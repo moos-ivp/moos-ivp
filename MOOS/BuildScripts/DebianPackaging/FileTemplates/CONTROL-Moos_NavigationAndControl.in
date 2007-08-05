@@ -1,0 +1,9 @@
+Package: moos-navigation-and-control
+Version: @PACKAGE_VERSION@-@PACKAGE_BUILD_NUM@
+Section: devel
+Priority: optional
+Architecture: i386
+Depends: moos-core (>= @PACKAGE_VERSION@)
+Maintainer: Paul Newman <pnewman@robots.ox.ac.uk>
+Description: Provides the iRemote, pHelm, and pNav programs for MOOS
+ (TODO: Add longer decription.)

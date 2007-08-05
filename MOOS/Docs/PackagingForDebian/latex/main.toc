@@ -1,0 +1,15 @@
+\contentsline {section}{\numberline {1}Overview}{1}
+\contentsline {section}{\numberline {2}The Packages}{2}
+\contentsline {subsection}{\numberline {2.1}Locations of installed files}{2}
+\contentsline {section}{\numberline {3}Modifications to MOOS' Build System}{3}
+\contentsline {subsection}{\numberline {3.1}Shell scripts now, CPack later}{3}
+\contentsline {subsection}{\numberline {3.2}Modifications to MOOS's CMakeLists.txt files}{3}
+\contentsline {subsubsection}{\numberline {3.2.1}Why use CMake named installation components?}{4}
+\contentsline {subsubsection}{\numberline {3.2.2}CMake installs: Specifying component and location}{4}
+\contentsline {subsection}{\numberline {3.3}The make-debs shell script}{5}
+\contentsline {subsection}{\numberline {3.4}File templates}{5}
+\contentsline {section}{\numberline {4}Creating Debian Packages}{6}
+\contentsline {subsection}{\numberline {4.1}Pre-requisites}{6}
+\contentsline {subsection}{\numberline {4.2}Steps to Create Packages}{7}
+\contentsline {section}{\numberline {5}Suggested Near-term Future Work}{8}
+\contentsline {section}{\numberline {6}Suggested Medium-term Future Work}{9}
