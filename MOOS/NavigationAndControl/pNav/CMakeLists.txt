@@ -22,9 +22,13 @@ TARGET_LINK_LIBRARIES(pNav ${MOOSLIBS} ${PLATFORM_LIBS}  MOOSNav newmat )
 # For installation and Debian packaging...
 #===============================================================================
 
-INSTALL(
-   TARGETS pNav
-   DESTINATION bin/moos-${MOOS_VERSION}
-   COMPONENT Moos_NavigationAndControl)
+IF ("${MOOS_VERSION}" STREQUAL "")
+   MESSAGE(STATUS "MOOS_VERSION not set, so not creating install component.")
+ELSE("${MOOS_VERSION}" STREQUAL "")
+   INSTALL(
+      TARGETS pNav
+      DESTINATION bin/moos-${MOOS_VERSION}
+      COMPONENT Moos_NavigationAndControl)
+ENDIF("${MOOS_VERSION}" STREQUAL "")
 
 #===============================================================================

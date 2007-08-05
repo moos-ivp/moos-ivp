@@ -24,9 +24,13 @@ TARGET_LINK_LIBRARIES(pHelm MOOSTask ${MOOSLIBS} ${PLATFORM_LIBS}   newmat )
 # For installation and Debian packaging...
 #===============================================================================
 
-INSTALL(
-   TARGETS pHelm
-   DESTINATION bin/moos-${MOOS_VERSION}
-   COMPONENT Moos_NavigationAndControl)
+IF ("${MOOS_VERSION}" STREQUAL "")
+   MESSAGE(STATUS "MOOS_VERSION not set, so not creating install component.")
+ELSE("${MOOS_VERSION}" STREQUAL "")
+   INSTALL(
+      TARGETS pHelm
+      DESTINATION bin/moos-${MOOS_VERSION}
+      COMPONENT Moos_NavigationAndControl)
+ENDIF("${MOOS_VERSION}" STREQUAL "")
 
 #===============================================================================

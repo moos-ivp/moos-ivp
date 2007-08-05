@@ -48,40 +48,44 @@ ADD_LIBRARY(MOOSNav ${MOOSNAVLIB_SRCS})
 # For installation and Debian packaging...
 #===============================================================================
 
-INSTALL(
-   TARGETS MOOSNav
-   DESTINATION lib/moos-${MOOS_VERSION}
-   COMPONENT Moos_NavigationAndControl_Dev)
-
-# Note: If there are any header files that are truly unneeded by users of this
-# library, it should be OK to remove them from the PUBLIC_HEADERS variable,
-# which in turn will prevent them from being installed. -CJC
-SET(PUBLIC_HEADERS 
-   LBLMaths.h
-   MOOSLinearLeastMedianFilter.h
-   MOOSNavBase.h
-   MOOSNavBBCMLEngine.h
-   MOOSNavBeacon.h
-   MOOSNavBroker.h
-   MOOSNavEKFEngine.h
-   MOOSNavEngine.h
-   MOOSNavEntity.h
-   MOOSNavLibDefs.h
-   MOOSNavLibGlobalHelper.h
-   MOOSNavLib.h
-   MOOSNavLogger.h
-   MOOSNavLSQEngine.h
-   MOOSNavObsStore.h
-   MOOSNavSensor.h
-   MOOSNavTopDownCalEngine.h
-   MOOSNavVehicle.h
-   MOOSObservation.h
-   MOOSSensorChannel.h
-)
-
-INSTALL(
-   FILES ${PUBLIC_HEADERS}
-   DESTINATION include/moos-${MOOS_VERSION}/NavigationAndControl/MOOSNavLib
-   COMPONENT Moos_NavigationAndControl_Dev)
+IF ("${MOOS_VERSION}" STREQUAL "")
+   MESSAGE(STATUS "MOOS_VERSION not set, so not creating install component.")
+ELSE("${MOOS_VERSION}" STREQUAL "")
+   INSTALL(
+      TARGETS MOOSNav
+      DESTINATION lib/moos-${MOOS_VERSION}
+      COMPONENT Moos_NavigationAndControl_Dev)
+   
+   # Note: If there are any header files that are truly unneeded by users of this
+   # library, it should be OK to remove them from the PUBLIC_HEADERS variable,
+   # which in turn will prevent them from being installed. -CJC
+   SET(PUBLIC_HEADERS 
+      LBLMaths.h
+      MOOSLinearLeastMedianFilter.h
+      MOOSNavBase.h
+      MOOSNavBBCMLEngine.h
+      MOOSNavBeacon.h
+      MOOSNavBroker.h
+      MOOSNavEKFEngine.h
+      MOOSNavEngine.h
+      MOOSNavEntity.h
+      MOOSNavLibDefs.h
+      MOOSNavLibGlobalHelper.h
+      MOOSNavLib.h
+      MOOSNavLogger.h
+      MOOSNavLSQEngine.h
+      MOOSNavObsStore.h
+      MOOSNavSensor.h
+      MOOSNavTopDownCalEngine.h
+      MOOSNavVehicle.h
+      MOOSObservation.h
+      MOOSSensorChannel.h
+   )
+   
+   INSTALL(
+      FILES ${PUBLIC_HEADERS}
+      DESTINATION include/moos-${MOOS_VERSION}/NavigationAndControl/MOOSNavLib
+      COMPONENT Moos_NavigationAndControl_Dev)
+ENDIF("${MOOS_VERSION}" STREQUAL "")
 
 #===============================================================================

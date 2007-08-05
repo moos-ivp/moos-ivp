@@ -23,9 +23,13 @@ TARGET_LINK_LIBRARIES(iINS ${MOOSLIBS} ${PLATFORM_LIBS} )
 # For installation and Debian packaging...
 #===============================================================================
 
-INSTALL(
-   TARGETS iINS
-   DESTINATION bin/moos-${MOOS_VERSION}
-   COMPONENT Moos_Instruments)
+IF ("${MOOS_VERSION}" STREQUAL "")
+   MESSAGE(STATUS "MOOS_VERSION not set, so not creating install component.")
+ELSE("${MOOS_VERSION}" STREQUAL "")
+   INSTALL(
+      TARGETS iINS
+      DESTINATION bin/moos-${MOOS_VERSION}
+      COMPONENT Moos_Instruments)
+ENDIF("${MOOS_VERSION}" STREQUAL "")
 
 #===============================================================================

@@ -11,14 +11,29 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.0)
 		    PROJECT(MOOS)
 ###########################################################
 
+
 INCLUDE(CPack)
+
+#####################################################
+#default set up for location of built files
+#NB user can change this through UI
+SET(MOOSBIN ${MOOS_BINARY_DIR}/MOOSBin)
+
+#dump libs and executables in the same place
+SET( LIBRARY_OUTPUT_PATH ${MOOSBIN} CACHE PATH
+     "Output directory for the MOOS libraries" )
+SET( EXECUTABLE_OUTPUT_PATH ${MOOSBIN} CACHE PATH
+     "Output directory for the MOOS executables" )
+
 
 SET(MOOS_VERSION "" CACHE STRING "The version of MOOS that you're building.  I.e., 7.0.1")
 IF ("${MOOS_VERSION}" STREQUAL "")
-   MESSAGE(FATAL_ERROR "You need to define the variable 'MOOS_VERSION' "
-      "(to a value something like '7.0.1'), because it's used when calculating "
-      "things like installation directory names."
-   )
+   MESSAGE("If you don't set MOOS_VERSION, no INSTALL directives will "
+      "be called.  This is because they use MOOS_VERSION as part of their "
+      "naming scheme.  This means that 'make install' won't put the project's "
+      "files in the ideal locations, and our scripts for creating packags "
+      "(such as Debian .deb files) won't work either."
+      )
 ENDIF ("${MOOS_VERSION}" STREQUAL "")
 
 
@@ -126,17 +141,6 @@ IF(UNIX)
   SET(OPENGL_LIBS GL GLU)
 ENDIF(UNIX)
 
-
-#####################################################
-#default set up for location of built files
-#NB user can change this through UI
-SET(MOOSBIN ${MOOS_BINARY_DIR}/MOOSBin)
-
-#dump libs and executables in the same place
-SET( LIBRARY_OUTPUT_PATH ${MOOSBIN} CACHE PATH
-     "Output directory for the MOOS libraries" )
-SET( EXECUTABLE_OUTPUT_PATH ${MOOSBIN} CACHE PATH
-     "Output directory for the MOOS executables" )
 
 #####################################################
 # be helpful and let all projects look for libraries here

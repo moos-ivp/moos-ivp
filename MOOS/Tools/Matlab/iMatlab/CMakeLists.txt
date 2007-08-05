@@ -84,15 +84,19 @@ ENDIF(WIN32)
 # installation component ("Moos_Tools_Matlab"). -CJC
 
 IF(${BUILD_MATLAB_TOOLS})
-   INSTALL(
-      TARGETS iMatlab
-      DESTINATION bin/moos-${MOOS_VERSION}
-      COMPONENT Moos_Tools_Matlab)
+   IF ("${MOOS_VERSION}" STREQUAL "")
+      MESSAGE(STATUS "MOOS_VERSION not set, so not creating install component.")
+   ELSE("${MOOS_VERSION}" STREQUAL "")
+      INSTALL(
+         TARGETS iMatlab
+         DESTINATION bin/moos-${MOOS_VERSION}
+         COMPONENT Moos_Tools_Matlab)
+   ENDIF ("${MOOS_VERSION}" STREQUAL "")
 ELSE(${BUILD_MATLAB_TOOLS})
    MESSAGE(STATUS 
       "Warning: Not building Matlab tools, because the "
       "BUILD_MATLAB_TOOLS variable isn't set to 'ON'.  So the 'Moos_Tools' "
-      "install component (and associated Debian package file) won't contain "
+      "install component (used for installation packages) won't contain "
       "the iMatlab shared library.")
 ENDIF(${BUILD_MATLAB_TOOLS})
 

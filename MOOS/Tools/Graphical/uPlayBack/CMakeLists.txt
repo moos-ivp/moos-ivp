@@ -41,10 +41,14 @@ ENDIF(FLTK_FOUND)
 #===============================================================================
 
 IF(FLTK_FOUND)
-   INSTALL(
-      TARGETS uPlayBack
-      DESTINATION bin/moos-${MOOS_VERSION}
-      COMPONENT Moos_Tools)
+   IF ("${MOOS_VERSION}" STREQUAL "")
+      MESSAGE(STATUS "MOOS_VERSION not set, so not creating install component.")
+   ELSE("${MOOS_VERSION}" STREQUAL "")
+      INSTALL(
+         TARGETS uPlayBack
+         DESTINATION bin/moos-${MOOS_VERSION}
+         COMPONENT Moos_Tools)
+   ENDIF("${MOOS_VERSION}" STREQUAL "")
 ENDIF(FLTK_FOUND)
 
 #===============================================================================

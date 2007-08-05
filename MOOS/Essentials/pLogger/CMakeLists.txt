@@ -19,9 +19,13 @@ TARGET_LINK_LIBRARIES(pLogger ${MOOSLIBS} ${PLATFORM_LIBS} )
 # For installation and Debian packaging...
 #===============================================================================
 
-INSTALL(
-   TARGETS pLogger
-   DESTINATION bin/moos-${MOOS_VERSION}
-   COMPONENT Moos_Essentials)
+IF ("${MOOS_VERSION}" STREQUAL "")
+   MESSAGE(STATUS "MOOS_VERSION not set, so not creating install component.")
+ELSE("${MOOS_VERSION}" STREQUAL "")
+   INSTALL(
+      TARGETS pLogger
+      DESTINATION bin/moos-${MOOS_VERSION}
+      COMPONENT Moos_Essentials)
+ENDIF("${MOOS_VERSION}" STREQUAL "")
 
 #===============================================================================

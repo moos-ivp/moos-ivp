@@ -39,9 +39,13 @@ TARGET_LINK_LIBRARIES(uMVS ${MOOSLIBS} ${PLATFORM_LIBS} newmat )
 # For installation and Debian packaging...
 #===============================================================================
 
-INSTALL(
-   TARGETS uMVS
-   DESTINATION bin/moos-${MOOS_VERSION}
-   COMPONENT Moos_Tools)
+IF ("${MOOS_VERSION}" STREQUAL "")
+   MESSAGE(STATUS "MOOS_VERSION not set, so not creating install component.")
+ELSE("${MOOS_VERSION}" STREQUAL "")
+   INSTALL(
+      TARGETS uMVS
+      DESTINATION bin/moos-${MOOS_VERSION}
+      COMPONENT Moos_Tools)
+ENDIF("${MOOS_VERSION}" STREQUAL "")
 
 #===============================================================================

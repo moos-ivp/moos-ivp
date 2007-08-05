@@ -39,37 +39,42 @@ ADD_LIBRARY(MOOS ${MOOSLIB_SRCS})
 # For installation and Debian packaging...
 #===============================================================================
 
-INSTALL(
-   TARGETS MOOS
-   DESTINATION lib/moos-${MOOS_VERSION}
-   COMPONENT Moos_Core_Dev)
+IF ("${MOOS_VERSION}" STREQUAL "")
+   MESSAGE(STATUS "MOOS_VERSION not set, so not creating install component.")
+ELSE("${MOOS_VERSION}" STREQUAL "")
+   INSTALL(
+      TARGETS MOOS
+      DESTINATION lib/moos-${MOOS_VERSION}
+      COMPONENT Moos_Core_Dev)
+   
+   # Note: If there are any header files that are truly unneeded by users of this
+   # library, it should be OK to remove them from the PUBLIC_HEADERS variable,
+   # which in turn will prevent them from being installed. -CJC
+   SET(PUBLIC_HEADERS 
+      MOOSApp.h
+      MOOSCommClient.h
+      MOOSCommObject.h
+      MOOSCommPkt.h
+      MOOSCommServer.h
+      MOOSException.h
+      MOOSGlobalHelper.h
+      MOOSInstrument.h
+      MOOSLib.h
+      MOOSMsg.h
+      MOOSVariable.h
+      XPCEndian.h
+      XPCException.h
+      XPCGetHostInfo.h
+      XPCGetProtocol.h
+      XPCSocket.h
+      XPCTcpSocket.h
+   )
+   
+   INSTALL(
+      FILES ${PUBLIC_HEADERS}
+      DESTINATION include/moos-${MOOS_VERSION}/Core/MOOSLib
+      COMPONENT Moos_Core_Dev)
+ENDIF("${MOOS_VERSION}" STREQUAL "")
 
-# Note: If there are any header files that are truly unneeded by users of this
-# library, it should be OK to remove them from the PUBLIC_HEADERS variable,
-# which in turn will prevent them from being installed. -CJC
-SET(PUBLIC_HEADERS 
-   MOOSApp.h
-   MOOSCommClient.h
-   MOOSCommObject.h
-   MOOSCommPkt.h
-   MOOSCommServer.h
-   MOOSException.h
-   MOOSGlobalHelper.h
-   MOOSInstrument.h
-   MOOSLib.h
-   MOOSMsg.h
-   MOOSVariable.h
-   XPCEndian.h
-   XPCException.h
-   XPCGetHostInfo.h
-   XPCGetProtocol.h
-   XPCSocket.h
-   XPCTcpSocket.h
-)
-
-INSTALL(
-   FILES ${PUBLIC_HEADERS}
-   DESTINATION include/moos-${MOOS_VERSION}/Core/MOOSLib
-   COMPONENT Moos_Core_Dev)
 
 #===============================================================================
