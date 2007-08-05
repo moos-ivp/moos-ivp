@@ -341,31 +341,7 @@ packages:
  \item Review the decision to include the specific MOOS version number in
 	the installation path for the packaged files.
 
- \item The \verb|Essentials| and \verb|Core| subdirectories have a strange
-	kind of cyclic dependency:
-
-	\verb|Essentials| provides \verb|MOOSUtilityLib|, on which the code in \verb|Core| has a
-	compile-time and link-time dependecy.  This dependency, as well as its
-	name, suggests that \verb|Essentials| is an underpinning of the rest of the
-	project's code.
-	
-	But \verb|Core| provides the \verb|MOOSDB| program, and \verb|Essentials| has some programs
-	(such as \verb|pMOOSBridge|that have a \textit{runtime} dependency on a
-	running \verb|MOOSDB| instance.
-
-	Both of the names (\verb|Essentials| and \verb|Core|) indicate a kind of foundational
-	role with respect to the rest of the project's code, but the dependencies
-	described above, as well as their synonymous-seeming names, contradict 
-	that interpretation.
-
-	I suggest that this is sorted out so that the two directories don't
-	both have names that indicate the same, exclusive role in the project. 
-	I also suggest that the runtime vs. build-time dependencies decribed 
-	above are sorted out.  One way to accomplish this would be to move
-	those programs that connect to \verb|MOOSDB| out of \verb|Essentials| and into 
-	\verb|Core|.
-
- \item MOOS's \verb|Docs| directory isn't currently build by the CMake
+ \item MOOS's \verb|Docs| directory isn't currently built by the CMake
 	build system.  Once it is, it would be easy to create one or
 	more \verb|-doc| documentation packages to accompany the other
 	MOOS Debian packages.  This would be helpful to would-be MOOS
