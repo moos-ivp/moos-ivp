@@ -1,0 +1,40 @@
+# Makefile definitions particular to behaviors-marine library
+
+LTARGET  = libbehaviours-oxford.a
+LIFLAGS  = 
+LCFLAGS  = 
+
+# Make configuration parameters
+include ../make_config.mk
+# Generic makefile structure for all library modules
+include ../make_lib.mk
+# DO NOT DELETE
+
+AOF_Plus.o: AOF_Plus.h ../lib_ivpcore/IvPDomain.h ../lib_ivpcore/IvPBox.h
+AOF_Plus.o: ../lib_ivpbuild/AOF.h
+IvPBehaviorPlus.o: IvPBehaviorPlus.h ../lib_ivpcore/IvPDomain.h
+IvPBehaviorPlus.o: ../lib_ivpcore/IvPBox.h ../lib_behaviors/IvPBehavior.h
+IvPBehaviorPlus.o: ../lib_ivpcore/IvPFunction.h ../lib_ivpcore/PDMap.h
+IvPBehaviorPlus.o: ../lib_ivpcore/BoxSet.h ../lib_ivpcore/BoxSetNode.h
+IvPBehaviorPlus.o: ../lib_ivpcore/IvPGrid.h ../lib_behaviors/InfoBuffer.h
+IvPBehaviorPlus.o: ../lib_behaviors/VarDataPair.h
+IvPBehaviorPlus.o: ../lib_logic/LogicCondition.h ../lib_logic/ParseNode.h
+IvPBehaviorPlus.o: AOF_Plus.h ../lib_ivpbuild/AOF.h /usr/include/math.h
+IvPBehaviorPlus.o: /usr/include/features.h /usr/include/sys/cdefs.h
+IvPBehaviorPlus.o: /usr/include/gnu/stubs.h /usr/include/bits/huge_val.h
+IvPBehaviorPlus.o: /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h
+IvPBehaviorPlus.o: ../lib_ivpbuild/OF_Reflector.h
+IvPBehaviorPlus.o: ../lib_ivpbuild/BuildUtils.h
+WayPointVW.o: WayPointVW.h ../lib_behaviors/IvPBehavior.h
+WayPointVW.o: ../lib_ivpcore/IvPFunction.h ../lib_ivpcore/IvPBox.h
+WayPointVW.o: ../lib_ivpcore/PDMap.h ../lib_ivpcore/BoxSet.h
+WayPointVW.o: ../lib_ivpcore/BoxSetNode.h ../lib_ivpcore/IvPGrid.h
+WayPointVW.o: ../lib_ivpcore/IvPDomain.h ../lib_behaviors/InfoBuffer.h
+WayPointVW.o: ../lib_behaviors/VarDataPair.h ../lib_logic/LogicCondition.h
+WayPointVW.o: ../lib_logic/ParseNode.h ../lib_ivpbuild/AOF.h
+WayPointVW.o: SimpleBehaviour.h ../lib_ivpbuild/BuildUtils.h
+WayPointVW.o: ../lib_ivpbuild/OF_Reflector.h /usr/include/math.h
+WayPointVW.o: /usr/include/features.h /usr/include/sys/cdefs.h
+WayPointVW.o: /usr/include/gnu/stubs.h /usr/include/bits/huge_val.h
+WayPointVW.o: /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h
+WayPointVW.o: ../MOOSGenLib/MOOSGenLibGlobalHelper.h

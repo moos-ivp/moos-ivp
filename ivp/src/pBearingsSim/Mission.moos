@@ -1,0 +1,6 @@
+ProcessConfig = pBearings
+{
+AppTick = 1
+CommsTick = 5
+
+}

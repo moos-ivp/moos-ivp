@@ -1,0 +1,33 @@
+ServerHost = localhost
+ServerPort = 9200
+
+// Community name IS the vehicle name
+Community  = nyak200
+
+//------------------------------------------------------------------
+// Antler configuration  block
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+
+  //crucial processes
+  Run = MOOSDB		@ NewConsole = true
+  Run = pLoiterControl	@ NewConsole = true
+}
+
+
+//------------------------------------------------------------------
+// pLoiterControl configuration  block
+
+ProcessConfig = pLoiterControl
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  WAIT_PERIOD = 1
+
+  ASSIGNMENT  = kayak_01 | radial:10,10,50,12
+  ASSIGNMENT  = kayak_02 | radial:20,20,50,12
+  ASSIGNMENT  = kayak_03 | radial:30,30,50,12
+  ASSIGNMENT  = kayak_04 | radial:40,40,50,12
+}

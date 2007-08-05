@@ -1,0 +1,30 @@
+  
+                                main.cpp
+  
+                           Splits Two Threads
+  
+                      (1)                     (2)
+  
+    +-------------------+                      +------------------------+ 
+    | Thread 1          |                      | Thread 2               |
+    | IMS_MOOSApp       |                      | fget(c) in main.cpp    |
+    |                   |                      |                        |
+    | interacts w/MOOS  |                      | interacts w/USER       |
+    |                   |                      |                        |
+    |                   |                      |                        |
+    | has-a: IMS_Model  |                      | has-a: IMS_Model       |
+    +-------------------+                      +------------------------+ 
+                         \                    /
+(1) Init IMS_Model from   \                  /  (1) Send handleChar(c)
+    .moos params           \                /       cmds to IMS_MODEL  
+(2) Send vehicle actuator   \              /
+    cmds from mailbox        \            /              
+(3) Send Sim global           V          V          
+    params from        +-----------------------+
+    MOOS mailbox       | IMS_Model             |
+                       |                       |
+                       |                       |
+                       | has-a: SimEngine      |
+                       | has-a: Vstate         |
+                       +-----------------------+
+  

@@ -1,0 +1,82 @@
+----------------------------------------------------------------------
+o Date: Tue Aug 16th 2005                          (First uVoice Test)
+  Who:  M.Benjamin, P.Osagie, M.Klein
+  Loc:  Charle River, Sailing Pavilion
+  Note: Objective of the experiment was to test M.Klein's uVoice 
+    module. We used one kayak tasked to execute a BHV_Loiter behavior
+    in one of two regions. We wanted to use uVoice to command the 
+    vehicle to either region. uVoice was run on a laptop shoreside
+    in a separate MOOS community. We used pMOOSBridge to bridge a 
+    single variable from the shore to the MOOSDB on the kayak. We
+    used uVoice simply to recognize the verbal command, change the
+    variable in the local MOOSDB, which was then mapped tothe kayak.
+    The two loiter behaviors on the kayak had preconditions depending
+    on the value of that variable.
+  Note: The experiment was successful. THis allowed us to declare 
+    Mike Klein's summer UROP project successful.
+
+----------------------------------------------------------------------
+o Date: Thu Aug 18th 2005                          (Vehicle Interrupt)
+  Who:  M.Benjamin, P.Osagie, M.Klein
+  Loc:  Charle River, Sailing Pavilion
+  Note: We were testing the ability to have one kayak in a loiter
+    pattern and remaining there until another kayaks came within a 
+    prescribed range. At which point the first kayak would follow the
+    second kayak.
+  Note: We also were testing Peter Osagie's BHV_StayInRange behavior
+    which would keep the kayak AT a specified range of another kayak.
+    Mike Klein would iRemote the second kayak around to test the 
+    effectiveness of Peter's behavior.
+  Note: Both experiments were successful. Data in aug1805.tgz reflects
+    only the first experiment however.
+
+----------------------------------------------------------------------
+o Date: Wed Nov  2nd 2005                        (Eickstedt 1 vehicle)
+  Who:  M.Benjamin, Don Eickstedt
+  Loc:  Charle River, Sailing Pavilion
+  Note: We were testing Don's one-vehicle tracker problem for his
+        thesis.
+
+----------------------------------------------------------------------
+o Date: Sat Nov 5th 2005                             (COLREGS Rule-16)
+  Who:  M.Benjamin, Don Eickstedt
+  Loc:  Charle River, Sailing Pavilion
+  Note: We successfully tested the COLREGS Rule 16
+  Note: We had a minor collision with the BU rowing team doing
+        time trials
+
+----------------------------------------------------------------------
+o Date: Fri Nov 11th 2005                          (Prep large deploy)
+  Who:  M.Benjamin, Peter Osagie
+  Loc:  Charle River, Sailing Pavilion
+  Note: Vehicle 200 ran a hexagon with an interesting star pattern
+        which is a good example of how a vehicle performs with a 
+        rudder offset problem. This was caused by vehicle 200 having
+        its plate under the moter/server come detached from the 8020
+        rails which we temp fixed with clamps from Home Depot.
+
+----------------------------------------------------------------------
+o Date: Mon Nov 14th 2005                       (Deploy 5 vehicle net)
+  Who:  M.Benjamin, Peter Osagie
+  Loc:  Charle River, Sailing Pavilion
+  Note: We deployed five vehicles simultaneously. Had a problem with 
+        a sixth vehicle on-hand, fixed the next day.
+
+----------------------------------------------------------------------
+o Date: Mon Nov 15th 2005                       (Deploy 6 vehicle net)
+  Who:  M.Benjamin, Peter Osagie
+  Loc:  Charle River, Sailing Pavilion
+  Note: We deployed six vehicles simultaneously. 
+
+---------------------------------------------------------------------
+o Date: Thursday Dec 1st 2005                   (Eickstedt 2 vehicle)
+  Who:  M. Benjamin, Don Eickstedt 
+  Loc:  Charles River, Sailing Pavilion
+  Note: Successful 2-vehicle cooperative tracking for Don's thesis
+
+---------------------------------------------------------------------
+o Date: Sunday Dec 4th 2005                     (Eickstedt 1 vehicle)
+  Who:  M. Benjamin, Don Eickstedt 
+  Loc:  Charles River, Sailing Pavilion
+  Note: Successful 1-vehicle tracking with a networked classification
+        vehicle for Don's thesis.

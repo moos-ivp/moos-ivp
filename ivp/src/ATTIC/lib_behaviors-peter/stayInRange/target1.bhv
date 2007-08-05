@@ -1,0 +1,8 @@
+Behavior = BHV_Waypoint
+{
+  name     = bhv_waypt
+  pwt      = 100
+  speed    = 1.5
+  radius   = 8.0
+  points = -10,-90:10,-70:-10,-50:10,-40:-80,-120:50,-90:0,-50
+}

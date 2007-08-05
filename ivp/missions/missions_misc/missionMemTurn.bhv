@@ -1,0 +1,25 @@
+initialize   DEPLOY = false
+initialize   RETURN = false
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name      = bhv_waypt_a
+  pwt       = 100
+  silent    = true
+  //log_ipf   = false
+  speed     = 4.0
+  radius    = 10
+  points    = 0,-100:300,-100:0,-120
+  condition = DEPLOY = true
+}
+
+//----------------------------------------------
+Behavior = BHV_MemoryTurnLimit
+{
+  name           = bhv_memturnlimit
+  pwt            = 1000
+  memory_time    = 20
+  turn_range     = 90
+  condition      = DEPLOY = true
+}

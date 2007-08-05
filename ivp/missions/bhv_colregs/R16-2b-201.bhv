@@ -1,0 +1,17 @@
+//----------------------------------------------------
+Behavior = BHV_ConstantSpeed
+{
+  name   = bhv_constant_speed
+  pwt    = 100
+  speed  = 1.6
+}
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name     = bhv_waypt
+  pwt      = 10
+  speed    = 1.6
+  radius   = 8.0
+  points   = 36,-128:156,-174:138,-34:62,10
+}

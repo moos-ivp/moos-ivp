@@ -1,0 +1,54 @@
+// MOOS file
+
+ServerHost = localhost
+ServerPort = 9000
+
+Community = base
+
+ProcessConfig = ANTLER
+{
+	 MSBetweenLaunches = 200
+
+	     Run = MOOSDB      @ NewConsole = false
+		 Run = pMOOSBridge @ NewConsole = false ~ pMOOSBridge_base
+}
+								 
+
+ProcessConfig = uVoice
+{
+	AppTick   = 4
+	CommsTick = 4
+}
+
+ProcessConfig = pMOOSBridge_base
+{
+	AppTick   = 4
+	CommsTick = 4
+
+	SHARE = [zero_return]  -> nyak200 @ 192.168.0.200:9000 [uVoice_return]
+	SHARE = [one_return]   -> nyak201 @ 192.168.0.201:9000 [uVoice_return]
+	SHARE = [two_return]   -> nyak202 @ 192.168.0.202:9000 [uVoice_return]
+	SHARE = [three_return] -> nyak203 @ 192.168.0.203:9000 [uVoice_return]
+	SHARE = [four_return]  -> nyak204 @ 192.168.0.204:9000 [uVoice_return]
+	SHARE = [five_return]  -> nyak205 @ 192.168.0.205:9000 [uVoice_return]
+	SHARE = [six_return]   -> nyak206 @ 192.168.0.206:9000 [uVoice_return]
+	SHARE = [seven_return] -> nyak207 @ 192.168.0.207:9000 [uVoice_return]
+	
+	SHARE = [zero_follow]  -> nyak200 @ 192.168.0.200:9000 [uVoice_follow]
+	SHARE = [one_follow]   -> nyak201 @ 192.168.0.201:9000 [uVoice_follow]
+	SHARE = [two_follow]   -> nyak202 @ 192.168.0.202:9000 [uVoice_follow]
+	SHARE = [three_follow] -> nyak203 @ 192.168.0.203:9000 [uVoice_follow]
+	SHARE = [four_follow]  -> nyak204 @ 192.168.0.204:9000 [uVoice_follow]
+	SHARE = [five_follow]  -> nyak205 @ 192.168.0.205:9000 [uVoice_follow]
+	SHARE = [six_follow]   -> nyak206 @ 192.168.0.206:9000 [uVoice_follow]
+	SHARE = [seven_follow] -> nyak207 @ 192.168.0.207:9000 [uVoice_follow] 
+
+	SHARE = [zero_formation]  -> nyak200 @ 192.168.0.200:9000 [uVoice_formation]
+	SHARE = [one_formation]   -> nyak201 @ 192.168.0.201:9000 [uVoice_formation]
+	SHARE = [two_formation]   -> nyak202 @ 192.168.0.202:9000 [uVoice_formation]
+	SHARE = [three_formation] -> nyak203 @ 192.168.0.203:9000 [uVoice_formation]
+	SHARE = [four_formation]  -> nyak204 @ 192.168.0.204:9000 [uVoice_formation]
+	SHARE = [five_formation]  -> nyak205 @ 192.168.0.205:9000 [uVoice_formation]
+	SHARE = [six_formation]   -> nyak206 @ 192.168.0.206:9000 [uVoice_formation]
+	SHARE = [seven_formation] -> nyak207 @ 192.168.0.207:9000 [uVoice_formation]
+}

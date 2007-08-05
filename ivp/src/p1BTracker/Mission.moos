@@ -1,0 +1,8 @@
+ProcessConfig = p1BTracker
+{
+	AppTick = 1;
+	CommsTick = 4
+
+	range_guess = 250
+	min_points = 60
+}

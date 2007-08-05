@@ -1,0 +1,41 @@
+initialize   DEPLOY = false
+initialize   RETURN = false
+
+//----------------------------------------------
+Behavior = BHV_LoiterMigrate
+{
+  name       = bhv_loiter_a
+  pwt        = 100
+  speed      = 5.0
+  clockwise  = true
+  radius     = 8 
+  acquire_dist = 50
+  polygon    = radial:0,-100,80,3
+  condition  = (DEPLOY = true) and (RETURN != true)
+}
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name       = bhv_waypt_return
+  pwt        = 100
+  condition  = (RETURN = true) and (DEPLOY = true)
+
+  speed      = 2.0
+  radius     = 8.0
+  points     = 100,0
+}
+
+//----------------------------------------------
+//Behavior = BHV_AvoidObstacles
+{
+  name           = bhv_avoid_obstacles
+  pwt            = 1000
+  polygon        = -50,-100:-50,-130:-30,-130:-30,-100
+  //polygon        = 30,-100:30,-40:60,-40:60,-100
+  polygon        = 10,-140:10,-80:40,-80:40,-140
+  allowable_ttc  = 20
+  activation_dist = 30
+  buffer_dist    = 15
+  condition      = DEPLOY = true
+}

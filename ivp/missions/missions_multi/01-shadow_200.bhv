@@ -1,0 +1,45 @@
+initialize   DEPLOY = false
+initialize   RETURN = false
+initialize   SHADOW = false
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name      = bhv_waypt_onstation
+  pwt       = 100
+  condition = DEPLOY = true
+  condition = RETURN = false
+  condition = SHADOW = false
+
+  speed     = 4.0
+  radius    = 10.0
+  points    = 70,-30:60,-80:120,-80:110,-30
+  repeat    = 100
+}
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name      = bhv_waypt_return
+  pwt       = 100
+  condition = DEPLOY = true
+  condition = RETURN = true
+
+  speed     = 4.0
+  radius    = 10.0
+  points    = 0,0
+}
+
+//----------------------------------------------
+Behavior = BHV_Shadow
+{
+  name      = bhv_shadow
+  them      = nyak201
+
+  pwt       = 100
+  condition = DEPLOY = true
+  condition = RETURN = false
+  condition = SHADOW = true
+
+  max_range = 1000
+}

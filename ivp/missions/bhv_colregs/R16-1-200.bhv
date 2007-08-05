@@ -1,0 +1,37 @@
+Behavior = BHV_Waypoint
+{
+  name   = bhv_waypt
+  pwt    = 100
+  speed  = 1.4
+  radius = 8.0
+#  points = 50,6:96,2:36,-126:-20,-252:-78,-114:-56,-38
+#  points = 50,-14:96,-18:36,-146:-20,-272:-78,-134:-56,-58
+#  points =   50,-14:96,-18:36,-146:0,-220:-78,-134:-56,-58
+  points =  50,-14:96,-18:36,-146:10,-190:-30,-120:0,-30  
+}
+
+
+//----------------------------------------------
+Behavior = BHV_GiveWay16
+{
+  name          = bhv_giveway16
+  pwt           = 1000
+  them          = nyak201
+  range_active  = 65
+  range_fullwt  = 40
+}
+
+//----------------------------------------------
+Behavior = BHV_TOL
+{
+  name        = bhv_tol
+  pwt         = 500
+}
+
+//----------------------------------------------
+Behavior = BHV_OpRegion
+{
+  polygon  = label,SafeOpBox:-160,-72:-50,-320:220,-210:108,43
+  name     = bhv_op_region
+}
+

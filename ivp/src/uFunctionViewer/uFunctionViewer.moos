@@ -1,0 +1,39 @@
+// MOOS file
+
+ServerHost = localhost
+ServerPort = 9000
+
+Simulator  = true
+
+//------------------------------------------------------------------
+// Antler configuration  block
+
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+
+  Run = MOOSDB		@ NewConsole = true
+  Run = uFunctionViewer	@ NewConsole = true
+  Run = pFunctionSender	@ NewConsole = true
+}
+
+//------------------------------------------------------------------
+// uFunctionViewer configuration  block
+
+ProcessConfig = uFunctionViewer
+{
+  AppTick   = 50
+  CommsTick = 50
+
+  ipf_name  = OF_TEST_P
+}
+
+//------------------------------------------------------------------
+// pFunctionSender configuration  block
+
+ProcessConfig = pFunctionSender
+{
+  AppTick   = 50
+  CommsTick = 50
+}
+

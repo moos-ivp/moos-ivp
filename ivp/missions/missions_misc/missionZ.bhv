@@ -1,0 +1,42 @@
+initialize   DEPLOY = false
+initialize   RETURN = false
+
+//----------------------------------------------
+Behavior = BHV_Loiter
+{
+  name       = bhv_loiter_A
+  pwt        = 100
+  speed      = 3.9
+  silent     = false
+  radius     = 8.0
+  //polygon    = 115,-40:140,-90:115,-140:65,-140:40,-90:65,-40sdf
+  radial     = 100,-100,80,10
+  //clockwise  = false
+  updates    = NEW_LOITER
+  condition  = RETURN = false
+  condition  = DEPLOY = true
+  endflag    = RETURN = true
+}
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name      = bhv_waypt_return
+  pwt       = 100
+  silent      = false
+  speed     = 2.0
+  radius    = 8.0
+  points    = 0,0
+  condition = RETURN = true
+  condition = DEPLOY = true
+}
+
+//----------------------------------------------
+Behavior = BHV_ConstantDepth
+{
+  name      = bhv_constantDepth
+  pwt       = 100
+  depth     = 25
+  duration  = no-time-limit
+  condition = DEPLOY = true
+}

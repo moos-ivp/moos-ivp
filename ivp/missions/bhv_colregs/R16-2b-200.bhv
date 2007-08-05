@@ -1,0 +1,40 @@
+//----------------------------------------------------
+Behavior = BHV_ConstantSpeed
+{
+  name   = bhv_constant_speed
+  pwt    = 100
+  speed  = 1.6
+}
+//----------------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name   = bhv_waypt
+  pwt    = 300
+  speed  = 1.5
+  radius = 8.0
+  points = 36,-126:-20,-252:-78,-114:-56,-38
+}
+
+//----------------------------------------------------
+Behavior = BHV_GiveWay16
+{
+  name          = bhv_giveway16_201
+  pwt           = 300
+  them          = nyak201
+  range_active  = 225
+  range_fullwt  = 50
+}
+
+//----------------------------------------------------
+Behavior = BHV_TOL
+{
+  name   = bhv_tol
+  pwt    = 300
+}
+
+//----------------------------------------------------
+Behavior = BHV_SteadyHeading
+{
+  name   = bhv_steady_heading
+  pwt    = 10
+}

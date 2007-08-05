@@ -1,0 +1,13 @@
+// Example AOF file
+
+AOF = AOF_AvoidCollision = course:0:359:180,speed:0:10:301,tol:5:45:21
+{
+  oslat = 0
+  oslon = 0 
+  cnlat = 100
+  cnlon = 100
+  cncrs = -135
+  cnspd = 8
+  collision_distance = 25
+  all_clear_distance = 100	
+}

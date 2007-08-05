@@ -1,0 +1,31 @@
+ProcessConfig = pBearings
+{
+  AppTick =   2
+  CommsTick = 4
+ 
+  //options are SINGLE or DUAL
+  def_array        = DUAL
+  def_numchannels  = 16 
+  def_spacing      = 0.10
+  def_numsamples   = 15000
+  def_fftlength    = 1024
+  def_beams        = 17
+  def_overlap      = 0.25
+  def_integrate    = 0.8
+  def_soundspeed   = 1532
+  def_centerfreq   = 7000
+  def_bandwidth    = 100
+  def_samplerate   = 18750
+  def_goodchannels = 1,3,5,7,9,11,13,15
+  def_alpha	   = 0.1
+  def_dep_angle    = 0.0	
+  def_det_thresh   = 15.0
+  def_lrbeams      = 4
+  def_Alpha_Head   = 0.7          // degrees
+  def_Turn_Rate_Threshold = 2     //degrees per second
+  def_Beam_Changed_Threshold = 7
+  def_Max_Ubias_Iter = 25
+  def_Abs_Uerror_Threshold = 1.0
+  def_Theta_Min = 10                 //degrees
+  def_Detection_Count_Threshold = 5
+}

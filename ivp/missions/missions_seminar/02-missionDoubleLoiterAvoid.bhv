@@ -1,0 +1,79 @@
+initialize   DEPLOY = false
+initialize   RETURN = false
+initialize   MODE   = ALPHA
+
+//----------------------------------------------
+Behavior = BHV_Loiter
+{
+  name       = bhv_loiter_a
+  pwt        = 100
+  speed      = 3.0
+  radius     = 8 
+  polygon    = radial:-120,-120,40,8
+  silent     = false
+  condition  = (DEPLOY = true) and (RETURN != true)
+  condition  = MODE = ALPHA
+}
+
+//----------------------------------------------
+Behavior = BHV_Loiter
+{
+  name       = bhv_loiter_b
+  pwt        = 100
+  speed      = 3.0
+  radius     = 8 
+  polygon    = radial:140,-120,40,8
+  silent     = false
+  condition  = (DEPLOY = true) and (RETURN != true)
+  condition  = MODE = BETA
+}
+
+//----------------------------------------------
+Behavior = BHV_Timer
+{
+  name       = bhv_timer_alpha
+  pwt        = 100
+  duration   = 210
+  perpetual  = true
+  condition  = (DEPLOY = true) and (RETURN != true)
+  condition  = MODE = ALPHA
+  endflag    = MODE = BETA
+}
+
+//----------------------------------------------
+Behavior = BHV_Timer
+{
+  name       = bhv_timer_beta
+  pwt        = 100
+  duration   = 180
+  perpetual  = true
+  condition  = (DEPLOY = true) and (RETURN != true)
+  condition  = (MODE = BETA)
+  endflag    = MODE = ALPHA
+}
+
+		
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name       = bhv_waypt_return
+  pwt        = 100
+  condition  = (RETURN = true) and (DEPLOY = true)
+
+  speed      = 2.0
+  radius     = 8.0
+  points     = 0,0
+}
+
+//----------------------------------------------
+Behavior = BHV_AvoidObstacles
+{
+  name           = bhv_avoid_obstacles
+  pwt            = 1000
+  polygon        = -20,-80:-20,-110:0,-110:0,-80
+  polygon        =  25,-120:25,-150:45,-150:45,-120
+  allowable_ttc  = 20
+  activation_dist = 50
+  buffer_dist    = 6
+  condition      = DEPLOY = true
+}

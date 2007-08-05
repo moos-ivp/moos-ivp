@@ -1,0 +1,12 @@
+// MOOS file
+
+ServerHost = localhost
+ServerPort = 9000
+
+ProcessConfig = iWifi
+{
+	AppTick   = 4
+	CommsTick = 4
+	interface = eth1
+}
+

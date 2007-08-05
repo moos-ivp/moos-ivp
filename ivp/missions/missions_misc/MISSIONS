@@ -1,0 +1,34 @@
+
+Mission 1: (alpha.moos,  mission1.bhv)
+  Simple waypoint mission with a return-home waypoint triggered 
+  after a box-run.
+    
+Mission 2: (alpha.moos,  mission2.bhv)
+  Simple waypoint mission. Box run repeats itself. The user will set 
+  RETURN true to trigger the return-home behavior and interupt 
+  the first waypoint behavior.
+  
+Mission 3: (alpha.moos,  mission3.bhv)
+  Test the OpRegion. A waypoint behavior takes the vehicle outside 
+  the OpRegion polygon and the helm posts all-stop.
+
+Mission X: (missionX.moos, missionX.bhv)
+   Waypoint mission w/ dynamic waypoint re-tasking. 
+   iRemote is configured to write to the WAYPOINT_UPDATES variable. 
+   Can also test for faulty waypoint updates.
+
+Mission Y: (missionY.moos, missionY.bhv)
+   Loiter mission w/ dynamic loiter region re-tasking. 
+   iRemote is configured to write to the NEW_LOITER variable. 
+   Can also test for faulty loiter polygon updates.
+
+Mission Z: (missionZ.moos, missionZ.bhv)
+   Loiter mission w/ ConstantDepth behavior
+   To test ConstantDepth, iMarineSim with depth, pMarineViewer depth
+   display and pTransponderAIS functionality.
+
+
+Multi_Mission 1:
+  FILES:  beta.moos,     multi_mission1_beta.bhv
+          charlie.moos,  multi_mission1_charlie.bhv
+  IDEA: 

@@ -1,0 +1,22 @@
+Behavior = BHV_StayInRange
+{
+  name              = stay_in_range_nyak200
+  pwt               = 50
+  ID                = nyak200
+  group             = blue
+  target            = nyak204
+  range_min         = 10.0
+  range_max         = 20.0
+  use_halfway_mark  = false
+  use_ranging       = false
+  debug             = true
+}
+
+Behavior = BHV_ShadowCourse
+{
+  name              = shadow_course_nyak200
+  pwt               = 90
+  ID                = nyak206
+  target            = nyak200
+  range_max         = 50.0
+}

@@ -1,0 +1,10 @@
+//------------------------------------------------------------------
+// iHeadingMonitor config block
+
+ProcessConfig = iHeadingMonitor
+{
+  AppTick	= 2
+  CommsTick	= 2
+  HeadingSource = meta
+  TimeThresh    = 3.0
+}

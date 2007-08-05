@@ -1,0 +1,13 @@
+// Example pMarineViewer MOOS file
+
+ServerHost = localhost
+ServerPort = 9000
+
+ProcessConfig = pMarineViewer
+{
+  AppTick   = 4
+  CommsTick = 4
+
+  TIF_FILE  = Default.tif  
+}
+

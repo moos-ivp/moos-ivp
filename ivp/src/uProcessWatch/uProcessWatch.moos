@@ -1,0 +1,27 @@
+// Example uProcessWatch MOOS file
+
+ServerHost = localhost
+ServerPort = 9000
+
+ProcessConfig = uProcessWatch
+{
+  AppTick   = 4
+  CommsTick = 4
+
+  WATCH  = pHelmIvP
+  WATCH  = pHuxley
+  WATCH  = pFramer
+  WATCH  = pSearch
+  WATCH  = pNaFCon
+  WATCH  = p1BTracker
+  WATCH  = pFramer
+  WATCH  = pThermoTrack
+  WATCH  = iVSA
+  WATCH  = pAEL
+  WATCH  = iMicroModem
+  WATCH  = pRouter
+  WATCH  = iCTD
+  WATCH  = pScheduler
+  WATCH  = pCSVLogger
+}
+

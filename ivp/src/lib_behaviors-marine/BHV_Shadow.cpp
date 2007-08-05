@@ -1,0 +1,231 @@
+/*****************************************************************/
+/*    NAME: Michael Benjamin and John Leonard                    */
+/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    FILE: BHV_Shadow.cpp                                       */
+/*    DATE: May 10th 2005                                        */
+/*                                                               */
+/* This program is free software; you can redistribute it and/or */
+/* modify it under the terms of the GNU General Public License   */
+/* as published by the Free Software Foundation; either version  */
+/* 2 of the License, or (at your option) any later version.      */
+/*                                                               */
+/* This program is distributed in the hope that it will be       */
+/* useful, but WITHOUT ANY WARRANTY; without even the implied    */
+/* warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR       */
+/* PURPOSE. See the GNU General Public License for more details. */
+/*                                                               */
+/* You should have received a copy of the GNU General Public     */
+/* License along with this program; if not, write to the Free    */
+/* Software Foundation, Inc., 59 Temple Place - Suite 330,       */
+/* Boston, MA 02111-1307, USA.                                   */
+/*****************************************************************/
+#ifdef _WIN32
+#pragma warning(disable : 4786)
+#pragma warning(disable : 4503)
+#endif
+#include <math.h>
+#include "AngleUtils.h"
+#include "BHV_Shadow.h"
+#include "ZAIC_PEAK.h"
+#include "OF_Coupler.h"
+#include "BuildUtils.h"
+#include "MBUtils.h"
+
+using namespace std;
+
+//-----------------------------------------------------------
+// Procedure: Constructor
+
+BHV_Shadow::BHV_Shadow(IvPDomain gdomain) : IvPBehavior(gdomain)
+{
+  this->setParam("descriptor", "(d)bhv_shadow");
+
+  domain = subDomain(domain, "course,speed");
+
+  m_max_range     = 0;
+  m_hdg_peakwidth = 0;
+  m_hdg_basewidth = 180;
+  m_spd_peakwidth = 0;
+  m_spd_basewidth = 2.0;
+
+  info_vars.push_back("NAV_X");
+  info_vars.push_back("NAV_Y");
+  info_vars.push_back("NAV_SPEED");
+  info_vars.push_back("NAV_HEADING");
+}
+
+//-----------------------------------------------------------
+// Procedure: setParam
+
+bool BHV_Shadow::setParam(string g_param, string g_val) 
+{
+  if(IvPBehavior::setParamCommon(g_param, g_val))
+    return(true);
+
+  if((g_param == "them") || (g_param == "contact")) {
+    if(!param_lock) {
+      m_them_name = toupper(g_val);
+      info_vars.push_back(m_them_name+"_NAV_X");
+      info_vars.push_back(m_them_name+"_NAV_Y");
+      info_vars.push_back(m_them_name+"_NAV_SPEED");
+      info_vars.push_back(m_them_name+"_NAV_HEADING");
+    }
+    return(true);
+  }  
+  else if(g_param == "max_range") {
+    m_max_range = atof(g_val.c_str());
+    return(true);
+  }  
+  if(g_param == "hdg_peakwidth") {
+    double dval = atof(g_val.c_str());
+    if((dval < 0) || (!isNumber(g_val)))
+      return(false);
+    if(!param_lock)
+      m_hdg_peakwidth = dval;
+    return(true);
+  }
+  if(g_param == "hdg_basewidth") {
+    double dval = atof(g_val.c_str());
+    if((dval < 0) || (!isNumber(g_val)))
+      return(false);
+    if(!param_lock)
+      m_hdg_basewidth = dval;
+    return(true);
+  }
+
+  if(g_param == "spd_peakwidth") {
+    double dval = atof(g_val.c_str());
+    if((dval < 0) || (!isNumber(g_val)))
+      return(false);
+    if(!param_lock)
+      m_spd_peakwidth = dval;
+    return(true);
+  }
+  if(g_param == "spd_basewidth") {
+    double dval = atof(g_val.c_str());
+    if((dval < 0) || (!isNumber(g_val)))
+      return(false);
+    if(!param_lock)
+      m_spd_basewidth = dval;
+    return(true);
+  }
+
+  return(false);
+}
+
+
+//-----------------------------------------------------------
+// Procedure: produceOF
+
+IvPFunction *BHV_Shadow::produceOF() 
+{
+  if(m_them_name == "") {
+    postWMessage("contact ID not set.");
+    return(0);
+  }
+  if(!domain.hasDomain("course")) {
+    postWMessage("No 'heading/course' variable in the helm domain");
+    return(0);
+  }
+  if(!domain.hasDomain("speed")) {
+    postWMessage("No 'speed' variable in the helm domain");
+    return(0);
+  }
+
+  // Set m_osx, m_osy, m_cnx, m_cny, m_cnv, m_cnh
+  if(!updateInfoIn())
+    return(0);
+  
+  // Calculate the relevance first. If zero-relevance, we won't
+  // bother to create the objective function.
+  double relevance = getRelevance();
+
+  if(relevance <= 0)
+    return(0);
+
+  ZAIC_PEAK hdg_zaic(domain, "course");
+  hdg_zaic.addSummit(m_cnh, m_hdg_peakwidth, m_hdg_basewidth, 50, 0, 100);
+  hdg_zaic.setValueWrap(true);
+  IvPFunction *hdg_ipf = hdg_zaic.extractOF();
+  
+  ZAIC_PEAK spd_zaic(domain, "speed");
+  spd_zaic.addSummit(m_cnv, m_spd_peakwidth, m_spd_basewidth, 10, 0, 25);
+  spd_zaic.setValueWrap(true);
+  IvPFunction *spd_ipf = spd_zaic.extractOF();
+  
+  OF_Coupler coupler;
+  IvPFunction *ipf = coupler.couple(hdg_ipf, spd_ipf);
+  if(ipf)
+    ipf->setPWT(relevance * priority_wt);
+  
+  ipf->getPDMap()->normalize(0.0, 100.0);
+  
+  if(!silent) {
+    postMessage("SHADOW_MIN_WT", ipf->getPDMap()->getMinWT());
+    postMessage("SHADOW_MAX_WT", ipf->getPDMap()->getMaxWT());
+  }
+
+  return(ipf);
+}
+
+//-----------------------------------------------------------
+// Procedure: updateInfoIn()
+//   Purpose: Update info need by the behavior from the info_buffer.
+//            Error or warning messages can be posted.
+//   Returns: true if no vital info is missing from the info_buffer.
+//            false otherwise.
+//      Note: By posting an EMessage, this sets the state_ok member
+//            variable to false which will communicate the gravity
+//            of the situation to the helm.
+
+bool BHV_Shadow::updateInfoIn()
+{
+  bool ok1, ok2;
+  
+  m_cnh = info_buffer->dQuery(m_them_name+"_NAV_HEADING", ok1);
+  m_cnv = info_buffer->dQuery(m_them_name+"_NAV_SPEED", ok2);
+  if(!ok1 || !ok2) {
+    postWMessage("contact course/speed info not found.");
+    return(false);
+  }
+
+  m_cnh = angle360(m_cnh);
+
+  m_cnx = info_buffer->dQuery(m_them_name+"_NAV_X", ok1);
+  m_cny = info_buffer->dQuery(m_them_name+"_NAV_Y", ok2);
+  if(!ok1 || !ok2) {
+    postWMessage("contact x/y info not found.");
+    return(false);
+  }
+  
+  m_osx = info_buffer->dQuery("NAV_X", ok1);
+  m_osy = info_buffer->dQuery("NAV_Y", ok2);
+  if(!ok1 || !ok2) {
+    postEMessage("ownship x/y info not found.");
+    return(false);
+  }
+}
+
+
+//-----------------------------------------------------------
+// Procedure: getRelevance
+
+double BHV_Shadow::getRelevance()
+{
+  if(m_max_range == 0)
+    return(1.0);
+  
+  double contact_range = hypot((m_osx-m_cnx), (m_osy-m_cny));
+  if(contact_range < m_max_range)
+    return(1.0);
+  else
+    return(0.0);
+}
+
+
+
+
+
+
+
+

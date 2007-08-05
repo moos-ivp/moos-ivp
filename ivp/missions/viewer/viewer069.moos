@@ -1,0 +1,48 @@
+//ServerHost = 192.168.1.69
+ServerHost = 192.168.0.69
+ServerPort = 9069
+Community  = marineviewer069
+
+/////////////////////////////////////////////
+// Antler configuration  block
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+
+  //crucial processes
+  Run = MOOSDB		@ NewConsole = true
+  Run = pMarineViewer	@ NewConsole = true
+  //Run = uMS		@ NewConsole = true
+  Run = pLogger		@ NewConsole = true
+}
+
+
+//----------------------------------------------
+// pMarineViewer configuration  block
+
+ProcessConfig = pMarineViewer
+{
+  AppTick    = 4
+  CommsTick  = 4
+  IMAGE_FILE = /home/mikerb/Research/project-marine/data/AerialMIT.tif
+  INFO_FILE  = /home/mikerb/Research/project-marine/data/AerialMIT.info
+}
+
+
+//------------------------------------------------------------------
+// Logger configuration block
+
+ProcessConfig = pLogger
+{
+  //over loading basic params...
+  AppTick 	= 10.0
+  CommsTick 	= 10.0
+
+  File		= LVIEWER_
+  PATH		= ../data_from_runs/
+  SyncLog 	= false
+  AsyncLog 	= true
+  FileTimeStamp = true
+
+  Log           = AIS_REPORT @ 0.1
+}

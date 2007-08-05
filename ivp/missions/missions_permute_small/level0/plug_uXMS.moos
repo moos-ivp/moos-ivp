@@ -1,0 +1,32 @@
+//------------------------------------------------------------------
+// uXMS config block
+
+ProcessConfig = uXMS
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  VAR        = DESIRED_HEADING
+  VAR        = DESIRED_SPEED
+  VAR        = DESIRED_DEPTH
+
+  VAR        = DESIRED_RUDDER
+  VAR        = DESIRED_THRUST
+  VAR        = DESIRED_ELEVATOR
+
+  VAR        = NAV_X
+  VAR        = NAV_Y
+  VAR        = NAV_SPEED
+  VAR        = NAV_YAW
+
+  VAR        = DEPLOY
+  VAR        = RETURN
+  VAR        = STATION_KEEP
+
+  VAR        = GPS_X
+  VAR        = GPS_Y
+  VAR        = GPS_SAT
+
+  VAR        = MOOS_MANUAL_OVERIDE
+}
+

@@ -1,0 +1,37 @@
+initialize   DEPLOY = false
+initialize   RETURN = false
+
+
+Behavior = BHV_Timer
+{
+  name      = TEST_TIMER
+  duration  = 10
+  perpetual = true
+  endflag   = TIMER_END = ok
+
+}
+
+//----------------------------------------------
+//Behavior = BHV_WaypointOx
+{
+  name        = bhv_waypt_ox1
+  pwt         = 100
+  speed       = 2.0
+  radius      = 8.0
+  points      = 60,-40:60,-160:150,-160:180,-100:150,-40
+  condition   = RETURN = false
+  condition   = DEPLOY = true
+  endflag     = RETURN = true
+}
+
+//----------------------------------------------
+//Behavior = BHV_Waypoint
+{
+  name      = bhv_waypt_ox2
+  pwt       = 100
+  speed     = 2.0
+  radius    = 8.0
+  points    = 0,0
+  condition = RETURN = true
+  condition = DEPLOY = true
+}

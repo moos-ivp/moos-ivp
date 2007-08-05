@@ -1,0 +1,331 @@
+//************************************************************
+// Configuration file: M. Benjamin
+//
+
+ServerHost = localhost
+ServerPort = 9123
+ 
+// Community name IS the vehicle name
+Community  = shoreside
+
+//-------------------------------------------------------------
+// Antler configuration  block
+
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+
+  //crucial processes
+  Run = MOOSDB		@ NewConsole = false
+  Run = pMOOSBridge     @ NewConsole = false
+  Run = pMarineViewer	@ NewConsole = true
+  Run = pLoiterControl	@ NewConsole = true
+  Run = uTermCommand    @ NewConsole = true
+  Run = uXMS            @ NewConsole = true
+}
+
+//------------------------------------------------------------------
+// pMOOSBridge config block
+
+ProcessConfig = pMOOSBridge
+{
+  AppTick   = 3
+  CommsTick = 3
+
+  // SHARE = [VAR] -> to-community @ to-host:to-port [VAR]
+
+  SHARE = [DEPLOY_ALL] -> nyak200 @ localhost:9200 [DEPLOY]
+  SHARE = [DEPLOY_ALL] -> nyak201 @ localhost:9201 [DEPLOY]
+  SHARE = [DEPLOY_ALL] -> nyak204 @ localhost:9204 [DEPLOY]
+  SHARE = [DEPLOY_ALL] -> nyak206 @ localhost:9206 [DEPLOY]
+
+  SHARE = [LOGGER_RESTART_ALL] -> nyak200 @ localhost:9200 [LOGGER_RESTART]
+  SHARE = [LOGGER_RESTART_ALL] -> nyak201 @ localhost:9201 [LOGGER_RESTART]
+  SHARE = [LOGGER_RESTART_ALL] -> nyak204 @ localhost:9204 [LOGGER_RESTART]
+  SHARE = [LOGGER_RESTART_ALL] -> nyak206 @ localhost:9206 [LOGGER_RESTART]
+
+  SHARE = [RETURN_ALL] -> nyak200 @ localhost:9200 [RETURN]
+  SHARE = [RETURN_ALL] -> nyak201 @ localhost:9201 [RETURN]
+  SHARE = [RETURN_ALL] -> nyak204 @ localhost:9204 [RETURN]
+  SHARE = [RETURN_ALL] -> nyak206 @ localhost:9206 [RETURN]
+
+  SHARE = [STATION_KEEP_ALL] -> nyak200 @ localhost:9200 [STATION_KEEP]
+  SHARE = [STATION_KEEP_ALL] -> nyak201 @ localhost:9201 [STATION_KEEP]
+  SHARE = [STATION_KEEP_ALL] -> nyak204 @ localhost:9204 [STATION_KEEP]
+  SHARE = [STATION_KEEP_ALL] -> nyak206 @ localhost:9206 [STATION_KEEP]
+
+  SHARE = [HELM_VERBOSE_ALL] -> nyak200 @ localhost:9200 [HELM_VERBOSE]
+  SHARE = [HELM_VERBOSE_ALL] -> nyak201 @ localhost:9201 [HELM_VERBOSE]
+  SHARE = [HELM_VERBOSE_ALL] -> nyak204 @ localhost:9204 [HELM_VERBOSE]
+  SHARE = [HELM_VERBOSE_ALL] -> nyak206 @ localhost:9206 [HELM_VERBOSE]
+
+  SHARE = [AVOID_POLICY_ALL] -> nyak200 @ localhost:9200 [AVOID_POLICY]
+  SHARE = [AVOID_POLICY_ALL] -> nyak201 @ localhost:9201 [AVOID_POLICY]
+  SHARE = [AVOID_POLICY_ALL] -> nyak204 @ localhost:9204 [AVOID_POLICY]
+  SHARE = [AVOID_POLICY_ALL] -> nyak206 @ localhost:9206 [AVOID_POLICY]
+
+  SHARE = [LOITER_UPDATE_ALL] -> nyak200 @ localhost:9200 [LOITER_UPDATE]
+  SHARE = [LOITER_UPDATE_ALL] -> nyak201 @ localhost:9201 [LOITER_UPDATE]
+  SHARE = [LOITER_UPDATE_ALL] -> nyak204 @ localhost:9204 [LOITER_UPDATE]
+  SHARE = [LOITER_UPDATE_ALL] -> nyak206 @ localhost:9206 [LOITER_UPDATE]
+
+  //-------------------
+
+  SHARE = [DEPLOY_200] -> nyak200 @ localhost:9200 [DEPLOY]
+  SHARE = [DEPLOY_201] -> nyak201 @ localhost:9201 [DEPLOY]
+  SHARE = [DEPLOY_204] -> nyak204 @ localhost:9204 [DEPLOY]
+  SHARE = [DEPLOY_206] -> nyak206 @ localhost:9206 [DEPLOY]
+
+  SHARE = [RETURN_200] -> nyak200 @ localhost:9200 [RETURN]
+  SHARE = [RETURN_201] -> nyak201 @ localhost:9201 [RETURN]
+  SHARE = [RETURN_204] -> nyak204 @ localhost:9204 [RETURN]
+  SHARE = [RETURN_206] -> nyak206 @ localhost:9206 [RETURN]
+
+  SHARE = [STATION_KEEP_200] -> nyak200 @ localhost:9200 [STATION_KEEP]
+  SHARE = [STATION_KEEP_201] -> nyak201 @ localhost:9201 [STATION_KEEP]
+  SHARE = [STATION_KEEP_204] -> nyak204 @ localhost:9204 [STATION_KEEP]
+  SHARE = [STATION_KEEP_206] -> nyak206 @ localhost:9206 [STATION_KEEP]
+
+  SHARE = [AVOID_POLICY_200] -> nyak200 @ localhost:9200 [AVOID_POLICY]
+  SHARE = [AVOID_POLICY_201] -> nyak201 @ localhost:9201 [AVOID_POLICY]
+  SHARE = [AVOID_POLICY_204] -> nyak204 @ localhost:9204 [AVOID_POLICY]
+  SHARE = [AVOID_POLICY_206] -> nyak206 @ localhost:9206 [AVOID_POLICY]
+
+  SHARE = [HELM_VERBOSE_200] -> nyak200 @ localhost:9200 [HELM_VERBOSE]
+  SHARE = [HELM_VERBOSE_201] -> nyak201 @ localhost:9201 [HELM_VERBOSE]
+  SHARE = [HELM_VERBOSE_204] -> nyak204 @ localhost:9204 [HELM_VERBOSE]
+  SHARE = [HELM_VERBOSE_206] -> nyak206 @ localhost:9206 [HELM_VERBOSE]
+
+  SHARE = [AVOID_POLICY_200] -> nyak200 @ localhost:9200 [AVOID_POLICY]
+  SHARE = [AVOID_POLICY_201] -> nyak201 @ localhost:9201 [AVOID_POLICY]
+  SHARE = [AVOID_POLICY_204] -> nyak204 @ localhost:9204 [AVOID_POLICY]
+  SHARE = [AVOID_POLICY_206] -> nyak206 @ localhost:9206 [AVOID_POLICY]
+
+  SHARE = [LOITER_UPDATE_NYAK200] -> nyak200 @ localhost:9200 [LOITER_UPDATE]
+  SHARE = [LOITER_UPDATE_NYAK201] -> nyak201 @ localhost:9201 [LOITER_UPDATE]
+  SHARE = [LOITER_UPDATE_NYAK204] -> nyak204 @ localhost:9204 [LOITER_UPDATE]
+  SHARE = [LOITER_UPDATE_NYAK206] -> nyak206 @ localhost:9206 [LOITER_UPDATE]
+}
+
+
+//----------------------------------------------
+// pMarineViewer configuration  block
+
+ProcessConfig = pMarineViewer
+{
+  AppTick    = 4
+  CommsTick  = 4
+  IMAGE_FILE = /home/mikerb/Research/project-marine/data/AerialMIT.tif
+  INFO_FILE  = /home/mikerb/Research/project-marine/data/AerialMIT.info
+}
+
+
+//------------------------------------------------------------------
+// pLoiterControl configuration  block
+
+ProcessConfig = pLoiterControl
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  WAIT_PERIOD = 180
+
+  ASSIGNMENT  = NYAK200 | radial:-20,-80,30,6  
+  ASSIGNMENT  = NYAK201 | radial:70,-35,30,6
+  ASSIGNMENT  = NYAK204 | radial:115,-120,30,6  
+  ASSIGNMENT  = NYAK206 | radial:28,-168,30,6
+}
+
+
+//------------------------------------------------------------------
+// iRemote configuration block
+
+ProcessConfig = iRemote
+{
+   CustomKey = 1 : DEPLOY_ALL        @ "true"
+   CustomKey = 2 : DEPLOY_ALL        @ "false"
+   CustomKey = 3 : RETURN_ALL        @ "true"
+   CustomKey = 4 : RETURN_ALL        @ "false"
+   CustomKey = 5 : STATION_KEEP_ALL  @ "true"
+   CustomKey = 6 : STATION_KEEP_ALL  @ "false"
+   CustomKey = 7 : TEST_RANGE        @ "INNER"
+   CustomKey = 8 : TEST_RANGE        @ "OUTER"
+
+   //CustomKey = 7 : LCONTROL_PAUSE    @ "true"
+   //CustomKey = 8 : LCONTROL_PAUSE    @ "false"
+
+   CustomKey = 9 : LOITER_REMAP @ "true"
+
+}
+
+//------------------------------------------------------------------
+// uXMS configuration block
+
+ProcessConfig = uXMS
+{
+  AppTick    = 5
+  CommsTick  = 5
+
+  VAR  = PROC_WATCH_SUMMARY_200
+  VAR  = PROC_WATCH_SUMMARY_201
+  VAR  = PROC_WATCH_SUMMARY_204
+  VAR  = PROC_WATCH_SUMMARY_206
+
+  VAR  = AIS_REPORT
+  VAR  = VIEW_POLYGON
+  VAR  = VIEW_POINT
+
+  VAR  = SIM_RESET_NYAK200
+  VAR  = SIM_RESET_NYAK201
+  VAR  = SIM_RESET_NYAK204
+  VAR  = SIM_RESET_NYAK206
+
+  VAR  = UPDATES_WPT_NYAK200
+  VAR  = UPDATES_WPT_NYAK201
+  VAR  = UPDATES_WPT_NYAK204
+  VAR  = UPDATES_WPT_NYAK206
+
+  VAR  = DEPLOY_ALL
+  VAR  = DEPLOY_200
+  VAR  = DEPLOY_201
+  VAR  = DEPLOY_204
+  VAR  = DEPLOY_206
+
+  VAR  = STATION_KEEP_ALL
+  VAR  = STATION_KEEP_200
+  VAR  = STATION_KEEP_201
+  VAR  = STATION_KEEP_204
+  VAR  = STATION_KEEP_206
+
+  VAR  = RETURN_ALL
+  VAR  = RETURN_200
+  VAR  = RETURN_201
+  VAR  = RETURN_204
+  VAR  = RETURN_206
+}   
+  
+
+//------------------------------------------------------------------
+// uTermCommand configuration block
+
+ProcessConfig = uTermCommand
+{
+  AppTick    = 2
+  CommsTick  = 2
+
+  //------------------------------------------------------
+  CMD  = loc_lcontrol_off    -->  LCONTROL_PAUSE --> false
+  CMD  = loc_lcontrol_on     -->  LCONTROL_PAUSE --> true
+  CMD  = loc_remap           -->  LOITER_REMAP   --> true
+
+  //-------------------------------------------------------
+  CMD  = all_deploy_true    -->  DEPLOY_ALL        --> true
+  CMD  = all_deploy_false   -->  DEPLOY_ALL        --> false
+  CMD  = all_return_true    -->  RETURN_ALL        --> true
+  CMD  = all_return_false   -->  RETURN_ALL        --> false
+  CMD  = all_station_true   -->  STATION_KEEP_ALL  --> true
+  CMD  = all_station_false  -->  STATION_KEEP_ALL  --> false
+
+  CMD  = all_loiter_speed_1 -->  LOITER_UPDATE_ALL --> speed=1.0
+  CMD  = all_loiter_speed_2 -->  LOITER_UPDATE_ALL --> speed=2.0
+  CMD  = all_loiter_speed_3 -->  LOITER_UPDATE_ALL --> speed=3.0
+  CMD  = all_loiter_speed_4 -->  LOITER_UPDATE_ALL --> speed=4.0
+  CMD  = all_loiter_speed_5 -->  LOITER_UPDATE_ALL --> speed=5.0
+
+  CMD  = all_avoid_none     -->  AVOID_POLICY_ALL  --> none
+  CMD  = all_avoid_basic    -->  AVOID_POLICY_ALL  --> basic
+  CMD  = all_avoid_colregs  -->  AVOID_POLICY_ALL  --> colregs
+
+  CMD  = all_helm_quiet     -->  HELM_VERBOSE_ALL  --> quiet
+  CMD  = all_helm_verbose   -->  HELM_VERBOSE_ALL  --> verbose
+  CMD  = all_helm_terse     -->  HELM_VERBOSE_ALL  --> terse
+
+  //-------------------------------------------------------
+  CMD  = 200_deploy_true    -->  DEPLOY_200       --> true
+  CMD  = 200_deploy_false   -->  DEPLOY_200       --> false
+  CMD  = 200_return_true    -->  RETURN_200       --> true
+  CMD  = 200_return_false   -->  RETURN_200       --> false
+  CMD  = 200_station_true   -->  STATION_KEEP_200 --> true
+  CMD  = 200_station_false  -->  STATION_KEEP_200 --> false
+
+  CMD  = 200_loiter_speed_1 -->  LOITER_UPDATE_NYAK200 --> speed=1.0
+  CMD  = 200_loiter_speed_2 -->  LOITER_UPDATE_NYAK200 --> speed=2.0
+  CMD  = 200_loiter_speed_3 -->  LOITER_UPDATE_NYAK200 --> speed=3.0
+  CMD  = 200_loiter_speed_4 -->  LOITER_UPDATE_NYAK200 --> speed=4.0
+  CMD  = 200_loiter_speed_5 -->  LOITER_UPDATE_NYAK200 --> speed=5.0
+
+  CMD  = 200_avoid_none     -->  AVOID_POLICY_200 --> none
+  CMD  = 200_avoid_basic    -->  AVOID_POLICY_200 --> basic 
+  CMD  = 200_avoid_colregs  -->  AVOID_POLICY_200 --> colregs 
+
+  CMD  = 200_helm_quiet     -->  HELM_VERBOSE_200 --> quiet
+  CMD  = 200_helm_terse     -->  HELM_VERBOSE_200 --> terse
+  CMD  = 200_helm_verbose   -->  HELM_VERBOSE_200 --> verbose
+
+  //-------------------------------------------------------
+  CMD  = 201_deploy_true    -->  DEPLOY_201       --> true
+  CMD  = 201_deploy_false   -->  DEPLOY_201       --> false
+  CMD  = 201_return_true    -->  RETURN_201       --> true
+  CMD  = 201_return_false   -->  RETURN_201       --> false
+  CMD  = 201_station_true   -->  STATION_KEEP_201 --> true
+  CMD  = 201_station_false  -->  STATION_KEEP_201 --> false
+
+  CMD  = 201_loiter_speed_1 -->  LOITER_UPDATE_NYAK201 --> speed=1.0
+  CMD  = 201_loiter_speed_2 -->  LOITER_UPDATE_NYAK201 --> speed=2.0
+  CMD  = 201_loiter_speed_3 -->  LOITER_UPDATE_NYAK201 --> speed=3.0
+  CMD  = 201_loiter_speed_4 -->  LOITER_UPDATE_NYAK201 --> speed=4.0
+  CMD  = 201_loiter_speed_5 -->  LOITER_UPDATE_NYAK201 --> speed=5.0
+
+  CMD  = 201_avoid_none     -->  AVOID_POLICY_201 --> none
+  CMD  = 201_avoid_basic    -->  AVOID_POLICY_201 --> basic 
+  CMD  = 201_avoid_colregs  -->  AVOID_POLICY_201 --> colregs 
+
+  CMD  = 201_helm_quiet     -->  HELM_VERBOSE_201 --> quiet
+  CMD  = 201_helm_terse     -->  HELM_VERBOSE_201 --> terse
+  CMD  = 201_helm_verbose   -->  HELM_VERBOSE_201 --> verbose
+
+  //-------------------------------------------------------
+  CMD  = 204_deploy_true    -->  DEPLOY_204       --> true
+  CMD  = 204_deploy_false   -->  DEPLOY_204       --> false
+  CMD  = 204_return_true    -->  RETURN_204       --> true
+  CMD  = 204_return_false   -->  RETURN_204       --> false
+  CMD  = 204_station_true   -->  STATION_KEEP_204 --> true
+  CMD  = 204_station_false  -->  STATION_KEEP_204 --> false
+
+  CMD  = 204_loiter_speed_1 -->  LOITER_UPDATE_NYAK204 --> speed=1.0
+  CMD  = 204_loiter_speed_2 -->  LOITER_UPDATE_NYAK204 --> speed=2.0
+  CMD  = 204_loiter_speed_3 -->  LOITER_UPDATE_NYAK204 --> speed=3.0
+  CMD  = 204_loiter_speed_4 -->  LOITER_UPDATE_NYAK204 --> speed=4.0
+  CMD  = 204_loiter_speed_5 -->  LOITER_UPDATE_NYAK204 --> speed=5.0
+
+  CMD  = 204_avoid_none     -->  AVOID_POLICY_204 --> none
+  CMD  = 204_avoid_basic    -->  AVOID_POLICY_204 --> basic 
+  CMD  = 204_avoid_colregs  -->  AVOID_POLICY_204 --> colregs 
+
+  CMD  = 204_helm_quiet     -->  HELM_VERBOSE_204 --> quiet
+  CMD  = 204_helm_terse     -->  HELM_VERBOSE_204 --> terse
+  CMD  = 204_helm_verbose   -->  HELM_VERBOSE_204 --> verbose
+
+  //-------------------------------------------------------
+  CMD  = 206_deploy_true    -->  DEPLOY_206       --> true
+  CMD  = 206_deploy_false   -->  DEPLOY_206       --> false
+  CMD  = 206_return_true    -->  RETURN_206       --> true
+  CMD  = 206_return_false   -->  RETURN_206       --> false
+  CMD  = 206_station_true   -->  STATION_KEEP_206 --> true
+  CMD  = 206_station_false  -->  STATION_KEEP_206 --> false
+
+  CMD  = 206_loiter_speed_1 -->  LOITER_UPDATE_NYAK206 --> speed=1.0
+  CMD  = 206_loiter_speed_2 -->  LOITER_UPDATE_NYAK206 --> speed=2.0
+  CMD  = 206_loiter_speed_3 -->  LOITER_UPDATE_NYAK206 --> speed=3.0
+  CMD  = 206_loiter_speed_4 -->  LOITER_UPDATE_NYAK206 --> speed=4.0
+  CMD  = 206_loiter_speed_5 -->  LOITER_UPDATE_NYAK206 --> speed=5.0
+
+  CMD  = 206_avoid_none     -->  AVOID_POLICY_206 --> none
+  CMD  = 206_avoid_basic    -->  AVOID_POLICY_206 --> basic 
+  CMD  = 206_avoid_colregs  -->  AVOID_POLICY_206 --> colregs 
+
+  CMD  = 206_helm_quiet     -->  HELM_VERBOSE_206 --> quiet
+  CMD  = 206_helm_terse     -->  HELM_VERBOSE_206 --> terse
+  CMD  = 206_helm_verbose   -->  HELM_VERBOSE_206 --> verbose
+}
+

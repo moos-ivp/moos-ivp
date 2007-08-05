@@ -1,0 +1,46 @@
+initialize   DEPLOY = false
+initialize   RETURN = false
+initialize   GO_TO_DEPTH_DONE = false
+
+//----------------------------------------------
+Behavior = BHV_Loiter
+{
+  name       = bhv_loiter_A
+  pwt        = 100
+  speed      = 2.0
+  silent     = false
+  radius     = 8.0
+  polygon    = radial:100,-100,80,10
+  clockwise  = false
+  updates    = NEW_LOITER
+  condition  = RETURN = false
+  condition  = DEPLOY = true
+}
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name      = bhv_waypt_return
+  pwt       = 100
+  silent      = false
+  speed     = 2.0
+  radius    = 8.0
+  points    = 0,0
+  condition = RETURN = true
+  condition = DEPLOY = true
+}
+
+//----------------------------------------------
+Behavior = BHV_GoToDepth
+{
+  name          = bhv_goto_depth
+  pwt           = 100
+  depth       = 10.1234,10
+  //depth       = 25,5 : 30,7 : 35,4 : 15,5
+  arrival_delta = 1
+  condition     = DEPLOY = true
+  endflag       = GOTO_DEPTH_DONE = true
+}
+
+
+//617 851 3751

@@ -1,0 +1,20 @@
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name     = bhv_waypt
+  pwt      = 10
+  speed    = 3.0
+  radius   = 8.0
+  points   = -56,-30:-88,-70:36,-128:156,-174:138,-34:62,10
+}
+
+//----------------------------------------------
+Behavior = BHV_ObeySpeedLimit
+{
+  name      = bhv_obey_spdlimit
+  pwt       = 10
+  spd_limit = 1.4
+  spd_cheat = 2.0
+  spd_death = 2.6
+  cheat_val = 60	
+}

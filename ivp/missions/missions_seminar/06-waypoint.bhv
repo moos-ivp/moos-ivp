@@ -1,0 +1,61 @@
+initialize   DEPLOY = false
+initialize   RETURN = false
+initialize   PHASE  = 0
+
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name       = bhv_waypt_one
+  pwt        = 100
+  condition  = (DEPLOY = true)
+  condition  = (PHASE  = 0)
+  endflag    = PHASE = 1
+  endflag    = SIM_X_FORCE = 2.0
+  runflag    = VIEW_POLYGON = radial:0,-45,10,12
+  runflag    = VIEW_POLYGON = radial:0,-45,4,12
+
+  speed      = 2.5
+  radius     = 4.0
+  //nm_radius  = 10
+  points     = 0,-45
+}
+
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name       = bhv_waypt_one
+  pwt        = 100
+  condition  = (DEPLOY = true)
+  condition  = (PHASE  = 1)
+  endflag    = PHASE = 2
+  endflag    = SIM_Y_FORCE = 0.0
+  runflag    = VIEW_POLYGON = radial:47,-29,12,12
+  runflag    = VIEW_POLYGON = radial:47,-29,4,12
+
+  speed      = 2.5
+  radius     = 4.0
+  //nm_radius  = 12
+  points     = 47,-29
+}
+
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name       = bhv_waypt_one
+  pwt        = 100
+  condition  = (DEPLOY = true)
+  condition  = (PHASE  = 2)
+  runflag    = VIEW_POLYGON = radial:120,-85,12,12
+  runflag    = VIEW_POLYGON = radial:120,-85,4,12
+
+
+  speed      = 2.5
+  radius     = 5.0
+  nm_radius  = 10
+  points     = 120,-85
+}
+
+

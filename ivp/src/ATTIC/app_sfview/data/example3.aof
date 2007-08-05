@@ -1,0 +1,10 @@
+// Example AOF file
+
+AOF = AOF_WPT3D = course:0:359:180,speed:0:10:301,tol:5:45:21
+{
+  oslat = 0
+  oslon = 0 
+  ptlat = 100
+  ptlon = 100
+  desired_speed = 5	
+}

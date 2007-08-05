@@ -1,0 +1,289 @@
+/*****************************************************************/
+/*    NAME: Michael Benjamin and John Leonard                    */
+/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    FILE: BackImg.cpp                                          */
+/*    DATE: Nov 16th 2004                                        */
+/*                                                               */
+/* This program is free software; you can redistribute it and/or */
+/* modify it under the terms of the GNU General Public License   */
+/* as published by the Free Software Foundation; either version  */
+/* 2 of the License, or (at your option) any later version.      */
+/*                                                               */
+/* This program is distributed in the hope that it will be       */
+/* useful, but WITHOUT ANY WARRANTY; without even the implied    */
+/* warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR       */
+/* PURPOSE. See the GNU General Public License for more details. */
+/*                                                               */
+/* You should have received a copy of the GNU General Public     */
+/* License along with this program; if not, write to the Free    */
+/* Software Foundation, Inc., 59 Temple Place - Suite 330,       */
+/* Boston, MA 02111-1307, USA.                                   */
+/*****************************************************************/
+
+#include <string>
+#include <vector>
+#include <iostream>
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <tiffio.h>
+#include <GL/gl.h>
+#include "BackImg.h"
+#include "MBUtils.h"
+#include "FileBuffer.h"
+
+using namespace std;
+
+// ----------------------------------------------------------
+// Procedure: Constructor
+
+BackImg::BackImg()
+{
+  // Just initialize member vars. First is most important.
+  img_data     = 0;    
+  img_width    = 0;
+  img_height   = 0;    
+  img_theta    = 0;
+
+  // Below should be populated by an "info" file.
+  img_centx    = 0;
+  img_centy    = 0;
+  img_offset_x = 0;
+  img_offset_y = 0;
+  img_meters   = 0;
+  img_centlat  = 0;
+  img_centlon  = 0;
+}
+
+// ----------------------------------------------------------
+// Procedure: Constructor
+
+BackImg::~BackImg()
+{
+  if(img_data) delete [] img_data;
+}
+
+// ----------------------------------------------------------
+// Procedure: pixToPctX,Y()
+//     Notes: pix is an absolute amount of the image
+
+float BackImg::pixToPctX(float pix)
+{
+  return((float)(pix) / (float)(img_width));
+}
+
+float BackImg::pixToPctY(float pix)
+{
+  return((float)(pix) / (float)(img_height));
+}
+
+// ----------------------------------------------------------
+// Procedure: readTiff
+//   Purpose: This routine reads in a tiff data and info
+
+bool BackImg::readTiff(const char* filename)
+{
+  if(!filename) {
+    readBlankTiff();
+    return(true);
+  }
+
+  string info_file = findReplace(filename, ".tif", ".info");
+
+  bool ok1 = readTiffData(filename);  
+  bool ok2 = readTiffInfo(info_file.c_str());
+
+  if(ok1 && ok2)
+    return(true);
+  else {
+    readBlankTiff();
+    return(false);
+  }
+}
+
+
+// ----------------------------------------------------------
+// Procedure: readTiffData
+//   Purpose: This routine reads in a tiff file and stores it 
+//            in a very simple data structure
+
+bool BackImg::readTiffData(const char* filename)
+{
+  if(img_data) delete [] img_data;
+  img_height = 0;
+  img_width  = 0;
+
+  string file = filename;
+  FILE *f = fopen(file.c_str(), "r");
+  if(f) {
+    fclose(f);
+  }
+  else {
+    file = DATA_DIR;
+    file += "/";
+    file += filename;
+  } 
+
+  cout << "Attempting to open tif file: " << file << endl;
+
+  // we turn off Warnings (maybe a bad idea) since many photoshop 
+  // images have newfangled tags that confuse libtiff
+  TIFFErrorHandler warn = TIFFSetWarningHandler(0);
+  
+  TIFF* tiff = TIFFOpen(file.c_str(), "r");
+  
+  // turn warnings back on, just in case
+  TIFFSetWarningHandler(warn);
+  
+  if(tiff) {
+    int rc = 1;			// what to return
+    uint32 w, h;
+    size_t npixels;
+    uint32* raster;
+    
+    TIFFGetField(tiff, TIFFTAG_IMAGEWIDTH, &w);
+    TIFFGetField(tiff, TIFFTAG_IMAGELENGTH, &h);
+    
+    // in case my data structures are different
+    img_width  = w;
+    img_height = h;
+    
+    npixels = w * h;
+    raster = (uint32*) _TIFFmalloc(npixels * sizeof (uint32));
+    if (raster != NULL) {
+      if (TIFFReadRGBAImage(tiff, w, h, raster, 0)) {
+	img_data = (unsigned char*) raster;
+      } 
+      else {
+	rc=0;
+	_TIFFfree(raster);
+      }
+    } 
+    else 
+      rc = 0;
+    
+    TIFFClose(tiff);
+    return(rc);
+  } 
+  else
+    return(0);
+}
+
+// ----------------------------------------------------------
+// Procedure: readTiffInfo
+//   Purpose: 
+
+bool BackImg::readTiffInfo(const char* filename)
+{
+  string file = filename;
+  FILE *f = fopen(file.c_str(), "r");
+  if(f) {
+    fclose(f);
+  }
+  else {
+    file = DATA_DIR;
+    file += "/";
+    file += filename;
+  } 
+
+  vector<string> buffer = fileBuffer(file);
+  int vsize = buffer.size();
+
+  if(vsize == 0) {
+    cout << file << " contains zero lines" << endl;
+    return(false);
+  }
+
+  for(int i=0; i<vsize; i++) {
+    string line = stripComment(buffer[i], "//");
+    line = stripBlankEnds(line);
+
+    if(line.size() > 0) {
+      vector<string> svector = parseString(line, '=');
+      if(svector.size() != 2) {
+	cout << "Problem w/ line " << i << " in " << file << endl;
+	return(false);
+      }
+      string left  = stripBlankEnds(svector[0]);
+      string right = stripBlankEnds(svector[1]);
+      
+      if(left == "img_centx") 
+	img_centx = atof(right.c_str());
+      else if(left == "img_centy") 
+	img_centy = atof(right.c_str());
+
+      else if(left == "img_offset_x") 
+	img_offset_x = atof(right.c_str());
+      else if(left == "img_offset_y") 
+	img_offset_y = atof(right.c_str());
+
+      else if(left == "img_meters") 
+	img_meters = atof(right.c_str());
+      else if(left == "img_centlat") 
+	img_centlat = atof(right.c_str());
+      else if(left == "img_centlon") 
+	img_centlon = atof(right.c_str());
+      else {
+	cout << "Problem w/ line " << i << " in " << file << endl;
+	return(false);
+      }
+    }
+  }
+  return(true);
+}
+
+
+// ----------------------------------------------------------
+// Procedure: readBlankTiff
+
+void BackImg::readBlankTiff()
+{
+  img_data    = 0;    
+
+#if 1
+  img_width   = 2048;
+  img_height  = 2048;    
+  img_centx   = 0.495850; 
+  img_centy   = 0.509000;
+  img_meters  = 0.048828; 
+  img_centlat = 42.35849;
+  img_centlon = -71.08759333;
+#endif
+
+#if 0
+  img_width   = 1000;
+  img_height  = 1000;    
+  img_centx   = 0.5;
+  img_centy   = 0.5;
+  img_meters  = 0.025;
+  img_centlat = 0;
+  img_centlon = 0;
+#endif
+}
+
+
+// ----------------------------------------------------------
+// Procedure: setTexture
+//   Purpose: 
+
+bool BackImg::setTexture()
+{
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 
+	       img_width, img_height, 0, 
+	       GL_RGBA, GL_UNSIGNED_INT_8_8_8_8_REV, 
+	       (unsigned char *)img_data);
+  
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  
+  glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+}
+
+
+
+
+
+
+

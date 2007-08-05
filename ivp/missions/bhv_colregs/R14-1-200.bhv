@@ -1,0 +1,32 @@
+Behavior = BHV_Waypoint
+{
+  name   = bhv_waypt
+  pwt    = 100
+  speed  = 3.0
+  radius = 8.0
+  points = 70,-30 : 100,-70 : 120,-100 : 100,-120 : 0,-120 : -100,-120 : -120,-100 : -100,-70 : -70,-30 :
+}
+
+#Behavior = BHV_CoWaypoint
+#{
+#	name = bhv_co_waypoint
+#	pwt  = 100
+#	them = nyak201
+#}
+
+
+#Behavior = BHV_Cruise
+#{
+#	name  = bhv_cruise
+#	pwt   = 10
+#	speed = 3.5
+#}
+#
+#Behavior = BHV_HeadOn14
+#{
+#	name = bhv_r14_201
+#	pwt  = 100
+#	them = nyak201
+#}
+
+

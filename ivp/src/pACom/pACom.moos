@@ -1,0 +1,84 @@
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+
+  Run = MOOSDB @ NewConsole = true
+  Run = pACom @ NewConsole = true
+//  Run = pMOOSBridge @ NewConsole = true ~ pMOOSBridge_ACom
+}
+
+ProcessConfig = MOOSDB
+{
+  ServerHost = localhost
+  ServerPort = 9000
+  Community  = pACom
+}
+
+ProcessConfig = pACom
+{
+  AppTick             = 1
+  CommsTick           = 1
+  
+  serial_port         = /dev/ttyS2
+  
+  src_address         = 1
+  dst_address         = 2
+  
+  // use these variables pairs when sending/receiving data
+  moos_variables      = NAV_X,A_X;NAV_Y,A_Y;NAV_SPEED,A_SPEED;META_HEADING,A_HEADING
+  
+  init_commands       = $CCCFG,CTO,3;$CCCFG,RXA,1;$CCCFG,RXD,0;$CCCFG,ASD,1;$CCCFG,CTO,5;$CCCFG,DTO,5
+  //set the Cycle-Init timeout $CCCFG,CTO,10
+  //set data output to ASCII $CCCFG,RXA,1
+  //unset binary output $CCCFG,RXD,0
+  //always send data $CCCFG,ASD,1
+  //set the cycle-init timout to 5 s
+  //set data timeout to 5 s
+
+  packet_type         = 0
+  // NB! all other packet types are not working
+  // packet type #frames bytes/frame bytes/packet bps
+  // 0           1       32          32           80
+  // 1           3       32          96           250
+  // 2           2       64          192          500
+  // 3           2       256         512          1200
+  // 4           2       256         512          1300
+  // 5           8       256         2048         5300
+  
+  // program operations
+  // currently the modem only supports one operation at the time so select only
+  // ON of these.
+  send_ping           = false
+  send_data           = false
+  read_data           = true
+  
+  compress_data       = true
+  verbose             = true
+  
+  max_message_length  = 64
+  buffer_size         = 64
+  
+  send_timeout        = 4
+  receive_timeout     = 10
+  
+  // discard any message smaller then this
+  byte_limit          = 1
+
+  // send ping every ... s
+  ping_delay          = 5
+
+  // send data every ... s
+  send_delay          = 8
+  
+  // read data every ...s
+  read_delay          = 1
+  
+  // read/send sleep in ms
+  send_sleep          = 100
+  read_sleep          = 10
+}
+
+ProcessConfig = pMOOSBridge_pACom
+{
+  //SHARE = from-community @ from-host:from-port [VAR] -> to-community @ to-host:to-port [VAR]
+}

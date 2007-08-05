@@ -1,0 +1,30 @@
+// MOOS file
+
+ServerHost = localhost
+ServerPort = 9000
+
+Community = base
+
+ProcessConfig = ANTLER
+{
+     MSBetweenLaunches = 200
+
+	          Run = MOOSDB      @ NewConsole = false
+			  Run = pMOOSBridge @ NewConsole = false ~ pMOOSBridge_base
+}
+
+
+ProcessConfig = uVoice
+{
+	AppTick   = 4
+	CommsTick = 4
+}
+
+ProcessConfig = pMOOSBridge_base
+{
+	AppTick   = 4
+	CommsTick = 4
+
+	SHARE = [zero_return]  -> nyak200 @ localhost:9200 [uVoice_return]
+	SHARE = [zero_formation] -> nyak200 @ localhost:9200 [uVoice_formation]
+}	

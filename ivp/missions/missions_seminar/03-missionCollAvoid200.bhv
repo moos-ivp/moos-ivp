@@ -1,0 +1,26 @@
+initialize   DEPLOY = false
+initialize   RETURN = false
+		
+//----------------------------------------------
+Behavior = BHV_AvoidCollision
+{
+  name               = bhv_avoid
+  them               = nyak201
+  active_distance    = 110
+  collision_distance = 25
+  all_clear_distance = 75
+  pwt                = 100
+}
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name       = bhv_waypt_b
+  pwt        = 100
+  condition  = (RETURN != true) and (DEPLOY = true)
+
+  speed      = 3.0
+  radius     = 8.0
+  points     = 0,-10
+}
+

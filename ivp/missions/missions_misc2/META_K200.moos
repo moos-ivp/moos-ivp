@@ -1,0 +1,44 @@
+#include plug_header_comments
+#define  VID 200
+
+ServerHost = localhost
+ServerPort = 9200
+Simulator  = true
+
+// Community name IS the vehicle name
+Community  = nyak200
+
+LatOrigin  = 42.3584
+LongOrigin = -71.08745
+
+//------------------------------------------------------------
+// Antler configuration  block
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+
+  Run = MOOSDB		@ NewConsole = true
+  Run = iMarineSim	@ NewConsole = true
+  Run = pMOOSBridge     @ NewConsole = true ~ pMOOSBridge_200
+  Run = pEchoVar	@ NewConsole = true
+  Run = pLogger		@ NewConsole = true
+  Run = pTransponderAIS	@ NewConsole = true
+  Run = pMarinePID	@ NewConsole = true
+  Run = uHSFunctionViewer @ NewConsole = true
+  Run = uTMS		@ NewConsole = true
+  Run = iRemote		@ NewConsole = true
+
+  //Run = iHeadingMonitor @ NewConsole = true
+  //Run = pHelmIvP	  @ NewConsole = true
+}
+
+#include plug_pMOOSBridge.moos
+#include plug_iMarineSim.moos
+#include plug_pHelmIvP.moos
+#include plug_pMarinePID.moos
+#include plug_iRemote.moos
+#include plug_pLogger.moos
+#include plug_pEchoVar.moos
+#include plug_pTransponderAIS.moos
+#include plug_uTMS.moos
+#include plug_uHSFunctionViewer.moos

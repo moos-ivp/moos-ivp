@@ -1,0 +1,28 @@
+initialize   DEPLOY = false
+initialize   RETURN = false
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name        = bhv_waypt_survey
+  pwt         = 100
+  speed       = 2.0
+  radius      = 8.0
+  points      = 60,-40:60,-160:150,-160:180,-100:150,-40
+  updates     = NEW_WAYPOINTS
+  condition   = RETURN = false
+  condition   = DEPLOY = true
+  endflag     = RETURN = true
+}
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name      = bhv_waypt_return
+  pwt       = 100
+  speed     = 2.0
+  radius    = 8.0
+  points    = 0,0
+  condition = RETURN = true
+  condition = DEPLOY = true
+}

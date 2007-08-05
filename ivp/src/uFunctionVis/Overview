@@ -1,0 +1,42 @@
+  
+                            main.cpp
+
+                      Splits Two Threads
+
+                    (1)                     (2)
+
+  +-------------------+                      +------------------------+ 
+  | Thread 1          |                      | Thread 2               |
+  | FV_MOOSApp        |                      | FV_GUI                 |
+  |                   |                      |                        |
+  | interacts w/MOOS  |                      | interacts w/USER       |
+  |                   |                      |                        |
+  | rgsters for IPF's |                     /|                        |
+  |                   |                    / |                        |
+  | has-a: FV_Model*  |                   /  | has-a: FV_Model*       |
+  | has-a: FV_Viewer* |                  /   | has-a: FV_Viewer*      |
+  +-------------------+                 /    +------------------------+ 
+      |                 \              /                 |
+      | (1) Sends curr    \           / Send ColorMap    | Sends user 
+      |     IPF as string   \        /  preferences      | view options
+      |                       \     /                    | (rotate etc)  
+      |       (2) tell viewer   \  /                     |   
+      |           to redraw()     \                      |  
+      V                          /  \                    V 
+   +-----------------------+    /     \    +-----------------------+
+   | FV_Model              |   /        >  | FV_Viewer             |
+   |                       |  /            |                       |
+   |                       | /             |                       |
+   |                       |<              |                       |
+   | has-a: FColorMap      |               | (does OpenGL stuff)   |
+   |                       |<------------- |                       |
+   | has-a: FunctionQueue  |  Query model  | has-a: FV_Model*      |
+   +-----------------------+  for drawing  +-----------------------+
+
+
+
+
+
+
+
+

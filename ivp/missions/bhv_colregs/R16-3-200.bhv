@@ -1,0 +1,16 @@
+Behavior = BHV_Waypoint
+{
+  name   = bhv_waypt
+  pwt    = 100
+  speed  = 3.0
+  radius = 8.0
+  points = 50,6:96,2:36,-126:-20,-252:-78,-114:-56,-38
+}
+
+Behavior = BHV_GiveWay16
+{
+  name   = bhv_giveway16_201
+  pwt    = 100
+  them   = nyak201
+  range  = 50
+}

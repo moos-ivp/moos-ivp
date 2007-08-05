@@ -1,0 +1,60 @@
+initialize   DEPLOY = false
+initialize   RETURN = false
+//initialize   VEHI_IN_GRID_ALPHA = true
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name      = bhv_waypt_onstation
+  pwt       = 100
+  condition = DEPLOY = true
+  condition = RETURN = false
+  endflag   = ONSTATION = true
+
+  speed     = 4.0
+  radius    = 10.0
+  points    = -110,-110
+}
+
+//----------------------------------------------
+Behavior = BHV_SearchGrid
+{
+  name         = bhv_search_grid
+  pwt          = 40
+  silent       = true
+  time_horizon = 60
+  precision    = high
+  //log_ipf    = false
+  searchgrid   = label,ALPHA:-108,-138:-71,-229:204,-118:167,-27@15,15
+  timutif      = normal, 2, 2, 2, 100
+  condition    = (DEPLOY=true) and (RETURN!=true)
+  condition    = (ONSTATION=true)
+}
+
+//----------------------------------------------
+Behavior = BHV_ConstantSpeed
+{
+  name      = bhv_constant_speed
+  speed     = 5.0
+  basewidth = 1.5
+  pwt       = 5
+  duration  = 10000
+  condition = (DEPLOY=true) and (RETURN!=true)
+  condition = (ONSTATION=true)
+}
+
+//----------------------------------------------
+Behavior = BHV_SteadyHeading
+{
+  name         = bhv_steady_heading
+  pwt          = 20
+  variable_pwt = 20
+	
+  peak_width   = 25
+  summit_delta = 40
+  memory_time  = 20
+  grace_time   = 10
+  condition    = (DEPLOY=true) and (RETURN!=true)
+  condition    = (ONSTATION=true)
+  condition    = TIME_TO_EXIT_GRID_ALPHA > 3.5
+}

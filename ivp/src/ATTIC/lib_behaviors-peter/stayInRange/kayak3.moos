@@ -1,0 +1,134 @@
+// Use example.sh to start (not pAntler)
+
+ServerHost = localhost
+ServerPort = 9204
+Simulator  = true
+Community  = kayak3
+LatOrigin  = 42.358482
+LongOrigin = -71.087418
+MagneticOffset = 0
+
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+
+  Run = MOOSDB @ NewConsole = true
+  Run = iMarineSim @ NewConsole = true
+  Run = pMOOSBridge @ NewConsole = true ~ pMOOSBridge_kayak3
+  Run = pNav @ NewConsole = true
+  Run = iRemote @ NewConsole = true
+  Run = pHelmIvP @ NewConsole = true
+  Run = pACom @ NewConsole = true ~ pACom_kayak3
+//Run = MOOSDump @ NewConsole = true
+//Run = pLogger @ NewConsole = true
+}
+
+ProcessConfig = MOOSDB
+{
+}
+
+ProcessConfig = iMarineSim
+{
+  AppTick      = 5.0
+  CommsTick    = 5.0
+  MaxTransVel  = 3.0
+  MaxRotVel    = 0.6
+  VName        = kayak3
+  StartLon     = 150
+  StartLat     = -300
+  StartHeading = 90
+  StartSpeed   = 0.0
+}
+
+ProcessConfig = pMarineViewer
+{
+  AppTick      = 5.0
+  CommsTick    = 5.0
+}
+
+ProcessConfig = iRemote
+{
+}
+
+ProcessConfig = pHelmIvP
+{
+  AppTick    = 5.0
+  CommsTick  = 5.0
+
+  Domain     = course,0:359:360
+  Domain     = speed,0:3:7
+  Domain     = tol,1:30:15
+  	
+  //IF BELOW IS COMMENTED OUT - BHV FILE IS GIVEN AS COMMAND LINE ARG	
+  Behaviors = kayak3.bhv
+
+  // Yaw PID controller
+  YAW_PID_KP		 = 0.5
+  YAW_PID_KD		 = 0.0
+  YAW_PID_KI		 = 0.0
+  YAW_PID_INTEGRAL_LIMIT = 0.07
+
+  // Speed PID controller
+  SPEED_PID_KP		 = 1.0
+  SPEED_PID_KD		 = 0.0
+  SPEED_PID_KI		 = 0.0
+  SPEED_PID_INTEGRAL_LIMIT = 0.07
+}
+
+ProcessConfig = pNav
+{
+  AppTick   = 5.0
+  CommsTick = 5.0
+
+  X	= MARINESIM @ 3.0
+  Y	= MARINESIM @ 3.0
+  Yaw	= MARINESIM @ 3.0
+  Speed	= MARINESIM @ 3.0
+  Z	= 
+
+  UseLSQ = false
+  UseEKF = false
+  UseTOPDOWN = false
+
+  FixedDepth = 0 @ 0.1
+}
+
+//Need to have a unique name when connecting to MOOSDB which is passed as a
+//parameter when starting MOOSBridge. Tthe name must be the same as the
+//processconfig below (stupid!).
+ProcessConfig = pMOOSBridge_kayak3
+{
+  //SHARE = from-community @ from-host:from-port [VAR] -> to-community @ to-host:to-port [VAR]
+
+  SHARE = kayak3@localhost:9204 [HELM_SUMMARY] -> viewer@localhost:9069 [HELM_SUMMARY_VIEW]
+
+  SHARE = kayak3@localhost:9204 [PING_TIME] -> kayak1@localhost:9200 [PING_TIME]
+  SHARE = kayak3@localhost:9204 [PING_TIME] -> kayak2@localhost:9201 [PING_TIME]
+  SHARE = kayak3@localhost:9204 [PING_TIME] -> kayak4@localhost:9206 [PING_TIME]
+
+//  SHARE = kayak3@localhost:9204 [NAV_X] -> kayak1@localhost:9200 [NAV_X]
+//  SHARE = kayak3@localhost:9204 [NAV_Y] -> kayak1@localhost:9200 [NAV_Y]
+//  SHARE = kayak3@localhost:9204 [NAV_YAW] -> kayak1@localhost:9200 [NAV_YAW]
+//  SHARE = kayak3@localhost:9204 [NAV_SPEED] -> kayak1@localhost:9200 [NAV_PEED]
+
+//  SHARE = kayak3@localhost:9204 [NAV_X] -> kayak2@localhost:9201 [NAV_X]
+//  SHARE = kayak3@localhost:9204 [NAV_Y] -> kayak2@localhost:9201 [NAV_Y]
+//  SHARE = kayak3@localhost:9204 [NAV_YAW] -> kayak2@localhost:9201 [NAV_YAW]
+//  SHARE = kayak3@localhost:9204 [NAV_SPEED] -> kayak2@localhost:9201 [NAV_SPEED]
+
+//  SHARE = kayak3@localhost:9204 [NAV_X] -> kayak2@localhost:9206 [NAV_X]
+//  SHARE = kayak3@localhost:9204 [NAV_Y] -> kayak2@localhost:9206 [NAV_Y]
+//  SHARE = kayak3@localhost:9204 [NAV_YAW] -> kayak2@localhost:9206 [NAV_YAW]
+//  SHARE = kayak3@localhost:9204 [NAV_SPEED] -> kayak2@localhost:9206 [NAV_SPEED]
+}
+
+ProcessConfig = pACom_kayak3
+{
+  AppTick    = 1
+  CommsTick  = 1
+  SerialPort = /dev/tts/USB0
+  // address of this modem
+  SRC        = 3
+  // address to destination
+  DST        = 5
+}

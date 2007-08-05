@@ -1,0 +1,81 @@
+ServerHost = localhost
+ServerPort = 9123
+Community  = marineviewer123
+
+//----------------------------------------------
+// Antler configuration  block
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 400
+
+  //crucial processes
+  Run = MOOSDB		@ NewConsole = true
+  Run = pMarineViewer	@ NewConsole = true
+  Run = iRemote         @ NewConsole = true
+  Run = pMOOSBridge     @ NewConsole = true ~ pMOOSBridge_LVIEWER
+  //Run = pLogger		@ NewConsole = true
+}
+
+//----------------------------------------------
+// pMarineViewer configuration  block
+
+ProcessConfig = pMarineViewer
+{
+  AppTick    = 4
+  CommsTick  = 4
+  IMAGE_FILE = /home/mikerb/Research/project-marine/data/AerialMIT.tif
+  INFO_FILE  = /home/mikerb/Research/project-marine/data/AerialMIT.info
+}
+
+
+//------------------------------------------------------------------
+// Logger configuration block
+
+ProcessConfig = pLogger
+{
+  //over loading basic params...
+  AppTick 	= 10.0
+  CommsTick 	= 10.0
+
+  File		= LVIEWER_
+  PATH		= ../data_from_runs/
+  SyncLog 	= false
+  AsyncLog 	= true
+  FileTimeStamp = true
+
+  Log           = AIS_REPORT @ 0.1
+}
+
+//------------------------------------------------------------------
+// iRemote configuration block
+
+ProcessConfig = iRemote
+{
+   CustomKey = 1 : SIM_PAUSE @ "true"
+   CustomKey = 2 : SIM_PAUSE @ "false"
+   CustomKey = 3 : DEPLOY @ "true"
+   CustomKey = 4 : DEPLOY @ "false"
+   CustomKey = 5 : RETURN @ "true"
+   CustomKey = 6 : RETURN @ "false"
+}
+
+
+//------------------------------------------------------------------
+// pMOOSBridge config block
+
+ProcessConfig = pMOOSBridge_LVIEWER
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  // SHARE = [VAR] -> to-community @ to-host:to-port [VAR]
+
+  SHARE = [SIM_PAUSE] -> nyak200 @ localhost:9200 [SIM_PAUSE]
+  SHARE = [SIM_PAUSE] -> nyak201 @ localhost:9201 [SIM_PAUSE]
+
+  SHARE = [DEPLOY] -> nyak200 @ localhost:9200 [DEPLOY]
+  SHARE = [DEPLOY] -> nyak201 @ localhost:9201 [DEPLOY]
+
+  SHARE = [RETURN] -> nyak200 @ localhost:9200 [RETURN]
+  SHARE = [RETURN] -> nyak201 @ localhost:9201 [RETURN]
+}

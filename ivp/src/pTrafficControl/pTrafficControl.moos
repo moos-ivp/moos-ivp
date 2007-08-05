@@ -1,0 +1,16 @@
+//------------------------------------------------------------------
+// pTrafficControl configuration  block
+	
+ProcessConfig = pTrafficControl
+{
+  AppTick    = 2
+  CommsTick  = 2
+
+  VIDS        = 200, 201, 204
+  CENTER      = 0,-200
+  RADIUS      = 100
+  VARIANCE    = 20
+  SPEED       = 2.2
+
+  WAIT_PERIOD = 180   
+}

@@ -1,0 +1,3 @@
+pAntler  K200.moos &;                     sleep 1; 
+pHelmIvP K200.moos ../200-loiter.bhv &;  sleep 1;
+

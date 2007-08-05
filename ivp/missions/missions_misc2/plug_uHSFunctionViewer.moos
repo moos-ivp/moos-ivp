@@ -1,0 +1,12 @@
+//------------------------------------------------------------------
+// uHSFunctionViewer configuration  block
+
+ProcessConfig = uHSFunctionViewer
+{
+  AppTick   = 10
+  CommsTick = 50
+
+  ipf_name  = BHV_IPF
+}
+
+

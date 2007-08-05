@@ -1,0 +1,41 @@
+Initial_Var = DEPLOY,false
+//Initial_Var = DEPLOY,true
+Initial_Var = RETURN_HOME,false
+
+//----------------------------------------------
+Behavior = BHV_Loiter
+{
+  name      = bhv_loiter_202
+  pwt       = 100
+  speed     = 9.0
+  radius    = 8.0
+  clockwise = true
+  polygon   = label,nyak202:124.25,-11.5:143.5,-50:124.25,-88.5:85.75,-88.5:66.5,-50:85.75,-11.5
+  condition = :DEPLOY,true
+  condition = :RETURN_HOME,false
+  endflag   = RETURN_HOME,true
+}
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name      = bhv_return
+  speed     = 1.0
+  radius    = 8.0
+  points    = 30,0:
+  condition = :RETURN_HOME,true
+}
+
+//----------------------------------------------
+Behavior = BHV_OpRegion
+{
+  polygon  = label,SafeOpBox: -45,-20:-121,-79:-177,-155:-45,-383:367,-145:273,23:176,24:110,24:28,12
+  //polygon  = label,SafeOpBox: 20,-10:60,-90:170,-30:130,20
+  name     = bhv_op_region
+  max_time = 1800
+
+  trigger_on_poly_entry = true
+  trigger_entry_time    = 1.0
+  trigger_exit_time     = 1.0
+}
+

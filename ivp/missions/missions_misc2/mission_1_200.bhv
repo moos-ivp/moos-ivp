@@ -1,0 +1,30 @@
+initialize   DEPLOY = false
+initialize   RETURN = false
+
+//----------------------------------------------
+Behavior = BHV_WaypointRC
+{
+  name       = bhv_waypt_rc_201
+  pwt        = 100
+
+  speed      = 2.6
+  radius     = 10 
+  points     = -100,-100:100,-300:100,-100
+  condition  = DEPLOY = true
+}
+
+//----------------------------------------------
+Behavior = BHV_AvoidCollision
+{
+  name               = bhv_avd_201
+  pwt                = 1000
+  unifbox            = course=2,speed=1
+
+  contact            = nyak201
+  active_distance    = 90
+  collision_distance = 40
+  all_clear_distance = 200
+	
+	
+}
+

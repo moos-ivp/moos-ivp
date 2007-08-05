@@ -1,0 +1,357 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<HTML>
+<HEAD>
+   <TITLE>class  CMOOSCommClient</TITLE>
+   <META NAME="GENERATOR" CONTENT="DOC++ 3.4.6">
+</HEAD>
+ <BODY>
+<H1><img src="moose6.gif"> <center>MOOSLib Class Documentation</center></H1>
+</BODY>
+
+In file MOOSCommClient.h:<H2>class  <A HREF="#DOC.DOCU">CMOOSCommClient</A></H2></H2><BLOCKQUOTE>This class is the most important component of MOOS as seen from the eyes of a component developer </BLOCKQUOTE>
+<HR>
+
+<H2>Inheritance:</H2>
+<APPLET CODE="ClassGraph.class" WIDTH=600 HEIGHT=65>
+<param name=classes value="CCMOOSCommObject,MCMOOSCommObject.html,CCMOOSCommClient,MCMOOSCommClient.html">
+<param name=before value="M,M">
+<param name=after value="Md_,M">
+<param name=indent value="0,1">
+<param name=arrowdir value="up">
+</APPLET>
+<HR>
+
+<DL>
+<P><DL>
+<DT><H3>Public Methods</H3><DD><DT>
+<IMG ALT="[more]" BORDER=0 SRC=icon1.gif>bool <B><A HREF="#DOC.1.1">Register</A></B>(const string &amp; sVar, double dfInterval)
+<DD><I>Register for notification in changes of named variable </I>
+<DT>
+<IMG ALT="[more]" BORDER=0 SRC=icon1.gif>bool <B><A HREF="#DOC.1.2">IsConnected</A></B>()
+<DD><I>returns true if this obecjt is connected to the server </I>
+<DT>
+<IMG ALT="[more]" BORDER=0 SRC=icon1.gif>bool <B><A HREF="#DOC.1.3">Fetch</A></B>(MOOSMSG_LIST &amp; MsgList)
+<DD><I>Called by a user of CMOOSCommClient to retrieve mail </I>
+<DT>
+<IMG ALT="[more]" BORDER=0 SRC=icon1.gif>bool <B><A HREF="#DOC.1.4">Post</A></B>(CMOOSMsg &amp; Msg)
+<DD><I>place a single message in the out box and return immediately.</I>
+<DT>
+<IMG ALT="[more]" BORDER=0 SRC=icon1.gif>bool <B><A HREF="#DOC.1.5">ClientLoop</A></B>()
+<DD><I>internal method which runs in a seperate thread and manges the input and output of messages from thser server.</I>
+<DT>
+<IMG ALT="[more]" BORDER=0 SRC=icon1.gif>bool <B><A HREF="#DOC.1.6">Run</A></B>(const char*  sServer, long lPort, const char*  sMyName, unsigned int nFundamentalFreq=5)
+<DD><I>Run the MOOSCommClient Object.</I>
+<DT>
+<IMG ALT="[more]" BORDER=0 SRC=icon1.gif>void <B><A HREF="#DOC.1.7">SetOnConnectCallBack</A></B>(bool (*pfn)(void*  pParamCaller), void*  pCallerParam)
+<DD><I>set the user supplied OnConnect call back.</I>
+<DT>
+<IMG ALT="[more]" BORDER=0 SRC=icon1.gif> <B><A HREF="#DOC.1.8">CMOOSCommClient</A></B>()
+<DD><I>default constructor</I>
+<DT>
+<IMG ALT="[more]" BORDER=0 SRC=icon1.gif>virtual   <B><A HREF="#DOC.1.9">~CMOOSCommClient</A></B>()
+<DD><I>default destructor</I>
+<DT>
+<IMG ALT="[more]" BORDER=0 SRC=icon1.gif>bool <B><A HREF="#DOC.1.32">Post</A></B>(CMOOSMsg &amp;Msg)
+<DD><I>this is called by user of a CommClient object to send a Msg to MOOS </I>
+<DT>
+<IMG ALT="[more]" BORDER=0 SRC=icon1.gif>bool <B><A HREF="#DOC.1.33">Fetch</A></B>(MOOSMSG_LIST &amp;MsgList)
+<DD><I>this is called by a user of a CommClient object to retrieve mail </I>
+</DL></P>
+
+<P><DL>
+<DT><H3>Protected Fields</H3><DD><DT>
+<IMG ALT="[more]" BORDER=0 SRC=icon1.gif>bool <B><A HREF="#DOC.1.12">m_bConnected</A></B>
+<DD><I>true if we are connected to the server </I>
+<DT>
+<IMG ALT="[more]" BORDER=0 SRC=icon1.gif>int <B><A HREF="#DOC.1.14">m_nOutPendingLimit</A></B>
+<DD><I>The number of pending unsent messages that can be tolerated</I>
+<DT>
+<IMG ALT="[more]" BORDER=0 SRC=icon1.gif>int <B><A HREF="#DOC.1.15">m_nInPendingLimit</A></B>
+<DD><I>The number of unread incoming  messages that can be tolerated</I>
+<DT>
+<IMG ALT="[more]" BORDER=0 SRC=icon1.gif>string <B><A HREF="#DOC.1.16">m_sMyName</A></B>
+<DD><I>name of MOOS process </I>
+<DT>
+<IMG ALT="[more]" BORDER=0 SRC=icon1.gif><!1><A HREF="CMOOSLock.html">CMOOSLock</A> <B><A HREF="#DOC.1.17">m_OutLock</A></B>
+<DD><I>Mutex around Outgoing mail box  </I>
+<DT>
+<IMG ALT="[more]" BORDER=0 SRC=icon1.gif><!1><A HREF="CMOOSLock.html">CMOOSLock</A> <B><A HREF="#DOC.1.18">m_InLock</A></B>
+<DD><I>Mutex around incoming mail box  </I>
+<DT>
+<IMG ALT="[more]" BORDER=0 SRC=icon1.gif>XPCTcpSocket* <B><A HREF="#DOC.1.21">m_pSocket</A></B>
+<DD><I>pointer to socket connected to server </I>
+<DT>
+<IMG ALT="[more]" BORDER=0 SRC=icon1.gif>string <B><A HREF="#DOC.1.22">m_sDBHost</A></B>
+<DD><I>name of teh host on which the server process lives </I>
+<DT>
+<IMG ALT="[more]" BORDER=0 SRC=icon1.gif>long <B><A HREF="#DOC.1.23">m_lPort</A></B>
+<DD><I>port number on which server process is listening for new connections </I>
+<DT>
+<IMG ALT="[more]" BORDER=0 SRC=icon1.gif>bool <B><A HREF="#DOC.1.24">m_bQuit</A></B>
+<DD><I>IO thread will continue so long as this flag is false </I>
+<DT>
+<IMG ALT="[more]" BORDER=0 SRC=icon1.gif>HANDLE <B><A HREF="#DOC.1.25">m_hClientThread</A></B>
+<DD><I>Win32 handle to IO thread </I>
+<DT>
+<IMG ALT="[more]" BORDER=0 SRC=icon1.gif>unsigned long <B><A HREF="#DOC.1.26">m_nClientThreadID</A></B>
+<DD><I>ID of IO thread </I>
+<DT>
+<IMG ALT="[more]" BORDER=0 SRC=icon1.gif>MOOSMSG_LIST <B><A HREF="#DOC.1.27">m_OutBox</A></B>
+<DD><I>List of messages that a pending to be sent </I>
+<DT>
+<IMG ALT="[more]" BORDER=0 SRC=icon1.gif>MOOSMSG_LIST <B><A HREF="#DOC.1.28">m_InBox</A></B>
+<DD><I>List of message that have been received and are ready for reading by user </I>
+<DT>
+<IMG ALT="[more]" BORDER=0 SRC=icon1.gif>void* <B><A HREF="#DOC.1.29">m_pConnectCallBackParam</A></B>
+<DD><I>parameter that user wants passed to him/her with connect callback</I>
+<DT>
+<IMG ALT="[more]" BORDER=0 SRC=icon1.gif>unsigned int <B><A HREF="#DOC.1.31">m_nFundamentalFreq</A></B>
+<DD><I>funcdamental frequency with which comms with server occurs </I>
+</DL></P>
+
+<P><DL>
+<DT><H3>Protected Methods</H3><DD><DT>
+<IMG ALT="[more]" BORDER=0 SRC=icon1.gif>void <B><A HREF="#DOC.1.10">DoBanner</A></B>()
+<DD><I>send library info to cout </I>
+<DT>
+<IMG ALT="[more]" BORDER=0 SRC=icon1.gif>bool <B><A HREF="#DOC.1.11">OnCloseConnection</A></B>()
+<DD><I>called when connection to server is closed </I>
+<DT>
+<IMG ALT="[more]" BORDER=0 SRC=icon1.gif>bool <B><A HREF="#DOC.1.13">HandShake</A></B>()
+<DD><I>performs a handshake with the server when a new connection is made.</I>
+<DT>
+<IMG ALT="[more]" BORDER=0 SRC=icon1.gif>bool <B><A HREF="#DOC.1.19">ConnectToServer</A></B>()
+<DD><I>Connect to the server process using info supplied to Init </I>
+<DT>
+<IMG ALT="[more]" BORDER=0 SRC=icon1.gif>bool <B><A HREF="#DOC.1.20">StartThreads</A></B>()
+<DD><I>called internally to start IO management thread  </I>
+<DT>
+<IMG ALT="[more]" BORDER=0 SRC=icon1.gif>bool <B><A HREF="#DOC.1.30">(*m_pfnConnectCallBack)</A></B>( void*  pConnectParam)
+<DD><I>the user supplied OnConnect callback </I>
+</DL></P>
+
+</DL>
+<HR><H3>Inherited from <A HREF="CMOOSCommObject.html">CMOOSCommObject</A>:</H3>
+<DL>
+<P><DL>
+<DT><H3>Protected Methods</H3><DD><DT>
+<IMG ALT="o" SRC=icon2.gif>bool <B>SocketsInit</B>()
+</DL></P>
+
+</DL>
+
+<A NAME="DOC.DOCU"></A>
+<HR>
+<H2>Documentation</H2>
+<BLOCKQUOTE>This class is the most important component of MOOS as seen from the eyes
+of a component developer </BLOCKQUOTE>
+<DL>
+
+<A NAME="Register"></A>
+<A NAME="DOC.1.1"></A>
+<DT><IMG ALT="o" BORDER=0 SRC=icon2.gif><TT><B>bool Register(const string &amp; sVar, double dfInterval)</B></TT>
+<DD>Register for notification in changes of named variable
+
+<DL><DT><DT><B>Parameters:</B><DD><B>sVar</B> -  name of variable of interest
+<BR><B>dfInterval</B> -  minimum time between notifications<BR><DD></DL><P>
+<A NAME="IsConnected"></A>
+<A NAME="DOC.1.2"></A>
+<DT><IMG ALT="o" BORDER=0 SRC=icon2.gif><TT><B>bool IsConnected()</B></TT>
+<DD>returns true if this obecjt is connected to the server 
+<DL><DT><DD></DL><P>
+<A NAME="Fetch"></A>
+<A NAME="DOC.1.3"></A>
+<DT><IMG ALT="o" BORDER=0 SRC=icon2.gif><TT><B>bool Fetch(MOOSMSG_LIST &amp; MsgList)</B></TT>
+<DD>Called by a user of CMOOSCommClient to retrieve mail
+
+<DL><DT><DT><B>Parameters:</B><DD><B>MsgList</B> -  a list of messages into which the newly received message will be placed
+<BR><DT><B>Returns:</B><DD>  true if there is new mail <BR><DD></DL><P>
+<A NAME="Post"></A>
+<A NAME="DOC.1.4"></A>
+<DT><IMG ALT="o" BORDER=0 SRC=icon2.gif><TT><B>bool Post(CMOOSMsg &amp; Msg)</B></TT>
+<DD>place a single message in the out box and return immediately. Completion of this method
+does not infer transmission. However transmission will occur at the next available oppurtunity.
+Inpractice the apparent speed of message transmission will be very fast indeed. This model howver prevents
+wayward user software bring down the MOOSComms by way of denial of service. (ie hogging the network)
+
+<DL><DT><DT><B>Parameters:</B><DD><B>Msg</B> -  reference to CMOOSMsg which user whishes to send<BR><DD></DL><P>
+<A NAME="ClientLoop"></A>
+<A NAME="DOC.1.5"></A>
+<DT><IMG ALT="o" BORDER=0 SRC=icon2.gif><TT><B>bool ClientLoop()</B></TT>
+<DD>internal method which runs in a seperate thread and manges the input and output
+of messages from thser server. DO NOT CALL THIS METHOD.
+<DL><DT><DD></DL><P>
+<A NAME="Run"></A>
+<A NAME="DOC.1.6"></A>
+<DT><IMG ALT="o" BORDER=0 SRC=icon2.gif><TT><B>bool Run(const char*  sServer, long lPort, const char*  sMyName, unsigned int nFundamentalFreq=5)</B></TT>
+<DD>Run the MOOSCommClient Object. This call is non blocking and begins managing process IO
+with the MOOSComms protocol
+
+<DL><DT><DT><B>Parameters:</B><DD><B>sServer</B> -  Name of machine on which server resides eg LOCALHOST or guru.mit.edu
+<BR><B>lPort</B> -    number of port on which server is listening for new connections eg 9000
+<BR><B>sMyName</B> -  string name by which this MOOS process will be known - eg "MotionController" or "DepthSensor"
+<BR><B>nFundamentalFrequency</B> -  the basic tick frequency of the comms loop. Default value of 5 implies mail will be
+retrieved and sent from the server at 5Hz<BR><DD></DL><P>
+<A NAME="SetOnConnectCallBack"></A>
+<A NAME="DOC.1.7"></A>
+<DT><IMG ALT="o" BORDER=0 SRC=icon2.gif><TT><B>void SetOnConnectCallBack(bool (*pfn)(void*  pParamCaller), void*  pCallerParam)</B></TT>
+<DD>set the user supplied OnConnect call back. This callback , when set, will be invoked
+when a connection to the server is made. It is a good plan to register for notification of variables
+in this callback
+
+<DL><DT><DT><B>Parameters:</B><DD><B>pfn</B> -  pointer to static function of type bool Fn(void * pParam)
+<BR><B>pCallerParam</B> -  parameter passed to callback function when invoked<BR><DD></DL><P>
+<A NAME="CMOOSCommClient"></A>
+<A NAME="DOC.1.8"></A>
+<DT><IMG ALT="o" BORDER=0 SRC=icon2.gif><TT><B> CMOOSCommClient()</B></TT>
+<DD>default constructor
+<DL><DT><DD></DL><P>
+<A NAME="~CMOOSCommClient"></A>
+<A NAME="DOC.1.9"></A>
+<DT><IMG ALT="o" BORDER=0 SRC=icon2.gif><TT><B>virtual   ~CMOOSCommClient()</B></TT>
+<DD>default destructor
+<DL><DT><DD></DL><P>
+<A NAME="DoBanner"></A>
+<A NAME="DOC.1.10"></A>
+<DT><IMG ALT="o" BORDER=0 SRC=icon2.gif><TT><B>void DoBanner()</B></TT>
+<DD>send library info to cout 
+<DL><DT><DD></DL><P>
+<A NAME="OnCloseConnection"></A>
+<A NAME="DOC.1.11"></A>
+<DT><IMG ALT="o" BORDER=0 SRC=icon2.gif><TT><B>bool OnCloseConnection()</B></TT>
+<DD>called when connection to server is closed 
+<DL><DT><DD></DL><P>
+<A NAME="m_bConnected"></A>
+<A NAME="DOC.1.12"></A>
+<DT><IMG ALT="o" BORDER=0 SRC=icon2.gif><TT><B>bool m_bConnected</B></TT>
+<DD>true if we are connected to the server 
+<DL><DT><DD></DL><P>
+<A NAME="HandShake"></A>
+<A NAME="DOC.1.13"></A>
+<DT><IMG ALT="o" BORDER=0 SRC=icon2.gif><TT><B>bool HandShake()</B></TT>
+<DD>performs a handshake with the server when a new connection is made. Within this
+function this class tells teh server its name
+<DL><DT><DD></DL><P>
+<A NAME="m_nOutPendingLimit"></A>
+<A NAME="DOC.1.14"></A>
+<DT><IMG ALT="o" BORDER=0 SRC=icon2.gif><TT><B>int m_nOutPendingLimit</B></TT>
+<DD>The number of pending unsent messages that can be tolerated
+<DL><DT><DD></DL><P>
+<A NAME="m_nInPendingLimit"></A>
+<A NAME="DOC.1.15"></A>
+<DT><IMG ALT="o" BORDER=0 SRC=icon2.gif><TT><B>int m_nInPendingLimit</B></TT>
+<DD>The number of unread incoming  messages that can be tolerated
+<DL><DT><DD></DL><P>
+<A NAME="m_sMyName"></A>
+<A NAME="DOC.1.16"></A>
+<DT><IMG ALT="o" BORDER=0 SRC=icon2.gif><TT><B>string m_sMyName</B></TT>
+<DD>name of MOOS process
+
+<DL><DT><DT><B>See Also:</B><DD>Init<BR><DD></DL><P>
+<A NAME="m_OutLock"></A>
+<A NAME="DOC.1.17"></A>
+<DT><IMG ALT="o" BORDER=0 SRC=icon2.gif><TT><B><!1><A HREF="CMOOSLock.html">CMOOSLock</A> m_OutLock</B></TT>
+<DD>Mutex around Outgoing mail box 
+
+<DL><DT><DT><B>See Also:</B><DD><!1><A HREF="CMOOSLock.html">CMOOSLock</A><BR><DD></DL><P>
+<A NAME="m_InLock"></A>
+<A NAME="DOC.1.18"></A>
+<DT><IMG ALT="o" BORDER=0 SRC=icon2.gif><TT><B><!1><A HREF="CMOOSLock.html">CMOOSLock</A> m_InLock</B></TT>
+<DD>Mutex around incoming mail box 
+
+<DL><DT><DT><B>See Also:</B><DD><!1><A HREF="CMOOSLock.html">CMOOSLock</A><BR><DD></DL><P>
+<A NAME="ConnectToServer"></A>
+<A NAME="DOC.1.19"></A>
+<DT><IMG ALT="o" BORDER=0 SRC=icon2.gif><TT><B>bool ConnectToServer()</B></TT>
+<DD>Connect to the server process using info supplied to Init
+
+<DL><DT><DT><B>See Also:</B><DD>Init<BR><DD></DL><P>
+<A NAME="StartThreads"></A>
+<A NAME="DOC.1.20"></A>
+<DT><IMG ALT="o" BORDER=0 SRC=icon2.gif><TT><B>bool StartThreads()</B></TT>
+<DD>called internally to start IO management thread 
+
+<DL><DT><DT><B>See Also:</B><DD><!1><A HREF="CMOOSCommClient.html#DOC.1.5">ClientLoop</A><BR><DD></DL><P>
+<A NAME="m_pSocket"></A>
+<A NAME="DOC.1.21"></A>
+<DT><IMG ALT="o" BORDER=0 SRC=icon2.gif><TT><B>XPCTcpSocket* m_pSocket</B></TT>
+<DD>pointer to socket connected to server 
+<DL><DT><DD></DL><P>
+<A NAME="m_sDBHost"></A>
+<A NAME="DOC.1.22"></A>
+<DT><IMG ALT="o" BORDER=0 SRC=icon2.gif><TT><B>string m_sDBHost</B></TT>
+<DD>name of teh host on which the server process lives
+
+<DL><DT><DT><B>See Also:</B><DD>Init<BR><DD></DL><P>
+<A NAME="m_lPort"></A>
+<A NAME="DOC.1.23"></A>
+<DT><IMG ALT="o" BORDER=0 SRC=icon2.gif><TT><B>long m_lPort</B></TT>
+<DD>port number on which server process is listening for new connections
+
+<DL><DT><DT><B>See Also:</B><DD>Init<BR><DD></DL><P>
+<A NAME="m_bQuit"></A>
+<A NAME="DOC.1.24"></A>
+<DT><IMG ALT="o" BORDER=0 SRC=icon2.gif><TT><B>bool m_bQuit</B></TT>
+<DD>IO thread will continue so long as this flag is false 
+<DL><DT><DD></DL><P>
+<A NAME="m_hClientThread"></A>
+<A NAME="DOC.1.25"></A>
+<DT><IMG ALT="o" BORDER=0 SRC=icon2.gif><TT><B>HANDLE m_hClientThread</B></TT>
+<DD>Win32 handle to IO thread 
+<DL><DT><DD></DL><P>
+<A NAME="m_nClientThreadID"></A>
+<A NAME="DOC.1.26"></A>
+<DT><IMG ALT="o" BORDER=0 SRC=icon2.gif><TT><B>unsigned long m_nClientThreadID</B></TT>
+<DD>ID of IO thread 
+<DL><DT><DD></DL><P>
+<A NAME="m_OutBox"></A>
+<A NAME="DOC.1.27"></A>
+<DT><IMG ALT="o" BORDER=0 SRC=icon2.gif><TT><B>MOOSMSG_LIST m_OutBox</B></TT>
+<DD>List of messages that a pending to be sent
+
+<DL><DT><DT><B>See Also:</B><DD><!1><A HREF="CMOOSCommClient.html#DOC.1.4">Post</A><BR><DD></DL><P>
+<A NAME="m_InBox"></A>
+<A NAME="DOC.1.28"></A>
+<DT><IMG ALT="o" BORDER=0 SRC=icon2.gif><TT><B>MOOSMSG_LIST m_InBox</B></TT>
+<DD>List of message that have been received and are ready for reading by user
+
+<DL><DT><DT><B>See Also:</B><DD><!1><A HREF="CMOOSCommClient.html#DOC.1.3">Fetch</A><BR><DD></DL><P>
+<A NAME="m_pConnectCallBackParam"></A>
+<A NAME="DOC.1.29"></A>
+<DT><IMG ALT="o" BORDER=0 SRC=icon2.gif><TT><B>void* m_pConnectCallBackParam</B></TT>
+<DD>parameter that user wants passed to him/her with connect callback
+<DL><DT><DD></DL><P>
+<A NAME="(*m_pfnConnectCallBack)"></A>
+<A NAME="DOC.1.30"></A>
+<DT><IMG ALT="o" BORDER=0 SRC=icon2.gif><TT><B>bool (*m_pfnConnectCallBack)( void*  pConnectParam)</B></TT>
+<DD>the user supplied OnConnect callback 
+<DL><DT><DD></DL><P>
+<A NAME="m_nFundamentalFreq"></A>
+<A NAME="DOC.1.31"></A>
+<DT><IMG ALT="o" BORDER=0 SRC=icon2.gif><TT><B>unsigned int m_nFundamentalFreq</B></TT>
+<DD>funcdamental frequency with which comms with server occurs
+
+<DL><DT><DT><B>See Also:</B><DD><!1><A HREF="CMOOSCommClient.html#DOC.1.6">Run</A><BR><DD></DL><P>
+<A NAME="Post"></A>
+<A NAME="DOC.1.32"></A>
+<DT><IMG ALT="o" BORDER=0 SRC=icon2.gif><TT><B>bool Post(CMOOSMsg &amp;Msg)</B></TT>
+<DD>this is called by user of a CommClient object
+to send a Msg to MOOS 
+<DL><DT><DD></DL><P>
+<A NAME="Fetch"></A>
+<A NAME="DOC.1.33"></A>
+<DT><IMG ALT="o" BORDER=0 SRC=icon2.gif><TT><B>bool Fetch(MOOSMSG_LIST &amp;MsgList)</B></TT>
+<DD>this is called by a user of a CommClient object
+to retrieve mail 
+<DL><DT><DD></DL><P></DL>
+
+<HR><DL><DT><B>This class has no child classes.</B></DL>
+
+<DL><DT><DD></DL><P><P><I><A HREF="index.html">Alphabetic index</A></I> <I><A HREF="HIER.html">HTML hierarchy of classes</A> or <A HREF="HIERjava.html">Java</A></I></P><HR>
+<BODY>
+<H4>
+MOOSLib
+&#169;  P. Newman 2001 <img src="moose2.gif">
+</H4>
+</BODY>

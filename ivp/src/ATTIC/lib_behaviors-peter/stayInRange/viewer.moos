@@ -1,0 +1,17 @@
+ServerHost = 192.168.0.201
+ServerPort = 9000
+Community  = marineviewer
+
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+
+  //Run = MOOSDB		@ NewConsole = true
+  Run = pMarineViewer	@ NewConsole = true
+}
+
+ProcessConfig = pMarineViewer
+{
+  AppTick      = 2.0
+  CommsTick    = 2.0
+}

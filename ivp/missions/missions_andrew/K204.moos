@@ -1,0 +1,265 @@
+//************************************************************
+// Configuration file: M. Benjamin
+//
+// Note: level0 vs. level2  all references to machines names
+//          in this file would be replaced by "localhost" in 
+//          the level2 counterpart. Also, iPWMController, iGPS
+//          and iPNICController are not started up in level2.
+//          And level2 would launch iMarineSim.
+//
+// Note: level0 vs. level1  iMarineSim is run in the level1
+//          counterpart. In level1, iGPS and iPNICompass are 
+//          not run.
+
+
+ServerHost = 192.168.0.204
+ServerPort = 9000
+ 
+// Community name IS the vehicle name
+Community  = nyak204
+
+// Charles River
+ LatOrigin  = 42.3584
+ LongOrigin = -71.08745
+
+// Pianosa
+//LatOrigin  = 42.58388
+//LongOrigin = 10.1
+
+
+//-------------------------------------------------------------
+// Antler configuration  block
+
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+
+  Run = MOOSDB		@ NewConsole = false
+  Run = iGPS		@ NewConsole = false
+  Run = iPNICompass	@ NewConsole = false
+  Run = iPWMController	@ NewConsole = false
+  Run = iMetaCompass    @ NewConsole = false
+  Run = pMOOSBridge     @ NewConsole = false ~ pMOOSBridge_204
+  Run = pEchoVar	@ NewConsole = false
+  Run = pLogger		@ NewConsole = false
+  Run = pMarinePID	@ NewConsole = false
+  Run = pTransponderAIS	@ NewConsole = false
+
+  //Run = pHelmIvP	@ NewConsole = false
+  //Run = iRemote	@ NewConsole = false
+}
+
+//------------------------------------------------------------------
+// pMOOSBridge config block
+
+ProcessConfig = pMOOSBridge_204
+{
+  AppTick   = 3
+  CommsTick = 3
+
+  // SHARE = [VAR] -> to-community @ to-host:to-port [VAR]
+
+  //SHARE = [AIS_REPORT_LOCAL] -> shoreside @ 192.168.0.69:9123 [AIS_REPORT]
+
+  SHARE = [AIS_REPORT_LOCAL] ->  shoreside @ 192.168.0.55:9123 [AIS_REPORT]
+  SHARE = [VIEW_POLYGON] ->  shoreside @ 192.168.0.55:9123 [VIEW_POLYGON]
+
+  //SHARE = [GRID_CONFIG]  -> shoreside @ 192.168.0:9123 [GRID_CONFIG]
+  //SHARE = [GRID_DELTA]   -> shoreside @ 192.168.0:9123 [GRID_DELTA]
+
+  //SHARE = [AIS_REPORT_LOCAL] -> nyak200 @ 192.168.0.200:9000 [AIS_REPORT]
+  //SHARE = [AIS_REPORT_LOCAL] -> nyak201 @ 192.168.0.201:9000 [AIS_REPORT]
+  //SHARE = [AIS_REPORT_LOCAL] -> nyak204 @ 192.168.0.204:9000 [AIS_REPORT]
+  //SHARE = [AIS_REPORT_LOCAL] -> nyak206 @ 192.168.0.206:9000 [AIS_REPORT]
+}
+
+//------------------------------------------------------------------
+// pTransponderAIS config block
+
+ProcessConfig = pTransponderAIS
+{
+  AppTick	= 5
+  CommsTick	= 5
+
+  VESSEL_TYPE   = KAYAK
+}
+
+//------------------------------------------------------------------
+// pHelmIvP config block
+// Note: pHelmIvP must know the vehicle name. pHelmIvP will look
+//       for the global line "Community = name" in the .moos file.
+
+ProcessConfig = pHelmIvP
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  Domain     = course,0:359:360
+  Domain     = speed,0:3:16
+  	
+  //IF BELOW IS COMMENTED OUT - BHV FILE IS GIVEN AS COMMAND LINE ARG	
+  //Behaviors = foobar.bhv  
+
+  ACTIVE_START   = true
+}
+
+//------------------------------------------------------------------
+// iRemote configuration block
+
+ProcessConfig = iRemote
+{
+   CustomKey = 1 : HELM_VERBOSE @ "verbose"
+   CustomKey = 2 : HELM_VERBOSE @ "terse"
+   CustomKey = 3 : HELM_VERBOSE @ "quiet"
+   CustomKey = 4 : DEPLOY @ "true"
+   CustomKey = 5 : DEPLOY @ "false"
+   CustomKey = 6 : RETURN_HOME @ "true"
+   CustomKey = 7 : RETURN_HOME @ "false"
+   CustomKey = 8 : PURSUE_MOKAI @ "true"
+   CustomKey = 9 : PURSUE_MOKAI @ "false"
+}
+
+//------------------------------------------------------------------
+// Logger configuration block
+
+ProcessConfig = pLogger
+{
+  //over loading basic params...
+  AppTick 	= 10.0
+  CommsTick 	= 10.0
+
+  File		= Kayak_204
+  PATH		= ../data_from_runs/
+  SyncLog 	= true @ 0.2
+  AsyncLog 	= true
+  FileTimeStamp = true
+
+  Log		= DESIRED_THRUST @ 0.1
+  Log		= DESIRED_RUDDER @ 0.1
+  Log           = NAV_X          @ 0.1
+  Log           = NAV_Y          @ 0.1
+  Log           = NAV_YAW        @ 0.1
+  Log           = NAV_HEADING    @ 0.1
+  Log           = DIST_TO_REGION @ 0.1
+  Log           = NAV_SPEED      @ 0.1
+  Log           = GPS_X          @ 0.1
+  Log           = GPS_Y          @ 0.1
+  Log           = GPS_SPEED      @ 0.1
+  Log           = GPS_HEADING    @ 0.1
+  Log           = GPS_TIME       @ 0.1
+  Log           = AIS_REPORT     @ 0.1 nosync
+  Log           = COMPASS_HEADING @ 0.1
+  log           = LOOP_CPU       @ 0.1
+  Log           = VEHICLE_WPT_INDEX @ 0.1
+  Log           = META_HEADING   @ 0.1
+  Log           = META_OFFSET    @ 0.1
+  Log           = META_SOURCE    @ 0.1
+  Log           = DESIRED_SPEED   @ 0.1
+  Log           = DESIRED_HEADING @ 0.1
+  Log           = BHV_IPF        @ 0.0 nosync
+}
+
+//------------------------------------------
+// pEchoVar configuration block
+
+ProcessConfig = pEchoVar
+{
+  AppTick     = 10
+  CommsTick   = 10
+
+  Echo    = GPS_X        ->  NAV_X
+  Echo    = GPS_Y        ->  NAV_Y
+  Echo    = GPS_YAW      ->  NAV_YAW
+  Echo    = META_HEADING ->  NAV_HEADING
+  Echo    = GPS_SPEED    ->  NAV_SPEED
+}
+
+
+//------------------------------------------------------------------
+// iPWMController configuration block
+
+ProcessConfig = iPWMController
+{
+  AppTick       = 10
+  CommsTick     = 10
+
+  Port          = /dev/ttyS0
+  ThrustPWM     = 6
+  RudderPWM     = 7
+  Timeout       = 10
+  RudderOffset  = 0
+}
+
+//------------------------------------------------------------------
+// iGPS configuration block
+
+ProcessConfig = iGPS 
+{
+  AppTick 	= 10
+  CommsTick 	= 10
+  Port 		= /dev/ttyS1
+  BaudRate 	= 19200
+  Streaming	= true
+  Verbose 	= true
+  Type		= GARMIN
+}
+
+//------------------------------------------------------------------
+// iPNICompass configuration block
+
+ProcessConfig = iPNICompass
+{
+  AppTick       = 4
+  CommsTick     = 4
+  Port          = /dev/ttyS3
+  Type		= V2Xe
+  Speed		= 9600
+  PreRotation   = -90
+}
+
+//------------------------------------------------------------------
+// iMetaCompass configuration block
+
+ProcessConfig = iMetaCompass
+{
+  AppTick     = 10
+  CommsTick   = 10
+
+  SpeedThresh = 0.2
+}
+
+
+//------------------------------------------------------------------
+// pMarine config block
+
+ProcessConfig = pMarinePID
+{
+  AppTick    = 10
+  CommsTick  = 10
+
+  Verbose    = true
+
+  DEPTH_CONTROL = false
+
+  // Yaw PID controller
+  YAW_PID_KP		 = 0.5
+  YAW_PID_KD		 = 0.0
+  YAW_PID_KI		 = 0.0
+  YAW_PID_INTEGRAL_LIMIT = 0.07
+
+  // Speed PID controller
+  SPEED_PID_KP		 = 1.0
+  SPEED_PID_KD		 = 0.0
+  SPEED_PID_KI		 = 0.0
+  SPEED_PID_INTEGRAL_LIMIT = 0.07
+
+  // Maximums
+  MAXRUDDER  = 100
+  MAXTHRUST  = 100
+
+  // A non-zero SPEED_FACTOR overrides use of SPEED_PID
+  // Will set DESIRED_THRUST = DESIRED_SPEED * SPEED_FACTOR
+  SPEED_FACTOR           = 20
+}
+
+

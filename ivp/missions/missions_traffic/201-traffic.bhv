@@ -1,0 +1,28 @@
+initialize   DEPLOY       = false
+initialize   STATION_KEEP = false
+
+//----------------------------------------------
+Behavior = BHV_StationKeep
+{
+  name       = bhv_station_keep_202
+  pwt        = 200
+  condition  = (STATION_KEEP = true) and (DEPLOY = true)
+
+  center_activate = true
+}
+
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name       = bhv_waypt_return_202
+  pwt        = 100
+  condition  = (RETURN = true) and (DEPLOY = true)
+  condition  = (STATION_KEEP != true)
+  endflag    = STATION_KEEP = true
+
+  speed      = 2.0
+  radius     = 10.0
+  points     = -50,-100
+}
+

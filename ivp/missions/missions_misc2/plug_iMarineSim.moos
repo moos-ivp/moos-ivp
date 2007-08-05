@@ -1,0 +1,14 @@
+//------------------------------------------------------------------
+// iMarineSim config block
+
+ProcessConfig = iMarineSim
+{
+  AppTick	= 4
+  CommsTick	= 4
+  MaxTransVel   = 3.0
+  MaxRotVel     = 0.6
+  StartLon      = 10
+  StartLat      = -40
+  StartSpeed    = 0
+  StartHeading  = 180
+}

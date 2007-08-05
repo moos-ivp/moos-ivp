@@ -1,0 +1,15 @@
+initialize   DEPLOY = false
+initialize   RETURN = false
+
+//----------------------------------------------
+Behavior = BHV_Loiter
+{
+  name       = bhv_loiter
+  pwt        = 100
+  speed      = 991.9
+  radius     = 8 
+  polygon    = radial:100,-100,40,12
+  silent     = false
+  condition  = DEPLOY = true
+}
+

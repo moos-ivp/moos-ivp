@@ -1,0 +1,58 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<HTML>
+<HEAD>
+   <TITLE>class  CMOOSCommPkt</TITLE>
+   <META NAME="GENERATOR" CONTENT="DOC++ 3.4.6">
+</HEAD>
+ <BODY>
+<H1><img src="moose6.gif"> <center>MOOSLib Class Documentation</center></H1>
+</BODY>
+
+In file MOOSCommPkt.h:<H2>class  <A HREF="#DOC.DOCU">CMOOSCommPkt</A></H2></H2><BLOCKQUOTE>This class is part of MOOS's internal transport mechanism.</BLOCKQUOTE>
+<HR>
+
+<DL>
+<P><DL>
+<DT><H3>Public Methods</H3><DD><DT>
+<IMG ALT="[more]" BORDER=0 SRC=icon1.gif>bool <B><A HREF="#DOC.3.2">Serialize</A></B>(MOOSMSG_LIST &amp;List, bool bToStream)
+<DD><I>This function stuffs messages in/from a packet </I>
+</DL></P>
+
+<P><DL>
+<DT><H3>Protected Fields</H3><DD><DT>
+<IMG ALT="[more]" BORDER=0 SRC=icon1.gif>bool <B><A HREF="#DOC.3.1">m_bAllocated</A></B>
+<DD><I>true is the packet has been infated to increase capicity and m_pStream no longer points to DefaultStream but to heap space allocated with new </I>
+</DL></P>
+
+</DL>
+
+<A NAME="DOC.DOCU"></A>
+<HR>
+<H2>Documentation</H2>
+<BLOCKQUOTE>This class is part of MOOS's internal transport mechanism. It any number of CMOOSMsg's
+can be packed into a CMOOSCommPkt and sent in one lump between a CMOOSCommServer and CMOOSCommClient
+object. It is never used by a user of MOOSLib </BLOCKQUOTE>
+<DL>
+
+<A NAME="m_bAllocated"></A>
+<A NAME="DOC.3.1"></A>
+<DT><IMG ALT="o" BORDER=0 SRC=icon2.gif><TT><B>bool m_bAllocated</B></TT>
+<DD>true is the packet has been infated to increase capicity and m_pStream no longer
+points to DefaultStream but to heap space allocated with new 
+<DL><DT><DD></DL><P>
+<A NAME="Serialize"></A>
+<A NAME="DOC.3.2"></A>
+<DT><IMG ALT="o" BORDER=0 SRC=icon2.gif><TT><B>bool Serialize(MOOSMSG_LIST &amp;List, bool bToStream)</B></TT>
+<DD>This function stuffs messages in/from a packet 
+<DL><DT><DD></DL><P></DL>
+
+<HR><DL><DT><B>This class has no child classes.</B></DL>
+
+<DL><DT><DD></DL><P><P><I><A HREF="index.html">Alphabetic index</A></I> <I><A HREF="HIER.html">HTML hierarchy of classes</A> or <A HREF="HIERjava.html">Java</A></I></P><HR>
+<BODY>
+<H4>
+MOOSLib
+&#169;  P. Newman 2001 <img src="moose2.gif">
+</H4>
+</BODY>

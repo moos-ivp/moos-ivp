@@ -1,0 +1,9 @@
+LIB_NAME = libopt.a
+SOURCE_LIST = mat.c
+
+DEP_LIST =
+
+all: $(LIB_NAME)
+
+include ../../../configuration.mk
+include ../../../build_library.mk

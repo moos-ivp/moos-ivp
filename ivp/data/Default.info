@@ -1,0 +1,7 @@
+
+img_centx   = 0.495850  
+img_centy   = 0.509000
+img_meters  = 0.048828
+//img_meters  = 0.48828
+img_centlat = 42.35849
+img_centlon = -71.08759333

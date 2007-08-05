@@ -1,0 +1,39 @@
+kayak1|dom> course:0:359:360, speed:0:3:7, tol:1:30:15
+kayak1|bhv> kayak1.bhv
+kayak1|lon> 0
+kayak1|lat> -250
+kayak1|crs> 15
+kayak1|spd> 0
+kayak1|pid> yaw:0.5:0:0:0.07, speed:1.0:0:0:0.07
+
+kayak2|dom> course:0:359:360, speed:0:3:7, tol:1:30:15
+kayak2|bhv> kayak2.bhv
+kayak2|lon> -150
+kayak2|lat> -200
+kayak2|crs> 0
+kayak2|spd> 0
+kayak2|pid> yaw:0.5:0:0:0.07, speed:1.0:0:0:0.07
+
+kayak3|dom> course:0:359:360, speed:0:3:7, tol:1:30:15
+kayak3|bhv> kayak3.bhv
+kayak3|lon> 150
+kayak3|lat> -200
+kayak3|crs> 90
+kayak3|spd> 0
+kayak3|pid> yaw:0.5:0:0:0.07, speed:1.0:0:0:0.07
+
+kayak4|dom> course:0:359:360, speed:0:3:7, tol:1:30:15
+kayak4|bhv> kayak4.bhv
+kayak4|lon> 0
+kayak4|lat> -100
+kayak4|crs> 165
+kayak4|spd> 0
+kayak4|pid> yaw:0.5:0:0:0.07, speed:1.0:0:0:0.07
+
+target1|dom> course:0:359:360, speed:0:1.5:4, tol:1:30:15
+target1|bhv> target1.bhv
+target1|lon> 0
+target1|lat> -200
+target1|crs> 135
+target1|spd> 0
+target1|pid> yaw:0.5:0:0:0.07, speed:1.0:0:0:0.07

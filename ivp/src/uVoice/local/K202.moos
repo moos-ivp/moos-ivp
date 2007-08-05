@@ -1,0 +1,7 @@
+// MOOS file
+
+ServerHost = localhost
+ServerPort = 9202
+
+Community = nyak202
+

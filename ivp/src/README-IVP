@@ -1,0 +1,25 @@
+
+                lib_ivpcore
+                     |
+                     |
+                lib_ivpbuild   lib_mbutil
+                     |        /         
+                     |       /    
+                lib_behaviors
+                     |       \----------- +--------------+
+                     |                    |              |
+                lib_behaviors-marine      |              |
+                lib_behaviors-don         |              |
+                     |                    |              |
+    MOOSLIB          |                    |              |
+   MOOSGenLib    lib_helmivp     lib_marineview     lib_marinesim
+            \        |   \       |        |         /    |
+             \       |    \      |        |        /     |
+              *pHelmIvP*   \     | *pMarineViewer*/  *iMarineSim*
+                            \    |               /
+                             \   |              /
+                              \  |             /
+                               \ |            /
+                              pMarineViewerSim
+
+(*) Indicates that the module references the MOOS library. 

@@ -1,0 +1,50 @@
+initialize   DEPLOY = false
+initialize   RETURN = false
+
+//----------------------------------------------
+Behavior = BHV_Loiter
+{
+  name       = bhv_loiter_a
+  pwt        = 100
+  speed      = 3.0
+  radius     = 8 
+  polygon    = radial:-80,-100,40,8
+  condition  = (DEPLOY = true) and (RETURN != true)
+  condition  = timer_value >= 180
+}
+
+//----------------------------------------------
+Behavior = BHV_Loiter
+{
+  name       = bhv_loiter_b
+  pwt        = 100
+  speed      = 3.0
+  radius     = 8 
+  polygon    = radial:100,-100,40,8
+  condition  = (DEPLOY = true) and (RETURN != true)
+  condition  = timer_value < 180
+}
+
+//----------------------------------------------
+Behavior = BHV_Timer
+{
+  name            = bhv_timer
+  duration        = 410
+  duration_status = timer_value
+  perpetual       = true
+  condition       = (DEPLOY = true) and (RETURN != true)
+}
+
+		
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name       = bhv_waypt_return
+  pwt        = 100
+  condition  = (RETURN = true) and (DEPLOY = true)
+
+  speed      = 2.0
+  radius     = 8.0
+  points     = 0,0
+}
+

@@ -1,0 +1,14 @@
+initialize   DEPLOY = false
+initialize   RETURN = false
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name       = bhv_wpt_201
+  pwt        = 100
+  speed      = 2.6
+  radius     = 10 
+  points     = 100,-100:-100,-300:-100,-100
+  condition  = DEPLOY = true
+}
+

@@ -1,0 +1,10 @@
+// Example AOF file
+
+AOF = AOF_Waypoint2D = course:0:359:360,speed:0:10:361
+{
+  oslat = 0
+  oslon = 0 
+  ptlat = 100
+  ptlon = 0
+  speed = 7
+}

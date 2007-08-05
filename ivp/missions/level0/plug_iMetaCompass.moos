@@ -1,0 +1,11 @@
+//------------------------------------------------------------------
+// iMetaCompass configuration block
+
+ProcessConfig = iMetaCompass
+{
+  AppTick     = 10
+  CommsTick   = 10
+
+  SpeedThresh = 0.2
+}
+

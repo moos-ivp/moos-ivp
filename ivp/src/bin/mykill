@@ -1,0 +1,16 @@
+#!/bin/sh
+
+killall -9 -q MOOSDB iRemote MOOSRemote iGPS iGPSMonitor pNav \
+        pHelm pHelmIvP pMarineViewer iMarineSim               \
+        pLogger iPWMController MOOSDump pAntler MOOSDump
+
+killall -9 -q pMOOSBridge pMikerb ExpMOOSDB pMikerb2        \
+        iPNICompass iMetaCompass iHeadingMonitor pDrone     \
+        iWifi p1BTracker p2BTracker pBearings uMS pTarget   \
+        pRedirect pLoiterControl pTransponderAIS uMVS       \
+        pMarinePID uTMS uMVS_Bluefin uFunctionViewer        \
+        pEchoVar uFunctionVis uXMS uProcessWatch            \
+        uTermCommand pMessageParser pTrafficControl
+
+echo Done - Killed all MOOS-Related Processes.....
+
