@@ -26,6 +26,6 @@ for walk_data in os.walk(root_dir):
          parent_dir + "/" + input_filename,
          parent_dir + "/" + output_filename
          ]
-      print "Running command: " + cmd
+      print "Running command: " + str(cmd)
       subprocess.check_call(cmd)
    
