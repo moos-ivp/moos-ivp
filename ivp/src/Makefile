@@ -7,28 +7,40 @@ LIB_BASE =  $(wildcard lib_ivpcore*)	$(wildcard lib_ivpbuild)   	   \
 	    $(wildcard lib_mbutil*)	$(wildcard lib_anrp_util*)  	   \
 	    $(wildcard lib_behaviors)	$(wildcard lib_behaviors-marine*)  \
 	    $(wildcard lib_bhvutil*)	$(wildcard lib_behaviors-colregs*) \
-	    $(wildcard MOOSUtilityLib*) $(wildcard lib_behaviors-don*) 	   \
+	    $(wildcard lib_behaviors-don*) 	   \
 	    $(wildcard lib_behaviors-sandbox*)				   \
 	    $(wildcard lib_geometry*)	$(wildcard lib_helmivp*)    	   \
-	    $(wildcard lib_logic*)	$(wildcard MOOSGenLib*)		   \
-	    $(wildcard MOOSLIB*)	$(wildcard newmat10D*)
+	    $(wildcard lib_logic*)	
+	    $(wildcard newmat10D*)
 
-APP_BASE =  $(wildcard pHelmIvP*) 	$(wildcard pAntler*)	   	\
-	    $(wildcard pEchoVar*) 	$(wildcard iRemote*)	   	\
-	    $(wildcard pLogger*)	$(wildcard pLoiterControl*) 	\
-	    $(wildcard pMOOSBridge*)	$(wildcard pMarinePID*)     	\
+# Removed because we no longer put MOOS code directly into the IvP source tree...
+# $(wildcard MOOSUtilityLib*) 
+# $(wildcard MOOSLIB*) $(wildcard MOOSGenLib*)		   \
+
+
+APP_BASE =  $(wildcard pHelmIvP*) 		   	\
+	    $(wildcard pEchoVar*) 	   	\
+	    $(wildcard pLoiterControl*) 	\
+	    $(wildcard pMarinePID*)     	\
 	    $(wildcard uXMS*)  	 	$(wildcard pTransponderAIS*)	\
 	    $(wildcard uTMS*)		$(wildcard uTermCommand*)   	\
-	    $(wildcard MOOSDB*)		$(wildcard iGPS*) 	   	\
+	    $(wildcard MOOSDB*)		 	   	\
 	    $(wildcard iMarineSim*)	$(wildcard iMetaCompass*)   	\
 	    $(wildcard iPNICompass*)	$(wildcard iPWMController*) 	\
 	    $(wildcard MOOSDump*)	$(wildcard uProcessWatch*)	\
 	    $(wildcard app_splug*)
 
-LIB_TOOLS = $(wildcard lib_FLTKVW*)	$(wildcard lib_behaviors-sandbox*) \
+# Removed because we no longer put MOOS code directly into the IvP source tree...
+# $(wildcard pAntler*)  $(wildcard pLogger*)
+# $(wildcard pMOOSBridge*)	$(wildcard iGPS*)
+# $(wildcard iRemote*)
+
+LIB_TOOLS = $(wildcard lib_behaviors-sandbox*) \
 	    $(wildcard lib_marineview*)	$(wildcard lib_behaviros-don*)	   \
 	    $(wildcard lib_navplot*)	$(wildcard lib_ivpbuild-extra*)	   \
 	    $(wildcard lib_track*)	$(wildcard lib_ipfview*)	
+
+# $(wildcard lib_FLTKVW*)
 
 APP_TOOLS = $(wildcard p1BTracker*)	$(wildcard iHeadingMonitor*)	\
 	    $(wildcard p2BTracker*)	$(wildcard pMarineViewer*)	\
@@ -37,10 +49,13 @@ APP_TOOLS = $(wildcard p1BTracker*)	$(wildcard iHeadingMonitor*)	\
 	    $(wildcard iWifi*)	    	$(wildcard pFunctionSender*)	\
 	    $(wildcard pMessageSim*)	$(wildcard pMineSim*)		\
 	    $(wildcard pTarget*)	$(wildcard uFunctionVis*)	\
-	    $(wildcard uMS*)		$(wildcard app_*)		\
+	    $(wildcard app_*)		\
 	    $(wildcard uPlayBack*)	$(wildcard iMicroModem*)	\
 	    $(wildcard uMVS*)		$(wildcard pDrone*)		\
 	    $(wildcard pBearings*)	
+
+# $(wildcard uMS*)	
+# 
 
 LIBS = $(LIB_BASE) $(LIB_TOOLS)
 

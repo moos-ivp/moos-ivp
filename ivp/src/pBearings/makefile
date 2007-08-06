@@ -4,9 +4,18 @@ LTARGET  = pBearings
 LIFLAGS  = 
 LCFLAGS  = 
 
-PLIBS    = libMOOS.a libMOOSGen.a libopt.a libnewmat.a
-LIBS     = -lm -lpthread $(patsubst lib%.a,-l%,$(PLIBS))
-PLDIRS   = ../MOOSLIB ../MOOSGenLib ../lib_track ../newmat10D
+REQUIRED_MOOS_LIBS = \
+	libMOOS.a 			\
+	libMOOSGen.a		
+
+PLIBS    = libopt.a 
+
+LIBS     = -lm -lpthread -lnewmat \
+	$(patsubst lib%.a,-l%,$(PLIBS)) \
+	$(patsubst lib%.a,-l%,$(REQUIRED_MOOS_LIBS)) 
+
+PLDIRS   = $(wildcard ../lib_*) ../newmat10D
+
 
 # Make configuration parameters -
 include ../make_config.mk

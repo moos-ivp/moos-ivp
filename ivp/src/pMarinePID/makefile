@@ -4,10 +4,19 @@ LTARGET  = pMarinePID
 LIFLAGS  = 
 LCFLAGS  = 
 
-PLIBS    = libMOOS.a libMOOSGen.a libgeometry.a libmbutil.a
-LIBS     = -lm -lpthread $(patsubst lib%.a,-l%,$(PLIBS))
 
-PLDIRS   = $(wildcard ../lib_*) ../MOOSLIB ../MOOSGenLib
+REQUIRED_MOOS_LIBS = \
+	libMOOS.a 			\
+	libMOOSGen.a 		
+
+
+PLIBS    = libgeometry.a libmbutil.a
+
+LIBS     = -lm -lpthread \
+	$(patsubst lib%.a,-l%,$(PLIBS)) \
+	$(patsubst lib%.a,-l%,$(REQUIRED_MOOS_LIBS)) 
+
+PLDIRS   = $(wildcard ../lib_*)
 
 # Make configuration parameters
 include ../make_config.mk

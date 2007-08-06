@@ -4,10 +4,17 @@ LTARGET  = MOOSDump
 LIFLAGS  = 
 LCFLAGS  = 
 
-PLIBS    = libMOOS.a libMOOSGen.a
-LIBS     = -lm -lpthread $(patsubst lib%.a,-l%,$(PLIBS))
+REQUIRED_MOOS_LIBS = \
+	libMOOS.a 			\
+	libMOOSGen.a 		
 
-PLDIRS   = $(wildcard ../lib_*) ../MOOSLIB ../MOOSGenLib
+PLIBS    = libmbutil.a 
+
+LIBS     = -lm -lpthread \
+	$(patsubst lib%.a,-l%,$(PLIBS)) \
+	$(patsubst lib%.a,-l%,$(REQUIRED_MOOS_LIBS)) 
+
+PLDIRS   = $(wildcard ../lib_*)
 
 # Make configuration parameters
 include ../make_config.mk

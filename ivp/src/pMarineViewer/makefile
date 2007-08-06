@@ -4,11 +4,17 @@ LTARGET  = pMarineViewer
 LIFLAGS  = 
 LCFLAGS  = 
 
-PLIBS    = libmarineview.a libmbutil.a libgeometry.a 	\
-	   libMOOS.a libMOOSGen.a  
-LIBS     = $(patsubst lib%.a,-l%,$(PLIBS)) \
-	   -lm -lpthread -lfltk -lfltk_gl -lX11  -lGL -ltiff
-PLDIRS   = $(wildcard ../lib_*) ../MOOSLIB ../MOOSGenLib
+REQUIRED_MOOS_LIBS = \
+	libMOOS.a 			\
+	libMOOSGen.a 		
+
+PLIBS    = libmarineview.a libmbutil.a libgeometry.a
+
+LIBS     = -lm -lpthread -lfltk -lfltk_gl -lX11  -lGL -ltiff \
+	$(patsubst lib%.a,-l%,$(PLIBS)) \
+	$(patsubst lib%.a,-l%,$(REQUIRED_MOOS_LIBS)) 
+
+PLDIRS   = $(wildcard ../lib_*)
 
 # Make configuration parameters
 include ../make_config.mk

@@ -1,11 +1,39 @@
 # Generic makefile structure for all application modules
 .SILENT:
 
+
+MOOS_LFLAGS = -L ../../../MOOS/MOOSBin
+
+# MOOS_IFLAGS = \
+# 	-I ../../../MOOS/Essentials/MOOSUtilityLib \
+# 	-I ../../../MOOS/Core/MOOSLIB \
+# 	-I ../../../MOOS/Core/MOOSGenLib \
+# 	-I ../../../MOOS/NavigationAndControl\MOOSNavLib \
+# 	-I ../../../MOOS/NavigationAndControl\MOOSTaskLib \
+# 	-I ../../../MOOS/Thirdparty/FLTKVW 
+
+MOOS_IFLAGS = \
+	-I ../../../MOOS/Essentials \
+	-I ../../../MOOS/Core \
+	-I ../../../MOOS/NavigationAndControl \
+	-I ../../../MOOS/Thirdparty/FLTKVW \
+	-I ../../../MOOS/Essentials/MOOSUtilityLib \
+	-I ../../../MOOS/Core/MOOSLIB \
+	-I ../../../MOOS/Core/MOOSGenLib \
+	-I ../../../MOOS/NavigationAndControl\MOOSNavLib \
+	-I ../../../MOOS/NavigationAndControl\MOOSTaskLib \
+	-I ../../../MOOS/Thirdparty/FLTKVW
+
 BIN_DIR  = ../bin
 TARGET   = $(BIN_DIR)/$(LTARGET)
-IFLAGS   = -I. -I.. $(patsubst %,-I%,$(PLDIRS))
+IFLAGS   = -I. -I.. $(patsubst %,-I%,$(PLDIRS)) $(MOOS_IFLAGS)
+
+
 LFLAGS   = -L/usr/X11R6/lib -L/usr/X11R6/lib64     \
-	   -L/sw/lib $(patsubst %,-L%,$(PLDIRS))  
+	   -L/sw/lib $(patsubst %,-L%,$(PLDIRS))   \
+	   $(MOOS_LFLAGS)
+           
+
 SOURCES  = $(wildcard *.cpp)
 OBJECTS  = $(SOURCES:.cpp=.o)
 CFLAGS   = $(DEBUG_LEVEL) -Wno-deprecated  $(FP) $(LCFLAGS)

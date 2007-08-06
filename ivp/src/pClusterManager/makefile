@@ -4,14 +4,18 @@ LTARGET  = pClusterManager
 LIFLAGS  = 
 LCFLAGS  = 
 
-PLIBS    = libMOOS.a 			\
-	   libMOOSGen.a 		\
-	   libmbutil.a 			\
-	   libgeometry.a 		\
+REQUIRED_MOOS_LIBS = \
+	libMOOS.a 			\
+	libMOOSGen.a 		
 
-LIBS     = -lm -lpthread $(patsubst lib%.a,-l%,$(PLIBS))
+PLIBS    = libmbutil.a libgeometry.a
 
-PLDIRS   = $(wildcard ../lib_*) ../MOOSLIB ../MOOSGenLib
+LIBS     = -lm -lpthread \
+	$(patsubst lib%.a,-l%,$(PLIBS)) \
+	$(patsubst lib%.a,-l%,$(REQUIRED_MOOS_LIBS)) 
+
+PLDIRS   = $(wildcard ../lib_*)
+
 
 # Make configuration parameters
 include ../make_config.mk

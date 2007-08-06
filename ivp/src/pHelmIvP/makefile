@@ -4,9 +4,11 @@ LTARGET  = pHelmIvP
 LIFLAGS  = 
 LCFLAGS  = 
 
-PLIBS    = libMOOS.a 			\
-	   libMOOSGen.a 		\
-	   libhelmivp.a    		\
+REQUIRED_MOOS_LIBS = \
+	libMOOS.a 			\
+	libMOOSGen.a 		
+	   
+PLIBS    = libhelmivp.a    		\
 	   libbehaviors-marine.a 	\
 	   libbehaviors-sandbox.a 	\
 	   libbhvutil.a			\
@@ -20,9 +22,11 @@ PLIBS    = libMOOS.a 			\
 #	   libbehaviours-oxford.a 	\
 
 
-LIBS     = -lm -lpthread $(patsubst lib%.a,-l%,$(PLIBS))
+LIBS     = -lm -lpthread \
+	$(patsubst lib%.a,-l%,$(PLIBS)) \
+	$(patsubst lib%.a,-l%,$(REQUIRED_MOOS_LIBS)) 
 
-PLDIRS   = $(wildcard ../lib_*) ../MOOSLIB ../MOOSGenLib
+PLDIRS   = $(wildcard ../lib_*)
 
 # Make configuration parameters
 include ../make_config.mk
