@@ -10,7 +10,7 @@ LIB_BASE =  $(wildcard lib_ivpcore*)	$(wildcard lib_ivpbuild)   	   \
 	    $(wildcard lib_behaviors-don*) 	   \
 	    $(wildcard lib_behaviors-sandbox*)				   \
 	    $(wildcard lib_geometry*)	$(wildcard lib_helmivp*)    	   \
-	    $(wildcard lib_logic*)	
+	    $(wildcard lib_logic*)	\
 	    $(wildcard newmat10D*)
 
 # Removed because we no longer put MOOS code directly into the IvP source tree...
