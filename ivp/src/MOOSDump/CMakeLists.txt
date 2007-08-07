@@ -1,0 +1,13 @@
+PROJECT(IVP_MOOSDUMP)
+
+FILE(GLOB SRC *.cpp)
+
+ADD_EXECUTABLE(MOOSDump ${SRC})
+
+TARGET_LINK_LIBRARIES(MOOSDump
+   MOOS
+   MOOSGen
+   mbutil
+   m
+   pthread
+   )

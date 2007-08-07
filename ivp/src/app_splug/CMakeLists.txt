@@ -1,0 +1,10 @@
+PROJECT(IVP_APP_SPLUG)
+
+FILE(GLOB SRC *.cpp)
+
+ADD_EXECUTABLE(splug ${SRC})
+
+TARGET_LINK_LIBRARIES(splug
+   mbutil
+   m
+   )

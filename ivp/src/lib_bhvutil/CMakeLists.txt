@@ -1,0 +1,5 @@
+PROJECT(IVP_LIB_BHVUTIL)
+
+FILE(GLOB SRC *.cpp)
+
+ADD_LIBRARY(bhvutil ${SRC})

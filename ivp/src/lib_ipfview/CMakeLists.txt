@@ -1,0 +1,5 @@
+PROJECT(IVP_LIB_IPFVIEW)
+
+FILE(GLOB SRC *.cpp)
+
+ADD_LIBRARY(ipfview ${SRC})

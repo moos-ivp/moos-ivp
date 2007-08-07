@@ -1,0 +1,12 @@
+PROJECT(IVP_IWIFI)
+
+FILE(GLOB SRC *.cpp)
+
+ADD_EXECUTABLE(iWifi ${SRC})
+
+TARGET_LINK_LIBRARIES(iWifi
+   MOOS
+   MOOSGen
+   m
+   pthread
+   )

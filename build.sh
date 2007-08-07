@@ -20,6 +20,11 @@ cmake                            \
 
 make
 
-cd ../ivp/src
+cd ../ivp
+
+cmake                              \
+   -DFLTK_DIR=/usr/lib             \
+   -DFLTK_INCLUDE_DIR=/usr/include \
+   ./
 
 make

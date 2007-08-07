@@ -1,0 +1,12 @@
+PROJECT(IVP_PEXTTRACKER)
+
+FILE(GLOB SRC *.cpp)
+
+ADD_EXECUTABLE(pExtTracker ${SRC})
+
+TARGET_LINK_LIBRARIES(pExtTracker
+   MOOS
+   MOOSGen
+   m
+   pthread
+   )

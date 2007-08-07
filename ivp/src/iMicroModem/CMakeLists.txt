@@ -1,11 +1,11 @@
-PROJECT(iMicroModem)
+PROJECT(IVP_IMICROMODEM)
 
+FILE(GLOB SRC *.cpp)
 
-#build a list of files to compile
-SET(MICROMODEM_SRCS MicroModemInstrument.cpp iMicroModemMain.cpp MicroModemInstrument.h nmea.cpp nmea.h umodem.h umodem.cpp ccl.cpp ccl.h )
+ADD_EXECUTABLE(iMicroModem ${SRC})
 
-# Add executable
-ADD_EXECUTABLE( iMicroModem ${MICROMODEM_SRCS})
-
-# Link the executable
-TARGET_LINK_LIBRARIES(iMicroModem ${MOOSLIBS} ${PLATFORM_LIBS} )
+TARGET_LINK_LIBRARIES(iMicroModem
+   MOOS 
+   MOOSGen
+   pthread
+   )

@@ -1,0 +1,12 @@
+PROJECT(IVP_PACOM)
+
+FILE(GLOB SRC *.cpp)
+
+ADD_EXECUTABLE(pACom ${SRC})
+
+TARGET_LINK_LIBRARIES(pACom
+   MOOS
+   MOOSGen
+   m
+   pthread
+   )

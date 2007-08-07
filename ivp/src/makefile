@@ -1,4 +1,4 @@
-.SILENT:
+# .SILENT:
 
 # Set variables to be passed down to subdirectories
 include ./make_config.mk
@@ -81,8 +81,8 @@ $(LIBS)::
 
 $(APPS):: 
 	@echo Entering directory $@
-	@cd $@; make depend
-	@cd $@; make 
+	cd $@; make depend
+	cd $@; make 
 
 # Provide the ability to CLEAN the codebase
 CLN_LIBS = $(patsubst %, cln_%, $(LIBS))

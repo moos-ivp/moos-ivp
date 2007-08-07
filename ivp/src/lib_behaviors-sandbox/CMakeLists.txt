@@ -1,0 +1,5 @@
+PROJECT(IVP_LIB_BEHAVIORS_SANDBOX)
+
+FILE(GLOB SRC *.cpp)
+
+ADD_LIBRARY(behaviors-sandbox ${SRC})

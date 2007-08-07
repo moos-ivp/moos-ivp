@@ -1,0 +1,5 @@
+PROJECT(IVP_LIB_BEHAVIORS_MARINE)
+
+FILE(GLOB SRC *.cpp)
+
+ADD_LIBRARY(behaviors-marine ${SRC})

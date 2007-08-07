@@ -1,0 +1,13 @@
+PROJECT(IVP_UXMS)
+
+FILE(GLOB SRC *.cpp)
+
+ADD_EXECUTABLE(uXMS ${SRC})
+
+TARGET_LINK_LIBRARIES(uXMS
+   MOOS
+   MOOSGen
+   mbutil
+   m
+   pthread
+   )

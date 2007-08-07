@@ -1,0 +1,5 @@
+PROJECT(IVP_LIB_LOGIC)
+
+FILE(GLOB SRC *.cpp)
+
+ADD_LIBRARY(logic ${SRC})
