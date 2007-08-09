@@ -72,7 +72,10 @@ int CPNICompass::GetType(void)
 	return type;
 }
 
-void *CPNICompass::CommThreadProc(void *_arg)
+// This only returns a 'bool' because that's the signature expected
+// by CMOOSThread.  Not a big deal because this return value of this function
+// isn't meaningful anyway.
+bool CPNICompass::CommThreadProc(void *_arg)
 {
 	CPNICompass *comp = (CPNICompass *)_arg;
 
@@ -161,7 +164,7 @@ eloop:
 		}
 	}
 
-	return NULL;
+	return true;
 }
 
 void CPNICompass::StartCalibMode(void)
@@ -245,16 +248,15 @@ void CPNICompass::StartCommThread(void)
 	port->SetXOnOff(true);
 
 	running = true;
-	pthread_create(&thr, NULL, CommThreadProc, this);
 
-	return ;
+        this->thread = new CMOOSThread(CommThreadProc, this);
 }
 
 void CPNICompass::StopCommThread(void)
 {
 	if (running) {
 		running = false;
-		pthread_join(thr, NULL);
+                this->thread->Stop();
 		delete port;
 	}
 }

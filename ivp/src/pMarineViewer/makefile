@@ -8,7 +8,7 @@ REQUIRED_MOOS_LIBS = \
 	libMOOS.a 			\
 	libMOOSGen.a 		
 
-PLIBS    = libmarineview.a libmbutil.a libgeometry.a
+PLIBS    = libmarineview.a libmbutil.a libgeometry.a libgenutil.a
 
 LIBS     = -lm -lpthread -lfltk -lfltk_gl -lX11  -lGL -ltiff \
 	$(patsubst lib%.a,-l%,$(PLIBS)) \

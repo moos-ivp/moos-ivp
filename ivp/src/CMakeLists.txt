@@ -5,8 +5,8 @@
 # Note: The value of IVP_BINARY_DIR was automatically established by CMake when
 # our top-level CMakeLists.txt file invoked the command PROJECT(IVP). -CJC
 
-SET( LIBRARY_OUTPUT_PATH ${IVP_BINARY_DIR}/bin CACHE PATH
-     "Output directory for the IvP libraries" )
+# SET( LIBRARY_OUTPUT_PATH ${IVP_BINARY_DIR}/bin CACHE PATH
+#      "Output directory for the IvP libraries" )
 
 SET( EXECUTABLE_OUTPUT_PATH ${IVP_BINARY_DIR}/bin CACHE PATH
      "Output directory for the IvP executables" )
@@ -59,7 +59,9 @@ FILE(GLOB IVP_LIB_BASE_SUBDIRS
    lib_behaviors-marine* 
    lib_behaviors-colregs*
    lib_helmivp*
+   lib_genutil
    )
+
 
 # In the original Makefile-based build system, the Makefile for 
 # lib_behaviors-attic had an "all" target that was a no-op.  However, 
@@ -135,6 +137,7 @@ SET(IVP_DIRS_TO_BUILD
    ${IVP_APP_TOOLS_SUBDIRS}
    )
 
+
 INCLUDE_DIRECTORIES(
    ${IVP_LIB_BASE_SUBDIRS}
    ${IVP_LIB_TOOLS_SUBDIRS}
@@ -142,3 +145,20 @@ INCLUDE_DIRECTORIES(
    )
 
 SUBDIRS(${IVP_DIRS_TO_BUILD})
+
+# Make optional the building of programs that people often don't want to buid...
+OPTION(IVP_BUILD_MOOSREMOTE "Build the MOOSRemote program" OFF)
+IF(IVP_BUILD_MOOSREMOTE)
+  SUBDIRS(MOOSRemote)
+ENDIF(IVP_BUILD_MOOSREMOTE)
+
+OPTION(IVP_BUILD_UVOICE "Build the uVoice program" OFF)
+IF(IVP_BUILD_UVOICE)
+  SUBDIRS(uVoice)
+ENDIF(IVP_BUILD_UVOICE)
+
+OPTION(IVP_BUILD_UFUNCTIONVIEWER "Build the uFunctionViewer program" OFF)
+IF(IVP_BUILD_UFUNCTIONVIEWER)
+  SUBDIRS(uFunctionViewer)
+ENDIF(IVP_BUILD_UFUNCTIONVIEWER)
+

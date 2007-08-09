@@ -4,14 +4,6 @@
 
 MOOS_LFLAGS = -L ../../../MOOS/MOOSBin
 
-# MOOS_IFLAGS = \
-# 	-I ../../../MOOS/Essentials/MOOSUtilityLib \
-# 	-I ../../../MOOS/Core/MOOSLIB \
-# 	-I ../../../MOOS/Core/MOOSGenLib \
-# 	-I ../../../MOOS/NavigationAndControl\MOOSNavLib \
-# 	-I ../../../MOOS/NavigationAndControl\MOOSTaskLib \
-# 	-I ../../../MOOS/Thirdparty/FLTKVW 
-
 MOOS_IFLAGS = \
 	-I ../../../MOOS/Essentials \
 	-I ../../../MOOS/Core \

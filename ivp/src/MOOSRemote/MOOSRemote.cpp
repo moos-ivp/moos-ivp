@@ -631,7 +631,7 @@ void CMOOSRemote::redraw_all(void)
 	move(LINES-1, COLS-1);
 }
 
-void *CMOOSRemote::comms_main(void *_arg)
+bool CMOOSRemote::comms_main(void *_arg)
 {
 	CMOOSRemote *p = reinterpret_cast<CMOOSRemote *>(_arg);
 	
@@ -708,6 +708,8 @@ void *CMOOSRemote::comms_main(void *_arg)
 
 		usleep(1000000/40);
 	}
+
+        return true;
 }
 
 void CMOOSRemote::Run()
@@ -722,7 +724,8 @@ void CMOOSRemote::Run()
 	infow_scroll = 0;
 	redraw_all();
 	
-	pthread_create(&comms_thread, NULL, comms_main, this);
+        comms_thread.Initialise(comms_main, this);
+        comms_thread.Start();
 	
 	addim("MOOSRemote ready");
 	main_loop();

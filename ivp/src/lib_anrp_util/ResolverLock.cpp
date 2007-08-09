@@ -19,28 +19,28 @@
 *************************************************************************/
 
 #include "ResolverLock.h"
-#include <pthread.h>
+#include <MOOSLock.h>
 #include <errno.h>
 
-static pthread_mutex_t resm = PTHREAD_MUTEX_INITIALIZER;
+static CMOOSLock resm;
 
 void LockResolver()
 {
-	pthread_mutex_lock(&resm);
+        resm.Lock();
 }
 
 void UnlockResolver()
 {
-	pthread_mutex_unlock(&resm);
+        resm.UnLock();
 }
 
-bool IsResolverLocked()
-{
-	if(pthread_mutex_trylock(&resm) == EBUSY) {
-		return true;
-	} else {
-		pthread_mutex_unlock(&resm);
-		return false;
-	}
-}
+// bool IsResolverLocked()
+// {
+// 	if(pthread_mutex_trylock(&resm) == EBUSY) {
+// 		return true;
+// 	} else {
+// 		pthread_mutex_unlock(&resm);
+// 		return false;
+// 	}
+// }
 

@@ -17,8 +17,6 @@ using namespace std;
 
 FV_Model::FV_Model()
 {
-  pthread_mutex_init(&m_ipf_mutex, NULL);
-
   m_collective = false;
   m_lock_ipf   = false;
   m_curr_descriptor = "null_descriptor";
@@ -29,7 +27,7 @@ FV_Model::FV_Model()
 
 void FV_Model::addIPF(string str)
 {
-  pthread_mutex_lock(&m_ipf_mutex);
+  m_ipf_mutex.Lock();
 
   if(!m_lock_ipf) {
     string new_descriptor = m_fqueue.addFunction(str);
@@ -40,7 +38,7 @@ void FV_Model::addIPF(string str)
     if(m_curr_descriptor == "")
       m_curr_descriptor = new_descriptor;
   }
-  pthread_mutex_unlock(&m_ipf_mutex);
+  m_ipf_mutex.UnLock();
 }
 
 //-------------------------------------------------------------
@@ -48,9 +46,9 @@ void FV_Model::addIPF(string str)
 
 void FV_Model::modColorMap(const string &str)
 {
-  pthread_mutex_lock(&m_ipf_mutex);
+  m_ipf_mutex.Lock();
   m_fqueue.modColorMap(str);
-  pthread_mutex_unlock(&m_ipf_mutex);
+  m_ipf_mutex.UnLock();
 }
 
 //-------------------------------------------------------------
@@ -58,7 +56,7 @@ void FV_Model::modColorMap(const string &str)
 
 void FV_Model::incDescriptor()
 {
-  pthread_mutex_lock(&m_ipf_mutex);
+  m_ipf_mutex.Lock();
 
   int vsize = m_descriptors.size();
   bool done = false;
@@ -71,7 +69,7 @@ void FV_Model::incDescriptor()
       done = true;
     }
   }
-  pthread_mutex_unlock(&m_ipf_mutex);
+  m_ipf_mutex.UnLock();
 }
 
 //-------------------------------------------------------------
@@ -79,7 +77,7 @@ void FV_Model::incDescriptor()
 
 void FV_Model::decDescriptor()
 {
-  pthread_mutex_lock(&m_ipf_mutex);
+  m_ipf_mutex.Lock();
   int vsize = m_descriptors.size();
   bool done = false;
   for(int i=vsize-1; (i>=0)&&!done; i--) {
@@ -91,7 +89,7 @@ void FV_Model::decDescriptor()
       done = true;
     }
   }
-  pthread_mutex_unlock(&m_ipf_mutex);
+  m_ipf_mutex.UnLock();
 }
 
 //-------------------------------------------------------------
@@ -110,7 +108,7 @@ string FV_Model::getCurrDescriptor()
 
 const QuadSet* FV_Model::getQuadSet()
 {
-  pthread_mutex_lock(&m_ipf_mutex);
+  m_ipf_mutex.Lock();
 
   const QuadSet* quadset = 0;
   if(m_collective)
@@ -118,7 +116,7 @@ const QuadSet* FV_Model::getQuadSet()
   else
     quadset = m_fqueue.getQuadSet(m_curr_descriptor);
 
-  pthread_mutex_unlock(&m_ipf_mutex);
+  m_ipf_mutex.UnLock();
   return(quadset);
 }
 

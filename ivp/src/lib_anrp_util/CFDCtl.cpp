@@ -41,9 +41,6 @@ void CFDCtl::CommonInit()
 	
 	this->blocksize = 16384;
 
-	pthread_mutex_init(&rdM, NULL);
-	pthread_mutex_init(&wrM, NULL);
-
 	wrMaxLen = -1;
 
 	isEOF = false;
@@ -136,9 +133,9 @@ int CFDCtl::DirectRead(void)
 	int amtRd;
 	char *buf = (char *)malloc(blocksize);
 
-	pthread_mutex_lock(&rdM);
+	rdM.Lock();
 	amtRd = read(fd, buf, blocksize);
-	pthread_mutex_unlock(&rdM);
+	rdM.UnLock();
 
 	if (amtRd == -1 && (errno == EWOULDBLOCK || errno == EAGAIN)) {
 		errno = 0;
@@ -152,11 +149,11 @@ int CFDCtl::DirectRead(void)
 		isEOF = true;
 		return 0;
 	} else {
-		pthread_mutex_lock(&rdM);
+		rdM.Lock();
 		rdBuf = (char *)realloc((void *)rdBuf, rdBufLen + amtRd);
 		memcpy(rdBuf + rdBufLen, buf, amtRd);
 		rdBufLen += amtRd;
-		pthread_mutex_unlock(&rdM);
+		rdM.UnLock();
 		free(buf);
 		return amtRd;
 	}
@@ -269,9 +266,9 @@ int CFDCtl::DirectWrite(void)
 	int mtw = wrMaxLen == -1 ? wrBufLen : wrMaxLen < wrBufLen ? wrMaxLen :
 	          wrBufLen;
 
-	pthread_mutex_lock(&wrM);
+	wrM.Lock();
 	amtWr = write(fd, wrBuf, mtw);
-	pthread_mutex_unlock(&wrM);
+	wrM.UnLock();
 
 	if (amtWr == -1 && (errno == EWOULDBLOCK || errno == EAGAIN)) {
 		errno = 0;
@@ -281,7 +278,7 @@ int CFDCtl::DirectWrite(void)
 	} else if (amtWr == 0) {
 		return 0;
 	} else {
-		pthread_mutex_lock(&wrM);
+		wrM.Lock();
 		memmove((void *)wrBuf, (void *)(wrBuf + amtWr), wrBufLen - amtWr);
 		wrBuf = (char *)realloc((void *)wrBuf, wrBufLen - amtWr);
 		wrBufLen -= amtWr;
@@ -289,7 +286,7 @@ int CFDCtl::DirectWrite(void)
 		if (wrBufLen == 0)
 			wrBuf = NULL;
 
-		pthread_mutex_unlock(&wrM);
+		wrM.UnLock();
 
 		return amtWr;
 	}
@@ -330,7 +327,7 @@ char *CFDCtl::Read(int nb)
 
 	memcpy(ptr, rdBuf, nb);
 
-	pthread_mutex_lock(&rdM);
+	rdM.Lock();
 
 	memmove(rdBuf, rdBuf + nb, rdBufLen - nb);
 
@@ -345,7 +342,7 @@ char *CFDCtl::Read(int nb)
 
 	ptr[nb] = 0;
 
-	pthread_mutex_unlock(&rdM);
+	rdM.UnLock();
 
 	return ptr;
 }
@@ -357,11 +354,11 @@ char *CFDCtl::Peek(int nb)
 
 	char *ptr = (char *)malloc(nb);
 
-	pthread_mutex_lock(&rdM);
+	rdM.Lock();
 
 	memcpy(ptr, rdBuf, nb);
 
-	pthread_mutex_unlock(&rdM);
+	rdM.UnLock();
 
 	return ptr;
 }
@@ -371,13 +368,13 @@ int CFDCtl::FindCharIndex(char c)
 	if (rdBufLen == 0)
 		return -1;
 
-	pthread_mutex_lock(&rdM);
+	rdM.Lock();
 
 	char *p = (char *)memchr((void *)rdBuf, c, rdBufLen);
 
 	int pos = p - rdBuf;
 
-	pthread_mutex_unlock(&rdM);
+	rdM.UnLock();
 
 	if (p == NULL)
 		return -1;
@@ -390,13 +387,13 @@ int CFDCtl::FindStrIndex(int l, char *s)
 	if (rdBufLen == 0)
 		return -1;
 
-	pthread_mutex_lock(&rdM);
+	rdM.Lock();
 
 	char *p = (char *)mymemmem(rdBuf, rdBufLen, s, l);
 
 	int pos = p - rdBuf;
 
-	pthread_mutex_unlock(&rdM);
+	rdM.UnLock();
 
 	if (p == NULL)
 		return -1;
@@ -417,7 +414,7 @@ int CFDCtl::AppendWriteQueue(const char *ptr, int len)
 	if (len == -1)
 		len = strlen(ptr);
 
-	pthread_mutex_lock(&wrM);
+	wrM.Lock();
 
 	wrBuf = (char *)realloc((void *)wrBuf, wrBufLen + len);
 
@@ -425,14 +422,14 @@ int CFDCtl::AppendWriteQueue(const char *ptr, int len)
 
 	wrBufLen += len;
 
-	pthread_mutex_unlock(&wrM);
+	wrM.UnLock();
 
 	return 0;
 }
 
 int CFDCtl::WriteQueueFlush(void)
 {
-	pthread_mutex_lock(&wrM);
+	wrM.Lock();
 
 	if (wrBufLen > 0) {
 		wrBufLen = 0;
@@ -440,14 +437,14 @@ int CFDCtl::WriteQueueFlush(void)
 		wrBuf = NULL;
 	}
 
-	pthread_mutex_unlock(&wrM);
+	wrM.UnLock();
 
 	return 0;
 }
 
 int CFDCtl::ReadQueueFlush(void)
 {
-	pthread_mutex_lock(&rdM);
+	rdM.Lock();
 
 	if (rdBufLen > 0) {
 		rdBufLen = 0;
@@ -455,7 +452,7 @@ int CFDCtl::ReadQueueFlush(void)
 		rdBuf = NULL;
 	}
 
-	pthread_mutex_unlock(&rdM);
+	rdM.UnLock();
 
 	return 0;
 }

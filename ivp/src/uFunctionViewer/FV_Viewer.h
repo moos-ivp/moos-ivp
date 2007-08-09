@@ -13,7 +13,7 @@
 #define IPF_VIEWER_HEADER
 
 #include <vector>
-#include <pthread.h>
+#include "MOOSLock.h"
 #include "IvPBox.h"
 #include "IvPFunction.h"
 #include "Quad3D.h"
@@ -75,7 +75,7 @@ protected:
   int        m_polar;
   int        m_zslice;
 
-  pthread_mutex_t m_ipf_mutex;
+  CMOOSLock m_ipf_mutex;
 
   IvPFunction *m_ipf;
 };

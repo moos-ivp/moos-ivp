@@ -12,19 +12,17 @@ CommServer::CommServer(int port)
 {
 	this->port = port;
 
-	pthread_mutex_init(&client_list, NULL);
 	pipe(cp);
-	pthread_create(&thr, NULL, &(CommServer::ThreadTrampoline), this);
+        thr.Initialise(&(CommServer::ThreadTrampoline), this);
 }
 
 CommServer::~CommServer()
 {
-	;
 }
 
 void CommServer::WriteString(char *str, int len)
 {
-	pthread_mutex_lock(&client_list);
+	client_list.Lock();
 	if(len == -1) len = strlen(str);
 
 	map<int,CFDCtl *>::iterator it;
@@ -33,16 +31,16 @@ void CommServer::WriteString(char *str, int len)
 		((*it).second)->AppendWriteQueue(str, len);
 	}
 
-	pthread_mutex_unlock(&client_list);
+	client_list.UnLock();
 
 	/* force a wakeup */
 	write(cp[1], "W", 1);
 }
 
-void *CommServer::ThreadTrampoline(void *p)
+bool CommServer::ThreadTrampoline(void *p)
 {
 	((CommServer *)p)->AsyncThread();
-	return NULL;
+	return true;
 }
 
 void CommServer::AsyncThread()
@@ -69,7 +67,7 @@ void CommServer::AsyncThread()
 		// build fd list
 		struct pollfd *fds;
 		
-		pthread_mutex_lock(&client_list);
+		client_list.Lock();
 		fds = (struct pollfd *)malloc(sizeof(struct pollfd) * 2);
 		memset(fds, 0, sizeof(struct pollfd) * 2);
 		
@@ -94,7 +92,7 @@ void CommServer::AsyncThread()
 			
 			i++;
 		}
-		pthread_mutex_unlock(&client_list);
+		client_list.UnLock();
 
 		int pr = poll(fds, i, -1);
 		
@@ -121,9 +119,9 @@ void CommServer::AsyncThread()
 
 			printf("new connection from %s\n", inet_ntoa(tadr.sin_addr));
 
-			pthread_mutex_lock(&client_list);
+			client_list.Lock();
 			clients[newfd] = new CFDCtl(newfd);
-			pthread_mutex_unlock(&client_list);
+			client_list.UnLock();
 		}
 
 		for(int j=2; j<i; j++) {
@@ -131,15 +129,15 @@ void CommServer::AsyncThread()
 				// remove... 
 				printf("removing connection on fd %i\n",
 						fds[j].fd);
-				pthread_mutex_lock(&client_list);
+				client_list.Lock();
 				close(fds[j].fd);
 				delete clients[fds[j].fd];
 				clients.erase(fds[j].fd);
-				pthread_mutex_unlock(&client_list);
+				client_list.UnLock();
 			} else if(fds[j].revents & POLLOUT) {
-				pthread_mutex_lock(&client_list);
+				client_list.Lock();
 				(clients[fds[j].fd])->NonBlockingWrite();
-				pthread_mutex_unlock(&client_list);
+				client_list.UnLock();
 			}
 		}
 

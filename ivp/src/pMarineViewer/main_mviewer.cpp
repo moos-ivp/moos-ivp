@@ -24,6 +24,7 @@
 #include "PMV_MOOSApp.h"
 #include "PMV_GUI.h"
 #include "MBUtils.h"
+#include "MOOSAppRunnerThread.h"
 
 using namespace std;
 
@@ -33,12 +34,6 @@ using namespace std;
 
 char*        g_sMissionFile = 0;
 PMV_MOOSApp  g_thePort;
-pthread_t    g_portThreadID;
-
-struct ThreadParams {
-    CMOOSApp *app;
-    char *name;
-};
 
 //--------------------------------------------------------
 // Procedure: usage
@@ -47,39 +42,6 @@ void exit_with_usage()
 {
   cout << "Usage: pMarineViewer file.moos [file.tif] [-noimg]" << endl;
   exit(-1);
-}
-
-
-//--------------------------------------------------------
-// Procedure: RunProc
-
-void* RunProc(void *lpParameter)
-{
-  void **params = (void **)lpParameter;
-  
-  CMOOSApp *app = (CMOOSApp *)params[0];
-  char *name = (char *) params[1];
-  
-  MOOSTrace("starting %s thread\n", name);
-  app->Run(name, g_sMissionFile);	
-  
-  return(NULL);
-}
-
-//--------------------------------------------------------
-// Procedure: spawn_thread
-
-pthread_t spawn_thread(ThreadParams *pParams)
-{
-  pthread_t tid;
-  if (pthread_create(&tid,NULL, RunProc, pParams) != 0) {
-    MOOSTrace("failed to start %s thread\n", pParams->name);
-    tid = (pthread_t) -1;
-  }
-  else 
-    MOOSTrace("%s thread spawned\n", pParams->name);
-  
-  return tid;
 }
 
 //--------------------------------------------------------
@@ -110,8 +72,7 @@ int main(int argc, char *argv[])
     exit_with_usage();
   
   // start the MOOSPort in its own thread
-  ThreadParams params = {&g_thePort, "pMarineViewer"};
-  g_portThreadID = spawn_thread(&params);	
+  MOOSAppRunnerThread runner(&g_thePort, "pMarineViewer", g_sMissionFile);
 
   Fl::add_idle(idleProc);
 

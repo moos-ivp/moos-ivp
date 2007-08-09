@@ -23,6 +23,18 @@
 
 void LockResolver();
 void UnlockResolver();
-bool IsResolverLocked();
+
+// To make IvP also build on Windows, we're using CMOOSLock.  Unfortunately
+// that class doesn't support an equivalent of pthread_mutex_trylock, on
+// which the function below relies.
+//
+// So for now I'm commenting out this function.  In the long term, we should
+// consider either adding a 'trylock'-like operation to CMOOSLock, or have
+// IvP (and possibly MOOS) use a Win32 pthreads library such as this:
+//      http://sourceware.org/pthreads-win32/index.html
+//
+// -CJC
+//
+// bool IsResolverLocked();
 
 #endif

@@ -42,8 +42,6 @@ FV_Viewer::FV_Viewer(int x, int y,
   m_zslice     = 0;
 
   m_ipf        = 0;
-
-  pthread_mutex_init(&m_ipf_mutex, NULL);
 }
 
 //-------------------------------------------------------------
@@ -60,11 +58,11 @@ int FV_Viewer::handle(int event)
 void FV_Viewer::setIPF(string str)
 {
 #if 1
-  pthread_mutex_lock(&m_ipf_mutex);
+  m_ipf_mutex.Lock();
   if(m_ipf)
     delete(m_ipf);
   m_ipf = 0;
-  pthread_mutex_unlock(&m_ipf_mutex);
+  m_ipf_mutex.UnLock();
 #endif
 
   m_ipf = StringToIvPFunction(str);
@@ -200,7 +198,7 @@ void FV_Viewer::drawIvPFunction()
   if(m_ipf==0)
     return;
 
-  pthread_mutex_lock(&m_ipf_mutex);
+  m_ipf_mutex.Lock();
 
   PDMap *pdmap = m_ipf->getPDMap();
   int amt = pdmap->size();
@@ -216,7 +214,7 @@ void FV_Viewer::drawIvPFunction()
     const IvPBox* ibox = pdmap->bx(i);
     drawIvPBox(*ibox, lval, hval, xpts, ypts);
   }
-  pthread_mutex_unlock(&m_ipf_mutex);
+  m_ipf_mutex.UnLock();
 }
 
 //-------------------------------------------------------------

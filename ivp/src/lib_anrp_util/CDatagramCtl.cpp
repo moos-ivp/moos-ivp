@@ -35,9 +35,6 @@ CDatagramCtl::CDatagramCtl()
 	// assume default blocksize
 	this->is_open = false;
 	this->fd = -1;
-	
-	pthread_mutex_init(&rdM, NULL);
-	pthread_mutex_init(&wrM, NULL);
 
 	isEOF = false;
 }
@@ -123,9 +120,9 @@ int CDatagramCtl::DirectRead(void)
 
 	r_addr_len = sizeof(struct sockaddr);
 	
-	pthread_mutex_lock(&rdM);
+	rdM.Lock();
 	amtRd = recvfrom(fd, buf, 65536, 0, &r_their_addr, (socklen_t *)&r_addr_len);
-	pthread_mutex_unlock(&rdM);
+	rdM.UnLock();
 
 	if (amtRd == -1 && (errno == EWOULDBLOCK || errno == EAGAIN)) {
 		errno = 0;
@@ -139,13 +136,13 @@ int CDatagramCtl::DirectRead(void)
 		isEOF = true;
 		return 0;
 	} else {
-		pthread_mutex_lock(&rdM);
+		rdM.Lock();
 		datagram_t tmp;
 		memcpy(&(tmp.from), &r_their_addr, r_addr_len);
 		tmp.len = amtRd;
 		tmp.data = buf;
 		rdBuf.push(tmp);
-		pthread_mutex_unlock(&rdM);
+		rdM.UnLock();
 		return amtRd;
 	}
 }
@@ -225,10 +222,10 @@ int CDatagramCtl::DirectWrite(void)
 {
 	int amtWr = 0;
 
-	pthread_mutex_lock(&wrM);
+	wrM.Lock();
 	datagram_t &tmp = wrBuf.front();
 	amtWr = sendto(fd, tmp.data, tmp.len, 0, (struct sockaddr *)&(tmp.to), sizeof(struct sockaddr));
-	pthread_mutex_unlock(&wrM);
+	wrM.UnLock();
 
 	if (amtWr == -1 && (errno == EWOULDBLOCK || errno == EAGAIN)) {
 		errno = 0;
@@ -238,9 +235,9 @@ int CDatagramCtl::DirectWrite(void)
 	} else if (amtWr == 0) {
 		return 0;
 	} else {
-		pthread_mutex_lock(&wrM);
+		wrM.Lock();
 		wrBuf.pop();
-		pthread_mutex_unlock(&wrM);
+		wrM.UnLock();
 
 		return amtWr;
 	}
@@ -274,19 +271,19 @@ int CDatagramCtl::ReadQueueSize(void)
 
 datagram_t CDatagramCtl::Read()
 {
-	pthread_mutex_lock(&rdM);
+	rdM.Lock();
 	datagram_t tmp = rdBuf.front();
 	rdBuf.pop();
-	pthread_mutex_unlock(&rdM);
+	rdM.UnLock();
 
 	return tmp;
 }
 
 datagram_t CDatagramCtl::Peek()
 {
-	pthread_mutex_lock(&rdM);
+	rdM.Lock();
 	datagram_t tmp = rdBuf.front();
-	pthread_mutex_unlock(&rdM);
+	rdM.UnLock();
 
 	return tmp;
 }
@@ -298,31 +295,31 @@ int CDatagramCtl::WriteQueueSize(void)
 
 int CDatagramCtl::AppendWriteQueue(datagram_t tmp)
 {
-	pthread_mutex_lock(&wrM);
+	wrM.Lock();
 	wrBuf.push(tmp);
-	pthread_mutex_unlock(&wrM);
+	wrM.UnLock();
 
 	return 0;
 }
 
 int CDatagramCtl::WriteQueueFlush(void)
 {
-	pthread_mutex_lock(&wrM);
+	wrM.Lock();
 	while(wrBuf.size()) {
 		wrBuf.pop();
 	}
-	pthread_mutex_unlock(&wrM);
+	wrM.UnLock();
 
 	return 0;
 }
 
 int CDatagramCtl::ReadQueueFlush(void)
 {
-	pthread_mutex_lock(&rdM);
+	rdM.Lock();
 	while(rdBuf.size()) {
 		rdBuf.pop();
 	}
-	pthread_mutex_unlock(&rdM);
+	rdM.UnLock();
 
 	return 0;
 }

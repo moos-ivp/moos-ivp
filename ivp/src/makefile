@@ -1,4 +1,4 @@
-# .SILENT:
+ .SILENT:
 
 # Set variables to be passed down to subdirectories
 include ./make_config.mk
@@ -11,7 +11,7 @@ LIB_BASE =  $(wildcard lib_ivpcore*)	$(wildcard lib_ivpbuild)   	   \
 	    $(wildcard lib_behaviors-sandbox*)				   \
 	    $(wildcard lib_geometry*)	$(wildcard lib_helmivp*)    	   \
 	    $(wildcard lib_logic*)	\
-	    $(wildcard newmat10D*)
+	    $(wildcard newmat10D*)      $(wildcard lib_genutil)
 
 # Removed because we no longer put MOOS code directly into the IvP source tree...
 # $(wildcard MOOSUtilityLib*) 

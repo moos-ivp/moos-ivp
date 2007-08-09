@@ -4,7 +4,6 @@
 #include <cstring>
 #include <sstream>
 #include <ctime>
-#include <pthread.h>
 #include "MOOSLib.h"
 #include "MOOSGenLib.h"
 #include "CpACom.h"
@@ -15,9 +14,11 @@
 
 using namespace std;
 
-void* pingThread(void*);
-void* sendThread(void*);
-void* readThread(void*);
+// These return bool just to satisfy MOOSThread's signature requirements.
+// The value isn't meaningful.
+bool pingThread(void*);
+bool sendThread(void*);
+bool readThread(void*);
 
 CpACom::CpACom() {
   serialPort = "/dev/ttyS2";
@@ -44,9 +45,9 @@ CpACom::CpACom() {
 }
 
 CpACom::~CpACom() {
-  pthread_join(pingThreadPointer, NULL);
-  pthread_join(sendThreadPointer, NULL);
-  pthread_join(readThreadPointer, NULL);
+  this->pingThreadPointer->Stop();
+  this->sendThreadPointer->Stop();
+  this->readThreadPointer->Stop();
 
   closeSerialPort();
 }
@@ -69,9 +70,9 @@ bool CpACom::OnConnectToServer() {
 }
 
 bool CpACom::OnDisconnectFromServer() {
-  pthread_join(pingThreadPointer, NULL);
-  pthread_join(sendThreadPointer, NULL);
-  pthread_join(readThreadPointer, NULL);
+  pingThreadPointer->Stop();
+  sendThreadPointer->Stop();
+  readThreadPointer->Stop();
 
   closeSerialPort();
   
@@ -92,14 +93,18 @@ bool CpACom::OnStartUp() {
   if(!initModem())
     return false;
 
-  if(toSendPing)
-    pthread_create(&pingThreadPointer, NULL, pingThread, (void*) this);
-
-  else if(toSendData)
-    pthread_create(&sendThreadPointer, NULL, sendThread, (void*) this);
-
-  else if(toReadData)
-    pthread_create(&readThreadPointer, NULL, readThread, (void*) this);
+  if(toSendPing) {
+    this->pingThreadPointer = new CMOOSThread(pingThread, this);
+    this->pingThreadPointer->Start();
+  }
+  else if(toSendData) {
+    this->sendThreadPointer = new CMOOSThread(sendThread, this);
+    this->sendThreadPointer->Start();
+  }
+  else if(toReadData) {
+    this->readThreadPointer = new CMOOSThread(readThread, this);
+    this->readThreadPointer->Start();
+  }
 
   return true;
 }
@@ -664,17 +669,20 @@ bool CpACom::readData() {
   return false;
 }
 
-void* pingThread(void* arg) {
+bool pingThread(void* arg) {
   while(true)
     ((CpACom*) arg)->ping();
+  return true;
 }
 
-void* sendThread(void* arg) {
+bool sendThread(void* arg) {
   while(true)
     ((CpACom*) arg)->sendData();
+  return true;
 }
 
-void* readThread(void* arg) {
+bool readThread(void* arg) {
   while(true)
     ((CpACom*) arg)->readData();
+  return true;
 }

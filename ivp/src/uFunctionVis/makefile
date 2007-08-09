@@ -9,7 +9,7 @@ REQUIRED_MOOS_LIBS = \
 	libMOOSGen.a 		
 
 PLIBS    = libipfview.a libgeometry.a   \
-           libmbutil.a libivpbuild.a libivpcore.a
+           libmbutil.a libivpbuild.a libivpcore.a libgenutil.a
 
 LIBS     = -lm -lfltk -lfltk_gl -lX11 -lGL -lpthread \
 	$(patsubst lib%.a,-l%,$(PLIBS)) \

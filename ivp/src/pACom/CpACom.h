@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 #include "MOOSLib.h"
+#include "MOOSThread.h"
 
 /**
  * Computes the length of an array.
@@ -209,17 +210,17 @@ class CpACom: public CMOOSApp {
   /**
    * The ping thread pointer.
    */
-  pthread_t pingThreadPointer;
+  CMOOSThread *pingThreadPointer;
 
   /**
    * The send data thread pointer.
    */  
-  pthread_t sendThreadPointer;
+  CMOOSThread *sendThreadPointer;
 
   /**
    * The read data thread pointer.
    */
-  pthread_t readThreadPointer;
+  CMOOSThread *readThreadPointer;
 
   /**
    * Object used when reading from the mission file (\c .moos file).

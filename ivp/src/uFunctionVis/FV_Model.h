@@ -7,7 +7,7 @@
 #ifndef IPF_MODEL_HEADER
 #define IPF_MODEL_HEADER
 
-#include <pthread.h>
+#include "MOOSLock.h"
 #include "QuadSet.h"
 #include "FunctionQueue.h"
 #include "FColorMap.h"
@@ -36,7 +36,7 @@ public:
 
 protected:
   FunctionQueue   m_fqueue;
-  pthread_mutex_t m_ipf_mutex;
+  CMOOSLock       m_ipf_mutex;
   std::string     m_curr_descriptor;
   bool            m_collective;
   bool            m_lock_ipf;

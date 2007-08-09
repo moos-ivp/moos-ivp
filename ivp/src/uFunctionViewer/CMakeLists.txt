@@ -1,30 +1,29 @@
-PROJECT(IVP_PMARINEVIEWER)
+PROJECT(IVP_UFUNCTIONVIEWER)
 
 INCLUDE(FindFLTK)    # This is distributed with CMake.
 IF(FLTK_FOUND)
    FILE(GLOB SRC *.cpp)
    
-   ADD_EXECUTABLE(pMarineViewer ${SRC})
+   ADD_EXECUTABLE(uFunctionViewer ${SRC})
    
-   
-   TARGET_LINK_LIBRARIES(pMarineViewer
+   TARGET_LINK_LIBRARIES(uFunctionViewer
       MOOS
       MOOSGen
-      marineview
-      mbutil
-      genutil
       geometry
-      m
+      genutil
+      mbutil
       pthread
+      ivpbuild
+      ivpcore
+      m
       fltk 
       fltk_gl 
       X11
       GL
-      tiff
       )
 ELSE(FLTK_FOUND)
    MESSAGE(STATUS 
-      "Won't build pMarineViewer because can't find needed FLTK stuff.  "
+      "Won't build uFunctionViewer because can't find needed FLTK stuff.  "
       "You can maybe fix this by setting the FLTK_DIR CMake variable "
       "to a value of "/usr/lib", because CMake's FindFLTK implementation "
       "is pretty stupid."

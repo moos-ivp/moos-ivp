@@ -1,0 +1,5 @@
+PROJECT(IVP_LIB_GENUTIL)
+
+FILE(GLOB SRC *.cpp)
+
+ADD_LIBRARY(genutil ${SRC})

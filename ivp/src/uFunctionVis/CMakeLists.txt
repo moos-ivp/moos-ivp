@@ -11,11 +11,11 @@ IF(FLTK_FOUND)
       MOOSGen
       ipfview
       geometry
+      genutil
       mbutil
       ivpbuild
       ivpcore
       m
-      pthread
       fltk 
       fltk_gl 
       X11

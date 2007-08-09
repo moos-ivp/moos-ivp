@@ -15,7 +15,7 @@ SimulatedSurfaceObject::~SimulatedSurfaceObject()
 {
 	if(running) {
 		running = false;
-		pthread_join(thr, NULL);
+                thr.Stop();
 	}
 }
 
@@ -24,7 +24,7 @@ void SimulatedSurfaceObject::Run(void (*uf)(void *, SimulatedSurfaceObject *),
 {
 	up = uptr;
 	ufn = uf;
-	pthread_create(&thr, NULL, &trampoline, this);
+        thr.Initialise(&trampoline, this);
 }
 
 static inline double gethrtime() {

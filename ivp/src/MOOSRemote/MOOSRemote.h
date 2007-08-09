@@ -23,6 +23,7 @@
 #define __MOOSRemote_h__
 
 #include "MOOSLib.h"
+#include "MOOSThread.h"
 #include <curses.h>
 #include <string>
 #include <vector>
@@ -95,8 +96,11 @@ private:
   static bool OnConnectCallBack(void *);
   static bool OnDisconnectCallBack(void *);
   
-  pthread_t comms_thread;
-  static void *comms_main(void *);
+  CMOOSThread comms_thread;
+
+  // The return value is a 'bool' only to satisfy the signature requirements of
+  // CMOOSThread.
+  static bool comms_main(void *);
   
   // time stuff
   string isodate, isotime;

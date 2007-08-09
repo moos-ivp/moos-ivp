@@ -23,7 +23,7 @@
 #define __CDatagramCtl_h__
 
 #include <unistd.h>
-#include <pthread.h>
+#include <MOOSLock.h>
 #include <queue>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -73,10 +73,10 @@ class CDatagramCtl
 		bool is_open;
 		bool isEOF;
 
-		pthread_mutex_t rdM;
+		CMOOSLock rdM;
 		queue<datagram_t> rdBuf;
 
-		pthread_mutex_t wrM;
+		CMOOSLock wrM;
 		queue<datagram_t> wrBuf;
 
 	public:

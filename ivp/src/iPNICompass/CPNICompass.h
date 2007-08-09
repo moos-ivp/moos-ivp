@@ -23,6 +23,7 @@
 #define __CPNICompass_h__
 
 #include "CSerialPort.h"
+#include "MOOSThread.h"
 #include <string>
 
 using namespace std;
@@ -67,9 +68,9 @@ class CPNICompass
 		string dev;
 		int speed;
 
-		pthread_t thr;
+		CMOOSThread *thread;
 		bool running;
-		static void *CommThreadProc(void *);
+		static bool CommThreadProc(void *);
 
 		/* type */
 		int type;

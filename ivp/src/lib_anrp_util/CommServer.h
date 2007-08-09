@@ -2,7 +2,8 @@
 #define __CommServer_h__
 
 #include "CFDCtl.h"
-#include <pthread.h>
+#include <MOOSThread.h>
+#include <MOOSLock.h>
 #include <map>
 
 using namespace std;
@@ -18,11 +19,14 @@ public:
 	
 private:
 	
-	static void *ThreadTrampoline(void *p);
+        // The 'bool' return value is just to satisfy CMOOSThread's signature
+        // requirements.
+	static bool ThreadTrampoline(void *p);
+
 	void AsyncThread(void);
-	pthread_t thr;
+	CMOOSThread thr;
 	
-	pthread_mutex_t client_list;
+	CMOOSLock client_list;
 	map<int,CFDCtl *> clients;
 	int cp[2];
 

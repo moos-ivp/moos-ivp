@@ -7,6 +7,7 @@ ADD_EXECUTABLE(pACom ${SRC})
 TARGET_LINK_LIBRARIES(pACom
    MOOS
    MOOSGen
+   MOOSUtility
    m
    pthread
    )

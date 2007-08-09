@@ -3,8 +3,22 @@
 
 LIB_DIR  = .
 TARGET   = $(LIB_DIR)/$(LTARGET)
+
+MOOS_IFLAGS = \
+	-I ../../../MOOS/Essentials \
+	-I ../../../MOOS/Core \
+	-I ../../../MOOS/NavigationAndControl \
+	-I ../../../MOOS/Thirdparty/FLTKVW \
+	-I ../../../MOOS/Essentials/MOOSUtilityLib \
+	-I ../../../MOOS/Core/MOOSLIB \
+	-I ../../../MOOS/Core/MOOSGenLib \
+	-I ../../../MOOS/NavigationAndControl\MOOSNavLib \
+	-I ../../../MOOS/NavigationAndControl\MOOSTaskLib \
+	-I ../../../MOOS/Thirdparty/FLTKVW
+
 IFLAGS   = -I. -I.. -I/usr/X11R6/include -I/sw/include \
-	    $(LIFLAGS) $(patsubst %, -I% , $(wildcard ../lib*))
+	    $(LIFLAGS) $(patsubst %, -I% , $(wildcard ../lib*)) \
+	    $(MOOS_IFLAGS)
 
 CFLAGS   = $(DEBUG_LEVEL) -Wno-deprecated  $(FP) $(LCFLAGS)
 SOURCES  = $(wildcard *.cpp)
