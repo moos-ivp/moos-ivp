@@ -1,5 +1,2 @@
-PROJECT(IVP_LIB_IVPBUILD_EXTRA)
-
 FILE(GLOB SRC *.cpp)
-
-ADD_LIBRARY(ivpbuildx ${SRC})
+ADD_LIBRARY(ivpbuild-extra ${SRC})

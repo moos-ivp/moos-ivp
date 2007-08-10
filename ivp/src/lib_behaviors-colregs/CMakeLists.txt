@@ -1,5 +1,2 @@
-PROJECT(IVP_LIB_BEHAVIORS_COLREGS)
-
 FILE(GLOB SRC *.cpp)
-
 ADD_LIBRARY(behaviors-colregs ${SRC})

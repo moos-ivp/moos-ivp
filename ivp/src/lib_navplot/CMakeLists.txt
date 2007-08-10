@@ -1,5 +1,2 @@
-PROJECT(IVP_LIB_NAVPLOT)
-
 FILE(GLOB SRC *.cpp)
-
 ADD_LIBRARY(navplot ${SRC})

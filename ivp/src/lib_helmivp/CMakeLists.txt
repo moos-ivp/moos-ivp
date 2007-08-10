@@ -1,5 +1,2 @@
-PROJECT(IVP_LIB_HELMIVP)
-
 FILE(GLOB SRC *.cpp)
-
 ADD_LIBRARY(helmivp ${SRC})

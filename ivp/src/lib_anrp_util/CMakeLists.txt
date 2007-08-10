@@ -1,5 +1,2 @@
-PROJECT(IVP_LIB_ANRP_UTIL)
-
 FILE(GLOB SRC *.cpp)
-
 ADD_LIBRARY(anrp_util ${SRC})

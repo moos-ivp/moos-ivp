@@ -1,5 +1,2 @@
-PROJECT(IVP_LIB_MBUTIL)
-
 FILE(GLOB SRC *.cpp)
-
 ADD_LIBRARY(mbutil ${SRC})

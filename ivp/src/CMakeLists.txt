@@ -144,23 +144,46 @@ INCLUDE_DIRECTORIES(
    ${IVP_LIB_BASE_EXTRA_INCLUDE_DIRS}
    )
 
-FOREACH(D ${IVP_DIRS_TO_BUILD})
-  ADD_SUBDIRECTORY(${D})
-ENDFOREACH(D)
-
 # Make optional the building of programs that people often don't want to buid...
 OPTION(IVP_BUILD_MOOSREMOTE "Build the MOOSRemote program" OFF)
 IF(IVP_BUILD_MOOSREMOTE)
-  ADD_SUBDIRECTORY(MOOSRemote)
+  SET(IVP_DIRS_TO_BUILD MOOSRemote ${IVP_DIRS_TO_BUILD})
 ENDIF(IVP_BUILD_MOOSREMOTE)
 
 OPTION(IVP_BUILD_UVOICE "Build the uVoice program" OFF)
 IF(IVP_BUILD_UVOICE)
-  ADD_SUBDIRECTORY(uVoice)
+  SET(IVP_DIRS_TO_BUILD uVoice ${IVP_DIRS_TO_BUILD})
 ENDIF(IVP_BUILD_UVOICE)
 
 OPTION(IVP_BUILD_UFUNCTIONVIEWER "Build the uFunctionViewer program" OFF)
 IF(IVP_BUILD_UFUNCTIONVIEWER)
-  ADD_SUBDIRECTORY(uFunctionViewer)
+  SET(IVP_DIRS_TO_BUILD uFunctionViewer ${IVP_DIRS_TO_BUILD})
 ENDIF(IVP_BUILD_UFUNCTIONVIEWER)
 
+
+FOREACH(D ${IVP_DIRS_TO_BUILD})
+  ADD_SUBDIRECTORY(${D})
+ENDFOREACH(D)
+
+#===============================================================================
+# DEFINE INSTALLATION COMPONENTS...
+#===============================================================================
+
+SET(IVP_VERSION 0.1-1)
+
+# Define the installation components for the libraries...
+FOREACH(D ${IVP_DIRS_TO_BUILD})
+   GET_FILENAME_COMPONENT(SUBDIR_NAME ${D} NAME)
+
+   # Only deal with directories that start with lib_ ...
+   STRING(REGEX MATCH lib_* X ${D})
+   IF(NOT "${X}" STREQUAL "")
+      FILE(GLOB IVP_HEADER_FILES ${SUBDIR_NAME}/*.h)
+
+      INSTALL(
+         FILES ${IVP_HEADER_FILES}
+         DESTINATION include/ivp-${IVP_VERSION}/${SUBDIR_NAME}
+         COMPONENT IvP_Dev
+         )
+   ENDIF(NOT "${X}" STREQUAL "")
+ENDFOREACH(D)

@@ -1,5 +1,2 @@
-PROJECT(IVP_LIB_GEOMETRY)
-
 FILE(GLOB SRC *.cpp)
-
 ADD_LIBRARY(geometry ${SRC})
