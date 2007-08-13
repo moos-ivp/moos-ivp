@@ -1,12 +1,15 @@
-PROJECT(IVP_UFUNCTIONVIS)
-
 INCLUDE(FindFLTK)    # This is distributed with CMake.
-IF(FLTK_FOUND)
-   FILE(GLOB SRC *.cpp)
+
+OPTION(IVP_BUILD_uFunctionVis "Build program uFunctionVis" ON)
+
+IF("${IVP_BUILD_uFunctionVis}" STREQUAL "ON")
+   IF(${FLTK_FOUND})
+      FILE(GLOB SRC *.cpp)
    
-   ADD_EXECUTABLE(uFunctionVis ${SRC})
-   
-   TARGET_LINK_LIBRARIES(uFunctionVis
+      ADD_EXECUTABLE(uFunctionVis ${SRC})
+      
+      TARGET_LINK_LIBRARIES(uFunctionVis 
+         
       MOOS
       MOOSGen
       ipfview
@@ -16,17 +19,19 @@ IF(FLTK_FOUND)
       ivpbuild
       ivpcore
       m
-      fltk 
-      fltk_gl 
-      X11
-      GL
-      )
-ELSE(FLTK_FOUND)
-   MESSAGE(STATUS 
-      "Won't build uFunctionVis because can't find needed FLTK stuff.  "
-      "You can maybe fix this by setting the FLTK_DIR CMake variable "
-      "to a value of "/usr/lib", because CMake's FindFLTK implementation "
-      "is pretty stupid."
-      )
-ENDIF(FLTK_FOUND)
-
+   
+         # Standard libraries used by this project's FLTK apps...
+         fltk 
+         fltk_gl 
+         X11
+         GL
+         tiff      
+         )
+   ELSE(${FLTK_FOUND})
+      MESSAGE(STATUS
+         "Won't build uFunctionVis because can't find needed FLTK stuff.  "
+         "You can maybe fix this by setting the FLTK_DIR and FLTK_INCLUDE_DIR CMake variables "
+         "because CMake's FindFLTK implementation is pretty stupid."
+         )
+   ENDIF(${FLTK_FOUND})
+ENDIF("${IVP_BUILD_uFunctionVis}" STREQUAL "ON")

@@ -1,11 +1,12 @@
-PROJECT(IVP_IMICROMODEM)
-
 FILE(GLOB SRC *.cpp)
 
-ADD_EXECUTABLE(iMicroModem ${SRC})
+OPTION(IVP_BUILD_iMicroModem "Build program iMicroModem" ON)
 
-TARGET_LINK_LIBRARIES(iMicroModem
+IF("${IVP_BUILD_iMicroModem}" STREQUAL "ON")
+   ADD_EXECUTABLE(iMicroModem ${SRC})
+   
+   TARGET_LINK_LIBRARIES(iMicroModem 
    MOOS 
    MOOSGen
-   pthread
-   )
+   pthread)
+ENDIF("${IVP_BUILD_iMicroModem}" STREQUAL "ON")

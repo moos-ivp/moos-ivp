@@ -86,6 +86,7 @@ FILE(GLOB IVP_APP_BASE_SUBDIRS
    iMarineSim*    
    iPNICompass*   
    MOOSDump*   
+   MOOSRemote
 # CMake doesn't like double-listed subdirectories, and app_splug is picked up
 # by the glob that sets the IVP_APP_TOOLS_SUBDIRS variable.
 #    app_splug*     
@@ -106,6 +107,7 @@ FILE(GLOB IVP_LIB_TOOLS_SUBDIRS
    lib_ivpbuild-extra*
    lib_track*
    lib_ipfview*
+   uVoice
    )
 
 FILE(GLOB IVP_APP_TOOLS_SUBDIRS
@@ -123,6 +125,7 @@ FILE(GLOB IVP_APP_TOOLS_SUBDIRS
    pMineSim*
    pTarget*	        
    uFunctionVis*
+   uFunctionViewer
    iMicroModem*
    pBearings
 #    uPlayBack*       I don't see this file in the src directory. -CJC	        
@@ -143,22 +146,6 @@ INCLUDE_DIRECTORIES(
    ${IVP_LIB_TOOLS_SUBDIRS}
    ${IVP_LIB_BASE_EXTRA_INCLUDE_DIRS}
    )
-
-# Make optional the building of programs that people often don't want to buid...
-OPTION(IVP_BUILD_MOOSREMOTE "Build the MOOSRemote program" OFF)
-IF(IVP_BUILD_MOOSREMOTE)
-  SET(IVP_DIRS_TO_BUILD MOOSRemote ${IVP_DIRS_TO_BUILD})
-ENDIF(IVP_BUILD_MOOSREMOTE)
-
-OPTION(IVP_BUILD_UVOICE "Build the uVoice program" OFF)
-IF(IVP_BUILD_UVOICE)
-  SET(IVP_DIRS_TO_BUILD uVoice ${IVP_DIRS_TO_BUILD})
-ENDIF(IVP_BUILD_UVOICE)
-
-OPTION(IVP_BUILD_UFUNCTIONVIEWER "Build the uFunctionViewer program" OFF)
-IF(IVP_BUILD_UFUNCTIONVIEWER)
-  SET(IVP_DIRS_TO_BUILD uFunctionViewer ${IVP_DIRS_TO_BUILD})
-ENDIF(IVP_BUILD_UFUNCTIONVIEWER)
 
 
 FOREACH(D ${IVP_DIRS_TO_BUILD})

@@ -1,7 +1,11 @@
 FILE(GLOB SRC *.cpp)
 
-ADD_EXECUTABLE(splug ${SRC})
+OPTION(IVP_BUILD_splug "Build program splug" ON)
 
-TARGET_LINK_LIBRARIES(splug 
+IF("${IVP_BUILD_splug}" STREQUAL "ON")
+   ADD_EXECUTABLE(splug ${SRC})
+   
+   TARGET_LINK_LIBRARIES(splug 
    mbutil
    m)
+ENDIF("${IVP_BUILD_splug}" STREQUAL "ON")

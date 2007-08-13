@@ -1,9 +1,13 @@
 FILE(GLOB SRC *.cpp)
 
-ADD_EXECUTABLE(peval ${SRC})
+OPTION(IVP_BUILD_peval "Build program peval" ON)
 
-TARGET_LINK_LIBRARIES(peval 
+IF("${IVP_BUILD_peval}" STREQUAL "ON")
+   ADD_EXECUTABLE(peval ${SRC})
+   
+   TARGET_LINK_LIBRARIES(peval 
    navplot
    mbutil
    geometry
    m)
+ENDIF("${IVP_BUILD_peval}" STREQUAL "ON")

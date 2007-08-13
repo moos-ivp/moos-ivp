@@ -1,14 +1,15 @@
-PROJECT(IVP_PLOITERCONTROL)
-
 FILE(GLOB SRC *.cpp)
 
-ADD_EXECUTABLE(pLoiterControl ${SRC})
+OPTION(IVP_BUILD_pLoiterControl "Build program pLoiterControl" ON)
 
-TARGET_LINK_LIBRARIES(pLoiterControl
+IF("${IVP_BUILD_pLoiterControl}" STREQUAL "ON")
+   ADD_EXECUTABLE(pLoiterControl ${SRC})
+   
+   TARGET_LINK_LIBRARIES(pLoiterControl 
    MOOS
    MOOSGen
    mbutil
    geometry
    m
-   pthread
-   )
+   pthread)
+ENDIF("${IVP_BUILD_pLoiterControl}" STREQUAL "ON")

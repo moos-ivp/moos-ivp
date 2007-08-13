@@ -1,14 +1,15 @@
-PROJECT(IVP_UXMS)
-
 FILE(GLOB SRC *.cpp)
 
-ADD_EXECUTABLE(uXMS ${SRC})
+OPTION(IVP_BUILD_uXMS "Build program uXMS" ON)
 
-TARGET_LINK_LIBRARIES(uXMS
+IF("${IVP_BUILD_uXMS}" STREQUAL "ON")
+   ADD_EXECUTABLE(uXMS ${SRC})
+   
+   TARGET_LINK_LIBRARIES(uXMS 
    MOOS
    MOOSGen
    genutil
    mbutil
    m
-   pthread
-   )
+   pthread)
+ENDIF("${IVP_BUILD_uXMS}" STREQUAL "ON")

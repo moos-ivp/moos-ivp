@@ -1,12 +1,13 @@
-PROJECT(IVP_IWIFI)
-
 FILE(GLOB SRC *.cpp)
 
-ADD_EXECUTABLE(iWifi ${SRC})
+OPTION(IVP_BUILD_iWifi "Build program iWifi" ON)
 
-TARGET_LINK_LIBRARIES(iWifi
+IF("${IVP_BUILD_iWifi}" STREQUAL "ON")
+   ADD_EXECUTABLE(iWifi ${SRC})
+   
+   TARGET_LINK_LIBRARIES(iWifi 
    MOOS
    MOOSGen
    m
-   pthread
-   )
+   pthread)
+ENDIF("${IVP_BUILD_iWifi}" STREQUAL "ON")

@@ -1,7 +1,11 @@
 FILE(GLOB SRC *.cpp)
 
-ADD_EXECUTABLE(logclip ${SRC})
+OPTION(IVP_BUILD_logclip "Build program logclip" ON)
 
-TARGET_LINK_LIBRARIES(logclip 
+IF("${IVP_BUILD_logclip}" STREQUAL "ON")
+   ADD_EXECUTABLE(logclip ${SRC})
+   
+   TARGET_LINK_LIBRARIES(logclip 
    mbutil
    m)
+ENDIF("${IVP_BUILD_logclip}" STREQUAL "ON")

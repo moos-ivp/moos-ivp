@@ -1,5 +1,9 @@
 FILE(GLOB SRC *.cpp)
 
-ADD_EXECUTABLE(artfieldgenerator ${SRC})
+OPTION(IVP_BUILD_artfieldgenerator "Build program artfieldgenerator" ON)
 
-TARGET_LINK_LIBRARIES(artfieldgenerator MOOS MOOSGen mbutil)
+IF("${IVP_BUILD_artfieldgenerator}" STREQUAL "ON")
+   ADD_EXECUTABLE(artfieldgenerator ${SRC})
+   
+   TARGET_LINK_LIBRARIES(artfieldgenerator MOOS MOOSGen mbutil)
+ENDIF("${IVP_BUILD_artfieldgenerator}" STREQUAL "ON")

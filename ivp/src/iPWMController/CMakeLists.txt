@@ -1,13 +1,14 @@
-PROJECT(IVP_IPWMCONTROLLER)
-
 FILE(GLOB SRC *.cpp)
 
-ADD_EXECUTABLE(iPWMController ${SRC})
+OPTION(IVP_BUILD_iPWMController "Build program iPWMController" ON)
 
-TARGET_LINK_LIBRARIES(iPWMController
+IF("${IVP_BUILD_iPWMController}" STREQUAL "ON")
+   ADD_EXECUTABLE(iPWMController ${SRC})
+   
+   TARGET_LINK_LIBRARIES(iPWMController 
    MOOS
    MOOSGen
    anrp_util
    m
-   pthread
-   )
+   pthread)
+ENDIF("${IVP_BUILD_iPWMController}" STREQUAL "ON")

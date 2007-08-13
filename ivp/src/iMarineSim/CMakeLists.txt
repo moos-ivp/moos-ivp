@@ -1,14 +1,15 @@
-PROJECT(IVP_IMARINESIM)
-
 FILE(GLOB SRC *.cpp)
 
-ADD_EXECUTABLE(iMarineSim ${SRC})
+OPTION(IVP_BUILD_iMarineSim "Build program iMarineSim" ON)
 
-TARGET_LINK_LIBRARIES(iMarineSim
+IF("${IVP_BUILD_iMarineSim}" STREQUAL "ON")
+   ADD_EXECUTABLE(iMarineSim ${SRC})
+   
+   TARGET_LINK_LIBRARIES(iMarineSim 
    MOOS
    MOOSGen
    mbutil
    geometry
    m
-   pthread
-   )
+   pthread)
+ENDIF("${IVP_BUILD_iMarineSim}" STREQUAL "ON")

@@ -1,13 +1,14 @@
-PROJECT(IVP_P1BTRACKER)
-
 FILE(GLOB SRC *.cpp)
 
-ADD_EXECUTABLE(p1BTracker ${SRC})
+OPTION(IVP_BUILD_p1BTracker "Build program p1BTracker" ON)
 
-TARGET_LINK_LIBRARIES(p1BTracker
+IF("${IVP_BUILD_p1BTracker}" STREQUAL "ON")
+   ADD_EXECUTABLE(p1BTracker ${SRC})
+   
+   TARGET_LINK_LIBRARIES(p1BTracker 
    MOOS
    MOOSGen
    opt
    m
-   pthread
-   )
+   pthread)
+ENDIF("${IVP_BUILD_p1BTracker}" STREQUAL "ON")

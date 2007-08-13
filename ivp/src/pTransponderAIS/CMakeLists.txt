@@ -1,13 +1,14 @@
-PROJECT(IVP_PTRANSPONDERAIS)
-
 FILE(GLOB SRC *.cpp)
 
-ADD_EXECUTABLE(pTransponderAIS ${SRC})
+OPTION(IVP_BUILD_pTransponderAIS "Build program pTransponderAIS" ON)
 
-TARGET_LINK_LIBRARIES(pTransponderAIS
+IF("${IVP_BUILD_pTransponderAIS}" STREQUAL "ON")
+   ADD_EXECUTABLE(pTransponderAIS ${SRC})
+   
+   TARGET_LINK_LIBRARIES(pTransponderAIS 
    MOOS
    MOOSGen
    mbutil
    m
-   pthread
-   )
+   pthread)
+ENDIF("${IVP_BUILD_pTransponderAIS}" STREQUAL "ON")

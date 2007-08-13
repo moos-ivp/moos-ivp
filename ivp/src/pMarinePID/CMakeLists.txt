@@ -1,14 +1,15 @@
-PROJECT(IVP_PMARINEPID)
-
 FILE(GLOB SRC *.cpp)
 
-ADD_EXECUTABLE(pMarinePID ${SRC})
+OPTION(IVP_BUILD_pMarinePID "Build program pMarinePID" ON)
 
-TARGET_LINK_LIBRARIES(pMarinePID
+IF("${IVP_BUILD_pMarinePID}" STREQUAL "ON")
+   ADD_EXECUTABLE(pMarinePID ${SRC})
+   
+   TARGET_LINK_LIBRARIES(pMarinePID 
    MOOS
    MOOSGen
    mbutil
    geometry
    m
-   pthread
-   )
+   pthread)
+ENDIF("${IVP_BUILD_pMarinePID}" STREQUAL "ON")

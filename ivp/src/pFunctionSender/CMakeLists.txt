@@ -1,15 +1,16 @@
-PROJECT(IVP_PFUNCTIONSENDER)
-
 FILE(GLOB SRC *.cpp)
 
-ADD_EXECUTABLE(pFunctionSender ${SRC})
+OPTION(IVP_BUILD_pFunctionSender "Build program pFunctionSender" ON)
 
-TARGET_LINK_LIBRARIES(pFunctionSender
+IF("${IVP_BUILD_pFunctionSender}" STREQUAL "ON")
+   ADD_EXECUTABLE(pFunctionSender ${SRC})
+   
+   TARGET_LINK_LIBRARIES(pFunctionSender 
    MOOS
    MOOSGen
    ivpbuild
    mbutil
    ivpcore
    m
-   pthread
-   )
+   pthread)
+ENDIF("${IVP_BUILD_pFunctionSender}" STREQUAL "ON")

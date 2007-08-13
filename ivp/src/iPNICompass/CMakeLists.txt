@@ -1,14 +1,15 @@
-PROJECT(IVP_IPNICOMPASS)
-
 FILE(GLOB SRC *.cpp)
 
-ADD_EXECUTABLE(iPNICompass ${SRC})
+OPTION(IVP_BUILD_iPNICompass "Build program iPNICompass" ON)
 
-TARGET_LINK_LIBRARIES(iPNICompass
+IF("${IVP_BUILD_iPNICompass}" STREQUAL "ON")
+   ADD_EXECUTABLE(iPNICompass ${SRC})
+   
+   TARGET_LINK_LIBRARIES(iPNICompass 
    MOOS
    MOOSGen
    MOOSUtility
    anrp_util
    m
-   pthread
-   )
+   pthread)
+ENDIF("${IVP_BUILD_iPNICompass}" STREQUAL "ON")

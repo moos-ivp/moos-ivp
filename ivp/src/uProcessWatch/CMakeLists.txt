@@ -1,13 +1,14 @@
-PROJECT(IVP_UPROCESSWATCH)
-
 FILE(GLOB SRC *.cpp)
 
-ADD_EXECUTABLE(uProcessWatch ${SRC})
+OPTION(IVP_BUILD_uProcessWatch "Build program uProcessWatch" ON)
 
-TARGET_LINK_LIBRARIES(uProcessWatch
+IF("${IVP_BUILD_uProcessWatch}" STREQUAL "ON")
+   ADD_EXECUTABLE(uProcessWatch ${SRC})
+   
+   TARGET_LINK_LIBRARIES(uProcessWatch 
    MOOS
    MOOSGen
    mbutil
    m
-   pthread
-   )
+   pthread)
+ENDIF("${IVP_BUILD_uProcessWatch}" STREQUAL "ON")

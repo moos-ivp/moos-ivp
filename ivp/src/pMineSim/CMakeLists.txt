@@ -1,14 +1,15 @@
-PROJECT(IVP_PMINESIM)
-
 FILE(GLOB SRC *.cpp)
 
-ADD_EXECUTABLE(pMineSim ${SRC})
+OPTION(IVP_BUILD_pMineSim "Build program pMineSim" ON)
 
-TARGET_LINK_LIBRARIES(pMineSim
+IF("${IVP_BUILD_pMineSim}" STREQUAL "ON")
+   ADD_EXECUTABLE(pMineSim ${SRC})
+   
+   TARGET_LINK_LIBRARIES(pMineSim 
    MOOS
    MOOSGen
    geometry
    mbutil
    m
-   pthread
-   )
+   pthread)
+ENDIF("${IVP_BUILD_pMineSim}" STREQUAL "ON")

@@ -1,26 +1,15 @@
 INCLUDE(FindFLTK)    # This is distributed with CMake.
 
-OPTION(IVP_BUILD_fview "Build program fview" ON)
+OPTION(IVP_BUILD_@PROGNAME@ "Build program @PROGNAME@" @IVP_BUILD_BY_DEFAULT@)
 
-IF("${IVP_BUILD_fview}" STREQUAL "ON")
+IF("${IVP_BUILD_@PROGNAME@}" STREQUAL "ON")
    IF(${FLTK_FOUND})
       FILE(GLOB SRC *.cpp)
    
-      ADD_EXECUTABLE(fview ${SRC})
+      ADD_EXECUTABLE(@PROGNAME@ ${SRC})
       
-      TARGET_LINK_LIBRARIES(fview 
-         
-      behaviors-don
-      behaviors-sandbox
-      behaviors-marine
-      bhvutil
-      ipfview
-      behaviors
-      geometry
-      ivpbuild
-      ivpcore
-      m
-      mbutil
+      TARGET_LINK_LIBRARIES(@PROGNAME@ 
+         @LINK_LIBS@
    
          # Standard libraries used by this project's FLTK apps...
          fltk 
@@ -31,9 +20,9 @@ IF("${IVP_BUILD_fview}" STREQUAL "ON")
          )
    ELSE(${FLTK_FOUND})
       MESSAGE(STATUS
-         "Won't build fview because can't find needed FLTK stuff.  "
+         "Won't build @PROGNAME@ because can't find needed FLTK stuff.  "
          "You can maybe fix this by setting the FLTK_DIR and FLTK_INCLUDE_DIR CMake variables "
          "because CMake's FindFLTK implementation is pretty stupid."
          )
    ENDIF(${FLTK_FOUND})
-ENDIF("${IVP_BUILD_fview}" STREQUAL "ON")
+ENDIF("${IVP_BUILD_@PROGNAME@}" STREQUAL "ON")

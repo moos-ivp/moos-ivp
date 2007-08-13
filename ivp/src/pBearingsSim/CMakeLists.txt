@@ -1,13 +1,14 @@
-PROJECT(IVP_PBEARINGSSIM)
-
 FILE(GLOB SRC *.cpp)
 
-ADD_EXECUTABLE(pBearingsSim ${SRC})
+OPTION(IVP_BUILD_pBearingsSim "Build program pBearingsSim" ON)
 
-TARGET_LINK_LIBRARIES(pBearingsSim
+IF("${IVP_BUILD_pBearingsSim}" STREQUAL "ON")
+   ADD_EXECUTABLE(pBearingsSim ${SRC})
+   
+   TARGET_LINK_LIBRARIES(pBearingsSim 
    MOOS
    MOOSGen
    opt
    m
-   pthread
-   )
+   pthread)
+ENDIF("${IVP_BUILD_pBearingsSim}" STREQUAL "ON")

@@ -1,12 +1,13 @@
-PROJECT(IVP_PEXTTRACKER)
-
 FILE(GLOB SRC *.cpp)
 
-ADD_EXECUTABLE(pExtTracker ${SRC})
+OPTION(IVP_BUILD_pExtTracker "Build program pExtTracker" ON)
 
-TARGET_LINK_LIBRARIES(pExtTracker
+IF("${IVP_BUILD_pExtTracker}" STREQUAL "ON")
+   ADD_EXECUTABLE(pExtTracker ${SRC})
+   
+   TARGET_LINK_LIBRARIES(pExtTracker 
    MOOS
    MOOSGen
    m
-   pthread
-   )
+   pthread)
+ENDIF("${IVP_BUILD_pExtTracker}" STREQUAL "ON")

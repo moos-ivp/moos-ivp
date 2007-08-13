@@ -1,13 +1,14 @@
-PROJECT(IVP_PACOM)
-
 FILE(GLOB SRC *.cpp)
 
-ADD_EXECUTABLE(pACom ${SRC})
+OPTION(IVP_BUILD_pACom "Build program pACom" ON)
 
-TARGET_LINK_LIBRARIES(pACom
+IF("${IVP_BUILD_pACom}" STREQUAL "ON")
+   ADD_EXECUTABLE(pACom ${SRC})
+   
+   TARGET_LINK_LIBRARIES(pACom 
    MOOS
    MOOSGen
    MOOSUtility
    m
-   pthread
-   )
+   pthread)
+ENDIF("${IVP_BUILD_pACom}" STREQUAL "ON")

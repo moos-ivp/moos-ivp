@@ -1,14 +1,15 @@
-PROJECT(IVP_UTMS)
-
 FILE(GLOB SRC *.cpp)
 
-ADD_EXECUTABLE(uTMS ${SRC})
+OPTION(IVP_BUILD_uTMS "Build program uTMS" ON)
 
-TARGET_LINK_LIBRARIES(uTMS
+IF("${IVP_BUILD_uTMS}" STREQUAL "ON")
+   ADD_EXECUTABLE(uTMS ${SRC})
+   
+   TARGET_LINK_LIBRARIES(uTMS 
    MOOS
    MOOSGen
    genutil
    mbutil
    m
-   pthread
-   )
+   pthread)
+ENDIF("${IVP_BUILD_uTMS}" STREQUAL "ON")

@@ -1,10 +1,11 @@
-PROJECT(IVP_PHELMIVP)
-
 FILE(GLOB SRC *.cpp)
 
-ADD_EXECUTABLE(pHelmIvP ${SRC})
+OPTION(IVP_BUILD_pHelmIvP "Build program pHelmIvP" ON)
 
-TARGET_LINK_LIBRARIES(pHelmIvP
+IF("${IVP_BUILD_pHelmIvP}" STREQUAL "ON")
+   ADD_EXECUTABLE(pHelmIvP ${SRC})
+   
+   TARGET_LINK_LIBRARIES(pHelmIvP 
    MOOS
    MOOSGen
    helmivp
@@ -18,5 +19,5 @@ TARGET_LINK_LIBRARIES(pHelmIvP
    geometry
    logic
    m
-   pthread
-   )
+   pthread)
+ENDIF("${IVP_BUILD_pHelmIvP}" STREQUAL "ON")

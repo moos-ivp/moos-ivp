@@ -1,13 +1,14 @@
-PROJECT(IVP_P2BTRACKER)
-
 FILE(GLOB SRC *.cpp)
 
-ADD_EXECUTABLE(p2BTracker ${SRC})
+OPTION(IVP_BUILD_p2BTracker "Build program p2BTracker" ON)
 
-TARGET_LINK_LIBRARIES(p2BTracker
+IF("${IVP_BUILD_p2BTracker}" STREQUAL "ON")
+   ADD_EXECUTABLE(p2BTracker ${SRC})
+   
+   TARGET_LINK_LIBRARIES(p2BTracker 
    MOOS
    MOOSGen
    opt
    m
-   pthread
-   )
+   pthread)
+ENDIF("${IVP_BUILD_p2BTracker}" STREQUAL "ON")

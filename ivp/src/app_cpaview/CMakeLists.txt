@@ -1,12 +1,15 @@
 INCLUDE(FindFLTK)    # This is distributed with CMake.
 
-IF(FLTK_FOUND)
-   FILE(GLOB SRC *.cpp)
+OPTION(IVP_BUILD_cpaview "Build program cpaview" ON)
 
-   ADD_EXECUTABLE(cpaview ${SRC})
+IF("${IVP_BUILD_cpaview}" STREQUAL "ON")
+   IF(${FLTK_FOUND})
+      FILE(GLOB SRC *.cpp)
    
-   TARGET_LINK_LIBRARIES(cpaview 
+      ADD_EXECUTABLE(cpaview ${SRC})
       
+      TARGET_LINK_LIBRARIES(cpaview 
+         
       marineview
       ipfview
       geometry
@@ -14,18 +17,19 @@ IF(FLTK_FOUND)
       mbutil
       ivpcore
       m
-
-      # Standard libraries used by this project's FLTK apps...
-      fltk 
-      fltk_gl 
-      X11
-      GL
-      tiff      
-      )
-ELSE(FLTK_FOUND)
-   MESSAGE(STATUS
-      "Won't build cpaview because can't find needed FLTK stuff.  "
-      "You can maybe fix this by setting the FLTK_DIR and FLTK_INCLUDE_DIR CMake variables "
-      "because CMake's FindFLTK implementation is pretty stupid."
-      )
-ENDIF(FLTK_FOUND)
+   
+         # Standard libraries used by this project's FLTK apps...
+         fltk 
+         fltk_gl 
+         X11
+         GL
+         tiff      
+         )
+   ELSE(${FLTK_FOUND})
+      MESSAGE(STATUS
+         "Won't build cpaview because can't find needed FLTK stuff.  "
+         "You can maybe fix this by setting the FLTK_DIR and FLTK_INCLUDE_DIR CMake variables "
+         "because CMake's FindFLTK implementation is pretty stupid."
+         )
+   ENDIF(${FLTK_FOUND})
+ENDIF("${IVP_BUILD_cpaview}" STREQUAL "ON")

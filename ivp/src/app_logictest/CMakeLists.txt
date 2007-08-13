@@ -1,8 +1,12 @@
 FILE(GLOB SRC *.cpp)
 
-ADD_EXECUTABLE(ltest ${SRC})
+OPTION(IVP_BUILD_ltest "Build program ltest" ON)
 
-TARGET_LINK_LIBRARIES(ltest 
+IF("${IVP_BUILD_ltest}" STREQUAL "ON")
+   ADD_EXECUTABLE(ltest ${SRC})
+   
+   TARGET_LINK_LIBRARIES(ltest 
    logic
    mbutil
    m)
+ENDIF("${IVP_BUILD_ltest}" STREQUAL "ON")

@@ -1,13 +1,14 @@
-PROJECT(IVP_IMETACOMPASS)
-
 FILE(GLOB SRC *.cpp)
 
-ADD_EXECUTABLE(iMetaCompass ${SRC})
+OPTION(IVP_BUILD_iMetaCompass "Build program iMetaCompass" ON)
 
-TARGET_LINK_LIBRARIES(iMetaCompass
+IF("${IVP_BUILD_iMetaCompass}" STREQUAL "ON")
+   ADD_EXECUTABLE(iMetaCompass ${SRC})
+   
+   TARGET_LINK_LIBRARIES(iMetaCompass 
    MOOS
    MOOSGen
    mbutil
    m
-   pthread
-   )
+   pthread)
+ENDIF("${IVP_BUILD_iMetaCompass}" STREQUAL "ON")

@@ -1,13 +1,14 @@
-PROJECT(IVP_IHEADINGMONITOR)
-
 FILE(GLOB SRC *.cpp)
 
-ADD_EXECUTABLE(iHeadingMonitor ${SRC})
+OPTION(IVP_BUILD_iHeadingMonitor "Build program iHeadingMonitor" ON)
 
-TARGET_LINK_LIBRARIES(iHeadingMonitor
+IF("${IVP_BUILD_iHeadingMonitor}" STREQUAL "ON")
+   ADD_EXECUTABLE(iHeadingMonitor ${SRC})
+   
+   TARGET_LINK_LIBRARIES(iHeadingMonitor 
    MOOS
    MOOSGen
    mbutil
    m
-   pthread
-   )
+   pthread)
+ENDIF("${IVP_BUILD_iHeadingMonitor}" STREQUAL "ON")
