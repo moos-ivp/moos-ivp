@@ -1,13 +1,5 @@
-PROJECT(IVP_ARTFIELD_GENERATOR)
-
-SET(SRC
-   artfieldgeneratorMain.cpp
-   )
+FILE(GLOB SRC *.cpp)
 
 ADD_EXECUTABLE(artfieldgenerator ${SRC})
 
-TARGET_LINK_LIBRARIES(artfieldgenerator 
-   MOOS 
-   MOOSGen
-   mbutil
-   )
+TARGET_LINK_LIBRARIES(artfieldgenerator MOOS MOOSGen mbutil)

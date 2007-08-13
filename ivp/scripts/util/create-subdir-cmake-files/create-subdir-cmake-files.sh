@@ -35,15 +35,6 @@ parse_and_validate_cmd_line() {
    fi
    
    SRC_DIR=${1}
-}
-
-#===============================================================================
-
-simple_lib_cmake_file() {
-   if [ ! -d ${SRC_DIR}/${SUBDIR:?} ]; then
-      echo "Something is wrong.  Directory ${SRC_DIR}/${SUBDIR:?} doesn't exist."
-      exit 1
-   fi
 
    if [ ! -f ${SCRIPT_DIR}/simple-lib-template.txt ]; then
       echo "I should be able to find the file ./simple-lib-template.txt, "
@@ -53,16 +44,13 @@ simple_lib_cmake_file() {
       exit 1
    fi
 
-   OUTPUT_FILE=${SRC_DIR}/${SUBDIR:?}/CMakeLists.txt
-
-   echo "About to create file:" ${OUTPUT_FILE}
-
-   cmake \
-      -DINPUT_FILE=${SCRIPT_DIR}/simple-lib-template.txt     \
-      -DOUTPUT_FILE=${OUTPUT_FILE} \
-      -DLIBNAME=${LIBNAME} \
-      -DCMAKE_BACKWARDS_COMPATIBILITY:STRING=2.4            \
-      -P ${SCRIPT_DIR}/customize-template-file.cmake 
+   if [ ! -f ${SCRIPT_DIR}/simple-app-template.txt ]; then
+      echo "I should be able to find the file ./simple-app-template.txt, "
+      echo "but I can't."
+      echo ""
+      echo "You're supposed to run this script from it's own directory."
+      exit 1
+   fi
 }
 
 #===============================================================================
@@ -95,36 +83,123 @@ lib_with_compile_flags_cmake_file() {
 }
 
 #===============================================================================
+
+simple_lib_cmake_file() {
+   if [ ! -d ${SRC_DIR}/${SUBDIR:?} ]; then
+      echo "Something is wrong.  Directory ${SRC_DIR}/${SUBDIR:?} doesn't exist."
+      exit 1
+   fi
+
+   OUTPUT_FILE=${SRC_DIR}/${SUBDIR:?}/CMakeLists.txt
+
+   echo "About to create file:" ${OUTPUT_FILE}
+
+   cmake \
+      -DINPUT_FILE=${SCRIPT_DIR}/simple-lib-template.txt     \
+      -DOUTPUT_FILE=${OUTPUT_FILE} \
+      -DLIBNAME=${LIBNAME} \
+      -DCMAKE_BACKWARDS_COMPATIBILITY:STRING=2.4            \
+      -P ${SCRIPT_DIR}/customize-template-file.cmake 
+}
+
+#===============================================================================
+
+simple_app_cmake_file() {
+   if [ ! -d ${SRC_DIR}/${SUBDIR:?} ]; then
+      echo "Something is wrong.  Directory ${SRC_DIR}/${SUBDIR:?} doesn't exist."
+      exit 1
+   fi
+
+   OUTPUT_FILE=${SRC_DIR}/${SUBDIR:?}/CMakeLists.txt
+
+   echo "About to create file:" ${OUTPUT_FILE}
+
+   cmake \
+      -DINPUT_FILE=${SCRIPT_DIR}/simple-app-template.txt     \
+      -DOUTPUT_FILE=${OUTPUT_FILE} \
+      -DPROGNAME=${PROGNAME:?} \
+      -DLINK_LIBS="${LINK_LIBS:?}" \
+      -DCMAKE_BACKWARDS_COMPATIBILITY:STRING=2.4            \
+      -P ${SCRIPT_DIR}/customize-template-file.cmake 
+}
+
+#===============================================================================
+
+fltk_app_cmake_file() {
+   if [ ! -d ${SRC_DIR}/${SUBDIR:?} ]; then
+      echo "Something is wrong.  Directory ${SRC_DIR}/${SUBDIR:?} doesn't exist."
+      exit 1
+   fi
+
+   OUTPUT_FILE=${SRC_DIR}/${SUBDIR:?}/CMakeLists.txt
+
+   echo "About to create file:" ${OUTPUT_FILE}
+
+   cmake \
+      -DINPUT_FILE=${SCRIPT_DIR}/fltk-app-template.txt     \
+      -DOUTPUT_FILE=${OUTPUT_FILE} \
+      -DPROGNAME=${PROGNAME:?} \
+      -DLINK_LIBS="${LINK_LIBS:?}" \
+      -DCMAKE_BACKWARDS_COMPATIBILITY:STRING=2.4            \
+      -P ${SCRIPT_DIR}/customize-template-file.cmake 
+}
+
+#===============================================================================
 # Main code...
 #===============================================================================
 
 parse_and_validate_cmd_line $*
 
-# SUBDIR=lib_anrp_util         LIBNAME=anrp_util         simple_lib_cmake_file
-# SUBDIR=lib_artifacts         LIBNAME=artifacts         simple_lib_cmake_file
-# SUBDIR=lib_behaviors         LIBNAME=behaviors         simple_lib_cmake_file
-# SUBDIR=lib_behaviors-attic   LIBNAME=behaviors-attic   simple_lib_cmake_file
-# SUBDIR=lib_behaviors-colregs LIBNAME=behaviors-colregs simple_lib_cmake_file
-# SUBDIR=lib_behaviors-don     LIBNAME=behaviors-don     simple_lib_cmake_file
-# SUBDIR=lib_behaviors-marine  LIBNAME=behaviors-marine  simple_lib_cmake_file
-# SUBDIR=lib_behaviors-oxford  LIBNAME=behaviors-oxford  simple_lib_cmake_file
-# SUBDIR=lib_behaviors-sandbox LIBNAME=behaviors-sandbox simple_lib_cmake_file
-# SUBDIR=lib_bhvutil           LIBNAME=bhvutil           simple_lib_cmake_file
-# SUBDIR=lib_genutil           LIBNAME=genutil           simple_lib_cmake_file
-# SUBDIR=lib_geometry          LIBNAME=geometry          simple_lib_cmake_file
-# SUBDIR=lib_helmivp           LIBNAME=helmivp           simple_lib_cmake_file
-# SUBDIR=lib_ipfview           LIBNAME=ipfview           simple_lib_cmake_file
-# SUBDIR=lib_ivpbuild          LIBNAME=ivpbuild          simple_lib_cmake_file
-# SUBDIR=lib_ivpbuild-extra    LIBNAME=ivpbuild-extra    simple_lib_cmake_file
-# SUBDIR=lib_ivpcore           LIBNAME=ivpcore           simple_lib_cmake_file
-# SUBDIR=lib_logic             LIBNAME=logic             simple_lib_cmake_file
-# SUBDIR=lib_mbutil            LIBNAME=mbutil            simple_lib_cmake_file
-# SUBDIR=lib_mbutiltest        LIBNAME=mbutiltest        simple_lib_cmake_file
-# SUBDIR=lib_navplot           LIBNAME=navplot           simple_lib_cmake_file
-# SUBDIR=lib_track             LIBNAME=opt               simple_lib_cmake_file
-
+SUBDIR=lib_anrp_util         LIBNAME=anrp_util         simple_lib_cmake_file
+SUBDIR=lib_artifacts         LIBNAME=artifacts         simple_lib_cmake_file
+SUBDIR=lib_behaviors         LIBNAME=behaviors         simple_lib_cmake_file
+SUBDIR=lib_behaviors-attic   LIBNAME=behaviors-attic   simple_lib_cmake_file
+SUBDIR=lib_behaviors-colregs LIBNAME=behaviors-colregs simple_lib_cmake_file
+SUBDIR=lib_behaviors-don     LIBNAME=behaviors-don     simple_lib_cmake_file
+SUBDIR=lib_behaviors-marine  LIBNAME=behaviors-marine  simple_lib_cmake_file
+SUBDIR=lib_behaviors-oxford  LIBNAME=behaviors-oxford  simple_lib_cmake_file
+SUBDIR=lib_behaviors-sandbox LIBNAME=behaviors-sandbox simple_lib_cmake_file
+SUBDIR=lib_bhvutil           LIBNAME=bhvutil           simple_lib_cmake_file
+SUBDIR=lib_genutil           LIBNAME=genutil           simple_lib_cmake_file
+SUBDIR=lib_geometry          LIBNAME=geometry          simple_lib_cmake_file
+SUBDIR=lib_helmivp           LIBNAME=helmivp           simple_lib_cmake_file
+SUBDIR=lib_ipfview           LIBNAME=ipfview           simple_lib_cmake_file
+SUBDIR=lib_ivpbuild          LIBNAME=ivpbuild          simple_lib_cmake_file
+SUBDIR=lib_ivpbuild-extra    LIBNAME=ivpbuild-extra    simple_lib_cmake_file
+SUBDIR=lib_ivpcore           LIBNAME=ivpcore           simple_lib_cmake_file
+SUBDIR=lib_logic             LIBNAME=logic             simple_lib_cmake_file
+SUBDIR=lib_mbutil            LIBNAME=mbutil            simple_lib_cmake_file
+SUBDIR=lib_mbutiltest        LIBNAME=mbutiltest        simple_lib_cmake_file
+SUBDIR=lib_navplot           LIBNAME=navplot           simple_lib_cmake_file
+SUBDIR=lib_track             LIBNAME=opt               simple_lib_cmake_file
 
 IVP_DATA_DIR="${SRC_DIR}/../data/" \
 SUBDIR=lib_marineview \
 LIBNAME=marineview \
 lib_with_compile_flags_cmake_file
+
+SUBDIR=app_artfieldgenerator \
+PROGNAME=artfieldgenerator \
+LINK_LIBS="MOOS MOOSGen mbutil" \
+simple_app_cmake_file
+
+SUBDIR=app_cpaview \
+PROGNAME=cpaview \
+LINK_LIBS="
+      marineview
+      ipfview
+      geometry
+      ivpbuild
+      mbutil
+      ivpcore
+      m
+      fltk
+      fltk_gl
+      X11
+      GL
+      tiff" \
+fltk_app_cmake_file
+
+
+
+

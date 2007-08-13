@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include <complex.h>
+#include <complex>
 
 // check whether vectors are defined
 #ifdef VEC_H
