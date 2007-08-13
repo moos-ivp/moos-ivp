@@ -25,6 +25,7 @@ cd ../ivp
 cmake                              \
    -DFLTK_DIR=/usr/lib             \
    -DFLTK_INCLUDE_DIR=/usr/include \
+   -DPYTHON_INCLUDE_PATH=/usr/include/python2.5 \
    -DIVP_BUILD_MOOSREMOTE=ON       \
    -DIVP_BUILD_UVOICE=ON           \
    -DIVP_BUILD_UFUNCTIONVIEWER=ON  \

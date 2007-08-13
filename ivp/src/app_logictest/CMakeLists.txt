@@ -1,11 +1,8 @@
-PROJECT(IVP_APP_LOGICTEST)
-
 FILE(GLOB SRC *.cpp)
-   
+
 ADD_EXECUTABLE(ltest ${SRC})
 
-TARGET_LINK_LIBRARIES(ltest
+TARGET_LINK_LIBRARIES(ltest 
    logic
    mbutil
-   m
-   )
+   m)

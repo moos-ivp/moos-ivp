@@ -192,14 +192,172 @@ LINK_LIBS="
       ivpbuild
       mbutil
       ivpcore
-      m
-      fltk
-      fltk_gl
-      X11
-      GL
-      tiff" \
+      m" \
 fltk_app_cmake_file
 
+SUBDIR=app_ffview \
+PROGNAME=ffview \
+LINK_LIBS="
+      behaviors-don
+      behaviors-sandbox
+      behaviors-marine
+      bhvutil
+      ipfview
+      behaviors
+      geometry
+      ivpbuild
+      ivpcore
+      mbutil
+      m" \
+fltk_app_cmake_file
 
+SUBDIR=app_fview \
+PROGNAME=fview \
+LINK_LIBS="
+      behaviors-don
+      behaviors-sandbox
+      behaviors-marine
+      bhvutil
+      ipfview
+      behaviors
+      geometry
+      ivpbuild
+      ivpcore
+      m
+      mbutil" \
+fltk_app_cmake_file
 
+SUBDIR=app_glogview \
+PROGNAME=glogview \
+LINK_LIBS="
+      navplot
+      ipfview
+      marineview
+      geometry
+      mbutil
+      ivpbuild
+      ivpcore
+      m" \
+fltk_app_cmake_file
 
+SUBDIR=app_gridgen \
+PROGNAME=gridgen \
+LINK_LIBS="
+   ivpbuild
+   ivpcore
+   geometry
+   mbutil
+   m" \
+simple_app_cmake_file
+
+SUBDIR=app_gzaicview \
+PROGNAME=gzaicview \
+LINK_LIBS="
+      ivpbuild
+      mbutil
+      ivpcore
+      m" \
+fltk_app_cmake_file
+
+SUBDIR=app_hexaview \
+PROGNAME=hexaview \
+LINK_LIBS="
+      marineview
+      geometry
+      mbutil
+      m" \
+fltk_app_cmake_file
+
+SUBDIR=app_logclip \
+PROGNAME=logclip \
+LINK_LIBS="
+   mbutil
+   m" \
+simple_app_cmake_file
+
+SUBDIR=app_logictest \
+PROGNAME=ltest \
+LINK_LIBS="
+   logic
+   mbutil
+   m" \
+simple_app_cmake_file
+
+SUBDIR=app_logparse \
+PROGNAME=logparse \
+LINK_LIBS="
+   mbutil
+   m" \
+simple_app_cmake_file
+
+SUBDIR=app_logview \
+PROGNAME=logview \
+LINK_LIBS="
+      navplot
+      marineview
+      geometry
+      mbutil
+      m" \
+fltk_app_cmake_file
+
+SUBDIR=app_peval \
+PROGNAME=peval \
+LINK_LIBS="
+   navplot
+   mbutil
+   geometry
+   m" \
+simple_app_cmake_file
+
+SUBDIR=app_polyview \
+PROGNAME=polyview \
+LINK_LIBS="
+      marineview
+      geometry
+      mbutil
+      m" \
+fltk_app_cmake_file
+
+SUBDIR=app_quadview \
+PROGNAME=quadview \
+LINK_LIBS="
+      marineview
+      mbutil
+      m" \
+fltk_app_cmake_file
+
+SUBDIR=app_splug \
+PROGNAME=splug \
+LINK_LIBS="
+   mbutil
+   m" \
+simple_app_cmake_file
+
+SUBDIR=app_test \
+PROGNAME=stest \
+LINK_LIBS="
+   ivpbuild
+   mbutil
+   geometry
+   ivpcore
+   logic
+   m" \
+simple_app_cmake_file
+
+SUBDIR=app_tupelize \
+PROGNAME=tupelize \
+LINK_LIBS="
+   mbutil
+   ivpbuild
+   ivpcore
+   m" \
+simple_app_cmake_file
+
+SUBDIR=app_zaicview \
+PROGNAME=zaicview \
+LINK_LIBS="
+   mbutil
+   ivpbuild
+   ivpcore
+   m" \
+fltk_app_cmake_file

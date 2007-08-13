@@ -1,12 +1,12 @@
-PROJECT(IVP_APP_FFVIEW)
-
 INCLUDE(FindFLTK)    # This is distributed with CMake.
+
 IF(FLTK_FOUND)
    FILE(GLOB SRC *.cpp)
-   
+
    ADD_EXECUTABLE(ffview ${SRC})
    
-   TARGET_LINK_LIBRARIES(ffview
+   TARGET_LINK_LIBRARIES(ffview 
+      
       behaviors-don
       behaviors-sandbox
       behaviors-marine
@@ -18,17 +18,18 @@ IF(FLTK_FOUND)
       ivpcore
       mbutil
       m
+
+      # Standard libraries used by this project's FLTK apps...
       fltk 
       fltk_gl 
       X11
       GL
-      tiff
+      tiff      
       )
 ELSE(FLTK_FOUND)
-   MESSAGE(STATUS 
+   MESSAGE(STATUS
       "Won't build ffview because can't find needed FLTK stuff.  "
       "You can maybe fix this by setting the FLTK_DIR and FLTK_INCLUDE_DIR CMake variables "
       "because CMake's FindFLTK implementation is pretty stupid."
       )
 ENDIF(FLTK_FOUND)
-

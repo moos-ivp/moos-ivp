@@ -6,6 +6,7 @@ IF(FLTK_FOUND)
    ADD_EXECUTABLE(cpaview ${SRC})
    
    TARGET_LINK_LIBRARIES(cpaview 
+      
       marineview
       ipfview
       geometry
@@ -13,11 +14,13 @@ IF(FLTK_FOUND)
       mbutil
       ivpcore
       m
-      fltk
-      fltk_gl
+
+      # Standard libraries used by this project's FLTK apps...
+      fltk 
+      fltk_gl 
       X11
       GL
-      tiff
+      tiff      
       )
 ELSE(FLTK_FOUND)
    MESSAGE(STATUS
