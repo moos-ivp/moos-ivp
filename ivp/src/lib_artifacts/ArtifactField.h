@@ -31,6 +31,8 @@ class ArtifactField {
 private:
 	/// Holds the artifact strings
 	std::vector<std::string> vecArtifacts;
+	/// Holds the geometric bounds ouf the field
+	// NEEDS TO BE IMPLEMENTED
 public:
 	void addArtifact(std::string);
 	void addArtifact(double, double);

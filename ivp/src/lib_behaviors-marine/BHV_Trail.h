@@ -40,11 +40,13 @@ protected:
   double getPriority();
   
 private: // Configuration parameters
-  std::string them_name; 
+  std::string m_contact; 
   double  m_trail_range;
   double  m_trail_angle;
   double  m_radius;
   double  m_max_range;
+  double  m_max_util_cpa_dist;
+  double  m_min_util_cpa_dist;
 
 private: // State Variables
   double  m_osx; // ownship x-position

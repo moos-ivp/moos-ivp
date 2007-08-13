@@ -41,6 +41,7 @@ protected: // non-virtual functions
   double metric2(double, double) const;
 
 protected:
+  double os_tol;   // Ownship Time on Leg
   double os_lat;   // Ownship Lat position
   double os_lon;   // Ownship Lon position
   double cn_lat;   // Contact Lat position
@@ -48,6 +49,7 @@ protected:
   double cn_crs;   // Contact heading
   double cn_spd;   // Contact speed
 
+  bool   os_tol_set;
   bool   os_lat_set;
   bool   os_lon_set;
   bool   cn_lat_set;
@@ -55,11 +57,13 @@ protected:
   bool   cn_crs_set;
   bool   cn_spd_set;
 
+  bool   collision_distance_set;
+  bool   all_clear_distance_set;
+
   CPAEngine *cpa_engine;
 
   int    crs_ix;  // Index of "course" variable in IvPDomain
   int    spd_ix;  // Index of "speed" variable in IvPDomain
-  int    tol_ix;  // Index of "tol" variable in IvPDomain
 };
 
 #endif

@@ -123,15 +123,16 @@ bool MarinePID::OnNewMail(MOOSMSG_LIST &NewMail)
 
       else if(key == "DESIRED_THRUST")
 	current_thrust = msg.m_dfVal;
-      else if(key == "DESIRED_HEADING")
+      else if(key == "DESIRED_HEADING") {
 	desired_heading = msg.m_dfVal;
-      else if(key == "DESIRED_SPEED")
+	time_of_last_helm_msg = MOOSTime();
+      }
+      else if(key == "DESIRED_SPEED") {
 	desired_speed = msg.m_dfVal;
+	time_of_last_helm_msg = MOOSTime();
+      }
       else if(key == "DESIRED_DEPTH")
 	desired_depth = msg.m_dfVal;
-
-      if(!strncmp(key.c_str(), "DESIRED_", 4))
-	time_of_last_helm_msg = MOOSTime();
     }
   }
   return(true);
@@ -201,6 +202,9 @@ bool MarinePID::Iterate()
   }
 
   paused = false;
+
+  if(thrust ==0)
+    rudder = 0;
   m_Comms.Notify("DESIRED_RUDDER", rudder);
   m_Comms.Notify("DESIRED_THRUST", thrust);
   if(depth_control)

@@ -38,6 +38,10 @@ double closingSpeed(double osx, double osy, double osspd,
 double closingSpeed(double osx, double osy, double osspd, double oshdg,
 		    double cnx, double cny, double cnspd, double cnhdg);
 
+
+void   velocityVectorSum(double hdg1, double spd1, double hdg2, 
+			 double spd2, double& hdg, double& spd);
+
 #endif
 
 

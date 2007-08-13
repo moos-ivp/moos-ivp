@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import sys
+import os.path
 
 #===============================================================================
 
@@ -55,15 +56,23 @@ def parse_slog_header(infile):
 #===============================================================================
 
 def print_help_and_exit():
-   s = "Usage: slog-filt.py <input-filename> --vars var1 [var2, var3, ...]"
+   s = "Usage: slog-filt.py <in-file> --[hide]vars var1 [var2, ...] [--output <out-file>]"
    sys.exit(s)
 
 #===============================================================================
 
 def parse_cmdline_args(argv):
-   """ Tries to dictionary with the following elements:
+   """ Tries to create a dictionary with the following elements:
    'input-filename': Path/filename of the slog file to read in.
+   
+   Exactly one of the following:
    'vars': A list of the variable names to appear in this program's output.
+   'hidevars': A list of variable names that are to *not* appear in this 
+      program's output.
+      
+   'outfile': A reference to the file object to which this program's output is
+      to be written.
+         
    If something goes wrong, this function calls print_help_and_exit.
    """
       
@@ -74,15 +83,53 @@ def parse_cmdline_args(argv):
       'input-filename':argv[1]
       }
    
-   if '--vars' not in argv:
+   # User was supposed specify exactly one of '--vars' or '--hidevars'...
+   if '--vars' in argv:
+      if '--hidevars' in argv:
+         print_help_and_exit()
+      else:
+         var_spec_flag='vars'
+   elif '--hidevars' in argv:
+         var_spec_flag='hidevars'
+   else:
       print_help_and_exit()
-   vars_idx = argv.index('--vars')
+   vars_idx = argv.index('--' + var_spec_flag)
+
 
    if vars_idx != 2:
       print_help_and_exit()
 
-   d['vars'] = argv[(vars_idx + 1):]
-   
+   if argv[-2] == '--output':
+      d[var_spec_flag] = argv[(vars_idx + 1):-3]
+      
+      filename = argv[-1]
+      
+      if os.path.exists(filename):
+         print >> sys.stderr, "The file " + filename + \
+            " already exists (I don't overwrite files.)"
+         print_help_and_exit()
+      
+      d['outfile'] = file(filename, 'w')
+   else:      
+      d[var_spec_flag] = argv[(vars_idx + 1):]
+      d['outfile'] = sys.stdout
+      
+   # Make sure there are no duplicate entries in 'vars' or 'hidevars'.  That
+   # makes the rest of our code somewhat more complicated (or else the output
+   # is messed up), and I can't think of a case where the user is likely to 
+   # need it. -CJC
+   var_list = d[var_spec_flag]
+   for i in range(len(var_list)):
+      var_name = var_list[i]      
+      
+      # This finds the *first* occurrence of 'var_name'.  If 'i' is greater than
+      # the index of the first occurrence, we know we have two occurrences, 
+      # which is what we're testing for.
+      idx1 = var_list.index(var_name)
+      if idx1 != i:
+         print >> sys.stderr, "Each var name can appear at most once."
+         print_help_and_exit()
+      
    return d
    
 #===============================================================================
@@ -114,12 +161,14 @@ def main(argv):
    args = parse_cmdline_args(argv)
    f = open(args['input-filename'])
    
+   outfile = args['outfile']
+   
    #----------------------------------------------------------------------------
    # Copy the first 5 lines of the input file, verbatim...
    #----------------------------------------------------------------------------
    for i in range(5):
       s = f.readline()
-      print s.strip()
+      print >> outfile, s.strip()
    
    var_name_to_col_number = parse_slog_header(f)
    
@@ -128,37 +177,58 @@ def main(argv):
    # variables present in the slog file.  Avoid using Python 'sets' for this,
    # because Mike's computer still runs, I believe, Python 2.4...
    #----------------------------------------------------------------------------
+   if 'vars' in args:
+      user_specified_cols = args['vars']
+   else:
+      user_specified_cols = args['hidevars']
+   
    missing_vars = []
-   for a_var in args['vars']:
+   for a_var in user_specified_cols:
       if a_var not in var_name_to_col_number:
          missing_vars.append(a_var)
          
    if len(missing_vars) > 0:
-      sys.exit("You requested the output contains the following vars, but " + \
+      sys.exit("You listed the following vars, but " + \
          "the input file didn't have them: " + str(missing_vars))
+   
+   #----------------------------------------------------------------------------         
+   # Determine the exact set of columns to output...
+   #----------------------------------------------------------------------------
+   if 'vars' in args:
+      output_vars = args['vars']
+      if 'TIME' not in output_vars:
+         output_vars = ['TIME'] + output_vars
+   else:
+      # Preserve the order of the columns from the original file.
+      # Yes, I know this is an O(n^2) approach, but that's ok enough for now...
+      output_vars = []
+      for i in range(len(var_name_to_col_number)):
+         for (var_name, col_num) in var_name_to_col_number.iteritems():
+            if (col_num == i) and (var_name not in args['hidevars']):
+               output_vars.append(var_name)
          
    #----------------------------------------------------------------------------
    # Print a reconstucted header to stdout.  Order the columns according to how
    # they were specified on the command-line in the "--vars" section...
    #----------------------------------------------------------------------------
-   for i in range(len(args['vars'])):
-      var_name = args['vars'][i]
-      print "%%   (" + str(i+1) + ") " + var_name
+   for i in range(len(output_vars)):
+      var_name = output_vars[i]
+      print >> outfile, "%%   (" + str(i+1) + ") " + var_name
       
-   print ""
-   print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"   
+   print >> outfile, ""
+   print >> outfile, "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"   
    
-   var_name = args['vars'][0]
+   var_name = output_vars[0]
    start_col_for_each_var = {var_name:0}
    s = "%% " + var_name
-   for i in range(1, len(args['vars'])):
-      var_name = args['vars'][i]
+   for i in range(1, len(output_vars)):
+      var_name = output_vars[i]
       start_col = 1 + 19 * i
       start_col_for_each_var[var_name] = start_col
       
       needed_padding = start_col - len(s)
       s += (' ' * needed_padding) + var_name
-   print s   
+   print >> outfile, s   
    
    #----------------------------------------------------------------------------         
    # Process the data lines...
@@ -170,13 +240,13 @@ def main(argv):
          line_dict = parse_one_line(a_line, var_name_to_col_number)
          
          s = ""
-         for i in range(len(args['vars'])):
-            var_name = args['vars'][i]
+         for i in range(len(output_vars)):
+            var_name = output_vars[i]
             var_value = line_dict[var_name]
             
             needed_padding = start_col_for_each_var[var_name] - len(s)
             s += (' ' * needed_padding) + var_value
-         print s
+         print >> outfile, s
       
       a_line = f.readline()
          

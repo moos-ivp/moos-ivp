@@ -96,11 +96,6 @@ ProcessConfig = pMOOSBridge
   SHARE = [HELM_VERBOSE_204] -> nyak204 @ localhost:9204 [HELM_VERBOSE]
   SHARE = [HELM_VERBOSE_206] -> nyak206 @ localhost:9206 [HELM_VERBOSE]
 
-  SHARE = [AVOID_POLICY_200] -> nyak200 @ localhost:9200 [AVOID_POLICY]
-  SHARE = [AVOID_POLICY_201] -> nyak201 @ localhost:9201 [AVOID_POLICY]
-  SHARE = [AVOID_POLICY_204] -> nyak204 @ localhost:9204 [AVOID_POLICY]
-  SHARE = [AVOID_POLICY_206] -> nyak206 @ localhost:9206 [AVOID_POLICY]
-
   SHARE = [LOITER_UPDATE_NYAK200] -> nyak200 @ localhost:9200 [LOITER_UPDATE]
   SHARE = [LOITER_UPDATE_NYAK201] -> nyak201 @ localhost:9201 [LOITER_UPDATE]
   SHARE = [LOITER_UPDATE_NYAK204] -> nyak204 @ localhost:9204 [LOITER_UPDATE]
@@ -128,7 +123,7 @@ ProcessConfig = pLoiterControl
   AppTick    = 4
   CommsTick  = 4
 
-  WAIT_PERIOD = 180
+  WAIT_PERIOD = 110
 
   ASSIGNMENT  = NYAK200 | radial:-20,-80,30,6  
   ASSIGNMENT  = NYAK201 | radial:70,-35,30,6
@@ -219,6 +214,8 @@ ProcessConfig = uTermCommand
   CMD  = loc_remap           -->  LOITER_REMAP   --> true
 
   //-------------------------------------------------------
+  CMD  = all_logger_restart  -->  LOGGER_RESTART_ALL --> true
+
   CMD  = all_deploy_true    -->  DEPLOY_ALL        --> true
   CMD  = all_deploy_false   -->  DEPLOY_ALL        --> false
   CMD  = all_return_true    -->  RETURN_ALL        --> true
@@ -236,7 +233,7 @@ ProcessConfig = uTermCommand
   CMD  = all_avoid_basic    -->  AVOID_POLICY_ALL  --> basic
   CMD  = all_avoid_colregs  -->  AVOID_POLICY_ALL  --> colregs
 
-  CMD  = all_helm_quiet     -->  HELM_VERBOSE_ALL  --> quiet
+  CMD  = all_helm_silent    -->  HELM_VERBOSE_ALL  --> quiet
   CMD  = all_helm_verbose   -->  HELM_VERBOSE_ALL  --> verbose
   CMD  = all_helm_terse     -->  HELM_VERBOSE_ALL  --> terse
 
@@ -258,7 +255,7 @@ ProcessConfig = uTermCommand
   CMD  = 200_avoid_basic    -->  AVOID_POLICY_200 --> basic 
   CMD  = 200_avoid_colregs  -->  AVOID_POLICY_200 --> colregs 
 
-  CMD  = 200_helm_quiet     -->  HELM_VERBOSE_200 --> quiet
+  CMD  = 200_helm_silent    -->  HELM_VERBOSE_200 --> quiet
   CMD  = 200_helm_terse     -->  HELM_VERBOSE_200 --> terse
   CMD  = 200_helm_verbose   -->  HELM_VERBOSE_200 --> verbose
 
@@ -280,7 +277,7 @@ ProcessConfig = uTermCommand
   CMD  = 201_avoid_basic    -->  AVOID_POLICY_201 --> basic 
   CMD  = 201_avoid_colregs  -->  AVOID_POLICY_201 --> colregs 
 
-  CMD  = 201_helm_quiet     -->  HELM_VERBOSE_201 --> quiet
+  CMD  = 201_helm_silent    -->  HELM_VERBOSE_201 --> quiet
   CMD  = 201_helm_terse     -->  HELM_VERBOSE_201 --> terse
   CMD  = 201_helm_verbose   -->  HELM_VERBOSE_201 --> verbose
 
@@ -302,7 +299,7 @@ ProcessConfig = uTermCommand
   CMD  = 204_avoid_basic    -->  AVOID_POLICY_204 --> basic 
   CMD  = 204_avoid_colregs  -->  AVOID_POLICY_204 --> colregs 
 
-  CMD  = 204_helm_quiet     -->  HELM_VERBOSE_204 --> quiet
+  CMD  = 204_helm_silent    -->  HELM_VERBOSE_204 --> quiet
   CMD  = 204_helm_terse     -->  HELM_VERBOSE_204 --> terse
   CMD  = 204_helm_verbose   -->  HELM_VERBOSE_204 --> verbose
 
@@ -324,7 +321,7 @@ ProcessConfig = uTermCommand
   CMD  = 206_avoid_basic    -->  AVOID_POLICY_206 --> basic 
   CMD  = 206_avoid_colregs  -->  AVOID_POLICY_206 --> colregs 
 
-  CMD  = 206_helm_quiet     -->  HELM_VERBOSE_206 --> quiet
+  CMD  = 206_helm_silent    -->  HELM_VERBOSE_206 --> quiet
   CMD  = 206_helm_terse     -->  HELM_VERBOSE_206 --> terse
   CMD  = 206_helm_verbose   -->  HELM_VERBOSE_206 --> verbose
 }

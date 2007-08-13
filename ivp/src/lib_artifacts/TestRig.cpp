@@ -11,7 +11,7 @@
 
 int main(int argc, char *argv[])
 {
-	int testervalue = 1;
+	int testervalue = 2;
 	switch(testervalue){
 		case 0:
 			{
@@ -41,6 +41,13 @@ int main(int argc, char *argv[])
 			std::cout << afmModel.getCell(7) << std::endl;
 			}
 			break;
+			
+		case 2:
+			{
+			// SensorModel Tester
+			
+			break;
+			}
 			
 	}
 	

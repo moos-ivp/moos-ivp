@@ -238,7 +238,7 @@ ProcessConfig = uTMS
 }
 
 //------------------------------------------
-// uXMS config block
+// iWifi config block
 
 ProcessConfig = iWifi
 {

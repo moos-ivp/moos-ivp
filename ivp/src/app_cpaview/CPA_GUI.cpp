@@ -134,6 +134,7 @@ void CPA_GUI::augmentMenu()
   mbar->add("TypeIPF/CPA", 0, (Fl_Callback*)CPA_GUI::cb_SetTypeIPF, (void*)0, 0);
   mbar->add("TypeIPF/Waypoint", 0, (Fl_Callback*)CPA_GUI::cb_SetTypeIPF, (void*)1, 0);
   mbar->add("TypeIPF/Avoid", 0, (Fl_Callback*)CPA_GUI::cb_SetTypeIPF, (void*)2, 0);
+  mbar->add("TypeIPF/ROC", 0, (Fl_Callback*)CPA_GUI::cb_SetTypeIPF, (void*)3, 0);
 }
 
 //----------------------------------------------------------
@@ -348,6 +349,8 @@ inline void CPA_GUI::cb_SetTypeIPF_i(int val) {
     ipf_viewer->setTypeIPF("wpt");
   if(val == 2) 
     ipf_viewer->setTypeIPF("avd");
+  if(val == 3) 
+    ipf_viewer->setTypeIPF("roc");
 }
 void CPA_GUI::cb_SetTypeIPF(Fl_Widget* o, int v) {
   ((CPA_GUI*)(o->parent()->user_data()))->cb_SetTypeIPF_i(v);

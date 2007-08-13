@@ -44,6 +44,7 @@ public:
   IvPFunction *calc_cpa_ipf(int index, int unif_units);
   IvPFunction *calc_wpt_ipf(int index, int unif_units);
   IvPFunction *calc_avd_ipf(int index, int unif_units);
+  IvPFunction *calc_roc_ipf(int index, int unif_units);
 
   std::vector<double> extrapolate(double spd, double time, int ix);
 

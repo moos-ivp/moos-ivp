@@ -46,7 +46,7 @@ void ArtifactField::addArtifact(double x, double y)
 	return;
 }
 
-/// Returns the artifact at location \a i
+/// Returns the artifact at index \a i
 /// No error catching is done, but at() will throw errors.  Could be implemented later.
 std::string ArtifactField::getArtifact(int i)
 {

@@ -42,6 +42,8 @@ void IPFViewer::setTypeIPF(const string& str)
     m_view_type = 1;
   else if(str == "avd")
     m_view_type = 2;
+  else if(str == "roc")
+    m_view_type = 3;
 }
 
 
@@ -61,6 +63,8 @@ void IPFViewer::resetIPF(int cn_index, int unif_units)
     ipf = m_cpa_model->calc_wpt_ipf(cn_index, unif_units);
   else if(m_view_type == 2)
     ipf = m_cpa_model->calc_avd_ipf(cn_index, unif_units);
+  else if(m_view_type == 3)
+    ipf = m_cpa_model->calc_roc_ipf(cn_index, unif_units);
 
   applyIPF(ipf, true);
 }

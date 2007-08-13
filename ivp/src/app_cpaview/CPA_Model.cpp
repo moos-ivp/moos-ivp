@@ -15,6 +15,7 @@
 #include "AOF_Waypoint2D.h"
 #include "AOF_AvoidCollisionRC.h"
 #include "AOF_WaypointRateClosure.h"
+#include "AOF_RC.h"
 #include "OF_Reflector.h"
 #include "ZAIC_PEAK.h"
 #include "OF_Coupler.h"
@@ -41,7 +42,7 @@ CPA_Model::CPA_Model()
   m_cncrs.push_back(30.0);
 
   m_ivp_domain.addDomain("course", 0, 359, 360);
-  m_ivp_domain.addDomain("speed",  0, m_os_maxspd, 81);
+  m_ivp_domain.addDomain("speed",  0, m_os_maxspd, 51);
 }
 
 
@@ -57,7 +58,7 @@ void CPA_Model::shift_os_maxspd(double v)
 
   IvPDomain new_ivp_domain;
   new_ivp_domain.addDomain("course", 0, 359, 360);
-  new_ivp_domain.addDomain("speed",  0, m_os_maxspd, 41);
+  new_ivp_domain.addDomain("speed",  0, m_os_maxspd, 51);
   
   m_ivp_domain = new_ivp_domain;
 }
@@ -329,6 +330,45 @@ IvPFunction *CPA_Model::calc_avd_ipf(int ix, int unif_units)
   bool ok = aof.initialize();
   if(!ok) {
     cout << "Problem init AOF_AvoidCollisionRC" << endl;
+    exit(0);
+  }
+
+  OF_Reflector reflector(&aof, 1);
+
+  if(unif_units <= 0) 
+    unif_units = 1;
+
+  IvPBox unifbox(2);
+  unifbox.setPTS(0, unif_units, unif_units);
+  unifbox.setPTS(1, unif_units, unif_units);
+  reflector.createUniform(&unifbox, &unifbox);
+  
+  IvPFunction *ipf = reflector.extractOF(false);
+
+  return(ipf);
+}
+
+// ----------------------------------------------------------
+// Procedure: calc_roc_ipf
+//   Purpose: 
+
+IvPFunction *CPA_Model::calc_roc_ipf(int ix, int unif_units)
+{
+  if((ix < 0) || (ix >= this->size()))
+    return(0);
+  
+  AOF_RC aof(m_ivp_domain);
+
+  aof.setParam("cnx", m_cnx[ix]);
+  aof.setParam("cny", m_cny[ix]);
+  aof.setParam("cnh", m_cncrs[ix]);
+  aof.setParam("cnv", m_cnspd[ix]);
+  aof.setParam("osx", m_os_x);
+  aof.setParam("osy", m_os_y);
+   
+  bool ok = aof.initialize();
+  if(!ok) {
+    cout << "Problem init AOF_RC" << endl;
     exit(0);
   }
 

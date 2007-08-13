@@ -23,6 +23,7 @@
 #include <cmath>
 #include "GeomUtils.h"
 #include "AngleUtils.h"
+#include "CPA_Utils.h"
 
 using namespace std;
 
@@ -260,11 +261,43 @@ double closingSpeed(double osx,   double osy, double osspd,
 //     cnhdg: Heading of the moving other object (m/sec)
 
 double closingSpeed(double osx,   double osy, double osspd, 
-		    double oshdg, double cnx,  double cny,
+		    double oshdg, double cnx, double cny,
 		    double cnspd, double cnhdg)
 {
-  double speed1 = closingSpeed(osx,osy,osspd,oshdg,cnx,cny);
-  double speed2 = closingSpeed(cnx,cny,cnspd,cnhdg,osx,osy);
+  double mod_cnhdg = angle360(cnhdg-180);
 
-  return(speed1 + speed2);
+  double hdg_sum, spd_sum;
+
+  velocityVectorSum(oshdg, osspd, mod_cnhdg, cnspd, hdg_sum, spd_sum);
+  
+  double rate_of_closure = closingSpeed(osx,osy,spd_sum,hdg_sum,cnx,cny);
+
+  return(rate_of_closure);
+}
+
+
+//---------------------------------------------------------------
+// Procedure: velocityVectorSum
+//   Purpose: Determine the sum of two velocity vectors.
+
+void velocityVectorSum(double hdg1, double spd1, double hdg2, 
+		       double spd2, double& hdg, double& spd)
+{
+  double hdg1_rad = headingToRadians(hdg1);
+  double hdg2_rad = headingToRadians(hdg2);
+  
+  double xspd1 = cos(hdg1_rad) * spd1;
+  double yspd1 = sin(hdg1_rad) * spd1;
+  double xspd2 = cos(hdg2_rad) * spd2;
+  double yspd2 = sin(hdg2_rad) * spd2;
+
+  double xspd = xspd1 + xspd2;
+  double yspd = yspd1 + yspd2;
+
+  spd = hypot(xspd, yspd);
+  
+  if(spd==0)
+    hdg = 0;
+  else
+    hdg = relAng(0,0,xspd,yspd);
 }

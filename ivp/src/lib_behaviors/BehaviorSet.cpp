@@ -76,18 +76,25 @@ IvPFunction* BehaviorSet::produceOF(int ix, int iteration, bool& idle)
 {
   if((ix >= 0) && (ix < behaviors.size())) {
     behaviors[ix]->checkForUpdates();
+    string bhv_tag = toupper(behaviors[ix]->getDescriptor());
+    bhv_tag = findReplace(bhv_tag, "BHV_", "");
+    bhv_tag = findReplace(bhv_tag, "(d)", "");
     if(!behaviors[ix]->preCheck()) {
       behaviors[ix]->postIdleFlags();
       behaviors[ix]->onIdleState();
+      behaviors[ix]->postMessage("SAT_BHV_"+bhv_tag, 0);
+      behaviors[ix]->postMessage("PWT_BHV_"+bhv_tag, 0);
       idle = true;
       return(0);
     }
     else {
       idle = false;
+      behaviors[ix]->postMessage("SAT_BHV_"+bhv_tag, 1);
       IvPFunction *ipf = behaviors[ix]->produceOF();
       if(ipf && !ipf->freeOfNan()) {
 	string msg = "Nan detected in produced ivp function";
 	behaviors[ix]->postEMessage(msg);
+	behaviors[ix]->postMessage("PWT_BHV_"+bhv_tag, 0);
 	delete(ipf);
 	return(0);
       }
@@ -99,6 +106,12 @@ IvPFunction* BehaviorSet::produceOF(int ix, int iteration, bool& idle)
 	string ipf_str = IvPFunctionToString(ipf);
 	behaviors[ix]->postMessage("BHV_IPF", ipf_str);
       }
+      
+      double pwt = 0.0;
+      if(ipf) 
+	pwt = ipf->getPWT();
+      behaviors[ix]->postMessage("PWT_BHV_"+bhv_tag, pwt);
+      
       return(ipf);
     }
   }

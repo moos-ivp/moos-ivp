@@ -99,10 +99,6 @@ void TermCommand::addCommand(string cmd_str)
 
   vector<string> vector_a = chompString(cmd_str, ' ');
 
-  cout << "CMD_STR: " << cmd_str << endl;
-  cout << "vector_a[0]: " << vector_a[0] << endl;
-  cout << "vector_a[1]: " << vector_a[1] << endl;
-
   if(vector_a.size() != 2)
     return;
   string var_key = stripBlankEnds(vector_a[0]);
@@ -128,8 +124,12 @@ void TermCommand::addCommand(string cmd_str)
   if(!isNumber(var_val))
     var_type = "string";
       
-  cout << "Key: " << var_key << " VAR: " << var_name << " VAL: " << var_val << endl;
-
+#if 0
+  if(var_type == "string")
+    cout << "Key: " << var_key << " VAR: " << var_name << " VAL(S): [" << var_val << "]" << endl;
+  else
+    cout << "Key: " << var_key << " VAR: " << var_name << " VAL(D): [" << var_val << "]" << endl;
+#endif
 
   m_var_key.push_back(var_key);
   m_var_name.push_back(var_name);
@@ -312,8 +312,6 @@ void TermCommand::handleCharInput(char c)
     if((c!=10) && (c!=9))
       m_cmd_buffer += c;
   
-  //cout << "Saw char: " << (int)(c) << endl;
-
   int res = getFullKeyMatch();
   if((res != -1) && (c==10)) {
     postCommand(res);

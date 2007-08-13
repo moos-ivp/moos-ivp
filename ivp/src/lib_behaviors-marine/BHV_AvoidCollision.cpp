@@ -10,6 +10,7 @@
 #pragma warning(disable : 4503)
 #endif
 
+#include <iostream>
 #include <math.h>
 #include "AngleUtils.h"
 #include "GeomUtils.h"
@@ -97,6 +98,14 @@ bool BHV_AvoidCollision::setParam(string g_param, string g_val)
       m_collision_dist = dval;
     return(true);
   }  
+  else if(g_param == "all_clear_distance") {
+    double dval = atof(g_val.c_str());
+    if((dval < 0) || (!isNumber(g_val)))
+      return(false);
+    if(!param_lock)
+      m_all_clear_dist = dval;
+    return(true);
+  }  
   else if(g_param == "active_grade") {
     g_val = tolower(g_val);
     if((g_val!="linear") && (g_val!="quadratic") && 
@@ -153,7 +162,6 @@ IvPFunction *BHV_AvoidCollision::produceOF()
     return(0);
 
   double relevance = getRelevance();
-  postMessage("AVD_REL", relevance);
   if(relevance <= 0)
     return(0);
 
@@ -184,7 +192,6 @@ IvPFunction *BHV_AvoidCollision::produceOF()
 
   ipf->setPWT(relevance * priority_wt);
 
-  postMessage("AVD_ON", 1);
   return(ipf);
 }
 
@@ -231,6 +238,8 @@ bool BHV_AvoidCollision::getBufferInfo()
   return(true);
 }
 
+
+
 //-----------------------------------------------------------
 // Procedure: getRelevance
 //            Calculate the relevance first. If zero-relevance, 
@@ -244,15 +253,19 @@ double BHV_AvoidCollision::getRelevance()
   double rng_dist_relevance = max_dist_relevance - min_dist_relevance;
   
   double dist = hypot((m_osx - m_cnx),(m_osy - m_cny));
-  if(dist >= m_active_outer_dist)
-    return(min_dist_relevance);
-  if(dist <= m_active_inner_dist)
-    return(max_dist_relevance);
+  if(dist >= m_active_outer_dist) {
+    //postInfo(0,0);
+    return(0);
+  }
 
+  double dpct, drange;
+  if(dist <= m_active_inner_dist)
+    dpct = max_dist_relevance;
+  
   // Note: drange should never be zero since either of the above
   // conditionals would be true and the function would have returned.
-  double drange = (m_active_outer_dist - m_active_inner_dist);
-  double dpct = (m_active_outer_dist - dist) / drange;
+  drange = (m_active_outer_dist - m_active_inner_dist);
+  dpct = (m_active_outer_dist - dist) / drange;
   
   // Apply the grade scale to the raw distance
   double mod_dpct = dpct; // linear case
@@ -263,10 +276,10 @@ double BHV_AvoidCollision::getRelevance()
 
   double d_relevance = (mod_dpct * rng_dist_relevance) + min_dist_relevance;
 
-  //return(d_relevance);
+  return(d_relevance);  // *********** DISABLED BELOW ******
 
   double closing_spd = closingSpeed(m_osx, m_osy, m_osv, m_osh,
-				    m_cnx, m_cny, m_osv, m_osh);
+				    m_cnx, m_cny, m_cnv, m_cnh);
 
   //  default:            0.0                         1.0            
   //                       o---------------------------o
@@ -275,15 +288,20 @@ double BHV_AvoidCollision::getRelevance()
   //        -0.5                         0.5
   //
 
-  double min_roc_relevance = min_dist_relevance - (rng_dist_relevance/2);
-  double max_roc_relevance = min_roc_relevance + (rng_dist_relevance/2);
+  double min_roc_relevance = min_dist_relevance - (0.75*rng_dist_relevance);
+  double max_roc_relevance = max_dist_relevance - (0.75*rng_dist_relevance);
   double rng_roc_relevance = max_roc_relevance - min_roc_relevance;
 
   double srange = m_roc_max_heighten - m_roc_max_dampen;
   double spct = 0.0;
-  if(srange > 0)
-    spct = (m_roc_max_heighten - closing_spd) / srange;
-  
+  if(srange > 0) {
+    if(closing_spd < m_roc_max_dampen)
+      closing_spd = m_roc_max_dampen;
+    if(closing_spd > m_roc_max_heighten)
+      closing_spd = m_roc_max_heighten;
+    spct = (closing_spd - m_roc_max_dampen) / srange;
+  }
+
   double s_relevance = (spct * rng_roc_relevance) + min_roc_relevance;
   
   double combined_relevance = d_relevance + s_relevance;
@@ -293,14 +311,43 @@ double BHV_AvoidCollision::getRelevance()
   if(combined_relevance > max_dist_relevance)
     combined_relevance = max_dist_relevance;
   
+  //postInfo(dpct, spct, closing_spd);
+
+
+#if 0
+  cout << "Relevance Report: ------------------- " << endl;
+  cout << "d_relevance:        " << d_relevance << endl;
+  cout << "closing_spd:        " << closing_spd << endl;
+  cout << "min_roc_relevance:  " << min_roc_relevance << endl;
+  cout << "max_roc_relevance:  " << max_roc_relevance << endl;
+  cout << "rng_roc_relevance:  " << rng_roc_relevance << endl;
+  cout << "srange:             " << srange << endl;
+  cout << "spct:               " << spct << endl;
+  cout << "s_relevance:        " << s_relevance << endl;
+  cout << "combined_relevance: " << combined_relevance << endl;
+#endif  
+
   return(combined_relevance);
-    
 }
 
 
 
+//-----------------------------------------------------------
+// Procedure: getRelevance
+//            Calculate the relevance first. If zero-relevance, 
+//            we won't bother to create the objective function.
 
+void BHV_AvoidCollision::postInfo(double dpct, double spct, double cspd)
+{
+  string bhv_tag = toupper(getDescriptor());
+  bhv_tag = findReplace(bhv_tag, "BHV_", "");
+  bhv_tag = findReplace(bhv_tag, "(d)", "");
 
+  
+  postMessage("DPCT_BHV_"+bhv_tag, dpct);
+  postMessage("SPCT_BHV_"+bhv_tag, spct);
+  postMessage("CSPD_BHV_"+bhv_tag, cspd);
 
+}
 
 

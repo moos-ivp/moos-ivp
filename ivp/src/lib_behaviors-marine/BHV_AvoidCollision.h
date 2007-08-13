@@ -23,6 +23,7 @@ protected:
   bool   getBufferInfo();
   double getRelevance();
   double getPriority();
+  void   postInfo(double, double, double=-1);
   
 private: // Configuration Parameters
 

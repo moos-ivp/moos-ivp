@@ -340,7 +340,16 @@ void NavPlotViewer::drawNavPlot(int index)
       drawGLPoly(g_propUnit, g_propUnitSize, 0.0,0.0, 1.0);
     }
     else {
-      drawGLPoly(g_kayakBody, g_kayakBodySize, 1.0, 0.906, 0.243);
+      if(index==0)
+	drawGLPoly(g_kayakBody, g_kayakBodySize, 1.0, 0.906, 0.243);
+      else if(index==1)
+	drawGLPoly(g_kayakBody, g_kayakBodySize, 1.0, 0.0, 0.0);
+      else if(index==2)
+	drawGLPoly(g_kayakBody, g_kayakBodySize, 0.0, 1.0, 0.0);
+      else if(index==3)
+	drawGLPoly(g_kayakBody, g_kayakBodySize, 0.0, 0.0, 1.0);
+      else
+	drawGLPoly(g_kayakBody, g_kayakBodySize, 1.0, 0.906, 0.243);
       drawGLPoly(g_kayakMidOpen, g_kayakMidOpenSize, 0.5, 0.5, 0.5);
       drawGLPoly(g_kayakBody, g_kayakBodySize, 0.0, 0.0, 0.0, 1.0); // HERE
     }

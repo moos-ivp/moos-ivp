@@ -37,6 +37,7 @@ double ArtifactFieldModel::getCell(int i)
 }
 
 /// Updates the contents of cell \n i.
+/// Does not check bounds on the input
 void ArtifactFieldModel::updateCell(int i, double newValue)
 {
 	vecArtFieldModel.at(i) = newValue;

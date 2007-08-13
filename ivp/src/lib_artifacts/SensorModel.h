@@ -28,4 +28,6 @@ private:
 public:
 };
 
+struct 
+
 #endif

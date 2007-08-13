@@ -20,11 +20,46 @@ ProcessConfig = pLogger
   // Helm Output
   Log           = DESIRED_SPEED      @ 0
   Log           = DESIRED_HEADING    @ 0
-  Log           = BHV_IPF            @ 0   nosync
+  //Log           = BHV_IPF            @ 0   nosync
+  Log           = HELM_ACTIVE_BHV    @ 0   nosync
+  Log           = HELM_NONIDLE_BHV   @ 0   nosync
+  Log           = HELM_IPF_COUNT     @ 0 
   log           = LOOP_CPU           @ 0
   log           = LOOP_WALL          @ 0
+  log           = DEPLOY             @ 0   nosync
+  log           = RETURN             @ 0   nosync
+  log           = STATION_KEEP       @ 0   nosync
   Log           = VEHICLE_WPT_INDEX  @ 0
-  Log           = BHV_IPF            @ 0   nosync
+  Log           = DIST_TO_STATION    @ 0
+  Log           = DIST_TO_REGION     @ 0
+  Log           = LOITER_AQUIRE      @ 0
+  Log           = LOITER_INDEX       @ 0
+  Log           = LOITER_REPORT      @ 0   nosync
+
+  Log           = SAT_BHV_AVD_200    @ 0
+  Log           = SAT_BHV_AVD_201    @ 0
+  Log           = SAT_BHV_AVD_204    @ 0
+  Log           = SAT_BHV_AVD_206    @ 0
+
+  Log           = PWT_BHV_AVD_200    @ 0
+  Log           = PWT_BHV_AVD_201    @ 0
+  Log           = PWT_BHV_AVD_204    @ 0
+  Log           = PWT_BHV_AVD_206    @ 0
+
+  Log           = DPCT_BHV_AVD_200    @ 0
+  Log           = DPCT_BHV_AVD_201    @ 0
+  Log           = DPCT_BHV_AVD_204    @ 0
+  Log           = DPCT_BHV_AVD_206    @ 0
+
+  Log           = SPCT_BHV_AVD_200    @ 0
+  Log           = SPCT_BHV_AVD_201    @ 0
+  Log           = SPCT_BHV_AVD_204    @ 0
+  Log           = SPCT_BHV_AVD_206    @ 0
+
+  Log           = CSPD_BHV_AVD_200    @ 0
+  Log           = CSPD_BHV_AVD_201    @ 0
+  Log           = CSPD_BHV_AVD_204    @ 0
+  Log           = CSPD_BHV_AVD_206    @ 0
 
   // Vehicle-Level IO
   Log           = PROC_WATCH_SUMMARY @ 0   nosync

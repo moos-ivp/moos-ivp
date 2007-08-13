@@ -4,17 +4,9 @@ LTARGET  = artfieldgenerator
 LIFLAGS  =
 LCFLAGS  =
 
-REQUIRED_MOOS_LIBS = \
-	libMOOS.a 			\
-	libMOOSGen.a 		
-
-PLIBS    = libmbutil.a 
-
-LIBS     = -lm -lpthread \
-	$(patsubst lib%.a,-l%,$(PLIBS)) \
-	$(patsubst lib%.a,-l%,$(REQUIRED_MOOS_LIBS)) 
-
-PLDIRS   = $(wildcard ../lib_*)
+PLIBS    = libMOOS.a libMOOSGen.a libmbutil.a
+LIBS     = -lm -lpthread $(patsubst lib%.a,-l%,$(PLIBS))
+PLDIRS   = $(wildcard ../lib_*) ../MOOSLIB ../MOOSGenLib
 
 # Make configuration parameters
 include ../make_config.mk

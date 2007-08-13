@@ -43,15 +43,18 @@ using namespace std;
 BHV_Trail::BHV_Trail(IvPDomain gdomain) : IvPBehavior(gdomain)
 {
   this->setParam("descriptor", "(d)trail");
-  this->setParam("unifbox", "course=3, speed=2, tol=2");
-  this->setParam("gridbox", "course=9, speed=6, tol=6");
+  this->setParam("unifbox", "course=3, speed=2");
+  this->setParam("gridbox", "course=9, speed=6");
 
-  domain = subDomain(domain, "course,speed,tol");
+  domain = subDomain(domain, "course,speed");
 
   m_trail_range  = 0;
   m_trail_angle  = 180;
   m_radius       = 5;
   m_max_range    = 0;
+
+  m_min_util_cpa_dist = 100;
+  m_max_util_cpa_dist = 0; 
 
   info_vars.push_back("NAV_X");
   info_vars.push_back("NAV_Y");
@@ -76,11 +79,11 @@ bool BHV_Trail::setParam(string g_param, string g_val)
 
   if((g_param == "them") || (g_param == "contact")) {
     if(!param_lock) {
-      them_name = toupper(g_val);
-      info_vars.push_back(them_name+"_NAV_X");
-      info_vars.push_back(them_name+"_NAV_Y");
-      info_vars.push_back(them_name+"_NAV_SPEED");
-      info_vars.push_back(them_name+"_NAV_HEADING");
+      m_contact = toupper(g_val);
+      info_vars.push_back(m_contact+"_NAV_X");
+      info_vars.push_back(m_contact+"_NAV_Y");
+      info_vars.push_back(m_contact+"_NAV_SPEED");
+      info_vars.push_back(m_contact+"_NAV_HEADING");
     }
     return(true);
   }  
@@ -118,7 +121,7 @@ IvPFunction *BHV_Trail::produceOF()
     return(0);
   }
   
-  if(them_name == "") {
+  if(m_contact == "") {
     postWMessage("contact ID not set.");
     return(0);
   }
@@ -150,34 +153,48 @@ IvPFunction *BHV_Trail::produceOF()
     aof.setParam("cnspd", m_cnv);
     aof.setParam("oslat", m_osy);
     aof.setParam("oslon", m_osx);
-    aof.initialize();
+    aof.setParam("tol",   60);
+    aof.setParam("min_util_cpa_dist", m_min_util_cpa_dist);
+    aof.setParam("max_util_cpa_dist", m_max_util_cpa_dist);
+    bool ok = aof.initialize();
+
+    if(!ok) {
+      postWMessage("Error in initializing AOF_CutRangeCPA.");
+      return(0);
+    }
+
     OF_Reflector reflector(&aof, 1);
     reflector.createUniform(unif_box, grid_box);
     ipf = reflector.extractOF();
   }
   else {
     ZAIC_PEAK hdg_zaic(domain, "course");
-    hdg_zaic.addSummit(m_cnh, 20, 160, 80, 0, 100);
+    hdg_zaic.addSummit(m_cnh, 0, 180, 80, 0, 100);
     hdg_zaic.setValueWrap(true);
     IvPFunction *hdg_ipf = hdg_zaic.extractOF();
     
     ZAIC_PEAK spd_zaic(domain, "speed");
-    spd_zaic.addSummit(m_cnv, 1.0, 2.0, 10, 0, 25);
+    double modv = m_cnv - 0.1;
+    if(modv < 0)
+      modv = 0;
+    spd_zaic.addSummit(modv, 0, 2.0, 10, 0, 25);
     spd_zaic.setValueWrap(true);
     IvPFunction *spd_ipf = spd_zaic.extractOF();
     
     OF_Coupler coupler;
-    IvPFunction *ipf = coupler.couple(hdg_ipf, spd_ipf);
+    ipf = coupler.couple(hdg_ipf, spd_ipf);
+  }
+  
+  if(ipf) {
+    ipf->getPDMap()->normalize(0.0, 100.0);
+    ipf->setPWT(relevance * priority_wt);
   }
 
-  ipf->getPDMap()->normalize(0.0, 100.0);
-  
   if(!silent) {
     postMessage("TRAIL_MIN_WT", ipf->getPDMap()->getMinWT());
     postMessage("TRAIL_MAX_WT", ipf->getPDMap()->getMaxWT());
   }
   
-  ipf->setPWT(relevance * priority_wt);
 
   return(ipf);
 }
@@ -201,10 +218,10 @@ bool BHV_Trail::updateInfoIn()
   m_osh = info_buffer->dQuery("NAV_HEADING", ok3);
   m_osv = info_buffer->dQuery("NAV_SPEED", ok4);
 
-  m_osx = info_buffer->dQuery("NAV_X", ok1);
-  m_osy = info_buffer->dQuery("NAV_Y", ok2);
-  m_osh = info_buffer->dQuery("NAV_HEADING", ok3);
-  m_osv = info_buffer->dQuery("NAV_SPEED", ok4);
+  m_cnx = info_buffer->dQuery(m_contact+"_NAV_X", ok5);
+  m_cny = info_buffer->dQuery(m_contact+"_NAV_Y", ok6);
+  m_cnh = info_buffer->dQuery(m_contact+"_NAV_HEADING", ok7);
+  m_cnv = info_buffer->dQuery(m_contact+"_NAV_SPEED", ok8);
 
   if(!ok1)
     postWMessage("No ownship NAV_X in info_buffer.");
