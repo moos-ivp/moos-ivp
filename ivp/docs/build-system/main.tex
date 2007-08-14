@@ -28,6 +28,16 @@ and then explains how to use MOOS-IvP's particular build system.
 \subsection{CMake}
 
 \subsubsection{Overview}
+This section gives a brief overview of CMake, but clearer and more complete sources
+of information exist:
+\begin{itemize}
+ \item The project's website: \verb|cmake.org|
+ \item \underline{Mastering CMake}, by Ken Martin and Bill Hoffman.
+ \item The CMake users email list: \verb|cmake@cmake.org|.  You can sign up
+   for this at the \verb|cmake.org| website.
+\end{itemize}
+
+
 CMake (\verb|cmake.org|) is a cross-platform build system.  Compared to traditional 
 Makefiles, CMake's control files (named \verb|CMakeLists.txt|) tend to be much shorter
 and easier to read.
@@ -67,17 +77,54 @@ A typical CMake-based build system will contain one \verb|CMakeLists.txt| file
 in each of the project's source tree's directories.  
 
 The project's top-level \verb|CMakeLists.txt| file typically sets variables that
-affect the entire project's build details, such as the directory into which 
+govern the entire project's build details, such as the directory into which 
 the built libraries and / or executables should be placed after being linked, and
 the directory(ies) in which the project's header files can be found.
 
 The \verb|CMakeLists.txt| files
 in the internal levels of the source tree often do nothing other than call
-\verb|ADD_SUBDIRECTORY| on each of that directory's subdirectories; this is very
-similar in effect to executing a \verb|#include| directive.  This is because 
-the intermediate-level directories often exist merely to group together 
-subdirectories into units that are meaningful to the programmer, and thus
-have little impact on the way the project code is actually built.
+\verb|ADD_SUBDIRECTORY| on each of that directory's subdirectories.
+(\verb|ADD_SUBDIRECTORY| is very
+similar in effect to the C preprocessor's \verb|#include| directive.)
+The practice of having intermediate-level directories' \verb|CMakeLists.txt|
+files mostly just consist of \verb|ADD_SUBDIRECTORY| is common because
+those directories often exist merely to group together 
+subdirectories into units that are meaningful to the programmer.
+Therefore those directories have little significance to the way the 
+project code is actually built.
+
+\subsubsection{Inherited Variables}
+Consider Figure \ref{fig:cmake-file-structure}.  Using these 
+\verb|CMakeLists.txt| files would look like this:
+\begin{verbatim}
+cmake -f CMakeLists.txt
+(... some miscellaneous output from cmake ...)
+Y
+X
+(... some miscellaneous output from cmake ...)
+\end{verbatim} 
+
+Notice how the subdirectory's file \verb|Bar/CMakeLists.txt| not 
+only inherits a value of \verb|MyVar| from the parent \verb|CMakeLists.txt| 
+file, but \verb|Bar/CMakeLists.txt| also affects the behavior of the
+parent \verb|CMakeLists.txt| file.  (\verb|Bar/CMakeLists.txt|) modifies
+the value of \verb|MyVar|, and that new value is in effect in the 
+lines of the parent \verb|CMakeLists.txt| file that follow the 
+\verb|ADD_SUBDIRECTORY| call.  
+
+Contrast this to behavior to a \verb|Makefile|-based system where 
+a parent directory's \verb|Makefile| calls \verb|make -f Bar/Makefile|.
+In that scenario, there is no mechanims by which \verb|Bar/Makefile|'s
+modifications of \verb|make| variables could propagate back to the 
+parent directory's running instance of \verb|make|.
+
+\begin{figure}
+ \centering
+\includegraphics[width=4in]{file-structure.eps}
+   \caption{ADD\_SUBDIRECTORY joines CMakeLists.txt files much like C's include}
+   \label{fig:cmake-file-structure}
+\end{figure}
+
 
 The source tree's leaf directories typically contain the bulk of the project's 
 interesting source code, with each subdirectory having the code for a single
@@ -86,47 +133,13 @@ directories will generally contain an \verb|ADD_LIBRARY| or \verb|ADD_EXECUTABLE
 command which leads to the compilation and linking of that one particular
 program / library.
 
-\subsubsection{Inherited Variables, Cache Files}
-
-% \begin{figure}[h]
-% \centerline{
-% % 	\epsfig{file=file-structure, scale=0.5}
-% 	\psfig{figure=file-structure.ps,width=5in};
-% }
-% \caption{Picture without equations}
-% \label{fig-eg2}
-% \end{figure}
-
-% \begin{figure}[htp]
-% \centering
-% \newcommand*{\DOT}{.}
-
-\begin{figure}
- \centering
-%  \includegraphics{file-structure.pdf}
-
-\includegraphics{file-structure.eps}
- % file-structure.eps: 1179666x1179666 pixel, 300dpi, 9987.84x9987.84 cm, bb=0 0 595 842
- \caption{My Caption}
- \label{fig:foo}
-\end{figure}
-
-
-% \epsfig{file-structure.eps}
-% \includegraphics{file-structure}
-% \includegraphics[type=eps,ext=.eps,read=.eps]{file-structure}
-% \includegraphics[type=fig,ext=.fig,read=.fig]{file-structure}
-% \caption{Transverse momentum distributions}\label{fig:erptsqfit}
-% \end{figure}
-
-
-
+\subsubsection{Cache Files}
 
 
 \subsubsection{cmake, ccmake, CMakeSetup.exe}
 \subsubsection{Finding External Packages}
 \subsubsection{Configuring until Stable}
-\subsubsection{Other Resources}
+\subsubsection{In-source vs. Out-of-source Builds}
 
 \subsection{Source Tree Organization and the Two Build Systems}
 
