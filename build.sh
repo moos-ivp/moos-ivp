@@ -3,10 +3,10 @@
 # If anything goes wrong, stop right away.
 set -e
 
-cd MOOS
-
 cmake                            \
    -DFLTK_DIR=/usr/lib           \
+   -DFLTK_INCLUDE_DIR=/usr/include \
+   -DPYTHON_INCLUDE_PATH=/usr/include/python2.5 \
    -DBUILD_CONTROL_AND_NAV=ON    \
    -DBUILD_INSTRUMENTS=ON        \
    -DBUILD_TOOLS=ON              \
@@ -16,16 +16,6 @@ cmake                            \
    -DBUILD_OCEAN_INSTRUMENTS=ON  \
    -DBUILD_UMVS=ON               \
    -DBUILD_UPB=ON                \
-   ./
-
-make
-
-cd ../ivp
-
-cmake                              \
-   -DFLTK_DIR=/usr/lib             \
-   -DFLTK_INCLUDE_DIR=/usr/include \
-   -DPYTHON_INCLUDE_PATH=/usr/include/python2.5 \
    ./
 
 make
