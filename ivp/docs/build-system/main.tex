@@ -76,13 +76,13 @@ equivalent action in VisualStudio, XCode, etc. ).
 A typical CMake-based build system will contain one \verb|CMakeLists.txt| file
 in each of the project's source tree's directories.  
 
-The project's top-level \verb|CMakeLists.txt| file typically sets variables that
+The project's \textit{top-level} \verb|CMakeLists.txt| file typically sets variables that
 govern the entire project's build details, such as the directory into which 
 the built libraries and / or executables should be placed after being linked, and
 the directory(ies) in which the project's header files can be found.
 
 The \verb|CMakeLists.txt| files
-in the internal levels of the source tree often do nothing other than call
+in the \textit{internal levels} of the source tree often do nothing other than call
 \verb|ADD_SUBDIRECTORY| on each of that directory's subdirectories.
 (\verb|ADD_SUBDIRECTORY| is very
 similar in effect to the C preprocessor's \verb|#include| directive.)
@@ -93,7 +93,24 @@ subdirectories into units that are meaningful to the programmer.
 Therefore those directories have little significance to the way the 
 project code is actually built.
 
+The source tree's \textit{leaf directories} typically contain the bulk of the project's 
+interesting source code, with each subdirectory having the code for a single
+library or executable.  The \verb|CMakeLists.txt| file in one of these leaf
+directories will generally contain an \verb|ADD_LIBRARY| or \verb|ADD_EXECUTABLE|
+command which leads to the compilation and linking of that one particular
+program / library.
+
 \subsubsection{Inherited Variables}
+\verb|CMakeLists.txt| scripts have variables, similar in form and purpose
+to \verb|make| shell variables.  They're treated and manipulated as text, and
+lists are generally represented as a single string in which spaces separate
+the list's elements.  (Another convention is sometimes used in CMake's functions,
+where semicolons rather than spaces separate list elements.)
+
+In traditional \verb|Makefile|s, a child \verb|make| process inherits a 
+parent \verb|make| process' variable values.  A similar effect exists in
+a hierarchy of \verb|CMakeLists.txt| files, but via a different mechanism:
+
 Consider Figure \ref{fig:cmake-file-structure}.  Using these 
 \verb|CMakeLists.txt| files would look like this:
 \begin{verbatim}
@@ -114,7 +131,7 @@ lines of the parent \verb|CMakeLists.txt| file that follow the
 
 Contrast this to behavior to a \verb|Makefile|-based system where 
 a parent directory's \verb|Makefile| calls \verb|make -f Bar/Makefile|.
-In that scenario, there is no mechanims by which \verb|Bar/Makefile|'s
+In that scenario, there is no mechanism by which \verb|Bar/Makefile|'s
 modifications of \verb|make| variables could propagate back to the 
 parent directory's running instance of \verb|make|.
 
@@ -125,18 +142,65 @@ parent directory's running instance of \verb|make|.
    \label{fig:cmake-file-structure}
 \end{figure}
 
-
-The source tree's leaf directories typically contain the bulk of the project's 
-interesting source code, with each subdirectory having the code for a single
-library or executable.  The \verb|CMakeLists.txt| file in one of these leaf
-directories will generally contain an \verb|ADD_LIBRARY| or \verb|ADD_EXECUTABLE|
-command which leads to the compilation and linking of that one particular
-program / library.
-
 \subsubsection{Cache Files}
+Some CMake variables are computed each time you run \verb|cmake|, but other
+\textit{cached} variables, once set, have their values recorded and stored in
+a file named \verb|CMakeCache.txt|.  Variables stored in this file can be
+edited using the \verb|ccmake| program (Linux) or the \verb|CMakeSetup.exe|
+program (Windows).  This not only lets users enter certain data just one time
+(i.e., the string that specifies the version of MOOS being built), but it also
+exposes some CMake variables that whose value the user might want to correct.
 
+For example, when CMake looks for the FLTK libraries, one variable that gets
+set is \verb|FLTK_DIR|.  If CMake's \verb|FindFLTK| package can't figure out
+where the FLTK libraries are, it will set the cached \verb|FLTK_DIR| variable
+to have a value of \verb|FLTK_DIR-NOTFOUND|.  The user can run \verb|ccmake|
+or \verb|CMakeSetup.exe| to manually set the value of \verb|FLTK_DIR| to
+a valid value (typically \verb|/usr/lib| for that particular variable), and
+then re-run \verb|cmake|.  This is typically enough of a help for a CMake
+package such as \verb|FindFLTK| package to work out the rest of the details it
+needs to.
+
+Sometimes a \verb|CMakeCache.txt| file will contain so many bad values that
+the user decides it's better just to start from scratch.  In general it's
+safe for a user to manually delete a \verb|CMakeCache.txt| file.  When he
+next runs \verb|cmake|, the variables whose values had been contained in the
+file will simply be freshly computed.
 
 \subsubsection{cmake, ccmake, CMakeSetup.exe}
+\verb|cmake| is used to generate build-system files from a set of \verb|CMakeLists.txt|
+files.  \verb|cmake| will also read from and write to a \verb|CMakeCache.txt| in the
+directory from which \verb|cmake| is run.
+
+Sometimes \verb|cmake| doesn't succeed the firs time it's run.  The FLTK module from
+above is a good example.  We can easily write \verb|CMakeLists.txt| that would terminate
+the \verb|cmake| invocation if the cached \verb|FLTK_DIR| variable had a value of \verb|FLTK_DIR-NOTFOUND|.
+
+One solution to such a problem would be for the user to specify a good value on the
+\verb|cmake| command line.  For example:
+\begin{verbatim}
+> cmake -DFLTK_DIR=/usr/lib -f CMakeLists.txt
+\end{verbatim} 
+
+This approach is sometimes the best, but \verb|ccmake| and \verb|CMakeSetup.exe| offer a
+more interactive approach to configuring the build system.  Within these tools, you continue
+re-running \verb|cmake| and modifing cached variable values until the \verb|cmake| succeeds.
+At that point the user instructs the tool to ``generate'' the build system files (on Linux,
+this typically includes a set of \verb|Makefile|s).  Once this is done the user will 
+be ready to run \verb|make| (or whatever the equivalent action is for his build tool).
+
+Note that \verb|ccmake| and \verb|CMakeSetup.exe| will not create the build system files
+until the set of CMake variable values has stabilized.  This means that the tool must observe
+that when it runs \verb|cmake|, none of the cached variables' values have changed.  This
+relates to the fact that run \textit{n} of \verb|cmake| may set new value in a cached variable,
+but the ramifications of that new variable aren't fully realized until the next invocation of
+\verb|cmake| makes use of that value.
+
+Practically speaking the need to iteratively run \verb|cmake| within \verb|ccmake| and \verb|CMakeSetup.exe| doesn't feel burdensome.  And if one knows the proper values for all
+of the CMake variables of interest, you can set them on the \verb|cmake| command line 
+as shown above, thus entirely avoiding the need to run \verb|ccmake| or
+\verb|CMakeSetup.exe|.
+
 \subsubsection{Finding External Packages}
 \subsubsection{Configuring until Stable}
 \subsubsection{In-source vs. Out-of-source Builds}
