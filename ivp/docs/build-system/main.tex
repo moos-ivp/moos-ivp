@@ -10,26 +10,90 @@
 
 \maketitle
 
+\begin{abstract}
+This document details the design and intended use of MOOS-IvP's build system.
+\end{abstract}
+
 \tableofcontents
 
 \parskip 7.2pt           % sets spacing between paragraphs
 
-%%%%%
-
-\begin{abstract}
-Foo
-\end{abstract}
-
 \section{HOWTO Build MOOS-IvP}
-x
+This section gives some basic background in using any CMake-based build system,
+and then explains how to use MOOS-IvP's particular build system.
 
-\subsection{Two Build Systems}
-x
+\subsection{CMake}
 
-\subsection{CMake Overview}
-x
+\subsubsection{Overview}
+CMake (\verb|cmake.org|) is a cross-platform build system.  Compared to traditional 
+Makefiles, CMake's control files (named \verb|CMakeLists.txt|) tend to be much shorter
+and easier to read.
 
-\subsection{How to Build MOOS-Ivp}
+CMake has a number of back-ends for various operating systems and Make programs
+(gmake, nmake, etc.) and IDEs (MS VisualStudio, KDevelop, Apple's XCode, etc.)
+CMake-based build systems trivially support some features that can be a real
+hassle to implement in hand-written Makefiles, such as calculating header file
+dependencies and supporting an \verb|install| target.
+
+The \verb|cmake| program reads in a project's \verb|CMakeLists.txt| files and produces
+one or more files suitable for use in your build-system of choice (GNU Make, 
+MS VisualStudio, etc.)  These generated build files will typically invoke the
+\verb|cmake| program when building certain targets; therefore CMake must be installed
+on any computer that will execute \verb|cmake|-produced build files.
+
+\subsubsection{Language for Describing Makefiles}
+\verb|CMakeLists.txt| files are written in an imperative language which is
+documented on CMake's website.  The language lets you set variables and
+supports branching, looping, and a limited form of subroutines (called
+\verb|MACRO|'s).
+
+When \verb|cmake| processes a project's \verb|CMakeLists.txt| files, the program
+embodied in those files specifies the details of the build system to be created.
+The \verb|CMakeLists.txt| files execute sequentially, specifying details as they
+run.  Then end product is not a fully built version of your project, but rather
+a set of build files (\verb|Makefile|, etc.) that when executed will build your
+project.
+
+The sequential nature of the programming language lets variables be computed,
+helper programs run, conditions to be tested, etc. in order to determine what should
+happen when the person building the project finally runs \verb|make| (or performs the
+equivalent action in VisualStudio, XCode, etc. ).
+
+\subsubsection{Federated Builds}
+A typical CMake-based build system will contain one \verb|CMakeLists.txt| file
+in each of the project's source tree's directories.  
+
+The project's top-level \verb|CMakeLists.txt| file typically sets variables that
+affect the entire project's build details, such as the directory into which 
+the built libraries and / or executables should be placed after being linked, and
+the directory(ies) in which the project's header files can be found.
+
+The \verb|CMakeLists.txt| files
+in the internal levels of the source tree often do nothing other than call
+\verb|ADD_SUBDIRECTORY| on each of that directory's subdirectories; this is very
+similar in effect to executing a \verb|#include| directive.  This is because 
+the intermediate-level directories often exist merely to group together 
+subdirectories into units that are meaningful to the programmer, and thus
+have little impact on the way the project code is actually built.
+
+The source tree's leaf directories typically contain the bulk of the project's 
+interesting source code, with each subdirectory having the code for a single
+library or executable.  The \verb|CMakeLists.txt| file in one of these leaf
+directories will generally contain an \verb|ADD_LIBRARY| or \verb|ADD_EXECUTABLE|
+command which leads to the compilation and linking of that one particular
+program / library.
+
+\subsubsection{Inherited Variables, Cache Files}
+
+
+\subsubsection{cmake, ccmake, CMakeSetup.exe}
+\subsubsection{Finding External Packages}
+\subsubsection{Configuring until Stable}
+\subsubsection{Other Resources}
+
+\subsection{Source Tree Organization and the Two Build Systems}
+
+\subsection{Building MOOS-Ivp}
 x
 
 \subsection{Finding Needed Files}
