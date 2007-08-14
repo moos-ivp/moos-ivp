@@ -1,0 +1,74 @@
+\documentclass[letterpaper,10pt]{article}
+\usepackage{graphicx}
+\usepackage{verbatim}
+
+\title{The MOOS-IvP Build System}
+\author{Christian Convey (christian.convey@navy.mil)}
+\date{2007-08-14}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\parskip 7.2pt           % sets spacing between paragraphs
+
+%%%%%
+
+\begin{abstract}
+Foo
+\end{abstract}
+
+\section{HOWTO Build MOOS-IvP}
+x
+
+\subsection{Two Build Systems}
+x
+
+\subsection{CMake Overview}
+x
+
+\subsection{How to Build MOOS-Ivp}
+x
+
+\subsection{Finding Needed Files}
+x
+
+\subsubsection{FLTK}
+x
+
+\subsubsection{Python.h}
+x
+
+\subsection{Other Important CMake Variables}
+x
+\subsection{Builds: In-source vs. Out-of-source}
+
+\section{Implementation of MOOS-IvP Build System }
+\subsection{Each Program / Library is Optional}
+\subsection{Internal Dependencies}
+- If building IvP on its own, then CMake sees things like MOOSGen as
+a simple library dependency, so you must build MOOS first.
+- If building MOOS-IvP as a combined project, CMake knows that MOOSGen
+is another build target, and will understand dependencies.
+
+\section{Future Work}
+
+
+\subsection{Debian packaging}
+
+\subsection{RPM packaging}
+
+\subsection{Windows builds}
+
+\subsection{Windows packaging}
+
+\subsection{Building Documentation}
+
+\subsection{Building IvP's Website}
+
+\subsection{Supporing Release Creation}
+
+
+\end{document}

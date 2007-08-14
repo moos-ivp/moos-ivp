@@ -1,0 +1,63 @@
+\documentclass[letterpaper,10pt]{article}
+\usepackage{graphicx}
+\usepackage{verbatim}
+
+\title{The MOOS-IvP Build System}
+\author{Christian Convey (christian.convey@navy.mil)}
+\date{2007-08-14}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\parskip 7.2pt           % sets spacing between paragraphs
+
+%%%%%
+
+\begin{abstract}
+Foo
+\end{abstract}
+
+\section{HOWTO Build MOOS-IvP}
+x
+
+\subsection{Two Build Systems}
+x
+
+\subsection{CMake Overview}
+x
+
+\subsection{How to Build MOOS-Ivp}
+x
+
+\subsection{Finding Needed Files}
+x
+
+\subsubsection{FLTK}
+x
+
+\subsubsection{Python.h}
+x
+
+\subsection{Other Important CMake Variables}
+x
+
+\section{Implementation of MOOS-IvP Build System }
+x
+
+\section{Future Work}
+x
+
+\subsection{Debian packaging}
+x
+
+\subsection{Building Documentation}
+x
+
+\subsection{Supporing Release Creation}
+x
+
+
+\end{document}
