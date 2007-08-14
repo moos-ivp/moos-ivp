@@ -9,7 +9,7 @@ IF("${IVP_BUILD_pBearings}" STREQUAL "ON")
    MOOS
    MOOSGen
    opt
-   newmat
+   newmat10D
    m
    pthread)
 ENDIF("${IVP_BUILD_pBearings}" STREQUAL "ON")

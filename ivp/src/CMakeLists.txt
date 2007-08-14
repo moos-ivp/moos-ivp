@@ -5,11 +5,14 @@
 # Note: The value of IVP_BINARY_DIR was automatically established by CMake when
 # our top-level CMakeLists.txt file invoked the command PROJECT(IVP). -CJC
 
-# SET( LIBRARY_OUTPUT_PATH ${IVP_BINARY_DIR}/bin CACHE PATH
-#      "Output directory for the IvP libraries" )
-
-SET( EXECUTABLE_OUTPUT_PATH ${IVP_BINARY_DIR}/bin CACHE PATH
-     "Output directory for the IvP executables" )
+# The MOOS build will have set its own values for these variables, and we don't
+# want those values to affect where IvP's libs and executables go.  So change 
+# their values within the context of IvP's targets.
+#
+# By avoiding use of the CACHE option, we force the (temporary) value of these
+# variables rather than picking up the cached values used in MOOS.
+SET( LIBRARY_OUTPUT_PATH "")
+SET( EXECUTABLE_OUTPUT_PATH ${IVP_BINARY_DIR}/src/bin)
 
 #===============================================================================
 # Specify where to find MOOS's headers and libraries...

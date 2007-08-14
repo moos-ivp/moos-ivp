@@ -249,6 +249,9 @@ IVP_BUILD_BY_DEFAULT=ON \
 SUBDIR=lib_navplot           LIBNAME=navplot           simple_lib_cmake_file
 
 IVP_BUILD_BY_DEFAULT=ON \
+SUBDIR=newmat10D           LIBNAME=newmat10D           simple_lib_cmake_file
+
+IVP_BUILD_BY_DEFAULT=ON \
 SUBDIR=lib_track             LIBNAME=opt               simple_lib_cmake_file
 
 IVP_BUILD_BY_DEFAULT=ON \
@@ -587,7 +590,7 @@ LINK_LIBS="
    MOOS
    MOOSGen
    opt
-   newmat
+   newmat10D
    m
    pthread" \
 simple_app_cmake_file
