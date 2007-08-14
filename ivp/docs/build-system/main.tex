@@ -1,6 +1,9 @@
 \documentclass[letterpaper,10pt]{article}
-\usepackage{graphicx}
+% \usepackage{graphicx}
 \usepackage{verbatim}
+\usepackage{epsfig}
+
+% \usepackage{}
 
 \title{The MOOS-IvP Build System}
 \author{Christian Convey (christian.convey@navy.mil)}
@@ -84,6 +87,40 @@ command which leads to the compilation and linking of that one particular
 program / library.
 
 \subsubsection{Inherited Variables, Cache Files}
+
+% \begin{figure}[h]
+% \centerline{
+% % 	\epsfig{file=file-structure, scale=0.5}
+% 	\psfig{figure=file-structure.ps,width=5in};
+% }
+% \caption{Picture without equations}
+% \label{fig-eg2}
+% \end{figure}
+
+% \begin{figure}[htp]
+% \centering
+% \newcommand*{\DOT}{.}
+
+\begin{figure}
+ \centering
+%  \includegraphics{file-structure.pdf}
+
+\includegraphics{file-structure.eps}
+ % file-structure.eps: 1179666x1179666 pixel, 300dpi, 9987.84x9987.84 cm, bb=0 0 595 842
+ \caption{My Caption}
+ \label{fig:foo}
+\end{figure}
+
+
+% \epsfig{file-structure.eps}
+% \includegraphics{file-structure}
+% \includegraphics[type=eps,ext=.eps,read=.eps]{file-structure}
+% \includegraphics[type=fig,ext=.fig,read=.fig]{file-structure}
+% \caption{Transverse momentum distributions}\label{fig:erptsqfit}
+% \end{figure}
+
+
+
 
 
 \subsubsection{cmake, ccmake, CMakeSetup.exe}
