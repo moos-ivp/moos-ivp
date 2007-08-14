@@ -1,3 +1,12 @@
+/*
+To build:
+
+dot -Tps file-structure.dot > file-structure.ps \
+&& ps2ps file-structure.ps file-structure.fixed.ps \
+&& ps2epsi file-structure.fixed.ps file-structure.epsi
+
+*/
+
 digraph {
    graph[
       rankdir = "LR"
