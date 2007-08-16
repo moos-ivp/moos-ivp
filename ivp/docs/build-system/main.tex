@@ -168,6 +168,7 @@ next runs \verb|cmake|, the variables whose values had been contained in the
 file will simply be freshly computed.
 
 \subsubsection{cmake, ccmake, CMakeSetup.exe}
+\label{sec:ccmake}
 \verb|cmake| is used to generate build-system files from a set of \verb|CMakeLists.txt|
 files.  \verb|cmake| will also read from and write to a \verb|CMakeCache.txt| in the
 directory from which \verb|cmake| is run.
@@ -202,8 +203,82 @@ as shown above, thus entirely avoiding the need to run \verb|ccmake| or
 \verb|CMakeSetup.exe|.
 
 \subsubsection{Finding External Packages}
-\subsubsection{Configuring until Stable}
+When it comes to telling the build system where to find the header files and
+development libraries for external packages such as FLTK or libGLU, CMake is
+similar to GNU's \verb|autoconf|:  Contributors write CMake modules to discover 
+the details needed to use a particular program, library, etc.  \verb|automake|
+packages are written in the \verb|m4| macro language, whereas CMake modules are
+written in CMake's scripting language - the same language used in 
+\verb|CMakeLists.txt| files.  
+
+CMake includes a number of these packages as a 
+part of its standard distribution.  On Ubuntu Linux you can see those modules
+in the directory 
+
+\begin{verbatim}
+ /usr/share/cmake-2.4/Modules/
+\end{verbatim} 
+
+
+You can also write your
+own modules, but you need to tell CMake about which directories to search when
+looking for extra modules that you've written.
+
+Sometimes the standard supplied modules are of lower quality and you might want
+to use your own CMake code instead.  A good example is \verb|FindFLTK|, 
+which is used by both MOOS and IvP in order to discover the locations of the
+include files and libraries for the FLTK library.  \verb|FindFLTK| does a bad
+job of discovering the locations of these files, even if they're in
+\verb|/usr/include/FL| and \verb|/usr/lib|, as expected.  \verb|FindFLTK| is 
+also structured so that it's inconvenient to test whether or not FLTKs header
+files and libraries have been found, without also requireding that the 
+\verb|fluid| program (unused by MOOS and IvP) is installed.
+
+MOOS avoids this quality problem by using a customized version of the module,
+implemented in the file:
+
+\verb|MOOS/MOOSFindFLTK.cmake|
+
+But even that customized version of \verb|FindFLTK| has a painfully complex
+implementation, and it still needs help just to realize that it should look
+in the directory \verb|/usr/lib|
+to find the FLTK libraries.
+
+
+\subsubsection{Multiple Attempts to Configure the Project}
+\textit{Configuring} a CMake-based project is the act of attempting to create
+the build files (i.e., \verb|Makefile|, etc.) needed to build your software.
+As described in Section \ref{sec:ccmake}, this make require multiple attempts
+in order to ensure that all of the important CMake variables have the values
+required to build your software the way you want it.
+
 \subsubsection{In-source vs. Out-of-source Builds}
+CMake can accomodate either in-source or out-of-source builds.  An 
+\textit{in-source} build is one in which the build files (\verb|Makefile|, etc.)
+and the intermediate files (\verb|.o| files mostly) are stored in the very same
+directories that contain the project's source code.  
+
+An \textit{out-of-source build} is one in which these files are stored somewhere
+else.  When you create an out-of-source build, CMake will generally create a
+directory tree whose structure mirrors that of the source tree.
+
+It's often preferable to use out-of-source builds when possible.  When one
+configures a project using \verb|cmake| (or \verb|ccmake| or 
+\verb|CMakeSetup.exe|), certain details become fixed and cannot be changed
+no matter what environment variables you set prior to running \verb|make|
+within that build tree.  Examples include whether the code will be built
+in debug or release mode (governed by the value of the \verb|CMAKE_BUILD_TYPE|
+variable), and where files will be installed if you run \verb|make install|
+(governed by the value of the \verb|CMAKE_INSTALL_PREFIX| variable).  
+
+If one wants to rapidly switch, for example, between release and debug builds,
+then it may be desirable to maintain two separate out-of-source configurations
+that differ only in their value of the \verb|CMAKE_BUILD_TYPE| variable.
+
+Another example of where the use of out-of-source configurations is useful 
+is when the MOOS-IvP build system produces Debian packages.  Our technique
+for producing the different Debian packages involves varying the value of
+the \verb|CMAKE_INSTALL_COMPONENT| CMake variable.   
 
 \subsection{Source Tree Organization and the Two Build Systems}
 
