@@ -262,6 +262,28 @@ An \textit{out-of-source build} is one in which these files are stored somewhere
 else.  When you create an out-of-source build, CMake will generally create a
 directory tree whose structure mirrors that of the source tree.
 
+When one runs \verb|cmake| or \verb|ccmake| or \verb|CMakeSetup.exe| to initially
+configure a project, he passes as a command-line argument the root of the source 
+code directory tree.  CMake will look within that specified directory tree for
+the \verb|CMakeLists.txt| files that guide the creation of the build files, but
+it will create the build files (\verb|Makefile|, etc.) in the current working 
+directory from which \verb|cmake| was invoked.  Therefore an in-source build
+tends to look like this:
+\begin{verbatim}
+cd ~/MyProj/src
+ccmake ./
+make
+\end{verbatim} 
+
+and an out-of-source build tends to look liks this:
+\begin{verbatim}
+mkdir ~/MyBuildDir
+cd ~/MyBuildDir
+ccmake ~/MyProj/src
+make
+\end{verbatim} 
+
+
 It's often preferable to use out-of-source builds when possible.  When one
 configures a project using \verb|cmake| (or \verb|ccmake| or 
 \verb|CMakeSetup.exe|), certain details become fixed and cannot be changed
@@ -273,14 +295,34 @@ variable), and where files will be installed if you run \verb|make install|
 
 If one wants to rapidly switch, for example, between release and debug builds,
 then it may be desirable to maintain two separate out-of-source configurations
-that differ only in their value of the \verb|CMAKE_BUILD_TYPE| variable.
+that differ only in their value of the \verb|CMAKE_BUILD_TYPE| variable.  One
+might therefore do something like this:
+
+\begin{verbatim}
+mkdir ~/MyBuildDir/release
+~/MyBuildDir/release
+ccmake -DCMAKE_BUILD_TYPE=Release ~/MyProj/src
+make
+
+mkdir ~/MyBuildDir/debug
+~/MyBuildDir/debug
+ccmake -DCMAKE_BUILD_TYPE=Debug ~/MyProj/src
+make
+\end{verbatim} 
+
 
 Another example of where the use of out-of-source configurations is useful 
 is when the MOOS-IvP build system produces Debian packages.  Our technique
 for producing the different Debian packages involves varying the value of
-the \verb|CMAKE_INSTALL_COMPONENT| CMake variable.   
+the \verb|CMAKE_INSTALL_COMPONENT| CMake variable.
+
+In order to remain consistent with the general behavior of the of IvP's
+previous build system, the top level \verb|build.sh| script performs an
+in-source build.  However, the MOOS-IvP project can be built equally well
+as an out-of-source build.
 
 \subsection{Source Tree Organization and the Two Build Systems}
+
 
 \subsection{Building MOOS-Ivp}
 x
