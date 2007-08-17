@@ -534,29 +534,40 @@ As of this writing, this script only creates IvP's \verb|CMakeLists.txt| files, 
 of MOOS's.  This is because the MOOS project already has a CMake-based build system in 
 place and there's no obvious need to re-implement it.
 
-\subsection{Internal Dependencies}
-TODO
-- If building IvP on its own, then CMake sees things like MOOSGen as
-a simple library dependency, so you must build MOOS first.
-- If building MOOS-IvP as a combined project, CMake knows that MOOSGen
-is another build target, and will understand dependencies.
 
 \section{Future Work}
 
 
 \subsection{Debian packaging}
+Debian packaging can be accomplished by some minor additions to IvP's 
+CMake-based build system.  We've already submitted a patch for doing this
+in MOOS to Paul Newman, so the techniques and code have been worked out
+already.
 
 \subsection{RPM packaging}
+CMake 2.6, expected to be released in late 2007, should have a feature for
+easily producing RedHat Package Manager (RPM) software packages.  When this
+happens we may support this for MOOS-IvP.
 
 \subsection{Windows builds}
+Now that all of MOOS-IvP can be built with CMake, we may be able to build
+the software on Windows with little or no additional effort.
 
 \subsection{Windows packaging}
+Develop an installation technique for MOOS-IvP that's convenient for Windows
+programmers.  We haven't yet investigated what the most preferred form of
+packaging is.
 
 \subsection{Building Documentation}
+CMake can easily build man pages, Doxygen documentation, etc.  Building it
+with CMake helps us to package the documentation for end-user use, as well
+as creating \verb|...-doc| Debian packages and whatever the RPM equivalent
+would be.
 
 \subsection{Building IvP's Website}
-
-\subsection{Supporing Release Creation}
-
+CMake's scripting language should be sufficient for expressing how to create
+new versions of IvP's static html website.  This would be useful to ensure that
+the website is always synchronized with the most current release of our software
+and documentation.
 
 \end{document}
