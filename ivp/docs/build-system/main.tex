@@ -1,5 +1,5 @@
 \documentclass[letterpaper,10pt]{article}
-% \usepackage{graphicx}
+\usepackage{graphicx}
 \usepackage{verbatim}
 \usepackage{epsfig}
 
@@ -314,7 +314,11 @@ make
 Another example of where the use of out-of-source configurations is useful 
 is when the MOOS-IvP build system produces Debian packages.  Our technique
 for producing the different Debian packages involves varying the value of
-the \verb|CMAKE_INSTALL_COMPONENT| CMake variable.
+the \verb|CMAKE_INSTALL_COMPONENT| CMake variable.  It seemed overly intrusive
+to re-configure the build directory used by the person creating the Debian
+packages, so the Debian packaging scripts use out-of-source builds whose
+configurations have various values for the \verb|CMAKE_INSTALL_COMPONENT| 
+CMake variable.
 
 In order to remain consistent with the general behavior of the of IvP's
 previous build system, the top level \verb|build.sh| script performs an
@@ -322,23 +326,135 @@ in-source build.  However, the MOOS-IvP project can be built equally well
 as an out-of-source build.
 
 \subsection{Source Tree Organization and the Two Build Systems}
+When targeting a Make-based build system, \verb|cmake| will produce a set
+of files named \verb|Makefile|, on in each directory of the tree.
+
+In order to permit MOOS-IvP's old set of Makefiles to remain present in
+the source tree, I renamed all of the old Makefiles to be named \verb|makefile|
+(note the lower-case filename).  In the old make system, the makefile
+in one directory builds the contents of its child directories by invoking
+the command \verb|make -f (child-dir)/makefile|.  Because the tweaked version of the 
+old build system specifically calls \verb|make| on the lower-case-named \verb|makefile|,
+the two build systems manage to remain completely independent.
+
+Our expectation is that after several months of gaining confidence in the CMake-based
+build system, Mike Benjamin will permit the old \verb|makefile| files to be 
+removed from the source tree.
+
+\subsection{Building MOOS-IvP}
+
+\subsubsection{Required Steps for old makefile-based build}
+In contrast to a previous organization of the MOOS-IvP directory tree, the
+\verb|ivp/src| no longer contains a subset of the programs and libraries that are
+part of the MOOS project.  Therefore if one is using the old makefiles to build
+IvP, he must first explicitly build the MOOS libraries so that they're available when
+the ivp programs are being linked.  This is the primary difference between the old
+and new technique for building IvP when using the old-style makefiles.
+
+The steps are as follows:
+
+\begin{enumerate}
+ \item Check-out or download the moo-ivp source code, into some directory \verb|foo/|.
+ \item Build MOOS:
+ \begin{enumerate}
+  \renewcommand{\labelenumii}{\arabic{enumi}.\arabic{enumii}.}
+   \item \verb|cd foo/MOOS|
+   \item \verb|../build.sh|
+
+	If this step fails, you may need to modify one or more of the directories
+	mentioned in the file \verb|../build.sh|.
+
+	Note that MOOS is being built with CMake, even though these present instructions
+	describe building IvP without using CMake.  This is because (a) we've decided to
+	stop importing code from the MOOS project directly into the IvP source tree, and
+	(b) the MOOS project uses CMake rather than hand-written makefiles.
+
+ \end{enumerate}
+
+ \item \verb|cd foo/ivp/src|
+ \item \verb|make -f makefile|
+
+	If you don't specify \verb|-f makefile|, and have previously used the
+	CMake-based build system in this directory, then your invocation of \verb|make|
+	will probable use the file \verb|ivp/src/Makefile| (note the upper-case \verb|M|).
+	That file is created by CMake, which presumably isn't what you want since these
+	present steps describe how to use IvP's \textit{non}-CMake build system.
+
+\end{enumerate}
 
 
-\subsection{Building MOOS-Ivp}
-x
+\subsubsection{Required Steps for CMake-based build (Easy Technique)}
+\begin{enumerate}
+ \item Check-out or download the moo-ivp source code, into some directory \verb|foo/|.
+ \item \verb|cd foo/|
+ \item \verb|./build.sh|
+\end{enumerate}
 
-\subsection{Finding Needed Files}
-x
+\subsubsection{Required Steps for CMake-based build (Advanced Technique)}
+This is the approach you'll need to take if CMake can't find some required header
+file or library, or if you want to tweak what set of programs and libraries are
+built.
 
-\subsubsection{FLTK}
-x
+\begin{enumerate}
+ \item Check-out or download the moo-ivp source code, into some directory \verb|foo/|.
+ \item \verb|cd foo/|
+ \item \verb|ccmake -f CMakeLists.txt|
 
-\subsubsection{Python.h}
-x
+	Within \verb|ccmake|, set variables as desired until you can generate the
+	build files.  Then generate them (within \verb|ccmake|).
 
-\subsection{Other Important CMake Variables}
-x
-\subsection{Builds: In-source vs. Out-of-source}
+	Note that the file \verb|foo/build.sh| shows an invocation of \verb|cmake| that
+	sets some CMake variables that the current build system has trouble figuring
+	out on your own.  If you're having trouble getting any of those variables to
+	take on good value when using \verb|ccmake|, consider using the respective
+	values mentioned in \verb|foo/build.sh|
+
+\item \verb|make|
+
+\end{enumerate}
+
+
+\subsubsection{Requried Ubuntu Packages}
+The following is a (perhaps) partial list of packages that must be installed on a 
+Ubuntu 7.04 (``Feisty Fawn'') system in order to build IvP and the non-Matlab parts
+of MOOS:
+\begin{center}
+% use packages: array
+\begin{tabular}{|l|l|}
+\hline
+Ubuntu package & Reason needed \\
+\hline
+\hline
+mesa-common-dev & Requried to build programs that use FLTK + OpenGL \\
+\hline
+libfltk1.1-dev & Requried to build programs that use FLTK + OpenGL \\
+\hline
+libglu1-mesa-dev & Requried to build programs that use FLTK + OpenGL \\
+\hline
+libtiff4-dev & Requried to build programs that use FLTK + OpenGL \\
+\hline
+libxft & Requried to build programs that use FLTK + OpenGL \\
+\hline
+libxft-dev & Requried to build programs that use FLTK + OpenGL \\
+\hline
+fluid & To satisfy CMake's \verb|FindFLTK| module \\
+\hline
+cmake & Integral part of build system \\
+\hline
+python-dev & Required to build \verb|uVoice|\\
+\hline
+\end{tabular}
+\end{center}
+
+
+
+
+\subsection{Important CMake Variables}
+\subsubsection{For FLTK}
+
+\subsubsection{For Python.h}
+
+\subsubsection{Other CMake Variables}
 
 \section{Implementation of MOOS-IvP Build System }
 \subsection{Each Program / Library is Optional}
