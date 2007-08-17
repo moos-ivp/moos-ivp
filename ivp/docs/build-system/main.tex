@@ -447,18 +447,95 @@ python-dev & Required to build \verb|uVoice|\\
 \end{center}
 
 
-
-
 \subsection{Important CMake Variables}
 \subsubsection{For FLTK}
+\begin{description}
+ \item[FLTK\_DIR] - This is the library where CMake's \verb|FindFLTK| module expects to 
+	find the FLTK libraries.  For mystifying reasons, it can't figure out on its own
+	to look in \verb|/usr/lib|.  You will probably want to set this to \verb|/usr/lib|.
+
+	As a bonus, once you do so, MOOS's customized version of that module, \verb|MOOSFindFLTK|,
+	will be able to figure out the proper value for \verb|FLTK_INCLUDE_DIR| all by itself.
+	As of this writing, IvP uses the standard version of \verb|FindFLTK| which sadly
+	cannot figure out the proper value for \verb|FLTK_INCLUDE_DIR| after you've provided
+	a valid value for \verb|FLTK_DIR|.
+
+ \item[FLTK\_INCLUDE\_DIR] - The directory that is expected to include a subdirectory 
+	named \verb|FL|,
+	which in turn contains FLTK's source files.  On Ubuntu Linux 7.04, at least, the 
+	proper value for this is \verb|/usr/include|.
+ \end{description}
 
 \subsubsection{For Python.h}
+\begin{description}
+ \item[IVP\_BUILD\_\_MOOS] - When this is \verb|ON| the build system will build \verb|uVoice|,
+	a Python
+	wrapper for MOOS's libraries.  When this is \verb|ON| you'll need to set a proper
+	value for the CMake variable \verb|PYTHON_INCLUDE_PATH| or else the build processes
+	won't attempt to build \verb|uVoice|.
+
+ \item[PYTHON\_INCLUDE\_PATH] - The directory containing the version of \verb|Python.h| that
+	should be used when building \verb|uVoice|.  On Ubuntu Linux 7.04, which by default
+	uses Python version 2.5, the correct value for this variable is 
+	\verb|/usr/include/python2.5|, assuming that you're trying to make a wrapper that
+	works with the host system's version of Python.
+ \end{description}
 
 \subsubsection{Other CMake Variables}
+\begin{description}
+ \item[IVP\_BUILD\_...] - There's one of these variables for each program and library
+	in the IvP part of the moos-ivp source tree.  Setting a value to \verb|ON| will
+	cause the corresponding program or library to be included in the build process.
 
-\section{Implementation of MOOS-IvP Build System }
-\subsection{Each Program / Library is Optional}
+	Several programs / libraries that were by default \textit{not} built by the
+	old build system have a default value of \verb|OFF| for this variable.  All others
+	default to \verb|ON|.
+
+	Note that the current IvP build system does not enforce, at this step, 
+	the build dependencies between libraries and the programs that require them at
+	link-time.  If you disabling the building of a library but enable the building
+	of some program that must be linked to that library, you'll end up with an error
+	from the linker when that program is being built.
+
+ \item[BUILD\_...] - These come from the MOOS side of the project.  Setting one of these
+	variables to \verb|ON| may lead to the appearance of even more such variables
+	when you next configure the build tree, because MOOS's build system supports
+	a two-level hierarchy of dis-/en-abling the building of its programs and libraries.
+
+ \item[CMAKE\_BUILD\_TYPE] - By convention, any CMake variable whose name starts with
+	\verb|CMAKE_| has special meaning to CMake.  This variable controls details related
+	to debug vs. optimized builds.  Two noteworthy values are \verb|Debug| and \verb|Release|.
+
+ \end{description}
+
+
+\section{MOOS-IvP Build System Implementation Details}
+
+\subsection{create-subdir-cmake-files.sh}
+IvP's source tree contains about 79 libraries and applications as of this writing, each of
+which requires its own \verb|CMakeLists.txt| file.  Most IvP programs have similar needs
+for their \verb|CMakeLists.txt| files, and the same goes for most IvP libraries.
+
+Because this regularity exists, and because all 79 of those \verb|CMakeLists.txt| files must
+be rewritten when certain improvements are made to the build system, IvP contains a
+script (plus a few helper files) to re-create those 79 \verb|CMakeLists.txt| files 
+whenever required.
+
+That script is named \verb|create-subdir-cmake-files.sh|.  It and its support files are 
+found in the directory
+\begin{verbatim}
+ivp/scripts/util/create-subdir-cmake-files 
+\end{verbatim} 
+
+Whenever a library or program is added to or removed from IvP, this script should be
+modified so that we can always easily recreate and / or redesign IvP's build system.
+
+As of this writing, this script only creates IvP's \verb|CMakeLists.txt| files, and none
+of MOOS's.  This is because the MOOS project already has a CMake-based build system in 
+place and there's no obvious need to re-implement it.
+
 \subsection{Internal Dependencies}
+TODO
 - If building IvP on its own, then CMake sees things like MOOSGen as
 a simple library dependency, so you must build MOOS first.
 - If building MOOS-IvP as a combined project, CMake knows that MOOSGen
