@@ -53,6 +53,8 @@ digraph whole_graph {
 
    }
 
+/*
+
    node_cmakelists2A_content:f1 -> node_cmakelists3A_content
    node_cmakelists2A_content:f2 -> node_dir3_docs_content
 
@@ -139,12 +141,6 @@ digraph whole_graph {
          label="AOF_AvoidCollisionRC.cpp"
       ]
 
-/*
-      node_app_cpaview_AOF_CutRangeCPA_cpp [
-         label="AOF_CutRangeCPA.cpp"
-      ]
-*/
-
       node_app_cpaview_etc_cpp [
          label="..."
          color=white
@@ -155,7 +151,6 @@ digraph whole_graph {
       ]
 
       node_cmakelists4_app_cpaview_content:f1->node_app_cpaview_AOF_AvoidCollisionRC_cpp
-  //    node_cmakelists4_app_cpaview_content:f1->node_app_cpaview_AOF_CutRangeCPA_cpp
       node_cmakelists4_app_cpaview_content:f1->node_app_cpaview_etc_cpp[style=invis]
       node_cmakelists4_app_cpaview_content:f1->node_app_cpaview_AOF_main_cpp
    }
@@ -186,5 +181,5 @@ digraph whole_graph {
       node_cmakelists4_uXMS_content:f1->node_uXMS_uXMSMain_cpp
       node_cmakelists4_uXMS_content:f1->node_uXMS_XMS_cpp
    }
-
+*/
 }
