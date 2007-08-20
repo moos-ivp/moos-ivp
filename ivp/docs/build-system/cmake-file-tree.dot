@@ -1,11 +1,10 @@
 digraph whole_graph {
 
-/*
-   graph[
-      rankdir = "LR"
-   ]
-*/
-      fillcolor=grey
+//   graph[
+//      rankdir = "LR"
+//   ]
+
+//      fillcolor=grey
 
    //===========================================================================
 
@@ -23,17 +22,23 @@ digraph whole_graph {
    }
 
    node_cmakelists1A_content:f2 -> node_cmakelists2A_content
-   node_cmakelists1A_content:f3 -> node_dir2_etc
+   node_cmakelists1A_content:f3 -> node_dir2_MOOS_content
 
    //===========================================================================
 
-   node_dir2_etc [
-      label="..."
-      color=white
-   ]
+   subgraph cluster_dir2_MOOS {
+
+      label=".../trunk/ivp/MOOS/"
+
+      node_dir2_MOOS_content [
+         label="..."
+         color=white
+      ]
+
+   }
+
 
    //===========================================================================
-
 
    subgraph cluster_dir2A {
 
@@ -49,21 +54,28 @@ digraph whole_graph {
    }
 
    node_cmakelists2A_content:f1 -> node_cmakelists3A_content
-   node_cmakelists2A_content:f2 -> node_dir3_etc
+   node_cmakelists2A_content:f2 -> node_dir3_docs_content
+
 
    //===========================================================================
 
-   node_dir3_etc [
-      label="..."
-      color=white
-   ]
+   subgraph cluster_dir3_docs {
+
+      label=".../trunk/ivp/docs/"
+
+      node_dir3_docs_content [
+         label="..."
+         color=white
+      ]
+
+   }
    
    //===========================================================================
 
 
    subgraph cluster_dir3A {
 
-      label=".../trunk/ivp/src"
+      label=".../trunk/ivp/src/"
 
       node_cmakelists3A_content [
          label = "{<f0> CMakeLists.txt | <f1> ADD_SUBDIRECTORY(app_artfieldgenerator) \l | <f2> ADD_SUBDIRECTORY(app_cpaview) \l | <f3> ... | <f4> ADD_SUBDIRECTORY(uXMS) \l}"
@@ -89,7 +101,7 @@ digraph whole_graph {
    //===========================================================================
 
    subgraph cluster_dir4_app_artfieldgenerator {
-      label=".../trunk/ivp/src/app_artfieldgenerator"
+      label=".../trunk/ivp/src/app_artfieldgenerator/"
       rankdir = "LR"
      
 
@@ -112,7 +124,7 @@ digraph whole_graph {
    //===========================================================================
 
    subgraph cluster_dir4_app_cpaview {
-      label=".../trunk/ivp/src/app_cpaview"
+      label=".../trunk/ivp/src/app_cpaview/"
       rankdir = "LR"
      
 
@@ -127,9 +139,11 @@ digraph whole_graph {
          label="AOF_AvoidCollisionRC.cpp"
       ]
 
+/*
       node_app_cpaview_AOF_CutRangeCPA_cpp [
          label="AOF_CutRangeCPA.cpp"
       ]
+*/
 
       node_app_cpaview_etc_cpp [
          label="..."
@@ -141,7 +155,7 @@ digraph whole_graph {
       ]
 
       node_cmakelists4_app_cpaview_content:f1->node_app_cpaview_AOF_AvoidCollisionRC_cpp
-      node_cmakelists4_app_cpaview_content:f1->node_app_cpaview_AOF_CutRangeCPA_cpp
+  //    node_cmakelists4_app_cpaview_content:f1->node_app_cpaview_AOF_CutRangeCPA_cpp
       node_cmakelists4_app_cpaview_content:f1->node_app_cpaview_etc_cpp[style=invis]
       node_cmakelists4_app_cpaview_content:f1->node_app_cpaview_AOF_main_cpp
    }
@@ -150,7 +164,7 @@ digraph whole_graph {
    //===========================================================================
 
    subgraph cluster_dir4_uXMS {
-      label=".../trunk/ivp/src/uXMS"
+      label=".../trunk/ivp/src/uXMS/"
       rankdir = "LR"
      
 
