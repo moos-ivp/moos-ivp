@@ -1,9 +1,0 @@
-Package: moos-navigation-and-control-dev
-Version: @PACKAGE_VERSION@-@PACKAGE_BUILD_NUM@
-Section: devel
-Priority: optional
-Architecture: i386
-Depends:
-Maintainer: Paul Newman <pnewman@robots.ox.ac.uk>
-Description: Provides MOOSNav and MOOSTask libraries and related header files
- (TODO: Add longer decription.)

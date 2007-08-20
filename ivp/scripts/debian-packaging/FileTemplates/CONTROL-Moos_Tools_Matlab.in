@@ -1,9 +1,0 @@
-Package: moos-tools-matlab
-Version: @PACKAGE_VERSION@-@PACKAGE_BUILD_NUM@
-Section: devel
-Priority: optional
-Architecture: i386
-Depends: moos-core (>= @PACKAGE_VERSION@)
-Maintainer: Paul Newman <pnewman@robots.ox.ac.uk>
-Description: Provides the iMatlab shared library for interfacing MOOS to Matlab
- (TODO: Add longer decription.)
