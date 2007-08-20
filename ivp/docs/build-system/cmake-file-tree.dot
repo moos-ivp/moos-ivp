@@ -1,0 +1,60 @@
+digraph whole_graph {
+
+/*
+   graph[
+      rankdir = "LR"
+   ]
+*/
+
+   //===========================================================================
+
+   subgraph cluster_dir1A {
+      rankdir = "LR"
+
+      label=".../trunk/"
+
+      node_cmakelists1A_content [
+         label = "{<f0> CMakeLists.txt | <f1> PROJECT(MOOS_IVP) \l | <f2> ADD_SUBDIRECTORY(MOOS) \l | <f3> ADD_SUBDIRECTORY(ivp) \l}"
+         shape = "record"
+         style=filled
+         color=white
+      ];
+   }
+
+   node_cmakelists1A_content:f3 -> node_cmakelists2A_content
+
+   //===========================================================================
+
+
+   subgraph cluster_dir2A {
+
+      label=".../trunk/ivp/"
+
+      node_cmakelists2A_content [
+         label = "{<f0> CMakeLists.txt | <f1> ADD_SUBDIRECTORY(docs) \l | <f2> ADD_SUBDIRECTORY(src) \l}"
+         shape = "record"
+         style=filled
+         color=white
+      ];
+
+   }
+
+   node_cmakelists2A_content:f2 -> node_cmakelists3A_content
+
+   //===========================================================================
+
+
+   subgraph cluster_dir3A {
+
+      label=".../trunk/ivp/src"
+
+      node_cmakelists3A_content [
+         label = "{<f0> CMakeLists.txt | <f1> ADD_SUBDIRECTORY(app_artfieldgenerator) \l | <f2> ADD_SUBDIRECTORY(app_cpaview) \l | ... | <f3> ADD_SUBDIRECTORY(uXMS) \l}"
+         shape = "record"
+         style=filled
+         color=white
+      ];
+
+   }
+
+}
