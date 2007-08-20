@@ -1,0 +1,10 @@
+Package: moos-essentials-dev
+Version: @PACKAGE_VERSION@-@PACKAGE_BUILD_NUM@
+Section: devel
+Priority: optional
+Architecture: i386
+Depends:
+Maintainer: Paul Newman <pnewman@robots.ox.ac.uk>
+Description: Provides the MOOSUtility library
+ The MOOSUtility library provides a number of utility and platform-neutralizing
+ functions for use by the MOOS software.
