@@ -1,10 +1,8 @@
 digraph whole_graph {
 
-//   graph[
-//      rankdir = "LR"
-//   ]
-
-//      fillcolor=grey
+  graph[
+//     size="7,8"
+  ]
 
    //===========================================================================
 
@@ -52,8 +50,6 @@ digraph whole_graph {
       ];
 
    }
-
-/*
 
    node_cmakelists2A_content:f1 -> node_cmakelists3A_content
    node_cmakelists2A_content:f2 -> node_dir3_docs_content
@@ -181,5 +177,5 @@ digraph whole_graph {
       node_cmakelists4_uXMS_content:f1->node_uXMS_uXMSMain_cpp
       node_cmakelists4_uXMS_content:f1->node_uXMS_XMS_cpp
    }
-*/
+
 }

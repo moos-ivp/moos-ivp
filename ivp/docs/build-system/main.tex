@@ -74,7 +74,17 @@ equivalent action in VisualStudio, XCode, etc. ).
 
 \subsubsection{Federated Builds}
 A typical CMake-based build system will contain one \verb|CMakeLists.txt| file
-in each of the project's source tree's directories.  
+in each of the project's source tree's directories.  A simplified depiction
+of this scheme is shown in Figure \ref{fig:cmake-file-tree}.
+
+
+\begin{figure}
+ \centering
+\includegraphics[width=4in]{cmake-file-tree.eps}
+   \caption{Conventionally each directory in the source code tree contains a CMakeLists.txt file.}
+   \label{fig:cmake-file-tree}
+\end{figure}
+
 
 The project's \textit{top-level} \verb|CMakeLists.txt| file typically sets variables that
 govern the entire project's build details, such as the directory into which 
@@ -138,7 +148,7 @@ parent directory's running instance of \verb|make|.
 \begin{figure}
  \centering
 \includegraphics[width=4in]{file-structure.eps}
-   \caption{ADD\_SUBDIRECTORY joines CMakeLists.txt files much like C's include}
+   \caption{ADD\_SUBDIRECTORY joins CMakeLists.txt files much like C's include}
    \label{fig:cmake-file-structure}
 \end{figure}
 
