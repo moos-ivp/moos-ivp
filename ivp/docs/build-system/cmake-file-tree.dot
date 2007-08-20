@@ -5,6 +5,7 @@ digraph whole_graph {
       rankdir = "LR"
    ]
 */
+      fillcolor=grey
 
    //===========================================================================
 
@@ -14,14 +15,22 @@ digraph whole_graph {
       label=".../trunk/"
 
       node_cmakelists1A_content [
-         label = "{<f0> CMakeLists.txt | <f1> PROJECT(MOOS_IVP) \l | <f2> ADD_SUBDIRECTORY(MOOS) \l | <f3> ADD_SUBDIRECTORY(ivp) \l}"
+         label = "{<f0> CMakeLists.txt | <f1> PROJECT(MOOS_IVP) \l | <f2> ADD_SUBDIRECTORY(ivp) \l | <f3> ADD_SUBDIRECTORY(MOOS) \l }"
          shape = "record"
          style=filled
          color=white
       ];
    }
 
-   node_cmakelists1A_content:f3 -> node_cmakelists2A_content
+   node_cmakelists1A_content:f2 -> node_cmakelists2A_content
+   node_cmakelists1A_content:f3 -> node_dir2_etc
+
+   //===========================================================================
+
+   node_dir2_etc [
+      label="..."
+      color=white
+   ]
 
    //===========================================================================
 
@@ -31,7 +40,7 @@ digraph whole_graph {
       label=".../trunk/ivp/"
 
       node_cmakelists2A_content [
-         label = "{<f0> CMakeLists.txt | <f1> ADD_SUBDIRECTORY(docs) \l | <f2> ADD_SUBDIRECTORY(src) \l}"
+         label = "{<f0> CMakeLists.txt | <f1> ADD_SUBDIRECTORY(src) \l | <f2> ADD_SUBDIRECTORY(docs) \l  }"
          shape = "record"
          style=filled
          color=white
@@ -39,8 +48,16 @@ digraph whole_graph {
 
    }
 
-   node_cmakelists2A_content:f2 -> node_cmakelists3A_content
+   node_cmakelists2A_content:f1 -> node_cmakelists3A_content
+   node_cmakelists2A_content:f2 -> node_dir3_etc
 
+   //===========================================================================
+
+   node_dir3_etc [
+      label="..."
+      color=white
+   ]
+   
    //===========================================================================
 
 
@@ -49,12 +66,111 @@ digraph whole_graph {
       label=".../trunk/ivp/src"
 
       node_cmakelists3A_content [
-         label = "{<f0> CMakeLists.txt | <f1> ADD_SUBDIRECTORY(app_artfieldgenerator) \l | <f2> ADD_SUBDIRECTORY(app_cpaview) \l | ... | <f3> ADD_SUBDIRECTORY(uXMS) \l}"
+         label = "{<f0> CMakeLists.txt | <f1> ADD_SUBDIRECTORY(app_artfieldgenerator) \l | <f2> ADD_SUBDIRECTORY(app_cpaview) \l | <f3> ... | <f4> ADD_SUBDIRECTORY(uXMS) \l}"
          shape = "record"
-         style=filled
-         color=white
+         style=filled,rounded
+         fillcolor=white
       ];
 
+   }
+
+   node_cmakelists3A_content:f1 -> node_cmakelists4_app_artfieldgenerator_content
+   node_cmakelists3A_content:f2 -> node_cmakelists4_app_cpaview_content
+   node_cmakelists3A_content:f3 -> node_dir4_etc[style=invis]
+   node_cmakelists3A_content:f4 -> node_cmakelists4_uXMS_content
+
+   //===========================================================================
+
+   node_dir4_etc [
+      label="..."
+      color=white
+   ]
+
+   //===========================================================================
+
+   subgraph cluster_dir4_app_artfieldgenerator {
+      label=".../trunk/ivp/src/app_artfieldgenerator"
+      rankdir = "LR"
+     
+
+      node_cmakelists4_app_artfieldgenerator_content [
+         label = "{<f0> CMakeLists.txt | <f1> FILE(GLOB SRC *.cpp) \l | ... | <f2> ADD_EXECUTABLE(artfieldgenerator $\{SRC\}) \l | ...}"
+         shape = "record"
+         style=filled,rounded
+         fillcolor=white
+      ];
+
+      node_app_artfieldgenerator_artfieldgeneratorMain_cpp [
+         label="artfieldgeneratorMain.cpp"
+      ]
+
+      node_cmakelists4_app_artfieldgenerator_content:f1 -> node_app_artfieldgenerator_artfieldgeneratorMain_cpp
+
+   }
+
+
+   //===========================================================================
+
+   subgraph cluster_dir4_app_cpaview {
+      label=".../trunk/ivp/src/app_cpaview"
+      rankdir = "LR"
+     
+
+      node_cmakelists4_app_cpaview_content [
+         label = "{<f0> CMakeLists.txt | <f1> FILE(GLOB SRC *.cpp) \l | ... | <f2> ADD_EXECUTABLE(cpaview $\{SRC\}) \l | ...}"
+         shape = "record"
+         style=filled,rounded
+         fillcolor=white
+      ];
+
+      node_app_cpaview_AOF_AvoidCollisionRC_cpp [
+         label="AOF_AvoidCollisionRC.cpp"
+      ]
+
+      node_app_cpaview_AOF_CutRangeCPA_cpp [
+         label="AOF_CutRangeCPA.cpp"
+      ]
+
+      node_app_cpaview_etc_cpp [
+         label="..."
+         color=white
+      ]
+
+      node_app_cpaview_AOF_main_cpp [
+         label="main.cpp"
+      ]
+
+      node_cmakelists4_app_cpaview_content:f1->node_app_cpaview_AOF_AvoidCollisionRC_cpp
+      node_cmakelists4_app_cpaview_content:f1->node_app_cpaview_AOF_CutRangeCPA_cpp
+      node_cmakelists4_app_cpaview_content:f1->node_app_cpaview_etc_cpp[style=invis]
+      node_cmakelists4_app_cpaview_content:f1->node_app_cpaview_AOF_main_cpp
+   }
+
+
+   //===========================================================================
+
+   subgraph cluster_dir4_uXMS {
+      label=".../trunk/ivp/src/uXMS"
+      rankdir = "LR"
+     
+
+      node_cmakelists4_uXMS_content [
+         label = "{<f0> CMakeLists.txt | <f1> FILE(GLOB SRC *.cpp) \l | ... | <f2> ADD_EXECUTABLE(uXMS $\{SRC\}) \l | ...}"
+         shape = "record"
+         style=filled,rounded
+         fillcolor=white
+      ];
+
+      node_uXMS_uXMSMain_cpp [
+         label="uXMSMain.cpp"
+      ]
+
+      node_uXMS_XMS_cpp [
+         label="XMS.cpp"
+      ]
+
+      node_cmakelists4_uXMS_content:f1->node_uXMS_uXMSMain_cpp
+      node_cmakelists4_uXMS_content:f1->node_uXMS_XMS_cpp
    }
 
 }
