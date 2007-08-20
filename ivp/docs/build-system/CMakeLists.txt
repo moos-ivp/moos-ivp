@@ -12,10 +12,16 @@ ADD_CUSTOM_COMMAND(OUTPUT cmake-file-tree.eps
    DEPENDS cmake-file-tree.dot
    )
 
+ADD_CUSTOM_COMMAND(OUTPUT cmake-data-flow.eps
+   COMMAND fig2dev -L eps cmake-data-flow.fig cmake-data-flow.eps
+   DEPENDS cmake-data-flow.fig
+   )
+
 ADD_CUSTOM_TARGET(build-system.pdf ALL
    COMMAND latex main.tex
    COMMAND dvipdf main.dvi build-system.pdf
    DEPENDS 
       file-structure.eps
       cmake-file-tree.eps
+      cmake-data-flow.eps
    )
