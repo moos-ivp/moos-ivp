@@ -339,12 +339,12 @@ might therefore do something like this:
 
 \begin{verbatim}
 mkdir ~/MyBuildDir/release
-~/MyBuildDir/release
+cd ~/MyBuildDir/release
 ccmake -DCMAKE_BUILD_TYPE=Release ~/MyProj/src
 make
 
 mkdir ~/MyBuildDir/debug
-~/MyBuildDir/debug
+cd ~/MyBuildDir/debug
 ccmake -DCMAKE_BUILD_TYPE=Debug ~/MyProj/src
 make
 \end{verbatim} 
@@ -570,7 +570,7 @@ whenever required.
 That script is named \verb|create-subdir-cmake-files.sh|.  It and its support files are 
 found in the directory
 \begin{verbatim}
-ivp/scripts/util/create-subdir-cmake-files 
+ivp/scripts/util/create-subdir-cmake-files/
 \end{verbatim} 
 
 Whenever a library or program is added to or removed from IvP, this script should be

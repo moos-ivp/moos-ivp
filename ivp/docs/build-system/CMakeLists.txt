@@ -6,7 +6,7 @@ ADD_CUSTOM_COMMAND(OUTPUT file-structure.eps
    )
 
 ADD_CUSTOM_COMMAND(OUTPUT cmake-file-tree.eps
-   COMMAND dot -Gsize="7,10" -Gpage="8.5,11"-Tps cmake-file-tree.dot -o cmake-file-tree.ps
+   COMMAND dot -Gsize="7,10" -Gpage="8.5,11" -Tps cmake-file-tree.dot -o cmake-file-tree.ps
    COMMAND ps2ps cmake-file-tree.ps cmake-file-tree.fixed.ps
    COMMAND ps2epsi cmake-file-tree.fixed.ps cmake-file-tree.eps
    DEPENDS cmake-file-tree.dot
