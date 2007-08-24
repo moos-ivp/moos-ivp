@@ -181,7 +181,7 @@ bool XYGrid::initialize(string given_config_str)
   if(!unit_square.isValid())
     return(false);
 
-  bool ok = initialize(bounding_poly, unit_square);
+  bool ok = initialize(bounding_poly, unit_square, initial_val);
 
   if(ok) {
     config_string = given_config_str;
@@ -364,7 +364,7 @@ void XYGrid::processDelta(const string& g_label, const string& g_str)
 // Procedure: initialize
 
 bool XYGrid::initialize(XYPolygon poly,
-			const XYSquare&  unit_square)
+			const XYSquare&  unit_square, double init_value)
 {
   int i, psize = poly.size();
   if(psize == 0)
@@ -392,7 +392,7 @@ bool XYGrid::initialize(XYPolygon poly,
   vector<double>   int_values;
   vector<double>   int_utils;
 
-  bool ok = initialize(outer_square, unit_square);
+  bool ok = initialize(outer_square, unit_square, init_value);
   if(!ok)
     return(false);
 
@@ -408,7 +408,7 @@ bool XYGrid::initialize(XYPolygon poly,
     spoly.add_vertex(xlow,  yhigh);
     if(spoly.intersects(poly)) {
       int_elements.push_back(elements[i]);
-      int_values.push_back(0);
+      int_values.push_back(init_value);
       int_utils.push_back(0);
     }
   }
@@ -426,7 +426,7 @@ bool XYGrid::initialize(XYPolygon poly,
 // Procedure: initialize
 
 bool XYGrid::initialize(const XYSquare& outer_square,
-			const XYSquare& unit_square)
+			const XYSquare& unit_square, double init_val)
 {
   double outer_x_len = outer_square.getLengthX();
   double outer_y_len = outer_square.getLengthY();
@@ -459,7 +459,7 @@ bool XYGrid::initialize(const XYSquare& outer_square,
       double y_high = y_low + unit_y_len;
       new_square.set(x_low, x_high, y_low, y_high);
       elements.push_back(new_square);
-      values.push_back(0.0);
+      values.push_back(init_val);
     }
   }
 

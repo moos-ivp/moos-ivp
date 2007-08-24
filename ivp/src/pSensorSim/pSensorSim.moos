@@ -1,0 +1,18 @@
+// MOOS file
+
+ServerHost = localhost
+ServerPort = 9000
+
+Community  = ArtifactHunt
+
+ProcessConfig = pSensorSim
+{
+   AppTick   = 4
+   CommsTick = 4
+   
+   ArtifactFile = mines.art
+   Artifact = X=10,Y=10
+   Sensor = FixedRadius
+   Sensor_Radius = 10   
+}
+

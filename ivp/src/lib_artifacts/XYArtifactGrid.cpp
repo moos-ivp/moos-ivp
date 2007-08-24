@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Andrew Shafer and Michael Benjamin                   */
 /*    ORGN: MIT Cambridge MA                                     */
-/*    FILE: ArtifactFieldModel.cpp                               */
+/*    FILE: XYArtifactGrid.cpp                                    */
 /*    DATE: 3 JUL 2007                                           */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
@@ -20,25 +20,17 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
-#include "ArtifactFieldModel.h"
+#include "XYArtifactGrid.h"
 #include <vector>
 
-/// This constructor sets all initial values to .5.
-ArtifactFieldModel::ArtifactFieldModel(int intSize)
+XYArtifactGrid::XYArtifactGrid()
 {
-	vecArtFieldModel.assign(intSize, .5);
+  min_val           = 0;
+  max_val           = 0;
+  min_util          = 0;
+  max_util          = 0;
+  min_util_possible = 0;
+  max_util_possible = 100;
 }
 
-/// Returns the contents of cell \n i.
-/// Does not do error checking (at() will throw exception)
-double ArtifactFieldModel::getCell(int i)
-{
-	return vecArtFieldModel.at(i);
-}
 
-/// Updates the contents of cell \n i.
-/// Does not check bounds on the input
-void ArtifactFieldModel::updateCell(int i, double newValue)
-{
-	vecArtFieldModel.at(i) = newValue;
-}

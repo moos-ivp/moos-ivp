@@ -22,6 +22,10 @@
 
 #include "ArtifactField.h"
 #include <sstream>
+#include "MBUtils.h"
+#include "GeomUtils.h"
+// iostream only for debugging
+// #include <iostream>
 
 /// Puts an artifact into the field
 void ArtifactField::addArtifact(std::string strInput)
@@ -58,3 +62,62 @@ int ArtifactField::size()
 {
 	return vecArtifacts.size();
 }
+
+/// Returns a vector of all artifacts within the 2D, X,Y box specified by
+/// \param x_lower Lower bound of x
+/// \param x_upper Upper bound of x
+/// \param y_lower Lower bound of y
+/// \param y_upper Upper bound of y
+std::vector<std::string> ArtifactField::getArtifactbox(double x_lower, double x_upper, double y_lower, double y_upper){
+	// Parse all of the artifacts for X,Y values, adding to local copy
+	std::string sx, sy;
+	double x, y;
+	
+	std::vector<std::string>::iterator p;
+	
+	std::vector<std::string> vecResults;
+	
+	for (p = vecArtifacts.begin(); p != vecArtifacts.end(); p++){
+		if(tokParse(*p, "X", ',', '=', x) && tokParse(*p, "Y", ',', '=', y)){
+			x = atof(sx.c_str());
+			y = atof(sy.c_str());
+			if(x > x_lower && x < x_upper && y > y_lower && y < y_upper){
+				vecResults.push_back(*p);
+			};
+		};
+	};
+
+	// Return remaining artifacts
+	return vecResults;
+};
+
+/// Returns a vector of all artifacts within the 2D, X,Y circle specified by
+/// \param x_val X value
+/// \param y_val XY value
+/// \param radius Radius to detect to
+std::vector<std::string> ArtifactField::getArtifactcircle(double x_val, double y_val, double radius){
+	// Parse all of the artifacts for X,Y values, adding to local copy
+	std::string sx, sy;
+	double x, y;
+	
+	std::vector<std::string>::iterator p;
+	
+	std::vector<std::string> vecResults;
+	
+	//std::cout << "Size of artifact field is " << vecArtifacts.size() << std::endl; //Debug line
+	
+	for (p = vecArtifacts.begin(); p != vecArtifacts.end(); p++){
+		//std::cout << "Object " << p - vecArtifacts.begin() << " :" << *p << std::endl; //Debug line
+		if(tokParse(*p, "X", ',', '=', sx) && tokParse(*p, "Y", ',', '=', sy)){
+			x = atof(sx.c_str());
+			y = atof(sy.c_str());
+			//std::cout << "X, Y, radius in artfield query are " << x << "," << y << "," << radius << std::endl; //Debug line
+			if(distPointToPoint(x_val, y_val, x, y) < radius){
+				vecResults.push_back(*p);
+			};
+		};
+	};
+
+	// Return remaining artifacts
+	return vecResults;
+};

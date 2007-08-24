@@ -1,4 +1,5 @@
 #!/bin/bash
+#Modified by ajshafer on Aug 15
 
 if [ -z "$1" ] ; then
     echo "GenMOOSApp: usage: $0 [app-name] [prefix]"
@@ -34,10 +35,10 @@ EOF
 
 cat >> ${1}.h <<EOF
 /************************************************************/
-/*    NAME: Michael Benjamin                                */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge             */
+/*    NAME: Andrew Shafer                                   */
+/*    ORGN: MIT                                             */
 /*    FILE: ${1}.h                                          */
-/*    DATE: Dec 29th 1963                                   */
+/*    DATE: Aug 15 2007                                     */
 /************************************************************/
 
 #ifndef ${1}_HEADER
@@ -65,10 +66,10 @@ EOF
 
 cat >> ${1}Main.cpp <<EOF
 /************************************************************/
-/*    NAME: Michael Benjamin                                */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge             */
+/*    NAME: Andrew Shafer                                   */
+/*    ORGN: MIT                                             */
 /*    FILE: ${1}Main.cpp                                    */
-/*    DATE: Dec 29th 1963                                   */
+/*    DATE: Aug 15 2007                                     */
 /************************************************************/
 
 #include "MOOSLib.h"
@@ -97,7 +98,7 @@ cat >> $2${1}.moos <<EOF
 ServerHost = localhost
 ServerPort = 9000
 
-ProcessConfig = ${1}
+ProcessConfig = ${2}${1}
 {
    AppTick   = 4
    CommsTick = 4
@@ -107,10 +108,10 @@ EOF
 
 cat >> ${1}.cpp <<EOF
 /************************************************************/
-/*    NAME: Michael Benjamin                                */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge             */
+/*    NAME: Andrew Shafer                                   */
+/*    ORGN: MIT                                             */
 /*    FILE: ${1}.cpp                                        */
-/*    DATE: Dec 29th 1963                                   */
+/*    DATE: Aug 15 2007                                     */
 /************************************************************/
 
 #include <iterator>

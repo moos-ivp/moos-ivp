@@ -110,6 +110,7 @@ FILE(GLOB IVP_LIB_TOOLS_SUBDIRS
    lib_ivpbuild-extra*
    lib_track*
    lib_ipfview*
+   lib_artifacts*
    uVoice
    )
 
@@ -131,6 +132,8 @@ FILE(GLOB IVP_APP_TOOLS_SUBDIRS
    uFunctionViewer
    iMicroModem*
    pBearings
+   pSensorSim*
+   pArtifactMapper*
 #    uPlayBack*       I don't see this file in the src directory. -CJC	        
 #    pDrone*          I don't see this file in the src directory. -CJC
 #    pMessageSim*     I don't see this file in the src directory. -CJC

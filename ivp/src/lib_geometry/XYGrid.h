@@ -67,8 +67,8 @@ public:
   std::string getLabel() const {return(label);};
 
 protected:
-  bool     initialize(XYPolygon, const XYSquare&);
-  bool     initialize(const XYSquare&, const XYSquare&);
+  bool     initialize(XYPolygon, const XYSquare&, double);
+  bool     initialize(const XYSquare&, const XYSquare&, double);
   void     clear();
     
 protected:

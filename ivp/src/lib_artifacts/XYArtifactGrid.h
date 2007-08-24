@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Andrew Shafer and Michael Benjamin                   */
 /*    ORGN: MIT Cambridge MA                                     */
-/*    FILE: ArtifactFieldModel.h                                 */
+/*    FILE: XYArtifactGrid.h                                     */
 /*    DATE: 3 JUL 2007                                           */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
@@ -20,18 +20,17 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
-#ifndef ARTIFACTFIELDMODEL_HEADER
-#define ARTIFACTFIELDMODEL_HEADER
+#ifndef XYARTIFACTGRID_HEADER
+#define XYARTIFACTGRID_HEADER
 
 #include <vector>
+#include "XYGrid.h"
 
-class ArtifactFieldModel {
-private:
-	std::vector<double> vecArtFieldModel;
+class XYArtifactGrid : public XYGrid {
 public:
-	ArtifactFieldModel(int);
-	double getCell(int);
-	void updateCell(int, double);
+  XYArtifactGrid();
+  virtual ~XYArtifactGrid() {};
+  
 };
 
 #endif

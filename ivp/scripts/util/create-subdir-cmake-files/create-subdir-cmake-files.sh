@@ -572,12 +572,13 @@ LINK_LIBS="
    pthread" \
 simple_app_cmake_file
 
-SUBDIR=pArtifactSensorSim \
-PROGNAME=pArtifactSensorSim \
+SUBDIR=pArtifactMapper \
+PROGNAME=pArtifactMapper \
 IVP_BUILD_BY_DEFAULT=OFF \
 LINK_LIBS="
    MOOS
    MOOSGen
+   geometry
    mbutil
    m
    pthread" \
@@ -709,16 +710,17 @@ LINK_LIBS="
       m" \
 fltk_app_cmake_file
 
-SUBDIR=pMineSim \
-PROGNAME=pMineSim \
+SUBDIR=pSensorSim \
+PROGNAME=pSensorSim \
 IVP_BUILD_BY_DEFAULT=ON \
 LINK_LIBS="
    MOOS
    MOOSGen
-   geometry
    mbutil
    m
-   pthread" \
+   pthread
+   artifacts
+   geometry" \
 simple_app_cmake_file
 
 SUBDIR=pTarget \

@@ -22,12 +22,22 @@
 
 #ifndef SENSORMODEL_HEADER
 #define SENSORMODEL_HEADER
+#include "ArtifactField.h"
+
+#include<string>
 
 class SensorModel {
 private:
+	double dSensorRadius;
+	std::string sSensorType;
+	
+	std::vector<std::string> queryFRSensor(std::string, ArtifactField*);
+	
 public:
+	bool setSensorModel(std::string);
+	void setSensorRadius(double);
+	double getSensorRadius() {return dSensorRadius;};
+	std::vector<std::string> querySensor(std::string, ArtifactField*);
 };
-
-struct 
 
 #endif

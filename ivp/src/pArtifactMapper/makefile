@@ -1,6 +1,6 @@
-# Makefile for ArtifactSensorSim
+# Makefile for ArtifactMapper
 
-LTARGET  = pArtifactSensorSim
+LTARGET  = pArtifactMapper
 LIFLAGS  =
 LCFLAGS  =
 
@@ -13,3 +13,4 @@ include ../make_config.mk
 # Generic makefile structure for all application modules
 include ../make_app.mk
 # DO NOT DELETE
+

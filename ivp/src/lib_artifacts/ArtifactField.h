@@ -38,6 +38,9 @@ public:
 	void addArtifact(double, double);
 	std::string getArtifact(int);
 	int size();
+	
+	std::vector<std::string> getArtifactbox(double, double, double, double);
+	std::vector<std::string> getArtifactcircle(double, double, double);
 };
 
 #endif
