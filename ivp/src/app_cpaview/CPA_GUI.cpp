@@ -21,7 +21,7 @@ using namespace std;
 // Constructor
 
 CPA_GUI::CPA_GUI(int g_w, int g_h, const char *g_l)
-  : CommonMarineGUI(g_w, g_h, g_l) {
+  : MarineGUI(g_w, g_h, g_l) {
 
   this->user_data((void*)(this));
   this->when(FL_WHEN_CHANGED);

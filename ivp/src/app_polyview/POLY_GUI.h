@@ -28,10 +28,10 @@
 #include <FL/Fl_Menu_Bar.H>
 #include "PolyViewer.h"
 #include <FL/Fl_Hold_Browser.H>
-#include "CommonMarineGUI.h"
+#include "MarineGUI.h"
 #include "MY_Output.h"
 
-class POLY_GUI : public CommonMarineGUI {
+class POLY_GUI : public MarineGUI {
 public:
   POLY_GUI(int w, int h, const char *l=0);
   ~POLY_GUI() {};

@@ -31,6 +31,7 @@ bool PMV_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
   NewMail.sort();
   
   bool gui_needs_redraw = false;
+  bool gui_clear_trails = false;
   MOOSMSG_LIST::reverse_iterator p;
 
   //cout  << NewMail.size() << "," << flush;
@@ -59,25 +60,36 @@ bool PMV_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
       receivePolygon(Msg);
       gui_needs_redraw = true;
     }
+    else if(Msg.m_sKey == "VIEW_SEGLIST") { 
+      receiveSegList(Msg);
+      gui_needs_redraw = true;
+    }
     else if(Msg.m_sKey == "VIEW_POINT") { 
       receivePoint(Msg);
       gui_needs_redraw = true;
     }
-    else if(Msg.m_sKey == "INFO_POLYGON") { 
-      receivePolygon(Msg);
-      gui_needs_redraw = true;
+    else if(Msg.m_sKey == "TRAIL_RESET") { 
+      gui_clear_trails = true;
     }
     else {
       MOOSTrace("Unknown msg [%s]\n",Msg.m_sKey.c_str());
     }
     //cout << "Originating community: " << Msg.m_sOriginatingCommunity << endl;
   }
-  if(gui_needs_redraw && gui) {
-    gui->updateXY();
-    gui->mviewer->redraw();
+  if(gui_needs_redraw && m_gui) {
+    m_gui->updateXY();
+    m_gui->mviewer->redraw();
   }
+  if(gui_clear_trails && m_gui)
+    m_gui->mviewer->clearTrails();
+
   return(true);
 }
+
+
+//----------------------------------------------------------------------
+// Procedure: OnConnectToServer()
+//      Note: virtual overide of base class CMOOSApp member.
 
 bool PMV_MOOSApp::OnConnectToServer()
 {
@@ -87,7 +99,7 @@ bool PMV_MOOSApp::OnConnectToServer()
   m_Comms.Register("GRID_DELTA", 0);
   m_Comms.Register("VIEW_POLYGON", 0);
   m_Comms.Register("VIEW_POINT", 0);
-  m_Comms.Register("INFO_POLYGON", 0);
+  m_Comms.Register("TRAIL_RESET", 0);
   return(true);
 }
 
@@ -99,8 +111,8 @@ bool PMV_MOOSApp::Iterate()
 {
   cout << "." << flush;
 
-  double curr_time = MOOSTime() - start_time;
-  gui->setCurrTime(curr_time);
+  double curr_time = MOOSTime() - m_start_time;
+  m_gui->setCurrTime(curr_time);
 
   return(true);
 }
@@ -127,12 +139,14 @@ bool PMV_MOOSApp::OnStartUp()
     
     if(MOOSStrCmp(sVarName, "TIF_FILE"))
       tif_file = sLine;
+    if(MOOSStrCmp(sVarName, "VEHICOLOR"))
+      m_gui->mviewer->colorMapping(sLine);
   }
 
   if(tif_file != "")
-    gui->readTiff(tif_file.c_str());
+    m_gui->readTiff(tif_file.c_str());
 
-  start_time = MOOSTime();
+  m_start_time = MOOSTime();
   
   return(true);
 }
@@ -169,9 +183,9 @@ bool PMV_MOOSApp::receiveAIS_REPORT(CMOOSMsg &Msg)
   }
 
   if(bX && bY && bHeading && bSpeed && bDepth) {
-    if(gui) {
-      gui->mviewer->updateVehiclePosition(community, dfX, dfY, 
-					  dfHeading, dfSpeed, dfDepth);
+    if(m_gui) {
+      m_gui->mviewer->updateVehiclePosition(community, dfX, dfY, 
+					    dfHeading, dfSpeed, dfDepth);
     }
     return(true);
   }
@@ -192,7 +206,7 @@ bool PMV_MOOSApp::receiveGRID_CONFIG(CMOOSMsg &Msg)
   
   bool ok = search_grid.initialize(Msg.m_sVal);
   if(ok) {
-    gui->addGrid(search_grid);
+    m_gui->addGrid(search_grid);
     return(true);
   }
   else {
@@ -206,17 +220,35 @@ bool PMV_MOOSApp::receiveGRID_CONFIG(CMOOSMsg &Msg)
 
 bool PMV_MOOSApp::receivePolygon(CMOOSMsg &Msg)
 {
-  //cout << "RECEIVED POLYGON!!!!" << endl << flush;
-  //cout << "   Msg.m_sVal:" << Msg.m_sVal << endl << flush;
   XYPolygon new_poly;
   
   bool ok = new_poly.initialize(Msg.m_sVal);
   if(ok) {
-    gui->addPoly(new_poly);
+    m_gui->addPoly(new_poly);
     return(true);
   }
   else {
     cout << "Parse Error in receivePolygon" << endl;
+    cout << "Msg: " << Msg.m_sVal << endl;
+    return(false);
+  }
+}
+
+//----------------------------------------------------------------------
+// Procedure: receiveSegList
+
+bool PMV_MOOSApp::receiveSegList(CMOOSMsg &Msg)
+{
+  XYSegList new_seglist;
+  
+  bool ok = new_seglist.initialize(Msg.m_sVal);
+  if(ok) {
+    m_gui->mviewer->addSegList(new_seglist);
+    return(true);
+  }
+  else {
+    cout << "Parse Error in receiveSegList" << endl;
+    cout << "Msg: " << Msg.m_sVal << endl;
     return(false);
   }
 }
@@ -231,7 +263,8 @@ bool PMV_MOOSApp::receivePoint(CMOOSMsg &Msg)
   
   bool ok = new_circ.initialize(Msg.m_sVal);
   if(ok) {
-    gui->addCircle(new_circ);
+    m_gui->addCircle(new_circ);
+    cout << "circle label: " << new_circ.getLabel() << endl;
     return(true);
   }
   else {
@@ -247,7 +280,7 @@ void PMV_MOOSApp::receiveGRID_DELTA(CMOOSMsg &Msg)
 {
   cout << "RECEIVED GRID ----------- DELTA   !!!!" << endl << flush;
   cout << "   Msg.m_sVal:" << Msg.m_sVal << endl << flush;
-  gui->mviewer->updateGrid(Msg.m_sVal);
+  m_gui->mviewer->updateGrid(Msg.m_sVal);
 }
 
 

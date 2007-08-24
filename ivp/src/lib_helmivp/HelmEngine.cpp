@@ -135,6 +135,8 @@ HelmReport HelmEngine::determineNextDecision(BehaviorSet *bhv_set,
 
   if(ofnum == 0) {
     helm_report.addMsg("No Decision due to zero (behavior) OF's");
+    if(ivp_problem)
+      delete(ivp_problem);
     return(helm_report);
   }
 

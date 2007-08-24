@@ -6,7 +6,7 @@ ProcessConfig = iMarineSim
   AppTick	= 10
   CommsTick	= 10
 
-  MAX_TRANS_VEL = 3.0
+  MAX_TRANS_VEL = 5.0
   MAX_ROT_VEL   = 0.6
   START_X       = 10
   START_Y       = -10

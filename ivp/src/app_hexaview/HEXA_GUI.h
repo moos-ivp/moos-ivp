@@ -16,10 +16,10 @@
 #include <FL/Fl_Window.H>
 #include <FL/Fl_Menu_Bar.H>
 #include "HexaViewer.h"
-#include "CommonMarineGUI.h"
+#include "MarineGUI.h"
 #include "MY_Output.h"
 
-class HEXA_GUI : public CommonMarineGUI {
+class HEXA_GUI : public MarineGUI {
 public:
   HEXA_GUI(int w, int h, const char *l=0);
   ~HEXA_GUI() {};

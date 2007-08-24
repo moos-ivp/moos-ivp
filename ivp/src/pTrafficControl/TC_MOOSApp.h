@@ -28,7 +28,7 @@ public:
 
 protected:
 
-  void handleConfig(const std::string &, const std::string&);
+  bool handleConfig(const std::string &, const std::string&);
   void makeTSet();
   void postTSet();
 
@@ -37,11 +37,16 @@ protected:
   double  m_wait_period;
   bool    m_reset_request;
   bool    m_paused;
+  bool    m_first_iter;
   double  m_paused_time_total;
   double  m_paused_time_start;
 
   std::vector<std::string> m_vehicles;
   TrajectorySet            m_trajectory_set;
+
+  std::vector<TrajectorySet> m_vtset;
+  int     m_vtset_ix;
+  int     m_tset_count;
 
   double  m_center_x;
   double  m_center_y;

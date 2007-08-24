@@ -32,9 +32,9 @@
 #include <FL/Fl_Hold_Browser.H>
 #include "MY_Output.h"
 #include "MBTimer.h"
-#include "CommonMarineSimGUI.h"
+#include "MarineVehiGUI.h"
 
-class REPLAY_GUI : public CommonMarineSimGUI {
+class REPLAY_GUI : public MarineVehiGUI {
 public:
   REPLAY_GUI(int w, int h, const char *l=0);
   ~REPLAY_GUI() {};

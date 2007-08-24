@@ -162,6 +162,37 @@ vector<XYArc> readArcsFromFile(const string& filestr)
 
 
 //--------------------------------------------------------
+// Procedure: readHexagonFromFile
+
+vector<XYHexagon> readHexagonsFromFile(const string& filestr)
+{
+  vector<XYHexagon> hexa_vector;
+
+  vector<string> file_vector = fileBuffer(filestr);
+  int lineCount = file_vector.size();
+  
+  for(int i=0; i < lineCount; i++) {
+    string line = stripBlankEnds(file_vector[i]);
+    
+    if((line.length()!=0) && ((line)[0]!='#')) {
+      vector<string> svector = chompString(line, '=');
+      if(svector.size() == 2) {
+	string left = stripBlankEnds(svector[0]);
+	if(left == "hexagon") {
+	  string right = stripBlankEnds(svector[1]);
+	  XYHexagon new_hexagon;
+	  bool ok = new_hexagon.initialize(right);
+	  if(ok)
+	    hexa_vector.push_back(new_hexagon);
+	}
+      }
+    }
+  }
+  return(hexa_vector);
+}
+
+
+//--------------------------------------------------------
 // Procedure: printSquare
 
 void printSquare(const XYSquare& square)

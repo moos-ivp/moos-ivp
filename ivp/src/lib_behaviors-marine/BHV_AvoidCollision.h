@@ -23,7 +23,7 @@ protected:
   bool   getBufferInfo();
   double getRelevance();
   double getPriority();
-  void   postInfo(double, double, double=-1);
+  void   postInfo(double, double);
   
 private: // Configuration Parameters
 
@@ -50,6 +50,9 @@ private:  // State Variables
   double m_cny; // Current contact y position (meters) 
   double m_cnh; // Current contact heading (degrees 0-359)
   double m_cnv; // Current contact speed (meters) 
+
+  double m_curr_distance;
+  double m_curr_closing_spd;
 };
 #endif
 

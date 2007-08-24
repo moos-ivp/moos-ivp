@@ -35,7 +35,7 @@ using namespace std;
 // Constructor
 
 REPLAY_GUI::REPLAY_GUI(int g_w, int g_h, const char *g_l)
-  : CommonMarineSimGUI(g_w, g_h, g_l) 
+  : MarineVehiGUI(g_w, g_h, g_l) 
 {
   stream       = false;
   collect      = "Off";
@@ -224,7 +224,7 @@ void REPLAY_GUI::cb_Jump(Fl_Widget* o, int v) {
 
 //----------------------------------------- PolyView
 inline void REPLAY_GUI::cb_PolyView_i() {
-  np_viewer->togglePolyView();
+  np_viewer->setParam("poly_view", "toggle");
   np_viewer->redraw();
 }
 void REPLAY_GUI::cb_PolyView(Fl_Widget* o) {

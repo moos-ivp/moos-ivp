@@ -278,7 +278,7 @@ void BHV_Loiter::updateCenter()
 	svector[0] = stripBlankEnds(svector[0]);
 	svector[1] = stripBlankEnds(svector[1]);
 	double xval = atof(svector[0].c_str());
-	double yval = atof(svector[0].c_str());
+	double yval = atof(svector[1].c_str());
 	m_loiter_engine.setCenter(xval, yval);
 	m_waypoint_engine.setCenter(xval, yval);
 	m_poly_changed = true;
@@ -347,7 +347,7 @@ void BHV_Loiter::updateInfoOut()
   
   if(m_waypoint_engine.currPtChanged()) {
     string ptmsg = doubleToString(m_ptx,2) + ",";
-    ptmsg += doubleToString(m_pty,2) + ",5," + getDescriptor();
+    ptmsg += doubleToString(m_pty,2) + ",5," + us_name;
     postMessage("VIEW_POINT", ptmsg);
   }
   

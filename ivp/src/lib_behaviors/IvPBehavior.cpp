@@ -144,6 +144,8 @@ bool IvPBehavior::setParamCommon(string g_param, string g_val)
       if(unif_box == 0)               // grid_box makes a good
 	unif_box = grid_box->copy();  // default unif_box too!
     }
+    else
+      delete(new_box);
     return(true);
   }
   else if(g_param == "unifbox") { // Alt way of setting unifbox
@@ -161,6 +163,8 @@ bool IvPBehavior::setParamCommon(string g_param, string g_val)
       if(grid_box == 0)               // unif_box makes a good
 	grid_box = unif_box->copy();  // default grid_box too!
     }
+    else
+      delete(new_box);
     return(true);
   }
 

@@ -19,9 +19,9 @@
 #include "FL/fl_draw.H"
 #include "BackImg.h"
 #include "XYHexagon.h"
-#include "CommonMarineViewer.h"
+#include "MarineViewer.h"
 
-class HexaViewer : public CommonMarineViewer
+class HexaViewer : public MarineViewer
 {
  public:
   HexaViewer(int x,int y,int w,int h,const char *l=0);
@@ -56,7 +56,3 @@ public:
 };
 
 #endif 
-
-
-
-

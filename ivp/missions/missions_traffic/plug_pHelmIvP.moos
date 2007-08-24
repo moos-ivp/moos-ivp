@@ -8,7 +8,7 @@ ProcessConfig = pHelmIvP
 
   Verbose      = false
   Domain       = course:0:359:360
-  Domain       = speed:0:3:16
+  Domain       = speed:0:5:26
   ACTIVE_START = true
 
   //IF BELOW IS COMMENTED OUT - BHV FILE IS GIVEN AS COMMAND LINE ARG	

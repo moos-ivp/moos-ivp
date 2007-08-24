@@ -1,0 +1,9 @@
+pAntler  K200.moos &;                  sleep 1; 
+pHelmIvP K200.moos 200-traffic.bhv &;  sleep 1;
+
+pAntler  K201.moos &;                  sleep 1; 
+pHelmIvP K201.moos 201-traffic.bhv &;  sleep 1;
+
+pAntler  K204.moos &;                  sleep 1; 
+pHelmIvP K204.moos 204-traffic.bhv &;  sleep 1;
+

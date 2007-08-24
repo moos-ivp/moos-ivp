@@ -28,23 +28,24 @@ protected:
   double metric(double) const;
 
 protected:
-  double m_os_tol;   // Ownship Time on Leg
-  double m_os_lat;   // Ownship Lat position
-  double m_os_lon;   // Ownship Lon position
-  double m_cn_lat;   // Contact Lat position
-  double m_cn_lon;   // Contact Lon position
-  double m_cn_crs;   // Contact heading
-  double m_cn_spd;   // Contact speed
+  double m_tol; // Ownship Time on Leg
+  double m_osx;    // Ownship X position (meters)
+  double m_osy;    // Ownship Y position (meters)
+  double m_cnx;    // Contact X position (meters)
+  double m_cny;    // Contact Y position (meters)
+  double m_cnh;    // Contact heading
+  double m_cnv;    // Contact speed
+
   double m_collision_distance;
   double m_all_clear_distance;
 
-  bool   m_os_tol_set;
-  bool   m_os_lat_set;
-  bool   m_os_lon_set;
-  bool   m_cn_lat_set;
-  bool   m_cn_lon_set;
-  bool   m_cn_crs_set;
-  bool   m_cn_spd_set;
+  bool   m_tol_set;
+  bool   m_osy_set;
+  bool   m_osx_set;
+  bool   m_cnx_set;
+  bool   m_cny_set;
+  bool   m_cnh_set;
+  bool   m_cnv_set;
   bool   m_collision_distance_set;
   bool   m_all_clear_distance_set;
 

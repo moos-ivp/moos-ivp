@@ -11,7 +11,6 @@
 #include "XMS.h"
 #include "TermUtils.h"
 #include "MBUtils.h"
-#include "MOOSAppRunnerThread.h"
 
 using namespace std;
 
@@ -20,6 +19,44 @@ using namespace std;
 
 char*       g_sMissionFile = 0;
 XMS         g_theXMS;
+pthread_t   g_threadID;
+
+struct ThreadParams {
+    CMOOSApp *app;
+    char *name;
+};
+
+//--------------------------------------------------------
+// Procedure: RunProc
+
+void* RunProc(void *lpParameter)
+{
+  void **params = (void **)lpParameter;
+  
+  CMOOSApp *app = (CMOOSApp *)params[0];
+  char *name = (char *) params[1];
+  
+  MOOSTrace("starting %s thread\n", name);
+  app->Run(name, g_sMissionFile);	
+  
+  return(NULL);
+}
+
+//--------------------------------------------------------
+// Procedure: spawn_thread
+
+pthread_t spawn_thread(ThreadParams *pParams)
+{
+  pthread_t tid;
+  if(pthread_create(&tid,NULL, RunProc, pParams) != 0) {
+    MOOSTrace("failed to start %s thread\n", pParams->name);
+    tid = (pthread_t) -1;
+  }
+  else 
+    MOOSTrace("%s thread spawned\n", pParams->name);
+  
+  return(tid);
+}
 
 //--------------------------------------------------------
 // Procedure: main
@@ -66,8 +103,8 @@ int main(int argc ,char * argv[])
 
 
   // start the XMS in its own thread
-  MOOSAppRunnerThread runner(&g_theXMS, (char*)(process_name.c_str()), 
-    g_sMissionFile);
+  ThreadParams params = {&g_theXMS, (char*)(process_name.c_str())};
+  g_threadID = spawn_thread(&params);	
 
   for(int i=1; i<argc; i++) {
     if(!strcmp(argv[i], "-nav")) {
@@ -80,6 +117,11 @@ int main(int argc ,char * argv[])
       g_theXMS.addVariable("DESIRED_HEADING");
       g_theXMS.addVariable("DESIRED_SPEED");
       g_theXMS.addVariable("DESIRED_DEPTH");
+      g_theXMS.addVariable("BHV_WARNING");
+      g_theXMS.addVariable("BHV_ERROR");
+      g_theXMS.addVariable("HELM_IPF_COUNT");
+      g_theXMS.addVariable("HELM_ACTIVE_BHV");
+      g_theXMS.addVariable("HELM_NONIDLE_BHV");
       g_theXMS.addVariable("MOOS_MANUAL_OVERIDE");
       g_theXMS.addVariable("DEPLOY");
       g_theXMS.addVariable("RETURN");

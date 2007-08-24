@@ -15,14 +15,57 @@ Behavior = BHV_StationKeep
 //----------------------------------------------
 Behavior = BHV_Waypoint
 {
-  name       = bhv_waypt_return_202
+  name       = bhv_waypt_201
   pwt        = 100
-  condition  = (RETURN = true) and (DEPLOY = true)
+  perpetual  = true
+  updates    = UPDATES_WPT
+  condition  = (DEPLOY = true)
   condition  = (STATION_KEEP != true)
   endflag    = STATION_KEEP = true
 
   speed      = 2.0
   radius     = 10.0
   points     = -50,-100
+}
+
+
+//----------------------------------------------
+Behavior = BHV_AvoidCollision
+{
+  name       = bhv_avd_200
+  pwt        = 200
+  condition  = (DEPLOY = true) and (STATION_KEEP != true)
+  condition  = (AVOID_POLICY == basic)
+
+                  contact = nyak200
+             active_grade = linear
+//    active_outer_distance = 60
+//    active_inner_distance = 20
+//       collision_distance = 15
+//       all_clear_distance = 100
+    active_outer_distance = 40
+    active_inner_distance = 10
+       collision_distance = 8
+       all_clear_distance = 50
+}
+
+//----------------------------------------------
+Behavior = BHV_AvoidCollision
+{
+  name       = bhv_avd_204
+  pwt        = 200
+  condition  = (DEPLOY = true) and (STATION_KEEP != true)
+  condition  = (AVOID_POLICY == basic)
+
+                  contact = nyak204
+             active_grade = linear
+//    active_outer_distance = 60
+//    active_inner_distance = 20
+//       collision_distance = 15
+//       all_clear_distance = 100
+    active_outer_distance = 40
+    active_inner_distance = 10
+       collision_distance = 8
+       all_clear_distance = 50
 }
 

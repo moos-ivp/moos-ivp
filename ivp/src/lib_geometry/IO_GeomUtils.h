@@ -30,11 +30,13 @@
 #include "XYSquare.h"
 #include "XYCircle.h"
 #include "XYArc.h"
+#include "XYHexagon.h"
 
 std::vector<XYPolygon> readPolysFromFile(const std::string&);
 std::vector<XYGrid>    readGridsFromFile(const std::string&);
 std::vector<XYCircle>  readCirclesFromFile(const std::string&);
 std::vector<XYArc>     readArcsFromFile(const std::string&);
+std::vector<XYHexagon> readHexagonsFromFile(const std::string&);
 
 void printSquare(const XYSquare&);
 

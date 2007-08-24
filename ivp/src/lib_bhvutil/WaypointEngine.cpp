@@ -70,7 +70,6 @@ void WaypointEngine::setSegList(const XYSegList& g_seglist)
 
   if(m_reverse)
     m_seglist.reverse();
-
 }
 
 //-----------------------------------------------------------

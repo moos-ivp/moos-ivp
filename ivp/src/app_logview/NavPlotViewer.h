@@ -31,9 +31,9 @@
 #include "BackImg.h"
 #include "XYGrid.h"
 #include "NavPlot.h"
-#include "CommonMarineViewer.h"
+#include "MarineViewer.h"
 
-class NavPlotViewer : public CommonMarineViewer
+class NavPlotViewer : public MarineViewer
 {
  public:
   NavPlotViewer(int x,int y,int w,int h,const char *l=0);

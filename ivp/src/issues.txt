@@ -1,3 +1,7 @@
+o memory leaks: IvPBehavior::safeProcessBox
+  HelmEngine.cpp delete(ivp_problem) line 139
+
+o bhv_trail when shadowing - speed 0.1 or 0.2 less than the leader?
 
 o Can we get pMOOSBridge to NOT bridge/send any information on a variable
   if it hasn't ever been written to, or only when a change in the variable

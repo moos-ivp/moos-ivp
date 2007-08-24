@@ -101,12 +101,11 @@ FILE_PATTERNS          = *.c \
                          *.C++ \
                          *.H
 RECURSIVE              = YES
-EXCLUDE                = */uVoice/* \
-                         */ATTIC/* \
-                         /home/ajshafer/cvs/project-marine/src/debian/ \
-                         */lib_behaviors-attic/* \
-                         */lib_behaviors-sandbox/* \
-                         */lib_mbutiltest/*
+EXCLUDE                = *uVoice* \
+                         *ATTIC* \
+                         *lib_behaviors-attic/* \
+                         *lib_behaviors-sandbox/* \
+                         *lib_mbutiltest/*
 EXCLUDE_SYMLINKS       = NO
 EXCLUDE_PATTERNS       = */CVS/* \
                          */uVoice/* \

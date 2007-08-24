@@ -34,7 +34,7 @@
 using namespace std;
 
 NavPlotViewer::NavPlotViewer(int x, int y, int w, int h, const char *l)
-  : CommonMarineViewer(x,y,w,h,l)
+  : MarineViewer(x,y,w,h,l)
 {
   m_global_ix    = 0;
   m_local_ix     = 0;
@@ -53,7 +53,7 @@ NavPlotViewer::NavPlotViewer(int x, int y, int w, int h, const char *l)
 
 void NavPlotViewer::draw()
 {
-  CommonMarineViewer::draw();
+  MarineViewer::draw();
 
   if(m_poly_offon)
     drawPolys();
@@ -240,10 +240,10 @@ void NavPlotViewer::drawNavPlot(int index)
   glLoadIdentity();
   glOrtho(0, w(), 0, h(), -1 ,1);
 
-  float tx = meters2img("x", 0);
-  float ty = meters2img("y", 0);
-  float qx = img2view("x", tx);
-  float qy = img2view("y", ty);
+  float tx = meters2img('x', 0);
+  float ty = meters2img('y', 0);
+  float qx = img2view('x', tx);
+  float qy = img2view('y', ty);
 
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();

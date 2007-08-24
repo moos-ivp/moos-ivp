@@ -9,5 +9,8 @@ ProcessConfig = pMarineViewer
   CommsTick = 4
 
   TIF_FILE  = Default.tif  
+  VEHICOLOR = nyak200, darkblue
+  VEHICOLOR = nyak201, darkgreen
+  VEHICOLOR = nyak204, yellow
 }
 

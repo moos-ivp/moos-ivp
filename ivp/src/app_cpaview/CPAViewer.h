@@ -18,10 +18,10 @@
 #include "FL/gl.h"
 #include "FL/fl_draw.H"
 #include "BackImg.h"
-#include "CommonMarineViewer.h"
+#include "MarineViewer.h"
 #include "CPA_Model.h"
 
-class CPAViewer : public CommonMarineViewer
+class CPAViewer : public MarineViewer
 {
  public:
   CPAViewer(CPA_Model*, int x,int y,int w,int h, const char *l=0);

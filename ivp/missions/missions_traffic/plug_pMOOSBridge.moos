@@ -14,8 +14,8 @@ ProcessConfig = pMOOSBridge_$(VID)
   SHARE = [PROC_WATCH_SUMMARY] -> shoreside @ localhost:9123 [PROC_WATCH_SUMMARY_$(VID)]
   SHARE = [PROC_WATCH_EVENT]   -> shoreside @ localhost:9123 [PROC_WATCH_EVENT_$(VID)]
 
-  //SHARE = [AIS_REPORT_LOCAL] -> nyak200 @ localhost:9200 [AIS_REPORT]
-  //SHARE = [AIS_REPORT_LOCAL] -> nyak201 @ localhost:9201 [AIS_REPORT]
-  //SHARE = [AIS_REPORT_LOCAL] -> nyak204 @ localhost:9204 [AIS_REPORT]
+  SHARE = [AIS_REPORT_LOCAL] -> nyak200 @ localhost:9200 [AIS_REPORT]
+  SHARE = [AIS_REPORT_LOCAL] -> nyak201 @ localhost:9201 [AIS_REPORT]
+  SHARE = [AIS_REPORT_LOCAL] -> nyak204 @ localhost:9204 [AIS_REPORT]
   //SHARE = [AIS_REPORT_LOCAL] -> nyak206 @ localhost:9206 [AIS_REPORT]
 }

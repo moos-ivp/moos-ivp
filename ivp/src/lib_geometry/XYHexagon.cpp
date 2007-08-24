@@ -20,7 +20,6 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
-#include <iostream>
 #include <math.h>
 #include <assert.h>
 #include "XYHexagon.h"
@@ -29,6 +28,29 @@
 #include "AngleUtils.h"
 
 using namespace std;
+
+//---------------------------------------------------------------
+// Procedure: initialize
+
+bool XYHexagon::initialize(string str)
+{
+  string mstr = stripBlankEnds(str);
+  vector<string> svector = parseString(mstr, ',');
+  int vsize = svector.size();
+  if(vsize != 3)
+    return(false);
+  for(int i=0; i<3; i++) {
+    svector[i] = stripBlankEnds(svector[i]);
+    if(!isNumber(svector[i]))
+      return(false);
+  }
+  
+  double cx = atof(svector[0].c_str());
+  double cy = atof(svector[1].c_str());
+  double dist = atof(svector[2].c_str());
+  
+  return(initialize(cx, cy, dist));
+}
 
 //---------------------------------------------------------------
 // Procedure: initialize

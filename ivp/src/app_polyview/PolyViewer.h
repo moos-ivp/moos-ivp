@@ -1,4 +1,4 @@
-/*****************************************************************/
+/*****************************************************************
 /*    NAME: Michael Benjamin and John Leonard                    */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
 /*    FILE: PolyViewer.h                                         */
@@ -28,11 +28,11 @@
 #include "FL/Fl_Gl_Window.H"
 #include "FL/gl.h"
 #include "FL/fl_draw.H"
-#include "CommonMarineViewer.h"
+#include "MarineViewer.h"
 #include "XYCircle.h"
 #include "XYArc.h"
 
-class PolyViewer : public CommonMarineViewer
+class PolyViewer : public MarineViewer
 {
  public:
   PolyViewer(int x,int y,int w,int h,const char *l=0);

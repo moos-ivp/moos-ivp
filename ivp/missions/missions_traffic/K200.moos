@@ -63,9 +63,9 @@ ProcessConfig = pMOOSBridge_200
   SHARE = [PROC_WATCH_SUMMARY] -> shoreside @ localhost:9123 [PROC_WATCH_SUMMARY_200]
   SHARE = [PROC_WATCH_EVENT]   -> shoreside @ localhost:9123 [PROC_WATCH_EVENT_200]
 
-  //SHARE = [AIS_REPORT_LOCAL] -> nyak200 @ localhost:9200 [AIS_REPORT]
-  //SHARE = [AIS_REPORT_LOCAL] -> nyak201 @ localhost:9201 [AIS_REPORT]
-  //SHARE = [AIS_REPORT_LOCAL] -> nyak204 @ localhost:9204 [AIS_REPORT]
+  SHARE = [AIS_REPORT_LOCAL] -> nyak200 @ localhost:9200 [AIS_REPORT]
+  SHARE = [AIS_REPORT_LOCAL] -> nyak201 @ localhost:9201 [AIS_REPORT]
+  SHARE = [AIS_REPORT_LOCAL] -> nyak204 @ localhost:9204 [AIS_REPORT]
   //SHARE = [AIS_REPORT_LOCAL] -> nyak206 @ localhost:9206 [AIS_REPORT]
 }
 
@@ -77,7 +77,7 @@ ProcessConfig = iMarineSim
   AppTick	= 10
   CommsTick	= 10
 
-  MAX_TRANS_VEL = 3.0
+  MAX_TRANS_VEL = 5.0
   MAX_ROT_VEL   = 0.6
   START_X       = 10
   START_Y       = -10
@@ -93,9 +93,9 @@ ProcessConfig = pHelmIvP
   AppTick    = 4
   CommsTick  = 4
 
-  Verbose      = false
+  Verbose      = verbose
   Domain       = course:0:359:360
-  Domain       = speed:0:3:16
+  Domain       = speed:0:5:26
   ACTIVE_START = true
 
   //IF BELOW IS COMMENTED OUT - BHV FILE IS GIVEN AS COMMAND LINE ARG	

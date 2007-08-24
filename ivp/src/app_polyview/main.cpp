@@ -28,6 +28,7 @@
 #include "XYPolygon.h"
 #include "XYGrid.h"
 #include "XYCircle.h"
+#include "XYHexagon.h"
 
 using namespace std;
 
@@ -56,6 +57,7 @@ int main(int argc, char *argv[])
   vector<XYGrid>    all_grids;
   vector<XYCircle>  all_circles;
   vector<XYArc>     all_arcs;
+  vector<XYHexagon> all_hexagons;
 
   for(i=1; i<argc; i++) {
     string argi  = tolower(argv[i]);
@@ -89,9 +91,12 @@ int main(int argc, char *argv[])
       vector<XYArc> avector = readArcsFromFile(argv[i]);
       for(j=0; j<avector.size(); j++)
 	all_arcs.push_back(avector[j]);
+      vector<XYHexagon> hvector = readHexagonsFromFile(argv[i]);
+      for(j=0; j<hvector.size(); j++)
+	all_hexagons.push_back(hvector[j]);
     }
   }
-  
+ 
   gui->readTiff(tif_file.c_str());
 
   for(i=0; i<all_polys.size(); i++)
@@ -105,6 +110,9 @@ int main(int argc, char *argv[])
   
   for(i=0; i<all_arcs.size(); i++)
     gui->addArc(all_arcs[i]);
+  
+  for(i=0; i<all_hexagons.size(); i++)
+    gui->addPoly(all_hexagons[i]);
   
   gui->updateXY();
 

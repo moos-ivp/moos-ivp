@@ -17,6 +17,8 @@ Behavior = BHV_Waypoint
 {
   name       = bhv_waypt_return_206
   pwt        = 100
+  perpetual  = true
+  updates    = UPDATES_WPT
   condition  = (DEPLOY = true)
   condition  = (STATION_KEEP != true)
   endflag    = STATION_KEEP = true

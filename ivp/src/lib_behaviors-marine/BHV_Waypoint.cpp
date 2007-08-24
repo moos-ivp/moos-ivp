@@ -234,9 +234,6 @@ bool BHV_Waypoint::setNextWaypoint()
       if(dist > lead_distance) 
 	dist = lead_distance; 
       projectPoint(angle, dist, nx, ny, iptX, iptY);
-      string str = "radial:" + doubleToString(iptX,1);
-      str += "," + doubleToString(iptY,1) + ",2,6";
-      postMessage("INFO_POLYGON", str);
     }
   }
   return(true);
@@ -292,12 +289,12 @@ void BHV_Waypoint::updateInfoOut()
   }
 
   XYSegList seglist = waypoint_engine.getSegList();
-  postMessage("VIEW_POLYGON", seglist.get_spec());
+  postMessage("VIEW_SEGLIST", seglist.get_spec());
 
   if(waypoint_engine.currPtChanged()) {
     string ptmsg;
     ptmsg += doubleToString(ptX,2) + ",";
-    ptmsg += doubleToString(ptY,2) + ",5," + getDescriptor();
+    ptmsg += doubleToString(ptY,2) + ",5," + us_name;
     postMessage("VIEW_POINT", ptmsg);
   }
 }

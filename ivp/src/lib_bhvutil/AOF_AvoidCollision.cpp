@@ -31,13 +31,13 @@ AOF_AvoidCollision::AOF_AvoidCollision(IvPDomain gdomain)
   m_crs_ix = gdomain.getIndex("course");
   m_spd_ix = gdomain.getIndex("speed");
 
-  m_os_tol_set = false;
-  m_os_lat_set = false;
-  m_os_lon_set = false;
-  m_cn_lat_set = false;
-  m_cn_lon_set = false;
-  m_cn_crs_set = false;
-  m_cn_spd_set = false;
+  m_tol_set = false;
+  m_osx_set = false;
+  m_osy_set = false;
+  m_cnx_set = false;
+  m_cny_set = false;
+  m_cnh_set = false;
+  m_cnv_set = false;
 
   m_collision_distance_set = false;
   m_all_clear_distance_set = false;
@@ -49,34 +49,34 @@ AOF_AvoidCollision::AOF_AvoidCollision(IvPDomain gdomain)
 
 bool AOF_AvoidCollision::setParam(const string& param, double param_val)
 {
-  if(param == "os_lat") {
-    m_os_lat = param_val;
-    m_os_lat_set = true;
+  if(param == "osx") {
+    m_osx = param_val;
+    m_osx_set = true;
     return(true);
   }
-  else if(param == "os_lon") {
-    m_os_lon = param_val;
-    m_os_lon_set = true;
+  else if(param == "osy") {
+    m_osy = param_val;
+    m_osy_set = true;
     return(true);
   }
-  else if(param == "cn_lat") {
-    m_cn_lat = param_val;
-    m_cn_lat_set = true;
+  else if(param == "cnx") {
+    m_cnx = param_val;
+    m_cnx_set = true;
     return(true);
   }
-  else if(param == "cn_lon") {
-    m_cn_lon = param_val;
-    m_cn_lon_set = true;
+  else if(param == "cny") {
+    m_cny = param_val;
+    m_cny_set = true;
     return(true);
   }
-  else if(param == "cn_crs") {
-    m_cn_crs = param_val;
-    m_cn_crs_set = true;
+  else if(param == "cnh") {
+    m_cnh = param_val;
+    m_cnh_set = true;
     return(true);
   }
-  else if(param == "cn_spd") {
-    m_cn_spd = param_val;
-    m_cn_spd_set = true;
+  else if(param == "cnv") {
+    m_cnv = param_val;
+    m_cnv_set = true;
     return(true);
   }
   else if(param == "collision_distance") {
@@ -89,9 +89,9 @@ bool AOF_AvoidCollision::setParam(const string& param, double param_val)
     m_all_clear_distance_set = true;
     return(true);
   }
-  else if(param == "os_tol") {
-    m_os_tol = param_val;
-    m_os_tol_set = true;
+  else if(param == "tol") {
+    m_tol = param_val;
+    m_tol_set = true;
     return(true);
   }
   else
@@ -106,21 +106,21 @@ bool AOF_AvoidCollision::initialize()
   if((m_crs_ix==-1) || (m_spd_ix==-1))
     return(false);
 
-  if(!m_os_lat_set || !m_os_lon_set || !m_cn_lat_set) 
+  if(!m_osx_set || !m_osy_set || !m_cnx_set) 
     return(false);
 
-  if(!m_cn_lon_set || !m_cn_crs_set || !m_cn_spd_set) 
+  if(!m_cny_set || !m_cnh_set || !m_cnv_set) 
     return(false);
 
   if(!m_collision_distance_set || 
-     !m_all_clear_distance_set || !m_os_tol_set) 
+     !m_all_clear_distance_set || !m_tol_set) 
     return(false);
 
   if(cpa_engine)
     delete(cpa_engine);
 
-  cpa_engine = new CPAEngine(m_cn_lat, m_cn_lon, m_cn_crs, 
-			     m_cn_spd, m_os_lat, m_os_lon);
+  cpa_engine = new CPAEngine(m_cny, m_cnx, m_cnh, 
+			     m_cnv, m_osy, m_osx);
 
   return(true);
 }
@@ -144,7 +144,7 @@ double AOF_AvoidCollision::evalBox(const IvPBox *b) const
   m_domain.getVal(m_crs_ix, b->pt(m_crs_ix,0), eval_crs);
   m_domain.getVal(m_spd_ix, b->pt(m_spd_ix,0), eval_spd);
 
-  cpa_dist  = cpa_engine->evalCPA(eval_crs, eval_spd, m_os_tol);
+  cpa_dist  = cpa_engine->evalCPA(eval_crs, eval_spd, m_tol);
 
   eval_dist = metric(cpa_dist);
   return(eval_dist);

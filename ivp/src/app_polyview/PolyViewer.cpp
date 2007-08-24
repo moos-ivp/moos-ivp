@@ -34,7 +34,7 @@ using namespace std;
 
 PolyViewer::PolyViewer(int x, int y, 
 			 int width, int height, const char *l)
-  : CommonMarineViewer(x,y,width,height,l)
+  : MarineViewer(x,y,width,height,l)
 {
   m_snap_val    = 10.0;
   m_active_poly = 0;
@@ -78,7 +78,7 @@ int PolyViewer::handle(int event)
 
 void PolyViewer::draw()
 {
-  CommonMarineViewer::draw();
+  MarineViewer::draw();
 
 
   int vsize = m_poly.size();
@@ -108,6 +108,7 @@ void PolyViewer::draw()
     drawMode9();
 
   drawGrids();
+  drawHexagons();
 }
 
 //-------------------------------------------------------------
@@ -117,10 +118,10 @@ void PolyViewer::handle_left_mouse(int vx, int vy)
 {
   int vsize = m_poly.size();
 
-  double ix = view2img("x", vx);
-  double iy = view2img("y", vy);
-  double mx = img2meters("x", ix);
-  double my = img2meters("y", iy);
+  double ix = view2img('x', vx);
+  double iy = view2img('y', vy);
+  double mx = img2meters('x', ix);
+  double my = img2meters('y', iy);
   double sx = snapToStep(mx, m_snap_val);
   double sy = snapToStep(my, m_snap_val);
 
@@ -185,10 +186,10 @@ void PolyViewer::handle_right_mouse(int vx, int vy)
   if(vsize == 0)
     return;
 
-  double ix = view2img("x", vx);
-  double iy = view2img("y", vy);
-  double mx = img2meters("x", ix);
-  double my = img2meters("y", iy);
+  double ix = view2img('x', vx);
+  double iy = view2img('y', vy);
+  double mx = img2meters('x', ix);
+  double my = img2meters('y', iy);
   double sx = snapToStep(mx, m_snap_val);
   double sy = snapToStep(my, m_snap_val);
 
@@ -312,48 +313,6 @@ float PolyViewer::getMetersY(int index)
 }
 
 // ----------------------------------------------------------
-// Procedure: getLonX
-//   Purpose: For a given x position, return its position, in 
-//            terms of longitude.
-
-float PolyViewer::getLonX(int index)
-{
-  if(index == -1) {
-    float x_pos = ((float)(w()) / 2.0) - (float)(m_vshift_x);
-    float x_pct = m_back_img.pixToPctX(x_pos);
-    float x_pct_cent = m_back_img.get_img_centx();
-    float x_pct_mtrs = m_back_img.get_img_meters();
-    float meters = (x_pct - x_pct_cent) / (x_pct_mtrs / 100.0);
-    float offset = m_back_img.get_img_offset_x();
-    meters += offset;
-    return(meters2LatLon("lon", meters));
-  }
-
-  return(0.0);
-}
-
-// ----------------------------------------------------------
-// Procedure: getLatY
-//   Purpose: For a given x position, return its position, in 
-//            terms of latitude.
-
-float PolyViewer::getLatY(int index)
-{
-  if(index == -1) {
-    float y_pos = ((float)(h()) / 2.0) - (float)(m_vshift_y);
-    float y_pct = m_back_img.pixToPctY(y_pos);
-    float y_pct_cent = m_back_img.get_img_centy();
-    float y_pct_mtrs = m_back_img.get_img_meters();
-    float meters = (y_pct - y_pct_cent) / (y_pct_mtrs / 100.0);
-    float offset = m_back_img.get_img_offset_y();
-    meters += offset;
-    return(meters2LatLon("lat", meters));
-  }
-
-  return(0.0);
-}
-
-// ----------------------------------------------------------
 // Procedure: getPolySpec
 //   Purpose: 
 
@@ -394,7 +353,9 @@ void PolyViewer::adjustActive(int v)
 
 void PolyViewer::shiftHorzPoly(double shift_val)
 {
-  //cout << "PolyViewer: shift_val: " << shift_val << endl;
+  if(m_active_poly >= m_poly.size())
+    return;
+
   m_poly[m_active_poly].shift_horz(shift_val);
 }
 
@@ -404,6 +365,9 @@ void PolyViewer::shiftHorzPoly(double shift_val)
 
 void PolyViewer::shiftVertPoly(double shift_val)
 {
+  if(m_active_poly >= m_poly.size())
+    return;
+
   m_poly[m_active_poly].shift_vert(shift_val);
 }
 
@@ -413,6 +377,9 @@ void PolyViewer::shiftVertPoly(double shift_val)
 
 void PolyViewer::rotatePoly(int rval)
 {
+  if(m_active_poly >= m_poly.size())
+    return;
+
   m_poly[m_active_poly].rotate(rval);
 }
 
@@ -422,6 +389,9 @@ void PolyViewer::rotatePoly(int rval)
 
 void PolyViewer::growPoly(int gval)
 {
+  if(m_active_poly >= m_poly.size())
+    return;
+
   double dgval = (double)(gval) / 100.0;
   m_poly[m_active_poly].grow_by_pct(dgval);
 }
@@ -432,6 +402,9 @@ void PolyViewer::growPoly(int gval)
 
 void PolyViewer::reversePoly()
 {
+  if(m_active_poly >= m_poly.size())
+    return;
+
   m_poly[m_active_poly].reverse();
 }
 
@@ -441,6 +414,9 @@ void PolyViewer::reversePoly()
 
 void PolyViewer::duplicateActive()
 {
+  if(m_active_poly >= m_poly.size())
+    return;
+
   XYPolygon new_poly = m_poly[m_active_poly];
   new_poly.shift_vert(-10);
   new_poly.shift_horz(10);
@@ -481,10 +457,10 @@ void PolyViewer::drawMode4()
   glLoadIdentity();
   glOrtho(0, w(), 0, h(), -1 ,1);
 
-  float tx = meters2img("x", 0);
-  float ty = meters2img("y", 0);
-  float qx = img2view("x", tx);
-  float qy = img2view("y", ty);
+  float tx = meters2img('x', 0);
+  float ty = meters2img('y', 0);
+  float qx = img2view('x', tx);
+  float qy = img2view('y', ty);
 
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
@@ -552,10 +528,10 @@ void PolyViewer::drawMode5()
   glLoadIdentity();
   glOrtho(0, w(), 0, h(), -1 ,1);
 
-  float tx = meters2img("x", 0);
-  float ty = meters2img("y", 0);
-  float qx = img2view("x", tx);
-  float qy = img2view("y", ty);
+  float tx = meters2img('x', 0);
+  float ty = meters2img('y', 0);
+  float qx = img2view('x', tx);
+  float qy = img2view('y', ty);
 
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
@@ -622,10 +598,10 @@ void PolyViewer::drawMode6()
   glLoadIdentity();
   glOrtho(0, w(), 0, h(), -1 ,1);
 
-  float tx = meters2img("x", 0);
-  float ty = meters2img("y", 0);
-  float qx = img2view("x", tx);
-  float qy = img2view("y", ty);
+  float tx = meters2img('x', 0);
+  float ty = meters2img('y', 0);
+  float qx = img2view('x', tx);
+  float qy = img2view('y', ty);
 
   double x1 = m_test_mx;
   double y1 = m_test_my;
@@ -690,10 +666,10 @@ void PolyViewer::drawMode7()
   glLoadIdentity();
   glOrtho(0, w(), 0, h(), -1 ,1);
 
-  float tx = meters2img("x", 0);
-  float ty = meters2img("y", 0);
-  float qx = img2view("x", tx);
-  float qy = img2view("y", ty);
+  float tx = meters2img('x', 0);
+  float ty = meters2img('y', 0);
+  float qx = img2view('x', tx);
+  float qy = img2view('y', ty);
 
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
@@ -772,10 +748,10 @@ void PolyViewer::drawMode8()
   glLoadIdentity();
   glOrtho(0, w(), 0, h(), -1 ,1);
 
-  float tx = meters2img("x", 0);
-  float ty = meters2img("y", 0);
-  float qx = img2view("x", tx);
-  float qy = img2view("y", ty);
+  float tx = meters2img('x', 0);
+  float ty = meters2img('y', 0);
+  float qx = img2view('x', tx);
+  float qy = img2view('y', ty);
 
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
@@ -865,10 +841,10 @@ void PolyViewer::drawMode9()
   glLoadIdentity();
   glOrtho(0, w(), 0, h(), -1 ,1);
 
-  float tx = meters2img("x", 0);
-  float ty = meters2img("y", 0);
-  float qx = img2view("x", tx);
-  float qy = img2view("y", ty);
+  float tx = meters2img('x', 0);
+  float ty = meters2img('y', 0);
+  float qx = img2view('x', tx);
+  float qy = img2view('y', ty);
 
   double x1 = m_test_mx;
   double y1 = m_test_my;
@@ -1013,10 +989,10 @@ void PolyViewer::drawVector(double g_x, double g_y, double g_angle)
   glLoadIdentity();
   glOrtho(0, w(), 0, h(), -1 ,1);
 
-  float tx = meters2img("x", 0);
-  float ty = meters2img("y", 0);
-  float qx = img2view("x", tx);
-  float qy = img2view("y", ty);
+  float tx = meters2img('x', 0);
+  float ty = meters2img('y', 0);
+  float qx = img2view('x', tx);
+  float qy = img2view('y', ty);
 
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();

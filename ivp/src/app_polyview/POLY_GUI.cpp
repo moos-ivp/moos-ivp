@@ -20,8 +20,6 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <iostream>
 #include "POLY_GUI.h"
 #include "MBUtils.h"
@@ -32,7 +30,7 @@ using namespace std;
 // Constructor
 
 POLY_GUI::POLY_GUI(int g_w, int g_h, const char *g_l)
-  : CommonMarineGUI(g_w, g_h, g_l) {
+  : MarineGUI(g_w, g_h, g_l) {
 
   this->user_data((void*)(this));
   this->when(FL_WHEN_CHANGED);
@@ -167,7 +165,7 @@ void POLY_GUI::addArc(XYArc new_arc)
 
 //----------------------------------------- Clear
 inline void POLY_GUI::cb_Clear_i() {
-  pviewer->clearPoly();
+  pviewer->setParam("clear", "polygons");
   updateXY();
   pviewer->redraw();
 }

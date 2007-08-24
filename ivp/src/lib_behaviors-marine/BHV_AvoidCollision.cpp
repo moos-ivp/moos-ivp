@@ -168,19 +168,19 @@ IvPFunction *BHV_AvoidCollision::produceOF()
 
   AOF_AvoidCollision aof(domain);
   ok = true;
-  ok = ok && aof.setParam("os_lat", m_osy);
-  ok = ok && aof.setParam("os_lon", m_osx);
-  ok = ok && aof.setParam("cn_lat", m_cny);
-  ok = ok && aof.setParam("cn_lon", m_cnx);
-  ok = ok && aof.setParam("cn_crs", m_cnh);
-  ok = ok && aof.setParam("cn_spd", m_cnv);
-  ok = ok && aof.setParam("os_tol", 120);
+  ok = ok && aof.setParam("osy", m_osy);
+  ok = ok && aof.setParam("osx", m_osx);
+  ok = ok && aof.setParam("cny", m_cny);
+  ok = ok && aof.setParam("cnx", m_cnx);
+  ok = ok && aof.setParam("cnh", m_cnh);
+  ok = ok && aof.setParam("cnv", m_cnv);
+  ok = ok && aof.setParam("tol", 120);
   ok = ok && aof.setParam("collision_distance", m_collision_dist);
   ok = ok && aof.setParam("all_clear_distance", m_all_clear_dist);
   ok = ok && aof.initialize();
 
   if(!ok) {
-    postEMessage("Unable to init AFO_AvoidCollision.");
+    postEMessage("Unable to init AOF_AvoidCollision.");
     return(0);
   }
 
@@ -239,7 +239,6 @@ bool BHV_AvoidCollision::getBufferInfo()
 }
 
 
-
 //-----------------------------------------------------------
 // Procedure: getRelevance
 //            Calculate the relevance first. If zero-relevance, 
@@ -252,20 +251,23 @@ double BHV_AvoidCollision::getRelevance()
   double max_dist_relevance = 1.0;
   double rng_dist_relevance = max_dist_relevance - min_dist_relevance;
   
-  double dist = hypot((m_osx - m_cnx),(m_osy - m_cny));
-  if(dist >= m_active_outer_dist) {
-    //postInfo(0,0);
+  m_curr_distance = hypot((m_osx - m_cnx),(m_osy - m_cny));
+  m_curr_closing_spd = closingSpeed(m_osx, m_osy, m_osv, m_osh,
+				    m_cnx, m_cny, m_cnv, m_cnh);
+  
+  if(m_curr_distance >= m_active_outer_dist) {
+    postInfo(0,0);
     return(0);
   }
 
   double dpct, drange;
-  if(dist <= m_active_inner_dist)
+  if(m_curr_distance <= m_active_inner_dist)
     dpct = max_dist_relevance;
   
   // Note: drange should never be zero since either of the above
   // conditionals would be true and the function would have returned.
   drange = (m_active_outer_dist - m_active_inner_dist);
-  dpct = (m_active_outer_dist - dist) / drange;
+  dpct = (m_active_outer_dist - m_curr_distance) / drange;
   
   // Apply the grade scale to the raw distance
   double mod_dpct = dpct; // linear case
@@ -276,10 +278,8 @@ double BHV_AvoidCollision::getRelevance()
 
   double d_relevance = (mod_dpct * rng_dist_relevance) + min_dist_relevance;
 
-  return(d_relevance);  // *********** DISABLED BELOW ******
 
-  double closing_spd = closingSpeed(m_osx, m_osy, m_osv, m_osh,
-				    m_cnx, m_cny, m_cnv, m_cnh);
+  return(d_relevance);  // *********** DISABLED BELOW ******
 
   //  default:            0.0                         1.0            
   //                       o---------------------------o
@@ -294,12 +294,13 @@ double BHV_AvoidCollision::getRelevance()
 
   double srange = m_roc_max_heighten - m_roc_max_dampen;
   double spct = 0.0;
+  double eval_closing_spd = m_curr_closing_spd;
   if(srange > 0) {
-    if(closing_spd < m_roc_max_dampen)
-      closing_spd = m_roc_max_dampen;
-    if(closing_spd > m_roc_max_heighten)
-      closing_spd = m_roc_max_heighten;
-    spct = (closing_spd - m_roc_max_dampen) / srange;
+    if(m_curr_closing_spd < m_roc_max_dampen)
+      eval_closing_spd = m_roc_max_dampen;
+    if(m_curr_closing_spd > m_roc_max_heighten)
+      eval_closing_spd = m_roc_max_heighten;
+    spct = (eval_closing_spd - m_roc_max_dampen) / srange;
   }
 
   double s_relevance = (spct * rng_roc_relevance) + min_roc_relevance;
@@ -311,7 +312,7 @@ double BHV_AvoidCollision::getRelevance()
   if(combined_relevance > max_dist_relevance)
     combined_relevance = max_dist_relevance;
   
-  //postInfo(dpct, spct, closing_spd);
+  postInfo(dpct, spct);
 
 
 #if 0
@@ -337,17 +338,18 @@ double BHV_AvoidCollision::getRelevance()
 //            Calculate the relevance first. If zero-relevance, 
 //            we won't bother to create the objective function.
 
-void BHV_AvoidCollision::postInfo(double dpct, double spct, double cspd)
+void BHV_AvoidCollision::postInfo(double dpct, double spct)
 {
   string bhv_tag = toupper(getDescriptor());
   bhv_tag = findReplace(bhv_tag, "BHV_", "");
   bhv_tag = findReplace(bhv_tag, "(d)", "");
 
   
+  postMessage("CLSG_SPD_"+bhv_tag, m_curr_closing_spd);
+  postMessage("REL_DIST_"+bhv_tag, m_curr_distance);
+
   postMessage("DPCT_BHV_"+bhv_tag, dpct);
   postMessage("SPCT_BHV_"+bhv_tag, spct);
-  postMessage("CSPD_BHV_"+bhv_tag, cspd);
-
 }
 
 

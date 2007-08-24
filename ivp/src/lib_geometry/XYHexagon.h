@@ -32,7 +32,7 @@ public:
 
   // The only two ways to build a pentagon
   bool   initialize(double, double, double);
-  bool   initialize(std::string) {};       
+  bool   initialize(std::string);       
 
   double get_cx()   {return(cx);};
   double get_cy()   {return(cy);};

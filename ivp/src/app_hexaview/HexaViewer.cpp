@@ -21,7 +21,7 @@ using namespace std;
 
 HexaViewer::HexaViewer(int x, int y, 
 		       int width, int height, const char *l)
-  : CommonMarineViewer(x,y,width,height,l)
+  : MarineViewer(x,y,width,height,l)
 {
   m_snap_val    = 10.0;
   m_active_poly = 0;
@@ -57,7 +57,7 @@ int HexaViewer::handle(int event)
 
 void HexaViewer::draw()
 {
-  CommonMarineViewer::draw();
+  MarineViewer::draw();
 
   int i, vsize = m_poly.size();
   if((view_state == 0) || (view_state == 2)) {
@@ -83,10 +83,10 @@ void HexaViewer::handle_left_mouse(int vx, int vy)
 {
   int vsize = m_poly.size();
 
-  double ix = view2img("x", vx);
-  double iy = view2img("y", vy);
-  double mx = img2meters("x", ix);
-  double my = img2meters("y", iy);
+  double ix = view2img('x', vx);
+  double iy = view2img('y', vy);
+  double mx = img2meters('x', ix);
+  double my = img2meters('y', iy);
   double sx = snapToStep(mx, m_snap_val);
   double sy = snapToStep(my, m_snap_val);
 
@@ -112,10 +112,10 @@ void HexaViewer::handle_right_mouse(int vx, int vy)
   if(vsize == 0)
     return;
 
-  double ix = view2img("x", vx);
-  double iy = view2img("y", vy);
-  double mx = img2meters("x", ix);
-  double my = img2meters("y", iy);
+  double ix = view2img('x', vx);
+  double iy = view2img('y', vy);
+  double mx = img2meters('x', ix);
+  double my = img2meters('y', iy);
   double sx = snapToStep(mx, m_snap_val);
   double sy = snapToStep(my, m_snap_val);
 

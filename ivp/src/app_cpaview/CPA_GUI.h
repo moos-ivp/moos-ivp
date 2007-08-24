@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
-/*    FILE: HEXA_GUI.h                                           */
+/*    FILE: CPA_GUI.h                                            */
 /*    DATE: Feb 12 2007                                          */
 /*                                                               */
 /* This is unreleased BETA code. No permission is granted or     */
@@ -17,10 +17,10 @@
 #include <FL/Fl_Menu_Bar.H>
 #include "CPAViewer.h"
 #include "IPFViewer.h"
-#include "CommonMarineGUI.h"
+#include "MarineGUI.h"
 #include "MY_Output.h"
 
-class CPA_GUI : public CommonMarineGUI {
+class CPA_GUI : public MarineGUI {
 public:
   CPA_GUI(int w, int h, const char *l=0);
   ~CPA_GUI() {};

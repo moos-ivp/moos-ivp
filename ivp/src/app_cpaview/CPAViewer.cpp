@@ -20,7 +20,7 @@ using namespace std;
 
 CPAViewer::CPAViewer(CPA_Model *g_model, int g_x, int g_y, 
 		     int g_width, int g_height, const char *g_l)
-  : CommonMarineViewer(g_x, g_y, g_width, g_height, g_l)
+  : MarineViewer(g_x, g_y, g_width, g_height, g_l)
 {
   m_cpa_model = g_model;
 
@@ -30,12 +30,12 @@ CPAViewer::CPAViewer(CPA_Model *g_model, int g_x, int g_y,
   m_vshift_y = 40;
   m_zoom     = 2.55;
 
-  setTiffView(false);
-  setHashView(true);
-  hashShade(-1.0);
-  hashShade(0.75);
-  backShade(-1.0);
-  backShade(0.85);
+  setParam("tiff_view", "off");
+  setParam("hash_view", "off");
+  setParam("hash_shade", -1.0);
+  setParam("hash_shade", 0.75);
+  setParam("back_shade", -1.0);
+  setParam("back_shade", 0.85);
 }
 
 
@@ -67,7 +67,7 @@ int CPAViewer::handle(int event)
 
 void CPAViewer::draw()
 {
-  CommonMarineViewer::draw();
+  MarineViewer::draw();
 
   draw_os_point(6, 0.2, 0.2, 1.0);
 
@@ -81,10 +81,10 @@ void CPAViewer::draw()
 
 void CPAViewer::handle_left_mouse(int vx, int vy)
 {
-  double ix = view2img("x", vx);
-  double iy = view2img("y", vy);
-  double mx = img2meters("x", ix);
-  double my = img2meters("y", iy);
+  double ix = view2img('x', vx);
+  double iy = view2img('y', vy);
+  double mx = img2meters('x', ix);
+  double my = img2meters('y', iy);
   double sx = snapToStep(mx, m_snap_val);
   double sy = snapToStep(my, m_snap_val);
 
@@ -99,10 +99,10 @@ void CPAViewer::handle_left_mouse(int vx, int vy)
 
 void CPAViewer::handle_right_mouse(int vx, int vy)
 {
-  double ix = view2img("x", vx);
-  double iy = view2img("y", vy);
-  double mx = img2meters("x", ix);
-  double my = img2meters("y", iy);
+  double ix = view2img('x', vx);
+  double iy = view2img('y', vy);
+  double mx = img2meters('x', ix);
+  double my = img2meters('y', iy);
   double sx = snapToStep(mx, m_snap_val);
   double sy = snapToStep(my, m_snap_val);
 
@@ -131,10 +131,10 @@ void CPAViewer::draw_cn_vector(int    index,
   glLoadIdentity();
   glOrtho(0, w(), 0, h(), -1 ,1);
 
-  float tx = meters2img("x", 0);
-  float ty = meters2img("y", 0);
-  float qx = img2view("x", tx);
-  float qy = img2view("y", ty);
+  float tx = meters2img('x', 0);
+  float ty = meters2img('y', 0);
+  float qx = img2view('x', tx);
+  float qy = img2view('y', ty);
 
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
@@ -200,10 +200,10 @@ void CPAViewer::draw_os_point(double vertex_size,
   glLoadIdentity();
   glOrtho(0, w(), 0, h(), -1 ,1);
 
-  float tx = meters2img("x", 0);
-  float ty = meters2img("y", 0);
-  float qx = img2view("x", tx);
-  float qy = img2view("y", ty);
+  float tx = meters2img('x', 0);
+  float ty = meters2img('y', 0);
+  float qx = img2view('x', tx);
+  float qy = img2view('y', ty);
 
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();

@@ -33,7 +33,7 @@ class PMV_MOOSApp : public CMOOSApp
   PMV_MOOSApp() {};
   virtual ~PMV_MOOSApp() {};
 
-  void setGUI(PMV_GUI* g_gui) {gui=g_gui;};
+  void setGUI(PMV_GUI* g_gui) {m_gui=g_gui;};
 
   bool Iterate();
 
@@ -50,12 +50,13 @@ class PMV_MOOSApp : public CMOOSApp
   bool receiveGRID_CONFIG(CMOOSMsg &Msg);
   void receiveGRID_DELTA(CMOOSMsg &Msg);
   bool receivePolygon(CMOOSMsg &Msg);
+  bool receiveSegList(CMOOSMsg &Msg);
   bool receivePoint(CMOOSMsg &Msg);
 
  protected:
-  PMV_GUI* gui;
+  PMV_GUI* m_gui;
 
-  double start_time;
+  double m_start_time;
 };
 
 #endif 

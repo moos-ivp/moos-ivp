@@ -21,7 +21,7 @@ using namespace std;
 // Constructor
 
 HEXA_GUI::HEXA_GUI(int g_w, int g_h, const char *g_l)
-  : CommonMarineGUI(g_w, g_h, g_l) {
+  : MarineGUI(g_w, g_h, g_l) {
 
   this->user_data((void*)(this));
   this->when(FL_WHEN_CHANGED);
@@ -107,7 +107,7 @@ int HEXA_GUI::handle(int event)
 
 //----------------------------------------- Clear
 inline void HEXA_GUI::cb_Clear_i() {
-  hviewer->clearPoly();
+  hviewer->setParam("clear", "polygons");
   updateXY();
   hviewer->redraw();
 }
