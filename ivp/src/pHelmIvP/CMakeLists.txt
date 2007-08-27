@@ -20,4 +20,14 @@ IF("${IVP_BUILD_pHelmIvP}" STREQUAL "ON")
    logic
    m
    pthread)
+
+   IF("${IVP_PACKAGE_VERSION}" STREQUAL "")
+      MESSAGE(STATUS "pHelmIvP: IVP_PACKAGE_VERSION not set, so not creating install component.")
+   ELSE("${IVP_PACKAGE_VERSION}" STREQUAL "")
+      INSTALL(
+         TARGETS pHelmIvP
+         DESTINATION bin/ivp-${IVP_PACKAGE_VERSION}
+         COMPONENT ivp-core)
+   ENDIF("${IVP_PACKAGE_VERSION}" STREQUAL "")
+
 ENDIF("${IVP_BUILD_pHelmIvP}" STREQUAL "ON")

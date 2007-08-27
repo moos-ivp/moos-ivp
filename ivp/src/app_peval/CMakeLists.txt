@@ -10,4 +10,14 @@ IF("${IVP_BUILD_peval}" STREQUAL "ON")
    mbutil
    geometry
    m)
+
+   IF("${IVP_PACKAGE_VERSION}" STREQUAL "")
+      MESSAGE(STATUS "peval: IVP_PACKAGE_VERSION not set, so not creating install component.")
+   ELSE("${IVP_PACKAGE_VERSION}" STREQUAL "")
+      INSTALL(
+         TARGETS peval
+         DESTINATION bin/ivp-${IVP_PACKAGE_VERSION}
+         COMPONENT ivp-tools)
+   ENDIF("${IVP_PACKAGE_VERSION}" STREQUAL "")
+
 ENDIF("${IVP_BUILD_peval}" STREQUAL "ON")

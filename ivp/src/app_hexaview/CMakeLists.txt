@@ -22,6 +22,16 @@ IF("${IVP_BUILD_hexaview}" STREQUAL "ON")
          GL
          tiff      
          )
+
+      IF("${IVP_PACKAGE_VERSION}" STREQUAL "")
+         MESSAGE(STATUS "hexaview: IVP_PACKAGE_VERSION not set, so not creating install component.")
+      ELSE("${IVP_PACKAGE_VERSION}" STREQUAL "")
+         INSTALL(
+            TARGETS hexaview
+            DESTINATION bin/ivp-${IVP_PACKAGE_VERSION}
+            COMPONENT )
+      ENDIF("${IVP_PACKAGE_VERSION}" STREQUAL "")
+
    ELSE(${FLTK_FOUND})
       MESSAGE(STATUS
          "Won't build hexaview because can't find needed FLTK stuff.  "

@@ -35,7 +35,22 @@ IF("${IVP_BUILD__MOOS}" STREQUAL "ON")
       ADD_LIBRARY(_MOOS SHARED
          ${WRAPPER_CXX_FILANEME}
          )
+
+      IF("${IVP_PACKAGE_VERSION}" STREQUAL "")
+         MESSAGE(STATUS "_MOOS: IVP_PACKAGE_VERSION not set, so not creating install component.")
+      ELSE("${IVP_PACKAGE_VERSION}" STREQUAL "")
+         INSTALL(
+            TARGETS _MOOS
+            DESTINATION lib/ivp-${IVP_PACKAGE_VERSION}
+            COMPONENT ivp-tools-dev)
+   
+         FILE(GLOB IVP_PUBLIC_HEADERS *.h)
+   
+         INSTALL(
+            FILES ${IVP_PUBLIC_HEADERS}
+            DESTINATION include/ivp-${IVP_PACKAGE_VERSION}/uVoice
+            COMPONENT ivp-tools-dev
+            )
+      ENDIF("${IVP_PACKAGE_VERSION}" STREQUAL "")
    ENDIF(${SWIG_FOUND} AND ${PYTHON_INCLUDE_PATH_FOUND})
-
-
 ENDIF("${IVP_BUILD__MOOS}" STREQUAL "ON")

@@ -17,8 +17,8 @@ QuickBuild=
 
 [item:main.tex]
 archive=true
-column=42
+column=0
 encoding=UTF-8
 highlight=LaTeX
-line=572
+line=0
 open=true
