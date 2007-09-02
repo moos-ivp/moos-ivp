@@ -17,15 +17,15 @@ QuickBuild=
 
 [item:main.tex]
 archive=true
-column=37
+column=14
 encoding=UTF-8
 highlight=LaTeX
-line=21
+line=41
 open=true
 
 [item:moos-ivp-sysadmin.kilepr]
 archive=true
-column=3079414128
+column=0
 encoding=
 highlight=
 line=0
