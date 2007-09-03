@@ -36,7 +36,7 @@ make
 
 # For now, prevent people from accidentally building the Debian packages.
 # I'll make this cleaner sometime later. -CJC
-# exit
+exit
 
 
 # Make the Debian packages...
