@@ -36,11 +36,11 @@ private:
 public:
 	void addArtifact(std::string);
 	void addArtifact(double, double);
-	std::string getArtifact(int);
-	int size();
+	std::string getArtifact(int) const;
+	int size() const;
 	
-	std::vector<std::string> getArtifactbox(double, double, double, double);
-	std::vector<std::string> getArtifactcircle(double, double, double);
+	std::vector<std::string> getArtifactbox(double, double, double, double) const;
+	std::vector<std::string> getArtifactcircle(double, double, double) const;
 };
 
 #endif

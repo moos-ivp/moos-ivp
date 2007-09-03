@@ -80,11 +80,11 @@ bool SensorSim::Iterate()
 	
 	//MOOSTrace(sQueryString);
 	
-	std::vector<std::string> vecSensorOutput = Sensor.querySensor(sQueryString, &ArtField);
+	std::vector<std::string> vecSensorOutput = Sensor.querySensor(sQueryString, ArtField);
 	
 	MOOSTrace("Detected %i artifacts from sensor at iteration %i\n", vecSensorOutput.size(), GetIterateCount());
 	
-	std::vector<std::string>::iterator p;
+	std::vector<std::string>::const_iterator p;
 	
 	for (p = vecSensorOutput.begin(); p != vecSensorOutput.end(); p++){
 		m_Comms.Notify("DETECTED_ARTIFACT", *p);
@@ -123,7 +123,7 @@ bool SensorSim::OnStartUp()
 	// Add artifacts to artifact field, set sensor settings
   	std::list<std::string> sParams;
   	if(m_MissionReader.GetConfiguration(GetAppName(), sParams)) {
-  		std::list<std::string>::iterator p;
+  		std::list<std::string>::const_iterator p;
 		for(p = sParams.begin(); p!=sParams.end(); p++) {
 	    		std::string sLine  = stripBlankEnds(*p);
 	    		std::string sKey   = stripBlankEnds(MOOSChomp(sLine, "="));

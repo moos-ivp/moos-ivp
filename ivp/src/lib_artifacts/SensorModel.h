@@ -31,13 +31,13 @@ private:
 	double dSensorRadius;
 	std::string sSensorType;
 	
-	std::vector<std::string> queryFRSensor(std::string, ArtifactField*);
+	std::vector<std::string> queryFRSensor(std::string const, ArtifactField const &) const;
 	
 public:
-	bool setSensorModel(std::string);
+	bool setSensorModel(std::string const);
 	void setSensorRadius(double);
-	double getSensorRadius() {return dSensorRadius;};
-	std::vector<std::string> querySensor(std::string, ArtifactField*);
+	double getSensorRadius() const {return dSensorRadius;};
+	std::vector<std::string> querySensor(std::string const, ArtifactField const &) const;
 };
 
 #endif

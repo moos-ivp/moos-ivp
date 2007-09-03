@@ -28,6 +28,8 @@
 // #include <iostream>
 
 /// Puts an artifact into the field
+/// Artifacts should be in the form "Var1=Val1,Var2=Val2"
+/// e.g. "std::string = "X=15.5,Y=4,TYPE=magnetic"
 void ArtifactField::addArtifact(std::string strInput)
 {
 	vecArtifacts.push_back(strInput);
@@ -35,6 +37,7 @@ void ArtifactField::addArtifact(std::string strInput)
 }
 
 /// An alternate way to add an X,Y artifact
+/// Constructs the proper string from an \a x, \a y pair
 void ArtifactField::addArtifact(double x, double y)
 {
 	std::string strAssembler;
@@ -52,13 +55,13 @@ void ArtifactField::addArtifact(double x, double y)
 
 /// Returns the artifact at index \a i
 /// No error catching is done, but at() will throw errors.  Could be implemented later.
-std::string ArtifactField::getArtifact(int i)
+std::string ArtifactField::getArtifact(int i) const
 {
 	return vecArtifacts.at(i);
 }
 
 /// Returns the size of the artifact field
-int ArtifactField::size()
+int ArtifactField::size() const
 {
 	return vecArtifacts.size();
 }
@@ -68,17 +71,18 @@ int ArtifactField::size()
 /// \param x_upper Upper bound of x
 /// \param y_lower Lower bound of y
 /// \param y_upper Upper bound of y
-std::vector<std::string> ArtifactField::getArtifactbox(double x_lower, double x_upper, double y_lower, double y_upper){
+std::vector<std::string> ArtifactField::getArtifactbox(double x_lower, double x_upper, double y_lower, double y_upper) const
+{
 	// Parse all of the artifacts for X,Y values, adding to local copy
 	std::string sx, sy;
 	double x, y;
 	
-	std::vector<std::string>::iterator p;
-	
 	std::vector<std::string> vecResults;
 	
+	std::vector<std::string>::const_iterator p;
+	
 	for (p = vecArtifacts.begin(); p != vecArtifacts.end(); p++){
-		if(tokParse(*p, "X", ',', '=', x) && tokParse(*p, "Y", ',', '=', y)){
+	if(tokParse(*p, "X", ',', '=', x) && tokParse(*p, "Y", ',', '=', y)){
 			x = atof(sx.c_str());
 			y = atof(sy.c_str());
 			if(x > x_lower && x < x_upper && y > y_lower && y < y_upper){
@@ -93,14 +97,15 @@ std::vector<std::string> ArtifactField::getArtifactbox(double x_lower, double x_
 
 /// Returns a vector of all artifacts within the 2D, X,Y circle specified by
 /// \param x_val X value
-/// \param y_val XY value
+/// \param y_val Y value
 /// \param radius Radius to detect to
-std::vector<std::string> ArtifactField::getArtifactcircle(double x_val, double y_val, double radius){
+std::vector<std::string> ArtifactField::getArtifactcircle(double x_val, double y_val, double radius) const
+{
 	// Parse all of the artifacts for X,Y values, adding to local copy
 	std::string sx, sy;
 	double x, y;
 	
-	std::vector<std::string>::iterator p;
+	std::vector<std::string>::const_iterator p;
 	
 	std::vector<std::string> vecResults;
 	
