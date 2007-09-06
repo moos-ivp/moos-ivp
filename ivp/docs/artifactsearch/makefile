@@ -10,8 +10,6 @@ EPSFILES = $(patsubst $(LDIR)%.fig, \
 	   $(LDIR)%.eps,$(wildcard $(LDIR)*.fig))
 
 all: dvi
-	dvips -t letter -o $(PAPER).ps $(PAPER).dvi
-	gnome-open $(PAPER).dvi &
 
 view:
 	gnome-open $(PAPER).dvi &
