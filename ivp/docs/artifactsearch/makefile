@@ -14,6 +14,9 @@ all: dvi
 view:
 	gnome-open $(PAPER).dvi &
 
+viewpdf:
+	gnome-open $(PAPER).pdf &
+
 installpdf: pdf
 	cp -f $(PAPERPDF).pdf ~/
 

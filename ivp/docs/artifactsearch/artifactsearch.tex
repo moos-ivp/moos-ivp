@@ -24,6 +24,16 @@
 \newlength{\pin}
 \setlength{\pin}{0.2in}
 \newcommand{\email}[1]{\textless #1\textgreater}
+\newcommand{\img}[4][width=\linewidth]
+{
+\begin{figure}[ht]
+\centering
+\includegraphics[#1]{#2}
+\caption{#3}
+\label{#4}
+\end{figure}
+}
+\newcommand{\bhvsg}{bhv\_SearchGrid}
 %\newcommand{\helm}{IvP Helm}
 %\newcommand{\phelm}{pHelmIvP}
 %\newcommand{\ibuff}{info\_buffer}

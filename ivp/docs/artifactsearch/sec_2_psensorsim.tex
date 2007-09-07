@@ -1,2 +1,70 @@
 \section{pSensorSim}
 \label{pSensorSim}
+
+pSensorSim is composed of two C++ classes, ArtifactField and SensorModel.  Most users will not directly use these classes and will instead interact with them through the MOOSApp pSensorSim.
+
+\subsection{ArtifactField}
+\label{classArtifactField}
+ArtifactField simulates an artifact field.  Internally, it is a vector of strings, where each string represents one artifact.  An artifact string consists of a comma separated list of equal-sign delimited variable-value pairs.  For example, ``Var1=val1,Var2=val2,Var3=val3''.  This structure makes it easy to add new traits to artifacts without having to change much code in other segments.
+
+ArtifactField can return a list of artifacts within a 2D rectangle or circle when the artifact strings contain both ``X=xval'' and ``Y=yval'' (e.g ``X=10,Y=4.5,TYPE=magnetic'').
+
+\subsubsection*{Public Member Functions}
+\begin{itemize}
+\item void {\bf add\-Artifact} (std::string)
+\begin{list}\small\item\em Puts an artifact into the field. \item\end{list}\item void {\bf add\-Artifact} (double, double)
+\begin{list}\small\item\em Constructs the proper string from an {\em x\/}, {\em y\/} pair. \item\end{list}\item std::string {\bf get\-Artifact} (int) const 
+\begin{list}\small\item\em Returns the artifact at index {\em i\/}. \item\end{list}\item int {\bf size} () const
+\begin{list}\small\item\em Returns the number of artifacts in the field. \item\end{list}\item std::vector$<$ std::string $>$ {\bf get\-Artifactbox} (double, double, double, double) const
+\begin{list}\small\item\em Returns a vector of all artifacts within the 2D, X,Y box specified by the parameters. \item\end{list}\item std::vector$<$ std::string $>$ {\bf get\-Artifactcircle} (double, double, double) const
+\begin{list}\small\item\em Returns a vector of all artifacts within the 2D, X,Y circle specified by the parameters. \item\end{list}\end{itemize}
+
+\subsection{SensorModel}
+\label{classSensorModel}
+SensorModel models the output of a specified sensor on a given ArtifactField.  After creating a SensorModel object, the programmer initializes the sensor by calling {\bf set\-Sensor\-Model} with the name of the model to simulate (currently, only a fixed radius, guaranteed-detection sensor is modeled, ``fixedradius'') and setting the detection radius using {\bf set\-Sensor\-Radius}.  The programmer can query the sensor by calling {\bf query\-Sensor} with a query string that is determined by the sensor.  For the fixed-radius sensor, the query string should contain the current X and Y values, e.g. ``X=4.5,Y=1.3''.
+
+\subsubsection*{Public Member Functions}
+\begin{itemize}
+\item bool {\bf set\-Sensor\-Model} (std::string const)
+\begin{list}\small\item\em Currently accepted value is ``fixedradius''. \item\end{list}\item void {\bf set\-Sensor\-Radius} (double)
+\begin{list}\small\item\em The sensor radius must be a non-negative value. \item\end{list}\item double {\bf get\-Sensor\-Radius} () const
+\item std::vector$<$ std::string $>$ {\bf query\-Sensor} (std::string const, {\bf Artifact\-Field} const \&) const
+\begin{list}\small\item\em \begin{description}
+\item[Parameters:]
+\begin{description}
+\item[{\em Art\-Field}]is a reference to an artifact field \end{description}
+\end{description}
+\item\end{list}\end{itemize}
+
+\subsection*{Private Member Functions}
+\begin{itemize}
+\item std::vector$<$ std::string $>$ {\bf query\-FRSensor} (std::string const, {\bf Artifact\-Field} const \&) const
+\begin{list}\small\item\em A private method for querying a fixed-radius sensor. \item\end{list}\end{itemize}
+\subsection*{Private Attributes}
+\begin{itemize}
+\item double {\bf d\-Sensor\-Radius}
+\begin{list}\small\item\em The maxiumum effective sensor radius. \item\end{list}\item std::string {\bf s\-Sensor\-Type}
+\begin{list}\small\item\em A string holding the current sensor type. \item\end{list}\end{itemize}
+
+\subsection{pSensorSim}
+Combining these two classes and creating a MOOSApp, we get Fig.~\ref{fig_sensorsim}.
+
+\img[width=\linewidth]{figures/sensorsim}{A class diagram for pSensorSim}{fig_sensorsim}
+
+The pAntler configuration block for pSensorSim looks like this:
+\begin{verbatim}
+//------------------------------------------
+// pSensorSim config block
+ProcessConfig = pSensorSim
+{
+   AppTick   = 4
+   CommsTick = 4
+   
+   ArtifactFile = mines.art
+   Artifact = X=10,Y=10
+   Sensor = FixedRadius
+   Sensor_Radius = 10   
+}
+\end{verbatim}
+
+EXPLANATION OF PARAMETERS HERE
