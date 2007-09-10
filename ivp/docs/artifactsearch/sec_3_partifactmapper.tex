@@ -1,6 +1,35 @@
 \section{pArtifactMapper}
 \label{pArtifactMapper}
 
-Combining these two classes and creating a MOOSApp, we get Fig.~\ref{fig_artifactmapper}.
+pArtifactMapper implements MOOSApp functionality for the XYArtifactGrid C++ class.
 
-\img[width=\linewidth]{figures/artifactmapper}{A class diagram for pArtifactMapper}{fig_artifactmapper}
+\subsection{XYArtifactGrid}
+\label{XYArtifactGrid}
+
+XYArtifactGrid is a simple class derived from XYGrid.  Using the functionality of XYGrid, this class is able to instantiate a search grid on top of a given search area.  Each cell in this search grid has a value member and a utility member.  The value member can be set to any double.  The utility member is bounded by the minimum and maximum utilities set by the programmer.
+
+\subsection{pArtifactMapper}
+The simple class diagram for pArtifactMapper is shown in Fig.~\ref{fig:artifactmapper}.
+
+\img[width=\linewidth]{figures/artifactmapper}{A class diagram for pArtifactMapper}{fig:artifactmapper}
+
+The pAntler configuration block for pArtifactMapper looks like this:
+\begin{verbatim}
+//------------------------------------------
+// pArtifactMapper config block
+ProcessConfig = pArtifactMapper
+{
+   AppTick   = 4
+   CommsTick = 4
+   
+   GridPoly =  poly:label,A:-60,-40:50,10:80,-40:-40,-80
+   GridSize = 5.0
+   GridInit = .5
+}
+\end{verbatim}
+
+\begin{itemize}
+\item {\bf GridPoly}  A valid polygon initialization string (must be convex) that covers the search area.
+\item {\bf GridSize}  The width/height of each cell in the search grid in meters.
+\item {\bf GridInit}  The initializing value for each cell.
+\end{itemize}

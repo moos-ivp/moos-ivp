@@ -1,2 +1,66 @@
 \section{Example Missions}
 \label{examples}
+
+\subsection{Tutorial}
+\label{ex:tutorial}
+This example gives a tutorial on how one might go about creating and executing a mission to search for artifacts.
+
+\subsubsection{Setup}
+\label{ex:tutorial:setup}
+The first step is to define the search area.  Using polyview, click on a few points (maintaining a convex polygon) to create the search area and export the polygon string.
+
+\img[width=\linewidth]{figures/01polyview}{Defining the search area in polyview}{fig:01polyview}
+
+We now generate a random artifact field for searching.  In the directory you want to run your mission file from:
+
+{\tt artfieldgenerator label,A:-119,-60:109,40:130,-97:-55,-156 .25 25 > mines.art}
+
+This generates some random artifacts:
+
+\begin{verbatim}
+head -4 mines.art 
+ARTIFACT = X=92.5,Y=26.25
+ARTIFACT = X=59.25,Y=-47.25
+ARTIFACT = X=-30.25,Y=-60.25
+ARTIFACT = X=88.5,Y=-85.25
+\end{verbatim}
+
+The next setup task is to create the MOOS mission file.  See Appendix~\ref{app:tutorialmission} for a working example.  The relevant portions are printed below:
+\begin{verbatim}
+//------------------------------------------
+// pSensorSim config block
+ProcessConfig = pSensorSim
+{
+   AppTick   = 4
+   CommsTick = 4
+   
+   ArtifactFile = mines.art
+   Artifact = X=10,Y=10
+   Sensor = FixedRadius
+   Sensor_Radius = 10   
+}
+
+//------------------------------------------
+// pArtifactMapper config block
+ProcessConfig = pArtifactMapper
+{
+   AppTick   = 4
+   CommsTick = 4
+   
+   GridPoly =  label,A:-119,-60:109,40:130,-97:-55,-156
+   GridSize = 5.0
+   GridInit = .5
+}
+\end{verbatim}
+
+We also need to configure the helm to run a simple behavior to search over the search area.  To do this we first need to create a sequence of points for the vehicle to search over.  Load polyview with the previously defined search area (pass polyview a file with a line that reads ``Polygon = polystring'' to get it to load) and create a new ``polygon'' (not really a polygon as it will not be convex) whose points are the points in the lawn-mower pattern.  See Fig.~\ref{fig:02lawnmower} for an example.  Export this sequence of points and put it in the bhv file.  See Appendix~\ref{app:tutorialbehavior} for an example behavior.
+
+\img[width=\linewidth]{figures/02lawnmower}{Defining the lawn-mower pattern in polyview}{fig:02lawnmower}
+
+\subsubsection{Launch}
+\label{ex:tutorial:launch}
+After getting setup for the mission, we invoke it with {\tt pAntler~mission.moos}.  The display should look like Fig.~\ref{fig:04missionstart}.  The blue grid is the search grid, the light blue dots are artifacts, and the circle around the kayak is the detection radius.  To start the helm, in iRemote, set Deploy = TRUE (key 4), and then relinquish manual control ('o').
+
+\img[width=\linewidth]{figures/03missionstart}{pMarineViewer at the beginning of an artifact search mission}{fig:04missionstart}
+
+The kayak will now loop through the points defined in the lawn-mower pattern and the various displays will update accordingly.

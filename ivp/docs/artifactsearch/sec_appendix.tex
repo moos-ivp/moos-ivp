@@ -1,131 +1,25 @@
-\refstepcounter{alisting}
-\vspace{0.1in}
-\noindent
-{\bf {Listing A.\arabic{alisting} The MOOS File for Examples 1-3}}
-\label{alpha_moos}
+\section{artfieldgenerator}
+\label{app:artfieldgenerator}
+artfieldgenerator is a command line tool for generating random artifact fields for testing various behaviors and algorithms.
 
-\medskip
-\noindent
-Filename: alpha.moos
+To use artfieldgenerator:
 
-\scriptsize
-\begin{verbatim}
-  0 ServerHost = localhost
-  1 ServerPort = 9000
-  2 Simulator  = true
-  3 Community  = alpha
-  4 LatOrigin  = 42.3584
-  5 LongOrigin = -71.08745
-  6      
-  7 //------------------------------------------
-  8 ProcessConfig = ANTLER
-  9 {
- 10   MSBetweenLaunches = 200
- 11   
- 12   Run = MOOSDB          @ NewConsole = true
- 13   Run = iMarineSim      @ NewConsole = true
- 14   Run = pEchoVar        @ NewConsole = true
- 15   Run = pLogger         @ NewConsole = true
- 16   Run = pTransponderAIS @ NewConsole = true
- 17   Run = pMarinePID      @ NewConsole = true
- 18   Run = pMarineViewer   @ NewConsole = true
- 19   Run = pHelmIvP        @ NewConsole = true
- 20   Run = iRemote         @ NewConsole = true
- 21 }
- 22    
- 23 //------------------------------------------
- 24 ProcessConfig = iMarineSim
- 25 {
- 26   AppTick	    = 4
- 27   CommsTick	    = 4
- 28   MaxTransVel   = 3.0
- 29   MaxRotVel     = 0.6
- 30   StartLon      = 10
- 31   StartLat      = -40
- 32   StartSpeed    = 0
- 33   StartHeading  = 180
- 34 }
- 35     
- 36 //------------------------------------------
- 37 ProcessConfig = pHelmIvP
- 38 {
- 39   AppTick    = 4
- 40   CommsTick  = 4
- 41   Domain     = course:0:359:360
- 42   Domain     = speed:0:3:16
- 43      
- 44   Behaviors  = foobar.bhv
- 45   VERBOSE    = terse
- 46 }
- 47     
- 48 //------------------------------------------
- 49 ProcessConfig = pMarinePID
- 50 {
- 51   AppTick    = 4
- 52   CommsTick  = 4
- 53   Verbose    = true
- 54    
- 55   DEPTH_CONTROL = false
- 56   MAXRUDDER     = 100
- 57   MAXTHRUST     = 100
- 58    
- 59   YAW_PID_KP               = 0.5
- 60   YAW_PID_KD               = 0.0
- 61   YAW_PID_KI               = 0.0
- 62   YAW_PID_INTEGRAL_LIMIT   = 0.07
- 63    
- 64   SPEED_PID_KP             = 1.0
- 65   SPEED_PID_KD             = 0.0
- 66   SPEED_PID_KI             = 0.0
- 67   SPEED_PID_INTEGRAL_LIMIT = 0.07
- 68   SPEED_FACTOR             = 20
- 69 }
- 70    
- 71 //------------------------------------------
- 72 ProcessConfig = iRemote
- 73 {
- 74    CustomKey = 1 : HELM_VERBOSE @ "verbose"
- 75    CustomKey = 2 : HELM_VERBOSE @ "terse"
- 76    CustomKey = 3 : HELM_VERBOSE @ "quiet"
- 77    CustomKey = 4 : DEPLOY       @ "true"
- 78    CustomKey = 5 : RETURN       @ "true"
- 79 }
- 80    
- 81 //------------------------------------------
- 82 ProcessConfig = pLogger
- 83 {
- 84   AppTick       = 20.0
- 85   CommsTick     = 20.0
- 86   File          = alpha
- 87   PATH          = ./datafiles
- 88   SyncLog       = true @ 0.2
- 89   AsyncLog      = true
- 90   FileTimeStamp = true
- 91   Log           = NAV_X     @ 0.1
- 92   Log           = NAV_Y     @ 0.1
- 93   Log           = NAV_Yaw   @ 0.1
- 94   Log           = NAV_Speed @ 0.1
- 95 }
- 96    
- 97 //------------------------------------------
- 98 ProcessConfig = pEchoVar
- 99 {
-100   AppTick   = 5
-101   CommsTick = 5
-102   Echo      = MARINESIM_X       ->  NAV_X
-103   Echo      = MARINESIM_Y       ->  NAV_Y
-104   Echo      = MARINESIM_YAW     ->  NAV_YAW
-105   Echo      = MARINESIM_HEADING ->  NAV_HEADING
-106   Echo      = MARINESIM_SPEED   ->  NAV_SPEED
-107 }
-108     
-109 //------------------------------------------
-110 ProcessConfig = pTransponderAIS
-111 {
-112   AppTick       = 2
-113   CommsTick     = 2
-114   VESSEL_TYPE   = KAYAK
-115 }
-\end{verbatim}
-\normalsize
+{\tt artfieldgenerator poly\_string step\_size num\_artifacts}
 
+\begin{itemize}
+\item {\bf poly\_string} A valid polygon initialization string (convex).  All of the artifacts will be contained within this polygon.  Some artifacts, however, may exist outside a search grid, depending on the size of the grid elements.
+\item {\bf step\_size} Where to step the X, Y values (e.g. .25 generates values in .25 increments)
+\item {\bf num\_artifacts} Number of unique artifacts to generate
+\end{itemize}
+
+The output of artfield generator is written to standard out, so it is often redirected to a file for later use:
+
+{\tt artfieldgenerator label,A:-60,-40:50,10:80,-40:-40,-80 .25 25 > mines.art}
+
+\section{Tutorial Mission}
+\label{app:tutorialmission}
+\verbatiminput{missions/mission.moos}
+
+\section{Tutorial Behavior}
+\label{app:tutorialbehavior}
+\verbatiminput{missions/artifactsearch.bhv}
