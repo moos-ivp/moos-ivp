@@ -36,6 +36,8 @@ protected:
   int              getFullKeyMatch();
 
   void tabExpand();
+  void handleArrow(char c);
+
 
 protected:
 
@@ -45,8 +47,12 @@ protected:
   std::vector<std::string>  m_var_val;
 
   int  m_iteration;
+  int  m_memory_ix;
 
   std::string m_cmd_buffer;
+  std::vector<std::string> m_cmds_prev;
+  std::string m_cmd_partial;
+
 };
 
 #endif

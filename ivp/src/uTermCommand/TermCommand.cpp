@@ -19,6 +19,7 @@ using namespace std;
 TermCommand::TermCommand()
 {
   m_iteration = 0;
+  m_memory_ix = -1;
 }
 
 //------------------------------------------------------------
@@ -214,7 +215,7 @@ void TermCommand::printMapping()
     
     if(m_var_type[i] == "string") {
       if(m_var_val[i] != "n/a") {
-	printf("\"%s\"", m_var_val[i].c_str());
+	printf("\"[%s]\"", m_var_val[i].c_str());
       }
       else
 	printf("n/a");
@@ -240,6 +241,42 @@ void TermCommand::postCommand(int ix)
     double dval = atof(m_var_val[ix].c_str());
     m_Comms.Notify(m_var_name[ix], dval);
   }
+
+  m_cmds_prev.push_back(m_var_key[ix]);
+  m_memory_ix = -1;
+  m_cmd_partial = "";
+}
+
+
+//------------------------------------------------------------
+// Procedure: handleArrow
+
+void TermCommand::handleArrow(char c)
+{
+  int cache_size = m_cmds_prev.size();
+  if(cache_size == 0)
+    return;
+
+  if(c==65) { // up-arrow
+    m_memory_ix++;
+    if(m_memory_ix >= cache_size)
+      m_memory_ix = cache_size-1;
+  }
+
+  if(c==66) { // down-arrow
+    m_memory_ix--;
+    if(m_memory_ix <= -1) {
+      m_memory_ix = -1;
+      m_cmd_buffer = "";
+      m_cmd_buffer = m_cmd_partial;
+      return;
+    }
+  }
+
+  int cache_ix = (cache_size - 1) - m_memory_ix;
+
+  // m_cmd_partial = m_cmd_buffer;
+  m_cmd_buffer = m_cmds_prev[cache_ix];
 }
 
 //------------------------------------------------------------
@@ -290,17 +327,29 @@ void TermCommand::tabExpand()
 
 //------------------------------------------------------------
 // Procedure: handleCharInput
+//  ASCII:
+//           09 = tab
+//           32 = blank
+//           65 = up-arrow
+//           66 = down-arrow
+//           67 = left-arrow
+//           68 = right-arrow
 
 void TermCommand::handleCharInput(char c)
 {
-  if((c==32)||(c==65)||(c==66)||(c==67)||(c==68)||(c==27)||(c==91))
+  if((c==32)||(c==67)||(c==68)||(c==27)||(c==91))
     return;
   
   for(int k=0; k<100; k++)
     printf("\n");
   
-  if(c==9)
+  if((c==65) || (c==66))
+    handleArrow(c);
+
+  if(c==9) {
     tabExpand();
+    m_cmd_partial = m_cmd_buffer;
+  }
 
   // Special case the DELETE key - reduce buff string at end
   if(c==127) {
@@ -308,9 +357,13 @@ void TermCommand::handleCharInput(char c)
     if(buff_len >= 1)
       m_cmd_buffer.assign(m_cmd_buffer.c_str(), buff_len-1);
   } 
-  else
-    if((c!=10) && (c!=9))
+  else {
+    if((c!=10) && (c!=9) && (c!=65) && (c!=66)) {
       m_cmd_buffer += c;
+      m_cmd_partial = m_cmd_buffer;
+    }
+  }
+
   
   int res = getFullKeyMatch();
   if((res != -1) && (c==10)) {
@@ -337,13 +390,13 @@ void TermCommand::handleCharInput(char c)
       printf("%-32s", m_var_name[i].c_str());
       if(m_var_type[i] == "string") {
 	if(m_var_val[i] != "n/a") {
-	  printf("\"%-15s\"", m_var_val[i].c_str());
+	  printf("\"%s\"", m_var_val[i].c_str());
 	}
 	else
 	  printf("n/a");
       }
       else if(m_var_type[i] == "double")
-	printf("%-15s", m_var_val[i].c_str());
+	printf("%s", m_var_val[i].c_str());
       printf("\n");		
     }
     printf("\n");		
@@ -354,7 +407,7 @@ void TermCommand::handleCharInput(char c)
     printf("%-32s", m_var_name[res].c_str());
     if(m_var_type[res] == "string") {
       if(m_var_val[res] != "n/a") {
-	printf("\"%-15s\"", m_var_val[res].c_str());
+	printf("\"%s\"", m_var_val[res].c_str());
       }
       else
 	printf("n/a");
@@ -369,6 +422,5 @@ void TermCommand::handleCharInput(char c)
     printf("\n  NO MATCH\n\n");
 
   cout << "> " << m_cmd_buffer << flush;
-
 }
 
