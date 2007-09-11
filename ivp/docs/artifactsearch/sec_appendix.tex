@@ -4,22 +4,42 @@ artfieldgenerator is a command line tool for generating random artifact fields f
 
 To use artfieldgenerator:
 
+\scriptsize
 {\tt artfieldgenerator poly\_string step\_size num\_artifacts}
+\normalsize
 
-\begin{itemize}
-\item {\bf poly\_string} A valid polygon initialization string (convex).  All of the artifacts will be contained within this polygon.  Some artifacts, however, may exist outside a search grid, depending on the size of the grid elements.
-\item {\bf step\_size} Where to step the X, Y values (e.g. .25 generates values in .25 increments)
-\item {\bf num\_artifacts} Number of unique artifacts to generate
-\end{itemize}
+\begin{hangpar}{\pin}{\var{poly\_string: }}
+A valid polygon initialization string (convex).  All of the artifacts will be contained within this polygon.  Some artifacts, however, may exist outside a search grid, depending on the size of the grid elements.
+\end{hangpar}
+
+\begin{hangpar}{\pin}{\var{step\_size: }}
+Where to step the X, Y values (e.g. .25 generates values in .25 increments)
+\end{hangpar}
+
+\begin{hangpar}{\pin}{\var{num\_artifacts: }}
+Number of unique artifacts to generate
+\end{hangpar}
 
 The output of artfield generator is written to standard out, so it is often redirected to a file for later use:
 
+\scriptsize
 {\tt artfieldgenerator label,A:-60,-40:50,10:80,-40:-40,-80 .25 25 > mines.art}
+\normalsize
 
 \section{Tutorial Mission}
 \label{app:tutorialmission}
+Line break in polygon string is provided for readability only.
+
+File: mission.moos
+\scriptsize
 \verbatiminput{missions/mission.moos}
+\normalsize
 
 \section{Tutorial Behavior}
 \label{app:tutorialbehavior}
+Line breaks in point list are provided for readability only.
+
+File: artifactsearch.bhv
+\scriptsize
 \verbatiminput{missions/artifactsearch.bhv}
+\normalsize

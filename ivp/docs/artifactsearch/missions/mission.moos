@@ -64,7 +64,8 @@ ProcessConfig = pArtifactMapper
    AppTick   = 4
    CommsTick = 4
    
-   GridPoly =  label,A:-119,-60:109,40:130,-97:-55,-156
+   GridPoly =  label,A:-119,-60:109,40:130,
+                  -97:-55,-156
    GridSize = 5.0
    GridInit = .5
 }
@@ -79,7 +80,7 @@ ProcessConfig = pMarineViewer
   TIF_FILE = ./Default.tif
 }
 
-//------------------------------------------------------------------
+//------------------------------------------
 // pMarine config block
 ProcessConfig = pMarinePID
 {
@@ -106,8 +107,10 @@ ProcessConfig = pMarinePID
   MAXRUDDER  = 100
   MAXTHRUST  = 100
 
-  // A non-zero SPEED_FACTOR overrides use of SPEED_PID
-  // Will set DESIRED_THRUST = DESIRED_SPEED * SPEED_FACTOR
+  // A non-zero SPEED_FACTOR overrides 
+  //     use of SPEED_PID
+  // Will set DESIRED_THRUST = 
+  //     DESIRED_SPEED * SPEED_FACTOR
   SPEED_FACTOR           = 20
 }
 

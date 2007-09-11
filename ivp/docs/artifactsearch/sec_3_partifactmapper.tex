@@ -14,6 +14,7 @@ The simple class diagram for pArtifactMapper is shown in Fig.~\ref{fig:artifactm
 \img[width=\linewidth]{figures/artifactmapper}{A class diagram for pArtifactMapper}{fig:artifactmapper}
 
 The pAntler configuration block for pArtifactMapper looks like this:
+\scriptsize
 \begin{verbatim}
 //------------------------------------------
 // pArtifactMapper config block
@@ -27,9 +28,16 @@ ProcessConfig = pArtifactMapper
    GridInit = .5
 }
 \end{verbatim}
+\normalsize
 
-\begin{itemize}
-\item {\bf GridPoly}  A valid polygon initialization string (must be convex) that covers the search area.
-\item {\bf GridSize}  The width/height of each cell in the search grid in meters.
-\item {\bf GridInit}  The initializing value for each cell.
-\end{itemize}
+\begin{hangpar}{\pin}{\var{GridPoly: }}
+Mandatory. A valid polygon initialization string (must be convex) that covers the search area.
+\end{hangpar}
+
+\begin{hangpar}{\pin}{\var{GridSize: }}
+Mandatory. The width/height of each cell in the search grid in meters.
+\end{hangpar}
+
+\begin{hangpar}{\pin}{\var{GridInit: }}
+Mandatory. The initializing value for each cell.
+\end{hangpar}

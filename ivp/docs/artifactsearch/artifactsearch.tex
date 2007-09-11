@@ -23,8 +23,6 @@
 
 \begin{document}
 
-\newlength{\pin}
-\setlength{\pin}{0.2in}
 \newcommand{\email}[1]{\textless #1\textgreater}
 \newcommand{\img}[4][width=\linewidth]
 {
@@ -39,9 +37,11 @@
 %\newcommand{\helm}{IvP Helm}
 %\newcommand{\phelm}{pHelmIvP}
 %\newcommand{\ibuff}{info\_buffer}
-\newcounter{listing}
-\newcounter{alisting}
+%\newcounter{listing}
+%\newcounter{alisting}
 
+\newlength{\pin}
+\setlength{\pin}{0.2in}
 \newenvironment{hangpar}[1]{\list{}{
     \setlength{\listparindent}{1.5em}       \setlength{\itemindent}{0pt}
     \setlength{\itemsep}{0pt}               \setlength{\parindent}{0pt}
@@ -64,7 +64,7 @@ Cambridge MA 02139 \\
 
 
 \begin{abstract}
-Documentation for the MOOS/IvP artifact search system.  Includes notes for pSensorSim, pArtifactMapper, artfieldgenerator, and bhv\_SearchGrid.  Includes an example mission as a tutorial for users experienced with MOOS/IvP
+Documentation for the MOOS/IvP artifact search system.  Includes notes for pSensorSim, pArtifactMapper, artfieldgenerator, and \bhvsg.  Includes an example mission as a tutorial for users experienced with MOOS/IvP
 \end{abstract}
 
 \input{sec_1_intro}
