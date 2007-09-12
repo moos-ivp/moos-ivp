@@ -37,42 +37,48 @@ bool PMV_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
   //cout  << NewMail.size() << "," << flush;
   for(p = NewMail.rbegin();p!=NewMail.rend();p++) {
     CMOOSMsg &Msg = *p;
-    
-    if(Msg.m_sKey == "AIS_REPORT") {
+
+    string key = Msg.m_sKey;
+
+    if(key == "AIS_REPORT") {
       cout << "*" << flush;
       receiveAIS_REPORT(Msg);
       gui_needs_redraw = true;
     }
-    else if(Msg.m_sKey == "AIS_REPORT_LOCAL") {
+    else if(key == "AIS_REPORT_LOCAL") {
       cout << "*" << flush;
       receiveAIS_REPORT(Msg);
       gui_needs_redraw = true;
     }
-    else if(Msg.m_sKey == "GRID_CONFIG") { 
+    else if(key == "GRID_CONFIG") { 
       receiveGRID_CONFIG(Msg);
       gui_needs_redraw = true;
     }
-    else if(Msg.m_sKey == "GRID_DELTA") { 
+    else if(key == "GRID_DELTA") { 
       receiveGRID_DELTA(Msg);
       gui_needs_redraw = true;
     }
-    else if(Msg.m_sKey == "VIEW_POLYGON") { 
+    else if(key == "VIEW_POLYGON") { 
       receivePolygon(Msg);
       gui_needs_redraw = true;
     }
-    else if(Msg.m_sKey == "VIEW_SEGLIST") { 
+    else if(key == "VIEW_SEGLIST") { 
       receiveSegList(Msg);
       gui_needs_redraw = true;
     }
-    else if(Msg.m_sKey == "VIEW_POINT") { 
+    else if(key == "VIEW_POINT") { 
       receivePoint(Msg);
       gui_needs_redraw = true;
     }
-    else if(Msg.m_sKey == "TRAIL_RESET") { 
+    else if(key == "VIEW_CIRCLE") { 
+      receivePoint(Msg);
+      gui_needs_redraw = true;
+    }
+    else if(key == "TRAIL_RESET") { 
       gui_clear_trails = true;
     }
     else {
-      MOOSTrace("Unknown msg [%s]\n",Msg.m_sKey.c_str());
+      MOOSTrace("Unknown msg [%s]\n",key.c_str());
     }
     //cout << "Originating community: " << Msg.m_sOriginatingCommunity << endl;
   }
