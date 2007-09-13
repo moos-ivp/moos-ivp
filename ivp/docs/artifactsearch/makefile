@@ -18,15 +18,17 @@ viewpdf:
 	gnome-open $(PAPER).pdf &
 
 installpdf: pdf
-	cp -f $(PAPERPDF).pdf ~/
+	cp -f $(PAPER).pdf ~/$(PAPERPDF).pdf
 
 pdf: dvi
 	dvipdfm -p letter $(PAPER).dvi
-	mv $(PAPER).pdf $(PAPERPDF).pdf
 	gnome-open $(PAPERPDF).pdf &
 
 dvi: $(EPSFILES)
 	rubber $(PAPER)
+
+force: $(EPSFILES)
+	rubber -f $(PAPER)
 
 ps: dvi
 	dvips -t letter -o $(PAPER).ps $(PAPER).dvi

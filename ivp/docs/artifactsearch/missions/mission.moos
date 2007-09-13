@@ -15,15 +15,15 @@ ProcessConfig = ANTLER
 {
   MSBetweenLaunches = 200
 
-  Run = MOOSDB		@ NewConsole = true
-  Run = iMarineSim	@ NewConsole = true
-  Run = pEchoVar	@ NewConsole = true
-  Run = pLogger		@ NewConsole = true
-  Run = pTransponderAIS	@ NewConsole = true
-  Run = pMarineViewer	@ NewConsole = true
-  Run = pHelmIvP	@ NewConsole = true
+  Run = MOOSDB      @ NewConsole = true
+  Run = iMarineSim  @ NewConsole = true
+  Run = pEchoVar    @ NewConsole = true
+  Run = pLogger     @ NewConsole = true
+  Run = pTransponderAIS @ NewConsole = true
+  Run = pMarineViewer   @ NewConsole = true
+  Run = pHelmIvP    @ NewConsole = true
   Run = pMarinePID  @ NewConsole = true
-  Run = iRemote		@ NewConsole = true
+  Run = iRemote     @ NewConsole = true
   Run = pSensorSim  @ NewConsole = true
   Run = pArtifactMapper @ NewConsole = true
 }
@@ -92,15 +92,15 @@ ProcessConfig = pMarinePID
   DEPTH_CONTROL = false
 
   // Yaw PID controller
-  YAW_PID_KP		 = 0.5
-  YAW_PID_KD		 = 0.0
-  YAW_PID_KI		 = 0.0
+  YAW_PID_KP        = 0.5
+  YAW_PID_KD        = 0.0
+  YAW_PID_KI        = 0.0
   YAW_PID_INTEGRAL_LIMIT = 0.07
 
   // Speed PID controller
-  SPEED_PID_KP		 = 1.0
-  SPEED_PID_KD		 = 0.0
-  SPEED_PID_KI		 = 0.0
+  SPEED_PID_KP        = 1.0
+  SPEED_PID_KD        = 0.0
+  SPEED_PID_KI        = 0.0
   SPEED_PID_INTEGRAL_LIMIT = 0.07
 
   // Maximums
@@ -118,8 +118,8 @@ ProcessConfig = pMarinePID
 // iMarineSim config block
 ProcessConfig = iMarineSim
 {
-  AppTick	= 10
-  CommsTick	= 10
+  AppTick       = 10
+  CommsTick     = 10
   MaxTransVel   = 3.0
   MaxRotVel     = 0.6
   StartLon      = 0
@@ -149,26 +149,26 @@ ProcessConfig = iRemote
 ProcessConfig = pLogger
 {
   //over loading basic params...
-  AppTick 	= 20.0
-  CommsTick 	= 20.0
+  AppTick   = 20.0
+  CommsTick = 20.0
 
-  File		= HW
-  PATH		= ../data_from_runs/
-  SyncLog 	= true @ 0.2
-  AsyncLog 	= true
+  File      = HW
+  PATH      = ../data_from_runs/
+  SyncLog   = true @ 0.2
+  AsyncLog  = true
   FileTimeStamp = true
 
-  Log		= DESIRED_THRUST @ 0.1
-  Log		= DESIRED_RUDDER @ 0.1
-  Log           = NAV_X   @ 0.1
-  Log           = NAV_Y   @ 0.1
-  Log           = NAV_Yaw @ 0.1
-  Log           = NAV_Heading @ 0.1
-  Log           = NAV_Speed @ 0.1
-  Log           = LOOP_WALL @ 0.1
-  Log           = LOOP_CPU @ 0.1
-  log  		= DIST_TO_REGION @ 0.1
-  Log           = AIS_REPORT @ 0.1
+  Log       = DESIRED_THRUST @ 0.1
+  Log       = DESIRED_RUDDER @ 0.1
+  Log       = NAV_X   @ 0.1
+  Log       = NAV_Y   @ 0.1
+  Log       = NAV_Yaw @ 0.1
+  Log       = NAV_Heading @ 0.1
+  Log       = NAV_Speed @ 0.1
+  Log       = LOOP_WALL @ 0.1
+  Log       = LOOP_CPU @ 0.1
+  log       = DIST_TO_REGION @ 0.1
+  Log       = AIS_REPORT @ 0.1
 }
 
 //------------------------------------------
@@ -191,7 +191,7 @@ ProcessConfig = pEchoVar
 
 ProcessConfig = pTransponderAIS
 {
-  AppTick	= 2
-  CommsTick	= 2
+  AppTick   = 2
+  CommsTick = 2
   VESSEL_TYPE   = KAYAK
 }

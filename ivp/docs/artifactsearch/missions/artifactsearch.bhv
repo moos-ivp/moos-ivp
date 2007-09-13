@@ -8,7 +8,7 @@ Behavior = BHV_Waypoint
   pwt       = 100
   condition = DEPLOY = true
   condition = RETURN = false
-  repeat    = 1
+  perpetual = true
 
   speed     = 3.0
   radius    = 2.0

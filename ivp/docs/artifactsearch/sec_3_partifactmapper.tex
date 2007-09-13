@@ -3,16 +3,18 @@
 
 pArtifactMapper implements MOOSApp functionality for the XYArtifactGrid C++ class.
 
-\subsection{XYArtifactGrid}
-\label{XYArtifactGrid}
+\subsection{Class XYArtifactGrid}
+\label{classXYArtifactGrid}
 
 XYArtifactGrid is a simple class derived from XYGrid.  Using the functionality of XYGrid, this class is able to instantiate a search grid on top of a given search area.  Each cell in this search grid has a value member and a utility member.  The value member can be set to any double.  The utility member is bounded by the minimum and maximum utilities set by the programmer.
 
-\subsection{pArtifactMapper}
+\subsection{MOOSApp pArtifactMapper}
+\label{apppArtifactMapper}
 The simple class diagram for pArtifactMapper is shown in Fig.~\ref{fig:artifactmapper}.
 
-\img[width=\linewidth]{figures/artifactmapper}{A class diagram for pArtifactMapper}{fig:artifactmapper}
+\img[width=.3\linewidth]{figures/artifactmapper}{A class diagram for pArtifactMapper}{fig:artifactmapper}
 
+\subsubsection{Configuration}
 The pAntler configuration block for pArtifactMapper looks like this:
 \scriptsize
 \begin{verbatim}
@@ -41,3 +43,24 @@ Mandatory. The width/height of each cell in the search grid in meters.
 \begin{hangpar}{\pin}{\var{GridInit: }}
 Mandatory. The initializing value for each cell.
 \end{hangpar}
+
+\subsubsection{MOOS Variables}
+\paragraph{Subscribes}
+\begin{hangpar}{\pin}{\var{DETECTED\_ARTIFACT: }}
+The sensor output strings are scanned for their x, y, and probability values.  The x, y location is mapped to a cell in the search grid and that cell's value and utility is updated to the probability.  After this, a \var{GRID\_DELTA} string is published.
+\end{hangpar}
+\begin{hangpar}{\pin}{\var{ARTIFACTMAP\_REFRESH: }}
+Any process can set this value to TRUE to ask pArtifactMapper to publish its current artifact field state.  This is published as a series of \var{GRID\_DELTA} updates for each cell.  After running the update, \var{ARTIFACTMAP\_REFRESH} is set to FALSE.
+\end{hangpar}
+\paragraph{Publishes}
+\begin{hangpar}{\pin}{\var{GRID\_CONFIG: }}
+This is published on startup and on connecting to the server.  This string is published to get pMarineViewer to plot the search grid and set up its internal XYGrid.
+\end{hangpar}
+\begin{hangpar}{\pin}{\var{GRID\_DELTA: }}
+A \var{GRID\_DELTA} string is published when the current probability in a \var{DETECTED\_ARTIFACT} cell differs from the detected probability.  The string format is the same as that used by pMarineViewer, ``label@index,oldval,newval,oldutil,newutil''.
+\end{hangpar}
+\begin{hangpar}{\pin}{\var{GRID\_CONFIG: }}
+This is published on startup and on connecting to the server.  This string is published to get pMarineViewer to plot the search grid and set up its internal XYGrid.
+\end{hangpar}
+
+NOTE:  pArtifactMapper currently does not listen for or accept updates from other sources (unless it get published as a \var{DETECTED\_ARTIFACT}.  Listening for other \var{GRID\_DELTA} updates is a feature that needs to be implemented.
