@@ -81,6 +81,16 @@ bool TransponderAIS::OnNewMail(MOOSMSG_LIST &NewMail)
       if(!ok) 
 	MOOSTrace("TransponderAIS: Un-Parsed CONTACT_STAT Report.\n");
     }
+    
+    // tes 9-12-07 added support for NAFCON_MESSAGES
+    else if (key == "NAFCON_MESSAGES")
+      {
+	bool ok = handleIncomingNaFConMessage(sdata);
+	if (!ok)
+	  MOOSTrace("TransponderAIS: Unparsed NaFConMessage.\n");
+     }
+    // end tes 9-12-07
+
     else {
       MOOSTrace("TransponderAIS: Unknown msg [%s]\n",msg.m_sKey.c_str());
     }
@@ -232,6 +242,10 @@ bool TransponderAIS::OnConnectToServer()
   m_Comms.Register("NAV_YAW", 0);
   m_Comms.Register("NAV_DEPTH", 0);
   m_Comms.Register("AIS_REPORT", 0);
+  
+  // tes 9-12-07. added NAFCON_MESSAGES registration
+  m_Comms.Register("NAFCON_MESSAGES", 0);
+
   return(true);
 }
 
@@ -276,6 +290,22 @@ bool TransponderAIS::OnStartUp()
     return(false);
   }
   
+
+  // tes 9-12-07
+  // look for latitude, longitude global variables
+  double latOrigin, longOrigin;
+  if (!m_MissionReader.GetValue("LatOrigin", latOrigin))
+    return MOOSFail("LatOrigin not set in *.moos file.\n");
+      
+  if (!m_MissionReader.GetValue("LongOrigin", longOrigin))
+    return MOOSFail("LongOrigin not set in *.moos file\n");
+  
+  // initialize m_Geodesy
+  if (!m_Geodesy.Initialise(latOrigin, longOrigin))
+    return MOOSFail("Geodesy init failed.\n");
+  // end tes 9-12-07
+
+
   list<string> sParams;
   if(m_MissionReader.GetConfiguration(GetAppName(), sParams)) {
     
@@ -292,8 +322,69 @@ bool TransponderAIS::OnStartUp()
   return(true);
 }
 
+/*
+ *  handleIncomingNaFConMessage()
+ *  tes 9-12-97
+ *  process a NaFCon Status Report and publish
+ *  {vehicle}_NAV_X, _NAV_Y, _NAV_HEADING, _NAV_DEPTH, _NAV_SPEED, _NAV_LASTUPDATETIME
+ */
 
+bool TransponderAIS::handleIncomingNaFConMessage(const string& rMsg)
+{    
+  //check message type                                                                                 
+  string messageType = "unknown";
+  
+  if (!(MOOSValFromString(messageType, rMsg, "MessageType")))
+    {
+    MOOSTrace("pParseNaFCon: Bad message. No message type found.\n");
+    return false;
+    } 
+  
+  //we have a status message                                                                           
+  if (MOOSStrCmp(messageType, "SENSOR_STATUS"))
+    {
+      string sourceID;
+      MOOSValFromString(sourceID, rMsg, "SourcePlatformId");
+      
+      //limit to MIT AUVs                                                                               
+      if(MOOSStrCmp(sourceID,"3") || MOOSStrCmp(sourceID,"4"))
+      	{
+	  
+	  double navX, navY, navLat, navLong, navHeading, navSpeed, navDepth, navTime;
+	  if(!MOOSValFromString(navLong, rMsg, "NodeLongitude"))
+	    return false;
 
+	  if (!MOOSValFromString(navLat, rMsg, "NodeLatitude"))
+	    return false;
+
+	  if (!MOOSValFromString(navHeading, rMsg, "NodeHeading"))
+	    return false;
+	  
+	  if (!MOOSValFromString(navSpeed, rMsg, "NodeSpeed"))
+	    return false;
+	  
+	  if(!MOOSValFromString(navDepth, rMsg, "NodeDepth"))
+	    return false;
+
+	  if(!MOOSValFromString(navTime, rMsg, "Timestamp"))
+	    return false;
+	  
+	  // convert lat, long into x, y. 60 nautical miles per minute
+	  if(!m_Geodesy.LatLong2LocalGrid(navLat, navLong, navY, navX))
+	    return false;
+
+	  // publish it
+	  m_Comms.Notify(sourceID + "_NAV_X", navX, MOOSTime());
+	  m_Comms.Notify(sourceID + "_NAV_Y", navY, MOOSTime());
+	  m_Comms.Notify(sourceID + "_NAV_HEADING", navHeading, MOOSTime());
+	  m_Comms.Notify(sourceID + "_NAV_SPEED", navSpeed, MOOSTime());
+	  m_Comms.Notify(sourceID + "_NAV_DEPTH", navDepth, MOOSTime());
+	  m_Comms.Notify(sourceID + "_NAV_LASTUPDATETIME", navTime, MOOSTime());
+	  
+	} 
+    }
+  return true;
+}
 
 
 

@@ -1,5 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin and John Leonard                    */
+/*    NaFCon Functionality: Toby Schneider tes@mit.edu           */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
 /*    FILE: TransponderAIS.cpp                                   */
 /*    DATE: Feb 9th 2006                                         */
@@ -25,6 +26,9 @@
 
 #include "MOOSLib.h"
 
+// tes 9-12-07 for CMOOSGeodesy class
+#include "MOOSGeodesy.h"
+
 class TransponderAIS : public CMOOSApp
 {
 public:
@@ -39,6 +43,7 @@ public:
  protected:
   bool handleIncomingAISReport(const std::string&);
   bool handleIncomingCSReport(const std::string&);
+  bool handleIncomingNaFConMessage(const std::string&);
 
 protected:
   double start_time;
@@ -49,6 +54,11 @@ protected:
   double nav_depth;
   std::string vessel_name;
   std::string vessel_type;
+  
+  // tes 9-12-07
+  // for lat long conversion
+  CMOOSGeodesy m_Geodesy;
+
 };
 
 #endif
