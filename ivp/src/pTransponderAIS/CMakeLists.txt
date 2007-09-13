@@ -8,6 +8,7 @@ IF("${IVP_BUILD_pTransponderAIS}" STREQUAL "ON")
    TARGET_LINK_LIBRARIES(pTransponderAIS 
    MOOS
    MOOSGen
+   MOOSUtility
    mbutil
    m
    pthread)
