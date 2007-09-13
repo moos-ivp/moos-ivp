@@ -2,8 +2,8 @@
 
 .PHONY : all clean ps
 
-PAPER    = artifactsearch
-PAPERPDF = artifactsearch
+PAPER    = graphicaltools
+PAPERPDF = graphicaltools
 LDIR     = $(CURDIR)/figures/
 
 EPSFILES = $(patsubst $(LDIR)%.fig, \
