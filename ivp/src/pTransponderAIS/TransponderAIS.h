@@ -56,6 +56,9 @@ protected:
   std::string vessel_type;
   
   // tes 9-12-07
+  bool parseNaFCon;
+  // array of bools stating whether to publish for a given ID
+  bool naFConPublishForID[32];
   // for lat long conversion
   CMOOSGeodesy m_Geodesy;
 

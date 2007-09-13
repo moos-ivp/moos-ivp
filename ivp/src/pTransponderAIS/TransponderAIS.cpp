@@ -85,10 +85,13 @@ bool TransponderAIS::OnNewMail(MOOSMSG_LIST &NewMail)
     // tes 9-12-07 added support for NAFCON_MESSAGES
     else if (key == "NAFCON_MESSAGES")
       {
-	bool ok = handleIncomingNaFConMessage(sdata);
-	if (!ok)
-	  MOOSTrace("TransponderAIS: Unparsed NaFConMessage.\n");
-     }
+	if(parseNaFCon)
+	  {
+	    bool ok = handleIncomingNaFConMessage(sdata);
+	    if (!ok)
+	      MOOSTrace("TransponderAIS: Unparsed NaFConMessage.\n");
+	  }
+      }
     // end tes 9-12-07
 
     else {
@@ -303,23 +306,51 @@ bool TransponderAIS::OnStartUp()
   // initialize m_Geodesy
   if (!m_Geodesy.Initialise(latOrigin, longOrigin))
     return MOOSFail("Geodesy init failed.\n");
-  // end tes 9-12-07
 
+  int i;
+  for (i=0; i<32; i++)
+    naFConPublishForID[i] = false;
+  
+  bool publishingSpecified = false;
+  parseNaFCon = false;
 
   list<string> sParams;
   if(m_MissionReader.GetConfiguration(GetAppName(), sParams)) {
     
     list<string>::iterator p;
     for(p = sParams.begin();p!=sParams.end();p++) {
+
       string sLine    = *p;
       string sVarName = MOOSChomp(sLine, "=");
 
       if(MOOSStrCmp(sVarName, "VESSEL_TYPE")) {
 	vessel_type = stripBlankEnds(sLine);
       }
+      
+      if(MOOSStrCmp(sVarName, "PARSE_NAFCON"))
+	{
+	  parseNaFCon = MOOSStrCmp(sLine, "true"); 
+	}
+
+      // create array specifying which IDs to publish for
+      if(MOOSStrCmp(sVarName, "PUBLISH_FOR_NAFCON_ID"))
+	{
+	  int id = atoi(sLine.c_str());
+	  naFConPublishForID[id] = true;
+	  publishingSpecified = true;
+	  
+	}
     }
+    // if no IDs to publish are specified, publish for ALL ids
+    if (!publishingSpecified)
+      {
+	int i;
+	for (i=0; i<32; i++)
+	  naFConPublishForID[i] = true;
+      }
   }
   return(true);
+  // end tes 9-12-07
 }
 
 /*
@@ -346,8 +377,8 @@ bool TransponderAIS::handleIncomingNaFConMessage(const string& rMsg)
       string sourceID;
       MOOSValFromString(sourceID, rMsg, "SourcePlatformId");
       
-      //limit to MIT AUVs                                                                               
-      if(MOOSStrCmp(sourceID,"3") || MOOSStrCmp(sourceID,"4"))
+      //limit to vehicles specified in config file
+      if(naFConPublishForID[atoi(sourceID.c_str())])
       	{
 	  
 	  double navX, navY, navLat, navLong, navHeading, navSpeed, navDepth, navTime;
