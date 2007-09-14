@@ -1,2 +1,77 @@
-\section{pMarineViewer}
+\section{\pmv}
 \label{pMarineViewer}
+For programming reference, the collaboration diagram for \pmv\ is included in Fig.~\ref{fig:pmvdiagram}.
+
+\img[width=\linewidth]{figures/pmvdiagram}{A collaboration diagram for \pmv}{fig:pmvdiagram}
+
+\subsection{Configuration}
+\pmv\ is launched by calling
+\scriptsize
+{\tt \pmv\ file.moos}
+\normalsize
+(contrary to the usage instructions, no other arguments are read from the command line).
+
+\subsubsection{MOOS Configuration Block}
+The \pmv\ MOOS configuration block looks like:
+\begin{verbatim}
+//------------------------------------------
+// pMarineViewer config block
+{ 
+  AppTick   = 4
+  CommsTick = 4
+
+  TIF_FILE  = Default.tif  
+  VEHICOLOR = nyak200, darkblue
+  VEHICOLOR = nyak201, darkgreen
+  VEHICOLOR = nyak204, yellow
+}
+\end{verbatim}
+\begin{hangpar}{\pin}{\var{TIF\_FILE: }}
+Optional.  Default value is ``Default.tif''.  The path to the image file to be used as the background for the display window.  
+\end{hangpar}
+\begin{hangpar}{\pin}{\var{VEHICOLOR: }}
+Optional.  Sets the color of object ``label''.  The format of this string is ``label, \{colorname OR hex[:], ff, ff, ff OR .050, .071, .125\}'' See Appendix~\ref{app:colormap} for a list of color names.
+\end{hangpar}
+
+\subsubsection{Background Image Data}
+Each tif file should have a .info file with the same name.  Comment lines are prefaced with ``//''.  This text file can have the following entries:
+\begin{hangpar}{\pin}{\var{img\_centx and img\_centy: }}
+The pixel that represents the origin of the image.  UNITS UNKNOWN.
+\end{hangpar}
+\begin{hangpar}{\pin}{\var{img\_offset\_x and img\_offset\_y: }}
+FEATURE UNDOCUMENTED.
+\end{hangpar}
+\begin{hangpar}{\pin}{\var{centlat and centlon: }}
+The latitude and longitude (in +N and +E degrees) of the center of the image.
+\end{hangpar}
+
+\subsection{Menus and Interface}
+All \pmv\ keyboard shortcuts are documented in the menu system.  The mouse performs no action in \pmv.
+
+\subsection{MOOS Variables}
+\subsubsection{Subscribes}
+In all of the requests to plot a figure, if a label is given, requesting to plot that label again with different values will cause the figure to move to that position instead of drawing a duplicate.
+
+\begin{hangpar}{\pin}{\var{AIS\_REPORT and AIS\_REPORT\_LOCAL: }}
+An AIS report is a string of the form ``NAME=name,TYPE=type,X=valx,Y=valy,SPD=speed,HDG=heading,DEPTH=depth''.  The name value must match the sending community's name.  All of the variables except type are required for a valid AIS report.
+\end{hangpar}
+\begin{hangpar}{\pin}{\var{GRID\_CONFIG: }}
+Configures \pmv\ to plot a new XYGrid on the display.  The string must be a valid XYGrid configuration string (of the form ``polygon\_string@unit\_string[@initial\_value]'')  A polygon\_string is ``poly[gon]:[label,LABELNAME:]segment\_list''.  A segment\_list is a colon seperated list of comma separated x,y pairs (e.g. 4,5.5:1,2.2).  The unit\_string is the dimensions of the rectangle to place inside the bounding polygon.  It is of the form ``x\_width,y\_width''.  Usually, these are the same value.  The label is used to uniquely identify the grid.
+\end{hangpar}
+\begin{hangpar}{\pin}{\var{GRID\_DELTA: }}
+A string to update the grid.  It is of the form ``LABELNAME@index,old\_val,new\_val[,old\_utility,new\_utility][:index,old\_val,new\_val...]''.
+\end{hangpar}
+\begin{hangpar}{\pin}{\var{VIEW\_POLYGON: }}
+Plots the specified polygon.  The string is a valid XYPolygon initialization string.  Polygons can also be of the form ``radial:xval,yval,radius,num\_points[,snap\_value[,LABELNAME]]'' to approximate a circle.  (An arc can also be plotted, see XYPolygon.cpp for details.)
+\end{hangpar}
+\begin{hangpar}{\pin}{\var{VIEW\_SEGLIST: }}
+Plots the specified seglist.  The string is a valid XYSeglist initialization string.  It is of the form ``[label,LABELNAME:]segment\_list''.  It can also be of the zigzag form (not described here.  See XYSegList.cpp for a description.
+\end{hangpar}
+\begin{hangpar}{\pin}{\var{VIEW\_POINT and VIEW\_CIRCLE: }}
+VIEW\_CIRCLE IS NOT IN SUBSCRIPTION LIST.  VIEW\_POINT plots a dot.  The string is a valid XYCircle initialization string.  It is of the form ``x\_val,y\_val,radius[,LABELNAME]''.
+\end{hangpar}
+\begin{hangpar}{\pin}{\var{TRAIL\_RESET: }}
+Forces \pmv\ to ``forget'' the current trails for any vehicles.
+\end{hangpar}
+\subsubsection{Publishes}
+No MOOSDB writes are created by \pmv.
