@@ -307,9 +307,8 @@ bool TransponderAIS::OnStartUp()
   if (!m_Geodesy.Initialise(latOrigin, longOrigin))
     return MOOSFail("Geodesy init failed.\n");
 
-  int i;
-  for (i=0; i<32; i++)
-    naFConPublishForID[i] = false;
+  // set to all zeros
+  naFConPublishForID = 0;
   
   bool publishingSpecified = false;
   parseNaFCon = false;
@@ -336,18 +335,14 @@ bool TransponderAIS::OnStartUp()
       if(MOOSStrCmp(sVarName, "PUBLISH_FOR_NAFCON_ID"))
 	{
 	  int id = atoi(sLine.c_str());
-	  naFConPublishForID[id] = true;
+	  naFConPublishForID += (1 << id);
 	  publishingSpecified = true;
-	  
 	}
     }
     // if no IDs to publish are specified, publish for ALL ids
+    // (ones for all 32 bits of naFConPublishForID
     if (!publishingSpecified)
-      {
-	int i;
-	for (i=0; i<32; i++)
-	  naFConPublishForID[i] = true;
-      }
+	  naFConPublishForID = 0xFFFFFFFF;
   }
   return(true);
   // end tes 9-12-07
@@ -377,10 +372,11 @@ bool TransponderAIS::handleIncomingNaFConMessage(const string& rMsg)
       string sourceID;
       MOOSValFromString(sourceID, rMsg, "SourcePlatformId");
       
-      //limit to vehicles specified in config file
-      if(naFConPublishForID[atoi(sourceID.c_str())])
+      // limit to vehicles specified in config file
+      // use a bit test on the nth bit of naFConPublishForID
+      // where n is the SourcePlatformId of the vehicle
+      if((naFConPublishForID >> atoi(sourceID.c_str()) & 1))
       	{
-	  
 	  double navX, navY, navLat, navLong, navHeading, navSpeed, navDepth, navTime;
 	  if(!MOOSValFromString(navLong, rMsg, "NodeLongitude"))
 	    return false;
