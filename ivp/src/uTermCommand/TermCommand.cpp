@@ -337,7 +337,7 @@ void TermCommand::tabExpand()
 
 void TermCommand::handleCharInput(char c)
 {
-  if((c==32)||(c==67)||(c==68)||(c==27)||(c==91))
+  if((c==32)||(c==27))
     return;
   
   for(int k=0; k<100; k++)
