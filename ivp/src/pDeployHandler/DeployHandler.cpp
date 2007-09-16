@@ -43,7 +43,7 @@ bool DeployHandler::OnNewMail(MOOSMSG_LIST &NewMail)
     bool   mstr  = msg.IsString();
     string msrc  = msg.GetSource();
 
-    key = tolower(key);
+    key = toupper(key);
     if(key == "DEPLOY_TO_POSITION")
       bool ok = handleNewDeployToPosition(sval);
 
