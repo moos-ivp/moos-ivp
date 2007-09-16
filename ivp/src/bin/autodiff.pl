@@ -54,7 +54,7 @@ if ($otherdir eq "") {
     $thisdir = cwd();
     $trydir  = $thisdir;
 #    $trydir =~ s/(.*)project-plusnetN(.*)/$1project-plusnet$2/i;
-    $trydir =~ s/(.*)project-marine(.*)/$1project-plus$2/i;
+    $trydir =~ s/(.*)project-marine(.*)/$1moos-ivp/trunk/ivp$2/i;
     $otherdir = $trydir;
 }
 
