@@ -53,10 +53,15 @@ private: // State Variables
   double  m_osy; // ownship y-position
   double  m_osh; // ownship heading
   double  m_osv; // ownship velocity
+
   double  m_cnx; // contact x-position
   double  m_cny; // contact y-position
   double  m_cnh; // contact heading
   double  m_cnv; // contact velocity
+
+  double  m_cnx_mark;
+  double  m_cny_mark;
+
 };
 #endif
 

@@ -53,6 +53,9 @@ private:  // State Variables
 
   double m_curr_distance;
   double m_curr_closing_spd;
+
+  bool   m_on_no_contact_ok;  // true if no trouble reported on no contact
+
 };
 #endif
 

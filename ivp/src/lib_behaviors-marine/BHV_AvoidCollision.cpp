@@ -43,6 +43,8 @@ BHV_AvoidCollision::BHV_AvoidCollision(IvPDomain gdomain) :
   m_roc_max_dampen    = -2.0; 
   m_roc_max_heighten  = 2.0; 
 
+  m_on_no_contact_ok  = true;
+
   info_vars.push_back("NAV_X");
   info_vars.push_back("NAV_Y");
   info_vars.push_back("NAV_SPEED");
@@ -138,6 +140,14 @@ bool BHV_AvoidCollision::setParam(string g_param, string g_val)
     }
     return(true);
   }  
+  else if(g_param == "on_no_contact_ok") {
+    g_val = tolower(g_val);
+    if((gval != "true") && (g_val != "false") && 
+       (g_val != "yes") && (g_val != "no"))
+      return(false);
+    m_on_no_contact_ok = ((g_val == "true") || (g_val == "yes"));
+    return(true);
+  }  
   return(false);
 }
 
@@ -206,8 +216,10 @@ bool BHV_AvoidCollision::getBufferInfo()
   m_cnv = info_buffer->dQuery(m_contact+"_NAV_SPEED",   ok2);
   if(!ok1 || !ok2) {    
     string msg = m_contact + " heading/speed info not found";
-    info_buffer->print();
-    postWMessage(msg);
+    if(m_on_no_contact_ok)
+      postWMessage(msg);
+    else
+      postEMessage(msg);
     return(false);
   }
 
@@ -224,7 +236,10 @@ bool BHV_AvoidCollision::getBufferInfo()
   m_cnx = info_buffer->dQuery(m_contact+"_NAV_X", ok2);
   m_cny = info_buffer->dQuery(m_contact+"_NAV_Y", ok1);
   if(!ok1 || !ok2) {
-    postWMessage("contact x/y info not found.");
+    if(m_on_no_contact_ok)
+      postWMessage(msg);
+    else
+      postEMessage(msg);
     return(false);
   }
 
