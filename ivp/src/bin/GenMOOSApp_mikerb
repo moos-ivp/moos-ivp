@@ -122,6 +122,9 @@ cat >> ${1}.cpp <<EOF
 
 #include <iterator>
 #include "${1}.h"
+
+using namespace std;
+
 //---------------------------------------------------------
 // Constructor
 
@@ -141,13 +144,26 @@ ${1}::~${1}()
 
 bool ${1}::OnNewMail(MOOSMSG_LIST &NewMail)
 {
-	MOOSMSG_LIST::reverse_iterator p;
+  MOOSMSG_LIST::reverse_iterator p;
 	
-	for(p = NewMail.rbegin(); p != NewMail.rend(); p++) {
-		CMOOSMsg &msg = *p;
-	}
+  for(p = NewMail.rbegin(); p != NewMail.rend(); p++) {
+    CMOOSMsg &msg = *p;
+  }
 	
-	return true;
+    string key   = msg.GetKey();
+    double dval  = msg.GetDouble();
+    string sval  = msg.GetString(); 
+    double mtime = msg.GetTime();
+    bool   mdbl  = msg.IsDouble();
+    bool   mstr  = msg.IsString();
+    string msrc  = msg.GetSource();
+
+    key = tolower(key);
+
+//    if(key == "FOOBAR")
+//      handleNewFOOBAR(sval);
+
+  return(true);
 }
 
 //---------------------------------------------------------
