@@ -23,6 +23,9 @@ class DeployHandler : public CMOOSApp
   void RegisterVariables();
 
  protected:
+  bool handleNewDeployToPosition(std::string);
+
+ protected:
   // insert local vars here
 };
 
