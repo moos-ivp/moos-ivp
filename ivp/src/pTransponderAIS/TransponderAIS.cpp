@@ -34,13 +34,13 @@ using namespace std;
 
 TransponderAIS::TransponderAIS()
 {
-  nav_x = 0;
-  nav_y = 0;
-  nav_speed = 0;
-  nav_heading = 0;
-  nav_depth = 0;
-  vessel_name = "UNKNOWN_VESSEL_NAME";
-  vessel_type = "UNKNOWN_VESSEL_TYPE";
+  m_nav_x       = 0;
+  m_nav_y       = 0;
+  m_nav_speed   = 0;
+  m_nav_heading = 0;
+  m_nav_depth   = 0;
+  m_vessel_name = "UNKNOWN_VESSEL_NAME";
+  m_vessel_type = "UNKNOWN_VESSEL_TYPE";
 }
 
 //-----------------------------------------------------------------
@@ -60,17 +60,17 @@ bool TransponderAIS::OnNewMail(MOOSMSG_LIST &NewMail)
     char   mtype = msg.m_cDataType;
 
     if(key == "NAV_X")
-      nav_x = ddata;
+      m_nav_x = ddata;
     else if(key == "NAV_Y")
-      nav_y = ddata;
+      m_nav_y = ddata;
     else if(key == "NAV_SPEED")
-      nav_speed = ddata;
+      m_nav_speed = ddata;
     else if(key == "NAV_HEADING")
-      nav_heading = ddata;
+      m_nav_heading = ddata;
     else if(key == "NAV_YAW")
-      nav_heading = (ddata*-180.0)/3.1415926;
+      m_nav_heading = (ddata*-180.0)/3.1415926;
     else if(key == "NAV_DEPTH")
-      nav_depth = ddata;
+      m_nav_depth = ddata;
     else if(key == "AIS_REPORT") {
       bool ok = handleIncomingAISReport(sdata);
       if(!ok) 
@@ -100,6 +100,123 @@ bool TransponderAIS::OnNewMail(MOOSMSG_LIST &NewMail)
   }
   return(true);
 }
+
+//-----------------------------------------------------------------
+// Procedure: OnConnectoToServer()
+
+bool TransponderAIS::OnConnectToServer()
+{
+  // register for variables here
+  // possibly look at the mission file?
+  // m_MissionReader.GetConfigurationParam("Name", <string>);
+  // m_Comms.Register("VARNAME", is_float(int));
+ 
+  m_Comms.Register("NAV_X", 0);
+  m_Comms.Register("NAV_Y", 0);
+  m_Comms.Register("NAV_SPEED", 0);
+  m_Comms.Register("NAV_HEADING", 0);
+  m_Comms.Register("NAV_YAW", 0);
+  m_Comms.Register("NAV_DEPTH", 0);
+  m_Comms.Register("AIS_REPORT", 0);
+  
+  // tes 9-12-07. added NAFCON_MESSAGES registration
+  m_Comms.Register("NAFCON_MESSAGES", 0);
+
+  return(true);
+}
+
+//-----------------------------------------------------------------
+// Procedure: Iterate()
+//      Note: Happens AppTick times per second
+
+bool TransponderAIS::Iterate()
+{
+  string timeinfo = dstringCompact(doubleToString(MOOSTime() - m_start_time));
+  string summary = "NAME=" + m_vessel_name;
+  summary += ",TYPE=" + m_vessel_type;
+  summary += ",TIME=" + timeinfo;
+  summary += ",X="   + dstringCompact(doubleToString(m_nav_x));
+  summary += ",Y="   + dstringCompact(doubleToString(m_nav_y));
+  summary += ",SPD=" + dstringCompact(doubleToString(m_nav_speed));
+  summary += ",HDG=" + dstringCompact(doubleToString(m_nav_heading));
+  summary += ",DEPTH=" + dstringCompact(doubleToString(m_nav_depth));
+
+  m_Comms.Notify("AIS_REPORT_LOCAL", summary);
+
+  return(true);
+}
+
+
+//-----------------------------------------------------------------
+// Procedure: OnStartUp()
+//      Note: Happens before connection is open
+
+bool TransponderAIS::OnStartUp()
+{
+  CMOOSApp::OnStartUp();
+
+  MOOSTrace("pTransponderAIS starting....\n");
+
+  m_start_time = MOOSTime();
+
+  // Look for ownship name first - a "global" variable in the 
+  // Configuration file. 
+  if(!m_MissionReader.GetValue("Community", m_vessel_name)) {
+    MOOSTrace("Vehicle (Community) Name not provided\n");
+    return(false);
+  }
+  
+
+  // tes 9-12-07
+  // look for latitude, longitude global variables
+  double latOrigin, longOrigin;
+  if (!m_MissionReader.GetValue("LatOrigin", latOrigin))
+    return MOOSFail("LatOrigin not set in *.moos file.\n");
+      
+  if (!m_MissionReader.GetValue("LongOrigin", longOrigin))
+    return MOOSFail("LongOrigin not set in *.moos file\n");
+  
+  // initialize m_Geodesy
+  if (!m_Geodesy.Initialise(latOrigin, longOrigin))
+    return MOOSFail("Geodesy init failed.\n");
+
+  // set to all zeros
+  naFConPublishForID = 0;
+  
+  bool publishingSpecified = false;
+  parseNaFCon = false;
+
+  list<string> sParams;
+  if(m_MissionReader.GetConfiguration(GetAppName(), sParams)) {
+    
+    list<string>::iterator p;
+    for(p = sParams.begin();p!=sParams.end();p++) {
+
+      string sLine    = *p;
+      string sVarName = MOOSChomp(sLine, "=");
+
+      if(MOOSStrCmp(sVarName, "VESSEL_TYPE"))
+	m_vessel_type = stripBlankEnds(sLine);
+      
+      if(MOOSStrCmp(sVarName, "PARSE_NAFCON")) 
+	parseNaFCon = MOOSStrCmp(sLine, "true"); 
+      
+      // create array specifying which IDs to publish for
+      if(MOOSStrCmp(sVarName, "PUBLISH_FOR_NAFCON_ID")) {
+	int id = atoi(sLine.c_str());
+	naFConPublishForID += (1 << id);
+	publishingSpecified = true;
+      }
+    }
+    // if no IDs to publish are specified, publish for ALL ids
+    // (ones for all 32 bits of naFConPublishForID
+    if (!publishingSpecified)
+      naFConPublishForID = 0xFFFFFFFF;
+  }
+  return(true);
+  // end tes 9-12-07
+}
+
 
 //-----------------------------------------------------------------
 // Procedure: handleIncomingAISReport()
@@ -228,192 +345,95 @@ bool TransponderAIS::handleIncomingCSReport(const string& sdata)
   return(true);
 }
 
-//-----------------------------------------------------------------
-// Procedure: OnConnectoToServer()
-
-bool TransponderAIS::OnConnectToServer()
-{
-  // register for variables here
-  // possibly look at the mission file?
-  // m_MissionReader.GetConfigurationParam("Name", <string>);
-  // m_Comms.Register("VARNAME", is_float(int));
- 
-  m_Comms.Register("NAV_X", 0);
-  m_Comms.Register("NAV_Y", 0);
-  m_Comms.Register("NAV_SPEED", 0);
-  m_Comms.Register("NAV_HEADING", 0);
-  m_Comms.Register("NAV_YAW", 0);
-  m_Comms.Register("NAV_DEPTH", 0);
-  m_Comms.Register("AIS_REPORT", 0);
-  
-  // tes 9-12-07. added NAFCON_MESSAGES registration
-  m_Comms.Register("NAFCON_MESSAGES", 0);
-
-  return(true);
-}
 
 //-----------------------------------------------------------------
-// Procedure: Iterate()
-//      Note: Happens AppTick times per second
-
-bool TransponderAIS::Iterate()
-{
-  string timeinfo = dstringCompact(doubleToString(MOOSTime()-start_time));
-  string summary = "NAME=" + vessel_name;
-  summary += ",TYPE=" + vessel_type;
-  summary += ",TIME=" + timeinfo;
-  summary += ",X="   + dstringCompact(doubleToString(nav_x));
-  summary += ",Y="   + dstringCompact(doubleToString(nav_y));
-  summary += ",SPD=" + dstringCompact(doubleToString(nav_speed));
-  summary += ",HDG=" + dstringCompact(doubleToString(nav_heading));
-  summary += ",DEPTH=" + dstringCompact(doubleToString(nav_depth));
-
-  m_Comms.Notify("AIS_REPORT_LOCAL", summary);
-
-  return(true);
-}
-
-
-//-----------------------------------------------------------------
-// Procedure: OnStartUp()
-//      Note: Happens before connection is open
-
-bool TransponderAIS::OnStartUp()
-{
-  CMOOSApp::OnStartUp();
-
-  MOOSTrace("pTransponderAIS starting....\n");
-
-  start_time = MOOSTime();
-
-  // Look for ownship name first - a "global" variable in the 
-  // Configuration file. 
-  if(!m_MissionReader.GetValue("Community", vessel_name)) {
-    MOOSTrace("Vehicle (Community) Name not provided\n");
-    return(false);
-  }
-  
-
-  // tes 9-12-07
-  // look for latitude, longitude global variables
-  double latOrigin, longOrigin;
-  if (!m_MissionReader.GetValue("LatOrigin", latOrigin))
-    return MOOSFail("LatOrigin not set in *.moos file.\n");
-      
-  if (!m_MissionReader.GetValue("LongOrigin", longOrigin))
-    return MOOSFail("LongOrigin not set in *.moos file\n");
-  
-  // initialize m_Geodesy
-  if (!m_Geodesy.Initialise(latOrigin, longOrigin))
-    return MOOSFail("Geodesy init failed.\n");
-
-  // set to all zeros
-  naFConPublishForID = 0;
-  
-  bool publishingSpecified = false;
-  parseNaFCon = false;
-
-  list<string> sParams;
-  if(m_MissionReader.GetConfiguration(GetAppName(), sParams)) {
-    
-    list<string>::iterator p;
-    for(p = sParams.begin();p!=sParams.end();p++) {
-
-      string sLine    = *p;
-      string sVarName = MOOSChomp(sLine, "=");
-
-      if(MOOSStrCmp(sVarName, "VESSEL_TYPE")) {
-	vessel_type = stripBlankEnds(sLine);
-      }
-      
-      if(MOOSStrCmp(sVarName, "PARSE_NAFCON"))
-	{
-	  parseNaFCon = MOOSStrCmp(sLine, "true"); 
-	}
-
-      // create array specifying which IDs to publish for
-      if(MOOSStrCmp(sVarName, "PUBLISH_FOR_NAFCON_ID"))
-	{
-	  int id = atoi(sLine.c_str());
-	  naFConPublishForID += (1 << id);
-	  publishingSpecified = true;
-	}
-    }
-    // if no IDs to publish are specified, publish for ALL ids
-    // (ones for all 32 bits of naFConPublishForID
-    if (!publishingSpecified)
-	  naFConPublishForID = 0xFFFFFFFF;
-  }
-  return(true);
-  // end tes 9-12-07
-}
-
-/*
- *  handleIncomingNaFConMessage()
- *  tes 9-12-97
- *  process a NaFCon Status Report and publish
- *  {vehicle}_NAV_X, _NAV_Y, _NAV_HEADING, _NAV_DEPTH, _NAV_SPEED, _NAV_LASTUPDATETIME
- */
+// Procedure: handleIncomingNaFConMessage()
+//
+//  tes 9-12-97
+//  process a NaFCon Status Report and publish
+//  {vehicle}_NAV_X, _NAV_Y, _NAV_HEADING, _NAV_DEPTH, _NAV_SPEED, _NAV_LASTUPDATETIME
+//
 
 bool TransponderAIS::handleIncomingNaFConMessage(const string& rMsg)
 {    
   //check message type                                                                                 
   string messageType = "unknown";
   
-  if (!(MOOSValFromString(messageType, rMsg, "MessageType")))
-    {
+  if (!(MOOSValFromString(messageType, rMsg, "MessageType"))) {
     MOOSTrace("pParseNaFCon: Bad message. No message type found.\n");
     return false;
-    } 
+  } 
   
   //we have a status message                                                                           
-  if (MOOSStrCmp(messageType, "SENSOR_STATUS"))
-    {
-      string sourceID;
-      MOOSValFromString(sourceID, rMsg, "SourcePlatformId");
+  if(MOOSStrCmp(messageType, "SENSOR_STATUS")) {
+    string sourceID;
+    MOOSValFromString(sourceID, rMsg, "SourcePlatformId");
+    
+    // limit to vehicles specified in config file
+    // use a bit test on the nth bit of naFConPublishForID
+    // where n is the SourcePlatformId of the vehicle
+    if((naFConPublishForID >> atoi(sourceID.c_str()) & 1)) {
+      double navX, navY, navLat, navLong, navHeading, navSpeed, navDepth, navTime;
+      if(!MOOSValFromString(navLong, rMsg, "NodeLongitude"))
+	return false;
       
-      // limit to vehicles specified in config file
-      // use a bit test on the nth bit of naFConPublishForID
-      // where n is the SourcePlatformId of the vehicle
-      if((naFConPublishForID >> atoi(sourceID.c_str()) & 1))
-      	{
-	  double navX, navY, navLat, navLong, navHeading, navSpeed, navDepth, navTime;
-	  if(!MOOSValFromString(navLong, rMsg, "NodeLongitude"))
-	    return false;
-
-	  if (!MOOSValFromString(navLat, rMsg, "NodeLatitude"))
-	    return false;
-
-	  if (!MOOSValFromString(navHeading, rMsg, "NodeHeading"))
-	    return false;
-	  
-	  if (!MOOSValFromString(navSpeed, rMsg, "NodeSpeed"))
-	    return false;
-	  
-	  if(!MOOSValFromString(navDepth, rMsg, "NodeDepth"))
-	    return false;
-
-	  if(!MOOSValFromString(navTime, rMsg, "Timestamp"))
-	    return false;
-	  
-	  // convert lat, long into x, y. 60 nautical miles per minute
-	  if(!m_Geodesy.LatLong2LocalGrid(navLat, navLong, navY, navX))
-	    return false;
-
-	  // publish it
-	  m_Comms.Notify(sourceID + "_NAV_X", navX, MOOSTime());
-	  m_Comms.Notify(sourceID + "_NAV_Y", navY, MOOSTime());
-	  m_Comms.Notify(sourceID + "_NAV_HEADING", navHeading, MOOSTime());
-	  m_Comms.Notify(sourceID + "_NAV_SPEED", navSpeed, MOOSTime());
-	  m_Comms.Notify(sourceID + "_NAV_DEPTH", navDepth, MOOSTime());
-	  m_Comms.Notify(sourceID + "_NAV_LASTUPDATETIME", navTime, MOOSTime());
-	  
-	} 
-    }
+      if (!MOOSValFromString(navLat, rMsg, "NodeLatitude"))
+	return false;
+      
+      if (!MOOSValFromString(navHeading, rMsg, "NodeHeading"))
+	return false;
+      
+      if (!MOOSValFromString(navSpeed, rMsg, "NodeSpeed"))
+	return false;
+      
+      if(!MOOSValFromString(navDepth, rMsg, "NodeDepth"))
+	return false;
+      
+      if(!MOOSValFromString(navTime, rMsg, "Timestamp"))
+	return false;
+      
+      // convert lat, long into x, y. 60 nautical miles per minute
+      if(!m_Geodesy.LatLong2LocalGrid(navLat, navLong, navY, navX))
+	return false;
+      
+      // publish it
+      m_Comms.Notify(sourceID + "_NAV_X", navX, MOOSTime());
+      m_Comms.Notify(sourceID + "_NAV_Y", navY, MOOSTime());
+      m_Comms.Notify(sourceID + "_NAV_HEADING", navHeading, MOOSTime());
+      m_Comms.Notify(sourceID + "_NAV_SPEED", navSpeed, MOOSTime());
+      m_Comms.Notify(sourceID + "_NAV_DEPTH", navDepth, MOOSTime());
+      m_Comms.Notify(sourceID + "_NAV_LASTUPDATETIME", navTime, MOOSTime());
+      
+    } 
+  }
   return true;
 }
 
 
 
+//-----------------------------------------------------------------
+// Procedure: addToContactList
+//   Purpose: Maintain a list of known unique contact names. And if
+//            a new one is added, post the list in the MOOS variable
+//            named CONTACT_LIST. 
 
+void TransponderAIS::addToContactList(string contact_name)
+{
+  contact_name = toupper(stripBlankEnds(contact_name));
 
+  int i;
+  
+  for(i=0; i<m_contact_list.size(); i++)
+    if(m_contact_list[i] == contact_name)
+      return;
+  
+  m_contact_list.push_back(contact_name);
+  
+  string contact_list_string;
+  for(i=0; i<m_contact_list.size(); i++) {
+    if(i!=0)
+      contact_list_string += ",";
+    contact_list_string += m_contact_list[i];
+  }
+  m_Comms.Notify("CONTACT_LIST", contact_list_string);
+}

@@ -44,16 +44,19 @@ public:
   bool handleIncomingAISReport(const std::string&);
   bool handleIncomingCSReport(const std::string&);
   bool handleIncomingNaFConMessage(const std::string&);
+  void addToContactList(std::string);
 
 protected:
-  double start_time;
-  double nav_x;
-  double nav_y;
-  double nav_heading;
-  double nav_speed;
-  double nav_depth;
-  std::string vessel_name;
-  std::string vessel_type;
+  double      m_start_time;
+  double      m_nav_x;
+  double      m_nav_y;
+  double      m_nav_heading;
+  double      m_nav_speed;
+  double      m_nav_depth;
+  std::string m_vessel_name;
+  std::string m_vessel_type;
+
+  std::vector<std::string> m_contact_list;
   
   // tes 9-12-07
   bool parseNaFCon;
