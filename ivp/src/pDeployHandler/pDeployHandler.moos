@@ -1,0 +1,11 @@
+// MOOS file
+
+ServerHost = localhost
+ServerPort = 9000
+
+ProcessConfig = DeployHandler
+{
+   AppTick   = 4
+   CommsTick = 4
+}
+
