@@ -49,7 +49,7 @@ int main(int argc ,char * argv[])
       g_theTMS.addVariable(argv[i], true);
   }
 
-  MOOSAppRunnerThread runner(&g_theTMS, "uTermCommand", g_sMissionFile);
+  MOOSAppRunnerThread runner(&g_theTMS, "uTMS", g_sMissionFile);
 
   bool quit = false;
 
