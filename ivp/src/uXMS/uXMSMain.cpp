@@ -81,7 +81,7 @@ int main(int argc ,char * argv[])
   }
  
   if(!g_sMissionFile) {
-    MOOSTrace("Failed to provide a MOOS (.moos) file... Exiting now.\n\n");
+    MOOSTrace("Failed to provide a MOOS (.moos) file... Exiting now.\n");
     return(0);
   }
  
