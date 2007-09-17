@@ -193,6 +193,10 @@ bool MarinePID::Iterate()
     elevator = pengine.getDesiredElevator(desired_depth, current_depth,
 					  current_pitch, max_pitch, 
 					  max_elevator);
+  
+  if((desired_speed <= 0.001) && (desired_speed >= -0.001))
+    thrust = 0;
+
   vector<string> pid_report;
   if(verbose == "verbose") {
     pid_report = pengine.getPIDReport();
