@@ -329,13 +329,13 @@ void BHV_OpRegion::postPolyStatus()
   }
   // Must get ownship position from InfoBuffer
   if(!ok3) {
-    string msg = "No ownship NAV_HEADING (" + us_name + ") in info_buffer";
+    string msg = "No ownship NAV_SPEED (" + us_name + ") in info_buffer";
     postEMessage(msg);
     return;
   }
   // Must get ownship position from InfoBuffer
   if(!ok4) {
-    string msg = "No ownship NAV_SPEED (" + us_name + ") in info_buffer";
+    string msg = "No ownship NAV_HEADING (" + us_name + ") in info_buffer";
     postEMessage(msg);
     return;
   }
