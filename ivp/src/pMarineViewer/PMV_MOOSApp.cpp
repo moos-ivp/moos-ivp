@@ -119,6 +119,36 @@ bool PMV_MOOSApp::Iterate()
 
   double curr_time = MOOSTime() - m_start_time;
   m_gui->setCurrTime(curr_time);
+  
+  int left_click_ix = m_gui->mviewer->getLeftClickIX();
+  if(left_click_ix > m_left_click_ix) {
+    m_left_click_ix = left_click_ix;
+    string left_click_str = m_gui->mviewer->getLeftClick();
+    
+    if(left_click_str != "") {
+      int    index   = m_gui->mviewer->getDataIndex();
+      string vname   = m_gui->mviewer->getKName(index);
+      string postval = left_click_str;
+      if(vname != "")
+	postval += (",vname=" + vname);
+      m_Comms.Notify("MVIEWER_LCLICK", postval);
+    }
+  }
+
+  int right_click_ix = m_gui->mviewer->getRightClickIX();
+  if(right_click_ix > m_right_click_ix) {
+    m_right_click_ix = right_click_ix;
+    string right_click_str = m_gui->mviewer->getRightClick();
+    
+    if(right_click_str != "") {
+      int    index  = m_gui->mviewer->getDataIndex();
+      string vname  = m_gui->mviewer->getKName(index);
+      string postval = right_click_str;
+      if(vname != "")
+	postval += (",vname=" + vname);
+      m_Comms.Notify("MVIEWER_RCLICK", postval);
+    }
+  }
 
   return(true);
 }

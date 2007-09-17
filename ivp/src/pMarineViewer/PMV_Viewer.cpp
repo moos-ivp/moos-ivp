@@ -40,6 +40,9 @@ PMV_Viewer::PMV_Viewer(int x, int y, int w, int h, const char *l)
   : MarineViewer(x,y,w,h,l)
 {
   m_time = 0;
+
+  m_left_click_ix  = 0;
+  m_right_click_ix = 0;
 }
 
 //-------------------------------------------------------------
@@ -76,7 +79,22 @@ void PMV_Viewer::draw()
 
 int PMV_Viewer::handle(int event)
 {
-  return(Fl_Gl_Window::handle(event));
+  int vx, vy;
+  switch(event) {
+  case FL_PUSH:
+    vx = Fl::event_x();
+    vy = h() - Fl::event_y();
+    if(Fl_Window::handle(event) != 1) {
+      if(Fl::event_button() == FL_LEFT_MOUSE)
+	handleLeftMouse(vx, vy);
+      if(Fl::event_button() == FL_RIGHT_MOUSE)
+	handleRightMouse(vx, vy);
+    }
+    return(1);
+    break;
+  default:
+    return(Fl_Gl_Window::handle(event));
+  }
 }
 
 //-------------------------------------------------------------
@@ -380,8 +398,47 @@ ObjectPose PMV_Viewer::getObjectPoseByIndex(int index)
 
 
 
+//-------------------------------------------------------------
+// Procedure: handleLeftMouse
+
+void PMV_Viewer::handleLeftMouse(int vx, int vy)
+{
+  double ix = view2img('x', vx);
+  double iy = view2img('y', vy);
+  double mx = img2meters('x', ix);
+  double my = img2meters('y', iy);
+  double sx = snapToStep(mx, 1.0);
+  double sy = snapToStep(my, 1.0);
+
+  m_left_click =  "x=" + doubleToString(sx,1) + ",";
+  m_left_click += "y=" + doubleToString(sy,1);
+
+  m_left_click_ix++;
+  
+  cout << "Left Mouse click at [" << m_left_click << "] meters." << endl;
+}
 
 
+
+//-------------------------------------------------------------
+// Procedure: handleRightMouse
+
+void PMV_Viewer::handleRightMouse(int vx, int vy)
+{
+  double ix = view2img('x', vx);
+  double iy = view2img('y', vy);
+  double mx = img2meters('x', ix);
+  double my = img2meters('y', iy);
+  double sx = snapToStep(mx, 1.0);
+  double sy = snapToStep(my, 1.0);
+  
+  m_right_click =  "x=" + doubleToString(sx,1) + ",";
+  m_right_click += "y=" + doubleToString(sy,1);
+
+  m_right_click_ix++;
+  
+  cout << "Right Mouse click at [" << m_right_click << "] meters." << endl;
+}
 
 
 
