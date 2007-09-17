@@ -142,8 +142,8 @@ bool BHV_AvoidCollision::setParam(string g_param, string g_val)
   }  
   else if(g_param == "on_no_contact_ok") {
     g_val = tolower(g_val);
-    if((gval != "true") && (g_val != "false") && 
-       (g_val != "yes") && (g_val != "no"))
+    if((g_val != "true") && (g_val != "false") && 
+       (g_val != "yes")  && (g_val != "no"))
       return(false);
     m_on_no_contact_ok = ((g_val == "true") || (g_val == "yes"));
     return(true);
@@ -236,6 +236,7 @@ bool BHV_AvoidCollision::getBufferInfo()
   m_cnx = info_buffer->dQuery(m_contact+"_NAV_X", ok2);
   m_cny = info_buffer->dQuery(m_contact+"_NAV_Y", ok1);
   if(!ok1 || !ok2) {
+    string msg = m_contact + " NAV_X/Y info not found";
     if(m_on_no_contact_ok)
       postWMessage(msg);
     else
