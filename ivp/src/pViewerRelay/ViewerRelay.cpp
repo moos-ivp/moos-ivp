@@ -6,6 +6,7 @@
 /************************************************************/
 
 #include <iterator>
+#include <iostream>
 #include "ViewerRelay.h"
 #include "MBUtils.h"
 
@@ -76,7 +77,8 @@ bool ViewerRelay::OnConnectToServer()
 
 void ViewerRelay::RegisterVariables()
 {
-  m_Comms.Register("FOO_BAR", 0);
+  m_Comms.Register("MVIEWER_LCLICK", 0);
+  m_Comms.Register("MVIEWER_RCLICK", 0);
 }
 
 
@@ -86,6 +88,7 @@ void ViewerRelay::RegisterVariables()
 bool ViewerRelay::Iterate()
 {
   // happens AppTick times per second
+  cout << "." << flush;
 	
   return(true);
 }
@@ -125,7 +128,7 @@ bool ViewerRelay::handleNewViewerLeftClick(string str)
     return(false);
 
   v_name = toupper(stripBlankEnds(v_name));
-  string var_name = "DEPLOY_TO_POINT_" + v_name;
+  string var_name = "DEPLOY_TO_PT_" + v_name;
   string var_val  = "x=" + x_meters + "," + "y=" + y_meters;
 
   m_Comms.Notify(var_name, var_val);
