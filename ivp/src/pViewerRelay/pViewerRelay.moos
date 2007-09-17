@@ -1,0 +1,11 @@
+// MOOS file
+
+ServerHost = localhost
+ServerPort = 9000
+
+ProcessConfig = ViewerRelay
+{
+   AppTick   = 4
+   CommsTick = 4
+}
+
