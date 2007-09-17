@@ -7,32 +7,31 @@ LIB_BASE =  $(wildcard lib_ivpcore*)	$(wildcard lib_ivpbuild)   	   \
 	    $(wildcard lib_mbutil*)	$(wildcard lib_anrp_util*)  	   \
 	    $(wildcard lib_behaviors)	$(wildcard lib_behaviors-marine*)  \
 	    $(wildcard lib_bhvutil*)	$(wildcard lib_behaviors-colregs*) \
-	    $(wildcard lib_behaviors-don*) 	   \
-	    $(wildcard lib_behaviors-sandbox*)				   \
 	    $(wildcard lib_geometry*)	$(wildcard lib_helmivp*)    	   \
-	    $(wildcard lib_logic*)	\
-	    $(wildcard newmat10D*)      $(wildcard lib_genutil)
+	    $(wildcard newmat10D*)      $(wildcard lib_genutil)		   \
+	    $(wildcard lib_logic*)	$(wildcard lib_behaviors-don*) 	   \
+	    $(wildcard lib_behaviors-sandbox*)				   \
+
 
 # Removed because we no longer put MOOS code directly into the IvP source tree...
 # $(wildcard MOOSUtilityLib*) 
 # $(wildcard MOOSLIB*) $(wildcard MOOSGenLib*)		   \
 
 
-APP_BASE =  $(wildcard pHelmIvP*) 		   	\
-	    $(wildcard pEchoVar*) 	   	\
-	    $(wildcard pLoiterControl*) 	\
-	    $(wildcard pMarinePID*)     	\
+APP_BASE =  $(wildcard pHelmIvP*) 	$(wildcard pEchoVar*) 	   	\
+	    $(wildcard pLoiterControl*) $(wildcard pMarinePID*)     	\
 	    $(wildcard uXMS*)  	 	$(wildcard pTransponderAIS*)	\
 	    $(wildcard uTMS*)		$(wildcard uTermCommand*)   	\
-	    $(wildcard MOOSDB*)		 	   	\
 	    $(wildcard iMarineSim*)	$(wildcard iMetaCompass*)   	\
 	    $(wildcard iPNICompass*)	$(wildcard iPWMController*) 	\
 	    $(wildcard MOOSDump*)	$(wildcard uProcessWatch*)	\
-	    $(wildcard app_splug*)
+	    $(wildcard app_splug*)	$(wildcard pDeployHandler*)	\
+	    $(wildcard iGPS*)	
+
 
 # Removed because we no longer put MOOS code directly into the IvP source tree...
 # $(wildcard pAntler*)  $(wildcard pLogger*)
-# $(wildcard pMOOSBridge*)	$(wildcard iGPS*)
+# $(wildcard pMOOSBridge*)
 # $(wildcard iRemote*)
 
 LIB_TOOLS = $(wildcard lib_behaviors-sandbox*) \
