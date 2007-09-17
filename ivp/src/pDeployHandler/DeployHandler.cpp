@@ -44,7 +44,7 @@ bool DeployHandler::OnNewMail(MOOSMSG_LIST &NewMail)
     string msrc  = msg.GetSource();
 
     key = toupper(key);
-    if(key == "DEPLOY_TO_POSITION")
+    if(key == "DEPLOY_TO_PT")
       bool ok = handleNewDeployToPosition(sval);
 
   }
@@ -73,7 +73,7 @@ bool DeployHandler::OnConnectToServer()
 
 void DeployHandler::RegisterVariables()
 {
-  m_Comms.Register("DEPLOY_TO_POSITION", 0);
+  m_Comms.Register("DEPLOY_TO_PT", 0);
 }
 
 
@@ -141,3 +141,10 @@ bool DeployHandler::handleNewDeployToPosition(string str)
   return(true);
 }
 
+#if 0
+MVIEWER_RCLICK = "x=12.4,y=-198.2,vname=nyak200"
+MVIEWER_RCLICK
+
+DEPLOY_TO_POSITION_200 = "x=12.4, y=-198.2, speed=0.2"
+
+#endif
