@@ -29,7 +29,7 @@
 #include "NavPlotViewer.h"
 #include "MBUtils.h"
 #include "GeomUtils.h"
-#include "KayakShapes.h"
+#include "VehicleShapes.h"
 
 using namespace std;
 
