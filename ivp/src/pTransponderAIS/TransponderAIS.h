@@ -24,6 +24,7 @@
 #ifndef TRANSPONDER_AIS_HEADER
 #define TRANSPONDER_AIS_HEADER
 
+#include <string>
 #include "MOOSLib.h"
 
 // tes 9-12-07 for CMOOSGeodesy class
@@ -44,7 +45,9 @@ public:
   bool handleIncomingAISReport(const std::string&);
   bool handleIncomingCSReport(const std::string&);
   bool handleIncomingNaFConMessage(const std::string&);
-  void addToContactList(std::string);
+  void updateContactList(std::string);
+  void postContactList();
+
 
 protected:
   double      m_start_time;
@@ -57,13 +60,19 @@ protected:
   std::string m_vessel_type;
 
   std::vector<std::string> m_contact_list;
+  std::vector<double>      m_contact_time;
   
   // tes 9-12-07
-  bool parseNaFCon;
+  bool m_parseNaFCon;
   // 32 bits to specify whether to publish for a given ID
   unsigned long int naFConPublishForID;
   // for lat long conversion
   CMOOSGeodesy m_Geodesy;
+
+
+  double  m_blackout_interval;
+  double  m_last_post_time;
+
 
 };
 

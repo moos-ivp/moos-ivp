@@ -20,10 +20,8 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
-#include <string>
 #include <list>
 #include <iterator>
-#include <iostream>
 #include "TransponderAIS.h"
 #include "MBUtils.h"
 
@@ -41,6 +39,10 @@ TransponderAIS::TransponderAIS()
   m_nav_depth   = 0;
   m_vessel_name = "UNKNOWN_VESSEL_NAME";
   m_vessel_type = "UNKNOWN_VESSEL_TYPE";
+  m_parseNaFCon = false;
+
+  m_blackout_interval = 0;
+  m_last_post_time    = -1;
 }
 
 //-----------------------------------------------------------------
@@ -83,15 +85,13 @@ bool TransponderAIS::OnNewMail(MOOSMSG_LIST &NewMail)
     }
     
     // tes 9-12-07 added support for NAFCON_MESSAGES
-    else if (key == "NAFCON_MESSAGES")
-      {
-	if(parseNaFCon)
-	  {
-	    bool ok = handleIncomingNaFConMessage(sdata);
-	    if (!ok)
-	      MOOSTrace("TransponderAIS: Unparsed NaFConMessage.\n");
-	  }
+    else if (key == "NAFCON_MESSAGES") {
+      if(m_parseNaFCon) {
+	bool ok = handleIncomingNaFConMessage(sdata);
+	if (!ok)
+	  MOOSTrace("TransponderAIS: Unparsed NaFConMessage.\n");
       }
+    }
     // end tes 9-12-07
 
     else {
@@ -127,21 +127,41 @@ bool TransponderAIS::OnConnectToServer()
 
 //-----------------------------------------------------------------
 // Procedure: Iterate()
-//      Note: Happens AppTick times per second
+//
+// Note: Happens AppTick times per second
+// Note: The "blackout_interval" is a way to have a vehicle simulate 
+//       a vehicle that is only making period reports available to 
+//       other vehicles. Even if this effect in the real world is due
+//       more to transmission loss or latency.
+//    
 
 bool TransponderAIS::Iterate()
 {
-  string timeinfo = dstringCompact(doubleToString(MOOSTime() - m_start_time));
-  string summary = "NAME=" + m_vessel_name;
-  summary += ",TYPE=" + m_vessel_type;
-  summary += ",TIME=" + timeinfo;
-  summary += ",X="   + dstringCompact(doubleToString(m_nav_x));
-  summary += ",Y="   + dstringCompact(doubleToString(m_nav_y));
-  summary += ",SPD=" + dstringCompact(doubleToString(m_nav_speed));
-  summary += ",HDG=" + dstringCompact(doubleToString(m_nav_heading));
-  summary += ",DEPTH=" + dstringCompact(doubleToString(m_nav_depth));
+  double moos_time = MOOSTime();
+  
+  // If (a) this is the first chance to post, or (b) there is no
+  // blackout interval being implemented, or (c) the time since last
+  // post exceeds the blackout interval, then perform a posting.
 
-  m_Comms.Notify("AIS_REPORT_LOCAL", summary);
+  if((m_last_post_time == -1) || (m_blackout_interval <= 0) ||
+     ((moos_time-m_last_post_time) > m_blackout_interval)) {
+
+    string timeinfo = dstringCompact(doubleToString(MOOSTime() - m_start_time));
+    string summary = "NAME=" + m_vessel_name;
+    summary += ",TYPE=" + m_vessel_type;
+    summary += ",TIME=" + timeinfo;
+    summary += ",X="   + dstringCompact(doubleToString(m_nav_x));
+    summary += ",Y="   + dstringCompact(doubleToString(m_nav_y));
+    summary += ",SPD=" + dstringCompact(doubleToString(m_nav_speed));
+    summary += ",HDG=" + dstringCompact(doubleToString(m_nav_heading));
+    summary += ",DEPTH=" + dstringCompact(doubleToString(m_nav_depth));
+    
+    m_Comms.Notify("AIS_REPORT_LOCAL", summary);
+
+    m_last_post_time = moos_time;
+  }
+
+  postContactList();
 
   return(true);
 }
@@ -184,7 +204,6 @@ bool TransponderAIS::OnStartUp()
   naFConPublishForID = 0;
   
   bool publishingSpecified = false;
-  parseNaFCon = false;
 
   list<string> sParams;
   if(m_MissionReader.GetConfiguration(GetAppName(), sParams)) {
@@ -192,14 +211,20 @@ bool TransponderAIS::OnStartUp()
     list<string>::iterator p;
     for(p = sParams.begin();p!=sParams.end();p++) {
 
-      string sLine    = *p;
+      string sLine    = stripBlankEnds(*p);
       string sVarName = MOOSChomp(sLine, "=");
 
       if(MOOSStrCmp(sVarName, "VESSEL_TYPE"))
-	m_vessel_type = stripBlankEnds(sLine);
+	m_vessel_type = sLine;
+      
+      if(MOOSStrCmp(sVarName, "BLACKOUT_INTERVAL")) {
+	double dval = atof(sLine.c_str());
+	if(dval >= 0)
+	  m_blackout_interval = dval;
+      }
       
       if(MOOSStrCmp(sVarName, "PARSE_NAFCON")) 
-	parseNaFCon = MOOSStrCmp(sLine, "true"); 
+	m_parseNaFCon = MOOSStrCmp(sLine, "true"); 
       
       // create array specifying which IDs to publish for
       if(MOOSStrCmp(sVarName, "PUBLISH_FOR_NAFCON_ID")) {
@@ -272,6 +297,8 @@ bool TransponderAIS::handleIncomingAISReport(const string& sdata)
 
   vname = toupper(vname);
   
+  updateContactList(vname);
+
   m_Comms.Notify(vname+"_NAV_X", nav_x_val);
   m_Comms.Notify(vname+"_NAV_Y", nav_y_val);
   m_Comms.Notify(vname+"_NAV_SPEED", nav_spd_val);
@@ -410,30 +437,54 @@ bool TransponderAIS::handleIncomingNaFConMessage(const string& rMsg)
 }
 
 
-
 //-----------------------------------------------------------------
-// Procedure: addToContactList
-//   Purpose: Maintain a list of known unique contact names. And if
-//            a new one is added, post the list in the MOOS variable
-//            named CONTACT_LIST. 
+// Procedure: updateContactList
+//   Purpose: Maintain a list of known unique contact names, and the
+//            times they were last written to.
 
-void TransponderAIS::addToContactList(string contact_name)
+void TransponderAIS::updateContactList(string contact_name)
 {
   contact_name = toupper(stripBlankEnds(contact_name));
 
+  double moos_time = MOOSTime();
+
   int i;
   
-  for(i=0; i<m_contact_list.size(); i++)
-    if(m_contact_list[i] == contact_name)
+  for(i=0; i<m_contact_list.size(); i++) {
+    if(m_contact_list[i] == contact_name) {
+      m_contact_time[i] = moos_time;
       return;
+    }
+  }
   
   m_contact_list.push_back(contact_name);
-  
+  m_contact_time.push_back(moos_time);
+}
+
+
+
+//-----------------------------------------------------------------
+// Procedure: postContactList
+//   Purpose: 
+
+void TransponderAIS::postContactList()
+{
+  double moos_time = MOOSTime();
+
+  int vsize = m_contact_list.size();
+
+ 
   string contact_list_string;
-  for(i=0; i<m_contact_list.size(); i++) {
+  
+  for(int i=0; i<vsize; i++) {
+    double time_since_update = moos_time - m_contact_time[i];
     if(i!=0)
       contact_list_string += ",";
     contact_list_string += m_contact_list[i];
+    contact_list_string += "(";
+    contact_list_string += doubleToString(time_since_update, 2);
+    contact_list_string += ")";    
   }
+
   m_Comms.Notify("CONTACT_LIST", contact_list_string);
 }
