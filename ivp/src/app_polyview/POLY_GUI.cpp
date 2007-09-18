@@ -89,6 +89,7 @@ void POLY_GUI::augmentMenu()
   
   mbar->add("Polygons/Delete All", 0, (Fl_Callback*)POLY_GUI::cb_Clear, (void*)0, 0);
   mbar->add("Polygons/Delete Current", FL_CTRL+'d', (Fl_Callback*)POLY_GUI::cb_ClearActive, (void*)0, 0);
+  mbar->add("Polygons/Create New", 0, (Fl_Callback*)POLY_GUI::cb_CreateNew, (void*)0, 0);
   mbar->add("Polygons/Current --", '-', (Fl_Callback*)POLY_GUI::cb_AdjustActive, (void*)-1, 0);
   mbar->add("Polygons/Current ++", '+', (Fl_Callback*)POLY_GUI::cb_AdjustActive, (void*)1, 0);
   mbar->add("Polygons/DumpSpec",   '>', (Fl_Callback*)POLY_GUI::cb_DumpPolySpec, (void*)0, 0);
@@ -181,6 +182,16 @@ inline void POLY_GUI::cb_ClearActive_i() {
 }
 void POLY_GUI::cb_ClearActive(Fl_Widget* o) {
   ((POLY_GUI*)(o->parent()->user_data()))->cb_ClearActive_i();
+}
+
+//----------------------------------------- CreateNew
+inline void POLY_GUI::cb_CreateNew_i() {
+  pviewer->createNew();
+  updateXY();
+  pviewer->redraw();
+}
+void POLY_GUI::cb_CreateNew(Fl_Widget* o) {
+  ((POLY_GUI*)(o->parent()->user_data()))->cb_CreateNew_i();
 }
 
 //----------------------------------------- AdjustActive

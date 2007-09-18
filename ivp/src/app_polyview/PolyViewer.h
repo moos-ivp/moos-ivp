@@ -52,7 +52,8 @@ public:
   float getLatY(int);
   std::string getPolySpec();
 
-  void  adjustActive(int); 
+  void  adjustActive(int);
+  void  createNew(); 
   void  shiftHorzPoly(double);
   void  shiftVertPoly(double);
   void  rotatePoly(int);

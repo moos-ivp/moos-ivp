@@ -207,7 +207,20 @@ void PolyViewer::handle_right_mouse(int vx, int vy)
   }
 
   if(m_active_poly == -1) {
-    if(m_poly[vsize-1].size() < 3) {
+  	createNew();
+  }
+
+  redraw();
+}
+
+//-------------------------------------------------------------
+// Procedure: createNew
+void PolyViewer::createNew(){
+	int vsize = m_poly.size(); 
+  	if(vsize == 0)
+    	return;
+
+	if(m_poly[vsize-1].size() < 3) {
       m_poly[vsize-1].clear();
       m_active_poly = vsize-1;
     }
@@ -223,9 +236,8 @@ void PolyViewer::handle_right_mouse(int vx, int vy)
     // If current poly is empty, makes sense to always be in 
     // place-mode
     m_drop_mode = 0;
-  }
-
-  redraw();
+    
+    redraw();
 }
 
 // ----------------------------------------------------------

@@ -57,6 +57,9 @@ public:
 private:
   inline void cb_Clear_i();
   static void cb_Clear(Fl_Widget*);
+  
+  inline void cb_CreateNew_i();
+  static void cb_CreateNew(Fl_Widget*);
 
   inline void cb_ClearActive_i();
   static void cb_ClearActive(Fl_Widget*);
