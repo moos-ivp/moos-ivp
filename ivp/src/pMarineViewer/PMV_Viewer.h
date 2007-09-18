@@ -47,6 +47,7 @@ class PMV_Viewer : public MarineViewer
 public:
   void  updateVehiclePosition(const std::string&, float x, float y, 
 			      float theta, float spd, float dep=0);  
+  void  setVehicleBodyType(const std::string&, const std::string&);
   void  resetVehicles();
   float getMetersX(int);
   float getMetersY(int);
@@ -80,7 +81,7 @@ public:
   // Mapping from Vehicle Name to Vehicle Position History
   std::map<std::string, CPList>       m_hist_map;
   // Mapping from Vehicle Name to Vehicle Body Type
-  std::map<std::string, std::string>  m_vtype_map;
+  std::map<std::string, std::string>  m_vbody_map;
 
   float m_time;
 

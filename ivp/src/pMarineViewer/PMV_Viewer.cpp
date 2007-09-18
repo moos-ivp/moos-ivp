@@ -62,8 +62,13 @@ void PMV_Viewer::draw()
   int ix = 0;
   map<string,ObjectPose>::iterator p1;
   for(p1=m_pos_map.begin(); p1!=m_pos_map.end(); p1++) {
+    string vname = p1->first;
     bool active = (ix == m_global_ix);
-    drawVehicle(p1->first, active, m_default_vehibody);
+    
+    string vehibody = m_vbody_map[vname];
+    if(vehibody == "")
+      vehibody = m_default_vehibody;
+    drawVehicle(vname, active, m_default_vehibody);
     ix++;
   }
 
@@ -173,8 +178,20 @@ void PMV_Viewer::resetVehicles()
 {
   m_pos_map.clear();
   m_hist_map.clear();
+  m_vbody_map.clear();
 }
       
+//-------------------------------------------------------------
+// Procedure: setVehicleBodyType
+//      Note: 
+
+void PMV_Viewer::setVehicleBodyType(const string& vname, 
+				    const string& vbody)
+{
+  m_vbody_map[vname] = tolower(stripBlankEnds(vbody));
+}  
+
+
 //-------------------------------------------------------------
 // Procedure: updateVehiclePosition
 //      Note: We don't redraw or call "redraw" in this method since
