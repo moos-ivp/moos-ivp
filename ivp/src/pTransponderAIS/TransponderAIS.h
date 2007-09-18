@@ -64,8 +64,8 @@ protected:
   
   // tes 9-12-07
   bool m_parseNaFCon;
-  // 32 bits to specify whether to publish for a given ID
-  unsigned long int naFConPublishForID;
+  // vector to specify whether to publish for a given ID
+  std::vector<bool> naFConPublishForID;
   // for lat long conversion
   CMOOSGeodesy m_Geodesy;
 

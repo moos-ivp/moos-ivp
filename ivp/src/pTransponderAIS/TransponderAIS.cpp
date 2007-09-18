@@ -1,6 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin and John Leonard                    */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NaFCon Functionality: Toby Schneider tes@mit.edu           */
 /*    FILE: TransponderAIS.cpp                                   */
 /*    DATE: Feb 13th 2006                                        */
 /*                                                               */
@@ -200,9 +201,10 @@ bool TransponderAIS::OnStartUp()
   if (!m_Geodesy.Initialise(latOrigin, longOrigin))
     return MOOSFail("Geodesy init failed.\n");
 
-  // set to all zeros
-  naFConPublishForID = 0;
-  
+  // initialize naFConPublishForID to all false before adding
+  //  config entries. we will add true values for NaFCoN
+  //  ids we wish to publish for
+  naFConPublishForID.assign(32, false);
   bool publishingSpecified = false;
 
   list<string> sParams;
@@ -226,17 +228,21 @@ bool TransponderAIS::OnStartUp()
       if(MOOSStrCmp(sVarName, "PARSE_NAFCON")) 
 	m_parseNaFCon = MOOSStrCmp(sLine, "true"); 
       
-      // create array specifying which IDs to publish for
+      // for each publish_for_nafcon_id config value
+      // insert a true in the appropriate entry of the 
+      // naFConPublishForID vector.
       if(MOOSStrCmp(sVarName, "PUBLISH_FOR_NAFCON_ID")) {
 	int id = atoi(sLine.c_str());
-	naFConPublishForID += (1 << id);
+	naFConPublishForID[id] = true;
+	// since the user specified id(s), do not publish
+	// AIS_REPORT for all ids
 	publishingSpecified = true;
       }
     }
     // if no IDs to publish are specified, publish for ALL ids
-    // (ones for all 32 bits of naFConPublishForID
+    // (true for all 32 entries of naFConPublishForID)
     if (!publishingSpecified)
-      naFConPublishForID = 0xFFFFFFFF;
+      naFConPublishForID.assign(32,true);
   }
   return(true);
   // end tes 9-12-07
@@ -378,7 +384,7 @@ bool TransponderAIS::handleIncomingCSReport(const string& sdata)
 //
 //  tes 9-12-97
 //  process a NaFCon Status Report and publish
-//  {vehicle}_NAV_X, _NAV_Y, _NAV_HEADING, _NAV_DEPTH, _NAV_SPEED, _NAV_LASTUPDATETIME
+//  an AIS_REPORT.
 //
 
 bool TransponderAIS::handleIncomingNaFConMessage(const string& rMsg)
@@ -397,9 +403,8 @@ bool TransponderAIS::handleIncomingNaFConMessage(const string& rMsg)
     MOOSValFromString(sourceID, rMsg, "SourcePlatformId");
     
     // limit to vehicles specified in config file
-    // use a bit test on the nth bit of naFConPublishForID
-    // where n is the SourcePlatformId of the vehicle
-    if((naFConPublishForID >> atoi(sourceID.c_str()) & 1)) {
+    // and now stored in naFConPublishForID
+    if(naFConPublishForID[atoi(sourceID.c_str())]) {
       double navX, navY, navLat, navLong, navHeading, navSpeed, navDepth, navTime;
       if(!MOOSValFromString(navLong, rMsg, "NodeLongitude"))
 	return false;
@@ -423,14 +428,17 @@ bool TransponderAIS::handleIncomingNaFConMessage(const string& rMsg)
       if(!m_Geodesy.LatLong2LocalGrid(navLat, navLong, navY, navX))
 	return false;
       
-      // publish it
-      m_Comms.Notify(sourceID + "_NAV_X", navX, MOOSTime());
-      m_Comms.Notify(sourceID + "_NAV_Y", navY, MOOSTime());
-      m_Comms.Notify(sourceID + "_NAV_HEADING", navHeading, MOOSTime());
-      m_Comms.Notify(sourceID + "_NAV_SPEED", navSpeed, MOOSTime());
-      m_Comms.Notify(sourceID + "_NAV_DEPTH", navDepth, MOOSTime());
-      m_Comms.Notify(sourceID + "_NAV_LASTUPDATETIME", navTime, MOOSTime());
-      
+      // publish it at AIS_REPORT
+      string summary = "NAME=" + sourceID;
+      summary += ",TYPE=";
+      summary += "Unknown";
+      summary += ",TIME=" + dstringCompact(doubleToString(navTime));
+      summary += ",X="   + dstringCompact(doubleToString(navX));
+      summary += ",Y="   + dstringCompact(doubleToString(navY));
+      summary += ",SPD=" + dstringCompact(doubleToString(navSpeed));
+      summary += ",HDG=" + dstringCompact(doubleToString(navHeading));
+      summary += ",DEPTH=" + dstringCompact(doubleToString(navDepth));
+      m_Comms.Notify("AIS_REPORT", summary);
     } 
   }
   return true;
