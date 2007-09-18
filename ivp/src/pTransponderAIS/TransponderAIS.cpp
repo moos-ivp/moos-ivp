@@ -309,7 +309,7 @@ bool TransponderAIS::handleIncomingAISReport(const string& sdata)
   m_Comms.Notify(vname+"_NAV_Y", nav_y_val);
   m_Comms.Notify(vname+"_NAV_SPEED", nav_spd_val);
   m_Comms.Notify(vname+"_NAV_HEADING", nav_hdg_val);
-  m_Comms.Notify(vname+"_NAV_DEPTH", nav_hdg_val);
+  m_Comms.Notify(vname+"_NAV_DEPTH", nav_dep_val);
 
   return(true);
 }
