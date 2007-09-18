@@ -41,7 +41,7 @@ PMV_Viewer::PMV_Viewer(int x, int y, int w, int h, const char *l)
 {
   m_time = 0;
 
-  m_default_vehibody = "auv";
+  m_default_vehibody = "kayak";
   m_left_click_ix    = 0;
   m_right_click_ix   = 0;
 }
@@ -68,7 +68,7 @@ void PMV_Viewer::draw()
     string vehibody = m_vbody_map[vname];
     if(vehibody == "")
       vehibody = m_default_vehibody;
-    drawVehicle(vname, active, m_default_vehibody);
+    drawVehicle(vname, active, vehibody);
     ix++;
   }
 

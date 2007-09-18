@@ -222,6 +222,7 @@ bool PMV_MOOSApp::receiveAIS_REPORT(CMOOSMsg &Msg)
     if(m_gui) {
       m_gui->mviewer->updateVehiclePosition(community, dfX, dfY, 
 					    dfHeading, dfSpeed, dfDepth);
+      m_gui->mviewer->setVehicleBodyType(vessel_name, vessel_type);
     }
     return(true);
   }
