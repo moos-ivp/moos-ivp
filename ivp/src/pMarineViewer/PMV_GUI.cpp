@@ -106,7 +106,7 @@ void PMV_GUI::updateXY() {
 
   string time_str = doubleToString(m_curr_time, 1);
   time->value(time_str.c_str());
-  std::string str = mviewer->getKName(index);
+  std::string str = mviewer->getVehiName(index);
   v_nam->value(str.c_str());
 }
 

@@ -127,7 +127,7 @@ bool PMV_MOOSApp::Iterate()
     
     if(left_click_str != "") {
       int    index   = m_gui->mviewer->getDataIndex();
-      string vname   = m_gui->mviewer->getKName(index);
+      string vname   = m_gui->mviewer->getVehiName(index);
       string postval = left_click_str;
       if(vname != "")
 	postval += (",vname=" + vname);
@@ -142,7 +142,7 @@ bool PMV_MOOSApp::Iterate()
     
     if(right_click_str != "") {
       int    index  = m_gui->mviewer->getDataIndex();
-      string vname  = m_gui->mviewer->getKName(index);
+      string vname  = m_gui->mviewer->getVehiName(index);
       string postval = right_click_str;
       if(vname != "")
 	postval += (",vname=" + vname);

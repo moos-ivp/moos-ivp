@@ -54,7 +54,7 @@ public:
   float getDep(int);
   float getCrs(int);
 
-  std::string getKName(int);
+  std::string getVehiName(int);
   std::string getLeftClick()     {return(m_left_click);};
   std::string getRightClick()    {return(m_right_click);};
   int   getLeftClickIX()         {return(m_left_click_ix);};
@@ -66,7 +66,7 @@ public:
   int   getDataIndex()           {return(m_global_ix);};
 
  private:
-  void  drawVehicle(std::string, bool);
+  void  drawVehicle(std::string, bool, std::string);
   void  drawPoints(CPList&);
   void  drawPoint(float, float, int color=0);
   void  handleLeftMouse(int, int);
@@ -75,18 +75,22 @@ public:
   ObjectPose getObjectPoseByIndex(int);
 
  private:
-  std::map<std::string, ObjectPose>  m_pos_map;
-  std::map<std::string, CPList>      m_hist_map;
-
-  std::vector<std::string> m_moos_messages;
-  
-  std::string m_left_click;
-  std::string m_right_click;
-
-  int   m_left_click_ix;
-  int   m_right_click_ix;
+  // Mapping from Vehicle Name to Vehicle Position
+  std::map<std::string, ObjectPose>   m_pos_map;
+  // Mapping from Vehicle Name to Vehicle Position History
+  std::map<std::string, CPList>       m_hist_map;
+  // Mapping from Vehicle Name to Vehicle Body Type
+  std::map<std::string, std::string>  m_vtype_map;
 
   float m_time;
+
+  std::string m_default_vehibody;
+
+  // Member variables for holding/conveying mouse click info
+  std::string m_left_click;
+  std::string m_right_click;
+  int   m_left_click_ix;
+  int   m_right_click_ix;
 };
 
 #endif 

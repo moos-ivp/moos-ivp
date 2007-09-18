@@ -41,8 +41,9 @@ PMV_Viewer::PMV_Viewer(int x, int y, int w, int h, const char *l)
 {
   m_time = 0;
 
-  m_left_click_ix  = 0;
-  m_right_click_ix = 0;
+  m_default_vehibody = "auv";
+  m_left_click_ix    = 0;
+  m_right_click_ix   = 0;
 }
 
 //-------------------------------------------------------------
@@ -62,7 +63,7 @@ void PMV_Viewer::draw()
   map<string,ObjectPose>::iterator p1;
   for(p1=m_pos_map.begin(); p1!=m_pos_map.end(); p1++) {
     bool active = (ix == m_global_ix);
-    drawVehicle(p1->first, active);
+    drawVehicle(p1->first, active, m_default_vehibody);
     ix++;
   }
 
@@ -100,7 +101,7 @@ int PMV_Viewer::handle(int event)
 //-------------------------------------------------------------
 // Procedure: drawVehicle(ObjectPose)
 
-void PMV_Viewer::drawVehicle(string vname, bool active)
+void PMV_Viewer::drawVehicle(string vname, bool active, string vehibody)
 {
   unsigned int i;
   
@@ -144,13 +145,22 @@ void PMV_Viewer::drawVehicle(string vname, bool active)
 
   glRotatef(-opose.getTheta(),0,0,1);  
 
-  glLineWidth(5.0);
-  glColor3f(0,1,0);
-  if(active)
-    drawGLPoly(g_kayakBody, g_kayakBodySize, 1, 0, 0, false);
-  else
-    drawGLPoly(g_kayakBody, g_kayakBodySize, cvect[0], cvect[1], cvect[2], false);
-  drawGLPoly(g_kayakMidOpen, g_kayakMidOpenSize, 0.5, 0.5, 0.5, false);
+  if(vehibody == "kayak") {
+    glLineWidth(5.0);
+    glColor3f(0,1,0);
+    if(active)
+      drawGLPoly(g_kayakBody, g_kayakBodySize, 1, 0, 0, false);
+    else
+      drawGLPoly(g_kayakBody, g_kayakBodySize, cvect[0], cvect[1], cvect[2], false);
+    drawGLPoly(g_kayakMidOpen, g_kayakMidOpenSize, 0.5, 0.5, 0.5, false);
+  }
+
+  if(vehibody == "auv") {
+    drawGLPoly(g_auvBody, g_auvBodySize, 1.0, 0.843, 0.0);
+    drawGLPoly(g_auvBody, g_auvBodySize, 0.0, 0.0,   0.0, 2.0);
+    drawGLPoly(g_propUnit, g_propUnitSize, 0.0,0.0, 1.0);
+  }
+
 
   glPopMatrix();
   
@@ -295,12 +305,12 @@ float PMV_Viewer::getCrs(int index)
 }
 
 // ----------------------------------------------------------
-// Procedure: getKName
+// Procedure: getVehiName
 //   Purpose: Index indicates which of the MAX_VEHICLES vehicles
 //            is being queried. Anything outside this range 
 //            results in an empty string being returned.
 
-string PMV_Viewer::getKName(int index)
+string PMV_Viewer::getVehiName(int index)
 {
   if((m_cross_offon) || (index == -1))
     return("cross-hairs");
