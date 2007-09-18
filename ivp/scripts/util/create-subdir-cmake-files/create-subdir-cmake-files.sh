@@ -317,6 +317,20 @@ SUBDIR=lib_mbutiltest        LIBNAME=mbutiltest        simple_lib_cmake_file
 # core apps...
 #-------------------------------------------------------------------------------
 
+SUBDIR=iGPS \
+PROGNAME=iGPS \
+IVP_BUILD_BY_DEFAULT=ON \
+IVP_INSTALL_COMPONENT=ivp-core \
+LINK_LIBS="
+   MOOS
+   MOOSGen
+   MOOSUtility
+   anrp_util
+   m
+   pthread" \
+simple_app_cmake_file
+
+
 SUBDIR=iMarineSim \
 PROGNAME=iMarineSim \
 IVP_BUILD_BY_DEFAULT=ON \
@@ -468,6 +482,7 @@ IVP_INSTALL_COMPONENT=ivp-core \
 LINK_LIBS="
    MOOS
    MOOSGen
+   MOOSUtility
    mbutil
    m
    pthread" \
