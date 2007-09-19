@@ -346,7 +346,8 @@ void SSV_Viewer::drawVehicle(string vname, bool active, string vehibody)
   }
 
   if(vehibody == "auv") {
-    drawGLPoly(g_auvBody, g_auvBodySize, 1.0, 0.843, 0.0);
+    //drawGLPoly(g_auvBody, g_auvBodySize, 1.0, 0.843, 0.0);
+    drawGLPoly(g_auvBody, g_auvBodySize, cvect[0], cvect[1], cvect[2]);
     drawGLPoly(g_auvBody, g_auvBodySize, 0.0, 0.0,   0.0, 2.0);
     drawGLPoly(g_propUnit, g_propUnitSize, 0.0,0.0, 1.0);
   }
