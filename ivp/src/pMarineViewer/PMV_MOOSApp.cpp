@@ -184,6 +184,9 @@ bool PMV_MOOSApp::OnStartUp()
 
   m_start_time = MOOSTime();
   
+  if(m_gui && m_gui->mviewer)
+    m_gui->mviewer->redraw();
+  
   return(true);
 }
 
