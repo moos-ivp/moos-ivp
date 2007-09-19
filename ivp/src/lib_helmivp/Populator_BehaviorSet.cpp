@@ -276,6 +276,7 @@ IvPBehavior* Populator_BehaviorSet::initializeBehavior(string bhv_name)
 {
   IvPBehavior *bhv = 0;      
 
+#if 1 // Core Behaviors
   if(bhv_name == "BHV_OpRegion")
     bhv = new BHV_OpRegion(domain);
   else if(bhv_name == "BHV_Waypoint")   
@@ -308,6 +309,7 @@ IvPBehavior* Populator_BehaviorSet::initializeBehavior(string bhv_name)
     bhv = new BHV_GoToDepth(domain);
   else if(bhv_name == "BHV_MemoryTurnLimit")      
     bhv = new BHV_MemoryTurnLimit(domain);
+#endif
 
 #if 0 
   // Oxford Behaviors
