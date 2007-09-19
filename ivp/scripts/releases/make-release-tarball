@@ -3,6 +3,7 @@
 import os
 import os.path
 import sys
+import shutil
 
 #===============================================================================
 
@@ -78,7 +79,7 @@ def parse_cmd_line(argv):
 
 #===============================================================================
 
-def validate_parsed_cmd_line(args, tarball_pathname):
+def validate_parsed_cmd_line(args, tarball_filename):
    if not os.path.isdir(args["src-dir"]):
       sys.exit("<src-dir> doesn't exist, or isn't a directory")
       
@@ -98,50 +99,107 @@ def validate_parsed_cmd_line(args, tarball_pathname):
    if not os.path.isdir(args["tarball-dir"]):
       sys.exit("<tarball-dir> doesn't exist, or isn't a directory")
       
-   
+   tarball_pathname = os.path.join(args["tarball-dir"], tarball_filename)
+     
    if os.path.exists(tarball_pathname):
       sys.exit("This script was going to produce a file named " + tarball_pathname + \
          ", but that file already exists.")
       
-   #if os.path.exists(os.path.join(args["tarball-dir"], tarball_filename)):
-
-      
 
 #===============================================================================
 
-def fixup_copied_src_tree(src_dir, copied_src_dir):
-   pass
+def fixup_copied_tree(copied_tree_path, whitelist_modules):
+   """
+   1) Eliminate any subdirectory of ivp/src/ that's not in the whitelist 
+      of release-worthy projects.
+   
+   2) Eliminate the scripts directories, which aren't currently relevant to
+      users.
+   
+   3) Eliminate the old-style makefiles.
+   
+   4) Replace lib_helmivp/Populator_BehaviorSet.cpp with a clean copy that lacks
+      private behaviors.
+   """
+      
+   # 1) Eliminate any subdirectory of ivp/src/ that's not in the whitelist 
+   #    of release-worthy projects.
+   ivp_src_dir = os.path.join(copied_tree_path, 'ivp/src')
+   src_dir_members = set(os.listdir(ivp_src_dir))
+   
+   members_to_delete = src_dir_members.difference(set(whitelist_modules))
+   for filename in members_to_delete:
+      pathname = os.path.join(ivp_src_dir, filename)
+      if os.path.isdir(pathname):
+         os.removedirs(pathname)
+      else:
+         os.rm(pathname)
+   
+   
+   # 2) Eliminate the scripts directories, which aren't currently relevant to
+   #    users.
+   d = os.path.join(copied_tree_path, 'ivp/scripts')
+   if os.path.isdir(d):
+      os.removedirs(d)
+      
+   d = os.path.join(copied_tree_path, 'MOOS/BuildScripts')
+   if os.path.isdir(d):
+      os.removedirs(d)
+      
+      
+   # 3) Eliminate the old-style makefiles.
+   cmd = "find " + ivp_src_dir + " -name makefile | xargs rm "
+   os.system(cmd)
+   
+   # 4) Replace lib_helmivp/Populator_BehaviorSet.cpp with a clean copy that lacks
+   #   private behaviors.
+   path1 = os.path.join(copied_tree_path, 
+      'ivp/src/lib_helmivp/opulator_BehaviorSet.cpp.for-release')
+   
+   path2 = os.path.join(copied_tree_path, 
+      'ivp/src/lib_helmivp/opulator_BehaviorSet.cpp')
+
+   shutil.copyfile(path1, path2)
+   os.rm(path1)
 
 #===============================================================================
 
 def generate_tarball_filename():
-   pass
+   (year, month, day, hour, minute) = time.localtime()[:5]
+   return "moos-ivp-%d-%02d-%02d-%02d%02d.tar.gz" % (year, month, day, hour, minute)
 
 #===============================================================================
 
 def create_tarball(copied_src_dir, tarball_dir, tarball_filename):
-   pass
+   tarball_pathname = os.path.join(tarball_dir, tarball_filename)
+   cmd = "tar cfvz " + copied_src_dir + " " + tarball_pathname
+   os.system(cmd)
 
 #===============================================================================
 
 def test_tarball(tarball_filename):
+   #TODO...
    pass
 
 #===============================================================================
 
-
-# Copy the entire source tree, but then make these corrections:
-# 1) Eliminate any subdirectory of ivp/src/ that's not in the whitelist 
-#    of release-worthy projects.
-#
-# 2) Eliminate the scripts directory, which isn't currently relevant to
-#    users.
-#
-# 3) Eliminate the old-style makefiles.
-#
-# 4) Replace lib_helmivp/Populator_BehaviorSet.cpp with a clean copy that lacks
-#    private behaviors.
-
-# Create the tarball
-
-# Test the tarball
+def main(argv):
+   args = parse_cmd_line(argv)
+   tarball_filename = generate_tarball_filename()
+   validate_parsed_cmd_line(args, tarball_filename)
+   
+   src_dir     = args["src-dir"]
+   working_dir = args["working-dir"]
+   tarball_dir = args["tarball-dir"]
+   
+   shutil.copytree(src_dir, working_dir)
+   
+   fixup_copied_tree(copied_tree_path, whitelist_modules)   
+   create_tarball(copied_src_dir, tarball_dir, tarball_filename)
+   
+   print "Done!  Created file " + tarball_filename + " in directory " + tarball_dir
+   
+#===============================================================================
+   
+if __name__ == '__main__':
+   main(sys.argv)
