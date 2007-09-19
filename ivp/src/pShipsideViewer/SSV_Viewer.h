@@ -48,6 +48,8 @@ public:
   void  updateVehiclePosition(const std::string&, float x, float y, 
 			      float theta, float spd, float dep=0);  
   void  setVehicleBodyType(const std::string&, const std::string&);
+  void  setOwnShipName(const std::string&);
+
   void  resetVehicles();
   float getMetersX(int);
   float getMetersY(int);
@@ -92,6 +94,9 @@ public:
   std::string m_right_click;
   int   m_left_click_ix;
   int   m_right_click_ix;
+
+  std::string m_ownship_name;
+
 };
 
 #endif 

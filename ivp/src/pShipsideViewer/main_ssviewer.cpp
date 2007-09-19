@@ -100,7 +100,7 @@ int main(int argc, char *argv[])
     string argi  = argv[i];
     if(strContains(argi, ".moos"))
       g_sMissionFile = argv[i];
-    else 
+    else if(argi != "pShipsideViewer")
       exit_with_usage();
   }
   

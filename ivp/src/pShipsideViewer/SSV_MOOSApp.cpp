@@ -177,12 +177,17 @@ bool SSV_MOOSApp::OnStartUp()
       tif_file = sLine;
     if(MOOSStrCmp(sVarName, "VEHICOLOR"))
       m_gui->mviewer->colorMapping(sLine);
+    if(MOOSStrCmp(sVarName, "OWNSHIP_NAME"))
+      m_gui->mviewer->setOwnShipName(sLine);
   }
 
   if(tif_file != "")
     m_gui->readTiff(tif_file.c_str());
 
   m_start_time = MOOSTime();
+  
+  if(m_gui && m_gui->mviewer)
+    m_gui->mviewer->redraw();
   
   return(true);
 }

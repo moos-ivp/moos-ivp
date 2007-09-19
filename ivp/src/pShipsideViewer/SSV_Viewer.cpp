@@ -104,83 +104,47 @@ int SSV_Viewer::handle(int event)
 }
 
 //-------------------------------------------------------------
-// Procedure: drawVehicle(ObjectPose)
+// Procedure: updateVehiclePosition
+//      Note: We don't redraw or call "redraw" in this method since
+//            if there are several updates backlogged that need 
+//            to be applied, we want to apply them all to have 
+//            the history, but only really want to redraw the 
+//            vehicles after the last update is done.
 
-void SSV_Viewer::drawVehicle(string vname, bool active, string vehibody)
+void SSV_Viewer::updateVehiclePosition(const string& vname, float x, 
+				       float y, float theta, 
+				       float speed, float depth)
 {
-  unsigned int i;
-  
-  ObjectPose opose;
+  // Handle updating the ObjectPose with the new information
+  ObjectPose opose(x,y,theta,speed,depth);
   map<string,ObjectPose>::iterator p1;
   p1 = m_pos_map.find(vname);
   if(p1 != m_pos_map.end())
-    opose = p1->second;
-  else 
-    return;
-
-  vector<double> cvect;
-  cvect.push_back(1.0);
-  cvect.push_back(0.906);
-  cvect.push_back(0.243);
-
-  map<string,vector<double> >::iterator p2;
-  p2 = m_color_map.find(vname);
-  if(p2 != m_color_map.end())
-    cvect = p2->second;
-
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  glOrtho(0, w(), 0, h(), -1 ,1);
-
-  // Determine position in terms of image percentage
-  float vehicle_ix = meters2img('x', opose.getX());
-  float vehicle_iy = meters2img('y', opose.getY());
-
-  // Determine position in terms of view percentage
-  float vehicle_vx = img2view('x', vehicle_ix);
-  float vehicle_vy = img2view('y', vehicle_iy);
-
-  glMatrixMode(GL_MODELVIEW);
-  glPushMatrix();
-  glLoadIdentity();
-
-  glTranslatef(vehicle_vx, vehicle_vy, 0); // theses are in pixel units
-
-  glScalef(m_zoom*m_shape_scale, m_zoom*m_shape_scale, m_zoom*m_shape_scale);
-
-  glRotatef(-opose.getTheta(),0,0,1);  
-
-  if(vehibody == "kayak") {
-    glLineWidth(5.0);
-    glColor3f(0,1,0);
-    if(active)
-      drawGLPoly(g_kayakBody, g_kayakBodySize, 1, 0, 0, false);
-    else
-      drawGLPoly(g_kayakBody, g_kayakBodySize, cvect[0], cvect[1], cvect[2], false);
-    drawGLPoly(g_kayakMidOpen, g_kayakMidOpenSize, 0.5, 0.5, 0.5, false);
+    p1->second = opose;
+  else {
+    m_pos_map[vname] = opose;
+  }
+ 
+  ColoredPoint point(x,y,0,0,255);
+  map<string,CPList>::iterator p2;
+  p2 = m_hist_map.find(vname);
+  if(p2 != m_hist_map.end()) {
+    p2->second.push_back(point);
+    if(p2->second.size() > HISTORY_SIZE)
+      p2->second.pop_front();
+  }
+  else {
+    list<ColoredPoint> newlist;
+    newlist.push_back(point);
+    m_hist_map[vname] = newlist;
   }
 
-  if(vehibody == "auv") {
-    drawGLPoly(g_auvBody, g_auvBodySize, 1.0, 0.843, 0.0);
-    drawGLPoly(g_auvBody, g_auvBodySize, 0.0, 0.0,   0.0, 2.0);
-    drawGLPoly(g_propUnit, g_propUnitSize, 0.0,0.0, 1.0);
+  if(toupper(vname) == m_ownship_name) {
+    setParam("set_pan_x", -x);
+    setParam("set_pan_y", -y);
   }
-
-
-  glPopMatrix();
-  
 }
 
-//-------------------------------------------------------------
-// Procedure: resetVehicles()
-
-void SSV_Viewer::resetVehicles()
-{
-  m_pos_map.clear();
-  m_hist_map.clear();
-  m_vbody_map.clear();
-}
-      
 //-------------------------------------------------------------
 // Procedure: setVehicleBodyType
 //      Note: 
@@ -193,42 +157,23 @@ void SSV_Viewer::setVehicleBodyType(const string& vname,
 
 
 //-------------------------------------------------------------
-// Procedure: updateVehiclePosition
-//      Note: We don't redraw or call "redraw" in this method since
-//            if there are several updates backlogged that need 
-//            to be applied, we want to apply them all to have 
-//            the history, but only really want to redraw the 
-//            vehicles after the last update is done.
+// Procedure: setOwnShipName
 
-void SSV_Viewer::updateVehiclePosition(const string& tag, float x, 
-				       float y, float theta, 
-				       float speed, float depth)
+void SSV_Viewer::setOwnShipName(const string& vname)
 {
-  // Handle updating the ObjectPose with the new information
-  ObjectPose opose(x,y,theta,speed,depth);
-  map<string,ObjectPose>::iterator p1;
-  p1 = m_pos_map.find(tag);
-  if(p1 != m_pos_map.end())
-    p1->second = opose;
-  else {
-    m_pos_map[tag] = opose;
-  }
- 
-  ColoredPoint point(x,y,0,0,255);
-  map<string,CPList>::iterator p2;
-  p2 = m_hist_map.find(tag);
-  if(p2 != m_hist_map.end()) {
-    p2->second.push_back(point);
-    if(p2->second.size() > HISTORY_SIZE)
-      p2->second.pop_front();
-  }
-  else {
-    list<ColoredPoint> newlist;
-    newlist.push_back(point);
-    m_hist_map[tag] = newlist;
-  }
+  m_ownship_name = toupper(vname);
 }
+      
+//-------------------------------------------------------------
+// Procedure: resetVehicles()
 
+void SSV_Viewer::resetVehicles()
+{
+  m_pos_map.clear();
+  m_hist_map.clear();
+  m_vbody_map.clear();
+}
+      
 // ----------------------------------------------------------
 // Procedure: getMetersX
 //   Purpose: For a given x position, return its position, in 
@@ -341,6 +286,74 @@ string SSV_Viewer::getVehiName(int index)
       ix--;
   }
   return("");
+}
+
+//-------------------------------------------------------------
+// Procedure: drawVehicle(ObjectPose)
+
+void SSV_Viewer::drawVehicle(string vname, bool active, string vehibody)
+{
+  unsigned int i;
+  
+  ObjectPose opose;
+  map<string,ObjectPose>::iterator p1;
+  p1 = m_pos_map.find(vname);
+  if(p1 != m_pos_map.end())
+    opose = p1->second;
+  else 
+    return;
+
+  vector<double> cvect;
+  cvect.push_back(1.0);
+  cvect.push_back(0.906);
+  cvect.push_back(0.243);
+
+  map<string,vector<double> >::iterator p2;
+  p2 = m_color_map.find(vname);
+  if(p2 != m_color_map.end())
+    cvect = p2->second;
+
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glOrtho(0, w(), 0, h(), -1 ,1);
+
+  // Determine position in terms of image percentage
+  float vehicle_ix = meters2img('x', opose.getX());
+  float vehicle_iy = meters2img('y', opose.getY());
+
+  // Determine position in terms of view percentage
+  float vehicle_vx = img2view('x', vehicle_ix);
+  float vehicle_vy = img2view('y', vehicle_iy);
+
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
+  glLoadIdentity();
+
+  glTranslatef(vehicle_vx, vehicle_vy, 0); // theses are in pixel units
+
+  glScalef(m_zoom*m_shape_scale, m_zoom*m_shape_scale, m_zoom*m_shape_scale);
+
+  glRotatef(-opose.getTheta(),0,0,1);  
+
+  if(vehibody == "kayak") {
+    glLineWidth(5.0);
+    glColor3f(0,1,0);
+    if(active)
+      drawGLPoly(g_kayakBody, g_kayakBodySize, 1, 0, 0, false);
+    else
+      drawGLPoly(g_kayakBody, g_kayakBodySize, cvect[0], cvect[1], cvect[2], false);
+    drawGLPoly(g_kayakMidOpen, g_kayakMidOpenSize, 0.5, 0.5, 0.5, false);
+  }
+
+  if(vehibody == "auv") {
+    drawGLPoly(g_auvBody, g_auvBodySize, 1.0, 0.843, 0.0);
+    drawGLPoly(g_auvBody, g_auvBodySize, 0.0, 0.0,   0.0, 2.0);
+    drawGLPoly(g_propUnit, g_propUnitSize, 0.0,0.0, 1.0);
+  }
+
+
+  glPopMatrix();
+  
 }
 
 //-------------------------------------------------------------
