@@ -12,7 +12,7 @@ killall -9 -q pMOOSBridge pMikerb ExpMOOSDB pMikerb2        \
         pEchoVar uFunctionVis uXMS uProcessWatch            \
 
 killall -9 -q uTermCommand pMessageParser pTrafficControl   \
-        pDeployHandler pViewerRelay
+        pDeployHandler pViewerRelay pShipsideViewer
 
 echo Done - Killed all MOOS-Related Processes.....
 
