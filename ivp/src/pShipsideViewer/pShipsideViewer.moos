@@ -1,0 +1,16 @@
+// Example pShipsideViewer MOOS file
+
+ServerHost = localhost
+ServerPort = 9000
+
+ProcessConfig = pMarineViewer
+{
+  AppTick   = 4
+  CommsTick = 4
+
+  TIF_FILE  = Default.tif  
+  VEHICOLOR = nyak200, darkblue
+  VEHICOLOR = nyak201, darkgreen
+  VEHICOLOR = nyak204, yellow
+}
+
