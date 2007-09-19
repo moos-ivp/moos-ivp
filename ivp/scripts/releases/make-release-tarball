@@ -4,6 +4,7 @@ import os
 import os.path
 import sys
 import shutil
+import time
 
 #===============================================================================
 
@@ -68,13 +69,13 @@ def print_usage_and_exit():
 #===============================================================================
 
 def parse_cmd_line(argv):
-   if len(argv) != 3:
+   if len(argv) != 4:
       print_usage_and_exit()
       
    return {
-      "src-dir":argv[0],
-      "working-dir":argv[1],
-      "tarball-dir":argv[2]
+      "src-dir":argv[1],
+      "working-dir":argv[2],
+      "tarball-dir":argv[3]
       }
 
 #===============================================================================
@@ -131,20 +132,20 @@ def fixup_copied_tree(copied_tree_path, whitelist_modules):
    for filename in members_to_delete:
       pathname = os.path.join(ivp_src_dir, filename)
       if os.path.isdir(pathname):
-         os.removedirs(pathname)
+         shutil.rmtree(pathname)
       else:
-         os.rm(pathname)
+         os.remove(pathname)
    
    
    # 2) Eliminate the scripts directories, which aren't currently relevant to
    #    users.
    d = os.path.join(copied_tree_path, 'ivp/scripts')
    if os.path.isdir(d):
-      os.removedirs(d)
+      shutil.rmtree(d)
       
    d = os.path.join(copied_tree_path, 'MOOS/BuildScripts')
    if os.path.isdir(d):
-      os.removedirs(d)
+      shutil.rmtree(d)
       
       
    # 3) Eliminate the old-style makefiles.
@@ -154,13 +155,13 @@ def fixup_copied_tree(copied_tree_path, whitelist_modules):
    # 4) Replace lib_helmivp/Populator_BehaviorSet.cpp with a clean copy that lacks
    #   private behaviors.
    path1 = os.path.join(copied_tree_path, 
-      'ivp/src/lib_helmivp/opulator_BehaviorSet.cpp.for-release')
+      'ivp/src/lib_helmivp/Populator_BehaviorSet.cpp.for-release')
    
    path2 = os.path.join(copied_tree_path, 
-      'ivp/src/lib_helmivp/opulator_BehaviorSet.cpp')
+      'ivp/src/lib_helmivp/Populator_BehaviorSet.cpp')
 
    shutil.copyfile(path1, path2)
-   os.rm(path1)
+   os.remove(path1)
 
 #===============================================================================
 
@@ -172,8 +173,10 @@ def generate_tarball_filename():
 
 def create_tarball(copied_src_dir, tarball_dir, tarball_filename):
    tarball_pathname = os.path.join(tarball_dir, tarball_filename)
-   cmd = "tar cfvz " + copied_src_dir + " " + tarball_pathname
-   os.system(cmd)
+   cmd = "tar cfz -C " + copied_src_dir + " " + tarball_pathname + " " + os.path.join(copied_src_dir, "*")
+   
+   if os.system(cmd) != 0:
+      sys.exit("Quitting.  The 'tar' command seems to have failed.")
 
 #===============================================================================
 
@@ -192,9 +195,10 @@ def main(argv):
    working_dir = args["working-dir"]
    tarball_dir = args["tarball-dir"]
    
-   shutil.copytree(src_dir, working_dir)
+   copied_src_dir = os.path.join(working_dir, "tarball-contents")
+   shutil.copytree(src_dir, copied_src_dir)
    
-   fixup_copied_tree(copied_tree_path, whitelist_modules)   
+   fixup_copied_tree(copied_src_dir, whitelist_modules)   
    create_tarball(copied_src_dir, tarball_dir, tarball_filename)
    
    print "Done!  Created file " + tarball_filename + " in directory " + tarball_dir
