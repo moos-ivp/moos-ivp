@@ -110,21 +110,6 @@ def validate_parsed_cmd_line(args, tarball_filename):
 #===============================================================================
 
 def fixup_copied_tree(copied_tree_path, whitelist_modules):
-   """
-   1) Eliminate any subdirectory of ivp/src/ that's not in the whitelist 
-      of release-worthy projects.
-   
-   2) Eliminate the scripts directories, which aren't currently relevant to
-      users.
-   
-   3) Eliminate the old-style makefiles.
-   
-   4) Replace lib_helmivp/Populator_BehaviorSet.cpp with a clean copy that lacks
-      private behaviors.
-      
-   5) Remove the ".svn" subdirectories.
-   """
-      
    # 1) Eliminate any subdirectory of ivp/src/ that's not in the whitelist 
    #    of release-worthy projects.
    ivp_src_dir = os.path.join(copied_tree_path, 'ivp/src')
@@ -148,10 +133,12 @@ def fixup_copied_tree(copied_tree_path, whitelist_modules):
    d = os.path.join(copied_tree_path, 'MOOS/BuildScripts')
    if os.path.isdir(d):
       shutil.rmtree(d)
-      
+     
       
    # 3) Eliminate the old-style makefiles.
-   cmd = "find " + ivp_src_dir + " -name makefile | xargs rm "
+   cmd = "find " + ivp_src_dir + " -name makefile | xargs rm"
+   print "About to execute:"
+   print cmd
    os.system(cmd)
    
    # 4) Replace lib_helmivp/Populator_BehaviorSet.cpp with a clean copy that lacks
@@ -167,11 +154,22 @@ def fixup_copied_tree(copied_tree_path, whitelist_modules):
 
    # 5) Remove the ".svn" subdirectories.
    cmd = "find " + copied_tree_path + " -name .svn -type d | xargs rm -rf"
-   
    print "About to execute:"
    print cmd
-   
    os.system(cmd)
+      
+      
+   # 6) Remove anything that ideally CMake will re-create the first time through...
+   cmd = "find " + copied_tree_path + " -name CMakeCache.txt | xargs rm"
+   print "About to execute:"
+   print cmd
+   os.system(cmd)
+   
+   cmd = "find " + copied_tree_path + " -name Makefile | xargs rm"
+   print "About to execute:"
+   print cmd
+   os.system(cmd)
+   
 
 #===============================================================================
 
