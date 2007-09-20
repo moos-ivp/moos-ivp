@@ -352,6 +352,11 @@ void SSV_Viewer::drawVehicle(string vname, bool active, string vehibody)
     drawGLPoly(g_propUnit, g_propUnitSize, 0.0,0.0, 1.0);
   }
 
+  if(vehibody == "ship") {
+    drawGLPoly(g_shipBody, g_shipBodySize, cvect[0], cvect[1], cvect[2]);
+    drawGLPoly(g_shipBody, g_shipBodySize, 0.0, 0.0,   0.0, 2.0);
+  }
+
 
   glPopMatrix();
   
