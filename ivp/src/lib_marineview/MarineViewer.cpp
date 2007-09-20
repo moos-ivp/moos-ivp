@@ -873,8 +873,14 @@ bool MarineViewer::setParam(string param, float v)
   else if(param == "pan_x") {
     m_vshift_x += v;
   }
+  else if(param == "set_pan_x") {
+    m_vshift_x = v;
+  }
   else if(param == "pan_y") {
     m_vshift_y += v;
+  }
+  else if(param == "set_pan_y") {
+    m_vshift_y = v;
   }
   else 
     return(false);
