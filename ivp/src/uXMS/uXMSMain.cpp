@@ -63,7 +63,8 @@ pthread_t spawn_thread(ThreadParams *pParams)
 
 int main(int argc ,char * argv[])
 {
-  bool help_requested = false;
+  bool help_requested   = false;
+  bool ignore_file_vars = false;
 
   g_sMissionFile = 0;
   for(int i=1; i<argc; i++) {
@@ -76,7 +77,7 @@ int main(int argc ,char * argv[])
   }
   
   if(help_requested) {
-    MOOSTrace("Usage: uXMS moosfile.moos VAR-1 VAR-2 ... VAR-N \n");
+    MOOSTrace("Usage: uXMS moosfile.moos -nav -helm -pid -clean [VARS] \n");
     return(0);
   }
  
@@ -101,19 +102,20 @@ int main(int argc ,char * argv[])
 
   string process_name = "uXMS_" + rand_str;
 
-
   // start the XMS in its own thread
   ThreadParams params = {&g_theXMS, (char*)(process_name.c_str())};
   g_threadID = spawn_thread(&params);	
 
   for(int i=1; i<argc; i++) {
-    if(!strcmp(argv[i], "-nav")) {
+    string str = argv[i];
+    if(str == "-nav") {
       g_theXMS.addVariable("NAV_X");
       g_theXMS.addVariable("NAV_Y");
       g_theXMS.addVariable("NAV_HEADING");
       g_theXMS.addVariable("NAV_SPEED");
+      g_theXMS.addVariable("NAV_DEPTH");
     }
-    else if(!strcmp(argv[i], "-helm")) {
+    else if(str ==  "-helm") {
       g_theXMS.addVariable("DESIRED_HEADING");
       g_theXMS.addVariable("DESIRED_SPEED");
       g_theXMS.addVariable("DESIRED_DEPTH");
@@ -127,34 +129,15 @@ int main(int argc ,char * argv[])
       g_theXMS.addVariable("RETURN");
       g_theXMS.addVariable("STATION_KEEP");
     }
-    else if(!strcmp(argv[i], "-proc")) {
-      g_theXMS.addVariable("PROC_WATCH_SUMMARY");
-      g_theXMS.addVariable("PROC_WATCH_EVENT");
+    else if(str == "-pid") {
+      g_theXMS.addVariable("DESIRED_RUDDER");
+      g_theXMS.addVariable("DESIRED_THRUST");
+      g_theXMS.addVariable("DESIRED_ELEVATOR");
     }
-    else if(!strcmp(argv[i], "-proc200")) {
-      g_theXMS.addVariable("PROC_SUMMARY_200");
-      g_theXMS.addVariable("PROC_EVENT_200");
-    }
-    else if(!strcmp(argv[i], "-proc201")) {
-      g_theXMS.addVariable("PROC_SUMMARY_201");
-      g_theXMS.addVariable("PROC_EVENT_201");
-    }
-    else if(!strcmp(argv[i], "-proc202")) {
-      g_theXMS.addVariable("PROC_SUMMARY_202");
-      g_theXMS.addVariable("PROC_EVENT_202");
-    }
-    else if(!strcmp(argv[i], "-proc203")) {
-      g_theXMS.addVariable("PROC_SUMMARY_203");
-      g_theXMS.addVariable("PROC_EVENT_203");
-    }
-    else if(!strcmp(argv[i], "-proc204")) {
-      g_theXMS.addVariable("PROC_SUMMARY_204");
-      g_theXMS.addVariable("PROC_EVENT_204");
-    }
-    else if(!strcmp(argv[i], "-proc206")) {
-      g_theXMS.addVariable("PROC_SUMMARY_206");
-      g_theXMS.addVariable("PROC_EVENT_206");
-    }
+
+    else if((str == "-c") || (str == "--clean") || (str == "-clean"))
+      g_theXMS.ignoreVars(true);
+    
     else if(!strContains(argv[i], ".moos"))
       g_theXMS.addVariable(argv[i]);
 

@@ -21,6 +21,8 @@ XMS::XMS()
   display_community = false;
   display_help      = false;
 
+  m_ignore_vars     = false;
+
   paused            = true;
   update_requested  = true;
   iteration         = 0;
@@ -87,8 +89,8 @@ bool XMS::OnStartUp()
     sVarName = stripBlankEnds(toupper(sVarName));
     sLine    = stripBlankEnds(sLine);
     int len  = sLine.length();
-        
-    if(MOOSStrCmp(sVarName, "VAR"))
+    
+    if(!m_ignore_vars && MOOSStrCmp(sVarName, "VAR"))
       addVariable(sLine);
   }
   
@@ -344,7 +346,8 @@ void XMS::updateVariable(CMOOSMsg &msg)
   
   double vtime = msg.GetTime() - GetAppStartTime();
 
-  vtime = MOOSTime() - GetAppStartTime();;
+  //vtime = MOOSTime() - GetAppStartTime();;
+  //vtime = MOOSTime();
 
   string vtime_str = doubleToString(vtime, 2);
   vtime_str = dstringCompact(vtime_str);

@@ -41,6 +41,7 @@ class XMS : public CMOOSApp
 
   void handleCommand(char);
   void addVariable(std::string);
+  void ignoreVars(bool v) {m_ignore_vars = v;};
 
  protected:
   void registerVariables();
@@ -71,6 +72,8 @@ class XMS : public CMOOSApp
   bool update_requested;
   bool help_requested;
   int  iteration;
+
+  bool m_ignore_vars;
 };
 
 #endif 
