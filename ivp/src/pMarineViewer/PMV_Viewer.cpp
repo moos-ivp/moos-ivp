@@ -27,6 +27,9 @@
 #include <tiffio.h>
 #include "PMV_Viewer.h"
 #include "VehicleShapes.h"
+#include "Shape_Ship.h"
+#include "Shape_Kayak.h"
+#include "Shape_AUV.h"
 #include "AngleUtils.h"
 #include "MBUtils.h"
 #include "ColorParse.h"
