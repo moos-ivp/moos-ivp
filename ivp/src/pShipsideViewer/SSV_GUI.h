@@ -35,8 +35,16 @@ public:
   void updateXY();
   int  handle(int);
   void setCurrTime(double v) {m_curr_time = v;};
+  void augmentMenu();
   
   SSV_Viewer *mviewer;
+
+private:
+  inline void cb_CentricToggle_i(int);
+  static void cb_CentricToggle(Fl_Widget*, int);
+
+  inline void cb_Radial_i(int);
+  static void cb_Radial(Fl_Widget*, int);
 
 protected:
   MY_Output  *v_nam;

@@ -31,6 +31,11 @@ class HexaViewer : public MarineViewer
   int   handle(int);
   void  handle_left_mouse(int, int);
   void  handle_right_mouse(int, int);
+  bool  setParam(std::string p, std::string v)
+    {return(setCommonParam(p,v));};
+  bool  setParam(std::string p, float v)
+    {return(setCommonParam(p,v));};
+
 
 public:
   std::string getPolySpec(int);

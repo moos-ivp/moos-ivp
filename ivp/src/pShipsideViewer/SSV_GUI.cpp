@@ -35,6 +35,8 @@ SSV_GUI::SSV_GUI(int g_w, int g_h, const char *g_l)
   this->when(FL_WHEN_CHANGED);
   this->begin();
 
+  augmentMenu();
+
   int info_size=12;
  
   m_curr_time = 0;
@@ -75,6 +77,21 @@ SSV_GUI::SSV_GUI(int g_w, int g_h, const char *g_l)
   this->show();
 }
 
+//-------------------------------------------------------------------
+// Procedure: augmentMenu()
+
+void SSV_GUI::augmentMenu()
+{
+  mbar->add("Shipside/ShipCentric Toggle", 0, (Fl_Callback*)SSV_GUI::cb_CentricToggle,(void*)0, 0);
+  mbar->add("Shipside/ShipCentric Off",    0, (Fl_Callback*)SSV_GUI::cb_CentricToggle,(void*)1, 0);
+  mbar->add("Shipside/ShipCentric On",     0, (Fl_Callback*)SSV_GUI::cb_CentricToggle,(void*)2, FL_MENU_DIVIDER);
+  mbar->add("Shipside/Radial Off",   0, (Fl_Callback*)SSV_GUI::cb_Radial,(void*)0, 0);
+  mbar->add("Shipside/Radial  100",  0, (Fl_Callback*)SSV_GUI::cb_Radial,(void*)100, 0);
+  mbar->add("Shipside/Radial  200",  0, (Fl_Callback*)SSV_GUI::cb_Radial,(void*)200, 0);
+  mbar->add("Shipside/Radial  500",  0, (Fl_Callback*)SSV_GUI::cb_Radial,(void*)500, 0);
+  mbar->add("Shipside/Radial 1000",  0, (Fl_Callback*)SSV_GUI::cb_Radial,(void*)1000, 0);
+};
+
 
 //----------------------------------------------------------
 // Procedure: handle
@@ -110,4 +127,31 @@ void SSV_GUI::updateXY() {
   v_nam->value(str.c_str());
 }
 
+
+//----------------------------------------- CentricToggle
+inline void SSV_GUI::cb_CentricToggle_i(int val) {
+  if(val == 0)
+    mviewer->setParam("centric_view", "toggle");
+  if(val == 1)
+    mviewer->setParam("centric_view", "off");
+  if(val == 2)
+    mviewer->setParam("centric_view", "on");
+  mviewer->redraw();
+  updateXY();
+}
+void SSV_GUI::cb_CentricToggle(Fl_Widget* o, int val) {
+  ((SSV_GUI*)(o->parent()->user_data()))->cb_CentricToggle_i(val);
+}
+
+//----------------------------------------- Radial
+inline void SSV_GUI::cb_Radial_i(int val) {
+  mviewer->setParam("radial_size", (float)(val));
+  mviewer->redraw();
+  updateXY();
+}
+
+void SSV_GUI::cb_Radial(Fl_Widget* o, int v) {
+  int val = (int)(v);
+  ((SSV_GUI*)(o->parent()->user_data()))->cb_Radial_i(val);
+}
 

@@ -44,6 +44,11 @@ class PMV_Viewer : public MarineViewer
   void  draw();
   int   handle(int);
 
+  bool  setParam(std::string p, std::string v)
+    {return(setCommonParam(p,v));};
+  bool  setParam(std::string p, float v)
+    {return(setCommonParam(p,v));};
+  
 public:
   void  updateVehiclePosition(const std::string&, float x, float y, 
 			      float theta, float spd, float dep=0);  

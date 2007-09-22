@@ -68,6 +68,9 @@ public:
   float getTime()                {return(m_time);};
   int   getDataIndex()           {return(m_global_ix);};
 
+  bool  setParam(std::string, std::string);
+  bool  setParam(std::string, float);
+
  private:
   void  drawVehicle(std::string, bool, std::string);
   void  drawPoints(CPList&);
@@ -92,8 +95,11 @@ public:
   // Member variables for holding/conveying mouse click info
   std::string m_left_click;
   std::string m_right_click;
-  int   m_left_click_ix;
-  int   m_right_click_ix;
+
+  int    m_left_click_ix;
+  int    m_right_click_ix;
+  bool   m_centric_view;
+  int    m_radial_size;
 
   std::string m_ownship_name;
 };

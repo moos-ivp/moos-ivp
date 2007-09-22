@@ -51,12 +51,15 @@ class MarineViewer : public Fl_Gl_Window
 
   virtual void setGlobalIndex(int i) {m_global_ix = i;};
 
+  virtual bool setParam(std::string p, std::string v) = 0;
+  virtual bool setParam(std::string p, float v)       = 0;
+
+  bool  setCommonParam(std::string, std::string);
+  bool  setCommonParam(std::string, float);
+
 public:
   bool  readTiff(const char *f=0);
   bool  setTexture();
-
-  bool  setParam(std::string, std::string);
-  bool  setParam(std::string, float);
 
   void  addPoly(const XYPolygon&);
   void  addGrid(const XYGrid&);

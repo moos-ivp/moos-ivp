@@ -33,6 +33,11 @@ class CPAViewer : public MarineViewer
   void   handle_left_mouse(int, int);
   void   handle_right_mouse(int, int);
 
+  bool  setParam(std::string p, std::string v)
+    {return(setCommonParam(p,v));};
+  bool  setParam(std::string p, float v)
+    {return(setCommonParam(p,v));};
+
  protected:
   void   draw_cn_vector(int, double=6, double=0.5, double=0.5, double=0.5);
   void   draw_os_point(double=6, double=0.5, double=0.5, double=0.5);

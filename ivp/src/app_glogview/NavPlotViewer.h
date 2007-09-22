@@ -39,6 +39,11 @@ class NavPlotViewer : public MarineViewer
   NavPlotViewer(int x,int y,int w,int h,const char *l=0);
   virtual ~NavPlotViewer() {};
   
+  bool  setParam(std::string p, std::string v)
+    {return(setCommonParam(p,v));};
+  bool  setParam(std::string p, float v)
+    {return(setCommonParam(p,v));};
+  
   void   draw();
   float  getMetersX();
   float  getMetersY();

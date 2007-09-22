@@ -38,11 +38,14 @@ using namespace std;
 SSV_Viewer::SSV_Viewer(int x, int y, int w, int h, const char *l)
   : MarineViewer(x,y,w,h,l)
 {
-  m_time = 0;
+  m_time        = 0;
+  m_tiff_offon  = 0;
 
   m_default_vehibody = "kayak";
   m_left_click_ix    = 0;
   m_right_click_ix   = 0;
+  m_centric_view     = true;
+  m_radial_size      = 100;
 }
 
 //-------------------------------------------------------------
@@ -137,8 +140,8 @@ void SSV_Viewer::updateVehiclePosition(const string& vname, float x,
     newlist.push_back(point);
     m_hist_map[vname] = newlist;
   }
-
-  if(toupper(vname) == m_ownship_name) {
+  
+  if((m_centric_view) && (toupper(vname) == m_ownship_name)) {
     setParam("set_pan_x", -x);
     setParam("set_pan_y", -y);
   }
@@ -424,7 +427,6 @@ void SSV_Viewer::handleLeftMouse(int vx, int vy)
 }
 
 
-
 //-------------------------------------------------------------
 // Procedure: handleRightMouse
 
@@ -445,5 +447,63 @@ void SSV_Viewer::handleRightMouse(int vx, int vy)
   cout << "Right Mouse click at [" << m_right_click << "] meters." << endl;
 }
 
+
+//-------------------------------------------------------------
+// Procedure: setParam
+
+bool SSV_Viewer::setParam(string param, string value)
+{
+  if(MarineViewer::setCommonParam(param, value))
+    return(true);
+
+  param = tolower(stripBlankEnds(param));
+  value = tolower(stripBlankEnds(value));
+
+  if(param == "centric_view") {
+    if(value == "toggle")
+      m_centric_view = !m_centric_view;
+    else if(value == "on")
+      m_centric_view = true;
+    else if(value == "off")
+      m_centric_view = false;
+    else
+      return(false);
+  }
+  else
+    return(false);
+
+  redraw();
+  return(true);
+
+}
+
+//-------------------------------------------------------------
+// Procedure: setParam
+
+bool SSV_Viewer::setParam(string param, float v)
+{
+  // Intercept and disallow any panning if in "centric" mode.
+  if(((param == "pan_x") || (param == "pan_y")) && (m_centric_view))
+    return(true);
+
+  if(MarineViewer::setCommonParam(param, v))
+    return(true);
+  
+  param = tolower(stripBlankEnds(param));
+  
+  if(param == "radial_size") {
+    m_radial_size = (int)(v);
+    if(m_radial_size < 0)
+      m_radial_size = 0;
+    if(m_radial_size > 2000);
+       m_radial_size = 2000;
+  }
+  else 
+    return(false);
+  
+  redraw();
+  return(true);
+
+}
 
 

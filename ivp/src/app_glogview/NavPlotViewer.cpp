@@ -261,10 +261,6 @@ void NavPlotViewer::drawNavPlot(int index)
     glPointSize(m_trail_size * m_zoom);
 
 #if 0
-      glColor3f(0.0, 0.0, 0.5);  // darkblue
-#endif
-
-#if 0
     if(index == m_global_ix)
       glColor3f(1.0, 1.0, 1.0);  // white
     else
@@ -282,10 +278,6 @@ void NavPlotViewer::drawNavPlot(int index)
       glColor3f(0.7, 0.7, 0.7);  // Lighter
     if(index==2)
       m_trail_gap += 5;
-#endif
-
-#if 0
-    glColor3f(0.0, 0.0, 0.0);  // Lighter
 #endif
 
     glBegin(GL_POINTS);
