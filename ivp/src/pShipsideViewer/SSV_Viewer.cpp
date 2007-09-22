@@ -58,6 +58,7 @@ void SSV_Viewer::draw()
   drawGrids();
   drawPolys();
   drawCircles();
+  drawRadials();
 
   // Next draw the vehicle shapes. If the vehicle index is the 
   // one "active", draw it in a different color.
@@ -113,10 +114,11 @@ int SSV_Viewer::handle(int event)
 //            the history, but only really want to redraw the 
 //            vehicles after the last update is done.
 
-void SSV_Viewer::updateVehiclePosition(const string& vname, float x, 
+void SSV_Viewer::updateVehiclePosition(string vname, float x, 
 				       float y, float theta, 
 				       float speed, float depth)
 {
+  vname = toupper(vname);
   // Handle updating the ObjectPose with the new information
   ObjectPose opose(x,y,theta,speed,depth);
   map<string,ObjectPose>::iterator p1;
@@ -151,9 +153,9 @@ void SSV_Viewer::updateVehiclePosition(const string& vname, float x,
 // Procedure: setVehicleBodyType
 //      Note: 
 
-void SSV_Viewer::setVehicleBodyType(const string& vname, 
-				    const string& vbody)
+void SSV_Viewer::setVehicleBodyType(string vname, string vbody)
 {
+  vname = toupper(vname);
   m_vbody_map[vname] = tolower(stripBlankEnds(vbody));
 }  
 
@@ -161,8 +163,9 @@ void SSV_Viewer::setVehicleBodyType(const string& vname,
 //-------------------------------------------------------------
 // Procedure: setOwnShipName
 
-void SSV_Viewer::setOwnShipName(const string& vname)
+void SSV_Viewer::setOwnShipName(string vname)
 {
+  vname = toupper(vname);
   m_ownship_name = toupper(vname);
 }
       
@@ -506,4 +509,96 @@ bool SSV_Viewer::setParam(string param, float v)
 
 }
 
+
+//-------------------------------------------------------------
+// Procedure: drawRadials
+
+void SSV_Viewer::drawRadials()
+{
+  return;
+  // First determine the position of "ownship". If this isn't 
+  // known we return right away.
+
+  ObjectPose opose;
+  map<string,ObjectPose>::iterator p1;
+  p1 = m_pos_map.find(m_ownship_name);
+  if(p1 != m_pos_map.end())
+    opose = p1->second;
+  else {
+    cout << "cant fine ownship name!!!!!!!!!!" << m_ownship_name << endl;
+    return;
+  }
+
+  double px = opose.getX();
+  double py = opose.getY();
+  int    psize = 60;
+
+  cout << "Ownship Position" << px << "," << py << endl;
+
+  bool   dashed = false;
+  double red=1, grn=0, blu=0;
+  
+  string poly_str = "radial:";
+  poly_str += doubleToString(px,2) + ",";
+  poly_str += doubleToString(py,2) + ",";
+  poly_str += doubleToString(m_radial_size,2) + ",";
+  poly_str += intToString(psize);
+  
+  XYPolygon poly;
+  poly.initialize(poly_str);
+
+  unsigned int i, j;
+  float *points = new float[2*psize];
+  
+  int pindex = 0;
+  for(i=0; i<psize; i++) {
+    points[pindex]   = poly.get_vx(i) - m_back_img.get_img_offset_x();
+    points[pindex+1] = poly.get_vy(i) - m_back_img.get_img_offset_y();
+
+    points[pindex]   *=  m_back_img.get_pix_per_mtr();
+    points[pindex+1] *=  m_back_img.get_pix_per_mtr();
+
+    pindex++;
+    pindex++;
+  }
+
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glOrtho(0, w(), 0, h(), -1 ,1);
+
+  float tx = meters2img('x', 0);
+  float ty = meters2img('y', 0);
+  float qx = img2view('x', tx);
+  float qy = img2view('y', ty);
+
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
+  glLoadIdentity();
+
+  glTranslatef(qx, qy, 0);
+  glScalef(m_zoom, m_zoom, m_zoom);
+
+  // Draw the edges 
+  glLineWidth(1.0);
+  if(dashed) {
+    glEnable(GL_LINE_STIPPLE);
+    GLushort pattern = 0x5555;
+    GLint factor = 5;
+    glLineStipple(factor, pattern);
+  }
+
+  glColor3f(red, grn, blu);
+
+  glBegin(GL_LINE_LOOP);
+  for(i=0; i<psize*2; i=i+2) {
+    glVertex2f(points[i], points[i+1]);
+  }
+  glEnd();
+  if(dashed)
+    glDisable(GL_LINE_STIPPLE);
+
+  delete [] points;
+  glFlush();
+  glPopMatrix();
+}
 

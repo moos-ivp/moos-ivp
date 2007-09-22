@@ -45,10 +45,10 @@ class SSV_Viewer : public MarineViewer
   int   handle(int);
 
 public:
-  void  updateVehiclePosition(const std::string&, float x, float y, 
+  void  updateVehiclePosition(std::string, float x, float y, 
 			      float theta, float spd, float dep=0);  
-  void  setVehicleBodyType(const std::string&, const std::string&);
-  void  setOwnShipName(const std::string&);
+  void  setVehicleBodyType(std::string, std::string);
+  void  setOwnShipName(std::string);
 
   void  resetVehicles();
   float getMetersX(int);
@@ -77,6 +77,7 @@ public:
   void  drawPoint(float, float, int color=0);
   void  handleLeftMouse(int, int);
   void  handleRightMouse(int, int);
+  void  drawRadials();
 
   ObjectPose getObjectPoseByIndex(int);
 
