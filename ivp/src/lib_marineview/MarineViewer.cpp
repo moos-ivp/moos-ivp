@@ -757,8 +757,6 @@ void MarineViewer::drawCircle(int ix)
 
 bool MarineViewer::setCommonParam(string param, string value)
 {
-  cout << "In MarineViewer::setCommonParam!!!!" << endl;
-
   param = tolower(stripBlankEnds(param));
   value = tolower(stripBlankEnds(value));
 
