@@ -1146,32 +1146,25 @@ void MarineViewer::drawCommonVehicle(ObjectPose opose, double red,
     glLineWidth(5.0);
     glColor3f(0,1,0);
 
-    double z_kayak_ctr_x = m_zoom * g_kayakCtrX;
-    double z_kayak_ctr_y = m_zoom * g_kayakCtrY;
-    glTranslatef(-z_kayak_ctr_x, -z_kayak_ctr_y, 0);
+    glTranslatef(-g_kayakCtrX, -g_kayakCtrY, 0);
     drawGLPoly(g_kayakBody, g_kayakBodySize, red, grn, blu);
     drawGLPoly(g_kayakMidOpen, g_kayakMidOpenSize, 0.5, 0.5, 0.5);
-    glTranslatef(z_kayak_ctr_x, z_kayak_ctr_y, 0);
+    glTranslatef(g_kayakCtrX, g_kayakCtrY, 0);
   }
 
   if(vehibody == "auv") {
-    double z_auv_ctr_x = m_zoom * g_auvCtrX;
-    double z_auv_ctr_y = m_zoom * g_auvCtrY;
-    glTranslatef(-z_auv_ctr_x, -z_auv_ctr_y, 0);
+    glTranslatef(-g_auvCtrX, -g_auvCtrY, 0);
     drawGLPoly(g_auvBody, g_auvBodySize, red, grn, blu);
     drawGLPoly(g_auvBody, g_auvBodySize, 0.0, 0.0, 0.0, 1.0);
     drawGLPoly(g_propUnit, g_propUnitSize, 0.0, 0.0, 1.0);
-    glTranslatef(z_auv_ctr_x, z_auv_ctr_y, 0);
+    glTranslatef(g_auvCtrX, g_auvCtrY, 0);
   }
 
   if(vehibody == "ship") {
-    double z_ship_ctr_x = m_zoom * g_shipCtrX;
-    double z_ship_ctr_y = m_zoom * g_shipCtrY;
-    glTranslatef(-z_ship_ctr_x, -z_ship_ctr_y, 0);
-
+    glTranslatef(-g_shipCtrX, -g_shipCtrY, 0);
     drawGLPoly(g_shipBody, g_shipBodySize, red, grn, blu);
     drawGLPoly(g_shipBody, g_shipBodySize, 0.0, 0.0, 0.0, 1.0);
-    glTranslatef(z_ship_ctr_x, z_ship_ctr_y, 0);
+    glTranslatef(g_shipCtrX, g_shipCtrY, 0);
   }
   glPopMatrix();
 }
