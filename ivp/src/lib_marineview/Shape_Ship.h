@@ -5,6 +5,9 @@
 /*    DATE: September 21st 2007                                  */
 /*****************************************************************/
 
+#ifndef SHAPE_SHIP_HEADER
+#define SHAPE_SHIP_HEADER
+
 float g_shipBody[]=
 {
   10.0,   0.0,      
@@ -27,3 +30,5 @@ float g_shipBody[]=
 double       g_shipCtrX     = 0.0;
 double       g_shipCtrY     = 26.5;
 unsigned int g_shipBodySize = 15;
+
+#endif

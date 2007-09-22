@@ -48,7 +48,7 @@ APP_TOOLS = $(wildcard p1BTracker*)	$(wildcard iHeadingMonitor*)	\
 	    $(wildcard iWifi*)	    	$(wildcard pFunctionSender*)	\
 	    $(wildcard pMessageSim*)	$(wildcard pMineSim*)		\
 	    $(wildcard pTarget*)	$(wildcard uFunctionVis*)	\
-	    $(wildcard app_*)		\
+	    $(wildcard app_*)		$(wildcard pShipsideViewer*)	\
 	    $(wildcard uPlayBack*)	$(wildcard iMicroModem*)	\
 	    $(wildcard uMVS*)		$(wildcard pDrone*)		\
 	    $(wildcard pBearings*)	

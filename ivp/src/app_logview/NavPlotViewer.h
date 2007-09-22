@@ -57,7 +57,6 @@ class NavPlotViewer : public MarineViewer
   void   setFrame(std::string s)     {m_frame = s;};
   void   toggleAllTrail()            {m_alltrail = !m_alltrail;};
 
-
 protected:
   void  drawNavPlots();
   void  drawNavPlot(int ix);

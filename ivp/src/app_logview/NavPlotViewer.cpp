@@ -29,7 +29,6 @@
 #include "NavPlotViewer.h"
 #include "MBUtils.h"
 #include "GeomUtils.h"
-#include "VehicleShapes.h"
 
 using namespace std;
 
@@ -255,17 +254,12 @@ void NavPlotViewer::drawNavPlot(int index)
   if(m_trails) {
     glPointSize(m_trail_size * m_zoom);
 
-#if 0
-      glColor3f(0.0, 0.0, 0.5);  // darkblue
-#endif
-
 #if 1
     if(index == m_global_ix)
       glColor3f(1.0, 1.0, 1.0);  // white
     else
       glColor3f(1.0, 1.0, 1.0);  // white
 #endif
-
 #if 0
     if(index == 0)
       glColor3f(0.5, 0.0, 0.0);  // DarkRed
@@ -279,9 +273,6 @@ void NavPlotViewer::drawNavPlot(int index)
       m_trail_gap += 5;
 #endif
 
-#if 0
-    glColor3f(0.0, 0.0, 0.0);  // Lighter
-#endif
 
     glBegin(GL_POINTS);
     for(int i=0; i<npsize; i++) {
@@ -327,39 +318,20 @@ void NavPlotViewer::drawNavPlot(int index)
     glVertex2f(x,y);
     glEnd();
   }
+
   else {
-    glTranslatef(x, y, 0);     // these are in pixel units
-    glScalef(m_shape_scale, m_shape_scale, m_shape_scale);
-    glRotatef(-theta,0,0,1);  
-
-    if(m_vehibody == "auv") {
-      drawGLPoly(g_auvBody, g_auvBodySize, 1.0, 0.843, 0.0);
-      drawGLPoly(g_auvBody, g_auvBodySize, 0.0, 0.0,   0.0, 2.0);
-      drawGLPoly(g_propUnit, g_propUnitSize, 0.0,0.0, 1.0);
-    }
-    else {
-      if(index==0)
-	drawGLPoly(g_kayakBody, g_kayakBodySize, 1.0, 0.906, 0.243);
-      else if(index==1)
-	drawGLPoly(g_kayakBody, g_kayakBodySize, 1.0, 0.0, 0.0);
-      else if(index==2)
-	drawGLPoly(g_kayakBody, g_kayakBodySize, 0.0, 1.0, 0.0);
-      else if(index==3)
-	drawGLPoly(g_kayakBody, g_kayakBodySize, 0.0, 0.0, 1.0);
-      else
-	drawGLPoly(g_kayakBody, g_kayakBodySize, 1.0, 0.906, 0.243);
-      drawGLPoly(g_kayakMidOpen, g_kayakMidOpenSize, 0.5, 0.5, 0.5);
-      drawGLPoly(g_kayakBody, g_kayakBodySize, 0.0, 0.0, 0.0, 1.0); // HERE
-    }
+    ObjectPose opose(x,y,theta,0,0);
+    double red=1.0, grn=0.906, blu=0.243;
+    if(index==1) 
+      {red=1.0; grn=0; blu=0;}
+    if(index==2)
+      {red=0; grn=1; blu=0;}
+    if(index==2) 
+      {red=0; grn=0; blu=2;}
+    
+    glTranslatef(-qx, -qy, 0);
+    drawCommonVehicle(opose, red, grn, blu, m_vehibody);
   }
-
-#if 0
-    if(index == m_global_ix)
-      drawGLPoly(g_kayakBody, g_kayakBodySize, 1.0, 0.0, 0.0);
-    else
-      drawGLPoly(g_kayakBody, g_kayakBodySize, 1.0, 0.906, 0.243);
-    drawGLPoly(g_kayakMidOpen, g_kayakMidOpenSize, 0.5, 0.5, 0.5);
-#endif
 
   glFlush();
   glPopMatrix();

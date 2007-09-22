@@ -5,6 +5,9 @@
 /*    DATE: September 21st 2007                                  */
 /*****************************************************************/
 
+#ifndef SHAPE_AUV_HEADER
+#define SHAPE_AUV_HEADER
+
 float g_auvBody[]=
 {
     5.0,    0.0,    
@@ -39,3 +42,4 @@ unsigned int g_propUnitSize =  4;
 double  g_auvCtrX = 0.0;
 double  g_auvCtrY = 45.5;
 
+#endif

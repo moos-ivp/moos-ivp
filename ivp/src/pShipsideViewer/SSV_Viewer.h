@@ -96,7 +96,6 @@ public:
   int   m_right_click_ix;
 
   std::string m_ownship_name;
-
 };
 
 #endif 

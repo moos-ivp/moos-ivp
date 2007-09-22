@@ -36,6 +36,7 @@
 #include "XYSegList.h"
 #include "XYCircle.h"
 #include "XYHexagon.h"
+#include "ObjectPose.h"
 
 class MarineViewer : public Fl_Gl_Window
 {
@@ -92,6 +93,8 @@ protected:
   void  drawCircle(int ix);
   void  drawGLPoly(float *points, int numPoints, 
 		   float r, float g, float b, float thickness=0);
+  void  drawCommonVehicle(ObjectPose, double r, double g, double b, 
+			  std::string body);
   
 protected:
   BackImg    m_back_img;  

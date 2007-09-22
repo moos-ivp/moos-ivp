@@ -5,6 +5,9 @@
 /*    DATE: September 21st 2007                                  */
 /*****************************************************************/
 
+#ifndef SHAPE_KAYAK_HEADER
+#define SHAPE_KAYAK_HEADER
+
 float g_kayakBody[]=
 {
     0.0,      0.0,     
@@ -99,3 +102,5 @@ unsigned int g_kayakMidOpenSize = 25;
 
 double  g_kayakCtrX = 0.0;
 double  g_kayakCtrY = 59.9375;
+
+#endif

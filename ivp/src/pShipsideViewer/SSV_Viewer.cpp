@@ -26,9 +26,6 @@
 #include <stdlib.h>
 #include <tiffio.h>
 #include "SSV_Viewer.h"
-#include "Shape_Ship.h"
-#include "Shape_Kayak.h"
-#include "Shape_AUV.h"
 #include "AngleUtils.h"
 #include "MBUtils.h"
 #include "ColorParse.h"
@@ -295,8 +292,6 @@ string SSV_Viewer::getVehiName(int index)
 
 void SSV_Viewer::drawVehicle(string vname, bool active, string vehibody)
 {
-  unsigned int i;
-  
   ObjectPose opose;
   map<string,ObjectPose>::iterator p1;
   p1 = m_pos_map.find(vname);
@@ -305,75 +300,25 @@ void SSV_Viewer::drawVehicle(string vname, bool active, string vehibody)
   else 
     return;
 
-  vector<double> cvect;
-  cvect.push_back(1.0);
-  cvect.push_back(0.906);
-  cvect.push_back(0.243);
+  // The default "non-active vehicle" color
+  double red = 1.0;
+  double grn = 0.906;
+  double blu = 0.243;
 
   map<string,vector<double> >::iterator p2;
   p2 = m_color_map.find(vname);
-  if(p2 != m_color_map.end())
-    cvect = p2->second;
-
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  glOrtho(0, w(), 0, h(), -1 ,1);
-
-  // Determine position in terms of image percentage
-  float vehicle_ix = meters2img('x', opose.getX());
-  float vehicle_iy = meters2img('y', opose.getY());
-
-  // Determine position in terms of view percentage
-  float vehicle_vx = img2view('x', vehicle_ix);
-  float vehicle_vy = img2view('y', vehicle_iy);
-
-  glMatrixMode(GL_MODELVIEW);
-  glPushMatrix();
-  glLoadIdentity();
-
-  glTranslatef(vehicle_vx, vehicle_vy, 0); // theses are in pixel units
-
-  glScalef(m_zoom*m_shape_scale, m_zoom*m_shape_scale, m_zoom*m_shape_scale);
-  cout << "m_zoom:" << m_zoom << endl;
-
-  glRotatef(-opose.getTheta(),0,0,1);  
-
-  if(vehibody == "kayak") {
-    glLineWidth(5.0);
-    glColor3f(0,1,0);
-
-    double z_kayak_ctr_x = m_zoom * g_kayakCtrX;
-    double z_kayak_ctr_y = m_zoom * g_kayakCtrY;
-    glTranslatef(-z_kayak_ctr_x, -z_kayak_ctr_y, 0);
-    if(active)
-      drawGLPoly(g_kayakBody, g_kayakBodySize, 1, 0, 0, false);
-    else
-      drawGLPoly(g_kayakBody, g_kayakBodySize, cvect[0], cvect[1], cvect[2], false);
-    drawGLPoly(g_kayakMidOpen, g_kayakMidOpenSize, 0.5, 0.5, 0.5, false);
-    glTranslatef(z_kayak_ctr_x, z_kayak_ctr_y, 0);
+  if(p2 != m_color_map.end()) {
+    red = p2->second[0];
+    grn = p2->second[1];
+    blu = p2->second[2];
   }
-
-  if(vehibody == "auv") {
-    double z_auv_ctr_x = m_zoom * g_auvCtrX;
-    double z_auv_ctr_y = m_zoom * g_auvCtrY;
-    glTranslatef(-z_auv_ctr_x, -z_auv_ctr_y, 0);
-    drawGLPoly(g_auvBody, g_auvBodySize, cvect[0], cvect[1], cvect[2]);
-    drawGLPoly(g_auvBody, g_auvBodySize, 0.0, 0.0, 0.0, 2.0);
-    drawGLPoly(g_propUnit, g_propUnitSize, 0.0, 0.0, 1.0);
-    glTranslatef(z_auv_ctr_x, z_auv_ctr_y, 0);
-  }
-
-  if(vehibody == "ship") {
-    double z_ship_ctr_x = m_zoom * g_shipCtrX;
-    double z_ship_ctr_y = m_zoom * g_shipCtrY;
-    glTranslatef(-z_ship_ctr_x, -z_ship_ctr_y, 0);
-
-    drawGLPoly(g_shipBody, g_shipBodySize, cvect[0], cvect[1], cvect[2]);
-    drawGLPoly(g_shipBody, g_shipBodySize, 0.0, 0.0,   0.0, 2.0);
-    glTranslatef(z_ship_ctr_x, z_ship_ctr_y, 0);
-  }
-  glPopMatrix();
   
+  // Set the color for the "active" vehicle.
+  if(active) {
+    red=1.0; grn=0; blu=0;
+  }
+
+  drawCommonVehicle(opose, red, grn, blu, vehibody);
 }
 
 //-------------------------------------------------------------

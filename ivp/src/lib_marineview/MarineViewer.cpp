@@ -27,6 +27,9 @@
 #include "MBUtils.h"
 #include "FColorMap.h"
 #include "ColorParse.h"
+#include "Shape_Ship.h"
+#include "Shape_Kayak.h"
+#include "Shape_AUV.h"
 
 using namespace std;
 
@@ -1011,17 +1014,14 @@ void MarineViewer::addCircle(const XYCircle& new_circ)
 void MarineViewer::addGrid(const XYGrid& new_grid)
 {
   string new_label = new_grid.getLabel();
-  
-  bool prior_existed = false;
-  
-  int vsize = m_grid.size();
+  bool   prior_existed = false;
+  int    vsize = m_grid.size();
   for(int i=0; i<vsize; i++) {
     if(m_grid[i].getLabel() == new_label) {
       m_grid[i] = new_grid;
       prior_existed = true;
     }
   }
-  
   if(!prior_existed)
     m_grid.push_back(new_grid);
 }
@@ -1110,3 +1110,69 @@ void MarineViewer::drawCrossHairs()
   glPopMatrix();
   glFlush();
 }
+
+//-------------------------------------------------------------
+// Procedure: drawCommonVehicle
+
+void MarineViewer::drawCommonVehicle(ObjectPose opose, double red, 
+				     double grn, double blu, 
+				     string vehibody)
+{
+  unsigned int i;
+  
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glOrtho(0, w(), 0, h(), -1 ,1);
+
+  // Determine position in terms of image percentage
+  float vehicle_ix = meters2img('x', opose.getX());
+  float vehicle_iy = meters2img('y', opose.getY());
+
+  // Determine position in terms of view percentage
+  float vehicle_vx = img2view('x', vehicle_ix);
+  float vehicle_vy = img2view('y', vehicle_iy);
+
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
+  glLoadIdentity();
+
+  glTranslatef(vehicle_vx, vehicle_vy, 0); // theses are in pixel units
+
+  glScalef(m_zoom*m_shape_scale, m_zoom*m_shape_scale, m_zoom*m_shape_scale);
+
+  glRotatef(-opose.getTheta(),0,0,1);  
+
+  if(vehibody == "kayak") {
+    glLineWidth(5.0);
+    glColor3f(0,1,0);
+
+    double z_kayak_ctr_x = m_zoom * g_kayakCtrX;
+    double z_kayak_ctr_y = m_zoom * g_kayakCtrY;
+    glTranslatef(-z_kayak_ctr_x, -z_kayak_ctr_y, 0);
+    drawGLPoly(g_kayakBody, g_kayakBodySize, red, grn, blu);
+    drawGLPoly(g_kayakMidOpen, g_kayakMidOpenSize, 0.5, 0.5, 0.5);
+    glTranslatef(z_kayak_ctr_x, z_kayak_ctr_y, 0);
+  }
+
+  if(vehibody == "auv") {
+    double z_auv_ctr_x = m_zoom * g_auvCtrX;
+    double z_auv_ctr_y = m_zoom * g_auvCtrY;
+    glTranslatef(-z_auv_ctr_x, -z_auv_ctr_y, 0);
+    drawGLPoly(g_auvBody, g_auvBodySize, red, grn, blu);
+    drawGLPoly(g_auvBody, g_auvBodySize, 0.0, 0.0, 0.0, 1.0);
+    drawGLPoly(g_propUnit, g_propUnitSize, 0.0, 0.0, 1.0);
+    glTranslatef(z_auv_ctr_x, z_auv_ctr_y, 0);
+  }
+
+  if(vehibody == "ship") {
+    double z_ship_ctr_x = m_zoom * g_shipCtrX;
+    double z_ship_ctr_y = m_zoom * g_shipCtrY;
+    glTranslatef(-z_ship_ctr_x, -z_ship_ctr_y, 0);
+
+    drawGLPoly(g_shipBody, g_shipBodySize, red, grn, blu);
+    drawGLPoly(g_shipBody, g_shipBodySize, 0.0, 0.0, 0.0, 1.0);
+    glTranslatef(z_ship_ctr_x, z_ship_ctr_y, 0);
+  }
+  glPopMatrix();
+}
+

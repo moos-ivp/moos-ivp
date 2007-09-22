@@ -35,7 +35,6 @@ public:
     {m_messages.push_back(str);};
   
   void addNonIdleBHV(const std::string& descriptor);
-  
   void addActiveBHV(const std::string& descriptor, double);
   
   std::vector<std::string> getMsgs() const  
