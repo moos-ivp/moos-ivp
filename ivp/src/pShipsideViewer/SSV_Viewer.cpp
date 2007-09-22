@@ -26,7 +26,9 @@
 #include <stdlib.h>
 #include <tiffio.h>
 #include "SSV_Viewer.h"
-#include "VehicleShapes.h"
+#include "Shape_Ship.h"
+#include "Shape_Kayak.h"
+#include "Shape_AUV.h"
 #include "AngleUtils.h"
 #include "MBUtils.h"
 #include "ColorParse.h"
@@ -332,32 +334,44 @@ void SSV_Viewer::drawVehicle(string vname, bool active, string vehibody)
   glTranslatef(vehicle_vx, vehicle_vy, 0); // theses are in pixel units
 
   glScalef(m_zoom*m_shape_scale, m_zoom*m_shape_scale, m_zoom*m_shape_scale);
+  cout << "m_zoom:" << m_zoom << endl;
 
   glRotatef(-opose.getTheta(),0,0,1);  
 
   if(vehibody == "kayak") {
     glLineWidth(5.0);
     glColor3f(0,1,0);
+
+    double z_kayak_ctr_x = m_zoom * g_kayakCtrX;
+    double z_kayak_ctr_y = m_zoom * g_kayakCtrY;
+    glTranslatef(-z_kayak_ctr_x, -z_kayak_ctr_y, 0);
     if(active)
       drawGLPoly(g_kayakBody, g_kayakBodySize, 1, 0, 0, false);
     else
       drawGLPoly(g_kayakBody, g_kayakBodySize, cvect[0], cvect[1], cvect[2], false);
     drawGLPoly(g_kayakMidOpen, g_kayakMidOpenSize, 0.5, 0.5, 0.5, false);
+    glTranslatef(z_kayak_ctr_x, z_kayak_ctr_y, 0);
   }
 
   if(vehibody == "auv") {
-    //drawGLPoly(g_auvBody, g_auvBodySize, 1.0, 0.843, 0.0);
+    double z_auv_ctr_x = m_zoom * g_auvCtrX;
+    double z_auv_ctr_y = m_zoom * g_auvCtrY;
+    glTranslatef(-z_auv_ctr_x, -z_auv_ctr_y, 0);
     drawGLPoly(g_auvBody, g_auvBodySize, cvect[0], cvect[1], cvect[2]);
-    drawGLPoly(g_auvBody, g_auvBodySize, 0.0, 0.0,   0.0, 2.0);
-    drawGLPoly(g_propUnit, g_propUnitSize, 0.0,0.0, 1.0);
+    drawGLPoly(g_auvBody, g_auvBodySize, 0.0, 0.0, 0.0, 2.0);
+    drawGLPoly(g_propUnit, g_propUnitSize, 0.0, 0.0, 1.0);
+    glTranslatef(z_auv_ctr_x, z_auv_ctr_y, 0);
   }
 
   if(vehibody == "ship") {
+    double z_ship_ctr_x = m_zoom * g_shipCtrX;
+    double z_ship_ctr_y = m_zoom * g_shipCtrY;
+    glTranslatef(-z_ship_ctr_x, -z_ship_ctr_y, 0);
+
     drawGLPoly(g_shipBody, g_shipBodySize, cvect[0], cvect[1], cvect[2]);
     drawGLPoly(g_shipBody, g_shipBodySize, 0.0, 0.0,   0.0, 2.0);
+    glTranslatef(z_ship_ctr_x, z_ship_ctr_y, 0);
   }
-
-
   glPopMatrix();
   
 }
