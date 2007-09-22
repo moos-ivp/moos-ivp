@@ -1077,9 +1077,9 @@ void MarineViewer::drawGLPoly(float *points, int numPoints,
 
   glColor3f(r,g,b);
   unsigned int i;
-  for(i = 0; i < numPoints*2; i=i+2) {
-    glVertex2f(points[i], points[i+1]-60.0);
-  }
+  for(i=0; i<numPoints*2; i=i+2)
+    glVertex2f(points[i], points[i+1]);
+
   glEnd();
 }
 
