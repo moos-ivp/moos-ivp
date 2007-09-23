@@ -1,0 +1,17 @@
+
+Add info on time-since-last AIS report
+  Perhaps a red/yellow/green box next to the contact buttons
+
+Add Lat/lon info to the bottom panel
+
+Add:   Claim-And-Station-Keep All
+       Claim-And-Station-Keep Current
+       Release All
+       Release Current
+
+Add line/line-width info to MarineViewer::drawVehicle()
+
+Fix decent Ratios in shape-size between Ownship and UxV's
+
+Can buttons be made to reflect which one is hit? And be consistent
+with someone using the hot keys?

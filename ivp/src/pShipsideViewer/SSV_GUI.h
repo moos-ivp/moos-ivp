@@ -26,6 +26,7 @@
 #include "SSV_Viewer.h"
 #include "MarineVehiGUI.h"
 #include "MY_Output.h"
+#include "FL/Fl_Button.H"
 
 class SSV_GUI : public MarineVehiGUI {
 public:
@@ -46,6 +47,9 @@ private:
   inline void cb_Radial_i(int);
   static void cb_Radial(Fl_Widget*, int);
 
+  inline void cb_ButtonView_i(int);
+  static void cb_ButtonView(Fl_Widget*, int);
+
 protected:
   MY_Output  *v_nam;
   MY_Output  *time;
@@ -54,6 +58,12 @@ protected:
   MY_Output  *v_spd;
   MY_Output  *v_crs;
   MY_Output  *v_dep;
+
+  Fl_Button  *button0;
+  Fl_Button  *button1;
+  Fl_Button  *button2;
+  Fl_Button  *button3;
+  Fl_Button  *button4;
 
   double m_curr_time;
 

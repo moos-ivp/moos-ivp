@@ -515,7 +515,6 @@ bool SSV_Viewer::setParam(string param, float v)
 
 void SSV_Viewer::drawRadials()
 {
-  return;
   // First determine the position of "ownship". If this isn't 
   // known we return right away.
 
@@ -524,16 +523,12 @@ void SSV_Viewer::drawRadials()
   p1 = m_pos_map.find(m_ownship_name);
   if(p1 != m_pos_map.end())
     opose = p1->second;
-  else {
-    cout << "cant fine ownship name!!!!!!!!!!" << m_ownship_name << endl;
+  else
     return;
-  }
 
   double px = opose.getX();
   double py = opose.getY();
   int    psize = 60;
-
-  cout << "Ownship Position" << px << "," << py << endl;
 
   bool   dashed = false;
   double red=1, grn=0, blu=0;
@@ -558,8 +553,7 @@ void SSV_Viewer::drawRadials()
     points[pindex]   *=  m_back_img.get_pix_per_mtr();
     points[pindex+1] *=  m_back_img.get_pix_per_mtr();
 
-    pindex++;
-    pindex++;
+    pindex += 2;
   }
 
   glMatrixMode(GL_PROJECTION);
@@ -602,3 +596,25 @@ void SSV_Viewer::drawRadials()
   glPopMatrix();
 }
 
+//-------------------------------------------------------------
+// Procedure: setCurrent
+
+void SSV_Viewer::setCurrent(string vname)
+{
+  if(vname == "ownship")
+    vname = m_ownship_name;
+
+  vname = toupper(vname);
+
+  int the_index = -1;
+  int cur_index = 0;
+  map<string,ObjectPose>::iterator p;
+  for(p=m_pos_map.begin(); p!=m_pos_map.end(); p++) {
+    if((p->first == vname) || (p->first == tolower(vname)))
+      the_index = cur_index;
+    cur_index++;
+  }
+  
+  if(the_index != -1)
+    m_global_ix = the_index;
+}

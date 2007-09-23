@@ -44,6 +44,9 @@ class SSV_Viewer : public MarineViewer
   void  draw();
   int   handle(int);
 
+  bool  setParam(std::string, std::string);
+  bool  setParam(std::string, float);
+
 public:
   void  updateVehiclePosition(std::string, float x, float y, 
 			      float theta, float spd, float dep=0);  
@@ -67,9 +70,7 @@ public:
   void  setTime(float v)         {m_time = v;};
   float getTime()                {return(m_time);};
   int   getDataIndex()           {return(m_global_ix);};
-
-  bool  setParam(std::string, std::string);
-  bool  setParam(std::string, float);
+  void  setCurrent(std::string);
 
  private:
   void  drawVehicle(std::string, bool, std::string);
