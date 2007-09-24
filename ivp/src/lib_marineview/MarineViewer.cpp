@@ -1116,7 +1116,7 @@ void MarineViewer::drawCrossHairs()
 
 void MarineViewer::drawCommonVehicle(ObjectPose opose, double red, 
 				     double grn, double blu, 
-				     string vehibody)
+				     string vehibody, int outer_line)
 {
   unsigned int i;
   
@@ -1147,7 +1147,9 @@ void MarineViewer::drawCommonVehicle(ObjectPose opose, double red,
     glColor3f(0,1,0);
 
     glTranslatef(-g_kayakCtrX, -g_kayakCtrY, 0);
-    drawGLPoly(g_kayakBody, g_kayakBodySize, red, grn, blu);
+    drawGLPoly(g_kayakBody, g_kayakBodySize, red, grn, blu);    
+    if(outer_line)
+      drawGLPoly(g_kayakBody, g_kayakBodySize, 0,0,0, outer_line);    
     drawGLPoly(g_kayakMidOpen, g_kayakMidOpenSize, 0.5, 0.5, 0.5);
     glTranslatef(g_kayakCtrX, g_kayakCtrY, 0);
   }
@@ -1156,14 +1158,16 @@ void MarineViewer::drawCommonVehicle(ObjectPose opose, double red,
     glTranslatef(-g_auvCtrX, -g_auvCtrY, 0);
     drawGLPoly(g_auvBody, g_auvBodySize, red, grn, blu);
     drawGLPoly(g_auvBody, g_auvBodySize, 0.0, 0.0, 0.0, 1.0);
-    drawGLPoly(g_propUnit, g_propUnitSize, 0.0, 0.0, 1.0);
+    if(outer_line > 0)
+      drawGLPoly(g_propUnit, g_propUnitSize, 0.0, 0.0, outer_line);
     glTranslatef(g_auvCtrX, g_auvCtrY, 0);
   }
 
   if(vehibody == "ship") {
     glTranslatef(-g_shipCtrX, -g_shipCtrY, 0);
     drawGLPoly(g_shipBody, g_shipBodySize, red, grn, blu);
-    drawGLPoly(g_shipBody, g_shipBodySize, 0.0, 0.0, 0.0, 1.0);
+    if(outer_line > 0)
+      drawGLPoly(g_shipBody, g_shipBodySize, 0.0, 0.0, 0.0, outer_line);
     glTranslatef(g_shipCtrX, g_shipCtrY, 0);
   }
   glPopMatrix();

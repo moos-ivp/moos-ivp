@@ -37,11 +37,10 @@ public:
   void         onIdleState();
   IvPFunction* produceOF();
 
-
 protected:
   bool         updateInfoIn();  
   bool         updateCenter();
-
+  void         postStationMessage(bool);
 
 private:  // Configuration Parameters
   double      m_station_x;

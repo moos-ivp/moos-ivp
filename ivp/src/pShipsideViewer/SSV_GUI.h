@@ -26,6 +26,7 @@
 #include "SSV_Viewer.h"
 #include "MarineVehiGUI.h"
 #include "MY_Output.h"
+#include "MY_Button.h"
 #include "FL/Fl_Button.H"
 
 class SSV_GUI : public MarineVehiGUI {
@@ -37,7 +38,10 @@ public:
   int  handle(int);
   void setCurrTime(double v) {m_curr_time = v;};
   void augmentMenu();
-  
+
+  void addContactButton(int ix, std::string vname);
+
+
   SSV_Viewer *mviewer;
 
 private:
@@ -59,11 +63,13 @@ protected:
   MY_Output  *v_crs;
   MY_Output  *v_dep;
 
-  Fl_Button  *button0;
-  Fl_Button  *button1;
-  Fl_Button  *button2;
-  Fl_Button  *button3;
-  Fl_Button  *button4;
+  MY_Button  *ownship_b0;
+  MY_Button  *contact_b1;
+  MY_Button  *contact_b2;
+  MY_Button  *contact_b3;
+  MY_Button  *contact_b4;
+  MY_Button  *contact_b5;
+  MY_Button  *contact_b6;
 
   double m_curr_time;
 

@@ -97,7 +97,7 @@ protected:
   void  drawGLPoly(float *points, int numPoints, 
 		   float r, float g, float b, float thickness=0);
   void  drawCommonVehicle(ObjectPose, double r, double g, double b, 
-			  std::string body);
+			  std::string body, int line=0);
   
 protected:
   BackImg    m_back_img;  

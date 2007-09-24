@@ -55,6 +55,7 @@ void SSV_Viewer::draw()
 {
   MarineViewer::draw();
 
+  drawStationCircles();
   drawGrids();
   drawPolys();
   drawCircles();
@@ -320,11 +321,10 @@ void SSV_Viewer::drawVehicle(string vname, bool active, string vehibody)
   }
   
   // Set the color for the "active" vehicle.
-  if(active) {
-    red=1.0; grn=0; blu=0;
-  }
+  if(active)
+    {red=1.0; grn=0; blu=0;}
 
-  drawCommonVehicle(opose, red, grn, blu, vehibody);
+  drawCommonVehicle(opose, red, grn, blu, vehibody, 1);
 }
 
 //-------------------------------------------------------------
@@ -598,19 +598,26 @@ void SSV_Viewer::drawRadials()
 
 //-------------------------------------------------------------
 // Procedure: setCurrent
+//            Given a vehicle name string, compare it to the map
+//            of known vehicles and, if found, let the 
+//            "global_index" point to that index. The global_index
+//            indicates which vehicle is "active". 
 
 void SSV_Viewer::setCurrent(string vname)
 {
-  if(vname == "ownship")
-    vname = m_ownship_name;
+  vname = tolower(vname);
 
-  vname = toupper(vname);
+  // Special case: the alias "ownship" can be used even if the value
+  // of m_ownship_name is something completely different
+  if(vname == "ownship")
+    vname = tolower(m_ownship_name);
 
   int the_index = -1;
   int cur_index = 0;
   map<string,ObjectPose>::iterator p;
   for(p=m_pos_map.begin(); p!=m_pos_map.end(); p++) {
-    if((p->first == vname) || (p->first == tolower(vname)))
+    string map_vname = tolower(p->first);
+    if(map_vname == vname)
       the_index = cur_index;
     cur_index++;
   }
@@ -618,3 +625,114 @@ void SSV_Viewer::setCurrent(string vname)
   if(the_index != -1)
     m_global_ix = the_index;
 }
+
+//-------------------------------------------------------------
+// Procedure: addStationCircle
+
+void SSV_Viewer::addStationCircle(const XYCircle& new_circ)
+{
+  string new_label = new_circ.getLabel();
+  
+  // Station Keeping Circles must have a label or else disregard
+  if(new_label == "")
+    return;
+  
+  bool prior_existed = false;
+  
+  int vsize = m_station_circ.size();
+  for(int i=0; i<vsize; i++) {
+    if(m_station_circ[i].getLabel() == new_label) {
+      m_station_circ[i] = new_circ;
+      prior_existed = true;
+    }
+  }
+  
+  if(!prior_existed)
+    m_station_circ.push_back(new_circ);
+}
+
+
+//-------------------------------------------------------------
+// Procedure: drawStationCircles
+
+void SSV_Viewer::drawStationCircles()
+{
+  int vsize = m_station_circ.size();
+  for(int i=0; i<vsize; i++)
+    drawCirc(m_station_circ[i], 30, true, 0,0,0.6, 0,0,0.4);
+}
+
+//-------------------------------------------------------------
+// Procedure: drawCircle
+
+void SSV_Viewer::drawCirc(XYCircle dcircle, int pts, bool filled,
+			    double l_red, double l_grn, double l_blu,
+			    double f_red, double f_grn, double f_blu)
+{
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glOrtho(0, w(), 0, h(), -1 ,1);
+  
+  float tx = meters2img('x', 0);
+  float ty = meters2img('y', 0);
+  float qx = img2view('x', tx);
+  float qy = img2view('y', ty);
+
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
+  glLoadIdentity();
+  
+  glLineWidth(1.0);  // added dec1306
+  glTranslatef(qx, qy, 0);
+  glScalef(m_zoom, m_zoom, m_zoom);
+
+  double px  = dcircle.getX();
+  double py  = dcircle.getY();
+  double rad = dcircle.getRad();
+
+  string poly_str = "radial:";
+  poly_str += doubleToString(px,2) + ",";
+  poly_str += doubleToString(py,2) + ",";
+  poly_str += doubleToString(rad,2) + ",";
+  poly_str += intToString(pts);
+  
+  XYPolygon poly;
+  poly.initialize(poly_str);
+  unsigned int i, j;
+  float *points = new float[2*pts];
+  int pindex = 0;
+  for(i=0; i<pts; i++) {
+    points[pindex]   = poly.get_vx(i) - m_back_img.get_img_offset_x();
+    points[pindex+1] = poly.get_vy(i) - m_back_img.get_img_offset_y();
+    points[pindex]   *=  m_back_img.get_pix_per_mtr();
+    points[pindex+1] *=  m_back_img.get_pix_per_mtr();
+    pindex += 2;
+  }
+
+  glColor3f(l_red, l_grn, l_blu);
+  glBegin(GL_LINE_LOOP);
+  for(i=0; i<pts*2; i=i+2) {
+    glVertex2f(points[i], points[i+1]);
+  }
+  glEnd();
+
+  // If filled option is on, draw the interior of the circle
+  if(filled) {
+    glEnable(GL_BLEND);
+    glColor4f(f_red,f_grn,f_blu,0.1);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBegin(GL_POLYGON);
+    for(i=0; i<pts*2; i=i+2) {
+      glVertex2f(points[i], points[i+1]);
+    }
+    glEnd();
+    glDisable(GL_BLEND);
+  }
+  
+
+  delete [] points;
+  glFlush();
+  glPopMatrix();
+
+}
+

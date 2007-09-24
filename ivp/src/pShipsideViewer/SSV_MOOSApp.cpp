@@ -74,6 +74,10 @@ bool SSV_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
       receivePoint(Msg);
       gui_needs_redraw = true;
     }
+    else if(key == "STATION_CIRCLE") { 
+      receiveStationCircle(Msg);
+      gui_needs_redraw = true;
+    }
     else if(key == "TRAIL_RESET") { 
       gui_clear_trails = true;
     }
@@ -106,6 +110,7 @@ bool SSV_MOOSApp::OnConnectToServer()
   m_Comms.Register("VIEW_POLYGON", 0);
   m_Comms.Register("VIEW_POINT", 0);
   m_Comms.Register("TRAIL_RESET", 0);
+  m_Comms.Register("STATION_CIRCLE", 0);
   return(true);
 }
 
@@ -119,6 +124,7 @@ bool SSV_MOOSApp::Iterate()
 
   double curr_time = MOOSTime() - m_start_time;
   m_gui->setCurrTime(curr_time);
+  m_gui->updateXY();
   
   int left_click_ix = m_gui->mviewer->getLeftClickIX();
   if(left_click_ix > m_left_click_ix) {
@@ -179,6 +185,8 @@ bool SSV_MOOSApp::OnStartUp()
       m_gui->mviewer->colorMapping(sLine);
     if(MOOSStrCmp(sVarName, "OWNSHIP_NAME"))
       m_gui->mviewer->setOwnShipName(sLine);
+    if(MOOSStrCmp(sVarName, "CONTACTS"))
+      handleContactList(sLine);
   }
 
   if(tif_file != "")
@@ -300,17 +308,35 @@ bool SSV_MOOSApp::receiveSegList(CMOOSMsg &Msg)
 
 bool SSV_MOOSApp::receivePoint(CMOOSMsg &Msg)
 {
-  cout << "Received VIEW_POINT" << endl;
   XYCircle new_circ;
   
   bool ok = new_circ.initialize(Msg.m_sVal);
   if(ok) {
     m_gui->addCircle(new_circ);
-    cout << "circle label: " << new_circ.getLabel() << endl;
     return(true);
   }
   else {
     cout << "Parse Error in receivePoint" << endl;
+    return(false);
+  }
+}
+
+//----------------------------------------------------------------------
+// Procedure: receiveStationCircle
+
+bool SSV_MOOSApp::receiveStationCircle(CMOOSMsg &Msg)
+{
+  cout << "Received STATION_CIRCLE" << endl;
+  XYCircle new_circ;
+  
+  bool ok = new_circ.initialize(Msg.m_sVal);
+  if(ok) {
+    m_gui->mviewer->addStationCircle(new_circ);
+    cout << "circle label: " << new_circ.getLabel() << endl;
+    return(true);
+  }
+  else {
+    cout << "Parse Error in receiveStationCircle" << endl;
     return(false);
   }
 }
@@ -325,10 +351,19 @@ void SSV_MOOSApp::receiveGRID_DELTA(CMOOSMsg &Msg)
   m_gui->mviewer->updateGrid(Msg.m_sVal);
 }
 
+//----------------------------------------------------------------------
+// Procedure: handleContactList
 
+bool SSV_MOOSApp::handleContactList(string clist)
+{
+  vector<string> svector = parseString(clist, ',');
+  int vsize = svector.size();
 
-
-
-
+  for(int i=0; i<vsize; i++) {
+    cout << "[" << i << "]: " << svector[i] << endl;
+    m_gui->addContactButton(i, svector[i]);
+  }
+  return(true);
+}
 
 

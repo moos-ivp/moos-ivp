@@ -150,6 +150,7 @@ bool BHV_StationKeep::setParam(string param, string val)
 
 void BHV_StationKeep::onIdleState()
 {
+  postStationMessage(false);
   if(!m_center_activate)
     return;
   m_center_pending = true;
@@ -170,6 +171,7 @@ IvPFunction *BHV_StationKeep::produceOF()
 
   if(!m_station_set) {
     postWMessage("STATION_NOT_SET");
+    postStationMessage(false);
     return(0);
   }
 
@@ -182,12 +184,14 @@ IvPFunction *BHV_StationKeep::produceOF()
   // If no ownship position from info_buffer, return null
   if(!ok1 || !ok2) {
     postWMessage("No ownship X/Y info in info_buffer.");
+    postStationMessage(false);
     return(0);
   }
 
   double dist_to_station  = distPointToPoint(nav_x, nav_y, 
 					     m_station_x, m_station_y);
 
+  postStationMessage(true);
   if(dist_to_station <= m_inner_radius)
     return(0);
 
@@ -225,13 +229,6 @@ IvPFunction *BHV_StationKeep::produceOF()
 
   if(ipf)
     ipf->setPWT(priority_wt);
-
-  string str_x = doubleToString(m_station_x);
-  string str_y = doubleToString(m_station_y);
-
-  string station = str_x + "," + str_y;
-    
-  postMessage("VIEW_POLYGON", station);
 
   return(ipf);
 }
@@ -305,6 +302,21 @@ bool BHV_StationKeep::updateCenter()
 }
 
 
+//-----------------------------------------------------------
+// Procedure: postStationMessage()
 
+void BHV_StationKeep::postStationMessage(bool post)
+{
+  string str_x = doubleToString(m_station_x,1);
+  string str_y = doubleToString(m_station_y,1);
+  string station = str_x + "," + str_y + ",";
+  
+  if(post)
+    station += doubleToString(m_outer_radius,1) + ",";
+  else
+    station += "0,";
 
+  station += us_name;
+  postMessage("STATION_CIRCLE", station);
+}
 

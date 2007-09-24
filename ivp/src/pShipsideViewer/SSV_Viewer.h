@@ -34,6 +34,7 @@
 #include "ObjectPose.h"
 #include "ColoredPoint.h"
 #include "MarineViewer.h"
+#include "XYCircle.h"
 
 class SSV_Viewer : public MarineViewer
 {
@@ -52,6 +53,7 @@ public:
 			      float theta, float spd, float dep=0);  
   void  setVehicleBodyType(std::string, std::string);
   void  setOwnShipName(std::string);
+  void  addStationCircle(const XYCircle&);
 
   void  resetVehicles();
   float getMetersX(int);
@@ -79,6 +81,9 @@ public:
   void  handleLeftMouse(int, int);
   void  handleRightMouse(int, int);
   void  drawRadials();
+  void  drawStationCircles();
+  void  drawCirc(XYCircle, int, bool, double, double, double,
+		 double=0, double=0, double=0);
 
   ObjectPose getObjectPoseByIndex(int);
 
@@ -103,7 +108,8 @@ public:
   bool   m_centric_view;
   int    m_radial_size;
 
-  std::string m_ownship_name;
+  std::string            m_ownship_name;
+  std::vector<XYCircle>  m_station_circ;
 };
 
 #endif 

@@ -52,6 +52,9 @@ class SSV_MOOSApp : public CMOOSApp
   bool receivePolygon(CMOOSMsg &Msg);
   bool receiveSegList(CMOOSMsg &Msg);
   bool receivePoint(CMOOSMsg &Msg);
+  bool receiveStationCircle(CMOOSMsg &Msg);
+
+  bool handleContactList(std::string);
 
  protected:
   SSV_GUI* m_gui;
