@@ -348,8 +348,8 @@ inline void REPLAY_GUI::cb_Delete_i() {
   string ylog_file = findReplace(log_file, ".slog", ".ylog");
   string moos_file = findReplace(log_file, ".slog", "._moos");
   string question = "Delete " + log_file + "  and  " + alog_file + "? ";
-  int res = fl_ask(question.c_str());
-  if(res!=1) 
+  int res = fl_choice(question.c_str(), "Yes", "No", 0);
+  if(res==1) 
     return;
   
   string command = "rm -f " + log_file + " " + alog_file + " " +
