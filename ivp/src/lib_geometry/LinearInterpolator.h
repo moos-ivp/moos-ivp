@@ -31,18 +31,28 @@ public:
   LinearInterpolator() {};
   virtual ~LinearInterpolator() {};
 
-  bool setPosition(double x, double y, double s, double h, double t);
+  void setDecay(double s, double e) {
+    m_decay_start = s; 
+    m_decay_end   = e;
+  };
 
-  bool getPosition(double& x, double& y, double t);
+  bool setPosition(double x, double y, double s, double h, double t) {
+    m_xpos = x;
+    m_ypos = y;
+    m_spd  = s;
+    m_hdg  = h;
+    m_timestamp = s;
+  }
 
+  bool getPosition(double& xpos, double& ypos, double timestamp);
   
-  double m_xpos;
-  double m_ypos;
-  double m_spd;
-  double m_hdg;
-
-  double m_timestamp;
-  double m_timewindow;
+  double m_xpos;         // Position in meters
+  double m_ypos;         // Position in meters
+  double m_spd;          // Speed in meters per second
+  double m_hdg;          // Heading in degress
+  double m_decay_start;  // Time in seconds
+  double m_decay_end;    // Time in seconds
+  double m_timestamp;    // Time in seconds
 };
 
 #endif

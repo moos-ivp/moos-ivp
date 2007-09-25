@@ -21,19 +21,9 @@
 /*****************************************************************/
 
 #include "LinearInterpolator.h"
+#include "GeomUtils.h"
 
 using namespace std;
-
-//---------------------------------------------------------------
-// Procedure: setPosition
-
-bool LinearInterpolator::setPosition(double g_xpos, double g_ypos,
-				     double g_spd, double g_hdg, 
-				     double g_timestamp)
-{
-  return(true);
-}
-
 
 //---------------------------------------------------------------
 // Procedure: getPosition
@@ -41,6 +31,46 @@ bool LinearInterpolator::setPosition(double g_xpos, double g_ypos,
 bool LinearInterpolator::getPosition(double& r_xpos, double& r_ypos,
 				     double g_timestamp)
 {
+  // Handle the error cases.
+  double delta_time = g_timestamp - m_timestamp;
+  if((m_decay_end < m_decay_start) || (delta_time < 0)) {
+    r_xpos = m_xpos;
+    r_ypos = m_ypos;
+    return(false);
+  }
+
+  // Handle a special (easy) case.
+  if(delta_time == 0) {
+    r_xpos = m_xpos;
+    r_ypos = m_ypos;
+    return(true);
+  }
+
+  double distance = 0;
+  if(delta_time <= m_decay_start)
+    distance = m_spd * delta_time;
+  
+  if(delta_time > m_decay_start) {
+    double decay_range = m_decay_end - m_decay_start;
+    // Handle special case where decay is instantaneous
+    if(decay_range <= 0)
+      distance = m_spd * m_decay_start;
+    else {
+      double decay_rate = (m_spd / (m_decay_end - m_decay_start));
+      if(delta_time <= m_decay_end) {
+	double decay_time = delta_time - m_decay_start;
+	double curr_speed = m_spd - (decay_rate * decay_time);
+	double avg_speed  = (m_spd + curr_speed) / 2.0;
+	distance = (m_spd * m_decay_start) + (avg_speed * decay_time);
+      }
+      else {
+	distance = (m_spd * m_decay_start) + ((m_spd/2.0) * decay_range);
+      }
+    }
+  }
+
+  projectPoint(m_hdg, distance, m_xpos, m_ypos, r_xpos, r_ypos);
+
   r_xpos = 0;
   r_ypos = 0;
   return(true);
