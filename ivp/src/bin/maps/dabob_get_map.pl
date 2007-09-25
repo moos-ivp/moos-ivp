@@ -31,9 +31,9 @@ print "\nMap Image Generator\n(images from Google)\n\n";
 #$topleft_latlon = "42.158754 -70.949703";
 #$bottomright_latlon = "42.139587 -70.924934";
 
-# Victorville, CA
-$topleft_latlon = "47.844800 -122.936200";
-$bottomright_latlon = "47.654800 -122.636200";
+# Dabob Bay - Washington State
+$topleft_latlon = "47.854800 -122.936200";
+$bottomright_latlon = "47.654800 -122.736200";
 
 # East Cambridge
 #$topleft_latlon = "42.375455 -71.091049";
