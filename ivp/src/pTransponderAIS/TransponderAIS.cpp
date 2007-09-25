@@ -187,7 +187,6 @@ bool TransponderAIS::OnStartUp()
     return(false);
   }
   
-
   // tes 9-12-07
   // look for latitude, longitude global variables
   double latOrigin, longOrigin;
