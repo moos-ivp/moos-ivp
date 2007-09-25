@@ -639,6 +639,29 @@ void SSV_Viewer::setCurrent(string vname)
 }
 
 //-------------------------------------------------------------
+// Procedure: hasVehiName
+//            Given a vehicle name string, compare it to the map
+//            of known vehicles and, if found, return true.
+
+bool SSV_Viewer::hasVehiName(string vname)
+{
+  vname = tolower(vname);
+
+  // Special case: the alias "ownship" can be used even if the value
+  // of m_ownship_name is something completely different
+  if(vname == "ownship")
+    vname = tolower(m_ownship_name);
+  
+  map<string,ObjectPose>::iterator p;
+  for(p=m_pos_map.begin(); p!=m_pos_map.end(); p++) {
+    string map_vname = tolower(p->first);
+    if(map_vname == vname)
+      return(true);
+  }
+  return(false);
+}
+
+//-------------------------------------------------------------
 // Procedure: addStationCircle
 
 void SSV_Viewer::addStationCircle(const XYCircle& new_circ)

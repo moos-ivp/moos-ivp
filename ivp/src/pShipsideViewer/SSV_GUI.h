@@ -23,6 +23,7 @@
 #ifndef SSV_GUI_HEADER
 #define SSV_GUI_HEADER
 
+#include "MOOSLock.h"
 #include "SSV_Viewer.h"
 #include "MarineVehiGUI.h"
 #include "MY_Output.h"
@@ -41,7 +42,15 @@ public:
 
   SSV_Viewer *mviewer;
 
+  std::string getPendingVar(int);
+  std::string getPendingVal(int);
+  void        clearPending();
+  void        pushPending(std::string, std::string);
+  int         getPendingSize() {return(m_pending_vars.size());};
+
 private:
+  void  updateButtonColor(MY_Button*);
+
   inline void cb_CentricToggle_i(int);
   static void cb_CentricToggle(Fl_Widget*, int);
 
@@ -50,6 +59,9 @@ private:
 
   inline void cb_ButtonView_i(int);
   static void cb_ButtonView(Fl_Widget*, int);
+
+  inline void cb_MOOS_Button_i(int);
+  static void cb_MOOS_Button(Fl_Widget*, int);
 
 protected:
   MY_Output  *v_nam;
@@ -64,19 +76,26 @@ protected:
   Fl_Box     *m_deploy_box_text;
   Fl_Box     *m_deploy_box_body;
   Fl_Box     *m_station_box_body;
+  Fl_Box     *m_engage_box_body;
 
   Fl_Box     *m_cdeploy_box_text;
   Fl_Box     *m_cdeploy_box_body;
   Fl_Box     *m_cstation_box_body;
+  Fl_Box     *m_cengage_box_body;
 
   MY_Button  *m_deploy_all_on;
   MY_Button  *m_deploy_all_off;
   MY_Button  *m_station_all_on;
   MY_Button  *m_station_all_off;
+  MY_Button  *m_engage_all_ok;
+  MY_Button  *m_engage_all_off;
+
   MY_Button  *m_deploy_cur_on;
   MY_Button  *m_deploy_cur_off;
   MY_Button  *m_station_cur_on;
   MY_Button  *m_station_cur_off;
+  MY_Button  *m_engage_cur_ok;
+  MY_Button  *m_engage_cur_off;
 
   MY_Button  *ownship_b0;
   MY_Button  *contact_b1;
@@ -85,6 +104,11 @@ protected:
   MY_Button  *contact_b4;
   MY_Button  *contact_b5;
   MY_Button  *contact_b6;
+
+  std::vector<std::string> m_pending_vars;
+  std::vector<std::string> m_pending_vals;
+
+  CMOOSLock  m_ssv_mutex;
 };
 #endif
 

@@ -105,26 +105,42 @@ SSV_GUI::SSV_GUI(int g_w, int g_h, const char *g_l)
   
   int d_top = a_top + a_txt + 1;
   int d_hgt = 75;
-    m_deploy_box_body = new Fl_Box(FL_BORDER_BOX, col_b+2, d_top, 
+  m_deploy_box_body = new Fl_Box(FL_BORDER_BOX, col_b+2, d_top, 
 				 wid_b-4, d_hgt, 0);
   m_deploy_box_body->color(FL_DARK_GREEN);
   m_deploy_all_on  = new MY_Button(col_b+10, d_top+10, 
 				   wid_b-20, 25, "DEPLOY ON");
   m_deploy_all_off = new MY_Button(col_b+10, d_top+40, 
 				   wid_b-20, 25, "DEPLOY OFF");
-
-
+  
+  m_deploy_all_on->callback((Fl_Callback*)SSV_GUI::cb_MOOS_Button,(void*)0);
+  m_deploy_all_off->callback((Fl_Callback*)SSV_GUI::cb_MOOS_Button,(void*)1);
+  
   int s_top = d_top + d_hgt + 1;
   int s_hgt = 75;
-    m_station_box_body = new Fl_Box(FL_BORDER_BOX, col_b+2, s_top, 
+  m_station_box_body = new Fl_Box(FL_BORDER_BOX, col_b+2, s_top, 
 				  wid_b-4, s_hgt, 0);
   m_station_box_body->color(FL_DARK_GREEN);
   m_station_all_on  = new MY_Button(col_b+10, s_top+10, 
 				    wid_b-20, 25, "STATION ON");
   m_station_all_off = new MY_Button(col_b+10, s_top+40, 
 				    wid_b-20, 25, "STATION OFF");
-
-
+  m_station_all_on->callback((Fl_Callback*)SSV_GUI::cb_MOOS_Button,(void*)2);
+  m_station_all_off->callback((Fl_Callback*)SSV_GUI::cb_MOOS_Button,(void*)3);
+  
+  int e_top = s_top + s_hgt + 1;
+  int e_hgt = 75;
+  m_engage_box_body = new Fl_Box(FL_BORDER_BOX, col_b+2, e_top, 
+				 wid_b-4, e_hgt, 0);
+  m_engage_box_body->color(FL_DARK_GREEN);
+  m_engage_all_ok = new MY_Button(col_b+10, e_top+10, 
+				   wid_b-20, 25, "ENGAGE OK");
+  m_engage_all_off = new MY_Button(col_b+10, e_top+40, 
+				   wid_b-20, 25, "ENGAGE OFF");
+  m_engage_all_ok->callback((Fl_Callback*)SSV_GUI::cb_MOOS_Button,(void*)4);
+  m_engage_all_off->callback((Fl_Callback*)SSV_GUI::cb_MOOS_Button,(void*)5);
+  
+  
 
 
   int ca_top = h()-600;
@@ -144,6 +160,9 @@ SSV_GUI::SSV_GUI(int g_w, int g_h, const char *g_l)
 				   wid_b-20, 25, "DEPLOY ON");
   m_deploy_cur_off = new MY_Button(col_b+10, cd_top+40, 
 				   wid_b-20, 25, "DEPLOY OFF");
+  m_deploy_cur_on->callback((Fl_Callback*)SSV_GUI::cb_MOOS_Button,(void*)20);
+  m_deploy_cur_off->callback((Fl_Callback*)SSV_GUI::cb_MOOS_Button,(void*)21);
+  
 
 
   int cs_top = cd_top + cd_hgt + 1;
@@ -155,8 +174,22 @@ SSV_GUI::SSV_GUI(int g_w, int g_h, const char *g_l)
 				    wid_b-20, 25, "STATION ON");
   m_station_cur_off = new MY_Button(col_b+10, cs_top+40, 
 				    wid_b-20, 25, "STATION OFF");
+  m_station_cur_on->callback((Fl_Callback*)SSV_GUI::cb_MOOS_Button,(void*)22);
+  m_station_cur_off->callback((Fl_Callback*)SSV_GUI::cb_MOOS_Button,(void*)23);
+  
 
-
+  int ce_top = cs_top + cs_hgt + 1;
+  int ce_hgt = 75;
+  m_cengage_box_body = new Fl_Box(FL_BORDER_BOX, col_b+2, ce_top, 
+				  wid_b-4, ce_hgt, 0);
+  m_cengage_box_body->color(FL_DARK_BLUE);
+  m_engage_cur_ok  = new MY_Button(col_b+10, ce_top+10, 
+				    wid_b-20, 25, "ENGAGE OK");
+  m_engage_cur_off = new MY_Button(col_b+10, ce_top+40, 
+				   wid_b-20, 25, "ENGAGE OFF");
+  m_engage_cur_ok->callback((Fl_Callback*)SSV_GUI::cb_MOOS_Button,(void*)22);
+  m_engage_cur_off->callback((Fl_Callback*)SSV_GUI::cb_MOOS_Button,(void*)23);
+  
   this->end();
   this->resizable(this);
   this->show();
@@ -184,6 +217,54 @@ void SSV_GUI::addContactButton(int index, string vname)
     contact_b5->copy_label(vname.c_str());
   if(index == 5)
     contact_b6->copy_label(vname.c_str());
+}
+
+//-------------------------------------------------------------------
+// Procedure: getPendingVar
+
+string SSV_GUI::getPendingVar(int ix)
+{
+  if((ix >=0) && (ix < m_pending_vars.size()))
+    return(m_pending_vars[ix]);
+  else
+    return("");
+}
+
+//-------------------------------------------------------------------
+// Procedure: getPendingVal
+
+string SSV_GUI::getPendingVal(int ix)
+{
+  if((ix >=0) && (ix < m_pending_vals.size()))
+    return(m_pending_vals[ix]);
+  else
+    return("");
+}
+
+//-------------------------------------------------------------------
+// Procedure: clearPending
+
+void SSV_GUI::clearPending()
+{
+  m_ssv_mutex.Lock();
+
+  m_pending_vars.clear();
+  m_pending_vals.clear();
+
+  m_ssv_mutex.UnLock();
+}
+
+//-------------------------------------------------------------------
+// Procedure: pushPending
+
+void SSV_GUI::pushPending(string var, string val)
+{
+  m_ssv_mutex.Lock();
+
+  m_pending_vars.push_back(var);
+  m_pending_vals.push_back(val);
+
+  m_ssv_mutex.UnLock();
 }
 
 //-------------------------------------------------------------------
@@ -257,8 +338,30 @@ void SSV_GUI::updateXY() {
   if(age_ais == -1)
     ais_str = "n/a";
   v_ais->value(ais_str.c_str());
+
+  if(mviewer->hasVehiName(ownship_b0->label()))
+    ownship_b0->labelcolor(FL_BLACK);
+  else
+    ownship_b0->labelcolor(FL_DARK_RED);
+
+  updateButtonColor(ownship_b0);
+  updateButtonColor(contact_b1);
+  updateButtonColor(contact_b2);
+  updateButtonColor(contact_b3);
+  updateButtonColor(contact_b4);
+  updateButtonColor(contact_b5);
+  updateButtonColor(contact_b6);
 }
 
+//----------------------------------------- UpdateXY
+void SSV_GUI::updateButtonColor(MY_Button* b) {
+
+  if(mviewer->hasVehiName(b->label()))
+    b->labelcolor(FL_BLACK);
+  else
+    b->labelcolor(FL_WHITE);
+  b->redraw();
+}
 
 //----------------------------------------- CentricToggle
 inline void SSV_GUI::cb_CentricToggle_i(int val) {
@@ -286,6 +389,41 @@ void SSV_GUI::cb_Radial(Fl_Widget* o, int v) {
   int val = (int)(v);
   ((SSV_GUI*)(o->parent()->user_data()))->cb_Radial_i(val);
 }
+
+//----------------------------------------- MOOS_Button
+inline void SSV_GUI::cb_MOOS_Button_i(int val) {
+  
+  string vname = toupper(mviewer->getCurrVName());
+
+  if(val == 0)
+    pushPending("DEPLOY_ALL", "true");
+  else if(val == 1)
+    pushPending("DEPLOY_ALL", "false");
+  else if(val == 2)
+    pushPending("STATION_KEEP_ALL", "true");
+  else if(val == 3)
+    pushPending("STATION_KEEP_ALL", "false");
+  else if(val == 4)
+    pushPending("ENGAGE_ALL", "true");
+  else if(val == 5)
+    pushPending("ENGAGE_ALL", "false");
+
+  else if(val == 20)
+    pushPending("DEPLOY_"+vname, "true");
+  else if(val == 21)
+    pushPending("DEPLOY_"+vname, "false");
+  else if(val == 22)
+    pushPending("STATION_KEEP_"+vname, "true");
+  else if(val == 23)
+    pushPending("STATION_KEEP_"+vname, "false");
+
+}
+
+void SSV_GUI::cb_MOOS_Button(Fl_Widget* o, int v) {
+  int val = (int)(v);
+  ((SSV_GUI*)(o->parent()->user_data()))->cb_MOOS_Button_i(val);
+}
+
 
 //----------------------------------------- ButtonView
 inline void SSV_GUI::cb_ButtonView_i(int val) {

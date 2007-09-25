@@ -159,6 +159,8 @@ bool SSV_MOOSApp::Iterate()
     }
   }
 
+  handlePendingGUI();
+
   return(true);
 }
 
@@ -367,6 +369,25 @@ bool SSV_MOOSApp::handleContactList(string clist)
     m_gui->addContactButton(i, svector[i]);
   }
   return(true);
+}
+
+
+//----------------------------------------------------------------------
+// Procedure: handlePendingGUI
+
+void SSV_MOOSApp::handlePendingGUI()
+{
+  if(!m_gui)
+    return;
+  
+  int pendingSize = m_gui->getPendingSize();
+
+  for(int i=0; i<pendingSize; i++) {
+    string var = m_gui->getPendingVar(i);
+    string val = m_gui->getPendingVal(i);
+    m_Comms.Notify(var, val);
+  }
+  m_gui->clearPending();
 }
 
 

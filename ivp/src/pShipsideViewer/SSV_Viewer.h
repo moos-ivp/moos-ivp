@@ -63,7 +63,9 @@ public:
   float getCrs(int);
   float getAgeAIS(int);
 
+  bool  hasVehiName(std::string);
   std::string getVehiName(int);
+  std::string getCurrVName()     {return(getVehiName(m_global_ix));};
   std::string getLeftClick()     {return(m_left_click);};
   std::string getRightClick()    {return(m_right_click);};
   int   getLeftClickIX()         {return(m_left_click_ix);};

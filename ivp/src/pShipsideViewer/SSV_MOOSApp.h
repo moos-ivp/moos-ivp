@@ -56,6 +56,8 @@ class SSV_MOOSApp : public CMOOSApp
 
   bool handleContactList(std::string);
 
+  void handlePendingGUI();
+
  protected:
   SSV_GUI* m_gui;
 
