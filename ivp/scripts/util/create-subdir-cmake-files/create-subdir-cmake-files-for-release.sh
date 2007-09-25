@@ -198,27 +198,11 @@ parse_and_validate_cmd_line $*
 
 IVP_BUILD_BY_DEFAULT=ON \
 IVP_INSTALL_COMPONENT=ivp-core-dev \
-SUBDIR=lib_anrp_util         LIBNAME=anrp_util         simple_lib_cmake_file
-
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-core-dev \
 SUBDIR=lib_behaviors         LIBNAME=behaviors         simple_lib_cmake_file
 
 IVP_BUILD_BY_DEFAULT=ON \
 IVP_INSTALL_COMPONENT=ivp-core-dev \
-SUBDIR=lib_behaviors-colregs LIBNAME=behaviors-colregs simple_lib_cmake_file
-
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-core-dev \
-SUBDIR=lib_behaviors-don     LIBNAME=behaviors-don     simple_lib_cmake_file
-
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-core-dev \
 SUBDIR=lib_behaviors-marine  LIBNAME=behaviors-marine  simple_lib_cmake_file
-
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-core-dev \
-SUBDIR=lib_behaviors-sandbox LIBNAME=behaviors-sandbox simple_lib_cmake_file
 
 IVP_BUILD_BY_DEFAULT=ON \
 IVP_INSTALL_COMPONENT=ivp-core-dev \
@@ -252,10 +236,6 @@ IVP_BUILD_BY_DEFAULT=ON \
 IVP_INSTALL_COMPONENT=ivp-core-dev \
 SUBDIR=lib_mbutil            LIBNAME=mbutil            simple_lib_cmake_file
 
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-core-dev \
-SUBDIR=newmat10D           LIBNAME=newmat10D           simple_lib_cmake_file
-
 #-------------------------------------------------------------------------------
 # tool libraries...
 #-------------------------------------------------------------------------------
@@ -263,10 +243,6 @@ SUBDIR=newmat10D           LIBNAME=newmat10D           simple_lib_cmake_file
 IVP_BUILD_BY_DEFAULT=ON \
 IVP_INSTALL_COMPONENT=ivp-tools-dev \
 SUBDIR=lib_navplot           LIBNAME=navplot           simple_lib_cmake_file
-
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-tools-dev \
-SUBDIR=lib_ivpbuild-extra    LIBNAME=ivpbuild-extra    simple_lib_cmake_file
 
 
 IVP_BUILD_BY_DEFAULT=ON \
@@ -276,60 +252,10 @@ SUBDIR=lib_marineview \
 LIBNAME=marineview \
 lib_with_compile_flags_cmake_file
 
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-tools-dev \
-SUBDIR=lib_track             LIBNAME=opt               simple_lib_cmake_file
-
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-tools-dev \
-SUBDIR=lib_ipfview           LIBNAME=ipfview           simple_lib_cmake_file
-
-IVP_BUILD_BY_DEFAULT=OFF \
-IVP_INSTALL_COMPONENT=ivp-tools-dev \
-SUBDIR=uVoice \
-LIBNAME=_MOOS \
-INTERFACE_FILENAME=MOOS.i \
-swig_lib_cmake_file
-
-
-#-------------------------------------------------------------------------------
-# misc libraries (still need to be assigned to proper component)
-#-------------------------------------------------------------------------------
-
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-tools-dev \
-SUBDIR=lib_artifacts         LIBNAME=artifacts         simple_lib_cmake_file
-
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-tools-dev \
-SUBDIR=lib_behaviors-attic   LIBNAME=behaviors-attic   simple_lib_cmake_file
-
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-tools-dev \
-SUBDIR=lib_behaviors-oxford  LIBNAME=behaviors-oxford  simple_lib_cmake_file
-
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-tools-dev \
-SUBDIR=lib_mbutiltest        LIBNAME=mbutiltest        simple_lib_cmake_file
-
 
 #-------------------------------------------------------------------------------
 # core apps...
 #-------------------------------------------------------------------------------
-
-SUBDIR=iGPS \
-PROGNAME=iGPS \
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-core \
-LINK_LIBS="
-   MOOS
-   MOOSGen
-   MOOSUtility
-   anrp_util
-   m
-   pthread" \
-simple_app_cmake_file
-
 
 SUBDIR=iMarineSim \
 PROGNAME=iMarineSim \
@@ -343,87 +269,6 @@ LINK_LIBS="
    m
    pthread" \
 simple_app_cmake_file
-
-
-SUBDIR=iMetaCompass \
-PROGNAME=iMetaCompass \
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-core \
-LINK_LIBS="
-   MOOS
-   MOOSGen
-   mbutil
-   m
-   pthread" \
-simple_app_cmake_file
-
-
-SUBDIR=iPNICompass \
-PROGNAME=iPNICompass \
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-core \
-LINK_LIBS="
-   MOOS
-   MOOSGen
-   MOOSUtility
-   anrp_util
-   m
-   pthread" \
-simple_app_cmake_file
-
-
-SUBDIR=iPWMController \
-PROGNAME=iPWMController \
-IVP_INSTALL_COMPONENT=ivp-core \
-IVP_BUILD_BY_DEFAULT=ON \
-LINK_LIBS="
-   MOOS
-   MOOSGen
-   anrp_util
-   m
-   pthread" \
-simple_app_cmake_file
-
-
-SUBDIR=MOOSDump \
-PROGNAME=MOOSDump \
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-core \
-LINK_LIBS="
-   MOOS
-   MOOSGen
-   mbutil
-   m
-   pthread" \
-simple_app_cmake_file
-
-
-SUBDIR=MOOSRemote \
-PROGNAME=MOOSRemote \
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-core \
-LINK_LIBS="
-   MOOS
-   MOOSGen
-   mbutil
-   curses
-   m
-   pthread" \
-simple_app_cmake_file
-
-
-SUBDIR=pDeployHandler \
-PROGNAME=pDeployHandler \
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-core \
-LINK_LIBS="
-   MOOS
-   MOOSGen
-   mbutil
-   m
-   pthread" \
-simple_app_cmake_file
-
 
 SUBDIR=pEchoVar \
 PROGNAME=pEchoVar \
@@ -447,7 +292,6 @@ LINK_LIBS="
    MOOSGen
    helmivp
    behaviors-marine
-   behaviors-sandbox
    bhvutil	
    behaviors
    mbutil 
@@ -455,20 +299,6 @@ LINK_LIBS="
    ivpcore 
    geometry
    logic
-   m
-   pthread" \
-simple_app_cmake_file
-
-
-SUBDIR=pLoiterControl \
-PROGNAME=pLoiterControl \
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-core \
-LINK_LIBS="
-   MOOS
-   MOOSGen
-   mbutil
-   geometry
    m
    pthread" \
 simple_app_cmake_file
@@ -502,20 +332,6 @@ LINK_LIBS="
 simple_app_cmake_file
 
 
-SUBDIR=pViewerRelay \
-PROGNAME=pViewerRelay \
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-core \
-LINK_LIBS="
-   MOOS
-   MOOSGen
-   MOOSUtility
-   mbutil
-   m
-   pthread" \
-simple_app_cmake_file
-
-
 SUBDIR=uProcessWatch \
 PROGNAME=uProcessWatch \
 IVP_BUILD_BY_DEFAULT=ON \
@@ -523,20 +339,6 @@ IVP_INSTALL_COMPONENT=ivp-core \
 LINK_LIBS="
    MOOS
    MOOSGen
-   mbutil
-   m
-   pthread" \
-simple_app_cmake_file
-
-
-SUBDIR=uTMS \
-PROGNAME=uTMS \
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-core \
-LINK_LIBS="
-   MOOS
-   MOOSGen
-   genutil
    mbutil
    m
    pthread" \
@@ -553,6 +355,20 @@ LINK_LIBS="
    MOOSUtility
    mbutil
    genutil
+   m
+   pthread" \
+simple_app_cmake_file
+
+
+SUBDIR=uTMS \
+PROGNAME=uTMS \
+IVP_BUILD_BY_DEFAULT=ON \
+IVP_INSTALL_COMPONENT=ivp-core \
+LINK_LIBS="
+   MOOS
+   MOOSGen
+   genutil
+   mbutil
    m
    pthread" \
 simple_app_cmake_file
@@ -576,144 +392,6 @@ simple_app_cmake_file
 # tools apps...
 #-------------------------------------------------------------------------------
 
-SUBDIR=app_artfieldgenerator \
-PROGNAME=artfieldgenerator \
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-tools \
-LINK_LIBS="
-      geometry
-      MOOS 
-      MOOSGen 
-      mbutil" \
-simple_app_cmake_file
-
-SUBDIR=app_cpaview \
-PROGNAME=cpaview \
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-tools \
-LINK_LIBS="
-      marineview
-      ipfview
-      geometry
-      ivpbuild
-      mbutil
-      ivpcore
-      m" \
-fltk_app_cmake_file
-
-SUBDIR=app_ffview \
-PROGNAME=ffview \
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-tools \
-LINK_LIBS="
-      behaviors-don
-      behaviors-sandbox
-      behaviors-marine
-      bhvutil
-      ipfview
-      behaviors
-      geometry
-      ivpbuild
-      ivpcore
-      mbutil
-      m" \
-fltk_app_cmake_file
-
-SUBDIR=app_fview \
-PROGNAME=fview \
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-tools \
-LINK_LIBS="
-      behaviors-don
-      behaviors-sandbox
-      behaviors-marine
-      bhvutil
-      ipfview
-      behaviors
-      geometry
-      ivpbuild
-      ivpcore
-      m
-      mbutil" \
-fltk_app_cmake_file
-
-SUBDIR=app_glogview \
-PROGNAME=glogview \
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-tools \
-LINK_LIBS="
-      navplot
-      ipfview
-      marineview
-      geometry
-      mbutil
-      ivpbuild
-      ivpcore
-      m" \
-fltk_app_cmake_file
-
-SUBDIR=app_gridgen \
-PROGNAME=gridgen \
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-tools \
-LINK_LIBS="
-   ivpbuild
-   ivpcore
-   geometry
-   mbutil
-   m" \
-simple_app_cmake_file
-
-SUBDIR=app_gzaicview \
-PROGNAME=gzaicview \
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-tools \
-LINK_LIBS="
-      ivpbuild
-      mbutil
-      ivpcore
-      m" \
-fltk_app_cmake_file
-
-SUBDIR=app_hexaview \
-PROGNAME=hexaview \
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-tools \
-LINK_LIBS="
-      marineview
-      geometry
-      mbutil
-      m" \
-fltk_app_cmake_file
-
-SUBDIR=app_logclip \
-PROGNAME=logclip \
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-tools \
-LINK_LIBS="
-   mbutil
-   m" \
-simple_app_cmake_file
-
-SUBDIR=app_logictest \
-PROGNAME=ltest \
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-tools \
-LINK_LIBS="
-   logic
-   mbutil
-   m" \
-simple_app_cmake_file
-
-SUBDIR=app_logparse \
-PROGNAME=logparse \
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-tools \
-LINK_LIBS="
-   mbutil
-   m" \
-simple_app_cmake_file
-
 SUBDIR=app_logview \
 PROGNAME=logview \
 IVP_BUILD_BY_DEFAULT=ON \
@@ -726,16 +404,6 @@ LINK_LIBS="
       m" \
 fltk_app_cmake_file
 
-SUBDIR=app_peval \
-PROGNAME=peval \
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-tools \
-LINK_LIBS="
-   navplot
-   mbutil
-   geometry
-   m" \
-simple_app_cmake_file
 
 SUBDIR=app_polyview \
 PROGNAME=polyview \
@@ -747,193 +415,6 @@ LINK_LIBS="
       mbutil
       m" \
 fltk_app_cmake_file
-
-SUBDIR=app_quadview \
-PROGNAME=quadview \
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-tools \
-LINK_LIBS="
-      marineview
-      mbutil
-      m" \
-fltk_app_cmake_file
-
-SUBDIR=app_splug \
-PROGNAME=splug \
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-tools \
-LINK_LIBS="
-   mbutil
-   m" \
-simple_app_cmake_file
-
-SUBDIR=app_test \
-PROGNAME=stest \
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-tools \
-LINK_LIBS="
-   ivpbuild
-   mbutil
-   geometry
-   ivpcore
-   logic
-   m" \
-simple_app_cmake_file
-
-SUBDIR=app_tupelize \
-PROGNAME=tupelize \
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-tools \
-LINK_LIBS="
-   mbutil
-   ivpbuild
-   ivpcore
-   m" \
-simple_app_cmake_file
-
-SUBDIR=app_zaicview \
-PROGNAME=zaicview \
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-tools \
-LINK_LIBS="
-   mbutil
-   ivpbuild
-   ivpcore
-   m" \
-fltk_app_cmake_file
-
-SUBDIR=iHeadingMonitor \
-PROGNAME=iHeadingMonitor \
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-tools \
-LINK_LIBS="
-   MOOS
-   MOOSGen
-   mbutil
-   m
-   pthread" \
-simple_app_cmake_file
-
-SUBDIR=iMicroModem \
-PROGNAME=iMicroModem \
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-tools \
-LINK_LIBS="
-   MOOS 
-   MOOSGen
-   pthread" \
-simple_app_cmake_file
-
-SUBDIR=iWifi \
-PROGNAME=iWifi \
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-tools \
-LINK_LIBS="
-   MOOS
-   MOOSGen
-   m
-   pthread" \
-simple_app_cmake_file
-
-SUBDIR=p1BTracker \
-PROGNAME=p1BTracker \
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-tools \
-LINK_LIBS="
-   MOOS
-   MOOSGen
-   opt
-   m
-   pthread" \
-simple_app_cmake_file
-
-SUBDIR=pACom \
-PROGNAME=pACom \
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-tools \
-LINK_LIBS="
-   MOOS
-   MOOSGen
-   MOOSUtility
-   m
-   pthread" \
-simple_app_cmake_file
-
-SUBDIR=pArtifactMapper \
-PROGNAME=pArtifactMapper \
-IVP_BUILD_BY_DEFAULT=OFF \
-IVP_INSTALL_COMPONENT=ivp-tools \
-LINK_LIBS="
-   MOOS
-   MOOSGen
-   geometry
-   mbutil
-   m
-   pthread" \
-simple_app_cmake_file
-
-SUBDIR=pBearings \
-PROGNAME=pBearings \
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-tools \
-LINK_LIBS="
-   MOOS
-   MOOSGen
-   opt
-   newmat10D
-   m
-   pthread" \
-simple_app_cmake_file
-
-SUBDIR=pBearingsSim \
-PROGNAME=pBearingsSim \
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-tools \
-LINK_LIBS="
-   MOOS
-   MOOSGen
-   opt
-   m
-   pthread" \
-simple_app_cmake_file
-
-SUBDIR=pClusterManager \
-PROGNAME=pClusterManager \
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-tools \
-LINK_LIBS="
-   MOOS
-   MOOSGen
-   mbutil
-   geometry
-   m
-   pthread" \
-simple_app_cmake_file
-
-SUBDIR=pExtTracker \
-PROGNAME=pExtTracker \
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-tools \
-LINK_LIBS="
-   MOOS
-   MOOSGen
-   m
-   pthread" \
-simple_app_cmake_file
-
-SUBDIR=pFunctionSender \
-PROGNAME=pFunctionSender \
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-tools \
-LINK_LIBS="
-   MOOS
-   MOOSGen
-   ivpbuild
-   mbutil
-   ivpcore
-   m
-   pthread" \
-simple_app_cmake_file
 
 SUBDIR=pMarineViewer \
 PROGNAME=pMarineViewer \
@@ -948,102 +429,5 @@ LINK_LIBS="
       geometry
       m" \
 fltk_app_cmake_file
-
-SUBDIR=pSensorSim \
-PROGNAME=pSensorSim \
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-tools \
-LINK_LIBS="
-   MOOS
-   MOOSGen
-   mbutil
-   m
-   pthread
-   artifacts
-   geometry" \
-simple_app_cmake_file
-
-SUBDIR=pTarget \
-PROGNAME=pTarget \
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-tools \
-LINK_LIBS="
-   MOOS
-   MOOSGen
-   geometry
-   mbutil
-   m
-   pthread" \
-simple_app_cmake_file
-
-SUBDIR=pTrafficControl \
-PROGNAME=pTrafficControl \
-IVP_BUILD_BY_DEFAULT=OFF \
-IVP_INSTALL_COMPONENT=ivp-tools \
-LINK_LIBS="
-   MOOS
-   MOOSGen
-   geometry
-   mbutil
-   m
-   pthread" \
-simple_app_cmake_file
-
-SUBDIR=pWatchDog \
-PROGNAME=pWatchDog \
-IVP_BUILD_BY_DEFAULT=OFF \
-IVP_INSTALL_COMPONENT=ivp-tools \
-LINK_LIBS="
-   MOOS
-   MOOSGen
-   mbutil
-   m
-   pthread" \
-simple_app_cmake_file
-
-SUBDIR=uFunctionViewer \
-PROGNAME=uFunctionViewer \
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-tools \
-LINK_LIBS="
-      MOOS
-      MOOSGen
-      geometry
-      genutil
-      mbutil
-      pthread
-      ivpbuild
-      ivpcore
-      m" \
-fltk_app_cmake_file
-
-SUBDIR=uFunctionVis \
-PROGNAME=uFunctionVis \
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-tools \
-LINK_LIBS="
-      MOOS
-      MOOSGen
-      ipfview
-      geometry
-      genutil
-      mbutil
-      ivpbuild
-      ivpcore
-      m" \
-fltk_app_cmake_file
-
-SUBDIR=uMOOSPoke \
-PROGNAME=uMOOSPoke \
-IVP_BUILD_BY_DEFAULT=OFF \
-IVP_INSTALL_COMPONENT=ivp-tools \
-LINK_LIBS="
-   MOOS
-   MOOSGen
-   m
-   pthread" \
-simple_app_cmake_file
-
-
 
 #-------------------------------------------------------------------------------
