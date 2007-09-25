@@ -16,8 +16,8 @@ $TileDir = "Tiles";
 
 
 use POSIX;  # to get ceil() and floor()
-$lat = 47.654800;
-$lon = -122.936200;
+$lat = 38.872105;
+$lon = -77.202770;
 
 print "\nMap Image Generator\n(images from Google)\n\n";
 #print " Top left lat-lon (like 38.872105 -77.202770)  --> "; $topleft_latlon = <>;
@@ -32,8 +32,8 @@ print "\nMap Image Generator\n(images from Google)\n\n";
 #$bottomright_latlon = "42.139587 -70.924934";
 
 # Victorville, CA
-$topleft_latlon = "34.988562 -117.378372";
-$bottomright_latlon = "34.578432 -117.370734";
+$topleft_latlon = "47.844800 -122.936200";
+$bottomright_latlon = "47.654800 -122.636200";
 
 # East Cambridge
 #$topleft_latlon = "42.375455 -71.091049";
