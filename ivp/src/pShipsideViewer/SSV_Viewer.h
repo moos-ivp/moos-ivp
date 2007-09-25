@@ -61,6 +61,7 @@ public:
   float getSpd(int);
   float getDep(int);
   float getCrs(int);
+  float getAgeAIS(int);
 
   std::string getVehiName(int);
   std::string getLeftClick()     {return(m_left_click);};
@@ -69,8 +70,8 @@ public:
   int   getRightClickIX()        {return(m_right_click_ix);};
 
   void  clearTrails()            {m_pos_map.clear(); m_hist_map.clear();};
-  void  setTime(float v)         {m_time = v;};
-  float getTime()                {return(m_time);};
+  void  setTime(float v)         {m_curr_time = v;};
+  float getTime()                {return(m_curr_time);};
   int   getDataIndex()           {return(m_global_ix);};
   void  setCurrent(std::string);
 
@@ -94,8 +95,10 @@ public:
   std::map<std::string, CPList>       m_hist_map;
   // Mapping from Vehicle Name to Vehicle Body Type
   std::map<std::string, std::string>  m_vbody_map;
+  // Mapping from Vehicle Name to Time of last AIS report
+  std::map<std::string, double>       m_ais_map;
 
-  float m_time;
+  float m_curr_time;
 
   std::string m_default_vehibody;
 

@@ -38,7 +38,7 @@ using namespace std;
 SSV_Viewer::SSV_Viewer(int x, int y, int w, int h, const char *l)
   : MarineViewer(x,y,w,h,l)
 {
-  m_time        = 0;
+  m_curr_time   = 0;
   m_tiff_offon  = 0;
 
   m_default_vehibody = "kayak";
@@ -120,15 +120,12 @@ void SSV_Viewer::updateVehiclePosition(string vname, float x,
 				       float speed, float depth)
 {
   vname = toupper(vname);
+
   // Handle updating the ObjectPose with the new information
   ObjectPose opose(x,y,theta,speed,depth);
-  map<string,ObjectPose>::iterator p1;
-  p1 = m_pos_map.find(vname);
-  if(p1 != m_pos_map.end())
-    p1->second = opose;
-  else {
-    m_pos_map[vname] = opose;
-  }
+
+  m_pos_map[vname] = opose;
+  m_ais_map[vname] = m_curr_time;
  
   ColoredPoint point(x,y,0,0,255);
   map<string,CPList>::iterator p2;
@@ -185,8 +182,7 @@ void SSV_Viewer::resetVehicles()
 //   Purpose: For a given x position, return its position, in 
 //            terms of delta meters from the zero position.
 //            Index indicates which of the MAX_VEHICLES vehicles
-//            is being queried. -1 indicates it the x position 
-//            of the cross-hairs
+//            is being queried. 
 
 float SSV_Viewer::getMetersX(int index)
 {
@@ -209,8 +205,7 @@ float SSV_Viewer::getMetersX(int index)
 //   Purpose: For a given y position, return its position, in 
 //            terms of delta meters from the zero position.
 //            Index indicates which of the MAX_VEHICLES vehicles
-//            is being queried. -1 indicates it the y position 
-//            of the cross-hairs
+//            is being queried. 
 
 float SSV_Viewer::getMetersY(int index)
 {
@@ -231,8 +226,7 @@ float SSV_Viewer::getMetersY(int index)
 // ----------------------------------------------------------
 // Procedure: getSpd
 //   Purpose: Index indicates which of the MAX_VEHICLES vehicles
-//            is being queried. -1 indicates it the x position 
-//            of the cross-hairs
+//            is being queried. 
 
 float SSV_Viewer::getSpd(int index)
 {
@@ -260,16 +254,34 @@ float SSV_Viewer::getDep(int index)
 // ----------------------------------------------------------
 // Procedure: getCrs
 //   Purpose: Index indicates which of the MAX_VEHICLES vehicles
-//            is being queried. -1 indicates it the x position 
-//            of the cross-hairs
+//            is being queried. 
 
 float SSV_Viewer::getCrs(int index)
 {
   if(m_cross_offon)
     return(0.0);
-
+  
   ObjectPose opose = getObjectPoseByIndex(index);
   return(opose.getTheta());
+}
+
+// ----------------------------------------------------------
+// Procedure: getAgeAIS
+//   Purpose: Index indicates which of the MAX_VEHICLES vehicles
+//            is being queried. 
+
+float SSV_Viewer::getAgeAIS(int index)
+{
+  if(m_cross_offon)
+    return(-1);
+
+  string vname = getVehiName(index);
+  map<string,double>::iterator p1;
+  p1 = m_ais_map.find(vname);
+  if(p1 != m_ais_map.end())
+    return(m_curr_time - p1->second);
+  else 
+    return(-1);
 }
 
 // ----------------------------------------------------------

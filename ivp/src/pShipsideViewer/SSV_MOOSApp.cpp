@@ -34,6 +34,9 @@ bool SSV_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
   bool gui_clear_trails = false;
   MOOSMSG_LIST::reverse_iterator p;
 
+  double curr_time = MOOSTime() - m_start_time;
+  m_gui->mviewer->setTime(curr_time);
+
   //cout  << NewMail.size() << "," << flush;
   for(p = NewMail.rbegin();p!=NewMail.rend();p++) {
     CMOOSMsg &Msg = *p;
@@ -123,7 +126,7 @@ bool SSV_MOOSApp::Iterate()
   cout << "." << flush;
 
   double curr_time = MOOSTime() - m_start_time;
-  m_gui->setCurrTime(curr_time);
+  m_gui->mviewer->setTime(curr_time);
   m_gui->updateXY();
   
   int left_click_ix = m_gui->mviewer->getLeftClickIX();
