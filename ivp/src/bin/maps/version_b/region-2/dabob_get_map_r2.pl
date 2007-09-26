@@ -24,8 +24,8 @@ print "\nMap Image Generator\n(images from Google)\n\n";
 #$bottomright_latlon = "38.864897 -77.197511";
 
 # Dabob Bay - Washington State
-$topleft_latlon = "47.754800 -122.876265";
-$bottomright_latlon = "47.704800 -122.836265";
+$topleft_latlon = "47.754800 -122.836265";
+$bottomright_latlon = "47.704800 -122.776265";
 
 # Weymouth
 #$topleft_latlon = "42.158754 -70.949703";
