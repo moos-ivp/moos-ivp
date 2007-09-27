@@ -20,8 +20,8 @@ viewpdf:
 installpdf: pdf
 	cp -f $(PAPER).pdf ~/$(PAPERPDF).pdf
 
-pdf: dvi
-	dvipdfm -p letter $(PAPER).dvi
+pdf:
+	rubber --ps --pdf $(PAPER)
 	gnome-open $(PAPERPDF).pdf &
 
 dvi: $(EPSFILES)
@@ -30,8 +30,8 @@ dvi: $(EPSFILES)
 force: $(EPSFILES)
 	rubber -f $(PAPER)
 
-ps: dvi
-	dvips -t letter -o $(PAPER).ps $(PAPER).dvi
+ps: $(EPSFILES)
+	rubber --ps $(PAPER)
 
 clean:
 	rm -f *.dvi *~   *.log $(PAPER).pdf
