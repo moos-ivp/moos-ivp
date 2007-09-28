@@ -1,0 +1,103 @@
+// MOOS file
+// Below is a typical configuration block for uMicroModemAddPPS as well as an iMicroModem and a pRouter configuration block. Note how
+// to_modem_prefix in uMicroModemAddPPS matches VarNamePrefix in iMicroModem and 
+// to_stack_prefix in uMicroModemAddPPS matches the first part of ModemCommand and ModemData in pRouter
+
+
+ServerHost = localhost
+ServerPort = 9000
+
+// uMicroModemAddPPS will use the local origin to compute local coordinates for fixed nodes
+LatOrigin = 41.34271
+LongOrigin = -71.4119
+
+///////////////////////////////////////////////////////////////////////////////
+// uMicroModemAddPPS configuration  block
+///////////////////////////////////////////////////////////////////////////////
+ProcessConfig = uMicroModemAddPPS
+{
+	AppTick   = 4
+	CommsTick = 4
+	
+	Verbose = true
+	
+	// This variable sets the prefix for MOOS communication between uMicroModemAddPPS
+	// and iMicroModem. It must be set to the same value as
+	// VarNamePrefix in the iMicroModem configuration block
+	to_modem_prefix = MICROMODEM
+	
+	// This variable sets the prefix for MOOS communication between uMicroModemAddPPS
+	// and stack (pRouter). It must be set to the same value as
+	// ModemData in the pRouter configuration block
+	to_stack_prefix = MICROMODEMTOSTACK
+	
+	// specify the speed of sound here
+	// in case it is fixed: set it to speed of sound in m/s
+	// in case it is specified by a moos variable enter name of moos variable which contains speed of sound
+	speed_of_sound = 1500
+
+	STATIC= buoy1,12,l,400,900,10
+	STATIC=buoy2,13,a,41.35,-71.3,15
+	
+	MOBILE=unicorn,3
+	//MOBILE=macrura,4
+}
+
+// below is a configuration which shows how ModemComand and ModemData in pRouter
+// and VarNamePrefix in iMicroModem have to be configured in order to tie in
+// uMicoModemAddPPS
+
+///////////////////////////////////////////////////////////////////////////////
+// pRouter confiuration block
+///////////////////////////////////////////////////////////////////////////////
+ProcessConfig = pRouter
+{
+
+        AppTick = 8
+        CommsTick = 8
+
+        Verbose = TRUE
+
+        //Variable Names
+        InputFrames = FRAMER_OUTPUT
+        OutputFrames = FRAMER_INPUT
+
+        ModemCommand = MICROMODEMTOSTACK_COMMAND
+        ModemData = MICROMODEMTOSTACK_DATA
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// iMicroModem configuration block
+///////////////////////////////////////////////////////////////////////////////
+ProcessConfig = iMicroModem
+{
+        AppTick   = 8
+        CommsTick = 8
+
+        Port =  /dev/ttyS1
+
+        BaudRate = 19200
+        Streaming = true
+        Verbose = false
+        // NAV, or STATE, or TEST
+        DefaultTxType = NAV 
+
+        VarNamePrefix = MICROMODEM
+
+        //Source address: Topside = 0, Macrura = 4, Unicorn =3
+        Config = SRC,3
+        Config = ASD,1
+        Config = MFD,1
+        Config = SHF,1
+        Config = DTO,5
+        Config = DBG,1
+        Config = SNV,0
+
+		//Enable/disable syn nav.Modem will not transmit without pps present when this is enabled (SNV=1)
+
+        Config = TOA,0 //Turn TOA ON (TOA,1) when SNV = 1
+        Config = AGN,250 //250 sets receive gain to max
+
+}
+
+
