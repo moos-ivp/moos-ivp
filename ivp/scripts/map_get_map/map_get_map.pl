@@ -42,7 +42,7 @@ $bottomright_latlon = "47.654800 -122.886200";
 # satellite zoom ranges from 2 (low res) to 19 (high res)
 # map zoom ranges from 17 (low res) to 0 (high res)
 
-$sat_zoom = 17;
+$sat_zoom = 14;
 $map_zoom = 17-$sat_zoom;
 
 ($min_lat,$max_lat,$min_lon,$max_lon) = parse_input( $topleft_latlon, $bottomright_latlon );
@@ -101,11 +101,8 @@ for ($la = $min_lat;$la <= $max_lat;$la += $delta_deg) {
 	$filename = sprintf("%d.%06d.%d.%06d.%d.%06d.%d.%06d.jpg", 
 			$t1,$t2,$t3,$t4,$t5,$t6,$t7,$t8);
 
-
-print "$la  $lo  $filename\n";
-next;
-
-
+# print "$la  $lo  $filename\n";
+# next;
 
 	if ( -e $filename ) {
 	    next;

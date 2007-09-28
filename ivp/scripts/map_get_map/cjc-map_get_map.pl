@@ -50,7 +50,7 @@ $dataset_dir="Dabob_Bay";
 # This leads to name collisions...
 #$sat_zoom = 14;
 
-$sat_zoom = 17;
+$sat_zoom = 14;
 $map_zoom = 17-$sat_zoom;
 
 ($min_lat,$max_lat,$min_lon,$max_lon) = parse_input( $topleft_latlon, $bottomright_latlon );
@@ -94,38 +94,37 @@ for ($la = $min_lat;$la <= $max_lat;$la += $delta_deg) {
 	
 # 	print "lat-lon: $la $lo\n";
 
-        $subimage_filename = $dataset_dir . "/" . &compute_subimage_filename( $la, $lo );
+        $subimage_filename = $dataset_dir . "/" . &compute_subimage_filename( $la, $lo, $sat_zoom );
 my $z =&compute_subimage_filename( $la, $lo );
 print "$la  $lo  $z\n";
 
-if ($z eq "47.656137.122.890319.47.654287.122.887573.jpg")
-{
-print "*** la=$la lo=$lo row_count=$row_count filename=$z\n";
-}
+$z = &latlon2qrts($la, $lo, $sat_zoom);
+print "+++ qrts=$z\n";
 
-#         print "CCC: subimage_filename = $subimage_filename\n";
-#    
-#         if ( -e $subimage_filename ) {
-#            print "EXISTS: $subimage_filename\n";
-#            next;
-#         }
-# 
-#         $new_image = 1;
-# 
-#         $qrts_string = &latlon2qrts($la, $lo);
-#         $status = &get_google_aerial_image($qrts_string, $subimage_filename);
-#         if ($status eq "error-404") {
-#             &get_google_map_tile( $la, $lo, $map_zoom, $subimage_filename )
-#         }
-#         else if ($status eq "forbidden") {
-# 	    print "You have been blacklisted by Google.  You need to wait a while and re-try.\n";
-# 	    exit;
-#         }
-#       
-# 
-# 
-# 
-# 	$cmd_append_row .= "$subimage_filename ";
+
+
+#if ($z eq "47.656137.122.890319.47.654287.122.887573.jpg")
+#{
+#print "*** la=$la lo=$lo row_count=$row_count filename=$z\n";
+#}
+
+        print "CCC: subimage_filename = $subimage_filename\n";
+   
+        if ( ! -e $subimage_filename ) {
+           $new_image = 1;
+            
+           $qrts_string = &latlon2qrts($la, $lo);
+           $status = &get_google_aerial_image($qrts_string, $subimage_filename);
+           if ($status == "error-404") {
+               &get_google_map_tile( $la, $lo, $map_zoom, $subimage_filename );
+           }
+           elsif ($status == "forbidden") {
+              print "You have been blacklisted by Google.  You need to wait a while and re-try.\n";
+              exit;
+           }
+        }
+
+ 	$cmd_append_row .= "$subimage_filename ";
     }
     
     # Build a new row-image if we introduced a new sub-image file for this row,
@@ -134,9 +133,9 @@ print "*** la=$la lo=$lo row_count=$row_count filename=$z\n";
     if ( $new_image or ( ! -e $row_filename ) ) {
        $cmd_append_row .= "+append $row_filename";
    
-#        qx\$cmd_append_row\;
+       qx\$cmd_append_row\;
    
-#        print "BBB: Row Command: $cmd_append_row\n";
+       print "BBB: Row Command: $cmd_append_row\n";
    
        $cmd_append = "$row_filename $cmd_append";
     }
@@ -147,7 +146,7 @@ print "*** la=$la lo=$lo row_count=$row_count filename=$z\n";
 # Combine the row-images to produce the final output image...
 $cmd_append = "convert $cmd_append -append output.jpg";
 
-# qx\$cmd_append\;
+qx\$cmd_append\;
 
 print "$cmd_append\n";
 
@@ -243,7 +242,7 @@ sub qrts2xy {
 	    
 sub latlon2qrts {
    
-    my ($lat,$lon) = @_;
+    my ($lat,$lon,$sat_zoom) = @_;
 #function GetQuadtreeAddress(long, lat)
 #{
     
@@ -383,11 +382,11 @@ sub get_google_aerial_image {
 # Given a latitude and longitude, this returns the local filename we'll use for
 # the corresponding subimage file.
 sub compute_subimage_filename {
-   my ( $la, $lo ) = @_;
+   my ( $la, $lo, $sat_zoom ) = @_;
 
 #    print "##### >>> la, lo = $la, $lo\n";
 
-   $qrts_string = &latlon2qrts($la, $lo);
+   $qrts_string = &latlon2qrts($la, $lo, $sat_zoom);
 
    ($xx,$yy) = &qrts2xy( $qrts_string );
 
