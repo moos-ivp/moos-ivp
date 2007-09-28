@@ -1,0 +1,62 @@
+// MOOS file
+
+ServerHost = localhost
+ServerPort = 9000
+
+///////////////////////////////////////////////////////////////////////////////
+// uMicroModemWatchPPS configuration block
+///////////////////////////////////////////////////////////////////////////////
+ProcessConfig = uMicroModemWatchPPS
+{
+	AppTick   = 4
+	CommsTick = 4
+	
+	// set the modem prefix. It must be set to the same value as
+	// VarNamePrefix in the iMicroModem configuration block
+	modem_prefix = MODEM
+	
+	// maximum number of timeouts before the modem gets reconfigured
+	max_timeout=3
+	
+	verbose=true
+}
+
+// below is a sample configuration block for iMicroModem which shows 
+
+///////////////////////////////////////////////////////////////////////////////
+// iMicroModem configuration block
+///////////////////////////////////////////////////////////////////////////////
+ProcessConfig = iMicroModem
+{
+        AppTick   = 8
+        CommsTick = 8
+
+        Port =  /dev/ttyS1
+
+        BaudRate = 19200
+        Streaming = true
+        Verbose = false
+        // NAV, or STATE, or TEST
+        DefaultTxType = NAV 
+
+        VarNamePrefix = MODEM
+
+        //Source address: Topside = 0, Macrura = 4, Unicorn =3
+        Config = SRC,3
+        Config = ASD,1
+        Config = MFD,1
+        Config = SHF,1
+        Config = DTO,5
+        Config = DBG,1
+        Config = SNV,1
+
+		//Enable/disable syn nav.Modem will not transmit without pps present when this is enabled (SNV=1)
+
+        Config = TOA,1 //Turn TOA ON (TOA,1) when SNV = 1
+        Config = AGN,250 //250 sets receive gain to max
+
+}
+
+
+
+
