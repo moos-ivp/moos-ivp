@@ -8,11 +8,11 @@ ProcessConfig = iMicroModem
 	AppTick   = 8
 	CommsTick = 8
 
-	Port = /dev/ttyS2
+	//Port = COM5
+	Port = /dev/ttyUSB0
 	BaudRate = 19200
 	Streaming = false
 	Verbose = true
-	// NAV, or STATE, or TEST
-        DefaultTxType = NAV
+	VarNamePrefix = MODEM
 }
 

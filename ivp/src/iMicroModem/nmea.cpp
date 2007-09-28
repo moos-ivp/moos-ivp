@@ -1,26 +1,139 @@
 /*
  *  nmea.c  - NMEA parser for umodem messages. 
- *              
- * 
- * Copyright (C) 2003  Matt Grund, WHOI
- * 
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
+ */             
 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
-
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA 
- *
- */
+// iMicroModem MOOS Modem driver, was developed 
+// by Matt Grund, Woods Hole Oceanographic Institution
+//
+// This code is licensed under a Creative Commons
+// Attribution Non-Commercial Share-A-Like License,
+// version 2.5.
+//
+// For more information, see the file License.html
+// or the web site:
+//
+//  http://creativecommons.org/licenses/by-nc-sa/2.5/
+//
+// Copyright(c)2004, Matt Grund, WHOI. <mgrund@whoi.edu>
+//
+// some debugging by Alex Bahr, MIT abahr@mit.edu
+// noted by lines containing abahr
 
 #include "nmea.h"
+#include <string.h>
+
+//
+//  Append Checksum, CR and NL to string
+// 
+void NMEA_AppendChecksum(char *str){
+
+  char *c;
+  char check[]="*  \r\n"; /* checksum template */
+  int cs=0;
+
+  /* compute checksum */
+  c=str+1;                  /* skip dollar sign */
+  while(*c) {
+    cs ^= *(int *)(c++) ;   /* XOR of message */
+    cs &= (0x0ff);          /* 8 bit, just to be sure */
+  }
+
+  if ((cs&(0x0f))>9)
+    check[2] = 'A' + (cs&(0x0f)) - 10 ;
+  else
+    check[2] = '0' + (cs&(0x0f)) ;
+
+  cs = cs >> 4 ;
+
+  if ((cs&(0x0f))>9)
+    check[1] = 'A' + (cs&(0x0f)) - 10 ;
+  else
+    check[1] = '0' + (cs&(0x0f)) ;
+
+  strcat(str,check);
+}
+
+//
+// Checks NMEA strings for correctness, checksum AND format
+//
+//    returns error codes for the following:
+//   
+//                1. no dollar sign
+//                2. no comma (there must be at least one arg)
+//                3. more than 1 star
+//                4. bad terminator 
+//                5. bad checksum
+//
+
+int NMEA_CheckChecksum(char *str){
+		
+	    char c0,c1;
+        char *bot, *c;
+     	int nargs=0,len,cs0,cs1=0,usechk=0;
+
+		c = str ;
+	
+		/* check syntax */
+		if (*c!='$')
+			return NMEA_NODOLLAR ;
+		
+		while (*c){
+			if (*c=='*')
+				usechk++;         /*  a "*" means checksum in use  */
+			if (*(c++)==',')    /*  one "," per argument */
+				nargs++;
+		}
+		
+		if (nargs==0)
+			return NMEA_NOCOMMA ;
+		
+		if (usechk>1)
+			return NMEA_STAR ;
+		c = str ;
+		len=strlen(c);
+		bot=c+len-1;
+	
+		if (*(bot--)!='\n')
+			return(NMEA_TERMERR);
+	
+		if (*(bot--)!='\r')
+			return(NMEA_TERMERR);
+	
+		/* check checksum */
+		if (usechk==1){
+		
+		c0 = *bot--;
+		c1 = *bot--;
+		
+		if (*(bot)!='*')
+			return(NMEA_CHKSUMERR);
+		
+		/* parse checksum digits */
+		if ((c0>'/')&&(c0<':'))  /* 0-9 */
+			cs0 = (int)c0 - 48 ;
+		else if ((c0>'@')&&(c0<'G'))  /* A-F */
+			cs0 = (int)c0 - 'A' + 10 ;
+		else
+			return(NMEA_CHKSUMERR); /* bad digit */
+		
+		if ((c1>'/')&&(c1<':'))  /* 0-9 */
+			cs0 += 16 * ((int)c1 - 48) ;
+		else if ((c1>'@')&&(c1<'G'))  /* A-F */
+			cs0 += 16 * ((int)c1 - 'A' + 10) ;
+		else
+			return(NMEA_CHKSUMERR); /* bad digit */
+		
+		c++ ; /* skip the $ */
+		while(*c!='*') {
+			cs1 ^= *(int *)(c++) ;   /* XOR of message */
+			cs1 &= (0x0ff);          /* 8 bit, just to be sure */
+		}
+		if (cs0 != cs1)
+			return(NMEA_CHKSUMERR); /* bad checksum */
+	}
+	return(NMEA_NOERROR);
+}
+
 
 int NMEA_Scan(unsigned char *buf,unsigned int *buflen,char *msg){
 	char *c,*m,*dol,*term;
@@ -69,14 +182,8 @@ int NMEA_Type(char *msg){
 			return (NMEA_REVERT);
 		return (NMEA_READY);
 	}
-	if (0==strncmp(msg,"$CACFG,SRC",10)) {
-		return(NMEA_ADDRESS);
-	}
-	if (0==strncmp(msg,"$CACFG,ASD",10)) {
-		return(NMEA_ALWAYS);
-	}
-	if (0==strncmp(msg,"$CACFG,PTO",10)) {
-		return(NMEA_CFGPTO);
+	if (0==strncmp(msg,"$CACFG",6)) {
+		return(NMEA_CFG);
 	}
 	if (0==strncmp(msg,"$CAMPA",6)) {
 		return(NMEA_APING);
@@ -177,23 +284,22 @@ int NMEA_Type(char *msg){
 	return(NMEA_UNKNOWN);
 }
 
+//
+// returns number of arguments in NMEA message
+//
+int NMEA_GetNArgs(char *str)
+{
+	int l,len,val=0;
 
-void NMEA_OldStrArg(char *msg,int n,char *arg){
-
-  int l;
-  char *t;
-  char str[NMEA_MAXSTR];
-
-  strcpy(str,msg);
-
-  t=strtok(str,",*");
-  for(l=0;l<n;l++)
-    t=strtok(NULL,",*");
-
-  strcpy(arg,t);
-
+	len=strlen(str);
+	for (l=0;l<len;l++)
+		if (str[l]==',')
+	       val++;
+	return(val);
 }
 
+//
+// Parses field "n", returns substring in "out"
 // improved over strtok method - provides empty args
 //
 void NMEA_StrArg(char *str,int n, char *out)
@@ -222,53 +328,56 @@ void NMEA_StrArg(char *str,int n, char *out)
 
 int NMEA_IntArg(char *msg,int n){
 
-  int ret,l;
-  char *t;
   char str[NMEA_MAXSTR];
 
-  strcpy(str,msg);
+  NMEA_StrArg(msg,n,str);
 
-  t=strtok(str,",*");
-  for(l=0;l<n;l++)
-    t=strtok(NULL,",*");
-  ret=atoi(t);
-  
-  return(ret);
+  if (strlen(str))
+	  return(atoi(str));
+  else
+      return(NMEA_NAN);
+
 }
 
 long NMEA_LongArg(char *msg,int n){
 
-  int l;
-  long ret;
-  char *t;
   char str[NMEA_MAXSTR];
 
-  strcpy(str,msg);
+  NMEA_StrArg(msg,n,str);
 
-  t=strtok(str,",*");
-  for(l=0;l<n;l++)
-    t=strtok(NULL,",*");
-  ret=atol(t);
-  
-  return(ret);
+  if (strlen(str))
+	  return(atol(str));
+  else
+      return(NMEA_NAN);
+
 }
 
 float NMEA_FloatArg(char *msg,int n){
 
-  int l;
-  float ret;
-  char *t;
   char str[NMEA_MAXSTR];
+  NMEA_StrArg(msg,n,str);
 
-  strcpy(str,msg);
+  if (strlen(str))
+	  return((float)atof(str));
+  else
+      return((float)NMEA_NAN);
 
-  t=strtok(str,",*");
-  for(l=0;l<n;l++)
-    t=strtok(NULL,",*");
-  ret=(float)atof(t);
-  
-  return(ret);
 }
+
+// added by abahr 21 August 2007
+
+double NMEA_DoubleArg(char *msg,int n){
+
+  char str[NMEA_MAXSTR];
+  NMEA_StrArg(msg,n,str);
+
+  if (strlen(str))
+	  return((double)atof(str));
+  else
+      return((double)NMEA_NAN);
+
+}
+
 
 
 int NMEA_HexData(char *msg,int n, char *buf){
@@ -289,7 +398,7 @@ int NMEA_HexData(char *msg,int n, char *buf){
   for (l=0;l<nbytes;l++){
     bs[0]=t[l*2];
     bs[1]=t[l*2+1];
-    bs[3]='\0';
+    bs[2]='\0';
     buf[l]=strtoul(bs,NULL,16);
   }
 
@@ -299,14 +408,14 @@ int NMEA_HexData(char *msg,int n, char *buf){
 int NMEA_HexToData(char *hex, unsigned char *buf){
 
   int l,nbytes;
-  char bs[3];
+  char bs[4];
 
   nbytes = strlen(hex)/2;
   
   for (l=0;l<nbytes;l++){
     bs[0]=hex[l*2];
     bs[1]=hex[l*2+1];
-    bs[3]='\0';
+    bs[2]='\0';
     buf[l]=strtoul(bs,NULL,16);
   }
 

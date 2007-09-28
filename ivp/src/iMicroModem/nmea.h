@@ -1,29 +1,46 @@
 /*
  *  nmea.h -  NMEA parser for umodem messaging
- *              
- * 
- * Copyright (C) 2003  Matt Grund, WHOI
- * 
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
+ */             
 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+// iMicroModem MOOS Modem driver, was developed 
+// by Matt Grund, Woods Hole Oceanographic Institution
+//
+// This code is licensed under a Creative Commons
+// Attribution Non-Commercial Share-A-Like License,
+// version 2.5.
+//
+// For more information, see the file License.html
+// or the web site:
+//
+//  http://creativecommons.org/licenses/by-nc-sa/2.5/
+//
+// Copyright(c)2004, Matt Grund, WHOI. <mgrund@whoi.edu>
+//
+// some debugging by Alex Bahr, MIT abahr@mit.edu
+// noted by lines containing "added by abahr"
 
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, wri	te to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA 
- *
- */
+
 #include <string>
 #include <stdio.h>
 
-#define NMEA_MAXSTR   (512)
+#define  NMEA_NAN      (-999)
+#define  NMEA_MAXSTR   (512)
 
+/* NMEA parse errors */
+#define NMEA_NOERROR    (9)           /* no error */        
+#define NMEA_CHKSUMERR  (11)          /* bad checksum */          
+#define NMEA_UNKNOWNCMD (12)          /* unknown cmd (parser not in table) */
+#define NMEA_NODOLLAR   (13)          /* missing $ */  
+#define NMEA_NOCOMMA    (14)          /* missing at least 1 comma */
+#define NMEA_WRONGNARGS (15)          /* wrong number of arguments */
+#define NMEA_STAR       (16)          /* too many or misplaced stars '*'  */
+#define NMEA_RANGE      (17)          /* arg out of range */
+#define NMEA_BLANK      (18)          /* required arg is blank */
+#define NMEA_TERMERR    (19)	      /* bad terminator(s) */
+#define NMEA_TALKER     (20)          /* unknown talker id */
+
+
+/* NMEA message IDs all known messages (this list grows) */
 #define  NMEA_UNKNOWN (0x00)
 #define  NMEA_REVERT  (0x01)
 #define  NMEA_READY   (0x02)
@@ -49,7 +66,7 @@
 #define  NMEA_DEBUG   (0x16)
 #define  NMEA_ERROR   (0x17)
 #define  NMEA_TXDACK  (0x18)
-#define  NMEA_CFGPTO  (0x19)
+#define  NMEA_CFG     (0x19)
 #define  NMEA_CFR     (0x1a)
 #define  NMEA_MFD     (0x1b)
 #define  NMEA_DOP     (0x1c)
@@ -68,8 +85,13 @@ int   NMEA_Scan(unsigned char *buf,unsigned int *buflen,char *msg);
 int   NMEA_Type(char *msg);
 int   NMEA_IntArg(char *msg,int n);
 long  NMEA_LongArg(char *msg,int n);
+// added by abahr 21 August 2007
+double  NMEA_DoubleArg(char *msg,int n);
 void  NMEA_StrArg(char *msg,int n,char *arg);
 float NMEA_FloatArg(char *msg,int n);
 int   NMEA_HexData(char *msg,int n, char *buf);
 int   NMEA_HexToData(char *hex,unsigned char *buf);
 int   NMEA_DataToHex(unsigned char *buf,int nBytes,char *hex);
+void  NMEA_AppendChecksum(char *str);
+int   NMEA_CheckChecksum(char *str);
+int   NMEA_GetNArgs(char *str);

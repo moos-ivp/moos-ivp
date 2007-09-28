@@ -39,7 +39,11 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "ccl.h"
+#include "umodem.h"
+
+typedef std::vector<std::string> STRING_VECTOR;
+typedef std::vector<int> INT_VECTOR;
+typedef std::list<std::string> STRING_LIST;
 
 class CMicroModemInstrument : public CMOOSInstrument  
 {
@@ -52,38 +56,57 @@ public:
 	bool OnStartUp();	
 	bool InitialiseSensor();
 	bool Iterate();
+	bool ConfigIterate();
 	bool GetModemMessage();
 	bool ParseModemMessage();
         bool OnNewMail(MOOSMSG_LIST &NewMail);
-	bool DoDecodeFrame(sDataFrame *f);
-	CCL_contactxy_t * MakeContactXYFromQ();
-	CCL_statexy_t * MakeStateXYFromDB();
-	CCL_navxy_t * MakeNavXYFromDB();
 	bool OnModemData();
-	bool OnDataRequest();
 	bool OnPingReply();
-	bool OnTrackerFix(const std::string &sVal);
 	bool OnCommand(const std::string &sVal);
-        bool CheckTimeouts();
-        bool PublishLastQoS();
+	bool CheckTimeouts();
+	bool PublishLastQoS();
+	bool OnModemConfig(char *caName,int nValue);
+	bool SetModemClock();
 
 	// context
 	sDataFrame m_sRxFrame;
-	std::list<CCL_contact_det_t> m_ContactsToTx;
-	std::list<sDataFrame> m_ForwardsToTx;
+	sDataFrame m_sTxFrame;
+	bool m_bHaveTxFrame;
 	std::string sLastModemMessage;
-	std::string m_sDefaultTxType;
-	CCL_statexy_t m_sStateXY;
-	CCL_navxy_t m_sNavXY;
-	CCL_contactxy_t m_sContactXY;
 	int  m_nDefaultDestinationAddress;
 	int  m_nThisModemAddress;
-	int  iLastModemMsgType;
-	int  iOldModemStatus;
-	bool  m_bDefaultUseNAVXY;
-        double dtLastGood[UMODEM_MAXNODES];
+	int  m_iLastModemMsgType;
+	int  m_iOldModemStatus;
+	double dtLastGood[UMODEM_MAXNODES];
+	
+	// configurable MOOS variable names, generic prefix "MICROMODEM" can be changed.
+	std::string m_sVarNamePrefix;   // the prefix to pre-pend to all the variable names
+	std::string m_sDataVarName;     
+	std::string m_sCommandVarName;
+	std::string m_sRawVarName;
+	std::string m_sServiceVarName;
+	std::string m_sToModemVarName;
+	std::string m_sFromModemVarName;
+	std::string m_sStatusVarName;
+	std::string m_sStatusCodeVarName;
+	int  vehicleID;
+
+	// configure the modem
+	STRING_VECTOR m_svSettingNames;  // settings to write to modem
+	INT_VECTOR m_ivSettingValues;    // settings to write to modem
+	int m_iNumSettings;
+	int m_iCurrentSetting;
+	STRING_VECTOR m_svConfigNames;   // config replies from modem
+	INT_VECTOR m_ivConfigValues;     // config replies from modem
+	int m_iNumConfigs;
+	bool m_bIsConfigured;
+	
 protected:
 
+private:
+	bool DoSubscribe();
+	bool DoFormVarNames();
+	bool SendModemString(char *caStr);
 };
 
 #endif // !defined(AFX_MicroModemINSTRUMENT_H__1233F956_765B_48B3_BDB5_0255B563F4B3__INCLUDED_)

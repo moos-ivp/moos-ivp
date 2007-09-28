@@ -1,51 +1,56 @@
 /*
  *  umodem.h  - wrapper around umodem specific calls 
- *              
- * 
- * Copyright (C) 2003  Matt Grund, WHOI
- * 
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
+ */             
 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+// iMicroModem MOOS Modem driver, was developed 
+// by Matt Grund, Woods Hole Oceanographic Institution
+//
+// This code is licensed under a Creative Commons
+// Attribution Non-Commercial Share-A-Like License,
+// version 2.5.
+//
+// For more information, see the file License.html
+// or the web site:
+//
+//  http://creativecommons.org/licenses/by-nc-sa/2.5/
+//
+// Copyright(c)2004, Matt Grund, WHOI. <mgrund@whoi.edu>
+//
+// some debugging by Alex Bahr, MIT abahr@mit.edu
+// modified/added lines are marked by
+// "modified/added by abahr"
 
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA 
- *
- */
+
+#ifndef _UMODEM_H
+#define _UMODEM_H
+
 
 #include "nmea.h"
 #include <time.h>
-
 /* states for u.state.status */
-#define UMODEM_UNKNOWN       (0)   // on fire? ;)
-#define UMODEM_BADDEVICE     (1)   // couldn't open
-#define UMODEM_CONFIGURING   (2)   // sent config command, waiting for reply
-#define UMODEM_IDLE          (3)   // nothing happening
-#define UMODEM_TRANSMITTING  (4)   // data request or transmitting
-#define UMODEM_RECEIVING     (5)   
-#define UMODEM_MONITORING    (6)
-#define UMODEM_INITIATING    (7)
-#define UMODEM_PINGING       (8)
-#define UMODEM_COMMANDING    (9)
-#define UMODEM_NAVIGATING    (10)
-#define UMODEM_CALIBRATING   (11)
-#define UMODEM_REVERTED      (12)  // if modem reverted
-#define UMODEM_GOTERROR      (13)  // if the modem reported an error
-#define UMODEM_GOTBADCRC     (14)  // if the modem reported a bad CRC
-#define UMODEM_GOTTIMEOUT    (15)  // if the modem reported packet timeout
-#define UMODEM_COMMANDED     (16)
-#define UMODEM_ACKNOWLEDGING (17)
-#define UMODEM_TXON          (18)
-#define UMODEM_TXOFF         (19)
-#define UMODEM_GOTPINGED     (20)
-#define UMODEM_GOTDATA       (21)
+#define UMODEM_UNKNOWN        (0)   // on fire? ;)
+#define UMODEM_CONFIGERROR    (1)   // couldn't open
+#define UMODEM_CONFIGURING    (2)   // sent config command, waiting for reply
+#define UMODEM_IDLE           (3)   // nothing happening
+#define UMODEM_TRANSMITTING   (4)   // data request or transmitting
+#define UMODEM_RECEIVING      (5)   
+#define UMODEM_MONITORING     (6)
+#define UMODEM_INITIATING     (7)
+#define UMODEM_PINGING        (8)
+#define UMODEM_COMMANDING     (9)
+#define UMODEM_NAVIGATING     (10)
+#define UMODEM_CALIBRATING    (11)
+#define UMODEM_REVERTED       (12)  // if modem reverted
+#define UMODEM_GOTERROR       (13)  // if the modem reported an error
+#define UMODEM_GOTBADCRC      (14)  // if the modem reported a bad CRC
+#define UMODEM_GOTTIMEOUT     (15)  // if the modem reported packet timeout
+#define UMODEM_COMMANDED      (16)
+#define UMODEM_ACKNOWLEDGING  (17)
+#define UMODEM_TXON           (18)
+#define UMODEM_TXOFF          (19)
+#define UMODEM_GOTPINGED      (20)
+#define UMODEM_REQUESTINGDATA (21)
+#define UMODEM_GOTDATA        (22)
 
 /* settings */
 #define UMODEM_MAXNODES     (16)
@@ -61,7 +66,7 @@
 // MicroModem device
 //  
 //
-typedef struct {
+typedef struct UmodemDev {
 	time_t        lastread;
 	int           fd;
 	char          name[80];
@@ -71,8 +76,7 @@ typedef struct {
 	char          lastmsg[UMODEM_MAXMSG];
 	char          txmsg[UMODEM_MAXMSG];
 	char          lasterrmsg[80];
-} UmodemDevObj ;
-
+} UmodemDevObj;
 
 // Micromodem configuration
 
@@ -142,6 +146,7 @@ typedef struct {
 	UmodemTxDataFrameObj frame[UMODEM_MAXFRAMES];
 	int                  src;
 	int                  dest;
+	int                  ackrequested; 
 	int                  requested;
 	int                  dataacksize;
 	int                  nsent;
@@ -182,6 +187,12 @@ typedef struct {
 } UmodemSleepObj;
 
 typedef struct {
+	unsigned int src;
+	float time;
+	int mode;
+} UmodemArrivalTimeObj;
+
+typedef struct {
   unsigned int   src;
   unsigned int   dest;
   unsigned int   mode;
@@ -204,22 +215,34 @@ typedef struct
      float owtt[4];
 } UmodemTravelTimeObj;
 
+typedef struct
+{
+	char name[4];
+	int  value;
+	char requested_name[4];
+	int  requested_value;
+} UmodemCfgObj;
+
+	
+
 
 // Micromodem Object - tracks state, stores data
 //
 typedef struct {
-     UmodemDevObj     dev;
-     UmodemStateObj   state;
-     UmodemLinkObj    link[UMODEM_MAXNODES];
-     UmodemRxDataObj  rx;
-     UmodemTxDataObj  tx;
-     UmodemAckObj     ack;
-     UmodemCycleObj   cycle;
-     UmodemPingObj    ping;
-     UmodemExtSelObj  extsel;
-     UmodemSleepObj   sleep;
-     UmodemLBLPingObj lbl;
-     UmodemTravelTimeObj ttimes;
+	UmodemDevObj     dev;
+	UmodemCfgObj     cfg;
+	UmodemStateObj   state;
+	UmodemLinkObj    link[UMODEM_MAXNODES];
+	UmodemRxDataObj  rx;
+	UmodemTxDataObj  tx;
+	UmodemAckObj     ack;
+	UmodemCycleObj   cycle;
+	UmodemPingObj    ping;
+	UmodemExtSelObj  extsel;
+	UmodemSleepObj   sleep;
+	UmodemLBLPingObj lbl;
+	UmodemTravelTimeObj ttimes;
+	UmodemArrivalTimeObj toa;
 } UmodemObj ;
 
 
@@ -247,6 +270,8 @@ void UmodemFlushTxData(void);
 
 /* read from structs */
 char *UmodemGetLastErrorMsg(void);
+char *UmodemGetLastCfgName(void);
+int UmodemGetLastCfgValue(void);
 int UmodemGetAddress(void);
 int UmodemGetPktTimeout(void);
 int UmodemGetLastDQF(void);
@@ -279,6 +304,7 @@ int UmodemGetTXFrameNo(void);
 int UmodemGetTXQSize(void);
 int UmodemGetTXDataAckSize(void);
 int UmodemGetTXDataAck(void);
+int UmodemGetTXDataAckRequested(void);
 int UmodemGetTXDataDest(void);
 void UmodemShowRXData(void);
 float UmodemGetLastVoltage(void);
@@ -299,6 +325,11 @@ char *UmodemMakePingCmd(int iSrc, int iDest);
 char *UmodemMakeCICmd(int iSrc, int iDest, int iRate, int iAck);
 char *UmodemMakeCfgCmd(char *name, int value);
 char *UmodemMakeCfgQueryCmd(char *name);
+char *UmodemMakeCFRCmd(int iMilliseconds);
+// modified/added by abahr 21 August 2007
+double UmodemGetArrivalTime(void);
+int UmodemGetArrivalTimeMode(void);
+int UmodemGetArrivalTimeSrc(void);
 
 /* int UmodemGetRXData(unsigned char *buf); */
 
@@ -324,7 +355,7 @@ char *UmodemMakeCfgQueryCmd(char *name);
 #define UMODEM_TXDACK     (28)
 #define UMODEM_DEBUG      (29)
 #define UMODEM_ERROR      (30)
-#define UMODEM_CFGPTO     (31)
+#define UMODEM_CFG        (31)
 #define UMODEM_NOISE      (32)
 #define UMODEM_RETRY      (33)
 #define UMODEM_MFD        (34)
@@ -338,3 +369,5 @@ char *UmodemMakeCfgQueryCmd(char *name);
 #define UMODEM_TTIMES     (42)
 #define UMODEM_NAVMFD     (43)
 #define UMODEM_TOA        (44)
+
+#endif  // #ifndef _UMODEM_H

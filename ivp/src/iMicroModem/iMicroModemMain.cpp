@@ -1,48 +1,45 @@
-///////////////////////////////////////////////////////////////////////////
+
+// iMicroModem MOOS Modem driver, was developed 
+// by Matt Grund, Woods Hole Oceanographic Institution
 //
-//   MOOS - Mission Oriented Operating Suite 
-//  
-//   A suit of Applications and Libraries for Mobile Robotics Research 
-//   Copyright (C) 2001-2005 Massachusetts Institute of Technology and 
-//   Oxford University. 
-//	
-//   This software was written by Paul Newman and others
-//   at MIT 2001-2002 and Oxford University 2003-2005.
-//   email: pnewman@robots.ox.ac.uk. 
-//	  
-//   This file is part of a  MOOS Instrument. 
-//		
-//   This program is free software; you can redistribute it and/or 
-//   modify it under the terms of the GNU General Public License as 
-//   published by the Free Software Foundation; either version 2 of the 
-//   License, or (at your option) any later version. 
-//		  
-//   This program is distributed in the hope that it will be useful, 
-//   but WITHOUT ANY WARRANTY; without even the implied warranty of 
-//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
-//   General Public License for more details. 
-//			
-//   You should have received a copy of the GNU General Public License 
-//   along with this program; if not, write to the Free Software 
-//   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 
-//   02111-1307, USA. 
+// This code is licensed under a Creative Commons
+// Attribution Non-Commercial Share-A-Like License,
+// version 2.5.
 //
-//////////////////////////    END_GPL    //////////////////////////////////
+// For more information, see the file License.html
+// or the web site:
+//
+//  http://creativecommons.org/licenses/by-nc-sa/2.5/
+//
+// Copyright(c)2004, Matt Grund, WHOI. <mgrund@whoi.edu>
+
 #include <MOOSLIB/MOOSLib.h>
+#include <string>
+#include "version.h"
 
 #include "MicroModemInstrument.h"
 int main(int argc ,char * argv[])
 {
-	char * sMissionFile = "Mission.moos";
+	std::string sMissionFile;
+	std::string sMOOSName; 
 
-    if(argc>1)
-    {
-        sMissionFile = argv[1];
-    }
+
+	sMOOSName.assign("iMicroModem");
+	sMissionFile.assign("iMicroModem.moos");
+	switch(argc)
+	{
+	case 3:
+		sMOOSName = MOOSFormat("%s",argv[2]);
+	case 2:
+        sMissionFile = MOOSFormat("%s",argv[1]);
+	}
 
     CMicroModemInstrument MicroModemInstrument;
 
-    MicroModemInstrument.Run("iMicroModem",sMissionFile);
+	MOOSTrace("\nThis is %s version %d.%02d\n\n",VERSION_NAME,VERSION_MAJOR,VERSION_MINOR);
+
+	MOOSTrace("iMicroModem running mission:\"%s\" as \"%s\"\n",sMissionFile.c_str(),sMOOSName.c_str());
+    MicroModemInstrument.Run((char *)sMOOSName.c_str(),(char *)sMissionFile.c_str());
 
     return 0;
 }

@@ -1,27 +1,29 @@
 /*
  *  umodem.c  - wrapper around umodem specific calls 
- *              
- * 
- *  Copyright (C) 2003  Matt Grund, WHOI
- * 
- *  This program is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU General Public License
- *  as published by the Free Software Foundation; either version 2
- *  of the License, or (at your option) any later version.
+ */             
 
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
-
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
- *  02111-1307, USA 
- *
- */
+// iMicroModem MOOS Modem driver, was developed 
+// by Matt Grund, Woods Hole Oceanographic Institution
+//
+// This code is licensed under a Creative Commons
+// Attribution Non-Commercial Share-A-Like License,
+// version 2.5.
+//
+// For more information, see the file License.html
+// or the web site:
+//
+//  http://creativecommons.org/licenses/by-nc-sa/2.5/
+//
+// Copyright(c)2004, Matt Grund, WHOI. <mgrund@whoi.edu>
 
 /* removed serial port interface -mg 2004-10-08 */
+
+//
+// some debugging by Alex Bahr, MIT abahr@mit.edu
+// modified/added lines are marked by
+// "modified/added by abahr"
+
+
 
 #include "umodem.h"
 
@@ -55,7 +57,7 @@ int UmodemInit(){
 
 char *UmodemMakeTxString(sDataFrame *f){
 //
-// form a micromodem biary dat transimt message
+// form a micromodem binary data transmit message
 //
 
         char caHexData[UMODEM_MAXMSG],caHexByte[3];
@@ -76,7 +78,7 @@ char *UmodemMakeTxString(sDataFrame *f){
 
 char *UmodemMakePingCmd(int iSrc, int iDest){
 //
-// form a micromodem biary dat transimt message
+// form a micromodem ping message
 //
          sprintf(u.dev.txmsg,"$CCMPC,%d,%d\r\n",
 	          iSrc,iDest);
@@ -116,6 +118,15 @@ char *UmodemMakeCfgQueryCmd(char *caName){
 	return u.dev.txmsg;
 }
 
+char *UmodemMakeCFRCmd(int dur){
+//
+// form a micromodem config query message
+//
+        sprintf(u.dev.txmsg,"$CCCFR,%d\r\n",dur);
+
+	    return u.dev.txmsg;
+}
+
 
 
 
@@ -144,14 +155,24 @@ int UmodemParse(char *nmeamsg)
 		UmodemSetStatus(UMODEM_IDLE);
 		break;
 
-	case NMEA_ADDRESS:
-		u.state.address=NMEA_IntArg(nmeamsg,2);
-		return(UMODEM_ADDRESS);
-		break;
+		//case NMEA_ADDRESS:
+		//u.state.address=NMEA_IntArg(nmeamsg,2);
+		//return(UMODEM_ADDRESS);
+		//break;
 
-	case NMEA_CFGPTO:
-		u.state.pkttimeout=NMEA_IntArg(nmeamsg,2);
-		return(UMODEM_CFGPTO);
+	case NMEA_CFG:
+		u.cfg.value=NMEA_IntArg(nmeamsg,2);
+		NMEA_StrArg(nmeamsg,1,u.cfg.name);
+		if (0==strncmp(u.cfg.name,"SRC",3))
+			u.state.address=u.cfg.value;
+		if (UmodemGetStatusInt()==UMODEM_CONFIGURING){ // we sent a command
+			if ( (0==strncmp(u.cfg.name,u.cfg.requested_name,3)) &&
+			     (u.cfg.value==u.cfg.requested_value) )
+				UmodemSetStatus(UMODEM_IDLE);  // reply was good
+			else
+				UmodemSetStatus(UMODEM_CONFIGERROR);  // reply NOT good
+		}
+		return(UMODEM_CFG);
 		break;
 
 	case NMEA_ALWAYS:
@@ -231,12 +252,12 @@ int UmodemParse(char *nmeamsg)
 		u.cycle.npkts   = NMEA_IntArg(nmeamsg,6);
 
 		// set status word appropriately
-        if (u.cycle.src==u.state.address)
+		if (u.cycle.src==u.state.address)
 			UmodemSetStatus(UMODEM_TRANSMITTING);
-        else if (u.cycle.dest==u.state.address)
+		else if (u.cycle.dest==u.state.address)
 			UmodemSetStatus(UMODEM_RECEIVING);
-        else
-            UmodemSetStatus(UMODEM_MONITORING);
+		else
+			UmodemSetStatus(UMODEM_MONITORING);
 		return(UMODEM_CI);
 		break;
 
@@ -265,6 +286,14 @@ int UmodemParse(char *nmeamsg)
 		break;
 	case NMEA_TXMINIDONE:
 		//UmodemSetStatus(UMODEM_TXOFF);
+		break;
+
+	case NMEA_TOA:
+		u.toa.src=u.cycle.src;
+		// modified by abahr 21 August 2007
+		u.toa.time=NMEA_DoubleArg(nmeamsg,1);
+		u.toa.mode=NMEA_IntArg(nmeamsg,2);
+		return(UMODEM_TOA);
 		break;
 
 	case NMEA_DOP:
@@ -305,6 +334,7 @@ int UmodemParse(char *nmeamsg)
 	case NMEA_DATREQ:
 		u.tx.src                      = NMEA_IntArg(nmeamsg,2); 
 		u.tx.dest                     = NMEA_IntArg(nmeamsg,3);
+		u.tx.ackrequested             = NMEA_IntArg(nmeamsg,4);
 		u.tx.frameno                  = NMEA_IntArg(nmeamsg,6)-1;
 		u.tx.requested                = NMEA_IntArg(nmeamsg,5);
 		return(UMODEM_DATREQ);
@@ -367,8 +397,14 @@ static char caModemMsg[560];
 char *UmodemConfig(char *set,int val){
 
 	caModemMsg[0]=0;
+
+	// log what we request
+	strcpy(u.cfg.requested_name,set);
+	u.cfg.requested_value=val;
+	
+	// now send command
 	sprintf(caModemMsg,"$CCCFG,%s,%d\r\n",set,val);    
-    UmodemSetStatus(UMODEM_CONFIGURING);
+	UmodemSetStatus(UMODEM_CONFIGURING);
 	return(caModemMsg);
 }
 
@@ -461,6 +497,12 @@ void UmodemData(char *msg){
 
 int UmodemGetAddress(void){
   return(u.state.address);
+}
+int UmodemGetLastCfgValue(void){
+  return(u.cfg.value);
+}
+char *UmodemGetLastCfgName(void){
+  return(u.cfg.name);
 }
 
 int UmodemGetPktTimeout(void){
@@ -606,12 +648,13 @@ int UmodemGetSleepDest(void){
 int UmodemGetSleepArg(void){
   return(u.sleep.arg);
 }
-char *UmodemGetTXDataBuf(void){
+char *UmodemBuf(void){
   return((char *)u.tx.frame[u.tx.frameno].buf);
 }
 int UmodemGetTXDataSize(void){
   return(u.tx.requested);
 }
+
 int UmodemGetTXFrameNo(void){
   return(u.tx.frameno);
 }
@@ -631,6 +674,9 @@ int UmodemGetTXDataDest(void){
 }
 int UmodemGetTXDataAck(void){
   return(u.tx.frame[u.tx.frameno].ack);
+}
+int UmodemGetTXDataAckRequested(void){
+  return(u.tx.ackrequested);
 }
 int UmodemGetLastAckSrc(void){
   return(u.ack.src);
@@ -761,84 +807,88 @@ void UmodemFlushTxData(void)
 }
 
 int UmodemSetStatus(int s){
-		u.state.status=s;
-		switch(s) { /* states for u.state.status */
-          case  UMODEM_UNKNOWN:       
-			  sprintf(u.state.statusmsg,"Connecting");
+	u.state.status=s;
+	switch(s) { /* states for u.state.status */
+	case  UMODEM_UNKNOWN:       
+		sprintf(u.state.statusmsg,"Connecting");
+		break;
+	case  UMODEM_CONFIGERROR:     
+		sprintf(u.state.statusmsg,"Config Error: %s,%d",u.cfg.requested_name,u.cfg.requested_value);
+		break;
+	case  UMODEM_CONFIGURING:   
+		sprintf(u.state.statusmsg,"Configuring");
+		break;
+	case  UMODEM_IDLE:       
+		sprintf(u.state.statusmsg,"Ready");
+		break;
+	case  UMODEM_TRANSMITTING:  
+		sprintf(u.state.statusmsg,"Transmitting: dest=%d",u.cycle.dest);
+		break;
+	case  UMODEM_RECEIVING:     
+		sprintf(u.state.statusmsg,"Receiving: src=%d",u.cycle.src);
+		break;
+	case  UMODEM_MONITORING:    
+		sprintf(u.state.statusmsg,"Monitoring: src=%d, dest=%d",u.cycle.src,u.cycle.dest);
+		break;
+	case  UMODEM_INITIATING:
+		sprintf(u.state.statusmsg,"New Comms Cycle: src=%d, dest=%d, rate=%d",
+			u.cycle.src,u.cycle.dest,u.cycle.pkttype);
+		break;
+	case  UMODEM_PINGING:       
+		sprintf(u.state.statusmsg,"Pinging, node=%d",u.ping.dest);
 			  break;
-          case  UMODEM_BADDEVICE:     
-			  sprintf(u.state.statusmsg,"Connect Error");
-			  break;
-          case  UMODEM_CONFIGURING:   
-			  sprintf(u.state.statusmsg,"Configuring");
-			  break;
-          case  UMODEM_IDLE:       
-			  sprintf(u.state.statusmsg,"Ready");
-			  break;
-          case  UMODEM_TRANSMITTING:  
-			  sprintf(u.state.statusmsg,"Transmitting: dest=%d",u.cycle.dest);
-			  break;
-          case  UMODEM_RECEIVING:     
-			  sprintf(u.state.statusmsg,"Receiving: src=%d",u.cycle.src);
-			  break;
-          case  UMODEM_MONITORING:    
-			  sprintf(u.state.statusmsg,"Monitoring: src=%d, dest=%d",u.cycle.src,u.cycle.dest);
-			  break;
-          case  UMODEM_INITIATING:
-			  sprintf(u.state.statusmsg,"New Comms Cycle: src=%d, dest=%d, rate=%d",
-				  u.cycle.src,u.cycle.dest,u.cycle.pkttype);
-			  break;
-          case  UMODEM_PINGING:       
-			  sprintf(u.state.statusmsg,"Pinging, node=%d",u.ping.dest);
-			  break;
-          case  UMODEM_COMMANDING:    
-			  sprintf(u.state.statusmsg,"Commanding");
-			  break;
-          case  UMODEM_NAVIGATING:    
-			  sprintf(u.state.statusmsg,"Navigating");
-			  break;
-          case  UMODEM_CALIBRATING:  
-			  sprintf(u.state.statusmsg,"Calibrating Receiver");
-			  break;
-          case  UMODEM_REVERTED:      
-			  sprintf(u.state.statusmsg,"Reverted");
-			  break;
-          case  UMODEM_GOTERROR:      
-			  sprintf(u.state.statusmsg,"Error");
-			  break;
-          case  UMODEM_GOTBADCRC:    
-			  sprintf(u.state.statusmsg,"Got Bad Packet");
-			  break;
-          case  UMODEM_GOTTIMEOUT:    
-			  sprintf(u.state.statusmsg,"Packet Timeout");
-			  break;
-          case  UMODEM_COMMANDED:    
-			  sprintf(u.state.statusmsg,"Got Command");
-			  break;
-          case  UMODEM_ACKNOWLEDGING:    
-			  sprintf(u.state.statusmsg,"Sending Ack");
-			  break;
+	case  UMODEM_COMMANDING:    
+		sprintf(u.state.statusmsg,"Commanding");
+		break;
+	case  UMODEM_NAVIGATING:    
+		sprintf(u.state.statusmsg,"Navigating");
+		break;
+	case  UMODEM_CALIBRATING:  
+		sprintf(u.state.statusmsg,"Calibrating Receiver");
+		break;
+	case  UMODEM_REVERTED:      
+		sprintf(u.state.statusmsg,"Reverted");
+		break;
+	case  UMODEM_GOTERROR:      
+		sprintf(u.state.statusmsg,"Error");
+		break;
+	case  UMODEM_GOTBADCRC:    
+		sprintf(u.state.statusmsg,"Got Bad Packet");
+		break;
+	case  UMODEM_GOTTIMEOUT:    
+		sprintf(u.state.statusmsg,"Packet Timeout");
+		break;
+	case  UMODEM_COMMANDED:    
+		sprintf(u.state.statusmsg,"Got Command");
+		break;
+	case  UMODEM_ACKNOWLEDGING:    
+		sprintf(u.state.statusmsg,"Sending Ack");
+		break;
 
-          case  UMODEM_TXON:    
-			  sprintf(u.state.statusmsg,"Transmitter On");
-			  break;
+	case  UMODEM_TXON:    
+		sprintf(u.state.statusmsg,"Transmitter On");
+		break;
+		
+	case  UMODEM_TXOFF:    
+		sprintf(u.state.statusmsg,"Transmitter Off");
+		break;
+		
+	case  UMODEM_GOTPINGED:    
+		sprintf(u.state.statusmsg,"Got Pinged: src=%d",u.ping.src);
+		break;
+		
+	case  UMODEM_GOTDATA:    
+		sprintf(u.state.statusmsg,"Got Data: size=%d, src=%d",u.rx.frame.iSize,u.rx.frame.iSrc);
+		break;
 
-          case  UMODEM_TXOFF:    
-			  sprintf(u.state.statusmsg,"Transmitter Off");
-			  break;
-
-          case  UMODEM_GOTPINGED:    
-			  sprintf(u.state.statusmsg,"Got Pinged: src=%d",u.ping.src);
-			  break;
-
-          case  UMODEM_GOTDATA:    
-			  sprintf(u.state.statusmsg,"Got Data: size=%d, src=%d",u.rx.frame.iSize,u.rx.frame.iSrc);
-			  break;
-
-		  default:
-			  sprintf(u.state.statusmsg,"Invalid State");
-		}
-		return(s);
+	case  UMODEM_REQUESTINGDATA:    
+		sprintf(u.state.statusmsg,"Got Data Request: size=%d, dest=%d",u.tx.requested,u.tx.dest);
+		break;
+		
+	default:
+		sprintf(u.state.statusmsg,"Invalid State");
+	}
+	return(s);
 }
 
 void UmodemCheckVoltage(void){
@@ -853,4 +903,20 @@ char *UmodemGetStatusString(void){
 
 int UmodemGetStatusInt(void){
 	return u.state.status;
+}
+
+// modified by abahr 21 August 2007
+double UmodemGetArrivalTime(void)
+{
+	return u.toa.time;
+}
+
+int UmodemGetArrivalTimeMode(void)
+{
+	return u.toa.mode;
+}
+
+int UmodemGetArrivalTimeSrc(void)
+{
+	return u.toa.src;
 }
