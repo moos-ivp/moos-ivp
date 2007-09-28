@@ -187,8 +187,8 @@ SSV_GUI::SSV_GUI(int g_w, int g_h, const char *g_l)
 				    wid_b-20, 25, "ENGAGE OK");
   m_engage_cur_off = new MY_Button(col_b+10, ce_top+40, 
 				   wid_b-20, 25, "ENGAGE OFF");
-  m_engage_cur_ok->callback((Fl_Callback*)SSV_GUI::cb_MOOS_Button,(void*)22);
-  m_engage_cur_off->callback((Fl_Callback*)SSV_GUI::cb_MOOS_Button,(void*)23);
+  m_engage_cur_ok->callback((Fl_Callback*)SSV_GUI::cb_MOOS_Button,(void*)24);
+  m_engage_cur_off->callback((Fl_Callback*)SSV_GUI::cb_MOOS_Button,(void*)25);
   
   this->end();
   this->resizable(this);
@@ -416,6 +416,10 @@ inline void SSV_GUI::cb_MOOS_Button_i(int val) {
     pushPending("STATION_KEEP_"+vname, "true");
   else if(val == 23)
     pushPending("STATION_KEEP_"+vname, "false");
+  else if(val == 24)
+    pushPending("ENGAGE_"+vname, "true");
+  else if(val == 25)
+    pushPending("ENGAGE_"+vname, "false");
 
 }
 
