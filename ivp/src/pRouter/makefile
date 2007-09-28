@@ -9,7 +9,7 @@ REQUIRED_MOOS_LIBS = \
 	libMOOS.a 			\
 	libMOOSGen.a 		
 
-PLIBS    = libmbutil.a libgenutil.a
+PLIBS    =
 
 LIBS     = -lm -lpthread \
 	$(patsubst lib%.a,-l%,$(PLIBS)) \
