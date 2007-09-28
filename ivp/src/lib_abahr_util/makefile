@@ -9,10 +9,6 @@ REQUIRED_MOOS_LIBS = 			\
 	libMOOSUtility.a 		\
 	libMOOSGen.a 		
 
-
-
-#PLDIRS   = $(wildcard ../lib_*) ../MOOSLIB ../MOOSGenLib 
-
 # Make configuration parameters
 include ../make_config.mk
 # Generic makefile structure for all library modules
