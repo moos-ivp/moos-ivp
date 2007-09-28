@@ -1,0 +1,28 @@
+////////////////////////////////////////
+//  global variables anyone can use them
+
+ServerHost = localhost
+//ServerHost = karma.whoi.edu 
+ServerPort = 9000
+Community  = Macrura 
+
+//geodetic constants
+// Origin corresponds to S-W corner Monterey Bay test box
+
+LatOrigin = 36.87
+LongOrigin = -122.42
+MagneticOffset = 0.0
+
+/////////////////////////////////////////
+ProcessConfig = pNaFCon
+{
+	AppTick   = 4
+	CommsTick = 4
+//	DestinationPlatformId = 3 //Unicorn 
+	DestinationPlatformId = 4 //Macrura 
+	TrackId = 31
+	Orbit_radius = 100
+	Orbit_points = 6
+	ZigZag_Period = 10
+	ZigZag_Amplitude = 10 
+}
