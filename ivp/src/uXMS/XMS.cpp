@@ -16,16 +16,18 @@ using namespace std;
 
 XMS::XMS()
 {    
-  display_source    = false;
-  display_time      = false;
-  display_community = false;
-  display_help      = false;
+  m_display_source    = false;
+  m_display_time      = false;
+  m_display_community = false;
+  m_display_help      = false;
 
-  m_ignore_vars     = false;
+  m_ignore_vars       = false;
 
-  paused            = true;
-  update_requested  = true;
-  iteration         = 0;
+  m_paused            = true;
+  m_update_requested  = true;
+  m_iteration         = 0;
+
+  m_display_virgins   = false;
 }
 
 //------------------------------------------------------------
@@ -53,7 +55,7 @@ bool XMS::OnNewMail(MOOSMSG_LIST &NewMail)
 
 bool XMS::Iterate()
 {    
-  if(display_help)
+  if(m_display_help)
     printHelp();
   else
     printReport();
@@ -105,45 +107,53 @@ void XMS::handleCommand(char c)
 {
   switch(c) {
   case 's':
-    display_source = false;
-    update_requested = true;
+    m_display_source = false;
+    m_update_requested = true;
     break;
   case 'S':
-    display_source = true;
-    update_requested = true;
+    m_display_source = true;
+    m_update_requested = true;
     break;
   case 't':
-    display_time = false;
-    update_requested = true;
+    m_display_time = false;
+    m_update_requested = true;
     break;
   case 'T':
-    display_time = true;
-    update_requested = true;
+    m_display_time = true;
+    m_update_requested = true;
+    break;
+  case 'v':
+    m_display_virgins = false;
+    m_update_requested  = true;
+    break;
+  case 'V':
+    m_display_virgins = true;
+    m_update_requested = true;
     break;
   case 'c':
-    display_community = false;
-    update_requested = true;
+    m_display_community = false;
+    m_update_requested = true;
     break;
   case 'C':
-    display_community = true;
-    update_requested = true;
+    m_display_community = true;
+    m_update_requested = true;
     break;
   case 'p':
   case 'P':
-    paused = true;
+    m_paused = true;
     break;
   case 'r':
   case 'R':
-    paused = false;
+    m_paused = false;
     break;
   case ' ':
   case 'u':
   case 'U':
-    update_requested = true;
+    m_update_requested = true;
     break;
   case 'h':
   case 'H':
-    display_help = true;
+    m_display_help = true;
     break;
   default:
     break;
@@ -245,12 +255,14 @@ void XMS::printHelp()
   printf("    T        Display Time of variables           \n");
   printf("    c        Surpress Community of variables     \n");
   printf("    C        Display Community of variables      \n");
+  printf("    v        Surpress virgin variables           \n");
+  printf("    V        Display virgin variables            \n");
   printf("   u/U       Update information once - now       \n");
   printf("   p/P       Pause information refresh           \n");
   printf("   r/R       resume information refresh          \n");
   printf("   h/H       Show this Help msg - 'R' to resume  \n");
-  paused = true;
-  display_help = false;
+  m_paused = true;
+  m_display_help = false;
 }
 
 //------------------------------------------------------------
@@ -258,25 +270,25 @@ void XMS::printHelp()
 
 void XMS::printReport()
 {
-  if(paused && !update_requested)
+  if(m_paused && !m_update_requested)
     return;
-  update_requested = false;
-  iteration++;
+  m_update_requested = false;
+  m_iteration++;
 
   for(int j=0; j<5; j++)
     printf("\n");
 
   printf("  %-22s", "VarName");
 
-  if(display_source)
+  if(m_display_source)
     printf("%-12s", "(S)ource");
   else
     printf(" (S) ");
-  if(display_time)
+  if(m_display_time)
     printf("%-12s", "(T)ime");
   else
     printf(" (T) ");
-  if(display_community)
+  if(m_display_community)
     printf("%-14s", "(C)ommunity");
   else
     printf(" (C) ");
@@ -284,51 +296,54 @@ void XMS::printReport()
 
   printf("  %-22s", "----------------");
 
-  if(display_source)
+  if(m_display_source)
     printf("%-12s", "----------");
   else
     printf(" --- ");
 
-  if(display_time)
+  if(m_display_time)
     printf("%-12s", "----------");
   else
     printf(" --- ");
 
-  if(display_community)
+  if(m_display_community)
     printf("%-14s", "----------");
   else
     printf(" --- ");
-  printf(" ----------- (%d)\n", iteration);
+  printf(" ----------- (%d)\n", m_iteration);
 
   int vsize = var_names.size();
   for(int i=0; i<vsize; i++) {
-    printf("  %-22s ", var_names[i].c_str());
-    
-    if(display_source)
-      printf("%-12s", var_source[i].c_str());
-    else
-      printf("     ");
-    
-    if(display_time)
-      printf("%-12s", var_time[i].c_str());
-    else
-      printf("     ");
-    
-    if(display_community)
-      printf("%-14s", var_community[i].c_str());
-    else
-      printf("     ");
-    
-    if(var_type[i] == "string") {
-      if(var_vals[i] != "n/a") {
-	printf("\"%s\"", var_vals[i].c_str());
-      }
+
+    if((m_display_virgins) || (var_vals[i] != "n/a")) {
+      printf("  %-22s ", var_names[i].c_str());
+	    
+      if(m_display_source)
+	printf("%-12s", var_source[i].c_str());
       else
-	printf("n/a");
+	printf("     ");
+    
+      if(m_display_time)
+	printf("%-12s", var_time[i].c_str());
+      else
+	printf("     ");
+      
+      if(m_display_community)
+	printf("%-14s", var_community[i].c_str());
+      else
+	printf("     ");
+      
+      if(var_type[i] == "string") {
+	if(var_vals[i] != "n/a") {
+	  printf("\"%s\"", var_vals[i].c_str());
+	}
+	else
+	  printf("n/a");
+      }
+      else if(var_type[i] == "double")
+	printf("%s", var_vals[i].c_str());
+      printf("\n");		
     }
-    else if(var_type[i] == "double")
-      printf("%s", var_vals[i].c_str());
-    printf("\n");		
   }
 }
 

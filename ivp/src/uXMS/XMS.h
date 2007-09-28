@@ -64,14 +64,16 @@ class XMS : public CMOOSApp
   std::vector<std::string> var_time;
   std::vector<std::string> var_community;
 
-  bool display_help;
-  bool display_source;
-  bool display_time;
-  bool display_community;
-  bool paused;
-  bool update_requested;
-  bool help_requested;
-  int  iteration;
+  bool m_display_help;
+  bool m_display_source;
+  bool m_display_time;
+  bool m_display_community;
+  bool m_paused;
+  bool m_update_requested;
+  bool m_help_requested;
+  int  m_iteration;
+
+  bool m_display_virgins;
 
   bool m_ignore_vars;
 };
