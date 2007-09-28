@@ -10,7 +10,7 @@ LIB_BASE =  $(wildcard lib_ivpcore*)	$(wildcard lib_ivpbuild)   	   \
 	    $(wildcard lib_geometry*)	$(wildcard lib_helmivp*)    	   \
 	    $(wildcard newmat10D*)      $(wildcard lib_genutil)		   \
 	    $(wildcard lib_logic*)	$(wildcard lib_behaviors-don*) 	   \
-	    $(wildcard lib_behaviors-sandbox*)				   \
+	    $(wildcard lib_behaviors-sandbox*) \
 
 
 # Removed because we no longer put MOOS code directly into the IvP source tree...
@@ -26,7 +26,10 @@ APP_BASE =  $(wildcard pHelmIvP*) 	$(wildcard pEchoVar*) 	   	\
 	    $(wildcard iPNICompass*)	$(wildcard iPWMController*) 	\
 	    $(wildcard MOOSDump*)	$(wildcard uProcessWatch*)	\
 	    $(wildcard app_splug*)	$(wildcard pDeployHandler*)	\
-	    $(wildcard iGPS*)	
+	    $(wildcard pFramer*)	$(wildcard pNaFCon*)		\
+	    $(wildcard iMicroModem*)	$(wildcard pScheduler*)		\
+	    $(wildcard pRouter*)	$(wildcard uMessageForward*)	\
+	    $(wildcard iGPS*)           $(wildcard pUDPBroadcastClient*)
 
 
 # Removed because we no longer put MOOS code directly into the IvP source tree...
@@ -37,7 +40,7 @@ APP_BASE =  $(wildcard pHelmIvP*) 	$(wildcard pEchoVar*) 	   	\
 LIB_TOOLS = $(wildcard lib_behaviors-sandbox*) \
 	    $(wildcard lib_marineview*)	$(wildcard lib_behaviros-don*)	   \
 	    $(wildcard lib_navplot*)	$(wildcard lib_ivpbuild-extra*)	   \
-	    $(wildcard lib_track*)	$(wildcard lib_ipfview*)	
+	    $(wildcard lib_track*)	$(wildcard lib_ipfview*)
 
 # $(wildcard lib_FLTKVW*)
 
