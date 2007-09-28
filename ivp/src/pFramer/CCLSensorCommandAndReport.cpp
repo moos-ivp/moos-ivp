@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#include <CCLSensorCommandAndReport.h>
+#include "CCLSensorCommandAndReport.h"
 
 ////////////////////////////////////////////////////////////////////////
 // Packed Commands and Reports

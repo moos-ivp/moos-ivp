@@ -134,6 +134,12 @@ FILE(GLOB IVP_APP_TOOLS_SUBDIRS
    pBearings
    pSensorSim*
    pArtifactMapper*
+   pFramer*
+   pNaFCon*
+   pScheduler*
+   pRouter*
+   uMessageForward*
+   pUDPBroadcastClient*
 #    uPlayBack*       I don't see this file in the src directory. -CJC	        
 #    pDrone*          I don't see this file in the src directory. -CJC
 #    pMessageSim*     I don't see this file in the src directory. -CJC

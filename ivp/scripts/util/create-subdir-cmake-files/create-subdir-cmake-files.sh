@@ -571,6 +571,76 @@ LINK_LIBS="
    pthread" \
 simple_app_cmake_file
 
+SUBDIR=pFramer \
+PROGNAME=pFramer \
+IVP_BUILD_BY_DEFAULT=ON \
+IVP_INSTALL_COMPONENT=ivp-core \
+LINK_LIBS="
+   MOOS
+   MOOSGen
+   pthread" \
+simple_app_cmake_file
+
+SUBDIR=pNaFCon \
+PROGNAME=pNaFCon \
+IVP_BUILD_BY_DEFAULT=ON \
+IVP_INSTALL_COMPONENT=ivp-core \
+LINK_LIBS="
+   MOOS
+   MOOSGen
+   MOOSUtility
+   genutil
+   mbutil
+   anrp_util
+   pthread" \
+simple_app_cmake_file
+
+SUBDIR=pScheduler \
+PROGNAME=pScheduler \
+IVP_BUILD_BY_DEFAULT=ON \
+IVP_INSTALL_COMPONENT=ivp-core \
+LINK_LIBS="
+   MOOS
+   MOOSGen
+   genutil
+   mbutil
+   pthread" \
+simple_app_cmake_file
+
+SUBDIR=pRouter \
+PROGNAME=pRouter \
+IVP_BUILD_BY_DEFAULT=ON \
+IVP_INSTALL_COMPONENT=ivp-core \
+LINK_LIBS="
+   MOOS
+   MOOSGen
+   genutil
+   mbutil
+   m
+   pthread" \
+simple_app_cmake_file
+
+SUBDIR=uMessageForward \
+PROGNAME=uMessageForward \
+IVP_BUILD_BY_DEFAULT=ON \
+IVP_INSTALL_COMPONENT=ivp-core \
+LINK_LIBS="
+   MOOS
+   MOOSGen
+   pthread" \
+simple_app_cmake_file
+
+SUBDIR=pUDPBroadcastClient \
+PROGNAME=pUDPBroadcastClient \
+IVP_BUILD_BY_DEFAULT=ON \
+IVP_INSTALL_COMPONENT=ivp-core \
+LINK_LIBS="
+   MOOS
+   MOOSGen
+   opt
+   newmat
+   pthread" \
+simple_app_cmake_file
 
 #-------------------------------------------------------------------------------
 # tools apps...

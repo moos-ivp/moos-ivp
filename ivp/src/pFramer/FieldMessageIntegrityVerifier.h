@@ -17,7 +17,7 @@
 #ifndef FIELD_MESSAGE_INTEGRITY_VERIFIER_H
 #define FIELD_MESSAGE_INTEGRITY_VERIFIER_H
 
-#include <WHOI_FieldMessages.h>
+#include "WHOI_FieldMessages.h"
 #include <string>
 using namespace std;
 
