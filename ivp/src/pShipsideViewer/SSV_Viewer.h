@@ -35,6 +35,8 @@
 #include "ColoredPoint.h"
 #include "MarineViewer.h"
 #include "XYCircle.h"
+#include "MOOSGeodesy.h"
+
 
 class SSV_Viewer : public MarineViewer
 {
@@ -54,6 +56,7 @@ public:
   void  setVehicleBodyType(std::string, std::string);
   void  setOwnShipName(std::string);
   void  addStationCircle(const XYCircle&);
+  bool  initGeodesy(double, double);
 
   void  resetVehicles();
   float getMetersX(int);
@@ -61,6 +64,7 @@ public:
   float getSpd(int);
   float getDep(int);
   float getCrs(int);
+  bool  getLatLon(int, double&, double&);
   float getAgeAIS(int);
 
   bool  hasVehiName(std::string);
@@ -100,9 +104,11 @@ public:
   // Mapping from Vehicle Name to Time of last AIS report
   std::map<std::string, double>       m_ais_map;
 
-  float m_curr_time;
+  std::string            m_ownship_name;
+  std::vector<XYCircle>  m_station_circ;
+  std::string            m_default_vehibody;
 
-  std::string m_default_vehibody;
+  CMOOSGeodesy m_geodesy;
 
   // Member variables for holding/conveying mouse click info
   std::string m_left_click;
@@ -112,9 +118,9 @@ public:
   int    m_right_click_ix;
   bool   m_centric_view;
   int    m_radial_size;
+  float  m_curr_time;
 
-  std::string            m_ownship_name;
-  std::vector<XYCircle>  m_station_circ;
+
 };
 
 #endif 

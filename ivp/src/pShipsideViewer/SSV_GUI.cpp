@@ -44,7 +44,6 @@ SSV_GUI::SSV_GUI(int g_w, int g_h, const char *g_l)
   int wid_b = 150;
   int col_b = w() - wid_b;
 
-
   mviewer  = new SSV_Viewer(0, 30, w()-wid_b, h()-100);
   cmviewer = mviewer;
 
@@ -95,6 +94,14 @@ SSV_GUI::SSV_GUI(int g_w, int g_h, const char *g_l)
   v_ais = new MY_Output(500, h()-30, 55, 20, "Age-AIS:"); 
   v_ais->textsize(info_size); 
   v_ais->labelsize(info_size);
+
+  v_lat = new MY_Output(600, h()-60, 75, 20, "Lat:"); 
+  v_lat->textsize(info_size); 
+  v_lat->labelsize(info_size);
+
+  v_lon = new MY_Output(600, h()-30, 75, 20, "Lon:"); 
+  v_lon->textsize(info_size); 
+  v_lon->labelsize(info_size);
 
   int a_top = h()-300;
   int a_txt = 25;
@@ -316,6 +323,8 @@ void SSV_GUI::updateXY() {
     v_dep->value(" n/a");
     v_ais->value(" n/a");
     v_nam->value(" n/a");
+    v_lat->value(" n/a");
+    v_lon->value(" n/a");
     return;
   }
 
@@ -332,6 +341,18 @@ void SSV_GUI::updateXY() {
 
   string dep_str = doubleToString(mviewer->getDep(index),1);
   v_dep->value(dep_str.c_str());
+
+
+  string lat_str = "??";
+  string lon_str = "??";
+  double dlat, dlon;
+  bool ok = mviewer->getLatLon(index, dlat, dlon);
+  if(ok) {
+    lat_str = doubleToString(dlat,6);
+    lon_str = doubleToString(dlon,6);
+  }
+  v_lat->value(lat_str.c_str());
+  v_lon->value(lon_str.c_str());
 
   double age_ais = mviewer->getAgeAIS(index);
   string ais_str = doubleToString(age_ais,3);

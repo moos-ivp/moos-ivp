@@ -4,9 +4,10 @@ LTARGET  = pShipsideViewer
 LIFLAGS  = 
 LCFLAGS  = 
 
-REQUIRED_MOOS_LIBS = \
-	libMOOS.a 			\
-	libMOOSGen.a 		
+REQUIRED_MOOS_LIBS = 		\
+	libMOOS.a 		\
+	libMOOSGen.a 		\
+	libMOOSUtility.a 		
 
 PLIBS    = libmarineview.a libmbutil.a libgeometry.a libgenutil.a
 

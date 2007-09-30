@@ -72,6 +72,8 @@ protected:
   MY_Output  *v_crs;
   MY_Output  *v_dep;
   MY_Output  *v_ais;
+  MY_Output  *v_lat;
+  MY_Output  *v_lon;
 
   Fl_Box     *m_deploy_box_text;
   Fl_Box     *m_deploy_box_body;

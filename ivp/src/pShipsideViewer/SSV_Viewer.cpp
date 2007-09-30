@@ -266,6 +266,20 @@ float SSV_Viewer::getCrs(int index)
 }
 
 // ----------------------------------------------------------
+// Procedure: getLatLon
+//   Purpose: Index indicates which of the MAX_VEHICLES vehicles
+//            is being queried. 
+
+bool SSV_Viewer::getLatLon(int index, double& rlat, double& rlon)
+{
+  ObjectPose opose = getObjectPoseByIndex(index);
+  return(m_geodesy.LocalGrid2LatLong(opose.getX(), opose.getY(), rlat, rlon));
+  
+  if(m_cross_offon)
+    return(0.0);
+}
+
+// ----------------------------------------------------------
 // Procedure: getAgeAIS
 //   Purpose: Index indicates which of the MAX_VEHICLES vehicles
 //            is being queried. 
@@ -688,6 +702,15 @@ void SSV_Viewer::addStationCircle(const XYCircle& new_circ)
 
 
 //-------------------------------------------------------------
+// Procedure: initGeodesy
+
+bool SSV_Viewer::initGeodesy(double lat, double lon)
+{
+  return(m_geodesy.Initialise(lat, lon));
+}
+
+
+//-------------------------------------------------------------
 // Procedure: drawStationCircles
 
 void SSV_Viewer::drawStationCircles()
@@ -701,8 +724,8 @@ void SSV_Viewer::drawStationCircles()
 // Procedure: drawCircle
 
 void SSV_Viewer::drawCirc(XYCircle dcircle, int pts, bool filled,
-			    double l_red, double l_grn, double l_blu,
-			    double f_red, double f_grn, double f_blu)
+			  double l_red, double l_grn, double l_blu,
+			  double f_red, double f_grn, double f_blu)
 {
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();

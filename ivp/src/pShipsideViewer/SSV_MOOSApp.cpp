@@ -177,6 +177,36 @@ bool SSV_MOOSApp::OnStartUp()
   
   string tif_file = "Default.tif";
 
+
+  //Initialize m_Geodesy from lat lon origin in .moos file
+  string sVal;
+  double dfLatOrigin;
+  double dfLongOrigin;
+  
+  if(m_MissionReader.GetValue("LatOrigin",sVal)) {
+    dfLatOrigin = atof(sVal.c_str());
+    MOOSTrace("  LatOrigin  = %10.5f deg.\n",dfLatOrigin);
+  }
+  else {
+    MOOSTrace("LatOrigin not specified in mission file - FAIL\n");
+    return(false);
+  }
+
+  if(m_MissionReader.GetValue("LongOrigin",sVal)) {
+    dfLongOrigin = atof(sVal.c_str());
+    MOOSTrace("  LongOrigin = %10.5f deg.\n",dfLongOrigin);
+  }
+  else {
+    MOOSTrace("LongOrigin not specified in mission file - FAIL\n");
+    return(false);
+  }
+  
+  if(!m_gui->mviewer->initGeodesy(dfLatOrigin, dfLongOrigin)) {
+    MOOSTrace("Geodesy Init inside pShipSideViewer failed - FAIL\n");
+    return(false);
+  }
+
+
   STRING_LIST::iterator p;
   for(p = sParams.begin();p!=sParams.end();p++) {
     string sLine    = *p;
