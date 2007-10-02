@@ -67,6 +67,8 @@ $cmd_append = "";
 
 $row_count = 0;
 
+$first_time_through_loop = 1;
+
 for ($la = $min_lat;$la <= $max_lat;$la += $delta_deg) {
 
     $cmd_append_row = "convert ";
@@ -98,19 +100,24 @@ for ($la = $min_lat;$la <= $max_lat;$la += $delta_deg) {
 	$t7 = floor(-$br_lon);
 	$t8 = floor(1000000*(-$br_lon-floor(-$br_lon)));
 
+        if ($first_time_through_loop) {
+           $first_time_through_loop = 0;
+           $output_min_lat = $br_lat;
+           $output_min_lon = $tl_lon;
+        }
+
+        $output_max_lat = $tl_lat;
+        $output_max_lon = $br_lon;
+
+
 	$filename = sprintf("%d.%06d.%d.%06d.%d.%06d.%d.%06d.jpg", 
 			$t1,$t2,$t3,$t4,$t5,$t6,$t7,$t8);
-
-# print "$la  $lo  $filename\n";
-# next;
 
 	if ( -e $filename ) {
 	    next;
 	}
 
 	$new_image = 1;
-
-	#$filename = "$t1.$t2.$t3.$t4.$t5.$t6.$t7.$t8.jpg";
 	
 	$sat_ok = 1;
 
@@ -195,11 +202,20 @@ for ($la = $min_lat;$la <= $max_lat;$la += $delta_deg) {
     $row_count = $row_count + 1;
 }
 
-$cmd_append = "convert $cmd_append -append output.jpg";
+$output_filename = sprintf("blat_%.6f_tlat_%.6f_llon_%.6f_rlon_%.6f.jpg",
+   $output_min_lat, $output_max_lat, $output_min_lon, $output_max_lon);
+
+$cmd_append = "convert $cmd_append -append $output_filename";
 
 qx\$cmd_append\;
 
 print "$cmd_append\n";
+
+print "Bounds:\n";
+print "output_min_lat = $output_min_lat\n";
+print "output_max_lat = $output_max_lat\n";
+print "output_min_lon = $output_min_lon\n";
+print "output_max_lon = $output_max_lon\n";
 
 exit;
 
