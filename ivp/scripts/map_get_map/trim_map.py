@@ -59,6 +59,24 @@ def get_image_xy_size(filename):
 
 #===============================================================================
 
+def crop_image(input_filename, output_filename, new_x_pixels, new_y_pixels):
+   cmd = ['convert',  
+      '-gravity', 'SouthWest',
+      '-crop',  str(new_x_pixels) + 'x' + str(new_y_pixels) + '+0+0',
+      input_filename, 
+      output_filename]
+   
+   p = subprocess.Popen(args=cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+   (p_stdout, p_stderr) = p.communicate()
+   
+   if p.returncode != 0:
+      print >> sys.stderr, "Command '" + ' '.join(cmd) + "' failed.  Here's it's output:\n"
+      sys.exit(p_stderr)
+      
+   results = p_stdout.strip().split(' ')
+
+#===============================================================================
+
 def parse_input_img_filename(filename):
    f = os.path.splitext(os.path.basename(filename))[0]
    fname_parts = f.split('_')
@@ -166,7 +184,7 @@ def main(argv):
             str(required_output_image_x) + "," + str(required_output_image_y) + "\n\n" + \
             "   That's bigger than you specified the output image size to be.")
              
-            
+      crop_image(infile, outfile, desired_x_size, desired_y_size)
       
       
    else:
