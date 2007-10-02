@@ -87,10 +87,10 @@ def main(argv):
          
       try:
          infile         = argv[1]
-         desired_blat     = float(argv[3])
-         desired_tlat        = float(argv[4])
-         desired_llon       = float(argv[5])
-         desired_rlon      = float(argv[6])
+         desired_blat   = float(argv[3])
+         desired_tlat   = float(argv[4])
+         desired_llon   = float(argv[5])
+         desired_rlon   = float(argv[6])
          desired_x_size = int(argv[7])
          desired_y_size = int(argv[8])
          outfile        = argv[9]
@@ -101,12 +101,12 @@ def main(argv):
          sys.exit(1)
       
       # Confirm that the user isn't asking to grow the image...
-      (input_img_x, input_img_y) = get_image_xy_size(infile)
-      if (desired_x_size > input_img_x) or (desired_y_size > input_img_y):
+      (input_image_x, input_image_y) = get_image_xy_size(infile)
+      if (desired_x_size > input_image_x) or (desired_y_size > input_image_y):
          sys.exit("You specified an output image of width, height=" + \
             str(desired_x_size) + ", " + str(desired_y_size) + "\n" + \
             "But the input image has width, height of " + \
-            str(input_img_x) + ", " + str(input_img_y) + "\n" + \
+            str(input_image_x) + ", " + str(input_image_y) + "\n" + \
             "The output image cannot be bigger on either axis than the input image.")
       
       # Confirm that the desired image actually lies within the input image.
@@ -138,6 +138,36 @@ def main(argv):
          
       if (desired_llon > desired_rlon):
          sys.exit("Problem: <left-lon> is greater than <right-lon>.")
+         
+      # Figure out the relationship between pixels and lat/lon.
+      #
+      # This is only an approximation, because lines of longitude aren't 
+      # parallel.  But it's safe enough at the scales we work at...
+      input_lat_span_degrees = input_tlat - input_blat
+      input_lon_span_degrees = input_rlon - input_llon
+      
+      desired_lat_span_degrees = desired_tlat - desired_blat
+      desired_lon_span_degrees = desired_tlat - desired_blat
+      
+      input_lat_degrees_per_pixel = input_lat_span_degrees / input_image_y
+      input_lon_degrees_per_pixel = input_lon_span_degrees / input_image_x
+      
+      print "Input image:"
+      print "   lat degrees per pixel: " + str(input_lat_degrees_per_pixel)
+      print "   lon degrees per pixel: " + str(input_lon_degrees_per_pixel)
+      
+      required_output_image_y = int(input_image_y * (desired_lat_span_degrees / input_lat_span_degrees))
+      required_output_image_x = int(input_image_x * (desired_lon_span_degrees / input_lon_span_degrees))
+      
+      if (required_output_image_y > desired_y_size) or (required_output_image_x > desired_x_size):
+         sys.exit( \
+            "Problem: In order to produce an output image that covers the specified \n" + \
+            "   lat/lon range, the output image would need to have width,height = " + \
+            str(required_output_image_x) + "," + str(required_output_image_y) + "\n\n" + \
+            "   That's bigger than you specified the output image size to be.")
+             
+            
+      
       
    else:
       #TODO
