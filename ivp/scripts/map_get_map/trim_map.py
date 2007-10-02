@@ -43,13 +43,13 @@ def get_image_xy_size(filename):
    Returns a tuple (x, y) giving the size in pixels of the specified image file.
    If some problem is encountered, this prints an error and exits.
    """
-   cmd = ['identify',  '-xformat', '%w %h', filename]
+   cmd = ['identify',  '-format', '%w %h', filename]
    
    p = subprocess.Popen(args=cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
    (p_stdout, p_stderr) = p.communicate()
    
    if p.returncode != 0:
-      print >> sys.stderr, "Command '" + cmd + "' failed.  Here's it's output:\n\n"
+      print >> sys.stderr, "Command '" + ' '.join(cmd) + "' failed.  Here's it's output:\n"
       sys.exit(p_stderr)
       
    results = p_stdout.strip().split(' ')
