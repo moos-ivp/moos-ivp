@@ -2,6 +2,7 @@
 
 import sys
 import subprocess
+import os.path
 
 #===============================================================================
 
@@ -58,6 +59,26 @@ def get_image_xy_size(filename):
 
 #===============================================================================
 
+def parse_input_img_filename(filename):
+   f = os.path.splitext(os.path.basename(filename))[0]
+   fname_parts = f.split('_')
+   
+   if (len(fname_parts) != 8) \
+         or (fname_parts[0] != 'blat') \
+         or (fname_parts[2] != 'tlat') \
+         or (fname_parts[4] != 'llon') \
+         or (fname_parts[6] != 'rlon'):
+      sys.exit("The input file's name doesn't have the required structure.")
+      
+   blat = float(fname_parts[1])
+   tlat = float(fname_parts[3])
+   llon = float(fname_parts[5])
+   rlon = float(fname_parts[7])
+   
+   return (blat, tlat, llon, rlon)
+
+#===============================================================================
+
 def main(argv):
    if '-keep' in argv:
       if len(argv) != 10:
@@ -66,10 +87,10 @@ def main(argv):
          
       try:
          infile         = argv[1]
-         bottom_lat     = float(argv[3])
-         top_lat        = float(argv[4])
-         left_lon       = float(argv[5])
-         right_lon      = float(argv[6])
+         desired_blat     = float(argv[3])
+         desired_tlat        = float(argv[4])
+         desired_llon       = float(argv[5])
+         desired_rlon      = float(argv[6])
          desired_x_size = int(argv[7])
          desired_y_size = int(argv[8])
          outfile        = argv[9]
@@ -79,7 +100,44 @@ def main(argv):
          print_usage()
          sys.exit(1)
       
-      print get_image_xy_size(infile)
+      # Confirm that the user isn't asking to grow the image...
+      (input_img_x, input_img_y) = get_image_xy_size(infile)
+      if (desired_x_size > input_img_x) or (desired_y_size > input_img_y):
+         sys.exit("You specified an output image of width, height=" + \
+            str(desired_x_size) + ", " + str(desired_y_size) + "\n" + \
+            "But the input image has width, height of " + \
+            str(input_img_x) + ", " + str(input_img_y) + "\n" + \
+            "The output image cannot be bigger on either axis than the input image.")
+      
+      # Confirm that the desired image actually lies within the input image.
+      # Note that this probably only works for images that don't span the poles,
+      # prime meridian, etc.
+      #
+      # We also assume that the image is oriented with the increasing-y axis 
+      # pointing north.  This assures us that the bottom latitude is < the top
+      # latitude (as long as the image doesn't span a pole of the earth), and 
+      # the left longitude is less than the right longitude (as long as the 
+      # image doesn't cross the prime meridian)...
+      (input_blat, input_tlat, input_llon, input_rlon) = parse_input_img_filename(infile)
+      
+      if ((desired_blat < input_blat) or (desired_blat > input_tlat)):
+         sys.exit("Problem: <bottom-lat> is outside the latitude range of the input file.")
+      
+      if ((desired_tlat < input_blat) or (desired_tlat > input_tlat)):
+         sys.exit("Problem: <top-lat> is outside the latitude range of the input file.")
+         
+      if (desired_blat > desired_tlat):
+         sys.exit("Problem: <bottom-lat> is greater than <top-lat>.")
+            
+      
+      if ((desired_llon < input_llon) or (desired_llon > input_rlon)):
+         sys.exit("Problem: <left-lon> is outside the longitude range of the input file.")
+      
+      if ((desired_rlon < input_llon) or (desired_rlon > input_rlon)):
+         sys.exit("Problem: <right-lon> is outside the longitude range of the input file.")
+         
+      if (desired_llon > desired_rlon):
+         sys.exit("Problem: <left-lon> is greater than <right-lon>.")
       
    else:
       #TODO
