@@ -256,7 +256,16 @@ def main(argv):
    # region, so we can choose an arbitrary latitude within that region for our
    # calculations.
    meters_per_degree_lon = get_meters_per_degree_lon(outfile_tlat)
-   info_file_img_meters = (meters_per_degree_lon + meters_per_degree_lat) / 2
+   avg_meters_per_degree = (meters_per_degree_lon + meters_per_degree_lat) / 2
+   
+   # What fraction of the output image makes up 100 meters.  Even if our image
+   # covered the same number of degrees latitude as it did degrees longitude,
+   # this would be dependent on how far from the equator we are.  But if we're
+   # really going to boil this down to a single value, not much I can do.  I'll
+   # just average it. -CJC
+   
+   # >> TEMPORARILY COMMENTED OUT UNTIL MIKE B. EXPLAINS FORMULA FOR img_meters. -CJC
+   #info_file_img_meters
    
    print "Input image:"
    print "   lat degrees per pixel: %0.10f" % input_lat_degrees_per_pixel
@@ -283,12 +292,12 @@ def main(argv):
    print "   Distances:"
    print "      meters per degree lat: " + str(meters_per_degree_lat)
    print "      meters per degree lon: %0.3f" % (meters_per_degree_lon)
-   print "      .info file's 'img_meters' value will use the average: %0.3f" % info_file_img_meters
+   #print "      .info file's 'img_meters' value will use the average: %0.3f" % avg_meters_per_degree
                
-   skew = abs(meters_per_degree_lon / meters_per_degree_lat)
-   if skew < 0.95:
-      print "      *** WARNING: The ratio (meters per degree lon):(meters per degree lat) is %0.3f.\n" \
-         "          Should your visualization app really act as though it's no big deal?" % (skew)
+   #skew = abs(meters_per_degree_lon / meters_per_degree_lat)
+   #if skew < 0.95:
+      #print "      *** WARNING: The ratio (meters per degree lon):(meters per degree lat) is %0.3f.\n" \
+         #"          Should your visualization app really act as though it's no big deal?" % (skew)
    print ""            
             
    # Produce the output files...
