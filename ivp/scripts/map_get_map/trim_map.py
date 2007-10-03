@@ -3,6 +3,7 @@
 import sys
 import subprocess
 import os.path
+import math
 
 #===============================================================================
 
@@ -46,7 +47,24 @@ extension you use for <outfile>.  So, for example, if you specify
 
 <out-info-file> describes the details of the output file, suitable for use in 
 polyview.  It will presumably be named something like "foo.info".
+
+*** THIS SCRIPT WILL OVERWRITE EXISTING <outfile> AND <out-info-file> FILES! ***
 """
+
+#===============================================================================
+
+nautical_miles_per_degree_lat = 60
+meters_per_nautical_mile = 1852
+
+meters_per_degree_lat = nautical_miles_per_degree_lat * meters_per_nautical_mile
+
+#===============================================================================
+
+def get_meters_per_degree_lon(lat_degrees):
+   lat_radians = lat_degrees * (2 * math.pi / 360)
+   
+   # This is approximate, but should be close enough.
+   return nautical_miles_per_degree_lat * meters_per_nautical_mile * math.cos(lat_radians)
 
 #===============================================================================
 
@@ -233,6 +251,12 @@ def main(argv):
    outfile_origin_x_pixels = int(outfile_origin_x_fraction * required_output_image_x)
    outfile_origin_y_pixels = int(outfile_origin_y_fraction * required_output_image_y)
    
+   # Figure out how changes in lat/lon relate to actual distances (using our 
+   # simplified projection of everything onto a plane).  We're assuming a small 
+   # region, so we can choose an arbitrary latitude within that region for our
+   # calculations.
+   meters_per_degree_lon = get_meters_per_degree_lon(outfile_tlat)
+   info_file_img_meters = (meters_per_degree_lon + meters_per_degree_lat) / 2
    
    print "Input image:"
    print "   lat degrees per pixel: " + str(input_lat_degrees_per_pixel)
@@ -256,10 +280,28 @@ def main(argv):
       + ", y-axis=" + str(outfile_origin_y_fraction)
    print "      pixel offset relative to bottom-left corner: x=" + str(outfile_origin_x_pixels) \
       + ", y=" + str(outfile_origin_y_pixels)
+   print "   Distances:"
+   print "      meters per degree lat: " + str(meters_per_degree_lat)
+   print "      meters per degree lon: %0.3f" % (meters_per_degree_lon)
+   print "      .info file's 'img_meters' value will use the average: %0.3f" % info_file_img_meters
+               
+   skew = abs(meters_per_degree_lon / meters_per_degree_lat)
+   if skew < 0.95:
+      print "      *** WARNING: The ratio (meters per degree lon):(meters per degree lat) is %0.3f.\n" \
+         "          Should your visualization app really act as though it's no big deal?" % (skew)
    print ""            
             
+   # Produce the output files...
    crop_image(infile, outfile, desired_x_size, desired_y_size, crop_x_offset, crop_y_offset)
+   print "Created image file: " + outfile
 
+   oif = open(out_info_file, "w")
+   oif.write("img_centx   = " + str(outfile_origin_x_fraction) + "\n")
+   oif.write("img_centy   = " + str(outfile_origin_y_fraction) + "\n")
+   oif.write("img_centlat = " + str(origin_lat) + "\n")
+   oif.write("img_centlon = " + str(origin_lon) + "\n")
+   oif.close()
+   print "Created info file: " + out_info_file
 
 #===============================================================================
 
