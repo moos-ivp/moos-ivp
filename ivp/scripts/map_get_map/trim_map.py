@@ -259,8 +259,8 @@ def main(argv):
    info_file_img_meters = (meters_per_degree_lon + meters_per_degree_lat) / 2
    
    print "Input image:"
-   print "   lat degrees per pixel: " + str(input_lat_degrees_per_pixel)
-   print "   lon degrees per pixel: " + str(input_lon_degrees_per_pixel)
+   print "   lat degrees per pixel: %0.10f" % input_lat_degrees_per_pixel
+   print "   lon degrees per pixel: %0.10f" % input_lon_degrees_per_pixel
    print "   Origin:"
    print "      fraction into image: x-axis=" + str(input_origin_x_fraction) \
       + ", y-axis=" + str(input_origin_y_fraction)
