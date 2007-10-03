@@ -9,9 +9,9 @@ import os.path
 def print_usage():
    print \
 """
-Usage: trim_map.py  <infile>  <outfile>  \
-   -keep  <bottom-lat>  <top-lat>  <left-lon>  <right-lon>  \
-   -size <x-size>  <y-size> \
+Usage: trim_map.py  <infile>  <outfile>  <out-info-file> \\
+   -keep  <bottom-lat>  <top-lat>  <left-lon>  <right-lon>  \\
+   -size <x-size>  <y-size> \\
    -origin <origin-lat>  <origin-lon>
    
 If the the '-keep' option and associated parameters are supplied, this trims the
@@ -110,24 +110,25 @@ def parse_input_img_filename(filename):
 #===============================================================================
 
 def main(argv):
-   if (len(argv) != 14) \
-         or (argv[3] != '-keep') \
-         or (argv[8] != '-size') \
-         or (argv[11] != '-origin'):
+   if (len(argv) != 15) \
+         or (argv[4] != '-keep') \
+         or (argv[9] != '-size') \
+         or (argv[12] != '-origin'):
       print_usage();
       sys.exit(1);
       
    try:
       infile         = argv[1]
       outfile        = argv[2]
-      desired_blat   = float(argv[4])
-      desired_tlat   = float(argv[5])
-      desired_llon   = float(argv[6])
-      desired_rlon   = float(argv[7])
-      desired_x_size = int(argv[9])
-      desired_y_size = int(argv[10])
-      origin_lat     = float(argv[12])
-      origin_lon     = float(argv[13])
+      out_info_file  = argv[3]
+      desired_blat   = float(argv[5])
+      desired_tlat   = float(argv[6])
+      desired_llon   = float(argv[7])
+      desired_rlon   = float(argv[8])
+      desired_x_size = int(argv[10])
+      desired_y_size = int(argv[11])
+      origin_lat     = float(argv[13])
+      origin_lon     = float(argv[14])
    except:
       print sys.exc_info()
       print "\n\n"
@@ -201,6 +202,9 @@ def main(argv):
    # report where it is in the input file.
    input_origin_x_fraction = (origin_lon - input_llon) / input_lon_span_degrees
    input_origin_y_fraction = (origin_lat - input_blat) / input_lat_span_degrees
+   
+   input_origin_x_pixels = int(input_origin_x_fraction * input_image_x)
+   input_origin_y_pixels = int(input_origin_y_fraction * input_image_y)
 
    # Figure out what pixel offset (both x- and y-) into the original image
    # should be the bottom-left corner of the content that ends up in the
@@ -208,7 +212,11 @@ def main(argv):
    crop_x_offset = int((desired_blat - input_blat) / input_lat_degrees_per_pixel)
    crop_y_offset = int((desired_llon - input_llon) / input_lon_degrees_per_pixel)
             
-   # Figure out the lat/lon bounds of the *actual* output image being produced...                        
+   # Figure out the lat/lon bounds of the *actual* output image being produced.
+   # This will typically exceed what the user specified with <bottom-lat>, et al
+   # because we need to grab extra content from the source image in order for the
+   # output image to have the number of pixels specified by the <x-size> and
+   # <y-size> command-line args...   
    outfile_llon = input_llon + (crop_x_offset * input_lon_degrees_per_pixel)
    outfile_rlon = outfile_llon + (required_output_image_x * input_lon_degrees_per_pixel)            
    outfile_blat = input_blat + (crop_x_offset * input_lat_degrees_per_pixel)
@@ -229,9 +237,11 @@ def main(argv):
    print "Input image:"
    print "   lat degrees per pixel: " + str(input_lat_degrees_per_pixel)
    print "   lon degrees per pixel: " + str(input_lon_degrees_per_pixel)
-   print "   origin (fraction into image): x-axis=" + str(input_origin_x_fraction) \
+   print "   Origin:"
+   print "      fraction into image: x-axis=" + str(input_origin_x_fraction) \
       + ", y-axis=" + str(input_origin_y_fraction)
-   
+   print "      pixel offset relative to bottom-left corner: x=" + str(input_origin_x_pixels) \
+      + ", y=" + str(input_origin_y_pixels)
    print "\n"
    print "Output image:"
    print "   Size (pixels) needed to contain specified lat/lon region: " + \
