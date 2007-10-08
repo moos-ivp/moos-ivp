@@ -89,7 +89,7 @@ def print_help_and_exit():
    s = \
       "Usage: \n" + \
       "To specify the output column using the command line:\n" + \
-      "   slog-filt.py <in-file> --[hide]vars var1 [var2, ...] [--select <query>] [--output <out-file>]\n" + \
+      "   slog-filt.py <in-file> --[hide]vars var1 [var2 ...] [--select <query>] [--output <out-file>]\n" + \
       "or\n" + \
       "To specify the output column interactively:\n" + \
       "   slog-filt.py <in-file> [--select <query>] [--output <out-file>]\n"
@@ -111,10 +111,10 @@ def get_output_vars_by_prompting(var_name_to_col_number):
          
       satisfied = False
       while not satisfied:
-         choice = raw_input("Output " + col_name + " [Y]: ").capitalize()
+         choice = raw_input("Output " + col_name + " [Y]: ").upper()
          if choice in ['N', 'NO']:
             satisfied = True
-         elif choice in ['', 'Y' 'YES']:
+         elif choice in ['', 'Y', 'YES']:
             cols_to_output.append(col_name)
             satisfied = True
          else:
@@ -359,9 +359,24 @@ def line_meets_select_criteria(line_dict, query_string, valid_col_names):
 #===============================================================================
 
 def main(argv):
+   if len(argv) == 1:
+      print_help_and_exit()      
    
    f = get_input_file(argv)
    outfile = get_output_file(argv)   
+   
+   # Quick check to ensure that the user isn't passing any unrecognized 
+   # switches...
+   problem = False
+   for a in argv[1:]:
+      if a.startswith('-'):
+         if a not in ['--select', '--vars', '--hidevars', '--output']:
+            problem = True
+            print >> sys.stderr, \
+               "Unrecognized command-line switch: " + a
+   if problem:
+      print >> sys.stderr, ""
+      print_help_and_exit()
    
    # Copy the first 5 lines of the input file, verbatim.  Actually, we'll print
    # these a little later, after we've completed validating the command-line
