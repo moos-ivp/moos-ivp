@@ -168,7 +168,7 @@ def get_output_vars_list(argv, var_name_to_col_number):
             else:
                user_var_list[i] = matching_col_name
       
-      
+      # Complain if we have a genuinely unrecognizable column name...
       if len(unmatchable_names) > 0:
          print >> sys.stderr, \
             "You listed some variables that aren't in the supplied slog file:\n" + \
@@ -179,7 +179,7 @@ def get_output_vars_list(argv, var_name_to_col_number):
       if spec_type == 'vars':
          # Include the variables in the sequence specified by the user.
          output_vars_list = user_var_list
-      else:
+      else:  # spec_type == 'hidevars'
          # Include the variables in the sequence in which they appear in the 
          # input slog file...
          output_vars_list = []
@@ -187,8 +187,8 @@ def get_output_vars_list(argv, var_name_to_col_number):
    
          for col_idx in range(1, len(col_number_to_var_name)+1):
             col_name = col_number_to_var_name[col_idx]
-            if not col_name in user_var_set:
-               output_vars_list.append(var_name)
+            if not col_name in user_var_list:
+               output_vars_list.append(col_name)
          
    
    return output_vars_list
@@ -363,7 +363,6 @@ def main(argv):
       print_help_and_exit()      
    
    f = get_input_file(argv)
-   outfile = get_output_file(argv)   
    
    # Quick check to ensure that the user isn't passing any unrecognized 
    # switches...
@@ -411,6 +410,7 @@ def main(argv):
    # Print a reconstucted header to stdout.  Order the columns according to how
    # they were specified on the command-line in the "--vars" section...
    #----------------------------------------------------------------------------
+   outfile = get_output_file(argv)      
    print >> outfile, first_header_lines
    
    for i in range(len(output_vars)):
