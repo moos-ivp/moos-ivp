@@ -6,9 +6,23 @@ import os.path
 #===============================================================================
 
 def parse_slog_header(infile):
-   """Returns a dictionary that maps variable names to column numbers (starting
-   at 1, not 0).  Raises an error is something went wrong.
+   """Returns two dictionaires.
+   
+   The first dictionary maps disambiguated variable names to column numbers 
+   (starting at 1, not 0).  Raises an error is something went wrong.
+   
+   The second dictionary has the disambiguated variable names as its keys, and 
+   the dependent value is the original, ambiguous variable name.  This 
+   dictionary doesn't have any entries for variables that occurred just once in
+   the header.
    """
+   
+   # Record the number of occurrences of each name, in case we enounter 
+   # duplicates.  We'll handle duplicates by appending a __i to their name, 
+   # where i is a disambiguating number, starting at __1 for each distinct name.
+   num_var_occurrences = {}
+   disambig_to_ambig_dict = {}
+   variable_renaming_required = False
    
    # Discover the column number for each variable...
    s = infile.readline().strip()
@@ -25,33 +39,97 @@ def parse_slog_header(infile):
             "' but found '" + fields[1] + "'"
       
       var_name = fields[2]
-      if var_name in var_name_to_col_number:
-         raise "Something's wrong: " + var_name + " appears twice in the header?"
+      #if var_name in var_name_to_col_number:
+         #raise "Something's wrong: " + var_name + " appears twice in the header?"
       
       # Phew... FINALLY we can just record the info we wanted...
-      var_name_to_col_number[var_name] = col_number
+      if var_name in num_var_occurrences:
+         variable_renaming_required = True
+         
+         if num_var_occurrences[var_name] == 1:
+            # We need to rename the previous occurrence of this variable in
+            # 'var_name_to_col_number', because at the time we inserted it into
+            # the map we didn't know there were multiple occurrences of that
+            # var name...
+            temp = var_name_to_col_number[var_name]
+            del var_name_to_col_number[var_name]
+            disambig_name = var_name + "__1"
+            
+            var_name_to_col_number[disambig_name] = temp
+            disambig_to_ambig_dict[disambig_name] = var_name
+         
+         num_var_occurrences[var_name] = num_var_occurrences[var_name] + 1
+         
+         disambig_name = var_name + "__" + str(num_var_occurrences[var_name])
+         var_name_to_col_number[disambig_name] = col_number
+         disambig_to_ambig_dict[disambig_name] = var_name
+      else:
+         num_var_occurrences[var_name] = 1
+         var_name_to_col_number[var_name] = col_number
       
       col_number += 1
       s = infile.readline().strip()
    
+   
+   # Let the user know about any variable renaming we did...
+   if variable_renaming_required:
+      print >> sys.stderr, \
+"""
+** PLEASE NOTE ***
+Some columns in the supplied slog file had the same variable name.
+
+Since this script requires you to specifically name the variables that are to be
+included or excluded from the output file, this is a problem.  To get around it,
+this script is internally renaming such variables to make them unique.
+
+For example if the variable FOO is used three times, you should refer to the 
+three different occurrences as FOO__1 FOO__2 and FOO__3 when dealing with this
+script.  *This script will likely break if you already have a variable named,
+for example, FOO__1.*
+
+The specific renames performed on the supplied input file are:
+      
+"""
+      for (base_varname, num_occurrences) in num_var_occurrences.iteritems():
+         if num_occurrences > 1:
+            print >> sys.stderr, base_varname + " ==> "
+            for n in range(1, num_occurrences+1):
+               disamb_name = base_varname + "__" + str(n)
+               #print disamb_name, var_name_to_col_number
+               assert(disamb_name in var_name_to_col_number)
+               print >> sys.stderr, "     " + disamb_name
+            print >> sys.stderr, ""
+      
+      print >> sys.stderr, \
+"""
+
+* THESE VARIABLES WILL APPEAR IN THE OUTPUT FILE IN THEIR ORIGINAL, POTENTIALLY
+* AMBIGUOUS FORM.  I.E., FOO__2 and FOO__3 WILL BOTH BE LISTED AS 'FOO' IN THE
+* OUTPUT FILE.
+"""
+   
+   
    infile.readline()
    
-   # Confirm that the column headers, which state the variable names, match what
-   # was claimed earlier in the header.  This is maybe being overly cautious, 
-   # but could save someone hours of hear-pulling if/when this actually detects
-   # a problem...
-   s = infile.readline().strip()
-   fields = s.split()
-   for i in range(1, len(fields)):
-      var_name = fields[i]
-      if var_name_to_col_number[var_name] != i:
-         raise "The first part of the slog header said that variable '" + \
-            var_name + "' would appear in column " + \
-            var_name_to_col_number[var_name] + ", but the " + \
-            "line showing the column headers shows this variable in column " + \
-            str(i)
+   # We can't do the following check at the moment, because we rename variables
+   # that have multiple occurrences. -CJC
+   #
+   ## Confirm that the column headers, which state the variable names, match what
+   ## was claimed earlier in the header.  This is maybe being overly cautious, 
+   ## but could save someone hours of hear-pulling if/when this actually detects
+   ## a problem...
+   #s = infile.readline().strip()
+   #fields = s.split()
+   #for i in range(1, len(fields)):
+      #var_name = fields[i]
+      #if var_name_to_col_number[var_name] != i:
+         #raise "The first part of the slog header said that variable '" + \
+            #var_name + "' would appear in column " + \
+            #var_name_to_col_number[var_name] + ", but the " + \
+            #"line showing the column headers shows this variable in column " + \
+            #str(i)
 
-   return var_name_to_col_number
+   return (var_name_to_col_number, disambig_to_ambig_dict)
 
 #===============================================================================
 
@@ -386,7 +464,7 @@ def main(argv):
       first_header_lines = first_header_lines + f.readline().strip() + "\n"
    
    # OK, NOW we can parse the header
-   var_name_to_col_number = parse_slog_header(f)
+   (var_name_to_col_number, disambig_to_ambig_dict) = parse_slog_header(f)
    valid_col_names = var_name_to_col_number.keys()
    
    # We needed to parse the header so we can determine the output columns.
@@ -415,6 +493,8 @@ def main(argv):
    
    for i in range(len(output_vars)):
       var_name = output_vars[i]
+      if var_name in disambig_to_ambig_dict:
+         var_name = disambig_to_ambig_dict[var_name]
       print >> outfile, "%%   (" + str(i+1) + ") " + var_name
       
    print >> outfile, ""
@@ -429,7 +509,12 @@ def main(argv):
       start_col_for_each_var[var_name] = start_col
       
       needed_padding = start_col - len(s)
-      s += (' ' * needed_padding) + var_name
+      
+      if var_name in disambig_to_ambig_dict:
+         s += (' ' * needed_padding) + disambig_to_ambig_dict[var_name]
+      else:
+         s += (' ' * needed_padding) + var_name
+         
    print >> outfile, s   
    
    #----------------------------------------------------------------------------         
