@@ -20,6 +20,8 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
+// Trivial change
+
 #ifdef _WIN32
 #pragma warning(disable : 4786)
 #pragma warning(disable : 4503)
