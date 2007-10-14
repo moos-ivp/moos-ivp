@@ -36,6 +36,7 @@ public:
   static Fl_Menu_Item menu_[];
 
   void readTiff(const char*);
+  void readTiffB(const char*);
   int  handle(int);
   void addGrid(XYGrid);
   void addPoly(XYPolygon);
@@ -61,6 +62,9 @@ protected:
 
   inline void cb_ToggleTiff_i();
   static void cb_ToggleTiff(Fl_Widget*);
+
+  inline void cb_ToggleTiffType_i();
+  static void cb_ToggleTiffType(Fl_Widget*);
 
   inline void cb_ToggleHash_i();
   static void cb_ToggleHash(Fl_Widget*);

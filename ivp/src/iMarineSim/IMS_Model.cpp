@@ -81,6 +81,7 @@ bool IMS_Model::propagate(double g_curr_time)
 #endif
 
   m_sim_engine.setPushXY(m_push_x, m_push_y);
+  m_sim_engine.setPushTheta(m_push_theta);
   m_sim_engine.setParam("float_rate", m_float_rate);
   m_sim_engine.propagate(m_vstate, m_vstate.m_dfSpeed, radian_rudder_angle, 
 			 delta_time, m_elevator);

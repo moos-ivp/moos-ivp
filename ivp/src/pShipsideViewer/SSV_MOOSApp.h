@@ -55,6 +55,7 @@ class SSV_MOOSApp : public CMOOSApp
   bool receiveStationCircle(CMOOSMsg &Msg);
 
   bool handleContactList(std::string);
+  bool handleMarker(std::string, std::string);
 
   void handlePendingGUI();
 

@@ -108,7 +108,7 @@ int main(int argc, char *argv[])
     exit_with_usage();
   
 
-  SSV_GUI* gui = new SSV_GUI(1000,850, "ShipSide - Viewer");
+  SSV_GUI* gui = new SSV_GUI(1400,1100, "ShipSideViewer");
   g_thePort.setGUI(gui);
 
   // start the MOOSPort in its own thread

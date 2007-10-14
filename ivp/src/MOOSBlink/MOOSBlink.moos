@@ -1,0 +1,20 @@
+// MOOS file
+
+Community = me
+
+ProcessConfig = MOOSBlink
+{
+	AppTick   = 10
+	CommsTick = 10
+
+	BroadcastAddr = 192.168.1.255
+
+	// share = dest community, input variable, output variable, min seconds between TX
+	// dest community can be "global" -> means all
+	// unspecified min time between tx means as fast as possible
+	SHARE = global, AIS_REPORT_LOCAL, AIS_REPORT, 5
+	SHARE = shipside, STATION_CIRCLE, STATION_CIRCLE, 10
+	SHARE = shipside, VIEW_POLYGON, VIEW_POLYGON, 10
+	SHARE = shipside, VIEW_POINT, VIEW_POINT, 10
+	SHARE = shipside, PROC_WATCH_SUMMARY, PROC_SUMMARY_$(VID), 10
+}

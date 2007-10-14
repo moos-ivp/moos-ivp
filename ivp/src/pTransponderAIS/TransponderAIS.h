@@ -23,9 +23,10 @@
 
 #ifndef TRANSPONDER_AIS_HEADER
 #define TRANSPONDER_AIS_HEADER
-
+#include <iostream>
 #include <string>
 #include "MOOSLib.h"
+#include <vector>
 
 // tes 9-12-07 for CMOOSGeodesy class
 #include "MOOSGeodesy.h"
@@ -43,7 +44,6 @@ public:
 
  protected:
   bool handleIncomingAISReport(const std::string&);
-  bool handleIncomingCSReport(const std::string&);
   bool handleIncomingNaFConMessage(const std::string&);
   void updateContactList(std::string);
   void postContactList();
@@ -69,11 +69,11 @@ protected:
   // for lat long conversion
   CMOOSGeodesy m_Geodesy;
 
-
+  // strings to hold information about NaFCon IDs
+  std::vector<std::string> m_nafcon_name;
+  std::vector<std::string> m_nafcon_type;
   double  m_blackout_interval;
   double  m_last_post_time;
-
-
 };
 
 #endif

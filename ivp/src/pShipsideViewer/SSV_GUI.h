@@ -57,6 +57,9 @@ private:
   inline void cb_Radial_i(int);
   static void cb_Radial(Fl_Widget*, int);
 
+  inline void cb_CycleFocus_i(int);
+  static void cb_CycleFocus(Fl_Widget*, int);
+
   inline void cb_ButtonView_i(int);
   static void cb_ButtonView(Fl_Widget*, int);
 
@@ -74,6 +77,8 @@ protected:
   MY_Output  *v_ais;
   MY_Output  *v_lat;
   MY_Output  *v_lon;
+  MY_Output  *d_hash;
+  MY_Output  *d_radial;
 
   Fl_Box     *m_deploy_box_text;
   Fl_Box     *m_deploy_box_body;

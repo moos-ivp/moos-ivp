@@ -1,4 +1,4 @@
-// $Header: /home/cvsroot/project-plus/src/pNaFCon/pNaFCon.cpp,v 1.20 2007-08-17 12:00:02 arjunab Exp $
+// $Header: /home/cvsroot/project-plus/src/pNaFCon/pNaFCon.cpp,v 1.3 2007-10-05 22:19:46 arjunab Exp $
 // (c) 2006
 // CpNaFCon.h: An interface/translator for communications
 // between MOOS and the pHelm 
@@ -36,6 +36,11 @@ CpNaFCon::CpNaFCon()
   MOOSTrace("(c) Copyright, 2007 Arjuna Balasuriya MIT\n");
   MOOSTrace("====================================\n");
 
+  dep_state = "FALSE";
+  dep_mission = "FALSE";
+  prose_state = "FALSE";
+  close_range = "FALSE";
+  track_tracking = "FALSE";
   MessageFlag = 0;
   abort_set = false;
   modem_count = 0;
@@ -126,7 +131,13 @@ bool CpNaFCon::OnNewMail(MOOSMSG_LIST &NewMail)
    if(m_Comms.PeekMail(NewMail,"NAV_HEADING",Msg))
    {
 	    ss4 <<  Msg.m_dfVal;
-	    ss4 >> Nav_yaw; 
+	    ss4 >> Nav_yaw;
+	    double double_nav_yaw = atof(Nav_yaw.c_str()); 
+	    while((double_nav_yaw) < 0)
+	      double_nav_yaw += 360;
+	    
+	    Nav_yaw = doubleToString(double_nav_yaw);
+	    
 	    counter++; 
    }
    if(m_Comms.PeekMail(NewMail,"NAV_SPEED",Msg))
@@ -193,10 +204,31 @@ bool CpNaFCon::OnNewMail(MOOSMSG_LIST &NewMail)
    {
 	string polling_add = Msg.m_sVal;
 
-//	sCollVehicleId = Msg.m_sVal;
+	sCollVehicleId = Msg.m_sVal;
 
 	MOOSTrace("Polling address %d\n",atoi(polling_add.c_str()));
    }  
+
+   if(m_Comms.PeekMail(NewMail,"DEPLOY_STATE",Msg))
+   {
+	dep_state = Msg.m_sVal;
+   }
+   if(m_Comms.PeekMail(NewMail,"DEPLOY_MISSION",Msg))
+   {
+	dep_mission = Msg.m_sVal;
+   }
+   if(m_Comms.PeekMail(NewMail,"PROSECUTE_STATE",Msg))
+   {
+	prose_state = Msg.m_sVal;
+   }
+   if(m_Comms.PeekMail(NewMail,"CLOSE_RANGE",Msg))
+   {
+	close_range = Msg.m_sVal;
+   }
+   if(m_Comms.PeekMail(NewMail,"TRACKING",Msg))
+   {
+	track_tracking = Msg.m_sVal;
+   }
 
    //Send a Contact Report
    if(m_Comms.PeekMail(NewMail,"BEARING_STAT",Msg))
@@ -278,10 +310,11 @@ bool CpNaFCon::OnNewMail(MOOSMSG_LIST &NewMail)
   //              "ContactFrequency2=0,ContactBandwidth2=0";
 
 
-
-	     SetMOOSVar("Plusnetmessages", ContactMessage, TimeNow);
-		
-             Contact_rpt_time = MOOSTime();
+	    if(((dep_state == "DEPLOY")&&(dep_mission == "0")) || ((prose_state == "PROSECUTE")&&(close_range == "TRUE")&&(track_tracking == "TRACKING")))
+	    { 
+	      SetMOOSVar("Plusnetmessages", ContactMessage, TimeNow);
+              Contact_rpt_time = MOOSTime();
+	    }
 	}
 	}	
    }
@@ -397,6 +430,11 @@ bool CpNaFCon::OnConnectToServer()
 	m_Comms.Register("LAST_POLLED_TIME",0);
 	m_Comms.Register("POLLING_ADDRESS",0);
 	m_Comms.Register("COLLABORATION_MODE",0);
+	m_Comms.Register("DEPLOY_STATE",0);
+	m_Comms.Register("DEPLOY_MISSION",0);
+	m_Comms.Register("PROSECUTE_STATE",0);
+	m_Comms.Register("CLOSE_RANGE",0);
+	m_Comms.Register("TRACKING",0);
 	
 	string sVal;
 	string sVehicle;
@@ -600,6 +638,11 @@ bool CpNaFCon::OnStartUp()
 	  AddMOOSVariable("AbortDepth",	"",	"SENSOR_DEPTH_ABORT",       0);
 	//SENSOR_DEPLOY = "deploy lat, deploy lon"
 	  AddMOOSVariable("SensorDeploy",	"",	"SENSOR_DEPLOY",       0);
+	//added for kayaks
+	  AddMOOSVariable("SensorProsecute",	"",	"SENSOR_Prosecute",       0);
+
+
+
 	//ABORT Lat
 	  AddMOOSVariable("AbortLat",	"",	"ABORT_LAT",	0);
 	//ABORT Lon
@@ -659,6 +702,10 @@ bool CpNaFCon::OnStartUp()
 	SetMOOSVar("ReturnDepth", "depth=0.0", dfTimeNow);
 	SetMOOSVar("AbortDepth", "depth=0.0", dfTimeNow);
 	SetMOOSVar("SensorDeploy", "points=radial:0.0,0.0,100,6", dfTimeNow);
+	
+	// added for kayaks
+	SetMOOSVar("SensorProsecute", "points=radial:0.0,0.0,100,6", dfTimeNow);
+
 	SetMOOSVar("SensorAbort", "points=0.0,0.0", dfTimeNow);
 	SetMOOSVar("SensorReturn", "points=0.0,0.0", dfTimeNow);
 	SetMOOSVar("SensorRaceTrack", "deploy_location=0,0#heading=0", dfTimeNow);
@@ -693,6 +740,7 @@ void CpNaFCon::Translate(CMOOSMsg sentence)
 	string sopradius;
 	string sduration;
 	string ssdeploy;
+	string ssprosecute;
 	string sabort;
 	string sreturn;
 	string destiId;
@@ -1173,6 +1221,14 @@ void CpNaFCon::Translate(CMOOSMsg sentence)
 
 			//PROSECUTE STATE
 		      	SetMOOSVar("ProsecuteState", "PROSECUTE", dfTimeNow);
+			
+			ssprosecute = "polygon=radial:"+doubleToString(localEast,9)+","+doubleToString(localNorth,9)+",80,6";
+
+			//SENSOR DEPLOY
+		      	SetMOOSVar("SensorProsecute", ssprosecute, dfTimeNow);
+
+
+
 			SetMOOSVar("ProsecuteMission", sProsecuteMission, dfTimeNow);
 			SetMOOSVar("DeployState", "FALSE", dfTimeNow);
 			//stop surfacing

@@ -145,23 +145,37 @@ bool BHV_Waypoint::setParam(string param, string val)
 
 
 //-----------------------------------------------------------
+// Procedure: onIdleState
+
+void BHV_Waypoint::onIdleState() 
+{
+  updateInfoOut(false);
+}
+
+
+//-----------------------------------------------------------
 // Procedure: produceOF
 
 IvPFunction *BHV_Waypoint::produceOF() 
 {
-  // Set osX, osY, osSPD
-  if(!updateInfoIn())
-    return(0);
+  //waypoint_engine.setPerpetual(perpetual);
 
-  // Set ptX, ptY, iptX, iptY;
-  if(!setNextWaypoint())
+  // Set osX, osY, osSPD
+  if(!updateInfoIn()) {
+    updateInfoOut(false);
     return(0);
+  }
+  // Set ptX, ptY, iptX, iptY;
+  if(!setNextWaypoint()) {
+    updateInfoOut(false);
+    return(0);
+  }
   
   IvPFunction *ipf = buildOF("zaic");
   if(ipf)
     ipf->setPWT(priority_wt);
 
-  updateInfoOut();
+  updateInfoOut(true);
 
   return(ipf);
 }
@@ -205,6 +219,8 @@ bool BHV_Waypoint::setNextWaypoint()
   if(waypoint_engine.isComplete()) {
     postMessage("VEHICLE_WPT_STAT", "complete");
     setComplete();
+    if(perpetual)
+      waypoint_engine.reset();
     return(false);
   }
   
@@ -272,7 +288,7 @@ IvPFunction *BHV_Waypoint::buildOF(string method)
 //-----------------------------------------------------------
 // Procedure: updateInfoOut()
 
-void BHV_Waypoint::updateInfoOut()
+void BHV_Waypoint::updateInfoOut(bool post)
 {
   if(osSPD > 0) {
     int    current_waypt = waypoint_engine.getCurrIndex();
@@ -291,11 +307,18 @@ void BHV_Waypoint::updateInfoOut()
   XYSegList seglist = waypoint_engine.getSegList();
   postMessage("VIEW_SEGLIST", seglist.get_spec());
 
-  if(waypoint_engine.currPtChanged()) {
-    string ptmsg;
-    ptmsg += doubleToString(ptX,2) + ",";
-    ptmsg += doubleToString(ptY,2) + ",5," + us_name;
+  if(post) {
+    if(waypoint_engine.currPtChanged()) {
+      string ptmsg;
+      ptmsg += doubleToString(ptX,2) + ",";
+      ptmsg += doubleToString(ptY,2) + ",5," + us_name + "_wpt";
+      postMessage("VIEW_POINT", ptmsg);
+    }
+  }
+  else {
+    string ptmsg = "0,0,0," + us_name + "_wpt";;
     postMessage("VIEW_POINT", ptmsg);
   }
+
 }
 

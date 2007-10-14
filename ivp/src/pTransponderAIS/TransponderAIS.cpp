@@ -21,6 +21,7 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
+#include <iostream>
 #include <list>
 #include <iterator>
 #include "TransponderAIS.h"
@@ -79,14 +80,8 @@ bool TransponderAIS::OnNewMail(MOOSMSG_LIST &NewMail)
       if(!ok) 
 	MOOSTrace("TransponderAIS: Un-Parsed AIS-Report.\n");
     }
-    else if(key == "CONTACT_STAT") {
-      bool ok = handleIncomingCSReport(sdata);
-      if(!ok) 
-	MOOSTrace("TransponderAIS: Un-Parsed CONTACT_STAT Report.\n");
-    }
-    
     // tes 9-12-07 added support for NAFCON_MESSAGES
-    else if (key == "NAFCON_MESSAGES") {
+    else if((key == "NAFCON_MESSAGES") || (key == "NAFCON_MESSAGES_WLAN")) {
       if(m_parseNaFCon) {
 	bool ok = handleIncomingNaFConMessage(sdata);
 	if (!ok)
@@ -122,6 +117,7 @@ bool TransponderAIS::OnConnectToServer()
   
   // tes 9-12-07. added NAFCON_MESSAGES registration
   m_Comms.Register("NAFCON_MESSAGES", 0);
+  m_Comms.Register("NAFCON_MESSAGES_WLAN", 0);
 
   return(true);
 }
@@ -313,70 +309,6 @@ bool TransponderAIS::handleIncomingAISReport(const string& sdata)
   return(true);
 }
 
-//-----------------------------------------------------------------
-// Procedure: handleIncomingCSReport()
-
-bool TransponderAIS::handleIncomingCSReport(const string& sdata)
-{
-  string vname;         bool vname_set   = false;
-  double nav_x_val;     bool nav_x_set   = false;
-  double nav_y_val;     bool nav_y_set   = false;
-  double nav_spd_val;   bool nav_spd_set = false;
-  double nav_hdg_val;   bool nav_hdg_set = false;
-  double nav_dep_val;   bool nav_dep_set = false;
-
-  vector<string> svector = parseString(sdata, ',');
-  int vsize = svector.size();
-  for(int i=0; i<vsize; i++) {
-    vector<string> svector2 = parseString(svector[i], '=');
-    if(svector2.size() == 2) {
-      string left = tolower(stripBlankEnds(svector2[0]));
-      string right = stripBlankEnds(svector2[1]);
-      
-      if(left=="node") {
-	vname = right;
-	vname_set = true;
-      }
-      if(left == "x") {
-	nav_x_val = atof(right.c_str());
-	nav_x_set = true;
-      }
-      if(left == "y") {
-	nav_y_val = atof(right.c_str());
-	nav_y_set = true;
-      }
-      if(left == "speed") {
-	nav_spd_val = atof(right.c_str());
-	nav_spd_set = true;
-      }
-      if(left == "heading") {
-	nav_hdg_val = atof(right.c_str());
-	nav_hdg_set = true;
-      }
-      if(left == "depth") {
-	nav_dep_val = atof(right.c_str());
-	nav_dep_set = true;
-      }
-    }
-  }
-
-  if(!vname_set || !nav_x_set || !nav_y_set ||
-     !nav_spd_set || !nav_hdg_set)
-    return(false);
-  
-
-  vname = toupper(vname);
-  
-  m_Comms.Notify(vname+"_NAV_X", nav_x_val);
-  m_Comms.Notify(vname+"_NAV_Y", nav_y_val);
-  m_Comms.Notify(vname+"_NAV_SPEED", nav_spd_val);
-  m_Comms.Notify(vname+"_NAV_HEADING", nav_hdg_val);
-  if(nav_dep_set)
-    m_Comms.Notify(vname+"_NAV_DEPTH", nav_dep_val);
-
-  return(true);
-}
-
 
 //-----------------------------------------------------------------
 // Procedure: handleIncomingNaFConMessage()
@@ -392,9 +324,13 @@ bool TransponderAIS::handleIncomingNaFConMessage(const string& rMsg)
   string messageType = "unknown";
   
   if (!(MOOSValFromString(messageType, rMsg, "MessageType"))) {
-    MOOSTrace("pParseNaFCon: Bad message. No message type found.\n");
+    MOOSTrace("pTransponderAIS: Bad message. No message type found.\n");
     return false;
   } 
+
+  MOOSTrace("Began parsing NaFCon message to AIS_REPORT:\n");
+  MOOSTrace(rMsg);
+  MOOSTrace("\n\n");
   
   //we have a status message                                                                           
   if(MOOSStrCmp(messageType, "SENSOR_STATUS")) {
@@ -404,33 +340,106 @@ bool TransponderAIS::handleIncomingNaFConMessage(const string& rMsg)
     // limit to vehicles specified in config file
     // and now stored in naFConPublishForID
     if(naFConPublishForID[atoi(sourceID.c_str())]) {
+      MOOSTrace("Will publish for this ID. \n");
       double navX, navY, navLat, navLong, navHeading, navSpeed, navDepth, navTime;
       if(!MOOSValFromString(navLong, rMsg, "NodeLongitude"))
-	return false;
+	return MOOSFail("No NodeLongitude\n");
       
       if (!MOOSValFromString(navLat, rMsg, "NodeLatitude"))
-	return false;
+	return MOOSFail("No NodeLatitude\n");
       
       if (!MOOSValFromString(navHeading, rMsg, "NodeHeading"))
-	return false;
+	return MOOSFail("No NodeHeading\n");
       
       if (!MOOSValFromString(navSpeed, rMsg, "NodeSpeed"))
-	return false;
+	return MOOSFail("No NodeSpeed\n");
       
       if(!MOOSValFromString(navDepth, rMsg, "NodeDepth"))
-	return false;
-      
+	return MOOSFail("No NodeDepth\n");      
+
       if(!MOOSValFromString(navTime, rMsg, "Timestamp"))
-	return false;
-      
+	return MOOSFail("No Timestamp\n");      
+
       // convert lat, long into x, y. 60 nautical miles per minute
       if(!m_Geodesy.LatLong2LocalGrid(navLat, navLong, navY, navX))
-	return false;
+	return MOOSFail("Geodesy conversion failed\n");
       
+
+      string vtype = "GLIDER";
+      string vname = sourceID;
+      if(sourceID == "1") {
+	vtype = "AUV";
+	vname = "(1)Sea-Horse";
+      }
+      if(sourceID == "2") {
+	vtype = "KAYAK";
+	vname = "(2)Bobby";
+      }
+      if(sourceID == "3") {
+	vtype = "AUV";
+	vname = "(3)Unicorn";
+      }
+      if(sourceID == "4") {
+	vtype = "AUV";
+	vname = "(4)Macrura";
+      }
+      if(sourceID == "5") {
+	vtype = "KELP";
+	vname = "(5)PN2";
+      }
+      if(sourceID == "7") {
+	vtype = "GLIDER";
+	vname = "(7)X-RAY";
+      }
+      if(sourceID == "9") { 
+	vtype = "KAYAK";
+	vname = "(9)DEE";
+      }
+      if(sourceID == "10") {
+	vtype = "KAYAK";
+	vname = "(10)Elanor";
+      }
+      if(sourceID == "11") {
+	vtype = "KAYAK";
+	vname = "(11)Frankie";
+      }
+      if(sourceID == "14") {
+	vtype = "GLIDER";
+	vname = "(14)SLOCUM-GTAS";
+      }
+      if(sourceID == "15") {
+	vtype = "KELP";
+	vname = "(15)KELP-OBCI";
+      }
+      if(sourceID == "18") {
+	vtype = "VSA";
+	vname = "(18)VSA-1";
+      }
+      if(sourceID == "19") {
+	vtype = "VSA";
+	vname = "(19)VSA-2";
+      }
+      if(sourceID == "20") {
+	vtype = "GLIDER";
+	vname = "(20)SeaGlider-106";
+      }
+      if(sourceID == "21") {
+	vtype = "GLIDER";
+	vname = "(21)SeaGlider-107";
+      }
+      if(sourceID == "22") {
+	vtype = "GLIDER";
+	vname = "(22)SeaGlider-116";
+      }
+      if(sourceID == "24") {
+	vtype = "GLIDER";
+	vname = "(24)SeaGlider-118";
+      }
+
       // publish it at AIS_REPORT
-      string summary = "NAME=" + sourceID;
+      string summary = "NAME=" + vname;
       summary += ",TYPE=";
-      summary += "Unknown";
+      summary += vtype;
       summary += ",TIME=" + dstringCompact(doubleToString(navTime));
       summary += ",X="   + dstringCompact(doubleToString(navX));
       summary += ",Y="   + dstringCompact(doubleToString(navY));
@@ -438,7 +447,12 @@ bool TransponderAIS::handleIncomingNaFConMessage(const string& rMsg)
       summary += ",HDG=" + dstringCompact(doubleToString(navHeading));
       summary += ",DEPTH=" + dstringCompact(doubleToString(navDepth));
       m_Comms.Notify("AIS_REPORT", summary);
-    } 
+      m_Comms.Notify("TRANSPONDER_NAFCON_REPORT", summary);
+
+      MOOSTrace("Transponder NaFCon Report:\n");
+      MOOSTrace(summary);
+      MOOSTrace("\n");
+     } 
   }
   return true;
 }

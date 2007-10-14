@@ -52,6 +52,7 @@ BHV_Trail::BHV_Trail(IvPDomain gdomain) : IvPBehavior(gdomain)
   m_trail_angle  = 180;
   m_radius       = 5;
   m_max_range    = 0;
+  m_interpolate  = false;
 
   m_min_util_cpa_dist = 100;
   m_max_util_cpa_dist = 0; 
@@ -138,10 +139,12 @@ IvPFunction *BHV_Trail::produceOF()
   // Calculate the relevance first. If zero-relevance, we won't
   // bother to create the objective function.
   double relevance = getRelevance();
-  if(relevance <= 0)
+  if(relevance <= 0) {
+    postMessage("PURSUIT", 0);
     return(0);
+  }
 
-  postMessage("PURSUIT", "true");
+  postMessage("PURSUIT", 1);
 
   IvPFunction *ipf = 0;
 
@@ -243,6 +246,24 @@ bool BHV_Trail::updateInfoIn()
   if(!ok1 || !ok2 || !ok3 || !ok4 || !ok5 || !ok6 || !ok7 || !ok8)
     return(false);
   
+  if(!m_interpolate)
+    return(true);
+  
+  double curr_time = info_buffer->getCurrTime();
+  double mark_time = info_buffer->tQuery(m_contact+"_NAV_X");
+  if(mark_time == curr_time)
+    m_interpolator.setPosition(m_cnx, m_cny, m_cnv, m_cnh, curr_time);
+  
+  double new_cnx, new_cny;
+  bool ok = m_interpolator.getPosition(new_cnx, new_cny, curr_time);
+  if(ok) {
+    m_cnx = new_cnx;
+    m_cny = new_cny;
+  }
+
+      
+
+
   return(true);
 }
 

@@ -82,9 +82,15 @@ bool MarinePID::OnNewMail(MOOSMSG_LIST &NewMail)
 
     msg.IsSkewed(MOOSTime(),&dfT);
 
+
+    string key = toupper(stripBlankEnds(msg.m_sKey));
+    if(key == "SPEED_FACTOR") {
+      speed_factor = msg.m_dfVal;
+      pengine.setSpeedFactor(speed_factor);
+    }
+
     #define ACCEPTABLE_SKEW_FIX_ME 360.0
     if(fabs(dfT)<ACCEPTABLE_SKEW_FIX_ME) {
-      string key = msg.m_sKey;
       if(key == "MOOS_MANUAL_OVERIDE") {
 	if(MOOSStrCmp(msg.m_sVal, "FALSE")) {
 	  has_control = true;
@@ -133,7 +139,8 @@ bool MarinePID::OnNewMail(MOOSMSG_LIST &NewMail)
       }
       else if(key == "DESIRED_DEPTH")
 	desired_depth = msg.m_dfVal;
-    }
+
+      }
   }
   return(true);
 }
@@ -261,6 +268,7 @@ void MarinePID::registerVariables()
   m_Comms.Register("DESIRED_THRUST", 0);
   m_Comms.Register("DESIRED_DEPTH", 0);
   m_Comms.Register("PID_VERBOSE", 0);
+  m_Comms.Register("SPEED_FACTOR", 0);
   m_Comms.Register("MOOS_MANUAL_OVERIDE", 0);
 }
 

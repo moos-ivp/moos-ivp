@@ -27,7 +27,7 @@ XMS::XMS()
   m_update_requested  = true;
   m_iteration         = 0;
 
-  m_display_virgins   = false;
+  m_display_virgins   = true;
 }
 
 //------------------------------------------------------------

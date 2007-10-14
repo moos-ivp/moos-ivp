@@ -9,7 +9,7 @@
  *
  *  Last modified: July 31, 2006
  *
- *  $Id: CCLMessageTypes.h,v 1.1.1.1 2007-07-13 03:02:14 cvsadmin Exp $
+ *  $Id: CCLMessageTypes.h,v 1.1.1.1 2007-09-28 16:38:01 ajshafer Exp $
  *
  *  ChangeLog:   Version        Description
  *

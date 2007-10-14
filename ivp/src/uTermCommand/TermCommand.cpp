@@ -102,7 +102,7 @@ void TermCommand::addCommand(string cmd_str)
 
   if(vector_a.size() != 2)
     return;
-  string var_key = stripBlankEnds(vector_a[0]);
+  string var_key = tolower(stripBlankEnds(vector_a[0]));
   
   // Don't allow duplicate keys
   for(int i=0; i<m_var_key.size(); i++)

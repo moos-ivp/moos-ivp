@@ -120,7 +120,7 @@ bool CFramer::OnStartUp()
 	MOOSTrace("                   %s Version %d.%02d\n",VERSION_NAME,VERSION_MAJOR,VERSION_MINOR);
 	MOOSTrace("\n");
 	MOOSTrace("\n");
-	MOOSTrace("$Id: Framer.cpp,v 1.3 2007-09-06 15:39:57 mgrund Exp $\n");
+	MOOSTrace("$Id: Framer.cpp,v 1.1.1.1 2007-09-28 16:38:01 ajshafer Exp $\n");
 	MOOSTrace("=========================================================\n\n\n");
 	
 

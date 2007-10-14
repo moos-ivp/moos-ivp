@@ -52,6 +52,7 @@ public:
   void   setMaxRotatVel(double v) {m_max_rotat_vel = v;};
   void   setPushX(double v)       {m_push_x = v;};
   void   setPushY(double v)       {m_push_y = v;};
+  void   setPushTheta(double v)   {m_push_theta = v;};
   void   setFloatRate(double v)   {m_float_rate = v;};
   void   setPaused(bool);
 
@@ -72,6 +73,7 @@ protected:
   double    m_elevator;
   double    m_push_x;
   double    m_push_y;
+  double    m_push_theta;
   double    m_float_rate;
   VState    m_vstate; // with no noise
   MBTimer   m_pause_timer;

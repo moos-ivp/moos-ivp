@@ -324,11 +324,13 @@ bool CGPSInstrument::ParseNMEAString(string &sNMEAString, double dfWhen)
     SetMOOSVar("Satellites", dfSatellites, dfWhen);
     
     char tmp[160];
-    snprintf(tmp, 160, "time=%lf,n=%lf,e=%lf,x=%lf,y=%lf,sat=%i",
+    snprintf(tmp, 160, "time=%lf,n=%lf,e=%lf,x=%lf,y=%lf,sat=%i,lat=%lf,lon=%lf",
 	     dfWhen, dfNLocal, dfELocal, dfXLocal,
-	     dfYLocal, (int)dfSatellites);
+	     dfYLocal, (int)dfSatellites, dfLatDecDeg, dfLongDecDeg);
     
     m_Comms.Notify("GPS_SUMMARY", tmp);
+    m_Comms.Notify("GPS_LATITUDE", dfLatDecDeg);
+    m_Comms.Notify("GPS_LONGITUDE", dfLongDecDeg);
     
     return true;
   } else if(sWhat == "$GPRMC") {

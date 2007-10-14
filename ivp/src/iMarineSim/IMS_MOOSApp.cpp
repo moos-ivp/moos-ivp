@@ -64,6 +64,8 @@ bool IMS_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 	m_model->setElevator(Msg.m_dfVal);
       else if(Msg.m_sKey == "SIM_PAUSED")
 	m_model->setPaused(toupper(Msg.m_sVal) == "TRUE");
+      else if(Msg.m_sKey == "SIM_THETA_FORCE")
+	m_model->setPushTheta(Msg.m_dfVal);
       else if(Msg.m_sKey == "SIM_X_FORCE")
 	m_model->setPushX(Msg.m_dfVal);
       else if(Msg.m_sKey == "SIM_Y_FORCE")
@@ -147,6 +149,8 @@ bool IMS_MOOSApp::OnStartUp()
       m_model->setFloatRate(dVal);
     else if(sVarName == "PREFIX")
       m_sim_prefix = sVal;
+    else if(sVarName == "FORCE_THETA")
+      m_model->setPushTheta(dVal);
     else if(sVarName == "FORCE_X")
       m_model->setPushX(dVal);
     else if(sVarName == "FORCE_Y")

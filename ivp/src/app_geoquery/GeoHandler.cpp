@@ -216,7 +216,7 @@ void GeoHandler::queryPosLatLong2Local()
   }
   
   double new_x, new_y;
-  bool ok_trans = m_geodesy.LatLong2LocalGrid(m_lat1, m_lon1, new_x, new_y);
+  bool ok_trans = m_geodesy.LatLong2LocalGrid(m_lat1, m_lon1, new_y, new_x);
   if(!ok_trans) {
     cout << "Problem with the MOOSGeodesy translation - exiting." << endl;
     exit(0);

@@ -13,20 +13,6 @@
 using namespace std;
 
 //---------------------------------------------------------
-// Constructor
-
-ViewerRelay::ViewerRelay()
-{
-}
-
-//---------------------------------------------------------
-// Destructor
-
-ViewerRelay::~ViewerRelay()
-{
-}
-
-//---------------------------------------------------------
 // Procedure: OnNewMail
 
 bool ViewerRelay::OnNewMail(MOOSMSG_LIST &NewMail)
@@ -48,9 +34,10 @@ bool ViewerRelay::OnNewMail(MOOSMSG_LIST &NewMail)
     
     if(key == "MVIEWER_LCLICK")
       handleNewViewerLeftClick(sval);
-    
-    if(key == "MVIEWER_RCLICK")
-      handleNewViewerRightClick(sval);
+    //    if(key == "MVIEWER_RCLICK")
+    //      handleNewViewerRightClick(sval);
+    if(key == "MVIEWER_RCLICK_RP")
+      handleNewViewerRightClickRP(sval);
   }
 
   return(true);
@@ -79,6 +66,7 @@ void ViewerRelay::RegisterVariables()
 {
   m_Comms.Register("MVIEWER_LCLICK", 0);
   m_Comms.Register("MVIEWER_RCLICK", 0);
+  m_Comms.Register("MVIEWER_RCLICK_RP", 0);
 }
 
 
@@ -132,8 +120,6 @@ bool ViewerRelay::handleNewViewerLeftClick(string str)
   string var_val  = "x=" + x_meters + "," + "y=" + y_meters;
 
   m_Comms.Notify(var_name, var_val);
-
-
   return(true);
 }
 
@@ -142,6 +128,53 @@ bool ViewerRelay::handleNewViewerLeftClick(string str)
 
 bool ViewerRelay::handleNewViewerRightClick(string str)
 {
-  return(true);
+  string x_meters, y_meters, v_name;
+
+  bool x_ok, y_ok, v_ok;
+  
+  x_ok   = tokParse(str, "x", ',', '=', x_meters);
+  y_ok   = tokParse(str, "y", ',', '=', y_meters);
+  v_ok   = tokParse(str, "vname", ',', '=', v_name);
+  
+  if(!v_ok)
+    return(false);
+  else
+    v_name = toupper(stripBlankEnds(v_name));
+  
+  if(x_ok && y_ok) {
+    string var_name = "DEPLOY_TO_LOITER_" + v_name;
+    string var_val  = "x=" + x_meters + "," + "y=" + y_meters;
+    m_Comms.Notify(var_name, var_val);
+    return(true);
+  }
+  else
+    return(false);
+}
+
+//---------------------------------------------------------
+// Procedure: handleNewViewerRightClickRP
+
+bool ViewerRelay::handleNewViewerRightClickRP(string str)
+{
+  string vname, range, bearing, contact;
+  bool   vname_ok, range_ok, bearing_ok, contact_ok;
+  
+  vname_ok   = tokParse(str, "vname", ',', '=', vname);
+  range_ok   = tokParse(str, "range", ',', '=', range);
+  bearing_ok = tokParse(str, "bearing", ',', '=', bearing);
+  contact_ok = tokParse(str, "contact", ',', '=', contact);
+  
+  if(!vname_ok || !range_ok || !bearing_ok || !contact_ok)
+    return(false);
+
+  vname = toupper(stripBlankEnds(vname));
+  
+  string var_name = "DEPLOY_TO_RELPOS_" + vname;
+  string var_val  = "range=" + range + ",";
+  var_val += "bearing=" + bearing + ",";
+  var_val += "contact=" + contact;
+  m_Comms.Notify(var_name, var_val);
+  
+  return(true);  
 }
 

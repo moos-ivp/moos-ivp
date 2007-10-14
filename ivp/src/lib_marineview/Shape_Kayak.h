@@ -68,6 +68,7 @@ float g_kayakBody[]=
    0.0,       0.0
 };
 unsigned int g_kayakBodySize = 58;
+float        g_kayakScale = 1.0;
 
 float g_kayakMidOpen[]=
 {

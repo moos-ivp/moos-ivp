@@ -43,6 +43,7 @@
 #include "BHV_Shadow.h"
 #include "BHV_Timer.h"
 #include "BHV_StationKeep.h"
+#include "BHV_RStationKeep.h"
 #include "BHV_CutRange.h"
 #include "BHV_AvoidCollision.h"
 #include "BHV_GoToDepth.h"
@@ -293,6 +294,8 @@ IvPBehavior* Populator_BehaviorSet::initializeBehavior(string bhv_name)
     bhv = new BHV_Loiter(domain);
   else if(bhv_name == "BHV_StationKeep")     
     bhv = new BHV_StationKeep(domain);
+  else if(bhv_name == "BHV_RStationKeep")     
+    bhv = new BHV_RStationKeep(domain);
   else if(bhv_name == "BHV_Timer")     
     bhv = new BHV_Timer(domain);
   else if(bhv_name == "BHV_Shadow")     

@@ -58,49 +58,57 @@ class MarineViewer : public Fl_Gl_Window
   bool  setCommonParam(std::string, float);
 
 public:
-  bool  readTiff(const char *f=0);
-  bool  setTexture();
+  bool   readTiff(const char *f=0);
+  bool   readTiffB(const char *f=0);
+  bool   setTexture();
 
-  void  addPoly(const XYPolygon&);
-  void  addGrid(const XYGrid&);
-  void  addCircle(const XYCircle&);
-  void  addHexagon(const XYHexagon&);
-  void  addSegList(const XYSegList&);
-  void  colorMapping(const std::string&);
-  void  updateGrid(std::string);
+  void   addPoly(const XYPolygon&);
+  void   addGrid(const XYGrid&);
+  void   addCircle(const XYCircle&);
+  void   addHexagon(const XYHexagon&);
+  void   addSegList(const XYSegList&);
+  void   colorMapping(const std::string&);
+  void   updateGrid(std::string);
+  double getHashDelta();
 
 protected:
-  float img2view(char, float);
-  float view2img(char, float);
-  float meters2img(char, float);
-  float img2meters(char, float);
-  void  drawCommon();
-  void  drawTiff();
-  void  drawHash();
-  void  drawCrossHairs();
-  void  drawPolys();
-  void  drawPoly(const XYPolygon&, 
-		 bool filled=false, bool dashed=false,
-		 float=0.40, float=0.40, float=0.40,   
-		 float=0.20, float=0.80, float=0.20,   
-		 float=0.00, float=0.00, float=0.00,   
-		 float=0.00, float=0.00, float=0.00,   
-		 float=0.00, float=0.00, float=0.00);
+  float  img2view(char, float);
+  float  view2img(char, float);
+  float  meters2img(char, float);
+  float  img2meters(char, float);
+  void   drawCommon();
+  void   drawTiff();
+  void   drawHash();
+  void   drawCrossHairs();
+  void   drawPolys();
+  void   drawSegment(float, float, float, float, float, float, float);
+  void   drawPoly(const XYPolygon&, 
+		  bool filled=false, bool dashed=false,
+		  float=0.40, float=0.40, float=0.40,   
+		  float=0.20, float=0.80, float=0.20,   
+		  float=0.00, float=0.00, float=0.00,   
+		  float=0.00, float=0.00, float=0.00,   
+		  float=0.00, float=0.00, float=0.00);
 
-  void  drawHexagons();
-  void  drawSegLists();
-  void  drawSegList(int ix);
-  void  drawGrids();
-  void  drawGrid(int ix);
-  void  drawCircles();
-  void  drawCircle(int ix);
-  void  drawGLPoly(float *points, int numPoints, 
-		   float r, float g, float b, float thickness=0);
-  void  drawCommonVehicle(ObjectPose, double r, double g, double b, 
-			  std::string body, int line=0);
+  void   drawHexagons();
+  void   drawSegLists();
+  void   drawSegList(int ix);
+  void   drawGrids();
+  void   drawGrid(int ix);
+  void   drawCircles();
+  void   drawCircle(int ix);
+  void   drawGLPoly(float *points, int numPoints, float r, float g, 
+		    float b, float thickness=0, float scale=1);
+  void   drawCommonVehicle(std::string vname, ObjectPose, double r, 
+			   double g, double b, std::string body, int line=0);
+  void   drawCommonMarker(double x, double y, double scale, std::string);
   
 protected:
-  BackImg    m_back_img;  
+  BackImg    m_back_img;
+  BackImg    m_back_img_b;
+  bool       m_back_img_b_ok;
+  bool       m_back_img_b_on;
+  bool       m_back_img_mod;
 
   float      m_zoom;
   float      m_vshift_x; 
@@ -115,6 +123,7 @@ protected:
   GLuint*    m_textures;
 
   bool       m_trails;
+  bool       m_trail_connect;
   int        m_trail_color;
   int        m_trail_gap;
   float      m_trail_size;
@@ -122,6 +131,7 @@ protected:
   bool       m_poly_offon;
   bool       m_tiff_offon;
   bool       m_hash_offon;
+  bool       m_draw_vname;
   int        m_global_ix;
 
   std::vector<XYCircle>  m_circ;

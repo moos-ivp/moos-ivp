@@ -83,6 +83,8 @@ void SimEngine::propagate(VState &vstate, double velocity,
 
   double delta_theta_deg = rudder_angle * 40 * delta_time;
 
+  delta_theta_deg += (delta_time * push_theta);
+
   double pct = velocity / top_turn_speed;
   if(pct > 1.0)
     pct = 1.0;

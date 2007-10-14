@@ -26,6 +26,20 @@
 using namespace std;
 
 //---------------------------------------------------------------
+// Constructor
+
+LinearInterpolator::LinearInterpolator()
+{
+  m_xpos        = 0;
+  m_ypos        = 0;
+  m_spd         = 0;
+  m_hdg         = 0;
+  m_decay_start = 0;
+  m_decay_end   = 0;
+  m_timestamp   = 0;
+}
+
+//---------------------------------------------------------------
 // Procedure: getPosition
 
 bool LinearInterpolator::getPosition(double& r_xpos, double& r_ypos,

@@ -45,13 +45,18 @@ bool CiPWMController::OnNewMail(MOOSMSG_LIST &NewMail)
 			servo_params_t &p = mapping[msg.m_sKey];
 			p.last_set = MOOSTime();
 			if(p.mode == MODE_PWM) {
-				double iv = dCLAMP(msg.m_dfVal+p.input_offset, p.clamp_in_low, p.clamp_in_high);
-				pwm->SetPower(p.servon, mu8SCALE(iv, p.in_low, p.in_high));
+				p.desired = dCLAMP(msg.m_dfVal+p.input_offset, p.clamp_in_low, p.clamp_in_high);
 			} else if(p.mode == MODE_DIGITAL) {
 				bool enabled = strtobool(msg.m_sVal);
 				pwm->SetDigital(p.servon, enabled);
 				fprintf(stdout, "setting %i to %s\n", p.servon, enabled? "true" : "false");
 			}
+		} else if(mapping.find(msg.m_sKey.substr(0, msg.m_sKey.size()-2)) != mapping.end()) {
+			servo_params_t &p = mapping[msg.m_sKey.substr(0, msg.m_sKey.size()-2)];
+
+			printf("Old K for %s is %lf, new %lf\n", msg.m_sKey.c_str(), p.k, msg.m_dfVal);
+
+			p.k = msg.m_dfVal;
 		}
 	}
 
@@ -119,6 +124,16 @@ bool CiPWMController::OnConnectToServer()
 					p.dflt = (p.in_low + p.in_high) / 2.0;
 				}
 
+				if(vs.size() >= 8) {
+					p.k = stof(vs[7]);
+				} else {
+					p.k = 0.3;
+				}
+
+				printf("K is %lf\n", p.k);
+
+				p.current = p.desired = p.dflt;
+
 				mapping[vs[1]] = p;
 			}
 		}
@@ -126,6 +141,7 @@ bool CiPWMController::OnConnectToServer()
 
 	for(servo_map::iterator it = mapping.begin(); it != mapping.end(); it++) {
 		m_Comms.Register(it->first, 0);
+		m_Comms.Register(it->first + "_K", 0);
 		servo_params_t &p = it->second;
 
 		pwm->ConfigureServo(p.servon, p.mode);
@@ -146,11 +162,27 @@ bool CiPWMController::Iterate()
 	// happens AppTick times per second
 	
 	for(servo_map::iterator it = mapping.begin(); it != mapping.end(); it++) {
-		if(it->second.last_set + 5 < MOOSTime()) {
+		servo_params_t &p = it->second;
+		if(p.last_set + 5 < MOOSTime()) {
 			printf("Timeout on %s\n", it->first.c_str());
-			if(it->second.mode == MODE_PWM) {
-				pwm->SetPower(it->second.servon, mu8SCALE(it->second.dflt, it->second.in_low, it->second.in_high));
+			if(p.mode == MODE_PWM) {
+				p.desired = p.dflt;
 			}
+		}
+
+		if(p.mode == MODE_PWM) {
+			double lk = p.k;
+			if(p.desired == 0.0) {
+				printf("Wants exactly zero: increasing K\n");
+				lk *= 4;
+			}
+
+			p.current = (p.current + (p.desired * lk))/(1.0+lk);
+		
+			printf("Setting servo %i to %i (input %lf, current %lf)\n",
+				p.servon, mu8SCALE(p.current, p.in_low, p.in_high),
+				p.desired, p.current);
+			pwm->SetPower(p.servon, mu8SCALE(p.current, p.in_low, p.in_high));
 		}
 	}
 	
@@ -162,7 +194,7 @@ void CiPWMController::callback(int input, double volts)
 	char tmp[40];
 	snprintf(tmp, 40, "ANALOG_IN_%i", input);
 	m_Comms.Notify(tmp, volts);
-	fprintf(stderr, "Read voltage on port %i @ %lf volts\n", input, volts);
+	//fprintf(stderr, "Read voltage on port %i @ %lf volts\n", input, volts);
 }
 
 bool CiPWMController::OnStartUp()

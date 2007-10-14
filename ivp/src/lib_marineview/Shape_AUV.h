@@ -28,6 +28,7 @@ float g_auvBody[]=
    -5.0,    0.0
 };
 unsigned int g_auvBodySize = 16;
+float        g_auvScale = 1.0;
 
 float g_propUnit[]=
 {

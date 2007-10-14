@@ -48,7 +48,7 @@ CMicroModemInstrument::CMicroModemInstrument()
     MOOSTrace("\n");
     MOOSTrace("                   %s Version %d.%02d\n",VERSION_NAME,VERSION_MAJOR,VERSION_MINOR);
     MOOSTrace("\n");
-    MOOSTrace(" Version $Id: MicroModemInstrument.cpp,v 1.11 2007-09-04 20:46:05 adumorti Exp $\n");
+    MOOSTrace(" Version $Id: MicroModemInstrument.cpp,v 1.3 2007-10-07 05:36:01 arjunab Exp $\n");
     MOOSTrace("\n");
     MOOSTrace("            (c) Copyright, 2006 Matt Grund,WHOI\n");
     MOOSTrace("==========================================================\n\n");
@@ -506,7 +506,8 @@ bool CMicroModemInstrument::GetModemMessage()
 		
 		if(m_Port.IsStreaming())
 		{
-			if(!m_Port.GetLatest(sModemMessage,dfModemMessageTime))
+//			if(!m_Port.GetLatest(sModemMessage,dfModemMessageTime))
+			if(!m_Port.GetEarliest(sModemMessage,dfModemMessageTime))
 			{
 				return false;
 			}
@@ -530,27 +531,27 @@ bool CMicroModemInstrument::GetModemMessage()
         m_Comms.Notify(m_sRawVarName,sLastModemMessage,MOOSTime());
 
 //Arjuna Included this for getting the ACK bit
-//	std::string modem_data = sLastModemMessage;
+	std::string modem_data = sLastModemMessage;
 
-//	MOOSChomp(modem_data,"$");
-//	std::string TYPE = MOOSChomp(modem_data,",");
+	MOOSChomp(modem_data,"$");
+	std::string TYPE = MOOSChomp(modem_data,",");
 
-//	MOOSTrace("TYPE = %s\n",TYPE.c_str());
+	MOOSTrace("TYPE = %s\n",TYPE.c_str());
 
-//	if(TYPE == "CACYC")
-//	{
-//		std::string CMD = MOOSChomp(modem_data,",");
-//		std::string ADR1 = MOOSChomp(modem_data,",");
-//		std::string ADR2 = MOOSChomp(modem_data,",");
+	if(TYPE == "CACYC")
+	{
+		std::string CMD = MOOSChomp(modem_data,",");
+		std::string ADR1 = MOOSChomp(modem_data,",");
+		std::string ADR2 = MOOSChomp(modem_data,",");
 
-//		m_Comms.Notify("POLLING_ADDRESS",ADR2);
+		m_Comms.Notify("POLLING_ADDRESS",ADR2);
 
-//		std::string PACKETYPE = MOOSChomp(modem_data,",");
-//		std::string ACK_VAL = MOOSChomp(modem_data,",");
-//		MOOSTrace("Address %s, ACK_VAL = %s\n",ADR1.c_str(),ACK_VAL.c_str());
-//		if(atoi(ADR1.c_str()) == vehicleID)	
-//		 m_Comms.Notify("ACK_VAL",atoi(ACK_VAL.c_str()));
-//	}
+		std::string PACKETYPE = MOOSChomp(modem_data,",");
+		std::string ACK_VAL = MOOSChomp(modem_data,",");
+		MOOSTrace("Address %s, ACK_VAL = %s\n",ADR1.c_str(),ACK_VAL.c_str());
+		if(atoi(ADR1.c_str()) == vehicleID)	
+		 m_Comms.Notify("ACK_VAL",atoi(ACK_VAL.c_str()));
+	}
 //  End of Arjuna's code	
 	return true;
 }

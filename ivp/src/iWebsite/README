@@ -1,0 +1,34 @@
+t. schneider tes@mit.edu 10.1.07
+laboratory for autonomous marine sensing systems
+massachusetts institute of technology 
+
+readme for iWebsite:
+
+this process is a program running under the MOOS robotic control
+software system developed by paul newman:
+http://www.robots.ox.ac.uk/%7Epnewman/TheMOOS/index.html
+
+> compilation: type in the iWebsite directory
+
+make
+
+> usage:
+iWebsite file.moos [name to register with moos]
+
+an example .moos configuration file (with comments) is provided
+in this directory.
+
+this process may also be launched by pAntler.
+
+> purpose:
+the process serves as an interface between a webserver containing a text file
+of values to be parsed into the moosdb that iWebsite is associated with.
+
+the program uses the linux process "wget" (which must be available) to
+procure a text file from a given server and cached in a given local folder.
+the text file is then parsed and values are echoed into the db based on the
+configuration values. the program (by default) will not update the moosdb
+unless a new sequence number (which may be a timestamp) is incremented in the 
+remote file. please read the notes in the example iWebsite.moos file and the included
+iWebsite.mission file (assumed to reside remotely).
+

@@ -95,15 +95,23 @@ SSV_GUI::SSV_GUI(int g_w, int g_h, const char *g_l)
   v_ais->textsize(info_size); 
   v_ais->labelsize(info_size);
 
-  v_lat = new MY_Output(600, h()-60, 75, 20, "Lat:"); 
+  v_lat = new MY_Output(600, h()-60, 80, 20, "Lat:"); 
   v_lat->textsize(info_size); 
   v_lat->labelsize(info_size);
 
-  v_lon = new MY_Output(600, h()-30, 75, 20, "Lon:"); 
+  v_lon = new MY_Output(600, h()-30, 80, 20, "Lon:"); 
   v_lon->textsize(info_size); 
   v_lon->labelsize(info_size);
 
-  int a_top = h()-300;
+  d_hash = new MY_Output(750, h()-30, 55, 20, "Hash:"); 
+  d_hash->textsize(info_size); 
+  d_hash->labelsize(info_size);
+
+  d_radial = new MY_Output(750, h()-60, 55, 20, "Radial:"); 
+  d_radial->textsize(info_size); 
+  d_radial->labelsize(info_size);
+
+  int a_top = h()-323; // eyeballing it
   int a_txt = 25;
   int a_hgt = 75;
   m_deploy_box_text = new Fl_Box(FL_BORDER_BOX, col_b+2, a_top, 
@@ -287,6 +295,10 @@ void SSV_GUI::augmentMenu()
   mbar->add("Shipside/Radial  200",  0, (Fl_Callback*)SSV_GUI::cb_Radial,(void*)200, 0);
   mbar->add("Shipside/Radial  500",  0, (Fl_Callback*)SSV_GUI::cb_Radial,(void*)500, 0);
   mbar->add("Shipside/Radial 1000",  0, (Fl_Callback*)SSV_GUI::cb_Radial,(void*)1000, 0);
+  mbar->add("Shipside/Radial Cycle", 'r', (Fl_Callback*)SSV_GUI::cb_Radial,(void*)-1, 0);
+
+  mbar->add("ForeView/Cycle Focus", 'v', (Fl_Callback*)SSV_GUI::cb_CycleFocus,(void*)0, 0);
+
 };
 
 
@@ -314,6 +326,20 @@ void SSV_GUI::updateXY() {
   double curr_time = mviewer->getTime();
   string time_str = doubleToString(curr_time, 1);
   time->value(time_str.c_str());
+
+  double hash = mviewer->getHashDelta();
+  string hash_str = doubleToString(hash,1);
+  d_hash->value(hash_str.c_str());
+  
+  if(mviewer->hasVehiName("ownship")) {
+    double radial_size = mviewer->getRadialSize();
+    string radial_str = doubleToString(radial_size,1);
+    d_radial->value(radial_str.c_str());
+    d_radial->value(radial_str.c_str());
+  }
+  else
+    d_radial->value(" /na");
+    
 
   if(vname == "") {
     x_mtr->value(" n/a");
@@ -401,7 +427,10 @@ void SSV_GUI::cb_CentricToggle(Fl_Widget* o, int val) {
 
 //----------------------------------------- Radial
 inline void SSV_GUI::cb_Radial_i(int val) {
-  mviewer->setParam("radial_size", (float)(val));
+  if(val >= 0)
+    mviewer->setParam("radial_size", (float)(val));
+  else
+    mviewer->setParam("radial_increment", (float)(val));
   mviewer->redraw();
   updateXY();
 }
@@ -409,6 +438,18 @@ inline void SSV_GUI::cb_Radial_i(int val) {
 void SSV_GUI::cb_Radial(Fl_Widget* o, int v) {
   int val = (int)(v);
   ((SSV_GUI*)(o->parent()->user_data()))->cb_Radial_i(val);
+}
+
+//----------------------------------------- CycleFocus
+inline void SSV_GUI::cb_CycleFocus_i(int val) {
+  mviewer->cycleIndex();
+  mviewer->redraw();
+  updateXY();
+}
+
+void SSV_GUI::cb_CycleFocus(Fl_Widget* o, int v) {
+  int val = (int)(v);
+  ((SSV_GUI*)(o->parent()->user_data()))->cb_CycleFocus_i(val);
 }
 
 //----------------------------------------- MOOS_Button

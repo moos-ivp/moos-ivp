@@ -1,0 +1,15 @@
+//----------------------------------------------
+// Example MOOS file for uRepeater
+
+ServerHost = localhost
+ServerPort = 9000
+
+ProcessConfig = Repeater
+{
+   AppTick   = 4
+   CommsTick = 4
+
+   VAR  = foo, 10, 0.5
+   VAR  = bar, 100, 1.0
+}
+

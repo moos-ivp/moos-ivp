@@ -1,4 +1,4 @@
-// $Header: /home/cvsroot/project-plus/src/pNaFCon/pNaFCon.h,v 1.5 2007-08-17 12:00:02 arjunab Exp $
+// $Header: /home/cvsroot/project-plus/src/pNaFCon/pNaFCon.h,v 1.2 2007-10-05 22:19:46 arjunab Exp $
 // (c) 2005 
 // CpNaFCon.h: an interface/translator for communications
 ////////////////////////////////////////////////
@@ -6,13 +6,15 @@
 #ifndef __CpNaFCon_h__
 #define __CpNaFCon_h__
 
+
+
 #include "CommServer.h"
 #include "NMEAMessage.h"
 #include "CClientTCPSocket.h"
 #include "CDatagramCtl.h"
 #include "CUDPSocket.h"
-#include "MOOSGeodesy.h"
 #include "MOOSLib.h"
+#include "MOOSGeodesy.h"
 #include <string>
 
 class CpNaFCon : public CMOOSApp
@@ -66,6 +68,11 @@ public:
 	string BearingStatState;
 	string CollaborationMode;
 
+	string dep_state; 
+	string dep_mission;
+	string prose_state;
+	string close_range;
+	string track_tracking;
 
 	double Init_time;
 	double Init_head;

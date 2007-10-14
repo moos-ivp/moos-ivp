@@ -49,6 +49,8 @@ MarineVehiGUI::MarineVehiGUI(int g_w, int g_h, const char *g_l)
   mbar->add("ForeView/Shape Smaller",   '-', (Fl_Callback*)MarineVehiGUI::cb_AltShapeScale, (void*)-1, FL_MENU_DIVIDER);
   mbar->add("ForeView/Toggle Trails",   't', (Fl_Callback*)MarineVehiGUI::cb_ToggleTrails, 0, 134);
   mbar->add("ForeView/Toggle TrailColor", 'T', (Fl_Callback*)MarineVehiGUI::cb_ToggleTrailColor, 0, 0);
+  mbar->add("ForeView/Toggle TrailConnect", 'y', (Fl_Callback*)MarineVehiGUI::cb_ToggleTrailConnect, 0, 0);
+  mbar->add("ForeView/Toggle VehicleName", 'n', (Fl_Callback*)MarineVehiGUI::cb_ToggleVehicleName, 0, 0);
   mbar->add("ForeView/More Trail Gap",  '}', (Fl_Callback*)MarineVehiGUI::cb_AltTrailGap, (void*)1,  0);
   mbar->add("ForeView/Less Trail Gap",  '{', (Fl_Callback*)MarineVehiGUI::cb_AltTrailGap, (void*)-1, 0);
   mbar->add("ForeView/More Trail Size", ']', (Fl_Callback*)MarineVehiGUI::cb_AltTrailSize, (void*)+1, 0);
@@ -61,6 +63,22 @@ inline void MarineVehiGUI::cb_ToggleTrails_i() {
 }
 void MarineVehiGUI::cb_ToggleTrails(Fl_Widget* o) {
   ((MarineVehiGUI*)(o->parent()->user_data()))->cb_ToggleTrails_i();
+}
+
+//----------------------------------------- ToggleTrailConnect
+inline void MarineVehiGUI::cb_ToggleTrailConnect_i() {
+  cmviewer->setParam("trail_connect", "toggle");
+}
+void MarineVehiGUI::cb_ToggleTrailConnect(Fl_Widget* o) {
+  ((MarineVehiGUI*)(o->parent()->user_data()))->cb_ToggleTrailConnect_i();
+}
+
+//----------------------------------------- ToggleVehicleName
+inline void MarineVehiGUI::cb_ToggleVehicleName_i() {
+  cmviewer->setParam("display_vname", "toggle");
+}
+void MarineVehiGUI::cb_ToggleVehicleName(Fl_Widget* o) {
+  ((MarineVehiGUI*)(o->parent()->user_data()))->cb_ToggleVehicleName_i();
 }
 
 //----------------------------------------- ToggleTrailColor
@@ -81,7 +99,7 @@ void MarineVehiGUI::cb_AltTrailGap(Fl_Widget* o, int v) {
 
 //----------------------------------------- Alt Trail Size
 inline void MarineVehiGUI::cb_AltTrailSize_i(int delta) {
-  cmviewer->setParam("trail_size", (float)(delta/5.0));
+  cmviewer->setParam("trail_size", (float)(delta/20.0));
 }
 void MarineVehiGUI::cb_AltTrailSize(Fl_Widget* o, int v) {
   ((MarineVehiGUI*)(o->parent()->user_data()))->cb_AltTrailSize_i(v);

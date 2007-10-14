@@ -18,12 +18,14 @@ public:
   
   IvPFunction* produceOF();
   bool         setParam(std::string, std::string);
+  void         onIdleState();
 
 protected:
   bool   getBufferInfo();
   double getRelevance();
   double getPriority();
   void   postInfo(double, double);
+  void   postRange(bool ok=true);
   
 private: // Configuration Parameters
 

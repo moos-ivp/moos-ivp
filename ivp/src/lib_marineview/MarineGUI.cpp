@@ -47,16 +47,21 @@ Fl_Menu_Item MarineGUI::menu_[] = {
  {"Zoom In",          'i', (Fl_Callback*)MarineGUI::cb_Zoom, (void*)-1, 0},
  {"Zoom Out",         'o', (Fl_Callback*)MarineGUI::cb_Zoom, (void*)1, 0},
  {"Zoom Reset",       FL_CTRL+'z', (Fl_Callback*)MarineGUI::cb_Zoom, (void*)0, FL_MENU_DIVIDER},
- {"Pan Up ",          FL_Up,  (Fl_Callback*)MarineGUI::cb_PanY, (void*)-20, 0},
- {"Pan Down ",        FL_Down,  (Fl_Callback*)MarineGUI::cb_PanY, (void*)20, 0},
- {"Pan Left ",        FL_Left,  (Fl_Callback*)MarineGUI::cb_PanX, (void*)20, 0},
- {"Pan Right ",       FL_Right,  (Fl_Callback*)MarineGUI::cb_PanX, (void*)-20, FL_MENU_DIVIDER},
- {"Pan Up (slow) ",   FL_ALT + FL_Up, (Fl_Callback*)MarineGUI::cb_PanY, (void*)-1, 0},
- {"Pan Down (slow) ", FL_ALT + FL_Down, (Fl_Callback*)MarineGUI::cb_PanY, (void*)1, 0},
- {"Pan Left (slow) ", FL_ALT + FL_Left, (Fl_Callback*)MarineGUI::cb_PanX, (void*)1, 0},
- {"Pan Right (slow)", FL_ALT + FL_Right, (Fl_Callback*)MarineGUI::cb_PanX, (void*)-1, FL_MENU_DIVIDER},
+ {"Pan Up ",          FL_Up,  (Fl_Callback*)MarineGUI::cb_PanY, (void*)-200, 0},
+ {"Pan Down ",        FL_Down,  (Fl_Callback*)MarineGUI::cb_PanY, (void*)200, 0},
+ {"Pan Left ",        FL_Left,  (Fl_Callback*)MarineGUI::cb_PanX, (void*)200, 0},
+ {"Pan Right ",       FL_Right,  (Fl_Callback*)MarineGUI::cb_PanX, (void*)-200, FL_MENU_DIVIDER},
+ {"Pan Up (slow) ",   FL_ALT + FL_Up, (Fl_Callback*)MarineGUI::cb_PanY, (void*)-10, 0},
+ {"Pan Down (slow) ", FL_ALT + FL_Down, (Fl_Callback*)MarineGUI::cb_PanY, (void*)10, 0},
+ {"Pan Left (slow) ", FL_ALT + FL_Left, (Fl_Callback*)MarineGUI::cb_PanX, (void*)10, 0},
+ {"Pan Right (slow)", FL_ALT + FL_Right, (Fl_Callback*)MarineGUI::cb_PanX, (void*)-10, FL_MENU_DIVIDER},
+ {"Pan Up (v. slow) ",   FL_CTRL + FL_Up, (Fl_Callback*)MarineGUI::cb_PanY, (void*)-1, 0},
+ {"Pan Down (v. slow) ", FL_CTRL + FL_Down, (Fl_Callback*)MarineGUI::cb_PanY, (void*)1, 0},
+ {"Pan Left (v. slow) ", FL_CTRL + FL_Left, (Fl_Callback*)MarineGUI::cb_PanX, (void*)1, 0},
+ {"Pan Right (v. slow)", FL_CTRL + FL_Right, (Fl_Callback*)MarineGUI::cb_PanX, (void*)-1, FL_MENU_DIVIDER},
  {"Cross Hairs",      'c', (Fl_Callback*)MarineGUI::cb_ToggleCross, (void*)-1, FL_MENU_DIVIDER},
- {"Toggle Background",  'b', (Fl_Callback*)MarineGUI::cb_ToggleTiff, (void*)-1, 0},
+ {"Toggle BGround Off/On",  'b', (Fl_Callback*)MarineGUI::cb_ToggleTiff, (void*)-1, 0},
+ {"Toggle BGround Type",  '`', (Fl_Callback*)MarineGUI::cb_ToggleTiffType, (void*)-1, 0},
  {"Background Lighter", FL_CTRL+'b', (Fl_Callback*)MarineGUI::cb_BackShade,  (void*)+1, 0},
  {"Background Darker",  FL_ALT +'b', (Fl_Callback*)MarineGUI::cb_BackShade,  (void*)-1, FL_MENU_DIVIDER},
  {"Toggle Hash",      'h', (Fl_Callback*)MarineGUI::cb_ToggleHash, (void*)-1, 0},
@@ -66,6 +71,9 @@ Fl_Menu_Item MarineGUI::menu_[] = {
  {"Hash 50",      FL_ALT+'2', (Fl_Callback*)MarineGUI::cb_HashDelta,  (void*)50,  FL_MENU_RADIO},
  {"Hash 100",     FL_ALT+'3', (Fl_Callback*)MarineGUI::cb_HashDelta,  (void*)100, FL_MENU_RADIO|FL_MENU_VALUE},
  {"Hash 200",     FL_ALT+'4', (Fl_Callback*)MarineGUI::cb_HashDelta,  (void*)200, FL_MENU_RADIO},
+ {"Hash 500",     FL_ALT+'5', (Fl_Callback*)MarineGUI::cb_HashDelta,  (void*)500, FL_MENU_RADIO},
+ {"Hash 1000",     FL_ALT+'6', (Fl_Callback*)MarineGUI::cb_HashDelta,  (void*)1000, FL_MENU_RADIO},
+ {"Hash Auto",    FL_ALT+'7', (Fl_Callback*)MarineGUI::cb_HashDelta,  (void*)-1, FL_MENU_RADIO},
  {0},
  {0}
 };
@@ -92,6 +100,14 @@ void MarineGUI::readTiff(const char *filename)
     cmviewer->readTiff();
 
   cmviewer->setTexture();
+}  
+
+//-------------------------------------------------------------------
+// Procedure: readTiffB
+
+void MarineGUI::readTiffB(const char *filename)
+{
+  cmviewer->readTiffB(filename);
 }  
 
 //----------------------------------------------------------
@@ -135,7 +151,7 @@ void MarineGUI::cb_Zoom(Fl_Widget* o, int v) {
 
 //----------------------------------------- Pan Y
 inline void MarineGUI::cb_PanY_i(int amt) {
-  cmviewer->setParam("pan_y", (float)(amt));
+  cmviewer->setParam("pan_y", ((float)(amt))/10);
   this->updateXY();
 }
 void MarineGUI::cb_PanY(Fl_Widget* o, int v) {
@@ -145,7 +161,7 @@ void MarineGUI::cb_PanY(Fl_Widget* o, int v) {
 
 //----------------------------------------- Pan X
 inline void MarineGUI::cb_PanX_i(int amt) {
-  cmviewer->setParam("pan_x", (float)(amt));
+  cmviewer->setParam("pan_x", ((float)(amt))/10);
   this->updateXY();
 }
 void MarineGUI::cb_PanX(Fl_Widget* o, int v) {
@@ -159,6 +175,15 @@ inline void MarineGUI::cb_ToggleTiff_i() {
 }
 void MarineGUI::cb_ToggleTiff(Fl_Widget* o) {
   ((MarineGUI*)(o->parent()->user_data()))->cb_ToggleTiff_i();
+}
+
+//----------------------------------------- ToggleTiffType
+inline void MarineGUI::cb_ToggleTiffType_i() {
+  cmviewer->setParam("tiff_type", "toggle");
+  cmviewer->redraw();
+}
+void MarineGUI::cb_ToggleTiffType(Fl_Widget* o) {
+  ((MarineGUI*)(o->parent()->user_data()))->cb_ToggleTiffType_i();
 }
 
 //----------------------------------------- ToggleHash

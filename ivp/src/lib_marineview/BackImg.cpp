@@ -53,6 +53,10 @@ BackImg::BackImg()
   img_meters   = 0;
   img_centlat  = 0;
   img_centlon  = 0;
+  
+  // Below should be derived after info file is read in.
+  x_at_img_ctr = 0;
+  y_at_img_ctr = 0;
 }
 
 // ----------------------------------------------------------
@@ -229,6 +233,18 @@ bool BackImg::readTiffInfo(const char* filename)
       }
     }
   }
+
+  double x_img_diff = 0.50 - img_centx;
+  x_at_img_ctr = (x_img_diff * 100) / img_meters;
+    
+  double y_img_diff = 0.50 - img_centy;
+  y_at_img_ctr = (y_img_diff * 100) / img_meters;
+  
+  x_at_img_left   = (-img_centx * 100) / img_meters;
+  x_at_img_right  = ((1.0-img_centx) * 100) / img_meters;
+  y_at_img_bottom = (-img_centy * 100) / img_meters;
+  y_at_img_top    = ((1.0-img_centy) * 100) / img_meters;
+
   return(true);
 }
 

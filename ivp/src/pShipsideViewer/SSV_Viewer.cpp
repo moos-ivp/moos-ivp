@@ -39,13 +39,14 @@ SSV_Viewer::SSV_Viewer(int x, int y, int w, int h, const char *l)
   : MarineViewer(x,y,w,h,l)
 {
   m_curr_time   = 0;
-  m_tiff_offon  = 0;
+  m_tiff_offon  = 1;
 
-  m_default_vehibody = "kayak";
-  m_left_click_ix    = 0;
-  m_right_click_ix   = 0;
-  m_centric_view     = true;
-  m_radial_size      = 100;
+  m_default_vehibody  = "kayak";
+  m_left_click_ix     = 0;
+  m_right_click_ix    = 0;
+  m_radial_size       = 100;
+  m_trail_size        = 0.1;
+  m_centric_view      = true;
 }
 
 //-------------------------------------------------------------
@@ -55,24 +56,45 @@ void SSV_Viewer::draw()
 {
   MarineViewer::draw();
 
+  drawGridPN();
+  drawAGateways();
+  drawBGateways();
+  drawEFields();
+
   drawStationCircles();
   drawGrids();
   drawPolys();
   drawCircles();
   drawRadials();
 
-  // Next draw the vehicle shapes. If the vehicle index is the 
-  // one "active", draw it in a different color.
+  // Next draw the ownship vehicle shape. If the vehicle 
+  // index is the one "active", draw it in a different color.
   int ix = 0;
   map<string,ObjectPose>::iterator p1;
   for(p1=m_pos_map.begin(); p1!=m_pos_map.end(); p1++) {
     string vname = p1->first;
-    bool active = (ix == m_global_ix);
-    
-    string vehibody = m_vbody_map[vname];
-    if(vehibody == "")
-      vehibody = m_default_vehibody;
-    drawVehicle(vname, active, vehibody);
+    if(vname == m_ownship_name) {
+      bool active = (ix == m_global_ix);
+      string vehibody = m_vbody_map[vname];
+      if(vehibody == "")
+	vehibody = m_default_vehibody;
+      drawVehicle(vname, active, vehibody);
+    }
+    ix++;
+  }
+
+  // Next draw the non-ownship vehicle shapes. If the vehicle 
+  // index is the one "active", draw it in a different color.
+  ix = 0;
+  for(p1=m_pos_map.begin(); p1!=m_pos_map.end(); p1++) {
+    string vname = p1->first;
+    if(vname != m_ownship_name) {
+      bool active = (ix == m_global_ix);
+      string vehibody = m_vbody_map[vname];
+      if(vehibody == "")
+	vehibody = m_default_vehibody;
+      drawVehicle(vname, active, vehibody);
+    }
     ix++;
   }
 
@@ -142,8 +164,18 @@ void SSV_Viewer::updateVehiclePosition(string vname, float x,
   }
   
   if((m_centric_view) && (toupper(vname) == m_ownship_name)) {
-    setParam("set_pan_x", -x);
-    setParam("set_pan_y", -y);
+
+    // First determine how much we're off in terms of meters
+    double delta_x = x - m_back_img.get_x_at_img_ctr();
+    double delta_y = y - m_back_img.get_y_at_img_ctr();
+
+    // Next determine how much in terms of pixels
+    double pix_per_mtr = m_back_img.get_pix_per_mtr();
+    double x_pixels = pix_per_mtr * delta_x;
+    double y_pixels = pix_per_mtr * delta_y;
+
+    setParam("set_pan_x", -x_pixels);
+    setParam("set_pan_y", -y_pixels);
   }
 }
 
@@ -350,7 +382,7 @@ void SSV_Viewer::drawVehicle(string vname, bool active, string vehibody)
   if(active)
     {red=1.0; grn=0; blu=0;}
 
-  drawCommonVehicle(opose, red, grn, blu, vehibody, 1);
+  drawCommonVehicle(vname, opose, red, grn, blu, vehibody, 1);
 }
 
 //-------------------------------------------------------------
@@ -361,14 +393,25 @@ void SSV_Viewer::drawPoints(CPList &cps)
   if(!m_trails) 
     return;
 
-  list<ColoredPoint>::iterator p;
+  list<ColoredPoint>::iterator p, o;
+
+  // Line colors
+  double r=1.0;
+  double g=0.0;
+  double b=0.0;
 
   int i=0;
+  double prev_x = 0;
+  double prev_y = 0;
   for(p=cps.begin(); p!=cps.end(); p++) {
+    if(m_trail_connect && (i!=0))
+      drawSegment(prev_x, prev_y, p->m_x, p->m_y, r, g, b);
     if((i % m_trail_gap) == 0) {
       if(p->isValid()) 
 	drawPoint(p->m_x, p->m_y, m_trail_color);
     }
+    prev_x = p->m_x;
+    prev_y = p->m_y;
     i++;
   }
 }
@@ -434,7 +477,6 @@ ObjectPose SSV_Viewer::getObjectPoseByIndex(int index)
 }
 
 
-
 //-------------------------------------------------------------
 // Procedure: handleLeftMouse
 
@@ -452,9 +494,8 @@ void SSV_Viewer::handleLeftMouse(int vx, int vy)
 
   m_left_click_ix++;
   
-  cout << "Left Mouse click at [" << m_left_click << "] meters." << endl;
+  // cout << "Left Mouse click at [" << m_left_click << "] meters." << endl;
 }
-
 
 //-------------------------------------------------------------
 // Procedure: handleRightMouse
@@ -471,7 +512,36 @@ void SSV_Viewer::handleRightMouse(int vx, int vy)
   m_right_click =  "x=" + doubleToString(sx,1) + ",";
   m_right_click += "y=" + doubleToString(sy,1);
 
+  bool ownship_position_known = false;
+  ObjectPose opose;
+  map<string,ObjectPose>::iterator p;
+  for(p=m_pos_map.begin(); p!=m_pos_map.end(); p++) {
+    string map_vname = tolower(p->first);
+    if(map_vname == tolower(m_ownship_name)) {
+      ownship_position_known = true;
+      opose = p->second;
+    }
+  }
+  
+  cout << endl;
+  if(ownship_position_known) {
+    double osx = opose.getX();
+    double osy = opose.getY();
+    double osh = opose.getTheta();
+    
+    double range = hypot((osx-sx),(osy-sy));
+    double relang = relAng(osx, osy, sx, sy);
+
+    relang = angle360(relang - osh);
+    m_right_click_rp  = "range=" + doubleToString(range,1) + ",";
+    m_right_click_rp += "bearing=" + doubleToString(relang) + ",";
+    m_right_click_rp += "contact=" + m_ownship_name;
+
+    cout << "Right Mouse click at [" << m_right_click_rp << "] relpos." << endl;
+    cout << "Ownship-X: " << osx << "  Ownship-Y: " << osy << endl;
+  }
   m_right_click_ix++;
+
   
   cout << "Right Mouse click at [" << m_right_click << "] meters." << endl;
 }
@@ -512,8 +582,10 @@ bool SSV_Viewer::setParam(string param, string value)
 bool SSV_Viewer::setParam(string param, float v)
 {
   // Intercept and disallow any panning if in "centric" mode.
-  if(((param == "pan_x") || (param == "pan_y")) && (m_centric_view))
-    return(true);
+  if((param == "pan_x") || (param == "pan_y")) {
+    m_centric_view = false;
+    return(setCommonParam(param, v));
+  }
 
   if(MarineViewer::setCommonParam(param, v))
     return(true);
@@ -524,8 +596,13 @@ bool SSV_Viewer::setParam(string param, float v)
     m_radial_size = (int)(v);
     if(m_radial_size < 0)
       m_radial_size = 0;
-    if(m_radial_size > 2000);
+    if(m_radial_size > 2000)
        m_radial_size = 2000;
+  }
+  else if(param == "radial_increment") {
+    m_radial_size += 100;
+    if(m_radial_size > 2000)
+      m_radial_size = 0;
   }
   else 
     return(false);
@@ -623,6 +700,130 @@ void SSV_Viewer::drawRadials()
 }
 
 //-------------------------------------------------------------
+// Procedure: drawGridPN
+
+void SSV_Viewer::drawGridPN()
+{
+  unsigned int i, j;
+
+  int vsize     = 18;
+  float *points = new float[2*18];
+
+  points[0]  =   932;    points[1]  =  4339;
+  points[2]  =  1905;    points[3]  =  4122;
+  points[4]  =  2879;    points[5]  =  3905;
+  points[6]  =   501;    points[7]  =  2385;
+  points[8]  =  1475;    points[9]  =  2170;
+  points[10] =  2449;    points[11] =  1953;
+  points[12] =    72;    points[13] =   433;
+  points[14] =  1046;    points[15] =   218;
+  points[16] =  2019;    points[17] =     1;
+  points[18] =  -357;    points[19] = -1518;
+  points[20] =   615;    points[21] = -1698;
+  points[22] =  1588;    points[23] = -1950;
+  points[24] =  -787;    points[25] = -3472;
+  points[26] =   185;    points[27] = -3687;
+  points[28] =  1159;    points[29] = -3902;
+  points[30] = -1216;    points[31] = -5424;
+  points[32] =  -243;    points[33] = -5639;
+  points[34] =   729;    points[35] = -5855;
+
+  int pindex = 0;
+  for(i=0; i<vsize; i++) {
+    points[pindex]   += -m_back_img.get_img_offset_x();
+    points[pindex+1] += -m_back_img.get_img_offset_y();
+
+    points[pindex]   *=  m_back_img.get_pix_per_mtr();
+    points[pindex+1] *=  m_back_img.get_pix_per_mtr();
+
+    pindex+=2;
+  }
+
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glOrtho(0, w(), 0, h(), -1 ,1);
+
+  float tx = meters2img('x', 0);
+  float ty = meters2img('y', 0);
+  float qx = img2view('x', tx);
+  float qy = img2view('y', ty);
+
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
+  glLoadIdentity();
+
+  glTranslatef(qx, qy, 0);
+  glScalef(m_zoom, m_zoom, m_zoom);
+
+  // Draw the edges 
+  glLineWidth(1.0);
+
+  glColor3f(0.0, 0.7, 0.5);
+
+  glBegin(GL_LINE_STRIP);
+
+  glBegin(GL_LINE_STRIP);
+  glVertex2f(points[2*0],  points[2*0+1]);
+  glVertex2f(points[2*3],  points[2*3+1]);
+  glVertex2f(points[2*6],  points[2*6+1]);
+  glVertex2f(points[2*9],  points[2*9+1]);
+  glVertex2f(points[2*12], points[2*12+1]);
+  glVertex2f(points[2*15], points[2*15+1]);
+  glEnd();
+
+  glBegin(GL_LINE_STRIP);
+  glVertex2f(points[2*1],  points[2*1+1]);
+  glVertex2f(points[2*4],  points[2*4+1]);
+  glVertex2f(points[2*7],  points[2*7+1]);
+  glVertex2f(points[2*10], points[2*10+1]);
+  glVertex2f(points[2*13], points[2*13+1]);
+  glVertex2f(points[2*16], points[2*16+1]);
+  glEnd();
+
+  glBegin(GL_LINE_STRIP);
+  glVertex2f(points[2*2],  points[2*2+1]);
+  glVertex2f(points[2*5],  points[2*5+1]);
+  glVertex2f(points[2*8],  points[2*8+1]);
+  glVertex2f(points[2*11], points[2*11+1]);
+  glVertex2f(points[2*14], points[2*14+1]);
+  glVertex2f(points[2*17], points[2*17+1]);
+  glEnd();
+
+  glBegin(GL_LINE_STRIP);
+  glVertex2f(points[2*0], points[2*0+1]);
+  glVertex2f(points[2*2], points[2*2+1]);
+  glEnd();
+
+  glBegin(GL_LINE_STRIP);
+  glVertex2f(points[2*3], points[2*3+1]);
+  glVertex2f(points[2*5], points[2*5+1]);
+  glEnd();
+
+  glBegin(GL_LINE_STRIP);
+  glVertex2f(points[2*6], points[2*6+1]);
+  glVertex2f(points[2*8], points[2*8+1]);
+  glEnd();
+
+  glBegin(GL_LINE_STRIP);
+  glVertex2f(points[2*9],  points[2*9+1]);
+  glVertex2f(points[2*11], points[2*11+1]);
+  glEnd();
+
+  glBegin(GL_LINE_STRIP);
+  glVertex2f(points[2*12], points[2*12+1]);
+  glVertex2f(points[2*14], points[2*14+1]);
+  glEnd();
+
+  glBegin(GL_LINE_STRIP);
+  glVertex2f(points[2*15], points[2*15+1]);
+  glVertex2f(points[2*17], points[2*17+1]);
+  glEnd();
+
+  glFlush();
+  glPopMatrix();
+}
+
+//-------------------------------------------------------------
 // Procedure: setCurrent
 //            Given a vehicle name string, compare it to the map
 //            of known vehicles and, if found, let the 
@@ -650,6 +851,20 @@ void SSV_Viewer::setCurrent(string vname)
   
   if(the_index != -1)
     m_global_ix = the_index;
+}
+
+//-------------------------------------------------------------
+// Procedure: cycleIndex
+
+void SSV_Viewer::cycleIndex()
+{
+  m_global_ix += 1;
+  if(m_global_ix >= m_pos_map.size())
+    m_global_ix = 0;
+
+  cout << "m_pos_map.size(): " << m_pos_map.size() << endl;
+  cout << "m_global_ix: " << m_global_ix << endl;
+
 }
 
 //-------------------------------------------------------------
@@ -794,3 +1009,90 @@ void SSV_Viewer::drawCirc(XYCircle dcircle, int pts, bool filled,
 
 }
 
+//-------------------------------------------------------------
+// Procedure: drawEFields
+
+void SSV_Viewer::drawEFields()
+{
+  int vsize = m_efield_x.size();
+  for(int i=0; i<vsize; i++)
+    drawCommonMarker(m_efield_x[i], m_efield_y[i], 
+		     m_efield_s[i], "efield");
+}
+
+//-------------------------------------------------------------
+// Procedure: drawAGateways
+
+void SSV_Viewer::drawAGateways()
+{
+  int vsize = m_gateway_a_x.size();
+  for(int i=0; i<vsize; i++)
+    drawCommonMarker(m_gateway_a_x[i], m_gateway_a_y[i], 
+		     m_gateway_a_s[i], "gateway_a");
+}
+
+//-------------------------------------------------------------
+// Procedure: drawBGateways
+
+void SSV_Viewer::drawBGateways()
+{
+  int vsize = m_gateway_b_x.size();
+  for(int i=0; i<vsize; i++)
+    drawCommonMarker(m_gateway_b_x[i], m_gateway_b_y[i], 
+		     m_gateway_b_s[i], "gateway_b");
+}
+
+//-------------------------------------------------------------
+// Procedure: addGatewayA
+
+void SSV_Viewer::addGatewayA(double x, double y, double scale, bool latlon)
+{
+  double rx = x;
+  double ry = y;
+  if(latlon)
+    m_geodesy.LatLong2LocalGrid(x, y, ry, rx);
+  
+  m_gateway_a_x.push_back(rx);
+  m_gateway_a_y.push_back(ry);
+  m_gateway_a_s.push_back(scale);
+}
+
+//-------------------------------------------------------------
+// Procedure: addGatewayB
+
+void SSV_Viewer::addGatewayB(double x, double y, double scale, bool latlon)
+{
+  double rx = x;
+  double ry = y;
+  if(latlon)
+    m_geodesy.LatLong2LocalGrid(x, y, ry, rx);
+  
+  m_gateway_b_x.push_back(rx);
+  m_gateway_b_y.push_back(ry);
+  m_gateway_b_s.push_back(scale);
+}
+
+//-------------------------------------------------------------
+// Procedure: addEField
+
+void SSV_Viewer::addEField(double x, double y, double scale, bool latlon)
+{
+  double rx = x;
+  double ry = y;
+  if(latlon)
+    m_geodesy.LatLong2LocalGrid(x, y, ry, rx);
+  
+  m_efield_x.push_back(rx);
+  m_efield_y.push_back(ry);
+  m_efield_s.push_back(scale);
+}
+
+//-------------------------------------------------------------
+// Procedure: addRangeSensor
+
+void SSV_Viewer::addRangeSensor(double x, double y, double scale)
+{
+  m_range_sensor_x.push_back(x);
+  m_range_sensor_y.push_back(y);
+  m_range_sensor_s.push_back(scale);
+}

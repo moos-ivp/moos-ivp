@@ -28,7 +28,7 @@
 
 class LinearInterpolator {
 public:
-  LinearInterpolator() {};
+  LinearInterpolator();
   virtual ~LinearInterpolator() {};
 
   void setDecay(double s, double e) {

@@ -1,0 +1,89 @@
+// Simple .moos file for iWebsite. Launches MOOSDB & iWebsite
+
+ServerHost = localhost
+ServerPort = 9000
+
+Community = iWebsite_Default
+
+//------------------------------------------------------------------
+// Antler configuration  block
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+  Run = MOOSDB		@ NewConsole = true
+  Run = iWebsite	@ NewConsole = true
+}
+
+
+//------------------------------------------------------------------
+// iWebsite configuration  block
+
+ProcessConfig = iWebsite
+{
+
+// available to all moos processes.
+// running iWebsite at 4 times / second is fine
+  AppTick    = 4
+  CommsTick  = 4
+
+// standard iWebsite parameters
+
+	// web address (URL) of mission file to parse
+	// information from (downloaded) using WGET
+	// this parameter is required
+  down_address = web.mit.edu/~tes/www/iWebsite.mission
+  
+	// web address (URL) of location to post any data
+	// for which a local path is present in WEBSITE_PUT
+	// using scp (ssh access and a public key must be in place)
+  up_address = modelseas.mit.edu:htdocs/Sea_exercises/PLUSNet07/kayak/
+
+	// user to use for up connection
+  up_user = mseas
+
+	// file to cache mission files fetched
+  cache = /home/toby/iWebsite_test/iWebsite-local.mission
+
+	// number of seconds to wait before refetching
+	// the mission file from the website after
+	// a successful fetch
+	// if omitted, wait = 600 is used
+  wait = 10
+
+
+	// name of string that will contain sequence or timestamp information
+	// that this program will use to determine whether a web file is
+	// stale
+		// website file syntax:
+		// sequence = (double)
+		// e.g. sequence = 3
+	// if omitted, sequence_string = sequence is used
+  sequence_string = sequence
+	
+	// ignore_sequence boolean. if true, the sequence_string
+	// is ignored when looking at the website file and therefore
+	// all information is echoed to the moosdb every fetch from the server
+	// if omitted, ignore_sequence = false is used
+  ignore_sequence = false
+
+	// verbosity - follows pHelmIvP standard	
+	// = verbose - full information
+	// = terse - heartbeat ($ = ok, < = good fetch, ! = bad fetch, @ = data written, > send (no guarantee of sucess))
+	// = quiet - no output
+	// if omitted, verbosity = terse is used
+  verbosity = verbose
+
+  // list of variables from file to echo into MOOSDB
+  // syntax is 
+	// echo = website_file_variable_name -> MOOSDB_VARIABLE
+  echo = cat -> tiger
+  echo = dog -> wolf
+
+  // note that the website file must be a set of lines of syntax 
+	// website_file_variable_name = value
+  // if value is enclosed in quotations, it will be published to the MOOSDB
+  // as a string value. if not, it will be published as a double. thus, string
+  // values must be in quotation marks
+  // "#" is the comment escape notation in the website file
+
+}

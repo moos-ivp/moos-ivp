@@ -42,8 +42,12 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <math.h>
 
-#define MAXQUEUES (16)
+//#define MAXQUEUES (16)
+//changed due to segmentation fault
+//127 is the max WHOI umodems support FSK
+#define MAXQUEUES (127)
 
 typedef struct 
 {

@@ -53,7 +53,8 @@
 #define UMODEM_GOTDATA        (22)
 
 /* settings */
-#define UMODEM_MAXNODES     (16)
+//#define UMODEM_MAXNODES     (16)
+#define UMODEM_MAXNODES     (127)
 #define UMODEM_MAXFRAMES    (8)
 #define UMODEM_MAXFRAMESIZE (256)
 #define UMODEM_DEV_ERROR    (-1)
@@ -188,7 +189,8 @@ typedef struct {
 
 typedef struct {
 	unsigned int src;
-	float time;
+//	float time;
+	double time;
 	int mode;
 } UmodemArrivalTimeObj;
 

@@ -134,7 +134,7 @@ void PMV_Viewer::drawVehicle(string vname, bool active, string vehibody)
     red=1.0; grn=0; blu=0;
   }
 
-  drawCommonVehicle(opose, red, grn, blu, vehibody);
+  drawCommonVehicle("", opose, red, grn, blu, vehibody);
 }
 
 //-------------------------------------------------------------

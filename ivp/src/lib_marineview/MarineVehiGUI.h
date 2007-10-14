@@ -37,6 +37,9 @@ protected:
   inline void cb_ToggleTrailColor_i();
   static void cb_ToggleTrailColor(Fl_Widget*);
 
+  inline void cb_ToggleTrailConnect_i();
+  static void cb_ToggleTrailConnect(Fl_Widget*);
+
   inline void cb_AltTrailGap_i(int);
   static void cb_AltTrailGap(Fl_Widget*, int);
 
@@ -45,6 +48,9 @@ protected:
 
   inline void cb_AltShapeScale_i(int);
   static void cb_AltShapeScale(Fl_Widget*, int);
+
+  inline void cb_ToggleVehicleName_i();
+  static void cb_ToggleVehicleName(Fl_Widget*);
 
   inline void cb_DataView_i(int);
   static void cb_DataView(Fl_Widget*, int);

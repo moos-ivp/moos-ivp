@@ -185,8 +185,10 @@ IvPFunction *BHV_Loiter::produceOF()
   m_iterations++;
 
   // Set m_osx, m_osy, m_osh
-  if(!updateInfoIn())
+  if(!updateInfoIn()) {
+    updateInfoOutNull();
     return(0);
+  }
 
   updateCenter();
 
@@ -341,8 +343,10 @@ void BHV_Loiter::updateInfoOut()
     postMessage("LOITER_ACQUIRE", 0);
 
   XYSegList seglist = m_waypoint_engine.getSegList();
-  if(m_poly_changed)
-    postMessage("VIEW_POLYGON", seglist.get_spec());
+  if(m_poly_changed) {
+    string spec = "label,foo:" + seglist.get_spec();
+    postMessage("VIEW_POLYGON", spec);
+  }
   m_poly_changed = false;
   
   if(m_waypoint_engine.currPtChanged()) {
@@ -352,5 +356,18 @@ void BHV_Loiter::updateInfoOut()
   }
   
   postMessage("DIST_TO_REGION", m_dist_to_poly);
+}
+
+//-----------------------------------------------------------
+// Procedure: updateInfoOutNull()
+
+void BHV_Loiter::updateInfoOutNull()
+{
+  string bhv_tag = toupper(getDescriptor());
+  bhv_tag = findReplace(bhv_tag, "BHV_", "");
+  bhv_tag = findReplace(bhv_tag, "(d)", "");
+
+  string null_spec = "label," + bhv_tag + ":0,0:0,0:0,0";
+  postMessage("VIEW_POLYGON", null_spec);
 }
 

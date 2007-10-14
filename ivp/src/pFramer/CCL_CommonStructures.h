@@ -84,7 +84,8 @@
 #define	MaxSearchRateMins	255
 
 #define	MinPlatformId		0
-#define	MaxPlatformId		31
+//#define	MaxPlatformId		31
+#define	MaxPlatformId	 	127	
 
 #define	MinTrackNumber		0
 #define	MaxTrackNumber		255

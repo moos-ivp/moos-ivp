@@ -40,7 +40,7 @@ NavPlotViewer::NavPlotViewer(int x, int y, int w, int h, const char *l)
   m_trail_gap    = 1;
   m_trail_size   = 1;
   m_alltrail     = true;
-  m_vehibody     = "kayak";  // "auv" or "kayak"
+  m_vehibody     = "auv";  // "auv" or "kayak"
 }
 
 //-------------------------------------------------------------
@@ -254,13 +254,13 @@ void NavPlotViewer::drawNavPlot(int index)
   if(m_trails) {
     glPointSize(m_trail_size * m_zoom);
 
-#if 1
+#if 0
     if(index == m_global_ix)
       glColor3f(1.0, 1.0, 1.0);  // white
     else
       glColor3f(1.0, 1.0, 1.0);  // white
 #endif
-#if 0
+#if 1
     if(index == 0)
       glColor3f(0.5, 0.0, 0.0);  // DarkRed
     else if(index == 1)
@@ -269,16 +269,15 @@ void NavPlotViewer::drawNavPlot(int index)
       glColor3f(0.0, 0.0, 0.5);  // DarkBlue
     else
       glColor3f(0.7, 0.7, 0.7);  // Lighter
-    if(index==2)
-      m_trail_gap += 5;
 #endif
 
 
     glBegin(GL_POINTS);
     for(int i=0; i<npsize; i++) {
       double itime = m_navplots[index].get_time_by_index(i);
+      cout << ".";
       if(m_alltrail || (itime < ctime)) {
-	
+	cout << "+";
 	//if((ctime - itime) < 110) {
 	if(1) {
 	  if(i != m_local_ix) {
@@ -290,6 +289,9 @@ void NavPlotViewer::drawNavPlot(int index)
 	  }
 	}
       }
+      else 
+	cout << m_alltrail << ":" << itime << ":" << ctime << endl;
+
     }
     glEnd();
   }
@@ -330,7 +332,7 @@ void NavPlotViewer::drawNavPlot(int index)
       {red=0; grn=0; blu=2;}
     
     glTranslatef(-qx, -qy, 0);
-    drawCommonVehicle(opose, red, grn, blu, m_vehibody);
+    drawCommonVehicle("", opose, red, grn, blu, m_vehibody);
   }
 
   glFlush();

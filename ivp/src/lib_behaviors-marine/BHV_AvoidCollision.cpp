@@ -153,25 +153,45 @@ bool BHV_AvoidCollision::setParam(string g_param, string g_val)
 
 
 //-----------------------------------------------------------
+// Procedure: onIdleState()
+
+void BHV_AvoidCollision::onIdleState() 
+{
+  bool ok = getBufferInfo();
+  if(!ok)
+    postRange(false);
+  else {
+    m_curr_distance = hypot((m_osx - m_cnx),(m_osy - m_cny));
+    postRange(true);
+  }
+}
+
+//-----------------------------------------------------------
 // Procedure: produceOF
 
 IvPFunction *BHV_AvoidCollision::produceOF() 
 {
   if(!unif_box || !grid_box) {
+    postRange(false);
     postEMessage("Null UnifBox or GridBox.");
     return(0);
   }
   
   if(m_contact == "") {
+    postRange(false);
     postEMessage("contact ID not set.");
     return(0);
   }
 
   bool ok = getBufferInfo();
-  if(!ok) 
+  if(!ok) {
+    postRange(false);
     return(0);
+  }
 
   double relevance = getRelevance();
+  postRange(true);
+
   if(relevance <= 0)
     return(0);
 
@@ -330,29 +350,13 @@ double BHV_AvoidCollision::getRelevance()
   
   postInfo(dpct, spct);
 
-
-#if 0
-  cout << "Relevance Report: ------------------- " << endl;
-  cout << "d_relevance:        " << d_relevance << endl;
-  cout << "closing_spd:        " << closing_spd << endl;
-  cout << "min_roc_relevance:  " << min_roc_relevance << endl;
-  cout << "max_roc_relevance:  " << max_roc_relevance << endl;
-  cout << "rng_roc_relevance:  " << rng_roc_relevance << endl;
-  cout << "srange:             " << srange << endl;
-  cout << "spct:               " << spct << endl;
-  cout << "s_relevance:        " << s_relevance << endl;
-  cout << "combined_relevance: " << combined_relevance << endl;
-#endif  
-
   return(combined_relevance);
 }
 
 
 
 //-----------------------------------------------------------
-// Procedure: getRelevance
-//            Calculate the relevance first. If zero-relevance, 
-//            we won't bother to create the objective function.
+// Procedure: postInfo
 
 void BHV_AvoidCollision::postInfo(double dpct, double spct)
 {
@@ -360,12 +364,27 @@ void BHV_AvoidCollision::postInfo(double dpct, double spct)
   bhv_tag = findReplace(bhv_tag, "BHV_", "");
   bhv_tag = findReplace(bhv_tag, "(d)", "");
 
-  
-  postMessage("CLSG_SPD_"+bhv_tag, m_curr_closing_spd);
-  postMessage("REL_DIST_"+bhv_tag, m_curr_distance);
-
   postMessage("DPCT_BHV_"+bhv_tag, dpct);
   postMessage("SPCT_BHV_"+bhv_tag, spct);
+}
+
+
+//-----------------------------------------------------------
+// Procedure: postRange
+
+void BHV_AvoidCollision::postRange(bool ok)
+{
+  string bhv_tag = toupper(getDescriptor());
+  bhv_tag = findReplace(bhv_tag, "BHV_", "");
+  bhv_tag = findReplace(bhv_tag, "(d)", "");
+  if(!ok) {
+    postMessage("RANGE_AVD_" + m_contact, -1);
+    postMessage("CLSG_SPD_AVD_"+ m_contact, 0);
+  }
+  else {
+    postMessage("RANGE_AVD_" + m_contact, m_curr_distance);
+    postMessage("CLSG_SPD_AVD_" + m_contact, m_curr_closing_spd);
+  }
 }
 
 

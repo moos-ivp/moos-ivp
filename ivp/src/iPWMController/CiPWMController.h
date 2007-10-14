@@ -13,7 +13,7 @@ class servo_params_t {
 public:
 	servo_params_t() :
 		servon(0), mode(MODE_DISABLED),
-		enabled(false), dflt(0), in_low(0),
+		enabled(false), dflt(0), desired(0), k(0.3), current(0), in_low(0),
 		in_high(0), clamp_in_low(0), clamp_in_high(0),
 		last_set(0), input_offset(0) {}
 
@@ -21,6 +21,9 @@ public:
 	pwm_mode_t mode;
 	bool enabled;
 	double dflt;
+	double desired;
+	double k;
+	double current;
 	double in_low;
 	double in_high;
 	double clamp_in_low;

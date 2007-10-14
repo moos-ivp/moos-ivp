@@ -14,7 +14,7 @@ class DeployHandler : public CMOOSApp
 {
  public:
   DeployHandler();
-  virtual ~DeployHandler();
+  virtual ~DeployHandler() {};
 
   bool OnNewMail(MOOSMSG_LIST &NewMail);
   bool Iterate();
@@ -24,8 +24,19 @@ class DeployHandler : public CMOOSApp
 
  protected:
   bool handleNewDeployToPosition(std::string);
+  bool handleNewLoiterPosition(std::string);
+  bool handleNewRelativePosition(std::string);
+  bool handleReclaim(std::string);
 
  protected:
+
+  double  m_range_1;
+  double  m_range_2;
+  double  m_range_3;
+  double  m_angle_1;
+  double  m_angle_2;
+  double  m_angle_3;
+
   // insert local vars here
 };
 

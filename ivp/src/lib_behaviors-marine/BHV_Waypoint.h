@@ -32,14 +32,15 @@ public:
   BHV_Waypoint(IvPDomain);
   ~BHV_Waypoint() {};
   
-  IvPFunction* produceOF();
   bool         setParam(std::string, std::string);
+  void         onIdleState();
+  IvPFunction* produceOF();
 
 protected:
   bool         updateInfoIn();
   bool         setNextWaypoint();
   IvPFunction* buildOF(std::string);
-  void         updateInfoOut();
+  void         updateInfoOut(bool post=true);
 
 protected:
   WaypointEngine waypoint_engine;

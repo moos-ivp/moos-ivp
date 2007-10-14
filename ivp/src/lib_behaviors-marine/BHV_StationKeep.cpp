@@ -51,9 +51,9 @@ BHV_StationKeep::BHV_StationKeep(IvPDomain gdomain) :
   m_station_x    = 0;
   m_station_y    = 0;
   m_outer_radius = 15;
-  m_inner_radius = 2;
-  m_outer_speed  = 2.0;
-  m_extra_speed  = 3.0;
+  m_inner_radius = 4;
+  m_outer_speed  = 1.2;
+  m_extra_speed  = 2.5;
   m_center_activate = false;
 
   // Default values for State  Variables
@@ -191,14 +191,14 @@ IvPFunction *BHV_StationKeep::produceOF()
   double dist_to_station  = distPointToPoint(nav_x, nav_y, 
 					     m_station_x, m_station_y);
 
+  postMessage("DIST_TO_STATION", dist_to_station);
+
   postStationMessage(true);
   if(dist_to_station <= m_inner_radius)
     return(0);
 
   double angle_to_station = relAng(nav_x, nav_y, 
 				   m_station_x, m_station_y);
-
-  postMessage("DIST_TO_STATION", dist_to_station);
 
   double desired_speed = 0;
   if((dist_to_station > m_inner_radius) && (dist_to_station < m_outer_radius)) {
@@ -287,7 +287,7 @@ bool BHV_StationKeep::updateCenter()
       svector[1] = stripBlankEnds(svector[1]);
       if(isNumber(svector[0]) && isNumber(svector[1])) {
 	double xval = atof(svector[0].c_str());
-	double yval = atof(svector[0].c_str());
+	double yval = atof(svector[1].c_str());
 	m_station_x   = xval;
 	m_station_y   = yval;
 	m_station_set = true;
@@ -318,5 +318,6 @@ void BHV_StationKeep::postStationMessage(bool post)
 
   station += us_name;
   postMessage("STATION_CIRCLE", station);
+
 }
 

@@ -44,6 +44,7 @@ protected:
   void         updateCenter();
   IvPFunction* buildIPF(const std::string&);
   void         updateInfoOut();
+  void         updateInfoOutNull();
 
 private:  // Configuration Parameters
   bool         m_clockwise;

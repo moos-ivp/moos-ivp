@@ -34,7 +34,6 @@
 #include <MOOSLIB/MOOSLib.h>
 #include <MOOSGenLib/MOOSGenLib.h>
 #include "Router.h"
-#include "math.h"
 #include "version.h"
 
 #include <time.h>
@@ -43,6 +42,9 @@
 using namespace std;
 
 #define DEFAULT_CSV_LOG_INTERVAL (3600) // seconds => 1 hour
+
+//By Arjuna 10/6/2007
+#define DONTSORT (1)
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -140,7 +142,7 @@ bool CRouter::OnStartUp()
 		MOOSTrace("      MOOS uRouter - Simulates PLUSNet message strings \n");
 		MOOSTrace("\n");
 		MOOSTrace("\n");
-		MOOSTrace("$Id: Router.cpp,v 1.11 2007-09-04 21:32:42 adumorti Exp $\n");
+		MOOSTrace("$Id: Router.cpp,v 1.5 2007-10-07 06:14:46 arjunab Exp $\n");
 		MOOSTrace("=========================================================\n\n\n");
 	
 		// Input from Framer  
@@ -261,11 +263,16 @@ bool CRouter::SendFrameToModem()
 	std::string sRequest = m_sLastModemData;
 	std::string sMessageType;
 	
-	
+
+#ifdef DONTSORT	
+	MOOSTrace("SendFrame() => Not Sorting data by destination.\n");
+	iDest = 0;
+#else
 	if (!MOOSValFromString(iDest,sRequest,"Dest")) {
 		MOOSTrace("pRouter: error: no \"Dest\" in Modem Data Request Message!\n");
 		return false;
 	}
+#endif
 
 	if (!MOOSValFromString(iAck,sRequest,"Ack")) {
 		MOOSTrace("pRouter: warning: no \"Ack\" in Modem Data Request Message => using Ack=0\n");
@@ -273,16 +280,16 @@ bool CRouter::SendFrameToModem()
 	}
 
 
-
 	// Don't send anything unless 10 seconds since last one
 	// HS 052407
 	double curr_time = MOOSTime();
-	if (curr_time > prev_msg_time + 0.0)
-	{
+//	if (curr_time > prev_msg_time + 0.0)
+//	{
 		sBestFrame = GetBestFrame(iDest);
-	    prev_msg_time = curr_time;
-	} else
-	    sBestFrame = "";
+//	    prev_msg_time = curr_time;
+//	} else
+//	    sBestFrame = "";
+        MOOSTrace("The STRING is %s\n",sBestFrame.c_str());
 
 	if (sBestFrame.length()){
 		if (!MOOSValFromString(sMessageType,sBestFrame,"MessageType")) {
@@ -294,6 +301,8 @@ bool CRouter::SendFrameToModem()
 		      m_Comms.Notify(m_sModemCommandName,sBestFrame,MOOSTime());
 	    } else {
 		      MOOSTrace("pRouter: No Frame for %d.\n",iDest);
+
+		      m_Comms.Notify(m_sModemCommandName,sBestFrame,MOOSTime());
 	    }
         return true;
 }
@@ -380,6 +389,7 @@ bool CRouter::OnModemData(std::string sDataIn)
 	  else
 	    ack_val=false;
 	  m_sLastModemData = sData ;  // store DATAREQUEST message
+
 	  SendFrameToModem();
 	}
 	
@@ -404,10 +414,16 @@ bool CRouter::OnFramerFrame(std::string sFrameIn)
 		MOOSTrace("pRouter: ERROR: OnFramerFrame(): no \"MessageType\" in Frame Message\n");
 		return false;
 	}
+#ifdef DONTSORT
+	MOOSTrace("On FramerFrame() => Not sorting data by destination\n");
+	iDest = 0;
+#else
 	if (!MOOSValFromString(iDest,sFrame,"Dest")){
 		MOOSTrace("pRouter: ERROR: OnFramerFrame(): no \"Dest\" in Frame Message\n");
 		return false;
 	}
+#endif
+
 	if (!MOOSValFromString(dTimestamp,sFrame,"Timestamp")){
 		MOOSTrace("pRouter: WARNING: OnFramerFrame(): no \"Timestamp\" in Frame Message\n");
 	}
@@ -463,8 +479,14 @@ std::string CRouter::GetBestFrame(int iDest){
 	std::string *nextCandidate;
 	
 	double curr_time = MOOSTime();
+#ifdef DONTSORT
+	MOOSTrace("GetBestFrame() => Not sorting data by destination\n");
+	iDest = 0;
+#endif
 
 	if (ack_val){
+MOOSTrace("The destination = %d\n",iDest);
+
 		if(m_tFrameQ[iDest].sStatusFrame.length()) {
 			MOOSTrace("DATAREQUEST: Dest=%d, Ack=1 => sending SENSOR_STATUS\n",iDest);
 			sBest = m_tFrameQ[iDest].sStatusFrame ;

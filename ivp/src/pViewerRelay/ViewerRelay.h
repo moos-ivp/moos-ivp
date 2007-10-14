@@ -13,8 +13,8 @@
 class ViewerRelay : public CMOOSApp
 {
  public:
-  ViewerRelay();
-  virtual ~ViewerRelay();
+  ViewerRelay() {};
+  virtual ~ViewerRelay() {};
   
   bool OnNewMail(MOOSMSG_LIST &NewMail);
   bool Iterate();
@@ -25,6 +25,7 @@ class ViewerRelay : public CMOOSApp
  protected:
   bool handleNewViewerLeftClick(std::string);
   bool handleNewViewerRightClick(std::string);
+  bool handleNewViewerRightClickRP(std::string);
 
  protected:
   // insert local vars here

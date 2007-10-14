@@ -24,6 +24,7 @@
 #define BHV_TRAIL_HEADER
 
 #include "IvPBehavior.h"
+#include "LinearInterpolator.h"
 
 class IvPDomain;
 class BHV_Trail : public IvPBehavior {
@@ -59,8 +60,9 @@ private: // State Variables
   double  m_cnh; // contact heading
   double  m_cnv; // contact velocity
 
-  double  m_cnx_mark;
-  double  m_cny_mark;
+  bool    m_interpolate;
+
+  LinearInterpolator m_interpolator;
 
 };
 #endif

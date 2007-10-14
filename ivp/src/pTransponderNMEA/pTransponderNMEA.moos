@@ -1,0 +1,11 @@
+//------------------------------------------------------------------
+// pTransponderNMEA configuration block
+
+ProcessConfig = pTransponderNMEA
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  VESSEL_NAME = WECOMA
+  VESSEL_TYPE = SHIP
+}

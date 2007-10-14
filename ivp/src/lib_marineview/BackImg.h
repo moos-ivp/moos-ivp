@@ -46,7 +46,14 @@ public:
   float get_img_centlat()  {return(img_centlat);};
   float get_img_centlon()  {return(img_centlon);};
 
-  float get_pix_per_mtr() {return(img_meters*img_width/100);};
+  float get_x_at_img_left()   {return(x_at_img_left);};
+  float get_x_at_img_right()  {return(x_at_img_right);};
+  float get_y_at_img_bottom() {return(y_at_img_bottom);};
+  float get_y_at_img_top()    {return(y_at_img_top);};
+  float get_x_at_img_ctr()    {return(x_at_img_ctr);};
+  float get_y_at_img_ctr()    {return(y_at_img_ctr);};
+
+  float get_pix_per_mtr()     {return(img_meters*img_width/100);};
 
   float pixToPctX(float pix);
   float pixToPctY(float pix);
@@ -63,6 +70,14 @@ private:
   float          img_offset_y;
   float          img_centlat;
   float          img_centlon;
+
+  float          x_at_img_ctr;
+  float          y_at_img_ctr;
+  float          x_at_img_left;
+  float          x_at_img_right;
+  float          y_at_img_top;
+  float          y_at_img_bottom;
+
 };
 
 #endif 
