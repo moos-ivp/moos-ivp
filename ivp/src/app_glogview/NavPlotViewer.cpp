@@ -335,7 +335,7 @@ void NavPlotViewer::drawNavPlot(int index)
       {red=0; grn=0; blu=2;}
     
     glTranslatef(-qx, -qy, 0);
-    drawCommonVehicle(opose, red, grn, blu, m_vehibody);
+    drawCommonVehicle("", opose, red, grn, blu, m_vehibody);
   }
 
   glFlush();
