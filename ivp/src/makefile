@@ -29,7 +29,16 @@ APP_BASE =  $(wildcard pHelmIvP*) 	$(wildcard pEchoVar*) 	   	\
 	    $(wildcard pFramer*)	$(wildcard pNaFCon*)		\
 	    $(wildcard iMicroModem*)	$(wildcard pScheduler*)		\
 	    $(wildcard pRouter*)	$(wildcard uMessageForward*)	\
-	    $(wildcard iGPS*)           $(wildcard pUDPBroadcastClient*)
+	    $(wildcard iGPS*)           $(wildcard pUDPBroadcastClient*) \
+	    $(wildcard pViewerRelay*)   $(wildcard iWinch*) 		\
+            $(wildcard pSamplingControl*) $(wildcard iWinchSim*)	\
+	    $(wildcard iMetaMemCompass*)  $(wildcard iOS5000*)          \
+	    $(wildcard iCTDSBE49*)      $(wildcard iSerialNMEA*)	\
+	    $(wildcard iWebsite*)       $(wildcard iWinchCTL*)          \
+	    $(wildcard pVirtualTether*)	$(wildcard MOOSBlink*)		\
+	    $(wildcard uRepeater*)    	    $(wildcard pCTDLogger*)     \
+	    $(wildcard iBatteryMonitor*)
+
 
 
 # Removed because we no longer put MOOS code directly into the IvP source tree...
