@@ -1,0 +1,9 @@
+rm -f ~/Research/moos-ivp/ivp/data/Default.tif;
+rm -f ~/Research/moos-ivp/ivp/data/DefaultB.tif;
+rm -f ~/Research/moos-ivp/ivp/data/Default.info;
+rm -f ~/Research/moos-ivp/ivp/data/DefaultB.info;
+cp    ~/Research/moos-ivp/ivp/data/dabob_d14.tif   ~/Research/moos-ivp/ivp/data/Default.tif;
+cp    ~/Research/moos-ivp/ivp/data/dabob_d14.info  ~/Research/moos-ivp/ivp/data/Default.info;
+cp    ~/Research/moos-ivp/ivp/data/dabob_d14s.tif  ~/Research/moos-ivp/ivp/data/DefaultB.tif;
+cp    ~/Research/moos-ivp/ivp/data/dabob_d14s.info ~/Research/moos-ivp/ivp/data/DefaultB.info;
+
