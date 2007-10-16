@@ -32,8 +32,8 @@ print "\nMap Image Generator\n(images from Google)\n\n";
 #$bottomright_latlon = "42.139587 -70.924934";
 
 # Dabob Bay - Washington State
-$topleft_latlon = "47.854800 -122.936200";
-$bottomright_latlon = "47.654800 -122.736200";
+$topleft_latlon = "47.704800 -122.936200";
+$bottomright_latlon = "47.654800 -122.886200";
 
 # East Cambridge
 #$topleft_latlon = "42.375455 -71.091049";
@@ -48,10 +48,10 @@ $bottomright_latlon = "47.654800 -122.736200";
 print "lat: [$min_lat, $max_lat]\n";
 print "lon: [$min_lon, $max_lon]\n";
 
-$delta_deg = 360.0 / 2**19;
+$delta_deg = 360.0 / 2**16;
 $delta_deg /= 2.0; # to make sure that we get all images
 
-$dt = 1.0 / 2**19;
+$dt = 1.0 / 2**16;
 
 #print "delta_deg: $delta_deg\n";
 
@@ -195,7 +195,7 @@ sub latlon2qrts {
 #{
     
     $PI = 3.1415926535897;
-    $digits = 19; # how many digits precision
+    $digits = 16; # how many digits precision
 #now convert to normalized square coordinates
 # use standard equations to map into mercator projection
     $x = (180.0 + $lon) / 360.0;
