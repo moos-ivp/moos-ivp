@@ -88,7 +88,7 @@ void OnRemoveCommunity(Fl_Widget* pWidget,void * pParam)
 
     if(pTab->children()>1)
     {       
-	if(fl_ask(MOOSFormat("Really delete Scope of \"%s\" ?",pTab->value()->label()).c_str()))
+	if(fl_choice( MOOSFormat("Really delete Scope of \"%s\" ?",pTab->value()->label()).c_str(), "No", "Yes", NULL))
 	{
 	    Fl_Group* pG = (Fl_Group*)pTab->value();
 	    pG->clear();
