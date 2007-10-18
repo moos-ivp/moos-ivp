@@ -12,8 +12,7 @@
 #ifndef CCLSENSORCOMMANDANDREPORT_H
 #define CCLSENSORCOMMANDANDREPORT_H
 
-#define MDAT_SENSOR_CMD  	26
-#define MDAT_SENSOR_RPT  	27
+#include "CCLMessageTypes.h"
 
 ////////////////////////////////////////////////////////////////////////
 // Definitions
