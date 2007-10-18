@@ -131,6 +131,7 @@ FILE(GLOB IVP_APP_TOOLS_SUBDIRS
    uFunctionVis*
    uFunctionViewer
    iMicroModem*
+   iGPS*
    pBearings
    pSensorSim*
    pArtifactMapper*
@@ -140,6 +141,28 @@ FILE(GLOB IVP_APP_TOOLS_SUBDIRS
    pRouter*
    uMessageForward*
    pUDPBroadcastClient*
+   iBatteryMonitor*
+   iCTDSBE49*
+   iMetaMemCompass*
+   iOS5000*
+   iSerialNMEA*
+   iWebsite*
+#   iWinch
+   iWinchCtl*
+   iWinchSim*
+   MOOSBlink*
+   pCTDLogger*
+   pDynamicWaypointLL*
+   pGPSReTx*
+   pSamplingControl*
+   pShipsideViewer*
+   pTransponderNMEA*
+   pVirtualTether*
+#   uMicroModemAddPPS*
+#   uMicroModemWatchPPS*
+   uRepeater*
+   zlog2alog*
+   zLoggerNG*
 #    uPlayBack*       I don't see this file in the src directory. -CJC	        
 #    pDrone*          I don't see this file in the src directory. -CJC
 #    pMessageSim*     I don't see this file in the src directory. -CJC

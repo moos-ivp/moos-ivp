@@ -11,7 +11,7 @@
 // 4 --> [3 and 5], 5 --> [3 and 4]
  
 #include <iostream>
-#include <strstream>
+#include <sstream>
 #include "MOOSLib.h"
 #include "MOOSGenLib.h"
 #include "uMessageForward.h"

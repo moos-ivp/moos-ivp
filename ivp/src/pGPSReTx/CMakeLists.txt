@@ -8,6 +8,7 @@ IF("${IVP_BUILD_pGPSReTx}" STREQUAL "ON")
    TARGET_LINK_LIBRARIES(pGPSReTx 
    MOOS
    MOOSGen
+   MOOSUtility
    anrp_util
    m
    pthread)
@@ -18,7 +19,7 @@ IF("${IVP_BUILD_pGPSReTx}" STREQUAL "ON")
       INSTALL(
          TARGETS pGPSReTx
          DESTINATION bin/ivp-${IVP_PACKAGE_VERSION}
-         COMPONENT ivp-core)
+         COMPONENT ivp-tools)
    ENDIF("${IVP_PACKAGE_VERSION}" STREQUAL "")
 
 ENDIF("${IVP_BUILD_pGPSReTx}" STREQUAL "ON")

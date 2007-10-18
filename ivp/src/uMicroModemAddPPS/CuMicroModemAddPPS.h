@@ -8,7 +8,7 @@
 
 #include "MOOSLib.h"
 #include "MOOSGeodesy.h"
-#include "MU.h"
+#include <MU.h>
 #include <stdio.h>
 #include <string>
 #include <map>

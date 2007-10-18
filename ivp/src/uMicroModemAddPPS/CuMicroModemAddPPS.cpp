@@ -16,7 +16,7 @@
 #include "../MOOSLIB/MOOSLib.h"
 #include "../MOOSGenLib/MOOSGenLib.h"
 #include "CuMicroModemAddPPS.h"
-#include "MU.h"
+#include <MU.h>
 
 CuMicroModemAddPPS::CuMicroModemAddPPS()
 {

@@ -18,7 +18,7 @@ IF("${IVP_BUILD_MOOSBlink}" STREQUAL "ON")
       INSTALL(
          TARGETS MOOSBlink
          DESTINATION bin/ivp-${IVP_PACKAGE_VERSION}
-         COMPONENT ivp-core)
+         COMPONENT ivp-tools)
    ENDIF("${IVP_PACKAGE_VERSION}" STREQUAL "")
 
 ENDIF("${IVP_BUILD_MOOSBlink}" STREQUAL "ON")

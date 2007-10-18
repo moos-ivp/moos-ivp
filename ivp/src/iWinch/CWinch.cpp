@@ -77,7 +77,7 @@ void CWinch::GetZeroCurrentLevel(void)
 long CWinch::PositionToCounts(double line_pos)
 {
 	if(type == TYPE_LINE) {
-		return (line_pos / line_per_turn) * enc_per_drive_rev;
+		return long((line_pos / line_per_turn) * enc_per_drive_rev);
 	} else if(type == TYPE_SPOOL) {
 		//...
 	}
