@@ -1,9 +1,7 @@
 #include "MOOSLib.h"
 #include "MOOSGenLib.h"
-#include <string.h>
-#include <math.h>
-#include "MBUtils.h"
-#include <iomanip.h>
+#include <string>
+#include <sstream>
 
 using namespace std;
 

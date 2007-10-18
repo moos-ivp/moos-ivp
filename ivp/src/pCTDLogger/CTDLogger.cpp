@@ -1,7 +1,9 @@
 #include "CTDLogger.h"
-
+#include "MBUtils.h"
+#include <math.h>
+#include <iomanip>
 #include <iostream>
-#include <strstream>
+#include <sstream>
 
 using namespace std;
 
@@ -75,7 +77,7 @@ bool CTDLogger::OnNewMail(MOOSMSG_LIST &NewMail)
 	}  
       else if(Msg.m_sKey == "SENSOR_MISSION")
 	{
-	  m_mission_number = Msg.m_dfVal;
+	  m_mission_number = int(Msg.m_dfVal);
 	}
 
       else if(Msg.m_sKey == "CTD_LOG")
