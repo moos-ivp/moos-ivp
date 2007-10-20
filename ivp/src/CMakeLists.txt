@@ -47,24 +47,48 @@ INCLUDE_DIRECTORIES(${MOOS_INCLUDE_DIRS})
 # files...
 #===============================================================================
 
+# Sometimes people introduce their own subdirectories into the build tree so
+# that, among other reasons, their behaviors can be used by pHelmIvP.
+# (We expect this practice to end once each behavior is running in its own
+# MOOSApp.)
+# Anyway, we'll have them indicate the presence of such directories with the
+# presence (and contents) of the file:
+#
+# ExtraCMakeIncludeDirs.txt : should contain some CMake INCLUDE_DIRECTORIES
+#    commands, so that the the compiler can find that code's header files
+#    in case other programs / libs in IvP (probably just pHelmIvP, 
+#    realistically) try to #include them.
+#
+# Iff one of these extra subdirectories contains a ExtraCMakeIncludeDirs.txt,
+# we'll also take that to mean that the subdirectory should be built by this
+# build process.
+#
+# The reason a new subdirectory must be explicitly flagged for inclusion
+# (via the presense of a ExtraCMakeIncludeDirs.txt file) is that this present
+# CMake file explicitly lists the subdirectories build, rather than just finding
+# them all with one big "FILE(GLOB *)" command.
+SET(IVP_DIRS_TO_BUILD "")
+FILE(GLOB_RECURSE CUSTOM_ADDED_INCLUDES ./ExtraCMakeIncludeDirs.txt)
+FOREACH(F ${CUSTOM_ADDED_INCLUDES})
+  INCLUDE(${F})
+  GET_FILENAME_COMPONENT(DIR ${F} PATH)
+  MESSAGE("Addding supplemental source directory: " ${DIR})
+  ADD_SUBDIRECTORY(${DIR})
+ENDFOREACH(F)
+
 FILE(GLOB IVP_LIB_BASE_SUBDIRS
    lib_ivpcore*
    lib_ivpbuild
    lib_mbutil*           
-   lib_behaviors         
    lib_bhvutil*          
-   lib_behaviors-don*    
-   lib_behaviors-sandbox*
    lib_geometry*         
    lib_logic*            
    newmat10D*            
-   lib_anrp_util*        
    lib_behaviors-marine* 
    lib_behaviors-colregs*
    lib_helmivp*
    lib_genutil
    )
-
 
 # In the original Makefile-based build system, the Makefile for 
 # lib_behaviors-attic had an "all" target that was a no-op.  However, 
@@ -169,6 +193,7 @@ FILE(GLOB IVP_APP_TOOLS_SUBDIRS
    )
 
 SET(IVP_DIRS_TO_BUILD 
+   ${IVP_DIRS_TO_BUILD}
    ${IVP_LIB_BASE_SUBDIRS}
    ${IVP_APP_BASE_SUBDIRS}
    ${IVP_LIB_TOOLS_SUBDIRS}
