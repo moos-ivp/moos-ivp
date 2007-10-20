@@ -18,7 +18,7 @@ IF("${IVP_BUILD_pUDPBroadcastClient}" STREQUAL "ON")
       INSTALL(
          TARGETS pUDPBroadcastClient
          DESTINATION bin/ivp-${IVP_PACKAGE_VERSION}
-         COMPONENT ivp-core)
+         COMPONENT none)
    ENDIF("${IVP_PACKAGE_VERSION}" STREQUAL "")
 
 ENDIF("${IVP_BUILD_pUDPBroadcastClient}" STREQUAL "ON")
