@@ -5,9 +5,9 @@ set -e
 #===============================================================================
 
 print_usage() {
-   echo `basename ${0}` "<src-dir>"
+   echo `basename ${0}`
    echo
-   echo "Writes the CMakeLists.txt file for each subdirectory of <src-dir>."
+   echo "Writes the CMakeLists.txt file for each subdirectory."
    echo "This script uses built-in information about what subdirectories should "
    echo "exist, and how each subdirectory's CMakeLists.txt file should look."
 }
@@ -15,29 +15,17 @@ print_usage() {
 #===============================================================================
 
 parse_and_validate_cmd_line() {
-   if [ "$#" -ne "1" ]; then
+   if [ "$#" -ne "0" ]; then
       print_usage
       exit 1
    fi 
    
-   if [ -h $0 ]; then
-      echo "You're running this script as a symbolic link.  Please don't: doing so "
-      echo "makes it hard for this script to find some helper files that are supposed "
-      echo "to reside in the same directory as the script itself."
-      exit 1
-   fi
+   SCRIPT_DIR=../../scripts/util/create-subdir-cmake-files/
    
-   SCRIPT_DIR=`dirname ${0}`
-   
-   if [ ! -d "${1:?}" ]; then
-      echo "<src-dir> doesn't seem to exist, or isn't a directory."
-      exit 1
-   fi
-   
-   SRC_DIR=${1}
+   SRC_DIR=./
 
    if [ ! -f ${SCRIPT_DIR}/simple-lib-template.txt ]; then
-      echo "I should be able to find the file ./simple-lib-template.txt, "
+      echo "I should be able to find the file ${SCRIPT_DIR}/simple-lib-template.txt, "
       echo "but I can't."
       echo ""
       echo "You're supposed to run this script from it's own directory."
@@ -45,7 +33,7 @@ parse_and_validate_cmd_line() {
    fi
 
    if [ ! -f ${SCRIPT_DIR}/simple-app-template.txt ]; then
-      echo "I should be able to find the file ./simple-app-template.txt, "
+      echo "I should be able to find the file ${SCRIPT_DIR}/simple-app-template.txt, "
       echo "but I can't."
       echo ""
       echo "You're supposed to run this script from it's own directory."
