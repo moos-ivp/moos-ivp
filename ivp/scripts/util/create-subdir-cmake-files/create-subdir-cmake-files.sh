@@ -371,44 +371,44 @@ LINK_LIBS="
 simple_app_cmake_file
 
 
-SUBDIR=iPWMController \
-PROGNAME=iPWMController \
-IVP_INSTALL_COMPONENT=ivp-core \
-IVP_BUILD_BY_DEFAULT=ON \
-LINK_LIBS="
-   MOOS
-   MOOSGen
-   anrp_util
-   m
-   pthread" \
-simple_app_cmake_file
+# SUBDIR=iPWMController \
+# PROGNAME=iPWMController \
+# IVP_INSTALL_COMPONENT=ivp-core \
+# IVP_BUILD_BY_DEFAULT=ON \
+# LINK_LIBS="
+#    MOOS
+#    MOOSGen
+#    anrp_util
+#    m
+#    pthread" \
+# simple_app_cmake_file
 
 
-SUBDIR=MOOSDump \
-PROGNAME=MOOSDump \
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-core \
-LINK_LIBS="
-   MOOS
-   MOOSGen
-   mbutil
-   m
-   pthread" \
-simple_app_cmake_file
+# SUBDIR=MOOSDump \
+# PROGNAME=MOOSDump \
+# IVP_BUILD_BY_DEFAULT=ON \
+# IVP_INSTALL_COMPONENT=ivp-core \
+# LINK_LIBS="
+#    MOOS
+#    MOOSGen
+#    mbutil
+#    m
+#    pthread" \
+# simple_app_cmake_file
 
 
-SUBDIR=MOOSRemote \
-PROGNAME=MOOSRemote \
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-core \
-LINK_LIBS="
-   MOOS
-   MOOSGen
-   mbutil
-   curses
-   m
-   pthread" \
-simple_app_cmake_file
+# SUBDIR=MOOSRemote \
+# PROGNAME=MOOSRemote \
+# IVP_BUILD_BY_DEFAULT=ON \
+# IVP_INSTALL_COMPONENT=ivp-core \
+# LINK_LIBS="
+#    MOOS
+#    MOOSGen
+#    mbutil
+#    curses
+#    m
+#    pthread" \
+# simple_app_cmake_file
 
 
 SUBDIR=pDeployHandler \
@@ -1140,29 +1140,29 @@ LINK_LIBS="
    pthread" \
 simple_app_cmake_file
 
-SUBDIR=iBatteryMonitor \
-PROGNAME=iBatteryMonitor \
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-tools \
-LINK_LIBS="
-   MOOS
-   MOOSGen
-   anrp_util
-   m
-   pthread" \
-simple_app_cmake_file
+# SUBDIR=iBatteryMonitor \
+# PROGNAME=iBatteryMonitor \
+# IVP_BUILD_BY_DEFAULT=ON \
+# IVP_INSTALL_COMPONENT=ivp-tools \
+# LINK_LIBS="
+#    MOOS
+#    MOOSGen
+#    anrp_util
+#    m
+#    pthread" \
+# simple_app_cmake_file
 
-SUBDIR=iCTDSBE49 \
-PROGNAME=iCTDSBE49 \
-IVP_BUILD_BY_DEFAULT=OFF \
-IVP_INSTALL_COMPONENT=ivp-tools \
-LINK_LIBS="
-   MOOS
-   MOOSGen
-   anrp_util
-   m
-   pthread" \
-simple_app_cmake_file
+# SUBDIR=iCTDSBE49 \
+# PROGNAME=iCTDSBE49 \
+# IVP_BUILD_BY_DEFAULT=OFF \
+# IVP_INSTALL_COMPONENT=ivp-tools \
+# LINK_LIBS="
+#    MOOS
+#    MOOSGen
+#    anrp_util
+#    m
+#    pthread" \
+# simple_app_cmake_file
 
 SUBDIR=iMetaMemCompass \
 PROGNAME=iMetaMemCompass \
