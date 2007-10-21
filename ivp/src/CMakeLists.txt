@@ -73,7 +73,7 @@ FOREACH(F ${CUSTOM_ADDED_INCLUDES})
   INCLUDE(${F})
   GET_FILENAME_COMPONENT(DIR ${F} PATH)
   MESSAGE("Addding supplemental source directory: " ${DIR})
-  ADD_SUBDIRECTORY(${DIR})
+  SET(IVP_DIRS_TO_BUILD ${IVP_DIRS_TO_BUILD} ${DIR})
 ENDFOREACH(F)
 
 FILE(GLOB IVP_LIB_BASE_SUBDIRS
@@ -84,6 +84,7 @@ FILE(GLOB IVP_LIB_BASE_SUBDIRS
    lib_geometry*         
    lib_logic*            
    newmat10D*            
+   lib_behaviors
    lib_behaviors-marine* 
    lib_behaviors-colregs*
    lib_helmivp*
@@ -140,9 +141,7 @@ FILE(GLOB IVP_LIB_TOOLS_SUBDIRS
 
 FILE(GLOB IVP_APP_TOOLS_SUBDIRS
    app_*		
-   p1BTracker*	
    iHeadingMonitor*
-   p2BTracker*	
    pMarineViewer*
    pBearingsSim*	
    pClusterManager*
@@ -166,15 +165,10 @@ FILE(GLOB IVP_APP_TOOLS_SUBDIRS
    uMessageForward*
    pUDPBroadcastClient*
    iBatteryMonitor*
-   iCTDSBE49*
    iMetaMemCompass*
    iOS5000*
    iSerialNMEA*
    iWebsite*
-#   iWinch
-   iWinchCtl*
-   iWinchSim*
-   MOOSBlink*
    pCTDLogger*
    pDynamicWaypointLL*
    pGPSReTx*
@@ -210,6 +204,7 @@ INCLUDE_DIRECTORIES(
 
 FOREACH(D ${IVP_DIRS_TO_BUILD})
   ADD_SUBDIRECTORY(${D})
+#   MESSAGE(">>>>>> " ${D})
 ENDFOREACH(D)
 
 #===============================================================================
