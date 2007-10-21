@@ -119,6 +119,7 @@ IVP_INSTALL_COMPONENT=ivp-tools \
 LINK_LIBS="
    MOOS
    MOOSGen
+   anrp_util
    m
    pthread" \
 simple_app_cmake_file

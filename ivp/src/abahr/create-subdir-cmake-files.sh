@@ -64,6 +64,7 @@ IVP_INSTALL_COMPONENT=none \
 LINK_LIBS="
    MOOS
    MOOSGen
+   MOOSUtility
    anrp_util
    abahr_util
    m

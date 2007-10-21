@@ -8,6 +8,7 @@ IF("${IVP_BUILD_uMicroModemAddPPS}" STREQUAL "ON")
    TARGET_LINK_LIBRARIES(uMicroModemAddPPS 
    MOOS
    MOOSGen
+   MOOSUtility
    anrp_util
    abahr_util
    m
