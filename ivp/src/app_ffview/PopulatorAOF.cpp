@@ -17,7 +17,7 @@
 #include "AOF_Rings.h"
 #include "AOF_Waypoint2D.h"
 #include "AOF_AvoidCollision.h"
-#include "AOF_ArrayAngle.h"
+//#include "AOF_ArrayAngle.h"
 #include "AOF_AvoidObstacles.h"
 #include "PopulatorAOF.h"
 #include "MBUtils.h"
@@ -130,8 +130,8 @@ bool PopulatorAOF::handleLine(string line)
       aof = new AOF_Waypoint2D(domain);
     else if(right == "AOF_AvoidCollision")
       aof = new AOF_AvoidCollision(domain);
-    else if(right == "AOF_ArrayAngle")
-      aof = new AOF_ArrayAngle(domain);
+//    else if(right == "AOF_ArrayAngle")
+//      aof = new AOF_ArrayAngle(domain);
     else if(right == "AOF_AvoidObstacles")
       aof = new AOF_AvoidObstacles(domain);
     return(aof!=0);
