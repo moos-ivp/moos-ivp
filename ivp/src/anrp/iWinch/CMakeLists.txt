@@ -8,6 +8,7 @@ IF("${IVP_BUILD_iWinch}" STREQUAL "ON")
    TARGET_LINK_LIBRARIES(iWinch 
    MOOS
    MOOSGen
+   anrp_util
    m
    pthread)
 
