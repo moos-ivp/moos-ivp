@@ -85,7 +85,7 @@ simple_app_cmake_file
 
 SUBDIR=pUDPBroadcastClient \
 PROGNAME=pUDPBroadcastClient \
-IVP_BUILD_BY_DEFAULT=ON \
+IVP_BUILD_BY_DEFAULT=OFF \
 IVP_INSTALL_COMPONENT=none \
 LINK_LIBS="
    MOOS

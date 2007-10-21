@@ -1,6 +1,6 @@
 FILE(GLOB SRC *.cpp)
 
-OPTION(IVP_BUILD_pUDPBroadcastClient "Build program pUDPBroadcastClient" ON)
+OPTION(IVP_BUILD_pUDPBroadcastClient "Build program pUDPBroadcastClient" OFF)
 
 IF("${IVP_BUILD_pUDPBroadcastClient}" STREQUAL "ON")
    ADD_EXECUTABLE(pUDPBroadcastClient ${SRC})
