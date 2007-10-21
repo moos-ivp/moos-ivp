@@ -707,7 +707,6 @@ PROGNAME=fview \
 IVP_BUILD_BY_DEFAULT=ON \
 IVP_INSTALL_COMPONENT=ivp-tools \
 LINK_LIBS="
-      behaviors-don
       behaviors-sandbox
       behaviors-marine
       bhvutil

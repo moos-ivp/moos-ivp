@@ -10,7 +10,6 @@ IF("${IVP_BUILD_ffview}" STREQUAL "ON")
       
       TARGET_LINK_LIBRARIES(ffview 
          
-      behaviors-don
       behaviors-sandbox
       behaviors-marine
       bhvutil
