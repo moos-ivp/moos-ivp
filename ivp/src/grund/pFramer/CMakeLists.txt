@@ -16,7 +16,7 @@ IF("${IVP_BUILD_pFramer}" STREQUAL "ON")
       INSTALL(
          TARGETS pFramer
          DESTINATION bin/ivp-${IVP_PACKAGE_VERSION}
-         COMPONENT ivp-core)
+         COMPONENT none)
    ENDIF("${IVP_PACKAGE_VERSION}" STREQUAL "")
 
 ENDIF("${IVP_BUILD_pFramer}" STREQUAL "ON")

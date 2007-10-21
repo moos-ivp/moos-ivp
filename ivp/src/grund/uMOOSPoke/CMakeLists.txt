@@ -1,6 +1,6 @@
 FILE(GLOB SRC *.cpp)
 
-OPTION(IVP_BUILD_uMOOSPoke "Build program uMOOSPoke" OFF)
+OPTION(IVP_BUILD_uMOOSPoke "Build program uMOOSPoke" ON)
 
 IF("${IVP_BUILD_uMOOSPoke}" STREQUAL "ON")
    ADD_EXECUTABLE(uMOOSPoke ${SRC})
@@ -17,7 +17,7 @@ IF("${IVP_BUILD_uMOOSPoke}" STREQUAL "ON")
       INSTALL(
          TARGETS uMOOSPoke
          DESTINATION bin/ivp-${IVP_PACKAGE_VERSION}
-         COMPONENT ivp-tools)
+         COMPONENT none)
    ENDIF("${IVP_PACKAGE_VERSION}" STREQUAL "")
 
 ENDIF("${IVP_BUILD_uMOOSPoke}" STREQUAL "ON")
