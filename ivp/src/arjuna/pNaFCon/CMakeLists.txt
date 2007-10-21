@@ -20,7 +20,7 @@ IF("${IVP_BUILD_pNaFCon}" STREQUAL "ON")
       INSTALL(
          TARGETS pNaFCon
          DESTINATION bin/ivp-${IVP_PACKAGE_VERSION}
-         COMPONENT ivp-core)
+         COMPONENT none)
    ENDIF("${IVP_PACKAGE_VERSION}" STREQUAL "")
 
 ENDIF("${IVP_BUILD_pNaFCon}" STREQUAL "ON")
