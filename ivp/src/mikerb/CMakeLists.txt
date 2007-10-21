@@ -1,4 +1,4 @@
-ADD_SUBDIRECTORY(lib_behaviors-attic)
+# ADD_SUBDIRECTORY(lib_behaviors-attic)
 ADD_SUBDIRECTORY(lib_behaviors-oxford)
 ADD_SUBDIRECTORY(lib_behaviors-sandbox)
 ADD_SUBDIRECTORY(lib_ivpbuild-extra)

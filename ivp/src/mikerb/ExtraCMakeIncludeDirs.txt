@@ -1,3 +1,4 @@
-FILE(GLOB LIB_SUBDIRS lib_*)
-
-INCLUDE_DIRECTORIES(${LIB_SUBDIRS})
+INCLUDE_DIRECTORIES(lib_behaviors-oxford)
+INCLUDE_DIRECTORIES(lib_behaviors-sandbox)
+INCLUDE_DIRECTORIES(lib_ivpbuild-extra)
+INCLUDE_DIRECTORIES(lib_mbutiltest)
