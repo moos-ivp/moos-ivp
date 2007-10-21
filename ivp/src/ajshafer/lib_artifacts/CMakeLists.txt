@@ -10,14 +10,14 @@ IF("${IVP_BUILD_artifacts}" STREQUAL "ON")
       INSTALL(
          TARGETS artifacts
          DESTINATION lib/ivp-${IVP_PACKAGE_VERSION}
-         COMPONENT ivp-tools-dev)
+         COMPONENT none)
 
       FILE(GLOB IVP_PUBLIC_HEADERS *.h)
 
       INSTALL(
          FILES ${IVP_PUBLIC_HEADERS}
          DESTINATION include/ivp-${IVP_PACKAGE_VERSION}/lib_artifacts
-         COMPONENT ivp-tools-dev
+         COMPONENT none
          )
 
    ENDIF("${IVP_PACKAGE_VERSION}" STREQUAL "")
