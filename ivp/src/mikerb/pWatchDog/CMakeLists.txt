@@ -18,7 +18,7 @@ IF("${IVP_BUILD_pWatchDog}" STREQUAL "ON")
       INSTALL(
          TARGETS pWatchDog
          DESTINATION bin/ivp-${IVP_PACKAGE_VERSION}
-         COMPONENT ivp-tools)
+         COMPONENT none)
    ENDIF("${IVP_PACKAGE_VERSION}" STREQUAL "")
 
 ENDIF("${IVP_BUILD_pWatchDog}" STREQUAL "ON")

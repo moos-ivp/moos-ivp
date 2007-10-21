@@ -42,14 +42,14 @@ IF("${IVP_BUILD__MOOS}" STREQUAL "ON")
          INSTALL(
             TARGETS _MOOS
             DESTINATION lib/ivp-${IVP_PACKAGE_VERSION}
-            COMPONENT ivp-tools-dev)
+            COMPONENT none)
    
          FILE(GLOB IVP_PUBLIC_HEADERS *.h)
    
          INSTALL(
             FILES ${IVP_PUBLIC_HEADERS}
             DESTINATION include/ivp-${IVP_PACKAGE_VERSION}/uVoice
-            COMPONENT ivp-tools-dev
+            COMPONENT none
             )
       ENDIF("${IVP_PACKAGE_VERSION}" STREQUAL "")
    ENDIF(${SWIG_FOUND} AND ${PYTHON_INCLUDE_PATH_FOUND})

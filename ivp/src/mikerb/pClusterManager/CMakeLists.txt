@@ -19,7 +19,7 @@ IF("${IVP_BUILD_pClusterManager}" STREQUAL "ON")
       INSTALL(
          TARGETS pClusterManager
          DESTINATION bin/ivp-${IVP_PACKAGE_VERSION}
-         COMPONENT ivp-tools)
+         COMPONENT none)
    ENDIF("${IVP_PACKAGE_VERSION}" STREQUAL "")
 
 ENDIF("${IVP_BUILD_pClusterManager}" STREQUAL "ON")

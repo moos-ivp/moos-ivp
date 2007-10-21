@@ -10,14 +10,14 @@ IF("${IVP_BUILD_behaviors-oxford}" STREQUAL "ON")
       INSTALL(
          TARGETS behaviors-oxford
          DESTINATION lib/ivp-${IVP_PACKAGE_VERSION}
-         COMPONENT ivp-tools-dev)
+         COMPONENT none)
 
       FILE(GLOB IVP_PUBLIC_HEADERS *.h)
 
       INSTALL(
          FILES ${IVP_PUBLIC_HEADERS}
          DESTINATION include/ivp-${IVP_PACKAGE_VERSION}/lib_behaviors-oxford
-         COMPONENT ivp-tools-dev
+         COMPONENT none
          )
 
    ENDIF("${IVP_PACKAGE_VERSION}" STREQUAL "")

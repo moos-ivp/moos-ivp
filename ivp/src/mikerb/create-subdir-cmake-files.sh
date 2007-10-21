@@ -51,46 +51,55 @@ parse_and_validate_cmd_line $*
 
 #-------------------------------------------------------------------------------
 
+
 IVP_BUILD_BY_DEFAULT=ON \
 IVP_INSTALL_COMPONENT=none \
-SUBDIR=lib_abahr_util \
-LIBNAME=abahr_util \
-simple_lib_cmake_file
+SUBDIR=lib_behaviors-attic   LIBNAME=behaviors-attic   simple_lib_cmake_file
 
-SUBDIR=uMicroModemAddPPS \
-PROGNAME=uMicroModemAddPPS \
+IVP_BUILD_BY_DEFAULT=ON \
+IVP_INSTALL_COMPONENT=none \
+SUBDIR=lib_behaviors-oxford  LIBNAME=behaviors-oxford  simple_lib_cmake_file
+
+IVP_BUILD_BY_DEFAULT=ON \
+IVP_INSTALL_COMPONENT=none \
+SUBDIR=lib_behaviors-sandbox LIBNAME=behaviors-sandbox simple_lib_cmake_file
+
+IVP_BUILD_BY_DEFAULT=ON \
+IVP_INSTALL_COMPONENT=none \
+SUBDIR=lib_ivpbuild-extra    LIBNAME=ivpbuild-extra    simple_lib_cmake_file
+
+IVP_BUILD_BY_DEFAULT=ON \
+IVP_INSTALL_COMPONENT=none \
+SUBDIR=lib_mbutiltest        LIBNAME=mbutiltest        simple_lib_cmake_file
+
+SUBDIR=pClusterManager \
+PROGNAME=pClusterManager \
 IVP_BUILD_BY_DEFAULT=ON \
 IVP_INSTALL_COMPONENT=none \
 LINK_LIBS="
    MOOS
    MOOSGen
-   anrp_util
-   abahr_util
+   mbutil
+   geometry
    m
    pthread" \
 simple_app_cmake_file
 
-SUBDIR=uMicroModemWatchPPS \
-PROGNAME=uMicroModemWatchPPS \
+SUBDIR=pWatchDog \
+PROGNAME=pWatchDog \
 IVP_BUILD_BY_DEFAULT=ON \
 IVP_INSTALL_COMPONENT=none \
 LINK_LIBS="
    MOOS
    MOOSGen
-   anrp_util
-   abahr_util
+   mbutil
    m
    pthread" \
 simple_app_cmake_file
 
-SUBDIR=pUDPBroadcastClient \
-PROGNAME=pUDPBroadcastClient \
-IVP_BUILD_BY_DEFAULT=ON \
+IVP_BUILD_BY_DEFAULT=OFF \
 IVP_INSTALL_COMPONENT=none \
-LINK_LIBS="
-   MOOS
-   MOOSGen
-   opt
-   newmat
-   pthread" \
-simple_app_cmake_file
+SUBDIR=uVoice \
+LIBNAME=_MOOS \
+INTERFACE_FILENAME=MOOS.i \
+swig_lib_cmake_file
