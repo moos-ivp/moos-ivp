@@ -1,0 +1,24 @@
+FILE(GLOB SRC *.cpp)
+
+OPTION(IVP_BUILD_iOS5000 "Build program iOS5000" OFF)
+
+IF("${IVP_BUILD_iOS5000}" STREQUAL "ON")
+   ADD_EXECUTABLE(iOS5000 ${SRC})
+   
+   TARGET_LINK_LIBRARIES(iOS5000 
+   MOOS
+   MOOSGen
+   anrp_util
+   m
+   pthread)
+
+   IF("${IVP_PACKAGE_VERSION}" STREQUAL "")
+      MESSAGE(STATUS "iOS5000: IVP_PACKAGE_VERSION not set, so not creating install component.")
+   ELSE("${IVP_PACKAGE_VERSION}" STREQUAL "")
+      INSTALL(
+         TARGETS iOS5000
+         DESTINATION bin/ivp-${IVP_PACKAGE_VERSION}
+         COMPONENT ivp-tools)
+   ENDIF("${IVP_PACKAGE_VERSION}" STREQUAL "")
+
+ENDIF("${IVP_BUILD_iOS5000}" STREQUAL "ON")
