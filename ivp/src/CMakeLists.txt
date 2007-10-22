@@ -112,7 +112,6 @@ FILE(GLOB IVP_APP_BASE_SUBDIRS
    uXMS*          
    uTMS*          
    iMarineSim*    
-   iPNICompass*   
    MOOSDump*   
    MOOSRemote
 # CMake doesn't like double-listed subdirectories, and app_splug is picked up
