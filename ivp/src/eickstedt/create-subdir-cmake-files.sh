@@ -119,20 +119,6 @@ LINK_LIBS="
    pthread" \
 simple_app_cmake_file
 
-SUBDIR=pSensorSim \
-PROGNAME=pSensorSim \
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-tools \
-LINK_LIBS="
-   MOOS
-   MOOSGen
-   mbutil
-   m
-   pthread
-   artifacts
-   geometry" \
-simple_app_cmake_file
-
 SUBDIR=pTarget \
 PROGNAME=pTarget \
 IVP_BUILD_BY_DEFAULT=ON \

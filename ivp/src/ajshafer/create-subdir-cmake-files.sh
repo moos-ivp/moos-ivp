@@ -54,3 +54,18 @@ parse_and_validate_cmd_line $*
 IVP_BUILD_BY_DEFAULT=ON \
 IVP_INSTALL_COMPONENT=none \
 SUBDIR=lib_artifacts         LIBNAME=artifacts         simple_lib_cmake_file
+
+SUBDIR=pSensorSim \
+PROGNAME=pSensorSim \
+IVP_BUILD_BY_DEFAULT=ON \
+IVP_INSTALL_COMPONENT=ivp-tools \
+LINK_LIBS="
+   MOOS
+   MOOSGen
+   mbutil
+   m
+   pthread
+   artifacts
+   geometry" \
+simple_app_cmake_file
+
