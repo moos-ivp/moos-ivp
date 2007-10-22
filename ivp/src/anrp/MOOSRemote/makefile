@@ -2,7 +2,7 @@
 .SILENT:
 
 # Make configuration parameters
-include ../make_config.mk
+include ../../make_config.mk
 
 BIN_DIR  = ../bin
 LTARGET  = MOOSRemote

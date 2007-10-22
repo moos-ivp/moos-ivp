@@ -8,9 +8,11 @@ REQUIRED_MOOS_LIBS = 			\
 	libMOOS.a 			\
 	libMOOSGen.a 		
 
+# Removed linkage to libbehaviors-sandbox.a because it's a private library. -CJC
+
+
 PLIBS    = libhelmivp.a    		\
 	   libbehaviors-marine.a 	\
-	   libbehaviors-sandbox.a 	\
 	   libbhvutil.a			\
 	   libbehaviors.a  		\
 	   libmbutil.a 			\

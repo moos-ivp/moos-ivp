@@ -17,7 +17,7 @@ LIBS     = -lm -lpthread \
 PLDIRS   = $(wildcard ../lib_*) ../newmat10D
 
 # Make configuration parameters
-include ../make_config.mk
+include ../../make_config.mk
 # Generic makefile structure for all application modules
-include ../make_app.mk
+include ../../make_app.mk
 # DO NOT DELETE

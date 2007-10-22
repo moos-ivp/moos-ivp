@@ -4,6 +4,11 @@
 LIB_DIR  = .
 TARGET   = $(LIB_DIR)/$(LTARGET)
 
+# CJC: Modified LFLAGS and IFLAGS to also work for building code that's two 
+# directories below ivp/src/, rather than only for code that's in a subdirectory
+# immediately below ivp/src/.  This was necessary to accomodate private code
+# directories.
+
 MOOS_IFLAGS = \
 	-I ../../../MOOS/Essentials \
 	-I ../../../MOOS/Core \
@@ -14,10 +19,20 @@ MOOS_IFLAGS = \
 	-I ../../../MOOS/Core/MOOSGenLib \
 	-I ../../../MOOS/NavigationAndControl\MOOSNavLib \
 	-I ../../../MOOS/NavigationAndControl\MOOSTaskLib \
-	-I ../../../MOOS/Thirdparty/FLTKVW
+	-I ../../../MOOS/Thirdparty/FLTKVW \
+	-I ../../../../MOOS/Essentials \
+	-I ../../../../MOOS/Core \
+	-I ../../../../MOOS/NavigationAndControl \
+	-I ../../../../MOOS/Thirdparty/FLTKVW \
+	-I ../../../../MOOS/Essentials/MOOSUtilityLib \
+	-I ../../../../MOOS/Core/MOOSLIB \
+	-I ../../../../MOOS/Core/MOOSGenLib \
+	-I ../../../../MOOS/NavigationAndControl\MOOSNavLib \
+	-I ../../../../MOOS/NavigationAndControl\MOOSTaskLib \
+	-I ../../../../MOOS/Thirdparty/FLTKVW
 
-IFLAGS   = -I. -I.. -I/usr/X11R6/include -I/sw/include \
-	    $(LIFLAGS) $(patsubst %, -I% , $(wildcard ../lib*)) \
+IFLAGS   = -I. -I.. -I../.. -I/usr/X11R6/include -I/sw/include \
+	    $(LIFLAGS) $(patsubst %, -I% , $(wildcard ../lib*) $(wildcard ../../lib*)) \
 	    $(MOOS_IFLAGS)
 
 CFLAGS   = $(DEBUG_LEVEL) -Wno-deprecated  $(FP) $(LCFLAGS)

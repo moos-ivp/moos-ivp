@@ -18,5 +18,5 @@ LIBS     = -lm -lpthread -ggdb3 \
 PLDIRS   = $(wildcard ../lib_*)
 
 # Generic makefile structure for all application modules
-include ../make_app.mk
+include ../../make_app.mk
 # DO NOT DELETE

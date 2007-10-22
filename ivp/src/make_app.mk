@@ -1,8 +1,14 @@
 # Generic makefile structure for all application modules
 .SILENT:
 
+# CJC: Modified LFLAGS and IFLAGS to also work for building code that's two 
+# directories below ivp/src/, rather than only for code that's in a subdirectory
+# immediately below ivp/src/.  This was necessary to accomodate private code
+# directories.
 
-MOOS_LFLAGS = -L ../../../MOOS/MOOSBin
+MOOS_LFLAGS = \
+	-L ../../../MOOS/MOOSBin \
+	-L ../../../../MOOS/MOOSBin
 
 MOOS_IFLAGS = \
 	-I ../../../MOOS/Essentials \
@@ -14,11 +20,21 @@ MOOS_IFLAGS = \
 	-I ../../../MOOS/Core/MOOSGenLib \
 	-I ../../../MOOS/NavigationAndControl\MOOSNavLib \
 	-I ../../../MOOS/NavigationAndControl\MOOSTaskLib \
-	-I ../../../MOOS/Thirdparty/FLTKVW
+	-I ../../../MOOS/Thirdparty/FLTKVW \
+	-I ../../../../MOOS/Essentials \
+	-I ../../../../MOOS/Core \
+	-I ../../../../MOOS/NavigationAndControl \
+	-I ../../../../MOOS/Thirdparty/FLTKVW \
+	-I ../../../../MOOS/Essentials/MOOSUtilityLib \
+	-I ../../../../MOOS/Core/MOOSLIB \
+	-I ../../../../MOOS/Core/MOOSGenLib \
+	-I ../../../../MOOS/NavigationAndControl\MOOSNavLib \
+	-I ../../../../MOOS/NavigationAndControl\MOOSTaskLib \
+	-I ../../../../MOOS/Thirdparty/FLTKVW
 
 BIN_DIR  = ../bin
 TARGET   = $(BIN_DIR)/$(LTARGET)
-IFLAGS   = -I. -I.. $(patsubst %,-I%,$(PLDIRS)) $(MOOS_IFLAGS)
+IFLAGS   = -I. -I.. -I../.. $(patsubst %,-I%,$(PLDIRS)) $(MOOS_IFLAGS)
 
 
 LFLAGS   = -L/usr/X11R6/lib -L/usr/X11R6/lib64     \
@@ -51,6 +67,7 @@ $(TARGET): $(OBJECTS) $(PLIBS)
 
 %.o: %.cpp
 	@echo $(CXX) "compiling" $(LTARGET) "source code" $<
+        @echo "IFLAGS: " $(IFLAGS)
 	$(CXX) $(CFLAGS) $(IFLAGS) -c $<
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
