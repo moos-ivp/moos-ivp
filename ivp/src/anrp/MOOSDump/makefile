@@ -14,7 +14,7 @@ LIBS     = -lm -lpthread \
 	$(patsubst lib%.a,-l%,$(PLIBS)) \
 	$(patsubst lib%.a,-l%,$(REQUIRED_MOOS_LIBS)) 
 
-PLDIRS   = $(wildcard ../lib_*)
+PLDIRS   = $(wildcard ../lib_*) $(wildcard ../../lib_*)
 
 # Make configuration parameters
 include ../../make_config.mk

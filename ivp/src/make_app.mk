@@ -32,6 +32,7 @@ MOOS_IFLAGS = \
 	-I ../../../../MOOS/NavigationAndControl\MOOSTaskLib \
 	-I ../../../../MOOS/Thirdparty/FLTKVW
 
+
 BIN_DIR  = ../bin
 TARGET   = $(BIN_DIR)/$(LTARGET)
 IFLAGS   = -I. -I.. -I../.. $(patsubst %,-I%,$(PLDIRS)) $(MOOS_IFLAGS)
@@ -67,7 +68,7 @@ $(TARGET): $(OBJECTS) $(PLIBS)
 
 %.o: %.cpp
 	@echo $(CXX) "compiling" $(LTARGET) "source code" $<
-        @echo "IFLAGS: " $(IFLAGS)
+	@echo "IFLAGS: " $(IFLAGS)
 	$(CXX) $(CFLAGS) $(IFLAGS) -c $<
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
