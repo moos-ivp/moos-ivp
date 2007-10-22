@@ -27,7 +27,7 @@ APP_BASE =  $(wildcard pHelmIvP*) 	$(wildcard pEchoVar*) 	   	\
 	    $(wildcard anrp/MOOSDump*)	$(wildcard uProcessWatch*)	\
 	    $(wildcard app_splug*)	$(wildcard pDeployHandler*)	\
 	    $(wildcard grund/pFramer*)	$(wildcard arjuna/pNaFCon*)		\
-	    $(wildcard iMicroModem*)	$(wildcard eickstedt/pScheduler*)		\
+	    $(wildcard grund/iMicroModem*)	$(wildcard eickstedt/pScheduler*)		\
 	    $(wildcard grund/pRouter*)	$(wildcard uMessageForward*)	\
 	    $(wildcard iGPS*)           $(wildcard abahr/pUDPBroadcastClient*) \
 	    $(wildcard pViewerRelay*)   $(wildcard anrp/iWinch*) 		\

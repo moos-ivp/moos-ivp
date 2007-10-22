@@ -84,3 +84,13 @@ LINK_LIBS="
    m
    pthread" \
 simple_app_cmake_file
+
+SUBDIR=iMicroModem \
+PROGNAME=iMicroModem \
+IVP_BUILD_BY_DEFAULT=ON \
+IVP_INSTALL_COMPONENT=ivp-tools \
+LINK_LIBS="
+   MOOS 
+   MOOSGen
+   pthread" \
+simple_app_cmake_file
