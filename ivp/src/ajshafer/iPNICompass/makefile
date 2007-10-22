@@ -18,7 +18,7 @@ PLDIRS   = $(wildcard ../lib_*)
 
 
 # Make configuration parameters
-include ../make_config.mk
+include ../../make_config.mk
 # Generic makefile structure for all application modules
-include ../make_app.mk
+include ../../make_3rd_party_app.mk
 # DO NOT DELETE

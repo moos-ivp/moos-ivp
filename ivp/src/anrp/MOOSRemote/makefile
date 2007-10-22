@@ -4,7 +4,7 @@
 # Make configuration parameters
 include ../../make_config.mk
 
-BIN_DIR  = ../bin
+BIN_DIR  = ../../bin
 LTARGET  = MOOSRemote
 TARGET   = $(BIN_DIR)/$(LTARGET)
 
@@ -12,8 +12,8 @@ PLIBS    = libMOOS.a libMOOSGen.a
 LIBS     = -lm -lpthread -lcurses $(patsubst lib%.a,-l%,$(PLIBS))
 
 PLDIRS   = ../MOOSLIB ../MOOSGenLib
-IFLAGS   = -I. -I.. $(patsubst %,-I%,$(PLDIRS))
-LFLAGS   = -L.. -L/usr/X11R6/lib $(patsubst %,-L%,$(PLDIRS))	
+IFLAGS   = -I. -I.. -I../.. $(patsubst %,-I%,$(PLDIRS))
+LFLAGS   = -L.. -L../.. -L/usr/X11R6/lib $(patsubst %,-L%,$(PLDIRS))	
 vpath %.a  $(PLDIRS) 
 
 SOURCES  = $(wildcard *.cpp)
