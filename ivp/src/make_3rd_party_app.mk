@@ -19,7 +19,7 @@ MOOS_IFLAGS = \
 
 BIN_DIR  = ../../bin
 TARGET   = $(BIN_DIR)/$(LTARGET)
-IFLAGS   = -I. -I.. -I../.. $(patsubst %,-I%,$(PLDIRS)) $(MOOS_IFLAGS)
+IFLAGS   = -I. -I.. -I../.. $(patsubst %,-I%,$(PLDIRS)) $(MOOS_IFLAGS) $(EXTRA_IFLAGS)
 
 
 LFLAGS   = -L/usr/X11R6/lib -L/usr/X11R6/lib64     \
