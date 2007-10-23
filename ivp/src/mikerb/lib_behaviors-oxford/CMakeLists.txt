@@ -1,4 +1,4 @@
-OPTION(IVP_BUILD_behaviors-oxford "Build library behaviors-oxford" ON)
+OPTION(IVP_BUILD_behaviors-oxford "Build library behaviors-oxford" OFF)
 
 IF("${IVP_BUILD_behaviors-oxford}" STREQUAL "ON")
    FILE(GLOB SRC *.cpp *.c)
