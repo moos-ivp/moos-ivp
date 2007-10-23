@@ -1,2 +1,2 @@
-INCLUDE_DIRECTORIES(eicksted/lib_behaviors-don)
-INCLUDE_DIRECTORIES(eicksted/lib_track)
+INCLUDE_DIRECTORIES(eickstedt/lib_behaviors-don)
+INCLUDE_DIRECTORIES(eickstedt/lib_track)
