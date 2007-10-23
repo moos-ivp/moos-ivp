@@ -68,7 +68,6 @@ $(TARGET): $(OBJECTS) $(PLIBS)
 
 %.o: %.cpp
 	@echo $(CXX) "compiling" $(LTARGET) "source code" $<
-	@echo "IFLAGS: " $(IFLAGS)
 	$(CXX) $(CFLAGS) $(IFLAGS) -c $<
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
