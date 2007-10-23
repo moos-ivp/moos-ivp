@@ -23,7 +23,7 @@ APP_BASE =  $(wildcard pHelmIvP*) 	$(wildcard pEchoVar*) 	   	\
 	    $(wildcard uXMS*)  	 	$(wildcard pTransponderAIS*)	\
 	    $(wildcard uTMS*)		$(wildcard uTermCommand*)   	\
 	    $(wildcard iMarineSim*)	$(wildcard iMetaCompass*)   	\
-	    $(wildcard iPNICompass*)	$(wildcard iPWMController*) 	\
+	    $(wildcard ajshafer/iPNICompass*)	$(wildcard iPWMController*) 	\
 	    $(wildcard anrp/MOOSDump*)	$(wildcard uProcessWatch*)	\
 	    $(wildcard app_splug*)	$(wildcard pDeployHandler*)	\
 	    $(wildcard grund/pFramer*)	$(wildcard arjuna/pNaFCon*)		\
