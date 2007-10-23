@@ -56,7 +56,13 @@ IVP_BUILD_BY_DEFAULT=ON \
 IVP_INSTALL_COMPONENT=none \
 SUBDIR=lib_behaviors-attic   LIBNAME=behaviors-attic   simple_lib_cmake_file
 
-IVP_BUILD_BY_DEFAULT=ON \
+# Temporarily disabled because of this build error:
+# [ 75%] Building CXX object ivp/src/lib_helmivp/CMakeFiles/helmivp.dir/Populator_BehaviorSet.o
+# /home/cjc/trunk/ivp/src/mikerb/lib_behaviors-oxford/SimpleBehaviour.h: In member function ‘virtual IvPFunction* CSimpleBehavior::produceOF()’:
+# /home/cjc/trunk/ivp/src/mikerb/lib_behaviors-oxford/SimpleBehaviour.h:114: error: ‘class OF_Reflector’ has no member named ‘create_uniform’
+# make[2]: *** [ivp/src/lib_helmivp/CMakeFiles/helmivp.dir/Populator_BehaviorSet.o] Error 1
+# make[1]: *** [ivp/src/lib_helmivp/CMakeFiles/helmivp.dir/all] Error 2
+IVP_BUILD_BY_DEFAULT=OFF \
 IVP_INSTALL_COMPONENT=none \
 SUBDIR=lib_behaviors-oxford  LIBNAME=behaviors-oxford  simple_lib_cmake_file
 
