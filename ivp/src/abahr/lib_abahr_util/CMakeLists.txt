@@ -1,4 +1,4 @@
-OPTION(IVP_BUILD_abahr_util "Build library abahr_util" ON)
+OPTION(IVP_BUILD_abahr_util "Build library abahr_util" OFF)
 
 IF("${IVP_BUILD_abahr_util}" STREQUAL "ON")
    FILE(GLOB SRC *.cpp *.c)

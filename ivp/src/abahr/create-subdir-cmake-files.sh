@@ -51,7 +51,7 @@ parse_and_validate_cmd_line $*
 
 #-------------------------------------------------------------------------------
 
-IVP_BUILD_BY_DEFAULT=ON \
+IVP_BUILD_BY_DEFAULT=OFF \
 IVP_INSTALL_COMPONENT=none \
 SUBDIR=lib_abahr_util \
 LIBNAME=abahr_util \
@@ -59,7 +59,7 @@ simple_lib_cmake_file
 
 SUBDIR=uMicroModemAddPPS \
 PROGNAME=uMicroModemAddPPS \
-IVP_BUILD_BY_DEFAULT=ON \
+IVP_BUILD_BY_DEFAULT=OFF \
 IVP_INSTALL_COMPONENT=none \
 LINK_LIBS="
    MOOS
@@ -73,7 +73,7 @@ simple_app_cmake_file
 
 SUBDIR=uMicroModemWatchPPS \
 PROGNAME=uMicroModemWatchPPS \
-IVP_BUILD_BY_DEFAULT=ON \
+IVP_BUILD_BY_DEFAULT=OFF \
 IVP_INSTALL_COMPONENT=none \
 LINK_LIBS="
    MOOS

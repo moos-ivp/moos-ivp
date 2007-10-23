@@ -1,6 +1,6 @@
 FILE(GLOB SRC *.cpp)
 
-OPTION(IVP_BUILD_uMicroModemWatchPPS "Build program uMicroModemWatchPPS" ON)
+OPTION(IVP_BUILD_uMicroModemWatchPPS "Build program uMicroModemWatchPPS" OFF)
 
 IF("${IVP_BUILD_uMicroModemWatchPPS}" STREQUAL "ON")
    ADD_EXECUTABLE(uMicroModemWatchPPS ${SRC})
