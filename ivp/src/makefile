@@ -4,7 +4,7 @@
 include ./make_config.mk
 
 LIB_BASE =  $(wildcard lib_ivpcore*)	$(wildcard lib_ivpbuild)   	   \
-	    $(wildcard lib_mbutil*)	$(wildcardanrp/ lib_anrp_util*)  	   \
+	    $(wildcard lib_mbutil*)	$(wildcard anrp/lib_anrp_util*)  	   \
 	    $(wildcard lib_behaviors)	$(wildcard lib_behaviors-marine*)  \
 	    $(wildcard lib_bhvutil*)	$(wildcard lib_behaviors-colregs*) \
 	    $(wildcard lib_geometry*)	$(wildcard lib_helmivp*)    	   \
