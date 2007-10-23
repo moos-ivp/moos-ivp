@@ -8,7 +8,6 @@ IF("${IVP_BUILD_pUDPBroadcastClient}" STREQUAL "ON")
    TARGET_LINK_LIBRARIES(pUDPBroadcastClient 
    MOOS
    MOOSGen
-   opt
    newmat
    pthread)
 

@@ -4,9 +4,18 @@ LTARGET  = ffview
 LIFLAGS  = 
 LCFLAGS  = 
 
-PLIBS    = libbehaviors-don.a		\
-	   libbehaviors-sandbox.a 	\
-	   libbehaviors-marine.a	\
+# Eliminated private libraries
+# PLIBS    = libbehaviors-don.a		\
+# 	   libbehaviors-sandbox.a 	\
+# 	   libbehaviors-marine.a	\
+# 	   libbhvutil.a			\
+# 	   libipfview.a			\
+# 	   libbehaviors.a		\
+# 	   libgeometry.a 		\
+# 	   libivpbuild.a    		\
+#            libivpcore.a libmbutil.a 
+
+PLIBS    = libbehaviors-marine.a	\
 	   libbhvutil.a			\
 	   libipfview.a			\
 	   libbehaviors.a		\

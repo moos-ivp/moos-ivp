@@ -60,3 +60,14 @@ LINK_LIBS="
    MOOSGen
    pthread" \
 simple_app_cmake_file
+
+SUBDIR=pUDPBroadcastClient \
+PROGNAME=pUDPBroadcastClient \
+IVP_BUILD_BY_DEFAULT=OFF \
+IVP_INSTALL_COMPONENT=none \
+LINK_LIBS="
+   MOOS
+   MOOSGen
+   newmat
+   pthread" \
+simple_app_cmake_file

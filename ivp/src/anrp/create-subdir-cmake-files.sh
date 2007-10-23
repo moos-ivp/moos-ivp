@@ -266,3 +266,16 @@ LINK_LIBS="
    pthread
    z" \
 simple_app_cmake_file
+
+SUBDIR=iGPS \
+PROGNAME=iGPS \
+IVP_BUILD_BY_DEFAULT=ON \
+IVP_INSTALL_COMPONENT=none \
+LINK_LIBS="
+   MOOS
+   MOOSGen
+   MOOSUtility
+   anrp_util
+   m
+   pthread" \
+simple_app_cmake_file

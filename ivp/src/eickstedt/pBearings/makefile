@@ -14,7 +14,7 @@ LIBS     = -lm -lpthread -lnewmat \
 	$(patsubst lib%.a,-l%,$(PLIBS)) \
 	$(patsubst lib%.a,-l%,$(REQUIRED_MOOS_LIBS)) 
 
-PLDIRS   = $(wildcard ../lib_*) ../newmat10D
+PLDIRS   = $(wildcard ../lib_*) $(wildcard ../../lib_*) ../../newmat10D
 
 
 # Make configuration parameters -

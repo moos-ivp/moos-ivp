@@ -8,13 +8,13 @@ REQUIRED_MOOS_LIBS = 		\
 	libMOOS.a 		\
 	libMOOSGen.a 		
 
-PLIBS    = libopt.a libnewmat.a
+PLIBS    = libnewmat.a
 
 LIBS     = -lm -lpthread \
 	$(patsubst lib%.a,-l%,$(PLIBS)) \
 	$(patsubst lib%.a,-l%,$(REQUIRED_MOOS_LIBS)) 
 
-PLDIRS   = $(wildcard ../lib_*) ../newmat10D
+PLDIRS   = $(wildcard ../lib_*) ../../newmat10D
 
 # Make configuration parameters
 include ../../make_config.mk

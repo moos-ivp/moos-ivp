@@ -29,7 +29,7 @@ APP_BASE =  $(wildcard pHelmIvP*) 	$(wildcard pEchoVar*) 	   	\
 	    $(wildcard grund/pFramer*)	$(wildcard arjuna/pNaFCon*)		\
 	    $(wildcard grund/iMicroModem*)	$(wildcard eickstedt/pScheduler*)		\
 	    $(wildcard grund/pRouter*)	$(wildcard uMessageForward*)	\
-	    $(wildcard iGPS*)           $(wildcard abahr/pUDPBroadcastClient*) \
+	    $(wildcard anrp/iGPS*)           $(wildcard cockrell/pUDPBroadcastClient*) \
 	    $(wildcard pViewerRelay*)   $(wildcard anrp/iWinch*) 		\
             $(wildcard pSamplingControl*) $(wildcard anrp/iWinchSim*)	\
 	    $(wildcard iMetaMemCompass*)  $(wildcard anrp/iOS5000*)          \

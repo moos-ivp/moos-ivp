@@ -19,7 +19,7 @@ IF("${IVP_BUILD_iGPS}" STREQUAL "ON")
       INSTALL(
          TARGETS iGPS
          DESTINATION bin/ivp-${IVP_PACKAGE_VERSION}
-         COMPONENT ivp-core)
+         COMPONENT none)
    ENDIF("${IVP_PACKAGE_VERSION}" STREQUAL "")
 
 ENDIF("${IVP_BUILD_iGPS}" STREQUAL "ON")
