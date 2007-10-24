@@ -1,2 +1,2 @@
-INCLUDE_DIRECTORIES(ajshafer/lib_artifacts)
+INCLUDE_DIRECTORIES(3rd-party-ajshafer/lib_artifacts)
 

@@ -1,2 +1,2 @@
-INCLUDE_DIRECTORIES(anrp/lib_anrp_util)
+INCLUDE_DIRECTORIES(3rd-party-anrp/lib_anrp_util)
 
