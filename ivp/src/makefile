@@ -4,13 +4,13 @@
 include ./make_config.mk
 
 LIB_BASE =  $(wildcard lib_ivpcore*)	$(wildcard lib_ivpbuild)   	   \
-	    $(wildcard lib_mbutil*)	$(wildcard anrp/lib_anrp_util*)  	   \
+	    $(wildcard lib_mbutil*)	$(wildcard 3rd-party-anrp/lib_anrp_util*)  	   \
 	    $(wildcard lib_behaviors)	$(wildcard lib_behaviors-marine*)  \
 	    $(wildcard lib_bhvutil*)	$(wildcard lib_behaviors-colregs*) \
 	    $(wildcard lib_geometry*)	$(wildcard lib_helmivp*)    	   \
 	    $(wildcard newmat10D*)      $(wildcard lib_genutil)		   \
-	    $(wildcard lib_logic*)	$(wildcard eickstedt/lib_behaviors-don*) 	   \
-	    $(wildcard mikerb/lib_behaviors-sandbox*) \
+	    $(wildcard lib_logic*)	$(wildcard 3rd-party-eickstedt/lib_behaviors-don*) 	   \
+	    $(wildcard 3rd-party-mikerb/lib_behaviors-sandbox*) \
 
 
 # Removed because we no longer put MOOS code directly into the IvP source tree...
@@ -23,21 +23,21 @@ APP_BASE =  $(wildcard pHelmIvP*) 	$(wildcard pEchoVar*) 	   	\
 	    $(wildcard uXMS*)  	 	$(wildcard pTransponderAIS*)	\
 	    $(wildcard uTMS*)		$(wildcard uTermCommand*)   	\
 	    $(wildcard iMarineSim*)	$(wildcard iMetaCompass*)   	\
-	    $(wildcard ajshafer/iPNICompass*)	$(wildcard iPWMController*) 	\
+	    $(wildcard anrp/Compass*)	$(wildcard iPWMController*) 	\
 	    $(wildcard anrp/MOOSDump*)	$(wildcard uProcessWatch*)	\
 	    $(wildcard app_splug*)	$(wildcard pDeployHandler*)	\
-	    $(wildcard grund/pFramer*)	$(wildcard arjuna/pNaFCon*)		\
-	    $(wildcard grund/iMicroModem*)	$(wildcard eickstedt/pScheduler*)		\
-	    $(wildcard grund/pRouter*)	$(wildcard uMessageForward*)	\
-	    $(wildcard anrp/iGPS*)           $(wildcard cockrell/pUDPBroadcastClient*) \
-	    $(wildcard pViewerRelay*)   $(wildcard anrp/iWinch*) 		\
-            $(wildcard pSamplingControl*) $(wildcard anrp/iWinchSim*)	\
-	    $(wildcard iMetaMemCompass*)  $(wildcard anrp/iOS5000*)          \
-	    $(wildcard anrp/iCTDSBE49*)      $(wildcard anrp/iSerialNMEA*)	\
-	    $(wildcard iWebsite*)       $(wildcard anrp/iWinchCTL*)          \
-	    $(wildcard pVirtualTether*)	$(wildcard anrp/MOOSBlink*)		\
-	    $(wildcard uRepeater*)    	    $(wildcard anrp/pCTDLogger*)     \
-	    $(wildcard anrp/iBatteryMonitor*)
+	    $(wildcard 3rd-party-grund/pFramer*)	$(wildcard 3rd-party-arjuna/pNaFCon*)		\
+	    $(wildcard 3rd-party-grund/iMicroModem*)	$(wildcard 3rd-party-eickstedt/pScheduler*)		\
+	    $(wildcard 3rd-party-grund/pRouter*)	$(wildcard uMessageForward*)	\
+	    $(wildcard 3rd-party-anrp/iGPS*)           $(wildcard 3rd-party-cockrell/pUDPBroadcastClient*) \
+	    $(wildcard pViewerRelay*)   $(wildcard 3rd-party-anrp/iWinch*) 		\
+            $(wildcard pSamplingControl*) $(wildcard 3rd-party-anrp/iWinchSim*)	\
+	    $(wildcard iMetaMemCompass*)  $(wildcard 3rd-party-anrp/iOS5000*)          \
+	    $(wildcard 3rd-party-anrp/iCTDSBE49*)      $(wildcard 3rd-party-anrp/iSerialNMEA*)	\
+	    $(wildcard iWebsite*)       $(wildcard 3rd-party-anrp/iWinchCTL*)          \
+	    $(wildcard pVirtualTether*)	$(wildcard 3rd-party-anrp/MOOSBlink*)		\
+	    $(wildcard uRepeater*)    	    $(wildcard 3rd-party-anrp/pCTDLogger*)     \
+	    $(wildcard 3rd-party-anrp/iBatteryMonitor*)
 
 
 
@@ -46,24 +46,24 @@ APP_BASE =  $(wildcard pHelmIvP*) 	$(wildcard pEchoVar*) 	   	\
 # $(wildcard pMOOSBridge*)
 # $(wildcard iRemote*)
 
-LIB_TOOLS = $(wildcard miker/lib_behaviors-sandbox*) \
-	    $(wildcard lib_marineview*)	$(wildcard eickstedt/lib_behaviros-don*)	   \
-	    $(wildcard lib_navplot*)	$(wildcard mikerb/lib_ivpbuild-extra*)	   \
-	    $(wildcard eickstedt/lib_track*)	$(wildcard lib_ipfview*)
+LIB_TOOLS = $(wildcard 3rd-party-mikerb/lib_behaviors-sandbox*) \
+	    $(wildcard lib_marineview*)	$(wildcard 3rd-party-eickstedt/lib_behaviros-don*)	   \
+	    $(wildcard lib_navplot*)	$(wildcard 3rd-party-mikerb/lib_ivpbuild-extra*)	   \
+	    $(wildcard 3rd-party-eickstedt/lib_track*)	$(wildcard lib_ipfview*)
 
 # $(wildcard lib_FLTKVW*)
 
-APP_TOOLS = $(wildcard eickstedt/p1BTracker*)	$(wildcard iHeadingMonitor*)	\
-	    $(wildcard eickstedt/p2BTracker*)	$(wildcard pMarineViewer*)	\
-	    $(wildcard eickstedt/pBearingsSim*)	$(wildcard mikerb/pClusterManager*)	\
-	    $(wildcard pACom*)		$(wildcard eickstedt/pExtTracker*)	\
+APP_TOOLS = $(wildcard 3rd-party-eickstedt/p1BTracker*)	$(wildcard iHeadingMonitor*)	\
+	    $(wildcard 3rd-party-eickstedt/p2BTracker*)	$(wildcard pMarineViewer*)	\
+	    $(wildcard 3rd-party-eickstedt/pBearingsSim*)	$(wildcard 3rd-party-mikerb/pClusterManager*)	\
+	    $(wildcard pACom*)		$(wildcard 3rd-party-eickstedt/pExtTracker*)	\
 	    $(wildcard iWifi*)	    	$(wildcard pFunctionSender*)	\
-	    $(wildcard pMessageSim*)	$(wildcard ajshafer/pMineSim*)		\
-	    $(wildcard eickstedt/pTarget*)	$(wildcard uFunctionVis*)	\
+	    $(wildcard pMessageSim*)	$(wildcard 3rd-party-ajshafer/pMineSim*)		\
+	    $(wildcard 3rd-party-eickstedt/pTarget*)	$(wildcard uFunctionVis*)	\
 	    $(wildcard app_*)		$(wildcard pShipsideViewer*)	\
 	    $(wildcard uPlayBack*)	$(wildcard iMicroModem*)	\
 	    $(wildcard uMVS*)		$(wildcard pDrone*)		\
-	    $(wildcard eickstedt/pBearings*)	
+	    $(wildcard 3rd-party-eickstedt/pBearings*)	
 
 # $(wildcard uMS*)	
 # 

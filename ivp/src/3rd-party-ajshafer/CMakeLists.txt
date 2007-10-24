@@ -1,3 +1,2 @@
 ADD_SUBDIRECTORY(lib_artifacts)
 ADD_SUBDIRECTORY(pSensorSim)
-ADD_SUBDIRECTORY(iPNICompass)

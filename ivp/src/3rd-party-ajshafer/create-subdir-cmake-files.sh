@@ -68,16 +68,3 @@ LINK_LIBS="
    artifacts
    geometry" \
 simple_app_cmake_file
-
-SUBDIR=iPNICompass \
-PROGNAME=iPNICompass \
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-core \
-LINK_LIBS="
-   MOOS
-   MOOSGen
-   MOOSUtility
-   anrp_util
-   m
-   pthread" \
-simple_app_cmake_file
