@@ -68,7 +68,7 @@ INCLUDE_DIRECTORIES(${MOOS_INCLUDE_DIRS})
 # CMake file explicitly lists the subdirectories build, rather than just finding
 # them all with one big "FILE(GLOB *)" command.
 SET(IVP_DIRS_TO_BUILD "")
-FILE(GLOB_RECURSE CUSTOM_ADDED_INCLUDES ./ExtraCMakeIncludeDirs.txt)
+FILE(GLOB_RECURSE CUSTOM_ADDED_INCLUDES ExtraCMakeIncludeDirs.txt)
 FOREACH(F ${CUSTOM_ADDED_INCLUDES})
   INCLUDE(${F})
   GET_FILENAME_COMPONENT(DIR ${F} PATH)
