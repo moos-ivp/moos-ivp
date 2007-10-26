@@ -6,8 +6,8 @@ PAPER    = artifactsearch
 PAPERPDF = artifactsearch
 LDIR     = $(CURDIR)/figures/
 
-EPSFILES = $(patsubst $(LDIR)%.fig, \
-	   $(LDIR)%.eps,$(wildcard $(LDIR)*.fig))
+PNGFILES = $(patsubst $(LDIR)%.png, \
+	   $(LDIR)%.eps,$(wildcard $(LDIR)*.png))
 
 all: dvi
 
@@ -24,21 +24,21 @@ pdf:
 	rubber --ps --pdf $(PAPER)
 	gnome-open $(PAPERPDF).pdf &
 
-dvi: $(EPSFILES)
+dvi: $(PNGFILES)
 	rubber $(PAPER)
 
-force: $(EPSFILES)
+force: $(PNGFILES)
 	rubber -f $(PAPER)
 
-ps: $(EPSFILES)
+ps: $(PNGFILES)
 	rubber --ps $(PAPER)
 
 clean:
 	rm -f *.dvi *~   *.log $(PAPER).pdf
 	rm -f *.bbl *.blg $(PAPER).ps *.aux
 	rm -f $(LDIR)*.bak $(LDIR)*~ 
-	rm -f $(EPSFILES) $(PAPERPDF).pdf
+	rm -f $(PNGFILES) $(PAPERPDF).pdf
 
-$(EPSFILES): %.eps: %.fig
-	cd $(LDIR); fig2dev -L eps $< $@;
+$(PNGFILES): %.eps: %.png
+	cd $(LDIR); convert $< $@;
 
