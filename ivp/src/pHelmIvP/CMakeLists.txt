@@ -10,7 +10,7 @@ IF("${IVP_BUILD_pHelmIvP}" STREQUAL "ON")
    MOOSGen
    helmivp
    behaviors-marine
-   behaviors-sandbox
+#    behaviors-sandbox
 #    behaviors-don
 #    behaviors-colregs
 #    behaviors-oxford
