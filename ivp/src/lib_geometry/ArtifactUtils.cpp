@@ -14,30 +14,96 @@
 
 // --------------------
 // Procedure: generateLawnmower
-//          Generates a lawnmower pattern in a polygon, given the starting point, initial angle,
+//          Generates a lawnmower pattern in a polygon, given the starting point, initial angle (degrees),
 //          and whether the first turn should be clockwise or counter-clockwise.
-XYSegList generateLawnmower(const XYPolygon& poly, double px, double py, double ang, double radius, bool clockwise = true)
+XYSegList generateLawnmower(const XYPolygon& poly, double px0, double py0, double ang, double radius, bool clockwise = true)
 {
+	// General algorithm:
+	// 1) Create initial segment
+	// 2) Create parallel segment 2*radius away
+	//    Check to see if segment intercepts, extend/contract segment to fit inside
+	//    If segment doesn't intercept, quit
+	
+	
 	XYSegList segList;
 
 	// Check initial point, push it on
-	if (poly.contains(px, py)){
-		segList.add_vertex(px, py);
+	if (poly.contains(px0, py0)){
+		segList.add_vertex(px0, py0);
 	}
-	else return segList;
+	else return segList; // Return empty seglist
 	
-	// Find distance to next side, subtract equivalent radius and go add that point;
-	double dDistance = poly.dist_to_poly(px, py, ang);
-	double newx, newy; // used later
-	double edge_dist = radius / sin(degToRadians(ang));
-	dDistance -= edge_dist;
+	// Create initial segment
+	double dDistance = poly.dist_to_poly(px0, py0, ang);
+	double px1, py1;
+	projectPoint(ang, dDistance, px0, py0, px1, py1);
+	segList.add_vertex(px1, py1);
 	
-	while (dDistance > 0) {
-		// Project new point
-		projectPoint(ang, dDistance, px, py, newx, newy);
-		segList.add_vertex(newx, newy);
-		
-		// Determine which way to turn
-		
+	// Initial segment is now px0, py0, px1, py1
+	double x_shift, y_shift;
+
+	if (clockwise) {
+		x_shift = 2*radius* cos(degToRadians(ang + 90));
+		y_shift = 2*radius* sin(degToRadians(ang + 90));
 	}
+	else {
+		x_shift = 2*radius* cos(degToRadians(ang - 90));
+		y_shift = 2*radius* sin(degToRadians(ang - 90));
+	}
+	
+	// we will be reusing px0, py0, px1, py1 to represent the next two points to add
+	bool carryon = true;
+	while (carryon) {
+		// Shift current segment
+		XYSegList segTemp;
+		segTemp.add_vertex(px0, py0);
+		segTemp.add_vertex(px1, py1);
+		segTemp.shift_horz(x_shift);
+		segTemp.shift_vert(y_shift);
+		
+		px0 = segTemp.get_vx(0);
+		py0 = segTemp.get_vy(0);
+		px1 = segTemp.get_vx(1);
+		py1 = segTemp.get_vy(1);
+				
+		// Check to see if segment intercepts polygon
+		if (poly.seg_intercepts(px0, py0, px1, py1)){
+			// Two cases:
+			// 1) Point is inside polygon -- extend to closest edge along angle, angle+180
+			// 2) Point is outside polygon -- only one distance is positive
+			double distnormal = poly.dist_to_poly(px0, py0, ang);
+			double distanti   = poly.dist_to_poly(px0, py0, angle360(ang + 180));
+			if ((distnormal == -1) || (distanti == -1)) { // Point is outside polygon
+				if (distnormal > distanti){ // Greater value is actual distance
+					projectPoint(ang, distnormal, px0, py0, px0, py0);
+				}
+				else {
+					projectPoint(angle360(ang + 180), distanti, px0, py0, px0, py0);
+				}
+			}
+			else {
+				if (distnormal < distanti) { // Lesser value is actual distance
+					projectPoint(ang, distnormal, px0, py0, px0, py0);
+				}
+				else {
+					projectPoint(angle360(ang + 180), distanti, px0, py0, px0, py0);
+				}
+			}
+			
+			// Figure out which point to add next (closest to tail of segList), then add other
+			if (distPointToPoint(px0, py0, segList.get_vx(segList.size()-1), segList.get_vy(segList.size()-1)) < 
+				distPointToPoint(px1, py1, segList.get_vx(segList.size()-1), segList.get_vy(segList.size()-1))) {
+					segList.add_vertex(px0, py0);
+					segList.add_vertex(px1, py1);
+			}
+			else {
+				segList.add_vertex(px1, py1);
+				segList.add_vertex(px0, py0);
+			}
+		}
+		else { // If the segment doesn't intersect, get out of here
+			carryon = false;
+		}
+	}
+
 }
