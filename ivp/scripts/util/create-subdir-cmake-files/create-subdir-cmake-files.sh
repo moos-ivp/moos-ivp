@@ -198,7 +198,7 @@ LINK_LIBS="
    MOOSGen
    helmivp
    behaviors-marine
-   behaviors-sandbox
+#    behaviors-sandbox
 #    behaviors-don
 #    behaviors-colregs
 #    behaviors-oxford
@@ -374,7 +374,7 @@ PROGNAME=ffview \
 IVP_BUILD_BY_DEFAULT=ON \
 IVP_INSTALL_COMPONENT=ivp-tools \
 LINK_LIBS="
-      behaviors-sandbox
+#       behaviors-sandbox
       behaviors-marine
       bhvutil
       ipfview
@@ -391,7 +391,7 @@ PROGNAME=fview \
 IVP_BUILD_BY_DEFAULT=ON \
 IVP_INSTALL_COMPONENT=ivp-tools \
 LINK_LIBS="
-      behaviors-sandbox
+#       behaviors-sandbox
       behaviors-marine
       bhvutil
       ipfview
