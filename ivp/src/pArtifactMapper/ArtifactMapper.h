@@ -1,7 +1,7 @@
 /************************************************************/
 /*    NAME: Andrew Shafer                                   */
 /*    ORGN: MIT                                             */
-/*    FILE: ArtifactMapper.h                                          */
+/*    FILE: ArtifactMapper.h                                */
 /*    DATE: Aug 15 2007                                     */
 /************************************************************/
 
@@ -11,6 +11,7 @@
 #include "MOOSLib.h"
 #include "XYArtifactGrid.h"
 
+/// A class for implementing an XYArtifactGrid
 class ArtifactMapper : public CMOOSApp
 {
 public:
@@ -21,10 +22,15 @@ public:
 	bool Iterate();
 	bool OnConnectToServer();
 	bool OnStartUp();
+	
+	void processDelta(std::string);
+	void processRefresh();
+	void processDetectedArtifact(std::string);
 
 protected:
 	// insert local vars here
 	XYArtifactGrid ArtGrid;
+	std::string sLocalCommunity;
 };
 
 #endif 

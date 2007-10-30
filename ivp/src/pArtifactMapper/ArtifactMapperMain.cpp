@@ -1,7 +1,7 @@
 /************************************************************/
 /*    NAME: Andrew Shafer                                   */
 /*    ORGN: MIT                                             */
-/*    FILE: ArtifactMapperMain.cpp                                    */
+/*    FILE: ArtifactMapperMain.cpp                          */
 /*    DATE: Aug 15 2007                                     */
 /************************************************************/
 
