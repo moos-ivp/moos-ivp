@@ -612,6 +612,7 @@ LINK_LIBS="
    MOOSGen
    geometry
    mbutil
+   artifacts
    m
    pthread" \
 simple_app_cmake_file
