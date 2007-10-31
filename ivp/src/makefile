@@ -49,7 +49,8 @@ APP_BASE =  $(wildcard pHelmIvP*) 	$(wildcard pEchoVar*) 	   	\
 LIB_TOOLS = $(wildcard 3rd-party-mikerb/lib_behaviors-sandbox*) \
 	    $(wildcard lib_marineview*)	$(wildcard 3rd-party-eickstedt/lib_behaviros-don*)	   \
 	    $(wildcard lib_navplot*)	$(wildcard 3rd-party-mikerb/lib_ivpbuild-extra*)	   \
-	    $(wildcard 3rd-party-eickstedt/lib_track*)	$(wildcard lib_ipfview*)
+	    $(wildcard 3rd-party-eickstedt/lib_track*)	$(wildcard lib_ipfview*)                   \
+	    $(wildcard 3rd-party-ajshafer/lib_artifacts)
 
 # $(wildcard lib_FLTKVW*)
 

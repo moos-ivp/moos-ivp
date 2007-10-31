@@ -6,6 +6,7 @@ IF("${IVP_BUILD_pArtifactMapper}" STREQUAL "ON")
    ADD_EXECUTABLE(pArtifactMapper ${SRC})
    
    TARGET_LINK_LIBRARIES(pArtifactMapper 
+   artifacts
    MOOS
    MOOSGen
    geometry
