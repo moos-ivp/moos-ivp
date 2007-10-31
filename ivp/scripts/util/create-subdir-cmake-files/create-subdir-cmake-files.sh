@@ -605,7 +605,7 @@ simple_app_cmake_file
 
 SUBDIR=pArtifactMapper \
 PROGNAME=pArtifactMapper \
-IVP_BUILD_BY_DEFAULT=OFF \
+IVP_BUILD_BY_DEFAULT=ON \
 IVP_INSTALL_COMPONENT=ivp-tools \
 LINK_LIBS="
    MOOS
