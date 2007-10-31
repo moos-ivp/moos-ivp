@@ -63,7 +63,8 @@ APP_TOOLS = $(wildcard 3rd-party-eickstedt/p1BTracker*)	$(wildcard iHeadingMonit
 	    $(wildcard app_*)		$(wildcard pShipsideViewer*)	\
 	    $(wildcard uPlayBack*)	$(wildcard iMicroModem*)	\
 	    $(wildcard uMVS*)		$(wildcard pDrone*)		\
-	    $(wildcard 3rd-party-eickstedt/pBearings*)	
+	    $(wildcard 3rd-party-eickstedt/pBearings*) \
+	    $(wildcard 3rd-party-ajshafer/pArtifactMapper)	
 
 # $(wildcard uMS*)	
 # 

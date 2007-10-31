@@ -156,7 +156,6 @@ FILE(GLOB IVP_APP_TOOLS_SUBDIRS
    iGPS*
    pBearings
    pSensorSim*
-   pArtifactMapper*
    pFramer*
    pNaFCon*
    pScheduler*
