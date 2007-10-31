@@ -95,7 +95,8 @@ bool SensorSim::Iterate()
 	std::ostringstream osPlotter;
 	//Sensor.getSensorRadius()
 	// "radial:x,y,radius,numpoints,[snapval],[label]
-	osPlotter << "radial:" << x << "," << y << "," << "10" << "," << "12" << "," << "0.0" << "," << "ArtifactHunter";
+	
+	osPlotter << "radial:" << x << "," << y << "," << "10" << "," << "12" << "," << "0.0" << "," << sLocalCommunity;
 	m_Comms.Notify("VIEW_POLYGON", osPlotter.str()); 
 	
 	return true;
@@ -179,6 +180,8 @@ bool SensorSim::OnStartUp()
 		//MOOSTrace(ArtField.getArtifact(i) + "\n"); //Debug line
 	}
 	//MOOSTrace("End of ArtField\n");
+	
+	m_MissionReader.GetValue("Community", sLocalCommunity);
 	
 	return true;
 }

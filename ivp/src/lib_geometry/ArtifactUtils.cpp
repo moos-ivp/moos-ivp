@@ -24,7 +24,6 @@ XYSegList generateLawnmower(const XYPolygon& poly, double px0, double py0, doubl
 	//    Check to see if segment intercepts, extend/contract segment to fit inside
 	//    If segment doesn't intercept, quit
 	
-	
 	XYSegList segList;
 
 	// Check initial point, push it on

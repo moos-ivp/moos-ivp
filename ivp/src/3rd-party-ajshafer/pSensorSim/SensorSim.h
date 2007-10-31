@@ -28,6 +28,7 @@ protected:
 	ArtifactField ArtField;
 	SensorModel   Sensor;
 	double x, y; // Used for storing current X, Y
+	std::string sLocalCommunity; // Local community
 };
 
 #endif 
