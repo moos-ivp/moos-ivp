@@ -1,6 +1,6 @@
 FILE(GLOB SRC *.cpp)
 
-OPTION(IVP_BUILD_pArtifactMapper "Build program pArtifactMapper" OFF)
+OPTION(IVP_BUILD_pArtifactMapper "Build program pArtifactMapper" ON)
 
 IF("${IVP_BUILD_pArtifactMapper}" STREQUAL "ON")
    ADD_EXECUTABLE(pArtifactMapper ${SRC})
