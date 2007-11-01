@@ -1,3 +1,4 @@
 ADD_SUBDIRECTORY(lib_artifacts)
 ADD_SUBDIRECTORY(pSensorSim)
 ADD_SUBDIRECTORY(pArtifactMapper)
+ADD_SUBDIRECTORY(app_generatelawnmower)

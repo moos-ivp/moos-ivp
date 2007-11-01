@@ -174,7 +174,8 @@ bool SensorSim::OnStartUp()
 			osInit << sx << "," << sy << "," << dMineSize << "," << "Artifact" << i;
 			sInitializer = osInit.str();
 
-			m_Comms.Notify("VIEW_POINT", sInitializer); 
+			m_Comms.Notify("VIEW_POINT", sInitializer);
+			MOOSPause(100); // Wait 50 ms
 			};
 		
 		//MOOSTrace(ArtField.getArtifact(i) + "\n"); //Debug line

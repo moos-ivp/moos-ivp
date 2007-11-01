@@ -39,18 +39,15 @@ XYSegList generateLawnmower(const XYPolygon& poly, double px0, double py0, doubl
 	segList.add_vertex(px1, py1);
 	
 	// Initial segment is now px0, py0, px1, py1
-	double x_shift, y_shift;
-
-	if (clockwise) {
-		x_shift = 2*radius* cos(degToRadians(ang + 90));
-		y_shift = 2*radius* sin(degToRadians(ang + 90));
-	}
-	else {
-		x_shift = 2*radius* cos(degToRadians(ang - 90));
-		y_shift = 2*radius* sin(degToRadians(ang - 90));
-	}
 	
-	// we will be reusing px0, py0, px1, py1 to represent the next two points to add
+	// Determine the values for x_shift and y_shift
+	double x_shift, y_shift;
+	double rpx, rpy;
+	projectPoint(ang + (clockwise ? 90 : -90), 2*radius, px0, py0, rpx, rpy);
+	x_shift = rpx - px0;
+	y_shift = rpy - py0;
+	
+		// we will be reusing px0, py0, px1, py1 to represent the next two points to add
 	bool carryon = true;
 	while (carryon) {
 		// Shift current segment
@@ -80,7 +77,7 @@ XYSegList generateLawnmower(const XYPolygon& poly, double px0, double py0, doubl
 					projectPoint(angle360(ang + 180), distanti, px0, py0, px0, py0);
 				}
 			}
-			else {
+			else { // Point is inside polygon
 				if (distnormal < distanti) { // Lesser value is actual distance
 					projectPoint(ang, distnormal, px0, py0, px0, py0);
 				}

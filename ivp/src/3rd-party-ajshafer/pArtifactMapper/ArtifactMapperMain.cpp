@@ -11,15 +11,15 @@
 
 int main(int argc, char *argv[])
 {
-  char *sMissionFile = "ArtifactMapper.moos";
-	
-  if(argc > 1)
-    sMissionFile = argv[1];
-	
-  ArtifactMapper ArtifactMapper;
-	
-  ArtifactMapper.Run("pArtifactMapper", sMissionFile);
+	char *sMissionFile = "ArtifactMapper.moos";
 
-  return(0);
+	if(argc > 1)
+	sMissionFile = argv[1];
+
+	ArtifactMapper ArtifactMapper;
+
+	ArtifactMapper.Run("pArtifactMapper", sMissionFile);
+
+	return(0);
 }
 
