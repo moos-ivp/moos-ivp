@@ -21,6 +21,7 @@ installpdf: pdf
 	cp -f $(PAPER).pdf ~/$(PAPERPDF).pdf
 
 pdf:
+	$(PNGFILES)
 	rubber --ps --pdf $(PAPER)
 	gnome-open $(PAPERPDF).pdf &
 
