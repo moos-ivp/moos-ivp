@@ -10,6 +10,7 @@
 #include <vector>
 #include "MBUtils.h"
 #include "XYPolygon.h"
+#include "XYSegList.h"
 #include "IO_GeomUtils.h"
 #include "ArtifactUtils.h"
 
@@ -35,10 +36,19 @@ int main(int argc, char *argv[])
 	
 	std::vector<XYPolygon> vecPolys = readPolysFromFile(argv[1]);
 	
-	std::vector<XYPolygon>::iterator p;
+	std::vector<XYSegList> vecMowers;
 	
+	std::vector<XYPolygon>::iterator p;
 	for(p = vecPolys.begin(); p != vecPolys.end(); p++) {
-		std::cout << p->get_spec();
+		std::cout << "Attempting to generate lawnmower pattern for: \n";
+		std::cout << p->get_spec() << std::endl;
+		
+		//generateLawnmower(poly, x0, y0, angle, radius, clockwise?);
+		vecMowers.push_back(generateLawnmower(*p, 0, 0, 90, 10, true));
+		
+		std::cout << "Got mower pattern: \n";
+		std::cout << vecMowers.at(vecMowers.size()-1).get_spec();
+		
 	};
 }
 
@@ -47,7 +57,8 @@ int main(int argc, char *argv[])
 /// help_message() prints the usage instructions for the program
 void help_message()
 {
-	using namespace std;
+	using std::cout;
+	using std::endl;
 
 	cout << endl;
 	cout << "Usage:  generatelawnmower" << endl;
