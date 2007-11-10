@@ -10,11 +10,18 @@ killall -9 -q pMOOSBridge pMikerb ExpMOOSDB pMikerb2        \
         pRedirect pLoiterControl pTransponderAIS uMVS       \
         pMarinePID uTMS uMVS_Bluefin uFunctionViewer        \
         pEchoVar uFunctionVis uXMS uProcessWatch            \
+        pVirtualTether iWebsite iSerialNMEA iWinchSim \
+        pSamplingControl iWinch 
 
 killall -9 -q uTermCommand pMessageParser pTrafficControl   \
-        pDeployHandler pViewerRelay pShipsideViewer
+        pDeployHandler pViewerRelay pShipsideViewer         \
+        iMetaMemCompass iOS5000 MOOSBlink
         
 killall -9 -q pArtifactMapper pSensorSim
+
+killall -9 -q zLoggerNG iWinchCtl iCTDSBE49 pCTDLogger      \
+         uRepeater pNaFCon pRouter pFramer iMicroModem      \
+         pDynamicWaypointLL iBatteryMonitor pFunctionSender
 
 echo Done - Killed all MOOS-Related Processes.....
 
