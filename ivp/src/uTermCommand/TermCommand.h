@@ -39,6 +39,9 @@ protected:
   void handleArrow(char c);
 
 
+public:
+  CMOOSLock  m_tc_mutex;
+
 protected:
 
   std::vector<std::string>  m_var_key;
@@ -52,7 +55,6 @@ protected:
   std::string m_cmd_buffer;
   std::vector<std::string> m_cmds_prev;
   std::string m_cmd_partial;
-
 };
 
 #endif

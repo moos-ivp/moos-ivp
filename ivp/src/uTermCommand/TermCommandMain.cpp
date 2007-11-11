@@ -84,10 +84,13 @@ int main(int argc ,char * argv[])
     char c = getCharNoWait();
     if(c=='q')
       quit = true;
-    else
+    else {
+      g_theTermCommand.m_tc_mutex.Lock();
       g_theTermCommand.handleCharInput(c);
+      g_theTermCommand.m_tc_mutex.UnLock();
+    }
   }
- 
+
   return(0);
 }
 

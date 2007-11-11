@@ -54,11 +54,15 @@ bool TermCommand::OnConnectToServer()
 
 bool TermCommand::Iterate()
 {
+  m_tc_mutex.Lock();
   if(m_iteration==0)
     handleCharInput('\n');
 
   //printMapping();
   m_iteration++;
+
+  m_tc_mutex.UnLock();
+
   return(true);
 }
 
@@ -337,9 +341,11 @@ void TermCommand::tabExpand()
 
 void TermCommand::handleCharInput(char c)
 {
-  if((c==32)||(c==27))
+  if((c==32)||(c==27)) {
+    m_tc_mutex.UnLock();
     return;
-  
+  }
+
   for(int k=0; k<100; k++)
     printf("\n");
   
