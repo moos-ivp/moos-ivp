@@ -444,12 +444,10 @@ bool HelmIvP::updateInfoBuffer(CMOOSMsg &msg)
 
 bool HelmIvP::OnConnectToServer()
 {
-  // register for variables here
-  // possibly look at the mission file?
-  // m_MissionReader.GetConfigurationParam("Name", <string>);
-  // m_Comms.Register("VARNAME", is_float(int));
-  
   registerVariables();
+
+  // Request that the Logger make a copy of the Behavior file
+  m_Comms.Notify("COPY_FILE_REQUEST", GetMissionFileName());
 
   return(true);
 }
