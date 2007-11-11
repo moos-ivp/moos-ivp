@@ -30,6 +30,7 @@ LoiterController::LoiterController()
   m_paused            = false;
   m_paused_time_total = 0;
   m_paused_time_start = 0;
+  m_post_counter      = 0;
 }
 
 //-----------------------------------------------------------------
@@ -67,7 +68,7 @@ bool LoiterController::OnNewMail(MOOSMSG_LIST &NewMail)
     else {
       MOOSTrace("LoiterController: Unknown msg [%s]\n",msg.m_sKey.c_str());
     }
-    }
+  }
   return(true);
 }
 
@@ -194,7 +195,15 @@ bool LoiterController::OnStartUp()
 
 bool LoiterController::postMapping()
 {
+  m_post_counter++;
+
   int vsize = vehicles.size();
+
+  double curr_time = MOOSTime();
+
+  string tag_str = intToString(m_post_counter) + ":";
+  tag_str += doubleToString(curr_time,2);
+  m_Comms.Notify("LOITER_CONTROL_TAG", tag_str);
 
   cout << "New Mapping:  " << endl;
   for(int i=0; i<vsize; i++) {

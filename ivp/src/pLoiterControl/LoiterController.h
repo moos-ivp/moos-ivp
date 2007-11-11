@@ -37,6 +37,8 @@ protected:
   bool    m_paused;
   double  m_paused_time_total;
   double  m_paused_time_start;
+  int     m_post_counter;
+
 
   std::vector<std::string> vehicles;
   std::vector<std::string> regions;
