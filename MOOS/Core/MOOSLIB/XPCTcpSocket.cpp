@@ -5,22 +5,22 @@
 //   A suit of Applications and Libraries for Mobile Robotics Research 
 //   Copyright (C) 2001-2005 Massachusetts Institute of Technology and 
 //   Oxford University. 
-//	
+//    
 //   This software was written by Paul Newman at MIT 2001-2002 and Oxford 
 //   University 2003-2005. email: pnewman@robots.ox.ac.uk. 
-//	  
+//      
 //   This file is part of a  MOOS CORE Component. 
-//		
+//        
 //   This program is free software; you can redistribute it and/or 
 //   modify it under the terms of the GNU General Public License as 
 //   published by the Free Software Foundation; either version 2 of the 
 //   License, or (at your option) any later version. 
-//		  
+//          
 //   This program is distributed in the hope that it will be useful, 
 //   but WITHOUT ANY WARRANTY; without even the implied warranty of 
 //   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
 //   General Public License for more details. 
-//			
+//            
 //   You should have received a copy of the GNU General Public License 
 //   along with this program; if not, write to the Free Software 
 //   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 
@@ -31,7 +31,6 @@
 //
 //////////////////////////    END_GPL    //////////////////////////////////
 #include "XPCTcpSocket.h"
-
 #ifdef _WIN32
 #else
 #include <sys/time.h>
@@ -71,7 +70,7 @@ void XPCTcpSocket::vConnect(const char *_sHost)
     if (connect(iSocket, (struct sockaddr *)&serverAddress,sizeof(serverAddress)) == -1)
     {
         char sMsg[512];
-        sprintf(sMsg, "Error Connecting To Socket. %s\0", sGetError());
+        sprintf(sMsg, "Error Connecting To Socket. %s", sGetError());
         XPCException socketExcept(sMsg);
         throw socketExcept;
         return;
@@ -92,7 +91,7 @@ XPCTcpSocket *XPCTcpSocket::Accept(char *_sHost)
     {
         char sMsg[512];
         
-        sprintf(sMsg, "Error Accepting Socket. %s\0", sGetError());
+        sprintf(sMsg, "Error Accepting Socket. %s", sGetError());
         XPCException socketExcept(sMsg);
         throw socketExcept;
         return NULL;
@@ -130,11 +129,9 @@ void XPCTcpSocket::vListen(int _iNumPorts)
     // Incoming connections are listened for
     if (listen(iSocket, _iNumPorts) == -1)
     {
-        char sMsg[512];
-        
-        sprintf(sMsg, "Error Listening To Socket. %s\0", sGetError());
-        XPCException socketExcept(sMsg);
-        throw socketExcept;
+        char sMsg[512];       
+        sprintf(sMsg, "Error Listening To Socket. %s", sGetError());
+        throw XPCException(sMsg);;
         return;
     }
 }       
@@ -147,11 +144,9 @@ int XPCTcpSocket::iSendMessage(void *_vMessage, int _iMessageSize)
     if ((iNumBytes = send(iSocket, (char *)_vMessage, _iMessageSize, 0)) ==
         -1)
     {
-        char sMsg[512];
-        
+        char sMsg[512];        
         sprintf(sMsg, "Error sending socket message: %s", sGetError());
-        XPCException socketExcept(sMsg);
-        throw socketExcept;
+        throw XPCException(sMsg);
         return 0;
     }
     return iNumBytes;
@@ -255,8 +250,8 @@ int XPCTcpSocket::iReadMessageWithTimeOut(void *_vMessage, int _iMessageSize, do
 {
     int iNumBytes = 0;
     
-    struct timeval timeout;		// The timeout value for the select system call
-    fd_set fdset;				// Set of "watched" file descriptors
+    struct timeval timeout;        // The timeout value for the select system call
+    fd_set fdset;                // Set of "watched" file descriptors
     
     
     // The socket file descriptor set is cleared and the socket file 
@@ -276,7 +271,7 @@ int XPCTcpSocket::iReadMessageWithTimeOut(void *_vMessage, int _iMessageSize, do
         dfTimeOut=1.0;
     }
     
-    timeout.tv_sec	= (int)dfTimeOut;
+    timeout.tv_sec    = (int)dfTimeOut;
     timeout.tv_usec = 0;
     
     
@@ -294,7 +289,7 @@ int XPCTcpSocket::iReadMessageWithTimeOut(void *_vMessage, int _iMessageSize, do
     switch(iSelectRet)
     {
     case -1:
-        //				Trace("Select failed ");
+        //                Trace("Select failed ");
         iNumBytes=-1;
         break;
         

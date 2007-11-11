@@ -5,22 +5,22 @@
 //   A suit of Applications and Libraries for Mobile Robotics Research 
 //   Copyright (C) 2001-2005 Massachusetts Institute of Technology and 
 //   Oxford University. 
-//	
+//    
 //   This software was written by Paul Newman at MIT 2001-2002 and Oxford 
 //   University 2003-2005. email: pnewman@robots.ox.ac.uk. 
-//	  
+//      
 //   This file is part of a  MOOS Core Component. 
-//		
+//        
 //   This program is free software; you can redistribute it and/or 
 //   modify it under the terms of the GNU General Public License as 
 //   published by the Free Software Foundation; either version 2 of the 
 //   License, or (at your option) any later version. 
-//		  
+//          
 //   This program is distributed in the hope that it will be useful, 
 //   but WITHOUT ANY WARRANTY; without even the implied warranty of 
 //   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
 //   General Public License for more details. 
-//			
+//            
 //   You should have received a copy of the GNU General Public License 
 //   along with this program; if not, write to the Free Software 
 //   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 
@@ -31,7 +31,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 #ifdef _WIN32
-	#pragma warning(disable : 4786)
+    #pragma warning(disable : 4786)
 #endif
 
 #ifdef _WIN32
@@ -72,7 +72,7 @@ CMOOSFileReader::~CMOOSFileReader()
 
 bool CMOOSFileReader::SetFile(const std::string  & sFile)
 {
-	m_sFileName = sFile;
+    m_sFileName = sFile;
 
     THREAD2FILE_MAP::iterator p;
 
@@ -102,7 +102,7 @@ std::string CMOOSFileReader::GetNextValidLine()
 
     if(GetFile()->eof())
     {
-		return sLine;
+        return sLine;
     }
 
     char Tmp[MAXLINESIZE];
@@ -117,20 +117,20 @@ std::string CMOOSFileReader::GetNextValidLine()
     while(GetFile()&& sLine.length()!=0 && IsComment(sLine))
     {
         (*GetFile())>>std::ws;
-	    GetFile()->getline(Tmp,sizeof(Tmp));
-		sLine = std::string(Tmp);
+        GetFile()->getline(Tmp,sizeof(Tmp));
+        sLine = std::string(Tmp);
     }
 
-	// jckerken 8-12-2004 (MIT)
-	// remove comments made in line not at beginning
-	int nC = (int)sLine.find("//");
+    // jckerken 8-12-2004 (MIT)
+    // remove comments made in line not at beginning
+    int nC = (int)sLine.find("//");
 
-	if (nC >= 0 && nC <= (int)sLine.size()) {
-		if (nC > 0)
-			sLine = sLine.substr(0, nC);
-		else
-			sLine = "";
-	} // end jckerken
+    if (nC >= 0 && nC <= (int)sLine.size()) {
+        if (nC > 0)
+            sLine = sLine.substr(0, nC);
+        else
+            sLine = "";
+    } // end jckerken
 
     
     return sLine;
@@ -153,10 +153,10 @@ bool CMOOSFileReader::GetTokenValPair(std::string sLine, std::string &sTok, std:
     {
         MOOSRemoveChars(sLine,"\r");
 
-		if(!bPreserveWhiteSpace)
-		{
-	        MOOSRemoveChars(sLine," \t");
-		}
+        if(!bPreserveWhiteSpace)
+        {
+            MOOSRemoveChars(sLine," \t");
+        }
 
         sTok = MOOSChomp(sLine,"=");
         sVal = sLine;
@@ -199,10 +199,10 @@ bool CMOOSFileReader::GetValue(std::string sName,int  & nResult)
 bool CMOOSFileReader::GetValue(std::string sName,std::string & sResult)
 {
 
-	
+    
     if(GetFile()->is_open())
     {
-	    Reset();
+        Reset();
      
         GetFile()->seekg(std::ios::beg);
 
@@ -226,6 +226,48 @@ bool CMOOSFileReader::GetValue(std::string sName,std::string & sResult)
 }
 
 
+
+bool CMOOSFileReader::GetValue(std::string  sName,float & fResult)
+{
+    double dfT;
+    if(GetValue(sName,dfT))
+    {
+        fResult = float(dfT);
+        return true;
+    }
+    return false;
+
+}
+bool CMOOSFileReader::GetValue(std::string sName,bool  & bResult)
+{
+    std::string sT;
+
+    if(GetValue(sName, sT))
+    {
+        bResult = (MOOSStrCmp(sT, "TRUE") ||
+            (MOOSIsNumeric(sT) && atof(sT.c_str()) > 0));
+
+        return true;
+    }
+    return false;
+
+}
+bool CMOOSFileReader::GetValue(std::string sName,unsigned int  & nResult)
+{
+    int nT;
+    if(GetValue(sName,nT))
+    {
+        if(nT<0)
+            nResult = 0;
+        else
+            nResult = (unsigned int)nT;
+
+        return true;
+    }
+    return false;
+}
+
+
 bool CMOOSFileReader::Reset()
 {
     bool bResult = true;
@@ -233,17 +275,17 @@ bool CMOOSFileReader::Reset()
 
     if(GetFile()->is_open())
     {
-		if(GetFile()->eof())
-		{
-			GetFile()->clear();
-			GetFile()->seekg(ios::beg);
+        if(GetFile()->eof())
+        {
+            GetFile()->clear();
+            GetFile()->seekg(ios::beg);
             
-		}
-		else
-		{
+        }
+        else
+        {
             std::ifstream * pMyFile = GetFile();
-			pMyFile->seekg(ios::beg);
-		}
+            pMyFile->seekg(ios::beg);
+        }
         bResult = true;
     }
     else
@@ -283,7 +325,7 @@ bool CMOOSFileReader::GoTo(std::string sLine)
     }     
     else
     {
-        MOOSTrace("CMOOSFileReader::GoTo() file not open!\n");
+        //MOOSTrace("CMOOSFileReader::GoTo() file not open!\n");
     }
 
     return false;
@@ -328,8 +370,8 @@ std::ifstream * CMOOSFileReader::GetFile()
 
 bool CMOOSFileReader::IsOpen()
 {
-	if(GetFile()==NULL)
-		return false;
+    if(GetFile()==NULL)
+        return false;
 
-	return GetFile()->is_open();
+    return GetFile()->is_open();
 }

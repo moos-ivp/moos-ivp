@@ -5,22 +5,22 @@
 //   A suit of Applications and Libraries for Mobile Robotics Research 
 //   Copyright (C) 2001-2005 Massachusetts Institute of Technology and 
 //   Oxford University. 
-//	
+//    
 //   This software was written by Paul Newman at MIT 2001-2002 and Oxford 
 //   University 2003-2005. email: pnewman@robots.ox.ac.uk. 
-//	  
+//      
 //   This file is part of a  MOOS Core Component. 
-//		
+//        
 //   This program is free software; you can redistribute it and/or 
 //   modify it under the terms of the GNU General Public License as 
 //   published by the Free Software Foundation; either version 2 of the 
 //   License, or (at your option) any later version. 
-//		  
+//          
 //   This program is distributed in the hope that it will be useful, 
 //   but WITHOUT ANY WARRANTY; without even the implied warranty of 
 //   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
 //   General Public License for more details. 
-//			
+//            
 //   You should have received a copy of the GNU General Public License 
 //   along with this program; if not, write to the Free Software 
 //   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 
@@ -31,8 +31,8 @@
 //
 //////////////////////////////////////////////////////////////////////
 #ifdef _WIN32
-	#pragma warning(disable : 4786)
-	#pragma warning(disable : 4503)
+    #pragma warning(disable : 4786)
+    #pragma warning(disable : 4503)
 #endif
 
 #include <MOOSGenLib/MOOSGenLib.h>
@@ -71,9 +71,9 @@ bool CMOOSCommObject::ReadPkt(XPCTcpSocket *pSocket, CMOOSCommPkt &PktRx, int nS
 
         try
         {
-	    if(nRqd<CHUNK_READ)
-	    {
-		//read in in chunks of 1k
+        if(nRqd<CHUNK_READ)
+        {
+        //read in in chunks of 1k
                 if(nSecondsTimeout<0)
                 {
                     nRxd  = pSocket->iRecieveMessage(pBuffer,nRqd);
@@ -82,10 +82,10 @@ bool CMOOSCommObject::ReadPkt(XPCTcpSocket *pSocket, CMOOSCommPkt &PktRx, int nS
                 {
                     nRxd  = pSocket->iReadMessageWithTimeOut(pBuffer,nRqd,(double)nSecondsTimeout);
                 }
-	    }
-	    else
-	    {
-		//read in in chunks of 1k
+        }
+        else
+        {
+        //read in in chunks of 1k
                 if(nSecondsTimeout<0)
                 {
                     nRxd  = pSocket->iRecieveMessage(pBuffer,CHUNK_READ);
@@ -94,14 +94,14 @@ bool CMOOSCommObject::ReadPkt(XPCTcpSocket *pSocket, CMOOSCommPkt &PktRx, int nS
                 {
                     nRxd  = pSocket->iReadMessageWithTimeOut(pBuffer,CHUNK_READ,(double)nSecondsTimeout);
                 }
-	    }
+        }
         }
         catch(XPCException e)
         {
             MOOSTrace("Exception %s\n",e.sGetException());
             throw CMOOSException("CMOOSCommObject::ReadPkt() Failed Rx");
         }
-	    
+        
         switch(nRxd)
         {
         case -1:
@@ -135,7 +135,7 @@ bool CMOOSCommObject::SendPkt(XPCTcpSocket *pSocket, CMOOSCommPkt &PktTx)
         MOOSTrace("MOOSCommObject::SendPkt Exception caught %s\n",e.sGetException());
         throw CMOOSException("CMOOSCommObject::SendPkt() Failed Tx");
     }
-	
+    
     if(nSent!=PktTx.GetStreamLength())
     {                
         throw CMOOSException("CMOOSCommObject::SendPkt() Failed Tx");
@@ -185,39 +185,39 @@ bool CMOOSCommObject::SocketsInit()
 {
 
 #ifdef _WIN32
-	WORD wVersionRequested;
-	WSADATA wsaData;
-	int err;
+    WORD wVersionRequested;
+    WSADATA wsaData;
+    int err;
 
-	wVersionRequested = MAKEWORD( 2, 2 );
+    wVersionRequested = MAKEWORD( 2, 2 );
  
-	err = WSAStartup( wVersionRequested, &wsaData );
-	if ( err != 0 ) {
-		/* Tell the user that we could not find a usable */
-		/* WinSock DLL.                                  */
+    err = WSAStartup( wVersionRequested, &wsaData );
+    if ( err != 0 ) {
+        /* Tell the user that we could not find a usable */
+        /* WinSock DLL.                                  */
 
-		printf("failed socket init\n");
-		return false;
-	}
+        printf("failed socket init\n");
+        return false;
+    }
  
-	/* Confirm that the WinSock DLL supports 2.2.*/
-	/* Note that if the DLL supports versions greater    */
-	/* than 2.2 in addition to 2.2, it will still return */
-	/* 2.2 in wVersion since that is the version we      */
-	/* requested.                                        */
+    /* Confirm that the WinSock DLL supports 2.2.*/
+    /* Note that if the DLL supports versions greater    */
+    /* than 2.2 in addition to 2.2, it will still return */
+    /* 2.2 in wVersion since that is the version we      */
+    /* requested.                                        */
  
-	if ( LOBYTE( wsaData.wVersion ) != 2 ||
-			HIBYTE( wsaData.wVersion ) != 2 ) {
-		/* Tell the user that we could not find a usable */
-		/* WinSock DLL.                     
-		*/
+    if ( LOBYTE( wsaData.wVersion ) != 2 ||
+            HIBYTE( wsaData.wVersion ) != 2 ) {
+        /* Tell the user that we could not find a usable */
+        /* WinSock DLL.                     
+        */
 
-		printf("failed socket init\n");
+        printf("failed socket init\n");
 
-		WSACleanup( );
-		return false; 
-	}
+        WSACleanup( );
+        return false; 
+    }
 #endif
-	return true;
+    return true;
 }
 

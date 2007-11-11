@@ -5,22 +5,22 @@
 //   A suit of Applications and Libraries for Mobile Robotics Research 
 //   Copyright (C) 2001-2005 Massachusetts Institute of Technology and 
 //   Oxford University. 
-//	
+//    
 //   This software was written by Paul Newman at MIT 2001-2002 and Oxford 
 //   University 2003-2005. email: pnewman@robots.ox.ac.uk. 
-//	  
+//      
 //   This file is part of a  MOOS Core Component. 
-//		
+//        
 //   This program is free software; you can redistribute it and/or 
 //   modify it under the terms of the GNU General Public License as 
 //   published by the Free Software Foundation; either version 2 of the 
 //   License, or (at your option) any later version. 
-//		  
+//          
 //   This program is distributed in the hope that it will be useful, 
 //   but WITHOUT ANY WARRANTY; without even the implied warranty of 
 //   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
 //   General Public License for more details. 
-//			
+//            
 //   You should have received a copy of the GNU General Public License 
 //   along with this program; if not, write to the Free Software 
 //   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 
@@ -31,7 +31,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 #ifdef _WIN32
-	#pragma warning(disable : 4786)
+    #pragma warning(disable : 4786)
 #endif
 
 #if !defined(AFX_MOOSLINUXSERIALPORT_H__7C4C08B7_D9E9_4226_A227_81B9621BC09A__INCLUDED_)
@@ -45,10 +45,10 @@
 //using namespace std;
 
 #ifndef _WIN32
-	#include <fcntl.h>
-	#include <sys/signal.h>
-	#include <sys/types.h>
-	#include <termios.h>
+    #include <fcntl.h>
+    #include <sys/signal.h>
+    #include <sys/types.h>
+    #include <termios.h>
         #include <unistd.h>
 
         #include <stdio.h>
@@ -59,14 +59,14 @@
 class CMOOSLinuxSerialPort :public CMOOSSerialPort 
 {
 public:
-	virtual bool Close();
+    virtual bool Close();
 
     CMOOSLinuxSerialPort();
 
     virtual ~CMOOSLinuxSerialPort();
   
     /** Create and set up the port */
-	virtual bool Create(const char * pPortNum=DEFAULT_PORT, int nBaudRate=DEFAULT_BAUDRATE);
+    virtual bool Create(const char * pPortNum=DEFAULT_PORT, int nBaudRate=DEFAULT_BAUDRATE);
     
     /** Write a string out of port */
     int Write(char* Str,int nLen, double* pTime=NULL);

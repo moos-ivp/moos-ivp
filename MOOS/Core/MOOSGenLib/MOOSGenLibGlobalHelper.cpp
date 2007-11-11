@@ -94,7 +94,7 @@ void    SetMOOSSkew(double dfSkew)
 
 double GetMOOSSkew()
 {
-	return gdfMOOSSkew;
+    return gdfMOOSSkew;
 }
 
 
@@ -211,7 +211,7 @@ void MOOSPause(int nMS)
 
 string MOOSChomp(string &sStr, const string &sTk)
 {
-    int nPos = string::npos;
+    unsigned int nPos = string::npos;
     if((nPos = sStr.find(sTk))!=string::npos)
     {
         string sRet;
@@ -232,11 +232,11 @@ string MOOSChomp(string &sStr, const string &sTk)
 
 bool MOOSValFromString(string & sVal,const string & sStr,const string & sTk)
 {
-    int nPos = string::npos;
+    unsigned int nPos = string::npos;
     if((nPos = sStr.find(sTk))!=string::npos)
     {
         //we have the start of teh token at nPos
-        int nEqualsPos = sStr.find('=',nPos);
+        unsigned int nEqualsPos = sStr.find('=',nPos);
         if(nEqualsPos!=string::npos)
         {
             sVal="";
@@ -262,8 +262,8 @@ bool MOOSValFromString(int  & nVal,const string & sStr,const string & sTk)
     
     if(MOOSValFromString(sVal,sStr,sTk))
     {
-		        
-        int nPos = sVal.find_first_not_of(' ');
+                
+        unsigned int nPos = sVal.find_first_not_of(' ');
         
         if(nPos!=string::npos)
         {
@@ -280,19 +280,43 @@ bool MOOSValFromString(int  & nVal,const string & sStr,const string & sTk)
 }
 
 
+bool MOOSValFromString(long  & nVal,const string & sStr,const string & sTk)
+{
+    string sVal;
+    
+    if(MOOSValFromString(sVal,sStr,sTk))
+    {
+                
+        unsigned int nPos = sVal.find_first_not_of(' ');
+        
+        if(nPos!=string::npos)
+        {
+            char c = sVal[nPos];
+            if(isdigit(c)  || c=='-' || c=='+')
+            {
+                nVal = atol(sVal.c_str());
+                return true;
+            }
+        }
+        
+    }
+    return false;
+}
+
+
 bool MOOSValFromString(bool  & bVal,const string & sStr,const string & sTk)
 {
     string sVal;
     
     if(MOOSValFromString(sVal,sStr,sTk))
     {
-		MOOSRemoveChars(sVal," ");
+        MOOSRemoveChars(sVal," ");
         if(MOOSStrCmp(sVal,"true") || MOOSStrCmp(sVal,"1"))
-			bVal =  true;
-		else
-			bVal =  false;
+            bVal =  true;
+        else
+            bVal =  false;
 
-		return true;
+        return true;
     }
 
     return false;
@@ -306,7 +330,7 @@ bool MOOSValFromString(double  & dfVal,const string & sStr,const string & sTk)
     if(MOOSValFromString(sVal,sStr,sTk))
     {
         
-        int nPos = sVal.find_first_not_of(' ');
+        unsigned int nPos = sVal.find_first_not_of(' ');
         
         if(nPos!=string::npos)
         {
@@ -322,11 +346,37 @@ bool MOOSValFromString(double  & dfVal,const string & sStr,const string & sTk)
     return false;
 }
 
+
+
+bool MOOSValFromString(float  & fVal,const string & sStr,const string & sTk)
+{
+    string sVal;
+    
+    if(MOOSValFromString(sVal,sStr,sTk))
+    {
+        
+        unsigned int nPos = sVal.find_first_not_of(' ');
+        
+        if(nPos!=string::npos)
+        {
+            char c = sVal[nPos];
+            if(isdigit(c) || c=='.' || c=='-' || c=='+')
+            {
+                fVal = static_cast<float> (atof(sVal.c_str()));
+                return true;
+            }
+        }
+        
+    }
+    return false;
+}
+
+
+
 bool MOOSVectorFromString(const string & sStr,std::vector<double> & dfValVec,int & nRows, int & nCols)
 {
-    int nPos = 0;
     
-    nPos = sStr.find('[',nPos);
+    unsigned int nPos = sStr.find('[');
     
     if(nPos==string::npos)
         return false;
@@ -335,7 +385,7 @@ bool MOOSVectorFromString(const string & sStr,std::vector<double> & dfValVec,int
     
     
     //if we have [456] then implicitlyt we mean [456x1]
-    int nXPos = sStr.find('x',nPos);
+    unsigned int nXPos = sStr.find('x',nPos);
     
     nCols = 1;
     if(nXPos!=string::npos)
@@ -356,7 +406,6 @@ bool MOOSVectorFromString(const string & sStr,std::vector<double> & dfValVec,int
     dfValVec.clear();
     dfValVec.reserve(nRows*nCols);
     
-    int k = 0;
     
     const char * pStr = sStr.data();
     for(int i = 1; i<=nRows;i++)
@@ -374,11 +423,11 @@ bool MOOSVectorFromString(const string & sStr,std::vector<double> & dfValVec,int
     
 }
 
-bool MOOSVectorFromString(const string & sStr,std::vector<unsigned int> & nValVec,int & nRows, int & nCols)
+
+bool MOOSVectorFromString(const string & sStr,std::vector<float> & fValVec,int & nRows, int & nCols)
 {
-    int nPos = 0;
     
-    nPos = sStr.find('[',nPos);
+    unsigned int nPos = sStr.find('[');
     
     if(nPos==string::npos)
         return false;
@@ -387,7 +436,60 @@ bool MOOSVectorFromString(const string & sStr,std::vector<unsigned int> & nValVe
     
     
     //if we have [456] then implicitlyt we mean [456x1]
-    int nXPos = sStr.find('x',nPos);
+    unsigned int nXPos = sStr.find('x',nPos);
+    
+    nCols = 1;
+    if(nXPos!=string::npos)
+    {
+        nCols = atoi( sStr.data()+nXPos+1);
+        nPos = nXPos;
+    }
+    
+    nPos = sStr.find('{',nPos);
+    
+    if(nPos==string::npos)
+        return false;
+    
+    
+    if(nCols==0 ||nRows==0)
+        return false;
+    
+    fValVec.clear();
+    fValVec.reserve(nRows*nCols);
+    
+    
+    const char * pStr = sStr.data();
+    for(int i = 1; i<=nRows;i++)
+    {
+        for(int j = 1; j<=nCols;j++)
+        {
+            double dfVal = atof(pStr+nPos+1);
+            
+            fValVec.push_back(static_cast<float> (dfVal));
+            nPos = sStr.find(',',nPos+1);            
+        }
+    }
+    
+    return true;
+    
+}
+
+
+
+bool MOOSVectorFromString(const string & sStr,std::vector<unsigned int> & nValVec,int & nRows, int & nCols)
+{
+
+    
+    unsigned int nPos = sStr.find('[');
+    
+    if(nPos==string::npos)
+        return false;
+    
+    nRows = atoi( sStr.data()+nPos+1);
+    
+    
+    //if we have [456] then implicitlyt we mean [456x1]
+    unsigned int nXPos = sStr.find('x',nPos);
     
     nCols = 1;
     if(nXPos!=string::npos)
@@ -408,7 +510,6 @@ bool MOOSVectorFromString(const string & sStr,std::vector<unsigned int> & nValVe
     nValVec.clear();
     nValVec.reserve(nRows*nCols);
     
-    int k = 0;
     
     const char * pStr = sStr.data();
     for(int i = 1; i<=nRows;i++)
@@ -432,7 +533,7 @@ bool MOOSValFromString(std::vector<double> &dfValVec,
                        const std::string & sStr, 
                        const std::string & sToken)
 {
-    int nPos = sStr.find(sToken+'=');
+    unsigned int nPos = sStr.find(sToken+'=');
     
     if(nPos==string::npos)
         return false;
@@ -558,8 +659,8 @@ void MOOSTrimWhiteSpace(string &str)
 {
     if(!str.empty())
     {
-        int p = str.find_first_not_of(" \t\n\r");
-        int q = str.find_last_not_of(" \t\n\r");
+        unsigned int p = str.find_first_not_of(" \t\n\r");
+        unsigned int q = str.find_last_not_of(" \t\n\r");
         
         if(p==string::npos || q==string::npos)
         {
@@ -592,7 +693,7 @@ int MOOSGetch()
 {
 #ifndef _WIN32
     
-    int c, i, fd=0;
+    int c, fd=0;
     struct termios term, oterm;
     
     /* get the terminal settings */
@@ -628,7 +729,7 @@ int MOOSGetch()
 
 string MOOSFormat(char * FmtStr,...)
 {
-    const int MAX_TRACE_STR = 1024;
+    const unsigned int MAX_TRACE_STR = 1024;
     
     if(strlen(FmtStr)<MAX_TRACE_STR)
     {
@@ -666,7 +767,7 @@ string MOOSFormat(char * FmtStr,...)
 
 bool MOOSFail(char * FmtStr,...)
 {
-    const int MAX_TRACE_STR = 1024;
+    const unsigned int MAX_TRACE_STR = 1024;
     
     if(strlen(FmtStr)<MAX_TRACE_STR)
     {
@@ -706,7 +807,7 @@ void MOOSTrace(string  sStr)
 
 void MOOSTrace(char *FmtStr,...)
 {
-    const int MAX_TRACE_STR = 2048;
+    const unsigned int MAX_TRACE_STR = 2048;
     
     if(strlen(FmtStr)<MAX_TRACE_STR)
     {
@@ -734,11 +835,11 @@ void MOOSTrace(char *FmtStr,...)
         OutputDebugString(buf);
 #endif
         
-	// arh changed this because if you wanted to add a percent character in the string, it would first
-	// be processed by the _vsnprintf above, then placed in 'buf'.
-	// Problem is that fprintf finds the '%' in buf and expects us to provide more arguments!
+    // arh changed this because if you wanted to add a percent character in the string, it would first
+    // be processed by the _vsnprintf above, then placed in 'buf'.
+    // Problem is that fprintf finds the '%' in buf and expects us to provide more arguments!
         //fprintf(stderr,buf);
-	fputs(buf, stderr);
+    fputs(buf, stderr);
         
     }
 }
@@ -996,12 +1097,12 @@ bool GetDirectoryContents(const std::string & sPath,
             //look to remove . and ..
             if(sPossible!="." && sPossible!="..")
             {
-                if(bFiles && sfd.dwFileAttributes!=FILE_ATTRIBUTE_DIRECTORY)
+                if(bFiles && !(sfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
                 {
                     // do something with the file name sfd.cFileName...
                     sContents.push_front(sPossible);
                 }
-                else if(!bFiles && sfd.dwFileAttributes==FILE_ATTRIBUTE_DIRECTORY)
+                else if(!bFiles && (sfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
                 {
                     // do something with the file name sfd.cFileName...
                     sContents.push_front(sPossible);
@@ -1067,6 +1168,57 @@ bool GetDirectoryContents(const std::string & sPath,
 #endif
 }
 
+/** splits a fully qualified path into parts -path, filestem and extension */
+bool MOOSFileParts(std::string sFullPath, std::string & sPath,std::string &sFile,std::string & sExtension)
+{
+    unsigned int nBreak;
+    unsigned int nFS = sFullPath.find_last_of("/");
+
+#ifdef _WIN32
+    //Windows user use either forward ot backslash to delimit (or even a combination...)
+    unsigned int nBS = sFullPath.find_last_of("\\");    
+    if(nBS!=std::string::npos)
+    {
+        if(nFS!=std::string::npos)
+        {
+            //look like a mixture - which is the final one
+            nBreak=nBS>nFS ? nBS:nFS;
+        }
+        else
+        {
+            //looks like they are using only back slashes
+            nBreak= nBS;
+        }        
+    }
+    else
+    {
+        //looks like they are using nix style forward slashes
+        nBreak = nFS;
+    }
+#else
+    nBreak = nFS;
+#endif
+
+    std::string sFullFile;
+    if(nBreak==std::string::npos)
+    {
+        //there is no path
+        sPath = "";       
+        sFullFile = sFullPath;
+    }
+    else
+    {
+        //split path and file
+        sPath = sFullPath.substr(0,nBreak);
+        sFullFile = sFullPath.substr(nBreak+1);
+    }
+
+    //finally look to split on "." for extension if it is there.
+    sFile = MOOSChomp(sFullFile,".");
+    sExtension = sFullFile;
+    
+    return true;
+}
 
 
 bool MOOSCreateDirectory(const std::string & sDirectory)

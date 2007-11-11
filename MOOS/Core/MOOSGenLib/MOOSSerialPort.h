@@ -5,22 +5,22 @@
 //   A suit of Applications and Libraries for Mobile Robotics Research 
 //   Copyright (C) 2001-2005 Massachusetts Institute of Technology and 
 //   Oxford University. 
-//	
+//    
 //   This software was written by Paul Newman at MIT 2001-2002 and Oxford 
 //   University 2003-2005. email: pnewman@robots.ox.ac.uk. 
-//	  
+//      
 //   This file is part of a  MOOS Core Component. 
-//		
+//        
 //   This program is free software; you can redistribute it and/or 
 //   modify it under the terms of the GNU General Public License as 
 //   published by the Free Software Foundation; either version 2 of the 
 //   License, or (at your option) any later version. 
-//		  
+//          
 //   This program is distributed in the hope that it will be useful, 
 //   but WITHOUT ANY WARRANTY; without even the implied warranty of 
 //   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
 //   General Public License for more details. 
-//			
+//            
 //   You should have received a copy of the GNU General Public License 
 //   along with this program; if not, write to the Free Software 
 //   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 
@@ -41,9 +41,9 @@
 #endif // _MSC_VER > 1000
 
 #ifdef _WIN32
-	#define DEFAULT_PORT  "COM1"
+    #define DEFAULT_PORT  "COM1"
 #else
-	#define DEFAULT_PORT  "/dev/ttyS0"
+    #define DEFAULT_PORT  "/dev/ttyS0"
 #endif
 
 #define DEFAULT_BAUDRATE 9600
@@ -65,44 +65,44 @@ by the platform dependent derivatives
 class CMOOSSerialPort  
 {
 public:
-	std::string GetPortName();
-	virtual bool Close();
-	char GetTermCharacter();
-	void SetTermCharacter(char cTermChar);
-	int GetBaudRate(){return m_nBaudRate;};
+    std::string GetPortName();
+    virtual bool Close();
+    char GetTermCharacter();
+    void SetTermCharacter(char cTermChar);
+    int GetBaudRate(){return m_nBaudRate;};
 
     virtual int Flush(){return -1;};
-	
-	bool IsStreaming();
-	bool IsVerbose(){return m_bVerbose;};
-	bool GetLatest(std::string & sWhat,double & dfWhen);
+    
+    bool IsStreaming();
+    bool IsVerbose(){return m_bVerbose;};
+    bool GetLatest(std::string & sWhat,double & dfWhen);
 
     bool GetEarliest(std::string &sWhat, double &dfWhen);
 
 
-	class CMOOSSerialTelegram
-	{
-	public:
-		CMOOSSerialTelegram(const std::string & sWhat,double dfWhen):
-		  m_sTelegram(sWhat),m_dfTime(dfWhen){};
+    class CMOOSSerialTelegram
+    {
+    public:
+        CMOOSSerialTelegram(const std::string & sWhat,double dfWhen):
+          m_sTelegram(sWhat),m_dfTime(dfWhen){};
 
-		std::string m_sTelegram;
-		double m_dfTime;
-	};
-	typedef std::list<CMOOSSerialTelegram> TELEGRAM_LIST;
+        std::string m_sTelegram;
+        double m_dfTime;
+    };
+    typedef std::list<CMOOSSerialTelegram> TELEGRAM_LIST;
 
-	TELEGRAM_LIST m_InBox;
-	TELEGRAM_LIST m_OutBox;
-	CMOOSLock m_InBoxLock;
-	CMOOSLock m_OutBoxLock;
-	CMOOSLock m_PortLock;
+    TELEGRAM_LIST m_InBox;
+    TELEGRAM_LIST m_OutBox;
+    CMOOSLock m_InBoxLock;
+    CMOOSLock m_OutBoxLock;
+    CMOOSLock m_PortLock;
 
-	bool CommsLoop();
-	
-	CMOOSSerialPort();
-	virtual ~CMOOSSerialPort();
+    bool CommsLoop();
+    
+    CMOOSSerialPort();
+    virtual ~CMOOSSerialPort();
 
-	
+    
     virtual bool Configure(STRING_LIST sParams);
     
     //crucial functions...
@@ -114,16 +114,16 @@ public:
 
 
     void SetIsCompleteReplyCallBack(bool (*pfn)(char *pData, int nLen, int nRead) );
-    	
+        
     virtual void Break();
 
 protected:
     //termination character the serial port is interested in
-	char m_cTermCharacter;
-	
+    char m_cTermCharacter;
+    
     /** Win32 handle to IO thread */
 #ifdef _WIN32
-	HANDLE m_hCommsThread;
+    HANDLE m_hCommsThread;
 #endif
 
 
@@ -134,10 +134,10 @@ protected:
 #endif
 
 
-	/** ID of IO thread */
-    THREAD_ID		m_nCommsThreadID;
+    /** ID of IO thread */
+    THREAD_ID        m_nCommsThreadID;
 
-	
+    
     bool StartThreads();
 
     bool m_bStreaming;
@@ -151,7 +151,7 @@ protected:
     bool IsCompleteReply(char * pData,int nLen, int nRead);
 
     ///handware handshaking active flag
-	   bool m_bHandShaking;
+       bool m_bHandShaking;
 
     ///port name
     std::string m_sPort;
@@ -162,7 +162,7 @@ protected:
     bool m_bQuit;
 
     /// ARH 14/05/2005 For 500kBaud PCMCIA card
-	    bool m_bUseCsmExt;
+        bool m_bUseCsmExt;
 
 };
 

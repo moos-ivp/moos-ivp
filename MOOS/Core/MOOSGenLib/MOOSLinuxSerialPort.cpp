@@ -5,22 +5,22 @@
 //   A suit of Applications and Libraries for Mobile Robotics Research 
 //   Copyright (C) 2001-2005 Massachusetts Institute of Technology and 
 //   Oxford University. 
-//	
+//    
 //   This software was written by Paul Newman at MIT 2001-2002 and Oxford 
 //   University 2003-2005. email: pnewman@robots.ox.ac.uk. 
-//	  
+//      
 //   This file is part of a  MOOS Core Component. 
-//		
+//        
 //   This program is free software; you can redistribute it and/or 
 //   modify it under the terms of the GNU General Public License as 
 //   published by the Free Software Foundation; either version 2 of the 
 //   License, or (at your option) any later version. 
-//		  
+//          
 //   This program is distributed in the hope that it will be useful, 
 //   but WITHOUT ANY WARRANTY; without even the implied warranty of 
 //   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
 //   General Public License for more details. 
-//			
+//            
 //   You should have received a copy of the GNU General Public License 
 //   along with this program; if not, write to the Free Software 
 //   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 
@@ -47,33 +47,33 @@ CMOOSLinuxSerialPort::CMOOSLinuxSerialPort()
 port*/
 CMOOSLinuxSerialPort::~CMOOSLinuxSerialPort()
 {
-	Close();
+    Close();
 }
 
 /** Create and set up the port */
 bool CMOOSLinuxSerialPort::Create(const char * sPort, int nBaudRate)
 {
-	
+    
 #ifndef _WIN32
     int nLinuxBaudRate = B9600;
     switch(nBaudRate)
     {
 #ifdef B500000
-        case 500000: 	nLinuxBaudRate = B500000;  	break;
+        case 500000:     nLinuxBaudRate = B500000;      break;
 #endif
         case 115200:    nLinuxBaudRate = B115200;   break;
-        case 38400: 	nLinuxBaudRate = B38400;  	break;
-        case 19200: 	nLinuxBaudRate = B19200;  	break;
-        case 9600:  	nLinuxBaudRate = B9600;   	break;
-        case 4800:	    nLinuxBaudRate = B4800;  	break;
-        case 2400:	    nLinuxBaudRate = B2400;  	break;
-        case 1200:	    nLinuxBaudRate = B1200;  	break;
-        case 600:	    nLinuxBaudRate = B600;  	break;
-        case 300:	    nLinuxBaudRate = B300;  	break;
+        case 38400:     nLinuxBaudRate = B38400;      break;
+        case 19200:     nLinuxBaudRate = B19200;      break;
+        case 9600:      nLinuxBaudRate = B9600;       break;
+        case 4800:        nLinuxBaudRate = B4800;      break;
+        case 2400:        nLinuxBaudRate = B2400;      break;
+        case 1200:        nLinuxBaudRate = B1200;      break;
+        case 600:        nLinuxBaudRate = B600;      break;
+        case 300:        nLinuxBaudRate = B300;      break;
         default :   
-	        printf("unsupported baud rate\n");
-	        return false;
-	        break;
+            printf("unsupported baud rate\n");
+            return false;
+            break;
 
     }
 
@@ -83,8 +83,8 @@ bool CMOOSLinuxSerialPort::Create(const char * sPort, int nBaudRate)
 
     if (m_nPortFD <0)
     {
-	    perror(sPort);
-	    exit(-1);
+        perror(sPort);
+        exit(-1);
     }
     
     //save the current configuration
@@ -149,7 +149,7 @@ int CMOOSLinuxSerialPort::Write(char* Str,int nLen,double* pTime)
     //grab the time..
     if(pTime!=NULL)
     {
-    	*pTime = MOOSTime();	
+        *pTime = MOOSTime();    
     }
 
     //lock the port
@@ -161,22 +161,22 @@ int CMOOSLinuxSerialPort::Write(char* Str,int nLen,double* pTime)
     
     return nChars;
 
-	
+    
     for(int i = 0; i<nLen;i++)
     {
         #ifndef _WIN32
 
-	    if(write(m_nPortFD, &Str[i],1)!=1)
-	    {
-		MOOSTrace("Write Failed\n");
-	        nChars = -1;
-	        break;
-	    }
-	    else
-	    {
+        if(write(m_nPortFD, &Str[i],1)!=1)
+        {
+        MOOSTrace("Write Failed\n");
+            nChars = -1;
+            break;
+        }
+        else
+        {
 
-		nChars++;
-	    }	
+        nChars++;
+        }    
         #else
 
         #endif
@@ -225,15 +225,15 @@ bool CMOOSLinuxSerialPort::Close()
 {
 //    MOOSTrace("MOOSLinuxSerialPort::Close()\n");
 
-	bool bResult = true;
-	CMOOSSerialPort::Close();
+    bool bResult = true;
+    CMOOSSerialPort::Close();
 #ifndef _WIN32
     tcsetattr(m_nPortFD,
-	      TCSANOW,
-	      &m_OldPortOptions);
+          TCSANOW,
+          &m_OldPortOptions);
 
     bResult =  close(m_nPortFD)==0;
 #endif
-	return bResult;
+    return bResult;
 
 }

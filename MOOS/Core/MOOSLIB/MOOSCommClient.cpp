@@ -37,15 +37,16 @@
 //
 //////////////////////////////////////////////////////////////////////
 #ifdef _WIN32
-#include <winsock2.h>
-#include "windows.h"
-#include "winbase.h"
-#include "winnt.h"
-#define isnan _isnan
+    #include <winsock2.h>
+    #include "windows.h"
+    #include "winbase.h"
+    #include "winnt.h"
+    #define isnan _isnan
 #else
-#include <pthread.h>
+    #include <pthread.h>
 #endif
 
+#include <cmath>
 #include <string>
 #include <set>
 #include <limits>
@@ -57,8 +58,9 @@ using namespace std;
 #include "MOOSCommPkt.h"
 #include "MOOSGlobalHelper.h"
 #include "MOOSException.h"
-#include <cmath>
 #include <iostream>
+#include <cmath>
+
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -194,7 +196,6 @@ bool CMOOSCommClient::ClientLoop()
 
 		if(ConnectToServer())
 		{
-			int nIteration = 0;
 
 			while(!m_bQuit)
 			{
@@ -367,7 +368,8 @@ bool CMOOSCommClient::ConnectToServer()
 		catch(XPCException e)
 		{
 			//connect failed....
-			e;
+		    UNUSED_PARAMETER(e);
+
 			if(m_pSocket)
 				delete m_pSocket;
 
@@ -645,6 +647,8 @@ bool CMOOSCommClient::Notify(const string &sVar, double dfVal, double dfTime)
 {
 	CMOOSMsg Msg(MOOS_NOTIFY,sVar.c_str(),dfVal,dfTime);
 
+	m_Published.insert(sVar);
+
 	return Post(Msg);
 
 }
@@ -652,8 +656,9 @@ bool CMOOSCommClient::Notify(const string &sVar, const string & sVal, double dfT
 {
 	CMOOSMsg Msg(MOOS_NOTIFY,sVar.c_str(),sVal.c_str(),dfTime);
 
-	return Post(Msg);
+	m_Published.insert(sVar);
 
+	return Post(Msg);
 }
 
 bool CMOOSCommClient::ServerRequest(const string &sWhat,MOOSMSG_LIST  & MsgList, double dfTimeOut, bool bClear)

@@ -30,36 +30,36 @@ inline void MOOSAssert(bool cond, char *msg=NULL, const char *filename=NULL, int
 #if (defined(_DEBUG) || defined(ALLOW_RELEASE_ASSERTS))
 #if (MOOS_ASSERT_LEVEL > 0)
 
-	if (!cond)
-	{
-		if (filename && line>0)
-		{
-			if (msg)
-			{
-				MOOSTrace("Assert failed at %s:%d. %s\n", filename, line, msg);
-			}
-			else
-			{
-				MOOSTrace("Assert failed at %s:%d.\n", filename, line);
-			}
-		}
-		else
-		{
-			if (msg)
-			{
-				MOOSTrace("Assert failed. %s\n", msg);
-			}
-			else
-			{
-				MOOSTrace("Assert failed.\n");
-			}
-		}
-				
+    if (!cond)
+    {
+        if (filename && line>0)
+        {
+            if (msg)
+            {
+                MOOSTrace("Assert failed at %s:%d. %s\n", filename, line, msg);
+            }
+            else
+            {
+                MOOSTrace("Assert failed at %s:%d.\n", filename, line);
+            }
+        }
+        else
+        {
+            if (msg)
+            {
+                MOOSTrace("Assert failed. %s\n", msg);
+            }
+            else
+            {
+                MOOSTrace("Assert failed.\n");
+            }
+        }
+                
 
 #if (MOOS_ASSERT_LEVEL == 2)
-		exit();
+        exit();
 #endif
-	}
+    }
 #endif
 #endif
 }

@@ -5,22 +5,22 @@
 //   A suit of Applications and Libraries for Mobile Robotics Research 
 //   Copyright (C) 2001-2005 Massachusetts Institute of Technology and 
 //   Oxford University. 
-//	
+//    
 //   This software was written by Paul Newman at MIT 2001-2002 and Oxford 
 //   University 2003-2005. email: pnewman@robots.ox.ac.uk. 
-//	  
+//      
 //   This file is part of a  MOOS Core Component. 
-//		
+//        
 //   This program is free software; you can redistribute it and/or 
 //   modify it under the terms of the GNU General Public License as 
 //   published by the Free Software Foundation; either version 2 of the 
 //   License, or (at your option) any later version. 
-//		  
+//          
 //   This program is distributed in the hope that it will be useful, 
 //   but WITHOUT ANY WARRANTY; without even the implied warranty of 
 //   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
 //   General Public License for more details. 
-//			
+//            
 //   You should have received a copy of the GNU General Public License 
 //   along with this program; if not, write to the Free Software 
 //   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 
@@ -35,13 +35,14 @@
 #define MOOSAPPH
 
 #include <MOOSGenLib/MOOSGenLib.h>
-#include "MOOSCommClient.h"	
+#include "MOOSCommClient.h"    
 
 
 #define DEFAULT_MOOS_APP_COMMS_FREQ 5
 #define DEFAULT_MOOS_APP_FREQ 5
 #define MOOS_MAX_APP_FREQ 50
 #define MOOS_MAX_COMMS_FREQ 20
+#define STATUS_PERIOD 2
 
 #include "MOOSVariable.h"
 #include <set>
@@ -78,10 +79,10 @@ public:
     /** Called when the class has succesully connected to the server. Overload this function
     and place use it to register for notification when variables of interest change */
     virtual bool OnConnectToServer();
-	
+    
     /** Called when the class has disconnects from  the server. Put code you want to run when this happens in a virtual version of this method*/
     virtual bool OnDisconnectFromServer();
-	
+    
 protected:
     /** called when the application should iterate. Overload this function in a derived class
     and within it write all the application specific code. It will be called at approximately
@@ -94,6 +95,13 @@ protected:
     @param NewMail a list of new mail messages*/
     virtual bool OnNewMail(MOOSMSG_LIST & NewMail);
 
+    /** optionally (see ::EnableCommandMessageFiltering() ) called when a command message (<MOOSNAME>_CMD) is recieved by the application.
+    @param a copy of CmdMsg the message purporting to be a "command" - i.e. has the name <MOOSNAME>_CMD */
+    virtual bool OnCommandMsg(CMOOSMsg Msg);
+
+    /** make a status string - overload this in a derived class if you want to modify or what the statuts string looks like */
+    virtual std::string MakeStatusString();
+    
     /** The MOOSComms node. All communications happens by way of this object. You'll often do things like  m_Comms.Notify("VARIABLE_X","STRING_DATA",dfTime) top send data */
     CMOOSCommClient m_Comms;
 
@@ -131,12 +139,18 @@ protected:
     /**  Call this to write a debug string to the DB under the name "MOOS_DEBUG"  */
     bool MOOSDebugWrite(const std::string & sTxt);
 
+    /** enable/disable the behind the scenes search for command messages */
+    void EnableCommandMessageFiltering(bool bEnable);
+    
+    /** dispatching function for ::OnCommandMsg */
+    bool LookForAndHandleAppCommand(MOOSMSG_LIST & NewMail);
+    
+
     /** return the application name */
     std::string GetAppName();
 
     /** return the application mission file name */
     std::string GetMissionFileName();
-
 
 
     /////////////////////////////////////////////////////////////////////////////////////////////
@@ -156,7 +170,7 @@ protected:
 
     /** Register with the DB to be mailed about any changes to any dynamic variables which were created with non-empty sSubscribeName fields */
     bool RegisterMOOSVariables();
-	
+    
     
     /** Pass mail (usually collected in OnNewMail) to the set of dynamic variables. If they are interested (mail name matches their subscribe name) they will update themselves automatically */
     bool UpdateMOOSVariables(MOOSMSG_LIST & NewMail);
@@ -170,7 +184,7 @@ protected:
 
     /** Send any variables (under their sPublishName see AddMOOSVariable)  which been written too since the last call of PublishFreshMOOSVariables()*/
     bool PublishFreshMOOSVariables();
-	
+    
 
     /** a map of dynamic/run time moos variables that may be set by comms - avoid messy long
     if else if statements */
@@ -179,17 +193,17 @@ protected:
 
     /** Returns true if Simulate = true is found in the mission/configuration file (a global flag) - the mission file is not re-read on each call */
     bool IsSimulateMode();
-	
+    
     /** flag saying whether MOOS is running with a simulator
-	can be set by registering for SIMULATION_MODE variable*/
+    can be set by registering for SIMULATION_MODE variable*/
     bool m_bSimMode;
 
 
-	/** called just before the main app loop is entered. Specific initialisation code can be written
-	in an overloaded version of this function */
+    /** called just before the main app loop is entered. Specific initialisation code can be written
+    in an overloaded version of this function */
     virtual bool OnStartUp();
 
-	/** start up the comms */
+    /** start up the comms */
     bool ConfigureComms();
 
     /** Port on which server application listens for new connection */
@@ -204,14 +218,14 @@ protected:
     /** true if the server has been set */
     bool m_bServerSet;
 
-	/** true if we want to use MOOS comms */
+    /** true if we want to use MOOS comms */
     bool m_bUseMOOSComms;
 
     /** name of this application */
     std::string m_sAppName;
 
     /** frequency at which server will be contacted */
-    unsigned int m_nCommsFreq;
+    int m_nCommsFreq;
 
     /** frequency at which this application will iterate */
     double m_dfFreq;
@@ -219,7 +233,9 @@ protected:
     /** std::string name of mission file */
     std::string m_sMissionFile;
 
-
+    /** flag specifying whether command message fitlering is enabled */
+    bool m_bCommandMessageFiltering;
+    
     /** The start time of the application */
     double m_dfAppStartTime;
 
@@ -235,9 +251,37 @@ protected:
     /** return number of times iterate has been called*/
     int GetIterateCount();
 
+
+    /** returns the string which constitutes a command string for this application.
+    if CommandFiltering is enabled (see EnableCommandMessageFiltering() ) the 
+    application will filter incoming mail and Call OnCommandMsg() (which can be overiden)
+    if a message with this command string as a name is received. Command strings look
+    like APPNAME_CMD */
+    std::string GetCommandKey();
+    
+
     bool m_bDebug;
 
     bool   IsDebug(){return m_bDebug;};
+
+
+public:
+    /**these two functions are used to handle private MOOSApp work that
+    need to occur on behalf of derived classes at the same time as the
+    overloaded OnConnectToServer and OnDisconnectFromServer methods are 
+    called. They are public to allow their invokation from a call back. They
+    are not interesting to the casual user*/
+    void OnDisconnectToServerPrivate();
+    void OnConnectToServerPrivate();
+
+private:
+    /* this function is used to process mail on behalf of the client just before
+       the derived OnNewMail is invoked - it has no interest to the casual user*/
+    void OnNewMailPrivate(MOOSMSG_LIST & NewMail);
+    /* and this is a private iterate - we may need to regularly do things behind the scenes */
+    void IteratePrivate();
+    
+    
 
 private:
 
@@ -247,6 +291,9 @@ private:
     /** Number of  Application has had new mail */
     int m_nMailCount;
 
+    /** last time a status message was sent */
+    double m_dfLastStatusTime;
+    
     /** called before starting the Application running. If parameters have not beedn set correctly
     it prints a help statement and returns false */
     bool CheckSetUp();

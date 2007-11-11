@@ -5,22 +5,22 @@
 //   A suit of Applications and Libraries for Mobile Robotics Research 
 //   Copyright (C) 2001-2005 Massachusetts Institute of Technology and 
 //   Oxford University. 
-//	
+//    
 //   This software was written by Paul Newman at MIT 2001-2002 and Oxford 
 //   University 2003-2005. email: pnewman@robots.ox.ac.uk. 
-//	  
+//      
 //   This file is part of a  MOOS Core Component. 
-//		
+//        
 //   This program is free software; you can redistribute it and/or 
 //   modify it under the terms of the GNU General Public License as 
 //   published by the Free Software Foundation; either version 2 of the 
 //   License, or (at your option) any later version. 
-//		  
+//          
 //   This program is distributed in the hope that it will be useful, 
 //   but WITHOUT ANY WARRANTY; without even the implied warranty of 
 //   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
 //   General Public License for more details. 
-//			
+//            
 //   You should have received a copy of the GNU General Public License 
 //   along with this program; if not, write to the Free Software 
 //   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 
@@ -32,8 +32,8 @@
 //////////////////////////////////////////////////////////////////////
 
 #ifdef _WIN32
-	#pragma warning(disable : 4786)
-	#pragma warning(disable : 4503)
+    #pragma warning(disable : 4786)
+    #pragma warning(disable : 4503)
 #endif
 
 #include <MOOSGenLib/MOOSGenLib.h>
@@ -60,25 +60,25 @@ using namespace std;
 DWORD WINAPI ServerListenLoopProc( LPVOID lpParameter)
 {
     
-    CMOOSCommServer* pMe = 	(CMOOSCommServer*)lpParameter;
+    CMOOSCommServer* pMe =     (CMOOSCommServer*)lpParameter;
     
-    return pMe->ListenLoop();	
+    return pMe->ListenLoop();    
 }
 
 DWORD WINAPI ServerLoopProc( LPVOID lpParameter)
 {
     
-    CMOOSCommServer* pMe = 	(CMOOSCommServer*)lpParameter;
+    CMOOSCommServer* pMe =     (CMOOSCommServer*)lpParameter;
     
-    return pMe->ServerLoop();	
+    return pMe->ServerLoop();    
 }
 
 DWORD WINAPI TimerLoopProc( LPVOID lpParameter)
 {
     
-    CMOOSCommServer* pMe = 	(CMOOSCommServer*)lpParameter;
+    CMOOSCommServer* pMe =     (CMOOSCommServer*)lpParameter;
     
-    return pMe->TimerLoop();	
+    return pMe->TimerLoop();    
 }
 #else
 
@@ -87,9 +87,9 @@ DWORD WINAPI TimerLoopProc( LPVOID lpParameter)
 void * ServerListenLoopProc( void * lpParameter)
 {
     
-    CMOOSCommServer* pMe = 	(CMOOSCommServer*)lpParameter;
+    CMOOSCommServer* pMe =     (CMOOSCommServer*)lpParameter;
     
-    pMe->ListenLoop();	
+    pMe->ListenLoop();    
     
     return NULL;
 }
@@ -97,9 +97,9 @@ void * ServerListenLoopProc( void * lpParameter)
 void * ServerLoopProc( void * lpParameter)
 {
     
-    CMOOSCommServer* pMe = 	(CMOOSCommServer*)lpParameter;
+    CMOOSCommServer* pMe =     (CMOOSCommServer*)lpParameter;
     
-    pMe->ServerLoop();	
+    pMe->ServerLoop();    
     
     return NULL;
 }
@@ -107,9 +107,9 @@ void * ServerLoopProc( void * lpParameter)
 void *TimerLoopProc( void * lpParameter)
 {
     
-    CMOOSCommServer* pMe = 	(CMOOSCommServer*)lpParameter;
+    CMOOSCommServer* pMe =     (CMOOSCommServer*)lpParameter;
     
-    pMe->TimerLoop();	
+    pMe->TimerLoop();    
     
     return NULL;
 }
@@ -142,7 +142,7 @@ bool CMOOSCommServer::StartThreads()
 #ifdef _WIN32
     
     //this is the main listen thread
-    m_hListenThread = ::CreateThread(	NULL,
+    m_hListenThread = ::CreateThread(    NULL,
         0,
         ServerListenLoopProc,
         this,
@@ -152,7 +152,7 @@ bool CMOOSCommServer::StartThreads()
     
     
     
-    m_hServerThread = ::CreateThread(	NULL,
+    m_hServerThread = ::CreateThread(    NULL,
         0,
         ServerLoopProc,
         this,
@@ -163,7 +163,7 @@ bool CMOOSCommServer::StartThreads()
     
     
     
-    m_hTimerThread = ::CreateThread(	NULL,
+    m_hTimerThread = ::CreateThread(    NULL,
         0,
         TimerLoopProc,
         this,
@@ -211,7 +211,7 @@ CMOOSCommServer::CMOOSCommServer()
     m_nMaxSocketFD = 0;
     m_pfnRxCallBack = NULL;
     m_pfnDisconnectCallBack = NULL;
-	m_sCommunityName = "!£";
+    m_sCommunityName = "!£";
 }
 
 CMOOSCommServer::~CMOOSCommServer()
@@ -223,7 +223,7 @@ CMOOSCommServer::~CMOOSCommServer()
 bool CMOOSCommServer::Run(long lPort, const string & sCommunityName)
 {
     
-	m_sCommunityName = sCommunityName;
+    m_sCommunityName = sCommunityName;
     
     m_lListenPort = lPort;
 
@@ -252,13 +252,13 @@ bool CMOOSCommServer::TimerLoop()
         
         m_SocketListLock.Lock();
         
-		p = m_ClientSocketList.begin();
+        p = m_ClientSocketList.begin();
         while(p!=m_ClientSocketList.end())
         {
-            XPCTcpSocket* pS = *p;
+
             double dfLastCalled = (*p)->GetReadTime();
-			q = p;
-			++q;
+            q = p;
+            ++q;
             if(dfTimeNow-dfLastCalled>dfTimeOut)
             {
                 if(OnAbsentClient(*p))
@@ -266,7 +266,7 @@ bool CMOOSCommServer::TimerLoop()
                     m_ClientSocketList.erase(p);
                 }
             }
-			p=q;
+            p=q;
         }
 
         m_SocketListLock.UnLock();        
@@ -322,7 +322,9 @@ bool CMOOSCommServer::ListenLoop()
     }
     catch(XPCException e)
     {
+    #if _WIN32
         e;
+    #endif
         
         MOOSTrace("Error binding to listen socket - Is there another CommServer Running?\n");
         MOOSTrace("This Server Is Quitting\n");
@@ -373,11 +375,10 @@ bool CMOOSCommServer::ListenLoop()
 bool CMOOSCommServer::ServerLoop()
 {
     
-    struct timeval timeout;		// The timeout value for the select system call
-    fd_set fdset;				// Set of "watched" file descriptors
+    struct timeval timeout;        // The timeout value for the select system call
+    fd_set fdset;                // Set of "watched" file descriptors
     
     
-    int nIterations=0;
     
     while(!m_bQuit)
     {
@@ -400,19 +401,22 @@ bool CMOOSCommServer::ServerLoop()
         m_SocketListLock.Lock();
         
         //rotate list..
-        m_ClientSocketList.push_front(m_ClientSocketList.back());
-        m_ClientSocketList.pop_back();
-        
-        for(p = m_ClientSocketList.begin();p!=m_ClientSocketList.end();p++)
+        if(!m_ClientSocketList.empty())
         {
-            FD_SET((*p)->iGetSocketFd(), &fdset);
+            m_ClientSocketList.push_front(m_ClientSocketList.back());
+            m_ClientSocketList.pop_back();
+            
+            for(p = m_ClientSocketList.begin();p!=m_ClientSocketList.end();p++)
+            {
+                FD_SET((*p)->iGetSocketFd(), &fdset);
+            }
         }
         m_SocketListLock.UnLock();
         
         // The select system call is set to timeout after 1 seconds with no data existing
         // on the socket. This has to be here, within the loop as Linux actually writes over
         // the timeout structure on completion of select (no that was a hard bug to find)
-        timeout.tv_sec	= 1;
+        timeout.tv_sec    = 1;
         timeout.tv_usec = 0;
         
         
@@ -431,7 +435,7 @@ bool CMOOSCommServer::ServerLoop()
         switch(iSelectRet)
         {
         case -1:
-            //				Trace("Select failed ");
+            //                Trace("Select failed ");
             return false;
             
         case 0:
@@ -471,7 +475,7 @@ bool CMOOSCommServer::ServerLoop()
 
 
 bool CMOOSCommServer::ProcessClient()
-{					
+{                    
     bool bResult = true;
     
     try
@@ -492,7 +496,7 @@ bool CMOOSCommServer::ProcessClient()
             //convert to list of messages
             PktRx.Serialize(MsgLstRx,false);
             
-			std::string sWho = m_Socket2ClientMap[m_pFocusSocket->iGetSocketFd()];
+            std::string sWho = m_Socket2ClientMap[m_pFocusSocket->iGetSocketFd()];
             //let owner figure out what to do !
             //this is a user supplied call back
             if(!(*m_pfnRxCallBack)(sWho,MsgLstRx,MsgLstTx,m_pRxCallBackParam))
@@ -502,14 +506,14 @@ bool CMOOSCommServer::ProcessClient()
             }
             
             //we must send something back... just to keep the link alive
-			//PMN changes this in 2007 as part of the new timing scheme
-			//every packet will no begin with a NULL message the double val
-			//of which will be the current time on the BD's machine
+            //PMN changes this in 2007 as part of the new timing scheme
+            //every packet will no begin with a NULL message the double val
+            //of which will be the current time on the BD's machine
             if( 1 || MsgLstTx.size()==0)
             {
                 //add a default packet so client doesn't block
                 CMOOSMsg NullMsg;
-				NullMsg.m_dfVal = HPMOOSTime();
+                NullMsg.m_dfVal = HPMOOSTime();
                 MsgLstTx.push_front(NullMsg);
             }
             
@@ -661,7 +665,7 @@ bool CMOOSCommServer::HandShake(XPCTcpSocket *pNewClient)
     {
         if(ReadMsg(pNewClient,Msg,5))
         {
-	    MOOSTrace("part 1 complete\n");
+        MOOSTrace("part 1 complete\n");
             double dfClientTime = Msg.m_dfTime;
             
             dfSkew = MOOSTime()-dfClientTime;
@@ -746,7 +750,7 @@ int CMOOSCommServer::GetMaxSocketFD()
     {
         m_nMaxSocketFD = m_nMaxSocketFD > (*p)->iGetSocketFd() 
             ? m_nMaxSocketFD :
-        (*p)->iGetSocketFd();	
+        (*p)->iGetSocketFd();    
     }
     
     return m_nMaxSocketFD;

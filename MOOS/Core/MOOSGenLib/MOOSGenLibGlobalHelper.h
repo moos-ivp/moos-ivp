@@ -5,22 +5,22 @@
 //   A suit of Applications and Libraries for Mobile Robotics Research 
 //   Copyright (C) 2001-2005 Massachusetts Institute of Technology and 
 //   Oxford University. 
-//	
+//    
 //   This software was written by Paul Newman at MIT 2001-2002 and Oxford 
 //   University 2003-2005. email: pnewman@robots.ox.ac.uk. 
-//	  
+//      
 //   This file is part of a  MOOS Core Component. 
-//		
+//        
 //   This program is free software; you can redistribute it and/or 
 //   modify it under the terms of the GNU General Public License as 
 //   published by the Free Software Foundation; either version 2 of the 
 //   License, or (at your option) any later version. 
-//		  
+//          
 //   This program is distributed in the hope that it will be useful, 
 //   but WITHOUT ANY WARRANTY; without even the implied warranty of 
 //   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
 //   General Public License for more details. 
-//			
+//            
 //   You should have received a copy of the GNU General Public License 
 //   along with this program; if not, write to the Free Software 
 //   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 
@@ -44,6 +44,8 @@
 #include <algorithm>
 
 
+
+
 ////////////////////// STRING MANIPULATION/EXTRATION TOOLS ///////////////////////////////
 
 typedef std::list<std::string> STRING_LIST ;
@@ -53,11 +55,14 @@ bool MOOSGetValueFromToken(STRING_LIST & sParams,const std::string & sToken,std:
 
 //following two functions remove a value from a string containing comma seperated pairs of Token = Val....
 bool MOOSValFromString(std::string & sVal,const std::string & sStr,const std::string & sTk);
-bool MOOSValFromString(double  & dfVal,const std::string & sStr,const std::string & sTk);
-bool MOOSValFromString(int  & nVal,const std::string & sStr,const std::string & sTk);
-bool MOOSValFromString(bool  & bVal,const std::string & sStr,const std::string & sTk);
+bool MOOSValFromString(double & dfVal,const std::string & sStr,const std::string & sTk);
+bool MOOSValFromString(float  &  fVal,const std::string & sStr,const std::string & sTk);
+bool MOOSValFromString(long   &  nVal,const std::string & sStr,const std::string & sTk);
+bool MOOSValFromString(int    &  nVal,const std::string & sStr,const std::string & sTk);
+bool MOOSValFromString(bool   &  bVal,const std::string & sStr,const std::string & sTk);
 bool MOOSValFromString(std::vector<double> &dfValVec,int &nRows,int &nCols, const std::string & sStr, const std::string & sToken);
 bool MOOSVectorFromString(const std::string & sStr,std::vector<double> & dfVecVal,int & nRows,int & nCols);
+bool MOOSVectorFromString(const std::string & sStr,std::vector<float> & fValVec,int & nRows, int & nCols);
 bool MOOSVectorFromString(const std::string & sStr,std::vector<unsigned int> & dfVecVal,int & nRows,int & nCols);
 
 /** write a std::vector<double> to a string (using MOOS Notation) */
@@ -106,7 +111,7 @@ double MOOSTime();
 double HPMOOSTime();
 
 /**useful keyboard trap*/
-int	 MOOSGetch();
+int     MOOSGetch();
 
 
 ////////////////////// OUTPUT TOOLS ///////////////////////////////
@@ -188,6 +193,11 @@ bool GetDirectoryContents(const std::string & sPath,std::list<std::string> &sCon
 /** make a directory */
 bool MOOSCreateDirectory(const std::string & sDirectory);
 
+/** splits a fully qualified path into parts -path, filestem and extension */
+bool MOOSFileParts(std::string sFullPath, std::string & sPath,std::string &sFile,std::string & sExtension);
+
+
+
 
 ////////////////////// MISC TOOLS  ///////////////////////////////
 
@@ -208,20 +218,29 @@ bool IsLittleEndian();
 
 /** Functor class for performing static_cast between two types.
     Use it with stl::transform when copying between two collections
-	with different element types */
+    with different element types */
 template<class D> struct static_caster
 {
-	template<class S> D operator()(S s) const { return static_cast<D> (s); }
+    template<class S> D operator()(S s) const { return static_cast<D> (s); }
 };
 
 
 /** Functor class for performing dynamic_cast between two types.
     Use it with stl::transform when copying between two collections
-	with different element types */
+    with different element types */
 template<class D> struct dynamic_caster
 {
-	template<class S> D operator()(S s) const { return dynamic_cast<D> (s); }
+    template<class S> D operator()(S s) const { return dynamic_cast<D> (s); }
 };
+
+
+///////// USEFUL MACRO FOR PREVENTING COMPILER WARNINGS
+#ifdef _WIN32
+#define UNUSED_PARAMETER(a) a
+#else
+#define UNUSED_PARAMETER(a) 
+#endif
+
 
 
 #endif

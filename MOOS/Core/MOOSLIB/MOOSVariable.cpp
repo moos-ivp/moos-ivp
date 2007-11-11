@@ -5,22 +5,22 @@
 //   A suit of Applications and Libraries for Mobile Robotics Research 
 //   Copyright (C) 2001-2005 Massachusetts Institute of Technology and 
 //   Oxford University. 
-//	
+//    
 //   This software was written by Paul Newman at MIT 2001-2002 and Oxford 
 //   University 2003-2005. email: pnewman@robots.ox.ac.uk. 
-//	  
+//      
 //   This file is part of a  MOOS Core Component. 
-//		
+//        
 //   This program is free software; you can redistribute it and/or 
 //   modify it under the terms of the GNU General Public License as 
 //   published by the Free Software Foundation; either version 2 of the 
 //   License, or (at your option) any later version. 
-//		  
+//          
 //   This program is distributed in the hope that it will be useful, 
 //   but WITHOUT ANY WARRANTY; without even the implied warranty of 
 //   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
 //   General Public License for more details. 
-//			
+//            
 //   You should have received a copy of the GNU General Public License 
 //   along with this program; if not, write to the Free Software 
 //   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 
@@ -45,7 +45,7 @@ CMOOSVariable::CMOOSVariable()
 {
     m_bDouble = false;//true;
     m_bFresh = false;
-	m_dfCommsTime = DEFAULT_MOOS_VAR_COMMS_TIME;
+    m_dfCommsTime = DEFAULT_MOOS_VAR_COMMS_TIME;
     m_dfTimeWritten = -1;
     m_dfVal = 0;
   
@@ -58,7 +58,7 @@ CMOOSVariable::CMOOSVariable(std::string sName,std::string sSubscribe, std::stri
     m_sName = sName;
     m_sSubscribeName =  sSubscribe;
     m_sPublishName = sPublish;
-	m_dfCommsTime = dfCommsTime;
+    m_dfCommsTime = dfCommsTime;
     m_dfTimeWritten = -1;
     m_dfVal = 0;
   
@@ -73,8 +73,8 @@ bool CMOOSVariable::Set(double dfVal,double dfTime)
     m_dfVal = dfVal;
     m_dfTimeWritten = dfTime;
     m_bDouble = true;
-	
-	SetFresh(true);
+    
+    SetFresh(true);
 
     return true;
 }
@@ -84,7 +84,7 @@ bool CMOOSVariable::Set(const std::string & sVal,double dfTime)
     m_sVal = sVal;
     m_dfTimeWritten = dfTime;
     m_bDouble = false;
-	SetFresh(true);
+    SetFresh(true);
 
     return true;
 

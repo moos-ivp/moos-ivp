@@ -5,22 +5,22 @@
 //   A suit of Applications and Libraries for Mobile Robotics Research 
 //   Copyright (C) 2001-2005 Massachusetts Institute of Technology and 
 //   Oxford University. 
-//	
+//    
 //   This software was written by Paul Newman at MIT 2001-2002 and Oxford 
 //   University 2003-2005. email: pnewman@robots.ox.ac.uk. 
-//	  
+//      
 //   This file is part of a  MOOS Core Component. 
-//		
+//        
 //   This program is free software; you can redistribute it and/or 
 //   modify it under the terms of the GNU General Public License as 
 //   published by the Free Software Foundation; either version 2 of the 
 //   License, or (at your option) any later version. 
-//		  
+//          
 //   This program is distributed in the hope that it will be useful, 
 //   but WITHOUT ANY WARRANTY; without even the implied warranty of 
 //   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
 //   General Public License for more details. 
-//			
+//            
 //   You should have received a copy of the GNU General Public License 
 //   along with this program; if not, write to the Free Software 
 //   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 
@@ -45,26 +45,26 @@
 class CMOOSVariable  
 {
 public:
-	std::string GetWriter();
-	double GetAge(double dfTimeNow);
-	std::string GetAsString(int nFieldWidth = 12);
+    std::string GetWriter();
+    double GetAge(double dfTimeNow);
+    std::string GetAsString(int nFieldWidth = 12);
     bool Set(const std::string & sVal,double dfTime);
     bool Set(double dfVal,double dfTime);
 
     std::string GetName();
-	std::string GetStringVal();
-	double GetTime();
-	double GetDoubleVal();
-	bool IsDouble();
-	std::string GetPublishName();
-	bool IsFresh();
-	std::string GetSubscribeName();
-	bool SetFresh(bool bFresh);
-	bool Set(CMOOSMsg & Msg);
-	double GetCommsTime(){return m_dfCommsTime;};
-	CMOOSVariable();
+    std::string GetStringVal();
+    double GetTime();
+    double GetDoubleVal();
+    bool IsDouble();
+    std::string GetPublishName();
+    bool IsFresh();
+    std::string GetSubscribeName();
+    bool SetFresh(bool bFresh);
+    bool Set(CMOOSMsg & Msg);
+    double GetCommsTime(){return m_dfCommsTime;};
+    CMOOSVariable();
     CMOOSVariable(std::string sName, std::string sSubscribe,std::string sPublish,double dfCommsTime = DEFAULT_MOOS_VAR_COMMS_TIME);
-	virtual ~CMOOSVariable();
+    virtual ~CMOOSVariable();
 
 
     
@@ -76,7 +76,7 @@ protected:
     bool   m_bDouble;
     bool   m_bFresh; 
     double m_dfTimeWritten;
-	double m_dfCommsTime; //time used when registering (how often should we receive updates?
+    double m_dfCommsTime; //time used when registering (how often should we receive updates?
 
     std::string m_sName;
     std::string m_sSrc;

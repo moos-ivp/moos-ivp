@@ -5,22 +5,22 @@
 //   A suit of Applications and Libraries for Mobile Robotics Research 
 //   Copyright (C) 2001-2005 Massachusetts Institute of Technology and 
 //   Oxford University. 
-//	
+//    
 //   This software was written by Paul Newman at MIT 2001-2002 and Oxford 
 //   University 2003-2005. email: pnewman@robots.ox.ac.uk. 
-//	  
+//      
 //   This file is part of a  MOOS Core Component. 
-//		
+//        
 //   This program is free software; you can redistribute it and/or 
 //   modify it under the terms of the GNU General Public License as 
 //   published by the Free Software Foundation; either version 2 of the 
 //   License, or (at your option) any later version. 
-//		  
+//          
 //   This program is distributed in the hope that it will be useful, 
 //   but WITHOUT ANY WARRANTY; without even the implied warranty of 
 //   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
 //   General Public License for more details. 
-//			
+//            
 //   You should have received a copy of the GNU General Public License 
 //   along with this program; if not, write to the Free Software 
 //   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 
@@ -31,8 +31,8 @@
 //
 //////////////////////////////////////////////////////////////////////
 #ifdef _WIN32
-	#pragma warning(disable : 4786)
-	#pragma warning(disable : 4503)
+    #pragma warning(disable : 4786)
+    #pragma warning(disable : 4503)
 #endif
 #include <MOOSLIB/MOOSLib.h>
 #include <iostream>
@@ -65,9 +65,9 @@ bool CMOOSInstrument::SetupPort()
 
     if(!m_MissionReader.GetConfiguration(m_sAppName,sParams))
     {
-	MOOSTrace("%s ReadConfiguration() failed to read configuration\n",m_sAppName.c_str());
-	MOOSPause(3000);
-	return false;
+    MOOSTrace("%s ReadConfiguration() failed to read configuration\n",m_sAppName.c_str());
+    MOOSPause(3000);
+    return false;
     }
     
     ///////////////////////////////////////////////////////////
@@ -75,8 +75,8 @@ bool CMOOSInstrument::SetupPort()
     
     if(!m_Port.Configure(sParams))
     {
-	MOOSTrace("failed port creation\n");
-	return false;
+    MOOSTrace("failed port creation\n");
+    return false;
     }
     
     m_Port.Flush();
@@ -88,16 +88,16 @@ bool CMOOSInstrument::InitialiseSensorN(int nAttempts, string sSensorName)
     int i = 0;
     while(!InitialiseSensor())
     {
-	if(++i>nAttempts)
-	{
+    if(++i>nAttempts)
+    {
             MOOSTrace("tried %d time to initialise \"%s\"...giving up\n",i,sSensorName.c_str());
-	    
-	    return false;
-	}
-	else
-	{
-	    MOOSTrace("Attempting to initialise %s\n",sSensorName.c_str());
-	}
+        
+        return false;
+    }
+    else
+    {
+        MOOSTrace("Attempting to initialise %s\n",sSensorName.c_str());
+    }
     }
     
     return true;

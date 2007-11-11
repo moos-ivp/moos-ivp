@@ -5,22 +5,22 @@
 //   A suit of Applications and Libraries for Mobile Robotics Research 
 //   Copyright (C) 2001-2005 Massachusetts Institute of Technology and 
 //   Oxford University. 
-//	
+//    
 //   This software was written by Paul Newman at MIT 2001-2002 and Oxford 
 //   University 2003-2005. email: pnewman@robots.ox.ac.uk. 
-//	  
+//      
 //   This file is part of a  MOOS Core Component. 
-//		
+//        
 //   This program is free software; you can redistribute it and/or 
 //   modify it under the terms of the GNU General Public License as 
 //   published by the Free Software Foundation; either version 2 of the 
 //   License, or (at your option) any later version. 
-//		  
+//          
 //   This program is distributed in the hope that it will be useful, 
 //   but WITHOUT ANY WARRANTY; without even the implied warranty of 
 //   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
 //   General Public License for more details. 
-//			
+//            
 //   You should have received a copy of the GNU General Public License 
 //   along with this program; if not, write to the Free Software 
 //   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 
@@ -31,7 +31,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 #ifdef _WIN32
-	#pragma warning(disable : 4786)
+#pragma warning(disable : 4786)
 #endif
 
 #include <MOOSGenLib/MOOSGenLib.h>
@@ -40,7 +40,6 @@
 #include "MOOSGlobalHelper.h"
 #include <iostream>
 #include <sstream>
-//#include <strstream>
 #include <iomanip>
 #include <math.h>
 
@@ -70,7 +69,6 @@ CMOOSMsg::CMOOSMsg(char cMsgType,const std::string  & sKey,double dfVal,double d
     m_cMsgType = cMsgType;
     m_dfVal = dfVal;
     m_dfVal2 = -1;
-
     m_cDataType = MOOS_DOUBLE;
     m_sKey = sKey;
     m_dfTime = -1;
@@ -145,33 +143,33 @@ template<class T> T CopyFromBufferAsLittleEndian(unsigned char* pBuffer)
 
 void  CMOOSMsg::operator << (double & dfVal)
 {
-	int nSize = sizeof(dfVal);
+    int nSize = sizeof(dfVal);
 
-	if(CanSerialiseN(nSize))
-	{
+    if(CanSerialiseN(nSize))
+    {
         CopyToBufferAsLittleEndian<double>(dfVal,m_pSerializeBuffer);
-		m_pSerializeBuffer+=nSize;
-	}
-	else
-	{
-		throw CMOOSException("CMOOSMsg::operator << Out Of Space");
-	}
+        m_pSerializeBuffer+=nSize;
+    }
+    else
+    {
+        throw CMOOSException("CMOOSMsg::operator << Out Of Space");
+    }
 }
 
 void  CMOOSMsg::operator >> (double & dfVal)
 {
-	int nSize = sizeof(dfVal);
+    int nSize = sizeof(dfVal);
 
-	if(CanSerialiseN(nSize))
-	{
+    if(CanSerialiseN(nSize))
+    {
         dfVal = CopyFromBufferAsLittleEndian<double>(m_pSerializeBuffer);
-		//memcpy((void*)(&dfVal),(void*)(m_pSerializeBuffer),nSize);
-		m_pSerializeBuffer+=nSize;
-	}
-	else
-	{
-		throw CMOOSException("CMOOSMsg::operator >> Out Of Space");
-	}
+        //memcpy((void*)(&dfVal),(void*)(m_pSerializeBuffer),nSize);
+        m_pSerializeBuffer+=nSize;
+    }
+    else
+    {
+        throw CMOOSException("CMOOSMsg::operator >> Out Of Space");
+    }
 }
 
 
@@ -179,98 +177,98 @@ void  CMOOSMsg::operator >> (double & dfVal)
 void  CMOOSMsg::operator << (string &   sVal)
 {
 
-	int nSize = sVal.size()+1;
-	
-	if(CanSerialiseN(nSize))
-	{
+    int nSize = sVal.size()+1;
+
+    if(CanSerialiseN(nSize))
+    {
         strcpy((char *)m_pSerializeBuffer,sVal.c_str());
-		m_pSerializeBuffer+=nSize;
-	}
-	else
-	{
-		throw CMOOSException("CMOOSMsg::operator << Out Of Space");
-	}
+        m_pSerializeBuffer+=nSize;
+    }
+    else
+    {
+        throw CMOOSException("CMOOSMsg::operator << Out Of Space");
+    }
 }
 
 void  CMOOSMsg::operator >> (string & sVal)
 {
-	int nSize = strlen((char*)m_pSerializeBuffer)+1;
+    int nSize = strlen((char*)m_pSerializeBuffer)+1;
 
-	if(CanSerialiseN(nSize))
-	{
-		sVal.insert(0,(char*)m_pSerializeBuffer,nSize-1);
-		m_pSerializeBuffer+=nSize;
-	}
-	else
-	{
-		throw CMOOSException("CMOOSMsg::operator >> Out Of Space");
-	}
+    if(CanSerialiseN(nSize))
+    {
+        sVal.insert(0,(char*)m_pSerializeBuffer,nSize-1);
+        m_pSerializeBuffer+=nSize;
+    }
+    else
+    {
+        throw CMOOSException("CMOOSMsg::operator >> Out Of Space");
+    }
 }
 
 
 void  CMOOSMsg::operator << (int & nVal)
 {
-	int nSize = sizeof(int);
+    int nSize = sizeof(int);
 
-	if(CanSerialiseN(nSize))
-	{
+    if(CanSerialiseN(nSize))
+    {
         CopyToBufferAsLittleEndian<int>(nVal,m_pSerializeBuffer);
-//		memcpy((void*)(m_pSerializeBuffer),(void*)(&nVal),sizeof(nVal));
-		m_pSerializeBuffer+=nSize;
-	}
-	else
-	{
-		throw CMOOSException("CMOOSMsg::operator << Out Of Space");
-	}
+        //        memcpy((void*)(m_pSerializeBuffer),(void*)(&nVal),sizeof(nVal));
+        m_pSerializeBuffer+=nSize;
+    }
+    else
+    {
+        throw CMOOSException("CMOOSMsg::operator << Out Of Space");
+    }
 
 }
 void  CMOOSMsg::operator >> (int & nVal)
 {
-	int nSize = sizeof(int);
+    int nSize = sizeof(int);
 
-	if(CanSerialiseN(nSize))
-	{
+    if(CanSerialiseN(nSize))
+    {
         nVal = CopyFromBufferAsLittleEndian<int>(m_pSerializeBuffer);
 
-		//memcpy((void*)(&nVal),(void*)(m_pSerializeBuffer),sizeof(nVal));
-		m_pSerializeBuffer+=nSize;
-	}
-	else
-	{
-		throw CMOOSException("CMOOSMsg::operator >> Out Of Space");
-	}
+        //memcpy((void*)(&nVal),(void*)(m_pSerializeBuffer),sizeof(nVal));
+        m_pSerializeBuffer+=nSize;
+    }
+    else
+    {
+        throw CMOOSException("CMOOSMsg::operator >> Out Of Space");
+    }
 
 }
 
 void  CMOOSMsg::operator << (char &  cVal)
 {
-	int nSize = sizeof(cVal);
+    int nSize = sizeof(cVal);
 
-	if(CanSerialiseN(nSize))
-	{
-		memcpy((void*)(m_pSerializeBuffer),(void*)(&cVal),sizeof(cVal));
-		m_pSerializeBuffer+=sizeof(cVal);
-	}
-	else
-	{
-		throw CMOOSException("CMOOSMsg::operator << Out Of Space");
-	}
+    if(CanSerialiseN(nSize))
+    {
+        memcpy((void*)(m_pSerializeBuffer),(void*)(&cVal),sizeof(cVal));
+        m_pSerializeBuffer+=sizeof(cVal);
+    }
+    else
+    {
+        throw CMOOSException("CMOOSMsg::operator << Out Of Space");
+    }
 
 }
 
 void  CMOOSMsg::operator >> (char & cVal)
 {
-	int nSize = sizeof(cVal);
+    int nSize = sizeof(cVal);
 
-	if(CanSerialiseN(nSize))
-	{
-		memcpy((void*)(&cVal),(void*)m_pSerializeBuffer,sizeof(cVal));
-		m_pSerializeBuffer+=sizeof(cVal);
-	}
-	else
-	{
-		throw CMOOSException("CMOOSMsg::operator >> Out Of Space");
-	}
+    if(CanSerialiseN(nSize))
+    {
+        memcpy((void*)(&cVal),(void*)m_pSerializeBuffer,sizeof(cVal));
+        m_pSerializeBuffer+=sizeof(cVal);
+    }
+    else
+    {
+        throw CMOOSException("CMOOSMsg::operator >> Out Of Space");
+    }
 
 }
 
@@ -278,42 +276,41 @@ void  CMOOSMsg::operator >> (char & cVal)
 int CMOOSMsg::Serialize(unsigned char *pBuffer, int nLen, bool bToStream)
 {
 
-	if(bToStream)
-	{
-		try
-		{
+    if(bToStream)
+    {
+        try
+        {
 
             //MOOSTrace("Packing Msg with community %s\n",m_sOriginatingCommunity.c_str());
 
-			m_pSerializeBuffer = pBuffer;
-			m_pSerializeBufferStart = pBuffer;
-			m_nSerializeBufferLen = nLen;
+            m_pSerializeBuffer = pBuffer;
+            m_pSerializeBufferStart = pBuffer;
+            m_nSerializeBufferLen = nLen;
 
-			//leave space for total byte count
-			m_pSerializeBuffer +=sizeof(int);
+            //leave space for total byte count
+            m_pSerializeBuffer +=sizeof(int);
 
             //what is message ID;
             (*this)<<m_nID;
 
-			//what type of message is this?
-			(*this)<<m_cMsgType;
+            //what type of message is this?
+            (*this)<<m_cMsgType;
 
-			//what type of data is this?
-			(*this)<<m_cDataType;
-
+            //what type of data is this?
+            (*this)<<m_cDataType;
 
             //from whence does it come
             (*this)<<m_sSrc;
 
-			//and from which community?
-			(*this)<<m_sOriginatingCommunity;
+            //and from which community?
+            (*this)<<m_sOriginatingCommunity;
 
-			//what
-			(*this)<<m_sKey;
+            //what
+            (*this)<<m_sKey;
 
             //what time was the notification?
-			(*this)<<m_dfTime;
-			
+            (*this)<<m_dfTime;
+
             //double data
             (*this)<<m_dfVal;
 
@@ -321,63 +318,63 @@ int CMOOSMsg::Serialize(unsigned char *pBuffer, int nLen, bool bToStream)
             (*this)<<m_dfVal2;
 
             //string data
-			(*this)<<m_sVal;
-			
-
-			//how many bytes in total have we written (this includes an int at the start)?
-			m_nLength = m_pSerializeBuffer-m_pSerializeBufferStart;
-
-			//reset destination
-			m_pSerializeBuffer = m_pSerializeBufferStart;
-
-			//write the number of bytes
-			(*this)<<m_nLength;
-
-		
-		
-
-		}
-		catch(CMOOSException e)
-		{
-			MOOSTrace("exception : CMOOSMsg::Serialize failed: %s\n ",e.m_sReason);
-			return -1;
-		}
-	}
-	else
-	{
-		//this is extracting from a stream....
-
-		try
-		{
-			m_pSerializeBuffer = pBuffer;
-			m_pSerializeBufferStart = pBuffer;
-			m_nSerializeBufferLen = nLen;
+            (*this)<<m_sVal;
 
 
-			(*this)>>m_nLength;
+            //how many bytes in total have we written (this includes an int at the start)?
+            m_nLength = m_pSerializeBuffer-m_pSerializeBufferStart;
+
+            //reset destination
+            m_pSerializeBuffer = m_pSerializeBufferStart;
+
+            //write the number of bytes
+            (*this)<<m_nLength;
+
+
+
+
+        }
+        catch(CMOOSException e)
+        {
+            MOOSTrace("exception : CMOOSMsg::Serialize failed: %s\n ",e.m_sReason);
+            return -1;
+        }
+    }
+    else
+    {
+        //this is extracting from a stream....
+
+        try
+        {
+            m_pSerializeBuffer = pBuffer;
+            m_pSerializeBufferStart = pBuffer;
+            m_nSerializeBufferLen = nLen;
+
+
+            (*this)>>m_nLength;
 
             //what is message ID;
             (*this)>>m_nID;
 
-			//what type of message is this?
-			(*this)>>m_cMsgType;
+            //what type of message is this?
+            (*this)>>m_cMsgType;
 
-			//what type of data is this?
-			(*this)>>m_cDataType;
+            //what type of data is this?
+            (*this)>>m_cDataType;
 
 
             //from whence does it come
             (*this)>>m_sSrc;
 
-	    //and from which community?
-	    (*this)>>m_sOriginatingCommunity;
-	    
-	    //what
-	    (*this)>>m_sKey;
-	    
+            //and from which community?
+            (*this)>>m_sOriginatingCommunity;
+
+            //what
+            (*this)>>m_sKey;
+
             //what time was the notification?
-	    (*this)>>m_dfTime;
-			
+            (*this)>>m_dfTime;
+
             //double data
             (*this)>>m_dfVal;
 
@@ -386,18 +383,18 @@ int CMOOSMsg::Serialize(unsigned char *pBuffer, int nLen, bool bToStream)
 
 
             //string data
-	    (*this)>>m_sVal;
-			
-		}
-		catch(CMOOSException e)
-		{
-			MOOSTrace("exception : CMOOSMsg::Serialize failed: %s\n ",e.m_sReason);
+            (*this)>>m_sVal;
 
-			return -1;
-		}
+        }
+        catch(CMOOSException e)
+        {
+            MOOSTrace("exception : CMOOSMsg::Serialize failed: %s\n ",e.m_sReason);
 
-	}
-	return m_nLength;
+            return -1;
+        }
+
+    }
+    return m_nLength;
 
 }
 
@@ -408,7 +405,7 @@ int CMOOSMsg::GetLength()
 
 bool CMOOSMsg::CanSerialiseN(int N)
 {
-    return 	 (m_pSerializeBuffer-m_pSerializeBufferStart)+N<=m_nSerializeBufferLen;
+    return      (m_pSerializeBuffer-m_pSerializeBufferStart)+N<=m_nSerializeBufferLen;
 }
 
 bool CMOOSMsg::IsType(char cType)
@@ -423,12 +420,12 @@ void CMOOSMsg::Trace()
 
     switch(m_cDataType)
     {
-	case MOOS_DOUBLE:
+    case MOOS_DOUBLE:
         MOOSTrace("Data=%f ",m_dfVal);
-		break;
-	case MOOS_STRING:
+        break;
+    case MOOS_STRING:
         MOOSTrace("Data=%s ",m_sVal.c_str());
-		break;
+        break;
     }
 
 
@@ -441,14 +438,14 @@ bool CMOOSMsg::IsYoungerThan(double dfAge)
 }
 
 /**
- *A method to check the timestamping of a MOOSMsg.
- *Does so by checking the <code>TimeNow</code> passed to it, and gives the
- *requesting class an idea about how out of sync this message is by comparing the
- *MOOSMsg's time stamp (<code>m_dfTime</code>) to SKEW_TOLERANCE.  
- *@return true if a MOOSMsg's time stamp is either SKEW_TOLERANCE seconds ahead or 
- *behind the MOOSDB clock.  Will also pass you the <code>pdfSkew</code>, or amount of
- *time difference between the MOOSDB and MOOSMsg timestamp if desired. 
- */
+*A method to check the timestamping of a MOOSMsg.
+*Does so by checking the <code>TimeNow</code> passed to it, and gives the
+*requesting class an idea about how out of sync this message is by comparing the
+*MOOSMsg's time stamp (<code>m_dfTime</code>) to SKEW_TOLERANCE.  
+*@return true if a MOOSMsg's time stamp is either SKEW_TOLERANCE seconds ahead or 
+*behind the MOOSDB clock.  Will also pass you the <code>pdfSkew</code>, or amount of
+*time difference between the MOOSDB and MOOSMsg timestamp if desired. 
+*/
 bool CMOOSMsg::IsSkewed(double dfTimeNow, double * pdfSkew)
 {
     //if we are in playback mode (a global app wide flag)
@@ -460,41 +457,16 @@ bool CMOOSMsg::IsSkewed(double dfTimeNow, double * pdfSkew)
 
     double dfSkew = fabs(dfTimeNow - m_dfTime);
 
-	if(pdfSkew != NULL)
+    if(pdfSkew != NULL)
     {
-	    *pdfSkew = dfSkew;
+        *pdfSkew = dfSkew;
     }
 
     return (dfSkew > SKEW_TOLERANCE) ? true : false;
 
 }
 
-/*
- *bool CMOOSMsg::IsStale(double dfCurrentTime)
- *{
- //first check on FutureNess of this MOOSMsg
- if((m_dfTime - dfCurrentTime) > FUTURE_TIME_STAMP_TOLERANCE)
- {
- MOOSTrace("Msg %s has Future Time Stamp: %f\n", m_sKey.c_str(), m_dfTime);
- MOOSTrace("Msg %s [current Time Stamp: %f]\n", m_sKey.c_str(), dfCurrentTime);
- 
- return true;
- }
- else if((m_dfTime - dfCurrentTime) < -FUTURE_TIME_STAMP_TOLERANCE)
- {
- MOOSTrace("Msg %s has Past Time Stamp: %f\n", m_sKey.c_str(), m_dfTime);
- MOOSTrace("Msg %s [current Time Stamp: %f]\n", m_sKey.c_str(), dfCurrentTime);
- 
- return true;
- }
- else
- {
- //(m_dfTime < dfCurrentTime) 
- return (dfCurrentTime > m_dfTime) ? true : false;
- }
- 
- }
-*/
+
 
 
 
@@ -502,7 +474,6 @@ bool CMOOSMsg::IsSkewed(double dfTimeNow, double * pdfSkew)
 string CMOOSMsg::GetAsString(int nFieldWidth/*=12*/)
 {
     ostringstream os;
-//	ostrstream os;
 
     os.setf(ios::left);
 
@@ -510,24 +481,19 @@ string CMOOSMsg::GetAsString(int nFieldWidth/*=12*/)
     {        
         if(IsDataType(MOOS_DOUBLE))
         {
-            os<<setw(nFieldWidth)<<m_dfVal<<ends;       
+            os<<setw(nFieldWidth)<<setprecision(12)<<m_dfVal<<ends;       
         }
         else
         {
             os<<m_sVal.c_str()<<ends;
         }
-
     }
     else
     {
         os<<setw(nFieldWidth)<<"NaN"<<ends;       
     }
 
-    string sResult = os.str();
-
-//    os.rdbuf()->freeze(0);
-
-    return sResult;
+    return os.str();
 }
 
 bool CMOOSMsg::IsDataType(char cDataType)

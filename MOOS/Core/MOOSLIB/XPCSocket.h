@@ -5,22 +5,22 @@
 //   A suit of Applications and Libraries for Mobile Robotics Research 
 //   Copyright (C) 2001-2005 Massachusetts Institute of Technology and 
 //   Oxford University. 
-//	
+//    
 //   This software was written by Paul Newman at MIT 2001-2002 and Oxford 
 //   University 2003-2005. email: pnewman@robots.ox.ac.uk. 
-//	  
+//      
 //   This file is part of a  MOOS CORE Component. 
-//		
+//        
 //   This program is free software; you can redistribute it and/or 
 //   modify it under the terms of the GNU General Public License as 
 //   published by the Free Software Foundation; either version 2 of the 
 //   License, or (at your option) any later version. 
-//		  
+//          
 //   This program is distributed in the hope that it will be useful, 
 //   but WITHOUT ANY WARRANTY; without even the implied warranty of 
 //   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
 //   General Public License for more details. 
-//			
+//            
 //   You should have received a copy of the GNU General Public License 
 //   along with this program; if not, write to the Free Software 
 //   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 
@@ -45,17 +45,18 @@
     #include <errno.h>
     #include <iostream>
     #include <sys/types.h>
-    #include <stropts.h>
-//    #include <sys/filio.h>
-#define FIONBIO 0x5421
-#else
+    #include <sys/ioctl.h>
+    #ifdef PLATFORM_LINUX
+        #define FIONBIO 0x5421
+    #endif
+#elif _WIN32
     #include <winsock2.h>
-	#include "windows.h"
-	#include "winbase.h"
-	#include "winnt.h"
-
-
+    #include "windows.h"
+    #include "winbase.h"
+    #include "winnt.h"
     typedef int socklen_t;
+#else
+    #error "Looks like the build scripts didn't set the platform type"
 #endif
 
 class XPCSocket
@@ -68,12 +69,12 @@ protected:
     double  m_dfLastRead;
     struct sockaddr_in clientAddress;    // Address of the client that sent data
 public:
-	void vSetRecieveTimeOut(int nTimeOut);
+    void vSetRecieveTimeOut(int nTimeOut);
     void SetReadTime(double dfTime){m_dfLastRead = dfTime;};
     double GetReadTime(){return m_dfLastRead;};
 
-	//returns integer number of last socket error
-	int iGetLastError();
+    //returns integer number of last socket error
+    int iGetLastError();
     // Constructor.  Creates a socket given a protocol (UDP / TCP) and a port number
     XPCSocket(char *_sProtocol, int _iPort);
 
@@ -124,10 +125,10 @@ public:
     // Gets the system error
     char *sGetError()
     {
-        static char buf[10];
         #ifdef UNIX
             return strerror(errno);
-        #else
+        #elif _WIN32
+            static char buf[10];
             sprintf(buf, "%d", WSAGetLastError());    
             return buf;
         #endif

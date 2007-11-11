@@ -5,22 +5,22 @@
 //   A suit of Applications and Libraries for Mobile Robotics Research 
 //   Copyright (C) 2001-2005 Massachusetts Institute of Technology and 
 //   Oxford University. 
-//	
+//    
 //   This software was written by Paul Newman at MIT 2001-2002 and Oxford 
 //   University 2003-2005. email: pnewman@robots.ox.ac.uk. 
-//	  
+//      
 //   This file is part of a  MOOS Core Component. 
-//		
+//        
 //   This program is free software; you can redistribute it and/or 
 //   modify it under the terms of the GNU General Public License as 
 //   published by the Free Software Foundation; either version 2 of the 
 //   License, or (at your option) any later version. 
-//		  
+//          
 //   This program is distributed in the hope that it will be useful, 
 //   but WITHOUT ANY WARRANTY; without even the implied warranty of 
 //   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
 //   General Public License for more details. 
-//			
+//            
 //   You should have received a copy of the GNU General Public License 
 //   along with this program; if not, write to the Free Software 
 //   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 
@@ -65,9 +65,9 @@
 DWORD WINAPI CommsLoopProc( LPVOID lpParameter)
 {
     
-    CMOOSSerialPort* pMe = 	(CMOOSSerialPort*)lpParameter;
+    CMOOSSerialPort* pMe =     (CMOOSSerialPort*)lpParameter;
     
-    return pMe->CommsLoop();	
+    return pMe->CommsLoop();    
 }
 
 
@@ -77,9 +77,9 @@ void * CommsLoopProc( void * lpParameter)
 {
     
     MOOSTrace("starting comms thread in linux\n");
-    CMOOSSerialPort* pMe = 	(CMOOSSerialPort*)lpParameter;
+    CMOOSSerialPort* pMe =     (CMOOSSerialPort*)lpParameter;
     
-    pMe->CommsLoop();	
+    pMe->CommsLoop();    
     
     return NULL;
 }
@@ -95,7 +95,7 @@ bool CMOOSSerialPort::StartThreads()
     
 #ifdef _WIN32
     //this is the main listen thread
-    m_hCommsThread = ::CreateThread(	NULL,
+    m_hCommsThread = ::CreateThread(    NULL,
         0,
         CommsLoopProc,
         this,
@@ -120,17 +120,17 @@ bool CMOOSSerialPort::StartThreads()
 
 CMOOSSerialPort::CMOOSSerialPort()
 {
-    m_sPort			 = DEFAULT_PORT;
-    m_nBaudRate		 = DEFAULT_BAUDRATE;
-    m_bHandShaking	 = false;
-    m_bStreaming	 = false;
+    m_sPort             = DEFAULT_PORT;
+    m_nBaudRate         = DEFAULT_BAUDRATE;
+    m_bHandShaking     = false;
+    m_bStreaming     = false;
     m_bVerbose       = false;
-    m_bQuit			 = false;
+    m_bQuit             = false;
     m_pfnUserIsCompleteReplyCallBack = NULL;
     m_cTermCharacter = '\r';
 
-	// ARH 14/05/2005 500kBaud CSM PCMCIA serial card setting
-	m_bUseCsmExt = false;
+    // ARH 14/05/2005 500kBaud CSM PCMCIA serial card setting
+    m_bUseCsmExt = false;
 }
 
 CMOOSSerialPort::~CMOOSSerialPort()
@@ -207,18 +207,18 @@ bool CMOOSSerialPort::Configure(STRING_LIST sParams)
             
         }
 
-		// ARH 14/05/2005 Added to allow use of the 500kbaud CSM PCMCIA card
-		else if (MOOSStrCmp(sTok, "USECSMEXT"))
-		{
-			if (MOOSStrCmp(sVal, "TRUE"))
-			{
-				m_bUseCsmExt = true;
-			}
-			else
-			{
-				m_bUseCsmExt = false;
-			}
-		}
+        // ARH 14/05/2005 Added to allow use of the 500kbaud CSM PCMCIA card
+        else if (MOOSStrCmp(sTok, "USECSMEXT"))
+        {
+            if (MOOSStrCmp(sVal, "TRUE"))
+            {
+                m_bUseCsmExt = true;
+            }
+            else
+            {
+                m_bUseCsmExt = false;
+            }
+        }
     }
     
     
@@ -274,9 +274,9 @@ bool CMOOSSerialPort::CommsLoop()
 {
     
     
-    char	pTmp[DEFAULT_COMMS_SPACE];
-    char	pAccumulator[2*DEFAULT_COMMS_SPACE];
-    int		nInStore = 0;
+    char    pTmp[DEFAULT_COMMS_SPACE];
+    char    pAccumulator[2*DEFAULT_COMMS_SPACE];
+    int        nInStore = 0;
     
     double dfTimeOut = 0.1;
     
@@ -287,7 +287,7 @@ bool CMOOSSerialPort::CommsLoop()
         if(nRead!=-1)
         {
             
-            if((nInStore+nRead)>sizeof(pAccumulator))
+            if((nInStore+nRead)>int(sizeof(pAccumulator)))
             {
                 //oops...
                 MOOSTrace("Comms Loop Accumulator Overflow, reseting\n");
@@ -306,7 +306,7 @@ bool CMOOSSerialPort::CommsLoop()
             
             char * pTelegramEnd = NULL;
             
-            do	
+            do    
             {
                
                
@@ -356,7 +356,7 @@ bool CMOOSSerialPort::CommsLoop()
                     CMOOSSerialTelegram Tg(sTelegram,MOOSTime());
                     
                     //stuff it
-                    m_InBox.push_front(Tg);		
+                    m_InBox.push_front(Tg);        
                 }
             }while(pTelegramEnd !=NULL);
             
@@ -452,7 +452,6 @@ char CMOOSSerialPort::GetTermCharacter()
 int CMOOSSerialPort::ReadNWithTimeOut(char *pData, int nLen, double dfTimeOut,double * pTime )
 {
         
-    double  dfTimeWaited   = 0;         //haven't waited any time yet
 
     int nSpace = nLen;                  //space left in buffer
     int nRead = 0;                      //total number of chars read
@@ -464,7 +463,7 @@ int CMOOSSerialPort::ReadNWithTimeOut(char *pData, int nLen, double dfTimeOut,do
     
     while (HPMOOSTime()<dfStopTime && !bQuit)
     {
-        unsigned long dwRes = 0;
+
         
         //try the read
         nGrabbed = GrabN(pData+nRead,nSpace);
@@ -472,7 +471,7 @@ int CMOOSSerialPort::ReadNWithTimeOut(char *pData, int nLen, double dfTimeOut,do
         if (nGrabbed == 0)
         {
             // wait a while...maybe it is on its way!
-            MOOSPause(10);	       
+            MOOSPause(10);           
         }
         else if(nGrabbed<0)
         {
@@ -482,7 +481,7 @@ int CMOOSSerialPort::ReadNWithTimeOut(char *pData, int nLen, double dfTimeOut,do
         {
             if(nRead==0 && pTime!=NULL)
             {
-                //grab the time..						
+                //grab the time..                        
                 *pTime = MOOSTime();
             }
             
@@ -512,8 +511,8 @@ bool CMOOSSerialPort::GetTelegram(std::string &sTelegram,double dfTimeOut,double
     
     char pData[TELEGRAM_LEN];
     double dfTimeWaited   = 0.0;              //haven't waited any tiome yet
-    double dfInterval =		0.01;             //10ms
-    int nRead =			0;              //total number of chars read
+    double dfInterval =        0.01;             //10ms
+    int nRead =            0;              //total number of chars read
     
     
     while ((dfTimeWaited<dfTimeOut) && nRead<TELEGRAM_LEN)
@@ -534,7 +533,7 @@ bool CMOOSSerialPort::GetTelegram(std::string &sTelegram,double dfTimeOut,double
         {
             if(nRead==0 && pTime!=NULL)
             {
-                //grab the time..						
+                //grab the time..                        
                 *pTime = MOOSTime();
             }
             
@@ -567,15 +566,15 @@ bool CMOOSSerialPort::Close()
 
     m_bQuit = true;
 
-	if(m_bStreaming)
-	{
+    if(m_bStreaming)
+    {
 #ifdef _WIN32
     WaitForSingleObject(m_hCommsThread,INFINITE);
 #else
     void * Result;
     pthread_join(m_nCommsThreadID,&Result);
 #endif
-	}
+    }
     return true;
 
 
@@ -583,6 +582,6 @@ bool CMOOSSerialPort::Close()
 
 std::string CMOOSSerialPort::GetPortName()
 {
-	return m_sPort;
+    return m_sPort;
 }
 
