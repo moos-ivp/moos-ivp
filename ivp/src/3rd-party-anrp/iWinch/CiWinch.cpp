@@ -36,7 +36,7 @@ bool CiWinch::OnNewMail(MOOSMSG_LIST &NewMail)
 		CMOOSMsg &msg = *p;
 		
 		if(msg.m_sKey == "WINCH_DESIRED_ENCPOS" && !msg.IsSkewed(MOOSTime())) {
-			winch->Seek(msg.m_dfVal);
+			winch->Seek(int(msg.m_dfVal));
 		} else if(msg.m_sKey == "WINCH_ENABLED" && !msg.IsSkewed(MOOSTime())) {
 			if(msg.m_dfVal == 0) {
 				winch->Disable();
