@@ -19,10 +19,12 @@
 /* Software Foundation, Inc., 59 Temple Place - Suite 330,       */
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
+
 #ifdef _WIN32
 #pragma warning(disable : 4786)
 #pragma warning(disable : 4503)
 #endif
+
 #include <iostream>
 #include <math.h>
 #include "AngleUtils.h"
