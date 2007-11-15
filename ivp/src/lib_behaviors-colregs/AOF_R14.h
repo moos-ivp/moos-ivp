@@ -29,7 +29,7 @@
 class AOF_R14: public AOF {
 public:
   AOF_R14(IvPDomain);
-  ~AOF_R14() {if(cpa_engine) delete(cpa_engine);};
+  ~AOF_R14() {if(m_cpa_engine) delete(m_cpa_engine);};
 
 public: // virtual functions   
   double evalBox(const IvPBox*) const;
@@ -41,29 +41,31 @@ protected: // non-virtual functions
   double metric2(double, double) const;
 
 protected:
-  double os_tol;   // Ownship Time on Leg
-  double os_lat;   // Ownship Lat position
-  double os_lon;   // Ownship Lon position
-  double cn_lat;   // Contact Lat position
-  double cn_lon;   // Contact Lon position
-  double cn_crs;   // Contact heading
-  double cn_spd;   // Contact speed
+  double m_tol;    // Ownship Time on Leg
+  double m_osx;    // Ownship X position (meters)
+  double m_osy;    // Ownship Y position (meters)
+  double m_cnx;    // Contact X position (meters)
+  double m_cny;    // Contact Y position (meters)
+  double m_cnh;    // Contact heading
+  double m_cnv;    // Contact speed
 
-  bool   os_tol_set;
-  bool   os_lat_set;
-  bool   os_lon_set;
-  bool   cn_lat_set;
-  bool   cn_lon_set;
-  bool   cn_crs_set;
-  bool   cn_spd_set;
+  double m_collision_distance;
+  double m_all_clear_distance;
 
-  bool   collision_distance_set;
-  bool   all_clear_distance_set;
+  bool   m_tol_set;
+  bool   m_osy_set;
+  bool   m_osx_set;
+  bool   m_cnx_set;
+  bool   m_cny_set;
+  bool   m_cnh_set;
+  bool   m_cnv_set;
+  bool   m_collision_distance_set;
+  bool   m_all_clear_distance_set;
 
-  CPAEngine *cpa_engine;
+  CPAEngine *m_cpa_engine;
 
-  int    crs_ix;  // Index of "course" variable in IvPDomain
-  int    spd_ix;  // Index of "speed" variable in IvPDomain
+  int    m_crs_ix;  // Index of "course" variable in IvPDomain
+  int    m_spd_ix;  // Index of "speed" variable in IvPDomain
 };
 
 #endif
