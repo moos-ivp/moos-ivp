@@ -28,11 +28,13 @@
 #include <iostream>
 #include <math.h>
 #include "AngleUtils.h"
+#include "GeomUtils.h"
 #include "BHV_HeadOn14.h"
 #include "AOF_R14.h"
 #include "OF_Reflector.h"
 #include "BuildUtils.h"
 #include "MBUtils.h"
+#include "CPA_Utils.h"
 
 using namespace std;
 
@@ -43,12 +45,20 @@ BHV_HeadOn14::BHV_HeadOn14(IvPDomain gdomain) :
   IvPBehavior(gdomain)
 {
   this->setParam("descriptor", "(d)bhv_r14");
-  this->setParam("unifbox", "course=2, speed=2, tol=2");
-  this->setParam("gridbox", "course=8, speed=6, tol=6");
+  this->setParam("unifbox", "course=3,speed=3");
+  this->setParam("gridbox", "course=9,speed=6");
 
-  domain = subDomain(domain, "course,speed,tol");
+  domain = subDomain(domain, "course,speed");
 
-  range = -1;
+  m_active_outer_dist = 200;
+  m_active_inner_dist = 50;
+  m_collision_dist    = 10; 
+  m_all_clear_dist    = 75; 
+  m_active_grade      = "quasi";
+  m_roc_max_dampen    = -2.0; 
+  m_roc_max_heighten  = 2.0; 
+
+  m_on_no_contact_ok  = true;
 
   info_vars.push_back("NAV_X");
   info_vars.push_back("NAV_Y");
@@ -66,16 +76,92 @@ bool BHV_HeadOn14::setParam(string g_param, string g_val)
 
   if((g_param == "them") || (g_param == "contact")) {
     if(!param_lock) {
-      them_name = toupper(g_val);
-      info_vars.push_back(them_name+"_NAV_X");
-      info_vars.push_back(them_name+"_NAV_Y");
-      info_vars.push_back(them_name+"_NAV_SPEED");
-      info_vars.push_back(them_name+"_NAV_HEADING");
+      m_contact = toupper(g_val);
+      info_vars.push_back(m_contact + "_NAV_X");
+      info_vars.push_back(m_contact + "_NAV_Y");
+      info_vars.push_back(m_contact + "_NAV_SPEED");
+      info_vars.push_back(m_contact + "_NAV_HEADING");
     }
     return(true);
   }  
-  else if(g_param == "range") {
-    range = atof(g_val.c_str());
+
+  else if((g_param == "active_distance") ||
+	  (g_param == "active_outer_distance")) {
+    double dval = atof(g_val.c_str());
+    if((dval < 0) || (!isNumber(g_val)))
+      return(false);
+    if(!param_lock) {
+      m_active_outer_dist = dval;
+      if(m_active_inner_dist > m_active_outer_dist)
+	m_active_inner_dist = m_active_outer_dist;
+    }
+    return(true);
+  }  
+  else if(g_param == "active_inner_distance") {
+    double dval = atof(g_val.c_str());
+    if((dval < 0) || (!isNumber(g_val)))
+      return(false);
+    if(!param_lock) {
+      m_active_inner_dist = dval;
+      if(m_active_outer_dist < m_active_inner_dist)
+	m_active_outer_dist = m_active_inner_dist;
+    }
+    return(true);
+  }  
+  else if(g_param == "collision_distance") {
+    double dval = atof(g_val.c_str());
+    if((dval < 0) || (!isNumber(g_val)))
+      return(false);
+    if(!param_lock)
+      m_collision_dist = dval;
+    return(true);
+  }  
+  else if(g_param == "all_clear_distance") {
+    double dval = atof(g_val.c_str());
+    if((dval < 0) || (!isNumber(g_val)))
+      return(false);
+    if(!param_lock)
+      m_all_clear_dist = dval;
+    return(true);
+  }  
+  else if(g_param == "active_grade") {
+    g_val = tolower(g_val);
+    if((g_val!="linear") && (g_val!="quadratic") && 
+       (g_val!="quasi"))
+      return(false);
+    if(!param_lock)
+      m_active_grade = g_val;
+    return(true);
+    return(true);
+  }  
+  else if(g_param == "roc_max_heighten") {
+    double dval = atof(g_val.c_str());
+    if((dval < 0) || (!isNumber(g_val)))
+      return(false);
+    if(!param_lock) {
+      m_roc_max_heighten = dval;
+      if(m_roc_max_dampen > m_roc_max_heighten)
+	m_roc_max_dampen = m_roc_max_heighten;
+    }
+    return(true);
+  }  
+  else if(g_param == "roc_max_dampen") {
+    double dval = atof(g_val.c_str());
+    if((dval < 0) || (!isNumber(g_val)))
+      return(false);
+    if(!param_lock) {
+      m_roc_max_dampen = dval;
+      if(m_roc_max_heighten < m_roc_max_heighten)
+	m_roc_max_heighten = m_roc_max_dampen;
+    }
+    return(true);
+  }  
+  else if(g_param == "on_no_contact_ok") {
+    g_val = tolower(g_val);
+    if((g_val != "true") && (g_val != "false") && 
+       (g_val != "yes")  && (g_val != "no"))
+      return(false);
+    m_on_no_contact_ok = ((g_val == "true") || (g_val == "yes"));
     return(true);
   }  
   return(false);
@@ -92,45 +178,18 @@ IvPFunction *BHV_HeadOn14::produceOF()
     return(0);
   }
   
-  if(them_name == "") {
+  if(m_contact == "") {
     postEMessage("contact ID not set.");
     return(0);
   }
 
-  bool ok1, ok2;
-
-  double cnCRS = info_buffer->dQuery(them_name+"_NAV_HEADING", ok1);
-  double cnSPD = info_buffer->dQuery(them_name+"_NAV_SPEED", ok2);
-  if(!ok1 || !ok2) {
-    postWMessage("contact course/speed info not found.");
+  bool ok = getBufferInfo();
+  if(!ok) {
+    postRange(false);
     return(0);
   }
 
-  double osCRS = info_buffer->dQuery("NAV_HEADING", ok1);
-  double osSPD = info_buffer->dQuery("NAV_SPEED", ok2);
-  if(!ok1 || !ok2) {
-    postEMessage("ownship course/speed info not found.");
-    return(0);
-  }
-
-  if(cnCRS < 0) cnCRS += 360.0;
-
-  double cnLAT = info_buffer->dQuery(them_name+"_NAV_Y", ok1);
-  double cnLON = info_buffer->dQuery(them_name+"_NAV_X", ok2);
-  if(!ok1 || !ok2) {
-    postWMessage("contact x/y info not found.");
-    return(0);
-  }
-
-  double osLAT = info_buffer->dQuery("NAV_Y", ok1);
-  double osLON = info_buffer->dQuery("NAV_X", ok2);
-  if(!ok1 || !ok2) {
-    postEMessage("ownship x/y info not found.");
-    return(0);
-  }
-
-  double relevance = getRelevance(osLON, osLAT, osCRS, osSPD, 
-				  cnLON, cnLAT, cnCRS, cnSPD);
+  double relevance = getRelevance();
 
   if(!silent)
     cout << "BHV_HeadOn14::produceOF(): relevance: " << relevance << endl;
@@ -138,43 +197,112 @@ IvPFunction *BHV_HeadOn14::produceOF()
     return(0);
 
   AOF_R14 aof(domain);
-  aof.setParam("os_lat", osLAT);
-  aof.setParam("os_lon", osLON);
-  aof.setParam("cn_lat", cnLAT);
-  aof.setParam("cn_lon", cnLON);
-  aof.setParam("cn_crs", cnCRS);
-  aof.setParam("cn_spd", cnSPD);
-  aof.initialize();
-  
+
+  ok = true;
+  ok = ok && aof.setParam("osy", m_osy);
+  ok = ok && aof.setParam("osx", m_osx);
+  ok = ok && aof.setParam("cny", m_cny);
+  ok = ok && aof.setParam("cnx", m_cnx);
+  ok = ok && aof.setParam("cnh", m_cnh);
+  ok = ok && aof.setParam("cnv", m_cnv);
+  ok = ok && aof.setParam("tol", 120);
+  ok = ok && aof.setParam("collision_distance", m_collision_dist);
+  ok = ok && aof.setParam("all_clear_distance", m_all_clear_dist);
+  ok = ok && aof.initialize();
+
+  if(!ok) {
+    postEMessage("Unable to init AOF_R14.");
+    return(0);
+  }
+
   OF_Reflector reflector(&aof, 1);
-
   reflector.createUniform(unif_box, grid_box);
+  IvPFunction *ipf = reflector.extractOF();
 
-  IvPFunction *of = reflector.extractOF();
+  ipf->getPDMap()->normalize(0.0, 100.0);
 
-  of->setPWT(relevance * priority_wt);
+  ipf->setPWT(relevance * priority_wt);
 
-  return(of);
+  return(ipf);
 }
+
+//-----------------------------------------------------------
+// Procedure: onIdleState()
+
+void BHV_HeadOn14::onIdleState() 
+{
+  bool ok = getBufferInfo();
+  if(!ok)
+    postRange(false);
+  else {
+    m_curr_distance = hypot((m_osx - m_cnx),(m_osy - m_cny));
+    postRange(true);
+  }
+}
+
+//-----------------------------------------------------------
+// Procedure: getBufferInfo
+
+bool BHV_HeadOn14::getBufferInfo()
+{
+  bool ok1, ok2;
+
+  m_cnh = info_buffer->dQuery(m_contact+"_NAV_HEADING", ok1);
+  m_cnv = info_buffer->dQuery(m_contact+"_NAV_SPEED",   ok2);
+  if(!ok1 || !ok2) {    
+    string msg = m_contact + " heading/speed info not found";
+    if(m_on_no_contact_ok)
+      postWMessage(msg);
+    else
+      postEMessage(msg);
+    return(false);
+  }
+
+  m_osh = info_buffer->dQuery("NAV_HEADING", ok1);
+  m_osv = info_buffer->dQuery("NAV_SPEED", ok2);
+  if(!ok1 || !ok2) {
+    postEMessage("ownship course/speed info not found.");
+    return(false);
+  }
+
+  m_osh = angle360(m_osh);
+  m_cnh = angle360(m_cnh);
+
+  m_cnx = info_buffer->dQuery(m_contact+"_NAV_X", ok2);
+  m_cny = info_buffer->dQuery(m_contact+"_NAV_Y", ok1);
+  if(!ok1 || !ok2) {
+    string msg = m_contact + " NAV_X/Y info not found";
+    if(m_on_no_contact_ok)
+      postWMessage(msg);
+    else
+      postEMessage(msg);
+    return(false);
+  }
+
+  m_osx = info_buffer->dQuery("NAV_X", ok2);
+  m_osy = info_buffer->dQuery("NAV_Y", ok1);
+  if(!ok1 || !ok2) {
+    postEMessage("ownship x/y info not found.");
+    return(false);
+  }
+
+  return(true);
+}
+
 
 //-----------------------------------------------------------
 // Procedure: getRelevance
 
-double BHV_HeadOn14::getRelevance(double oslon, double oslat,
-			     double oscrs, double osspd,
-			     double cnlon, double cnlat, 
-			     double cncrs, double cnspd)
+double BHV_HeadOn14::getRelevance()
 {
-  if((oslon==cnlon)&&(oslat==cnlat))
+  if((m_osx == m_cnx) && (m_osy == m_cny))
     return(0);
 
-  if(range > -1) { // -1 means range wasn't specified
-    double dist = hypot((oslon-cnlon), (oslat-cnlat));
-    if(dist > range)
-      return(0);
-  }
-
-  double ang_to_cn = relAng(oslon, oslat, cnlon, cnlat);
+  double dist = hypot((m_osx - m_cnx), (m_osy - m_cny));
+  if(dist > m_active_outer_dist)
+    return(0);
+  
+  double ang_to_cn = relAng(m_osx, m_osy, m_cnx, m_cny);
   double ang_to_os = ang_to_cn + 180.0;
   if(ang_to_os >= 360.0)
     ang_to_os -= 360.0;
@@ -206,7 +334,7 @@ double BHV_HeadOn14::getRelevance(double oslon, double oslat,
 
 
 #if 0
-  double os_bearing_delta = oscrs - ang_to_cn;
+  double os_bearing_delta = m_osh - ang_to_cn;
   if(os_bearing_delta < 0)
     os_bearing_delta += 360.0;
   if(os_bearing_delta > 180)
@@ -216,7 +344,7 @@ double BHV_HeadOn14::getRelevance(double oslon, double oslat,
 #endif
 
 #if 1
-  double cn_bearing_delta = cncrs - ang_to_os;
+  double cn_bearing_delta = m_cnh - ang_to_os;
   if(cn_bearing_delta < 0)
     cn_bearing_delta += 360.0;
   if(cn_bearing_delta > 180)
