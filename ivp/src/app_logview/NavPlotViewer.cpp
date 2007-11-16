@@ -40,7 +40,7 @@ NavPlotViewer::NavPlotViewer(int x, int y, int w, int h, const char *l)
   m_trail_gap    = 1;
   m_trail_size   = 1;
   m_alltrail     = true;
-  m_vehibody     = "auv";  // "auv" or "kayak"
+  m_vehibody     = "kayak";  // "auv" or "kayak"
 }
 
 //-------------------------------------------------------------
