@@ -21,7 +21,6 @@
 /*****************************************************************/
 
 #include "AngleUtils.h"
-#include <assert.h>
 #include <stdlib.h>
 #include <math.h>
 
@@ -44,7 +43,9 @@
 
 double relAng(double xa, double ya, double xb, double yb)
 { 
-  assert((xa!=xb)||(ya!=yb));
+  //assert((xa!=xb)||(ya!=yb));
+  if((xa==xb)&&(ya==yb))
+    return(0);
 
   double w, sop;
 

@@ -226,6 +226,9 @@ bool crossesBow(double cnx, double cny, double cnspd, double cnhdg,
 double closingSpeed(double osx,   double osy, double osspd, 
 		    double oshdg, double ptx,  double pty)
 {
+  // Handle the special case where the two positions are identical
+  if((osx==ptx)&&(osy==pty))
+    return(0);
 
   double angle_to_wpt = relAng(osx, osy, ptx, pty);
   
