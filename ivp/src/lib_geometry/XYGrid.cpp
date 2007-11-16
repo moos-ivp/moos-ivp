@@ -55,6 +55,7 @@ XYSquare XYGrid::getElement(int ix) const
 
 //-------------------------------------------------------------
 // Procedure: setVal
+//      Note: reflects min/max val ever seen - as currently impl.
 
 void XYGrid::setVal(int ix, double val)
 {
