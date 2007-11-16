@@ -11,6 +11,7 @@ IF("${IVP_BUILD_pHelmIvP}" STREQUAL "ON")
    helmivp
    behaviors-marine
 #    behaviors-sandbox
+   behaviors-colregs
 #    behaviors-don
 #    behaviors-colregs
 #    behaviors-oxford

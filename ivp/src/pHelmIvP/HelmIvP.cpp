@@ -447,7 +447,12 @@ bool HelmIvP::OnConnectToServer()
   registerVariables();
 
   // Request that the Logger make a copy of the Behavior file
-  m_Comms.Notify("COPY_FILE_REQUEST", GetMissionFileName());
+  set<string>::const_iterator p;
+  for(p=bhv_files.begin(); p!=bhv_files.end(); p++) {
+    string filename = *p;
+    string command  = "COPY_FILE_REQUEST = " + filename;
+    m_Comms.Notify("PLOGGER_CMD", command);
+  }
 
   return(true);
 }
