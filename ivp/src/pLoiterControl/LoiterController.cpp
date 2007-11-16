@@ -199,11 +199,7 @@ bool LoiterController::postMapping()
 
   int vsize = vehicles.size();
 
-  double curr_time = MOOSTime();
-
-  string tag_str = intToString(m_post_counter) + ":";
-  tag_str += doubleToString(curr_time,2);
-  m_Comms.Notify("LOITER_CONTROL_TAG", tag_str);
+  m_Comms.Notify("LOITER_CONTROL_TAG", m_post_counter);
 
   cout << "New Mapping:  " << endl;
   for(int i=0; i<vsize; i++) {
