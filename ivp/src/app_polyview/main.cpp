@@ -97,7 +97,7 @@ int main(int argc, char *argv[])
     }
   }
  
-  gui->readTiff(tif_file.c_str());
+  gui->readTiff(tif_file);
 
   for(i=0; i<all_polys.size(); i++)
     gui->addPoly(all_polys[i]);

@@ -109,6 +109,10 @@ int main(int argc, char *argv[])
   
 
   SSV_GUI* gui = new SSV_GUI(1400,1100, "ShipSideViewer");
+
+  gui->readTiff("Default.tif");
+  gui->readTiffB("DefaultB.tif");
+
   g_thePort.setGUI(gui);
 
   // start the MOOSPort in its own thread

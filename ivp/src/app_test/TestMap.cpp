@@ -11,6 +11,23 @@ using namespace std;
 
 int testMap(int argc, char *argv[])
 {
+  map<string, string> tmap;
+
+  tmap["one"] = "hello";
+  tmap["two"] = "world";
+  tmap["ok"]  = tmap["one"];
+
+  map<string, string>::const_iterator p;
+  
+  for(p=tmap.begin(); p!=tmap.end(); p++) {
+    cout << "  [" << p->first << "]: " << p->second << endl;
+  }
+
+  cout << "tmap[foo]: [" << tmap["foo"] << "]" << endl;
+
+  return(0);
+
+
   //------------------------------------------------
   map<string, map<string,double> > meta_map;
   map<string,double> smap;

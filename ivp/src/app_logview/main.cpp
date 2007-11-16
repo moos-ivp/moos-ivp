@@ -253,7 +253,7 @@ int main(int argc, char *argv[])
     gui->addGrid(searchgrids[i]);
 
   gui->updateXY();
-  gui->readTiff(tif_file.c_str());
+  gui->readTiff(tif_file);
 
   // Enter the GUI event loop.
   return Fl::run();

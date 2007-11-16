@@ -115,6 +115,7 @@ bool PMV_MOOSApp::OnConnectToServer()
 
 bool PMV_MOOSApp::Iterate()
 {
+  counter++;
   cout << "." << flush;
 
   double curr_time = MOOSTime() - m_start_time;
@@ -179,8 +180,8 @@ bool PMV_MOOSApp::OnStartUp()
       m_gui->mviewer->colorMapping(sLine);
   }
 
-  if(tif_file != "")
-    m_gui->readTiff(tif_file.c_str());
+  //if((tif_file != "") && (m_gui))
+  //  m_gui->readTiff(tif_file.c_str());
 
   m_start_time = MOOSTime();
   

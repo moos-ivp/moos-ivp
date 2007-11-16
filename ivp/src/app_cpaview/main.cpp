@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
       tif_file = "";
   }
   
-  gui->readTiff(tif_file.c_str());
+  gui->readTiff(tif_file);
   gui->updateXY();
   
   return Fl::run();

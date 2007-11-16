@@ -57,7 +57,7 @@
 #include "WayPointVW.h"
 #endif
 
-#if 0
+#if 1
 // Sandbox behaviors
 //#include "BHV_WaypointOx.h"
 #include "BHV_LoiterMigrate.h"
@@ -320,7 +320,7 @@ IvPBehavior* Populator_BehaviorSet::initializeBehavior(string bhv_name)
     bhv = new CWayPointVW(domain);
 #endif
   
-#if 0
+#if 1
   // Sandbox behaviors
   else if(bhv_name == "BHV_AvoidObstacles")
     bhv = new BHV_AvoidObstacles(domain);

@@ -29,6 +29,8 @@ using namespace std;
 
 int main(int argc, char *argv[])
 { 
+  return(testMap(argc, argv));
+
   return(testUniformMap(argc, argv));
   return(testSubstring(argc, argv));
   return(testGeo(argc, argv));
@@ -44,7 +46,6 @@ int main(int argc, char *argv[])
   //-----------------------------------------------
   return(testTemplate(argc, argv));
   return(testSet(argc, argv));
-  return(testMap(argc, argv));
   return(testRelAng(argc, argv));
   return(testChompString(argc, argv));
 }

@@ -111,6 +111,9 @@ int main(int argc, char *argv[])
   
 
   PMV_GUI* gui = new PMV_GUI(900,750, "Marine-Viewer");
+
+  gui->readTiff("Default.tif");
+
   g_thePort.setGUI(gui);
 
   // start the MOOSPort in its own thread

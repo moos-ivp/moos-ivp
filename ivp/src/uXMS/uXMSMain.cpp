@@ -134,6 +134,9 @@ int main(int argc ,char * argv[])
       g_theXMS.addVariable("DESIRED_THRUST");
       g_theXMS.addVariable("DESIRED_ELEVATOR");
     }
+    else if(str == "-proc") {
+      g_theXMS.addVariable("PROC_WATCH_SUMMARY");
+    }
 
     else if((str == "-c") || (str == "--clean") || (str == "-clean"))
       g_theXMS.ignoreVars(true);

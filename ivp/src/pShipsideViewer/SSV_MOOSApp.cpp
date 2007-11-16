@@ -243,11 +243,13 @@ bool SSV_MOOSApp::OnStartUp()
       handleMarker("efield", sLine);
   }
 
+#if 0
   if(tif_file != "")
-    m_gui->readTiff(tif_file.c_str());
+    m_gui->readTiff(tif_file);
 
   if(tif_file_b != "")
-    m_gui->readTiffB(tif_file_b.c_str());
+    m_gui->readTiffB(tif_file_b);
+#endif
 
   m_start_time = MOOSTime();
   

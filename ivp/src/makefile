@@ -23,21 +23,31 @@ APP_BASE =  $(wildcard pHelmIvP*) 	$(wildcard pEchoVar*) 	   	\
 	    $(wildcard uXMS*)  	 	$(wildcard pTransponderAIS*)	\
 	    $(wildcard uTMS*)		$(wildcard uTermCommand*)   	\
 	    $(wildcard iMarineSim*)	$(wildcard iMetaCompass*)   	\
-	    $(wildcard anrp/Compass*)	$(wildcard iPWMController*) 	\
-	    $(wildcard anrp/MOOSDump*)	$(wildcard uProcessWatch*)	\
+	    $(wildcard iPWMController*) $(wildcard uProcessWatch*)	\
 	    $(wildcard app_splug*)	$(wildcard pDeployHandler*)	\
-	    $(wildcard 3rd-party-grund/pFramer*)	$(wildcard 3rd-party-arjuna/pNaFCon*)		\
-	    $(wildcard 3rd-party-grund/iMicroModem*)	$(wildcard 3rd-party-eickstedt/pScheduler*)		\
-	    $(wildcard 3rd-party-grund/pRouter*)	$(wildcard uMessageForward*)	\
-	    $(wildcard 3rd-party-anrp/iGPS*)           $(wildcard 3rd-party-cockrell/pUDPBroadcastClient*) \
-	    $(wildcard pViewerRelay*)   $(wildcard 3rd-party-anrp/iWinch*) 		\
-            $(wildcard pSamplingControl*) $(wildcard 3rd-party-anrp/iWinchSim*)	\
-	    $(wildcard iMetaMemCompass*)  $(wildcard 3rd-party-anrp/iOS5000*)          \
-	    $(wildcard 3rd-party-anrp/iCTDSBE49*)      $(wildcard 3rd-party-anrp/iSerialNMEA*)	\
-	    $(wildcard iWebsite*)       $(wildcard 3rd-party-anrp/iWinchCTL*)          \
-	    $(wildcard pVirtualTether*)	$(wildcard 3rd-party-anrp/MOOSBlink*)		\
-	    $(wildcard uRepeater*)    	    $(wildcard 3rd-party-anrp/pCTDLogger*)     \
-	    $(wildcard 3rd-party-anrp/iBatteryMonitor*)
+	    $(wildcard pViewerRelay*)   $(wildcard pSamplingControl*) 	\
+	    $(wildcard iWebsite*)       $(wildcard iMetaMemCompass*)    \
+	    $(wildcard pVirtualTether*) $(wildcard uRepeater*)    	\
+	    $(wildcard uMessageForward*)		\
+	    $(wildcard pTrafficControl*)		\
+	    $(wildcard 3rd-party-anrp/pCTDLogger*)     	\
+	    $(wildcard 3rd-party-anrp/MOOSBlink*)	\
+	    $(wildcard 3rd-party-anrp/iWinchCTL*)       \
+	    $(wildcard 3rd-party-anrp/iOS5000*)         \
+	    $(wildcard 3rd-party-anrp/iWinchSim*)	\
+	    $(wildcard 3rd-party-anrp/iWinch*) 		\
+	    $(wildcard 3rd-party-anrp/iCTDSBE49*)       \
+	    $(wildcard 3rd-party-anrp/iSerialNMEA*)	\
+	    $(wildcard 3rd-party-anrp/iGPS*)            \
+	    $(wildcard 3rd-party-anrp/MOOSDump*)        \
+	    $(wildcard 3rd-party-anrp/iPNICompass*)     \
+	    $(wildcard 3rd-party-anrp/iBatteryMonitor*) \
+	    $(wildcard 3rd-party-grund/pFramer*)	\
+	    $(wildcard 3rd-party-grund/iMicroModem*)	\
+	    $(wildcard 3rd-party-grund/pRouter*)	\
+	    $(wildcard 3rd-party-arjuna/pNaFCon*)	\
+	    $(wildcard 3rd-party-eickstedt/pScheduler*)	\
+	    $(wildcard 3rd-party-cockrell/pUDPBroadcastClient*)
 
 
 
