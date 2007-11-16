@@ -42,19 +42,20 @@ vector<string> fileBuffer(const string& filename, int amt)
 
   const int MAX_LINE_LENGTH = 500000;
 
-  char mychar = '\0';
+  int  myint = '\0';
   int  buffix = 0;
   bool EOL    = false;
   char buff[MAX_LINE_LENGTH];
   int  lines = 0;
   bool reached_line_limit = false;
 
-  while((mychar!=EOF) && (!reached_line_limit)) {
+  while((myint!=EOF) && (!reached_line_limit)) {
     EOL = false;
     buffix = 0;
     while((!EOL) && (buffix < MAX_LINE_LENGTH)) {
-      mychar = fgetc(f);
-      switch(mychar) {
+      myint = fgetc(f);
+      unsigned char   mychar = myint;
+      switch(myint) {
       case '\n':
       case EOF:
         buff[buffix] = '\0';  // attach terminating NULL
@@ -98,7 +99,7 @@ vector<string> fileBufferSlash(const string& filename, int amt)
 
   const int MAX_LINE_LENGTH = 5000;
 
-  char   mychar = '\0';
+  int    myint = '\0';
   int    buffix = 0;
   bool   EOL    = false;
   char   buff[MAX_LINE_LENGTH];
@@ -106,15 +107,17 @@ vector<string> fileBufferSlash(const string& filename, int amt)
   bool   reached_line_limit = false;
   string line_so_far = "";
 
-  while((mychar!=EOF) && (!reached_line_limit)) {
+
+  while((myint!=EOF) && (!reached_line_limit)) {
     EOL = false;
     buffix = 0;
 
     int  slash_index      = 0;
     bool slash_terminated = false;
     while((!EOL) && (buffix < MAX_LINE_LENGTH)) {
-      mychar = fgetc(f);
-      switch(mychar) {
+      myint = fgetc(f);
+      unsigned char  mychar = myint;
+      switch(myint) {
       case '\\':
 	slash_terminated = true;
 	slash_index = buffix;
@@ -151,7 +154,7 @@ vector<string> fileBufferSlash(const string& filename, int amt)
     }
   }
   fclose(f);
-  
+ 
   return(fvector);
 }
 
