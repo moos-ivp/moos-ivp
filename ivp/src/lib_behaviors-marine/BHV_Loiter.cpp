@@ -344,7 +344,11 @@ void BHV_Loiter::updateInfoOut()
 
   XYSegList seglist = m_waypoint_engine.getSegList();
   if(m_poly_changed) {
-    string spec = "label,foo:" + seglist.get_spec();
+    string bhv_tag = toupper(getDescriptor());
+    bhv_tag = findReplace(bhv_tag, "BHV_", "");
+    bhv_tag = findReplace(bhv_tag, "(d)", "");
+    bhv_tag = us_name + "-" + bhv_tag;
+    string spec = "label," + bhv_tag + ":" + seglist.get_spec();
     postMessage("VIEW_POLYGON", spec);
   }
   m_poly_changed = false;

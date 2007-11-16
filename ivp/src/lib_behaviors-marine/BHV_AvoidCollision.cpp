@@ -197,6 +197,7 @@ IvPFunction *BHV_AvoidCollision::produceOF()
 
 
   AOF_AvoidCollision aof(domain);
+
   ok = true;
   ok = ok && aof.setParam("osy", m_osy);
   ok = ok && aof.setParam("osx", m_osx);
