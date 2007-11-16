@@ -23,6 +23,7 @@
 #ifndef COMMON_MARINE_GUI_HEADER
 #define COMMON_MARINE_GUI_HEADER
 
+#include <string>
 #include <FL/Fl.H>
 #include <FL/Fl_Window.H>
 #include <FL/Fl_Menu_Bar.H>
@@ -35,8 +36,8 @@ public:
 
   static Fl_Menu_Item menu_[];
 
-  void readTiff(const char*);
-  void readTiffB(const char*);
+  void readTiff(std::string);
+  void readTiffB(std::string);
   int  handle(int);
   void addGrid(XYGrid);
   void addPoly(XYPolygon);

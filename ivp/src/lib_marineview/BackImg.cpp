@@ -85,9 +85,10 @@ float BackImg::pixToPctY(float pix)
 // Procedure: readTiff
 //   Purpose: This routine reads in a tiff data and info
 
-bool BackImg::readTiff(const char* filename)
+bool BackImg::readTiff(string filename)
 {
-  if(!filename) {
+  filename = stripBlankEnds(filename);
+  if(filename == "") {
     readBlankTiff();
     return(true);
   }
@@ -95,7 +96,7 @@ bool BackImg::readTiff(const char* filename)
   string info_file = findReplace(filename, ".tif", ".info");
 
   bool ok1 = readTiffData(filename);  
-  bool ok2 = readTiffInfo(info_file.c_str());
+  bool ok2 = readTiffInfo(info_file);
 
   if(ok1 && ok2)
     return(true);
@@ -111,11 +112,12 @@ bool BackImg::readTiff(const char* filename)
 //   Purpose: This routine reads in a tiff file and stores it 
 //            in a very simple data structure
 
-bool BackImg::readTiffData(const char* filename)
+bool BackImg::readTiffData(string filename)
 {
   if(img_data) delete [] img_data;
   img_height = 0;
   img_width  = 0;
+
 
   string file = filename;
   FILE *f = fopen(file.c_str(), "r");
@@ -138,7 +140,7 @@ bool BackImg::readTiffData(const char* filename)
   
   // turn warnings back on, just in case
   TIFFSetWarningHandler(warn);
-  
+
   if(tiff) {
     int rc = 1;			// what to return
     uint32 w, h;
@@ -177,7 +179,7 @@ bool BackImg::readTiffData(const char* filename)
 // Procedure: readTiffInfo
 //   Purpose: 
 
-bool BackImg::readTiffInfo(const char* filename)
+bool BackImg::readTiffInfo(string filename)
 {
   string file = filename;
   FILE *f = fopen(file.c_str(), "r");
@@ -190,7 +192,10 @@ bool BackImg::readTiffInfo(const char* filename)
     file += filename;
   } 
 
+  cout << "Attempting to open: " << file << endl;
+
   vector<string> buffer = fileBuffer(file);
+  //vector<string> buffer;
   int vsize = buffer.size();
 
   if(vsize == 0) {
@@ -296,10 +301,4 @@ bool BackImg::setTexture()
   
   glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 }
-
-
-
-
-
-
 

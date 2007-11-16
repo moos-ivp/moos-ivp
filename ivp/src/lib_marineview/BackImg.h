@@ -23,15 +23,17 @@
 #ifndef BACK_IMG_HEADER
 #define BACK_IMG_HEADER
 
+#include <string>
+
 class BackImg
 {
 public:
   BackImg();
   ~BackImg();
 
-  bool readTiff(const char* filename);
-  bool readTiffData(const char* filename);
-  bool readTiffInfo(const char* filename);
+  bool readTiff(std::string filename);
+  bool readTiffData(std::string filename);
+  bool readTiffInfo(std::string filename);
   void readBlankTiff();
   bool setTexture();
 

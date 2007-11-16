@@ -20,6 +20,7 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
+#include <iostream>
 #include "MarineGUI.h"
 
 using namespace std;
@@ -92,20 +93,26 @@ int MarineGUI::handle(int event)
 //-------------------------------------------------------------------
 // Procedure: readTiff
 
-void MarineGUI::readTiff(const char *filename)
+void MarineGUI::readTiff(string filename)
 {
-  bool result = cmviewer->readTiff(filename);
+  if(!cmviewer)
+    return;
 
-  if(!result) 
-    cmviewer->readTiff();
+  cout << "MarineGUI:readTiff: " << filename << endl;
 
-  cmviewer->setTexture();
+  bool ok = cmviewer->readTiff(filename);
+
+  if(!ok) 
+    ok = cmviewer->readTiff("");
+
+  if(ok)
+    cmviewer->setTexture();
 }  
 
 //-------------------------------------------------------------------
 // Procedure: readTiffB
 
-void MarineGUI::readTiffB(const char *filename)
+void MarineGUI::readTiffB(string filename)
 {
   cmviewer->readTiffB(filename);
 }  

@@ -58,8 +58,8 @@ class MarineViewer : public Fl_Gl_Window
   bool  setCommonParam(std::string, float);
 
 public:
-  bool   readTiff(const char *f=0);
-  bool   readTiffB(const char *f=0);
+  bool   readTiff(std::string);
+  bool   readTiffB(std::string);
   bool   setTexture();
 
   void   addPoly(const XYPolygon&);

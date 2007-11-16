@@ -75,7 +75,7 @@ MarineViewer::MarineViewer(int x, int y, int w, int h, const char *l)
 //   Purpose: This routine reads in a tiff file and stores it 
 //            in a very simple data structure
 
-bool MarineViewer::readTiff(const char* filename)
+bool MarineViewer::readTiff(string filename)
 {
   return(m_back_img.readTiff(filename));
 }
@@ -85,7 +85,7 @@ bool MarineViewer::readTiff(const char* filename)
 //   Purpose: This routine reads in a tiff file and stores it 
 //            in a very simple data structure
 
-bool MarineViewer::readTiffB(const char* filename)
+bool MarineViewer::readTiffB(string filename)
 {
   bool ok = m_back_img_b.readTiff(filename);
   if(ok)
@@ -100,7 +100,7 @@ bool MarineViewer::readTiffB(const char* filename)
 
 bool MarineViewer::setTexture()
 {
-  //glEnable(GL_TEXTURE_2D);
+  glEnable(GL_TEXTURE_2D);
   glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
   glBindTexture(GL_TEXTURE_2D, m_textures[0]);
