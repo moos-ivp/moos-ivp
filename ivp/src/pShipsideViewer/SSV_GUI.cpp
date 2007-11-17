@@ -400,7 +400,7 @@ void SSV_GUI::updateXY() {
   updateButtonColor(contact_b6);
 }
 
-//----------------------------------------- UpdateXY
+//----------------------------------------- UpdateButtonColor
 void SSV_GUI::updateButtonColor(MY_Button* b) {
 
   if(mviewer->hasVehiName(b->label()))
