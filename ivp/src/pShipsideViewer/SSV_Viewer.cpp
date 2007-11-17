@@ -650,8 +650,8 @@ void SSV_Viewer::drawRadials()
   
   int pindex = 0;
   for(i=0; i<psize; i++) {
-    points[pindex]   = poly.get_vx(i) - m_back_img.get_img_offset_x();
-    points[pindex+1] = poly.get_vy(i) - m_back_img.get_img_offset_y();
+    points[pindex]   = poly.get_vx(i);
+    points[pindex+1] = poly.get_vy(i);
 
     points[pindex]   *=  m_back_img.get_pix_per_mtr();
     points[pindex+1] *=  m_back_img.get_pix_per_mtr();
@@ -730,12 +730,8 @@ void SSV_Viewer::drawGridPN()
 
   int pindex = 0;
   for(i=0; i<vsize; i++) {
-    points[pindex]   += -m_back_img.get_img_offset_x();
-    points[pindex+1] += -m_back_img.get_img_offset_y();
-
     points[pindex]   *=  m_back_img.get_pix_per_mtr();
     points[pindex+1] *=  m_back_img.get_pix_per_mtr();
-
     pindex+=2;
   }
 
@@ -861,10 +857,6 @@ void SSV_Viewer::cycleIndex()
   m_global_ix += 1;
   if(m_global_ix >= m_pos_map.size())
     m_global_ix = 0;
-
-  cout << "m_pos_map.size(): " << m_pos_map.size() << endl;
-  cout << "m_global_ix: " << m_global_ix << endl;
-
 }
 
 //-------------------------------------------------------------
@@ -975,8 +967,6 @@ void SSV_Viewer::drawCirc(XYCircle dcircle, int pts, bool filled,
   float *points = new float[2*pts];
   int pindex = 0;
   for(i=0; i<pts; i++) {
-    points[pindex]   = poly.get_vx(i) - m_back_img.get_img_offset_x();
-    points[pindex+1] = poly.get_vy(i) - m_back_img.get_img_offset_y();
     points[pindex]   *=  m_back_img.get_pix_per_mtr();
     points[pindex+1] *=  m_back_img.get_pix_per_mtr();
     pindex += 2;
