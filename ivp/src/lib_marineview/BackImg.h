@@ -42,11 +42,7 @@ public:
   int   get_img_height()   {return(img_height);};
   float get_img_centx()    {return(img_centx);};
   float get_img_centy()    {return(img_centy);};
-  float get_img_offset_x() {return(img_offset_x);};
-  float get_img_offset_y() {return(img_offset_y);};
   float get_img_meters()   {return(img_meters);};
-  float get_img_centlat()  {return(img_centlat);};
-  float get_img_centlon()  {return(img_centlon);};
 
   float get_x_at_img_left()   {return(x_at_img_left);};
   float get_x_at_img_right()  {return(x_at_img_right);};
@@ -68,10 +64,6 @@ private:
   float          img_centx;
   float          img_centy;
   float          img_meters;
-  float          img_offset_x;
-  float          img_offset_y;
-  float          img_centlat;
-  float          img_centlon;
 
   float          x_at_img_ctr;
   float          y_at_img_ctr;

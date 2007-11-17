@@ -48,11 +48,7 @@ BackImg::BackImg()
   // Below should be populated by an "info" file.
   img_centx    = 0;
   img_centy    = 0;
-  img_offset_x = 0;
-  img_offset_y = 0;
   img_meters   = 0;
-  img_centlat  = 0;
-  img_centlon  = 0;
   
   // Below should be derived after info file is read in.
   x_at_img_ctr = 0;
@@ -221,17 +217,8 @@ bool BackImg::readTiffInfo(string filename)
       else if(left == "img_centy") 
 	img_centy = atof(right.c_str());
 
-      else if(left == "img_offset_x") 
-	img_offset_x = atof(right.c_str());
-      else if(left == "img_offset_y") 
-	img_offset_y = atof(right.c_str());
-
       else if(left == "img_meters") 
 	img_meters = atof(right.c_str());
-      else if(left == "img_centlat") 
-	img_centlat = atof(right.c_str());
-      else if(left == "img_centlon") 
-	img_centlon = atof(right.c_str());
       else {
 	cout << "Problem w/ line " << i << " in " << file << endl;
 	return(false);
@@ -267,8 +254,6 @@ void BackImg::readBlankTiff()
   img_centx   = 0.495850; 
   img_centy   = 0.509000;
   img_meters  = 0.048828; 
-  img_centlat = 42.35849;
-  img_centlon = -71.08759333;
 #endif
 
 #if 0
@@ -277,8 +262,6 @@ void BackImg::readBlankTiff()
   img_centx   = 0.5;
   img_centy   = 0.5;
   img_meters  = 0.025;
-  img_centlat = 0;
-  img_centlon = 0;
 #endif
 }
 

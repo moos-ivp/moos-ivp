@@ -210,13 +210,11 @@ float MarineViewer::img2meters(char xy, float img_val)
   if(xy == 'x') {
     meters_val  = (img_val - m_back_img.get_img_centx()) * 100.0;
     meters_val  = meters_val / m_back_img.get_img_meters();
-    meters_val += m_back_img.get_img_offset_x();
   }
 
   if(xy == 'y') {
     meters_val  = (img_val - m_back_img.get_img_centy()) * 100.0;
     meters_val  = meters_val / m_back_img.get_img_meters();
-    meters_val += m_back_img.get_img_offset_y();
   }
   return(meters_val);
 }
@@ -366,8 +364,8 @@ void MarineViewer::drawPoly(const XYPolygon& poly,
 
   int pindex = 0;
   for(i=0; i<vsize; i++) {
-    points[pindex]   = poly.get_vx(i) - m_back_img.get_img_offset_x();
-    points[pindex+1] = poly.get_vy(i) - m_back_img.get_img_offset_y();
+    points[pindex]   = poly.get_vx(i);
+    points[pindex+1] = poly.get_vy(i);
 
     points[pindex]   *=  m_back_img.get_pix_per_mtr();
     points[pindex+1] *=  m_back_img.get_pix_per_mtr();
@@ -483,17 +481,11 @@ void MarineViewer::drawPoly(const XYPolygon& poly,
 void MarineViewer::drawSegment(float x1, float y1, float x2, float y2, 
 			       float red, float grn, float blu)
 {
-  float offset_x = m_back_img.get_img_offset_x();
-  float offset_y = m_back_img.get_img_offset_y();
   float pix_per_mtr = m_back_img.get_pix_per_mtr();
 
-  x1 -= offset_x;
-  y1 -= offset_y;
   x1 *= pix_per_mtr;
   y1 *= pix_per_mtr;
 
-  x2 -= offset_x;
-  y2 -= offset_y;
   x2 *= pix_per_mtr;
   y2 *= pix_per_mtr;
 
@@ -566,8 +558,8 @@ void MarineViewer::drawSegList(int ix)
 
   int pindex = 0;
   for(i=0; i<vsize; i++) {
-    points[pindex]   = segl.get_vx(i) - m_back_img.get_img_offset_x();
-    points[pindex+1] = segl.get_vy(i) - m_back_img.get_img_offset_y();
+    points[pindex]   = segl.get_vx(i);
+    points[pindex+1] = segl.get_vy(i);
 
     points[pindex]   *=  m_back_img.get_pix_per_mtr();
     points[pindex+1] *=  m_back_img.get_pix_per_mtr();
@@ -761,8 +753,6 @@ void MarineViewer::drawCircle(int ix)
 
   double px  = dcircle.getX();
   double py  = dcircle.getY();
-  px += -m_back_img.get_img_offset_x();
-  py += -m_back_img.get_img_offset_y();
   px *=  m_back_img.get_pix_per_mtr();
   py *=  m_back_img.get_pix_per_mtr();
 
