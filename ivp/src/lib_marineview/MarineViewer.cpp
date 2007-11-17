@@ -1127,7 +1127,6 @@ double MarineViewer::getHashDelta()
     return(m_hash_delta);
 }
 
-
 //-------------------------------------------------------------
 // Procedure: colorMapping
 //            "label, DarkKhaki"
