@@ -30,8 +30,7 @@
 class PMV_MOOSApp : public CMOOSApp  
 {
  public:
-  PMV_MOOSApp() {m_left_click_ix=-1; m_right_click_ix=-1; 
-  m_gui=0; counter=0;};
+  PMV_MOOSApp();
   virtual ~PMV_MOOSApp() {};
 
   void setGUI(PMV_GUI* g_gui) {m_gui=g_gui;};
@@ -59,9 +58,10 @@ class PMV_MOOSApp : public CMOOSApp
 
   double m_start_time;
 
-  int counter;
-  int m_left_click_ix;
-  int m_right_click_ix;
+  int  m_left_click_ix;
+  int  m_right_click_ix;
+  bool m_verbose;
+  int  m_counter;
 
 };
 

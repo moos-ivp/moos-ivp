@@ -44,6 +44,8 @@ PMV_Viewer::PMV_Viewer(int x, int y, int w, int h, const char *l)
   m_default_vehibody = "kayak";
   m_left_click_ix    = 0;
   m_right_click_ix   = 0;
+
+  m_hash_delta       = 100;
 }
 
 //-------------------------------------------------------------
