@@ -49,7 +49,9 @@ bool PMV_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
   bool gui_clear_trails = false;
   MOOSMSG_LIST::reverse_iterator p;
 
-  
+  double curr_time = MOOSTime() - m_start_time;
+  m_gui->mviewer->setTime(curr_time);
+
   if(NewMail.rbegin() != NewMail.rend()) {
     double curr_time = MOOSTime() - m_start_time;
     string ctime_str = doubleToString(curr_time, 2);
@@ -137,8 +139,12 @@ bool PMV_MOOSApp::OnConnectToServer()
 bool PMV_MOOSApp::Iterate()
 {
   double curr_time = MOOSTime() - m_start_time;
-  m_gui->setCurrTime(curr_time);
-  
+
+  if(m_gui) {
+    m_gui->setCurrTime(curr_time);
+    m_gui->updateXY();
+  }
+
   int left_click_ix = m_gui->mviewer->getLeftClickIX();
   if(left_click_ix > m_left_click_ix) {
     m_left_click_ix = left_click_ix;
@@ -184,6 +190,36 @@ bool PMV_MOOSApp::OnStartUp()
   m_MissionReader.GetConfiguration(GetAppName(), sParams);
   
   string tif_file = "Default.tif";
+
+
+  //Initialize m_Geodesy from lat lon origin in .moos file
+  string sVal;
+  double dfLatOrigin;
+  double dfLongOrigin;
+  
+  if(m_MissionReader.GetValue("LatOrigin",sVal)) {
+    dfLatOrigin = atof(sVal.c_str());
+    MOOSTrace("  LatOrigin  = %10.5f deg.\n",dfLatOrigin);
+  }
+  else {
+    MOOSTrace("LatOrigin not specified in mission file - FAIL\n");
+    return(false);
+  }
+
+  if(m_MissionReader.GetValue("LongOrigin",sVal)) {
+    dfLongOrigin = atof(sVal.c_str());
+    MOOSTrace("  LongOrigin = %10.5f deg.\n",dfLongOrigin);
+  }
+  else {
+    MOOSTrace("LongOrigin not specified in mission file - FAIL\n");
+    return(false);
+  }
+  
+  if(!m_gui->mviewer->initGeodesy(dfLatOrigin, dfLongOrigin)) {
+    MOOSTrace("Geodesy Init inside pShipSideViewer failed - FAIL\n");
+    return(false);
+  }
+
 
   STRING_LIST::iterator p;
   for(p = sParams.begin();p!=sParams.end();p++) {

@@ -34,6 +34,7 @@
 #include "ObjectPose.h"
 #include "ColoredPoint.h"
 #include "MarineViewer.h"
+#include "MOOSGeodesy.h"
 
 class PMV_Viewer : public MarineViewer
 {
@@ -50,7 +51,7 @@ class PMV_Viewer : public MarineViewer
     {return(setCommonParam(p,v));};
   
 public:
-  void  updateVehiclePosition(const std::string&, float x, float y, 
+  void  updateVehiclePosition(std::string vname, float x, float y, 
 			      float theta, float spd, float dep=0);  
   void  setVehicleBodyType(const std::string&, const std::string&);
   void  resetVehicles();
@@ -59,6 +60,9 @@ public:
   float getSpd(int);
   float getDep(int);
   float getCrs(int);
+  float getAgeAIS(int);
+  bool  getLatLon(int, double&, double&);
+  bool  initGeodesy(double, double);
 
   std::string getVehiName(int);
   std::string getLeftClick()     {return(m_left_click);};
@@ -67,8 +71,8 @@ public:
   int   getRightClickIX()        {return(m_right_click_ix);};
 
   void  clearTrails()            {m_pos_map.clear(); m_hist_map.clear();};
-  void  setTime(float v)         {m_time = v;};
-  float getTime()                {return(m_time);};
+  void  setTime(float v)         {m_curr_time = v;};
+  float getTime()                {return(m_curr_time);};
   int   getDataIndex()           {return(m_global_ix);};
   void  cycleIndex();
 
@@ -81,6 +85,8 @@ public:
 
   ObjectPose getObjectPoseByIndex(int);
 
+  CMOOSGeodesy m_geodesy;
+
  private:
   // Mapping from Vehicle Name to Vehicle Position
   std::map<std::string, ObjectPose>   m_pos_map;
@@ -88,8 +94,10 @@ public:
   std::map<std::string, CPList>       m_hist_map;
   // Mapping from Vehicle Name to Vehicle Body Type
   std::map<std::string, std::string>  m_vbody_map;
+  // Mapping from Vehicle Name to Time of last AIS report
+  std::map<std::string, double>       m_ais_map;
 
-  float m_time;
+  float m_curr_time;
 
   std::string m_default_vehibody;
 

@@ -39,7 +39,7 @@ using namespace std;
 PMV_Viewer::PMV_Viewer(int x, int y, int w, int h, const char *l)
   : MarineViewer(x,y,w,h,l)
 {
-  m_time = 0;
+  m_curr_time = 0;
 
   m_default_vehibody = "kayak";
   m_left_click_ix    = 0;
@@ -168,23 +168,19 @@ void PMV_Viewer::setVehicleBodyType(const string& vname,
 //            the history, but only really want to redraw the 
 //            vehicles after the last update is done.
 
-void PMV_Viewer::updateVehiclePosition(const string& tag, float x, 
+void PMV_Viewer::updateVehiclePosition(string vname, float x, 
 				       float y, float theta, 
 				       float speed, float depth)
 {
   // Handle updating the ObjectPose with the new information
   ObjectPose opose(x,y,theta,speed,depth);
-  map<string,ObjectPose>::iterator p1;
-  p1 = m_pos_map.find(tag);
-  if(p1 != m_pos_map.end())
-    p1->second = opose;
-  else {
-    m_pos_map[tag] = opose;
-  }
+
+  m_pos_map[vname] = opose;
+  m_ais_map[vname] = m_curr_time;
  
   ColoredPoint point(x,y,0,0,255);
   map<string,CPList>::iterator p2;
-  p2 = m_hist_map.find(tag);
+  p2 = m_hist_map.find(vname);
   if(p2 != m_hist_map.end()) {
     p2->second.push_back(point);
     if(p2->second.size() > HISTORY_SIZE)
@@ -193,7 +189,7 @@ void PMV_Viewer::updateVehiclePosition(const string& tag, float x,
   else {
     list<ColoredPoint> newlist;
     newlist.push_back(point);
-    m_hist_map[tag] = newlist;
+    m_hist_map[vname] = newlist;
   }
 }
 
@@ -446,5 +442,45 @@ void PMV_Viewer::handleRightMouse(int vx, int vy)
   cout << "Right Mouse click at [" << m_right_click << "] meters." << endl;
 }
 
+//-------------------------------------------------------------
+// Procedure: initGeodesy
 
+bool PMV_Viewer::initGeodesy(double lat, double lon)
+{
+  return(m_geodesy.Initialise(lat, lon));
+}
+
+
+// ----------------------------------------------------------
+// Procedure: getLatLon
+//   Purpose: Index indicates which of the MAX_VEHICLES vehicles
+//            is being queried. 
+
+bool PMV_Viewer::getLatLon(int index, double& rlat, double& rlon)
+{
+  ObjectPose opose = getObjectPoseByIndex(index);
+  return(m_geodesy.LocalGrid2LatLong(opose.getX(), opose.getY(), rlat, rlon));
+  
+  if(m_cross_offon)
+    return(0.0);
+}
+
+// ----------------------------------------------------------
+// Procedure: getAgeAIS
+//   Purpose: Index indicates which of the MAX_VEHICLES vehicles
+//            is being queried. 
+
+float PMV_Viewer::getAgeAIS(int index)
+{
+  if(m_cross_offon)
+    return(-1);
+  
+  string vname = getVehiName(index);
+  map<string,double>::iterator p1;
+  p1 = m_ais_map.find(vname);
+  if(p1 != m_ais_map.end())
+    return(m_curr_time - p1->second);
+  else 
+    return(-1);
+}
 

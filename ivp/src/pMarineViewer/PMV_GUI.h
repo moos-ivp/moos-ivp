@@ -49,11 +49,13 @@ protected:
   MY_Output  *x_mtr;
   MY_Output  *y_mtr;
   MY_Output  *v_spd;
+  MY_Output  *v_lat;
+  MY_Output  *v_lon;
   MY_Output  *v_crs;
   MY_Output  *v_dep;
+  MY_Output  *v_ais;
 
   double m_curr_time;
-
 };
 #endif
 
