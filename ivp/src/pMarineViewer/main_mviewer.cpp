@@ -96,23 +96,29 @@ void idleProc(void *)
 
 int main(int argc, char *argv[])
 {
+  string tif_file = "Default.tif";
+
   for(int i=1; i<argc; i++) {
     string argi  = argv[i];
     if(strContains(argi, ".moos"))
       g_sMissionFile = argv[i];
-    else if(argi == "pMarineViewer") 
-      cout << "pAntler is WHACKED!!!" << endl << flush;
+    else if(strContains(argi, ".tif"))
+      tif_file = argv[i];
+    else if(strContains(argi, "-noimg"))
+      tif_file = "";
     else 
-      exit_with_usage();
+      if(!strContains(argi, "pMarineViewer"))
+	exit_with_usage();
   }
   
   if(g_sMissionFile == 0)
     exit_with_usage();
   
 
-  PMV_GUI* gui = new PMV_GUI(900,750, "Marine-Viewer");
-
-  gui->readTiff("Default.tif");
+  PMV_GUI* gui = new PMV_GUI(900,750, "pMarineViewer");
+  
+  if(tif_file != "")
+    gui->readTiff(tif_file);
 
   g_thePort.setGUI(gui);
 

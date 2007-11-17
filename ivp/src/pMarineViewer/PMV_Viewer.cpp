@@ -310,6 +310,17 @@ string PMV_Viewer::getVehiName(int index)
 }
 
 //-------------------------------------------------------------
+// Procedure: cycleIndex
+
+void PMV_Viewer::cycleIndex()
+{
+  m_global_ix += 1;
+  if(m_global_ix >= m_pos_map.size())
+    m_global_ix = 0;
+}
+
+
+//-------------------------------------------------------------
 // Procedure: drawPoints
 
 void PMV_Viewer::drawPoints(CPList &cps)

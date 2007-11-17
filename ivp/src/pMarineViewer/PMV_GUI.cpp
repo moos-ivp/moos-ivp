@@ -35,6 +35,8 @@ PMV_GUI::PMV_GUI(int g_w, int g_h, const char *g_l)
   this->when(FL_WHEN_CHANGED);
   this->begin();
 
+  augmentMenu();
+  
   int info_size=12;
  
   m_curr_time = 0;
@@ -76,6 +78,16 @@ PMV_GUI::PMV_GUI(int g_w, int g_h, const char *g_l)
 }
 
 
+
+//-------------------------------------------------------------------
+// Procedure: augmentMenu()
+
+void PMV_GUI::augmentMenu()
+{
+  mbar->add("ForeView/Cycle Focus", 'v', (Fl_Callback*)PMV_GUI::cb_CycleFocus,(void*)0, 0);
+}
+
+
 //----------------------------------------------------------
 // Procedure: handle
 //      Note: As it stands, this method could be eliminated entirely, and the 
@@ -110,4 +122,16 @@ void PMV_GUI::updateXY() {
   v_nam->value(str.c_str());
 }
 
+
+//----------------------------------------- CycleFocus
+inline void PMV_GUI::cb_CycleFocus_i(int val) {
+  mviewer->cycleIndex();
+  mviewer->redraw();
+  updateXY();
+}
+
+void PMV_GUI::cb_CycleFocus(Fl_Widget* o, int v) {
+  int val = (int)(v);
+  ((PMV_GUI*)(o->parent()->user_data()))->cb_CycleFocus_i(val);
+}
 

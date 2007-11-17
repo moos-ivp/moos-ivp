@@ -34,7 +34,6 @@ bool PMV_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
   bool gui_clear_trails = false;
   MOOSMSG_LIST::reverse_iterator p;
 
-  //cout  << NewMail.size() << "," << flush;
   for(p = NewMail.rbegin();p!=NewMail.rend();p++) {
     CMOOSMsg &Msg = *p;
 
@@ -80,7 +79,6 @@ bool PMV_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
     else {
       MOOSTrace("Unknown msg [%s]\n",key.c_str());
     }
-    //cout << "Originating community: " << Msg.m_sOriginatingCommunity << endl;
   }
   if(gui_needs_redraw && m_gui) {
     m_gui->updateXY();
