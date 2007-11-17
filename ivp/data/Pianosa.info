@@ -19,9 +19,3 @@ img_centy   = 0.50
 img_meters  = 0.048
 //img_meters  = 0.01953125
 
-//--------------------------------------------------------------
-// img_centlat and img_centlon tell us what (0,0) corresponds to 
-// in terms of latitude/longitude
-
-img_centlat = 42.35849
-img_centlon = -71.08759333
