@@ -1,4 +1,4 @@
-# Makefile definitions particular to the pHelmIvP app
+# Makefile definitions particular to the pTrafficControl app
 
 LTARGET  = pTrafficControl
 LIFLAGS  = 
@@ -8,14 +8,10 @@ REQUIRED_MOOS_LIBS = 			\
 	libMOOS.a 			\
 	libMOOSGen.a 		
 
-# Removed linkage to libbehaviors-sandbox.a because it's a private library. -CJC
+PLIBS    = libmbutil.a libgeometry.a
 
-
-PLIBS    = libmbutil.a 			\
-	   libgeometry.a 
-
-LIBS     = -lm -lpthread 				\
-	$(patsubst lib%.a,-l%,$(PLIBS)) 		\
+LIBS     = -lm -lpthread 		\
+	$(patsubst lib%.a,-l%,$(PLIBS)) \
 	$(patsubst lib%.a,-l%,$(REQUIRED_MOOS_LIBS)) 
 
 PLDIRS   = $(wildcard ../lib_*)
