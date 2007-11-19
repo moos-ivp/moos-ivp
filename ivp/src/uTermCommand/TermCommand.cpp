@@ -131,9 +131,9 @@ void TermCommand::addCommand(string cmd_str)
       
 #if 0
   if(var_type == "string")
-    cout << "Key: " << var_key << " VAR: " << var_name << " VAL(S): [" << var_val << "]" << endl;
+    cout << "Cue: " << var_key << " VAR: " << var_name << " VAL(S): [" << var_val << "]" << endl;
   else
-    cout << "Key: " << var_key << " VAR: " << var_name << " VAL(D): [" << var_val << "]" << endl;
+    cout << "Cue: " << var_key << " VAR: " << var_name << " VAL(D): [" << var_val << "]" << endl;
 #endif
 
   m_var_key.push_back(var_key);
@@ -203,7 +203,7 @@ void TermCommand::printMapping()
   for(int j=0; j<5; j++)
     printf("\n");
 
-  printf("  %-12s", "Key");
+  printf("  %-12s", "Cue");
   printf("%-22s", "VarName");
   printf("VarValue\n");
 
@@ -378,7 +378,7 @@ void TermCommand::handleCharInput(char c)
     res = -1;
   }
 
-  printf("  %-24s", "Key");
+  printf("  %-24s", "Cue");
   printf(" %-32s", "VarName");
   printf("VarValue\n");
 
