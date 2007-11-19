@@ -96,16 +96,23 @@ void idleProc(void *)
 
 int main(int argc, char *argv[])
 {
-  string tif_file = "Default.tif";
+  string tif_file_a = "";
+  string tif_file_b = "";
 
   for(int i=1; i<argc; i++) {
     string argi  = argv[i];
     if(strContains(argi, ".moos"))
       g_sMissionFile = argv[i];
-    else if(strContains(argi, ".tif"))
-      tif_file = argv[i];
-    else if(strContains(argi, "-noimg"))
-      tif_file = "";
+    else if(strContains(argi, ".tif")) {
+      if(tif_file_a == "")
+	tif_file_a = argv[i];
+      else if(tif_file_b == "")
+	tif_file_b = argv[i];
+    }
+    else if(strContains(argi, "-noimg")) {
+      tif_file_a = "";
+      tif_file_b = "";
+    }
     else 
       if(!strContains(argi, "pMarineViewer"))
 	exit_with_usage();
@@ -117,8 +124,13 @@ int main(int argc, char *argv[])
 
   PMV_GUI* gui = new PMV_GUI(900,750, "pMarineViewer");
   
-  if(tif_file != "")
-    gui->readTiff(tif_file);
+  if(tif_file_a == "")
+    tif_file_a = "Default.tif";
+  if(tif_file_b == "")
+    tif_file_b = "DefaultB.tif";
+
+  gui->readTiff(tif_file_a);
+  gui->readTiffB(tif_file_b);
 
   g_thePort.setGUI(gui);
 
