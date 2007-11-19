@@ -289,12 +289,12 @@ void MarineViewer::drawTiff()
 
   glEnable(GL_TEXTURE_2D);
   glBegin(GL_QUADS);
-#if 1
+
   glTexCoord2f(0.0f, 0.0f); glVertex2f(lower_x, lower_y);
   glTexCoord2f(0.0f, 1.0f); glVertex2f(lower_x, upper_y);
   glTexCoord2f(1.0f, 1.0f); glVertex2f(upper_x, upper_y);
   glTexCoord2f(1.0f, 0.0f); glVertex2f(upper_x, lower_y);
-#endif
+
   glEnd();
   glDisable(GL_TEXTURE_2D);
   glPopMatrix();
