@@ -20,12 +20,13 @@ IF("${IVP_BUILD_uFunctionViewer}" STREQUAL "ON")
       ivpcore
       m
    
-      # Standard libraries used by this project's FLTK apps...
-     fltk 
-     fltk_gl 
-     X11
-     GL
-     tiff)
+         # Standard libraries used by this project's FLTK apps...
+         fltk 
+         fltk_gl 
+         X11
+         GL
+         tiff      
+         )
 
       IF("${IVP_PACKAGE_VERSION}" STREQUAL "")
          MESSAGE(STATUS "uFunctionViewer: IVP_PACKAGE_VERSION not set, so not creating install component.")

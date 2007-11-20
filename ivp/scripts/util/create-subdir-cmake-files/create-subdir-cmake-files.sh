@@ -200,7 +200,7 @@ LINK_LIBS="
    behaviors-marine
 #    behaviors-sandbox
 #    behaviors-don
-#    behaviors-colregs
+   behaviors-colregs
 #    behaviors-oxford
    bhvutil	
    behaviors
