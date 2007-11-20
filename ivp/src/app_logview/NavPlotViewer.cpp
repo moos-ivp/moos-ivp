@@ -62,7 +62,6 @@ void NavPlotViewer::draw()
 //   Purpose: For a given x position, return its position, in 
 //            terms of delta meters from the zero position.
 
-#if 1
 float NavPlotViewer::getMetersX()
 {
   if(m_cross_offon) {
@@ -72,8 +71,6 @@ float NavPlotViewer::getMetersX()
     float x_pct_cent = m_back_img.get_img_centx();
     float x_pct_mtrs = m_back_img.get_img_meters();
     float meters = (x_pct - x_pct_cent) / (x_pct_mtrs / 100.0);
-    float offset = m_back_img.get_img_offset_x();
-    meters += offset;
     return(meters);
   }
   else
@@ -94,14 +91,11 @@ float NavPlotViewer::getMetersY()
     float y_pct_cent = m_back_img.get_img_centy();
     float y_pct_mtrs = m_back_img.get_img_meters();
     float meters = (y_pct - y_pct_cent) / (y_pct_mtrs / 100.0);
-    float offset = m_back_img.get_img_offset_y();
-    meters += offset;
     return(meters);
   }
   else
     return(m_navplots[m_global_ix].get_yval_by_index(m_local_ix));
 }
-#endif
 
 //-------------------------------------------------------------
 // Procedure: setCurrIndex
