@@ -1,11 +1,26 @@
 #!/usr/bin/python
 import sys
 import os.path
+import time
+from slog_util import parse_slog
 
 #===============================================================================
 
 def print_usage_and_exit():
    sys.exit("Usage: slog-to-taml.py  <slog-filename>  <taml-filename>")
+
+#===============================================================================
+
+def convert_time(slog_time_str):
+   """ Converts a time string from an slog file into a string DTG string for
+   use in TAML.  Have to artificially turn (seconds) into (date), so there's 
+   some creativity in the conversion.
+   """
+   base_time = time.mktime([2007,1,1,0,0,0,0,0,0])
+   additional_secs = float(slog_time_str)
+   
+   taml_time = time.strftime('%Y-%m-%dT%H:%M:%S', (base_time + additional_secs))
+   return taml_time
 
 #===============================================================================
 
@@ -31,7 +46,7 @@ def emit_file_header(taml_file):
 def emit_position_report(taml_file, slog_timestamp, lat, lon, heading):
    
    # TODO: Compute DTG...
-   dtg = timestamp
+   dtg = convert_time(slog_timestamp)
    
    print >> taml_file, 
 """
@@ -68,9 +83,12 @@ def emit_file_footer(taml_file):
 #===============================================================================
 
 def slog_to_taml(slog_file, taml_file):
+   slog_lines = parse_slog(slog_file)
+   
    emit_file_header(taml_file)
    
-   emit_position_report(taml_file, lat, lon, heading)
+   for l in slog_lines:
+      emit_position_report(taml_file, l['TIME'], l['NAV_Y'], l['NAV_X'], l['META_HEADING'])
    
    emit_file_footer(taml_file)
 
