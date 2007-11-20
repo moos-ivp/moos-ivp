@@ -12,6 +12,7 @@ IF("${IVP_BUILD_pMarineViewer}" STREQUAL "ON")
          
       MOOS
       MOOSGen
+      MOOSUtility
       marineview
       mbutil
       genutil
