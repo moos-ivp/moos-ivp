@@ -20,10 +20,7 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
-#include <string>
-#include <list>
 #include <iterator>
-#include <iostream>
 #include "EchoVar.h"
 #include "MBUtils.h"
 
@@ -34,8 +31,10 @@ using namespace std;
 
 bool EchoVar::OnNewMail(MOOSMSG_LIST &NewMail)
 {
+  int i;
+  int vsize = m_var_source.size();
+
   MOOSMSG_LIST::reverse_iterator p;
-  
   for(p = NewMail.rbegin(); p != NewMail.rend(); p++) {
     CMOOSMsg &msg = *p;
 
@@ -44,19 +43,16 @@ bool EchoVar::OnNewMail(MOOSMSG_LIST &NewMail)
     double ddata = msg.m_dfVal;
     char   mtype = msg.m_cDataType;
 
-    map<string,string>::iterator p;
-    p = var_map.find(key);
-    if(p == var_map.end())
-      MOOSTrace("EchoVar: Unknown msg [%s]\n",msg.m_sKey.c_str());
-    else {
-      string new_key = p->second;
-      if(mtype == MOOS_DOUBLE)
-	m_Comms.Notify(new_key, ddata);
-      else if(mtype == MOOS_STRING)
-	m_Comms.Notify(new_key, sdata);
+    for(i=0; i<vsize; i++) {
+      if(key == m_var_source[i]) {
+	string new_key = m_var_target[i];
+	if(mtype == MOOS_DOUBLE)
+	  m_Comms.Notify(new_key, ddata);
+	else if(mtype == MOOS_STRING)
+	  m_Comms.Notify(new_key, sdata);
+      }
     }
   }
-
   return(true);
 }
 
@@ -111,6 +107,15 @@ bool EchoVar::OnStartUp()
       }
     }
   }
+
+  bool ok = noCycles();
+  if(ok)
+    MOOSTrace("No Cycles Detected - proceeding with startup.\n");
+  else {
+    MOOSTrace("A cycle was detected - aborting the startup.\n");
+    return(false);
+  }
+
   registerVariables();
   return(true);
 }
@@ -120,17 +125,8 @@ bool EchoVar::OnStartUp()
 
 void EchoVar::registerVariables()
 {
-  // register for variables here
-  if(var_map.empty())
-    return;
-
-  map<string,string>::iterator p;
-  p = var_map.begin();
-  while(p != var_map.end()) {
-    string src = p->first;
-    m_Comms.Register(src, 0);
-    p++;
-  }
+  for(int i=0; i<m_unique_sources.size(); i++)
+    m_Comms.Register(m_unique_sources[i], 0);
 }
 
 //-----------------------------------------------------------------
@@ -141,20 +137,82 @@ bool EchoVar::addMapping(string src, string targ)
   if((src == "") || (targ == ""))
     return(false);
   
-  map<string,string>::iterator p;
-  p = var_map.find(src);
+  int  i;
+  
+  bool new_pair = true;
+  bool new_src  = true;
+  
+  int vsize = m_var_source.size();
+  for(i=0; i<vsize; i++) {
+    if(m_var_source[i] == src) {
+      new_src = false;
+      if(m_var_target[i] == targ)
+	new_pair = false;
+    }
+  }
+   
+  if(new_pair) {
+    m_var_source.push_back(src);
+    m_var_target.push_back(targ);
+  }
+  
+  if(new_src)
+    m_unique_sources.push_back(src);
+  
+  return(true);
+}
 
-  if(p == var_map.end())
-    var_map[src] = targ;
-  else
-    return(false);
 
+//-----------------------------------------------------------------
+// Procedure: noCycles
+
+bool EchoVar::noCycles()
+{
+  int  i, j;
+  int  vsize    = m_unique_sources.size(); 
+  int  map_size = m_var_source.size();;
+
+  vector<string> key_vector;
+  vector<string> new_vector;
+
+  for(i=0; i<vsize; i++) {
+    key_vector.clear();
+    
+    for(j=0; j<map_size; j++)
+      if(m_unique_sources[i] == m_var_source[j])
+	if(!vectorContains(key_vector, m_var_target[j]))
+	  key_vector.push_back(m_var_target[j]);
+
+    new_vector = expand(key_vector);
+    
+    if(vectorContains(new_vector, m_unique_sources[i]))
+      return(false);
+  }
   return(true);
 }
 
 
 
+//-----------------------------------------------------------------
+// Procedure: expand
 
+vector<string> EchoVar::expand(vector<string> key_vector)
+{
+  int  i, j;
+  int  map_size = m_var_source.size();;
 
+  int vsize = key_vector.size();
+  for(i=0; i<vsize; i++) {
+    string key = key_vector[i];
+    for(j=0; j<map_size; j++)
+      if(key == m_var_source[j])
+	if(!vectorContains(key_vector, m_var_target[j]))
+	  key_vector.push_back(m_var_target[j]);
+  }
 
+  if(key_vector.size() == vsize)
+    return(key_vector);
+  else
+    return(expand(key_vector));
 
+}

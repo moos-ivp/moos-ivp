@@ -23,6 +23,8 @@
 #ifndef TRANSLATOR_HEADER
 #define TRANSLATOR_HEADER
 
+#include <vector>
+#include <string>
 #include "MOOSLib.h"
 
 class EchoVar : public CMOOSApp
@@ -37,13 +39,16 @@ public:
   bool OnStartUp();
   void registerVariables();
 
+protected:
   bool addMapping(std::string, std::string);
+  bool noCycles();
+  
+  std::vector<std::string> expand(std::vector<std::string> v);
 
 protected:
-  std::vector<std::string> var_source;
-  std::vector<std::string> var_target;
-
-  std::map<std::string,std::string> var_map;
+  std::vector<std::string>  m_var_source;
+  std::vector<std::string>  m_var_target;
+  std::vector<std::string>  m_unique_sources;
 };
 
 #endif
