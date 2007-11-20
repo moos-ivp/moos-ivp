@@ -292,8 +292,6 @@ float PolyViewer::getMetersX(int index)
     float x_pct_cent = m_back_img.get_img_centx();
     float x_pct_mtrs = m_back_img.get_img_meters();
     float meters = (x_pct - x_pct_cent) / (x_pct_mtrs / 100.0);
-    float offset = m_back_img.get_img_offset_x();
-    meters += offset;
     return(meters);
   }
 }
@@ -318,8 +316,6 @@ float PolyViewer::getMetersY(int index)
     float y_pct_cent = m_back_img.get_img_centy();
     float y_pct_mtrs = m_back_img.get_img_meters();
     float meters = (y_pct - y_pct_cent) / (y_pct_mtrs / 100.0);
-    float offset = m_back_img.get_img_offset_y();
-    meters += offset;
     return(meters);
   }
 }
