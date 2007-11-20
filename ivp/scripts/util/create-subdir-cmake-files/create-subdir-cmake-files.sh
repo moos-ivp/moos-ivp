@@ -624,6 +624,7 @@ IVP_INSTALL_COMPONENT=ivp-tools \
 LINK_LIBS="
       MOOS
       MOOSGen
+      MOOSUtility
       marineview
       mbutil
       genutil
