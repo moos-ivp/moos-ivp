@@ -344,17 +344,6 @@ fltk_app_cmake_file
 # tools apps...
 #-------------------------------------------------------------------------------
 
-SUBDIR=app_artfieldgenerator \
-PROGNAME=artfieldgenerator \
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-tools \
-LINK_LIBS="
-      geometry
-      MOOS 
-      MOOSGen 
-      mbutil" \
-simple_app_cmake_file
-
 SUBDIR=app_cpaview \
 PROGNAME=cpaview \
 IVP_BUILD_BY_DEFAULT=ON \

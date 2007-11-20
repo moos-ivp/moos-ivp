@@ -1,27 +1,26 @@
-.SILENT:
-
-.PHONY : all clean ps
+.PHONY : all clean
 
 PAPER    = artifactsearch
 PAPERPDF = artifactsearch
 LDIR     = $(CURDIR)/figures/
 
-PNGFILES = $(patsubst $(LDIR)%.png, \
-	   $(LDIR)%.eps,$(wildcard $(LDIR)*.png))
+# Looking at all the png files in the LDIR (wildcard command),
+# find the phrase .png and replace it with .eps
+# This creates a list of target eps files to make from pngs.
+PNGFILES = $(patsubst $(LDIR)%.png,$(LDIR)%.eps,$(wildcard $(LDIR)*.png))
 
 all: dvi
 
 view:
 	gnome-open $(PAPER).dvi &
 
-viewpdf:
+viewpdf: pdf
 	gnome-open $(PAPER).pdf &
 
 installpdf: pdf
 	cp -f $(PAPER).pdf ~/$(PAPERPDF).pdf
 
-pdf:
-	$(PNGFILES)
+pdf: $(PNGFILES)
 	rubber --ps --pdf $(PAPER)
 	gnome-open $(PAPERPDF).pdf &
 
@@ -41,5 +40,5 @@ clean:
 	rm -f $(PNGFILES) $(PAPERPDF).pdf
 
 $(PNGFILES): %.eps: %.png
-	cd $(LDIR); convert $< $@;
+	convert $< $@;
 
