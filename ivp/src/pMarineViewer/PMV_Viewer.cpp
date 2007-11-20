@@ -57,6 +57,7 @@ void PMV_Viewer::draw()
 
   drawGrids();
   drawPolys();
+  drawSegLists();
   drawCircles();
 
   // Next draw the vehicle shapes. If the vehicle index is the 

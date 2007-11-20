@@ -127,6 +127,7 @@ bool PMV_MOOSApp::OnConnectToServer()
   m_Comms.Register("GRID_CONFIG", 0);
   m_Comms.Register("GRID_DELTA", 0);
   m_Comms.Register("VIEW_POLYGON", 0);
+  m_Comms.Register("VIEW_SEGLIST", 0);
   m_Comms.Register("VIEW_POINT", 0);
   m_Comms.Register("TRAIL_RESET", 0);
   return(true);
