@@ -54,7 +54,7 @@ bool ProcessWatch::Iterate()
   int vsize = m_procname.size();
     
   for(int i=0; i<vsize; i++) {
-    bool alive = isAlive(m_procname[i]);
+    bool alive = isAlive(m_procname[i], m_prefix_match[i]);
     
     if(!alive) {
       if(m_isalive[i]) {
@@ -105,9 +105,15 @@ bool ProcessWatch::OnStartUp()
     }
     
     if(MOOSStrCmp(sVarName, "WATCH")) {
+      int len = sLine.length();
+      if((len > 0) && (sLine.at(len-1) == '*')) {
+	m_prefix_match.push_back(true);
+	sLine.at(len-1) = '\0';
+      }
+      else
+	m_prefix_match.push_back(false);
       m_procname.push_back(sLine);
       m_isalive.push_back(false);
-      m_reported.push_back(false);
     }
   }
   
@@ -117,7 +123,7 @@ bool ProcessWatch::OnStartUp()
 //-----------------------------------------------------------------
 // Procedure: isAlive
 
-bool ProcessWatch::isAlive(string g_procname)
+bool ProcessWatch::isAlive(string g_procname, bool g_prefix_match)
 {
   vector<string> svector = parseString(m_db_clients, ',');
   int vsize = svector.size();
@@ -126,11 +132,12 @@ bool ProcessWatch::isAlive(string g_procname)
 
   for(int i=0; i<vsize; i++) {
     string i_procname = stripBlankEnds(svector[i]);
-    if(g_procname == i_procname) {
+    if(g_procname == i_procname)
+      return(true);
+    if(g_prefix_match && strContains(i_procname, g_procname)) {
       return(true);
     }
   }
-   
   return(false);
 }
   
