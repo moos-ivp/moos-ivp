@@ -44,6 +44,8 @@ TransponderAIS::TransponderAIS()
   m_parseNaFCon = false;
 
   m_blackout_interval = 0;
+  m_blackout_baseval  = 0;
+  m_blackout_variance = 0;
   m_last_post_time    = -1;
 }
 
@@ -154,8 +156,25 @@ bool TransponderAIS::Iterate()
     summary += ",DEPTH=" + dstringCompact(doubleToString(m_nav_depth));
     
     m_Comms.Notify("AIS_REPORT_LOCAL", summary);
-
     m_last_post_time = moos_time;
+
+    int    range = (int)(m_blackout_variance * 100.0);
+    int    val   = rand() % range;
+    double delta = (double)((double)val / 100.0);
+
+
+    m_blackout_interval  = m_blackout_baseval;
+    m_blackout_interval -= m_blackout_variance;
+    m_blackout_interval += (delta * 2.0);
+    if(m_blackout_interval < 0)
+      m_blackout_interval = 0;
+
+#if 0
+    interval_history += ",";
+    interval_history += doubleToString(m_blackout_interval, 2);
+    m_Comms.Notify("AIS_HISTORY", interval_history);
+#endif
+
   }
 
   postContactList();
@@ -217,7 +236,14 @@ bool TransponderAIS::OnStartUp()
       if(MOOSStrCmp(sVarName, "BLACKOUT_INTERVAL")) {
 	double dval = atof(sLine.c_str());
 	if(dval >= 0)
+	  m_blackout_baseval  = dval;
 	  m_blackout_interval = dval;
+      }
+      
+      if(MOOSStrCmp(sVarName, "BLACKOUT_VARIANCE")) {
+	double dval = atof(sLine.c_str());
+	if(dval >= 0)
+	  m_blackout_variance = dval;
       }
       
       if(MOOSStrCmp(sVarName, "PARSE_NAFCON")) 

@@ -73,7 +73,11 @@ protected:
   std::vector<std::string> m_nafcon_name;
   std::vector<std::string> m_nafcon_type;
   double  m_blackout_interval;
+  double  m_blackout_baseval;
+  double  m_blackout_variance;
   double  m_last_post_time;
+
+  std::string interval_history;
 };
 
 #endif
