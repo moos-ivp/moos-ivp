@@ -168,13 +168,6 @@ bool TransponderAIS::Iterate()
     m_blackout_interval += (delta * 2.0);
     if(m_blackout_interval < 0)
       m_blackout_interval = 0;
-
-#if 0
-    interval_history += ",";
-    interval_history += doubleToString(m_blackout_interval, 2);
-    m_Comms.Notify("AIS_HISTORY", interval_history);
-#endif
-
   }
 
   postContactList();
