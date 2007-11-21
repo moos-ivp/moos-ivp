@@ -24,19 +24,14 @@ public:
   bool OnStartUp();
 
 protected:
-  void addItem(std::string procname, std::string varname, 
-	       bool isdouble, double dval, std::string sval);
-
-  bool parseAddItem(std::string);
+  void addToWatchList(std::string);
   bool isAlive(std::string, bool=false);
-
-  int  size() {return(m_procname.size());};
 
 protected:
   std::string               m_db_clients;
   std::string               m_awol_procs;
 
-  std::vector<std::string>  m_procname;
+  std::vector<std::string>  m_watchlist;
   std::vector<bool>         m_isalive;
   std::vector<bool>         m_prefix_match;
 };

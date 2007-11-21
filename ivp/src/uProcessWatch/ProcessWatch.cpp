@@ -51,27 +51,27 @@ bool ProcessWatch::Iterate()
 {
   m_awol_procs = "All Present";
   
-  int vsize = m_procname.size();
+  int vsize = m_watchlist.size();
     
   for(int i=0; i<vsize; i++) {
-    bool alive = isAlive(m_procname[i], m_prefix_match[i]);
+    bool alive = isAlive(m_watchlist[i], m_prefix_match[i]);
     
     if(!alive) {
       if(m_isalive[i]) {
-	string msg = "Process [" + m_procname[i] + "] has died!!!!";
+	string msg = "Process [" + m_watchlist[i] + "] has died!!!!";
 	m_Comms.Notify("PROC_WATCH_EVENT", msg);
 	MOOSTrace("PROC_WATCH_EVENT: %s\n", msg.c_str());
       }
       m_isalive[i] = false;
 
       if(m_awol_procs == "All Present")
-	m_awol_procs = "AWOL: " + m_procname[i];
+	m_awol_procs = "AWOL: " + m_watchlist[i];
       else
-	m_awol_procs += "," + m_procname[i];
+	m_awol_procs += "," + m_watchlist[i];
     }
     else {
       if(!m_isalive[i]) {
-	string msg = "Process [" + m_procname[i] + "] is resurected!!!";
+	string msg = "Process [" + m_watchlist[i] + "] is resurected!!!";
 	m_Comms.Notify("PROC_WATCH_EVENT", msg);
 	MOOSTrace("PROC_WATCH_EVENT: %s\n", msg.c_str());
       }
@@ -105,15 +105,7 @@ bool ProcessWatch::OnStartUp()
     }
     
     if(MOOSStrCmp(sVarName, "WATCH")) {
-      int len = sLine.length();
-      if((len > 0) && (sLine.at(len-1) == '*')) {
-	m_prefix_match.push_back(true);
-	sLine.at(len-1) = '\0';
-      }
-      else
-	m_prefix_match.push_back(false);
-      m_procname.push_back(sLine);
-      m_isalive.push_back(false);
+      addToWatchList(sLine);
     }
   }
   
@@ -141,3 +133,29 @@ bool ProcessWatch::isAlive(string g_procname, bool g_prefix_match)
   return(false);
 }
   
+
+//-----------------------------------------------------------------
+// Procedure: addToWatchList
+
+void ProcessWatch::addToWatchList(string g_procname)
+{
+  string proc = stripBlankEnds(g_procname);
+  bool prefix = false; 
+  int  len    = proc.length();
+
+  if((len > 0) && (proc.at(len-1) == '*')) {
+    prefix = true;
+    proc.at(len-1) = '\0';
+  }
+  
+  // Check to see if the process name is already present
+  int vsize = m_watchlist.size();
+  for(int i=0; i<vsize; i++)
+    if(m_watchlist[i] == proc)
+      return;
+
+  // If not - add the new item to the watch list
+  m_watchlist.push_back(proc);
+  m_prefix_match.push_back(prefix);
+  m_isalive.push_back(false);
+}
