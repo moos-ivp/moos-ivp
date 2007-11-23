@@ -33,11 +33,12 @@ using namespace std;
 SimEngine::SimEngine(double g_push_x, double g_push_y, 
 			  double g_float_rate)
 {
-  push_x         = g_push_x;
-  push_y         = g_push_y;
-  
-  float_rate     = 0;
-  top_turn_speed = 3.0; // meters per second
+  m_push_x  = g_push_x;
+  m_push_y  = g_push_y;
+
+  m_push_theta     = 0;
+  m_float_rate     = 0;
+  m_top_turn_speed = 3.0; // meters per second
 }
 
 
@@ -47,13 +48,25 @@ SimEngine::SimEngine(double g_push_x, double g_push_y,
 bool SimEngine::setParam(const string& g_param, double g_value)
 {
   if(g_param == "top_turn_speed") {
-    if(top_turn_speed > 0) {
-      top_turn_speed = g_value;
+    if(m_top_turn_speed > 0) {
+      m_top_turn_speed = g_value;
       return(true);
     }
   }
   if(g_param == "float_rate") {
-    float_rate = g_value;
+    m_float_rate = g_value;
+    return(true);
+  }
+  if(g_param == "push_x") {
+    m_push_x = g_value;
+    return(true);
+  }
+  if(g_param == "push_y") {
+    m_push_y = g_value;
+    return(true);
+  }
+  if(g_param == "push_theta") {
+    m_push_theta = g_value;
     return(true);
   }
 
@@ -83,9 +96,9 @@ void SimEngine::propagate(VState &vstate, double velocity,
 
   double delta_theta_deg = rudder_angle * 40 * delta_time;
 
-  delta_theta_deg += (delta_time * push_theta);
+  delta_theta_deg += (delta_time * m_push_theta);
 
-  double pct = velocity / top_turn_speed;
+  double pct = velocity / m_top_turn_speed;
   if(pct > 1.0)
     pct = 1.0;
   if(pct < -1.0)
@@ -109,8 +122,8 @@ void SimEngine::propagate(VState &vstate, double velocity,
   double ydot  = (sin_ang * vx_body) + (cos_ang * vy_body);
 
   vstate.m_dfSpeed    = hypot(xdot, ydot);
-  vstate.m_dfX       += (xdot * delta_time) + (push_x * delta_time);
-  vstate.m_dfY       += (ydot * delta_time) + (push_y * delta_time);
+  vstate.m_dfX       += (xdot * delta_time) + (m_push_x * delta_time);
+  vstate.m_dfY       += (ydot * delta_time) + (m_push_y * delta_time);
   vstate.m_dfHeading += delta_theta_rad;
   vstate.m_dfHeading  = radAngleWrap(vstate.m_dfHeading);
   vstate.m_dfTime    += delta_time;
@@ -118,7 +131,7 @@ void SimEngine::propagate(VState &vstate, double velocity,
   if(velocity > 0) 
     vstate.m_dfDepth   += (elevator_angle/10.0) * delta_time;
   else
-    vstate.m_dfDepth += (-1 * float_rate * delta_time);
+    vstate.m_dfDepth += (-1 * m_float_rate * delta_time);
 
   if(vstate.m_dfDepth < 0)
     vstate.m_dfDepth = 0;

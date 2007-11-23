@@ -33,18 +33,14 @@ public:
   
 public:
   void   propagate(VState&, double, double, double, double=0);
-  void   setPushXY(double x, double y) {push_x=x; push_y=y;};
-  void   setPushTheta(double deg_per_sec) {push_theta=deg_per_sec;};
-
   bool   setParam(const std::string&, double);
 
 protected:
-  double push_x;
-  double push_y;
-  double push_theta;
-
-  double top_turn_speed;
-  double float_rate;
+  double m_push_x;
+  double m_push_y;
+  double m_push_theta;
+  double m_top_turn_speed;
+  double m_float_rate;
 };
 
 #endif
