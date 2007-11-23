@@ -47,6 +47,7 @@ TransponderAIS::TransponderAIS()
   m_blackout_baseval  = 0;
   m_blackout_variance = 0;
   m_last_post_time    = -1;
+  m_db_uptime         = 0;
 }
 
 //-----------------------------------------------------------------
@@ -65,6 +66,8 @@ bool TransponderAIS::OnNewMail(MOOSMSG_LIST &NewMail)
     double ddata = msg.m_dfVal;
     char   mtype = msg.m_cDataType;
 
+    if(key == "DB_UPTIME")
+      m_db_uptime = ddata;
     if(key == "NAV_X")
       m_nav_x = ddata;
     else if(key == "NAV_Y")
@@ -116,6 +119,8 @@ bool TransponderAIS::OnConnectToServer()
   m_Comms.Register("NAV_YAW", 0);
   m_Comms.Register("NAV_DEPTH", 0);
   m_Comms.Register("AIS_REPORT", 0);
+  m_Comms.Register("DB_UPTIME", 0);
+
   
   // tes 9-12-07. added NAFCON_MESSAGES registration
   m_Comms.Register("NAFCON_MESSAGES", 0);
@@ -145,15 +150,23 @@ bool TransponderAIS::Iterate()
   if((m_last_post_time == -1) || (m_blackout_interval <= 0) ||
      ((moos_time-m_last_post_time) > m_blackout_interval)) {
 
-    string timeinfo = dstringCompact(doubleToString(MOOSTime() - m_start_time));
+
+    double lat, lon;
+    m_geodesy.LocalGrid2LatLong(m_nav_x, m_nav_y, lat, lon);
+
+    string moosdb_time = dstringCompact(doubleToString(m_db_uptime,3));
+    string utc_time = dstringCompact(doubleToString(moos_time,3));
     string summary = "NAME=" + m_vessel_name;
     summary += ",TYPE=" + m_vessel_type;
-    summary += ",TIME=" + timeinfo;
-    summary += ",X="   + dstringCompact(doubleToString(m_nav_x));
-    summary += ",Y="   + dstringCompact(doubleToString(m_nav_y));
-    summary += ",SPD=" + dstringCompact(doubleToString(m_nav_speed));
-    summary += ",HDG=" + dstringCompact(doubleToString(m_nav_heading));
-    summary += ",DEPTH=" + dstringCompact(doubleToString(m_nav_depth));
+    summary += ",MOOSDB_TIME=" + moosdb_time;
+    summary += ",UTC_TIME=" + utc_time;
+    summary += ",X="   + dstringCompact(doubleToString(m_nav_x, 2));
+    summary += ",Y="   + dstringCompact(doubleToString(m_nav_y, 2));
+    summary += ",LAT=" + dstringCompact(doubleToString(lat, 6));
+    summary += ",LON=" + dstringCompact(doubleToString(lon, 6));
+    summary += ",SPD=" + dstringCompact(doubleToString(m_nav_speed, 2));
+    summary += ",HDG=" + dstringCompact(doubleToString(m_nav_heading, 2));
+    summary += ",DEPTH=" + dstringCompact(doubleToString(m_nav_depth, 2));
     
     m_Comms.Notify("AIS_REPORT_LOCAL", summary);
     m_last_post_time = moos_time;
@@ -204,8 +217,8 @@ bool TransponderAIS::OnStartUp()
   if (!m_MissionReader.GetValue("LongOrigin", longOrigin))
     return MOOSFail("LongOrigin not set in *.moos file\n");
   
-  // initialize m_Geodesy
-  if (!m_Geodesy.Initialise(latOrigin, longOrigin))
+  // initialize m_geodesy
+  if (!m_geodesy.Initialise(latOrigin, longOrigin))
     return MOOSFail("Geodesy init failed.\n");
 
   // initialize naFConPublishForID to all false before adding
@@ -380,7 +393,7 @@ bool TransponderAIS::handleIncomingNaFConMessage(const string& rMsg)
 	return MOOSFail("No Timestamp\n");      
 
       // convert lat, long into x, y. 60 nautical miles per minute
-      if(!m_Geodesy.LatLong2LocalGrid(navLat, navLong, navY, navX))
+      if(!m_geodesy.LatLong2LocalGrid(navLat, navLong, navY, navX))
 	return MOOSFail("Geodesy conversion failed\n");
       
 

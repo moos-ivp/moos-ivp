@@ -23,6 +23,7 @@
 
 #ifndef TRANSPONDER_AIS_HEADER
 #define TRANSPONDER_AIS_HEADER
+
 #include <iostream>
 #include <string>
 #include "MOOSLib.h"
@@ -50,6 +51,7 @@ public:
 
 
 protected:
+  double      m_db_uptime;
   double      m_start_time;
   double      m_nav_x;
   double      m_nav_y;
@@ -67,7 +69,7 @@ protected:
   // vector to specify whether to publish for a given ID
   std::vector<bool> naFConPublishForID;
   // for lat long conversion
-  CMOOSGeodesy m_Geodesy;
+  CMOOSGeodesy m_geodesy;
 
   // strings to hold information about NaFCon IDs
   std::vector<std::string> m_nafcon_name;
