@@ -283,20 +283,6 @@ LINK_LIBS="
 simple_app_cmake_file
 
 
-SUBDIR=uTMS \
-PROGNAME=uTMS \
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-core \
-LINK_LIBS="
-   MOOS
-   MOOSGen
-   genutil
-   mbutil
-   m
-   pthread" \
-simple_app_cmake_file
-
-
 SUBDIR=uTermCommand \
 PROGNAME=uTermCommand \
 IVP_BUILD_BY_DEFAULT=ON \
@@ -375,23 +361,6 @@ LINK_LIBS="
       m" \
 fltk_app_cmake_file
 
-SUBDIR=app_fview \
-PROGNAME=fview \
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-tools \
-LINK_LIBS="
-#       behaviors-sandbox
-      behaviors-marine
-      bhvutil
-      ipfview
-      behaviors
-      geometry
-      ivpbuild
-      ivpcore
-      m
-      mbutil" \
-fltk_app_cmake_file
-
 SUBDIR=app_glogview \
 PROGNAME=glogview \
 IVP_BUILD_BY_DEFAULT=ON \
@@ -427,17 +396,6 @@ LINK_LIBS="
       ivpbuild
       mbutil
       ivpcore
-      m" \
-fltk_app_cmake_file
-
-SUBDIR=app_hexaview \
-PROGNAME=hexaview \
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-tools \
-LINK_LIBS="
-      marineview
-      geometry
-      mbutil
       m" \
 fltk_app_cmake_file
 
