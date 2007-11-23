@@ -6,7 +6,7 @@ import os.path
 #===============================================================================
 
 def parse_slog_header(infile):
-   """Returns two dictionaires.
+   """Returns two dictionaries.
    
    The first dictionary maps disambiguated variable names to column numbers 
    (starting at 1, not 0).  Raises an error is something went wrong.
