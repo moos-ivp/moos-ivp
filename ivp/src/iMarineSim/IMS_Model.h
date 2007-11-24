@@ -2,7 +2,7 @@
 /*    NAME: Michael Benjamin and John Leonard                    */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
 /*    FILE: IMS_Model.h                                          */
-/*    DATE: Nov 19th 2006 (as separate class under MVC paradigm  */
+/*    DATE: Nov 19th 2006 (as separate class under MVC paradigm) */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
 /* modify it under the terms of the GNU General Public License   */
@@ -48,8 +48,6 @@ public:
   void   setRudder(double v)      {m_rudder = v;};
   void   setThrust(double v)      {m_thrust = v;};
   void   setElevator(double v)    {m_elevator = v;};
-  void   setMaxTransVel(double v) {m_max_trans_vel = v;};
-  void   setMaxRotatVel(double v) {m_max_rotat_vel = v;};
   void   setPushX(double v)       {m_push_x = v;};
   void   setPushY(double v)       {m_push_y = v;};
   void   setPushTheta(double v)   {m_push_theta = v;};
@@ -66,8 +64,6 @@ public:
 
 protected:
   bool      m_paused;
-  double    m_max_trans_vel;
-  double    m_max_rotat_vel;
   double    m_rudder;
   double    m_thrust;
   double    m_elevator;

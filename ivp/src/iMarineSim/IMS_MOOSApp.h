@@ -54,7 +54,6 @@ public:
 protected:
   std::string m_sim_prefix;
   IMS_Model*  m_model;
-  std::string m_vehicle_id;
 };
 #endif
 

@@ -53,8 +53,6 @@ bool IMS_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
       continue;
     }
 
-    string reset_str = "SIM_RESET_" + toupper(m_vehicle_id);
-
     if(m_model) {
       if(Msg.m_sKey == "DESIRED_THRUST")
 	m_model->setThrust(Msg.m_dfVal);
@@ -70,7 +68,7 @@ bool IMS_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 	m_model->setPushX(Msg.m_dfVal);
       else if(Msg.m_sKey == "SIM_Y_FORCE")
 	m_model->setPushY(Msg.m_dfVal);
-      else if(Msg.m_sKey == reset_str) {
+      else if(Msg.m_sKey == "SIM_RESET") {
 	string str = stripBlankEnds(Msg.m_sVal);
 	vector<string> svector = parseString(str, ',');
 	if(svector.size() == 4) {
@@ -82,6 +80,29 @@ bool IMS_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 	  m_model->setSpeed(atof(spd.c_str()));
 	  string hdg = stripBlankEnds(svector[3]);
 	  m_model->setHeadingDEG(atof(hdg.c_str()));
+	}
+      }
+      else if(Msg.m_sKey == "MARINESIM_RESET") {
+	string str = stripBlankEnds(Msg.m_sVal);
+	vector<string> svector = parseString(str, ',');
+	int vsize = svector.size();
+	for(int i=0; i<vsize; i++) {
+	  string pair = stripBlankEnds(svector[i]);
+	  vector<string> vpair = parseString(pair, '=');
+	  if(vpair.size() == 2) {
+	    string left = tolower(stripBlankEnds(vpair[0]));
+	    string right = stripBlankEnds(vpair[1]);
+	    if(left == "start_x")
+	      m_model->setPositionX(atof(right.c_str()));
+	    if(left == "start_y")
+	      m_model->setPositionY(atof(right.c_str()));
+	    if(left == "start_speed")
+	      m_model->setSpeed(atof(right.c_str()));
+	    if(left == "start_heading")
+	      m_model->setHeadingDEG(atof(right.c_str()));
+	    if(left == "start_depth")
+	      m_model->setDepth(atof(right.c_str()));
+	  }
 	}
       }
       else
@@ -105,9 +126,6 @@ bool IMS_MOOSApp::OnStartUp()
   else
     MOOSTrace("sim starting\n");
   
-  // Set the vehicle_id to the community name - possibly overide later.
-  m_MissionReader.GetValue("Community", m_vehicle_id);
-  
   m_model->reset(MOOSTime());
 
   STRING_LIST sParams;
@@ -121,8 +139,6 @@ bool IMS_MOOSApp::OnStartUp()
     double dVal      = atof(sVal.c_str());
 
     // Backward support of older param style
-    if(sVarName=="MaxTransVel")  sVarName="MAX_TRANS_VEL";
-    if(sVarName=="MaxRotVel")    sVarName="MAX_ROTAT_VEL";
     if(sVarName=="StartLon")     sVarName="START_X";
     if(sVarName=="StartLat")     sVarName="START_Y";
     if(sVarName=="StartHeading") sVarName="START_HEADING";
@@ -131,11 +147,7 @@ bool IMS_MOOSApp::OnStartUp()
 
     sVarName = toupper(sVarName);
 
-    if(sVarName == "MAX_TRANS_VEL")
-      m_model->setMaxTransVel(dVal);
-    else if(sVarName == "MAX_ROTAT_VEL")
-      m_model->setMaxRotatVel(dVal);
-    else if(sVarName == "START_X")
+    if(sVarName == "START_X")
       m_model->setPositionX(dVal);
     else if(sVarName == "START_Y")
       m_model->setPositionY(dVal);
@@ -155,16 +167,8 @@ bool IMS_MOOSApp::OnStartUp()
       m_model->setPushX(dVal);
     else if(sVarName == "FORCE_Y")
       m_model->setPushY(dVal);
-    else if(sVarName == "VEHICLE_ID")
-      m_vehicle_id = sVal;
-
     else if(sVarName == "SIM_PAUSE")
       m_model->setPaused(toupper(sVal) == "TRUE");
-  }
-
-  if(m_vehicle_id == "") {
-    MOOSTrace("SIM Vehicle ID not set - via community or explicitly.\n");
-    return(false);
   }
 
   registerVariables();
@@ -193,12 +197,13 @@ void IMS_MOOSApp::registerVariables()
   m_Comms.Register("DESIRED_RUDDER", 0);
   m_Comms.Register("DESIRED_THRUST", 0);
   m_Comms.Register("DESIRED_ELEVATOR", 0);
-  m_Comms.Register("SIM_X_FORCE", 0);
-  m_Comms.Register("SIM_Y_FORCE", 0);
-  m_Comms.Register("SIM_PAUSE", 0);
 
-  if(m_vehicle_id != "")
-    m_Comms.Register("SIM_RESET_" + toupper(m_vehicle_id), 0);
+  m_Comms.Register("MARINESIM_FLOAT_RATE", 0);
+  m_Comms.Register("MARINESIM_FORCE_X", 0);
+  m_Comms.Register("MARINESIM_FORCE_Y", 0);
+  m_Comms.Register("MARINESIM_FORCE_THETA", 0);
+  m_Comms.Register("MARINESIM_PAUSE", 0);
+  m_Comms.Register("MARINESIM_RESET", 0);
 }
 
 //------------------------------------------------------------------------

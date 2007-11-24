@@ -38,13 +38,13 @@ using namespace std;
 
 IMS_Model::IMS_Model() 
 {
-  m_max_trans_vel = 100;   // 2.7?
-  m_max_rotat_vel = 100;   // 0.6?
   m_rudder        = 0;
   m_thrust        = 0;
   m_elevator      = 0;
   m_push_x        = 0;
   m_push_y        = 0; 
+  m_push_theta    = 0;
+  m_float_rate    = 0;
   m_paused        = false;
 }
 
@@ -64,9 +64,6 @@ bool IMS_Model::propagate(double g_curr_time)
   double delta_time  = a_curr_time - m_vstate.m_dfTime;
   double next_speed  = m_thrust / 20.0;
 
-  if(next_speed > m_max_trans_vel)   next_speed = m_max_trans_vel;
-  if(next_speed < -m_max_trans_vel)  next_speed = -m_max_trans_vel;
-  
   m_vstate.m_dfSpeed = next_speed;
 
   // Convert rudder_angle to RADIANS
@@ -123,8 +120,6 @@ void IMS_Model::reset(double g_curr_time)
   m_vstate.m_dfY       = 0.0;
   m_vstate.m_dfSpeed   = 0.0;
   m_vstate.m_dfHeading = 0.0;
-  m_max_trans_vel      = 100;   // 2.7?
-  m_max_rotat_vel      = 100;   // 0.6?
 
   m_paused   = false;
   m_push_x   = 0;
