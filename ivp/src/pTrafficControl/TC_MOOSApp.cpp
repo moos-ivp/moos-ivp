@@ -238,10 +238,10 @@ void TC_MOOSApp::postTSet()
     
     var = "MARINESIM_RESET_" + toupper(m_vehicles[i]);
 
-    val  = "start_x=" + x +", "; 
-    val += "start_y=" + y +", "; 
-    val += "start_speed=" + spd +", "; 
-    val += "start_heading=" + hdg;
+    val  = "START_X=" + x +","; 
+    val += "START_Y=" + y +","; 
+    val += "START_SPEED=" + spd +","; 
+    val += "START_HEADING=" + hdg;
     m_Comms.Notify(var, val);
 
     
