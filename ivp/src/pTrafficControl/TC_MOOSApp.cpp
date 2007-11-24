@@ -236,8 +236,12 @@ void TC_MOOSApp::postTSet()
     string spd = doubleToString(m_trajectory_set.getStartSPD(i), 1);
     string hdg = doubleToString(m_trajectory_set.getStartHDG(i), 1);
     
-    var = "SIM_RESET_" + toupper(m_vehicles[i]);
-    val += x + "," + y + "," + spd + "," + hdg;
+    var = "MARINESIM_RESET_" + toupper(m_vehicles[i]);
+
+    val  = "start_x=" + x +", "; 
+    val += "start_y=" + y +", "; 
+    val += "start_speed=" + spd +", "; 
+    val += "start_heading=" + hdg;
     m_Comms.Notify(var, val);
 
     
