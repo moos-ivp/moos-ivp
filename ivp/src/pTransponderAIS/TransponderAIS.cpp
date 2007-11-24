@@ -68,7 +68,7 @@ bool TransponderAIS::OnNewMail(MOOSMSG_LIST &NewMail)
 
     if(key == "DB_UPTIME")
       m_db_uptime = ddata;
-    if(key == "NAV_X")
+    else if(key == "NAV_X")
       m_nav_x = ddata;
     else if(key == "NAV_Y")
       m_nav_y = ddata;
@@ -171,14 +171,16 @@ bool TransponderAIS::Iterate()
     m_Comms.Notify("AIS_REPORT_LOCAL", summary);
     m_last_post_time = moos_time;
 
-    int    range = (int)(m_blackout_variance * 100.0);
-    int    val   = rand() % range;
-    double delta = (double)((double)val / 100.0);
-
-
     m_blackout_interval  = m_blackout_baseval;
-    m_blackout_interval -= m_blackout_variance;
-    m_blackout_interval += (delta * 2.0);
+
+    if(m_blackout_variance > 0) {
+      int    range = (int)(m_blackout_variance * 100.0);
+      int    val   = rand() % range;
+      double delta = (double)((double)val / 100.0);
+      m_blackout_interval -= m_blackout_variance;
+      m_blackout_interval += (delta * 2.0);
+    }
+
     if(m_blackout_interval < 0)
       m_blackout_interval = 0;
   }
