@@ -62,26 +62,14 @@ bool IMS_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 	m_model->setElevator(Msg.m_dfVal);
       else if(Msg.m_sKey == "SIM_PAUSED")
 	m_model->setPaused(toupper(Msg.m_sVal) == "TRUE");
-      else if(Msg.m_sKey == "SIM_THETA_FORCE")
+      else if(Msg.m_sKey == "MARINESIM_FLOAT_RATE")
+	m_model->setFloatRate(Msg.m_dfVal);
+      else if(Msg.m_sKey == "MARINESIM_FORCE_THETA")
 	m_model->setPushTheta(Msg.m_dfVal);
-      else if(Msg.m_sKey == "SIM_X_FORCE")
+      else if(Msg.m_sKey == "MARINESIM_FORCE_X")
 	m_model->setPushX(Msg.m_dfVal);
-      else if(Msg.m_sKey == "SIM_Y_FORCE")
+      else if(Msg.m_sKey == "MARINESIM_FORCE_Y")
 	m_model->setPushY(Msg.m_dfVal);
-      else if(Msg.m_sKey == "SIM_RESET") {
-	string str = stripBlankEnds(Msg.m_sVal);
-	vector<string> svector = parseString(str, ',');
-	if(svector.size() == 4) {
-	  string x = stripBlankEnds(svector[0]);
-	  m_model->setPositionX(atof(x.c_str()));
-	  string y = stripBlankEnds(svector[1]);
-	  m_model->setPositionY(atof(y.c_str()));
-	  string spd = stripBlankEnds(svector[2]);
-	  m_model->setSpeed(atof(spd.c_str()));
-	  string hdg = stripBlankEnds(svector[3]);
-	  m_model->setHeadingDEG(atof(hdg.c_str()));
-	}
-      }
       else if(Msg.m_sKey == "MARINESIM_RESET") {
 	string str = stripBlankEnds(Msg.m_sVal);
 	vector<string> svector = parseString(str, ',');
