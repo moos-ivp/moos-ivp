@@ -174,4 +174,3 @@ void ProcessWatch::addToWatchList(string g_procname)
   m_prefix_match.push_back(prefix);
   m_isalive.push_back(false);
 }
->>>>>>> .r501
