@@ -122,14 +122,8 @@ bool PMV_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 
 bool PMV_MOOSApp::OnConnectToServer()
 {
-  m_Comms.Register("AIS_REPORT", 0);
-  m_Comms.Register("AIS_REPORT_LOCAL", 0);
-  m_Comms.Register("GRID_CONFIG", 0);
-  m_Comms.Register("GRID_DELTA", 0);
-  m_Comms.Register("VIEW_POLYGON", 0);
-  m_Comms.Register("VIEW_SEGLIST", 0);
-  m_Comms.Register("VIEW_POINT", 0);
-  m_Comms.Register("TRAIL_RESET", 0);
+  registerVariables();
+
   return(true);
 }
 
@@ -228,9 +222,31 @@ bool PMV_MOOSApp::OnStartUp()
     string sVarName = MOOSChomp(sLine, "=");
     sVarName = toupper(sVarName);
     sLine    = stripBlankEnds(sLine);
+    double dval = atof(sLine.c_str());
     
     if(MOOSStrCmp(sVarName, "TIF_FILE"))
       tif_file = sLine;
+    if(MOOSStrCmp(sVarName, "HASH_DELTA"))
+      m_gui->mviewer->setParam("hash_delta", dval);
+    if(MOOSStrCmp(sVarName, "HASH_SHADE"))
+      m_gui->mviewer->setParam("hash_shade", dval);
+    if(MOOSStrCmp(sVarName, "BACK_SHADE"))
+      m_gui->mviewer->setParam("back_shade", dval);
+    if(MOOSStrCmp(sVarName, "TRAIL_SIZE"))
+      m_gui->mviewer->setParam("trail_size", dval);
+    if(MOOSStrCmp(sVarName, "TRAIL_GAP"))
+      m_gui->mviewer->setParam("trail_gap",  dval);
+    if(MOOSStrCmp(sVarName, "ZOOM"))
+      m_gui->mviewer->setParam("zoom",       dval);
+    if(MOOSStrCmp(sVarName, "HASH_VIEW"))
+      m_gui->mviewer->setParam("hash_view",  sLine);
+    if(MOOSStrCmp(sVarName, "TIFF_VIEW"))
+      m_gui->mviewer->setParam("tiff_view",  sLine);
+    if(MOOSStrCmp(sVarName, "TRAIL_VIEW"))
+      m_gui->mviewer->setParam("trail_view", sLine);
+    if(MOOSStrCmp(sVarName, "DISPLAY_VNAME"))
+      m_gui->mviewer->setParam("display_vname", sLine);
+
     if(MOOSStrCmp(sVarName, "VERBOSE")) {
       if(tolower(sLine) == "true")
 	m_verbose = true;
@@ -249,6 +265,7 @@ bool PMV_MOOSApp::OnStartUp()
   if(m_gui && m_gui->mviewer)
     m_gui->mviewer->redraw();
   
+  registerVariables();
   return(true);
 }
 
@@ -425,9 +442,19 @@ void PMV_MOOSApp::receiveGRID_DELTA(CMOOSMsg &Msg)
 }
 
 
+//------------------------------------------------------------
+// Procedure: registerVariables
 
-
-
-
+void PMV_MOOSApp::registerVariables()
+{
+  m_Comms.Register("AIS_REPORT", 0);
+  m_Comms.Register("AIS_REPORT_LOCAL", 0);
+  m_Comms.Register("GRID_CONFIG", 0);
+  m_Comms.Register("GRID_DELTA", 0);
+  m_Comms.Register("VIEW_POLYGON", 0);
+  m_Comms.Register("VIEW_POINT", 0);
+  m_Comms.Register("VIEW_SEGLIST", 0);
+  m_Comms.Register("TRAIL_RESET", 0);
+}
 
 

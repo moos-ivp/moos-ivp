@@ -52,6 +52,7 @@ class PMV_MOOSApp : public CMOOSApp
   bool receivePolygon(CMOOSMsg &Msg);
   bool receiveSegList(CMOOSMsg &Msg);
   bool receivePoint(CMOOSMsg &Msg);
+  void registerVariables();
 
  protected:
   PMV_GUI* m_gui;
@@ -66,6 +67,7 @@ class PMV_MOOSApp : public CMOOSApp
 };
 
 #endif 
+
 
 
 

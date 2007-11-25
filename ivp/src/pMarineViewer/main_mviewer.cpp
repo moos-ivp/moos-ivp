@@ -122,7 +122,7 @@ int main(int argc, char *argv[])
     exit_with_usage();
   
 
-  PMV_GUI* gui = new PMV_GUI(900,750, "pMarineViewer");
+  PMV_GUI* gui = new PMV_GUI(900,650, "pMarineViewer");
   
   if(tif_file_a == "")
     tif_file_a = "Default.tif";
@@ -142,4 +142,5 @@ int main(int argc, char *argv[])
 
   return Fl::run();
 }
+
 

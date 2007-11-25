@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin and John Leonard                    */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
-/*    FILE: PMV_Viewer.cpp                                     */
+/*    FILE: PMV_Viewer.cpp                                       */
 /*    DATE: Nov 11th 2004                                        */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
@@ -137,7 +137,7 @@ void PMV_Viewer::drawVehicle(string vname, bool active, string vehibody)
     red=1.0; grn=0; blu=0;
   }
 
-  drawCommonVehicle("", opose, red, grn, blu, vehibody);
+  drawCommonVehicle(vname, opose, red, grn, blu, vehibody, 1);
 }
 
 //-------------------------------------------------------------
@@ -484,4 +484,5 @@ float PMV_Viewer::getAgeAIS(int index)
   else 
     return(-1);
 }
+
 
