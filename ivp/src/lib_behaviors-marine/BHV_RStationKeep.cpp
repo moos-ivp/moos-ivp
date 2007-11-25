@@ -376,3 +376,4 @@ void BHV_RStationKeep::postStationMessage(bool post)
   postMessage("RVIEW_POINT", ptmsg);
 }
 
+

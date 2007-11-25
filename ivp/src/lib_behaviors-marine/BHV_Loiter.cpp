@@ -375,3 +375,4 @@ void BHV_Loiter::updateInfoOutNull()
   postMessage("VIEW_POLYGON", null_spec);
 }
 
+

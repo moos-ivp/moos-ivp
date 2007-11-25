@@ -106,3 +106,5 @@ void HelmReport::addActiveBHV(const std::string& descriptor,
   m_active_bhvs += descriptor;
   m_active_bhvs += ":" + doubleToString(pwt, 2);
 }
+
+

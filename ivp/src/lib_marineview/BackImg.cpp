@@ -247,22 +247,11 @@ bool BackImg::readTiffInfo(string filename)
 void BackImg::readBlankTiff()
 {
   img_data    = 0;    
-
-#if 1
   img_width   = 2048;
   img_height  = 2048;    
-  img_centx   = 0.495850; 
-  img_centy   = 0.509000;
-  img_meters  = 0.048828; 
-#endif
-
-#if 0
-  img_width   = 1000;
-  img_height  = 1000;    
-  img_centx   = 0.5;
+  img_centx   = 0.5; 
   img_centy   = 0.5;
-  img_meters  = 0.025;
-#endif
+  img_meters  = 0.048828; 
 }
 
 
@@ -284,4 +273,5 @@ bool BackImg::setTexture()
   
   glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 }
+
 

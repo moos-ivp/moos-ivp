@@ -244,3 +244,4 @@ void MarineGUI::cb_ToggleCross(Fl_Widget* o) {
   ((MarineGUI*)(o->parent()->user_data()))->cb_ToggleCross_i();
 }
 
+

@@ -202,3 +202,4 @@ void ZAIC_GUI::updateOutput()
   s_heq->value(str.c_str());
 
 }
+

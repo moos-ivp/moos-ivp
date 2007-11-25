@@ -259,3 +259,4 @@ bool BHV_MemoryTurnLimit::getHeadingAvg2(double& heading_avg)
   return(true);
 }
 
+

@@ -220,6 +220,33 @@ float MarineViewer::img2meters(char xy, float img_val)
 }
 
 // ----------------------------------------------------------
+// Procedure: getCrossHairMeters
+//      Note: 
+
+float MarineViewer::getCrossHairMeters(char xy)
+{
+  if(xy == 'x') {
+    int iwidth = m_back_img.get_img_width();
+    float x_pos = ((float)(iwidth) / 2.0) - (float)(m_vshift_x);
+    float x_pct = m_back_img.pixToPctX(x_pos);
+    float x_pct_cent = m_back_img.get_img_centx();
+    float x_pct_mtrs = m_back_img.get_img_meters();
+    float meters = (x_pct - x_pct_cent) / (x_pct_mtrs / 100.0);
+    return(meters);   
+  }
+  else if (xy == 'y') {
+    int iheight = m_back_img.get_img_height();
+    float y_pos = ((float)(iheight) / 2.0) - (float)(m_vshift_y);
+    float y_pct = m_back_img.pixToPctY(y_pos);
+    float y_pct_cent = m_back_img.get_img_centy();
+    float y_pct_mtrs = m_back_img.get_img_meters();
+    float meters = (y_pct - y_pct_cent) / (y_pct_mtrs / 100.0);
+    return(meters);
+  }
+}
+
+
+// ----------------------------------------------------------
 // Procedure: draw
 //   Purpose: 
 
@@ -851,9 +878,9 @@ bool MarineViewer::setCommonParam(string param, string value)
   else if(param == "display_vname") {
     if(value == "toggle")
       m_draw_vname = !m_draw_vname;
-    else if(value == "on")
+    else if((value == "on") || (value == "true"))
       m_draw_vname = true;
-    else if(value == "off")
+    else if((value == "off") || (value == "false"))
       m_draw_vname = false;
     else
       return(false);
@@ -1231,8 +1258,7 @@ void MarineViewer::drawCommonVehicle(string vname, ObjectPose opose,
     drawGLPoly(g_kayakMidOpen, g_kayakMidOpenSize, 0.5, 0.5, 0.5, 0, g_kayakScale);
     glTranslatef(cx, cy, 0);
   }
-  
-  if(vehibody == "auv") {
+  else if(vehibody == "auv") {
     double cx = g_auvCtrX * g_auvScale;
     double cy = g_auvCtrY * g_auvScale;
     glTranslatef(-cx, -cy, 0);
@@ -1242,8 +1268,7 @@ void MarineViewer::drawCommonVehicle(string vname, ObjectPose opose,
     drawGLPoly(g_propUnit, g_propUnitSize, 0,0,1, 0, g_auvScale);
     glTranslatef(cx, cy, 0);
   }
-
-  if(vehibody == "glider") {
+  else if(vehibody == "glider") {
     double cx = g_gliderCtrX * g_gliderScale;
     double cy = g_gliderCtrY * g_gliderScale;
     glTranslatef(-cx, -cy, 0);
@@ -1253,8 +1278,7 @@ void MarineViewer::drawCommonVehicle(string vname, ObjectPose opose,
     drawGLPoly(g_gliderBody, g_gliderBodySize, 0,0,0, 1, g_gliderScale);
     glTranslatef(cx, cy, 0);
   }
-
-  if(vehibody == "ship") {
+  else {  // vehibody == "ship" is the default
     double cx = g_shipCtrX * g_shipScale;
     double cy = g_shipCtrY * g_shipScale;
     glTranslatef(-cx, -cy, 0);
@@ -1346,4 +1370,5 @@ void MarineViewer::drawCommonMarker(double x, double y,
 
   glPopMatrix();
 }
+
 

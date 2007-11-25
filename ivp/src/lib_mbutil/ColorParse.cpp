@@ -3,6 +3,21 @@
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
 /*    FILE: ColorParse.h                                         */
 /*    DATE: Aug 19th 2006                                        */
+/*                                                               */
+/* This program is free software; you can redistribute it and/or */
+/* modify it under the terms of the GNU General Public License   */
+/* as published by the Free Software Foundation; either version  */
+/* 2 of the License, or (at your option) any later version.      */
+/*                                                               */
+/* This program is distributed in the hope that it will be       */
+/* useful, but WITHOUT ANY WARRANTY; without even the implied    */
+/* warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR       */
+/* PURPOSE. See the GNU General Public License for more details. */
+/*                                                               */
+/* You should have received a copy of the GNU General Public     */
+/* License along with this program; if not, write to the Free    */
+/* Software Foundation, Inc., 59 Temple Place - Suite 330,       */
+/* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
 #include <iostream>
@@ -180,7 +195,7 @@ string colorNameToHex(const std::string &str)
   if(cstr == "darkturquoise")  return("hex:00,ce,d1");
   if(cstr == "darkviolet")     return("hex:94,00,d3");
   if(cstr == "deeppink")       return("hex:ff,14,93");
-  if(cstr == "deepskynlue")    return("hex:00,bf,ff");
+  if(cstr == "deepskyblue")    return("hex:00,bf,ff");
   if(cstr == "dimgray")        return("hex:69,69,69");
   if(cstr == "dodgerblue")     return("hex:1e,90,ff");
   if(cstr == "firenrick")      return("hex:b2,22,22");
@@ -282,3 +297,4 @@ string colorNameToHex(const std::string &str)
 
   return("error");
 }
+

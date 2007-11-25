@@ -42,3 +42,4 @@ void printSquare(const XYSquare&);
 
 #endif
 
+

@@ -505,3 +505,4 @@ void REPLAY_GUI::capture_to_file()
   save_file_ix++;
 }
 
+

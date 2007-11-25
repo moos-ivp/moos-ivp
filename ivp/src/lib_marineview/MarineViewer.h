@@ -70,6 +70,7 @@ public:
   void   colorMapping(const std::string&);
   void   updateGrid(std::string);
   double getHashDelta();
+  float  getCrossHairMeters(char);
 
 protected:
   float  img2view(char, float);
@@ -145,4 +146,5 @@ protected:
 };
 
 #endif 
+
 

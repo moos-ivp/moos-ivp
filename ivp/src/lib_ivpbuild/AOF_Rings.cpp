@@ -136,3 +136,4 @@ string AOF_Rings::latexSTR(int full) const
 
 
 
+

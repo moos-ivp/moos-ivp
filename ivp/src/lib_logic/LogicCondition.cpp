@@ -115,3 +115,4 @@ bool LogicCondition::eval()
 
 	   
 
+

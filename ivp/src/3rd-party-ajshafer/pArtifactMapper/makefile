@@ -21,4 +21,3 @@ include ../../make_config.mk
 # Generic makefile structure for all application modules
 include ../../make_3rd_party_app.mk
 # DO NOT DELETE
-

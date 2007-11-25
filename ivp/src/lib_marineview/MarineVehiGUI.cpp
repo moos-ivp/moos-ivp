@@ -48,7 +48,7 @@ MarineVehiGUI::MarineVehiGUI(int g_w, int g_h, const char *g_l)
   mbar->add("ForeView/Shape Larger",    '+', (Fl_Callback*)MarineVehiGUI::cb_AltShapeScale, (void*)+1, 0);
   mbar->add("ForeView/Shape Smaller",   '-', (Fl_Callback*)MarineVehiGUI::cb_AltShapeScale, (void*)-1, FL_MENU_DIVIDER);
   mbar->add("ForeView/Toggle Trails",   't', (Fl_Callback*)MarineVehiGUI::cb_ToggleTrails, 0, 134);
-  mbar->add("ForeView/Toggle TrailColor", 'T', (Fl_Callback*)MarineVehiGUI::cb_ToggleTrailColor, 0, 0);
+  mbar->add("ForeView/Toggle TrailColor", FL_CTRL+'T', (Fl_Callback*)MarineVehiGUI::cb_ToggleTrailColor, 0, 0);
   mbar->add("ForeView/Toggle TrailConnect", 'y', (Fl_Callback*)MarineVehiGUI::cb_ToggleTrailConnect, 0, 0);
   mbar->add("ForeView/Toggle VehicleName", 'n', (Fl_Callback*)MarineVehiGUI::cb_ToggleVehicleName, 0, 0);
   mbar->add("ForeView/More Trail Gap",  '}', (Fl_Callback*)MarineVehiGUI::cb_AltTrailGap, (void*)1,  0);
@@ -125,4 +125,5 @@ inline void MarineVehiGUI::cb_DataView_i(int val) {
 void MarineVehiGUI::cb_DataView(Fl_Widget* o, int v) {
   ((MarineVehiGUI*)(o->parent()->user_data()))->cb_DataView_i(v);
 }
+
 

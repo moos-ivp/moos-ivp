@@ -1,4 +1,4 @@
-/*****************************************************************
+/*****************************************************************/
 /*    NAME: Michael Benjamin and John Leonard                    */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
 /*    FILE: PolyViewer.h                                         */
@@ -106,4 +106,5 @@ public:
 };
 
 #endif 
+
 

@@ -1,6 +1,5 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin and John Leonard                    */
-/*    NaFCon Functionality: Toby Schneider tes@mit.edu           */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
 /*    FILE: TransponderAIS.cpp                                   */
 /*    DATE: Feb 9th 2006                                         */
@@ -83,6 +82,7 @@ protected:
 };
 
 #endif
+
 
 
 

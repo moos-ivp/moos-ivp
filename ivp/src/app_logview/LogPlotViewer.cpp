@@ -409,3 +409,4 @@ void LogPlotViewer::draw_logplot()
 
 
 
+

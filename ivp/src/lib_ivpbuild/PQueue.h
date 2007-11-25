@@ -3,7 +3,6 @@
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
 /*    FILE: PQueue.h                                             */
 /*    DATE: December 8th, 2000                                   */
-/*    DATE: July 4th, 2007  Modified to hold indices vs IvPBox*  */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
 /* modify it under the terms of the GNU General Public License   */
@@ -62,6 +61,7 @@ protected:
   int      m_max_levels;
 };
 #endif
+
 
 
 

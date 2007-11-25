@@ -304,3 +304,4 @@ void velocityVectorSum(double hdg1, double spd1, double hdg2,
   else
     hdg = relAng(0,0,xspd,yspd);
 }
+

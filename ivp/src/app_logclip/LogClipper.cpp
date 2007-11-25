@@ -179,3 +179,4 @@ bool LogClipper::write_output()
 
   return(true);
 }
+
