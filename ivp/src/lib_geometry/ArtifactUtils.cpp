@@ -1,7 +1,7 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
-/*    FILE: ArtifactUtils.cpp                                    */
+/*    NAME: Andrew Shafer                                        */
+/*    ORGN: MIT                                                  */
+/*    FILE: ArtifactUtils.h                                      */
 /*    DATE: Oct 24 2007                                          */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */

@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Andrew Shafer                                        */
+/*    ORGN: MIT                                                  */
 /*    FILE: ArtifactUtils.h                                      */
 /*    DATE: Oct 24 2007                                          */
 /*                                                               */
