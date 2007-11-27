@@ -16,13 +16,6 @@
 
 void help_message();
 
-/// ArtfieldGenerator creates random artifact fields for testing purposes.
-
-/// It reads its configuration information from the command line and
-/// outputs the artifactfield to stdout.
-/// \example config strig: label,A:-60,-40:50,10:80,-40:-40,-80
-/// \example usage: artfieldgenerator label,A:-60,-40:50,10:80,-40:-40,-80 .25 25 > mines.art
-
 int main(int argc, char *argv[])
 {
 	// argv[0] = program name
@@ -31,7 +24,7 @@ int main(int argc, char *argv[])
 	// Read in the polygons
 	// generate lawnmower pattern
 	// Output to files
-	if (argc != 3){ help_message(); return 1; };
+	if (argc != 2){ help_message(); return 1; };
 	
 	
 	std::vector<XYPolygon> vecPolys = readPolysFromFile(argv[1]);
@@ -44,10 +37,10 @@ int main(int argc, char *argv[])
 		std::cout << p->get_spec() << std::endl;
 		
 		//generateLawnmower(poly, x0, y0, angle, radius, clockwise?);
-		vecMowers.push_back(generateLawnmower(*p, 0, 0, 90, 10, true));
+		vecMowers.push_back(generateLawnmower(*p, 0, 0, 45, 10, true));
 		
 		std::cout << "Got mower pattern: \n";
-		std::cout << vecMowers.at(vecMowers.size()-1).get_spec();
+		std::cout << vecMowers.at(vecMowers.size()-1).get_spec() << std::endl;
 		
 	};
 }
@@ -62,7 +55,7 @@ void help_message()
 
 	cout << endl;
 	cout << "Usage:  generatelawnmower" << endl;
-	cout << "generatelawnmower input_file output_file_header" << endl;
+	cout << "generatelawnmower input_file" << endl;
 	cout << endl;
 }
 

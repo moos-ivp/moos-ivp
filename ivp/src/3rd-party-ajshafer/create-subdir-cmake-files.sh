@@ -74,9 +74,9 @@ PROGNAME=pArtifactMapper \
 IVP_BUILD_BY_DEFAULT=ON \
 IVP_INSTALL_COMPONENT=ivp-tools \
 LINK_LIBS="
-   artifacts
    MOOS
    MOOSGen
+   artifacts
    geometry
    mbutil
    m
@@ -88,9 +88,9 @@ PROGNAME=artfieldgenerator \
 IVP_BUILD_BY_DEFAULT=ON \
 IVP_INSTALL_COMPONENT=ivp-tools \
 LINK_LIBS="
-      geometry
       MOOS 
-      MOOSGen 
+      MOOSGen
+      geometry
       mbutil" \
 simple_app_cmake_file
 
@@ -101,4 +101,17 @@ IVP_INSTALL_COMPONENT=ivp-tools \
 LINK_LIBS="
       geometry
       mbutil" \
+simple_app_cmake_file
+
+SUBDIR=pLawnmower \
+PROGNAME=pLawnmower \
+IVP_BUILD_BY_DEFAULT=ON \
+IVP_INSTALL_COMPONENT=ivp-tools \
+LINK_LIBS="
+   MOOS
+   MOOSGen
+   geometry
+   mbutil
+   m
+   pthread" \
 simple_app_cmake_file

@@ -6,9 +6,9 @@ IF("${IVP_BUILD_artfieldgenerator}" STREQUAL "ON")
    ADD_EXECUTABLE(artfieldgenerator ${SRC})
    
    TARGET_LINK_LIBRARIES(artfieldgenerator 
-      geometry
       MOOS 
-      MOOSGen 
+      MOOSGen
+      geometry
       mbutil)
 
    IF("${IVP_PACKAGE_VERSION}" STREQUAL "")
