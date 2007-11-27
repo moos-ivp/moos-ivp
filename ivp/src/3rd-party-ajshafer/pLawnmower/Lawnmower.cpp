@@ -37,15 +37,17 @@ bool Lawnmower::OnNewMail(MOOSMSG_LIST &NewMail)
 	for(p = NewMail.rbegin(); p != NewMail.rend(); p++) {
 		CMOOSMsg &msg = *p;
 		if (MOOSStrCmp(msg.GetKey(), "LAWNMOWER_POLYGON")){
-			// MOOSTrace("Receiving LAWNMOWER_POLYGON Message...\n"); //Debug Line
+			//MOOSTrace("Receiving LAWNMOWER_POLYGON Message...\n"); //Debug Line
+			//MOOSTrace("Contents are: %s\n", msg.GetString().c_str());
 			
 			// Parse out the options and pass on the request
 			// A LAWNMOWER_POLYGON string looks like this, arguments in any order:
-			// poly=polystring#x=blah#y=blah#ang=blah#radius=blah[#clockwise=truefalse];
+			// poly=polystring#x=blah#y=blah#ang=blah#radius=blah[#clockwise=truefalse][#snap=val];
 			// x, y = initial position
 			// ang = [0,360], N = 0, clockwise positive
 			// radius = 1/2 distance between lines
 			// clockwise is first turn, defaults to true;
+			// snap is snap value, defaults to no snapping;
 			
 			bool ok = true;
 			std::string sMsg = msg.GetString();
@@ -53,33 +55,27 @@ bool Lawnmower::OnNewMail(MOOSMSG_LIST &NewMail)
 			XYSegList slOutput;
 			
 			XYPolygon poly;
-			double px0, py0, ang, radius;
+			double px0, py0, ang, radius, snap;
 			bool clockwise = true;
-			std::string spoly, spx0, spy0, sang, sradius, sclockwise;
+			std::string spoly, sclockwise;
 			
 			ok = tokParse(sMsg, "poly", '#', '=', spoly) && ok;
-			ok = tokParse(sMsg, "x", '#', '=', spx0) && ok;
-			ok = tokParse(sMsg, "y", '#', '=', spy0) && ok;
-			ok = tokParse(sMsg, "ang", '#', '=', sang) && ok;
-			ok = tokParse(sMsg, "radius", '#', '=', sradius) && ok;
-			if (!tokParse(sMsg, "clockwise", '#', '=', sclockwise)) {sclockwise="TRUE";}
+			ok = tokParse(sMsg, "x", '#', '=', px0) && ok;
+			ok = tokParse(sMsg, "y", '#', '=', py0) && ok;
+			ok = tokParse(sMsg, "ang", '#', '=', ang) && ok;
+			ok = tokParse(sMsg, "radius", '#', '=', radius) && ok;
+			if (!tokParse(sMsg, "snap", '#', '=', snap)) { snap = 0; }
+			if (!tokParse(sMsg, "clockwise", '#', '=', sclockwise)) { sclockwise = "TRUE"; }
 			if (toupper(sclockwise) == "TRUE"){ clockwise = true; }
 			else if (toupper(sclockwise) == "FALSE"){ clockwise = false; }
 			
 			if (ok) {ok = poly.initialize(spoly);}
-			if (ok) {ok = isNumber(spx0) && isNumber(spy0) && 
-			              isNumber(sang) && isNumber(sradius);}
-			if (ok) {
-				px0 = atof(spx0.c_str());
-				py0 = atof(spy0.c_str());
-				ang = angle360(atof(sang.c_str()));
-				radius = atof(sradius.c_str());
-			}
-			
+						
 			// Passing request
 			if (ok) {
 				slOutput = generateLawnmower(poly, px0, py0, ang, radius, clockwise);
 				slOutput.set_label(poly.get_label());
+				slOutput.apply_snap(snap);
 				
 				std::string sOutput = slOutput.get_spec();
 				
