@@ -9,10 +9,10 @@
 #include <sstream>
 #include "MBUtils.h"
 #include "XYPolygon.h"
+#include "ArtifactUtils.h"
 #include <algorithm>
 
 void help_message();
-std::vector<std::string> generateArtifacts(double, double, double, double, double, double, XYPolygon&);
 
 /// ArtfieldGenerator creates random artifact fields for testing purposes.
 
@@ -77,31 +77,6 @@ int main(int argc, char *argv[])
 		std::cout << LINE_HEADER << *p << std::endl;
 	};
 
-}
-
-/// generateArtifacts() produces a random vector of unique artifacts
-/// \param step Discrete grid to snap artifacts to
-/// \param num_artifacts Number of artifacts to generate
-/// \param poly An XYPolygon to check to see if the points are within the bounds
-std::vector<std::string> generateArtifacts(double min_x, double max_x, double min_y, double max_y, double step, double num_artifacts, XYPolygon& poly)
-{
-	std::vector<std::string> vArtifacts;
-	
-	srand(time(NULL));
-
-	while(vArtifacts.size() < num_artifacts){
-		double rand_x = snapToStep(min_x + rand() * (max_x - min_x) / RAND_MAX, step);
-		double rand_y = snapToStep(min_y + rand() * (max_y - min_y) / RAND_MAX, step);
-		std::ostringstream osArtifact;
-		osArtifact << "X=" << rand_x << "," << "Y=" << rand_y;
-		std::string sArtifact = osArtifact.str();
-		
-		if(poly.contains(rand_x, rand_y) && !vectorContains(vArtifacts, sArtifact)){ // New artifact to add
-			vArtifacts.push_back(sArtifact);
-		};
-	};
-	
-	return vArtifacts;
 }
 
 /// help_message() prints the usage instructions for the program
