@@ -55,6 +55,11 @@ IVP_BUILD_BY_DEFAULT=ON \
 IVP_INSTALL_COMPONENT=none \
 SUBDIR=lib_artifacts         LIBNAME=artifacts         simple_lib_cmake_file
 
+IVP_BUILD_BY_DEFAULT=ON \
+IVP_INSTALL_COMPONENT=none \
+SUBDIR=lib_behaviors-ajshafer LIBNAME=behaviors-ajshafer simple_lib_cmake_file
+
+
 SUBDIR=pSensorSim \
 PROGNAME=pSensorSim \
 IVP_BUILD_BY_DEFAULT=ON \
