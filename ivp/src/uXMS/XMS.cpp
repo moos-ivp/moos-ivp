@@ -108,7 +108,7 @@ bool XMS::OnStartUp()
     int len  = sLine.length();
     
     if(!m_ignore_vars && MOOSStrCmp(sVarName, "VAR"))
-      addVariable(sLine);
+      addVariables(sLine);
   }
   
   registerVariables();
@@ -173,6 +173,22 @@ void XMS::handleCommand(char c)
   default:
     break;
   } 
+}
+
+//------------------------------------------------------------
+// Procedure: addVariables
+
+void XMS::addVariables(string line)
+{
+  line = stripBlankEnds(line);
+  vector<string> svector = parseString(line, ',');
+  int vsize = svector.size();
+
+  for(int i=0; i<vsize; i++) {
+    string var = stripBlankEnds(svector[i]);
+    addVariable(var);
+  }
+  
 }
 
 //------------------------------------------------------------

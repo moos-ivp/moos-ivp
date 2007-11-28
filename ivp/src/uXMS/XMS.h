@@ -40,11 +40,12 @@ class XMS : public CMOOSApp
   bool OnStartUp();
 
   void handleCommand(char);
-  void addVariable(std::string);
+  void addVariables(std::string);
   void ignoreVars(bool v) {m_ignore_vars = v;};
 
  protected:
   void registerVariables();
+  void addVariable(std::string);
   
   void updateVariable(CMOOSMsg& msg);
   void updateVarVal(std::string, std::string);
