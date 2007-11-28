@@ -42,7 +42,8 @@ bool Lawnmower::OnNewMail(MOOSMSG_LIST &NewMail)
 			
 			// Parse out the options and pass on the request
 			// A LAWNMOWER_POLYGON string looks like this, arguments in any order:
-			// poly=polystring#x=blah#y=blah#ang=blah#radius=blah[#clockwise=truefalse][#snap=val];
+			// poly=polystring#x=blah#y=blah#ang=blah#radius=blah[#clockwise=truefalse][#snap=val][#full=truefalse];
+			// x, y, clockwise are not necessary when using full output
 			// x, y = initial position
 			// ang = [0,360], N = 0, clockwise positive
 			// radius = 1/2 distance between lines
@@ -56,24 +57,36 @@ bool Lawnmower::OnNewMail(MOOSMSG_LIST &NewMail)
 			
 			XYPolygon poly;
 			double px0, py0, ang, radius, snap;
-			bool clockwise = true;
-			std::string spoly, sclockwise;
+			bool clockwise, full;
+			std::string spoly, sclockwise, sfull;
 			
 			ok = tokParse(sMsg, "poly", '#', '=', spoly) && ok;
-			ok = tokParse(sMsg, "x", '#', '=', px0) && ok;
-			ok = tokParse(sMsg, "y", '#', '=', py0) && ok;
+			if (ok) {ok = poly.initialize(spoly);}
+			
+			tokParse(sMsg, "full", '#', '=', sfull);
+			if (toupper(sfull) == "TRUE"){ full = true; }
+			else if (toupper(sfull) == "FALSE"){ full = false; }
+			else { full = false; }
+			
+			
 			ok = tokParse(sMsg, "ang", '#', '=', ang) && ok;
 			ok = tokParse(sMsg, "radius", '#', '=', radius) && ok;
 			if (!tokParse(sMsg, "snap", '#', '=', snap)) { snap = 0; }
-			if (!tokParse(sMsg, "clockwise", '#', '=', sclockwise)) { sclockwise = "TRUE"; }
-			if (toupper(sclockwise) == "TRUE"){ clockwise = true; }
-			else if (toupper(sclockwise) == "FALSE"){ clockwise = false; }
 			
-			if (ok) {ok = poly.initialize(spoly);}
-						
-			// Passing request
+			// We now have the full output ready
 			if (ok) {
-				slOutput = generateLawnmower(poly, px0, py0, ang, radius, clockwise);
+				if (full) {slOutput = generateLawnmowerFull(poly, ang, radius); }
+				else {
+					ok = tokParse(sMsg, "x", '#', '=', px0) && ok;
+					ok = tokParse(sMsg, "y", '#', '=', py0) && ok;
+					tokParse(sMsg, "clockwise", '#', '=', sclockwise);
+					if (toupper(sclockwise) == "TRUE"){ clockwise = true; }
+					else if (toupper(sclockwise) == "FALSE"){ clockwise = false; }
+					else { clockwise = true; }			
+					
+					slOutput = generateLawnmower(poly, px0, py0, ang, radius, clockwise);
+				}
+				
 				slOutput.set_label(poly.get_label());
 				slOutput.apply_snap(snap);
 				
