@@ -190,19 +190,6 @@ LINK_LIBS="
    pthread" \
 simple_app_cmake_file
 
-SUBDIR=pCTDLogger \
-PROGNAME=pCTDLogger \
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-tools \
-LINK_LIBS="
-   MOOS
-   MOOSGen
-   MOOSUtility
-   anrp_util
-   mbutil
-   m
-   pthread" \
-simple_app_cmake_file
 
 SUBDIR=pDynamicWaypointLL \
 PROGNAME=pDynamicWaypointLL \
@@ -230,18 +217,6 @@ LINK_LIBS="
    pthread" \
 simple_app_cmake_file
 
-SUBDIR=pSamplingControl \
-PROGNAME=pSamplingControl \
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-tools \
-LINK_LIBS="
-   MOOS
-   MOOSGen
-   MOOSUtility
-   anrp_util
-   m
-   pthread" \
-simple_app_cmake_file
 
 SUBDIR=zlog2alog \
 PROGNAME=zlog2alog \

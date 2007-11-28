@@ -165,15 +165,10 @@ FILE(GLOB IVP_APP_TOOLS_SUBDIRS
    iBatteryMonitor*
    iMetaMemCompass*
    iOS5000*
-   iSerialNMEA*
-   iWebsite*
-   pCTDLogger*
    pDynamicWaypointLL*
    pGPSReTx*
-   pSamplingControl*
    pShipsideViewer*
    pTransponderNMEA*
-   pVirtualTether*
 #   uMicroModemAddPPS*
 #   uMicroModemWatchPPS*
    uRepeater*

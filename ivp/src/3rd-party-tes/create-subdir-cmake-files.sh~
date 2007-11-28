@@ -51,96 +51,81 @@ parse_and_validate_cmd_line $*
 
 #-------------------------------------------------------------------------------
 
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-core-dev \
-SUBDIR=lib_behaviors-don     LIBNAME=behaviors-don     simple_lib_cmake_file
-
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-tools-dev \
-SUBDIR=lib_track             LIBNAME=opt               simple_lib_cmake_file
-
-SUBDIR=p1BTracker \
-PROGNAME=p1BTracker \
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-tools \
-LINK_LIBS="
-   MOOS
-   MOOSGen
-   opt
-   m
-   pthread" \
-simple_app_cmake_file
-
-SUBDIR=pBearings \
-PROGNAME=pBearings \
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-tools \
-LINK_LIBS="
-   MOOS
-   MOOSGen
-   opt
-   newmat10D
-   m
-   pthread" \
-simple_app_cmake_file
-
-SUBDIR=pBearingsSim \
-PROGNAME=pBearingsSim \
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-tools \
-LINK_LIBS="
-   MOOS
-   MOOSGen
-   opt
-   m
-   pthread" \
-simple_app_cmake_file
-
-SUBDIR=pExtTracker \
-PROGNAME=pExtTracker \
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-tools \
-LINK_LIBS="
-   MOOS
-   MOOSGen
-   m
-   pthread" \
-simple_app_cmake_file
-
-SUBDIR=pScheduler \
-PROGNAME=pScheduler \
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-core \
-LINK_LIBS="
-   MOOS
-   MOOSGen
-   genutil
-   mbutil
-   pthread" \
-simple_app_cmake_file
-
-SUBDIR=pTarget \
-PROGNAME=pTarget \
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-tools \
-LINK_LIBS="
-   MOOS
-   MOOSGen
-   geometry
-   mbutil
-   m
-   pthread" \
-simple_app_cmake_file
-
-
-SUBDIR=pSamplingControl \
-PROGNAME=pSamplingControl \
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=ivp-tools \
+SUBDIR=iSerialNMEA \
+PROGNAME=iSerialNMEA \
+IVP_BUILD_BY_DEFAULT=OFF \
+IVP_INSTALL_COMPONENT=none \
 LINK_LIBS="
    MOOS
    MOOSGen
    MOOSUtility
+   mbutil
    m
    pthread" \
 simple_app_cmake_file
+
+SUBDIR=iWebsite \
+PROGNAME=iWebsite \
+IVP_BUILD_BY_DEFAULT=OFF \
+IVP_INSTALL_COMPONENT=none \
+LINK_LIBS="
+   MOOS
+   MOOSGen
+   MOOSUtility
+   mbutil
+   m
+   pthread" \
+simple_app_cmake_file
+
+SUBDIR=pCTDLogger \
+PROGNAME=pCTDLogger \
+IVP_BUILD_BY_DEFAULT=OFF \
+IVP_INSTALL_COMPONENT=none \
+LINK_LIBS="
+   MOOS
+   MOOSGen
+   MOOSUtility
+   mbutil
+   m
+   pthread" \
+simple_app_cmake_file
+
+SUBDIR=pSoundSpeed \
+PROGNAME=pSoundSpeed \
+IVP_BUILD_BY_DEFAULT=OFF \
+IVP_INSTALL_COMPONENT=none \
+LINK_LIBS="
+   MOOS
+   MOOSGen
+   MOOSUtility
+   mbutil
+   m
+   pthread" \
+simple_app_cmake_file
+
+
+SUBDIR=pVirtualTether \
+PROGNAME=pVirtualTether \
+IVP_BUILD_BY_DEFAULT=OFF \
+IVP_INSTALL_COMPONENT=none \
+LINK_LIBS="
+   MOOS
+   MOOSGen
+   MOOSUtility
+   mbutil
+   m
+   pthread" \
+simple_app_cmake_file
+
+
+SUBDIR=zlog2alog_tes \
+PROGNAME=zlog2alog_tes \
+IVP_BUILD_BY_DEFAULT=OFF \
+IVP_INSTALL_COMPONENT=none \
+LINK_LIBS="
+   anrp_util
+   z
+   m
+   pthread" \
+simple_app_cmake_file
+

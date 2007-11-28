@@ -1,0 +1,9 @@
+t. schneider tes@mit.edu 9-30-07
+
+this folder contains templates for making a generic moos process.
+
+things that need be replaced:
+
+{ProcessName} -> replace with normal version of the name of your process (e.g. pAardvark)
+
+{PROCESSNAME} -> replace with the uppercase version (e.g. PAARDVARK)

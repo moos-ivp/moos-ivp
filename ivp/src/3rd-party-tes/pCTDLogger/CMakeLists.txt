@@ -9,7 +9,6 @@ IF("${IVP_BUILD_pCTDLogger}" STREQUAL "ON")
    MOOS
    MOOSGen
    MOOSUtility
-   anrp_util
    mbutil
    m
    pthread)
@@ -20,7 +19,7 @@ IF("${IVP_BUILD_pCTDLogger}" STREQUAL "ON")
       INSTALL(
          TARGETS pCTDLogger
          DESTINATION bin/ivp-${IVP_PACKAGE_VERSION}
-         COMPONENT ivp-tools)
+         COMPONENT none)
    ENDIF("${IVP_PACKAGE_VERSION}" STREQUAL "")
 
 ENDIF("${IVP_BUILD_pCTDLogger}" STREQUAL "ON")

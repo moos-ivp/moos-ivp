@@ -9,7 +9,6 @@ IF("${IVP_BUILD_pSamplingControl}" STREQUAL "ON")
    MOOS
    MOOSGen
    MOOSUtility
-   anrp_util
    m
    pthread)
 
