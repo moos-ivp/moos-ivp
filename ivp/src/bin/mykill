@@ -17,7 +17,7 @@ killall -9 -q uTermCommand pMessageParser pTrafficControl   \
         pDeployHandler pViewerRelay pShipsideViewer         \
         iMetaMemCompass iOS5000 MOOSBlink
         
-killall -9 -q pArtifactMapper pSensorSim
+killall -9 -q pArtifactMapper pSensorSim pLawnmower
 
 killall -9 -q zLoggerNG iWinchCtl iCTDSBE49 pCTDLogger      \
          uRepeater pNaFCon pRouter pFramer iMicroModem      \
