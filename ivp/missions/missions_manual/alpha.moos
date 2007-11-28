@@ -22,7 +22,7 @@ ProcessConfig = ANTLER
   Run = pTransponderAIS	@ NewConsole = true
   Run = pMarinePID	@ NewConsole = true
   Run = pMarineViewer	@ NewConsole = true
-  Run = uTMS		@ NewConsole = true
+  Run = uXMS		@ NewConsole = true
   Run = pHelmIvP	@ NewConsole = true
   Run = iRemote		@ NewConsole = true
 }
@@ -35,12 +35,11 @@ ProcessConfig = iMarineSim
 {
   AppTick	= 10
   CommsTick	= 10
-  MaxTransVel   = 3.0
-  MaxRotVel     = 0.6
-  StartLon      = 0
-  StartLat      = 0
-  StartSpeed    = 0
-  StartHeading  = 180
+
+  START_LAT     = 0
+  START_LON     = 0
+  START_SPEED   = 0
+  START_HEADING = 180
 }
 
 //------------------------------------------
@@ -163,26 +162,18 @@ ProcessConfig = pTransponderAIS
 //------------------------------------------
 // uXMS config block
 
-ProcessConfig = uTMS
+ProcessConfig = uXMS
 {
   AppTick    = 4
   CommsTick  = 4
 
-  VAR        = WATCH_PROC_EVENT
-  VAR        = WATCH_PROC_SUMMARY
+  VAR        = WATCH_PROC_EVENT, WATCH_PROC_SUMMARY
 
-  VAR        = DESIRED_HEADING
-  VAR        = DESIRED_SPEED
-  VAR        = DESIRED_DEPTH
+  VAR        = DESIRED_HEADING, DESIRED_SPEED, DESIRED_DEPTH
 
-  VAR        = DESIRED_RUDDER
-  VAR        = DESIRED_THRUST
-  VAR        = DESIRED_ELEVATOR
+  VAR        = DESIRED_RUDDER, DESIRED_THRUST, DESIRED_ELEVATOR
 
-  VAR        = NAV_X
-  VAR        = NAV_Y
-  VAR        = NAV_SPEED
-  VAR        = NAV_YAW
+  VAR        = NAV_X, NAV_Y, NAV_SPEED, NAV_YAW
 
   VAR        = MARINESIM_X
   VAR        = MARINESIM_Y
