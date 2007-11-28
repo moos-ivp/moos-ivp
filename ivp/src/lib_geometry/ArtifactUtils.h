@@ -27,7 +27,10 @@
 #include "XYSegList.h"
 #include "XYPolygon.h"
 
-XYSegList generateLawnmower(const XYPolygon&, double, double, double, double, bool);
+const XYSegList generateLawnmower(const XYPolygon&, double, double, double, double, bool);
+const XYSegList generateLawnmowerFull(const XYPolygon&, double, double);
+const std::vector<std::string> generateArtifacts(double, double, double, double, double, double, const XYPolygon&);
+
 
 #endif
 

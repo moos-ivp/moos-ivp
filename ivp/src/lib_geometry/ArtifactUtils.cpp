@@ -22,16 +22,26 @@
 
 #include "ArtifactUtils.h"
 
+#include <sstream>
 #include "XYSquare.h"
 #include "AngleUtils.h"
 #include "GeomUtils.h"
+#include "MBUtils.h"
 #include "math.h"
 
 // --------------------
 // Procedure: generateLawnmower
 //          Generates a lawnmower pattern in a polygon, given the starting point, initial angle (degrees),
 //          and whether the first turn should be clockwise or counter-clockwise.
-XYSegList generateLawnmower(const XYPolygon& poly, double px0, double py0, double ang, double radius, bool clockwise = true)
+
+/// generateLawnmower() produces a lawnmower pattern in a polygon from an initial point
+/// \param poly Polygon string that defines the boundaries
+/// \param px0 Initial x to start from
+/// \param py0 Initial y to start from
+/// \param ang Angle to orient the lawnmower pattern.  [0-360], 0 is North, clockwise is positive
+/// \param radius 1/2 the distance between adjacent swaths
+/// \param clockwise Determines the direction of the first turn, defaults to true
+const XYSegList generateLawnmower(const XYPolygon& poly, double px0, double py0, double ang, double radius, bool clockwise = true)
 {
 	// General algorithm:
 	// 1) Create initial segment
@@ -162,6 +172,67 @@ XYSegList generateLawnmower(const XYPolygon& poly, double px0, double py0, doubl
 			carryon = false;
 		}
 	}
+	
+	return segList;
 
+}
+
+/// generateLawnmower() produces a lawnmower pattern in a polygon from an initial point.
+/// It does so by creating two half lawnmowers starting at the center of the polygon and
+/// then joining them together.
+/// \param poly Polygon string that defines the boundaries
+/// \param ang Angle to orient the lawnmower pattern.  [0-360], 0 is North, clockwise is positive
+/// \param radius 1/2 the distance between adjacent swaths
+const XYSegList generateLawnmowerFull(const XYPolygon& poly, double ang, double radius){
+	// Get the center of the polygon
+	double x0 = poly.get_center_x();
+	double y0 = poly.get_center_y();
+	
+	// Form the alpha and beta lawnmower patterns
+	// beta is the lower half (with clockwise = true)
+	XYSegList beta = generateLawnmower(poly, x0, y0, ang, radius, true);
+	
+	// alpha is the upper half (with clockwise also = true)
+	XYSegList alpha = generateLawnmower(poly, x0, y0, angle360(ang + 180), radius, true);
+	
+	// Remove initial point from both patterns
+	beta.delete_vertex(x0, y0);
+	alpha.delete_vertex(x0, y0);
+	
+	// Reverse the alpha pattern and put the beta pattern after it
+	alpha.reverse();
+	
+	for (int i = 0; i < beta.size(); i++) {
+		alpha.add_vertex(beta.get_vx(i), beta.get_vy(i));
+	}
+		
+	return alpha;
+}
+
+
+/// generateArtifacts() produces a random vector of unique artifacts
+/// \param step Discrete grid to snap artifacts to
+/// \param num_artifacts Number of artifacts to generate
+/// \param poly An XYPolygon to check to see if the points are within the bounds
+const std::vector<std::string> generateArtifacts(double min_x, double max_x, double min_y, double max_y, double step, double num_artifacts, const XYPolygon& poly)
+{
+	std::vector<std::string> vArtifacts;
+	
+	srand(time(NULL));
+
+	while(vArtifacts.size() < num_artifacts){
+		// RAND_MAX is defined by the math headers, refers to the maximum random value
+		double rand_x = snapToStep(min_x + rand() * (max_x - min_x) / RAND_MAX, step);
+		double rand_y = snapToStep(min_y + rand() * (max_y - min_y) / RAND_MAX, step);
+		std::ostringstream osArtifact;
+		osArtifact << "X=" << rand_x << "," << "Y=" << rand_y;
+		std::string sArtifact = osArtifact.str();
+		
+		if(poly.contains(rand_x, rand_y) && !vectorContains(vArtifacts, sArtifact)){ // New artifact to add
+			vArtifacts.push_back(sArtifact);
+		};
+	};
+	
+	return vArtifacts;
 }
 
