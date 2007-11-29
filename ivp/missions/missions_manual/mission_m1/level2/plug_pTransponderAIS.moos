@@ -1,11 +1,8 @@
 //------------------------------------------------------------------
-// pTransponderAIS config block
-
 ProcessConfig = pTransponderAIS
 {
-  AppTick	= 5
-  CommsTick	= 5
-
-  VESSEL_TYPE   = KAYAK
-  BLACKOUT_INTERVAL = 0
+  AppTick     = 5
+  CommsTick   = 5
+  
+  VESSEL_TYPE = KAYAK
 }

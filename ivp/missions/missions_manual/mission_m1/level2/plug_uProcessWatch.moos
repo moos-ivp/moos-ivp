@@ -1,11 +1,9 @@
 //------------------------------------------------------------------
-// uProcessWatch configuration block
-
 ProcessConfig = uProcessWatch
 {
-  AppTick 	= 2
-  CommsTick 	= 2
-
+  AppTick   = 2
+  CommsTick = 2
+  
   WATCH  = iMarineSim
   WATCH  = pMOOSBridge*
   WATCH  = pEchoVar
