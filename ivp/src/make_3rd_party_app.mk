@@ -24,7 +24,7 @@ IFLAGS   = -I. -I.. -I../.. $(patsubst %,-I%,$(PLDIRS)) $(MOOS_IFLAGS) $(EXTRA_I
 
 LFLAGS   = -L/usr/X11R6/lib -L/usr/X11R6/lib64     \
 	   -L/sw/lib $(patsubst %,-L%,$(PLDIRS))   \
-	   $(MOOS_LFLAGS)
+	   $(MOOS_LFLAGS) $(EXTRA_LFLAGS)
            
 
 SOURCES  = $(wildcard *.cpp)
