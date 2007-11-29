@@ -47,7 +47,9 @@ public:
   bool handleIncomingNaFConMessage(const std::string&);
   void updateContactList(std::string);
   void postContactList();
-
+  std::string assembleAIS(std::string,std::string,std::string,std::string,\
+			  std::string,std::string,std::string,std::string,\
+			  std::string,std::string,std::string);
 
 protected:
   double      m_db_uptime;

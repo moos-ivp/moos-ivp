@@ -155,17 +155,17 @@ bool TransponderAIS::Iterate()
 
     string moosdb_time = dstringCompact(doubleToString(m_db_uptime,3));
     string utc_time = dstringCompact(doubleToString(moos_time,3));
-    string summary = "NAME=" + m_vessel_name;
-    summary += ",TYPE=" + m_vessel_type;
-    summary += ",MOOSDB_TIME=" + moosdb_time;
-    summary += ",UTC_TIME=" + utc_time;
-    summary += ",X="   + dstringCompact(doubleToString(m_nav_x, 2));
-    summary += ",Y="   + dstringCompact(doubleToString(m_nav_y, 2));
-    summary += ",LAT=" + dstringCompact(doubleToString(lat, 6));
-    summary += ",LON=" + dstringCompact(doubleToString(lon, 6));
-    summary += ",SPD=" + dstringCompact(doubleToString(m_nav_speed, 2));
-    summary += ",HDG=" + dstringCompact(doubleToString(m_nav_heading, 2));
-    summary += ",DEPTH=" + dstringCompact(doubleToString(m_nav_depth, 2));
+
+
+    //all strings: assembleAIS(name,type,db_time,utc_time,x,y,lat,lon,spd,hdg,depth)
+    string summary = assembleAIS(m_vessel_name, m_vessel_type, moosdb_time, utc_time,\
+				 dstringCompact(doubleToString(m_nav_x, 2)),\
+				 dstringCompact(doubleToString(m_nav_y, 2)),\
+				 dstringCompact(doubleToString(lat, 6)),\
+				 dstringCompact(doubleToString(lon, 6)),\
+				 dstringCompact(doubleToString(m_nav_speed, 2)),\
+				 dstringCompact(doubleToString(m_nav_heading, 2)),\
+				 dstringCompact(doubleToString(m_nav_depth, 2)));
     
     m_Comms.Notify("AIS_REPORT_LOCAL", summary);
     m_last_post_time = moos_time;
@@ -402,83 +402,85 @@ bool TransponderAIS::handleIncomingNaFConMessage(const string& rMsg)
       string vname = sourceID;
       if(sourceID == "1") {
 	vtype = "AUV";
-	vname = "(1)Sea-Horse";
+	vname = "Sea-Horse";
       }
       if(sourceID == "2") {
 	vtype = "KAYAK";
-	vname = "(2)Bobby";
+	vname = "Bobby";
       }
       if(sourceID == "3") {
 	vtype = "AUV";
-	vname = "(3)Unicorn";
+	vname = "Unicorn";
       }
       if(sourceID == "4") {
 	vtype = "AUV";
-	vname = "(4)Macrura";
+	vname = "Macrura";
       }
       if(sourceID == "5") {
 	vtype = "KELP";
-	vname = "(5)PN2";
+	vname = "PN2";
       }
       if(sourceID == "7") {
 	vtype = "GLIDER";
-	vname = "(7)X-RAY";
+	vname = "X-RAY";
       }
       if(sourceID == "9") { 
 	vtype = "KAYAK";
-	vname = "(9)DEE";
+	vname = "DEE";
       }
       if(sourceID == "10") {
 	vtype = "KAYAK";
-	vname = "(10)Elanor";
+	vname = "Elanor";
       }
       if(sourceID == "11") {
 	vtype = "KAYAK";
-	vname = "(11)Frankie";
+	vname = "Frankie";
       }
       if(sourceID == "14") {
 	vtype = "GLIDER";
-	vname = "(14)SLOCUM-GTAS";
+	vname = "SLOCUM-GTAS";
       }
       if(sourceID == "15") {
 	vtype = "KELP";
-	vname = "(15)KELP-OBCI";
+	vname = "KELP-OBCI";
       }
       if(sourceID == "18") {
 	vtype = "VSA";
-	vname = "(18)VSA-1";
+	vname = "VSA-1";
       }
       if(sourceID == "19") {
 	vtype = "VSA";
-	vname = "(19)VSA-2";
+	vname = "VSA-2";
       }
       if(sourceID == "20") {
 	vtype = "GLIDER";
-	vname = "(20)SeaGlider-106";
+	vname = "SeaGlider-106";
       }
       if(sourceID == "21") {
 	vtype = "GLIDER";
-	vname = "(21)SeaGlider-107";
+	vname = "SeaGlider-107";
       }
       if(sourceID == "22") {
 	vtype = "GLIDER";
-	vname = "(22)SeaGlider-116";
+	vname = "SeaGlider-116";
       }
       if(sourceID == "24") {
 	vtype = "GLIDER";
-	vname = "(24)SeaGlider-118";
+	vname = "SeaGlider-118";
       }
 
       // publish it at AIS_REPORT
-      string summary = "NAME=" + vname;
-      summary += ",TYPE=";
-      summary += vtype;
-      summary += ",TIME=" + dstringCompact(doubleToString(navTime));
-      summary += ",X="   + dstringCompact(doubleToString(navX));
-      summary += ",Y="   + dstringCompact(doubleToString(navY));
-      summary += ",SPD=" + dstringCompact(doubleToString(navSpeed));
-      summary += ",HDG=" + dstringCompact(doubleToString(navHeading));
-      summary += ",DEPTH=" + dstringCompact(doubleToString(navDepth));
+      // all strings: assembleAIS(name,type,db_time,utc_time,x,y,lat,lon,spd,hdg,depth)
+      string summary = assembleAIS(vname, vtype, "",\
+				   dstringCompact(doubleToString(navTime)),\
+				   dstringCompact(doubleToString(navX, 2)),\
+				   dstringCompact(doubleToString(navY, 2)),\
+				   dstringCompact(doubleToString(navLat, 6)),\
+				   dstringCompact(doubleToString(navLong, 6)),\
+				   dstringCompact(doubleToString(navSpeed, 2)),\
+				   dstringCompact(doubleToString(navHeading, 2)),\
+				   dstringCompact(doubleToString(navDepth, 2)));
+      
       m_Comms.Notify("AIS_REPORT", summary);
       m_Comms.Notify("TRANSPONDER_NAFCON_REPORT", summary);
 
@@ -543,3 +545,28 @@ void TransponderAIS::postContactList()
   m_Comms.Notify("CONTACT_LIST", contact_list_string);
 }
 
+//------------------------------------------------------------------
+// Procedure: assembleAIS
+// Purpose: builds the string used for AIS_REPORT
+// tes 11.19.07
+
+string TransponderAIS::assembleAIS(string name, string type, string db_time, string utc_time, \
+		   string x, string y, string lat, string lon, string spd, \
+		   string hdg, string depth)
+{
+
+    string summary = "NAME=" + name;
+    summary += ",TYPE=" + type;
+    summary += ",MOOSDB_TIME=" + db_time;
+    summary += ",UTC_TIME=" + utc_time;
+    summary += ",X="   + x;
+    summary += ",Y="   + y;
+    summary += ",LAT=" + lat;
+    summary += ",LON=" + lon;
+    summary += ",SPD=" + spd;
+    summary += ",HDG=" + hdg;
+    summary += ",DEPTH=" + depth;
+    
+    return summary;
+
+}
