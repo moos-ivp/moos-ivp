@@ -1,0 +1,25 @@
+t. schneider tes@mit.edu 11.29.07
+laboratory for autonomous marine sensing systems
+massachusetts institute of technology 
+
+readme for pAIS2SQL:
+
+this process is a program running under the MOOS robotic control
+software system developed by paul newman:
+http://www.robots.ox.ac.uk/%7Epnewman/TheMOOS/index.html
+
+> compilation:
+use the cmake build system (run ./build.sh in /moos-ivp/trunk/)
+
+> usage:
+pAIS2SQL file.moos [name to register with moos]
+
+an example .moos configuration file (with comments) is provided
+in this directory.
+
+this process may also be launched by pAntler.
+
+> purpose:
+takes AIS_REPORT variables from the local MOOSDB and imports them into a MySQL
+database for the purpose of the google earth viewer.
+
