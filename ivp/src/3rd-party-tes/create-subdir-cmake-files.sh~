@@ -53,7 +53,7 @@ parse_and_validate_cmd_line $*
 
 SUBDIR=iSerialNMEA \
 PROGNAME=iSerialNMEA \
-IVP_BUILD_BY_DEFAULT=OFF \
+IVP_BUILD_BY_DEFAULT=ON \
 IVP_INSTALL_COMPONENT=none \
 LINK_LIBS="
    MOOS
@@ -66,7 +66,7 @@ simple_app_cmake_file
 
 SUBDIR=iWebsite \
 PROGNAME=iWebsite \
-IVP_BUILD_BY_DEFAULT=OFF \
+IVP_BUILD_BY_DEFAULT=ON \
 IVP_INSTALL_COMPONENT=none \
 LINK_LIBS="
    MOOS
@@ -79,7 +79,7 @@ simple_app_cmake_file
 
 SUBDIR=pCTDLogger \
 PROGNAME=pCTDLogger \
-IVP_BUILD_BY_DEFAULT=OFF \
+IVP_BUILD_BY_DEFAULT=ON \
 IVP_INSTALL_COMPONENT=none \
 LINK_LIBS="
    MOOS
@@ -92,7 +92,7 @@ simple_app_cmake_file
 
 SUBDIR=pSoundSpeed \
 PROGNAME=pSoundSpeed \
-IVP_BUILD_BY_DEFAULT=OFF \
+IVP_BUILD_BY_DEFAULT=ON \
 IVP_INSTALL_COMPONENT=none \
 LINK_LIBS="
    MOOS
@@ -106,7 +106,7 @@ simple_app_cmake_file
 
 SUBDIR=pVirtualTether \
 PROGNAME=pVirtualTether \
-IVP_BUILD_BY_DEFAULT=OFF \
+IVP_BUILD_BY_DEFAULT=ON \
 IVP_INSTALL_COMPONENT=none \
 LINK_LIBS="
    MOOS
@@ -120,7 +120,7 @@ simple_app_cmake_file
 
 SUBDIR=zlog2alog_tes \
 PROGNAME=zlog2alog_tes \
-IVP_BUILD_BY_DEFAULT=OFF \
+IVP_BUILD_BY_DEFAULT=ON \
 IVP_INSTALL_COMPONENT=none \
 LINK_LIBS="
    anrp_util
@@ -129,3 +129,16 @@ LINK_LIBS="
    pthread" \
 simple_app_cmake_file
 
+
+SUBDIR=pAIS2SQL \
+PROGNAME=pAIS2SQL \
+IVP_BUILD_BY_DEFAULT=ON \
+IVP_INSTALL_COMPONENT=none \
+LINK_LIBS="
+   MOOS
+   MOOSGen
+   mysqlclient
+   mbutil
+   m
+   pthread" \
+simple_app_cmake_file

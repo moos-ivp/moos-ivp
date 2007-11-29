@@ -25,6 +25,13 @@
 
 #include "MOOSLib.h"
 
+// for mysql C API
+#include <my_global.h>
+#include <my_sys.h>
+#include <mysql.h>
+
+
+
 class CpAIS2SQL : public CMOOSApp  
 {
 public:
@@ -37,6 +44,19 @@ protected:
 	bool Iterate();
 	bool OnConnectToServer();
 	bool OnStartUp();
+	
+	void DoRegistrations();
+
+        void print_error (MYSQL *conn, char *message);
+	void process_result_set (MYSQL *conn, MYSQL_RES *res_set);
+
+	
+	std::string m_host_name;      /* server host (default=localhost) */
+	std::string m_user_name;      /* username (default=login name) */
+	std::string m_password;     /* password (default=none) */
+	unsigned int m_port_num;   /* port number (use built-in value) */
+	std::string m_db_name;        /* database name (default=none) */
+	MYSQL *conn;
 };
 
 #endif 
