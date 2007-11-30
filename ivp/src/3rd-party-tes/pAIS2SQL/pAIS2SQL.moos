@@ -1,0 +1,50 @@
+// Simple .moos file for iWebsite. Launches MOOSDB & pAIS2SQL
+
+ServerHost = localhost
+ServerPort = 9000
+
+// Dabob 
+// Note: lat/long origin *optional* if AIS_REPORT contains LAT/LON
+LatOrigin  = 47.731900
+LongOrigin = -122.85000
+
+
+Community = pAIS2SQL_default
+
+//------------------------------------------------------------------
+// Antler configuration  block
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+  Run = MOOSDB		@ NewConsole = false
+  Run = pAIS2SQL	@ NewConsole = true
+}
+
+
+//------------------------------------------------------------------
+// pAIS2SQL configuration  block
+
+ProcessConfig = pAIS2SQL
+{
+
+// available to all moos processes.
+// running pAIS2SQL at 4 times / second is fine
+  AppTick    = 4
+  CommsTick  = 4
+
+// standard pAIS2SQL parameters
+
+  //mysql server parameters
+  mysql_host = 18.251.3.46
+  mysql_user = sea
+  mysql_password = saline12
+  mysql_port = 3306
+  mysql_db_name = ge_testdb
+  cruise_name = testname2
+  cruise_location = testplace2
+
+  //counts from midnight of LOCAL time of MYSQL server (don't worry about this)
+  cruise_start = 2007.10.01 
+  cruise_end = 2007.10.10
+
+}

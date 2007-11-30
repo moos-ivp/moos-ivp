@@ -24,6 +24,10 @@
 #define PAIS2SQLH
 
 #include "MOOSLib.h"
+#include "MBUtils.h"
+#include <iterator>
+#include "MOOSGeodesy.h"
+#include <vector>
 
 // for mysql C API
 #include <my_global.h>
@@ -46,10 +50,9 @@ protected:
 	bool OnStartUp();
 	
 	void DoRegistrations();
-
         void print_error (MYSQL *conn, char *message);
-	void process_result_set (MYSQL *conn, MYSQL_RES *res_set);
 
+	bool check_blackout(std::string vid, double report_time);
 	
 	std::string m_host_name;      /* server host (default=localhost) */
 	std::string m_user_name;      /* username (default=login name) */
@@ -57,6 +60,17 @@ protected:
 	unsigned int m_port_num;   /* port number (use built-in value) */
 	std::string m_db_name;        /* database name (default=none) */
 	MYSQL *conn;
+
+	bool m_geo_ok;
+
+	std::string m_cruise_id;
+	CMOOSGeodesy m_geodesy;
+	
+	// vector of vehicle id strings of the vehicles we have seen
+	std::vector<std::string> m_known_vid;
+	// the last published time for that vehicle ID (to ensure the 1 sec window)
+	std::vector<double> m_known_time;
+
 };
 
 #endif 
