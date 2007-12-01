@@ -1,6 +1,6 @@
+
 initialize   DEPLOY        = false
 initialize   RETURN        = false
-initialize   STATION_KEEP  = false
 initialize   TRAIL         = false
 
 //----------------------------------------------
@@ -8,8 +8,7 @@ Behavior = BHV_StationKeep
 {
   name      = bhv_station_keep
   pwt       = 100
-  condition = (STATION_KEEP = true) and (DEPLOY = true)
-  condition = (RETURN != true)
+  condition = (DEPLOY = true) and (RETURN != true)
 
   center_activate = true
 }
@@ -19,8 +18,7 @@ Behavior = BHV_Trail
 {
   name       = bhv_trail_vehi1
   pwt        = 100
-  condition  = (DEPLOY = true) and (STATION_KEEP != true)
-  condition  = (TRAIL == true)
+  condition  = (DEPLOY = true) and (TRAIL == true)
 
          contact = vehicle1
      trail_range = 30
@@ -34,10 +32,7 @@ Behavior = BHV_Waypoint
 {
   name      = bhv_waypoint
   pwt       = 100	
-  condition = (DEPLOY = true)
-  condition = (STATION_KEEP != true) and (TRAIL != true)
-  condition = (RETURN = true)
+  condition = (DEPLOY == true) and (RETURN == true)
 
-	points = 0,-10
+     points = 0,-10
 }
-
