@@ -25,6 +25,7 @@ class Expander
   bool expand();
   bool verify_infile();
   bool write_output();
+  void addMacro(std::string, std::string);
 
  protected:
   void add_newline(std::string);
@@ -37,8 +38,3 @@ class Expander
 };
 
 #endif 
-
-
-
-
-

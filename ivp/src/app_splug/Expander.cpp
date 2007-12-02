@@ -64,8 +64,9 @@ bool Expander::expand()
       svector[1] = compactConsecutive(svector[1], ' ');
       vector<string> mvector = parseString(svector[1], ' ');
       if(mvector.size() == 2) {
-	string key = "$(" + mvector[0] + ")";
-	macros[key] = mvector[1];
+	addMacro(mvector[0], mvector[1]);
+	//	string key = "$(" + mvector[0] + ")";
+	//	macros[key] = mvector[1];
       }
       else {
 	ok = false;
@@ -85,7 +86,14 @@ bool Expander::expand()
 }
   
 //--------------------------------------------------------
-// Procedure: verify_infile()
+// Procedure: addMacro()
+
+void Expander::addMacro(string key, string value)
+{
+  key   = "$(" + stripBlankEnds(key) + ")";
+  value = stripBlankEnds(value);
+  macros[key] = value;
+}
 
 bool Expander::verify_infile()
 {

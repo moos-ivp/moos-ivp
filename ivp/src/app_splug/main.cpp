@@ -13,6 +13,7 @@
 #include <string>
 #include <iostream>
 #include "Expander.h"
+#include "MBUtils.h"
 
 using namespace std;
 
@@ -27,14 +28,19 @@ int main(int argc, char *argv[])
   }
 
   Expander expander(argv[1], argv[2]);
+
+  for(int i=3; i<argc; i++) {
+    vector<string> svector = parseString(argv[i], '=');
+    if(svector.size() == 2) {
+      string left  = stripBlankEnds(svector[0]);
+      string right = stripBlankEnds(svector[1]);
+      expander.addMacro(left, right);
+    }
+  }
+
   if(expander.verify_infile())
     if(expander.expand())
       if(expander.write_output())
 	cout << "...successfully completed" << endl;
   
 }
-
-
-
-
-
