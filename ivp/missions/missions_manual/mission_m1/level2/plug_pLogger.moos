@@ -20,8 +20,6 @@ ProcessConfig = pLogger
   Log           = HELM_ACTIVE_BHV    @ 0   NOSYNC
   Log           = HELM_NONIDLE_BHV   @ 0   NOSYNC
   log           = DEPLOY             @ 0   NOSYNC
-  log           = RETURN             @ 0   NOSYNC
-  log           = STATION_KEEP       @ 0   NOSYNC
   
   // Vehicle-Level IO
   Log           = PROC_WATCH_SUMMARY @ 0   NOSYNC
