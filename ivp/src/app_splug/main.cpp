@@ -38,9 +38,9 @@ int main(int argc, char *argv[])
     }
   }
 
-  if(expander.verify_infile())
+  if(expander.verifyInfile())
     if(expander.expand())
-      if(expander.write_output())
+      if(expander.writeOutput())
 	cout << "...successfully completed" << endl;
   
 }

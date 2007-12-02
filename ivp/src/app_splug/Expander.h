@@ -23,12 +23,14 @@ class Expander
   ~Expander() {};
   
   bool expand();
-  bool verify_infile();
-  bool write_output();
+  bool verifyInfile();
+  bool writeOutput();
   void addMacro(std::string, std::string, bool=false);
 
  protected:
-  void add_newline(std::string);
+  void addNewLine(std::string);
+
+  std::string containsMacro(std::string);
 
  private:
   std::vector<std::string> newlines;

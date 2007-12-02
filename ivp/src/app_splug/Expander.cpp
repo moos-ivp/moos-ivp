@@ -57,7 +57,7 @@ bool Expander::expand()
 	bad_line = i+1;
       }
       for(int j=0; j<isize; j++)
-	add_newline(ivector[j]);
+	addNewLine(ivector[j]);
     }
     else if(svector[0] == "#define") {
       svector[1] = stripBlankEnds(svector[1]);
@@ -74,7 +74,7 @@ bool Expander::expand()
       }
     }
     else
-      add_newline(fvector[i]);
+      addNewLine(fvector[i]);
   }      
   
   if(!ok) {
@@ -111,7 +111,7 @@ void Expander::addMacro(string key, string value, bool over_ok)
 //--------------------------------------------------------
 // Procedure: verifyInfile()
 
-bool Expander::verify_infile()
+bool Expander::verifyInfile()
 {
   // First abort condition: Cannot read the input file.
   FILE *f = fopen(infile.c_str(), "r");
@@ -125,9 +125,9 @@ bool Expander::verify_infile()
 }
 
 //--------------------------------------------------------
-// Procedure: write_output
+// Procedure: writeOutput
 
-bool Expander::write_output()
+bool Expander::writeOutput()
 {
   //  Abort condition: Output file exists but cannot
   //  be overwritten. tests:  fopen(r), !fopen(r+)
@@ -184,9 +184,9 @@ bool Expander::write_output()
 }
 
 //--------------------------------------------------------
-// Procedure: add_newline
+// Procedure: addNewLine
 
-void Expander::add_newline(string newline)
+void Expander::addNewLine(string newline)
 {
   map<string, string>::iterator p;
 
@@ -195,7 +195,28 @@ void Expander::add_newline(string newline)
     string val = p->second;
     newline = findReplace(newline, key, val);
   }
+
+  string res = containsMacro(newline);
+
+  if(res != "") {
+    cout << "Warning: The following line may contain an undefined macro:" << endl;
+    cout << "> " << res << endl;
+  }
   
   newlines.push_back(newline);
+}
+
+//--------------------------------------------------------
+// Procedure: containsMacro()
+
+// TO BE IMPLEMENTED - identify any undefined macros in a line
+ 
+string Expander::containsMacro(string line)
+{
+  int pos = line.find("$(");
+  if(pos != -1)
+    return(line);
+  else
+    return("");
 }
 
