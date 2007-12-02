@@ -25,7 +25,7 @@ class Expander
   bool expand();
   bool verify_infile();
   bool write_output();
-  void addMacro(std::string, std::string);
+  void addMacro(std::string, std::string, bool=false);
 
  protected:
   void add_newline(std::string);

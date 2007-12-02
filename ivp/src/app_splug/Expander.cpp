@@ -88,12 +88,28 @@ bool Expander::expand()
 //--------------------------------------------------------
 // Procedure: addMacro()
 
-void Expander::addMacro(string key, string value)
+void Expander::addMacro(string key, string value, bool over_ok)
 {
   key   = "$(" + stripBlankEnds(key) + ")";
   value = stripBlankEnds(value);
-  macros[key] = value;
+
+  if(over_ok) {
+    macros[key] = value;
+    return;
+  }
+  
+  // Don't allow over-writes of previous mappings
+  map<string, string>::iterator p;
+  p = macros.find(key);
+  if(p != macros.end())
+    return;
+  else
+    macros[key] = value;
 }
+
+
+//--------------------------------------------------------
+// Procedure: verifyInfile()
 
 bool Expander::verify_infile()
 {

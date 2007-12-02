@@ -22,8 +22,8 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-  if((argc != 3) || (!strcmp(argv[1], "-h"))) {
-    cout << "Usage: mplode filename newfilename" << endl;
+  if((argc < 3) || (!strcmp(argv[1], "-h"))) {
+    cout << "Usage: splug filename newfilename [MACRO=VAL]" << endl;
     return(1);
   }
 
