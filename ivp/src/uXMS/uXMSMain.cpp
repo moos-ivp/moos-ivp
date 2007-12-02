@@ -156,6 +156,9 @@ int main(int argc ,char * argv[])
     else if((str == "-c") || (str == "--clean") || (str == "-clean"))
       g_theXMS.ignoreVars(true);
     
+    else if(str == "-r") 
+      g_theXMS.setPaused(false);
+
     else if(!strContains(argv[i], ".moos"))
       g_theXMS.addVariable(argv[i]);
 

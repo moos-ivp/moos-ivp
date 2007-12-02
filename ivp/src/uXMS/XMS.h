@@ -43,6 +43,7 @@ class XMS : public CMOOSApp
   void addVariables(std::string);
   void addVariable(std::string);
   void ignoreVars(bool v) {m_ignore_vars = v;};
+  void setPaused(bool v)  {m_paused = v;};
 
  protected:
   void registerVariables();
