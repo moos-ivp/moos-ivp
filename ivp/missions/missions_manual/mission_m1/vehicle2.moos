@@ -1,3 +1,4 @@
+
 ServerHost = localhost
 ServerPort = 9202
 Simulator  = true
@@ -8,12 +9,12 @@ Community  = vehicle2
 LatOrigin  = 42.3584
 LongOrigin = -71.08745
 
-  
+   
 //------------------------------------------------------------
 ProcessConfig = ANTLER
 {
   MSBetweenLaunches = 200
-    
+   
   Run = MOOSDB          @ NewConsole = false
   Run = iMarineSim      @ NewConsole = false
   Run = pMOOSBridge     @ NewConsole = false ~ pMOOSBridge_2
@@ -25,7 +26,7 @@ ProcessConfig = ANTLER
   Run = uProcessWatch   @ NewConsole = false
 }
   
-//------------------------------------------------------------------
+//---------------------------------------
 ProcessConfig = pMOOSBridge_2
 {
   AppTick    = 4
@@ -34,25 +35,22 @@ ProcessConfig = pMOOSBridge_2
   SHARE = [AIS_REPORT_LOCAL]   -> shoreside @ localhost:9123 [AIS_REPORT]
   SHARE = [VIEW_POLYGON]       -> shoreside @ localhost:9123 [VIEW_POLYGON]
   SHARE = [VIEW_POINT]         -> shoreside @ localhost:9123 [VIEW_POINT]
-  SHARE = [PROC_WATCH_SUMMARY] -> shoreside @ localhost:9123 [PROC_WATCH_SUMMARY_2]
+  SHARE = [PROC_WATCH_SUMMARY] -> shoreside @ localhost:9123 [PROC_WATCH_SUMMARY_VH2]
   
   SHARE = [AIS_REPORT_LOCAL]   -> vehicle1  @ localhost:9201 [AIS_REPORT]
   SHARE = [AIS_REPORT_LOCAL]   -> vehicle2  @ localhost:9202 [AIS_REPORT]
 }
 
-//------------------------------------------------------------------
+//------------------------------------------
 ProcessConfig = iMarineSim
 {
-  AppTick	= 10
-  CommsTick	= 10
-  
-  START_X       = 10
-  START_Y       = -10
-  START_SPEED   = 0
-  START_HEADING = 180
+  AppTick   = 10
+  CommsTic  = 10
+
+  START_POS = -10,-25,180,0
 }
 
-//------------------------------------------------------------------
+//---------------------------------------
 ProcessConfig = pHelmIvP
 {
   AppTick    = 4
@@ -65,7 +63,7 @@ ProcessConfig = pHelmIvP
   ACTIVE_START = true
 }
 
-//------------------------------------------------------------------
+//---------------------------------------
 ProcessConfig = pMarinePID
 {
   AppTick    = 10
@@ -76,15 +74,15 @@ ProcessConfig = pMarinePID
   ACTIVE_START  = true
   
   // Yaw PID controller
-  YAW_PID_KP		 = 0.4
-  YAW_PID_KD		 = 0.1
-  YAW_PID_KI		 = 0.0
+  YAW_PID_KP             = 0.4
+  YAW_PID_KD             = 0.1
+  YAW_PID_KI             = 0.0
   YAW_PID_INTEGRAL_LIMIT = 0.07
   
   // Speed PID controller
-  SPEED_PID_KP		 = 1.0
-  SPEED_PID_KD		 = 0.0
-  SPEED_PID_KI		 = 0.0
+  SPEED_PID_KP           = 1.0
+  SPEED_PID_KD           = 0.0
+  SPEED_PID_KI           = 0.0
   SPEED_PID_INTEGRAL_LIMIT = 0.07
   
   // Maximums
@@ -96,7 +94,7 @@ ProcessConfig = pMarinePID
   SPEED_FACTOR = 20
 }
 
-//------------------------------------------------------------------
+//---------------------------------------
 ProcessConfig = pLogger
 {
   AppTick 	= 10
@@ -118,8 +116,6 @@ ProcessConfig = pLogger
   Log           = HELM_ACTIVE_BHV    @ 0   NOSYNC
   Log           = HELM_NONIDLE_BHV   @ 0   NOSYNC
   log           = DEPLOY             @ 0   NOSYNC
-  log           = RETURN             @ 0   NOSYNC
-  log           = STATION_KEEP       @ 0   NOSYNC
   
   // Vehicle-Level IO
   Log           = PROC_WATCH_SUMMARY @ 0   NOSYNC
@@ -134,7 +130,7 @@ ProcessConfig = pLogger
   Log           = NAV_SPEED          @ 0
 }
 
-//------------------------------------------
+//---------------------------------------
 ProcessConfig = pEchoVar
 {
   AppTick   = 20
@@ -147,7 +143,7 @@ ProcessConfig = pEchoVar
 }
 
 
-//------------------------------------------------------------------
+//---------------------------------------
 ProcessConfig = pTransponderAIS
 {
   AppTick     = 5
@@ -156,7 +152,7 @@ ProcessConfig = pTransponderAIS
   VESSEL_TYPE = KAYAK
 }
 
-//------------------------------------------------------------------
+//---------------------------------------
 ProcessConfig = uProcessWatch
 {
   AppTick   = 2

@@ -15,7 +15,7 @@ ProcessConfig = ANTLER
   MSBetweenLaunches = 200
 
   Run = MOOSDB          @ NewConsole = false
-  Run = pMOOSBridge     @ NewConsole = true
+  Run = pMOOSBridge     @ NewConsole = false
   Run = pMarineViewer   @ NewConsole = true
   Run = uTermCommand    @ NewConsole = true
 }
@@ -28,15 +28,8 @@ ProcessConfig = pMOOSBridge
 
   SHARE = [DEPLOY_ALL] -> vehicle1 @ localhost:9201 [DEPLOY]
   SHARE = [DEPLOY_ALL] -> vehicle2 @ localhost:9202 [DEPLOY]
-  SHARE = [RETURN_ALL] -> vehicle1 @ localhost:9201 [RETURN]
-  SHARE = [RETURN_ALL] -> vehicle2 @ localhost:9202 [RETURN]
-
-  //-------------------
-
   SHARE = [DEPLOY_VH1] -> vehicle1 @ localhost:9201 [DEPLOY]
   SHARE = [DEPLOY_VH2] -> vehicle2 @ localhost:9202 [DEPLOY]
-  SHARE = [RETURN_VH1] -> vehicle1 @ localhost:9201 [RETURN]
-  SHARE = [RETURN_VH2] -> vehicle2 @ localhost:9202 [RETURN]
   SHARE = [TRAIL_VH2]  -> vehicle2 @ localhost:9202 [TRAIL]
 }
 
@@ -60,7 +53,6 @@ ProcessConfig = uXMS
   VAR  = VIEW_POINT
 
   VAR  = DEPLOY_ALL, DEPLOY_VH1, DEPLOY_VH2
-  VAR  = RETURN_ALL, RETURN_VH1, RETURN_VH2
 }   
   
 //--------------------------------------------------------
@@ -69,21 +61,15 @@ ProcessConfig = uTermCommand
   AppTick    = 2
   CommsTick  = 2
 
-  CMD  = all_deploy_true   -->  DEPLOY_ALL       --> true
-  CMD  = all_deploy_false  -->  DEPLOY_ALL       --> false
-  CMD  = all_return_true   -->  RETURN_ALL       --> true
-  CMD  = all_return_false  -->  RETURN_ALL       --> false
-  //-------------------------------------------------------
-  CMD  = 1_deploy_true     -->  DEPLOY_VH1       --> true
-  CMD  = 1_deploy_false    -->  DEPLOY_VH1       --> false
-  CMD  = 1_return_true     -->  RETURN_VH1       --> true
-  CMD  = 1_return_false    -->  RETURN_VH1       --> false
-  //-------------------------------------------------------
-  CMD  = 2_deploy_true     -->  DEPLOY_VH2       --> true
-  CMD  = 2_deploy_false    -->  DEPLOY_VH2       --> false
-  CMD  = 2_return_true     -->  RETURN_VH2       --> true
-  CMD  = 2_return_false    -->  RETURN_VH2       --> false
-  CMD  = 2_trail_true      -->  TRAIL_VH2        --> true
-  CMD  = 2_trail_false     -->  TRAIL_VH2        --> false
+  CMD  = all_deploy_true  -->  DEPLOY_ALL --> true
+  CMD  = all_deploy_false -->  DEPLOY_ALL --> false
+  //-----------------------------------------------
+  CMD  = 1_deploy_true    -->  DEPLOY_VH1 --> true
+  CMD  = 1_deploy_false   -->  DEPLOY_VH1 --> false
+  //-----------------------------------------------
+  CMD  = 2_deploy_true    -->  DEPLOY_VH2 --> true
+  CMD  = 2_deploy_false   -->  DEPLOY_VH2 --> false
+  CMD  = 2_trail_true     -->  TRAIL_VH2  --> true
+  CMD  = 2_trail_false    -->  TRAIL_VH2  --> false
 }
 

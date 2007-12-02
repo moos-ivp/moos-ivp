@@ -24,7 +24,6 @@ Behavior = BHV_Trail
      trail_range = 30
      trail_angle = 190
           radius = 8
-       max_range = 100
 }
 
 //----------------------------------------------
