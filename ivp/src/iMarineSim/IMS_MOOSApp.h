@@ -28,6 +28,10 @@
 #include "VState.h"
 #include "IMS_Model.h"
 
+// tes 12-2-07 for CMOOSGeodesy class
+#include "MOOSGeodesy.h"
+
+
 class IMS_MOOSApp : public CMOOSApp  
 {
 public:
@@ -54,6 +58,13 @@ public:
 protected:
   std::string m_sim_prefix;
   IMS_Model*  m_model;
+
+
+  // tes 12-2-07 added to allow simulated lat/long
+  CMOOSGeodesy m_geodesy;
+  bool m_geo_ok;
+
+
 };
 #endif
 

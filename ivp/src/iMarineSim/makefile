@@ -6,7 +6,9 @@ LCFLAGS  =
 
 REQUIRED_MOOS_LIBS = \
 	libMOOS.a 			\
-	libMOOSGen.a 		
+	libMOOSGen.a 		\
+	libMOOSUtility.a
+
 
 PLIBS    = libmbutil.a libgeometry.a 
 

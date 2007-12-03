@@ -159,6 +159,31 @@ bool IMS_MOOSApp::OnStartUp()
       m_model->setPaused(toupper(sVal) == "TRUE");
   }
 
+  
+  // tes 12-2-07
+  // look for latitude, longitude global variables
+  double latOrigin, longOrigin;
+  if (!m_MissionReader.GetValue("LatOrigin", latOrigin))
+    {
+      MOOSTrace("iMarineSim: LatOrigin not set in *.moos file.\n");
+      m_geo_ok = false;
+    } 
+  else if (!m_MissionReader.GetValue("LongOrigin", longOrigin))
+    {
+      MOOSTrace("iMarineSim: LongOrigin not set in *.moos file\n");
+      m_geo_ok = false;      
+    }
+  else
+    {
+      m_geo_ok = true;
+      // initialize m_geodesy
+      if (!m_geodesy.Initialise(latOrigin, longOrigin))
+	{
+	MOOSTrace("iMarineSim: Geodesy init failed.\n");
+	m_geo_ok = false;
+	}
+    }
+
   registerVariables();
   MOOSTrace("Sim started \n");
   return(true);
@@ -217,8 +242,21 @@ bool IMS_MOOSApp::Iterate()
 
   m_model->propagate(ctime);
 
-  m_Comms.Notify(m_sim_prefix+"_X", m_model->getPositionX(), ctime);
-  m_Comms.Notify(m_sim_prefix+"_Y", m_model->getPositionY(), ctime);
+  double nav_x = m_model->getPositionX();
+  double nav_y = m_model->getPositionY();
+
+  m_Comms.Notify(m_sim_prefix+"_X", nav_x, ctime);
+  m_Comms.Notify(m_sim_prefix+"_Y", nav_y, ctime);
+
+  // tes 12-2-07 try to give a simulated lat / long
+  if(m_geo_ok)
+    {
+      double lat, lon;
+      m_geodesy.LocalGrid2LatLong(nav_x, nav_y, lat, lon);
+      m_Comms.Notify(m_sim_prefix+"_LAT", lat, ctime);
+      m_Comms.Notify(m_sim_prefix+"_LONG", lon, ctime);
+    }
+
   m_Comms.Notify(m_sim_prefix+"_HEADING", m_model->getHeading(), ctime);
   m_Comms.Notify(m_sim_prefix+"_SPEED", m_model->getSpeed(), ctime);
   m_Comms.Notify(m_sim_prefix+"_DEPTH", m_model->getDepth(), ctime);

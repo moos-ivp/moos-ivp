@@ -8,6 +8,7 @@ IF("${IVP_BUILD_iMarineSim}" STREQUAL "ON")
    TARGET_LINK_LIBRARIES(iMarineSim 
    MOOS
    MOOSGen
+   MOOSUtility
    mbutil
    geometry
    m
