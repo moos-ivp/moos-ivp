@@ -1,9 +1,8 @@
-#define  VID 1
-#define  SIM_START_POS  10,-10,180,0
-
 ServerHost = localhost
 ServerPort = 920$(VID)
 Simulator  = true
+
+Hello $(FOOBAR)
   
 // Community name IS the vehicle name
 Community  = vehicle$(VID)

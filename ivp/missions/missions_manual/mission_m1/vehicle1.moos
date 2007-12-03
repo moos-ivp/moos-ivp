@@ -1,7 +1,8 @@
-
 ServerHost = localhost
 ServerPort = 9201
 Simulator  = true
+
+Hello $(FOOBAR)
   
 // Community name IS the vehicle name
 Community  = vehicle1
