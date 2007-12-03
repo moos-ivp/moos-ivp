@@ -2,8 +2,6 @@ ServerHost = localhost
 ServerPort = 920$(VID)
 Simulator  = true
 
-Hello $(FOOBAR)
-  
 // Community name IS the vehicle name
 Community  = vehicle$(VID)
   
