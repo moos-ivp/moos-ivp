@@ -28,7 +28,7 @@ public:
 public:
   Fl_Menu_Bar      *mbar;
   WireframeViewer  *viewer;
-
+  
 private:
   inline void cb_Zoom_i(int);
   static void cb_Zoom(Fl_Widget*, int);
@@ -53,6 +53,18 @@ private:
 
   inline void cb_Rotate_i(int);
   static void cb_Rotate(Fl_Widget*, int);
+
+  inline void cb_CameraYawRotate_i(int);
+  static void cb_CameraYawRotate(Fl_Widget*, int);
+
+  inline void cb_CameraPitchRotate_i(int);
+  static void cb_CameraPitchRotate(Fl_Widget*, int);
+
+  inline void cb_COI_Origin_i();
+  static void cb_COI_Origin(Fl_Widget*);
+
+  inline void cb_COI_Next_i();
+  static void cb_COI_Next(Fl_Widget*);
 
   inline void cb_ToggleAnimation_i();
   static void cb_ToggleAnimation(Fl_Widget*);
