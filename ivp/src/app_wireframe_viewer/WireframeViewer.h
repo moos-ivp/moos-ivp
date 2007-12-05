@@ -24,11 +24,15 @@ class WireframeViewer : public Fl_Gl_Window{
 
   void  InitializeGL();
   void  DrawAxes();
-  void  DrawKayak();
+  void  DrawKayak(float, float, float);
 
   bool  isAnimating()          {return(m_animating);};
+  bool  isCOI()		       {return(m_COI);};
   float getRotationIncrement() {return(m_rotation_increment);};
-  float getRotation()          {return(m_rotation);};
+  float getRotationAngle()     {return(m_rotation);};
+  float getZoom()	       {return(m_zoom);};
+  float getCameraPitch()       {return(m_camera_pitch);};
+  float getCameraYaw()         {return(m_camera_yaw);};
 
   void  setRotation(float v)   {m_rotation  = v;};
   void  setCameraX(float v)    {m_camera_x  = v;};
@@ -43,20 +47,25 @@ class WireframeViewer : public Fl_Gl_Window{
   void  setTargetZ(float v)    {m_target_z = v;};
 
   void  modZoom(float v) {};
-  void  reset() {};
+  void  reset();
 
   void  setViewMode(int v)     {m_view_mode = v;};
   void  setCameraYaw(float);
   void  incCameraYaw(float);
   void  setCameraPitch(float);
   void  incCameraPitch(float);
+  void  setCameraAngle();
+  void  setCOI(float, float, float);
+  void  translateCamera(float, float, float);
 
   void  toggleAnimation() {m_animating = !m_animating;};
+  void  toggleCOI() {m_COI = !m_COI;};
 
- protected:
+ //protected:
   float m_rotation;
   float m_rotation_increment;
   bool  m_animating;
+  bool  m_COI;
 
   float m_camera_x;
   float m_camera_y;
@@ -64,6 +73,7 @@ class WireframeViewer : public Fl_Gl_Window{
 
   float m_camera_pitch;  // 0:down  180:up
   float m_camera_yaw;    // 0:north 270:west
+  float m_camera_roll;
 
   float m_target_x;
   float m_target_y;
