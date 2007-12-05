@@ -26,7 +26,7 @@ void IdleCallback(void* pData)
     WireframeViewer* pWindow = reinterpret_cast<WireframeViewer*>(pData);
     if(pWindow->isAnimating()) {
       float increment = pWindow->getRotationIncrement();
-      float rotation  = pWindow->getRotation();
+      float rotation  = pWindow->getRotationAngle();
       float new_rval  = rotation + increment / 360;
 
       pWindow->setRotation(new_rval);
