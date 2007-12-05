@@ -117,6 +117,7 @@ void GUI::cb_Reset(Fl_Widget* o) {
 //----------------------------------------- Camera X
 inline void GUI::cb_CameraX_i(int amt) {
   viewer->incCameraX(amt);
+  viewer->redraw();
 }
 void GUI::cb_CameraX(Fl_Widget* o, int v) {
   ((GUI*)(o->parent()->user_data()))->cb_CameraX_i(v);
@@ -125,6 +126,7 @@ void GUI::cb_CameraX(Fl_Widget* o, int v) {
 //----------------------------------------- Camera Y
 inline void GUI::cb_CameraY_i(int amt) {
   viewer->incCameraY(amt);
+  viewer->redraw();
 }
 void GUI::cb_CameraY(Fl_Widget* o, int v) {
   ((GUI*)(o->parent()->user_data()))->cb_CameraY_i(v);
@@ -132,7 +134,8 @@ void GUI::cb_CameraY(Fl_Widget* o, int v) {
 
 //----------------------------------------- Camera Z
 inline void GUI::cb_CameraZ_i(int amt) {
-  viewer->incCameraZ((double)(amt)/5.0);
+  viewer->incCameraZ(amt);
+  viewer->redraw();
 }
 void GUI::cb_CameraZ(Fl_Widget* o, int v) {
   ((GUI*)(o->parent()->user_data()))->cb_CameraZ_i(v);
