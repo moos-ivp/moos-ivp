@@ -11,7 +11,7 @@ MOOSThread in IvP programs.
 
 APPROACH #1: DIRECTLY USING MOOSThread
 --------------------------------------
-To use the MOOSThread, you'll need to do the following in your code:
+To use the MOOSThread class, you'll need to do the following in your code:
 
 Be sure your code links in the library libMOOSUtility.a
 
