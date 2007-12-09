@@ -350,3 +350,23 @@ double BHV_HeadOn14::getRelevance()
 
 
 
+//-----------------------------------------------------------
+// Procedure: postRange
+
+void BHV_HeadOn14::postRange(bool ok)
+{
+  string bhv_tag = toupper(getDescriptor());
+  bhv_tag = findReplace(bhv_tag, "BHV_", "");
+  bhv_tag = findReplace(bhv_tag, "(d)", "");
+  if(!ok) {
+    postMessage("RANGE_AVD_" + m_contact, -1);
+    postMessage("CLSG_SPD_AVD_"+ m_contact, 0);
+  }
+  else {
+    postMessage("RANGE_AVD_" + m_contact, m_curr_distance);
+    postMessage("CLSG_SPD_AVD_" + m_contact, m_curr_closing_spd);
+  }
+}
+
+
+
