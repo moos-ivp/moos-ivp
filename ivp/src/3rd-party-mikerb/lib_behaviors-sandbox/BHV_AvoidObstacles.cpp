@@ -153,7 +153,7 @@ IvPFunction *BHV_AvoidObstacles::produceOF()
   
   ipf->setPWT(priority_wt);
 
-  if(!silent) {
+  if(!m_silent) {
     IvPBox mpt = ipf->getPDMap()->getGrid()->getMaxPt();
     cout << "BHV_AvoidObstacles::produceOF():" << endl;
     cout << "maxpt:" << endl;

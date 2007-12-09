@@ -113,7 +113,7 @@ IvPFunction *BHV_Waypoint2D::produceOF()
       postMessage("VEHICLE_WPT_STAT_US", "complete");
       postMessage("VEHICLE_WPT_STAT", "complete");
       postFlags(end_flags);
-      completed = true;
+      m_completed = true;
       return(0);
     }
   }

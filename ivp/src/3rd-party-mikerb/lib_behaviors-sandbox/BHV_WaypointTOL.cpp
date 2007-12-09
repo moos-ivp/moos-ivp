@@ -58,7 +58,8 @@ BHV_WaypointTOL::BHV_WaypointTOL(IvPDomain gdomain) :
   current_cpa     = 100000;
   lead_distance   = -1;
   repeat          = 0;
-  completed       = false;
+
+  m_completed     = false;
 
   osX   = -1;
   osY   = -1;
@@ -160,7 +161,7 @@ IvPFunction *BHV_WaypointTOL::produceOF()
 
   of->setPWT(priority_wt);
 
-  if(!silent) {
+  if(!m_silent) {
     IvPBox mpt = of->getPDMap()->getGrid()->getMaxPt();
     cout << "BHV_WaypointTOL::produceOF():" << endl;
     cout << "maxpt:" << endl;
@@ -257,7 +258,7 @@ bool BHV_WaypointTOL::setNextWaypoint()
       postMessage("VEHICLE_WPT_STAT_US", "complete");
       postMessage("VEHICLE_WPT_STAT", "complete");
       postFlags(end_flags);
-      completed = true;
+      m_completed = true;
       return(false);
     }
   }
@@ -287,7 +288,7 @@ bool BHV_WaypointTOL::setNextWaypoint()
     }
   }
     
-  if(!silent) {
+  if(!m_silent) {
     cout << "   ptX:" <<  ptX << "  ptY:" << ptY  << endl;
     cout << "  iptX:" << iptX << " iptY:" << iptY << endl;
   }

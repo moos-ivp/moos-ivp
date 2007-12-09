@@ -157,14 +157,14 @@ IvPFunction *BHV_CutRangeFCPA::produceOF()
 
   IvPFunction *of = reflector.extractOF();
 
-  if(!silent) {
+  if(!m_silent) {
     cout << "CutRange Pre-Normalize MIN-WT: " << of->getPDMap()->getMinWT() << endl;
     cout << "CutRange Pre-Normalize MAX-WT: " << of->getPDMap()->getMaxWT() << endl;
   }
 
   of->getPDMap()->normalize(0.0, 100.0);
 
-  if(!silent) {
+  if(!m_silent) {
     cout << "CutRange MIN-WT: " << of->getPDMap()->getMinWT() << endl;
     cout << "CutRange MAX-WT: " << of->getPDMap()->getMaxWT() << endl;
   }
@@ -186,7 +186,7 @@ double BHV_CutRangeFCPA::getRelevance(double osX, double osY,
 
 
   double dist = hypot((osX - cnX), (osY - cnY));
-  if(!silent)
+  if(!m_silent)
     cout << "BHV_CutRangeFCPA: Current Distance ------" << dist << endl;
 
   if(dist > range_max)

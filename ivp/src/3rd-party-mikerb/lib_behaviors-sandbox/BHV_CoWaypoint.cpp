@@ -121,7 +121,7 @@ IvPFunction *BHV_CoWaypoint::produceOF()
   string us_waypt_stat   = info_buffer->sQuery("VEHICLE_WPT_STAT", ok1);
   string them_waypt_stat = info_buffer->sQuery(them_name+"_VEHICLE_WPT_STAT", ok2);
 
-  if(!silent) {
+  if(!m_silent) {
     cout << "+++++BHV_CoWaypoint::produceOF() " << endl;
     cout << "  us_waypt_stat:" << us_waypt_stat << endl;
     cout << "  them_waypt_stat:" << them_waypt_stat << endl;

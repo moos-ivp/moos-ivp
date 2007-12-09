@@ -58,8 +58,9 @@ BHV_WaypointRC::BHV_WaypointRC(IvPDomain gdomain) :
   current_cpa     = 100000;
   lead_distance   = -1;
   repeat          = 0;
-  perpetual       = false;
-  completed       = false;
+
+  m_perpetual     = false;
+  m_completed     = false;
 
   osX   = -1;
   osY   = -1;
@@ -291,8 +292,8 @@ bool BHV_WaypointRC::setNextWaypoint()
 	postMessage("VEHICLE_WPT_STAT_US", "complete");
 	postMessage("VEHICLE_WPT_STAT",    "complete");
 	postFlags(end_flags);
-	if(!perpetual)
-	  completed = true;
+	if(!m_perpetual)
+	  m_completed = true;
 	return(false);
       }
     }
@@ -325,7 +326,7 @@ bool BHV_WaypointRC::setNextWaypoint()
 
   postMessage("VIEW_POLYGON", seglist.get_spec());
 
-  if(!silent) {
+  if(!m_silent) {
     cout << "current_waypt: " << current_waypt << endl;
     cout << "seglist.size(): " << seglist.size() << endl;
     cout << "   ptX:" <<  ptX << "  ptY:" << ptY  << endl;
