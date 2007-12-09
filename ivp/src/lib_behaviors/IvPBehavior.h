@@ -81,9 +81,9 @@ public:
   std::string getDescriptor()            {return(descriptor);};
   std::vector<VarDataPair> getMessages() {return(messages);};
   void   clearMessages()                 {messages.clear();};
-  bool   stateOK()                       {return(state_ok);};
-  void   resetStateOK()                  {state_ok=true;};
-  bool   okLogIPF()                      {return(log_ipf);};
+  bool   stateOK()                       {return(m_state_ok);};
+  void   resetStateOK()                  {m_state_ok=true;};
+  bool   okLogIPF()                      {return(m_log_ipf);};
 
 protected:
   IvPBox* processBox(const std::string&);
@@ -115,29 +115,29 @@ protected:
   double      priority_wt;   // ALL behaviors utilize
   IvPBox*     unif_box;      // MOST behaviors utilize
   IvPBox*     grid_box;      // MOST behaviors utilize
-  bool        silent;
+  bool        m_silent;
   bool        param_lock;
-  bool        log_ipf;
+  bool        m_log_ipf;
 
   // Variables for providing behaviors w/ "udate" capability
-  std::string update_var;
-  std::string curr_update_str;
-  int         good_updates;
-  int         bad_updates;
-  double      last_update_age;
+  std::string m_update_var;
+  std::string m_curr_update_str;
+  int         m_good_updates;
+  int         m_bad_updates;
+  double      m_last_update_age;
 
 
   // variables for providing behaviors w/ "duration" capability
-  double      duration;
-  double      start_time;
-  bool        started;
-  bool        completed;
-  bool        perpetual; 
+  double      m_duration;
+  double      m_start_time;
+  bool        m_started;
+  bool        m_completed;
+  bool        m_perpetual; 
 
   // The state_ok flag shouldn't be set to true once it has been 
   // set to false. So prevent subclasses from setting this directly.
 private:
-  bool        state_ok;
+  bool        m_state_ok;
 };
 
 #endif

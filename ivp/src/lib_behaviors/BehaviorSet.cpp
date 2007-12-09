@@ -84,6 +84,7 @@ IvPFunction* BehaviorSet::produceOF(int ix, int iteration, bool& idle)
       behaviors[ix]->onIdleState();
       behaviors[ix]->postMessage("SAT_BHV_"+bhv_tag, 0);
       behaviors[ix]->postMessage("PWT_BHV_"+bhv_tag, 0);
+      behaviors[ix]->postMessage("BHV_STATE_", bhv_tag + ":idle");
       idle = true;
       return(0);
     }
@@ -95,6 +96,7 @@ IvPFunction* BehaviorSet::produceOF(int ix, int iteration, bool& idle)
 	string msg = "Nan detected in produced ivp function";
 	behaviors[ix]->postEMessage(msg);
 	behaviors[ix]->postMessage("PWT_BHV_"+bhv_tag, 0);
+	behaviors[ix]->postMessage("BHV_STAT_", bhv_tag +":idle");
 	delete(ipf);
 	return(0);
       }
@@ -110,6 +112,13 @@ IvPFunction* BehaviorSet::produceOF(int ix, int iteration, bool& idle)
       double pwt = 0.0;
       if(ipf) 
 	pwt = ipf->getPWT();
+
+      if(pwt <= 0)
+	behaviors[ix]->postMessage("BHV_STATE", bhv_tag+":standby");
+      else
+	behaviors[ix]->postMessage("BHV_STATE", bhv_tag+":active");
+
+
       behaviors[ix]->postMessage("PWT_BHV_"+bhv_tag, pwt);
       
       return(ipf);

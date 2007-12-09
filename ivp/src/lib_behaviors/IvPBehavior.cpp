@@ -55,24 +55,24 @@ using namespace std;
 
 IvPBehavior::IvPBehavior(IvPDomain g_domain)
 {
-  domain          = g_domain;
-  info_buffer     = 0;
-  priority_wt     = 100.0;  // Default Priority Weight
-  descriptor      = "???";  // Default descriptor
-  grid_box        = 0;
-  unif_box        = 0;
-  silent          = true;
-  state_ok        = true;
-  started         = false;
-  start_time      = -1;
-  last_update_age = -1;
-  duration        = -1;
-  completed       = false;
-  param_lock      = false;
-  good_updates    = 0;
-  bad_updates     = 0;
-  log_ipf         = true;   // Will log if the helm is logging
-  perpetual       = false;
+  domain            = g_domain;
+  info_buffer       = 0;
+  priority_wt       = 100.0;  // Default Priority Weight
+  descriptor        = "???";  // Default descriptor
+  grid_box          = 0;
+  unif_box          = 0;
+  m_silent          = true;
+  m_state_ok        = true;
+  m_started         =  false;
+  m_start_time      = -1;
+  m_last_update_age = -1;
+  m_duration        = -1;
+  m_completed       = false;
+  param_lock        = false;
+  m_good_updates    = 0;
+  m_bad_updates     = 0;
+  m_log_ipf         = true;   // Will log if the helm is logging
+  m_perpetual       = false;
 }
   
 //-----------------------------------------------------------
@@ -116,7 +116,7 @@ bool IvPBehavior::setParamCommon(string g_param, string g_val)
     if((g_val!="true") && (g_val!="false"))
       return(false);
     if(!param_lock)
-      silent = (g_val == "true");
+      m_silent = (g_val == "true");
     return(true);
   }
   else if((g_param == "pwt") || 
@@ -242,7 +242,7 @@ bool IvPBehavior::setParamCommon(string g_param, string g_val)
   else if(g_param == "perpetual")  {
     if(!param_lock) {
       string modval = tolower(g_val);
-      perpetual = (modval == "true");
+      m_perpetual = (modval == "true");
     }
     return(true);
   }
@@ -256,17 +256,17 @@ bool IvPBehavior::setParamCommon(string g_param, string g_val)
     
     if(!param_lock) {
       if((g_val == "no-time-limit") || (g_val == "-1"))
-	duration = -1;
+	m_duration = -1;
       else
-	duration = dval;
+	m_duration = dval;
     }
     return(true);
   }
 
   else if(g_param == "updates") {
     if(!param_lock) {
-      update_var = g_val;
-      if(update_var != "")
+      m_update_var = g_val;
+      if(m_update_var != "")
 	info_vars.push_back(g_val);
     }
     return(true);
@@ -275,7 +275,7 @@ bool IvPBehavior::setParamCommon(string g_param, string g_val)
   else if(g_param == "log_ipf") {
     if(!param_lock) {
       string mod_val = tolower(g_val);
-      log_ipf = (mod_val == "true");
+      m_log_ipf = (mod_val == "true");
     }
     return(true);
   }
@@ -314,7 +314,7 @@ bool IvPBehavior::setParamCommon(string g_param, string g_val)
 
 bool IvPBehavior::preCheck()
 {
-  if(completed) {
+  if(m_completed) {
     postPCMessage(" -- completed -- ");
     //postFlags(end_flags);
     return(false);
@@ -329,20 +329,20 @@ bool IvPBehavior::preCheck()
   if(durationExceeded()) {
     postPCMessage(" -- completed (duration exceeded) -- ");
     setComplete();
-    if(perpetual)
-      started = false;
+    if(m_perpetual)
+      m_started = false;
     return(false);
   }
   
   if(domain.size() == 0) {
-    state_ok = false;
+    m_state_ok = false;
     postEMessage("Null IvPDomain given to Behavior");
     postPCMessage("----- Null IvPDomain ----");
     return(false);
   }
   
   if(!checkNoStarve()) {
-    state_ok = false;
+    m_state_ok = false;
     postPCMessage("----- STARVED VARIABLE ----");
     return(false);
   }
@@ -382,8 +382,8 @@ void IvPBehavior::postMessage(string var, double ddata)
 void IvPBehavior::setComplete()
 {
   postFlags(end_flags);
-  if(!perpetual)
-    completed = true;
+  if(!m_perpetual)
+    m_completed = true;
 }
 
 
@@ -400,7 +400,7 @@ void IvPBehavior::postEMessage(string g_emsg)
   VarDataPair msg("BHV_ERROR", emsg);
   messages.push_back(msg);
 
-  state_ok = false;
+  m_state_ok = false;
 }
 
 
@@ -531,7 +531,7 @@ bool IvPBehavior::checkNoStarve()
 
 void IvPBehavior::checkForUpdates()
 {
-  if(update_var == "")
+  if(m_update_var == "")
     return;
 
   int    i;
@@ -539,16 +539,16 @@ void IvPBehavior::checkForUpdates()
   string new_update_str;
   double curr_update_age;
   
-  new_update_str  = info_buffer->sQuery(update_var, ok);
+  new_update_str  = info_buffer->sQuery(m_update_var, ok);
   new_update_str  = stripBlankEnds(new_update_str);
-  curr_update_age = info_buffer->tQuery(update_var);
+  curr_update_age = info_buffer->tQuery(m_update_var);
 
   bool fresh = false;
-  if((curr_update_age < last_update_age) || (last_update_age == -1))
+  if((curr_update_age < m_last_update_age) || (m_last_update_age == -1))
     fresh = true;
 
   if((fresh) && (new_update_str != "") && 
-     (new_update_str != curr_update_str)) {
+     (new_update_str != m_curr_update_str)) {
     
     vector<string> uvector = parseString(new_update_str, '#');
     int usize = uvector.size();
@@ -579,22 +579,22 @@ void IvPBehavior::checkForUpdates()
     }
 
     if(!ok) {
-      bad_updates++;
+      m_bad_updates++;
       string wmsg = "Faulty Behavior (" + descriptor + ") Update - IGNORED!";
       postMessage("BHV_WARNING", wmsg);
     }
     else {
-      good_updates++;
-      curr_update_str = new_update_str;
+      m_good_updates++;
+      m_curr_update_str = new_update_str;
     }
   }
 
-  last_update_age = curr_update_age;
+  m_last_update_age = curr_update_age;
 
-  if((good_updates+bad_updates)>0) {
+  if((m_good_updates + m_bad_updates)>0) {
     string varname = "UH_" + descriptor;
-    string gstr = intToString(good_updates) + " update(s), and ";
-    string bstr = intToString(bad_updates) + " failure(s)";
+    string gstr = intToString(m_good_updates) + " update(s), and ";
+    string bstr = intToString(m_bad_updates) + " failure(s)";
     postMessage(varname, gstr+bstr);
   }
 }
@@ -606,24 +606,24 @@ void IvPBehavior::checkForUpdates()
 bool IvPBehavior::durationExceeded()
 {
   // If a duration was never specified, just return false
-  if(duration == -1)
+  if(m_duration == -1)
     return(false);
 
   double curr_time = info_buffer->getCurrTime();
 
-  if(!started) {
-    started = true;
-    start_time = info_buffer->getCurrTime();
+  if(!m_started) {
+    m_started = true;
+    m_start_time = info_buffer->getCurrTime();
   }
 
-  double elapsed_time = (curr_time - start_time);
-  double remaining_time = duration - elapsed_time;
+  double elapsed_time = (curr_time - m_start_time);
+  double remaining_time = m_duration - elapsed_time;
   if(remaining_time < 0)
     remaining_time = 0;
   if(duration_status != "")
     postMessage(duration_status, remaining_time);
   
-  if(elapsed_time >= duration)
+  if(elapsed_time >= m_duration)
     return(true);
 
   return(false);
