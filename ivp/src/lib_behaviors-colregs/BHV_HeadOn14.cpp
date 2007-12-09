@@ -63,7 +63,7 @@ bool BHV_HeadOn14::setParam(string g_param, string g_val)
   if(IvPBehavior::setParamCommon(g_param, g_val))
     return(true);
 
-  if((g_param == "them") || (g_param == "contact")) {
+  if(g_param == "contact") {
     if(!param_lock) {
       m_contact = toupper(g_val);
       info_vars.push_back(m_contact + "_NAV_X");
@@ -180,7 +180,7 @@ IvPFunction *BHV_HeadOn14::produceOF()
 
   double relevance = getRelevance();
 
-  if(!silent)
+  if(!m_silent)
     cout << "BHV_HeadOn14::produceOF(): relevance: " << relevance << endl;
   if(relevance == 0)
     return(0);
