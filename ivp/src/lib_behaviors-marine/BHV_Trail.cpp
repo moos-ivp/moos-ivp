@@ -193,7 +193,7 @@ IvPFunction *BHV_Trail::produceOF()
     ipf->setPWT(relevance * priority_wt);
   }
 
-  if(!silent) {
+  if(!m_silent) {
     postMessage("TRAIL_MIN_WT", ipf->getPDMap()->getMinWT());
     postMessage("TRAIL_MAX_WT", ipf->getPDMap()->getMaxWT());
   }

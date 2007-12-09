@@ -160,7 +160,7 @@ IvPFunction *BHV_Shadow::produceOF()
   
   ipf->getPDMap()->normalize(0.0, 100.0);
   
-  if(!silent) {
+  if(!m_silent) {
     postMessage("SHADOW_MIN_WT", ipf->getPDMap()->getMinWT());
     postMessage("SHADOW_MAX_WT", ipf->getPDMap()->getMaxWT());
   }

@@ -237,7 +237,7 @@ bool BHV_GoToDepth::incrementLevelDepth()
   m_curr_index++;
   if((m_curr_index >= m_level_depths.size()) && (m_repeat==0)) {
     setComplete();
-    if(perpetual) {
+    if(m_perpetual) {
       m_curr_index = 0;
       m_first_iteration = true;
       m_arrivals = 0;

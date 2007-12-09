@@ -84,7 +84,7 @@ IvPFunction *BHV_TimeOut::produceOF()
     emsg += "  Elapsed Time: ";
     emsg += doubleToString(m_elapsed_time);
     postEMessage(emsg);
-    if(!silent)
+    if(!m_silent)
       cout << emsg << endl; 
   }
 

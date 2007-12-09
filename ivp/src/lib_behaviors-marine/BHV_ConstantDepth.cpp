@@ -52,7 +52,7 @@ BHV_ConstantDepth::BHV_ConstantDepth(IvPDomain gdomain) :
   // indicates no duration applied to the behavior by default. By
   // setting to zero here, we force the user to provide a duration
   // value otherwise it will timeout immediately.
-  duration      = 0;
+  m_duration      = 0;
 }
 
 //-----------------------------------------------------------

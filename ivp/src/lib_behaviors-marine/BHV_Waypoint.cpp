@@ -53,8 +53,8 @@ BHV_Waypoint::BHV_Waypoint(IvPDomain gdomain) :
 
   // The completed and perpetual vars are initialized in superclass
   // but we initialize here just to be safe and clear.
-  completed       = false; 
-  perpetual       = false;
+  m_completed     = false; 
+  m_perpetual     = false;
 
   osX   = -1;
   osY   = -1;
@@ -219,7 +219,7 @@ bool BHV_Waypoint::setNextWaypoint()
   if(waypoint_engine.isComplete()) {
     postMessage("VEHICLE_WPT_STAT", "complete");
     setComplete();
-    if(perpetual)
+    if(m_perpetual)
       waypoint_engine.reset();
     return(false);
   }

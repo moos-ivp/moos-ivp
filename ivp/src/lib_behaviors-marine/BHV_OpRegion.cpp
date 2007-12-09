@@ -266,7 +266,7 @@ void BHV_OpRegion::polygonVerify()
   emsg += " x=" + doubleToString(osX);
   emsg += " y=" + doubleToString(osY);
   postEMessage(emsg);
-  if(!silent)
+  if(!m_silent)
     cout << emsg << endl;
 }
 
@@ -435,7 +435,7 @@ void BHV_OpRegion::altitudeVerify()
     emsg += "  Detected Altitude: ";
     emsg += doubleToString(curr_altitude);
     postEMessage(emsg);
-    if(!silent)
+    if(!m_silent)
       cout << emsg << endl; 
   }
 }
@@ -458,7 +458,7 @@ void BHV_OpRegion::timeoutVerify()
     emsg += "  Elapsed Time: ";
     emsg += doubleToString(elapsed_time);
     postEMessage(emsg);
-    if(!silent)
+    if(!m_silent)
       cout << emsg << endl; 
   }
 }
