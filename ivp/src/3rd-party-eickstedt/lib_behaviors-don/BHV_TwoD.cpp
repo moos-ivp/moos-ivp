@@ -43,7 +43,7 @@ BHV_TwoD::BHV_TwoD(IvPDomain gdomain) :
   // indicates no duration applied to the behavior by default. By
   // setting to zero here, we force the user to provide a duration
   // value otherwise it will timeout immediately.
-  duration        = -1;
+  m_duration      = -1;
 
   //behavior not initialized yet
   initialized = false;

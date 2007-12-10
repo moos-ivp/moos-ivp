@@ -115,7 +115,7 @@ IvPFunction *BHV_CoOrbit::produceOF()
   string us_waypt_stat = info_buffer->sQuery("VEHICLE_WPT_STAT", ok1);
   string them_waypt_stat = info_buffer->sQuery(them_name+"_VEHICLE_WPT_STAT", ok2);
 
-  if(!silent) {
+  if(!m_silent) {
     cout << "+++++BHV_CoOrbit::produceOF() " << us_name << endl;
     cout << "  us_waypt_stat:" << us_waypt_stat << endl;
     cout << "  them_waypt_stat:" << them_waypt_stat << endl;
@@ -183,7 +183,7 @@ IvPFunction *BHV_CoOrbit::produceOF()
   
   ahead = diff - lag;
 
-  if (!silent) cout << us_name << " ahead = " << ahead << " diff = " << diff << endl;
+  if (!m_silent) cout << us_name << " ahead = " << ahead << " diff = " << diff << endl;
   
   //calculate should speed
   if (ahead > 0){
@@ -208,7 +208,7 @@ IvPFunction *BHV_CoOrbit::produceOF()
   if(should_speed > spdHigh)
     should_speed = spdHigh;
   
-  if (!silent) cout << us_name << "should speed = " << should_speed << endl;
+  if (!m_silent) cout << us_name << "should speed = " << should_speed << endl;
 
   // Convert the "should" speed into an index in the IvPDomain
   double double_index = (should_speed - spdBase) / spdDelta;
