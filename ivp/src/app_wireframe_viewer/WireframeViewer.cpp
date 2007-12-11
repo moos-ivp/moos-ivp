@@ -40,6 +40,12 @@ WireframeViewer::WireframeViewer(int x, int y, int w, int h, char* title)
   m_target_z = 0;
 
   m_view_mode = 0;
+
+  m_curr_cursor_pos_x = 0;
+  m_curr_cursor_pos_y = 0;
+  m_old_cursor_pos_x = 0;
+  m_old_cursor_pos_y = 0;
+
   m_zoom      = 0;
 }
 
@@ -235,7 +241,7 @@ void WireframeViewer::setCOI(float tx, float ty, float tz)
 void WireframeViewer::reset()
 {
    m_camera_x = 0; 
-   m_camera_y = 0; 
+   m_camera_y = 2; 
    m_camera_z = 4; 
    m_camera_pitch = 0; 
    m_camera_yaw   = 0;
@@ -244,7 +250,7 @@ void WireframeViewer::reset()
    m_target_y = 0;
    m_target_z = 0;
 
-   gluLookAt(0,0,4,m_target_x,m_target_y,m_target_z,0,1,0); 
+   gluLookAt(m_camera_x, m_camera_y, m_camera_z,m_target_x,m_target_y,m_target_z,0,1,0); 
 }
 
 //-----------------------------------------------------------
@@ -257,5 +263,35 @@ void WireframeViewer::translateCamera(float cx, float cy, float cz)
    m_camera_z = cz;
    glTranslatef(m_camera_x, m_camera_y, m_camera_z);
 }
+
+//-----------------------------------------------------------
+// Procedure: handle_mouse_left
+
+void WireframeViewer::handle_mouse_left()
+{
+  while(m_camera_pitch < 0)
+    m_camera_pitch += 360.0;
+  while(m_camera_pitch > 360.0)
+    m_camera_pitch -= 360;
+
+  while(m_camera_yaw < 0)
+    m_camera_yaw += 360.0;
+  while(m_camera_yaw > 360.0)
+    m_camera_yaw -= 360; 
+
+  glRotatef((m_camera_yaw), 0.0, 1.0, 0.0);
+  glRotatef((m_camera_pitch), 1.0, 0.0, 0.0);
+  glTranslatef(-m_camera_x, -m_camera_y, -m_camera_z);
+
+  m_old_cursor_pos_x = m_curr_cursor_pos_x;
+  m_old_cursor_pos_y = m_curr_cursor_pos_y;
+
+  redraw();
+}
+
+//-----------------------------------------------------------
+// Procedure: handle_mouse_right
+void WireframeViewer::handle_mouse_right()
+{}
 
 
