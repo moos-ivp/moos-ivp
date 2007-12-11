@@ -52,10 +52,6 @@ Fl_Menu_Item GUI::menu_[] = {
  {"Camera Z- ", 'z',  (Fl_Callback*)GUI::cb_CameraZ, (void*)-1, 0},
  {"Camera Z+ ", 'Z',  (Fl_Callback*)GUI::cb_CameraZ, (void*)1, FL_MENU_DIVIDER},
  {"Reset ",     'r',  (Fl_Callback*)GUI::cb_Reset, (void*)0, FL_MENU_DIVIDER},
- {"ViewMode 0 ",  '0',  (Fl_Callback*)GUI::cb_ViewMode, (void*)0, 0},
- {"ViewMode 1 ",  '1',  (Fl_Callback*)GUI::cb_ViewMode, (void*)1, 0},
- {"ViewMode 2 ",  0,  (Fl_Callback*)GUI::cb_ViewMode, (void*)2, FL_MENU_DIVIDER},
-
  {"Zoom In",        'i', (Fl_Callback*)GUI::cb_Zoom, (void*)1, 0},
  {"Zoom Out",       'o', (Fl_Callback*)GUI::cb_Zoom, (void*)-1, FL_MENU_DIVIDER},
  {"Pan Left ",      '4',  (Fl_Callback*)GUI::cb_PanLR, (void*)1, 0},
@@ -68,6 +64,11 @@ Fl_Menu_Item GUI::menu_[] = {
  {"Camera Look Right ", FL_Right, (Fl_Callback*)GUI::cb_CameraYawRotate, (void*)1, 0},
  {"Camera Look Up ", FL_Up, (Fl_Callback*)GUI::cb_CameraPitchRotate, (void*)-1, 0},
  {"Camera Look Down ", FL_Down, (Fl_Callback*)GUI::cb_CameraPitchRotate, (void*)1, 0},
+ {0},
+
+ {"View Mode", 0,  0, 0, 64, 0, 0, 14, 0},
+ {"Freelook ",  '0',  (Fl_Callback*)GUI::cb_ViewMode, (void*)0, 0},
+ {"Target ",  '1',  (Fl_Callback*)GUI::cb_ViewMode, (void*)1, FL_MENU_DIVIDER},
  {0},
 
  {"COI", 0,  0, 0, 64, 0, 0, 14, 0},
@@ -84,13 +85,37 @@ Fl_Menu_Item GUI::menu_[] = {
 
 //----------------------------------------------------------
 // Procedure: handle
-//    As it stands, this method could be eliminated entirely, and the 
-//    default behavior of the parent class should work fine. But if
-//    we want to tinker with event handling, this method is the place.
 
 int GUI::handle(int event) 
 {
-  return(Fl_Window::handle(event));
+  int cursor_pos_x, cursor_pos_y;
+  switch(event){
+  case FL_PUSH:
+    viewer->m_curr_cursor_pos_x = Fl::event_x();
+    viewer->m_curr_cursor_pos_y = Fl::event_y();
+    viewer->m_old_cursor_pos_x = Fl::event_x();
+    viewer->m_old_cursor_pos_y = Fl::event_y();    
+  case FL_DRAG:
+    viewer->m_curr_cursor_pos_x = Fl::event_x();
+    viewer->m_curr_cursor_pos_y = Fl::event_y();
+
+    cursor_pos_x = viewer->m_curr_cursor_pos_x - viewer->m_old_cursor_pos_x;
+    cursor_pos_y = viewer->m_curr_cursor_pos_y - viewer->m_old_cursor_pos_y;
+
+    viewer->m_camera_pitch+=(cursor_pos_y);
+    viewer->m_camera_yaw+=(cursor_pos_x);
+
+    if(Fl_Window::handle(event) != 1){
+	if(Fl::event_button() == FL_LEFT_MOUSE)
+	  viewer->handle_mouse_left();
+	if(Fl::event_button() == FL_RIGHT_MOUSE)
+	  viewer->handle_mouse_right();
+    }      
+    //return 1;
+    break;   
+  default:
+    return(Fl_Window::handle(event));   
+  }
 }
 
 //----------------------------------------- Zoom In
