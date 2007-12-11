@@ -21,6 +21,8 @@ class WireframeViewer : public Fl_Gl_Window{
 
   virtual void draw();
   virtual int handle(int event);
+  virtual void handle_mouse_left();
+  virtual void handle_mouse_right();
 
   void  InitializeGL();
   void  DrawAxes();
@@ -80,6 +82,11 @@ class WireframeViewer : public Fl_Gl_Window{
   float m_target_z;
 
   int   m_view_mode;
+
+  int m_curr_cursor_pos_x;
+  int m_curr_cursor_pos_y;
+  int m_old_cursor_pos_x;
+  int m_old_cursor_pos_y;  
  
   float m_zoom;
 
