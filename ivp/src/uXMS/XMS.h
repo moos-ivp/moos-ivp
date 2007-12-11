@@ -42,8 +42,12 @@ class XMS : public CMOOSApp
   void handleCommand(char);
   void addVariables(std::string);
   void addVariable(std::string);
-  void ignoreVars(bool v) {m_ignore_vars = v;};
-  void setPaused(bool v)  {m_paused = v;};
+  void ignoreVars(bool v)       {m_ignore_vars = v;};
+  void setPaused(bool v)        {m_paused = v;};
+  void setDispVirgins(bool v)   {m_display_virgins = v;};
+  void setDispTime(bool v)      {m_display_time = v;};
+  void setDispSource(bool v)    {m_display_source = v;};
+  void setDispCommunity(bool v) {m_display_community = v;};
 
  protected:
   void registerVariables();

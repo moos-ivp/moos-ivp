@@ -159,6 +159,18 @@ int main(int argc ,char * argv[])
     else if(str == "-r") 
       g_theXMS.setPaused(false);
 
+    else if(str == "-v") 
+      g_theXMS.setDispVirgins(false);
+
+    else if(str == "-s") 
+      g_theXMS.setDispSource(true);
+
+    else if(str == "-t") 
+      g_theXMS.setDispTime(true);
+
+    else if(str == "-c") 
+      g_theXMS.setDispCommunity(true);
+
     else if(!strContains(argv[i], ".moos"))
       g_theXMS.addVariable(argv[i]);
 

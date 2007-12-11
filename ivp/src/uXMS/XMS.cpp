@@ -107,6 +107,21 @@ bool XMS::OnStartUp()
     sLine    = stripBlankEnds(sLine);
     int len  = sLine.length();
     
+    if(sVarName == "PAUSED")
+      m_paused = (tolower(sLine) == "true");
+
+    if(sVarName == "DISPLAY_VIRGINS")
+      m_display_virgins = (tolower(sLine) == "true");
+
+    if(sVarName == "DISPLAY_SOURCE")
+      m_display_source = (tolower(sLine) == "true");
+
+    if(sVarName == "DISPLAY_TIME")
+      m_display_time = (tolower(sLine) == "true");
+
+    if(sVarName == "DISPLAY_COMMUNITY")
+      m_display_community = (tolower(sLine) == "true");
+
     if(!m_ignore_vars && MOOSStrCmp(sVarName, "VAR"))
       addVariables(sLine);
   }
