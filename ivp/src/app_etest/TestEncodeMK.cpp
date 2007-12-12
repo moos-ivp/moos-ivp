@@ -69,10 +69,13 @@ int testEncodeMK(int argc, char*argv[])
 
 
   OF_Reflector reflector(&aof,1);
+#if 0
   IvPBox unifbox(dim);
   for(i=0; i<dim; i++)
     unifbox.setPTS(i,0,200);
   reflector.createUniform(&unifbox, &unifbox, 7);
+#endif
+  reflector.createUniform(pcs, 7);
   IvPFunction *ipf = reflector.extractOF();
 
   if(!ipf) {
@@ -113,7 +116,11 @@ int testEncodeMK(int argc, char*argv[])
   }
   timer1.stop();
 
+  double rate = ((double)(counter)) / tm;
+  string rate_str = doubleToString(rate,2);
+
   cout << "Total Encodings1: " << counter << endl;
+  cout << "Encodings/sec: " << rate_str << endl;
   cout << "String Length: " << ipf_str.length() << endl;
   if((ipf_str.length() < 500) && !quiet) {
     cout << "str exp1: " << endl;
@@ -134,7 +141,12 @@ int testEncodeMK(int argc, char*argv[])
     done = timerZ.timeOutCheck();
   }
   timerZ.stop();
+
+  rate = ((double)(counter)) / tm;
+  rate_str = doubleToString(rate,2);
+
   cout << "Total De-codings: " << counter << endl;
+  cout << "De-codings/sec: " << rate_str << endl;
 
 
   // Experiment Compare ---------------------------------
