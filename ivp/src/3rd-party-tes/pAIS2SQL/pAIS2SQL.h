@@ -54,6 +54,8 @@ protected:
 
 	bool check_blackout(std::string vid, double report_time);
 	
+	std::string check_vid(std::string vnametype);
+
 	std::string m_host_name;      /* server host (default=localhost) */
 	std::string m_user_name;      /* username (default=login name) */
 	std::string m_password;     /* password (default=none) */
@@ -70,6 +72,9 @@ protected:
 	std::vector<std::string> m_known_vid;
 	// the last published time for that vehicle ID (to ensure the 1 sec window)
 	std::vector<double> m_known_time;
+
+	//vector of vehiclename.vehicletype of the vehicles we have seen
+	std::vector<std::string> m_known_vname;
 
 };
 

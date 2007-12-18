@@ -122,70 +122,80 @@ bool CpAIS2SQL::OnNewMail(MOOSMSG_LIST &NewMail)
 	
 	// determine vehicle id or add new vehicle
 	string vid;
+
+	string vnametype = vname + vtype;
 	
-	MYSQL_RES *res_set;
-	
-	string query_veh = "SELECT vehicle_id FROM ge_vehicle WHERE ";
-	query_veh += "lower(vehicle_name) = '" + tolower(vname);
-	query_veh += "' AND lower(vehicle_type) = '" + tolower(vtype);
-	query_veh += "'";
-	
-	MOOSTrace(query_veh);
-	MOOSTrace("\n");
-	
-	if (mysql_query(conn, query_veh.c_str()) != 0)
-	  {
-	    print_error (conn, "mysql_query() failed");
-	  }
-	else
-	  {
-	    res_set = mysql_store_result(conn);
+	vid = check_vid(vnametype);
+  
+	if(vid == "")
+	  {	
+	    MYSQL_RES *res_set;
 	    
-	    if(res_set == NULL)
-	      print_error(conn, "mysql_store_result() failed");
+	    string query_veh = "SELECT vehicle_id FROM ge_vehicle WHERE ";
+	    query_veh += "lower(vehicle_name) = '" + tolower(vname);
+	    query_veh += "' AND lower(vehicle_type) = '" + tolower(vtype);
+	    query_veh += "'";
+	    
+	    MOOSTrace(query_veh);
+	    MOOSTrace("\n");
+	    
+	    if (mysql_query(conn, query_veh.c_str()) != 0)
+	      {
+		print_error (conn, "mysql_query() failed");
+	      }
 	    else
 	      {
+		res_set = mysql_store_result(conn);
 		
-		if(mysql_num_rows(res_set) == 0)
-		  {
-		    //add new id
-		    string query_veh_insert = "INSERT INTO ge_vehicle (vehicle_type, vehicle_name) ";
-		    query_veh_insert += "VALUES ('" + tolower(vtype);
-		    query_veh_insert += "', '" + tolower(vname);
-		    query_veh_insert += "')";
-		    
-		    MOOSTrace(query_veh_insert);
-		    MOOSTrace("\n");
-		    
-		    
-		    if (mysql_query(conn, query_veh_insert.c_str()) != 0)
-		      {
-			print_error (conn, "insert failed");
-			return false;
-		      }	    
-		    else
-		      {
-			vid = intToString(mysql_insert_id(conn));
-		      }
-		    
-		  }
+		if(res_set == NULL)
+		  print_error(conn, "mysql_store_result() failed");
 		else
 		  {
-		    //get veh id
-		    MYSQL_ROW row;
-		    row = mysql_fetch_row(res_set);
-		    vid = row[0];
+		    
+		    if(mysql_num_rows(res_set) == 0)
+		      {
+			//add new id
+			string query_veh_insert = "INSERT INTO ge_vehicle (vehicle_type, vehicle_name) ";
+			query_veh_insert += "VALUES ('" + tolower(vtype);
+			query_veh_insert += "', '" + tolower(vname);
+			query_veh_insert += "')";
+			
+			MOOSTrace(query_veh_insert);
+			MOOSTrace("\n");
+			
+			
+			if (mysql_query(conn, query_veh_insert.c_str()) != 0)
+			  {
+			    print_error (conn, "insert failed");
+			    return false;
+			  }	    
+			else
+			  {
+			    vid = intToString(mysql_insert_id(conn));
+			  }
+			
+		      }
+		    else
+		      {
+			//get veh id
+			MYSQL_ROW row;
+			row = mysql_fetch_row(res_set);
+			vid = row[0];
+		      }
+		    
+		    MOOSTrace("pAIS2SQL: vehicle id is ");
+		    MOOSTrace(vid);
+		    MOOSTrace(".\n");
+		    
+		    mysql_free_result(res_set);
 		  }
-		
-		MOOSTrace("pAIS2SQL: vehicle id is ");
-		MOOSTrace(vid);
-		MOOSTrace(".\n");
-		
-		mysql_free_result(res_set);
 	      }
+	    
+	    m_known_vid.push_back(vid);
+	    m_known_time.push_back(0);
+	    m_known_vname.push_back(vnametype);
 	  }
 	
-
 	// check the blackout time on this vehicle. if not enough time elapsed
 	// return to stop wasting our time :) since we aren't going to publish
 	// to the mysql db
@@ -525,8 +535,21 @@ bool CpAIS2SQL::check_blackout(string vid, double report_time)
 	    }
 	}
     }
-  
-  m_known_vid.push_back(vid);
-  m_known_time.push_back(report_time);
   return true;
+}
+
+// matches a name.type string to a vehicle id to save database accesses
+string CpAIS2SQL::check_vid(string vnametype)
+{  
+  int i;
+
+  for(i=0; i<m_known_vid.size(); i++)
+    {
+      if(m_known_vname[i] == vnametype)
+	{
+	  return m_known_vid[i];	  
+	}
+    }
+  
+  return "";
 }
