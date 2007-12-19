@@ -279,9 +279,10 @@ bool IvPBehavior::setParamCommon(string g_param, string g_val)
 
 bool IvPBehavior::preCheck()
 {
+  // If completed indicat that the pre-check failed due to this
+  // reason and simply return false. End-flags are posted elsewhere
   if(m_completed) {
     postPCMessage(" -- completed -- ");
-    //postFlags(end_flags);
     return(false);
   }
 
