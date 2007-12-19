@@ -476,6 +476,7 @@ bool tokParse(const string& str, const string& left,
     vector<string> svector2 = parseString(svector1[i], lsep);
     if(svector2.size() != 2)
       return(false);
+    svector2[0] = stripBlankEnds(svector2[0]);
     if(svector2[0] == left) {
       rstr = svector2[1];
       return(true);
