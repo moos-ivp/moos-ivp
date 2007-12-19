@@ -49,37 +49,32 @@ bool BHV_CutRangeFCPA::setParam(string g_param, string g_val)
     return(true);
 
   if((g_param == "them") || (g_param == "contact")) {
-    if(!param_lock) {
-      them_name = toupper(g_val);
-      info_vars.push_back(them_name+"_NAV_X");
-      info_vars.push_back(them_name+"_NAV_Y");
-      info_vars.push_back(them_name+"_NAV_SPEED");
-      info_vars.push_back(them_name+"_NAV_HEADING");
-    }
+    them_name = toupper(g_val);
+    info_vars.push_back(them_name+"_NAV_X");
+    info_vars.push_back(them_name+"_NAV_Y");
+    info_vars.push_back(them_name+"_NAV_SPEED");
+    info_vars.push_back(them_name+"_NAV_HEADING");
     return(true);
   }  
   else if(g_param == "tol") {
     double dval = atof(g_val.c_str());
     if((dval < 0) || (!isNumber(g_val)))
       return(false);
-    if(!param_lock)
-      tol = dval;
+    tol = dval;
     return(true);
   }  
   else if(g_param == "max_range") {
     double dval = atof(g_val.c_str());
     if((dval < 0) || (!isNumber(g_val)))
       return(false);
-    if(!param_lock)
-      range_max = dval;
+    range_max = dval;
     return(true);
   }  
   else if(g_param == "min_range") {
     double dval = atof(g_val.c_str());
     if((dval < 0) || (!isNumber(g_val)))
       return(false);
-    if(!param_lock)
-      range_min = dval;
+    range_min = dval;
     return(true);
   }  
   return(false);
@@ -157,17 +152,17 @@ IvPFunction *BHV_CutRangeFCPA::produceOF()
 
   IvPFunction *of = reflector.extractOF();
 
-  if(!m_silent) {
-    cout << "CutRange Pre-Normalize MIN-WT: " << of->getPDMap()->getMinWT() << endl;
-    cout << "CutRange Pre-Normalize MAX-WT: " << of->getPDMap()->getMaxWT() << endl;
-  }
+#if 0
+  cout << "CutRange Pre-Normalize MIN-WT: " << of->getPDMap()->getMinWT() << endl;
+  cout << "CutRange Pre-Normalize MAX-WT: " << of->getPDMap()->getMaxWT() << endl;
+#endif
 
   of->getPDMap()->normalize(0.0, 100.0);
 
-  if(!m_silent) {
-    cout << "CutRange MIN-WT: " << of->getPDMap()->getMinWT() << endl;
-    cout << "CutRange MAX-WT: " << of->getPDMap()->getMaxWT() << endl;
-  }
+#if 0
+  cout << "CutRange MIN-WT: " << of->getPDMap()->getMinWT() << endl;
+  cout << "CutRange MAX-WT: " << of->getPDMap()->getMaxWT() << endl;
+#endif
 
   of->setPWT(relevance * priority_wt);
 
@@ -186,8 +181,9 @@ double BHV_CutRangeFCPA::getRelevance(double osX, double osY,
 
 
   double dist = hypot((osX - cnX), (osY - cnY));
-  if(!m_silent)
-    cout << "BHV_CutRangeFCPA: Current Distance ------" << dist << endl;
+#if 0
+  cout << "BHV_CutRangeFCPA: Current Distance ------" << dist << endl;
+#endif  
 
   if(dist > range_max)
     return(0.0);

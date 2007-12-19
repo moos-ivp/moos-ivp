@@ -50,8 +50,7 @@ bool BHV_SteadyHeading::setParam(string param, string val)
     double dval = atof(val.c_str());
     if((dval < 0) || (!isNumber(val)))
       return(false);
-    if(!param_lock)
-      memory_time = dval;
+    memory_time = dval;
     return(true);
   }
   
@@ -59,8 +58,7 @@ bool BHV_SteadyHeading::setParam(string param, string val)
     double dval = atof(val.c_str());
     if((dval < 0) || (!isNumber(val)))
       return(false);
-    if(!param_lock)
-      grace_time = dval;
+    grace_time = dval;
     return(true);
   }
   
@@ -68,8 +66,7 @@ bool BHV_SteadyHeading::setParam(string param, string val)
     double dval = atof(val.c_str());
     if((dval < 0) || (!isNumber(val)))
       return(false);
-    if(!param_lock)
-      variable_pwt = dval;
+    variable_pwt = dval;
     return(true);
   }
   
@@ -77,8 +74,7 @@ bool BHV_SteadyHeading::setParam(string param, string val)
     double dval = atof(val.c_str());
     if((dval < 0) || (!isNumber(val)))
       return(false);
-    if(!param_lock)
-      peak_width = dval;
+    peak_width = dval;
     return(true);
   }
   
@@ -86,8 +82,7 @@ bool BHV_SteadyHeading::setParam(string param, string val)
     double dval = atof(val.c_str());
     if((dval < 0) || (!isNumber(val)))
       return(false);
-    if(!param_lock)
-      summit_delta = dval;
+    summit_delta = dval;
     return(true);
   }
   

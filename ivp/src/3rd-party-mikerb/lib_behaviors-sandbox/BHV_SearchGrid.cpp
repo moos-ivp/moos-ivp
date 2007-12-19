@@ -52,8 +52,7 @@ bool BHV_SearchGrid::setParam(string param, string val)
     bool ok = new_search_grid.initialize(val);
     if(!ok) 
       return(false);
-    if(!param_lock)
-      search_grid = new_search_grid;
+    search_grid = new_search_grid;
     return(true);
   }
   
@@ -62,8 +61,7 @@ bool BHV_SearchGrid::setParam(string param, string val)
     bool ok = new_timutif.isConfigured();
     if(!ok) 
       return(false);
-    if(!param_lock)
-      timutif = new_timutif;
+    timutif = new_timutif;
     return(true);
   }
   
@@ -71,8 +69,7 @@ bool BHV_SearchGrid::setParam(string param, string val)
     double dval = atof(val.c_str());
     if((dval < 0) || (!isNumber(val)))
       return(false);
-    if(!param_lock)
-      time_horizon = dval;
+    time_horizon = dval;
     return(true);
   }
   

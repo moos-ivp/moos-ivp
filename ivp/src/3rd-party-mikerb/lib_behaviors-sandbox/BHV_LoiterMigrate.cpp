@@ -60,65 +60,55 @@ bool BHV_LoiterMigrate::setParam(string g_param, string g_val)
     bool ok = new_poly.initialize(g_val);
     if(!ok)  // Should be convex - false otherwise
       return(false);
-    if(!param_lock) {
-      if(new_poly.is_clockwise() != m_clockwise)
-	new_poly.reverse();
-      new_poly.apply_snap(0.1); // snap to tenth of meter
-      loiter_engine.setPoly(new_poly);
-      waypoint_engine.setSegList(new_poly);
-      m_poly_changed  = true;
-      m_acquire_mode  = true;
-    }
+    if(new_poly.is_clockwise() != m_clockwise)
+      new_poly.reverse();
+    new_poly.apply_snap(0.1); // snap to tenth of meter
+    loiter_engine.setPoly(new_poly);
+    waypoint_engine.setSegList(new_poly);
+    m_poly_changed  = true;
+    m_acquire_mode  = true;
     return(true);
   }  
   else if(g_param == "center_assign") {
-    if(!param_lock) {
-      m_center_assign  = g_val;
-      m_center_pending = true;
-    }
+    m_center_assign  = g_val;
+    m_center_pending = true;
     return(true);
   }  
   else if(g_param == "clockwise") {
     g_val = tolower(g_val);
     if((g_val!="true")&&(g_val!="false"))
       return(false);
-    if(!param_lock) {
-      m_clockwise = (g_val == "true");
-      loiter_engine.setClockwise(m_clockwise);
-      waypoint_engine.setSegList(loiter_engine.getPolygon());
-    }
+    m_clockwise = (g_val == "true");
+    loiter_engine.setClockwise(m_clockwise);
+    waypoint_engine.setSegList(loiter_engine.getPolygon());
     return(true);
   }  
   else if(g_param == "center_activate") {
     g_val = tolower(g_val);
     if((g_val!="true")&&(g_val!="false"))
       return(false);
-    if(!param_lock)
-      m_center_activate = (g_val == "true");
+    m_center_activate = (g_val == "true");
     return(true);
   }  
   else if(g_param == "speed") {
     double dval = atof(g_val.c_str());
     if((dval < 0) || (!isNumber(g_val)))
       return(false);
-    if(!param_lock)
-      m_desired_speed = dval;
+    m_desired_speed = dval;
     return(true);
   }
   else if(g_param == "radius") {
     double dval = atof(g_val.c_str());
     if((dval < 0) || (!isNumber(g_val)))
       return(false);
-    if(!param_lock)
-      waypoint_engine.setCaptureRadius(dval);
+    waypoint_engine.setCaptureRadius(dval);
     return(true);
   }
   else if(g_param == "acquire_dist") {
     double dval = atof(g_val.c_str());
     if((dval < 0) || (!isNumber(g_val)))
       return(false);
-    if(!param_lock)
-      m_acquire_dist = dval;
+    m_acquire_dist = dval;
     return(true);
   }
   else if(g_param == "nm_radius")  {
@@ -126,8 +116,7 @@ bool BHV_LoiterMigrate::setParam(string g_param, string g_val)
     // val=0 is ok, interpreted as inactive
     if((dval < 0) || (!isNumber(g_val)))
       return(false);
-    if(!param_lock)
-      waypoint_engine.setNonmonotonicRadius(dval);
+    waypoint_engine.setNonmonotonicRadius(dval);
     return(true);
   }
   return(false);

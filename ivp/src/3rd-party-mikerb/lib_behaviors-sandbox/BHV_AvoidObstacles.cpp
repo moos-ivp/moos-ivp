@@ -70,37 +70,29 @@ bool BHV_AvoidObstacles::setParam(string param, string val)
     bool ok = new_polygon.initialize(val);
     if(!ok)
       return(false);
-    if(!param_lock) {
-      obstacles.push_back(new_polygon);
-      aof_avoid->setParam("polygon", val);
-    }
+    obstacles.push_back(new_polygon);
+    aof_avoid->setParam("polygon", val);
     return(true);
   }
   else if(param == "allowable_ttc") {
     double dval = atof(val.c_str());
     if((dval < 0) || (!isNumber(val)))
       return(false);
-    if(!param_lock) {
-      aof_avoid->setParam("allowable_ttc", dval);
-    }
+    aof_avoid->setParam("allowable_ttc", dval);
     return(true);
   }
   else if(param == "activation_dist") {
     double dval = atof(val.c_str());
     if((dval < 0) || (!isNumber(val)))
       return(false);
-    if(!param_lock) {
-      aof_avoid->setParam("activation_dist", dval);
-    }
+    aof_avoid->setParam("activation_dist", dval);
     return(true);
   }
   else if(param == "buffer_dist") {
     double dval = atof(val.c_str());
     if((dval < 0) || (!isNumber(val)))
       return(false);
-    if(!param_lock) {
-      aof_avoid->setParam("buffer_dist", dval);
-    }
+    aof_avoid->setParam("buffer_dist", dval);
     return(true);
   }
   return(false);
@@ -153,12 +145,12 @@ IvPFunction *BHV_AvoidObstacles::produceOF()
   
   ipf->setPWT(priority_wt);
 
-  if(!m_silent) {
-    IvPBox mpt = ipf->getPDMap()->getGrid()->getMaxPt();
-    cout << "BHV_AvoidObstacles::produceOF():" << endl;
-    cout << "maxpt:" << endl;
-    mpt.print();
-  }
+#if 0
+  IvPBox mpt = ipf->getPDMap()->getGrid()->getMaxPt();
+  cout << "BHV_AvoidObstacles::produceOF():" << endl;
+  cout << "maxpt:" << endl;
+  mpt.print();
+#endif
 
   return(ipf);
 }

@@ -62,38 +62,31 @@ bool BHV_ObeySpeedLimit::setParam(string param, string val)
     double dval = atof(val.c_str());
     if((dval < 0) || (!isNumber(val)))
       return(false);
-    if(!param_lock) {
-      spd_limit = dval;
-      if(spd_cheat < spd_limit) spd_cheat = spd_limit;
-      if(spd_death < spd_limit) spd_death = spd_limit;
-    }
+    spd_limit = dval;
+    if(spd_cheat < spd_limit) spd_cheat = spd_limit;
+    if(spd_death < spd_limit) spd_death = spd_limit;
     return(true);
   }
   if(param == "spd_cheat") {
     double dval = atof(val.c_str());
     if((dval < 0) || (!isNumber(val)))
       return(false);
-    if(!param_lock) {
-      spd_cheat = dval;
-      if(spd_limit > spd_cheat) spd_limit = spd_cheat;
-      if(spd_death < spd_cheat) spd_death = spd_cheat;
-    }
+    spd_cheat = dval;
+    if(spd_limit > spd_cheat) spd_limit = spd_cheat;
+    if(spd_death < spd_cheat) spd_death = spd_cheat;
     return(true);
   }
   if(param == "spd_death") {
     double dval = atof(val.c_str());
     if((dval < 0) || (!isNumber(val)))
       return(false);
-    if(!param_lock) {
-      spd_death = dval;
-      if(spd_limit > spd_death) spd_limit = spd_death;
-      if(spd_cheat < spd_death) spd_cheat = spd_death;
-    }
+    spd_death = dval;
+    if(spd_limit > spd_death) spd_limit = spd_death;
+    if(spd_cheat < spd_death) spd_cheat = spd_death;
     return(true);
   }
   if(param == "cheat_val") {
-    if(!param_lock)
-      cheat_val = atof(val.c_str());
+    cheat_val = atof(val.c_str());
     return(true);
   }
   return(false);

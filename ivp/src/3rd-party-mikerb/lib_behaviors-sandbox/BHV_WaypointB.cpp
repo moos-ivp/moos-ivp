@@ -90,57 +90,49 @@ bool BHV_WaypointB::setParam(string param, string val)
     bool ok = new_seglist.initialize(val);
     if(!ok)
       return(false);
-    if(!param_lock)
-      seglist = new_seglist;
+    seglist = new_seglist;
     return(true);
   }
   else if(param == "speed") {
     double dval = atof(val.c_str());
     if((dval <= 0) || (!isNumber(val)))
       return(false);
-    if(!param_lock)
-      cruise_speed = dval;
+    cruise_speed = dval;
     return(true);
   }
   else if(param == "lead") {
     double dval = atof(val.c_str());
     if((dval < 0) || (!isNumber(val)))
       return(false);
-    if(!param_lock)
-      lead_distance = dval;
+    lead_distance = dval;
     return(true);
   }
   else if(param == "order") {
     if((val!="reverse") && (val!="reversed") && (val!="normal"))
       return(false);
-    if(!param_lock) {
-      if((val == "reverse") || (val == "reversed"))
-	seglist.reverse();
-    }
+    if((val == "reverse") || (val == "reversed"))
+      seglist.reverse();
     return(true);
   }
   else if(param == "repeat") {
     int ival = atoi(val.c_str());
     if((ival < 0) || (!isNumber(val)))
       return(false);
-    if(!param_lock)
-      repeat = ival;
+    repeat = ival;
     return(true);
   }
   else if(param == "radius") {
     double dval = atof(val.c_str());
     if(dval <= 0)
       return(false);
-    if(!param_lock)
-      arrival_radius = dval;
+    arrival_radius = dval;
     return(true);
   }
   else if(param == "nm_radius")  {
     double dval = atof(val.c_str());
     if(dval <= 0) 
       return(false);
-    if(!param_lock)
-      nm_radius = dval;
+    nm_radius = dval;
     return(true);
   }
   return(false);
@@ -189,12 +181,12 @@ IvPFunction *BHV_WaypointB::produceOF()
   if(ipf)
     ipf->setPWT(priority_wt);
 
-  if(!m_silent) {
-    IvPBox mpt = ipf->getPDMap()->getGrid()->getMaxPt();
-    cout << "BHV_WaypointB::produceOF():" << endl;
-    cout << "maxpt:" << endl;
-    mpt.print();
-  }
+#if 0
+  IvPBox mpt = ipf->getPDMap()->getGrid()->getMaxPt();
+  cout << "BHV_WaypointB::produceOF():" << endl;
+  cout << "maxpt:" << endl;
+  mpt.print();
+#endif
 
   if(osSPD > 0) {
     double dist_meters = hypot((osX-ptX), (osY-ptY));
@@ -308,12 +300,12 @@ bool BHV_WaypointB::setNextWaypoint()
     }
   }
     
-  if(!m_silent) {
-    cout << "current_waypt: " << current_waypt << endl;
-    cout << "seglist.size(): " << seglist.size() << endl;
-    cout << "   ptX:" <<  ptX << "  ptY:" << ptY  << endl;
-    cout << "  iptX:" << iptX << " iptY:" << iptY << endl;
-  }
+#if 0
+  cout << "current_waypt: " << current_waypt << endl;
+  cout << "seglist.size(): " << seglist.size() << endl;
+  cout << "   ptX:" <<  ptX << "  ptY:" << ptY  << endl;
+  cout << "  iptX:" << iptX << " iptY:" << iptY << endl;
+#endif
 
   return(true);
 }

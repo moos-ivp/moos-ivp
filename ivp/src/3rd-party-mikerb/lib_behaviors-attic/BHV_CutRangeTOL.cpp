@@ -63,29 +63,25 @@ bool BHV_CutRange::setParam(string g_param, string g_val)
     return(true);
 
   if((g_param == "them") || (g_param == "contact")) {
-    if(!param_lock) {
-      them_name = toupper(g_val);
-      info_vars.push_back(them_name+"_NAV_X");
-      info_vars.push_back(them_name+"_NAV_Y");
-      info_vars.push_back(them_name+"_NAV_SPEED");
-      info_vars.push_back(them_name+"_NAV_HEADING");
-    }
+    them_name = toupper(g_val);
+    info_vars.push_back(them_name+"_NAV_X");
+    info_vars.push_back(them_name+"_NAV_Y");
+    info_vars.push_back(them_name+"_NAV_SPEED");
+    info_vars.push_back(them_name+"_NAV_HEADING");
     return(true);
   }  
   else if(g_param == "max_range") {
     double dval = atof(g_val.c_str());
     if((dval < 0) || (!isNumber(g_val)))
       return(false);
-    if(!param_lock)
-      range_max = dval;
+    range_max = dval;
     return(true);
   }  
   else if(g_param == "min_range") {
     double dval = atof(g_val.c_str());
     if((dval < 0) || (!isNumber(g_val)))
       return(false);
-    if(!param_lock)
-      range_min = dval;
+    range_min = dval;
     return(true);
   }  
   return(false);

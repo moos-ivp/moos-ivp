@@ -68,11 +68,9 @@ bool BHV_AvoidObstacles::setParam(string param, string val)
     bool ok = new_polygon.initialize(val);
     if(!ok)
       return(false);
-    if(!param_lock) {
-      obstacles.push_back(new_polygon);
-      inner_dist.push_back(0);
-      outer_dist.push_back(0);
-    }
+    obstacles.push_back(new_polygon);
+    inner_dist.push_back(0);
+    outer_dist.push_back(0);
     return(true);
   }
   else if(param == "inner_dist") {
@@ -84,8 +82,7 @@ bool BHV_AvoidObstacles::setParam(string param, string val)
     double dval = atof(poly_dist.c_str());
     if((dval <= 0) || (!isNumber(val)))
       return(false);
-    if(!param_lock)
-      return(setInnerDist(poly_label, dval));
+    return(setInnerDist(poly_label, dval));
     return(true);
   }
   else if(param == "outer_dist") {
@@ -97,9 +94,7 @@ bool BHV_AvoidObstacles::setParam(string param, string val)
     double dval = atof(poly_dist.c_str());
     if((dval <= 0) || (!isNumber(val)))
       return(false);
-    if(!param_lock)
-      return(setOuterDist(poly_label, dval));
-    return(true);
+    return(setOuterDist(poly_label, dval));
   }
   return(false);
 }

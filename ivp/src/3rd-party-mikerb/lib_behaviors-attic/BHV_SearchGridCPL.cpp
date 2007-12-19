@@ -71,8 +71,7 @@ bool BHV_SearchGrid::setParam(string param, string val)
     bool ok = new_search_grid.initialize(val);
     if(!ok) 
       return(false);
-    if(!param_lock)
-      search_grid = new_search_grid;
+    search_grid = new_search_grid;
     return(true);
   }
   return(false);
