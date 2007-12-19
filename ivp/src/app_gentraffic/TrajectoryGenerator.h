@@ -31,6 +31,7 @@ public:
 protected:
   
   TrajectorySet m_trajectory_set;
+  
 };
 
 #endif

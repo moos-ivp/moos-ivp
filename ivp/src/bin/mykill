@@ -15,7 +15,7 @@ killall -9 -q pMOOSBridge pMikerb ExpMOOSDB pMikerb2        \
 
 killall -9 -q uTermCommand pMessageParser pTrafficControl   \
         pDeployHandler pViewerRelay pShipsideViewer         \
-        iMetaMemCompass iOS5000 MOOSBlink
+        iMetaMemCompass iOS5000 MOOSBlink pHelmIvPD
         
 killall -9 -q pArtifactMapper pSensorSim pLawnmower
 

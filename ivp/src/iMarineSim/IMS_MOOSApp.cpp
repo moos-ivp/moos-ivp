@@ -157,6 +157,11 @@ bool IMS_MOOSApp::OnStartUp()
       m_model->setPushY(dVal);
     else if(sVarName == "SIM_PAUSE")
       m_model->setPaused(toupper(sVal) == "TRUE");
+
+    else if(sVarName == "START_POS")
+      m_model->setPosition(sVal);
+
+
   }
 
   

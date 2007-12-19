@@ -18,7 +18,8 @@ GPL_RELS  = lib_ivpbuild 	lib_behaviors-marine 	\
 	    iMarineSim		pMarinePID 		\
 	    pEchoVar 		app_polyview 		\
 	    app_logview 	uTMS			\
-	    uXMS     		uProcessWatch			
+	    uXMS     		uProcessWatch		\
+	    uRepeater		uFunctionVis	
 
 MRB_BETA  = lib_behaviors-colregs lib_behaviors-sandbox     	\
 	    lib_behaviors-atttic  app_fview app_hexaview 	\

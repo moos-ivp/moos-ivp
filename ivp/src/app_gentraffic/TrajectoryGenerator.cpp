@@ -33,8 +33,6 @@ void TrajectoryGenerator::randomSeed()
   srand(seed);
 }
 
-
-
 //-----------------------------------------------------------------
 // Procedure: generate
 
@@ -45,6 +43,9 @@ void TrajectoryGenerator::generate(double c_x, double c_y, double radius,
     return;
 
   int i, j;
+
+
+
 
   // Generate a random heading
   vector<double> headings;

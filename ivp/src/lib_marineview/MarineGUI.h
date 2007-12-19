@@ -70,11 +70,17 @@ protected:
   inline void cb_ToggleHash_i();
   static void cb_ToggleHash(Fl_Widget*);
 
+  inline void cb_HashDelta_i(int);
+  static void cb_HashDelta(Fl_Widget*, int);
+
   inline void cb_HashShade_i(int);
   static void cb_HashShade(Fl_Widget*, int);
 
-  inline void cb_HashDelta_i(int);
-  static void cb_HashDelta(Fl_Widget*, int);
+  inline void cb_ToggleDatum_i();
+  static void cb_ToggleDatum(Fl_Widget*);
+
+  inline void cb_DatumSize_i(int);
+  static void cb_DatumSize(Fl_Widget*, int);
 
   inline void cb_BackShade_i(int);
   static void cb_BackShade(Fl_Widget*, int);

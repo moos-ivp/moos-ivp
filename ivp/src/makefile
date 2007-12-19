@@ -21,7 +21,7 @@ LIB_BASE =  $(wildcard lib_ivpcore*)	$(wildcard lib_ivpbuild)   	   \
 APP_BASE =  $(wildcard pHelmIvP*) 	$(wildcard pEchoVar*) 	   	\
 	    $(wildcard pLoiterControl*) $(wildcard pMarinePID*)     	\
 	    $(wildcard uXMS*)  	 	$(wildcard pTransponderAIS*)	\
-	    $(wildcard uTMS*)		$(wildcard uTermCommand*)   	\
+	    $(wildcard uTermCommand*)  				 	\
 	    $(wildcard iMarineSim*)	$(wildcard iMetaCompass*)   	\
 	    $(wildcard iPWMController*) $(wildcard uProcessWatch*)	\
 	    $(wildcard app_splug*)	$(wildcard pDeployHandler*)	\

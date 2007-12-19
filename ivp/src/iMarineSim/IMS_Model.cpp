@@ -150,6 +150,32 @@ void IMS_Model::setPaused(bool g_paused)
 
 
 //------------------------------------------------------------------------
+// Procedure: setPosition
+//      Note: 
+
+void IMS_Model::setPosition(string str)
+{
+  str = stripBlankEnds(str);
+  vector<string> svector = parseString(str, ',');
+  int vsize = svector.size();
+
+  for(int i=0; i<vsize; i++)
+    svector[i] = stripBlankEnds(svector[i]);
+
+  if(vsize > 0)
+    setPositionX(atof(svector[0].c_str()));
+  if(vsize > 1)
+    setPositionY(atof(svector[1].c_str()));
+  if(vsize > 2)
+    setHeadingDEG(atof(svector[2].c_str()));
+  if(vsize > 3)
+    setSpeed(atof(svector[3].c_str()));
+  if(vsize > 4)
+    setDepth(atof(svector[4].c_str()));
+}
+
+
+//------------------------------------------------------------------------
 // Procedure: handleCommand
 //      Note: 
 

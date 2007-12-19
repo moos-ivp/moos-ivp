@@ -23,6 +23,7 @@
 #ifndef IMS_MODEL_HEADER
 #define IMS_MODEL_HEADER
 
+#include <string>
 #include "VState.h"
 #include "MBTimer.h"
 #include "SimEngine.h"
@@ -61,6 +62,7 @@ public:
     {m_vstate.m_dfHeading = degToRadians(v);};
   void   setSpeed(double v)       {m_vstate.m_dfSpeed = v;};
   void   setDepth(double v)       {m_vstate.m_dfDepth = v;};
+  void   setPosition(std::string);
 
 protected:
   bool      m_paused;

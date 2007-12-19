@@ -304,9 +304,9 @@ void SSV_GUI::augmentMenu()
 
 //----------------------------------------------------------
 // Procedure: handle
-//      Note: As it stands, this method could be eliminated entirely, and the 
-//            default behavior of the parent class should work fine. But if
-//            we want to tinker with event handling, this method is the place.
+//    As it stands, this method could be eliminated entirely, and the 
+//    default behavior of the parent class should work fine. But if
+//    we want to tinker with event handling, this method is the place.
 
 int SSV_GUI::handle(int event) 
 {

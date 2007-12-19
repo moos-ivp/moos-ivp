@@ -171,6 +171,55 @@ IvPBox makeRand(const IvPBox& container_box)
 }
 
 //-------------------------------------------------------------
+// Procedure: stringToPointBox
+
+//    - Process a string of the form "x=10,y=20" and return an IvPBox
+//      with the corresponding extents. 
+//    - Also examine the given IvPDomain and ensure those variables 
+//      exist, and that domain.
+//    - Re-order the dimensions of the requested box to match the 
+//      domain.
+//  Example:
+//      IvPDomain: x:0:20:21, y:5:10:6
+//      String: "y=2, x=9" results in a pt box - dim0:9, dim1:2
+
+IvPBox stringToPointBox(const string& given_str, const IvPDomain& domain)
+{
+  IvPBox null_box(0);
+
+  int i, dim;
+  dim = domain.size();
+
+  vector<int> extents;
+
+  for(i=0; i<dim; i++) {
+    string varname = domain.getVarName(i);
+    string strval;
+    bool ok = tokParse(given_str, varname, ',', '=', strval);
+    strval = stripBlankEnds(strval);
+    if(!ok || !isNumber(strval))
+      return(null_box);
+
+    int extent = atoi(strval.c_str());
+    int varpts = domain.getVarPoints(i);
+    if(extent > varpts)
+      extent = varpts;
+    if(extent < 0)
+      extent = 0;
+    extents.push_back(extent);
+  }
+      
+  // All is good, so go ahead and create the IvP Box.
+  IvPBox ret_box(dim);
+  for(i=0; i<dim; i++) {
+    ret_box.pt(i,0) = extents[i] - 1;
+    ret_box.pt(i,1) = extents[i] - 1;
+  }
+  
+  return(ret_box);
+}
+
+//-------------------------------------------------------------
 // Procedure: makeRand
 //   Purpose: Create a point-box with values somewhere randomly
 //            inside the given domain.

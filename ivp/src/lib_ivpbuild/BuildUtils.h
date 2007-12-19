@@ -29,7 +29,8 @@
 
 IvPBox  genUnifBox(const IvPDomain&, int);
 IvPBox  makeRand(const IvPBox&); 
-IvPBox  makeRand(const IvPDomain&); 
+IvPBox  makeRand(const IvPDomain&);
+IvPBox  stringToPointBox(const std::string&, const IvPDomain&); 
 bool    containedWithinBox(const IvPBox&, const IvPBox&);
 bool    intersectDomain(const IvPDomain&, const IvPDomain&);
 

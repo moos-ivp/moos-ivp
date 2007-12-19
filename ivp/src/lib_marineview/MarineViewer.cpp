@@ -61,6 +61,8 @@ MarineViewer::MarineViewer(int x, int y, int w, int h, const char *l)
   m_tiff_offon  = true;
   m_hash_offon  = false;
   m_draw_vname  = false;
+  m_draw_datum  = false;
+  m_size_datum  = 3.0;
   m_global_ix   = 0;
 
   m_back_img_b_ok = false;
@@ -749,12 +751,47 @@ void MarineViewer::drawCircles()
 }
 
 //-------------------------------------------------------------
+// Procedure: drawDatum
+
+void MarineViewer::drawDatum()
+{
+  if(!m_draw_datum)
+    return;
+
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glOrtho(0, w(), 0, h(), -1 ,1);
+  
+  float tx = meters2img('x', 0);
+  float ty = meters2img('y', 0);
+  float qx = img2view('x', tx);
+  float qy = img2view('y', ty);
+
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
+  glLoadIdentity();
+  
+  glTranslatef(qx, qy, 0);
+  glScalef(m_zoom, m_zoom, m_zoom);
+
+  // Draw the vertices in between the first and last ones
+  glEnable(GL_POINT_SMOOTH);
+  glPointSize(m_size_datum * m_zoom);
+  glColor3f(0, 1, 0.3);
+  glBegin(GL_POINTS);
+  glVertex2f(0, 0);
+  glEnd();
+  glDisable(GL_POINT_SMOOTH);
+
+  glFlush();
+  glPopMatrix();
+}
+
+//-------------------------------------------------------------
 // Procedure: drawCircle
 
 void MarineViewer::drawCircle(int ix)
 {
-  FColorMap cmap;
-
   XYCircle dcircle = m_circ[ix];
   string dlabel = dcircle.getLabel();
   double rad = dcircle.getRad();
@@ -885,6 +922,16 @@ bool MarineViewer::setCommonParam(string param, string value)
     else
       return(false);
   }
+  else if(param == "display_datum") {
+    if(value == "toggle")
+      m_draw_datum = !m_draw_datum;
+    else if((value == "on") || (value == "true"))
+      m_draw_datum = true;
+    else if((value == "off") || (value == "false"))
+      m_draw_datum = false;
+    else
+      return(false);
+  }
   else if(param == "poly_view") {
     if(value == "toggle")
       m_poly_offon = !m_poly_offon;
@@ -956,6 +1003,11 @@ bool MarineViewer::setCommonParam(string param, float v)
   else if(param == "shape_scale") {
     if(m_shape_scale*v > 0.01)      
       m_shape_scale *= v;
+  }
+  else if(param == "datum_size") {
+    m_size_datum += v;
+    if(m_size_datum < 0)
+      m_size_datum = 0;
   }
   else if(param == "zoom") {
     if(m_zoom*v > 0.05)      

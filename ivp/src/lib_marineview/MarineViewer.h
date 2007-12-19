@@ -91,6 +91,7 @@ protected:
 		  float=0.00, float=0.00, float=0.00,   
 		  float=0.00, float=0.00, float=0.00);
 
+  void   drawDatum();
   void   drawHexagons();
   void   drawSegLists();
   void   drawSegList(int ix);
@@ -133,6 +134,8 @@ protected:
   bool       m_tiff_offon;
   bool       m_hash_offon;
   bool       m_draw_vname;
+  bool       m_draw_datum;
+  float      m_size_datum;
   int        m_global_ix;
 
   std::vector<XYCircle>  m_circ;

@@ -547,6 +547,9 @@ bool IvPBox::intersect(IvPBox *gbox, IvPBox *&rbox) const
 
 bool IvPBox::isPtBox() const
 {
+  if(m_dim <= 0)
+    return(false);
+
   for(int d=0; (d < m_dim); d++) {
     if(pt(d,0) != pt(d,1)) {
       if((pt(d,1)-pt(d,0)) != 1)

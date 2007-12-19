@@ -68,6 +68,9 @@ Fl_Menu_Item MarineGUI::menu_[] = {
  {"Toggle Hash",      'h', (Fl_Callback*)MarineGUI::cb_ToggleHash, (void*)-1, 0},
  {"Hash Lighter",     FL_CTRL+'h', (Fl_Callback*)MarineGUI::cb_HashShade,  (void*)+1, 0},
  {"Hash Darker",      FL_ALT +'h', (Fl_Callback*)MarineGUI::cb_HashShade,  (void*)-1, FL_MENU_DIVIDER},
+ {"Toggle Datum",        'd', (Fl_Callback*)MarineGUI::cb_ToggleDatum, (void*)0, 0},
+ {"Datum Bigger", FL_CTRL+'d', (Fl_Callback*)MarineGUI::cb_DatumSize,  (void*)+1, 0},
+ {"Datum Smaller", FL_ALT +'d', (Fl_Callback*)MarineGUI::cb_DatumSize,  (void*)-1, FL_MENU_DIVIDER},
  {"Hash 10",      FL_ALT+'1', (Fl_Callback*)MarineGUI::cb_HashDelta,  (void*)10,  FL_MENU_RADIO},
  {"Hash 50",      FL_ALT+'2', (Fl_Callback*)MarineGUI::cb_HashDelta,  (void*)50,  FL_MENU_RADIO},
  {"Hash 100",     FL_ALT+'3', (Fl_Callback*)MarineGUI::cb_HashDelta,  (void*)100, FL_MENU_RADIO|FL_MENU_VALUE},
@@ -209,6 +212,24 @@ inline void MarineGUI::cb_HashShade_i(int amt) {
 }
 void MarineGUI::cb_HashShade(Fl_Widget* o, int v) {
   ((MarineGUI*)(o->parent()->user_data()))->cb_HashShade_i(v);
+}
+
+//----------------------------------------- ToggleDatum
+inline void MarineGUI::cb_ToggleDatum_i() {
+  cmviewer->setParam("display_datum", "toggle");
+  cmviewer->redraw();
+}
+void MarineGUI::cb_ToggleDatum(Fl_Widget* o) {
+  ((MarineGUI*)(o->parent()->user_data()))->cb_ToggleDatum_i();
+}
+
+//----------------------------------------- DatumSize
+inline void MarineGUI::cb_DatumSize_i(int amt) {
+  cmviewer->setParam("datum_size", (float)(amt));
+  cmviewer->redraw();
+}
+void MarineGUI::cb_DatumSize(Fl_Widget* o, int v) {
+  ((MarineGUI*)(o->parent()->user_data()))->cb_DatumSize_i(v);
 }
 
 //----------------------------------------- HashDelta
