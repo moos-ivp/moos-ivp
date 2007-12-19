@@ -55,10 +55,10 @@ MarinePID::MarinePID()
   current_depth   = 0;
   current_pitch   = 0;
 
-  max_pitch    = 15;
-  max_rudder   = 13;
-  max_elevator = 13;
   max_thrust   = 100;
+  max_rudder   = 100;
+  max_pitch    = 15;
+  max_elevator = 13;
   iteration    = 0;
   start_time   = 0;
 
