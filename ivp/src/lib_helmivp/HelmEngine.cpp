@@ -46,12 +46,6 @@ HelmEngine::HelmEngine(IvPDomain g_ivp_domain)
 
 //------------------------------------------------------------------
 // Procedure: determineNextDecision()
-//      Note: An instance of IvPProblem is created on each iteration 
-//            of this loop. This object is allowed to persist as a
-//            member variable so that calls to getIMG can access the 
-//            objective functions of the problem for viewing if 
-//            desired. The instance is deleted just prior to the new
-//            instance creation each time.
 
 HelmReport HelmEngine::determineNextDecision(BehaviorSet *bhv_set, 
 					     double curr_time)

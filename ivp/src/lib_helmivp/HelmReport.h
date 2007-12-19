@@ -57,11 +57,12 @@ public:
 protected:
 
   std::vector<std::string>  m_messages;
-  int                       m_iteration;
-  int                       m_ofnum;
   std::string               m_nonidle_bhvs;
   std::string               m_active_bhvs;
   std::string               m_all_bhvs;
+
+  int                       m_iteration;
+  int                       m_ofnum;
   double                    m_create_time;
   double                    m_solve_time;
   double                    m_loop_time;

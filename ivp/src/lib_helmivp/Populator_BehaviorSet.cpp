@@ -70,7 +70,7 @@
 #include "BHV_SteadyHeading.h"
 #endif
 
-#if 0
+#if 1
 // COLREGS Behaviors
 #include "BHV_HeadOn14.h"
 #include "BHV_GiveWay16.h"
@@ -342,7 +342,7 @@ IvPBehavior* Populator_BehaviorSet::initializeBehavior(string bhv_name)
     bhv = new BHV_SteadyHeading(domain);
 #endif
   
-#if 0
+#if 1
   // COLREGS Behaviors --------------------------------
   else if(bhv_name == "BHV_HeadOn14")        
     bhv = new BHV_HeadOn14(domain);
