@@ -5,7 +5,6 @@
 /*****************************************************************/
 
 #include "TestEncode.h"
-#include "TestEncodeMK.h"
 #include "TestTemplate.h"
 #include "TestMap.h"
 #include "TestSet.h"
@@ -30,7 +29,6 @@ using namespace std;
 
 int main(int argc, char *argv[])
 { 
-  return(testEncodeMK(argc, argv));
   return(testMap(argc, argv));
 
   return(testUniformMap(argc, argv));
