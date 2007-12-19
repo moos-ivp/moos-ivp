@@ -86,58 +86,49 @@ bool BHV_Waypoint::setParam(string param, string val)
     bool ok = new_seglist.initialize(val);
     if(!ok)
       return(false);
-    if(!param_lock)
-      waypoint_engine.setSegList(new_seglist);
+    waypoint_engine.setSegList(new_seglist);
     return(true);
   }
   else if(param == "speed") {
     double dval = atof(val.c_str());
     if((dval <= 0) || (!isNumber(val)))
       return(false);
-    if(!param_lock) {
-      cruise_speed = dval;
-    }
+    cruise_speed = dval;
     return(true);
   }
   else if(param == "lead") {
     double dval = atof(val.c_str());
     if((dval < 0) || (!isNumber(val)))
       return(false);
-    if(!param_lock)
-      lead_distance = dval;
+    lead_distance = dval;
     return(true);
   }
   else if(param == "order") {
     if((val!="reverse") && (val!="reversed") && (val!="normal"))
       return(false);
-    if(!param_lock) {
-      bool reverse = ((val == "reverse") || (val == "reversed"));
-      waypoint_engine.setReverse(reverse);
-    }
+    bool reverse = ((val == "reverse") || (val == "reversed"));
+    waypoint_engine.setReverse(reverse);
     return(true);
   }
   else if(param == "repeat") {
     int ival = atoi(val.c_str());
     if((ival < 0) || (!isNumber(val)))
       return(false);
-    if(!param_lock)
-      waypoint_engine.setRepeat(ival);
+    waypoint_engine.setRepeat(ival);
     return(true);
   }
   else if(param == "radius") {
     double dval = atof(val.c_str());
     if(dval <= 0)
       return(false);
-    if(!param_lock)
-      waypoint_engine.setCaptureRadius(dval);
+    waypoint_engine.setCaptureRadius(dval);
     return(true);
   }
   else if(param == "nm_radius")  {
     double dval = atof(val.c_str());
     if(dval <= 0) 
       return(false);
-    if(!param_lock)
-      waypoint_engine.setNonmonotonicRadius(dval);
+    waypoint_engine.setNonmonotonicRadius(dval);
     return(true);
   }
   return(false);

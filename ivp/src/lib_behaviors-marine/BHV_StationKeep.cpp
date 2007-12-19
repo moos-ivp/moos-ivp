@@ -81,11 +81,9 @@ bool BHV_StationKeep::setParam(string param, string val)
   val = stripBlankEnds(val);
 
   if(param == "station_pt") {
-    if(!param_lock) {
-      m_center_assign  = val;
-      m_center_pending = true;
-      return(updateCenter());
-    }
+    m_center_assign  = val;
+    m_center_pending = true;
+    return(updateCenter());
     return(true);
   }
 
@@ -93,8 +91,7 @@ bool BHV_StationKeep::setParam(string param, string val)
     val = tolower(val);
     if((val!="true")&&(val!="false"))
       return(false);
-    if(!param_lock)
-      m_center_activate = (val == "true");
+    m_center_activate = (val == "true");
     return(true);
   }  
 
@@ -102,8 +99,7 @@ bool BHV_StationKeep::setParam(string param, string val)
     double dval = atof(val.c_str());
     if((dval <= 0) || (!isNumber(val)))
       return(false);
-    if(!param_lock)
-      m_outer_radius = dval;
+    m_outer_radius = dval;
     return(true);
   }
 
@@ -111,8 +107,7 @@ bool BHV_StationKeep::setParam(string param, string val)
     double dval = atof(val.c_str());
     if((dval <= 0) || (!isNumber(val)))
       return(false);
-    if(!param_lock)
-      m_inner_radius = dval;
+    m_inner_radius = dval;
     return(true);
   }
 
@@ -120,11 +115,9 @@ bool BHV_StationKeep::setParam(string param, string val)
     double dval = atof(val.c_str());
     if((dval <= 0) || (!isNumber(val)))
       return(false);
-    if(!param_lock) {
-      m_outer_speed = dval;
-      if(m_extra_speed < m_outer_speed)
-	m_extra_speed = m_outer_speed;
-    }
+    m_outer_speed = dval;
+    if(m_extra_speed < m_outer_speed)
+      m_extra_speed = m_outer_speed;
     return(true);
   }
 
@@ -132,8 +125,7 @@ bool BHV_StationKeep::setParam(string param, string val)
     double dval = atof(val.c_str());
     if((dval <= 0) || (!isNumber(val)))
       return(false);
-    if(!param_lock)
-      m_extra_speed = dval;
+    m_extra_speed = dval;
     return(true);
   }
   return(false);

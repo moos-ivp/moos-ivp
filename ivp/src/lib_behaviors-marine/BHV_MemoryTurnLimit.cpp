@@ -74,18 +74,14 @@ bool BHV_MemoryTurnLimit::setParam(string param, string val)
     double dval = atof(val.c_str());
     if((dval < 0) || (!isNumber(val)))
       return(false);
-    if(!param_lock) {
-      m_memory_time = dval;
-    }
+    m_memory_time = dval;
     return(true);
   }
   else if(param == "turn_range") {
     double dval = atof(val.c_str());
     if((dval < 0) || (dval > 180) || (!isNumber(val)))
       return(false);
-    if(!param_lock) {
-      m_turn_range = dval;
-    }
+    m_turn_range = dval;
     return(true);
   }
   return(false);

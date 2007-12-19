@@ -81,30 +81,25 @@ bool BHV_RStationKeep::setParam(string param, string val)
   val = stripBlankEnds(val);
 
   if(param == "rstation_position") {
-    if(!param_lock) {
-      m_center_assign  = val;
-      m_center_pending = true;
-      return(updateRCenter());
-    }
+    m_center_assign  = val;
+    m_center_pending = true;
+    return(updateRCenter());
     return(true);
   }
-
+  
   if((param == "them") || (param == "contact")) {
-    if(!param_lock) {
-      m_contact = toupper(val);
-      info_vars.push_back(m_contact+"_NAV_X");
-      info_vars.push_back(m_contact+"_NAV_Y");
-      info_vars.push_back(m_contact+"_NAV_SPEED");
-      info_vars.push_back(m_contact+"_NAV_HEADING");
-    }
+    m_contact = toupper(val);
+    info_vars.push_back(m_contact+"_NAV_X");
+    info_vars.push_back(m_contact+"_NAV_Y");
+    info_vars.push_back(m_contact+"_NAV_SPEED");
+    info_vars.push_back(m_contact+"_NAV_HEADING");
     return(true);
   }  
   else if(param == "center_activate") {
     val = tolower(val);
     if((val!="true")&&(val!="false"))
       return(false);
-    if(!param_lock)
-      m_center_activate = (val == "true");
+    m_center_activate = (val == "true");
     return(true);
   }  
 
@@ -112,8 +107,7 @@ bool BHV_RStationKeep::setParam(string param, string val)
     double dval = atof(val.c_str());
     if((dval <= 0) || (!isNumber(val)))
       return(false);
-    if(!param_lock)
-      m_outer_radius = dval;
+    m_outer_radius = dval;
     return(true);
   }
 
@@ -121,8 +115,7 @@ bool BHV_RStationKeep::setParam(string param, string val)
     double dval = atof(val.c_str());
     if((dval <= 0) || (!isNumber(val)))
       return(false);
-    if(!param_lock)
-      m_inner_radius = dval;
+    m_inner_radius = dval;
     return(true);
   }
 
@@ -130,11 +123,9 @@ bool BHV_RStationKeep::setParam(string param, string val)
     double dval = atof(val.c_str());
     if((dval <= 0) || (!isNumber(val)))
       return(false);
-    if(!param_lock) {
-      m_outer_speed = dval;
-      if(m_extra_speed < m_outer_speed)
-	m_extra_speed = m_outer_speed;
-    }
+    m_outer_speed = dval;
+    if(m_extra_speed < m_outer_speed)
+      m_extra_speed = m_outer_speed;
     return(true);
   }
 
@@ -142,8 +133,7 @@ bool BHV_RStationKeep::setParam(string param, string val)
     double dval = atof(val.c_str());
     if((dval <= 0) || (!isNumber(val)))
       return(false);
-    if(!param_lock)
-      m_extra_speed = dval;
+    m_extra_speed = dval;
     return(true);
   }
   return(false);

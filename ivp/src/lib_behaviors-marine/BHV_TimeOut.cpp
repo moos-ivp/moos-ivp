@@ -63,8 +63,7 @@ bool BHV_TimeOut::setParam(string param, string val)
     double dval = atof(val.c_str());
     if((dval < 0) || (!isNumber(val)))
       return(false);
-    if(!param_lock)
-      m_max_time = dval;
+    m_max_time = dval;
     return(true);
   }
   return(false);
@@ -84,8 +83,6 @@ IvPFunction *BHV_TimeOut::produceOF()
     emsg += "  Elapsed Time: ";
     emsg += doubleToString(m_elapsed_time);
     postEMessage(emsg);
-    if(!m_silent)
-      cout << emsg << endl; 
   }
 
   return(0);

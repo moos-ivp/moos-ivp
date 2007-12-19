@@ -66,8 +66,7 @@ bool BHV_ConstantSpeed::setParam(string param, string val)
     double dval = atof(val.c_str());
     if((dval < 0) || (!isNumber(val)))
       return(false);
-    if(!param_lock)
-      m_desired_speed = dval;
+    m_desired_speed = dval;
     return(true);
   }
 
@@ -75,8 +74,7 @@ bool BHV_ConstantSpeed::setParam(string param, string val)
     double dval = atof(val.c_str());
     if((dval < 0) || (!isNumber(val)))
       return(false);
-    if(!param_lock)
-      m_peakwidth = dval;
+    m_peakwidth = dval;
     return(true);
   }
   
@@ -84,8 +82,7 @@ bool BHV_ConstantSpeed::setParam(string param, string val)
     double dval = atof(val.c_str());
     if((dval < 0) || (!isNumber(val)))
       return(false);
-    if(!param_lock)
-      m_basewidth = dval;
+    m_basewidth = dval;
     return(true);
   }
   return(false);

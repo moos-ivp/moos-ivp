@@ -66,40 +66,35 @@ bool BHV_PeriodicSpeed::setParam(string g_param, string g_val)
     double dval = atof(g_val.c_str());
     if((dval <= 0) || (!isNumber(g_val)))
       return(false);
-    if(!param_lock)
-      m_period_gap = dval;
+    m_period_gap = dval;
     return(true);
   }  
   else if(g_param == "period_length") {
     double dval = atof(g_val.c_str());
     if((dval <= 0) || (!isNumber(g_val)))
       return(false);
-    if(!param_lock)
-      m_period_length = dval;
+    m_period_length = dval;
     return(true);
   }  
   else if(g_param == "period_speed") {
     double dval = atof(g_val.c_str());
     if((dval < 0) || (!isNumber(g_val)))
       return(false);
-    if(!param_lock)
-      m_period_speed = dval;
+    m_period_speed = dval;
     return(true);
   }  
   else if(g_param == "period_basewidth") {
     double dval = atof(g_val.c_str());
     if((dval < 0) || (!isNumber(g_val)))
       return(false);
-    if(!param_lock)
-      m_period_basewidth = dval;
+    m_period_basewidth = dval;
     return(true);
   }  
   else if(g_param == "period_peakwidth") {
     double dval = atof(g_val.c_str());
     if((dval < 0) || (!isNumber(g_val)))
       return(false);
-    if(!param_lock)
-      m_period_peakwidth = dval;
+    m_period_peakwidth = dval;
     return(true);
   }  
   else if(g_param == "period_flag") {

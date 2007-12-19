@@ -70,8 +70,7 @@ bool BHV_ConstantDepth::setParam(string param, string val)
     double dval = atof(val.c_str());
     if((dval < 0) || (!isNumber(val)))
       return(false);
-    if(!param_lock)
-      m_desired_depth = dval;
+    m_desired_depth = dval;
     return(true);
   }
 
@@ -79,8 +78,7 @@ bool BHV_ConstantDepth::setParam(string param, string val)
     double dval = atof(val.c_str());
     if((dval < 0) || (!isNumber(val)))
       return(false);
-    if(!param_lock)
-      m_peakwidth = dval;
+    m_peakwidth = dval;
     return(true);
   }
   
@@ -88,8 +86,7 @@ bool BHV_ConstantDepth::setParam(string param, string val)
     double dval = atof(val.c_str());
     if((dval < 0) || (!isNumber(val)))
       return(false);
-    if(!param_lock)
-      m_basewidth = dval;
+    m_basewidth = dval;
     return(true);
   }
 
@@ -101,6 +98,7 @@ bool BHV_ConstantDepth::setParam(string param, string val)
 
 bool BHV_ConstantDepth::handleConditionalParam(string param, string val)
 {
+#if 0
   ConditionalParam condi_param;
   condi_param.setFromString(param, val);
 
@@ -125,6 +123,7 @@ bool BHV_ConstantDepth::handleConditionalParam(string param, string val)
     return(false);
 
   condi_params.push_back(condi_param);
+#endif
   return(true);
 }
 

@@ -72,13 +72,11 @@ bool BHV_CutRange::setParam(string g_param, string g_val)
     return(true);
 
   if((g_param == "them") || (g_param == "contact")) {
-    if(!param_lock) {
-      m_them_name = toupper(g_val);
-      info_vars.push_back(m_them_name+"_NAV_X");
-      info_vars.push_back(m_them_name+"_NAV_Y");
-      info_vars.push_back(m_them_name+"_NAV_SPEED");
-      info_vars.push_back(m_them_name+"_NAV_HEADING");
-    }
+    m_them_name = toupper(g_val);
+    info_vars.push_back(m_them_name+"_NAV_X");
+    info_vars.push_back(m_them_name+"_NAV_Y");
+    info_vars.push_back(m_them_name+"_NAV_SPEED");
+    info_vars.push_back(m_them_name+"_NAV_HEADING");
     return(true);
   }  
   else if(g_param == "dist_priority_interval") {
@@ -93,10 +91,8 @@ bool BHV_CutRange::setParam(string g_param, string g_val)
     double dval2 = atof(svector[1].c_str());
     if((dval1 < 0) || (dval2 < 0) || (dval1 > dval2))
       return(false);
-    if(!param_lock) {
-      m_min_priority_range = dval1;
-      m_max_priority_range = dval2;
-    }
+    m_min_priority_range = dval1;
+    m_max_priority_range = dval2;
     return(true);
   }  
   else if(g_param == "cpa_utility_interval") {
@@ -111,34 +107,29 @@ bool BHV_CutRange::setParam(string g_param, string g_val)
     double dval2 = atof(svector[1].c_str());
     if((dval1 < 0) || (dval2 < 0) || (dval1 >= dval2))
       return(false);
-    if(!param_lock) {
-      m_max_util_cpa_dist = dval1;
-      m_min_util_cpa_dist = dval2;
-    }
+    m_max_util_cpa_dist = dval1;
+    m_min_util_cpa_dist = dval2;
     return(true);
   }  
   else if(g_param == "time_on_leg") {
     double dval = atof(g_val.c_str());
     if((dval < 0) || (!isNumber(g_val)))
       return(false);
-    if(!param_lock)
-      m_time_on_leg = dval;
+    m_time_on_leg = dval;
     return(true);
   }  
   else if(g_param == "giveup_range") {
     double dval = atof(g_val.c_str());
     if((dval < 0) || (!isNumber(g_val)))
       return(false);
-    if(!param_lock)
-      m_giveup_range = dval;
+    m_giveup_range = dval;
     return(true);
   }  
   else if(g_param == "patience") {
     double dval = atof(g_val.c_str());
     if((dval < 0) || (dval > 100) || (!isNumber(g_val)))
       return(false);
-    if(!param_lock)
-      m_patience = dval;
+    m_patience = dval;
     return(true);
   }  
   return(false);
@@ -226,17 +217,17 @@ IvPFunction *BHV_CutRange::produceOF()
 
   IvPFunction *of = reflector.extractOF();
 
-  if(!m_silent) {
-    cout << "CutRange Pre-Normalize MIN-WT: " << of->getPDMap()->getMinWT() << endl;
-    cout << "CutRange Pre-Normalize MAX-WT: " << of->getPDMap()->getMaxWT() << endl;
-  }
+#if 0
+  cout << "CutRange Pre-Normalize MIN-WT: " << of->getPDMap()->getMinWT() << endl;
+  cout << "CutRange Pre-Normalize MAX-WT: " << of->getPDMap()->getMaxWT() << endl;
+#endif
 
   of->getPDMap()->normalize(0.0, 100.0);
 
-  if(!m_silent) {
-    cout << "CutRange MIN-WT: " << of->getPDMap()->getMinWT() << endl;
-    cout << "CutRange MAX-WT: " << of->getPDMap()->getMaxWT() << endl;
-  }
+#if 0
+  cout << "CutRange MIN-WT: " << of->getPDMap()->getMinWT() << endl;
+  cout << "CutRange MAX-WT: " << of->getPDMap()->getMaxWT() << endl;
+#endif
 
   of->setPWT(relevance * priority_wt);
 
@@ -259,8 +250,6 @@ double BHV_CutRange::getRelevance(double osX, double osY,
   }
   
   double dist = hypot((osX - cnX), (osY - cnY));
-  if(!m_silent)
-    cout << "BHV_CutRange: Current Distance ------" << dist << endl;
 
   if((m_giveup_range > 0) && (dist > m_giveup_range))
     return(0);

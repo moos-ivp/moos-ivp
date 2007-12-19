@@ -79,33 +79,27 @@ bool BHV_Trail::setParam(string g_param, string g_val)
     return(true);
 
   if((g_param == "them") || (g_param == "contact")) {
-    if(!param_lock) {
-      m_contact = toupper(g_val);
-      info_vars.push_back(m_contact+"_NAV_X");
-      info_vars.push_back(m_contact+"_NAV_Y");
-      info_vars.push_back(m_contact+"_NAV_SPEED");
-      info_vars.push_back(m_contact+"_NAV_HEADING");
-    }
+    m_contact = toupper(g_val);
+    info_vars.push_back(m_contact+"_NAV_X");
+    info_vars.push_back(m_contact+"_NAV_Y");
+    info_vars.push_back(m_contact+"_NAV_SPEED");
+    info_vars.push_back(m_contact+"_NAV_HEADING");
     return(true);
   }  
   else if(g_param == "trail_range") {
-    if(!param_lock)
-      m_trail_range = atof(g_val.c_str());
+    m_trail_range = atof(g_val.c_str());
     return(true);
   }  
   else if(g_param == "trail_angle") {
-    if(!param_lock)
-      m_trail_angle = angle180(atof(g_val.c_str()));
+    m_trail_angle = angle180(atof(g_val.c_str()));
     return(true);
   }  
   else if(g_param == "radius") {
-    if(!param_lock)
-      m_radius = atof(g_val.c_str());
+    m_radius = atof(g_val.c_str());
     return(true);
   }  
   else if(g_param == "max_range") {
-    if(!param_lock)
-      m_max_range = atof(g_val.c_str());
+    m_max_range = atof(g_val.c_str());
     return(true);
   }  
   return(false);
@@ -193,11 +187,10 @@ IvPFunction *BHV_Trail::produceOF()
     ipf->setPWT(relevance * priority_wt);
   }
 
-  if(!m_silent) {
+#if 0
     postMessage("TRAIL_MIN_WT", ipf->getPDMap()->getMinWT());
     postMessage("TRAIL_MAX_WT", ipf->getPDMap()->getMaxWT());
-  }
-  
+#endif  
 
   return(ipf);
 }

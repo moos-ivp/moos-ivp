@@ -63,13 +63,11 @@ bool BHV_Shadow::setParam(string g_param, string g_val)
     return(true);
 
   if((g_param == "them") || (g_param == "contact")) {
-    if(!param_lock) {
-      m_them_name = toupper(g_val);
-      info_vars.push_back(m_them_name+"_NAV_X");
-      info_vars.push_back(m_them_name+"_NAV_Y");
-      info_vars.push_back(m_them_name+"_NAV_SPEED");
-      info_vars.push_back(m_them_name+"_NAV_HEADING");
-    }
+    m_them_name = toupper(g_val);
+    info_vars.push_back(m_them_name+"_NAV_X");
+    info_vars.push_back(m_them_name+"_NAV_Y");
+    info_vars.push_back(m_them_name+"_NAV_SPEED");
+    info_vars.push_back(m_them_name+"_NAV_HEADING");
     return(true);
   }  
   else if(g_param == "max_range") {
@@ -80,16 +78,14 @@ bool BHV_Shadow::setParam(string g_param, string g_val)
     double dval = atof(g_val.c_str());
     if((dval < 0) || (!isNumber(g_val)))
       return(false);
-    if(!param_lock)
-      m_hdg_peakwidth = dval;
+    m_hdg_peakwidth = dval;
     return(true);
   }
   if(g_param == "hdg_basewidth") {
     double dval = atof(g_val.c_str());
     if((dval < 0) || (!isNumber(g_val)))
       return(false);
-    if(!param_lock)
-      m_hdg_basewidth = dval;
+    m_hdg_basewidth = dval;
     return(true);
   }
 
@@ -97,16 +93,14 @@ bool BHV_Shadow::setParam(string g_param, string g_val)
     double dval = atof(g_val.c_str());
     if((dval < 0) || (!isNumber(g_val)))
       return(false);
-    if(!param_lock)
-      m_spd_peakwidth = dval;
+    m_spd_peakwidth = dval;
     return(true);
   }
   if(g_param == "spd_basewidth") {
     double dval = atof(g_val.c_str());
     if((dval < 0) || (!isNumber(g_val)))
       return(false);
-    if(!param_lock)
-      m_spd_basewidth = dval;
+    m_spd_basewidth = dval;
     return(true);
   }
 
@@ -160,10 +154,10 @@ IvPFunction *BHV_Shadow::produceOF()
   
   ipf->getPDMap()->normalize(0.0, 100.0);
   
-  if(!m_silent) {
+#if 0
     postMessage("SHADOW_MIN_WT", ipf->getPDMap()->getMinWT());
     postMessage("SHADOW_MAX_WT", ipf->getPDMap()->getMaxWT());
-  }
+#endif
 
   return(ipf);
 }

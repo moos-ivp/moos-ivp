@@ -89,31 +89,26 @@ bool BHV_PeriodicSurface::setParam(string g_param, string g_val)
     double dval = atof(g_val.c_str());
     if((dval <= 0) || (!isNumber(g_val)))
       return(false);
-    if(!param_lock)
-      m_period = dval;
+    m_period = dval;
     return(true);
   } 
   else if(g_param == "mark_variable") {
     if(g_val == "")
       return(false);
-    if(!param_lock) {
-      m_mark_variable = g_val;
-      info_vars.push_back(m_mark_variable);
-    }
+    m_mark_variable = g_val;
+    info_vars.push_back(m_mark_variable);
     return(true);
   }
   else if(g_param == "pending_status_var") {
     if(g_val == "")
       return(false);
-    if(!param_lock)
-      m_pending_status_var = g_val;
+    m_pending_status_var = g_val;
     return(true);
   }
   else if(g_param == "atsurface_status_var") {
     if(g_val == "")
       return(false);
-    if(!param_lock)
-      m_atsurface_status_var = g_val;
+    m_atsurface_status_var = g_val;
     return(true);
   }
   else if((g_param == "speed_to_surface") || 
@@ -130,24 +125,21 @@ bool BHV_PeriodicSurface::setParam(string g_param, string g_val)
       else
 	return(false);
     }
-    if(!param_lock)
-      m_ascent_speed = dval;
+    m_ascent_speed = dval;
     return(true);
   }
   else if(g_param == "zero_speed_depth") {
     double dval = atof(g_val.c_str());
     if((dval < 0) || (!isNumber(g_val)))
       return(false);
-    if(!param_lock)
-      m_zero_speed_depth = dval;
+    m_zero_speed_depth = dval;
     return(true);
   }
   else if(g_param == "max_time_at_surface") {
     double dval = atof(g_val.c_str());
     if((dval < 0) || (!isNumber(g_val)))
       return(false);
-    if(!param_lock)
-      m_max_time_at_surface = dval;
+    m_max_time_at_surface = dval;
     return(true);
   }
   else if(g_param == "ascent_grade") {
@@ -155,8 +147,7 @@ bool BHV_PeriodicSurface::setParam(string g_param, string g_val)
     if((g_val!="linear") && (g_val!="quadratic") && 
        (g_val!="quasi") && (g_val != "fullspeed"))
       return(false);
-    if(!param_lock)
-      m_ascent_grade = g_val;
+    m_ascent_grade = g_val;
     return(true);
   }
   

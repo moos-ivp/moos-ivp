@@ -112,51 +112,44 @@ bool BHV_OpRegion::setParam(string param, string val)
     bool ok = new_poly.initialize(val);
     if(!ok)  // Should be convex - false otherwise
       return(false);
-    if(!param_lock)
-      polygon = new_poly;
+    polygon = new_poly;
     return(true);
   }
   else if(param == "max_depth") {
     double dval = atof(val.c_str());
     if((dval < 0) || (!isNumber(val)))
       return(false);
-    if(!param_lock)
-      max_depth = dval;
+    max_depth = dval;
     return(true);
   }
   else if(param == "min_altitude") {
     double dval = atof(val.c_str());
     if((dval < 0) || (!isNumber(val)))
       return(false);
-    if(!param_lock)
-      min_altitude = dval;
+    min_altitude = dval;
     return(true);
   }
   else if(param == "max_time") {
     double dval = atof(val.c_str());
     if((dval < 0) || (!isNumber(val)))
       return(false);
-    if(!param_lock)
-      max_time = dval;
+    max_time = dval;
     return(true);
   }
   else if(param == "trigger_entry_time") {
     double dval = atof(val.c_str());
     if((dval < 0) || (!isNumber(val)))
       return(false);
-    if(!param_lock) {
-      trigger_entry_time = dval;
-      if(trigger_entry_time > 0)
-	trigger_on_poly_entry = true;
-    }
+    trigger_entry_time = dval;
+    if(trigger_entry_time > 0)
+      trigger_on_poly_entry = true;
     return(true);
   }
   else if(param == "trigger_exit_time") {
     double dval = atof(val.c_str());
     if((dval < 0) || (!isNumber(val)))
       return(false);
-    if(!param_lock)
-      trigger_exit_time = dval;
+    trigger_exit_time = dval;
     return(true);
   }
   return(false);
@@ -266,8 +259,6 @@ void BHV_OpRegion::polygonVerify()
   emsg += " x=" + doubleToString(osX);
   emsg += " y=" + doubleToString(osY);
   postEMessage(emsg);
-  if(!m_silent)
-    cout << emsg << endl;
 }
 
 //-----------------------------------------------------------
@@ -435,8 +426,6 @@ void BHV_OpRegion::altitudeVerify()
     emsg += "  Detected Altitude: ";
     emsg += doubleToString(curr_altitude);
     postEMessage(emsg);
-    if(!m_silent)
-      cout << emsg << endl; 
   }
 }
 
@@ -458,8 +447,6 @@ void BHV_OpRegion::timeoutVerify()
     emsg += "  Elapsed Time: ";
     emsg += doubleToString(elapsed_time);
     postEMessage(emsg);
-    if(!m_silent)
-      cout << emsg << endl; 
   }
 }
 

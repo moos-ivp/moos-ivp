@@ -105,8 +105,7 @@ bool BHV_GoToDepth::setParam(string param, string val)
     int ival = atoi(val.c_str());
     if((ival < 0) || (!isNumber(val)))
       return(false);
-    if(!param_lock)
-      m_repeat = ival;
+    m_repeat = ival;
     return(true);
   }
   else if((param == "arrival_delta") || 
@@ -114,14 +113,12 @@ bool BHV_GoToDepth::setParam(string param, string val)
     double dval = atof(val.c_str());
     if((dval < 0) || (!isNumber(val)))
       return(false);
-    if(!param_lock)
-      m_arrival_delta = dval;
+    m_arrival_delta = dval;
     return(true);
   }
   else if((param == "arrival_flag") ||
 	  (param == "capture_flag")) {
-    if(!param_lock)
-      m_arrival_flag = "GTD_" + val;
+    m_arrival_flag = "GTD_" + val;
     return(true);
   }
   return(false);

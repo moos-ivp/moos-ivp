@@ -65,24 +65,21 @@ bool BHV_ConstantHeading::setParam(string param, string val)
   if(param == "heading") {
     if(!isNumber(val))
       return(false);
-    if(!param_lock)
-      m_desired_heading = atof(val.c_str());
+    m_desired_heading = atof(val.c_str());
     return(true);
   }
   if(param == "peakwidth") {
     double dval = atof(val.c_str());
     if((dval < 0) || (!isNumber(val)))
       return(false);
-    if(!param_lock)
-      m_peakwidth = dval;
+    m_peakwidth = dval;
     return(true);
   }
   if(param == "basewidth") {
     double dval = atof(val.c_str());
     if((dval < 0) || (!isNumber(val)))
       return(false);
-    if(!param_lock)
-      m_basewidth = dval;
+    m_basewidth = dval;
     return(true);
   }
 
