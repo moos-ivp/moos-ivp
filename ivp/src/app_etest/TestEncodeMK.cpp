@@ -14,6 +14,7 @@
 #include "AOF_Rings.h"
 #include "MBTimer.h"
 #include "FunctionEncoder.h"
+#include "FunctionEncoderMK.h"
 
 using namespace std;
 
@@ -88,7 +89,9 @@ int testEncodeMK(int argc, char*argv[])
   string ipf_str;
   if(alg == "mb")
     ipf_str = IvPFunctionToString(ipf);
-  else
+  else if(alg == "mk")
+    ipf_str = IvPFunctionToStringMK(ipf);
+  else 
     ipf_str = IvPFunctionToString(ipf);
 
 
@@ -108,7 +111,9 @@ int testEncodeMK(int argc, char*argv[])
   while(!done) {
     if(alg == "mb")
       ipf_str = IvPFunctionToString(ipf);
-    else
+    else if(alg == "mk")
+      ipf_str = IvPFunctionToStringMK(ipf);
+    else 
       ipf_str = IvPFunctionToString(ipf);
     counter ++;
     if((counter % 5) == 0)
@@ -134,7 +139,13 @@ int testEncodeMK(int argc, char*argv[])
   counter = 0;
   done = false;
   while(!done) {
-    IvPFunction *new_of = StringToIvPFunction(ipf_str);
+    IvPFunction *new_of = 0;
+    if(alg == "mb")
+      new_of = StringToIvPFunction(ipf_str);
+    else if(alg == "mk")
+      new_of = StringToIvPFunctionMK(ipf_str);
+    else 
+      new_of = StringToIvPFunction(ipf_str);
     if(new_of)
       delete(new_of);
     counter++;
@@ -151,8 +162,19 @@ int testEncodeMK(int argc, char*argv[])
 
   // Experiment Compare ---------------------------------
 
-  IvPFunction *new_of  = StringToIvPFunction(ipf_str);
-  string new_str = IvPFunctionToString(new_of);
+  IvPFunction *new_of;
+  string new_str;
+
+  if(alg == "mb") {
+    new_of  = StringToIvPFunction(ipf_str);
+    new_str = IvPFunctionToString(new_of);
+  } else if(alg == "mk") {
+    new_of  = StringToIvPFunctionMK(ipf_str);
+    new_str = IvPFunctionToStringMK(new_of);
+  } else  {
+    new_of  = StringToIvPFunction(ipf_str);
+    new_str = IvPFunctionToString(new_of);
+  }
 
   if(new_str == ipf_str) 
     cout << "The two strings are equivalent!" << endl;
@@ -162,6 +184,8 @@ int testEncodeMK(int argc, char*argv[])
     int len2 = new_str.length();
     cout << "Len1 : " << len1 << endl;
     cout << "Len2 : " << len2 << endl;
+    cout << "ipf_str: " << ipf_str << endl;
+    cout << "new_str: " << new_str << endl;
   }
 
   if((ipf_str.length() < 500) & !quiet) {
