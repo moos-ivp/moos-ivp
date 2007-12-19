@@ -53,7 +53,6 @@ HelmIvP::HelmIvP()
   ylog_flag     = true;
   verbose       = "terse";
   iteration     = 0;
-  simulate      = false;
   ok_skew       = 360; 
   skews_matter  = true;
 }
@@ -506,10 +505,6 @@ bool HelmIvP::OnStartUp()
     MOOSTrace("Simulation flag not provided\n");
     //return(false);
   }
-  if(MOOSStrCmp(simulator, "true")){
-    simulate = true;
-  }
-  
   vector<string> must_bhvs;
   must_bhvs.push_back("BHV_OpRegion");
 

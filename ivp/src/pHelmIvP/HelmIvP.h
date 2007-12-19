@@ -59,7 +59,6 @@ protected:
   InfoBuffer*   info_buffer;
   bool          has_control;
   bool          allow_overide;
-  bool          simulate;
   IvPDomain     ivp_domain;
   BehaviorSet*  bhv_set;
   bool          ylog_flag;
