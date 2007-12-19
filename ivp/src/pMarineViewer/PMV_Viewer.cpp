@@ -59,6 +59,8 @@ void PMV_Viewer::draw()
   drawPolys();
   drawSegLists();
   drawCircles();
+  drawDatum();
+
 
   // Next draw the vehicle shapes. If the vehicle index is the 
   // one "active", draw it in a different color.
