@@ -64,13 +64,11 @@ bool BHV_HeadOn14::setParam(string g_param, string g_val)
     return(true);
 
   if(g_param == "contact") {
-    if(!param_lock) {
-      m_contact = toupper(g_val);
-      info_vars.push_back(m_contact + "_NAV_X");
-      info_vars.push_back(m_contact + "_NAV_Y");
-      info_vars.push_back(m_contact + "_NAV_SPEED");
-      info_vars.push_back(m_contact + "_NAV_HEADING");
-    }
+    m_contact = toupper(g_val);
+    info_vars.push_back(m_contact + "_NAV_X");
+    info_vars.push_back(m_contact + "_NAV_Y");
+    info_vars.push_back(m_contact + "_NAV_SPEED");
+    info_vars.push_back(m_contact + "_NAV_HEADING");
     return(true);
   }  
 
@@ -79,38 +77,32 @@ bool BHV_HeadOn14::setParam(string g_param, string g_val)
     double dval = atof(g_val.c_str());
     if((dval < 0) || (!isNumber(g_val)))
       return(false);
-    if(!param_lock) {
-      m_active_outer_dist = dval;
-      if(m_active_inner_dist > m_active_outer_dist)
-	m_active_inner_dist = m_active_outer_dist;
-    }
+    m_active_outer_dist = dval;
+    if(m_active_inner_dist > m_active_outer_dist)
+      m_active_inner_dist = m_active_outer_dist;
     return(true);
   }  
   else if(g_param == "active_inner_distance") {
     double dval = atof(g_val.c_str());
     if((dval < 0) || (!isNumber(g_val)))
       return(false);
-    if(!param_lock) {
-      m_active_inner_dist = dval;
-      if(m_active_outer_dist < m_active_inner_dist)
-	m_active_outer_dist = m_active_inner_dist;
-    }
+    m_active_inner_dist = dval;
+    if(m_active_outer_dist < m_active_inner_dist)
+      m_active_outer_dist = m_active_inner_dist;
     return(true);
   }  
   else if(g_param == "collision_distance") {
     double dval = atof(g_val.c_str());
     if((dval < 0) || (!isNumber(g_val)))
       return(false);
-    if(!param_lock)
-      m_collision_dist = dval;
+    m_collision_dist = dval;
     return(true);
   }  
   else if(g_param == "all_clear_distance") {
     double dval = atof(g_val.c_str());
     if((dval < 0) || (!isNumber(g_val)))
       return(false);
-    if(!param_lock)
-      m_all_clear_dist = dval;
+    m_all_clear_dist = dval;
     return(true);
   }  
   else if(g_param == "active_grade") {
@@ -118,31 +110,25 @@ bool BHV_HeadOn14::setParam(string g_param, string g_val)
     if((g_val!="linear") && (g_val!="quadratic") && 
        (g_val!="quasi"))
       return(false);
-    if(!param_lock)
-      m_active_grade = g_val;
-    return(true);
+    m_active_grade = g_val;
     return(true);
   }  
   else if(g_param == "roc_max_heighten") {
     double dval = atof(g_val.c_str());
     if((dval < 0) || (!isNumber(g_val)))
       return(false);
-    if(!param_lock) {
-      m_roc_max_heighten = dval;
-      if(m_roc_max_dampen > m_roc_max_heighten)
-	m_roc_max_dampen = m_roc_max_heighten;
-    }
+    m_roc_max_heighten = dval;
+    if(m_roc_max_dampen > m_roc_max_heighten)
+      m_roc_max_dampen = m_roc_max_heighten;
     return(true);
   }  
   else if(g_param == "roc_max_dampen") {
     double dval = atof(g_val.c_str());
     if((dval < 0) || (!isNumber(g_val)))
       return(false);
-    if(!param_lock) {
-      m_roc_max_dampen = dval;
-      if(m_roc_max_heighten < m_roc_max_heighten)
-	m_roc_max_heighten = m_roc_max_dampen;
-    }
+    m_roc_max_dampen = dval;
+    if(m_roc_max_heighten < m_roc_max_heighten)
+      m_roc_max_heighten = m_roc_max_dampen;
     return(true);
   }  
   else if(g_param == "on_no_contact_ok") {
@@ -180,8 +166,10 @@ IvPFunction *BHV_HeadOn14::produceOF()
 
   double relevance = getRelevance();
 
-  if(!m_silent)
-    cout << "BHV_HeadOn14::produceOF(): relevance: " << relevance << endl;
+#if 0
+  cout << "BHV_HeadOn14::produceOF(): relevance: " << relevance << endl;
+#endif
+
   if(relevance == 0)
     return(0);
 

@@ -52,13 +52,11 @@ bool BHV_StandOn17::setParam(string g_param, string g_val)
     return(true);
 
   if((g_param == "them") || (g_param == "contact")) {
-    if(!param_lock) {
-      them_name = toupper(g_val);
-      info_vars.push_back(them_name+"_NAV_X");
-      info_vars.push_back(them_name+"_NAV_Y");
-      info_vars.push_back(them_name+"_NAV_SPEED");
-      info_vars.push_back(them_name+"_NAV_HEADING");
-    }
+    them_name = toupper(g_val);
+    info_vars.push_back(them_name+"_NAV_X");
+    info_vars.push_back(them_name+"_NAV_Y");
+    info_vars.push_back(them_name+"_NAV_SPEED");
+    info_vars.push_back(them_name+"_NAV_HEADING");
     return(true);
   }  
   else if(g_param == "range") {
