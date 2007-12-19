@@ -58,8 +58,8 @@ public:
   IvPBehavior(IvPDomain);
   virtual ~IvPBehavior();
 
-  virtual IvPFunction* produceOF() = 0;
-  virtual bool setParam(std::string, std::string) = 0;
+  virtual IvPFunction* produceOF() {return(0);};
+  virtual bool setParam(std::string, std::string);
   virtual bool preCheck();
   virtual void onIdleState() {};
 

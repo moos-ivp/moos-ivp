@@ -85,6 +85,14 @@ IvPBehavior::~IvPBehavior()
 }
   
 //-----------------------------------------------------------
+// Procedure: setParam
+
+bool IvPBehavior::setParam(string g_param, string g_val) 
+{
+  return(setParamCommon(g_param, g_val));
+}
+
+//-----------------------------------------------------------
 // Procedure: setParamCommon
 
 bool IvPBehavior::setParamCommon(string g_param, string g_val) 
