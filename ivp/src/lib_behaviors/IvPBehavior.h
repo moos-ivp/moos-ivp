@@ -65,16 +65,11 @@ public:
 
   bool   setParamCommon(std::string, std::string);
   void   setInfoBuffer(const InfoBuffer*);
-  bool   checkConditions();
-  bool   durationExceeded();
-  bool   checkNoStarve();
   void   checkForUpdates();
   double getPriority()                   {return(priority_wt);};
   void   postRunFlags()                  {postFlags(run_flags);};
   void   postEndFlags()                  {postFlags(end_flags);};
   void   postIdleFlags()                 {postFlags(idle_flags);};
-
-  void   printCommon();
 
   std::vector<std::string> getInfoVars();
   std::vector<std::string> getConditionVars();
@@ -83,11 +78,8 @@ public:
   void   clearMessages()                 {messages.clear();};
   bool   stateOK()                       {return(m_state_ok);};
   void   resetStateOK()                  {m_state_ok=true;};
-  bool   okLogIPF()                      {return(m_log_ipf);};
 
 protected:
-  IvPBox* processBox(const std::string&);
-  IvPBox* safeProcessBox(const std::string&);
   void    setComplete();
   void    postMessage(std::string, double);
   void    postMessage(std::string, std::string);
@@ -95,6 +87,10 @@ protected:
   void    postWMessage(std::string);
   void    postPCMessage(std::string);
   void    postFlags(const std::vector<VarDataPair>&);
+
+  bool    durationExceeded();
+  bool    checkConditions();
+  bool    checkNoStarve();
 
 protected:
   const InfoBuffer* info_buffer;
@@ -115,9 +111,6 @@ protected:
   double      priority_wt;   // ALL behaviors utilize
   IvPBox*     unif_box;      // MOST behaviors utilize
   IvPBox*     grid_box;      // MOST behaviors utilize
-  bool        m_silent;
-  bool        param_lock;
-  bool        m_log_ipf;
 
   // Variables for providing behaviors w/ "udate" capability
   std::string m_update_var;
@@ -125,7 +118,6 @@ protected:
   int         m_good_updates;
   int         m_bad_updates;
   double      m_last_update_age;
-
 
   // variables for providing behaviors w/ "duration" capability
   double      m_duration;

@@ -100,7 +100,7 @@ IvPFunction* BehaviorSet::produceOF(int ix, int iteration, bool& idle)
 	delete(ipf);
 	return(0);
       }
-      if(ipf && report_ipf && (behaviors[ix]->okLogIPF())) {
+      if(ipf && report_ipf) {
 	string desc_str = behaviors[ix]->getDescriptor();
 	string iter_str = intToString(iteration);
 	string ctxt_str = iter_str + ":" + desc_str;
@@ -216,7 +216,23 @@ void BehaviorSet::print()
   cout << "BehaviorSet::print() " << endl;
   for(int i=0; i<behaviors.size(); i++) {
     cout << "Behavior[" << i << "]: " << endl;
-    behaviors[i]->printCommon();
+    
+
+    cout << "Behavior descriptor: " << behaviors[i]->descriptor << endl;
+    cout << " priority weight: " << behaviors[i]->priority_wt << endl;
+    if(behaviors[i]->unif_box) {
+      cout << " UniformBox: " << endl;
+      behaviors[i]->unif_box->print();
+    }
+    else
+      cout << " UniformBox: NULL" << endl;
+    if(behaviors[i]->grid_box) {
+      cout << " GridBox: " << endl;
+      behaviors[i]->grid_box->print();
+    }
+    else
+      cout << " GridBox: NULL" << endl;
+
     cout << "-------" << endl;
   }
 }

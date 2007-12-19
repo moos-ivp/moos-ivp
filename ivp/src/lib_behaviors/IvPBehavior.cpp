@@ -42,11 +42,10 @@
 #pragma warning(disable : 4503)
 #endif
 
-#include <iostream> 
 #include <vector>
-#include <assert.h>
 #include "IvPBehavior.h"
 #include "MBUtils.h"
+#include "BuildUtils.h"
 
 using namespace std;
 
@@ -61,17 +60,14 @@ IvPBehavior::IvPBehavior(IvPDomain g_domain)
   descriptor        = "???";  // Default descriptor
   grid_box          = 0;
   unif_box          = 0;
-  m_silent          = true;
   m_state_ok        = true;
   m_started         =  false;
   m_start_time      = -1;
   m_last_update_age = -1;
   m_duration        = -1;
   m_completed       = false;
-  param_lock        = false;
   m_good_updates    = 0;
   m_bad_updates     = 0;
-  m_log_ipf         = true;   // Will log if the helm is logging
   m_perpetual       = false;
 }
   
@@ -106,25 +102,15 @@ bool IvPBehavior::setParamCommon(string g_param, string g_val)
     g_param = g_param.c_str()+1;
 
   if(g_param == "us") { 
-    if(!param_lock)
-      us_name = g_val;
+    us_name = g_val;
     return(true);
   }
   else if((g_param == "name") || (g_param == "descriptor")) {
-    if(!param_lock)
-      descriptor = g_val;
+    descriptor = g_val;
     return(true);
   }
   else if(g_param == "duration_status") {
-    if(!param_lock)
-      duration_status = g_val;
-    return(true);
-  }
-  else if(g_param == "silent") {
-    if((g_val!="true") && (g_val!="false"))
-      return(false);
-    if(!param_lock)
-      m_silent = (g_val == "true");
+    duration_status = g_val;
     return(true);
   }
   else if((g_param == "pwt") || 
@@ -133,25 +119,23 @@ bool IvPBehavior::setParamCommon(string g_param, string g_val)
     double pwt = atof(g_val.c_str());
     if((pwt < 0) || (!isNumber(g_val)))
       return(false);
-    if(!param_lock)
-      priority_wt = pwt;
+    priority_wt = pwt;
     return(true);
   }
   else if(g_param == "gridbox") {  // Alt way of setting gridbox
     if(g_val == "default")
       return(grid_box != 0);
 
-    IvPBox *new_box = safeProcessBox(g_val);
-    if(!new_box)
+    IvPBox ptbox = stringToPointBox(g_val, domain);
+    if(!ptbox.isPtBox())
       return(false);
 
-    if(!param_lock) {
-      if(grid_box)
-	delete(grid_box);
-      grid_box = new_box;
-      if(unif_box == 0)               // grid_box makes a good
-	unif_box = grid_box->copy();  // default unif_box too!
-    }
+    IvPBox *new_box = ptbox.copy(); 
+    if(grid_box)
+      delete(grid_box);
+    grid_box = new_box;
+    if(unif_box == 0)               // grid_box makes a good
+      unif_box = grid_box->copy();  // default unif_box too!
     else
       delete(new_box);
     return(true);
@@ -160,17 +144,16 @@ bool IvPBehavior::setParamCommon(string g_param, string g_val)
     if(g_val == "default")
       return(unif_box != 0);
 
-    IvPBox *new_box = safeProcessBox(g_val);
-    if(!new_box)
+    IvPBox ptbox = stringToPointBox(g_val, domain);
+    if(!ptbox.isPtBox())
       return(false);
 
-    if(!param_lock) {
-      if(unif_box)
-	delete(unif_box);
-      unif_box = new_box;
-      if(grid_box == 0)               // unif_box makes a good
-	grid_box = unif_box->copy();  // default grid_box too!
-    }
+    IvPBox *new_box = ptbox.copy();
+    if(unif_box)
+      delete(unif_box);
+    unif_box = new_box;
+    if(grid_box == 0)               // unif_box makes a good
+      grid_box = unif_box->copy();  // default grid_box too!
     else
       delete(new_box);
     return(true);
@@ -180,12 +163,10 @@ bool IvPBehavior::setParamCommon(string g_param, string g_val)
     g_val = findReplace(g_val, ',', '=');
     g_val = findReplace(g_val, "==", "=");
     bool ok = true;
-    if(!param_lock) {
-      LogicCondition new_condition;
-      ok = new_condition.setCondition(g_val);
-      if(ok)
-	logic_conditions.push_back(new_condition);
-    }
+    LogicCondition new_condition;
+    ok = new_condition.setCondition(g_val);
+    if(ok)
+      logic_conditions.push_back(new_condition);
     return(ok);
   }
 
@@ -194,12 +175,10 @@ bool IvPBehavior::setParamCommon(string g_param, string g_val)
     vector<string> svector = parseString(g_val, '=');
     if(svector.size() != 2)
       return(false);
-    if(!param_lock) {
-      string var = stripBlankEnds(svector[0]);
-      string val = stripBlankEnds(svector[1]);
-      VarDataPair pair(var, val, "auto");
-      run_flags.push_back(pair);
-    }
+    string var = stripBlankEnds(svector[0]);
+    string val = stripBlankEnds(svector[1]);
+    VarDataPair pair(var, val, "auto");
+    run_flags.push_back(pair);
     return(true);
   }
   else if(g_param == "idleflag") {
@@ -207,12 +186,10 @@ bool IvPBehavior::setParamCommon(string g_param, string g_val)
     vector<string> svector = parseString(g_val, '=');
     if(svector.size() != 2)
       return(false);
-    if(!param_lock) {
-      string var = stripBlankEnds(svector[0]);
-      string val = stripBlankEnds(svector[1]);
-      VarDataPair pair(var, val, "auto");
-      idle_flags.push_back(pair);
-    }
+    string var = stripBlankEnds(svector[0]);
+    string val = stripBlankEnds(svector[1]);
+    VarDataPair pair(var, val, "auto");
+    idle_flags.push_back(pair);
     return(true);
   }
   else if(g_param == "endflag") {
@@ -220,12 +197,10 @@ bool IvPBehavior::setParamCommon(string g_param, string g_val)
     vector<string> svector = parseString(g_val, '=');
     if(svector.size() != 2)
       return(false);
-    if(!param_lock) {
-      string var = stripBlankEnds(svector[0]);
-      string val = stripBlankEnds(svector[1]);
-      VarDataPair pair(var, val, "auto");
-      end_flags.push_back(pair);
-    }
+    string var = stripBlankEnds(svector[0]);
+    string val = stripBlankEnds(svector[1]);
+    VarDataPair pair(var, val, "auto");
+    end_flags.push_back(pair);
     return(true);
   }
   else if(g_param == "nostarve") {
@@ -238,23 +213,19 @@ bool IvPBehavior::setParamCommon(string g_param, string g_val)
     if(stime <= 0)
       return(false);
 
-    if(!param_lock) {
-      for(int i=0; i<vsize-1; i++) {
-	string var = stripBlankEnds(svector[i]);
-	starve_vars[var] = stime;
-      }
+    for(int i=0; i<vsize-1; i++) {
+      string var = stripBlankEnds(svector[i]);
+      starve_vars[var] = stime;
     }
     return(true);
   }
 
   else if(g_param == "perpetual")  {
-    if(!param_lock) {
-      string modval = tolower(g_val);
-      m_perpetual = (modval == "true");
-    }
+    string modval = tolower(g_val);
+    m_perpetual = (modval == "true");
     return(true);
   }
-
+  
   // Accept duration parameter (in seconds)
   else if(g_param == "duration") {
     double dval = atof(g_val.c_str());
@@ -262,37 +233,23 @@ bool IvPBehavior::setParamCommon(string g_param, string g_val)
       if((g_val != "no-time-limit") && (g_val != "-1"))
 	return(false);
     
-    if(!param_lock) {
-      if((g_val == "no-time-limit") || (g_val == "-1"))
-	m_duration = -1;
-      else
-	m_duration = dval;
-    }
+    if((g_val == "no-time-limit") || (g_val == "-1"))
+      m_duration = -1;
+    else
+      m_duration = dval;
     return(true);
   }
 
   else if(g_param == "updates") {
-    if(!param_lock) {
-      m_update_var = g_val;
-      if(m_update_var != "")
-	info_vars.push_back(g_val);
-    }
+    m_update_var = g_val;
+    if(m_update_var != "")
+      info_vars.push_back(g_val);
     return(true);
   }
   
-  else if(g_param == "log_ipf") {
-    if(!param_lock) {
-      string mod_val = tolower(g_val);
-      m_log_ipf = (mod_val == "true");
-    }
-    return(true);
-  }
-
   else if(g_param == "precision") {
     if((g_val != "high") && (g_val != "normal") && (g_val != "low"))
       return(false);
-    if(param_lock)
-      return(true);
     if((g_val == "high") && (unif_box)) {
       int dim = unif_box->getDim();
       for(int d=0; d<dim; d++) {
@@ -550,45 +507,34 @@ void IvPBehavior::checkForUpdates()
   new_update_str  = info_buffer->sQuery(m_update_var, ok);
   new_update_str  = stripBlankEnds(new_update_str);
   curr_update_age = info_buffer->tQuery(m_update_var);
-
+  
   bool fresh = false;
   if((curr_update_age < m_last_update_age) || (m_last_update_age == -1))
     fresh = true;
-
+  
   if((fresh) && (new_update_str != "") && 
      (new_update_str != m_curr_update_str)) {
     
     vector<string> uvector = parseString(new_update_str, '#');
     int usize = uvector.size();
-
-    ok         = true;
-    param_lock = true;
+    
+    ok = true;
     for(i=0; i<usize; i++) {
       string an_update_str = uvector[i];
       vector<string> pvector = chompString(an_update_str, '=');
-      ok = ok && (pvector.size() == 2);
-      if(ok) {
+      if(pvector.size() == 2) {
 	string param = stripBlankEnds(pvector[0]);
 	string value = stripBlankEnds(pvector[1]);
-	ok = ok && setParam(param, value);
+	bool  result = setParam(param, value);
+	ok = ok && result;
       }
+      else 
+	ok = false;
     }
-    param_lock = false;
-
-    if(ok) {
-      for(i=0; i<usize; i++) {
-	string an_update_str = uvector[i];
-	vector<string> pvector = chompString(an_update_str, '=');
-	string param = stripBlankEnds(pvector[0]);
-	string value = stripBlankEnds(pvector[1]);
-	setParam(param, value);
-      }
-
-    }
-
+    
     if(!ok) {
       m_bad_updates++;
-      string wmsg = "Faulty Behavior (" + descriptor + ") Update - IGNORED!";
+      string wmsg = "Faulty Behavior (" + descriptor + ") Update - INCOMPLETE!";
       postMessage("BHV_WARNING", wmsg);
     }
     else {
@@ -654,125 +600,6 @@ void IvPBehavior::postFlags(const vector<VarDataPair>& flags)
       postMessage(var, ddata);
   }    
 }
-
-//-----------------------------------------------------------
-// Procedure: printCommon
-
-void IvPBehavior::printCommon()
-{
-  cout << "Behavior descriptor: " << descriptor << endl;
-  cout << " priority weight: " << priority_wt << endl;
-  if(unif_box) {
-    cout << " UniformBox: " << endl;
-    unif_box->print();
-  }
-  else
-    cout << " UniformBox: NULL" << endl;
-  if(grid_box) {
-    cout << " GridBox: " << endl;
-    grid_box->print();
-  }
-  else
-    cout << " GridBox: NULL" << endl;
-}
-
-
-//--------------------------------------------------------------
-// Procedure: processBox
-//   Purpose: Process a string of the form "int-int-int" and return
-//            a box with corresponding extents. For example a 
-//            string "12-40-8" would return a 3D box with the 
-//            dim0: 0-11, dim2: 0-39, dim3: 0-7.
-
-IvPBox* IvPBehavior::processBox(const string& given_str)
-{
-  string mod_str = stripBlankEnds(given_str);
-
-  mod_str = compactConsecutive(mod_str, ' ');
-  mod_str = findReplace(mod_str, '-', ',');
-  mod_str = findReplace(mod_str, ' ', ',');
-  mod_str = findReplace(mod_str, ':', ',');
-
-  vector<string> svector = parseString(mod_str, ',');
-  int i, dim = svector.size();
-  if(dim == 0)
-    return(0);
-
-  // Convert into integer form and store in temporary vector.
-  vector<int> extents;
-  for(i=0; i<dim; i++)
-    extents.push_back(atoi(svector[i].c_str()));
-    
-  // Make sure the extents have at least unit length
-  for(i=0; i<dim; i++)
-    if(extents[i] <= 0)
-      return(0);
-
-  // All is good, so go ahead and create the IvP Box.
-  IvPBox *ret_box = new IvPBox(dim);
-  for(i=0; i<dim; i++) {
-    ret_box->pt(i,0) = 0;
-    ret_box->pt(i,1) = extents[i] - 1;
-  }
-
-  return(ret_box);
-}
-
-//--------------------------------------------------------------
-// Procedure: processBox
-//   Purpose: Process a string of the form "int-int-int" and return
-//            a box with corresponding extents. For example a 
-//            string "12-40-8" would return a 3D box with the 
-//            dim0: 0-11, dim2: 0-39, dim3: 0-7.
-
-IvPBox* IvPBehavior::safeProcessBox(const string& given_str)
-{
-  string mod_str = findReplace(given_str, " ", "");
-
-  vector<string> dvector = parseString(mod_str, ',');
-  int i, dim = dvector.size();
-  if(dim == 0) 
-    return(0);
-
-  vector<int> extents;
-
-  for(i=0; i<dim; i++) {
-    vector<string> evector = parseString(dvector[i], '=');
-    // entry must be a pair, e.g., "course,360"
-    if(evector.size() != 2)
-      return(0);
-
-    // Check that domain name is known by the IvPBehavior domain
-    string dname = evector[0];
-    if(!domain.hasDomain(dname))
-      return(0);
-
-    // Clip the extents if greater than the domain
-    extents.push_back(atoi(evector[1].c_str()));
-    int index   = domain.getIndex(dname);
-    int dpoints = domain.getVarPoints(index);
-    if(extents[i] > dpoints)
-      extents[i] = dpoints;
-    
-    // Ensure that the extent is at least unit length
-    if(extents[i] <= 0)
-      return(0);
-  }
-
-  // All is good, so go ahead and create the IvP Box.
-  IvPBox *ret_box = new IvPBox(dim);
-  for(i=0; i<dim; i++) {
-    ret_box->pt(i,0) = 0;
-    ret_box->pt(i,1) = extents[i] - 1;
-  }
-
-  return(ret_box);
-}
-
-
-
-
-
 
 
 
