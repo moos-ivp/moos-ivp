@@ -75,11 +75,8 @@ bool BHV_TwoD::setParam(string param, string val)
   if(param == "heading") {
     if(!isNumber(val))
       return(false);
-    if(!param_lock)
-      {
-      desired_heading = atof(val.c_str());
-      initialize(desired_heading);
-      }
+    desired_heading = atof(val.c_str());
+    initialize(desired_heading);
     return(true);
   }
 
@@ -87,10 +84,7 @@ bool BHV_TwoD::setParam(string param, string val)
   if(param == "period") {
     if(!isNumber(val))
       return(false);
-    if(!param_lock)
-      {
-      period = atof(val.c_str());
-      }
+    period = atof(val.c_str());
     return(true);
   }
 
@@ -98,10 +92,7 @@ bool BHV_TwoD::setParam(string param, string val)
    if(param == "amplitude") {
     if(!isNumber(val))
       return(false);
-    if(!param_lock)
-      {
-      amplitude = atof(val.c_str());
-      }
+    amplitude = atof(val.c_str());
     return(true);
   }
 
@@ -109,10 +100,7 @@ bool BHV_TwoD::setParam(string param, string val)
    if(param == "length") {
     if(!isNumber(val))
       return(false);
-    if(!param_lock)
-      {
-      length = atof(val.c_str());
-      }
+    length = atof(val.c_str());
     return(true);
   }
 
@@ -121,8 +109,7 @@ bool BHV_TwoD::setParam(string param, string val)
     double dval = atof(val.c_str());
     if((dval < 0) || (!isNumber(val)))
       return(false);
-    if(!param_lock)
-      peakwidth = dval;
+    peakwidth = dval;
     return(true);
   }
 
@@ -131,8 +118,7 @@ bool BHV_TwoD::setParam(string param, string val)
     double dval = atof(val.c_str());
     if((dval < 0) || (!isNumber(val)))
       return(false);
-    if(!param_lock)
-      basewidth = dval;
+    basewidth = dval;
     return(true);
   }
 

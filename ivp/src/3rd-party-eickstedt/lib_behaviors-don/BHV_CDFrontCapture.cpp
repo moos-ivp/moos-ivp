@@ -45,59 +45,51 @@ bool BHV_CDFrontCapture::setParam(string param, string val)
   if(param == "heading") {
     if(!isNumber(val))
       return(false);
-    if(!param_lock)
-	desired_heading = atof(val.c_str());
+    desired_heading = atof(val.c_str());
     return(true);
   }
   if(param == "peakwidth") {
     double dval = atof(val.c_str());
     if((dval < 0) || (!isNumber(val)))
       return(false);
-    if(!param_lock)
-      peakwidth = dval;
+    peakwidth = dval;
     return(true);
   }
   if(param == "basewidth") {
     double dval = atof(val.c_str());
     if((dval < 0) || (!isNumber(val)))
       return(false);
-    if(!param_lock)
-      basewidth = dval;
+    basewidth = dval;
     return(true);
   }
   if(param == "w_azimuth") {
     if(!isNumber(val))
       return(false);
-    if(!param_lock)
-      w_azimuth = atof(val.c_str());
+    w_azimuth = atof(val.c_str());
     return(true);
   }
   if(param == "near") {
     if(!isNumber(val))
       return(false);
-    if(!param_lock)
-      near = atof(val.c_str());
+    near = atof(val.c_str());
     return(true);
   }
   if(param == "far") {
     if(!isNumber(val))
       return(false);
-    if(!param_lock)
-      far = atof(val.c_str());
+    far = atof(val.c_str());
     return(true);
   }
   if(param == "threshold") {
     if(!isNumber(val))
       return(false);
-    if(!param_lock)
-      threshold = atof(val.c_str());
+    threshold = atof(val.c_str());
     return(true);
   }
   if(param == "points") {
     if(!isNumber(val))
       return(false);
-    if(!param_lock)
-      points = atoi(val.c_str());
+    points = atoi(val.c_str());
     return(true);
   }
 

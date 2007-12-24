@@ -41,24 +41,21 @@ bool BHV_ADP::setParam(string param, string val)
   if(param == "heading") {
     if(!isNumber(val))
       return(false);
-    if(!param_lock)
-      desired_heading = atof(val.c_str());
+    desired_heading = atof(val.c_str());
     return(true);
   }
   if(param == "peakwidth") {
     double dval = atof(val.c_str());
     if((dval < 0) || (!isNumber(val)))
       return(false);
-    if(!param_lock)
-      peakwidth = dval;
+    peakwidth = dval;
     return(true);
   }
   if(param == "basewidth") {
     double dval = atof(val.c_str());
     if((dval < 0) || (!isNumber(val)))
       return(false);
-    if(!param_lock)
-      basewidth = dval;
+    basewidth = dval;
     return(true);
   }
 
