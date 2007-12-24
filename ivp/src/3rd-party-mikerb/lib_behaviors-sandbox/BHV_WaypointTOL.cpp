@@ -161,12 +161,12 @@ IvPFunction *BHV_WaypointTOL::produceOF()
 
   of->setPWT(priority_wt);
 
-  if(!m_silent) {
-    IvPBox mpt = of->getPDMap()->getGrid()->getMaxPt();
-    cout << "BHV_WaypointTOL::produceOF():" << endl;
-    cout << "maxpt:" << endl;
-    mpt.print();
-  }
+#if 0
+  IvPBox mpt = of->getPDMap()->getGrid()->getMaxPt();
+  cout << "BHV_WaypointTOL::produceOF():" << endl;
+  cout << "maxpt:" << endl;
+  mpt.print();
+#endif
 
   if(osSPD > 0) {
     double dist_meters = hypot((osX-ptX), (osY-ptY));
@@ -288,10 +288,10 @@ bool BHV_WaypointTOL::setNextWaypoint()
     }
   }
     
-  if(!m_silent) {
-    cout << "   ptX:" <<  ptX << "  ptY:" << ptY  << endl;
-    cout << "  iptX:" << iptX << " iptY:" << iptY << endl;
-  }
+#if 0
+  cout << "   ptX:" <<  ptX << "  ptY:" << ptY  << endl;
+  cout << "  iptX:" << iptX << " iptY:" << iptY << endl;
+#endif
 
   return(true);
 }
