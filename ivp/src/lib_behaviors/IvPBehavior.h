@@ -56,7 +56,7 @@ class IvPBehavior {
 friend class BehaviorSet;
 public:
   IvPBehavior(IvPDomain);
-  virtual ~IvPBehavior();
+  virtual ~IvPBehavior() {};
 
   virtual IvPFunction* produceOF() {return(0);};
   virtual bool setParam(std::string, std::string);
@@ -66,16 +66,16 @@ public:
   bool   setParamCommon(std::string, std::string);
   void   setInfoBuffer(const InfoBuffer*);
   void   checkForUpdates();
-  double getPriority()                   {return(priority_wt);};
-  void   postRunFlags()                  {postFlags(run_flags);};
-  void   postEndFlags()                  {postFlags(end_flags);};
-  void   postIdleFlags()                 {postFlags(idle_flags);};
+  double getPriority()                   {return(m_priority_wt);};
+  void   postRunFlags()                  {postFlags(m_run_flags);};
+  void   postEndFlags()                  {postFlags(m_end_flags);};
+  void   postIdleFlags()                 {postFlags(m_idle_flags);};
 
   std::vector<std::string> getInfoVars();
   std::vector<std::string> getConditionVars();
-  std::string getDescriptor()            {return(descriptor);};
-  std::vector<VarDataPair> getMessages() {return(messages);};
-  void   clearMessages()                 {messages.clear();};
+  std::string getDescriptor()            {return(m_descriptor);};
+  std::vector<VarDataPair> getMessages() {return(m_messages);};
+  void   clearMessages()                 {m_messages.clear();};
   bool   stateOK()                       {return(m_state_ok);};
   void   resetStateOK()                  {m_state_ok=true;};
 
@@ -87,30 +87,30 @@ protected:
   void    postWMessage(std::string);
   void    postPCMessage(std::string);
   void    postFlags(const std::vector<VarDataPair>&);
+  void    addInfoVars(std::string);
 
   bool    durationExceeded();
   bool    checkConditions();
   bool    checkNoStarve();
 
 protected:
-  const InfoBuffer* info_buffer;
+  const InfoBuffer* m_info_buffer;
 
-  std::string descriptor;    // ALL behaviors utilize
-  std::string us_name;       // MOST behaviors utilize
-  std::string duration_status;
+  std::string m_descriptor;    
+  std::string m_us_name;       
+  std::string m_duration_status;
+  std::string m_build_info;
 
-  std::vector<std::string>           info_vars;
-  std::vector<VarDataPair>           messages;
-  std::vector<LogicCondition>        logic_conditions;
-  std::vector<VarDataPair>           run_flags;
-  std::vector<VarDataPair>           end_flags;
-  std::vector<VarDataPair>           idle_flags;
-  std::map<std::string, double>      starve_vars;
+  std::vector<std::string>       m_info_vars;
+  std::vector<VarDataPair>       m_messages;
+  std::vector<LogicCondition>    m_logic_conditions;
+  std::vector<VarDataPair>       m_run_flags;
+  std::vector<VarDataPair>       m_end_flags;
+  std::vector<VarDataPair>       m_idle_flags;
+  std::map<std::string, double>  m_starve_vars;
   
-  IvPDomain   domain;        
-  double      priority_wt;   // ALL behaviors utilize
-  IvPBox*     unif_box;      // MOST behaviors utilize
-  IvPBox*     grid_box;      // MOST behaviors utilize
+  IvPDomain  m_domain;        
+  double     m_priority_wt; 
 
   // Variables for providing behaviors w/ "udate" capability
   std::string m_update_var;

@@ -220,19 +220,8 @@ void BehaviorSet::print()
 
     cout << "Behavior descriptor: " << behaviors[i]->descriptor << endl;
     cout << " priority weight: " << behaviors[i]->priority_wt << endl;
-    if(behaviors[i]->unif_box) {
-      cout << " UniformBox: " << endl;
-      behaviors[i]->unif_box->print();
-    }
-    else
-      cout << " UniformBox: NULL" << endl;
-    if(behaviors[i]->grid_box) {
-      cout << " GridBox: " << endl;
-      behaviors[i]->grid_box->print();
-    }
-    else
-      cout << " GridBox: NULL" << endl;
-
+    cout << " BuildInfo: " << endl;
+    behaviors[i]->m_build_info;
     cout << "-------" << endl;
   }
 }

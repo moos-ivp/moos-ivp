@@ -54,12 +54,10 @@ using namespace std;
 
 IvPBehavior::IvPBehavior(IvPDomain g_domain)
 {
-  domain            = g_domain;
-  info_buffer       = 0;
-  priority_wt       = 100.0;  // Default Priority Weight
-  descriptor        = "???";  // Default descriptor
-  grid_box          = 0;
-  unif_box          = 0;
+  m_domain          = g_domain;
+  m_info_buffer     = 0;
+  m_priority_wt     = 100.0;  // Default Priority Weight
+  m_descriptor      = "???";  // Default descriptor
   m_state_ok        = true;
   m_started         =  false;
   m_start_time      = -1;
@@ -69,15 +67,6 @@ IvPBehavior::IvPBehavior(IvPDomain g_domain)
   m_good_updates    = 0;
   m_bad_updates     = 0;
   m_perpetual       = false;
-}
-  
-//-----------------------------------------------------------
-// Procedure: Destructor
-
-IvPBehavior::~IvPBehavior()
-{
-  if(grid_box) delete(grid_box);
-  if(unif_box) delete(unif_box);
 }
   
 //-----------------------------------------------------------
@@ -102,15 +91,15 @@ bool IvPBehavior::setParamCommon(string g_param, string g_val)
     g_param = g_param.c_str()+1;
 
   if(g_param == "us") { 
-    us_name = g_val;
+    m_us_name = g_val;
     return(true);
   }
   else if((g_param == "name") || (g_param == "descriptor")) {
-    descriptor = g_val;
+    m_descriptor = g_val;
     return(true);
   }
   else if(g_param == "duration_status") {
-    duration_status = g_val;
+    m_duration_status = g_val;
     return(true);
   }
   else if((g_param == "pwt") || 
@@ -119,46 +108,9 @@ bool IvPBehavior::setParamCommon(string g_param, string g_val)
     double pwt = atof(g_val.c_str());
     if((pwt < 0) || (!isNumber(g_val)))
       return(false);
-    priority_wt = pwt;
+    m_priority_wt = pwt;
     return(true);
   }
-  else if(g_param == "gridbox") {  // Alt way of setting gridbox
-    if(g_val == "default")
-      return(grid_box != 0);
-
-    IvPBox ptbox = stringToPointBox(g_val, domain);
-    if(!ptbox.isPtBox())
-      return(false);
-
-    IvPBox *new_box = ptbox.copy(); 
-    if(grid_box)
-      delete(grid_box);
-    grid_box = new_box;
-    if(unif_box == 0)               // grid_box makes a good
-      unif_box = grid_box->copy();  // default unif_box too!
-    else
-      delete(new_box);
-    return(true);
-  }
-  else if(g_param == "unifbox") { // Alt way of setting unifbox
-    if(g_val == "default")
-      return(unif_box != 0);
-
-    IvPBox ptbox = stringToPointBox(g_val, domain);
-    if(!ptbox.isPtBox())
-      return(false);
-
-    IvPBox *new_box = ptbox.copy();
-    if(unif_box)
-      delete(unif_box);
-    unif_box = new_box;
-    if(grid_box == 0)               // unif_box makes a good
-      grid_box = unif_box->copy();  // default grid_box too!
-    else
-      delete(new_box);
-    return(true);
-  }
-
   else if(g_param == "condition") {
     g_val = findReplace(g_val, ',', '=');
     g_val = findReplace(g_val, "==", "=");
@@ -166,7 +118,7 @@ bool IvPBehavior::setParamCommon(string g_param, string g_val)
     LogicCondition new_condition;
     ok = new_condition.setCondition(g_val);
     if(ok)
-      logic_conditions.push_back(new_condition);
+      m_logic_conditions.push_back(new_condition);
     return(ok);
   }
 
@@ -178,7 +130,7 @@ bool IvPBehavior::setParamCommon(string g_param, string g_val)
     string var = stripBlankEnds(svector[0]);
     string val = stripBlankEnds(svector[1]);
     VarDataPair pair(var, val, "auto");
-    run_flags.push_back(pair);
+    m_run_flags.push_back(pair);
     return(true);
   }
   else if(g_param == "idleflag") {
@@ -189,7 +141,7 @@ bool IvPBehavior::setParamCommon(string g_param, string g_val)
     string var = stripBlankEnds(svector[0]);
     string val = stripBlankEnds(svector[1]);
     VarDataPair pair(var, val, "auto");
-    idle_flags.push_back(pair);
+    m_idle_flags.push_back(pair);
     return(true);
   }
   else if(g_param == "endflag") {
@@ -200,7 +152,7 @@ bool IvPBehavior::setParamCommon(string g_param, string g_val)
     string var = stripBlankEnds(svector[0]);
     string val = stripBlankEnds(svector[1]);
     VarDataPair pair(var, val, "auto");
-    end_flags.push_back(pair);
+    m_end_flags.push_back(pair);
     return(true);
   }
   else if(g_param == "nostarve") {
@@ -215,7 +167,7 @@ bool IvPBehavior::setParamCommon(string g_param, string g_val)
 
     for(int i=0; i<vsize-1; i++) {
       string var = stripBlankEnds(svector[i]);
-      starve_vars[var] = stime;
+      m_starve_vars[var] = stime;
     }
     return(true);
   }
@@ -240,35 +192,23 @@ bool IvPBehavior::setParamCommon(string g_param, string g_val)
     return(true);
   }
 
+  else if(g_param == "build_info") {
+    if(m_build_info != "")
+      m_build_info += " # ";
+    m_build_info += g_val;
+    return(true);
+  }
+  
   else if(g_param == "updates") {
     m_update_var = g_val;
     if(m_update_var != "")
-      info_vars.push_back(g_val);
+      m_info_vars.push_back(g_val);
     return(true);
   }
   
   else if(g_param == "precision") {
-    if((g_val != "high") && (g_val != "normal") && (g_val != "low"))
-      return(false);
-    if((g_val == "high") && (unif_box)) {
-      int dim = unif_box->getDim();
-      for(int d=0; d<dim; d++) {
-	unif_box->pt(d,0) = unif_box->pt(d,0) / 2;
-	unif_box->pt(d,1) = unif_box->pt(d,1) / 2;
-	if(unif_box->pt(d,0) == 0)
-	  unif_box->pt(d,0) = 1;
-	if(unif_box->pt(d,1) == 0)
-	  unif_box->pt(d,1) = 1;
-      }
-    }
-    if((g_val == "low") && (unif_box)) {
-      int dim = unif_box->getDim();
-      for(int d=0; d<dim; d++) {
-	unif_box->pt(d,0) = unif_box->pt(d,0) * 2;
-	unif_box->pt(d,1) = unif_box->pt(d,1) * 2;
-      }
-    }
-    return(true);
+    string precision_info = "precision=" + tolower(g_val);
+    return(setParamCommon("build_info", precision_info)); 
   }
 
   return(false);
@@ -300,7 +240,7 @@ bool IvPBehavior::preCheck()
     return(false);
   }
   
-  if(domain.size() == 0) {
+  if(m_domain.size() == 0) {
     m_state_ok = false;
     postEMessage("Null IvPDomain given to Behavior");
     postPCMessage("----- Null IvPDomain ----");
@@ -314,7 +254,7 @@ bool IvPBehavior::preCheck()
   }
   
   postPCMessage(" -- ok -- ");
-  postFlags(run_flags);
+  postFlags(m_run_flags);
   return(true);
 }
   
@@ -323,7 +263,7 @@ bool IvPBehavior::preCheck()
 
 void IvPBehavior::setInfoBuffer(const InfoBuffer *ib)
 {
-  info_buffer = ib;
+  m_info_buffer = ib;
 }
 
 //-----------------------------------------------------------
@@ -331,7 +271,7 @@ void IvPBehavior::setInfoBuffer(const InfoBuffer *ib)
 
 void IvPBehavior::postMessage(string var, string sdata)
 {
-  messages.push_back(VarDataPair(var, sdata));
+  m_messages.push_back(VarDataPair(var, sdata));
 }
 
 //-----------------------------------------------------------
@@ -339,7 +279,7 @@ void IvPBehavior::postMessage(string var, string sdata)
 
 void IvPBehavior::postMessage(string var, double ddata)
 {
-  messages.push_back(VarDataPair(var, ddata));
+  m_messages.push_back(VarDataPair(var, ddata));
 }
 
 //-----------------------------------------------------------
@@ -347,7 +287,7 @@ void IvPBehavior::postMessage(string var, double ddata)
 
 void IvPBehavior::setComplete()
 {
-  postFlags(end_flags);
+  postFlags(m_end_flags);
   if(!m_perpetual)
     m_completed = true;
 }
@@ -359,12 +299,12 @@ void IvPBehavior::setComplete()
 void IvPBehavior::postEMessage(string g_emsg)
 {
   string emsg = "";
-  if(descriptor != "")
-    emsg += descriptor + ": ";
+  if(m_descriptor != "")
+    emsg += m_descriptor + ": ";
   emsg += g_emsg;
 
   VarDataPair msg("BHV_ERROR", emsg);
-  messages.push_back(msg);
+  m_messages.push_back(msg);
 
   m_state_ok = false;
 }
@@ -376,12 +316,12 @@ void IvPBehavior::postEMessage(string g_emsg)
 void IvPBehavior::postWMessage(string g_wmsg)
 {
   string wmsg = "";
-  if(descriptor != "")
-    wmsg += descriptor + ": ";
+  if(m_descriptor != "")
+    wmsg += m_descriptor + ": ";
   wmsg += g_wmsg;
 
   VarDataPair msg("BHV_WARNING", wmsg);
-  messages.push_back(msg);
+  m_messages.push_back(msg);
 }
 
 
@@ -390,14 +330,14 @@ void IvPBehavior::postWMessage(string g_wmsg)
 
 void IvPBehavior::postPCMessage(string g_msg)
 {
-  string mvar = "PC_" + descriptor;
+  string mvar = "PC_" + m_descriptor;
   
-  double curr_time = info_buffer->getCurrTime();
+  double curr_time = m_info_buffer->getCurrTime();
   string str_time = "(" + doubleToString(curr_time, 1) + ")";
   string mval = str_time + g_msg;
   
   VarDataPair msg(mvar, mval);
-  messages.push_back(msg);
+  m_messages.push_back(msg);
 }
 
 
@@ -406,16 +346,16 @@ void IvPBehavior::postPCMessage(string g_msg)
 
 bool IvPBehavior::checkConditions()
 {
-  if(!info_buffer) 
+  if(!m_info_buffer) 
     return(false);
 
   int i, j, vsize, csize;
 
   // Phase 1: get all the variable names from all present conditions.
   vector<string> all_vars;
-  csize = logic_conditions.size();
+  csize = m_logic_conditions.size();
   for(i=0; i<csize; i++) {
-    vector<string> svector = logic_conditions[i].getVarNames();
+    vector<string> svector = m_logic_conditions[i].getVarNames();
     all_vars = mergeVectors(all_vars, svector);
   }
   all_vars = removeDuplicates(all_vars);
@@ -425,23 +365,23 @@ bool IvPBehavior::checkConditions()
   vsize = all_vars.size();
   for(i=0; i<vsize; i++) {
     string varname = all_vars[i];
-    string community = us_name;
+    string community = m_us_name;
     bool   ok_s, ok_d;
-    string s_result = info_buffer->sQuery(varname, ok_s);
-    double d_result = info_buffer->dQuery(varname, ok_d);
+    string s_result = m_info_buffer->sQuery(varname, ok_s);
+    double d_result = m_info_buffer->dQuery(varname, ok_d);
 
     for(j=0; (j<csize)&&(ok_s); j++)
-      logic_conditions[j].setVarVal(varname, s_result);
+      m_logic_conditions[j].setVarVal(varname, s_result);
     for(j=0; (j<csize)&&(ok_d); j++)
-      logic_conditions[j].setVarVal(varname, d_result);
+      m_logic_conditions[j].setVarVal(varname, d_result);
   }
 
   // Phase 3: evaluate all logic conditions. Return true only if all
   // conditions evaluate to be true.
   for(i=0; i<csize; i++) {
-    bool satisfied = logic_conditions[i].eval();
+    bool satisfied = m_logic_conditions[i].eval();
     if(!satisfied) {
-      string failed_condition = logic_conditions[i].getRawCondition();
+      string failed_condition = m_logic_conditions[i].getRawCondition();
       postPCMessage(failed_condition);
       return(false);
     }
@@ -451,15 +391,29 @@ bool IvPBehavior::checkConditions()
 }
 
 //-----------------------------------------------------------
+// Procedure: addInfoVars
+
+void IvPBehavior::addInfoVars(string var_string)
+{
+  vector<string> svector = parseString(var_string, ',');
+  int vsize = svector.size();
+  for(int i=0; i<vsize; i++) {
+    string varname = stripBlankEnds(svector[i]);
+    if(!vectorContains(m_info_vars, varname))
+      m_info_vars.push_back(varname);
+  }
+}
+
+//-----------------------------------------------------------
 // Procedure: getInfoVars()
 
 vector<string> IvPBehavior::getInfoVars()
 {
   vector<string> svector;
-  for(int i=0; i<logic_conditions.size(); i++)
-    svector = mergeVectors(svector, logic_conditions[i].getVarNames());
+  for(int i=0; i<m_logic_conditions.size(); i++)
+    svector = mergeVectors(svector, m_logic_conditions[i].getVarNames());
 
-  svector = mergeVectors(svector, info_vars);
+  svector = mergeVectors(svector, m_info_vars);
   svector = removeDuplicates(svector);
 
   return(svector);
@@ -473,14 +427,14 @@ vector<string> IvPBehavior::getInfoVars()
 
 bool IvPBehavior::checkNoStarve()
 {
-  if(!info_buffer) 
+  if(!m_info_buffer) 
     return(false);
 
   map<string,double>::const_iterator p;
-  for(p=starve_vars.begin(); p!=starve_vars.end(); p++) {
+  for(p=m_starve_vars.begin(); p!=m_starve_vars.end(); p++) {
     string var   = p->first;
     double stime = p->second;
-    double itime = info_buffer->tQuery(var);
+    double itime = m_info_buffer->tQuery(var);
 
     if((itime == -1) || (itime > stime)) {
       string msg = "VarStarve: " + var + "(stime:" + doubleToString(stime);
@@ -505,9 +459,9 @@ void IvPBehavior::checkForUpdates()
   string new_update_str;
   double curr_update_age;
   
-  new_update_str  = info_buffer->sQuery(m_update_var, ok);
+  new_update_str  = m_info_buffer->sQuery(m_update_var, ok);
   new_update_str  = stripBlankEnds(new_update_str);
-  curr_update_age = info_buffer->tQuery(m_update_var);
+  curr_update_age = m_info_buffer->tQuery(m_update_var);
   
   bool fresh = false;
   if((curr_update_age < m_last_update_age) || (m_last_update_age == -1))
@@ -535,7 +489,7 @@ void IvPBehavior::checkForUpdates()
     
     if(!ok) {
       m_bad_updates++;
-      string wmsg = "Faulty Behavior (" + descriptor + ") Update - INCOMPLETE!";
+      string wmsg = "Faulty Behavior (" + m_descriptor + ") Update - INCOMPLETE!";
       postMessage("BHV_WARNING", wmsg);
     }
     else {
@@ -547,7 +501,7 @@ void IvPBehavior::checkForUpdates()
   m_last_update_age = curr_update_age;
 
   if((m_good_updates + m_bad_updates)>0) {
-    string varname = "UH_" + descriptor;
+    string varname = "UH_" + m_descriptor;
     string gstr = intToString(m_good_updates) + " update(s), and ";
     string bstr = intToString(m_bad_updates) + " failure(s)";
     postMessage(varname, gstr+bstr);
@@ -564,19 +518,19 @@ bool IvPBehavior::durationExceeded()
   if(m_duration == -1)
     return(false);
 
-  double curr_time = info_buffer->getCurrTime();
+  double curr_time = m_info_buffer->getCurrTime();
 
   if(!m_started) {
     m_started = true;
-    m_start_time = info_buffer->getCurrTime();
+    m_start_time = m_info_buffer->getCurrTime();
   }
 
   double elapsed_time = (curr_time - m_start_time);
   double remaining_time = m_duration - elapsed_time;
   if(remaining_time < 0)
     remaining_time = 0;
-  if(duration_status != "")
-    postMessage(duration_status, remaining_time);
+  if(m_duration_status != "")
+    postMessage(m_duration_status, remaining_time);
   
   if(elapsed_time >= m_duration)
     return(true);
