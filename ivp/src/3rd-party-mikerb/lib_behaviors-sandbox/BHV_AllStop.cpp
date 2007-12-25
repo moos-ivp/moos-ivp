@@ -40,19 +40,19 @@ bool BHV_AllStop::setParam(string param, string val)
 
 IvPFunction *BHV_AllStop::produceOF() 
 {
-  int dsize = domain.size();
+  int dsize = m_domain.size();
 
   if(dsize == 0) 
     return(0);
 
-  ZAIC_PEAK zaic(domain, domain.getVarName(0));
+  ZAIC_PEAK zaic(m_domain, m_domain.getVarName(0));
   zaic.setSummit(0);
 
   IvPFunction *ipf = zaic.extractOF();
   
   OF_Coupler coupler;
   for(int i=1; i<dsize; i++) {
-    ZAIC_PEAK zaic(domain, domain.getVarName(i));
+    ZAIC_PEAK zaic(m_domain, m_domain.getVarName(i));
     zaic.setSummit(0);
     IvPFunction *new_ipf = zaic.extractOF();
     ipf = coupler.couple(ipf, new_ipf);
