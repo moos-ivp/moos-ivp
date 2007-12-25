@@ -125,7 +125,7 @@ IvPFunction *BHV_GiveWay16::produceOF()
   // Turn it into an ObjectiveFunction object for returning
   IvPFunction *of = reflector.extractOF();
 
-  of->setPWT(relevance * priority_wt);
+  of->setPWT(relevance * m_priority_wt);
 
   return(of);
 }
@@ -142,15 +142,15 @@ bool BHV_GiveWay16::getCurrentPositions()
 
   bool ok1, ok2;
 
-  cnCRS = info_buffer->dQuery(them_name+"_NAV_HEADING", ok1);
-  cnSPD = info_buffer->dQuery(them_name+"_NAV_SPEED", ok2);
+  cnCRS = m_info_buffer->dQuery(them_name+"_NAV_HEADING", ok1);
+  cnSPD = m_info_buffer->dQuery(them_name+"_NAV_SPEED", ok2);
   if(!ok1 || !ok2) {
     postWMessage("contact course/speed info not found.");
     return(false);
   }
 
-  osCRS = info_buffer->dQuery("NAV_HEADING", ok1);
-  osSPD = info_buffer->dQuery("NAV_SPEED", ok2);
+  osCRS = m_info_buffer->dQuery("NAV_HEADING", ok1);
+  osSPD = m_info_buffer->dQuery("NAV_SPEED", ok2);
   if(!ok1 || !ok2) {
     postEMessage("ownship course/speed info not found.");
     return(false);
@@ -159,15 +159,15 @@ bool BHV_GiveWay16::getCurrentPositions()
   osCRS = angle360(osCRS);
   cnCRS = angle360(cnCRS);
 
-  cnLAT = info_buffer->dQuery(them_name+"_NAV_Y", ok1);
-  cnLON = info_buffer->dQuery(them_name+"_NAV_X", ok2);
+  cnLAT = m_info_buffer->dQuery(them_name+"_NAV_Y", ok1);
+  cnLON = m_info_buffer->dQuery(them_name+"_NAV_X", ok2);
   if(!ok1 || !ok2) {
     postWMessage("contact x/y info not found.");
     return(false);
   }
 
-  osLAT = info_buffer->dQuery("NAV_Y", ok1);
-  osLON = info_buffer->dQuery("NAV_X", ok2);
+  osLAT = m_info_buffer->dQuery("NAV_Y", ok1);
+  osLON = m_info_buffer->dQuery("NAV_X", ok2);
   if(!ok1 || !ok2) {
     postEMessage("ownship x/y info not found.");
     return(false);

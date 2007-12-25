@@ -46,14 +46,11 @@ BHV_HeadOn14::BHV_HeadOn14(IvPDomain gdomain) :
   this->setParam("unifbox", "course=2, speed=2, tol=2");
   this->setParam("gridbox", "course=8, speed=6, tol=6");
 
-  domain = subDomain(domain, "course,speed,tol");
+  m_domain = subDomain(m_domain, "course,speed,tol");
 
   range = -1;
 
-  info_vars.push_back("NAV_X");
-  info_vars.push_back("NAV_Y");
-  info_vars.push_back("NAV_SPEED");
-  info_vars.push_back("NAV_HEADING");
+  addInfoVars("NAV_X, NAV_Y, NAV_SPEED, NAV_HEADING");
 }
 
 //-----------------------------------------------------------
@@ -99,15 +96,15 @@ IvPFunction *BHV_HeadOn14::produceOF()
 
   bool ok1, ok2;
 
-  double cnCRS = info_buffer->dQuery(them_name+"_NAV_HEADING", ok1);
-  double cnSPD = info_buffer->dQuery(them_name+"_NAV_SPEED", ok2);
+  double cnCRS = m_info_buffer->dQuery(them_name+"_NAV_HEADING", ok1);
+  double cnSPD = m_info_buffer->dQuery(them_name+"_NAV_SPEED", ok2);
   if(!ok1 || !ok2) {
     postWMessage("contact course/speed info not found.");
     return(0);
   }
 
-  double osCRS = info_buffer->dQuery("NAV_HEADING", ok1);
-  double osSPD = info_buffer->dQuery("NAV_SPEED", ok2);
+  double osCRS = m_info_buffer->dQuery("NAV_HEADING", ok1);
+  double osSPD = m_info_buffer->dQuery("NAV_SPEED", ok2);
   if(!ok1 || !ok2) {
     postEMessage("ownship course/speed info not found.");
     return(0);
@@ -115,15 +112,15 @@ IvPFunction *BHV_HeadOn14::produceOF()
 
   if(cnCRS < 0) cnCRS += 360.0;
 
-  double cnLAT = info_buffer->dQuery(them_name+"_NAV_Y", ok1);
-  double cnLON = info_buffer->dQuery(them_name+"_NAV_X", ok2);
+  double cnLAT = m_info_buffer->dQuery(them_name+"_NAV_Y", ok1);
+  double cnLON = m_info_buffer->dQuery(them_name+"_NAV_X", ok2);
   if(!ok1 || !ok2) {
     postWMessage("contact x/y info not found.");
     return(0);
   }
 
-  double osLAT = info_buffer->dQuery("NAV_Y", ok1);
-  double osLON = info_buffer->dQuery("NAV_X", ok2);
+  double osLAT = m_info_buffer->dQuery("NAV_Y", ok1);
+  double osLON = m_info_buffer->dQuery("NAV_X", ok2);
   if(!ok1 || !ok2) {
     postEMessage("ownship x/y info not found.");
     return(0);
@@ -137,7 +134,7 @@ IvPFunction *BHV_HeadOn14::produceOF()
   if(relevance == 0)
     return(0);
 
-  AOF_R14 aof(domain);
+  AOF_R14 aof(m_domain);
   aof.setParam("os_lat", osLAT);
   aof.setParam("os_lon", osLON);
   aof.setParam("cn_lat", cnLAT);
@@ -152,7 +149,7 @@ IvPFunction *BHV_HeadOn14::produceOF()
 
   IvPFunction *of = reflector.extractOF();
 
-  of->setPWT(relevance * priority_wt);
+  of->setPWT(relevance * m_priority_wt);
 
   return(of);
 }

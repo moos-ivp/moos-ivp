@@ -34,10 +34,10 @@ BHV_GiveWay16::BHV_GiveWay16(IvPDomain gdomain) :
   IvPBehavior(gdomain)
 {
   this->setParam("descriptor", "(d)avoid_collision");
-  this->setParam("unifbox", "course=3, speed=3");
-  this->setParam("gridbox", "course=9, speed=6");
+  this->setParam("build_info", "uniform_box=course:3,speed:3");
+  this->setParam("build_info", "uniform_grid=course:9,speed:6");
   
-  domain = subDomain(domain, "course,speed");
+  m_domain = subDomain(m_domain, "course,speed");
 
   m_active_outer_dist = 200;
   m_active_inner_dist = 50;
@@ -49,10 +49,7 @@ BHV_GiveWay16::BHV_GiveWay16(IvPDomain gdomain) :
 
   m_on_no_contact_ok  = true;
 
-  info_vars.push_back("NAV_X");
-  info_vars.push_back("NAV_Y");
-  info_vars.push_back("NAV_SPEED");
-  info_vars.push_back("NAV_HEADING");
+  addInfoVars("NAV_X, NAV_Y, NAV_SPEED, NAV_HEADING");
 }
 
 //-----------------------------------------------------------
@@ -65,10 +62,10 @@ bool BHV_GiveWay16::setParam(string g_param, string g_val)
 
   if((g_param == "them") || (g_param == "contact")) {
     m_contact = toupper(g_val);
-    info_vars.push_back(m_contact+"_NAV_X");
-    info_vars.push_back(m_contact+"_NAV_Y");
-    info_vars.push_back(m_contact+"_NAV_SPEED");
-    info_vars.push_back(m_contact+"_NAV_HEADING");
+    addInfoVars(m_contact+"_NAV_X");
+    addInfoVars(m_contact+"_NAV_Y");
+    addInfoVars(m_contact+"_NAV_SPEED");
+    addInfoVars(m_contact+"_NAV_HEADING");
     return(true);
   }  
   else if((g_param == "active_distance") ||
@@ -161,12 +158,6 @@ void BHV_GiveWay16::onIdleState()
 
 IvPFunction *BHV_GiveWay16::produceOF() 
 {
-  if(!unif_box || !grid_box) {
-    postRange(false);
-    postEMessage("Null UnifBox or GridBox.");
-    return(0);
-  }
-  
   if(m_contact == "") {
     postRange(false);
     postEMessage("contact ID not set.");
@@ -186,7 +177,7 @@ IvPFunction *BHV_GiveWay16::produceOF()
     return(0);
 
 
-  AOF_R16 aof(domain);
+  AOF_R16 aof(m_domain);
 
   ok = true;
   ok = ok && aof.setParam("osy", m_osy);
@@ -206,12 +197,12 @@ IvPFunction *BHV_GiveWay16::produceOF()
   }
 
   OF_Reflector reflector(&aof, 1);
-  reflector.createUniform(unif_box, grid_box);
+  reflector.create(m_build_info);
   IvPFunction *ipf = reflector.extractOF();
 
   ipf->getPDMap()->normalize(0.0, 100.0);
 
-  ipf->setPWT(relevance * priority_wt);
+  ipf->setPWT(relevance * m_priority_wt);
 
   return(ipf);
 }
@@ -223,8 +214,8 @@ bool BHV_GiveWay16::getBufferInfo()
 {
   bool ok1, ok2;
 
-  m_cnh = info_buffer->dQuery(m_contact+"_NAV_HEADING", ok1);
-  m_cnv = info_buffer->dQuery(m_contact+"_NAV_SPEED",   ok2);
+  m_cnh = m_info_buffer->dQuery(m_contact+"_NAV_HEADING", ok1);
+  m_cnv = m_info_buffer->dQuery(m_contact+"_NAV_SPEED",   ok2);
   if(!ok1 || !ok2) {    
     string msg = m_contact + " heading/speed info not found";
     if(m_on_no_contact_ok)
@@ -234,8 +225,8 @@ bool BHV_GiveWay16::getBufferInfo()
     return(false);
   }
 
-  m_osh = info_buffer->dQuery("NAV_HEADING", ok1);
-  m_osv = info_buffer->dQuery("NAV_SPEED", ok2);
+  m_osh = m_info_buffer->dQuery("NAV_HEADING", ok1);
+  m_osv = m_info_buffer->dQuery("NAV_SPEED", ok2);
   if(!ok1 || !ok2) {
     postEMessage("ownship course/speed info not found.");
     return(false);
@@ -244,8 +235,8 @@ bool BHV_GiveWay16::getBufferInfo()
   m_osh = angle360(m_osh);
   m_cnh = angle360(m_cnh);
 
-  m_cnx = info_buffer->dQuery(m_contact+"_NAV_X", ok2);
-  m_cny = info_buffer->dQuery(m_contact+"_NAV_Y", ok1);
+  m_cnx = m_info_buffer->dQuery(m_contact+"_NAV_X", ok2);
+  m_cny = m_info_buffer->dQuery(m_contact+"_NAV_Y", ok1);
   if(!ok1 || !ok2) {
     string msg = m_contact + " NAV_X/Y info not found";
     if(m_on_no_contact_ok)
@@ -255,8 +246,8 @@ bool BHV_GiveWay16::getBufferInfo()
     return(false);
   }
 
-  m_osx = info_buffer->dQuery("NAV_X", ok2);
-  m_osy = info_buffer->dQuery("NAV_Y", ok1);
+  m_osx = m_info_buffer->dQuery("NAV_X", ok2);
+  m_osy = m_info_buffer->dQuery("NAV_Y", ok1);
   if(!ok1 || !ok2) {
     postEMessage("ownship x/y info not found.");
     return(false);

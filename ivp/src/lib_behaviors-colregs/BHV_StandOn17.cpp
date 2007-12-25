@@ -30,17 +30,14 @@ BHV_StandOn17::BHV_StandOn17(IvPDomain gdomain) :
   IvPBehavior(gdomain)
 {
   this->setParam("descriptor", "(d)bhv_giveway17");
-  this->setParam("unifbox", "course=1, speed=1, tol=1");
-  this->setParam("gridbox", "course=8, speed=5, tol=5");
+  this->setParam("build_info", "uniform_box=course:2,speed:3");
+  this->setParam("build_info", "uniform_grid=course:8,speed:6");
 
-  domain = subDomain(domain, "course,speed,tol");
+  m_domain = subDomain(m_domain, "course,speed");
 
   range = -1;
 
-  info_vars.push_back("NAV_X");
-  info_vars.push_back("NAV_Y");
-  info_vars.push_back("NAV_SPEED");
-  info_vars.push_back("NAV_HEADING");
+  addInfoVars("NAV_X, NAV_Y, NAV_SPEED, NAV_HEADING");
 }
 
 //-----------------------------------------------------------
@@ -53,10 +50,10 @@ bool BHV_StandOn17::setParam(string g_param, string g_val)
 
   if((g_param == "them") || (g_param == "contact")) {
     them_name = toupper(g_val);
-    info_vars.push_back(them_name+"_NAV_X");
-    info_vars.push_back(them_name+"_NAV_Y");
-    info_vars.push_back(them_name+"_NAV_SPEED");
-    info_vars.push_back(them_name+"_NAV_HEADING");
+    addInfoVars(them_name+"_NAV_X");
+    addInfoVars(them_name+"_NAV_Y");
+    addInfoVars(them_name+"_NAV_SPEED");
+    addInfoVars(them_name+"_NAV_HEADING");
     return(true);
   }  
   else if(g_param == "range") {
@@ -72,11 +69,6 @@ bool BHV_StandOn17::setParam(string g_param, string g_val)
 
 IvPFunction *BHV_StandOn17::produceOF() 
 {
-  if(!unif_box || !grid_box) {
-    postEMessage("Null UnifBox or GridBox.");
-    return(0);
-  }
-  
   if(them_name == "") {
     postEMessage("contact ID not set.");
     return(0);
@@ -84,15 +76,15 @@ IvPFunction *BHV_StandOn17::produceOF()
 
   bool ok1, ok2;
 
-  double cnCRS = info_buffer->dQuery(them_name+"_NAV_HEADING", ok1);
-  double cnSPD = info_buffer->dQuery(them_name+"_NAV_SPEED", ok2);
+  double cnCRS = m_info_buffer->dQuery(them_name+"_NAV_HEADING", ok1);
+  double cnSPD = m_info_buffer->dQuery(them_name+"_NAV_SPEED", ok2);
   if(!ok1 || !ok2) {
     postWMessage("contact course/speed info not found.");
     return(0);
   }
 
-  double osCRS = info_buffer->dQuery("NAV_HEADING", ok1);
-  double osSPD = info_buffer->dQuery("NAV_SPEED", ok2);
+  double osCRS = m_info_buffer->dQuery("NAV_HEADING", ok1);
+  double osSPD = m_info_buffer->dQuery("NAV_SPEED", ok2);
   if(!ok1 || !ok2) {
     postEMessage("ownship course/speed info not found.");
     return(0);
@@ -100,15 +92,15 @@ IvPFunction *BHV_StandOn17::produceOF()
 
   if(cnCRS < 0) cnCRS += 360.0;
 
-  double cnLAT = info_buffer->dQuery(them_name+"_NAV_Y", ok1);
-  double cnLON = info_buffer->dQuery(them_name+"_NAV_X", ok2);
+  double cnLAT = m_info_buffer->dQuery(them_name+"_NAV_Y", ok1);
+  double cnLON = m_info_buffer->dQuery(them_name+"_NAV_X", ok2);
   if(!ok1 || !ok2) {
     postWMessage("contact x/y info not found.");
     return(0);
   }
 
-  double osLAT = info_buffer->dQuery("NAV_Y", ok1);
-  double osLON = info_buffer->dQuery("NAV_X", ok2);
+  double osLAT = m_info_buffer->dQuery("NAV_Y", ok1);
+  double osLON = m_info_buffer->dQuery("NAV_X", ok2);
   if(!ok1 || !ok2) {
     postEMessage("ownship x/y info not found.");
     return(0);
@@ -121,7 +113,7 @@ IvPFunction *BHV_StandOn17::produceOF()
   if(relevance == 0)
     return(0);
 
-  AOF_R16 aof(domain);
+  AOF_R16 aof(m_domain);
   aof.setParam("os_lat", osLAT);
   aof.setParam("os_lon", osLON);
   aof.setParam("cn_lat", cnLAT);
@@ -131,14 +123,12 @@ IvPFunction *BHV_StandOn17::produceOF()
   aof.initialize();
 
   OF_Reflector reflector(&aof, 1);
+  reflector.create(m_build_info);
+  IvPFunction *ipf = reflector.extractOF();
 
-  reflector.createUniform(unif_box, grid_box);
+  ipf->setPWT(relevance * m_priority_wt);
 
-  IvPFunction *of = reflector.extractOF();
-
-  of->setPWT(relevance * priority_wt);
-
-  return(of);
+  return(ipf);
 }
 
 //-----------------------------------------------------------
