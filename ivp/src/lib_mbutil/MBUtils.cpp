@@ -178,6 +178,17 @@ string stripBlankEnds(const string& str)
   int i; 
   int startIX=length; // assume all blanks
 
+#if 0
+  // Added Dec 23rd 2007 (mikerb)
+  // Quick check to see if the string has already been stripped
+  // of blank ends. Just return the original in that case.
+  int s_char = (int)(sPtr[0]);
+  int e_char = (int)(sPtr[length-1]);
+  if((s_char != 9) && (s_char != 32) &&
+     (e_char != 9) && (e_char != 32))
+    return(str);
+#endif
+
   for(i=0; i<length; i++) {
     int cval = (int)(sPtr[i]);
     if(!((cval==9) ||     // 09:tab 
@@ -187,7 +198,7 @@ string stripBlankEnds(const string& str)
     }
   }
 
-  if(sPtr[startIX]==0)    // If first non-blank is NULL term,
+  if(sPtr[startIX]==0)   // If first non-blank is NULL term,
     startIX=length;      // treat as if blank, empty line.
 
 
