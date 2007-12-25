@@ -39,7 +39,7 @@ BHV_PeriodicSpeed::BHV_PeriodicSpeed(IvPDomain gdomain) :
 {
   this->setParam("descriptor", "(d)bhv_periodic_speed");
 
-  domain = subDomain(domain, "speed");
+  m_domain = subDomain(m_domain, "speed");
 
   // Initialize Configuration Parameters
   m_period_gap       = 0;
@@ -121,7 +121,7 @@ bool BHV_PeriodicSpeed::setParam(string g_param, string g_val)
 
 IvPFunction *BHV_PeriodicSpeed::produceOF() 
 {
-  double curr_time = info_buffer->getCurrTime();
+  double curr_time = m_info_buffer->getCurrTime();
 
   if(m_first_iteration) {
     m_first_iteration = false;
@@ -164,14 +164,14 @@ IvPFunction *BHV_PeriodicSpeed::produceOF()
   if(!m_state_inperiod)
     return(0);
 
-  ZAIC_PEAK zaic(domain, "speed");
+  ZAIC_PEAK zaic(m_domain, "speed");
   zaic.setSummit(m_period_speed);
   zaic.setBaseWidth(m_period_basewidth);
   zaic.setPeakWidth(m_period_peakwidth);
 
   IvPFunction *new_of = zaic.extractOF();
   new_of->getPDMap()->normalize(0,100);
-  new_of->setPWT(priority_wt);
+  new_of->setPWT(m_priority_wt);
 
   return(new_of);
 }

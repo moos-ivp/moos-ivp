@@ -42,7 +42,7 @@ BHV_ConstantDepth::BHV_ConstantDepth(IvPDomain gdomain) :
 {
   this->setParam("descriptor", "(d)bhv_constantdepth");
 
-  domain = subDomain(domain, "depth");
+  m_domain = subDomain(m_domain, "depth");
 
   m_desired_depth = 0;
   m_peakwidth     = 0;
@@ -133,19 +133,19 @@ bool BHV_ConstantDepth::handleConditionalParam(string param, string val)
 
 IvPFunction *BHV_ConstantDepth::produceOF() 
 {
-  if(!domain.hasDomain("depth")) {
+  if(!m_domain.hasDomain("depth")) {
     postEMessage("No 'depth' variable in the helm domain");
     return(0);
   }
 
-  ZAIC_PEAK zaic(domain, "depth");
+  ZAIC_PEAK zaic(m_domain, "depth");
   zaic.setSummit(m_desired_depth);
   zaic.setBaseWidth(m_basewidth);
   zaic.setPeakWidth(m_peakwidth);
 
   IvPFunction *ipf = zaic.extractOF();
   if(ipf)
-    ipf->setPWT(priority_wt);
+    ipf->setPWT(m_priority_wt);
 
   return(ipf);
 }

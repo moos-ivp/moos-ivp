@@ -40,7 +40,7 @@ BHV_Shadow::BHV_Shadow(IvPDomain gdomain) : IvPBehavior(gdomain)
 {
   this->setParam("descriptor", "(d)bhv_shadow");
 
-  domain = subDomain(domain, "course,speed");
+  m_domain = subDomain(m_domain, "course,speed");
 
   m_max_range     = 0;
   m_hdg_peakwidth = 0;
@@ -48,10 +48,7 @@ BHV_Shadow::BHV_Shadow(IvPDomain gdomain) : IvPBehavior(gdomain)
   m_spd_peakwidth = 0;
   m_spd_basewidth = 2.0;
 
-  info_vars.push_back("NAV_X");
-  info_vars.push_back("NAV_Y");
-  info_vars.push_back("NAV_SPEED");
-  info_vars.push_back("NAV_HEADING");
+  addInfoVars("NAV_X, NAV_Y, NAV_SPEED, NAV_HEADING");
 }
 
 //-----------------------------------------------------------
@@ -64,10 +61,10 @@ bool BHV_Shadow::setParam(string g_param, string g_val)
 
   if((g_param == "them") || (g_param == "contact")) {
     m_them_name = toupper(g_val);
-    info_vars.push_back(m_them_name+"_NAV_X");
-    info_vars.push_back(m_them_name+"_NAV_Y");
-    info_vars.push_back(m_them_name+"_NAV_SPEED");
-    info_vars.push_back(m_them_name+"_NAV_HEADING");
+    addInfoVars(m_them_name+"_NAV_X");
+    addInfoVars(m_them_name+"_NAV_Y");
+    addInfoVars(m_them_name+"_NAV_SPEED");
+    addInfoVars(m_them_name+"_NAV_HEADING");
     return(true);
   }  
   else if(g_param == "max_range") {
@@ -117,11 +114,11 @@ IvPFunction *BHV_Shadow::produceOF()
     postWMessage("contact ID not set.");
     return(0);
   }
-  if(!domain.hasDomain("course")) {
+  if(!m_domain.hasDomain("course")) {
     postWMessage("No 'heading/course' variable in the helm domain");
     return(0);
   }
-  if(!domain.hasDomain("speed")) {
+  if(!m_domain.hasDomain("speed")) {
     postWMessage("No 'speed' variable in the helm domain");
     return(0);
   }
@@ -137,12 +134,12 @@ IvPFunction *BHV_Shadow::produceOF()
   if(relevance <= 0)
     return(0);
 
-  ZAIC_PEAK hdg_zaic(domain, "course");
+  ZAIC_PEAK hdg_zaic(m_domain, "course");
   hdg_zaic.addSummit(m_cnh, m_hdg_peakwidth, m_hdg_basewidth, 50, 0, 100);
   hdg_zaic.setValueWrap(true);
   IvPFunction *hdg_ipf = hdg_zaic.extractOF();
   
-  ZAIC_PEAK spd_zaic(domain, "speed");
+  ZAIC_PEAK spd_zaic(m_domain, "speed");
   spd_zaic.addSummit(m_cnv, m_spd_peakwidth, m_spd_basewidth, 10, 0, 25);
   spd_zaic.setValueWrap(true);
   IvPFunction *spd_ipf = spd_zaic.extractOF();
@@ -150,7 +147,7 @@ IvPFunction *BHV_Shadow::produceOF()
   OF_Coupler coupler;
   IvPFunction *ipf = coupler.couple(hdg_ipf, spd_ipf);
   if(ipf)
-    ipf->setPWT(relevance * priority_wt);
+    ipf->setPWT(relevance * m_priority_wt);
   
   ipf->getPDMap()->normalize(0.0, 100.0);
   
@@ -176,8 +173,8 @@ bool BHV_Shadow::updateInfoIn()
 {
   bool ok1, ok2;
   
-  m_cnh = info_buffer->dQuery(m_them_name+"_NAV_HEADING", ok1);
-  m_cnv = info_buffer->dQuery(m_them_name+"_NAV_SPEED", ok2);
+  m_cnh = m_info_buffer->dQuery(m_them_name+"_NAV_HEADING", ok1);
+  m_cnv = m_info_buffer->dQuery(m_them_name+"_NAV_SPEED", ok2);
   if(!ok1 || !ok2) {
     postWMessage("contact course/speed info not found.");
     return(false);
@@ -185,15 +182,15 @@ bool BHV_Shadow::updateInfoIn()
 
   m_cnh = angle360(m_cnh);
 
-  m_cnx = info_buffer->dQuery(m_them_name+"_NAV_X", ok1);
-  m_cny = info_buffer->dQuery(m_them_name+"_NAV_Y", ok2);
+  m_cnx = m_info_buffer->dQuery(m_them_name+"_NAV_X", ok1);
+  m_cny = m_info_buffer->dQuery(m_them_name+"_NAV_Y", ok2);
   if(!ok1 || !ok2) {
     postWMessage("contact x/y info not found.");
     return(false);
   }
   
-  m_osx = info_buffer->dQuery("NAV_X", ok1);
-  m_osy = info_buffer->dQuery("NAV_Y", ok2);
+  m_osx = m_info_buffer->dQuery("NAV_X", ok1);
+  m_osy = m_info_buffer->dQuery("NAV_Y", ok2);
   if(!ok1 || !ok2) {
     postEMessage("ownship x/y info not found.");
     return(false);

@@ -45,7 +45,7 @@ BHV_RStationKeep::BHV_RStationKeep(IvPDomain gdomain) :
 {
   this->setParam("descriptor", "(d)bhv_waypoint");
 
-  domain = subDomain(domain, "course,speed");
+  m_domain = subDomain(m_domain, "course,speed");
 
   // Default values for Configuration Parameters
   m_station_range = 0;
@@ -62,8 +62,7 @@ BHV_RStationKeep::BHV_RStationKeep(IvPDomain gdomain) :
   m_station_set     = false;
 
   // Declare information needed by this behavior
-  info_vars.push_back("NAV_X");
-  info_vars.push_back("NAV_Y");
+  addInfoVars("NAV_X, NAV_Y");
 }
 
 //-----------------------------------------------------------
@@ -89,10 +88,10 @@ bool BHV_RStationKeep::setParam(string param, string val)
   
   if((param == "them") || (param == "contact")) {
     m_contact = toupper(val);
-    info_vars.push_back(m_contact+"_NAV_X");
-    info_vars.push_back(m_contact+"_NAV_Y");
-    info_vars.push_back(m_contact+"_NAV_SPEED");
-    info_vars.push_back(m_contact+"_NAV_HEADING");
+    addInfoVars(m_contact+"_NAV_X");
+    addInfoVars(m_contact+"_NAV_Y");
+    addInfoVars(m_contact+"_NAV_SPEED");
+    addInfoVars(m_contact+"_NAV_HEADING");
     return(true);
   }  
   else if(param == "center_activate") {
@@ -178,8 +177,8 @@ IvPFunction *BHV_RStationKeep::produceOF()
   IvPFunction *ipf = 0;
 
   bool ok1, ok2;
-  double nav_x = info_buffer->dQuery("NAV_X", ok1);
-  double nav_y = info_buffer->dQuery("NAV_Y", ok2);
+  double nav_x = m_info_buffer->dQuery("NAV_X", ok1);
+  double nav_y = m_info_buffer->dQuery("NAV_Y", ok2);
 
   // If no ownship position from info_buffer, return null
   if(!ok1 || !ok2) {
@@ -210,7 +209,7 @@ IvPFunction *BHV_RStationKeep::produceOF()
   if(dist_to_station >= m_outer_radius)
     desired_speed = m_extra_speed;
 
-  ZAIC_PEAK spd_zaic(domain, "speed");
+  ZAIC_PEAK spd_zaic(m_domain, "speed");
   spd_zaic.setSummit(desired_speed);
   spd_zaic.setBaseWidth(0.4);
   spd_zaic.setPeakWidth(0.0);
@@ -218,7 +217,7 @@ IvPFunction *BHV_RStationKeep::produceOF()
   spd_zaic.setMinMaxUtil(0, 25);
   IvPFunction *spd_ipf = spd_zaic.extractOF();
   
-  ZAIC_PEAK crs_zaic(domain, "course");
+  ZAIC_PEAK crs_zaic(m_domain, "course");
   crs_zaic.setSummit(angle_to_station);
   crs_zaic.setBaseWidth(180.0);
   crs_zaic.setValueWrap(true);
@@ -228,7 +227,7 @@ IvPFunction *BHV_RStationKeep::produceOF()
   ipf = coupler.couple(crs_ipf, spd_ipf);
 
   if(ipf)
-    ipf->setPWT(priority_wt);
+    ipf->setPWT(m_priority_wt);
 
   return(ipf);
 }
@@ -248,8 +247,8 @@ bool BHV_RStationKeep::updateInfoIn()
 {
   bool ok1, ok2, ok3, ok4, ok5, ok6;
   // ownship position in meters from some 0,0 reference point.
-  m_osx = info_buffer->dQuery("NAV_X", ok1);
-  m_osy = info_buffer->dQuery("NAV_Y", ok2);
+  m_osx = m_info_buffer->dQuery("NAV_X", ok1);
+  m_osy = m_info_buffer->dQuery("NAV_Y", ok2);
 
   // Must get ownship position from InfoBuffer
   if(!ok1 || !ok2) {
@@ -257,10 +256,10 @@ bool BHV_RStationKeep::updateInfoIn()
     return(false);
   }
 
-  m_cnx = info_buffer->dQuery(m_contact+"_NAV_X", ok3);
-  m_cny = info_buffer->dQuery(m_contact+"_NAV_Y", ok4);
-  m_cnh = info_buffer->dQuery(m_contact+"_NAV_HEADING", ok5);
-  m_cnv = info_buffer->dQuery(m_contact+"_NAV_SPEED", ok6);
+  m_cnx = m_info_buffer->dQuery(m_contact+"_NAV_X", ok3);
+  m_cny = m_info_buffer->dQuery(m_contact+"_NAV_Y", ok4);
+  m_cnh = m_info_buffer->dQuery(m_contact+"_NAV_HEADING", ok5);
+  m_cnv = m_info_buffer->dQuery(m_contact+"_NAV_SPEED", ok6);
 
   if(!ok3)
     postWMessage("No contact NAV_X in info_buffer.");
@@ -351,17 +350,17 @@ void BHV_RStationKeep::postStationMessage(bool post)
   else
     station += "0,";
 
-  station += us_name + "_rstation";
+  station += m_us_name + "_rstation";
   postMessage("RSTATION_CIRCLE", station);
 
   string ptmsg;
   if(post) {
     ptmsg += doubleToString(m_station_x, 2) + ",";
-    ptmsg += doubleToString(m_station_y, 2) + ",5," + us_name + "_rstation";
+    ptmsg += doubleToString(m_station_y, 2) + ",5," + m_us_name + "_rstation";
   }
   else {
     ptmsg += doubleToString(m_station_x, 2) + ",";
-    ptmsg += doubleToString(m_station_y, 2) + ",0," + us_name + "_rstation";
+    ptmsg += doubleToString(m_station_y, 2) + ",0," + m_us_name + "_rstation";
   }    
   postMessage("RVIEW_POINT", ptmsg);
 }

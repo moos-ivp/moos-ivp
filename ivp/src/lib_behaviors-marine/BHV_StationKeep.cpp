@@ -45,7 +45,7 @@ BHV_StationKeep::BHV_StationKeep(IvPDomain gdomain) :
 {
   this->setParam("descriptor", "(d)bhv_waypoint");
 
-  domain = subDomain(domain, "course,speed");
+  m_domain = subDomain(m_domain, "course,speed");
 
   // Default values for Configuration Parameters
   m_station_x    = 0;
@@ -62,8 +62,7 @@ BHV_StationKeep::BHV_StationKeep(IvPDomain gdomain) :
   m_station_set     = false;
 
   // Declare information needed by this behavior
-  info_vars.push_back("NAV_X");
-  info_vars.push_back("NAV_Y");
+  addInfoVars("NAV_X, NAV_Y");
 }
 
 //-----------------------------------------------------------
@@ -170,8 +169,8 @@ IvPFunction *BHV_StationKeep::produceOF()
   IvPFunction *ipf = 0;
 
   bool ok1, ok2;
-  double nav_x = info_buffer->dQuery("NAV_X", ok1);
-  double nav_y = info_buffer->dQuery("NAV_Y", ok2);
+  double nav_x = m_info_buffer->dQuery("NAV_X", ok1);
+  double nav_y = m_info_buffer->dQuery("NAV_Y", ok2);
 
   // If no ownship position from info_buffer, return null
   if(!ok1 || !ok2) {
@@ -202,7 +201,7 @@ IvPFunction *BHV_StationKeep::produceOF()
   if(dist_to_station >= m_outer_radius)
     desired_speed = m_extra_speed;
 
-  ZAIC_PEAK spd_zaic(domain, "speed");
+  ZAIC_PEAK spd_zaic(m_domain, "speed");
   spd_zaic.setSummit(desired_speed);
   spd_zaic.setBaseWidth(0.4);
   spd_zaic.setPeakWidth(0.0);
@@ -210,7 +209,7 @@ IvPFunction *BHV_StationKeep::produceOF()
   spd_zaic.setMinMaxUtil(0, 25);
   IvPFunction *spd_ipf = spd_zaic.extractOF();
   
-  ZAIC_PEAK crs_zaic(domain, "course");
+  ZAIC_PEAK crs_zaic(m_domain, "course");
   crs_zaic.setSummit(angle_to_station);
   crs_zaic.setBaseWidth(180.0);
   crs_zaic.setValueWrap(true);
@@ -220,7 +219,7 @@ IvPFunction *BHV_StationKeep::produceOF()
   ipf = coupler.couple(crs_ipf, spd_ipf);
 
   if(ipf)
-    ipf->setPWT(priority_wt);
+    ipf->setPWT(m_priority_wt);
 
   return(ipf);
 }
@@ -240,8 +239,8 @@ bool BHV_StationKeep::updateInfoIn()
 {
   bool ok1, ok2;
   // ownship position in meters from some 0,0 reference point.
-  m_osx = info_buffer->dQuery("NAV_X", ok1);
-  m_osy = info_buffer->dQuery("NAV_Y", ok2);
+  m_osx = m_info_buffer->dQuery("NAV_X", ok1);
+  m_osy = m_info_buffer->dQuery("NAV_Y", ok2);
 
   // Must get ownship position from InfoBuffer
   if(!ok1 || !ok2) {
@@ -308,7 +307,7 @@ void BHV_StationKeep::postStationMessage(bool post)
   else
     station += "0,";
 
-  station += us_name;
+  station += m_us_name;
   postMessage("STATION_CIRCLE", station);
 
 }

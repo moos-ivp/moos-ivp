@@ -46,7 +46,7 @@ BHV_Waypoint::BHV_Waypoint(IvPDomain gdomain) :
   IvPBehavior(gdomain)
 {
   this->setParam("descriptor", "(d)bhv_waypoint");
-  domain = subDomain(domain, "course,speed");
+  m_domain = subDomain(m_domain, "course,speed");
 
   cruise_speed    = 0;  // Meters/second
   lead_distance   = -1;
@@ -64,9 +64,7 @@ BHV_Waypoint::BHV_Waypoint(IvPDomain gdomain) :
   iptX  = -1;
   iptY  = -1;
 
-  info_vars.push_back("NAV_X");
-  info_vars.push_back("NAV_Y");
-  info_vars.push_back("NAV_SPEED");
+  addInfoVars("NAV_X, NAV_Y, NAV_SPEED");
 }
 
 //-----------------------------------------------------------
@@ -164,7 +162,7 @@ IvPFunction *BHV_Waypoint::produceOF()
   
   IvPFunction *ipf = buildOF("zaic");
   if(ipf)
-    ipf->setPWT(priority_wt);
+    ipf->setPWT(m_priority_wt);
 
   updateInfoOut(true);
 
@@ -184,9 +182,9 @@ IvPFunction *BHV_Waypoint::produceOF()
 bool BHV_Waypoint::updateInfoIn()
 {
   bool ok1, ok2, ok3;
-  osX   = info_buffer->dQuery("NAV_X",     ok1);
-  osY   = info_buffer->dQuery("NAV_Y",     ok2);
-  osSPD = info_buffer->dQuery("NAV_SPEED", ok3);
+  osX   = m_info_buffer->dQuery("NAV_X",     ok1);
+  osY   = m_info_buffer->dQuery("NAV_Y",     ok2);
+  osSPD = m_info_buffer->dQuery("NAV_SPEED", ok3);
 
   // Must get ownship position from InfoBuffer
   if(!ok1 || !ok2) {
@@ -255,7 +253,7 @@ IvPFunction *BHV_Waypoint::buildOF(string method)
   IvPFunction *ipf = 0;
 
   if(method == "zaic") {
-    ZAIC_PEAK spd_zaic(domain, "speed");
+    ZAIC_PEAK spd_zaic(m_domain, "speed");
     spd_zaic.setSummit(cruise_speed);
     spd_zaic.setBaseWidth(2.6);
     spd_zaic.setPeakWidth(0.0);
@@ -263,7 +261,7 @@ IvPFunction *BHV_Waypoint::buildOF(string method)
     IvPFunction *spd_of = spd_zaic.extractOF();
 
     double rel_ang_to_wpt = relAng(osX, osY, iptX, iptY);
-    ZAIC_PEAK crs_zaic(domain, "course");
+    ZAIC_PEAK crs_zaic(m_domain, "course");
     crs_zaic.setSummit(rel_ang_to_wpt);
     crs_zaic.setBaseWidth(180.0);
     crs_zaic.setValueWrap(true);
@@ -286,7 +284,7 @@ void BHV_Waypoint::updateInfoOut(bool post)
     double dist_meters   = hypot((osX-ptX), (osY-ptY));
     double eta_seconds   = dist_meters / osSPD;
 
-    string stat = "vname=" + us_name + ",";
+    string stat = "vname=" + m_us_name + ",";
     stat += "index=" + intToString(current_waypt)   + ",";
     stat += "dist="  + doubleToString(dist_meters)  + ",";
     stat += "eta="   + doubleToString(eta_seconds);
@@ -302,12 +300,12 @@ void BHV_Waypoint::updateInfoOut(bool post)
     if(waypoint_engine.currPtChanged()) {
       string ptmsg;
       ptmsg += doubleToString(ptX,2) + ",";
-      ptmsg += doubleToString(ptY,2) + ",5," + us_name + "_wpt";
+      ptmsg += doubleToString(ptY,2) + ",5," + m_us_name + "_wpt";
       postMessage("VIEW_POINT", ptmsg);
     }
   }
   else {
-    string ptmsg = "0,0,0," + us_name + "_wpt";;
+    string ptmsg = "0,0,0," + m_us_name + "_wpt";;
     postMessage("VIEW_POINT", ptmsg);
   }
 

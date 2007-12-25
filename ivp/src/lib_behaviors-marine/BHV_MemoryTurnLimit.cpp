@@ -49,13 +49,12 @@ BHV_MemoryTurnLimit::BHV_MemoryTurnLimit(IvPDomain gdomain) :
 {
   this->setParam("descriptor", "(d)bhv_memturnlimit");
 
-  domain = subDomain(domain, "course");
+  m_domain = subDomain(m_domain, "course");
 
   m_memory_time = -1;
   m_turn_range  = -1;
 
-  info_vars.push_back("NAV_HEADING");
-  info_vars.push_back("NAV_SPEED"); //dpe
+  addInfoVars("NAV_HEADING, NAV_SPEED");
 }
 
 //-----------------------------------------------------------
@@ -104,8 +103,8 @@ IvPFunction *BHV_MemoryTurnLimit::produceOF()
     
 
   bool ok,ok2;
-  double heading = info_buffer->dQuery("NAV_HEADING", ok);
-  double speed   = info_buffer->dQuery("NAV_SPEED", ok2); //dpe
+  double heading = m_info_buffer->dQuery("NAV_HEADING", ok);
+  double speed   = m_info_buffer->dQuery("NAV_SPEED", ok2); //dpe
 
   if(!ok) {
     postEMessage("No Ownship NAV_HEADING in info_buffer");
@@ -117,7 +116,7 @@ IvPFunction *BHV_MemoryTurnLimit::produceOF()
     return(0);                                               //dpe 
   }
  
-  double currtime = info_buffer->getCurrTime();
+  double currtime = m_info_buffer->getCurrTime();
   
   addHeading(heading, currtime);
   double heading_avg;
@@ -128,7 +127,7 @@ IvPFunction *BHV_MemoryTurnLimit::produceOF()
   
   postMessage("MEM_HDG_AVG", heading_avg);
 
-  ZAIC_PEAK crs_zaic(domain, "course");
+  ZAIC_PEAK crs_zaic(m_domain, "course");
   crs_zaic.setSummit(heading_avg);
   crs_zaic.setValueWrap(true);
   crs_zaic.setPeakWidth(m_turn_range*speed/1.5);  //dpe-make 1.5 a param in future
@@ -136,7 +135,7 @@ IvPFunction *BHV_MemoryTurnLimit::produceOF()
   IvPFunction *ipf = crs_zaic.extractOF();
 
   if(ipf)
-    ipf->setPWT(priority_wt);
+    ipf->setPWT(m_priority_wt);
 
   return(ipf);
 }

@@ -43,10 +43,10 @@ using namespace std;
 BHV_Trail::BHV_Trail(IvPDomain gdomain) : IvPBehavior(gdomain)
 {
   this->setParam("descriptor", "(d)trail");
-  this->setParam("unifbox", "course=3, speed=2");
-  this->setParam("gridbox", "course=9, speed=6");
+  this->setParam("build_info", "uniform_box=course:3,speed:2");
+  this->setParam("build_info", "uniform_grid=course:9,speed:6");
 
-  domain = subDomain(domain, "course,speed");
+  m_domain = subDomain(m_domain, "course,speed");
 
   m_trail_range  = 0;
   m_trail_angle  = 180;
@@ -57,10 +57,7 @@ BHV_Trail::BHV_Trail(IvPDomain gdomain) : IvPBehavior(gdomain)
   m_min_util_cpa_dist = 100;
   m_max_util_cpa_dist = 0; 
 
-  info_vars.push_back("NAV_X");
-  info_vars.push_back("NAV_Y");
-  info_vars.push_back("NAV_SPEED");
-  info_vars.push_back("NAV_HEADING");
+  addInfoVars("NAV_X, NAV_Y, NAV_SPEED, NAV_HEADING");
 }
 
 //-----------------------------------------------------------
@@ -80,10 +77,10 @@ bool BHV_Trail::setParam(string g_param, string g_val)
 
   if((g_param == "them") || (g_param == "contact")) {
     m_contact = toupper(g_val);
-    info_vars.push_back(m_contact+"_NAV_X");
-    info_vars.push_back(m_contact+"_NAV_Y");
-    info_vars.push_back(m_contact+"_NAV_SPEED");
-    info_vars.push_back(m_contact+"_NAV_HEADING");
+    addInfoVars(m_contact+"_NAV_X");
+    addInfoVars(m_contact+"_NAV_Y");
+    addInfoVars(m_contact+"_NAV_SPEED");
+    addInfoVars(m_contact+"_NAV_HEADING");
     return(true);
   }  
   else if(g_param == "trail_range") {
@@ -111,11 +108,6 @@ bool BHV_Trail::setParam(string g_param, string g_val)
 
 IvPFunction *BHV_Trail::produceOF() 
 {
-  if(!unif_box || !grid_box) {
-    postEMessage("Null UnifBox or GridBox.");
-    return(0);
-  }
-  
   if(m_contact == "") {
     postWMessage("contact ID not set.");
     return(0);
@@ -143,7 +135,7 @@ IvPFunction *BHV_Trail::produceOF()
   IvPFunction *ipf = 0;
 
   if(distPointToPoint(m_osx, m_osy, posX, posY) > m_radius) {
-    AOF_CutRangeCPA aof(domain);
+    AOF_CutRangeCPA aof(m_domain);
     aof.setParam("cnlat", posY);
     aof.setParam("cnlon", posX);
     aof.setParam("cncrs", m_cnh);
@@ -161,16 +153,16 @@ IvPFunction *BHV_Trail::produceOF()
     }
 
     OF_Reflector reflector(&aof, 1);
-    reflector.createUniform(unif_box, grid_box);
+    reflector.create(m_build_info);
     ipf = reflector.extractOF();
   }
   else {
-    ZAIC_PEAK hdg_zaic(domain, "course");
+    ZAIC_PEAK hdg_zaic(m_domain, "course");
     hdg_zaic.addSummit(m_cnh, 0, 180, 80, 0, 100);
     hdg_zaic.setValueWrap(true);
     IvPFunction *hdg_ipf = hdg_zaic.extractOF();
     
-    ZAIC_PEAK spd_zaic(domain, "speed");
+    ZAIC_PEAK spd_zaic(m_domain, "speed");
     double modv = m_cnv - 0.1;
     if(modv < 0)
       modv = 0;
@@ -184,7 +176,7 @@ IvPFunction *BHV_Trail::produceOF()
   
   if(ipf) {
     ipf->getPDMap()->normalize(0.0, 100.0);
-    ipf->setPWT(relevance * priority_wt);
+    ipf->setPWT(relevance * m_priority_wt);
   }
 
 #if 0
@@ -209,15 +201,15 @@ bool BHV_Trail::updateInfoIn()
 {
   bool ok1, ok2, ok3, ok4, ok5, ok6, ok7, ok8;
  
-  m_osx = info_buffer->dQuery("NAV_X", ok1);
-  m_osy = info_buffer->dQuery("NAV_Y", ok2);
-  m_osh = info_buffer->dQuery("NAV_HEADING", ok3);
-  m_osv = info_buffer->dQuery("NAV_SPEED", ok4);
+  m_osx = m_info_buffer->dQuery("NAV_X", ok1);
+  m_osy = m_info_buffer->dQuery("NAV_Y", ok2);
+  m_osh = m_info_buffer->dQuery("NAV_HEADING", ok3);
+  m_osv = m_info_buffer->dQuery("NAV_SPEED", ok4);
 
-  m_cnx = info_buffer->dQuery(m_contact+"_NAV_X", ok5);
-  m_cny = info_buffer->dQuery(m_contact+"_NAV_Y", ok6);
-  m_cnh = info_buffer->dQuery(m_contact+"_NAV_HEADING", ok7);
-  m_cnv = info_buffer->dQuery(m_contact+"_NAV_SPEED", ok8);
+  m_cnx = m_info_buffer->dQuery(m_contact+"_NAV_X", ok5);
+  m_cny = m_info_buffer->dQuery(m_contact+"_NAV_Y", ok6);
+  m_cnh = m_info_buffer->dQuery(m_contact+"_NAV_HEADING", ok7);
+  m_cnv = m_info_buffer->dQuery(m_contact+"_NAV_SPEED", ok8);
 
   if(!ok1)
     postWMessage("No ownship NAV_X in info_buffer.");
@@ -242,8 +234,8 @@ bool BHV_Trail::updateInfoIn()
   if(!m_interpolate)
     return(true);
   
-  double curr_time = info_buffer->getCurrTime();
-  double mark_time = info_buffer->tQuery(m_contact+"_NAV_X");
+  double curr_time = m_info_buffer->getCurrTime();
+  double mark_time = m_info_buffer->tQuery(m_contact+"_NAV_X");
   if(mark_time == curr_time)
     m_interpolator.setPosition(m_cnx, m_cny, m_cnv, m_cnh, curr_time);
   

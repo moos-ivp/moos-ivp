@@ -41,7 +41,7 @@ BHV_ConstantSpeed::BHV_ConstantSpeed(IvPDomain gdomain) :
 {
   this->setParam("descriptor", "(d)bhv_constant_speed");
 
-  domain = subDomain(domain, "speed");
+  m_domain = subDomain(m_domain, "speed");
 
   m_desired_speed = 0;
   m_peakwidth     = 0;
@@ -94,19 +94,19 @@ bool BHV_ConstantSpeed::setParam(string param, string val)
 
 IvPFunction *BHV_ConstantSpeed::produceOF() 
 {
-  if(!domain.hasDomain("speed")) {
+  if(!m_domain.hasDomain("speed")) {
     postEMessage("No 'speed' variable in the helm domain");
     return(0);
   }
 
-  ZAIC_PEAK zaic(domain, "speed");
+  ZAIC_PEAK zaic(m_domain, "speed");
   zaic.setSummit(m_desired_speed);
   zaic.setBaseWidth(m_basewidth);
   zaic.setPeakWidth(m_peakwidth);
 
   IvPFunction *ipf = zaic.extractOF();
   if(ipf)
-    ipf->setPWT(priority_wt);
+    ipf->setPWT(m_priority_wt);
 
   return(ipf);
 }

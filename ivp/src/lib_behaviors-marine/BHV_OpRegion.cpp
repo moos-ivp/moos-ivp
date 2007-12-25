@@ -85,12 +85,8 @@ BHV_OpRegion::BHV_OpRegion(IvPDomain gdomain) : IvPBehavior(gdomain)
   trigger_exit_time = 0.5;
 
   // Declare the variables we will need from the info_buffer
-  info_vars.push_back("NAV_X");
-  info_vars.push_back("NAV_Y");
-  info_vars.push_back("NAV_HEADING");
-  info_vars.push_back("NAV_SPEED");
-  info_vars.push_back("NAV_DEPTH");
-  info_vars.push_back("NAV_ALTITUDE");
+  addInfoVars("NAV_X, NAV_Y, NAV_HEADING");
+  addInfoVars("NAV_SPEED, NAV_DEPTH, NAV_ALTITUDE");
 }
 
 //-----------------------------------------------------------
@@ -185,8 +181,8 @@ IvPFunction *BHV_OpRegion::produceOF()
 void BHV_OpRegion::polygonVerify()
 {
   bool ok1, ok2;
-  double osX = info_buffer->dQuery("NAV_X", ok1);
-  double osY = info_buffer->dQuery("NAV_Y", ok2);
+  double osX = m_info_buffer->dQuery("NAV_X", ok1);
+  double osY = m_info_buffer->dQuery("NAV_Y", ok2);
 
   // Must get ownship position from InfoBuffer
   if(!ok1 || !ok2) {
@@ -290,15 +286,15 @@ void BHV_OpRegion::polygonVerify()
 void BHV_OpRegion::postPolyStatus()
 {
   bool ok1, ok2, ok3, ok4;
-  double osX   = info_buffer->dQuery("NAV_X", ok1);
-  double osY   = info_buffer->dQuery("NAV_Y", ok2);
-  double osSPD = info_buffer->dQuery("NAV_SPEED", ok3);
-  double osHDG = info_buffer->dQuery("NAV_HEADING", ok4);
+  double osX   = m_info_buffer->dQuery("NAV_X", ok1);
+  double osY   = m_info_buffer->dQuery("NAV_Y", ok2);
+  double osSPD = m_info_buffer->dQuery("NAV_SPEED", ok3);
+  double osHDG = m_info_buffer->dQuery("NAV_HEADING", ok4);
 
 #if 0
   // Must get ownship position from InfoBuffer
   if(!ok1 || !ok2 || !ok3 || !ok4) {
-    string msg = "No ownship info (" + us_name + ") in info_buffer";
+    string msg = "No ownship info (" + m_us_name + ") in info_buffer";
     postEMessage(msg);
     return;
   }
@@ -307,26 +303,26 @@ void BHV_OpRegion::postPolyStatus()
 #if 0
   // Must get ownship position from InfoBuffer
   if(!ok1) {
-    string msg = "No ownship NAV_X (" + us_name + ") in info_buffer";
+    string msg = "No ownship NAV_X (" + m_us_name + ") in info_buffer";
     postEMessage(msg);
     return;
   }
 #endif
   // Must get ownship position from InfoBuffer
   if(!ok2) {
-    string msg = "No ownship NAV_Y (" + us_name + ") in info_buffer";
+    string msg = "No ownship NAV_Y (" + m_us_name + ") in info_buffer";
     postEMessage(msg);
     return;
   }
   // Must get ownship position from InfoBuffer
   if(!ok3) {
-    string msg = "No ownship NAV_SPEED (" + us_name + ") in info_buffer";
+    string msg = "No ownship NAV_SPEED (" + m_us_name + ") in info_buffer";
     postEMessage(msg);
     return;
   }
   // Must get ownship position from InfoBuffer
   if(!ok4) {
-    string msg = "No ownship NAV_HEADING (" + us_name + ") in info_buffer";
+    string msg = "No ownship NAV_HEADING (" + m_us_name + ") in info_buffer";
     postEMessage(msg);
     return;
   }
@@ -334,13 +330,13 @@ void BHV_OpRegion::postPolyStatus()
 
 
   // Must find the top vehicle speed in the behavior ivp domain
-  int index = domain.getIndex("speed");
+  int index = m_domain.getIndex("speed");
   if(index == -1) {
     string msg = "No Top-Speed info found in the decision domain";
     postEMessage(msg);
     return;
   }
-  double osTopSpeed = domain.getVarHigh(index);
+  double osTopSpeed = m_domain.getVarHigh(index);
   
   // Calculate the time and the distance to the perimeter along the
   // current heading (CH).
@@ -382,13 +378,13 @@ void BHV_OpRegion::depthVerify()
     return;
 
   bool ok;
-  double depth = info_buffer->dQuery("NAV_DEPTH", ok);
+  double depth = m_info_buffer->dQuery("NAV_DEPTH", ok);
 
   // Must get ownship depth from info_buffer
   if(!ok) { 
-    //cout << "No NAV_DEPTH in info_buffer for vehicle: " << us_name << endl;
+    //cout << "No NAV_DEPTH in info_buffer for vehicle: " << m_us_name << endl;
     postEMessage("No ownship depth in info_buffer.");
-    //info_buffer->print();
+    //m_info_buffer->print();
     return;
   }
 
@@ -412,7 +408,7 @@ void BHV_OpRegion::altitudeVerify()
     return;
 
   bool ok;
-  double curr_altitude = info_buffer->dQuery("NAV_ALTITUDE", ok);
+  double curr_altitude = m_info_buffer->dQuery("NAV_ALTITUDE", ok);
 
   // Must get ownship altitude from info_buffer
   if(!ok) { 
@@ -457,7 +453,7 @@ void BHV_OpRegion::timeoutVerify()
 void BHV_OpRegion::setTimeStamps()
 {
   // Grab current time from Info Buffer
-  current_time = info_buffer->getCurrTime();
+  current_time = m_info_buffer->getCurrTime();
   
   //cout << "Current Time -    " << delta_time << endl;
   //cout << "Previous Time -    " << delta_time << endl;

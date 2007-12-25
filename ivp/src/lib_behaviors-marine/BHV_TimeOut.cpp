@@ -94,7 +94,7 @@ IvPFunction *BHV_TimeOut::produceOF()
 void BHV_TimeOut::setTimeStamps()
 {
   // Grab current time from Info Buffer
-  m_current_time = info_buffer->getCurrTime();
+  m_current_time = m_info_buffer->getCurrTime();
   
   //cout << "Current Time -    " << delta_time << endl;
   //cout << "Previous Time -    " << delta_time << endl;

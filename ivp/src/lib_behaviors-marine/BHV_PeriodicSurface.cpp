@@ -42,7 +42,7 @@ BHV_PeriodicSurface::BHV_PeriodicSurface(IvPDomain gdomain) :
 {
   this->setParam("descriptor", "(d)bhv_periodic_surface");
 
-  domain = subDomain(domain, "speed,depth");
+  m_domain = subDomain(m_domain, "speed,depth");
 
   // Behavior Parameter Default Values:
   m_period              = 300; // Seconds
@@ -70,9 +70,8 @@ BHV_PeriodicSurface::BHV_PeriodicSurface(IvPDomain gdomain) :
   m_at_surface            = false;
 
   // Declare information needed by this behavior
-  info_vars.push_back(m_mark_variable);
-  info_vars.push_back("NAV_DEPTH");
-  info_vars.push_back("NAV_SPEED");
+  addInfoVars(m_mark_variable);
+  addInfoVars("NAV_DEPTH, NAV_SPEED");
 }
 
 //-----------------------------------------------------------
@@ -96,7 +95,7 @@ bool BHV_PeriodicSurface::setParam(string g_param, string g_val)
     if(g_val == "")
       return(false);
     m_mark_variable = g_val;
-    info_vars.push_back(m_mark_variable);
+    addInfoVars(m_mark_variable);
     return(true);
   }
   else if(g_param == "pending_status_var") {
@@ -218,7 +217,7 @@ IvPFunction *BHV_PeriodicSurface::produceOF()
 
 
 
-  ZAIC_PEAK zaic_speed(domain, "speed");
+  ZAIC_PEAK zaic_speed(m_domain, "speed");
   zaic_speed.setSummit(desired_speed);
   if(desired_speed == 0)
     zaic_speed.setBaseWidth(0);
@@ -230,7 +229,7 @@ IvPFunction *BHV_PeriodicSurface::produceOF()
   IvPFunction *ipf_speed = zaic_speed.extractOF();
 
 
-  ZAIC_PEAK zaic_depth(domain, "depth");
+  ZAIC_PEAK zaic_depth(m_domain, "depth");
   zaic_depth.setSummit(0);
   zaic_depth.setBaseWidth(0);
   zaic_depth.setPeakWidth(0);
@@ -241,7 +240,7 @@ IvPFunction *BHV_PeriodicSurface::produceOF()
   OF_Coupler coupler;
   IvPFunction *new_ipf = coupler.couple(ipf_speed, ipf_depth);
 
-  new_ipf->setPWT(priority_wt);
+  new_ipf->setPWT(m_priority_wt);
 
   return(new_ipf);
 }
@@ -253,9 +252,9 @@ IvPFunction *BHV_PeriodicSurface::produceOF()
 bool BHV_PeriodicSurface::updateInfoIn()
 {  
   bool ok1, ok2;
-  m_curr_depth = info_buffer->dQuery("NAV_DEPTH", ok1);
-  m_curr_speed = info_buffer->dQuery("NAV_SPEED", ok2);
-  m_curr_time  = info_buffer->getCurrTime();
+  m_curr_depth = m_info_buffer->dQuery("NAV_DEPTH", ok1);
+  m_curr_speed = m_info_buffer->dQuery("NAV_SPEED", ok2);
+  m_curr_time  = m_info_buffer->getCurrTime();
   
   if(!ok1 || !ok2) {
     postEMessage("No ownship NAV_DEPTH or NAV_SPEED in info_buffer");
@@ -276,8 +275,8 @@ void BHV_PeriodicSurface::checkForMarking()
   bool   mark_noted = false;
 
   bool   ok1, ok2;
-  double double_mark_val = info_buffer->dQuery(m_mark_variable, ok1);
-  string string_mark_val = info_buffer->sQuery(m_mark_variable, ok2);
+  double double_mark_val = m_info_buffer->dQuery(m_mark_variable, ok1);
+  string string_mark_val = m_info_buffer->sQuery(m_mark_variable, ok2);
 
   if(m_first_iteration) {
     m_first_iteration = false;

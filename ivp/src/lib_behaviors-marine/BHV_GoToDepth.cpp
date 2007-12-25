@@ -39,7 +39,7 @@ using namespace std;
 BHV_GoToDepth::BHV_GoToDepth(IvPDomain gdomain) : 
   IvPBehavior(gdomain)
 {
-  domain = subDomain(domain, "depth");
+  m_domain = subDomain(m_domain, "depth");
 
   // configuration parameters
   m_repeat        = 0;
@@ -55,7 +55,7 @@ BHV_GoToDepth::BHV_GoToDepth(IvPDomain gdomain) :
   m_arrivals            = 0;
   m_first_iteration     = true;
   
-  info_vars.push_back("NAV_DEPTH");
+  addInfoVars("NAV_DEPTH");
 }
 
 //-----------------------------------------------------------
@@ -130,7 +130,7 @@ bool BHV_GoToDepth::setParam(string param, string val)
 
 IvPFunction *BHV_GoToDepth::produceOF() 
 {
-  if(!domain.hasDomain("depth")) {
+  if(!m_domain.hasDomain("depth")) {
     postEMessage("No 'depth' variable in the helm domain");
     return(0);
   }
@@ -147,14 +147,14 @@ IvPFunction *BHV_GoToDepth::produceOF()
   if(!valid_depth_level)
     return(0);
   
-  ZAIC_PEAK zaic(domain, "depth");
+  ZAIC_PEAK zaic(m_domain, "depth");
   zaic.setSummit(m_level_depths[m_curr_index]);
   zaic.setBaseWidth(m_basewidth);
   zaic.setPeakWidth(m_peakwidth);
 
   IvPFunction *ipf = zaic.extractOF();
   if(ipf)
-    ipf->setPWT(priority_wt);
+    ipf->setPWT(m_priority_wt);
 
   return(ipf);
 }
@@ -168,7 +168,7 @@ IvPFunction *BHV_GoToDepth::produceOF()
 bool BHV_GoToDepth::setNextLevelDepth()
 {
   bool ok;
-  double vehicle_depth = info_buffer->dQuery("NAV_DEPTH", ok);
+  double vehicle_depth = m_info_buffer->dQuery("NAV_DEPTH", ok);
   
   // Must get ownship depth from InfoBuffer
   if(!ok) {
@@ -176,7 +176,7 @@ bool BHV_GoToDepth::setNextLevelDepth()
     return(false);
   }
 
-  double curr_time = info_buffer->getCurrTime();
+  double curr_time = m_info_buffer->getCurrTime();
 
   bool new_level = false;
 
@@ -239,7 +239,7 @@ bool BHV_GoToDepth::incrementLevelDepth()
       m_first_iteration = true;
       m_arrivals = 0;
     }
-    postFlags(end_flags); 
+    postFlags(m_end_flags); 
     return(false);
   }
   

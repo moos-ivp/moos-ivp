@@ -42,7 +42,7 @@ BHV_Loiter::BHV_Loiter(IvPDomain gdomain) :
   IvPBehavior(gdomain)
 {
   this->setParam("descriptor", "(d)bhv_loiter");
-  domain = subDomain(domain, "course,speed");
+  m_domain = subDomain(m_domain, "course,speed");
 
   // Initialize State Variable with meaningful initial vals
   m_acquire_mode    = true;
@@ -66,9 +66,7 @@ BHV_Loiter::BHV_Loiter(IvPDomain gdomain) :
 
   m_waypoint_engine.setPerpetual(true);
 
-  info_vars.push_back("NAV_X");
-  info_vars.push_back("NAV_Y");
-  info_vars.push_back("NAV_HEADING");
+  addInfoVars("NAV_X, NAV_Y, NAV_HEADING");
 }
 
 //-----------------------------------------------------------
@@ -197,7 +195,7 @@ IvPFunction *BHV_Loiter::produceOF()
 
   if(ipf) {
     ipf->getPDMap()->normalize(0,100);
-    ipf->setPWT(priority_wt);
+    ipf->setPWT(m_priority_wt);
   }
 
   updateInfoOut();
@@ -226,9 +224,9 @@ bool BHV_Loiter::updateInfoIn()
 
   bool ok1, ok2, ok3;
   // ownship position in meters from some 0,0 reference point.
-  m_osx = info_buffer->dQuery("NAV_X", ok1);
-  m_osy = info_buffer->dQuery("NAV_Y", ok2);
-  m_osh = info_buffer->dQuery("NAV_HEADING", ok3);
+  m_osx = m_info_buffer->dQuery("NAV_X", ok1);
+  m_osy = m_info_buffer->dQuery("NAV_Y", ok2);
+  m_osh = m_info_buffer->dQuery("NAV_HEADING", ok3);
 
   // Must get ownship position from InfoBuffer
   if(!ok1 || !ok2) {
@@ -287,14 +285,14 @@ IvPFunction *BHV_Loiter::buildIPF(const string& method)
   
   if(method == "zaic") {
     
-    ZAIC_PEAK spd_zaic(domain, "speed");
+    ZAIC_PEAK spd_zaic(m_domain, "speed");
     spd_zaic.setSummit(m_desired_speed);
     spd_zaic.setBaseWidth(0.3);
     spd_zaic.setPeakWidth(0.0);
     spd_zaic.setSummitDelta(0.0);
     IvPFunction *spd_of = spd_zaic.extractOF();
     double rel_ang_to_wpt = relAng(m_osx, m_osy, m_ptx, m_pty);
-    ZAIC_PEAK crs_zaic(domain, "course");
+    ZAIC_PEAK crs_zaic(m_domain, "course");
     crs_zaic.setSummit(rel_ang_to_wpt);
     crs_zaic.setBaseWidth(180.0);
     crs_zaic.setValueWrap(true);
@@ -333,7 +331,7 @@ void BHV_Loiter::updateInfoOut()
     string bhv_tag = toupper(getDescriptor());
     bhv_tag = findReplace(bhv_tag, "BHV_", "");
     bhv_tag = findReplace(bhv_tag, "(d)", "");
-    bhv_tag = us_name + "-" + bhv_tag;
+    bhv_tag = m_us_name + "-" + bhv_tag;
     string spec = "label," + bhv_tag + ":" + seglist.get_spec();
     postMessage("VIEW_POLYGON", spec);
   }
@@ -341,7 +339,7 @@ void BHV_Loiter::updateInfoOut()
   
   if(m_waypoint_engine.currPtChanged()) {
     string ptmsg = doubleToString(m_ptx,2) + ",";
-    ptmsg += doubleToString(m_pty,2) + ",5," + us_name;
+    ptmsg += doubleToString(m_pty,2) + ",5," + m_us_name;
     postMessage("VIEW_POINT", ptmsg);
   }
   

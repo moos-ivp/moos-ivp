@@ -41,7 +41,7 @@ BHV_ConstantHeading::BHV_ConstantHeading(IvPDomain gdomain) :
 {
   this->setParam("descriptor", "(d)bhv_constantHeading");
 
-  domain = subDomain(domain, "course");
+  m_domain = subDomain(m_domain, "course");
 
   m_desired_heading = 0;
   m_peakwidth       = 0;
@@ -92,12 +92,12 @@ bool BHV_ConstantHeading::setParam(string param, string val)
 
 IvPFunction *BHV_ConstantHeading::produceOF() 
 {
-  if(!domain.hasDomain("course")) {
+  if(!m_domain.hasDomain("course")) {
     postEMessage("No 'heading/course' variable in the helm domain");
     return(0);
   }
 
-  ZAIC_PEAK zaic(domain, "course");
+  ZAIC_PEAK zaic(m_domain, "course");
   zaic.setSummit(m_desired_heading);
   zaic.setBaseWidth(m_basewidth);
   zaic.setPeakWidth(m_peakwidth);
@@ -105,7 +105,7 @@ IvPFunction *BHV_ConstantHeading::produceOF()
   
   IvPFunction *ipf = zaic.extractOF();
   if(ipf)
-    ipf->setPWT(priority_wt);
+    ipf->setPWT(m_priority_wt);
 
   return(ipf);
 }
