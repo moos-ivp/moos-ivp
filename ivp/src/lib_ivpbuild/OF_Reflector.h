@@ -45,8 +45,10 @@ public:
   int    createUniform(int amt, int qlev=0);
   int    createUniform(const IvPBox*, const IvPBox*b=0, int qlev=0);
 
-  int    createPriority(int amt, double thresh=0);
+  int    createPriority(int more_pcs, double thresh=0);
   int    createFocusRefine(IvPBox, IvPBox);
+
+  int    create(const std::string);
 
   void   setStrictRange(bool);
 

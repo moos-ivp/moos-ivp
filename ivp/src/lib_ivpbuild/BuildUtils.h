@@ -30,7 +30,6 @@
 IvPBox  genUnifBox(const IvPDomain&, int);
 IvPBox  makeRand(const IvPBox&); 
 IvPBox  makeRand(const IvPDomain&);
-IvPBox  stringToPointBox(const std::string&, const IvPDomain&); 
 bool    containedWithinBox(const IvPBox&, const IvPBox&);
 bool    intersectDomain(const IvPDomain&, const IvPDomain&);
 
@@ -46,6 +45,8 @@ BoxSet*  makeUniformDistro(const IvPBox&, const IvPBox&, int=1);
 BoxSet*  subtractBox(const IvPBox&, const IvPBox&);
 IvPBox*  cutBox(IvPBox*, int);
 
+IvPBox  stringToPointBox(const std::string&, const IvPDomain&, 
+			 const char gsep=',', const char lsep='='); 
 
 #endif
 

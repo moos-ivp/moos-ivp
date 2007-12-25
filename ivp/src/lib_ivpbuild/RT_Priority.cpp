@@ -37,9 +37,11 @@ RT_Priority::RT_Priority(Regressor *g_reg)
 
 //-------------------------------------------------------------
 // Procedure: create
-//   Purpose: Make a uniform IvP function based on the given box.
-//            Each uniform piece will have the same size as the
-//            given box.
+//   Purpose: Augment the given PDMap with an *additional* number
+//            of pieces based on the given priority queue, which 
+//            stores pieces prioritized based on the poorness of
+//            regression fit during the phase when uniform pieces
+//            were constructed.
 
 PDMap* RT_Priority::create(PDMap *pdmap, PQueue* pqueue, 
 			   int amt, double thresh)

@@ -28,6 +28,7 @@
 #include "RT_Uniform.h"
 #include "RT_Priority.h"
 #include "RT_Focus.h"
+#include "MBUtils.h"
 
 using namespace std;
 
@@ -132,19 +133,19 @@ int OF_Reflector::createUniform(const IvPBox *unifbox,
 //-------------------------------------------------------------
 // Procedure: createPriority
 
-int OF_Reflector::createPriority(int amt, double thresh)
+int OF_Reflector::createPriority(int more_amt, double thresh)
 {
   if(!m_pdmap)
     return(0);
   
-  if(amt <= 0)
+  if(more_amt <= 0)
     return(m_pdmap->size());
   
   PQueue *pqueue = m_rt_uniform->getPQueue();
   if(!pqueue)
     return(m_pdmap->size());
   
-  m_pdmap = m_rt_priority->create(m_pdmap, pqueue, amt, thresh);
+  m_pdmap = m_rt_priority->create(m_pdmap, pqueue, more_amt, thresh);
   return(m_pdmap->size());
 }
 
@@ -182,6 +183,100 @@ void OF_Reflector::clearPDMap()
     delete(m_pdmap);
     m_pdmap = 0;
   }
+}
+    
+//-------------------------------------------------------------
+// Procedure: create
+
+int OF_Reflector::create(const string params)
+{
+  clearPDMap();
+  if(!m_aof)
+    return(0);
+
+  // The possible paramaters - all initialized to "".
+  string str_uniform_amt;
+  string str_uniform_box; 
+  string str_uniform_grid;
+  string str_priority_amt;
+  string str_priority_thresh;
+  string str_focus_region;
+  string str_focus_refine;
+
+  tokParse(params, "uniform_amt",  '#', '=', str_uniform_amt);
+  tokParse(params, "uniform_box",  '#', '=', str_uniform_box);
+  tokParse(params, "uniform_grid", '#', '=', str_uniform_grid);
+  tokParse(params, "priority_amt", '#', '=', str_priority_amt);
+  tokParse(params, "priority_thresh", '#', '=', str_priority_thresh);
+  tokParse(params, "focus_region", '#', '=', str_focus_region);
+  tokParse(params, "focus_box",    '#', '=', str_focus_refine);
+
+  str_uniform_amt  = stripBlankEnds(str_uniform_amt);
+  str_uniform_box  = stripBlankEnds(str_uniform_box);
+  str_uniform_grid = stripBlankEnds(str_uniform_grid);
+  str_priority_amt = stripBlankEnds(str_priority_amt);
+  str_priority_thresh = stripBlankEnds(str_priority_thresh);
+  str_focus_region = stripBlankEnds(str_focus_region);
+  str_focus_refine = stripBlankEnds(str_focus_refine);
+  
+  int unif_amt = 0;
+  if(isNumber(str_uniform_amt))
+    unif_amt = atoi(str_uniform_amt.c_str());
+
+  int priority_amt = 0;
+  if(isNumber(str_priority_amt))
+    priority_amt = atoi(str_priority_amt.c_str());
+
+  double priority_thresh = 0.0;
+  if(isNumber(str_priority_thresh)) {
+     priority_thresh = atof(str_priority_thresh.c_str());
+     if(priority_thresh < 0)
+       priority_thresh = 0;
+  }
+  
+  IvPDomain domain = m_aof->getDomain();
+
+  IvPBox unif_box   = stringToPointBox(str_uniform_box, domain, ',', ':');
+  IvPBox grid_box   = stringToPointBox(str_uniform_grid, domain, ',', ':');
+  IvPBox region_box = stringToPointBox(str_focus_region, domain, ',', ':');
+  IvPBox refine_box = stringToPointBox(str_focus_refine, domain, ',', ':');
+
+  // Under this utility, a uniform PDMap must be create by either of the 
+  // two methods, or else it will not proceed.
+  if(unif_amt <= 0)
+    if(unif_box.null())
+      return(0);
+
+  // If no priority building is to be done after the initial uniform build
+  // then don't waste time building and maintaining a priority queue during
+  // the uniform build. If priority building IS to follow, then call for a 
+  // priority queue with 7 levels by default (2^7=128 elements).
+  int qlevels = 0;
+  if(priority_amt > 0)
+    qlevels = 7;
+
+  int pdmap_size = 0;
+  
+  if(unif_amt > 0)
+    pdmap_size = createUniform(unif_amt, qlevels);
+  else {
+    // If the grid_box was not set, or if it doesn't subsume unif_box, then
+    // proceed by just making the grid_box identical to the unif_box.
+    if(grid_box.null() || (!containedWithinBox(unif_box, grid_box)))
+      grid_box = unif_box;
+    pdmap_size = createUniform(&unif_box, &grid_box, qlevels);
+  }
+  
+  if(pdmap_size <= 0)
+    return(0);
+
+  if((pdmap_size > 0) && (priority_amt > 0))
+    pdmap_size = createPriority(priority_amt, priority_thresh);
+  
+  if((pdmap_size > 0) && !region_box.null() && !refine_box.null())
+    pdmap_size = createFocusRefine(region_box, refine_box);
+  
+  return(m_pdmap->size());
 }
     
 

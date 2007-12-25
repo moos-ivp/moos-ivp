@@ -179,13 +179,22 @@ IvPBox makeRand(const IvPBox& container_box)
 //      exist, and that domain.
 //    - Re-order the dimensions of the requested box to match the 
 //      domain.
+//    - gsep is the "global separator", the character that separates 
+//      the outer chunks.
+//    - lsep is the "local separator", the character that separates
+//      the innner fields.  
 //  Example:
 //      IvPDomain: x:0:20:21, y:5:10:6
 //      String: "y=2, x=9" results in a pt box - dim0:9, dim1:2
 
-IvPBox stringToPointBox(const string& given_str, const IvPDomain& domain)
+
+IvPBox stringToPointBox(const string& given_str, const IvPDomain& domain, 
+			const char gsep, const char lsep)
 {
-  IvPBox null_box(0);
+  IvPBox null_box;
+
+  if(given_str == "")
+    return(null_box);
 
   int i, dim;
   dim = domain.size();
@@ -195,7 +204,7 @@ IvPBox stringToPointBox(const string& given_str, const IvPDomain& domain)
   for(i=0; i<dim; i++) {
     string varname = domain.getVarName(i);
     string strval;
-    bool ok = tokParse(given_str, varname, ',', '=', strval);
+    bool ok = tokParse(given_str, varname, gsep, lsep, strval);
     strval = stripBlankEnds(strval);
     if(!ok || !isNumber(strval))
       return(null_box);
