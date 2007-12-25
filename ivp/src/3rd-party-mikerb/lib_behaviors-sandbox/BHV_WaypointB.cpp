@@ -45,10 +45,8 @@ BHV_WaypointB::BHV_WaypointB(IvPDomain gdomain) :
   IvPBehavior(gdomain)
 {
   this->setParam("descriptor", "(d)bhv_waypoint");
-  this->setParam("unifbox", "course=3, speed=2");
-  this->setParam("gridbox", "course=9, speed=6");
 
-  domain = subDomain(domain, "course,speed");
+  m_domain = subDomain(m_domain, "course,speed");
 
   current_waypt   = 0;
   arrival_radius  = 10; // Meters
@@ -68,9 +66,7 @@ BHV_WaypointB::BHV_WaypointB(IvPDomain gdomain) :
   iptX  = -1;
   iptY  = -1;
 
-  info_vars.push_back("NAV_X");
-  info_vars.push_back("NAV_Y");
-  info_vars.push_back("NAV_SPEED");
+  addInfoVars("NAV_X, NAV_Y, NAV_SPEED");
 }
 
 //-----------------------------------------------------------
@@ -144,11 +140,6 @@ bool BHV_WaypointB::setParam(string param, string val)
 
 IvPFunction *BHV_WaypointB::produceOF() 
 {
-  if(!unif_box || !grid_box) {
-    postEMessage("Null UnifBox or GridBox.");
-    return(0);
-  }
-
   // Set osX, osY, ptX, ptY, iptX, iptY;
   bool valid_point = setNextWaypoint();
 
@@ -158,7 +149,7 @@ IvPFunction *BHV_WaypointB::produceOF()
   if(!valid_point)
     return(0);
 
-  ZAIC_PEAK spd_zaic(domain, "speed");
+  ZAIC_PEAK spd_zaic(m_domain, "speed");
   spd_zaic.setSummit(ptSPD);
   spd_zaic.setBaseWidth(0.3);
   spd_zaic.setPeakWidth(0.0);
@@ -168,7 +159,7 @@ IvPFunction *BHV_WaypointB::produceOF()
 
   double rel_ang_to_wpt = relAng(osX,osY,ptX,ptY);
 
-  ZAIC_PEAK crs_zaic(domain, "course");
+  ZAIC_PEAK crs_zaic(m_domain, "course");
   crs_zaic.setSummit(rel_ang_to_wpt);
   crs_zaic.setBaseWidth(180.0);
   crs_zaic.setValueWrap(true);
@@ -179,7 +170,7 @@ IvPFunction *BHV_WaypointB::produceOF()
   IvPFunction *ipf = coupler.couple(crs_of, spd_of);
 
   if(ipf)
-    ipf->setPWT(priority_wt);
+    ipf->setPWT(m_priority_wt);
 
 #if 0
   IvPBox mpt = ipf->getPDMap()->getGrid()->getMaxPt();
@@ -192,7 +183,7 @@ IvPFunction *BHV_WaypointB::produceOF()
     double dist_meters = hypot((osX-ptX), (osY-ptY));
     double eta_seconds = dist_meters / osSPD;
 
-    string stat = "vname=" + us_name + ",";
+    string stat = "vname=" + m_us_name + ",";
     stat += "index=" + intToString(current_waypt)   + ",";
     stat += "dist="  + doubleToString(dist_meters)  + ",";
     stat += "eta="   + doubleToString(eta_seconds);
@@ -215,9 +206,9 @@ IvPFunction *BHV_WaypointB::produceOF()
 bool BHV_WaypointB::setNextWaypoint()
 {
   bool ok1, ok2, ok3;
-  osX   = info_buffer->dQuery("NAV_X",     ok1);
-  osY   = info_buffer->dQuery("NAV_Y",     ok2);
-  osSPD = info_buffer->dQuery("NAV_SPEED", ok3);
+  osX   = m_info_buffer->dQuery("NAV_X",     ok1);
+  osY   = m_info_buffer->dQuery("NAV_Y",     ok2);
+  osSPD = m_info_buffer->dQuery("NAV_SPEED", ok3);
 
   // Must get ownship position from InfoBuffer
   if(!ok1 || !ok2) {
@@ -269,7 +260,7 @@ bool BHV_WaypointB::setNextWaypoint()
     else {
       postMessage("VEHICLE_WPT_STAT_US", "complete");
       postMessage("VEHICLE_WPT_STAT", "complete");
-      postFlags(end_flags);
+      postFlags(m_end_flags);
       m_completed = true;
       return(false);
     }

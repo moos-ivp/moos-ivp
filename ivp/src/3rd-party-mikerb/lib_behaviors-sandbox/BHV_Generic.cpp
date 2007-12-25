@@ -46,13 +46,10 @@ BHV_Generic::BHV_Generic(IvPDomain gdomain) :
   IvPBehavior(gdomain)
 {
   this->setParam("descriptor", "(d)bhv_generic");
-  this->setParam("unifbox", "course=3, speed=2");
-  this->setParam("gridbox", "course=9, speed=6");
 
-  domain = subDomain(domain, "course,speed");
+  m_domain = subDomain(m_domain, "course,speed");
 
-  info_vars.push_back("NAV_X");
-  info_vars.push_back("NAV_Y");
+  addInfoVars("NAV_X, NAV_Y");
 }
 
 //-----------------------------------------------------------
@@ -76,15 +73,10 @@ bool BHV_Generic::setParam(string g_param, string g_val)
 
 IvPFunction *BHV_Generic::produceOF() 
 {
-  if(!unif_box || !grid_box) {
-    postEMessage("Null UnifBox or GridBox.");
-    return(0);
-  }
-  
   bool ok1, ok2;
   // ownship position in meters from some 0,0 reference point.
-  double osX = info_buffer->dQuery("NAV_X", ok1);
-  double osY = info_buffer->dQuery("NAV_Y", ok2);
+  double osX = m_info_buffer->dQuery("NAV_X", ok1);
+  double osY = m_info_buffer->dQuery("NAV_Y", ok2);
 
   // Must get ownship position from InfoBuffer
   if(!ok1 || !ok2) {

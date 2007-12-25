@@ -46,9 +46,9 @@ BHV_WaypointSimple::BHV_WaypointSimple(IvPDomain gdomain) :
   IvPBehavior(gdomain)
 {
   this->setParam("name", "(d)bhv_waypoint_simple");
-  this->setParam("unifbox", "course=3, speed=3");
-  this->setParam("gridbox", "course=9, speed=6");
-  domain = subDomain(domain, "course,speed");
+  this->setParam("build_info", "uniform_box=course:3,speed:3");
+  this->setParam("build_info", "uniform_grid=course:9,speed:6");
+  m_domain = subDomain(m_domain, "course,speed");
 
   // All distances are in meters, all speed in meters per second
 
@@ -63,9 +63,7 @@ BHV_WaypointSimple::BHV_WaypointSimple(IvPDomain gdomain) :
   m_pty  = 0;
   m_curr_waypt = 0;
 
-  info_vars.push_back("NAV_X");
-  info_vars.push_back("NAV_Y");
-  info_vars.push_back("NAV_SPEED");
+  addInfoVars("NAV_X, NAV_Y, NAV_SPEED");
 }
 
 //-----------------------------------------------------------
@@ -118,7 +116,7 @@ IvPFunction *BHV_WaypointSimple::produceOF()
   
   IvPFunction *ipf = buildOF("aof");
   if(ipf)
-    ipf->setPWT(priority_wt);
+    ipf->setPWT(m_priority_wt);
 
   return(ipf);
 }
@@ -137,8 +135,8 @@ bool BHV_WaypointSimple::setNextWaypoint()
 
   // Check for and get essential infor from the info_buffer
   bool ok1, ok2;
-  m_osx = info_buffer->dQuery("NAV_X", ok1);
-  m_osy = info_buffer->dQuery("NAV_Y", ok2);
+  m_osx = m_info_buffer->dQuery("NAV_X", ok1);
+  m_osy = m_info_buffer->dQuery("NAV_Y", ok2);
 
   if(!ok1 || !ok2) {
     postEMessage("No ownship X/Y info in info_buffer.");
@@ -181,7 +179,7 @@ IvPFunction *BHV_WaypointSimple::buildOF(string method)
   bravo_timer.start();
 
   if(method == "zaic") {
-    ZAIC_PEAK spd_zaic(domain, "speed");
+    ZAIC_PEAK spd_zaic(m_domain, "speed");
     spd_zaic.setSummit(m_desired_speed);
     spd_zaic.setBaseWidth(2.6);
     spd_zaic.setPeakWidth(0.0);
@@ -189,7 +187,7 @@ IvPFunction *BHV_WaypointSimple::buildOF(string method)
     IvPFunction *spd_of = spd_zaic.extractOF();
 
     double rel_ang_to_wpt = relAng(m_osx, m_osy, m_ptx, m_pty);
-    ZAIC_PEAK crs_zaic(domain, "course");
+    ZAIC_PEAK crs_zaic(m_domain, "course");
     crs_zaic.setSummit(rel_ang_to_wpt);
     crs_zaic.setBaseWidth(180.0);
     crs_zaic.setValueWrap(true);
@@ -203,7 +201,7 @@ IvPFunction *BHV_WaypointSimple::buildOF(string method)
     echo_timer.start();
 
     bool ok = true;
-    AOF_WaypointRateClosure aof_wpt(domain);
+    AOF_WaypointRateClosure aof_wpt(m_domain);
     ok = ok && aof_wpt.setParam("desired_speed", m_desired_speed);
     ok = ok && aof_wpt.setParam("oslat", m_osy);
     ok = ok && aof_wpt.setParam("oslon", m_osx);
@@ -216,12 +214,10 @@ IvPFunction *BHV_WaypointSimple::buildOF(string method)
     cout << "ctime_echo: " << ctime_echo << endl;
     
     if(ok) {
-
-
       MBTimer charlie_timer;
       charlie_timer.start();
       OF_Reflector reflector(&aof_wpt);
-      reflector.createUniform(unif_box, grid_box);
+      reflector.create(m_build_info);
       double wtime_charlie = charlie_timer.get_float_wall_time();
       double ctime_charlie = charlie_timer.get_float_cpu_time();
       cout << "wtime_charlie: " << wtime_charlie << endl;

@@ -38,10 +38,10 @@ using namespace std;
 BHV_TOL::BHV_TOL(IvPDomain gdomain) : IvPBehavior(gdomain)
 {
   this->setParam("descriptor", "(d)bhv_tol");
-  this->setParam("unifbox", "tol=2");
-  this->setParam("gridbox", "tol=4");
+  this->setParam("build_info", "uniform_box=tol:2");
+  this->setParam("build_info", "uniform_grid=tol:4");
 
-  domain = subDomain(domain, "tol");
+  m_domain = subDomain(m_domain, "tol");
 }
 
 //-----------------------------------------------------------
@@ -61,19 +61,14 @@ bool BHV_TOL::setParam(string g_param, string g_val)
 
 IvPFunction *BHV_TOL::produceOF() 
 {
-  if(!unif_box || !grid_box) {
-    postEMessage("Null UnifBox or GridBox.");
-    return(0);
-  }
-
-  AOF_TOL aof_tol(domain);
+  AOF_TOL aof_tol(m_domain);
   OF_Reflector reflector(&aof_tol, 1);
 
-  reflector.createUniform(unif_box, grid_box);
+  reflector.create(m_build_info);
 
   IvPFunction *of = reflector.extractOF();
 
-  of->setPWT(priority_wt);
+  of->setPWT(m_priority_wt);
 
   return(of);
 }

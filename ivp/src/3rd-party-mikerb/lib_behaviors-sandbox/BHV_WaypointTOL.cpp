@@ -48,7 +48,11 @@ BHV_WaypointTOL::BHV_WaypointTOL(IvPDomain gdomain) :
   this->setParam("unifbox", "course=3, speed=2, tol=4");
   this->setParam("gridbox", "course=9, speed=6, tol=8");
 
-  domain = subDomain(domain, "course,speed,tol");
+  this->setParam("build_info", "uniform_box=course:2,speed:2,tol=4");
+  this->setParam("build_info", "uniform_grid=course:6,speed:6,tol=8");
+
+
+  m_domain = subDomain(m_domain, "course,speed,tol");
 
   current_waypt   = 0;
   arrival_radius  = 10; // Meters
@@ -69,9 +73,7 @@ BHV_WaypointTOL::BHV_WaypointTOL(IvPDomain gdomain) :
   iptX  = -1;
   iptY  = -1;
 
-  info_vars.push_back("NAV_X");
-  info_vars.push_back("NAV_Y");
-  info_vars.push_back("NAV_SPEED");
+  addInfoVars("NAV_X, NAV_Y, NAV_SPEED");
 }
 
 //-----------------------------------------------------------
@@ -131,11 +133,6 @@ bool BHV_WaypointTOL::setParam(string param, string val)
 
 IvPFunction *BHV_WaypointTOL::produceOF() 
 {
-  if(!unif_box || !grid_box) {
-    postEMessage("Null UnifBox or GridBox.");
-    return(0);
-  }
-  
   // Set osX, osY, ptX, ptY, iptX, iptY;
   bool valid_point = setNextWaypoint();
 
@@ -147,7 +144,7 @@ IvPFunction *BHV_WaypointTOL::produceOF()
 
   IvPFunction *of = 0;
 
-  AOF_WPT3D aof(domain);
+  AOF_WPT3D aof(m_domain);
   aof.setParam("oslat", osY);
   aof.setParam("oslon", osX);
   aof.setParam("ptlat", ptY);
@@ -156,10 +153,10 @@ IvPFunction *BHV_WaypointTOL::produceOF()
   aof.initialize();
   
   OF_Reflector reflector(&aof, 1);
-  reflector.createUniform(unif_box, grid_box);
+  reflector.create(m_build_info);
   of = reflector.extractOF();
 
-  of->setPWT(priority_wt);
+  of->setPWT(m_priority_wt);
 
 #if 0
   IvPBox mpt = of->getPDMap()->getGrid()->getMaxPt();
@@ -172,7 +169,7 @@ IvPFunction *BHV_WaypointTOL::produceOF()
     double dist_meters = hypot((osX-ptX), (osY-ptY));
     double eta_seconds = dist_meters / osSPD;
 
-    string stat = "vname=" + us_name + ",";
+    string stat = "vname=" + m_us_name + ",";
     stat += "index=" + intToString(current_waypt)   + ",";
     stat += "dist="  + doubleToString(dist_meters)  + ",";
     stat += "eta="   + doubleToString(eta_seconds);
@@ -194,9 +191,9 @@ IvPFunction *BHV_WaypointTOL::produceOF()
 bool BHV_WaypointTOL::setNextWaypoint()
 {
   bool ok1, ok2, ok3;
-  osX   = info_buffer->dQuery("NAV_X",     ok1);
-  osY   = info_buffer->dQuery("NAV_Y",     ok2);
-  osSPD = info_buffer->dQuery("NAV_SPEED", ok3);
+  osX   = m_info_buffer->dQuery("NAV_X",     ok1);
+  osY   = m_info_buffer->dQuery("NAV_Y",     ok2);
+  osSPD = m_info_buffer->dQuery("NAV_SPEED", ok3);
 
   // Must get ownship position from InfoBuffer
   if(!ok1 || !ok2) {
@@ -257,7 +254,7 @@ bool BHV_WaypointTOL::setNextWaypoint()
     else {
       postMessage("VEHICLE_WPT_STAT_US", "complete");
       postMessage("VEHICLE_WPT_STAT", "complete");
-      postFlags(end_flags);
+      postFlags(m_end_flags);
       m_completed = true;
       return(false);
     }

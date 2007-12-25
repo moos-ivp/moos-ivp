@@ -41,7 +41,7 @@ BHV_ObeySpeedLimit::BHV_ObeySpeedLimit(IvPDomain gdomain) :
 {
   this->setParam("descriptor", "(d)bhv_obey_spdlimit");
 
-  domain = subDomain(domain, "speed");
+  m_domain = subDomain(m_domain, "speed");
 
   spd_limit = 0;
   spd_cheat = 0;
@@ -110,10 +110,10 @@ bool BHV_ObeySpeedLimit::setParam(string param, string val)
 
 IvPFunction *BHV_ObeySpeedLimit::produceOF() 
 {
-  int    spdIndex  = domain.getIndex("speed");
-  double spdBase   = domain.getVarLow(spdIndex);
-  double spdDelta  = domain.getVarDelta(spdIndex);
-  int    spdPoints = domain.getVarPoints(spdIndex);
+  int    spdIndex  = m_domain.getIndex("speed");
+  double spdBase   = m_domain.getVarLow(spdIndex);
+  double spdDelta  = m_domain.getVarDelta(spdIndex);
+  int    spdPoints = m_domain.getVarPoints(spdIndex);
 
   // build piece 1
   double dbl_limit_ix = (spd_limit - spdBase) / spdDelta;
@@ -173,7 +173,7 @@ IvPFunction *BHV_ObeySpeedLimit::produceOF()
   if(piece1) piece_count++;
   if(piece2) piece_count++;
 
-  PDMap *pdmap = new PDMap(piece_count, domain, 1);
+  PDMap *pdmap = new PDMap(piece_count, m_domain, 1);
 
   piece_count = 0;
   if(piece0) {
@@ -192,7 +192,7 @@ IvPFunction *BHV_ObeySpeedLimit::produceOF()
   pdmap->updateGrid();
 
   IvPFunction *of = new IvPFunction(pdmap);
-  of->setPWT(priority_wt);
+  of->setPWT(m_priority_wt);
 
   return(of);
 }

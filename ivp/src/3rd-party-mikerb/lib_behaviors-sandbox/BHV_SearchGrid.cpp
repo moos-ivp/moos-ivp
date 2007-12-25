@@ -25,18 +25,17 @@ BHV_SearchGrid::BHV_SearchGrid(IvPDomain gdomain) :
   IvPBehavior(gdomain)
 {
   this->setParam("descriptor", "(d)bhv_search_grid");
-  this->setParam("unifbox", "course=6,  speed=4");
-  this->setParam("gridbox", "course=12, speed=8");
+  this->setParam("build_info", "uniform_box=course:6,speed:4");
+  this->setParam("build_info", "uniform_grid=course:12,speed:8");
 
-  domain = subDomain(domain, "course,speed");
+  m_domain = subDomain(m_domain, "course,speed");
 
   has_fired = false;
   osX   = 0;
   osY   = 0;
   osSPD = 0;
 
-  info_vars.push_back("NAV_X");
-  info_vars.push_back("NAV_Y");
+  addInfoVars("NAV_X, NAV_Y");
 }
 
 //-----------------------------------------------------------
@@ -83,11 +82,6 @@ bool BHV_SearchGrid::setParam(string param, string val)
 
 IvPFunction *BHV_SearchGrid::produceOF() 
 {
-  if(!unif_box || !grid_box) {
-    postEMessage("Null UnifBox or GridBox.");
-    return(0);
-  }
-  
   IvPFunction *ipf = 0;
 
   bool ok_info = updateFromInfoBuffer();
@@ -108,7 +102,7 @@ IvPFunction *BHV_SearchGrid::produceOF()
 
   bool os_in_grid = updateSearchGrid(prev_osX, prev_osY, osX, osY);
 
-  AOF_SearchGrid aof(domain, &search_grid);
+  AOF_SearchGrid aof(m_domain, &search_grid);
 
   aof.setParam("os_lat", osY);
   aof.setParam("os_lon", osX);
@@ -118,11 +112,11 @@ IvPFunction *BHV_SearchGrid::produceOF()
   aof.fillCache();
 
   OF_Reflector reflector(&aof, 1);
-  reflector.createUniform(unif_box, grid_box);
+  reflector.create(m_build_info);
   ipf = reflector.extractOF();
 
   if(ipf)
-    ipf->setPWT(priority_wt);
+    ipf->setPWT(m_priority_wt);
 
   return(ipf);
 }
@@ -147,10 +141,10 @@ bool BHV_SearchGrid::updateFromInfoBuffer()
   }
 
   bool ok1, ok2, ok3, ok4;
-  osX   = info_buffer->dQuery("NAV_X",     ok1);
-  osY   = info_buffer->dQuery("NAV_Y",     ok2);
-  osSPD = info_buffer->dQuery("NAV_SPEED", ok3);
-  osCRS = info_buffer->dQuery("NAV_HEADING", ok4);
+  osX   = m_info_buffer->dQuery("NAV_X",     ok1);
+  osY   = m_info_buffer->dQuery("NAV_Y",     ok2);
+  osSPD = m_info_buffer->dQuery("NAV_SPEED", ok3);
+  osCRS = m_info_buffer->dQuery("NAV_HEADING", ok4);
 
   // Must get ownship position from InfoBuffer
   if(!ok1 || !ok2)
@@ -205,7 +199,7 @@ bool BHV_SearchGrid::updateSearchGrid(double x1, double y1,
 	dstringCompact(doubleToString(cur_util)) + "," +
 	dstringCompact(doubleToString(new_util));
       string msg = "type=delta @ gname=" + glabel;
-      msg += " @ vname=" + us_name;
+      msg += " @ vname=" + m_us_name;
       msg += " @ trans=" + intToString(i) + ",";
 	dstringCompact(doubleToString(cur_tis))  + "," +
 	dstringCompact(doubleToString(new_tis))  + "," +

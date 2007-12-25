@@ -26,7 +26,7 @@ BHV_SteadyHeading::BHV_SteadyHeading(IvPDomain gdomain) :
   IvPBehavior(gdomain)
 {
   this->setParam("descriptor", "(d)bhv_SteadyHeading");
-  domain = subDomain(domain, "course");
+  m_domain = subDomain(m_domain, "course");
 
   memory_time  = 30;  // Default 30 Seconds
   summit_delta = 75;  // Default
@@ -35,7 +35,7 @@ BHV_SteadyHeading::BHV_SteadyHeading(IvPDomain gdomain) :
   curr_time    = 0;   // 
   variable_pwt = 0;   
 
-  info_vars.push_back("NAV_HEADING");
+  addInfoVars("NAV_HEADING");
 }
 
 //-----------------------------------------------------------
@@ -103,13 +103,13 @@ void BHV_SteadyHeading::onIdleState()
 
 bool BHV_SteadyHeading::updateCurrHeadingTimeLog() 
 {
-  if(!info_buffer)
+  if(!m_info_buffer)
     return(false);
 
   bool   ok;
 
-  curr_time    = info_buffer->getCurrTime();
-  curr_heading = info_buffer->dQuery("NAV_HEADING", ok);
+  curr_time    = m_info_buffer->getCurrTime();
+  curr_heading = m_info_buffer->dQuery("NAV_HEADING", ok);
   curr_heading = angle360(curr_heading);
 
   addHeading(curr_heading, curr_time);
@@ -148,10 +148,10 @@ IvPFunction *BHV_SteadyHeading::produceOF()
 
   double pct = (total_dev / 180);
 
-  cout << "Priority_BAS: " << priority_wt  << endl;
+  cout << "Priority_BAS: " << m_priority_wt  << endl;
   cout << "Priority_VAR: " << variable_pwt  << endl;
   cout << "PCT: "          << pct  << endl;
-  double loc_priority_wt = priority_wt + (pct * variable_pwt);
+  double loc_priority_wt = m_priority_wt + (pct * variable_pwt);
 
   cout << "HeadingCur: " << curr_heading << endl;
   cout << "HeadingAvg: " << heading_avg  << endl;
@@ -174,7 +174,7 @@ IvPFunction *BHV_SteadyHeading::produceOF()
   postMessage("SDY_HDG_CUR", curr_heading);
   postMessage("SDY_HDG_PWT", loc_priority_wt);
 
-  ZAIC_PEAK crs_zaic(domain, "course");
+  ZAIC_PEAK crs_zaic(m_domain, "course");
   crs_zaic.setSummit(curr_heading);
   crs_zaic.setValueWrap(true);
   crs_zaic.setPeakWidth(peak_width);

@@ -40,14 +40,12 @@ BHV_CoWaypoint::BHV_CoWaypoint(IvPDomain gdomain) :
 {
   this->setParam("descriptor", "(d)bhv_cowaypoint");
 
-  domain = subDomain(domain, "speed");
+  m_domain = subDomain(m_domain, "speed");
 
   politeness = 50.0;   
   wait_speed = 0.0;
 
-  domain = subDomain(domain, "speed");
-
-  info_vars.push_back("VEHICLE_WPT_STAT");
+  addInfoVars("VEHICLE_WPT_STAT");
 }
 
 //-----------------------------------------------------------
@@ -65,10 +63,10 @@ bool BHV_CoWaypoint::setParam(string g_param, string g_val)
 
   if((g_param == "them") || (g_param == "contact")) {
     them_name = toupper(g_val);
-    info_vars.push_back(them_name+"_NAV_X");
-    info_vars.push_back(them_name+"_NAV_Y");
-    info_vars.push_back(them_name+"_NAV_SPEED");
-    info_vars.push_back(them_name+"_NAV_HEADING");
+    addInfoVars(them_name+"_NAV_X");
+    addInfoVars(them_name+"_NAV_Y");
+    addInfoVars(them_name+"_NAV_SPEED");
+    addInfoVars(them_name+"_NAV_HEADING");
     return(true);
   }  
   else if(g_param == "politeness") {
@@ -114,8 +112,8 @@ IvPFunction *BHV_CoWaypoint::produceOF()
   }
 
   bool ok1, ok2;
-  string us_waypt_stat   = info_buffer->sQuery("VEHICLE_WPT_STAT", ok1);
-  string them_waypt_stat = info_buffer->sQuery(them_name+"_VEHICLE_WPT_STAT", ok2);
+  string us_waypt_stat   = m_info_buffer->sQuery("VEHICLE_WPT_STAT", ok1);
+  string them_waypt_stat = m_info_buffer->sQuery(them_name+"_VEHICLE_WPT_STAT", ok2);
 
 #if 0
   cout << "+++++BHV_CoWaypoint::produceOF() " << endl;
@@ -151,11 +149,11 @@ IvPFunction *BHV_CoWaypoint::produceOF()
 
   double peak_utility = 100;
 
-  int    spdIndex  = domain.getIndex("speed");
-  double spdBase   = domain.getVarLow(spdIndex);
-  double spdHigh   = domain.getVarHigh(spdIndex);
-  double spdDelta  = domain.getVarDelta(spdIndex);
-  int    spdPoints = domain.getVarPoints(spdIndex);
+  int    spdIndex  = m_domain.getIndex("speed");
+  double spdBase   = m_domain.getVarLow(spdIndex);
+  double spdHigh   = m_domain.getVarHigh(spdIndex);
+  double spdDelta  = m_domain.getVarDelta(spdIndex);
+  int    spdPoints = m_domain.getVarPoints(spdIndex);
 
 
   // Setting the "should" speed - the speed at which we
@@ -198,11 +196,11 @@ IvPFunction *BHV_CoWaypoint::produceOF()
   // Build a PDMap out of the pieces
   PDMap *pdmap;
   if(piece1) {
-    pdmap = new PDMap(2, domain, 1);
+    pdmap = new PDMap(2, m_domain, 1);
     pdmap->bx(1) = piece1;
   }
   else
-    pdmap = new PDMap(1, domain, 1);
+    pdmap = new PDMap(1, m_domain, 1);
   pdmap->bx(0) = piece0;
 
   // Build an objective function from the PDMap
@@ -233,13 +231,13 @@ double BHV_CoWaypoint::calcPriority(double us_eta, double them_eta)
   // (1) First handle the situation where we're behind
   if(us_eta > them_eta) { 
     double eta_ratio = delta_eta / us_eta;
-    return(eta_ratio * priority_wt);
+    return(eta_ratio * m_priority_wt);
   }
 
   // (2) Second handle the situation where we're behind
     
   double eta_ratio = delta_eta / them_eta;
-  double weight = eta_ratio * priority_wt;
+  double weight = eta_ratio * m_priority_wt;
   weight = weight * (politeness / 100.00);
   return(weight);
 }

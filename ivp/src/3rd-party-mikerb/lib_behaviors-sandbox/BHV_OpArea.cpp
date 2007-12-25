@@ -40,17 +40,16 @@ BHV_OpArea::BHV_OpArea(IvPDomain gdomain) :
   IvPBehavior(gdomain)
 {
   this->setParam("descriptor", "(d)bhv_op_area");
-  this->setParam("unifbox", "course=3, speed=3, tol=3");
-  this->setParam("gridbox", "course=9, speed=6, tol=6");
+  this->setParam("build_info", "uniform_box=course:2,speed:3,tol=3");
+  this->setParam("build_info", "uniform_grid=course:8,speed:6,tol=6");
 
-  domain = subDomain(domain, "course,speed,tol");
+  m_domain = subDomain(m_domain, "course,speed,tol");
 
   max_depth    = 0;
   depth_buffer = 0;
   poly_buffer  = 0;
 
-  info_vars.push_back("NAV_X");
-  info_vars.push_back("NAV_Y");
+  addInfoVars("NAV_X, NAV_Y");
 }
 
 //-----------------------------------------------------------
@@ -95,15 +94,10 @@ bool BHV_OpArea::setParam(string param, string val)
 
 IvPFunction *BHV_OpArea::produceOF() 
 {
-  if(!unif_box || !grid_box) {
-    postEMessage("Null UnifBox or GridBox.");
-    return(0);
-  }
-
   bool ok1, ok2;
   // ownship position in meters from some 0,0 reference point.
-  double osX = info_buffer->dQuery("NAV_X", ok1);
-  double osY = info_buffer->dQuery("NAV_Y", ok2);
+  double osX = m_info_buffer->dQuery("NAV_X", ok1);
+  double osY = m_info_buffer->dQuery("NAV_Y", ok2);
 
   // Must get ownship position from InfoBuffer
   if(!ok1 || !ok2) {
@@ -115,16 +109,16 @@ IvPFunction *BHV_OpArea::produceOF()
   if(relevance == 0)
     return(0);
 
-  AOF_OpArea aof(domain, polygon);
+  AOF_OpArea aof(m_domain, polygon);
   aof.setParam("os_lat", osY);
   aof.setParam("os_lon", osX);
   aof.setParam("buffer", poly_buffer);
   OF_Reflector reflector(&aof, 1);
 
-  reflector.createUniform(unif_box, grid_box);
+  reflector.create(m_build_info);
   IvPFunction *of = reflector.extractOF();
 
-  of->setPWT(relevance * priority_wt);
+  of->setPWT(relevance * m_priority_wt);
 
   return(of);
 }

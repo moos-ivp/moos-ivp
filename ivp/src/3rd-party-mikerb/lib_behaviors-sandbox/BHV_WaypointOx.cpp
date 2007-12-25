@@ -47,9 +47,10 @@ BHV_WaypointOx::BHV_WaypointOx(IvPDomain gdomain) :
   IvPBehaviorPlus(gdomain)
 {
   this->setParam("descriptor", "(d)bhv_waypoint");
-  this->setParam("unifbox", "course=3, speed=2");
-  this->setParam("gridbox", "course=9, speed=6");
-  domain = subDomain(domain, "course,speed");
+  this->setParam("build_info", "uniform_box=course:3,speed:2");
+  this->setParam("build_info", "uniform_grid=course:9,speed:6");
+
+  m_domain = subDomain(m_domain, "course,speed");
 
 #if 0
   SetSubDomain("course,speed");
@@ -76,9 +77,7 @@ BHV_WaypointOx::BHV_WaypointOx(IvPDomain gdomain) :
   iptX  = -1;
   iptY  = -1;
 
-  info_vars.push_back("NAV_X");
-  info_vars.push_back("NAV_Y");
-  info_vars.push_back("NAV_SPEED");
+  addInfoVars("NAV_X, NAV_Y, NAV_SPEED");
 }
 
 //-----------------------------------------------------------
@@ -165,13 +164,13 @@ IvPFunction *BHV_WaypointOx::produceOF()
   IvPFunction *ipf = buildOF("rate_closure");
 
   if(ipf)
-    ipf->setPWT(priority_wt);
+    ipf->setPWT(m_priority_wt);
 
   if(osSPD > 0) {
     double dist_meters = hypot((osX-ptX), (osY-ptY));
     double eta_seconds = dist_meters / osSPD;
 
-    string stat = "vname=" + us_name + ",";
+    string stat = "vname=" + m_us_name + ",";
     stat += "index=" + intToString(current_waypt)   + ",";
     stat += "dist="  + doubleToString(dist_meters)  + ",";
     stat += "eta="   + doubleToString(eta_seconds);
@@ -193,7 +192,7 @@ IvPFunction *BHV_WaypointOx::buildOF(string method)
   IvPFunction *ipf = 0;
 
   if(method == "zaic") {
-    ZAIC_PEAK spd_zaic(domain, "speed");
+    ZAIC_PEAK spd_zaic(m_domain, "speed");
     spd_zaic.setSummit(ptSPD);
     spd_zaic.setBaseWidth(2.6);
     spd_zaic.setPeakWidth(0.0);
@@ -201,7 +200,7 @@ IvPFunction *BHV_WaypointOx::buildOF(string method)
     IvPFunction *spd_of = spd_zaic.extractOF();
 
     double rel_ang_to_wpt = relAng(osX, osY, iptX, iptY);
-    ZAIC_PEAK crs_zaic(domain, "course");
+    ZAIC_PEAK crs_zaic(m_domain, "course");
     crs_zaic.setSummit(rel_ang_to_wpt);
     crs_zaic.setBaseWidth(180.0);
     crs_zaic.setValueWrap(true);
@@ -212,7 +211,7 @@ IvPFunction *BHV_WaypointOx::buildOF(string method)
   }    
 
   if(method == "rate_closure") {
-    AOF_WaypointRateClosure aof(domain);
+    AOF_WaypointRateClosure aof(m_domain);
     aof.setParam("oslat", osY);
     aof.setParam("oslon", osX);
     aof.setParam("ptlat", iptY);
@@ -222,7 +221,7 @@ IvPFunction *BHV_WaypointOx::buildOF(string method)
     
     OF_Reflector reflector(&aof, 1);
         
-    reflector.createUniform(unif_box, grid_box);
+    reflector.create(m_build_info);
     ipf = reflector.extractOF();
   }
   
@@ -235,9 +234,9 @@ IvPFunction *BHV_WaypointOx::buildOF(string method)
 bool BHV_WaypointOx::setNextWaypoint()
 {
   bool ok1, ok2, ok3;
-  osX   = info_buffer->dQuery("NAV_X",     ok1);
-  osY   = info_buffer->dQuery("NAV_Y",     ok2);
-  osSPD = info_buffer->dQuery("NAV_SPEED", ok3);
+  osX   = m_info_buffer->dQuery("NAV_X",     ok1);
+  osY   = m_info_buffer->dQuery("NAV_Y",     ok2);
+  osSPD = m_info_buffer->dQuery("NAV_SPEED", ok3);
 
   // Must get ownship position from InfoBuffer
   if(!ok1 || !ok2) {
@@ -289,7 +288,7 @@ bool BHV_WaypointOx::setNextWaypoint()
       else {
 	postMessage("VEHICLE_WPT_STAT_US", "complete");
 	postMessage("VEHICLE_WPT_STAT",    "complete");
-	postFlags(end_flags);
+	postFlags(m_end_flags);
 	if(!m_perpetual)
 	  m_completed = true;
 	return(false);

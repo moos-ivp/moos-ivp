@@ -38,17 +38,16 @@ using namespace std;
 BHV_Waypoint2D::BHV_Waypoint2D(IvPDomain gdomain) : IvPBehavior(gdomain)
 {
   this->setParam("descriptor", "(d)bhv_waypoint2D");
-  this->setParam("unifbox", "course=3, speed=2");
-  this->setParam("gridbox", "course=6, speed=4");
+  this->setParam("build_info", "uniform_box=course:3,speed:3");
+  this->setParam("build_info", "uniform_grid=course:6,speed:4");
 
-  domain = subDomain(domain, "course,speed");
+  m_domain = subDomain(m_domain, "course,speed");
 
   current_waypt   = 0;
   arrival_radius  = 10; // Meters
   cruise_speed    = 0;  // Meters/second
 
-  info_vars.push_back("NAV_X");
-  info_vars.push_back("NAV_Y");
+  addInfoVars("NAV_X, NAV_Y");
 }
 
 //-----------------------------------------------------------
@@ -84,14 +83,9 @@ bool BHV_Waypoint2D::setParam(string param, string val)
 
 IvPFunction *BHV_Waypoint2D::produceOF() 
 {
-  if(!unif_box || !grid_box) {
-    postEMessage("Null UnifBox or GridBox.");
-    return(0);
-  }
- 
   bool ok1, ok2;
-  double osX = info_buffer->dQuery("NAV_X", ok1);
-  double osY = info_buffer->dQuery("NAV_Y", ok2);
+  double osX = m_info_buffer->dQuery("NAV_X", ok1);
+  double osY = m_info_buffer->dQuery("NAV_Y", ok2);
 
   // Must get ownship position from InfoBuffer
   if(!ok1 || !ok2) {
@@ -112,14 +106,14 @@ IvPFunction *BHV_Waypoint2D::produceOF()
     else {
       postMessage("VEHICLE_WPT_STAT_US", "complete");
       postMessage("VEHICLE_WPT_STAT", "complete");
-      postFlags(end_flags);
+      postFlags(m_end_flags);
       m_completed = true;
       return(0);
     }
   }
 
   //AOF_Waypoint2D aof_wpt(domain, cruise_speed, osY, osX, ptY, ptX);
-  AOF_Waypoint2D aof_wpt(domain);
+  AOF_Waypoint2D aof_wpt(m_domain);
   aof_wpt.setParam("speed", cruise_speed);
   aof_wpt.setParam("oslat", osY);
   aof_wpt.setParam("oslon", osX);
@@ -128,13 +122,12 @@ IvPFunction *BHV_Waypoint2D::produceOF()
   aof_wpt.initialize();
 
   OF_Reflector reflector(&aof_wpt);
-  reflector.createUniform(unif_box);
+  reflector.create(m_build_info);
+  IvPFunction *ipf = reflector.extractOF();
 
-  IvPFunction *ivp_function = reflector.extractOF();
+  ipf->setPWT(m_priority_wt);
 
-  ivp_function->setPWT(priority_wt);
-
-  return(ivp_function);
+  return(ipf);
 }
 
 

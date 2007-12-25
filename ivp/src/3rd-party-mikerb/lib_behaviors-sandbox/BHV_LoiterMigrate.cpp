@@ -30,7 +30,7 @@ BHV_LoiterMigrate::BHV_LoiterMigrate(IvPDomain gdomain) :
   this->setParam("unifbox", "course=3, speed=2");
   this->setParam("gridbox", "course=9, speed=6");
 
-  domain = subDomain(domain, "course,speed");
+  m_domain = subDomain(m_domain, "course,speed");
 
   m_desired_speed   = 0;      // meters/sec
   m_acquire_mode    = true;
@@ -42,9 +42,7 @@ BHV_LoiterMigrate::BHV_LoiterMigrate(IvPDomain gdomain) :
 
   waypoint_engine.setPerpetual(true);
 
-  info_vars.push_back("NAV_X");
-  info_vars.push_back("NAV_Y");
-  info_vars.push_back("NAV_HEADING");
+  addInfoVars("NAV_X, NAV_Y, NAV_HEADING");
 }
 
 //-----------------------------------------------------------
@@ -166,7 +164,7 @@ IvPFunction *BHV_LoiterMigrate::produceOF()
 
   if(ipf) {
     ipf->getPDMap()->normalize(0,100);
-    ipf->setPWT(priority_wt);
+    ipf->setPWT(m_priority_wt);
   }
 
   updateInfoOut();
@@ -195,9 +193,9 @@ bool BHV_LoiterMigrate::updateInfoIn()
 
   bool ok1, ok2, ok3;
   // ownship position in meters from some 0,0 reference point.
-  m_osx = info_buffer->dQuery("NAV_X", ok1);
-  m_osy = info_buffer->dQuery("NAV_Y", ok2);
-  m_osh = info_buffer->dQuery("NAV_HEADING", ok3);
+  m_osx = m_info_buffer->dQuery("NAV_X", ok1);
+  m_osy = m_info_buffer->dQuery("NAV_Y", ok2);
+  m_osh = m_info_buffer->dQuery("NAV_HEADING", ok3);
 
   // Must get ownship position from InfoBuffer
   if(!ok1 || !ok2) {
@@ -256,14 +254,14 @@ IvPFunction *BHV_LoiterMigrate::buildIPF(const string& method)
   
   if(method == "zaic") {
     
-    ZAIC_PEAK spd_zaic(domain, "speed");
+    ZAIC_PEAK spd_zaic(m_domain, "speed");
     spd_zaic.setSummit(m_desired_speed);
     spd_zaic.setBaseWidth(0.3);
     spd_zaic.setPeakWidth(0.0);
     spd_zaic.setSummitDelta(0.0);
     IvPFunction *spd_of = spd_zaic.extractOF();
     double rel_ang_to_wpt = relAng(m_osx, m_osy, m_ptx, m_pty);
-    ZAIC_PEAK crs_zaic(domain, "course");
+    ZAIC_PEAK crs_zaic(m_domain, "course");
     crs_zaic.setSummit(rel_ang_to_wpt);
     crs_zaic.setBaseWidth(180.0);
     crs_zaic.setValueWrap(true);

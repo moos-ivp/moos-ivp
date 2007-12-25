@@ -42,15 +42,14 @@ BHV_AvoidObstacles::BHV_AvoidObstacles(IvPDomain gdomain) :
   IvPBehavior(gdomain)
 {
   this->setParam("descriptor", "(d)bhv_avoid_obstacles");
-  this->setParam("unifbox", "course=1, speed=4");
-  this->setParam("gridbox", "course=9, speed=6");
+  this->setParam("build_info", "uniform_box=course:1,speed:2");
+  this->setParam("build_info", "uniform_grid=course:9,speed:6");
 
-  domain = subDomain(domain, "course,speed");
+  m_domain = subDomain(m_domain, "course,speed");
 
-  aof_avoid = new AOF_AvoidObstacles(domain);
+  aof_avoid = new AOF_AvoidObstacles(m_domain);
 
-  info_vars.push_back("NAV_X");
-  info_vars.push_back("NAV_Y");
+  addInfoVars("NAV_X, NAV_Y");
 }
 
 //-----------------------------------------------------------
@@ -104,14 +103,9 @@ bool BHV_AvoidObstacles::setParam(string param, string val)
 
 IvPFunction *BHV_AvoidObstacles::produceOF() 
 {
-  if(!unif_box || !grid_box) {
-    postEMessage("NULL UnifBox or GridBox.");
-    return(0);
-  }
-
   bool ok1, ok2;
-  double os_x = info_buffer->dQuery("NAV_X", ok1);
-  double os_y = info_buffer->dQuery("NAV_Y", ok2);
+  double os_x = m_info_buffer->dQuery("NAV_X", ok1);
+  double os_y = m_info_buffer->dQuery("NAV_Y", ok2);
 
   if(!ok1 || !ok2) {
     postEMessage("No Ownship NAV_X and/or NAV_Y in info_buffer");
@@ -140,10 +134,10 @@ IvPFunction *BHV_AvoidObstacles::produceOF()
   IvPFunction *ipf = 0;
 
   OF_Reflector reflector(aof_avoid, 1);
-  reflector.createUniform(unif_box, grid_box);
+  reflector.create(m_build_info);
   ipf = reflector.extractOF(false);
   
-  ipf->setPWT(priority_wt);
+  ipf->setPWT(m_priority_wt);
 
 #if 0
   IvPBox mpt = ipf->getPDMap()->getGrid()->getMaxPt();
