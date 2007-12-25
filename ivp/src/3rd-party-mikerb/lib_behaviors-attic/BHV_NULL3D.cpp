@@ -37,8 +37,8 @@ BHV_NULL3D::BHV_NULL3D(IvPDomain gdomain) :
   IvPBehavior(gdomain)
 {
   this->setDescriptor("NULL3D");
-  this->setParam("unifbox", "course=2, speed=2, tol=3");
-  this->setParam("gridbox", "course=8, speed=6, tol=6");
+  this->setParam("build_info", "uniform_box=course:2,speed:2,tol:3");
+  this->setParam("build_info", "uniform_grid=course:8,speed:6,tol:6");
 }
 
 //-----------------------------------------------------------
@@ -46,18 +46,10 @@ BHV_NULL3D::BHV_NULL3D(IvPDomain gdomain) :
 
 OF *BHV_NULL3D::produceOF() 
 {
-  // clear each time produceOF() is called
-  messages.clear();
-
-  if(!unif_box || !grid_box) {
-    postEMessage("Null UnifBox or GridBox.");
-    return(0);
-  }
-
-  AOF_NULL3D *aof_NULL3D = new AOF_NULL3D(domain);
+  AOF_NULL3D *aof_NULL3D = new AOF_NULL3D(m_domain);
   OF_Reflector *ofrNULL3D = new OF_Reflector(aof_NULL3D, 1);
 
-  ofrNULL3D->createUniform(unif_box, grid_box);
+  ofrNULL3D->create(m_build_info);
 
   OF *of = ofrNULL3D->extractOF();
 
@@ -66,7 +58,7 @@ OF *BHV_NULL3D::produceOF()
   of->setDomainName(0, "course");
   of->setDomainName(1, "speed");
   of->setDomainName(2, "tol");
-  of->setPWT(priority_wt);
+  of->setPWT(m_priority_wt);
 
   return(of);
 }

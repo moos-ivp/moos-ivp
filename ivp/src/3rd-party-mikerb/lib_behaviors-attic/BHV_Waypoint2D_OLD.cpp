@@ -41,8 +41,8 @@ BHV_Waypoint2D::BHV_Waypoint2D(IvPDomain gdomain) :
   IvPBehavior(gdomain)
 {
   this->setDescriptor("(d)waypoint1D");
-  this->setParam("unifbox", "course=2,  speed=1");
-  this->setParam("gridbox", "course=10, speed=5");
+  this->setParam("build_info", "uniform_box=course:2,speed:1");
+  this->setParam("build_info", "uniform_grid=course:10,speed:5");
 
   current_waypt  = 0;
   arrival_radius = 10; // Meters
@@ -95,14 +95,6 @@ bool BHV_Waypoint2D::setParam(string param, string val)
 
 OF *BHV_Waypoint2D::produceOF() 
 {
-  // clear each time produceOF() is called
-  messages.clear();
-
-  if(!unif_box || !grid_box) {
-    postEMessage("Null UnifBox or GridBox.");
-    return(0);
-  }
-
   bool silent = true;
 
   // If no more waypoints to hit, do not generate function.
@@ -111,9 +103,9 @@ OF *BHV_Waypoint2D::produceOF()
   //    current_waypt = 0;
 
   bool ok;
-  double osX   = info_buffer->dQuery("NAV_X",     &ok);
-  double osY   = info_buffer->dQuery("NAV_Y",     &ok);
-  double osSPD = info_buffer->dQuery("NAV_SPEED", &ok);
+  double osX   = m_info_buffer->dQuery("NAV_X",     &ok);
+  double osY   = m_info_buffer->dQuery("NAV_Y",     &ok);
+  double osSPD = m_info_buffer->dQuery("NAV_SPEED", &ok);
 
   if(!silent) cout << "+++++BHV_Waypoint2D::produceOF() " << endl;
   if(!silent) cout << "  osX:" << osX << " osY:" << osY << endl;
@@ -135,7 +127,7 @@ OF *BHV_Waypoint2D::produceOF()
     }
     else {
       VarDataPair msg("VEHICLE_WPT_STAT_US", "complete");
-      messages.push_back(msg);
+      m_messages.push_back(msg);
       return(0);
     }
   }
@@ -145,14 +137,14 @@ OF *BHV_Waypoint2D::produceOF()
   AOF_WPT2D *aof_wpt = new AOF_WPT2D(domain, cruise_speed, osY, osX, ptY, ptX);
   OF_Reflector *ofr_wpt = new OF_Reflector(aof_wpt, 1);
 
-  ofr_wpt->createUniform(unif_box, grid_box);
+  ofr_wpt->create(m_build_info);
   OF *of = ofr_wpt->extractOF();
 
   delete(ofr_wpt);
 
   of->setDomainName(0, "course");
   of->setDomainName(1, "speed");
-  of->setPWT(priority_wt);
+  of->setPWT(m_priority_wt);
 
   if(!silent) {
     Box *mpt = of->getPDMap()->getGrid()->getMaxPt();
@@ -165,16 +157,16 @@ OF *BHV_Waypoint2D::produceOF()
   double dist_meters = hypot((osX-ptX), (osY-ptY));
   double eta_seconds = dist_meters / osSPD;
 
-  string stat = "vname=" + us_name + ",";
+  string stat = "vname=" + m_us_name + ",";
   stat += "index=" + intToString(current_waypt)   + ",";
   stat += "dist="  + doubleToString(dist_meters)  + ",";
   stat += "eta="   + doubleToString(eta_seconds);
 
   VarDataPair msg("VEHICLE_WPT_STAT_US", stat);
-  messages.push_back(msg);
+  m_messages.push_back(msg);
   
   msg.set("VEHICLE_WPT_INDEX_US", current_waypt);
-  messages.push_back(msg);
+  m_messages.push_back(msg);
 
   return(of);
 }

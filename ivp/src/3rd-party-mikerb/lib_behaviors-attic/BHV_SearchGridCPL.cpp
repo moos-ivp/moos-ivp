@@ -47,15 +47,14 @@ BHV_SearchGrid::BHV_SearchGrid(IvPDomain gdomain) :
   this->setParam("unifbox", "course=6,  speed=4");
   this->setParam("gridbox", "course=12, speed=8");
 
-  domain = subDomain(domain, "course,speed");
+  m_domain = subDomain(m_domain, "course,speed");
 
   has_fired = false;
   osX   = 0;
   osY   = 0;
   osSPD = 0;
 
-  info_vars.push_back("NAV_X");
-  info_vars.push_back("NAV_Y");
+  addInfoVars("NAV_X, NAV_Y");
 }
 
 //-----------------------------------------------------------
@@ -101,8 +100,8 @@ IvPFunction *BHV_SearchGrid::produceOF()
   AOF_SearchGrid *aof_sgrid = 0;
   AOF_Aggregate  *aof = 0;
 
-  aof       = new AOF_Aggregate(domain);
-  aof_sgrid = new AOF_SearchGrid(domain, &search_grid);
+  aof       = new AOF_Aggregate(m_domain);
+  aof_sgrid = new AOF_SearchGrid(m_domain, &search_grid);
 
   aof_sgrid->setParam("os_lat", osY);
   aof_sgrid->setParam("os_lon", osX);
@@ -112,7 +111,7 @@ IvPFunction *BHV_SearchGrid::produceOF()
   aof->addAOF(aof_sgrid, 100);
 
   if(os_in_grid) {
-    aof_sdy = new AOF_SDY(domain);
+    aof_sdy = new AOF_SDY(m_domain);
     aof_sdy->setParam("desired_course", osCRS);
     aof->addAOF(aof_sdy, 150);
   }
@@ -146,10 +145,10 @@ bool BHV_SearchGrid::updateFromInfoBuffer()
   }
 
   bool ok1, ok2, ok3, ok4;
-  osX   = info_buffer->dQuery("NAV_X",     &ok1);
-  osY   = info_buffer->dQuery("NAV_Y",     &ok2);
-  osSPD = info_buffer->dQuery("NAV_SPEED", &ok3);
-  osCRS = info_buffer->dQuery("NAV_HEADING", &ok4);
+  osX   = m_info_buffer->dQuery("NAV_X",     &ok1);
+  osY   = m_info_buffer->dQuery("NAV_Y",     &ok2);
+  osSPD = m_info_buffer->dQuery("NAV_SPEED", &ok3);
+  osCRS = m_info_buffer->dQuery("NAV_HEADING", &ok4);
 
   // Must get ownship position from InfoBuffer
   if(!ok1 || !ok2)

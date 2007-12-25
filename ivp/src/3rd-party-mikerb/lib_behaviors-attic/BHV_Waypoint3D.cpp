@@ -42,8 +42,8 @@ BHV_Waypoint3D::BHV_Waypoint3D(IvPDomain gdomain) :
 {
 
   this->setDescriptor("(d)waypoint3D");
-  this->setParam("unifbox", "course=2, speed=2, tol=3");
-  this->setParam("gridbox", "course=8, speed=6, tol=6");
+  this->setParam("build_info", "uniform_box=course:2,speed:2,tol=3");
+  this->setParam("build_info", "uniform_grid=course:8,speed:6,tol=6");
 
   current_waypt  = 0;
   arrival_radius = 7;  // Meters
@@ -92,14 +92,6 @@ bool BHV_Waypoint3D::setParam(string param, string val)
 
 OF *BHV_Waypoint3D::produceOF() 
 {
-  // clear each time produceOF() is called
-  messages.clear();
-
-  if(!unif_box || !grid_box) {
-    postEMessage("Null UnifBox or GridBox.");
-    return(0);
-  }
-
   bool silent = true;
 
   // If no more waypoints to hit, do not generate function.
@@ -107,9 +99,9 @@ OF *BHV_Waypoint3D::produceOF()
     return(0);
 
   bool ok;
-  double osX   = info_buffer->dQuery("NAV_X",     &ok);
-  double osY   = info_buffer->dQuery("NAV_Y",     &ok);
-  double osSPD = info_buffer->dQuery("NAV_SPEEE", &ok);
+  double osX   = m_info_buffer->dQuery("NAV_X",     &ok);
+  double osY   = m_info_buffer->dQuery("NAV_Y",     &ok);
+  double osSPD = m_info_buffer->dQuery("NAV_SPEEE", &ok);
 
   if(!silent) cout << "+++++BHV_Waypoint3D::produceOF() " << endl;
   if(!silent) cout << "  osX:" << osX << " osY:" << osY << endl;
@@ -139,7 +131,7 @@ OF *BHV_Waypoint3D::produceOF()
   AOF_WPT3D *aof_wpt = new AOF_WPT3D(domain, cruise_speed, osY, osX, ptY, ptX);
   OF_Reflector *ofr_wpt = new OF_Reflector(aof_wpt, 1);  // 1 indicates pcwise linear
 
-  ofr_wpt->createUniform(unif_box, grid_box);
+  ofr_wpt->create(m_build_info);
   OF *of = ofr_wpt->extractOF();
 
   delete(ofr_wpt);
@@ -147,7 +139,7 @@ OF *BHV_Waypoint3D::produceOF()
   of->setDomainName(0, "course");
   of->setDomainName(1, "speed");
   of->setDomainName(2, "tol");
-  of->setPWT(priority_wt);
+  of->setPWT(m_priority_wt);
 
   if(!silent) {
     Box *mpt = of->getPDMap()->getGrid()->getMaxPt();
@@ -160,13 +152,13 @@ OF *BHV_Waypoint3D::produceOF()
   double dist_meters = hypot((osX-ptX), (osY-ptY));
   double eta_seconds = dist_meters / osSPD;
 
-  string stat = "vname=" + us_name + ",";
+  string stat = "vname=" + m_us_name + ",";
   stat += "index=" + intToString(current_waypt)   + ",";
   stat += "dist="  + doubleToString(dist_meters)  + ",";
   stat += "eta="   + doubleToString(eta_seconds);
 
   VarDataPair msg("VEHICLE_WPT_STAT", stat);
-  messages.push_back(msg);
+  m_messages.push_back(msg);
   
   return(of);
 }

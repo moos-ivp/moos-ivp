@@ -42,13 +42,12 @@ BHV_AvoidObstacles::BHV_AvoidObstacles(IvPDomain gdomain) :
   IvPBehavior(gdomain)
 {
   this->setParam("descriptor", "(d)bhv_waypoint");
-  this->setParam("unifbox", "course=3, speed=2");
-  this->setParam("gridbox", "course=9, speed=6");
+  this->setParam("build_info", "uniform_box=course:3,speed:3");
+  this->setParam("build_info", "uniform_grid=course:9,speed:6");
 
-  domain = subDomain(domain, "course,speed");
+  m_domain = subDomain(m_domain, "course,speed");
 
-  info_vars.push_back("NAV_X");
-  info_vars.push_back("NAV_Y");
+  addInfoVars("NAV_X, NAV_Y");
 }
 
 //-----------------------------------------------------------
@@ -106,11 +105,6 @@ bool BHV_AvoidObstacles::setParam(string param, string val)
 IvPFunction *BHV_AvoidObstacles::produceOF() 
 {
 #if 0
-  if(!unif_box || !grid_box) {
-    postEMessage("Null UnifBox or GridBox.");
-    return(0);
-  }
-
   // Set osX, osY, ptX, ptY, iptX, iptY;
   bool valid_point = setNextWaypoint();
 
@@ -122,7 +116,7 @@ IvPFunction *BHV_AvoidObstacles::produceOF()
 
   IvPFunction *ipf = 0;
 
-  AOF_WPT2D aof(domain);
+  AOF_WPT2D aof(m_domain);
   aof.setParam("oslat", osY);
   aof.setParam("oslon", osX);
   aof.setParam("ptlat", iptY);
@@ -131,10 +125,10 @@ IvPFunction *BHV_AvoidObstacles::produceOF()
   aof.initialize();
   
   OF_Reflector reflector(&aof, 1);
-  reflector.createUniform(unif_box, grid_box);
+  reflector.create(m_build_info);
   ipf = reflector.extractOF();
   
-  ipf->setPWT(priority_wt);
+  ipf->setPWT(m_priority_wt);
 
   if(!silent) {
     IvPBox mpt = ipf->getPDMap()->getGrid()->getMaxPt();
@@ -147,7 +141,7 @@ IvPFunction *BHV_AvoidObstacles::produceOF()
     double dist_meters = hypot((osX-ptX), (osY-ptY));
     double eta_seconds = dist_meters / osSPD;
 
-    string stat = "vname=" + us_name + ",";
+    string stat = "vname=" + m_us_name + ",";
     stat += "index=" + intToString(current_waypt)   + ",";
     stat += "dist="  + doubleToString(dist_meters)  + ",";
     stat += "eta="   + doubleToString(eta_seconds);

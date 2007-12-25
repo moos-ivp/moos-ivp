@@ -40,18 +40,14 @@ BHV_CutRange::BHV_CutRange(IvPDomain gdomain) :
   IvPBehavior(gdomain)
 {
   this->setParam("descriptor", "(d)bhv_cutrange");
-  this->setParam("unifbox", "course=3, speed=2, tol=2");
-  this->setParam("gridbox", "course=9, speed=6, tol=6");
-
-  domain = subDomain(domain, "course,speed,tol");
+  this->setParam("build_info", "uniform_box=course:3,speed:2,tol:2");
+  this->setParam("build_info", "uniform_grid=course:9,speed:6,tol:6");
+  m_domain = subDomain(m_domain, "course,speed,tol");
 
   range_max = 0;
   range_min = 50;
 
-  info_vars.push_back("NAV_X");
-  info_vars.push_back("NAV_Y");
-  info_vars.push_back("NAV_SPEED");
-  info_vars.push_back("NAV_HEADING");
+  addInfoVars("NAV_X, NAV_Y, NAV_SPEED, NAV_HEADING");
 }
 
 //-----------------------------------------------------------
@@ -64,10 +60,10 @@ bool BHV_CutRange::setParam(string g_param, string g_val)
 
   if((g_param == "them") || (g_param == "contact")) {
     them_name = toupper(g_val);
-    info_vars.push_back(them_name+"_NAV_X");
-    info_vars.push_back(them_name+"_NAV_Y");
-    info_vars.push_back(them_name+"_NAV_SPEED");
-    info_vars.push_back(them_name+"_NAV_HEADING");
+    addInfoVars(them_name+"_NAV_X");
+    addInfoVars(them_name+"_NAV_Y");
+    addInfoVars(them_name+"_NAV_SPEED");
+    addInfoVars(them_name+"_NAV_HEADING");
     return(true);
   }  
   else if(g_param == "max_range") {
@@ -93,11 +89,6 @@ bool BHV_CutRange::setParam(string g_param, string g_val)
 
 IvPFunction *BHV_CutRange::produceOF() 
 {
-  if(!unif_box || !grid_box) {
-    postEMessage("Null UnifBox or GridBox.");
-    return(0);
-  }
-  
   if(them_name == "") {
     postEMessage("contact ID not set.");
     return(0);
@@ -105,15 +96,15 @@ IvPFunction *BHV_CutRange::produceOF()
 
   bool ok1, ok2;
 
-  double cnCRS = info_buffer->dQuery(them_name+"_NAV_HEADING", ok1);
-  double cnSPD = info_buffer->dQuery(them_name+"_NAV_SPEED", ok2);
+  double cnCRS = m_info_buffer->dQuery(them_name+"_NAV_HEADING", ok1);
+  double cnSPD = m_info_buffer->dQuery(them_name+"_NAV_SPEED", ok2);
   if(!ok1 || !ok2) {
     postWMessage("contact course/speed info not found.");
     return(0);
   }
 
-  double osCRS = info_buffer->dQuery("NAV_HEADING", ok1);
-  double osSPD = info_buffer->dQuery("NAV_SPEED", ok2);
+  double osCRS = m_info_buffer->dQuery("NAV_HEADING", ok1);
+  double osSPD = m_info_buffer->dQuery("NAV_SPEED", ok2);
   if(!ok1 || !ok2) {
     postEMessage("ownship course/speed info not found.");
     return(0);
@@ -121,15 +112,15 @@ IvPFunction *BHV_CutRange::produceOF()
 
   if(cnCRS < 0) cnCRS += 360.0;
 
-  double cnX = info_buffer->dQuery(them_name+"_NAV_X", ok2);
-  double cnY = info_buffer->dQuery(them_name+"_NAV_Y", ok1);
+  double cnX = m_info_buffer->dQuery(them_name+"_NAV_X", ok2);
+  double cnY = m_info_buffer->dQuery(them_name+"_NAV_Y", ok1);
   if(!ok1 || !ok2) {
     postWMessage("contact x/y info not found.");
     return(0);
   }
 
-  double osX = info_buffer->dQuery("NAV_X", ok2);
-  double osY = info_buffer->dQuery("NAV_Y", ok1);
+  double osX = m_info_buffer->dQuery("NAV_X", ok2);
+  double osY = m_info_buffer->dQuery("NAV_Y", ok1);
   if(!ok1 || !ok2) {
     postEMessage("ownship x/y info not found.");
     return(0);
@@ -143,7 +134,7 @@ IvPFunction *BHV_CutRange::produceOF()
   if(relevance <= 0)
     return(0);
 
-  AOF_CutRangeCPA aof(domain);
+  AOF_CutRangeCPA aof(m_domain);
   aof.setParam("cnlat", cnY);
   aof.setParam("cnlon", cnX);
   aof.setParam("cncrs", cnCRS);
@@ -154,23 +145,13 @@ IvPFunction *BHV_CutRange::produceOF()
 
   OF_Reflector reflector(&aof, 1);
 
-  reflector.createUniform(unif_box, grid_box);
+  reflector.create(m_build_info);
 
   IvPFunction *of = reflector.extractOF();
 
-  if(!silent) {
-    cout << "CutRange Pre-Normalize MIN-WT: " << of->getPDMap()->getMinWT() << endl;
-    cout << "CutRange Pre-Normalize MAX-WT: " << of->getPDMap()->getMaxWT() << endl;
-  }
-
   of->getPDMap()->normalize(0.0, 100.0);
 
-  if(!silent) {
-    cout << "CutRange MIN-WT: " << of->getPDMap()->getMinWT() << endl;
-    cout << "CutRange MAX-WT: " << of->getPDMap()->getMaxWT() << endl;
-  }
-
-  of->setPWT(relevance * priority_wt);
+  of->setPWT(relevance * m_priority_wt);
 
   return(of);
 }

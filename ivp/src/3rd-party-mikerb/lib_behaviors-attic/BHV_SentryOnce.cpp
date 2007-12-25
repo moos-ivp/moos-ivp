@@ -39,8 +39,8 @@ BHV_SentryOnce::BHV_SentryOnce(IvPDomain gdomain) :
   IvPBehavior(gdomain)
 {
   this->setDescriptor("(d)bhv_sentry_once");
-  this->setParam("unifbox", "course=3, speed=2");
-  this->setParam("gridbox", "course=9, speed=6");
+  this->setParam("build_info", "uniform_box=course:3,speed:3");
+  this->setParam("build_info", "uniform_grid=course:9,speed:6");
 
   current_waypt  = 0;
   arrival_radius = 10; // Meters
@@ -147,22 +147,14 @@ int BHV_SentryOnce::acquireVertex(double os_x, double os_y, bool inside)
 
 OF *BHV_SentryOnce::produceOF() 
 {
-  // clear each time produceOF() is called
-  messages.clear();
-
-  if(!unif_box || !grid_box) {
-    postEMessage("Null UnifBox or GridBox.");
-    return(0);
-  }
-  
   // Check for "pause" mode
   if(sentry_mode == -1) 
     return(0);
   
   bool ok1, ok2;
   // ownship position in meters from some 0,0 reference point.
-  double osX = info_buffer->dQuery("NAV_X", &ok1);
-  double osY = info_buffer->dQuery("NAV_Y", &ok2);
+  double osX = m_info_buffer->dQuery("NAV_X", &ok1);
+  double osY = m_info_buffer->dQuery("NAV_Y", &ok2);
 
   // Must get ownship position from InfoBuffer
   if(!ok1 || !ok2) {
@@ -172,8 +164,8 @@ OF *BHV_SentryOnce::produceOF()
 
   double relevance = 1.0;
   if(them_name != "") {
-    double cnY = info_buffer->dQuery(them_name, "NAV_Y", &ok1);
-    double cnX = info_buffer->dQuery(them_name, "NAV_X", &ok2);
+    double cnY = m_info_buffer->dQuery(them_name, "NAV_Y", &ok1);
+    double cnX = m_info_buffer->dQuery(them_name, "NAV_X", &ok2);
     // Must get them position from InfoBuffer
     if(!ok1 || !ok2) {
       postWMessage("BHV_SentryOnce: contact X/Y info not found.");
@@ -217,17 +209,17 @@ OF *BHV_SentryOnce::produceOF()
     ptY = poly.get_vy(current_waypt);
   }
 
-  AOF_WPT2D    *aof_wpt = new AOF_WPT2D(domain, cruise_speed, osY, osX, ptY, ptX);
+  AOF_WPT2D    *aof_wpt = new AOF_WPT2D(m_domain, cruise_speed, osY, osX, ptY, ptX);
   OF_Reflector *ofr_wpt = new OF_Reflector(aof_wpt, 1);
 
-  ofr_wpt->createUniform(unif_box, grid_box);
+  ofr_wpt->create(m_build_info);
   OF *of = ofr_wpt->extractOF();
 
   delete(ofr_wpt);
 
   of->setDomainName(0, "course");
   of->setDomainName(1, "speed");
-  of->setPWT(relevance * priority_wt);
+  of->setPWT(relevance * m_priority_wt);
 
   return(of);
 }

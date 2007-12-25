@@ -39,10 +39,10 @@ using namespace std;
 BHV_Sentry::BHV_Sentry(IvPDomain gdomain) : IvPBehavior(gdomain)
 {
   this->setParam("descriptor", "(d)bhv_sentry");
-  this->setParam("unifbox", "course=2, speed=2");
-  this->setParam("gridbox", "course=8, speed=6");
+  this->setParam("build_info", "uniform_box=course:2,speed:2");
+  this->setParam("build_info", "uniform_grid=course:8,speed:6");
 
-  domain = subDomain(domain, "course,speed");
+  m_domain = subDomain(m_domain, "course,speed");
 
   current_waypt  = 0;
   arrival_radius = 10; // Meters
@@ -50,8 +50,7 @@ BHV_Sentry::BHV_Sentry(IvPDomain gdomain) : IvPBehavior(gdomain)
   sentry_mode    = 1;  // Default is acquire mode
   range_max      = 0;
 
-  info_vars.push_back("NAV_X");
-  info_vars.push_back("NAV_Y");
+  addInfoVars("NAV_X, NAV_Y");
 }
 
 //-----------------------------------------------------------
@@ -156,15 +155,10 @@ IvPFunction *BHV_Sentry::produceOF()
   if(sentry_mode == -1) 
     return(0);
   
-  if(!unif_box || !grid_box) {
-    postEMessage("Null UnifBox or GridBox.");
-    return(0);
-  }
-  
   bool ok1, ok2;
   // ownship position in meters from some 0,0 reference point.
-  double osX = info_buffer->dQuery("NAV_X", &ok1);
-  double osY = info_buffer->dQuery("NAV_Y", &ok2);
+  double osX = m_info_buffer->dQuery("NAV_X", &ok1);
+  double osY = m_info_buffer->dQuery("NAV_Y", &ok2);
 
   // Must get ownship position from InfoBuffer
   if(!ok1 || !ok2) {
@@ -174,13 +168,13 @@ IvPFunction *BHV_Sentry::produceOF()
 
   double relevance = 1.0;
   if(them_name != "") {
-    double cnY = info_buffer->dQuery(them_name, "NAV_Y", &ok1);
-    double cnX = info_buffer->dQuery(them_name, "NAV_X", &ok2);
+    double cnY = m_info_buffer->dQuery(them_name, "NAV_Y", &ok1);
+    double cnX = m_info_buffer->dQuery(them_name, "NAV_X", &ok2);
     // Must get them position from InfoBuffer
     if(!ok1 || !ok2) {
       
       postEMessage("contact x/y info not found.");
-      info_buffer->print();
+      m_info_buffer->print();
       return(0);
     }
     // Calculate the relevance first. If zero-relevance, we won't
@@ -219,7 +213,7 @@ IvPFunction *BHV_Sentry::produceOF()
     ptY = poly.get_vy(current_waypt);
   }
 
-  AOF_WPT2D aof(domain);
+  AOF_WPT2D aof(m_domain);
   aof.setParam("oslat", osY);
   aof.setParam("oslon", osX);
   aof.setParam("ptlat", ptY);
@@ -229,10 +223,10 @@ IvPFunction *BHV_Sentry::produceOF()
 
   OF_Reflector reflector(&aof, 1);
 
-  reflector.createUniform(unif_box, grid_box);
+  reflector.create(m_build_info);
   IvPFunction *of = reflector.extractOF();
 
-  of->setPWT(relevance * priority_wt);
+  of->setPWT(relevance * m_priority_wt);
 
   postMessage("BHV_SENTRY_WT", (relevance * priority_wt));
   return(of);
