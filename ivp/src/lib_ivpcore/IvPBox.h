@@ -84,6 +84,7 @@ public:
   int     getDim() const               {return((int)m_dim);};
   int     getDegree() const            {return((int)m_degree);};
   int     getWtc() const               {return((m_degree*m_dim)+1);};
+  bool    null() const                 {return(m_dim==0);};
 
   bool    intersect(const IvPBox*) const;
   bool    intersect(IvPBox*, IvPBox*&) const;
