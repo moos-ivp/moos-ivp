@@ -22,17 +22,14 @@ BHV_ArrayAngle::BHV_ArrayAngle(IvPDomain gdomain) :
   IvPBehavior(gdomain)
 {
   this->setParam("descriptor", "(d)bhv_1BTrack");
-  this->setParam("unifbox", "course=3, speed = 2");
-  this->setParam("gridbox", "course=9, speed = 6");
+  this->setParam("build_info", "uniform_box=course:3,speed:2");
+  this->setParam("build_info", "uniform_grid=course:9,speed:6");
 
-  domain = subDomain(domain, "course,speed");
+  m_domain = subDomain(m_domain, "course,speed");
  
-  
-  // info_vars.push_back("NAV_HEADING");
-  info_vars.push_back("AEL_HEADING");
-
-  info_vars.push_back("BEARING_STAT");
-  
+  // addInfoVars("NAV_HEADING");
+  addInfoVars("AEL_HEADING");
+  addInfoVars("BEARING_STAT");
 }
 
 //-----------------------------------------------------------
@@ -65,11 +62,11 @@ IvPFunction *BHV_ArrayAngle::produceOF()
   bool ok1,ok2;
   //get current course
   // Changed to array heading HS 103006
-  // double osCourse = info_buffer->dQuery("NAV_HEADING", ok1);
-  double osCourse = info_buffer->dQuery("AEL_HEADING", ok1);
+  // double osCourse = m_info_buffer->dQuery("NAV_HEADING", ok1);
+  double osCourse = m_info_buffer->dQuery("AEL_HEADING", ok1);
   
   //get current tracking state
-  string tState = info_buffer->sQuery("BEARING_STAT", ok2);
+  string tState = m_info_buffer->sQuery("BEARING_STAT", ok2);
 
   if(!ok1 || !ok2){
     postEMessage("error,BHV_ArrayAngle: ownship data not available");
@@ -84,7 +81,7 @@ IvPFunction *BHV_ArrayAngle::produceOF()
     return(0);
 
  
-  AOF_ArrayAngle aof_track(domain);
+  AOF_ArrayAngle aof_track(m_domain);
   aof_track.setParam("width",width);
   aof_track.setParam("osCourse",osCourse);
   aof_track.setParam("t_bearing",true_bearing);
@@ -93,11 +90,11 @@ IvPFunction *BHV_ArrayAngle::produceOF()
 
   OF_Reflector reflector(&aof_track,1);
  
-  reflector.createUniform(unif_box,grid_box);
+  reflector.create(m_build_info);
  
   IvPFunction *of = reflector.extractOF();
 
-  of->setPWT(priority_wt);
+  of->setPWT(m_priority_wt);
  
   return(of);
 }

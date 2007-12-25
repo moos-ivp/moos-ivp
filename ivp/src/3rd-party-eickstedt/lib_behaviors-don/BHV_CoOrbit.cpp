@@ -26,7 +26,7 @@ BHV_CoOrbit::BHV_CoOrbit(IvPDomain gdomain) :
 {
   this->setParam("descriptor", "CoOrbit");
 
-  domain = subDomain(domain, "speed");
+  m_domain = subDomain(m_domain, "speed");
 
   politeness = 50.0;   
   wait_speed = 0.0;
@@ -35,7 +35,7 @@ BHV_CoOrbit::BHV_CoOrbit(IvPDomain gdomain) :
   last_us_index = 0;
   last_them_index = 0;
 
-  info_vars.push_back("VEHICLE_WPT_STAT");
+  addInfoVars("VEHICLE_WPT_STAT");
 }
 
 //-----------------------------------------------------------
@@ -53,10 +53,10 @@ bool BHV_CoOrbit::setParam(string param, string val)
 
   if((param == "them") || (param == "contact")) {
     them_name = toupper(val);
-    info_vars.push_back(them_name+"_NAV_X");
-    info_vars.push_back(them_name+"_NAV_Y");
-    info_vars.push_back(them_name+"_NAV_SPEED");
-    info_vars.push_back(them_name+"_NAV_HEADING");
+    addInfoVars(them_name+"_NAV_X");
+    addInfoVars(them_name+"_NAV_Y");
+    addInfoVars(them_name+"_NAV_SPEED");
+    addInfoVars(them_name+"_NAV_HEADING");
     return(true);
   }  
   else if(param == "politeness") {
@@ -110,8 +110,8 @@ IvPFunction *BHV_CoOrbit::produceOF()
   }
   
   bool ok1, ok2;
-  string us_waypt_stat = info_buffer->sQuery("VEHICLE_WPT_STAT", ok1);
-  string them_waypt_stat = info_buffer->sQuery(them_name+"_VEHICLE_WPT_STAT", ok2);
+  string us_waypt_stat = m_info_buffer->sQuery("VEHICLE_WPT_STAT", ok1);
+  string them_waypt_stat = m_info_buffer->sQuery(them_name+"_VEHICLE_WPT_STAT", ok2);
 
 #if 0
   cout << "+++++BHV_CoOrbit::produceOF() " << us_name << endl;
@@ -150,11 +150,11 @@ IvPFunction *BHV_CoOrbit::produceOF()
   double peak_utility = 100;
   double raw_should_speed;
 
-  int    spdIndex  = domain.getIndex("speed");
-  double spdBase   = domain.getVarLow(spdIndex);
-  double spdHigh   = domain.getVarHigh(spdIndex);
-  double spdDelta  = domain.getVarDelta(spdIndex);
-  int    spdPoints = domain.getVarPoints(spdIndex);
+  int    spdIndex  = m_domain.getIndex("speed");
+  double spdBase   = m_domain.getVarLow(spdIndex);
+  double spdHigh   = m_domain.getVarHigh(spdIndex);
+  double spdDelta  = m_domain.getVarDelta(spdIndex);
+  int    spdPoints = m_domain.getVarPoints(spdIndex);
 
   //keep track of laps
   if (them_index == 0)
@@ -239,11 +239,11 @@ IvPFunction *BHV_CoOrbit::produceOF()
   // Build a PDMap out of the pieces
   PDMap *pdmap;
   if(piece1) {
-    pdmap = new PDMap(2, domain, 1);
+    pdmap = new PDMap(2, m_domain, 1);
     pdmap->bx(1) = piece1;
   }
   else
-    pdmap = new PDMap(1, domain, 1);
+    pdmap = new PDMap(1, m_domain, 1);
   pdmap->bx(0) = piece0;
 
   // Build an objective function from the PDMap
@@ -272,10 +272,10 @@ double BHV_CoOrbit::calcPriority(double us_eta, double them_eta)
   //if we're significantly ahead or behind schedule
   //increase our priority to give our speed choice more weight
   if ((ahead < 0) || (ahead > 0))
-    return (1.5*priority_wt);
+    return (1.5 * m_priority_wt);
 
   //otherwise we're on the right leg so stay cool
-  return(priority_wt);
+  return(m_priority_wt);
 }
 
 

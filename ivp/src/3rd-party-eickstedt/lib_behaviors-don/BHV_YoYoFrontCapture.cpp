@@ -15,7 +15,7 @@ BHV_YoYoFrontCapture::BHV_YoYoFrontCapture(IvPDomain gdomain) :
 {
   this->setParam("descriptor", "(d)bhv_YoYoFrontCapture");
 
-  domain = subDomain(domain, "course");
+  m_domain = subDomain(m_domain, "course");
 
   desired_heading = 0;
   peakwidth       = 0;
@@ -28,12 +28,9 @@ BHV_YoYoFrontCapture::BHV_YoYoFrontCapture(IvPDomain gdomain) :
   m_duration      = 0;
 
   initialized = false;
-
-  info_vars.push_back("NAV_X");
-  info_vars.push_back("NAV_Y");
-  info_vars.push_back("CTD_TEMPERATURE");
-  info_vars.push_back("NAV_DEPTH");
-  info_vars.push_back("YoYo_Direc");
+  
+  addInfoVars("NAV_X, NAV_Y, NAV_DEPTH");
+  addInfoVars("CTD_TEMPERATURE, YoYo_Direc");
 }
 
 //-----------------------------------------------------------
@@ -122,7 +119,7 @@ bool BHV_YoYoFrontCapture::setParam(string param, string val)
 
 IvPFunction *BHV_YoYoFrontCapture::produceOF() 
 {
-  if(!domain.hasDomain("course")) {
+  if(!m_domain.hasDomain("course")) {
     postEMessage("No 'heading' variable in the helm domain");
     return(0);
   }
@@ -135,15 +132,15 @@ IvPFunction *BHV_YoYoFrontCapture::produceOF()
 
   bool ok1,ok2,ok3,ok4,ok5;
   //get current x
-  double osX = info_buffer->dQuery("NAV_X", ok1);
+  double osX = m_info_buffer->dQuery("NAV_X", ok1);
   //get current heading
-  double osY = info_buffer->dQuery("NAV_Y", ok2);
+  double osY = m_info_buffer->dQuery("NAV_Y", ok2);
   //get current tracking state 
-  double ctdTemp = info_buffer->dQuery("CTD_TEMPERATURE", ok3);
+  double ctdTemp = m_info_buffer->dQuery("CTD_TEMPERATURE", ok3);
   //get current depth 
-  double osDepth = info_buffer->dQuery("NAV_DEPTH", ok4);
+  double osDepth = m_info_buffer->dQuery("NAV_DEPTH", ok4);
   //get current vertical yoyo direction
-  int yoyo_direc = (int) info_buffer->dQuery("YoYo_Direc", ok5);
+  int yoyo_direc = (int) m_info_buffer->dQuery("YoYo_Direc", ok5);
 
   //give an error if we don't have the information we need
   if(!ok1 || !ok2 || !ok3 || !ok4 || !ok5){
@@ -160,7 +157,7 @@ IvPFunction *BHV_YoYoFrontCapture::produceOF()
   //log the value in the MOOS DB
   postMessage("BHV_YoYoFrontCapture-desired heading",desired_heading);
 
-  ZAIC_PEAK zaic(domain, "course");
+  ZAIC_PEAK zaic(m_domain, "course");
   zaic.setSummit(desired_heading);
   zaic.setBaseWidth(basewidth);
   zaic.setPeakWidth(peakwidth);
@@ -168,7 +165,7 @@ IvPFunction *BHV_YoYoFrontCapture::produceOF()
   
   IvPFunction *ipf = zaic.extractOF();
   if(ipf)
-    ipf->setPWT(priority_wt);
+    ipf->setPWT(m_priority_wt);
 
   return(ipf);
 }

@@ -15,7 +15,7 @@ BHV_CDFrontCapture::BHV_CDFrontCapture(IvPDomain gdomain) :
 {
   this->setParam("descriptor", "(d)bhv_CDFrontCapture");
 
-  domain = subDomain(domain, "course");
+  m_domain = subDomain(m_domain, "course");
 
   desired_heading = 0;
   peakwidth       = 0;
@@ -29,9 +29,7 @@ BHV_CDFrontCapture::BHV_CDFrontCapture(IvPDomain gdomain) :
 
   initialized = false;
 
-  info_vars.push_back("NAV_X");
-  info_vars.push_back("NAV_Y");
-  info_vars.push_back("CTD_TEMPERATURE");
+  addInfoVars("NAV_X, NAV_Y, CTD_TEMPERATURE");
 }
 
 //-----------------------------------------------------------
@@ -102,18 +100,18 @@ bool BHV_CDFrontCapture::setParam(string param, string val)
 
 IvPFunction *BHV_CDFrontCapture::produceOF() 
 {
-  if(!domain.hasDomain("course")) {
+  if(!m_domain.hasDomain("course")) {
     postEMessage("No 'heading' variable in the helm domain");
     return(0);
   }
 
   bool ok1,ok2,ok3;
   //get current x
-  double osX = info_buffer->dQuery("NAV_X", ok1);
+  double osX = m_info_buffer->dQuery("NAV_X", ok1);
   //get current heading
-  double osY = info_buffer->dQuery("NAV_Y", ok2);
+  double osY = m_info_buffer->dQuery("NAV_Y", ok2);
   //get current tracking state 
-  double ctdTemp = info_buffer->dQuery("CTD_TEMPERATURE", ok3);
+  double ctdTemp = m_info_buffer->dQuery("CTD_TEMPERATURE", ok3);
 
   if(!initialized)
     {
@@ -137,7 +135,7 @@ IvPFunction *BHV_CDFrontCapture::produceOF()
   postMessage("BHV_CDFrontCapture-desired heading",desired_heading);
 
   //set the new desired heading
-  ZAIC_PEAK zaic(domain, "course");
+  ZAIC_PEAK zaic(m_domain, "course");
   zaic.setSummit(desired_heading);
   zaic.setBaseWidth(basewidth);
   zaic.setPeakWidth(peakwidth);
@@ -145,7 +143,7 @@ IvPFunction *BHV_CDFrontCapture::produceOF()
   
   IvPFunction *ipf = zaic.extractOF();
   if(ipf)
-    ipf->setPWT(priority_wt);
+    ipf->setPWT(m_priority_wt);
 
   return(ipf);
 }

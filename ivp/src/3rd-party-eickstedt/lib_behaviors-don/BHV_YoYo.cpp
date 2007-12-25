@@ -56,7 +56,7 @@ BHV_YoYo::BHV_YoYo(IvPDomain gdomain) :
   this->setParam("gridbox", "depth=10");
 
   //this behavior controls on depth only
-  domain = subDomain(domain, "depth");
+  m_domain = subDomain(m_domain, "depth");
 
   //determines initial direction when the behavior
   //activates. -1 = down, +1 = up
@@ -70,8 +70,7 @@ BHV_YoYo::BHV_YoYo(IvPDomain gdomain) :
   alt_min = 0.0;
 
   //subscribe to vehicle depth info
-  info_vars.push_back("NAV_DEPTH");
-  info_vars.push_back("NAV_ALTITUDE");
+  addInfoVars("NAV_DEPTH, NAV_ALTITUDE");
 }
 
 /******************************************************************************
@@ -121,7 +120,7 @@ IvPFunction *BHV_YoYo::produceOF()
 {
   double peak_utility = 100;
 
-  int    depthIndex  = domain.getIndex("depth");
+  int    depthIndex  = m_domain.getIndex("depth");
 
   if(depthIndex == -1) 
     {
@@ -137,7 +136,7 @@ IvPFunction *BHV_YoYo::produceOF()
 
   bool ok,ok2;
   //query the current depth from the MOOS DB
-  double current_depth = info_buffer->dQuery("NAV_DEPTH", ok);
+  double current_depth = m_info_buffer->dQuery("NAV_DEPTH", ok);
   
    if(!ok)
     {
@@ -148,7 +147,7 @@ IvPFunction *BHV_YoYo::produceOF()
    //if we set a min altitude, query the current altitude
   if (alt_set)
     {
-      current_alt = info_buffer->dQuery("NAV_ALTITUDE", ok2);
+      current_alt = m_info_buffer->dQuery("NAV_ALTITUDE", ok2);
        if(!ok2)
 	 {
 	   postEMessage("BHV_YoYo: no altitude info available");
@@ -181,9 +180,9 @@ IvPFunction *BHV_YoYo::produceOF()
       desired_depth = upper;
     }
 
-  double depthBase   = domain.getVarLow(depthIndex);
-  double depthDelta  = domain.getVarDelta(depthIndex);
-  int    depthPoints = domain.getVarPoints(depthIndex);
+  double depthBase   = m_domain.getVarLow(depthIndex);
+  double depthDelta  = m_domain.getVarDelta(depthIndex);
+  int    depthPoints = m_domain.getVarPoints(depthIndex);
   
   double double_index = (desired_depth - depthBase) / depthDelta;
   int    domain_index = (int)(floor(double_index + 0.5));
@@ -205,18 +204,18 @@ IvPFunction *BHV_YoYo::produceOF()
 
   PDMap *pdmap;
   if(piece1) {
-    pdmap = new PDMap(2, domain, 1);
+    pdmap = new PDMap(2, m_domain, 1);
     pdmap->bx(1) = piece1;
   }
   else
-    pdmap = new PDMap(1, domain, 1);
+    pdmap = new PDMap(1, m_domain, 1);
   pdmap->bx(0) = piece0;
 
 
   pdmap->updateGrid();
 
   IvPFunction *of = new IvPFunction(pdmap);
-  of->setPWT(priority_wt);
+  of->setPWT(m_priority_wt);
 
   return(of);
 }

@@ -27,10 +27,10 @@ BHV_CloseRange::BHV_CloseRange(IvPDomain gdomain) :
   IvPBehavior(gdomain)
 {
   this->setParam("descriptor", "(d)bhv_CloseRange");
-  this->setParam("unifbox", "course=3, speed=2, tol = 2");
-  this->setParam("gridbox", "course=9, speed=6, tol = 6");
+  this->setParam("build_info", "uniform_box=course:3,speed:2,tol:2");
+  this->setParam("build_info", "uniform_grid=course:9,speed:6,tol:6");
 
-  domain = subDomain(domain, "course,speed,tol");
+  m_domain = subDomain(m_domain, "course,speed,tol");
 
   //set default values
   range_min = 0.0;
@@ -39,10 +39,7 @@ BHV_CloseRange::BHV_CloseRange(IvPDomain gdomain) :
   max_val   = 0.0;
 
   //subscribe to the necessary MOOS variables
-  info_vars.push_back("TRACK_STAT");
-  info_vars.push_back("NAV_X");
-  info_vars.push_back("NAV_Y");  
- 
+  addInfoVars("TRACK_STAT, NAV_X, NAV_Y");  
 }
 
 /******************************************************************************
@@ -105,22 +102,17 @@ bool BHV_CloseRange::setParam(string param, string val)
 
 IvPFunction *BHV_CloseRange::produceOF() 
 {
-  if(!unif_box || !grid_box) {
-    postEMessage("error, BHV_CloseRange: Null UnifBox or GridBox.");
-    return(0);
-  }
-
   bool ok2,ok3,ok4;
   
   string tState;
   //get current tracking state
-  tState = info_buffer->sQuery("TRACK_STAT", ok4);
+  tState = m_info_buffer->sQuery("TRACK_STAT", ok4);
 
   //get current x
-  double osX = info_buffer->dQuery("NAV_X", ok2);
+  double osX = m_info_buffer->dQuery("NAV_X", ok2);
   
   //get current y
-  double osY = info_buffer->dQuery("NAV_Y", ok3);
+  double osY = m_info_buffer->dQuery("NAV_Y", ok3);
     
   if(!ok2 || !ok3){
     postEMessage("error,BHV_CloseRange: ownship data not available");
@@ -152,7 +144,7 @@ IvPFunction *BHV_CloseRange::produceOF()
     return(0);
      
   //form the objective function
-  AOF_CutRangeCPA aof(domain);
+  AOF_CutRangeCPA aof(m_domain);
   aof.setParam("cnlat", ty);
   aof.setParam("cnlon", tx);
   aof.setParam("cncrs", heading);
@@ -162,12 +154,10 @@ IvPFunction *BHV_CloseRange::produceOF()
   aof.initialize();
 
   OF_Reflector reflector(&aof,1);
- 
-  reflector.createUniform(unif_box,grid_box);
- 
+  reflector.create(m_build_info);
   IvPFunction *of = reflector.extractOF();
 
-  of->setPWT(relevance*priority_wt);
+  of->setPWT(relevance * m_priority_wt);
 
   return(of);
 }

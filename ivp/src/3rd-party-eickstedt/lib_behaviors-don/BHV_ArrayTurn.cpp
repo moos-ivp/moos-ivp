@@ -23,18 +23,17 @@ BHV_ArrayTurn::BHV_ArrayTurn(IvPDomain gdomain) :
 {
 
   this->setParam("descriptor", "(d)bhv_ArrayTurn");
-  this->setParam("unifbox", "course=3");
-  this->setParam("gridbox", "course=9");
+  this->setParam("build_info", "uniform_box=course:3");
+  this->setParam("build_info", "uniform_grid=course:9");
 
-  domain = subDomain(domain, "course");
+  m_domain = subDomain(m_domain, "course");
 
   course_fixed = false;
   current_state = 0;
 
-  info_vars.push_back("NAV_X");
-  info_vars.push_back("NAV_Y");
+  addInfoVars("NAV_X, NAV_Y");
   // changed to AEL_HEADING. HS 103106
-  info_vars.push_back("AEL_HEADING");
+  addInfoVars("AEL_HEADING");
   // info_vars.push_back("NAV_HEADING");
   //info_vars.push_back("TRACK_STAT");
 }
@@ -59,14 +58,14 @@ IvPFunction *BHV_ArrayTurn::produceOF()
   bool ok1,ok2,ok3,ok4;
   //get current course
   // changed to AEL_HEADING. HS 103106
-  double osCourse = info_buffer->dQuery("AEL_HEADING", ok1);
-  // double osCourse = info_buffer->dQuery("NAV_HEADING", ok1);
+  double osCourse = m_info_buffer->dQuery("AEL_HEADING", ok1);
+  // double osCourse = m_info_buffer->dQuery("NAV_HEADING", ok1);
   //get current x
-  double osX = info_buffer->dQuery("NAV_X", ok2);
+  double osX = m_info_buffer->dQuery("NAV_X", ok2);
   //get current heading
-  double osY = info_buffer->dQuery("NAV_Y", ok3);
+  double osY = m_info_buffer->dQuery("NAV_Y", ok3);
   //get current tracking state
-  //  string tState = info_buffer->sQuery(us_name,"TRACK_STAT", ok4);
+  //  string tState = m_info_buffer->sQuery(us_name,"TRACK_STAT", ok4);
 
   if(!ok1 || !ok2 || !ok3){
     postEMessage("error,BHV_ArrayTurn: ownship data not available");
@@ -90,15 +89,15 @@ IvPFunction *BHV_ArrayTurn::produceOF()
 
   //current_state = new_state;
 
-  AOF_ArrayTurn aof_track(domain,course_fix,osCourse);
+  AOF_ArrayTurn aof_track(m_domain,course_fix,osCourse);
   
   OF_Reflector reflector(&aof_track,1);
  
-  reflector.createUniform(unif_box,grid_box);
+  reflector.create(m_build_info);
  
   IvPFunction *of = reflector.extractOF();
 
-  of->setPWT(priority_wt);
+  of->setPWT(m_priority_wt);
  
   return(of);
 }

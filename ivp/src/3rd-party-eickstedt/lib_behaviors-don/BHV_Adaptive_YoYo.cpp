@@ -53,10 +53,10 @@ BHV_Adaptive_YoYo::BHV_Adaptive_YoYo(IvPDomain gdomain) :
   this->setParam("unifbox", "depth=5");
   this->setParam("gridbox", "depth=10");
 
-  domain = subDomain(domain, "depth");
+  m_domain = subDomain(m_domain, "depth");
 
   desired_depth = 0;
-  info_vars.push_back("YoYo_depth");
+  addInfoVars("YoYo_depth");
 }
 
 //-----------------------------------------------------------
@@ -90,7 +90,7 @@ IvPFunction *BHV_Adaptive_YoYo::produceOF()
 {
   double peak_utility = 100;
 
-  int    depthIndex  = domain.getIndex("depth");
+  int    depthIndex  = m_domain.getIndex("depth");
 
   if(depthIndex == -1) {
     postEMessage("No 'depth' variable in the helm domain");
@@ -98,7 +98,7 @@ IvPFunction *BHV_Adaptive_YoYo::produceOF()
   }
 
   bool ok; 
-  double desired_depth    = info_buffer->dQuery("YoYo_depth",  ok);
+  double desired_depth = m_info_buffer->dQuery("YoYo_depth",  ok);
 
   if(!ok) {
     postEMessage("error,BHV_Adaptive_YoYo: No yoyo depth info.");
@@ -106,9 +106,9 @@ IvPFunction *BHV_Adaptive_YoYo::produceOF()
   }
 
 
-  double depthBase   = domain.getVarLow(depthIndex);
-  double depthDelta  = domain.getVarDelta(depthIndex);
-  int    depthPoints = domain.getVarPoints(depthIndex);
+  double depthBase   = m_domain.getVarLow(depthIndex);
+  double depthDelta  = m_domain.getVarDelta(depthIndex);
+  int    depthPoints = m_domain.getVarPoints(depthIndex);
   
   double double_index = (desired_depth - depthBase) / depthDelta;
   int    domain_index = (int)(floor(double_index + 0.5));
@@ -130,18 +130,18 @@ IvPFunction *BHV_Adaptive_YoYo::produceOF()
 
   PDMap *pdmap;
   if(piece1) {
-    pdmap = new PDMap(2, domain, 1);
+    pdmap = new PDMap(2, m_domain, 1);
     pdmap->bx(1) = piece1;
   }
   else
-    pdmap = new PDMap(1, domain, 1);
+    pdmap = new PDMap(1, m_domain, 1);
   pdmap->bx(0) = piece0;
 
 
   pdmap->updateGrid();
 
   IvPFunction *of = new IvPFunction(pdmap);
-  of->setPWT(priority_wt);
+  of->setPWT(m_priority_wt);
 
   return(of);
 }

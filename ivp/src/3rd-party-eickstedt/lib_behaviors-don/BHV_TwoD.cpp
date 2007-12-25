@@ -33,7 +33,7 @@ BHV_TwoD::BHV_TwoD(IvPDomain gdomain) :
 {
   this->setParam("descriptor", "(d)bhv_TwoD");
 
-  domain = subDomain(domain, "course");
+  m_domain = subDomain(m_domain, "course");
 
   desired_heading = 0;
   peakwidth       = 1;
@@ -49,10 +49,8 @@ BHV_TwoD::BHV_TwoD(IvPDomain gdomain) :
   initialized = false;
 
   //subscribe to the required information from the MOOS DB
-  info_vars.push_back("NAV_X");
-  info_vars.push_back("NAV_Y");
-  info_vars.push_back("CTD_SOUND_VELOCITY");
-  info_vars.push_back("ZIGZAG_GO");
+  addInfoVars("NAV_X, NAV_Y");
+  addInfoVars("CTD_SOUND_VELOCITY, ZIGZAG_GO");
 
   postMessage("zigzagging","half");
 }
@@ -136,7 +134,7 @@ bool BHV_TwoD::setParam(string param, string val)
 
 IvPFunction *BHV_TwoD::produceOF() 
 {
-  if(!domain.hasDomain("course")) {
+  if(!m_domain.hasDomain("course")) {
     postEMessage("No 'heading' variable in the helm domain");
     return(0);
   }
@@ -144,13 +142,13 @@ IvPFunction *BHV_TwoD::produceOF()
   //figure out where we are and what the sound speed is
   bool ok1,ok2,ok3,ok4;
   //get current x
-  double osX = info_buffer->dQuery("NAV_X", ok1);
+  double osX = m_info_buffer->dQuery("NAV_X", ok1);
   //get current heading
-  double osY = info_buffer->dQuery("NAV_Y", ok2);
+  double osY = m_info_buffer->dQuery("NAV_Y", ok2);
   //get current tracking state
-  double ctdSpeed = info_buffer->dQuery("CTD_SOUND_VELOCITY", ok3);
+  double ctdSpeed = m_info_buffer->dQuery("CTD_SOUND_VELOCITY", ok3);
   //check to see if the zigzag is done
-  string done = info_buffer->sQuery("ZIGZAG_GO", ok4);
+  string done = m_info_buffer->sQuery("ZIGZAG_GO", ok4);
 
   string falsestr = "FALSE";
 
@@ -191,7 +189,7 @@ IvPFunction *BHV_TwoD::produceOF()
       postMessage("ZIGZAG_GO","TRUE");
     }
 
-  ZAIC_PEAK zaic(domain, "course");
+  ZAIC_PEAK zaic(m_domain, "course");
   zaic.setSummit(desired_heading);
   zaic.setBaseWidth(basewidth);
   zaic.setPeakWidth(peakwidth);
@@ -199,7 +197,7 @@ IvPFunction *BHV_TwoD::produceOF()
   
   IvPFunction *ipf = zaic.extractOF();
   if(ipf)
-    ipf->setPWT(priority_wt);
+    ipf->setPWT(m_priority_wt);
 
   return(0);
 }

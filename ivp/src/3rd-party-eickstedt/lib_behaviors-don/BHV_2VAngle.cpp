@@ -23,20 +23,16 @@ BHV_2VAngle::BHV_2VAngle(IvPDomain gdomain) :
   IvPBehavior(gdomain)
 {
   this->setParam("descriptor", "(d)bhv_2VAngle");
-  this->setParam("unifbox", "course=3, speed=2");
-  this->setParam("gridbox", "course=9, speed=6");
+  this->setParam("build_info", "uniform_box=course:3,speed:2");
+  this->setParam("build_info", "uniform_grid=course:9,speed:6");
 
-  domain = subDomain(domain, "course,speed");
+  m_domain = subDomain(m_domain, "course,speed");
 
   range_min = 0;
   sign = 1;
 
-  info_vars.push_back("NAV_X");
-  info_vars.push_back("NAV_Y");
-  info_vars.push_back("NAV_HEADING");
-  info_vars.push_back("TRACK_STAT");
-  info_vars.push_back("V2_X");
-  info_vars.push_back("V2_Y");
+  addInfoVars("NAV_X, NAV_Y, NAV_HEADING");
+  addInfoVars("TRACK_STAT, V2_X, V2_Y");
 }
 
 //-----------------------------------------------------------
@@ -78,17 +74,17 @@ IvPFunction *BHV_2VAngle::produceOF()
 {
   bool ok1,ok2,ok3,ok4,ok5,ok6;
   //get current course
-  double osCourse = info_buffer->dQuery("NAV_HEADING", ok1);
+  double osCourse = m_info_buffer->dQuery("NAV_HEADING", ok1);
   //get current x
-  double osX = info_buffer->dQuery("NAV_X", ok2);
+  double osX = m_info_buffer->dQuery("NAV_X", ok2);
   //get current heading
-  double osY = info_buffer->dQuery("NAV_Y", ok3);
+  double osY = m_info_buffer->dQuery("NAV_Y", ok3);
   //get current tracking state
-  string tState = info_buffer->sQuery("TRACK_STAT", ok4);
+  string tState = m_info_buffer->sQuery("TRACK_STAT", ok4);
   
 
-  double v2_x = info_buffer->dQuery("V2_X",ok5);
-  double v2_y = info_buffer->dQuery("V2_Y",ok6);
+  double v2_x = m_info_buffer->dQuery("V2_X",ok5);
+  double v2_y = m_info_buffer->dQuery("V2_Y",ok6);
   
   
   if(!ok1 || !ok2 || !ok3 ||!ok4||!ok5||!ok6){
@@ -133,7 +129,7 @@ IvPFunction *BHV_2VAngle::produceOF()
 
   if(d_r < 5.0){
        
-    AOF_Shadow aof(domain);
+    AOF_Shadow aof(m_domain);
     aof.setParam("cn_crs", heading);
     aof.setParam("cn_spd", speed);
     aof.initialize();
@@ -142,16 +138,16 @@ IvPFunction *BHV_2VAngle::produceOF()
     
     OF_Reflector reflector(&aof,1);
     
-    reflector.createUniform(unif_box,grid_box);
+    reflector.create(m_build_info);
     
     IvPFunction *of = reflector.extractOF();
     
-    of->setPWT(relevance*priority_wt);
+    of->setPWT(relevance * m_priority_wt);
     return(of);
   }
   else{
     
-    AOF_WPT2D aof(domain);
+    AOF_WPT2D aof(m_domain);
     aof.setParam("oslat", osY);
     aof.setParam("oslon", osX);
     aof.setParam("ptlat", d_y);
@@ -162,11 +158,11 @@ IvPFunction *BHV_2VAngle::produceOF()
     
     OF_Reflector reflector(&aof,1);
     
-    reflector.createUniform(unif_box,grid_box);
+    reflector.create(m_build_info);
     
     IvPFunction *of = reflector.extractOF();
     
-    of->setPWT(relevance*priority_wt);
+    of->setPWT(relevance * m_priority_wt);
     return(of);
   }
   

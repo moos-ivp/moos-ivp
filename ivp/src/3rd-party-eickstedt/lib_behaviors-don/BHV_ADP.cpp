@@ -17,7 +17,7 @@ BHV_ADP::BHV_ADP(IvPDomain gdomain) :
 {
   this->setParam("descriptor", "(d)bhv_ADP");
 
-  domain = subDomain(domain, "course");
+  m_domain = subDomain(m_domain, "course");
 
   desired_heading = 0;
   peakwidth       = 0;
@@ -68,12 +68,12 @@ bool BHV_ADP::setParam(string param, string val)
 
 IvPFunction *BHV_ADP::produceOF() 
 {
-  if(!domain.hasDomain("course")) {
+  if(!m_domain.hasDomain("course")) {
     postEMessage("No 'heading' variable in the helm domain");
     return(0);
   }
 
-  ZAIC_PEAK zaic(domain, "course");
+  ZAIC_PEAK zaic(m_domain, "course");
   zaic.setSummit(desired_heading);
   zaic.setBaseWidth(basewidth);
   zaic.setPeakWidth(peakwidth);
@@ -81,7 +81,7 @@ IvPFunction *BHV_ADP::produceOF()
   
   IvPFunction *ipf = zaic.extractOF();
   if(ipf)
-    ipf->setPWT(priority_wt);
+    ipf->setPWT(m_priority_wt);
 
   return(ipf);
 }
