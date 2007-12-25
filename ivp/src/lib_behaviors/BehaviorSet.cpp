@@ -218,8 +218,8 @@ void BehaviorSet::print()
     cout << "Behavior[" << i << "]: " << endl;
     
 
-    cout << "Behavior descriptor: " << behaviors[i]->descriptor << endl;
-    cout << " priority weight: " << behaviors[i]->priority_wt << endl;
+    cout << "Behavior descriptor: " << behaviors[i]->m_descriptor << endl;
+    cout << " priority weight: " << behaviors[i]->m_priority_wt << endl;
     cout << " BuildInfo: " << endl;
     behaviors[i]->m_build_info;
     cout << "-------" << endl;
