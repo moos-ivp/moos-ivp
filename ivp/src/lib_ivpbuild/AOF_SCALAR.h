@@ -33,18 +33,18 @@ public:
   ~AOF_SCALAR() {};
 
 public:    
-  double evalBox(const IvPBox*) const {return(scalar_val);};
+  double evalBox(const IvPBox*) const {return(m_scalar_val);};
   bool   setParam(const std::string& param, double val) 
     {
       if(param == "scalar")
-	scalar_val = val;
+	m_scalar_val = val;
       else
 	return(false);
       return(true);
     };
 
 private:
-  double scalar_val;
+  double m_scalar_val;
 };
 
 #endif

@@ -39,16 +39,16 @@ using namespace std;
 
 OF_Rater::OF_Rater(const PDMap *g_pdmap, const AOF *g_aof) 
 {
-  aof   = g_aof;
-  pdmap = g_pdmap;
+  m_aof   = g_aof;
+  m_pdmap = g_pdmap;
 
-  sampleCount  = 0;
-  totalErr     = 0.0;
-  worstErr     = 0.0;
-  squaredErr   = 0.0;
-  sampHigh     = 0.0;   // Not actual starting value. First
-  sampLow      = 0.0;   // sample value will be assigned
-  err          = 0;
+  m_sample_count  = 0;
+  m_total_err     = 0.0;
+  m_worst_err     = 0.0;
+  m_squared_err   = 0.0;
+  m_samp_high     = 0.0;   // Not actual starting value. First
+  m_samp_low      = 0.0;   // sample value will be assigned
+  m_err          = 0;
 }
 
 //-------------------------------------------------------------
@@ -59,7 +59,7 @@ OF_Rater::OF_Rater(const PDMap *g_pdmap, const AOF *g_aof)
 
 void OF_Rater::setPDMap(const PDMap *g_pdmap)
 {
-  pdmap = g_pdmap;
+  m_pdmap = g_pdmap;
   resetSamples();
 }
 
@@ -71,7 +71,7 @@ void OF_Rater::setPDMap(const PDMap *g_pdmap)
 
 void OF_Rater::setAOF(const AOF *g_aof)
 {
-  aof = g_aof;
+  m_aof = g_aof;
   resetSamples();
 }
 
@@ -81,60 +81,60 @@ void OF_Rater::setAOF(const AOF *g_aof)
 
 void OF_Rater::takeSamples(int amount, double winterruptVal)
 {
-  if(!pdmap || !aof || (amount <= 0))
+  if(!m_pdmap || !m_aof || (amount <= 0))
     return;
 
   double val1, val2, diff, avgErr;
   int    i;
 
-  IvPDomain domain = aof->getDomain();
+  IvPDomain domain = m_aof->getDomain();
 
-  double *tempErr = new double[sampleCount];
-  for(i=0; i<sampleCount; i++)
-    tempErr[i] = err[i];
+  double *tempErr = new double[m_sample_count];
+  for(i=0; i<m_sample_count; i++)
+    tempErr[i] = m_err[i];
 
-  if(err) delete(err);
-  err = new double[sampleCount+amount];
-  for(i=0; i<sampleCount; i++)
-    err[i] = tempErr[i];
+  if(m_err) delete(m_err);
+  m_err = new double[m_sample_count+amount];
+  for(i=0; i<m_sample_count; i++)
+    m_err[i] = tempErr[i];
   delete [] tempErr;
 
-  if(sampleCount == 0) {
+  if(m_sample_count == 0) {
     IvPBox rand_box = makeRand(domain);
-    worstErr = 0.0;
-    totalErr = 0.0;
-    squaredErr = 0.0;
-    val1 = aof->evalBox(&rand_box);
-    sampHigh = val1;
-    sampLow  = val1;
+    m_worst_err = 0.0;
+    m_total_err = 0.0;
+    m_squared_err = 0.0;
+    val1 = m_aof->evalBox(&rand_box);
+    m_samp_high = val1;
+    m_samp_low  = val1;
   }
 
   while(amount > 0) {
     IvPBox rand_box = makeRand(domain);
-    sampleCount++;
-    val1 = aof->evalBox(&rand_box);
-    val2 = pdmap->evalPoint(&rand_box);
+    m_sample_count++;
+    val1 = m_aof->evalBox(&rand_box);
+    val2 = m_pdmap->evalPoint(&rand_box);
 
     diff = (val1-val2);
     if(diff<0) diff = (diff * -1.0);
-    err[i]    = diff;
-    totalErr += diff;
-    squaredErr += diff * diff;
+    m_err[i]       = diff;
+    m_total_err   += diff;
+    m_squared_err += diff * diff;
     i++;
 
-    worstErr  = max(worstErr, diff);
-    sampHigh  = max(sampHigh, val1);
-    sampLow   = min(sampLow, val1);
+    m_worst_err  = max(m_worst_err, diff);
+    m_samp_high  = max(m_samp_high, val1);
+    m_samp_low   = min(m_samp_low, val1);
 
-    if(winterruptVal && (worstErr>winterruptVal)) {
+    if(winterruptVal && (m_worst_err > winterruptVal)) {
       cout << "    INTERRUPTING TAKE_SAMPLES!! " << amount << endl;
       amount = 0;
     }
     else
       amount--;
   }
-  assert(sampleCount > 0);
-  avgErr = (double)(totalErr / (double)sampleCount);
+  assert(m_sample_count > 0);
+  avgErr = (double)(m_total_err / (double)m_sample_count);
 
 }
 
@@ -143,12 +143,12 @@ void OF_Rater::takeSamples(int amount, double winterruptVal)
 
 void OF_Rater::resetSamples()
 {
-  if(err) delete(err);
-  err         = 0;
-  totalErr    = 0;
-  worstErr    = 0;
-  squaredErr  = 0;
-  sampleCount = 0;
+  if(m_err) delete(m_err);
+  m_err          = 0;
+  m_total_err    = 0;
+  m_worst_err    = 0;
+  m_squared_err  = 0;
+  m_sample_count = 0;
 }
 
 //------------------------------------------------------------------
@@ -156,9 +156,9 @@ void OF_Rater::resetSamples()
 
 double OF_Rater::getAvgErr() const
 {
-  if((sampHigh-sampLow) <= 0) return(0.0);
-  double retVal = totalErr / (double)sampleCount;
-  //retVal = 100.0 * retVal / (sampHigh-sampLow);
+  if((m_samp_high-m_samp_low) <= 0) return(0.0);
+  double retVal = m_total_err / (double)m_sample_count;
+  //retVal = 100.0 * retVal / (m_samp_high-m_samp_low);
   return(retVal);
 }
 
@@ -167,18 +167,18 @@ double OF_Rater::getAvgErr() const
 
 double OF_Rater::getWorstErr() const
 {
-  if((sampHigh-sampLow) <= 0) return(0.0);
-  //double retVal = 100.0 * worstErr / (sampHigh-sampLow);
-  double retVal = worstErr;
+  if((m_samp_high-m_samp_low) <= 0) return(0.0);
+  //double retVal = 100.0 * m_worst_err / (m_samp_high-m_samp_low);
+  double retVal = m_worst_err;
   return(retVal);
 }
 
 //------------------------------------------------------------------
-// Procedure: getSquaredErr()
+// Procedure: getm_Squared_err()
 
 double OF_Rater::getSquaredErr() const
 {
-  return squaredErr / (double)sampleCount;
+  return m_squared_err / (double)m_sample_count;
 }
 
 

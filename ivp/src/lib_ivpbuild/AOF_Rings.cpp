@@ -34,7 +34,7 @@ using namespace std;
 
 AOF_Rings::AOF_Rings(IvPDomain g_domain) : AOF(g_domain)
 {
-  snapval = 0;
+  m_snapval = 0;
 }
 
 //----------------------------------------------------------------
@@ -43,14 +43,14 @@ AOF_Rings::AOF_Rings(IvPDomain g_domain) : AOF(g_domain)
 double AOF_Rings::evalBox(const IvPBox *gbox) const
 {
   double totval=0;
-  int rsize = rings.size();
+  int rsize = m_rings.size();
   for(int i=0; i<rsize; i++)
-    totval += rings[i].evalBox(gbox);
+    totval += m_rings[i].evalBox(gbox);
   
   double weight = (totval / rsize);    
   
-  if(snapval > 0)
-    return(snapToStep(weight, (double)snapval));
+  if(m_snapval > 0)
+    return(snapToStep(weight, (double)m_snapval));
   else
     return(weight);
 }
@@ -61,11 +61,11 @@ double AOF_Rings::evalBox(const IvPBox *gbox) const
 bool AOF_Rings::setParam(const string& param, double val)
 {
   if(param == "snapval")
-    snapval = val;
+    m_snapval = val;
   else {
-    int rsize = rings.size();
+    int rsize = m_rings.size();
     if(rsize != 0) {
-      bool result = rings[rsize-1].setParam(param, val);
+      bool result = m_rings[rsize-1].setParam(param, val);
       return(result);
     }
     else
@@ -85,12 +85,12 @@ bool AOF_Rings::setParam(const string& param, const string& val)
     bool result = new_ring.setParam(param, val);
     if(!result)
       return(false);
-    rings.push_back(new_ring);
+    m_rings.push_back(new_ring);
   }
   else {
-    int rsize = rings.size();
+    int rsize = m_rings.size();
     if(rsize != 0) {
-      bool result = rings[rsize-1].setParam(param, val);
+      bool result = m_rings[rsize-1].setParam(param, val);
       return(result);
     }
     else
@@ -105,10 +105,10 @@ bool AOF_Rings::setParam(const string& param, const string& val)
 
 void AOF_Rings::print() const
 {
-  int rsize = rings.size();
+  int rsize = m_rings.size();
   for(int j=0; j<rsize; j++) {
     cout << "Ring#" << j << ":  ";
-    rings[j].print();
+    m_rings[j].print();
   }
 }
 
@@ -121,9 +121,9 @@ string AOF_Rings::latexSTR(int full) const
 
   if(full) retstr += "\\fbox{ \\LARGE \\begin{tabular}{ll} $f(x, y) = $ ";
 
-  int rsize = rings.size();
+  int rsize = m_rings.size();
   for(int i=0; i<rsize; i++) 
-    retstr += rings[i].latexSTR(0);
+    retstr += m_rings[i].latexSTR(0);
   
   if(full) retstr += " \\end{tabular}} \\normalsize";
   return(retstr);

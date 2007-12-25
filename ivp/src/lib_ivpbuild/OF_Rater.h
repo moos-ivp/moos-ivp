@@ -29,15 +29,15 @@
 class OF_Rater {
 public:
   OF_Rater(const PDMap *pdmap=0, const AOF *aof=0);
-  virtual ~OF_Rater() {if(err) delete [] err;};
+  virtual ~OF_Rater() {if(m_err) delete [] m_err;};
 
 public: 
   void    setPDMap(const PDMap*);
   void    setAOF(const AOF*);
   void    takeSamples(int i=1000, double wi=0.0);
-  int     getSampleCount()  {return(sampleCount);};
-  double  getSampHigh()     {return(sampHigh);};
-  double  getSampLow()      {return(sampLow);};
+  int     getSampleCount()  {return(m_sample_count);};
+  double  getSampHigh()     {return(m_samp_high);};
+  double  getSampLow()      {return(m_samp_low);};
 
   void    resetSamples();
   double  getAvgErr() const;
@@ -45,16 +45,16 @@ public:
   double  getSquaredErr() const;
 
 protected:
-  const AOF*   aof;
-  const PDMap* pdmap;
+  const AOF*   m_aof;
+  const PDMap* m_pdmap;
   
-  int     sampleCount;   // Count of samples taken so far
-  double  totalErr;      // Total Err of all samples so far
-  double  worstErr;      // Worst val of all samples so far
-  double  squaredErr;
-  double  sampHigh;      // Highest value of samples
-  double  sampLow;       // Lowest  value of samples
-  double* err;           // Err val of all samples so far
+  int     m_sample_count;   // Count of samples taken so far
+  double  m_total_err;      // Total Err of all samples so far
+  double  m_worst_err;      // Worst val of all samples so far
+  double  m_squared_err;
+  double  m_samp_high;      // Highest value of samples
+  double  m_samp_low;       // Lowest  value of samples
+  double* m_err;            // Err val of all samples so far
 };
 
 #endif

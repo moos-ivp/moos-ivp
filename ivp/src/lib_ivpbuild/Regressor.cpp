@@ -41,42 +41,42 @@ Regressor::Regressor(const AOF *g_aof, int g_degree)
 {
   assert(g_aof != 0);
 
-  aof    = g_aof;
-  degree = g_degree;
+  m_aof    = g_aof;
+  m_degree = g_degree;
 
   // We don't know the dim until runtime, but when we do, it will
   // be the same for each and every box that has its weight set 
   // by this regressor. So we will allocate some useful memory
   // as member variables here to be used repeatedly in each call
   // to setWeight().
-  dim = aof->getDim();
+  m_dim = m_aof->getDim();
 
   // The coner_points represent the points of a box being fitted.
   // We create a box for each point of the appropriate dimension
   // and use them repeatedly in each call to setWeight().
-  corners      = (int)(pow(2.0, (double)dim));
-  corner_point = new IvPBox* [corners];
-  corner_val   = new double [corners];
-  for(int i=0; i<corners; i++)
-    corner_point[i] = new IvPBox(dim);
+  m_corners      = (int)(pow(2.0, (double)m_dim));
+  m_corner_point = new IvPBox* [m_corners];
+  m_corner_val   = new double [m_corners];
+  for(int i=0; i<m_corners; i++)
+    m_corner_point[i] = new IvPBox(m_dim);
 
   // The vals array holds all the linear and/or coefficients 
   // determined during the setWeight function. Enough memory is
   // allocated to hande quadratic, linear or scalar.
   // Allocating this memory here rather than once per each call 
   // to setWeight is done to limit calls to the heap, saving time.
-  vals = new double[(dim*2)+1];
+  m_vals = new double[(m_dim*2)+1];
 
   // The center_point is a placeholder for point sampled at the 
   // center of a given box being fitted - if it has a center.
-  center_point = new IvPBox(dim);
+  m_center_point = new IvPBox(m_dim);
 
-  // The mask array is useful on each setWeight call
+  // The m_mask array is useful on each setWeight call
   // mask[0]=1, mask[1]=2, mask[2]=4, and so on.
-  mask = new int[dim];
-  mask[0] = 1;
-  for(int d=1; d<dim; d++)
-    mask[d] = 2 * mask[d-1];
+  m_mask = new int[m_dim];
+  m_mask[0] = 1;
+  for(int d=1; d<m_dim; d++)
+    m_mask[d] = 2 * m_mask[d-1];
 
   // If true, then after setWeight is finished for a given box, 
   // all points, when evaluated by the interior function, must
@@ -84,7 +84,7 @@ Regressor::Regressor(const AOF *g_aof, int g_degree)
   // constructing the interior function. This is sometimes a
   // desirable property, but there is typically a small measure
   // of overall fit that is sacrificed.
-  strict_range = true;
+  m_strict_range = true;
 }
 
 //-------------------------------------------------------------
@@ -92,14 +92,14 @@ Regressor::Regressor(const AOF *g_aof, int g_degree)
 
 Regressor::~Regressor()
 {
-  delete(center_point);
+  delete(m_center_point);
 
-  for(int i=0; i<corners; i++)
-    delete(corner_point[i]);
-  delete [] corner_point;
-  delete [] corner_val;
-  delete [] mask;
-  delete [] vals;
+  for(int i=0; i<m_corners; i++)
+    delete(m_corner_point[i]);
+  delete [] m_corner_point;
+  delete [] m_corner_val;
+  delete [] m_mask;
+  delete [] m_vals;
 }
 
 //-------------------------------------------------------------
@@ -110,11 +110,11 @@ Regressor::~Regressor()
 
 double Regressor::setWeight(IvPBox *gbox, bool feedback)
 {
-  if(degree==0)  // Piecewise Scalar
+  if(m_degree==0)  // Piecewise Scalar
     return(setWeight0(gbox, feedback));
-  if(degree==1)  // Piecewise Linear
+  if(m_degree==1)  // Piecewise Linear
     return(setWeight1(gbox, feedback));
-  if(degree==2)  // Piecewise Quadratic
+  if(m_degree==2)  // Piecewise Quadratic
     return(setWeight2(gbox, feedback));
 }
 
@@ -122,7 +122,7 @@ double Regressor::setWeight(IvPBox *gbox, bool feedback)
 // Procedure: setWeight0
 //   Purpose: Set the interior function of the box to a SCALAR
 //            value that is just the average of points sampled
-//            at the corners and at the center point (if there
+//            at the m_corners and at the center point (if there
 //            is indeed a center point).
 
 double Regressor::setWeight0(IvPBox *gbox, bool feedback)
@@ -130,16 +130,16 @@ double Regressor::setWeight0(IvPBox *gbox, bool feedback)
   int i, d;
   setCorners(gbox);
   
-  bool center_flag = centerBox(gbox, center_point);
+  bool center_flag = centerBox(gbox, m_center_point);
   if(center_flag)
-    center_val = aof->evalBox(center_point);
+    m_center_val = m_aof->evalBox(m_center_point);
 
   double val = 0.0;
-  for(i=0; i<corners; i++)
-    val += corner_val[i];
-  double denominator = (double)(corners);
+  for(i=0; (i < m_corners); i++)
+    val += m_corner_val[i];
+  double denominator = (double)(m_corners);
   if(center_flag) {
-    val += center_val;
+    val += m_center_val;
     denominator += 1.0;
   }
   val = val / denominator;
@@ -149,8 +149,8 @@ double Regressor::setWeight0(IvPBox *gbox, bool feedback)
     return(0);  // returning error est. yet to be implemented
   else {
     double error = 0.0;
-    for(i=0; i<corners; i++) {
-      double delta  = corner_val[i] - val;
+    for(i=0; (i < m_corners); i++) {
+      double delta  = m_corner_val[i] - val;
       error += (delta * delta);
     }
     return(sqrt(error));
@@ -170,70 +170,70 @@ double Regressor::setWeight1(IvPBox *gbox, bool feedback)
   int i, d;
   setCorners(gbox);
   
-  bool center_flag = centerBox(gbox, center_point);
+  bool center_flag = centerBox(gbox, m_center_point);
   if(center_flag)
-    center_val = aof->evalBox(center_point);
+    m_center_val = m_aof->evalBox(m_center_point);
 
-  for(d=0; d<=dim; d++)
-    vals[d] = 0.0;
+  for(d=0; (d <= m_dim); d++)
+    m_vals[d] = 0.0;
   
   // Determine the highest and lowest values of all the evaluated
   // points at each corner and at the center if have center point.
-  double high_val = corner_val[0];
-  double low_val  = corner_val[0];
-  for(i=1; i<corners; i++) {
-    if(corner_val[i] > high_val) 
-      high_val = corner_val[i];
-    if(corner_val[i] < low_val)
-      low_val = corner_val[i];
+  double high_val = m_corner_val[0];
+  double low_val  = m_corner_val[0];
+  for(i=1; (i < m_corners); i++) {
+    if(m_corner_val[i] > high_val) 
+      high_val = m_corner_val[i];
+    if(m_corner_val[i] < low_val)
+      low_val = m_corner_val[i];
   }
   if(center_flag) {
-    if(center_val > high_val) 
-      high_val = center_val;
-    if(center_val < low_val)
-      low_val = center_val;
+    if(m_center_val > high_val) 
+      high_val = m_center_val;
+    if(m_center_val < low_val)
+      low_val = m_center_val;
   }    
   
   // Now calculate the various "slopes" for each dimension. There
   // should be 2^(dim-1) calculations for each dimension.
-  for(d=0; d<dim; d++) {
-    int    diff = mask[d];
+  for(d=0; (d < m_dim); d++) {
+    int    diff = m_mask[d];
     int    jump_cnt = diff;
     double run  = (double)(gbox->pt(d,1) - gbox->pt(d,0));
     
     if(run == 0)
-      vals[d] = 0.0;
+      m_vals[d] = 0.0;
     else {
       double rise = 0.0;
-      for(i=diff; i<corners; i++) {
-	rise += corner_val[i] - corner_val[i-diff];
+      for(i=diff; (i < m_corners); i++) {
+	rise += m_corner_val[i] - m_corner_val[i-diff];
 	jump_cnt--;
 	if(!jump_cnt) {
 	  i += diff;
 	  jump_cnt = diff;
 	}
       }
-      rise = rise / ((double)(corners)/2.0);
-      vals[d] = rise / (double)run;
+      rise = rise / ((double)(m_corners)/2.0);
+      m_vals[d] = rise / (double)run;
     }
   }
   
   // Calculated and used only if strict_range is true
   double max_intercept, min_intercept; 
   
-  // For each of the corners, calculate what would be the correct
+  // For each of the m_corners, calculate what would be the correct
   // intercept for that point. If strict_range is true, also 
   // calculate what would be the correct intercept at that point
   // for the overall high_val and low_val.
   
   double total_intercept = 0.0;
-  for(i=0; i<corners; i++) {
+  for(i=0; (i < m_corners); i++) {
     double planeVal = 0.0;
-    for(d=0; d<dim; d++)
-      planeVal += vals[d] * (double)(corner_point[i]->pt(d, 0));
-    total_intercept += (corner_val[i] - planeVal);
+    for(d=0; (d < m_dim); d++)
+      planeVal += m_vals[d] * (double)(m_corner_point[i]->pt(d, 0));
+    total_intercept += (m_corner_val[i] - planeVal);
     
-    if(strict_range) {
+    if(m_strict_range) {
       double imax_intercept = (high_val - planeVal);
       double imin_intercept = (low_val - planeVal);
       if((i==0) || (imax_intercept < max_intercept))
@@ -247,11 +247,11 @@ double Regressor::setWeight1(IvPBox *gbox, bool feedback)
   // as for each of the corner points above.
   if(center_flag) {
     double planeVal = 0.0;
-    for(d=0; d<dim; d++)
-      planeVal += vals[d] * (double)(center_point->pt(d, 0));
-    total_intercept += (center_val - planeVal);
+    for(d=0; (d < m_dim); d++)
+      planeVal += m_vals[d] * (double)(m_center_point->pt(d, 0));
+    total_intercept += (m_center_val - planeVal);
     
-    if(strict_range) {
+    if(m_strict_range) {
       double cmax_intercept = (high_val - planeVal);
       double cmin_intercept = (low_val - planeVal);
       if(cmax_intercept < max_intercept)
@@ -261,18 +261,18 @@ double Regressor::setWeight1(IvPBox *gbox, bool feedback)
     }
   }
   
-  // Now calculate the average intercept given all the corners
+  // Now calculate the average intercept given all the m_corners
   // and possibly the center_point as well.
   double avg_intercept;
   if(center_flag)
-    avg_intercept = total_intercept / (double)(corners+1);
+    avg_intercept = total_intercept / (double)(m_corners+1);
   else
-    avg_intercept = total_intercept / (double)(corners);
+    avg_intercept = total_intercept / (double)(m_corners);
   
   // If strict_range is true, we will have calculated an 
   // allowable range for the intercept. If the avg_intercept
   // is outside the allowable range, adjust it.
-  if(strict_range) {
+  if(m_strict_range) {
     if(avg_intercept > max_intercept)
       avg_intercept = max_intercept;
     if(avg_intercept < min_intercept)
@@ -281,37 +281,37 @@ double Regressor::setWeight1(IvPBox *gbox, bool feedback)
   
   // Put this intercept value where it belongs with the other
   // linear coefficients.
-  vals[dim] = avg_intercept;
+  m_vals[m_dim] = avg_intercept;
   
   // Finally, set the linear coefficients on the given box.
-  for(d=0; d<dim+1; d++)
-    gbox->wt(d) = vals[d];
+  for(d=0; (d < m_dim+1); d++)
+    gbox->wt(d) = m_vals[d];
 
   if(!feedback)
     return(0);
   else {
     double error = 0;
-    for(i=0; i<corners; i++) {
-      double linear_value = vals[dim];
-      for(int d=0; d<dim; d++)
-	linear_value += (vals[d] * corner_point[i]->pt(d,0));
-      double delta = (linear_value - corner_val[i]);
+    for(i=0; (i < m_corners); i++) {
+      double linear_value = m_vals[m_dim];
+      for(int d=0; d<m_dim; d++)
+	linear_value += (m_vals[d] * m_corner_point[i]->pt(d,0));
+      double delta = (linear_value - m_corner_val[i]);
       error += (delta * delta);
     }
     if(center_flag) {
-      double linear_value = vals[dim];
-      for(int d=0; d<dim; d++)
-	linear_value += (vals[d] * center_point->pt(d,0));
-      double delta = (linear_value - center_val);
+      double linear_value = m_vals[m_dim];
+      for(int d=0; d<m_dim; d++)
+	linear_value += (m_vals[d] * m_center_point->pt(d,0));
+      double delta = (linear_value - m_center_val);
       error += (delta * delta);
     }
     
     error = sqrt(error);
 
     if(center_flag)
-      error = error / (double)(corners+1);
+      error = error / (double)(m_corners+1);
     else
-      error = error / (double)(corners);
+      error = error / (double)(m_corners);
 
     return(error);
   }	
@@ -330,36 +330,36 @@ double Regressor::setWeight2(IvPBox *gbox, bool feedback)
   int i, d;
   setCorners(gbox);
   
-  bool center_flag = centerBox(gbox, center_point);
+  bool center_flag = centerBox(gbox, m_center_point);
   if(center_flag)
-    center_val = aof->evalBox(center_point);
+    m_center_val = m_aof->evalBox(m_center_point);
 
-  for(d=0; d<=(dim*2); d++)
-    vals[d] = 0.0;
+  for(d=0; d<=(m_dim*2); d++)
+    m_vals[d] = 0.0;
   
   // Now calculate the various quadratic coefficients for each 
   // dimension. 
-  for(d=0; d<dim; d++) {
+  for(d=0; d<m_dim; d++) {
     double run  = (double)(gbox->pt(d,1) - gbox->pt(d,0));
-    int    diff = mask[d];
+    int    diff = m_mask[d];
     int    jump_cnt = diff;
     
-    if(run == 0) // do nothing - vals[d], vals[d+dim] already 0.
+    if(run == 0) // do nothing - m_vals[d], m_vals[d+dim] already 0.
       {} 
 
     else if(run == 1) {   // will be no quadratic component
       double rise = 0.0;
-      for(i=diff; i<corners; i++) {
-	rise += corner_val[i] - corner_val[i-diff];
+      for(i=diff; (i < m_corners); i++) {
+	rise += m_corner_val[i] - m_corner_val[i-diff];
 	jump_cnt--;
 	if(!jump_cnt) {
 	  i += diff;
 	  jump_cnt = diff;
 	}
       }
-      rise = rise / ((double)(corners)/2.0);
-      vals[d] = 0;
-      vals[d+dim] = rise / (double)run;
+      rise = rise / ((double)(m_corners)/2.0);
+      m_vals[d] = 0;
+      m_vals[d + m_dim] = rise / (double)run;
     }
     else {
       double x1, y1, x2, y2, x3, y3, qm, qn, qb;
@@ -367,14 +367,14 @@ double Regressor::setWeight2(IvPBox *gbox, bool feedback)
       double tn = 0;
       double tb = 0;
       int count = 0;
-      for(i=diff; i<corners; i++) {
+      for(i=diff; (i < m_corners); i++) {
 	count++;
-	x3 = corner_point[i]->pt(d,0);
-	x2 = center_point->pt(d,0);
-	x1 = corner_point[i-diff]->pt(d,0);
-	y3 = corner_val[i];
-	y2 = center_val;
-	y1 = corner_val[i-diff];
+	x3 = m_corner_point[i]->pt(d,0);
+	x2 = m_center_point->pt(d,0);
+	x1 = m_corner_point[i-diff]->pt(d,0);
+	y3 = m_corner_val[i];
+	y2 = m_center_val;
+	y1 = m_corner_val[i-diff];
 	setQuadCoeffs(x1, y1, x2, y2, x3, y3, qm, qn, qb);
 	cout << "x1:" << x1 << " y1:" << y1 << "   x2:" << x2 << " y2:" 
 	     << y2 << "   x3:" << x3 << " y3:" << y3 << endl;
@@ -389,55 +389,55 @@ double Regressor::setWeight2(IvPBox *gbox, bool feedback)
 	  jump_cnt = diff;
 	}
       }
-      vals[d]      = (tm / (double)(count));
-      vals[d+dim]  = (tn / (double)(count));
-      vals[dim*2] += (tb / (double)(count));
+      m_vals[d]          = (tm / (double)(count));
+      m_vals[d + m_dim]  = (tn / (double)(count));
+      m_vals[m_dim * 2] += (tb / (double)(count));
     }
-    cout << "vals[" << d << "]: " << vals[d];
-    cout << "  vals[" << d+dim << "]: " << vals[d+dim];
-    cout << "  vals[" << dim*2 << "]: " << vals[dim*2] << endl;
+    cout << "m_vals[" << d << "]: " << m_vals[d];
+    cout << "  m_vals[" << (d + m_dim) << "]: " << m_vals[m_dim+d];
+    cout << "  m_vals[" << m_dim*2 << "]: " << m_vals[m_dim*2] << endl;
 
     cout << "---------------" << endl;
   }
 
   double total_intercept = 0.0;
-  for(i=0; i<corners; i++) {
+  for(i=0; i<m_corners; i++) {
     double quadVal = 0.0;
-    for(d=0; d<dim; d++) {
-      double p = (double)(corner_point[i]->pt(d, 0));
-      quadVal += vals[d]*p*p + vals[d+dim]*p;
+    for(d=0; (d < m_dim); d++) {
+      double p = (double)(m_corner_point[i]->pt(d, 0));
+      quadVal += m_vals[d]*p*p + m_vals[m_dim+d]*p;
     } 
-    total_intercept += (corner_val[i] - quadVal);
+    total_intercept += (m_corner_val[i] - quadVal);
     
   }
   
-  // If there is a center_point being fitted, do the same
+  // If there is a m_center_point being fitted, do the same
   // as for each of the corner points above.
   if(center_flag) {
     double quadVal = 0.0;
-    for(d=0; d<dim; d++) {
-      double p = (double)(center_point->pt(d, 0));
-      quadVal += vals[d]*p*p + vals[d+dim]*p;
+    for(d=0; (d < m_dim); d++) {
+      double p = (double)(m_center_point->pt(d, 0));
+      quadVal += m_vals[d]*p*p + m_vals[m_dim+d]*p;
     }
-    total_intercept += (center_val - quadVal);
+    total_intercept += (m_center_val - quadVal);
     
   }
   
   // Now calculate the average intercept given all the corners
-  // and possibly the center_point as well.
+  // and possibly the m_center_point as well.
   double avg_intercept;
   if(center_flag)
-    avg_intercept = total_intercept / (double)(corners+1);
+    avg_intercept = total_intercept / (double)(m_corners+1);
   else
-    avg_intercept = total_intercept / (double)(corners);
+    avg_intercept = total_intercept / (double)(m_corners);
   
   // Put this intercept value where it belongs with the other
   // quadratic coefficients.
-  vals[dim*2] = avg_intercept;
+  m_vals[m_dim*2] = avg_intercept;
   
   // Finally, set the coefficients on the given box.
-  for(d=0; d<=(dim*2); d++) {
-    gbox->wt(d) = vals[d];
+  for(d=0; d<=(m_dim*2); d++) {
+    gbox->wt(d) = m_vals[d];
   }
   return(0);  // returning error est. yet to be implemented
 }
@@ -560,32 +560,32 @@ void Regressor::setCorners(IvPBox *gbox)
 {
   int i, d;
   
-  for(i=0; i<corners; i++) {
-    for(d=0; d<dim; d++) {
-      bool edge = (i & mask[d]);
+  for(i=0; i<m_corners; i++) {
+    for(d=0; (d < m_dim); d++) {
+      bool edge = (i & m_mask[d]);
       int  val  = gbox->pt(d, edge);
-      corner_point[i]->setPTS(d, val, val);
+      m_corner_point[i]->setPTS(d, val, val);
     }
   }
   
-  emask = 0;
-  for(d=0; d<dim; d++)
+  int emask = 0;
+  for(d=0; (d < m_dim); d++)
     if(gbox->pt(d,1) == gbox->pt(d,0))
-      emask += mask[d];
+      emask += m_mask[d];
 
   // Evaluate the AOF at each of the corners. If one or more of the 
   // edge lengths of the gbox is 1 (high==low) then avoid evaluating
   // the AOF at that point by "borrowing" its value from another pt.
-  corner_val[0] = aof->evalBox(corner_point[0]);
+  m_corner_val[0] = m_aof->evalBox(m_corner_point[0]);
   int count = 1;
-  for(i=1; i<corners; i++) {
+  for(i=1; (i < m_corners); i++) {
     bool borrow = (emask & i);
     if(borrow) {
       int lender = ((emask & i) ^ i);
-      corner_val[i] = corner_val[lender];
+      m_corner_val[i] = m_corner_val[lender];
     }
     else
-      corner_val[i] = aof->evalBox(corner_point[i]);
+      m_corner_val[i] = m_aof->evalBox(m_corner_point[i]);
 
   }
 }
@@ -596,8 +596,8 @@ void Regressor::setCorners(IvPBox *gbox)
 
 double Regressor::evalPtBox(const IvPBox *gbox, const double *vals)
 {
-  double return_value = vals[dim];
-  for(int d=0; d<dim; d++)
+  double return_value = vals[m_dim];
+  for(int d=0; (d < m_dim); d++)
     return_value += (vals[d] * gbox->pt(d,0));
   
   return(return_value);
@@ -610,7 +610,7 @@ double Regressor::evalPtBox(const IvPBox *gbox, const double *vals)
 //   Purpose: Return a point box "inside" the container_box. If the
 //            container box has no interior boxes, it returns false.
 //            An interior point box is one that is contained by the 
-//            container_box, but is *not* one of the corners.
+//            container_box, but is *not* one of the m_corners.
 //      Note: If rbox is non-null and ther 
 
 

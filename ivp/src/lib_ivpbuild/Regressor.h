@@ -31,12 +31,12 @@ public:
   virtual ~Regressor();
 
 public:  
-  int     getDegree() const   {return(degree);};
+  int     getDegree() const   {return(m_degree);};
 
   double  setWeight(IvPBox*, bool feedback=false);
-  void    setStrictRange(bool val) {strict_range = val;};
+  void    setStrictRange(bool val) {m_strict_range = val;};
 
-  const AOF* getAOF() {return(aof);};
+  const AOF* getAOF() {return(m_aof);};
 
 protected:
   void    setCorners(IvPBox*);
@@ -50,23 +50,22 @@ protected:
   
 protected:
   // AOF represents the underlying function.
-  const AOF* aof;         
-  int        dim;
-  bool       strict_range;
+  const AOF* m_aof;         
+  int        m_dim;
+  bool       m_strict_range;
 
   // The below data structures are used repeatedly on 
   // successive calls to "setWeight". So they are allocated 
   // once for efficiency sake.
-  IvPBox*   center_point;
-  double    center_val;
-  IvPBox**  corner_point; 
-  double*   corner_val;   
-  int       corners;      
-  int*      mask;
-  double*   vals;
+  IvPBox*   m_center_point;
+  double    m_center_val;
+  IvPBox**  m_corner_point; 
+  double*   m_corner_val;   
+  int       m_corners;      
+  int*      m_mask;
+  double*   m_vals;
 
-  int       emask;
-  int       degree;
+  int       m_degree;
 };
 
 #endif

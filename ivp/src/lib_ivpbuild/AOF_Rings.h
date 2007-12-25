@@ -40,14 +40,14 @@ public:
   bool   setParam(const std::string&, const std::string&);
 
 public:
-  int         size() {return(rings.size());};
+  int         size() {return(m_rings.size());};
   void        print() const;
   std::string latexSTR(int full=1) const;   
 
 private:
-  double     snapval;
+  double m_snapval;
 
-  std::vector<AOF_Ring> rings;
+  std::vector<AOF_Ring> m_rings;
 };
 
 #endif
