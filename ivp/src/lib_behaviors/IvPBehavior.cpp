@@ -235,15 +235,15 @@ bool IvPBehavior::isCompleted()
 }
 
 //-----------------------------------------------------------
-// Procedure: preCheck()
+// Procedure: isRunning()
 
-bool IvPBehavior::preCheck()
+bool IvPBehavior::isRunning()
 {
   if(!checkConditions())
     return(false);
 
   // Important that this be called after checkConditions so 
-  // the duration clock doesn't start until the the conditions
+  // the duration clock doesn't start until the conditions
   // are met.
   if(durationExceeded()) {
     postPCMessage(" -- completed (duration exceeded) -- ");

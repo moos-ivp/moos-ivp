@@ -83,7 +83,7 @@ IvPFunction* BehaviorSet::produceOF(int ix, int iteration,
     if(behaviors[ix]->isCompleted())
       activity_state = "completed";
     else {
-      if(!behaviors[ix]->preCheck())
+      if(!behaviors[ix]->isRunning())
 	activity_state = "idle";
       else
 	activity_state = "running";

@@ -60,13 +60,13 @@ public:
 
   virtual IvPFunction* produceOF() {return(0);};
   virtual bool setParam(std::string, std::string);
-  virtual bool preCheck();
   virtual void onIdleState() {};
 
   bool   setParamCommon(std::string, std::string);
   void   setInfoBuffer(const InfoBuffer*);
   void   checkForUpdates();
   bool   isCompleted();
+  bool   isRunning();
   double getPriority()                   {return(m_priority_wt);};
   void   postRunFlags()                  {postFlags(m_run_flags);};
   void   postEndFlags()                  {postFlags(m_end_flags);};
