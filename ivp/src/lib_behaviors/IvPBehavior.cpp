@@ -193,9 +193,15 @@ bool IvPBehavior::setParamCommon(string g_param, string g_val)
   }
 
   else if(g_param == "build_info") {
+    g_val = tolower(g_val);
+    if(g_val == "clear") {
+      m_build_info = "";
+      return(true);
+    }
+    // Add new info on to the *front* of the string
     if(m_build_info != "")
-      m_build_info += " # ";
-    m_build_info += g_val;
+      m_build_info = " # " + m_build_info;
+    m_build_info = g_val + m_build_info;
     return(true);
   }
   
