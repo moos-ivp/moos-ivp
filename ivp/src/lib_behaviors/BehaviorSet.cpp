@@ -72,33 +72,39 @@ BehaviorSet::~BehaviorSet()
 //------------------------------------------------------------
 // Procedure: produceOF
 
-IvPFunction* BehaviorSet::produceOF(int ix, int iteration, bool& idle)
+IvPFunction* BehaviorSet::produceOF(int ix, int iteration, 
+				    string& activity_state)
 {
+  IvPFunction *ipf = 0;
   if((ix >= 0) && (ix < behaviors.size())) {
+    
     behaviors[ix]->checkForUpdates();
-    string bhv_tag = toupper(behaviors[ix]->getDescriptor());
-    bhv_tag = findReplace(bhv_tag, "BHV_", "");
-    bhv_tag = findReplace(bhv_tag, "(d)", "");
-    if(!behaviors[ix]->preCheck()) {
+
+    if(behaviors[ix]->isCompleted())
+      activity_state = "completed";
+    else {
+      if(!behaviors[ix]->preCheck())
+	activity_state = "idle";
+      else
+	activity_state = "running";
+    }
+
+    if(activity_state == "idle") {
       behaviors[ix]->postIdleFlags();
       behaviors[ix]->onIdleState();
-      behaviors[ix]->postMessage("SAT_BHV_"+bhv_tag, 0);
-      behaviors[ix]->postMessage("PWT_BHV_"+bhv_tag, 0);
-      behaviors[ix]->postMessage("BHV_STATE_", bhv_tag + ":idle");
-      idle = true;
-      return(0);
     }
-    else {
-      idle = false;
-      behaviors[ix]->postMessage("SAT_BHV_"+bhv_tag, 1);
-      IvPFunction *ipf = behaviors[ix]->produceOF();
+
+    if(activity_state == "running") {
+      behaviors[ix]->postRunFlags();
+      ipf = behaviors[ix]->produceOF();
       if(ipf && !ipf->freeOfNan()) {
-	string msg = "Nan detected in produced ivp function";
-	behaviors[ix]->postEMessage(msg);
-	behaviors[ix]->postMessage("PWT_BHV_"+bhv_tag, 0);
-	behaviors[ix]->postMessage("BHV_STAT_", bhv_tag +":idle");
+	behaviors[ix]->postEMessage("NaN detected in IvP Function");
 	delete(ipf);
-	return(0);
+	ipf = 0;
+      }
+      if(ipf && (ipf->getPWT() <= 0)) {
+	delete(ipf);
+	ipf = 0;
       }
       if(ipf && report_ipf) {
 	string desc_str = behaviors[ix]->getDescriptor();
@@ -108,24 +114,30 @@ IvPFunction* BehaviorSet::produceOF(int ix, int iteration, bool& idle)
 	string ipf_str = IvPFunctionToString(ipf);
 	behaviors[ix]->postMessage("BHV_IPF", ipf_str);
       }
-      
-      double pwt = 0.0;
-      if(ipf) 
-	pwt = ipf->getPWT();
-
-      if(pwt <= 0)
-	behaviors[ix]->postMessage("BHV_STATE", bhv_tag+":standby");
-      else
-	behaviors[ix]->postMessage("BHV_STATE", bhv_tag+":active");
-
-
-      behaviors[ix]->postMessage("PWT_BHV_"+bhv_tag, pwt);
-      
-      return(ipf);
+      if(ipf)
+	activity_state = "active";
     }
+
+    string bhv_tag = toupper(behaviors[ix]->getDescriptor());
+    bhv_tag = findReplace(bhv_tag, "BHV_", "");
+    bhv_tag = findReplace(bhv_tag, "(d)", "");
+
+    double pwt = 0;
+    if(ipf) 
+      pwt = ipf->getPWT();
+    behaviors[ix]->postMessage("PWT_BHV_"+bhv_tag, pwt);
+
+    if(activity_state == "idle")
+      behaviors[ix]->postMessage("STATE_BHV_"+bhv_tag, 0);
+    else if(activity_state == "running")
+      behaviors[ix]->postMessage("STATE_BHV_"+bhv_tag, 1);
+    else if(activity_state == "active") 
+      behaviors[ix]->postMessage("STATE_BHV_"+bhv_tag, 2);
+    else if(activity_state == "completed") 
+      behaviors[ix]->postMessage("STATE_BHV_"+bhv_tag, 3);
   }
 
-  return(0);
+  return(ipf);
 }
 
 //------------------------------------------------------------

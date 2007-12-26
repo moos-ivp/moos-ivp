@@ -75,8 +75,8 @@ HelmReport HelmEngine::determineNextDecision(BehaviorSet *bhv_set,
   for(bhv_ix=0; bhv_ix<bhv_cnt; bhv_ix++) {
     MBTimer of_timer;
     of_timer.start();
-    bool idle;
-    IvPFunction *newof = bhv_set->produceOF(bhv_ix, iteration, idle);
+    string astate;
+    IvPFunction *newof = bhv_set->produceOF(bhv_ix, iteration, astate);
     of_timer.stop();
     
     if(!bhv_set->stateOK(bhv_ix)) {
@@ -102,8 +102,8 @@ HelmReport HelmEngine::determineNextDecision(BehaviorSet *bhv_set,
       double pwt = newof->getPWT();
       helm_report.addActiveBHV(descriptor, pwt);
     }
-    if(!idle)
-      helm_report.addNonIdleBHV(descriptor);
+    if((astate=="active") || (astate=="running"))
+      helm_report.addRunningBHV(descriptor);
 	
     helm_report.addMsg(report_line);
     ofs.push_back(newof);

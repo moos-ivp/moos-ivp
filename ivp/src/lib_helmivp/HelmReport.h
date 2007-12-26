@@ -34,13 +34,13 @@ public:
   void addMsg(const std::string& str) 
     {m_messages.push_back(str);};
   
-  void addNonIdleBHV(const std::string& descriptor);
+  void addRunningBHV(const std::string& descriptor);
   void addActiveBHV(const std::string& descriptor, double);
   
   std::vector<std::string> getMsgs() const  
     {return(m_messages);};
 
-  std::string getNonIdleBehaviors() {return(m_nonidle_bhvs);};
+  std::string getRunningBehaviors() {return(m_running_bhvs);};
   std::string getActiveBehaviors() {return(m_active_bhvs);};
 
   void   addDecision(const std::string &var, double val);
@@ -57,7 +57,7 @@ public:
 protected:
 
   std::vector<std::string>  m_messages;
-  std::string               m_nonidle_bhvs;
+  std::string               m_running_bhvs;
   std::string               m_active_bhvs;
   std::string               m_all_bhvs;
 

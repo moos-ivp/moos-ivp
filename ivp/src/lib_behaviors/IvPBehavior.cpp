@@ -215,17 +215,24 @@ bool IvPBehavior::setParamCommon(string g_param, string g_val)
 }
 
 //-----------------------------------------------------------
-// Procedure: preCheck
+// Procedure: isCompleted()
 
-bool IvPBehavior::preCheck()
+bool IvPBehavior::isCompleted()
 {
   // If completed indicat that the pre-check failed due to this
   // reason and simply return false. End-flags are posted elsewhere
   if(m_completed) {
     postPCMessage(" -- completed -- ");
-    return(false);
+    return(true);
   }
+  return(false);
+}
 
+//-----------------------------------------------------------
+// Procedure: preCheck()
+
+bool IvPBehavior::preCheck()
+{
   if(!checkConditions())
     return(false);
 
@@ -254,7 +261,6 @@ bool IvPBehavior::preCheck()
   }
   
   postPCMessage(" -- ok -- ");
-  postFlags(m_run_flags);
   return(true);
 }
   

@@ -181,7 +181,7 @@ bool HelmIvP::Iterate()
 
   m_Comms.Notify("HELM_IPF_COUNT", helm_report.getOFNUM());
   m_Comms.Notify("HELM_ACTIVE_BHV", helm_report.getActiveBehaviors());
-  m_Comms.Notify("HELM_NONIDLE_BHV", helm_report.getNonIdleBehaviors());
+  m_Comms.Notify("HELM_RUNNING_BHV", helm_report.getRunningBehaviors());
  
   if(verbose == "verbose") {
     MOOSTrace("(End) Iteration: %d", iteration);

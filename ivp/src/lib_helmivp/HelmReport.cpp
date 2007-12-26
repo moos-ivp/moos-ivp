@@ -75,17 +75,17 @@ bool HelmReport::hasDecision(const string& var)
 
 
 //-----------------------------------------------------------
-// Procedure: addNonIdleBHV
+// Procedure: addRunningBHV
 
-void HelmReport::addNonIdleBHV(const std::string& descriptor)
+void HelmReport::addRunningBHV(const std::string& descriptor)
 {
-  if(m_nonidle_bhvs == "") {
-    m_nonidle_bhvs += "#";
-    m_nonidle_bhvs += intToString(m_iteration);
+  if(m_running_bhvs == "") {
+    m_running_bhvs += "#";
+    m_running_bhvs += intToString(m_iteration);
   }
   
-  m_nonidle_bhvs += ",";
-  m_nonidle_bhvs += descriptor;
+  m_running_bhvs += ",";
+  m_running_bhvs += descriptor;
 }
 
 

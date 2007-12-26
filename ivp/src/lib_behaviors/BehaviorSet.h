@@ -60,7 +60,7 @@ public:
   void         setReportIPF(bool v)   {report_ipf=v;};
   bool         stateOK(int);
   void         resetStateOK();
-  IvPFunction* produceOF(int ix, int iter, bool &idle);
+  IvPFunction* produceOF(int ix, int iter, std::string& activity_state);
 
   IvPBehavior* getBehavior(int);
   std::string  getDescriptor(int);
