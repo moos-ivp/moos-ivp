@@ -50,7 +50,7 @@ BHV_LoiterMigrate::BHV_LoiterMigrate(IvPDomain gdomain) :
 
 bool BHV_LoiterMigrate::setParam(string g_param, string g_val) 
 {
-  if(IvPBehavior::setParamCommon(g_param, g_val))
+  if(IvPBehavior::setParam(g_param, g_val))
     return(true);
 
   if(g_param == "polygon") {

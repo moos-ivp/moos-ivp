@@ -70,17 +70,17 @@ IvPBehavior::IvPBehavior(IvPDomain g_domain)
 }
   
 //-----------------------------------------------------------
-// Procedure: setParam
-
-bool IvPBehavior::setParam(string g_param, string g_val) 
-{
-  return(setParamCommon(g_param, g_val));
-}
-
-//-----------------------------------------------------------
 // Procedure: setParamCommon
 
 bool IvPBehavior::setParamCommon(string g_param, string g_val) 
+{
+  return(IvPBehavior::setParam(g_param, g_val));
+}
+
+//-----------------------------------------------------------
+// Procedure: setParam
+
+bool IvPBehavior::setParam(string g_param, string g_val) 
 {
   g_val   = stripBlankEnds(g_val);
   g_param = tolower(g_param);
@@ -235,9 +235,9 @@ bool IvPBehavior::isCompleted()
 }
 
 //-----------------------------------------------------------
-// Procedure: isRunning()
+// Procedure: isRunnable()
 
-bool IvPBehavior::isRunning()
+bool IvPBehavior::isRunnable()
 {
   if(!checkConditions())
     return(false);

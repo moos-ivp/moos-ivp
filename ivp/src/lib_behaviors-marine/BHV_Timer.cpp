@@ -41,7 +41,7 @@ BHV_Timer::BHV_Timer(IvPDomain gdomain) : IvPBehavior(gdomain)
 
 bool BHV_Timer::setParam(string param, string val) 
 {
-  return(IvPBehavior::setParamCommon(param, val));
+  return(IvPBehavior::setParam(param, val));
 }
 
 //-----------------------------------------------------------

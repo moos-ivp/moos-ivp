@@ -76,7 +76,7 @@ BHV_Waypoint::BHV_Waypoint(IvPDomain gdomain) :
 
 bool BHV_Waypoint::setParam(string param, string val) 
 {
-  if(IvPBehavior::setParamCommon(param, val))
+  if(IvPBehavior::setParam(param, val))
     return(true);
 
   if((param == "polygon") || (param == "points")) {

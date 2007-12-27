@@ -63,7 +63,7 @@ bool BHV_ConstantDepth::setParam(string param, string val)
   if(isConditionalParamString(val))
     return(handleConditionalParam(param, val));
 
-  if(IvPBehavior::setParamCommon(param, val))
+  if(IvPBehavior::setParam(param, val))
     return(true);
 
   if(param == "depth") {

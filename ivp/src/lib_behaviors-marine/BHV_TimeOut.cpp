@@ -56,7 +56,7 @@ BHV_TimeOut::BHV_TimeOut(IvPDomain gdomain) : IvPBehavior(gdomain)
 
 bool BHV_TimeOut::setParam(string param, string val) 
 {
-  if(IvPBehavior::setParamCommon(param, val))
+  if(IvPBehavior::setParam(param, val))
     return(true);
 
   else if(param == "max_time") {

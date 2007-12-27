@@ -29,7 +29,7 @@ BHV_AllStop::BHV_AllStop(IvPDomain gdomain) :
 
 bool BHV_AllStop::setParam(string param, string val) 
 {
-  if(IvPBehavior::setParamCommon(param, val))
+  if(IvPBehavior::setParam(param, val))
     return(true);
 
   return(false);

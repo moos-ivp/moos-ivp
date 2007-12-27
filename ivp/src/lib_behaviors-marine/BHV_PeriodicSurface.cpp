@@ -79,7 +79,7 @@ BHV_PeriodicSurface::BHV_PeriodicSurface(IvPDomain gdomain) :
 
 bool BHV_PeriodicSurface::setParam(string g_param, string g_val) 
 {
-  if(IvPBehavior::setParamCommon(g_param, g_val))
+  if(IvPBehavior::setParam(g_param, g_val))
     return(true);
 
   g_val = stripBlankEnds(g_val);

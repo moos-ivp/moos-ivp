@@ -63,7 +63,7 @@ BHV_GoToDepth::BHV_GoToDepth(IvPDomain gdomain) :
 
 bool BHV_GoToDepth::setParam(string param, string val) 
 {
-  if(IvPBehavior::setParamCommon(param, val))
+  if(IvPBehavior::setParam(param, val))
     return(true);
 
   //  50,10;10,10;50,10;50

@@ -68,7 +68,7 @@ BHV_AvoidCollision::BHV_AvoidCollision(IvPDomain gdomain) :
 
 bool BHV_AvoidCollision::setParam(string g_param, string g_val) 
 {
-  if(IvPBehavior::setParamCommon(g_param, g_val))
+  if(IvPBehavior::setParam(g_param, g_val))
     return(true);
 
   if((g_param == "them") || (g_param == "contact")) {

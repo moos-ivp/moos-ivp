@@ -74,7 +74,7 @@ BHV_RStationKeep::BHV_RStationKeep(IvPDomain gdomain) :
 
 bool BHV_RStationKeep::setParam(string param, string val) 
 {
-  if(IvPBehavior::setParamCommon(param, val))
+  if(IvPBehavior::setParam(param, val))
     return(true);
 
   val = stripBlankEnds(val);

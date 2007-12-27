@@ -76,6 +76,8 @@ IvPFunction* BehaviorSet::produceOF(int ix, int iteration,
 				    string& activity_state)
 {
   IvPFunction *ipf = 0;
+  double pwt = 0;
+
   if((ix >= 0) && (ix < behaviors.size())) {
     
     behaviors[ix]->checkForUpdates();
@@ -83,7 +85,7 @@ IvPFunction* BehaviorSet::produceOF(int ix, int iteration,
     if(behaviors[ix]->isCompleted())
       activity_state = "completed";
     else {
-      if(!behaviors[ix]->isRunning())
+      if(!behaviors[ix]->isRunnable())
 	activity_state = "idle";
       else
 	activity_state = "running";
@@ -102,9 +104,12 @@ IvPFunction* BehaviorSet::produceOF(int ix, int iteration,
 	delete(ipf);
 	ipf = 0;
       }
-      if(ipf && (ipf->getPWT() <= 0)) {
-	delete(ipf);
-	ipf = 0;
+      if(ipf) {
+	pwt = ipf->getPWT();
+	if(pwt <= 0) {
+	  delete(ipf);
+	  ipf = 0;
+	}
       }
       if(ipf && report_ipf) {
 	string desc_str = behaviors[ix]->getDescriptor();
@@ -122,9 +127,6 @@ IvPFunction* BehaviorSet::produceOF(int ix, int iteration,
     bhv_tag = findReplace(bhv_tag, "BHV_", "");
     bhv_tag = findReplace(bhv_tag, "(d)", "");
 
-    double pwt = 0;
-    if(ipf) 
-      pwt = ipf->getPWT();
     behaviors[ix]->postMessage("PWT_BHV_"+bhv_tag, pwt);
 
     if(activity_state == "idle")

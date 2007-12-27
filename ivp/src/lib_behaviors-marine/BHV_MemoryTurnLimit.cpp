@@ -66,7 +66,7 @@ BHV_MemoryTurnLimit::BHV_MemoryTurnLimit(IvPDomain gdomain) :
 
 bool BHV_MemoryTurnLimit::setParam(string param, string val) 
 {
-  if(IvPBehavior::setParamCommon(param, val))
+  if(IvPBehavior::setParam(param, val))
     return(true);
 
   if(param == "memory_time") {

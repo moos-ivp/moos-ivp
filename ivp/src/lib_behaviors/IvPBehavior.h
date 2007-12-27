@@ -66,7 +66,7 @@ public:
   void   setInfoBuffer(const InfoBuffer*);
   void   checkForUpdates();
   bool   isCompleted();
-  bool   isRunning();
+  bool   isRunnable();
   double getPriority()                   {return(m_priority_wt);};
   void   postRunFlags()                  {postFlags(m_run_flags);};
   void   postEndFlags()                  {postFlags(m_end_flags);};

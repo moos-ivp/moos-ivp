@@ -57,7 +57,7 @@ BHV_HeadOn14::BHV_HeadOn14(IvPDomain gdomain) :
 
 bool BHV_HeadOn14::setParam(string g_param, string g_val) 
 {
-  if(IvPBehavior::setParamCommon(g_param, g_val))
+  if(IvPBehavior::setParam(g_param, g_val))
     return(true);
 
   if(g_param == "contact") {

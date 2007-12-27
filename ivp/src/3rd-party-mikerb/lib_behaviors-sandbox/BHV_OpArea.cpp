@@ -62,7 +62,7 @@ BHV_OpArea::BHV_OpArea(IvPDomain gdomain) :
 
 bool BHV_OpArea::setParam(string param, string val) 
 {
-  if(IvPBehavior::setParamCommon(param, val))
+  if(IvPBehavior::setParam(param, val))
     return(true);
 
   // Typical line: polygon  = 0,0:0,100:100,0:100,100

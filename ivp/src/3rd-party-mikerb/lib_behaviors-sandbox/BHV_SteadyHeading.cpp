@@ -43,7 +43,7 @@ BHV_SteadyHeading::BHV_SteadyHeading(IvPDomain gdomain) :
 
 bool BHV_SteadyHeading::setParam(string param, string val) 
 {
-  if(IvPBehavior::setParamCommon(param, val))
+  if(IvPBehavior::setParam(param, val))
     return(true);
 
   if(param == "memory_time") {

@@ -75,7 +75,7 @@ BHV_WaypointSimple::BHV_WaypointSimple(IvPDomain gdomain) :
 
 bool BHV_WaypointSimple::setParam(string param, string val) 
 {
-  if(IvPBehavior::setParamCommon(param, val))
+  if(IvPBehavior::setParam(param, val))
     return(true);
   
   if(param == "points") {

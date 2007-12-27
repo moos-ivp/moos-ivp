@@ -59,7 +59,7 @@ BHV_ConstantHeading::BHV_ConstantHeading(IvPDomain gdomain) :
 
 bool BHV_ConstantHeading::setParam(string param, string val) 
 {
-  if(IvPBehavior::setParamCommon(param, val))
+  if(IvPBehavior::setParam(param, val))
     return(true);
 
   if(param == "heading") {
