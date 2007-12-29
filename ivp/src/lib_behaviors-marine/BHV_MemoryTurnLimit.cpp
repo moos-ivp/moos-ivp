@@ -88,9 +88,9 @@ bool BHV_MemoryTurnLimit::setParam(string param, string val)
 
 
 //-----------------------------------------------------------
-// Procedure: produceOF
+// Procedure: onRunState
 
-IvPFunction *BHV_MemoryTurnLimit::produceOF() 
+IvPFunction *BHV_MemoryTurnLimit::onRunState() 
 {
   if(m_memory_time < 0) {
     postWMessage("Variable memory_time not specified");

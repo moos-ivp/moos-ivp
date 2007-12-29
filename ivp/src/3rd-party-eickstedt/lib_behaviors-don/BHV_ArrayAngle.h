@@ -17,7 +17,7 @@ public:
   BHV_ArrayAngle(IvPDomain);
   ~BHV_ArrayAngle() {};
   
-  IvPFunction*  produceOF();
+  IvPFunction*  onRunState();
   bool setParam(std::string, std::string);
   double getRelevance();
 

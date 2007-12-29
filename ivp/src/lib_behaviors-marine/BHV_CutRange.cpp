@@ -144,9 +144,9 @@ void BHV_CutRange::onIdleState()
 
 
 //-----------------------------------------------------------
-// Procedure: produceOF
+// Procedure: onRunState
 
-IvPFunction *BHV_CutRange::produceOF() 
+IvPFunction *BHV_CutRange::onRunState() 
 {
   postMessage("CUT_RANGE_ACTIVE", 1);
 

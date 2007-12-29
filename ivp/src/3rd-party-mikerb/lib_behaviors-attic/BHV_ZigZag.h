@@ -33,7 +33,7 @@ public:
   BHV_ZigZag(IvPDomain);
   ~BHV_ZigZag() {};
   
-  IvPFunction* produceOF();
+  IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
 
 protected:

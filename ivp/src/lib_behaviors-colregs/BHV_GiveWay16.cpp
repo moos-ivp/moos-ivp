@@ -154,9 +154,9 @@ void BHV_GiveWay16::onIdleState()
 }
 
 //-----------------------------------------------------------
-// Procedure: produceOF
+// Procedure: onRunState
 
-IvPFunction *BHV_GiveWay16::produceOF() 
+IvPFunction *BHV_GiveWay16::onRunState() 
 {
   if(m_contact == "") {
     postRange(false);

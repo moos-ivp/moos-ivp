@@ -31,7 +31,7 @@ class BHV_TimeOut : public IvPBehavior {
   ~BHV_TimeOut() {};
   
   bool         setParam(std::string, std::string);
-  IvPFunction* produceOF();
+  IvPFunction* onRunState();
 
  protected:
   void      setTimeStamps();

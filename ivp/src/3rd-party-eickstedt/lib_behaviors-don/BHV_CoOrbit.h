@@ -16,7 +16,7 @@ public:
   BHV_CoOrbit(IvPDomain);
   ~BHV_CoOrbit() {};
   
-  IvPFunction* produceOF();
+  IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
 
  protected:

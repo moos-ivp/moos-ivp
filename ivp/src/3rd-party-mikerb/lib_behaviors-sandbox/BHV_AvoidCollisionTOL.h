@@ -32,7 +32,7 @@ public:
   BHV_AvoidCollisionTOL(IvPDomain);
   ~BHV_AvoidCollisionTOL() {};
   
-  IvPFunction* produceOF();
+  IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
 
 protected:

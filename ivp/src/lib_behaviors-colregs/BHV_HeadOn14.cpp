@@ -141,9 +141,9 @@ bool BHV_HeadOn14::setParam(string g_param, string g_val)
 
 
 //-----------------------------------------------------------
-// Procedure: produceOF
+// Procedure: onRunState
 
-IvPFunction *BHV_HeadOn14::produceOF() 
+IvPFunction *BHV_HeadOn14::onRunState() 
 {
   if(m_contact == "") {
     postEMessage("contact ID not set.");

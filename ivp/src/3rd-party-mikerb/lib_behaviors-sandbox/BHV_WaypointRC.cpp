@@ -141,9 +141,9 @@ bool BHV_WaypointRC::setParam(string param, string val)
 
 
 //-----------------------------------------------------------
-// Procedure: produceOF
+// Procedure: onRunState
 
-IvPFunction *BHV_WaypointRC::produceOF() 
+IvPFunction *BHV_WaypointRC::onRunState() 
 {
   // Set osX, osY, ptX, ptY, iptX, iptY;
   bool valid_point = setNextWaypoint();

@@ -88,11 +88,11 @@ bool BHV_OpArea::setParam(string param, string val)
 
 
 //-----------------------------------------------------------
-// Procedure: produceOF
+// Procedure: onRunState
 //     Notes: Returns NULL if all safety concerns can be verified
 //     Notes: Returns (OF*)1 otherwise
 
-IvPFunction *BHV_OpArea::produceOF() 
+IvPFunction *BHV_OpArea::onRunState() 
 {
   bool ok1, ok2;
   // ownship position in meters from some 0,0 reference point.

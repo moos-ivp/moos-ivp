@@ -30,7 +30,7 @@ public:
   BHV_Timer(IvPDomain);
   ~BHV_Timer() {};
   
-  IvPFunction* produceOF();
+  IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
 
 };

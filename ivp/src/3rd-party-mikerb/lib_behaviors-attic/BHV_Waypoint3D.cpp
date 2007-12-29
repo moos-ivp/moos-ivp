@@ -88,9 +88,9 @@ bool BHV_Waypoint3D::setParam(string param, string val)
 
 
 //-----------------------------------------------------------
-// Procedure: produceOF
+// Procedure: onRunState
 
-OF *BHV_Waypoint3D::produceOF() 
+OF *BHV_Waypoint3D::onRunState() 
 {
   bool silent = true;
 

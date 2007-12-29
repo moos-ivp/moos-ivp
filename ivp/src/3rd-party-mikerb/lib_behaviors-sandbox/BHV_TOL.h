@@ -32,7 +32,7 @@ public:
   BHV_TOL(IvPDomain);
   ~BHV_TOL() {};
   
-  IvPFunction* produceOF();
+  IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
 };
 #endif

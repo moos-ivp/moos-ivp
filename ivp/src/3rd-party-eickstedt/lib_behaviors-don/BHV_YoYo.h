@@ -43,7 +43,7 @@ public:
   BHV_YoYo(IvPDomain);
   ~BHV_YoYo() {};
   
-  IvPFunction* produceOF();
+  IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
 
 protected:

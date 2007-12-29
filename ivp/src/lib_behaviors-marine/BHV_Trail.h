@@ -32,7 +32,7 @@ public:
   BHV_Trail(IvPDomain);
   ~BHV_Trail() {};
   
-  IvPFunction* produceOF();
+  IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
 
 protected:

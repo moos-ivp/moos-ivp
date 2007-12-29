@@ -32,7 +32,7 @@ public:
   BHV_GoToDepth(IvPDomain);
   ~BHV_GoToDepth() {};
   
-  IvPFunction* produceOF();
+  IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
 
 protected:

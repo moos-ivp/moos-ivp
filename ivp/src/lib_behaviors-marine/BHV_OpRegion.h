@@ -31,7 +31,7 @@ class BHV_OpRegion : public IvPBehavior {
   BHV_OpRegion(IvPDomain);
   ~BHV_OpRegion() {};
   
-  IvPFunction* produceOF();
+  IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
 
  protected:

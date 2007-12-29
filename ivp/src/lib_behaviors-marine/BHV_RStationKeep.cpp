@@ -158,9 +158,9 @@ void BHV_RStationKeep::onIdleState()
 
 
 //-----------------------------------------------------------
-// Procedure: produceOF
+// Procedure: onRunState
 
-IvPFunction *BHV_RStationKeep::produceOF() 
+IvPFunction *BHV_RStationKeep::onRunState() 
 {
   // Set m_osx, m_osy
   if(!updateInfoIn())

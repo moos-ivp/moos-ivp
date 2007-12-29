@@ -69,9 +69,9 @@ bool BHV_Generic::setParam(string g_param, string g_val)
 }
 
 //-----------------------------------------------------------
-// Procedure: produceOF
+// Procedure: onRunState
 
-IvPFunction *BHV_Generic::produceOF() 
+IvPFunction *BHV_Generic::onRunState() 
 {
   bool ok1, ok2;
   // ownship position in meters from some 0,0 reference point.

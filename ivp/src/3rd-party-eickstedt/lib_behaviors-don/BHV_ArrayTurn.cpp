@@ -51,9 +51,9 @@ bool BHV_ArrayTurn::setParam(string param, string val)
 
 
 //-----------------------------------------------------------
-// Procedure: produceOF
+// Procedure: onRunState
 
-IvPFunction *BHV_ArrayTurn::produceOF() 
+IvPFunction *BHV_ArrayTurn::onRunState() 
 {
   bool ok1,ok2,ok3,ok4;
   //get current course

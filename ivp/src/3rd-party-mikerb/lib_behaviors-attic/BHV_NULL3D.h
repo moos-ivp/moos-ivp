@@ -31,7 +31,7 @@ public:
   BHV_NULL3D(IvPDomain);
   ~BHV_NULL3D() {};
   
-  OF*  produceOF();
+  OF*  onRunState();
   bool setParam(std::string, std::string) {};
 };
 #endif

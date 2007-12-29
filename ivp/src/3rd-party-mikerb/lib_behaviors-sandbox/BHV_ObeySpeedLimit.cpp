@@ -94,7 +94,7 @@ bool BHV_ObeySpeedLimit::setParam(string param, string val)
 
 
 //-----------------------------------------------------------
-// Procedure: produceOF
+// Procedure: onRunState
 //
 //          ^               limit    
 //      100-|-----------------o
@@ -108,7 +108,7 @@ bool BHV_ObeySpeedLimit::setParam(string param, string val)
 //          |___ ____________________________\death___________
 //                    Speed
 
-IvPFunction *BHV_ObeySpeedLimit::produceOF() 
+IvPFunction *BHV_ObeySpeedLimit::onRunState() 
 {
   int    spdIndex  = m_domain.getIndex("speed");
   double spdBase   = m_domain.getVarLow(spdIndex);

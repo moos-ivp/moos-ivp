@@ -31,7 +31,7 @@ public:
   BHV_Generic(IvPDomain);
   ~BHV_Generic() {};
   
-  IvPFunction* produceOF();
+  IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
 
 protected:

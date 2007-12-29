@@ -77,10 +77,10 @@ bool BHV_SearchGrid::setParam(string param, string val)
 
 
 //-----------------------------------------------------------
-// Procedure: produceOF
+// Procedure: onRunState
 //
 
-IvPFunction *BHV_SearchGrid::produceOF() 
+IvPFunction *BHV_SearchGrid::onRunState() 
 {
   IvPFunction *ipf = 0;
 

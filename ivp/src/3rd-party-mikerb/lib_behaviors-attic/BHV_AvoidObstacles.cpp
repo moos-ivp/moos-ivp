@@ -100,9 +100,9 @@ bool BHV_AvoidObstacles::setParam(string param, string val)
 
 
 //-----------------------------------------------------------
-// Procedure: produceOF
+// Procedure: onRunState
 
-IvPFunction *BHV_AvoidObstacles::produceOF() 
+IvPFunction *BHV_AvoidObstacles::onRunState() 
 {
 #if 0
   // Set osX, osY, ptX, ptY, iptX, iptY;

@@ -20,7 +20,7 @@ public:
   BHV_2VAngle(IvPDomain);
   ~BHV_2VAngle() {};
   
-  IvPFunction*  produceOF();
+  IvPFunction*  onRunState();
   bool setParam(std::string, std::string);
 
 protected:

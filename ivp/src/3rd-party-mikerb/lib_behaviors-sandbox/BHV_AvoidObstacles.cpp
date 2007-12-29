@@ -99,9 +99,9 @@ bool BHV_AvoidObstacles::setParam(string param, string val)
 
 
 //-----------------------------------------------------------
-// Procedure: produceOF
+// Procedure: onRunState
 
-IvPFunction *BHV_AvoidObstacles::produceOF() 
+IvPFunction *BHV_AvoidObstacles::onRunState() 
 {
   bool ok1, ok2;
   double os_x = m_info_buffer->dQuery("NAV_X", ok1);

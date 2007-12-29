@@ -68,9 +68,9 @@ bool BHV_2VAngle::setParam(string param, string val)
 
 
 //-----------------------------------------------------------
-// Procedure: produceOF
+// Procedure: onRunState
 
-IvPFunction *BHV_2VAngle::produceOF() 
+IvPFunction *BHV_2VAngle::onRunState() 
 {
   bool ok1,ok2,ok3,ok4,ok5,ok6;
   //get current course

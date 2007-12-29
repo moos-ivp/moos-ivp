@@ -129,9 +129,9 @@ bool BHV_ConstantDepth::handleConditionalParam(string param, string val)
 
 
 //-----------------------------------------------------------
-// Procedure: produceOF
+// Procedure: onRunState
 
-IvPFunction *BHV_ConstantDepth::produceOF() 
+IvPFunction *BHV_ConstantDepth::onRunState() 
 {
   if(!m_domain.hasDomain("depth")) {
     postEMessage("No 'depth' variable in the helm domain");

@@ -93,14 +93,14 @@ bool BHV_CloseRange::setParam(string param, string val)
 
 /******************************************************************************
  *                                                                            *
- *  Method: produceOF()                                                       *
+ *  Method: onRunState()                                                       *
  *                                                                            *
- *  Description: The produceOF method creates and returns the objective       *
+ *  Description: The onRunState method creates and returns the objective       *
  *  function for the BHV_CloseRange behavior                                  *
  *                                                                            *
  ******************************************************************************/
 
-IvPFunction *BHV_CloseRange::produceOF() 
+IvPFunction *BHV_CloseRange::onRunState() 
 {
   bool ok2,ok3,ok4;
   

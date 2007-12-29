@@ -12,7 +12,7 @@ public:
   BHV_ADP(IvPDomain);
   ~BHV_ADP() {};
   
-  IvPFunction* produceOF();
+  IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
 
 protected:

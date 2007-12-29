@@ -109,14 +109,14 @@ bool BHV_YoYo::setParam(string param, string val)
 
 /******************************************************************************
  *                                                                            *
- *  Method: produceOF()                                                       *
+ *  Method: onRunState()                                                       *
  *                                                                            *
- *  Description: The produceOF method creates and returns the objective       *
+ *  Description: The onRunState method creates and returns the objective       *
  *  function for the BHV_YoYo behavior                                        *
  *                                                                            *
  ******************************************************************************/
 
-IvPFunction *BHV_YoYo::produceOF() 
+IvPFunction *BHV_YoYo::onRunState() 
 {
   double peak_utility = 100;
 

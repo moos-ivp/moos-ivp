@@ -87,7 +87,7 @@ bool BHV_CoWaypoint::setParam(string g_param, string g_val)
 
 
 //-----------------------------------------------------------
-// Procedure: produceOF
+// Procedure: onRunState
 //
 //          ^     should-speed    
 //      100-|           .
@@ -103,7 +103,7 @@ bool BHV_CoWaypoint::setParam(string g_param, string g_val)
 //
 //
 
-IvPFunction *BHV_CoWaypoint::produceOF() 
+IvPFunction *BHV_CoWaypoint::onRunState() 
 {
   // Need to know name of us and them to query own waypt progress
   if(them_name == "") {

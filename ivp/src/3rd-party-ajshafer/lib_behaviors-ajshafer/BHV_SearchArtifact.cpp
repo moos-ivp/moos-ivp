@@ -77,10 +77,10 @@ bool BHV_SearchArtifact::setParam(string param, string val)
 
 
 //-----------------------------------------------------------
-// Procedure: produceOF
+// Procedure: onRunState
 //
 
-IvPFunction *BHV_SearchArtifact::produceOF() 
+IvPFunction *BHV_SearchArtifact::onRunState() 
 {
   IvPFunction *ipf = 0;
 

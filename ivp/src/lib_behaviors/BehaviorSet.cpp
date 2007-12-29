@@ -70,35 +70,50 @@ BehaviorSet::~BehaviorSet()
 }
 
 //------------------------------------------------------------
+// Procedure: addBehavior
+
+void BehaviorSet::addBehavior(IvPBehavior *bhv)
+{
+  behaviors.push_back(bhv);
+  behavior_states.push_back("");
+}
+
+
+//------------------------------------------------------------
 // Procedure: produceOF
 
 IvPFunction* BehaviorSet::produceOF(int ix, int iteration, 
-				    string& activity_state)
+				    string& new_activity_state)
 {
   IvPFunction *ipf = 0;
   double pwt = 0;
 
   if((ix >= 0) && (ix < behaviors.size())) {
     
-    behaviors[ix]->checkForUpdates();
+    behaviors[ix]->checkUpdates();
 
     if(behaviors[ix]->isCompleted())
-      activity_state = "completed";
+      new_activity_state = "completed";
     else {
       if(!behaviors[ix]->isRunnable())
-	activity_state = "idle";
+	new_activity_state = "idle";
       else
-	activity_state = "running";
+	new_activity_state = "running";
     }
 
-    if(activity_state == "idle") {
-      behaviors[ix]->postIdleFlags();
+    if(new_activity_state == "idle") {
+      if(behavior_states[ix] != "idle")
+	behaviors[ix]->postIdleFlags();
       behaviors[ix]->onIdleState();
     }
-
-    if(activity_state == "running") {
-      behaviors[ix]->postRunFlags();
+    
+    if(new_activity_state == "running") {
+      if((behavior_states[ix] != "running") && 
+	 (behavior_states[ix] != "active"))
+	behaviors[ix]->postRunFlags();
       ipf = behaviors[ix]->produceOF();
+      if(!ipf)
+	ipf = behaviors[ix]->onRunState();
       if(ipf && !ipf->freeOfNan()) {
 	behaviors[ix]->postEMessage("NaN detected in IvP Function");
 	delete(ipf);
@@ -120,7 +135,7 @@ IvPFunction* BehaviorSet::produceOF(int ix, int iteration,
 	behaviors[ix]->postMessage("BHV_IPF", ipf_str);
       }
       if(ipf)
-	activity_state = "active";
+	new_activity_state = "active";
     }
 
     string bhv_tag = toupper(behaviors[ix]->getDescriptor());
@@ -129,14 +144,16 @@ IvPFunction* BehaviorSet::produceOF(int ix, int iteration,
 
     behaviors[ix]->postMessage("PWT_BHV_"+bhv_tag, pwt);
 
-    if(activity_state == "idle")
+    if(new_activity_state == "idle")
       behaviors[ix]->postMessage("STATE_BHV_"+bhv_tag, 0);
-    else if(activity_state == "running")
+    else if(new_activity_state == "running")
       behaviors[ix]->postMessage("STATE_BHV_"+bhv_tag, 1);
-    else if(activity_state == "active") 
+    else if(new_activity_state == "active") 
       behaviors[ix]->postMessage("STATE_BHV_"+bhv_tag, 2);
-    else if(activity_state == "completed") 
+    else if(new_activity_state == "completed") 
       behaviors[ix]->postMessage("STATE_BHV_"+bhv_tag, 3);
+
+    behavior_states[ix] = new_activity_state;
   }
 
   return(ipf);

@@ -459,9 +459,9 @@ bool IvPBehavior::checkNoStarve()
 }
 
 //-----------------------------------------------------------
-// Procedure: checkForUpdates
+// Procedure: checkUpdates
 
-void IvPBehavior::checkForUpdates()
+void IvPBehavior::checkUpdates()
 {
   if(m_update_var == "")
     return;
@@ -485,6 +485,7 @@ void IvPBehavior::checkForUpdates()
     vector<string> uvector = parseString(new_update_str, '#');
     int usize = uvector.size();
     
+    string bad_params;
     ok = true;
     for(i=0; i<usize; i++) {
       string an_update_str = uvector[i];
@@ -493,7 +494,12 @@ void IvPBehavior::checkForUpdates()
 	string param = stripBlankEnds(pvector[0]);
 	string value = stripBlankEnds(pvector[1]);
 	bool  result = setParam(param, value);
-	ok = ok && result;
+	if(!result) {
+	  ok = false;
+	  if(bad_params != "")
+	    bad_params += ",";
+	  bad_params += param;
+	}
       }
       else 
 	ok = false;
@@ -501,7 +507,8 @@ void IvPBehavior::checkForUpdates()
     
     if(!ok) {
       m_bad_updates++;
-      string wmsg = "Faulty Behavior (" + m_descriptor + ") Update - INCOMPLETE!";
+      string wmsg = "Faulty update for behavior: " + m_descriptor;
+      wmsg += (". Bad parameter(s): " + bad_params);
       postMessage("BHV_WARNING", wmsg);
     }
     else {

@@ -78,10 +78,10 @@ bool BHV_SearchGrid::setParam(string param, string val)
 
 
 //-----------------------------------------------------------
-// Procedure: produceOF
+// Procedure: onRunState
 //
 
-IvPFunction *BHV_SearchGrid::produceOF() 
+IvPFunction *BHV_SearchGrid::onRunState() 
 {
   if(!unif_box || !grid_box) {
     postEMessage("Null UnifBox or GridBox.");

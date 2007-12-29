@@ -114,10 +114,10 @@ bool BHV_YoYoFrontCapture::setParam(string param, string val)
 }
 
 //-----------------------------------------------------------
-// Procedure: produceOF
+// Procedure: onRunState
 //
 
-IvPFunction *BHV_YoYoFrontCapture::produceOF() 
+IvPFunction *BHV_YoYoFrontCapture::onRunState() 
 {
   if(!m_domain.hasDomain("course")) {
     postEMessage("No 'heading' variable in the helm domain");

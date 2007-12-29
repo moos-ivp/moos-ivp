@@ -16,7 +16,7 @@ public:
   BHV_SteadyHeading(IvPDomain);
   ~BHV_SteadyHeading() {};
   
-  IvPFunction* produceOF();
+  IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
   void         onIdleState();
 

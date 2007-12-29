@@ -85,7 +85,7 @@ bool BHV_CoOrbit::setParam(string param, string val)
 
 
 //-----------------------------------------------------------
-// Procedure: produceOF
+// Procedure: onRunState
 //
 //          ^     should-speed    
 //      100-|           .
@@ -101,7 +101,7 @@ bool BHV_CoOrbit::setParam(string param, string val)
 //
 //
 
-IvPFunction *BHV_CoOrbit::produceOF() 
+IvPFunction *BHV_CoOrbit::onRunState() 
 {
   // Need to know name of us and them to query own waypt progress
   if(them_name == "") {
@@ -114,7 +114,7 @@ IvPFunction *BHV_CoOrbit::produceOF()
   string them_waypt_stat = m_info_buffer->sQuery(them_name+"_VEHICLE_WPT_STAT", ok2);
 
 #if 0
-  cout << "+++++BHV_CoOrbit::produceOF() " << us_name << endl;
+  cout << "+++++BHV_CoOrbit::onRunState() " << us_name << endl;
   cout << "  us_waypt_stat:" << us_waypt_stat << endl;
   cout << "  them_waypt_stat:" << them_waypt_stat << endl;
 #endif

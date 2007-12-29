@@ -154,9 +154,9 @@ bool BHV_PeriodicSurface::setParam(string g_param, string g_val)
 }
 
 //-----------------------------------------------------------
-// Procedure: produceOF
+// Procedure: onRunState
 
-IvPFunction *BHV_PeriodicSurface::produceOF() 
+IvPFunction *BHV_PeriodicSurface::onRunState() 
 {
   // Set m_curr_depth, m_curr_speed, m_curr_time
   if(!updateInfoIn()) {

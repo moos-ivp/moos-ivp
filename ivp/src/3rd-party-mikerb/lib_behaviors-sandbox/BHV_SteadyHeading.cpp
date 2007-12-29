@@ -119,9 +119,9 @@ bool BHV_SteadyHeading::updateCurrHeadingTimeLog()
 
 
 //-----------------------------------------------------------
-// Procedure: produceOF
+// Procedure: onRunState
 
-IvPFunction *BHV_SteadyHeading::produceOF() 
+IvPFunction *BHV_SteadyHeading::onRunState() 
 {
   bool ok = updateCurrHeadingTimeLog();
 

@@ -72,7 +72,7 @@ bool BHV_Adaptive_YoYo::setParam(string param, string val)
 }
 
 //-----------------------------------------------------------
-// Procedure: produceOF
+// Procedure: onRunState
 //
 //          ^     desired-depth     
 //      100-|           .
@@ -86,7 +86,7 @@ bool BHV_Adaptive_YoYo::setParam(string param, string val)
 //          |___/_______________\__________________
 //                    Depth
 
-IvPFunction *BHV_Adaptive_YoYo::produceOF() 
+IvPFunction *BHV_Adaptive_YoYo::onRunState() 
 {
   double peak_utility = 100;
 

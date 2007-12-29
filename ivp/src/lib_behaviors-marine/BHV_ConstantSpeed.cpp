@@ -90,9 +90,9 @@ bool BHV_ConstantSpeed::setParam(string param, string val)
 
 
 //-----------------------------------------------------------
-// Procedure: produceOF
+// Procedure: onRunState
 
-IvPFunction *BHV_ConstantSpeed::produceOF() 
+IvPFunction *BHV_ConstantSpeed::onRunState() 
 {
   if(!m_domain.hasDomain("speed")) {
     postEMessage("No 'speed' variable in the helm domain");

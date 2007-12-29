@@ -126,9 +126,9 @@ bool BHV_GoToDepth::setParam(string param, string val)
 
 
 //-----------------------------------------------------------
-// Procedure: produceOF
+// Procedure: onRunState
 
-IvPFunction *BHV_GoToDepth::produceOF() 
+IvPFunction *BHV_GoToDepth::onRunState() 
 {
   if(!m_domain.hasDomain("depth")) {
     postEMessage("No 'depth' variable in the helm domain");

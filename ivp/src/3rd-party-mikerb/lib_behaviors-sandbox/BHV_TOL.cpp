@@ -57,9 +57,9 @@ bool BHV_TOL::setParam(string g_param, string g_val)
 
 
 //-----------------------------------------------------------
-// Procedure: produceOF
+// Procedure: onRunState
 
-IvPFunction *BHV_TOL::produceOF() 
+IvPFunction *BHV_TOL::onRunState() 
 {
   AOF_TOL aof_tol(m_domain);
   OF_Reflector reflector(&aof_tol, 1);

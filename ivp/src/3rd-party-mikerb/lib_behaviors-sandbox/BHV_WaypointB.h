@@ -33,7 +33,7 @@ public:
   BHV_WaypointB(IvPDomain);
   ~BHV_WaypointB() {};
   
-  IvPFunction* produceOF();
+  IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
 
 protected:

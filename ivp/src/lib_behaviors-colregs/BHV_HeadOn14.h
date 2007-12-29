@@ -21,7 +21,7 @@ public:
   BHV_HeadOn14(IvPDomain);
   ~BHV_HeadOn14() {};
   
-  IvPFunction* produceOF();
+  IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
   void         onIdleState();
 

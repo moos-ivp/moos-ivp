@@ -21,7 +21,7 @@ public:
   BHV_GiveWay16(IvPDomain);
   ~BHV_GiveWay16() {};
   
-  IvPFunction* produceOF();
+  IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
   void         onIdleState();
 

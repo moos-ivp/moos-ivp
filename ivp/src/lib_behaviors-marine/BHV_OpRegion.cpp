@@ -152,12 +152,12 @@ bool BHV_OpRegion::setParam(string param, string val)
 }
 
 //-----------------------------------------------------------
-// Procedure: produceOF
+// Procedure: onRunState
 //     Notes: Always returns NULL, never returns an IvPFunction*
 //     Notes: Sets state_ok = false and posts an error message if
 //            any of the OpRegion conditions are not met.
 
-IvPFunction *BHV_OpRegion::produceOF() 
+IvPFunction *BHV_OpRegion::onRunState() 
 {
   // Each of the below calls will check their critical conditions
   // and post an error message if a violation is detected. The call

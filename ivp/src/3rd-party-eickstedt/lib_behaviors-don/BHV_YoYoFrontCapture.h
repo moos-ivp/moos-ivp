@@ -37,7 +37,7 @@ public:
   BHV_YoYoFrontCapture(IvPDomain);
   ~BHV_YoYoFrontCapture() {};
   
-  IvPFunction* produceOF();
+  IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
 
 protected:

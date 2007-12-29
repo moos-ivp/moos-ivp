@@ -16,7 +16,7 @@ public:
   BHV_SearchGrid(IvPDomain);
   ~BHV_SearchGrid() {};
   
-  IvPFunction* produceOF();
+  IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
 
 protected:

@@ -143,9 +143,9 @@ void BHV_Waypoint::onIdleState()
 
 
 //-----------------------------------------------------------
-// Procedure: produceOF
+// Procedure: onRunState
 
-IvPFunction *BHV_Waypoint::produceOF() 
+IvPFunction *BHV_Waypoint::onRunState() 
 {
   //waypoint_engine.setPerpetual(perpetual);
 

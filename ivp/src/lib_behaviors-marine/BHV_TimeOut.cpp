@@ -70,12 +70,12 @@ bool BHV_TimeOut::setParam(string param, string val)
 }
 
 //-----------------------------------------------------------
-// Procedure: produceOF
+// Procedure: onRunState
 //     Notes: Always returns NULL, never returns an IvPFunction*
 //     Notes: Sets state_ok = false and posts an error message if
 //            the max-time condition is violated.
 
-IvPFunction *BHV_TimeOut::produceOF() 
+IvPFunction *BHV_TimeOut::onRunState() 
 {
   if(m_elapsed_time > m_max_time) {
     string emsg = "OpRegion timeout failure: MaxTime:";

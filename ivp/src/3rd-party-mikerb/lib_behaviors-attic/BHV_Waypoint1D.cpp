@@ -81,9 +81,9 @@ bool BHV_Waypoint1D::setParam(string param, string val)
 
 
 //-----------------------------------------------------------
-// Procedure: produceOF
+// Procedure: onRunState
 
-OF *BHV_Waypoint1D::produceOF() 
+OF *BHV_Waypoint1D::onRunState() 
 {
   // If no more waypoints to hit, do not generate function.
   if(current_waypt >= x_waypt.size())

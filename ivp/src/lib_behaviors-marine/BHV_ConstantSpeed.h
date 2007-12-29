@@ -30,7 +30,7 @@ public:
   BHV_ConstantSpeed(IvPDomain);
   ~BHV_ConstantSpeed() {};
   
-  IvPFunction* produceOF();
+  IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
 
 protected:

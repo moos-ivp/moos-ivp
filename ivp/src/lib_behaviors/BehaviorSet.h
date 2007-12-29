@@ -52,7 +52,7 @@ public:
   BehaviorSet();
   virtual ~BehaviorSet();
   
-  void addBehavior(IvPBehavior *b)    {behaviors.push_back(b);};
+  void addBehavior(IvPBehavior *b);
   void addInitialVar(VarDataPair msg) {initial_vars.push_back(msg);};
   void addDefaultVar(VarDataPair msg) {default_vars.push_back(msg);};
   int  getCount()                     {return(behaviors.size());};
@@ -74,6 +74,8 @@ public:
 
 protected:
   std::vector<IvPBehavior*>  behaviors;
+  std::vector<std::string>   behavior_states;
+
   std::vector<VarDataPair>   initial_vars;
   std::vector<VarDataPair>   default_vars;
 

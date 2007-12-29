@@ -32,7 +32,7 @@ public:
   BHV_AvoidObstacles(IvPDomain);
   ~BHV_AvoidObstacles() {};
   
-  IvPFunction* produceOF();
+  IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
 
 protected:

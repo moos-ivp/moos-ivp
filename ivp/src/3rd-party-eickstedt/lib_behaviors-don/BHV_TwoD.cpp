@@ -125,14 +125,14 @@ bool BHV_TwoD::setParam(string param, string val)
 
 /******************************************************************************
  *                                                                            *
- *  Method: produceOF()                                                       *
+ *  Method: onRunState()                                                       *
  *                                                                            *
- *  Description: The produceOF method creates and returns the objective       *
+ *  Description: The onRunState method creates and returns the objective       *
  *  function for the BHV_TwoD behavior                                        *
  *                                                                            *
  ******************************************************************************/
 
-IvPFunction *BHV_TwoD::produceOF() 
+IvPFunction *BHV_TwoD::onRunState() 
 {
   if(!m_domain.hasDomain("course")) {
     postEMessage("No 'heading' variable in the helm domain");

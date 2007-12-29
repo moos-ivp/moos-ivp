@@ -30,7 +30,7 @@ public:
   BHV_ConstantHeading(IvPDomain);
   ~BHV_ConstantHeading() {};
   
-  IvPFunction* produceOF();
+  IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
 
 protected:

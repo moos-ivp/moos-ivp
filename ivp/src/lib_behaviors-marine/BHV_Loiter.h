@@ -37,7 +37,7 @@ public:
   
   bool         setParam(std::string, std::string);
   void         onIdleState();
-  IvPFunction* produceOF();
+  IvPFunction* onRunState();
 
 protected:
   bool         updateInfoIn();
@@ -64,7 +64,7 @@ private:  // State Variables
   double       m_osx;            // Curr owhship x/lon (mtrs)
   double       m_osy;            // Curr ownship y/lat (mtrs)
   double       m_osh;            // Curr ownship Heading (degs)
-  int          m_iterations;     // Number of calls to produceOF
+  int          m_iterations;     // Number of calls to onRunState
 
   bool         m_poly_changed;
   bool         m_center_pending; 

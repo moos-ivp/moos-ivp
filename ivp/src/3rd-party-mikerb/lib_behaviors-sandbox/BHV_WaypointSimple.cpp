@@ -101,11 +101,11 @@ bool BHV_WaypointSimple::setParam(string param, string val)
 
 
 //-----------------------------------------------------------
-// Procedure: produceOF
+// Procedure: onRunState
 //      Note: Posting an EMessage sets the state_ok variable to 
 //            false and communicates the problem to the helm.
 
-IvPFunction *BHV_WaypointSimple::produceOF() 
+IvPFunction *BHV_WaypointSimple::onRunState() 
 {
   // Determine the current waypoint based on updated information.
   if(!setNextWaypoint())

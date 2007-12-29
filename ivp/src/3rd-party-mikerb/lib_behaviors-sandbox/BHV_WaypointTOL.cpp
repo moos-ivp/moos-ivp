@@ -129,9 +129,9 @@ bool BHV_WaypointTOL::setParam(string param, string val)
 
 
 //-----------------------------------------------------------
-// Procedure: produceOF
+// Procedure: onRunState
 
-IvPFunction *BHV_WaypointTOL::produceOF() 
+IvPFunction *BHV_WaypointTOL::onRunState() 
 {
   // Set osX, osY, ptX, ptY, iptX, iptY;
   bool valid_point = setNextWaypoint();

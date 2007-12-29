@@ -33,7 +33,7 @@ public:
   BHV_WaypointOx(IvPDomain);
   ~BHV_WaypointOx() {};
   
-  IvPFunction* produceOF();
+  IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
 
   double       EvaluateThis(double *vals, int cnt) {return(0);};

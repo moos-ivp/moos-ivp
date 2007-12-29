@@ -42,9 +42,9 @@ BHV_NULL3D::BHV_NULL3D(IvPDomain gdomain) :
 }
 
 //-----------------------------------------------------------
-// Procedure: produceOF
+// Procedure: onRunState
 
-OF *BHV_NULL3D::produceOF() 
+OF *BHV_NULL3D::onRunState() 
 {
   AOF_NULL3D *aof_NULL3D = new AOF_NULL3D(m_domain);
   OF_Reflector *ofrNULL3D = new OF_Reflector(aof_NULL3D, 1);

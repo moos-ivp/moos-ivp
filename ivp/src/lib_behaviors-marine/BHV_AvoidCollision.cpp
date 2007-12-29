@@ -165,9 +165,9 @@ void BHV_AvoidCollision::onIdleState()
 }
 
 //-----------------------------------------------------------
-// Procedure: produceOF
+// Procedure: onRunState
 
-IvPFunction *BHV_AvoidCollision::produceOF() 
+IvPFunction *BHV_AvoidCollision::onRunState() 
 {
   if(m_contact == "") {
     postRange(false);

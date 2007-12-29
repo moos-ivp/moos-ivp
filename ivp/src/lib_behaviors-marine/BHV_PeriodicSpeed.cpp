@@ -117,9 +117,9 @@ bool BHV_PeriodicSpeed::setParam(string g_param, string g_val)
 }
 
 //-----------------------------------------------------------
-// Procedure: produceOF
+// Procedure: onRunState
 
-IvPFunction *BHV_PeriodicSpeed::produceOF() 
+IvPFunction *BHV_PeriodicSpeed::onRunState() 
 {
   double curr_time = m_info_buffer->getCurrTime();
 

@@ -32,7 +32,7 @@ public:
   BHV_Waypoint3D(IvPDomain);
   ~BHV_Waypoint3D() {};
   
-  OF*  produceOF();
+  OF*  onRunState();
   bool setParam(std::string, std::string);
 
 protected:

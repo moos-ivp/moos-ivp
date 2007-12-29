@@ -104,9 +104,9 @@ bool BHV_Trail::setParam(string g_param, string g_val)
 
 
 //-----------------------------------------------------------
-// Procedure: produceOF
+// Procedure: onRunState
 
-IvPFunction *BHV_Trail::produceOF() 
+IvPFunction *BHV_Trail::onRunState() 
 {
   if(m_contact == "") {
     postWMessage("contact ID not set.");

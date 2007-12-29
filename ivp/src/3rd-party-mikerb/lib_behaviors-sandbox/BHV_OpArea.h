@@ -32,7 +32,7 @@ public:
   BHV_OpArea(IvPDomain);
   ~BHV_OpArea() {};
   
-  IvPFunction* produceOF();
+  IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
 
 protected:

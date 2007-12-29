@@ -33,7 +33,7 @@ public:
   BHV_SentryOnce(IvPDomain);
   ~BHV_SentryOnce() {};
   
-  OF*  produceOF();
+  OF*  onRunState();
   bool setParam(std::string, std::string);
 
 protected:

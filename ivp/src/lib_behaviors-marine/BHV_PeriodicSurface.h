@@ -33,7 +33,7 @@ public:
   ~BHV_PeriodicSurface() {};
   
   bool         setParam(std::string, std::string);
-  IvPFunction* produceOF();
+  IvPFunction* onRunState();
   void         onIdleState() {checkForMarking();};
 
 protected:

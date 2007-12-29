@@ -20,7 +20,7 @@ public:
   BHV_ArrayTurn(IvPDomain);
   ~BHV_ArrayTurn() {};
   
-  IvPFunction*  produceOF();
+  IvPFunction*  onRunState();
   bool setParam(std::string, std::string);
 
 protected:

@@ -143,9 +143,9 @@ int BHV_SentryOnce::acquireVertex(double os_x, double os_y, bool inside)
 
 
 //-----------------------------------------------------------
-// Procedure: produceOF
+// Procedure: onRunState
 
-OF *BHV_SentryOnce::produceOF() 
+OF *BHV_SentryOnce::onRunState() 
 {
   // Check for "pause" mode
   if(sentry_mode == -1) 

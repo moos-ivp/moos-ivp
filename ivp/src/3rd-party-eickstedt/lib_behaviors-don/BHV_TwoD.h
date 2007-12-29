@@ -33,7 +33,7 @@ public:
   BHV_TwoD(IvPDomain);
   ~BHV_TwoD() {};
   
-  IvPFunction* produceOF();
+  IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
 
 protected:

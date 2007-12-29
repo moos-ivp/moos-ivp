@@ -59,12 +59,13 @@ public:
   virtual ~IvPBehavior() {};
 
   virtual IvPFunction* produceOF() {return(0);};
+  virtual IvPFunction* onRunState() {return(0);};
   virtual bool setParam(std::string, std::string);
   virtual void onIdleState() {};
 
   bool   setParamCommon(std::string, std::string);
   void   setInfoBuffer(const InfoBuffer*);
-  void   checkForUpdates();
+  void   checkUpdates();
   bool   isCompleted();
   bool   isRunnable();
   double getPriority()                   {return(m_priority_wt);};

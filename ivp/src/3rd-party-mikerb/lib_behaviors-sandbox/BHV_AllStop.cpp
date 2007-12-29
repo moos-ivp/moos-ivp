@@ -36,9 +36,9 @@ bool BHV_AllStop::setParam(string param, string val)
 }
 
 //-----------------------------------------------------------
-// Procedure: produceOF
+// Procedure: onRunState
 
-IvPFunction *BHV_AllStop::produceOF() 
+IvPFunction *BHV_AllStop::onRunState() 
 {
   int dsize = m_domain.size();
 

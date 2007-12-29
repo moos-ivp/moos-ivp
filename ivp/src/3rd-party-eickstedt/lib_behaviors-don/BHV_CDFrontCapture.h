@@ -34,7 +34,7 @@ public:
   BHV_CDFrontCapture(IvPDomain);
   ~BHV_CDFrontCapture() {};
   
-  IvPFunction* produceOF();
+  IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
 
 protected:

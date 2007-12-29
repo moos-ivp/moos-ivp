@@ -31,7 +31,7 @@ public:
   BHV_ConstantDepth(IvPDomain);
   ~BHV_ConstantDepth() {};
   
-  IvPFunction* produceOF();
+  IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
 
   bool         handleConditionalParam(std::string, std::string);

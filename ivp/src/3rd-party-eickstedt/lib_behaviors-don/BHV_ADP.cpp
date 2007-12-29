@@ -63,10 +63,10 @@ bool BHV_ADP::setParam(string param, string val)
 }
 
 //-----------------------------------------------------------
-// Procedure: produceOF
+// Procedure: onRunState
 //
 
-IvPFunction *BHV_ADP::produceOF() 
+IvPFunction *BHV_ADP::onRunState() 
 {
   if(!m_domain.hasDomain("course")) {
     postEMessage("No 'heading' variable in the helm domain");

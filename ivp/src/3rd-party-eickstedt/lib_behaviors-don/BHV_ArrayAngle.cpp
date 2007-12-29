@@ -55,9 +55,9 @@ bool BHV_ArrayAngle::setParam(string param, string val)
 
 
 //-----------------------------------------------------------
-// Procedure: produceOF
+// Procedure: onRunState
 
-IvPFunction *BHV_ArrayAngle::produceOF()  
+IvPFunction *BHV_ArrayAngle::onRunState()  
 {
   bool ok1,ok2;
   //get current course

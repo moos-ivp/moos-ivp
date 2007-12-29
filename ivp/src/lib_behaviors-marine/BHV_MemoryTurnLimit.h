@@ -31,7 +31,7 @@ public:
   BHV_MemoryTurnLimit(IvPDomain);
   ~BHV_MemoryTurnLimit() {};
   
-  IvPFunction* produceOF();
+  IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
 
 protected:

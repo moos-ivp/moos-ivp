@@ -15,7 +15,7 @@ public:
   BHV_AllStop(IvPDomain);
   ~BHV_AllStop() {};
   
-  IvPFunction* produceOF();
+  IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
 
 protected:

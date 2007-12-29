@@ -65,9 +65,9 @@ bool BHV_StandOn17::setParam(string g_param, string g_val)
 
 
 //-----------------------------------------------------------
-// Procedure: produceOF
+// Procedure: onRunState
 
-IvPFunction *BHV_StandOn17::produceOF() 
+IvPFunction *BHV_StandOn17::onRunState() 
 {
   if(them_name == "") {
     postEMessage("contact ID not set.");

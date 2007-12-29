@@ -97,9 +97,9 @@ bool BHV_AvoidCollisionTOL::setParam(string g_param, string g_val)
 
 
 //-----------------------------------------------------------
-// Procedure: produceOF
+// Procedure: onRunState
 
-IvPFunction *BHV_AvoidCollisionTOL::produceOF() 
+IvPFunction *BHV_AvoidCollisionTOL::onRunState() 
 {
   if(them_name == "") {
     postEMessage("contact name not set.");

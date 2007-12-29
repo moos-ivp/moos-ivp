@@ -32,7 +32,7 @@ public:
   BHV_Waypoint2D(IvPDomain);
   ~BHV_Waypoint2D() {};
   
-  OF*  produceOF();
+  OF*  onRunState();
   bool setParam(std::string, std::string);
 
 protected:

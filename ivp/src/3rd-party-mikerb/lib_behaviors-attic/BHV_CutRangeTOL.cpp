@@ -85,9 +85,9 @@ bool BHV_CutRange::setParam(string g_param, string g_val)
 
 
 //-----------------------------------------------------------
-// Procedure: produceOF
+// Procedure: onRunState
 
-IvPFunction *BHV_CutRange::produceOF() 
+IvPFunction *BHV_CutRange::onRunState() 
 {
   if(them_name == "") {
     postEMessage("contact ID not set.");

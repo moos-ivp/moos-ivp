@@ -21,7 +21,7 @@ public:
   BHV_StandOn17(IvPDomain);
   ~BHV_StandOn17() {};
   
-  IvPFunction* produceOF();
+  IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
 
 protected:

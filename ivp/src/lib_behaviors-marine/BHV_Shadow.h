@@ -35,7 +35,7 @@ public:
   BHV_Shadow(IvPDomain);
   ~BHV_Shadow() {};
   
-  IvPFunction* produceOF();
+  IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
 
 protected:

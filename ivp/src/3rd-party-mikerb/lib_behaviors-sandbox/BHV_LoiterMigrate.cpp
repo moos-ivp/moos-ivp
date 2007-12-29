@@ -133,9 +133,9 @@ void BHV_LoiterMigrate::onIdleState()
 
 
 //-----------------------------------------------------------
-// Procedure: produceOF
+// Procedure: onRunState
 
-IvPFunction *BHV_LoiterMigrate::produceOF() 
+IvPFunction *BHV_LoiterMigrate::onRunState() 
 {
   m_iterations++;
 

@@ -16,7 +16,7 @@ public:
   BHV_CloseRange(IvPDomain);
   ~BHV_CloseRange() {};
   
-  IvPFunction*  produceOF();
+  IvPFunction*  onRunState();
   bool setParam(std::string, std::string);
 
 protected:

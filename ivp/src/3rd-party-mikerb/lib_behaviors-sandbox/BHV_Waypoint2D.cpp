@@ -79,9 +79,9 @@ bool BHV_Waypoint2D::setParam(string param, string val)
 
 
 //-----------------------------------------------------------
-// Procedure: produceOF
+// Procedure: onRunState
 
-IvPFunction *BHV_Waypoint2D::produceOF() 
+IvPFunction *BHV_Waypoint2D::onRunState() 
 {
   bool ok1, ok2;
   double osX = m_info_buffer->dQuery("NAV_X", ok1);

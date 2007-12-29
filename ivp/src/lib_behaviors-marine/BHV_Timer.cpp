@@ -45,9 +45,9 @@ bool BHV_Timer::setParam(string param, string val)
 }
 
 //-----------------------------------------------------------
-// Procedure: produceOF
+// Procedure: onRunState
 
-IvPFunction *BHV_Timer::produceOF() 
+IvPFunction *BHV_Timer::onRunState() 
 {
   return(0);
 }

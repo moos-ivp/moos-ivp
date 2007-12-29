@@ -32,7 +32,7 @@ public:
   BHV_PeriodicSpeed(IvPDomain);
   ~BHV_PeriodicSpeed() {};
   
-  IvPFunction* produceOF();
+  IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
 
 

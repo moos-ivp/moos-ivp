@@ -261,6 +261,7 @@ bool Populator_BehaviorSet::handleLine(string line)
   }
   
   if(define_mode == 1) {
+    left = tolower(left);
     IvPBehavior *bhv = behaviors[behaviors.size()-1];
     bool result = bhv->setParam(left.c_str(), right.c_str());
     return(result);

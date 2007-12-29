@@ -87,10 +87,10 @@ bool BHV_ConstantHeading::setParam(string param, string val)
 }
 
 //-----------------------------------------------------------
-// Procedure: produceOF
+// Procedure: onRunState
 //
 
-IvPFunction *BHV_ConstantHeading::produceOF() 
+IvPFunction *BHV_ConstantHeading::onRunState() 
 {
   if(!m_domain.hasDomain("course")) {
     postEMessage("No 'heading/course' variable in the helm domain");

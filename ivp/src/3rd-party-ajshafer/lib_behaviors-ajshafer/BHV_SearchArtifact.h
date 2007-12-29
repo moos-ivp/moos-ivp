@@ -17,7 +17,7 @@ public:
   BHV_SearchArtifact(IvPDomain);
   ~BHV_SearchArtifact() {};
   
-  IvPFunction* produceOF();
+  IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
 
 protected:
