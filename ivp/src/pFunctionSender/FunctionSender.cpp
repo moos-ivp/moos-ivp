@@ -15,7 +15,6 @@
 #include "FunctionEncoder.h"
 #include "MBUtils.h"
 #include "OF_Reflector.h"
-#include "AOF_SCALAR.h"
 #include "AOF_Rings.h"
 
 using namespace std;
