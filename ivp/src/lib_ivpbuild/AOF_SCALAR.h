@@ -28,7 +28,7 @@
 class AOF_SCALAR: public AOF {
 public:
   AOF_SCALAR(IvPDomain g_domain) : AOF(g_domain) 
-    {scalar_val = 0;};
+    {m_scalar_val = 0;};
 
   ~AOF_SCALAR() {};
 
