@@ -106,9 +106,9 @@ bool BHV_Shadow::setParam(string g_param, string g_val)
 
 
 //-----------------------------------------------------------
-// Procedure: produceOF
+// Procedure: onRunState
 
-IvPFunction *BHV_Shadow::produceOF() 
+IvPFunction *BHV_Shadow::onRunState() 
 {
   if(m_them_name == "") {
     postWMessage("contact ID not set.");
