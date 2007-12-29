@@ -97,9 +97,9 @@ string InfoBuffer::sQuery(string var, bool& result) const
 }
 
 //-----------------------------------------------------------
-// Procedure: svQuery
+// Procedure: sQueryDeltas
 
-vector<string> InfoBuffer::svQuery(string var, bool& result) const
+vector<string> InfoBuffer::sQueryDeltas(string var, bool& result) const
 {
   // Have an empty vector handy for returning any kind of failure
   vector<string> empty_vector;
@@ -118,9 +118,9 @@ vector<string> InfoBuffer::svQuery(string var, bool& result) const
 }
 
 //-----------------------------------------------------------
-// Procedure: dvQuery
+// Procedure: dQueryDeltas
 
-vector<double> InfoBuffer::dvQuery(string var, bool& result) const
+vector<double> InfoBuffer::dQueryDeltas(string var, bool& result) const
 {
   // Have an empty vector handy for returning any kind of failure
   vector<double> empty_vector;
@@ -148,10 +148,10 @@ void InfoBuffer::clearDeltaVectors()
 }
 
 //-----------------------------------------------------------
-// Procedure: set_val
+// Procedure: setValue
 //      Note: 
 
-bool InfoBuffer::set_val(string var, double val)
+bool InfoBuffer::setValue(string var, double val)
 {
   dmap[var] = val;
   tmap[var] = m_curr_time;
@@ -163,12 +163,12 @@ bool InfoBuffer::set_val(string var, double val)
 }
 
 //-----------------------------------------------------------
-// Procedure: set_val
+// Procedure: setValue
 //      Note: Handles the following types of inputs:
 //            HELM_SUMMARY
 //
 
-bool InfoBuffer::set_val(string var, string val)
+bool InfoBuffer::setValue(string var, string val)
 {
   smap[var] = val;
   tmap[var] = m_curr_time;

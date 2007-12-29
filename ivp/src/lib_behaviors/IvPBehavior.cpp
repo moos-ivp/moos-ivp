@@ -575,6 +575,98 @@ void IvPBehavior::postFlags(const vector<VarDataPair>& flags)
   }    
 }
 
+//-----------------------------------------------------------
+// Procedure: getBufferCurrTime()
+
+double IvPBehavior::getBufferCurrTime()
+{
+  if(!m_info_buffer)
+    return(0);
+  return(m_info_buffer->getCurrTime());
+}
+
+
+//-----------------------------------------------------------
+// Procedure: getBufferTimeVal()
+
+double IvPBehavior::getBufferTimeVal(string varname)
+{
+  if(!m_info_buffer)
+    return(0);
+  return(m_info_buffer->tQuery(varname));
+}
+
+//-----------------------------------------------------------
+// Procedure: getBufferDoubleVal()
+
+double IvPBehavior::getBufferDoubleVal(string varname, bool& ok)
+{
+  if(!m_info_buffer) {
+    ok = false;
+    return(0);
+  }
+
+  double value = m_info_buffer->dQuery(varname, ok);
+  if(!ok) {
+    bool result;
+    string sval = m_info_buffer->sQuery(varname, result);
+    if(result && isNumber(sval)) {
+      value = atof(sval.c_str());
+      ok = true;
+    }
+  }
+  return(value);
+}
+
+//-----------------------------------------------------------
+// Procedure: getBufferStringVal()
+
+string IvPBehavior::getBufferStringVal(string varname, bool& ok)
+{
+  if(!m_info_buffer) {
+    ok = false;
+    return(0);
+  }
+
+  string value = m_info_buffer->sQuery(varname, ok);
+  if(!ok) {
+    bool result;
+    double dval = m_info_buffer->dQuery(varname, result);
+    if(result) {
+      value = doubleToString(dval, 6);
+      ok = true;
+    }
+  }
+  return(value);
+}
+
+
+//-----------------------------------------------------------
+// Procedure: getBufferDoubleVector()
+
+vector<double> IvPBehavior::getBufferDoubleVector(string varname, bool& ok)
+{
+  vector<double> empty_vector;
+  if(!m_info_buffer) {
+    ok = false;
+    return(empty_vector);
+  }
+  return(m_info_buffer->dQueryDeltas(varname, ok));
+}
+
+//-----------------------------------------------------------
+// Procedure: getBufferStringVector()
+
+vector<string> IvPBehavior::getBufferStringVector(string varname, bool& ok)
+{
+  vector<string> empty_vector;
+  if(!m_info_buffer) {
+    ok = false;
+    return(empty_vector);
+  }
+  return(m_info_buffer->sQueryDeltas(varname, ok));
+}
+
 
 
 

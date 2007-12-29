@@ -225,8 +225,8 @@ bool BHV_AvoidCollision::getBufferInfo()
 {
   bool ok1, ok2;
 
-  m_cnh = m_info_buffer->dQuery(m_contact+"_NAV_HEADING", ok1);
-  m_cnv = m_info_buffer->dQuery(m_contact+"_NAV_SPEED",   ok2);
+  m_cnh = getBufferDoubleVal(m_contact+"_NAV_HEADING", ok1);
+  m_cnv = getBufferDoubleVal(m_contact+"_NAV_SPEED",   ok2);
   if(!ok1 || !ok2) {    
     string msg = m_contact + " heading/speed info not found";
     if(m_on_no_contact_ok)
@@ -236,8 +236,8 @@ bool BHV_AvoidCollision::getBufferInfo()
     return(false);
   }
 
-  m_osh = m_info_buffer->dQuery("NAV_HEADING", ok1);
-  m_osv = m_info_buffer->dQuery("NAV_SPEED", ok2);
+  m_osh = getBufferDoubleVal("NAV_HEADING", ok1);
+  m_osv = getBufferDoubleVal("NAV_SPEED", ok2);
   if(!ok1 || !ok2) {
     postEMessage("ownship course/speed info not found.");
     return(false);
@@ -246,8 +246,8 @@ bool BHV_AvoidCollision::getBufferInfo()
   m_osh = angle360(m_osh);
   m_cnh = angle360(m_cnh);
 
-  m_cnx = m_info_buffer->dQuery(m_contact+"_NAV_X", ok2);
-  m_cny = m_info_buffer->dQuery(m_contact+"_NAV_Y", ok1);
+  m_cnx = getBufferDoubleVal(m_contact+"_NAV_X", ok2);
+  m_cny = getBufferDoubleVal(m_contact+"_NAV_Y", ok1);
   if(!ok1 || !ok2) {
     string msg = m_contact + " NAV_X/Y info not found";
     if(m_on_no_contact_ok)
@@ -257,8 +257,8 @@ bool BHV_AvoidCollision::getBufferInfo()
     return(false);
   }
 
-  m_osx = m_info_buffer->dQuery("NAV_X", ok2);
-  m_osy = m_info_buffer->dQuery("NAV_Y", ok1);
+  m_osx = getBufferDoubleVal("NAV_X", ok2);
+  m_osy = getBufferDoubleVal("NAV_Y", ok1);
   if(!ok1 || !ok2) {
     postEMessage("ownship x/y info not found.");
     return(false);

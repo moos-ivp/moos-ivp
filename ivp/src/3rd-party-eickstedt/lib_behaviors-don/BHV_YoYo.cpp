@@ -136,7 +136,7 @@ IvPFunction *BHV_YoYo::onRunState()
 
   bool ok,ok2;
   //query the current depth from the MOOS DB
-  double current_depth = m_info_buffer->dQuery("NAV_DEPTH", ok);
+  double current_depth = getBufferDoubleVal("NAV_DEPTH", ok);
   
    if(!ok)
     {
@@ -147,7 +147,7 @@ IvPFunction *BHV_YoYo::onRunState()
    //if we set a min altitude, query the current altitude
   if (alt_set)
     {
-      current_alt = m_info_buffer->dQuery("NAV_ALTITUDE", ok2);
+      current_alt = getBufferDoubleVal("NAV_ALTITUDE", ok2);
        if(!ok2)
 	 {
 	   postEMessage("BHV_YoYo: no altitude info available");

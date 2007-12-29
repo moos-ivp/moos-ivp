@@ -177,8 +177,8 @@ IvPFunction *BHV_RStationKeep::onRunState()
   IvPFunction *ipf = 0;
 
   bool ok1, ok2;
-  double nav_x = m_info_buffer->dQuery("NAV_X", ok1);
-  double nav_y = m_info_buffer->dQuery("NAV_Y", ok2);
+  double nav_x = getBufferDoubleVal("NAV_X", ok1);
+  double nav_y = getBufferDoubleVal("NAV_Y", ok2);
 
   // If no ownship position from info_buffer, return null
   if(!ok1 || !ok2) {
@@ -247,8 +247,8 @@ bool BHV_RStationKeep::updateInfoIn()
 {
   bool ok1, ok2, ok3, ok4, ok5, ok6;
   // ownship position in meters from some 0,0 reference point.
-  m_osx = m_info_buffer->dQuery("NAV_X", ok1);
-  m_osy = m_info_buffer->dQuery("NAV_Y", ok2);
+  m_osx = getBufferDoubleVal("NAV_X", ok1);
+  m_osy = getBufferDoubleVal("NAV_Y", ok2);
 
   // Must get ownship position from InfoBuffer
   if(!ok1 || !ok2) {
@@ -256,10 +256,10 @@ bool BHV_RStationKeep::updateInfoIn()
     return(false);
   }
 
-  m_cnx = m_info_buffer->dQuery(m_contact+"_NAV_X", ok3);
-  m_cny = m_info_buffer->dQuery(m_contact+"_NAV_Y", ok4);
-  m_cnh = m_info_buffer->dQuery(m_contact+"_NAV_HEADING", ok5);
-  m_cnv = m_info_buffer->dQuery(m_contact+"_NAV_SPEED", ok6);
+  m_cnx = getBufferDoubleVal(m_contact+"_NAV_X", ok3);
+  m_cny = getBufferDoubleVal(m_contact+"_NAV_Y", ok4);
+  m_cnh = getBufferDoubleVal(m_contact+"_NAV_HEADING", ok5);
+  m_cnv = getBufferDoubleVal(m_contact+"_NAV_SPEED", ok6);
 
   if(!ok3)
     postWMessage("No contact NAV_X in info_buffer.");

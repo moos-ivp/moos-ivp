@@ -58,14 +58,14 @@ IvPFunction *BHV_ArrayTurn::onRunState()
   bool ok1,ok2,ok3,ok4;
   //get current course
   // changed to AEL_HEADING. HS 103106
-  double osCourse = m_info_buffer->dQuery("AEL_HEADING", ok1);
-  // double osCourse = m_info_buffer->dQuery("NAV_HEADING", ok1);
+  double osCourse = getBufferDoubleVal("AEL_HEADING", ok1);
+  // double osCourse = getBufferDoubleVal("NAV_HEADING", ok1);
   //get current x
-  double osX = m_info_buffer->dQuery("NAV_X", ok2);
+  double osX = getBufferDoubleVal("NAV_X", ok2);
   //get current heading
-  double osY = m_info_buffer->dQuery("NAV_Y", ok3);
+  double osY = getBufferDoubleVal("NAV_Y", ok3);
   //get current tracking state
-  //  string tState = m_info_buffer->sQuery(us_name,"TRACK_STAT", ok4);
+  //  string tState = getBufferStringVal(us_name,"TRACK_STAT", ok4);
 
   if(!ok1 || !ok2 || !ok3){
     postEMessage("error,BHV_ArrayTurn: ownship data not available");

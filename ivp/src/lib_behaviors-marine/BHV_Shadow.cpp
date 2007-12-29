@@ -173,8 +173,8 @@ bool BHV_Shadow::updateInfoIn()
 {
   bool ok1, ok2;
   
-  m_cnh = m_info_buffer->dQuery(m_them_name+"_NAV_HEADING", ok1);
-  m_cnv = m_info_buffer->dQuery(m_them_name+"_NAV_SPEED", ok2);
+  m_cnh = getBufferDoubleVal(m_them_name+"_NAV_HEADING", ok1);
+  m_cnv = getBufferDoubleVal(m_them_name+"_NAV_SPEED", ok2);
   if(!ok1 || !ok2) {
     postWMessage("contact course/speed info not found.");
     return(false);
@@ -182,15 +182,15 @@ bool BHV_Shadow::updateInfoIn()
 
   m_cnh = angle360(m_cnh);
 
-  m_cnx = m_info_buffer->dQuery(m_them_name+"_NAV_X", ok1);
-  m_cny = m_info_buffer->dQuery(m_them_name+"_NAV_Y", ok2);
+  m_cnx = getBufferDoubleVal(m_them_name+"_NAV_X", ok1);
+  m_cny = getBufferDoubleVal(m_them_name+"_NAV_Y", ok2);
   if(!ok1 || !ok2) {
     postWMessage("contact x/y info not found.");
     return(false);
   }
   
-  m_osx = m_info_buffer->dQuery("NAV_X", ok1);
-  m_osy = m_info_buffer->dQuery("NAV_Y", ok2);
+  m_osx = getBufferDoubleVal("NAV_X", ok1);
+  m_osy = getBufferDoubleVal("NAV_Y", ok2);
   if(!ok1 || !ok2) {
     postEMessage("ownship x/y info not found.");
     return(false);

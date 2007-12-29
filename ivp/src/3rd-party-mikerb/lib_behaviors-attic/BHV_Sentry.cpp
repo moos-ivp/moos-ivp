@@ -157,8 +157,8 @@ IvPFunction *BHV_Sentry::onRunState()
   
   bool ok1, ok2;
   // ownship position in meters from some 0,0 reference point.
-  double osX = m_info_buffer->dQuery("NAV_X", &ok1);
-  double osY = m_info_buffer->dQuery("NAV_Y", &ok2);
+  double osX = getBufferDoubleVal("NAV_X", &ok1);
+  double osY = getBufferDoubleVal("NAV_Y", &ok2);
 
   // Must get ownship position from InfoBuffer
   if(!ok1 || !ok2) {
@@ -168,8 +168,8 @@ IvPFunction *BHV_Sentry::onRunState()
 
   double relevance = 1.0;
   if(them_name != "") {
-    double cnY = m_info_buffer->dQuery(them_name, "NAV_Y", &ok1);
-    double cnX = m_info_buffer->dQuery(them_name, "NAV_X", &ok2);
+    double cnY = getBufferDoubleVal(them_name, "NAV_Y", &ok1);
+    double cnX = getBufferDoubleVal(them_name, "NAV_X", &ok2);
     // Must get them position from InfoBuffer
     if(!ok1 || !ok2) {
       

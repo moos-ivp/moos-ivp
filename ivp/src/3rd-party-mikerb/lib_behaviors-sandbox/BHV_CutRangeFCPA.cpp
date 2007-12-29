@@ -90,15 +90,15 @@ IvPFunction *BHV_CutRangeFCPA::onRunState()
 
   bool ok1, ok2;
 
-  double cnCRS = m_info_buffer->dQuery(them_name+"_NAV_HEADING", ok1);
-  double cnSPD = m_info_buffer->dQuery(them_name+"_NAV_SPEED", ok2);
+  double cnCRS = getBufferDoubleVal(them_name+"_NAV_HEADING", ok1);
+  double cnSPD = getBufferDoubleVal(them_name+"_NAV_SPEED", ok2);
   if(!ok1 || !ok2) {
     postWMessage("contact course/speed info not found.");
     return(0);
   }
 
-  double osCRS = m_info_buffer->dQuery("NAV_HEADING", ok1);
-  double osSPD = m_info_buffer->dQuery("NAV_SPEED", ok2);
+  double osCRS = getBufferDoubleVal("NAV_HEADING", ok1);
+  double osSPD = getBufferDoubleVal("NAV_SPEED", ok2);
   if(!ok1 || !ok2) {
     postEMessage("ownship course/speed info not found.");
     return(0);
@@ -106,15 +106,15 @@ IvPFunction *BHV_CutRangeFCPA::onRunState()
 
   if(cnCRS < 0) cnCRS += 360.0;
 
-  double cnX = m_info_buffer->dQuery(them_name+"_NAV_X", ok2);
-  double cnY = m_info_buffer->dQuery(them_name+"_NAV_Y", ok1);
+  double cnX = getBufferDoubleVal(them_name+"_NAV_X", ok2);
+  double cnY = getBufferDoubleVal(them_name+"_NAV_Y", ok1);
   if(!ok1 || !ok2) {
     postWMessage("contact x/y info not found.");
     return(0);
   }
 
-  double osX = m_info_buffer->dQuery("NAV_X", ok2);
-  double osY = m_info_buffer->dQuery("NAV_Y", ok1);
+  double osX = getBufferDoubleVal("NAV_X", ok2);
+  double osY = getBufferDoubleVal("NAV_Y", ok1);
   if(!ok1 || !ok2) {
     postEMessage("ownship x/y info not found.");
     return(0);

@@ -98,7 +98,7 @@ IvPFunction *BHV_Adaptive_YoYo::onRunState()
   }
 
   bool ok; 
-  double desired_depth = m_info_buffer->dQuery("YoYo_depth",  ok);
+  double desired_depth = getBufferDoubleVal("YoYo_depth",  ok);
 
   if(!ok) {
     postEMessage("error,BHV_Adaptive_YoYo: No yoyo depth info.");

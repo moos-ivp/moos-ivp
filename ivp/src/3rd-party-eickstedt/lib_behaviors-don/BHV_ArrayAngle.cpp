@@ -62,11 +62,11 @@ IvPFunction *BHV_ArrayAngle::onRunState()
   bool ok1,ok2;
   //get current course
   // Changed to array heading HS 103006
-  // double osCourse = m_info_buffer->dQuery("NAV_HEADING", ok1);
-  double osCourse = m_info_buffer->dQuery("AEL_HEADING", ok1);
+  // double osCourse = getBufferDoubleVal("NAV_HEADING", ok1);
+  double osCourse = getBufferDoubleVal("AEL_HEADING", ok1);
   
   //get current tracking state
-  string tState = m_info_buffer->sQuery("BEARING_STAT", ok2);
+  string tState = getBufferStringVal("BEARING_STAT", ok2);
 
   if(!ok1 || !ok2){
     postEMessage("error,BHV_ArrayAngle: ownship data not available");

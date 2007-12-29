@@ -90,9 +90,9 @@ OF *BHV_Waypoint1D::onRunState()
     return(0);
 
   bool ok;
-  double osX   = m_info_buffer->dQuery("NAV_X",     &ok);
-  double osY   = m_info_buffer->dQuery("NAV_Y",     &ok);
-  double osSPD = m_info_buffer->dQuery("NAV_SPEED", &ok);
+  double osX   = getBufferDoubleVal("NAV_X",     &ok);
+  double osY   = getBufferDoubleVal("NAV_Y",     &ok);
+  double osSPD = getBufferDoubleVal("NAV_SPEED", &ok);
 
   cout << "+++++BHV_Waypoint1D:produceOF() " << endl;
   cout << "  osX:" << osX << " osY:" << osY << endl;

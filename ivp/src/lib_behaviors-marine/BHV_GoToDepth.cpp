@@ -168,7 +168,7 @@ IvPFunction *BHV_GoToDepth::onRunState()
 bool BHV_GoToDepth::setNextLevelDepth()
 {
   bool ok;
-  double vehicle_depth = m_info_buffer->dQuery("NAV_DEPTH", ok);
+  double vehicle_depth = getBufferDoubleVal("NAV_DEPTH", ok);
   
   // Must get ownship depth from InfoBuffer
   if(!ok) {
@@ -176,7 +176,7 @@ bool BHV_GoToDepth::setNextLevelDepth()
     return(false);
   }
 
-  double curr_time = m_info_buffer->getCurrTime();
+  double curr_time = getBufferCurrTime();
 
   bool new_level = false;
 

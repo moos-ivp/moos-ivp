@@ -110,8 +110,8 @@ IvPFunction *BHV_CoOrbit::onRunState()
   }
   
   bool ok1, ok2;
-  string us_waypt_stat = m_info_buffer->sQuery("VEHICLE_WPT_STAT", ok1);
-  string them_waypt_stat = m_info_buffer->sQuery(them_name+"_VEHICLE_WPT_STAT", ok2);
+  string us_waypt_stat = getBufferStringVal("VEHICLE_WPT_STAT", ok1);
+  string them_waypt_stat = getBufferStringVal(them_name+"_VEHICLE_WPT_STAT", ok2);
 
 #if 0
   cout << "+++++BHV_CoOrbit::onRunState() " << us_name << endl;

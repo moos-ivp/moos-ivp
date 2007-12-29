@@ -252,9 +252,9 @@ IvPFunction *BHV_PeriodicSurface::onRunState()
 bool BHV_PeriodicSurface::updateInfoIn()
 {  
   bool ok1, ok2;
-  m_curr_depth = m_info_buffer->dQuery("NAV_DEPTH", ok1);
-  m_curr_speed = m_info_buffer->dQuery("NAV_SPEED", ok2);
-  m_curr_time  = m_info_buffer->getCurrTime();
+  m_curr_depth = getBufferDoubleVal("NAV_DEPTH", ok1);
+  m_curr_speed = getBufferDoubleVal("NAV_SPEED", ok2);
+  m_curr_time  = getBufferCurrTime();
   
   if(!ok1 || !ok2) {
     postEMessage("No ownship NAV_DEPTH or NAV_SPEED in info_buffer");
@@ -275,8 +275,8 @@ void BHV_PeriodicSurface::checkForMarking()
   bool   mark_noted = false;
 
   bool   ok1, ok2;
-  double double_mark_val = m_info_buffer->dQuery(m_mark_variable, ok1);
-  string string_mark_val = m_info_buffer->sQuery(m_mark_variable, ok2);
+  double double_mark_val = getBufferDoubleVal(m_mark_variable, ok1);
+  string string_mark_val = getBufferStringVal(m_mark_variable, ok2);
 
   if(m_first_iteration) {
     m_first_iteration = false;

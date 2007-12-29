@@ -103,8 +103,8 @@ IvPFunction *BHV_MemoryTurnLimit::onRunState()
     
 
   bool ok,ok2;
-  double heading = m_info_buffer->dQuery("NAV_HEADING", ok);
-  double speed   = m_info_buffer->dQuery("NAV_SPEED", ok2); //dpe
+  double heading = getBufferDoubleVal("NAV_HEADING", ok);
+  double speed   = getBufferDoubleVal("NAV_SPEED", ok2); //dpe
 
   if(!ok) {
     postEMessage("No Ownship NAV_HEADING in info_buffer");
@@ -116,7 +116,7 @@ IvPFunction *BHV_MemoryTurnLimit::onRunState()
     return(0);                                               //dpe 
   }
  
-  double currtime = m_info_buffer->getCurrTime();
+  double currtime = getBufferCurrTime();
   
   addHeading(heading, currtime);
   double heading_avg;

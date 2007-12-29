@@ -121,7 +121,7 @@ bool BHV_PeriodicSpeed::setParam(string g_param, string g_val)
 
 IvPFunction *BHV_PeriodicSpeed::onRunState() 
 {
-  double curr_time = m_info_buffer->getCurrTime();
+  double curr_time = getBufferCurrTime();
 
   if(m_first_iteration) {
     m_first_iteration = false;

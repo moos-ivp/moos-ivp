@@ -201,15 +201,15 @@ bool BHV_Trail::updateInfoIn()
 {
   bool ok1, ok2, ok3, ok4, ok5, ok6, ok7, ok8;
  
-  m_osx = m_info_buffer->dQuery("NAV_X", ok1);
-  m_osy = m_info_buffer->dQuery("NAV_Y", ok2);
-  m_osh = m_info_buffer->dQuery("NAV_HEADING", ok3);
-  m_osv = m_info_buffer->dQuery("NAV_SPEED", ok4);
+  m_osx = getBufferDoubleVal("NAV_X", ok1);
+  m_osy = getBufferDoubleVal("NAV_Y", ok2);
+  m_osh = getBufferDoubleVal("NAV_HEADING", ok3);
+  m_osv = getBufferDoubleVal("NAV_SPEED", ok4);
 
-  m_cnx = m_info_buffer->dQuery(m_contact+"_NAV_X", ok5);
-  m_cny = m_info_buffer->dQuery(m_contact+"_NAV_Y", ok6);
-  m_cnh = m_info_buffer->dQuery(m_contact+"_NAV_HEADING", ok7);
-  m_cnv = m_info_buffer->dQuery(m_contact+"_NAV_SPEED", ok8);
+  m_cnx = getBufferDoubleVal(m_contact+"_NAV_X", ok5);
+  m_cny = getBufferDoubleVal(m_contact+"_NAV_Y", ok6);
+  m_cnh = getBufferDoubleVal(m_contact+"_NAV_HEADING", ok7);
+  m_cnv = getBufferDoubleVal(m_contact+"_NAV_SPEED", ok8);
 
   if(!ok1)
     postWMessage("No ownship NAV_X in info_buffer.");
@@ -234,8 +234,8 @@ bool BHV_Trail::updateInfoIn()
   if(!m_interpolate)
     return(true);
   
-  double curr_time = m_info_buffer->getCurrTime();
-  double mark_time = m_info_buffer->tQuery(m_contact+"_NAV_X");
+  double curr_time = getBufferCurrTime();
+  double mark_time = getBufferTimeVal(m_contact+"_NAV_X");
   if(mark_time == curr_time)
     m_interpolator.setPosition(m_cnx, m_cny, m_cnv, m_cnh, curr_time);
   
@@ -245,9 +245,6 @@ bool BHV_Trail::updateInfoIn()
     m_cnx = new_cnx;
     m_cny = new_cny;
   }
-
-      
-
 
   return(true);
 }

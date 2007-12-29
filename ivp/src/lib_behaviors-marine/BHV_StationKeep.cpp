@@ -169,8 +169,8 @@ IvPFunction *BHV_StationKeep::onRunState()
   IvPFunction *ipf = 0;
 
   bool ok1, ok2;
-  double nav_x = m_info_buffer->dQuery("NAV_X", ok1);
-  double nav_y = m_info_buffer->dQuery("NAV_Y", ok2);
+  double nav_x = getBufferDoubleVal("NAV_X", ok1);
+  double nav_y = getBufferDoubleVal("NAV_Y", ok2);
 
   // If no ownship position from info_buffer, return null
   if(!ok1 || !ok2) {
@@ -239,8 +239,8 @@ bool BHV_StationKeep::updateInfoIn()
 {
   bool ok1, ok2;
   // ownship position in meters from some 0,0 reference point.
-  m_osx = m_info_buffer->dQuery("NAV_X", ok1);
-  m_osy = m_info_buffer->dQuery("NAV_Y", ok2);
+  m_osx = getBufferDoubleVal("NAV_X", ok1);
+  m_osy = getBufferDoubleVal("NAV_Y", ok2);
 
   // Must get ownship position from InfoBuffer
   if(!ok1 || !ok2) {

@@ -132,15 +132,15 @@ IvPFunction *BHV_YoYoFrontCapture::onRunState()
 
   bool ok1,ok2,ok3,ok4,ok5;
   //get current x
-  double osX = m_info_buffer->dQuery("NAV_X", ok1);
+  double osX = getBufferDoubleVal("NAV_X", ok1);
   //get current heading
-  double osY = m_info_buffer->dQuery("NAV_Y", ok2);
+  double osY = getBufferDoubleVal("NAV_Y", ok2);
   //get current tracking state 
-  double ctdTemp = m_info_buffer->dQuery("CTD_TEMPERATURE", ok3);
+  double ctdTemp = getBufferDoubleVal("CTD_TEMPERATURE", ok3);
   //get current depth 
-  double osDepth = m_info_buffer->dQuery("NAV_DEPTH", ok4);
+  double osDepth = getBufferDoubleVal("NAV_DEPTH", ok4);
   //get current vertical yoyo direction
-  int yoyo_direc = (int) m_info_buffer->dQuery("YoYo_Direc", ok5);
+  int yoyo_direc = (int) getBufferDoubleVal("YoYo_Direc", ok5);
 
   //give an error if we don't have the information we need
   if(!ok1 || !ok2 || !ok3 || !ok4 || !ok5){

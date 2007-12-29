@@ -135,8 +135,8 @@ bool BHV_WaypointSimple::setNextWaypoint()
 
   // Check for and get essential infor from the info_buffer
   bool ok1, ok2;
-  m_osx = m_info_buffer->dQuery("NAV_X", ok1);
-  m_osy = m_info_buffer->dQuery("NAV_Y", ok2);
+  m_osx = getBufferDoubleVal("NAV_X", ok1);
+  m_osy = getBufferDoubleVal("NAV_Y", ok2);
 
   if(!ok1 || !ok2) {
     postEMessage("No ownship X/Y info in info_buffer.");

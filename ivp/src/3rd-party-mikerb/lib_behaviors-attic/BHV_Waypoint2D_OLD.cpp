@@ -103,9 +103,9 @@ OF *BHV_Waypoint2D::onRunState()
   //    current_waypt = 0;
 
   bool ok;
-  double osX   = m_info_buffer->dQuery("NAV_X",     &ok);
-  double osY   = m_info_buffer->dQuery("NAV_Y",     &ok);
-  double osSPD = m_info_buffer->dQuery("NAV_SPEED", &ok);
+  double osX   = getBufferDoubleVal("NAV_X",     &ok);
+  double osY   = getBufferDoubleVal("NAV_Y",     &ok);
+  double osSPD = getBufferDoubleVal("NAV_SPEED", &ok);
 
   if(!silent) cout << "+++++BHV_Waypoint2D::produceOF() " << endl;
   if(!silent) cout << "  osX:" << osX << " osY:" << osY << endl;

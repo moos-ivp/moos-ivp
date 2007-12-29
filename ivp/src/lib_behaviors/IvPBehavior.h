@@ -95,6 +95,13 @@ protected:
   bool    checkConditions();
   bool    checkNoStarve();
 
+  double                   getBufferCurrTime();
+  double                   getBufferTimeVal(std::string);
+  double                   getBufferDoubleVal(std::string, bool&);
+  std::string              getBufferStringVal(std::string, bool&);
+  std::vector<double>      getBufferDoubleVector(std::string, bool&);
+  std::vector<std::string> getBufferStringVector(std::string, bool&);
+
 protected:
   const InfoBuffer* m_info_buffer;
 

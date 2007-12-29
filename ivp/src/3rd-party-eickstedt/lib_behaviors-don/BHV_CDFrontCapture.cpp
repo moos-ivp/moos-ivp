@@ -107,11 +107,11 @@ IvPFunction *BHV_CDFrontCapture::onRunState()
 
   bool ok1,ok2,ok3;
   //get current x
-  double osX = m_info_buffer->dQuery("NAV_X", ok1);
+  double osX = getBufferDoubleVal("NAV_X", ok1);
   //get current heading
-  double osY = m_info_buffer->dQuery("NAV_Y", ok2);
+  double osY = getBufferDoubleVal("NAV_Y", ok2);
   //get current tracking state 
-  double ctdTemp = m_info_buffer->dQuery("CTD_TEMPERATURE", ok3);
+  double ctdTemp = getBufferDoubleVal("CTD_TEMPERATURE", ok3);
 
   if(!initialized)
     {

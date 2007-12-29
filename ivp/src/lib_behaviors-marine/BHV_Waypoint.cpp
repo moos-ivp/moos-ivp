@@ -182,9 +182,9 @@ IvPFunction *BHV_Waypoint::onRunState()
 bool BHV_Waypoint::updateInfoIn()
 {
   bool ok1, ok2, ok3;
-  osX   = m_info_buffer->dQuery("NAV_X",     ok1);
-  osY   = m_info_buffer->dQuery("NAV_Y",     ok2);
-  osSPD = m_info_buffer->dQuery("NAV_SPEED", ok3);
+  osX   = getBufferDoubleVal("NAV_X",     ok1);
+  osY   = getBufferDoubleVal("NAV_Y",     ok2);
+  osSPD = getBufferDoubleVal("NAV_SPEED", ok3);
 
   // Must get ownship position from InfoBuffer
   if(!ok1 || !ok2) {

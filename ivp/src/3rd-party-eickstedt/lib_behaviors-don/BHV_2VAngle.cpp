@@ -74,17 +74,17 @@ IvPFunction *BHV_2VAngle::onRunState()
 {
   bool ok1,ok2,ok3,ok4,ok5,ok6;
   //get current course
-  double osCourse = m_info_buffer->dQuery("NAV_HEADING", ok1);
+  double osCourse = getBufferDoubleVal("NAV_HEADING", ok1);
   //get current x
-  double osX = m_info_buffer->dQuery("NAV_X", ok2);
+  double osX = getBufferDoubleVal("NAV_X", ok2);
   //get current heading
-  double osY = m_info_buffer->dQuery("NAV_Y", ok3);
+  double osY = getBufferDoubleVal("NAV_Y", ok3);
   //get current tracking state
-  string tState = m_info_buffer->sQuery("TRACK_STAT", ok4);
+  string tState = getBufferStringVal("TRACK_STAT", ok4);
   
 
-  double v2_x = m_info_buffer->dQuery("V2_X",ok5);
-  double v2_y = m_info_buffer->dQuery("V2_Y",ok6);
+  double v2_x = getBufferDoubleVal("V2_X",ok5);
+  double v2_y = getBufferDoubleVal("V2_Y",ok6);
   
   
   if(!ok1 || !ok2 || !ok3 ||!ok4||!ok5||!ok6){

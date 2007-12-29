@@ -104,8 +104,8 @@ bool BHV_AvoidObstacles::setParam(string param, string val)
 IvPFunction *BHV_AvoidObstacles::onRunState() 
 {
   bool ok1, ok2;
-  double os_x = m_info_buffer->dQuery("NAV_X", ok1);
-  double os_y = m_info_buffer->dQuery("NAV_Y", ok2);
+  double os_x = getBufferDoubleVal("NAV_X", ok1);
+  double os_y = getBufferDoubleVal("NAV_Y", ok2);
 
   if(!ok1 || !ok2) {
     postEMessage("No Ownship NAV_X and/or NAV_Y in info_buffer");

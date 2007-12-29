@@ -37,7 +37,7 @@
 /* enhancements or modifications.                                */
 /*****************************************************************/
 
-#ifdef _WIN32 //MSVC pragma added by PMN in FAF
+#ifdef _WIN32 //MSVC pragma added by PMN in FAF '05
 	#pragma warning(disable : 4786)
 #endif
 
@@ -60,15 +60,15 @@ public: // virtuals defined
   double dQuery(std::string, bool&) const;
   double tQuery(std::string) const;
 
-  std::vector<std::string> svQuery(std::string, bool&) const;
+  std::vector<std::string> sQueryDeltas(std::string, bool&) const;
   
-  std::vector<double> dvQuery(std::string, bool&) const;
+  std::vector<double> dQueryDeltas(std::string, bool&) const;
 
   void   print() const;
 
 public:
-  bool  set_val(std::string, double);
-  bool  set_val(std::string, std::string);
+  bool  setValue(std::string, double);
+  bool  setValue(std::string, std::string);
   void  clearDeltaVectors();
 
   void   setCurrTime(double t)         {m_curr_time = t;};

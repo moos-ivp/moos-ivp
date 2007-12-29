@@ -193,9 +193,9 @@ bool BHV_LoiterMigrate::updateInfoIn()
 
   bool ok1, ok2, ok3;
   // ownship position in meters from some 0,0 reference point.
-  m_osx = m_info_buffer->dQuery("NAV_X", ok1);
-  m_osy = m_info_buffer->dQuery("NAV_Y", ok2);
-  m_osh = m_info_buffer->dQuery("NAV_HEADING", ok3);
+  m_osx = getBufferDoubleVal("NAV_X", ok1);
+  m_osy = getBufferDoubleVal("NAV_Y", ok2);
+  m_osh = getBufferDoubleVal("NAV_HEADING", ok3);
 
   // Must get ownship position from InfoBuffer
   if(!ok1 || !ok2) {

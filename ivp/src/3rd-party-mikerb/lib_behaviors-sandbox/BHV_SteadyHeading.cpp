@@ -108,8 +108,8 @@ bool BHV_SteadyHeading::updateCurrHeadingTimeLog()
 
   bool   ok;
 
-  curr_time    = m_info_buffer->getCurrTime();
-  curr_heading = m_info_buffer->dQuery("NAV_HEADING", ok);
+  curr_time    = getBufferCurrTime();
+  curr_heading = getBufferDoubleVal("NAV_HEADING", ok);
   curr_heading = angle360(curr_heading);
 
   addHeading(curr_heading, curr_time);

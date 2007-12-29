@@ -106,13 +106,13 @@ IvPFunction *BHV_CloseRange::onRunState()
   
   string tState;
   //get current tracking state
-  tState = m_info_buffer->sQuery("TRACK_STAT", ok4);
+  tState = getBufferStringVal("TRACK_STAT", ok4);
 
   //get current x
-  double osX = m_info_buffer->dQuery("NAV_X", ok2);
+  double osX = getBufferDoubleVal("NAV_X", ok2);
   
   //get current y
-  double osY = m_info_buffer->dQuery("NAV_Y", ok3);
+  double osY = getBufferDoubleVal("NAV_Y", ok3);
     
   if(!ok2 || !ok3){
     postEMessage("error,BHV_CloseRange: ownship data not available");

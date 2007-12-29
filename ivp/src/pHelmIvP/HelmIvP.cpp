@@ -95,6 +95,10 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
   double curr_time = MOOSTime() - GetAppStartTime();
   info_buffer->setCurrTime(curr_time);
 
+  // Clear the delta vectors in the info_buffer here, before any
+  // new MOOS Mail is applied to the info buffer.
+  info_buffer->clearDeltaVectors();
+
   MOOSMSG_LIST::reverse_iterator p;
   
   for(p = NewMail.rbegin(); p != NewMail.rend(); p++) {
@@ -110,7 +114,6 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
 	  double start_time = GetAppStartTime();
 	  MOOSTrace("\n");
 	  MOOSDebugWrite("pHelmIvP Control Is On");
-	  //info_buffer->set_val(ownship, "start_time", curr_time);
 	  info_buffer->setCurrTime(curr_time);
 	}
 	else {
@@ -300,13 +303,13 @@ void HelmIvP::postBehaviorMessages()
       else {
 	string padvar = padString(var, 22, false);
 	if(sdata != "") {
-	  info_buffer->set_val(var, sdata);
+	  info_buffer->setValue(var, sdata);
 	  m_Comms.Notify(var, sdata);
 	  if(verbose == "verbose")
 	    MOOSTrace("  %s %s \n", padvar.c_str(), sdata.c_str());
 	}
 	else {
-	  info_buffer->set_val(var, ddata);
+	  info_buffer->setValue(var, ddata);
 	  m_Comms.Notify(var, ddata);
 	  if(verbose == "verbose") {
 	    string dstr = dstringCompact(doubleToString(ddata));
@@ -336,11 +339,11 @@ void HelmIvP::postInitialVariables()
     double ddata = msg.get_ddata();
     
     if(sdata != "") {
-      info_buffer->set_val(var, sdata);
+      info_buffer->setValue(var, sdata);
       m_Comms.Notify(var, sdata);
     }
     else {
-      info_buffer->set_val(var, ddata);
+      info_buffer->setValue(var, ddata);
       m_Comms.Notify(var, ddata);
     }
   }
@@ -384,12 +387,12 @@ void HelmIvP::postDefaultVariables()
     if(!vectorContains(message_vars, var)) {
       if(msg.is_string()) {
 	string sdata  = msg.get_sdata();
-	info_buffer->set_val(var, sdata);
+	info_buffer->setValue(var, sdata);
 	m_Comms.Notify(var, sdata);
       }
       else {
 	double ddata  = msg.get_ddata();
-	info_buffer->set_val(var, ddata);
+	info_buffer->setValue(var, ddata);
 	m_Comms.Notify(var, ddata);
       }
     }
@@ -424,16 +427,16 @@ bool HelmIvP::updateInfoBuffer(CMOOSMsg &msg)
   // doesn't post HEADING, so assume for now its same as YAW
   if(key == "NAV_YAW") {
     double heading = (ddata*-180.0)/3.1415926;
-    info_buffer->set_val("NAV_HEADING", heading);
-    info_buffer->set_val("NAV_YAW", ddata);
+    info_buffer->setValue("NAV_HEADING", heading);
+    info_buffer->setValue("NAV_YAW", ddata);
     return(true);
   }
 
   if(mtype == MOOS_DOUBLE) {
-    return(info_buffer->set_val(key, ddata));
+    return(info_buffer->setValue(key, ddata));
   }
   else if(mtype == MOOS_STRING) {
-    return(info_buffer->set_val(key, sdata));
+    return(info_buffer->setValue(key, sdata));
   }
   return(false);
 }

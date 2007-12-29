@@ -142,13 +142,13 @@ IvPFunction *BHV_TwoD::onRunState()
   //figure out where we are and what the sound speed is
   bool ok1,ok2,ok3,ok4;
   //get current x
-  double osX = m_info_buffer->dQuery("NAV_X", ok1);
+  double osX = getBufferDoubleVal("NAV_X", ok1);
   //get current heading
-  double osY = m_info_buffer->dQuery("NAV_Y", ok2);
+  double osY = getBufferDoubleVal("NAV_Y", ok2);
   //get current tracking state
-  double ctdSpeed = m_info_buffer->dQuery("CTD_SOUND_VELOCITY", ok3);
+  double ctdSpeed = getBufferDoubleVal("CTD_SOUND_VELOCITY", ok3);
   //check to see if the zigzag is done
-  string done = m_info_buffer->sQuery("ZIGZAG_GO", ok4);
+  string done = getBufferStringVal("ZIGZAG_GO", ok4);
 
   string falsestr = "FALSE";
 
