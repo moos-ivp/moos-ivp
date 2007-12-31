@@ -250,7 +250,8 @@ bool IvPBehavior::isRunnable()
     setComplete();
     if(m_perpetual)
       m_started = false;
-    return(false);
+    if(!m_perpetual)
+      return(false);
   }
   
   if(m_domain.size() == 0) {
@@ -299,7 +300,7 @@ void IvPBehavior::postMessage(string var, double ddata)
 
 void IvPBehavior::setComplete()
 {
-  postFlags(m_end_flags);
+  postFlags("endflags");
   if(!m_perpetual)
     m_completed = true;
 }
@@ -561,8 +562,16 @@ bool IvPBehavior::durationExceeded()
 //-----------------------------------------------------------
 // Procedure: postFlags()
 
-void IvPBehavior::postFlags(const vector<VarDataPair>& flags)
+void IvPBehavior::postFlags(const string& str)
 {
+  vector<VarDataPair> flags;
+  if(str == "runflags")
+    flags = m_run_flags;
+  else if(str == "endflags")
+    flags = m_end_flags;
+  else if(str == "idleflags")
+    flags = m_end_flags;
+
   int vsize = flags.size();
   for(int i=0; i<vsize; i++) {
     string var   = flags[i].get_var();
@@ -574,6 +583,7 @@ void IvPBehavior::postFlags(const vector<VarDataPair>& flags)
       postMessage(var, ddata);
   }    
 }
+
 
 //-----------------------------------------------------------
 // Procedure: getBufferCurrTime()

@@ -58,7 +58,6 @@ public:
   IvPBehavior(IvPDomain);
   virtual ~IvPBehavior() {};
 
-  virtual IvPFunction* produceOF() {return(0);};
   virtual IvPFunction* onRunState() {return(0);};
   virtual bool setParam(std::string, std::string);
   virtual void onIdleState() {};
@@ -68,13 +67,8 @@ public:
   void   checkUpdates();
   bool   isCompleted();
   bool   isRunnable();
-  double getPriority()                   {return(m_priority_wt);};
-  void   postRunFlags()                  {postFlags(m_run_flags);};
-  void   postEndFlags()                  {postFlags(m_end_flags);};
-  void   postIdleFlags()                 {postFlags(m_idle_flags);};
 
   std::vector<std::string> getInfoVars();
-  std::vector<std::string> getConditionVars();
   std::string getDescriptor()            {return(m_descriptor);};
   std::vector<VarDataPair> getMessages() {return(m_messages);};
   void   clearMessages()                 {m_messages.clear();};
@@ -88,7 +82,7 @@ protected:
   void    postEMessage(std::string);
   void    postWMessage(std::string);
   void    postPCMessage(std::string);
-  void    postFlags(const std::vector<VarDataPair>&);
+  void    postFlags(const std::string&);
   void    addInfoVars(std::string);
 
   bool    durationExceeded();

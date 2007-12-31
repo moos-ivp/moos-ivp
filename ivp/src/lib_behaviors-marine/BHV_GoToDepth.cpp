@@ -239,7 +239,6 @@ bool BHV_GoToDepth::incrementLevelDepth()
       m_first_iteration = true;
       m_arrivals = 0;
     }
-    postFlags(m_end_flags); 
     return(false);
   }
   

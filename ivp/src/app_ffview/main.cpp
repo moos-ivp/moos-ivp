@@ -60,9 +60,8 @@ int main(int argc, char *argv[])
   //GUI *gui  = new GUI(1200, 900, "aof-ipf-function-viewer");
   GUI *gui  = new GUI(1000, 900, "aof-ipf-function-viewer");
 
-  if(aof) {
+  if(aof)
     gui->setAOF(aof);
-  }
 
   return Fl::run();
 }

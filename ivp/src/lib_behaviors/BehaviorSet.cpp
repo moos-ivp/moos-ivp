@@ -103,17 +103,15 @@ IvPFunction* BehaviorSet::produceOF(int ix, int iteration,
 
     if(new_activity_state == "idle") {
       if(behavior_states[ix] != "idle")
-	behaviors[ix]->postIdleFlags();
+	behaviors[ix]->postFlags("idleflags");
       behaviors[ix]->onIdleState();
     }
     
     if(new_activity_state == "running") {
       if((behavior_states[ix] != "running") && 
 	 (behavior_states[ix] != "active"))
-	behaviors[ix]->postRunFlags();
-      ipf = behaviors[ix]->produceOF();
-      if(!ipf)
-	ipf = behaviors[ix]->onRunState();
+	behaviors[ix]->postFlags("runflags");
+      ipf = behaviors[ix]->onRunState();
       if(ipf && !ipf->freeOfNan()) {
 	behaviors[ix]->postEMessage("NaN detected in IvP Function");
 	delete(ipf);
