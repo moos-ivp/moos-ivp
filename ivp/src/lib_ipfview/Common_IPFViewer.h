@@ -50,6 +50,9 @@ public:
   
   void   applyIPF(IvPFunction*, bool=false);
 
+  void   setParam(std::string, std::string);
+  void   setParam(std::string, double);
+
 protected:
   void   drawFrame();
   void   drawOwnPoint();
@@ -76,6 +79,8 @@ protected:
   
   bool         m_ipf_owner;
   bool         m_draw_frame;
+  bool         m_draw_base;
+  double       m_frame_height;
   QuadSet      m_quadset;
   IvPFunction* m_ivp_function;
 };

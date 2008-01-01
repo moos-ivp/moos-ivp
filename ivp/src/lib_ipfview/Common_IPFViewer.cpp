@@ -15,6 +15,8 @@
 #include "GeomUtils.h"
 #include "ZAIC_PEAK.h"
 #include "OF_Coupler.h"
+#include "MBUtils.h"
+#include "ColorParse.h"
 
 using namespace std;
 
@@ -33,6 +35,7 @@ Common_IPFViewer::Common_IPFViewer(int g_x, int g_y, int g_width,
   m_base_extra   = 0;
   m_scale_extra  = 1;
   m_draw_frame   = false;
+  m_draw_base    = true;
   m_ipf_owner    = false;
   m_ivp_function = 0;
   m_polar        = 1; 
@@ -40,6 +43,7 @@ Common_IPFViewer::Common_IPFViewer(int g_x, int g_y, int g_width,
   m_clear_red    = 0;
   m_clear_green  = 0.5;
   m_clear_blue   = 0;
+  m_frame_height = 250;
 }
 
 //-------------------------------------------------------------
@@ -76,6 +80,44 @@ int Common_IPFViewer::handle(int event)
     return(Fl_Gl_Window::handle(event));
   }
 }
+
+//-------------------------------------------------------------
+// Procedure: setParam
+
+void Common_IPFViewer::setParam(string param, string value)
+{
+  value = tolower(stripBlankEnds(value));
+
+  if((param == "draw_frame") && (value == "toggle")) {
+    if(!m_draw_frame) {
+      m_draw_frame = true;
+      m_draw_base  = true;
+    }
+    else if(m_draw_frame && m_draw_base)
+      m_draw_base = false;
+    else if (m_draw_frame && !m_draw_base)
+      m_draw_frame = false;
+  }
+
+  if((param == "color_scheme") && (value == "toggle")) {
+  }
+
+
+  redraw();
+}
+
+//-------------------------------------------------------------
+// Procedure: setParam
+
+void Common_IPFViewer::setParam(string param, double value)
+{
+  if(param == "frame_height")
+    m_frame_height += value;
+
+  redraw();
+}
+
+
 
 //-------------------------------------------------------------
 // Procedure: draw()
@@ -312,37 +354,66 @@ void Common_IPFViewer::drawFrame()
 {
   double w = 250;
 
-  glColor3f(0.6f, 0.4f, 0.6f);
+  double b = -250;
+  double t = -250 + (m_frame_height);
+
+  vector<double> cvect = colorParse("yellow");
+
+  //Color3f(0.6f, 0.4f, 0.6f);
+  glColor3f(cvect[0]/2, cvect[1]/2, cvect[2]/2);
   glShadeModel(GL_FLAT);
   
-  //glEnable(GL_BLEND);
-  //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  glBegin(GL_TRIANGLES);
-  glVertex3f(-w,-w,-w); glVertex3f( w,-w,-w); glVertex3f( w, w,-w);
-  glVertex3f( w, w,-w); glVertex3f(-w, w,-w); glVertex3f(-w,-w,-w);
-  glEnd();
-  //glDisable(GL_BLEND);
+  // Either draw a full base or just the frame
+  if(m_draw_base) {
+    glBegin(GL_TRIANGLES);
+    glVertex3f(-w,-w, b); 
+    glVertex3f( w,-w, b); 
+    glVertex3f( w, w, b);
+    glVertex3f( w, w, b); 
+    glVertex3f(-w, w, b); 
+    glVertex3f(-w,-w, b);
+    glEnd();
+  }
+  
+  glColor3f(cvect[0], cvect[1], cvect[2]);
 
-  glColor3f(0.8f, 0.3f, 0.8f);
+  if(!m_draw_base) {
+    glBegin(GL_LINE_STRIP);
+    glVertex3f(-w,-w, b);  
+    glVertex3f(w, -w, b);  
+    glVertex3f(w,  w, b);
+    glVertex3f(-w, w, b);  
+    glVertex3f(-w,-w, b);
+    glEnd();
+  }
+
+  //glColor3f(0.8f, 0.3f, 0.8f);
   glBegin(GL_LINE_STRIP);
-  glVertex3f(-w,-w, w);  glVertex3f(w, -w,w);  glVertex3f(w,w, w);
-  glVertex3f(-w, w, w);  glVertex3f(-w,-w,w);
+  glVertex3f(-w,-w, t);  
+  glVertex3f(w, -w, t);  
+  glVertex3f(w,  w, t);
+  glVertex3f(-w, w, t);  
+  glVertex3f(-w,-w, t);
   glEnd();
 
   glBegin(GL_LINE_STRIP);
-  glVertex3f(-w,-w,-w);  glVertex3f(-w, -w, w);
+  glVertex3f(-w,-w, b);  
+  glVertex3f(-w,-w, t);
   glEnd();
 
   glBegin(GL_LINE_STRIP);
-  glVertex3f(-w, w, -w);  glVertex3f(-w, w, w);
+  glVertex3f(-w, w, b);  
+  glVertex3f(-w, w, t);
   glEnd();
 
   glBegin(GL_LINE_STRIP);
-  glVertex3f(w,w,-w);     glVertex3f(w, w, w);
+  glVertex3f(w, w, b);     
+  glVertex3f(w, w, t);
   glEnd();
 
   glBegin(GL_LINE_STRIP);
-  glVertex3f(w, -w, -w);  glVertex3f(w, -w, w);
+  glVertex3f(w, -w, b);  
+  glVertex3f(w, -w, t);
   glEnd();
 
   glFlush();
