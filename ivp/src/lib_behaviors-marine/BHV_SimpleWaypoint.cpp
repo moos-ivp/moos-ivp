@@ -20,11 +20,6 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
-#ifdef _WIN32
-#pragma warning(disable : 4786)
-#pragma warning(disable : 4503)
-#endif
-
 #include "BHV_SimpleWaypoint.h"
 #include "MBUtils.h"
 #include "AngleUtils.h"
@@ -95,28 +90,11 @@ bool BHV_SimpleWaypoint::setParam(string param, string val)
   return(false);
 }
 
-
 //-----------------------------------------------------------
 // Procedure: onRunState
-//      Note: Posting an EMessage sets the state_ok variable to 
-//            false and communicates the problem to the helm.
 
 IvPFunction *BHV_SimpleWaypoint::onRunState() 
 {
-  IvPFunction *ipf = buildIvPFunction();
-  if(ipf)
-    ipf->setPWT(m_priority_wt);
-
-  return(ipf);
-}
-
-//-----------------------------------------------------------
-// Procedure: buildIvPFunction
-
-IvPFunction *BHV_SimpleWaypoint::buildIvPFunction() 
-{
-  IvPFunction *ipf = 0;
-
   ZAIC_PEAK spd_zaic(m_domain, "speed");
   spd_zaic.setSummit(m_desired_speed);
   spd_zaic.setBaseWidth(2.6);
@@ -132,7 +110,7 @@ IvPFunction *BHV_SimpleWaypoint::buildIvPFunction()
   IvPFunction *crs_ipf = crs_zaic.extractOF();
   
   OF_Coupler coupler;
-  ipf = coupler.couple(crs_ipf, spd_ipf);
+  IvPFunction *ipf = coupler.couple(crs_ipf, spd_ipf);
 
   return(ipf);
 }

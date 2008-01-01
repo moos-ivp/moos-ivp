@@ -34,9 +34,6 @@ public:
   IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
 
-protected:
-  IvPFunction* buildIvPFunction();
-
 protected: // Configuration Parameters
   double    m_arrival_radius;
   double    m_desired_speed;
