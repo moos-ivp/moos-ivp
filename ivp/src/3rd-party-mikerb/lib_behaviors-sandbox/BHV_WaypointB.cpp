@@ -260,7 +260,7 @@ bool BHV_WaypointB::setNextWaypoint()
     else {
       postMessage("VEHICLE_WPT_STAT_US", "complete");
       postMessage("VEHICLE_WPT_STAT", "complete");
-      postFlags(m_end_flags);
+      postFlags("end_flags");
       m_completed = true;
       return(false);
     }

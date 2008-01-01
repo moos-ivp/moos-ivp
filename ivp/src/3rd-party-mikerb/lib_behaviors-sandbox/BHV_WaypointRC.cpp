@@ -281,7 +281,7 @@ bool BHV_WaypointRC::setNextWaypoint()
       else {
 	postMessage("VEHICLE_WPT_STAT_US", "complete");
 	postMessage("VEHICLE_WPT_STAT",    "complete");
-	postFlags(m_end_flags);
+	postFlags("end_flags");
 	if(!m_perpetual)
 	  m_completed = true;
 	return(false);

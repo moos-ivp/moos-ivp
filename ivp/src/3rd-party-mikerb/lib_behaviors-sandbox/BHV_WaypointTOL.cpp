@@ -254,7 +254,7 @@ bool BHV_WaypointTOL::setNextWaypoint()
     else {
       postMessage("VEHICLE_WPT_STAT_US", "complete");
       postMessage("VEHICLE_WPT_STAT", "complete");
-      postFlags(m_end_flags);
+      postFlags("endflags");
       m_completed = true;
       return(false);
     }
