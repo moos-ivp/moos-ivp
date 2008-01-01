@@ -1,8 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin and John Leonard                    */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
-/*    FILE: BHV_Timer.cpp                                        */
-/*    DATE: Jul 22nd 2005                                        */
+/*    FILE: BHV_SimpleWaypoint.h                                 */
+/*    DATE: July 1st 2007  (For purposes of simp illustration)   */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
 /* modify it under the terms of the GNU General Public License   */
@@ -19,38 +19,38 @@
 /* Software Foundation, Inc., 59 Temple Place - Suite 330,       */
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
-#ifdef _WIN32
-#pragma warning(disable : 4786)
-#pragma warning(disable : 4503)
+ 
+#ifndef BHV_WAYPOINT_SIMPLE_HEADER
+#define BHV_WAYPOINT_SIMPLE_HEADER
+
+#include <string>
+#include "IvPBehavior.h"
+
+class BHV_SimpleWaypoint : public IvPBehavior {
+public:
+  BHV_SimpleWaypoint(IvPDomain);
+  ~BHV_SimpleWaypoint() {};
+  
+  IvPFunction* onRunState();
+  bool         setParam(std::string, std::string);
+
+protected:
+  IvPFunction* buildIvPFunction();
+
+protected: // Configuration Parameters
+  double    m_arrival_radius;
+  double    m_desired_speed;
+  double    m_ptx;
+  double    m_pty;
+
+protected: // State Variables
+  double    m_osx;
+  double    m_osy;
+  bool      m_waypoint_set;
+
+};
 #endif
 
-#include "BHV_Timer.h"
-
-using namespace std;
-
-//-----------------------------------------------------------
-// Procedure: Constructor
-
-BHV_Timer::BHV_Timer(IvPDomain gdomain) : IvPBehavior(gdomain)
-{
-  this->setParam("descriptor", "bhv_timer");
-}
-
-//-----------------------------------------------------------
-// Procedure: setParam
-
-bool BHV_Timer::setParam(string param, string val) 
-{
-  return(IvPBehavior::setParam(param, val));
-}
-
-//-----------------------------------------------------------
-// Procedure: onRunState
-
-IvPFunction *BHV_Timer::onRunState() 
-{
-  return(0);
-}
 
 
 
