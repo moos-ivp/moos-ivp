@@ -73,7 +73,7 @@ void Viewer::draw()
 
   if(m_draw_frame) {
     drawFrame();
-    drawFocusBox();
+    //drawFocusBox();
   }
 
   //cout << "x: " << m_xRot;

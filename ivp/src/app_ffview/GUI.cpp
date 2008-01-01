@@ -89,6 +89,8 @@ Fl_Menu_Item GUI::menu_[] = {
  {"Reset3 ",       '3',  (Fl_Callback*)GUI::cb_Reset, (void*)3, 0},
  {"Reset4 ",       '4',  (Fl_Callback*)GUI::cb_Reset, (void*)4, 0},
  {"Toggle Frame ", 'f',  (Fl_Callback*)GUI::cb_ToggleFrame, (void*)-1, FL_MENU_DIVIDER},
+ {"Toggle Frame ", FL_ALT+'f',  (Fl_Callback*)GUI::cb_FrameHeight, (void*)-10, 0},
+ {"Toggle Frame ", FL_CTRL+'f',  (Fl_Callback*)GUI::cb_FrameHeight, (void*)10, FL_MENU_DIVIDER},
  {"Zoom In",          'i', (Fl_Callback*)GUI::cb_Zoom, (void*)-1, 0},
  {"Zoom Out",         'o', (Fl_Callback*)GUI::cb_Zoom, (void*)1, 0},
  {"Zoom Reset",       'Z', (Fl_Callback*)GUI::cb_Zoom, (void*)0, 0},
@@ -351,10 +353,18 @@ void GUI::cb_PriorityAugAmt(Fl_Widget* o, int i) {
 
 //----------------------------------------- Toggle Frame
 inline void GUI::cb_ToggleFrame_i() {
-  viewer->toggleFrame();
+  viewer->setParam("draw_frame", "toggle");
 }
 void GUI::cb_ToggleFrame(Fl_Widget* o) {
   ((GUI*)(o->parent()->user_data()))->cb_ToggleFrame_i();
+}
+
+//----------------------------------------- Frame Height
+inline void GUI::cb_FrameHeight_i(int amt) {
+  viewer->setParam("frame_height", (double)amt);
+}
+void GUI::cb_FrameHeight(Fl_Widget* o, int v) {
+  ((GUI*)(o->parent()->user_data()))->cb_FrameHeight_i(v);
 }
 
 //----------------------------------------- Toggle Strict

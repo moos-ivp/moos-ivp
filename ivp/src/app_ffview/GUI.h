@@ -88,6 +88,9 @@ private:
   inline void cb_ToggleFrame_i();
   static void cb_ToggleFrame(Fl_Widget*);
 
+  inline void cb_FrameHeight_i(int);
+  static void cb_FrameHeight(Fl_Widget*, int);
+
   inline void cb_ToggleStrict_i();
   static void cb_ToggleStrict(Fl_Widget*);
 
