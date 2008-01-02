@@ -1,6 +1,6 @@
  .SILENT:
 
-# Set variables to be passed down to subdirectories
+# Set variables to be passed down to subdirectories -
 include ./make_config.mk
 
 LIB_BASE =  $(wildcard lib_ivpcore*)	$(wildcard lib_ivpbuild)   	   \
