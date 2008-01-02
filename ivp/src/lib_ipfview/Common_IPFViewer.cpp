@@ -175,17 +175,15 @@ void Common_IPFViewer::setParam(string param, double value)
     m_xRot += value;
   else if(param == "set_x_rotation")
     m_xRot = value;
-  else if(param == "mod_y_rotation")
-    m_yRot += value;
-  else if(param == "set_y_rotation")
-    m_yRot = value;
+  else if(param == "mod_z_rotation")
+    m_zRot += value;
+  else if(param == "set_z_rotation")
+    m_zRot = value;
   else
     return;
 
   redraw();
 }
-
-
 
 //-------------------------------------------------------------
 // Procedure: draw()
