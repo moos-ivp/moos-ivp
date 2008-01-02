@@ -56,26 +56,34 @@ APP_BASE =  $(wildcard pHelmIvP*) 	$(wildcard pEchoVar*) 	   	\
 # $(wildcard pMOOSBridge*)
 # $(wildcard iRemote*)
 
-LIB_TOOLS = $(wildcard 3rd-party-mikerb/lib_behaviors-sandbox*) \
-	    $(wildcard lib_marineview*)	$(wildcard 3rd-party-eickstedt/lib_behaviros-don*)	   \
-	    $(wildcard lib_navplot*)	$(wildcard 3rd-party-mikerb/lib_ivpbuild-extra*)	   \
-	    $(wildcard 3rd-party-eickstedt/lib_track*)	$(wildcard lib_ipfview*)                   \
-	    $(wildcard 3rd-party-ajshafer/lib_artifacts)
+LIB_TOOLS = $(wildcard 3rd-party-mikerb/lib_behaviors-sandbox*)    \
+	    $(wildcard 3rd-party-mikerb/lib_ivpbuild-extra*)	   \
+	    $(wildcard 3rd-party-eickstedt/lib_track*)		   \
+	    $(wildcard 3rd-party-eickstedt/lib_behaviros-don*)	   \
+	    $(wildcard 3rd-party-ajshafer/lib_artifacts)	   \
+	    $(wildcard lib_marineview*)				   \
+	    $(wildcard lib_navplot*)				   \
+            $(wildcard lib_ipfview*)
 
 # $(wildcard lib_FLTKVW*)
 
-APP_TOOLS = $(wildcard 3rd-party-eickstedt/p1BTracker*)	$(wildcard iHeadingMonitor*)	\
-	    $(wildcard 3rd-party-eickstedt/p2BTracker*)	$(wildcard pMarineViewer*)	\
-	    $(wildcard 3rd-party-eickstedt/pBearingsSim*)	$(wildcard 3rd-party-mikerb/pClusterManager*)	\
-	    $(wildcard pACom*)		$(wildcard 3rd-party-eickstedt/pExtTracker*)	\
-	    $(wildcard iWifi*)	    	$(wildcard pFunctionSender*)	\
-	    $(wildcard pMessageSim*)	$(wildcard 3rd-party-ajshafer/pMineSim*)		\
-	    $(wildcard 3rd-party-eickstedt/pTarget*)	$(wildcard uFunctionVis*)	\
-	    $(wildcard app_*)		$(wildcard pShipsideViewer*)	\
-	    $(wildcard uPlayBack*)	$(wildcard iMicroModem*)	\
-	    $(wildcard uMVS*)		$(wildcard pDrone*)		\
-	    $(wildcard 3rd-party-eickstedt/pBearings*) \
-	    $(wildcard 3rd-party-ajshafer/pArtifactMapper)	
+APP_TOOLS = $(wildcard 3rd-party-eickstedt/p1BTracker*)		\
+	    $(wildcard 3rd-party-eickstedt/p2BTracker*)		\
+	    $(wildcard 3rd-party-eickstedt/pBearingsSim*)	\
+	    $(wildcard 3rd-party-eickstedt/pBearings*)          \
+	    $(wildcard 3rd-party-eickstedt/pExtTracker*)	\
+	    $(wildcard 3rd-party-ajshafer/pMineSim*)		\
+	    $(wildcard 3rd-party-eickstedt/pTarget*)		\
+	    $(wildcard 3rd-party-ajshafer/pArtifactMapper)	\
+	    $(wildcard 3rd-party-mikerb/pClusterManager*)	\
+	    $(wildcard pACom*)			\
+	    $(wildcard iWifi*)	    		\
+	    $(wildcard pFunctionSender*)	\
+	    $(wildcard uFunctionVis*)		\
+	    $(wildcard uFunctionViewer*)	\
+	    $(wildcard pShipsideViewer*)	\
+            $(wildcard pMarineViewer*)		\
+	    $(wildcard app_*)			\
 
 # $(wildcard uMS*)	
 # 
