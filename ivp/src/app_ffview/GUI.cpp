@@ -233,7 +233,7 @@ void GUI::cb_Script(Fl_Widget* o) {
 
 //----------------------------------------- Rotate  X
 inline void GUI::cb_RotateX_i(int amt) {
-  viewer->setParam("mod_z_rotation", (double)(amt));
+  viewer->setParam("mod_x_rotation", (double)(amt));
 }
 void GUI::cb_RotateX(Fl_Widget* o, int v) {
   ((GUI*)(o->parent()->user_data()))->cb_RotateX_i(v);
