@@ -204,8 +204,8 @@ int GUI::handle(int event)
 
 //----------------------------------------- Zoom In
 inline void GUI::cb_Zoom_i(int val) {
-  if(val < 0) viewer->modZoom(1.25);
-  if(val > 0) viewer->modZoom(0.80);
+  if(val < 0) viewer->setParam("mod_zoom", 1.25);
+  if(val > 0) viewer->setParam("mod_zoom", 0.80);
   //if(val ==0) viewer->zoomReset();
 }
 void GUI::cb_Zoom(Fl_Widget* o, int v) {
@@ -214,10 +214,10 @@ void GUI::cb_Zoom(Fl_Widget* o, int v) {
 
 //----------------------------------------- Reset
 inline void GUI::cb_Reset_i(int i) {
-  if(i==1) viewer->reset1();
-  if(i==2) viewer->reset2();
-  if(i==3) viewer->reset3();
-  if(i==4) viewer->reset4();
+  if(i==1) viewer->setParam("reset_view", "1");
+  if(i==2) viewer->setParam("reset_view", "2");
+  if(i==3) viewer->setParam("reset_view", "3");
+  if(i==4) viewer->setParam("reset_view", "4");
 }
 void GUI::cb_Reset(Fl_Widget* o, int i) {
   ((GUI*)(o->parent()->user_data()))->cb_Reset_i(i);
@@ -233,7 +233,7 @@ void GUI::cb_Script(Fl_Widget* o) {
 
 //----------------------------------------- Rotate  X
 inline void GUI::cb_RotateX_i(int amt) {
-  viewer->rotate_x(amt);
+  viewer->setParam("mod_z_rotation", (double)(amt));
 }
 void GUI::cb_RotateX(Fl_Widget* o, int v) {
   ((GUI*)(o->parent()->user_data()))->cb_RotateX_i(v);
@@ -241,7 +241,7 @@ void GUI::cb_RotateX(Fl_Widget* o, int v) {
 
 //----------------------------------------- Rotate  Z
 inline void GUI::cb_RotateZ_i(int amt) {
-  viewer->rotate_z((double)(amt)/5.0);
+  viewer->setParam("mod_z_rotation", (double)(amt));
 }
 void GUI::cb_RotateZ(Fl_Widget* o, int v) {
   ((GUI*)(o->parent()->user_data()))->cb_RotateZ_i(v);
@@ -249,7 +249,7 @@ void GUI::cb_RotateZ(Fl_Widget* o, int v) {
 
 //----------------------------------------- Mod Scale
 inline void GUI::cb_ModScale_i(int amt) {
-  viewer->modScale(((double)amt)/100.0);
+  viewer->setParam("mod_scale", (((double)amt)/100.0));
 }
 void GUI::cb_ModScale(Fl_Widget* o, int v) {
   ((GUI*)(o->parent()->user_data()))->cb_ModScale_i(v);

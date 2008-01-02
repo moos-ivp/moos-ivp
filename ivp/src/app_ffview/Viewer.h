@@ -41,7 +41,6 @@ public:
   void   makeUniformIPF(int=0);
   void   makeUniformIPFxN(int amt);
   void   modColorMap(const std::string&);
-  void   modScale(double amt);
   void   modPatchAOF(int amt);
   void   modUniformAug(int amt);
   void   modPriorityAugAmt(int amt);

@@ -99,9 +99,45 @@ void Common_IPFViewer::setParam(string param, string value)
       m_draw_frame = false;
   }
 
-  if((param == "color_scheme") && (value == "toggle")) {
+  if((param == "draw_frame") && (value == "true"))
+    m_draw_frame = true;
+  if((param == "draw_frame") && (value == "false"))
+    m_draw_frame = false;
+  if((param == "draw_base") && (value == "true"))
+    m_draw_base = true;
+  if((param == "draw_base") && (value == "false"))
+    m_draw_base = false;
+
+
+  if((param == "color_scheme") && (value == "toggle-forward")) {
+    m_scheme_index++;
+    if(m_scheme_index > m_scheme_back.size()-1)
+      m_scheme_index = 0;
   }
 
+  if((param == "color_scheme") && (value == "toggle-back")) {
+    m_scheme_index--;
+    if(m_scheme_index < 0)
+      m_scheme_index = m_scheme_back.size()-1;
+  }
+
+  if(param == "new_color_scheme") {
+    vector<string> svector = parseString(value, ',');
+    if(svector.size()==2) {
+      m_scheme_back.push_back(stripBlankEnds(svector[0]));
+      m_scheme_frame.push_back(stripBlankEnds(svector[1]));
+    }
+  }
+  if(param == "reset_view") {
+    if(value=="1")
+      {m_xRot=-72; m_yRot=0; m_zRot=40;}
+    else if(value=="2")
+      {m_xRot=0;   m_yRot=0; m_zRot=0;}
+    else if(value=="3")
+      {m_xRot=-53; m_yRot=0; m_zRot=0;}
+    else if(value=="4")
+      {m_xRot=-72; m_yRot=0; m_zRot=122;}
+  }
 
   redraw();
 }
@@ -113,6 +149,38 @@ void Common_IPFViewer::setParam(string param, double value)
 {
   if(param == "frame_height")
     m_frame_height += value;
+  else if(param == "set_base")
+    m_base_extra = value;
+  else if(param == "mod_base")
+    m_base_extra += value;
+  else if(param == "mod_scale") {
+    m_scale_extra += value;
+    if(m_scale_extra < 0)
+      m_scale_extra = 0;
+  }
+  else if(param == "set_scale") {
+    m_scale_extra = value;
+    if(m_scale_extra < 0)
+      m_scale_extra = 0;
+  }
+  else if(param == "mod_zoom")
+    m_zoom *= value;
+  else if(param == "set_zoom")
+    m_zoom = value;
+  else if(param == "mod_radius")
+    m_rad_extra *= value;
+  else if(param == "set_radius")
+    m_rad_extra = value;
+  else if(param == "mod_x_rotation")
+    m_xRot += value;
+  else if(param == "set_x_rotation")
+    m_xRot = value;
+  else if(param == "mod_y_rotation")
+    m_yRot += value;
+  else if(param == "set_y_rotation")
+    m_yRot = value;
+  else
+    return;
 
   redraw();
 }
@@ -129,7 +197,6 @@ void Common_IPFViewer::draw()
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   glViewport(0,0,w(),h());
-  //errCheck();
 
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();

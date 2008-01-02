@@ -215,7 +215,7 @@ void FV_GUI::cb_ModBaseIPF(Fl_Widget* o, int v) {
 
 //----------------------------------------- Toggle Frame
 inline void FV_GUI::cb_ToggleFrame_i() {
-  viewer->toggleFrame();
+  viewer->setParam("draw_frame", "toggle");
 }
 void FV_GUI::cb_ToggleFrame(Fl_Widget* o) {
   ((FV_GUI*)(o->parent()->user_data()))->cb_ToggleFrame_i();
@@ -263,8 +263,3 @@ void FV_GUI::cb_ModZSlice(Fl_Widget* o, int v) {
 void FV_GUI::cb_Quit() {
   exit(0);
 }
-
-
-
-
-

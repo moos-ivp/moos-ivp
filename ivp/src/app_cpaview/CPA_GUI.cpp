@@ -286,7 +286,7 @@ void CPA_GUI::cb_AltCNCRS(Fl_Widget* o, int v) {
 
 //----------------------------------------- ROT_X
 inline void CPA_GUI::cb_RotateX_i(int amt) {
-  ipf_viewer->rotate_x((float)(amt));
+  ipf_viewer->setParam("mod_x_rotation", (double)(amt));
   updateXY();
   ipf_viewer->redraw();
 }
@@ -296,7 +296,7 @@ void CPA_GUI::cb_RotateX(Fl_Widget* o, int v) {
 
 //----------------------------------------- ROT_Z
 inline void CPA_GUI::cb_RotateZ_i(int amt) {
-  ipf_viewer->rotate_z((float)(amt));
+  ipf_viewer->setParam("mod_z_rotation", (double)(amt));
   updateXY();
   ipf_viewer->redraw();
 }
@@ -306,9 +306,9 @@ void CPA_GUI::cb_RotateZ(Fl_Widget* o, int v) {
 
 //----------------------------------------- Reset
 inline void CPA_GUI::cb_Reset_i(int val) {
-  if(val==1)  ipf_viewer->reset1();
-  if(val==2)  ipf_viewer->reset2();
-  if(val==3)  ipf_viewer->reset3();
+  if(val==1)  ipf_viewer->setParam("reset_view", "1");
+  if(val==2)  ipf_viewer->setParam("reset_view", "2");
+  if(val==3)  ipf_viewer->setParam("reset_view", "3");
 }
 void CPA_GUI::cb_Reset(Fl_Widget* o, int v) {
   ((CPA_GUI*)(o->parent()->user_data()))->cb_Reset_i(v);
@@ -316,8 +316,8 @@ void CPA_GUI::cb_Reset(Fl_Widget* o, int v) {
 
 //----------------------------------------- Stretch Radius
 inline void CPA_GUI::cb_StretchRad_i(int amt) {
-  if(amt > 0) ipf_viewer->modRadius(1.25);
-  if(amt < 0) ipf_viewer->modRadius(0.80);
+  if(amt > 0) ipf_viewer->setParam("mod_radius", 1.25);
+  if(amt < 0) ipf_viewer->setParam("mod_radius", 0.80);
 }
 void CPA_GUI::cb_StretchRad(Fl_Widget* o, int v) {
   ((CPA_GUI*)(o->parent()->user_data()))->cb_StretchRad_i(v);
@@ -325,8 +325,8 @@ void CPA_GUI::cb_StretchRad(Fl_Widget* o, int v) {
 
 //----------------------------------------- Mod Base
 inline void CPA_GUI::cb_ModBase_i(int amt) {
-  if(amt > 0) ipf_viewer->modBase(10);
-  if(amt < 0) ipf_viewer->modBase(-10);
+  if(amt > 0) ipf_viewer->setParam("mod_base", 10);
+  if(amt < 0) ipf_viewer->setParam("mod_base",-10);
 }
 void CPA_GUI::cb_ModBase(Fl_Widget* o, int v) {
   ((CPA_GUI*)(o->parent()->user_data()))->cb_ModBase_i(v);
@@ -334,8 +334,8 @@ void CPA_GUI::cb_ModBase(Fl_Widget* o, int v) {
 
 //----------------------------------------- Mod Scale
 inline void CPA_GUI::cb_ModScale_i(int amt) {
-  if(amt > 0) ipf_viewer->modScale(1.25);
-  if(amt < 0) ipf_viewer->modScale(0.80);
+  if(amt > 0) ipf_viewer->setParam("mod_scale", 1.25);
+  if(amt < 0) ipf_viewer->setParam("mod_scale", 0.80);
 }
 void CPA_GUI::cb_ModScale(Fl_Widget* o, int v) {
   ((CPA_GUI*)(o->parent()->user_data()))->cb_ModScale_i(v);
@@ -358,7 +358,7 @@ void CPA_GUI::cb_SetTypeIPF(Fl_Widget* o, int v) {
 
 //----------------------------------------- Toggle Frame
 inline void CPA_GUI::cb_ToggleFrame_i() {
-  ipf_viewer->toggleFrame();
+  ipf_viewer->setParam("draw_frame", "toggle");
 }
 void CPA_GUI::cb_ToggleFrame(Fl_Widget* o) {
   ((CPA_GUI*)(o->parent()->user_data()))->cb_ToggleFrame_i();

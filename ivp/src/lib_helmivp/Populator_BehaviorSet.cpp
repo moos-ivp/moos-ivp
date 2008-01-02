@@ -23,6 +23,10 @@
 #pragma warning(disable : 4786)
 #endif
 
+#ifdef _WIN32
+#define strncasecmp _strnicmp
+#endif
+
 #include <iostream>
 #include <stdlib.h>
 #include <stdio.h>
@@ -48,14 +52,6 @@
 #include "BHV_AvoidCollision.h"
 #include "BHV_GoToDepth.h"
 #include "BHV_MemoryTurnLimit.h"
-
-#ifdef _WIN32
-#define strncasecmp _strnicmp
-#endif
-
-#if 0
-#include "WayPointVW.h"
-#endif
 
 #if 0
 // Sandbox behaviors
@@ -315,12 +311,6 @@ IvPBehavior* Populator_BehaviorSet::initializeBehavior(string bhv_name)
     bhv = new BHV_MemoryTurnLimit(domain);
 #endif
 
-#if 0 
-  // Oxford Behaviors
-  else if(bhv_name == "WayPointVW")      
-    bhv = new CWayPointVW(domain);
-#endif
-  
 #if 0
   // Sandbox behaviors
   else if(bhv_name == "BHV_AvoidObstacles")

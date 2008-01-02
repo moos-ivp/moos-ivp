@@ -36,7 +36,7 @@ IvPFuncViewer::IvPFuncViewer(int x, int y, int w, int h, const char *l)
 
   m_rad_extra = 20;
 
-  reset2();
+  setParam("reset_view", "2");
   m_clear_red   =  73.0 / 256.0;
   m_clear_green =  62.0 / 256.0;
   m_clear_blue  = 120.0 / 256.0;

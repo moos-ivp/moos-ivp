@@ -27,10 +27,9 @@ Viewer::Viewer(int x, int y,
 	       int width, int height, const char *l)
   : Common_IPFViewer(x,y,width,height,l)
 {
-  reset1();
+  setParam("reset_view", "1");
   m_base_aof   = -100;      // For shifting the AOF rendering
   m_base_ipf   =  150;      // For shifting the IPF rendering
-  m_scale      = 1.0;       // Amplifier for the AOF rendering
   m_patch      = 5;         // Size of patch rendering the AOF
   m_draw_aof   = true;
   m_draw_ipf   = true;
@@ -240,17 +239,6 @@ void Viewer::modColorMap(const string &str)
 }
 
 //-------------------------------------------------------------
-// Procedure: modScale
-
-void Viewer::modScale(double amt)
-{
-  m_scale += amt; 
-  if(m_scale <0)  
-    m_scale=0; 
-  redraw();
-}
-
-//-------------------------------------------------------------
 // Procedure: modPatchAOF
 
 void Viewer::modPatchAOF(int amt)
@@ -298,7 +286,7 @@ void Viewer::runScript()
   int save_file_ix = 0;
   int delta = 4;
   for(int i=0; i<360; i=i+delta) {
-    rotate_z(delta);
+    setParam("mod_z_rotation", delta);
     redraw();
     Fl::flush();
     capture(save_file_ix);
@@ -492,7 +480,7 @@ void Viewer::drawAOF()
   int xc = xmin;
   Quad3D q;
   q.base = m_base_aof; 
-  q.scale= m_scale; 
+  q.scale= m_scale_extra; 
   q.lines= false;
   q.xpts = (xmax - xmin) + 1;
   q.ypts = (ymax - ymin) + 1;

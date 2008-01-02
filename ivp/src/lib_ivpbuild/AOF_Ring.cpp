@@ -48,7 +48,7 @@ AOF_Ring::AOF_Ring(IvPDomain g_domain) : AOF(g_domain)
   range    = 200;     
   base     = -100;    
   ringPeak = true;    
-  plateau  = 10.0;
+  plateau  = 0.0;
 
   gradient_type = 0;
   

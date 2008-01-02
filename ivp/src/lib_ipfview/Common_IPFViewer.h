@@ -31,28 +31,14 @@ class Common_IPFViewer : public Fl_Gl_Window
   int    handle(int);
 
 public:
-  void   rotate_x(double v)  {m_xRot += v; redraw();};
-  void   rotate_z(double v)  {m_zRot += v; redraw();};
-
-  void   reset1()            {m_xRot=-72; m_yRot=0; m_zRot=40; redraw();};
-  void   reset2()            {m_xRot=0;   m_yRot=0; m_zRot=0; redraw();};
-  void   reset3()            {m_xRot=-53; m_yRot=0; m_zRot=0; redraw();};
-  void   reset4()            {m_xRot=-72; m_yRot=0; m_zRot=122; redraw();};
-
   void   modBackColor(double r, double g, double b)
     {m_clear_red=r; m_clear_green=g; m_clear_blue=b;};
 
-  void   modRadius(float v)  {m_rad_extra   *= v; redraw();};
-  void   modBase(float v)    {m_base_extra  += v; redraw();};
-  void   modScale(float v)   {m_scale_extra *= v; redraw();};
-  void   toggleFrame()       {m_draw_frame  = !m_draw_frame; redraw();};
-  void   modZoom(float amt)  {m_zoom *= amt; redraw();};
-  
   void   applyIPF(IvPFunction*, bool=false);
 
   void   setParam(std::string, std::string);
   void   setParam(std::string, double);
-
+  
 protected:
   void   drawFrame();
   void   drawOwnPoint();
@@ -61,11 +47,18 @@ protected:
   void   handleLeftMouse(int, int) {};
   void   handleRightMouse(int, int) {};
 
-
 protected:
   double       m_clear_red;
   double       m_clear_green;
   double       m_clear_blue;
+  
+  double       m_frame_red;
+  double       m_frame_green;
+  double       m_frame_blue;
+
+  std::vector<std::string> m_scheme_back;
+  std::vector<std::string> m_scheme_frame;
+  int          m_scheme_index;
 
   double       m_xRot;
   double       m_yRot;

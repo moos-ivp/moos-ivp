@@ -385,10 +385,10 @@ void REPLAY_GUI::cb_AltIndexIPF(Fl_Widget* o, int val) {
 
 //----------------------------------------- ROT_X
 inline void REPLAY_GUI::cb_RotateX_i(int amt) {
-  ipf_viewer->rotate_x((float)(amt));
+  ipf_viewer->setParam("mod_x_rotation", (double)(amt));
   ipf_viewer->redraw();
   if(ipf_viewer_b) {
-    ipf_viewer_b->rotate_x((float)(amt));
+    ipf_viewer_b->setParam("mod_z_rotation", (float)(amt));
     ipf_viewer_b->redraw();
   }
   updateXY();
@@ -399,10 +399,10 @@ void REPLAY_GUI::cb_RotateX(Fl_Widget* o, int v) {
 
 //----------------------------------------- ROT_Z
 inline void REPLAY_GUI::cb_RotateZ_i(int amt) {
-  ipf_viewer->rotate_z((float)(amt));
+  ipf_viewer->setParam("mod_z_rotation", (double)(amt));
   ipf_viewer->redraw();
   if(ipf_viewer_b) {
-    ipf_viewer->rotate_z((float)(amt));
+    ipf_viewer->setParam("mod_z_rotation", (float)(amt));
     ipf_viewer->redraw();
   }
   updateXY();
@@ -414,19 +414,19 @@ void REPLAY_GUI::cb_RotateZ(Fl_Widget* o, int v) {
 //----------------------------------------- Reset
 inline void REPLAY_GUI::cb_Reset_i(int val) {
   if(val==1) {
-    ipf_viewer->reset1();
+    ipf_viewer->setParam("reset_view", "1");
     if(ipf_viewer_b)
-      ipf_viewer_b->reset1();
+      ipf_viewer_b->setParam("reset_view", "1");
   }
   if(val==2) {
-    ipf_viewer->reset2();
+    ipf_viewer->setParam("reset_view", "2");
     if(ipf_viewer_b)
-      ipf_viewer_b->reset2();
+      ipf_viewer_b->setParam("reset_view", "2");
   }
   if(val==3) {
-    ipf_viewer->reset3();
+    ipf_viewer->setParam("reset_view", "3");
     if(ipf_viewer_b)
-      ipf_viewer_b->reset3();
+      ipf_viewer_b->setParam("reset_view", "3");
   }
 }
 
@@ -437,14 +437,14 @@ void REPLAY_GUI::cb_Reset(Fl_Widget* o, int v) {
 //----------------------------------------- Stretch Radius
 inline void REPLAY_GUI::cb_StretchRad_i(int amt) {
   if(amt > 0) {
-    ipf_viewer->modRadius(1.25);
+    ipf_viewer->setParam("mod_radius", 1.25);
     if(ipf_viewer_b)
-      ipf_viewer_b->modRadius(1.25);
+      ipf_viewer_b->setParam("mod_radius", 1.25);
   }
   if(amt < 0) {
-    ipf_viewer->modRadius(0.80);
+    ipf_viewer->setParam("mod_radius", 0.80);
     if(ipf_viewer_b)
-      ipf_viewer_b->modRadius(0.80);
+      ipf_viewer_b->setParam("mod_radius", 0.80);
   }
 }
 

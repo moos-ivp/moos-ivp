@@ -131,9 +131,8 @@ int FV_GUI::handle(int event)
 
 //----------------------------------------- Zoom In
 inline void FV_GUI::cb_Zoom_i(int val) {
-  if(val < 0) viewer->modZoom(1.25);
-  if(val > 0) viewer->modZoom(0.80);
-  //if(val ==0) viewer->zoomReset();
+  if(val < 0) viewer->setParam("mod_zoom", 1.25);
+  if(val > 0) viewer->setParam("mod_zoom", 0.80);
 }
 void FV_GUI::cb_Zoom(Fl_Widget* o, int v) {
   ((FV_GUI*)(o->parent()->user_data()))->cb_Zoom_i(v);
@@ -141,9 +140,9 @@ void FV_GUI::cb_Zoom(Fl_Widget* o, int v) {
 
 //----------------------------------------- Reset
 inline void FV_GUI::cb_Reset_i(int val) {
-  if(val==1)  viewer->reset1();
-  if(val==2)  viewer->reset2();
-  if(val==3)  viewer->reset3();
+  if(val==1)  viewer->setParam("reset_view", "1");
+  if(val==2)  viewer->setParam("reset_view", "2");
+  if(val==3)  viewer->setParam("reset_view", "3");
 }
 void FV_GUI::cb_Reset(Fl_Widget* o, int v) {
   ((FV_GUI*)(o->parent()->user_data()))->cb_Reset_i(v);
@@ -151,7 +150,7 @@ void FV_GUI::cb_Reset(Fl_Widget* o, int v) {
 
 //----------------------------------------- Rotate  X
 inline void FV_GUI::cb_RotateX_i(int amt) {
-  viewer->rotate_x(amt);
+  viewer->setParam("mod_x_rotation", (double)(amt));
 }
 void FV_GUI::cb_RotateX(Fl_Widget* o, int v) {
   ((FV_GUI*)(o->parent()->user_data()))->cb_RotateX_i(v);
@@ -159,7 +158,7 @@ void FV_GUI::cb_RotateX(Fl_Widget* o, int v) {
 
 //----------------------------------------- Rotate  Z
 inline void FV_GUI::cb_RotateZ_i(int amt) {
-  viewer->rotate_z(amt);
+  viewer->setParam("mod_z_rotation", (double)(amt));
 }
 void FV_GUI::cb_RotateZ(Fl_Widget* o, int v) {
   ((FV_GUI*)(o->parent()->user_data()))->cb_RotateZ_i(v);
@@ -167,8 +166,8 @@ void FV_GUI::cb_RotateZ(Fl_Widget* o, int v) {
 
 //----------------------------------------- Stretch Radius
 inline void FV_GUI::cb_StretchRad_i(int amt) {
-  if(amt > 0) viewer->modRadius(1.25);
-  if(amt < 0) viewer->modRadius(0.80);
+  if(amt > 0) viewer->setParam("mod_radius", 1.25);
+  if(amt < 0) viewer->setParam("mod_radius", 0.80);
 }
 void FV_GUI::cb_StretchRad(Fl_Widget* o, int v) {
   ((FV_GUI*)(o->parent()->user_data()))->cb_StretchRad_i(v);
@@ -176,8 +175,8 @@ void FV_GUI::cb_StretchRad(Fl_Widget* o, int v) {
 
 //----------------------------------------- Mod Base
 inline void FV_GUI::cb_ModBase_i(int amt) {
-  if(amt > 0) viewer->modBase(10);
-  if(amt < 0) viewer->modBase(-10);
+  if(amt > 0) viewer->setParam("mod_base",  10);
+  if(amt < 0) viewer->setParam("mod_base", -10);
 }
 void FV_GUI::cb_ModBase(Fl_Widget* o, int v) {
   ((FV_GUI*)(o->parent()->user_data()))->cb_ModBase_i(v);
@@ -185,8 +184,8 @@ void FV_GUI::cb_ModBase(Fl_Widget* o, int v) {
 
 //----------------------------------------- Mod Scale
 inline void FV_GUI::cb_ModScale_i(int amt) {
-  if(amt > 0) viewer->modScale(1.25);
-  if(amt < 0) viewer->modScale(0.80);
+  if(amt > 0) viewer->setParam("mod_scale", 1.25);
+  if(amt < 0) viewer->setParam("mod_scale", 0.80);
 }
 void FV_GUI::cb_ModScale(Fl_Widget* o, int v) {
   ((FV_GUI*)(o->parent()->user_data()))->cb_ModScale_i(v);
@@ -194,7 +193,7 @@ void FV_GUI::cb_ModScale(Fl_Widget* o, int v) {
 
 //----------------------------------------- Toggle Frame
 inline void FV_GUI::cb_ToggleFrame_i() {
-  viewer->toggleFrame();
+  viewer->setParam("draw_frame", "toggle");
 }
 void FV_GUI::cb_ToggleFrame(Fl_Widget* o) {
   ((FV_GUI*)(o->parent()->user_data()))->cb_ToggleFrame_i();
