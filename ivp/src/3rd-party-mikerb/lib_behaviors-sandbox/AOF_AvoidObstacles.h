@@ -30,7 +30,6 @@ class IvPDomain;
 class AOF_AvoidObstacles: public AOF {
 public:
   AOF_AvoidObstacles(IvPDomain);
-  AOF_AvoidObstacles() {};
   ~AOF_AvoidObstacles() {};
 
 public: // virtual functions
