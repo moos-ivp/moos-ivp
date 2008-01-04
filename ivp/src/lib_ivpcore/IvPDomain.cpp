@@ -152,8 +152,6 @@ void IvPDomain::print()
   }
 }
 
-
-
 //-------------------------------------------------------------
 // Procedure: getIndex
 
@@ -166,7 +164,7 @@ int IvPDomain::getIndex(const string &g_name) const
 }
 
 
-// Build it and they will come
+// Build it well and they will come
 // Share it and it will grow
 // Keep it simple and people will use it
 

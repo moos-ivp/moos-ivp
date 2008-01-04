@@ -81,6 +81,16 @@ public:
       return(false);
     };
 
+  // A simplified version of getVal where no error is indicate
+  // if the domain or index is out of range.
+  double getVal(int d, int j) const
+    {
+      int dsize = (int)(m_dlow.size());
+      if((d>=0) && (d<dsize) && (j>=0) && (j<m_dpoints[d]))
+	return(val = m_dlow[i] + (m_ddelta[i] * j));
+      return(0);
+    };
+
 
   bool getVal(const std::string str, int j, double &val) const
     {
