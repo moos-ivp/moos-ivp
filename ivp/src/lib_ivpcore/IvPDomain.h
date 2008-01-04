@@ -87,7 +87,7 @@ public:
     {
       int dsize = (int)(m_dlow.size());
       if((d>=0) && (d<dsize) && (j>=0) && (j<m_dpoints[d]))
-	return(val = m_dlow[i] + (m_ddelta[i] * j));
+	return(m_dlow[d] + (m_ddelta[d] * j));
       return(0);
     };
 
