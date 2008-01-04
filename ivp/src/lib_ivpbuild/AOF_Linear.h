@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin and John Leonard                    */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
-/*    FILE: AOF.h                                                */
+/*    FILE: AOF_Linear.h                                         */
 /*    DATE:                                                      */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
@@ -19,41 +19,32 @@
 /* Software Foundation, Inc., 59 Temple Place - Suite 330,       */
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
-#ifdef _WIN32
-#pragma warning(disable : 4786)
-#pragma warning(disable : 4503)
-#endif
-#ifndef AOF_HEADER
-#define AOF_HEADER
+ 
+#ifndef AOF_LINEAR_HEADER
+#define AOF_LINEAR_HEADER
 
-#include <string>
-#include "IvPBox.h"
-#include "IvPDomain.h"
-class AOF{
+#include "AOF.h"
+
+class AOF_Linear: public AOF {
 public:
-  AOF(const IvPDomain& dom) {m_domain=dom;};
-  virtual ~AOF() {};
+  AOF_Linear(IvPDomain g_domain);
+  ~AOF_Linear() {};
 
-  // PURE virtual function
-  virtual double evalBox(const IvPBox*) const = 0;
+public:    
+  double evalBox(const IvPBox*) const;
+  bool   setParam(const std::string& param, double val); 
+  bool   initialize();
   
-  // Virtual functions
-  virtual bool  setParam(const std::string&, double) 
-    {return(false);};
-  virtual bool  setParam(const std::string&, const std::string&) 
-    {return(false);};
-  virtual bool  initialize() 
-    {return(true);};
-
-  IvPDomain getDomain() const {return(m_domain);};
-
-  int getDim() const {return(m_domain.size());};
-
-protected:
-  IvPDomain m_domain;
+private:
+  double m_coeff;
+  double n_coeff;
+  bool   m_coeff_set;
+  bool   n_coeff_set;
+  int    x_index;
+  int    y_index;
 };
-#endif
 
+#endif
 
 
 
