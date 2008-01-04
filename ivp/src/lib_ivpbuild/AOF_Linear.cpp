@@ -39,10 +39,14 @@ double AOF_Linear::evalBox(const IvPBox *ptbox) const
 
 bool AOF_Linear::setParam(const std::string& param, double val) 
 {
-  if(param == "mcoeff")
+  if(param == "mcoeff") {
     m_coeff = val;
-  else if(param == "ncoeff")
+    m_coeff_set = true;
+  }
+  else if(param == "ncoeff") {
     n_coeff = val;
+    n_coeff_set = true;
+  }
   else
     return(false);
   return(true);
@@ -53,7 +57,7 @@ bool AOF_Linear::setParam(const std::string& param, double val)
 
 bool AOF_Linear::initialize()
 {
-  if(m_coeff_set && n_coeff_set && (x_index != -1) && y_index != -1)
+  if(m_coeff_set && n_coeff_set && (x_index != -1) && (y_index != -1))
     return(true);
   return(false);
 };
