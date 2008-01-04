@@ -46,7 +46,6 @@
 class AOF_Plus : public AOF
 {
 public:
-  AOF_Plus(){};
   AOF_Plus(IvPDomain);
   ~AOF_Plus();
 
