@@ -10,5 +10,5 @@ ADD_DEFINITIONS(-Wall -O2)
 ADD_EXECUTABLE(wireframeviewer main.cpp WireframeViewer.cpp GUI.cpp)
 
 #need to link to some other libraries ? just add them here
-TARGET_LINK_LIBRARIES(wireframeviewer fltk fltk_gl GL glut)
+TARGET_LINK_LIBRARIES(wireframeviewer fltk fltk_gl GL)
  
