@@ -14,11 +14,8 @@
 #include "IvPDomain.h"
 #include "AOF_Rings.h"
 #include "AOF_Ring.h"
-#include "AOF_Rings.h"
-//#include "AOF_Waypoint2D.h"
+#include "AOF_Linear.h"
 #include "AOF_AvoidCollision.h"
-//#include "AOF_ArrayAngle.h"
-// #include "AOF_AvoidObstacles.h"
 #include "PopulatorAOF.h"
 #include "MBUtils.h"
 #include "FileBuffer.h"
@@ -57,6 +54,12 @@ AOF *PopulatorAOF::populate(string filename)
 	return(0);
       }
     }
+  }
+
+  if(aof && (aof->initialize() == false)) {
+    cout << "Problem with AOF initialization!!!!" << endl;
+    delete(aof);
+    return(0);
   }
 
   return(aof);
@@ -124,16 +127,10 @@ bool PopulatorAOF::handleLine(string line)
       aof = new AOF_Rings(domain);
     else if(right == "AOF_Ring")
       aof = new AOF_Ring(domain);
-    else if(right == "AOF_Rings")
-      aof = new AOF_Rings(domain);
-//     else if(right == "AOF_Waypoint2D")
-//       aof = new AOF_Waypoint2D(domain);
     else if(right == "AOF_AvoidCollision")
       aof = new AOF_AvoidCollision(domain);
-//    else if(right == "AOF_ArrayAngle")
-//      aof = new AOF_ArrayAngle(domain);
-//     else if(right == "AOF_AvoidObstacles")
-//       aof = new AOF_AvoidObstacles(domain);
+    else if(right == "AOF_Linear")
+      aof = new AOF_Linear(domain);
     return(aof!=0);
   }
   
