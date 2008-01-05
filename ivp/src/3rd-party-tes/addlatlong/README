@@ -1,0 +1,51 @@
+t. schneider 1.3.08
+tes@mit.edu
+mit / whoi joint program in ocean engineering
+use of this software outside of the schmidt laboratory at mit requires permission of the author.
+
+this script recursively crawls through a directory, finding alogs. it then
+takes each .alog file, looks for NAV_X and NAV_Y, and inserts
+NAV_LATITUDE and NAV_LONGITUDE immediately following the NAV_X, NAV_Y pair
+(by doing the the geodesy conversion). it thus requires LAT_ORIGIN and
+LONG_ORIGIN variables to be in the alog file as well. 
+
+the original *.alog is renamed *._alog and a new file is written with the
+above changes *_latlong.alog.
+
+> history: this was written initially to add NAV_LATITUDE and NAV_LONGITUDE to the 
+bluefin21 alog files after PLUSNet07 to allow them to parsed into geov
+(google earth ocean viewer)
+
+> compile (binaries are placed in the MOOS-IvP bin directory):
+make
+
+> usage (automatically recursive):
+addlatlong directory_with_alogs
+
+> example (processes all files in directory and subdirectories): 
+addlatlong ~/project-plus07-data-Wecoma/Macrura
+
+one piece of one input file:
+0.493           PAEL_HEADING         pAEL       19.000000,   9.6616,   7.826
+0.493           PAEL_FRAME           pAEL       102538.000000 
+0.591           NAV_YAW              pHuxley    2.38813      
+0.591           NAV_Y                pHuxley    2421.74      
+0.591           NAV_X                pHuxley    520.441      
+0.591           NAV_SPEED            pHuxley    0            
+0.591           NAV_HEADING          pHuxley    223.17       
+0.591           NAV_DEPTH            pHuxley    0.079        
+0.591           NAV_ALTITUDE         pHuxley    0            
+
+
+same piece of the corresponding output file
+0.493           PAEL_HEADING         pAEL       19.000000,   9.6616,   7.826
+0.493           PAEL_FRAME           pAEL       102538.000000 
+0.591           NAV_YAW              pHuxley    2.38813      
+0.591           NAV_Y                pHuxley    2421.74      
+0.591           NAV_X                pHuxley    520.441      
+0.591000000     NAV_LATITUDE         addlatlong 47.753694969 
+0.591000000     NAV_LONGITUDE        addlatlong -122.843036253 
+0.591           NAV_SPEED            pHuxley    0            
+0.591           NAV_HEADING          pHuxley    223.17       
+0.591           NAV_DEPTH            pHuxley    0.079        
+0.591           NAV_ALTITUDE         pHuxley    0            
