@@ -3,27 +3,7 @@
  * mit / whoi joint program in ocean engineering
  * use of this software outside of the schmidt laboratory at mit requires permission of the author.
  * 
- * this is a MOOS *.alog post processing tool. it takes a directory with *.alog files and recursively
- * attempts to use GPS NMEA strings logged in the file to correct the initial time stamp. the new (corrected)
- * file is output as {original_name}.timefixed.alog and the old file is renamed (untouched) as {original_name}._alog
- * 
- * if the script can find a *.slog file with the same {original_name} as the corrected *.alog file, it will process that as
- * well, producing a new file {original_name}.timefixed.slog and rename the old file as {original_name}._slog
- * 
- * compile: gcc -o time_fix_alog time_fix_alog.c -lm
- * usage: ./time_fix_alog directory_with_alog_files MOOS_variable_with_GPS [mode: 0 (default) - use raw NMEA, 1 - use preparsed GPS Time]
- * example 1: ./time_fix_alog ~/project-plus07-data/Unicorn/ GPS_RAW 0
- * GPS_RAW looks like:
- * -0.210 GPS_RAW              iGPS       $GPGGA,173210.2,4739.65331,N,12249.36092,W,2,11,1.0,-2.2,M,-18.7,M,,*4F
-
- * example 2: ./time_fix_alog ~/project-plus07-data/Unicorn/ GPS_TIME 1
- * GPS_TIME looks like:
- * -0.082 GPS_TIME             iGPS       173210.400000
- * 
- * IMPORTANT: this script assumes the timestamp present in the original file is not wrong by MORE than 
- * 12 hours! (this is because the gps time we are using here is time of day) be sure to examine the 
- * runtime output of this script to verify reasonable behavior as well.
- * 
+ * see README for information on this script
  */
 #include <stdio.h>
 #include <stdlib.h>
