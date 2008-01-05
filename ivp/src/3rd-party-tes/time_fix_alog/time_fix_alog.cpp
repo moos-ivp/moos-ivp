@@ -301,7 +301,7 @@ int process_file(FILE *fin1, FILE *fin2, char * fout1_full_name, char * fout2_fu
   printf("time_fix_alog: unix epoch for last day: %lf, seconds from start of day are file = %lf, gps = %lf\n", unix_last_day, f_sec, gps_sec);
   
   /* must assume time difference is less than 12 hours. deal with condition where one time "wraps" over a day */
-  if (abs(gps_sec - f_sec) > (86400/2))
+  if (fabs(gps_sec - f_sec) > (86400/2))
     f_sec = f_sec + 86400;
   
   double new_start_time = gps_sec - f_sec + start_time;

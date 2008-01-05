@@ -1,4 +1,4 @@
-# Makefile definitions particular to the pAIS2SQL app
+# Makefile definitions particular to this app
 
 LTARGET  = addlatlong
 LIFLAGS  = 
