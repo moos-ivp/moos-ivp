@@ -13,5 +13,3 @@ cat = 3.14
 
 # quoted values will be stripped of quotes and put in as string
 dog = "big dog"
-
-

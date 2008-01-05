@@ -3,14 +3,7 @@
  * mit / whoi joint program in ocean engineering
  * use of this software outside of the schmidt laboratory at mit requires permission of the author.
  * 
- * this is a special purpose script. it converts MICROMODEM_RAW (messages to the modem from elsewhere)
- * and MICROMODEM_TO_MODEM (messages to the modem from the vehicle) into *.CSV files in the format used
- * by ModemTool (WHOI)
- *
- * compile: gcc -o modem_csv modem_csv.c
- * usage: ./modem_csv directory_with_alog_files modem_id [time offset]
- * example (for unicorn): ./modem_csv ~/project-plus07-data/Unicorn/ 3 0
- * 
+ * see README in this directory for details on this script
  * 
  */
 #include <stdio.h>

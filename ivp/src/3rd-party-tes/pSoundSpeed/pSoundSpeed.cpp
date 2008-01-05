@@ -1,8 +1,8 @@
-// t. schneider tes@mit.edu {date}
+// t. schneider tes@mit.edu 10.09.07
 // laboratory for autonomous marine sensing systems
 // massachusetts institute of technology 
 // 
-// this is {ProcessName}.cpp 
+// this is pSoundSpeed.cpp 
 //
 // see the readme file within this directory for information
 // pertaining to usage and purpose of this script.

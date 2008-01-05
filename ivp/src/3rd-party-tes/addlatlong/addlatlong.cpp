@@ -3,11 +3,7 @@
  * mit / whoi joint program in ocean engineering
  * use of this software outside of the schmidt laboratory at mit requires permission of the author.
  * 
- * this script takes an .alog file with only NAV_X and NAV_Y and inserts
- * NAV_LATITUDE and NAV_LONGITUDE in the appropriate places (by doing the
- * the geodesy conversion). it thus requres LAT_ORIGIN and LONG_ORIGIN variables
- * to be in the alog file
- *
+ * see README for compilation and usage
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -43,7 +39,7 @@ int main(int argc, char *argv[])
   
   if (argc < 2)
     {
-      printf("Usage is ./addlatlong directory_with_alogs");
+      printf("usage is (automatically recursive): addlatlong directory_with_alogs");
       return 1;
     }
 

@@ -1,1 +1,0 @@
-gcc -o ptsur2sql ptsur2sql.c -lm -I /usr/include/mysql -L /usr/lib/mysql -lmysqlclient

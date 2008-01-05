@@ -2,9 +2,9 @@ t. schneider 7.30.07
 tes@mit.edu
 mit / whoi joint program in ocean engineering
 
-readme for C scripts btr_fix and alog_to_btr. more information is available in the header comments of the *.c files.
+readme for C scripts btr_fix and alog_to_btr. more information is available in the header comments of the *.cpp files.
 
-purpose:
+> purpose:
 
 these programs are intended to fix btr data from the may 2007 project minus experiment.
 
@@ -30,20 +30,20 @@ detailed process:
 
 compilation and execution:
 
-to compile btr_fix.c type
+> compile btr_fix.c type in btr_fix/
 make
 
-to compile alog_to_btr.c type
+to compile alog_to_btr.c type in alog_to_btr/
 make
 
 binaries are placed in the MOOS-IvP bin directory.
 
-to run btr_fix type
-> btr_fix inputfile0.btr directory_with_btr_files > logfile
+> to run btr_fix type
+btr_fix inputfile0.btr directory_with_btr_files > logfile
 
 "> logfile" can be omitted, and the program output will be put to the screen. btr_fix is verbose. there is presently no terse mode.
 
-to run alog_to_btr type
+> to run alog_to_btr type
 > alog_to_btr < input.alog > output.btr
 
 the i/o redirection (<,>)  is necessary as alog_to_btr uses standard input and writes standard output.

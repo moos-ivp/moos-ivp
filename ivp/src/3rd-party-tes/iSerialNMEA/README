@@ -28,3 +28,7 @@ this process was written primarily as a special purpose script
 to parse serial data from the R/V point sur during the PN'07
 exercises. With modification, it may be useful for other serial
 NMEA streams.
+
+currently supports the following NMEA strings:
+GPGGA (lat, long, extrapolated speed)
+PASHR (heading)

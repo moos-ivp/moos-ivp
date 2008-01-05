@@ -1,6 +1,6 @@
 # Makefile definitions particular to this app
 
-LTARGET  = modem_csv
+LTARGET  = alog_to_btr
 LIFLAGS  = 
 LCFLAGS  = 
 

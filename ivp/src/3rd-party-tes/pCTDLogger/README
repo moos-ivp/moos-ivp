@@ -1,0 +1,44 @@
+t. schneider tes@mit.edu 10.1.07
+laboratory for autonomous marine sensing systems
+massachusetts institute of technology 
+
+readme for CTDLogger:
+
+this process is a program running under the MOOS robotic control
+software system developed by paul newman:
+http://www.robots.ox.ac.uk/%7Epnewman/TheMOOS/index.html
+
+> compilation: type in the iWebsite directory
+
+make
+
+> usage:
+CTDLogger file.moos [name to register with moos]
+
+an example .moos configuration file (with comments) is provided
+in this directory.
+
+this process may also be launched by pAntler.
+the only *.moos file value is:
+LogPath	some_path
+
+which specifies the path to log to (current user must have write).
+otherwise it logs to the current working directory.
+
+> purpose:
+writes out a log file with CTD data for the kayak CTD (SBE49)
+
+it begins logging when the moos variable CTD_LOG is set to true
+and stops the file when CTD_LOG is set to false.
+
+pSamplingControl is used to control the logging behavior of this
+process.
+
+CTDLogger requires the moos variables:
+
+CTD_TCPSV (ctd data)
+GPS_LATITUDE
+GPS_LONGITUDE
+CTD_LOG (true or false)
+SENSOR_MISSION (1,2, 3, or 4 -to log the mission number)
+

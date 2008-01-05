@@ -21,5 +21,6 @@ this process may also be launched by pAntler.
 
 > purpose:
 takes AIS_REPORT variables from the local MOOSDB and imports them into a MySQL
-database for the purpose of the google earth viewer.
+database for the purpose of geov (google earth ocean viewer).
 
+more details forthcoming
