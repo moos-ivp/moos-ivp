@@ -1,0 +1,7 @@
+t. schneider tes@mit.edu
+
+this directory contains both MOOS processes and MOOS post processing tools.
+
+the MOOS processes are named either iName, pName, or uName. the tools are simply name (all lowercase).
+
+read the README in the subdirectories for details on use and usage.
