@@ -1,11 +1,9 @@
 /* t. schneider 1.3.08
-;5B;5B;5B * tes@mit.edu
+ * tes@mit.edu
  * mit / whoi joint program in ocean engineering
  * use of this software outside of the schmidt laboratory at mit requires permission of the author.
  * 
- * this is a special purpose script to convert the data from the oct 07 dabob
- * bay, washington cruise pt sur ship data into the geov database. geov
- * db server information is defined below
+ * see README for information about this script.
  * 
  */
 #include <stdio.h>
