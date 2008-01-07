@@ -147,3 +147,51 @@ LINK_LIBS="
    pthread" \
 simple_app_cmake_file
 
+
+SUBDIR=addlatlong \
+PROGNAME=addlatlong \
+IVP_BUILD_BY_DEFAULT=OFF \
+IVP_INSTALL_COMPONENT=none \
+LINK_LIBS="
+   MOOS
+   MOOSGen
+   MOOSUtility
+   mbutil
+   pthread" \
+simple_app_cmake_file
+
+
+SUBDIR=alog_to_btr \
+PROGNAME=alog_to_btr \
+IVP_BUILD_BY_DEFAULT=OFF \
+IVP_INSTALL_COMPONENT=none \
+LINK_LIBS="
+   " \
+simple_app_cmake_file
+
+
+SUBDIR=btr_fix \
+PROGNAME=btr_fix \
+IVP_BUILD_BY_DEFAULT=OFF \
+IVP_INSTALL_COMPONENT=none \
+LINK_LIBS="
+   " \
+simple_app_cmake_file
+
+SUBDIR=time_fix_alog \
+PROGNAME=time_fix_alog \
+IVP_BUILD_BY_DEFAULT=ON \
+IVP_INSTALL_COMPONENT=none \
+LINK_LIBS="
+   m" \
+simple_app_cmake_file
+
+
+SUBDIR=modem_csv \
+PROGNAME=modem_csv \
+IVP_BUILD_BY_DEFAULT=OFF \
+IVP_INSTALL_COMPONENT=none \
+LINK_LIBS="
+   " \
+simple_app_cmake_file
+
