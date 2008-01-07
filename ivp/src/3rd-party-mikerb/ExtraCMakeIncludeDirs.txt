@@ -1,5 +1,0 @@
-INCLUDE_DIRECTORIES(3rd-party-mikerb/lib_behaviors-attic)
-INCLUDE_DIRECTORIES(3rd-party-mikerb/lib_behaviors-oxford)
-INCLUDE_DIRECTORIES(3rd-party-mikerb/lib_behaviors-sandbox)
-INCLUDE_DIRECTORIES(3rd-party-mikerb/lib_ivpbuild-extra)
-INCLUDE_DIRECTORIES(3rd-party-mikerb/lib_mbutiltest)
