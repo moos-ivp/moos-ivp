@@ -294,7 +294,9 @@ void BHV_Waypoint::updateInfoOut(bool post)
   }
 
   XYSegList seglist = waypoint_engine.getSegList();
-  postMessage("VIEW_SEGLIST", seglist.get_spec());
+  seglist.set_label(m_us_name + "_" + m_descriptor);
+  string segmsg = seglist.get_spec();
+  postMessage("VIEW_SEGLIST", segmsg);
 
   if(post) {
     if(waypoint_engine.currPtChanged()) {
