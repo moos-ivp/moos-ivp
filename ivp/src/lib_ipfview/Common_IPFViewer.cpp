@@ -40,9 +40,18 @@ Common_IPFViewer::Common_IPFViewer(int g_x, int g_y, int g_width,
   m_ivp_function = 0;
   m_polar        = 1; 
 
-  m_clear_red    = 0;
-  m_clear_green  = 0.5;
-  m_clear_blue   = 0;
+  vector<double> cvect = colorParse("white");
+
+  m_clear_red    = cvect[0];
+  m_clear_green  = cvect[1];
+  m_clear_blue   = cvect[2];
+
+  vector<double> fvect = colorParse("dark_red");
+
+  m_frame_red    = fvect[0];
+  m_frame_green  = fvect[1];
+  m_frame_blue   = fvect[2];
+
   m_frame_height = 250;
 }
 
@@ -422,10 +431,9 @@ void Common_IPFViewer::drawFrame()
   double b = -250;
   double t = -250 + (m_frame_height);
 
-  vector<double> cvect = colorParse("yellow");
-
+  glColor3f(m_frame_red/2, m_frame_green/2, m_frame_blue/2);
   //Color3f(0.6f, 0.4f, 0.6f);
-  glColor3f(cvect[0]/2, cvect[1]/2, cvect[2]/2);
+  //glColor3f(cvect[0]/2, cvect[1]/2, cvect[2]/2);
   glShadeModel(GL_FLAT);
   
   // Either draw a full base or just the frame
@@ -440,7 +448,7 @@ void Common_IPFViewer::drawFrame()
     glEnd();
   }
   
-  glColor3f(cvect[0], cvect[1], cvect[2]);
+  glColor3f(m_frame_red, m_frame_green, m_frame_blue);
 
   if(!m_draw_base) {
     glBegin(GL_LINE_STRIP);

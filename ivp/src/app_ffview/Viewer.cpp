@@ -39,9 +39,13 @@ Viewer::Viewer(int x, int y,
   m_strict_rng = true;
   m_create_time = -1;
 
-  m_clear_red   =  73.0 / 256.0;
-  m_clear_green =  62.0 / 256.0;
-  m_clear_blue  = 120.0 / 256.0;
+  //m_clear_red   =  73.0 / 256.0;
+  //m_clear_green =  62.0 / 256.0;
+  //m_clear_blue  = 120.0 / 256.0;
+
+  m_clear_red   =  0.65;
+  m_clear_green =  0.7;
+  m_clear_blue  =  0.8;
 
   m_priority       = false;
   m_priority_cnt   = 1000;

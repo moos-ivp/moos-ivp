@@ -127,7 +127,7 @@ Fl_Menu_Item GUI::menu_[] = {
  {"Uniform 50",  0, (Fl_Callback*)GUI::cb_MakeUniform, (void*)50, FL_MENU_RADIO},
  {"Uniform 75",  0, (Fl_Callback*)GUI::cb_MakeUniform, (void*)75, FL_MENU_RADIO},
  {"Uniform 100", 0, (Fl_Callback*)GUI::cb_MakeUniform, (void*)100, FL_MENU_RADIO},
- {"Uniform 499", 0, (Fl_Callback*)GUI::cb_MakeUniform, (void*)499, FL_MENU_RADIO},
+ {"Uniform 500", 0, (Fl_Callback*)GUI::cb_MakeUniform, (void*)500, FL_MENU_RADIO},
  {0},
 
  {"Color-Map", 0,  0, 0, 64, 0, 0, 14, 0},
