@@ -77,6 +77,22 @@ LINK_LIBS="
    pthread" \
 simple_app_cmake_file
 
+
+SUBDIR=pAIS2SQL \
+PROGNAME=pAIS2SQL \
+IVP_BUILD_BY_DEFAULT=ON \
+IVP_INSTALL_COMPONENT=none \
+LINK_LIBS="
+   mysqlclient
+   MOOS
+   MOOSGen
+   mbutil
+   m
+   pthread" \
+simple_app_cmake_file
+
+libmysqlclient
+
 SUBDIR=pCTDLogger \
 PROGNAME=pCTDLogger \
 IVP_BUILD_BY_DEFAULT=ON \
