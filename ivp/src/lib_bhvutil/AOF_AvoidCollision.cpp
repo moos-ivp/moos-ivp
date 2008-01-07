@@ -156,8 +156,8 @@ double AOF_AvoidCollision::evalBox(const IvPBox *b) const
   if(!cpa_engine)
     return(0);
 
-  m_domain.getVal(m_crs_ix, b->pt(m_crs_ix,0), eval_crs);
-  m_domain.getVal(m_spd_ix, b->pt(m_spd_ix,0), eval_spd);
+  m_domain.getVal(m_crs_ix, b->pt(m_crs_ix), eval_crs);
+  m_domain.getVal(m_spd_ix, b->pt(m_spd_ix), eval_spd);
 
   cpa_dist  = cpa_engine->evalCPA(eval_crs, eval_spd, m_tol);
 

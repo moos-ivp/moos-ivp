@@ -9,8 +9,8 @@ LIB_BASE =  $(wildcard lib_ivpcore*)	$(wildcard lib_ivpbuild)   	   \
 	    $(wildcard lib_bhvutil*)	$(wildcard lib_behaviors-colregs*) \
 	    $(wildcard lib_geometry*)	$(wildcard lib_helmivp*)    	   \
 	    $(wildcard newmat10D*)      $(wildcard lib_genutil)		   \
-	    $(wildcard lib_logic*)	$(wildcard 3rd-party-eickstedt/lib_behaviors-don*) 	   \
-	    $(wildcard 3rd-party-mikerb/lib_behaviors-sandbox*) \
+	    $(wildcard lib_logic*)					   \
+	    $(wildcard 3rd-party-eickstedt/lib_behaviors-don*) 	 
 
 
 # Removed because we no longer put MOOS code directly into the IvP source tree...
@@ -19,17 +19,14 @@ LIB_BASE =  $(wildcard lib_ivpcore*)	$(wildcard lib_ivpbuild)   	   \
 
 
 APP_BASE =  $(wildcard pHelmIvP*) 	$(wildcard pEchoVar*) 	   	\
-	    $(wildcard pLoiterControl*) $(wildcard pMarinePID*)     	\
-	    $(wildcard uXMS*)  	 	$(wildcard pTransponderAIS*)	\
-	    $(wildcard uTermCommand*)  				 	\
-	    $(wildcard iMarineSim*)	$(wildcard iMetaCompass*)   	\
+	    $(wildcard pMarinePID*)     $(wildcard uXMS*)  	 	\
+	    $(wildcard pTransponderAIS*) $(wildcard uTermCommand*)  	\
+	    $(wildcard iMarineSim*)					\
 	    $(wildcard iPWMController*) $(wildcard uProcessWatch*)	\
 	    $(wildcard app_splug*)	$(wildcard pDeployHandler*)	\
-	    $(wildcard pViewerRelay*)   $(wildcard pSamplingControl*) 	\
-	    $(wildcard iWebsite*)       $(wildcard iMetaMemCompass*)    \
+	    $(wildcard pViewerRelay*)   				\
 	    $(wildcard pVirtualTether*) $(wildcard uRepeater*)    	\
 	    $(wildcard uMessageForward*)		\
-	    $(wildcard pTrafficControl*)		\
 	    $(wildcard 3rd-party-anrp/pCTDLogger*)     	\
 	    $(wildcard 3rd-party-anrp/MOOSBlink*)	\
 	    $(wildcard 3rd-party-anrp/iWinchCTL*)       \
@@ -56,8 +53,7 @@ APP_BASE =  $(wildcard pHelmIvP*) 	$(wildcard pEchoVar*) 	   	\
 # $(wildcard pMOOSBridge*)
 # $(wildcard iRemote*)
 
-LIB_TOOLS = $(wildcard 3rd-party-mikerb/lib_behaviors-sandbox*)    \
-	    $(wildcard 3rd-party-mikerb/lib_ivpbuild-extra*)	   \
+LIB_TOOLS = $(wildcard lib_behaviors-sandbox*) 		   \
 	    $(wildcard 3rd-party-eickstedt/lib_track*)		   \
 	    $(wildcard 3rd-party-eickstedt/lib_behaviros-don*)	   \
 	    $(wildcard 3rd-party-ajshafer/lib_artifacts)	   \

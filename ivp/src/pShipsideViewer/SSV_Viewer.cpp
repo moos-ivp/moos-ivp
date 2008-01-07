@@ -61,9 +61,10 @@ void SSV_Viewer::draw()
   drawBGateways();
   drawEFields();
 
+  drawPolys();
+  drawSegLists();
   drawStationCircles();
   drawGrids();
-  drawPolys();
   drawCircles();
   drawRadials();
 

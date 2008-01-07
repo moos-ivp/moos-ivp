@@ -556,7 +556,7 @@ void MarineViewer::drawHexagons()
 }
 
 //-------------------------------------------------------------
-// Procedure: drawSegList()
+// Procedure: drawSegLists()
 
 void MarineViewer::drawSegLists()
 {
