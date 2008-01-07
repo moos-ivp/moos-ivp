@@ -1,9 +1,0 @@
-Behavior = BHV_Waypoint
-{
-	name	= bhv_return
-	speed	= 3.0
-	radius	= 5.0
-	points	= 0,0
-	
-	condition = uVoice_return,true
-}
