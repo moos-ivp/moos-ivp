@@ -2,14 +2,16 @@ FILE(GLOB SRC *.cpp)
 
 OPTION(IVP_BUILD_pAIS2SQL "Build program pAIS2SQL" ON)
 
-
 IF("${IVP_BUILD_pAIS2SQL}" STREQUAL "ON")
    ADD_EXECUTABLE(pAIS2SQL ${SRC})
+
+   INCLUDE_DIRECTORIES(/usr/include/mysql)
    
    TARGET_LINK_LIBRARIES(pAIS2SQL 
    mysqlclient
    MOOS
    MOOSGen
+   MOOSUtility
    mbutil
    m
    pthread)

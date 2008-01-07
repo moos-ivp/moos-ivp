@@ -78,20 +78,22 @@ LINK_LIBS="
 simple_app_cmake_file
 
 
-SUBDIR=pAIS2SQL \
-PROGNAME=pAIS2SQL \
-IVP_BUILD_BY_DEFAULT=ON \
-IVP_INSTALL_COMPONENT=none \
-LINK_LIBS="
-   mysqlclient
-   MOOS
-   MOOSGen
-   mbutil
-   m
-   pthread" \
-simple_app_cmake_file
-
-libmysqlclient
+# This app also needs an INCLUDE_DIRECTORIES(/usr/include/mysql) command, which 
+# this generation script doesn't currently support afaik.  So for now, don't
+# automate the creation of this CMakeLists.txt file.  (This is easy to fix, btw.)
+#
+# SUBDIR=pAIS2SQL \
+# PROGNAME=pAIS2SQL \
+# IVP_BUILD_BY_DEFAULT=ON \
+# IVP_INSTALL_COMPONENT=none \
+# LINK_LIBS="
+#    mysqlclient
+#    MOOS
+#    MOOSGen
+#    mbutil
+#    m
+#    pthread" \
+# simple_app_cmake_file
 
 SUBDIR=pCTDLogger \
 PROGNAME=pCTDLogger \
