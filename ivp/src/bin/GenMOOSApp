@@ -14,31 +14,12 @@ fi
 mkdir $2$1
 cd $2$1
 
-cat >> makefile <<EOF
-# Makefile for $1
-
-LTARGET  = $2$1
-LIFLAGS  =
-LCFLAGS  =
-
-PLIBS    = libMOOS.a libMOOSGen.a libmbutil.a
-LIBS     = -lm -lpthread \$(patsubst lib%.a,-l%,\$(PLIBS))
-PLDIRS   = \$(wildcard ../lib_*) ../MOOSLIB ../MOOSGenLib
-
-# Make configuration parameters
-include ../make_config.mk
-# Generic makefile structure for all application modules
-include ../make_app.mk
-# DO NOT DELETE
-
-EOF
-
 cat >> ${1}.h <<EOF
 /************************************************************/
-/*    NAME: Andrew Shafer                                   */
+/*    NAME:                                                 */
 /*    ORGN: MIT                                             */
 /*    FILE: ${1}.h                                          */
-/*    DATE: Aug 15 2007                                     */
+/*    DATE:                                                 */
 /************************************************************/
 
 #ifndef ${1}_HEADER
@@ -66,10 +47,10 @@ EOF
 
 cat >> ${1}Main.cpp <<EOF
 /************************************************************/
-/*    NAME: Andrew Shafer                                   */
+/*    NAME:                                                 */
 /*    ORGN: MIT                                             */
 /*    FILE: ${1}Main.cpp                                    */
-/*    DATE: Aug 15 2007                                     */
+/*    DATE:                                                 */
 /************************************************************/
 
 #include "MOOSLib.h"
@@ -78,16 +59,30 @@ cat >> ${1}Main.cpp <<EOF
 
 int main(int argc, char *argv[])
 {
-  char *sMissionFile = "${1}.moos";
-	
-  if(argc > 1)
-    sMissionFile = argv[1];
-	
-  ${1} ${1};
-	
-  ${1}.Run("${2}${1}", sMissionFile);
+  // default parameters file
+  char * sMissionFile = "${1}.moos";
+        
+  //under what name shoud the application register with the MOOSDB?
+  char * sMOOSName = "${2}${1}";
+  
+  switch(argc)
+    {
+    case 3:
+      //command line says don't register with default name              
+      sMOOSName = argv[2];
+    case 2:
+      //command line says don't use default config file
+      sMissionFile = argv[1];
+    }
+  
+  //make an application
+  ${1} ${1}App;
 
-  return(0);
+  //run it
+  ${1}App.Run(sMOOSName,sMissionFile);
+  
+  return 0;
+
 }
 
 EOF
@@ -108,10 +103,10 @@ EOF
 
 cat >> ${1}.cpp <<EOF
 /************************************************************/
-/*    NAME: Andrew Shafer                                   */
+/*    NAME:                                                 */
 /*    ORGN: MIT                                             */
 /*    FILE: ${1}.cpp                                        */
-/*    DATE: Aug 15 2007                                     */
+/*    DATE:                                                 */
 /************************************************************/
 
 #include <iterator>
