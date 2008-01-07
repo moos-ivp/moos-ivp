@@ -1,11 +1,11 @@
 
 
-                lib_ivpcore
-                     |
-                     |
-                lib_ivpbuild     lib_mbutil
-                     |          /      
-                     |        /        
+                lib_ivpcore    lib_mbutil
+                     |       /
+                     |      /
+                lib_ivpbuild
+                     |      
+                     |      
                 lib_behaviors          
                      |                 
                      |                 
