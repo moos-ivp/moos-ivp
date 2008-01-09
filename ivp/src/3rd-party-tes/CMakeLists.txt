@@ -11,5 +11,5 @@ ADD_SUBDIRECTORY(modem_csv)
 ADD_SUBDIRECTORY(time_fix_alog)
 
 # both these require mysql libraries (libmysqlclient15-dev in ubuntu)
-#ADD_SUBDIRECTORY(pAIS2SQL)
+ADD_SUBDIRECTORY(pAIS2SQL)
 #ADD_SUBDIRECTORY(ptsur2sql)

@@ -24,27 +24,27 @@
  
 int main(int argc, char * argv[])
 {
-  // default parameters file
-  char * sMissionFile = "pVirtualTether.moos";
-	
-  //under what name shoud the application register with the MOOSDB?
-  char * sMOOSName = "pVirtualTether";
+    // default parameters file
+    char * sMissionFile = "pVirtualTether.moos";
+        
+    //under what name shoud the application register with the MOOSDB?
+    char * sMOOSName = "pVirtualTether";
   
-  switch(argc)
+    switch(argc)
     {
-    case 3:
-      //command line says don't register with default name		
-      sMOOSName = argv[2];
-    case 2:
-      //command line says don't use default config file
-      sMissionFile = argv[1];
+        case 3:
+            //command line says don't register with default name                
+            sMOOSName = argv[2];
+        case 2:
+            //command line says don't use default config file
+            sMissionFile = argv[1];
     }
   
-  //make an application
-  CpVirtualTether pVirtualTetherApp;
+    //make an application
+    CpVirtualTether pVirtualTetherApp;
 
-  //run it
-  pVirtualTetherApp.Run(sMOOSName,sMissionFile);
+    //run it
+    pVirtualTetherApp.Run(sMOOSName,sMissionFile);
   
-  return 0;
+    return 0;
 }

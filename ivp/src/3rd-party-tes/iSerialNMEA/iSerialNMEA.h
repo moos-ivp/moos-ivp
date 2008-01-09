@@ -36,8 +36,8 @@ class CiSerialNMEA : public CMOOSApp
 public:
 	//standard construction and destruction
 	CiSerialNMEA();
-	virtual ~CiSerialNMEA();
-
+        virtual ~CiSerialNMEA();
+	
 protected:
 	bool OnNewMail(MOOSMSG_LIST &NewMail);
 	bool Iterate();

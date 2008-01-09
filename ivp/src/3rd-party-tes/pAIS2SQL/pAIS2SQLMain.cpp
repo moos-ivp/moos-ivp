@@ -24,27 +24,27 @@
  
 int main(int argc, char * argv[])
 {
-  // default parameters file
-  char * sMissionFile = "pAIS2SQL.moos";
-	
-  //under what name shoud the application register with the MOOSDB?
-  char * sMOOSName = "pAIS2SQL";
+    // default parameters file
+    char * sMissionFile = "pAIS2SQL.moos";
+        
+    //under what name shoud the application register with the MOOSDB?
+    char * sMOOSName = "pAIS2SQL";
   
-  switch(argc)
+    switch(argc)
     {
-    case 3:
-      //command line says don't register with default name		
-      sMOOSName = argv[2];
-    case 2:
-      //command line says don't use default config file
-      sMissionFile = argv[1];
+        case 3:
+            //command line says don't register with default name                
+            sMOOSName = argv[2];
+        case 2:
+            //command line says don't use default config file
+            sMissionFile = argv[1];
     }
   
-  //make an application
-  CpAIS2SQL pAIS2SQLApp;
+    //make an application
+    CpAIS2SQL pAIS2SQLApp;
 
-  //run it
-  pAIS2SQLApp.Run(sMOOSName,sMissionFile);
+    //run it
+    pAIS2SQLApp.Run(sMOOSName,sMissionFile);
   
-  return 0;
+    return 0;
 }

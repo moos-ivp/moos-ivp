@@ -25,27 +25,27 @@
  
 int main(int argc, char * argv[])
 {
-  // default parameters file
-  char * sMissionFile = "iSerialNMEA.moos";
-	
-  //under what name shoud the application register with the MOOSDB?
-  char * sMOOSName = "iSerialNMEA";
+    // default parameters file
+    char * sMissionFile = "iSerialNMEA.moos";
+        
+    //under what name shoud the application register with the MOOSDB?
+    char * sMOOSName = "iSerialNMEA";
   
-  switch(argc)
+    switch(argc)
     {
-    case 3:
-      //command line says don't register with default name		
-      sMOOSName = argv[2];
-    case 2:
-      //command line says don't use default config file
-      sMissionFile = argv[1];
+        case 3:
+            //command line says don't register with default name                
+            sMOOSName = argv[2];
+        case 2:
+            //command line says don't use default config file
+            sMissionFile = argv[1];
     }
   
-  //make an application
-  CiSerialNMEA iSerialNMEAApp;
+    //make an application
+    CiSerialNMEA iSerialNMEAApp;
 
-  //run it
-  iSerialNMEAApp.Run(sMOOSName,sMissionFile);
+    //run it
+    iSerialNMEAApp.Run(sMOOSName,sMissionFile);
   
-  return 0;
+    return 0;
 }

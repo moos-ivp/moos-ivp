@@ -35,12 +35,12 @@
 
 class CiWebsite : public CMOOSApp  
 {
-public:
+ public:
 	//standard construction and destruction
 	CiWebsite();
 	virtual ~CiWebsite();
 
-protected:
+ protected:
 	// methods
 	bool OnNewMail(MOOSMSG_LIST &NewMail);
 	bool Iterate();
