@@ -39,34 +39,32 @@ int main(int argc, char *argv[])
 	
 	XYPolygon poly;
 
-	poly.initialize(poly_init);
+	bool ok = poly.initialize(poly_init);
 	
-	// Remove label if present
-	if(poly_init.substr(0, 5) == "label"){
-		poly_init = chompString(poly_init, ':').at(1);
+	if (!ok) {
+		std::cerr << "ERROR:  Polygon string not parsed properly\n";
+		return 1;
 	}
 	
-	// Put points into vector
-	std::vector<std::string> vPoints = parseString(poly_init, ':');
-	if(vPoints.size() < 3){
-		std::cout << "Error: config string contains less than 3 points: " << poly_init << std::endl;
-		return(2);
-	};
+	// Find the bounding square.  We'll generate random points within this
+	double x, y;
+	double min_x, max_x, min_y, max_y;
 	
-	// Find min/max x,y
-	std::vector<double> vx, vy;
+	min_x = poly.get_vx(0);
+	max_x = poly.get_vx(0);
+	min_y = poly.get_vy(0);
+	max_y = poly.get_vy(0);
 	
-	for(std::vector<std::string>::iterator p = vPoints.begin(); p != vPoints.end(); p++){
-		std::vector<std::string> vPoint = parseString(*p, ',');
-		vx.push_back(atof(vPoint.at(0).c_str()));
-		vy.push_back(atof(vPoint.at(1).c_str()));
+	for(int i = 1; i < poly.size(); i++){
+		x = poly.get_vx(i);
+		y = poly.get_vy(i);
+		
+		if (x < min_x) { min_x = x; }
+		else if (x > max_x) { max_x = x; }
+		
+		if (y < min_y) { min_y = y; }
+		else if (y > max_x) { max_y = y; }
 	}
-	
-	double min_x, min_y, max_x, max_y;
-	min_x = *min_element(vx.begin(), vx.end());
-	min_y = *min_element(vy.begin(), vy.end());
-	max_x = *max_element(vx.begin(), vx.end());
-	max_y = *max_element(vy.begin(), vy.end());
 
 	std::vector<std::string> vArtifacts = generateArtifacts(min_x, max_x, min_y, max_y, step, num_artifacts, poly);
 	

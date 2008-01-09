@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
     	sradius = argv[4];
     	sclockwise = argv[5];
     	ofHeader = argv[6];
-    	if (argc == 7) {ssnap = argv[7];}
+    	if (argc == 8) {ssnap = argv[7];}
     }
 	
 	if (toupper(sclockwise) == "TRUE") {clockwise = true;}
