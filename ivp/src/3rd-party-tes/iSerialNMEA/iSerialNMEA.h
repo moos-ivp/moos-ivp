@@ -33,48 +33,48 @@
 
 class CiSerialNMEA : public CMOOSApp  
 {
-public:
-	//standard construction and destruction
-	CiSerialNMEA();
-        virtual ~CiSerialNMEA();
-	
-protected:
-	bool OnNewMail(MOOSMSG_LIST &NewMail);
-	bool Iterate();
-	bool OnConnectToServer();
-	bool OnStartUp();
+  public:
+    //standard construction and destruction
+    CiSerialNMEA();
+    virtual ~CiSerialNMEA();
+        
+  protected:
+    bool OnNewMail(MOOSMSG_LIST &NewMail);
+    bool Iterate();
+    bool OnConnectToServer();
+    bool OnStartUp();
 
-	bool processGPGGA(std::vector<std::string>);
-	bool processGPHGT(std::vector<std::string>);
-	bool processPASHR(std::vector<std::string>);
+    bool processGPGGA(std::vector<std::string>);
+    bool processGPHGT(std::vector<std::string>);
+    bool processPASHR(std::vector<std::string>);
 
-	int m_baud;
-	std::string m_port_name;
-	CMOOSLinuxSerialPort m_port;
+    int m_baud;
+    std::string m_port_name;
+    CMOOSLinuxSerialPort m_port;
 
-	std::string m_vessel_name;
-	std::string m_vessel_type;
-	double m_nav_x;
-	double m_nav_y;
-	double m_lat;
-	double m_long;
-	double m_nav_speed;
-	double m_nav_heading;
-	double m_blackout_interval;
-	double m_last_post_time;
-	
-	// newest timestamp available from the serial stream
-	double m_best_time;
+    std::string m_vessel_name;
+    std::string m_vessel_type;
+    double m_nav_x;
+    double m_nav_y;
+    double m_lat;
+    double m_long;
+    double m_nav_speed;
+    double m_nav_heading;
+    double m_blackout_interval;
+    double m_last_post_time;
+        
+    // newest timestamp available from the serial stream
+    double m_best_time;
 
-	CMOOSGeodesy m_Geodesy;
+    CMOOSGeodesy m_Geodesy;
 
-	double m_last_x;
-	double m_last_y;
-	double m_last_time;
-	
-	char m_i;
+    double m_last_x;
+    double m_last_y;
+    double m_last_time;
+        
+    char m_i;
 
-	double m_speed [];
+    double m_speed [];
 };
 
 #endif 

@@ -35,43 +35,43 @@
 
 class CiWebsite : public CMOOSApp  
 {
- public:
-	//standard construction and destruction
-	CiWebsite();
-	virtual ~CiWebsite();
+  public:
+    //standard construction and destruction
+    CiWebsite();
+    virtual ~CiWebsite();
 
- protected:
-	// methods
-	bool OnNewMail(MOOSMSG_LIST &NewMail);
-	bool Iterate();
-	bool OnConnectToServer();
-	bool OnStartUp();
-	void DoRegistrations();
-	bool ProcessFetchedFile();
-	bool addMapping(std::string, std::string);
-	bool scpPut(std::string);
+  protected:
+    // methods
+    bool OnNewMail(MOOSMSG_LIST &NewMail);
+    bool Iterate();
+    bool OnConnectToServer();
+    bool OnStartUp();
+    void DoRegistrations();
+    bool ProcessFetchedFile();
+    bool addMapping(std::string, std::string);
+    bool scpPut(std::string);
 
-	// configuration values
-	std::string m_server_address;
-	std::string m_local_cache;
-	double m_wait;
-	std::string m_verbosity;
-	std::string m_sequence_string;
-	bool m_ignore_sequence;
-	std::string m_server_up_address;
-	std::string m_server_up_user;
+    // configuration values
+    std::string m_server_address;
+    std::string m_local_cache;
+    double m_wait;
+    std::string m_verbosity;
+    std::string m_sequence_string;
+    bool m_ignore_sequence;
+    std::string m_server_up_address;
+    std::string m_server_up_user;
 
-	// unixtime to hit the website again (last fetch time plus m_wait)
-	double m_next_fetch;
+    // unixtime to hit the website again (last fetch time plus m_wait)
+    double m_next_fetch;
 
-	// unixtime or sequence number of last processed file
-	double m_last_file_time;
+    // unixtime or sequence number of last processed file
+    double m_last_file_time;
 
-	// last sequence number
-	double m_last_seq;
+    // last sequence number
+    double m_last_seq;
 
-	// map for echoing variables
-	std::map<std::string, std::string> var_map;
+    // map for echoing variables
+    std::map<std::string, std::string> var_map;
 };
 
 #endif 

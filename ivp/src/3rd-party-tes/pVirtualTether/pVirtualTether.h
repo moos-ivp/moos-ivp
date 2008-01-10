@@ -30,32 +30,32 @@
 
 class CpVirtualTether : public CMOOSApp  
 {
-public:
-	//standard construction and destruction
-	CpVirtualTether();
-	virtual ~CpVirtualTether();
+  public:
+    //standard construction and destruction
+    CpVirtualTether();
+    virtual ~CpVirtualTether();
 
-protected:
-	bool OnNewMail(MOOSMSG_LIST &NewMail);
-	bool Iterate();
-	bool OnConnectToServer();
-	bool OnStartUp();
-        void DoRegistrations();
+  protected:
+    bool OnNewMail(MOOSMSG_LIST &NewMail);
+    bool Iterate();
+    bool OnConnectToServer();
+    bool OnStartUp();
+    void DoRegistrations();
 
-	// config parameters
-	std::string m_contact;
-	double m_range;
-	double m_original_range;
-	double m_timeout;
-	double m_last_report_time;
-	bool m_override;
-	double m_nav_x;
-	double m_nav_y;
-	double m_grace;
-	double m_start_time;
-	bool m_pos_ok;
-	double m_lsquare;
-	
+    // config parameters
+    std::string m_contact;
+    double m_range;
+    double m_original_range;
+    double m_timeout;
+    double m_last_report_time;
+    bool m_override;
+    double m_nav_x;
+    double m_nav_y;
+    double m_grace;
+    double m_start_time;
+    bool m_pos_ok;
+    double m_lsquare;
+        
 };
 
 #endif 

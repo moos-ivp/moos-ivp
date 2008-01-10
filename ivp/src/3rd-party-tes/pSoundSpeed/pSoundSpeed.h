@@ -35,32 +35,32 @@
 
 class CpSoundSpeed : public CMOOSApp  
 {
-public:
-	//standard construction and destruction
-	CpSoundSpeed();
-	virtual ~CpSoundSpeed();
+  public:
+    //standard construction and destruction
+    CpSoundSpeed();
+    virtual ~CpSoundSpeed();
 
-	bool OnNewMail(MOOSMSG_LIST &NewMail);
-	bool Iterate();
-	bool OnConnectToServer();
-	bool OnStartUp();
+    bool OnNewMail(MOOSMSG_LIST &NewMail);
+    bool Iterate();
+    bool OnConnectToServer();
+    bool OnStartUp();
 
- 	void registerVariables();
-	void doPing();
+    void registerVariables();
+    void doPing();
 
 
- protected:
+  protected:
 
-	int m_i;
-	double m_start_x;
-	double m_start_y;
-	CMOOSGeodesy m_Geodesy;
-	double LatOrigin;
-	double LongOrigin;
-	double lasttime;
-	bool m_do_ping;
+    int m_i;
+    double m_start_x;
+    double m_start_y;
+    CMOOSGeodesy m_Geodesy;
+    double LatOrigin;
+    double LongOrigin;
+    double lasttime;
+    bool m_do_ping;
 
-	double m_last_ping;
+    double m_last_ping;
 
 };
 
