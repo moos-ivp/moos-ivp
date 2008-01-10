@@ -1,4 +1,4 @@
-INCLUDE(FindFLTK)    # This is distributed with CMake.
+INCLUDE(../MOOSFindFLTK.cmake)
 
 OPTION(IVP_BUILD_ffview "Build program ffview" ON)
 
