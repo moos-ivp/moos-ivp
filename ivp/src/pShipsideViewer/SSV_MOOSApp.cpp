@@ -115,6 +115,7 @@ bool SSV_MOOSApp::OnConnectToServer()
   m_Comms.Register("GRID_CONFIG", 0);
   m_Comms.Register("GRID_DELTA", 0);
   m_Comms.Register("VIEW_POLYGON", 0);
+  m_Comms.Register("VIEW_SEGLIST", 0);
   m_Comms.Register("VIEW_POINT", 0);
   m_Comms.Register("TRAIL_RESET", 0);
   m_Comms.Register("STATION_CIRCLE", 0);
@@ -328,6 +329,7 @@ bool SSV_MOOSApp::receivePolygon(CMOOSMsg &Msg)
   
   bool ok = new_poly.initialize(Msg.m_sVal);
   if(ok) {
+    cout << "Receieved OK poly of size: " << new_poly.size() << endl;
     m_gui->addPoly(new_poly);
     return(true);
   }
@@ -343,6 +345,7 @@ bool SSV_MOOSApp::receivePolygon(CMOOSMsg &Msg)
 
 bool SSV_MOOSApp::receiveSegList(CMOOSMsg &Msg)
 {
+  cout << "In SSV_MOOSApp::receiveSegList()" << endl;
   XYSegList new_seglist;
   
   bool ok = new_seglist.initialize(Msg.m_sVal);

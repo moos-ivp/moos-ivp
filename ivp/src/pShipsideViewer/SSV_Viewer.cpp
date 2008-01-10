@@ -964,6 +964,9 @@ void SSV_Viewer::drawCirc(XYCircle dcircle, int pts, bool filled,
   
   XYPolygon poly;
   poly.initialize(poly_str);
+
+  // Now set points to the actual size vs. the requested size
+  pts = poly.size();
   unsigned int i, j;
   float *points = new float[2*pts];
   int pindex = 0;
