@@ -33,7 +33,9 @@ PROJECT(IVP)
 # By avoiding use of the CACHE option, we force the (temporary) value of these
 # variables rather than picking up the cached values used in MOOS.
 SET( LIBRARY_OUTPUT_PATH "")
-SET( EXECUTABLE_OUTPUT_PATH ./bin)
+
+MESSAGE("*** IVP_SOURCE_DIR = ${IVP_SOURCE_DIR}")
+SET( EXECUTABLE_OUTPUT_PATH ${IVP_SOURCE_DIR}/bin)
 
 #===============================================================================
 # Specify where to find MOOS's headers and libraries...
