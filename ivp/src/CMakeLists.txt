@@ -1,3 +1,24 @@
+PROJECT(IVP)
+
+#******************************************************************************
+#  NOTE: WHAT TO MODIFY IF CMAKE/MAKE CAN'T FIND CERTAIN FILES/DIRECTORIES!
+#
+#  MOOS:  This file assumes that standard the MOOS 7.0 directory structure is
+#         in place, and that it's rooted at the directory given by the CMake
+#         variable "MOOS_BASE_DIR".  To specify where that directory is, you
+#         can modify the line below that looks like this:
+#
+#         GET_FILENAME_COMPONENT(MOOS_BASE_DIR ../../MOOS ABSOLUTE)
+#
+#         by replacing the "../../MOOS" with the correct value.
+#
+#  IVP_DATA_DIR: This is set below by a command that looks like the following:
+#
+#         GET_FILENAME_COMPONENT(IVP_DATA_DIR ./data ABSOLUTE)
+#
+#         You can modify the "../data" pathname as needed, but this shouldn't
+#         normally require and change.
+
 #===============================================================================
 # Some details the user (whose building IvP) can control...
 #===============================================================================
@@ -12,7 +33,7 @@
 # By avoiding use of the CACHE option, we force the (temporary) value of these
 # variables rather than picking up the cached values used in MOOS.
 SET( LIBRARY_OUTPUT_PATH "")
-SET( EXECUTABLE_OUTPUT_PATH ${IVP_BINARY_DIR}/src/bin)
+SET( EXECUTABLE_OUTPUT_PATH ./bin)
 
 #===============================================================================
 # Specify where to find MOOS's headers and libraries...
@@ -46,6 +67,12 @@ INCLUDE_DIRECTORIES(${MOOS_INCLUDE_DIRS})
 # Specify which IvP subdirectories to build, and where to find IvP's header 
 # files...
 #===============================================================================
+
+# This is used to supply a preprocessor definition that gets compiled into some
+# code, such as lib_marineview.  I really dislike this approach because it's 
+# very brittle w.r.t. anything getting moved around, or if you use the code on
+# a different system than that on which it was compiled. -CJC
+GET_FILENAME_COMPONENT(IVP_DATA_DIR ../data ABSOLUTE)
 
 # Sometimes people introduce their own subdirectories into the build tree so
 # that, among other reasons, their behaviors can be used by pHelmIvP.
