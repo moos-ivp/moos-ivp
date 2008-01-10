@@ -1,0 +1,21 @@
+t. schneider 11.5.07 tes@mit.edu
+
+zlog2alog_tes is identical to anrp's zlog2alog except:
+>> added recursive nature and output to files (not stdout)
+>> modified timestamping to be in accord with pLogger's
+.alog files.
+
+> compile:
+make
+
+> usage (automatically recursive):
+zlog2alog_tes directory_with_zlogs MOOS_VAR1 MOOS_VAR2 MOOS_VAR3 || all
+
+> example:
+zlog2alog_tes ~/project-ptsur-all-dabob07/bobby all
+decompresses all .zlog files into .alog files in the above directory
+and includes  all variables
+
+zlog2alog_tes ~/project-ptsur-all-dabob07/bobby GPS_X GPS_Y
+decompresses all .zlog files into .alog files in the above directory
+but only includes GPS_X and GPS_Y variables in the .alog
