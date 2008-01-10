@@ -967,10 +967,19 @@ void SSV_Viewer::drawCirc(XYCircle dcircle, int pts, bool filled,
 
   // Now set points to the actual size vs. the requested size
   pts = poly.size();
+
+  cout << "Radius: " << rad << "  pts: " << pts << endl;
+
+  if(pts <= 0)
+    return;
+
   unsigned int i, j;
   float *points = new float[2*pts];
   int pindex = 0;
   for(i=0; i<pts; i++) {
+    points[pindex]   = poly.get_vx(i);
+    points[pindex+1] = poly.get_vy(i);
+
     points[pindex]   *=  m_back_img.get_pix_per_mtr();
     points[pindex+1] *=  m_back_img.get_pix_per_mtr();
     pindex += 2;
