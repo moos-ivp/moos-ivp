@@ -585,6 +585,8 @@ void MarineViewer::drawSegList(int ix)
   unsigned int i, j;
   float *points = new float[2*vsize];
 
+  cout << "In drawSegList - pts: " << vsize << endl;
+
   int pindex = 0;
   for(i=0; i<vsize; i++) {
     points[pindex]   = segl.get_vx(i);
