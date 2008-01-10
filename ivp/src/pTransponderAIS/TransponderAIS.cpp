@@ -346,7 +346,7 @@ bool TransponderAIS::handleIncomingAISReport(const string& sdata)
 //-----------------------------------------------------------------
 // Procedure: handleIncomingNaFConMessage()
 //
-//  tes 9-12-97
+//  tes 9-12-07
 //  process a NaFCon Status Report and publish
 //  an AIS_REPORT.
 //

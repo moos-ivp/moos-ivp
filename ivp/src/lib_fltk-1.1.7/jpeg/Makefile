@@ -34,10 +34,10 @@ RM = /usr/bin/cmake -E remove -f
 CMAKE_EDIT_COMMAND = /usr/bin/ccmake
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/cjc/moos-ivp/trunk/ivp/src
+CMAKE_SOURCE_DIR = /home/toby/moos-ivp/trunk
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/cjc/moos-ivp/trunk/ivp/src
+CMAKE_BINARY_DIR = /home/toby/moos-ivp/trunk
 
 # Include the progress variables for this target.
 include CMakeFiles/progress.make
@@ -48,7 +48,7 @@ include CMakeFiles/progress.make
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake cache editor..."
-	cd /home/cjc/moos-ivp/trunk/ivp/src/lib_fltk-1.1.7/jpeg && /usr/bin/ccmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	cd /home/toby/moos-ivp/trunk/ivp/src/lib_fltk-1.1.7/jpeg && /usr/bin/ccmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 
 # Special rule for the target edit_cache
 edit_cache/fast: edit_cache
@@ -56,623 +56,639 @@ edit_cache/fast: edit_cache
 # Special rule for the target install
 install: preinstall
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
-	cd /home/cjc/moos-ivp/trunk/ivp/src/lib_fltk-1.1.7/jpeg && /usr/bin/cmake -P cmake_install.cmake
+	cd /home/toby/moos-ivp/trunk/ivp/src/lib_fltk-1.1.7/jpeg && /usr/bin/cmake -P cmake_install.cmake
 
 # Special rule for the target install
 install/fast: preinstall/fast
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
-	cd /home/cjc/moos-ivp/trunk/ivp/src/lib_fltk-1.1.7/jpeg && /usr/bin/cmake -P cmake_install.cmake
+	cd /home/toby/moos-ivp/trunk/ivp/src/lib_fltk-1.1.7/jpeg && /usr/bin/cmake -P cmake_install.cmake
 
 # Special rule for the target install/local
 install/local: preinstall
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing only the local directory..."
-	cd /home/cjc/moos-ivp/trunk/ivp/src/lib_fltk-1.1.7/jpeg && /usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
+	cd /home/toby/moos-ivp/trunk/ivp/src/lib_fltk-1.1.7/jpeg && /usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
 
 # Special rule for the target install/local
 install/local/fast: install/local
 
 # Special rule for the target list_install_components
 list_install_components:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Available install components are: \"IvP_Dev\""
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Available install components are: \"IvP_Dev\" \"Moos_Core\" \"Moos_Core_Dev\" \"Moos_Essentials\" \"Moos_Essentials_Dev\" \"Moos_Instruments\" \"Moos_NavigationAndControl\" \"Moos_NavigationAndControl_Dev\" \"Moos_Thirdparty_Dev\" \"Moos_Tools\" \"ivp-core\" \"ivp-core-dev\" \"ivp-tools\" \"ivp-tools-dev\" \"none\""
 
 # Special rule for the target list_install_components
 list_install_components/fast: list_install_components
 
+# Special rule for the target package
+package: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Run CPack packaging tool..."
+	cd /home/toby/moos-ivp/trunk/ivp/src/lib_fltk-1.1.7/jpeg && /usr/bin/cpack --config /home/toby/moos-ivp/trunk/CPackConfig.cmake
+
+# Special rule for the target package
+package/fast: package
+
+# Special rule for the target package_source
+package_source:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Run CPack packaging tool for source..."
+	cd /home/toby/moos-ivp/trunk/ivp/src/lib_fltk-1.1.7/jpeg && /usr/bin/cpack --config /home/toby/moos-ivp/trunk/CPackSourceConfig.cmake
+
+# Special rule for the target package_source
+package_source/fast: package_source
+
 # Special rule for the target rebuild_cache
 rebuild_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
-	cd /home/cjc/moos-ivp/trunk/ivp/src/lib_fltk-1.1.7/jpeg && /usr/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	cd /home/toby/moos-ivp/trunk/ivp/src/lib_fltk-1.1.7/jpeg && /usr/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 
 # Special rule for the target rebuild_cache
 rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(CMAKE_COMMAND) -E cmake_progress_start /home/cjc/moos-ivp/trunk/ivp/src/CMakeFiles $(CMAKE_ALL_PROGRESS)
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.7/jpeg/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/cjc/moos-ivp/trunk/ivp/src/CMakeFiles 0
+	cd /home/toby/moos-ivp/trunk && $(CMAKE_COMMAND) -E cmake_progress_start /home/toby/moos-ivp/trunk/CMakeFiles $(CMAKE_ALL_PROGRESS)
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f CMakeFiles/Makefile2 ivp/src/lib_fltk-1.1.7/jpeg/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/toby/moos-ivp/trunk/CMakeFiles 0
 
 # The main clean target
 clean:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.7/jpeg/clean
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f CMakeFiles/Makefile2 ivp/src/lib_fltk-1.1.7/jpeg/clean
 
 # The main clean target
 clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.7/jpeg/preinstall
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f CMakeFiles/Makefile2 ivp/src/lib_fltk-1.1.7/jpeg/preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.7/jpeg/preinstall
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f CMakeFiles/Makefile2 ivp/src/lib_fltk-1.1.7/jpeg/preinstall
 
 # clear depends
 depend:
 	$(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 
 # Convenience name for target.
-lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/rule:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/rule
+ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/rule:
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f CMakeFiles/Makefile2 ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/rule
 
 # Convenience name for target.
-fltk_jpeg: lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/rule
+fltk_jpeg: ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/rule
 
 # fast build rule for target.
 fltk_jpeg/fast:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build
 
 # target to build an object file
 jcapimin.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcapimin.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcapimin.o
 
 # target to preprocess a source file
 jcapimin.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcapimin.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcapimin.i
 
 # target to generate assembly for a file
 jcapimin.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcapimin.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcapimin.s
 
 # target to build an object file
 jcapistd.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcapistd.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcapistd.o
 
 # target to preprocess a source file
 jcapistd.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcapistd.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcapistd.i
 
 # target to generate assembly for a file
 jcapistd.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcapistd.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcapistd.s
 
 # target to build an object file
 jccoefct.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jccoefct.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jccoefct.o
 
 # target to preprocess a source file
 jccoefct.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jccoefct.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jccoefct.i
 
 # target to generate assembly for a file
 jccoefct.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jccoefct.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jccoefct.s
 
 # target to build an object file
 jccolor.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jccolor.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jccolor.o
 
 # target to preprocess a source file
 jccolor.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jccolor.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jccolor.i
 
 # target to generate assembly for a file
 jccolor.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jccolor.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jccolor.s
 
 # target to build an object file
 jcdctmgr.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcdctmgr.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcdctmgr.o
 
 # target to preprocess a source file
 jcdctmgr.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcdctmgr.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcdctmgr.i
 
 # target to generate assembly for a file
 jcdctmgr.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcdctmgr.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcdctmgr.s
 
 # target to build an object file
 jchuff.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jchuff.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jchuff.o
 
 # target to preprocess a source file
 jchuff.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jchuff.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jchuff.i
 
 # target to generate assembly for a file
 jchuff.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jchuff.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jchuff.s
 
 # target to build an object file
 jcinit.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcinit.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcinit.o
 
 # target to preprocess a source file
 jcinit.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcinit.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcinit.i
 
 # target to generate assembly for a file
 jcinit.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcinit.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcinit.s
 
 # target to build an object file
 jcmainct.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcmainct.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcmainct.o
 
 # target to preprocess a source file
 jcmainct.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcmainct.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcmainct.i
 
 # target to generate assembly for a file
 jcmainct.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcmainct.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcmainct.s
 
 # target to build an object file
 jcmarker.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcmarker.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcmarker.o
 
 # target to preprocess a source file
 jcmarker.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcmarker.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcmarker.i
 
 # target to generate assembly for a file
 jcmarker.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcmarker.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcmarker.s
 
 # target to build an object file
 jcmaster.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcmaster.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcmaster.o
 
 # target to preprocess a source file
 jcmaster.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcmaster.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcmaster.i
 
 # target to generate assembly for a file
 jcmaster.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcmaster.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcmaster.s
 
 # target to build an object file
 jcomapi.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcomapi.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcomapi.o
 
 # target to preprocess a source file
 jcomapi.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcomapi.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcomapi.i
 
 # target to generate assembly for a file
 jcomapi.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcomapi.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcomapi.s
 
 # target to build an object file
 jcparam.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcparam.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcparam.o
 
 # target to preprocess a source file
 jcparam.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcparam.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcparam.i
 
 # target to generate assembly for a file
 jcparam.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcparam.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcparam.s
 
 # target to build an object file
 jcphuff.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcphuff.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcphuff.o
 
 # target to preprocess a source file
 jcphuff.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcphuff.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcphuff.i
 
 # target to generate assembly for a file
 jcphuff.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcphuff.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcphuff.s
 
 # target to build an object file
 jcprepct.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcprepct.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcprepct.o
 
 # target to preprocess a source file
 jcprepct.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcprepct.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcprepct.i
 
 # target to generate assembly for a file
 jcprepct.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcprepct.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcprepct.s
 
 # target to build an object file
 jcsample.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcsample.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcsample.o
 
 # target to preprocess a source file
 jcsample.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcsample.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcsample.i
 
 # target to generate assembly for a file
 jcsample.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcsample.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jcsample.s
 
 # target to build an object file
 jctrans.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jctrans.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jctrans.o
 
 # target to preprocess a source file
 jctrans.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jctrans.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jctrans.i
 
 # target to generate assembly for a file
 jctrans.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jctrans.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jctrans.s
 
 # target to build an object file
 jdapimin.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdapimin.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdapimin.o
 
 # target to preprocess a source file
 jdapimin.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdapimin.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdapimin.i
 
 # target to generate assembly for a file
 jdapimin.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdapimin.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdapimin.s
 
 # target to build an object file
 jdapistd.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdapistd.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdapistd.o
 
 # target to preprocess a source file
 jdapistd.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdapistd.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdapistd.i
 
 # target to generate assembly for a file
 jdapistd.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdapistd.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdapistd.s
 
 # target to build an object file
 jdatadst.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdatadst.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdatadst.o
 
 # target to preprocess a source file
 jdatadst.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdatadst.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdatadst.i
 
 # target to generate assembly for a file
 jdatadst.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdatadst.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdatadst.s
 
 # target to build an object file
 jdatasrc.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdatasrc.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdatasrc.o
 
 # target to preprocess a source file
 jdatasrc.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdatasrc.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdatasrc.i
 
 # target to generate assembly for a file
 jdatasrc.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdatasrc.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdatasrc.s
 
 # target to build an object file
 jdcoefct.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdcoefct.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdcoefct.o
 
 # target to preprocess a source file
 jdcoefct.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdcoefct.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdcoefct.i
 
 # target to generate assembly for a file
 jdcoefct.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdcoefct.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdcoefct.s
 
 # target to build an object file
 jdcolor.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdcolor.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdcolor.o
 
 # target to preprocess a source file
 jdcolor.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdcolor.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdcolor.i
 
 # target to generate assembly for a file
 jdcolor.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdcolor.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdcolor.s
 
 # target to build an object file
 jddctmgr.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jddctmgr.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jddctmgr.o
 
 # target to preprocess a source file
 jddctmgr.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jddctmgr.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jddctmgr.i
 
 # target to generate assembly for a file
 jddctmgr.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jddctmgr.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jddctmgr.s
 
 # target to build an object file
 jdhuff.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdhuff.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdhuff.o
 
 # target to preprocess a source file
 jdhuff.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdhuff.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdhuff.i
 
 # target to generate assembly for a file
 jdhuff.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdhuff.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdhuff.s
 
 # target to build an object file
 jdinput.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdinput.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdinput.o
 
 # target to preprocess a source file
 jdinput.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdinput.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdinput.i
 
 # target to generate assembly for a file
 jdinput.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdinput.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdinput.s
 
 # target to build an object file
 jdmainct.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdmainct.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdmainct.o
 
 # target to preprocess a source file
 jdmainct.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdmainct.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdmainct.i
 
 # target to generate assembly for a file
 jdmainct.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdmainct.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdmainct.s
 
 # target to build an object file
 jdmarker.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdmarker.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdmarker.o
 
 # target to preprocess a source file
 jdmarker.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdmarker.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdmarker.i
 
 # target to generate assembly for a file
 jdmarker.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdmarker.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdmarker.s
 
 # target to build an object file
 jdmaster.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdmaster.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdmaster.o
 
 # target to preprocess a source file
 jdmaster.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdmaster.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdmaster.i
 
 # target to generate assembly for a file
 jdmaster.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdmaster.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdmaster.s
 
 # target to build an object file
 jdmerge.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdmerge.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdmerge.o
 
 # target to preprocess a source file
 jdmerge.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdmerge.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdmerge.i
 
 # target to generate assembly for a file
 jdmerge.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdmerge.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdmerge.s
 
 # target to build an object file
 jdphuff.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdphuff.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdphuff.o
 
 # target to preprocess a source file
 jdphuff.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdphuff.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdphuff.i
 
 # target to generate assembly for a file
 jdphuff.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdphuff.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdphuff.s
 
 # target to build an object file
 jdpostct.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdpostct.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdpostct.o
 
 # target to preprocess a source file
 jdpostct.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdpostct.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdpostct.i
 
 # target to generate assembly for a file
 jdpostct.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdpostct.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdpostct.s
 
 # target to build an object file
 jdsample.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdsample.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdsample.o
 
 # target to preprocess a source file
 jdsample.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdsample.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdsample.i
 
 # target to generate assembly for a file
 jdsample.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdsample.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdsample.s
 
 # target to build an object file
 jdtrans.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdtrans.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdtrans.o
 
 # target to preprocess a source file
 jdtrans.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdtrans.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdtrans.i
 
 # target to generate assembly for a file
 jdtrans.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdtrans.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jdtrans.s
 
 # target to build an object file
 jerror.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jerror.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jerror.o
 
 # target to preprocess a source file
 jerror.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jerror.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jerror.i
 
 # target to generate assembly for a file
 jerror.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jerror.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jerror.s
 
 # target to build an object file
 jfdctflt.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jfdctflt.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jfdctflt.o
 
 # target to preprocess a source file
 jfdctflt.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jfdctflt.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jfdctflt.i
 
 # target to generate assembly for a file
 jfdctflt.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jfdctflt.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jfdctflt.s
 
 # target to build an object file
 jfdctfst.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jfdctfst.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jfdctfst.o
 
 # target to preprocess a source file
 jfdctfst.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jfdctfst.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jfdctfst.i
 
 # target to generate assembly for a file
 jfdctfst.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jfdctfst.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jfdctfst.s
 
 # target to build an object file
 jfdctint.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jfdctint.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jfdctint.o
 
 # target to preprocess a source file
 jfdctint.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jfdctint.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jfdctint.i
 
 # target to generate assembly for a file
 jfdctint.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jfdctint.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jfdctint.s
 
 # target to build an object file
 jidctflt.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jidctflt.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jidctflt.o
 
 # target to preprocess a source file
 jidctflt.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jidctflt.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jidctflt.i
 
 # target to generate assembly for a file
 jidctflt.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jidctflt.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jidctflt.s
 
 # target to build an object file
 jidctfst.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jidctfst.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jidctfst.o
 
 # target to preprocess a source file
 jidctfst.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jidctfst.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jidctfst.i
 
 # target to generate assembly for a file
 jidctfst.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jidctfst.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jidctfst.s
 
 # target to build an object file
 jidctint.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jidctint.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jidctint.o
 
 # target to preprocess a source file
 jidctint.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jidctint.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jidctint.i
 
 # target to generate assembly for a file
 jidctint.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jidctint.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jidctint.s
 
 # target to build an object file
 jidctred.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jidctred.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jidctred.o
 
 # target to preprocess a source file
 jidctred.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jidctred.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jidctred.i
 
 # target to generate assembly for a file
 jidctred.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jidctred.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jidctred.s
 
 # target to build an object file
 jmemmgr.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jmemmgr.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jmemmgr.o
 
 # target to preprocess a source file
 jmemmgr.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jmemmgr.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jmemmgr.i
 
 # target to generate assembly for a file
 jmemmgr.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jmemmgr.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jmemmgr.s
 
 # target to build an object file
 jmemnobs.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jmemnobs.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jmemnobs.o
 
 # target to preprocess a source file
 jmemnobs.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jmemnobs.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jmemnobs.i
 
 # target to generate assembly for a file
 jmemnobs.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jmemnobs.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jmemnobs.s
 
 # target to build an object file
 jquant1.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jquant1.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jquant1.o
 
 # target to preprocess a source file
 jquant1.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jquant1.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jquant1.i
 
 # target to generate assembly for a file
 jquant1.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jquant1.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jquant1.s
 
 # target to build an object file
 jquant2.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jquant2.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jquant2.o
 
 # target to preprocess a source file
 jquant2.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jquant2.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jquant2.i
 
 # target to generate assembly for a file
 jquant2.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jquant2.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jquant2.s
 
 # target to build an object file
 jutils.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jutils.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jutils.o
 
 # target to preprocess a source file
 jutils.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jutils.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jutils.i
 
 # target to generate assembly for a file
 jutils.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jutils.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/build.make ivp/src/lib_fltk-1.1.7/jpeg/CMakeFiles/fltk_jpeg.dir/jutils.s
 
 # Help Target
 help::
@@ -685,6 +701,8 @@ help::
 	@echo "... install"
 	@echo "... install/local"
 	@echo "... list_install_components"
+	@echo "... package"
+	@echo "... package_source"
 	@echo "... rebuild_cache"
 	@echo "... jcapimin.o"
 	@echo "... jcapimin.i"
@@ -834,5 +852,5 @@ help::
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /home/toby/moos-ivp/trunk && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 

@@ -34,10 +34,10 @@ RM = /usr/bin/cmake -E remove -f
 CMAKE_EDIT_COMMAND = /usr/bin/ccmake
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/cjc/moos-ivp/trunk/ivp/src
+CMAKE_SOURCE_DIR = /home/toby/moos-ivp/trunk
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/cjc/moos-ivp/trunk/ivp/src
+CMAKE_BINARY_DIR = /home/toby/moos-ivp/trunk
 
 # Include the progress variables for this target.
 include CMakeFiles/progress.make
@@ -48,7 +48,7 @@ include CMakeFiles/progress.make
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake cache editor..."
-	cd /home/cjc/moos-ivp/trunk/ivp/src/lib_fltk-1.1.7/zlib && /usr/bin/ccmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	cd /home/toby/moos-ivp/trunk/ivp/src/lib_fltk-1.1.7/zlib && /usr/bin/ccmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 
 # Special rule for the target edit_cache
 edit_cache/fast: edit_cache
@@ -56,203 +56,219 @@ edit_cache/fast: edit_cache
 # Special rule for the target install
 install: preinstall
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
-	cd /home/cjc/moos-ivp/trunk/ivp/src/lib_fltk-1.1.7/zlib && /usr/bin/cmake -P cmake_install.cmake
+	cd /home/toby/moos-ivp/trunk/ivp/src/lib_fltk-1.1.7/zlib && /usr/bin/cmake -P cmake_install.cmake
 
 # Special rule for the target install
 install/fast: preinstall/fast
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
-	cd /home/cjc/moos-ivp/trunk/ivp/src/lib_fltk-1.1.7/zlib && /usr/bin/cmake -P cmake_install.cmake
+	cd /home/toby/moos-ivp/trunk/ivp/src/lib_fltk-1.1.7/zlib && /usr/bin/cmake -P cmake_install.cmake
 
 # Special rule for the target install/local
 install/local: preinstall
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing only the local directory..."
-	cd /home/cjc/moos-ivp/trunk/ivp/src/lib_fltk-1.1.7/zlib && /usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
+	cd /home/toby/moos-ivp/trunk/ivp/src/lib_fltk-1.1.7/zlib && /usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
 
 # Special rule for the target install/local
 install/local/fast: install/local
 
 # Special rule for the target list_install_components
 list_install_components:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Available install components are: \"IvP_Dev\""
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Available install components are: \"IvP_Dev\" \"Moos_Core\" \"Moos_Core_Dev\" \"Moos_Essentials\" \"Moos_Essentials_Dev\" \"Moos_Instruments\" \"Moos_NavigationAndControl\" \"Moos_NavigationAndControl_Dev\" \"Moos_Thirdparty_Dev\" \"Moos_Tools\" \"ivp-core\" \"ivp-core-dev\" \"ivp-tools\" \"ivp-tools-dev\" \"none\""
 
 # Special rule for the target list_install_components
 list_install_components/fast: list_install_components
 
+# Special rule for the target package
+package: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Run CPack packaging tool..."
+	cd /home/toby/moos-ivp/trunk/ivp/src/lib_fltk-1.1.7/zlib && /usr/bin/cpack --config /home/toby/moos-ivp/trunk/CPackConfig.cmake
+
+# Special rule for the target package
+package/fast: package
+
+# Special rule for the target package_source
+package_source:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Run CPack packaging tool for source..."
+	cd /home/toby/moos-ivp/trunk/ivp/src/lib_fltk-1.1.7/zlib && /usr/bin/cpack --config /home/toby/moos-ivp/trunk/CPackSourceConfig.cmake
+
+# Special rule for the target package_source
+package_source/fast: package_source
+
 # Special rule for the target rebuild_cache
 rebuild_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
-	cd /home/cjc/moos-ivp/trunk/ivp/src/lib_fltk-1.1.7/zlib && /usr/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	cd /home/toby/moos-ivp/trunk/ivp/src/lib_fltk-1.1.7/zlib && /usr/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 
 # Special rule for the target rebuild_cache
 rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(CMAKE_COMMAND) -E cmake_progress_start /home/cjc/moos-ivp/trunk/ivp/src/CMakeFiles $(CMAKE_ALL_PROGRESS)
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.7/zlib/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/cjc/moos-ivp/trunk/ivp/src/CMakeFiles 0
+	cd /home/toby/moos-ivp/trunk && $(CMAKE_COMMAND) -E cmake_progress_start /home/toby/moos-ivp/trunk/CMakeFiles $(CMAKE_ALL_PROGRESS)
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f CMakeFiles/Makefile2 ivp/src/lib_fltk-1.1.7/zlib/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/toby/moos-ivp/trunk/CMakeFiles 0
 
 # The main clean target
 clean:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.7/zlib/clean
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f CMakeFiles/Makefile2 ivp/src/lib_fltk-1.1.7/zlib/clean
 
 # The main clean target
 clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.7/zlib/preinstall
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f CMakeFiles/Makefile2 ivp/src/lib_fltk-1.1.7/zlib/preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.7/zlib/preinstall
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f CMakeFiles/Makefile2 ivp/src/lib_fltk-1.1.7/zlib/preinstall
 
 # clear depends
 depend:
 	$(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 
 # Convenience name for target.
-lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/rule:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/rule
+ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/rule:
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f CMakeFiles/Makefile2 ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/rule
 
 # Convenience name for target.
-fltk_zlib: lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/rule
+fltk_zlib: ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/rule
 
 # fast build rule for target.
 fltk_zlib/fast:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build
 
 # target to build an object file
 adler32.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/adler32.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/adler32.o
 
 # target to preprocess a source file
 adler32.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/adler32.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/adler32.i
 
 # target to generate assembly for a file
 adler32.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/adler32.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/adler32.s
 
 # target to build an object file
 compress.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/compress.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/compress.o
 
 # target to preprocess a source file
 compress.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/compress.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/compress.i
 
 # target to generate assembly for a file
 compress.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/compress.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/compress.s
 
 # target to build an object file
 crc32.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/crc32.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/crc32.o
 
 # target to preprocess a source file
 crc32.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/crc32.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/crc32.i
 
 # target to generate assembly for a file
 crc32.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/crc32.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/crc32.s
 
 # target to build an object file
 deflate.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/deflate.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/deflate.o
 
 # target to preprocess a source file
 deflate.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/deflate.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/deflate.i
 
 # target to generate assembly for a file
 deflate.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/deflate.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/deflate.s
 
 # target to build an object file
 gzio.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/gzio.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/gzio.o
 
 # target to preprocess a source file
 gzio.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/gzio.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/gzio.i
 
 # target to generate assembly for a file
 gzio.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/gzio.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/gzio.s
 
 # target to build an object file
 inffast.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/inffast.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/inffast.o
 
 # target to preprocess a source file
 inffast.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/inffast.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/inffast.i
 
 # target to generate assembly for a file
 inffast.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/inffast.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/inffast.s
 
 # target to build an object file
 inflate.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/inflate.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/inflate.o
 
 # target to preprocess a source file
 inflate.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/inflate.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/inflate.i
 
 # target to generate assembly for a file
 inflate.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/inflate.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/inflate.s
 
 # target to build an object file
 inftrees.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/inftrees.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/inftrees.o
 
 # target to preprocess a source file
 inftrees.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/inftrees.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/inftrees.i
 
 # target to generate assembly for a file
 inftrees.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/inftrees.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/inftrees.s
 
 # target to build an object file
 trees.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/trees.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/trees.o
 
 # target to preprocess a source file
 trees.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/trees.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/trees.i
 
 # target to generate assembly for a file
 trees.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/trees.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/trees.s
 
 # target to build an object file
 uncompr.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/uncompr.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/uncompr.o
 
 # target to preprocess a source file
 uncompr.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/uncompr.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/uncompr.i
 
 # target to generate assembly for a file
 uncompr.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/uncompr.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/uncompr.s
 
 # target to build an object file
 zutil.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/zutil.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/zutil.o
 
 # target to preprocess a source file
 zutil.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/zutil.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/zutil.i
 
 # target to generate assembly for a file
 zutil.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/zutil.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/build.make ivp/src/lib_fltk-1.1.7/zlib/CMakeFiles/fltk_zlib.dir/zutil.s
 
 # Help Target
 help::
@@ -265,6 +281,8 @@ help::
 	@echo "... install"
 	@echo "... install/local"
 	@echo "... list_install_components"
+	@echo "... package"
+	@echo "... package_source"
 	@echo "... rebuild_cache"
 	@echo "... adler32.o"
 	@echo "... adler32.i"
@@ -309,5 +327,5 @@ help::
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /home/toby/moos-ivp/trunk && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 

@@ -229,6 +229,19 @@ LINK_LIBS="
    z" \
 simple_app_cmake_file
 
+
+SUBDIR=zlog2alog_tes \
+PROGNAME=zlog2alog_tes \
+IVP_BUILD_BY_DEFAULT=ON \
+IVP_INSTALL_COMPONENT=ivp-tools \
+LINK_LIBS="
+   anrp_util
+   m
+   pthread
+   z" \
+simple_app_cmake_file
+
+
 SUBDIR=zLoggerNG \
 PROGNAME=zLoggerNG \
 IVP_BUILD_BY_DEFAULT=ON \

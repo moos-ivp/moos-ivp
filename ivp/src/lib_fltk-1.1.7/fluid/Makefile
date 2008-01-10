@@ -34,10 +34,10 @@ RM = /usr/bin/cmake -E remove -f
 CMAKE_EDIT_COMMAND = /usr/bin/ccmake
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/cjc/moos-ivp/trunk/ivp/src
+CMAKE_SOURCE_DIR = /home/toby/moos-ivp/trunk
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/cjc/moos-ivp/trunk/ivp/src
+CMAKE_BINARY_DIR = /home/toby/moos-ivp/trunk
 
 # Include the progress variables for this target.
 include CMakeFiles/progress.make
@@ -48,7 +48,7 @@ include CMakeFiles/progress.make
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake cache editor..."
-	cd /home/cjc/moos-ivp/trunk/ivp/src/lib_fltk-1.1.7/fluid && /usr/bin/ccmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	cd /home/toby/moos-ivp/trunk/ivp/src/lib_fltk-1.1.7/fluid && /usr/bin/ccmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 
 # Special rule for the target edit_cache
 edit_cache/fast: edit_cache
@@ -56,299 +56,315 @@ edit_cache/fast: edit_cache
 # Special rule for the target install
 install: preinstall
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
-	cd /home/cjc/moos-ivp/trunk/ivp/src/lib_fltk-1.1.7/fluid && /usr/bin/cmake -P cmake_install.cmake
+	cd /home/toby/moos-ivp/trunk/ivp/src/lib_fltk-1.1.7/fluid && /usr/bin/cmake -P cmake_install.cmake
 
 # Special rule for the target install
 install/fast: preinstall/fast
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
-	cd /home/cjc/moos-ivp/trunk/ivp/src/lib_fltk-1.1.7/fluid && /usr/bin/cmake -P cmake_install.cmake
+	cd /home/toby/moos-ivp/trunk/ivp/src/lib_fltk-1.1.7/fluid && /usr/bin/cmake -P cmake_install.cmake
 
 # Special rule for the target install/local
 install/local: preinstall
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing only the local directory..."
-	cd /home/cjc/moos-ivp/trunk/ivp/src/lib_fltk-1.1.7/fluid && /usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
+	cd /home/toby/moos-ivp/trunk/ivp/src/lib_fltk-1.1.7/fluid && /usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
 
 # Special rule for the target install/local
 install/local/fast: install/local
 
 # Special rule for the target list_install_components
 list_install_components:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Available install components are: \"IvP_Dev\""
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Available install components are: \"IvP_Dev\" \"Moos_Core\" \"Moos_Core_Dev\" \"Moos_Essentials\" \"Moos_Essentials_Dev\" \"Moos_Instruments\" \"Moos_NavigationAndControl\" \"Moos_NavigationAndControl_Dev\" \"Moos_Thirdparty_Dev\" \"Moos_Tools\" \"ivp-core\" \"ivp-core-dev\" \"ivp-tools\" \"ivp-tools-dev\" \"none\""
 
 # Special rule for the target list_install_components
 list_install_components/fast: list_install_components
 
+# Special rule for the target package
+package: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Run CPack packaging tool..."
+	cd /home/toby/moos-ivp/trunk/ivp/src/lib_fltk-1.1.7/fluid && /usr/bin/cpack --config /home/toby/moos-ivp/trunk/CPackConfig.cmake
+
+# Special rule for the target package
+package/fast: package
+
+# Special rule for the target package_source
+package_source:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Run CPack packaging tool for source..."
+	cd /home/toby/moos-ivp/trunk/ivp/src/lib_fltk-1.1.7/fluid && /usr/bin/cpack --config /home/toby/moos-ivp/trunk/CPackSourceConfig.cmake
+
+# Special rule for the target package_source
+package_source/fast: package_source
+
 # Special rule for the target rebuild_cache
 rebuild_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
-	cd /home/cjc/moos-ivp/trunk/ivp/src/lib_fltk-1.1.7/fluid && /usr/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	cd /home/toby/moos-ivp/trunk/ivp/src/lib_fltk-1.1.7/fluid && /usr/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 
 # Special rule for the target rebuild_cache
 rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(CMAKE_COMMAND) -E cmake_progress_start /home/cjc/moos-ivp/trunk/ivp/src/CMakeFiles $(CMAKE_ALL_PROGRESS)
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.7/fluid/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/cjc/moos-ivp/trunk/ivp/src/CMakeFiles 0
+	cd /home/toby/moos-ivp/trunk && $(CMAKE_COMMAND) -E cmake_progress_start /home/toby/moos-ivp/trunk/CMakeFiles $(CMAKE_ALL_PROGRESS)
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f CMakeFiles/Makefile2 ivp/src/lib_fltk-1.1.7/fluid/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/toby/moos-ivp/trunk/CMakeFiles 0
 
 # The main clean target
 clean:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.7/fluid/clean
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f CMakeFiles/Makefile2 ivp/src/lib_fltk-1.1.7/fluid/clean
 
 # The main clean target
 clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.7/fluid/preinstall
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f CMakeFiles/Makefile2 ivp/src/lib_fltk-1.1.7/fluid/preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.7/fluid/preinstall
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f CMakeFiles/Makefile2 ivp/src/lib_fltk-1.1.7/fluid/preinstall
 
 # clear depends
 depend:
 	$(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 
 # Convenience name for target.
-lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/rule:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/rule
+ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/rule:
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f CMakeFiles/Makefile2 ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/rule
 
 # Convenience name for target.
-fluid: lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/rule
+fluid: ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/rule
 
 # fast build rule for target.
 fluid/fast:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build
 
 # target to build an object file
 CodeEditor.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/CodeEditor.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/CodeEditor.o
 
 # target to preprocess a source file
 CodeEditor.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/CodeEditor.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/CodeEditor.i
 
 # target to generate assembly for a file
 CodeEditor.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/CodeEditor.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/CodeEditor.s
 
 # target to build an object file
 Fl_Function_Type.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/Fl_Function_Type.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/Fl_Function_Type.o
 
 # target to preprocess a source file
 Fl_Function_Type.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/Fl_Function_Type.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/Fl_Function_Type.i
 
 # target to generate assembly for a file
 Fl_Function_Type.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/Fl_Function_Type.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/Fl_Function_Type.s
 
 # target to build an object file
 Fl_Group_Type.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/Fl_Group_Type.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/Fl_Group_Type.o
 
 # target to preprocess a source file
 Fl_Group_Type.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/Fl_Group_Type.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/Fl_Group_Type.i
 
 # target to generate assembly for a file
 Fl_Group_Type.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/Fl_Group_Type.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/Fl_Group_Type.s
 
 # target to build an object file
 Fl_Menu_Type.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/Fl_Menu_Type.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/Fl_Menu_Type.o
 
 # target to preprocess a source file
 Fl_Menu_Type.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/Fl_Menu_Type.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/Fl_Menu_Type.i
 
 # target to generate assembly for a file
 Fl_Menu_Type.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/Fl_Menu_Type.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/Fl_Menu_Type.s
 
 # target to build an object file
 Fl_Type.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/Fl_Type.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/Fl_Type.o
 
 # target to preprocess a source file
 Fl_Type.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/Fl_Type.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/Fl_Type.i
 
 # target to generate assembly for a file
 Fl_Type.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/Fl_Type.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/Fl_Type.s
 
 # target to build an object file
 Fl_Widget_Type.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/Fl_Widget_Type.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/Fl_Widget_Type.o
 
 # target to preprocess a source file
 Fl_Widget_Type.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/Fl_Widget_Type.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/Fl_Widget_Type.i
 
 # target to generate assembly for a file
 Fl_Widget_Type.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/Fl_Widget_Type.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/Fl_Widget_Type.s
 
 # target to build an object file
 Fl_Window_Type.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/Fl_Window_Type.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/Fl_Window_Type.o
 
 # target to preprocess a source file
 Fl_Window_Type.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/Fl_Window_Type.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/Fl_Window_Type.i
 
 # target to generate assembly for a file
 Fl_Window_Type.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/Fl_Window_Type.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/Fl_Window_Type.s
 
 # target to build an object file
 Fluid_Image.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/Fluid_Image.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/Fluid_Image.o
 
 # target to preprocess a source file
 Fluid_Image.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/Fluid_Image.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/Fluid_Image.i
 
 # target to generate assembly for a file
 Fluid_Image.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/Fluid_Image.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/Fluid_Image.s
 
 # target to build an object file
 about_panel.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/about_panel.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/about_panel.o
 
 # target to preprocess a source file
 about_panel.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/about_panel.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/about_panel.i
 
 # target to generate assembly for a file
 about_panel.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/about_panel.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/about_panel.s
 
 # target to build an object file
 align_widget.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/align_widget.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/align_widget.o
 
 # target to preprocess a source file
 align_widget.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/align_widget.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/align_widget.i
 
 # target to generate assembly for a file
 align_widget.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/align_widget.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/align_widget.s
 
 # target to build an object file
 alignment_panel.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/alignment_panel.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/alignment_panel.o
 
 # target to preprocess a source file
 alignment_panel.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/alignment_panel.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/alignment_panel.i
 
 # target to generate assembly for a file
 alignment_panel.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/alignment_panel.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/alignment_panel.s
 
 # target to build an object file
 code.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/code.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/code.o
 
 # target to preprocess a source file
 code.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/code.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/code.i
 
 # target to generate assembly for a file
 code.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/code.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/code.s
 
 # target to build an object file
 factory.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/factory.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/factory.o
 
 # target to preprocess a source file
 factory.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/factory.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/factory.i
 
 # target to generate assembly for a file
 factory.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/factory.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/factory.s
 
 # target to build an object file
 file.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/file.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/file.o
 
 # target to preprocess a source file
 file.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/file.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/file.i
 
 # target to generate assembly for a file
 file.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/file.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/file.s
 
 # target to build an object file
 fluid.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/fluid.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/fluid.o
 
 # target to preprocess a source file
 fluid.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/fluid.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/fluid.i
 
 # target to generate assembly for a file
 fluid.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/fluid.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/fluid.s
 
 # target to build an object file
 function_panel.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/function_panel.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/function_panel.o
 
 # target to preprocess a source file
 function_panel.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/function_panel.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/function_panel.i
 
 # target to generate assembly for a file
 function_panel.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/function_panel.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/function_panel.s
 
 # target to build an object file
 template_panel.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/template_panel.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/template_panel.o
 
 # target to preprocess a source file
 template_panel.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/template_panel.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/template_panel.i
 
 # target to generate assembly for a file
 template_panel.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/template_panel.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/template_panel.s
 
 # target to build an object file
 undo.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/undo.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/undo.o
 
 # target to preprocess a source file
 undo.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/undo.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/undo.i
 
 # target to generate assembly for a file
 undo.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/undo.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/undo.s
 
 # target to build an object file
 widget_panel.o:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/widget_panel.o
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/widget_panel.o
 
 # target to preprocess a source file
 widget_panel.i:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/widget_panel.i
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/widget_panel.i
 
 # target to generate assembly for a file
 widget_panel.s:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/widget_panel.s
+	cd /home/toby/moos-ivp/trunk && $(MAKE) -f ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/build.make ivp/src/lib_fltk-1.1.7/fluid/CMakeFiles/fluid.dir/widget_panel.s
 
 # Help Target
 help::
@@ -361,6 +377,8 @@ help::
 	@echo "... install"
 	@echo "... install/local"
 	@echo "... list_install_components"
+	@echo "... package"
+	@echo "... package_source"
 	@echo "... rebuild_cache"
 	@echo "... CodeEditor.o"
 	@echo "... CodeEditor.i"
@@ -429,5 +447,5 @@ help::
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /home/cjc/moos-ivp/trunk/ivp/src && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /home/toby/moos-ivp/trunk && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 
