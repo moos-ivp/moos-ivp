@@ -94,8 +94,9 @@ bool XYPolygon::initialize(string str)
 //---------------------------------------------------------------
 // Procedure: init_radial
 
-/// Initializes a polygon that approximates a circle
-/// \param str The format of the string is "radial:x_val,y_val,radius,num_points,[snap_value=0],[label]
+/// Initializes a polygon that approximates a circle.
+/// The format of the string is 
+/// "radial:x_val,y_val,radius,num_points,[snap_value=0],[label]
 bool XYPolygon::init_radial(string str)
 {
   if(!strncasecmp("radial:", str.c_str(), 7))
@@ -112,6 +113,9 @@ bool XYPolygon::init_radial(string str)
   double py   = atof(svector[1].c_str());
   double prad = atof(svector[2].c_str());
   double ppts = atof(svector[3].c_str());
+
+  if(prad <= 0)
+    return(false);
 
   double snap_value = 0;
   if(vsize == 5)
