@@ -585,8 +585,6 @@ void MarineViewer::drawSegList(int ix)
   unsigned int i, j;
   float *points = new float[2*vsize];
 
-  cout << "In drawSegList - pts: " << vsize << endl;
-
   int pindex = 0;
   for(i=0; i<vsize; i++) {
     points[pindex]   = segl.get_vx(i);
@@ -706,8 +704,8 @@ void MarineViewer::drawGrid(int ix)
     double   eval = grid.getUtil(i);
     double   pct  = (eval-min_eval)/(max_eval-min_eval);
 
+    //cout << "[" << pct << "]";
     pct = snapToStep(pct, 0.25);
-    cout << "[" << pct << "]";
     
     double   r    = cmap.getIRVal(pct);
     double   g    = cmap.getIGVal(pct);
@@ -995,8 +993,6 @@ bool MarineViewer::setCommonParam(string param, float v)
     m_trail_size += v;
     if(m_trail_size <= 0)
       m_trail_size = 0.05;
-    cout << "Trail_SIZE: " << m_trail_size << endl;
-
   }
   else if(param == "trail_gap") {
     if(m_trail_gap+v >= 1)      
@@ -1177,8 +1173,16 @@ void MarineViewer::addGrid(const XYGrid& new_grid)
 void MarineViewer::updateGrid(string delta)
 {
   int g_size = m_grid.size();
+  bool ok;
   for(int i=0; i<g_size; i++)
-      m_grid[i].processDelta(delta);
+      ok = m_grid[i].processDelta(delta);
+
+#if 1
+  if(ok)
+    cout << "Successfully processed GridDelta" << endl;
+  else
+    cout << "Failed process of received GridDelta" << endl;
+#endif
 }
 
 //-------------------------------------------------------------
