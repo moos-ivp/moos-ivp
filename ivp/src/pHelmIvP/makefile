@@ -14,6 +14,7 @@ REQUIRED_MOOS_LIBS = 			\
 PLIBS    = libhelmivp.a    		\
 	   libbehaviors-marine.a 	\
 	   libbehaviors-colregs.a 	\
+	   libbehaviors-sandbox.a 	\
 	   libbhvutil.a			\
 	   libbehaviors.a  		\
 	   libmbutil.a 			\
