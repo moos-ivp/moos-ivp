@@ -37,7 +37,7 @@ XYGrid::XYGrid()
   min_util          = 0;
   max_util          = 0;
   min_util_possible = 0;
-  max_util_possible = 100;
+  max_util_possible = 1;
 }
 
 //-------------------------------------------------------------
@@ -288,6 +288,8 @@ bool XYGrid::processDelta(const string& str)
     int    index   = atoi(dvector[0].c_str());
     double old_val = atof(dvector[1].c_str());
     double new_val = atof(dvector[2].c_str());
+
+    cout << "ix:" << index << "  old:" << old_val << "  new:" << new_val << endl;
     
     if((index < 0) || (index >= values.size()))
       return(false);
@@ -300,6 +302,9 @@ bool XYGrid::processDelta(const string& str)
       setUtil(index, new_util);
     }
   }
+
+  cout << "Gmin: " << min_val << "Gmax: " << max_val << endl;
+
   return(true);
 }
 
