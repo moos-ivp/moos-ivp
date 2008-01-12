@@ -20,6 +20,4 @@ TARGET_LINK_LIBRARIES(pMarineViewer
   # Standard libraries used by this project's FLTK apps...
   fltk 
   fltk_gl 
-  X11
-  GL
   tiff)
