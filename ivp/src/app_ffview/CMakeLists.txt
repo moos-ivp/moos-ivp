@@ -1,48 +1,24 @@
-# INCLUDE(../MOOSFindFLTK.cmake)
+#--------------------------------------------------------
+# The CMakeLists.txt for:                      app_ffview
+# Author(s):                                Mike Benjamin
+#--------------------------------------------------------
 
-OPTION(IVP_BUILD_ffview "Build program ffview" ON)
-
-IF("${IVP_BUILD_ffview}" STREQUAL "ON")
-#    IF(${FLTK_FOUND})
-      FILE(GLOB SRC *.cpp)
+FILE(GLOB SRC *.cpp)
+  
+ADD_EXECUTABLE(ffview ${SRC})
+     
+TARGET_LINK_LIBRARIES(ffview
+  bhvutil
+  ipfview
+  behaviors
+  geometry
+  mbutil
+  ivpbuild
+  ivpcore
+  m
    
-      ADD_EXECUTABLE(ffview ${SRC})
-      
-      TARGET_LINK_LIBRARIES(ffview 
-         
-#       behaviors-sandbox
-      behaviors-marine
-      bhvutil
-      ipfview
-      behaviors
-      geometry
-      ivpbuild
-      ivpcore
-      mbutil
-      m
-   
-         # Standard libraries used by this project's FLTK apps...
-         fltk 
-         fltk_gl 
-         X11
-         GL
-         tiff      
-         )
+  # Standard libraries used by this project's FLTK apps...
+  fltk 
+  fltk_gl 
+  tiff)
 
-      IF("${IVP_PACKAGE_VERSION}" STREQUAL "")
-         MESSAGE(STATUS "ffview: IVP_PACKAGE_VERSION not set, so not creating install component.")
-      ELSE("${IVP_PACKAGE_VERSION}" STREQUAL "")
-         INSTALL(
-            TARGETS ffview
-            DESTINATION bin/ivp-${IVP_PACKAGE_VERSION}
-            COMPONENT )
-      ENDIF("${IVP_PACKAGE_VERSION}" STREQUAL "")
-
-#    ELSE(${FLTK_FOUND})
-#       MESSAGE(STATUS
-#          "Won't build ffview because can't find needed FLTK stuff.  "
-#          "You can maybe fix this by setting the FLTK_DIR and FLTK_INCLUDE_DIR CMake variables "
-#          "because CMake's FindFLTK implementation is pretty stupid."
-#          )
-#    ENDIF(${FLTK_FOUND})
-ENDIF("${IVP_BUILD_ffview}" STREQUAL "ON")
