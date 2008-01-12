@@ -60,12 +60,12 @@ void GEO_GUI::augmentMenu()
 {
   mbar->add("EditMode/Append Vertex", 'p', (Fl_Callback*)GEO_GUI::cb_DropMode, (void*)0, FL_MENU_RADIO|FL_MENU_VALUE);
   mbar->add("EditMode/Edit Vertex",   'e', (Fl_Callback*)GEO_GUI::cb_DropMode, (void*)1, FL_MENU_RADIO);
-  mbar->add("EditMode/Delete Vertex", 'd', (Fl_Callback*)GEO_GUI::cb_DropMode, (void*)2, FL_MENU_RADIO);
+  mbar->add("EditMode/Delete Vertex", 'x', (Fl_Callback*)GEO_GUI::cb_DropMode, (void*)2, FL_MENU_RADIO);
   mbar->add("EditMode/Insert Vertex", 'a', (Fl_Callback*)GEO_GUI::cb_DropMode, (void*)3, FL_MENU_RADIO);
   mbar->add("EditMode/Center View",   'c', (Fl_Callback*)GEO_GUI::cb_DropMode, (void*)-1, FL_MENU_RADIO);
   
   mbar->add("Polygons/Delete All", 0, (Fl_Callback*)GEO_GUI::cb_Clear, (void*)0, 0);
-  mbar->add("Polygons/Delete Current", FL_CTRL+'d', (Fl_Callback*)GEO_GUI::cb_ClearActive, (void*)0, 0);
+  mbar->add("Polygons/Delete Current", FL_CTRL+'x', (Fl_Callback*)GEO_GUI::cb_ClearActive, (void*)0, 0);
   mbar->add("Polygons/Create New", 0, (Fl_Callback*)GEO_GUI::cb_CreateNew, (void*)0, 0);
   mbar->add("Polygons/Current --", '-', (Fl_Callback*)GEO_GUI::cb_AdjustActive, (void*)-1, 0);
   mbar->add("Polygons/Current ++", '+', (Fl_Callback*)GEO_GUI::cb_AdjustActive, (void*)1, 0);

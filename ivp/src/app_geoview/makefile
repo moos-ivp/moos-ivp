@@ -6,7 +6,7 @@ LCFLAGS  =
 
 PLIBS    = libmarineview.a libgeometry.a libmbutil.a 
 LIBS     =  $(patsubst lib%.a,-l%,$(PLIBS)) \
-	    -lm -lfltk -lfltk_gl -lX11 -lGL -ltiff
+	    -lm -lfltk -lfltk_gl -ltiff
 PLDIRS   = $(wildcard ../lib_*)
 
 # Make configuration parameters
