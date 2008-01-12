@@ -1,46 +1,25 @@
-# INCLUDE(../MOOSFindFLTK.cmake)
+#--------------------------------------------------------
+# The CMakeLists.txt for:                   pMarineViewer
+# Author(s):                                Mike Benjamin
+#--------------------------------------------------------
 
-OPTION(IVP_BUILD_pMarineViewer "Build program pMarineViewer" ON)
-
-IF("${IVP_BUILD_pMarineViewer}" STREQUAL "ON")
-#    IF(${FLTK_FOUND})
-      FILE(GLOB SRC *.cpp)
+FILE(GLOB SRC *.cpp)
+  
+ADD_EXECUTABLE(pMarineViewer ${SRC})
+     
+TARGET_LINK_LIBRARIES(pMarineViewer         
+  MOOS
+  MOOSGen
+  MOOSUtility
+  marineview
+  mbutil
+  genutil
+  geometry
+  m
    
-      ADD_EXECUTABLE(pMarineViewer ${SRC})
-      
-      TARGET_LINK_LIBRARIES(pMarineViewer 
-         
-      MOOS
-      MOOSGen
-      MOOSUtility
-      marineview
-      mbutil
-      genutil
-      geometry
-      m
-   
-         # Standard libraries used by this project's FLTK apps...
-         fltk 
-         fltk_gl 
-         X11
-         GL
-         tiff      
-         )
-
-      IF("${IVP_PACKAGE_VERSION}" STREQUAL "")
-         MESSAGE(STATUS "pMarineViewer: IVP_PACKAGE_VERSION not set, so not creating install component.")
-      ELSE("${IVP_PACKAGE_VERSION}" STREQUAL "")
-         INSTALL(
-            TARGETS pMarineViewer
-            DESTINATION bin/ivp-${IVP_PACKAGE_VERSION}
-            COMPONENT )
-      ENDIF("${IVP_PACKAGE_VERSION}" STREQUAL "")
-
-#    ELSE(${FLTK_FOUND})
-#       MESSAGE(STATUS
-#          "Won't build pMarineViewer because can't find needed FLTK stuff.  "
-#          "You can maybe fix this by setting the FLTK_DIR and FLTK_INCLUDE_DIR CMake variables "
-#          "because CMake's FindFLTK implementation is pretty stupid."
-#          )
-#    ENDIF(${FLTK_FOUND})
-ENDIF("${IVP_BUILD_pMarineViewer}" STREQUAL "ON")
+  # Standard libraries used by this project's FLTK apps...
+  fltk 
+  fltk_gl 
+  X11
+  GL
+  tiff)
