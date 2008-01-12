@@ -1,2 +1,0 @@
-INCLUDE_DIRECTORIES(3rd-party-eickstedt/lib_behaviors-don)
-INCLUDE_DIRECTORIES(3rd-party-eickstedt/lib_track)
