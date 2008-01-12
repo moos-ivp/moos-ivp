@@ -115,96 +115,34 @@ FILE(GLOB IVP_LIB_BASE_SUBDIRS
    lib_behaviors
    lib_behaviors-marine* 
    lib_behaviors-colregs*
+   lib_behaviors-sandbox*
    lib_helmivp*
    lib_genutil
-   )
-
-# In the original Makefile-based build system, the Makefile for 
-# lib_behaviors-attic had an "all" target that was a no-op.  However, 
-# lib_behaviors-attic cannot be fully hidden from the build system:
-# lib_behaviors-sandbox/BHV_WaypointTOL.cpp must be able to #include
-# the file AOF_WPT3D.h, which resides in the lib_behaviors-attic directory.
-#
-# So define a list of directories that will be added to the include search path,
-# but that won't be treated during the build process as containing code to be
-# built.
-FILE(GLOB IVP_LIB_BASE_EXTRA_INCLUDE_DIRS
-   lib_behaviors-attic
    )
 
 FILE(GLOB IVP_APP_BASE_SUBDIRS
    pHelmIvP*
    pEchoVar*      
-   pLoiterControl*
    pMarinePID*    
    uXMS*          
-   uTMS*          
    iMarineSim*    
-   MOOSDump*   
-   MOOSRemote
-# CMake doesn't like double-listed subdirectories, and app_splug is picked up
-# by the glob that sets the IVP_APP_TOOLS_SUBDIRS variable.
-#    app_splug*     
    pTransponderAIS*
    uTermCommand*
-   iMetaCompass*
-   iPWMController*
    uProcessWatch*
+   uRepeater*
    )
 
 FILE(GLOB IVP_LIB_TOOLS_SUBDIRS
    lib_marineview*
-# CMake doesn't like having the same directory listed more than once, and this
-# one is also listed in IVP_LIB_BASE_SUBDIRS.  (These lists mirror what appears
-# in the project's original GNU Make makefiles.)
-#    lib_behaviors-don*    
    lib_navplot*
-   lib_ivpbuild-extra*
-   lib_track*
    lib_ipfview*
    lib_artifacts*
-   uVoice
    )
 
 FILE(GLOB IVP_APP_TOOLS_SUBDIRS
    app_*		
-   iHeadingMonitor*
    pMarineViewer*
-   pBearingsSim*	
-   pClusterManager*
-   pACom*		
-   pExtTracker*
-   iWifi*	    	
-   pFunctionSender*
-   pMineSim*
-   pTarget*	        
-   uFunctionVis*
-   uFunctionViewer
-   iMicroModem*
-   iGPS*
-   pBearings
-   pSensorSim*
-   pFramer*
-   pNaFCon*
-   pScheduler*
-   pRouter*
-   uMessageForward*
-   pUDPBroadcastClient*
-   iBatteryMonitor*
-   iMetaMemCompass*
-   iOS5000*
-   pDynamicWaypointLL*
-   pGPSReTx*
    pShipsideViewer*
-   pTransponderNMEA*
-#   uMicroModemAddPPS*
-#   uMicroModemWatchPPS*
-   uRepeater*
-   zlog2alog*
-   zLoggerNG*
-#    uPlayBack*       I don't see this file in the src directory. -CJC	        
-#    pDrone*          I don't see this file in the src directory. -CJC
-#    pMessageSim*     I don't see this file in the src directory. -CJC
    )
 
 SET(IVP_DIRS_TO_BUILD 
@@ -220,13 +158,11 @@ INCLUDE_DIRECTORIES(
    lib_fltk-1.1.7
    ${IVP_LIB_BASE_SUBDIRS}
    ${IVP_LIB_TOOLS_SUBDIRS}
-   ${IVP_LIB_BASE_EXTRA_INCLUDE_DIRS}
    )
 
 
 FOREACH(D ${IVP_DIRS_TO_BUILD})
   ADD_SUBDIRECTORY(${D})
-#   MESSAGE(">>>>>> " ${D})
 ENDFOREACH(D)
 
 #===============================================================================
