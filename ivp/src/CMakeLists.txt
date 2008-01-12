@@ -54,12 +54,9 @@ SET(MOOS_INCLUDE_DIRS
    ${MOOS_BASE_DIR}/Essentials
    ${MOOS_BASE_DIR}/Core
    ${MOOS_BASE_DIR}/NavigationAndControl
-   ${MOOS_BASE_DIR}/Thirdparty/FLTKVW
    ${MOOS_BASE_DIR}/Essentials/MOOSUtilityLib
    ${MOOS_BASE_DIR}/Core/MOOSLIB
    ${MOOS_BASE_DIR}/Core/MOOSGenLib
-   ${MOOS_BASE_DIR}/NavigationAndControl/MOOSNavLib
-   ${MOOS_BASE_DIR}/NavigationAndControl/MOOSTaskLib
    ${MOOS_BASE_DIR}/Thirdparty/FLTKVW
    )
 INCLUDE_DIRECTORIES(${MOOS_INCLUDE_DIRS})
@@ -95,6 +92,7 @@ GET_FILENAME_COMPONENT(IVP_DATA_DIR ../data ABSOLUTE)
 # (via the presense of a ExtraCMakeIncludeDirs.txt file) is that this present
 # CMake file explicitly lists the subdirectories build, rather than just finding
 # them all with one big "FILE(GLOB *)" command.
+
 SET(IVP_DIRS_TO_BUILD "")
 FILE(GLOB_RECURSE CUSTOM_ADDED_INCLUDES ExtraCMakeIncludeDirs.txt)
 FOREACH(F ${CUSTOM_ADDED_INCLUDES})

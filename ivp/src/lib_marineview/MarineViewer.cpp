@@ -288,6 +288,10 @@ void MarineViewer::draw()
   // Draw the crosshairs if the tiff flag is set
   if(m_cross_offon)
     drawCrossHairs();
+
+  // Draw the datum
+  if(m_draw_datum)
+    drawDatum();
 }
 
 // ----------------------------------------------------------
@@ -923,6 +927,7 @@ bool MarineViewer::setCommonParam(string param, string value)
       return(false);
   }
   else if(param == "display_datum") {
+    cout << "MarineViewer::SetParamCommon - Inside display_datum" << endl;
     if(value == "toggle")
       m_draw_datum = !m_draw_datum;
     else if((value == "on") || (value == "true"))

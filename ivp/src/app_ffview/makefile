@@ -15,8 +15,7 @@ LCFLAGS  =
 # 	   libivpbuild.a    		\
 #            libivpcore.a libmbutil.a 
 
-PLIBS    = libbehaviors-marine.a	\
-	   libbhvutil.a			\
+PLIBS    = 	   libbhvutil.a			\
 	   libipfview.a			\
 	   libbehaviors.a		\
 	   libgeometry.a 		\
