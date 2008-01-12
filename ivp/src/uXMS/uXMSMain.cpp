@@ -162,6 +162,9 @@ int main(int argc ,char * argv[])
     else if(str == "-v") 
       g_theXMS.setDispVirgins(false);
 
+    else if(str == "-e") 
+      g_theXMS.setDispEmptyStrings(false);
+
     else if(str == "-s") 
       g_theXMS.setDispSource(true);
 

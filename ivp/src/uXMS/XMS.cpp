@@ -43,6 +43,7 @@ XMS::XMS()
   m_iteration         = 0;
 
   m_display_virgins   = true;
+  m_display_empty_strings = true;
 }
 
 //------------------------------------------------------------
@@ -113,6 +114,9 @@ bool XMS::OnStartUp()
     if(sVarName == "DISPLAY_VIRGINS")
       m_display_virgins = (tolower(sLine) == "true");
 
+    if(sVarName == "DISPLAY_EMPTY_STRINGS")
+      m_display_empty_strings = (tolower(sLine) == "true");
+
     if(sVarName == "DISPLAY_SOURCE")
       m_display_source = (tolower(sLine) == "true");
 
@@ -158,6 +162,14 @@ void XMS::handleCommand(char c)
     break;
   case 'V':
     m_display_virgins = true;
+    m_update_requested = true;
+    break;
+  case 'e':
+    m_display_empty_strings = false;
+    m_update_requested  = true;
+    break;
+  case 'E':
+    m_display_empty_strings = true;
     m_update_requested = true;
     break;
   case 'c':
@@ -303,6 +315,8 @@ void XMS::printHelp()
   printf("    C        Display Community of variables      \n");
   printf("    v        Surpress virgin variables           \n");
   printf("    V        Display virgin variables            \n");
+  printf("    e        Surpress empty strings              \n");
+  printf("    E        Display empty strings               \n");
   printf("   u/U       Update information once - now       \n");
   printf("   p/P       Pause information refresh           \n");
   printf("   r/R       resume information refresh          \n");
@@ -361,7 +375,8 @@ void XMS::printReport()
   int vsize = var_names.size();
   for(int i=0; i<vsize; i++) {
 
-    if((m_display_virgins) || (var_vals[i] != "n/a")) {
+    if(((m_display_virgins) || (var_vals[i] != "n/a")) &&
+       ((m_display_empty_strings) || (var_vals[i] != ""))) {
       printf("  %-22s ", var_names[i].c_str());
 	    
       if(m_display_source)

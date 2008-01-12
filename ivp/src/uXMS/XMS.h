@@ -48,6 +48,7 @@ class XMS : public CMOOSApp
   void setDispTime(bool v)      {m_display_time = v;};
   void setDispSource(bool v)    {m_display_source = v;};
   void setDispCommunity(bool v) {m_display_community = v;};
+  void setDispEmptyStrings(bool v) {m_display_empty_strings = v;};
 
  protected:
   void registerVariables();
@@ -80,6 +81,7 @@ class XMS : public CMOOSApp
   int  m_iteration;
 
   bool m_display_virgins;
+  bool m_display_empty_strings;
 
   bool m_ignore_vars;
 };

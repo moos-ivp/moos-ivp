@@ -1,3 +1,8 @@
+#--------------------------------------------------------
+# The CMakeLists.txt for:                            uXMS
+# Author(s):                                Mike Benjamin
+#--------------------------------------------------------
+
 FILE(GLOB SRC *.cpp)
 
 OPTION(IVP_BUILD_uXMS "Build program uXMS" ON)
