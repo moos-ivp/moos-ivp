@@ -1,9 +1,0 @@
-XX               - (2) 'ML'
-XXXX             - (4) uint32_t sequence
-XXXXXXXXXXXXXXXX - (16) originating community
-XXXXXXXXXXXXXXXX - (16) destination community
-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX - (32) var name
-X                - Type
-			'F' = float
-			'S' = string
-X[...]		- Data
