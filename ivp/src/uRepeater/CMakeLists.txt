@@ -1,17 +1,15 @@
 #--------------------------------------------------------
-# The CMakeLists.txt for:                      iMarineSim
+# The CMakeLists.txt for:                   uProcessWatch
 # Author(s):                                Mike Benjamin
 #--------------------------------------------------------
 
 FILE(GLOB SRC *.cpp)
 
-ADD_EXECUTABLE(iMarineSim ${SRC})
-
-TARGET_LINK_LIBRARIES(iMarineSim 
-MOOS
-MOOSGen
-MOOSUtility
-mbutil
-geometry
-m
-pthread)
+ADD_EXECUTABLE(uRepeater ${SRC})
+ 
+TARGET_LINK_LIBRARIES(uRepeater
+   MOOS
+   MOOSGen
+   mbutil
+   m
+   pthread)

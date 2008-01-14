@@ -5,24 +5,12 @@
 
 FILE(GLOB SRC *.cpp)
 
-OPTION(IVP_BUILD_pMarinePID "Build program pMarinePID" ON)
-
-IF("${IVP_BUILD_pMarinePID}" STREQUAL "ON")
-   ADD_EXECUTABLE(pMarinePID ${SRC})
+ADD_EXECUTABLE(pMarinePID ${SRC})
    
-   TARGET_LINK_LIBRARIES(pMarinePID 
-   MOOS
-   MOOSGen
-   mbutil
-   geometry
-   m
-   pthread)
-
-   IF(NOT "${IVP_PACKAGE_VERSION}" STREQUAL "")
-      INSTALL(
-         TARGETS pMarinePID
-         DESTINATION bin/ivp-${IVP_PACKAGE_VERSION}
-         COMPONENT ivp-core)
-   ENDIF(NOT "${IVP_PACKAGE_VERSION}" STREQUAL "")
-
-ENDIF("${IVP_BUILD_pMarinePID}" STREQUAL "ON")
+TARGET_LINK_LIBRARIES(pMarinePID 
+MOOS
+MOOSGen
+mbutil
+geometry
+m
+pthread)
