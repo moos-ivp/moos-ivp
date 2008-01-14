@@ -13,6 +13,22 @@ SET(MOOS_BASE_DIR ../../MOOS)
 # never sure from which directory a relative path will be employed in commands
 # such as LINK_DIRECTORIES() ...
 GET_FILENAME_COMPONENT(MOOS_BASE_DIR_ABSOLUTE ../../MOOS ABSOLUTE)
+
+# Confirm that MOOS_BASE_DIR seems to be set to a valid value...
+IF(NOT EXISTS ${MOOS_BASE_DIR_ABSOLUTE}/Core)
+   MESSAGE(FATAL_ERROR 
+      "The CMake variable MOOS_BASE_DIR_ABSOLUTE has the value "
+      "'${MOOS_BASE_DIR_ABSOLUTE}'.\n\n"
+      "That directory doesn't have a 'Core' subdirectory, which means it's "
+      "definitely not the base directory of a MOOS source tree."
+      "\n\n"
+      "You need to set the CMake variable 'MOOS_BASE_DIR' to a different value."
+)
+ENDIF(NOT EXISTS ${MOOS_BASE_DIR_ABSOLUTE}/Core)
+
+
+
+
 SET(MOOS_LIB_DIR ${MOOS_BASE_DIR_ABSOLUTE}/MOOSBin)
 LINK_DIRECTORIES(${MOOS_LIB_DIR})
 
