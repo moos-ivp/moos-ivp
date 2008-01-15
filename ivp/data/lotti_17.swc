@@ -4,6 +4,6 @@ rm -f Default.info;
 rm -f DefaultB.info;
 cp    lotti_17s.tif   Default.tif;
 cp    lotti_17s.info  Default.info;
-cp    lotti_17s.tif   DefaultB.tif;
-cp    lotti_17s.info  DefaultB.info;
+cp    lotti_17m.tif   DefaultB.tif;
+cp    lotti_17m.info  DefaultB.info;
 
