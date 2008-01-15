@@ -1360,9 +1360,9 @@ void MarineViewer::drawCommonVehicle(string vname, ObjectPose opose,
     if(m_vname_color == 0)
       glColor3f(0, 0, 0.6);
     else if(m_vname_color == 1)
-      glColor3f(1, 1, 0);
+      glColor3f(1, 1, 1);
     else
-      glColor3f(0, 1, 0);
+      glColor3f(1, 0, 0);
     gl_font(1, 12);
     if(m_zoom > 4)
       gl_font(1, 14);
