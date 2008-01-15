@@ -49,8 +49,11 @@ protected:
   inline void cb_AltShapeScale_i(int);
   static void cb_AltShapeScale(Fl_Widget*, int);
 
-  inline void cb_ToggleVehicleName_i();
-  static void cb_ToggleVehicleName(Fl_Widget*);
+  inline void cb_ToggleVName_i();
+  static void cb_ToggleVName(Fl_Widget*);
+
+  inline void cb_ToggleVNameColor_i();
+  static void cb_ToggleVNameColor(Fl_Widget*);
 
   inline void cb_DataView_i(int);
   static void cb_DataView(Fl_Widget*, int);

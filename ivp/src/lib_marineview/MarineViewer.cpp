@@ -64,6 +64,7 @@ MarineViewer::MarineViewer(int x, int y, int w, int h, const char *l)
   m_draw_datum  = false;
   m_size_datum  = 3.0;
   m_global_ix   = 0;
+  m_vname_color = 0;
 
   m_back_img_b_ok = false;
   m_back_img_b_on = false;
@@ -926,6 +927,10 @@ bool MarineViewer::setCommonParam(string param, string value)
     else
       return(false);
   }
+  else if(param == "vname_color") {
+    if(value == "toggle")
+      m_vname_color = (m_vname_color+1) % 3;
+  }
   else if(param == "display_datum") {
     cout << "MarineViewer::SetParamCommon - Inside display_datum" << endl;
     if(value == "toggle")
@@ -1352,7 +1357,12 @@ void MarineViewer::drawCommonVehicle(string vname, ObjectPose opose,
   }
 
   if(m_draw_vname) {
-    glColor3f(0, 0, 0.8);
+    if(m_vname_color == 0)
+      glColor3f(0, 0, 0.6);
+    else if(m_vname_color == 1)
+      glColor3f(1, 1, 0);
+    else
+      glColor3f(0, 1, 0);
     gl_font(1, 12);
     if(m_zoom > 4)
       gl_font(1, 14);

@@ -134,6 +134,7 @@ protected:
   bool       m_tiff_offon;
   bool       m_hash_offon;
   bool       m_draw_vname;
+  int        m_vname_color;
   bool       m_draw_datum;
   float      m_size_datum;
   int        m_global_ix;
