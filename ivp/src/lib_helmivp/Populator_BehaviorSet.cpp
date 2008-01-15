@@ -83,6 +83,11 @@
 #include "BHV_2VAngle.h"
 #endif
 
+#if 1
+// Andrew Shafer Behaviors
+#include "BHV_SearchArtifact.h"
+#endif
+
 using namespace std;
 
 //-------------------------------------------------------------
@@ -358,6 +363,12 @@ IvPBehavior* Populator_BehaviorSet::initializeBehavior(string bhv_name)
   else if (bhv_name == "BHV_2VAngle")
     bhv = new BHV_2VAngle(domain);
 #endif
+
+#if 1
+  // Andrew Shafer Behaviors --------------------------
+  else if (bhv_name == "BHV_SearchArtifact")
+    bhv = new BHV_SearchArtifact(domain);
+#endif 
 
   return(bhv);
 }

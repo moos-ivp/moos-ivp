@@ -67,7 +67,7 @@ SET( EXECUTABLE_OUTPUT_PATH ${IVP_SOURCE_DIR}/bin)
 # a different system than that on which it was compiled. -CJC
 GET_FILENAME_COMPONENT(IVP_DATA_DIR ../data ABSOLUTE)
 
-FILE(GLOB IVP_DIRS_TO_BUILD lib_* app_* p* u* i*)
+FILE(GLOB IVP_DIRS_TO_BUILD lib_* app_* p* u* i* newmat10D)
 
 FOREACH(D ${IVP_DIRS_TO_BUILD})
   ADD_SUBDIRECTORY(${D})
