@@ -4,6 +4,6 @@ rm -f Default.info;
 rm -f DefaultB.info;
 cp    tellaro_16s.tif   Default.tif;
 cp    tellaro_16s.info  Default.info;
-cp    tellaro_16s.tif   DefaultB.tif;
-cp    tellaro_16s.info  DefaultB.info;
+cp    tellaro_16m.tif   DefaultB.tif;
+cp    tellaro_16m.info  DefaultB.info;
 
