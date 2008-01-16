@@ -469,9 +469,18 @@ bool TransponderAIS::handleIncomingNaFConMessage(const string& rMsg)
 	vname = "SeaGlider-118";
       }
 
+      // temporary hack until we know OEXs real ID
+      if(sourceID == "30")
+      {
+          vtype = "AUV";
+          vname = "OEX";
+      }
+      
+
+          
       // publish it at AIS_REPORT
       // all strings: assembleAIS(name,type,db_time,utc_time,x,y,lat,lon,spd,hdg,depth)
-      string summary = assembleAIS(vname, vtype, "",\
+      string summary = assembleAIS(vname, vtype, "-1",\
 				   dstringCompact(doubleToString(navTime)),\
 				   dstringCompact(doubleToString(navX, 2)),\
 				   dstringCompact(doubleToString(navY, 2)),\
