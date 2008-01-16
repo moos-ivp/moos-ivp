@@ -33,8 +33,6 @@ SET(MOOS_LIB_DIR ${MOOS_BASE_DIR_ABSOLUTE}/MOOSBin)
 LINK_DIRECTORIES(${MOOS_LIB_DIR})
 
 # No harm in giving all IvP software access to MOOS's include libraries.
-# MOOS and IvP both have a copy of the 'newmat' library (different versions),
-# but we don't seem to need to include MOOS's copy in our include path.
 SET(MOOS_INCLUDE_DIRS
    ${MOOS_BASE_DIR_ABSOLUTE}/Essentials
    ${MOOS_BASE_DIR_ABSOLUTE}/Core
