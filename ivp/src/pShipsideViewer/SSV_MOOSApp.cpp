@@ -184,15 +184,12 @@ bool SSV_MOOSApp::OnStartUp()
   STRING_LIST sParams;
   m_MissionReader.GetConfiguration(GetAppName(), sParams);
   
-  string tif_file   = "Default.tif";
-  string tif_file_b = "DefaultB.tif";
-
-
   //Initialize m_Geodesy from lat lon origin in .moos file
   string sVal;
   double dfLatOrigin;
   double dfLongOrigin;
-  
+  string op_area;
+
   if(m_MissionReader.GetValue("LatOrigin",sVal)) {
     dfLatOrigin = atof(sVal.c_str());
     MOOSTrace("  LatOrigin  = %10.5f deg.\n",dfLatOrigin);
@@ -224,10 +221,8 @@ bool SSV_MOOSApp::OnStartUp()
     sVarName = toupper(sVarName);
     sLine    = stripBlankEnds(sLine);
     
-    if(MOOSStrCmp(sVarName, "TIF_FILE"))
-      tif_file = sLine;
-    if(MOOSStrCmp(sVarName, "TIF_FILE_B"))
-      tif_file_b = sLine;
+    if(MOOSStrCmp(sVarName, "OP_AREA"))
+      op_area = tolower(sLine);
     if(MOOSStrCmp(sVarName, "VEHICOLOR"))
       m_gui->mviewer->colorMapping(sLine);
     if(MOOSStrCmp(sVarName, "OWNSHIP_NAME"))
@@ -244,17 +239,11 @@ bool SSV_MOOSApp::OnStartUp()
       handleMarker("efield", sLine);
   }
 
-#if 0
-  if(tif_file != "")
-    m_gui->readTiff(tif_file);
-
-  if(tif_file_b != "")
-    m_gui->readTiffB(tif_file_b);
-#endif
-
   m_start_time = MOOSTime();
   
   if(m_gui && m_gui->mviewer)
+    if(op_area != "")
+      m_gui->mviewer->setParam("op_area", op_area);
     m_gui->mviewer->redraw();
   
   return(true);

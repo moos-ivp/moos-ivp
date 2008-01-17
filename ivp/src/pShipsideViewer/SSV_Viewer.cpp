@@ -56,7 +56,7 @@ void SSV_Viewer::draw()
 {
   MarineViewer::draw();
 
-  //drawGridPN();
+  drawOpAreaGrid();
   //drawAGateways();
   //drawBGateways();
   //drawEFields();
@@ -702,6 +702,84 @@ void SSV_Viewer::drawRadials()
   glFlush();
   glPopMatrix();
 }
+
+//-------------------------------------------------------------
+// Procedure: drawOpAreaGrid
+
+void SSV_Viewer::drawOpAreaGrid()
+{
+  if(m_op_area == "dabob_bay")
+    drawGridPN();
+  else if(m_op_area == "tellaro")
+    drawGridBox(0.0,    1542.6,	  1510.2,  2690.7,
+		2839.8, 1227.0,	  1382.2,     0.0);
+  else if(m_op_area == "palmara")
+    drawGridBox(0.0,       0.0,      0.0,  1347.0,
+		1071.3, 1347.0,   1071.3,     0.0);
+  else if(m_op_area == "lotti")
+    drawGridBox(926.7,   749.9,    1048.1,  642.4,
+		467.0,     0.0,       0.0,  342.0);
+}
+
+
+//-------------------------------------------------------------
+// Procedure: drawGridBox
+
+void SSV_Viewer::drawGridBox(double p0x, double p0y,
+			     double p1x, double p1y,
+			     double p2x, double p2y,
+			     double p3x, double p3y)
+{
+  unsigned int i;
+
+  int    vsize  = 4;
+  float *points = new float[2*4];
+
+  points[0]  = p0x;    points[1] = p0y;
+  points[2]  = p1x;    points[3] = p1y;
+  points[4]  = p2x;    points[5] = p2y;
+  points[6]  = p3x;    points[7] = p3y;
+
+  int pindex = 0;
+  for(i=0; i<vsize; i++) {
+    points[pindex]   *=  m_back_img.get_pix_per_mtr();
+    points[pindex+1] *=  m_back_img.get_pix_per_mtr();
+    pindex+=2;
+  }
+
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glOrtho(0, w(), 0, h(), -1 ,1);
+
+  float tx = meters2img('x', 0);
+  float ty = meters2img('y', 0);
+  float qx = img2view('x', tx);
+  float qy = img2view('y', ty);
+
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
+  glLoadIdentity();
+
+  glTranslatef(qx, qy, 0);
+  glScalef(m_zoom, m_zoom, m_zoom);
+
+  // Draw the edges 
+  glLineWidth(2.0);
+  glColor3f(0.0, 0.7, 0.5);
+  glBegin(GL_LINE_STRIP);
+
+  glBegin(GL_LINE_STRIP);
+  glVertex2f(points[2*0],  points[2*0+1]);
+  glVertex2f(points[2*1],  points[2*1+1]);
+  glVertex2f(points[2*2],  points[2*2+1]);
+  glVertex2f(points[2*3],  points[2*3+1]);
+  glVertex2f(points[2*0],  points[2*0+1]);
+  glEnd();
+
+  glFlush();
+  glPopMatrix();
+}
+
 
 //-------------------------------------------------------------
 // Procedure: drawGridPN
