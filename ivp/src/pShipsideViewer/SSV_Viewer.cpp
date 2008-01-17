@@ -56,10 +56,10 @@ void SSV_Viewer::draw()
 {
   MarineViewer::draw();
 
-  drawGridPN();
-  drawAGateways();
-  drawBGateways();
-  drawEFields();
+  //drawGridPN();
+  //drawAGateways();
+  //drawBGateways();
+  //drawEFields();
 
   drawPolys();
   drawSegLists();
@@ -568,6 +568,9 @@ bool SSV_Viewer::setParam(string param, string value)
       m_centric_view = false;
     else
       return(false);
+  }
+  else if(param == "op_area") {
+    m_op_area = value;
   }
   else
     return(false);

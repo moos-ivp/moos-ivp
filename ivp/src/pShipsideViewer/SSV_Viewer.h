@@ -136,6 +136,9 @@ public:
   float  m_curr_time;
 
  private: // Geomarkers
+  std::string m_op_area;
+  
+
   std::vector<double>    m_gateway_a_x;
   std::vector<double>    m_gateway_a_y;
   std::vector<double>    m_gateway_a_s;
