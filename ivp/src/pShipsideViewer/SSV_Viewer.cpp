@@ -713,7 +713,7 @@ void SSV_Viewer::drawOpAreaGrid()
   else if(m_op_area == "tellaro")
     drawGridBox(0.0,    1542.6,	  1510.2,  2690.7,
 		2839.8, 1227.0,	  1382.2,     0.0);
-  else if(m_op_area == "palmara")
+  else if((m_op_area == "palmara") || (m_op_area == "palmaria"))
     drawGridBox(0.0,       0.0,      0.0,  1347.0,
 		1071.3, 1347.0,   1071.3,     0.0);
   else if(m_op_area == "lotti")
