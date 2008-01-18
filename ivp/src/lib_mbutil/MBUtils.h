@@ -53,6 +53,8 @@ std::string stripComment(const std::string&, const std::string&);
 std::string stripQuotes(const std::string&);
 std::string doubleToHex(double);
 
+std::string packageToString(const std::vector<std::string>&);
+
 bool strContains(const std::string&, const std::string&);
 
 bool  tokParse(const std::string&, const std::string&, 

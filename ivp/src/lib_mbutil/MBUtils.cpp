@@ -473,6 +473,17 @@ bool strContains(const string& str, const string& qstr)
     
 
 //----------------------------------------------------------------
+// Procedure: packageToString
+//      Note: Added Jan 18 07 
+
+string packageToString(const vector<string>&)
+{
+  string result;
+  return(result);
+}
+    
+
+//----------------------------------------------------------------
 // Procedure: tokParse
 //   Example: info  = "fruit=apple, drink=water, temp=98.6";
 //            match = str_tok(info, "drink", ',', '=', rval);
