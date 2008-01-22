@@ -20,25 +20,20 @@ using namespace std;
 
 //----------------------------------------------------------
 // Procedure: Constructor
-//      args: gcnlat  Given Contact Latitude Position
-//      args: gcnlon  Given Contact Longitude Position
-//      args: gcncrs  Given Contact Course
-//      args: gcnspd  Given Contact Speed
-//      args: goslat  Given Ownship Latitude Position
-//      args: goslon  Given Ownship Latitude Position
 
 AOF_R16::AOF_R16(IvPDomain gdomain) : AOF(gdomain)
 {
-  crs_ix = gdomain.getIndex("course");
-  spd_ix = gdomain.getIndex("speed");
-  tol_ix = gdomain.getIndex("tol");
+  m_crs_ix = gdomain.getIndex("course");
+  m_spd_ix = gdomain.getIndex("speed");
 
-  os_lat_set = false;
-  os_lon_set = false;
-  cn_lat_set = false;
-  cn_lon_set = false;
-  cn_crs_set = false;
-  cn_spd_set = false;
+  m_osx_set = false;
+  m_osy_set = false;
+  m_cnx_set = false;
+  m_cny_set = false;
+  m_cnh_set = false;
+  m_cnv_set = false;
+
+  m_cpa_engine = 0;
 }
 
 //----------------------------------------------------------------
@@ -46,34 +41,34 @@ AOF_R16::AOF_R16(IvPDomain gdomain) : AOF(gdomain)
 
 bool AOF_R16::setParam(const string& param, double param_val)
 {
-  if(param == "os_lat") {
-    os_lat = param_val;
-    os_lat_set = true;
+  if(param == "osx") {
+    m_osx = param_val;
+    m_osx_set = true;
     return(true);
   }
-  else if(param == "os_lon") {
-    os_lon = param_val;
-    os_lon_set = true;
+  else if(param == "osy") {
+    m_osy = param_val;
+    m_osy_set = true;
     return(true);
   }
-  else if(param == "cn_lat") {
-    cn_lat = param_val;
-    cn_lat_set = true;
+  else if(param == "cnx") {
+    m_cnx = param_val;
+    m_cnx_set = true;
     return(true);
   }
-  else if(param == "cn_lon") {
-    cn_lon = param_val;
-    cn_lon_set = true;
+  else if(param == "cny") {
+    m_cny = param_val;
+    m_cny_set = true;
     return(true);
   }
-  else if(param == "cn_crs") {
-    cn_crs = param_val;
-    cn_crs_set = true;
+  else if(param == "cnh") {
+    m_cnh = param_val;
+    m_cnh_set = true;
     return(true);
   }
-  else if(param == "cn_spd") {
-    cn_spd = param_val;
-    cn_spd_set = true;
+  else if(param == "cnv") {
+    m_cnv = param_val;
+    m_cnv_set = true;
     return(true);
   }
   else
@@ -85,17 +80,17 @@ bool AOF_R16::setParam(const string& param, double param_val)
 
 bool AOF_R16::initialize()
 {
-  if((crs_ix==-1)|| (spd_ix==-1)|| (tol_ix==-1))
+  if((m_crs_ix==-1)|| (m_spd_ix==-1))
     return(false);
 
-  if(!os_lat_set || !os_lon_set || !cn_lat_set)
+  if(!m_osx_set || !m_osy_set || !m_cnx_set)
     return(false);
 
-  if(!cn_lon_set || !cn_crs_set || !cn_spd_set)
+  if(!m_cny_set || !m_cnh_set || !m_cnv_set)
     return(false);
 
-  cpa_engine = new CPAEngine(cn_lat, cn_lon, cn_crs, 
-			     cn_spd, os_lat, os_lon);
+  m_cpa_engine = new CPAEngine(m_cny, m_cnx, m_cnh, 
+			       m_cnv, m_osy, m_osx);
 
   return(true);
 }
@@ -110,15 +105,14 @@ bool AOF_R16::initialize()
 
 double AOF_R16::evalBox(const IvPBox *b) const
 {
-  double eval_crs, eval_spd, eval_tol, cpa_dist;
+  double eval_crs, eval_spd, cpa_dist;
 
-  m_domain.getVal(crs_ix, b->pt(crs_ix,0), eval_crs);
-  m_domain.getVal(spd_ix, b->pt(spd_ix,0), eval_spd);
-  m_domain.getVal(tol_ix, b->pt(tol_ix,0), eval_tol);
+  m_domain.getVal(m_crs_ix, b->pt(m_crs_ix,0), eval_crs);
+  m_domain.getVal(m_spd_ix, b->pt(m_spd_ix,0), eval_spd);
 
-  cpa_dist = cpa_engine->evalCPA(eval_crs, eval_spd, eval_tol);
+  cpa_dist = m_cpa_engine->evalCPA(eval_crs, eval_spd, m_tol);
 
-  bool crosses_bow  = cpa_engine->crossesBow(eval_crs, eval_spd);
+  bool crosses_bow  = m_cpa_engine->crossesBow(eval_crs, eval_spd);
 
   //  if(crosses_bow) 
   //    cpa_distance = cpa_distance * 0.1;
@@ -183,11 +177,4 @@ double AOF_R16::metric(double gval) const
   val += (100.0 - drop_val) * (gval - min_dist) / (max_dist - min_dist);
   return(val);
 }
-
-
-
-
-
-
-
 

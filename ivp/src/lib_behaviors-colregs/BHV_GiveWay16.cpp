@@ -171,6 +171,7 @@ IvPFunction *BHV_GiveWay16::onRunState()
   }
 
   double relevance = getRelevance();
+  cout << "Relevance: " << relevance << endl;
   postRange(true);
 
   if(relevance <= 0)
@@ -186,13 +187,12 @@ IvPFunction *BHV_GiveWay16::onRunState()
   ok = ok && aof.setParam("cnx", m_cnx);
   ok = ok && aof.setParam("cnh", m_cnh);
   ok = ok && aof.setParam("cnv", m_cnv);
-  ok = ok && aof.setParam("tol", 120);
-  ok = ok && aof.setParam("collision_distance", m_collision_dist);
-  ok = ok && aof.setParam("all_clear_distance", m_all_clear_dist);
+  //ok = ok && aof.setParam("collision_distance", m_collision_dist);
+  //ok = ok && aof.setParam("all_clear_distance", m_all_clear_dist);
   ok = ok && aof.initialize();
 
   if(!ok) {
-    postEMessage("Unable to init AOF_AvoidCollision.");
+    postEMessage("Unable to init AOF_R16.");
     return(0);
   }
 
@@ -293,16 +293,25 @@ double BHV_GiveWay16::getRelevance()
 
   double cn_bearing_delta = angle360(m_cnh - ang_to_os);
 
-  //cout << "cn_bearing_delta:" << cn_bearing_delta << endl;
+  cout << "cn_bearing_delta:" << cn_bearing_delta << endl;
 
   if((cn_bearing_delta <= 15.0) || (cn_bearing_delta > 90.0))
     return(0.0);
+
+  cout << "dist: " << dist << endl;
   
-  if(dist < m_active_outer_dist)
+  if(dist > m_active_outer_dist)
     dist = m_active_outer_dist;
+  else if(dist < m_active_inner_dist)
+    dist = m_active_inner_dist;
   
   double range_range = (m_active_outer_dist - m_active_inner_dist);
-  double pct = 1.0 -  ((dist - m_active_inner_dist) / range_range);
+
+  cout << "range_range: " << range_range << endl;
+
+  double pct = 1.0 - ((dist - m_active_inner_dist) / range_range);
+
+  cout << "pct: " << pct << endl;
   return(pct);
 }
 

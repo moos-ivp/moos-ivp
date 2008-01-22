@@ -18,7 +18,7 @@
 class AOF_R16: public AOF {
 public:
   AOF_R16(IvPDomain);
-  ~AOF_R16() {if(cpa_engine) delete(cpa_engine);};
+  ~AOF_R16() {if(m_cpa_engine) delete(m_cpa_engine);};
 
 public: // virtual functions   
   double evalBox(const IvPBox*) const;
@@ -29,25 +29,26 @@ protected: // non-virtual functions
   double metric(double) const;
 
 protected:
-  double os_lat;   // Ownship Lat position
-  double os_lon;   // Ownship Lon position
-  double cn_lat;   // Contact Lat position
-  double cn_lon;   // Contact Lon position
-  double cn_crs;   // Contact heading
-  double cn_spd;   // Contact speed
+  double m_tol;   // Ownship Time on Leg
+  double m_osx;   // Ownship X position
+  double m_osy;   // Ownship Y position
+  double m_cnx;   // Contact X position
+  double m_cny;   // Contact Y position
+  double m_cnh;   // Contact heading
+  double m_cnv;   // Contact speed
 
-  bool   os_lat_set;
-  bool   os_lon_set;
-  bool   cn_lat_set;
-  bool   cn_lon_set;
-  bool   cn_crs_set;
-  bool   cn_spd_set;
+  bool   m_tol_set;
+  bool   m_osx_set;
+  bool   m_osy_set;
+  bool   m_cnx_set;
+  bool   m_cny_set;
+  bool   m_cnh_set;
+  bool   m_cnv_set;
 
-  CPAEngine *cpa_engine;
+  CPAEngine *m_cpa_engine;
 
-  int    crs_ix;  // Index of "course" variable in IvPDomain
-  int    spd_ix;  // Index of "speed" variable in IvPDomain
-  int    tol_ix;  // Index of "tol" variable in IvPDomain
+  int    m_crs_ix;  // Index of "course" variable in IvPDomain
+  int    m_spd_ix;  // Index of "speed" variable in IvPDomain
 };
 
 #endif
