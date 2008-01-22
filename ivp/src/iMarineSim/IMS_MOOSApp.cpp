@@ -31,8 +31,9 @@ using namespace std;
 
 IMS_MOOSApp::IMS_MOOSApp() 
 {
-  m_sim_prefix = "MARINESIM";
-  m_model      = 0;
+  m_sim_prefix  = "MARINESIM";
+  m_model       = 0;
+  m_reset_count = 0;
 }
 
 //------------------------------------------------------------------------
@@ -43,22 +44,20 @@ bool IMS_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 {
   CMOOSMsg Msg;
   
+  double curr_moos_time = MOOSTime();
+
   MOOSMSG_LIST::reverse_iterator p;
   for(p = NewMail.rbegin(); p != NewMail.rend(); p++) {
     CMOOSMsg &Msg = *p;
- 
-    double dfTimeDiff = MOOSTime() - Msg.m_dfTime;
-    if(dfTimeDiff > 1.0) {
-      MOOSTrace("Mail too old [%s] %f\n",Msg.m_sKey.c_str(),dfTimeDiff);
-      continue;
-    }
+
+    double dfTimeDiff = curr_moos_time - Msg.m_dfTime;
 
     if(m_model) {
-      if(Msg.m_sKey == "DESIRED_THRUST")
+      if((Msg.m_sKey == "DESIRED_THRUST") && (dfTimeDiff <= 1.0))
 	m_model->setThrust(Msg.m_dfVal);
-      else if(Msg.m_sKey == "DESIRED_RUDDER")
+      else if((Msg.m_sKey == "DESIRED_RUDDER")  && (dfTimeDiff <= 1.0))
 	m_model->setRudder(Msg.m_dfVal);
-      else if(Msg.m_sKey == "DESIRED_ELEVATOR")
+      else if((Msg.m_sKey == "DESIRED_ELEVATOR")  && (dfTimeDiff <= 1.0))
 	m_model->setElevator(Msg.m_dfVal);
       else if(Msg.m_sKey == "SIM_PAUSED")
 	m_model->setPaused(toupper(Msg.m_sVal) == "TRUE");
@@ -71,6 +70,8 @@ bool IMS_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
       else if(Msg.m_sKey == "MARINESIM_FORCE_Y")
 	m_model->setPushY(Msg.m_dfVal);
       else if(Msg.m_sKey == "MARINESIM_RESET") {
+	m_reset_count++;
+	m_Comms.Notify("MARINESIM_RESET_COUNT", m_reset_count);
 	string str = stripBlankEnds(Msg.m_sVal);
 	vector<string> svector = parseString(str, ',');
 	int vsize = svector.size();
