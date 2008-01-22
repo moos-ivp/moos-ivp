@@ -44,6 +44,7 @@ XMS::XMS()
 
   m_display_virgins   = true;
   m_display_empty_strings = true;
+  m_db_uptime         = 0;
 }
 
 //------------------------------------------------------------
@@ -51,13 +52,20 @@ XMS::XMS()
 
 bool XMS::OnNewMail(MOOSMSG_LIST &NewMail)
 {    
+  // First scan the mail for the DB_UPTIME message to get an 
+  // up-to-date value of DB uptime *before* handling other vars
+  MOOSMSG_LIST::reverse_iterator p;
+  for(p = NewMail.rbegin(); p != NewMail.rend(); p++) {
+    CMOOSMsg &msg = *p;
+    if(msg.m_sKey == "DB_UPTIME")
+      m_db_uptime = msg.m_dfVal;
+  }
+  
   // Update the values of all variables we have registered for.  
-
   // All variables "values" are stored as strings. We let MOOS
   // tell us the type of the variable, and we keep track of the
   // type locally, just so we can put quotes around string values.
 
-  MOOSMSG_LIST::reverse_iterator p;
   for(p = NewMail.rbegin(); p != NewMail.rend(); p++) {
     CMOOSMsg &msg = *p;
     updateVariable(msg);
@@ -255,6 +263,8 @@ void XMS::registerVariables()
     m_Comms.Register(var_names[i], 0);
     cout << "Registering for: [" << var_names[i] << "]" << endl;
   }
+
+  m_Comms.Register("DB_UPTIME", 0);
 }
 
 //------------------------------------------------------------
@@ -420,8 +430,9 @@ void XMS::updateVariable(CMOOSMsg &msg)
   string varname = msg.m_sKey;
   addVariable(varname);  // No action if already exists.
   
-  double vtime = msg.GetTime() - GetAppStartTime();
+  double vtime = m_db_uptime;
 
+  //double vtime = msg.GetTime() - GetAppStartTime();
   //vtime = MOOSTime() - GetAppStartTime();;
   //vtime = MOOSTime();
 
