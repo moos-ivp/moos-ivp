@@ -206,7 +206,7 @@ bool BackImg::readTiffInfo(string filename)
     if(line.size() > 0) {
       vector<string> svector = parseString(line, '=');
       if(svector.size() != 2) {
-	cout << "Problem w/ line " << i << " in " << file << endl;
+	cout << "A Problem w/ line " << i << " in " << file << endl;
 	return(false);
       }
       string left  = stripBlankEnds(svector[0]);
@@ -221,6 +221,7 @@ bool BackImg::readTiffInfo(string filename)
 	img_meters = atof(right.c_str());
       else {
 	cout << "Problem w/ line " << i << " in " << file << endl;
+	cout << "Lefthand argument: " << left << endl;
 	return(false);
       }
     }
