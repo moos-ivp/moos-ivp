@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Andrew Shafer                                        */
+/*    NAME: Andrew Shafer, Mike Benjamin                         */
 /*    ORGN: MIT                                                  */
 /*    FILE: BHV_SearchArtifact.cpp                               */
 /*    DATE: NOV 28, 2007                                         */
@@ -24,7 +24,7 @@ using namespace std;
 BHV_SearchArtifact::BHV_SearchArtifact(IvPDomain gdomain) : 
   IvPBehavior(gdomain)
 {
-  this->setParam("descriptor", "(d)bhv_search_grid");
+  this->setParam("descriptor", "(d)bhv_search_artifact_grid");
   this->setParam("build_info", "uniform_box=course:6,speed:4");
   this->setParam("build_info", "uniform_grid=course:12,speed:8");
 
@@ -47,7 +47,7 @@ bool BHV_SearchArtifact::setParam(string param, string val)
     return(true);
 
   if(param == "searchgrid") {
-    XYGrid new_search_grid;
+    XYArtifactGrid new_search_grid;
     bool ok = new_search_grid.initialize(val);
     if(!ok) 
       return(false);
@@ -55,14 +55,14 @@ bool BHV_SearchArtifact::setParam(string param, string val)
     return(true);
   }
   
-  if(param == "timutif") {
-    Timutif new_timutif(val);
-    bool ok = new_timutif.isConfigured();
-    if(!ok) 
-      return(false);
-    timutif = new_timutif;
-    return(true);
-  }
+//  if(param == "timutif") {
+//    Timutif new_timutif(val);
+//    bool ok = new_timutif.isConfigured();
+//    if(!ok) 
+//      return(false);
+//    timutif = new_timutif;
+//    return(true);
+//  }
   
   if(param == "time_horizon") {
     double dval = atof(val.c_str());
@@ -107,7 +107,7 @@ IvPFunction *BHV_SearchArtifact::onRunState()
   aof.setParam("os_lat", osY);
   aof.setParam("os_lon", osX);
   aof.setParam("time_horizon", time_horizon);
-  aof.setParam("timutif", timutif.toString());
+  //aof.setParam("timutif", timutif.toString());
   aof.initialize();
   aof.fillCache();
 
@@ -188,7 +188,7 @@ bool BHV_SearchArtifact::updateSearchGrid(double x1, double y1,
       double new_tis = cur_tis + time_in_square;
 
       double cur_util = search_grid.getUtil(i);
-      double new_util = timutif.evalUtility(new_tis);
+      double new_util = pass_value.evalValue(new_tis);
 
       search_grid.setVal(i, new_tis);
       search_grid.setUtil(i, new_util);

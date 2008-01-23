@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Andrew Shafer                                        */
+/*    NAME: Andrew Shafer, Mike Benjamin                         */
 /*    ORGN: MIT                                                  */
 /*    FILE: BHV_SearchArtifact.h                                 */
 /*    DATE: NOV 28, 2007                                         */
@@ -9,8 +9,8 @@
 #define BHV_SEARCH_ARTIFACT_HEADER
 
 #include "IvPBehavior.h"
-#include "XYGrid.h"
-#include "Timutif.h"
+#include "XYArtifactGrid.h"
+#include "SearchPassValue.h"
 
 class BHV_SearchArtifact : public IvPBehavior {
 public:
@@ -25,8 +25,8 @@ protected:
   bool updateSearchGrid(double, double, double, double);
 
 protected:
-  XYGrid    search_grid;
-  Timutif   timutif;
+  XYArtifactGrid    search_grid;
+  SearchPassValue pass_value;
   double    time_horizon;
 
   double    osCRS;

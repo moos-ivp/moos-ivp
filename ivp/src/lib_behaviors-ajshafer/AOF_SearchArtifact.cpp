@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Andrew Shafer                                        */
+/*    NAME: Andrew Shafer, Mike Benjamin                         */
 /*    ORGN: MIT                                                  */
 /*    FILE: AOF_SearchArtifact.cpp                               */
 /*    DATE: NOV 28, 2007                                         */
@@ -22,14 +22,14 @@ using namespace std;
 // Procedure: Constructor
 
 AOF_SearchArtifact::AOF_SearchArtifact(IvPDomain g_domain, 
-			       const XYGrid *g_grid)
+			       const XYArtifactGrid *g_grid)
   : AOF(g_domain)
 {
   crs_ix = g_domain.getIndex("course");
   spd_ix = g_domain.getIndex("speed");
 
   search_grid  = g_grid;
-  time_horizon = 30;       // 60 Seconds by default
+  time_horizon = 60;       // 60 Seconds by default
 }
 
 //----------------------------------------------------------------
@@ -62,11 +62,11 @@ bool AOF_SearchArtifact::setParam(const string& param, double param_val)
 bool AOF_SearchArtifact::setParam(const string& param, 
 			      const string& param_val)
 {
-  if(param == "timutif") {
-    timutif = Timutif(param_val);
-    return(true);
-  }
-  else
+//  if(param == "timutif") {
+//    timutif = Timutif(param_val);
+//    return(true);
+//  }
+//  else
     return(false);
 }
 
@@ -194,8 +194,8 @@ double AOF_SearchArtifact::evalBox(const IvPBox *b) const
       //double time_in_square = length;  //  /eval_speed????
       double time_in_square = length / eval_spd;
       double curr_duration  = search_grid->getVal(grid_ix);
-      double curr_util      = timutif.evalUtility(curr_duration);
-      double hypo_util      = timutif.evalUtility(curr_duration + time_in_square);
+      double curr_util      = pass_value.evalValue(curr_duration);
+      double hypo_util      = pass_value.evalValue(curr_duration + time_in_square);
       double delta_util     = hypo_util - curr_util;
 
       delta_util *= (1 - (dist_to_square / top_dist));

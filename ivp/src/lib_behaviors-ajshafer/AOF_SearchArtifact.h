@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Andrew Shafer                                        */
+/*    NAME: Andrew Shafer, Mike Benjamin                         */
 /*    ORGN: MIT                                                  */
 /*    FILE: AOF_SearchArtifact.h                                 */
 /*    DATE: NOV 28, 2007                                         */
@@ -10,12 +10,12 @@
 
 #include "AOF.h"
 #include "IvPDomain.h"
-#include "XYGrid.h"
-#include "Timutif.h"
+#include "XYArtifactGrid.h"
+#include "SearchPassValue.h"
 
 class AOF_SearchArtifact: public AOF {
  public:
-  AOF_SearchArtifact(IvPDomain, const XYGrid*);
+  AOF_SearchArtifact(IvPDomain, const XYArtifactGrid*);
   ~AOF_SearchArtifact() {};
 
 public: // virtual functions
@@ -26,9 +26,9 @@ public: // virtual functions
   void   fillCache();
 
 protected:
-  const XYGrid *search_grid;
+  const XYArtifactGrid *search_grid;
   
-  Timutif timutif;
+  SearchPassValue pass_value;
 
   double  os_lat;
   double  os_lon;
