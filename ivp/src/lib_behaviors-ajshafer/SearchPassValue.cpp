@@ -13,7 +13,7 @@
 #include <iostream>
 #include "SearchPassValue.h"
 #include "MBUtils.h"
-#include <math>
+#include <math.h>
 
 using namespace std;
 
