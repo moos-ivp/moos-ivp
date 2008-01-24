@@ -62,11 +62,11 @@ bool AOF_SearchArtifact::setParam(const string& param, double param_val)
 bool AOF_SearchArtifact::setParam(const string& param, 
 			      const string& param_val)
 {
-//  if(param == "timutif") {
-//    timutif = Timutif(param_val);
-//    return(true);
-//  }
-//  else
+  if(param == "pass_value") {
+    pass_value = SearchPassValue(param_val);
+    return(true);
+  }
+  else
     return(false);
 }
 

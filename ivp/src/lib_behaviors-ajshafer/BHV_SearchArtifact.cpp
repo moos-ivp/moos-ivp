@@ -55,14 +55,14 @@ bool BHV_SearchArtifact::setParam(string param, string val)
     return(true);
   }
   
-//  if(param == "timutif") {
-//    Timutif new_timutif(val);
-//    bool ok = new_timutif.isConfigured();
-//    if(!ok) 
-//      return(false);
-//    timutif = new_timutif;
-//    return(true);
-//  }
+  if(param == "passvalue") {
+    SearchPassValue new_passvalue(val);
+    bool ok = new_passvalue.isConfigured();
+    if(!ok) 
+      return(false);
+    pass_value = new_passvalue;
+    return(true);
+  }
   
   if(param == "time_horizon") {
     double dval = atof(val.c_str());
@@ -107,7 +107,7 @@ IvPFunction *BHV_SearchArtifact::onRunState()
   aof.setParam("os_lat", osY);
   aof.setParam("os_lon", osX);
   aof.setParam("time_horizon", time_horizon);
-  //aof.setParam("timutif", timutif.toString());
+  aof.setParam("pass_value", pass_value.toString());
   aof.initialize();
   aof.fillCache();
 
