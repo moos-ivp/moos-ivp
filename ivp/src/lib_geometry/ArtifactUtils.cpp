@@ -177,7 +177,7 @@ const XYSegList generateLawnmower(const XYPolygon& poly, double px0, double py0,
 
 }
 
-/// generateLawnmower() produces a lawnmower pattern in a polygon from an initial point.
+/// generateLawnmowerFull() produces a full lawnmower pattern in a polygon
 /// It does so by creating two half lawnmowers starting at the center of the polygon and
 /// then joining them together.
 /// \param poly Polygon string that defines the boundaries
