@@ -27,7 +27,7 @@ ProcessConfig = pArtifactMapper
    
    GridPoly =  poly:label,A:-60,-40:50,10:80,-40:-40,-80
    GridSize = 5.0
-   GridInit = .5
+   GridInit = 0
 }
 \end{verbatim}
 \normalsize
@@ -47,20 +47,24 @@ Mandatory. The initializing value for each cell.
 \subsubsection{MOOS Variables}
 \paragraph{Subscribes}
 \begin{hangpar}{\pin}{\var{DETECTED\_ARTIFACT: }}
-The sensor output strings are scanned for their x, y, and probability values.  The x, y location is mapped to a cell in the search grid and that cell's value and utility is updated to the probability.  After this, a \var{GRID\_DELTA} string is published.
+The sensor output strings are scanned for their x, y, and probability values.  The x, y location is mapped to a cell in the search grid and that cell's value and utility is updated to the probability.  If this is a new detection, a \var{GRID\_DELTA\_LOCAL} string is published.
 \end{hangpar}
 \begin{hangpar}{\pin}{\var{ARTIFACTMAP\_REFRESH: }}
 Any process can set this value to TRUE to ask pArtifactMapper to publish its current artifact field state.  This is published as a series of \var{GRID\_DELTA} updates for each cell.  After running the update, \var{ARTIFACTMAP\_REFRESH} is set to FALSE.
+\end{hangpar}
+\begin{hangpar}{\pin}{\var{GRID\_DELTA: }}
+These delta's come from other mapping processes on other platforms.  The contents of this update are placed into the local grid structure.
+\end{hangpar}
+\begin{hangpar}{\pin}{\var{ARTIFACTMAP\_EXPORT: }}
+Any process can set this value to a string to ask pArtifactMapper to write its current artifact field state to a file.  pArtifactMapper attempts to write out the data to a file with the name specified in the string (e.g. ./data\_output).  The format of this file has three header lines (Grid label, grid configuration string, and "Index, Value, Utility") followed by strings of the format index,value,utility.  This output is used by the scoring utility to calculate the score on a given artifact field.
 \end{hangpar}
 \paragraph{Publishes}
 \begin{hangpar}{\pin}{\var{GRID\_CONFIG: }}
 This is published on startup and on connecting to the server.  This string is published to get pMarineViewer to plot the search grid and set up its internal XYGrid.
 \end{hangpar}
-\begin{hangpar}{\pin}{\var{GRID\_DELTA: }}
+\begin{hangpar}{\pin}{\var{GRID\_DELTA\_LOCAL: }}
 A \var{GRID\_DELTA} string is published when the current probability in a \var{DETECTED\_ARTIFACT} cell differs from the detected probability.  The string format is the same as that used by pMarineViewer, ``label@index,oldval,newval,oldutil,newutil''.
 \end{hangpar}
 \begin{hangpar}{\pin}{\var{GRID\_CONFIG: }}
 This is published on startup and on connecting to the server.  This string is published to get pMarineViewer to plot the search grid and set up its internal XYGrid.
 \end{hangpar}
-
-NOTE:  pArtifactMapper currently does not listen for or accept updates from other sources (unless it get published as a \var{DETECTED\_ARTIFACT}.  Listening for other \var{GRID\_DELTA} updates is a feature that needs to be implemented.
