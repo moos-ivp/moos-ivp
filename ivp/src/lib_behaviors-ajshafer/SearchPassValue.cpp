@@ -25,16 +25,16 @@ using std::vector;
 SearchPassValue::SearchPassValue(string config_str)
 {
 	// Configuration string currently looks like this:
-	// param=value,param2=value2,max_val=doubleval
+	// param=value,param2=value2,max_value=doubleval
 
 	configured = false;
 	
 	if (config_str == ""){
 		return;
 	}
-	
+		
 	double temp_value = -1;
-	bool valid = tokParse(config_str, "max_val", ',', '=', temp_value);
+	bool valid = tokParse(config_str, "max_value", ',', '=', temp_value);
 	
 	if(valid && temp_value >= 0){
 		max_value = temp_value;
