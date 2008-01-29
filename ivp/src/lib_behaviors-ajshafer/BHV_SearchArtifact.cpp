@@ -35,7 +35,7 @@ BHV_SearchArtifact::BHV_SearchArtifact(IvPDomain gdomain) :
   osY   = 0;
   osSPD = 0;
 
-  addInfoVars("NAV_X, NAV_Y");
+  addInfoVars("NAV_X, NAV_Y, GRID_DELTA, NAV_SPEED, NAV_HEADING");
 }
 
 //-----------------------------------------------------------
@@ -55,7 +55,7 @@ bool BHV_SearchArtifact::setParam(string param, string val)
     return(true);
   }
   
-  if(param == "passvalue") {
+  if(param == "pass_value") {
     SearchPassValue new_passvalue(val);
     bool ok = new_passvalue.isConfigured();
     if(!ok) 
@@ -66,7 +66,7 @@ bool BHV_SearchArtifact::setParam(string param, string val)
   
   if(param == "time_horizon") {
     double dval = atof(val.c_str());
-    if((dval < 0) || (!isNumber(val)))
+    if( (!isNumber(val)) || (dval < 0) )
       return(false);
     time_horizon = dval;
     return(true);
@@ -82,41 +82,46 @@ bool BHV_SearchArtifact::setParam(string param, string val)
 
 IvPFunction *BHV_SearchArtifact::onRunState() 
 {
-  IvPFunction *ipf = 0;
+	IvPFunction *ipf = NULL;
 
-  bool ok_info = updateFromInfoBuffer();
-  if(!ok_info)
-    return(0);
+	bool ok_info = updateFromInfoBuffer();
+	if(!ok_info){
+		return(NULL);
+	}
 
-  string grid_label = search_grid.getLabel();
-  bool   in_grid    = search_grid.ptIntersect(osX, osY);
+	string grid_label = search_grid.getLabel();
+	bool   in_grid    = search_grid.ptIntersect(osX, osY);
+
+	if(!in_grid){
+		postMessage("TIME_TO_EXIT_GRID_"+grid_label, 0);
+	}
+	else {
+		XYPolygon poly = search_grid.getPBound();
+		double dist_to_exit = poly.dist_to_poly(osX, osY, osCRS);
+		double time_to_exit = dist_to_exit / osSPD;
+		postMessage("TIME_TO_EXIT_GRID_"+grid_label, time_to_exit);
+	}    
+
+	bool os_in_grid = updateSearchGrid(prev_osX, prev_osY, osX, osY);
+
+	AOF_SearchArtifact aof(m_domain, &search_grid);
+
+	aof.setParam("os_lat", osY);
+	aof.setParam("os_lon", osX);
+	aof.setParam("time_horizon", time_horizon);
+	aof.setParam("pass_value", pass_value.toString());
+	bool ready = aof.initialize();
   
-  if(!in_grid)
-    postMessage("TIME_TO_EXIT_GRID_"+grid_label, 0);
-  else {
-    XYPolygon poly = search_grid.getPBound();
-    double dist_to_exit = poly.dist_to_poly(osX, osY, osCRS);
-    double time_to_exit = dist_to_exit / osSPD;
-    postMessage("TIME_TO_EXIT_GRID_"+grid_label, time_to_exit);
-  }    
+  	if(ready){
+  		aof.fillCache();
+		
+		OF_Reflector reflector(&aof, 1);
+		reflector.create(m_build_info);
+		ipf = reflector.extractOF();
 
-  bool os_in_grid = updateSearchGrid(prev_osX, prev_osY, osX, osY);
-
-  AOF_SearchArtifact aof(m_domain, &search_grid);
-
-  aof.setParam("os_lat", osY);
-  aof.setParam("os_lon", osX);
-  aof.setParam("time_horizon", time_horizon);
-  aof.setParam("pass_value", pass_value.toString());
-  aof.initialize();
-  aof.fillCache();
-
-  OF_Reflector reflector(&aof, 1);
-  reflector.create(m_build_info);
-  ipf = reflector.extractOF();
-
-  if(ipf)
-    ipf->setPWT(m_priority_wt);
+	  if(ipf)
+	    ipf->setPWT(m_priority_wt);
+	}
 
   return(ipf);
 }
@@ -169,50 +174,51 @@ bool BHV_SearchArtifact::updateFromInfoBuffer()
 bool BHV_SearchArtifact::updateSearchGrid(double x1, double y1, 
 				      double x2, double y2) 
 {
-  bool os_in_grid = false;
+	bool os_in_grid = false;
 
-  int gsize = search_grid.size();
-  for(int i=0; i<gsize; i++) {
-    XYSquare square = search_grid.getElement(i);
-    os_in_grid = os_in_grid || square.containsPoint(x2,y2);
-    double length = square.segIntersectLength(x1,y1,x2,y2);
-    if(length > 0) {
-      double time_in_square = 0;
-      if(osSPD > 0)
-	time_in_square = length / osSPD;
-      string glabel  = search_grid.getLabel();
-      string gvar1 = "GRID_DELTA";
-      string gvar2 = "GRID_DELTA_" + glabel;
-      string gvar3 = "GRID_MSG";
-      double cur_tis = search_grid.getVal(i);
-      double new_tis = cur_tis + time_in_square;
+	int gsize = search_grid.size();
+	for(int i=0; i<gsize; i++) {
+		XYSquare square = search_grid.getElement(i);
+		os_in_grid = os_in_grid || square.containsPoint(x2,y2);
+		double length = square.segIntersectLength(x1,y1,x2,y2);
+		if(length > 0) {
+			double time_in_square = 0;
+			if(osSPD > 0) {
+//				time_in_square = length / osSPD;
+//				string glabel  = search_grid.getLabel();
+//				string gvar1 = "GRID_DELTA";
+//				string gvar2 = "GRID_DELTA_" + glabel;
+//				string gvar3 = "GRID_MSG";
+//				double cur_tis = search_grid.getVal(i);
+//				double new_tis = cur_tis + time_in_square;
 
-      double cur_util = search_grid.getUtil(i);
-      double new_util = pass_value.evalValue(new_tis);
+//				double cur_util = search_grid.getUtil(i);
+//				double new_util = pass_value.evalValue(new_tis);
 
-      search_grid.setVal(i, new_tis);
-      search_grid.setUtil(i, new_util);
-      string gdelta = glabel + "@" + 
-	intToString(i) + "," +
-	dstringCompact(doubleToString(cur_tis))  + "," +
-	dstringCompact(doubleToString(new_tis))  + "," +
-	dstringCompact(doubleToString(cur_util)) + "," +
-	dstringCompact(doubleToString(new_util));
-      string msg = "type=delta @ gname=" + glabel;
-      msg += " @ vname=" + m_us_name;
-      msg += " @ trans=" + intToString(i) + ",";
-	dstringCompact(doubleToString(cur_tis))  + "," +
-	dstringCompact(doubleToString(new_tis))  + "," +
-	dstringCompact(doubleToString(cur_util)) + "," +
-	dstringCompact(doubleToString(new_util));
-      postMessage(gvar1, gdelta);
-      postMessage(gvar2, gdelta);
-      postMessage(gvar3, msg);
-    }
-  }
+//				search_grid.setVal(i, new_tis);
+//				search_grid.setUtil(i, new_util);
+//				string gdelta = glabel + "@" + 
+//				intToString(i) + "," +
+//				dstringCompact(doubleToString(cur_tis))  + "," +
+//				dstringCompact(doubleToString(new_tis))  + "," +
+//				dstringCompact(doubleToString(cur_util)) + "," +
+//				dstringCompact(doubleToString(new_util));
+//				string msg = "type=delta @ gname=" + glabel;
+//				msg += " @ vname=" + m_us_name;
+//				msg += " @ trans=" + intToString(i) + ",";
+//				dstringCompact(doubleToString(cur_tis))  + "," +
+//				dstringCompact(doubleToString(new_tis))  + "," +
+//				dstringCompact(doubleToString(cur_util)) + "," +
+//				dstringCompact(doubleToString(new_util));
+//				postMessage(gvar1, gdelta);
+//				postMessage(gvar2, gdelta);
+//				postMessage(gvar3, msg);
+			}
+		}
+	}
 
-  search_grid.resetFromMin();
-  return(os_in_grid);
+	search_grid.resetFromMin();
+	return(os_in_grid);
 }
 
 

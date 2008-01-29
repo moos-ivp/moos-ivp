@@ -23,12 +23,10 @@ public:
 
 protected:
   bool   configured;
-  int    util_type;
 
-  double time_low;
-  double time_med;
-  double time_high;
-  double util_med;
+  double max_value;
+  std::string config_string;
+
 };
 
 #endif
