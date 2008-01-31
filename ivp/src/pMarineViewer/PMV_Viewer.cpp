@@ -26,7 +26,6 @@
 #include <stdlib.h>
 #include <tiffio.h>
 #include "PMV_Viewer.h"
-#include "VehicleShapes.h"
 #include "AngleUtils.h"
 #include "MBUtils.h"
 #include "ColorParse.h"
