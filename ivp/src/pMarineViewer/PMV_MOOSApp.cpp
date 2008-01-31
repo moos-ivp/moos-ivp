@@ -285,7 +285,7 @@ bool PMV_MOOSApp::receiveAIS_REPORT(CMOOSMsg &Msg)
   string vessel_name = "";
   string vessel_type = "";
 
-  string community(Msg.m_sOriginatingCommunity);
+  //string community(Msg.m_sOriginatingCommunity);
 
   bool bVName = tokParse(sVal, "NAME",   ',', '=', vessel_name);
   bool bVType = tokParse(sVal, "TYPE",   ',', '=', vessel_type);
@@ -302,7 +302,7 @@ bool PMV_MOOSApp::receiveAIS_REPORT(CMOOSMsg &Msg)
 
   if(bX && bY && bHeading && bSpeed && bDepth) {
     if(m_gui) {
-      m_gui->mviewer->updateVehiclePosition(community, dfX, dfY, 
+      m_gui->mviewer->updateVehiclePosition(vessel_name, dfX, dfY, 
 					    dfHeading, dfSpeed, dfDepth);
       m_gui->mviewer->setVehicleBodyType(vessel_name, vessel_type);
     }
