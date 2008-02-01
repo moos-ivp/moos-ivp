@@ -31,6 +31,7 @@
 #include "OF_Reflector.h"
 #include "MBUtils.h"
 #include "AngleUtils.h"
+#include "AOF_WaypointRateClosure.h"
 #include "GeomUtils.h"
 #include "BuildUtils.h"
 #include "FunctionEncoder.h"
@@ -160,7 +161,8 @@ IvPFunction *BHV_Waypoint::onRunState()
     return(0);
   }
   
-  IvPFunction *ipf = buildOF("zaic");
+  //IvPFunction *ipf = buildOF("zaic");
+  IvPFunction *ipf = buildOF("aof-rc");
   if(ipf)
     ipf->setPWT(m_priority_wt);
 
@@ -269,6 +271,24 @@ IvPFunction *BHV_Waypoint::buildOF(string method)
 
     OF_Coupler coupler;
     ipf = coupler.couple(crs_of, spd_of);
+  }    
+
+  if(method == "aof-rc") {
+    bool ok = true;
+    AOF_WaypointRateClosure aof_wpt(m_domain);
+    ok = ok && aof_wpt.setParam("desired_speed", cruise_speed);
+    ok = ok && aof_wpt.setParam("oslat", osY);
+    ok = ok && aof_wpt.setParam("oslon", osX);
+    ok = ok && aof_wpt.setParam("ptlat", iptY);
+    ok = ok && aof_wpt.setParam("ptlon", iptX);
+    ok = ok && aof_wpt.initialize();
+    
+    if(ok) {
+      OF_Reflector reflector(&aof_wpt);
+      reflector.createUniform(1000, 8);
+      reflector.createPriority(1000);
+      ipf = reflector.extractOF();
+    }
   }    
 
   return(ipf);
