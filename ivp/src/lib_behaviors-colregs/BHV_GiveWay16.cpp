@@ -171,7 +171,6 @@ IvPFunction *BHV_GiveWay16::onRunState()
   }
 
   double relevance = getRelevance();
-  cout << "Relevance: " << relevance << endl;
   postRange(true);
 
   if(relevance <= 0)
@@ -294,12 +293,12 @@ double BHV_GiveWay16::getRelevance()
 
   double cn_bearing_delta = angle360(m_cnh - ang_to_os);
 
-  cout << "cn_bearing_delta:" << cn_bearing_delta << endl;
+  //cout << "cn_bearing_delta:" << cn_bearing_delta << endl;
 
   if((cn_bearing_delta <= 15.0) || (cn_bearing_delta > 90.0))
     return(0.0);
 
-  cout << "dist: " << dist << endl;
+  //cout << "dist: " << dist << endl;
   
   if(dist > m_active_outer_dist)
     dist = m_active_outer_dist;
@@ -308,11 +307,11 @@ double BHV_GiveWay16::getRelevance()
   
   double range_range = (m_active_outer_dist - m_active_inner_dist);
 
-  cout << "range_range: " << range_range << endl;
+  //cout << "range_range: " << range_range << endl;
 
   double pct = 1.0 - ((dist - m_active_inner_dist) / range_range);
 
-  cout << "pct: " << pct << endl;
+  //cout << "pct: " << pct << endl;
   return(pct);
 }
 
