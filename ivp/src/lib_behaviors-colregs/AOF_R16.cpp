@@ -32,6 +32,7 @@ AOF_R16::AOF_R16(IvPDomain gdomain) : AOF(gdomain)
   m_cny_set = false;
   m_cnh_set = false;
   m_cnv_set = false;
+  m_tol_set = false;
 
   m_cpa_engine = 0;
 }
@@ -71,6 +72,11 @@ bool AOF_R16::setParam(const string& param, double param_val)
     m_cnv_set = true;
     return(true);
   }
+  else if(param == "tol") {
+    m_tol = param_val;
+    m_tol_set = true;
+    return(true);
+  }
   else
     return(false);
 }
@@ -83,7 +89,7 @@ bool AOF_R16::initialize()
   if((m_crs_ix==-1)|| (m_spd_ix==-1))
     return(false);
 
-  if(!m_osx_set || !m_osy_set || !m_cnx_set)
+  if(!m_osx_set || !m_osy_set || !m_cnx_set || !m_tol_set)
     return(false);
 
   if(!m_cny_set || !m_cnh_set || !m_cnv_set)
@@ -117,23 +123,15 @@ double AOF_R16::evalBox(const IvPBox *b) const
   //  if(crosses_bow) 
   //    cpa_distance = cpa_distance * 0.1;
 
+#if 1
   if(crosses_bow) 
-    cpa_dist = cpa_dist * 0.45;
-
+    cpa_dist = cpa_dist * 0.145;
+#endif
 
   double value = metric(cpa_dist);
   
-#if 0
-  if((eval_crs >= 45) && (eval_crs <= 45)) {
-    cout << "   osCRS: " << eval_crs; 
-    cout << "   osSPD: " << eval_spd;
-    cout << "   osTOL: " << eval_tol;
-    cout << "   cpa: " << cpa_dist;
-    cout << "   val: " << value << endl;
-  }
-#endif
 
-
+  //return(cpa_dist);
   return(value);
 }
 

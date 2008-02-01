@@ -187,6 +187,7 @@ IvPFunction *BHV_GiveWay16::onRunState()
   ok = ok && aof.setParam("cnx", m_cnx);
   ok = ok && aof.setParam("cnh", m_cnh);
   ok = ok && aof.setParam("cnv", m_cnv);
+  ok = ok && aof.setParam("tol", 60);
   //ok = ok && aof.setParam("collision_distance", m_collision_dist);
   //ok = ok && aof.setParam("all_clear_distance", m_all_clear_dist);
   ok = ok && aof.initialize();
