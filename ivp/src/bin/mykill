@@ -1,10 +1,10 @@
 #!/bin/sh
 
-killall -9 -q MOOSDB iRemote MOOSRemote iGPS iGPSMonitor pNav \
+killall -q MOOSDB iRemote MOOSRemote iGPS iGPSMonitor pNav \
         pHelm pHelmIvP pMarineViewer iMarineSim               \
         pLogger iPWMController MOOSDump pAntler MOOSDump
 
-killall -9 -q pMOOSBridge pMikerb ExpMOOSDB pMikerb2        \
+killall -q pMOOSBridge pMikerb ExpMOOSDB pMikerb2        \
         iPNICompass iMetaCompass iHeadingMonitor pDrone     \
         iWifi p1BTracker p2BTracker pBearings uMS pTarget   \
         pRedirect pLoiterControl pTransponderAIS uMVS       \
@@ -13,15 +13,17 @@ killall -9 -q pMOOSBridge pMikerb ExpMOOSDB pMikerb2        \
         pVirtualTether iWebsite iSerialNMEA iWinchSim \
         pSamplingControl iWinch 
 
-killall -9 -q uTermCommand pMessageParser pTrafficControl   \
+killall -q uTermCommand pMessageParser pTrafficControl   \
         pDeployHandler pViewerRelay pShipsideViewer         \
         iMetaMemCompass iOS5000 MOOSBlink pHelmIvPD
         
-killall -9 -q pArtifactMapper pSensorSim pLawnmower
+killall -q pArtifactMapper pSensorSim pLawnmower
 
-killall -9 -q zLoggerNG iWinchCtl iCTDSBE49 pCTDLogger      \
-         uRepeater pNaFCon pRouter pFramer iMicroModem      \
-         pDynamicWaypointLL iBatteryMonitor pFunctionSender
+killall -q zLoggerNG iWinchCtl iCTDSBE49 pCTDLogger      \
+    uRepeater pNaFCon pRouter pFramer iMicroModem      \
+    pDynamicWaypointLL iBatteryMonitor pFunctionSender \
+    pTopside2NaFCon pHuxley
+
 
 echo Done - Killed all MOOS-Related Processes.....
 

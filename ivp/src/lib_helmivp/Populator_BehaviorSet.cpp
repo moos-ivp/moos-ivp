@@ -53,6 +53,10 @@
 #include "BHV_GoToDepth.h"
 #include "BHV_MemoryTurnLimit.h"
 
+// henrik 1.29.08
+#include "BHV_RubberBand.h"
+#include "BHV_Attractor.h"
+
 #if 1
 // Sandbox behaviors
 //#include "BHV_WaypointOx.h"
@@ -314,6 +318,14 @@ IvPBehavior* Populator_BehaviorSet::initializeBehavior(string bhv_name)
     bhv = new BHV_GoToDepth(domain);
   else if(bhv_name == "BHV_MemoryTurnLimit")      
     bhv = new BHV_MemoryTurnLimit(domain);
+
+  // henrik 1.29.08
+  else if(bhv_name == "BHV_RubberBand")     
+    bhv = new BHV_RubberBand(domain);
+  else if(bhv_name == "BHV_Attractor")     
+    bhv = new BHV_Attractor(domain);
+
+  
 #endif
 
 #if 1

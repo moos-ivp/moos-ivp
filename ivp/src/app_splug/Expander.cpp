@@ -154,7 +154,11 @@ bool Expander::writeOutput()
     bool done = false;
     while(!done) {
       cout << "File " << outfile << " exists. Replace?(y/n)" << endl;
-      char answer = getCharNoWait();
+
+      //char answer = getCharNoWait();
+      char answer = 'y';
+      
+      
       if(answer == 'n') {
 	cout << "Aborted: The file " << outfile;
 	cout << " will not be created" << endl;

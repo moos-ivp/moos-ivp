@@ -288,7 +288,10 @@ bool TransponderAIS::handleIncomingAISReport(const string& sdata)
   double nav_spd_val;   bool nav_spd_set = false;
   double nav_hdg_val;   bool nav_hdg_set = false;
   double nav_dep_val;   bool nav_dep_set = false;
-
+  double nav_lat_val; 
+  double nav_long_val;
+  
+  
   vector<string> svector = parseString(sdata, ',');
   int vsize = svector.size();
   for(int i=0; i<vsize; i++) {
@@ -309,6 +312,13 @@ bool TransponderAIS::handleIncomingAISReport(const string& sdata)
 	nav_y_val = atof(right.c_str());
 	nav_y_set = true;
       }
+      if(left == "LAT") {
+	nav_lat_val = atof(right.c_str());
+      }
+      if(left == "LON") {
+	nav_long_val = atof(right.c_str());
+      }
+
       if(left == "SPD") {
 	nav_spd_val = atof(right.c_str());
 	nav_spd_set = true;
@@ -338,7 +348,11 @@ bool TransponderAIS::handleIncomingAISReport(const string& sdata)
   m_Comms.Notify(vname+"_NAV_SPEED", nav_spd_val);
   m_Comms.Notify(vname+"_NAV_HEADING", nav_hdg_val);
   m_Comms.Notify(vname+"_NAV_DEPTH", nav_dep_val);
+  m_Comms.Notify(vname+"_NAV_LAT", nav_lat_val);
+  m_Comms.Notify(vname+"_NAV_LONG", nav_long_val);
 
+
+  
   return(true);
 }
 
@@ -366,7 +380,7 @@ bool TransponderAIS::handleIncomingNaFConMessage(const string& rMsg)
   MOOSTrace("\n\n");
   
   //we have a status message                                                                           
-  if(MOOSStrCmp(messageType, "SENSOR_STATUS")) {
+  if(MOOSStrCmp(messageType, "SENSOR_STATUS") || MOOSStrCmp(messageType, "SENSOR_CONTACT")) {
     string sourceID;
     MOOSValFromString(sourceID, rMsg, "SourcePlatformId");
     
@@ -375,24 +389,49 @@ bool TransponderAIS::handleIncomingNaFConMessage(const string& rMsg)
     if(naFConPublishForID[atoi(sourceID.c_str())]) {
       MOOSTrace("Will publish for this ID. \n");
       double navX, navY, navLat, navLong, navHeading, navSpeed, navDepth, navTime;
-      if(!MOOSValFromString(navLong, rMsg, "NodeLongitude"))
-	return MOOSFail("No NodeLongitude\n");
-      
-      if (!MOOSValFromString(navLat, rMsg, "NodeLatitude"))
-	return MOOSFail("No NodeLatitude\n");
-      
-      if (!MOOSValFromString(navHeading, rMsg, "NodeHeading"))
-	return MOOSFail("No NodeHeading\n");
-      
-      if (!MOOSValFromString(navSpeed, rMsg, "NodeSpeed"))
-	return MOOSFail("No NodeSpeed\n");
-      
-      if(!MOOSValFromString(navDepth, rMsg, "NodeDepth"))
-	return MOOSFail("No NodeDepth\n");      
 
-      if(!MOOSValFromString(navTime, rMsg, "Timestamp"))
-	return MOOSFail("No Timestamp\n");      
+      if(MOOSStrCmp(messageType, "SENSOR_STATUS"))
+      {
+          
+          if(!MOOSValFromString(navLong, rMsg, "NodeLongitude"))
+              return MOOSFail("No NodeLongitude\n");
+          
+          if (!MOOSValFromString(navLat, rMsg, "NodeLatitude"))
+              return MOOSFail("No NodeLatitude\n");
+          
+          if (!MOOSValFromString(navHeading, rMsg, "NodeHeading"))
+              return MOOSFail("No NodeHeading\n");
+          
+          if (!MOOSValFromString(navSpeed, rMsg, "NodeSpeed"))
+              return MOOSFail("No NodeSpeed\n");
+          
+          if(!MOOSValFromString(navDepth, rMsg, "NodeDepth"))
+              return MOOSFail("No NodeDepth\n");      
 
+          if(!MOOSValFromString(navTime, rMsg, "Timestamp"))
+              return MOOSFail("No Timestamp\n");      
+      }
+
+      if(MOOSStrCmp(messageType, "SENSOR_CONTACT"))
+      {
+          navSpeed = 0;
+          
+          if(!MOOSValFromString(navLong, rMsg, "SensorLongitude"))
+              return MOOSFail("No SensorLongitude\n");
+          
+          if (!MOOSValFromString(navLat, rMsg, "SensorLatitude"))
+              return MOOSFail("No SensorLatitude\n");
+          
+          if (!MOOSValFromString(navHeading, rMsg, "SensorHeading"))
+              return MOOSFail("No SensorHeading\n");
+          
+          if(!MOOSValFromString(navDepth, rMsg, "SensorDepth"))
+              return MOOSFail("No SensorDepth\n");      
+
+          if(!MOOSValFromString(navTime, rMsg, "ContactTimestamp"))
+              return MOOSFail("No ContactTimestamp\n");      
+      }
+      
       // convert lat, long into x, y. 60 nautical miles per minute
       if(!m_geodesy.LatLong2LocalGrid(navLat, navLong, navY, navX))
 	return MOOSFail("Geodesy conversion failed\n");
@@ -429,8 +468,8 @@ bool TransponderAIS::handleIncomingNaFConMessage(const string& rMsg)
 	vname = "DEE";
       }
       if(sourceID == "10") {
-	vtype = "KAYAK";
-	vname = "Elanor";
+	vtype = "AUV";
+	vname = "OEX";
       }
       if(sourceID == "11") {
 	vtype = "KAYAK";
