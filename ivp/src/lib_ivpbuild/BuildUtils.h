@@ -47,6 +47,8 @@ IvPBox*  cutBox(IvPBox*, int);
 
 IvPBox  stringToPointBox(const std::string&, const IvPDomain&, 
 			 const char gsep=',', const char lsep='='); 
+IvPBox  stringToRegionBox(const std::string&, const IvPDomain&, 
+			 const char gsep=',', const char lsep='='); 
 
 #endif
 

@@ -23,19 +23,7 @@ AOF_Quadratic::AOF_Quadratic(IvPDomain domain) : AOF(domain)
 }
 
 //----------------------------------------------------------------
-// Procedure: evalBox
-
-double AOF_Quadratic::evalBox(const IvPBox *ptbox) const
-{
-  double x_val = m_domain.getVal(x_index, ptbox->pt(x_index));
-  double y_val = m_domain.getVal(y_index, ptbox->pt(y_index));
-  
-  return((m_coeff * (x_val - x_center) * (x_val - x_center)) + 
-	 (n_coeff * (y_val - y_center) * (y_val - y_center)));
-}
-
-//----------------------------------------------------------------
-// Procedure: evalBox
+// Procedure: setParam
 
 bool AOF_Quadratic::setParam(const std::string& param, double val) 
 {
@@ -61,3 +49,16 @@ bool AOF_Quadratic::initialize()
     return(true);
   return(false);
 };
+
+//----------------------------------------------------------------
+// Procedure: evalBox
+
+double AOF_Quadratic::evalBox(const IvPBox *ptbox) const
+{
+  double x_val = m_domain.getVal(x_index, ptbox->pt(x_index));
+  double y_val = m_domain.getVal(y_index, ptbox->pt(y_index));
+  
+  return((m_coeff * (x_val - x_center) * (x_val - x_center)) + 
+	 (n_coeff * (y_val - y_center) * (y_val - y_center)));
+}
+

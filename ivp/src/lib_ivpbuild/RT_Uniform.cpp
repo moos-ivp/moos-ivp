@@ -21,6 +21,7 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
+#include <iostream>
 #include "RT_Uniform.h"
 #include "BuildUtils.h"
 #include "Regressor.h"
@@ -65,6 +66,11 @@ PDMap* RT_Uniform::create(const IvPBox* unifbox,
   else
     m_pqueue = 0;
   
+  if(m_pqueue)
+    cout << "Making uniform IPF with Priority Queue" << endl;
+  else
+    cout << "Making uniform IPF withOUT Priority Queue" << endl;
+
   // If a using a Priority Queue, we'll use the return values in 
   // the setWeight() calls. Return value is the noted error at 
   // sampled points w.r.t. the interior function chosen. We store 

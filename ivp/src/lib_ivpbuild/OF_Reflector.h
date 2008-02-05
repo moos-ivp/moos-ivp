@@ -50,9 +50,9 @@ public:
 
   int    create(const std::string);
 
-  void   setStrictRange(bool);
-
   IvPFunction* extractOF(bool normalize=true);
+ 
+  bool   setParam(std::string, std::string);
   
  protected:
   void initializePDMap();
@@ -60,12 +60,18 @@ public:
 
 protected:
   const AOF*   m_aof;
+  IvPDomain    m_domain;
   PDMap*       m_pdmap;
 
   Regressor*   m_regressor;
   RT_Uniform*  m_rt_uniform;
   RT_Focus*    m_rt_focus;
   RT_Priority* m_rt_priority;
+
+  IvPBox       m_uniform_box;
+  int          m_uniform_amt;
+  IvPBox       m_focus_uniform_box;
+  IvPBox       m_focus_region_box;
 };
 #endif
 

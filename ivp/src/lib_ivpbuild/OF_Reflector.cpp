@@ -20,6 +20,7 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
+#include <math.h>
 #include "OF_Reflector.h"
 #include "BuildUtils.h"
 #include "IvPFunction.h"
@@ -43,11 +44,14 @@ OF_Reflector::OF_Reflector(const AOF *g_aof, int g_degree)
   m_aof         = g_aof;
   m_pdmap       = 0;
   m_regressor   = new Regressor(m_aof, g_degree);
+  if(m_aof)
+    m_domain    = m_aof->getDomain();
 
   m_rt_uniform  = new RT_Uniform(m_regressor);
   m_rt_priority = new RT_Priority(m_regressor);
   m_rt_focus    = new RT_Focus(m_regressor);
-
+  
+  m_uniform_amt = 0;
 }
 
 //-------------------------------------------------------------
@@ -62,7 +66,7 @@ OF_Reflector::~OF_Reflector()
 {
   if(m_pdmap) 
     delete(m_pdmap);
-  
+
   delete(m_regressor);
   delete(m_rt_uniform);
   delete(m_rt_priority);
@@ -165,16 +169,6 @@ int OF_Reflector::createFocusRefine(IvPBox region, IvPBox resbox)
 }
 
 //-------------------------------------------------------------
-// Procedure: setStrictRange
-//   Purpose:
-
-void OF_Reflector::setStrictRange(bool val)
-{
-  if(m_regressor)
-    m_regressor->setStrictRange(val);
-}
-
-//-------------------------------------------------------------
 // Procedure: clearPDMap()
 
 void OF_Reflector::clearPDMap()
@@ -199,6 +193,7 @@ int OF_Reflector::create(const string params)
   string str_uniform_box; 
   string str_uniform_grid;
   string str_priority_amt;
+  string str_priority_queue;
   string str_priority_thresh;
   string str_focus_region;
   string str_focus_refine;
@@ -207,6 +202,7 @@ int OF_Reflector::create(const string params)
   tokParse(params, "uniform_box",  '#', '=', str_uniform_box);
   tokParse(params, "uniform_grid", '#', '=', str_uniform_grid);
   tokParse(params, "priority_amt", '#', '=', str_priority_amt);
+  tokParse(params, "priority_queue",  '#', '=', str_priority_queue);
   tokParse(params, "priority_thresh", '#', '=', str_priority_thresh);
   tokParse(params, "focus_region", '#', '=', str_focus_region);
   tokParse(params, "focus_box",    '#', '=', str_focus_refine);
@@ -215,6 +211,7 @@ int OF_Reflector::create(const string params)
   str_uniform_box  = stripBlankEnds(str_uniform_box);
   str_uniform_grid = stripBlankEnds(str_uniform_grid);
   str_priority_amt = stripBlankEnds(str_priority_amt);
+  str_priority_queue  = stripBlankEnds(str_priority_queue);
   str_priority_thresh = stripBlankEnds(str_priority_thresh);
   str_focus_region = stripBlankEnds(str_focus_region);
   str_focus_refine = stripBlankEnds(str_focus_refine);
@@ -226,6 +223,15 @@ int OF_Reflector::create(const string params)
   int priority_amt = 0;
   if(isNumber(str_priority_amt))
     priority_amt = atoi(str_priority_amt.c_str());
+
+  int qlevels = 8;
+  if(isNumber(str_priority_queue)) {
+    double pqueue_amt = atof(str_priority_queue.c_str());
+    if(pqueue_amt < 2)
+      qlevels = 0;
+    else
+      qlevels = (int)(log2(pqueue_amt));
+  }
 
   double priority_thresh = 0.0;
   if(isNumber(str_priority_thresh)) {
@@ -246,14 +252,6 @@ int OF_Reflector::create(const string params)
   if(unif_amt <= 0)
     if(unif_box.null())
       return(0);
-
-  // If no priority building is to be done after the initial uniform build
-  // then don't waste time building and maintaining a priority queue during
-  // the uniform build. If priority building IS to follow, then call for a 
-  // priority queue with 7 levels by default (2^7=128 elements).
-  int qlevels = 0;
-  if(priority_amt > 0)
-    qlevels = 7;
 
   int pdmap_size = 0;
   
@@ -279,11 +277,37 @@ int OF_Reflector::create(const string params)
   return(m_pdmap->size());
 }
     
+//-------------------------------------------------------------
+// Procedure: setParam
+
+bool OF_Reflector::setParam(string param, string val)
+{
+  if(param == "strict_range") {
+    val = tolower(val);
+    if((val != "true") && (val != "false"))
+      return(false);
+    if(m_regressor)
+      m_regressor->setStrictRange(val=="true");
+  }
+  if(param == "uniform_amt") {
+    m_uniform_amt = atoi(val.c_str());
+    if(m_uniform_amt < 0) {
+      m_uniform_amt = 0;
+      return(false);
+    }
+  }
+  if(param == "uniform_box") {
+    m_uniform_box   = stringToPointBox(val, m_domain, ',', ':');
+    if(m_uniform_box.null())
+      return(false);
+    }
+  else
+    return(false);
+  
+  return(true);
+}
 
 
-
-
-
-
+//"course:34.34:89.009, speed:all
 
 

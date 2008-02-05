@@ -229,6 +229,100 @@ IvPBox stringToPointBox(const string& given_str, const IvPDomain& domain,
 }
 
 //-------------------------------------------------------------
+// Procedure: stringToRegionBOx
+
+//    - Process a string of the form "x:2.3:4.0, y:20:30" and return 
+//      an IvPBox with the corresponding extents. 
+//    - Also examine the given IvPDomain and ensure those variables 
+//      exist in that domain.
+//    - Re-order the dimensions of the requested box to match the 
+//      domain.
+//    - gsep is the "global separator", the character that separates 
+//      the outer chunks.
+//    - lsep is the "local separator", the character that separates
+//      the innner fields.  
+//  Example:
+//      IvPDomain: x:0:20:21, y:5:10:6
+//      String: "y=2, x=9" results in a pt box - dim0:9, dim1:2
+
+
+IvPBox stringToRegionBox(const string& given_str, const IvPDomain& domain, 
+			 const char gsep, const char lsep)
+{
+  IvPBox null_box;
+#if 1
+  if(given_str == "")
+    return(null_box);
+
+  int i, j, k, dim;
+  dim = domain.size();
+
+  vector<string> dvar_name;
+  vector<bool>   dvar_legal;
+  vector<int>    dvar_box_low;
+  vector<int>    dvar_box_high;
+  vector<double> dvar_val_low;
+  vector<double> dvar_val_high;
+
+  // for all the variables in the IvP domain, check that the 
+  // variable is specified in the given string. 
+  
+  for(i=0; i<dim; i++) {
+    dvar_name.push_back(tolower(domain.getVarName(i)));
+    dvar_legal.push_back(false);
+    dvar_box_low.push_back(0);
+    dvar_box_low.push_back(0);
+    dvar_val_low.push_back(domain.getVarLow(i));
+    dvar_val_high.push_back(domain.getVarHigh(i));
+
+    vector<string> svector = parseString(given_str, gsep);
+    int vsize = svector.size();
+    for(j=0; j<vsize; j++) {
+      svector[j] = stripBlankEnds(svector[j]);
+      vector<string> svector2 = parseString(svector[j], lsep);
+      int vsize2 = svector2.size();
+      for(k=0; k<vsize2; k++)
+	svector2[k] = tolower(stripBlankEnds(svector2[k]));
+      if((vsize2 > 1) && (svector2[0] == dvar_name[i])) {
+	if((vsize2 == 2) && (svector2[1] != "all"))
+	  dvar_legal[i] = true;
+	else if(vsize == 3) {
+	  if(isNumber(svector[1]) && isNumber(svector[2])) {
+	    double lval = atof(svector2[1].c_str());
+	    double hval = atof(svector2[2].c_str());
+	    if((lval >= dvar_val_low[i]) &&
+	       (hval <= dvar_val_high[i]) && (lval <= hval)) {
+	      dvar_val_low[i]  = lval;
+	      dvar_val_high[i] = hval;
+	      dvar_legal[i] = true;
+	    }
+	  }
+	}
+      }  
+    }
+  }
+
+  // Convert the high and low raw values into Domain discrete indices.
+
+
+  for(i=0; i<dim; i++)
+    if(!dvar_legal[i])
+      return(null_box);
+  
+  
+  
+  // All is good, so go ahead and create the IvP Box.
+  IvPBox ret_box(dim);
+  for(i=0; i<dim; i++) {
+    ret_box.pt(i,0) = dvar_box_low[i];
+    ret_box.pt(i,1) = dvar_box_high[i];
+  }
+  return(ret_box);
+#endif
+  return(null_box);
+}
+
+//-------------------------------------------------------------
 // Procedure: makeRand
 //   Purpose: Create a point-box with values somewhere randomly
 //            inside the given domain.
@@ -588,6 +682,5 @@ BoxSet* makeUniformDistro(const IvPBox& outer_box,
 
   return(boxset);
 }
-
 
 
