@@ -175,6 +175,81 @@ void Viewer::makeUniformIPFxN(int iterations)
 }  
 
 
+#if 0
+//-------------------------------------------------------------
+// Procedure: makeUniformIPF
+
+void Viewer::makeUniformIPF(int usize)
+{
+  AOF *aof = m_aof_cache.getAOF();
+  if(!aof)
+    return;
+
+  IvPDomain domain = aof->getDomain();
+  string var_0 = domain.getVarName(0);
+  string var_1 = domain.getVarName(1);
+  
+
+  if(usize <= 0)
+    usize = m_unifsize;
+  else
+    m_unifsize = usize;
+
+  OF_Reflector reflector(aof, 1);
+  if(m_strict_rng)
+    reflector.setParam("strict_range", "true");
+  else
+    reflector.setParam("strict_range", "false");
+  
+  string box_str;
+  box_str += var_0 + ":" + intToString(usize) + ",";
+  box_str += var_1 + ":" + intToString(usize);
+
+  cout << "log -128: " << log2(-128) << endl;
+  cout << "log 0:    " << log2(0) << endl;
+  cout << "log 1:    " << log2(1) << endl;
+  cout << "log 1.5:  " << log2(1.5) << endl;
+  cout << "log 128:  " << log2(128) << endl;
+  cout << "log 512:  " << log2(512) << endl;
+  cout << "log 1000: " << log2(1000) << endl;
+
+  reflector.create("uniform_box="+box_str);
+  //reflector.create("priority_amt=500");
+  //reflector.create("uniform_amt=567");
+
+  // Uniform Augmentation -------------------------------
+
+  string focus_str;
+  focus_str += var_0 + ":" + intToString(usize) + ",";
+  focus_str += var_1 + ":" + intToString(usize);
+  
+
+  //  if(m_focus_box) {
+  //    IvPBox region = unifbox;
+  //    IvPBox resbox = unifbox;
+  //    region.setPTS(0,100,300);
+  //    region.setPTS(1,100,300);
+  //    resbox.setPTS(0,0,m_focus_unif_len);
+  //    resbox.setPTS(1,0,m_focus_unif_len);
+  //    reflector.createFocusRefine(region, resbox);
+  //  }
+
+  if(m_priority) {
+    reflector.createPriority(m_priority_cnt, 0.001);
+  }
+  if(m_unif_ipf)
+    delete(m_unif_ipf);
+
+  // false means do not normalize as part of extractOF()
+  m_unif_ipf = reflector.extractOF(false);
+
+  if(m_unif_ipf && m_unif_ipf->getPDMap())
+    m_rater.setPDMap(m_unif_ipf->getPDMap());
+}
+#endif
+
+
+#if 1
 //-------------------------------------------------------------
 // Procedure: makeUniformIPF
 
@@ -194,21 +269,17 @@ void Viewer::makeUniformIPF(int usize)
   unifbox.setPTS(1, usize, usize);
   OF_Reflector reflector(aof, 1);
 
-  reflector.setStrictRange(m_strict_rng);
+  if(m_strict_rng)
+    reflector.setParam("strict_range", "true");
+  else
+    reflector.setParam("strict_range", "false");
   
   reflector.createUniform(&unifbox, &unifbox, 12);
 
   // Uniform Augmentation -------------------------------
-  int bxl = m_focus_box_x - (m_focus_box_len / 2);
-  int bxh = m_focus_box_x + (m_focus_box_len / 2);
-  int byl = m_focus_box_y - (m_focus_box_len / 2);
-  int byh = m_focus_box_y + (m_focus_box_len / 2);
-
   if(m_focus_box) {
     IvPBox region = unifbox;
     IvPBox resbox = unifbox;
-    //region.setPTS(0,bxl,bxh);
-    //region.setPTS(1,byl,byh);
     region.setPTS(0,100,300);
     region.setPTS(1,100,300);
     resbox.setPTS(0,0,m_focus_unif_len);
@@ -230,6 +301,7 @@ void Viewer::makeUniformIPF(int usize)
     m_rater.setPDMap(m_unif_ipf->getPDMap());
 
 }
+#endif
 
 //-------------------------------------------------------------
 // Procedure: modColorMap

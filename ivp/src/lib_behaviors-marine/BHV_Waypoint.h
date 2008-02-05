@@ -43,19 +43,19 @@ protected:
   void         updateInfoOut(bool post=true);
 
 protected:
-  WaypointEngine waypoint_engine;
+  WaypointEngine m_waypoint_engine;
 
-  double    cruise_speed;
-  double    lead_distance;
+  double    m_cruise_speed;
+  double    m_lead_distance;
 
 protected: // intermediate or object global variables.
-  double    osSPD;
-  double    osX;
-  double    osY;
-  double    ptX;
-  double    ptY;
-  double    iptX;
-  double    iptY;
+  double    m_osv;  // Ownship velocity
+  double    m_osx;  // Ownship x position
+  double    m_osy;  // Ownship y position
+  double    m_ptx;
+  double    m_pty;
+  double    m_trackpt_x;
+  double    m_trackpt_y;
 };
 #endif
 

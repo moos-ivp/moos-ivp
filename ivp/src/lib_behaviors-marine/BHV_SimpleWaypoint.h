@@ -35,16 +35,15 @@ public:
   bool         setParam(std::string, std::string);
 
 protected: // Configuration Parameters
-  double    m_arrival_radius;
-  double    m_desired_speed;
-  double    m_ptx;
-  double    m_pty;
+  double       m_arrival_radius;
+  double       m_desired_speed;
+  double       m_ptx;
+  double       m_pty;
+  std::string  m_ipf_type;
 
 protected: // State Variables
   double    m_osx;
   double    m_osy;
-  bool      m_waypoint_set;
-
 };
 #endif
 

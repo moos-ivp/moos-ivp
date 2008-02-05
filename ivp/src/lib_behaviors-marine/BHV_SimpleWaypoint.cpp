@@ -26,6 +26,8 @@
 #include "BuildUtils.h"
 #include "ZAIC_PEAK.h"
 #include "OF_Coupler.h"
+#include "OF_Reflector.h"
+#include "AOF_Waypoint.h"
 
 using namespace std;
 
@@ -42,13 +44,13 @@ BHV_SimpleWaypoint::BHV_SimpleWaypoint(IvPDomain gdomain) :
   // Default values for configuration parameters 
   m_desired_speed  = 0; 
   m_arrival_radius = 10;
-  m_ptx = 0;
-  m_pty = 0;
+  m_ptx            = 0;
+  m_pty            = 0;
+  m_ipf_type       = "zaic";
 
   // Default values for behavior state variables
   m_osx  = 0;
   m_osy  = 0;
-  m_waypoint_set = false;
 
   addInfoVars("NAV_X, NAV_Y");
 }
@@ -87,6 +89,13 @@ bool BHV_SimpleWaypoint::setParam(string param, string val)
     m_arrival_radius = dval;
     return(true);
   }
+  else if(param == "ipf_type") {
+    val = tolower(val);
+    if((val=="zaic") || (val=="coupled")) {
+      m_ipf_type = val;
+      return(true);
+    }
+  }
   return(false);
 }
 
@@ -95,22 +104,45 @@ bool BHV_SimpleWaypoint::setParam(string param, string val)
 
 IvPFunction *BHV_SimpleWaypoint::onRunState() 
 {
-  ZAIC_PEAK spd_zaic(m_domain, "speed");
-  spd_zaic.setSummit(m_desired_speed);
-  spd_zaic.setBaseWidth(2.6);
-  spd_zaic.setPeakWidth(0.0);
-  spd_zaic.setSummitDelta(0.0);
-  IvPFunction *spd_ipf = spd_zaic.extractOF();
+  IvPFunction *ipf = 0;
+
+  if(m_ipf_type == "zaic") {
+
+    ZAIC_PEAK spd_zaic(m_domain, "speed");
+    spd_zaic.setSummit(m_desired_speed);
+    spd_zaic.setBaseWidth(2.6);
+    spd_zaic.setPeakWidth(0.0);
+    spd_zaic.setSummitDelta(0.0);
+    IvPFunction *spd_ipf = spd_zaic.extractOF();
   
-  double rel_ang_to_wpt = relAng(m_osx, m_osy, m_ptx, m_pty);
-  ZAIC_PEAK crs_zaic(m_domain, "course");
-  crs_zaic.setSummit(rel_ang_to_wpt);
-  crs_zaic.setBaseWidth(180.0);
-  crs_zaic.setValueWrap(true);
-  IvPFunction *crs_ipf = crs_zaic.extractOF();
-  
-  OF_Coupler coupler;
-  IvPFunction *ipf = coupler.couple(crs_ipf, spd_ipf);
+    double rel_ang_to_wpt = relAng(m_osx, m_osy, m_ptx, m_pty);
+    ZAIC_PEAK crs_zaic(m_domain, "course");
+    crs_zaic.setSummit(rel_ang_to_wpt);
+    crs_zaic.setBaseWidth(180.0);
+    crs_zaic.setValueWrap(true);
+    IvPFunction *crs_ipf = crs_zaic.extractOF();
+    
+    OF_Coupler coupler;
+    ipf = coupler.couple(crs_ipf, spd_ipf);
+  }
+  else if(m_ipf_type == "coupled") {
+
+    bool ok = true;
+    AOF_Waypoint aof(m_domain);
+    ok = ok && aof.setParam("desired_speed", m_desired_speed);
+    ok = ok && aof.setParam("osx", m_osx);
+    ok = ok && aof.setParam("osy", m_osy);
+    ok = ok && aof.setParam("ptx", m_ptx);
+    ok = ok && aof.setParam("pty", m_pty);
+    ok = ok && aof.initialize();
+    
+    if(ok) {
+      OF_Reflector reflector(&aof);
+      reflector.createUniform(1000, 8);
+      reflector.createPriority(1000);
+      ipf = reflector.extractOF();
+    }
+  }    
 
   return(ipf);
 }

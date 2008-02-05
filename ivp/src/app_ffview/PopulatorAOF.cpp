@@ -15,6 +15,7 @@
 #include "AOF_Rings.h"
 #include "AOF_Ring.h"
 #include "AOF_Linear.h"
+#include "AOF_Quadratic.h"
 #include "AOF_AvoidCollision.h"
 #include "PopulatorAOF.h"
 #include "MBUtils.h"
@@ -131,6 +132,8 @@ bool PopulatorAOF::handleLine(string line)
       aof = new AOF_AvoidCollision(domain);
     else if(right == "AOF_Linear")
       aof = new AOF_Linear(domain);
+    else if(right == "AOF_Quadratic")
+      aof = new AOF_Quadratic(domain);
     return(aof!=0);
   }
   
