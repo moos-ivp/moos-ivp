@@ -16,7 +16,6 @@
 #include <math.h>
 
 using std::string;
-using std::cout;
 using std::vector;
 
 //-----------------------------------------------------------

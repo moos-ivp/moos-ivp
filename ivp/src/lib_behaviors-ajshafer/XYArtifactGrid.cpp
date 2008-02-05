@@ -25,12 +25,12 @@
 
 XYArtifactGrid::XYArtifactGrid()
 {
-  min_val           = 0;
-  max_val           = 0;
-  min_util          = 0;
-  max_util          = 0;
-  min_util_possible = 0;
-  max_util_possible = 1;
+//  min_val           = 0;
+//  max_val           = 0;
+//  min_util          = 0;
+//  max_util          = 0;
+//  min_util_possible = 0;
+//  max_util_possible = 1;
 }
 
 
