@@ -224,6 +224,10 @@ const std::vector<std::string> generateArtifacts(double min_x, double max_x, dou
 		// RAND_MAX is defined by the math headers, refers to the maximum random value
 		double rand_x = snapToStep(min_x + rand() * (max_x - min_x) / RAND_MAX, step);
 		double rand_y = snapToStep(min_y + rand() * (max_y - min_y) / RAND_MAX, step);
+		
+		// This portion should be fixed to not use the << operator for doubles
+		// e.g., use Mike's dstringCompact(doubleToString(rand_x)) and get rid of
+		// the string stream.
 		std::ostringstream osArtifact;
 		osArtifact << "X=" << rand_x << "," << "Y=" << rand_y;
 		std::string sArtifact = osArtifact.str();

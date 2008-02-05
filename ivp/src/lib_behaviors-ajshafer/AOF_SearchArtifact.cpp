@@ -21,9 +21,7 @@ using namespace std;
 //----------------------------------------------------------
 // Procedure: Constructor
 
-AOF_SearchArtifact::AOF_SearchArtifact(IvPDomain g_domain, 
-			       const XYArtifactGrid *g_grid)
-  : AOF(g_domain)
+AOF_SearchArtifact::AOF_SearchArtifact(IvPDomain g_domain, const XYArtifactGrid *g_grid) : AOF(g_domain)
 {
 	crs_ix = g_domain.getIndex("course");
 	spd_ix = g_domain.getIndex("speed");
@@ -42,12 +40,12 @@ bool AOF_SearchArtifact::setParam(const string& param, double param_val)
 		os_lat_set = true;
 		return(true);
 	}
-	if(param == "os_lon") {
+	else if(param == "os_lon") {
 		os_lon = param_val;
 		os_lon_set = true;
 		return(true);
 	}
-	if(param == "time_horizon") {
+	else if(param == "time_horizon") {
 		time_horizon = param_val;
 		return(true);
 	}
@@ -76,10 +74,10 @@ bool AOF_SearchArtifact::setParam(const string& param,
 
 bool AOF_SearchArtifact::initialize()
 {
-	if((crs_ix==-1)||(spd_ix==-1))
+	if( (crs_ix==-1) || (spd_ix==-1) )
 		return(false);
 
-	if(!os_lat_set || !os_lon_set)
+	if( !os_lat_set ||  !os_lon_set )
 		return(false);
 
 	return(true);
@@ -108,7 +106,7 @@ void AOF_SearchArtifact::fillCache()
 	for(i=0; i<heading_count; i++) {
 		bool ok = m_domain.getVal(crs_ix, i, heading);
 
-		if(!ok) {
+		if(!ok) { // Something's wrong...
 			ray_cache.clear();
 			return;
 		}
@@ -131,7 +129,7 @@ void AOF_SearchArtifact::fillCache()
 		int gsize = search_grid->size();
 		for(int j=0; j<gsize; j++) {
 			XYSquare square = search_grid->getElement(j);
-			if(!square.containsPoint(x1,y1)) {
+			if(!square.containsPoint(x1,y1)) { // Don't count the current location
 				double length = square.segIntersectLength(x1,y1,x2,y2);
 				if(length > 0){
 					ray_cache[i].push_back(j);

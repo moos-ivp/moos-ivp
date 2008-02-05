@@ -92,7 +92,7 @@ IvPFunction *BHV_SearchArtifact::onRunState()
 	string grid_label = search_grid.getLabel();
 	bool   in_grid    = search_grid.ptIntersect(osX, osY);
 
-	if(!in_grid){
+	if(!in_grid || osSPD == 0){
 		postMessage("TIME_TO_EXIT_GRID_"+grid_label, 0);
 	}
 	else {
