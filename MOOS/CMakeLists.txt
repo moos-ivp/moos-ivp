@@ -20,10 +20,10 @@ INCLUDE(CPack)
 SET(MOOSBIN ${MOOS_BINARY_DIR}/MOOSBin)
 
 #dump libs and executables in the same place
-SET( LIBRARY_OUTPUT_PATH ${MOOSBIN} CACHE PATH
-     "Output directory for the MOOS libraries" )
-SET( EXECUTABLE_OUTPUT_PATH ${MOOSBIN} CACHE PATH
-     "Output directory for the MOOS executables" )
+SET( LIBRARY_OUTPUT_PATH ${MOOSBIN} CACHE PATH 
+     "Output directory for the MOOS libraries" FORCE )
+SET( EXECUTABLE_OUTPUT_PATH ${MOOSBIN} CACHE PATH 
+     "Output directory for the MOOS executables" FORCE )
 
 
 SET(MOOS_VERSION "" CACHE STRING "The version of MOOS that you're building.  I.e., 7.0.1")

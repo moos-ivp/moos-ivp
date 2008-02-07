@@ -52,12 +52,6 @@ INCLUDE_DIRECTORIES(${MOOS_INCLUDE_DIRS})
 FILE(GLOB IVP_LIBRARY_DIRS lib_*)
 INCLUDE_DIRECTORIES(${IVP_LIBRARY_DIRS})
 
-# As a matter of preference, each built IvP library file (.a) should be placed 
-# in its source directory.
-SET( LIBRARY_OUTPUT_PATH "")
-
-# Programs get placed in ivp/src/bin/
-SET( EXECUTABLE_OUTPUT_PATH ${IVP_SOURCE_DIR}/bin)
 
 # This is used to supply a preprocessor definition that gets compiled into some
 # code, such as lib_marineview.  I really dislike this approach because it's 
@@ -68,6 +62,13 @@ GET_FILENAME_COMPONENT(IVP_DATA_DIR ../data ABSOLUTE)
 FILE(GLOB IVP_DIRS_TO_BUILD lib_* app_* p* u* i* newmat10D)
 
 FOREACH(D ${IVP_DIRS_TO_BUILD})
+  # Programs get placed in ivp/src/bin/
+  SET( EXECUTABLE_OUTPUT_PATH ${IVP_SOURCE_DIR}/bin CACHE PATH "" FORCE )
+
+  # As a matter of preference, each built IvP library file (.a) should be placed 
+  # in its source directory.
+  SET( LIBRARY_OUTPUT_PATH "" CACHE PATH "" FORCE )
+
   ADD_SUBDIRECTORY(${D})
 ENDFOREACH(D)
 
