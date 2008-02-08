@@ -9,9 +9,7 @@
 #pragma warning(disable : 4786)
 #pragma warning(disable : 4503)
 #endif
-#include <iostream>
 #include <math.h> 
-#include <assert.h>
 #include "AOF_SearchArtifact.h"
 #include "AngleUtils.h"
 #include "MBUtils.h"

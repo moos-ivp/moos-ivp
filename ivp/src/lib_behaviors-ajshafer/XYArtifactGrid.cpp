@@ -21,7 +21,6 @@
 /*****************************************************************/
 
 #include "XYArtifactGrid.h"
-#include <vector>
 
 XYArtifactGrid::XYArtifactGrid()
 {

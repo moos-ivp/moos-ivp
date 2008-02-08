@@ -23,7 +23,6 @@
 #ifndef XYARTIFACTGRID_HEADER
 #define XYARTIFACTGRID_HEADER
 
-#include <vector>
 #include "XYGrid.h"
 
 class XYArtifactGrid : public XYGrid {

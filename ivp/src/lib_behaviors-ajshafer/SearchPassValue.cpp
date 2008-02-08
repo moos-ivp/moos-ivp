@@ -10,7 +10,6 @@
 #pragma warning(disable : 4503)
 #endif
 
-#include <iostream>
 #include "SearchPassValue.h"
 #include "MBUtils.h"
 #include <math.h>
@@ -31,7 +30,7 @@ SearchPassValue::SearchPassValue(string config_str)
 	if (config_str == ""){
 		return;
 	}
-		
+
 	double temp_value = -1;
 	bool valid = tokParse(config_str, "max_value", ',', '=', temp_value);
 	
