@@ -49,6 +49,7 @@ public:
   double lengthUnits() const;
   double lengthDegrees() const;
   bool   containsAngle(double) const;
+  bool   containsPoint(double, double) const;
 
   bool   segIntersectStrict(double, double, double, double) const;
   double ptDistToArc(double, double) const;

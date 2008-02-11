@@ -217,6 +217,19 @@ bool XYArc::containsAngle(double g_angle) const
 }
 
 //-------------------------------------------------------------
+// Procedure: containsPoint
+// Andrew Shafer, 8 FEB 2008
+// Overloads the XYCircle containsPoint to more accurately
+// reflect when an arc "contains" a point.
+// Used by sensor model to determine if a FLIR-type system
+// detects an artifact.
+
+bool XYArc::containsPoint(double x, double y) const
+{
+  return (XYCircle::containsPoint(x, y) && containsAngle(relAng(m_x, m_y, x, y)));
+}
+
+//-------------------------------------------------------------
 // Procedure: segIntersectStrict
 //      Note: Returns TRUE only if the segment crosses the arc
 //            perimeter. Will return FALSE if the segment is 
