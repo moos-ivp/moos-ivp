@@ -65,12 +65,16 @@ public:
   double getVarDelta(int i) const     {return(m_ddelta[i]);};
   int    getVarPoints(int i) const    {return(m_dpoints[i]);};
 
-  int    getVarPoints(const std::string& str) const
+  // Return number of points in the domain for a given variable name.
+  // If the variable name is unknown, just return zero.
+  int getVarPoints(const std::string& str) const
     {
       unsigned int ix = getIndex(str);
       return(((ix>=0)&&(ix<m_dpoints.size())) ? m_dpoints[ix] : 0);
     }
 
+  // For the ith domain index, and j steps into the domain, return
+  // the corresponding floating point value.
   bool getVal(int i, int j, double &val) const
     {
       int dsize = (int)(m_dlow.size());
@@ -91,18 +95,44 @@ public:
       return(0);
     };
 
-
+  // For domain given by the varible name, and j steps into the 
+  // domain, return the corresponding floating point value.
   bool getVal(const std::string str, int j, double &val) const
     {
       return(getVal(getIndex(str), j, val));
     };
       
+  // Return the variable name of ith element of the domain
   std::string getVarName(int i) const
     {
       if((i<0) || (i>(int)m_dname.size()))
 	return("");
       return(m_dname[i]);
     }
+
+  // Return the discrete index into the domain given by a double
+  // input value. Round up or down depending on truncate input.
+  int getDiscreteVal(int index, double val, bool truncate) const
+    {
+      if(val <= m_dlow[index])
+	return(0);
+      else if(val >= m_dhigh[index])
+	return(m_dpoints[index]-1);
+      else { 
+	if(truncate)
+	  return((int)((val-m_dlow[index])/m_ddelta[index]));
+	else {
+	  double dval = ((val-m_dlow[index])/m_ddelta[index]);
+	  int    ival = (int)(dval);
+	  if(dval > ((double)(ival)))
+	    return(ival + 1);
+	  else
+	    return(ival);
+	  //return((int)(ceil((val-m_dlow[index])/m_ddelta[index])));
+	}
+      }
+    }
+
 
 private:
   std::vector<std::string> m_dname;

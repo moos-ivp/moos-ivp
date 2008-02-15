@@ -568,6 +568,11 @@ bool IvPBox::isPtBox() const
 //-------------------------------------------------------------
 void IvPBox::print(bool full) const
 {
+  if(m_dim == 0) {
+    cout << "null_box" << endl;
+    return;
+  }
+    
   for(int d=0; (d<m_dim); d++) {
     cout << "[d" << d << ":" << bd(d,0) << bd(d,1);
     cout << "](" << pt(d,0) << "-" << pt(d,1) << ") ";
