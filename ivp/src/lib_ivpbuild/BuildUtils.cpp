@@ -20,6 +20,7 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
+#include <iostream>
 #include <assert.h>
 #include <math.h>
 #include "BuildUtils.h"
@@ -230,27 +231,55 @@ IvPBox stringToPointBox(const string& given_str, const IvPDomain& domain,
 
 //-------------------------------------------------------------
 // Procedure: stringToRegionBOx
-
-//    - Process a string of the form "x:2.3:4.0, y:20:30" and return 
-//      an IvPBox with the corresponding extents. 
-//    - Also examine the given IvPDomain and ensure those variables 
-//      exist in that domain.
-//    - Re-order the dimensions of the requested box to match the 
-//      domain.
-//    - gsep is the "global separator", the character that separates 
-//      the outer chunks.
-//    - lsep is the "local separator", the character that separates
-//      the innner fields.  
-//  Example:
+//
+// Purpose: This procedure takes a given IvPDomain and string which
+//          specifies low and high float values for a set of domain
+//          names. The objective is to create an IvPBox which also
+//          has low and high values, but in the standard form of 
+//          discrete indices of the IvPDomain.
+// Example:
 //      IvPDomain: x:0:20:21, y:5:10:6
-//      String: "y=2, x=9" results in a pt box - dim0:9, dim1:2
+//      String: "y:7.5:9, x:10:12.5" 
+//      Resulting Box: dim0:10:13, dim1:1:4
+// 
+// Notes: A low-high pair can be replace with the string "all" which
+//        will be interpreted as the extreme low and high float value
+//        associated with that variable as specified by the IvPDomain.
+// Example:
+//      IvPDomain: x:0:20:21, y:5:10:6
+//      String: "y:7.5:9, x:all" 
+//      Resulting Box: dim0:0:20, dim1:1:4
+//
+// Notes: A lower bound float not exactly on a discrete IvPDomain 
+//          point is rounded down to the next lowest discrete point.
+//        An upper bound float not exactly on a discrete IvPDomain 
+//          point is rounded up to the next highest discrete point.
+//
+// Notes: The resulting IvPBox will have the implied domain ordering
+//          given by the IvPDomain, not the ordering of string tuples.
+//        An error will return a "null_box" or an IvPBox of dimension
+//          zero. This can be tested by "bool ok = result_box.null();"
+//
+// Notes: Some pseudo-errors are not checked for and thus allowed.
+//        1. If the domain name tuple is specified more than once
+//           in the given string, only the first tuple is used, the
+//           others are ignored.
+//        2. If extra domain name tuples are specified in the string,
+//           unknown to the IvPDomain, they are simply ignored.
+//        3. If low or high double values are specified that are 
+//           lower or higher than the IvPDomain extreme values, they
+//           are simply clipped to those extreme values.
+//        4. Domain name matching is case insensitive.
+//
+// Notes: Things that *will* create an error:
+//        1. For any tuple, if low value is greater than high value.
+//        2. If a IvPDomain variable is unspecified in the string
 
 
 IvPBox stringToRegionBox(const string& given_str, const IvPDomain& domain, 
 			 const char gsep, const char lsep)
 {
   IvPBox null_box;
-#if 1
   if(given_str == "")
     return(null_box);
 
@@ -264,14 +293,24 @@ IvPBox stringToRegionBox(const string& given_str, const IvPDomain& domain,
   vector<double> dvar_val_low;
   vector<double> dvar_val_high;
 
-  // for all the variables in the IvP domain, check that the 
-  // variable is specified in the given string. 
-  
+  // For all the variables in the IvP domain, check that the 
+  //   variable is specified in the given string. 
+  // For each variable in the IvP domain, create a record:
+  //       dvar_name[i] is the ith IvPDomain variable
+  //      dvar_legal[i] is true if var also present in the string
+  //    dvar_box_low[i] is eventual box lower bound, zero for this pass
+  //   dvar_box_high[i] is eventual box upper bound, zero for this pas
+  //    dvar_val_low[i] is the float lower bound given by the string
+  //   dvar_val_high[i] is the float upper bound given by the string
+
   for(i=0; i<dim; i++) {
+    // Initialize the above record for this variable name. 
+    // The val_low and val_high initial values are initialized to the
+    // max boundaries of the domain. 
     dvar_name.push_back(tolower(domain.getVarName(i)));
     dvar_legal.push_back(false);
     dvar_box_low.push_back(0);
-    dvar_box_low.push_back(0);
+    dvar_box_high.push_back(0);
     dvar_val_low.push_back(domain.getVarLow(i));
     dvar_val_high.push_back(domain.getVarHigh(i));
 
@@ -283,18 +322,32 @@ IvPBox stringToRegionBox(const string& given_str, const IvPDomain& domain,
       int vsize2 = svector2.size();
       for(k=0; k<vsize2; k++)
 	svector2[k] = tolower(stripBlankEnds(svector2[k]));
-      if((vsize2 > 1) && (svector2[0] == dvar_name[i])) {
-	if((vsize2 == 2) && (svector2[1] != "all"))
+
+      // svector2 example [0]"x" [1]"2.3" [2]"5.0"
+      //              or  [0]"x" [1]"all"
+      if((vsize2 > 0) && (svector2[0] == dvar_name[i])) {
+	if((vsize2 == 2) && (svector2[1] == "all"))
 	  dvar_legal[i] = true;
-	else if(vsize == 3) {
-	  if(isNumber(svector[1]) && isNumber(svector[2])) {
+	else if(vsize2 == 3) {
+	  if(isNumber(svector2[1]) && isNumber(svector2[2])) {
 	    double lval = atof(svector2[1].c_str());
 	    double hval = atof(svector2[2].c_str());
-	    if((lval >= dvar_val_low[i]) &&
-	       (hval <= dvar_val_high[i]) && (lval <= hval)) {
-	      dvar_val_low[i]  = lval;
-	      dvar_val_high[i] = hval;
+
+	    if(lval <= hval) {
 	      dvar_legal[i] = true;
+	      // Check the lval and modify if necessary
+	      // Assumes dvar_val_low[i] has been init to extreme low
+	      if(lval > dvar_val_high[i])
+		dvar_val_low[i] = dvar_val_high[i];
+	      else
+		dvar_val_low[i] = lval;
+
+	      // Check the hval and modify if necessary
+	      // Assumes dvar_val_high[i] has been init to extreme high
+	      if(hval < dvar_val_low[i])
+		dvar_val_high[i] = dvar_val_low[i];
+	      else
+		dvar_val_high[i] = hval;
 	    }
 	  }
 	}
@@ -302,24 +355,37 @@ IvPBox stringToRegionBox(const string& given_str, const IvPDomain& domain,
     }
   }
 
-  // Convert the high and low raw values into Domain discrete indices.
+#if 0 // for Debugging/Validation
+  cout << endl << endl;
+  for(i=0; i<dim; i++) {
+    cout << "dvar_name["     << i << "]: [" << dvar_name[i] << "]" << endl;
+    cout << "dvar_legal["    << i << "]: " << dvar_legal[i] << endl;
+    cout << "dvar_box_low["  << i << "]: " << dvar_box_low[i] << endl;
+    cout << "dvar_box_high[" << i << "]: " << dvar_box_high[i] << endl;
+    cout << "dvar_val_low["  << i << "]: " << dvar_val_low[i] << endl;
+    cout << "dvar_val_high[" << i << "]: " << dvar_val_high[i] << endl << endl;
+  }
+#endif
 
-
+  // If any one of the variables in the IvPDomain were not legally
+  // specified in one of the elements of the string, return null_box
   for(i=0; i<dim; i++)
     if(!dvar_legal[i])
       return(null_box);
   
+  // Convert high and low raw double values into Domain discrete indices.
+  for(i=0; i<dim; i++) {
+    dvar_box_low[i]  = domain.getDiscreteVal(i, dvar_val_low[i], true); 
+    dvar_box_high[i] = domain.getDiscreteVal(i, dvar_val_high[i], false); 
+  }
   
-  
-  // All is good, so go ahead and create the IvP Box.
+    // All is good, so go ahead and create the IvP Box.
   IvPBox ret_box(dim);
   for(i=0; i<dim; i++) {
     ret_box.pt(i,0) = dvar_box_low[i];
     ret_box.pt(i,1) = dvar_box_high[i];
   }
   return(ret_box);
-#endif
-  return(null_box);
 }
 
 //-------------------------------------------------------------
@@ -584,6 +650,8 @@ string domainToString(const IvPDomain& domain)
     return_string += dstringCompact(doubleToString(domain.getVarHigh(i)));
     return_string += ",";
     return_string += intToString(domain.getVarPoints(i));
+    return_string += ",";
+    return_string += doubleToString(domain.getVarDelta(i));
     if(i < dcount-1)
       return_string += ":";
   }
