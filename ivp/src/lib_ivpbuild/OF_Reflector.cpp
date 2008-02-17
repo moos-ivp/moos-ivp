@@ -242,10 +242,10 @@ int OF_Reflector::create(const string params)
   
   IvPDomain domain = m_aof->getDomain();
 
-  IvPBox unif_box   = stringToPointBox(str_uniform_box, domain, ',', ':');
-  IvPBox grid_box   = stringToPointBox(str_uniform_grid, domain, ',', ':');
-  IvPBox region_box = stringToPointBox(str_focus_region, domain, ',', ':');
-  IvPBox refine_box = stringToPointBox(str_focus_refine, domain, ',', ':');
+  IvPBox unif_box   = stringDiscreteToPointBox(str_uniform_box, domain, ',', ':');
+  IvPBox grid_box   = stringDiscreteToPointBox(str_uniform_grid, domain, ',', ':');
+  IvPBox region_box = stringDiscreteToPointBox(str_focus_region, domain, ',', ':');
+  IvPBox refine_box = stringDiscreteToPointBox(str_focus_refine, domain, ',', ':');
 
   // Under this utility, a uniform PDMap must be create by either of the 
   // two methods, or else it will not proceed.
@@ -297,7 +297,7 @@ bool OF_Reflector::setParam(string param, string val)
     }
   }
   if(param == "uniform_box") {
-    m_uniform_box   = stringToPointBox(val, m_domain, ',', ':');
+    m_uniform_box   = stringDiscreteToPointBox(val, m_domain, ',', ':');
     if(m_uniform_box.null())
       return(false);
     }
