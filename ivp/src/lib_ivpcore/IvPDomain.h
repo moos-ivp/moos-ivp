@@ -111,28 +111,8 @@ public:
     }
 
   // Return the discrete index into the domain given by a double
-  // input value. Round up or down depending on truncate input.
-  int getDiscreteVal(int index, double val, bool truncate) const
-    {
-      if(val <= m_dlow[index])
-	return(0);
-      else if(val >= m_dhigh[index])
-	return(m_dpoints[index]-1);
-      else { 
-	if(truncate)
-	  return((int)((val-m_dlow[index])/m_ddelta[index]));
-	else {
-	  double dval = ((val-m_dlow[index])/m_ddelta[index]);
-	  int    ival = (int)(dval);
-	  if(dval > ((double)(ival)))
-	    return(ival + 1);
-	  else
-	    return(ival);
-	  //return((int)(ceil((val-m_dlow[index])/m_ddelta[index])));
-	}
-      }
-    }
-
+  // input value. Round up, down or closest, depending on snaptype.
+  int getDiscreteVal(int index, double val, int snaptype) const;
 
 private:
   std::vector<std::string> m_dname;

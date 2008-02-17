@@ -172,6 +172,51 @@ int IvPDomain::getIndex(const string &g_name) const
 
 
 
+//-------------------------------------------------------------
+// Procedure: getDiscreteVal
+//   Purpose: Return the discrete index into the domain given 
+//            by a double input value. 
+//      Note: The snaptype refers to the manner in which float
+//            values not exactly on a discrete point in the domain
+//            are settled:
+//            snaptype = 0: values are truncated down
+//            snaptype = 1: values are ceiling'ed up
+//            snaptype = 2: values are to the nearest discrete point
+//
+//  Examples: For IvPDomain: x:0:20:41, y:2:7:11
+//            getDiscreteVal(0, 2.1, 0)  --> 4   
+//            getDiscreteVal(0, 2.1, 1)  --> 5   
+//            getDiscreteVal(0, 2.1, 2)  --> 4   
+//
+//            getDiscreteVal(1, 2.1, 0)  --> 0   
+//            getDiscreteVal(1, 2.1, 1)  --> 1   
+//            getDiscreteVal(1, 2.3, 2)  --> 1   
 
+
+int IvPDomain::getDiscreteVal(int index, double val, int snaptype) const
+{
+  if((snaptype < 0) || (snaptype > 2))
+    return(0);
+
+  if(val <= m_dlow[index])
+    return(0);
+  else if(val >= m_dhigh[index])
+    return(m_dpoints[index]-1);
+  else { 
+    if(snaptype == 0)
+      return((int)((val-m_dlow[index])/m_ddelta[index]));
+    else {
+      if(snaptype == 2)
+	val -= (m_ddelta[index]/2.0);
+      double dval = ((val-m_dlow[index])/m_ddelta[index]);
+      int    ival = (int)(dval);
+      if(dval > ((double)(ival)))
+	return(ival + 1);
+      else
+	return(ival);
+      //return((int)(ceil((val-m_dlow[index])/m_ddelta[index])));
+    }
+  }
+}
 
 
