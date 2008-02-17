@@ -244,8 +244,8 @@ int OF_Reflector::create(const string params)
 
   IvPBox unif_box   = stringDiscreteToPointBox(str_uniform_box, domain, ',', ':');
   IvPBox grid_box   = stringDiscreteToPointBox(str_uniform_grid, domain, ',', ':');
-  IvPBox region_box = stringDiscreteToPointBox(str_focus_region, domain, ',', ':');
-  IvPBox refine_box = stringDiscreteToPointBox(str_focus_refine, domain, ',', ':');
+  IvPBox region_box = stringFloatToPointBox(str_focus_region, domain, ',', ':');
+  IvPBox refine_box = stringFloatToPointBox(str_focus_refine, domain, ',', ':');
 
   // Under this utility, a uniform PDMap must be create by either of the 
   // two methods, or else it will not proceed.

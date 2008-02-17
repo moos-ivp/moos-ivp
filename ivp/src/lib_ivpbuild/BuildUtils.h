@@ -45,14 +45,18 @@ BoxSet*  makeUniformDistro(const IvPBox&, const IvPBox&, int=1);
 BoxSet*  subtractBox(const IvPBox&, const IvPBox&);
 IvPBox*  cutBox(IvPBox*, int);
 
+IvPBox  stringToPointBox(const std::string&, const IvPDomain&, 
+			 const char gsep=',', const char lsep=':'); 
+
 IvPBox  stringDiscreteToPointBox(const std::string&, const IvPDomain&, 
 				 const char gsep=',', const char lsep=':'); 
 
-IvPBox  stringFloatToRegionBox(const std::string&, const IvPDomain&, 
-			       const char gsep=',', const char lsep=':'); 
-
 IvPBox  stringFloatToPointBox(const std::string&, const IvPDomain&, 
 			      const char gsep=',', const char lsep=':'); 
+
+
+IvPBox  stringFloatToRegionBox(const std::string&, const IvPDomain&, 
+			       const char gsep=',', const char lsep=':'); 
 
 
 #endif
