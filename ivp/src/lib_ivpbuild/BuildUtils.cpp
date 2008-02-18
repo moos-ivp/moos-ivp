@@ -40,7 +40,7 @@ using namespace std;
 //            ratio. But once it becomes impossible to grow an
 //            edge of ubox due to the maxAmount restriction, it will
 //            grow the other edges regardless of the aspect ratio
-//            until its as large as possible.
+//            until it is as large as possible.
 //      Note: The significant info of the returned box, is the value
 //            of the high edge. A domain of [0,283] would indicate
 //            an edge length of 284, for example.
@@ -76,7 +76,8 @@ IvPBox genUnifBox(const IvPDomain &domain, int maxAmount)
   for(d=0; d<dim; d++) {
     dsplit[d] = 1.0;                 // Num splits for dim d
     dmaxed[d] = false;               // False if more splits ok
-    dsize[d]  = (double)(uhgh[d]+1); // Size of unif box for dim d    
+    //dsize[d]  = (double)(uhgh[d]+1); // benign bugfix
+    dsize[d]  = (double)(uhgh[d]); // Size of unif box for dim d    
   }
 
   bool done = false;
@@ -114,7 +115,8 @@ IvPBox genUnifBox(const IvPDomain &domain, int maxAmount)
 	dmaxed[bd] = true;
       else {
 	dsplit[bd] = dsplit[bd] + 1.0;  
-	dsize[bd]  = (double)(uhgh[bd]+1);
+	//dsize[bd]  = (double)(uhgh[bd]+1); // benign bugfix
+	dsize[bd]  = (double)(uhgh[bd]);
 	dsize[bd]  = dsize[bd] / dsplit[bd];
       }
       if(dsplit[bd] >= maxSplit[bd])  
@@ -128,7 +130,8 @@ IvPBox genUnifBox(const IvPDomain &domain, int maxAmount)
   IvPBox ubox(dim,0);
   double total = 1.0;
   for(d=0; d<dim; d++) {
-    double ddom =(double)(uhgh[d] + 1);
+    //double ddom =(double)(uhgh[d] + 1); // benign bugfix
+    double ddom =(double)(uhgh[d]);
     double dval = ceil(ddom / dsplit[d]);
     double boxesPerEdge = ceil(ddom / dval);
     total = total * boxesPerEdge;
