@@ -43,9 +43,16 @@ Viewer::Viewer(int x, int y,
   //m_clear_green =  62.0 / 256.0;
   //m_clear_blue  = 120.0 / 256.0;
 
+#if 1
   m_clear_red   =  0.65;
   m_clear_green =  0.7;
   m_clear_blue  =  0.8;
+#endif
+#if 0
+  m_clear_red   =  0.9;
+  m_clear_green =  0.9;
+  m_clear_blue  =  0.9;
+#endif
 
   m_priority       = false;
   m_priority_cnt   = 1000;
@@ -284,8 +291,13 @@ void Viewer::makeUniformIPF(int usize)
     region.setPTS(1,100,300);
     resbox.setPTS(0,0,m_focus_unif_len);
     resbox.setPTS(1,0,m_focus_unif_len);
-    
     reflector.createFocusRefine(region, resbox);
+
+
+    IvPBox region2 = unifbox;
+    region2.setPTS(0,285,410);
+    region2.setPTS(1,0,110);
+    reflector.createFocusRefine(region2, resbox);
   }
   
   if(m_priority) {
