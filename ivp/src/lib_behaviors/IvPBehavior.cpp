@@ -570,7 +570,7 @@ void IvPBehavior::postFlags(const string& str)
   else if(str == "endflags")
     flags = m_end_flags;
   else if(str == "idleflags")
-    flags = m_end_flags;
+    flags = m_idle_flags;
 
   int vsize = flags.size();
   for(int i=0; i<vsize; i++) {
