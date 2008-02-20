@@ -68,10 +68,16 @@ protected:
   RT_Focus*    m_rt_focus;
   RT_Priority* m_rt_priority;
 
-  IvPBox       m_uniform_box;
-  int          m_uniform_amt;
-  IvPBox       m_focus_uniform_box;
-  IvPBox       m_focus_region_box;
+  IvPBox       m_uniform_piece;
+  int          m_uniform_amount;
+  int          m_smart_amount;
+  int          m_smart_percent;
+  bool         m_smart_peak;
+
+  std::vector<IvPBox>  m_refine_regions;
+  std::vector<IvPBox>  m_refine_pieces;
+  std::vector<IvPBox>  m_refine_points;
+
 };
 #endif
 

@@ -51,7 +51,7 @@ OF_Reflector::OF_Reflector(const AOF *g_aof, int g_degree)
   m_rt_priority = new RT_Priority(m_regressor);
   m_rt_focus    = new RT_Focus(m_regressor);
   
-  m_uniform_amt = 0;
+  m_uniform_amount = 0;
 }
 
 //-------------------------------------------------------------
@@ -279,28 +279,86 @@ int OF_Reflector::create(const string params)
     
 //-------------------------------------------------------------
 // Procedure: setParam
+// Note: Care must be taken to add a refine_region and refine_piece
+//       only in pairs. A refine_region must be added first, followed
+//       by a refine_piece. A refine_region can only be added when 
+//       the count of the two vectors are equal, and a refine_piece
+//       can be added only if there is currently one more 
+//       refine_region than the number of refine_pieces. If there is
+//       a syntax error on adding a refine_region, false is simply
+//       returned. If there is a syntax error on the refine-piece add, 
+//       a single refine-region is popped from its vector.
+//
+// Note: The above strategy assumes that if the creation process is
+//       commenced with one more refine_region than refine_piece, 
+//       then the extra refine_region is simply disregarded.
 
-bool OF_Reflector::setParam(string param, string val)
+bool OF_Reflector::setParam(string param, string value)
 {
+  param = tolower(stripBlankEnds(param));
+  value = tolower(stripBlankEnds(value));
+
   if(param == "strict_range") {
-    val = tolower(val);
-    if((val != "true") && (val != "false"))
+    if((value != "true") && (value != "false"))
       return(false);
     if(m_regressor)
-      m_regressor->setStrictRange(val=="true");
+      m_regressor->setStrictRange(value=="true");
   }
-  if(param == "uniform_amt") {
-    m_uniform_amt = atoi(val.c_str());
-    if(m_uniform_amt < 0) {
-      m_uniform_amt = 0;
+  else if(param == "uniform_amount") {
+    int uniform_amount = atoi(value.c_str());
+    if(!isNumber(value) || (uniform_amount < 1))
+      return(false);
+    m_uniform_amount = uniform_amount;
+  }
+  else if(param == "uniform_piece") {
+    m_uniform_piece = stringToPointBox(value, m_domain, ',', ':');
+    if(m_uniform_piece.null())
+      return(false);
+  }
+  else if(param == "refine_region") {
+    if(m_refine_regions.size() != m_refine_pieces.size())
+      return(false);
+    IvPBox refine_region = stringFloatToRegionBox(value, m_domain, ',', ':');
+    if(refine_region.null())
+      return(false);
+  }
+  else if(param == "refine_piece") {
+    if((m_refine_regions.size() - m_refine_pieces.size()) != 1)
+      return(false);
+    IvPBox refine_piece = stringToPointBox(value, m_domain, ',', ':');
+    if(refine_piece.null()) {
+      m_refine_regions.pop_back();
       return(false);
     }
+    m_refine_pieces.push_back(refine_piece);
   }
-  if(param == "uniform_box") {
-    m_uniform_box   = stringDiscreteToPointBox(val, m_domain, ',', ':');
-    if(m_uniform_box.null())
+  else if(param == "refine_clear") {
+    m_refine_regions.clear();
+    m_refine_pieces.clear();
+  }
+  else if(param == "refine_point") {
+    IvPBox refine_point = stringToPointBox(value, m_domain, ',', ':');
+    if(refine_point.null() || !refine_point.isPtBox())
       return(false);
-    }
+    m_refine_points.push_back(refine_point);
+  }
+  else if(param == "smart_amount") {
+    int smart_amount = atoi(value.c_str());
+    if(!isNumber(value) || (smart_amount < 0))
+      return(false);
+    m_smart_amount = smart_amount;
+  }
+  else if(param == "smart_percent") {
+    int smart_percent = atoi(value.c_str());
+    if(!isNumber(value) || (smart_percent < 0))
+      return(false);
+    m_smart_percent = smart_percent;
+  }
+  else if(param == "smart_peak") {
+    if((value != "true") && (value != "false"))
+      return(false);
+    m_smart_peak = (value == "true");
+  }
   else
     return(false);
   

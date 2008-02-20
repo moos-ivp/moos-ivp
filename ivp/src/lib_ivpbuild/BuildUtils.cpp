@@ -74,10 +74,10 @@ IvPBox genUnifBox(const IvPDomain &domain, int maxAmount)
   }
 
   for(d=0; d<dim; d++) {
-    dsplit[d] = 1.0;                 // Num splits for dim d
-    dmaxed[d] = false;               // False if more splits ok
+    dsplit[d] = 1.0;                   // Num splits for dim d
+    dmaxed[d] = false;                 // False if more splits ok
     //dsize[d]  = (double)(uhgh[d]+1); // benign bugfix
-    dsize[d]  = (double)(uhgh[d]); // Size of unif box for dim d    
+    dsize[d]  = (double)(uhgh[d]);     // Size of unif box for dim d    
   }
 
   bool done = false;
