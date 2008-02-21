@@ -107,7 +107,10 @@ bool XMS::OnStartUp()
   STRING_LIST sParams;
   //m_MissionReader.GetConfiguration(GetAppName(), sParams);
   m_MissionReader.GetConfiguration("uXMS", sParams);
-    
+
+  // tes 2.21.08 - variables will be shown in the order they appear in the config file
+  sParams.reverse();
+  
   STRING_LIST::iterator p;
   for(p = sParams.begin();p!=sParams.end();p++) {
     string sLine     = *p;
