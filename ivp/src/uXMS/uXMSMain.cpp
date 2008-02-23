@@ -95,12 +95,14 @@ int main(int argc ,char * argv[])
     MOOSTrace("Usage: uXMS moosfile.moos -nav -helm -pid -clean [VARS] \n");
     return(0);
   }
- 
+
+  
   if(!g_sMissionFile) {
     MOOSTrace("Failed to provide a MOOS (.moos) file... Exiting now.\n");
     return(0);
   }
- 
+  
+  
   bool seed = true;
   if(seed) {
     unsigned long tseed = time(NULL);
@@ -174,9 +176,13 @@ int main(int argc ,char * argv[])
     else if(str == "-c") 
       g_theXMS.setDispCommunity(true);
 
+    else if(str == "-a") 
+      g_theXMS.setDispAll(true);
+    
     else if(!strContains(argv[i], ".moos"))
       g_theXMS.addVariable(argv[i]);
 
+    
   }
 
   bool quit = false;

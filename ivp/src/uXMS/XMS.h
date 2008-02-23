@@ -30,62 +30,81 @@
 
 class XMS : public CMOOSApp  
 {
- public:
-  XMS();
-  virtual ~XMS() {};
+  public:
+    XMS();
+    virtual ~XMS() {};
   
-  bool OnNewMail(MOOSMSG_LIST &NewMail);
-  bool Iterate();
-  bool OnConnectToServer();
-  bool OnStartUp();
+    bool OnNewMail(MOOSMSG_LIST &NewMail);
+    bool Iterate();
+    bool OnConnectToServer();
+    bool OnStartUp();
 
-  void handleCommand(char);
-  void addVariables(std::string);
-  void addVariable(std::string);
-  void ignoreVars(bool v)       {m_ignore_vars = v;};
-  void setPaused(bool v)        {m_paused = v;};
-  void setDispVirgins(bool v)   {m_display_virgins = v;};
-  void setDispTime(bool v)      {m_display_time = v;};
-  void setDispSource(bool v)    {m_display_source = v;};
-  void setDispCommunity(bool v) {m_display_community = v;};
-  void setDispEmptyStrings(bool v) {m_display_empty_strings = v;};
+    void handleCommand(char);
+    void addVariables(std::string);
+    bool addVariable(std::string);
+    void ignoreVars(bool v)       {m_ignore_vars = v;};
+    void setPaused(bool v)        {m_paused = v;};
+    void setDispVirgins(bool v)   {m_display_virgins = v;};
+    void setDispTime(bool v)      {m_display_time = v;};
+    void setDispSource(bool v)    {m_display_source = v;};
+    void setDispCommunity(bool v) {m_display_community = v;};
+    void setDispEmptyStrings(bool v) {m_display_empty_strings = v;};
+    void setDispAll(bool v) {m_display_all = v;};
 
- protected:
-  void registerVariables();
+  protected:
+    void registerVariables();
   
-  void updateVariable(CMOOSMsg& msg);
-  void updateVarVal(std::string, std::string);
-  void updateVarType(std::string, std::string);
-  void updateVarSource(std::string, std::string);
-  void updateVarTime(std::string, std::string);
-  void updateVarCommunity(std::string, std::string);
+    void updateVariable(CMOOSMsg& msg);
+    void updateVarVal(std::string, std::string);
+    void updateVarType(std::string, std::string);
+    void updateVarSource(std::string, std::string);
+    void updateVarTime(std::string, std::string);
+    void updateVarCommunity(std::string, std::string);
   
-  void printHelp();
-  void printReport();
+    void printHelp();
+    void printReport();
 
- protected:
-  std::vector<std::string> var_names;
-  std::vector<std::string> var_vals;
-  std::vector<std::string> var_type;
-  std::vector<std::string> var_source;
-  std::vector<std::string> var_time;
-  std::vector<std::string> var_community;
+    void refreshAllVarsList();
+    
+  protected:
+    std::vector<std::string> var_names;
+    std::vector<std::string> var_vals;
+    std::vector<std::string> var_type;
+    std::vector<std::string> var_source;
+    std::vector<std::string> var_time;
+    std::vector<std::string> var_community;
 
-  bool   m_display_help;
-  bool   m_display_source;
-  bool   m_display_time;
-  bool   m_display_community;
-  bool   m_paused;
-  bool   m_update_requested;
-  bool   m_help_requested;
-  int    m_iteration;
+    std::vector<std::string> orig_var_names;
+    std::vector<std::string> orig_var_vals;
+    std::vector<std::string> orig_var_type;
+    std::vector<std::string> orig_var_source;
+    std::vector<std::string> orig_var_time;
+    std::vector<std::string> orig_var_community;
 
-  bool   m_display_virgins;
-  bool   m_display_empty_strings;
 
-  bool   m_ignore_vars;
-  double m_db_uptime;
+    bool   m_display_help;
+    bool   m_display_source;
+    bool   m_display_time;
+    bool   m_display_community;
+    bool   m_paused;
+    bool   m_update_requested;
+    bool   m_help_requested;
+    int    m_iteration;
+
+    bool   m_display_virgins;
+    bool   m_display_empty_strings;
+
+    bool   m_ignore_vars;
+    double m_db_uptime;
+  
+    bool   m_filter_writing;
+    std::string m_filter;
+
+    bool   m_display_all;
+    double m_last_all_refresh;
+    
 };
+
 
 #endif 
 
