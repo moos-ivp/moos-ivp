@@ -202,12 +202,11 @@ void XMS::handleCommand(char c)
             }
             
             m_filter = m_filter.substr(0, m_filter.length()-1);
-            MOOSTrace("\n/");
-            MOOSTrace(m_filter);
+            printf("\n/%s", m_filter.c_str());
             return;
         }
 
-        MOOSTrace("%c", c);
+        printf("%c", c);
         
         m_filter += c;
         return;        
@@ -281,7 +280,7 @@ void XMS::handleCommand(char c)
             }
             m_paused = true;
             
-            MOOSTrace("%c", c);
+            printf("%c", c);
             m_filter_writing = true;
             m_filter = "";
             break;
@@ -540,6 +539,23 @@ void XMS::printReport()
             printf("\n");		
         }
     }
+
+    bool newline = false;
+    if(m_filter != "")
+    {
+        printf("  -- filter: %s -- ", m_filter.c_str() );
+        newline = true;
+    }
+    if(m_display_all)
+    {
+        printf("  -- displaying all variables --");
+        newline = true;
+    }
+    if (newline)
+        printf("\n");
+    
+    
+    
 }
 
 
