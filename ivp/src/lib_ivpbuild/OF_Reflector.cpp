@@ -20,11 +20,9 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
-#include <math.h>
 #include "OF_Reflector.h"
 #include "BuildUtils.h"
 #include "IvPFunction.h"
-#include "PQueue.h"
 #include "Regressor.h"
 #include "RT_Uniform.h"
 #include "RT_Priority.h"
@@ -51,19 +49,22 @@ OF_Reflector::OF_Reflector(const AOF *g_aof, int g_degree)
   m_rt_priority = new RT_Priority(m_regressor);
   m_rt_focus    = new RT_Focus(m_regressor);
   
-  m_uniform_amount = 0;
+  m_uniform_amount = 1;
+  m_smart_amount   = 0;
+  m_smart_percent  = 0;
+  m_smart_thresh   = 0;
+  m_auto_peak      = true;
 }
 
 //-------------------------------------------------------------
 // Procedure: Destructor
-//      Note: the member variable "pdmap" is not freed since it 
-//            it is common convention to use the pdmap as the 
-//            product of the creation process, typically in a new
-//            objective function - see OF_Reflector::pruneToOF()
-
 
 OF_Reflector::~OF_Reflector()
 {
+  // The PDMap is typically null in normal operation, after a 
+  // call to extractOF() is made. But if for some reason the 
+  // user used the reflector to create a PDMap, but then never
+  // extracted it, the memory is free here.
   if(m_pdmap) 
     delete(m_pdmap);
 
@@ -95,79 +96,6 @@ IvPFunction *OF_Reflector::extractOF(bool normalize)
   return(new_ipf);
 }
 
-
-//-------------------------------------------------------------
-// Procedure: createUniform
-//   Purpose: Make a uniform IvP function based on the given amt
-//            of max uniform boxes desired. First calculates the
-//            largest uniform box possible given the domain. 
-//            Further boxes will be created based on priority.
-
-int OF_Reflector::createUniform(int max_amt, int qlevels)
-{
-  clearPDMap();
-  if(!m_aof)
-    return(0);
-
-  IvPDomain domain = m_aof->getDomain();
-  IvPBox unifbox = genUnifBox(domain, max_amt);
-  
-  m_pdmap = m_rt_uniform->create(&unifbox, &unifbox, qlevels);
-  return(m_pdmap->size());
-}
-
-//-------------------------------------------------------------
-// Procedure: createUniform
-//   Purpose: Make a uniform IvP function based on the given box.
-//            Each uniform piece will have the same size as the
-//            given box.
-
-int OF_Reflector::createUniform(const IvPBox *unifbox, 
-				const IvPBox *gridbox, 
-				int qlevels)
-{
-  clearPDMap();
-  if(!m_aof)
-    return(0);
-
-  m_pdmap = m_rt_uniform->create(unifbox, gridbox, qlevels);
-  return(m_pdmap->size());
-}
-
-//-------------------------------------------------------------
-// Procedure: createPriority
-
-int OF_Reflector::createPriority(int more_amt, double thresh)
-{
-  if(!m_pdmap)
-    return(0);
-  
-  if(more_amt <= 0)
-    return(m_pdmap->size());
-  
-  PQueue *pqueue = m_rt_uniform->getPQueue();
-  if(!pqueue)
-    return(m_pdmap->size());
-  
-  m_pdmap = m_rt_priority->create(m_pdmap, pqueue, more_amt, thresh);
-  return(m_pdmap->size());
-}
-
-//-------------------------------------------------------------
-// Procedure: createFocusRefine
-
-int OF_Reflector::createFocusRefine(IvPBox region, IvPBox resbox)
-{
-  if(!m_pdmap)
-    return(0);
-  
-  PDMap *new_pdmap = m_rt_focus->create(m_pdmap, region, resbox);
-  if(new_pdmap != 0)
-    m_pdmap = new_pdmap;
-  
-  return(m_pdmap->size());
-}
-
 //-------------------------------------------------------------
 // Procedure: clearPDMap()
 
@@ -181,102 +109,44 @@ void OF_Reflector::clearPDMap()
     
 //-------------------------------------------------------------
 // Procedure: create
+//      Note: Returns the number of pieces made in the new PDMap.
+//            A return of zero indicates an error.
 
 int OF_Reflector::create(const string params)
 {
-  clearPDMap();
-  if(!m_aof)
+  if(!setParam(params))
     return(0);
-
-  // The possible paramaters - all initialized to "".
-  string str_uniform_amt;
-  string str_uniform_box; 
-  string str_uniform_grid;
-  string str_priority_amt;
-  string str_priority_queue;
-  string str_priority_thresh;
-  string str_focus_region;
-  string str_focus_refine;
-
-  tokParse(params, "uniform_amt",  '#', '=', str_uniform_amt);
-  tokParse(params, "uniform_box",  '#', '=', str_uniform_box);
-  tokParse(params, "uniform_grid", '#', '=', str_uniform_grid);
-  tokParse(params, "priority_amt", '#', '=', str_priority_amt);
-  tokParse(params, "priority_queue",  '#', '=', str_priority_queue);
-  tokParse(params, "priority_thresh", '#', '=', str_priority_thresh);
-  tokParse(params, "focus_region", '#', '=', str_focus_region);
-  tokParse(params, "focus_box",    '#', '=', str_focus_refine);
-
-  str_uniform_amt  = stripBlankEnds(str_uniform_amt);
-  str_uniform_box  = stripBlankEnds(str_uniform_box);
-  str_uniform_grid = stripBlankEnds(str_uniform_grid);
-  str_priority_amt = stripBlankEnds(str_priority_amt);
-  str_priority_queue  = stripBlankEnds(str_priority_queue);
-  str_priority_thresh = stripBlankEnds(str_priority_thresh);
-  str_focus_region = stripBlankEnds(str_focus_region);
-  str_focus_refine = stripBlankEnds(str_focus_refine);
-  
-  int unif_amt = 0;
-  if(isNumber(str_uniform_amt))
-    unif_amt = atoi(str_uniform_amt.c_str());
-
-  int priority_amt = 0;
-  if(isNumber(str_priority_amt))
-    priority_amt = atoi(str_priority_amt.c_str());
-
-  int qlevels = 8;
-  if(isNumber(str_priority_queue)) {
-    double pqueue_amt = atof(str_priority_queue.c_str());
-    if(pqueue_amt < 2)
-      qlevels = 0;
-    else
-      qlevels = (int)(log2(pqueue_amt));
-  }
-
-  double priority_thresh = 0.0;
-  if(isNumber(str_priority_thresh)) {
-     priority_thresh = atof(str_priority_thresh.c_str());
-     if(priority_thresh < 0)
-       priority_thresh = 0;
-  }
-  
-  IvPDomain domain = m_aof->getDomain();
-
-  IvPBox unif_box   = stringDiscreteToPointBox(str_uniform_box, domain, ',', ':');
-  IvPBox grid_box   = stringDiscreteToPointBox(str_uniform_grid, domain, ',', ':');
-  IvPBox region_box = stringFloatToPointBox(str_focus_region, domain, ',', ':');
-  IvPBox refine_box = stringFloatToPointBox(str_focus_refine, domain, ',', ':');
-
-  // Under this utility, a uniform PDMap must be create by either of the 
-  // two methods, or else it will not proceed.
-  if(unif_amt <= 0)
-    if(unif_box.null())
-      return(0);
-
-  int pdmap_size = 0;
-  
-  if(unif_amt > 0)
-    pdmap_size = createUniform(unif_amt, qlevels);
-  else {
-    // If the grid_box was not set, or if it doesn't subsume unif_box, then
-    // proceed by just making the grid_box identical to the unif_box.
-    if(grid_box.null() || (!containedWithinBox(unif_box, grid_box)))
-      grid_box = unif_box;
-    pdmap_size = createUniform(&unif_box, &grid_box, qlevels);
-  }
-  
-  if(pdmap_size <= 0)
-    return(0);
-
-  if((pdmap_size > 0) && (priority_amt > 0))
-    pdmap_size = createPriority(priority_amt, priority_thresh);
-  
-  if((pdmap_size > 0) && !region_box.null() && !refine_box.null())
-    pdmap_size = createFocusRefine(region_box, refine_box);
-  
-  return(m_pdmap->size());
+  else
+    return(create());
 }
     
+//-------------------------------------------------------------
+// Procedure: setParam
+
+bool OF_Reflector::setParam(string str)
+{
+  bool ok = true;
+  str = tolower(stripBlankEnds(str));
+
+  vector<string> svector = parseString(str, '#');
+  int vsize = svector.size();
+
+  if(vsize == 0)
+    return(false);
+  
+  for(int i=0; i<vsize; i++) {
+    svector[i] = stripBlankEnds(svector[i]);
+    vector<string> tvector = parseString(svector[i], '=');
+    if(tvector.size() == 2) {
+      string param = tvector[0];
+      string value = tvector[1];
+      ok = ok && setParam(param, value);
+    }
+  }
+  return(ok);
+}
+
+
 //-------------------------------------------------------------
 // Procedure: setParam
 // Note: Care must be taken to add a refine_region and refine_piece
@@ -304,25 +174,32 @@ bool OF_Reflector::setParam(string param, string value)
     if(m_regressor)
       m_regressor->setStrictRange(value=="true");
   }
-  else if(param == "uniform_amount") {
+  else if((param=="uniform_amount")||(param=="uniform_amt")) {
     int uniform_amount = atoi(value.c_str());
     if(!isNumber(value) || (uniform_amount < 1))
       return(false);
     m_uniform_amount = uniform_amount;
   }
-  else if(param == "uniform_piece") {
+  else if((param=="uniform_piece")||(param=="uniform_box")) {
     m_uniform_piece = stringToPointBox(value, m_domain, ',', ':');
     if(m_uniform_piece.null())
       return(false);
   }
-  else if(param == "refine_region") {
+  else if(param=="uniform_grid") {
+    m_uniform_grid = stringToPointBox(value, m_domain, ',', ':');
+    if(m_uniform_grid.null())
+      return(false);
+  }
+  else if((param=="refine_region")||(param=="focus_region")) {
     if(m_refine_regions.size() != m_refine_pieces.size())
       return(false);
     IvPBox refine_region = stringFloatToRegionBox(value, m_domain, ',', ':');
     if(refine_region.null())
       return(false);
+    else
+      m_refine_regions.push_back(refine_region);
   }
-  else if(param == "refine_piece") {
+  else if((param=="refine_piece")||(param=="focus_box")) {
     if((m_refine_regions.size() - m_refine_pieces.size()) != 1)
       return(false);
     IvPBox refine_piece = stringToPointBox(value, m_domain, ',', ':');
@@ -342,7 +219,7 @@ bool OF_Reflector::setParam(string param, string value)
       return(false);
     m_refine_points.push_back(refine_point);
   }
-  else if(param == "smart_amount") {
+  else if((param=="smart_amount")||(param=="priority_amt")) {
     int smart_amount = atoi(value.c_str());
     if(!isNumber(value) || (smart_amount < 0))
       return(false);
@@ -354,10 +231,16 @@ bool OF_Reflector::setParam(string param, string value)
       return(false);
     m_smart_percent = smart_percent;
   }
-  else if(param == "smart_peak") {
+  else if((param=="smart_thresh")||(param=="priority_thresh")) {
+    double smart_thresh = atof(value.c_str());
+    if(!isNumber(value) || (smart_thresh < 0))
+      return(false);
+    m_smart_thresh = smart_thresh;
+  }
+  else if(param == "auto_peak") {
     if((value != "true") && (value != "false"))
       return(false);
-    m_smart_peak = (value == "true");
+    m_auto_peak = (value == "true");
   }
   else
     return(false);
@@ -365,7 +248,129 @@ bool OF_Reflector::setParam(string param, string value)
   return(true);
 }
 
+//-------------------------------------------------------------
+// Procedure: setParam
 
-//"course:34.34:89.009, speed:all
+bool OF_Reflector::setParam(string param, int value)
+{
+  param = tolower(stripBlankEnds(param));
+  
+  if((param=="uniform_amount")||(param=="uniform_amt")) {
+    if(value < 1)
+      return(false);
+    m_uniform_amount = value;
+  }
+  else if((param=="smart_amount")||(param=="priority_amt")) {
+    if(value < 0)
+      return(false);
+    m_smart_amount = value;
+  }
+  else if(param == "smart_percent") {
+    if(value < 0)
+      return(false);
+    m_smart_percent = value;
+  }
+  else
+    return(false);
+  
+  return(true);
+}
 
+//-------------------------------------------------------------
+// Procedure: setParam
 
+bool OF_Reflector::setParam(string param, bool value)
+{
+  param = tolower(stripBlankEnds(param));
+  
+  if(param == "strict_range") {
+    if(m_regressor)
+      m_regressor->setStrictRange(value);
+  }
+  else if(param == "auto_peak") {
+    m_auto_peak = value;
+  }
+  else
+    return(false);
+  
+  return(true);
+}
+
+//-------------------------------------------------------------
+// Procedure: create
+
+int OF_Reflector::create(int unif_amt, int smart_amt, 
+			 double smart_thresh)
+{
+  clearPDMap();
+  if(!m_aof)
+    return(0);
+  
+  if(unif_amt >= 0)
+    m_uniform_amount = unif_amt;
+  if(smart_amt >= 0)
+    m_smart_amount = smart_amt;
+  if(smart_thresh >= 0)
+    m_smart_thresh = smart_thresh;
+
+  // =============  Stage 1 - Uniform Pieces ======================
+  // Make the initial uniform function based on the specified piece.
+  // If no piece specified, base it on specified amount, default=1.
+  int qlevels = 0;
+  if((m_smart_amount > 0) || (m_smart_percent > 0))
+    qlevels = 8;
+  
+  PQueue pqueue(qlevels);
+  m_pqueue = pqueue;
+  
+  if(m_uniform_piece.null()) {
+    IvPDomain domain = m_aof->getDomain();
+    IvPBox unifbox   = genUnifBox(domain, m_uniform_amount);
+    m_pdmap = m_rt_uniform->create(&unifbox, 0, m_pqueue);
+  }
+  else
+    m_pdmap = m_rt_uniform->create(&m_uniform_piece, 0, m_pqueue);
+
+  if(!m_pdmap)  // This should never happen, but check anyway.
+    return(0);
+
+  // =============  Stage 2 - Directed Refinement ================
+
+  int i; 
+  int reg_size = m_refine_regions.size();
+  int pce_size = m_refine_pieces.size();
+  if(reg_size > pce_size)
+    reg_size = pce_size;
+  for(i=0; i<reg_size; i++) {
+    IvPBox region = m_refine_regions[i];
+    IvPBox resbox = m_refine_pieces[i];
+    PDMap *new_pdmap = m_rt_focus->create(m_pdmap, region, 
+					  resbox, m_pqueue);
+    if(new_pdmap != 0)
+      m_pdmap = new_pdmap;
+  }
+
+  if(!m_pdmap)  // This should never happen, but check anyway.
+    return(0);
+
+  // =============  Stage 3 - Smart Refinement ================
+
+  if(!m_pqueue.null()) {
+    if((m_smart_amount > 0) || (m_smart_percent > 0)) {
+      int  psize   = m_pdmap->size();
+      int  use_amt = m_smart_amount;
+      int  pct_amt = (psize * m_smart_percent) / 100;
+      if(pct_amt > m_smart_amount)
+	use_amt = pct_amt;    
+      PDMap *new_pdmap = m_rt_priority->create(m_pdmap, m_pqueue, use_amt, 
+					       m_smart_thresh);
+      if(new_pdmap != 0)
+	m_pdmap = new_pdmap;
+    }
+  }
+
+  if(m_pdmap)
+    return(m_pdmap->size());
+  else
+    return(0);
+}

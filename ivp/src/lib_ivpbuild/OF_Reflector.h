@@ -28,6 +28,7 @@
 #define OF_REFLECTOR_HEADER
 
 #include "AOF.h"
+#include "PQueue.h"
 
 class IvPFunction;
 class PDMap;
@@ -42,21 +43,19 @@ public:
   virtual ~OF_Reflector();
 
 public: 
-  int    createUniform(int amt, int qlev=0);
-  int    createUniform(const IvPBox*, const IvPBox*b=0, int qlev=0);
-
-  int    createPriority(int more_pcs, double thresh=0);
-  int    createFocusRefine(IvPBox, IvPBox);
-
   int    create(const std::string);
+  int    create(int unif_amt=-1, int smart_amt=-1, double thresh=-1);
 
   IvPFunction* extractOF(bool normalize=true);
  
+  bool   setParam(std::string);
   bool   setParam(std::string, std::string);
+  bool   setParam(std::string, bool);
+  bool   setParam(std::string, int);
   
  protected:
-  void initializePDMap();
-  void clearPDMap();
+  void   initializePDMap();
+  void   clearPDMap();
 
 protected:
   const AOF*   m_aof;
@@ -67,12 +66,15 @@ protected:
   RT_Uniform*  m_rt_uniform;
   RT_Focus*    m_rt_focus;
   RT_Priority* m_rt_priority;
-
+  PQueue       m_pqueue;
+  
   IvPBox       m_uniform_piece;
+  IvPBox       m_uniform_grid;
   int          m_uniform_amount;
   int          m_smart_amount;
   int          m_smart_percent;
-  bool         m_smart_peak;
+  double       m_smart_thresh;
+  bool         m_auto_peak;
 
   std::vector<IvPBox>  m_refine_regions;
   std::vector<IvPBox>  m_refine_pieces;

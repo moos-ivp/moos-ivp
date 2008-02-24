@@ -12,6 +12,7 @@
 #ifndef VIEWER_HEADER
 #define VIEWER_HEADER
 
+#include "IvPDomain.h"
 #include "AOF_Cache.h"
 #include "IvPFunction.h"
 #include "FColorMap.h"
@@ -66,6 +67,7 @@ private:
   bool       m_draw_aof;
   bool       m_draw_ipf;
   AOF_Cache  m_aof_cache;
+  IvPDomain  m_domain;
   FColorMap  m_cmap;
   bool       m_strict_rng;
   double     m_create_time;

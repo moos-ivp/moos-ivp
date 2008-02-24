@@ -25,7 +25,7 @@ BHV_SearchArtifact::BHV_SearchArtifact(IvPDomain gdomain) :
   IvPBehavior(gdomain)
 {
   this->setParam("descriptor", "(d)bhv_search_artifact_grid");
-  this->setParam("build_info", "uniform_box=course:6,speed:4");
+  this->setParam("build_info", "uniform_piece=course:6,speed:4");
   this->setParam("build_info", "uniform_grid=course:12,speed:8");
 
   m_domain = subDomain(m_domain, "course,speed");

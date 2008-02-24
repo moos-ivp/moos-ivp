@@ -43,7 +43,7 @@ BHV_AvoidCollisionTOL::BHV_AvoidCollisionTOL(IvPDomain gdomain) :
   IvPBehavior(gdomain)
 {
   this->setParam("descriptor", "(d)avoid_collision");
-  this->setParam("build_info", "uniform_box=course:3,speed:3,tol=3");
+  this->setParam("build_info", "uniform_piece=course:3,speed:3,tol=3");
   this->setParam("build_info", "uniform_grid=course:9,speed:6,tol=6");
   
   m_domain = subDomain(m_domain, "course,speed,tol");

@@ -31,16 +31,14 @@
 #include "PDMap.h"
 #include "PQueue.h"
 
-class AOF;
 class Regressor;
-
 class RT_Priority {
 public:
   RT_Priority(Regressor*);
   virtual ~RT_Priority() {};
 
 public: 
-  PDMap* create(PDMap*, PQueue*, int more_pcs, double thresh=0);
+  PDMap* create(PDMap*, PQueue&, int more_pcs, double thresh=0);
 
 protected:
   Regressor* m_regressor;

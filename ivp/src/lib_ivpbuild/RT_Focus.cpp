@@ -21,7 +21,6 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
-#include <assert.h>
 #include "RT_Focus.h"
 #include "BuildUtils.h"
 #include "Regressor.h"
@@ -47,9 +46,8 @@ RT_Focus::RT_Focus(Regressor *g_reg)
 //            the new PDmap. 
 
 
-PDMap* RT_Focus::create(PDMap *pdmap, 
-			const IvPBox& region, 
-			const IvPBox& unibox)
+PDMap* RT_Focus::create(PDMap *pdmap, const IvPBox& region, 
+			const IvPBox& unibox, PQueue& pqueue)
 {
   if(!pdmap || !m_regressor)
     return(0);
@@ -60,7 +58,7 @@ PDMap* RT_Focus::create(PDMap *pdmap,
   
   // First ensure that the dimensions all agree
   IvPDomain domain = pdmap->getDomain();
-  int dim_pdmap = domain.size();
+  int dim_pdmap  = domain.size();
   int dim_region = region.getDim();
   int dim_unibox = unibox.getDim();
 
@@ -92,20 +90,37 @@ PDMap* RT_Focus::create(PDMap *pdmap,
   vector<IvPBox*> int_boxes;
   vector<IvPBox*> new_boxes;
 
+  // The idx_map is an mapping from the index in the given PDMap to
+  // the index in the soon-to-be-created PDMap, only for those pieces 
+  // that do not intersect the region box. This mapping will be used
+  // to preserve the PQueue information. It assumes that these N boxes
+  // that do not intersect the region box will be at indices [0]-[n-1]
+  // in the new PDMap.
+  vector<int> idx_map;
+  idx_map.resize(pdmap_size);
+
   for(i=0; i<pdmap_size; i++) {
-#if 1
-    IvPBox *newbox = pdmap->getBox(i)->copy();
-#endif
-#if 0
+
+    // Older version did this - unnecessary work
+    // IvPBox *newbox = pdmap->getBox(i)->copy();
+    
     IvPBox *newbox = pdmap->bx(i);
     pdmap->bx(i) = 0;
-#endif
-    if(region.intersect(newbox))
+    if(region.intersect(newbox)) {
       int_boxes.push_back(newbox);
-    else
+      idx_map[i] = -1;
+    }
+    else {
       non_boxes.push_back(newbox);
+      idx_map[i] = non_boxes.size()-1;
+    }
   }
 
+  //---------------------------------
+  if(!pqueue.null())
+    updatePQueue(pqueue, idx_map);
+  //---------------------------------
+  
   // Next subtract the region box from all boxes that intersect it.  
   int vsize = int_boxes.size();
   for(i=0; i<vsize; i++) {
@@ -141,7 +156,13 @@ PDMap* RT_Focus::create(PDMap *pdmap,
     new_pdmap->bx(i) = non_boxes[i];
 
   for(i=0; i<new_count; i++) {
-    m_regressor->setWeight(new_boxes[i]);
+    if(!pqueue.null()) {
+      double delta = m_regressor->setWeight(new_boxes[i], true);
+      pqueue.insert(i+old_count, delta);
+    }
+    else
+      m_regressor->setWeight(new_boxes[i], false);
+    
     new_pdmap->bx(i+old_count) = new_boxes[i];
   }
   
@@ -149,15 +170,52 @@ PDMap* RT_Focus::create(PDMap *pdmap,
   return(new_pdmap);
 }
 
+//-------------------------------------------------------------
+// Procedure: updatePQueue
+//   Purpose: Modify the Priority Queue to contain only boxes that
+//            do not intersect the given region. 
+// Algorithm: Create a new priority queue to replace existing one.
+//            Pop each element of the existing queue, which is an 
+//             index in the given PDMap. Get the IvPBox related to
+//             that index, see if it intersects the region. If not,
+//             add the queue key and keyval to the new PQueue. 
+//            When done, simply delete the old queue, and replace 
+//             with the new queue.
 
 
+void RT_Focus::updatePQueue(PQueue& pqueue, const vector<int>& idx_map)
+{
+  // If there is no priority queue being used - just return.
+  if(pqueue.null())
+    return;
 
+  // Get the important constructor info of the existing queue
+  int  levels   = pqueue.getLevels();
+  bool sort_max = pqueue.isSortByMax();
+  
+  // Make an empty queue of the same size as the existing one
+  // For filling in with the boxes not intesecting the region box.
+  PQueue new_pqueue(levels, sort_max);
+  
+  int  msize = idx_map.size();  
 
-
-
-
-
-
-
-
-
+  // Get the top key and keyval of the current queue. Always have
+  // to get the keyval first because by popping the top key, access
+  // to the top keyval is lost.
+  double q_keyval = pqueue.returnBestVal();
+  int    q_key    = pqueue.removeBest();
+  
+  // When the queue is eventually empty, it will return -1
+  while(q_key != -1) {
+    if((q_key > 0) && (q_key < msize)) {
+      int new_key = idx_map[q_key];
+      if(new_key != -1)
+	new_pqueue.insert(new_key, q_keyval);
+    }
+    q_keyval = pqueue.returnBestVal();
+    q_key    = pqueue.removeBest();   
+  }
+  
+  pqueue = new_pqueue;
+}
+  

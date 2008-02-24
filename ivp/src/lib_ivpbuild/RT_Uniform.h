@@ -31,33 +31,18 @@
 #include "PDMap.h"
 #include "PQueue.h"
 
-class AOF;
 class Regressor;
 
 class RT_Uniform {
 public:
   RT_Uniform(Regressor*);
-  virtual ~RT_Uniform();
-
+  virtual ~RT_Uniform() {};
+  
 public: 
-  PDMap*  create(const IvPBox*u, const IvPBox*, int qlevels=0);
-  PQueue* getPQueue() {return(m_pqueue);};
-
-protected:
+  PDMap*  create(const IvPBox*u, const IvPBox*, PQueue&);
+  
+ protected:
   Regressor* m_regressor;
-  PQueue*    m_pqueue;
 };
 
 #endif
-
-
-
-
-
-
-
-
-
-
-
-

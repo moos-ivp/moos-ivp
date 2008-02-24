@@ -44,9 +44,9 @@ using namespace std;
 BHV_AvoidCollision::BHV_AvoidCollision(IvPDomain gdomain) : 
   IvPBehavior(gdomain)
 {
-  this->setParam("descriptor", "(d)avoid_collision");
-  this->setParam("build_info", "uniform_box=course:3,speed:3");
-  this->setParam("build_info", "uniform_grid=course:9,speed:6");
+  this->setParam("descriptor", "avoid_collision");
+  this->setParam("build_info", "uniform_piece = discrete @ course:3,speed:3");
+  this->setParam("build_info", "uniform_grid  = discrete @ course:9,speed:6");
   
   m_domain = subDomain(m_domain, "course,speed");
 
@@ -208,6 +208,8 @@ IvPFunction *BHV_AvoidCollision::onRunState()
   }
 
   OF_Reflector reflector(&aof, 1);
+  
+
   reflector.create(m_build_info);
   IvPFunction *ipf = reflector.extractOF();
 

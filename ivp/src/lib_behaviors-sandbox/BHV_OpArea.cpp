@@ -40,7 +40,7 @@ BHV_OpArea::BHV_OpArea(IvPDomain gdomain) :
   IvPBehavior(gdomain)
 {
   this->setParam("descriptor", "(d)bhv_op_area");
-  this->setParam("build_info", "uniform_box=course:2,speed:3,tol=3");
+  this->setParam("build_info", "uniform_piece=course:2,speed:3,tol=3");
   this->setParam("build_info", "uniform_grid=course:8,speed:6,tol=6");
 
   m_domain = subDomain(m_domain, "course,speed,tol");

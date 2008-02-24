@@ -136,7 +136,7 @@ void IvPDomain::clear()
 //-------------------------------------------------------------
 // Procedure: print()
 
-void IvPDomain::print()
+void IvPDomain::print() const
 {
   int dcount = size();
   cout << "Domain Size: " << dcount << endl;

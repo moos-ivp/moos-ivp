@@ -97,7 +97,8 @@ PDMap::~PDMap()
 {
   if(m_boxes) {
     for(int i=0; (i < m_boxCount); i++)
-      delete(m_boxes[i]);
+      if(m_boxes[i])
+	delete(m_boxes[i]);
     delete [] m_boxes;
   }
 

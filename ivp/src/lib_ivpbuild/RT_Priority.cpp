@@ -43,17 +43,17 @@ RT_Priority::RT_Priority(Regressor *g_reg)
 //            regression fit during the phase when uniform pieces
 //            were constructed.
 
-PDMap* RT_Priority::create(PDMap *pdmap, PQueue* pqueue, 
+PDMap* RT_Priority::create(PDMap *pdmap, PQueue& pqueue, 
 			   int amt, double thresh)
 {
-  if(!pdmap || !pqueue || (amt < 1))
+  if(!pdmap || pqueue.null() || (amt < 1))
     return(pdmap);
 
   pdmap->growBoxArray(amt);
   int dim = pdmap->getDim();
 
-  double worst_err = pqueue->returnBestVal();
-  int    worst_box = pqueue->removeBest();
+  double worst_err = pqueue.returnBestVal();
+  int    worst_box = pqueue.removeBest();
   while((amt > 0) && (worst_box != -1) && (worst_err > thresh)) {
 
     IvPBox *cut_box = pdmap->bx(worst_box);
@@ -81,14 +81,13 @@ PDMap* RT_Priority::create(PDMap *pdmap, PQueue* pqueue,
       
       // Now update the PQueue if appropriate
       if(!cut_box->isPtBox())
-	pqueue->insert(worst_box, err1);
+	pqueue.insert(worst_box, err1);
       if(!new_box->isPtBox())
-	pqueue->insert(newix, err2);
+	pqueue.insert(newix, err2);
       amt--;
     }
-    
-    worst_err = pqueue->returnBestVal();
-    worst_box = pqueue->removeBest();
+    worst_err = pqueue.returnBestVal();
+    worst_box = pqueue.removeBest();
   }
 
   pdmap->updateGrid();

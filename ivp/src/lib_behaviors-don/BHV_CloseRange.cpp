@@ -27,7 +27,7 @@ BHV_CloseRange::BHV_CloseRange(IvPDomain gdomain) :
   IvPBehavior(gdomain)
 {
   this->setParam("descriptor", "(d)bhv_CloseRange");
-  this->setParam("build_info", "uniform_box=course:3,speed:2,tol:2");
+  this->setParam("build_info", "uniform_piece=course:3,speed:2,tol:2");
   this->setParam("build_info", "uniform_grid=course:9,speed:6,tol:6");
 
   m_domain = subDomain(m_domain, "course,speed,tol");

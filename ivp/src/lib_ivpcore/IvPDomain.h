@@ -56,7 +56,7 @@ public:
   bool   addDomain(const IvPDomain&, const std::string&);
   bool   hasDomain(const std::string&) const;
   void   clear();
-  void   print();
+  void   print() const;
 
   int    getIndex(const std::string&) const;
   int    size() const                 {return(m_dname.size());};

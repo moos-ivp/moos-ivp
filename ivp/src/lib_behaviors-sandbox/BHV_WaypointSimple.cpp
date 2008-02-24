@@ -46,7 +46,7 @@ BHV_WaypointSimple::BHV_WaypointSimple(IvPDomain gdomain) :
   IvPBehavior(gdomain)
 {
   this->setParam("name", "(d)bhv_waypoint_simple");
-  this->setParam("build_info", "uniform_box=course:3,speed:3");
+  this->setParam("build_info", "uniform_piece=course:3,speed:3");
   this->setParam("build_info", "uniform_grid=course:9,speed:6");
   m_domain = subDomain(m_domain, "course,speed");
 

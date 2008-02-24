@@ -28,9 +28,14 @@
 class PQueue { 
 public:
   PQueue(int levels=0, bool max=true);  
-  ~PQueue();
+  ~PQueue() {};
 
   void    insert(int key, double keyval);
+
+  int     getLevels()    {return(m_levels);};
+  bool    isSortByMax()  {return(m_sort_by_max);};
+  bool    null()         {return(m_levels == 0);};
+
   int     removeBest();
   double  returnBestVal();
 
@@ -49,16 +54,15 @@ protected:
   bool heapify(int ix);
 
 protected:
-  int*     m_key;
-  double*  m_keyval;
+  std::vector<int>    m_key;
+  std::vector<double> m_keyval;
 
+  int      m_levels;
   int      m_end_ix;       // index of last active element
   bool     m_sort_by_max;  // true if max val is top priority
   int      m_size;         // size of the array
   int      m_num_leaves;   // number of leaves in full tree;
   int      m_num_inodes;   // number non-leaves in full tree;
-
-  int      m_max_levels;
 };
 #endif
 

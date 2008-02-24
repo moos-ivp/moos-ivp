@@ -38,7 +38,7 @@ using namespace std;
 BHV_TOL::BHV_TOL(IvPDomain gdomain) : IvPBehavior(gdomain)
 {
   this->setParam("descriptor", "(d)bhv_tol");
-  this->setParam("build_info", "uniform_box=tol:2");
+  this->setParam("build_info", "uniform_piece=tol:2");
   this->setParam("build_info", "uniform_grid=tol:4");
 
   m_domain = subDomain(m_domain, "tol");

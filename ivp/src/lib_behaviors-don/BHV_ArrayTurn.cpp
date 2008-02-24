@@ -23,7 +23,7 @@ BHV_ArrayTurn::BHV_ArrayTurn(IvPDomain gdomain) :
 {
 
   this->setParam("descriptor", "(d)bhv_ArrayTurn");
-  this->setParam("build_info", "uniform_box=course:3");
+  this->setParam("build_info", "uniform_piece=course:3");
   this->setParam("build_info", "uniform_grid=course:9");
 
   m_domain = subDomain(m_domain, "course");

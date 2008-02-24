@@ -138,8 +138,7 @@ IvPFunction *BHV_SimpleWaypoint::onRunState()
     
     if(ok) {
       OF_Reflector reflector(&aof);
-      reflector.createUniform(1000, 8);
-      reflector.createPriority(1000);
+      reflector.create(400, 500);
       ipf = reflector.extractOF();
     }
   }    

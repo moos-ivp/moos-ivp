@@ -23,6 +23,8 @@
 #include <iostream>
 #include "PQueue.h"
 
+#define  MAX_PQUEUE_LEVELS 10
+
 using namespace std;
 
 //--------------------------------------------------------------
@@ -39,14 +41,15 @@ using namespace std;
 
 PQueue::PQueue(int levels, bool g_sortbymax)
 {
-  if(levels < 0)
-    levels = 0;
+  m_levels = levels;
 
-  m_max_levels = 10;
-  if(levels > 10) 
-    levels = m_max_levels;
-
+  if(m_levels < 0)
+    m_levels = 0;
+  else if(levels > MAX_PQUEUE_LEVELS) 
+    m_levels = MAX_PQUEUE_LEVELS;
+  
   m_size = 1;
+
   for(int j=0; j<(levels-1); j++)
     m_size *= 2;
 
@@ -55,23 +58,14 @@ PQueue::PQueue(int levels, bool g_sortbymax)
 
   m_sort_by_max = g_sortbymax;
   m_end_ix      = 0;
-
-  m_key    = new int [m_size];
-  m_keyval = new double [m_size];
+  
+  m_key.resize(m_size);
+  m_keyval.resize(m_size);
 
   for(int i=0; i<m_size; i++) {
     m_key[i]    = -1;
     m_keyval[i] = 0.0;
   }
-}
-
-//--------------------------------------------------------------
-// Destructor:
-
-PQueue::~PQueue()
-{
-  delete [] m_key;
-  delete [] m_keyval;
 }
 
 //--------------------------------------------------------------
@@ -86,6 +80,9 @@ PQueue::~PQueue()
 
 void PQueue::insert(int new_key, double new_keyval)
 {
+  if(m_levels <= 0)
+    return;
+
   int new_ix;
 
   // Untested as of 7/4/07
@@ -148,8 +145,9 @@ void PQueue::insert(int new_key, double new_keyval)
 
 int PQueue::removeBest()
 {
-  if(m_end_ix < 0) return(-1);   // Heap underflow
-
+  if((m_levels <= 0) || (m_end_ix < 0))
+    return(-1);   // Heap underflow
+  
   int retix = m_key[0];
   m_key[0] = m_key[m_end_ix];
   m_keyval[0] = m_keyval[m_end_ix];
@@ -169,6 +167,9 @@ int PQueue::removeBest()
 
 double PQueue::returnBestVal()
 {
+  if((m_levels <= 0) || (m_end_ix < 0))
+    return(0);   // Heap underflow
+  
   if(m_sort_by_max)
     return(m_keyval[0]);
   else
@@ -233,6 +234,10 @@ bool PQueue::heapify(int gIX)
 
 void PQueue::print()
 {
+  if((m_levels <= 0) || (m_end_ix < 0)) {
+    cout << "Empty/Null Priority Queue." << endl;
+    return;
+  }
   while(m_key[0] != -1) {
     cout << "[" << m_key[0] << "] ";
     cout << "[" << m_keyval[0] << "] " << endl;
@@ -240,12 +245,15 @@ void PQueue::print()
   }
 }
 
-
 //--------------------------------------------------------------
 // Procedure: printLiteral
 
 void PQueue::printLiteral()
 {
+  if((m_levels <= 0) || (m_end_ix < 0)) {
+    cout << "Empty/Null Priority Queue." << endl;
+    return;
+  }
   for(int i=0; i<=m_end_ix; i++) {
     cout << "[" << m_key[i] << "] ";
     cout << "[" << m_keyval[i] << "] " << endl;

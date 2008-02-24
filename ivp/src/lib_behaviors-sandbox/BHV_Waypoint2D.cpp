@@ -38,7 +38,7 @@ using namespace std;
 BHV_Waypoint2D::BHV_Waypoint2D(IvPDomain gdomain) : IvPBehavior(gdomain)
 {
   this->setParam("descriptor", "(d)bhv_waypoint2D");
-  this->setParam("build_info", "uniform_box=course:3,speed:3");
+  this->setParam("build_info", "uniform_piece=course:3,speed:3");
   this->setParam("build_info", "uniform_grid=course:6,speed:4");
 
   m_domain = subDomain(m_domain, "course,speed");

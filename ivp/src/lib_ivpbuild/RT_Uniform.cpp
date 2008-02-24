@@ -34,16 +34,6 @@ using namespace std;
 RT_Uniform::RT_Uniform(Regressor *g_reg) 
 {
   m_regressor = g_reg;
-  m_pqueue    = 0;
-}
-
-//-------------------------------------------------------------
-// Procedure: Constructor
-
-RT_Uniform::~RT_Uniform() 
-{
-  if(m_pqueue)
-    delete(m_pqueue);
 }
 
 //-------------------------------------------------------------
@@ -52,29 +42,20 @@ RT_Uniform::~RT_Uniform()
 //            Each uniform piece will have the same size as the
 //            given box.
 
-PDMap* RT_Uniform::create(const IvPBox* unifbox, 
-			  const IvPBox* gelbox, 
-			  int qlevels)
+PDMap* RT_Uniform::create(const IvPBox* unifbox, const IvPBox* gelbox, 
+			  PQueue& pqueue)
 {
   if(!unifbox)
     return(0);
 
-  if(m_pqueue)
-    delete(m_pqueue);
-  if(qlevels > 0)
-    m_pqueue = new PQueue(qlevels);
-  else
-    m_pqueue = 0;
+  bool use_pqueue = true;
+  if(pqueue.null())
+    use_pqueue = false;
   
-  if(m_pqueue)
-    cout << "Making uniform IPF with Priority Queue" << endl;
-  else
-    cout << "Making uniform IPF withOUT Priority Queue" << endl;
-
   // If a using a Priority Queue, we'll use the return values in 
   // the setWeight() calls. Return value is the noted error at 
   // sampled points w.r.t. the interior function chosen. We store 
-  // the box,error pair in the priority queue, which can be used
+  // box-index,error pair in the priority queue, which can be used
   // by other ReflectorTools for refining boxes with high error.
 
   IvPDomain domain = m_regressor->getAOF()->getDomain();
@@ -103,12 +84,12 @@ PDMap* RT_Uniform::create(const IvPBox* unifbox,
     pdmap->setGelBox(*gelbox);
   else
     pdmap->setGelBox(*unifbox);
-
+  
   int unifCount = pdmap->size();
   for(int i=0; i<unifCount; i++) {
-    if(m_pqueue) {
+    if(use_pqueue) {
       double delta = m_regressor->setWeight(pdmap->bx(i), true);
-      m_pqueue->insert(i, delta);
+      pqueue.insert(i, delta);
     }
     else
       m_regressor->setWeight(pdmap->bx(i), false);

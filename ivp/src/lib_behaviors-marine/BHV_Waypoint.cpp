@@ -162,8 +162,8 @@ IvPFunction *BHV_Waypoint::onRunState()
     return(0);
   }
   
-  //IvPFunction *ipf = buildOF("zaic");
-  IvPFunction *ipf = buildOF("aof-rc");
+  IvPFunction *ipf = buildOF("zaic");
+  //IvPFunction *ipf = buildOF("aof-rc");
   if(ipf)
     ipf->setPWT(m_priority_wt);
 
@@ -286,8 +286,7 @@ IvPFunction *BHV_Waypoint::buildOF(string method)
     
     if(ok) {
       OF_Reflector reflector(&aof_wpt);
-      reflector.createUniform(1000, 8);
-      reflector.createPriority(1000);
+      reflector.create(600, 500);
       ipf = reflector.extractOF();
     }
   }    

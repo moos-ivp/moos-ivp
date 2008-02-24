@@ -905,8 +905,14 @@ IvPBox stringFloatToRegionBox(const string& given_str,
 	      else
 		dvar_val_high[i] = hval;
 	    }
+	    else 
+	      cout << "Bad 77" << endl;
 	  }
+	  else 
+	    cout << "Bad 88" << endl;
 	}
+	else
+	  cout << "badd 66" << endl;
       }  
     }
   }

@@ -117,9 +117,9 @@ void Viewer::setAOF(AOF *aof)
   if(!aof)
     return;
 
-  IvPDomain domain = aof->getDomain();
+  m_domain = aof->getDomain();
 
-  if(domain.size() != 2)
+  if(m_domain.size() != 2)
     return;
 
   if(m_unif_ipf) {
@@ -131,8 +131,8 @@ void Viewer::setAOF(AOF *aof)
   m_aof_cache.setAOF(aof);
   m_rater.setAOF(aof);
   
-  int dim_0_size = domain.getVarPoints(0);
-  int dim_1_size = domain.getVarPoints(0);
+  int dim_0_size = m_domain.getVarPoints(0);
+  int dim_1_size = m_domain.getVarPoints(0);
 
   m_focus_box_x    = dim_0_size / 2;
   m_focus_box_y    = dim_1_size / 2;
@@ -181,82 +181,6 @@ void Viewer::makeUniformIPFxN(int iterations)
   m_create_time = create_timer.get_float_cpu_time();
 }  
 
-
-#if 0
-//-------------------------------------------------------------
-// Procedure: makeUniformIPF
-
-void Viewer::makeUniformIPF(int usize)
-{
-  AOF *aof = m_aof_cache.getAOF();
-  if(!aof)
-    return;
-
-  IvPDomain domain = aof->getDomain();
-  string var_0 = domain.getVarName(0);
-  string var_1 = domain.getVarName(1);
-  
-
-  if(usize <= 0)
-    usize = m_unifsize;
-  else
-    m_unifsize = usize;
-
-  OF_Reflector reflector(aof, 1);
-  if(m_strict_rng)
-    reflector.setParam("strict_range", "true");
-  else
-    reflector.setParam("strict_range", "false");
-  
-  string box_str;
-  box_str += var_0 + ":" + intToString(usize) + ",";
-  box_str += var_1 + ":" + intToString(usize);
-
-  cout << "log -128: " << log2(-128) << endl;
-  cout << "log 0:    " << log2(0) << endl;
-  cout << "log 1:    " << log2(1) << endl;
-  cout << "log 1.5:  " << log2(1.5) << endl;
-  cout << "log 128:  " << log2(128) << endl;
-  cout << "log 512:  " << log2(512) << endl;
-  cout << "log 1000: " << log2(1000) << endl;
-
-  reflector.create("uniform_box="+box_str);
-  //reflector.create("priority_amt=500");
-  //reflector.create("uniform_amt=567");
-
-  // Uniform Augmentation -------------------------------
-
-  string focus_str;
-  focus_str += var_0 + ":" + intToString(usize) + ",";
-  focus_str += var_1 + ":" + intToString(usize);
-  
-
-  //  if(m_focus_box) {
-  //    IvPBox region = unifbox;
-  //    IvPBox resbox = unifbox;
-  //    region.setPTS(0,100,300);
-  //    region.setPTS(1,100,300);
-  //    resbox.setPTS(0,0,m_focus_unif_len);
-  //    resbox.setPTS(1,0,m_focus_unif_len);
-  //    reflector.createFocusRefine(region, resbox);
-  //  }
-
-  if(m_priority) {
-    reflector.createPriority(m_priority_cnt, 0.001);
-  }
-  if(m_unif_ipf)
-    delete(m_unif_ipf);
-
-  // false means do not normalize as part of extractOF()
-  m_unif_ipf = reflector.extractOF(false);
-
-  if(m_unif_ipf && m_unif_ipf->getPDMap())
-    m_rater.setPDMap(m_unif_ipf->getPDMap());
-}
-#endif
-
-
-#if 1
 //-------------------------------------------------------------
 // Procedure: makeUniformIPF
 
@@ -271,41 +195,55 @@ void Viewer::makeUniformIPF(int usize)
   else
     m_unifsize = usize;
 
-  IvPBox unifbox(2,1);
-  unifbox.setPTS(0, usize, usize);
-  unifbox.setPTS(1, usize, usize);
   OF_Reflector reflector(aof, 1);
 
-  if(m_strict_rng)
-    reflector.setParam("strict_range", "true");
-  else
-    reflector.setParam("strict_range", "false");
-  
-  reflector.createUniform(&unifbox, &unifbox, 12);
+  bool ok = true;
+  string dim0_name = m_domain.getVarName(0);
+  string dim1_name = m_domain.getVarName(1);
 
-  // Uniform Augmentation -------------------------------
+  // Example String: "discrete @ x:40,y:20"
+
+  string unif_str = "discrete @ ";
+  unif_str += dim0_name + ":" + intToString(usize) + ",";
+  unif_str += dim1_name + ":" + intToString(usize);
+
+  ok = ok && reflector.setParam("uniform_piece", unif_str);
+
+  if(m_strict_rng)
+    ok = ok && reflector.setParam("strict_range", "true");
+  else
+    ok = ok && reflector.setParam("strict_range", "false");
+  
   if(m_focus_box) {
-    IvPBox region = unifbox;
-    IvPBox resbox = unifbox;
-    region.setPTS(0,100,300);
-    region.setPTS(1,100,300);
-    resbox.setPTS(0,0,m_focus_unif_len);
-    resbox.setPTS(1,0,m_focus_unif_len);
-    reflector.createFocusRefine(region, resbox);
-
-
-    IvPBox region2 = unifbox;
-    region2.setPTS(0,285,410);
-    region2.setPTS(1,0,110);
-    reflector.createFocusRefine(region2, resbox);
+    string foc_region1 = "";
+    foc_region1 += dim0_name + ":" + "100:300" + ",";
+    foc_region1 += dim1_name + ":" + "100:300";
+    
+    string res_box = "discrete @";
+    res_box += dim0_name + ":" + intToString(m_focus_unif_len) + ",";
+    res_box += dim1_name + ":" + intToString(m_focus_unif_len);
+    
+    string foc_region2 = "";
+    foc_region2 += dim0_name + ":" + "285:410" + ",";
+    foc_region2 += dim1_name + ":" + "0:110";
+    
+    ok = ok && reflector.setParam("refine_region", foc_region1);
+    ok = ok && reflector.setParam("refine_piece", res_box);
+    ok = ok && reflector.setParam("refine_region", foc_region2);
+    ok = ok && reflector.setParam("refine_piece", res_box);    
   }
   
-  if(m_priority) {
-    reflector.createPriority(m_priority_cnt, 0.001);
-  }
+  string pstr = intToString(m_priority_cnt);
+  ok = ok && reflector.setParam("smart_amount", pstr);
+  
+  //while(1) {
+  //  reflector.create();
+  //  m_unif_ipf = reflector.extractOF(false);
+  //  delete(m_unif_ipf);
+  // }
+
   if(m_unif_ipf)
     delete(m_unif_ipf);
-
   // false means do not normalize as part of extractOF()
   m_unif_ipf = reflector.extractOF(false);
 
@@ -313,7 +251,6 @@ void Viewer::makeUniformIPF(int usize)
     m_rater.setPDMap(m_unif_ipf->getPDMap());
 
 }
-#endif
 
 //-------------------------------------------------------------
 // Procedure: modColorMap

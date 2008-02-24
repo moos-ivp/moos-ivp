@@ -22,7 +22,7 @@ BHV_ArrayAngle::BHV_ArrayAngle(IvPDomain gdomain) :
   IvPBehavior(gdomain)
 {
   this->setParam("descriptor", "(d)bhv_1BTrack");
-  this->setParam("build_info", "uniform_box=course:3,speed:2");
+  this->setParam("build_info", "uniform_piece=course:3,speed:2");
   this->setParam("build_info", "uniform_grid=course:9,speed:6");
 
   m_domain = subDomain(m_domain, "course,speed");

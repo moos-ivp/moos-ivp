@@ -28,7 +28,9 @@
 #ifndef RT_FOCUS_HEADER
 #define RT_FOCUS_HEADER
 
+#include <vector>
 #include "PDMap.h"
+#include "PQueue.h"
 
 class Regressor;
 
@@ -38,22 +40,14 @@ public:
   virtual ~RT_Focus() {};
 
 public: 
-  PDMap* create(PDMap*, const IvPBox&, const IvPBox&);
+  PDMap* create(PDMap*, const IvPBox&, const IvPBox&, PQueue&);
+
+ protected:
+  void   updatePQueue(PQueue&, const std::vector<int>& idx_map);
 
 protected:
   Regressor* m_regressor;
 };
 
 #endif
-
-
-
-
-
-
-
-
-
-
-
 

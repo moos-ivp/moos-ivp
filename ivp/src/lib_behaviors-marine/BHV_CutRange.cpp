@@ -41,7 +41,7 @@ BHV_CutRange::BHV_CutRange(IvPDomain gdomain) :
   IvPBehavior(gdomain)
 {
   this->setParam("descriptor", "(d)bhv_cutrange");
-  this->setParam("build_info", "uniform_box=course:2,speed:3");
+  this->setParam("build_info", "uniform_piece=course:2,speed:3");
   this->setParam("build_info", "uniform_grid=course:8,speed:6");
   
   m_domain = subDomain(m_domain, "course,speed");
