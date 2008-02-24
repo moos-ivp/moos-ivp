@@ -76,7 +76,8 @@ int testEncodeMK(int argc, char*argv[])
     unifbox.setPTS(i,0,200);
   reflector.createUniform(&unifbox, &unifbox, 7);
 #endif
-  reflector.createUniform(pcs, 7);
+
+  reflector.create(pcs);
   IvPFunction *ipf = reflector.extractOF();
 
   if(!ipf) {
