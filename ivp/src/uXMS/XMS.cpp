@@ -25,9 +25,8 @@
 #include "MBUtils.h"
 
 #define BACKSPACE_ASCII 127
-
 // number of seconds before checking for new moos vars (in all mode)
-#define ALL_BLACKOUT    2
+#define ALL_BLACKOUT 2 
 
 using namespace std;
 
@@ -50,9 +49,7 @@ XMS::XMS()
     m_display_virgins   = true;
     m_display_empty_strings = true;
     m_db_uptime         = 0;
-
     
-    m_filter_writing = false;
     m_filter = "";
 
     m_display_all = false;
@@ -167,9 +164,7 @@ bool XMS::OnStartUp()
 
     // setup for display all
     if(m_display_all)
-    {
         refreshAllVarsList();
-    }
     else
         registerVariables();
 
@@ -181,38 +176,6 @@ bool XMS::OnStartUp()
 
 void XMS::handleCommand(char c)
 {
-    if(m_filter_writing && c != '?' && c != '/')
-    {
-
-        if(c == '\n')
-        {
-            m_filter_writing = false;
-            m_update_requested = true;
-            return;
-        }
-
-        // backspace
-        if(c == BACKSPACE_ASCII)
-        {
-            if (m_filter == "")
-            {
-                m_filter_writing = false;
-                m_update_requested = true;
-                return;
-            }
-            
-            m_filter = m_filter.substr(0, m_filter.length()-1);
-            printf("\n/%s", m_filter.c_str());
-            return;
-        }
-
-        printf("%c", c);
-        
-        m_filter += c;
-        return;        
-    }
-    
-        
     switch(c) {
         case 's':
             m_display_source = false;
@@ -274,15 +237,12 @@ void XMS::handleCommand(char c)
             
             // turn filtering on
         case '/':
-            if(m_filter_writing)
-            {
-                break;
-            }
             m_paused = true;
-            
+
             printf("%c", c);
-            m_filter_writing = true;
-            m_filter = "";
+            cin >> m_filter;
+
+            m_update_requested = true;
             break;
 
             // clear filtering
@@ -291,10 +251,13 @@ void XMS::handleCommand(char c)
             m_filter = "";
             break;
 
+            // turn show all variables mode on
         case 'A':
             m_display_all = true;
             m_update_requested = true;
 
+            // save the original startup variable configuration
+            // there may a more elegant way to do this
             orig_var_names = var_names;
             orig_var_vals = var_vals;
             orig_var_type = var_type;
@@ -304,12 +267,14 @@ void XMS::handleCommand(char c)
             
             break;
 
+            // turn show all variables mode off
         case 'a':
             if (m_display_all)
             {
                 m_display_all = false;
                 m_update_requested = true;
-                
+
+                // restore the variable list at startup
                 var_names = orig_var_names;
                 var_vals = orig_var_vals;
                 var_type = orig_var_type;
@@ -317,13 +282,13 @@ void XMS::handleCommand(char c)
                 var_time = orig_var_time;
                 var_community = orig_var_community;
             }
-            
-
-            
+                
         default:
             break;
-    } 
+    }
+        
 }
+    
 
 //------------------------------------------------------------
 // Procedure: addVariables
@@ -353,7 +318,7 @@ bool XMS::addVariable(string varname)
     if(strContains(varname, "uXMS"))
         return false;
 
-    // Simply return if the variable has already been added.
+    // Simply return false if the variable has already been added.
     int vsize = var_names.size();
     for(int i=0; i<vsize; i++)
         if(var_names[i] == varname)
@@ -365,6 +330,7 @@ bool XMS::addVariable(string varname)
     var_source.push_back(" n/a");
     var_time.push_back(" n/a");
     var_community.push_back(" n/a");
+    // added a new variable, return true
     return true;
     
 }
@@ -378,6 +344,8 @@ void XMS::registerVariables()
     int vsize = var_names.size();
     for(int i=0; i<vsize; i++) {
         m_Comms.Register(var_names[i], 0);
+
+        // tes - commented out to minimize startup text (for low bandwidth)
         // cout << "Registering for: [" << var_names[i] << "]" << endl;
     }
 
@@ -432,26 +400,26 @@ void XMS::printHelp()
     for(int j=0; j<2; j++)
         printf("\n");
 
-    printf("KeyStroke    Function                            \n");
-    printf("---------    ---------------------------         \n");
-    printf("    s        Surpress Source of variables        \n");
-    printf("    S        Display Source of variables         \n");
-    printf("    t        Surpress Time of variables          \n");
-    printf("    T        Display Time of variables           \n");
-    printf("    c        Surpress Community of variables     \n");
-    printf("    C        Display Community of variables      \n");
-    printf("    v        Surpress virgin variables           \n");
-    printf("    V        Display virgin variables            \n");
-    printf("    e        Surpress empty strings              \n");
-    printf("    E        Display empty strings               \n");
-    printf("    /        Begin entering a filter string      \n");
-    printf("    ?        Clear current filter                \n");    
-    printf("    a        Revert to variables shown at startup\n");
+    printf("KeyStroke    Function                             \n");
+    printf("---------    ---------------------------          \n");
+    printf("    s        Surpress Source of variables         \n");
+    printf("    S        Display Source of variables          \n");
+    printf("    t        Surpress Time of variables           \n");
+    printf("    T        Display Time of variables            \n");
+    printf("    c        Surpress Community of variables      \n");
+    printf("    C        Display Community of variables       \n");
+    printf("    v        Surpress virgin variables            \n");
+    printf("    V        Display virgin variables             \n");
+    printf("    e        Surpress empty strings               \n");
+    printf("    E        Display empty strings                \n");
+    printf("    /        Begin entering a filter string       \n");
+    printf("    ?        Clear current filter                 \n");    
+    printf("    a        Revert to variables shown at startup \n");
     printf("    A        Display all variables in the database\n");
-    printf("   u/U       Update information once - now       \n");
-    printf("   p/P       Pause information refresh           \n");
-    printf("   r/R       resume information refresh          \n");
-    printf("   h/H       Show this Help msg - 'R' to resume  \n");
+    printf("   u/U       Update information once - now        \n");
+    printf("   p/P       Pause information refresh            \n");
+    printf("   r/R       resume information refresh           \n");
+    printf("   h/H       Show this Help msg - 'R' to resume   \n");
 
     m_paused = true;
     m_display_help = false;
@@ -510,6 +478,7 @@ void XMS::printReport()
         if(((m_display_virgins) || (var_vals[i] != "n/a")) &&
            ((m_display_empty_strings) || (var_vals[i] != "")) &&
            MOOSStrCmp(m_filter, var_names[i].substr(0, m_filter.length()))) {
+
             printf("  %-22s ", var_names[i].c_str());
 	    
             if(m_display_source)
@@ -540,6 +509,7 @@ void XMS::printReport()
         }
     }
 
+    // provide information for current filter(s)
     bool newline = false;
     if(m_filter != "")
     {
@@ -600,32 +570,40 @@ void XMS::updateVariable(CMOOSMsg &msg)
     }
 }
 
+//------------------------------------------------------------
+// Procedure: updateVariable
 // tes 2.23.08
-// finds all variables in the MOOS database and adds the ones we do not yet know about
+//
+// finds all variables in the MOOS database and adds the ones
+// we do not yet know about
+// the mechanism and code for fetching all moos vars is
+// closely related to that used for wildcard logging in pLogger
 void XMS::refreshAllVarsList()
 {
     MOOSMSG_LIST mail;
     if(m_Comms.ServerRequest("VAR_SUMMARY",mail))
     {
         string ss(mail.begin()->GetString());
-            while(!ss.empty())
+        while(!ss.empty())
+        {
+            string sVar = MOOSChomp(ss);
+                
+            bool discard = false;
+
+            // we assert here that we do not want _STATUS variables
+            // displayed as part of all
+            // perhaps we should make this a configuration option
+            if (sVar.length() > 7)
             {
-                string sVar = MOOSChomp(ss);
-                
-                bool discard = false;
-                if (sVar.length() > 7)
-                {
-                    // we assert that we do not want _STATUS variables
-                    // displayed as part of all
-                    if (MOOSStrCmp(sVar.substr(sVar.length()-7, 7), "_STATUS"))
-                        discard = true;
-                }
-                
-                if (!discard)
-                {
-                    if (addVariable(sVar))
-                        m_Comms.Register(sVar, 0);
-                }   
+                if (MOOSStrCmp(sVar.substr(sVar.length()-7, 7), "_STATUS"))
+                    discard = true;
             }
+                
+            if (!discard)
+            {
+                if (addVariable(sVar))
+                    m_Comms.Register(sVar, 0);
+            }   
+        }
     }
 }

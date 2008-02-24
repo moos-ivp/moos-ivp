@@ -97,12 +97,10 @@ class XMS : public CMOOSApp
     bool   m_ignore_vars;
     double m_db_uptime;
   
-    bool   m_filter_writing;
     std::string m_filter;
 
     bool   m_display_all;
-    double m_last_all_refresh;
-    
+    double m_last_all_refresh;    
 };
 
 
