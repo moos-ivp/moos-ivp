@@ -1,3 +1,0 @@
-SET(BASICAPP_DIRS  iRemote MOOSTaskLib pHelm MOOSNavLib pNav )
-
-SUBDIRS(${BASICAPP_DIRS})
