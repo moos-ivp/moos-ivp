@@ -1,0 +1,100 @@
+<HTML>
+<HEAD>
+<TITLE>XYPattern Task</TITLE>
+</HEAD>
+<BODY>
+
+<H1><img src="moose6.gif"> <center>XYPattern Task</center></H1>
+
+<H2>Description</H2>
+This task directs a vehicle through a series of waypoints. The series can be repeated a specified
+number of times. Each waypoint is specified with a <b>LOCATION</b> tag as is the case for the WayPointTask.
+The waypoints are executed in order of specification.
+
+<H2>Publishes</H2>
+<ul>
+	<li>EndFlags
+	<li>EventFlags
+</ul>
+<p>
+
+
+<H2>Subscribes</H2>
+<ul>
+	<li><b>StartFlags</b>
+	<li><b>NAV_X</b>
+	<li><b>NAV_Y</b>
+	<li><b>NAV_YAW</b>
+</ul>
+<p>
+
+<H2>Configuration Block</H2>
+<ul>
+
+
+
+	<li><a href="CommonMOOSTask.html"> Common Task Parameters</a>
+	<p>
+
+	<li><H3>Thrust</H3>
+	<ul>
+		<li><b>Syntax:	</b> 	Thrust = Thrust[0-100]
+		<li><b>Meaning:	</b>	Set Thrust of pattern operation
+		<li><b>Example:	</b> <i>	Thrust = 10 </i> go at ten percent throttle.
+	</ul>
+	<p>
+
+
+
+	<li><H3>Location</H3>
+	<ul>
+		<li><b>Syntax:	</b> Location = X,Y,Z
+		<li><b>Meaning:	</b> Set location of waypoint to X,Y,Z
+		<li><b>Example:	</b> <i>Location = 15,-15,0</i> set one (of any number) way point goal at 15,-15,0
+	</ul>
+	<p>
+	
+	<li><H3>Radius</H3>
+	<ul>
+		<li><b>Syntax:	</b> 	Radius = distance
+		<li><b>Meaning:	</b> Set radius of waypoint tolerance sphere to Radius meters
+		<li><b>Example:	</b> <i>	Radius = 10 </i> Tolerance will be set to 10m
+	</ul>
+	<p>
+
+	<li><H3>Repeat</H3>
+	<ul>
+		<li><b>Syntax:	</b> 	Repeat = Number
+		<li><b>Meaning:	</b> set number of times to repeat waypoint pattern
+		<li><b>Example:	</b> <i>	Repeat = 10 </i> repeat 10 times
+	</ul>
+	<p>
+
+
+
+	
+</ul>
+
+<H2>Example Block</H2>
+<pre>
+Task = XYPattern
+{
+	Name = XY1
+	Priority = 3
+	InitialState = ON
+	TimeOut = 300
+	FinishFlag = EndMission
+	Thrust = 60
+	Location = 0,30,0
+	Location = 30,30,0
+	Location = 0,30,0
+	Radius = 8	
+	Repeat = 3
+}
+
+<pre>
+
+<hr>
+<H4>The MOOS &#169;  P. Newman 2001-2002 <img src="moose2.gif"></H4>
+</BODY>
+</HTML>

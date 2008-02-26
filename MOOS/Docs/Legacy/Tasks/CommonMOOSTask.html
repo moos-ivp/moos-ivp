@@ -1,0 +1,111 @@
+<HTML>
+<HEAD>
+<TITLE>Common MOOS Task Parameters</TITLE>
+</HEAD>
+<BODY>
+
+<H1><img src="moose6.gif"> <center>Common MOOS Task Parameters</center></H1>
+
+<H2>Description</H2>
+This page describes the parameters that are common to all MOOSTasks.
+
+<H2>Publishes</H2>
+<ul>
+	<li><b>EndFlags</b> When the task end condition is met these variables are written to in the server
+</ul>
+<p>
+
+
+<H2>Subscribes</H2>
+<ul>
+	<li><b>StartFlags</b> These variables (set in script) are watched. When written to by another MOOS suite component they
+							cause the task to go active (if it hasb't set its internal complete flag to true)
+
+</ul>
+<p>
+
+<H2>Configuration Block</H2>
+<ul>
+
+	
+
+	 
+	<li><H3>Name</H3>
+	<ul>
+		<li><b>Syntax:	</b> Name = TaskName
+		<li><b>Meaning:	</b> Sets the name of the task
+		<li><b>Example:	</b> <i>Name = WP1</i> this task is called "WP1"
+	</ul>
+	<p>
+	
+
+	<li><H3>InitialState</H3>
+	<ul>
+		<li><b>Syntax:	</b> InitialState = true/false
+		<li><b>Meaning:	</b> Sets the initial active state of teh task
+		<li><b>Example:	</b> <i>InitialState = false</i> at start up this task is of
+	</ul>
+	<p>
+	
+
+	<li><H3>Priority</H3>
+	<ul>
+		<li><b>Syntax:	</b> Priority = Priority [0-Infinity]
+		<li><b>Meaning:	</b> Sets the Priority of the task
+		<li><b>Example:	</b> <i>Priority = 3</i> task has Priority of 3
+	</ul>
+	<p>
+
+	<li><H3>TimeOut</H3>
+	<ul>
+		<li><b>Syntax:	</b> TimeOut = TimeOut/NEVER
+		<li><b>Meaning:	</b> Sets the Timeout of the task in seconds
+		<li><b>Example:	</b> <i>Priority = NEVER</i> task never timesout when active
+	</ul>
+	<p>
+
+	<li><H3>StartFlag</H3>
+	<ul>
+		<li><b>Syntax:	</b> StartFlag = Variable1,Variable2....
+		<li><b>Meaning:	</b> Sets the flags that are watched to cause teh task to go active
+		<li><b>Example:	</b> <i>StartFlag = = WP3Done,EndMission</i> Task goes active when either
+						"WP3Done" or "EndMission" are written to
+	</ul>
+	<p>
+
+
+	<li><H3>EndFlag</H3>
+	<ul>
+		<li><b>Syntax:	</b> EndFlag = Variable1,Variable2....
+		<li><b>Meaning:	</b> Sets the flags that are set when the task completes
+		<li><b>Example:	</b> <i>EndFlag = = WP2Done</i> When task completes "WP2Dome" is written.
+	</ul>
+	<p>
+
+
+	<li><H3>EventFlag</H3>
+	<ul>
+		<li><b>Syntax:	</b> EventFlag = Variable1,Variable2....
+		<li><b>Meaning:	</b> Sets the flags that are set when the task calls OnEvent()
+		<li><b>Example:	</b> <i>EventFlag =  DepthExceeded</i> When calling OnEvent() this task writes "DepthExceeded"
+	</ul>
+	<p>
+
+	<li><H3>LogPID</H3>
+	<ul>
+		<li><b>Syntax:	</b> LogPID = True/False
+		<li><b>Meaning:	</b> sets weather the PID's in the task perform low level logging.
+							 The file is called <i>TaskName_PIDType.pid</i>
+		<li><b>Example:	</b> <i>LogPID =  true</i> Task will log its PID controller operatation. 
+	</ul>
+
+	<p>
+
+
+</ul>
+
+
+<hr>
+<H4>The MOOS &#169;  P. Newman 2001-2002 <img src="moose2.gif"></H4>
+</BODY>
+</HTML>
