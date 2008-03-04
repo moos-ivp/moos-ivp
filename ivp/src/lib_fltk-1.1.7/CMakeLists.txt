@@ -336,10 +336,10 @@ SUBDIRS(fluid)
 
 
 # Set an option to build the examples and testing
-OPTION(BUILD_EXAMPLES "Build the tests" ON)
-IF(BUILD_EXAMPLES)
-  SUBDIRS(test)
-ENDIF(BUILD_EXAMPLES)
+# OPTION(BUILD_EXAMPLES "Build the tests" ON)
+# IF(BUILD_EXAMPLES)
+#   SUBDIRS(test)
+# ENDIF(BUILD_EXAMPLES)
 
 OPTION(BUILD_TESTING "Build testing of FLTK" ON)
 IF(BUILD_TESTING)
