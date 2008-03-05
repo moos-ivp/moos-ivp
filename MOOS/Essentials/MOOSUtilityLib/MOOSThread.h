@@ -32,7 +32,7 @@
 #define MOOSThreadh
 
 #include <MOOSGenLib/MOOSLock.h>
-#include <MOOSGenLib.h>
+#include <MOOSGenLib/MOOSGenLib.h>
 
 //! Implements a cross platform thread*/
 class CMOOSThread
