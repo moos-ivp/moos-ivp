@@ -53,9 +53,24 @@
 #include "BHV_GoToDepth.h"
 #include "BHV_MemoryTurnLimit.h"
 
+#if 1
+// Henrik's behaviors
+#include "BHV_HArrayTurn.h"
+#include "BHV_HCloseRange.h"
+#include "BHV_HPeriodicSurface.h"
+#include "BHV_ClassifyYoyo.h"
+#include "BHV_ZigZag.h"
+#include "BHV_RaceTrack.h"
+#include "BHV_MinAltitude.h"
+#include "BHV_ConstantAltitude.h"
+#include "BHV_HShadow.h"
+#include "BHV_HTrail.h"
+#include "BHV_HCutRange.h"
+#include "BHV_HArrayAngle.h"
 // henrik 1.29.08
 #include "BHV_RubberBand.h"
 #include "BHV_Attractor.h"
+#endif
 
 #if 1
 // Sandbox behaviors
@@ -77,7 +92,7 @@
 #include "BHV_StandOn17.h"
 #endif
 
-#if 0
+#if 1
 // Don Eickstedt Behaviors
 #include "BHV_CoOrbit.h"
 #include "BHV_Adaptive_YoYo.h"
@@ -318,14 +333,39 @@ IvPBehavior* Populator_BehaviorSet::initializeBehavior(string bhv_name)
     bhv = new BHV_GoToDepth(domain);
   else if(bhv_name == "BHV_MemoryTurnLimit")      
     bhv = new BHV_MemoryTurnLimit(domain);
+#endif
 
+#if 1
+  // Henrik's  PLUSNet Behaviors --------------------------
+  else if (bhv_name == "BHV_HArrayTurn")
+    bhv = new BHV_HArrayTurn(domain);
+  else if (bhv_name == "BHV_HCloseRange")
+    bhv = new BHV_HCloseRange(domain);
+  else if (bhv_name == "BHV_HPeriodicSurface")
+    bhv = new BHV_HPeriodicSurface(domain);
+  else if (bhv_name == "BHV_ClassifyYoyo")
+    bhv = new BHV_ClassifyYoyo(domain);
+  else if (bhv_name == "BHV_ZigZag")
+    bhv = new BHV_ZigZag(domain);
+  else if (bhv_name == "BHV_RaceTrack")
+    bhv = new BHV_RaceTrack(domain);
+  else if (bhv_name == "BHV_MinAltitude")
+    bhv = new BHV_MinAltitude(domain);
+  else if (bhv_name == "BHV_ConstantAltitude")
+    bhv = new BHV_ConstantAltitude(domain);
+  else if (bhv_name == "BHV_HShadow")
+    bhv = new BHV_HShadow(domain);
+  else if (bhv_name == "BHV_HTrail")
+    bhv = new BHV_HTrail(domain);
+  else if (bhv_name == "BHV_HCutRange")
+    bhv = new BHV_HCutRange(domain);
+  else if (bhv_name == "BHV_HArrayAngle")
+    bhv = new BHV_HArrayAngle(domain);
   // henrik 1.29.08
   else if(bhv_name == "BHV_RubberBand")     
     bhv = new BHV_RubberBand(domain);
   else if(bhv_name == "BHV_Attractor")     
     bhv = new BHV_Attractor(domain);
-
-  
 #endif
 
 #if 1
@@ -360,7 +400,7 @@ IvPBehavior* Populator_BehaviorSet::initializeBehavior(string bhv_name)
     bhv = new BHV_StandOn17(domain);
 #endif
   
-#if 0
+#if 1
   // Don Eickstedt Behaviors --------------------------
   else if(bhv_name == "BHV_CoOrbit")    
     bhv = new BHV_CoOrbit(domain);

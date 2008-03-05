@@ -15,6 +15,8 @@ TARGET_LINK_LIBRARIES(pHelmIvP
   behaviors-marine
   behaviors-sandbox
   behaviors-colregs
+  behaviors-don
+  behaviors-henrik
   bhvutil	
   behaviors
   mbutil 
