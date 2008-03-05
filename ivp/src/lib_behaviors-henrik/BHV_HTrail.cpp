@@ -60,11 +60,14 @@ BHV_HTrail::BHV_HTrail(IvPDomain gdomain) : IvPBehavior(gdomain)
   cnY   = 0;
   cnTime   = 0;
   obsolete = 0;
+ speed_delta = 0;
 
   addInfoVars("NAV_X");
   addInfoVars("NAV_Y");
   addInfoVars("NAV_SPEED");
   addInfoVars("NAV_HEADING");
+  addInfoVars("COMMUNITY_STAT");
+  addInfoVars("DB_TIME");
 }
 
 //-----------------------------------------------------------
@@ -108,8 +111,22 @@ bool BHV_HTrail::setParam(string g_param, string g_val)
       obsolete = atof(g_val.c_str());
       return(true);
     }
+  else if (g_param == "speed_delta")
+    {
+      speed_delta = atof(g_val.c_str());
+      return(true);
+    }
   return(false);
 }
+
+
+
+
+
+
+
+
+
 
 
 //-----------------------------------------------------------
@@ -141,7 +158,12 @@ IvPFunction *BHV_HTrail::onRunState()
     return(0);
   }
 
-  bool ok1, ok2;
+ 
+
+
+
+
+ bool ok1, ok2;
 
   //get current contact state
   string tState = getBufferStringVal("COMMUNITY_STAT", ok1);
@@ -157,25 +179,38 @@ IvPFunction *BHV_HTrail::onRunState()
 
   my_contact = (contact_id == them_id);
 
-  if ( my_contact )
+  double head_x =0;
+  double head_y =0;
+
+    if ( my_contact )
     {
+ 
+      curr_time = getBufferDoubleVal("DB_TIME", ok1);
+
+      double dist_extrap = contact_speed * (curr_time - contact_time);
+      head_x = dist_extrap*cos(headingToRadians(contact_heading));
+      head_y = dist_extrap*sin(headingToRadians(contact_heading));
       cnCRS = contact_heading;
       cnSPD = contact_speed;
-      cnX   = contact_x;
-      cnY   = contact_y;
+      cnX   = contact_x + head_x;
+      cnY   = contact_y + head_y;
       cnTime   = contact_time;
-    }
 
-  //  double cnCRS = getBufferDoubleVal(them_name, "NAV_HEADING", &ok1);
-  //  double cnSPD = getBufferDoubleVal(them_name, "NAV_SPEED",   &ok2);
-  // if(!ok1 || !ok2) {
-  //  string emsg = "contact (" + them_name + ") crs/spd info not found";
-  //  postEMessage(emsg);
-  //  return(0);
-  //  }
+      postMessage("TRAIL_CONTACT_TIME", cnTime);
+      postMessage("TRAIL_CURRENT_TIME", curr_time);
+      postMessage("TRAIL_DELTA_TIME", curr_time-cnTime);
+
+      postMessage("TRAIL_CONTACT_X", cnX);
+      postMessage("TRAIL_CONTACT_Y", cnY);
+      postMessage("TRAIL_CONTACT_MSG_X", contact_x);
+      postMessage("TRAIL_CONTACT_MSG_Y", contact_y);
+      postMessage("TRAIL_CONTACT_SPEED", cnSPD);
+      postMessage("TRAIL_CONTACT_HEADING", cnCRS);
+     }
 
   double osCRS = getBufferDoubleVal("NAV_HEADING", ok1);
   double osSPD = getBufferDoubleVal("NAV_SPEED", ok2);
+ 
   if(!ok1 || !ok2) {
     postEMessage("ownship course/speed info not found.");
     return(0);
@@ -183,49 +218,73 @@ IvPFunction *BHV_HTrail::onRunState()
 
   if(cnCRS < 0) cnCRS += 360.0;
 
-  //  double cnX = getBufferDoubleVal(them_name, "NAV_X", &ok2);
-  //double cnY = getBufferDoubleVal(them_name, "NAV_Y", &ok1);
-  //if(!ok1 || !ok2) {
-  //  postEMessage("contact x/y info not found.");
-  //  return(0);
-  //}
-
   double osX = getBufferDoubleVal("NAV_X", ok2);
   double osY = getBufferDoubleVal("NAV_Y", ok1);
+
   if(!ok1 || !ok2) {
     postEMessage("ownship x/y info not found.");
     return(0);
   }
 
   // Calculate the trail point based on trail_angle, trail_range.
-  double posX, posY; 
-  double adjusted_angle = cnCRS + trail_angle;
-  projectPoint(adjusted_angle, trail_range, cnX, cnY, posX, posY);
+  // double posX, posY; 
+  // double adjusted_angle = cnCRS + trail_angle;
+  
+  // projectPoint(adjusted_angle, trail_range, cnX, cnY, posX, posY);
+  // Changed by HS. heading/degree problem 
+
+  double adjusted_angle = headingToRadians(angle360(cnCRS + trail_angle));
+  double posX = cnX + trail_range*cos(adjusted_angle);
+  double posY = cnY + trail_range*sin(adjusted_angle);
+
+
+  postMessage("TRAIL_X", posX);
+  postMessage("TRAIL_Y", posY);
+
 
   // Calculate the relevance first. If zero-relevance, we won't
   // bother to create the objective function.
-  double relevance = getRelevance(osX, osY, posX, posY, cnX, cnY);
-  if(relevance <= 0)
-    return(0);
+ 
+  double relevance = 0;
+  if (((curr_time - contact_time) < obsolete) || (obsolete == 0))
+    {
+      relevance = getRelevance(osX, osY, posX, posY, cnX, cnY);
+    }
+ 
+  postMessage("TRAIL_RELEVANCE", relevance);
 
-  postMessage("PURSUIT", "true");
+  if(relevance <= 0)
+    {
+      postMessage("PURSUIT", "FALSE");
+      return(0);
+    }
+  else
+    postMessage("PURSUIT", "true");
 
   IvPFunction *of = 0;
 
-  if(distPointToPoint(osX, osY, posX, posY) > radius) {
-    AOF_CutRangeCPA aof(m_domain);
-    aof.setParam("cnlat", posY);
-    aof.setParam("cnlon", posX);
-    aof.setParam("cncrs", cnCRS);
-    aof.setParam("cnspd", cnSPD);
-    aof.setParam("oslat", osY);
-    aof.setParam("oslon", osX);
-    aof.initialize();
-    OF_Reflector reflector(&aof, 1);
-    reflector.create(m_build_info);
-    of = reflector.extractOF(true);
-  }
-  else {
+  if(distPointToPoint(osX, osY, posX, posY) > radius) 
+    {
+      AOF_CutRangeCPA aof(m_domain);
+      aof.setParam("cnlat", posY);
+      aof.setParam("cnlon", posX);
+      aof.setParam("cncrs", cnCRS);
+      aof.setParam("cnspd", cnSPD);
+      aof.setParam("oslat", osY);
+      aof.setParam("oslon", osX);
+      aof.initialize();
+      OF_Reflector reflector(&aof, 1);
+      reflector.create(m_build_info);
+      of = reflector.extractOF(true);
+    }
+  else 
+    {
+      // If inside radius and ahead, reduce speed
+      bool ahead = head_x*(osX-posX)+head_y*(osY-posY);
+      
+      if (ahead && (cnSPD > speed_delta))
+	cnSPD -= speed_delta;
+      
     AOF_Shadow aof(m_domain);
     aof.setParam("cn_crs", cnCRS);
     aof.setParam("cn_spd", cnSPD);
@@ -244,27 +303,21 @@ IvPFunction *BHV_HTrail::onRunState()
 //-----------------------------------------------------------
 // Procedure: getRelevance
 
-double BHV_HTrail::getRelevance(double osX, double osY,
-			       double posX, double posY, 
-			       double cnX, double cnY)
+double BHV_HTrail::getRelevance(double osx, double osy,
+			       double posx, double posy, 
+			       double cnx, double cny)
 {
   // For now just return 1.0 if within max_range. But we could 
   // imagine that we would reduce its relevance (linearly perhaps) 
   // if the vehicle were already in a good position.
 
-  double curr_time = getBufferCurrTime();
-
-  if (((curr_time - contact_time) < obsolete) || (obsolete == 0))
-    {
-      if(max_range == 0)
-	return(1.0);
-      
-      double contact_range = hypot((osX-cnX), (osY-cnY));
-      if(contact_range < max_range)
-	return(1.0);
-      else
-	return(0.0);
-    }
+  if(max_range == 0)
+    return(1.0);
+  
+  double contact_range = hypot((osx-cnx), (osy-cny));
+  postMessage("TRAIL_CONTACT_RANGE", contact_range);
+  if(contact_range < max_range)
+    return(1.0);
   else
     return(0.0);
 }

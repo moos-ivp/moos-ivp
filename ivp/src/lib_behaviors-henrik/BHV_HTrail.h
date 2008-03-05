@@ -51,10 +51,11 @@ private:
   double radius;
   double max_range;
   double obsolete;
+  double speed_delta;
   int them_id;
   
   double contact_x,contact_y,contact_heading,contact_speed,contact_time;
-  double cnCRS, cnSPD,cnX,cnY,cnTime;
+  double cnCRS, cnSPD,cnX,cnY,cnTime,curr_time;
   int contact_id,new_state; 
   bool my_contact ;
 };

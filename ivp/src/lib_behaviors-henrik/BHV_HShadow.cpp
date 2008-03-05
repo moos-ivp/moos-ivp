@@ -64,6 +64,7 @@ BHV_HShadow::BHV_HShadow(IvPDomain gdomain) : IvPBehavior(gdomain)
   addInfoVars("NAV_SPEED");
   addInfoVars("NAV_HEADING");
   addInfoVars("COMMUNITY_STAT");
+  addInfoVars("DB_TIME");
 }
 
 //-----------------------------------------------------------
@@ -200,16 +201,17 @@ IvPFunction *BHV_HShadow::onRunState()
 //-----------------------------------------------------------
 // Procedure: getRelevance
 
-double BHV_HShadow::getRelevance(double osX, double osY,
-				 double cnX, double cnY)
+double BHV_HShadow::getRelevance(double osx, double osy,
+				 double cnx, double cny)
 {
-  double curr_time = getBufferCurrTime();
+  bool ok1;
+  double curr_time = getBufferDoubleVal("DB_TIME", ok1);
   if (((curr_time - contact_time) < obsolete) || (obsolete == 0))
     {
       if(max_range == 0)
 	return(1.0);
       
-      double contact_range = hypot((osX-cnX), (osY-cnY));
+      double contact_range = hypot((osx-cnx), (osy-cny));
       if(contact_range < max_range)
 	return(1.0);
       else
