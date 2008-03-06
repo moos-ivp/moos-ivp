@@ -16,6 +16,6 @@ killall -9 -q iMicroModem pRouter pFramer pMessageSim  \
         pCSVLogger pBearings_VSA pEchoVar pTrackQuality \
         p1HTracker pGPSSim uBathy uCtdSim2 pTargetOpportunity \
         pBearings_DURIP uProcessWatch uPlayBack pSubIndex \
-        pBearings_GENERIC pTargetSim pMBTracker
+        pBearings_GENERIC pTargetSim pMBTracker zLoggerNG
 
 echo Done - Killed all MOOS-Related Processes.....

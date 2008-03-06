@@ -30,8 +30,8 @@
 #include "MBUtils.h"
 #include "AngleUtils.h"
 #include "GeomUtils.h"
-#include "AOF_Shadow.h"
-#include "AOF_CutRangeCPA.h"
+#include "AOF_HShadow.h"
+#include "AOF_HCutRangeCPA.h"
 #include "BHV_HTrail.h"
 #include "OF_Reflector.h"
 #include "BuildUtils.h"
@@ -60,7 +60,8 @@ BHV_HTrail::BHV_HTrail(IvPDomain gdomain) : IvPBehavior(gdomain)
   cnY   = 0;
   cnTime   = 0;
   obsolete = 0;
- speed_delta = 0;
+  speed_delta = 0;
+  contact_time = 0;
 
   addInfoVars("NAV_X");
   addInfoVars("NAV_Y");
@@ -79,7 +80,9 @@ BHV_HTrail::BHV_HTrail(IvPDomain gdomain) : IvPBehavior(gdomain)
 //      "radius": distance to the desired trailing point within
 //                which the behavior is "shadowing".
 //   "max_range": contact range outside which priority is zero.
-//   "obsolete":  max allowed lack of contact in seconds for retaining relevance
+//    "obsolete": max allowed lack of contact in seconds for retaining relevance
+// "speed_delta": decrease in speed when ahead of contact
+
 bool BHV_HTrail::setParam(string g_param, string g_val) 
 {
   if(IvPBehavior::setParamCommon(g_param, g_val))
@@ -126,9 +129,6 @@ bool BHV_HTrail::setParam(string g_param, string g_val)
 
 
 
-
-
-
 //-----------------------------------------------------------
 // Procedure: onIdleState
 //      Note: This function overrides the onIdleState() virtual
@@ -139,12 +139,12 @@ bool BHV_HTrail::setParam(string g_param, string g_val)
 void BHV_HTrail::onIdleState()
 {
   // Do your thing here
-  my_contact = false;
-  cnCRS = 0;
-  cnSPD = 0;
-  cnX   = 0;
-  cnY   = 0;
-  cnTime   = 0;
+  //my_contact = false;
+  //cnCRS = 0;
+  //cnSPD = 0;
+  //cnX   = 0;
+  //cnY   = 0;
+  //cnTime   = 0;
 }
 
 
@@ -265,7 +265,7 @@ IvPFunction *BHV_HTrail::onRunState()
 
   if(distPointToPoint(osX, osY, posX, posY) > radius) 
     {
-      AOF_CutRangeCPA aof(m_domain);
+      AOF_HCutRangeCPA aof(m_domain);
       aof.setParam("cnlat", posY);
       aof.setParam("cnlon", posX);
       aof.setParam("cncrs", cnCRS);
@@ -285,7 +285,7 @@ IvPFunction *BHV_HTrail::onRunState()
       if (ahead && (cnSPD > speed_delta))
 	cnSPD -= speed_delta;
       
-    AOF_Shadow aof(m_domain);
+    AOF_HShadow aof(m_domain);
     aof.setParam("cn_crs", cnCRS);
     aof.setParam("cn_spd", cnSPD);
     aof.initialize();
