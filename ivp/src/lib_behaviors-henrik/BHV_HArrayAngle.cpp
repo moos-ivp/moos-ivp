@@ -30,6 +30,8 @@ BHV_HArrayAngle::BHV_HArrayAngle(IvPDomain gdomain) :
   addInfoVars("BEARING_STAT");
   
   over_shoot = 0.0;
+  desired_angle = 90.0;
+
 }
 
 //-----------------------------------------------------------
@@ -40,28 +42,38 @@ bool BHV_HArrayAngle::setParam(string param, string val)
 
   // Dangerous: you're not returning false on an unrecognized
   // parameter - mikerb, 02/27/08
+  // Inherited template! fixed HS 03/06/08
 
-  IvPBehavior::setParamCommon(param, val);
+  //  IvPBehavior::setParamCommon(param, val);
 
- if(param == "width") {
-    width = (int) atof(val.c_str());
-  }
-
- if(param == "peak_width") {
-    pwidth = (int) atof(val.c_str());
-  }
-
- if(param == "over_shoot") {
-    over_shoot = atof(val.c_str());
-  }
-
-  if(param == "desired_angle") {
-     desired_angle = atof(val.c_str());
+  if(IvPBehavior::setParamCommon(param, val))
     return(true);
-  }
-  
 
-  return true;
+ if(param == "width") 
+   {
+     width = (int) atof(val.c_str());
+     return(true);
+   }
+
+ if(param == "peak_width") 
+   {
+     pwidth = (int) atof(val.c_str());
+     return(true);
+   }
+
+ if(param == "over_shoot") 
+   {
+     over_shoot = atof(val.c_str());
+     return(true);
+   }
+
+ if(param == "desired_angle") 
+   {
+     desired_angle = atof(val.c_str());
+     return(true);
+   }
+  
+ return(false);
 }
 
 
