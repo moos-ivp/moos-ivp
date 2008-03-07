@@ -145,11 +145,19 @@ ENDIF(UNIX)
 #NB user can change this through UI
 SET(MOOSBIN ${MOOS_BINARY_DIR}/MOOSBin)
 
-#dump libs and executables in the same place
-SET( LIBRARY_OUTPUT_PATH ${MOOSBIN} CACHE PATH
-     "Output directory for the MOOS libraries" )
-SET( EXECUTABLE_OUTPUT_PATH ${MOOSBIN} CACHE PATH
-     "Output directory for the MOOS executables" )
+# dump libs and executables in the same place
+SET( LIBRARY_OUTPUT_PATH ${MOOSBIN} CACHE PATH 
+     "Output directory for the MOOS libraries" FORCE)
+
+SET( EXECUTABLE_OUTPUT_PATH ${MOOSBIN} CACHE PATH 
+     "Output directory for the MOOS executables" FORCE)
+
+# SET( LIBRARY_OUTPUT_PATH ${MOOSBIN} CACHE PATH 
+#      "Output directory for the MOOS libraries" )
+# SET( EXECUTABLE_OUTPUT_PATH ${MOOSBIN} CACHE PATH 
+#      "Output directory for the MOOS executables" )
+
+message("*** LIBRARY_OUTPUT_PATH: " ${LIBRARY_OUTPUT_PATH} "***")
 
 #####################################################
 # be helpful and let all projects look for libraries here
