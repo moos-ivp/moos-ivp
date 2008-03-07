@@ -1,0 +1,4 @@
+
+- Fixed a bug in lib_geometry/XYPolygon that failed to reset convexity
+  local information after a polygon rotation. The lack of reset could
+  cause XYPolygon::contains() function to malfunction in some instances.
