@@ -368,6 +368,19 @@ void XYPolygon::reverse()
 }
 
 //---------------------------------------------------------------
+// Procedure: rotate
+//      Note: A call to "determine_convexity()" is made since this
+//            operation needs to have side_xy[i] reset for each i.
+
+
+void XYPolygon::rotate(double val)
+{
+  XYSegList::rotate(val);
+  determine_convexity();
+}
+
+
+//---------------------------------------------------------------
 // Procedure: contains
 
 bool XYPolygon::contains(double x, double y) const
@@ -394,9 +407,8 @@ bool XYPolygon::contains(double x, double y) const
     y2 = vertex_y[ixx];
 
     int vside = side(x1, y1, x2, y2, x, y);
-    if(vside != 2)
-      if(vside != side_xy[ix])
-	return(false);
+    if((vside != 2) && (vside != side_xy[ix]))
+      return(false);
   }
   return(true);
 }

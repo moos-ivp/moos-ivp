@@ -45,8 +45,8 @@ public:
   void   shift_vert(double val);
   void   grow_by_pct(double pct);
   void   grow_by_amt(double amt);
-  void   rotate(double degrees);
   void   apply_snap(double snapval);
+  void   rotate(double degrees);
   void   reverse();
   void   new_center(double x, double y);
   void   print() const;
