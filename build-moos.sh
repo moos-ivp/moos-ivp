@@ -11,6 +11,7 @@ MOOS_PACKAGE_VERSION=7.0.1
 # If anything goes wrong, stop right away.
 set -e
 
+cd MOOS/
 cmake                                           \
    -DMOOS_VERSION=${MOOS_PACKAGE_VERSION:?}     \
    -DFLTK_DIR=/usr/lib                          \
@@ -21,8 +22,8 @@ cmake                                           \
    -DBUILD_TOOLS=ON                             \
    -DBUILD_OCEAN_SIM=ON                         \
    -DBUILD_MATLAB_TOOLS=OFF                     \
-   -DBUILD_LAND_INSTRUMENTS=ON                  \
-   -DBUILD_OCEAN_INSTRUMENTS=ON                 \
+   -DBUILD_LAND_INSTRUMENTS=OFF                 \
+   -DBUILD_OCEAN_INSTRUMENTS=OFF                \
    -DBUILD_UMVS=ON                              \
    -DBUILD_UPB=ON                               \
    ./
