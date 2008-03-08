@@ -11,6 +11,7 @@ MOOS_PACKAGE_VERSION=7.0.1
 # If anything goes wrong, stop right away.
 set -e
 
+cd MOOS
 cmake                                           \
    -DMOOS_VERSION=${MOOS_PACKAGE_VERSION:?}     \
    -DFLTK_DIR=/usr/lib                          \
