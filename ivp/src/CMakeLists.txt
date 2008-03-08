@@ -36,11 +36,9 @@ LINK_DIRECTORIES(${MOOS_LIB_DIR})
 SET(MOOS_INCLUDE_DIRS
    ${MOOS_BASE_DIR_ABSOLUTE}/Essentials
    ${MOOS_BASE_DIR_ABSOLUTE}/Core
-   ${MOOS_BASE_DIR_ABSOLUTE}/NavigationAndControl
    ${MOOS_BASE_DIR_ABSOLUTE}/Essentials/MOOSUtilityLib
    ${MOOS_BASE_DIR_ABSOLUTE}/Core/MOOSLIB
    ${MOOS_BASE_DIR_ABSOLUTE}/Core/MOOSGenLib
-   ${MOOS_BASE_DIR_ABSOLUTE}/Thirdparty/FLTKVW
    )
 INCLUDE_DIRECTORIES(${MOOS_INCLUDE_DIRS})
 
@@ -59,16 +57,65 @@ INCLUDE_DIRECTORIES(${IVP_LIBRARY_DIRS})
 # a different system than that on which it was compiled. -CJC
 GET_FILENAME_COMPONENT(IVP_DATA_DIR ../data ABSOLUTE)
 
-FILE(GLOB IVP_DIRS_TO_BUILD lib_* app_* p* u* i* newmat10D)
+#---------------------------------------------------------------------
+#  Build the Libraries
+#---------------------------------------------------------------------
+FILE(GLOB IVP_LIBS_TO_BUILD
+  lib_behaviors
+  lib_behaviors-ajshafer
+  lib_behaviors-colregs
+  lib_behaviors-don
+  lib_behaviors-henrik
+  lib_behaviors-marine
+  lib_behaviors-sandbox
+  lib_bhvutil
+  lib_fltk-1.1.7
+  lib_genutil
+  lib_geometry
+  lib_helmivp
+  lib_ipfview
+  lib_ivpbuild
+  lib_ivpcore
+  lib_logic
+  lib_marineview
+  lib_mbutil
+  lib_navplot
+)
 
-FOREACH(D ${IVP_DIRS_TO_BUILD})
-  # Programs get placed in ivp/src/bin/
-  SET( EXECUTABLE_OUTPUT_PATH ${IVP_SOURCE_DIR}/bin CACHE PATH "" FORCE )
-
+FOREACH(L ${IVP_LIBS_TO_BUILD})
   # As a matter of preference, each built IvP library file (.a) should be placed 
   # in its source directory.
   SET( LIBRARY_OUTPUT_PATH "" CACHE PATH "" FORCE )
+  ADD_SUBDIRECTORY(${L})
+ENDFOREACH(L)
 
-  ADD_SUBDIRECTORY(${D})
-ENDFOREACH(D)
+#---------------------------------------------------------------------
+#  Build the Applications
+#---------------------------------------------------------------------
+FILE(GLOB IVP_APPS_TO_BUILD
+  app_ffview
+  app_geoview
+  app_logview
+  app_splug
+  iMarineSim
+  pDeployHandler
+  pEchoVar
+  pHelmIvP
+  pMarinePID
+  pMarineViewer
+  pShipsideViewer
+  pTransponderAIS
+  pViewerRelay
+  uProcessWatch
+  uRepeater
+  uTermCommand
+  uXMS
+)
+
+FOREACH(A ${IVP_APPS_TO_BUILD})
+  # Programs get placed in ivp/src/bin/
+  SET( EXECUTABLE_OUTPUT_PATH ${IVP_SOURCE_DIR}/bin CACHE PATH "" FORCE )
+  ADD_SUBDIRECTORY(${A})
+ENDFOREACH(A)
+
 
