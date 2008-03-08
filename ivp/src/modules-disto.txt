@@ -79,3 +79,27 @@ pMarinePID
  g. lib_FLTK
  h. uMS
  i. pMOOSBridge
+
+
+
+
+                lib_ivpcore    lib_mbutil
+                     |       /
+                     |      /
+                lib_ivpbuild
+                     |      
+                     |      
+                lib_behaviors          
+                     |                 
+                     |                 
+                lib_behaviors-marine   
+                lib_behaviors-don   
+                     |                 
+    MOOSLIB          |                 
+   MOOSGenLib    lib_helmivp      
+            \        |            
+             \       |           
+              *pHelmIvP*        
+                            
+                            
+(*) Indicates that the module references the MOOS library. 
