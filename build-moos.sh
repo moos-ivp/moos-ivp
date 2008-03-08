@@ -20,9 +20,10 @@ cmake                                           \
    -DBUILD_INSTRUMENTS=ON                       \
    -DBUILD_TOOLS=ON                             \
    -DBUILD_OCEAN_SIM=ON                         \
+   -DBUILD_NEWMAT=OFF                           \
    -DBUILD_MATLAB_TOOLS=OFF                     \
-   -DBUILD_LAND_INSTRUMENTS=ON                  \
-   -DBUILD_OCEAN_INSTRUMENTS=ON                 \
+   -DBUILD_LAND_INSTRUMENTS=OFF                 \
+   -DBUILD_OCEAN_INSTRUMENTS=OFF                \
    -DBUILD_UMVS=ON                              \
    -DBUILD_UPB=ON                               \
    ./
