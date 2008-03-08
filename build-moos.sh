@@ -1,14 +1,21 @@
 #!/bin/sh
 
-#THIS_DIR=${PWD}
+# Note by mikerb (Mar 8th 2008)
+#
+# The MOOS subdirectory is the exact directory distributed
+# by Oxford, with the following two exceptions. Two local
+# edits were made:
+#
+# (1) MOOS-VERSION-IS-X-Y file is added to MOOS/ to show 
+#     which MOOS version is in the IvP tree
+# (2) MOOS/NavigationAndControl/CMakeLists.txt is edited to 
+#     not build pNav, pHelm, MOOSNavLib, MOOSTaskLib, four
+#     fairly large modules generally not needed by users of
+#     this repository. There was no CMake BUILD flag for
+#     shutting these off, other than shutting of all of
+#     NavigationAndControl which contains iRemote.
 
 MOOS_PACKAGE_VERSION=7.0.1
-#MOOS_BUILD_NUM=1
-#MOOS_PACKAGE_DIR=${PWD}/MOOS/MOOSBin
-
-#SCRATCH_DIRECTORY=/tmp/moos-ivp-scratch-dir
-
-# If anything goes wrong, stop right away.
 set -e
 
 cd MOOS
