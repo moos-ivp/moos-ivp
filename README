@@ -1,0 +1,17 @@
+
+To build the software in this "moos-ivp" repository, first
+build the MOOS software:
+
+> ./build-moos.sh
+
+You should only ever have to do this once upon an initial checkout
+from the SVN repository. 
+
+Thereafter the ivp tree can be build by:
+
+> cd ivp/src
+> cmake ./
+> make
+
+See the README file in moos-ivp/ivp/src for more specific
+build info regarding that tree.
