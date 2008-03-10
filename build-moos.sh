@@ -6,13 +6,13 @@
 # by Oxford, with the following two exceptions. Two local
 # edits were made:
 #
-# (1) MOOS-VERSION-IS-X-Y file is added to MOOS/ to show 
-#     which MOOS version is in the IvP tree
+# (1) A MOOS-VERSION-IS-V-X file is added to MOOS/ to show
+#     which Oxford MOOS version is in this MOOS-IvP tree.
 # (2) MOOS/NavigationAndControl/CMakeLists.txt is edited to 
 #     not build pNav, pHelm, MOOSNavLib, MOOSTaskLib, four
 #     fairly large modules generally not needed by users of
 #     this repository. There was no CMake BUILD flag for
-#     shutting these off, other than shutting of all of
+#     shutting these off, other than shutting off all of
 #     NavigationAndControl which contains iRemote.
 
 MOOS_PACKAGE_VERSION=7.0.1
