@@ -4,7 +4,7 @@ killall -9 -q MOOSDB iRemote MOOSRemote iGPS iGPSMonitor pNav \
         pHelm pHelmIvP pMarineViewer iMarineSim \
         pLogger iPWMController MOOSDump pAntler MOOSDump \
         iINS iDepth pScheduler pThermoTrack pNaFCon pSearch \
-        pHuxley pMessageSim pBeamform
+        pHuxley pMessageSim pBeamform uTermCommand
 
 killall -9 -q pMOOSBridge  iVSA iCTD iCTDSBE49 pBearingsSim        \
         iPNICompass iMetaCompass iHeadingMonitor  pAEL     \
@@ -17,5 +17,7 @@ killall -9 -q iMicroModem pRouter pFramer pMessageSim  \
         p1HTracker pGPSSim uBathy uCtdSim2 pTargetOpportunity \
         pBearings_DURIP uProcessWatch uPlayBack pSubIndex \
         pBearings_GENERIC pTargetSim pMBTracker zLoggerNG
+
+killall -9 -q pSensorSim pArtifactMapper 
 
 echo Done - Killed all MOOS-Related Processes.....
