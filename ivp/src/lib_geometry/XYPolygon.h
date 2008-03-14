@@ -47,6 +47,7 @@ public:
 
 protected:
   bool   init_radial(std::string);
+  bool   init_ellipse(std::string);
   bool   init_arc(std::string);
 
 public:

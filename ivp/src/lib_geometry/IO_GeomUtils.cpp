@@ -47,6 +47,8 @@ vector<XYPolygon> readPolysFromFile(const string& filestr)
       if(svector.size() == 2) {
 	string left = stripBlankEnds(svector[0]);
 	if((left == "polygon") || 
+	   (left == "poly")  ||
+	   (left == "ellipse")  ||
 	   (left == "points")  ||
 	   (left == "radial")) {
 	  string right = stripBlankEnds(svector[1]);
