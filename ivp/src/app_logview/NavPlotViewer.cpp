@@ -207,6 +207,43 @@ float NavPlotViewer::getAvgStepTime()
 }
 
 //-------------------------------------------------------------
+// Procedure: drawPoint
+
+void NavPlotViewer::drawPoint(float px, float py, float cr, 
+			      float cg, float cb, float sz)
+{
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glOrtho(0, w(), 0, h(), -1 ,1);
+
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
+  glLoadIdentity();
+
+  // Determine position in terms of image percentage
+  float pt_ix = meters2img('x', px);
+  float pt_iy = meters2img('y', py);
+
+  // Determine position in terms of view percentage
+  float pt_vx = img2view('x', pt_ix);
+  float pt_vy = img2view('y', pt_iy);
+
+  glTranslatef(pt_vx, pt_vy, 0); // theses are in pixel units
+
+  glEnable(GL_POINT_SMOOTH);
+  glPointSize(sz);
+  glColor3f(cr, cg, cb);
+  
+  glBegin(GL_POINTS);
+  glVertex2f(0, 0);
+  glEnd();
+  glDisable(GL_POINT_SMOOTH);
+
+  glFlush();
+  glPopMatrix();
+}
+
+//-------------------------------------------------------------
 // Procedure: drawNavPlots
 
 void NavPlotViewer::drawNavPlots()
@@ -224,72 +261,41 @@ void NavPlotViewer::drawNavPlot(int index)
   if(npsize == 0)
     return;
 
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  glOrtho(0, w(), 0, h(), -1 ,1);
-
-  float tx = meters2img('x', 0);
-  float ty = meters2img('y', 0);
-  float qx = img2view('x', tx);
-  float qy = img2view('y', ty);
-
-  glMatrixMode(GL_MODELVIEW);
-  glPushMatrix();
-  glLoadIdentity();
-
-  glTranslatef(qx, qy, 0);
-  glScalef(m_zoom, m_zoom, m_zoom);
-
   double ctime = getCurrTime();
   
-  int tmp_trail_gap = m_trail_gap;
-
   // Draw all the non_current points
   if(m_trails) {
-    glPointSize(m_trail_size * m_zoom);
+    double pt_size = m_trail_size * m_zoom;
+    double pt_red  = 0;
+    double pt_grn  = 0;
+    double pt_blu  = 0;
 
-#if 0
-    if(index == m_global_ix)
-      glColor3f(1.0, 1.0, 1.0);  // white
-    else
-      glColor3f(1.0, 1.0, 1.0);  // white
-#endif
-#if 1
-    if(index == 0)
-      glColor3f(0.5, 0.0, 0.0);  // DarkRed
-    else if(index == 1)
-      glColor3f(0.0, 0.5, 0.0);  // DarkGreen
-    else if(index == 2)
-      glColor3f(0.0, 0.0, 0.5);  // DarkBlue
-    else
-      glColor3f(0.7, 0.7, 0.7);  // Lighter
-#endif
+    if(index == 0) {
+      pt_red=0.5; pt_grn=0; pt_blu=0;
+    }
+    else if(index == 1) {
+      pt_red=0; pt_grn=0.5; pt_blu=0;
+    }
+    else if(index == 2){
+      pt_red=0; pt_grn=0; pt_blu=0.5;
+    }
+    else if(index == 3) {
+      pt_red=0.7; pt_grn=0.7; pt_blu=0.7;
+    }
 
-
-    glBegin(GL_POINTS);
     for(int i=0; i<npsize; i++) {
       double itime = m_navplots[index].get_time_by_index(i);
-      cout << ".";
       if(m_alltrail || (itime < ctime)) {
-	cout << "+";
-	//if((ctime - itime) < 110) {
-	if(1) {
-	  if(i != m_local_ix) {
-	    if((i % m_trail_gap) == 0) {
-	      double x = m_navplots[index].get_xval_by_index(i);
-	      double y = m_navplots[index].get_yval_by_index(i);
-	      glVertex2f(x,y);
-	    }
+	if(i != m_local_ix) {
+	  if((i % m_trail_gap) == 0) {
+	    double x = m_navplots[index].get_xval_by_index(i);
+	    double y = m_navplots[index].get_yval_by_index(i);
+	    drawPoint(x, y, pt_red, pt_grn, pt_blu, pt_size);
 	  }
 	}
       }
-      else 
-	cout << m_alltrail << ":" << itime << ":" << ctime << endl;
-
     }
-    glEnd();
   }
-  m_trail_gap = tmp_trail_gap;
 
   // Draw the current_index point, larger and w/ diff color
   double x, y, theta;
@@ -305,32 +311,16 @@ void NavPlotViewer::drawNavPlot(int index)
     theta = m_navplots[index].get_cval_by_time(curr_time);
   }
 
-  bool show_kayaks = true;
+  ObjectPose opose(x,y,theta,0,0);
+  double red=1.0, grn=0.906, blu=0.243;
+  if(index==1) 
+    {red=1.0; grn=0; blu=0;}
+  if(index==2)
+    {red=0; grn=1; blu=0;}
+  if(index==2) 
+    {red=0; grn=0; blu=2;}
+  drawCommonVehicle("", opose, red, grn, blu, m_vehibody);
 
-  if(!show_kayaks) {
-    glPointSize(m_trail_size * 3.0 * m_zoom);
-    glColor3f(1.0,0.0,0.0);
-    glBegin(GL_POINTS);
-    glVertex2f(x,y);
-    glEnd();
-  }
-
-  else {
-    ObjectPose opose(x,y,theta,0,0);
-    double red=1.0, grn=0.906, blu=0.243;
-    if(index==1) 
-      {red=1.0; grn=0; blu=0;}
-    if(index==2)
-      {red=0; grn=1; blu=0;}
-    if(index==2) 
-      {red=0; grn=0; blu=2;}
-    
-    glTranslatef(-qx, -qy, 0);
-    drawCommonVehicle("", opose, red, grn, blu, m_vehibody);
-  }
-
-  glFlush();
-  glPopMatrix();
 }
 
 //-------------------------------------------------------------

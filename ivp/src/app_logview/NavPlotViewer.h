@@ -66,6 +66,7 @@ protected:
   void  drawNavPlots();
   void  drawNavPlot(int ix);
   void  drawFrame();
+  void  drawPoint(float x, float y, float cr, float cg, float cb, float sz);
   
 private:
   int                   m_local_ix;
