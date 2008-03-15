@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
   int i, j;
   Fl::add_idle(idleProc);
 
-  GEO_GUI* gui = new GEO_GUI(900, 800, "OpRegion Viewer");
+  GEO_GUI* gui = new GEO_GUI(900, 800, "geoview");
 
   string tif_file = "Default.tif";  // default
   
@@ -79,15 +79,19 @@ int main(int argc, char *argv[])
  
   gui->readTiff(tif_file);
 
+  cout << "# of file polys: " << all_polys.size() << endl;
   for(i=0; i<all_polys.size(); i++)
     gui->addPoly(all_polys[i]);
 
+  cout << "# of file grids: " << all_grids.size() << endl;
   for(i=0; i<all_grids.size(); i++)
     gui->addGrid(all_grids[i]);
   
+  cout << "# of file circles: " << all_circles.size() << endl;
   for(i=0; i<all_circles.size(); i++)
     gui->addCircle(all_circles[i]);
   
+  cout << "# of file hexagons: " << all_hexagons.size() << endl;
   for(i=0; i<all_hexagons.size(); i++)
     gui->addPoly(all_hexagons[i]);
   
