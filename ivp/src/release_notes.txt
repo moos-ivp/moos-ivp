@@ -2,8 +2,13 @@
 - Fixed a bug in lib_geometry/XYPolygon that failed to reset convexity
   local information after a polygon rotation. The lack of reset could
   cause XYPolygon::contains() function to malfunction in some instances.
+
 - Added the ability to create a Polygon based on ellipse specifications.
   This is a generalization of the XYPolygon class in lib_geometry.
+
 - The pMarineViewer is able to render ellipses (typically used for 
   uncertaintly ellipses). The details are in Section X.Y of the 
   "Guide to the IvPHelm document".
+
+- Added a --force feature to app_splug to allow an automatic overwrite
+  of an existing file without prompting for confirmation from the user.
