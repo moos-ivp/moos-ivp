@@ -24,8 +24,9 @@ using namespace std;
 
 Expander::Expander(string given_infile, string given_outfile)
 {
-  infile = given_infile;
+  infile  = given_infile;
   outfile = given_outfile;
+  m_force = false;  
 }
 
 //--------------------------------------------------------
@@ -153,10 +154,14 @@ bool Expander::writeOutput()
     fclose(f);
     bool done = false;
     while(!done) {
-      cout << "File " << outfile << " exists. Replace?(y/n)" << endl;
+      cout << "Warning: File " << outfile << " already exists.";
+      
+      char answer = 'y';
+      if(!m_force) {
+	cout <<  " Replace?(y/n)" << endl;
+	answer = getCharNoWait();
+      }
 
-      char answer = getCharNoWait();
-            
       if(answer == 'n') {
 	cout << "Aborted: The file " << outfile;
 	cout << " will not be created" << endl;

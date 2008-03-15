@@ -23,13 +23,16 @@ using namespace std;
 int main(int argc, char *argv[])
 {
   if((argc < 3) || (!strcmp(argv[1], "-h"))) {
-    cout << "Usage: splug filename newfilename [MACRO=VAL]" << endl;
+    cout << "Usage: splug filename newfilename [-f, --force][MACRO=VAL]" << endl;
     return(1);
   }
 
   Expander expander(argv[1], argv[2]);
 
   for(int i=3; i<argc; i++) {
+    string arg = argv[i];
+    if((arg == "-f") || (arg == "--force"))
+      expander.setForce(true);
     vector<string> svector = parseString(argv[i], '=');
     if(svector.size() == 2) {
       string left  = stripBlankEnds(svector[0]);
@@ -37,6 +40,8 @@ int main(int argc, char *argv[])
       expander.addMacro(left, right);
     }
   }
+
+  
 
   if(expander.verifyInfile())
     if(expander.expand())

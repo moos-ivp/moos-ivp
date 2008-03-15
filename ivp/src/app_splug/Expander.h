@@ -26,6 +26,7 @@ class Expander
   bool verifyInfile();
   bool writeOutput();
   void addMacro(std::string, std::string, bool=false);
+  void setForce(bool v) {m_force=v;};
 
  protected:
   void addNewLine(std::string);
@@ -37,6 +38,8 @@ class Expander
   std::map<std::string, std::string> macros;
   std::string infile;
   std::string outfile;
+
+  bool m_force;
 };
 
 #endif 
