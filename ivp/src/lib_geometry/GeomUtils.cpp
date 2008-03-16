@@ -20,7 +20,6 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
  
-#include <iostream>
 #include <math.h>
 #include "GeomUtils.h"
 #include "AngleUtils.h"
@@ -418,8 +417,6 @@ bool segmentsCross(double x1, double y1, double x2, double y2,
     return(true);
   }
 
-  //cout << "CASE FAILURE in segements_cross() !!" << endl;
-  //assert(0);
   return(false);
 }
 
@@ -447,12 +444,10 @@ double segmentAngle(double x1, double y1, double x2,
   double angle1 = relAng(x1,y1, x2,y2);
   if(angle1 > 180) 
     angle1 -= 360;
-  //cout << "angle1: " << angle1 << endl;
 
   double angle2 = relAng(x2,y2, x3,y3);
   if(angle2 > 180) 
     angle2 -= 360;
-  //cout << "angle2: " << angle2 << endl;
 
   double result = angle2 - angle1;
   if(result > 180)

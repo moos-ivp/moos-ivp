@@ -26,6 +26,7 @@
 #include "XYEncoders.h"
 #include "MBUtils.h"
 #include "FileBuffer.h"
+#include "XYBuildUtils.h"
 
 using namespace std;
 
@@ -43,22 +44,26 @@ vector<XYPolygon> readPolysFromFile(const string& filestr)
     string line = stripBlankEnds(file_vector[i]);
     
     if((line.length()!=0) && ((line)[0]!='#')) {
-      vector<string> svector = parseString(line, '=');
+      vector<string> svector = chompString(line, '=');
       if(svector.size() == 2) {
 	string left = stripBlankEnds(svector[0]);
-	if((left == "polygon") || 
-	   (left == "poly")  ||
+	if((left == "polygon")  || 
+	   (left == "poly")     ||
+	   (left == "points")   ||
 	   (left == "ellipse")  ||
-	   (left == "points")  ||
 	   (left == "radial")) {
 	  string right = stripBlankEnds(svector[1]);
 	  XYPolygon poly;
 	  bool res;
-	  if(left=="radial")
+	  if(left=="ellipse") {
+	    poly = stringToEllipse(right);
+	  }
+	  else if(left=="radial")
 	    res = poly.initialize("radial:"+right);
 	  else
 	    res = poly.initialize(right);
-	  poly_vector.push_back(poly);
+	  if(poly.size() != 0)
+	    poly_vector.push_back(poly);
 	}
       }
     }

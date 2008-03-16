@@ -33,8 +33,8 @@ public:
   ~XYPolygon() {};
 
   // Polygon create and edit functions
-  bool   add_vertex(double, double);    // One way to build
-  bool   initialize(std::string);       // Another way to build
+  bool   add_vertex(double, double, bool=true); // One way to build
+  bool   initialize(std::string);               // Another way to build
   bool   alter_vertex(double, double);
   bool   delete_vertex(double, double);
   bool   insert_vertex(double, double);
@@ -59,12 +59,12 @@ public:
   bool   seg_intercepts(double, double, double, double) const;
   bool   vertex_is_viewable(int, double, double) const;
   bool   is_convex() const  {return(convex_state);};
+  void   determine_convexity();
 
 protected:
   int    side(double x1, double y1, double x2, 
 	      double y2, double x3, double y3) const;
   void   set_side(int);
-  void   determine_convexity();
 
 private:
   std::vector<int> side_xy;

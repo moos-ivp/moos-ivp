@@ -44,17 +44,23 @@ XYPolygon::XYPolygon()
 
 //---------------------------------------------------------------
 // Procedure: add_vertex
-//      Note: A call to "determine_convexity()" is made since this
-//            operation may result in a change in the convexity.
+//    o A call to "determine_convexity()" is made since this
+//      operation may result in a change in the convexity.
+//    o The check_convexity option allows a bunch of vertices to be
+//      added and then just check for convexity at the end. 
 
-bool XYPolygon::add_vertex(double x, double y)
+bool XYPolygon::add_vertex(double x, double y, bool check_convexity)
 {
   XYSegList::add_vertex(x,y);
   side_xy.push_back(-1);
-
+  
   // With new vertex, we don't know if the new polygon is valid
-  determine_convexity();
-  return(convex_state);
+  if(check_convexity) {
+    determine_convexity();
+    return(convex_state);
+  }
+  else
+    return(true);
 }
 
 //---------------------------------------------------------------
