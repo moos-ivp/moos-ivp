@@ -24,9 +24,9 @@
 #define BHV_HTRAIL_HEADER
 
 #include "IvPBehavior.h"
+#include "LinearInterpolator.h"
 
 using namespace std;
-
 
 class IvPDomain;
 class BHV_HTrail : public IvPBehavior {
@@ -36,30 +36,48 @@ public:
   
   IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
-  void         onIdleState() ;
 
 protected:
-  double getRelevance(double, double, double, double, double, double);
+  bool   updateInfoIn();  
+  double getRelevance();
   double getPriority();
   int decode(string);
-  int state;  
-
-private:
-  std::string them_name; // Name for them in InfoBuffer
-  double trail_range;
-  double trail_angle;
-  double radius;
-  double max_range;
-  double obsolete;
-  double speed_delta;
-  int them_id;
   
+private: // Configuration parameters
+  std::string m_contact; 
+  double  m_trail_range;
+  double  m_trail_angle;
+  double  m_radius;
+  double  m_max_range;
+  double  m_max_util_cpa_dist;
+  double  m_min_util_cpa_dist;
+
+private: // State Variables
+  double  m_osx; // ownship x-position
+  double  m_osy; // ownship y-position
+  double  m_osh; // ownship heading
+  double  m_osv; // ownship velocity
+
+  double  m_cnx; // contact x-position
+  double  m_cny; // contact y-position
+  double  m_cnh; // contact heading
+  double  m_cnv; // contact velocity
+  double  m_cnt; // contact time
+
+  bool    m_interpolate;
+ 
   double contact_x,contact_y,contact_heading,contact_speed,contact_time;
-  double cnCRS, cnSPD,cnX,cnY,cnTime,curr_time;
-  int contact_id,new_state; 
+  double m_obsolete,speed_delta,curr_time;
+  std::string them_name; // Name for them in InfoBuffer
+  int them_id,contact_id,new_state,state;
   bool my_contact ;
+
+  LinearInterpolator m_interpolator;
+
 };
 #endif
+
+
 
 
 
