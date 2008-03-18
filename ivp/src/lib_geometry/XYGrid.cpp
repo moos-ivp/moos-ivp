@@ -24,6 +24,7 @@
 #include <math.h>
 #include "XYGrid.h"
 #include "MBUtils.h"
+#include "XYBuildUtils.h"
 
 using namespace std;
 
@@ -156,8 +157,8 @@ bool XYGrid::initialize(string given_config_str)
   if(vsize == 3)
     initial_val = atof(svector[2].c_str());
 
-  bool result = bounding_poly.initialize(poly_string);
-  if(!result)
+  bounding_poly = stringToPoly(poly_string);
+  if(bounding_poly.size() == 0)
     return(false);
 
   // Label of poly will also be label of this searchgrid.

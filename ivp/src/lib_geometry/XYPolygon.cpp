@@ -20,7 +20,6 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
-#include <iostream>
 #include <math.h>
 #include "XYPolygon.h"
 #include "MBUtils.h"
@@ -61,84 +60,6 @@ bool XYPolygon::add_vertex(double x, double y, bool check_convexity)
   }
   else
     return(true);
-}
-
-//---------------------------------------------------------------
-// Procedure: initialize
-//      Note: A call to "determine_convexity()" is made since this
-//            operation may result in a change in the convexity.
-
-bool XYPolygon::initialize(string str)
-{
-  str = stripBlankEnds(str);
-  if(!strncasecmp("radial:", str.c_str(), 7))
-    return(init_radial(str.c_str()+7));
-
-  bool ok;
-  if(!strncasecmp("polygon:", str.c_str(), 8))
-    ok = XYSegList::initialize(str.c_str()+8);
-  else if(!strncasecmp("poly:", str.c_str(), 5))
-    ok = XYSegList::initialize(str.c_str()+5);
-  else
-    ok = XYSegList::initialize(str);
-
-  for(int i=0; i<size(); i++) 
-    side_xy.push_back(-1);
-
-  if(!ok)
-    convex_state = false;
-  else
-    determine_convexity();
-
-  return(convex_state);
-}
-
-
-//---------------------------------------------------------------
-// Procedure: init_radial
-//
-/// Initializes a polygon that approximates a circle.
-/// The format of the string is 
-/// "radial:x_val,y_val,radius,num_points,[snap_value=0],[label]
-
-bool XYPolygon::init_radial(string str)
-{
-  if(!strncasecmp("radial:", str.c_str(), 7))
-    str = str.c_str()+7;
-
-  clear();
-  vector<string> svector = parseString(str, ',');
-  int vsize = svector.size();
-
-  if((vsize < 4) || (vsize > 6))
-    return(false);
-
-  double px   = atof(svector[0].c_str());
-  double py   = atof(svector[1].c_str());
-  double prad = atof(svector[2].c_str());
-  double ppts = atof(svector[3].c_str());
-
-  if(prad <= 0)
-    return(false);
-
-  double snap_value = 0;
-  if(vsize >= 5)
-    snap_value = atof(svector[4].c_str());
-    
-  if(vsize == 6) // Label present
-    set_label(svector[5]);
-
-  double delta = 360.0 / ppts;
-  for(double deg=(delta/2); deg<360; deg+=delta) {
-    double new_x, new_y;
-    projectPoint(deg, prad, px, py, new_x, new_y);
-    add_vertex(new_x, new_y);
-  }
-  if(snap_value >= 0)
-    apply_snap(snap_value);
-
-  determine_convexity();
-  return(convex_state);
 }
 
 //---------------------------------------------------------------
@@ -616,8 +537,6 @@ bool XYPolygon::seg_intercepts(double x1, double y1,
 
 bool XYPolygon::vertex_is_viewable(int ix, double x1, double y1) const
 {
-  //cout << "Checking if Vertex " << ix << " is viewable -----" << endl;
-
   int vsize = vertex_x.size();
   if(vsize == 0)
     return(false);
@@ -679,12 +598,9 @@ bool XYPolygon::vertex_is_viewable(int ix, double x1, double y1) const
     y4 = vertex_y[j];
 
     bool res = segmentsCross(x1,y1,x2,y2,x3,y3,x4,y4);
-    //cout << "Cross Result segment " << i << ": " << res << endl;
     if(res)
       count++;
    }
-
-  //cout << "   Cross Count: " << count << endl;
 
   if(count > 2)
     return(false);
@@ -821,12 +737,3 @@ void XYPolygon::determine_convexity()
   for(int i=0; i<size(); i++)
     convex_state = convex_state && (side_xy[i] != -1);
 }
-
-
-
-
-
-
-
-
-

@@ -347,7 +347,6 @@ void PMV_Viewer::drawPoint(float px, float py, int color)
 {
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
-
   glOrtho(0, w(), 0, h(), -1 ,1);
 
   glMatrixMode(GL_MODELVIEW);

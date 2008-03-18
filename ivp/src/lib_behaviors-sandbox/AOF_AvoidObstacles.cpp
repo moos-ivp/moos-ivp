@@ -26,6 +26,7 @@
 #include "AOF_AvoidObstacles.h"
 #include "AngleUtils.h"
 #include "GeomUtils.h"
+#include "XYBuildUtils.h"
 
 using namespace std;
 
@@ -98,9 +99,8 @@ bool AOF_AvoidObstacles::setParam(const string& param,
 				  const string& param_val)
 {
   if(param == "polygon") {
-    XYPolygon new_polygon;
-    bool ok = new_polygon.initialize(param_val);
-    if(!ok)
+    XYPolygon new_polygon = stringToPoly(param_val);
+    if(!new_polygon.is_convex())
       return(false);
     obstacles.push_back(new_polygon);
     obstacles_buff.push_back(new_polygon);

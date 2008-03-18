@@ -13,6 +13,7 @@
 #include "GeomUtils.h"
 #include "CircularUtils.h"
 #include "AngleUtils.h"
+#include "XYBuildUtils.h"
 
 using namespace std;
 
@@ -332,9 +333,8 @@ void GeoViewer::addCircle(XYCircle g_circle)
   double c_r = g_circle.getRad();
   string str = "radial:" + doubleToString(c_x) + ",";
   str += doubleToString(c_y) + "," + doubleToString(c_r) + ",36";
-  XYPolygon circle_poly;
-  bool ok = circle_poly.initialize(str);
-  if(!ok)
+  XYPolygon circle_poly = stringToPoly(str);
+  if(circle_poly.size() == 0)
     return;
   
   m_circle.push_back(g_circle);

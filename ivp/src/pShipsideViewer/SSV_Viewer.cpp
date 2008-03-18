@@ -29,6 +29,7 @@
 #include "AngleUtils.h"
 #include "MBUtils.h"
 #include "ColorParse.h"
+#include "XYBuildUtils.h"
 
 using namespace std;
 
@@ -646,8 +647,7 @@ void SSV_Viewer::drawRadials()
   poly_str += doubleToString(m_radial_size,2) + ",";
   poly_str += intToString(psize);
   
-  XYPolygon poly;
-  poly.initialize(poly_str);
+  XYPolygon poly = stringToPoly(poly_str);
 
   unsigned int i, j;
   float *points = new float[2*psize];
@@ -1043,13 +1043,10 @@ void SSV_Viewer::drawCirc(XYCircle dcircle, int pts, bool filled,
   poly_str += doubleToString(rad,2) + ",";
   poly_str += intToString(pts);
   
-  XYPolygon poly;
-  poly.initialize(poly_str);
+  XYPolygon poly = stringToPoly(poly_str);
 
   // Now set points to the actual size vs. the requested size
   pts = poly.size();
-
-  cout << "Radius: " << rad << "  pts: " << pts << endl;
 
   if(pts <= 0)
     return;

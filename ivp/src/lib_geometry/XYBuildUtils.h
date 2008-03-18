@@ -26,6 +26,12 @@
 #include <string>
 #include "XYPolygon.h"
 
-XYPolygon stringToEllipse(std::string);
+XYPolygon stringToPoly(std::string);
+
+XYPolygon stringPairsToEllipsePoly(std::string);
+XYPolygon stringPairsToRadialPoly(std::string);
+XYPolygon stringShortToRadialPoly(std::string);
+XYPolygon stringShortToPointsPoly(std::string);
+
   
 #endif

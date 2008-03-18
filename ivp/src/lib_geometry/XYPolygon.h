@@ -33,8 +33,7 @@ public:
   ~XYPolygon() {};
 
   // Polygon create and edit functions
-  bool   add_vertex(double, double, bool=true); // One way to build
-  bool   initialize(std::string);               // Another way to build
+  bool   add_vertex(double, double, bool=true);
   bool   alter_vertex(double, double);
   bool   delete_vertex(double, double);
   bool   insert_vertex(double, double);
@@ -44,11 +43,6 @@ public:
   bool   apply_snap(double snapval);
   void   reverse();
   void   rotate(double);
-
-protected:
-  bool   init_radial(std::string);
-  bool   init_ellipse(std::string);
-  bool   init_arc(std::string);
 
 public:
   bool   contains(double, double) const;

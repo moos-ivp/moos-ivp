@@ -47,6 +47,13 @@ vector<XYPolygon> readPolysFromFile(const string& filestr)
       vector<string> svector = chompString(line, '=');
       if(svector.size() == 2) {
 	string left = stripBlankEnds(svector[0]);
+	if(left == "gpoly") {
+	  string right = stripBlankEnds(svector[1]);
+	  XYPolygon poly;
+	  poly = stringToPoly(right);
+	  if(poly.size() != 0)
+	    poly_vector.push_back(poly);
+	}
 	if((left == "polygon")  || 
 	   (left == "poly")     ||
 	   (left == "points")   ||
@@ -56,12 +63,12 @@ vector<XYPolygon> readPolysFromFile(const string& filestr)
 	  XYPolygon poly;
 	  bool res;
 	  if(left=="ellipse") {
-	    poly = stringToEllipse(right);
+	    poly = stringPairsToEllipsePoly(right);
 	  }
 	  else if(left=="radial")
-	    res = poly.initialize("radial:"+right);
+	    poly = stringPairsToRadialPoly(right);
 	  else
-	    res = poly.initialize(right);
+	    poly = stringToPoly(right);
 	  if(poly.size() != 0)
 	    poly_vector.push_back(poly);
 	}

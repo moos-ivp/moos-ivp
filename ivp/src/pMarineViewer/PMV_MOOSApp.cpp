@@ -23,6 +23,7 @@
 #include <iostream>
 #include "PMV_MOOSApp.h"
 #include "MBUtils.h"
+#include "XYBuildUtils.h"
 
 using namespace std;
 
@@ -344,11 +345,10 @@ bool PMV_MOOSApp::receiveGRID_CONFIG(CMOOSMsg &Msg)
 
 bool PMV_MOOSApp::receivePolygon(CMOOSMsg &Msg)
 {
-  XYPolygon new_poly;
-  
-  bool ok = new_poly.initialize(Msg.m_sVal);
-  
+  XYPolygon new_poly = stringToPoly(Msg.m_sVal);
+
   string label = "ERR";
+  bool ok = (new_poly.size() != 0);
   if(ok)
     label = new_poly.get_label();
   

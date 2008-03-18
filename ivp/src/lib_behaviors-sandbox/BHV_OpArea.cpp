@@ -30,6 +30,7 @@
 #include "OF_Reflector.h"
 #include "MBUtils.h"
 #include "BuildUtils.h"
+#include "XYBuildUtils.h"
 
 using namespace std;
 
@@ -67,9 +68,9 @@ bool BHV_OpArea::setParam(string param, string val)
 
   // Typical line: polygon  = 0,0:0,100:100,0:100,100
   if(param == "polygon") {
-    polygon.clear();
-    // Should be convex - init will return false otherwise
-    return(polygon.initialize(val));
+    polygon = stringToPoly(val);
+    // Should be convex 
+    return(polygon.is_convex());
   }
   else if(param == "max_depth") {
     max_depth = atof(val.c_str());

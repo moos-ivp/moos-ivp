@@ -1,5 +1,7 @@
 
-points =  -220,-120:-270,-170:-270,-250:-190,-300:-130,-300:-90,-250:-90,-190
+gpoly = ellipse:: xpos=100 # ypos=-200 # major=200 # minor=70 # degs=30 # pts=20 # snap=1.0# label=foobar
 
-circle = 100,-100,200
+gpoly = radial:-100,-100,40,10
+gpoly = radial:: x=100 # y=-100 # radius=145 # pts=12
 
+gpoly = 0,-70:-40,-170:160,-260:320,-100:210,-20

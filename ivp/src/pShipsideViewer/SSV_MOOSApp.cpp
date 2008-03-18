@@ -23,6 +23,7 @@
 #include <iostream>
 #include "SSV_MOOSApp.h"
 #include "MBUtils.h"
+#include "XYBuildUtils.h"
 
 using namespace std;
 
@@ -314,10 +315,9 @@ bool SSV_MOOSApp::receiveGRID_CONFIG(CMOOSMsg &Msg)
 
 bool SSV_MOOSApp::receivePolygon(CMOOSMsg &Msg)
 {
-  XYPolygon new_poly;
+  XYPolygon new_poly = stringToPoly(Msg.m_sVal);
   
-  bool ok = new_poly.initialize(Msg.m_sVal);
-  if(ok) {
+  if(new_poly.size() != 0) {
     cout << "Receieved OK poly of size: " << new_poly.size() << endl;
     m_gui->addPoly(new_poly);
     return(true);

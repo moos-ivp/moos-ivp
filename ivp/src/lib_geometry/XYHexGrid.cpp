@@ -24,6 +24,7 @@
 #include <math.h>
 #include "XYHexGrid.h"
 #include "MBUtils.h"
+#include "XYBuildUtils.h"
 
 using namespace std;
 
@@ -62,11 +63,10 @@ bool XYHexGrid::initialize(string given_config_str)
   if(vsize == 3)
     initial_val = atof(svector[2].c_str());
 
-  XYPolygon poly;
-  bool result = poly.initialize(poly_string);
-  if(!result)
+  XYPolygon poly = stringToPoly(poly_string);
+  if(poly.size() == 0)
     return(false);
-
+  
   // Label of poly will also be label of this searchgrid.
   string poly_label = poly.get_label();
   if(poly_label == "") {

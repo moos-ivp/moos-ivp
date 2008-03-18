@@ -32,6 +32,7 @@
 #include "AngleUtils.h"
 #include "GeomUtils.h"
 #include "BuildUtils.h"
+#include "XYBuildUtils.h"
 
 using namespace std;
 
@@ -65,9 +66,8 @@ bool BHV_AvoidObstacles::setParam(string param, string val)
     return(true);
 
   if((param == "polygon") || (param == "points")) {
-    XYPolygon new_polygon;
-    bool ok = new_polygon.initialize(val);
-    if(!ok)
+    XYPolygon new_polygon = stringToPoly(val);
+    if(!new_polygon.is_convex())
       return(false);
     obstacles.push_back(new_polygon);
     aof_avoid->setParam("polygon", val);
