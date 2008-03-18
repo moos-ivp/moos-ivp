@@ -74,12 +74,6 @@ bool XYPolygon::initialize(string str)
   if(!strncasecmp("radial:", str.c_str(), 7))
     return(init_radial(str.c_str()+7));
 
-  if(!strncasecmp("ellipse:", str.c_str(), 8))
-    return(init_ellipse(str.c_str()+8));
-
-  if(!strncasecmp("arc:", str.c_str(), 4))
-    return(init_arc(str.c_str()+4));
-
   bool ok;
   if(!strncasecmp("polygon:", str.c_str(), 8))
     ok = XYSegList::initialize(str.c_str()+8);
@@ -140,118 +134,6 @@ bool XYPolygon::init_radial(string str)
     projectPoint(deg, prad, px, py, new_x, new_y);
     add_vertex(new_x, new_y);
   }
-  if(snap_value >= 0)
-    apply_snap(snap_value);
-
-  determine_convexity();
-  return(convex_state);
-}
-
-//---------------------------------------------------------------
-// Procedure: init_ellipse
-//
-/// Initializes a polygon that approximates an ellipse
-/// The format of the string is 
-/// "elipse:x,y,major,minor,rotation,pts,[snap_value=0],[label]
-
-bool XYPolygon::init_ellipse(string str)
-{
-  if(!strncasecmp("ellipse:", str.c_str(), 8))
-    str = str.c_str()+8;
-
-  vector<string> svector = parseString(str, ',');
-  int vsize = svector.size();
-
-  if((vsize < 6) || (vsize > 8))
-    return(false);
-
-  clear();
-  double px     = atof(svector[0].c_str());
-  double py     = atof(svector[1].c_str());
-  double major  = atof(svector[2].c_str());
-  double minor  = atof(svector[3].c_str());
-  double rdegs  = atof(svector[4].c_str());
-  double rrads  = degToRadians(rdegs);
-  int    pts    = atoi(svector[5].c_str());
-
-  if((major <= 0) || (minor <= 0) || (pts < 4))
-    return(false);
-
-  double snap_value = 0;
-  if(vsize >= 7)
-    snap_value = atof(svector[6].c_str());
-    
-  if(vsize == 8) // Label present
-    set_label(svector[7]);
-
-  double delta = (2*M_PI) / pts;
-  for(int i=0; i<pts; i++) {
-    double angle = -M_PI + (i*delta);
-    double new_x = px + (major/2 * cos(angle) * cos(rrads)) - 
-      (minor/2 * sin(angle) * sin(rrads));
-    double new_y = py + (minor/2 * sin(angle) * cos(rrads)) +
-      (major/2 * cos(angle) * sin(rrads));
-    add_vertex(new_x, new_y);
-  }
-  if(snap_value >= 0)
-    apply_snap(snap_value);
-
-  determine_convexity();
-  return(convex_state);
-}
-
-//---------------------------------------------------------------
-// Procedure: init_arc
-
-bool XYPolygon::init_arc(string str)
-{
-  if(!strncasecmp("arc:", str.c_str(), 7))
-    str = str.c_str()+7;
-
-  clear();
-  vector<string> svector = parseString(str, ',');
-  int vsize = svector.size();
-  
-  if((vsize < 6) || (vsize > 7))
-    return(false);
-
-  double px   = atof(svector[0].c_str());
-  double py   = atof(svector[1].c_str());
-  double prad = atof(svector[2].c_str());
-  double lang = atof(svector[3].c_str());
-  double rang = atof(svector[4].c_str());
-  double ppts = atof(svector[5].c_str());
-
-  lang = angle360(lang);
-  rang = angle360(rang);
-
-  double snap_value = 0;
-  if(vsize == 7)
-    snap_value = atof(svector[6].c_str());
-
-  double delta = 360.0 / ppts;
-  double new_x, new_y;
-
-  // Case 1: Arc does not cross the ZERO degree mark
-  if((rang >=0) && (rang <= lang)) {
-    for(double deg=lang; deg>rang; deg-=delta) {
-      projectPoint(deg, prad, px, py, new_x, new_y);
-      add_vertex(new_x, new_y);
-    }
-    projectPoint(rang, prad, px, py, new_x, new_y);
-    add_vertex(new_x, new_y);
-  }
-  // Case 2: Arc DOES cross the ZERO degree mark
-  else {
-    for(double deg=rang; ((deg>=rang)||(deg<lang)); deg+=delta) {
-      deg = angle360(deg);
-      projectPoint(deg, prad, px, py, new_x, new_y);
-      add_vertex(new_x, new_y);
-    }
-    projectPoint(lang, prad, px, py, new_x, new_y);
-    add_vertex(new_x, new_y);
-  }
-
   if(snap_value >= 0)
     apply_snap(snap_value);
 
