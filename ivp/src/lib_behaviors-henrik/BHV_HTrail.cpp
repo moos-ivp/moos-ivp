@@ -1,9 +1,9 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin and John Leonard                    */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
-/*    FILE: BHV_Trail.cpp                                        */
+/*    FILE: BHV_HTrail.cpp                                        */
 /*    DATE: Jul 3rd 2005 Sunday morning at Brueggers             */
-/*    MOD to CCL:  Henrik Schmidt                                */
+/*    MOD to CCL and UTC extrapolation:  Henrik Schmidt                                */
 /*    DATE: Mar 16 2008 Monday afternoon at NURC                 */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
@@ -54,12 +54,14 @@ BHV_HTrail::BHV_HTrail(IvPDomain gdomain) : IvPBehavior(gdomain)
   m_trail_angle  = 180;
   m_radius       = 5;
   m_max_range    = 0;
-  m_interpolate  = false;
+  m_interpolate  = true;
+  m_obsolete = 120;
+  m_speed_delta = 0;
 
   m_min_util_cpa_dist = 100;
   m_max_util_cpa_dist = 0; 
 
-  addInfoVars("NAV_X, NAV_Y, NAV_SPEED, NAV_HEADING, COMMUNITY_STAT, DB_TIME");
+  addInfoVars("NAV_X, NAV_Y, NAV_SPEED, NAV_HEADING, DB_TIME");
 }
 
 //-----------------------------------------------------------
@@ -77,27 +79,36 @@ bool BHV_HTrail::setParam(string g_param, string g_val)
   if(IvPBehavior::setParam(g_param, g_val))
     return(true);
 
-  if((g_param == "them") || (g_param == "contact")) {
-    m_contact = g_val;
-    them_id = atoi(g_val.c_str());
-    return(true);
-  }  
-  else if(g_param == "trail_range") {
-    m_trail_range = atof(g_val.c_str());
-    return(true);
-  }  
-  else if(g_param == "trail_angle") {
-    m_trail_angle = angle180(atof(g_val.c_str()));
-    return(true);
-  }  
-  else if(g_param == "radius") {
-    m_radius = atof(g_val.c_str());
-    return(true);
-  }  
-  else if(g_param == "max_range") {
-    m_max_range = atof(g_val.c_str());
-    return(true);
-  }  
+  if((g_param == "them") || (g_param == "contact")) 
+    {
+      m_contact = toupper(g_val);
+      addInfoVars(m_contact+"_NAV_X");
+      addInfoVars(m_contact+"_NAV_Y");
+      addInfoVars(m_contact+"_NAV_SPEED");
+      addInfoVars(m_contact+"_NAV_HEADING");
+      addInfoVars(m_contact+"_NAV_TIME");
+      return(true);
+    }  
+  else if(g_param == "trail_range") 
+    {
+      m_trail_range = atof(g_val.c_str());
+      return(true);
+    }  
+  else if(g_param == "trail_angle") 
+    {
+      m_trail_angle = angle180(atof(g_val.c_str()));
+      return(true);
+    }  
+  else if(g_param == "radius") 
+    {
+      m_radius = atof(g_val.c_str());
+      return(true);
+    }  
+  else if(g_param == "max_range") 
+    {
+      m_max_range = atof(g_val.c_str());
+      return(true);
+    }  
   else if (g_param == "obsolete")
     {
       m_obsolete = atof(g_val.c_str());
@@ -105,9 +116,10 @@ bool BHV_HTrail::setParam(string g_param, string g_val)
     }
   else if (g_param == "speed_delta")
     {
-      speed_delta = atof(g_val.c_str());
+      m_speed_delta = atof(g_val.c_str());
       return(true);
     }
+ 
   return(false);
 }
 
@@ -123,21 +135,24 @@ IvPFunction *BHV_HTrail::onRunState()
   }
 
   // Set m_osx, m_osy, m_osh, m_osv, m_cnx, m_cny, m_cnh, m_cnv
-    if(!updateInfoIn())
+  if(!updateInfoIn())
     return(0);
- 
+
   // Calculate the trail point based on trail_angle, trail_range.
   //double posX, posY; 
   //double adjusted_angle = angle360(m_cnh + m_trail_angle);
-  //  projectPoint(adjusted_angle, m_trail_range, m_cnx, m_cny, posX, posY);
+  //projectPoint(adjusted_angle, m_trail_range, m_cnx, m_cny, posX, posY);
+
   // Changed by HS. heading/degree problem 
 
   double adjusted_angle = headingToRadians(angle360(m_cnh + m_trail_angle));
   double posX = m_cnx + m_trail_range*cos(adjusted_angle);
   double posY = m_cny + m_trail_range*sin(adjusted_angle);
 
+
   // Calculate the relevance first. If zero-relevance, we won't
   // bother to create the objective function.
+   //  double relevance = getRelevance();
   double relevance = 0;
   if (((curr_time - m_cnt) < m_obsolete) || (m_obsolete == 0))
     {
@@ -150,8 +165,8 @@ IvPFunction *BHV_HTrail::onRunState()
   
   postMessage("TRAIL_CONTACT_X", m_cnx);
   postMessage("TRAIL_CONTACT_Y", m_cny);
-  postMessage("TRAIL_CONTACT_MSG_X", contact_x);
-  postMessage("TRAIL_CONTACT_MSG_Y", contact_y);
+  //  postMessage("TRAIL_CONTACT_MSG_X", contact_x);
+  //  postMessage("TRAIL_CONTACT_MSG_Y", contact_y);
   postMessage("TRAIL_CONTACT_SPEED", m_cnv);
   postMessage("TRAIL_CONTACT_HEADING", m_cnh);
   postMessage("TRAIL_RELEVANCE", relevance);
@@ -194,14 +209,17 @@ IvPFunction *BHV_HTrail::onRunState()
     IvPFunction *hdg_ipf = hdg_zaic.extractOF();
     
     ZAIC_PEAK spd_zaic(m_domain, "speed");
-    double modv =m_cnv;
+    //    double modv = m_cnv - 0.1;
+    //   if(modv < 0)
+    //    modv = 0;
 
+    double modv =m_cnv;
     // If inside radius and ahead, reduce speed
     double head_x = cos(headingToRadians(contact_heading));
     double head_y = sin(headingToRadians(contact_heading));
     bool ahead = (head_x*(m_osx-posX)+head_y*(m_osy-posY) > 0.0);
-    if (ahead && (m_cnv > speed_delta))
-	modv -= speed_delta;
+    if (ahead && (m_cnv > m_speed_delta))
+	modv -= m_speed_delta;
 
     spd_zaic.addSummit(modv, 0, 2.0, 10, 0, 25);
     spd_zaic.setValueWrap(true);
@@ -236,22 +254,19 @@ IvPFunction *BHV_HTrail::onRunState()
 
 bool BHV_HTrail::updateInfoIn()
 {
-  bool ok1, ok2, ok3, ok4, ok5, ok6, ok7, ok8;
+  bool ok, ok1, ok2, ok3, ok4, ok5, ok6, ok7, ok8, ok9;
  
   m_osx = getBufferDoubleVal("NAV_X", ok1);
   m_osy = getBufferDoubleVal("NAV_Y", ok2);
   m_osh = getBufferDoubleVal("NAV_HEADING", ok3);
   m_osv = getBufferDoubleVal("NAV_SPEED", ok4);
-
-  //get current contact state
-  string tState = getBufferStringVal("COMMUNITY_STAT", ok5);
+  curr_time = getBufferDoubleVal("DB_TIME", ok);
   
-
-  if(!ok5) 
-    {
-      // postEMessage("contact info not found.");
-      return(false);
-    }
+  m_cnx = getBufferDoubleVal(m_contact+"_NAV_X", ok5);
+  m_cny = getBufferDoubleVal(m_contact+"_NAV_Y", ok6);
+  m_cnh = getBufferDoubleVal(m_contact+"_NAV_HEADING", ok7);
+  m_cnv = getBufferDoubleVal(m_contact+"_NAV_SPEED", ok8);
+  m_cnt = getBufferDoubleVal(m_contact+"_NAV_TIME", ok9);
 
   if(!ok1)
     postWMessage("No ownship NAV_X in info_buffer.");
@@ -261,45 +276,42 @@ bool BHV_HTrail::updateInfoIn()
     postWMessage("No ownship NAV_HEADING in info_buffer.");
   if(!ok4)
     postWMessage("No ownship NAV_SPEED in info_buffer.");
+  if(!ok5)
+    postWMessage("No contact NAV_X in info_buffer.");
+  if(!ok6)
+    postWMessage("No contact NAV_Y in info_buffer.");
+  if(!ok7)
+    postWMessage("No contact NAV_HEADING in info_buffer.");
+  if(!ok8)
+    postWMessage("No contact NAV_SPEED in info_buffer.");
+  if(!ok9)
+    postWMessage("No contact NAV_TIME in info_buffer.");
 
-  if(!ok1 || !ok2 || !ok3 || !ok4 )
+  if(!ok1 || !ok2 || !ok3 || !ok4 || !ok5 || !ok6 || !ok7 || !ok8 || !ok9)
     return(false);
-  
-  new_state = decode(tState);
 
-  my_contact = (contact_id == them_id);
+  if(!m_interpolate)
+    return(true);
 
-  double head_x =0;
-  double head_y =0;
+  // Henrik's extrapolation
+  double dist_extrap = m_cnv * (curr_time - m_cnt);
+  double head_x = dist_extrap*cos(headingToRadians(m_cnh));
+  double head_y = dist_extrap*sin(headingToRadians(m_cnh));
+  m_cnx   += head_x;
+  m_cny   += head_y;
 
-  curr_time = getBufferDoubleVal("DB_TIME", ok1);
-
-  if ( my_contact )
-    {
-      // The following replaced by m_interpolator
-            double dist_extrap = contact_speed * (curr_time - contact_time);
-            head_x = dist_extrap*cos(headingToRadians(contact_heading));
-            head_y = dist_extrap*sin(headingToRadians(contact_heading));
-      m_cnh = contact_heading;
-      m_cnv = contact_speed;
-      m_cnx   = contact_x + head_x;
-      m_cny   = contact_y + head_y;
-      m_cnt   = contact_time;
-      m_interpolator.setPosition(m_cnx, m_cny, m_cnv, m_cnh, m_cnt);
-    }
-
-      if(!m_interpolate)
-	return(true);
-      else
-	{
-	  double new_cnx, new_cny;
-	  bool ok = m_interpolator.getPosition(new_cnx, new_cny, curr_time);
-	  if(ok) 
-	    {
-	      m_cnx = new_cnx;
-	      m_cny = new_cny;
-	    }
-	}
+  //  double curr_time = getBufferCurrTime();
+  // double mark_time = getBufferTimeVal(m_contact+"_NAV_X");
+  // double mark_time = cnt;
+  //  if(mark_time == curr_time)
+  //    m_interpolator.setPosition(m_cnx, m_cny, m_cnv, m_cnh, curr_time);
+    
+  //double new_cnx, new_cny;
+  //bool ok = m_interpolator.getPosition(new_cnx, new_cny, curr_time);
+  //if(ok) {
+  //  m_cnx = new_cnx;
+  //  m_cny = new_cny;
+  //}
 
   return(true);
 }
@@ -324,36 +336,6 @@ double BHV_HTrail::getRelevance()
     return(1.0);
   else
     return(0.0);
-}
-
-int BHV_HTrail::decode(string status)
-{
-  vector<string> svector;
-  vector<string> svector2;
-  
-  
-  // Parse the community state string for "contact"  
-  svector = parseString(status, ',');
-  for(unsigned int i=0; i<svector.size(); i++) 
-    {
-      svector2 = parseString(svector[i], '=');
-      if(svector2.size() != 2) 
-	{
-	  postEMessage("error,BHV_HShadow: Invalid community string");
-	  return(0);
-	}
-      
-      string left  = stripBlankEnds(svector2[0]);
-      string right = stripBlankEnds(svector2[1]);
-      if(left == "node")     contact_id       = atoi(right.c_str());
-      if(left == "x")        contact_x        = atof(right.c_str());
-      if(left == "y")        contact_y        = atof(right.c_str());
-      if(left == "heading")  contact_heading  = atof(right.c_str());
-      if(left == "speed")    contact_speed    = atof(right.c_str());
-      if(left == "time")     contact_time     = atof(right.c_str());
-    }
-  
-  return(state);
 }
 
 

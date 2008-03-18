@@ -75,14 +75,15 @@ bool BHV_Trail::setParam(string g_param, string g_val)
   if(IvPBehavior::setParam(g_param, g_val))
     return(true);
 
-  if((g_param == "them") || (g_param == "contact")) {
-    m_contact = toupper(g_val);
-    addInfoVars(m_contact+"_NAV_X");
-    addInfoVars(m_contact+"_NAV_Y");
-    addInfoVars(m_contact+"_NAV_SPEED");
-    addInfoVars(m_contact+"_NAV_HEADING");
-    return(true);
-  }  
+  if((g_param == "them") || (g_param == "contact")) 
+    {
+      m_contact = toupper(g_val);
+      addInfoVars(m_contact+"_NAV_X");
+      addInfoVars(m_contact+"_NAV_Y");
+      addInfoVars(m_contact+"_NAV_SPEED");
+      addInfoVars(m_contact+"_NAV_HEADING");
+      return(true);
+    }  
   else if(g_param == "trail_range") {
     m_trail_range = atof(g_val.c_str());
     return(true);

@@ -67,7 +67,7 @@ private: // State Variables
   bool    m_interpolate;
  
   double contact_x,contact_y,contact_heading,contact_speed,contact_time;
-  double m_obsolete,speed_delta,curr_time;
+  double m_obsolete,m_speed_delta,curr_time;
   std::string them_name; // Name for them in InfoBuffer
   int them_id,contact_id,new_state,state;
   bool my_contact ;
