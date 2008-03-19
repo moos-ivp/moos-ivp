@@ -1,7 +1,7 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin                                     */
+/*    NAME: Donald Eickstedt                                     */
 /*    ORGN: NAVSEA Newport RI - MIT Dept. Mechanical Engineering */
-/*    FILE: BHV_ConstantDepth.h                                  */
+/*    FILE: BHV_Adaptive_YoYo.h                                  */
 /*    DATE: Jul 3rd 2005                                         */
 /*                                                               */
 /* IvPHelm - Interval Programming Autonomous Control Helm        */
@@ -48,6 +48,7 @@ public:
 
 protected:
   double desired_depth;
+  int width,pwidth;
 };
 #endif
 

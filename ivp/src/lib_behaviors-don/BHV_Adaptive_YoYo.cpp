@@ -39,6 +39,7 @@
 #include <iostream>
 #include <math.h> 
 #include "BHV_Adaptive_YoYo.h"
+#include "ZAIC_PEAK.h"
 #include "BuildUtils.h"
 
 using namespace std;
@@ -50,8 +51,8 @@ BHV_Adaptive_YoYo::BHV_Adaptive_YoYo(IvPDomain gdomain) :
   IvPBehavior(gdomain)
 {
   this->setParam("descriptor", "(d)bhv_Adaptive_YoYo");
-  this->setParam("unifbox", "depth=5");
-  this->setParam("gridbox", "depth=10");
+  this->setParam("unifbox", "depth=2");
+  this->setParam("gridbox", "depth=5");
 
   m_domain = subDomain(m_domain, "depth");
 
@@ -67,17 +68,26 @@ bool BHV_Adaptive_YoYo::setParam(string param, string val)
   if(IvPBehavior::setParamCommon(param, val))
     return(true);
 
+  if(param == "width") 
+    {
+      width = (int) atof(val.c_str());
+    }
+
+  if(param == "peak_width") 
+    {
+      pwidth = (int) atof(val.c_str());
+    }
 
   return(false);
 }
 
 //-----------------------------------------------------------
-// Procedure: onRunState
+// Procedure: produceOF
 //
 //          ^     desired-depth     
 //      100-|           .
 //          |          / \
-//          | piece-1 /   \ piece-2
+//          |         /   \ 
 //          |        /     \
 // Utility  |       /       \
 //          |      /         \
@@ -88,15 +98,7 @@ bool BHV_Adaptive_YoYo::setParam(string param, string val)
 
 IvPFunction *BHV_Adaptive_YoYo::onRunState() 
 {
-  double peak_utility = 100;
-
-  int    depthIndex  = m_domain.getIndex("depth");
-
-  if(depthIndex == -1) {
-    postEMessage("No 'depth' variable in the helm domain");
-    return(0);
-  }
-
+  
   bool ok; 
   double desired_depth = getBufferDoubleVal("YoYo_depth",  ok);
 
@@ -105,42 +107,15 @@ IvPFunction *BHV_Adaptive_YoYo::onRunState()
     return(false);
   }
 
+  ZAIC_PEAK depth_zaic(m_domain,"depth");
+  depth_zaic.setSummit(desired_depth);
+  depth_zaic.setValueWrap(true);
+  depth_zaic.setPeakWidth(pwidth);
+  depth_zaic.setBaseWidth(width);
+  depth_zaic.setMinMaxUtil(0,100);
 
-  double depthBase   = m_domain.getVarLow(depthIndex);
-  double depthDelta  = m_domain.getVarDelta(depthIndex);
-  int    depthPoints = m_domain.getVarPoints(depthIndex);
-  
-  double double_index = (desired_depth - depthBase) / depthDelta;
-  int    domain_index = (int)(floor(double_index + 0.5));
-  double slope = peak_utility / domain_index;
+  IvPFunction *of = depth_zaic.extractOF();
 
-  IvPBox *piece0 = new IvPBox(1,1);
-  IvPBox *piece1 = 0;
-
-  piece0->setPTS(0, 0, domain_index);
-  piece0->wt(0) = slope;
-  piece0->wt(1) = 0.0;
-
-  if(domain_index < depthPoints) {
-    piece1 = new IvPBox(1,1);
-    piece1->setPTS(0, domain_index+1, depthPoints);
-    piece1->wt(0) = -slope;
-    piece1->wt(1) = 2.0 * peak_utility;
-  }
-
-  PDMap *pdmap;
-  if(piece1) {
-    pdmap = new PDMap(2, m_domain, 1);
-    pdmap->bx(1) = piece1;
-  }
-  else
-    pdmap = new PDMap(1, m_domain, 1);
-  pdmap->bx(0) = piece0;
-
-
-  pdmap->updateGrid();
-
-  IvPFunction *of = new IvPFunction(pdmap);
   of->setPWT(m_priority_wt);
 
   return(of);
