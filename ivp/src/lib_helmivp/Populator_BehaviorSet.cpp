@@ -99,7 +99,7 @@
 #include "BHV_CloseRange.h"
 #include "BHV_ArrayAngle.h"
 #include "BHV_ArrayTurn.h"
-#include "BHV_2VAngle.h"
+#include "BHV_CollaborativeTracking.h"
 #endif
 
 #if 1
@@ -412,8 +412,8 @@ IvPBehavior* Populator_BehaviorSet::initializeBehavior(string bhv_name)
     bhv = new BHV_ArrayTurn(domain);
   else if (bhv_name == "BHV_ArrayAngle")
     bhv = new BHV_ArrayAngle(domain);
-  else if (bhv_name == "BHV_2VAngle")
-    bhv = new BHV_2VAngle(domain);
+  else if (bhv_name == "BHV_CollaborativeTracking")
+    bhv = new BHV_CollaborativeTracking(domain);
 #endif
 
 #if 1
