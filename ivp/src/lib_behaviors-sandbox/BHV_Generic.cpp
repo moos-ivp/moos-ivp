@@ -32,7 +32,7 @@
 #include <math.h>
 #include "GeomUtils.h"
 #include "BHV_Generic.h"
-#include "AOF_WPT2D.h"
+//#include "AOF_WPT2D.h"
 #include "OF_Reflector.h"
 #include "MBUtils.h"
 #include "BuildUtils.h"
