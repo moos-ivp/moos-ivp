@@ -1,6 +1,6 @@
 /***********************************************************/
 /*    NAME: Don Eickstedt                                  */
-/*    FILE: BHV_ArrayAngle.h                                  */
+/*    FILE: BHV_ArrayAngle.h                            */
 /***********************************************************/
  
 #ifndef BHV_ARRAYANGLE_HEADER
@@ -26,9 +26,7 @@ protected:
   int decode(string);
 
   double desired_angle,true_bearing;
-  double heading,speed;
-
-  int width,new_state;
+  int width,pwidth;
 
 };
 #endif

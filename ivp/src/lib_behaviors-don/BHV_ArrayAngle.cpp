@@ -9,8 +9,7 @@
 #include <math.h> 
 #include "BHV_ArrayAngle.h"
 #include "MBUtils.h"
-#include "AOF_ArrayAngle.h"
-#include "OF_Reflector.h"
+#include "ZAIC_PEAK.h"
 #include "BuildUtils.h"
 
 using namespace std;
@@ -21,15 +20,15 @@ using namespace std;
 BHV_ArrayAngle::BHV_ArrayAngle(IvPDomain gdomain) : 
   IvPBehavior(gdomain)
 {
-  this->setParam("descriptor", "(d)bhv_1BTrack");
-  this->setParam("build_info", "uniform_piece=course:3,speed:2");
-  this->setParam("build_info", "uniform_grid=course:9,speed:6");
+  this->setParam("descriptor", "(d)bhv_ArrayAngleNew");
+  this->setParam("unifbox", "course=3");
+  this->setParam("gridbox", "course=9");
 
-  m_domain = subDomain(m_domain, "course,speed");
+  m_domain = subDomain(m_domain, "course");
  
-  // addInfoVars("NAV_HEADING");
   addInfoVars("AEL_HEADING");
   addInfoVars("BEARING_STAT");
+  
 }
 
 //-----------------------------------------------------------
@@ -44,6 +43,10 @@ bool BHV_ArrayAngle::setParam(string param, string val)
     width = (int) atof(val.c_str());
   }
 
+ if(param == "peak_width") {
+    pwidth = (int) atof(val.c_str());
+  }
+
   if(param == "desired_angle") {
      desired_angle = atof(val.c_str());
     return(true);
@@ -55,44 +58,67 @@ bool BHV_ArrayAngle::setParam(string param, string val)
 
 
 //-----------------------------------------------------------
-// Procedure: onRunState
+// Procedure: produceOF
 
 IvPFunction *BHV_ArrayAngle::onRunState()  
 {
   bool ok1,ok2;
-  //get current course
-  // Changed to array heading HS 103006
-  // double osCourse = getBufferDoubleVal("NAV_HEADING", ok1);
+  
+  //get the heading of the array
   double osCourse = getBufferDoubleVal("AEL_HEADING", ok1);
   
   //get current tracking state
   string tState = getBufferStringVal("BEARING_STAT", ok2);
 
   if(!ok1 || !ok2){
-    postEMessage("error,BHV_ArrayAngle: ownship data not available");
+    postEMessage("error,BHV_ArrayAngleNew: ownship data not available");
     return (0);
   }
     
-  new_state = decode(tState);
+  int new_state = decode(tState);
+
+  double current_angle = (osCourse-true_bearing);
+  if (current_angle < 0.0)
+    current_angle = fabs(current_angle);
+  else if(current_angle >= 180.0)
+    current_angle = 360- current_angle;
+
+  postMessage("ARRAY_ANGLE",current_angle);
 
   double relevance = getRelevance();
 
   if(relevance <= 0)
     return(0);
 
- 
-  AOF_ArrayAngle aof_track(m_domain);
-  aof_track.setParam("width",width);
-  aof_track.setParam("osCourse",osCourse);
-  aof_track.setParam("t_bearing",true_bearing);
-  aof_track.setParam("desired_angle",desired_angle);
-  aof_track.initialize();
+  //pick left side desired direction
+  double leftabs = (true_bearing - desired_angle);
+  if (leftabs < 0.0)
+    leftabs += 360.0;
+  
+  //pick right side desired direction
+  double rightabs = (true_bearing + desired_angle);
+  if(rightabs > 360.0)
+    rightabs -= 360.0;
 
-  OF_Reflector reflector(&aof_track,1);
- 
-  reflector.create(m_build_info);
- 
-  IvPFunction *of = reflector.extractOF();
+  //postMessage("LEFTABS",leftabs);
+  //postMessage("RIGHTABS",rightabs);
+  
+  ZAIC_PEAK crs_zaic(m_domain,"course");
+  crs_zaic.setSummit(leftabs);
+  crs_zaic.setValueWrap(true);
+  crs_zaic.setPeakWidth(pwidth);
+  crs_zaic.setBaseWidth(width);
+  //crs_zaic.setSummitDelta(100.0);
+  crs_zaic.setMinMaxUtil(0,100);
+
+  int new_index = crs_zaic.addSummit();  
+  crs_zaic.setSummit(rightabs, new_index);
+  crs_zaic.setPeakWidth(pwidth, new_index);
+  //crs_zaic.setSummitDelta(100.0, new_index);
+  crs_zaic.setBaseWidth(width,new_index);
+  crs_zaic.setMinMaxUtil(0,100,new_index);
+
+  IvPFunction *of = crs_zaic.extractOF();
 
   of->setPWT(m_priority_wt);
  
@@ -110,7 +136,7 @@ int BHV_ArrayAngle::decode(string status)
   for(unsigned int i=0; i<svector.size(); i++) {
     svector2 = parseString(svector[i], '=');
     if(svector2.size() != 2) {
-      postEMessage("error,BHV_CloseRange: Invalid waypoint string");
+      postEMessage("error,BHV_ArrayAngleNew: Invalid waypoint string");
       return(0);
     }
 
