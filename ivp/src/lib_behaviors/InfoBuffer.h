@@ -67,12 +67,12 @@ public: // virtuals defined
   void   print() const;
 
 public:
-  bool  setValue(std::string, double);
-  bool  setValue(std::string, std::string);
+  bool  setValue(std::string, double, double=0);
+  bool  setValue(std::string, std::string, double=0);
   void  clearDeltaVectors();
 
-  void   setCurrTime(double t)         {m_curr_time = t;};
-  double getCurrTime() const           {return(m_curr_time);};
+  void   setCurrTime(double t)         {m_curr_time_utc = t;};
+  double getCurrTime() const           {return(m_curr_time_utc);};
 
 protected:
   std::map<std::string, std::string> smap;
@@ -82,7 +82,7 @@ protected:
   std::map<std::string, std::vector<std::string> >  vsmap;
   std::map<std::string, std::vector<double> > vdmap;
 
-  double m_curr_time;
+  double m_curr_time_utc;
 };
 #endif
 

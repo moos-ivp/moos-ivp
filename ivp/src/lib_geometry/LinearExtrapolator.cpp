@@ -20,6 +20,7 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
+#include <iostream>
 #include "LinearExtrapolator.h"
 #include "GeomUtils.h"
 
@@ -30,13 +31,14 @@ using namespace std;
 
 LinearExtrapolator::LinearExtrapolator()
 {
-  m_xpos        = 0;
-  m_ypos        = 0;
-  m_spd         = 0;
-  m_hdg         = 0;
-  m_decay_start = 0;
-  m_decay_end   = 0;
-  m_timestamp   = 0;
+  m_xpos         = 0;
+  m_ypos         = 0;
+  m_spd          = 0;
+  m_hdg          = 0;
+  m_decay_start  = 0;
+  m_decay_end    = 0;
+  m_timestamp    = 0;
+  m_position_set = false;
 }
 
 //---------------------------------------------------------------
@@ -45,13 +47,28 @@ LinearExtrapolator::LinearExtrapolator()
 bool LinearExtrapolator::getPosition(double& r_xpos, double& r_ypos,
 				     double g_timestamp)
 {
+  if(!m_position_set) {
+    r_xpos = 0;
+    r_ypos = 0;
+    return(false);
+  }
+
   // Handle the error cases.
   double delta_time = g_timestamp - m_timestamp;
   if((m_decay_end < m_decay_start) || (delta_time < 0)) {
     r_xpos = m_xpos;
     r_ypos = m_ypos;
+    cout << "LinearExtrpolator:: returning(false)" << endl;
     return(false);
   }
+
+  cout << "LinearExtrpolator::delta_time:"  << delta_time << endl;
+  cout << "LinearExtrpolator::decay_start:" << m_decay_start << endl;
+  cout << "LinearExtrpolator::decay_end:"   << m_decay_end << endl;
+
+  cout << "LinearExtrpolator::m_xpos:" << m_xpos << endl;
+  cout << "LinearExtrpolator::m_ypos:" << m_ypos << endl;
+  
 
   // Handle a special (easy) case.
   if(delta_time == 0) {
@@ -83,10 +100,16 @@ bool LinearExtrapolator::getPosition(double& r_xpos, double& r_ypos,
     }
   }
 
+  cout << "LinearExtrpolator::distance" << distance << endl;
+
   projectPoint(m_hdg, distance, m_xpos, m_ypos, r_xpos, r_ypos);
 
-  r_xpos = 0;
-  r_ypos = 0;
+
+  cout << "LinearExtrpolator::r_xpos:" << r_xpos << endl;
+  cout << "LinearExtrpolator::r_ypos:" << r_ypos << endl;
+
+  //r_xpos = 0;
+  //r_ypos = 0;
   return(true);
 }
 

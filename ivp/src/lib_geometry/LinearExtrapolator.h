@@ -41,7 +41,8 @@ public:
     m_ypos = y;
     m_spd  = s;
     m_hdg  = h;
-    m_timestamp = s;
+    m_timestamp = t;
+    m_position_set = true;
   }
 
   bool getPosition(double& xpos, double& ypos, double timestamp);
@@ -53,6 +54,7 @@ public:
   double m_decay_start;  // Time in seconds
   double m_decay_end;    // Time in seconds
   double m_timestamp;    // Time in seconds
+  bool   m_position_set; // false until first setPosition
 };
 
 #endif

@@ -73,7 +73,7 @@ double InfoBuffer::tQuery(string var) const
   map<string, double>::const_iterator p2;
   p2 = tmap.find(var);
   if(p2 != tmap.end()) {
-    return(m_curr_time - p2->second);
+    return(m_curr_time_utc - p2->second);
   }
   else
     return(-1);
@@ -151,10 +151,13 @@ void InfoBuffer::clearDeltaVectors()
 // Procedure: setValue
 //      Note: 
 
-bool InfoBuffer::setValue(string var, double val)
+bool InfoBuffer::setValue(string var, double val, double force_utc)
 {
   dmap[var] = val;
-  tmap[var] = m_curr_time;
+  if(force_utc == 0)
+    tmap[var] = m_curr_time_utc;
+  else
+    tmap[var] = force_utc;
 
   vdmap[var].push_back(val);
   vdmap[var].push_back(val);
@@ -168,10 +171,13 @@ bool InfoBuffer::setValue(string var, double val)
 //            HELM_SUMMARY
 //
 
-bool InfoBuffer::setValue(string var, string val)
+bool InfoBuffer::setValue(string var, string val, double force_utc)
 {
   smap[var] = val;
-  tmap[var] = m_curr_time;
+  if(force_utc == 0)
+    tmap[var] = m_curr_time_utc;
+  else
+    tmap[var] = force_utc;
 
   vsmap[var].push_back(val);
   vsmap[var].push_back(val);
@@ -185,7 +191,7 @@ bool InfoBuffer::setValue(string var, string val)
 void InfoBuffer::print() const
 {
   cout << "InfoBuffer: " << endl;
-  cout << " curr_time:" << m_curr_time << endl;
+  cout << " curr_time_utc:" << m_curr_time_utc << endl;
   
   cout << "-----------------------------------------------" << endl; 
   cout << " String Data: " << endl;
@@ -204,7 +210,7 @@ void InfoBuffer::print() const
   map<string, double>::const_iterator pt;
   for(pt=tmap.begin(); pt!=tmap.end(); pt++) {
     cout << "  " << pt->first << ": " << pt->second << endl;
-    cout << "  " << pt->first << ": " << m_curr_time - pt->second << endl;
+    cout << "  " << pt->first << ": " << m_curr_time_utc - pt->second << endl;
   }
 }
 

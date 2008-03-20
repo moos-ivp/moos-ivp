@@ -92,7 +92,7 @@ void HelmIvP::cleanup()
 
 bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
 {
-  double curr_time = MOOSTime() - GetAppStartTime();
+  double curr_time = MOOSTime();
   info_buffer->setCurrTime(curr_time);
 
   // Clear the delta vectors in the info_buffer here, before any
@@ -163,7 +163,7 @@ bool HelmIvP::Iterate()
   if(!has_control)
     return(false);
 
-  double curr_time = MOOSTime() - GetAppStartTime();
+  double curr_time = MOOSTime();
 
   //  info_buffer->setCurrTime(curr_time);
 

@@ -52,10 +52,15 @@ BHV_Trail::BHV_Trail(IvPDomain gdomain) : IvPBehavior(gdomain)
   m_trail_angle  = 180;
   m_radius       = 5;
   m_max_range    = 0;
-  m_interpolate  = false;
+  m_extrapolate  = true;
 
   m_min_util_cpa_dist = 100;
   m_max_util_cpa_dist = 0; 
+
+  m_decay_start = 5;
+  m_decay_end   = 10;
+
+  m_extrapolator.setDecay(m_decay_start, m_decay_end);
 
   addInfoVars("NAV_X, NAV_Y, NAV_SPEED, NAV_HEADING");
 }
@@ -72,6 +77,7 @@ BHV_Trail::BHV_Trail(IvPDomain gdomain) : IvPBehavior(gdomain)
 
 bool BHV_Trail::setParam(string g_param, string g_val) 
 {
+  g_val = stripBlankEnds(g_val);
   if(IvPBehavior::setParam(g_param, g_val))
     return(true);
 
@@ -85,20 +91,52 @@ bool BHV_Trail::setParam(string g_param, string g_val)
       return(true);
     }  
   else if(g_param == "trail_range") {
-    m_trail_range = atof(g_val.c_str());
-    return(true);
-  }  
+    if(isNumber(g_val)) {
+      m_trail_range = atof(g_val.c_str());
+      return(true);
+    }  
+  }
   else if(g_param == "trail_angle") {
-    m_trail_angle = angle180(atof(g_val.c_str()));
-    return(true);
-  }  
+    if(isNumber(g_val)) {
+      m_trail_angle = angle180(atof(g_val.c_str()));
+      return(true);
+    }  
+  }
   else if(g_param == "radius") {
-    m_radius = atof(g_val.c_str());
-    return(true);
-  }  
+    if(isNumber(g_val)) {
+      m_radius = atof(g_val.c_str());
+      return(true);
+    }  
+  }
   else if(g_param == "max_range") {
-    m_max_range = atof(g_val.c_str());
-    return(true);
+    if(isNumber(g_val)) {
+      m_max_range = atof(g_val.c_str());
+      return(true);
+    }  
+  }
+  else if(g_param == "decay") {
+    vector<string> svector = parseString(g_val, ',');
+    if(svector.size() == 2) {
+      svector[0] = stripBlankEnds(svector[0]);
+      svector[1] = stripBlankEnds(svector[1]);
+      if(isNumber(svector[0]) && isNumber(svector[1])) {
+	double start = atof(svector[0].c_str());
+	double end   = atof(svector[1].c_str());
+	if((start >= 0) && (start <= end)) {
+	  m_decay_start = start;
+	  m_decay_end   = end;
+	  m_extrapolator.setDecay(start,end);
+	  return(true);
+	}
+      }
+    }
+  }  
+  else if(g_param == "decay_end") {
+    if(isNumber(g_val)) {
+      m_decay_end = atof(g_val.c_str());
+      
+      return(true);
+    }
   }  
   return(false);
 }
@@ -232,20 +270,33 @@ bool BHV_Trail::updateInfoIn()
   if(!ok1 || !ok2 || !ok3 || !ok4 || !ok5 || !ok6 || !ok7 || !ok8)
     return(false);
   
-  if(!m_interpolate)
+  if(!m_extrapolate)
     return(true);
-  
+
+  string pcontact_pos = "M_CNX: " + doubleToString(m_cnx,3);
+  pcontact_pos += ", M_CNY:" + doubleToString(m_cny,3);
+  postMessage("TRAIL_CNPOS:", pcontact_pos);
+
   double curr_time = getBufferCurrTime();
   double mark_time = getBufferTimeVal(m_contact+"_NAV_X");
-  if(mark_time == curr_time)
+  postMessage("TCURR_TIME", doubleToString(curr_time, 2));
+  postMessage("TMARK_TIME", doubleToString(mark_time, 2));
+  //if(mark_time == curr_time) {
+  if(mark_time == 0) {
+    postMessage("MARK_CURR", doubleToString(mark_time,2));
     m_extrapolator.setPosition(m_cnx, m_cny, m_cnv, m_cnh, curr_time);
-  
+  }  
+
   double new_cnx, new_cny;
   bool ok = m_extrapolator.getPosition(new_cnx, new_cny, curr_time);
   if(ok) {
     m_cnx = new_cnx;
     m_cny = new_cny;
   }
+
+  string contact_pos = "X: " + doubleToString(m_cnx,3);
+  contact_pos += ", Y:" + doubleToString(m_cny,3);
+  postMessage("TRAIL_TARGET", contact_pos);
 
   return(true);
 }

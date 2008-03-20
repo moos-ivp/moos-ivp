@@ -60,7 +60,9 @@ private: // State Variables
   double  m_cnh; // contact heading
   double  m_cnv; // contact velocity
 
-  bool    m_interpolate;
+  bool    m_extrapolate;
+  double  m_decay_start;
+  double  m_decay_end;
 
   LinearExtrapolator m_extrapolator;
 
