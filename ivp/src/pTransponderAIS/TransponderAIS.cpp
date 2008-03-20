@@ -94,9 +94,8 @@ bool TransponderAIS::OnNewMail(MOOSMSG_LIST &NewMail)
     }
     // end tes 9-12-07
 
-    else {
+    else
       MOOSTrace("TransponderAIS: Unknown msg [%s]\n",msg.m_sKey.c_str());
-    }
   }
   return(true);
 }
@@ -318,7 +317,6 @@ bool TransponderAIS::handleIncomingAISReport(const string& sdata)
       if(left == "LON") {
 	nav_long_val = atof(right.c_str());
       }
-
       if(left == "SPD") {
 	nav_spd_val = atof(right.c_str());
 	nav_spd_set = true;
@@ -439,84 +437,27 @@ bool TransponderAIS::handleIncomingNaFConMessage(const string& rMsg)
 
       string vtype = "GLIDER";
       string vname = sourceID;
-      if(sourceID == "1") {
-	vtype = "AUV";
-	vname = "Sea-Horse";
-      }
-      if(sourceID == "2") {
-	vtype = "KAYAK";
-	vname = "Bobby";
-      }
-      if(sourceID == "3") {
-	vtype = "AUV";
-	vname = "Unicorn";
-      }
-      if(sourceID == "4") {
-	vtype = "AUV";
-	vname = "Macrura";
-      }
-      if(sourceID == "5") {
-	vtype = "KELP";
-	vname = "PN2";
-      }
-      if(sourceID == "7") {
-	vtype = "GLIDER";
-	vname = "X-RAY";
-      }
-      if(sourceID == "9") { 
-	vtype = "KAYAK";
-	vname = "DEE";
-      }
-      if(sourceID == "10") {
-	vtype = "AUV";
-	vname = "OEX";
-      }
-      if(sourceID == "11") {
-	vtype = "KAYAK";
-	vname = "Frankie";
-      }
-      if(sourceID == "14") {
-	vtype = "GLIDER";
-	vname = "SLOCUM-GTAS";
-      }
-      if(sourceID == "15") {
-	vtype = "KELP";
-	vname = "KELP-OBCI";
-      }
-      if(sourceID == "18") {
-	vtype = "VSA";
-	vname = "VSA-1";
-      }
-      if(sourceID == "19") {
-	vtype = "VSA";
-	vname = "VSA-2";
-      }
-      if(sourceID == "20") {
-	vtype = "GLIDER";
-	vname = "SeaGlider-106";
-      }
-      if(sourceID == "21") {
-	vtype = "GLIDER";
-	vname = "SeaGlider-107";
-      }
-      if(sourceID == "22") {
-	vtype = "GLIDER";
-	vname = "SeaGlider-116";
-      }
-      if(sourceID == "24") {
-	vtype = "GLIDER";
-	vname = "SeaGlider-118";
-      }
+      if(sourceID == "1" ) {vtype = "AUV";    vname = "Sea-Horse";}
+      if(sourceID == "2")  {vtype = "KAYAK";  vname = "Bobby";}
+      if(sourceID == "3")  {vtype = "AUV";    vname = "Unicorn";}
+      if(sourceID == "4")  {vtype = "AUV";    vname = "Macrura";}
+      if(sourceID == "5")  {vtype = "KELP";   vname = "PN2";}
+      if(sourceID == "7")  {vtype = "GLIDER"; vname = "X-RAY";}
+      if(sourceID == "9")  {vtype = "KAYAK";  vname = "DEE";}
+      if(sourceID == "10") {vtype = "AUV";    vname = "OEX";}
+      if(sourceID == "11") {vtype = "KAYAK";  vname = "Frankie";}
+      if(sourceID == "14") {vtype = "GLIDER"; vname = "SLOCUM-GTAS";}
+      if(sourceID == "15") {vtype = "KELP";   vname = "KELP-OBCI";}
+      if(sourceID == "18") {vtype = "VSA";    vname = "VSA-1";}
+      if(sourceID == "19") {vtype = "VSA";    vname = "VSA-2";}
+      if(sourceID == "20") {vtype = "GLIDER"; vname = "SeaGlider-106";}
+      if(sourceID == "21") {vtype = "GLIDER"; vname = "SeaGlider-107";}
+      if(sourceID == "22") {vtype = "GLIDER"; vname = "SeaGlider-116";}
+      if(sourceID == "24") {vtype = "GLIDER"; vname = "SeaGlider-118";}
 
       // temporary hack until we know OEXs real ID
-      if(sourceID == "30")
-      {
-          vtype = "AUV";
-          vname = "OEX";
-      }
+      if(sourceID == "30") {vtype = "AUV";    vname = "OEX";}
       
-
-          
       // publish it at AIS_REPORT
       // all strings: assembleAIS(name,type,db_time,utc_time,x,y,lat,lon,spd,hdg,depth)
       string summary = assembleAIS(vname, vtype, "-1",\
@@ -598,9 +539,9 @@ void TransponderAIS::postContactList()
 // Purpose: builds the string used for AIS_REPORT
 // tes 11.19.07
 
-string TransponderAIS::assembleAIS(string name, string type, string db_time, string utc_time, \
-		   string x, string y, string lat, string lon, string spd, \
-		   string hdg, string depth)
+string TransponderAIS::assembleAIS(string name, string type, string db_time, string utc_time,
+				   string x, string y, string lat, string lon, string spd,
+				   string hdg, string depth)
 {
 
     string summary = "NAME=" + name;
