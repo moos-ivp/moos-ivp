@@ -11,7 +11,8 @@ killall -9 -q pMOOSBridge  iVSA iCTD iCTDSBE49 pBearingsSim        \
         iWifi p1BTracker p2BTracker pBearings uMS pTarget  \
         pRedirect pLoiterControl pTransponderAIS uMVS      \
         pMarinePID uTMS uMVS_Bluefin pEchoVar pDeployHandler \
-        pTrafficControl
+        pTrafficControl pShipsideViewer uRepeater uXMS   \
+        pViewerRelay
 
 killall -9 -q iMicroModem pRouter pFramer pMessageSim  \
         pCSVLogger pBearings_VSA pEchoVar pTrackQuality \
