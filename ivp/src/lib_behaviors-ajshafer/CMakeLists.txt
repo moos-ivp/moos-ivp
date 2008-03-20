@@ -4,5 +4,5 @@
 #--------------------------------------------------------
 
 FILE(GLOB SRC *.cpp *.c)
-ADD_LIBRARY(behaviors-ajshafer ${SRC})
+#ADD_LIBRARY(behaviors-ajshafer ${SRC})
 

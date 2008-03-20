@@ -11,7 +11,7 @@ TARGET_LINK_LIBRARIES(pHelmIvP
   MOOS
   MOOSGen
   helmivp
-  behaviors-ajshafer
+  #behaviors-ajshafer
   behaviors-marine
   behaviors-sandbox
   behaviors-colregs
