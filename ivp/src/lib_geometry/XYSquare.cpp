@@ -45,6 +45,23 @@ XYSquare::XYSquare(double gxl, double gxh, double gyl, double gyh)
 }
 
 //-------------------------------------------------------------
+// Procedure: Operator==
+
+bool XYSquare::operator==(const XYSquare &other) const
+{
+  return(xlow==other.xlow && xhigh == other.xhigh &&
+         ylow==other.ylow && yhigh == other.yhigh);
+}
+
+//-------------------------------------------------------------
+// Procedure: Operator!=
+
+bool XYSquare::operator!=(const XYSquare &other) const
+{
+  return !(*this == other);
+}
+
+//-------------------------------------------------------------
 // Procedure: set
 
 void XYSquare::set(double gxl, double gxh, double gyl, double gyh)

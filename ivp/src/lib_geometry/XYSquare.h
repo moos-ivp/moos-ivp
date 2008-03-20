@@ -27,6 +27,8 @@ class XYSquare {
 public:
   XYSquare();
   XYSquare(double, double, double, double);
+  bool operator==(const XYSquare&) const;
+  bool operator!=(const XYSquare&) const;
   virtual ~XYSquare() {};
 
   void   set(double, double, double, double);
@@ -41,6 +43,9 @@ public:
   double getLengthX() const   {return(xhigh-xlow);};
   double getLengthY() const   {return(yhigh-ylow);};
   bool   isValid() const      {return(valid_state);};
+  
+  double getCenterX() const   {return((xhigh-xlow)/2 + xlow);};
+  double getCenterY() const   {return((yhigh-ylow)/2 + ylow);};
 
 protected:
   double xlow;
