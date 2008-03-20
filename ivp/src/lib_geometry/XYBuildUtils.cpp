@@ -371,12 +371,19 @@ XYPolygon stringShortToPointsPoly(string str)
       return(null_poly);
     string xstr = stripBlankEnds(svector[0]);
     string ystr = stripBlankEnds(svector[1]);
-    if((!isNumber(xstr)) || (!isNumber(ystr)))
-      return(null_poly);
-    
-    double xval = atof(xstr.c_str());
-    double yval = atof(ystr.c_str());
-    new_poly.add_vertex(xval, yval, false);
+
+    if((!isNumber(xstr)) || (!isNumber(ystr))) {
+      xstr = tolower(xstr);
+      if(xstr == "label") 
+	new_poly.set_label(ystr);
+      else
+	return(null_poly);
+    }
+    else {
+      double xval = atof(xstr.c_str());
+      double yval = atof(ystr.c_str());
+      new_poly.add_vertex(xval, yval, false);
+    }
   }
 
   // Make a call to determine_convexity here because convexity 
