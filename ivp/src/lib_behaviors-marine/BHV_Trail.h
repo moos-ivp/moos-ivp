@@ -59,6 +59,7 @@ private: // State Variables
   double  m_cny; // contact y-position
   double  m_cnh; // contact heading
   double  m_cnv; // contact velocity
+  double  m_cnutc; // UTC time of last contact report
 
   bool    m_extrapolate;
   double  m_decay_start;

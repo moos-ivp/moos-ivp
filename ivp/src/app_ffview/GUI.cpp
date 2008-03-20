@@ -138,20 +138,18 @@ Fl_Menu_Item GUI::menu_[] = {
  {"Back-Blue",  0, (Fl_Callback*)GUI::cb_ColorBack, (void*)1, 0},
   {0},
 
- {"Augmentation",     0,  0, 0, 64, 0, 0, 14, 0},
- {"Toggle-Uniform-Aug",   0, (Fl_Callback*)GUI::cb_ToggleUniformAug, (void*)0, 0},
- {"Smaller-Uniform-Aug",   '[', (Fl_Callback*)GUI::cb_ModUniformAug, (void*)-1, 0},
- {"Larger-Uniform-Aug",   ']', (Fl_Callback*)GUI::cb_ModUniformAug, (void*)1, FL_MENU_DIVIDER},
- {"Toggle-Priority-Aug",   0, (Fl_Callback*)GUI::cb_TogglePriorityAug, (void*)0, 0},
- {"Priority-Aug 120",    0, (Fl_Callback*)GUI::cb_PriorityAugAmt, (void*)120, 0},
- {"Priority-Aug 231",    0, (Fl_Callback*)GUI::cb_PriorityAugAmt, (void*)231, 0},
- {"Priority-Aug 407",    0, (Fl_Callback*)GUI::cb_PriorityAugAmt, (void*)407, 0},
- {"Priority-Aug 855",    0, (Fl_Callback*)GUI::cb_PriorityAugAmt, (void*)855, 0},
- {"Priority-Aug 1000",   0, (Fl_Callback*)GUI::cb_PriorityAugAmt, (void*)1000, 0},
- {"Priority-Aug 1092",   0, (Fl_Callback*)GUI::cb_PriorityAugAmt, (void*)1092, 0},
- {"Priority-Aug 2000",   0, (Fl_Callback*)GUI::cb_PriorityAugAmt, (void*)2000, 0},
- {"Priority-Aug 2945",   0, (Fl_Callback*)GUI::cb_PriorityAugAmt, (void*)2945, 0},
- {"Priority-Aug 3800",   0, (Fl_Callback*)GUI::cb_PriorityAugAmt, (void*)3800, 0},
+ {"Augmentation", 0,  0, 0, 64, 0, 0, 14, 0},
+ {"Toggle-Uniform-Aug",  0, (Fl_Callback*)GUI::cb_ToggleUniformAug, (void*)0, 0},
+ {"Smaller-Uniform-Aug", '[', (Fl_Callback*)GUI::cb_ModUniformAug, (void*)-1, 0},
+ {"Larger-Uniform-Aug",  ']', (Fl_Callback*)GUI::cb_ModUniformAug, (void*)1, FL_MENU_DIVIDER},
+ {"Toggle-Smart-Aug",    0, (Fl_Callback*)GUI::cb_ToggleSmartAug, (void*)0, 0},
+ {"Smart-Aug 100",    0, (Fl_Callback*)GUI::cb_SmartAugAmt, (void*)100, 0},
+ {"Smart-Aug 200",    0, (Fl_Callback*)GUI::cb_SmartAugAmt, (void*)200, 0},
+ {"Smart-Aug 500",    0, (Fl_Callback*)GUI::cb_SmartAugAmt, (void*)500, 0},
+ {"Smart-Aug 750",    0, (Fl_Callback*)GUI::cb_SmartAugAmt, (void*)750, 0},
+ {"Smart-Aug 1000",   0, (Fl_Callback*)GUI::cb_SmartAugAmt, (void*)1000, 0},
+ {"Smart-Aug 2000",   0, (Fl_Callback*)GUI::cb_SmartAugAmt, (void*)2000, 0},
+ {"Smart-Aug 4000",   0, (Fl_Callback*)GUI::cb_SmartAugAmt, (void*)4000, 0},
  {0},
 
  {"Analysis",     0,  0, 0, 64, 0, 0, 14, 0},
@@ -333,22 +331,22 @@ void GUI::cb_ToggleUniformAug(Fl_Widget* o) {
   ((GUI*)(o->parent()->user_data()))->cb_ToggleUniformAug_i();
 }
 
-//----------------------------------------- Toggle PriorityAug
-inline void GUI::cb_TogglePriorityAug_i() {
-  viewer->togglePriorityAug();
+//----------------------------------------- Toggle SmartAug
+inline void GUI::cb_ToggleSmartAug_i() {
+  viewer->toggleSmartAug();
   updateXY();
 }
-void GUI::cb_TogglePriorityAug(Fl_Widget* o) {
-  ((GUI*)(o->parent()->user_data()))->cb_TogglePriorityAug_i();
+void GUI::cb_ToggleSmartAug(Fl_Widget* o) {
+  ((GUI*)(o->parent()->user_data()))->cb_ToggleSmartAug_i();
 }
 
-//----------------------------------------- PriorityAugAmt
-inline void GUI::cb_PriorityAugAmt_i(int amt) {
-  viewer->modPriorityAugAmt(amt);
+//----------------------------------------- SmartAugAmt
+inline void GUI::cb_SmartAugAmt_i(int amt) {
+  viewer->modSmartAugAmt(amt);
   updateXY();
 }
-void GUI::cb_PriorityAugAmt(Fl_Widget* o, int i) {
-  ((GUI*)(o->parent()->user_data()))->cb_PriorityAugAmt_i(i);
+void GUI::cb_SmartAugAmt(Fl_Widget* o, int i) {
+  ((GUI*)(o->parent()->user_data()))->cb_SmartAugAmt_i(i);
 }
 
 //----------------------------------------- Toggle Frame

@@ -209,6 +209,9 @@ bool BHV_Waypoint::setNextWaypoint()
   m_waypoint_engine.setNextWaypoint(m_osx, m_osy);
 
   if(m_waypoint_engine.isComplete()) {
+
+    cout << "Waypoint Behavior " << m_descriptor << " has completed! " << endl;
+
     postMessage("VEHICLE_WPT_STAT", "complete");
     setComplete();
     if(m_perpetual)

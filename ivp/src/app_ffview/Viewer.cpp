@@ -54,8 +54,8 @@ Viewer::Viewer(int x, int y,
   m_clear_blue  =  0.9;
 #endif
 
-  m_priority       = false;
-  m_priority_cnt   = 1000;
+  m_smart_refine   = false;
+  m_smart_count    = 1000;
 
   m_focus_box      = false;
   m_focus_box_x    = 0;
@@ -156,11 +156,11 @@ void Viewer::toggleUniformAug()
 
 
 //-------------------------------------------------------------
-// Procedure: togglePriorityAug
+// Procedure: toggleSmartAug
 
-void Viewer::togglePriorityAug()
+void Viewer::toggleSmartAug()
 {
-  m_priority = !m_priority;
+  m_smart_refine = !m_smart_refine;
 
   if(m_unif_ipf)
     makeUniformIPF();
@@ -202,7 +202,6 @@ void Viewer::makeUniformIPF(int usize)
   string dim1_name = m_domain.getVarName(1);
 
   // Example String: "discrete @ x:40,y:20"
-
   string unif_str = "discrete @ ";
   unif_str += dim0_name + ":" + intToString(usize) + ",";
   unif_str += dim1_name + ":" + intToString(usize);
@@ -233,14 +232,13 @@ void Viewer::makeUniformIPF(int usize)
     ok = ok && reflector.setParam("refine_piece", res_box);    
   }
   
-  string pstr = intToString(m_priority_cnt);
-  ok = ok && reflector.setParam("smart_amount", pstr);
-  
-  //while(1) {
-  //  reflector.create();
-  //  m_unif_ipf = reflector.extractOF(false);
-  //  delete(m_unif_ipf);
-  // }
+  if(m_smart_refine) {
+    string pstr = intToString(m_smart_count);
+    ok = ok && reflector.setParam("smart_amount", pstr);
+  }
+
+  cout << "OK: " << ok << endl;
+  reflector.create();
 
   if(m_unif_ipf)
     delete(m_unif_ipf);
@@ -290,12 +288,12 @@ void Viewer::modUniformAug(int amt)
 }
 
 //-------------------------------------------------------------
-// Procedure: modPriorityAugAmt
+// Procedure: modSmartAugAmt
 
-void Viewer::modPriorityAugAmt(int amt)
+void Viewer::modSmartAugAmt(int amt)
 {
   if(amt >= 0)
-    m_priority_cnt = amt;
+    m_smart_count = amt;
 
   if(m_unif_ipf)
     makeUniformIPF();

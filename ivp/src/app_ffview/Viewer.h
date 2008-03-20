@@ -38,13 +38,13 @@ public:
   void   modBaseAOF(float amt)    {m_base_aof += amt; redraw();};
   void   modBaseIPF(float amt)    {m_base_ipf += amt; redraw();};
   void   toggleUniformAug();
-  void   togglePriorityAug();
+  void   toggleSmartAug();
   void   makeUniformIPF(int=0);
   void   makeUniformIPFxN(int amt);
   void   modColorMap(const std::string&);
   void   modPatchAOF(int amt);
   void   modUniformAug(int amt);
-  void   modPriorityAugAmt(int amt);
+  void   modSmartAugAmt(int amt);
 
   void   runScript();
   void   capture(int);
@@ -75,8 +75,8 @@ private:
   IvPFunction *m_unif_ipf;
   OF_Rater     m_rater;
 
-  bool       m_priority;
-  int        m_priority_cnt;
+  bool       m_smart_refine;
+  int        m_smart_count;
 
   bool       m_focus_box;
   int        m_focus_box_x;

@@ -287,6 +287,7 @@ bool TransponderAIS::handleIncomingAISReport(const string& sdata)
   double nav_spd_val;   bool nav_spd_set = false;
   double nav_hdg_val;   bool nav_hdg_set = false;
   double nav_dep_val;   bool nav_dep_set = false;
+  double nav_utc_val;   bool nav_utc_set = false;
   double nav_lat_val; 
   double nav_long_val;
   
@@ -298,41 +299,46 @@ bool TransponderAIS::handleIncomingAISReport(const string& sdata)
     if(svector2.size() == 2) {
       string left = stripBlankEnds(svector2[0]);
       string right = stripBlankEnds(svector2[1]);
-      
+      bool right_isnum = isNumber(right);
+
       if(left=="NAME") {
 	vname = right;
 	vname_set = true;
       }
-      if(left == "X") {
+      else if((left == "UTC_TIME") && right_isnum) {
+	nav_utc_val = atof(right.c_str());
+	nav_utc_set = true;
+      }
+      else if((left == "X") && right_isnum) {
 	nav_x_val = atof(right.c_str());
 	nav_x_set = true;
       }
-      if(left == "Y") {
+      else if((left == "Y") && right_isnum) {
 	nav_y_val = atof(right.c_str());
 	nav_y_set = true;
       }
-      if(left == "LAT") {
+      else if((left == "LAT") && right_isnum) {
 	nav_lat_val = atof(right.c_str());
       }
-      if(left == "LON") {
+      else if((left == "LON") && right_isnum) {
 	nav_long_val = atof(right.c_str());
       }
-      if(left == "SPD") {
+      else if((left == "SPD") && right_isnum) {
 	nav_spd_val = atof(right.c_str());
 	nav_spd_set = true;
       }
-      if(left == "HDG") {
+      else if((left == "HDG") && right_isnum) {
 	nav_hdg_val = atof(right.c_str());
 	nav_hdg_set = true;
       }
-      if(left == "DEPTH") {
+      else if((left == "DEPTH") && right_isnum) {
 	nav_dep_val = atof(right.c_str());
 	nav_dep_set = true;
       }
     }
   }
 
-  if(!vname_set || !nav_x_set || !nav_y_set ||
+  if(!vname_set || !nav_x_set || !nav_y_set || !nav_utc_set ||
      !nav_spd_set || !nav_hdg_set || !nav_dep_set)
     return(false);
 
@@ -341,6 +347,7 @@ bool TransponderAIS::handleIncomingAISReport(const string& sdata)
   
   updateContactList(vname);
 
+  m_Comms.Notify(vname+"_NAV_UTC", nav_utc_val);
   m_Comms.Notify(vname+"_NAV_X", nav_x_val);
   m_Comms.Notify(vname+"_NAV_Y", nav_y_val);
   m_Comms.Notify(vname+"_NAV_SPEED", nav_spd_val);
@@ -348,8 +355,6 @@ bool TransponderAIS::handleIncomingAISReport(const string& sdata)
   m_Comms.Notify(vname+"_NAV_DEPTH", nav_dep_val);
   m_Comms.Notify(vname+"_NAV_LAT", nav_lat_val);
   m_Comms.Notify(vname+"_NAV_LONG", nav_long_val);
-
-
   
   return(true);
 }

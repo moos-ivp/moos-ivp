@@ -79,11 +79,11 @@ private:
   inline void cb_ToggleUniformAug_i();
   static void cb_ToggleUniformAug(Fl_Widget*);
 
-  inline void cb_TogglePriorityAug_i();
-  static void cb_TogglePriorityAug(Fl_Widget*);
+  inline void cb_ToggleSmartAug_i();
+  static void cb_ToggleSmartAug(Fl_Widget*);
 
-  inline void cb_PriorityAugAmt_i(int);
-  static void cb_PriorityAugAmt(Fl_Widget*, int);
+  inline void cb_SmartAugAmt_i(int);
+  static void cb_SmartAugAmt(Fl_Widget*, int);
 
   inline void cb_ToggleFrame_i();
   static void cb_ToggleFrame(Fl_Widget*);

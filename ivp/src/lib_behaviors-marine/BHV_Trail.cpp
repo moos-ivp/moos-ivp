@@ -84,6 +84,7 @@ bool BHV_Trail::setParam(string g_param, string g_val)
   if((g_param == "them") || (g_param == "contact")) 
     {
       m_contact = toupper(g_val);
+      addInfoVars(m_contact+"_NAV_UTC");
       addInfoVars(m_contact+"_NAV_X");
       addInfoVars(m_contact+"_NAV_Y");
       addInfoVars(m_contact+"_NAV_SPEED");
@@ -218,11 +219,6 @@ IvPFunction *BHV_Trail::onRunState()
     ipf->setPWT(relevance * m_priority_wt);
   }
 
-#if 0
-    postMessage("TRAIL_MIN_WT", ipf->getPDMap()->getMinWT());
-    postMessage("TRAIL_MAX_WT", ipf->getPDMap()->getMaxWT());
-#endif  
-
   return(ipf);
 }
 
@@ -238,7 +234,7 @@ IvPFunction *BHV_Trail::onRunState()
 
 bool BHV_Trail::updateInfoIn()
 {
-  bool ok1, ok2, ok3, ok4, ok5, ok6, ok7, ok8;
+  bool ok1, ok2, ok3, ok4, ok5, ok6, ok7, ok8, ok9;
  
   m_osx = getBufferDoubleVal("NAV_X", ok1);
   m_osy = getBufferDoubleVal("NAV_Y", ok2);
@@ -249,6 +245,7 @@ bool BHV_Trail::updateInfoIn()
   m_cny = getBufferDoubleVal(m_contact+"_NAV_Y", ok6);
   m_cnh = getBufferDoubleVal(m_contact+"_NAV_HEADING", ok7);
   m_cnv = getBufferDoubleVal(m_contact+"_NAV_SPEED", ok8);
+  m_cnutc = getBufferDoubleVal(m_contact+"_NAV_UTC", ok9);
 
   if(!ok1)
     postWMessage("No ownship NAV_X in info_buffer.");
@@ -266,39 +263,38 @@ bool BHV_Trail::updateInfoIn()
     postWMessage("No contact NAV_HEADING in info_buffer.");
   if(!ok8)
     postWMessage("No contact NAV_SPEED in info_buffer.");
+  if(!ok9)
+    postWMessage("No contact NAV_UTC in info_buffer.");
 
-  if(!ok1 || !ok2 || !ok3 || !ok4 || !ok5 || !ok6 || !ok7 || !ok8)
+  if(!ok1 || !ok2 || !ok3 || !ok4 || !ok5 || 
+     !ok6 || !ok7 || !ok8 || !ok9)
     return(false);
   
   if(!m_extrapolate)
     return(true);
 
-  string pcontact_pos = "M_CNX: " + doubleToString(m_cnx,3);
-  pcontact_pos += ", M_CNY:" + doubleToString(m_cny,3);
-  postMessage("TRAIL_CNPOS:", pcontact_pos);
-
   double curr_time = getBufferCurrTime();
   double mark_time = getBufferTimeVal(m_contact+"_NAV_X");
-  postMessage("TCURR_TIME", doubleToString(curr_time, 2));
-  postMessage("TMARK_TIME", doubleToString(mark_time, 2));
-  //if(mark_time == curr_time) {
-  if(mark_time == 0) {
-    postMessage("MARK_CURR", doubleToString(mark_time,2));
-    m_extrapolator.setPosition(m_cnx, m_cny, m_cnv, m_cnh, curr_time);
-  }  
+  if(mark_time == 0)
+    m_extrapolator.setPosition(m_cnx, m_cny, m_cnv, m_cnh, m_cnutc);
+
+  // Even if mark_time is zero and thus "fresh", still derive the 
+  // the contact position from the extrapolator since the UTC time
+  // of the position in this report may still be substantially 
+  // behind the current own-platform UTC time.
 
   double new_cnx, new_cny;
   bool ok = m_extrapolator.getPosition(new_cnx, new_cny, curr_time);
+
   if(ok) {
     m_cnx = new_cnx;
     m_cny = new_cny;
+    return(true);
   }
-
-  string contact_pos = "X: " + doubleToString(m_cnx,3);
-  contact_pos += ", Y:" + doubleToString(m_cny,3);
-  postMessage("TRAIL_TARGET", contact_pos);
-
-  return(true);
+  else {
+    postWMessage("Incomplete Linear Extrapolation");
+    return(false);
+  }
 }
 
 
