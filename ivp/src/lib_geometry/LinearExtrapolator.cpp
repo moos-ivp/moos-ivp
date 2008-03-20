@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin and John Leonard                    */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
-/*    FILE: LinearInterpolator.cpp                               */
+/*    FILE: LinearExtrapolator.cpp                               */
 /*    DATE: May 2nd, 2007                                        */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
@@ -20,7 +20,7 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
-#include "LinearInterpolator.h"
+#include "LinearExtrapolator.h"
 #include "GeomUtils.h"
 
 using namespace std;
@@ -28,7 +28,7 @@ using namespace std;
 //---------------------------------------------------------------
 // Constructor
 
-LinearInterpolator::LinearInterpolator()
+LinearExtrapolator::LinearExtrapolator()
 {
   m_xpos        = 0;
   m_ypos        = 0;
@@ -42,7 +42,7 @@ LinearInterpolator::LinearInterpolator()
 //---------------------------------------------------------------
 // Procedure: getPosition
 
-bool LinearInterpolator::getPosition(double& r_xpos, double& r_ypos,
+bool LinearExtrapolator::getPosition(double& r_xpos, double& r_ypos,
 				     double g_timestamp)
 {
   // Handle the error cases.

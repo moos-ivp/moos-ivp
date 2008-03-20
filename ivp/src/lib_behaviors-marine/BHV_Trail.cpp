@@ -238,10 +238,10 @@ bool BHV_Trail::updateInfoIn()
   double curr_time = getBufferCurrTime();
   double mark_time = getBufferTimeVal(m_contact+"_NAV_X");
   if(mark_time == curr_time)
-    m_interpolator.setPosition(m_cnx, m_cny, m_cnv, m_cnh, curr_time);
+    m_extrapolator.setPosition(m_cnx, m_cny, m_cnv, m_cnh, curr_time);
   
   double new_cnx, new_cny;
-  bool ok = m_interpolator.getPosition(new_cnx, new_cny, curr_time);
+  bool ok = m_extrapolator.getPosition(new_cnx, new_cny, curr_time);
   if(ok) {
     m_cnx = new_cnx;
     m_cny = new_cny;

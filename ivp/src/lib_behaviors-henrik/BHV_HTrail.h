@@ -24,7 +24,7 @@
 #define BHV_HTRAIL_HEADER
 
 #include "IvPBehavior.h"
-#include "LinearInterpolator.h"
+#include "LinearExtrapolator.h"
 
 using namespace std;
 
@@ -72,7 +72,7 @@ private: // State Variables
   int them_id,contact_id,new_state,state;
   bool my_contact ;
 
-  LinearInterpolator m_interpolator;
+  LinearExtrapolator m_extrapolator;
 
 };
 #endif

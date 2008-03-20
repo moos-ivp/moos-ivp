@@ -24,7 +24,7 @@
 #define BHV_TRAIL_HEADER
 
 #include "IvPBehavior.h"
-#include "LinearInterpolator.h"
+#include "LinearExtrapolator.h"
 
 class IvPDomain;
 class BHV_Trail : public IvPBehavior {
@@ -62,7 +62,7 @@ private: // State Variables
 
   bool    m_interpolate;
 
-  LinearInterpolator m_interpolator;
+  LinearExtrapolator m_extrapolator;
 
 };
 #endif

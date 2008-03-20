@@ -304,7 +304,7 @@ bool BHV_HTrail::updateInfoIn()
   // double mark_time = getBufferTimeVal(m_contact+"_NAV_X");
   // double mark_time = cnt;
   //  if(mark_time == curr_time)
-  //    m_interpolator.setPosition(m_cnx, m_cny, m_cnv, m_cnh, curr_time);
+  //    m_extrapolator.setPosition(m_cnx, m_cny, m_cnv, m_cnh, curr_time);
     
   //double new_cnx, new_cny;
   //bool ok = m_interpolator.getPosition(new_cnx, new_cny, curr_time);

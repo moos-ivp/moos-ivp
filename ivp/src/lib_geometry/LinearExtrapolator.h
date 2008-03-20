@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin and John Leonard                    */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
-/*    FILE: LinearInterpolator.h                                 */
+/*    FILE: LinearExtrapolator.h                                 */
 /*    DATE: May 2nd, 2007                                        */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
@@ -20,16 +20,16 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
  
-#ifndef LINEAR_INTERPOLATOR_HEADER
-#define LINEAR_INTERPOLATOR_HEADER
+#ifndef LINEAR_EXTRAPOLATOR_HEADER
+#define LINEAR_EXTRAPOLATOR_HEADER
 
 #include <vector>
 #include <string>
 
-class LinearInterpolator {
+class LinearExtrapolator {
 public:
-  LinearInterpolator();
-  virtual ~LinearInterpolator() {};
+  LinearExtrapolator();
+  virtual ~LinearExtrapolator() {};
 
   void setDecay(double s, double e) {
     m_decay_start = s; 
