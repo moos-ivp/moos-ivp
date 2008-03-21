@@ -3,7 +3,7 @@
 # Author(s):                                Mike Benjamin
 #--------------------------------------------------------
 
-FILE(GLOB SRC *.cpp)
+FILE(GLOB SRC ProcessWatch.cpp main.cpp)
 
 ADD_EXECUTABLE(uProcessWatch ${SRC})
  

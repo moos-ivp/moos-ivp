@@ -3,7 +3,13 @@
 # Author(s):                                Mike Benjamin
 #--------------------------------------------------------
 
-FILE(GLOB SRC *.cpp *.c)
+FILE(GLOB SRC
+  BackImg.cpp
+  MarineGUI.cpp
+  MarineVehiGUI.cpp
+  MarineViewer.cpp)
+
+
 ADD_LIBRARY(marineview ${SRC})
    
 SET_TARGET_PROPERTIES(marineview
