@@ -3,7 +3,15 @@
 # Author(s):                                Mike Benjamin
 #--------------------------------------------------------
 
-
-FILE(GLOB SRC *.cpp *.c)
+FILE(GLOB SRC
+  BoxSet.cpp      
+  IvPBox.cpp      
+  IvPDomain.cpp   
+  IvPFunction.cpp 
+  IvPGrid.cpp     
+  IvPProblem.cpp
+  IvPProblem_v3.cpp
+  PDMap.cpp
+  Problem.cpp)
 
 ADD_LIBRARY(ivpcore ${SRC})
