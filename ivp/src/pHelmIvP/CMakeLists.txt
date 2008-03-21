@@ -3,7 +3,9 @@
 # Author(s):                                Mike Benjamin
 #--------------------------------------------------------
 
-FILE(GLOB SRC *.cpp)
+FILE(GLOB SRC
+  HelmIvP.cpp
+  pHelmIvPMain.cpp)
 
 ADD_EXECUTABLE(pHelmIvP ${SRC})
    
