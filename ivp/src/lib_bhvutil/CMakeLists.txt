@@ -3,6 +3,13 @@
 # Author(s):                                Mike Benjamin
 #--------------------------------------------------------
 
-FILE(GLOB SRC *.cpp *.c)
+FILE(GLOB SRC
+  AOF_AttractorCPA.cpp
+  AOF_AvoidCollision.cpp
+  AOF_CutRangeCPA.cpp
+  AOF_Shadow.cpp
+  AOF_Waypoint.cpp
+  LoiterEngine.cpp
+  WaypointEngine.cpp)
 
 ADD_LIBRARY(bhvutil ${SRC})
