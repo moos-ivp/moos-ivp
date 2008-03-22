@@ -345,7 +345,13 @@ bool TransponderAIS::handleIncomingAISReport(const string& sdata)
 
   vname = toupper(vname);
   
-  updateContactList(vname);
+  updateContactList(vname,
+		    nav_utc_val,
+		    nav_x_val,
+		    nav_y_val,
+		    nav_spd_val,
+		    nav_hdg_val,
+		    nav_dep_val);
 
   m_Comms.Notify(vname+"_NAV_UTC", nav_utc_val);
   m_Comms.Notify(vname+"_NAV_X", nav_x_val);
@@ -417,7 +423,6 @@ bool TransponderAIS::handleIncomingNaFConMessage(const string& rMsg)
 
       if(MOOSStrCmp(messageType, "SENSOR_CONTACT"))
       {
-          navSpeed = 0;
           
           if(!MOOSValFromString(navLong, rMsg, "SensorLongitude"))
               return MOOSFail("No SensorLongitude\n");
@@ -462,6 +467,13 @@ bool TransponderAIS::handleIncomingNaFConMessage(const string& rMsg)
 
       // temporary hack until we know OEXs real ID
       if(sourceID == "30") {vtype = "AUV";    vname = "OEX";}
+
+      // Use previous speed for CONTACT_REPORT
+      double node_utc,node_x,node_y,node_spd,node_hdg,node_dep;      
+      if (prevContactInfo(vname,node_utc,node_x,node_y,node_spd,node_hdg,node_dep))
+	navSpeed = node_spd;
+      else
+	navSpeed = 0;
       
       // publish it at AIS_REPORT
       // all strings: assembleAIS(name,type,db_time,utc_time,x,y,lat,lon,spd,hdg,depth)
@@ -491,24 +503,76 @@ bool TransponderAIS::handleIncomingNaFConMessage(const string& rMsg)
 // Procedure: updateContactList
 //   Purpose: Maintain a list of known unique contact names, and the
 //            times they were last written to.
+//   HS 032108 Modified to full contact nav info and UTC of report to allow inheritance
+//             and extrapolation of unreported varibles in NaFCon messages 
 
-void TransponderAIS::updateContactList(string contact_name)
+void TransponderAIS::updateContactList(string contact_name,
+				     double cn_time,
+				     double cn_x,
+				     double cn_y,
+				     double cn_spd,
+				     double cn_hdg,
+				     double cn_dep)
 {
   contact_name = toupper(stripBlankEnds(contact_name));
 
-  double moos_time = MOOSTime();
+  // double moos_time = MOOSTime();
 
   int i;
   
   for(i=0; i<m_contact_list.size(); i++) {
     if(m_contact_list[i] == contact_name) {
-      m_contact_time[i] = moos_time;
+      //      m_contact_time[i] = moos_time;
+      m_contact_time[i] = cn_time;
+      m_contact_x[i] = cn_x;
+      m_contact_y[i] = cn_y;
+      m_contact_spd[i] = cn_spd;
+      m_contact_hdg[i] = cn_hdg;
+      m_contact_dep[i] = cn_dep;
       return;
     }
   }
   
   m_contact_list.push_back(contact_name);
-  m_contact_time.push_back(moos_time);
+  //  m_contact_time.push_back(moos_time);
+  m_contact_time.push_back(cn_time);
+  m_contact_x.push_back(cn_x);
+  m_contact_y.push_back(cn_y);
+  m_contact_spd.push_back(cn_spd);
+  m_contact_hdg.push_back(cn_hdg);
+  m_contact_dep.push_back(cn_dep);
+
+}
+
+bool TransponderAIS::prevContactInfo(string contact_name,
+				     double cn_time,
+				     double cn_x,
+				     double cn_y,
+				     double cn_spd,
+				     double cn_hdg,
+				     double cn_dep)
+  
+{
+  contact_name = toupper(stripBlankEnds(contact_name));
+
+  int i;
+  
+  for(i=0; i<m_contact_list.size(); i++) 
+    {
+      if(m_contact_list[i] == contact_name) 
+	{
+	  //      m_contact_time[i] = moos_time;
+	  cn_time = m_contact_time[i];
+	  cn_x    = m_contact_x[i];
+	  cn_y    = m_contact_y[i];
+	  cn_spd  = m_contact_spd[i];
+	  cn_hdg  = m_contact_hdg[i];
+	  cn_dep  = m_contact_dep[i];
+	  return(true);
+	}
+    }
+  
+  return(false);
 }
 
 
