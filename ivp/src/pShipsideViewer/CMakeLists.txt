@@ -21,9 +21,7 @@ TARGET_LINK_LIBRARIES(pShipsideViewer
    geometry
    m
    pthread
-   X11
    GL
    fltk 
    fltk_gl 
-   tiff
-   )
+   tiff)
