@@ -51,6 +51,7 @@ BHV_Trail::BHV_Trail(IvPDomain gdomain) : IvPBehavior(gdomain)
   m_trail_range  = 0;
   m_trail_angle  = 180;
   m_radius       = 5;
+  m_nm_radius    = 20;
   m_max_range    = 0;
   m_extrapolate  = true;
 
@@ -73,6 +74,7 @@ BHV_Trail::BHV_Trail(IvPDomain gdomain) : IvPBehavior(gdomain)
 // "trail_angle": desired angle to the vehicle trailed.
 //      "radius": distance to the desired trailing point within
 //                which the behavior is "shadowing".
+//   "nm_radius": If within this and heading ahead of target slow down
 //   "max_range": contact range outside which priority is zero.
 
 bool BHV_Trail::setParam(string g_param, string g_val) 
@@ -109,6 +111,13 @@ bool BHV_Trail::setParam(string g_param, string g_val)
       return(true);
     }  
   }
+  else if(g_param == "nm_radius") 
+    {
+      if(isNumber(g_val)) {
+	m_nm_radius = atof(g_val.c_str());
+	return(true);
+      }  
+    }
   else if(g_param == "max_range") {
     if(isNumber(g_val)) {
       m_max_range = atof(g_val.c_str());
@@ -174,45 +183,81 @@ IvPFunction *BHV_Trail::onRunState()
 
   IvPFunction *ipf = 0;
 
-  if(distPointToPoint(m_osx, m_osy, posX, posY) > m_radius) {
-    AOF_CutRangeCPA aof(m_domain);
-    aof.setParam("cnlat", posY);
-    aof.setParam("cnlon", posX);
-    aof.setParam("cncrs", m_cnh);
-    aof.setParam("cnspd", m_cnv);
-    aof.setParam("oslat", m_osy);
-    aof.setParam("oslon", m_osx);
-    aof.setParam("tol",   60);
-    aof.setParam("min_util_cpa_dist", m_min_util_cpa_dist);
-    aof.setParam("max_util_cpa_dist", m_max_util_cpa_dist);
-    bool ok = aof.initialize();
+  double head_x = cos(headingToRadians(m_cnh));
+  double head_y = sin(headingToRadians(m_cnh));
+  bool ahead = (head_x*(m_osx-posX)+head_y*(m_osy-posY) >= 0.0);
+      
+  if(distPointToPoint(m_osx, m_osy, posX, posY) > m_radius) 
+    {
+      if(!ahead && distPointToPoint(m_osx, m_osy, posX, posY) > m_nm_radius) 
+	{
+	  AOF_CutRangeCPA aof(m_domain);
+	  aof.setParam("cnlat", posY);
+	  aof.setParam("cnlon", posX);
+	  aof.setParam("cncrs", m_cnh);
+	  aof.setParam("cnspd", m_cnv);
+	  aof.setParam("oslat", m_osy);
+	  aof.setParam("oslon", m_osx);
+	  aof.setParam("tol",   60);
+	  aof.setParam("min_util_cpa_dist", m_min_util_cpa_dist);
+	  aof.setParam("max_util_cpa_dist", m_max_util_cpa_dist);
+	  bool ok = aof.initialize();
+	  
+	  if(!ok) 
+	    {
+	      postWMessage("Error in initializing AOF_CutRangeCPA.");
+	      return(0);
+	    }
 
-    if(!ok) {
-      postWMessage("Error in initializing AOF_CutRangeCPA.");
-      return(0);
+	  OF_Reflector reflector(&aof, 1);
+	  reflector.create(m_build_info);
+	  ipf = reflector.extractOF();
+	}
+      else
+	{
+          // If inside nm_radius and ahead, reduce speed more
+
+	  ZAIC_PEAK hdg_zaic(m_domain, "course");
+	  hdg_zaic.addSummit(m_cnh, 0, 180, 80, 0, 100);
+	  hdg_zaic.setValueWrap(true);
+	  IvPFunction *hdg_ipf = hdg_zaic.extractOF();
+	  
+	  ZAIC_PEAK spd_zaic(m_domain, "speed");
+	  double modv = m_cnv - 0.2;
+	  if(modv < 0)
+	    modv = 0;
+	  spd_zaic.addSummit(modv, 0, 2.0, 10, 0, 25);
+	  spd_zaic.setValueWrap(true);
+	  IvPFunction *spd_ipf = spd_zaic.extractOF();
+	  
+	  OF_Coupler coupler;
+	  ipf = coupler.couple(hdg_ipf, spd_ipf);
+	}
     }
+  else 
+    {
+      ZAIC_PEAK hdg_zaic(m_domain, "course");
+      hdg_zaic.addSummit(m_cnh, 0, 180, 80, 0, 100);
+      hdg_zaic.setValueWrap(true);
+      IvPFunction *hdg_ipf = hdg_zaic.extractOF();
+      
+      ZAIC_PEAK spd_zaic(m_domain, "speed");
 
-    OF_Reflector reflector(&aof, 1);
-    reflector.create(m_build_info);
-    ipf = reflector.extractOF();
-  }
-  else {
-    ZAIC_PEAK hdg_zaic(m_domain, "course");
-    hdg_zaic.addSummit(m_cnh, 0, 180, 80, 0, 100);
-    hdg_zaic.setValueWrap(true);
-    IvPFunction *hdg_ipf = hdg_zaic.extractOF();
-    
-    ZAIC_PEAK spd_zaic(m_domain, "speed");
-    double modv = m_cnv - 0.1;
-    if(modv < 0)
-      modv = 0;
-    spd_zaic.addSummit(modv, 0, 2.0, 10, 0, 25);
-    spd_zaic.setValueWrap(true);
-    IvPFunction *spd_ipf = spd_zaic.extractOF();
-    
-    OF_Coupler coupler;
-    ipf = coupler.couple(hdg_ipf, spd_ipf);
-  }
+      // If inside radius and ahead, reduce speed a little
+      double modv=m_cnv;
+      if (ahead)
+	modv = m_cnv - 0.1;
+ 
+      if(modv < 0)
+	modv = 0;
+ 
+      spd_zaic.addSummit(modv, 0, 2.0, 10, 0, 25);
+      spd_zaic.setValueWrap(true);
+      IvPFunction *spd_ipf = spd_zaic.extractOF();
+      
+      OF_Coupler coupler;
+      ipf = coupler.couple(hdg_ipf, spd_ipf);
+    }
   
   if(ipf) {
     ipf->getPDMap()->normalize(0.0, 100.0);

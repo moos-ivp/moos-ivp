@@ -45,6 +45,7 @@ private: // Configuration parameters
   double  m_trail_range;
   double  m_trail_angle;
   double  m_radius;
+  double  m_nm_radius;
   double  m_max_range;
   double  m_max_util_cpa_dist;
   double  m_min_util_cpa_dist;
