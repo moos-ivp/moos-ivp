@@ -73,6 +73,11 @@ void Viewer::draw()
 {
   Common_IPFViewer::draw();
 
+  glPushMatrix();
+  glRotatef(m_xRot, 1.0f, 0.0f, 0.0f);
+  glRotatef(m_yRot, 0.0f, 1.0f, 0.0f);
+  glRotatef(m_zRot, 0.0f, 0.0f, 1.0f);
+
   if(m_draw_ipf && m_unif_ipf)
     drawIvPFunction(m_unif_ipf);
 
