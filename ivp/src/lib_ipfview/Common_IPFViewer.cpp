@@ -263,6 +263,7 @@ void Common_IPFViewer::draw()
 
   drawOwnPoint();
   Common_IPFViewer::drawIvPFunction();
+  glPopMatrix();
 }
 
 // ----------------------------------------------------------
