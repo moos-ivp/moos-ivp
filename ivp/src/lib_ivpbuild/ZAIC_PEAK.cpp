@@ -127,9 +127,9 @@ IvPFunction *ZAIC_PEAK::extractOF(bool maxval)
     return(0);
 
   pdmap->updateGrid();
-  IvPFunction *of = new IvPFunction(pdmap);
+  IvPFunction *ipf = new IvPFunction(pdmap);
 
-  return(of);
+  return(ipf);
 }
 
 
