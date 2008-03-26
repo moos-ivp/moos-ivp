@@ -199,7 +199,7 @@ IvPFunction *BHV_Trail::onRunState()
     
   if(distPointToPoint(m_osx, m_osy, posX, posY) > m_radius) 
     {
-      if(!ahead && distPointToPoint(m_osx, m_osy, posX, posY) > m_nm_radius) 
+      if(distPointToPoint(m_osx, m_osy, posX, posY) > m_nm_radius || !ahead) 
 	{
 	  AOF_CutRangeCPA aof(m_domain);
 	  aof.setParam("cnlat", posY);
