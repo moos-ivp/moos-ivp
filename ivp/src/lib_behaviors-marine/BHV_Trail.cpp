@@ -196,10 +196,10 @@ IvPFunction *BHV_Trail::onRunState()
   double head_y = sin(headingToRadians(m_cnh));
   double ahead_by = head_x*(m_osx-posX)+head_y*(m_osy-posY) ;
   bool ahead = (ahead_by > 0);
-    
-  if(distPointToPoint(m_osx, m_osy, posX, posY) > m_radius) 
+  bool outside_nm = (distPointToPoint(m_osx, m_osy, posX, posY) > m_radius);   
+  if (outside_nm || (!outside_nm && !ahead))
     {
-      if(distPointToPoint(m_osx, m_osy, posX, posY) > m_nm_radius || !ahead) 
+      if(distPointToPoint(m_osx, m_osy, posX, posY) > m_nm_radius ) 
 	{
 	  AOF_CutRangeCPA aof(m_domain);
 	  aof.setParam("cnlat", posY);
@@ -233,9 +233,15 @@ IvPFunction *BHV_Trail::onRunState()
 	  IvPFunction *hdg_ipf = hdg_zaic.extractOF();
 	  
 	  ZAIC_PEAK spd_zaic(m_domain, "speed");
-	  double modv = m_cnv * (1 - ahead_by/m_nm_radius);
+
+
+	  double modv = m_cnv;
+	  if (ahead)
+	    modv = m_cnv * (1 - ahead_by/m_nm_radius);
+
 	  if(modv < 0)
 	    modv = 0;
+
 	  spd_zaic.addSummit(modv, 0, 2.0, 10, 0, 25);
 	  spd_zaic.setValueWrap(true);
 	  IvPFunction *spd_ipf = spd_zaic.extractOF();
