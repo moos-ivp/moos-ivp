@@ -45,7 +45,7 @@ private:
 
 protected:
   MY_Output  *v_nam;
-  MY_Output  *time;
+  MY_Output  *v_typ;
   MY_Output  *x_mtr;
   MY_Output  *y_mtr;
   MY_Output  *v_spd;
@@ -54,6 +54,7 @@ protected:
   MY_Output  *v_crs;
   MY_Output  *v_dep;
   MY_Output  *v_ais;
+  MY_Output  *time;
 
   double m_curr_time;
 };

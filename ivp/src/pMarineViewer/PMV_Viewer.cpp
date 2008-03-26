@@ -309,6 +309,28 @@ string PMV_Viewer::getVehiName(int index)
   return("");
 }
 
+// ----------------------------------------------------------
+// Procedure: getVehiType
+//   Purpose: Index indicates which of the MAX_VEHICLES vehicles
+//            is being queried. Anything outside this range 
+//            results in an empty string being returned.
+
+string PMV_Viewer::getVehiType(int index)
+{
+  if((m_cross_offon) || (index == -1))
+    return("n/a");
+
+  int ix = index;
+  map<string,string>::iterator p;
+  for(p=m_vbody_map.begin(); p!=m_vbody_map.end(); p++) {
+    if(ix==0)
+      return(p->second);
+    else
+      ix--;
+  }
+  return("???");
+}
+
 //-------------------------------------------------------------
 // Procedure: cycleIndex
 

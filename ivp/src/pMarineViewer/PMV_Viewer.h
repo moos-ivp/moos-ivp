@@ -65,6 +65,7 @@ public:
   bool  initGeodesy(double, double);
 
   std::string getVehiName(int);
+  std::string getVehiType(int);
   std::string getLeftClick()     {return(m_left_click);};
   std::string getRightClick()    {return(m_right_click);};
   int   getLeftClickIX()         {return(m_left_click_ix);};

@@ -48,9 +48,9 @@ PMV_GUI::PMV_GUI(int g_w, int g_h, const char *g_l)
   v_nam->textsize(info_size); 
   v_nam->labelsize(info_size);
 
-  time = new MY_Output(60, h()-30, 70, 20, "Time:"); 
-  time->textsize(info_size); 
-  time->labelsize(info_size);
+  v_typ = new MY_Output(60, h()-30, 70, 20, "VType:"); 
+  v_typ->textsize(info_size); 
+  v_typ->labelsize(info_size);
 
   x_mtr = new MY_Output(190, h()-60, 70, 20, "X(m):"); 
   x_mtr->textsize(info_size); 
@@ -83,6 +83,10 @@ PMV_GUI::PMV_GUI(int g_w, int g_h, const char *g_l)
   v_ais = new MY_Output(610, h()-30, 55, 20, "Age-AIS:"); 
   v_ais->textsize(info_size); 
   v_ais->labelsize(info_size);
+
+  time = new MY_Output(720, h()-60, 70, 20, "Time:"); 
+  time->textsize(info_size); 
+  time->labelsize(info_size);
 
   this->end();
   this->resizable(this);
@@ -135,6 +139,10 @@ void PMV_GUI::updateXY() {
   }
 
   v_nam->value(vname.c_str());
+
+
+  string vtype = mviewer->getVehiType(index);
+  v_typ->value(vtype.c_str());
 
   string lat_str = "??";
   string lon_str = "??";
