@@ -174,6 +174,15 @@ IvPFunction *BHV_Trail::onRunState()
   // Calculate the relevance first. If zero-relevance, we won't
   // bother to create the objective function.
   double relevance = getRelevance();
+
+  
+  postMessage("TRAIL_CONTACT_X", m_cnx);
+  postMessage("TRAIL_CONTACT_Y", m_cny);
+  postMessage("TRAIL_CONTACT_SPEED", m_cnv);
+  postMessage("TRAIL_CONTACT_HEADING", m_cnh);
+  postMessage("TRAIL_RELEVANCE", relevance);
+  
+
   if(relevance <= 0) {
     postMessage("PURSUIT", 0);
     return(0);
@@ -185,8 +194,9 @@ IvPFunction *BHV_Trail::onRunState()
 
   double head_x = cos(headingToRadians(m_cnh));
   double head_y = sin(headingToRadians(m_cnh));
-  bool ahead = (head_x*(m_osx-posX)+head_y*(m_osy-posY) >= 0.0);
-      
+  double ahead_by = head_x*(m_osx-posX)+head_y*(m_osy-posY) ;
+  bool ahead = (ahead_by > 0);
+    
   if(distPointToPoint(m_osx, m_osy, posX, posY) > m_radius) 
     {
       if(!ahead && distPointToPoint(m_osx, m_osy, posX, posY) > m_nm_radius) 
@@ -223,7 +233,7 @@ IvPFunction *BHV_Trail::onRunState()
 	  IvPFunction *hdg_ipf = hdg_zaic.extractOF();
 	  
 	  ZAIC_PEAK spd_zaic(m_domain, "speed");
-	  double modv = m_cnv - 0.2;
+	  double modv = m_cnv * (1 - ahead_by/m_nm_radius);
 	  if(modv < 0)
 	    modv = 0;
 	  spd_zaic.addSummit(modv, 0, 2.0, 10, 0, 25);
@@ -315,12 +325,17 @@ bool BHV_Trail::updateInfoIn()
      !ok6 || !ok7 || !ok8 || !ok9)
     return(false);
   
+  double curr_time = getBufferCurrTime();
+  // double mark_time = getBufferTimeVal(m_contact+"_NAV_X");
+
+  postMessage("TRAIL_CONTACT_TIME", m_cnutc);
+  postMessage("TRAIL_CURRENT_TIME", curr_time);
+  postMessage("TRAIL_DELTA_TIME", curr_time-m_cnutc);
+
   if(!m_extrapolate)
     return(true);
 
-  double curr_time = getBufferCurrTime();
-  double mark_time = getBufferTimeVal(m_contact+"_NAV_X");
-  if(mark_time == 0)
+  // if(mark_time == 0)
     m_extrapolator.setPosition(m_cnx, m_cny, m_cnv, m_cnh, m_cnutc);
 
   // Even if mark_time is zero and thus "fresh", still derive the 
@@ -357,6 +372,8 @@ double BHV_Trail::getRelevance()
     return(1.0);
   
   double contact_range = hypot((m_osx-m_cnx), (m_osy-m_cny));
+  postMessage("TRAIL_RANGE",contact_range );
+
   if(contact_range < m_max_range)
     return(1.0);
   else
