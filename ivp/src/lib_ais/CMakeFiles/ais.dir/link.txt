@@ -1,0 +1,2 @@
+/usr/bin/ar cr libais.a  "CMakeFiles/ais.dir/OM1371Message.o" "CMakeFiles/ais.dir/OM1371Message_1.o" "CMakeFiles/ais.dir/OM1371Message_5.o" "CMakeFiles/ais.dir/OM1371Message_18.o" "CMakeFiles/ais.dir/OM1371Message_19.o" 
+/usr/bin/ranlib libais.a 

@@ -80,6 +80,7 @@ FILE(GLOB IVP_LIBS_TO_BUILD
   lib_marineview
   lib_mbutil
   lib_navplot
+  lib_ais
 )
 
 FOREACH(L ${IVP_LIBS_TO_BUILD})
@@ -110,6 +111,9 @@ FILE(GLOB IVP_APPS_TO_BUILD
   uRepeater
   uTermCommand
   uXMS
+  iRawAIS
+  iPlaybackAIS
+  iParserAIS
 )
 
 FOREACH(A ${IVP_APPS_TO_BUILD})
