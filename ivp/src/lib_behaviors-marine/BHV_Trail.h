@@ -33,6 +33,7 @@ public:
   ~BHV_Trail() {};
   
   IvPFunction* onRunState();
+  void         onIdleState();
   bool         setParam(std::string, std::string);
 
 protected:

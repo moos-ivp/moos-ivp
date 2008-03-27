@@ -197,6 +197,8 @@ IvPFunction *BHV_Trail::onRunState()
   double distance = distPointToPoint(m_osx, m_osy, posX, posY); 
   bool outside = (distance > m_radius);   
 
+  postMessage("TRAIL_DISTANCE", distance);
+
   if ( outside )
     {
       if( distance > m_nm_radius ) 	  // Outside nm_radius
@@ -229,8 +231,11 @@ IvPFunction *BHV_Trail::onRunState()
 	  bool ahead = (ahead_by > 0);
  
 	  // head toward point nm_radius ahead of trail point
-	  double bear_x = (head_x*m_nm_radius+posX-m_osx)/distance;
-	  double bear_y = (head_y*m_nm_radius+posY-m_osy)/distance;
+	  double ppx = head_x*m_nm_radius+posX;
+	  double ppy = head_y*m_nm_radius+posY;
+          double distp=hypot((ppx-m_osx), (ppy-m_osy));
+	  double bear_x = (head_x*m_nm_radius+posX-m_osx)/distp;
+	  double bear_y = (head_y*m_nm_radius+posY-m_osy)/distp;
 	  double modh = radToHeading(atan2(bear_y,bear_x));
 
 	  ZAIC_PEAK hdg_zaic(m_domain, "course");
@@ -238,18 +243,27 @@ IvPFunction *BHV_Trail::onRunState()
 	  hdg_zaic.setValueWrap(true);
 	  IvPFunction *hdg_ipf = hdg_zaic.extractOF();
 	  
-	  ZAIC_PEAK spd_zaic(m_domain, "speed");
-
           // If ahead, reduce speed proportionally
 	  // if behind, increaase speed proportionally
 
-	  double modv = m_cnv * (1 - ahead_by/m_nm_radius);
+	  double modv = m_cnv * (1 - 0.5*ahead_by/m_nm_radius);
+
+	  postMessage("TRAIL_SPEED", modv);
 
 	  if(modv < 0)
 	    modv = 0;
 
-	  spd_zaic.addSummit(modv, 0, 2.0, 10, 0, 25);
+	  ZAIC_PEAK spd_zaic(m_domain, "speed");
+
+	  spd_zaic.setSummit(modv);
 	  spd_zaic.setValueWrap(true);
+	  spd_zaic.setPeakWidth(0.1);
+	  spd_zaic.setBaseWidth(1.0);
+	  spd_zaic.setSummitDelta(50.0); 
+
+  //	  spd_zaic.addSummit(modv, 0, 3.0, 10, 0, 25);
+  //	  spd_zaic.setValueWrap(true);
+
 	  IvPFunction *spd_ipf = spd_zaic.extractOF();
 	  
 	  OF_Coupler coupler;
@@ -287,6 +301,19 @@ IvPFunction *BHV_Trail::onRunState()
   }
 
   return(ipf);
+}
+
+//-----------------------------------------------------------
+// Procedure: onIdleState
+//      Note: This function overrides the onIdleState() virtual
+//            function defined for the IvPBehavior superclass
+//            This function will be executed by the helm each
+//            time the behavior FAILS to meet its run conditions.
+
+void BHV_Trail::onIdleState()
+{
+  // Do your thing here
+    postMessage("PURSUIT", 0);
 }
 
 //-----------------------------------------------------------
