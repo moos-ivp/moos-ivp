@@ -194,12 +194,12 @@ IvPFunction *BHV_Trail::onRunState()
 
   double head_x = cos(headingToRadians(m_cnh));
   double head_y = sin(headingToRadians(m_cnh));
-  double ahead_by = head_x*(m_osx-posX)+head_y*(m_osy-posY) ;
-  bool ahead = (ahead_by > 0);
-  bool outside_nm = (distPointToPoint(m_osx, m_osy, posX, posY) > m_radius);   
-  if (outside_nm || (!outside_nm && !ahead))
+  double distance = distPointToPoint(m_osx, m_osy, posX, posY); 
+  bool outside = (distance > m_radius);   
+
+  if ( outside )
     {
-      if(distPointToPoint(m_osx, m_osy, posX, posY) > m_nm_radius ) 
+      if( distance > m_nm_radius ) 	  // Outside nm_radius
 	{
 	  AOF_CutRangeCPA aof(m_domain);
 	  aof.setParam("cnlat", posY);
@@ -223,21 +223,27 @@ IvPFunction *BHV_Trail::onRunState()
 	  reflector.create(m_build_info);
 	  ipf = reflector.extractOF();
 	}
-      else
+      else // inside nm_radius
 	{
-          // If inside nm_radius and ahead, reduce speed more
+	  double ahead_by = head_x*(m_osx-posX)+head_y*(m_osy-posY) ;
+	  bool ahead = (ahead_by > 0);
+ 
+	  // head toward point nm_radius ahead of trail point
+	  double bear_x = (head_x*m_nm_radius+posX-m_osx)/distance;
+	  double bear_y = (head_y*m_nm_radius+posY-m_osy)/distance;
+	  double modh = radToHeading(atan2(bear_y,bear_x));
 
 	  ZAIC_PEAK hdg_zaic(m_domain, "course");
-	  hdg_zaic.addSummit(m_cnh, 0, 180, 80, 0, 100);
+	  hdg_zaic.addSummit(modh, 0, 180, 80, 0, 100);
 	  hdg_zaic.setValueWrap(true);
 	  IvPFunction *hdg_ipf = hdg_zaic.extractOF();
 	  
 	  ZAIC_PEAK spd_zaic(m_domain, "speed");
 
+          // If ahead, reduce speed proportionally
+	  // if behind, increaase speed proportionally
 
-	  double modv = m_cnv;
-	  if (ahead)
-	    modv = m_cnv * (1 - ahead_by/m_nm_radius);
+	  double modv = m_cnv * (1 - ahead_by/m_nm_radius);
 
 	  if(modv < 0)
 	    modv = 0;
@@ -261,8 +267,8 @@ IvPFunction *BHV_Trail::onRunState()
 
       // If inside radius and ahead, reduce speed a little
       double modv=m_cnv;
-      if (ahead)
-	modv = m_cnv - 0.1;
+      //      if (ahead)
+      //	modv = m_cnv - 0.1;
  
       if(modv < 0)
 	modv = 0;
