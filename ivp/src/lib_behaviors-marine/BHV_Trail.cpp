@@ -205,26 +205,6 @@ IvPFunction *BHV_Trail::onRunState()
     {
       if( distance > m_nm_radius ) 	  // Outside nm_radius
 	{
-	  if (fabs(rel_bearing) > 45.0)
-	    {
-	      // Due to CPA bug point in right direction first
-	      ZAIC_PEAK hdg_zaic(m_domain, "course");
-	      hdg_zaic.addSummit(bearing, 0, 180, 80, 0, 100);
-	      hdg_zaic.setValueWrap(true);
-	      IvPFunction *hdg_ipf = hdg_zaic.extractOF();
-	      
-	      ZAIC_PEAK spd_zaic(m_domain, "speed");
-	      spd_zaic.setSummit(m_cnv);
-	      spd_zaic.setPeakWidth(0.1);
-	      spd_zaic.setBaseWidth(2.0);
-	      spd_zaic.setSummitDelta(50.0); 
-	      IvPFunction *spd_ipf = spd_zaic.extractOF();
-	      
-	      OF_Coupler coupler;
-	      ipf = coupler.couple(hdg_ipf, spd_ipf);
-	    }
-	  else
-	    {
 	      AOF_CutRangeCPA aof(m_domain);
 	      aof.setParam("cnlat", posY);
 	      aof.setParam("cnlon", posX);
@@ -246,7 +226,6 @@ IvPFunction *BHV_Trail::onRunState()
 	      OF_Reflector reflector(&aof, 1);
 	      reflector.create(m_build_info);
 	      ipf = reflector.extractOF();
-	    }
 	}
       else // inside nm_radius
 	{
