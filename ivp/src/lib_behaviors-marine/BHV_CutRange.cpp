@@ -159,19 +159,15 @@ IvPFunction *BHV_CutRange::onRunState()
 
   double cnCRS = getBufferDoubleVal(m_them_name+"_NAV_HEADING", ok1);
   double cnSPD = getBufferDoubleVal(m_them_name+"_NAV_SPEED", ok2);
-  if(!ok1 || !ok2) {
-    postWMessage("contact course/speed info not found.");
+  if(!ok1 || !ok2)
     return(0);
-  }
 
   if(cnCRS < 0) cnCRS += 360.0;
 
   double cnX = getBufferDoubleVal(m_them_name+"_NAV_X", ok1);
   double cnY = getBufferDoubleVal(m_them_name+"_NAV_Y", ok2);
-  if(!ok1 || !ok2) {
-    postWMessage("contact x/y info not found.");
+  if(!ok1 || !ok2)
     return(0);
-  }
 
   double osX = getBufferDoubleVal("NAV_X", ok1);
   double osY = getBufferDoubleVal("NAV_Y", ok2);

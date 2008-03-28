@@ -175,19 +175,15 @@ bool BHV_Shadow::updateInfoIn()
   
   m_cnh = getBufferDoubleVal(m_them_name+"_NAV_HEADING", ok1);
   m_cnv = getBufferDoubleVal(m_them_name+"_NAV_SPEED", ok2);
-  if(!ok1 || !ok2) {
-    postWMessage("contact course/speed info not found.");
+  if(!ok1 || !ok2)
     return(false);
-  }
 
   m_cnh = angle360(m_cnh);
 
   m_cnx = getBufferDoubleVal(m_them_name+"_NAV_X", ok1);
   m_cny = getBufferDoubleVal(m_them_name+"_NAV_Y", ok2);
-  if(!ok1 || !ok2) {
-    postWMessage("contact x/y info not found.");
+  if(!ok1 || !ok2)
     return(false);
-  }
   
   m_osx = getBufferDoubleVal("NAV_X", ok1);
   m_osy = getBufferDoubleVal("NAV_Y", ok2);

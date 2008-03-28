@@ -231,9 +231,7 @@ bool BHV_AvoidCollision::getBufferInfo()
   m_cnv = getBufferDoubleVal(m_contact+"_NAV_SPEED",   ok2);
   if(!ok1 || !ok2) {    
     string msg = m_contact + " heading/speed info not found";
-    if(m_on_no_contact_ok)
-      postWMessage(msg);
-    else
+    if(!m_on_no_contact_ok)
       postEMessage(msg);
     return(false);
   }

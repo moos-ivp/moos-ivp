@@ -12,3 +12,6 @@
 
 - Added a --force feature to app_splug to allow an automatic overwrite
   of an existing file without prompting for confirmation from the user.
+
+- Fixed a bug in ZAIC_PEAK that showed itself when set with a minutil
+  value greater than zero.

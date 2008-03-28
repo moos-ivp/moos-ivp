@@ -78,10 +78,8 @@ IvPFunction *BHV_StandOn17::onRunState()
 
   double cnCRS = getBufferDoubleVal(them_name+"_NAV_HEADING", ok1);
   double cnSPD = getBufferDoubleVal(them_name+"_NAV_SPEED", ok2);
-  if(!ok1 || !ok2) {
-    postWMessage("contact course/speed info not found.");
+  if(!ok1 || !ok2)
     return(0);
-  }
 
   double osCRS = getBufferDoubleVal("NAV_HEADING", ok1);
   double osSPD = getBufferDoubleVal("NAV_SPEED", ok2);
@@ -94,10 +92,8 @@ IvPFunction *BHV_StandOn17::onRunState()
 
   double cnLAT = getBufferDoubleVal(them_name+"_NAV_Y", ok1);
   double cnLON = getBufferDoubleVal(them_name+"_NAV_X", ok2);
-  if(!ok1 || !ok2) {
-    postWMessage("contact x/y info not found.");
+  if(!ok1 || !ok2)
     return(0);
-  }
 
   double osLAT = getBufferDoubleVal("NAV_Y", ok1);
   double osLON = getBufferDoubleVal("NAV_X", ok2);

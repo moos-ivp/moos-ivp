@@ -140,7 +140,6 @@ void PMV_GUI::updateXY() {
 
   v_nam->value(vname.c_str());
 
-
   string vtype = mviewer->getVehiType(index);
   v_typ->value(vtype.c_str());
 
@@ -186,5 +185,3 @@ void PMV_GUI::cb_CycleFocus(Fl_Widget* o, int v) {
   int val = (int)(v);
   ((PMV_GUI*)(o->parent()->user_data()))->cb_CycleFocus_i(val);
 }
-
-

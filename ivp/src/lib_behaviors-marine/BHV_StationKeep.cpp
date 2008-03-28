@@ -174,7 +174,6 @@ IvPFunction *BHV_StationKeep::onRunState()
 
   // If no ownship position from info_buffer, return null
   if(!ok1 || !ok2) {
-    postWMessage("No ownship X/Y info in info_buffer.");
     postStationMessage(false);
     return(0);
   }

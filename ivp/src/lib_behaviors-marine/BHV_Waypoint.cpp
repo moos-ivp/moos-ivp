@@ -185,8 +185,8 @@ IvPFunction *BHV_Waypoint::onRunState()
 bool BHV_Waypoint::updateInfoIn()
 {
   bool ok1, ok2, ok3;
-  m_osx   = getBufferDoubleVal("NAV_X",     ok1);
-  m_osy   = getBufferDoubleVal("NAV_Y",     ok2);
+  m_osx = getBufferDoubleVal("NAV_X",     ok1);
+  m_osy = getBufferDoubleVal("NAV_Y",     ok2);
   m_osv = getBufferDoubleVal("NAV_SPEED", ok3);
 
   // Must get ownship position from InfoBuffer
@@ -194,8 +194,9 @@ bool BHV_Waypoint::updateInfoIn()
     postEMessage("No ownship X/Y info in info_buffer.");
     return(false);
   }
-  if(!ok3)
-    postWMessage("No ownship speed info in info_buffer.");
+
+  // If NAV_SPEED info is not found in the info_buffer, its
+  // not a show-stopper. A warning will be posted.
 
   return(true);
 }
