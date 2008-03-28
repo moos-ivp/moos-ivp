@@ -28,6 +28,7 @@
 #include <stdio.h>
 #include "IvPProblem.h"
 #include "IvPFunction.h"
+#include "ZAIC_PEAK.h"
 
 bool   saveProblem(IvPProblem*, const std::string&);
 bool   saveFunction(IvPFunction *ipf, const std::string&, bool append);
@@ -37,6 +38,8 @@ IvPFunction* readFunction(const std::string&);
 
 std::vector<IvPFunction*> readFunctions(const std::string&);
 PDMap*       readPDMap(FILE *f, int dim, int cnt, IvPDomain dom, int deg);
+
+void   printZAIC_PEAK(ZAIC_PEAK);
 
 #endif
 

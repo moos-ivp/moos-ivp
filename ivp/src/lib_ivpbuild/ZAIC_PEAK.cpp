@@ -310,7 +310,7 @@ double ZAIC_PEAK::evalPoint(int sx, int ix)
   else if((dist_from_summit > peak_width) &&
      (dist_from_summit <= (peak_width + base_width))) {
     double edge_of_peak_height = max_util - loc_summit_delta;
-    double slope = edge_of_peak_height / base_width;
+    double slope = (edge_of_peak_height - min_util) / base_width;
     double rise  = slope * (dist_from_summit - peak_width);
     return_val   = edge_of_peak_height - rise;
   }
@@ -319,8 +319,8 @@ double ZAIC_PEAK::evalPoint(int sx, int ix)
   else
     return_val = min_util;
   
-  if(return_val < min_util)
-    return_val = min_util;
+  //if(return_val < min_util)
+  //  return_val = min_util;
   if(return_val > max_util)
     return_val = max_util;
   return(return_val);
@@ -392,7 +392,6 @@ PDMap *ZAIC_PEAK::setPDMap(double tolerance)
   int    i;
   int    first_pt  = 0;
   double first_val = m_ptvals[0];
-
 
   bool   trend = false; // No trend to start
   double s_m;

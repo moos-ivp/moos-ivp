@@ -305,11 +305,35 @@ bool saveFunction(IvPFunction *ipf, const string& filename, bool append)
 }
 
 
+//--------------------------------------------------------------
+// Procedure: printZAIC_PEAK
+
+void printZAIC_PEAK(ZAIC_PEAK zaic)
+{
+  int zsize = zaic.getSummitCount();
+  
+  bool insist = zaic.getSummitInsist();
+  bool wrap   = zaic.getValueWrap();
 
 
+  cout << "ZAIC Summit Count: " << zsize << endl;
+  cout << " SummitInsist (T/F): " << insist;
+  cout << " ValueWrap (T/F): "    << wrap;
 
+  for(int i=0; i<zsize; i++) {
+     cout << "[" << i << "]: " << endl;
+    double summit = zaic.getParam("summit", i);
+    double basewidth = zaic.getParam("basewidth", i);
+    double peakwidth = zaic.getParam("peakwidth", i);
+    double delta = zaic.getParam("delta", i);
+    double minutil = zaic.getParam("minutil", i);
+    double maxutil = zaic.getParam("maxutil", i);
 
-
-
-
-
+    cout << "  Summit: "    << summit << endl;
+    cout << "  Basewidth: " << basewidth << endl;
+    cout << "  Peakwidth: " << peakwidth << endl;
+    cout << "  Delta: "     << delta << endl;
+    cout << "  Minutil: "   << minutil << endl;
+    cout << "  Maxutil: "   << maxutil << endl;
+  }
+}
