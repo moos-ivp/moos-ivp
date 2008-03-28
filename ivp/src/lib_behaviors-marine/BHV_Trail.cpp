@@ -342,25 +342,6 @@ bool BHV_Trail::updateInfoIn()
   m_cnv = getBufferDoubleVal(m_contact+"_NAV_SPEED", ok8);
   m_cnutc = getBufferDoubleVal(m_contact+"_NAV_UTC", ok9);
 
-  if(!ok1)
-    postWMessage("No ownship NAV_X in info_buffer.");
-  if(!ok2)
-    postWMessage("No ownship NAV_Y in info_buffer.");
-  if(!ok3)
-    postWMessage("No ownship NAV_HEADING in info_buffer.");
-  if(!ok4)
-    postWMessage("No ownship NAV_SPEED in info_buffer.");
-  if(!ok5)
-    postWMessage("No contact NAV_X in info_buffer.");
-  if(!ok6)
-    postWMessage("No contact NAV_Y in info_buffer.");
-  if(!ok7)
-    postWMessage("No contact NAV_HEADING in info_buffer.");
-  if(!ok8)
-    postWMessage("No contact NAV_SPEED in info_buffer.");
-  if(!ok9)
-    postWMessage("No contact NAV_UTC in info_buffer.");
-
   if(!ok1 || !ok2 || !ok3 || !ok4 || !ok5 || 
      !ok6 || !ok7 || !ok8 || !ok9)
     return(false);
