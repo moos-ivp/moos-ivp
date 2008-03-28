@@ -255,13 +255,13 @@ IvPFunction *BHV_Trail::onRunState()
 
 	  ZAIC_PEAK spd_zaic(m_domain, "speed");
 
-	  // spd_zaic.setSummit(modv);
-	  // spd_zaic.setPeakWidth(0);
-	  // spd_zaic.setBaseWidth(2.0);
-	  // spd_zaic.setSummitDelta(50.0); 
-
-	  spd_zaic.addSummit(modv, 0, 2.0, 10, 0, 25);
+	  spd_zaic.setSummit(modv);
+	  spd_zaic.setPeakWidth(0.1);
+	  spd_zaic.setBaseWidth(2.0);
+	  spd_zaic.setSummitDelta(50.0); 
+	  
 	  // the following creates 0 desired speed. HS 032708
+	  //      spd_zaic.addSummit(modv, 0, 2.0, 10, 0, 25);
 	  //	  spd_zaic.setValueWrap(true);
 
 	  IvPFunction *spd_ipf = spd_zaic.extractOF();
@@ -287,9 +287,15 @@ IvPFunction *BHV_Trail::onRunState()
       if(modv < 0)
 	modv = 0;
  
-      spd_zaic.addSummit(modv, 0, 2.0, 10, 0, 25);
+      spd_zaic.setSummit(modv);
+      spd_zaic.setPeakWidth(0.1);
+      spd_zaic.setBaseWidth(2.0);
+      spd_zaic.setSummitDelta(50.0); 
+      
       // the following creates 0 desired speed. HS 032708
+      //      spd_zaic.addSummit(modv, 0, 2.0, 10, 0, 25);
       //      spd_zaic.setValueWrap(true);
+
       IvPFunction *spd_ipf = spd_zaic.extractOF();
       
       OF_Coupler coupler;
