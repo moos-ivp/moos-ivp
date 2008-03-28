@@ -317,8 +317,8 @@ void printZAIC_PEAK(ZAIC_PEAK zaic)
 
 
   cout << "ZAIC Summit Count: " << zsize << endl;
-  cout << " SummitInsist (T/F): " << insist;
-  cout << " ValueWrap (T/F): "    << wrap;
+  cout << " SummitInsist (T/F): " << insist << endl;
+  cout << " ValueWrap (T/F): "    << wrap << endl;
 
   for(int i=0; i<zsize; i++) {
      cout << "[" << i << "]: " << endl;
