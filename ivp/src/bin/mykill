@@ -18,7 +18,8 @@ killall -9 -q iMicroModem pRouter pFramer pMessageSim  \
         pCSVLogger pBearings_VSA pEchoVar pTrackQuality \
         p1HTracker pGPSSim uBathy uCtdSim2 pTargetOpportunity \
         pBearings_DURIP uProcessWatch uPlayBack pSubIndex \
-        pBearings_GENERIC pTargetSim pMBTracker zLoggerNG
+        pBearings_GENERIC pTargetSim pMBTracker zLoggerNG \
+	iModemSim
 
 killall -9 -q pSensorSim pArtifactMapper 
 
