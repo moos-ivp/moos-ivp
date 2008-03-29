@@ -242,6 +242,7 @@ ProcessConfig = pEchoVar
   Echo    = MARINESIM_HEADING ->  NAV_HEADING
   Echo    = META_HEADING      ->  NAV_HEADING
   Echo    = MARINESIM_SPEED   ->  NAV_SPEED
+  Echo    = MARINESIM_DEPTH   ->  NAV_DEPTH
 }
 
 
