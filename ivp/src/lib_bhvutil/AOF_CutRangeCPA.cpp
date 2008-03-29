@@ -56,7 +56,7 @@ AOF_CutRangeCPA::AOF_CutRangeCPA(IvPDomain gdomain)
   max_util_cpa_dist_set = false;
 
   cpa_engine = 0;
-  patience   = 100;
+  patience   = 0;
 }
 
 //----------------------------------------------------------------
