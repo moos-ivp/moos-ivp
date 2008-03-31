@@ -241,8 +241,15 @@ IvPFunction *BHV_Trail::onRunState()
 	  double modh = radToHeading(atan2(bear_y,bear_x));
 	  
 	  ZAIC_PEAK hdg_zaic(m_domain, "course");
-	  hdg_zaic.addSummit(modh, 0, 180, 80, 0, 100);
+	  hdg_zaic.setSummit(modh);
 	  hdg_zaic.setValueWrap(true);
+	  hdg_zaic.setPeakWidth(30);
+	  hdg_zaic.setBaseWidth(150);
+	  hdg_zaic.setSummitDelta(50.0);
+	  hdg_zaic.setMinMaxUtil(0,100);
+
+	  //	  hdg_zaic.addSummit(modh, 0, 180, 80, 0, 100);
+	  //	  hdg_zaic.setValueWrap(true);
 	  IvPFunction *hdg_ipf = hdg_zaic.extractOF();
 	  
 	  // If ahead, reduce speed proportionally
@@ -275,8 +282,14 @@ IvPFunction *BHV_Trail::onRunState()
   else 
     {
       ZAIC_PEAK hdg_zaic(m_domain, "course");
-      hdg_zaic.addSummit(m_cnh, 0, 180, 80, 0, 100);
+      hdg_zaic.setSummit(m_cnh);
       hdg_zaic.setValueWrap(true);
+      hdg_zaic.setPeakWidth(30);
+      hdg_zaic.setBaseWidth(150);
+      hdg_zaic.setSummitDelta(50.0);
+      hdg_zaic.setMinMaxUtil(0,100);
+      //      hdg_zaic.addSummit(m_cnh, 0, 180, 80, 0, 100);
+      //      hdg_zaic.setValueWrap(true);
       IvPFunction *hdg_ipf = hdg_zaic.extractOF();
       
       ZAIC_PEAK spd_zaic(m_domain, "speed");
