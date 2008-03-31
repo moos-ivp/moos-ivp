@@ -168,14 +168,17 @@ IvPFunction *BHV_Trail::onRunState()
 
   // Calculate the trail point based on trail_angle, trail_range.
   double posX, posY; 
-  double adjusted_angle = m_cnh + m_trail_angle;
-  projectPoint(adjusted_angle, m_trail_range, m_cnx, m_cny, posX, posY);
-
+  // double adjusted_angle = angle180(m_cnh + m_trail_angle);
+  // projectPoint(adjusted_angle, m_trail_range, m_cnx, m_cny, posX, posY);
+  double abs_angle = headingToRadians(angle360(m_cnh+m_trail_angle));
+  posX = m_cnx + m_trail_range*cos(abs_angle);
+  posY = m_cny + m_trail_range*sin(abs_angle);
+ 
   // Calculate the relevance first. If zero-relevance, we won't
   // bother to create the objective function.
   double relevance = getRelevance();
 
-  
+  m_cnh =angle360(m_cnh);  
   postMessage("TRAIL_CONTACT_X", m_cnx);
   postMessage("TRAIL_CONTACT_Y", m_cny);
   postMessage("TRAIL_CONTACT_SPEED", m_cnv);
@@ -237,6 +240,8 @@ IvPFunction *BHV_Trail::onRunState()
 	  double bear_x = (head_x*m_nm_radius+posX-m_osx)/distp;
 	  double bear_y = (head_y*m_nm_radius+posY-m_osy)/distp;
 	  double modh = radToHeading(atan2(bear_y,bear_x));
+
+	  postMessage("TRAIL_HEADING", modh);
 	  
 	  ZAIC_PEAK hdg_zaic(m_domain, "course");
 	  hdg_zaic.setSummit(modh);

@@ -329,6 +329,10 @@ bool TransponderAIS::handleIncomingAISReport(const string& sdata)
       }
       else if((left == "HDG") && right_isnum) {
 	nav_hdg_val = atof(right.c_str());
+	if (nav_hdg_val < 0.0)
+	  nav_hdg_val += 360.0;
+	if (nav_hdg_val >= 360.0)
+	  nav_hdg_val -= 360.0;
 	nav_hdg_set = true;
       }
       else if((left == "DEPTH") && right_isnum) {
