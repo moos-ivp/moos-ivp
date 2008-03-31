@@ -195,8 +195,6 @@ IvPFunction *BHV_Trail::onRunState()
   double head_x = cos(headingToRadians(m_cnh));
   double head_y = sin(headingToRadians(m_cnh));
   double distance = distPointToPoint(m_osx, m_osy, posX, posY); 
-  double bearing = relAng(m_osx, m_osy, posX, posY);
-  double rel_bearing = angle180(bearing-m_osh); 
   bool outside = (distance > m_radius);   
 
   postMessage("TRAIL_DISTANCE", distance);

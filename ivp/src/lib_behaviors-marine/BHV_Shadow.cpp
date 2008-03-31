@@ -43,9 +43,9 @@ BHV_Shadow::BHV_Shadow(IvPDomain gdomain) : IvPBehavior(gdomain)
   m_domain = subDomain(m_domain, "course,speed");
 
   m_max_range     = 0;
-  m_hdg_peakwidth = 0;
-  m_hdg_basewidth = 180;
-  m_spd_peakwidth = 0;
+  m_hdg_peakwidth = 20;
+  m_hdg_basewidth = 160;
+  m_spd_peakwidth = 0.1;
   m_spd_basewidth = 2.0;
 
   addInfoVars("NAV_X, NAV_Y, NAV_SPEED, NAV_HEADING");
@@ -114,14 +114,15 @@ IvPFunction *BHV_Shadow::onRunState()
     postWMessage("contact ID not set.");
     return(0);
   }
-  if(!m_domain.hasDomain("course")) {
-    postWMessage("No 'heading/course' variable in the helm domain");
-    return(0);
-  }
-  if(!m_domain.hasDomain("speed")) {
-    postWMessage("No 'speed' variable in the helm domain");
-    return(0);
-  }
+
+  //  if(!m_domain.hasDomain("course")) {
+  //   postWMessage("No 'heading/course' variable in the helm domain");
+  //  return(0);
+  //}
+  //if(!m_domain.hasDomain("speed")) {
+  //  postWMessage("No 'speed' variable in the helm domain");
+  //  return(0);
+  //}
 
   // Set m_osx, m_osy, m_cnx, m_cny, m_cnv, m_cnh
   if(!updateInfoIn())
@@ -131,25 +132,50 @@ IvPFunction *BHV_Shadow::onRunState()
   // bother to create the objective function.
   double relevance = getRelevance();
 
+  postMessage("SHADOW_CONTACT_X", m_cnx);
+  postMessage("SHADOW_CONTACT_Y", m_cny);
+  postMessage("SHADOW_CONTACT_SPEED", m_cnv);
+  postMessage("SHADOW_CONTACT_HEADING", m_cnh);
+  postMessage("SHADOW_RELEVANCE", relevance);
+  
+
   if(relevance <= 0)
     return(0);
 
-  ZAIC_PEAK hdg_zaic(m_domain, "course");
-  hdg_zaic.addSummit(m_cnh, m_hdg_peakwidth, m_hdg_basewidth, 50, 0, 100);
-  hdg_zaic.setValueWrap(true);
-  IvPFunction *hdg_ipf = hdg_zaic.extractOF();
+      ZAIC_PEAK hdg_zaic(m_domain, "course");
+      hdg_zaic.setSummit(m_cnh);
+      hdg_zaic.setValueWrap(true);
+      hdg_zaic.setPeakWidth(m_hdg_peakwidth);
+      hdg_zaic.setBaseWidth(m_hdg_basewidth);
+      hdg_zaic.setSummitDelta(50.0);
+      hdg_zaic.setMinMaxUtil(0,100);
+      //  hdg_zaic.addSummit(m_cnh, m_hdg_peakwidth, m_hdg_basewidth, 50, 0, 100);
+      // hdg_zaic.setValueWrap(true);
+      IvPFunction *hdg_ipf = hdg_zaic.extractOF();
   
-  ZAIC_PEAK spd_zaic(m_domain, "speed");
-  spd_zaic.addSummit(m_cnv, m_spd_peakwidth, m_spd_basewidth, 10, 0, 25);
-  spd_zaic.setValueWrap(true);
-  IvPFunction *spd_ipf = spd_zaic.extractOF();
+      ZAIC_PEAK spd_zaic(m_domain, "speed");
+      spd_zaic.setSummit(m_cnv);
+      spd_zaic.setPeakWidth(m_spd_peakwidth);
+      spd_zaic.setBaseWidth(m_spd_basewidth);
+      spd_zaic.setSummitDelta(10.0); 
+      hdg_zaic.setMinMaxUtil(0,25);
+      
+      //  spd_zaic.addSummit(m_cnv, m_spd_peakwidth, m_spd_basewidth, 10, 0, 25);
+      // spd_zaic.setValueWrap(true);
+      IvPFunction *spd_ipf = spd_zaic.extractOF();
   
-  OF_Coupler coupler;
-  IvPFunction *ipf = coupler.couple(hdg_ipf, spd_ipf);
-  if(ipf)
-    ipf->setPWT(relevance * m_priority_wt);
-  
-  ipf->getPDMap()->normalize(0.0, 100.0);
+      OF_Coupler coupler;
+      IvPFunction *ipf = coupler.couple(hdg_ipf, spd_ipf);
+      //      if(ipf)
+	//	ipf->setPWT(relevance * m_priority_wt);
+      
+	//     ipf->getPDMap()->normalize(0.0, 100.0);
+      
+  if(ipf) 
+    {
+      ipf->getPDMap()->normalize(0.0, 100.0);
+      ipf->setPWT(relevance * m_priority_wt);
+    }
   
 #if 0
     postMessage("SHADOW_MIN_WT", ipf->getPDMap()->getMinWT());
@@ -176,21 +202,27 @@ bool BHV_Shadow::updateInfoIn()
   m_cnh = getBufferDoubleVal(m_them_name+"_NAV_HEADING", ok1);
   m_cnv = getBufferDoubleVal(m_them_name+"_NAV_SPEED", ok2);
   if(!ok1 || !ok2)
+    {
+    postEMessage("contact speed and heading info not found.");
     return(false);
-
+    }
   m_cnh = angle360(m_cnh);
 
   m_cnx = getBufferDoubleVal(m_them_name+"_NAV_X", ok1);
   m_cny = getBufferDoubleVal(m_them_name+"_NAV_Y", ok2);
   if(!ok1 || !ok2)
-    return(false);
-  
+    {
+      postEMessage("contact x/y info not found.");
+      return(false);
+    }
+
   m_osx = getBufferDoubleVal("NAV_X", ok1);
   m_osy = getBufferDoubleVal("NAV_Y", ok2);
   if(!ok1 || !ok2) {
     postEMessage("ownship x/y info not found.");
     return(false);
   }
+  return(true);
 }
 
 
