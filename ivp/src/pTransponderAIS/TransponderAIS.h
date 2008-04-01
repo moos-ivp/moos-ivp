@@ -46,7 +46,7 @@ public:
   bool handleIncomingAISReport(const std::string&);
   bool handleIncomingNaFConMessage(const std::string&);
   void updateContactList(std::string, double, double, double, double, double, double);
-  bool prevContactInfo(std::string, double, double, double, double, double, double);
+  bool prevContactInfo(std::string, double*, double*, double*, double*, double*, double*);
   void postContactList();
   std::string assembleAIS(std::string,std::string,std::string,std::string,\
 			  std::string,std::string,std::string,std::string,\
@@ -65,6 +65,7 @@ protected:
 
   std::vector<std::string> m_contact_list;
   std::vector<double>      m_contact_time;
+  std::vector<double>      m_contact_utc;
   std::vector<double>      m_contact_x;
   std::vector<double>      m_contact_y;
   std::vector<double>      m_contact_spd;

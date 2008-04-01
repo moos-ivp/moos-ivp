@@ -465,11 +465,11 @@ bool TransponderAIS::handleIncomingNaFConMessage(const string& rMsg)
 
 	  // Use previous speed for CONTACT_REPORT
 	  double node_utc,node_x,node_y,node_spd,node_hdg,node_dep;      
-	  if (prevContactInfo(vname,node_utc,node_x,node_y,node_spd,node_hdg,node_dep))
+
+	  if (prevContactInfo(vname,&node_utc,&node_x,&node_y,&node_spd,&node_hdg,&node_dep))
 	    navSpeed = node_spd;
-	  else
-	    navSpeed = 0;
-      
+
+	  MOOSTrace("Status Info: Time = %f, Speed = %f, Heading = %f \n",node_utc,node_spd,node_hdg);
       }
       
       // convert lat, long into x, y. 60 nautical miles per minute
@@ -512,7 +512,7 @@ bool TransponderAIS::handleIncomingNaFConMessage(const string& rMsg)
 //             and extrapolation of unreported varibles in NaFCon messages 
 
 void TransponderAIS::updateContactList(string contact_name,
-				     double cn_time,
+				     double cn_utc,
 				     double cn_x,
 				     double cn_y,
 				     double cn_spd,
@@ -521,58 +521,63 @@ void TransponderAIS::updateContactList(string contact_name,
 {
   contact_name = toupper(stripBlankEnds(contact_name));
 
-  // double moos_time = MOOSTime();
+  double moos_time = MOOSTime();
 
   int i;
   
   for(i=0; i<m_contact_list.size(); i++) {
     if(m_contact_list[i] == contact_name) {
-      //      m_contact_time[i] = moos_time;
-      m_contact_time[i] = cn_time;
+      m_contact_time[i] = moos_time;
+      m_contact_utc[i] = cn_utc;
       m_contact_x[i] = cn_x;
       m_contact_y[i] = cn_y;
       m_contact_spd[i] = cn_spd;
       m_contact_hdg[i] = cn_hdg;
       m_contact_dep[i] = cn_dep;
+      MOOSTrace("Existing Contact %d, Time = %f, Speed = %f, Heading = %f \n",i+1,cn_utc,cn_spd,cn_hdg);
       return;
     }
   }
   
   m_contact_list.push_back(contact_name);
-  //  m_contact_time.push_back(moos_time);
-  m_contact_time.push_back(cn_time);
+  m_contact_time.push_back(moos_time);
+  m_contact_utc.push_back(cn_utc);
   m_contact_x.push_back(cn_x);
   m_contact_y.push_back(cn_y);
   m_contact_spd.push_back(cn_spd);
   m_contact_hdg.push_back(cn_hdg);
   m_contact_dep.push_back(cn_dep);
 
+  MOOSTrace("New Contact %d, Time = %f, Speed = %f, Heading = %f \n",m_contact_list.size(),cn_utc,cn_spd,cn_hdg);
 }
 
 bool TransponderAIS::prevContactInfo(string contact_name,
-				     double cn_time,
-				     double cn_x,
-				     double cn_y,
-				     double cn_spd,
-				     double cn_hdg,
-				     double cn_dep)
+				     double* cn_utc,
+				     double* cn_x,
+				     double* cn_y,
+				     double* cn_spd,
+				     double* cn_hdg,
+				     double* cn_dep)
   
 {
   contact_name = toupper(stripBlankEnds(contact_name));
 
   int i;
   
+  //  i=m_contact_list.size();
+  // MOOSTrace("Last Contact %d, Time = %f, Speed = %f, Heading = %f \n",i,m_contact_utc[i-1],m_contact_spd[i-1],m_contact_hdg[i-1]);
+
   for(i=0; i<m_contact_list.size(); i++) 
     {
       if(m_contact_list[i] == contact_name) 
 	{
-	  //      m_contact_time[i] = moos_time;
-	  cn_time = m_contact_time[i];
-	  cn_x    = m_contact_x[i];
-	  cn_y    = m_contact_y[i];
-	  cn_spd  = m_contact_spd[i];
-	  cn_hdg  = m_contact_hdg[i];
-	  cn_dep  = m_contact_dep[i];
+	  *cn_utc = m_contact_utc[i];
+	  *cn_x    = m_contact_x[i];
+	  *cn_y   = m_contact_y[i];
+	  *cn_spd  = m_contact_spd[i];
+	  *cn_hdg  = m_contact_hdg[i];
+	  *cn_dep  = m_contact_dep[i];
+	  //  MOOSTrace("Old Contact %d, Time = %f, Speed = %f, Heading = %f \n",i+1,cn_utc,cn_spd,cn_hdg);
 	  return(true);
 	}
     }
