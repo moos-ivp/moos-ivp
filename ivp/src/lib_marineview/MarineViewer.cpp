@@ -710,7 +710,7 @@ void MarineViewer::drawGrid(int ix)
     double   pct  = (eval-min_eval)/(max_eval-min_eval);
 
     //cout << "[" << pct << "]";
-    pct = snapToStep(pct, 0.25);
+    //pct = snapToStep(pct, 0.25);
     
     double   r    = cmap.getIRVal(pct);
     double   g    = cmap.getIGVal(pct);
