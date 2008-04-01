@@ -51,6 +51,8 @@ ZAIC_PEAK::ZAIC_PEAK(IvPDomain g_domain, const string& g_varname)
   v_summitdelta.push_back(0);
   v_minutil.push_back(0);
   v_maxutil.push_back(100);
+
+  m_state_ok = true;
 }
 
 //-------------------------------------------------------------
@@ -62,7 +64,7 @@ int ZAIC_PEAK::addSummit()
   v_summit.push_back(0);
   v_basewidth.push_back(0);
   v_peakwidth.push_back(0);
-  v_summitdelta.push_back(50);
+  v_summitdelta.push_back(0);
   v_minutil.push_back(0);
   v_maxutil.push_back(100);
 
@@ -70,67 +72,115 @@ int ZAIC_PEAK::addSummit()
 }
 
 //-------------------------------------------------------------
-// Procedure: addSummit
-//    Return: index of the new summit just added
+// Procedure: setParams
+//    Return: true if all ok
 
-bool ZAIC_PEAK::addSummit(double summit, double peakwidth,
-			  double basewidth, double delta, 
-			  double minutil, double maxutil)
+bool ZAIC_PEAK::setParam(string param, string value)
 {
-  int ix = addSummit();
+  value = stripBlankEnds(tolower(value));
+  if((param == "value_wrap") || (param == "wrap")) {
+    if((value == "true") || (value == "false"))
+      m_value_wrap = (value == "true");
+    else
+      m_state_ok = false;
+  }
+  else if((param == "summit_insist") || (param == "insist")) {
+    if((value == "true") || (value == "false"))
+      m_summit_insist = (value == "true");
+    else
+      m_state_ok = false;
+  }
+  else
+    m_state_ok = false;
+
+  return(m_state_ok);
+}
+
+
+//-------------------------------------------------------------
+// Procedure: setParams
+//    Return: true if all ok
+
+bool ZAIC_PEAK::setParams(double summit, double pwidth, 
+			  double bwidth, double delta,  
+			  double minutil, double maxutil, 
+			  int index)
+{
+  if((index < 0) || (index >= v_summit.size()))
+    m_state_ok = false;
   
-  bool ok = true;
-  
-  ok = ok && setSummit(summit, ix);
-  ok = ok && setPeakWidth(peakwidth, ix);
-  ok = ok && setBaseWidth(basewidth, ix);
-  ok = ok && setSummitDelta(delta, ix);
-  ok = ok && setMinMaxUtil(minutil, maxutil, ix);
-  
-  if(!ok) {
-    v_summit.pop_back();
-    v_basewidth.pop_back();
-    v_peakwidth.pop_back();
-    v_summitdelta.pop_back();
-    v_minutil.pop_back();
-    v_maxutil.pop_back();
+  if(minutil >= maxutil)
+    m_state_ok = false;
+
+  double util_range = (maxutil - minutil);
+  if(delta > util_range)
+    m_state_ok = false;
+
+  if(m_state_ok) {
+    v_summit[index]      = summit;
+    v_peakwidth[index]   = pwidth;
+    v_basewidth[index]   = bwidth;
+    v_summitdelta[index] = delta;
+    v_minutil[index]     = minutil;
+    v_maxutil[index]     = maxutil;
   }
 
-  return(ok);
+  return(m_state_ok);
 }
 
 //-------------------------------------------------------------
-// Procedure: extractOF
-//   Purpose: Build and return for the caller an IvP objective
-//            function built from the pdmap. Once this is done
-//            the caller "owns" the PDMap. The reason for this is
-//            that the pdmap is assumed to be too expensive to 
-//            replicate for certain applications.
+// Procedure: setParam
 
-IvPFunction *ZAIC_PEAK::extractOF(bool maxval)
+bool ZAIC_PEAK::setParam(string param, double value, int index)
 {
-  if(m_domain_ix == -1)
-    return(0);
-
-  int i;
-  for(i=0; i<m_domain_pts; i++)
-    m_ptvals[i] = evalPoint(i, maxval);
-
-  if(m_summit_insist) {
-    int vsize = v_summit.size();
-    for(int sx=0; sx<vsize; sx++)
-      insistSummit(sx);
+  if((index < 0) || (index >= v_summit.size())) {
+    m_state_ok = false;
+    return(false);
   }
 
-  PDMap *pdmap = setPDMap();
-  if(!pdmap)
-    return(0);
+  if(param == "summit")
+    v_summit[index] = value;
+  else if((param == "basewidth") || (param == "bwidth"))
+    v_basewidth[index] = value;
+  else if((param == "peakwidth") || (param == "pwidth"))
+    v_peakwidth[index] = value;
+  else if((param == "summitdelta") || (param == "delta"))
+    v_summitdelta[index] = value;
+  else if((param == "min_util") || (param == "minutil")) {
+    v_minutil[index] = value;
+    if(v_minutil[index] > v_maxutil[index])
+      v_maxutil[index] = value;
+  }
+  else if((param == "max_util") || (param == "maxutil")) {
+    v_maxutil[index] = value;
+    if(v_maxutil[index] < v_minutil[index])
+      v_minutil[index] = value;
+  }
+  else {
+    m_state_ok = false;
+    return(false);
+  }
 
-  pdmap->updateGrid();
-  IvPFunction *ipf = new IvPFunction(pdmap);
-
-  return(ipf);
+  double util_range = (v_maxutil[index] - v_minutil[index]);
+  if(v_summitdelta[index] > util_range)
+    v_summitdelta[index] = util_range;
+  
+  return(true);
 }
+
+//-------------------------------------------------------------
+// Procedure: setParam
+
+bool ZAIC_PEAK::setParam(string param1, double value1, 
+			 string param2, double value2, 
+			 int index)
+{
+  bool ok1 = setParam(param1, value1, index);
+  bool ok2 = setParam(param2, value2, index);
+  
+  return(ok1 && ok2);
+}
+
 
 
 //-------------------------------------------------------------
@@ -142,32 +192,40 @@ IvPFunction *ZAIC_PEAK::extractOF(bool maxval)
 
 bool ZAIC_PEAK::setSummit(double val, int index)
 {
-  if((index < 0) || (index >= v_summit.size()))
+  if((index < 0) || (index >= v_summit.size())) {
+    m_state_ok = false;
     return(false);
+  }
   v_summit[index] = val;
   return(true);
 }
 
 bool ZAIC_PEAK::setBaseWidth(double val, int index)
 {
-  if((index < 0) || (index >= v_basewidth.size()))
+  if((index < 0) || (index >= v_basewidth.size())) {
+    m_state_ok = false;
     return(false);
+  }
   v_basewidth[index] = val;
   return(true);
 }
 
 bool ZAIC_PEAK::setPeakWidth(double val, int index)
 {
-  if((index < 0) || (index >= v_peakwidth.size()))
+  if((index < 0) || (index >= v_peakwidth.size())) {
+    m_state_ok = false;
     return(false);
+  }
   v_peakwidth[index] = val;
   return(true);
 }
 
 bool ZAIC_PEAK::setSummitDelta(double val, int index)
 {
-  if((index < 0) || (index >= v_summitdelta.size()))
+  if((index < 0) || (index >= v_summitdelta.size())) {
+    m_state_ok = false;
     return(false);
+  }
   v_summitdelta[index] = val;
 
   double util_range = (v_maxutil[index] - v_minutil[index]);
@@ -179,21 +237,27 @@ bool ZAIC_PEAK::setSummitDelta(double val, int index)
 
 bool ZAIC_PEAK::setMinMaxUtil(double minval, double maxval, int index)
 {
-  if((index < 0) || (index >= v_minutil.size()))
+  if((index < 0) || (index >= v_minutil.size())) {
+    m_state_ok = false;
     return(false);
-
-  if(minval > maxval)
+  }
+  
+  if(minval > maxval) {
+    m_state_ok = false;
     return(false);
+  }
 
   v_minutil[index] = minval;
   v_maxutil[index] = maxval;
-
+  
   double util_range = (maxval - minval);
   if(v_summitdelta[index] > util_range)
     v_summitdelta[index] = util_range;
   
   return(true);
 }
+
+
 
 //-------------------------------------------------------------
 // Procedure: getParam
@@ -240,6 +304,40 @@ double ZAIC_PEAK::evalPoint(int ix, bool maxval)
     return(total_value);
   
 }
+
+//-------------------------------------------------------------
+// Procedure: extractOF
+//   Purpose: Build and return for the caller an IvP objective
+//            function built from the pdmap. Once this is done
+//            the caller "owns" the PDMap. The reason for this is
+//            that the pdmap is assumed to be too expensive to 
+//            replicate for certain applications.
+
+IvPFunction *ZAIC_PEAK::extractOF(bool maxval)
+{
+  if((m_domain_ix == -1) || (m_state_ok == false))
+    return(0);
+
+  int i;
+  for(i=0; i<m_domain_pts; i++)
+    m_ptvals[i] = evalPoint(i, maxval);
+
+  if(m_summit_insist) {
+    int vsize = v_summit.size();
+    for(int sx=0; sx<vsize; sx++)
+      insistSummit(sx);
+  }
+
+  PDMap *pdmap = setPDMap();
+  if(!pdmap)
+    return(0);
+
+  pdmap->updateGrid();
+  IvPFunction *ipf = new IvPFunction(pdmap);
+
+  return(ipf);
+}
+
 
 
 //-------------------------------------------------------------
@@ -471,12 +569,5 @@ PDMap *ZAIC_PEAK::setPDMap(double tolerance)
 
   return(pdmap);
 }
-
-
-
-
-
-
-
 
 

@@ -24,6 +24,7 @@ FILE(GLOB SRC
   BHV_TimeOut.cpp
   BHV_Timer.cpp
   BHV_Trail.cpp
+  BHV_Trail_V1.cpp
   BHV_Waypoint.cpp)
 
 ADD_LIBRARY(behaviors-marine ${SRC})

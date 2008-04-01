@@ -202,108 +202,62 @@ IvPFunction *BHV_Trail::onRunState()
 
   postMessage("TRAIL_DISTANCE", distance);
 
-  if ( outside )
-    {
-      if( distance > m_nm_radius ) 	  // Outside nm_radius
-	{
-	      AOF_CutRangeCPA aof(m_domain);
-	      aof.setParam("cnlat", posY);
-	      aof.setParam("cnlon", posX);
-	      aof.setParam("cncrs", m_cnh);
-	      aof.setParam("cnspd", m_cnv);
-	      aof.setParam("oslat", m_osy);
-	      aof.setParam("oslon", m_osx);
-	      aof.setParam("tol",   60);
-	      aof.setParam("min_util_cpa_dist", m_min_util_cpa_dist);
-	      aof.setParam("max_util_cpa_dist", m_max_util_cpa_dist);
-	      bool ok = aof.initialize();
-	      
-	      if(!ok) 
-		{
-		  postWMessage("Error in initializing AOF_CutRangeCPA.");
-		  return(0);
-		}
-	      
-	      OF_Reflector reflector(&aof, 1);
-	      reflector.create(m_build_info);
-	      ipf = reflector.extractOF();
-	}
-      else // inside nm_radius
-	{
-	  double ahead_by = head_x*(m_osx-posX)+head_y*(m_osy-posY) ;
-	  bool ahead = (ahead_by > 0);
-	  
-	  // head toward point nm_radius ahead of trail point
-	  double ppx = head_x*m_nm_radius+posX;
-	  double ppy = head_y*m_nm_radius+posY;
-	  double distp=hypot((ppx-m_osx), (ppy-m_osy));
-	  double bear_x = (head_x*m_nm_radius+posX-m_osx)/distp;
-	  double bear_y = (head_y*m_nm_radius+posY-m_osy)/distp;
-	  double modh = radToHeading(atan2(bear_y,bear_x));
-
-	  postMessage("TRAIL_HEADING", modh);
-	  
-	  ZAIC_PEAK hdg_zaic(m_domain, "course");
-	  hdg_zaic.setSummit(modh);
-	  hdg_zaic.setValueWrap(true);
-	  hdg_zaic.setPeakWidth(30);
-	  hdg_zaic.setBaseWidth(150);
-	  hdg_zaic.setSummitDelta(50.0);
-	  hdg_zaic.setMinMaxUtil(0,100);
-
-	  //	  hdg_zaic.addSummit(modh, 0, 180, 80, 0, 100);
-	  //	  hdg_zaic.setValueWrap(true);
-	  IvPFunction *hdg_ipf = hdg_zaic.extractOF();
-	  
-	  // If ahead, reduce speed proportionally
-	  // if behind, increaase speed proportionally
-	  
-	  double modv = m_cnv * (1 - 0.5*ahead_by/m_nm_radius);
-	  
-	  postMessage("TRAIL_SPEED", modv);
-	  
-	  if(modv < 0)
-	    modv = 0;
-	  
-	  ZAIC_PEAK spd_zaic(m_domain, "speed");
-	  
-	  spd_zaic.setSummit(modv);
-	  spd_zaic.setPeakWidth(0.1);
-	  spd_zaic.setBaseWidth(2.0);
-	  spd_zaic.setSummitDelta(50.0); 
-	  
-	  // the following creates 0 desired speed. HS 032708
-	  //      spd_zaic.addSummit(modv, 0, 2.0, 10, 0, 25);
-	  //	  spd_zaic.setValueWrap(true);
-	  
-	  IvPFunction *spd_ipf = spd_zaic.extractOF();
-	  
-	  OF_Coupler coupler;
-	  ipf = coupler.couple(hdg_ipf, spd_ipf);
-	}
+  if(outside) {
+    if(distance > m_nm_radius) {  // Outside nm_radius
+      AOF_CutRangeCPA aof(m_domain);
+      aof.setParam("cnlat", posY);
+      aof.setParam("cnlon", posX);
+      aof.setParam("cncrs", m_cnh);
+      aof.setParam("cnspd", m_cnv);
+      aof.setParam("oslat", m_osy);
+      aof.setParam("oslon", m_osx);
+      aof.setParam("tol",   60);
+      aof.setParam("min_util_cpa_dist", m_min_util_cpa_dist);
+      aof.setParam("max_util_cpa_dist", m_max_util_cpa_dist);
+      bool ok = aof.initialize();
+      
+      if(!ok) {
+	postWMessage("Error in initializing AOF_CutRangeCPA.");
+	return(0);
+      }
+      
+      OF_Reflector reflector(&aof, 1);
+      reflector.create(m_build_info);
+      ipf = reflector.extractOF();
     }
-  else 
-    {
+    else { // inside nm_radius
+      double ahead_by = head_x*(m_osx-posX)+head_y*(m_osy-posY) ;
+      bool ahead = (ahead_by > 0);
+      
+      // head toward point nm_radius ahead of trail point
+      double ppx = head_x*m_nm_radius+posX;
+      double ppy = head_y*m_nm_radius+posY;
+      double distp=hypot((ppx-m_osx), (ppy-m_osy));
+      double bear_x = (head_x*m_nm_radius+posX-m_osx)/distp;
+      double bear_y = (head_y*m_nm_radius+posY-m_osy)/distp;
+      double modh = radToHeading(atan2(bear_y,bear_x));
+      
+      postMessage("TRAIL_HEADING", modh);
+      
       ZAIC_PEAK hdg_zaic(m_domain, "course");
-      hdg_zaic.setSummit(m_cnh);
-      hdg_zaic.setValueWrap(true);
-      hdg_zaic.setPeakWidth(30);
-      hdg_zaic.setBaseWidth(150);
-      hdg_zaic.setSummitDelta(50.0);
-      hdg_zaic.setMinMaxUtil(0,100);
-      //      hdg_zaic.addSummit(m_cnh, 0, 180, 80, 0, 100);
-      //      hdg_zaic.setValueWrap(true);
+      
+      // summit, pwidth, bwidth, delta, minutil, maxutil
+      hdg_zaic.setParams(modh, 30, 150, 50, 0, 100);
+      hdg_zaic.setParam("value_wrap", "true");
+      
       IvPFunction *hdg_ipf = hdg_zaic.extractOF();
       
-      ZAIC_PEAK spd_zaic(m_domain, "speed");
+      // If ahead, reduce speed proportionally
+      // if behind, increaase speed proportionally
       
-      // If inside radius and ahead, reduce speed a little
-      double modv=m_cnv;
-      //      if (ahead)
-      //	modv = m_cnv - 0.1;
+      double modv = m_cnv * (1 - 0.5*ahead_by/m_nm_radius);
+      
+      postMessage("TRAIL_SPEED", modv);
       
       if(modv < 0)
 	modv = 0;
+      
+      ZAIC_PEAK spd_zaic(m_domain, "speed");
       
       spd_zaic.setSummit(modv);
       spd_zaic.setPeakWidth(0.1);
@@ -312,19 +266,50 @@ IvPFunction *BHV_Trail::onRunState()
       
       // the following creates 0 desired speed. HS 032708
       //      spd_zaic.addSummit(modv, 0, 2.0, 10, 0, 25);
-      //      spd_zaic.setValueWrap(true);
+      //	  spd_zaic.setValueWrap(true);
       
       IvPFunction *spd_ipf = spd_zaic.extractOF();
       
       OF_Coupler coupler;
       ipf = coupler.couple(hdg_ipf, spd_ipf);
     }
+  }
+  else {
+    ZAIC_PEAK hdg_zaic(m_domain, "course");
+    
+    // summit, pwidth, bwidth, delta, minutil, maxutil
+    hdg_zaic.setParams(m_cnh, 30, 150, 50, 0, 100);
+    hdg_zaic.setParam("value_wrap", "true");
+    
+    IvPFunction *hdg_ipf = hdg_zaic.extractOF();
+    
+    ZAIC_PEAK spd_zaic(m_domain, "speed");
+    
+    // If inside radius and ahead, reduce speed a little
+    double modv=m_cnv;
+    //      if (ahead)
+    //	modv = m_cnv - 0.1;
+    
+    if(modv < 0)
+      modv = 0;
+    
+    // summit, pwidth, bwidth, delta, minutil, maxutil
+    spd_zaic.setParams(modv, 0.1, 2.0, 50, 0, 100);
+    
+    // the following creates 0 desired speed. HS 032708
+    //      spd_zaic.addSummit(modv, 0, 2.0, 10, 0, 25);
+    //      spd_zaic.setValueWrap(true);
+    
+    IvPFunction *spd_ipf = spd_zaic.extractOF();
+    
+    OF_Coupler coupler;
+    ipf = coupler.couple(hdg_ipf, spd_ipf);
+  }
   
-  if(ipf) 
-    {
-      ipf->getPDMap()->normalize(0.0, 100.0);
-      ipf->setPWT(relevance * m_priority_wt);
-    }
+  if(ipf) {
+    ipf->getPDMap()->normalize(0.0, 100.0);
+    ipf->setPWT(relevance * m_priority_wt);
+  }
   
   return(ipf);
 }

@@ -204,7 +204,7 @@ IvPFunction *BHV_HTrail::onRunState()
   }
   else {
     ZAIC_PEAK hdg_zaic(m_domain, "course");
-    hdg_zaic.addSummit(m_cnh, 0, 180, 80, 0, 100);
+    hdg_zaic.setParams(m_cnh, 0, 180, 80, 0, 100);
     hdg_zaic.setValueWrap(true);
     IvPFunction *hdg_ipf = hdg_zaic.extractOF();
     
@@ -221,8 +221,8 @@ IvPFunction *BHV_HTrail::onRunState()
     if (ahead && (m_cnv > m_speed_delta))
 	modv -= m_speed_delta;
 
-    spd_zaic.addSummit(modv, 0, 2.0, 10, 0, 25);
-    spd_zaic.setValueWrap(true);
+    spd_zaic.setParams(modv, 0, 2.0, 10, 0, 25);
+    spd_zaic.setValueWrap(false);
     IvPFunction *spd_ipf = spd_zaic.extractOF();
     
     OF_Coupler coupler;

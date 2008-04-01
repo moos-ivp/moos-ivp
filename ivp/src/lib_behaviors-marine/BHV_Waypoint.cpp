@@ -261,10 +261,10 @@ IvPFunction *BHV_Waypoint::buildOF(string method)
 
   if(method == "zaic") {
     ZAIC_PEAK spd_zaic(m_domain, "speed");
-    spd_zaic.setSummit(m_cruise_speed);
-    spd_zaic.setBaseWidth(2.6);
-    spd_zaic.setPeakWidth(0.0);
-    spd_zaic.setSummitDelta(0.0);
+    spd_zaic.setParam("summit", m_cruise_speed);
+    spd_zaic.setParam("basewidth", 2.6);
+    spd_zaic.setParam("peakwidth", 0.0);
+    spd_zaic.setParam("summitdelta", 0.0);
     IvPFunction *spd_of = spd_zaic.extractOF();
     
     double rel_ang_to_wpt = relAng(m_osx, m_osy, m_trackpt_x, m_trackpt_y);

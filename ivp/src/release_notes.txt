@@ -13,5 +13,8 @@
 - Added a --force feature to app_splug to allow an automatic overwrite
   of an existing file without prompting for confirmation from the user.
 
-- Fixed a bug in ZAIC_PEAK that showed itself when set with a minutil
+- Fixed a bug in ZAIC_PEAK that emerges when the minutil is set with a
   value greater than zero.
+
+- The IvPHelm works properly with pLogger to ensure that Behavior Files
+  (.bhv files) are being logged alongside the .moos files
