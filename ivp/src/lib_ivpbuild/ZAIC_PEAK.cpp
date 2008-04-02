@@ -23,6 +23,7 @@
 #include <math.h>
 #include "ZAIC_PEAK.h"
 #include "BuildUtils.h"
+#include "MBUtils.h"
 
 using namespace std;
 
