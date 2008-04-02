@@ -243,7 +243,7 @@ IvPFunction *BHV_Trail::onRunState()
       
       // summit, pwidth, bwidth, delta, minutil, maxutil
       hdg_zaic.setParams(modh, 30, 150, 50, 0, 100);
-      hdg_zaic.setParam("value_wrap", "true");
+      hdg_zaic.setValueWrap(true);
       
       IvPFunction *hdg_ipf = hdg_zaic.extractOF();
       
@@ -279,7 +279,7 @@ IvPFunction *BHV_Trail::onRunState()
     
     // summit, pwidth, bwidth, delta, minutil, maxutil
     hdg_zaic.setParams(m_cnh, 30, 150, 50, 0, 100);
-    hdg_zaic.setParam("value_wrap", "true");
+    hdg_zaic.setValueWrap(true);
     
     IvPFunction *hdg_ipf = hdg_zaic.extractOF();
     

@@ -38,20 +38,9 @@ public:
   ZAIC_PEAK(IvPDomain g_domain, const std::string& g_varname);
   virtual ~ZAIC_PEAK() {};
 
-  int  addSummit();
-
-#if 1  // New interface Start -------------
   bool setParams(double summit, double pwidth,  double bwidth, 
 		 double delta,  double minutil, double maxutil, 
 		 int index=0);
-  bool setParam(std::string param, std::string value);
-  bool setParam(std::string param, double value, int index=0);
-  bool setParam(std::string param1, double value1, 
-		std::string param2, double value2, int index=0);
-#endif  // New interface  End  -------------
-
-#if 1
-    //bool   addSummit(double, double, double, double, double, double);
 
   bool   setSummit(double, int index=0);
   bool   setBaseWidth(double, int index=0);
@@ -60,8 +49,8 @@ public:
   bool   setMinMaxUtil(double, double, int index=0);
   void   setSummitInsist(bool v)      {m_summit_insist=v;};
   void   setValueWrap(bool v)         {m_value_wrap=v;};
-#endif
 
+  int    addSummit();
 
   double getParam(std::string, int index=0);
   bool   getValueWrap()     {return(m_value_wrap);};
@@ -69,6 +58,7 @@ public:
   int    getSummitCount()   {return(v_summit.size());};
 
   IvPFunction* extractOF(bool maxval=true);
+  std::string  getWarning() {return(m_warning);};
 
 protected:
   double evalPoint(int pt_ix, bool maxval=true);
@@ -97,6 +87,7 @@ private:
 
   bool   m_state_ok;
 
+  std::string         m_warning;
   std::vector<double> m_ptvals;
   IvPDomain           m_ivp_domain;
 };

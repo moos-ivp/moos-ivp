@@ -23,7 +23,6 @@
 #include <math.h>
 #include "ZAIC_PEAK.h"
 #include "BuildUtils.h"
-#include "MBUtils.h"
 
 using namespace std;
 
@@ -76,47 +75,27 @@ int ZAIC_PEAK::addSummit()
 // Procedure: setParams
 //    Return: true if all ok
 
-bool ZAIC_PEAK::setParam(string param, string value)
-{
-  value = stripBlankEnds(tolower(value));
-  if((param == "value_wrap") || (param == "wrap")) {
-    if((value == "true") || (value == "false"))
-      m_value_wrap = (value == "true");
-    else
-      m_state_ok = false;
-  }
-  else if((param == "summit_insist") || (param == "insist")) {
-    if((value == "true") || (value == "false"))
-      m_summit_insist = (value == "true");
-    else
-      m_state_ok = false;
-  }
-  else
-    m_state_ok = false;
-
-  return(m_state_ok);
-}
-
-
-//-------------------------------------------------------------
-// Procedure: setParams
-//    Return: true if all ok
-
 bool ZAIC_PEAK::setParams(double summit, double pwidth, 
 			  double bwidth, double delta,  
 			  double minutil, double maxutil, 
 			  int index)
 {
-  if((index < 0) || (index >= v_summit.size()))
+  if((index < 0) || (index >= v_summit.size())) {
     m_state_ok = false;
-  
-  if(minutil >= maxutil)
+    m_warning += "setParams:index out of range:";
+  }
+
+  if(minutil >= maxutil) {
     m_state_ok = false;
+    m_warning += "setParams:min>=max:";
+  }
 
   double util_range = (maxutil - minutil);
-  if(delta > util_range)
+  if(delta > util_range) {
     m_state_ok = false;
-
+    m_warning += "setParams:delta>utility_range";
+  }
+  
   if(m_state_ok) {
     v_summit[index]      = summit;
     v_peakwidth[index]   = pwidth;
@@ -130,61 +109,6 @@ bool ZAIC_PEAK::setParams(double summit, double pwidth,
 }
 
 //-------------------------------------------------------------
-// Procedure: setParam
-
-bool ZAIC_PEAK::setParam(string param, double value, int index)
-{
-  if((index < 0) || (index >= v_summit.size())) {
-    m_state_ok = false;
-    return(false);
-  }
-
-  if(param == "summit")
-    v_summit[index] = value;
-  else if((param == "basewidth") || (param == "bwidth"))
-    v_basewidth[index] = value;
-  else if((param == "peakwidth") || (param == "pwidth"))
-    v_peakwidth[index] = value;
-  else if((param == "summitdelta") || (param == "delta"))
-    v_summitdelta[index] = value;
-  else if((param == "min_util") || (param == "minutil")) {
-    v_minutil[index] = value;
-    if(v_minutil[index] > v_maxutil[index])
-      v_maxutil[index] = value;
-  }
-  else if((param == "max_util") || (param == "maxutil")) {
-    v_maxutil[index] = value;
-    if(v_maxutil[index] < v_minutil[index])
-      v_minutil[index] = value;
-  }
-  else {
-    m_state_ok = false;
-    return(false);
-  }
-
-  double util_range = (v_maxutil[index] - v_minutil[index]);
-  if(v_summitdelta[index] > util_range)
-    v_summitdelta[index] = util_range;
-  
-  return(true);
-}
-
-//-------------------------------------------------------------
-// Procedure: setParam
-
-bool ZAIC_PEAK::setParam(string param1, double value1, 
-			 string param2, double value2, 
-			 int index)
-{
-  bool ok1 = setParam(param1, value1, index);
-  bool ok2 = setParam(param2, value2, index);
-  
-  return(ok1 && ok2);
-}
-
-
-
-//-------------------------------------------------------------
 // Procedure: setSummit
 //            setBaseWidth
 //            setPeakWidth
@@ -195,6 +119,7 @@ bool ZAIC_PEAK::setSummit(double val, int index)
 {
   if((index < 0) || (index >= v_summit.size())) {
     m_state_ok = false;
+    m_warning += "setSummit:index out of range:";
     return(false);
   }
   v_summit[index] = val;
@@ -205,6 +130,7 @@ bool ZAIC_PEAK::setBaseWidth(double val, int index)
 {
   if((index < 0) || (index >= v_basewidth.size())) {
     m_state_ok = false;
+    m_warning += "setBaseWidth:index out of range:";
     return(false);
   }
   v_basewidth[index] = val;
@@ -215,6 +141,7 @@ bool ZAIC_PEAK::setPeakWidth(double val, int index)
 {
   if((index < 0) || (index >= v_peakwidth.size())) {
     m_state_ok = false;
+    m_warning += "setPeakWidth:index out of range:";
     return(false);
   }
   v_peakwidth[index] = val;
@@ -224,6 +151,7 @@ bool ZAIC_PEAK::setPeakWidth(double val, int index)
 bool ZAIC_PEAK::setSummitDelta(double val, int index)
 {
   if((index < 0) || (index >= v_summitdelta.size())) {
+    m_warning += "setSummitDelta:index out of range:";
     m_state_ok = false;
     return(false);
   }
@@ -240,11 +168,13 @@ bool ZAIC_PEAK::setMinMaxUtil(double minval, double maxval, int index)
 {
   if((index < 0) || (index >= v_minutil.size())) {
     m_state_ok = false;
+    m_warning += "setMinMaxUtil:index out of range:";
     return(false);
   }
   
-  if(minval > maxval) {
+  if(minval >= maxval) {
     m_state_ok = false;
+    m_warning += "setMinMaxUtil:min>=max:";
     return(false);
   }
 
