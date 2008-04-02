@@ -53,7 +53,7 @@ BHV_RubberBand::BHV_RubberBand(IvPDomain gdomain) :
   m_outer_radius = 15;
   m_inner_radius = 4;
   m_outer_speed  = 1.2;
-  m_extra_speed  = 2.5;
+  m_extra_speed  = 0;
   m_center_activate = false;
 
   // Default values for State  Variables
@@ -118,8 +118,8 @@ bool BHV_RubberBand::setParam(string param, string val)
     if((dval <= 0) || (!isNumber(val)))
       return(false);
     m_outer_speed = dval;
-    if(m_extra_speed < m_outer_speed)
-      m_extra_speed = m_outer_speed;
+    //    if(m_extra_speed < m_outer_speed)
+    //  m_extra_speed = m_outer_speed;
     return(true);
   }
 
@@ -206,29 +206,37 @@ IvPFunction *BHV_RubberBand::onRunState()
   relevance = 1.0;
 
   double desired_speed = 0;
-  if((dist_to_station > m_inner_radius) && (dist_to_station < m_outer_radius)) {
-    double range  = m_outer_radius - m_inner_radius;
-    double pct    = (dist_to_station - m_inner_radius) / range;
-    desired_speed = pct * m_outer_speed;
-  }
+  if((dist_to_station > m_inner_radius) && (dist_to_station < m_outer_radius)) 
+    {
+      double range  = m_outer_radius - m_inner_radius;
+      double pct    = (dist_to_station - m_inner_radius) / range;
+      desired_speed = pct * m_outer_speed;
+    }
 
   if(dist_to_station >= m_outer_radius)
     {
-      desired_speed = m_extra_speed;
+      if (m_extra_speed > 0)
+	desired_speed = m_extra_speed;
+      else
+	desired_speed = m_outer_speed;
+
       relevance += stiffness*(dist_to_station - m_outer_radius)/m_outer_radius;
     }
 
   ZAIC_PEAK spd_zaic(m_domain, "speed");
   spd_zaic.setSummit(desired_speed);
-  spd_zaic.setBaseWidth(0.4);
-  spd_zaic.setPeakWidth(0.0);
-  spd_zaic.setSummitDelta(0.0);
+  spd_zaic.setBaseWidth(2.0);
+  spd_zaic.setPeakWidth(0.5);
+  spd_zaic.setSummitDelta(50.0);
   spd_zaic.setMinMaxUtil(0, 25);
   IvPFunction *spd_ipf = spd_zaic.extractOF();
   
   ZAIC_PEAK crs_zaic(m_domain, "course");
   crs_zaic.setSummit(angle_to_station);
-  crs_zaic.setBaseWidth(180.0);
+  crs_zaic.setBaseWidth(150.0);
+  crs_zaic.setPeakWidth(30.0);
+  crs_zaic.setSummitDelta(10.0);
+  crs_zaic.setMinMaxUtil(0, 100);
   crs_zaic.setValueWrap(true);
   IvPFunction *crs_ipf = crs_zaic.extractOF();
   

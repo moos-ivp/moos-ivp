@@ -25,6 +25,7 @@
 
 #include <string>
 #include "IvPBehavior.h"
+#include "LinearExtrapolator.h"
 
 class IvPDomain;
 class BHV_Attractor : public IvPBehavior {
@@ -37,6 +38,7 @@ public:
   void         onIdleState();
 
 protected:
+  bool   updateInfoIn();  
   double getRelevance(double, double, double, double);
   double getPriority();
   
@@ -56,7 +58,27 @@ private:
 
   double strength;
 
+private: // State Variables
+  double  m_osx; // ownship x-position
+  double  m_osy; // ownship y-position
+  double  m_osh; // ownship heading
+  double  m_osv; // ownship velocity
+
+  double  m_cnx; // contact x-position
+  double  m_cny; // contact y-position
+  double  m_cnh; // contact heading
+  double  m_cnv; // contact velocity
+  double  m_cnutc; // UTC time of last contact report
+
+  bool    m_extrapolate;
+  double  m_decay_start;
+  double  m_decay_end;
+  double m_cpa_speed;
+
+  LinearExtrapolator m_extrapolator;
+
 };
+
 #endif
 
 
