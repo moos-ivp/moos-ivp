@@ -145,7 +145,9 @@ bool AOF_CutRangeCPA::initialize()
   cpa_engine = new CPAEngine(cn_lat, cn_lon, cn_crs, cn_spd,
 			     os_lat, os_lon);
 
-  max_heading = cpa_engine->minMaxROC(5, 360, min_roc, max_roc);
+  double max_ownship_spd = m_domain.getVarHigh(spd_ix);
+
+  max_heading = cpa_engine->minMaxROC(max_ownship_spd, 360, min_roc, max_roc);
   
   range_roc = max_roc - min_roc;
 
@@ -167,19 +169,18 @@ double AOF_CutRangeCPA::evalBox(const IvPBox *b) const
   m_domain.getVal(crs_ix, b->pt(crs_ix,0), eval_crs);
   m_domain.getVal(spd_ix, b->pt(spd_ix,0), eval_spd);
 
+  // Calculate the CPA distance and the RateOfClosure for a maneuver
   double roc;
-
   double eval_dist = cpa_engine->evalCPA(eval_crs, eval_spd, tol, &roc);
+  double metric_eval = metric(eval_dist);
 
+  // Calculate the normalized RateOfClosure based on the ROC and Range
   double nroc = 0;
-
   if(range_roc > 0)
     nroc = ((roc - min_roc) / (range_roc)) * 100.0;
 
-  double metric_eval = metric(eval_dist);
-  
+  // Calculate a valuation based on the ROC and CPA
   double pct = patience / 100.0;
-
   double compromise = ((1.0-pct) * nroc) + (pct * metric_eval);
 
   return(compromise);
