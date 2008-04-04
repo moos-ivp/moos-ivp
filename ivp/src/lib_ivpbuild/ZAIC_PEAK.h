@@ -50,15 +50,16 @@ public:
   void   setSummitInsist(bool v)      {m_summit_insist=v;};
   void   setValueWrap(bool v)         {m_value_wrap=v;};
 
-  int    addSummit();
+  int    addComponent();
 
   double getParam(std::string, int index=0);
   bool   getValueWrap()     {return(m_value_wrap);};
   bool   getSummitInsist()  {return(m_summit_insist);};
   int    getSummitCount()   {return(v_summit.size());};
 
-  IvPFunction* extractOF(bool maxval=true);
+  bool         stateOK()    {return(m_state_ok);};
   std::string  getWarning() {return(m_warning);};
+  IvPFunction* extractOF(bool maxval=true);
 
 protected:
   double evalPoint(int pt_ix, bool maxval=true);

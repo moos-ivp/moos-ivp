@@ -31,7 +31,14 @@ using namespace std;
 
 ZAIC_PEAK::ZAIC_PEAK(IvPDomain g_domain, const string& g_varname) 
 {
-  m_ivp_domain   = subDomain(g_domain, g_varname);
+  m_state_ok = true;
+
+  m_ivp_domain = subDomain(g_domain, g_varname);
+
+  // If the domain variable is not found in the given domain, flip
+  // the m_state_ok bit to false. 
+  if(m_ivp_domain.size() == 0)
+    m_state_ok = false;
 
   m_summit_insist = true;
   m_value_wrap    = false;
@@ -52,14 +59,13 @@ ZAIC_PEAK::ZAIC_PEAK(IvPDomain g_domain, const string& g_varname)
   v_minutil.push_back(0);
   v_maxutil.push_back(100);
 
-  m_state_ok = true;
 }
 
 //-------------------------------------------------------------
-// Procedure: addSummit
+// Procedure: addComonent
 //    Return: index of the new summit just added
 
-int ZAIC_PEAK::addSummit()
+int ZAIC_PEAK::addComponent()
 {
   v_summit.push_back(0);
   v_basewidth.push_back(0);
@@ -80,31 +86,14 @@ bool ZAIC_PEAK::setParams(double summit, double pwidth,
 			  double minutil, double maxutil, 
 			  int index)
 {
-  if((index < 0) || (index >= v_summit.size())) {
-    m_state_ok = false;
-    m_warning += "setParams:index out of range:";
-  }
+  setSummit(summit, index);
+  setBaseWidth(bwidth, index);
+  setPeakWidth(pwidth, index);
 
-  if(minutil >= maxutil) {
-    m_state_ok = false;
-    m_warning += "setParams:min>=max:";
-  }
-
-  double util_range = (maxutil - minutil);
-  if(delta > util_range) {
-    m_state_ok = false;
-    m_warning += "setParams:delta>utility_range";
-  }
-  
-  if(m_state_ok) {
-    v_summit[index]      = summit;
-    v_peakwidth[index]   = pwidth;
-    v_basewidth[index]   = bwidth;
-    v_summitdelta[index] = delta;
-    v_minutil[index]     = minutil;
-    v_maxutil[index]     = maxutil;
-  }
-
+  // Important to set the min/max util before the summit-delta
+  // since this sets the upper bound on allowable delta value.
+  setMinMaxUtil(minutil, maxutil, index);
+  setSummitDelta(delta, index);
   return(m_state_ok);
 }
 
@@ -126,6 +115,7 @@ bool ZAIC_PEAK::setSummit(double val, int index)
   return(true);
 }
 
+//------------------------------------------------
 bool ZAIC_PEAK::setBaseWidth(double val, int index)
 {
   if((index < 0) || (index >= v_basewidth.size())) {
@@ -133,10 +123,17 @@ bool ZAIC_PEAK::setBaseWidth(double val, int index)
     m_warning += "setBaseWidth:index out of range:";
     return(false);
   }
+  if(val < 0) {
+    m_state_ok = false;
+    m_warning += "setBaseWidth:value less than zero";
+    return(false);
+  }
+
   v_basewidth[index] = val;
   return(true);
 }
 
+//------------------------------------------------
 bool ZAIC_PEAK::setPeakWidth(double val, int index)
 {
   if((index < 0) || (index >= v_peakwidth.size())) {
@@ -144,10 +141,17 @@ bool ZAIC_PEAK::setPeakWidth(double val, int index)
     m_warning += "setPeakWidth:index out of range:";
     return(false);
   }
+  if(val < 0) {
+    m_state_ok = false;
+    m_warning += "setPeakWidth:value less than zero";
+    return(false);
+  }
+
   v_peakwidth[index] = val;
   return(true);
 }
 
+//------------------------------------------------
 bool ZAIC_PEAK::setSummitDelta(double val, int index)
 {
   if((index < 0) || (index >= v_summitdelta.size())) {
@@ -155,15 +159,23 @@ bool ZAIC_PEAK::setSummitDelta(double val, int index)
     m_state_ok = false;
     return(false);
   }
-  v_summitdelta[index] = val;
-
+  if(val < 0) {
+    m_state_ok = false;
+    m_warning += "setSummitDelta:value less than zero";
+    return(false);
+  }
   double util_range = (v_maxutil[index] - v_minutil[index]);
-  if(v_summitdelta[index] > util_range)
-    v_summitdelta[index] = util_range;
-  
+  if(val > util_range) {
+    m_state_ok = false;
+    m_warning += "setSummitDelta:delta greater than util range";
+    return(false);
+  }
+
+  v_summitdelta[index] = val;
   return(true);
 }
 
+//------------------------------------------------
 bool ZAIC_PEAK::setMinMaxUtil(double minval, double maxval, int index)
 {
   if((index < 0) || (index >= v_minutil.size())) {
@@ -171,7 +183,6 @@ bool ZAIC_PEAK::setMinMaxUtil(double minval, double maxval, int index)
     m_warning += "setMinMaxUtil:index out of range:";
     return(false);
   }
-  
   if(minval >= maxval) {
     m_state_ok = false;
     m_warning += "setMinMaxUtil:min>=max:";

@@ -135,7 +135,7 @@ IvPFunction *BHV_HArrayAngle::onRunState()
   crs_zaic.setSummitDelta(50.0);
   crs_zaic.setMinMaxUtil(0,100);
 
-  int new_index = crs_zaic.addSummit();  
+  int new_index = crs_zaic.addComponent();  
   crs_zaic.setSummit(rightabs, new_index);
   crs_zaic.setPeakWidth(width, new_index);
   crs_zaic.setBaseWidth(90.0 - width,new_index);
