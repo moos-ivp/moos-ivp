@@ -68,14 +68,15 @@ bool ParserAIS::OnNewMail(MOOSMSG_LIST &NewMail)
     char* sdata = new char[(msg.m_sVal.size()+1)];
     strcpy(sdata, msg.m_sVal.c_str() );
     vector<string> svector = parseString(msg.m_sVal, ',');
-    
+    if(svector.size() >= 3){
     num_sent = atoi(svector[1].c_str());
     sent_num = atoi(svector[2].c_str());
     seq_num  = atoi(svector[3].c_str());
+    }
     double ddata = msg.m_dfVal;
     char   mtype = msg.m_cDataType;
     
-    if(key == "AIS_REPORT_RAW" && strlen(sdata) > 0) {
+    if(key == "AIS_REPORT_RAW" && strlen(sdata) >= 48) {
       //MOOSTrace("ON Received AIS_REPORT_RAW: %s \n", sdata);	
         
       bool ok = handleIncomingReport(sdata);
@@ -157,6 +158,16 @@ bool ParserAIS::handleIncomingReport(char* sdata)
                 strcat(dynamicAIS,",");
 		strcat(dynamicAIS,"DEPTH="); 
                 strcat(dynamicAIS,dstringCompact(doubleToString(dAISData->dynamic_data.depth)).c_str());
+		strcat(dynamicAIS,",");
+		strcat(dynamicAIS,"AOU_SEMI_MAJOR="); 
+                strcat(dynamicAIS,dstringCompact(doubleToString(4.0)).c_str());
+		strcat(dynamicAIS,",");
+		strcat(dynamicAIS,"AOU_SEMI_MINOR="); 
+                strcat(dynamicAIS,dstringCompact(doubleToString(2.0)).c_str());
+		strcat(dynamicAIS,",");
+		strcat(dynamicAIS,"AOU_ORIENT="); 
+                strcat(dynamicAIS,dstringCompact(doubleToString(0.0)).c_str());
+                
                 /**/
 	    }
 	  
@@ -174,48 +185,6 @@ bool ParserAIS::handleIncomingReport(char* sdata)
          msg_1 = NULL;
        }
   }
-  else if(msg_type == 5)
-  {
-
-        if(num_sent == 2 && sent_num ==1)
-	{
-            if(sAISData == NULL)
-            {
-		sAISData = new AISTargetDataType;
-            }
-            
-	    msg_5 = new OM1371Message_5(sAISData);
-	    msg_5->SetNMEAString(sdata, strlen(sdata), 0);	
-	}
-	
-  }
-  else if(msg_type == -2 && num_sent == 2 && sent_num ==2)
-  {
-	if(msg_5 !=NULL && sAISData != NULL)
-        {
-	   msg_5->SetNMEAString(sdata, strlen(sdata), 1);
-           msg_5->DecodeNMEAString();
-           
-  
-          // if(sAISData->static_data.name != NULL || sAISData->static_data.name != "")
-          // 	strcpy(staticAIS, sAISData->static_data.name);
-           strcpy(staticAIS,"MMSI="); 
-           strcat(staticAIS,dstringCompact(intToString(sAISData->static_data.mmsi_number)).c_str());
-           strcat(staticAIS,",");
-           strcat(staticAIS,"NAME=");
-           strcat(staticAIS,sAISData->static_data.name);
-           
-           MOOSTrace("Notify AIS_STATIC_REPORT_LOCAL: %s\n",staticAIS);
-           m_Comms.Notify("AIS_STATIC_REPORT_LOCAL", staticAIS);
-         
-           delete sAISData;
-           sAISData = NULL;
-           delete msg_5;
-           msg_5 = NULL;
-           memset(staticAIS, 0, sizeof staticAIS);
-        }
-        
-  }
   else
   {
        MOOSTrace("Error parsing AIS data message Type: %d \n", msg_type);
@@ -229,10 +198,7 @@ bool ParserAIS::handleIncomingReport(char* sdata)
 
 bool ParserAIS::OnConnectToServer()
 {
-  // register for variables here
-  // possibly look at the mission file?
-  // m_MissionReader.GetConfigurationParam("Name", <string>);
-  // m_Comms.Register("VARNAME", is_float(int));
+  
   m_Comms.Register("AIS_REPORT_RAW", 0);
   return(true);
 }

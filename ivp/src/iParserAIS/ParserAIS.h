@@ -47,7 +47,6 @@ public:
 protected:
   CMOOSGeodesy m_Geodesy;
   double start_time;
-  char staticAIS[256];
   char dynamicAIS[256];
   OM1371Message ais_object;
   AISTargetDataType*  sAISData;
