@@ -40,11 +40,11 @@ public:
 
   bool  setSummit(double);
   bool  setBaseWidth(double);
-  bool  setParam(const std::string&, const std::string&);
+  bool  setMinMaxUtil(double, double);
+
+  double getParam(std::string);
 
   IvPFunction* extractOF();
-
-  double getParam(std::string) {return(0);};
 
 protected:
   bool   setPointLocations();
@@ -53,25 +53,19 @@ protected:
 protected:  // Parameters
   double  m_summit;
   double  m_basewidth;
+  double  m_minutil;
+  double  m_maxutil;
 
 protected: // State values
-  int     m_domain_ix;
-  double  m_domain_delta;
-  int     m_domain_pts;
-  
-  double  m_dpt_low;
-  double  m_dpt_one;
-  double  m_dpt_two;
-  double  m_dpt_high;
-
   int     m_ipt_low;
   int     m_ipt_one;
   int     m_ipt_two;
   int     m_ipt_high;
   int     i_basewidth;
 
+  bool         m_state_ok;
+  std::string  m_warning;
   IvPDomain    m_ivp_domain;
-  std::string  m_varname;
 };
 #endif
 
