@@ -44,14 +44,17 @@ public:
 
   IvPFunction* extractOF();
 
+  double getParam(std::string) {return(0);};
+
 protected:
   bool   setPointLocations();
   PDMap* setPDMap();
   
-protected:
+protected:  // Parameters
   double  m_summit;
   double  m_basewidth;
 
+protected: // State values
   int     m_domain_ix;
   double  m_domain_delta;
   int     m_domain_pts;
