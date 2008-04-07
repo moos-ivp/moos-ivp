@@ -24,22 +24,42 @@
 #pragma warning(disable : 4786)
 #pragma warning(disable : 4503)
 #endif
-#ifndef OF_ZAIC_HEQ_HEADER
-#define OF_ZAIC_HEQ_HEADER
+#ifndef OF_ZAIC_HLEQ_HEADER
+#define OF_ZAIC_HLEQ_HEADER
 
-#include "ZAIC_HLEQ.h"
+#include <string>
+#include "IvPDomain.h"
+#include "IvPFunction.h"
 
-class ZAIC_HEQ: public ZAIC_HLEQ {
+class PDMap;
+
+class ZAIC_HLEQ {
 public:
-  ZAIC_HEQ(IvPDomain domain, const std::string& varname) :
-    ZAIC_HLEQ(domain, varname) {};
-  virtual ~ZAIC_HEQ() {};
+  ZAIC_HLEQ(IvPDomain g_domain, const std::string& g_varname);
+  virtual ~ZAIC_HLEQ() {};
 
-  IvPFunction* extractOF();
+  bool  setSummit(double);
+  bool  setBaseWidth(double);
+  bool  setMinMaxUtil(double, double);
 
-protected:
-  void   setPointLocations();
-  PDMap* setPDMap();
+  double getParam(std::string);
+
+protected:  // Parameters
+  double  m_summit;
+  double  m_basewidth;
+  double  m_minutil;
+  double  m_maxutil;
+
+protected: // State values
+  int     m_ipt_low;
+  int     m_ipt_one;
+  int     m_ipt_two;
+  int     m_ipt_high;
+  int     i_basewidth;
+
+  bool         m_state_ok;
+  std::string  m_warning;
+  IvPDomain    m_ivp_domain;
 };
 #endif
 

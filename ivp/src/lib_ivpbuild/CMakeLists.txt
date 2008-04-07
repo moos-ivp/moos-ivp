@@ -14,7 +14,7 @@ FILE(GLOB SRC
   RT_Focus.cpp           RT_Priority.cpp
   RT_Uniform.cpp         Regressor.cpp
   ZAIC_HEQ.cpp           ZAIC_LEQ.cpp
-  ZAIC_PEAK.cpp)
+  ZAIC_PEAK.cpp          ZAIC_HLEQ.cpp)
 
 ADD_LIBRARY(ivpbuild ${SRC})
 

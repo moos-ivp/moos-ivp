@@ -29,73 +29,7 @@
 using namespace std;
 
 //-------------------------------------------------------------
-// Procedure: Constructor
-
-ZAIC_HEQ::ZAIC_HEQ(IvPDomain g_domain, const string& g_varname) 
-{
-  m_varname      = g_varname;
-  m_ivp_domain   = subDomain(g_domain, m_varname);
-
-  m_summit       = 0;
-  m_basewidth    = 0;
-
-  m_domain_ix    = m_ivp_domain.getIndex(m_varname);
-  m_domain_pts   = m_ivp_domain.getVarPoints(m_domain_ix);
-  m_domain_delta = m_ivp_domain.getVarDelta(m_domain_ix);
-
-  m_dpt_low      = m_ivp_domain.getVarLow(m_domain_ix);
-  m_dpt_high     = m_ivp_domain.getVarHigh(m_domain_ix);
-  m_dpt_one      = 0;
-  m_dpt_two      = 0;
-
-  m_ipt_low      = 0;
-  m_ipt_one      = 0;
-  m_ipt_two      = 0;
-  m_ipt_high     = 0;
-}
-
-//-------------------------------------------------------------
-// Procedure: setSummit
-
-bool ZAIC_HEQ::setSummit(double g_val)
-{
-  bool ok = ((g_val >= m_dpt_low) && (g_val <= m_dpt_high));
-  if(ok)
-    m_summit = g_val;
-  return(ok);
-}
-
-//-------------------------------------------------------------
-// Procedure: setBaseWidth
-
-bool ZAIC_HEQ::setBaseWidth(double g_val)
-{
-  bool ok = (g_val >= 0);
-  if(ok)
-    m_basewidth = g_val;
-  return(ok);
-}
-
-
-//-------------------------------------------------------------
-// Procedure: setParam
-
-bool ZAIC_HEQ::setParam(const string& param, const string& g_val)
-{
-  string val = tolower(stripBlankEnds(g_val));
-  if(param == "summit")
-    return(setSummit(atof(g_val.c_str())));
-  
-  else if(param == "base_width")
-    return(setBaseWidth(atof(g_val.c_str())));
-
-  else
-    return(false);
-}
-  
-
-//-------------------------------------------------------------
-// Procedure: extractOF
+// Procedure: extractOF()
 //   Purpose: Build and return for the caller an IvP objective
 //            function built from the pdmap. Once this is done
 //            the caller "owns" the PDMap. The reason for this is
@@ -104,73 +38,71 @@ bool ZAIC_HEQ::setParam(const string& param, const string& g_val)
 
 IvPFunction *ZAIC_HEQ::extractOF()
 {
-  cout << "In ExtractOF !" << endl;
-
   // Check for error conditions first
-  if(m_domain_ix == -1)
+  if(!m_state_ok)
     return(0);
 
-  bool ok = setPointLocations();
-  if(!ok) 
-    return(0);
+  setPointLocations();
 
   PDMap *pdmap = setPDMap();
   if(!pdmap)
     return(0);
 
   pdmap->updateGrid();
-  IvPFunction *of = new IvPFunction(pdmap);
+  IvPFunction *ipf = new IvPFunction(pdmap);
 
-  return(of);
+  return(ipf);
 }
 
+     
 //-------------------------------------------------------------
-// Procedure: setPointLocations()
+// Procedure: setPointLocationsHEQ() 
 //                                                             
-//     |                                    o-----------------|
-//     |                                  /                   |
-//     |                                /                     |
-//     |                              /                       |
-//     |                            /                         |
-//     |                          /                           |
-//     |                        /                             |
-//     o-----------------------o------------o-----------------o
-//     0                       1            2                 3
+//     |                                       o--------------|
+//     |                                     /                |
+//     |                                   /                  |
+//     |                                 /                    |
+//     |                               /                      |
+//     |                             /                        |
+//     |                           /                          |
+//     o--------------------------o------------o--------------o
+//     0                          1            2              3
 //                                                             
 
-bool ZAIC_HEQ::setPointLocations()
+void ZAIC_HEQ::setPointLocations()
 {
-  if((m_summit < m_dpt_low) || (m_summit > m_dpt_high))
-    return(false);
+  double dpt_low   = m_ivp_domain.getVarLow(0);
+  double dpt_high  = m_ivp_domain.getVarHigh(0);
   
-  m_dpt_one = m_summit - m_basewidth;
-  m_dpt_two = m_summit;
-  
-  double d = m_domain_delta;
+  int    domain_pts   = m_ivp_domain.getVarPoints(0);
+  double delta        = m_ivp_domain.getVarDelta(0);
+
+  double dpt_one = m_summit - m_basewidth;
+  double dpt_two = m_summit;
 
   m_ipt_low  = 0;
-  m_ipt_one  = (int)((m_dpt_one/d)+0.5);
-  m_ipt_two  = (int)((m_dpt_two/d)+0.5);
-  m_ipt_high = m_domain_pts - 1;
+  m_ipt_one  = (int)((dpt_one/delta)+0.5);
+  m_ipt_two  = (int)((dpt_two/delta)+0.5);
+  m_ipt_high = domain_pts - 1;
 
-  if(m_ipt_one < m_ipt_low)
-    m_ipt_one = m_ipt_low;
+  // Ensure that both middle points are within bounds and that
+  // point one is never greater than point two
+  if(m_ipt_two > m_ipt_high)
+    m_ipt_two = m_ipt_high;
+  if(m_ipt_one > m_ipt_high)
+    m_ipt_one = m_ipt_high;
 
-  i_basewidth = (int)((m_basewidth + (d/2)) / d);
+  if(m_ipt_one < 0)
+    m_ipt_one = 0;
+  if(m_ipt_two < 0)
+    m_ipt_two = 0;
 
-  cout << "dpt_low:      " << m_dpt_low    << endl;
-  cout << "dpt_one:      " << m_dpt_one    << endl;
-  cout << "dpt_two:      " << m_dpt_two    << endl;
-  cout << "dpt_high:     " << m_dpt_high   << endl;
-  cout << endl;
-  cout << "ipt_low:      " << m_ipt_low    << endl;
-  cout << "ipt_one:      " << m_ipt_one    << endl;
-  cout << "ipt_two:      " << m_ipt_two    << endl;
-  cout << "ipt_high:     " << m_ipt_high   << endl;
+  if(m_ipt_one > m_ipt_two)
+    m_ipt_one = m_ipt_two;
 
-  return(true);
+  i_basewidth = (int)((m_basewidth + (delta/2)) / delta);
 }
-     
+  
 //-------------------------------------------------------------
 // Procedure: setPDMap()
 //            
@@ -187,20 +119,24 @@ PDMap *ZAIC_HEQ::setPDMap()
   // Handle piece0 if it exists
   if(m_ipt_low < m_ipt_one) {
     piece[0] = new IvPBox(1,1);
-    piece[0]->setPTS(0, 0, m_ipt_one-1);
+    piece[0]->setPTS(0, 0, m_ipt_one);
     piece[0]->wt(0) = 0.0;
-    piece[0]->wt(1) = 0.0;
+    piece[0]->wt(1) = m_minutil;
     piece_count++;
   }
 
   // Handle piece1 if it exists
   if(m_ipt_one < m_ipt_two) {
     piece[1] = new IvPBox(1,1);
-    piece[1]->setPTS(0, m_ipt_one, m_ipt_two-1);
+    piece[1]->setPTS(0, m_ipt_one+1, m_ipt_two);
 
     double run    = (double)(i_basewidth);
-    double slope  = 100 / run;
-    double intcpt = -1.0 * slope * (m_ipt_two - i_basewidth);
+    double slope  = (m_maxutil - m_minutil) / run;
+    double intcpt;
+    if(m_ipt_one > 0)
+      intcpt = m_minutil + (-slope * m_ipt_one);
+    else
+      intcpt = m_maxutil + (-slope * m_ipt_two);
 
     piece[1]->wt(0) = slope;
     piece[1]->wt(1) = intcpt;
@@ -210,14 +146,15 @@ PDMap *ZAIC_HEQ::setPDMap()
   // Handle piece2 if it exists
   if(m_ipt_two < m_ipt_high) {
     piece[2] = new IvPBox(1,1);
-    piece[2]->setPTS(0, m_ipt_two, m_ipt_high);
+    piece[2]->setPTS(0, m_ipt_two+1, m_ipt_high);
     piece[2]->wt(0) = 0.0;
-    piece[2]->wt(1) = 100.0;
+    piece[2]->wt(1) = m_maxutil;
     piece_count++;
   }
 
   PDMap *pdmap;
   pdmap = new PDMap(piece_count, m_ivp_domain, 1);
+
 
   int ix = 0;
   for(i=0; i<3; i++) {
@@ -226,25 +163,7 @@ PDMap *ZAIC_HEQ::setPDMap()
       ix++;
     }
   }
-
-#if 0
-  cout << "piece_count: " << piece_count << endl;
-  for(i=0; i<3; i++) {
-    cout << "[" << i << "]: ";
-    if(piece[i])
-      piece[i]->print();
-    else
-      cout << "NULL" << endl;
-  }
-#endif
-
   return(pdmap);
 }
-
-
-
-
-
-
 
 

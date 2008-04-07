@@ -27,45 +27,21 @@
 #ifndef OF_ZAIC_LEQ_HEADER
 #define OF_ZAIC_LEQ_HEADER
 
-#include <string>
-#include "IvPDomain.h"
-#include "IvPFunction.h"
+#include "ZAIC_HLEQ.h"
 
 class PDMap;
 
-class ZAIC_LEQ {
+class ZAIC_LEQ: public ZAIC_HLEQ {
 public:
-  ZAIC_LEQ(IvPDomain g_domain, const std::string& g_varname);
+  ZAIC_LEQ(IvPDomain domain, const std::string& varname) :
+    ZAIC_HLEQ(domain, varname) {};
   virtual ~ZAIC_LEQ() {};
-
-  bool  setSummit(double);
-  bool  setBaseWidth(double);
-  bool  setMinMaxUtil(double, double);
-
-  double getParam(std::string);
 
   IvPFunction* extractOF();
 
 protected:
-  bool   setPointLocations();
+  void   setPointLocations();
   PDMap* setPDMap();
-  
-protected:  // Parameters
-  double  m_summit;
-  double  m_basewidth;
-  double  m_minutil;
-  double  m_maxutil;
-
-protected: // State values
-  int     m_ipt_low;
-  int     m_ipt_one;
-  int     m_ipt_two;
-  int     m_ipt_high;
-  int     i_basewidth;
-
-  bool         m_state_ok;
-  std::string  m_warning;
-  IvPDomain    m_ivp_domain;
 };
 #endif
 
