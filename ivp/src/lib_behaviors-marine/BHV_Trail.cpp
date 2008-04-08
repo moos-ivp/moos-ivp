@@ -83,8 +83,7 @@ bool BHV_Trail::setParam(string g_param, string g_val)
   if(IvPBehavior::setParam(g_param, g_val))
     return(true);
 
-  if((g_param == "them") || (g_param == "contact")) 
-    {
+  if((g_param == "them") || (g_param == "contact")) {
       m_contact = toupper(g_val);
       addInfoVars(m_contact+"_NAV_UTC");
       addInfoVars(m_contact+"_NAV_X");
