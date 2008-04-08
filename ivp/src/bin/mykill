@@ -19,7 +19,7 @@ killall -9 -q iMicroModem pRouter pFramer pMessageSim  \
         p1HTracker pGPSSim uBathy uCtdSim2 pTargetOpportunity \
         pBearings_DURIP uProcessWatch uPlayBack pSubIndex \
         pBearings_GENERIC pTargetSim pMBTracker zLoggerNG \
-	iModemSim
+	iModemSim pFunctionSender uFunctionViewer uFunctionVis
 
 killall -9 -q pSensorSim pArtifactMapper 
 
