@@ -363,7 +363,7 @@ IvPDomain subDomain(const IvPDomain& domain, string vars)
 
 //--------------------------------------------------------------
 // Procedure: stringToDomain
-//    Format: "X:0:100:101,Y:0:1:11"
+//    Format: "X,0,100,101 : Y,0,1,11"
 
 IvPDomain stringToDomain(const string& domain_descriptor)
 {
@@ -437,8 +437,6 @@ string domainToString(const IvPDomain& domain)
     return_string += dstringCompact(doubleToString(domain.getVarHigh(i)));
     return_string += ",";
     return_string += intToString(domain.getVarPoints(i));
-    return_string += ",";
-    return_string += doubleToString(domain.getVarDelta(i));
     if(i < dcount-1)
       return_string += ":";
   }
