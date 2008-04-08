@@ -1,17 +1,6 @@
-
 initialize   DEPLOY        = false
 initialize   RETURN        = false
 initialize   TRAIL         = false
-
-//----------------------------------------------
-Behavior = BHV_StationKeep
-{
-  name      = bhv_station_keep
-  pwt       = 100
-  condition = (DEPLOY = true) and (RETURN != true)
-
-  center_activate = true
-}
 
 //----------------------------------------------
 Behavior = BHV_Trail
