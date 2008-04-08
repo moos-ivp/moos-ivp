@@ -69,6 +69,7 @@ public:
   std::vector<VarDataPair> getInitialVariables() {return(initial_vars);};
   std::vector<VarDataPair> getDefaultVariables() {return(default_vars);};
   std::vector<std::string> getInfoVars();
+  std::vector<std::string> getNewInfoVars();
 
   void print();
 
@@ -78,6 +79,8 @@ protected:
 
   std::vector<VarDataPair>   initial_vars;
   std::vector<VarDataPair>   default_vars;
+
+  std::vector<std::string>   prev_info_vars;
 
   bool report_ipf;
 };

@@ -140,7 +140,8 @@ vector<string> mergeVectors(vector<string> vector1,
 
 //----------------------------------------------------------------
 // Procedure: removeDuplicates
-//      Note: 
+//      Note: Return a vector of strings such that no string is in
+//            the vector more than once.
 
 vector<string> removeDuplicates(vector<string> svector)
 {

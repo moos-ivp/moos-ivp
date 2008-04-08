@@ -165,8 +165,6 @@ bool HelmIvP::Iterate()
 
   double curr_time = MOOSTime();
 
-  //  info_buffer->setCurrTime(curr_time);
-
   HelmReport helm_report = hengine->determineNextDecision(bhv_set, curr_time);
   iteration = helm_report.getIteration();
   if(verbose == "verbose") {
@@ -179,6 +177,7 @@ bool HelmIvP::Iterate()
       MOOSTrace("%s\n", svector[i].c_str());
   }
   
+  registerNewVariables();
   postBehaviorMessages();
   postDefaultVariables();
 
@@ -468,6 +467,23 @@ void HelmIvP::registerVariables()
 
   if(bhv_set) {
     vector<string> info_vars = bhv_set->getInfoVars();
+    for(int j=0; j<info_vars.size(); j++) {
+      if(verbose == "verbose")
+	MOOSTrace("Registering for: %s\n", info_vars[j].c_str());
+      m_Comms.Register(info_vars[j], 0.0);
+    }
+  }
+}
+
+//------------------------------------------------------------
+// Procedure: registerNewVariables
+
+void HelmIvP::registerNewVariables()
+{
+  int amt = 0;
+  if(bhv_set) {
+    vector<string> info_vars = bhv_set->getNewInfoVars();
+    amt = info_vars.size();
     for(int j=0; j<info_vars.size(); j++) {
       if(verbose == "verbose")
 	MOOSTrace("Registering for: %s\n", info_vars[j].c_str());

@@ -222,17 +222,26 @@ vector<string> BehaviorSet::getInfoVars()
       rvector.push_back(bvector[j]);
   }
 
-  vector<string>::iterator p1;
-
-  set<string> temp_set;
-  for(int j=0; j<rvector.size(); j++)
-    temp_set.insert(rvector[j]);
+  rvector = removeDuplicates(rvector);
   
-  rvector.clear();
+  return(rvector);
+}
 
-  set<string>::iterator p;
-  for(p=temp_set.begin(); p!=temp_set.end(); p++)
-    rvector.push_back(*p);
+//------------------------------------------------------------
+// Procedure: getNewInfoVars
+
+vector<string> BehaviorSet::getNewInfoVars()
+{
+  vector<string> cvector = getInfoVars();
+  int csize = cvector.size();
+
+  vector<string> rvector;
+  for(int i=0; i<csize; i++) {
+    if(!vectorContains(prev_info_vars, cvector[i]))
+      rvector.push_back(cvector[i]);
+  }
+
+  prev_info_vars = cvector;
 
   return(rvector);
 }

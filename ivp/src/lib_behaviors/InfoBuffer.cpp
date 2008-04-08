@@ -209,7 +209,6 @@ void InfoBuffer::print() const
   cout << " Time Data: " << endl;
   map<string, double>::const_iterator pt;
   for(pt=tmap.begin(); pt!=tmap.end(); pt++) {
-    cout << "  " << pt->first << ": " << pt->second << endl;
     cout << "  " << pt->first << ": " << m_curr_time_utc - pt->second << endl;
   }
 }

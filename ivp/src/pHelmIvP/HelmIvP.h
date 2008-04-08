@@ -54,6 +54,7 @@ protected:
   void postDefaultVariables();
   void postSummary();
   void registerVariables();
+  void registerNewVariables();
   void requestBehaviorLogging();
 
 protected:
