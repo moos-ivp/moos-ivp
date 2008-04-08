@@ -10,7 +10,7 @@ Behavior = BHV_Waypoint
   condition = DEPLOY = true
   endflag   = RETURN = true
 
-  speed     = 25.0
+  speed     = 2.0
   radius    = 8.0
   points    = 60,-40:60,-160:150,-160:180,-100:150,-40
 }
@@ -20,10 +20,11 @@ Behavior = BHV_Waypoint
 {
   name       = bhv_waypt_return
   pwt        = 100
-  condition  = RETURN,true
-  condition  = DEPLOY,true
+  condition  = RETURN = true
+  condition  = DEPLOY = true
 
   speed      = 2.0
   radius     = 8.0
   points     = 0,0
 }
+
