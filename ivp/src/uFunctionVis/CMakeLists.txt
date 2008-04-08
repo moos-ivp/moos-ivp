@@ -1,0 +1,23 @@
+#--------------------------------------------------------
+# The CMakeLists.txt for:                    uFunctionVis
+# Author(s):                                Mike Benjamin
+#--------------------------------------------------------
+
+FILE(GLOB SRC *.cpp)
+
+ADD_EXECUTABLE(uFunctionVis ${SRC})
+      
+TARGET_LINK_LIBRARIES(uFunctionVis
+  MOOS
+  MOOSGen
+  pthread
+  ipfview
+  geometry
+  ivpbuild
+  mbutil
+  ivpcore
+  genutil
+  m
+  fltk 
+  fltk_gl
+  GL)
