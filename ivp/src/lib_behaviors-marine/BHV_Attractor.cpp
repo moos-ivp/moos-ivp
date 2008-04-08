@@ -69,7 +69,7 @@ BHV_Attractor::BHV_Attractor(IvPDomain gdomain) :
 
   m_extrapolator.setDecay(m_decay_start, m_decay_end);
 
-  m_cpa_speed = 1.2;
+  m_contact_name = "";
 
   addInfoVars("NAV_X, NAV_Y, NAV_SPEED, NAV_HEADING");
 }
@@ -82,15 +82,12 @@ bool BHV_Attractor::setParam(string g_param, string g_val)
   if(IvPBehavior::setParam(g_param, g_val))
     return(true);
 
-  if((g_param == "them") || (g_param == "contact")) {
-    m_them_name = toupper(g_val);
-    addInfoVars(m_them_name+"_NAV_X");
-    addInfoVars(m_them_name+"_NAV_Y");
-    addInfoVars(m_them_name+"_NAV_SPEED");
-    addInfoVars(m_them_name+"_NAV_HEADING");
-    addInfoVars(m_them_name+"_NAV_UTC");
-    return(true);
-  }  
+  if((g_param == "them") || (g_param == "contact")) 
+    {
+      m_contact_name = toupper(g_val);
+      updateContactList(); 
+      return(true);
+    }  
   else if(g_param == "dist_priority_interval") {
     g_val = stripBlankEnds(g_val);
     vector<string> svector = parseString(g_val, ',');
@@ -154,14 +151,6 @@ bool BHV_Attractor::setParam(string g_param, string g_val)
     return(true);
   }  
 
-  else if(g_param == "cpa_speed") {
-    double dval = atof(g_val.c_str());
-    if((dval < 0) || (dval > 100) || (!isNumber(g_val)))
-      return(false);
-    m_cpa_speed = dval;
-    return(true);
-  }  
-
   return(false);
 }
 
@@ -181,10 +170,15 @@ IvPFunction *BHV_Attractor::onRunState()
 {
   postMessage("ATTRACTOR_ACTIVE", 1);
 
-  if(m_them_name == "") {
-    postEMessage("contact ID not set.");
-    return(0);
-  }
+  if(m_contact_name == "") 
+    {
+      postEMessage("contact ID not set.");
+      return(0);
+    }
+  else
+    {
+      updateContactList();
+    }
 
   // Set m_osx, m_osy, m_osh, m_osv, m_cnx, m_cny, m_cnh, m_cnv
   if(!updateInfoIn())
@@ -209,8 +203,7 @@ IvPFunction *BHV_Attractor::onRunState()
       aof.setParam("cnlat", m_cny);
       aof.setParam("cnlon", m_cnx);
       aof.setParam("cncrs", m_cnh);
-      aof.setParam("cnspd", 0.5*m_cpa_speed);
-      //      aof.setParam("cnspd", m_cnv);
+      aof.setParam("cnspd", m_cnv);
       aof.setParam("oslat", m_osy);
       aof.setParam("oslon", m_osx);
       aof.setParam("tol", m_time_on_leg);
@@ -233,9 +226,9 @@ IvPFunction *BHV_Attractor::onRunState()
       ZAIC_PEAK hdg_zaic(m_domain, "course");
       hdg_zaic.setSummit(m_cnh);
       hdg_zaic.setValueWrap(true);
-      hdg_zaic.setPeakWidth(30);
-      hdg_zaic.setBaseWidth(150);
-      hdg_zaic.setSummitDelta(50.0);
+      hdg_zaic.setPeakWidth(120);
+      hdg_zaic.setBaseWidth(60);
+      hdg_zaic.setSummitDelta(10.0);
       hdg_zaic.setMinMaxUtil(0,100);
       IvPFunction *hdg_ipf = hdg_zaic.extractOF();
       
@@ -279,18 +272,18 @@ bool BHV_Attractor::updateInfoIn()
   m_osh = getBufferDoubleVal("NAV_HEADING", ok3);
   m_osv = getBufferDoubleVal("NAV_SPEED", ok4);
 
-  m_cnx = getBufferDoubleVal(m_them_name+"_NAV_X", ok5);
-  m_cny = getBufferDoubleVal(m_them_name+"_NAV_Y", ok6);
-  m_cnh = getBufferDoubleVal(m_them_name+"_NAV_HEADING", ok7);
-  m_cnv = getBufferDoubleVal(m_them_name+"_NAV_SPEED", ok8);
-  m_cnutc = getBufferDoubleVal(m_them_name+"_NAV_UTC", ok9);
+  m_cnx = getBufferDoubleVal(m_contact_name+"_NAV_X", ok5);
+  m_cny = getBufferDoubleVal(m_contact_name+"_NAV_Y", ok6);
+  m_cnh = getBufferDoubleVal(m_contact_name+"_NAV_HEADING", ok7);
+  m_cnv = getBufferDoubleVal(m_contact_name+"_NAV_SPEED", ok8);
+  m_cnutc = getBufferDoubleVal(m_contact_name+"_NAV_UTC", ok9);
 
   if(!ok1 || !ok2 || !ok3 || !ok4 || !ok5 || 
      !ok6 || !ok7 || !ok8 || !ok9)
     return(false);
   
   double curr_time = getBufferCurrTime();
-  // double mark_time = getBufferTimeVal(m_them_name+"_NAV_X");
+  // double mark_time = getBufferTimeVal(m_contact_name+"_NAV_X");
 
   postMessage("TRAIL_CONTACT_TIME", m_cnutc);
   postMessage("TRAIL_CURRENT_TIME", curr_time);
@@ -359,6 +352,31 @@ double BHV_Attractor::getRelevance(double osX, double osY,
       else
 	pct = 1;
   return(pct);
+}
+
+//-----------------------------------------------------------------
+// Procedure: updateContactList
+//   Purpose: Maintain a list of known unique contact names, and subscrinbe to NAV info
+
+void BHV_Attractor::updateContactList()
+{
+  int i;
+  
+  m_contact_name = toupper(m_contact_name);
+
+  for(i=0; i<m_contact_list.size(); i++) {
+    if(m_contact_list[i] == m_contact_name) {
+      return;
+    }
+  }
+  
+  m_contact_list.push_back(m_contact_name);
+  addInfoVars(m_contact_name+"_NAV_X");
+  addInfoVars(m_contact_name+"_NAV_Y");
+  addInfoVars(m_contact_name+"_NAV_SPEED");
+  addInfoVars(m_contact_name+"_NAV_HEADING");
+  addInfoVars(m_contact_name+"_NAV_UTC");
+
 }
 
 

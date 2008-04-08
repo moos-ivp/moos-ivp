@@ -22,8 +22,8 @@ BHV_CollaborativeTracking::BHV_CollaborativeTracking(IvPDomain gdomain) :
   IvPBehavior(gdomain)
 {
   this->setParam("descriptor", "(d)BHV_CollaborativeTracking");
-  this->setParam("unifbox", "course=3");
-  this->setParam("gridbox", "course=9");
+  this->setParam("build_info", "uniform_piece=course:3");
+  this->setParam("build_info", "uniform_grid=course:9");
 
   m_domain = subDomain(m_domain,"course");
 

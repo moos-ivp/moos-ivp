@@ -22,12 +22,12 @@ using namespace std;
 
 AOF_CollaborativeTracking::AOF_CollaborativeTracking(IvPDomain g_domain): AOF(g_domain)
 {
-  int crs_ix = g_domain.getIndex("course");
+  crs_ix = g_domain.getIndex("course");
   
   assert(crs_ix != -1);
   
-  crsDelta = g_domain.getVarDelta(crs_ix);
-  crsBase  = g_domain.getVarLow(crs_ix);
+  //crsDelta = g_domain.getVarDelta(crs_ix);
+  //crsBase  = g_domain.getVarLow(crs_ix);
 
 }
 
@@ -91,8 +91,12 @@ bool AOF_CollaborativeTracking::setParam(const string& param, double param_val)
 double AOF_CollaborativeTracking::evalBox(const IvPBox *b) const
 {
  
-  double evalCRS  = crsBase + ((double)(b->pt(0,0)) * crsDelta);
+  //double evalCRS  = crsBase + ((double)(b->pt(0,0)) * crsDelta);
   
+  double evalCRS;
+
+  m_domain.getVal(crs_ix,b->pt(crs_ix,0),evalCRS);
+
   //look 1 meter in each direction
   double osxp = osx + sin(evalCRS*M_PI/180.0);
   double osyp = osy + cos(evalCRS*M_PI/180.0);

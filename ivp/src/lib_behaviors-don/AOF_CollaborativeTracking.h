@@ -29,6 +29,8 @@ protected:
 
   double crsBase;
   double crsDelta;
+
+  int crs_ix;
 };
 
 #endif

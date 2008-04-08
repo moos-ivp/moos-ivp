@@ -233,8 +233,8 @@ IvPFunction *BHV_RubberBand::onRunState()
   
   ZAIC_PEAK crs_zaic(m_domain, "course");
   crs_zaic.setSummit(angle_to_station);
-  crs_zaic.setBaseWidth(150.0);
-  crs_zaic.setPeakWidth(30.0);
+  crs_zaic.setPeakWidth(120);
+  crs_zaic.setBaseWidth(60.0);
   crs_zaic.setSummitDelta(10.0);
   crs_zaic.setMinMaxUtil(0, 100);
   crs_zaic.setValueWrap(true);

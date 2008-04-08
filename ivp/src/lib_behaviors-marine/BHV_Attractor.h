@@ -41,9 +41,12 @@ protected:
   bool   updateInfoIn();  
   double getRelevance(double, double, double, double);
   double getPriority();
-  
+  void updateContactList();
+
+
 private:
-  std::string m_them_name; // Name for them in InfoBuffer
+  std::string m_contact_name; // Name for them in InfoBuffer
+  std::vector<std::string> m_contact_list;
 
   double  m_min_util_cpa_dist;
   double  m_max_util_cpa_dist;
