@@ -18,3 +18,6 @@
 
 - The IvPHelm works properly with pLogger to ensure that Behavior Files
   (.bhv files) are being logged alongside the .moos files
+
+- Fixed a bug in the helm that was misssing behavior variable-register 
+  requests occurring well after the initial startup period.
