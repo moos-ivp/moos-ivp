@@ -26,6 +26,7 @@ cmake                                           \
    -DPYTHON_INCLUDE_PATH=/usr/include/python2.5 \
    -DBUILD_CONTROL_AND_NAV=ON                   \
    -DBUILD_INSTRUMENTS=ON                       \
+   -DDB_HAS_HTTP=ON                             \
    -DBUILD_TOOLS=ON                             \
    -DBUILD_OCEAN_SIM=ON                         \
    -DBUILD_NEWMAT=OFF                           \
