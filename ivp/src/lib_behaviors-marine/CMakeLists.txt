@@ -6,6 +6,7 @@
 FILE(GLOB SRC
   BHV_Attractor.cpp
   BHV_AvoidCollision.cpp
+  BHV_AvoidObstacles.cpp
   BHV_ConstantDepth.cpp
   BHV_ConstantHeading.cpp
   BHV_ConstantSpeed.cpp
