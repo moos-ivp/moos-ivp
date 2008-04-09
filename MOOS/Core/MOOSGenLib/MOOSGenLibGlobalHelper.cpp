@@ -35,6 +35,8 @@
 #include "MOOSGenLibGlobalHelper.h"
 #include <algorithm>
 #include <iterator>
+#include <cctype>
+#include <string>
 #include <time.h>
 #include <stdarg.h>
 #include <math.h>

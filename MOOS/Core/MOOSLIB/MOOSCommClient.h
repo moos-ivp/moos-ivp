@@ -35,6 +35,7 @@
 #define MOOSCommClientH
 
 #include <MOOSGenLib/MOOSLock.h>
+#include <MOOSGenLib/MOOSThread.h>
 #include "MOOSCommObject.h"
 #include <set>
 #include <string>
@@ -166,7 +167,8 @@ public:
     /** return the list of messages registered*/
     std::set<std::string> GetRegistered(){return m_Registered;};
     
-
+    /** used to control how verbose the connection process is */
+    void SetQuiet(bool bQ){m_bQuiet = bQ;};
 
 protected:
     bool ClearResources();
@@ -236,18 +238,8 @@ protected:
 
     bool UpdateMOOSSkew(double dfTxTime,double dfRxTime);
     
-    /** Win32 handle to IO thread */
-#ifdef _WIN32
-    HANDLE m_hClientThread;
-#endif
-    /** ID of IO thread */
-    
-#ifdef _WIN32
-    typedef unsigned long THREAD_ID;
-#else
-    typedef pthread_t THREAD_ID;
-#endif
-    THREAD_ID    m_nClientThreadID;
+    /*thread to handle communications with a server object*/
+    CMOOSThread m_ClientThread;
     
     /** List of messages that a pending to be sent
     @see Post*/
@@ -281,6 +273,9 @@ protected:
 
     /** the set of messages names/keys that have been sent */
     std::set<std::string> m_Published;
+
+    /** controls how verbose connectionn is*/
+    bool m_bQuiet;
     
 };
 

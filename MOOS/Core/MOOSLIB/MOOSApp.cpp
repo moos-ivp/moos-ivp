@@ -1,30 +1,30 @@
 ///////////////////////////////////////////////////////////////////////////
 //
-//   MOOS - Mission Oriented Operating Suite 
-//  
-//   A suit of Applications and Libraries for Mobile Robotics Research 
-//   Copyright (C) 2001-2005 Massachusetts Institute of Technology and 
-//   Oxford University. 
-//      
-//   This software was written by Paul Newman at MIT 2001-2002 and Oxford 
-//   University 2003-2005. email: pnewman@robots.ox.ac.uk. 
-//        
-//   This file is part of a  MOOS Core Component. 
-//              
-//   This program is free software; you can redistribute it and/or 
-//   modify it under the terms of the GNU General Public License as 
-//   published by the Free Software Foundation; either version 2 of the 
-//   License, or (at your option) any later version. 
-//                
-//   This program is distributed in the hope that it will be useful, 
-//   but WITHOUT ANY WARRANTY; without even the implied warranty of 
-//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
-//   General Public License for more details. 
-//                      
-//   You should have received a copy of the GNU General Public License 
-//   along with this program; if not, write to the Free Software 
-//   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 
-//   02111-1307, USA. 
+//   MOOS - Mission Oriented Operating Suite
+//
+//   A suit of Applications and Libraries for Mobile Robotics Research
+//   Copyright (C) 2001-2005 Massachusetts Institute of Technology and
+//   Oxford University.
+//
+//   This software was written by Paul Newman at MIT 2001-2002 and Oxford
+//   University 2003-2005. email: pnewman@robots.ox.ac.uk.
+//
+//   This file is part of a  MOOS Core Component.
+//
+//   This program is free software; you can redistribute it and/or
+//   modify it under the terms of the GNU General Public License as
+//   published by the Free Software Foundation; either version 2 of the
+//   License, or (at your option) any later version.
+//
+//   This program is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+//   General Public License for more details.
+//
+//   You should have received a copy of the GNU General Public License
+//   along with this program; if not, write to the Free Software
+//   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+//   02111-1307, USA.
 //
 //////////////////////////    END_GPL    //////////////////////////////////
 
@@ -107,11 +107,11 @@ CMOOSApp::~CMOOSApp()
 
 }
 
-bool CMOOSApp::Run( char * sName,
-                   char * sMissionFile)
+bool CMOOSApp::Run( const char * sName,
+                   const char * sMissionFile)
 {
 
-    //save absolutely crucial info...   
+    //save absolutely crucial info...
     m_sAppName      = sName;
     m_sMissionFile  = sMissionFile;
     m_MissionReader.SetAppName(m_sAppName);
@@ -158,7 +158,7 @@ bool CMOOSApp::Run( char * sName,
             //do we want to enable command filtering (default is set in constructor)
             m_MissionReader.GetConfigurationParam("CatchCommandMessages",m_bCommandMessageFiltering);
         }
-    }       
+    }
 
     //can we start the communications ?
     if(m_bUseMOOSComms)
@@ -179,7 +179,7 @@ bool CMOOSApp::Run( char * sName,
         int t = 0;
         int dT = 50;
         while(!m_Comms.IsConnected())
-        {        
+        {
             MOOSPause(dT);
             t+=dT;
             if(t>5000)
@@ -220,7 +220,7 @@ bool CMOOSApp::Run( char * sName,
             if(m_Comms.Fetch(MailIn))
             {
                 /////////////////////////////
-                //   process mail        
+                //   process mail
 
                 //call our own private version
                 OnNewMailPrivate(MailIn);
@@ -259,7 +259,7 @@ bool CMOOSApp::Run( char * sName,
 
         //sleep
         if(m_dfFreq>0)
-        {                       
+        {
             int nSleep = (int)(1000.0/m_dfFreq-1000*(m_dfLastRunTime-dfT1));
 
             //a 10 ms sleep is a good as you are likely to get, if we are being told to sleep less than this we may as well
@@ -432,7 +432,7 @@ bool CMOOSApp::AddMOOSVariable(string sName, string sSubscribeName, string sPubl
     return true;
 }
 
-//this function publishes all the fresh variables belong to the 
+//this function publishes all the fresh variables belong to the
 //apllication. Useful in many sensor applications!
 bool CMOOSApp::PublishFreshMOOSVariables()
 {
@@ -561,7 +561,7 @@ std::string CMOOSApp::GetMissionFileName()
 }
 
 string CMOOSApp::GetAppName()
-{   
+{
     return m_sAppName;
 }
 

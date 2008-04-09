@@ -30,6 +30,7 @@
 // MOOSDB.cpp: implementation of the CMOOSDB class.
 //
 //////////////////////////////////////////////////////////////////////
+
 #ifdef _WIN32
 #pragma warning(disable : 4786)
 #endif
@@ -190,9 +191,9 @@ void CMOOSDB::UpdateDBTimeVars()
         OnNotify(DBT);
         dfLastTime = dfNow;
 
-           CMOOSMsg DBUpT(MOOS_NOTIFY,"DB_UPTIME",MOOSTime()-GetStartTime());
-        DBT.m_sOriginatingCommunity = m_sCommunityName;
-        DBT.m_sSrc = m_sDBName;
+        CMOOSMsg DBUpT(MOOS_NOTIFY,"DB_UPTIME",MOOSTime()-GetStartTime());
+        DBUpT.m_sOriginatingCommunity = m_sCommunityName;
+        DBUpT.m_sSrc = m_sDBName;
         OnNotify(DBUpT);    
     }
 }
@@ -201,6 +202,7 @@ void CMOOSDB::UpdateDBTimeVars()
 bool CMOOSDB::OnRxPkt(const std::string & sClient,MOOSMSG_LIST & MsgListRx,MOOSMSG_LIST & MsgListTx)
 {
     
+
     MOOSMSG_LIST::iterator p;
     
     for(p = MsgListRx.begin();p!=MsgListRx.end();p++)

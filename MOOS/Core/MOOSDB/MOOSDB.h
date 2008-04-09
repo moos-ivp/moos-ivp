@@ -31,12 +31,9 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_MOOSDB_H__B4445B32_FB95_4630_8748_A5BBB5843B6F__INCLUDED_)
-#define AFX_MOOSDB_H__B4445B32_FB95_4630_8748_A5BBB5843B6F__INCLUDED_
+#if !defined(MOOSDBH)
+#define MOOSDBH
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
 
 #include "MOOSDBVar.h"
 #include <string>
@@ -70,7 +67,10 @@ public:
     /** called by the owning application to start the DB running. It launches threads
     and returns */
     bool Run(const std::string & sMissionFile="" );
-    
+
+    /** returns the port on which this DB is listening */
+    long GetDBPort(){return m_nPort;};
+
     CMOOSDB();
     virtual ~CMOOSDB();
 
@@ -86,7 +86,7 @@ protected:
     Very occasionally a client with a singularly unusual role may want to ask questions
     directly to the DB. The paired function is in MOOCCommClient::ServerRequest which
     unusually, is blocking (with timeout) - hence my edgey feel about these utilities*/
-       bool OnServerAllRequested(CMOOSMsg & Msg, MOOSMSG_LIST & MsgTxList);
+    bool OnServerAllRequested(CMOOSMsg & Msg, MOOSMSG_LIST & MsgTxList);
     bool OnProcessSummaryRequested(CMOOSMsg &Msg, MOOSMSG_LIST &MsgTxList);
     bool OnVarSummaryRequested(CMOOSMsg &Msg, MOOSMSG_LIST &MsgTxList);
 
@@ -99,7 +99,6 @@ protected:
     bool OnNotify(CMOOSMsg & Msg);
     bool ProcessMsg(CMOOSMsg & MsgRx,MOOSMSG_LIST & MsgLstTx);
     double GetStartTime(){return m_dfStartTime;}
-
 private:
     CMOOSCommServer m_CommServer;
     string m_sDBName;
@@ -118,4 +117,4 @@ private:
     void LogStartTime();
 };
 
-#endif // !defined(AFX_MOOSDB_H__B4445B32_FB95_4630_8748_A5BBB5843B6F__INCLUDED_)
+#endif 

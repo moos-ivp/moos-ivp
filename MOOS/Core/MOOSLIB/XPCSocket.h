@@ -1,33 +1,33 @@
 ///////////////////////////////////////////////////////////////////////////
 //
-//   MOOS - Mission Oriented Operating Suite 
-//  
-//   A suit of Applications and Libraries for Mobile Robotics Research 
-//   Copyright (C) 2001-2005 Massachusetts Institute of Technology and 
-//   Oxford University. 
-//    
-//   This software was written by Paul Newman at MIT 2001-2002 and Oxford 
-//   University 2003-2005. email: pnewman@robots.ox.ac.uk. 
-//      
-//   This file is part of a  MOOS CORE Component. 
-//        
-//   This program is free software; you can redistribute it and/or 
-//   modify it under the terms of the GNU General Public License as 
-//   published by the Free Software Foundation; either version 2 of the 
-//   License, or (at your option) any later version. 
-//          
-//   This program is distributed in the hope that it will be useful, 
-//   but WITHOUT ANY WARRANTY; without even the implied warranty of 
-//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
-//   General Public License for more details. 
-//            
-//   You should have received a copy of the GNU General Public License 
-//   along with this program; if not, write to the Free Software 
-//   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 
-//   02111-1307, USA. 
+//   MOOS - Mission Oriented Operating Suite
 //
-//   The XPC classes in MOOS are modified versions of the source provided 
-//   in "Making UNIX and Windows NT Talk" by Mark Nadelson and Thomas Haga 
+//   A suit of Applications and Libraries for Mobile Robotics Research
+//   Copyright (C) 2001-2005 Massachusetts Institute of Technology and
+//   Oxford University.
+//
+//   This software was written by Paul Newman at MIT 2001-2002 and Oxford
+//   University 2003-2005. email: pnewman@robots.ox.ac.uk.
+//
+//   This file is part of a  MOOS CORE Component.
+//
+//   This program is free software; you can redistribute it and/or
+//   modify it under the terms of the GNU General Public License as
+//   published by the Free Software Foundation; either version 2 of the
+//   License, or (at your option) any later version.
+//
+//   This program is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+//   General Public License for more details.
+//
+//   You should have received a copy of the GNU General Public License
+//   along with this program; if not, write to the Free Software
+//   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+//   02111-1307, USA.
+//
+//   The XPC classes in MOOS are modified versions of the source provided
+//   in "Making UNIX and Windows NT Talk" by Mark Nadelson and Thomas Haga
 //
 //////////////////////////    END_GPL    //////////////////////////////////
 #ifndef _XPCSocket
@@ -62,7 +62,7 @@
 class XPCSocket
 {
 protected:
-    int iPort;        // Socket port number    
+    int iPort;        // Socket port number
     int iSocket;        // Socket file descriptor
     int iBlocking;        // Blocking flag
     char cBind;        // Binding flag
@@ -74,9 +74,9 @@ public:
     double GetReadTime(){return m_dfLastRead;};
 
     //returns integer number of last socket error
-    int iGetLastError();
+    static int iGetLastError();
     // Constructor.  Creates a socket given a protocol (UDP / TCP) and a port number
-    XPCSocket(char *_sProtocol, int _iPort);
+    XPCSocket(const char *_sProtocol, int _iPort);
 
     // Constructor.  Stores a socket file descriptor
     XPCSocket(int _iSocket) : iSocket(_iSocket) { };
@@ -88,8 +88,8 @@ public:
     }
 
     // Closes the socket
-    void vCloseSocket() 
-    { 
+    void vCloseSocket()
+    {
         #ifdef    WINDOWS_NT
             closesocket(iSocket);
         #else
@@ -129,11 +129,11 @@ public:
             return strerror(errno);
         #elif _WIN32
             static char buf[10];
-            sprintf(buf, "%d", WSAGetLastError());    
+            sprintf(buf, "%d", WSAGetLastError());
             return buf;
         #endif
     }
 };
 
 #endif
-        
+

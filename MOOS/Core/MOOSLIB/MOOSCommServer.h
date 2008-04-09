@@ -1,30 +1,30 @@
 ///////////////////////////////////////////////////////////////////////////
 //
-//   MOOS - Mission Oriented Operating Suite 
-//  
-//   A suit of Applications and Libraries for Mobile Robotics Research 
-//   Copyright (C) 2001-2005 Massachusetts Institute of Technology and 
-//   Oxford University. 
-//    
-//   This software was written by Paul Newman at MIT 2001-2002 and Oxford 
-//   University 2003-2005. email: pnewman@robots.ox.ac.uk. 
-//      
-//   This file is part of a  MOOS Core Component. 
-//        
-//   This program is free software; you can redistribute it and/or 
-//   modify it under the terms of the GNU General Public License as 
-//   published by the Free Software Foundation; either version 2 of the 
-//   License, or (at your option) any later version. 
-//          
-//   This program is distributed in the hope that it will be useful, 
-//   but WITHOUT ANY WARRANTY; without even the implied warranty of 
-//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
-//   General Public License for more details. 
-//            
-//   You should have received a copy of the GNU General Public License 
-//   along with this program; if not, write to the Free Software 
-//   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 
-//   02111-1307, USA. 
+//   MOOS - Mission Oriented Operating Suite
+//
+//   A suit of Applications and Libraries for Mobile Robotics Research
+//   Copyright (C) 2001-2005 Massachusetts Institute of Technology and
+//   Oxford University.
+//
+//   This software was written by Paul Newman at MIT 2001-2002 and Oxford
+//   University 2003-2005. email: pnewman@robots.ox.ac.uk.
+//
+//   This file is part of a  MOOS Core Component.
+//
+//   This program is free software; you can redistribute it and/or
+//   modify it under the terms of the GNU General Public License as
+//   published by the Free Software Foundation; either version 2 of the
+//   License, or (at your option) any later version.
+//
+//   This program is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+//   General Public License for more details.
+//
+//   You should have received a copy of the GNU General Public License
+//   along with this program; if not, write to the Free Software
+//   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+//   02111-1307, USA.
 //
 //////////////////////////    END_GPL    //////////////////////////////////
 // MOOSCommServer.h: interface for the CMOOSCommServer class.
@@ -51,7 +51,9 @@
 
 #include "MOOSCommObject.h"
 #include "MOOSCommPkt.h"
-#include <MOOSGenLib/MOOSLock.h>    // Added by ClassView
+#include <MOOSGenLib/MOOSLock.h>
+
+#include <MOOSGenLib/MOOSThread.h>
 
 class XPCTcpSocket;
 #include <list>
@@ -61,7 +63,7 @@ class XPCTcpSocket;
 /** This class is the MOOS Comms Server. It lies at the heart of the communications
 architecture and typically is of no interest to the component developer. It maintains a list of all
 the connected clients and their names. It simultaneously listens on all sockets for calling clients
-and then calls a user supplied call back to handle the request. This class is only used by the 
+and then calls a user supplied call back to handle the request. This class is only used by the
 CMOOSDB application*/
 class CMOOSCommServer  : public CMOOSCommObject
 {
@@ -74,7 +76,7 @@ public:
 
     /** Set the recieve message call back handler. The callback will be called whenever
     a client sends one or more messages to teh server. The supplied call back must be of the form
-    static bool MyCallBack(MOOSMSG_LIST & RxLst,MOOSMSG_LIST & TxLst, void * pParam). 
+    static bool MyCallBack(MOOSMSG_LIST & RxLst,MOOSMSG_LIST & TxLst, void * pParam).
     @param sClient    Name of client at the end of the socket sending this Pkt
     @param RxLst    contains the incoming messages.
     @param TxLst    passed to the handler as a recepticle for all the message that    should be sent back to the client in response to teh incoming messages.
@@ -83,7 +85,7 @@ public:
     void SetOnRxCallBack(bool (*pfn)(const std::string  & sClient,MOOSMSG_LIST & MsgListRx,MOOSMSG_LIST & MsgListTx,void * pParam),void * pParam);
 
     /** Set the disconnect message call back handler.  The supplied call back must be of the form
-    static bool MyCallBack(std::string  & sClient,, void * pParam). 
+    static bool MyCallBack(std::string  & sClient,, void * pParam).
     @param sClient    contains the incoming messages.
     @param TxLst    passed to the handler as a recepticle for all the message that    should be sent back to the client in response to teh incoming messages.
     @param pParam      user suplied parameter to be passed to callback function
@@ -98,13 +100,13 @@ public:
     sockets and when a call is received invokes thse user supplied callback */
     bool ServerLoop();
 
-    /** This function is the timer loop called from one of the three 
+    /** This function is the timer loop called from one of the three
     server threads. It makes sure all clients speak occasionally*/
-    
+
     bool TimerLoop();
 
 
-    /** Initialise the server. This is a non blocking call and launches the MOOS Comms server threads. 
+    /** Initialise the server. This is a non blocking call and launches the MOOS Comms server threads.
     @param lPort port number to listen on
     */
     bool Run(long lPort,const std::string  & sCommunityName);
@@ -122,25 +124,25 @@ protected:
 
     /** figures out what the largest socket FD of all connected sockets. (needed by select)*/
     int GetMaxSocketFD();
-    
+
     /** prints class information banner to stdout*/
     virtual void DoBanner();
-    
+
     /** Get the name of the client on the remote end of pSocket*/
     std::string  GetClientName(XPCTcpSocket* pSocket);
-    
+
     /** Send a Poisoned mesasge to the client on the end of pSocket. This may cause teh client
     comms thrad to die */
-    void PoisonClient(XPCTcpSocket* pSocket,char * sReason);
-    
+    void PoisonClient(XPCTcpSocket* pSocket,const char * sReason);
+
     /** Perform handshaling with client just after a connection has been accepted */
     bool HandShake(XPCTcpSocket* pNewSocket);
 
     /** returns true if a server has no connection to the named client
-    @param sClientName reference to client name std::string 
+    @param sClientName reference to client name std::string
     */
     bool IsUniqueName(std::string  & sClientName);
-    
+
     /// internal count of the number of calls processed
     int m_nTotalActions;
 
@@ -150,35 +152,14 @@ protected:
     ///called when a client goes quiet...
     virtual bool OnAbsentClient(XPCTcpSocket* pClient);
 
-    /** Win32 handle to Listen thread 
-    @see ListenLoop*/
-#ifdef _WIN32
-    HANDLE m_hListenThread;
-#endif
-    /** Win32 handle to Server thread 
-    @see ServerLoop*/
-#ifdef _WIN32
-    HANDLE m_hServerThread;
-#endif
+    /** a thread to listen for new connections */
+    CMOOSThread m_ListenThread;
 
-#ifdef _WIN32
-    /** Win32 handle to Timer thread 
-    @see TimerLoop*/
-    HANDLE m_hTimerThread;
-#endif
+    /** a thread to handle existing connections */
+    CMOOSThread m_ServerThread;
 
-
-#ifdef _WIN32
-    typedef unsigned long THREAD_ID;
-#else
-    typedef pthread_t THREAD_ID;
-#endif
-    /// ID of Listen Thread
-    THREAD_ID    m_nListenThreadID;
-    /// ID of Server Thread
-    THREAD_ID    m_nServerThreadID;
-    /// ID of timer Thread
-    THREAD_ID    m_nTimerThreadID;
+    /** a thread to notice if clients appear to have fallen silent */
+    CMOOSThread m_TimerThread;
 
     /** user supplied OnRx callback
     @see SetOnRxCallBack */
@@ -197,12 +178,11 @@ protected:
     @see SetOnDisconnectCallBack */
     void * m_pDisconnectCallBackParam;
 
-
     /** Listen socket (bound to port address supplied in constructor) */
     XPCTcpSocket * m_pListenSocket;
 
     /** pointer to the socket which server is currently processing call from */
-    XPCTcpSocket * m_pFocusSocket; 
+    XPCTcpSocket * m_pFocusSocket;
 
     /** list of all currently connected sockets */
     SOCKETLIST    m_ClientSocketList;
@@ -220,7 +200,7 @@ protected:
     invokes the user supplied callback function */
     virtual bool    ProcessClient();
 
-    /// port listen socket is bound to 
+    /// port listen socket is bound to
     long    m_lListenPort;
 
     /// threads continue while this flag is false

@@ -62,6 +62,7 @@ using namespace std;
 #include <cmath>
 
 
+
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -69,38 +70,12 @@ using namespace std;
 
 
 
-
-
-
-
-#ifdef _WIN32
-
-DWORD WINAPI ClientLoopProc( LPVOID lpParameter)
+/*file scope function to redirect thread work to a particular instance of CMOOSCommClient */
+bool ClientLoopProc( void * pParameter)
 {
-
-	CMOOSCommClient* pMe = 	(CMOOSCommClient*)lpParameter;
-
+	CMOOSCommClient* pMe = 	(CMOOSCommClient*)pParameter;    
 	return pMe->ClientLoop();	
 }
-
-
-#else
-
-void * ClientLoopProc( void * lpParameter)
-{
-
-	CMOOSCommClient* pMe = 	(CMOOSCommClient*)lpParameter;
-
-	pMe->ClientLoop();	
-
-	return NULL;
-}
-
-#endif
-
-
-
-
 
 CMOOSCommClient::CMOOSCommClient()
 {
@@ -117,6 +92,7 @@ CMOOSCommClient::CMOOSCommClient()
 	m_nFundamentalFreq = CLIENT_DEFAULT_FUNDAMENTAL_FREQ;
 	m_nNextMsgID=0;
 	m_bFakeSource = false;
+    m_bQuiet= false;
 
 	m_bMailPresent = false;
 
@@ -309,56 +285,32 @@ bool CMOOSCommClient::DoClientWork()
 bool CMOOSCommClient::StartThreads()
 {
 	m_bQuit = false;
-
-#ifdef _WIN32
-	//this is the main listen thread
-	m_hClientThread = ::CreateThread(	NULL,
-		0,
-		ClientLoopProc,
-		this,
-		CREATE_SUSPENDED,
-		&m_nClientThreadID);
-	ResumeThread(m_hClientThread);
-#else
-
-	int Status = pthread_create(& m_nClientThreadID,NULL,ClientLoopProc,this);
-
-	if(Status!=0)
-	{
-		MOOSTrace("failed unix thread create\n");
-		return false;
-	}
-
-
-#endif
-
+    if(!m_ClientThread.Initialise(ClientLoopProc,this))
+        return false;
+    if(!m_ClientThread.Start())
+        return false;
 
 	return true;
 }
-
-
-
-
-
-
 
 bool CMOOSCommClient::ConnectToServer()
 {
 	if(IsConnected())
 	{
-		MOOSTrace("attempt to connect to server whilst alrady connected...\n");
+		MOOSTrace("attempt to connect to server whilst already connected...\n");
 		return true;
 	}
 
 	int nAttempt=0;
 
-
-	MOOSTrace("\n---------------MOOS CONNECT-----------------------\n");
+    if(!m_bQuiet)
+	    MOOSTrace("\n---------------MOOS CONNECT-----------------------\n");
 
 
 	while(!m_bQuit)
 	{
-		MOOSTrace("  contacting MOOSDB %s:%d -  try %.5d ",m_sDBHost.c_str(),m_lPort,++nAttempt);
+        if(!m_bQuiet)
+		    MOOSTrace("  contacting MOOSDB %s:%d -  try %.5d ",m_sDBHost.c_str(),m_lPort,++nAttempt);
 
 		try
 		{
@@ -386,7 +338,8 @@ bool CMOOSCommClient::ConnectToServer()
 		return false;
 	}
 
-	MOOSTrace("\n  Contact Made\n");
+    if(!m_bQuiet)
+	    MOOSTrace("\n  Contact Made\n");
 
 
 	if(HandShake())
@@ -397,16 +350,22 @@ bool CMOOSCommClient::ConnectToServer()
 			//we must be connected for user callback to work..
 			m_bConnected = true;
 
-			MOOSTrace("  Invoking User OnConnect() callback...");
+			if(!m_bQuiet)
+                MOOSTrace("  Invoking User OnConnect() callback...");
+
 			//invoke user defined callback
 			bool bUserResult = (*m_pfnConnectCallBack)(m_pConnectCallBackParam);
 			if(bUserResult)
 			{
-				MOOSTrace("ok\n");
+    			if(!m_bQuiet)
+	    			MOOSTrace("ok\n");
 			}
 			else
 			{
-				MOOSTrace("fail\n");
+		    	if(!m_bQuiet)
+			    	MOOSTrace("fail\n");
+                else
+                    MOOSTrace("failed User OnConnect() callback\n");
 			}
 
 		}
@@ -422,10 +381,10 @@ bool CMOOSCommClient::ConnectToServer()
 		return false;
 	}
 
-	MOOSTrace("--------------------------------------------------\n\n");
+    if(!m_bQuiet)
+        MOOSTrace("--------------------------------------------------\n\n");
 	return true;
 }
-
 
 /** this is called by user of a CommClient object
 to send a Msg to MOOS */
@@ -507,7 +466,8 @@ bool CMOOSCommClient::HandShake()
 {
 	try
 	{
-		MOOSTrace("  Handshaking as \"%s\"\n",m_sMyName.c_str());
+        if(!m_bQuiet)
+		    MOOSTrace("  Handshaking as \"%s\"\n",m_sMyName.c_str());
 
 		SetMOOSSkew(0);
 
@@ -522,17 +482,23 @@ bool CMOOSCommClient::HandShake()
 
 		if(WelcomeMsg.IsType(MOOS_POISON))
 		{
-			MOOSTrace("..failed\n");
-
-			MOOSTrace("->   MOOS Server Poisoned me....\n");
-			MOOSTrace("->   What I did wrong was :\"%s\"",WelcomeMsg.m_sVal.c_str());
-
+            if(!m_bQuiet)
+            {
+			    MOOSTrace("..failed\n");
+			    MOOSTrace("->   MOOS Server Poisoned me....\n");
+			    MOOSTrace("->   What I did wrong was :\"%s\"",WelcomeMsg.m_sVal.c_str());
+            }
+            else
+            {
+                MOOSTrace("Breaking a vow of silence - handshaking failed (poisoned)\n");
+            }
 			return false;
 		}
 		else
 		{
 			//read our skew
-			MOOSTrace("  Handshaking Complete\n");
+	       if(!m_bQuiet)
+                MOOSTrace("  Handshaking Complete\n");
 
 			double dfSkew = WelcomeMsg.m_dfVal;
 			SetMOOSSkew(dfSkew);
@@ -589,6 +555,9 @@ bool CMOOSCommClient::OnCloseConnection()
 
 void CMOOSCommClient::DoBanner()
 {
+    if(m_bQuiet)
+        return ;
+
 	MOOSTrace("****************************************************\n");
 	MOOSTrace("*                                                  *\n");
 	MOOSTrace("*       This is MOOS Client                        *\n");
@@ -621,7 +590,6 @@ bool CMOOSCommClient::UnRegister(const string &sVar)
 
 }
 
-
 bool CMOOSCommClient::Register(const string &sVar, double dfInterval)
 {
 	if(sVar.empty())
@@ -652,6 +620,7 @@ bool CMOOSCommClient::Notify(const string &sVar, double dfVal, double dfTime)
 	return Post(Msg);
 
 }
+
 bool CMOOSCommClient::Notify(const string &sVar, const string & sVal, double dfTime)
 {
 	CMOOSMsg Msg(MOOS_NOTIFY,sVar.c_str(),sVal.c_str(),dfTime);
@@ -780,26 +749,14 @@ bool CMOOSCommClient::PeekMail(MOOSMSG_LIST &Mail,
 	return false;
 }
 
-
 bool CMOOSCommClient::Close(bool bNice )
 {
 
 	m_bQuit = true;
-	int i = 0;
-
-#ifdef _WIN32
-	if(bNice)
-	{
-		WaitForSingleObject(m_hClientThread,INFINITE);
-	}
-	else
-	{
-		//WaitForSingleObject(m_hClientThread,1000);
-	}	
-#else
-	void * Result;
-	pthread_join(m_nClientThreadID,&Result);
-#endif
+	
+    m_ClientThread.Stop();
+    
+    int i = 0;
 
 	while(m_bConnected )
 	{
@@ -861,7 +818,6 @@ string CMOOSCommClient::GetLocalIPAddress()
 	}
 	return std::string(Name);
 }
-
 
 bool CMOOSCommClient::UpdateMOOSSkew(double dfTxTime,double dfRxTime)
 {
