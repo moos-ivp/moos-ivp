@@ -1,30 +1,30 @@
 ///////////////////////////////////////////////////////////////////////////
 //
-//   MOOS - Mission Oriented Operating Suite 
-//  
-//   A suit of Applications and Libraries for Mobile Robotics Research 
-//   Copyright (C) 2001-2005 Massachusetts Institute of Technology and 
-//   Oxford University. 
-//  
-//   This software was written by Paul Newman at MIT 2001-2002 and Oxford 
-//   University 2003-2005. email: pnewman@robots.ox.ac.uk. 
-//    
-//   This file is part of a  MOOS Core Component. 
-//      
-//   This program is free software; you can redistribute it and/or 
-//   modify it under the terms of the GNU General Public License as 
-//   published by the Free Software Foundation; either version 2 of the 
-//   License, or (at your option) any later version. 
-//        
-//   This program is distributed in the hope that it will be useful, 
-//   but WITHOUT ANY WARRANTY; without even the implied warranty of 
-//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
-//   General Public License for more details. 
-//          
-//   You should have received a copy of the GNU General Public License 
-//   along with this program; if not, write to the Free Software 
-//   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 
-//   02111-1307, USA. 
+//   MOOS - Mission Oriented Operating Suite
+//
+//   A suit of Applications and Libraries for Mobile Robotics Research
+//   Copyright (C) 2001-2005 Massachusetts Institute of Technology and
+//   Oxford University.
+//
+//   This software was written by Paul Newman at MIT 2001-2002 and Oxford
+//   University 2003-2005. email: pnewman@robots.ox.ac.uk.
+//
+//   This file is part of a  MOOS Core Component.
+//
+//   This program is free software; you can redistribute it and/or
+//   modify it under the terms of the GNU General Public License as
+//   published by the Free Software Foundation; either version 2 of the
+//   License, or (at your option) any later version.
+//
+//   This program is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+//   General Public License for more details.
+//
+//   You should have received a copy of the GNU General Public License
+//   along with this program; if not, write to the Free Software
+//   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+//   02111-1307, USA.
 //
 //////////////////////////    END_GPL    //////////////////////////////////
 #ifdef _WIN32
@@ -34,6 +34,7 @@
 
 #include "MOOSGenLibGlobalHelper.h"
 #include <algorithm>
+#include <iterator>
 #include <time.h>
 #include <stdarg.h>
 #include <math.h>
@@ -87,7 +88,7 @@ void    SetMOOSSkew(double dfSkew)
     //printf("Clock Skew = %f seconds\n",dfSkew);
     gdfMOOSSkew = dfSkew;
 
-    
+
     //a call to HPMOOSTime() sets up high preformance clocks
     HPMOOSTime();
 }
@@ -100,13 +101,13 @@ double GetMOOSSkew()
 
 
 /** returns true if architecture is LittleEndian (true for x86 Architectures)
-Note after first call it remembers answer in a static so v. littel overhead in 
+Note after first call it remembers answer in a static so v. littel overhead in
 calling this function frequently*/
 bool IsLittleEndian()
 {
     static bool bTested = false;
     static bool bLittleEndIn = false;
-    
+
     if(!bTested)
     {
         short int word = 0x0001;
@@ -114,7 +115,7 @@ bool IsLittleEndian()
         bLittleEndIn = byte[0]==1;
         bTested = true;
     }
-    
+
     return bLittleEndIn;
 }
 
@@ -125,7 +126,7 @@ double HPMOOSTime()
 {
 #ifdef _WIN32
     static LARGE_INTEGER liStart;
-    static LARGE_INTEGER liPerformanceFreq; 
+    static LARGE_INTEGER liPerformanceFreq;
     static double dfMOOSStart;
     static bool bHPTimeInitialised=false;
     if(!bHPTimeInitialised)
@@ -140,15 +141,15 @@ double HPMOOSTime()
     {
         LARGE_INTEGER liNow;
         QueryPerformanceCounter(&liNow);
-        
+
         return gdfMOOSSkew+dfMOOSStart+(double)(liNow.QuadPart-liStart.QuadPart)/((double)(liPerformanceFreq.QuadPart));
     }
 #else
     return MOOSTime();
 #endif
-    
-    
-    
+
+
+
 }
 
 
@@ -158,15 +159,15 @@ double MOOSTime()
     double dfT=0.0;
     //grab the time..
 #ifndef _WIN32
-    
+
 #if(0) //PMN May03 04
     struct timeb timebuffer;
-    ftime( &timebuffer );   
+    ftime( &timebuffer );
     dfT = timebuffer.time+ ((double)timebuffer.millitm)/1000;
 #else
-    
+
     struct timeval TimeVal;
-    
+
     if(gettimeofday(&TimeVal,NULL)==0)
     {
         dfT = TimeVal.tv_sec+TimeVal.tv_usec/1000000.0;
@@ -176,19 +177,19 @@ double MOOSTime()
         dfT =-1;
     }
 #endif
-    
-        
-    
+
+
+
 #else
     struct _timeb timebuffer;
     _ftime( &timebuffer );
     dfT = timebuffer.time+ ((double)timebuffer.millitm)/1000;
-    
-    
-    
+
+
+
 #endif
     return dfT+gdfMOOSSkew;
-    
+
 }
 
 void MOOSPause(int nMS)
@@ -196,26 +197,26 @@ void MOOSPause(int nMS)
 #ifdef _WIN32
     ::Sleep(nMS);
 #else
-    
+
     timespec TimeSpec;
     TimeSpec.tv_sec     = nMS / 1000;
     TimeSpec.tv_nsec    = (nMS%1000) *1000000;
-    
+
     nanosleep(&TimeSpec,NULL);
-    
+
 #endif
 }
 
 
 
 
-string MOOSChomp(string &sStr, const string &sTk)
+string MOOSChomp(string &sStr, const string &sTk,bool bInsensitive)
 {
-    unsigned int nPos = string::npos;
-    if((nPos = sStr.find(sTk))!=string::npos)
+    /*unsigned int*/ size_t  nPos = string::npos;
+    if((nPos =MOOSStrFind(sStr,sTk,bInsensitive))!=string::npos)
     {
         string sRet;
-        sRet = sStr.substr(0,nPos); 
+        sRet = sStr.substr(0,nPos);
         sStr.erase(0,nPos+sTk.length());
         return sRet;
     }
@@ -225,46 +226,79 @@ string MOOSChomp(string &sStr, const string &sTk)
         sStr="";
         return sTmp;
     }
+
+
+}
+
+//case insensitive character compare functor
+struct CompareInsensitive: public std::binary_function< char, char, bool >
+{
+	bool operator()(char lhs, char rhs)
+	{
+		return std::toupper(lhs) == std::toupper(rhs);
+	}
     
+};
+
+//case insensitive find
+size_t  MOOSStrFind(const std::string & sSource,const std::string & sToken,bool bInsensitive)
+{
     
+	if(bInsensitive)
+    {
+        std::string::const_iterator q = std::search(
+                                              sSource.begin(), sSource.end(), 
+                                              sToken.begin(), sToken.end(),
+                                              CompareInsensitive());
+        if(q==sSource.end())
+            return std::string::npos;
+        else
+        {
+            return std::distance(sSource.begin(),q);
+        }
+    }
+	else
+    {
+        return sSource.find(sToken);
+    }
 }
 
 
-bool MOOSValFromString(string & sVal,const string & sStr,const string & sTk)
+bool MOOSValFromString(string & sVal,const string & sStr,const string & sTk,bool bInsensitive)
 {
-    unsigned int nPos = string::npos;
-    if((nPos = sStr.find(sTk))!=string::npos)
+    /*unsigned int*/ size_t  nPos = string::npos;
+    if((nPos = MOOSStrFind(sStr,sTk,bInsensitive))!=string::npos)
     {
         //we have the start of teh token at nPos
-        unsigned int nEqualsPos = sStr.find('=',nPos);
+        /*unsigned int*/ size_t  nEqualsPos = sStr.find('=',nPos);
         if(nEqualsPos!=string::npos)
         {
             sVal="";
-            
+
             int nCommaPos =sStr.find(',',nEqualsPos);
-            
+
             sVal.append(sStr,nEqualsPos+1,nCommaPos-nEqualsPos-1);
             //sStr.copy(sVal.begin(),nCommaPos-nEqualsPos-1,nEqualsPos+1);
-            //sVal = sStr.substr(nEqualsPos+1,nCommaPos-nEqualsPos-1);  
-            
+            //sVal = sStr.substr(nEqualsPos+1,nCommaPos-nEqualsPos-1);
+
             return true;
         }
-        
+
     }
-    
+
     return false;
 }
 
 
-bool MOOSValFromString(int  & nVal,const string & sStr,const string & sTk)
+bool MOOSValFromString(int  & nVal,const string & sStr,const string & sTk,bool bInsensitive)
 {
     string sVal;
-    
-    if(MOOSValFromString(sVal,sStr,sTk))
+
+    if(MOOSValFromString(sVal,sStr,sTk,bInsensitive))
     {
-                
-        unsigned int nPos = sVal.find_first_not_of(' ');
-        
+
+        /*unsigned int*/ size_t  nPos = sVal.find_first_not_of(' ');
+
         if(nPos!=string::npos)
         {
             char c = sVal[nPos];
@@ -274,21 +308,21 @@ bool MOOSValFromString(int  & nVal,const string & sStr,const string & sTk)
                 return true;
             }
         }
-        
+
     }
     return false;
 }
 
 
-bool MOOSValFromString(long  & nVal,const string & sStr,const string & sTk)
+bool MOOSValFromString(long  & nVal,const string & sStr,const string & sTk,bool bInsensitive)
 {
     string sVal;
-    
-    if(MOOSValFromString(sVal,sStr,sTk))
+
+    if(MOOSValFromString(sVal,sStr,sTk,bInsensitive))
     {
-                
-        unsigned int nPos = sVal.find_first_not_of(' ');
-        
+
+        /*unsigned int*/ size_t  nPos = sVal.find_first_not_of(' ');
+
         if(nPos!=string::npos)
         {
             char c = sVal[nPos];
@@ -298,17 +332,17 @@ bool MOOSValFromString(long  & nVal,const string & sStr,const string & sTk)
                 return true;
             }
         }
-        
+
     }
     return false;
 }
 
 
-bool MOOSValFromString(bool  & bVal,const string & sStr,const string & sTk)
+bool MOOSValFromString(bool  & bVal,const string & sStr,const string & sTk,bool bInsensitive)
 {
     string sVal;
-    
-    if(MOOSValFromString(sVal,sStr,sTk))
+
+    if(MOOSValFromString(sVal,sStr,sTk,bInsensitive))
     {
         MOOSRemoveChars(sVal," ");
         if(MOOSStrCmp(sVal,"true") || MOOSStrCmp(sVal,"1"))
@@ -323,15 +357,15 @@ bool MOOSValFromString(bool  & bVal,const string & sStr,const string & sTk)
 }
 
 
-bool MOOSValFromString(double  & dfVal,const string & sStr,const string & sTk)
+bool MOOSValFromString(double  & dfVal,const string & sStr,const string & sTk,bool bInsensitive)
 {
     string sVal;
-    
-    if(MOOSValFromString(sVal,sStr,sTk))
+
+    if(MOOSValFromString(sVal,sStr,sTk,bInsensitive))
     {
-        
-        unsigned int nPos = sVal.find_first_not_of(' ');
-        
+
+        /*unsigned int*/ size_t  nPos = sVal.find_first_not_of(' ');
+
         if(nPos!=string::npos)
         {
             char c = sVal[nPos];
@@ -341,22 +375,22 @@ bool MOOSValFromString(double  & dfVal,const string & sStr,const string & sTk)
                 return true;
             }
         }
-        
+
     }
     return false;
 }
 
 
 
-bool MOOSValFromString(float  & fVal,const string & sStr,const string & sTk)
+bool MOOSValFromString(float  & fVal,const string & sStr,const string & sTk,bool bInsensitive)
 {
     string sVal;
-    
-    if(MOOSValFromString(sVal,sStr,sTk))
+
+    if(MOOSValFromString(sVal,sStr,sTk,bInsensitive))
     {
-        
-        unsigned int nPos = sVal.find_first_not_of(' ');
-        
+
+        /*unsigned int*/ size_t  nPos = sVal.find_first_not_of(' ');
+
         if(nPos!=string::npos)
         {
             char c = sVal[nPos];
@@ -366,7 +400,7 @@ bool MOOSValFromString(float  & fVal,const string & sStr,const string & sTk)
                 return true;
             }
         }
-        
+
     }
     return false;
 }
@@ -375,103 +409,103 @@ bool MOOSValFromString(float  & fVal,const string & sStr,const string & sTk)
 
 bool MOOSVectorFromString(const string & sStr,std::vector<double> & dfValVec,int & nRows, int & nCols)
 {
-    
-    unsigned int nPos = sStr.find('[');
-    
+
+    /*unsigned int*/ size_t  nPos = sStr.find('[');
+
     if(nPos==string::npos)
         return false;
-    
+
     nRows = atoi( sStr.data()+nPos+1);
-    
-    
+
+
     //if we have [456] then implicitlyt we mean [456x1]
-    unsigned int nXPos = sStr.find('x',nPos);
-    
+    /*unsigned int*/ size_t  nXPos = sStr.find('x',nPos);
+
     nCols = 1;
     if(nXPos!=string::npos)
     {
         nCols = atoi( sStr.data()+nXPos+1);
         nPos = nXPos;
     }
-    
+
     nPos = sStr.find('{',nPos);
-    
+
     if(nPos==string::npos)
         return false;
-    
-    
+
+
     if(nCols==0 ||nRows==0)
         return false;
-    
+
     dfValVec.clear();
     dfValVec.reserve(nRows*nCols);
-    
-    
+
+
     const char * pStr = sStr.data();
     for(int i = 1; i<=nRows;i++)
     {
         for(int j = 1; j<=nCols;j++)
         {
             double dfVal = atof(pStr+nPos+1);
-            
+
             dfValVec.push_back(dfVal);
-            nPos = sStr.find(',',nPos+1);            
+            nPos = sStr.find(',',nPos+1);
         }
     }
-    
+
     return true;
-    
+
 }
 
 
 bool MOOSVectorFromString(const string & sStr,std::vector<float> & fValVec,int & nRows, int & nCols)
 {
-    
-    unsigned int nPos = sStr.find('[');
-    
+
+    /*unsigned int*/ size_t  nPos = sStr.find('[');
+
     if(nPos==string::npos)
         return false;
-    
+
     nRows = atoi( sStr.data()+nPos+1);
-    
-    
+
+
     //if we have [456] then implicitlyt we mean [456x1]
-    unsigned int nXPos = sStr.find('x',nPos);
-    
+    /*unsigned int*/ size_t  nXPos = sStr.find('x',nPos);
+
     nCols = 1;
     if(nXPos!=string::npos)
     {
         nCols = atoi( sStr.data()+nXPos+1);
         nPos = nXPos;
     }
-    
+
     nPos = sStr.find('{',nPos);
-    
+
     if(nPos==string::npos)
         return false;
-    
-    
+
+
     if(nCols==0 ||nRows==0)
         return false;
-    
+
     fValVec.clear();
     fValVec.reserve(nRows*nCols);
-    
-    
+
+
     const char * pStr = sStr.data();
     for(int i = 1; i<=nRows;i++)
     {
         for(int j = 1; j<=nCols;j++)
         {
             double dfVal = atof(pStr+nPos+1);
-            
+
             fValVec.push_back(static_cast<float> (dfVal));
-            nPos = sStr.find(',',nPos+1);            
+            nPos = sStr.find(',',nPos+1);
         }
     }
-    
+
     return true;
-    
+
 }
 
 
@@ -479,76 +513,91 @@ bool MOOSVectorFromString(const string & sStr,std::vector<float> & fValVec,int &
 bool MOOSVectorFromString(const string & sStr,std::vector<unsigned int> & nValVec,int & nRows, int & nCols)
 {
 
-    
-    unsigned int nPos = sStr.find('[');
-    
+
+    /*unsigned int*/ size_t  nPos = sStr.find('[');
+
     if(nPos==string::npos)
         return false;
-    
+
     nRows = atoi( sStr.data()+nPos+1);
-    
-    
+
+
     //if we have [456] then implicitlyt we mean [456x1]
-    unsigned int nXPos = sStr.find('x',nPos);
-    
+    /*unsigned int*/ size_t  nXPos = sStr.find('x',nPos);
+
     nCols = 1;
     if(nXPos!=string::npos)
     {
         nCols = atoi( sStr.data()+nXPos+1);
         nPos = nXPos;
     }
-    
+
     nPos = sStr.find('{',nPos);
-    
+
     if(nPos==string::npos)
         return false;
-    
-    
+
+
     if(nCols==0 ||nRows==0)
         return false;
-    
+
     nValVec.clear();
     nValVec.reserve(nRows*nCols);
-    
-    
+
+
     const char * pStr = sStr.data();
     for(int i = 1; i<=nRows;i++)
     {
         for(int j = 1; j<=nCols;j++)
         {
             unsigned int nVal = atoi(pStr+nPos+1);
-            
+
             nValVec.push_back(nVal);
-            nPos = sStr.find(',',nPos+1);            
+            nPos = sStr.find(',',nPos+1);
         }
     }
-    
+
     return true;
-    
+
 }
 
-bool MOOSValFromString(std::vector<double> &dfValVec,                      
+bool MOOSValFromString(std::vector<double> &dfValVec,
+                       int &nRows,
+                       int &nCols,
+                       const std::string & sStr,
+                       const std::string & sToken,
+						bool bInsensitive)
+{
+       /*unsigned int*/ size_t  nPos = MOOSStrFind(sStr,sToken+'=',bInsensitive);
+
+    if(nPos==string::npos)
+        return false;
+
+    return MOOSVectorFromString(sStr.substr(nPos),dfValVec,nRows,nCols);
+
+}
+
+bool MOOSValFromString(std::vector<unsigned int> &nValVec,                      
                        int &nRows,
                        int &nCols,
                        const std::string & sStr, 
-                       const std::string & sToken)
+                       const std::string & sToken,
+                       bool bInsensitive)
 {
-    unsigned int nPos = sStr.find(sToken+'=');
+
+    size_t nPos = MOOSStrFind(sStr,sToken+'=',bInsensitive);
     
     if(nPos==string::npos)
         return false;
     
-    return MOOSVectorFromString(sStr.substr(nPos),dfValVec,nRows,nCols);
-    
+    return MOOSVectorFromString(sStr.substr(nPos),nValVec,nRows,nCols);   
 }
-
-
 
 double MOOS_ANGLE_WRAP(double dfAng)
 {
     if(dfAng<PI && dfAng>-PI)
         return dfAng;
-    
+
     return (dfAng+(dfAng>PI ? -TWO_PI :TWO_PI));
 }
 
@@ -572,9 +621,9 @@ bool MOOSStrCmp(string s1,string s2)
 {
     MOOSToUpper(s1);
     MOOSToUpper(s2);
-    
+
     return s1 == s2;
-    
+
 }
 
 
@@ -582,29 +631,29 @@ string MOOSGetDate()
 {
 #ifndef _WIN32
     struct timeb timebuffer;
-    ftime( &timebuffer );   
-    
+    ftime( &timebuffer );
+
     char *timeline = ctime( & ( timebuffer.time ) );
     char sResult[100];
     sprintf(sResult,"%s",timeline);
-    
+
     string sAnswer =sResult;
-    
+
     return sAnswer;
 #else
     struct _timeb timebuffer;
     _ftime( &timebuffer );
-    
+
     char *timeline = ctime( & ( timebuffer.time ) );
     char sResult[100];
     sprintf(sResult,"%s",timeline);
-    
+
     string sAnswer =sResult;
-    
+
     return sAnswer;
 #endif
-    
-    
+
+
 }
 
 
@@ -614,13 +663,13 @@ string MOOSGetTimeStampString()
 {
     struct tm *Now;
     time_t aclock;
-    time( &aclock );                 
-    Now = localtime( &aclock );  
-    
+    time( &aclock );
+    Now = localtime( &aclock );
+
     char sTmp[1000];
-    
-    // Print local time as a string 
-    
+
+    // Print local time as a string
+
     //14_5_1993_____9_30
     sprintf(sTmp, "_%d_%d_%d_____%.2d_%.2d",
         Now->tm_mday,
@@ -628,17 +677,17 @@ string MOOSGetTimeStampString()
         Now->tm_year+1900,
         Now->tm_hour,
         Now->tm_min         );
-    
-    
+
+
     string sAns = sTmp;
     return sAns;
-    
+
 }
 
 void MOOSToUpper(string &str)
 {
     string::iterator p;
-    
+
     for(p = str.begin();p!=str.end();p++)
     {
         *p = toupper(*p);
@@ -652,16 +701,16 @@ bool MOOSIsNumeric(string  str)
     {
         return true;
     }
-    
+
     return false;
 }
 void MOOSTrimWhiteSpace(string &str)
 {
     if(!str.empty())
     {
-        unsigned int p = str.find_first_not_of(" \t\n\r");
-        unsigned int q = str.find_last_not_of(" \t\n\r");
-        
+        /*unsigned int*/ size_t  p = str.find_first_not_of(" \t\n\r");
+        /*unsigned int*/ size_t  q = str.find_last_not_of(" \t\n\r");
+
         if(p==string::npos || q==string::npos)
         {
             str="";
@@ -675,16 +724,16 @@ void MOOSTrimWhiteSpace(string &str)
 
 void MOOSRemoveChars(string & sStr,const string & sTok)
 {
-    
+
     for(unsigned int i = 0;i<sTok.length();i++)
     {
         string::iterator q = remove(sStr.begin(),sStr.end(),sTok[i]);
-        
+
         int n = sStr.length()-(sStr.end()-q);
-        
+
         sStr.resize(n);
     }
-    
+
 }
 
 
@@ -692,16 +741,16 @@ void MOOSRemoveChars(string & sStr,const string & sTok)
 int MOOSGetch()
 {
 #ifndef _WIN32
-    
+
     int c, fd=0;
     struct termios term, oterm;
-    
+
     /* get the terminal settings */
     tcgetattr(fd, &oterm);
-    
+
     /* get a copy of the settings, which we modify */
     memcpy(&term, &oterm, sizeof(term));
-    
+
     /* put the terminal in non-canonical mode, any
     reads will wait until a character has been
     pressed. This function will not time out */
@@ -709,52 +758,52 @@ int MOOSGetch()
     term.c_cc[VMIN] = 1;
     term.c_cc[VTIME] = 0;
     tcsetattr(fd, TCSANOW, &term);
-    
+
     /* get a character. c is the character */
     c=getchar();
-    
+
     /* reset the terminal to its original state */
     tcsetattr(fd, TCSANOW, &oterm);
-    
+
     /* return the charcter */
     return c;
 #else
     return _getch();
 #endif
-    
-    
-}                                 
+
+
+}
 
 
 
-string MOOSFormat(char * FmtStr,...)
+string MOOSFormat(const char * FmtStr,...)
 {
     const unsigned int MAX_TRACE_STR = 1024;
-    
+
     if(strlen(FmtStr)<MAX_TRACE_STR)
     {
         //double the size for format length!
         char buf[MAX_TRACE_STR*2];
-        
+
         va_list arg_ptr;
-        
+
         va_start( arg_ptr,FmtStr);
-        
-                  
+
+
 #ifdef _WIN32
         int n= _vsnprintf(buf,sizeof(buf),FmtStr,arg_ptr);
 #else
         int n = vsnprintf(buf,sizeof(buf),FmtStr,arg_ptr);
 #endif
-        
+
         if(n==sizeof(buf))
         {
             MOOSTrace("WARNING MOOFormat() TRUNCATED TO %d CHARS",sizeof(buf));
         }
-        
+
         va_end( arg_ptr );
-                
-        return string(buf);        
+
+        return string(buf);
     }
     else
     {
@@ -765,34 +814,34 @@ string MOOSFormat(char * FmtStr,...)
 
 
 
-bool MOOSFail(char * FmtStr,...)
+bool MOOSFail(const char * FmtStr,...)
 {
     const unsigned int MAX_TRACE_STR = 1024;
-    
+
     if(strlen(FmtStr)<MAX_TRACE_STR)
     {
         //double the size for format length!
         char buf[MAX_TRACE_STR*2];
-        
+
         va_list arg_ptr;
-        
+
         va_start( arg_ptr,FmtStr);
-                
+
 #ifdef _WIN32
         int n= _vsnprintf(buf,sizeof(buf),FmtStr,arg_ptr);
 #else
         int n = vsnprintf(buf,sizeof(buf),FmtStr,arg_ptr);
 #endif
-        
+
         if(n==sizeof(buf))
         {
             MOOSTrace("WARNING MOOFormat() TRUNCATED TO %d CHARS",sizeof(buf));
         }
-                
+
         va_end( arg_ptr );
-                
+
         MOOSTrace(string(buf)+"\n");
-        
+
     }
     return false;
 }
@@ -805,42 +854,42 @@ void MOOSTrace(string  sStr)
 }
 
 
-void MOOSTrace(char *FmtStr,...)
+void MOOSTrace(const char *FmtStr,...)
 {
     const unsigned int MAX_TRACE_STR = 2048;
-    
+
     if(strlen(FmtStr)<MAX_TRACE_STR)
     {
         //double the size for format length!
         char buf[MAX_TRACE_STR*2];
-        
+
         va_list arg_ptr;
-        
+
         va_start( arg_ptr,FmtStr);
-        
+
 #ifdef _WIN32
         int n= _vsnprintf(buf,sizeof(buf),FmtStr,arg_ptr);
 #else
         int n = vsnprintf(buf,sizeof(buf),FmtStr,arg_ptr);
 #endif
-        
+
         if(n==sizeof(buf))
         {
             MOOSTrace("WARNING MOOSTrace() TRUNCATED TO %d CHARS",sizeof(buf));
         }
-        
+
         va_end( arg_ptr );
-        
+
 #ifdef _WIN32
         OutputDebugString(buf);
 #endif
-        
+
     // arh changed this because if you wanted to add a percent character in the string, it would first
     // be processed by the _vsnprintf above, then placed in 'buf'.
     // Problem is that fprintf finds the '%' in buf and expects us to provide more arguments!
         //fprintf(stderr,buf);
     fputs(buf, stderr);
-        
+
     }
 }
 
@@ -858,23 +907,23 @@ double MOOSRad2Deg(double dfRad)
 bool MOOSGetValueFromToken(STRING_LIST & sParams,const string & sToken,string & sVal)
 {
     STRING_LIST::iterator p;
-    
+
     for(p = sParams.begin();p!=sParams.end();p++)
     {
         string sLine = *p;
-        
+
         if(sLine.find("=")!=string::npos)
         {
             MOOSRemoveChars(sLine," \t\r");
-            
+
             string sTok = MOOSChomp(sLine,"=");
-            
+
             if(MOOSStrCmp(sTok,sToken))
             {
                 sVal = sLine;
                 return true;
-            }           
-        }       
+            }
+        }
     }
     return false;
 }
@@ -883,16 +932,16 @@ string MOOSThirdPartyStatusString(string sStatusCommand)
 {
     ostringstream os;
     os<<"STATUS:"<<sStatusCommand.c_str()<<","<<ends;
-    string sAnswer = os.str();    
+    string sAnswer = os.str();
     return sAnswer;
-    
+
 }
 
 
 string MOOSThirdPartyActuationString(double * pdfRudder,double * pdfElevator,double * pdfThrust)
 {
     ostringstream os;
-    
+
     os<<"ACTUATION:";
     if(pdfRudder!=NULL)
     {
@@ -907,17 +956,17 @@ string MOOSThirdPartyActuationString(double * pdfRudder,double * pdfElevator,dou
         os<<"THRUST="<<*pdfThrust<<",";
     }
     os<<ends;
-    
+
     string sAnswer = os.str();
-    
+
     return sAnswer;
-    
+
 }
 
 
 double MOOSNormalInv(double dfArea)
 {
-    double dfNormInv[] ={ 
+    double dfNormInv[] ={
         0,   -2.3263,   -2.0537,   -1.8808 ,  -1.7507,   -1.6449,   -1.5548 ,  -1.4758,   -1.4051,   -1.3408,   -1.2816,   -1.2265,   -1.1750,
             -1.1264,   -1.0803,   -1.0364,   -0.9945,   -0.9542,   -0.9154,   -0.8779 ,  -0.8416,   -0.8064,   -0.7722,   -0.7388,   -0.7063,  -0.6745 ,
             -0.6433,   -0.6128,   -0.5828,   -0.5534,   -0.5244,   -0.4959,   -0.4677 ,  -0.4399,   -0.4125,   -0.3853,   -0.3585,   -0.3319,   -0.3055,
@@ -926,18 +975,18 @@ double MOOSNormalInv(double dfArea)
             0.3853,    0.4125,    0.4399,    0.4677,    0.4959,    0.5244,    0.5534 ,   0.5828,    0.6128,    0.6433,    0.6745,    0.7063,    0.7388,
             0.7722,    0.8064,    0.8416,    0.8779,    0.9154,    0.9542,    0.9945 ,   1.0364,    1.0803,    1.1264,    1.1750,    1.2265,    1.2816,
             1.3408,    1.4051,    1.4758,    1.5548,    1.6449,    1.7507,    1.8808 ,   2.0537,    2.3263,       0};
-        
+
         if(dfArea<0)
             return -1e60;
         if(dfArea>=1)
             return 1e60;
-        
+
         int nNdx = (int)(dfArea*100.0);
-        
+
         return dfNormInv[nNdx];
-        
-        
-        
+
+
+
 }
 
 double MOOSUniformRandom(double dfMin, double dfMax)
@@ -949,16 +998,16 @@ double MOOSUniformRandom(double dfMin, double dfMax)
 int MOOSDiscreteUniform(int nMin, int nMax)
 {
     double dfVal = (MOOSUniformRandom(nMin,nMax));
-    
+
     int nVal = (int)(dfVal);
-    
+
     if(dfVal-nVal>0.5)
     {
         nVal++;
     }
-    
+
     return nVal;
-    
+
 }
 
 
@@ -969,8 +1018,8 @@ double MOOSWhiteNoise(double Sigma)
     int u;
     static int iset = 0;
     static double gset;
-    
-    
+
+
     if (iset == 0)
     {
         s = 0;
@@ -984,11 +1033,11 @@ double MOOSWhiteNoise(double Sigma)
             v2 = 2 * u2 - 1;
             s = v1 * v1 + v2 * v2;
         } while (s > 1);
-        
-        
+
+
         fac = sqrt ((-2 * log (s)) / s);
-        
-        
+
+
         gset = (v1 * fac);
         iset = 1;
         v2 = v2 * fac;
@@ -1019,7 +1068,7 @@ void Progress(double dfPC)
         int n = (int)(dfPC*sizeof(T));
         memset(T,'*',n);
         printf("\r%.2f  %s",dfPC,T);
-    }   
+    }
 }
 
 
@@ -1033,17 +1082,17 @@ std::string DoubleVector2String(const std::vector<double> & V)
 }
 
 /** formats a vector of doubles into standard MOOS format*/
-std::stringstream & Write (std::stringstream & os,const std::vector<double> & Vec) 
+std::stringstream & Write (std::stringstream & os,const std::vector<double> & Vec)
 {
     int nRows = Vec.size();
-    
+
     os<<std::setiosflags(std::ios::scientific);
     os<<std::setprecision(3);
-    
+
     os <<'['<<nRows<<"x1]{";
-    
+
     os.unsetf(std::ios::scientific);
-    
+
     for ( int i = 0; i<nRows; i++ )
     {
         os.setf(std::ios::fixed);
@@ -1055,17 +1104,17 @@ std::stringstream & Write (std::stringstream & os,const std::vector<double> & Ve
         }
     }
     os<<"}";
-    
+
     return os;
 }
 
 /** formats a vector of ints into standard MOOS format*/
-std::stringstream & Write (std::stringstream & os,const std::vector<int> & Vec) 
+std::stringstream & Write (std::stringstream & os,const std::vector<int> & Vec)
 {
     int nRows = Vec.size();
-    
+
     os <<'['<<nRows<<"x1]{";
-    
+
     for ( int i = 0; i<nRows; i++ )
     {
         os<<Vec[i];
@@ -1075,13 +1124,13 @@ std::stringstream & Write (std::stringstream & os,const std::vector<int> & Vec)
         }
     }
     os<<"}";
-    
+
     return os;
 }
 
 /** returns a string list of directories or files in a specified location
 exludes . and ..*/
-bool GetDirectoryContents(const std::string & sPath,                             
+bool GetDirectoryContents(const std::string & sPath,
                           std::list<std::string> &sContents, bool bFiles)
 {
 #ifdef _WIN32
@@ -1108,53 +1157,53 @@ bool GetDirectoryContents(const std::string & sPath,
                     sContents.push_front(sPossible);
                 }
             }
-            
+
         } while ( FindNextFile( h, &sfd ) );
     }
     else
     {
         return MOOSFail("failed to read directory %s",sPath.c_str());
     }
-    
+
     return true;
 #else
-    
+
     struct dirent **namelist;
     int n;
-    
+
     //system call...
     n = scandir(sPath.c_str(), &namelist, 0, alphasort);
-    
+
     if (n < 0)
     {
         //uh oh...
         return MOOSFail("error reading directory contents %s\n",strerror(errno));
     }
-    else 
+    else
     {
-        while(n--) 
+        while(n--)
         {
-            
-            std::string sName(namelist[n]->d_name);            
+
+            std::string sName(namelist[n]->d_name);
             std::string sFullName = sPath+"/"+sName;
-            
+
             //ask a few pertinent questions.
             struct stat FileStatus;
-            stat(sFullName.c_str(),&FileStatus);            
-            
+            stat(sFullName.c_str(),&FileStatus);
+
             //look to remove . and ..
             if(sName!="." && sName!="..")
             {
-                
+
                 if(bFiles &&S_ISREG(FileStatus.st_mode))
-                {                                                        
+                {
                     //only want to get regular files
-                    sContents.push_front(sName);           
+                    sContents.push_front(sName);
                 }
                 else if(!bFiles && S_ISDIR(FileStatus.st_mode))
                 {
                     //only want directories
-                    sContents.push_front(sName);           
+                    sContents.push_front(sName);
                 }
             }
             //C-like clean up..
@@ -1163,7 +1212,7 @@ bool GetDirectoryContents(const std::string & sPath,
         //C-like clean up
         free(namelist);
     }
-    
+
     return true;
 #endif
 }
@@ -1171,12 +1220,12 @@ bool GetDirectoryContents(const std::string & sPath,
 /** splits a fully qualified path into parts -path, filestem and extension */
 bool MOOSFileParts(std::string sFullPath, std::string & sPath,std::string &sFile,std::string & sExtension)
 {
-    unsigned int nBreak;
-    unsigned int nFS = sFullPath.find_last_of("/");
+    /*unsigned int*/ size_t nBreak;
+    /*unsigned int*/ size_t nFS = sFullPath.find_last_of("/");
 
 #ifdef _WIN32
     //Windows user use either forward ot backslash to delimit (or even a combination...)
-    unsigned int nBS = sFullPath.find_last_of("\\");    
+    /*unsigned int*/ size_t nBS = sFullPath.find_last_of("\\");
     if(nBS!=std::string::npos)
     {
         if(nFS!=std::string::npos)
@@ -1188,7 +1237,7 @@ bool MOOSFileParts(std::string sFullPath, std::string & sPath,std::string &sFile
         {
             //looks like they are using only back slashes
             nBreak= nBS;
-        }        
+        }
     }
     else
     {
@@ -1203,7 +1252,7 @@ bool MOOSFileParts(std::string sFullPath, std::string & sPath,std::string &sFile
     if(nBreak==std::string::npos)
     {
         //there is no path
-        sPath = "";       
+        sPath = "";
         sFullFile = sFullPath;
     }
     else
@@ -1216,47 +1265,47 @@ bool MOOSFileParts(std::string sFullPath, std::string & sPath,std::string &sFile
     //finally look to split on "." for extension if it is there.
     sFile = MOOSChomp(sFullFile,".");
     sExtension = sFullFile;
-    
+
     return true;
 }
 
 
 bool MOOSCreateDirectory(const std::string & sDirectory)
 {
-    
+
 #if _WIN32
     int bOK  = ::CreateDirectory(sDirectory.c_str(),NULL);
-    
+
     if(!bOK)
     {
         DWORD TheError = GetLastError();
-        
+
         if(TheError!=ERROR_ALREADY_EXISTS)
         {
-            
+
             LPVOID lpMsgBuf;
-            FormatMessage( 
-                FORMAT_MESSAGE_ALLOCATE_BUFFER | 
-                FORMAT_MESSAGE_FROM_SYSTEM | 
+            FormatMessage(
+                FORMAT_MESSAGE_ALLOCATE_BUFFER |
+                FORMAT_MESSAGE_FROM_SYSTEM |
                 FORMAT_MESSAGE_IGNORE_INSERTS,
                 NULL,
                 TheError,
                 MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
                 (LPTSTR) &lpMsgBuf,
                 0,
-                NULL 
+                NULL
                 );
             // Process any inserts in lpMsgBuf.
             // ...
             // Display the string.
             MOOSTrace("Error %ld  making directory :  \"%s\"\n",TheError,(LPCTSTR)lpMsgBuf);
-            
+
             // Free the buffer.
             LocalFree( lpMsgBuf );
-            
+
             return false;
         }
-        
+
     }
 #else
     if(mkdir(sDirectory.c_str(),0755)==-1)
@@ -1270,10 +1319,10 @@ bool MOOSCreateDirectory(const std::string & sDirectory)
             return false;
         }
     }
-    
+
 #endif
-    
-    
-    
+
+
+
     return true;
 }

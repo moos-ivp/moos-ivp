@@ -135,7 +135,7 @@ bool CMOOSNTSerialPort::Create(const char * pPortNum,
 }
 
 
-int CMOOSNTSerialPort::Write(char *pData, int nLen,double *pTime)
+int CMOOSNTSerialPort::Write(const char *pData, int nLen,double *pTime)
 {
     LONG    lLastError = ERROR_SUCCESS;
 

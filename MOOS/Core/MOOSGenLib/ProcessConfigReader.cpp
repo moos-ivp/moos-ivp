@@ -43,12 +43,12 @@
 
 CProcessConfigReader::CProcessConfigReader()
 {
-
+    
 }
 
 CProcessConfigReader::~CProcessConfigReader()
 {
-
+    
 }
 
 
@@ -74,74 +74,74 @@ std::string CProcessConfigReader::GetFileName()
 
 bool CProcessConfigReader::GetConfiguration(std::string sAppName, STRING_LIST &Params)
 {
-
+    
     int nBrackets = 0;
     Params.clear();
-
+    
     Reset();
-
+    
     std::string sKey = "PROCESSCONFIG="+sAppName;
-
+    
     if(GoTo(sKey))
     {
         std::string sBracket = GetNextValidLine();
         if(sBracket.find("{")==0)
         {
-        nBrackets++;
+            nBrackets++;
             while(!GetFile()->eof())
             {
                 std::string sLine = GetNextValidLine();
                 
-        MOOSRemoveChars(sLine," \t\r");
+                MOOSRemoveChars(sLine," \t\r");
                 
-        if(sLine.find("}")!=0)
+                if(sLine.find("}")!=0)
                 {
 #if(1)
                     // jckerken 8-12-2004
-            // ignore if param = <empty string>
+                    // ignore if param = <empty string>
                     std::string sTmp(sLine);
-            std::string sTok = MOOSChomp(sTmp, "=");
-
-            if (sTok.size() > 0) 
+                    std::string sTok = MOOSChomp(sTmp, "=");
+                    
+                    if (sTok.size() > 0) 
                     {
-            MOOSTrimWhiteSpace(sTmp);
-
-            if (!sTmp.empty()) 
+                        MOOSTrimWhiteSpace(sTmp);
+                        
+                        if (!sTmp.empty()) 
                         {
-                Params.push_front(sLine);
-            }
+                            Params.push_front(sLine);
+                        }
                         else if(sLine.find("[")!=std::string::npos || sLine.find("]")!=std::string::npos) 
                         {
-                Params.push_front(sLine);
-            }
-            } 
+                            Params.push_front(sLine);
+                        }
+                    } 
                     else 
                     {
-            Params.push_front(sLine);
-            }
+                        Params.push_front(sLine);
+                    }
 #else            
                     Params.push_front(sLine);
 #endif
                 }
-        else
-        {
-            return true;
-        }
+                else
+                {
+                    return true;
+                }
                 
-        //quick error check - we don't allow nested { on single lines
-        if(sLine.find("{")==0)
-        {
-            MOOSTrace("CProcessConfigReader::GetConfiguration() missing \"}\" syntax error in mission file\n");
-        }
+                //quick error check - we don't allow nested { on single lines
+                if(sLine.find("{")==0)
+                {
+                    MOOSTrace("CProcessConfigReader::GetConfiguration() missing \"}\" syntax error in mission file\n");
+                }
                 
-            
+                
             }
         }
     }
-  
-  
+    
+    
     return false;
-  
+    
     
 }
 
@@ -154,9 +154,9 @@ bool CProcessConfigReader::GetConfigurationParam(std::string sParam, bool & bVal
         std::string sVal;
         if(GetConfigurationParam(m_sAppName,sParam, sVal))
         {
-        bVal = (MOOSStrCmp(sVal, "TRUE") ||
-            (MOOSIsNumeric(sVal) && atof(sVal.c_str()) > 0));
-
+            bVal = (MOOSStrCmp(sVal, "TRUE") ||
+                    (MOOSIsNumeric(sVal) && atof(sVal.c_str()) > 0));
+            
             return true;
         }
     }
@@ -171,15 +171,15 @@ bool CProcessConfigReader::GetConfigurationParam(std::string sParam, bool & bVal
 bool CProcessConfigReader::GetConfigurationParam(std::string sAppName, std::string sParam, bool & bVal)
 {
     std::string sVal;
-
+    
     if (GetConfigurationParam(sAppName, sParam, sVal)) 
     {
-    // jckerken 10/24/04 : made bin 0,1 also work
-    // bVal =  MOOSStrCmp(sVal,"TRUE");
-    bVal = (MOOSStrCmp(sVal, "TRUE") ||  (MOOSIsNumeric(sVal) && atof(sVal.c_str()) > 0));
-    return true;
+        // jckerken 10/24/04 : made bin 0,1 also work
+        // bVal =  MOOSStrCmp(sVal,"TRUE");
+        bVal = (MOOSStrCmp(sVal, "TRUE") ||  (MOOSIsNumeric(sVal) && atof(sVal.c_str()) > 0));
+        return true;
     }
-
+    
     return false;
 }
 
@@ -197,10 +197,9 @@ bool CProcessConfigReader::GetConfigurationParam(std::string sParam, double & df
     {
         MOOSTrace("App Name not set in CProcessConfigReader::GetConfigurationParam()\n");
     }
-
+    
     return false;
 }
-
 
 bool CProcessConfigReader::GetConfigurationParam(std::string sAppName,std::string sParam, double & dfVal)
 {
@@ -210,12 +209,33 @@ bool CProcessConfigReader::GetConfigurationParam(std::string sAppName,std::strin
         if(!sTmp.empty() && (isdigit(sTmp[0]) || sTmp[0]=='-' ))
         {
             dfVal = atof(sTmp.c_str());
-
+            
             return true;
         }
     }
     return false;
+    
+}
 
+///                               READ FLOATS
+
+
+bool CProcessConfigReader::GetConfigurationParam(std::string sParam, float & fVal)
+{
+    double dfVal;
+    bool bSuccess = GetConfigurationParam(sParam,dfVal);
+    if(bSuccess)
+        fVal = (float) dfVal;
+    return bSuccess;
+}
+
+bool CProcessConfigReader::GetConfigurationParam(std::string sAppName,std::string sParam, float & fVal)
+{
+    double dfVal;
+    bool bSuccess = GetConfigurationParam(sAppName,sParam,dfVal);
+    if(bSuccess)
+        fVal = (float) dfVal;
+    return bSuccess;
 }
 
 ///                               READ STRINGS
@@ -223,28 +243,28 @@ bool CProcessConfigReader::GetConfigurationParam(std::string sAppName,std::strin
 bool CProcessConfigReader::GetConfigurationParam(std::string sAppName,std::string sParam, std::string &sVal)
 {
     Reset();
-
+    
     STRING_LIST sParams;
-
+    
     if(GetConfiguration( sAppName, sParams))
     {
-    STRING_LIST::iterator p;
-    for(p = sParams.begin();p!=sParams.end();p++)
-    {
-        std::string sTmp = *p;
-        std::string sTok = MOOSChomp(sTmp,"=");
-
-            MOOSTrimWhiteSpace(sTmp);
-
-        if (sTmp.empty())
-        return false;
-
-        if(MOOSStrCmp(sTok,sParam))
+        STRING_LIST::iterator p;
+        for(p = sParams.begin();p!=sParams.end();p++)
         {
-        sVal=sTmp;
-        return true;
+            std::string sTmp = *p;
+            std::string sTok = MOOSChomp(sTmp,"=");
+            
+            MOOSTrimWhiteSpace(sTmp);
+            
+            if (sTmp.empty())
+                return false;
+            
+            if(MOOSStrCmp(sTok,sParam))
+            {
+                sVal=sTmp;
+                return true;
+            }
         }
-    }
     }
     return false;
 }
@@ -259,7 +279,7 @@ bool CProcessConfigReader::GetConfigurationParam(std::string sParam, std::string
     {
         MOOSTrace("App Name not set in CProcessConfigReader::GetConfigurationParam()\n");
     }
-
+    
     return false;
 }
 
@@ -270,28 +290,45 @@ bool CProcessConfigReader::GetConfigurationParam(std::string sParam, int & nVal)
 {
     if (!m_sAppName.empty()) 
     {
-    return GetConfigurationParam(m_sAppName, sParam, nVal);
+        return GetConfigurationParam(m_sAppName, sParam, nVal);
     }
     else 
     {
-    MOOSTrace("App Name not set in CProcessConfigReader::GetConfigurationParam()\n");
+        MOOSTrace("App Name not set in CProcessConfigReader::GetConfigurationParam()\n");
     }
-
+    
     return false;
 }
 
 bool CProcessConfigReader::GetConfigurationParam(std::string sAppName, std::string sParam, int &nVal)
 {
     std::string sTmp;
-
+    
     if (GetConfigurationParam(sAppName, sParam, sTmp)) {
-    nVal = atoi(sTmp.c_str());
-    return true;
+        nVal = atoi(sTmp.c_str());
+        return true;
     }
-
+    
     return false;
 }
 
+bool CProcessConfigReader::GetConfigurationParam(std::string sParam, unsigned int &nVal)
+{
+    int nIntVal;
+    bool bSuccess = GetConfigurationParam(sParam,nIntVal);
+    if(bSuccess)
+        nVal = (unsigned int) nIntVal;
+    return bSuccess;
+}
+
+bool CProcessConfigReader::GetConfigurationParam(std::string sAppName, std::string sParam, unsigned int &nVal)
+{
+    int nIntVal;
+    bool bSuccess = GetConfigurationParam(sAppName,sParam,nIntVal);
+    if(bSuccess)
+        nVal = (unsigned int) nIntVal;
+    return bSuccess;
+}
 
 ///                               READ VECTORS
 
@@ -300,7 +337,7 @@ bool CProcessConfigReader::GetConfigurationParam(std::string sParam, std::vector
     std::string sVal;
     if(GetConfigurationParam(sParam,sVal))
     {
-    return MOOSVectorFromString(sVal,Vec,nRows,nCols);
+        return MOOSVectorFromString(sVal,Vec,nRows,nCols);
     }
     return false;
 }

@@ -66,14 +66,20 @@ public:
     /** read a string parameter for a named process*/
     bool GetConfigurationParam(std::string sAppName,std::string sParam,std::string &sVal);
 
-    /** read a string parameter for a named process*/
+    /** read a double parameter for a named process*/
     bool GetConfigurationParam(std::string sAppName,std::string sParam, double & dfVal); 
+
+    /** read a float parameter for a named process*/
+    bool GetConfigurationParam(std::string sAppName,std::string sParam, float & fVal);
 
     /** read a bool parameter for a named process*/
     bool GetConfigurationParam(std::string sAppName, std::string sParam, bool & bVal);
 
     /** read a integer parameter for a named process*/
     bool GetConfigurationParam(std::string sAppName, std::string sParam, int & nVal);
+
+    /** read a unsigned integer parameter for a named process*/
+    bool GetConfigurationParam(std::string sAppName, std::string sParam, unsigned int & nVal);
 
     /** read a vector<double> parameter for a named process*/
     bool GetConfigurationParam(std::string sAppName, std::string sParam,std::vector<double> & Vec,int & nRows,int & nCols);
@@ -84,11 +90,17 @@ public:
     /** read a double parameter for a Process "m_sName" */
     bool GetConfigurationParam(std::string sParam, double & dfVal);
 
+    /** read a float parameter for a Process "m_sName" */
+    bool GetConfigurationParam(std::string sParam, float & fVal);
+
     /** read a bool parameter for a Process "m_sName" */
     bool GetConfigurationParam(std::string sParam, bool & bVal);
 
     /** read a int parameter for a Process "m_sName" */
     bool GetConfigurationParam(std::string sParam, int & nVal);
+
+    /** read a unsigned int parameter for a Process "m_sName" */
+    bool GetConfigurationParam(std::string sParam, unsigned int & nVal);
 
     /** read a vector<double> parameter for a Process "m_sName" (can be interprested as a matrix with (rows x cols) */
     bool GetConfigurationParam(std::string sParam,std::vector<double> & Vec,int & nRows,int & nCols);

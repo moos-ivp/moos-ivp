@@ -100,6 +100,18 @@ public:
     /** returns a string of teh next non comment line (and removs trailing comments)*/
     std::string  GetNextValidLine();
 
+	/** iterates through filemap freeing up resources then calls filemap's clear method */
+	void ClearFileMap()
+	{
+		for(THREAD2FILE_MAP::iterator iter = m_FileMap.begin(); iter != m_FileMap.end(); iter++)
+		{
+            std::ifstream * pFile = iter->second;
+            if(pFile)
+				delete pFile;
+		}
+		m_FileMap.clear();
+	}
+
 protected:
     std::ifstream * GetFile();
     CMOOSLock *m_pLock;

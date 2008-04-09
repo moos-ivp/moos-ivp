@@ -1,30 +1,30 @@
 ///////////////////////////////////////////////////////////////////////////
 //
-//   MOOS - Mission Oriented Operating Suite 
-//  
-//   A suit of Applications and Libraries for Mobile Robotics Research 
-//   Copyright (C) 2001-2005 Massachusetts Institute of Technology and 
-//   Oxford University. 
-//    
-//   This software was written by Paul Newman at MIT 2001-2002 and Oxford 
-//   University 2003-2005. email: pnewman@robots.ox.ac.uk. 
-//      
-//   This file is part of a  MOOS Core Component. 
-//        
-//   This program is free software; you can redistribute it and/or 
-//   modify it under the terms of the GNU General Public License as 
-//   published by the Free Software Foundation; either version 2 of the 
-//   License, or (at your option) any later version. 
-//          
-//   This program is distributed in the hope that it will be useful, 
-//   but WITHOUT ANY WARRANTY; without even the implied warranty of 
-//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
-//   General Public License for more details. 
-//            
-//   You should have received a copy of the GNU General Public License 
-//   along with this program; if not, write to the Free Software 
-//   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 
-//   02111-1307, USA. 
+//   MOOS - Mission Oriented Operating Suite
+//
+//   A suit of Applications and Libraries for Mobile Robotics Research
+//   Copyright (C) 2001-2005 Massachusetts Institute of Technology and
+//   Oxford University.
+//
+//   This software was written by Paul Newman at MIT 2001-2002 and Oxford
+//   University 2003-2005. email: pnewman@robots.ox.ac.uk.
+//
+//   This file is part of a  MOOS Core Component.
+//
+//   This program is free software; you can redistribute it and/or
+//   modify it under the terms of the GNU General Public License as
+//   published by the Free Software Foundation; either version 2 of the
+//   License, or (at your option) any later version.
+//
+//   This program is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+//   General Public License for more details.
+//
+//   You should have received a copy of the GNU General Public License
+//   along with this program; if not, write to the Free Software
+//   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+//   02111-1307, USA.
 //
 //////////////////////////    END_GPL    //////////////////////////////////
 // MOOSSerialPort.h: interface for the CMOOSSerialPort class.
@@ -60,9 +60,9 @@ typedef std::list<std::string> STRING_LIST;
 //! Cross Platform Serial Port Base Class
 /*!
 Provides cross platform functionality which is implemented in detail
-by the platform dependent derivatives 
+by the platform dependent derivatives
 */
-class CMOOSSerialPort  
+class CMOOSSerialPort
 {
 public:
     std::string GetPortName();
@@ -72,7 +72,7 @@ public:
     int GetBaudRate(){return m_nBaudRate;};
 
     virtual int Flush(){return -1;};
-    
+
     bool IsStreaming();
     bool IsVerbose(){return m_bVerbose;};
     bool GetLatest(std::string & sWhat,double & dfWhen);
@@ -98,32 +98,32 @@ public:
     CMOOSLock m_PortLock;
 
     bool CommsLoop();
-    
+
     CMOOSSerialPort();
     virtual ~CMOOSSerialPort();
 
-    
+
     virtual bool Configure(STRING_LIST sParams);
-    
+
     //crucial functions...
     virtual bool Create(const char * pPortNum=DEFAULT_PORT, int nBaudRate=DEFAULT_BAUDRATE)=0;
     virtual int  ReadNWithTimeOut(char * pBuff, int  nBufferLen,double Timeout=0.5, double* pTime = NULL);
-    virtual int  Write(char* Str,int nLen, double* pTime=NULL)=0;
+    virtual int  Write(const char* Str,int nLen, double* pTime=NULL)=0;
     bool GetTelegram(std::string &sTelegram,double dfTimeOut,double *pTime=NULL);
 
     // This version of ReadNWithTimeOut returns a negative value to signal an error
-    virtual int  ReadNWithTimeOut2(char * pBuff, int  nBufferLen,double Timeout=0.5, double* pTime = NULL);
+    virtual int  ReadNWithTimeOut2(char * pBuff, int nBufferLen, double Timeout=0.5, double* pTime = NULL);
 
 
 
     void SetIsCompleteReplyCallBack(bool (*pfn)(char *pData, int nLen, int nRead) );
-        
+
     virtual void Break();
 
 protected:
     //termination character the serial port is interested in
     char m_cTermCharacter;
-    
+
     /** Win32 handle to IO thread */
 #ifdef _WIN32
     HANDLE m_hCommsThread;
@@ -140,11 +140,11 @@ protected:
     /** ID of IO thread */
     THREAD_ID        m_nCommsThreadID;
 
-    
+
     bool StartThreads();
 
     bool m_bStreaming;
-    
+
     bool m_bVerbose;
 
     virtual int GrabN(char * pBuffer,int nRequired)=0;

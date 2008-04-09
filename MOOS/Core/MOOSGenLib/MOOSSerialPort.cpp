@@ -502,7 +502,7 @@ int CMOOSSerialPort::ReadNWithTimeOut(char *pData, int nLen, double dfTimeOut,do
 
 
 
-int CMOOSSerialPort::ReadNWithTimeOut2(char *pData, int nLen, double dfTimeOut,double * pTime )
+int CMOOSSerialPort::ReadNWithTimeOut2(char *pData, int nLen, double dfTimeOut, double * pTime )
 {
         
 

@@ -1,30 +1,30 @@
 ///////////////////////////////////////////////////////////////////////////
 //
-//   MOOS - Mission Oriented Operating Suite 
-//  
-//   A suit of Applications and Libraries for Mobile Robotics Research 
-//   Copyright (C) 2001-2005 Massachusetts Institute of Technology and 
-//   Oxford University. 
-//    
-//   This software was written by Paul Newman at MIT 2001-2002 and Oxford 
-//   University 2003-2005. email: pnewman@robots.ox.ac.uk. 
-//      
-//   This file is part of a  MOOS Core Component. 
-//        
-//   This program is free software; you can redistribute it and/or 
-//   modify it under the terms of the GNU General Public License as 
-//   published by the Free Software Foundation; either version 2 of the 
-//   License, or (at your option) any later version. 
-//          
-//   This program is distributed in the hope that it will be useful, 
-//   but WITHOUT ANY WARRANTY; without even the implied warranty of 
-//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
-//   General Public License for more details. 
-//            
-//   You should have received a copy of the GNU General Public License 
-//   along with this program; if not, write to the Free Software 
-//   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 
-//   02111-1307, USA. 
+//   MOOS - Mission Oriented Operating Suite
+//
+//   A suit of Applications and Libraries for Mobile Robotics Research
+//   Copyright (C) 2001-2005 Massachusetts Institute of Technology and
+//   Oxford University.
+//
+//   This software was written by Paul Newman at MIT 2001-2002 and Oxford
+//   University 2003-2005. email: pnewman@robots.ox.ac.uk.
+//
+//   This file is part of a  MOOS Core Component.
+//
+//   This program is free software; you can redistribute it and/or
+//   modify it under the terms of the GNU General Public License as
+//   published by the Free Software Foundation; either version 2 of the
+//   License, or (at your option) any later version.
+//
+//   This program is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+//   General Public License for more details.
+//
+//   You should have received a copy of the GNU General Public License
+//   along with this program; if not, write to the Free Software
+//   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+//   02111-1307, USA.
 //
 //////////////////////////    END_GPL    //////////////////////////////////
 /*! \file MOOSGenLibGlobalHelper.h */
@@ -50,17 +50,26 @@
 
 typedef std::list<std::string> STRING_LIST ;
 
+//find the location of sToken in a string sSource with or without case sensitivity
+size_t  MOOSStrFind( const std::string &sSource , const std::string & sToken,bool bInsensitive=false);
+
+
 //following function finds token = value in a list of such strings
 bool MOOSGetValueFromToken(STRING_LIST & sParams,const std::string & sToken,std::string & sVal);
 
-//following two functions remove a value from a string containing comma seperated pairs of Token = Val....
-bool MOOSValFromString(std::string & sVal,const std::string & sStr,const std::string & sTk);
-bool MOOSValFromString(double & dfVal,const std::string & sStr,const std::string & sTk);
-bool MOOSValFromString(float  &  fVal,const std::string & sStr,const std::string & sTk);
-bool MOOSValFromString(long   &  nVal,const std::string & sStr,const std::string & sTk);
-bool MOOSValFromString(int    &  nVal,const std::string & sStr,const std::string & sTk);
-bool MOOSValFromString(bool   &  bVal,const std::string & sStr,const std::string & sTk);
-bool MOOSValFromString(std::vector<double> &dfValVec,int &nRows,int &nCols, const std::string & sStr, const std::string & sToken);
+//following functions extract a value from a string containing comma seperated pairs of Token = Val....
+//by default case sensitivity on the Token is off. Thus  given two strings S1="X=AbCd" and S2="x=AbCd",
+//invoking  MOOSValFromString(s,S1,"x",true) and MOOSValFromString(s,S2,"x",true) with both insert "AbCd" into s
+bool MOOSValFromString(std::string & sVal,const std::string & sStr,const std::string & sTk,bool bInsensitive=false);
+bool MOOSValFromString(double & dfVal,const std::string & sStr,const std::string & sTk,bool bInsensitive=false);
+bool MOOSValFromString(float  &  fVal,const std::string & sStr,const std::string & sTk,bool bInsensitive=false);
+bool MOOSValFromString(long   &  nVal,const std::string & sStr,const std::string & sTk,bool bInsensitive=false);
+bool MOOSValFromString(int    &  nVal,const std::string & sStr,const std::string & sTk,bool bInsensitive=false);
+bool MOOSValFromString(bool   &  bVal,const std::string & sStr,const std::string & sTk,bool bInsensitive=false);
+bool MOOSValFromString(std::vector<double> &dfValVec,int &nRows,int &nCols, const std::string & sStr, const std::string & sToken,bool bInsensitive=false);
+bool MOOSValFromString(std::vector<unsigned int> &nValVec, int &nRows, int &nCols, const std::string & sStr, const std::string & sToken,bool bInsensitive=false);
+
+//the following simply parse a MOOSFormated vector [nxm]{a,b,c...}
 bool MOOSVectorFromString(const std::string & sStr,std::vector<double> & dfVecVal,int & nRows,int & nCols);
 bool MOOSVectorFromString(const std::string & sStr,std::vector<float> & fValVec,int & nRows, int & nCols);
 bool MOOSVectorFromString(const std::string & sStr,std::vector<unsigned int> & dfVecVal,int & nRows,int & nCols);
@@ -69,13 +78,13 @@ bool MOOSVectorFromString(const std::string & sStr,std::vector<unsigned int> & d
 std::string DoubleVector2String(const std::vector<double> & V);
 
 /** write a std::vector<double> to a stringstream (using MOOS Notation)*/
-std::stringstream & Write (std::stringstream & os,const std::vector<double> & Vec); 
+std::stringstream & Write (std::stringstream & os,const std::vector<double> & Vec);
 
 /** write a std::vector<int> to a stringstream (using MOOS Notation)*/
 std::stringstream & Write (std::stringstream & os,const std::vector<int> & Vec);
 
 //the ubiquitous chomp function
-std::string MOOSChomp(std::string &sStr, const std::string &sTk=",");
+std::string MOOSChomp(std::string &sStr, const std::string &sTk=",",bool bInsensitive=false);
 
 /** remove all characters in sTok from sStr*/
 void MOOSRemoveChars(std::string & sStr,const std::string & sTok);
@@ -120,13 +129,13 @@ int     MOOSGetch();
 void MOOSTrace(std::string  Str);
 
 /** print a formatted string (with printf-like format codes) and to debug window in DevStudio*/
-void MOOSTrace(char *FmtStr,...);
+void MOOSTrace(const char *FmtStr,...);
 
 /** return a formatted string (with printf-like format codes*/
-std::string MOOSFormat(char * FmtStr,...);
+std::string MOOSFormat(const char * FmtStr,...);
 
 /** like MOOSTrace but returns false - useful for return statements */
-bool MOOSFail(char * FmtStr,...);
+bool MOOSFail(const char * FmtStr,...);
 
 /** return nicely formatted time stamp string */
 std::string MOOSGetTimeStampString();
@@ -174,7 +183,7 @@ int MOOSDiscreteUniform(int nMin, int nMax);
 double MOOSUniformRandom(double dfMin, double dfMax);
 
 /** Clamps a templated type between two values */
-template <class T> 
+template <class T>
 const T& MOOSClamp(const T &val, const T &min, const T &max)
 {
     if (val < min) return min;
@@ -204,10 +213,10 @@ bool MOOSFileParts(std::string sFullPath, std::string & sPath,std::string &sFile
 
 /** templated function which swaps byte order of type T returning it*/
 template <class  T > T SwapByteOrder(const T &v)
-{    
+{
     T r = v;
     char * aR = (char*)&r;
-    std::reverse(aR,aR+sizeof(T));    
+    std::reverse(aR,aR+sizeof(T));
     return r;
 }
 
@@ -238,7 +247,7 @@ template<class D> struct dynamic_caster
 #ifdef _WIN32
 #define UNUSED_PARAMETER(a) a
 #else
-#define UNUSED_PARAMETER(a) 
+#define UNUSED_PARAMETER(a)
 #endif
 
 

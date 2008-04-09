@@ -68,6 +68,10 @@ CMOOSFileReader::~CMOOSFileReader()
         GetFile()->close();
     }
 
+	delete m_pLock;
+	m_pLock = NULL;
+
+	ClearFileMap();
 }
 
 bool CMOOSFileReader::SetFile(const std::string  & sFile)
@@ -80,14 +84,18 @@ bool CMOOSFileReader::SetFile(const std::string  & sFile)
     {
         std::ifstream * pFile = p->second;
 
-        if(pFile!=NULL && pFile->is_open())
+        if(pFile!=NULL)
         {
-            pFile->close();
+            if(pFile->is_open())
+            {
+                pFile->close();
+            }
             delete pFile;
+            p->second = NULL;
         }
     }
-    m_FileMap.clear();
-
+    
+	ClearFileMap();
 
     return true;
 

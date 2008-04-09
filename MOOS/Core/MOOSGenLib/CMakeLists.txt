@@ -46,7 +46,8 @@ MOOSGenLibGlobalHelper.h
 ProcessConfigReader.h
 MOOSLinuxSerialPort.h
 MOOSSerialPort.h
-MOOSAssert.h )
+MOOSAssert.h
+MOOSThread.h )
 
 # install headers
 INSTALL( FILES ${INSTALL_HEADERS} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/MOOSGenLib )
