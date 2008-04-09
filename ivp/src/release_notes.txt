@@ -1,4 +1,11 @@
 
+Version 3.0.2
+
+- Added BHV_AvoidObstacles to lib_behaviors-marine
+
+
+Version 3.0.1
+
 - Fixed a bug in lib_geometry/XYPolygon that failed to reset convexity
   local information after a polygon rotation. The lack of reset could
   cause XYPolygon::contains() function to malfunction in some instances.
