@@ -101,8 +101,6 @@ IvPFunction* BehaviorSet::produceOF(int ix, int iteration,
 	new_activity_state = "running";
     }
 
-    cout << "behavior-id:" << behaviors[ix]->getDescriptor() << endl;
-    cout << "new_activity_state:" << new_activity_state << endl;
     if(new_activity_state == "idle") {
       if(behavior_states[ix] != "idle")
 	behaviors[ix]->postFlags("idleflags");
