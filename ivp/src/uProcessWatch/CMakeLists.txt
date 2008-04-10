@@ -3,13 +3,14 @@
 # Author(s):                                Mike Benjamin
 #--------------------------------------------------------
 
-FILE(GLOB SRC ProcessWatch.cpp main.cpp)
+FILE(GLOB SRC 
+  ProcessWatch.cpp 
+  main.cpp)
 
 ADD_EXECUTABLE(uProcessWatch ${SRC})
  
 TARGET_LINK_LIBRARIES(uProcessWatch 
-   MOOS
-   MOOSGen
-   mbutil
-   m
-   pthread)
+  MOOS
+  MOOSGen
+  mbutil
+  pthread)

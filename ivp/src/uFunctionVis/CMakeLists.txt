@@ -3,7 +3,14 @@
 # Author(s):                                Mike Benjamin
 #--------------------------------------------------------
 
-FILE(GLOB SRC *.cpp)
+FILE(GLOB SRC
+  FV_GUI.cpp
+  FV_MOOSApp.cpp
+  FV_Model.cpp
+  FV_Viewer.cpp
+  FunctionQueue.cpp
+  QueueEntry.cpp
+  uFunctionVisMain.cpp)
 
 ADD_EXECUTABLE(uFunctionVis ${SRC})
       

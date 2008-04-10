@@ -3,15 +3,17 @@
 # Author(s):                                Mike Benjamin
 #--------------------------------------------------------
 
-FILE(GLOB SRC *.cpp)
+FILE(GLOB SRC 
+  XMS.cpp
+  uXMSMain.cpp)
 
 ADD_EXECUTABLE(uXMS ${SRC})
 
 TARGET_LINK_LIBRARIES(uXMS 
-MOOS
-MOOSGen
-genutil
-mbutil
-m
-pthread)
+  MOOS
+  MOOSGen
+  genutil
+  mbutil 
+  m
+  pthread)
 
