@@ -43,8 +43,6 @@ bool FV_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
     if(msg.m_sKey == ipf_name) {
       string ipf_str = msg.m_sVal;
       demuxer.addMuxPacket(ipf_str, MOOSTime());
-      //cout << "Received IPF: " << ipf_str << endl;
-      cout << "$" << flush;
     }
   }
   return(true);

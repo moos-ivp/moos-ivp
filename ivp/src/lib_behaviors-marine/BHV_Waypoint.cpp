@@ -51,6 +51,7 @@ BHV_Waypoint::BHV_Waypoint(IvPDomain gdomain) :
 
   m_cruise_speed    = 0;  // Meters/second
   m_lead_distance   = -1;
+  m_ipf_type        = "zaic";
 
   // The completed and perpetual vars are initialized in superclass
   // but we initialize here just to be safe and clear.
@@ -94,6 +95,12 @@ bool BHV_Waypoint::setParam(string param, string val)
     if((dval <= 0) || (!isNumber(val)))
       return(false);
     m_cruise_speed = dval;
+    return(true);
+  }
+  else if(param == "ipf-type") {
+    val = tolower(val);
+    if((val=="zaic") || (val=="roc") || (val=="rate_of_closure"))
+      m_ipf_type = val;
     return(true);
   }
   else if(param == "lead") {
@@ -162,8 +169,7 @@ IvPFunction *BHV_Waypoint::onRunState()
     return(0);
   }
   
-  IvPFunction *ipf = buildOF("zaic");
-  //IvPFunction *ipf = buildOF("aof-rc");
+  IvPFunction *ipf = buildOF(m_ipf_type);
   if(ipf)
     ipf->setPWT(m_priority_wt);
 
@@ -259,22 +265,8 @@ IvPFunction *BHV_Waypoint::buildOF(string method)
 {
   IvPFunction *ipf = 0;
 
-  if(method == "zaic") {
-    ZAIC_PEAK spd_zaic(m_domain, "speed");
-    spd_zaic.setParams(m_cruise_speed, 0, 2.6, 0, 0, 100);
-    IvPFunction *spd_of = spd_zaic.extractOF();
-    
-    double rel_ang_to_wpt = relAng(m_osx, m_osy, m_trackpt_x, m_trackpt_y);
-    ZAIC_PEAK crs_zaic(m_domain, "course");
-    crs_zaic.setValueWrap(true);
-    crs_zaic.setParams(rel_ang_to_wpt, 0, 180, 50, 0, 100);
-    IvPFunction *crs_of = crs_zaic.extractOF();
-
-    OF_Coupler coupler;
-    ipf = coupler.couple(crs_of, spd_of);
-  }    
-
-  if(method == "aof-rc") {
+  if((method == "roc") || (method == "rate_of_closure")) {
+    cout << "Building an ROC Waypoint IPF!!!!!!!!!!!!!!!!!!!!!!!" << endl;
     bool ok = true;
     AOF_Waypoint aof_wpt(m_domain);
     ok = ok && aof_wpt.setParam("desired_speed", m_cruise_speed);
@@ -290,6 +282,21 @@ IvPFunction *BHV_Waypoint::buildOF(string method)
       ipf = reflector.extractOF();
     }
   }    
+  else { // if (method == "zaic")
+    ZAIC_PEAK spd_zaic(m_domain, "speed");
+    spd_zaic.setParams(m_cruise_speed, 0, 2.6, 0, 0, 100);
+    IvPFunction *spd_of = spd_zaic.extractOF();
+    
+    double rel_ang_to_wpt = relAng(m_osx, m_osy, m_trackpt_x, m_trackpt_y);
+    ZAIC_PEAK crs_zaic(m_domain, "course");
+    crs_zaic.setValueWrap(true);
+    crs_zaic.setParams(rel_ang_to_wpt, 0, 180, 50, 0, 100);
+    IvPFunction *crs_of = crs_zaic.extractOF();
+
+    OF_Coupler coupler;
+    ipf = coupler.couple(crs_of, spd_of);
+  }    
+
 
   return(ipf);
 }

@@ -111,6 +111,7 @@ FILE(GLOB IVP_APPS_TO_BUILD
   uRepeater
   uTermCommand
   uXMS
+  uFunctionVis
   iRawAIS
   iPlaybackAIS
   iParserAIS

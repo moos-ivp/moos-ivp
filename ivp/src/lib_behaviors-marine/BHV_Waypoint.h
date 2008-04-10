@@ -42,11 +42,13 @@ protected:
   IvPFunction* buildOF(std::string);
   void         updateInfoOut(bool post=true);
 
-protected:
+protected: 
   WaypointEngine m_waypoint_engine;
 
-  double    m_cruise_speed;
-  double    m_lead_distance;
+protected: // configuration parameters
+  double      m_cruise_speed;
+  double      m_lead_distance;
+  std::string m_ipf_type;
 
 protected: // intermediate or object global variables.
   double    m_osv;  // Ownship velocity
