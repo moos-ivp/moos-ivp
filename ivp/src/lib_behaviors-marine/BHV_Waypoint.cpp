@@ -216,9 +216,6 @@ bool BHV_Waypoint::setNextWaypoint()
   m_waypoint_engine.setNextWaypoint(m_osx, m_osy);
 
   if(m_waypoint_engine.isComplete()) {
-
-    cout << "Waypoint Behavior " << m_descriptor << " has completed! " << endl;
-
     postMessage("VEHICLE_WPT_STAT", "complete");
     setComplete();
     if(m_perpetual)
@@ -266,7 +263,6 @@ IvPFunction *BHV_Waypoint::buildOF(string method)
   IvPFunction *ipf = 0;
 
   if((method == "roc") || (method == "rate_of_closure")) {
-    cout << "Building an ROC Waypoint IPF!!!!!!!!!!!!!!!!!!!!!!!" << endl;
     bool ok = true;
     AOF_Waypoint aof_wpt(m_domain);
     ok = ok && aof_wpt.setParam("desired_speed", m_cruise_speed);
@@ -334,7 +330,7 @@ void BHV_Waypoint::updateInfoOut(bool post)
     }
   }
   else {
-    string ptmsg = "0,0,0," + m_us_name + "_wpt";;
+    string ptmsg = "0,0,0," + m_descriptor;
     postMessage("VIEW_POINT", ptmsg);
   }
 

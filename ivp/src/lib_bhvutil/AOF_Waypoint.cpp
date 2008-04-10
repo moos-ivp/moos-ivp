@@ -122,51 +122,30 @@ double AOF_Waypoint::evalBox(const IvPBox *b) const
   double rate_of_closure = cos(rad_diff) * eval_spd;
   
   double roc_range = 2 * m_max_speed;
-  double pct = (rate_of_closure - (-m_max_speed)) / roc_range;
-  double score_ROC = pct * pct * 100;
-
-
-  // CALCULATE THE SECOND SCORE - SCORE_SPD
+  double roc_diff = (m_desired_spd - rate_of_closure);
+  if(roc_diff < 0) 
+    roc_diff *= -0.5; // flip the sign, cut the penalty for being over
+  if(roc_diff > roc_range)
+    roc_diff = roc_range;
   
-  double diff_spd = eval_spd - m_desired_spd;
+  double pct = (roc_diff / roc_range);
+  double score_ROC = (1.0 - pct) * 100;
+
+  // CALCULATE THE FIRST SCORE - SCORE_ROD
+
+  double angle_180 = angle180(angle_diff);
+  if(angle_180 < 0)
+    angle_180 *= -1;
+  if(eval_spd < 0)
+    eval_spd = 0;
+  double rate_of_detour  = (angle_180 * eval_spd);
   
-  if(diff_spd < 0)
-    diff_spd = 0;
+  double rod_range = (m_max_speed * 180);
+  double rod_pct = (rate_of_detour / rod_range);
+  double score_ROD = (1.0 - rod_pct) * 100;
 
-  double val = 2 - diff_spd;
-  if(val < 0)
-    val = 0;
-  val *= 10;
+  double combined_score = (0.6 * score_ROC) + (0.4 * score_ROD);
   
-  double score_SPD = val;
-
-  //if(rate_of_closure < 0)
-  // score_SPD = 0;
-
-  return(score_ROC + score_SPD);
-
-  double rate_of_detour  = sin(rad_diff) * eval_spd;
-  if(rate_of_detour < 0)
-    rate_of_detour *= -1;
-
-  double diff = rate_of_closure - m_desired_spd;
-  if(diff < 0) 
-    diff *= -1;
-  
-  double mod_val1 = (100 - (diff*100));
-#if 0
-  if(mod_val1 < 0)
-    mod_val1 = 0;
-#endif
-
-  double mod_val2 = 50 * rate_of_detour;
-
-  double mod_val = mod_val1 - mod_val2;
-
-  //  if(mod_val < 0)
-  // mod_val = 0;
-  
-  
-  return(mod_val);
+  return(combined_score);
 }
 
