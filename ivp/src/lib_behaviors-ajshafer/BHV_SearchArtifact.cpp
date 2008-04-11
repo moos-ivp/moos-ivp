@@ -110,8 +110,11 @@ IvPFunction *BHV_SearchArtifact::onRunState()
   	if(ready){
   		aof.fillCache();
 		
+		// 1 for linear pieces
 		OF_Reflector reflector(&aof, 1);
+		
 		reflector.create(m_build_info);
+		
 		ipf = reflector.extractOF();
 
 	  if(ipf)
