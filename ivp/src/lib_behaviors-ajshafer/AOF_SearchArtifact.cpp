@@ -13,8 +13,10 @@
 #include "AOF_SearchArtifact.h"
 #include "AngleUtils.h"
 #include "MBUtils.h"
+#include "XYPolygon.h"
 
-using namespace std;
+using std::vector;
+using std::string;
 
 //----------------------------------------------------------
 // Procedure: Constructor
@@ -36,19 +38,27 @@ bool AOF_SearchArtifact::setParam(const string& param, double param_val)
 	if(param == "os_lat") {
 		os_lat = param_val;
 		os_lat_set = true;
-		return(true);
+		return true;
 	}
 	else if(param == "os_lon") {
 		os_lon = param_val;
 		os_lon_set = true;
-		return(true);
+		return true;
 	}
 	else if(param == "time_horizon") {
 		time_horizon = param_val;
-		return(true);
+		return true;
+	}
+	else if(param == "sensor_a") {
+		sensor_a = param_val;
+		return true;
+	}
+	else if(param == "sensor_b") {
+		sensor_b = param_val;
+		return true;
 	}
 	else
-		return(false);
+		return false;
 }
 
 
@@ -58,12 +68,7 @@ bool AOF_SearchArtifact::setParam(const string& param, double param_val)
 bool AOF_SearchArtifact::setParam(const string& param, 
 			      const string& param_val)
 {
-	if(param == "pass_value") {
-		pass_value = SearchPassValue(param_val);
-		return(true);
-	}
-	else
-		return(false);
+	return false;
 }
 
 
@@ -84,7 +89,9 @@ bool AOF_SearchArtifact::initialize()
 
 //----------------------------------------------------------------
 // Procedure: fillCache
-
+// Fills the ray_cache to contain vectors of ints,
+// where each vector holds the indices of the cells that are
+// intercepted along that direction.
 void AOF_SearchArtifact::fillCache()
 {
 	ray_cache.clear();
@@ -92,34 +99,31 @@ void AOF_SearchArtifact::fillCache()
 	int i;
 	double heading;
 	double top_spd    = m_domain.getVarHigh(spd_ix);
+	double top_dist   = top_spd * time_horizon;
 	int heading_count = m_domain.getVarPoints(crs_ix);
-
-	// For each possible heading...
-	for(i=0; i<heading_count; i++) {
-		vector<int> ivector;
-		ray_cache.push_back(ivector);
-	}
-
+	
+	vector<int> blank;
+	
+	ray_cache.assign(heading_count, blank); // Make heading_count copies of a vector of ints
+	
 	// ...calculate the intercepted cells going that direction
 	for(i=0; i<heading_count; i++) {
-		bool ok = m_domain.getVal(crs_ix, i, heading);
+		bool ok = m_domain.getVal(crs_ix, i, heading);  // Puts a heading into variable heading
 
 		if(!ok) { // Something's wrong...
 			ray_cache.clear();
 			return;
 		}
 
-		double gamOS  = degToRadians(heading); // Angle in radians.
-		double cgamOS = cos(gamOS);            // Cosine of Angle (osCRS).
-		double sgamOS = sin(gamOS);            // Sine   of Angle (osCRS).
-
-		double eval_lat = (cgamOS * top_spd * time_horizon) + os_lat;
-		double eval_lon = (sgamOS * top_spd * time_horizon) + os_lon;
-
-		double x1 = os_lon;
-		double y1 = os_lat;
-		double x2 = eval_lon;
-		double y2 = eval_lat;
+		// Create a polygon that represents the most cells we can see
+		XYPolygon poly;
+		poly.add_vertex(0,0, false);
+		poly.add_vertex(sensor_a,0, false);
+		poly.add_vertex(sensor_a,top_dist, false);
+		poly.add_vertex(0,top_dist, true); // now check convexity
+		
+		poly.new_center(os_lon, os_lat);
+		poly.rotate(heading);
 
 		// Each vector in ray_cache is a heading
 		// Each int in the heading vector is the index of a square in the
@@ -127,9 +131,8 @@ void AOF_SearchArtifact::fillCache()
 		int gsize = search_grid->size();
 		for(int j=0; j<gsize; j++) {
 			XYSquare square = search_grid->getElement(j);
-			if(!square.containsPoint(x1,y1)) { // Don't count the current location
-				double length = square.segIntersectLength(x1,y1,x2,y2);
-				if(length > 0){
+			if(!square.containsPoint(os_lon,os_lat)) { // Don't count the current location
+				if(poly.contains(square.getCenterX(), square.getCenterY())) {
 					ray_cache[i].push_back(j);
 				}
 			}
@@ -151,15 +154,17 @@ double AOF_SearchArtifact::evalBox(const IvPBox *b) const
 
 	double eval_tol = time_horizon;
 
-	m_domain.getVal(crs_ix, b->pt(crs_ix,0), eval_crs);
-	m_domain.getVal(spd_ix, b->pt(spd_ix,0), eval_spd);
+	m_domain.getVal(crs_ix, b->pt(crs_ix,0), eval_crs); // Get the current course...
+	m_domain.getVal(spd_ix, b->pt(spd_ix,0), eval_spd); // ...and speed
+	
+	double eval_dist = eval_tol * eval_spd;
 
 	double gamOS  = degToRadians(eval_crs); // Angle in radians.
 	double cgamOS = cos(gamOS);             // Cosine of Angle (osCRS).
 	double sgamOS = sin(gamOS);             // Sine   of Angle (osCRS).
 
-	double eval_lat = (cgamOS * eval_spd * eval_tol) + os_lat;
-	double eval_lon = (sgamOS * eval_spd * eval_tol) + os_lon;
+	double eval_lat = (cgamOS * eval_dist) + os_lat;
+	double eval_lon = (sgamOS * eval_dist) + os_lon;
 
 	double x1 = os_lon;
 	double y1 = os_lat;
@@ -191,31 +196,22 @@ double AOF_SearchArtifact::evalBox(const IvPBox *b) const
 	for(int cache_j=0; cache_j < vsize; cache_j++) {
 		int grid_ix = ray_cache[cache_i][cache_j];
 		XYSquare square = search_grid->getElement(grid_ix);
-		double length = square.segIntersectLength(x1,y1,x2,y2);
-		if((eval_spd > 0) && (length > 0)) {
-			double dist_to_square = square.ptDistToSquareCtr(x1,y1);
-			double time_in_square = length / eval_spd;
-			double curr_duration  = search_grid->getVal(grid_ix);
-			double curr_util      = pass_value.evalValue(curr_duration);
-			double hypo_util      = pass_value.evalValue(curr_duration + time_in_square);
-			double delta_util     = hypo_util - curr_util;
+		double dist_to_square = square.ptDistToSquareCtr(x1, y1);
+		// angle between the current cell and the eval_dist point
+		double theta = degToRadians(angle360(relAng(x1, y1, x2, y2) - relAng(x1, y1, square.getCenterX(), square.getCenterY())));
+		double proj_dist = dist_to_square * cos(theta);
+		
+		if( (eval_spd > 0) && (eval_dist > proj_dist) ) { // square is within this speed
+			double clearance = search_grid->getClearance(grid_ix);
+			double evalclearance = 1.0 - ((1.0 - clearance) * (1.0 - sensor_b));
+			double delta_util = evalclearance - clearance;
 			
-			// Why is this done 6 times?
-			// Each line appears to multiply the delta utility by the portion of time
-			// that the cell will take to get that extra utility
-			// i.e., a cell update that takes 1/4 the top_dist and gives 4 delta_util
-			// is more valuable than an update that takes 1/4 the top_dist and gives 6 delta_util
-			delta_util *= (1 - (dist_to_square / top_dist));
-			delta_util *= (1 - (dist_to_square / top_dist));
-			delta_util *= (1 - (dist_to_square / top_dist));
-			delta_util *= (1 - (dist_to_square / top_dist));
-			delta_util *= (1 - (dist_to_square / top_dist));
-			delta_util *= (1 - (dist_to_square / top_dist));
-
+			// Scale down delta_util based on distance, proj_dist
+			
 			ret_val += delta_util;
 		}
 	}
 
-  return(ret_val);
+	return(ret_val);
 }
 

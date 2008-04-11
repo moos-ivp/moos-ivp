@@ -28,8 +28,6 @@ public: // virtual functions
 protected:
 	const XYArtifactGrid *search_grid;
 
-	SearchPassValue pass_value; // Used to get the "utility" from the time spend in a grid
-
 	// Own ship values
 	double  os_lat;
 	double  os_lon;
@@ -37,6 +35,8 @@ protected:
 
 	bool    os_lat_set;
 	bool    os_lon_set;
+	
+	double  sensor_a, sensor_b;
 
 	int     crs_ix;  // Index of "course" variable in IvPDomain
 	int     spd_ix;  // Index of "speed" variable in IvPDomain

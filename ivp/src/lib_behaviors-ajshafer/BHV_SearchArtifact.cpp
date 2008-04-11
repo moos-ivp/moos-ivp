@@ -10,6 +10,9 @@
 #pragma warning(disable : 4503)
 #endif
 #include <iostream>
+#include <iterator>
+#include <vector>
+#include <string>
 #include "BHV_SearchArtifact.h"
 #include "AOF_SearchArtifact.h"
 #include "MBUtils.h"
@@ -35,7 +38,7 @@ BHV_SearchArtifact::BHV_SearchArtifact(IvPDomain gdomain) :
   osY   = 0;
   osSPD = 0;
 
-  addInfoVars("NAV_X, NAV_Y, GRID_DELTA, NAV_SPEED, NAV_HEADING");
+  addInfoVars("NAV_X, NAV_Y, NAV_SPEED, NAV_HEADING, ARTIFACTGRID_DELTA, SENSOR_A, SENSOR_B");
 }
 
 //-----------------------------------------------------------
@@ -52,15 +55,6 @@ bool BHV_SearchArtifact::setParam(string param, string val)
     if(!ok) 
       return(false);
     search_grid = new_search_grid;
-    return(true);
-  }
-  
-  if(param == "pass_value") {
-    SearchPassValue new_passvalue(val);
-    bool ok = new_passvalue.isConfigured();
-    if(!ok) 
-      return(false);
-    pass_value = new_passvalue;
     return(true);
   }
   
@@ -90,7 +84,7 @@ IvPFunction *BHV_SearchArtifact::onRunState()
 	}
 
 	string grid_label = search_grid.getLabel();
-	bool   in_grid    = search_grid.ptIntersect(osX, osY);
+	bool   in_grid    = search_grid.containsPoint(osX, osY);
 
 	if(!in_grid || osSPD == 0){
 		postMessage("TIME_TO_EXIT_GRID_"+grid_label, 0);
@@ -100,16 +94,17 @@ IvPFunction *BHV_SearchArtifact::onRunState()
 		double dist_to_exit = poly.dist_to_poly(osX, osY, osCRS);
 		double time_to_exit = dist_to_exit / osSPD;
 		postMessage("TIME_TO_EXIT_GRID_"+grid_label, time_to_exit);
-	}    
-
-	bool os_in_grid = updateSearchGrid(prev_osX, prev_osY, osX, osY);
+		postMessage("osSPD", osSPD);
+		postMessage("dtg", dist_to_exit);
+	}
 
 	AOF_SearchArtifact aof(m_domain, &search_grid);
 
 	aof.setParam("os_lat", osY);
 	aof.setParam("os_lon", osX);
 	aof.setParam("time_horizon", time_horizon);
-	aof.setParam("pass_value", pass_value.toString());
+	aof.setParam("sensor_a", sensor_a);
+	aof.setParam("sensor_b", sensor_b);
 	bool ready = aof.initialize();
   
   	if(ready){
@@ -132,7 +127,7 @@ IvPFunction *BHV_SearchArtifact::onRunState()
 
 bool BHV_SearchArtifact::updateFromInfoBuffer()
 {
-  cout << "config: " << search_grid.getConfigString() << endl;
+  //cout << "config: " << search_grid.getConfigString() << endl;
     
   // If we have ever fired before, set the "previous" values.
   if(has_fired) {
@@ -141,15 +136,16 @@ bool BHV_SearchArtifact::updateFromInfoBuffer()
   }
   else {
     has_fired = true;
-    postMessage("GRID_CONFIG", search_grid.getConfigString());
     return(false);
   }
 
-  bool ok1, ok2, ok3, ok4;
+  bool ok1, ok2, ok3, ok4, ok5, ok6, ok7;
   osX   = getBufferDoubleVal("NAV_X",     ok1);
   osY   = getBufferDoubleVal("NAV_Y",     ok2);
   osSPD = getBufferDoubleVal("NAV_SPEED", ok3);
   osCRS = getBufferDoubleVal("NAV_HEADING", ok4);
+  sensor_a = getBufferDoubleVal("SENSOR_A", ok5);
+  sensor_b = getBufferDoubleVal("SENSOR_B", ok6);
 
   // Must get ownship position from InfoBuffer
   if(!ok1 || !ok2)
@@ -158,73 +154,16 @@ bool BHV_SearchArtifact::updateFromInfoBuffer()
     postWMessage("No ownship speed info in info_buffer.");
   if(!ok4)
     postWMessage("No ownship heading info in info_buffer.");
-  if( !(ok1 && ok2 && ok3 && ok4) )
+  if(!ok5 || !ok6)
+    postWMessage("No sensor information in info_buffer.");
+  if( !(ok1 && ok2 && ok3 && ok4 && ok5 && ok6) )
     return(false);
+    
+  vector<string> updates = getBufferStringVector("ARTIFACTGRID_DELTA", ok7);
+  vector<string>::const_iterator p;
+  for(p = updates.begin(); p != updates.end(); p++){
+  	search_grid.processDelta( *p );
+  }
 
   return(true);
 }
-
-//-----------------------------------------------------------
-// Procedure: updateSearchGrid
-//
-//  GRID_MSG @ type=config @ gname=area23 @ vname=nyak200 @
-//      trans=index,tis_old,tis_new,util_old,util_new
-
-
-bool BHV_SearchArtifact::updateSearchGrid(double x1, double y1, 
-				      double x2, double y2) 
-{
-	bool os_in_grid = false;
-
-	int gsize = search_grid.size();
-	for(int i=0; i<gsize; i++) {
-		XYSquare square = search_grid.getElement(i);
-		os_in_grid = os_in_grid || square.containsPoint(x2,y2);
-		double length = square.segIntersectLength(x1,y1,x2,y2);
-		if(length > 0) {
-			double time_in_square = 0;
-			if(osSPD > 0) {
-//				time_in_square = length / osSPD;
-//				string glabel  = search_grid.getLabel();
-//				string gvar1 = "GRID_DELTA";
-//				string gvar2 = "GRID_DELTA_" + glabel;
-//				string gvar3 = "GRID_MSG";
-//				double cur_tis = search_grid.getVal(i);
-//				double new_tis = cur_tis + time_in_square;
-
-//				double cur_util = search_grid.getUtil(i);
-//				double new_util = pass_value.evalValue(new_tis);
-
-//				search_grid.setVal(i, new_tis);
-//				search_grid.setUtil(i, new_util);
-//				string gdelta = glabel + "@" + 
-//				intToString(i) + "," +
-//				dstringCompact(doubleToString(cur_tis))  + "," +
-//				dstringCompact(doubleToString(new_tis))  + "," +
-//				dstringCompact(doubleToString(cur_util)) + "," +
-//				dstringCompact(doubleToString(new_util));
-//				string msg = "type=delta @ gname=" + glabel;
-//				msg += " @ vname=" + m_us_name;
-//				msg += " @ trans=" + intToString(i) + ",";
-//				dstringCompact(doubleToString(cur_tis))  + "," +
-//				dstringCompact(doubleToString(new_tis))  + "," +
-//				dstringCompact(doubleToString(cur_util)) + "," +
-//				dstringCompact(doubleToString(new_util));
-//				postMessage(gvar1, gdelta);
-//				postMessage(gvar2, gdelta);
-//				postMessage(gvar3, msg);
-			}
-		}
-	}
-
-	search_grid.resetFromMin();
-	return(os_in_grid);
-}
-
-
-
-
-
-
-
-

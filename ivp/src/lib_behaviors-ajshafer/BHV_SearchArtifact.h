@@ -22,12 +22,12 @@ public:
 
 protected:
   bool updateFromInfoBuffer();
-  bool updateSearchGrid(double, double, double, double);
 
 protected:
   XYArtifactGrid    search_grid;
-  SearchPassValue pass_value;
   double    time_horizon;
+  
+  double    sensor_a, sensor_b;
 
   double    osCRS;
   double    osSPD;
