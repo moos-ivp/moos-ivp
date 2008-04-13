@@ -162,9 +162,9 @@ double AOF_R16::evalBox(const IvPBox *b) const
 
 double AOF_R16::metric(double gval) const
 {
-  double min_dist = 15.0;
+  double min_dist = 20.0;
   double max_dist = 100.0;
-  double drop_val = 25.0;
+  double drop_val = 60.0;
 
   if(gval < min_dist) 
     return(0);

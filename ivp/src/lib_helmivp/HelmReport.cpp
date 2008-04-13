@@ -79,12 +79,9 @@ bool HelmReport::hasDecision(const string& var)
 
 void HelmReport::addRunningBHV(const std::string& descriptor)
 {
-  if(m_running_bhvs == "") {
-    m_running_bhvs += "#";
-    m_running_bhvs += intToString(m_iteration);
-  }
-  
-  m_running_bhvs += ",";
+  if(m_running_bhvs != "")
+    m_running_bhvs += ":";
+
   m_running_bhvs += descriptor;
 }
 
@@ -92,19 +89,91 @@ void HelmReport::addRunningBHV(const std::string& descriptor)
 //-----------------------------------------------------------
 // Procedure: addActiveBHV
 
-//   143:bhv_waypoint:100,bhv_avoid:200,bhv_opregion:100
+//   bhv_waypoint:100,bhv_avoid:200,bhv_opregion:100
 
 void HelmReport::addActiveBHV(const std::string& descriptor, 
 			      double pwt)
 {
-  if(m_active_bhvs == "") {
-    m_active_bhvs += "#";
-    m_active_bhvs += intToString(m_iteration);
-  }
+  if(m_active_bhvs != "")
+    m_active_bhvs += ":";
   
-  m_active_bhvs += ",";
   m_active_bhvs += descriptor;
-  m_active_bhvs += ":" + doubleToString(pwt, 2);
+  m_active_bhvs += "$" + doubleToString(pwt, 2);
+}
+
+
+//-----------------------------------------------------------
+// Procedure: getRunningBehaviors()
+
+string HelmReport::getRunningBehaviors()
+{
+  string result = "#";
+  result += intToString(m_iteration);
+  result += ":";
+  result += m_running_bhvs;
+
+  return(result);
+}
+
+//-----------------------------------------------------------
+// Procedure: getActiveBehaviors()
+
+string HelmReport::getActiveBehaviors()
+{
+  string result = "#";
+  result += intToString(m_iteration);
+  result += ":";
+  result += m_active_bhvs;
+  
+  return(result);
+}
+
+//-----------------------------------------------------------
+// Procedure: getReportAsString()
+
+string HelmReport::getReportAsString()
+{
+  int i, vsize;
+  string report;
+
+  report += "iter="; 
+  report += intToString(m_iteration);
+
+  report += ",ofnum="; 
+  report += intToString(m_ofnum);
+
+  report += ",solve_time=";
+  report += doubleToString(m_solve_time, 2);
+
+  report += ",create_time=";
+  report += doubleToString(m_create_time, 2);
+
+  report += ",loop_time";
+  report += doubleToString(m_loop_time, 2);
+  
+  vsize = m_decision_var.size();
+  for(i=0; i<vsize; i++) {
+    report += ",var=";
+    report += m_decision_var[i];
+    report += ":";
+    report += doubleToString(m_decision_val[i], 1);
+  }
+
+  if(m_halted)
+    report += ",halted=true";
+  else
+    report += ",halted=false";
+
+  report += ",running_bhvs=";
+  report += m_running_bhvs;
+
+  report += ",active_bhvs=";
+  report += m_active_bhvs;
+
+  report += ",all_bhvs=";
+  report += m_all_bhvs;
+
+  return(report);
 }
 
 

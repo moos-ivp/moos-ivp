@@ -39,9 +39,9 @@ public:
   
   std::vector<std::string> getMsgs() const  
     {return(m_messages);};
-
-  std::string getRunningBehaviors() {return(m_running_bhvs);};
-  std::string getActiveBehaviors() {return(m_active_bhvs);};
+  
+  std::string getRunningBehaviors();
+  std::string getActiveBehaviors();
 
   void   addDecision(const std::string &var, double val);
   double getDecision(const std::string &var);
@@ -53,6 +53,8 @@ public:
   double getSolveTime() const      {return(m_solve_time);};
   double getLoopTime() const       {return(m_loop_time);};
   bool   getHalted() const         {return(m_halted);};
+
+  std::string getReportAsString();
 
 protected:
 
