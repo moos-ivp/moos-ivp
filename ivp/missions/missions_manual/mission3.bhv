@@ -4,7 +4,7 @@ initialize   RETURN = false
 //----------------------------------------------
 Behavior = BHV_Waypoint
 {
-  name      = bhv_waypt_survey
+  name      = waypt_survey
   pwt       = 100
   speed     = 2.4
   radius    = 8.0
@@ -17,7 +17,7 @@ Behavior = BHV_Waypoint
 //----------------------------------------------
 Behavior = BHV_Waypoint
 {
-  name      = bhv_waypt_return
+  name      = waypt_return
   pwt       = 100
   speed     = 2.4
   radius    = 8.0
