@@ -12,7 +12,8 @@ FILE(GLOB SRC
    XYCircle.cpp          XYEncoders.cpp         
    XYGrid.cpp            XYHexGrid.cpp          
    XYHexagon.cpp         XYPolygon.cpp          
-   XYSegList.cpp         XYSquare.cpp           
+   XYSegList.cpp         XYSquare.cpp         
+   XYArtifactGrid.cpp  
 )
 
 ADD_LIBRARY(geometry ${SRC})
