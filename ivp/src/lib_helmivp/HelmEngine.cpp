@@ -104,6 +104,10 @@ HelmReport HelmEngine::determineNextDecision(BehaviorSet *bhv_set,
     }
     if((astate=="active") || (astate=="running"))
       helm_report.addRunningBHV(descriptor);
+    if(astate=="idle")
+      helm_report.addIdleBHV(descriptor);
+    if(astate=="completed")
+      helm_report.addCompletedBHV(descriptor);
 	
     helm_report.addMsg(report_line);
     ofs.push_back(newof);

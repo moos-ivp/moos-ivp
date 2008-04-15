@@ -76,13 +76,28 @@ bool HelmReport::hasDecision(const string& var)
 
 //-----------------------------------------------------------
 // Procedure: addRunningBHV
+//            addIdleBHV
+//            addCompletedBHV
 
 void HelmReport::addRunningBHV(const std::string& descriptor)
 {
   if(m_running_bhvs != "")
     m_running_bhvs += ":";
-
   m_running_bhvs += descriptor;
+}
+
+void HelmReport::addIdleBHV(const std::string& descriptor)
+{
+  if(m_idle_bhvs != "")
+    m_idle_bhvs += ":";
+  m_idle_bhvs += descriptor;
+}
+
+void HelmReport::addCompletedBHV(const std::string& descriptor)
+{
+  if(m_completed_bhvs != "")
+    m_completed_bhvs += ":";
+  m_completed_bhvs += descriptor;
 }
 
 
@@ -165,13 +180,28 @@ string HelmReport::getReportAsString()
     report += ",halted=false";
 
   report += ",running_bhvs=";
-  report += m_running_bhvs;
+  if(m_running_bhvs == "")
+    report += "none";
+  else
+    report += m_running_bhvs;
 
   report += ",active_bhvs=";
-  report += m_active_bhvs;
+  if(m_active_bhvs == "")
+    report += "none";
+  else
+    report += m_active_bhvs;
 
-  report += ",all_bhvs=";
-  report += m_all_bhvs;
+  report += ",idle_bhvs=";
+  if(m_idle_bhvs == "")
+    report += "none";
+  else
+    report += m_idle_bhvs;
+  
+  report += ",completed_bhvs=";
+  if(m_completed_bhvs == "")
+    report += "none";
+  else
+    report += m_completed_bhvs;
 
   return(report);
 }

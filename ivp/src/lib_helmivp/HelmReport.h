@@ -34,8 +34,10 @@ public:
   void addMsg(const std::string& str) 
     {m_messages.push_back(str);};
   
-  void addRunningBHV(const std::string& descriptor);
   void addActiveBHV(const std::string& descriptor, double);
+  void addRunningBHV(const std::string& descriptor);
+  void addIdleBHV(const std::string& descriptor);
+  void addCompletedBHV(const std::string& descriptor);
   
   std::vector<std::string> getMsgs() const  
     {return(m_messages);};
@@ -62,6 +64,8 @@ protected:
   std::string               m_running_bhvs;
   std::string               m_active_bhvs;
   std::string               m_all_bhvs;
+  std::string               m_completed_bhvs;
+  std::string               m_idle_bhvs;
 
   int                       m_iteration;
   int                       m_ofnum;
