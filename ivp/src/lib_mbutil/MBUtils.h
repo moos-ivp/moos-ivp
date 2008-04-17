@@ -28,6 +28,8 @@
 #include <time.h>
 
 std::vector<std::string> parseString(const std::string&, char);
+std::vector<std::string> parseString(const std::string&, 
+				     const std::string&);
 std::vector<std::string> chompString(const std::string&, char);
 std::vector<std::string> sortStrings(std::vector<std::string>);
 std::vector<std::string> mergeVectors(std::vector<std::string>,

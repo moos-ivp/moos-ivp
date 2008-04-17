@@ -38,10 +38,10 @@
 using namespace std;
 
 //----------------------------------------------------------------
-// Procedure: parseString(const char*, char)
-//   Example: svector = parseString("apples,    pears,banannas");
+// Procedure: parseString(string, char)
+//   Example: svector = parseString("apples,  pears,banannas", ',');
 //            svector[0] = "apples"
-//            svector[1] = "    pears"
+//            svector[1] = "  pears"
 //            svector[2] = "bananas"
 
 vector<string> parseString(const string& string_str, char separator)
@@ -66,6 +66,27 @@ vector<string> parseString(const string& string_str, char separator)
       str++;
   }
   delete [] buff;
+  return(rvector);
+}
+
+//----------------------------------------------------------------
+// Procedure: parseString(string, string)
+//   Example: svector = parseString("apples $@$ pears $@$ banannas");
+//            svector[0] = "apples "
+//            svector[1] = " pears "
+//            svector[2] = " bananas"
+
+vector<string> parseString(const string& string_str, 
+			   const string& separator)
+{
+  string new_separator;
+  char   unique_char = (char)129;
+  new_separator += unique_char;
+
+  string new_string = findReplace(string_str, separator, new_separator);
+
+  vector<string> rvector = parseString(new_string, unique_char);
+
   return(rvector);
 }
 
