@@ -103,7 +103,7 @@ ArtVec XYArtifactGrid::getArtVec(int index) const
 	}
 }
 
-int XYArtifactGrid::getDetectedArts() const
+uint XYArtifactGrid::getDetectedArts() const
 {
 	int count = 0;
 	

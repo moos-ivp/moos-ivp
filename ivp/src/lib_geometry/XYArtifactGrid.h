@@ -29,6 +29,7 @@
 #include <string>
 
 typedef std::vector<std::string> ArtVec;
+typedef unsigned int uint;
 
 class XYArtifactGrid {
 public:
@@ -37,7 +38,7 @@ public:
 
 	bool      initialize(std::string); 
 
-	std::vector<XYSquare> getElements() const {return elements;};
+	const std::vector<XYSquare> getElements() const {return elements;};
 	XYSquare  getElement(int index) const; 
 	
 	void      setClearance(int index, double val); 
@@ -46,12 +47,12 @@ public:
 	
 	void      setArtVec(int index, const ArtVec &); 
 	ArtVec    getArtVec(int index) const; 
-	int       getDetectedArts() const;
+	uint      getDetectedArts() const;
 	
 
 	XYSquare  getSBound() const  {return(bounding_square);}; 
 	XYPolygon getPBound() const  {return(bounding_poly);};  // Used by bhv_SearchArtifact
-	int       size() const       {return(elements.size());}; 
+	uint      size() const       {return(elements.size());}; 
 
 	bool      containsPoint(double, double) const; 
 	bool      ptIntersectBound(double, double) const; 

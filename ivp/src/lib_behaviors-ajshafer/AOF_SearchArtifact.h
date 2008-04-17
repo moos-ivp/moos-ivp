@@ -13,6 +13,8 @@
 #include "XYArtifactGrid.h"
 #include "SearchPassValue.h"
 
+typedef unsigned int uint;
+
 class AOF_SearchArtifact: public AOF {
 public:
 	AOF_SearchArtifact(IvPDomain, const XYArtifactGrid*);
@@ -42,9 +44,14 @@ protected:
 	int     spd_ix;  // Index of "speed" variable in IvPDomain
 	
 	// Each first level vector is a discrete course direction
-	// Each sub vector holds the index to searchgrid cells that are contained
+	// Each sub vector holds the index to local_* cells that are contained
 	// in the time horizon based on top-speed
-	std::vector<std::vector<int> > ray_cache;
+	std::vector<std::vector<uint> > ray_cache;
+	std::vector<uint>   local_indices; // Squares that are possible
+	std::vector<double> local_delP;    // Delta clearance for each of those squares
+	std::vector<double> local_dist;    // Distance from current loc to center of cell
+	std::vector<double> local_angle;   // Relative heading of cell from current location
+
 };
 
 #endif
