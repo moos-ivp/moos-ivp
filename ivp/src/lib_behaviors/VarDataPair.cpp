@@ -96,5 +96,34 @@ VarDataPair::VarDataPair(const string& var, const string& sdata,
 }
 
 
+//------------------------------------------------------------------
+// Procedure: getPrintable
+//  Notes: Return a single string representing the pair. The type
+//         are expressed as follows.
+//         foo = 27  var is of type double since 27 is a number.
+//         foo = "27"  var is of type string since 27 is quoted.
+//         foo = bar  var is of type string since bar is NOT a number.
 
 
+string VarDataPair::getPrintable()
+{
+  string rstring = m_var;
+  rstring += "=";
+
+  if(m_is_string) {
+    if(isNumber(m_sdata)) {
+      rstring += "\"";
+      rstring += m_sdata;
+      rstring += "\"";
+    }
+    else
+      rstring += m_sdata;
+  }
+  else {
+    string dstr = doubleToString(m_ddata, 4);
+    // Remove trailing zeros after the decimal point
+    dstr = dstringCompact(dstr);
+    rstring += dstr;
+  }
+  return(rstring);
+}

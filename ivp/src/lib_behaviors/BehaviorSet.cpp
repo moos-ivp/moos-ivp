@@ -76,6 +76,8 @@ void BehaviorSet::addBehavior(IvPBehavior *bhv)
 {
   behaviors.push_back(bhv);
   behavior_states.push_back("");
+  BehaviorReport new_report;
+  behavior_reports.push_back(new_report);
 }
 
 
@@ -87,6 +89,7 @@ IvPFunction* BehaviorSet::produceOF(int ix, int iteration,
 {
   IvPFunction *ipf = 0;
   double pwt = 0;
+  int    pcs = 0;
 
   if((ix >= 0) && (ix < behaviors.size())) {
     
@@ -119,9 +122,11 @@ IvPFunction* BehaviorSet::produceOF(int ix, int iteration,
       }
       if(ipf) {
 	pwt = ipf->getPWT();
+	pcs = ipf->getPDMap()->size();
 	if(pwt <= 0) {
 	  delete(ipf);
 	  ipf = 0;
+	  pcs = 0;
 	}
       }
       if(ipf && report_ipf) {
@@ -152,6 +157,17 @@ IvPFunction* BehaviorSet::produceOF(int ix, int iteration,
       behaviors[ix]->postMessage("STATE_BHV_"+bhv_tag, 3);
 
     behavior_states[ix] = new_activity_state;
+
+    behavior_reports[ix].m_state     = new_activity_state;
+    behavior_reports[ix].m_priority  = pwt;
+    behavior_reports[ix].m_pieces    = pcs;
+    behavior_reports[ix].m_descriptor   = behaviors[ix]->m_descriptor;
+    behavior_reports[ix].m_update_var   = behaviors[ix]->m_update_var;
+    behavior_reports[ix].m_good_updates = behaviors[ix]->m_good_updates;
+    behavior_reports[ix].m_bad_updates  =  behaviors[ix]->m_bad_updates;
+    behavior_reports[ix].m_update_age   = behaviors[ix]->m_last_update_age;
+    behavior_reports[ix].m_duration     = behaviors[ix]->m_duration;
+    behavior_reports[ix].m_start_time   = behaviors[ix]->m_start_time;
   }
 
   return(ipf);
@@ -195,6 +211,19 @@ string BehaviorSet::getDescriptor(int ix)
   if((ix >= 0) && (ix < behaviors.size()))
     return(behaviors[ix]->getDescriptor());
   return("");
+}
+
+//------------------------------------------------------------
+// Procedure: getBehaviorReport
+
+BehaviorReport BehaviorSet::getBehaviorReport(int ix)
+{
+  BehaviorReport null_report;
+  
+  if((ix >= 0) && (ix < behavior_reports.size()))
+    return(behavior_reports[ix]);
+  else
+    return(null_report);
 }
 
 //------------------------------------------------------------

@@ -5,6 +5,7 @@
 
 FILE(GLOB SRC
   BehaviorSet.cpp
+  BehaviorReport.cpp
   InfoBuffer.cpp
   IvPBehavior.cpp
   VarDataPair.cpp)

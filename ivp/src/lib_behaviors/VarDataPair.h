@@ -56,6 +56,8 @@ public:
   double      get_ddata() const  {return(m_ddata);};
   bool        is_string() const  {return(m_is_string);};
 
+  std::string getPrintable();
+
 protected:
   std::string m_var;
   std::string m_sdata;

@@ -44,6 +44,7 @@
 #include <vector>
 #include "IvPBehavior.h"
 #include "VarDataPair.h"
+#include "BehaviorReport.h"
 
 class IvPFunction;
 class BehaviorSet
@@ -62,8 +63,9 @@ public:
   void         resetStateOK();
   IvPFunction* produceOF(int ix, int iter, std::string& activity_state);
 
-  IvPBehavior* getBehavior(int);
-  std::string  getDescriptor(int);
+  IvPBehavior*   getBehavior(int);
+  std::string    getDescriptor(int);
+  BehaviorReport getBehaviorReport(int);
 
   std::vector<VarDataPair> getMessages(int);
   std::vector<VarDataPair> getInitialVariables() {return(initial_vars);};
@@ -74,13 +76,14 @@ public:
   void print();
 
 protected:
-  std::vector<IvPBehavior*>  behaviors;
-  std::vector<std::string>   behavior_states;
+  std::vector<IvPBehavior*>   behaviors;
+  std::vector<std::string>    behavior_states;
+  std::vector<BehaviorReport> behavior_reports;
 
-  std::vector<VarDataPair>   initial_vars;
-  std::vector<VarDataPair>   default_vars;
+  std::vector<VarDataPair>    initial_vars;
+  std::vector<VarDataPair>    default_vars;
 
-  std::vector<std::string>   prev_info_vars;
+  std::vector<std::string>    prev_info_vars;
 
   bool report_ipf;
 };

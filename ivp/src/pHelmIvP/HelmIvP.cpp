@@ -266,18 +266,34 @@ void HelmIvP::postBehaviorMessages()
   if(verbose == "verbose") {
     MOOSTrace("Behavior Report ---------------------------------\n");
   }
-  
+
   int bhv_cnt = bhv_set->getCount();
   for(int i=0; i < bhv_cnt; i++) {
     vector<VarDataPair> mvector = bhv_set->getMessages(i);
     string bhv_descriptor = bhv_set->getDescriptor(i);
     int msize = mvector.size();
+
+    string all_messages;
+  
     for(int j=0; j<msize; j++) {
       VarDataPair msg = mvector[j];
-      
+
       string var   = msg.get_var();
       string sdata = msg.get_sdata();
       double ddata = msg.get_ddata();
+
+      if(all_messages == "") {
+	all_messages += "iter=";
+	all_messages += intToString(iteration);
+	all_messages += "$@!$ bhv=";
+	all_messages += bhv_descriptor;
+      }
+      if(var != "BHV_IPF") {
+	string pair_printable = msg.getPrintable();
+	all_messages += "$@!$";
+	all_messages += pair_printable;
+      }
+      
 
       // If error message indicate time of error. If ylog_flag
       // is true, also post info to MOOS_SYSTEM variable which
@@ -317,8 +333,9 @@ void HelmIvP::postBehaviorMessages()
 	  }
 	}
       }
-
     }
+    if(all_messages != "")
+      m_Comms.Notify("IVPHELM_POSTINGS", all_messages);
   }
 }
 
