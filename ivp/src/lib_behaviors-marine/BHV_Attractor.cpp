@@ -143,13 +143,40 @@ bool BHV_Attractor::setParam(string g_param, string g_val)
     return(true);
   }  
 
-  else if(g_param == "strength") {
-    double dval = atof(g_val.c_str());
-    if((dval < 0) || (dval > 100) || (!isNumber(g_val)))
-      return(false);
-    strength = dval;
-    return(true);
-  }  
+  else if(g_param == "strength") 
+    {
+      double dval = atof(g_val.c_str());
+      if((dval < 0) || (dval > 100) || (!isNumber(g_val)))
+	return(false);
+      strength = dval;
+      return(true);
+    }  
+  else if(g_param == "decay") 
+    {
+      vector<string> svector = parseString(g_val, ',');
+      if(svector.size() == 2) {
+	svector[0] = stripBlankEnds(svector[0]);
+	svector[1] = stripBlankEnds(svector[1]);
+	if(isNumber(svector[0]) && isNumber(svector[1])) {
+	  double start = atof(svector[0].c_str());
+	  double end   = atof(svector[1].c_str());
+	  if((start >= 0) && (start <= end)) {
+	    m_decay_start = start;
+	    m_decay_end   = end;
+	    m_extrapolator.setDecay(start,end);
+	    return(true);
+	  }
+	}
+      }
+    }  
+  else if(g_param == "decay_end") 
+    {
+      if(isNumber(g_val)) {
+	m_decay_end = atof(g_val.c_str());
+	
+	return(true);
+      }
+    }  
 
   return(false);
 }
@@ -160,6 +187,7 @@ bool BHV_Attractor::setParam(string g_param, string g_val)
 void BHV_Attractor::onIdleState()
 {
   postMessage("ATTRACTOR_ACTIVE", 0);
+  postMessage("PURSUIT", 0);
 }
 
 
@@ -330,6 +358,7 @@ double BHV_Attractor::getRelevance(double osX, double osY,
   }
   
   double dist = hypot((osX - cnX), (osY - cnY));
+  postMessage("TRAIL_RANGE",dist );
 
   if((m_giveup_range > 0) && (dist > m_giveup_range))
     return(0);
@@ -351,6 +380,8 @@ double BHV_Attractor::getRelevance(double osX, double osY,
 	pct = (1 + strength * (dist-range_min) / total_range);
       else
 	pct = 1;
+
+  postMessage("TRAIL_RELEVANCE", pct);
   return(pct);
 }
 

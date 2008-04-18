@@ -203,7 +203,7 @@ IvPFunction *BHV_RubberBand::onRunState()
   double angle_to_station = relAng(nav_x, nav_y, 
 				   m_station_x, m_station_y);
 
-  relevance = 1.0;
+  relevance = 0;
 
   double desired_speed = 0;
   if((dist_to_station > m_inner_radius) && (dist_to_station < m_outer_radius)) 
@@ -211,6 +211,7 @@ IvPFunction *BHV_RubberBand::onRunState()
       double range  = m_outer_radius - m_inner_radius;
       double pct    = (dist_to_station - m_inner_radius) / range;
       desired_speed = pct * m_outer_speed;
+      relevance = 1.0;
     }
 
   if(dist_to_station >= m_outer_radius)
