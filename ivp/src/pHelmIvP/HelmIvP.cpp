@@ -283,17 +283,15 @@ void HelmIvP::postBehaviorMessages()
       double ddata = msg.get_ddata();
 
       if(all_messages == "") {
-	all_messages += "iter=";
-	all_messages += intToString(iteration);
-	all_messages += "$@!$ bhv=";
 	all_messages += bhv_descriptor;
+	all_messages += "$@!$";
+	all_messages += intToString(iteration);
       }
       if(var != "BHV_IPF") {
 	string pair_printable = msg.getPrintable();
 	all_messages += "$@!$";
 	all_messages += pair_printable;
       }
-      
 
       // If error message indicate time of error. If ylog_flag
       // is true, also post info to MOOS_SYSTEM variable which

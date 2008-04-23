@@ -55,7 +55,8 @@ using namespace std;
 
 BehaviorSet::BehaviorSet()
 {
-  report_ipf = true;
+  m_report_ipf = true;
+  m_curr_time  = -1;
 }
 
 //------------------------------------------------------------
@@ -78,6 +79,9 @@ void BehaviorSet::addBehavior(IvPBehavior *bhv)
   behavior_states.push_back("");
   BehaviorReport new_report;
   behavior_reports.push_back(new_report);
+  
+  behavior_state_time_entered.push_back(-1);
+  behavior_state_time_elapsed.push_back(-1);
 }
 
 
@@ -129,7 +133,7 @@ IvPFunction* BehaviorSet::produceOF(int ix, int iteration,
 	  pcs = 0;
 	}
       }
-      if(ipf && report_ipf) {
+      if(ipf && m_report_ipf) {
 	string desc_str = behaviors[ix]->getDescriptor();
 	string iter_str = intToString(iteration);
 	string ctxt_str = iter_str + ":" + desc_str;
@@ -156,8 +160,13 @@ IvPFunction* BehaviorSet::produceOF(int ix, int iteration,
     else if(new_activity_state == "completed") 
       behaviors[ix]->postMessage("STATE_BHV_"+bhv_tag, 3);
 
+    if(behavior_states[ix] != new_activity_state)
+      behavior_state_time_entered[ix] = m_curr_time;
+    
     behavior_states[ix] = new_activity_state;
-
+    double elapsed = m_curr_time - behavior_state_time_entered[ix];
+    behavior_state_time_elapsed[ix] = elapsed;
+    
     behavior_reports[ix].m_state     = new_activity_state;
     behavior_reports[ix].m_priority  = pwt;
     behavior_reports[ix].m_pieces    = pcs;
@@ -169,7 +178,6 @@ IvPFunction* BehaviorSet::produceOF(int ix, int iteration,
     behavior_reports[ix].m_duration     = behaviors[ix]->m_duration;
     behavior_reports[ix].m_start_time   = behaviors[ix]->m_start_time;
   }
-
   return(ipf);
 }
 
@@ -224,6 +232,17 @@ BehaviorReport BehaviorSet::getBehaviorReport(int ix)
     return(behavior_reports[ix]);
   else
     return(null_report);
+}
+
+//------------------------------------------------------------
+// Procedure: getStateElapsed
+
+double BehaviorSet::getStateElapsed(int ix)
+{
+  if((ix >= 0) && (ix < behavior_reports.size()))
+    return(behavior_state_time_elapsed[ix]);
+  else
+    return(-1);
 }
 
 //------------------------------------------------------------

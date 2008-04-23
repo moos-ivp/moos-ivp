@@ -345,9 +345,10 @@ void IvPBehavior::postPCMessage(string g_msg)
 {
   string mvar = "PC_" + m_descriptor;
   
-  double curr_time = m_info_buffer->getCurrTime();
-  string str_time = "(" + doubleToString(curr_time, 1) + ")";
-  string mval = str_time + g_msg;
+  //double curr_time = m_info_buffer->getCurrTime();
+  //string str_time = "(" + doubleToString(curr_time, 1) + ")";
+  //string mval = str_time + g_msg;
+  string mval = g_msg;
   
   VarDataPair msg(mvar, mval);
   m_messages.push_back(msg);

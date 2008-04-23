@@ -79,25 +79,31 @@ bool HelmReport::hasDecision(const string& var)
 //            addIdleBHV
 //            addCompletedBHV
 
-void HelmReport::addRunningBHV(const std::string& descriptor)
+void HelmReport::addRunningBHV(const std::string& descriptor,
+			       double time)
 {
   if(m_running_bhvs != "")
     m_running_bhvs += ":";
   m_running_bhvs += descriptor;
+  m_running_bhvs += "$" + doubleToString(time, 1);
 }
 
-void HelmReport::addIdleBHV(const std::string& descriptor)
+void HelmReport::addIdleBHV(const std::string& descriptor,
+			    double time)
 {
   if(m_idle_bhvs != "")
     m_idle_bhvs += ":";
   m_idle_bhvs += descriptor;
+  m_idle_bhvs += "$" + doubleToString(time, 1);
 }
 
-void HelmReport::addCompletedBHV(const std::string& descriptor)
+void HelmReport::addCompletedBHV(const std::string& descriptor,
+				 double time)
 {
   if(m_completed_bhvs != "")
     m_completed_bhvs += ":";
   m_completed_bhvs += descriptor;
+  m_completed_bhvs += "$" + doubleToString(time, 1);
 }
 
 
@@ -107,13 +113,17 @@ void HelmReport::addCompletedBHV(const std::string& descriptor)
 //   bhv_waypoint:100,bhv_avoid:200,bhv_opregion:100
 
 void HelmReport::addActiveBHV(const std::string& descriptor, 
-			      double pwt)
+			      double time, double pwt, 
+			      int pcs, double cpu_time)
 {
   if(m_active_bhvs != "")
     m_active_bhvs += ":";
   
   m_active_bhvs += descriptor;
+  m_active_bhvs += "$" + doubleToString(time, 1);
   m_active_bhvs += "$" + doubleToString(pwt, 2);
+  m_active_bhvs += "$" + intToString(pcs);
+  m_active_bhvs += "$" + doubleToString(cpu_time,2);
 }
 
 

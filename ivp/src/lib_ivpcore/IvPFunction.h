@@ -57,6 +57,7 @@ public:
   PDMap*      getPDMap()       {return(m_pdmap);};
   bool        freeOfNan()      {return(m_pdmap->freeOfNan());};
   void        print();
+  int         size()           {return(m_pdmap->size());};
   int         getDim()         {return(m_pdmap->getDim());};
   std::string getContextStr()  {return(m_context_string);};
   std::string getVarName(int); 

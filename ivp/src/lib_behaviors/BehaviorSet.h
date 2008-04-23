@@ -57,8 +57,9 @@ public:
   void addInitialVar(VarDataPair msg) {initial_vars.push_back(msg);};
   void addDefaultVar(VarDataPair msg) {default_vars.push_back(msg);};
   int  getCount()                     {return(behaviors.size());};
-
-  void         setReportIPF(bool v)   {report_ipf=v;};
+  void setCurrTime(double v)          {m_curr_time = v;};
+  
+  void         setReportIPF(bool v)   {m_report_ipf=v;};
   bool         stateOK(int);
   void         resetStateOK();
   IvPFunction* produceOF(int ix, int iter, std::string& activity_state);
@@ -66,6 +67,7 @@ public:
   IvPBehavior*   getBehavior(int);
   std::string    getDescriptor(int);
   BehaviorReport getBehaviorReport(int);
+  double         getStateElapsed(int);
 
   std::vector<VarDataPair> getMessages(int);
   std::vector<VarDataPair> getInitialVariables() {return(initial_vars);};
@@ -79,13 +81,16 @@ protected:
   std::vector<IvPBehavior*>   behaviors;
   std::vector<std::string>    behavior_states;
   std::vector<BehaviorReport> behavior_reports;
+  std::vector<double>         behavior_state_time_entered;
+  std::vector<double>         behavior_state_time_elapsed;
 
   std::vector<VarDataPair>    initial_vars;
   std::vector<VarDataPair>    default_vars;
 
   std::vector<std::string>    prev_info_vars;
 
-  bool report_ipf;
+  bool   m_report_ipf;
+  double m_curr_time;
 };
 
 #endif 

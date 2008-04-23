@@ -63,6 +63,7 @@ HelmReport HelmEngine::determineNextDecision(BehaviorSet *bhv_set,
   else
     bhv_set->resetStateOK();
 
+  bhv_set->setCurrTime(curr_time);
 
   int i, bhv_ix;
   int bhv_cnt = bhv_set->getCount();
@@ -79,6 +80,9 @@ HelmReport HelmEngine::determineNextDecision(BehaviorSet *bhv_set,
     IvPFunction *newof = bhv_set->produceOF(bhv_ix, iteration, astate);
     of_timer.stop();
     
+    // Determine the amt of time the bhv has been in this state
+    double state_elapsed = bhv_set->getStateElapsed(bhv_ix);
+
     if(!bhv_set->stateOK(bhv_ix)) {
       helm_report.m_halted = true;
       helm_report.addMsg("HELM HALTING: Safety Emergency!!!");
@@ -89,7 +93,7 @@ HelmReport HelmEngine::determineNextDecision(BehaviorSet *bhv_set,
     string report_line = descriptor;
     if(newof) {
       double of_time  = of_timer.get_float_cpu_time();
-      int    pieces   = newof->getPDMap()->size();
+      int    pieces   = newof->size();
       string timestr  = doubleToString(of_time,2);
       report_line += " produces obj-function - time:" + timestr;
       report_line += " pcs: " + doubleToString(pieces);
@@ -99,15 +103,17 @@ HelmReport HelmEngine::determineNextDecision(BehaviorSet *bhv_set,
       report_line += " did NOT produce an obj-function";
     
     if(newof) {
+      double of_time  = of_timer.get_float_cpu_time();
       double pwt = newof->getPWT();
-      helm_report.addActiveBHV(descriptor, pwt);
+      int pcs = newof->size();
+      helm_report.addActiveBHV(descriptor, state_elapsed, pwt, pcs, of_time);
     }
-    if((astate=="active") || (astate=="running"))
-      helm_report.addRunningBHV(descriptor);
+    if(astate=="running")
+      helm_report.addRunningBHV(descriptor, state_elapsed);
     if(astate=="idle")
-      helm_report.addIdleBHV(descriptor);
+      helm_report.addIdleBHV(descriptor, state_elapsed);
     if(astate=="completed")
-      helm_report.addCompletedBHV(descriptor);
+      helm_report.addCompletedBHV(descriptor, state_elapsed);
 	
     helm_report.addMsg(report_line);
     ofs.push_back(newof);
