@@ -135,9 +135,9 @@ bool ParserAIS::handleIncomingReport(char* sdata)
                 strcat(dynamicAIS,"MOOS_TIME=");
                 strcat(dynamicAIS,dstringCompact(doubleToString(moos_time)).c_str());
                 strcat(dynamicAIS,",");
-                strcat(dynamicAIS,"UTC_TIME=");
-                strcat(dynamicAIS,utc_time.c_str());
-                strcat(dynamicAIS,",");
+                //strcat(dynamicAIS,"UTC_TIME=");
+                //strcat(dynamicAIS,utc_time.c_str());
+                //strcat(dynamicAIS,",");
                 strcat(dynamicAIS,"X="); 
                 strcat(dynamicAIS,dstringCompact(doubleToString(X_local)).c_str());
                 strcat(dynamicAIS,",");

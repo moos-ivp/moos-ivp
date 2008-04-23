@@ -66,8 +66,14 @@ bool PMV_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 
     string key = Msg.m_sKey;
 
-    if(key == "AIS_REPORT") {
-      receiveAIS_REPORT(Msg);
+//    if(key == "AIS_REPORT") {
+//      MOOSTrace("\nProcessing AIS_REPORT Message\n");
+//      receiveAIS_REPORT(Msg);
+//      gui_needs_redraw = true;
+//    }
+    if(key == "PK_SOL") {
+      MOOSTrace("\nProcessing PK_SOL Message\n");
+      receivePK_SOL(Msg);
       gui_needs_redraw = true;
     }
     else if(key == "AIS_REPORT_LOCAL") {
@@ -272,11 +278,11 @@ bool PMV_MOOSApp::OnStartUp()
 
 
 //---------------------------------------------------------------
-// Procedure: receiveAIS_REPORT
+// Procedure: parseSingleReport
 
-bool PMV_MOOSApp::receiveAIS_REPORT(CMOOSMsg &Msg)
+bool PMV_MOOSApp::parseSingleReport(string sReport)
 {
-  string sVal = Msg.m_sVal;
+  bool returnStatus = false;
   double dfX  = 0;
   double dfY  = 0; 
 
@@ -286,15 +292,15 @@ bool PMV_MOOSApp::receiveAIS_REPORT(CMOOSMsg &Msg)
   string vessel_name = "";
   string vessel_type = "";
 
-  //string community(Msg.m_sOriginatingCommunity);
+  MOOSTrace("Received Msg = %s\n", sReport.c_str());
 
-  bool bVName = tokParse(sVal, "NAME",   ',', '=', vessel_name);
-  bool bVType = tokParse(sVal, "TYPE",   ',', '=', vessel_type);
-  bool bX     = tokParse(sVal, "X",      ',', '=', dfX);
-  bool bY     = tokParse(sVal, "Y",      ',', '=', dfY);
-  bool bSpeed = tokParse(sVal, "SPD",    ',', '=', dfSpeed);
-  bool bHeading = tokParse(sVal, "HDG",  ',', '=', dfHeading);
-  bool bDepth = tokParse(sVal, "DEPTH",  ',', '=', dfDepth);
+  bool bVName = tokParse(sReport, "NAME",   ',', '=', vessel_name);
+  bool bVType = tokParse(sReport, "TYPE",   ',', '=', vessel_type);
+  bool bX     = tokParse(sReport, "X",      ',', '=', dfX);
+  bool bY     = tokParse(sReport, "Y",      ',', '=', dfY);
+  bool bSpeed = tokParse(sReport, "SPD",    ',', '=', dfSpeed);
+  bool bHeading = tokParse(sReport, "HDG",  ',', '=', dfHeading);
+  bool bDepth = tokParse(sReport, "DEPTH",  ',', '=', dfDepth);
 
   if(m_verbose)
     MOOSTrace("   AIS(%s)\n", vessel_name.c_str());
@@ -307,13 +313,59 @@ bool PMV_MOOSApp::receiveAIS_REPORT(CMOOSMsg &Msg)
 					    dfHeading, dfSpeed, dfDepth);
       m_gui->mviewer->setVehicleBodyType(vessel_name, vessel_type);
     }
-    return(true);
+    returnStatus = true;
   }
   else {
-    MOOSTrace("Parse Error in receiveAIS_REPORT. \n");
-    MOOSTrace("Msg: %s\n", Msg.m_sVal.c_str());
-    return(false);
+    MOOSTrace("Parse Error in ParseSingleReport. \n");
+    MOOSTrace("Msg: %s\n", sReport.c_str());
+    returnStatus = false;
   }
+  return( returnStatus );
+}
+
+//---------------------------------------------------------------
+// Procedure: receivePK_SOL
+
+bool PMV_MOOSApp::receivePK_SOL(CMOOSMsg &Msg)
+{
+  bool returnStatus = true;
+  bool singleStatus = false;
+  vector<string> rvector;
+
+  // REPORTS in PK_SOL message are separated by ";"
+
+  vector<string> svector = parseString(Msg.m_sVal, ';');
+
+  MOOSTrace("Received PK_SOL Msg\n");
+
+  // cycle through all reports
+
+  for (int i=0;i<svector.size()-1;i++)
+  {
+     // Remove first item of string - it is the type of report
+     // (e.g. REPORT_TYPE = AIS_REPORT) so strip that off and 
+     // proceed as before with the single AIS_REPORT messages
+
+     rvector = chompString(svector[i], ',');
+     if (rvector.size() > 1 )
+     {
+        singleStatus = parseSingleReport( rvector[1].c_str());
+        if ( singleStatus == false )
+        {
+           returnStatus = false;
+        }
+     }
+  }
+  return( returnStatus );
+}
+
+//---------------------------------------------------------------
+// Procedure: receiveAIS_REPORT
+
+bool PMV_MOOSApp::receiveAIS_REPORT(CMOOSMsg &Msg)
+{
+  MOOSTrace("Received AIS_REPORT Msg\n");
+  return( parseSingleReport( Msg.m_sVal ) );
 }
 
 //--------------------------------------------------------------
@@ -447,7 +499,8 @@ void PMV_MOOSApp::receiveGRID_DELTA(CMOOSMsg &Msg)
 
 void PMV_MOOSApp::registerVariables()
 {
-  m_Comms.Register("AIS_REPORT", 0);
+//  m_Comms.Register("AIS_REPORT", 0);
+  m_Comms.Register("PK_SOL", 0);
   m_Comms.Register("AIS_REPORT_LOCAL", 0);
   m_Comms.Register("GRID_CONFIG", 0);
   m_Comms.Register("GRID_DELTA", 0);

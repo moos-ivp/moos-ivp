@@ -207,20 +207,23 @@ bool RawAIS::Iterate()
   if(runMode == "true")
    {
      cout<<"Waiting for serial input....\n";
-     if (wait_flag==FALSE) 
-     { 
+     usleep(100000);
+     //if (wait_flag==FALSE) 
+     //{ 
        res = read(fd,buf,255);
        buf[res]=0;
        printf("receive: %s size %d\n", buf, res);
-       if (res==1)
+       if (res < 1)
        { 
-          STOP=TRUE; /* stop loop if only a CR was input */
+           //STOP=TRUE; /* stop loop if only a CR was input */
           tcsetattr(fd,TCSANOW,&oldtio);
        }
        wait_flag = TRUE;      /* wait for new input */
-      
+       if(res > 1){
+       //printf("receive: %s size %d\n", buf, res);
        m_Comms.Notify("AIS_REPORT_RAW", buf);
-     }
+       }
+     //}
   }
   else{
         if(test<5)
