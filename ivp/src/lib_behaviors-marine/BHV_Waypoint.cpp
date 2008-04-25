@@ -216,7 +216,7 @@ bool BHV_Waypoint::setNextWaypoint()
   m_waypoint_engine.setNextWaypoint(m_osx, m_osy);
 
   if(m_waypoint_engine.isComplete()) {
-    postMessage("VEHICLE_WPT_STAT", "complete");
+    postMessage("WPT_STAT", "complete");
     setComplete();
     if(m_perpetual)
       m_waypoint_engine.reset();
@@ -312,8 +312,8 @@ void BHV_Waypoint::updateInfoOut(bool post)
     stat += "dist="  + doubleToString(dist_meters)  + ",";
     stat += "eta="   + doubleToString(eta_seconds);
     
-    postMessage("VEHICLE_WPT_STAT_LOCAL", stat);
-    postMessage("VEHICLE_WPT_INDEX", current_waypt);
+    postMessage("WPT_STAT_LOCAL", stat);
+    postMessage("WPT_INDEX", current_waypt);
   }
 
   XYSegList seglist = m_waypoint_engine.getSegList();

@@ -173,7 +173,7 @@ string HelmReport::getReportAsString()
   report += ",create_time=";
   report += doubleToString(m_create_time, 2);
 
-  report += ",loop_time";
+  report += ",loop_time=";
   report += doubleToString(m_loop_time, 2);
   
   vsize = m_decision_var.size();
