@@ -6,6 +6,8 @@ Version 3.0.2
 - Fixed a bug in IvPBehavior that would miss more than one update
   request happening within the same helm iteration.
 
+- Fixed innocous bug in InfoBuffer that was duplicating new
+  entries in the vector records.
 
 Version 3.0.1
 

@@ -69,6 +69,7 @@ public:
   bool   isRunnable();
 
   std::vector<std::string> getInfoVars();
+  std::string getUpdateSummary();
   std::string getDescriptor()            {return(m_descriptor);};
   std::vector<VarDataPair> getMessages() {return(m_messages);};
   void   clearMessages()                 {m_messages.clear();};
@@ -115,12 +116,11 @@ protected:
   IvPDomain  m_domain;        
   double     m_priority_wt; 
 
-  // Variables for providing behaviors w/ "udate" capability
+  // Variables for providing behaviors w/ "update" capability
   std::string m_update_var;
-  std::string m_curr_update_str;
+  std::string m_prev_update_str;
   int         m_good_updates;
   int         m_bad_updates;
-  double      m_last_update_age;
 
   // variables for providing behaviors w/ "duration" capability
   double      m_duration;

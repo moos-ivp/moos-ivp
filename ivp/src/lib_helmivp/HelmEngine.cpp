@@ -88,8 +88,9 @@ HelmReport HelmEngine::determineNextDecision(BehaviorSet *bhv_set,
       helm_report.addMsg("HELM HALTING: Safety Emergency!!!");
       return(helm_report);
     }
-
-    string descriptor =  bhv_set->getDescriptor(bhv_ix);
+    
+    string upd_summary = bhv_set->getUpdateSummary(bhv_ix);
+    string descriptor  =  bhv_set->getDescriptor(bhv_ix);
     string report_line = descriptor;
     if(newof) {
       double of_time  = of_timer.get_float_cpu_time();
@@ -106,14 +107,15 @@ HelmReport HelmEngine::determineNextDecision(BehaviorSet *bhv_set,
       double of_time  = of_timer.get_float_cpu_time();
       double pwt = newof->getPWT();
       int pcs = newof->size();
-      helm_report.addActiveBHV(descriptor, state_elapsed, pwt, pcs, of_time);
+      helm_report.addActiveBHV(descriptor, state_elapsed, pwt, pcs, 
+			       of_time, upd_summary);
     }
     if(astate=="running")
-      helm_report.addRunningBHV(descriptor, state_elapsed);
+      helm_report.addRunningBHV(descriptor, state_elapsed, upd_summary);
     if(astate=="idle")
-      helm_report.addIdleBHV(descriptor, state_elapsed);
+      helm_report.addIdleBHV(descriptor, state_elapsed, upd_summary);
     if(astate=="completed")
-      helm_report.addCompletedBHV(descriptor, state_elapsed);
+      helm_report.addCompletedBHV(descriptor, state_elapsed, upd_summary);
 	
     helm_report.addMsg(report_line);
     ofs.push_back(newof);

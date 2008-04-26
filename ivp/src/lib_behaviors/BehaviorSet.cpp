@@ -173,8 +173,7 @@ IvPFunction* BehaviorSet::produceOF(int ix, int iteration,
     behavior_reports[ix].m_descriptor   = behaviors[ix]->m_descriptor;
     behavior_reports[ix].m_update_var   = behaviors[ix]->m_update_var;
     behavior_reports[ix].m_good_updates = behaviors[ix]->m_good_updates;
-    behavior_reports[ix].m_bad_updates  =  behaviors[ix]->m_bad_updates;
-    behavior_reports[ix].m_update_age   = behaviors[ix]->m_last_update_age;
+    behavior_reports[ix].m_bad_updates  = behaviors[ix]->m_bad_updates;
     behavior_reports[ix].m_duration     = behaviors[ix]->m_duration;
     behavior_reports[ix].m_start_time   = behaviors[ix]->m_start_time;
   }
@@ -243,6 +242,17 @@ double BehaviorSet::getStateElapsed(int ix)
     return(behavior_state_time_elapsed[ix]);
   else
     return(-1);
+}
+
+//------------------------------------------------------------
+// Procedure: getUpdateSummary()
+
+string BehaviorSet::getUpdateSummary(int ix)
+{
+  if((ix >= 0) && (ix < behaviors.size()))
+    return(behaviors[ix]->getUpdateSummary());
+  else
+    return("err");
 }
 
 //------------------------------------------------------------

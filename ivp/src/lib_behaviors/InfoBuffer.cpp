@@ -160,15 +160,12 @@ bool InfoBuffer::setValue(string var, double val, double force_utc)
     tmap[var] = force_utc;
 
   vdmap[var].push_back(val);
-  vdmap[var].push_back(val);
 
   return(true);
 }
 
 //-----------------------------------------------------------
 // Procedure: setValue
-//      Note: Handles the following types of inputs:
-//            HELM_SUMMARY
 //
 
 bool InfoBuffer::setValue(string var, string val, double force_utc)
@@ -179,7 +176,6 @@ bool InfoBuffer::setValue(string var, string val, double force_utc)
   else
     tmap[var] = force_utc;
 
-  vsmap[var].push_back(val);
   vsmap[var].push_back(val);
 
   return(true);

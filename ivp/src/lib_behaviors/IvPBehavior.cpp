@@ -54,19 +54,18 @@ using namespace std;
 
 IvPBehavior::IvPBehavior(IvPDomain g_domain)
 {
-  m_domain          = g_domain;
-  m_info_buffer     = 0;
-  m_priority_wt     = 100.0;  // Default Priority Weight
-  m_descriptor      = "???";  // Default descriptor
-  m_state_ok        = true;
-  m_started         =  false;
-  m_start_time      = -1;
-  m_last_update_age = -1;
-  m_duration        = -1;
-  m_completed       = false;
-  m_good_updates    = 0;
-  m_bad_updates     = 0;
-  m_perpetual       = false;
+  m_domain       = g_domain;
+  m_info_buffer  = 0;
+  m_priority_wt  = 100.0;  // Default Priority Weight
+  m_descriptor   = "???";  // Default descriptor
+  m_state_ok     = true;
+  m_started      =  false;
+  m_start_time   = -1;
+  m_duration     = -1;
+  m_completed    = false;
+  m_good_updates = 0;
+  m_bad_updates  = 0;
+  m_perpetual    = false;
 }
   
 //-----------------------------------------------------------
@@ -434,6 +433,22 @@ vector<string> IvPBehavior::getInfoVars()
 }
 
 //-----------------------------------------------------------
+// Procedure: getUpdateSummary()
+
+string IvPBehavior::getUpdateSummary()
+{
+  string rval;
+  if(m_update_var == "")
+    rval = "n/a";
+  else {
+    rval = intToString(m_good_updates);
+    rval += "/";
+    rval += intToString(m_good_updates + m_bad_updates);
+  }
+  return(rval);
+}
+
+//-----------------------------------------------------------
 // Procedure: checkNoStarve()
 //     Notes: Check all "starve_vars" against the info_buffer
 //              to ensure no starve conditions.
@@ -463,59 +478,144 @@ bool IvPBehavior::checkNoStarve()
 //-----------------------------------------------------------
 // Procedure: checkUpdates
 
+// (1) We want to be efficient and avoid applying an update string 
+//     if it hasn't change since the last application - in case some
+//     process talking to the helm is inadvertently repeating the 
+//     same requested update over and over. So we store the value
+//     of the previous update string in m_curr_update_str, and only
+//     apply the current string if it is different.
+//
+// (2) We want to keep track of successful and failed updates, and
+//     increment m_bad_updates and m_good_updates accordingly.
+//
+// (3) A write to the update_var with an empty string is just ignored.
+
 void IvPBehavior::checkUpdates()
 {
   if(m_update_var == "")
     return;
 
-  int    i;
   bool   ok;
-  string new_update_str;
+  vector<string> new_update_strs = getBufferStringVector(m_update_var, ok);
+
+  int vsize = new_update_strs.size();
+  for(int i=0; i<vsize; i++) {
+    string new_update_str = new_update_strs[i];
+    
+    if((new_update_str != "") && (new_update_str != m_prev_update_str)) {
+    
+      vector<string> uvector = parseString(new_update_str, '#');
+      int usize = uvector.size();
+    
+      string bad_params;
+      ok = true;
+      for(int j=0; j<usize; j++) {
+	string an_update_str = uvector[j];
+	vector<string> pvector = chompString(an_update_str, '=');
+	if(pvector.size() == 2) {
+	  string param = stripBlankEnds(pvector[0]);
+	  string value = stripBlankEnds(pvector[1]);
+	  bool  result = setParam(param, value);
+	  if(!result) {
+	    ok = false;
+	    if(bad_params != "")
+	      bad_params += ",";
+	    bad_params += param;
+	  }
+	}
+	else 
+	  ok = false;
+      }
+      
+      if(!ok) {
+	m_bad_updates++;
+	string wmsg = "Faulty update for behavior: " + m_descriptor;
+	wmsg += (". Bad parameter(s): " + bad_params);
+	postMessage("BHV_WARNING", wmsg);
+      }
+      else {
+	m_good_updates++;
+	m_prev_update_str = new_update_str;
+      }
+    }
+  }
+
+  if((m_good_updates + m_bad_updates)>0) {
+    string varname = "UH_" + m_descriptor;
+    string gstr = intToString(m_good_updates) + " update(s), and ";
+    string bstr = intToString(m_bad_updates) + " failure(s)";
+    postMessage(varname, gstr+bstr);
+  }
+}
+
+#if 0
+//-----------------------------------------------------------
+// Procedure: checkUpdates
+
+void IvPBehavior::checkUpdates()
+{
+  if(m_update_var == "")
+    return;
+
+  int    i, j;
+  bool   ok;
+  vector<string> new_update_strs;
   double curr_update_age;
   
-  new_update_str  = m_info_buffer->sQuery(m_update_var, ok);
-  new_update_str  = stripBlankEnds(new_update_str);
+  new_update_strs = m_info_buffer->sQueryDeltas(m_update_var, ok);
+  int vsize = new_update_strs.size();
+  for(i=0; i<vsize; i++)
+    new_update_strs[i]  = stripBlankEnds(new_update_strs[i]);
+  
+  // The curr_update_age is the elapsed time since this variable
+  // has been written to in the info_bufer. If it was written on
+  // this cycle, then this value is zero.
   curr_update_age = m_info_buffer->tQuery(m_update_var);
   
   bool fresh = false;
   if((curr_update_age < m_last_update_age) || (m_last_update_age == -1))
     fresh = true;
   
-  if((fresh) && (new_update_str != "") && 
-     (new_update_str != m_curr_update_str)) {
+  for(i=0; i<vsize; i++) {
+    string new_update_str = new_update_strs[i];
     
-    vector<string> uvector = parseString(new_update_str, '#');
-    int usize = uvector.size();
+    // We ignore updates 
+    if((fresh) && (new_update_str != "") && 
+       (new_update_str != m_curr_update_str)) {
     
-    string bad_params;
-    ok = true;
-    for(i=0; i<usize; i++) {
-      string an_update_str = uvector[i];
-      vector<string> pvector = chompString(an_update_str, '=');
-      if(pvector.size() == 2) {
-	string param = stripBlankEnds(pvector[0]);
-	string value = stripBlankEnds(pvector[1]);
-	bool  result = setParam(param, value);
-	if(!result) {
-	  ok = false;
-	  if(bad_params != "")
-	    bad_params += ",";
-	  bad_params += param;
+      vector<string> uvector = parseString(new_update_str, '#');
+      int usize = uvector.size();
+    
+      string bad_params;
+      ok = true;
+      for(j=0; j<usize; j++) {
+	string an_update_str = uvector[j];
+	vector<string> pvector = chompString(an_update_str, '=');
+	if(pvector.size() == 2) {
+	  string param = stripBlankEnds(pvector[0]);
+	  string value = stripBlankEnds(pvector[1]);
+	  bool  result = setParam(param, value);
+	  if(!result) {
+	    ok = false;
+	    if(bad_params != "")
+	      bad_params += ",";
+	    bad_params += param;
+	  }
 	}
+	else 
+	  ok = false;
       }
-      else 
-	ok = false;
-    }
-    
-    if(!ok) {
-      m_bad_updates++;
-      string wmsg = "Faulty update for behavior: " + m_descriptor;
-      wmsg += (". Bad parameter(s): " + bad_params);
-      postMessage("BHV_WARNING", wmsg);
-    }
-    else {
-      m_good_updates++;
-      m_curr_update_str = new_update_str;
+      
+      if(!ok) {
+	m_bad_updates++;
+	string wmsg = "Faulty update for behavior: " + m_descriptor;
+	wmsg += (". Bad parameter(s): " + bad_params);
+	postMessage("BHV_WARNING", wmsg);
+      }
+      else {
+	m_good_updates++;
+	m_curr_update_str = new_update_str;
+      }
     }
   }
 
@@ -528,7 +628,7 @@ void IvPBehavior::checkUpdates()
     postMessage(varname, gstr+bstr);
   }
 }
-
+#endif
 
 //-----------------------------------------------------------
 // Procedure: durationExceeded()

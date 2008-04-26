@@ -68,6 +68,7 @@ public:
   std::string    getDescriptor(int);
   BehaviorReport getBehaviorReport(int);
   double         getStateElapsed(int);
+  std::string    getUpdateSummary(int);
 
   std::vector<VarDataPair> getMessages(int);
   std::vector<VarDataPair> getInitialVariables() {return(initial_vars);};
