@@ -9,6 +9,8 @@ Version 3.0.2
 - Fixed innocous bug in InfoBuffer that was duplicating new
   entries in the vector records.
 
+- Change in uXMS key mapping - pause is done w/ space bar, not 'p'
+
 Version 3.0.1
 
 - Fixed a bug in lib_geometry/XYPolygon that failed to reset convexity

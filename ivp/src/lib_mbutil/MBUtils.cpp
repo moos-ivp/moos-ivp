@@ -164,7 +164,7 @@ vector<string> mergeVectors(vector<string> vector1,
 //      Note: Return a vector of strings such that no string is in
 //            the vector more than once.
 
-vector<string> removeDuplicates(vector<string> svector)
+vector<string> removeDuplicates(const vector<string>& svector)
 {
   vector<string> rvector;
   
@@ -180,7 +180,7 @@ vector<string> removeDuplicates(vector<string> svector)
 // Procedure: vectorContains
 //      Note: 
 
-bool vectorContains(vector<string> svector, string str)
+bool vectorContains(const vector<string>& svector, const string& str)
 {
   int vsize = svector.size();
   for(int i=0; i<vsize; i++)
@@ -276,6 +276,45 @@ string toupper(const string& str)
   int len = str.length();
   for(int i=0; i<len; i++)
     rstr[i] = toupper(str[i]);
+  return(rstr);
+}
+
+//----------------------------------------------------------------
+// Procedure: truncString
+
+string truncString(const string& str, int sz, string style)
+{
+  if(sz < 0)
+    sz = 0;
+
+  int len  = str.length();
+  if(len <= sz)
+    return(str);
+
+  char *buff = new char[sz+1]; 
+
+  if((style == "middle") && (sz >= 4)) {
+    int front_amt = sz/2;
+    int back_amt  = (sz-2) - front_amt;
+    for(int i=0; i<front_amt; i++)
+      buff[i] = str[i];
+    buff[front_amt]   = '.';
+    buff[front_amt+1] = '.';
+    
+    for(int i=0; i<back_amt; i++) {
+      int leftix  = (front_amt+2) + i;
+      int rightix = (len - back_amt) + i;
+      buff[leftix] = str[rightix];
+    }
+    buff[sz] = '\0';
+  }
+  else { // if style is basic truncation
+    for(int i=0; i<sz; i++)
+      buff[i] = str[i];
+    buff[sz] = '\0';
+  }
+
+  string rstr = buff;
   return(rstr);
 }
 

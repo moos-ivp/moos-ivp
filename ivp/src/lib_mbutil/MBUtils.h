@@ -34,13 +34,15 @@ std::vector<std::string> chompString(const std::string&, char);
 std::vector<std::string> sortStrings(std::vector<std::string>);
 std::vector<std::string> mergeVectors(std::vector<std::string>,
 				      std::vector<std::string>);
-std::vector<std::string> removeDuplicates(std::vector<std::string>);
+std::vector<std::string> removeDuplicates(const std::vector<std::string>&);
 
-bool vectorContains(std::vector<std::string>, std::string);
+bool vectorContains(const std::vector<std::string>&, 
+		    const std::string&);
 
 std::string stripBlankEnds(const std::string&);
 std::string tolower(const std::string&);
 std::string toupper(const std::string&);
+std::string truncString(const std::string&, int, std::string="");
 std::string boolToString(bool);
 std::string intToString(int);
 std::string floatToString(float, int=0);

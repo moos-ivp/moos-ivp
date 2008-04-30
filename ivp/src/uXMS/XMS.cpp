@@ -311,7 +311,7 @@ bool XMS::addVariable(string varname)
   // This would have the effect of registering uXMS as variable to
   // be scoped on. We assert here that we don't want that.
   if(strContains(varname, "uXMS"))
-    return false;
+    return(false);
   
   // Simply return false if the variable has already been added.
   int vsize = var_names.size();
@@ -338,7 +338,6 @@ void XMS::registerVariables()
   int vsize = var_names.size();
   for(int i=0; i<vsize; i++) {
     m_Comms.Register(var_names[i], 0);
-    
     // tes - commented out to minimize startup text (for low bandwidth)
     // cout << "Registering for: [" << var_names[i] << "]" << endl;
   }

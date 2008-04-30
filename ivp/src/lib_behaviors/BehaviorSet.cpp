@@ -305,6 +305,49 @@ vector<string> BehaviorSet::getNewInfoVars()
 }
 
 //------------------------------------------------------------
+// Procedure: updateStateSpaceVars()
+//      Note: Since duplicates are checked for here, and this is
+//            the only place where the state_space_vars vector
+//            is updated, we know there are no duplicates here.
+//      Note: Returns true only if a new variable has been detected
+//            in any of the instantiated behaviors.
+
+bool BehaviorSet::updateStateSpaceVars()
+{
+  bool new_var = false;
+  
+  int vsize = behaviors.size();
+  for(int i=0; i<vsize; i++) {
+    if(behaviors[i] != 0) {
+      vector<string> ivars = behaviors[i]->getStateSpaceVars();
+      int isize = ivars.size();
+      for(int k=0; k<isize; k++) {
+	if(!vectorContains(state_space_vars, ivars[k])) {
+	  state_space_vars.push_back(ivars[k]);
+	  new_var = true;
+	}
+      }
+    }
+  }
+  return(new_var);
+}
+
+//------------------------------------------------------------
+// Procedure: getStateSpaceVars()
+
+string BehaviorSet::getStateSpaceVars()
+{
+  string rstr;
+  int vsize = state_space_vars.size();
+  for(int i=0; i<vsize; i++) {
+    if(rstr != "")
+      rstr += ",";
+    rstr += state_space_vars[i];
+  }
+  return(rstr);
+}
+
+//------------------------------------------------------------
 // Procedure: print
 
 void BehaviorSet::print()

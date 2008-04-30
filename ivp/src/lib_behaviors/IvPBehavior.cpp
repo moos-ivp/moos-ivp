@@ -336,6 +336,15 @@ void IvPBehavior::postWMessage(string g_wmsg)
   m_messages.push_back(msg);
 }
 
+//-----------------------------------------------------------
+// Procedure: postVMessage
+
+void IvPBehavior::postVMessage(string g_msg)
+{
+  VarDataPair msg("PRIVATE_INFO", g_msg);
+  m_messages.push_back(msg);
+}
+
 
 //-----------------------------------------------------------
 // Procedure: postPCMessage
@@ -780,6 +789,36 @@ vector<string> IvPBehavior::getBufferStringVector(string varname, bool& ok)
     return(empty_vector);
   }
   return(m_info_buffer->sQueryDeltas(varname, ok));
+}
+
+
+//-----------------------------------------------------------
+// Procedure: getStateSpaceVars
+//   Purpose: Get a vector of all the variables involved in the 
+//            state space of a behavior. This includes conditions, 
+//            idle_flags, end_flags and run_flags.
+
+vector<string> IvPBehavior::getStateSpaceVars()
+{
+  vector<string> rvector;
+
+  int i, vsize = m_logic_conditions.size();
+  for(i=0; i<vsize; i++) 
+    rvector = mergeVectors(rvector, m_logic_conditions[i].getVarNames());
+
+  vsize = m_run_flags.size();
+  for(i=0; i<vsize; i++)
+    rvector.push_back(m_run_flags[i].get_var());
+  
+  vsize = m_idle_flags.size();
+  for(i=0; i<vsize; i++)
+    rvector.push_back(m_idle_flags[i].get_var());
+  
+  vsize = m_end_flags.size();
+  for(i=0; i<vsize; i++)
+    rvector.push_back(m_end_flags[i].get_var());
+
+  return(rvector);
 }
 
 

@@ -76,6 +76,9 @@ public:
   std::vector<std::string> getInfoVars();
   std::vector<std::string> getNewInfoVars();
 
+  bool        updateStateSpaceVars();
+  std::string getStateSpaceVars();
+
   void print();
 
 protected:
@@ -89,6 +92,7 @@ protected:
   std::vector<VarDataPair>    default_vars;
 
   std::vector<std::string>    prev_info_vars;
+  std::vector<std::string>    state_space_vars;
 
   bool   m_report_ipf;
   double m_curr_time;

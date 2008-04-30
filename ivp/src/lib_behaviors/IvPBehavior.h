@@ -82,6 +82,7 @@ protected:
   void    postMessage(std::string, std::string);
   void    postEMessage(std::string);
   void    postWMessage(std::string);
+  void    postVMessage(std::string);
   void    postPCMessage(std::string);
   void    postFlags(const std::string&);
   void    addInfoVars(std::string);
@@ -96,6 +97,7 @@ protected:
   std::string              getBufferStringVal(std::string, bool&);
   std::vector<double>      getBufferDoubleVector(std::string, bool&);
   std::vector<std::string> getBufferStringVector(std::string, bool&);
+  std::vector<std::string> getStateSpaceVars();
 
 protected:
   const InfoBuffer* m_info_buffer;

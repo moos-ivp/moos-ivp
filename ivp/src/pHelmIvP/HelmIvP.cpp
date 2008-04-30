@@ -317,10 +317,12 @@ void HelmIvP::postBehaviorMessages()
       else {
 	string padvar = padString(var, 22, false);
 	if(sdata != "") {
-	  info_buffer->setValue(var, sdata);
-	  m_Comms.Notify(var, sdata);
-	  if(verbose == "verbose")
-	    MOOSTrace("  %s %s \n", padvar.c_str(), sdata.c_str());
+	  if(sdata != "PRIVATE_INFO") {
+	    info_buffer->setValue(var, sdata);
+	    m_Comms.Notify(var, sdata);
+	    if(verbose == "verbose")
+	      MOOSTrace("  %s %s \n", padvar.c_str(), sdata.c_str());
+	  }
 	}
 	else {
 	  info_buffer->setValue(var, ddata);
@@ -334,6 +336,15 @@ void HelmIvP::postBehaviorMessages()
     }
     if(all_messages != "")
       m_Comms.Notify("IVPHELM_POSTINGS", all_messages);
+  }
+
+  // Determine if the list of state-space related variables for
+  // the behavior-set has changed and post the new set if so.
+
+  bool changed = bhv_set->updateStateSpaceVars();
+  if(changed) {
+    string state_vars = bhv_set->getStateSpaceVars();
+    m_Comms.Notify("IVPHELM_STATEVARS", state_vars);
   }
 }
 

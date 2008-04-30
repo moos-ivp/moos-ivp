@@ -173,9 +173,6 @@ int main(int argc ,char * argv[])
     else if(str == "-t") 
       g_theXMS.setDispTime(true);
 
-    else if(str == "-c") 
-      g_theXMS.setDispCommunity(true);
-
     else if(str == "-a") 
       g_theXMS.setDispAll(true);
     
