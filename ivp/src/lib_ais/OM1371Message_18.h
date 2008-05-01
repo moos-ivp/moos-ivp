@@ -63,7 +63,7 @@ public:
 	void FormatNMEAString(int message_sequence_id);
 	// Calls MoveNMEAStringToMessageBuffer then	UnpackMessageStructure to create
 	// pAISData structure filled with data from NMEAString[]
-	void DecodeNMEAString();
+	bool DecodeNMEAString();
 	
 	void PrintMessageBufferInHex();	// for debugging	
 	virtual void PrintAISData();
@@ -79,7 +79,7 @@ protected:
 	
 	// Converts binary data in messageBuffer into AIS data 
 	// in AISTargetDataType structure (pAISData)  
-	void UnpackMessageStructure();
+	bool UnpackMessageStructure();
 	
 private:
 	unsigned char			messageBuffer[AIS_MSG_18_BUFFER_SIZE];

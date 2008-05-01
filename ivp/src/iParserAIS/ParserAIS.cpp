@@ -108,7 +108,6 @@ bool ParserAIS::handleIncomingReport(char* sdata)
           
 	  dAISData = new AISTargetDataType;
           msg_1 = new OM1371Message_1(dAISData);
-          ;
           if(msg_1->SetNMEAString(sdata, strlen(sdata), 0))
   	  {
             //MOOSTrace("msg_1->SetNMEAString is OK\n");
@@ -172,7 +171,7 @@ bool ParserAIS::handleIncomingReport(char* sdata)
 	    }
 	  
             }
-            MOOSTrace("Notify AIS_REPORT: %s\n",dynamicAIS);
+            MOOSTrace("Notify AIS_REPORT for Message 1,2,and 3: %s\n",dynamicAIS);
             if(strlen(dynamicAIS) > 0)
             {
    	        m_Comms.Notify("AIS_REPORT", dynamicAIS);
@@ -183,6 +182,89 @@ bool ParserAIS::handleIncomingReport(char* sdata)
          dAISData = NULL;
          delete msg_1;
          msg_1 = NULL;
+       }
+  }
+  else if (msg_type == 18)
+  {
+      if(msg_18 == NULL && dAISData == NULL)
+      {
+          
+	  dAISData = new AISTargetDataType;
+          msg_18 = new OM1371Message_18(dAISData);
+          if(msg_18->SetNMEAString(sdata, strlen(sdata), 0))
+  	  {
+            //MOOSTrace("msg_18->SetNMEAString is OK\n");
+            if(msg_18->DecodeNMEAString())
+            {
+            /**/
+            if(!m_Geodesy.LatLong2LocalGrid(dAISData->dynamic_data.latitude,
+					   dAISData->dynamic_data.longitude,
+					   Y_local, X_local))
+	    {
+		cout<<"ERROR: m_Geodesy.LatLong2LocalGrid "<<endl;
+	    }
+            /**/
+            //PrintSummaryData(dAISData);
+	    else
+	    {
+                /**/
+                double moos_time = MOOSTime();
+                string utc_time = dstringCompact(doubleToString(moos_time,3));
+                strcpy(dynamicAIS,"NAME="); 
+                strcat(dynamicAIS,dstringCompact(intToString(dAISData->static_data.mmsi_number)).c_str());
+                strcat(dynamicAIS,",");
+                strcat(dynamicAIS,"TYPE=Ship,");
+                strcat(dynamicAIS,"MOOS_TIME=");
+                strcat(dynamicAIS,dstringCompact(doubleToString(moos_time)).c_str());
+                strcat(dynamicAIS,",");
+                //strcat(dynamicAIS,"UTC_TIME=");
+                //strcat(dynamicAIS,utc_time.c_str());
+                //strcat(dynamicAIS,",");
+                strcat(dynamicAIS,"X="); 
+                strcat(dynamicAIS,dstringCompact(doubleToString(X_local)).c_str());
+                strcat(dynamicAIS,",");
+   		strcat(dynamicAIS,"Y="); 
+                strcat(dynamicAIS,dstringCompact(doubleToString(Y_local)).c_str());
+                strcat(dynamicAIS,",");
+                strcat(dynamicAIS,"LAT="); 
+                strcat(dynamicAIS,dstringCompact(doubleToString(dAISData->dynamic_data.latitude)).c_str());
+                strcat(dynamicAIS,",");
+		strcat(dynamicAIS,"LON="); 
+                strcat(dynamicAIS,dstringCompact(doubleToString(dAISData->dynamic_data.longitude)).c_str());
+                strcat(dynamicAIS,",");
+		strcat(dynamicAIS,"SPD="); 
+                strcat(dynamicAIS,dstringCompact(doubleToString(dAISData->dynamic_data.speed_over_ground*0.5144)).c_str());
+                strcat(dynamicAIS,",");
+		strcat(dynamicAIS,"HDG="); 
+                strcat(dynamicAIS,dstringCompact(doubleToString(dAISData->dynamic_data.course_over_ground)).c_str());
+                strcat(dynamicAIS,",");
+		strcat(dynamicAIS,"DEPTH="); 
+                strcat(dynamicAIS,dstringCompact(doubleToString(dAISData->dynamic_data.depth)).c_str());
+		strcat(dynamicAIS,",");
+		strcat(dynamicAIS,"AOU_SEMI_MAJOR="); 
+                strcat(dynamicAIS,dstringCompact(doubleToString(4.0)).c_str());
+		strcat(dynamicAIS,",");
+		strcat(dynamicAIS,"AOU_SEMI_MINOR="); 
+                strcat(dynamicAIS,dstringCompact(doubleToString(2.0)).c_str());
+		strcat(dynamicAIS,",");
+		strcat(dynamicAIS,"AOU_ORIENT="); 
+                strcat(dynamicAIS,dstringCompact(doubleToString(0.0)).c_str());
+                
+                /**/
+	    }
+	  
+            }
+            MOOSTrace("Notify AIS_REPORT for Message 18: %s\n",dynamicAIS);
+            if(strlen(dynamicAIS) > 0)
+            {
+   	        m_Comms.Notify("AIS_REPORT", dynamicAIS);
+            }
+	  }
+         memset(dynamicAIS, 0, sizeof dynamicAIS);
+         delete dAISData;
+         dAISData = NULL;
+         delete msg_18;
+         msg_18 = NULL;
        }
   }
   else

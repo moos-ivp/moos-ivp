@@ -44,7 +44,7 @@ using namespace std;
 void signal_handler_IO (int status);   /* definition of signal handler */
 int wait_flag=TRUE;                    /* TRUE while no signal received */
 string runMode;    
-int test = 0;    
+   
 //-----------------------------------------------------------------
 // Procedure: Constructor
 
@@ -224,11 +224,6 @@ bool RawAIS::Iterate()
        m_Comms.Notify("AIS_REPORT_RAW", buf);
        }
      //}
-  }
-  else{
-        if(test<5)
-	//handleIncomingReport();
-     test++;
   }
   
   return(true);

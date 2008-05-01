@@ -28,7 +28,7 @@
 #include "OM1371Message.h"
 #include "OM1371Message_1.h"
 #include "OM1371Message_5.h"
- 
+#include "OM1371Message_18.h"
 
 class ParserAIS : public CMOOSApp
 {
@@ -53,6 +53,7 @@ protected:
   AISTargetDataType*  dAISData;
   OM1371Message_1* msg_1;
   OM1371Message_5* msg_5;
+  OM1371Message_18* msg_18;
 };
 
 #endif

@@ -198,13 +198,13 @@ void OM1371Message_18::PackMessageStructure()
 // the SMMTT requirement, but useful capability (for testing)
 //
 ////////////////////////////////////////////////////////////////////
-void OM1371Message_18::UnpackMessageStructure()
+bool OM1371Message_18::UnpackMessageStructure()
 {
 
 	if(pAISData == NULL)
 	{
 		cout << "OM1371Message_18::UnpackMessageStructure. No data structure, no data" << endl;
-		return;
+		return false;
 	}
 	
 	// Message ID bits 0 through 5
@@ -212,7 +212,7 @@ void OM1371Message_18::UnpackMessageStructure()
 	if(message_type != 18)
 	{
 		cout << "OM1371Message_18::UnpackMessageStructure. Not message type 18.  Can't decode. " << endl;
-		return;
+		return false;
 	}
 
 	pAISData->smmtt_data.repeat_indicator = GetUnsignedLongValue(messageBuffer, AIS_MSG_18_BUFFER_SIZE, 
@@ -250,7 +250,7 @@ void OM1371Message_18::UnpackMessageStructure()
 							
 	pAISData->dynamic_data.raim_flag = GetUnsignedLongValue(messageBuffer, AIS_MSG_18_BUFFER_SIZE, 
 							AIS_MSG_18_RAIM_FLAG_START, AIS_MSG_18_RAIM_FLAG_SIZE);
-
+        return true;
 }
 	
 //////////////////////////////////////////////////////
@@ -294,10 +294,11 @@ void OM1371Message_18::FormatNMEAString(int message_sequence_id)
 // pAISData structure filled with data from NMEAString[]
 //
 //////////////////////////////////////////////////////
-void OM1371Message_18::DecodeNMEAString()
+bool OM1371Message_18::DecodeNMEAString()
 {
 	MoveNMEAStringToMessageBuffer();
-	UnpackMessageStructure();
+	bool isOK = UnpackMessageStructure();
+        return isOK;
 }
 //////////////////////////////////////////////////////////
 // MoveNMEAStringToMessageBuffer
