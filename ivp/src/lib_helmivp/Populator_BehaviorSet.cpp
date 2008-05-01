@@ -102,7 +102,7 @@
 #include "BHV_CollaborativeTracking.h"
 #endif
 
-#if 0
+#if 1
 // Andrew Shafer Behaviors
 #include "BHV_SearchArtifact.h"
 #endif
@@ -416,7 +416,7 @@ IvPBehavior* Populator_BehaviorSet::initializeBehavior(string bhv_name)
     bhv = new BHV_CollaborativeTracking(domain);
 #endif
 
-#if 0
+#if 1
   // Andrew Shafer Behaviors --------------------------
   else if (bhv_name == "BHV_SearchArtifact")
     bhv = new BHV_SearchArtifact(domain);
