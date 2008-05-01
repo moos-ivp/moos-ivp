@@ -3,18 +3,22 @@
 # Author(s):                                Mike Benjamin
 #--------------------------------------------------------
 
-FILE(GLOB SRC *.cpp)
-  
-ADD_EXECUTABLE(logview ${SRC})
-     
-TARGET_LINK_LIBRARIES(logview
-  marineview
-  navplot
-  geometry
-  mbutil
-  m
+IF(BUILD_GUIS)
 
-  # Standard libraries used by this project's FLTK apps...
-  fltk 
-  fltk_gl 
-  tiff)
+	FILE(GLOB SRC *.cpp)
+	  
+	ADD_EXECUTABLE(logview ${SRC})
+	     
+	TARGET_LINK_LIBRARIES(logview
+	  marineview
+	  navplot
+	  geometry
+	  mbutil
+	  m
+
+	  # Standard libraries used by this project's FLTK apps...
+	  fltk 
+	  fltk_gl 
+	  tiff)
+	  
+ENDIF(BUILD_GUIS)
