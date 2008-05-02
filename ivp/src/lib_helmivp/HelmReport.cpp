@@ -30,12 +30,14 @@ using namespace std;
 
 HelmReport::HelmReport() 
 { 
-  m_iteration       = 0;
-  m_ofnum           = 0;
-  m_create_time     = 0;
-  m_solve_time      = 0;
-  m_loop_time       = 0;
-  m_halted          = false;
+  m_iteration     = 0;
+  m_ofnum         = 0;
+  m_time_utc      = 0;
+  m_warning_count = 0;
+  m_create_time   = 0;
+  m_solve_time    = 0;
+  m_loop_time     = 0;
+  m_halted        = false;
 }
 
 //-----------------------------------------------------------
@@ -166,20 +168,13 @@ string HelmReport::getReportAsString()
   int i, vsize;
   string report;
 
-  report += "iter="; 
-  report += intToString(m_iteration);
-
-  report += ",ofnum="; 
-  report += intToString(m_ofnum);
-
-  report += ",solve_time=";
-  report += doubleToString(m_solve_time, 2);
-
-  report += ",create_time=";
-  report += doubleToString(m_create_time, 2);
-
-  report += ",loop_time=";
-  report += doubleToString(m_loop_time, 2);
+  report += ("iter=" + intToString(m_iteration));
+  report += (",ofnum=" + intToString(m_ofnum));
+  report += (",warnings=" + intToString(m_warning_count));
+  report += (",utc_time=" + doubleToString(m_time_utc, 2));
+  report += (",solve_time=" + doubleToString(m_solve_time, 2));
+  report += (",create_time=" + doubleToString(m_create_time, 2));
+  report += (",loop_time=" + doubleToString(m_loop_time, 2));
   
   vsize = m_decision_var.size();
   for(i=0; i<vsize; i++) {

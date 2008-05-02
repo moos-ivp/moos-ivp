@@ -44,7 +44,6 @@
 #include <vector>
 #include "IvPBehavior.h"
 #include "VarDataPair.h"
-#include "BehaviorReport.h"
 
 class IvPFunction;
 class BehaviorSet
@@ -66,7 +65,6 @@ public:
 
   IvPBehavior*   getBehavior(int);
   std::string    getDescriptor(int);
-  BehaviorReport getBehaviorReport(int);
   double         getStateElapsed(int);
   std::string    getUpdateSummary(int);
 
@@ -84,7 +82,6 @@ public:
 protected:
   std::vector<IvPBehavior*>   behaviors;
   std::vector<std::string>    behavior_states;
-  std::vector<BehaviorReport> behavior_reports;
   std::vector<double>         behavior_state_time_entered;
   std::vector<double>         behavior_state_time_elapsed;
 

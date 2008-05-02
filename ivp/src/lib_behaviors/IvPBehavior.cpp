@@ -506,7 +506,7 @@ void IvPBehavior::checkUpdates()
 
   bool   ok;
   vector<string> new_update_strs = getBufferStringVector(m_update_var, ok);
-
+  
   int vsize = new_update_strs.size();
   for(int i=0; i<vsize; i++) {
     string new_update_str = new_update_strs[i];
@@ -549,95 +549,13 @@ void IvPBehavior::checkUpdates()
     }
   }
 
-  if((m_good_updates + m_bad_updates)>0) {
+  if((m_good_updates + m_bad_updates) > 0) {
     string varname = "UH_" + m_descriptor;
     string gstr = intToString(m_good_updates) + " update(s), and ";
     string bstr = intToString(m_bad_updates) + " failure(s)";
     postMessage(varname, gstr+bstr);
   }
 }
-
-#if 0
-//-----------------------------------------------------------
-// Procedure: checkUpdates
-
-void IvPBehavior::checkUpdates()
-{
-  if(m_update_var == "")
-    return;
-
-  int    i, j;
-  bool   ok;
-  vector<string> new_update_strs;
-  double curr_update_age;
-  
-  new_update_strs = m_info_buffer->sQueryDeltas(m_update_var, ok);
-  int vsize = new_update_strs.size();
-  for(i=0; i<vsize; i++)
-    new_update_strs[i]  = stripBlankEnds(new_update_strs[i]);
-  
-  // The curr_update_age is the elapsed time since this variable
-  // has been written to in the info_bufer. If it was written on
-  // this cycle, then this value is zero.
-  curr_update_age = m_info_buffer->tQuery(m_update_var);
-  
-  bool fresh = false;
-  if((curr_update_age < m_last_update_age) || (m_last_update_age == -1))
-    fresh = true;
-  
-  for(i=0; i<vsize; i++) {
-    string new_update_str = new_update_strs[i];
-    
-    // We ignore updates 
-    if((fresh) && (new_update_str != "") && 
-       (new_update_str != m_curr_update_str)) {
-    
-      vector<string> uvector = parseString(new_update_str, '#');
-      int usize = uvector.size();
-    
-      string bad_params;
-      ok = true;
-      for(j=0; j<usize; j++) {
-	string an_update_str = uvector[j];
-	vector<string> pvector = chompString(an_update_str, '=');
-	if(pvector.size() == 2) {
-	  string param = stripBlankEnds(pvector[0]);
-	  string value = stripBlankEnds(pvector[1]);
-	  bool  result = setParam(param, value);
-	  if(!result) {
-	    ok = false;
-	    if(bad_params != "")
-	      bad_params += ",";
-	    bad_params += param;
-	  }
-	}
-	else 
-	  ok = false;
-      }
-      
-      if(!ok) {
-	m_bad_updates++;
-	string wmsg = "Faulty update for behavior: " + m_descriptor;
-	wmsg += (". Bad parameter(s): " + bad_params);
-	postMessage("BHV_WARNING", wmsg);
-      }
-      else {
-	m_good_updates++;
-	m_curr_update_str = new_update_str;
-      }
-    }
-  }
-
-  m_last_update_age = curr_update_age;
-
-  if((m_good_updates + m_bad_updates)>0) {
-    string varname = "UH_" + m_descriptor;
-    string gstr = intToString(m_good_updates) + " update(s), and ";
-    string bstr = intToString(m_bad_updates) + " failure(s)";
-    postMessage(varname, gstr+bstr);
-  }
-}
-#endif
 
 //-----------------------------------------------------------
 // Procedure: durationExceeded()

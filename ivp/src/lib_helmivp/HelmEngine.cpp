@@ -54,6 +54,7 @@ HelmReport HelmEngine::determineNextDecision(BehaviorSet *bhv_set,
 
   HelmReport helm_report;
   helm_report.m_iteration = iteration;
+  helm_report.m_time_utc  = curr_time;
 
   if(!bhv_set) {
     helm_report.m_halted = true;

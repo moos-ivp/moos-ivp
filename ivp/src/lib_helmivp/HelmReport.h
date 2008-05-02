@@ -44,6 +44,9 @@ public:
   void addCompletedBHV(const std::string& descriptor, double time,
 		       const std::string& update_summary);
   
+  void setTimeUTC(double v)   {m_time_utc = v;};
+  void setWarningCount(int v) {m_warning_count = v;};
+  
   std::vector<std::string> getMsgs() const  
     {return(m_messages);};
   
@@ -64,7 +67,6 @@ public:
   std::string getReportAsString();
 
 protected:
-
   std::vector<std::string>  m_messages;
   std::string               m_running_bhvs;
   std::string               m_active_bhvs;
@@ -72,6 +74,8 @@ protected:
   std::string               m_completed_bhvs;
   std::string               m_idle_bhvs;
 
+  int                       m_warning_count;
+  double                    m_time_utc;
   int                       m_iteration;
   int                       m_ofnum;
   double                    m_create_time;
@@ -83,23 +87,3 @@ protected:
 };
 
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

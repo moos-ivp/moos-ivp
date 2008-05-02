@@ -58,23 +58,23 @@ protected:
   void requestBehaviorLogging();
 
 protected:
-  InfoBuffer*   info_buffer;
-  bool          has_control;
-  bool          allow_overide;
-  IvPDomain     ivp_domain;
-  BehaviorSet*  bhv_set;
-  bool          ylog_flag;
-  std::string   verbose;
-  int           iteration;
-  double        ok_skew;
-  bool          skews_matter;
+  InfoBuffer*   m_info_buffer;
+  bool          m_has_control;
+  bool          m_allow_overide;
+  IvPDomain     m_ivp_domain;
+  BehaviorSet*  m_bhv_set;
+  std::string   m_verbose;
+  int           m_iteration;
+  double        m_ok_skew;
+  bool          m_skews_matter;
+  int           m_warning_count;
 
-  HelmEngine*   hengine;
-  std::string   ownship;
+  HelmEngine*   m_hengine;
+  std::string   m_ownship;
 
-  std::map<std::string, bool> optional_var;
+  std::map<std::string, bool> m_optional_var;
 
-  std::set<std::string> bhv_files;
+  std::set<std::string> m_bhv_files;
 };
 
 #endif 

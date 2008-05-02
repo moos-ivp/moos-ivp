@@ -77,9 +77,6 @@ void BehaviorSet::addBehavior(IvPBehavior *bhv)
 {
   behaviors.push_back(bhv);
   behavior_states.push_back("");
-  BehaviorReport new_report;
-  behavior_reports.push_back(new_report);
-  
   behavior_state_time_entered.push_back(-1);
   behavior_state_time_elapsed.push_back(-1);
 }
@@ -166,16 +163,6 @@ IvPFunction* BehaviorSet::produceOF(int ix, int iteration,
     behavior_states[ix] = new_activity_state;
     double elapsed = m_curr_time - behavior_state_time_entered[ix];
     behavior_state_time_elapsed[ix] = elapsed;
-    
-    behavior_reports[ix].m_state     = new_activity_state;
-    behavior_reports[ix].m_priority  = pwt;
-    behavior_reports[ix].m_pieces    = pcs;
-    behavior_reports[ix].m_descriptor   = behaviors[ix]->m_descriptor;
-    behavior_reports[ix].m_update_var   = behaviors[ix]->m_update_var;
-    behavior_reports[ix].m_good_updates = behaviors[ix]->m_good_updates;
-    behavior_reports[ix].m_bad_updates  = behaviors[ix]->m_bad_updates;
-    behavior_reports[ix].m_duration     = behaviors[ix]->m_duration;
-    behavior_reports[ix].m_start_time   = behaviors[ix]->m_start_time;
   }
   return(ipf);
 }
@@ -221,24 +208,11 @@ string BehaviorSet::getDescriptor(int ix)
 }
 
 //------------------------------------------------------------
-// Procedure: getBehaviorReport
-
-BehaviorReport BehaviorSet::getBehaviorReport(int ix)
-{
-  BehaviorReport null_report;
-  
-  if((ix >= 0) && (ix < behavior_reports.size()))
-    return(behavior_reports[ix]);
-  else
-    return(null_report);
-}
-
-//------------------------------------------------------------
 // Procedure: getStateElapsed
 
 double BehaviorSet::getStateElapsed(int ix)
 {
-  if((ix >= 0) && (ix < behavior_reports.size()))
+  if((ix >= 0) && (ix < behaviors.size()))
     return(behavior_state_time_elapsed[ix]);
   else
     return(-1);
