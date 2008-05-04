@@ -1,13 +1,14 @@
-initialize   DEPLOY        = false
-initialize   RETURN        = false
-initialize   TRAIL         = false
+initialize   DEPLOY   = false
+initialize   RETURN   = false
+initialize   TRAIL    = false
 
 //----------------------------------------------
 Behavior = BHV_Trail
 {
-  name       = bhv_trail_vehi1
+  name       = trail_vehi1
   pwt        = 100
   condition  = (DEPLOY = true) and (TRAIL == true)
+  condition  = (RETURN != true)
 
          contact = vehicle1
      trail_range = 30
@@ -18,9 +19,9 @@ Behavior = BHV_Trail
 //----------------------------------------------
 Behavior = BHV_Waypoint
 {
-  name      = bhv_waypoint
+  name      = waypoint
   pwt       = 100	
   condition = (DEPLOY == true) and (RETURN == true)
 
-     points = 0,-10
+  points = 0,-10
 }

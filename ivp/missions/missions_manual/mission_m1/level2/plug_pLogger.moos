@@ -9,6 +9,9 @@ ProcessConfig = pLogger
   SyncLog 	= true @ 0.2
   AsyncLog 	= true
   FileTimeStamp = true
+
+  // Log it all!!!!!
+  WildCardLogging = true 
   
   // PID Output
   Log		= DESIRED_THRUST     @ 0

@@ -2,8 +2,6 @@ ServerHost = localhost
 ServerPort = 9201
 Simulator  = true
 
-Hello $(FOOBAR)
-  
 // Community name IS the vehicle name
 Community  = vehicle1
   
@@ -106,6 +104,9 @@ ProcessConfig = pLogger
   SyncLog 	= true @ 0.2
   AsyncLog 	= true
   FileTimeStamp = true
+
+  // Log it all!!!!!
+  WildCardLogging = true 
   
   // PID Output
   Log		= DESIRED_THRUST     @ 0

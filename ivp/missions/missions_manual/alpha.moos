@@ -15,16 +15,19 @@ ProcessConfig = ANTLER
 {
   MSBetweenLaunches = 200
 
-  Run = MOOSDB		@ NewConsole = true
+  Run = MOOSDB		@ NewConsole = true, LaunchString=block1
   Run = iMarineSim	@ NewConsole = true
   Run = pEchoVar	@ NewConsole = true
   Run = pLogger		@ NewConsole = true
   Run = pTransponderAIS	@ NewConsole = true
   Run = pMarinePID	@ NewConsole = true
-  Run = pMarineViewer	@ NewConsole = true
-  Run = uXMS		@ NewConsole = true
+  Run = pMarineViewer	@ NewConsole = true, LaunchString=block0
+  Run = uXMS		@ NewConsole = true, LaunchString=block2 ~ uXMS, DB_TIME, AIS_REPORT_LOCAL
   Run = pHelmIvP	@ NewConsole = true
   Run = iRemote		@ NewConsole = true
+
+  block2 = xterm, -bg, #FFFFFF, -fg, #000000, -geometry, 80x50+400+400
+
 }
 
 //------------------------------------------
@@ -51,7 +54,7 @@ ProcessConfig = pHelmIvP
   CommsTick  = 4
 
   Behaviors  = mission1.bhv
-  Verbose    = false
+  Verbose    = true
   Domain     = course:0:359:360
   Domain     = speed:0:4:21
 
@@ -123,15 +126,13 @@ ProcessConfig = pLogger
 
   Log		= DESIRED_THRUST @ 0.1
   Log		= DESIRED_RUDDER @ 0.1
-  Log           = NAV_X   @ 0.1
-  Log           = NAV_Y   @ 0.1
-  Log           = NAV_Yaw @ 0.1
-  Log           = NAV_Heading @ 0.1
-  Log           = NAV_Speed @ 0.1
-  Log           = LOOP_WALL @ 0.1
-  Log           = LOOP_CPU @ 0.1
-  log  		= DIST_TO_REGION @ 0.1
-  Log           = AIS_REPORT @ 0.1
+  Log           = NAV_X          @ 0.1
+  Log           = NAV_Y          @ 0.1
+  Log           = NAV_HEADING    @ 0.1
+  Log           = NAV_SPEED      @ 0.1
+  Log           = LOOP_WALL      @ 0.1
+  Log           = LOOP_CPU       @ 0.1
+  Log           = AIS_REPORT     @ 0.1
 }
 
 //------------------------------------------
