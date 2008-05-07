@@ -163,6 +163,7 @@ bool BHV_SearchArtifact::updateFromInfoBuffer()
     return(false);
     
   vector<string> updates = getBufferStringVector("ARTIFACTGRID_DELTA", ok7);
+  //postWMessage("Updating ArtifactGrid with " + intToString(updates.size()) + " updates");
   vector<string>::const_iterator p;
   for(p = updates.begin(); p != updates.end(); p++){
   	search_grid.processDelta( *p );

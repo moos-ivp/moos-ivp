@@ -11,7 +11,6 @@
 #include "AOF.h"
 #include "IvPDomain.h"
 #include "XYArtifactGrid.h"
-#include "SearchPassValue.h"
 
 typedef unsigned int uint;
 

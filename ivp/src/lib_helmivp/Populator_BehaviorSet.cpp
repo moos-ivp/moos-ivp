@@ -105,6 +105,7 @@
 #if 1
 // Andrew Shafer Behaviors
 #include "BHV_SearchArtifact.h"
+#include "BHV_Lawnmower.h"
 #endif
 
 using namespace std;
@@ -420,6 +421,8 @@ IvPBehavior* Populator_BehaviorSet::initializeBehavior(string bhv_name)
   // Andrew Shafer Behaviors --------------------------
   else if (bhv_name == "BHV_SearchArtifact")
     bhv = new BHV_SearchArtifact(domain);
+  else if (bhv_name == "BHV_Lawnmower")
+    bhv = new BHV_Lawnmower(domain);
 #endif 
 
   return(bhv);

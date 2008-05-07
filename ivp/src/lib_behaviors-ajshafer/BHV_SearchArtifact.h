@@ -10,7 +10,6 @@
 
 #include "IvPBehavior.h"
 #include "XYArtifactGrid.h"
-#include "SearchPassValue.h"
 
 class BHV_SearchArtifact : public IvPBehavior {
 public:
