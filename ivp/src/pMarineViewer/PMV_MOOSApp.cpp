@@ -76,7 +76,7 @@ bool PMV_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
       receivePK_SOL(Msg);
       gui_needs_redraw = true;
     }
-    else if(key == "AIS_REPORT_LOCAL") {
+    else if((key == "AIS_REPORT_LOCAL") || (key == "AIS_REPORT")) {
       receiveAIS_REPORT(Msg);
       gui_needs_redraw = true;
     }
@@ -502,6 +502,7 @@ void PMV_MOOSApp::registerVariables()
 //  m_Comms.Register("AIS_REPORT", 0);
   m_Comms.Register("PK_SOL", 0);
   m_Comms.Register("AIS_REPORT_LOCAL", 0);
+  m_Comms.Register("AIS_REPORT", 0);
   m_Comms.Register("GRID_CONFIG", 0);
   m_Comms.Register("GRID_DELTA", 0);
   m_Comms.Register("VIEW_POLYGON", 0);
