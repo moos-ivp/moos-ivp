@@ -43,7 +43,7 @@ ProcessConfig = ANTLER
   Run = pMarinePID	@ NewConsole = false
   Run = uProcessWatch	@ NewConsole = false
 
-  //Run = pHelmIvP	@ NewConsole = false
+  Run = pHelmIvP	@ NewConsole = false
   //Run = iRemote	@ NewConsole = false
 }
 
@@ -99,7 +99,7 @@ ProcessConfig = pHelmIvP
   ACTIVE_START = true
 
   //IF BELOW IS COMMENTED OUT - BHV FILE IS GIVEN AS COMMAND LINE ARG	
-  //Behaviors = foobar.bhv  
+  Behaviors = V200.bhv  
 }
 
 //------------------------------------------------------------------
