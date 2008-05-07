@@ -23,6 +23,10 @@
 #pragma warning(disable : 4786)
 #endif
 
+#ifdef _WIN32
+#define strncasecmp _strnicmp
+#endif
+
 #include <iostream>
 #include <stdlib.h>
 #include <stdio.h>
@@ -218,6 +222,7 @@ bool Populator_BehaviorSet2::handleLine(string line)
   }
   
   if(define_mode == 1) {
+    left = tolower(left);
     IvPBehavior *bhv = behaviors[behaviors.size()-1];
     bool result = bhv->setParam(left.c_str(), right.c_str());
     return(result);
