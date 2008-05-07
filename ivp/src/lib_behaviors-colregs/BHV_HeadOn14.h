@@ -15,6 +15,8 @@
 #include <string>
 #include "IvPBehavior.h"
 
+extern "C" IvPBehavior *createBehavior(IvPDomain d);  
+
 class IvPDomain;
 class BHV_HeadOn14 : public IvPBehavior {
 public:

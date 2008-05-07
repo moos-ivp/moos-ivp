@@ -28,6 +28,13 @@
 using namespace std;
 
 //-----------------------------------------------------------
+// Boilerplate for Dynamic Behavior Loading
+
+IvPBehavior *createBehavior(IvPDomain domain) {
+  return(new BHV_GiveWay16(domain));
+}
+
+//-----------------------------------------------------------
 // Procedure: Constructor
 
 BHV_GiveWay16::BHV_GiveWay16(IvPDomain gdomain) : 

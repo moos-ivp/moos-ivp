@@ -15,12 +15,14 @@
 #include <string>
 #include "IvPBehavior.h"
 
+extern "C" IvPBehavior *createBehavior(IvPDomain d);  
+
 class IvPDomain;
 class BHV_GiveWay16 : public IvPBehavior {
 public:
   BHV_GiveWay16(IvPDomain);
   ~BHV_GiveWay16() {};
-  
+
   IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
   void         onIdleState();
