@@ -5,7 +5,8 @@
 
 MACRO(ADD_BHV BHV_NAME)
   ADD_LIBRARY(${BHV_NAME} SHARED ${BHV_NAME}.cpp)
-  TARGET_LINK_LIBRARIES(${BHV_NAME} behaviors bhvutil mbutil geometry m)
+  TARGET_LINK_LIBRARIES(${BHV_NAME} 
+    behaviors ivpbuild ivpcore bhvutil mbutil geometry m)
 ENDMACRO(ADD_BHV)
 
 ADD_BHV(BHV_HeadOn14)
