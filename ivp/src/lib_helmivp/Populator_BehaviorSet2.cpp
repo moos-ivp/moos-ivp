@@ -28,7 +28,7 @@
 #include <stdio.h>
 #include "MBUtils.h"
 #include "FileBuffer.h"
-#include "Populator_BehaviorSet.h"
+#include "Populator_BehaviorSet2.h"
 
 #ifdef _WIN32
 #define strncasecmp _strnicmp
@@ -40,10 +40,10 @@ using namespace std;
 //-------------------------------------------------------------
 // Procedure: Constructor
 
-Populator_BehaviorSet::Populator_BehaviorSet(IvPDomain g_domain,
+Populator_BehaviorSet2::Populator_BehaviorSet2(IvPDomain g_domain,
 					     InfoBuffer *g_buffer)
 {
-  // cout << "Populator_BehaviorSet::Constructor()" << endl;
+  // cout << "Populator_BehaviorSet2::Constructor()" << endl;
   // g_domain.print();
   // cout << endl << endl;
 
@@ -57,7 +57,7 @@ Populator_BehaviorSet::Populator_BehaviorSet(IvPDomain g_domain,
 //-------------------------------------------------------------
 // Procedure: loadBehaviors
 
-void Populator_BehaviorSet::loadBehaviors(const string & lib_directory) 
+void Populator_BehaviorSet2::loadBehaviors(const string & lib_directory) 
 {
 
 }
@@ -66,7 +66,7 @@ void Populator_BehaviorSet::loadBehaviors(const string & lib_directory)
 //-------------------------------------------------------------
 // Procedure: populate
 
-BehaviorSet *Populator_BehaviorSet::populate(set<string> bhv_files)
+BehaviorSet *Populator_BehaviorSet2::populate(set<string> bhv_files)
 {
   int i;
   set<string>::const_iterator p;
@@ -122,7 +122,7 @@ BehaviorSet *Populator_BehaviorSet::populate(set<string> bhv_files)
 //      Note: A convenience function when the behaviors are 
 //            given by only one file.
 
-BehaviorSet *Populator_BehaviorSet::populate(string filestr)
+BehaviorSet *Populator_BehaviorSet2::populate(string filestr)
 {
   set<string> bhv_files;
   bhv_files.insert(filestr);
@@ -134,7 +134,7 @@ BehaviorSet *Populator_BehaviorSet::populate(string filestr)
 //   Returns: 1 if all OK
 //            0 otherwise
 //
-bool Populator_BehaviorSet::handleLine(string line)
+bool Populator_BehaviorSet2::handleLine(string line)
 {
   // Comments are anything to the right of a "#" or "//"
   line = stripComment(line, "//");
@@ -228,7 +228,7 @@ bool Populator_BehaviorSet::handleLine(string line)
 
 //----------------------------------------------------------
 
-void Populator_BehaviorSet::load_behavior_libs(string dirname) 
+void Populator_BehaviorSet2::load_behavior_libs(string dirname) 
 {
   bhv_factory.load_directory(dirname);
 }
@@ -236,7 +236,7 @@ void Populator_BehaviorSet::load_behavior_libs(string dirname)
 //----------------------------------------------------------
 // Procedure: initializeBehavior
 
-IvPBehavior* Populator_BehaviorSet::initializeBehavior(string bhv_name)
+IvPBehavior* Populator_BehaviorSet2::initializeBehavior(string bhv_name)
 {
   if (! bhv_factory.is_known_behavior(bhv_name)) {
     return NULL;

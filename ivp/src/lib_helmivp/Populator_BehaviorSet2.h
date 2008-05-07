@@ -20,8 +20,8 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
-#ifndef POPULATOR_BEHAVIORSET_HEADER
-#define POPULATOR_BEHAVIORSET_HEADER
+#ifndef POPULATOR_BEHAVIORSET2_HEADER
+#define POPULATOR_BEHAVIORSET2_HEADER
 
 #include <string>
 #include <set>
@@ -33,10 +33,10 @@
 #include "InfoBuffer.h"
 #include "BehaviorFactory.h"
 
-class Populator_BehaviorSet {
+class Populator_BehaviorSet2 {
 public:
-  Populator_BehaviorSet(IvPDomain, InfoBuffer*);
-  ~Populator_BehaviorSet() {};
+  Populator_BehaviorSet2(IvPDomain, InfoBuffer*);
+  ~Populator_BehaviorSet2() {};
 
   void load_behavior_libs(std::string dirname);
 
