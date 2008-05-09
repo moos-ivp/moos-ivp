@@ -27,5 +27,7 @@ TARGET_LINK_LIBRARIES(pHelmIvP
   geometry
   logic 
   m
+  dl
+  genutil
   pthread)
 

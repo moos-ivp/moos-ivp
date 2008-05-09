@@ -47,7 +47,7 @@ using namespace std;
 Populator_BehaviorSet2::Populator_BehaviorSet2(IvPDomain g_domain,
 					     InfoBuffer *g_buffer)
 {
-  // cout << "Populator_BehaviorSet2::Constructor()" << endl;
+  cout << "Populator_BehaviorSet2::Constructor()" << endl;
   // g_domain.print();
   // cout << endl << endl;
 

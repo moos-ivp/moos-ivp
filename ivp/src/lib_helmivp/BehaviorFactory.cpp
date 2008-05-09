@@ -10,15 +10,18 @@ using namespace std;
 //==============================================================================
 
 BehaviorFactory::BehaviorFactory() {
+   cerr << "BehaviorFactory::BehaviorFactory()" << endl;
 }
 
 //==============================================================================
 
 BehaviorFactory::~BehaviorFactory() {
+cerr << "BehaviorFactory::~BehaviorFactory()" << endl;
    // If this is being called as the program is being shut down, it's probably
    // superfluous.  But just in case it's not...
+
    for (int i = 0; i < open_library_handles.size(); ++i) {
-      dlclose(open_library_handles[i]);
+//       dlclose(open_library_handles[i]);
    }
 }
 
@@ -64,25 +67,27 @@ void BehaviorFactory::load_directory(string dirname) {
 
       const char *dlsym_error;
       TFuncPtrCreateBehavior createFn = 
-         reinterpret_cast<TFuncPtrCreateBehavior>(dlsym(handle, "create_behavior"));
+         reinterpret_cast<TFuncPtrCreateBehavior>(dlsym(handle, "createBehavior"));
       dlsym_error = dlerror();
       if (dlsym_error) {
-         cerr << "Cannot load symbol 'create_behavior' from file " << fname << endl;
+         cerr << "Cannot load symbol 'createBehavior' from file " << fname << endl;
          cerr << "dlerror() returns: " << dlsym_error << endl;
          exit(1);
       }
 
-      TFuncPtrDeleteBehavior deleteFn = 
-         reinterpret_cast<TFuncPtrDeleteBehavior>(dlsym(handle, "delete_behavior"));
-      dlsym_error = dlerror();
-      if (dlsym_error) {
-         cerr << "Cannot load symbol 'delete_behavior' from file " << fname << endl;
-         cerr << "dlerror() returns: " << dlsym_error << endl;
-         exit(1);
-      }
+      cerr << "Loaded: " << fname << endl;
+
+//       TFuncPtrDeleteBehavior deleteFn = 
+//          reinterpret_cast<TFuncPtrDeleteBehavior>(dlsym(handle, "deleteBehavior"));
+//       dlsym_error = dlerror();
+//       if (dlsym_error) {
+//          cerr << "Cannot load symbol 'deleteBehavior' from file " << fname << endl;
+//          cerr << "dlerror() returns: " << dlsym_error << endl;
+//          exit(1);
+//       }
 
       creation_funcs[bhv_name] = createFn;
-      deletion_funcs[bhv_name] = deleteFn;
+//       deletion_funcs[bhv_name] = deleteFn;
       open_library_handles.push_back(handle);
 
 // cerr << "BehaviorFactory::load_directory(): 

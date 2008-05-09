@@ -36,7 +36,13 @@
 #include "FunctionEncoder.h" 
 #include "AngleUtils.h"
 #include "IvPProblem.h"
-#include "Populator_BehaviorSet.h"
+
+#if 0
+   #include "Populator_BehaviorSet2.h"
+#else
+   #include "Populator_BehaviorSet.h"
+#endif
+
 #include "HelmReport.h"
 
 using namespace std;
@@ -533,6 +539,8 @@ void HelmIvP::requestBehaviorLogging()
 
 bool HelmIvP::OnStartUp()
 {
+  cerr << "HelmIvP::OnStartUp()" << endl;
+
   cleanup();
   if(!m_info_buffer)
     m_info_buffer = new InfoBuffer;
@@ -618,7 +626,15 @@ bool HelmIvP::OnStartUp()
     
   m_hengine = new HelmEngine(m_ivp_domain);
 
+#if 0
+  Populator_BehaviorSet2 p_bset(m_ivp_domain, m_info_buffer);
+  p_bset.load_behavior_libs("/home/cjc/moos-ivp/ivp/src/lib_behaviors-colregs");
+#else
   Populator_BehaviorSet p_bset(m_ivp_domain, m_info_buffer);
+#endif
+
+//   Populator_BehaviorSet p_bset(m_ivp_domain, m_info_buffer);
+
   m_bhv_set = p_bset.populate(m_bhv_files);
   
   if(m_bhv_set == 0) {
