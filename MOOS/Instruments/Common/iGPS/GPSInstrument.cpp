@@ -39,6 +39,8 @@
 #include <sstream>
 #include <iomanip>
 #include <assert.h>
+#include <string.h>
+
 using namespace std;
 
 

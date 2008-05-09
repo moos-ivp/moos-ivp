@@ -51,6 +51,7 @@
 #include <sys/types.h>
 #endif
 
+#include <string.h>
 
 using namespace std;
 #include "MOOSLogger.h"

@@ -42,6 +42,7 @@
 #include <sstream>
 #include <iomanip>
 #include <math.h>
+#include <string.h>
 
 using namespace std;
 
