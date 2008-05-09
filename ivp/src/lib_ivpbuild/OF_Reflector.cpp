@@ -20,6 +20,7 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
+#include <stdlib.h>
 #include "OF_Reflector.h"
 #include "BuildUtils.h"
 #include "IvPFunction.h"

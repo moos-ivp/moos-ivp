@@ -13,6 +13,7 @@
 #include <iterator>
 #include <vector>
 #include <string>
+#include <stdlib.h>
 #include "BHV_Lawnmower.h"
 #include "AOF_Waypoint.h"
 #include "MBUtils.h"

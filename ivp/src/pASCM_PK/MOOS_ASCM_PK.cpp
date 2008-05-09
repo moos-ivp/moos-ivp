@@ -23,6 +23,7 @@
 #include <MOOSLIB/MOOSLib.h>
 #include <MOOSGenLib/MOOSGenLib.h>
 #include <string>
+#include <string.h>
 //#include <cstring>
 #include <list>
 #include <iterator>

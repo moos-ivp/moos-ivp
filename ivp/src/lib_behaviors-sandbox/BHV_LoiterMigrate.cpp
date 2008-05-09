@@ -11,6 +11,7 @@
 #endif
 
 #include <math.h>
+#include <stdlib.h>
 #include "AngleUtils.h"
 #include "BHV_LoiterMigrate.h"
 #include "MBUtils.h"

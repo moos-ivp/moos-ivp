@@ -22,6 +22,7 @@
 
 #include <iostream>
 #include <math.h>
+#include <string.h>
 #include <tiffio.h>
 #include "MarineViewer.h"
 #include "MBUtils.h"

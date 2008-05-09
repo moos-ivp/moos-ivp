@@ -25,6 +25,7 @@
 #pragma warning(disable : 4503)
 #endif
 #include <math.h> 
+#include <stdlib.h>
 #include "BHV_Waypoint2D.h"
 #include "AOF_Waypoint2D.h"
 #include "OF_Reflector.h"

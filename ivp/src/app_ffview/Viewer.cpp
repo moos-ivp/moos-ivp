@@ -11,6 +11,7 @@
 
 #include <iostream>
 #include "math.h"
+#include <stdlib.h>
 #include "Viewer.h"
 #include "MBUtils.h"
 #include "OF_Reflector.h"

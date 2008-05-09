@@ -26,6 +26,7 @@
 #pragma warning(disable : 4503)
 #endif
 #include <math.h> 
+#include <stdlib.h>
 #include "BHV_ClassifyYoyo.h"
 #include "MBUtils.h"
 #include "BuildUtils.h"

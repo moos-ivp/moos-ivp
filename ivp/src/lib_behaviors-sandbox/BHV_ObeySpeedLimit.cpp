@@ -27,6 +27,7 @@
 #include <iostream>
 #include <assert.h>
 #include <math.h> 
+#include <stdlib.h>
 #include "BHV_ObeySpeedLimit.h"
 #include "MBUtils.h"
 #include "BuildUtils.h"

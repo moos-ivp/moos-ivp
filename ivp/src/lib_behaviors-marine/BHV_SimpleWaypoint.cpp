@@ -20,6 +20,7 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
+#include <stdlib.h>
 #include "BHV_SimpleWaypoint.h"
 #include "MBUtils.h"
 #include "AngleUtils.h"

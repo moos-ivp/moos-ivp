@@ -11,6 +11,7 @@
 #endif
 #include <iostream>
 #include <math.h> 
+#include <stdlib.h>
 #include "BHV_SteadyHeading.h"
 #include "ZAIC_PEAK.h"
 #include "BuildUtils.h"

@@ -22,6 +22,7 @@
 
 #include <math.h>
 #include <assert.h>
+#include <stdlib.h>
 #include "XYHexagon.h"
 #include "MBUtils.h"
 #include "GeomUtils.h"

@@ -23,6 +23,7 @@
 #include <iostream>
 #include <assert.h>
 #include <math.h>
+#include <stdlib.h>
 #include "BuildUtils.h"
 #include "MBUtils.h"
 

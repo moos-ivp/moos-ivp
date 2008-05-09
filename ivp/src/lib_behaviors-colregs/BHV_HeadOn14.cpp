@@ -16,6 +16,7 @@
 
 #include <iostream>
 #include <math.h>
+#include <stdlib.h>
 #include "AngleUtils.h"
 #include "GeomUtils.h"
 #include "BHV_HeadOn14.h"

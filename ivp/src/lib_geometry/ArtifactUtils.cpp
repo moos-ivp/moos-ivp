@@ -28,6 +28,7 @@
 #include "GeomUtils.h"
 #include "MBUtils.h"
 #include "math.h"
+#include <stdlib.h>
 
 // --------------------
 // Procedure: generateLawnmower

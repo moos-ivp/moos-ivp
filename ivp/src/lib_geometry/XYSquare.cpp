@@ -21,6 +21,7 @@
 /*****************************************************************/
 
 #include <cmath>
+#include <stdlib.h>
 #include "XYSquare.h"
 #include "GeomUtils.h"
 

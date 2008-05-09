@@ -8,6 +8,7 @@
 #include <string>
 #include <iostream>
 #include <math.h> 
+#include <stdlib.h>
 #include "BHV_HArrayTurn.h"
 #include "MBUtils.h"
 #include "AngleUtils.h"

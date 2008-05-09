@@ -1,9 +1,10 @@
 #include <math.h>
 #include <string.h>
 #include <stdlib.h>
-#include <iostream.h>
 #include <iostream>
 #include "PkContacts.h"
+
+using namespace std;
 
 double PkContacts::longitudeFunc( double pOffsetInYds, double pLongitude, double pNewLatitude )
 {

@@ -26,6 +26,7 @@
 #endif
 #include <iostream>
 #include <math.h> 
+#include <stdlib.h>
 #include "BHV_ConstantDepth.h"
 #include "BuildUtils.h"
 #include "MBUtils.h"

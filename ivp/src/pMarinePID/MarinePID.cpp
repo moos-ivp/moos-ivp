@@ -27,6 +27,7 @@
 #include <iterator>
 #include <iostream>
 #include <math.h>
+#include <string.h>
 #include "MarinePID.h"
 #include "MBUtils.h"
 

@@ -10,6 +10,7 @@
 #include <string>
 #include <iostream>
 #include <math.h>
+#include <stdlib.h>
 #include "BHV_CoOrbit.h"
 #include "IvPDomain.h"
 #include "MBUtils.h"

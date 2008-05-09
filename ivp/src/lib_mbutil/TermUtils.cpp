@@ -34,6 +34,8 @@
 #include <conio.h>
 #endif
 
+#include <string.h>
+
 //--------------------------------------------------------
 // Procedure: getCharNoWait()
 

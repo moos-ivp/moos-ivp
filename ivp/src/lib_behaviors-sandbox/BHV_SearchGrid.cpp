@@ -10,6 +10,7 @@
 #pragma warning(disable : 4503)
 #endif
 #include <iostream>
+#include <stdlib.h>
 #include "BHV_SearchGrid.h"
 #include "AOF_SearchGrid.h"
 #include "MBUtils.h"

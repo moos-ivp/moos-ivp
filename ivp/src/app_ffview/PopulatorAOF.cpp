@@ -11,6 +11,7 @@
 
 #include <iostream>
 #include <math.h>
+#include <stdlib.h>
 #include "IvPDomain.h"
 #include "AOF_Rings.h"
 #include "AOF_Ring.h"

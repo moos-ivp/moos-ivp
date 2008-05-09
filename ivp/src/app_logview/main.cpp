@@ -22,6 +22,8 @@
 
 #include <vector>
 #include <iostream>
+#include <stdlib.h>
+#include <string.h>
 #include "REPLAY_GUI.h"
 #include "MBUtils.h"
 #include "FileBuffer.h"

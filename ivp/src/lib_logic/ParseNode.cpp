@@ -22,6 +22,7 @@
 
 #include <iostream>
 #include <vector>
+#include <stdlib.h>
 #include "ParseNode.h"
 #include "LogicUtils.h"
 #include "MBUtils.h"

@@ -21,6 +21,7 @@
 /*****************************************************************/
 
 #include <iostream>
+#include <stdlib.h>
 #include "MarineGUI.h"
 
 using namespace std;

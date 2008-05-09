@@ -26,6 +26,7 @@
 #endif
 #include <iostream>
 #include <math.h> 
+#include <stdlib.h>
 #include "BHV_WaypointB.h"
 #include "ZAIC_PEAK.h"
 #include "ZAIC_PEAK.h"

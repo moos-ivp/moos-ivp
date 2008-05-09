@@ -30,6 +30,7 @@
 #endif
 #include <iostream>
 #include <math.h>
+#include <stdlib.h>
 #include "GeomUtils.h"
 #include "BHV_Generic.h"
 //#include "AOF_WPT2D.h"

@@ -22,6 +22,7 @@
 
 #include <iostream>
 #include <math.h>
+#include <stdlib.h>
 #include "XYHexGrid.h"
 #include "MBUtils.h"
 #include "XYBuildUtils.h"

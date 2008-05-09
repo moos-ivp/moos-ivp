@@ -11,6 +11,7 @@
 #endif
 
 #include <iostream>
+#include <stdlib.h>
 #include "Timutif.h"
 #include "MBUtils.h"
 

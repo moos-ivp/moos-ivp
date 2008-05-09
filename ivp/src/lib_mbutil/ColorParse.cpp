@@ -21,6 +21,7 @@
 /*****************************************************************/
 
 #include <iostream>
+#include <stdlib.h>
 #include "ColorParse.h"
 #include "MBUtils.h"
 

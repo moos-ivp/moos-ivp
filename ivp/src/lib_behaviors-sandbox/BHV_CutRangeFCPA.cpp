@@ -10,6 +10,7 @@
 #endif
 #include <iostream>
 #include <math.h>
+#include <stdlib.h>
 #include "AOF_CutRangeFCPA.h"
 #include "BHV_CutRangeFCPA.h"
 #include "OF_Reflector.h"

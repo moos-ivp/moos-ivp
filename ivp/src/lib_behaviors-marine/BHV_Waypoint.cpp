@@ -27,6 +27,7 @@
 
 #include <iostream>
 #include <math.h> 
+#include <stdlib.h>
 #include "BHV_Waypoint.h"
 #include "OF_Reflector.h"
 #include "MBUtils.h"

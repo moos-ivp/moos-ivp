@@ -26,6 +26,7 @@
 #endif
 
 #include <math.h>
+#include <stdlib.h>
 #include "AngleUtils.h"
 #include "BHV_Loiter.h"
 #include "MBUtils.h"

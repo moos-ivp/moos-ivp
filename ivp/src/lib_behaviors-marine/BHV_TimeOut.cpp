@@ -25,6 +25,7 @@
 #endif
 #include <iostream>
 #include <math.h> 
+#include <stdlib.h>
 #include "BHV_TimeOut.h"
 #include "MBUtils.h"
 

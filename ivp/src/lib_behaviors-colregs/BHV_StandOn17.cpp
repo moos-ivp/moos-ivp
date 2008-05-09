@@ -14,6 +14,7 @@
 #endif
 #include <iostream>
 #include <math.h>
+#include <stdlib.h>
 #include "AngleUtils.h"
 #include "BHV_StandOn17.h"
 #include "AOF_R16.h"

@@ -26,6 +26,7 @@
 #endif
 #include <iostream>
 #include <math.h> 
+#include <stdlib.h>
 #include "BHV_RubberBand.h"
 #include "MBUtils.h"
 #include "AngleUtils.h"

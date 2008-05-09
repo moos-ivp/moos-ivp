@@ -1,6 +1,7 @@
 
 #include <iostream>
 #include <stdio.h>
+#include <string.h>
 #include <math.h>
 //#ifndef _UNIT_TEST_
 //#include <OB/CORBA.h>

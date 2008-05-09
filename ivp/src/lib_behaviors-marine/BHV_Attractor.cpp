@@ -26,6 +26,7 @@
 #endif
 #include <iostream>
 #include <math.h>
+#include <stdlib.h>
 #include "AOF_AttractorCPA.h"
 #include "BHV_Attractor.h"
 #include "OF_Reflector.h"

@@ -7,6 +7,7 @@
 #include <string>
 #include <iostream>
 #include <math.h> 
+#include <stdlib.h>
 #include "BHV_CloseRange.h"
 #include "AOF_CutRangeCPA.h"
 #include "MBUtils.h"

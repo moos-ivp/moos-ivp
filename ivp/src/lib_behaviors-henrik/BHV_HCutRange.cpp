@@ -25,6 +25,7 @@
 #endif
 #include <iostream>
 #include <math.h>
+#include <stdlib.h>
 #include "AOF_HCutRangeCPA.h"
 #include "BHV_HCutRange.h"
 #include "OF_Reflector.h"

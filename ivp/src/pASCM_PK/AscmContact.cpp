@@ -9,6 +9,7 @@
 /*****************************************************************/
 
 #include <stdlib.h>
+#include <string.h>
 #include <iostream>
 #include "AscmContact.h"
 

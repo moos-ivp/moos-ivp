@@ -8,6 +8,7 @@
 #include <string>
 #include <iostream>
 #include <math.h> 
+#include <stdlib.h>
 #include "BHV_HCloseRange.h"
 #include "AOF_CutRangeCPA.h"
 #include "ZAIC_PEAK.h"

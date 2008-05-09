@@ -22,6 +22,8 @@
  
 #include <iostream>
 #include <math.h>
+#include <stdlib.h>
+#include <string.h>
 #include <vector>
 #include "XYBuildUtils.h"
 #include "MBUtils.h"

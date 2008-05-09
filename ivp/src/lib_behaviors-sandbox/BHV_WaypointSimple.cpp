@@ -28,6 +28,7 @@
 #include <iostream>
 #include "MBTimer.h"
 #include <math.h> 
+#include <stdlib.h>
 #include "BHV_WaypointSimple.h"
 #include "AOF_WaypointRateClosure.h"
 #include "OF_Reflector.h"

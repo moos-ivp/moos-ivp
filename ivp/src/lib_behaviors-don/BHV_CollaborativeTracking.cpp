@@ -7,6 +7,7 @@
 #include <string>
 #include <iostream>
 #include <math.h> 
+#include <stdlib.h>
 #include "BHV_CollaborativeTracking.h"
 #include "AOF_CollaborativeTracking.h"
 #include "MBUtils.h"

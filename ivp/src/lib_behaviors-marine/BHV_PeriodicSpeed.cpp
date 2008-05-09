@@ -24,6 +24,7 @@
 #pragma warning(disable : 4786)
 #pragma warning(disable : 4503)
 #endif
+#include <stdlib.h>
 #include "BHV_PeriodicSpeed.h"
 #include "MBUtils.h"
 #include "BuildUtils.h"

@@ -27,6 +27,7 @@
 
 #include <iostream>
 #include <math.h>
+#include <stdlib.h>
 #include "AngleUtils.h"
 #include "GeomUtils.h"
 #include "AOF_AvoidCollision.h"

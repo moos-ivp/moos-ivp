@@ -22,6 +22,7 @@
 
 #include <iostream>
 #include <math.h> 
+#include <stdlib.h>
 #include "IMS_Model.h"
 #include "SimEngine.h"
 #include "MBUtils.h"

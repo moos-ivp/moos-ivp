@@ -24,6 +24,7 @@
 
 #include <iostream>
 #include <math.h>
+#include <stdlib.h>
 #include <numeric> // For accumulate
 #include "MBUtils.h"
 #include "XYBuildUtils.h"

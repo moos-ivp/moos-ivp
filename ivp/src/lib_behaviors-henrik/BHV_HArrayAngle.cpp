@@ -7,6 +7,7 @@
 #include <string>
 #include <iostream>
 #include <math.h> 
+#include <stdlib.h>
 #include "BHV_HArrayAngle.h"
 #include "MBUtils.h"
 #include "ZAIC_PEAK.h"

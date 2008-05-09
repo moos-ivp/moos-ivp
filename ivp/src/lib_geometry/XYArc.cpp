@@ -21,6 +21,7 @@
 /*****************************************************************/
 
 #include <math.h>
+#include <stdlib.h>
 #include "XYArc.h"
 #include "GeomUtils.h"
 #include "AngleUtils.h"

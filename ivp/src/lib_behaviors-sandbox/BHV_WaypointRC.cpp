@@ -26,6 +26,7 @@
 #endif
 #include <iostream>
 #include <math.h> 
+#include <stdlib.h>
 #include "BHV_WaypointRC.h"
 #include "AOF_WaypointRateClosure.h"
 #include "OF_Reflector.h"

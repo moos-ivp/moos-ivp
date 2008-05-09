@@ -13,6 +13,7 @@
 #include <iterator>
 #include <vector>
 #include <string>
+#include <stdlib.h>
 #include "BHV_SearchArtifact.h"
 #include "AOF_SearchArtifact.h"
 #include "MBUtils.h"

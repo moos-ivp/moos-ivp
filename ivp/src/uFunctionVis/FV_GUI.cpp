@@ -5,6 +5,7 @@
 /****************************************************************/
 
 #include <iostream>
+#include <stdlib.h>
 #include "FV_GUI.h"
 #include "MBUtils.h"
 

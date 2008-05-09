@@ -22,6 +22,7 @@
 
 #include <iostream>
 #include <stdio.h>
+#include <stdlib.h>
 #include "MBUtils.h"
 #include "XYEncoders.h"
 

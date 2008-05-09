@@ -46,6 +46,7 @@
 #include "IvPBehavior.h"
 #include "MBUtils.h"
 #include "BuildUtils.h"
+#include <stdlib.h>
 
 using namespace std;
 

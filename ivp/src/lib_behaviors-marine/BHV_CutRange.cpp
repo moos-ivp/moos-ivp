@@ -26,6 +26,7 @@
 #endif
 #include <iostream>
 #include <math.h>
+#include <stdlib.h>
 #include "AOF_CutRangeCPA.h"
 #include "BHV_CutRange.h"
 #include "OF_Reflector.h"

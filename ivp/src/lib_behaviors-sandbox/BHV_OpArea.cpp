@@ -25,6 +25,7 @@
 #endif
 #include <iostream>
 #include <math.h> 
+#include <stdlib.h>
 #include "BHV_OpArea.h"
 #include "AOF_OpArea.h"
 #include "OF_Reflector.h"

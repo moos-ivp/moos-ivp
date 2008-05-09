@@ -29,6 +29,7 @@
 #include <string>
 #include <iostream>
 #include <math.h>
+#include <stdlib.h>
 #include "MBUtils.h"
 #include "AngleUtils.h"
 #include "AOF_HShadow.h"

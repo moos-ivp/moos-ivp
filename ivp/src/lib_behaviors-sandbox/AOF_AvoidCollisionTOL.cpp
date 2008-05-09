@@ -25,6 +25,7 @@
 #endif
 #include <iostream>
 #include <math.h> 
+#include <stdlib.h>
 #include "AOF_AvoidCollisionTOL.h"
 #include "AngleUtils.h"
 #include "IvPDomain.h"

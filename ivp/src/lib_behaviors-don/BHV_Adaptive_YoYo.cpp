@@ -38,6 +38,7 @@
 #endif
 #include <iostream>
 #include <math.h> 
+#include <stdlib.h>
 #include "BHV_Adaptive_YoYo.h"
 #include "ZAIC_PEAK.h"
 #include "BuildUtils.h"

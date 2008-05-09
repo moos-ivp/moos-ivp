@@ -40,6 +40,7 @@
 #include <iostream>
 #include "VarDataPair.h"
 #include "MBUtils.h"
+#include <stdlib.h>
 
 using namespace std;
 
