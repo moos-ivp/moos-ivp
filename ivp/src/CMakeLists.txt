@@ -127,10 +127,12 @@ FILE(GLOB IVP_APPS_TO_BUILD
   pShipsideViewer
   pTransponderAIS
   pViewerRelay
+  uHelmScope
   uProcessWatch
   uRepeater
   uTermCommand
   uXMS
+  uPokeDB
   uFunctionVis
   iRawAIS
   iPlaybackAIS
