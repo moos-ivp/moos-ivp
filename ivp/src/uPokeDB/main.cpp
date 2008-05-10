@@ -14,7 +14,7 @@ using namespace std;
 
 int main(int argc ,char * argv[])
 {
-  string sMissionFile = "PokeDB.moos";
+  char *sMissionFile = 0;
   
   bool help_requested = false;
 
@@ -70,8 +70,7 @@ int main(int argc ,char * argv[])
       else
 	Poker.setPokeDouble(varname[j], atof(varvalue[j].c_str()));
     }
-    string cmd = argv[0];
-    Poker.Run(cmd.c_str(), sMissionFile.c_str());
+    Poker.Run("uPokeDB", sMissionFile);
   }
 
   return(0);
