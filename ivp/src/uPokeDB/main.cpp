@@ -14,8 +14,9 @@ using namespace std;
 
 int main(int argc ,char * argv[])
 {
-  char *sMissionFile = 0;
-  
+  const char *sMissionFile = "Mission.moos";
+  const char *sMOOSName    = "uPokeDB";
+
   bool help_requested = false;
 
   vector<string> varname;
@@ -70,7 +71,7 @@ int main(int argc ,char * argv[])
       else
 	Poker.setPokeDouble(varname[j], atof(varvalue[j].c_str()));
     }
-    Poker.Run("uPokeDB", sMissionFile);
+    Poker.Run(sMOOSName, sMissionFile);
   }
 
   return(0);
