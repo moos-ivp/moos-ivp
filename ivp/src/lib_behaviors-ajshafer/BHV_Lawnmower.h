@@ -11,6 +11,7 @@
 #include <string>
 #include "IvPBehavior.h"
 #include "WaypointEngine.h"
+#include "XYPolygon.h"
 
 class BHV_Lawnmower : public IvPBehavior {
 public:
@@ -40,6 +41,19 @@ protected: // intermediate or object global variables.
   double    m_pty;
   double    m_trackpt_x;
   double    m_trackpt_y;
+  
+  // Variables for setting up the lawnmower
+  XYPolygon m_poly;
+  double    m_x;
+  double    m_y;
+  bool      m_x_set, m_y_set;
+  double    m_ang;
+  double    m_radius;
+  double    m_snap; //optional
+  bool      m_clockwise; //optional
+  bool      m_full; //optional
+  
+  bool      m_configured; // Have we configured the waypoint engine?
 };
 #endif
 

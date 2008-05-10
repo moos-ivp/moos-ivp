@@ -22,6 +22,9 @@
 
 #include "ArtifactUtils.h"
 
+//#include <iostream> // for debugging only
+//using std::cout;
+
 #include <sstream>
 #include "XYSquare.h"
 #include "AngleUtils.h"
@@ -51,12 +54,17 @@ const XYSegList generateLawnmower(const XYPolygon& poly, double px0, double py0,
 	//    If segment doesn't intercept, quit
 	
 	XYSegList segList;
+	
+	//cout << "Trying to add initial point\n";
+	//cout << "Point is: " + doubleToString(px0) + ", " + doubleToString(py0) + "\n";
 
 	// Check initial point, push it on
 	if (poly.contains(px0, py0)){
 		segList.add_vertex(px0, py0);
 	}
 	else return segList; // Return empty seglist
+	
+	//cout << "Below the initial check\n";
 	
 	// Create initial segment
 	double dDistance = poly.dist_to_poly(px0, py0, ang);
@@ -173,6 +181,8 @@ const XYSegList generateLawnmower(const XYPolygon& poly, double px0, double py0,
 			carryon = false;
 		}
 	}
+	
+	//cout << "Returning a seglist: " + segList.get_spec() << std::endl;
 	
 	return segList;
 

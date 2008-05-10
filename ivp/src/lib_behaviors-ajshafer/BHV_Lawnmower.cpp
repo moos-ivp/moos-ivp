@@ -21,6 +21,7 @@
 #include "BuildUtils.h"
 #include "AngleUtils.h"
 #include "GeomUtils.h"
+#include "ArtifactUtils.h"
 #include "XYBuildUtils.h"
 
 using namespace std;
@@ -31,27 +32,38 @@ using namespace std;
 BHV_Lawnmower::BHV_Lawnmower(IvPDomain gdomain) : 
   IvPBehavior(gdomain)
 {
-  this->setParam("descriptor", "(d)bhv_lawnmower");
-  m_domain = subDomain(m_domain, "course,speed");
+	this->setParam("descriptor", "(d)bhv_lawnmower");
+	m_domain = subDomain(m_domain, "course,speed");
 
-  m_cruise_speed    = 0;  // Meters/second
-  m_lead_distance   = -1;
+	m_cruise_speed    = 0;  // Meters/second
+	m_lead_distance   = -1;
 
-  // The completed and perpetual vars are initialized in superclass
-  // but we initialize here just to be safe and clear.
-  m_completed     = false; 
-  m_perpetual     = false;
+	// The completed and perpetual vars are initialized in superclass
+	// but we initialize here just to be safe and clear.
+	m_completed     = false; 
+	m_perpetual     = false;
+	
+	m_configured    = false;
 
-  m_osx   = -1;
-  m_osy   = -1;
-  m_osv   = -1;
-  m_ptx   = -1;
-  m_pty   = -1;
+	m_osx   = -1;
+	m_osy   = -1;
+	m_osv   = -1;
+	m_ptx   = -1;
+	m_pty   = -1;
 
-  m_trackpt_x = -1;
-  m_trackpt_y = -1;
+	m_trackpt_x = -1;
+	m_trackpt_y = -1;
 
-  addInfoVars("NAV_X, NAV_Y, NAV_SPEED");
+	m_x = -1; // optional 
+	m_y = -1; // optional
+	m_x_set = false; m_y_set = false;
+	m_ang = 0;
+	m_radius = -1;
+	m_snap = 0; //optional
+	m_clockwise = true; //optional
+	m_full = true; //optional
+
+	addInfoVars("NAV_X, NAV_Y, NAV_SPEED");
 
 //  this->setParam("descriptor", "(d)bhv_lawnmower");
 //  this->setParam("build_info", "uniform_piece=course:6,speed:4");
@@ -74,25 +86,17 @@ bool BHV_Lawnmower::setParam(string param, string val)
 {
 	if(IvPBehavior::setParamCommon(param, val))
 		return(true);
-#if 1
-	if((param == "polygon") || (param == "points")) {
-	  XYSegList new_seglist = stringToSegList(val);
-	  if(new_seglist.size() == 0)
-	    return(false);
-	  m_waypoint_engine.setSegList(new_seglist);
-	  return(true);
-	}
-#endif
-#if 0
-	if((param == "polygon") || (param == "points")) {
-		XYSegList new_seglist;
-		bool ok = new_seglist.initialize(val);
+
+	if((param == "polygon") || (param == "poly")) {
+		XYPolygon new_poly;
+		new_poly = stringToPoly(val);
+		bool ok = new_poly.is_convex();
 		if(!ok)
-		    return(false);
-		m_waypoint_engine.setSegList(new_seglist);
+			return(false);
+		m_poly = new_poly;
+		m_configured = false;
 		return(true);
 	}
-#endif
 	else if(param == "speed") {
 		double dval = atof(val.c_str());
 		if((dval <= 0) || (!isNumber(val)))
@@ -121,7 +125,7 @@ bool BHV_Lawnmower::setParam(string param, string val)
 	//    m_waypoint_engine.setRepeat(ival);
 	//    return(true);
 	//  }
-	else if(param == "radius") {
+	else if(param == "waypoint_radius") {
 		double dval = atof(val.c_str());
 		if(dval <= 0)
 		    return(false);
@@ -134,6 +138,74 @@ bool BHV_Lawnmower::setParam(string param, string val)
 		    return(false);
 		m_waypoint_engine.setNonmonotonicRadius(dval);
 		return(true);
+	}
+	else if(param == "x")  {
+		double dval = atof(val.c_str());
+		if (!isNumber(val))
+		    return(false);
+		m_x = dval;
+		m_x_set = true;
+		m_configured = false;
+		return(true);
+	}
+	else if(param == "y")  {
+		double dval = atof(val.c_str());
+		if (!isNumber(val))
+		    return(false);
+		m_y = dval;
+		m_y_set = true;
+		m_configured = false;
+		return(true);
+	}
+	else if(param == "ang")  {
+		double dval = atof(val.c_str());
+		if ((!isNumber(val)) || (dval < 0) || (dval > 360))
+		    return(false);
+		m_ang = dval;
+		m_configured = false;
+		return(true);
+	}
+	else if(param == "radius")  {
+		double dval = atof(val.c_str());
+		if ((!isNumber(val)) || (dval <= 0))
+		    return(false);
+		m_radius = dval;
+		m_configured = false;
+		return(true);
+	}
+	else if(param == "clockwise")  {
+		if ("false" == tolower(val)){
+			m_clockwise = false;
+			m_configured = false;
+			return true;
+		}
+		else if ("true" == tolower(val)) {
+			m_clockwise = true;
+			m_configured = false;
+			return true;
+		}
+		else return false;
+	}
+	else if(param == "snap")  {
+		double dval = atof(val.c_str());
+		if(dval < 0) 
+		    return(false);
+		m_snap = dval;
+		m_configured = false;
+		return(true);
+	}
+	else if(param == "full")  {
+		if ("false" == tolower(val)){
+			m_full = false;
+			m_configured = false;
+			return true;
+		}
+		else if ("true" == tolower(val)) {
+			m_full = true;
+			m_configured = false;
+			return true;
+		}
+		else return false;
 	}
 	
 	return(false);
@@ -161,9 +233,47 @@ IvPFunction* BHV_Lawnmower::onRunState()
 	if(!ok_info){
 		return(NULL);
 	}
+	
+	if (!m_configured) { // Need to configure the seglist
+		//postWMessage("Trying to configure waypoint engine");
+		XYSegList slOutput;
+		
+		if (m_radius < 0){
+			//postWMessage("m_radius < 0!");
+			return NULL; // don't do anything until radius is set
+		}
+		
+		//postWMessage("poly looks like: " + m_poly.get_spec());
+		//postWMessage("poly center is: " + doubleToString(m_poly.get_center_x()) + ", " + doubleToString(m_poly.get_center_y()));
+		//postWMessage("m_ang looks like: " + doubleToString(m_ang));
+		//postWMessage("m_radius looks like: " + doubleToString(m_radius));
+		
+		if (m_full) { // full pattern, need poly, ang, radius
+			slOutput = generateLawnmowerFull(m_poly, m_ang, m_radius);
+		}
+		else { // also need x, y values
+			if (!(m_x_set && m_y_set)){
+				postWMessage("X and Y not set for lawnmower generation!");
+				return NULL;
+			}
+			//postWMessage("x, y looks like: " + doubleToString(m_x) + ", " + doubleToString(m_y));
+			slOutput = generateLawnmower(m_poly, m_x, m_y, m_ang, m_radius, m_clockwise);
+		}
+		
+		//postWMessage("slOutput.size(): " + intToString(slOutput.size()));
+		//postWMessage("slOutput looks like: " + slOutput.get_spec());
+
+		slOutput.apply_snap(m_snap);
+		
+		m_waypoint_engine.setSegList(slOutput);
+		m_waypoint_engine.setPerpetual(true);
+		
+		m_configured = true;
+	}
 
 	// Set m_ptx, m_pty, m_trackpt_x, m_trackpt_y;
 	if(!setNextWaypoint()) {
+		postWMessage("Unable to set next waypoint!");
 		XYSegList seglist = m_waypoint_engine.getSegList();
 		seglist.set_label(m_us_name + "_" + m_descriptor);
 		string segmsg = seglist.get_spec();
@@ -194,7 +304,7 @@ IvPFunction* BHV_Lawnmower::onRunState()
 	string segmsg = seglist.get_spec();
 	postMessage("VIEW_SEGLIST", segmsg);
 
-  return(ipf);
+	return(ipf);
 }
 
 //-----------------------------------------------------------
@@ -264,13 +374,13 @@ bool BHV_Lawnmower::setNextWaypoint()
 {
   m_waypoint_engine.setNextWaypoint(m_osx, m_osy);
 
-  if(m_waypoint_engine.isComplete()) {
-//    postMessage("WPT_STAT", "complete");
-//    setComplete();
-//    if(m_perpetual)
-      m_waypoint_engine.reset();
-//    return(false);
-  }
+//  if(m_waypoint_engine.isComplete()) {
+////    postMessage("WPT_STAT", "complete");
+////    setComplete();
+////    if(m_perpetual)
+//      m_waypoint_engine.reset();
+////    return(false);
+//  }
   
   m_ptx = m_waypoint_engine.getPointX();
   m_pty = m_waypoint_engine.getPointY();
