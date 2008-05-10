@@ -1,0 +1,40 @@
+initialize   DEPLOY = false
+initialize   RETURN = false
+
+//----------------------------------------------
+Behavior = BHV_Lawnmower
+{
+  name      = bhv_lawnmower
+  pwt       = 100
+  condition = DEPLOY = true
+  condition = RETURN = false
+  
+  // Polygon to patrol, required (can also be called poly)
+  polygon =     -20,-30:50,10:120,-20:100,-80:0,-120:-50,-100
+  
+  // Angle for pattern, 0 = N, 90 = E
+  ang     =   1  // optional, default = 0
+  
+  // Radius, half the distance between lines
+  radius  =   10  // required, in meters
+  
+  // By default, pLawnmower will make a full pattern
+  // You can also specify a start point to make
+  // a partial pattern (useful for mid-mission changes
+  full    =  true   // optional, default = true
+  //x       =   10  // required for full, in meters
+  //y       =   -71  // required for full, in meters
+  //clockwise =   // optional, default = true,
+  
+  // Value to snap segment points to
+  snap    =  .25   // optional, in meters
+  
+  // Options for the waypoint navigating
+  lead      = 15.0 // optional, trackline lead distance, in meters
+  speed     = 3.0  // speed to waypoints, in m/s
+  
+  waypoint_radius = 2.0  // size of point in meters
+  nm_radius       = 10.0 // radius for capture in meters
+  
+  updates   = LAWNMOWER_UPDATES // update MOOS variable, case sens.
+}
