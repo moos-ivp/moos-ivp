@@ -32,9 +32,7 @@ public:
   virtual ~XYSegList() {};
 
   // XYSegList create and edit functions
-  void   add_vertex(double, double);       // One way to build
-  bool   initialize(std::string);          // Another way to build
-  bool   init_zigzag(std::string);
+  void   add_vertex(double, double);       
   void   alter_vertex(double, double);
   void   delete_vertex(double, double);
   void   insert_vertex(double, double);

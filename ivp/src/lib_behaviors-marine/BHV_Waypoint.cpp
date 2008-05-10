@@ -38,6 +38,7 @@
 #include "FunctionEncoder.h"
 #include "ZAIC_PEAK.h"
 #include "OF_Coupler.h"
+#include "XYBuildUtils.h"
 
 using namespace std;
 
@@ -84,9 +85,8 @@ bool BHV_Waypoint::setParam(string param, string val)
     return(true);
 
   if((param == "polygon") || (param == "points")) {
-    XYSegList new_seglist;
-    bool ok = new_seglist.initialize(val);
-    if(!ok)
+    XYSegList new_seglist = stringToSegList(val);
+    if(new_seglist.size() == 0)
       return(false);
     m_waypoint_engine.setSegList(new_seglist);
     return(true);

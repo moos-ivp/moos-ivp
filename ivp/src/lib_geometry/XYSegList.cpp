@@ -32,126 +32,6 @@
 using namespace std;
 
 //---------------------------------------------------------------
-// Procedure: initialize
-
-bool XYSegList::initialize(string str)
-{
-  if(!strncmp(str.c_str(), "zigzag:", 7))
-    return(init_zigzag(str));
-  
-  clear();
-  vector<string> svector1 = parseString(str, ':');
-  int vsize1 = svector1.size();
-  for(int i=0; i<vsize1; i++) {
-    vector<string> svector2 = parseString(svector1[i], ',');
-    int vsize2 = svector2.size();
-    
-    if(vsize2 != 2) {
-      cout << "Bad XYSegList::initialize()!!!!!" << endl;
-      clear();
-      return(false);
-    }
-
-    if(svector2[0] == "label")
-      label = svector2[1];
-    else {
-      string s_x = svector2[0];
-      string s_y = svector2[1];
-      if((!isNumber(s_x)) || (!isNumber(s_y))) {
-	clear();
-	return(true);
-      }
-      double d_x = atof(s_x.c_str());
-      double d_y = atof(s_y.c_str());
-      add_vertex(d_x, d_y);
-    }
-  }
-  return(true);
-}
-
-//---------------------------------------------------------------
-// Procedure: init_zigzag
-//                                                                
-//         o                               o                      
-//       /   \                           /   \                       
-//     /       \                       /       \                      
-//   /           \                   /           \                   
-//  o--------------o---------------o---------------o--------------->          
-//                   \           /                   \           /  
-//                     \       /                       \       /    
-//                       \   /                           \   /      
-//                         o                               o      
-//  p1     p2              p3             p4               p5     p6     
-//                                                                  
-
-bool XYSegList::init_zigzag(string str)
-{
-  str = tolower(str);
-  if(!strncmp("zigzag:", str.c_str(), 7))
-    str = str.c_str()+7;
-  else
-    return(false);
-
-  vector<string> svector = parseString(str, ',');
-  int vsize = svector.size();
-  
-  // Should have 6 fields, but optional 7th field, snapval is ok
-  if((vsize < 6) || (vsize > 7))
-    return(false);
-
-  for(int i=0; i<vsize; i++) 
-    if(!isNumber(svector[i]))
-      return(false);
-
-  double startx  = atof(svector[0].c_str());
-  double starty  = atof(svector[1].c_str());
-  double angle   = atof(svector[2].c_str());
-  double length  = atof(svector[3].c_str());
-  double period  = atof(svector[4].c_str());
-  double amplit  = atof(svector[5].c_str());
-  double snapval = 0;
-  if(vsize == 7)
-    snapval = atof(svector[6].c_str());
-
-  cout << "startx: "  << startx  << endl;
-  cout << "starty: "  << starty  << endl;
-  cout << "period: "  << period  << endl;
-  cout << "amplit: "  << amplit  << endl;
-  cout << "angle: "   << angle   << endl;
-  cout << "length: "  << length  << endl;
-  cout << "snapval: " << snapval << endl;
-
-  // Check for whatever semantic errors we can
-  if((period<=0) || (amplit<=0) || (length<=0) || (snapval<0))
-    return(false);
-
-  clear();
-  
-  vertex_x.push_back(startx);
-  vertex_y.push_back(starty);
-
-  double zigside = -90;
-  double zigdist = period / 4;
-  while(zigdist < length) {
-    double axis_x, axis_y;
-    projectPoint(angle, zigdist, startx, starty, axis_x, axis_y);
-    double new_x, new_y;
-    projectPoint((angle+zigside), amplit, axis_x, axis_y, new_x, new_y);
-    vertex_x.push_back(new_x);
-    vertex_y.push_back(new_y);
-    zigside *= -1;
-    zigdist += (period / 2);
-  }
-
-  // Now apply the snapval if a valid one was requested
-  if(snapval > 0)
-    apply_snap(snapval);
-
-  return(true);
-}
-
-
-//---------------------------------------------------------------
 // Procedure: add_vertex
 
 inline void XYSegList::add_vertex(double x, double y)
@@ -623,8 +503,6 @@ void XYSegList::rotate_pt(double deg, double cx, double cy,
   
   px = nx; 
   py = ny;
-
-
 }
 
 

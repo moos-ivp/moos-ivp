@@ -335,9 +335,9 @@ bool SSV_MOOSApp::receivePolygon(CMOOSMsg &Msg)
 bool SSV_MOOSApp::receiveSegList(CMOOSMsg &Msg)
 {
   cout << "In SSV_MOOSApp::receiveSegList()" << endl;
-  XYSegList new_seglist;
+  XYSegList new_seglist = stringToSegList(Msg.m_sVal);
   
-  bool ok = new_seglist.initialize(Msg.m_sVal);
+  bool ok = (new_seglist.size() > 0);
   if(ok) {
     m_gui->mviewer->addSegList(new_seglist);
     return(true);

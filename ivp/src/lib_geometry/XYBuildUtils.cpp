@@ -1,4 +1,4 @@
-/*****************************************************************/
+ /*****************************************************************/
 /*    NAME: Michael Benjamin and John Leonard                    */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
 /*    FILE: XYBuildUtils.cpp                                     */
@@ -291,6 +291,8 @@ XYPolygon stringPairsToRadialPoly(string str)
 //---------------------------------------------------------------
 // Procedure: stringShortToRadialPoly
 //
+// Examples: "radial: px, py, prad, ppts, snapval, label"
+//           "px, py, prad, ppts, snapval, label"
 
 XYPolygon stringShortToRadialPoly(string str)
 {
@@ -393,3 +395,146 @@ XYPolygon stringShortToPointsPoly(string str)
   new_poly.determine_convexity();
   return(new_poly);
 }
+
+//===============================================================
+//                                            XYSegList Functions
+//===============================================================
+
+
+//---------------------------------------------------------------
+// Procedure: stringToSegList
+//
+
+XYSegList stringToSegList(string str)
+{
+  str = stripBlankEnds(str);
+  
+  XYPolygon null_seglist;
+  if(!strncasecmp("zigzag:", str.c_str(), 7)) {
+    str = str.c_str()+7;
+    return(stringShortToZigZagSegList(str));
+  }
+  else if(!strncasecmp("pts:", str.c_str(), 5)) {
+    str = str.c_str()+5;
+    return(stringShortToPointsSegList(str));
+  }
+  else
+    return(stringShortToPointsSegList(str));
+
+  return(null_seglist);
+}
+
+//---------------------------------------------------------------
+// Procedure: stringShortToPointsSegList
+//
+
+XYSegList stringShortToPointsSegList(string str)
+{
+  XYSegList null_seglist;
+  
+  if(!strncasecmp("pts:", str.c_str(), 4))
+    str = str.c_str()+4;
+  else if(!strncasecmp("points:", str.c_str(), 7))
+    str = str.c_str()+7;
+  
+  XYSegList new_seglist;
+  
+  vector<string> mvector = parseString(str, ':');
+  int vsize = mvector.size();
+  for(int i=0; i<vsize; i++) {
+    mvector[i] = stripBlankEnds(mvector[i]);
+    vector<string> svector = parseString(mvector[i], ',');
+    if(svector.size() != 2)
+      return(null_seglist);
+    string xstr = stripBlankEnds(svector[0]);
+    string ystr = stripBlankEnds(svector[1]);
+    
+    if((!isNumber(xstr)) || (!isNumber(ystr))) {
+      xstr = tolower(xstr);
+      if(xstr == "label") 
+	new_seglist.set_label(ystr);
+      else
+	return(null_seglist);
+    }
+    else {
+      double xval = atof(xstr.c_str());
+      double yval = atof(ystr.c_str());
+      new_seglist.add_vertex(xval, yval);
+    }
+  }
+  return(new_seglist);
+}
+
+
+
+//---------------------------------------------------------------
+// Procedure: init_zigzag
+//                                                                
+//         o                               o                      
+//       /   \                           /   \                       
+//     /       \                       /       \                      
+//   /           \                   /           \                   
+//  o--------------o---------------o---------------o--------------->          
+//                   \           /                   \           /  
+//                     \       /                       \       /    
+//                       \   /                           \   /      
+//                         o                               o      
+//  p1     p2              p3             p4               p5     p6     
+//                                                                  
+
+XYSegList stringShortToZigZagSegList(string str)
+{
+  XYSegList null_seglist;
+  
+  if(!strncasecmp("zigzag:", str.c_str(), 7))
+    str = str.c_str()+7;
+  
+  vector<string> svector = parseString(str, ',');
+  int vsize = svector.size();
+  
+  // Should have 6 fields, but optional 7th field, snapval is ok
+  if((vsize < 6) || (vsize > 7))
+    return(null_seglist);
+  
+  for(int i=0; i<vsize; i++) 
+    if(!isNumber(svector[i]))
+      return(null_seglist);
+
+  double startx  = atof(svector[0].c_str());
+  double starty  = atof(svector[1].c_str());
+  double angle   = atof(svector[2].c_str());
+  double length  = atof(svector[3].c_str());
+  double period  = atof(svector[4].c_str());
+  double amplit  = atof(svector[5].c_str());
+  double snapval = 0;
+  if(vsize == 7)
+    snapval = atof(svector[6].c_str());
+  
+  // Check for whatever semantic errors we can
+  if((period<=0) || (amplit<=0) || (length<=0) || (snapval<0))
+    return(null_seglist);
+  
+  XYSegList new_seglist;
+  
+  new_seglist.add_vertex(startx, starty);
+  
+  double zigside = -90;
+  double zigdist = period / 4;
+  while(zigdist < length) {
+    double axis_x, axis_y;
+    projectPoint(angle, zigdist, startx, starty, axis_x, axis_y);
+    double new_x, new_y;
+    projectPoint((angle+zigside), amplit, axis_x, axis_y, new_x, new_y);
+    new_seglist.add_vertex(new_x, new_y);
+    zigside *= -1;
+    zigdist += (period / 2);
+  }
+  
+  // Now apply the snapval if a valid one was requested
+  if(snapval > 0)
+    new_seglist.apply_snap(snapval);
+
+  return(new_seglist);
+}
+
+

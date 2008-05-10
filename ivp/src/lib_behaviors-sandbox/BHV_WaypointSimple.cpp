@@ -35,6 +35,7 @@
 #include "MBUtils.h"
 #include "AngleUtils.h"
 #include "BuildUtils.h"
+#include "XYBuildUtils.h"
 #include "ZAIC_PEAK.h"
 #include "OF_Coupler.h"
 
@@ -80,8 +81,11 @@ bool BHV_WaypointSimple::setParam(string param, string val)
     return(true);
   
   if(param == "points") {
-    bool ok = m_seglist.initialize(val);
-    return(ok);
+    XYSegList new_seglist = stringToSegList(val);
+    if(new_seglist.size() == 0)
+      return(false);
+    m_seglist = new_seglist;
+    return(true);
   }
   else if(param == "speed") {
     double dval = atof(val.c_str());

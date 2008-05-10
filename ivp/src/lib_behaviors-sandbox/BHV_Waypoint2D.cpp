@@ -30,6 +30,7 @@
 #include "AOF_Waypoint2D.h"
 #include "OF_Reflector.h"
 #include "BuildUtils.h"
+#include "XYBuildUtils.h"
 
 using namespace std;
 
@@ -64,7 +65,10 @@ bool BHV_Waypoint2D::setParam(string param, string val)
     return(true);
 
   if(param == "points") {
-    seglist.initialize(val);
+    XYSegList new_seglist = stringToSegList(val);
+    if(new_seglist.size() == 0)
+      return(false);
+    seglist = new_seglist;
     return(true);
   }
   else if(param == "speed") {

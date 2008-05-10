@@ -34,6 +34,7 @@
 #include "AngleUtils.h"
 #include "GeomUtils.h"
 #include "BuildUtils.h"
+#include "XYBuildUtils.h"
 #include "FunctionEncoder.h"
 #include "OF_Coupler.h"
 
@@ -83,9 +84,8 @@ bool BHV_WaypointB::setParam(string param, string val)
     return(true);
 
   if((param == "polygon") || (param == "points")) {
-    XYSegList new_seglist;
-    bool ok = new_seglist.initialize(val);
-    if(!ok)
+    XYSegList new_seglist = stringToSegList(val);
+    if(new_seglist.size() == 0)
       return(false);
     seglist = new_seglist;
     return(true);

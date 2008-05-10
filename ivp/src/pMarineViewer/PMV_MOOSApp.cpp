@@ -425,9 +425,9 @@ bool PMV_MOOSApp::receivePolygon(CMOOSMsg &Msg)
 
 bool PMV_MOOSApp::receiveSegList(CMOOSMsg &Msg)
 {
-  XYSegList new_seglist;
+  XYSegList new_seglist = stringToSegList(Msg.m_sVal);
 
-  bool ok = new_seglist.initialize(Msg.m_sVal);
+  bool ok = (new_seglist.size() > 0);
 
   string label = "ERR";
   if(ok)

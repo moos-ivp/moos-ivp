@@ -21,6 +21,7 @@
 #include "BuildUtils.h"
 #include "AngleUtils.h"
 #include "GeomUtils.h"
+#include "XYBuildUtils.h"
 
 using namespace std;
 
@@ -73,7 +74,16 @@ bool BHV_Lawnmower::setParam(string param, string val)
 {
 	if(IvPBehavior::setParamCommon(param, val))
 		return(true);
-
+#if 1
+	if((param == "polygon") || (param == "points")) {
+	  XYSegList new_seglist = stringToSegList(val);
+	  if(new_seglist.size() == 0)
+	    return(false);
+	  m_waypoint_engine.setSegList(new_seglist);
+	  return(true);
+	}
+#endif
+#if 0
 	if((param == "polygon") || (param == "points")) {
 		XYSegList new_seglist;
 		bool ok = new_seglist.initialize(val);
@@ -82,6 +92,7 @@ bool BHV_Lawnmower::setParam(string param, string val)
 		m_waypoint_engine.setSegList(new_seglist);
 		return(true);
 	}
+#endif
 	else if(param == "speed") {
 		double dval = atof(val.c_str());
 		if((dval <= 0) || (!isNumber(val)))
