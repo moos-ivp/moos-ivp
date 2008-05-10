@@ -70,7 +70,8 @@ int main(int argc ,char * argv[])
       else
 	Poker.setPokeDouble(varname[j], atof(varvalue[j].c_str()));
     }
-    Poker.Run(argv[0], sMissionFile.c_str());
+    string cmd = argv[0];
+    Poker.Run(cmd.c_str(), sMissionFile.c_str());
   }
 
   return(0);
