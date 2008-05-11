@@ -16,3 +16,9 @@ Behavior = BHV_SearchArtifact
   // Time to look ahead, in seconds
   time_horizon = 20
 }
+
+//Messages posted:
+//TIME_TO_EXIT_GRID_+grid_label, time to leave the grid
+//osSPD, ownship speed
+//dtg, distance to edge of grid
+

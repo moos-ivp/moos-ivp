@@ -38,3 +38,6 @@ Behavior = BHV_Lawnmower
   
   updates   = LAWNMOWER_UPDATES // update MOOS variable, case sens.
 }
+
+//Messages posted:
+//VIEW_SEGLIST, seglist that is being traversed
