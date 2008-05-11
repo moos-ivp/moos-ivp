@@ -18,9 +18,12 @@ bool PokeDB::Iterate()
 {
   m_iteration++;
 
+  // Make sure we have a chance to receive and read incoming mail
+  // on the poke variables, prior to having their new values poked.
   if(m_iteration == 1)
     return(true);
 
+  // After the first iteration, poke the all the scheduled values.
   if(m_iteration == 2) {
     int vsize = m_varname.size();
     for(int i=0; i<vsize; i++) {
