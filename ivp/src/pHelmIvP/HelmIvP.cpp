@@ -28,6 +28,7 @@
 #endif
 #include <iterator>
 #include <iostream>
+#include <cstdlib>
 #include <math.h>
 #include "HelmIvP.h"
 #include "MBUtils.h"
@@ -36,14 +37,19 @@
 #include "FunctionEncoder.h" 
 #include "AngleUtils.h"
 #include "IvPProblem.h"
+#include "HelmReport.h"
+#include "stringutil.h"
 
 #if 0
+  #define USE_NEW_POPULATOR
+#endif
+
+#ifdef USE_NEW_POPULATOR
    #include "Populator_BehaviorSet2.h"
 #else
    #include "Populator_BehaviorSet.h"
 #endif
 
-#include "HelmReport.h"
 
 using namespace std;
 
@@ -626,9 +632,10 @@ bool HelmIvP::OnStartUp()
     
   m_hengine = new HelmEngine(m_ivp_domain);
 
-#if 0
+#ifdef USE_NEW_POPULATOR
   Populator_BehaviorSet2 p_bset(m_ivp_domain, m_info_buffer);
-  p_bset.load_behavior_libs("/home/cjc/moos-ivp/ivp/src/lib_behaviors-colregs");
+  p_bset.loadEnvVarDirectories("IVP_BEHAVIOR_DIRS", true);
+
 #else
   Populator_BehaviorSet p_bset(m_ivp_domain, m_info_buffer);
 #endif

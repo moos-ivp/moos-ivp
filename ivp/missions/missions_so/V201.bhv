@@ -1,0 +1,46 @@
+initialize   DEPLOY       = false
+initialize   STATION_KEEP = false
+
+//----------------------------------------------
+Behavior = BHV_HeadOn14
+{
+  name       = avd_headon_201
+  pwt        = 201
+  condition  = (DEPLOY = true) and (STATION_KEEP != true)
+  condition  = (AVOID_POLICY == colregs)
+
+                  contact = nyak201
+             active_grade = linear
+    active_outer_distance = 60
+    active_inner_distance = 20
+       collision_distance = 15
+       all_clear_distance = 100
+}
+
+
+//----------------------------------------------
+Behavior = BHV_GiveWay16
+{
+  name       = avd_giveway_201
+  pwt        = 300
+  condition  = (DEPLOY = true) and (STATION_KEEP != true)
+  condition  = (AVOID_POLICY == colregs)
+
+                  contact = nyak201
+             active_grade = linear
+    active_outer_distance = 60
+    active_inner_distance = 20
+       collision_distance = 15
+       all_clear_distance = 100
+}
+
+
+//----------------------------------------------
+Behavior = BHV_Timer2
+{
+  name       = my_timer2_test
+  pwt        = 300
+  condition  = (DEPLOY = true) and (STATION_KEEP != true)
+  condition  = (AVOID_POLICY == colregs)
+}
+

@@ -1,6 +1,7 @@
 #include "BehaviorFactory.h"
-#include <dlfcn.h>
 #include "fileutil.h"
+#include "stringutil.h"
+#include <dlfcn.h>
 #include <iostream>
 #include <stdlib.h>
 #include <unistd.h>
@@ -75,23 +76,47 @@ void BehaviorFactory::load_directory(string dirname) {
          exit(1);
       }
 
-      cerr << "Loaded: " << fname << endl;
-
-//       TFuncPtrDeleteBehavior deleteFn = 
-//          reinterpret_cast<TFuncPtrDeleteBehavior>(dlsym(handle, "deleteBehavior"));
-//       dlsym_error = dlerror();
-//       if (dlsym_error) {
-//          cerr << "Cannot load symbol 'deleteBehavior' from file " << fname << endl;
-//          cerr << "dlerror() returns: " << dlsym_error << endl;
-//          exit(1);
-//       }
-
       creation_funcs[bhv_name] = createFn;
-//       deletion_funcs[bhv_name] = deleteFn;
       open_library_handles.push_back(handle);
-
-// cerr << "BehaviorFactory::load_directory(): 
    }
+}
+
+//==============================================================================
+
+void BehaviorFactory::loadEnvVarDirectories(std::string envVar, bool verbose) {
+  if (verbose) {
+    cerr << ">>> Loading behavior dynamic libraries." << endl;
+  }
+
+  const char * dirs = getenv(envVar.c_str());
+  if (! dirs) {
+    if (verbose) {
+      cerr << "Can't load behavior libraries.  Environment variable " << envVar << " isn't set." << endl;
+    }
+
+    cerr << ">>> Exiting" << endl;
+    return;
+  }
+
+  vector<string> v = tokenize(dirs, ":");
+  for (int i = 0; i < v.size(); ++i) {
+    string d = v.at(i);
+
+    if (isdir(d)) {
+      if (verbose) {
+        cerr << ">>> Loading directory: " << d << endl;
+      }
+
+      load_directory(d);
+    }
+    else {
+      if (verbose) {
+        cerr << ">>> Seems not not be a directory.  Skipping: " << d << endl;
+      }
+    }
+  }
+
+  cerr << ">>> Exiting" << endl;
 }
 
 //==============================================================================
@@ -131,11 +156,11 @@ IvPBehavior* BehaviorFactory::new_behavior(string name, IvPDomain domain) {
    // to be defined in the behavior libraries), and this class can top trying
    // to remember each Behavior instance just so it can look up the proper
    // delete function.
-   bhv_delete_fn_map[pBehavior] = deletion_funcs[name];
+//    bhv_delete_fn_map[pBehavior] = deletion_funcs[name];
 
    return pBehavior;
 }
-
+/*
 //==============================================================================
 
 void BehaviorFactory::delete_behavior(IvPBehavior* pBehavior) {
@@ -153,5 +178,5 @@ void BehaviorFactory::delete_behavior(IvPBehavior* pBehavior) {
 //==============================================================================
 
 
-
+*/
 

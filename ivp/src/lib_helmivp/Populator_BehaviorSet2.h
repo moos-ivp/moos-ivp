@@ -23,65 +23,35 @@
 #ifndef POPULATOR_BEHAVIORSET2_HEADER
 #define POPULATOR_BEHAVIORSET2_HEADER
 
-#include <string>
-#include <set>
-#include <map>
-#include "BehaviorSet.h"
-#include "VarDataPair.h"
-#include "IvPDomain.h"
-#include "IvPBehavior.h"
-#include "InfoBuffer.h"
 #include "BehaviorFactory.h"
+#include "Populator_BehaviorSet.h"
 
-class Populator_BehaviorSet2 {
+/**
+   This class introduces dynamically loaded behaviors.  When a behavior name is
+   encountered in a behavior file, the superclass (Populator_BehaviorSet) is
+   given an opportunity to instantiate that behavior.  This will generally work
+   only when the behavior is one of those that's statically linked to the 
+   application.
+
+   If the behavior name isn't recognized by the superclass, then this class
+   will try to instantiate the behavior based on behavior libraries (shared 
+   objects) that this class has dynamically loaded.
+*/
+class Populator_BehaviorSet2 : public Populator_BehaviorSet {
 public:
   Populator_BehaviorSet2(IvPDomain, InfoBuffer*);
   ~Populator_BehaviorSet2() {};
 
   void load_behavior_libs(std::string dirname);
 
-  BehaviorSet* populate(std::set<std::string>);
-  BehaviorSet* populate(std::string filename);
+  void loadEnvVarDirectories(std::string envVar, bool verbose);
 
 protected:
-  bool handleLine(std::string);
-  bool handleEntry(std::string, std::string, std::string);
+  virtual IvPBehavior *initializeBehavior(std::string);
 
-  IvPBehavior *initializeBehavior(std::string);
-
-  void loadBehaviors(const std::string & lib_directory);
+//   void loadBehaviors(const std::string & lib_directory);
 
 protected:
   BehaviorFactory bhv_factory;
-
-  std::vector<IvPBehavior*>  behaviors;
-  std::vector<VarDataPair>   initial_vars;
-  std::vector<VarDataPair>   default_vars;
-
-  IvPDomain    domain;
-  InfoBuffer*  info_buffer;
-  int          define_mode;
-  bool         open_behavior_mode;
-
-  bool ok;
-  
 };
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -32,6 +32,7 @@
 #include "InfoBuffer.h"
 
 class Populator_BehaviorSet {
+
 public:
   Populator_BehaviorSet(IvPDomain, InfoBuffer*);
   ~Populator_BehaviorSet() {};
@@ -43,7 +44,7 @@ protected:
   bool handleLine(std::string);
   bool handleEntry(std::string, std::string, std::string);
 
-  IvPBehavior *initializeBehavior(std::string);
+  virtual IvPBehavior *initializeBehavior(std::string);
 
 protected:
   std::vector<IvPBehavior*>  behaviors;
