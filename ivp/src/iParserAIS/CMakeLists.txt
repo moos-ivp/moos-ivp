@@ -3,7 +3,10 @@
 # Author(s):                                   Phong TRan
 #--------------------------------------------------------
 
-FILE(GLOB SRC *.cpp)
+SET(SRC
+   ParserAIS.cpp
+   mainParserAIS.cpp
+)
 
 ADD_EXECUTABLE(iParserAIS ${SRC})
 

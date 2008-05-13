@@ -5,23 +5,28 @@
 
 IF(BUILD_GUIS)
 
-	FILE(GLOB SRC *.cpp)
-	  
-	ADD_EXECUTABLE(pMarineViewer ${SRC})
-	     
-	TARGET_LINK_LIBRARIES(pMarineViewer         
-	  MOOS
-	  MOOSGen
-	  MOOSUtility
-	  marineview
-	  mbutil
-	  genutil
-	  geometry
-	  m
-	   
-	  # Standard libraries used by this project's FLTK apps...
-	  fltk 
-	  fltk_gl 
-	  tiff)
+   SET(SRC
+      PMV_GUI.cpp
+      PMV_MOOSApp.cpp
+      PMV_Viewer.cpp
+      main_mviewer.cpp
+   )
+
+   ADD_EXECUTABLE(pMarineViewer ${SRC})
+         
+   TARGET_LINK_LIBRARIES(pMarineViewer         
+      MOOS
+      MOOSGen
+      MOOSUtility
+      marineview
+      mbutil
+      genutil
+      geometry
+      m
+      
+      # Standard libraries used by this project's FLTK apps...
+      fltk 
+      fltk_gl 
+      tiff)
   
 ENDIF(BUILD_GUIS)

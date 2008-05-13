@@ -3,7 +3,12 @@
 # Author(s):                                Mike Benjamin
 #--------------------------------------------------------
 
-FILE(GLOB SRC *.cpp)
+SET(SRC
+   MarinePID.cpp
+   PIDEngine.cpp
+   ScalarPID.cpp
+   main.cpp
+)
 
 ADD_EXECUTABLE(pMarinePID ${SRC})
    

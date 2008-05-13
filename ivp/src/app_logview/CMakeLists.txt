@@ -5,7 +5,12 @@
 
 IF(BUILD_GUIS)
 
-	FILE(GLOB SRC *.cpp)
+	SET(SRC
+            LogPlotViewer.cpp
+            NavPlotViewer.cpp
+            REPLAY_GUI.cpp
+            main.cpp
+        )
 	  
 	ADD_EXECUTABLE(logview ${SRC})
 	     

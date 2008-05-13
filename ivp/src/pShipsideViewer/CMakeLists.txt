@@ -5,7 +5,7 @@
 
 IF(BUILD_GUIS)
 
-	FILE(GLOB SRC
+	SET(SRC
 	  SSV_GUI.cpp
 	  SSV_MOOSApp.cpp
 	  SSV_Viewer.cpp

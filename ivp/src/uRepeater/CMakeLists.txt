@@ -3,9 +3,10 @@
 # Author(s):                                Mike Benjamin
 #--------------------------------------------------------
 
-FILE(GLOB SRC
+SET(SRC
   Repeater.cpp
-  RepeaterMain.cpp)
+  RepeaterMain.cpp
+)
 
 ADD_EXECUTABLE(uRepeater ${SRC})
  

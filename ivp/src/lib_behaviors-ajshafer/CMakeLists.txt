@@ -3,9 +3,11 @@
 # Author(s):                                Andrew Shafer
 #--------------------------------------------------------
 
-FILE(GLOB SRC
-	BHV_Lawnmower.cpp  
-	AOF_SearchArtifact.cpp BHV_SearchArtifact.cpp)
+SET(SRC
+   BHV_Lawnmower.cpp  
+   AOF_SearchArtifact.cpp 
+   BHV_SearchArtifact.cpp
+)
 
 ADD_LIBRARY(behaviors-ajshafer ${SRC})
 

@@ -3,7 +3,7 @@
 # Author(s):                                Mike Benjamin
 #--------------------------------------------------------
 
-FILE(GLOB SRC
+SET(SRC
   AOF_AvoidCollisionTOL.cpp
   AOF_CutRangeFCPA.cpp
   AOF_GENERIC.cpp

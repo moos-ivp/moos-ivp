@@ -5,7 +5,7 @@
 
 IF(BUILD_GUIS)
 
-	FILE(GLOB SRC
+	SET(SRC
 	  FV_GUI.cpp
 	  FV_MOOSApp.cpp
 	  FV_Model.cpp

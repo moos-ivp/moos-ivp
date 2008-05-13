@@ -5,8 +5,14 @@
 
 IF(BUILD_GUIS)
 
-	FILE(GLOB SRC *.cpp)
-	  
+   SET(SRC
+      AOF_Cache.cpp
+      GUI.cpp
+      PopulatorAOF.cpp
+      Viewer.cpp
+      main.cpp
+   )	  
+
 	ADD_EXECUTABLE(ffview ${SRC})
 	     
 	TARGET_LINK_LIBRARIES(ffview

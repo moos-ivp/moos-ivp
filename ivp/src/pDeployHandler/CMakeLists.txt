@@ -3,7 +3,10 @@
 # Author(s):                                Mike Benjamin
 #--------------------------------------------------------
 
-FILE(GLOB SRC *.cpp)
+SET(SRC
+   DeployHandler.cpp
+   DeployHandlerMain.cpp
+)
 
 ADD_EXECUTABLE(pDeployHandler ${SRC})
 

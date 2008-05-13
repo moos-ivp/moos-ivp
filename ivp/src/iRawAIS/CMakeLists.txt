@@ -3,7 +3,10 @@
 # Author(s):                                Phong Tran
 #--------------------------------------------------------
 
-FILE(GLOB SRC *.cpp)
+SET(SRC
+   RawAIS.cpp
+   mainRawAIS.cpp
+)
 
 ADD_EXECUTABLE(iRawAIS ${SRC})
 

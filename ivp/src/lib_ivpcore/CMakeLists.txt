@@ -3,7 +3,7 @@
 # Author(s):                                Mike Benjamin
 #--------------------------------------------------------
 
-FILE(GLOB SRC
+SET(SRC
   BoxSet.cpp      
   IvPBox.cpp      
   IvPDomain.cpp   

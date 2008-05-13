@@ -3,9 +3,10 @@
 # Author(s):                                Mike Benjamin
 #--------------------------------------------------------
 
-FILE(GLOB SRC
+SET(SRC
   Common_IPFViewer.cpp
-  QuadSet.cpp)
+  QuadSet.cpp
+)
 
 
 ADD_LIBRARY(ipfview ${SRC})

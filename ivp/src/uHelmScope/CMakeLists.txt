@@ -3,12 +3,13 @@
 # Author(s):                                Mike Benjamin
 #--------------------------------------------------------
 
-FILE(GLOB SRC 
+SET(SRC 
   HelmScope.cpp
   IterBlockHelm.cpp
   IterBlockBHV.cpp
   IterBlockPosts.cpp
-  main.cpp)
+  main.cpp
+)
 
 ADD_EXECUTABLE(uHelmScope ${SRC})
 

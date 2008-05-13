@@ -3,6 +3,13 @@
 # Author(s):                                Mike Benjamin
 #--------------------------------------------------------
 
-FILE(GLOB SRC *.cpp *.c)
+SET(SRC
+   IPF_Plot.cpp
+   LogPlot.cpp
+   NavPlot.cpp
+   Populator_IPF_Plot.cpp
+   Populator_LogPlots.cpp
+   Populator_NavPlot.cpp
+)
 
 ADD_LIBRARY(navplot ${SRC})

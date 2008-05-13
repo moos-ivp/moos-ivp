@@ -3,8 +3,11 @@
 # Author(s):                                Mike Benjamin
 #--------------------------------------------------------
 
-FILE(GLOB SRC *.cpp)
-  
+SET(SRC
+   Expander.cpp
+   main.cpp
+)
+ 
 ADD_EXECUTABLE(splug ${SRC})
      
 TARGET_LINK_LIBRARIES(splug

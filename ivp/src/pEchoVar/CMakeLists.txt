@@ -3,7 +3,10 @@
 # Author(s):                                Mike Benjamin
 #--------------------------------------------------------
 
-FILE(GLOB SRC *.cpp)
+SET(SRC
+   EchoVar.cpp  
+   mainEchoVar.cpp
+)
 
 ADD_EXECUTABLE(pEchoVar ${SRC})
 

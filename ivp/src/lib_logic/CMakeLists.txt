@@ -3,10 +3,11 @@
 # Author(s):                                Mike Benjamin
 #--------------------------------------------------------
 
-FILE(GLOB SRC
+SET(SRC
   ConditionalParam.cpp
   LogicCondition.cpp
   LogicUtils.cpp
-  ParseNode.cpp)
+  ParseNode.cpp
+)
 
 ADD_LIBRARY(logic ${SRC})

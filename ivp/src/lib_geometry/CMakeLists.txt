@@ -3,7 +3,7 @@
 # Author(s):                                Mike Benjamin
 #--------------------------------------------------------
 
-FILE(GLOB SRC  
+SET(SRC  
    AngleUtils.cpp        ArtifactUtils.cpp      
    CPAEngine.cpp         CPA_Utils.cpp          
    CircularUtils.cpp     GeomUtils.cpp          

@@ -3,7 +3,10 @@
 # Author(s):                                Phong Tran
 #--------------------------------------------------------
 
-FILE(GLOB SRC *.cpp)
+SET(SRC
+   PlaybackAIS.cpp
+   mainPlaybackAIS.cpp
+)
 
 ADD_EXECUTABLE(iPlaybackAIS ${SRC})
 

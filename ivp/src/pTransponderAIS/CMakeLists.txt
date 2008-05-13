@@ -3,7 +3,10 @@
 # Author(s):                                Mike Benjamin
 #--------------------------------------------------------
 
-FILE(GLOB SRC *.cpp)
+SET(SRC
+   TransponderAIS.cpp
+   mainTransponderAIS.cpp
+)
 
 ADD_EXECUTABLE(pTransponderAIS ${SRC})
    

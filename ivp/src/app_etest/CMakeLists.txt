@@ -3,7 +3,10 @@
 # Author(s):                                Mike Benjamin
 #--------------------------------------------------------
 
-FILE(GLOB SRC *.cpp)
+SET(SRC
+   TestEncodeMK.cpp
+   main.cpp
+)
   
 ADD_EXECUTABLE(etest ${SRC})
      

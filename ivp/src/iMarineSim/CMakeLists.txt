@@ -3,7 +3,13 @@
 # Author(s):                                Mike Benjamin
 #--------------------------------------------------------
 
-FILE(GLOB SRC *.cpp)
+SET(SRC
+   IMS_MOOSApp.cpp
+   IMS_Model.cpp
+   SimEngine.cpp
+   VState.cpp
+   iMarineSimMain.cpp
+)
 
 ADD_EXECUTABLE(iMarineSim ${SRC})
 

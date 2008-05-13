@@ -3,7 +3,10 @@
 # Author(s):                                Mike Benjamin
 #--------------------------------------------------------
 
-FILE(GLOB SRC *.cpp)
+SET(SRC
+   ViewerRelay.cpp
+   ViewerRelayMain.cpp
+)
 
 ADD_EXECUTABLE(pViewerRelay ${SRC})
 

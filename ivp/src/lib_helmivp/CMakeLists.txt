@@ -3,6 +3,12 @@
 # Author(s):                                Mike Benjamin
 #--------------------------------------------------------
 
-FILE(GLOB SRC *.cpp *.c)
+SET(SRC
+   BehaviorFactory.cpp
+   HelmEngine.cpp
+   HelmReport.cpp
+   Populator_BehaviorSet.cpp
+   Populator_BehaviorSet2.cpp
+)
 
 ADD_LIBRARY(helmivp ${SRC})

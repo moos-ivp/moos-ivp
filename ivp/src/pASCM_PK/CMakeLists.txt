@@ -3,7 +3,12 @@
 # Author(s):                                   Phong TRan
 #--------------------------------------------------------
 
-FILE(GLOB SRC *.cpp)
+SET(SRC
+   AscmContact.cpp
+   MOOS_ASCM_PK.cpp
+   PkContacts.cpp
+   mainASCM_PK.cpp
+)
 
 ADD_EXECUTABLE(pASCM_PK ${SRC})
 

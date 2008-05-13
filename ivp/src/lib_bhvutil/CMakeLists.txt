@@ -3,12 +3,12 @@
 # Author(s):                                Mike Benjamin
 #--------------------------------------------------------
 
-FILE(GLOB SRC
+SET(SRC
   AOF_AttractorCPA.cpp
   AOF_AvoidCollision.cpp
   AOF_AvoidObstacles.cpp
   AOF_CutRangeCPA.cpp
-  AOF_CutRangeCPA_V1.cpp
+#   AOF_CutRangeCPA_V1.cpp
   AOF_Shadow.cpp
   AOF_Waypoint.cpp
   LoiterEngine.cpp

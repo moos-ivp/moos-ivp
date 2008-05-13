@@ -3,13 +3,14 @@
 # Author(s):                                Mike Benjamin
 #--------------------------------------------------------
 
-FILE(GLOB SRC
+SET(SRC
   ColorParse.cpp
   FColorMap.cpp
   FileBuffer.cpp
   MBTimer.cpp
   MBUtils.cpp
-  TermUtils.cpp)
+  TermUtils.cpp
+)
 
 
 ADD_LIBRARY(mbutil ${SRC})

@@ -3,9 +3,10 @@
 # Author(s):                                Mike Benjamin
 #--------------------------------------------------------
 
-FILE(GLOB SRC 
+SET(SRC 
   XMS.cpp
-  uXMSMain.cpp)
+  uXMSMain.cpp
+)
 
 ADD_EXECUTABLE(uXMS ${SRC})
 

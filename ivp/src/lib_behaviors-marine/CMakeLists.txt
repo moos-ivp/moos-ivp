@@ -3,7 +3,7 @@
 # Author(s):                                Mike Benjamin
 #--------------------------------------------------------
 
-FILE(GLOB SRC
+SET(SRC
   BHV_Attractor.cpp
   BHV_AvoidCollision.cpp
   BHV_AvoidObstacles.cpp
@@ -25,7 +25,8 @@ FILE(GLOB SRC
   BHV_TimeOut.cpp
   BHV_Timer.cpp
   BHV_Trail.cpp
-  BHV_Trail_V1.cpp
-  BHV_Waypoint.cpp)
+#   BHV_Trail_V1.cpp
+  BHV_Waypoint.cpp
+)
 
 ADD_LIBRARY(behaviors-marine ${SRC})

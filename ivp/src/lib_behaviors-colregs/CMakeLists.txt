@@ -14,7 +14,7 @@
 # ADD_BHV(BHV_StandOn17)
 # ADD_BHV(BHV_GiveWay16)
 
-FILE(GLOB SRC
+SET(SRC
   AOF_R14.cpp
   AOF_R16.cpp
   AOF_R17.cpp
