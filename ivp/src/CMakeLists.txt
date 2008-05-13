@@ -80,7 +80,7 @@ GET_FILENAME_COMPONENT(IVP_DATA_DIR ../data ABSOLUTE)
 #---------------------------------------------------------------------
 #  Build the Libraries
 #---------------------------------------------------------------------
-FILE(GLOB IVP_LIBS_TO_BUILD
+SET(IVP_LIBS_TO_BUILD
   lib_behaviors
   lib_behaviors-ajshafer
   lib_behaviors-colregs
@@ -113,7 +113,7 @@ ENDFOREACH(L)
 #---------------------------------------------------------------------
 #  Build the Applications
 #---------------------------------------------------------------------
-FILE(GLOB IVP_APPS_TO_BUILD
+SET(IVP_APPS_TO_BUILD
   app_ffview
   app_geoview
   app_logview
