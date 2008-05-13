@@ -185,21 +185,38 @@ bool MOOS_ASCM_PK::Iterate()
     double moos_time = MOOSTime();
     isRead = true;
     std::string pk_sol;
+    std::string contact_list ="";
+    contact_list.append("CONTACT_LIST = ");
+    contact_list.append(dstringCompact(doubleToString(ascmContactList.size())).c_str());
+ 
     for(int i = 0; i< ascmContactList.size(); i++)
      {
 	AscmContact *lPkedContact = NULL;
 
 	lDeltaTime = moos_time - ascmContactList.at(i).getTime();
 	lPkedContact = PkContacts::pkContact( &ascmContactList.at(i), lDeltaTime );
+      
+        contact_list.append(",");
+	contact_list.append("NAME="); 
+        contact_list.append(dstringCompact(lPkedContact->getId()));
+        
 	composePK_SOL_Msg(lPkedContact);
         pk_sol.append(dynamicAIS);
         delete lPkedContact;
      }
 
-     MOOSTrace("Notify PK_SOL: ========================================================================\n" + pk_sol);
+     
+    if(contact_list.length() > 0)
+    {
+	MOOSTrace("Notify CONTACT_LIST: ========================================================================\n" + contact_list + "\n");        
+	m_Comms.Notify("CONTACT_LIST", contact_list);
+    }
+
+    
     if(strlen(dynamicAIS) > 0)
     {
-        m_Comms.Notify("PK_SOL", pk_sol);
+	MOOSTrace("Notify PK_SOL: ========================================================================\n" + pk_sol);        
+	m_Comms.Notify("PK_SOL", pk_sol);
     }
   }
   isRead = false;

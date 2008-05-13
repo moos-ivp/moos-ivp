@@ -86,7 +86,7 @@ void OM1371Message_1::PackMessageStructure()
 							pAISData->dynamic_data.navigational_status);
 	
 	// Rate of Turn (AIS) code	
-	long   rot_ais_code;
+	long   rot_ais_code = 0;
 	rot_ais_code = ComputeROT( pAISData->dynamic_data.turn_rate);
 	SetLongValue(messageBuffer, AIS_MSG_1_BUFFER_SIZE, 
 							AIS_MSG_1_RATE_OF_TURN_START, 
@@ -338,7 +338,8 @@ bool OM1371Message_1::DecodeNMEAString()
 char OM1371Message_1::ComputeROT(double turn_rate_deg_per_sec)
 {
 	char rot_ais_code = -128;	// not available;	
-	double turn_rate_deg_per_min = turn_rate_deg_per_sec * 60.0;
+	double turn_rate_deg_per_min = 0.0;
+        turn_rate_deg_per_min = turn_rate_deg_per_sec * 60.0;
 	
 	if(turn_rate_deg_per_min >= 720.0)
 		rot_ais_code = 127;

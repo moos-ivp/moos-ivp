@@ -37,7 +37,7 @@ OM1371Message::~OM1371Message()
 void OM1371Message::SetLongValue(unsigned char* pBuffer, 
 	int buffer_size_in_bytes, int start_bit, int num_bits, long value)
 {
-	int mask, i;
+	int mask = 0, i = 0;
 	
 	if(start_bit < 0)
 	{
