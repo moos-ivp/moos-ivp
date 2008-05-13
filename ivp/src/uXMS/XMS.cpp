@@ -74,7 +74,6 @@ bool XMS::OnNewMail(MOOSMSG_LIST &NewMail)
   // All variables "values" are stored as strings. We let MOOS
   // tell us the type of the variable, and we keep track of the
   // type locally, just so we can put quotes around string values.
-  
   for(p = NewMail.rbegin(); p != NewMail.rend(); p++) {
     CMOOSMsg &msg = *p;
     updateVariable(msg);

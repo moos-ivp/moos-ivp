@@ -79,6 +79,9 @@ protected:
   inline void cb_ToggleDatum_i();
   static void cb_ToggleDatum(Fl_Widget*);
 
+  inline void cb_ToggleGrids_i();
+  static void cb_ToggleGrids(Fl_Widget*);
+
   inline void cb_DatumSize_i(int);
   static void cb_DatumSize(Fl_Widget*, int);
 

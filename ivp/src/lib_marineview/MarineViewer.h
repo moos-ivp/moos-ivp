@@ -131,6 +131,7 @@ protected:
   float      m_trail_size;
   bool       m_cross_offon;
   bool       m_poly_offon;
+  bool       m_grid_offon;
   bool       m_tiff_offon;
   bool       m_hash_offon;
   bool       m_draw_vname;

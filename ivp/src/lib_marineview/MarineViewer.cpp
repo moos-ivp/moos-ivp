@@ -59,6 +59,7 @@ MarineViewer::MarineViewer(int x, int y, int w, int h, const char *l)
   m_trail_size  = 0.1;
   m_cross_offon = false;
   m_poly_offon  = true;
+  m_grid_offon  = true;
   m_tiff_offon  = true;
   m_hash_offon  = false;
   m_draw_vname  = false;
@@ -946,6 +947,12 @@ bool MarineViewer::setCommonParam(string param, string value)
   else if(param == "poly_view") {
     if(value == "toggle")
       m_poly_offon = !m_poly_offon;
+    else
+      return(false);
+  }
+  else if(param == "display_grids") {
+    if(value == "toggle")
+      m_grid_offon = !m_grid_offon;
     else
       return(false);
   }

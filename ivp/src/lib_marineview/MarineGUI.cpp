@@ -69,6 +69,7 @@ Fl_Menu_Item MarineGUI::menu_[] = {
  {"Toggle Hash",      'h', (Fl_Callback*)MarineGUI::cb_ToggleHash, (void*)-1, 0},
  {"Hash Lighter",     FL_CTRL+'h', (Fl_Callback*)MarineGUI::cb_HashShade,  (void*)+1, 0},
  {"Hash Darker",      FL_ALT +'h', (Fl_Callback*)MarineGUI::cb_HashShade,  (void*)-1, FL_MENU_DIVIDER},
+ {"Toggle Grid(s)",      'g', (Fl_Callback*)MarineGUI::cb_ToggleGrids, (void*)0, FL_MENU_DIVIDER},
  {"Toggle Datum",        'd', (Fl_Callback*)MarineGUI::cb_ToggleDatum, (void*)0, 0},
  {"Datum Bigger", FL_CTRL+'d', (Fl_Callback*)MarineGUI::cb_DatumSize,  (void*)+1, 0},
  {"Datum Smaller", FL_ALT +'d', (Fl_Callback*)MarineGUI::cb_DatumSize,  (void*)-1, FL_MENU_DIVIDER},
@@ -222,6 +223,15 @@ inline void MarineGUI::cb_ToggleDatum_i() {
 }
 void MarineGUI::cb_ToggleDatum(Fl_Widget* o) {
   ((MarineGUI*)(o->parent()->user_data()))->cb_ToggleDatum_i();
+}
+
+//----------------------------------------- ToggleGrids
+inline void MarineGUI::cb_ToggleGrids_i() {
+  cmviewer->setParam("display_grids", "toggle");
+  cmviewer->redraw();
+}
+void MarineGUI::cb_ToggleGrids(Fl_Widget* o) {
+  ((MarineGUI*)(o->parent()->user_data()))->cb_ToggleGrids_i();
 }
 
 //----------------------------------------- DatumSize

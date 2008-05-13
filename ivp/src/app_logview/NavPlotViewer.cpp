@@ -53,6 +53,9 @@ void NavPlotViewer::draw()
   if(m_poly_offon)
     drawPolys();
 
+  if(m_grid_offon)
+    drawGrids();
+
   drawNavPlots();
   drawFrame();
 }
