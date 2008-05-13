@@ -21,6 +21,7 @@
 /*****************************************************************/
 
 #include <iostream>
+#include <cstring>
 #include "HelmScope.h"
 #include "MBUtils.h"
 
