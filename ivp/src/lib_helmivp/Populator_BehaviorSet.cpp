@@ -71,6 +71,8 @@
 // henrik 1.29.08
 #include "BHV_RubberBand.h"
 #include "BHV_Attractor.h"
+// henrik 5.9.08
+#include "BHV_MinimizeNoise.h"
 #endif
 
 #if 1
@@ -368,6 +370,9 @@ IvPBehavior* Populator_BehaviorSet::initializeBehavior(string bhv_name)
     bhv = new BHV_RubberBand(domain);
   else if(bhv_name == "BHV_Attractor")     
     bhv = new BHV_Attractor(domain);
+  // henrik 5.9.08
+  else if(bhv_name == "BHV_MinimizeNoise")     
+    bhv = new BHV_MinimizeNoise(domain);
 #endif
 
 #if 1

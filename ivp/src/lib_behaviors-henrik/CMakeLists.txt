@@ -7,6 +7,7 @@ SET(SRC
    AOF_HArrayTurn.cpp
    AOF_HCutRangeCPA.cpp
    AOF_HShadow.cpp
+   AOF_MinimizeNoise.cpp
    BHV_ClassifyYoyo.cpp
    BHV_ConstantAltitude.cpp
    BHV_HArrayAngle.cpp
@@ -19,6 +20,7 @@ SET(SRC
    BHV_MinAltitude.cpp
    BHV_RaceTrack.cpp
    BHV_ZigZag.cpp
+   BHV_MinimizeNoise.cpp
 )
 
 ADD_LIBRARY(behaviors-henrik ${SRC})
