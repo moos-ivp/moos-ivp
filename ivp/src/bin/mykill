@@ -21,6 +21,6 @@ killall -9 -q iMicroModem pRouter pFramer pMessageSim  \
         pBearings_GENERIC pTargetSim pMBTracker zLoggerNG \
 	iModemSim pFunctionSender uFunctionViewer uFunctionVis
 
-killall -9 -q pSensorSim pArtifactMapper 
+killall -9 -q pSensorSim pArtifactMapper pNoiseSim
 
 echo Done - Killed all MOOS-Related Processes.....
