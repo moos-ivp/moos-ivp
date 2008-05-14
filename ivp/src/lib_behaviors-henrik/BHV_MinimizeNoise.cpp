@@ -93,7 +93,7 @@ IvPFunction *BHV_MinimizeNoise::onRunState()
    
   IvPFunction *of = reflector.extractOF();
   
-  of->getPDMap()->normalize(0.0, 100.0);
+  //  of->getPDMap()->normalize(0.0, 100.0);
   of->setPWT(relevance*m_priority_wt);
     
 return(of);
