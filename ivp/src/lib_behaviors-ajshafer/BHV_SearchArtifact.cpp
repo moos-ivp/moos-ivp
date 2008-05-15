@@ -29,8 +29,8 @@ BHV_SearchArtifact::BHV_SearchArtifact(IvPDomain gdomain) :
   IvPBehavior(gdomain)
 {
   this->setParam("descriptor", "(d)bhv_search_artifact_grid");
-  this->setParam("build_info", "uniform_piece=course:6,speed:4");
-  this->setParam("build_info", "uniform_grid=course:12,speed:8");
+  //this->setParam("build_info", "uniform_piece=course:6,speed:4");
+  //this->setParam("build_info", "uniform_grid=course:12,speed:8");
 
   m_domain = subDomain(m_domain, "course,speed");
 
@@ -114,7 +114,8 @@ IvPFunction *BHV_SearchArtifact::onRunState()
 		// 1 for linear pieces
 		OF_Reflector reflector(&aof, 1);
 		
-		reflector.create(m_build_info);
+		//reflector.create(m_build_info);
+		reflector.create(180);
 		
 		ipf = reflector.extractOF();
 
