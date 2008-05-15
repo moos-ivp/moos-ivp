@@ -1,30 +1,30 @@
 ///////////////////////////////////////////////////////////////////////////
 //
-//   MOOS - Mission Oriented Operating Suite 
-//  
-//   A suit of Applications and Libraries for Mobile Robotics Research 
-//   Copyright (C) 2001-2005 Massachusetts Institute of Technology and 
-//   Oxford University. 
-//    
-//   This software was written by Paul Newman at MIT 2001-2002 and Oxford 
-//   University 2003-2005. email: pnewman@robots.ox.ac.uk. 
-//      
-//   This file is part of a  MOOS Core Component. 
-//        
-//   This program is free software; you can redistribute it and/or 
-//   modify it under the terms of the GNU General Public License as 
-//   published by the Free Software Foundation; either version 2 of the 
-//   License, or (at your option) any later version. 
-//          
-//   This program is distributed in the hope that it will be useful, 
-//   but WITHOUT ANY WARRANTY; without even the implied warranty of 
-//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
-//   General Public License for more details. 
-//            
-//   You should have received a copy of the GNU General Public License 
-//   along with this program; if not, write to the Free Software 
-//   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 
-//   02111-1307, USA. 
+//   MOOS - Mission Oriented Operating Suite
+//
+//   A suit of Applications and Libraries for Mobile Robotics Research
+//   Copyright (C) 2001-2005 Massachusetts Institute of Technology and
+//   Oxford University.
+//
+//   This software was written by Paul Newman at MIT 2001-2002 and Oxford
+//   University 2003-2005. email: pnewman@robots.ox.ac.uk.
+//
+//   This file is part of a  MOOS Core Component.
+//
+//   This program is free software; you can redistribute it and/or
+//   modify it under the terms of the GNU General Public License as
+//   published by the Free Software Foundation; either version 2 of the
+//   License, or (at your option) any later version.
+//
+//   This program is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+//   General Public License for more details.
+//
+//   You should have received a copy of the GNU General Public License
+//   along with this program; if not, write to the Free Software
+//   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+//   02111-1307, USA.
 //
 //////////////////////////    END_GPL    //////////////////////////////////
 // MOOSLogger.cpp: implementation of the CMOOSLogger class.
@@ -51,7 +51,6 @@
 #include <sys/types.h>
 #endif
 
-#include <string.h>
 
 using namespace std;
 #include "MOOSLogger.h"
@@ -88,7 +87,7 @@ CMOOSLogger::CMOOSLogger()
 
     //start immediately
     m_dfLastSyncLogTime = 0;
-        
+
     //we have no immediate need to check monitored variables
     m_dfLastMonitorTime = MOOSTime();
 
@@ -189,7 +188,7 @@ bool CMOOSLogger::OnStartUp()
 
     //are we required to perform synchronous logs?
     string sTmp;
-    if(m_MissionReader.GetConfigurationParam("SYNCLOG",m_bSynchronousLog))
+    if(m_MissionReader.GetConfigurationParam("SYNCLOG",sTmp))
     {
         string sBool = MOOSChomp(sTmp,"@");
         if(MOOSStrCmp(sBool,"TRUE"))
@@ -218,7 +217,7 @@ bool CMOOSLogger::OnStartUp()
 
     //what sort of file name are we using
     m_MissionReader.GetConfigurationParam("FILETIMESTAMP",m_bAppendFileTimeStamp);
-    
+
     //do we have a path global name?
     if(!m_MissionReader.GetValue("GLOBALLOGPATH",m_sPath))
     {
@@ -248,7 +247,7 @@ bool CMOOSLogger::OnStartUp()
     m_MissionReader.GetConfigurationParam("FILE",m_sStemFileName);
 
 
-   
+
 
 
 
@@ -285,8 +284,8 @@ bool CMOOSLogger::ConfigureLogging()
             if(MOOSStrCmp(sWhat,"LOG"))
             {
                 std::string sNewVar;
-                HandleLogRequest(sParam,sNewVar);               
-            }            
+                HandleLogRequest(sParam,sNewVar);
+            }
         }
     }
     else
@@ -300,7 +299,7 @@ bool CMOOSLogger::ConfigureLogging()
 
     //this won't touch nNumDynamicVariables if mission file isn't open.
     m_MissionReader.GetConfigurationParam("DynamicSyncLogColumns",nNumDynamicVariables);
-    
+
     if(nNumDynamicVariables>0)
     {
         MOOSTrace("Comment:\n\tReserving space for %d dynamic variables in slog\n",nNumDynamicVariables);
@@ -335,7 +334,7 @@ bool CMOOSLogger::HandleLogRequest(std::string sParam,std::string & sVar, bool b
         return MOOSFail("Ignoring request to log %s - already requested\n",sVar.c_str());
 
     //do we want to monitor it?
-    unsigned int iMonitor = sParam.find("MONITOR");
+    size_t iMonitor = sParam.find("MONITOR");
     if(iMonitor!=string::npos)
     {
         m_MonitorMap[sVar] = DEFAULT_MONITOR_TIME;
@@ -418,7 +417,7 @@ bool CMOOSLogger::Iterate()
 
         //piggy back on this timer to publish current log directory
         m_Comms.Notify("LOGGER_DIRECTORY",m_sLogDirectoryName.c_str());
-    }    
+    }
 
     //are we requested to do wild card logging?
     if(m_bWildCardLogging)
@@ -430,7 +429,7 @@ bool CMOOSLogger::Iterate()
     m_AsyncLogFile.flush();
     m_SystemLogFile.flush();
 
-    
+
 
     return true;
 }
@@ -455,10 +454,10 @@ bool CMOOSLogger::HandleWildCardLogging()
                     if(AddMOOSVariable(sVar,sVar,"",0.0))
                     {
                         bHit = true;
-                        MOOSTrace("   Added wildcard logging of %s\n",sVar.c_str()); 
+                        MOOSTrace("   Added wildcard logging of %s\n",sVar.c_str());
                     }
                 }
-            }            
+            }
 
             if(bHit)
                 RegisterMOOSVariables();
@@ -475,14 +474,14 @@ std::string CMOOSLogger::MakeLogName(string sStem)
 {
     struct tm *Now;
     time_t aclock;
-    time( &aclock );                 
-    Now = localtime( &aclock );  
+    time( &aclock );
+    Now = localtime( &aclock );
 
     std::string  sTmp;
 
     if(m_bAppendFileTimeStamp)
     {
-        // Print local time as a string 
+        // Print local time as a string
 
         //ODYSSEYLOG_14_5_1993_____9_30.log
         sTmp = MOOSFormat( "%s_%d_%d_%d_____%.2d_%.2d_%.2d",
@@ -516,7 +515,7 @@ bool CMOOSLogger::DoSyncLog(double dfTimeNow)
     {
         string sVar = m_SynchronousLogVars[nVar];
 
-        //oops empty string! 
+        //oops empty string!
         if(sVar.empty())
             continue;
 
@@ -559,9 +558,9 @@ bool CMOOSLogger::DoSyncLog(double dfTimeNow)
 
 
         }
-       
+
     }
-    
+
 
     //here we want to add columns for unclaimed dynamic variables;
     for(unsigned int i = 0; i<m_UnusedDynamicVariables.size();i++)
@@ -571,7 +570,7 @@ bool CMOOSLogger::DoSyncLog(double dfTimeNow)
     }
 
     //put a new line in...
-    m_SyncLogFile<<endl;            
+    m_SyncLogFile<<endl;
 
     //every few lines put a comment in
     if((m_nSyncLines++)%30==0)
@@ -598,7 +597,7 @@ bool CMOOSLogger::OpenFile(std::ofstream & of,const std::string & sName)
 bool CMOOSLogger::OpenSyncFile()
 {
     if(!OpenFile(m_SyncLogFile,m_sSyncFileName))
-        return MOOSFail("Failed to Open slog file");    
+        return MOOSFail("Failed to Open slog file");
 
 
     //be pretty
@@ -615,7 +614,7 @@ bool CMOOSLogger::OpenSyncFile()
     {
         string sVar = m_SynchronousLogVars[nVar];
 
-        //oops empty string! 
+        //oops empty string!
         if(sVar.empty())
             continue;
 
@@ -631,7 +630,7 @@ bool CMOOSLogger::OpenSyncFile()
         m_SyncLogFile<<"%%   ("<<nCount++<<") ";
 
         //remember where the next string will be..
-        m_DynamicNameIndex[*q] =  m_SyncLogFile.tellp();  
+        m_DynamicNameIndex[*q] =  m_SyncLogFile.tellp();
 
         //write the as yet unclaimed name - note we are also writing a tonne of spare space so we can
         //later acccess the file here and write a new MOOS variabl name..
@@ -651,7 +650,7 @@ bool CMOOSLogger::OpenSystemFile()
 {
 
     if(!OpenFile(m_SystemLogFile,m_sSystemFileName))
-        return MOOSFail("Failed to Open system log file");    
+        return MOOSFail("Failed to Open system log file");
 
 
     DoBanner(m_SystemLogFile,m_sSystemFileName);
@@ -665,7 +664,7 @@ bool CMOOSLogger::OpenAsyncFile()
 {
 
     if(!OpenFile(m_AsyncLogFile,m_sAsyncFileName))
-        return MOOSFail("Failed to Open alog file");    
+        return MOOSFail("Failed to Open alog file");
 
     DoBanner(m_AsyncLogFile,m_sAsyncFileName);
 
@@ -688,18 +687,18 @@ bool CMOOSLogger::LogSystemMessages(MOOSMSG_LIST &NewMail)
 
             m_SystemLogFile<<setw(10)<<setprecision(7)<<rMsg.m_dfTime-GetAppStartTime()<<' ';
 
-            m_SystemLogFile<<setw(20)<<rMsg.m_sKey.c_str()<<' '; 
+            m_SystemLogFile<<setw(20)<<rMsg.m_sKey.c_str()<<' ';
 
             m_SystemLogFile<<setw(20)<<rMsg.m_sSrc.c_str()<<' ';
 
             if(rMsg.m_cDataType==MOOS_DOUBLE)
             {
-                m_SystemLogFile<<setw(20)<<rMsg.m_dfVal<<' ';                
+                m_SystemLogFile<<setw(20)<<rMsg.m_dfVal<<' ';
             }
             else
             {
                 MOOSRemoveChars(rMsg.m_sVal,"\n");
-                m_SystemLogFile<<setw(20)<<rMsg.m_sVal.c_str()<<' ';                
+                m_SystemLogFile<<setw(20)<<rMsg.m_sVal.c_str()<<' ';
             }
             m_SystemLogFile<<endl;
         }
@@ -739,13 +738,13 @@ bool CMOOSLogger::LabelSyncColumns()
     {
         string sVar = m_SynchronousLogVars[nVar];
 
-        //oops empty string! 
+        //oops empty string!
         if(sVar.empty())
             continue;
 
         m_SyncLogFile.setf(ios::left);
 
-        m_SyncLogFile<<setw(COLUMN_WIDTH)<<sVar.c_str()<<' ';        
+        m_SyncLogFile<<setw(COLUMN_WIDTH)<<sVar.c_str()<<' ';
     }
 
     //here we want to add columns for unclaimed dynamic variables;
@@ -753,7 +752,7 @@ bool CMOOSLogger::LabelSyncColumns()
     for( q = m_UnusedDynamicVariables.begin();q!=m_UnusedDynamicVariables.end();q++)
     {
         m_SyncLogFile.setf(ios::left);
-        m_SyncLogFile<<setw(COLUMN_WIDTH)<<q->c_str()<<' ';        
+        m_SyncLogFile<<setw(COLUMN_WIDTH)<<q->c_str()<<' ';
     }
 
 
@@ -801,16 +800,16 @@ bool CMOOSLogger::CreateDirectory(const std::string & sDirectory)
         {
 
             LPVOID lpMsgBuf;
-            FormatMessage( 
-                FORMAT_MESSAGE_ALLOCATE_BUFFER | 
-                FORMAT_MESSAGE_FROM_SYSTEM | 
+            FormatMessage(
+                FORMAT_MESSAGE_ALLOCATE_BUFFER |
+                FORMAT_MESSAGE_FROM_SYSTEM |
                 FORMAT_MESSAGE_IGNORE_INSERTS,
                 NULL,
                 TheError,
                 MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
                 (LPTSTR) &lpMsgBuf,
                 0,
-                NULL 
+                NULL
                 );
             // Process any inserts in lpMsgBuf.
             // ...
@@ -855,7 +854,7 @@ bool CMOOSLogger::OnNewSession()
     {
         MOOSTrace("Warning:\n\tFailed to create directory %s\n",sLogDirectory.c_str());
 
-        sLogDirectory = "./"+sRoot; 
+        sLogDirectory = "./"+sRoot;
         MOOSTrace("\tfalling back to creating %s...",sLogDirectory.c_str());
         if(!CMOOSLogger::CreateDirectory(sLogDirectory))
         {
@@ -875,22 +874,22 @@ bool CMOOSLogger::OnNewSession()
 
     m_sAsyncFileName = m_sLogDirectoryName+"/"+sRoot+".alog";
     m_sSyncFileName = m_sLogDirectoryName+"/"+sRoot+".slog";
-    m_sSystemFileName = m_sLogDirectoryName+"/"+sRoot+".ylog";    
+    m_sSystemFileName = m_sLogDirectoryName+"/"+sRoot+".ylog";
     m_sMissionCopyName = m_sLogDirectoryName+"/"+sRoot+"._moos";
     m_sHoofCopyName = m_sLogDirectoryName+"/"+sRoot+"._hoof";
 
     if(!OpenAsyncFile())
         return MOOSFail("Error:\n\tUnable to open Asynchronous log file\n");
-    
+
     if(! OpenSyncFile())
         return MOOSFail("Error:\n\tUnable to open Synchronous log file\n");
-    
+
     if(!OpenSystemFile())
         return MOOSFail("Error:\n\tUnable to open System log file\n");
 
     if(!CopyMissionFile())
         MOOSTrace("Warning:\n\tunable to create a back up of the mission file\n");
-        
+
     return true;
 }
 
@@ -926,7 +925,7 @@ bool CMOOSLogger::DoAsyncLog(MOOSMSG_LIST &NewMail)
 {
     //log asynchrounously...
     if(m_AsyncLogFile.is_open()&& m_bAsynchronousLog)
-    { 
+    {
         MOOSMSG_LIST::iterator q;
         for(q = NewMail.begin();q!=NewMail.end();q++)
         {
@@ -960,15 +959,15 @@ bool CMOOSLogger::CopyMissionFile()
     //open the original
     ifstream MissionFile;
     MissionFile.open(m_sMissionFile.c_str());
-    if(!MissionFile)    
+    if(!MissionFile)
         return false;
-    
+
 
     //open a copy file
     ofstream MissionCopy;
 
     if(!OpenFile(MissionCopy,m_sMissionCopyName))
-        return MOOSFail("Failed to open a copy of mission file");    
+        return MOOSFail("Failed to open a copy of mission file");
 
     //write a banner
     DoBanner(MissionCopy,m_sMissionCopyName);
@@ -980,7 +979,7 @@ bool CMOOSLogger::CopyMissionFile()
         MissionFile.getline(Tmp,sizeof(Tmp));
         string sLine = string(Tmp);
 
-        MissionCopy<<sLine.c_str()<<endl;            
+        MissionCopy<<sLine.c_str()<<endl;
     }
     MissionCopy.close();
     MissionFile.close();
@@ -1000,7 +999,7 @@ bool CMOOSLogger::CopyMissionFile()
         ofstream HoofCopy;
 
         if(!OpenFile(HoofCopy,m_sHoofCopyName))
-            return MOOSFail("Failed to copy of mission file");    
+            return MOOSFail("Failed to copy of mission file");
 
         //open the original
         ifstream HoofFile;
@@ -1016,7 +1015,7 @@ bool CMOOSLogger::CopyMissionFile()
                 HoofFile.getline(Tmp,sizeof(Tmp));
                 string sLine = string(Tmp);
 
-                HoofCopy<<sLine.c_str()<<endl;            
+                HoofCopy<<sLine.c_str()<<endl;
             }
 
             HoofCopy.close();
@@ -1046,7 +1045,7 @@ bool CMOOSLogger::OnCommandMsg(CMOOSMsg Msg)
 
     if(MOOSStrCmp(sTask,"LOG_REQUEST"))
     {
-        HandleDynamicLogRequest(sParam);        
+        HandleDynamicLogRequest(sParam);
     }
     else if(MOOSStrCmp(sTask,"COPY_FILE_REQUEST"))
     {
@@ -1130,7 +1129,7 @@ bool CMOOSLogger::HandleDynamicLogRequest(std::string sRequest)
 
 
             //better remember where we are...
-            std::streampos pNow =  m_SyncLogFile.tellp();  
+            std::streampos pNow =  m_SyncLogFile.tellp();
 
             //where do we write the new name to?
             std::streampos p = m_DynamicNameIndex[sDynamic];
@@ -1148,8 +1147,8 @@ bool CMOOSLogger::HandleDynamicLogRequest(std::string sRequest)
                     DYNAMIC_NAME_SPACE-1);
             }
 
-            m_SyncLogFile<<setw(DYNAMIC_NAME_SPACE-1)<<left<<sNewVar;;                                  
-            
+            m_SyncLogFile<<setw(DYNAMIC_NAME_SPACE-1)<<left<<sNewVar;;
+
             //and return from whence you came....
             m_SyncLogFile.seekp(pNow);
 
