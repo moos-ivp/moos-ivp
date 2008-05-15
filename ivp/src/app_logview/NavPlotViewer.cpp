@@ -29,6 +29,7 @@
 #include "NavPlotViewer.h"
 #include "MBUtils.h"
 #include "GeomUtils.h"
+#include "IO_GeomUtils.h"
 
 using namespace std;
 
@@ -36,6 +37,7 @@ NavPlotViewer::NavPlotViewer(int x, int y, int w, int h, const char *l)
   : MarineViewer(x,y,w,h,l)
 {
   m_global_ix    = 0;
+  m_gridplot_ix  = -1;
   m_local_ix     = 0;
   m_trail_gap    = 1;
   m_trail_size   = 1;
@@ -54,7 +56,7 @@ void NavPlotViewer::draw()
     drawPolys();
 
   if(m_grid_offon)
-    drawGrids();
+    drawGridPlots();
 
   drawNavPlots();
   drawFrame();
@@ -156,11 +158,22 @@ bool NavPlotViewer::jumpCurrIndex(int v)
 
 
 //-------------------------------------------------------------
+// Procedure: setGridPlotIndex
+
+void NavPlotViewer::setGridPlotIndex(int ix)
+{
+  if((ix < 0) || (ix >= m_gridplots.size()))
+    return;
+  else
+    m_gridplot_ix = ix;
+}
+
+
+//-------------------------------------------------------------
 // Procedure: vehicle
 
 void NavPlotViewer::setGlobalIndex(int new_ix)
 {
-  cout << "In NavPlotViewer::setGlobalIndex() " << new_ix << endl;
   if(new_ix < 0)
     new_ix = 0;
   if(new_ix >= m_navplots.size())
@@ -176,7 +189,18 @@ void NavPlotViewer::addNavPlot(const NavPlot &given_navplot)
 {
   NavPlot new_navplot(given_navplot);
   m_navplots.push_back(new_navplot); 
-  m_local_ix=0;
+  m_local_ix = 0;
+}
+
+//-------------------------------------------------------------
+// Procedure: addGridPlot
+//      Note: A local copy of the given Gridplot is created here.
+
+int NavPlotViewer::addGridPlot(const GridPlot &given_gridplot)
+{
+  GridPlot new_gridplot(given_gridplot);
+  m_gridplots.push_back(new_gridplot); 
+  return(m_gridplots.size());
 }
 
 
@@ -323,7 +347,34 @@ void NavPlotViewer::drawNavPlot(int index)
   if(index==2) 
     {red=0; grn=0; blu=2;}
   drawCommonVehicle("", opose, red, grn, blu, m_vehibody);
+}
 
+
+//-------------------------------------------------------------
+// Procedure: drawGridPlots
+
+void NavPlotViewer::drawGridPlots()
+{
+  if(m_gridplot_ix != -1)
+    drawGridPlot(m_gridplot_ix);
+  //for(int i=0; i<m_gridplots.size(); i++)
+  //  drawGridPlot(i);
+}
+
+
+//-------------------------------------------------------------
+// Procedure: drawGridPlot
+
+void NavPlotViewer::drawGridPlot(int index)
+{
+  int npsize = m_gridplots[index].size();
+  if(npsize == 0)
+    return;
+
+  double ctime = getCurrTime();
+
+  XYGrid grid = m_gridplots[index].getGridByTime(ctime);
+  drawGrid(grid);
 }
 
 //-------------------------------------------------------------

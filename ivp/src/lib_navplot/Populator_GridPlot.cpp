@@ -34,11 +34,15 @@ void Populator_GridPlot::populate(string filestr)
 
   int vsize = plines.size();  
   for(int i=0; i<vsize; i++) {
-    if(plines[i][1] == "GRID_DELTA") {
+    if(plines[i][1] == "GRID_CONFIG") {
       double time_stamp = atof(plines[i][0].c_str());
       handleConfigEntry(time_stamp, plines[i][3]);
     }
     else if(plines[i][1] == "GRID_DELTA") {
+      double time_stamp = atof(plines[i][0].c_str());
+      handleDeltaEntry(time_stamp, plines[i][3]);
+    }
+    else if(plines[i][1] == "GRID_DELTA_LOCAL") {
       double time_stamp = atof(plines[i][0].c_str());
       handleDeltaEntry(time_stamp, plines[i][3]);
     }
@@ -75,8 +79,14 @@ void Populator_GridPlot::handleDeltaEntry(double g_time,
 
   int vsize = m_gridplots.size();
   for(int i=0; i<vsize; i++) {
-    if(m_gridplots[i].getGridLabel() == grid_label)
-      m_gridplots[i].applyDelta(g_time, g_str);
+    if(m_gridplots[i].getGridLabel() == grid_label) {
+      bool ok = m_gridplots[i].applyDelta(g_time, g_str);
+      if(!ok)
+	cout << "Populator_GridPlot: failed applyDelta" << endl;
+    }
+    else
+      cout  << "Populator_GridPlot Label mismatch: " <<
+	grid_label << "  " << m_gridplots[i].getGridLabel() << endl;
   }
 }
 

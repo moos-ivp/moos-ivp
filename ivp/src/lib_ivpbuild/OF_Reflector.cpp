@@ -85,6 +85,12 @@ OF_Reflector::~OF_Reflector()
 
 IvPFunction *OF_Reflector::extractOF(bool normalize)
 {
+  // Check for a NULL pdmap. This may be the case if the user made
+  // an error in parameterizing the reflector, and a failed create
+  // ensued and the user did not notice.
+  if(!m_pdmap)
+    return(0);
+
   // By default, the pdap is normalized before handing over
   if(normalize)
     m_pdmap->normalize(0.0, 100.0);

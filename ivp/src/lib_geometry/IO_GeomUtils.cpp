@@ -207,6 +207,28 @@ vector<XYHexagon> readHexagonsFromFile(const string& filestr)
 
 
 //--------------------------------------------------------
+// Procedure: GridToString
+
+string GridToString(const XYGrid& grid)
+{
+  int gsize  = grid.size();
+  string str = "GSIZE:" + intToString(gsize);
+ 
+  for(int i=0; i<gsize; i++) {
+    str += " # ";
+    str += intToString(i);
+    str += ",";
+    str += doubleToString(grid.getVal(i),2);
+    str += ",";
+    str += doubleToString(grid.getUtil(i),2);
+  }
+  
+  return(str);
+}
+
+
+
+//--------------------------------------------------------
 // Procedure: printSquare
 
 void printSquare(const XYSquare& square)

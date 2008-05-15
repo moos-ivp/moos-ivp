@@ -242,6 +242,17 @@ void REPLAY_GUI::cb_LeftLogPlot(Fl_Widget* o, int v) {
   ((REPLAY_GUI*)(o->parent()->user_data()))->cb_LeftLogPlot_i(val);
 }
 
+//----------------------------------------- SelectGridPlot
+inline void REPLAY_GUI::cb_SelectGridPlot_i(int index) {
+  np_viewer->setGridPlotIndex(index);
+  np_viewer->redraw();
+  updateXY();
+}
+void REPLAY_GUI::cb_SelectGridPlot(Fl_Widget* o, int v) {
+  int val = (int)(v);
+  ((REPLAY_GUI*)(o->parent()->user_data()))->cb_SelectGridPlot_i(val);
+}
+
 //----------------------------------------- RightLogPlot
 inline void REPLAY_GUI::cb_RightLogPlot_i(int index) {
   lp_viewer->set_right_plot(index);
@@ -464,6 +475,25 @@ void REPLAY_GUI::addLogPlot(const LogPlot& logplot)
 	    (Fl_Callback*)REPLAY_GUI::cb_LeftLogPlot,  (void*)ix);
   mbar->add(labelB.c_str(), 0, 
 	    (Fl_Callback*)REPLAY_GUI::cb_RightLogPlot, (void*)ix);
+}
+
+//----------------------------------------------------------
+// Procedure: addGridPlot
+
+void REPLAY_GUI::addGridPlot(const GridPlot& gridplot)
+{
+  if(!np_viewer)
+    return;
+  
+  string label = gridplot.getGridLabel();
+  
+  cout << "Add GridPlot label: " << label << endl;
+
+  int ix = np_viewer->addGridPlot(gridplot)-1;
+  
+  string menu_tag = "GridPlots/" + label;
+  mbar->add(menu_tag.c_str(), 0, 
+	    (Fl_Callback*)REPLAY_GUI::cb_SelectGridPlot,  (void*)ix);
 }
 
 //----------------------------------------------------------

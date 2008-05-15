@@ -54,8 +54,12 @@ void PMV_Viewer::draw()
 {
   MarineViewer::draw();
 
-  drawGrids();
-  drawPolys();
+  if(m_poly_offon)
+    drawPolys();
+
+  if(m_grid_offon)
+    drawGrids();
+
   drawSegLists();
   drawCircles();
   drawDatum();

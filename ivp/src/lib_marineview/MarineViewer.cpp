@@ -667,17 +667,16 @@ void MarineViewer::drawGrids()
 {
   int vsize = m_grid.size();
   for(int i=0; i<vsize; i++)
-    drawGrid(i);
+    drawGrid(m_grid[i]);
 }
 
 //-------------------------------------------------------------
 // Procedure: drawGrid
 
-void MarineViewer::drawGrid(int ix)
+void MarineViewer::drawGrid(const XYGrid& grid)
 {
   FColorMap cmap;
 
-  XYGrid grid = m_grid[ix];
   int gsize = grid.size();
   if(gsize == 0)
     return;
@@ -934,7 +933,6 @@ bool MarineViewer::setCommonParam(string param, string value)
       m_vname_color = (m_vname_color+1) % 3;
   }
   else if(param == "display_datum") {
-    cout << "MarineViewer::SetParamCommon - Inside display_datum" << endl;
     if(value == "toggle")
       m_draw_datum = !m_draw_datum;
     else if((value == "on") || (value == "true"))
@@ -1195,7 +1193,7 @@ void MarineViewer::updateGrid(string delta)
   for(int i=0; i<g_size; i++)
       ok = m_grid[i].processDelta(delta);
 
-#if 1
+#if 0
   if(ok)
     cout << "Successfully processed GridDelta" << endl;
   else

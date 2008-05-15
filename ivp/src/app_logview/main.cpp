@@ -34,6 +34,7 @@
 #include "NavPlot.h"
 #include "Populator_LogPlots.h"
 #include "Populator_NavPlot.h"
+#include "Populator_GridPlot.h"
 
 using namespace std;
 
@@ -101,17 +102,21 @@ int main(int argc, char *argv[])
 
   // Find all the slog files provided on the command line
   //---------------------------------------------------------------------
+  vector<string> alog_files;
   vector<string> slog_files;
   vector<double> slog_files_skew;
-  vector<string> non_slog_files;
+  vector<string> non_log_files;
 
   for(i=1; i<argc; i++) {
     if(strContains(argv[i], ".slog")) {
       slog_files.push_back(argv[i]);
       slog_files_skew.push_back(0);
     }
+    else if(strContains(argv[i], ".alog")) {
+      alog_files.push_back(argv[i]);
+    }
     else
-      non_slog_files.push_back(argv[i]);
+      non_log_files.push_back(argv[i]);
   }
   if((argc <= 1) || (slog_files.size() == 0)) {
     cout << "Must provide an .slog file" << endl;
@@ -174,6 +179,28 @@ int main(int argc, char *argv[])
   cout << endl << endl;
 
 
+  // Build all the gridplots from the vector of alog files.
+  //---------------------------------------------------------------------
+  vector<GridPlot> gridplots;
+
+  parse_timer.reset();
+  parse_timer.start();
+  cout << "Parsing alog files to build GridPlots..." << endl;
+  
+  for(i=0; i<alog_files.size(); i++) {
+    Populator_GridPlot pop_gp;
+    pop_gp.populate(alog_files[i]);
+    int psize = pop_gp.size();
+    cout << "Built " << psize << " GridPlots from " << alog_files[i] << endl;
+    for(int j=0; j<psize; j++) 
+      gridplots.push_back(pop_gp.getGridPlot(j));
+  }
+
+  parse_timer.stop();
+  cout << "Done: GridPlot parse time: " << parse_timer.get_float_cpu_time();
+  cout << endl << endl;
+
+
   // Build all the logplots from the vector of slog files.
   //---------------------------------------------------------------------
   vector<vector<LogPlot> > logplots;
@@ -212,9 +239,9 @@ int main(int argc, char *argv[])
   vector<XYPolygon> polygons;
   vector<XYGrid>    searchgrids;
 
-  for(i=0; i<non_slog_files.size(); i++) {
-    vector<XYPolygon> pvector = readPolysFromFile(non_slog_files[i]);
-    vector<XYGrid>    qvector = readGridsFromFile(non_slog_files[i]);
+  for(i=0; i<non_log_files.size(); i++) {
+    vector<XYPolygon> pvector = readPolysFromFile(non_log_files[i]);
+    vector<XYGrid>    qvector = readGridsFromFile(non_log_files[i]);
     for(j=0; j<pvector.size(); j++)
       polygons.push_back(pvector[j]);
     for(j=0; j<qvector.size(); j++)
@@ -240,7 +267,11 @@ int main(int argc, char *argv[])
   // Populate the GUI with the NavPlots built above
   for(i=0; i<navplots.size(); i++)
     gui->addNavPlot(navplots[i]);
-
+  
+  // Populate the GUI with the GridPlots built above
+  for(i=0; i<gridplots.size(); i++)
+    gui->addGridPlot(gridplots[i]);
+  
   // Populate the GUI with the LogPlots built above
   for(i=0; i<logplots.size(); i++)
     for(int j=0; j<logplots[i].size(); j++)

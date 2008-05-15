@@ -38,6 +38,8 @@ std::vector<XYCircle>  readCirclesFromFile(const std::string&);
 std::vector<XYArc>     readArcsFromFile(const std::string&);
 std::vector<XYHexagon> readHexagonsFromFile(const std::string&);
 
+std::string  GridToString(const XYGrid&);
+
 void printSquare(const XYSquare&);
 
 #endif

@@ -20,32 +20,13 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
+#include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
 #include "GridPlot.h"
 #include "MBUtils.h"
 
 using namespace std;
-
-
-//---------------------------------------------------------------
-// Procedure: addGrid
-//      Note: Time must be in ascending order. If new pair doesn't
-//            obey, no action is taken, and false is returned.
-#if 0
-bool GridPlot::addGrid(double gtime, XYGrid newgrid)
-{
-  int tsize = m_time.size();
-  
-  if((tsize == 0) || (m_time[tsize-1] <= gtime)) {
-    m_time.push_back(gtime);
-    m_grids.push_back(newgrid);
-    return(true);
-  }
-  else
-    return(false);
-}
-#endif
 
 //---------------------------------------------------------------
 // Procedure: initialize
@@ -86,8 +67,13 @@ bool GridPlot::applyDelta(double gtime, const string& str)
 
   int vsize = m_time.size();
 
-  if((vsize == 0) || (m_time[vsize-1] <= gtime))
+  if(vsize == 0)
     return(false);
+  
+  if(gtime < m_time[vsize-1]) {
+    cout << "ApplyDelta fault 0 " << gtime << ", " << m_time[vsize-1] << endl;
+    return(false);
+  }
 
   XYGrid new_grid = m_grids[vsize-1];
 
@@ -96,6 +82,7 @@ bool GridPlot::applyDelta(double gtime, const string& str)
     m_time.push_back(gtime);
     m_grids.push_back(new_grid);
   }
+
   return(ok);
   
 }

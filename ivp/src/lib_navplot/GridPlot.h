@@ -38,8 +38,6 @@ public:
   // Updates are with the GRID_DELTA string
   bool   applyDelta(double gtime, const std::string& gstr);
 
-  //bool   addGrid(double gtime, XYGrid grid);
-
   double getTimeByIndex(int) const;
 
   XYGrid getGridByIndex(int) const;

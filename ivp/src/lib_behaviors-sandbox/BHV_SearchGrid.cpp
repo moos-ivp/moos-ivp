@@ -182,12 +182,9 @@ bool BHV_SearchGrid::updateSearchGrid(double x1, double y1,
       if(osSPD > 0)
 	time_in_square = length / osSPD;
       string glabel  = search_grid.getLabel();
-      string gvar1 = "GRID_DELTA";
-      string gvar2 = "GRID_DELTA_" + glabel;
-      string gvar3 = "GRID_MSG";
+      string gvar    = "GRID_DELTA_LOCAL";
       double cur_tis = search_grid.getVal(i);
       double new_tis = cur_tis + time_in_square;
-
       double cur_util = search_grid.getUtil(i);
       double new_util = timutif.evalUtility(new_tis);
 
@@ -199,16 +196,7 @@ bool BHV_SearchGrid::updateSearchGrid(double x1, double y1,
 	dstringCompact(doubleToString(new_tis))  + "," +
 	dstringCompact(doubleToString(cur_util)) + "," +
 	dstringCompact(doubleToString(new_util));
-      string msg = "type=delta @ gname=" + glabel;
-      msg += " @ vname=" + m_us_name;
-      msg += " @ trans=" + intToString(i) + ",";
-	dstringCompact(doubleToString(cur_tis))  + "," +
-	dstringCompact(doubleToString(new_tis))  + "," +
-	dstringCompact(doubleToString(cur_util)) + "," +
-	dstringCompact(doubleToString(new_util));
-      postMessage(gvar1, gdelta);
-      postMessage(gvar2, gdelta);
-      postMessage(gvar3, msg);
+      postMessage(gvar, gdelta);
     }
   }
 

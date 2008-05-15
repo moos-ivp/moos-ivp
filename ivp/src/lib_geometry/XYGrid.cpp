@@ -291,68 +291,6 @@ bool XYGrid::processDelta(const string& str)
     double old_val = atof(dvector[1].c_str());
     double new_val = atof(dvector[2].c_str());
 
-    cout << "ix:" << index << "  old:" << old_val << "  new:" << new_val << endl;
-    
-    if((index < 0) || (index >= values.size()))
-      return(false);
-
-    setVal(index, new_val);
-
-    if(dsize == 5) {
-      double old_util = atof(dvector[3].c_str());
-      double new_util = atof(dvector[4].c_str());
-      setUtil(index, new_util);
-    }
-  }
-
-  cout << "Gmin: " << min_val << "Gmax: " << max_val << endl;
-
-  return(true);
-}
-
-#if 0
-//-------------------------------------------------------------
-// Procedure: processDelta
-//      Note: format: 
-//
-//              "LABEL @ index,old_val,new_val,old_util,new_util
-//                       index,old_val,new_val:
-//                       index,old_val,new_val,old_util,new_util"
-//
-//            The reason why old_val is part of the structure is
-//            so that a series of delta's can be processed in 
-//            reverse by an application if needed.
-
-void XYGrid::processDelta(const string& g_label, const string& g_str)
-{
-  if(label ! = g_label)
-    return;
-
-  string stripped_str = stripBlankEnds(str);
-
-  vector<string> svector = parseString(stripped_str, '@');
-  int vsize = svector.size();
-  if(vsize != 2)
-    return(false);
-  if(svector[0] != label)
-    return(false);
-
-  svector = parseString(svector[1], ':');
-  vsize   = svector.size();
-
-  for(int i=0; i<vsize; i++) {
-    svector[i] = stripBlankEnds(svector[i]);
-    vector<string> dvector = parseString(svector[i], ',');
-    int dsize = dvector.size();
-    if((dsize != 3) && (dsize != 5))
-      return(false);
-    for(int j=0; j<dsize; j++)
-      dvector[j] = stripBlankEnds(dvector[j]);
-    
-    int    index   = atoi(dvector[0].c_str());
-    double old_val = atof(dvector[1].c_str());
-    double new_val = atof(dvector[2].c_str());
-    
     if((index < 0) || (index >= values.size()))
       return(false);
 
@@ -366,7 +304,6 @@ void XYGrid::processDelta(const string& g_label, const string& g_str)
   }
   return(true);
 }
-#endif
 
 //-------------------------------------------------------------
 // Procedure: initialize

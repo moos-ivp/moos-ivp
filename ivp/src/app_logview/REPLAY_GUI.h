@@ -38,7 +38,9 @@ public:
   REPLAY_GUI(int w, int h, const char *l=0);
   ~REPLAY_GUI() {};
   
-  void addNavPlot(const NavPlot &v) {if(np_viewer) np_viewer->addNavPlot(v);};
+  void addNavPlot(const NavPlot &v) 
+    {if(np_viewer) np_viewer->addNavPlot(v);};
+  void addGridPlot(const GridPlot &v);
   void addLogPlot(const LogPlot&);
   void setLogFile(std::string str)  {log_file = str;};
   void conditional_step();
@@ -64,6 +66,9 @@ private:
 
   inline void cb_CrossView_i();
   static void cb_CrossView(Fl_Widget*);
+
+  inline void cb_SelectGridPlot_i(int);
+  static void cb_SelectGridPlot(Fl_Widget*, int);
 
   inline void cb_LeftLogPlot_i(int);
   static void cb_LeftLogPlot(Fl_Widget*, int);

@@ -96,7 +96,7 @@ protected:
   void   drawSegLists();
   void   drawSegList(int ix);
   void   drawGrids();
-  void   drawGrid(int ix);
+  void   drawGrid(const XYGrid&);
   void   drawCircles();
   void   drawCircle(int ix);
   void   drawGLPoly(float *points, int numPoints, float r, float g, 
