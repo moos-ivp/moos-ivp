@@ -34,29 +34,69 @@ using namespace std;
 
 Populator_LogPlots::Populator_LogPlots()
 {
-  skew = 0;
+  m_skew = 0;
 }
 
 
 //---------------------------------------------------------------
 // Procedure: populate
 
-bool Populator_LogPlots::populate()
+bool Populator_LogPlots::populateFromSLog()
 {
-  scan_columns();
-  for(int i=1; i<columns.size(); i++)
-    populate_logplot(i);
+  scanColumns();
+  for(int i=1; i<m_columns.size(); i++)
+    populateLogPlot(i);
 
   return(true);
 }
 
 //---------------------------------------------------------------
-// Procedure: get_logplot(int index)
+// Procedure: populate
 
-LogPlot Populator_LogPlots::get_logplot(int ix)
+bool Populator_LogPlots::populateFromALog()
 {
-  if((ix >= 0) && (ix < logplots.size()))
-    return(logplots[ix]);
+  int i, vsize = m_alog_entry_time.size();
+  
+  map<string, int>::iterator p;
+
+  // First determine if a LogPlot already exists for the variable
+  // in question.
+  
+  for(i=0; i<vsize; i++) {
+    string var_name  = m_alog_entry_var[i];
+    string var_value = m_alog_entry_val[i];
+    double itime     = atof(m_alog_entry_val[i].c_str());
+    p = m_logplot_var_map.find(var_name);
+    if(p == m_logplot_var_map.end()) {
+      if(isNumber(var_value)) { 
+	double dvalue = atof(var_value.c_str());
+	LogPlot new_logplot;
+	new_logplot.set_varname(var_name);
+	new_logplot.set_vehicle(m_vname);
+	new_logplot.set_value(itime, dvalue);
+	m_logplots.push_back(new_logplot);
+	int new_index = m_logplots.size();
+	m_logplot_var_map[var_name] = new_index; 
+      }
+    }
+    else {
+      double dvalue = atof(var_value.c_str());
+      int found_index = p->second;
+      m_logplots[found_index].set_value(itime, dvalue);
+    }
+  }
+
+
+  return(true);
+}
+
+//---------------------------------------------------------------
+// Procedure: getLogPlot(int index)
+
+LogPlot Populator_LogPlots::getLogPlot(int ix)
+{
+  if((ix >= 0) && (ix < m_logplots.size()))
+    return(m_logplots[ix]);
   else {
     LogPlot empty_logplot;
     return(empty_logplot);
@@ -64,15 +104,15 @@ LogPlot Populator_LogPlots::get_logplot(int ix)
 }
 
 //---------------------------------------------------------------
-// Procedure: get_logplot(string var_name)
+// Procedure: getLogPlot(string var_name)
 
-LogPlot Populator_LogPlots::get_logplot(string varname)
+LogPlot Populator_LogPlots::getLogPlot(string varname)
 {
-  int vsize = logplots.size();
+  int vsize = m_logplots.size();
   for(int i=0; i<vsize; i++) {
-    string i_varname = logplots[i].get_varname();
+    string i_varname = m_logplots[i].get_varname();
     if(i_varname == varname)
-      return(logplots[i]);
+      return(m_logplots[i]);
   }
 
   LogPlot empty_logplot;
@@ -80,12 +120,15 @@ LogPlot Populator_LogPlots::get_logplot(string varname)
 }
 
 //---------------------------------------------------------------
-// Procedure: scan_columns()
+// Procedure: scanColumns()
+//      Note: The end result is filling in the values for m_columns
+//            which should list the variable associated with each
+//            column in the slog file.
 
-void Populator_LogPlots::scan_columns()
+void Populator_LogPlots::scanColumns()
 {
   int index = 0;
-  int lsize = lines.size();
+  int lsize = m_lines.size();
 
   bool done = false;
   while(!done) {
@@ -93,14 +136,14 @@ void Populator_LogPlots::scan_columns()
 
     bool found = false;
     for(int i=0; ((i<lsize) && !found); i++) {
-      vector<string> svector = plines[i];
+      vector<string> svector = m_plines[i];
       if(svector.size() >= 3)
 	if(svector[1] == search_tag) {
 	  found = true;
-	  columns.push_back(svector[2]);
+	  m_columns.push_back(svector[2]);
 	  index++;
 	  if((svector[2] == "TIME") && (svector.size() == 4))
-	    skew += atof(svector[3].c_str());
+	    m_skew += atof(svector[3].c_str());
 	}
     }
     if(!found)
@@ -110,36 +153,36 @@ void Populator_LogPlots::scan_columns()
 
 
 //---------------------------------------------------------------
-// Procedure: populate_logplot
+// Procedure: populateLogPlot
 
-void Populator_LogPlots::populate_logplot(int ix)
+void Populator_LogPlots::populateLogPlot(int ix)
 {
   LogPlot lplot;
 
-  int lsize = lines.size();
+  int lsize = m_lines.size();
   
   for(int i=0; i<lsize; i++) {
-    if(lines[i][0] != '%') {
-      vector<string> svector = plines[i];
+    if(m_lines[i][0] != '%') {
+      vector<string> svector = m_plines[i];
       if(svector.size() >= ix) {
 	if(svector[ix] != "NaN") {
 	  double tval = atof(svector[0].c_str());
 	  double cval = atof(svector[ix].c_str());
-	  lplot.set_value(tval+skew, cval);
+	  lplot.set_value(tval + m_skew, cval);
 	}
       }
     }
   }
 
-  lplot.set_varname(columns[ix]);
-  lplot.set_vehicle(vname);
-  logplots.push_back(lplot);
+  lplot.set_varname(m_columns[ix]);
+  lplot.set_vehicle(m_vname);
+  m_logplots.push_back(lplot);
 }
 
 //---------------------------------------------------------------
-// Procedure: set_file
+// Procedure: setFileSLog
 
-bool Populator_LogPlots::set_file(string filestr)
+bool Populator_LogPlots::setFileSLog(string filestr)
 {
   FILE *f = fopen(filestr.c_str(), "r");
 
@@ -147,15 +190,61 @@ bool Populator_LogPlots::set_file(string filestr)
     return(false);
 
   fclose(f);
-  file = filestr;
-  lines = fileBuffer(filestr);
+  m_file = filestr;
+  m_lines = fileBuffer(filestr);
 
-  for(int i=0; i<lines.size(); i++) {
-    lines[i] = findReplace(lines[i], '\t', ' ');
-    lines[i] = compactConsecutive(lines[i], ' ');
-    lines[i] = stripBlankEnds(lines[i]);
-    vector<string> svector = parseString(lines[i], ' ');
-    plines.push_back(svector);
+  for(int i=0; i<m_lines.size(); i++) {
+    m_lines[i] = findReplace(m_lines[i], '\t', ' ');
+    m_lines[i] = compactConsecutive(m_lines[i], ' ');
+    m_lines[i] = stripBlankEnds(m_lines[i]);
+    vector<string> svector = parseString(m_lines[i], ' ');
+    m_plines.push_back(svector);
+  }
+
+  return(true);
+}
+
+
+//---------------------------------------------------------------
+// Procedure: setFileALog
+
+bool Populator_LogPlots::setFileALog(string filestr)
+{
+  FILE *f = fopen(filestr.c_str(), "r");
+
+  if(!f)
+    return(false);
+
+  fclose(f);
+  m_file = filestr;
+  m_lines = fileBuffer(filestr);
+
+  for(int i=0; i<m_lines.size(); i++) {
+    m_lines[i] = findReplace(m_lines[i], '\t', ' ');
+    m_lines[i] = compactConsecutive(m_lines[i], ' ');
+    m_lines[i] = stripBlankEnds(m_lines[i]);
+    
+    string time, variable, source, value;
+    
+    vector<string> vector_a = chompString(m_lines[i], ' ');
+    time = vector_a[0];
+    if(vector_a.size() == 2) {
+      vector<string> vector_b = chompString(vector_a[1], ' ');
+      variable = vector_b[0];
+      if(vector_b.size() == 2) {
+	vector<string> vector_c = chompString(vector_b[1], ' ');
+	source = vector_c[0];
+	if(vector_c.size() == 2)
+	  value = vector_c[1];
+      }
+    }
+    
+    if((time!="")&&(variable!="")&&(source!="")&&(value!="")) {
+      m_alog_entry_time.push_back(time);
+      m_alog_entry_var.push_back(variable);
+      m_alog_entry_src.push_back(source);
+      m_alog_entry_val.push_back(value);
+    }
   }
 
   return(true);
@@ -167,8 +256,8 @@ bool Populator_LogPlots::set_file(string filestr)
 
 void Populator_LogPlots::print()
 {
-  for(int i=0; i<columns.size(); i++) {
-    cout << "column [" << i << "]: " << columns[i] << endl;
+  for(int i=0; i<m_columns.size(); i++) {
+    cout << "column [" << i << "]: " << m_columns[i] << endl;
   }
 }
 

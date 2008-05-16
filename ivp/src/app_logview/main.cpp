@@ -211,20 +211,20 @@ int main(int argc, char *argv[])
 
   for(i=0; i<slog_files.size(); i++) {
     Populator_LogPlots pop_lp;
-    pop_lp.set_skew(slog_files_skew[i]);
-    pop_lp.set_vname("V_" + intToString(i)); 
-    bool ok = pop_lp.set_file(slog_files[i]);
+    pop_lp.setSkew(slog_files_skew[i]);
+    pop_lp.setVName("V_" + intToString(i)); 
+    bool ok = pop_lp.setFileSLog(slog_files[i]);
     if(!ok) {
       cout << "Problem with file " << slog_files[i] << ". Exiting" << endl;
       exit(0);
     }
     
-    pop_lp.populate();
+    pop_lp.populateFromSLog();
     
     vector<LogPlot> lvector;
-    int lsize = pop_lp.get_size();
+    int lsize = pop_lp.size();
     for(int i=0; i<lsize; i++)
-      lvector.push_back(pop_lp.get_logplot(i));
+      lvector.push_back(pop_lp.getLogPlot(i));
 
     logplots.push_back(lvector);
   }

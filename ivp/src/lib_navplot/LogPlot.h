@@ -34,10 +34,10 @@ public:
 
   bool   set_varname(std::string s) {varname = s;};
   bool   set_vehicle(std::string s) {vehicle = s;};
-  bool   set_value(double, double);
-  double get_time_by_index(int) const;
-  double get_value_by_index(int) const;
-  double get_value_by_time(double) const;
+  bool   set_value(double gtime, double gvalue);
+  double get_time_by_index(int index) const;
+  double get_value_by_index(int index) const;
+  double get_value_by_time(double gtime) const;
   double get_min_time() const;
   double get_max_time() const;
   double get_min_val() const      {return(min_val);};
@@ -51,8 +51,8 @@ protected:
   int get_index_by_time(double) const;
 
 protected:
-  std::string varname;         // Variable name to be plotted
   std::string vehicle;         // Name of the platform
+  std::string varname;         // Variable name to be plotted
   std::vector<double> time;
   std::vector<double> value;
 

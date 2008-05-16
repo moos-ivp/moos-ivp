@@ -24,6 +24,7 @@
 #define POPULATOR_LOGPLOTS_HEADER
 
 #include <string>
+#include <map>
 #include <vector>
 #include "LogPlot.h"
 
@@ -33,30 +34,42 @@ public:
   Populator_LogPlots();
   ~Populator_LogPlots() {};
 
-  bool    set_file(std::string);
-  void    set_vname(std::string s) {vname = s;};
-  void    set_skew(double amt)     {skew = amt;};
+  bool    setFileSLog(std::string);
+  bool    setFileALog(std::string);
+  void    setVName(std::string s) {m_vname = s;};
+  void    setSkew(double amt)     {m_skew = amt;};
 
-  bool    populate();
-  LogPlot get_logplot(int);
-  LogPlot get_logplot(std::string);
-  int     get_size() {return(logplots.size());};
+  bool    populateFromSLog();
+  bool    populateFromALog();
+  LogPlot getLogPlot(int);
+  LogPlot getLogPlot(std::string);
+  int     size() {return(m_logplots.size());};
 
   void    print();
 
 protected:
-  void scan_columns();
-  void populate_logplot(int);
+  void scanColumns();
+  void populateLogPlot(int);
 
 protected:
-  std::string file;
-  std::string vname;
-  std::vector<LogPlot> logplots;
-  std::vector<std::string> columns;
-  std::vector<std::string> lines;
-  std::vector<std::vector<std::string> > plines; // parsed lines
+  std::string               m_file;
+  std::string               m_vname;
+  std::vector<LogPlot>      m_logplots;
 
-  double skew;
+  std::vector<std::string>  m_columns;
+  std::vector<std::string>  m_lines;
+
+  std::vector<std::vector<std::string> > m_plines; // parsed lines
+  
+  // Mapping from logplot variable to index in m_loplots vector
+  std::map<std::string, int> m_logplot_var_map;
+  
+  std::vector<std::string> m_alog_entry_time;
+  std::vector<std::string> m_alog_entry_var;
+  std::vector<std::string> m_alog_entry_src;
+  std::vector<std::string> m_alog_entry_val;
+  
+  double m_skew;
 };
 #endif 
 
