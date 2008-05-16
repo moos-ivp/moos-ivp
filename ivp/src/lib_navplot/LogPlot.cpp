@@ -139,6 +139,8 @@ double LogPlot::get_max_time() const
 void LogPlot::print() const
 {
   cout << "LogPlot::print()" << endl;
+  cout << " Varname: " << varname << endl;
+  cout << " Vehicle: " << vehicle << endl;
   for(int i=0; i<time.size(); i++) {
     cout << "time:" << time[i] << "  val:" << value[i] << endl;
   }

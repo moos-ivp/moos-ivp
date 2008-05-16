@@ -65,7 +65,7 @@ bool Populator_LogPlots::populateFromALog()
   for(i=0; i<vsize; i++) {
     string var_name  = m_alog_entry_var[i];
     string var_value = m_alog_entry_val[i];
-    double itime     = atof(m_alog_entry_val[i].c_str());
+    double itime     = atof(m_alog_entry_time[i].c_str());
     p = m_logplot_var_map.find(var_name);
     if(p == m_logplot_var_map.end()) {
       if(isNumber(var_value)) { 
@@ -75,7 +75,7 @@ bool Populator_LogPlots::populateFromALog()
 	new_logplot.set_vehicle(m_vname);
 	new_logplot.set_value(itime, dvalue);
 	m_logplots.push_back(new_logplot);
-	int new_index = m_logplots.size();
+	int new_index = m_logplots.size()-1;
 	m_logplot_var_map[var_name] = new_index; 
       }
     }
@@ -85,6 +85,10 @@ bool Populator_LogPlots::populateFromALog()
       m_logplots[found_index].set_value(itime, dvalue);
     }
   }
+
+  cout << "Total LogPlots: " << m_logplots.size() << endl;
+  m_logplots[0].print();
+
 
 
   return(true);

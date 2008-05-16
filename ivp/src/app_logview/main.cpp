@@ -209,6 +209,7 @@ int main(int argc, char *argv[])
   parse_timer.start();
   cout << "Parsing slog files to build LogPlots..." << endl;
 
+#if 0
   for(i=0; i<slog_files.size(); i++) {
     Populator_LogPlots pop_lp;
     pop_lp.setSkew(slog_files_skew[i]);
@@ -228,6 +229,29 @@ int main(int argc, char *argv[])
 
     logplots.push_back(lvector);
   }
+#endif
+
+#if 1
+  for(i=0; i<alog_files.size(); i++) {
+    Populator_LogPlots pop_lp;
+    pop_lp.setSkew(slog_files_skew[i]);
+    pop_lp.setVName("V_" + intToString(i)); 
+    bool ok = pop_lp.setFileALog(alog_files[i]);
+    if(!ok) {
+      cout << "Problem with file " << alog_files[i] << ". Exiting" << endl;
+      exit(0);
+    }
+    
+    pop_lp.populateFromALog();
+    
+    vector<LogPlot> lvector;
+    int lsize = pop_lp.size();
+    for(int i=0; i<lsize; i++)
+      lvector.push_back(pop_lp.getLogPlot(i));
+
+    logplots.push_back(lvector);
+  }
+#endif
 
   parse_timer.stop();
   cout << "Done: LogPlot parse time: " << parse_timer.get_float_cpu_time();
