@@ -38,8 +38,6 @@ public:
   REPLAY_GUI(int w, int h, const char *l=0);
   ~REPLAY_GUI() {};
   
-  void addNavPlot(const NavPlot &v) 
-    {if(np_viewer) np_viewer->addNavPlot(v);};
   void addGridPlot(const GridPlot &v);
   void addLogPlot(const LogPlot&);
   void setLogFile(std::string str)  {log_file = str;};
@@ -94,10 +92,11 @@ private:
   inline void cb_Delete_i();
   static void cb_Delete(Fl_Widget*);
 
-protected:
+public:
   NavPlotViewer *np_viewer;
   LogPlotViewer *lp_viewer;
 
+protected:
   MY_Output   *x_mtr;
   MY_Output   *y_mtr;
   MY_Output   *disp_time;

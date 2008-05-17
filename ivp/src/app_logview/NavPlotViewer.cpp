@@ -79,7 +79,7 @@ float NavPlotViewer::getMetersX()
     return(meters);
   }
   else
-    return(m_navplots[m_global_ix].get_xval_by_index(m_local_ix));
+    return(m_navx_plot[m_global_ix].get_value_by_index(m_local_ix));
 }
 
 // ----------------------------------------------------------
@@ -99,7 +99,7 @@ float NavPlotViewer::getMetersY()
     return(meters);
   }
   else
-    return(m_navplots[m_global_ix].get_yval_by_index(m_local_ix));
+    return(m_navy_plot[m_global_ix].get_value_by_index(m_local_ix));
 }
 
 //-------------------------------------------------------------
@@ -109,8 +109,8 @@ float NavPlotViewer::getMetersY()
 bool NavPlotViewer::setCurrIndex(int v)
 {
   int new_index = v;
-
-  int max_new_index = m_navplots[m_global_ix].get_size() - 1;
+  
+  int max_new_index = m_navx_plot[m_global_ix].size() - 1;
 
   if(v < 0)
     new_index = 0;
@@ -147,11 +147,11 @@ bool NavPlotViewer::jumpCurrIndex(int v)
   if(v==0)
     return(setCurrIndex(0));
   else if(v==1) {
-    int end_ix = m_navplots[m_global_ix].get_size() - 1;
+    int end_ix = m_navx_plot[m_global_ix].size() - 1;
     return(setCurrIndex(end_ix));
   }
   else {
-    int end_ix = m_navplots[m_global_ix].get_size() / 2;
+    int end_ix = m_navx_plot[m_global_ix].size() / 2;
     return(setCurrIndex(end_ix));
   }
 }
@@ -176,20 +176,9 @@ void NavPlotViewer::setGlobalIndex(int new_ix)
 {
   if(new_ix < 0)
     new_ix = 0;
-  if(new_ix >= m_navplots.size())
-    new_ix = m_navplots.size()-1;
+  if(new_ix >= m_navx_plot.size())
+    new_ix = m_navx_plot.size()-1;
   m_global_ix = new_ix;
-}
-
-//-------------------------------------------------------------
-// Procedure: addNavPlot
-//      Note: A local copy of the given navplot is created here.
-
-void NavPlotViewer::addNavPlot(const NavPlot &given_navplot)
-{
-  NavPlot new_navplot(given_navplot);
-  m_navplots.push_back(new_navplot); 
-  m_local_ix = 0;
 }
 
 //-------------------------------------------------------------
@@ -209,8 +198,8 @@ int NavPlotViewer::addGridPlot(const GridPlot &given_gridplot)
 
 float NavPlotViewer::getCurrTime()
 {
-  if(m_navplots.size() > 0)
-    return(m_navplots[m_global_ix].get_time_by_index(m_local_ix));
+  if(m_navx_plot.size() > 0)
+    return(m_navx_plot[m_global_ix].get_time_by_index(m_local_ix));
   else
     return(0);
 }
@@ -223,12 +212,12 @@ float NavPlotViewer::getCurrTime()
 
 float NavPlotViewer::getAvgStepTime()
 {
-  if(m_navplots.size() == 0)
+  if(m_navx_plot.size() == 0)
     return(0);
-
-  float max_time = m_navplots[m_global_ix].get_max_time();
-  float min_time = m_navplots[m_global_ix].get_min_time();
-  float plt_size = m_navplots[m_global_ix].get_size();
+  
+  float max_time = m_navx_plot[m_global_ix].get_max_time();
+  float min_time = m_navx_plot[m_global_ix].get_min_time();
+  float plt_size = m_navx_plot[m_global_ix].size();
   
   return((max_time - min_time) / (plt_size - 1));
 }
@@ -275,7 +264,7 @@ void NavPlotViewer::drawPoint(float px, float py, float cr,
 
 void NavPlotViewer::drawNavPlots()
 {
-  for(int i=0; i<m_navplots.size(); i++)
+  for(int i=0; i<m_navx_plot.size(); i++)
     drawNavPlot(i);
 }
 
@@ -284,7 +273,7 @@ void NavPlotViewer::drawNavPlots()
 
 void NavPlotViewer::drawNavPlot(int index)
 {
-  int npsize = m_navplots[index].get_size();
+  int npsize = m_navx_plot[index].size();
   if(npsize == 0)
     return;
 
@@ -309,34 +298,22 @@ void NavPlotViewer::drawNavPlot(int index)
     else if(index == 3) {
       pt_red=0.7; pt_grn=0.7; pt_blu=0.7;
     }
-
+    
     for(int i=0; i<npsize; i++) {
-      double itime = m_navplots[index].get_time_by_index(i);
+      double itime = m_navx_plot[index].get_time_by_index(i);
       if(m_alltrail || (itime < ctime)) {
-	if(i != m_local_ix) {
-	  if((i % m_trail_gap) == 0) {
-	    double x = m_navplots[index].get_xval_by_index(i);
-	    double y = m_navplots[index].get_yval_by_index(i);
-	    drawPoint(x, y, pt_red, pt_grn, pt_blu, pt_size);
-	  }
+	if((i % m_trail_gap) == 0) {
+	  double x = m_navx_plot[index].get_value_by_index(i);
+	  double y = m_navy_plot[index].get_value_by_index(i);
+	  drawPoint(x, y, pt_red, pt_grn, pt_blu, pt_size);
 	}
       }
     }
   }
 
-  // Draw the current_index point, larger and w/ diff color
-  double x, y, theta;
-  if(index == m_global_ix) {
-    x     = m_navplots[index].get_xval_by_index(m_local_ix);
-    y     = m_navplots[index].get_yval_by_index(m_local_ix);
-    theta = m_navplots[index].get_cval_by_index(m_local_ix);
-  }
-  else {
-    double curr_time = getCurrTime();
-    x     = m_navplots[index].get_xval_by_time(curr_time);
-    y     = m_navplots[index].get_yval_by_time(curr_time);
-    theta = m_navplots[index].get_cval_by_time(curr_time);
-  }
+  double x     = m_navx_plot[index].get_value_by_time(ctime);
+  double y     = m_navy_plot[index].get_value_by_time(ctime);
+  double theta = m_hdg_plot[index].get_value_by_time(ctime);
 
   ObjectPose opose(x,y,theta,0,0);
   double red=1.0, grn=0.906, blu=0.243;

@@ -30,7 +30,7 @@
 #include "FL/fl_draw.H"
 #include "BackImg.h"
 #include "XYGrid.h"
-#include "NavPlot.h"
+#include "LogPlot.h"
 #include "GridPlot.h"
 #include "MarineViewer.h"
 
@@ -45,6 +45,13 @@ class NavPlotViewer : public MarineViewer
   bool  setParam(std::string p, float v)
     {return(setCommonParam(p,v));};
   
+  void addLogPlotNAVX(const LogPlot& lp) 
+    {m_navx_plot.push_back(lp);};
+  void addLogPlotNAVY(const LogPlot& lp) 
+    {m_navy_plot.push_back(lp);};
+  void addLogPlotHDG(const LogPlot& lp) 
+    {m_hdg_plot.push_back(lp);};
+
   void   draw();
   float  getMetersX();
   float  getMetersY();
@@ -55,7 +62,6 @@ class NavPlotViewer : public MarineViewer
   void   setGridPlotIndex(int);
   void   setGlobalIndex(int);
   bool   vehicle(int);
-  void   addNavPlot(const NavPlot&);
   int    addGridPlot(const GridPlot&);
   float  getCurrTime();
   float  getAvgStepTime();
@@ -78,9 +84,12 @@ private:
   int                   m_gridplot_ix;
   std::string           m_vehibody;
   std::string           m_frame;
-  std::vector<NavPlot>  m_navplots;
   std::vector<GridPlot> m_gridplots;
   bool                  m_alltrail;
+
+  std::vector<LogPlot>  m_navx_plot;
+  std::vector<LogPlot>  m_navy_plot;
+  std::vector<LogPlot>  m_hdg_plot;
 };
 
 #endif 

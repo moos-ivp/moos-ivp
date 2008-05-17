@@ -31,9 +31,7 @@
 #include "IO_GeomUtils.h"
 #include "XYPolygon.h"
 #include "LogPlot.h"
-#include "NavPlot.h"
 #include "Populator_LogPlots.h"
-#include "Populator_NavPlot.h"
 #include "Populator_GridPlot.h"
 
 using namespace std;
@@ -103,31 +101,27 @@ int main(int argc, char *argv[])
   // Find all the slog files provided on the command line
   //---------------------------------------------------------------------
   vector<string> alog_files;
-  vector<string> slog_files;
-  vector<double> slog_files_skew;
+  vector<double> alog_files_skew;
   vector<string> non_log_files;
 
   for(i=1; i<argc; i++) {
-    if(strContains(argv[i], ".slog")) {
-      slog_files.push_back(argv[i]);
-      slog_files_skew.push_back(0);
-    }
-    else if(strContains(argv[i], ".alog")) {
+    if(strContains(argv[i], ".alog")) {
       alog_files.push_back(argv[i]);
+      alog_files_skew.push_back(0);
     }
     else
       non_log_files.push_back(argv[i]);
   }
-  if((argc <= 1) || (slog_files.size() == 0)) {
-    cout << "Must provide an .slog file" << endl;
+  if((argc <= 1) || (alog_files.size() == 0)) {
+    cout << "Must provide an .alog file" << endl;
     return(0);
   }
   
   // Read in the skews from each slog file
   //---------------------------------------------------------------------
   double min_skew = 0;
-  for(i=0; i<slog_files.size(); i++) {
-    vector<string> svector = fileBuffer(slog_files[i], 5);
+  for(i=0; i<alog_files.size(); i++) {
+    vector<string> svector = fileBuffer(alog_files[i], 5);
     int vsize = svector.size();
     for(int j=0; j<vsize; j++) {
       string line = compactConsecutive(svector[j], ' ');
@@ -135,7 +129,7 @@ int main(int argc, char *argv[])
       if(evector.size() >= 3)
 	if(evector[1] == "LOGSTART") {
 	  double skew = atof(evector[2].c_str());
-	  slog_files_skew[i] = skew;
+	  alog_files_skew[i] = skew;
 	  if((i==0) || (skew<min_skew))
 	    min_skew = skew;
 	}
@@ -144,46 +138,14 @@ int main(int argc, char *argv[])
   
   // Apply min_skew to all so the earliest has skew of zero
   //---------------------------------------------------------------------
-  for(i=0; i<slog_files_skew.size(); i++)
-    slog_files_skew[i] -= min_skew;
+  for(i=0; i<alog_files_skew.size(); i++)
+    alog_files_skew[i] -= min_skew;
   
-
-  // Build all the navplots from the vector of slog files.
-  //---------------------------------------------------------------------
-  vector<NavPlot> navplots;
-
-  MBTimer parse_timer;
-  parse_timer.start();
-  cout << "Parsing slog files to build NavPlots..." << endl;
-
-  for(i=0; i<slog_files.size(); i++) {
-    Populator_NavPlot pop_np;
-    pop_np.set_skew(slog_files_skew[i]);
-    bool ok = pop_np.set_file(slog_files[i]);
-    if(!ok) {
-      cout << "Problem with file " << slog_files[0] << ". Exiting" << endl;
-      exit(0);
-    }
-    ok = pop_np.populate();
-    if(!ok) {
-      cout << "Could not determine X,Y trajectory in file " << slog_files[i];
-      cout << ". Exiting now." << endl;
-      exit(0);
-    }
-    NavPlot navplot = pop_np.get_navplot();
-    navplots.push_back(navplot);
-  }
-
-  parse_timer.stop();
-  cout << "Done: NavPlot parse time: " << parse_timer.get_float_cpu_time();
-  cout << endl << endl;
-
-
   // Build all the gridplots from the vector of alog files.
   //---------------------------------------------------------------------
   vector<GridPlot> gridplots;
 
-  parse_timer.reset();
+  MBTimer parse_timer;
   parse_timer.start();
   cout << "Parsing alog files to build GridPlots..." << endl;
   
@@ -209,32 +171,9 @@ int main(int argc, char *argv[])
   parse_timer.start();
   cout << "Parsing slog files to build LogPlots..." << endl;
 
-#if 0
-  for(i=0; i<slog_files.size(); i++) {
-    Populator_LogPlots pop_lp;
-    pop_lp.setSkew(slog_files_skew[i]);
-    pop_lp.setVName("V_" + intToString(i)); 
-    bool ok = pop_lp.setFileSLog(slog_files[i]);
-    if(!ok) {
-      cout << "Problem with file " << slog_files[i] << ". Exiting" << endl;
-      exit(0);
-    }
-    
-    pop_lp.populateFromSLog();
-    
-    vector<LogPlot> lvector;
-    int lsize = pop_lp.size();
-    for(int i=0; i<lsize; i++)
-      lvector.push_back(pop_lp.getLogPlot(i));
-
-    logplots.push_back(lvector);
-  }
-#endif
-
-#if 1
   for(i=0; i<alog_files.size(); i++) {
     Populator_LogPlots pop_lp;
-    pop_lp.setSkew(slog_files_skew[i]);
+    //pop_lp.setSkew(alog_files_skew[i]);
     pop_lp.setVName("V_" + intToString(i)); 
     bool ok = pop_lp.setFileALog(alog_files[i]);
     if(!ok) {
@@ -251,7 +190,6 @@ int main(int argc, char *argv[])
 
     logplots.push_back(lvector);
   }
-#endif
 
   parse_timer.stop();
   cout << "Done: LogPlot parse time: " << parse_timer.get_float_cpu_time();
@@ -286,21 +224,23 @@ int main(int argc, char *argv[])
   if(gui_size=="xsmall")
     gui = new REPLAY_GUI(770, 605, "OpRegion-Viewer");
 
-  gui->setLogFile(slog_files[0]);
-
-  // Populate the GUI with the NavPlots built above
-  for(i=0; i<navplots.size(); i++)
-    gui->addNavPlot(navplots[i]);
-  
   // Populate the GUI with the GridPlots built above
   for(i=0; i<gridplots.size(); i++)
     gui->addGridPlot(gridplots[i]);
   
   // Populate the GUI with the LogPlots built above
-  for(i=0; i<logplots.size(); i++)
-    for(int j=0; j<logplots[i].size(); j++)
+  for(i=0; i<logplots.size(); i++) {
+    for(int j=0; j<logplots[i].size(); j++) {
       gui->addLogPlot(logplots[i][j]);
-  
+      if(logplots[i][j].get_varname() == "NAV_X")
+	gui->np_viewer->addLogPlotNAVX(logplots[i][j]);
+      else if(logplots[i][j].get_varname() == "NAV_Y")
+	gui->np_viewer->addLogPlotNAVY(logplots[i][j]);
+      else if(logplots[i][j].get_varname() == "NAV_HEADING")
+	gui->np_viewer->addLogPlotHDG(logplots[i][j]);
+    }
+  }
+
   // Populate the GUI with the polygons built above
   for(i=0; i<polygons.size(); i++)
     gui->addPoly(polygons[i]);

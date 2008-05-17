@@ -277,7 +277,7 @@ bool LogPlotViewer::fill_cache()
 
   w_step = (w()-margin) / (max_time - min_time);
 
-  int    vpsize1  = vplot1.get_size();
+  int    vpsize1  = vplot1.size();
   double min_val1 = vplot1.get_min_val();
   double max_val1 = vplot1.get_max_val();
   double h_step1 = (h()-margin) / (max_val1  - min_val1);
@@ -292,7 +292,7 @@ bool LogPlotViewer::fill_cache()
   }
 
   if(view_index1 != view_index2) {
-    int    vpsize2  = vplot2.get_size();
+    int    vpsize2  = vplot2.size();
     double min_val2 = vplot2.get_min_val();
     double max_val2 = vplot2.get_max_val();
     double h_step2 = (h()-margin) / (max_val2  - min_val2);
