@@ -34,33 +34,21 @@ public:
   Populator_LogPlots();
   ~Populator_LogPlots() {};
 
-  bool    setFileSLog(std::string);
   bool    setFileALog(std::string);
   void    setVName(std::string s) {m_vname = s;};
   void    setSkew(double amt)     {m_skew = amt;};
 
-  bool    populateFromSLog();
   bool    populateFromALog();
   LogPlot getLogPlot(int);
   LogPlot getLogPlot(std::string);
   int     size() {return(m_logplots.size());};
 
-  void    print();
-
-protected:
-  void scanColumns();
-  void populateLogPlot(int);
-
 protected:
   std::string               m_file;
   std::string               m_vname;
   std::vector<LogPlot>      m_logplots;
-
-  std::vector<std::string>  m_columns;
   std::vector<std::string>  m_lines;
 
-  std::vector<std::vector<std::string> > m_plines; // parsed lines
-  
   // Mapping from logplot variable to index in m_loplots vector
   std::map<std::string, int> m_logplot_var_map;
   

@@ -29,7 +29,7 @@
 class LogPlot
 {
 public:
-  LogPlot() {min_val=0; max_val=0;};
+  LogPlot() {min_val=0; max_val=0; utc_start_time=0;};
   ~LogPlot() {};
 
   bool   set_varname(std::string s) {varname = s;};
@@ -42,9 +42,9 @@ public:
   double get_max_time() const;
   double get_min_val() const      {return(min_val);};
   double get_max_val() const      {return(max_val);};
-  int    get_size() const         {return(time.size());};
   std::string get_varname() const {return(varname);};
   std::string get_vehicle() const {return(vehicle);};
+  int    size() const             {return(time.size());};
   void   print() const;
   
 protected:
@@ -56,6 +56,7 @@ protected:
   std::vector<double> time;
   std::vector<double> value;
 
+  double utc_start_time;
   double min_val;
   double max_val;
 };
