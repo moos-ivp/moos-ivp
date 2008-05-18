@@ -22,6 +22,7 @@
 
 #include <stdio.h>
 #include <iostream>
+#include <cstdlib>
 #include "Populator_LogPlots.h"
 #include "MBUtils.h"
 #include "FileBuffer.h"

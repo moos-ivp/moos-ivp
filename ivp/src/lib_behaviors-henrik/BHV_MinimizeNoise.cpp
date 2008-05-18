@@ -6,6 +6,7 @@
 
 #include <string>
 #include <iostream>
+#include <cstdlib>
 #include <math.h> 
 #include "BHV_MinimizeNoise.h"
 #include "AOF_MinimizeNoise.h"
