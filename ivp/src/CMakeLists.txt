@@ -134,10 +134,15 @@ SET(IVP_APPS_TO_BUILD
   uXMS
   uPokeDB
   uFunctionVis
-  iRawAIS
-  iPlaybackAIS
+
+#  Doesn't build on OS X 10.5
+#  iRawAIS
+
+iPlaybackAIS
   iParserAIS
-  pASCM_PK
+
+  #  Doesn't build on OS X 10.5
+  #pASCM_PK
 )
 
 FOREACH(A ${IVP_APPS_TO_BUILD})

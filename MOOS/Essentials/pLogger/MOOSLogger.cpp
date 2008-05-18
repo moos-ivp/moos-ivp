@@ -37,6 +37,8 @@
 
 #include <MOOSLIB/MOOSApp.h>
 #include <MOOSGenLib/MOOSGenLibGlobalHelper.h>
+#include <cstdlib>
+#include <cstring>
 #include <time.h>
 #include <iostream>
 #include <stdio.h>

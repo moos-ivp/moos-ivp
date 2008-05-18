@@ -4,6 +4,7 @@
 /*    BORN: 8. May 2008                                   */
 /***********************************************************/
 #include <iostream>
+#include <cstdlib>
 #include <math.h> 
 #include <assert.h>
 #include "AOF_MinimizeNoise.h"

@@ -27,7 +27,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <tiffio.h>
-#include <GL/gl.h>
+
+//#include <GL/gl.h>
+
+
+// See http://www.cmake.org/pipermail/cmake/2003-March/003482.html
+#if OPSYS_IS_LINUX
+   #include <GL/gl.h>
+#elif OPSYS_IS_OS_X
+   #include <OpenGL/gl.h>
+#else
+   #error "Unknown OS"
+#endif
+
+
+
 #include "BackImg.h"
 #include "MBUtils.h"
 #include "FileBuffer.h"
