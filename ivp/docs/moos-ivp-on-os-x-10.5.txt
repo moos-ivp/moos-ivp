@@ -1,0 +1,11 @@
+Subversion client:
+http://subversion.tigris.org/project_packages.html
+
+gcc:
+Comes with XCode on 2nd OS X install disk.  Also available as a download from Apple.
+
+CMake:
+cmake.org
+
+libtiff
+http://www.libtiff.org/

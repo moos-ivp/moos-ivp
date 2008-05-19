@@ -113,6 +113,18 @@ ENDFOREACH(L)
 #---------------------------------------------------------------------
 #  Build the Applications
 #---------------------------------------------------------------------
+
+  if (${APPLE})
+     set(LINUX_ONLY_APPS "")
+  else (${APPLE})
+     #  Doesn't build on OS X 10.5
+     SET(LINUX_ONLY_APPS 
+        iRawAIS
+        pASCM_PK
+     )
+  endif (${APPLE})
+
+
 SET(IVP_APPS_TO_BUILD
   app_ffview
   app_geoview
@@ -134,15 +146,9 @@ SET(IVP_APPS_TO_BUILD
   uXMS
   uPokeDB
   uFunctionVis
-
-#  Doesn't build on OS X 10.5
-#  iRawAIS
-
-iPlaybackAIS
+  iPlaybackAIS
   iParserAIS
-
-  #  Doesn't build on OS X 10.5
-  #pASCM_PK
+  ${LINUX_ONLY_APPS}
 )
 
 FOREACH(A ${IVP_APPS_TO_BUILD})
