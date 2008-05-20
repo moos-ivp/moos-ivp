@@ -72,7 +72,7 @@ MarineViewer::MarineViewer(int x, int y, int w, int h, const char *l)
   m_back_img_b_on = false;
   m_back_img_mod  = false;
 
-  glGenTextures(1, m_textures);
+//  glGenTextures(1, m_textures);
 }
 
 // ----------------------------------------------------------
@@ -108,6 +108,12 @@ bool MarineViewer::setTexture()
   glEnable(GL_TEXTURE_2D);
   glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
+  static bool texture_init;
+  if (! texture_init) {
+     glGenTextures(1, m_textures);
+     texture_init = true;
+  }	  
+  
   glBindTexture(GL_TEXTURE_2D, m_textures[0]);
   if((m_texture_set <2) || m_back_img_mod) {
     unsigned char *img_data;
