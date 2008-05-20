@@ -71,7 +71,6 @@ MarineViewer::MarineViewer(int x, int y, int w, int h, const char *l)
   m_back_img_b_ok = false;
   m_back_img_b_on = false;
   m_back_img_mod  = false;
-
 //  glGenTextures(1, m_textures);
 }
 
