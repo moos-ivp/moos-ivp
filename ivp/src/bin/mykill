@@ -1,26 +1,29 @@
 #!/bin/sh
 
-killall -9 -q MOOSDB iRemote MOOSRemote iGPS iGPSMonitor pNav \
+# We no longer use the "-q" option because it is not supported on
+# the mac
+
+killall -9 MOOSDB iRemote MOOSRemote iGPS iGPSMonitor pNav \
         pHelm pHelmIvP pMarineViewer iMarineSim \
         pLogger iPWMController MOOSDump pAntler MOOSDump \
         iINS iDepth pScheduler pThermoTrack pNaFCon pSearch \
-        pHuxley pMessageSim pBeamform uTermCommand pBearingTrack
+        pHuxley pMessageSim pBeamform uTermCommand pBearingTrack >& /dev/null
 
-killall -9 -q pMOOSBridge  iVSA iCTD iCTDSBE49 pBearingsSim        \
+killall pMOOSBridge  iVSA iCTD iCTDSBE49 pBearingsSim        \
         iPNICompass iMetaCompass iHeadingMonitor  pAEL     \
         iWifi p1BTracker p2BTracker pBearings uMS pTarget  \
         pRedirect pLoiterControl pTransponderAIS uMVS      \
         pMarinePID uTMS uMVS_Bluefin pEchoVar pDeployHandler \
         pTrafficControl pShipsideViewer uRepeater uXMS   \
-        pViewerRelay uHelmScope
+        pViewerRelay uHelmScope >& /dev/null
 
-killall -9 -q iMicroModem pRouter pFramer pMessageSim  \
+killall -q iMicroModem pRouter pFramer pMessageSim  \
         pCSVLogger pBearings_VSA pEchoVar pTrackQuality \
         p1HTracker pGPSSim uBathy uCtdSim2 pTargetOpportunity \
         pBearings_DURIP uProcessWatch uPlayBack pSubIndex \
         pBearings_GENERIC pTargetSim pMBTracker zLoggerNG \
-	iModemSim pFunctionSender uFunctionViewer uFunctionVis
+	iModemSim pFunctionSender uFunctionViewer uFunctionVis >& /dev/null
 
-killall -9 -q pSensorSim pArtifactMapper pNoiseSim
+killall -9 pSensorSim pArtifactMapper pNoiseSim >& /dev/null
 
 echo Done - Killed all MOOS-Related Processes.....
