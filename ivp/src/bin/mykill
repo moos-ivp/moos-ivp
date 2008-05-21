@@ -7,7 +7,7 @@ killall -9 MOOSDB iRemote MOOSRemote iGPS iGPSMonitor pNav \
         pHelm pHelmIvP pMarineViewer iMarineSim \
         pLogger iPWMController MOOSDump pAntler MOOSDump \
         iINS iDepth pScheduler pThermoTrack pNaFCon pSearch \
-        pHuxley pMessageSim pBeamform uTermCommand pBearingTrack >& /dev/null
+        pHuxley pMessageSim pBeamform uTermCommand pBearingTrack
 
 killall pMOOSBridge  iVSA iCTD iCTDSBE49 pBearingsSim        \
         iPNICompass iMetaCompass iHeadingMonitor  pAEL     \
@@ -15,15 +15,15 @@ killall pMOOSBridge  iVSA iCTD iCTDSBE49 pBearingsSim        \
         pRedirect pLoiterControl pTransponderAIS uMVS      \
         pMarinePID uTMS uMVS_Bluefin pEchoVar pDeployHandler \
         pTrafficControl pShipsideViewer uRepeater uXMS   \
-        pViewerRelay uHelmScope >& /dev/null
+        pViewerRelay uHelmScope
 
 killall -q iMicroModem pRouter pFramer pMessageSim  \
         pCSVLogger pBearings_VSA pEchoVar pTrackQuality \
         p1HTracker pGPSSim uBathy uCtdSim2 pTargetOpportunity \
         pBearings_DURIP uProcessWatch uPlayBack pSubIndex \
         pBearings_GENERIC pTargetSim pMBTracker zLoggerNG \
-	iModemSim pFunctionSender uFunctionViewer uFunctionVis >& /dev/null
+	iModemSim pFunctionSender uFunctionViewer uFunctionVis
 
-killall -9 pSensorSim pArtifactMapper pNoiseSim >& /dev/null
+killall -9 pSensorSim pArtifactMapper pNoiseSim
 
 echo Done - Killed all MOOS-Related Processes.....
