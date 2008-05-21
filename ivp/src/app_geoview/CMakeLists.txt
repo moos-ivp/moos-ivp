@@ -12,6 +12,12 @@ IF(BUILD_GUIS)
    )
 	  
    ADD_EXECUTABLE(geoview ${SRC})
+   
+	  IF (${APPLE})
+		 ADD_EXECUTABLE(geoview MACOSX_BUNDLE ${SRC})
+	  ELSE (${APPLE})
+		 ADD_EXECUTABLE(geoview ${SRC})
+	  ENDIF (${APPLE})
          
    TARGET_LINK_LIBRARIES(geoview
       marineview

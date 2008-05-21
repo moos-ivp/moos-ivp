@@ -12,7 +12,12 @@ IF(BUILD_GUIS)
             main.cpp
         )
 	  
-	ADD_EXECUTABLE(logview ${SRC})
+   
+	  IF (${APPLE})
+		 ADD_EXECUTABLE(logview MACOSX_BUNDLE ${SRC})
+	  ELSE (${APPLE})
+		 ADD_EXECUTABLE(logview ${SRC})
+	  ENDIF (${APPLE})
 	     
 	TARGET_LINK_LIBRARIES(logview
 	  marineview

@@ -13,7 +13,12 @@ IF(BUILD_GUIS)
       main.cpp
    )	  
 
-	ADD_EXECUTABLE(ffview ${SRC})
+   
+	  IF (${APPLE})
+		 ADD_EXECUTABLE(ffview MACOSX_BUNDLE ${SRC})
+	  ELSE (${APPLE})
+		 ADD_EXECUTABLE(ffview ${SRC})
+	  ENDIF (${APPLE})
 	     
 	TARGET_LINK_LIBRARIES(ffview
 	  bhvutil

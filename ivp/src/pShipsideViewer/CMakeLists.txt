@@ -10,8 +10,12 @@ IF(BUILD_GUIS)
 	  SSV_MOOSApp.cpp
 	  SSV_Viewer.cpp
 	  main_ssviewer.cpp)
-	  
-	ADD_EXECUTABLE(pShipsideViewer ${SRC})
+   
+	  IF (${APPLE})
+		 ADD_EXECUTABLE(pShipsideViewer MACOSX_BUNDLE ${SRC})
+	  ELSE (${APPLE})
+		 ADD_EXECUTABLE(pShipsideViewer ${SRC})
+	  ENDIF (${APPLE})
 	     
 	TARGET_LINK_LIBRARIES(pShipsideViewer
 	   MOOS
