@@ -271,8 +271,8 @@ bool segmentsCross(double x1, double y1, double x2, double y2,
   bool seg1_horz = (y1==y2);
   bool seg2_vert = (x3==x4);
   bool seg2_horz = (y3==y4);
-  bool seg1_pt = ((x1==x2)&&(y1==y2));
-  bool seg2_pt = ((x3==x4)&&(y3==y4));
+  // bool seg1_pt = ((x1==x2)&&(y1==y2));
+  // bool seg2_pt = ((x3==x4)&&(y3==y4));
 
   // Case 1 Vert-Vert
   if(seg1_vert && seg2_vert) {

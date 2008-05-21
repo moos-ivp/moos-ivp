@@ -57,7 +57,7 @@ double evalCPA(double cnLON, double cnLAT, double cnSPD, double cnCRS,
   
   // Set static variables for quickening the "crossingType" queries
   double statCLOW, statCHGH, statCRNG;
-  double statCNDIS = distPointToPoint(osLON, osLAT, cnLON, cnLAT);
+  //double statCNDIS = distPointToPoint(osLON, osLAT, cnLON, cnLAT);
   double statCNANG = relAng(osLON, osLAT, cnLON, cnLAT);
   if((cnCRS - statCNANG) <= 180) {
     statCLOW = statCNANG;

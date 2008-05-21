@@ -53,7 +53,10 @@ XYPolygon stringToPoly(string str)
     str = str.c_str()+9;
     return(stringPairsToEllipsePoly(str));
   }
-  else if(!strncasecmp("pts:", str.c_str(), 5)) {
+  else if((!strncasecmp("pts:", str.c_str(), 4)) ||
+	  (!strncasecmp("points:", str.c_str(), 7)) ||
+	  (!strncasecmp("poly:", str.c_str(), 5)) ||
+	  (!strncasecmp("polygon:", str.c_str(), 5))) {
     str = str.c_str()+5;
     return(stringShortToPointsPoly(str));
   }
