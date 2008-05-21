@@ -10,9 +10,7 @@ IF(BUILD_GUIS)
       GeoViewer.cpp
       main.cpp
    )
-	  
-   ADD_EXECUTABLE(geoview ${SRC})
-   
+
 	  IF (${APPLE})
 		 ADD_EXECUTABLE(geoview MACOSX_BUNDLE ${SRC})
 	  ELSE (${APPLE})
