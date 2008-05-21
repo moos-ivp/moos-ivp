@@ -89,13 +89,6 @@
 #endif
 
 #if 1
-// COLREGS Behaviors
-#include "BHV_HeadOn14.h"
-#include "BHV_GiveWay16.h"
-#include "BHV_StandOn17.h"
-#endif
-
-#if 1
 // Don Eickstedt Behaviors
 #include "BHV_CoOrbit.h"
 #include "BHV_Adaptive_YoYo.h"
@@ -395,16 +388,6 @@ IvPBehavior* Populator_BehaviorSet::initializeBehavior(string bhv_name)
     bhv = new BHV_SearchGrid(domain);
   else if(bhv_name == "BHV_SteadyHeading")   
     bhv = new BHV_SteadyHeading(domain);
-#endif
-  
-#if 1
-  // COLREGS Behaviors --------------------------------
-  else if(bhv_name == "BHV_HeadOn14")        
-    bhv = new BHV_HeadOn14(domain);
-  else if(bhv_name == "BHV_GiveWay16")        
-    bhv = new BHV_GiveWay16(domain);
-  else if(bhv_name == "BHV_StandOn17")        
-    bhv = new BHV_StandOn17(domain);
 #endif
   
 #if 1
