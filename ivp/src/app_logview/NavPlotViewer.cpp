@@ -78,8 +78,13 @@ float NavPlotViewer::getMetersX()
     float meters = (x_pct - x_pct_cent) / (x_pct_mtrs / 100.0);
     return(meters);
   }
-  else
-    return(m_navx_plot[m_global_ix].get_value_by_index(m_local_ix));
+  else {
+    if(m_global_ix < m_navx_plot.size()) {
+      return(m_navx_plot[m_global_ix].get_value_by_index(m_local_ix));
+    }
+    else
+      return(0);
+  }
 }
 
 // ----------------------------------------------------------
@@ -98,8 +103,13 @@ float NavPlotViewer::getMetersY()
     float meters = (y_pct - y_pct_cent) / (y_pct_mtrs / 100.0);
     return(meters);
   }
-  else
-    return(m_navy_plot[m_global_ix].get_value_by_index(m_local_ix));
+  else {
+    if(m_global_ix < m_navx_plot.size()) {
+      return(m_navy_plot[m_global_ix].get_value_by_index(m_local_ix));
+    }
+    else
+      return(0);
+  }
 }
 
 //-------------------------------------------------------------
@@ -108,6 +118,8 @@ float NavPlotViewer::getMetersY()
 
 bool NavPlotViewer::setCurrIndex(int v)
 {
+  if(m_navx_plot.size() == 0)
+    return(0);
   int new_index = v;
   
   int max_new_index = m_navx_plot[m_global_ix].size() - 1;
@@ -144,6 +156,9 @@ bool NavPlotViewer::incCurrIndex(int v)
 
 bool NavPlotViewer::jumpCurrIndex(int v)
 {
+  if(m_navx_plot.size() == 0)
+    return(false);
+
   if(v==0)
     return(setCurrIndex(0));
   else if(v==1) {
@@ -174,6 +189,9 @@ void NavPlotViewer::setGridPlotIndex(int ix)
 
 void NavPlotViewer::setGlobalIndex(int new_ix)
 {
+  if(m_navx_plot.size() == 0)
+    return;
+
   if(new_ix < 0)
     new_ix = 0;
   if(new_ix >= m_navx_plot.size())
@@ -273,6 +291,9 @@ void NavPlotViewer::drawNavPlots()
 
 void NavPlotViewer::drawNavPlot(int index)
 {
+  if((index < 0) || (index >= m_navx_plot.size()))
+    return;
+
   int npsize = m_navx_plot[index].size();
   if(npsize == 0)
     return;
