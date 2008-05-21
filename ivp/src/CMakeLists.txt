@@ -83,7 +83,6 @@ GET_FILENAME_COMPONENT(IVP_DATA_DIR ../data ABSOLUTE)
 SET(IVP_LIBS_TO_BUILD
   lib_behaviors
   lib_behaviors-ajshafer
-  lib_behaviors-colregs
   lib_behaviors-don
   lib_behaviors-henrik
   lib_behaviors-marine
