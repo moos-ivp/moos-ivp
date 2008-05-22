@@ -20,8 +20,8 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
  
-#ifndef BHV_WAYPOINT_SIMPLE_HEADER
-#define BHV_WAYPOINT_SIMPLE_HEADER
+#ifndef BHV_SIMPLE_WAYPOINT_HEADER
+#define BHV_SIMPLE_WAYPOINT_HEADER
 
 #include <string>
 #include "IvPBehavior.h"
