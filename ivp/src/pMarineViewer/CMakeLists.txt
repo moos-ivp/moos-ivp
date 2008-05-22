@@ -12,7 +12,11 @@ IF(BUILD_GUIS)
       main_mviewer.cpp
    )
 
-   ADD_EXECUTABLE(pMarineViewer ${SRC})
+	  IF (${APPLE})
+		 ADD_EXECUTABLE(pMarineViewer MACOSX_BUNDLE ${SRC})
+	  ELSE (${APPLE})
+		 ADD_EXECUTABLE(pMarineViewer ${SRC})
+	  ENDIF (${APPLE})
          
    TARGET_LINK_LIBRARIES(pMarineViewer         
       MOOS
