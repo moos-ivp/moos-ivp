@@ -37,6 +37,11 @@ XYPolygon stringToPoly(std::string);
 //    degs=val, rads=val, pts=val, snap_value=val, label=val"
 XYPolygon stringPairsToEllipsePoly(std::string);
 
+// Create a rectangle from two given points
+// Example: "x1=val, y1=val, x2=val, y2=val, axis_pad=val, 
+//          perp_pad=val, snap_val=val, label=val"
+XYPolygon stringPairsToPylonPoly(std::string);
+
 // Create a polygon that approximates a circle.
 // Example: "radial:: x=val, y=val, radius=val, pts=val, snap=val, 
 //    label=val"

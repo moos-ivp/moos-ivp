@@ -196,6 +196,130 @@ XYPolygon stringPairsToEllipsePoly(string str)
 
 
 //---------------------------------------------------------------
+// Procedure: stringPairsToPylonPoly
+//
+//                     o (x2,y2) 
+//                   /   
+//                 /     
+//      (x1,y1)  o    
+//
+/// Initializes a polygon (rectangle) based on two points
+/// The format of the string is "x1=val, y1=val, x2=val, y2=val, 
+//           axis_pad=val, perp_pad=val".
+
+
+XYPolygon stringPairsToPylonPoly(string str)
+{
+  XYPolygon null_poly;
+
+  str = tolower(stripBlankEnds(str));
+  vector<string> mvector = parseString(str, ',');
+  int vsize = mvector.size();
+
+  // Below are the mandatory parameters - check they are set.
+  bool x1_set  = false;
+  bool y1_set  = false;
+  bool x2_set  = false;
+  bool y2_set  = false;
+  bool axis_pad_set = false;
+  bool perp_pad_set = false;  // Either degrees OR radians must
+
+  double x1, y1, x2, y2, axis_pad, perp_pad, snap=0;
+  string label;
+  
+  for(int i=0; i<vsize; i++) {
+    vector<string> svector = parseString(mvector[i], '=');
+    if(svector.size() != 2)
+      return(null_poly);
+    string param = stripBlankEnds(svector[0]);
+    string value = stripBlankEnds(svector[1]);
+    double dval  = atof(value.c_str());
+    if((param == "x1") && isNumber(value)) {
+      x1_set = true;
+      x1 = dval;
+    }
+    else if((param == "y1") && isNumber(value)) {
+      y1_set = true;
+      y1 = dval;
+    }
+    else if((param == "x2") && isNumber(value)) {
+      x2_set = true;
+      x2 = dval;
+    }
+    else if((param == "y2") && isNumber(value)) {
+      y2_set = true;
+      y2 = dval;
+    }
+    else if((param == "axis_pad") && isNumber(value)) {
+      if(dval >= 0) {
+	axis_pad_set = true;
+	axis_pad = dval;
+      }
+    }
+    else if((param == "perp_pad") && isNumber(value)) {
+      if(dval >= 0) {
+	perp_pad_set = true;
+	perp_pad = dval;
+      }
+    }
+    else if((param == "snap") && (isNumber(value))) {
+      if(dval >= 0)
+	snap = dval;
+    }
+    else if(param == "label") {
+      label = value;
+    }
+  }
+
+  if(!x1_set || !y1_set || !x2_set || !y2_set)
+    return(null_poly);
+
+  if(!axis_pad_set || !perp_pad_set)
+    return(null_poly);
+
+  XYPolygon new_poly;
+
+  double rel_ang = relAng(x1,y1,x2,y2);
+  double extent  = sqrt((axis_pad*axis_pad)+(perp_pad*perp_pad));
+  
+  double px1, py1;
+  projectPoint(rel_ang-180, axis_pad, x1,  y1,  px1, py1);
+  projectPoint(rel_ang-90,  perp_pad, px1, py1, px1, py1);
+  
+  double px2, py2;
+  projectPoint(rel_ang-180, axis_pad, x1,  y1,  px2, py2);
+  projectPoint(rel_ang+90,  perp_pad, px2, py2, px2, py2);
+  
+  double px3, py3;
+  projectPoint(rel_ang,    axis_pad, x2,  y2,  px3, py3);
+  projectPoint(rel_ang+90, perp_pad, px3, py3, px3, py3);
+
+  double px4, py4;
+  projectPoint(rel_ang,    axis_pad, x2,  y2,  px4, py4);
+  projectPoint(rel_ang-90, perp_pad, px4, py4, px4, py4);
+
+
+  // Now add the four points. The "false" in the first three
+  // calls indicates that no determination of convexity is made.
+  // That is saved only for the last call - minor time savings.
+  new_poly.add_vertex(px1,py1,false);
+  new_poly.add_vertex(px2,py2,false);
+  new_poly.add_vertex(px3,py3,false);
+  new_poly.add_vertex(px4,py4,true);
+
+  if(snap>=0)
+    new_poly.apply_snap(snap);
+  new_poly.set_label(label);
+
+  if(new_poly.is_convex())
+    return(new_poly);
+  else
+    return(null_poly);
+}
+
+
+
+//---------------------------------------------------------------
 // Procedure: stringPairsToRadialPoly
 //
 /// Initializes a polygon that approximates a circle.

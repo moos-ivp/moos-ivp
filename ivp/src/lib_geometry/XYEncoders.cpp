@@ -31,14 +31,18 @@ using namespace std;
 //--------------------------------------------------------------
 // Procedure: XYPolygonToString
 
-string XYPolygonToString(const XYPolygon& g_poly)
+string XYPolygonToString(const XYPolygon& g_poly, int digits)
 {
   string str;
   int size = g_poly.size();
+  
+  string label = g_poly.get_label();
+  if(label != "")
+    str += ("label," + label + ":");
 
   for(int i=0; i<size; i++) {
-    str += dstringCompact(doubleToString(g_poly.get_vx(i))) + ","; 
-    str += dstringCompact(doubleToString(g_poly.get_vy(i)));
+    str += dstringCompact(doubleToString(g_poly.get_vx(i),digits)) + ","; 
+    str += dstringCompact(doubleToString(g_poly.get_vy(i),digits));
     if(i < size-1)
       str += ":";
   }
