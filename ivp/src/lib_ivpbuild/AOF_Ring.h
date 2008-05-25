@@ -41,11 +41,12 @@ public:
   void    print() const;
 
   IvPBox  getLOC() const    {return(location);};
-  int     getRAD() const    {return(radius);};
-  int     getEXP() const    {return(exponent);};
   bool    getRPK() const    {return(ringPeak);};
   double  getRNG() const    {return(range);};
   double  getBAS() const    {return(base);};
+
+  unsigned int getRAD() const {return(radius);};
+  unsigned int getEXP() const {return(exponent);};
 
   std::string latexSTR(int full=0) const;
 
@@ -54,21 +55,22 @@ protected:
   bool    randomize();
 
 private:
+  unsigned int  radius;
+  unsigned int  radLow;
+  unsigned int  radHigh;
+  unsigned int  exponent;
+  unsigned int  expLow;
+  unsigned int  expHigh;
+  unsigned int  dim;
+  unsigned int  gradient_type;
+
   IvPBox  location;
-  int     radius;
-  int     radLow;
-  int     radHigh;
-  int     exponent;
-  int     expLow;
-  int     expHigh;
   bool    ringPeak;  // 1 if pts on ring are peaks (vs. valleys)
   double  base;
   double  range;
   double  maxDist;
   double  plateau;
-  int     dim;
   double  gradient_dist;
-  int     gradient_type;
 };
 
 #endif

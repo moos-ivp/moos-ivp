@@ -74,9 +74,6 @@ bool Populator_LogPlots::populateFromALog()
   }
 
   cout << "Total LogPlots: " << m_logplots.size() << endl;
-  m_logplots[0].print();
-
-
 
   return(true);
 }

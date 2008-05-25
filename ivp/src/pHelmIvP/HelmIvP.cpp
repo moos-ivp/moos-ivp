@@ -40,7 +40,7 @@
 #include "HelmReport.h"
 #include "stringutil.h"
 
-#if 0
+#if 1
   #define USE_NEW_POPULATOR
 #endif
 

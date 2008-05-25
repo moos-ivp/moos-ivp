@@ -432,8 +432,9 @@ void IvPBehavior::addInfoVars(string var_string)
 
 vector<string> IvPBehavior::getInfoVars()
 {
+  unsigned int i;
   vector<string> svector;
-  for(int i=0; i<m_logic_conditions.size(); i++)
+  for(i=0; i<m_logic_conditions.size(); i++)
     svector = mergeVectors(svector, m_logic_conditions[i].getVarNames());
 
   svector = mergeVectors(svector, m_info_vars);

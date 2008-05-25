@@ -87,7 +87,7 @@ cout << "BehaviorSet::addBehavior( " << ((void*) bhv) << ")" << endl;
 //------------------------------------------------------------
 // Procedure: produceOF
 
-IvPFunction* BehaviorSet::produceOF(int ix, int iteration, 
+IvPFunction* BehaviorSet::produceOF(unsigned int ix, unsigned int iteration, 
 				    string& new_activity_state)
 {
   IvPFunction *ipf = 0;
@@ -172,7 +172,7 @@ IvPFunction* BehaviorSet::produceOF(int ix, int iteration,
 //------------------------------------------------------------
 // Procedure: stateOK
 
-bool BehaviorSet::stateOK(int ix)
+bool BehaviorSet::stateOK(unsigned int ix)
 {
   if((ix >= 0) && (ix < behaviors.size()))
     return(behaviors[ix]->stateOK());
@@ -185,14 +185,14 @@ bool BehaviorSet::stateOK(int ix)
 
 void BehaviorSet::resetStateOK()
 {
-  for(int i=0; i<behaviors.size(); i++) 
+  for(unsigned int i=0; i<behaviors.size(); i++) 
     behaviors[i]->resetStateOK();
 }
 
 //------------------------------------------------------------
 // Procedure: getBehavior
 
-IvPBehavior* BehaviorSet::getBehavior(int ix)
+IvPBehavior* BehaviorSet::getBehavior(unsigned int ix)
 {
   if((ix >= 0) && (ix < behaviors.size()))
     return(behaviors[ix]);
@@ -202,7 +202,7 @@ IvPBehavior* BehaviorSet::getBehavior(int ix)
 //------------------------------------------------------------
 // Procedure: getDescriptor
 
-string BehaviorSet::getDescriptor(int ix)
+string BehaviorSet::getDescriptor(unsigned int ix)
 {
   if((ix >= 0) && (ix < behaviors.size()))
     return(behaviors[ix]->getDescriptor());
@@ -212,7 +212,7 @@ string BehaviorSet::getDescriptor(int ix)
 //------------------------------------------------------------
 // Procedure: getStateElapsed
 
-double BehaviorSet::getStateElapsed(int ix)
+double BehaviorSet::getStateElapsed(unsigned int ix)
 {
   if((ix >= 0) && (ix < behaviors.size()))
     return(behavior_state_time_elapsed[ix]);
@@ -223,7 +223,7 @@ double BehaviorSet::getStateElapsed(int ix)
 //------------------------------------------------------------
 // Procedure: getUpdateSummary()
 
-string BehaviorSet::getUpdateSummary(int ix)
+string BehaviorSet::getUpdateSummary(unsigned int ix)
 {
   if((ix >= 0) && (ix < behaviors.size()))
     return(behaviors[ix]->getUpdateSummary());
@@ -234,7 +234,7 @@ string BehaviorSet::getUpdateSummary(int ix)
 //------------------------------------------------------------
 // Procedure: getMessages
 
-vector<VarDataPair> BehaviorSet::getMessages(int ix)
+vector<VarDataPair> BehaviorSet::getMessages(unsigned int ix)
 {
   vector<VarDataPair> mvector;
   if((ix >= 0) && (ix < behaviors.size())) {
@@ -250,9 +250,9 @@ vector<VarDataPair> BehaviorSet::getMessages(int ix)
 vector<string> BehaviorSet::getInfoVars()
 {
   vector<string> rvector;
-  for(int i=0; i<behaviors.size(); i++) {
+  for(unsigned int i=0; i<behaviors.size(); i++) {
     vector<string> bvector = behaviors[i]->getInfoVars();
-    for(int j=0; j<bvector.size(); j++)
+    for(unsigned int j=0; j<bvector.size(); j++)
       rvector.push_back(bvector[j]);
   }
 
@@ -328,8 +328,10 @@ string BehaviorSet::getStateSpaceVars()
 
 void BehaviorSet::print()
 {
+  unsigned int i;
+
   cout << "BehaviorSet::print() " << endl;
-  for(int i=0; i<behaviors.size(); i++) {
+  for(i=0; i<behaviors.size(); i++) {
     cout << "Behavior[" << i << "]: " << endl;
     
 

@@ -65,7 +65,7 @@ PDMap* RT_Focus::create(PDMap *pdmap, const IvPBox& region,
   if((dim_pdmap != dim_region) || (dim_region != dim_unibox))
     return(0);
 
-  int i, j;
+  int i;
   int dim = dim_pdmap;
 
   // Then ensure the region extents are within the domain extents

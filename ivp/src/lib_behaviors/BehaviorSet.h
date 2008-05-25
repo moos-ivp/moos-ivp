@@ -59,16 +59,17 @@ public:
   void setCurrTime(double v)          {m_curr_time = v;};
   
   void         setReportIPF(bool v)   {m_report_ipf=v;};
-  bool         stateOK(int);
+  bool         stateOK(unsigned int);
   void         resetStateOK();
-  IvPFunction* produceOF(int ix, int iter, std::string& activity_state);
+  IvPFunction* produceOF(unsigned int ix, unsigned int iter, 
+			 std::string& activity_state);
 
-  IvPBehavior*   getBehavior(int);
-  std::string    getDescriptor(int);
-  double         getStateElapsed(int);
-  std::string    getUpdateSummary(int);
+  IvPBehavior*   getBehavior(unsigned int);
+  std::string    getDescriptor(unsigned int);
+  double         getStateElapsed(unsigned int);
+  std::string    getUpdateSummary(unsigned int);
 
-  std::vector<VarDataPair> getMessages(int);
+  std::vector<VarDataPair> getMessages(unsigned int);
   std::vector<VarDataPair> getInitialVariables() {return(initial_vars);};
   std::vector<VarDataPair> getDefaultVariables() {return(default_vars);};
   std::vector<std::string> getInfoVars();

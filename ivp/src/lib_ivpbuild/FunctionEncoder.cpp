@@ -266,7 +266,6 @@ vector<string> IvPFunctionToVector(const string& whole_string,
   for(int i=0; i<num_packets; i++) {
     int aa_ix = sprintf(buff+a_ix, "%d,", i+1);
     const char *whole_buff = whole_string.c_str();
-    int b_ix = (i * body_size) + aa_ix;
     int src_ix  = (i * body_size) + 0;
     int dest_ix = aa_ix + a_ix + 0;
     for(int j=0; ((j<body_size)&&(src_ix <whole_size)); j++) {
@@ -290,7 +289,7 @@ vector<string> IvPFunctionToVector(const string& whole_string,
 
 IvPFunction *StringToIvPFunction(const string& str)
 {
-  int d, i, index = 0;
+  int d, i;
 
   int cix = 2; // To account for the H, in the header
 

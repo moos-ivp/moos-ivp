@@ -48,8 +48,9 @@ ZAIC_PEAK::ZAIC_PEAK(IvPDomain g_domain, const string& g_varname)
   m_domain_low   = m_ivp_domain.getVarLow(m_domain_ix);
   m_domain_pts   = m_ivp_domain.getVarPoints(m_domain_ix);
   m_domain_delta = m_ivp_domain.getVarDelta(m_domain_ix);
-
-  for(int i=0; i<m_domain_pts; i++)
+  
+  unsigned int i;
+  for(i=0; i<m_domain_pts; i++)
     m_ptvals.push_back(0.0);  
 
   v_summit.push_back(0);
@@ -84,7 +85,7 @@ int ZAIC_PEAK::addComponent()
 bool ZAIC_PEAK::setParams(double summit, double pwidth, 
 			  double bwidth, double delta,  
 			  double minutil, double maxutil, 
-			  int index)
+			  unsigned int index)
 {
   setSummit(summit, index);
   setBaseWidth(bwidth, index);
@@ -104,7 +105,7 @@ bool ZAIC_PEAK::setParams(double summit, double pwidth,
 //            setSummitDelta
 //            setMinMaxUtil
 
-bool ZAIC_PEAK::setSummit(double val, int index)
+bool ZAIC_PEAK::setSummit(double val, unsigned int index)
 {
   if((index < 0) || (index >= v_summit.size())) {
     m_state_ok = false;
@@ -116,7 +117,7 @@ bool ZAIC_PEAK::setSummit(double val, int index)
 }
 
 //------------------------------------------------
-bool ZAIC_PEAK::setBaseWidth(double val, int index)
+bool ZAIC_PEAK::setBaseWidth(double val, unsigned int index)
 {
   if((index < 0) || (index >= v_basewidth.size())) {
     m_state_ok = false;
@@ -134,7 +135,7 @@ bool ZAIC_PEAK::setBaseWidth(double val, int index)
 }
 
 //------------------------------------------------
-bool ZAIC_PEAK::setPeakWidth(double val, int index)
+bool ZAIC_PEAK::setPeakWidth(double val, unsigned int index)
 {
   if((index < 0) || (index >= v_peakwidth.size())) {
     m_state_ok = false;
@@ -152,7 +153,7 @@ bool ZAIC_PEAK::setPeakWidth(double val, int index)
 }
 
 //------------------------------------------------
-bool ZAIC_PEAK::setSummitDelta(double val, int index)
+bool ZAIC_PEAK::setSummitDelta(double val, unsigned int index)
 {
   if((index < 0) || (index >= v_summitdelta.size())) {
     m_warning += "setSummitDelta:index out of range:";
@@ -176,7 +177,8 @@ bool ZAIC_PEAK::setSummitDelta(double val, int index)
 }
 
 //------------------------------------------------
-bool ZAIC_PEAK::setMinMaxUtil(double minval, double maxval, int index)
+bool ZAIC_PEAK::setMinMaxUtil(double minval, double maxval, 
+			      unsigned int index)
 {
   if((index < 0) || (index >= v_minutil.size())) {
     m_state_ok = false;
@@ -204,23 +206,25 @@ bool ZAIC_PEAK::setMinMaxUtil(double minval, double maxval, int index)
 //-------------------------------------------------------------
 // Procedure: getParam
 
-double ZAIC_PEAK::getParam(string param, int index)
+double ZAIC_PEAK::getParam(string param, unsigned int index)
 {
   if((index < 0) || (index >= v_summit.size()))
     return(0);
 
   if(param == "summit")
     return(v_summit[index]);
-  if(param == "basewidth")
+  else if(param == "basewidth")
     return(v_basewidth[index]);
-  if(param == "peakwidth")
+  else if(param == "peakwidth")
     return(v_peakwidth[index]);
-  if(param == "summitdelta")
+  else if(param == "summitdelta")
     return(v_summitdelta[index]);
-  if(param == "minutil")
+  else if(param == "minutil")
     return(v_minutil[index]);
-  if(param == "maxutil")
+  else if(param == "maxutil")
     return(v_maxutil[index]);
+  else
+    return(0);
 }
 
 
@@ -228,7 +232,7 @@ double ZAIC_PEAK::getParam(string param, int index)
 // Procedure: evalPoint(int)
 //
 
-double ZAIC_PEAK::evalPoint(int ix, bool maxval)
+double ZAIC_PEAK::evalPoint(unsigned int ix, bool maxval)
 {
   double maximum_value = 0;
   double total_value   = 0;
@@ -260,7 +264,7 @@ IvPFunction *ZAIC_PEAK::extractOF(bool maxval)
   if((m_domain_ix == -1) || (m_state_ok == false))
     return(0);
 
-  int i;
+  unsigned int i;
   for(i=0; i<m_domain_pts; i++)
     m_ptvals[i] = evalPoint(i, maxval);
 
@@ -286,7 +290,7 @@ IvPFunction *ZAIC_PEAK::extractOF(bool maxval)
 // Procedure: evalPoint(int, int)
 //
 
-double ZAIC_PEAK::evalPoint(int sx, int ix)
+double ZAIC_PEAK::evalPoint(unsigned int sx, unsigned int ix)
 {
   double summit       = v_summit[sx];
   double peak_width   = v_peakwidth[sx];
@@ -371,7 +375,7 @@ double ZAIC_PEAK::evalPoint(int sx, int ix)
 // Procedure: insistSummit
 //
 
-void ZAIC_PEAK::insistSummit(int sx)
+void ZAIC_PEAK::insistSummit(unsigned int sx)
 {
   double summit       = v_summit[sx];
   double min_util     = v_minutil[sx];
@@ -380,7 +384,7 @@ void ZAIC_PEAK::insistSummit(int sx)
   // First check to see if there is a need to insist a summit.
   // This is the case only if all ptvals have the same value
   // If so, all vals=min_util=max_util
-  int i;
+  unsigned int i;
   for(i=0; i<m_domain_pts; i++)
     if(m_ptvals[i] != min_util)
       return;
@@ -429,7 +433,8 @@ void ZAIC_PEAK::insistSummit(int sx)
 
 PDMap *ZAIC_PEAK::setPDMap(double tolerance)
 {
-  int    i;
+  unsigned int i;
+  
   int    first_pt  = 0;
   double first_val = m_ptvals[0];
 
@@ -502,7 +507,7 @@ PDMap *ZAIC_PEAK::setPDMap(double tolerance)
     
   }
   
-  int piece_count = pieces.size();
+  unsigned int piece_count = pieces.size();
 
   PDMap *pdmap = new PDMap(piece_count, m_ivp_domain, 1);
 

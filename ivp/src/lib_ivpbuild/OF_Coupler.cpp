@@ -45,8 +45,6 @@ IvPFunction *OF_Coupler::couple(IvPFunction* ipf1,
   IvPDomain domain2 = ipf2->getPDMap()->getDomain();
 
   int i,j;
-  int size1 = domain1.size();
-  int size2 = domain2.size();
 
   if(intersectDomain(domain1, domain2))
      return(0);

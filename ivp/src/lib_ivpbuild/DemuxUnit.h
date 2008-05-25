@@ -38,7 +38,7 @@ public:
 
 public:
 
-  bool addString(const std::string& str, int ix)
+  bool addString(const std::string& str, unsigned int ix)
     {
       if((ix<0)||(ix>=m_data.size()))
 	return(false);

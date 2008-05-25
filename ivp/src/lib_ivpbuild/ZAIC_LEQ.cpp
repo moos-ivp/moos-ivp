@@ -70,9 +70,6 @@ IvPFunction *ZAIC_LEQ::extractOF()
 
 void ZAIC_LEQ::setPointLocations()
 {
-  double dpt_low   = m_ivp_domain.getVarLow(0);
-  double dpt_high  = m_ivp_domain.getVarHigh(0);
-  
   int    domain_pts  = m_ivp_domain.getVarPoints(0);
   double delta       = m_ivp_domain.getVarDelta(0);
 

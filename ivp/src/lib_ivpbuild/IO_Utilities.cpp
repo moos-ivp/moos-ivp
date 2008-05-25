@@ -65,7 +65,7 @@ bool savePDMap(PDMap *pdmap, FILE *f)
     okw = okw && (fprintf(f, "%d ", gelbox.pt(d, 0))  >= 0);
     okw = okw && (fprintf(f, "%d ", gelbox.pt(d, 1)) >= 0);
   }
-  okw = okw && (fprintf(f, "\n", dim) >= 0);
+  okw = okw && (fprintf(f, "\n") >= 0);
 
   for(int i=0; i<boxCount; i++) {
     IvPBox *ibox = pdmap->bx(i);

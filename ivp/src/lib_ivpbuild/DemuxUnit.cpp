@@ -47,12 +47,13 @@ DemuxUnit::DemuxUnit(const string& g_unit_id, int g_total_packets,
 
 string DemuxUnit::getDemuxString()
 {
-  for(int i=0; i<m_flag.size(); i++)
+  unsigned int i;
+  for(i=0; i<m_flag.size(); i++)
     if(m_flag[i]==false)
       return("");
   
   string full_string;
-  for(int i=0; i<m_data.size(); i++)
+  for(i=0; i<m_data.size(); i++)
     full_string += m_data[i];
   
   return(full_string);
@@ -66,7 +67,8 @@ string DemuxUnit::getDemuxString()
 
 bool DemuxUnit::unitReady()
 {
-  for(int i=0; i<m_flag.size(); i++)
+  unsigned int i;
+  for(i=0; i<m_flag.size(); i++)
     if(!m_flag[i])
       return(false);
   return(true);
@@ -77,8 +79,10 @@ bool DemuxUnit::unitReady()
 
 void DemuxUnit::print()
 {
+  unsigned int i;
+
   cout << "UnitID: " << m_unit_id << endl;
-  for(int i=0; i<m_data.size(); i++) {
+  for(i=0; i<m_data.size(); i++) {
     cout << "[" << i << "]: [" << m_data[i] << "]" << endl;
   }
   cout << "UnitReady(): " << unitReady() << endl;

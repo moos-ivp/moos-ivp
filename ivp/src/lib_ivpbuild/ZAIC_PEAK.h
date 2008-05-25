@@ -40,19 +40,19 @@ public:
 
   bool setParams(double summit, double pwidth,  double bwidth, 
 		 double delta,  double minutil, double maxutil, 
-		 int index=0);
+		 unsigned int index=0);
 
-  bool   setSummit(double, int index=0);
-  bool   setBaseWidth(double, int index=0);
-  bool   setPeakWidth(double, int index=0);
-  bool   setSummitDelta(double, int index=0);
-  bool   setMinMaxUtil(double, double, int index=0);
+  bool   setSummit(double, unsigned int index=0);
+  bool   setBaseWidth(double, unsigned int index=0);
+  bool   setPeakWidth(double, unsigned int index=0);
+  bool   setSummitDelta(double, unsigned int index=0);
+  bool   setMinMaxUtil(double, double, unsigned int index=0);
   void   setSummitInsist(bool v)      {m_summit_insist=v;};
   void   setValueWrap(bool v)         {m_value_wrap=v;};
 
   int    addComponent();
 
-  double getParam(std::string, int index=0);
+  double getParam(std::string, unsigned int index=0);
   bool   getValueWrap()     {return(m_value_wrap);};
   bool   getSummitInsist()  {return(m_summit_insist);};
   int    getSummitCount()   {return(v_summit.size());};
@@ -62,10 +62,10 @@ public:
   IvPFunction* extractOF(bool maxval=true);
 
 protected:
-  double evalPoint(int pt_ix, bool maxval=true);
-  double evalPoint(int summit_ix, int pt_ix);
+  double evalPoint(unsigned int pt_ix, bool maxval=true);
+  double evalPoint(unsigned int summit_ix, unsigned int pt_ix);
 
-  void   insistSummit(int summit_ix);
+  void   insistSummit(unsigned int summit_ix);
   PDMap* setPDMap(double tolerance = 0.001);
   
 protected:
@@ -80,11 +80,12 @@ protected:
   bool   m_value_wrap;
 
 private:
+  unsigned int m_domain_pts;
+
   int    m_domain_ix;
   double m_domain_high;
   double m_domain_low;
   double m_domain_delta;
-  int    m_domain_pts;
 
   bool   m_state_ok;
 

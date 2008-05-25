@@ -112,10 +112,12 @@ double Regressor::setWeight(IvPBox *gbox, bool feedback)
 {
   if(m_degree==0)  // Piecewise Scalar
     return(setWeight0(gbox, feedback));
-  if(m_degree==1)  // Piecewise Linear
+  else if(m_degree==1)  // Piecewise Linear
     return(setWeight1(gbox, feedback));
-  if(m_degree==2)  // Piecewise Quadratic
+  else if(m_degree==2)  // Piecewise Quadratic
     return(setWeight2(gbox, feedback));
+  else
+    return(0);
 }
 
 //-------------------------------------------------------------
@@ -127,7 +129,7 @@ double Regressor::setWeight(IvPBox *gbox, bool feedback)
 
 double Regressor::setWeight0(IvPBox *gbox, bool feedback)
 {
-  int i, d;
+  int i;
   setCorners(gbox);
   
   bool center_flag = centerBox(gbox, m_center_point);
@@ -577,7 +579,6 @@ void Regressor::setCorners(IvPBox *gbox)
   // edge lengths of the gbox is 1 (high==low) then avoid evaluating
   // the AOF at that point by "borrowing" its value from another pt.
   m_corner_val[0] = m_aof->evalBox(m_corner_point[0]);
-  int count = 1;
   for(i=1; (i < m_corners); i++) {
     bool borrow = (emask & i);
     if(borrow) {

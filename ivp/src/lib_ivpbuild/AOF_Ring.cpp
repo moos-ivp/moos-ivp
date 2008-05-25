@@ -56,7 +56,7 @@ AOF_Ring::AOF_Ring(IvPDomain g_domain) : AOF(g_domain)
   // have to do it each time when we call evalBox().
 
   gradient_dist  = 0.0;
-  for(int d=0; d<dim; d++)
+  for(unsigned int d=0; d<dim; d++)
     gradient_dist += m_domain.getVarPoints(d);
 
   ringPeak = (rand()%2);  
@@ -119,7 +119,7 @@ bool AOF_Ring::setParam(const string& param, const string& val)
       if(svector.size() != dim)
 	return(false);
       location = IvPBox(dim);
-      for(int i=0; i<dim; i++) {
+      for(unsigned int i=0; i<dim; i++) {
 	int pval = atoi(svector[i].c_str());
 	location.setPTS(i, pval, pval);
       }
@@ -210,8 +210,6 @@ double AOF_Ring::evalBox(const IvPBox *gbox) const
     double mean    = 0;
     double stdDev  = double(exponent * exponent);
     double e       = 2.718281;
-    double sqrt2pi = 2.506628;
-    double v1      = 1.0 / (stdDev * sqrt2pi);
     double v2a     = -1.0 / (2*stdDev);
     double v2b     = (val-mean) * (val-mean);
     double v2      = v2a * v2b;
@@ -302,7 +300,7 @@ double AOF_Ring::boxDist(const IvPBox& box1, const IvPBox& box2) const
 {
   double tally = 0.0;
 
-  for(int i=0; i<dim; i++) {
+  for(unsigned int i=0; i<dim; i++) {
     double ival = box1.pt(i,0) - box2.pt(i,0);
     tally += ival * ival;
   }

@@ -44,8 +44,12 @@ public:
 
   bool setCondition(std::string);
 
-  std::string getRawCondition()
-    {if(m_node) return(m_node->getRawCondition());};
+  std::string getRawCondition() {
+    if(m_node) 
+      return(m_node->getRawCondition());
+    else
+      return("");
+  };
   
   std::vector<std::string> getVarNames();
   

@@ -344,15 +344,13 @@ double IvPBox::ptVal(const IvPBox *gbox) const
 
   if(m_degree==0)
     return(m_wts[0]);
-
-  if(m_degree==1) {
+  else if(m_degree==1) {
     double retval = m_wts[m_dim];
     for(int d=0; (d < m_dim); d++)
       retval += (m_wts[d] * gbox->pt(d,0));
     return(retval);
   }
-
-  if(m_degree==2) {
+  else if(m_degree==2) {
     double retval = m_wts[m_dim * 2];
     for(int d=0; (d < m_dim); d++) {
       int p = gbox->pt(d,0);
@@ -360,6 +358,8 @@ double IvPBox::ptVal(const IvPBox *gbox) const
     }
     return(retval);
   }
+  else
+    return(0);
 }
 
 

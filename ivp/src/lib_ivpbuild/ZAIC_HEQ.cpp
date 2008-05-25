@@ -56,7 +56,7 @@ IvPFunction *ZAIC_HEQ::extractOF()
 
      
 //-------------------------------------------------------------
-// Procedure: setPointLocationsHEQ() 
+// Procedure: setPointLocations() 
 //                                                             
 //     |                                       o--------------|
 //     |                                     /                |
@@ -71,9 +71,6 @@ IvPFunction *ZAIC_HEQ::extractOF()
 
 void ZAIC_HEQ::setPointLocations()
 {
-  double dpt_low   = m_ivp_domain.getVarLow(0);
-  double dpt_high  = m_ivp_domain.getVarHigh(0);
-  
   int    domain_pts   = m_ivp_domain.getVarPoints(0);
   double delta        = m_ivp_domain.getVarDelta(0);
 

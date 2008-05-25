@@ -485,7 +485,7 @@ void MarineViewer::drawPoly(const XYPolygon& poly,
   }
 
   //glPointSize(1.0 * m_zoom);
-  glPointSize(1.0);
+  glPointSize(6.0);
 
   // Draw the first vertex
   glColor3f(ver1_r, ver1_g, ver1_b); 
