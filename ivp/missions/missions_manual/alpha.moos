@@ -39,8 +39,8 @@ ProcessConfig = iMarineSim
   AppTick	= 10
   CommsTick	= 10
 
-  START_LAT     = 0
-  START_LON     = 0
+  START_X       = 0
+  START_Y       = 0
   START_SPEED   = 0
   START_HEADING = 180
 }
