@@ -49,7 +49,6 @@ private: // Configuration parameters
   double  m_nm_radius;
   double  m_max_range;
   double  m_max_util_cpa_dist;
-  double  m_min_util_cpa_dist;
 
 private: // State Variables
   double  m_osx; // ownship x-position
