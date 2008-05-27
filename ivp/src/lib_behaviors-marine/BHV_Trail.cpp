@@ -56,9 +56,6 @@ BHV_Trail::BHV_Trail(IvPDomain gdomain) : IvPBehavior(gdomain)
   m_max_range    = 0;
   m_extrapolate  = true;
   
-  m_min_util_cpa_dist = 100;
-  m_max_util_cpa_dist = 0; 
-  
   m_decay_start = 5;
   m_decay_end   = 10;
   
@@ -217,8 +214,6 @@ IvPFunction *BHV_Trail::onRunState()
       aof.setParam("oslat", m_osy);
       aof.setParam("oslon", m_osx);
       aof.setParam("tol",   60);
-      aof.setParam("min_util_cpa_dist", m_min_util_cpa_dist);
-      aof.setParam("max_util_cpa_dist", m_max_util_cpa_dist);
       bool ok = aof.initialize();
       
       if(!ok) {
