@@ -16,8 +16,6 @@ TARGET_LINK_LIBRARIES(pHelmIvP
   helmivp
   behaviors-ajshafer
   behaviors-marine
-  behaviors-sandbox
-  #behaviors-colregs
   behaviors-don
   behaviors-henrik
   bhvutil	

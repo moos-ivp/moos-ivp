@@ -86,7 +86,6 @@ SET(IVP_LIBS_TO_BUILD
   lib_behaviors-don
   lib_behaviors-henrik
   lib_behaviors-marine
-  lib_behaviors-sandbox
   lib_bhvutil
   lib_fltk-1.1.7
   lib_genutil
