@@ -52,6 +52,7 @@
 #include "BHV_RStationKeep.h"
 #include "BHV_CutRange.h"
 #include "BHV_AvoidCollision.h"
+#include "BHV_AvoidObstacles.h"
 #include "BHV_GoToDepth.h"
 #include "BHV_MemoryTurnLimit.h"
 
@@ -74,19 +75,6 @@
 #include "BHV_Attractor.h"
 // henrik 5.9.08
 #include "BHV_MinimizeNoise.h"
-#endif
-
-#if 1
-// Sandbox behaviors
-//#include "BHV_WaypointOx.h"
-#include "BHV_LoiterMigrate.h"
-#include "BHV_AvoidCollision.h"
-#include "BHV_AvoidObstacles.h"
-#include "BHV_WaypointRC.h"
-#include "BHV_WaypointSimple.h"
-#include "BHV_CutRangeFCPA.h"
-#include "BHV_SearchGrid.h"
-#include "BHV_SteadyHeading.h"
 #endif
 
 #if 1
@@ -325,6 +313,8 @@ IvPBehavior* Populator_BehaviorSet::initializeBehavior(string bhv_name)
     bhv = new BHV_CutRange(domain);
   else if(bhv_name == "BHV_AvoidCollision") 
     bhv = new BHV_AvoidCollision(domain);
+  else if(bhv_name == "BHV_AvoidObstacles") 
+    bhv = new BHV_AvoidObstacles(domain);
   else if(bhv_name == "BHV_PeriodicSpeed") 
     bhv = new BHV_PeriodicSpeed(domain);
   else if(bhv_name == "BHV_PeriodicSurface") 
@@ -371,28 +361,6 @@ IvPBehavior* Populator_BehaviorSet::initializeBehavior(string bhv_name)
     bhv = new BHV_MinimizeNoise(domain);
 #endif
 
-#if 1
-  // Sandbox behaviors
-  else if(bhv_name == "BHV_AvoidObstacles")
-    bhv = new BHV_AvoidObstacles(domain);
-  //else if(bhv_name == "BHV_WaypointOx") 
-  //  bhv = new BHV_WaypointOx(domain);
-  else if(bhv_name == "BHV_AvoidCollision") 
-    bhv = new BHV_AvoidCollision(domain);
-  else if(bhv_name == "BHV_LoiterMigrate") 
-    bhv = new BHV_LoiterMigrate(domain);
-  else if(bhv_name == "BHV_WaypointRC")      
-    bhv = new BHV_WaypointRC(domain);
-  else if(bhv_name == "BHV_WaypointSimple")      
-    bhv = new BHV_WaypointSimple(domain);
-  else if(bhv_name == "BHV_CutRangeFCPA")   
-    bhv = new BHV_CutRangeFCPA(domain);
-  else if(bhv_name == "BHV_SearchGrid")   
-    bhv = new BHV_SearchGrid(domain);
-  else if(bhv_name == "BHV_SteadyHeading")   
-    bhv = new BHV_SteadyHeading(domain);
-#endif
-  
 #if 1
   // Don Eickstedt Behaviors --------------------------
   else if(bhv_name == "BHV_CoOrbit")    
