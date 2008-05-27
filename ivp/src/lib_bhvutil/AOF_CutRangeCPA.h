@@ -29,7 +29,7 @@
 class AOF_CutRangeCPA: public AOF {
 public:
   AOF_CutRangeCPA(IvPDomain);
-  ~AOF_CutRangeCPA() {if(cpa_engine) delete(cpa_engine);};
+  ~AOF_CutRangeCPA() {if(m_cpa_engine) delete(m_cpa_engine);};
 
 public:    
   double evalBox(const IvPBox*) const;   // virtual defined
@@ -40,37 +40,36 @@ protected:
   double metric(double) const;
 
 protected:
-  int    crs_ix;  // Index of "course" variable in IvPDomain
-  int    spd_ix;  // Index of "speed" variable in IvPDomain
+  int    m_crs_ix;  // Index of "course" variable in IvPDomain
+  int    m_spd_ix;  // Index of "speed" variable in IvPDomain
 
   // Parameters set by the user
-  double cn_lat;
-  double cn_lon;
-  double cn_crs;
-  double cn_spd;
-  double os_lat;
-  double os_lon;
-  double tol;
-  double patience;
+  double m_cnx;
+  double m_cny;
+  double m_cnh;
+  double m_cnv;
+  double m_osx;
+  double m_osy;
+  double m_tol;
+  double m_patience;
   
   // Intermediate variables set during initialization
-  CPAEngine *cpa_engine;
+  CPAEngine *m_cpa_engine;
 
-  double min_roc;
-  double max_roc;
-  double range_roc;
-  double max_heading;
-  double distance_os_cn;
-
+  double m_min_roc;
+  double m_max_roc;
+  double m_range_roc;
+  double m_distance_os_cn;
+  
   // Instance variables to indicated whether critical parameters
   // are set by the user - each is initialized to false
-  bool   os_lat_set;
-  bool   os_lon_set;
-  bool   cn_lat_set;
-  bool   cn_lon_set;
-  bool   cn_crs_set;
-  bool   cn_spd_set;
-  bool   tol_set;
+  bool   m_osx_set;
+  bool   m_osy_set;
+  bool   m_cnx_set;
+  bool   m_cny_set;
+  bool   m_cnh_set;
+  bool   m_cnv_set;
+  bool   m_tol_set;
 };
 
 #endif

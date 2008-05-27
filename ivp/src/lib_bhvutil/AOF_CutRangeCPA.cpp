@@ -42,19 +42,19 @@ using namespace std;
 AOF_CutRangeCPA::AOF_CutRangeCPA(IvPDomain gdomain)
   : AOF(gdomain)
 {
-  crs_ix = gdomain.getIndex("course");
-  spd_ix = gdomain.getIndex("speed");
+  m_crs_ix = gdomain.getIndex("course");
+  m_spd_ix = gdomain.getIndex("speed");
 
-  os_lat_set = false;
-  os_lon_set = false;
-  cn_lat_set = false;
-  cn_lon_set = false;
-  cn_crs_set = false;
-  cn_spd_set = false;
-  tol_set    = false;
+  m_osx_set = false;
+  m_osy_set = false;
+  m_cnx_set = false;
+  m_cny_set = false;
+  m_cnh_set = false;
+  m_cnv_set = false;
+  m_tol_set = false;
 
-  cpa_engine = 0;
-  patience   = 100;
+  m_cpa_engine = 0;
+  m_patience   = 100;
 }
 
 //----------------------------------------------------------------
@@ -62,45 +62,45 @@ AOF_CutRangeCPA::AOF_CutRangeCPA(IvPDomain gdomain)
 
 bool AOF_CutRangeCPA::setParam(const string& param, double param_val)
 {
-  if(param == "oslat") {
-    os_lat = param_val;
-    os_lat_set = true;
+  if((param == "oslat") || (param == "m_osy")) {
+    m_osy = param_val;
+    m_osy_set = true;
     return(true);
   }
-  else if(param == "oslon") {
-    os_lon = param_val;
-    os_lon_set = true;
+  else if((param == "oslon") || (param == "oslon")) {
+    m_osx = param_val;
+    m_osx_set = true;
     return(true);
   }
-  else if(param == "cnlat") {
-    cn_lat = param_val;
-    cn_lat_set = true;
+  else if((param == "cnlat") || (param == "cnlat")) {
+    m_cny = param_val;
+    m_cny_set = true;
     return(true);
   }
-  else if(param == "cnlon") {
-    cn_lon = param_val;
-    cn_lon_set = true;
+  else if((param == "cnlon") || (param == "cnlon")) {
+    m_cnx = param_val;
+    m_cnx_set = true;
     return(true);
   }
-  else if(param == "cncrs") {
-    cn_crs = param_val;
-    cn_crs_set = true;
+  else if((param == "cncrs") || (param == "cncrs")) {
+    m_cnh = param_val;
+    m_cnh_set = true;
     return(true);
   }
-  else if(param == "cnspd") {
-    cn_spd = param_val;
-    cn_spd_set = true;
+  else if((param == "cnspd") || (param == "cnspd")) {
+    m_cnv = param_val;
+    m_cnv_set = true;
     return(true);
   }
   else if(param == "tol") {
-    tol = param_val;
-    tol_set = true;
+    m_tol = param_val;
+    m_tol_set = true;
     return(true);
   }
   else if(param == "patience") {
     if((param_val < 0) || (param_val > 100))
       return(false);
-    patience = param_val;
+    m_patience = param_val;
     return(true);
   }
   // To support backward compatibility - these terms allow, but ignored.
@@ -117,34 +117,34 @@ bool AOF_CutRangeCPA::setParam(const string& param, double param_val)
 
 bool AOF_CutRangeCPA::initialize()
 {
-  if((crs_ix==-1)||(spd_ix==-1))
-    return(false);
-
-  if(!os_lat_set || !os_lon_set || !cn_lat_set || !tol_set)
-    return(false);
-
-  if(!cn_lon_set || !cn_crs_set || !cn_spd_set)
-    return(false);
-
-  if(tol < 1)
+  if((m_crs_ix==-1)||(m_spd_ix==-1))
     return(false);
   
-  distance_os_cn = distPointToPoint(os_lon, os_lat, cn_lon, cn_lat); 
+  if(!m_osx_set || !m_osy_set || !m_cnx_set || !m_tol_set)
+    return(false);
+  
+  if(!m_cny_set || !m_cnh_set || !m_cnv_set)
+    return(false);
+  
+  if(m_tol < 1)
+    return(false);
+  
+  m_distance_os_cn = distPointToPoint(m_osx, m_osy, m_cnx, m_cny); 
   
   // This AOF should not be used if the distance between ownship and 
   // the point of interest is already zero. The user should have 
   // checked for this prior to creation and initialization.
-  if(distance_os_cn <= 0)
+  if(m_distance_os_cn <= 0)
     return(false);
 
-  cpa_engine = new CPAEngine(cn_lat, cn_lon, cn_crs, cn_spd,
-			     os_lat, os_lon);
+  m_cpa_engine = new CPAEngine(m_cny, m_cnx, m_cnh, m_cnv, m_osy, m_osx);
 
-  double max_ownship_spd = m_domain.getVarHigh(spd_ix);
+  double max_ownship_spd = m_domain.getVarHigh(m_spd_ix);
 
-  max_heading = cpa_engine->minMaxROC(max_ownship_spd, 360, min_roc, max_roc);
+  double max_heading = m_cpa_engine->minMaxROC(max_ownship_spd, 360, 
+					       m_min_roc, m_max_roc);
   
-  range_roc = max_roc - min_roc;
+  m_range_roc = m_max_roc - m_min_roc;
 
   return(true);
 }
@@ -161,21 +161,21 @@ double AOF_CutRangeCPA::evalBox(const IvPBox *b) const
   double eval_crs = 0;
   double eval_spd = 0;
 
-  m_domain.getVal(crs_ix, b->pt(crs_ix,0), eval_crs);
-  m_domain.getVal(spd_ix, b->pt(spd_ix,0), eval_spd);
+  m_domain.getVal(m_crs_ix, b->pt(m_crs_ix,0), eval_crs);
+  m_domain.getVal(m_spd_ix, b->pt(m_spd_ix,0), eval_spd);
 
   // Calculate the CPA distance and the RateOfClosure for a maneuver
   double roc;
-  double eval_dist = cpa_engine->evalCPA(eval_crs, eval_spd, tol, &roc);
+  double eval_dist = m_cpa_engine->evalCPA(eval_crs, eval_spd, m_tol, &roc);
   double metric_eval = metric(eval_dist);
 
   // Calculate the normalized RateOfClosure based on the ROC and Range
   double nroc = 0;
-  if(range_roc > 0)
-    nroc = ((roc - min_roc) / (range_roc)) * 100.0;
+  if(m_range_roc > 0)
+    nroc = ((roc - m_min_roc) / (m_range_roc)) * 100.0;
 
   // Calculate a valuation based on the ROC and CPA
-  double pct = patience / 100.0;
+  double pct = m_patience / 100.0;
   double compromise = ((1.0-pct) * nroc) + (pct * metric_eval);
 
   return(compromise);
@@ -183,16 +183,30 @@ double AOF_CutRangeCPA::evalBox(const IvPBox *b) const
 
 //----------------------------------------------------------------
 // Procedure: metric
+//     Notes: The given value is a CPA (Closest Point of Approach) 
+//            value. By definition, for any candidate maneuver, 
+//            this value must be between (a) the current distance 
+//            between ownship and the contact and (b) zero. So the
+//            utility is based simply on where the value lies in 
+//            this range.
 
 double AOF_CutRangeCPA::metric(double gval) const
 {
-  if(distance_os_cn <= 0)
+  // This shouldn't happen, but we'll check anyway in case the number
+  // is negative due to machine precision of zero.
+  if(gval < 0)
+    return(100);
+
+  // This shouldn't happen, but we'll check anyway since a zero would
+  // mean a NaN in the devision below.
+  if(m_distance_os_cn <= 0)
     return(0);
 
-  double min_val = 0;
-  double max_val = distance_os_cn;
+  // This shouldn't happen, but we'll check anyway 
+  if(gval > m_distance_os_cn)
+    return(0);
 
-  double pct = (gval-min_val) / (max_val - min_val);
+  double pct = gval / m_distance_os_cn;
   return(100 - (pct * 100));
 }
 
