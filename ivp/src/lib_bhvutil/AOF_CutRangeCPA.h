@@ -43,6 +43,7 @@ protected:
   int    crs_ix;  // Index of "course" variable in IvPDomain
   int    spd_ix;  // Index of "speed" variable in IvPDomain
 
+  // Parameters set by the user
   double cn_lat;
   double cn_lon;
   double cn_crs;
@@ -52,14 +53,17 @@ protected:
   double tol;
   double patience;
   
+  // Intermediate variables set during initialization
+  CPAEngine *cpa_engine;
+
   double min_roc;
   double max_roc;
   double range_roc;
   double max_heading;
+  double distance_os_cn;
 
-  double max_util_cpa_dist;
-  double min_util_cpa_dist;
-
+  // Instance variables to indicated whether critical parameters
+  // are set by the user - each is initialized to false
   bool   os_lat_set;
   bool   os_lon_set;
   bool   cn_lat_set;
@@ -67,10 +71,6 @@ protected:
   bool   cn_crs_set;
   bool   cn_spd_set;
   bool   tol_set;
-  bool   min_util_cpa_dist_set;
-  bool   max_util_cpa_dist_set;
-
-  CPAEngine *cpa_engine;
 };
 
 #endif

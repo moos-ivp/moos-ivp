@@ -26,6 +26,7 @@
 #include <math.h> 
 #include "AOF_CutRangeCPA.h"
 #include "AngleUtils.h"
+#include "GeomUtils.h"
 
 using namespace std;
 
@@ -51,9 +52,6 @@ AOF_CutRangeCPA::AOF_CutRangeCPA(IvPDomain gdomain)
   cn_crs_set = false;
   cn_spd_set = false;
   tol_set    = false;
-
-  min_util_cpa_dist_set = false;
-  max_util_cpa_dist_set = false;
 
   cpa_engine = 0;
   patience   = 100;
@@ -105,16 +103,11 @@ bool AOF_CutRangeCPA::setParam(const string& param, double param_val)
     patience = param_val;
     return(true);
   }
-  else if(param == "min_util_cpa_dist") {
-    min_util_cpa_dist = param_val;
-    min_util_cpa_dist_set = true;
+  // To support backward compatibility - these terms allow, but ignored.
+  else if(param == "min_util_cpa_dist")
     return(true);
-  }
-  else if(param == "max_util_cpa_dist") {
-    max_util_cpa_dist = param_val;
-    max_util_cpa_dist_set = true;
+  else if(param == "max_util_cpa_dist")
     return(true);
-  }
   else
     return(false);
 }
@@ -133,13 +126,15 @@ bool AOF_CutRangeCPA::initialize()
   if(!cn_lon_set || !cn_crs_set || !cn_spd_set)
     return(false);
 
-  if(!min_util_cpa_dist_set || !max_util_cpa_dist_set)
+  if(tol < 1)
     return(false);
   
-  if(min_util_cpa_dist <= max_util_cpa_dist)
-    return(false);
-
-  if(tol < 1)
+  distance_os_cn = distPointToPoint(os_lon, os_lat, cn_lon, cn_lat); 
+  
+  // This AOF should not be used if the distance between ownship and 
+  // the point of interest is already zero. The user should have 
+  // checked for this prior to creation and initialization.
+  if(distance_os_cn <= 0)
     return(false);
 
   cpa_engine = new CPAEngine(cn_lat, cn_lon, cn_crs, cn_spd,
@@ -191,23 +186,14 @@ double AOF_CutRangeCPA::evalBox(const IvPBox *b) const
 
 double AOF_CutRangeCPA::metric(double gval) const
 {
-  double min_val = max_util_cpa_dist;
-  double max_val = min_util_cpa_dist;
-
-  if(min_val >= max_val)
+  if(distance_os_cn <= 0)
     return(0);
 
-  if(gval < min_val)
-    return(100);
-  if(gval > max_val)
-    return(0);
-  
-  
-  else {
-    double pct = (gval-min_val) / (max_val - min_val);
-    return(100 - (pct * 100));
-  }
-  
+  double min_val = 0;
+  double max_val = distance_os_cn;
+
+  double pct = (gval-min_val) / (max_val - min_val);
+  return(100 - (pct * 100));
 }
 
 
