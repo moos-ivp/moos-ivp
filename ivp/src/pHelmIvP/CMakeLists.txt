@@ -16,7 +16,6 @@ TARGET_LINK_LIBRARIES(pHelmIvP
   helmivp
   behaviors-marine
   behaviors-don
-  behaviors-henrik
   bhvutil	
   behaviors
   mbutil 
