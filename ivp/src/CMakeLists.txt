@@ -82,7 +82,6 @@ GET_FILENAME_COMPONENT(IVP_DATA_DIR ../data ABSOLUTE)
 #---------------------------------------------------------------------
 SET(IVP_LIBS_TO_BUILD
   lib_behaviors
-  lib_behaviors-don
   lib_behaviors-marine
   lib_bhvutil
   lib_fltk-1.1.7

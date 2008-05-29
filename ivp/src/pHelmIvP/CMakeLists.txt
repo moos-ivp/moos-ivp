@@ -15,7 +15,6 @@ TARGET_LINK_LIBRARIES(pHelmIvP
   MOOSGen
   helmivp
   behaviors-marine
-  behaviors-don
   bhvutil	
   behaviors
   mbutil 

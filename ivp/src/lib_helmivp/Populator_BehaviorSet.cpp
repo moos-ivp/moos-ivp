@@ -56,16 +56,6 @@
 #include "BHV_GoToDepth.h"
 #include "BHV_MemoryTurnLimit.h"
 
-#if 1
-// Don Eickstedt Behaviors
-#include "BHV_CoOrbit.h"
-#include "BHV_Adaptive_YoYo.h"
-#include "BHV_CloseRange.h"
-#include "BHV_ArrayAngle.h"
-#include "BHV_ArrayTurn.h"
-#include "BHV_CollaborativeTracking.h"
-#endif
-
 using namespace std;
 
 //-------------------------------------------------------------
@@ -257,7 +247,6 @@ IvPBehavior* Populator_BehaviorSet::initializeBehavior(string bhv_name)
 {
   IvPBehavior *bhv = 0;      
 
-#if 1 // Core Behaviors
   if(bhv_name == "BHV_OpRegion")
     bhv = new BHV_OpRegion(domain);
   else if(bhv_name == "BHV_SimpleWaypoint")   
@@ -296,23 +285,6 @@ IvPBehavior* Populator_BehaviorSet::initializeBehavior(string bhv_name)
     bhv = new BHV_GoToDepth(domain);
   else if(bhv_name == "BHV_MemoryTurnLimit")      
     bhv = new BHV_MemoryTurnLimit(domain);
-#endif
-
-#if 1
-  // Don Eickstedt Behaviors --------------------------
-  else if(bhv_name == "BHV_CoOrbit")    
-    bhv = new BHV_CoOrbit(domain);
-  else if(bhv_name == "BHV_Adaptive_YoYo")    
-    bhv = new BHV_Adaptive_YoYo(domain);
-  else if (bhv_name == "BHV_CloseRange")
-    bhv = new BHV_CloseRange(domain);
-  else if (bhv_name == "BHV_ArrayTurn")
-    bhv = new BHV_ArrayTurn(domain);
-  else if (bhv_name == "BHV_ArrayAngle")
-    bhv = new BHV_ArrayAngle(domain);
-  else if (bhv_name == "BHV_CollaborativeTracking")
-    bhv = new BHV_CollaborativeTracking(domain);
-#endif
 
   return(bhv);
 }
