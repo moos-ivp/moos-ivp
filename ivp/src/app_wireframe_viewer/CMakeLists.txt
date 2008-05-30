@@ -19,16 +19,23 @@ IF(BUILD_GUIS)
          
    TARGET_LINK_LIBRARIES(wireframe_viewer
       GL 
-      glut 
+#      glut 
+#GLUT
       fltk 
       fltk_gl
    )
 
    # http://developer.apple.com/qa/qa2007/qa1567.html
    IF (${APPLE})
+   
          SET_TARGET_PROPERTIES(wireframe_viewer PROPERTIES	  
-               LINK_FLAGS "-Wl,-dylib_file,/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib:/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib"
+			   COMPILE_FLAGS ${CXXFLAGS}\ -F/System/Library/Frameworks/OpenGL.framework
+               LINK_FLAGS "-Wl,-dylib_file,/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib:/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib -framework GLUT"
          )
-   ENDIF (${APPLE})
+
+		ADD_DEFINITIONS(-DOPSYS_IS_OS_X=1)    
+	ELSE (${APPLE})	    
+        ADD_DEFINITIONS(-DOPSYS_IS_LINUX=1)
+	ENDIF (${APPLE})
 
 ENDIF(BUILD_GUIS)

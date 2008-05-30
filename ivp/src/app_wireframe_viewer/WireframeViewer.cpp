@@ -12,7 +12,15 @@
 #include <FL/Fl.H>
 #include <FL/Fl_Gl_Window.H>
 #include <FL/gl.h>
-#include <GL/glu.h>
+
+// See http://www.cmake.org/pipermail/cmake/2003-March/003482.html
+#if OPSYS_IS_LINUX
+   #include <GL/glu.h>
+#elif OPSYS_IS_OS_X
+   #include <OpenGL/glu.h>
+#else
+   #error "Unknown OS"
+#endif
 #include <math.h>
 #include "WireframeViewer.h"
 
