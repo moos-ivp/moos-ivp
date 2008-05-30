@@ -1,0 +1,15 @@
+xxCircle Format circle radius x_center y_center z_center 0.0 0.0 0.0 red green blue alpha
+circle 2.5 1.0 1.0 0.0 0.0 0.0 0.0 1.0 0.0 0.0 1.0
+circle 4.5 1.0 0.0 0.0 0.0 0.0 0.0 0.0 1.0 0.0 1.0
+xxPoint Format point 0.0 x y z 0.0 0.0 0.0 red green blue alpha
+point 0.0 1.0 2.0 0.0 0.0 0.0 0.0 1.0 1.0 0.0 0.5
+point 0.0 2.0 2.0 0.0 0.0 0.0 0.0 0.0 0.0 1.0 0.5
+point 0.0 3.0 2.0 0.0 0.0 0.0 0.0 1.0 0.0 1.0 0.75
+xxLine Format line 0.0 Startx Starty Startz Endx Endy Endz red green blue alpha
+line 0.0 1.0 1.0 0.0 3.0 3.0 0.0 0.0 1.0 1.0 1.0
+line 0.0 3.0 3.0 0.0 6.0 3.0 0.0 0.0 1.0 0.0 1.0
+xxArc Format arc radius x_center y_center z_center start_angle end_angle 0.0 red green blue alpha
+arc 3.5 0.0 0.0 0.0 15.0 75.0 0.0 0.0 0.0 0.0 1.0 
+arc 5.0 1.0 0.0 0.0 45.0 120.0 0.0 1.0 1.0 1.0 1.0
+xxKayak Format kayak 0.0 x_center y_center z_center 0.0 0.0 0.0 red green blue alpha
+kayak 0.0 4.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 1.0 0.75

@@ -1,0 +1,52 @@
+==================================================================================================
+app_wireframe_viewier notes  dbm Jan08
+==================================================================================================
+==================================================================================================
+Arcs and Circles
+
+Currently, it is assumed that arcs and circles are 
+to be drawn co-planar to a virtual sea level.
+
+==================================================================================================
+
+Data File Format
+
+Circle:
+
+circle radius x_center y_center z_center 0.0 0.0 0.0 red green blue alpha
+
+Point:
+
+point 0.0 x y z 0.0 0.0 0.0 red green blue alpha
+
+Line:
+
+line 0.0 Startx Starty Startz Endx Endy Endz red green blue alpha
+
+Arc:
+
+arc radius x_center y_center z_center start_angle end_angle 0.0 red green blue alpha
+
+Kayak:
+
+kayak 0.0 x_center y_center z_center 0.0 0.0 0.0 red green blue alpha
+
+==================================================================================================
+
+TODO:
+
+1.  Viewpoint Management.
+
+2.  Illegal math checks.
+
+3.  Extend ray to include drawing a line with a specification of a start point, length and angle.
+
+4.  Add drawAxis toggle.
+
+5.  Text?
+
+++++++++
+
+sin a = y/r
+cos a = x/r
+tan a = y/x

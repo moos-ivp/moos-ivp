@@ -125,6 +125,7 @@ SET(IVP_APPS_TO_BUILD
   app_geoview
   app_logview
   app_splug
+  app_wireframe_viewer
   iMarineSim
   pDeployHandler
   pEchoVar
