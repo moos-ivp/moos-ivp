@@ -39,7 +39,7 @@ public:
   void    setSkew(double amt)     {m_skew = amt;};
 
   bool    populateFromALog();
-  LogPlot getLogPlot(int);
+  LogPlot getLogPlot(unsigned int);
   LogPlot getLogPlot(std::string);
   int     size() {return(m_logplots.size());};
 

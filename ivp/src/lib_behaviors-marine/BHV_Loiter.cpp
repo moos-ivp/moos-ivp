@@ -185,8 +185,8 @@ IvPFunction *BHV_Loiter::onRunState()
     m_waypoint_engine.setCurrIndex(curr_waypt);
   }
   
-  bool point_advance = m_waypoint_engine.setNextWaypoint(m_osx, m_osy);
-  if(point_advance)
+  string feedback_msg = m_waypoint_engine.setNextWaypoint(m_osx, m_osy);
+  if(feedback_msg == "advanced")
     m_acquire_mode = false;
   
   m_ptx = m_waypoint_engine.getPointX();

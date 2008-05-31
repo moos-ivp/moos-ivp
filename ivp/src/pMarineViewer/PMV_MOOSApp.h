@@ -61,11 +61,10 @@ class PMV_MOOSApp : public CMOOSApp
 
   double m_start_time;
 
-  int  m_left_click_ix;
-  int  m_right_click_ix;
-  bool m_verbose;
-  int  m_counter;
-
+  int    m_left_click_ix;
+  int    m_right_click_ix;
+  bool   m_verbose;
+  int    m_counter;
 };
 
 #endif 

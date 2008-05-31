@@ -35,16 +35,20 @@ public:
   IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
 
-protected:
-  std::vector<XYPolygon> obstacles;
+ protected:
+  void addNewObstacle(const XYPolygon&);
 
-  AOF_AvoidObstacles *aof_avoid;
+protected:
+  std::vector<XYPolygon> m_obstacles_buff;
+  std::vector<XYPolygon> m_obstacles_orig;
+
+  AOF_AvoidObstacles    *m_aof_avoid;
+
+  double  m_allowable_ttc;    // Allowable time to collision
+  double  m_activation_dist;  // Outside of which no IPF created
+  double  m_buffer_dist;       // Between OS and obstacle(s)
 };
 #endif
-
-
-
-
 
 
 

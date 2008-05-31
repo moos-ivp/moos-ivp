@@ -41,10 +41,10 @@ public:
   XYHexagon addNeighbor(int);
 
   // We disable these operations allowable on the superclass
-  bool   add_vertex(double, double) {};   
-  bool   alter_vertex(double, double) {};
-  bool   delete_vertex(double, double) {};
-  bool   insert_vertex(double, double) {};
+  bool   add_vertex(double, double) {return(false);};   
+  bool   alter_vertex(double, double) {return(false);};
+  bool   delete_vertex(double, double) {return(false);};
+  bool   insert_vertex(double, double) {return(false);};
 
 protected:
   double cx;

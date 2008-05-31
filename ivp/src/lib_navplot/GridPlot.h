@@ -38,14 +38,14 @@ public:
   // Updates are with the GRID_DELTA string
   bool   applyDelta(double gtime, const std::string& gstr);
 
-  double getTimeByIndex(int) const;
+  double getTimeByIndex(unsigned int) const;
 
-  XYGrid getGridByIndex(int) const;
+  XYGrid getGridByIndex(unsigned int) const;
   XYGrid getGridByTime(double) const;
   
   double getMinTime() const;
   double getMaxTime() const;
-  int    size() const             {return(m_time.size());};
+  unsigned int size() const         {return(m_time.size());};
 
   std::string getGridLabel() const  {return(m_gridlabel);};
 

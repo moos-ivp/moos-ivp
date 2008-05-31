@@ -1,7 +1,7 @@
-/*****************************************************************
+/*****************************************************************/
 /*    NAME: Michael Benjamin and John Leonard                    */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
-/*    FILE: GeoViewer.h                                         */
+/*    FILE: GeoViewer.h                                          */
 /*    DATE: May 1st, 2005 (Major Modifications November 2007)    */
 /*****************************************************************/
 
@@ -38,8 +38,8 @@ public:
   void  createNew(); 
   void  shiftHorzPoly(double);
   void  shiftVertPoly(double);
-  void  rotatePoly(int);
-  void  growPoly(int);
+  void  rotatePoly(unsigned int);
+  void  growPoly(unsigned int);
   void  reversePoly();
   void  duplicateActive();
   void  clearActivePoly();
@@ -49,12 +49,13 @@ public:
   void  reApplySnapToCurrent();   
   void  addCircle(XYCircle);
   void  drawCircles();
-  void  drawCircle(int ix);
+  void  drawCircle(unsigned int ix);
   void  drawVector(double, double, double);
 
  private:
+  unsigned int  m_active_poly;
+
   float   m_snap_val;
-  int     m_active_poly;
   int     m_drop_mode;
 
   std::vector<XYCircle>   m_circle;

@@ -69,7 +69,7 @@ bool IvPDomain::operator==(const IvPDomain& right) const
 // Procedure: addDomain
 
 bool IvPDomain::addDomain(const string& g_name, double g_low, 
-			  double g_high, int g_points)
+			  double g_high, unsigned int g_points)
 {
   if(hasDomain(g_name)) return(false);
   if(g_low > g_high)    return(false);
@@ -102,10 +102,10 @@ bool IvPDomain::addDomain(const IvPDomain& g_domain,
   if(!g_domain.hasDomain(g_name))
     return(false);
 
-  int    index  = g_domain.getIndex(g_name);
+  unsigned int index  = g_domain.getIndex(g_name);
+  unsigned int g_pts  = g_domain.getVarPoints(index);
   double g_low  = g_domain.getVarLow(index);
   double g_high = g_domain.getVarHigh(index);
-  int    g_pts  = g_domain.getVarPoints(index);
 
   return(this->addDomain(g_name, g_low, g_high, g_pts));
 }
@@ -139,9 +139,9 @@ void IvPDomain::clear()
 
 void IvPDomain::print() const
 {
-  int dcount = size();
+  unsigned int dcount = size();
   cout << "Domain Size: " << dcount << endl;
-  for(int i=0; i<dcount; i++) {
+  for(unsigned int i=0; i<dcount; i++) {
     cout << getVarName(i);
     cout << ",";
     cout << getVarLow(i);
@@ -158,7 +158,7 @@ void IvPDomain::print() const
 
 int IvPDomain::getIndex(const string &g_name) const
 {
-  unsigned int i;
+  int i;
   for(i=0; (i < m_dname.size()); i++)
     if(m_dname[i] == g_name)
       return(i);
@@ -195,7 +195,8 @@ int IvPDomain::getIndex(const string &g_name) const
 //            getDiscreteVal(1, 2.3, 2)  --> 1   
 
 
-int IvPDomain::getDiscreteVal(int index, double val, int snaptype) const
+unsigned int IvPDomain::getDiscreteVal(unsigned int index, 
+				       double val, int snaptype) const
 {
   if((snaptype < 0) || (snaptype > 2))
     return(0);

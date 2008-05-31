@@ -40,16 +40,13 @@ AOF_AvoidObstacles::AOF_AvoidObstacles(IvPDomain gdomain) : AOF(gdomain)
 
   os_x            = 0;
   os_y            = 0;
-  buffer_dist     = 0;
-  buffer_applied  = false;
   activation_dist = -1;
   allowable_ttc   = 20;  // time-to-collision in seconds
 
   os_x_set        = false;
   os_y_set        = false;
   activation_dist_set = false;
-  allowable_ttc_set = false;
-  
+  allowable_ttc_set   = false;
 }
 
 //----------------------------------------------------------------
@@ -81,13 +78,6 @@ bool AOF_AvoidObstacles::setParam(const string& param, double param_val)
     activation_dist_set = true;
     return(true);
   }
-  else if(param == "buffer_dist") {
-    if(param_val < 0)
-      return(false);
-    buffer_dist = param_val;
-    buffer_applied = false;
-    return(true);
-  }
   else
     return(false);
 }
@@ -98,32 +88,7 @@ bool AOF_AvoidObstacles::setParam(const string& param, double param_val)
 bool AOF_AvoidObstacles::setParam(const string& param, 
 				  const string& param_val)
 {
-  if(param == "polygon") {
-    XYPolygon new_polygon = stringToPoly(param_val);
-    if(!new_polygon.is_convex())
-      return(false);
-    obstacles.push_back(new_polygon);
-    obstacles_buff.push_back(new_polygon);
-    return(true);
-  }
-  else
-    return(false);
-}
-
-//----------------------------------------------------------------
-// Procedure: applyBuffer
-
-void AOF_AvoidObstacles::applyBuffer()
-{
-  obstacles_buff.clear();
-
-  int vsize = obstacles.size();
-  for(int i=0; i<vsize; i++) {
-    XYPolygon new_poly = obstacles[i];
-    new_poly.grow_by_amt(buffer_dist);
-    obstacles_buff.push_back(new_poly);
-  }
-  buffer_applied = true;
+  return(false);
 }
 
 //----------------------------------------------------------------
@@ -140,19 +105,16 @@ bool AOF_AvoidObstacles::initialize()
   if(!activation_dist_set)
     return(false);
   
-  if(obstacles.size() == 0)
+  if(m_obstacles.size() == 0)
     return(false);
-
-  if(!buffer_applied)
-    applyBuffer();
 
   // Fill in a cache of distances mapping a particular heading to
   // the minimum/closest distance to any of the obstacle polygons.
   // A distance of -1 indicates infinite distance.
 
-  int  i, j;
-  int  osize = obstacles_buff.size();
-  int  hsize = m_domain.getVarPoints(crs_ix);
+  unsigned int  i, j;
+  unsigned int  osize = m_obstacles.size();
+  unsigned int  hsize = m_domain.getVarPoints(crs_ix);
   for(i=0; i<hsize; i++)
     cache_distance.push_back(-1);
 
@@ -164,9 +126,9 @@ bool AOF_AvoidObstacles::initialize()
     double min_dist = -1; 
     bool   min_dist_set = false;
     for(j=0; j<osize; j++) {
-      double position_dist_to_poly = obstacles_buff[j].dist_to_poly(os_x, os_y);
+      double position_dist_to_poly = m_obstacles[j].dist_to_poly(os_x, os_y);
       if(position_dist_to_poly < activation_dist) {
-	dist_to_poly = obstacles_buff[j].dist_to_poly(os_x, os_y, heading);
+	dist_to_poly = m_obstacles[j].dist_to_poly(os_x, os_y, heading);
 	if(dist_to_poly != -1) {
 	  if(!min_dist_set || (dist_to_poly < min_dist))
 	    min_dist = dist_to_poly;
@@ -182,13 +144,13 @@ bool AOF_AvoidObstacles::initialize()
 //----------------------------------------------------------------
 // Procedure: obstaclesInRange
 
-int AOF_AvoidObstacles::obstaclesInRange()
+unsigned int AOF_AvoidObstacles::obstaclesInRange()
 {
-  int  vsize = obstacles_buff.size();
-  int  count = 0;
+  unsigned int  vsize = m_obstacles.size();
+  unsigned int  count = 0;
 
-  for(int i=0; i<vsize; i++) {
-    double position_dist_to_poly = obstacles_buff[i].dist_to_poly(os_x, os_y);
+  for(unsigned int i=0; i<vsize; i++) {
+    double position_dist_to_poly = m_obstacles[i].dist_to_poly(os_x, os_y);
     cout << "pdist: " << position_dist_to_poly << "  adist: " << activation_dist << endl;
     if(position_dist_to_poly < activation_dist)
       count++;
@@ -205,7 +167,7 @@ double AOF_AvoidObstacles::evalBox(const IvPBox *b) const
   double max_utility = 100;
   double min_utility = 0;
 
-  int osize = obstacles_buff.size();
+  int osize = m_obstacles.size();
   if(osize == 0)
     return(max_utility);
   

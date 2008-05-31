@@ -32,11 +32,11 @@ public:
   IPF_Plot() {};
   ~IPF_Plot() {};
 
-  bool   set_ipf_source(std::string s) {m_ipf_source = s;};
+  void   set_ipf_source(std::string s) {m_ipf_source = s;};
   bool   add_entry(double, const std::string& str);
-  double get_time_by_index(int) const;
+  double get_time_by_index(unsigned int) const;
 
-  std::string get_ipf_by_index(int) const;
+  std::string get_ipf_by_index(unsigned int) const;
   std::string get_ipf_by_time(double) const;
   std::string get_ipf_source() const {return(m_ipf_source);};
 

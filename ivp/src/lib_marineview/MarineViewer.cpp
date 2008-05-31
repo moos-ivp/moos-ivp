@@ -253,6 +253,8 @@ float MarineViewer::getCrossHairMeters(char xy)
     float meters = (y_pct - y_pct_cent) / (y_pct_mtrs / 100.0);
     return(meters);
   }
+  else
+    return(0);
 }
 
 
@@ -396,7 +398,7 @@ void MarineViewer::drawPoly(const XYPolygon& poly,
 			    float ver1_r, float ver1_g, float ver1_b,
 			    float last_r, float last_g, float last_b)  
 {
-  int vsize = poly.size();
+  unsigned int vsize = poly.size();
   if(vsize < 1)
     return;
 
@@ -496,8 +498,8 @@ void MarineViewer::drawPoly(const XYPolygon& poly,
   // Draw the vertices in between the first and last ones
   glColor3f(vert_r, vert_g, vert_b);
   glBegin(GL_POINTS);
-  for(int k=1; k<vsize; k++) {
-    glVertex2f(points[(k*2)], points[(k*2)+1]);
+  for(j=1; j<vsize; j++) {
+    glVertex2f(points[(j*2)], points[(j*2)+1]);
   }
   glEnd();
 
@@ -592,12 +594,12 @@ void MarineViewer::drawSegList(int ix)
   float vert_b = 0.6;
 
   XYSegList segl = m_segl[ix];
-  int vsize = segl.size();
+  unsigned int vsize = segl.size();
 
   unsigned int i, j;
   float *points = new float[2*vsize];
 
-  int pindex = 0;
+  unsigned int pindex = 0;
   for(i=0; i<vsize; i++) {
     points[pindex]   = segl.get_vx(i);
     points[pindex+1] = segl.get_vy(i);
@@ -655,8 +657,8 @@ void MarineViewer::drawSegList(int ix)
   // Draw the vertices in between the first and last ones
   glColor3f(vert_r, vert_g, vert_b);
   glBegin(GL_POINTS);
-  for(int k=0; k<vsize; k++) {
-    glVertex2f(points[(k*2)], points[(k*2)+1]);
+  for(j=0; j<vsize; j++) {
+    glVertex2f(points[(j*2)], points[(j*2)+1]);
   }
   glEnd();
   
@@ -1261,8 +1263,7 @@ void MarineViewer::drawGLPoly(float *points, int numPoints,
   }
 
   glColor3f(r,g,b);
-  unsigned int i;
-  for(i=0; i<numPoints*2; i=i+2)
+  for(int i=0; i<numPoints*2; i=i+2)
     glVertex2f(points[i]*scale, points[i+1]*scale);
 
   glEnd();
@@ -1303,8 +1304,6 @@ void MarineViewer::drawCommonVehicle(string vname, ObjectPose opose,
 				     double red, double grn, double blu, 
 				     string vehibody, int outer_line)
 {
-  unsigned int i;
-  
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   glOrtho(0, w(), 0, h(), -1 ,1);

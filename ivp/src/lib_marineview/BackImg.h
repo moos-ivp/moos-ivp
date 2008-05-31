@@ -35,7 +35,7 @@ public:
   bool readTiffData(std::string filename);
   bool readTiffInfo(std::string filename);
   void readBlankTiff();
-  bool setTexture();
+  void setTexture();
 
   unsigned char* get_img_data() {return(img_data);};
   int   get_img_width()    {return(img_width);};

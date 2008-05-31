@@ -21,8 +21,9 @@ void Populator_GridPlot::populate(string filestr)
   vector<string> lines = fileBuffer(filestr);
 
   vector<vector<string> > plines; // parsed lines
-  
-  for(int i=0; i<lines.size(); i++) {
+
+  unsigned int i;
+  for(i=0; i<lines.size(); i++) {
     if(lines[i][0] != '%') {
       lines[i] = findReplace(lines[i], '\t', ' ');
       lines[i] = compactConsecutive(lines[i], ' ');

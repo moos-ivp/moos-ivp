@@ -32,7 +32,7 @@ using namespace std;
 //-------------------------------------------------------------
 // Procedure: getElement
 
-XYHexagon XYHexGrid::getElement(int ix) const
+XYHexagon XYHexGrid::getElement(unsigned int ix) const
 {
   XYHexagon retElement;
 

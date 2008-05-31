@@ -58,8 +58,8 @@ void GeoViewer::draw()
 {
   MarineViewer::draw();
 
-  int vsize = m_poly.size();
-  for(int i=0; i<vsize; i++) {
+  unsigned int vsize = m_poly.size();
+  for(unsigned int i=0; i<vsize; i++) {
     if(i == m_active_poly)
       drawPoly(m_poly[i], true, false, 1.0, 1.0, 0.0);
     else
@@ -117,7 +117,7 @@ void GeoViewer::handle_left_mouse(int vx, int vy)
 
 void GeoViewer::handle_right_mouse(int vx, int vy)
 {
-  int vsize = m_poly.size(); 
+  unsigned int vsize = m_poly.size(); 
   if(vsize == 0)
     return;
 
@@ -125,18 +125,22 @@ void GeoViewer::handle_right_mouse(int vx, int vy)
   double iy = view2img('y', vy);
   double mx = img2meters('x', ix);
   double my = img2meters('y', iy);
-  double sx = snapToStep(mx, m_snap_val);
-  double sy = snapToStep(my, m_snap_val);
+  //double sx = snapToStep(mx, m_snap_val);
+  //double sy = snapToStep(my, m_snap_val);
+  
+  m_active_poly = 0;
+  bool found = false;
 
-  m_active_poly = -1;
-  for(int i=0; i<vsize; i++) {
-    if(m_poly[i].contains(mx, my))
+  for(unsigned int i=0; i<vsize; i++) {
+    if(m_poly[i].contains(mx, my)) {
       m_active_poly = i;
+      found = true;
+    }
   }
 
-  if(m_active_poly == -1) {
-  	createNew();
-  }
+  if(!found)
+    createNew();
+
   redraw();
 }
 
@@ -157,6 +161,8 @@ bool GeoViewer::setParam(string param, float pval)
     m_snap_val = pval;
     return(true);
   }
+  else
+    return(false);
 }
 
 //-------------------------------------------------------------
@@ -164,7 +170,7 @@ bool GeoViewer::setParam(string param, float pval)
 
 void GeoViewer::createNew()
 {
-  int vsize = m_poly.size(); 
+  unsigned int vsize = m_poly.size(); 
   if(vsize == 0)
     return;
   
@@ -197,7 +203,7 @@ string GeoViewer::getPolySpec()
   if(m_poly.size() == 0) 
     return("");
   else {
-    int s = m_poly.size();
+    //int s = m_poly.size();
     return(m_poly[m_active_poly].get_spec());
   }
 }
@@ -208,7 +214,7 @@ string GeoViewer::getPolySpec()
 
 void GeoViewer::adjustActive(int v)
 {
-  int old_ix = m_active_poly;
+  unsigned int old_ix = m_active_poly;
 
   m_active_poly += v;
 
@@ -250,7 +256,7 @@ void GeoViewer::shiftVertPoly(double shift_val)
 // Procedure: rotatePoly
 //   Purpose: 
 
-void GeoViewer::rotatePoly(int rval)
+void GeoViewer::rotatePoly(unsigned int rval)
 {
   if(m_active_poly >= m_poly.size())
     return;
@@ -262,7 +268,7 @@ void GeoViewer::rotatePoly(int rval)
 // Procedure: growPoly
 //   Purpose: 
 
-void GeoViewer::growPoly(int gval)
+void GeoViewer::growPoly(unsigned int gval)
 {
   if(m_active_poly >= m_poly.size())
     return;
@@ -307,7 +313,7 @@ void GeoViewer::clearActivePoly()
 {
   vector<XYPolygon> new_poly;
 
-  for(int i=0; i < m_poly.size(); i++)
+  for(unsigned int i=0; i<m_poly.size(); i++)
     if(i != m_active_poly)
       new_poly.push_back(m_poly[i]);
   m_poly = new_poly;
@@ -355,7 +361,7 @@ void GeoViewer::drawCircles()
 //-------------------------------------------------------------
 // Procedure: drawCircle
 
-void GeoViewer::drawCircle(int ix)
+void GeoViewer::drawCircle(unsigned int ix)
 {
   if((ix < 0) || (ix >= m_circle.size()))
     return;

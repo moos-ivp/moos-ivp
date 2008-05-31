@@ -427,11 +427,11 @@ bool segmentsCross(double x1, double y1, double x2, double y2,
 //            and x3,y3.
 //            The return value is between -179.9999 and 180.0
 //               
-//   2o-----o3    3o-----o2       2o------o3    o3      o2
-//    |                  |        /             |       | \  
-//    |  +90        -90  |       /   +45       o2 +0    |  \ +135
-//    |                  |      /               |       |   \
-//    o1                 o1    o1               o1      o1  3o 
+//   2o-----o3    3o-----o2       2o------o3    o3      o2         |
+//    |                  |        /             |       | \        |
+//    |  +90        -90  |       /   +45       o2 +0    |  \ +135  |
+//    |                  |      /               |       |   \      |
+//    o1                 o1    o1               o1      o1  3o     |
 //               
 
 double segmentAngle(double x1, double y1, double x2, 

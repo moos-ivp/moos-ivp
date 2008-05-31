@@ -35,7 +35,7 @@ public:
 
   bool     initialize(std::string);
 
-  XYHexagon getElement(int index) const;
+  XYHexagon getElement(unsigned int index) const;
   int       size() const      {return(elements.size());};
 
   std::string getConfigString() const {return(config_string);};

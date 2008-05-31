@@ -50,12 +50,13 @@ protected:  // configuration parameters
   std::vector<double> m_level_times;
 
 protected:  // local state variables
-  int       m_curr_index;
+  unsigned int  m_curr_index;
+  unsigned int  m_arrivals;
+
   double    m_prior_vehicle_depth;
   double    m_plateau_start_time;
   bool      m_plateau_mode;
   bool      m_first_iteration;
-  int       m_arrivals;
 };
 #endif
 

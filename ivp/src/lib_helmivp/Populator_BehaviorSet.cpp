@@ -80,7 +80,7 @@ Populator_BehaviorSet::Populator_BehaviorSet(IvPDomain g_domain,
 
 BehaviorSet *Populator_BehaviorSet::populate(set<string> bhv_files)
 {
-  int i;
+  unsigned int i;
   set<string>::const_iterator p;
   for(p=bhv_files.begin(); p!=bhv_files.end(); p++) {
 
@@ -95,7 +95,7 @@ BehaviorSet *Populator_BehaviorSet::populate(set<string> bhv_files)
       fclose(f);
       
       vector<string> file_vector = fileBufferSlash(filename);
-      int lineCount = file_vector.size();
+      unsigned int lineCount = file_vector.size();
     
       for(i=0; i<lineCount; i++) {
 	string line = stripBlankEnds(file_vector[i]);

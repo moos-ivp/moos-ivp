@@ -35,9 +35,9 @@ public:
 
   bool      initialize(std::string);
 
-  XYSquare  getElement(int index) const;
-  void      setVal(int index, double val);
-  double    getVal(int index) const;
+  XYSquare  getElement(unsigned int index) const;
+  void      setVal(unsigned int index, double val);
+  double    getVal(unsigned int index) const;
 
   XYSquare  getSBound() const  {return(bounding_square);};
   XYPolygon getPBound() const  {return(bounding_poly);};
@@ -45,9 +45,10 @@ public:
   double    getMaxVal() const  {return(max_val);};
   int       size() const       {return(elements.size());};
 
-  void      setUtil(int ix, double val);
+  void      setUtil(unsigned int ix, double val);
   void      setUtilRange(double, double);
-  double    getUtil(int ix)  const;
+  double    getUtil(unsigned int ix)  const;
+
   double    getMinUtil()     const {return(min_util);};
   double    getMaxUtil()     const {return(max_util);};
   double    getMinUtilPoss() const {return(min_util_possible);};

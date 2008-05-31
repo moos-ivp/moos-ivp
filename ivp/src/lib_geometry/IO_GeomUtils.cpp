@@ -61,7 +61,6 @@ vector<XYPolygon> readPolysFromFile(const string& filestr)
 	   (left == "radial")) {
 	  string right = stripBlankEnds(svector[1]);
 	  XYPolygon poly;
-	  bool res;
 	  if(left=="ellipse") {
 	    poly = stringPairsToEllipsePoly(right);
 	  }
@@ -100,7 +99,8 @@ vector<XYGrid> readGridsFromFile(const string& filestr)
 	  string right = stripBlankEnds(svector[1]);
 	  XYGrid sgrid;
 	  bool res = sgrid.initialize(right);
-	  grid_vector.push_back(sgrid);
+	  if(res)
+	    grid_vector.push_back(sgrid);
 	}
 	if((left == "fullgrid") || (left == "fgrid")) {
 	  string right = stripBlankEnds(svector[1]);
@@ -135,7 +135,8 @@ vector<XYCircle> readCirclesFromFile(const string& filestr)
 	  string right = stripBlankEnds(svector[1]);
 	  XYCircle new_circle;
 	  bool res = new_circle.initialize(right);
-	  circle_vector.push_back(new_circle);
+	  if(res)
+	    circle_vector.push_back(new_circle);
 	}
       }
     }

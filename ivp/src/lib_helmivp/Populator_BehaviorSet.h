@@ -35,7 +35,7 @@ class Populator_BehaviorSet {
 
 public:
   Populator_BehaviorSet(IvPDomain, InfoBuffer*);
-  ~Populator_BehaviorSet() {};
+  virtual ~Populator_BehaviorSet() {};
 
   BehaviorSet* populate(std::set<std::string>);
   BehaviorSet* populate(std::string filename);

@@ -280,7 +280,6 @@ XYPolygon stringPairsToPylonPoly(string str)
   XYPolygon new_poly;
 
   double rel_ang = relAng(x1,y1,x2,y2);
-  double extent  = sqrt((axis_pad*axis_pad)+(perp_pad*perp_pad));
   
   double px1, py1;
   projectPoint(rel_ang-180, axis_pad, x1,  y1,  px1, py1);
@@ -595,18 +594,18 @@ XYSegList stringShortToPointsSegList(string str)
 
 
 //---------------------------------------------------------------
-// Procedure: init_zigzag
-//                                                                
-//         o                               o                      
-//       /   \                           /   \                       
-//     /       \                       /       \                      
-//   /           \                   /           \                   
-//  o--------------o---------------o---------------o--------------->          
-//                   \           /                   \           /  
-//                     \       /                       \       /    
-//                       \   /                           \   /      
-//                         o                               o      
-//  p1     p2              p3             p4               p5     p6     
+// Procedure: init_zigzag                                             |
+//                                                                    |
+//         o                               o                          |
+//       /   \                           /   \                        |
+//     /       \                       /       \                      |
+//   /           \                   /           \                    |
+//  o--------------o---------------o---------------o--------------->  |
+//                   \           /                   \           /    |
+//                     \       /                       \       /      |
+//                       \   /                           \   /        |
+//                         o                               o          |
+//  p1     p2              p3             p4               p5     p6  |  
 //                                                                  
 
 XYSegList stringShortToZigZagSegList(string str)

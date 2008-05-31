@@ -48,12 +48,14 @@ bool PMV_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
   
   bool gui_needs_redraw = false;
   bool gui_clear_trails = false;
-  MOOSMSG_LIST::reverse_iterator p;
+  //MOOSMSG_LIST::reverse_iterator p;
+  MOOSMSG_LIST::iterator p;
 
   double curr_time = MOOSTime() - m_start_time;
   m_gui->mviewer->setTime(curr_time);
 
-  if(NewMail.rbegin() != NewMail.rend()) {
+  //if(NewMail.rbegin() != NewMail.rend()) {
+  if(NewMail.begin() != NewMail.end()) {
     double curr_time = MOOSTime() - m_start_time;
     string ctime_str = doubleToString(curr_time, 2);
     MOOSTrace("\n%s > ", ctime_str.c_str());
@@ -61,7 +63,8 @@ bool PMV_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
       MOOSTrace("\n");
   }
 
-  for(p = NewMail.rbegin();p!=NewMail.rend();p++) {
+  //for(p = NewMail.rbegin();p!=NewMail.rend();p++) {
+  for(p = NewMail.begin();p!=NewMail.end();p++) {
     CMOOSMsg &Msg = *p;
 
     string key = Msg.m_sKey;
@@ -502,13 +505,13 @@ void PMV_MOOSApp::registerVariables()
 //  m_Comms.Register("AIS_REPORT", 0);
   m_Comms.Register("PK_SOL", 0);
   m_Comms.Register("AIS_REPORT_LOCAL", 0);
-  m_Comms.Register("AIS_REPORT", 0);
-  m_Comms.Register("GRID_CONFIG", 0);
-  m_Comms.Register("GRID_DELTA", 0);
-  m_Comms.Register("VIEW_POLYGON", 0);
-  m_Comms.Register("VIEW_POINT", 0);
-  m_Comms.Register("VIEW_SEGLIST", 0);
-  m_Comms.Register("TRAIL_RESET", 0);
+  m_Comms.Register("AIS_REPORT",       0);
+  m_Comms.Register("GRID_CONFIG",      0);
+  m_Comms.Register("GRID_DELTA",       0);
+  m_Comms.Register("VIEW_POLYGON",     0);
+  m_Comms.Register("VIEW_POINT",       0);
+  m_Comms.Register("VIEW_SEGLIST",     0);
+  m_Comms.Register("TRAIL_RESET",      0);
 }
 
 

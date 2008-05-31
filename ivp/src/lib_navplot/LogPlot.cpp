@@ -55,7 +55,7 @@ bool LogPlot::set_value(double gtime, double gval)
 //---------------------------------------------------------------
 // Procedure: get_value_by_index
 
-double LogPlot::get_value_by_index(int index) const
+double LogPlot::get_value_by_index(unsigned int index) const
 {
   if((index >= 0) && (index < time.size()))
     return(value[index]);
@@ -66,7 +66,7 @@ double LogPlot::get_value_by_index(int index) const
 //---------------------------------------------------------------
 // Procedure: get_time_by_index
 
-double LogPlot::get_time_by_index(int index) const
+double LogPlot::get_time_by_index(unsigned int index) const
 {
   if((index >= 0) && (index < time.size()))
     return(time[index]);
@@ -138,10 +138,11 @@ double LogPlot::get_max_time() const
 
 void LogPlot::print() const
 {
+  unsigned int i;
   cout << "LogPlot::print()" << endl;
   cout << " Varname: " << varname << endl;
   cout << " Vehicle: " << vehicle << endl;
-  for(int i=0; i<time.size(); i++) {
+  for(i=0; i<time.size(); i++) {
     cout << "time:" << time[i] << "  val:" << value[i] << endl;
   }
 }

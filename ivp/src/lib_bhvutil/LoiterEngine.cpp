@@ -136,15 +136,15 @@ int LoiterEngine::acquireVertexIn(double os_hdg, double os_x, double os_y)
       smallest_delta_ix = i;
     }
   }
-  
+
   // Calc the angle made by maneuver to a vertex and the 
   // subsequent vertex. Take the absolut value.
-  //   2o-----o3    3o-----o2      o3      o2
-  //    |                  |       |       | \  
-  //    |  +90        -90  |      o2 +0    |  \ +135
-  //    |                  |       |       |   \
-  //    o1                 o1      o1      o1  3o 
-			   
+  //   2o-----o3    3o-----o2      o3      o2            |
+  //    |                  |       |       | \           |
+  //    |  +90        -90  |      o2 +0    |  \ +135     |
+  //    |                  |       |       |   \         |
+  //    o1                 o1      o1      o1  3o        |
+		   
   vector<double> pt_segangle;
   for(i=0; i<vsize; i++) {
     int ixx = i+1;

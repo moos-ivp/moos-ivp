@@ -246,7 +246,7 @@ void XYSegList::print() const
 //---------------------------------------------------------------
 // Procedure: get_vx
 
-double XYSegList::get_vx(int i) const
+double XYSegList::get_vx(unsigned int i) const
 {
   if((i>=0) && (i<vertex_x.size()))
      return(vertex_x[i]);
@@ -258,7 +258,7 @@ double XYSegList::get_vx(int i) const
 //---------------------------------------------------------------
 // Procedure: get_vy
 
-double XYSegList::get_vy(int i) const
+double XYSegList::get_vy(unsigned int i) const
 {
   if((i>=0) && (i<vertex_y.size()))
     return(vertex_y[i]);
@@ -432,16 +432,16 @@ int XYSegList::closest_segment(double x, double y) const
 
 
 //---------------------------------------------------------------
-// Procedure: grow_pt_by_pct
-//                                  o (px, py)                   
-//                                   \                           
-//                                    \                         
-//                o (px, py)           \                        
-//                 \                    \                       
-//                  \                    \                      
-//                   \                    \                     
-//                    \                    \                    
-//                     o (cx,cy)            o (cx, cy)          
+// Procedure: grow_pt_by_pct                                    |
+//                                  o (px, py)                  |
+//                                   \                          |
+//                                    \                         |
+//                o (px, py)           \                        |
+//                 \                    \                       |
+//                  \                    \                      |
+//                   \                    \                     |
+//                    \                    \                    |
+//                     o (cx,cy)            o (cx, cy)          |
 //
 
 void XYSegList::grow_pt_by_pct(double pct, double cx, double cy, 
@@ -456,16 +456,16 @@ void XYSegList::grow_pt_by_pct(double pct, double cx, double cy,
 
 
 //---------------------------------------------------------------
-// Procedure: grow_pt_by_amt
-//                                  o (px, py)                   
-//                                   \                           
-//                                    \                         
-//                o (px, py)           \                        
-//                 \                    \                       
-//                  \                    \                      
-//                   \                    \                     
-//                    \                    \                    
-//                     o (cx,cy)            o (cx, cy)          
+// Procedure: grow_pt_by_amt                                    |
+//                                  o (px, py)                  |
+//                                   \                          | 
+//                                    \                         |
+//                o (px, py)           \                        |
+//                 \                    \                       |
+//                  \                    \                      |
+//                   \                    \                     |
+//                    \                    \                    |
+//                     o (cx,cy)            o (cx, cy)          |
 //
 
 void XYSegList::grow_pt_by_amt(double amt, double cx, double cy, 

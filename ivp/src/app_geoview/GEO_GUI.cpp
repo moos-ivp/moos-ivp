@@ -111,7 +111,6 @@ void GEO_GUI::augmentMenu()
 
 int GEO_GUI::handle(int event) 
 {
-  int step = 1;
   switch(event) {
   case FL_PUSH:
     Fl_Window::handle(event);
@@ -273,7 +272,7 @@ void GEO_GUI::cb_DumpPolySpec(Fl_Widget* o) {
 //----------------------------------------- UpdateXY
 void GEO_GUI::updateXY() {
   
-  int index = -1;
+  //int index = -1;
   char buff[64];
 
   // Meters X

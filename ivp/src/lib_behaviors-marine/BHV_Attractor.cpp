@@ -367,7 +367,7 @@ double BHV_Attractor::getRelevance(double osX, double osY,
   
   double total_range = range_max - range_min;
   //double exp_wgt= 1.0-exp(-10*(dist-range_min)/range_max);
-  double exp_wgt = 1;
+  //double exp_wgt = 1;
   double pct = 1;
   // if total_range==0 one of the two cases will result in a return
 
@@ -392,7 +392,7 @@ double BHV_Attractor::getRelevance(double osX, double osY,
 
 void BHV_Attractor::updateContactList()
 {
-  int i;
+  unsigned int i;
   
   m_contact_name = toupper(m_contact_name);
 

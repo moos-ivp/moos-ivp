@@ -295,14 +295,14 @@ int XYArc::segIntersectPts(double x1, double y1, double x2,
   if(count == 0)
     return(0);
 
-  if(count == 1) {
+  else if(count == 1) {
     if(!containsAngle(relAng(m_x, m_y, rx1, ry1)))
       return(0);
     else
       return(1);
   }
 
-  if(count == 2) {
+  else if(count == 2) {
     if(!containsAngle(relAng(m_x, m_y, rx2, ry2)))
       count--;
 
@@ -317,6 +317,10 @@ int XYArc::segIntersectPts(double x1, double y1, double x2,
     }
     return(count);
   }
+  // Should never execute this since a line segment intersects
+  // an arc at at most two points.
+  else 
+    return(0);
 }
 
 

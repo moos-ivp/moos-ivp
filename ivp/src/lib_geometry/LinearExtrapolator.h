@@ -36,7 +36,7 @@ public:
     m_decay_end   = e;
   };
 
-  bool setPosition(double x, double y, double s, double h, double t) {
+  void setPosition(double x, double y, double s, double h, double t) {
     m_xpos = x;
     m_ypos = y;
     m_spd  = s;

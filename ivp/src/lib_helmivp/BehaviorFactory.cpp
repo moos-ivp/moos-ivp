@@ -8,25 +8,25 @@
 
 using namespace std;
 
-//==============================================================================
+//========================================================================
 
 BehaviorFactory::BehaviorFactory() {
-   cerr << "BehaviorFactory::BehaviorFactory()" << endl;
+  cerr << "BehaviorFactory::BehaviorFactory()" << endl;
 }
 
-//==============================================================================
+//========================================================================
 
 BehaviorFactory::~BehaviorFactory() {
-cerr << "BehaviorFactory::~BehaviorFactory()" << endl;
-   // If this is being called as the program is being shut down, it's probably
-   // superfluous.  But just in case it's not...
-
-   for (int i = 0; i < open_library_handles.size(); ++i) {
-//       dlclose(open_library_handles[i]);
-   }
+  cerr << "BehaviorFactory::~BehaviorFactory()" << endl;
+  // If this is being called as the program is being shut down, it's probably
+  // superfluous.  But just in case it's not...
+  
+  for(unsigned int i = 0; i < open_library_handles.size(); ++i) {
+    // dlclose(open_library_handles[i]);
+  }
 }
 
-//==============================================================================
+//========================================================================
 
 void BehaviorFactory::load_directory(string dirname) {
    vector<string> files;
@@ -36,52 +36,50 @@ void BehaviorFactory::load_directory(string dirname) {
       exit(status);
    }
 
-   for (int i = 0; i < files.size(); ++i) {
-      const string & fname = files[i];
-      const string fpath = dirname + '/' + fname;
-   
-      // Make sure it looks like a behavior's .so file...
-      if (fname.substr(0, 7) != "libBHV_") {
-         continue;
-      }
+   for(unsigned int i=0; i<files.size(); ++i) {
+     const string & fname = files[i];
+     const string fpath = dirname + '/' + fname;
+     
+     // Make sure it looks like a behavior's .so file...
+     if(fname.substr(0, 7) != "libBHV_")
+       continue;
 
-      if (fname.substr(fname.length() - 3, 3) != ".so") {
-         continue;
-      }
+     if(fname.substr(fname.length() - 3, 3) != ".so")
+       continue;
 
-      if (! is_regular_file(fpath)) {
-         cerr << "Warning: File " << fname << " isn't a regular file." << endl;
-         continue;
-      }
+     if(! is_regular_file(fpath)) {
+       cerr << "Warning: File " << fname << " isn't a regular file." << endl;
+       continue;
+     }
 
-      // Strip off the leading 'lib' and trailing '.so' from the filename, 
-      // because people using the behaviors want to call them just "BHV_...".
-      string bhv_name = fname.substr(3, fname.length() - (3 + 3));
-
-      // Load the .so file, then go after the symbols we need...
-      void* handle = dlopen(fpath.c_str(), RTLD_LAZY);
-      if (handle == NULL) {
-         cerr << "Error calling dlopen() on file " << fname << endl;
+     // Strip off the leading 'lib' and trailing '.so' from the filename, 
+     // because people using the behaviors want to call them just "BHV_...".
+     string bhv_name = fname.substr(3, fname.length() - (3 + 3));
+     
+     // Load the .so file, then go after the symbols we need...
+     void* handle = dlopen(fpath.c_str(), RTLD_LAZY);
+     if (handle == NULL) {
+       cerr << "Error calling dlopen() on file " << fname << endl;
          cerr << "dlerror() returns: " << dlerror() << endl;
          exit(1);
-      }
+     }
 
-      const char *dlsym_error;
-      TFuncPtrCreateBehavior createFn = 
-         reinterpret_cast<TFuncPtrCreateBehavior>(dlsym(handle, "createBehavior"));
-      dlsym_error = dlerror();
-      if (dlsym_error) {
+     const char *dlsym_error;
+     TFuncPtrCreateBehavior createFn = 
+       reinterpret_cast<TFuncPtrCreateBehavior>(dlsym(handle, "createBehavior"));
+     dlsym_error = dlerror();
+     if (dlsym_error) {
          cerr << "Cannot load symbol 'createBehavior' from file " << fname << endl;
          cerr << "dlerror() returns: " << dlsym_error << endl;
          exit(1);
       }
 
-      creation_funcs[bhv_name] = createFn;
-      open_library_handles.push_back(handle);
+     creation_funcs[bhv_name] = createFn;
+     open_library_handles.push_back(handle);
    }
 }
 
-//==============================================================================
+//=========================================================================
 
 void BehaviorFactory::loadEnvVarDirectories(std::string envVar, bool verbose) {
   if (verbose) {
@@ -97,9 +95,9 @@ void BehaviorFactory::loadEnvVarDirectories(std::string envVar, bool verbose) {
     cerr << ">>> Exiting" << endl;
     return;
   }
-
+  
   vector<string> v = tokenize(dirs, ":");
-  for (int i = 0; i < v.size(); ++i) {
+  for(unsigned int i=0; i<v.size(); ++i) {
     string d = v.at(i);
 
     if (isdir(d)) {

@@ -39,7 +39,8 @@ void Populator_IPF_Plot::populate(string filestr)
 
   vector<vector<string> > plines; // parsed lines
   
-  for(int i=0; i<lines.size(); i++) {
+  unsigned int i;
+  for(i=0; i<lines.size(); i++) {
     if(lines[i][0] != '%') {
       lines[i] = findReplace(lines[i], '\t', ' ');
       lines[i] = compactConsecutive(lines[i], ' ');
@@ -51,8 +52,8 @@ void Populator_IPF_Plot::populate(string filestr)
 
   IPF_Plot ipf_plot;
   
-  int vsize = plines.size();  
-  for(int i=0; i<vsize; i++) {
+  unsigned int vsize = plines.size();  
+  for(i=0; i<vsize; i++) {
     if(plines[i][1] == "BHV_IPF") {
       double dval = atof(plines[i][0].c_str());
       m_demuxer.addMuxPacket(plines[i][3], dval);

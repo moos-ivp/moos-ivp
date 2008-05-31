@@ -141,8 +141,7 @@ bool AOF_CutRangeCPA::initialize()
 
   double max_ownship_spd = m_domain.getVarHigh(m_spd_ix);
 
-  double max_heading = m_cpa_engine->minMaxROC(max_ownship_spd, 360, 
-					       m_min_roc, m_max_roc);
+  m_cpa_engine->minMaxROC(max_ownship_spd, 360, m_min_roc, m_max_roc);
   
   m_range_roc = m_max_roc - m_min_roc;
 

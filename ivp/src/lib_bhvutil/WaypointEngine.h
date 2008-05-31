@@ -32,16 +32,16 @@ class WaypointEngine {
 
   void   setSegList(const XYSegList& seglist);
   void   setReverse(bool);
-  void   setRepeat(int);
+  void   setRepeat(unsigned int);
   void   setCaptureRadius(double);
   void   setNonmonotonicRadius(double);
-  void   setCurrIndex(int);
+  void   setCurrIndex(unsigned int);
   void   setPerpetual(bool v) {m_perpetual = v;};
   void   setCenter(double, double);
   void   reset() {m_complete=false; m_curr_ix=0;};
   
-  double getPointX(int);
-  double getPointY(int);  
+  double getPointX(unsigned int);
+  double getPointY(unsigned int);  
   double getPointX()      {return(m_seglist.get_vx(m_curr_ix));};
   double getPointY()      {return(m_seglist.get_vy(m_curr_ix));};
   bool   isComplete()     {return(m_complete);};
@@ -53,26 +53,25 @@ class WaypointEngine {
 
   XYSegList getSegList()  {return(m_seglist);};
 
-  bool   setNextWaypoint(double os_x, double os_y);
+  std::string setNextWaypoint(double os_x, double os_y);
 
  protected:
   XYSegList m_seglist;
   XYSegList m_seglist_raw;
 
-  int       m_prev_ix;
-  int       m_curr_ix;
   bool      m_reverse;
-
   bool      m_perpetual;
-  int       m_repeat;
   double    m_capture_radius;
   double    m_nm_radius;
 
   double    m_current_cpa;
   bool      m_complete;
+  int       m_prev_ix;
+  int       m_curr_ix;
 
-  int       m_capture_hits;
-  int       m_nonmono_hits;
+  unsigned int  m_repeat;
+  unsigned int  m_capture_hits;
+  unsigned int  m_nonmono_hits;
 };
 
 #endif

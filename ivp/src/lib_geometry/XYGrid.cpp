@@ -45,7 +45,7 @@ XYGrid::XYGrid()
 //-------------------------------------------------------------
 // Procedure: getElement
 
-XYSquare XYGrid::getElement(int ix) const
+XYSquare XYGrid::getElement(unsigned int ix) const
 {
   XYSquare retElement;
 
@@ -59,7 +59,7 @@ XYSquare XYGrid::getElement(int ix) const
 // Procedure: setVal
 //      Note: reflects min/max val ever seen - as currently impl.
 
-void XYGrid::setVal(int ix, double val)
+void XYGrid::setVal(unsigned int ix, double val)
 {
   if((ix >= 0) && (ix < elements.size()))
     values[ix] = val;
@@ -73,7 +73,7 @@ void XYGrid::setVal(int ix, double val)
 //-------------------------------------------------------------
 // Procedure: getVal
 
-double XYGrid::getVal(int ix) const
+double XYGrid::getVal(unsigned int ix) const
 {
   if((ix >= 0) && (ix < values.size()))
     return(values[ix]);
@@ -84,7 +84,7 @@ double XYGrid::getVal(int ix) const
 //-------------------------------------------------------------
 // Procedure: setUtil
 
-void XYGrid::setUtil(int ix, double val)
+void XYGrid::setUtil(unsigned int ix, double val)
 {
   if(val > max_util_possible)
     val = max_util_possible;
@@ -128,7 +128,7 @@ void XYGrid::setUtilRange(double lval, double hval)
 //-------------------------------------------------------------
 // Procedure: getUtil
 
-double XYGrid::getUtil(int ix) const
+double XYGrid::getUtil(unsigned int ix) const
 {
   if((ix >= 0) && (ix < utilities.size()))
     return(utilities[ix]);
@@ -198,9 +198,9 @@ bool XYGrid::initialize(string given_config_str)
 // Procedure: handleSegment
 
 void XYGrid::handleSegment(double x1, double y1,
-				double x2, double y2)
+			   double x2, double y2)
 {
-  for(int i=0; i<elements.size(); i++) {
+  for(unsigned int i=0; i<elements.size(); i++) {
     double val = elements[i].segIntersectLength(x1,y1,x2,y2);
     setVal(i, val);
   }
@@ -211,7 +211,7 @@ void XYGrid::handleSegment(double x1, double y1,
 
 void XYGrid::resetFromMin()
 {
-  for(int i=0; i<elements.size(); i++) {
+  for(unsigned int i=0; i<elements.size(); i++) {
     double curr_val = getVal(i);
     setVal(i, (curr_val - min_val));
   }
@@ -224,8 +224,8 @@ void XYGrid::resetFromMin()
 
 bool XYGrid::ptIntersect(double x, double y) const
 {
-  int vsize = elements.size();
-  for(int i=0; i<vsize; i++) 
+  unsigned int vsize = elements.size();
+  for(unsigned int i=0; i<vsize; i++) 
     if(elements[i].containsPoint(x, y))
       return(true);
   return(false);
@@ -247,7 +247,7 @@ bool XYGrid::ptIntersectBound(double x, double y) const
 //            bounding box of all grid squares.
 
 bool XYGrid::segIntersectBound(double x1, double y1,
-				    double x2, double y2) const
+			       double x2, double y2) const
 {
   return(bounding_square.segIntersectLength(x1,y1,x2,y2) > 0);
 }
@@ -269,7 +269,7 @@ bool XYGrid::processDelta(const string& str)
   string stripped_str = stripBlankEnds(str);
 
   vector<string> svector = parseString(stripped_str, '@');
-  int vsize = svector.size();
+  unsigned int vsize = svector.size();
   if(vsize != 2)
     return(false);
   if(svector[0] != label)
@@ -278,7 +278,7 @@ bool XYGrid::processDelta(const string& str)
   svector = parseString(svector[1], ':');
   vsize   = svector.size();
 
-  for(int i=0; i<vsize; i++) {
+  for(unsigned int i=0; i<vsize; i++) {
     svector[i] = stripBlankEnds(svector[i]);
     vector<string> dvector = parseString(svector[i], ',');
     int dsize = dvector.size();
@@ -287,8 +287,9 @@ bool XYGrid::processDelta(const string& str)
     for(int j=0; j<dsize; j++)
       dvector[j] = stripBlankEnds(dvector[j]);
     
-    int    index   = atoi(dvector[0].c_str());
-    double old_val = atof(dvector[1].c_str());
+    unsigned int  index  = atoi(dvector[0].c_str());
+
+    //double old_val = atof(dvector[1].c_str());
     double new_val = atof(dvector[2].c_str());
 
     if((index < 0) || (index >= values.size()))
@@ -297,7 +298,7 @@ bool XYGrid::processDelta(const string& str)
     setVal(index, new_val);
 
     if(dsize == 5) {
-      double old_util = atof(dvector[3].c_str());
+      //double old_util = atof(dvector[3].c_str());
       double new_util = atof(dvector[4].c_str());
       setUtil(index, new_util);
     }
@@ -341,7 +342,7 @@ bool XYGrid::initialize(XYPolygon poly,
   if(!ok)
     return(false);
 
-  for(i=0; i<elements.size(); i++) {
+  for(unsigned i=0; i<elements.size(); i++) {
     xlow  = elements[i].getVal(0,0);
     xhigh = elements[i].getVal(0,1);
     ylow  = elements[i].getVal(1,0);

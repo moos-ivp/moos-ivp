@@ -57,18 +57,18 @@ bool XYHexagon::initialize(string str)
 // Procedure: initialize
 //
 //
-//                     (5)         (0)                         
-//                       o---------o                                   
-//                     /             \                           
-//                    /               \                       
-//                   /                 \                   
-//               (4)o       cx,cy       o (1)                   
-//                   \                 /                   
-//                    \               /                    
-//                     \             /                        
-//                       o---------o                          
-//                     (3)         (2)                        
-//                                                           
+//                     (5)         (0)                         |
+//                       o---------o                           |
+//                     /             \                         |
+//                    /               \                        |
+//                   /                 \                       |
+//               (4)o       cx,cy       o (1)                  |
+//                   \                 /                       |
+//                    \               /                        |
+//                     \             /                         |
+//                       o---------o                           |
+//                     (3)         (2)                         |
+//                                                             |
 //                                                         
 //                                                          
 
@@ -107,17 +107,17 @@ bool XYHexagon::initialize(double gcx, double gcy, double gdist)
 // Procedure: addNeighbor
 //
 //
-//                           (0)                               
-//                       o---------o                                   
-//                     /             \                           
-//                (5) /               \ (1)                   
-//                   /                 \                   
-//                  o       cx,cy       o                       
-//                   \                 /                   
-//                (4) \               / (2)                
-//                     \             /                        
-//                       o---------o                          
-//                           (3)                              
+//                           (0)                               |
+//                       o---------o                           |
+//                     /             \                         |
+//                (5) /               \ (1)                    |
+//                   /                 \                       |
+//                  o       cx,cy       o                      |
+//                   \                 /                       |
+//                (4) \               / (2)                    |
+//                     \             /                         |
+//                       o---------o                           |
+//                           (3)                               |
 //                                                           
 
 XYHexagon XYHexagon::addNeighbor(int nix)

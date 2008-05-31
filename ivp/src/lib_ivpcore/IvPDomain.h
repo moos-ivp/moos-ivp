@@ -52,18 +52,21 @@ public:
  public: bool operator==(const IvPDomain&) const;
 
 public:
-  bool   addDomain(const std::string&, double, double, int);
+  bool   addDomain(const std::string&, double, double, unsigned int);
   bool   addDomain(const IvPDomain&, const std::string&);
   bool   hasDomain(const std::string&) const;
   void   clear();
   void   print() const;
 
   int    getIndex(const std::string&) const;
-  int    size() const                 {return(m_dname.size());};
-  double getVarLow(int i) const       {return(m_dlow[i]);};
-  double getVarHigh(int i) const      {return(m_dhigh[i]);};
-  double getVarDelta(int i) const     {return(m_ddelta[i]);};
-  int    getVarPoints(int i) const    {return(m_dpoints[i]);};
+
+  unsigned int  size() const                 {return(m_dname.size());};
+  unsigned int  getVarPoints(unsigned int i) const    
+    {return(m_dpoints[i]);};
+
+  double getVarLow(unsigned int i) const    {return(m_dlow[i]);};
+  double getVarHigh(unsigned int i) const   {return(m_dhigh[i]);};
+  double getVarDelta(unsigned int i) const  {return(m_ddelta[i]);};
 
   // Return number of points in the domain for a given variable name.
   // If the variable name is unknown, just return zero.
@@ -75,9 +78,9 @@ public:
 
   // For the ith domain index, and j steps into the domain, return
   // the corresponding floating point value.
-  bool getVal(int i, int j, double &val) const
+  bool getVal(unsigned int i, unsigned int j, double &val) const
     {
-      int dsize = (int)(m_dlow.size());
+      unsigned int dsize = m_dlow.size();
       if((i>=0) && (i<dsize) && (j>=0) && (j<m_dpoints[i])) {
 	val = m_dlow[i] + (m_ddelta[i] * j);
 	return(true);
@@ -87,9 +90,9 @@ public:
 
   // A simplified version of getVal where no error is indicate
   // if the domain or index is out of range.
-  double getVal(int d, int j) const
+  double getVal(unsigned int d, unsigned int j) const
     {
-      int dsize = (int)(m_dlow.size());
+      unsigned int dsize = m_dlow.size();
       if((d>=0) && (d<dsize) && (j>=0) && (j<m_dpoints[d]))
 	return(m_dlow[d] + (m_ddelta[d] * j));
       return(0);
@@ -97,29 +100,30 @@ public:
 
   // For domain given by the varible name, and j steps into the 
   // domain, return the corresponding floating point value.
-  bool getVal(const std::string str, int j, double &val) const
+  bool getVal(const std::string str, unsigned int j, double &val) const
     {
       return(getVal(getIndex(str), j, val));
     };
       
   // Return the variable name of ith element of the domain
-  std::string getVarName(int i) const
+  std::string getVarName(unsigned int i) const
     {
-      if((i<0) || (i>(int)m_dname.size()))
+      if((i<0) || (i>m_dname.size()))
 	return("");
       return(m_dname[i]);
     }
 
   // Return the discrete index into the domain given by a double
   // input value. Round up, down or closest, depending on snaptype.
-  int getDiscreteVal(int index, double val, int snaptype) const;
+  unsigned int getDiscreteVal(unsigned int index, 
+			      double val, int snaptype) const;
 
 private:
-  std::vector<std::string> m_dname;
-  std::vector<double>      m_dlow;
-  std::vector<double>      m_dhigh;
-  std::vector<double>      m_ddelta;
-  std::vector<int>         m_dpoints;
+  std::vector<std::string>  m_dname;
+  std::vector<double>       m_dlow;
+  std::vector<double>       m_dhigh;
+  std::vector<double>       m_ddelta;
+  std::vector<unsigned int> m_dpoints;
 };
 
 #endif

@@ -50,10 +50,11 @@ public:
   void   print() const;
 
 public:
+  unsigned int size() const          {return(vertex_x.size());};
+
   void   set_label(std::string str)  {label=str;};
-  int    size() const                {return(vertex_x.size());};
-  double get_vx(int) const;
-  double get_vy(int) const;
+  double get_vx(unsigned int) const;
+  double get_vy(unsigned int) const;
   double get_center_x() const;
   double get_center_y() const;
   double get_avg_x() const;

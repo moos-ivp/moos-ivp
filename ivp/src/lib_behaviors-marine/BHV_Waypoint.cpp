@@ -214,7 +214,7 @@ bool BHV_Waypoint::updateInfoIn()
 
 bool BHV_Waypoint::setNextWaypoint()
 {
-  m_waypoint_engine.setNextWaypoint(m_osx, m_osy);
+  string feedback_msg = m_waypoint_engine.setNextWaypoint(m_osx, m_osy);
 
   if(m_waypoint_engine.isComplete()) {
     postMessage("WPT_STAT", "complete");

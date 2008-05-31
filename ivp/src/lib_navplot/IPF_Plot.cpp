@@ -51,7 +51,7 @@ bool IPF_Plot::add_entry(double gtime, const string& gstr)
 //---------------------------------------------------------------
 // Procedure: get_time_by_index
 
-double IPF_Plot::get_time_by_index(int index) const
+double IPF_Plot::get_time_by_index(unsigned int index) const
 {
   if(m_time_stamps.size() == 0)
     return(0);
@@ -69,7 +69,7 @@ double IPF_Plot::get_time_by_index(int index) const
 //---------------------------------------------------------------
 // Procedure: get_ipf_by_index
 
-string IPF_Plot::get_ipf_by_index(int index) const
+string IPF_Plot::get_ipf_by_index(unsigned int index) const
 {
   if(m_ipf_strings.size() == 0)
     return("");
@@ -187,8 +187,9 @@ double IPF_Plot::get_max_time() const
 
 void IPF_Plot::print() const
 {
+  unsigned int i;
   cout << "IPF_Plot::print()" << endl;
-  for(int i=0; i<m_time_stamps.size(); i++)
+  for(i=0; i<m_time_stamps.size(); i++)
     cout << "time:" << m_time_stamps[i] << 
       "  ipf:" << m_ipf_strings[i] << endl;
 }

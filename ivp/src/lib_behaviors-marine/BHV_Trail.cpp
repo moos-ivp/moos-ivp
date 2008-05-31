@@ -229,7 +229,7 @@ IvPFunction *BHV_Trail::onRunState()
       postMessage("REGION", "Inside nm_radius");
       
       double ahead_by = head_x*(m_osx-posX)+head_y*(m_osy-posY) ;
-      bool ahead = (ahead_by > 0);
+      //bool ahead = (ahead_by > 0);
       
       // head toward point nm_radius ahead of trail point
       double ppx = head_x*m_nm_radius+posX;

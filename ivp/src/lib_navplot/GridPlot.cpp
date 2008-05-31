@@ -91,7 +91,7 @@ bool GridPlot::applyDelta(double gtime, const string& str)
 //---------------------------------------------------------------
 // Procedure: getTimeByIndex
 
-double GridPlot::getTimeByIndex(int index) const
+double GridPlot::getTimeByIndex(unsigned int index) const
 {
   if(m_time.size() == 0)
     return(0);
@@ -107,7 +107,7 @@ double GridPlot::getTimeByIndex(int index) const
 //---------------------------------------------------------------
 // Procedure: getGridByIndex
 
-XYGrid GridPlot::getGridByIndex(int index) const
+XYGrid GridPlot::getGridByIndex(unsigned int index) const
 {
   XYGrid null_grid;
   

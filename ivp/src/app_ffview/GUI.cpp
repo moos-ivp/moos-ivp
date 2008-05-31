@@ -177,7 +177,6 @@ Fl_Menu_Item GUI::menu_[] = {
 
 int GUI::handle(int event) 
 {
-  bool catch_key = false;
   switch(event) {
   case FL_KEYBOARD:
     if(Fl::event_key()==FL_Down) {

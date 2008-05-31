@@ -730,10 +730,11 @@ void XYPolygon::set_side(int ix)
 
 void XYPolygon::determine_convexity()
 {
-  for(int i=0; i<size(); i++)
+  unsigned int i;
+  for(i=0; i<size(); i++)
     set_side(i);
 
   convex_state = (size() >= 3);
-  for(int i=0; i<size(); i++)
+  for(i=0; i<size(); i++)
     convex_state = convex_state && (side_xy[i] != -1);
 }

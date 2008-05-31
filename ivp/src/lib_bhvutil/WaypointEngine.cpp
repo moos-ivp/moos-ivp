@@ -101,7 +101,7 @@ void WaypointEngine::setReverse(bool g_val)
 //-----------------------------------------------------------
 // Procedure: setRepeat
 
-void WaypointEngine::setRepeat(int g_repeat)
+void WaypointEngine::setRepeat(unsigned int g_repeat)
 {
   if(g_repeat >= 0)
     m_repeat = g_repeat;
@@ -133,7 +133,7 @@ void WaypointEngine::setNonmonotonicRadius(double g_nm_radius)
 //            example the loiter behavior that is working in
 //            an acquire mode).
 
-void WaypointEngine::setCurrIndex(int index)
+void WaypointEngine::setCurrIndex(unsigned int index)
 {
   if((index < 0) || (index >= m_seglist.size()))
     return;
@@ -156,7 +156,7 @@ void WaypointEngine::setCenter(double g_x, double g_y)
 //-----------------------------------------------------------
 // Procedure: getPointX
 
-double WaypointEngine::getPointX(int i)
+double WaypointEngine::getPointX(unsigned int i)
 {
   if((i >= 0) && (i < m_seglist.size()))
     return(m_seglist.get_vx(i));
@@ -180,7 +180,7 @@ bool WaypointEngine::currPtChanged()
 //-----------------------------------------------------------
 // Procedure: getPointY
 
-double WaypointEngine::getPointY(int i)
+double WaypointEngine::getPointY(unsigned int i)
 {
   if((i >= 0) && (i < m_seglist.size()))
     return(m_seglist.get_vy(i));
@@ -195,11 +195,14 @@ double WaypointEngine::getPointY(int i)
 //      Note: Error can be checked for by checking if curr_ix == -1      
 
 
-bool WaypointEngine::setNextWaypoint(double os_x, double os_y)
+string WaypointEngine::setNextWaypoint(double os_x, double os_y)
 {
-  int vsize = m_seglist.size();
-  if((vsize == 0) || m_complete)
-    return(false);
+  unsigned int vsize = m_seglist.size();
+  if(vsize == 0)
+    return("empty seglist");
+
+  if(m_complete)
+    return("completed");
   
   double pt_x  = m_seglist.get_vx(m_curr_ix);
   double pt_y  = m_seglist.get_vy(m_curr_ix);
@@ -237,7 +240,7 @@ bool WaypointEngine::setNextWaypoint(double os_x, double os_y)
 	  m_repeat--;
 	else {
 	  m_complete = true;
-	  return(false);
+	  return("advanced and completed");
 	}
       }
     }
@@ -246,7 +249,7 @@ bool WaypointEngine::setNextWaypoint(double os_x, double os_y)
     m_current_cpa = hypot((os_x - pt_x), (os_y - pt_y));    
   }
 
-  return(point_advance);
+  return("advanced");
 }
 
 

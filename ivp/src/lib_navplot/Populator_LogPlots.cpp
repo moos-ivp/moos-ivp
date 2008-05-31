@@ -81,7 +81,7 @@ bool Populator_LogPlots::populateFromALog()
 //---------------------------------------------------------------
 // Procedure: getLogPlot(int index)
 
-LogPlot Populator_LogPlots::getLogPlot(int ix)
+LogPlot Populator_LogPlots::getLogPlot(unsigned int ix)
 {
   if((ix >= 0) && (ix < m_logplots.size()))
     return(m_logplots[ix]);
@@ -121,7 +121,8 @@ bool Populator_LogPlots::setFileALog(string filestr)
   m_file = filestr;
   m_lines = fileBuffer(filestr);
 
-  for(int i=0; i<m_lines.size(); i++) {
+  unsigned int i;
+  for(i=0; i<m_lines.size(); i++) {
     m_lines[i] = findReplace(m_lines[i], '\t', ' ');
     m_lines[i] = compactConsecutive(m_lines[i], ' ');
     m_lines[i] = stripBlankEnds(m_lines[i]);

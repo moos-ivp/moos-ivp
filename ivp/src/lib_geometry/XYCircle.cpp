@@ -202,7 +202,8 @@ bool XYCircle::segIntersectStrict(double x1, double y1,
     return(true);
   
   // Case4 - both ends out of the circle
-  if((p1_dist_to_center > m_rad) && (p2_dist_to_center > m_rad))
+  else // mikerb May 30 2008
+    //if((p1_dist_to_center > m_rad) && (p2_dist_to_center > m_rad))
     return(distPointToSeg(x1,y1,x2,y2,m_x,m_y) <= m_rad);
 }
 

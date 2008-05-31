@@ -32,11 +32,11 @@ public:
   LogPlot() {min_val=0; max_val=0; utc_start_time=0;};
   ~LogPlot() {};
 
-  bool   set_varname(std::string s) {varname = s;};
-  bool   set_vehicle(std::string s) {vehicle = s;};
+  void   set_varname(std::string s) {varname = s;};
+  void   set_vehicle(std::string s) {vehicle = s;};
   bool   set_value(double gtime, double gvalue);
-  double get_time_by_index(int index) const;
-  double get_value_by_index(int index) const;
+  double get_time_by_index(unsigned int index) const;
+  double get_value_by_index(unsigned int index) const;
   double get_value_by_time(double gtime) const;
   double get_min_time() const;
   double get_max_time() const;
@@ -44,7 +44,7 @@ public:
   double get_max_val() const      {return(max_val);};
   std::string get_varname() const {return(varname);};
   std::string get_vehicle() const {return(vehicle);};
-  int    size() const             {return(time.size());};
+  unsigned int  size() const      {return(time.size());};
   void   print() const;
   
 protected:

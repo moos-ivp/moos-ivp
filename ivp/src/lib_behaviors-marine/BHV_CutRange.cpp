@@ -53,9 +53,6 @@ BHV_CutRange::BHV_CutRange(IvPDomain gdomain) :
   m_min_priority_range = 0;
   m_max_priority_range = 0;
 
-  m_min_util_cpa_dist = 100;
-  m_max_util_cpa_dist = 0; 
-
   m_patience     = 0;
   m_giveup_range = 0;   // meters - zero means never give up
   m_time_on_leg  = 15;  // seconds
@@ -93,22 +90,6 @@ bool BHV_CutRange::setParam(string g_param, string g_val)
       return(false);
     m_min_priority_range = dval1;
     m_max_priority_range = dval2;
-    return(true);
-  }  
-  else if(g_param == "cpa_utility_interval") {
-    g_val = stripBlankEnds(g_val);
-    vector<string> svector = parseString(g_val, ',');
-    if(svector.size() != 2)
-      return(false);
-    if(!isNumber(svector[0]) || !isNumber(svector[1]))
-      return(false);
-
-    double dval1 = atof(svector[0].c_str());
-    double dval2 = atof(svector[1].c_str());
-    if((dval1 < 0) || (dval2 < 0) || (dval1 >= dval2))
-      return(false);
-    m_max_util_cpa_dist = dval1;
-    m_min_util_cpa_dist = dval2;
     return(true);
   }  
   else if(g_param == "time_on_leg") {
@@ -194,8 +175,6 @@ IvPFunction *BHV_CutRange::onRunState()
   aof.setParam("oslon", osX);
   aof.setParam("tol", m_time_on_leg);
   aof.setParam("patience", m_patience);
-  aof.setParam("min_util_cpa_dist", m_min_util_cpa_dist);
-  aof.setParam("max_util_cpa_dist", m_max_util_cpa_dist);
   ok1 = aof.initialize();
   if(!ok1) {
     postWMessage("Error in initializing AOF_CutRangeCPA.");

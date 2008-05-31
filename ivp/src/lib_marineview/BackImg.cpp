@@ -274,7 +274,7 @@ void BackImg::readBlankTiff()
 // Procedure: setTexture
 //   Purpose: 
 
-bool BackImg::setTexture()
+void BackImg::setTexture()
 {
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 
 	       img_width, img_height, 0, 
