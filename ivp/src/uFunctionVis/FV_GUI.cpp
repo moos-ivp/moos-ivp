@@ -103,7 +103,6 @@ Fl_Menu_Item FV_GUI::menu_[] = {
 
 int FV_GUI::handle(int event) 
 {
-  bool catch_key = false;
   switch(event) {
   case FL_KEYBOARD:
     if(Fl::event_key()==FL_Down) {

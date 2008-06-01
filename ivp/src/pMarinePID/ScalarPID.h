@@ -75,7 +75,7 @@ protected: // Data persistent between runs
   double m_dfeOld;
   double m_dfOldTime;
   double m_dfOut;
-  int    m_nHistorySize;
+  unsigned int m_nHistorySize;
   std::list<double> m_DiffHistory;
   
   double m_dfe;

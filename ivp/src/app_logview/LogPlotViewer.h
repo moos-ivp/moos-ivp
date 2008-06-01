@@ -44,11 +44,11 @@ class LogPlotViewer : public Fl_Gl_Window
   void  resize(int, int, int, int);
 
  public:
-  int   add_logplot(const LogPlot&);
+  unsigned int add_logplot(const LogPlot&);
   void  set_curr_time(double v) {curr_time = v;};
 
-  void  set_left_plot(int);
-  void  set_right_plot(int);
+  void  set_left_plot(unsigned int);
+  void  set_right_plot(unsigned int);
 
   double get_curr_val1(double time);
   double get_curr_val2(double time);
@@ -77,8 +77,9 @@ class LogPlotViewer : public Fl_Gl_Window
   std::vector<double>  cache_x2;
   std::vector<double>  cache_y2;
   bool   valid_cache;
-  int    view_index1;  // Index in logplot vector being viewed
-  int    view_index2;  // Index in logplot vector being viewed
+  
+  unsigned int  view_index1;  // Index in logplot vector being viewed
+  unsigned int  view_index2;  // Index in logplot vector being viewed
   double margin;
 
   double min_time;
@@ -87,11 +88,3 @@ class LogPlotViewer : public Fl_Gl_Window
 };
 
 #endif 
-
-
-
-
-
-
-
-

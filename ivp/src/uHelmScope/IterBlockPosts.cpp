@@ -36,11 +36,11 @@ vector<string> IterBlockPosts::getPostings(const string& bhv)
 {
   vector<string> rvector;
   
-  int vsize = m_postings.size();
+  unsigned int vsize = m_postings.size();
   if(m_behaviors.size() != vsize)
     return(rvector);
   
-  for(int i=0; i<vsize; i++) {
+  for(unsigned int i=0; i<vsize; i++) {
     if(m_behaviors[i] == bhv)
       rvector.push_back(m_postings[i]);
   }

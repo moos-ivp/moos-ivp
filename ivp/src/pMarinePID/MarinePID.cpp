@@ -64,8 +64,9 @@ MarinePID::MarinePID()
   start_time   = 0;
 
   paused       = false;
-  time_of_last_helm_msg;
-  time_of_last_nav_msg;
+
+  time_of_last_helm_msg = 0;
+  time_of_last_nav_msg  = 0;
 }
 
 //--------------------------------------------------------------------
@@ -209,7 +210,7 @@ bool MarinePID::Iterate()
   if(verbose == "verbose") {
     pid_report = pengine.getPIDReport();
     pengine.clearReport();
-    for(int i=0; i<pid_report.size(); i++)
+    for(unsigned int i=0; i<pid_report.size(); i++)
       cout << pid_report[i] << endl;
   }
 

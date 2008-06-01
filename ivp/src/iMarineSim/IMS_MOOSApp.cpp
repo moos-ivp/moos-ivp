@@ -283,12 +283,12 @@ void IMS_MOOSApp::handleSimReset(const string& str)
   if(!m_model)
     return;
   
-  bool xset = false;
-  bool yset = false;
-  bool spdset = false;
-  bool hdgset = false;
+  //bool xset = false;
+  //bool yset = false;
+  //bool spdset = false;
+  //bool hdgset = false;
   
-  double new_x, new_y, new_speed, new_heading;
+  //double new_x, new_y, new_speed, new_heading;
   
   vector<string> svector = parseString(str, ',');
   int vsize = svector.size();

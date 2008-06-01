@@ -55,7 +55,8 @@ void idleProc(void *)
 
 int main(int argc, char *argv[])
 {
-  int i, j, res = 0;
+  int i, res = 0;
+  unsigned int j, k;
 
   string gui_size = "large";
 
@@ -120,17 +121,17 @@ int main(int argc, char *argv[])
   // Read in the skews from each slog file
   //---------------------------------------------------------------------
   double min_skew = 0;
-  for(i=0; i<alog_files.size(); i++) {
-    vector<string> svector = fileBuffer(alog_files[i], 5);
-    int vsize = svector.size();
-    for(int j=0; j<vsize; j++) {
+  for(k=0; k<alog_files.size(); k++) {
+    vector<string> svector = fileBuffer(alog_files[k], 5);
+    unsigned int vsize = svector.size();
+    for(j=0; j<vsize; j++) {
       string line = compactConsecutive(svector[j], ' ');
       vector<string> evector = parseString(line, ' ');
       if(evector.size() >= 3)
 	if(evector[1] == "LOGSTART") {
 	  double skew = atof(evector[2].c_str());
-	  alog_files_skew[i] = skew;
-	  if((i==0) || (skew<min_skew))
+	  alog_files_skew[k] = skew;
+	  if((k==0) || (skew<min_skew))
 	    min_skew = skew;
 	}
     }
@@ -138,8 +139,8 @@ int main(int argc, char *argv[])
   
   // Apply min_skew to all so the earliest has skew of zero
   //---------------------------------------------------------------------
-  for(i=0; i<alog_files_skew.size(); i++)
-    alog_files_skew[i] -= min_skew;
+  for(j=0; j<alog_files_skew.size(); j++)
+    alog_files_skew[j] -= min_skew;
   
   // Build all the gridplots from the vector of alog files.
   //---------------------------------------------------------------------
@@ -149,12 +150,12 @@ int main(int argc, char *argv[])
   parse_timer.start();
   cout << "Parsing alog files to build GridPlots..." << endl;
   
-  for(i=0; i<alog_files.size(); i++) {
+  for(k=0; k<alog_files.size(); k++) {
     Populator_GridPlot pop_gp;
-    pop_gp.populate(alog_files[i]);
-    int psize = pop_gp.size();
-    cout << "Built " << psize << " GridPlots from " << alog_files[i] << endl;
-    for(int j=0; j<psize; j++) 
+    pop_gp.populate(alog_files[k]);
+    unsigned int psize = pop_gp.size();
+    cout << "Built " << psize << " GridPlots from " << alog_files[k] << endl;
+    for(j=0; j<psize; j++) 
       gridplots.push_back(pop_gp.getGridPlot(j));
   }
 
@@ -171,22 +172,22 @@ int main(int argc, char *argv[])
   parse_timer.start();
   cout << "Parsing slog files to build LogPlots..." << endl;
 
-  for(i=0; i<alog_files.size(); i++) {
+  for(j=0; j<alog_files.size(); j++) {
     Populator_LogPlots pop_lp;
-    //pop_lp.setSkew(alog_files_skew[i]);
-    pop_lp.setVName("V_" + intToString(i)); 
-    bool ok = pop_lp.setFileALog(alog_files[i]);
+    //pop_lp.setSkew(alog_files_skew[j]);
+    pop_lp.setVName("V_" + intToString(j)); 
+    bool ok = pop_lp.setFileALog(alog_files[j]);
     if(!ok) {
-      cout << "Problem with file " << alog_files[i] << ". Exiting" << endl;
+      cout << "Problem with file " << alog_files[j] << ". Exiting" << endl;
       exit(0);
     }
     
     pop_lp.populateFromALog();
     
     vector<LogPlot> lvector;
-    int lsize = pop_lp.size();
-    for(int i=0; i<lsize; i++)
-      lvector.push_back(pop_lp.getLogPlot(i));
+    unsigned int lsize = pop_lp.size();
+    for(k=0; k<lsize; k++)
+      lvector.push_back(pop_lp.getLogPlot(k));
 
     logplots.push_back(lvector);
   }
@@ -201,13 +202,13 @@ int main(int argc, char *argv[])
   vector<XYPolygon> polygons;
   vector<XYGrid>    searchgrids;
 
-  for(i=0; i<non_log_files.size(); i++) {
-    vector<XYPolygon> pvector = readPolysFromFile(non_log_files[i]);
-    vector<XYGrid>    qvector = readGridsFromFile(non_log_files[i]);
-    for(j=0; j<pvector.size(); j++)
-      polygons.push_back(pvector[j]);
-    for(j=0; j<qvector.size(); j++)
-      searchgrids.push_back(qvector[j]);
+  for(j=0; j<non_log_files.size(); j++) {
+    vector<XYPolygon> pvector = readPolysFromFile(non_log_files[j]);
+    vector<XYGrid>    qvector = readGridsFromFile(non_log_files[j]);
+    for(k=0; k<pvector.size(); k++)
+      polygons.push_back(pvector[k]);
+    for(k=0; k<qvector.size(); k++)
+      searchgrids.push_back(qvector[k]);
   }
   
   // If we've gotten this far without errors, go ahead and create the GUI
@@ -225,29 +226,29 @@ int main(int argc, char *argv[])
     gui = new REPLAY_GUI(770, 605, "OpRegion-Viewer");
 
   // Populate the GUI with the GridPlots built above
-  for(i=0; i<gridplots.size(); i++)
-    gui->addGridPlot(gridplots[i]);
+  for(j=0; j<gridplots.size(); j++)
+    gui->addGridPlot(gridplots[j]);
   
   // Populate the GUI with the LogPlots built above
-  for(i=0; i<logplots.size(); i++) {
-    for(int j=0; j<logplots[i].size(); j++) {
-      gui->addLogPlot(logplots[i][j]);
-      if(logplots[i][j].get_varname() == "NAV_X")
-	gui->np_viewer->addLogPlotNAVX(logplots[i][j]);
-      else if(logplots[i][j].get_varname() == "NAV_Y")
-	gui->np_viewer->addLogPlotNAVY(logplots[i][j]);
-      else if(logplots[i][j].get_varname() == "NAV_HEADING")
-	gui->np_viewer->addLogPlotHDG(logplots[i][j]);
+  for(k=0; k<logplots.size(); k++) {
+    for(j=0; j<logplots[k].size(); j++) {
+      gui->addLogPlot(logplots[k][j]);
+      if(logplots[k][j].get_varname() == "NAV_X")
+	gui->np_viewer->addLogPlotNAVX(logplots[k][j]);
+      else if(logplots[k][j].get_varname() == "NAV_Y")
+	gui->np_viewer->addLogPlotNAVY(logplots[k][j]);
+      else if(logplots[k][j].get_varname() == "NAV_HEADING")
+	gui->np_viewer->addLogPlotHDG(logplots[k][j]);
     }
   }
 
   // Populate the GUI with the polygons built above
-  for(i=0; i<polygons.size(); i++)
-    gui->addPoly(polygons[i]);
+  for(j=0; j<polygons.size(); j++)
+    gui->addPoly(polygons[j]);
 
   // Populate the GUI with the search grids build above
-  for(i=0; i<searchgrids.size(); i++)
-    gui->addGrid(searchgrids[i]);
+  for(j=0; j<searchgrids.size(); j++)
+    gui->addGrid(searchgrids[j]);
 
   gui->updateXY();
   gui->readTiff(tif_file);

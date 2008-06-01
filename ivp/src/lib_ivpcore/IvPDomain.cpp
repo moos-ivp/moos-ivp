@@ -158,8 +158,7 @@ void IvPDomain::print() const
 
 int IvPDomain::getIndex(const string &g_name) const
 {
-  int i;
-  for(i=0; (i < m_dname.size()); i++)
+  for(unsigned int i=0; (i < m_dname.size()); i++)
     if(m_dname[i] == g_name)
       return(i);
   return(-1);

@@ -42,11 +42,11 @@ public:
 
   SSV_Viewer *mviewer;
 
-  std::string getPendingVar(int);
-  std::string getPendingVal(int);
-  void        clearPending();
-  void        pushPending(std::string, std::string);
-  int         getPendingSize() {return(m_pending_vars.size());};
+  std::string  getPendingVar(unsigned int index);
+  std::string  getPendingVal(unsigned int index);
+  void         clearPending();
+  void         pushPending(std::string, std::string);
+  unsigned int getPendingSize() {return(m_pending_vars.size());};
 
 private:
   void  updateButtonColor(MY_Button*);

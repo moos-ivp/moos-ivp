@@ -35,10 +35,10 @@ public:
   void addPostingMsg(std::string);
   void addInfoMsg(std::string);
 
-  int     getErrorMsgCnt()     {m_error_msgs.size();};
-  int     getWarningMsgCnt()   {m_warning_msgs.size();};
-  int     getPostingMsgCnt()   {m_posting_msgs.size();};
-  int     getInfoMsgCnt()      {m_info_msgs.size();};
+  unsigned int getErrorMsgCnt()    {return(m_error_msgs.size());};
+  unsigned int getWarningMsgCnt()  {return(m_warning_msgs.size());};
+  unsigned int getPostingMsgCnt()  {return(m_posting_msgs.size());};
+  unsigned int getInfoMsgCnt()     {return(m_info_msgs.size());};
 
   int     getPieces()          {return(m_pieces);};
   double  getTimeCPU()         {return(m_cpu_time);};

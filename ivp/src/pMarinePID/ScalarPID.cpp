@@ -166,7 +166,7 @@ bool ScalarPID::Run(double dfeIn, double dfErrorTime, double &dfOut)
     //figure out differntial
     double dfDiffNow = (dfeIn-m_dfeOld)/m_dfDT;
     m_DiffHistory.push_front(dfDiffNow);
-    while(m_DiffHistory.size()>=m_nHistorySize) {
+    while(m_DiffHistory.size() >= m_nHistorySize) {
       m_DiffHistory.pop_back();
     }
     

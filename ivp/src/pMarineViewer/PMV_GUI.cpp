@@ -118,7 +118,6 @@ int PMV_GUI::handle(int event)
 //----------------------------------------- UpdateXY
 void PMV_GUI::updateXY() {
   int  index = mviewer->getDataIndex();
-  char buff[64];
 
   string time_str = doubleToString(m_curr_time, 1);
   time->value(time_str.c_str());

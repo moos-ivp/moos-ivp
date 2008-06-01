@@ -90,7 +90,7 @@ void LogPlotViewer::resize(int gx, int gy, int gw, int gh)
 //-------------------------------------------------------------
 // Procedure: add_logplot
 
-int LogPlotViewer::add_logplot(const LogPlot& given_logplot)
+unsigned int LogPlotViewer::add_logplot(const LogPlot& given_logplot)
 {
   LogPlot new_logplot(given_logplot);
   logplot.push_back(new_logplot);
@@ -100,7 +100,7 @@ int LogPlotViewer::add_logplot(const LogPlot& given_logplot)
 //-------------------------------------------------------------
 // Procedure: set_left_plot()
 
-void LogPlotViewer::set_left_plot(int index)
+void LogPlotViewer::set_left_plot(unsigned int index)
 {
   if(index == view_index1)
     return;
@@ -112,7 +112,7 @@ void LogPlotViewer::set_left_plot(int index)
 //-------------------------------------------------------------
 // Procedure: set_right_plot()
 
-void LogPlotViewer::set_right_plot(int index)
+void LogPlotViewer::set_right_plot(unsigned int index)
 {
   if(index == view_index2)
     return;
@@ -352,7 +352,7 @@ void LogPlotViewer::draw_logplot()
   else
     glColor4f(0.433,  0.520,  0.284,  0.1);  // DarkOliveGreen-ish
   glBegin(GL_LINE_STRIP);
-  for(int i=0; i<cache_x1.size(); i++)
+  for(unsigned int i=0; i<cache_x1.size(); i++)
     glVertex2f(cache_x1[i], cache_y1[i]);
   glEnd();
 
@@ -363,7 +363,7 @@ void LogPlotViewer::draw_logplot()
   else
     glColor4f(0.433,  0.520,  0.284,  0.1);  // DarkOliveGreen-ish
   glBegin(GL_POINTS);
-  for(int i=0; i<cache_x1.size(); i++)
+  for(unsigned int i=0; i<cache_x1.size(); i++)
     glVertex2f(cache_x1[i], cache_y1[i]);
   glEnd();
 
@@ -375,7 +375,7 @@ void LogPlotViewer::draw_logplot()
     else
       glColor4f(0.282,  0.239,  0.545,  0.1);  // DarkSlateBlue
     glBegin(GL_LINE_STRIP);
-    for(int i=0; i<cache_x2.size(); i++)
+    for(unsigned int i=0; i<cache_x2.size(); i++)
       glVertex2f(cache_x2[i], cache_y2[i]);
     glEnd();
 
@@ -386,7 +386,7 @@ void LogPlotViewer::draw_logplot()
     else
       glColor4f(0.282,  0.239,  0.545,  0.1);  // DarkSlateBlue
     glBegin(GL_POINTS);
-    for(int i=0; i<cache_x2.size(); i++)
+    for(unsigned int i=0; i<cache_x2.size(); i++)
       glVertex2f(cache_x2[i], cache_y2[i]);
     glEnd();
   }

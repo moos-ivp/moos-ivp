@@ -38,7 +38,7 @@ protected:
 
   std::list<int>         m_iter_index;
   std::list<int>         m_of_count;
-  int                    m_queue_limit;
+  unsigned int           m_queue_limit;
 
   std::string            m_colormap_type;
   double                 m_low_adjust;

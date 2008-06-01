@@ -480,7 +480,7 @@ string padString(const string& str, int target_size, bool front)
 
 string findReplace(const string& str, const string& fstr, const string& rstr)
 {
-  int posn = 0;
+  unsigned int posn = 0;
 
   string newstr = str;
   while(posn != string::npos) {
@@ -504,7 +504,7 @@ string findReplace(const string& str, const string& fstr, const string& rstr)
 
 string stripComment(const string& str, const string& cstr)
 {
-  int posn = str.find(cstr, 0);
+  unsigned int posn = str.find(cstr, 0);
   if(posn == string::npos)
     return(str);
 
@@ -525,7 +525,7 @@ string stripComment(const string& str, const string& cstr)
 
 bool strContains(const string& str, const string& qstr)
 {
-  int posn = str.find(qstr, 0);
+  unsigned int posn = str.find(qstr, 0);
   if(posn == string::npos)
     return(false);
   else

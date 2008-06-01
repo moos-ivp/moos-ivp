@@ -38,22 +38,28 @@ bool DeployHandler::OnNewMail(MOOSMSG_LIST &NewMail)
     CMOOSMsg &msg = *p;
 
     string key   = msg.GetKey();
-    double dval  = msg.GetDouble();
+    //double dval  = msg.GetDouble();
     string sval  = msg.GetString(); 
-    double mtime = msg.GetTime();
-    bool   mdbl  = msg.IsDouble();
-    bool   mstr  = msg.IsString();
-    string msrc  = msg.GetSource();
+    //double mtime = msg.GetTime();
+    //bool   mdbl  = msg.IsDouble();
+    //bool   mstr  = msg.IsString();
+    //string msrc  = msg.GetSource();
 
+    bool ok = true;
     key = toupper(key);
     if(key == "DEPLOY_TO_PT")
-      bool ok = handleNewDeployToPosition(sval);
-    if(key == "DEPLOY_TO_LOITER")
-      bool ok = handleNewLoiterPosition(sval);
-    if(key == "DEPLOY_TO_RELPOS")
-      bool ok = handleNewRelativePosition(sval);
-    if(key == "RECLAIM")
-      bool ok = handleReclaim(sval);
+      ok = handleNewDeployToPosition(sval);
+    else if(key == "DEPLOY_TO_LOITER")
+      ok = handleNewLoiterPosition(sval);
+    else if(key == "DEPLOY_TO_RELPOS")
+      ok = handleNewRelativePosition(sval);
+    else if(key == "RECLAIM")
+      ok = handleReclaim(sval);
+    else
+      ok = false;
+
+    if(!ok)
+      cout << "Unrecognized mail: " << key << endl;
   }
   
   return(true);

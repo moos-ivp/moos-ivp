@@ -79,7 +79,7 @@ pthread_t spawn_thread(ThreadParams *pParams)
 int main(int argc ,char * argv[])
 {
   bool help_requested   = false;
-  bool ignore_file_vars = false;
+  //bool ignore_file_vars = false;
 
   g_sMissionFile = 0;
   for(int i=1; i<argc; i++) {

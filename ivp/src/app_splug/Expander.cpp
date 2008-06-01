@@ -182,7 +182,7 @@ bool Expander::writeOutput()
     return(false);
   }
 
-  for(int i=0; i<newlines.size(); i++)
+  for(unsigned int i=0; i<newlines.size(); i++)
     fprintf(f, "%s\n", newlines[i].c_str());
 
   fclose(f);

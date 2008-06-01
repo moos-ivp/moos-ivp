@@ -95,7 +95,6 @@ SET(IVP_LIBS_TO_BUILD
   lib_marineview
   lib_mbutil
   lib_navplot
-  lib_ais
 )
 
 FOREACH(L ${IVP_LIBS_TO_BUILD})
@@ -113,10 +112,7 @@ ENDFOREACH(L)
      set(LINUX_ONLY_APPS "")
   else (${APPLE})
      #  Doesn't build on OS X 10.5
-     SET(LINUX_ONLY_APPS 
-        iRawAIS
-        pASCM_PK
-     )
+     SET(LINUX_ONLY_APPS "")
   endif (${APPLE})
 
 
@@ -141,8 +137,6 @@ SET(IVP_APPS_TO_BUILD
   uXMS
   uPokeDB
   uFunctionVis
-  iPlaybackAIS
-  iParserAIS
   ${LINUX_ONLY_APPS}
 )
 

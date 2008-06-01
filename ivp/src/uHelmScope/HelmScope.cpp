@@ -426,7 +426,7 @@ void HelmScope::handleNewHelmSummary(const string& str)
       int max_samples = m_interval_samples_a;
       if(m_interval_samples_b > max_samples)
 	max_samples = m_interval_samples_b;
-      if(m_helm_intervals.size() > max_samples)
+      if((int)(m_helm_intervals.size()) > max_samples)
 	m_helm_intervals.pop_back();
     }
   }
@@ -544,7 +544,7 @@ void HelmScope::pruneHistory()
   // we don't take it for granted. So we use a curr_history_size
   // that is the max of the two map sizes.
   int curr_history_size = m_blocks_helm.size();
-  if(m_blocks_posts.size() > curr_history_size)
+  if((int)(m_blocks_posts.size()) > curr_history_size)
     curr_history_size = m_blocks_posts.size();
   
   // If the curr_history_size is within the bounds set by the 
@@ -679,7 +679,7 @@ void HelmScope::updateVariable(CMOOSMsg &msg)
 void HelmScope::updateVarVal(const string& varname, 
 			     const string& val)
 {
-  for(int i=0; i<m_var_names.size(); i++)
+  for(unsigned int i=0; i<m_var_names.size(); i++)
     if(m_var_names[i] == varname)
       if(isNumber(val))
 	m_var_vals[i] = dstringCompact(val);
@@ -690,7 +690,7 @@ void HelmScope::updateVarVal(const string& varname,
 void HelmScope::updateVarType(const string& varname, 
 			      const string& vtype)
 {
-  for(int i=0; i<m_var_names.size(); i++)
+  for(unsigned int i=0; i<m_var_names.size(); i++)
     if(m_var_names[i] == varname)
       m_var_type[i] = vtype;
 }
@@ -698,7 +698,7 @@ void HelmScope::updateVarType(const string& varname,
 void HelmScope::updateVarSource(const string& varname, 
 				const string& vsource)
 {
-  for(int i=0; i<m_var_names.size(); i++)
+  for(unsigned int i=0; i<m_var_names.size(); i++)
     if(m_var_names[i] == varname)
       m_var_source[i] = vsource;
 }
@@ -706,7 +706,7 @@ void HelmScope::updateVarSource(const string& varname,
 void HelmScope::updateVarTime(const string& varname, 
 			      const string& vtime)
 {
-  for(int i=0; i<m_var_names.size(); i++)
+  for(unsigned int i=0; i<m_var_names.size(); i++)
     if(m_var_names[i] == varname)
       m_var_time[i] = vtime;
 }
@@ -714,7 +714,7 @@ void HelmScope::updateVarTime(const string& varname,
 void HelmScope::updateVarCommunity(const string& varname, 
 				   const string& vcommunity)
 {
-  for(int i=0; i<m_var_names.size(); i++)
+  for(unsigned int i=0; i<m_var_names.size(); i++)
     if(m_var_names[i] == varname)
       m_var_community[i] = vcommunity;
 }
@@ -810,7 +810,7 @@ void HelmScope::printReport()
 
 void HelmScope::printHelmReport(int index)
 {  
-  int i,j,vsize;
+  unsigned int i, vsize;
   vector<string> svector, tvector;
   
   if(m_iteration_helm == -1) {
@@ -826,7 +826,7 @@ void HelmScope::printHelmReport(int index)
   double solve_time  = hblock.getSolveTime();
   double create_time = hblock.getCreateTime();
   double loop_time   = hblock.getLoopTime();
-  double utc_time    = hblock.getUTCTime();
+  //double utc_time    = hblock.getUTCTime();
   bool   halted      = hblock.getHalted();
 
   //--------------------------------------------
@@ -884,9 +884,9 @@ void HelmScope::printHelmReport(int index)
 
   printf("Helm Decision: %s\n", m_ivpdomain.c_str());
   int vars = hblock.getDecVarCnt();
-  for(i=0; i<vars; i++) {
-    string var = hblock.getDecVar(i);
-    string val = doubleToString(hblock.getDecVal(i),2);
+  for(int j=0; j<vars; j++) {
+    string var = hblock.getDecVar(j);
+    string val = doubleToString(hblock.getDecVal(j),2);
     printf("  %s = %s \n", var.c_str(), val.c_str());
   }
 
@@ -976,8 +976,8 @@ void HelmScope::printDBReport(int index)
   printf("%-11s", "---------");
   printf("----------- \n");
   
-  int vsize = m_var_names.size();
-  for(int i=0; i<vsize; i++) {
+  unsigned int vsize = m_var_names.size();
+  for(unsigned int i=0; i<vsize; i++) {
     if((m_display_virgins || (i_var_vals[i]!="n/a")) &&
        (m_display_statevars || (strContains(i_var_category[i], "user")))) {
 
@@ -1010,7 +1010,7 @@ void HelmScope::printDBReport(int index)
       
       if(m_var_type[i] == "string") {
 	if(m_var_vals[i] != "n/a") {
-	  int max_len = 28;
+	  unsigned int max_len = 28;
 	  if((m_display_truncate) && (i_var_vals[i].length() > max_len)) {
 	    string str = truncString(i_var_vals[i], max_len);
 	    printf("\"%s\"+", str.c_str());
@@ -1033,8 +1033,6 @@ void HelmScope::printDBReport(int index)
 
 void HelmScope::printPostingReport(int index)
 {  
-  int i,j;
-  
   printf("@\n");
 
   if(m_iteration_helm == -1) {
@@ -1044,16 +1042,15 @@ void HelmScope::printPostingReport(int index)
 
   vector<string> postings;
   postings = m_blocks_posts[index].getPostings();
-  int psize = postings.size();
+  unsigned int psize = postings.size();
 
   vector<string> behaviors;
   behaviors = m_blocks_posts[index].getBehaviors();
-  int bsize = behaviors.size();
 
   printf("@  MOOS Variable     Value \n");
   
   string prev_behavior = "";
-  for(i=0; i<psize; i++) {
+  for(unsigned int i=0; i<psize; i++) {
     bool ok_post = true;
     const char *pcstr = postings[i].c_str();
     if(!m_display_msgs_view && (!strncmp("VIEW_", pcstr, 5)))
@@ -1077,12 +1074,12 @@ void HelmScope::printPostingReport(int index)
 	string var = stripBlankEnds(svector[0]);
 	string val = stripBlankEnds(svector[1]);
 	
-	int var_max_len = 17;
+	unsigned int var_max_len = 17;
 	if((m_display_truncate) && (var.length() > var_max_len))
 	  var = truncString(var, 17, "middle");
 	printf("@  %-17s ", var.c_str());
 	
-	int val_max_len = 50;
+	unsigned int val_max_len = 50;
 	if((m_display_truncate) && (val.length() > val_max_len)) {
 	  string str = truncString(val, val_max_len);
 	  printf("%s +\n", str.c_str());

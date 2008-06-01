@@ -41,24 +41,20 @@ using namespace std;
 class MK_itoa
 {
 public:
-  int itoa(int ival, char *buff)
-  {
-    if(ival < 10000)
-    {
-       unsigned int i;
-       for(i = 0; i < smaps[ival].len; ++i)
-       {
-          buff[i] = smaps[ival].str[i];
-       }
-       return i;
+  int itoa(int ival, char *buff) {
+    if(ival < 10000) {
+      int i;
+      for(i = 0; i < smaps[ival].len; ++i) {
+	buff[i] = smaps[ival].str[i];
+      }
+      return i;
     }
-    else
-    {
-       int upper = ival / 10000;
-       int lower = ival % 10000;
-       int slen = itoa(upper, buff);
-       slen += itoa(lower, buff + slen);
-       return slen;
+    else {
+      int upper = ival / 10000;
+      int lower = ival % 10000;
+      int slen = itoa(upper, buff);
+      slen += itoa(lower, buff + slen);
+      return slen;
     }
   }
 

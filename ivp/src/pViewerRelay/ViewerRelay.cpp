@@ -23,12 +23,12 @@ bool ViewerRelay::OnNewMail(MOOSMSG_LIST &NewMail)
     CMOOSMsg &msg = *p;
 	
     string key   = msg.GetKey();
-    double dval  = msg.GetDouble();
+    //double dval  = msg.GetDouble();
     string sval  = msg.GetString(); 
-    double mtime = msg.GetTime();
-    bool   mdbl  = msg.IsDouble();
-    bool   mstr  = msg.IsString();
-    string msrc  = msg.GetSource();
+    //double mtime = msg.GetTime();
+    //bool   mdbl  = msg.IsDouble();
+    //bool   mstr  = msg.IsString();
+    //string msrc  = msg.GetSource();
 
     key = toupper(key);
     

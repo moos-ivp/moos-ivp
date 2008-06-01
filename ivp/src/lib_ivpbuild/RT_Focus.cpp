@@ -71,7 +71,7 @@ PDMap* RT_Focus::create(PDMap *pdmap, const IvPBox& region,
   // Then ensure the region extents are within the domain extents
   for(i=0; i<dim; i++) {
     if((region.pt(i,0) < 0) ||
-       (region.pt(i,1) > domain.getVarPoints(i)) ||
+       (region.pt(i,1) > (int)(domain.getVarPoints(i))) ||
        (region.pt(i,0) > region.pt(i,1)))
       return(0);
   }

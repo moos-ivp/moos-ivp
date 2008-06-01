@@ -67,7 +67,7 @@ void PMV_Viewer::draw()
 
   // Next draw the vehicle shapes. If the vehicle index is the 
   // one "active", draw it in a different color.
-  int ix = 0;
+  unsigned int ix = 0;
   map<string,ObjectPose>::iterator p1;
   for(p1=m_pos_map.begin(); p1!=m_pos_map.end(); p1++) {
     string vname = p1->first;

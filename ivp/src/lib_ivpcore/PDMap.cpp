@@ -270,7 +270,7 @@ void PDMap::setGelBox(const IvPBox& b)
   for(int d=0; d<bdim; d++) {
     ok = ok && (b.pt(d,0) <= b.pt(d,1));
     ok = ok && (b.pt(d,0) >= 0);
-    ok = ok && (b.pt(d,1) <= m_domain.getVarPoints(d)-1);
+    ok = ok && (b.pt(d,1) <= (int)(m_domain.getVarPoints(d)-1));
   }
 
   assert(ok);

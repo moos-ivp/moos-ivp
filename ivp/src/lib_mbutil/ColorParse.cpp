@@ -81,8 +81,8 @@ vector<double> colorHexToVector(const std::string& str)
   // Remove all white space first.
   cstr = findReplace(cstr, '\t', ' ');
   cstr = findReplace(cstr, " ", "");
-  for(i=0; i<cstr.length(); i++) {
-    char c = cstr.at(i);
+  for(unsigned int j=0; j<cstr.length(); j++) {
+    char c = cstr.at(j);
     if(!(((c>=48) && (c<=57)) || (c==44) || ((c>=97)&&(c<=102))))
       return(return_vector);
   }

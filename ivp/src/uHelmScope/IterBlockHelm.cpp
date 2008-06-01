@@ -209,7 +209,7 @@ void IterBlockHelm::addDecVarVal(string varname, double value)
 //------------------------------------------------------------
 // Procedure: getDecVar(int)
 
-string IterBlockHelm::getDecVar(int ix) const
+string IterBlockHelm::getDecVar(unsigned int ix) const
 {
   if((ix >= 0) && (ix < m_decvar.size()))
     return(m_decvar[ix]);
@@ -220,7 +220,7 @@ string IterBlockHelm::getDecVar(int ix) const
 //------------------------------------------------------------
 // Procedure: getDecVal(int)
 
-double IterBlockHelm::getDecVal(int ix) const
+double IterBlockHelm::getDecVal(unsigned int ix) const
 {
   if((ix >= 0) && (ix < m_decvar.size()))
     return(m_decval[ix]);

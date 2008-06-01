@@ -30,7 +30,7 @@ protected:
   void addCommand(std::string);
   void printMapping();
   void registerVariables();
-  void postCommand(int);
+  void postCommand(unsigned int);
 
   std::vector<int> getPartialKeyMatches();
   int              getFullKeyMatch();

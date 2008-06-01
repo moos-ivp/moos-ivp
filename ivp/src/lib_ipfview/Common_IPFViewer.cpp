@@ -120,7 +120,7 @@ void Common_IPFViewer::setParam(string param, string value)
 
   if((param == "color_scheme") && (value == "toggle-forward")) {
     m_scheme_index++;
-    if(m_scheme_index > m_scheme_back.size()-1)
+    if(m_scheme_index > (int)(m_scheme_back.size()-1))
       m_scheme_index = 0;
   }
 
@@ -235,7 +235,7 @@ void Common_IPFViewer::draw()
 
   bool iCull=false;
   bool iDepth=true;
-  bool iOutline=false;
+  //bool iOutline=false;
 
   // Turn culling on if flag is set
   if(iCull)

@@ -75,7 +75,7 @@ void SSV_Viewer::draw()
 
   // Next draw the ownship vehicle shape. If the vehicle 
   // index is the one "active", draw it in a different color.
-  int ix = 0;
+  unsigned int ix = 0;
   map<string,ObjectPose>::iterator p1;
   for(p1=m_pos_map.begin(); p1!=m_pos_map.end(); p1++) {
     string vname = p1->first;
@@ -653,11 +653,10 @@ void SSV_Viewer::drawRadials()
   
   XYPolygon poly = stringToPoly(poly_str);
 
-  unsigned int i, j;
   float *points = new float[2*psize];
   
   int pindex = 0;
-  for(i=0; i<psize; i++) {
+  for(int i=0; i<psize; i++) {
     points[pindex]   = poly.get_vx(i);
     points[pindex+1] = poly.get_vy(i);
 
@@ -695,9 +694,9 @@ void SSV_Viewer::drawRadials()
   glColor3f(red, grn, blu);
 
   glBegin(GL_LINE_LOOP);
-  for(i=0; i<psize*2; i=i+2) {
-    glVertex2f(points[i], points[i+1]);
-  }
+  for(int j=0; j<psize*2; j=j+2) 
+    glVertex2f(points[j], points[j+1]);
+
   glEnd();
   if(dashed)
     glDisable(GL_LINE_STIPPLE);
@@ -736,7 +735,7 @@ void SSV_Viewer::drawGridBox(double p0x, double p0y,
 {
   unsigned int i;
 
-  int    vsize  = 4;
+  unsigned int    vsize  = 4;
   float *points = new float[2*4];
 
   points[0]  = p0x;    points[1] = p0y;
@@ -744,7 +743,7 @@ void SSV_Viewer::drawGridBox(double p0x, double p0y,
   points[4]  = p2x;    points[5] = p2y;
   points[6]  = p3x;    points[7] = p3y;
 
-  int pindex = 0;
+  unsigned int pindex = 0;
   for(i=0; i<vsize; i++) {
     points[pindex]   *=  m_back_img.get_pix_per_mtr();
     points[pindex+1] *=  m_back_img.get_pix_per_mtr();
@@ -790,9 +789,9 @@ void SSV_Viewer::drawGridBox(double p0x, double p0y,
 
 void SSV_Viewer::drawGridPN()
 {
-  unsigned int i, j;
+  unsigned int i;
 
-  int vsize     = 18;
+  unsigned int vsize     = 18;
   float *points = new float[2*18];
 
   points[0]  =   932;    points[1]  =  4339;
@@ -814,7 +813,7 @@ void SSV_Viewer::drawGridPN()
   points[32] =  -243;    points[33] = -5639;
   points[34] =   729;    points[35] = -5855;
 
-  int pindex = 0;
+  unsigned int pindex = 0;
   for(i=0; i<vsize; i++) {
     points[pindex]   *=  m_back_img.get_pix_per_mtr();
     points[pindex+1] *=  m_back_img.get_pix_per_mtr();
@@ -1050,15 +1049,15 @@ void SSV_Viewer::drawCirc(XYCircle dcircle, int pts, bool filled,
   XYPolygon poly = stringToPoly(poly_str);
 
   // Now set points to the actual size vs. the requested size
-  pts = poly.size();
+  unsigned int actual_pts = poly.size();
 
-  if(pts <= 0)
+  if(actual_pts == 0)
     return;
 
-  unsigned int i, j;
-  float *points = new float[2*pts];
-  int pindex = 0;
-  for(i=0; i<pts; i++) {
+  unsigned int i;
+  float *points = new float[2 * actual_pts];
+  unsigned int pindex = 0;
+  for(i=0; i<actual_pts; i++) {
     points[pindex]   = poly.get_vx(i);
     points[pindex+1] = poly.get_vy(i);
 
@@ -1069,7 +1068,7 @@ void SSV_Viewer::drawCirc(XYCircle dcircle, int pts, bool filled,
 
   glColor3f(l_red, l_grn, l_blu);
   glBegin(GL_LINE_LOOP);
-  for(i=0; i<pts*2; i=i+2) {
+  for(i=0; i<actual_pts*2; i=i+2) {
     glVertex2f(points[i], points[i+1]);
   }
   glEnd();
@@ -1080,7 +1079,7 @@ void SSV_Viewer::drawCirc(XYCircle dcircle, int pts, bool filled,
     glColor4f(f_red,f_grn,f_blu,0.1);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glBegin(GL_POLYGON);
-    for(i=0; i<pts*2; i=i+2) {
+    for(i=0; i<actual_pts*2; i=i+2) {
       glVertex2f(points[i], points[i+1]);
     }
     glEnd();

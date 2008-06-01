@@ -42,7 +42,7 @@
 #ifndef _WIN32
 char getCharNoWait() 
 {
-  char c, i, fd=0;
+  char c, fd=0;
   struct termios term, oterm;
   
   /* get the terminal settings */

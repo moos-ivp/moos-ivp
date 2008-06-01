@@ -291,6 +291,8 @@ bool ParseNode::recursiveSyntaxCheck(int side)
       else
 	return(false);
     }
+    else
+      return(false);
   }
   
   // Case where there is ONE subnode
@@ -317,7 +319,7 @@ bool ParseNode::recursiveSyntaxCheck(int side)
     
     return(ok1 & ok2);
   }
-
+  
   else
     return(false);
 }
@@ -367,12 +369,20 @@ bool ParseNode::evaluate(const string& relation,
   if(isQuoted(left))  left  = stripQuotes(left);
   if(isQuoted(right)) right = stripQuotes(right);
   
-  if(relation == "=")  return(left == right);
-  if(relation == "!=") return(left != right);
-  if(relation == "<")  return(left <  right);
-  if(relation == "<=") return(left <= right);
-  if(relation == ">")  return(left >  right);
-  if(relation == ">=") return(left >= right);
+  if(relation == "=")  
+    return(left == right);
+  else if(relation == "!=") 
+    return(left != right);
+  else if(relation == "<")  
+    return(left <  right);
+  else if(relation == "<=") 
+    return(left <= right);
+  else if(relation == ">")  
+    return(left >  right);
+  else if(relation == ">=") 
+    return(left >= right);
+  else
+    return(false);
 }
 
 //----------------------------------------------------------------
@@ -381,12 +391,20 @@ bool ParseNode::evaluate(const string& relation,
 bool ParseNode::evaluate(const string& relation, 
 			 double left, double right)
 {
-  if(relation == "=")  return(left == right);
-  if(relation == "!=") return(left != right);
-  if(relation == "<")  return(left <  right);
-  if(relation == "<=") return(left <= right);
-  if(relation == ">")  return(left >  right);
-  if(relation == ">=") return(left >= right);
+  if(relation == "=")  
+    return(left == right);
+  else if(relation == "!=") 
+    return(left != right);
+  else if(relation == "<")  
+    return(left <  right);
+  else if(relation == "<=") 
+    return(left <= right);
+  else if(relation == ">")  
+    return(left >  right);
+  else if(relation == ">=") 
+    return(left >= right);
+  else
+    return(false);
 }
 
 //----------------------------------------------------------------

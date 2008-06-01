@@ -58,10 +58,10 @@ class NavPlotViewer : public MarineViewer
 
   bool   setCurrIndex(int);
   bool   incCurrIndex(int);
-  bool   jumpCurrIndex(int);
-  void   setGridPlotIndex(int);
-  void   setGlobalIndex(int);
-  bool   vehicle(int);
+  bool   jumpCurrIndex(unsigned int);
+  void   setGridPlotIndex(unsigned int);
+  void   setGlobalIndex(unsigned int);
+  bool   vehicle(unsigned int);
   int    addGridPlot(const GridPlot&);
   float  getCurrTime();
   float  getAvgStepTime();
@@ -73,15 +73,15 @@ class NavPlotViewer : public MarineViewer
 
 protected:
   void  drawNavPlots();
-  void  drawNavPlot(int ix);
+  void  drawNavPlot(unsigned int ix);
   void  drawGridPlots();
-  void  drawGridPlot(int ix);
+  void  drawGridPlot(unsigned int ix);
   void  drawFrame();
   void  drawPoint(float x, float y, float cr, float cg, float cb, float sz);
   
 private:
-  int                   m_local_ix;
-  int                   m_gridplot_ix;
+  unsigned int          m_local_ix;
+  unsigned int          m_gridplot_ix;
   std::string           m_vehibody;
   std::string           m_frame;
   std::vector<GridPlot> m_gridplots;

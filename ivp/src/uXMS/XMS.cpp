@@ -132,7 +132,6 @@ bool XMS::OnStartUp()
     string sVarName  = MOOSChomp(sLine, "=");
     sVarName = stripBlankEnds(toupper(sVarName));
     sLine    = stripBlankEnds(sLine);
-    int len  = sLine.length();
     
     if(sVarName == "PAUSED")
       m_paused = (tolower(sLine) == "true");
@@ -350,35 +349,35 @@ void XMS::updateVarVal(string varname, string val)
 {
   if(isNumber(val))
     val = dstringCompact(val);
-  for(int i=0; i<var_names.size(); i++)
+  for(unsigned int i=0; i<var_names.size(); i++)
     if(var_names[i] == varname)
       var_vals[i] = val;
 }
 
 void XMS::updateVarType(string varname, string vtype)
 {
-  for(int i=0; i<var_names.size(); i++)
+  for(unsigned int i=0; i<var_names.size(); i++)
     if(var_names[i] == varname)
       var_type[i] = vtype;
 }
 
 void XMS::updateVarSource(string varname, string vsource)
 {
-  for(int i=0; i<var_names.size(); i++)
+  for(unsigned int i=0; i<var_names.size(); i++)
     if(var_names[i] == varname)
       var_source[i] = vsource;
 }
 
 void XMS::updateVarTime(string varname, string vtime)
 {
-  for(int i=0; i<var_names.size(); i++)
+  for(unsigned int i=0; i<var_names.size(); i++)
     if(var_names[i] == varname)
       var_time[i] = vtime;
 }
 
 void XMS::updateVarCommunity(string varname, string vcommunity)
 {
-  for(int i=0; i<var_names.size(); i++)
+  for(unsigned int i=0; i<var_names.size(); i++)
     if(var_names[i] == varname)
       var_community[i] = vcommunity;
 }

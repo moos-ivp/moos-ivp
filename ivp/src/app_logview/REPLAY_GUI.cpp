@@ -177,7 +177,6 @@ void REPLAY_GUI::augmentMenu()
 
 int REPLAY_GUI::handle(int event) 
 {
-  int step = 1;
   switch(event) {
   case FL_PUSH:
     Fl_Window::handle(event);
@@ -374,8 +373,6 @@ void REPLAY_GUI::cb_Delete(Fl_Widget* o) {
 
 //----------------------------------------- UpdateXY
 void REPLAY_GUI::updateXY() {
-  
-  char buff[64];
   
   // DISPLAY TIME
   double ctime = np_viewer->getCurrTime();

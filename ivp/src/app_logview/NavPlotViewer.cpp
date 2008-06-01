@@ -37,7 +37,7 @@ NavPlotViewer::NavPlotViewer(int x, int y, int w, int h, const char *l)
   : MarineViewer(x,y,w,h,l)
 {
   m_global_ix    = 0;
-  m_gridplot_ix  = -1;
+  m_gridplot_ix  = 0;
   m_local_ix     = 0;
   m_trail_gap    = 1;
   m_trail_size   = 1;
@@ -115,19 +115,24 @@ float NavPlotViewer::getMetersY()
 //-------------------------------------------------------------
 // Procedure: setCurrIndex
 //      Note: returns true if the value changes
+//      Note: uint-check
 
 bool NavPlotViewer::setCurrIndex(int v)
 {
   if(m_navx_plot.size() == 0)
-    return(0);
-  int new_index = v;
-  
-  int max_new_index = m_navx_plot[m_global_ix].size() - 1;
+    return(false);
 
-  if(v < 0)
-    new_index = 0;
-  else if(v >= max_new_index) 
-    new_index = max_new_index;
+  unsigned int new_index = 0;
+  if(v >= 0)
+    new_index = (unsigned int)(v);
+  
+  unsigned int plotsize = m_navx_plot[m_global_ix].size();
+
+  if(plotsize == 0)
+    return(false);
+
+  if(new_index >= plotsize) 
+    new_index = plotsize - 1;
 
   if(m_local_ix != new_index) {
     m_local_ix = new_index;
@@ -154,7 +159,7 @@ bool NavPlotViewer::incCurrIndex(int v)
 //            1 sets index at the end
 //            2 sets index at the middle
 
-bool NavPlotViewer::jumpCurrIndex(int v)
+bool NavPlotViewer::jumpCurrIndex(unsigned int v)
 {
   if(m_navx_plot.size() == 0)
     return(false);
@@ -175,7 +180,7 @@ bool NavPlotViewer::jumpCurrIndex(int v)
 //-------------------------------------------------------------
 // Procedure: setGridPlotIndex
 
-void NavPlotViewer::setGridPlotIndex(int ix)
+void NavPlotViewer::setGridPlotIndex(unsigned int ix)
 {
   if((ix < 0) || (ix >= m_gridplots.size()))
     return;
@@ -187,7 +192,7 @@ void NavPlotViewer::setGridPlotIndex(int ix)
 //-------------------------------------------------------------
 // Procedure: vehicle
 
-void NavPlotViewer::setGlobalIndex(int new_ix)
+void NavPlotViewer::setGlobalIndex(unsigned int new_ix)
 {
   if(m_navx_plot.size() == 0)
     return;
@@ -282,14 +287,14 @@ void NavPlotViewer::drawPoint(float px, float py, float cr,
 
 void NavPlotViewer::drawNavPlots()
 {
-  for(int i=0; i<m_navx_plot.size(); i++)
+  for(unsigned int i=0; i<m_navx_plot.size(); i++)
     drawNavPlot(i);
 }
 
 //-------------------------------------------------------------
 // Procedure: drawNavPlot
 
-void NavPlotViewer::drawNavPlot(int index)
+void NavPlotViewer::drawNavPlot(unsigned int index)
 {
   if((index < 0) || (index >= m_navx_plot.size()))
     return;
@@ -353,17 +358,17 @@ void NavPlotViewer::drawNavPlot(int index)
 
 void NavPlotViewer::drawGridPlots()
 {
-  if(m_gridplot_ix != -1)
-    drawGridPlot(m_gridplot_ix);
-  //for(int i=0; i<m_gridplots.size(); i++)
-  //  drawGridPlot(i);
+  if(m_gridplots.size() == 0)
+    return;
+
+  drawGridPlot(m_gridplot_ix);
 }
 
 
 //-------------------------------------------------------------
 // Procedure: drawGridPlot
 
-void NavPlotViewer::drawGridPlot(int index)
+void NavPlotViewer::drawGridPlot(unsigned int index)
 {
   int npsize = m_gridplots[index].size();
   if(npsize == 0)

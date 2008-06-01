@@ -27,8 +27,8 @@ public:
   void     incDescriptor();
   void     decDescriptor();
   int      getCurrIteration() {return(m_fqueue.getIteration());};
-  bool     toggleCollective() {m_collective = !m_collective;};
-  bool     toggleLockIPF()    {m_lock_ipf = !m_lock_ipf;};
+  void     toggleCollective() {m_collective = !m_collective;};
+  void     toggleLockIPF()    {m_lock_ipf = !m_lock_ipf;};
   bool     isLocked()         {return(m_lock_ipf);};
 
   std::string getCurrDescriptor();

@@ -276,7 +276,7 @@ bool SSV_MOOSApp::receiveAIS_REPORT(CMOOSMsg &Msg)
   bool bHeading = tokParse(sVal, "HDG",  ',', '=', dfHeading);
   bool bDepth = tokParse(sVal, "DEPTH",  ',', '=', dfDepth);
 
-  if(bX && bY && bHeading && bSpeed && bDepth) {
+  if(bVName && bVType && bX && bY && bHeading && bSpeed && bDepth) {
     if(m_gui) {
       m_gui->mviewer->updateVehiclePosition(vessel_name, dfX, dfY, 
 					    dfHeading, dfSpeed, dfDepth);

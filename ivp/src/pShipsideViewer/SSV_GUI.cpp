@@ -38,8 +38,8 @@ SSV_GUI::SSV_GUI(int g_w, int g_h, const char *g_l)
   augmentMenu();
 
   int info_size=12;
-  int bcol_width = 100;
-  int bcol_pos = w()-bcol_width;
+  //int bcol_width = 100;
+  //int bcol_pos = w()-bcol_width;
   
   int wid_b = 150;
   int col_b = w() - wid_b;
@@ -113,7 +113,7 @@ SSV_GUI::SSV_GUI(int g_w, int g_h, const char *g_l)
 
   int a_top = h()-323; // eyeballing it
   int a_txt = 25;
-  int a_hgt = 75;
+  //int a_hgt = 75;
   m_deploy_box_text = new Fl_Box(FL_BORDER_BOX, col_b+2, a_top, 
 				 wid_b-4, a_txt, "All Vehicles");
   m_deploy_box_text->color(FL_DARK_GREEN);
@@ -160,7 +160,7 @@ SSV_GUI::SSV_GUI(int g_w, int g_h, const char *g_l)
 
   int ca_top = h()-600;
   int ca_txt = 25;
-  int ca_hgt = 75;
+  //int ca_hgt = 75;
   m_cdeploy_box_text = new Fl_Box(FL_BORDER_BOX, col_b+2, ca_top, 
 				  wid_b-4, ca_txt, "Current Vehicle");
   m_cdeploy_box_text->color(FL_DARK_BLUE);
@@ -217,27 +217,27 @@ void SSV_GUI::addContactButton(int index, string vname)
 {
   vname = toupper(stripBlankEnds(vname));
 
-  int bcol_width = 100;
-  int bcol_pos = w()-bcol_width;
+  //int bcol_width = 100;
+  //int bcol_pos = w()-bcol_width;
 
   if(index == 0)
     contact_b1->copy_label(vname.c_str());
-  if(index == 1)
+  else if(index == 1)
     contact_b2->copy_label(vname.c_str());
-  if(index == 2)
+  else if(index == 2)
     contact_b3->copy_label(vname.c_str());
-  if(index == 3)
+  else if(index == 3)
     contact_b4->copy_label(vname.c_str());
-  if(index == 4)
+  else if(index == 4)
     contact_b5->copy_label(vname.c_str());
-  if(index == 5)
+  else if(index == 5)
     contact_b6->copy_label(vname.c_str());
 }
 
 //-------------------------------------------------------------------
 // Procedure: getPendingVar
 
-string SSV_GUI::getPendingVar(int ix)
+string SSV_GUI::getPendingVar(unsigned int ix)
 {
   if((ix >=0) && (ix < m_pending_vars.size()))
     return(m_pending_vars[ix]);
@@ -248,7 +248,7 @@ string SSV_GUI::getPendingVar(int ix)
 //-------------------------------------------------------------------
 // Procedure: getPendingVal
 
-string SSV_GUI::getPendingVal(int ix)
+string SSV_GUI::getPendingVal(unsigned int ix)
 {
   if((ix >=0) && (ix < m_pending_vals.size()))
     return(m_pending_vals[ix]);

@@ -125,7 +125,7 @@ bool EchoVar::OnStartUp()
 
 void EchoVar::registerVariables()
 {
-  for(int i=0; i<m_unique_sources.size(); i++)
+  for(unsigned int i=0; i<m_unique_sources.size(); i++)
     m_Comms.Register(m_unique_sources[i], 0);
 }
 
@@ -198,10 +198,10 @@ bool EchoVar::noCycles()
 
 vector<string> EchoVar::expand(vector<string> key_vector)
 {
-  int  i, j;
-  int  map_size = m_var_source.size();;
+  unsigned int  i, j;
+  unsigned int  map_size = m_var_source.size();;
 
-  int vsize = key_vector.size();
+  unsigned int vsize = key_vector.size();
   for(i=0; i<vsize; i++) {
     string key = key_vector[i];
     for(j=0; j<map_size; j++)

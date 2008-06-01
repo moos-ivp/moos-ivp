@@ -198,19 +198,17 @@ HelmReport HelmEngine::determineNextDecision(BehaviorSet *bhv_set,
 
 bool HelmEngine::checkOFDomains(vector<IvPFunction*> ofs)
 {
-  int i,j,k,vsize;
-
   // First build a vector of unique domain names strings from
   // all the objective functions.
   vector<string> of_domains;
-  vsize = ofs.size();
-  for(i=0; i<vsize; i++) {
+  int vsize = ofs.size();
+  for(int i=0; i<vsize; i++) {
     if(ofs[i]) {
       int dim = ofs[i]->getDim();
-      for(j=0; j<dim; j++) {
+      for(int j=0; j<dim; j++) {
 	string dname = ofs[i]->getVarName(j);
 	bool already_present = false;
-	for(k=0; k<of_domains.size(); k++)
+	for(unsigned int k=0; k<of_domains.size(); k++)
 	  if(of_domains[k] == dname)
 	    already_present = true;
 	if(!already_present)
@@ -223,11 +221,11 @@ bool HelmEngine::checkOFDomains(vector<IvPFunction*> ofs)
   // names produced by objective functions should be present in
   // the ivp_domain structure.
 
-  vsize = of_domains.size();
-  for(i=0; i<vsize; i++) {
+  unsigned int domsize = of_domains.size();
+  for(unsigned int i=0; i<domsize; i++) {
     bool ok_domain = false;
     int count = ivp_domain.size();
-    for(j=0; (!ok_domain && (j<count)); j++) {
+    for(int j=0; (!ok_domain && (j<count)); j++) {
       string dname = ivp_domain.getVarName(j);
       if(of_domains[i] == dname)
 	ok_domain = true;
@@ -248,13 +246,13 @@ bool HelmEngine::checkOFDomains(vector<IvPFunction*> ofs)
   // necessary. If of_domains is smaller, we want to build a smaller
   // modified ivp_domain, and return it.
 
-  if(vsize == ivp_domain.size()) {
+  if(domsize == ivp_domain.size()) {
     sub_domain = ivp_domain;
     return(true);
   }
   else {
     sub_domain = IvPDomain();
-    for(int i=0; i<vsize; i++) {
+    for(unsigned int i=0; i<domsize; i++) {
       const char* dname = of_domains[i].c_str();
       int    index = ivp_domain.getIndex(dname);
       double dlow  = ivp_domain.getVarLow(index);

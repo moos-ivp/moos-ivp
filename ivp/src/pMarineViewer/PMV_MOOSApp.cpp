@@ -309,8 +309,8 @@ bool PMV_MOOSApp::parseSingleReport(string sReport)
     MOOSTrace("   AIS(%s)\n", vessel_name.c_str());
   else
     MOOSTrace("*");
-
-  if(bX && bY && bHeading && bSpeed && bDepth) {
+  
+  if(bVName && bVType && bX && bY && bHeading && bSpeed && bDepth) {
     if(m_gui) {
       m_gui->mviewer->updateVehiclePosition(vessel_name, dfX, dfY, 
 					    dfHeading, dfSpeed, dfDepth);
@@ -343,23 +343,20 @@ bool PMV_MOOSApp::receivePK_SOL(CMOOSMsg &Msg)
 
   // cycle through all reports
 
-  for (int i=0;i<svector.size()-1;i++)
-  {
-     // Remove first item of string - it is the type of report
-     // (e.g. REPORT_TYPE = AIS_REPORT) so strip that off and 
-     // proceed as before with the single AIS_REPORT messages
-
-     rvector = chompString(svector[i], ',');
-     if (rvector.size() > 1 )
-     {
-        singleStatus = parseSingleReport( rvector[1].c_str());
-        if ( singleStatus == false )
-        {
-           returnStatus = false;
-        }
-     }
+  for(unsigned int i=0;i<svector.size()-1;i++) {
+    // Remove first item of string - it is the type of report
+    // (e.g. REPORT_TYPE = AIS_REPORT) so strip that off and 
+    // proceed as before with the single AIS_REPORT messages
+    
+    rvector = chompString(svector[i], ',');
+    if(rvector.size() > 1 ) {
+      singleStatus = parseSingleReport( rvector[1].c_str());
+      if(singleStatus == false) {
+	returnStatus = false;
+      }
+    }
   }
-  return( returnStatus );
+  return(returnStatus);
 }
 
 //---------------------------------------------------------------

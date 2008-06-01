@@ -49,7 +49,7 @@ class MarineViewer : public Fl_Gl_Window
   virtual int   handle(int event)
     {return(Fl_Gl_Window::handle(event));};
 
-  virtual void setGlobalIndex(int i) {m_global_ix = i;};
+  virtual void setGlobalIndex(unsigned int i) {m_global_ix = i;};
 
   virtual bool setParam(std::string p, std::string v) = 0;
   virtual bool setParam(std::string p, float v)       = 0;
@@ -138,7 +138,7 @@ protected:
   int        m_vname_color;
   bool       m_draw_datum;
   float      m_size_datum;
-  int        m_global_ix;
+  unsigned int m_global_ix;
 
   std::vector<XYCircle>  m_circ;
   std::vector<XYPolygon> m_poly;

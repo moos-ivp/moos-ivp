@@ -25,7 +25,7 @@ bool Repeater::OnNewMail(MOOSMSG_LIST &NewMail)
     string key   = msg.GetKey();
     double dval  = msg.GetDouble();
     string sval  = msg.GetString(); 
-    double mtime = msg.GetTime();
+    //double mtime = msg.GetTime();
     string msrc  = msg.GetSource();
 
     string vtype = "string";
@@ -188,6 +188,8 @@ bool Repeater::addVariable(string var, int amt, double time)
   m_dfVal.push_back(0);
   m_sVal.push_back("");
   m_type.push_back("unset");
+
+  return(true);
 }
 
 
@@ -197,7 +199,7 @@ bool Repeater::addVariable(string var, int amt, double time)
 int Repeater::findVarIndex(string var)
 {
   var = stripBlankEnds(var);
-  for(int i=0; i<m_rpt_variable.size(); i++) {
+  for(unsigned int i=0; i<m_rpt_variable.size(); i++) {
     if(var == m_rpt_variable[i])
       return(i);
   }

@@ -14,7 +14,11 @@ using namespace std;
 
 FunctionQueue::FunctionQueue(int g_queue_limit)
 {
-  m_queue_limit        = g_queue_limit;
+  if(g_queue_limit >= 0)
+    m_queue_limit = g_queue_limit;
+  else
+    m_queue_limit = 0;
+    
   m_latest_iteration   = 0;
   m_latest_collective  = 0;
   m_collective_quadset = 0;
@@ -99,7 +103,9 @@ const QuadSet* FunctionQueue::getCollectiveQuadSet()
   // Get all the QueueEntries of the previous iteration since 
   // presumably they have all arrived in the queue if the current
   // iteration is one greater.
-  int iter_matches = 0;
+
+  // int iter_matches = 0;
+
   list<QueueEntry>::reverse_iterator p;
   for(p = m_entries.rbegin(); p != m_entries.rend(); p++) {
     QueueEntry &entry = *p;

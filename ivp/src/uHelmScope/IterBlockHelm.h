@@ -39,8 +39,8 @@ public:
   std::vector<std::string> getCompletedBHV(bool=false) const;
 
   int         getDecVarCnt()  const {return(m_decvar.size());};
-  std::string getDecVar(int) const;
-  double      getDecVal(int) const;
+  std::string getDecVar(unsigned int) const;
+  double      getDecVal(unsigned int) const;
   int         getIteration() const  {return(m_iteration);};
   int         getCountIPF() const   {return(m_count_ipf);};
   double      getSolveTime() const  {return(m_solve_time);};

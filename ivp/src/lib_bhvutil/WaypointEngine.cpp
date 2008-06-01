@@ -233,7 +233,7 @@ string WaypointEngine::setNextWaypoint(double os_x, double os_y)
   // (3) declare completion of the behavior.
   if(point_advance) {
     m_curr_ix++;
-    if(m_curr_ix >= vsize) {
+    if(m_curr_ix >= (int)(vsize)) {
       m_curr_ix = 0;
       if(!m_perpetual) {
 	if(m_repeat > 0)

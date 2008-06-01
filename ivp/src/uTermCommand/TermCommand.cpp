@@ -27,12 +27,14 @@ TermCommand::TermCommand()
 
 bool TermCommand::OnNewMail(MOOSMSG_LIST &NewMail)
 {
+
+#if 0
   MOOSMSG_LIST::reverse_iterator p;
-  
   for(p = NewMail.rbegin(); p != NewMail.rend(); p++) {
     CMOOSMsg &msg = *p;
   }
-  
+#endif
+
   return(true);
 }
 
@@ -83,11 +85,11 @@ bool TermCommand::OnStartUp()
     sVarName = toupper(sVarName);
     sLine    = stripBlankEnds(sLine);
 
-    int len  = sLine.length();
+    //int len  = sLine.length();
     
-    if(MOOSStrCmp(sVarName, "CMD")) {
+    if(MOOSStrCmp(sVarName, "CMD"))
       addCommand(sLine);
-    }
+
   }
   
   registerVariables();
@@ -109,7 +111,7 @@ void TermCommand::addCommand(string cmd_str)
   string var_key = tolower(stripBlankEnds(vector_a[0]));
   
   // Don't allow duplicate keys
-  for(int i=0; i<m_var_key.size(); i++)
+  for(unsigned int i=0; i<m_var_key.size(); i++)
     if(var_key == m_var_key[i])
       return;
 
@@ -234,7 +236,7 @@ void TermCommand::printMapping()
 //------------------------------------------------------------
 // Procedure: postCommand
 
-void TermCommand::postCommand(int ix)
+void TermCommand::postCommand(unsigned int ix)
 {
   if((ix < 0) || (ix >= m_var_key.size()))
     return;

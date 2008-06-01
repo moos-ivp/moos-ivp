@@ -124,7 +124,6 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
       if(msg.m_sKey == "MOOS_MANUAL_OVERIDE") {
 	if(MOOSStrCmp(msg.m_sVal, "FALSE")) {
 	  m_has_control = true;
-	  double start_time = GetAppStartTime();
 	  MOOSTrace("\n");
 	  MOOSDebugWrite("pHelmIvP Control Is On");
 	  m_info_buffer->setCurrTime(curr_time);
@@ -150,9 +149,8 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
 	MOOSTrace("\n");
 	MOOSDebugWrite("pHelmIvP Has Been Re-Started");
       }
-      else {
-	bool result = updateInfoBuffer(msg);
-      }
+      else
+	updateInfoBuffer(msg);
     }
     else {
       // Add the variable name inthe out put?
@@ -188,7 +186,7 @@ bool HelmIvP::Iterate()
     MOOSTrace("  ******************************************\n");
     MOOSTrace("Helm Summary  ---------------------------\n");
     vector<string> svector = helm_report.getMsgs();
-    for(int i=0; i<svector.size(); i++)
+    for(unsigned int i=0; i<svector.size(); i++)
       MOOSTrace("%s\n", svector[i].c_str());
   }
   
@@ -316,8 +314,8 @@ void HelmIvP::postBehaviorMessages()
       if(var == "BHV_IPF") {
 	string id = bhv_descriptor + intToString(m_iteration);
 	vector<string> svector = IvPFunctionToVector(sdata, id, 2000);
-	for(int i=0; i<svector.size(); i++)
-	  m_Comms.Notify("BHV_IPF", svector[i]);
+	for(unsigned int k=0; k<svector.size(); k++)
+	  m_Comms.Notify("BHV_IPF", svector[k]);
       }
       // Otherwise just post to the DB directly.
       else {
@@ -402,7 +400,7 @@ void HelmIvP::postDefaultVariables()
   int bhv_cnt = m_bhv_set->getCount();
   for(int i=0; i < bhv_cnt; i++) {
     vector<VarDataPair> mvector = m_bhv_set->getMessages(i);
-    for(int j=0; j<mvector.size(); j++) {
+    for(unsigned int j=0; j<mvector.size(); j++) {
       VarDataPair msg = mvector[j];
       message_vars.push_back(msg.get_var());
     }
@@ -500,7 +498,7 @@ void HelmIvP::registerVariables()
 
   if(m_bhv_set) {
     vector<string> info_vars = m_bhv_set->getInfoVars();
-    for(int j=0; j<info_vars.size(); j++) {
+    for(unsigned int j=0; j<info_vars.size(); j++) {
       if(m_verbose == "verbose")
 	MOOSTrace("Registering for: %s\n", info_vars[j].c_str());
       m_Comms.Register(info_vars[j], 0.0);
@@ -513,11 +511,9 @@ void HelmIvP::registerVariables()
 
 void HelmIvP::registerNewVariables()
 {
-  int amt = 0;
   if(m_bhv_set) {
     vector<string> info_vars = m_bhv_set->getNewInfoVars();
-    amt = info_vars.size();
-    for(int j=0; j<info_vars.size(); j++) {
+    for(unsigned int j=0; j<info_vars.size(); j++) {
       if(m_verbose == "verbose")
 	MOOSTrace("Registering for: %s\n", info_vars[j].c_str());
       m_Comms.Register(info_vars[j], 0.0);
