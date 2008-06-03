@@ -38,6 +38,9 @@
 #include <iostream>
 #include <sstream>
 #include <iomanip>
+#include <algorithm>
+#include <cctype>
+#include <string>
 using namespace std;
 #include "MOOSInstrument.h"
 
@@ -194,8 +197,10 @@ string CMOOSInstrument::Message2NMEA(string sMsg)
     ostringstream os;
 
     os.flags(ios::hex);
-    os<<(int)xCheckSum<<ends;
+    os<<(int)xCheckSum;  //<<ends;   //(sideleau) should not add null char
     string sChkSum = os.str();
+    std::transform(sChkSum.begin(), sChkSum.end(), sChkSum.begin(), \
+            (int(*)(int)) std::toupper);    //(sideleau) capitalize checksum
     
     string sOutput = "$"+sMsg+"*"+sChkSum+"\r\n";
 
