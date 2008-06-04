@@ -55,6 +55,8 @@
 #include "BHV_AvoidObstacles.h"
 #include "BHV_GoToDepth.h"
 #include "BHV_MemoryTurnLimit.h"
+#include "BHV_Attractor.h"
+#include "BHV_RubberBand.h"
 
 using namespace std;
 
@@ -285,6 +287,10 @@ IvPBehavior* Populator_BehaviorSet::initializeBehavior(string bhv_name)
     bhv = new BHV_GoToDepth(domain);
   else if(bhv_name == "BHV_MemoryTurnLimit")      
     bhv = new BHV_MemoryTurnLimit(domain);
+  else if(bhv_name == "BHV_Attractor")      
+    bhv = new BHV_Attractor(domain);
+  else if(bhv_name == "BHV_RubberBand")      
+    bhv = new BHV_RubberBand(domain);
 
   return(bhv);
 }
