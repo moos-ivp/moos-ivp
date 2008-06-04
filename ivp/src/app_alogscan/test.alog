@@ -47,6 +47,7 @@
 4.322           NAV_Y                pEchoVar   0            
 4.526           NAV_X                pEchoVar   0            
 4.526           NAV_Y                pEchoVar   0            
+4.526           THIS_IS_A_REALLY_LONG_VARIABLE_OK   pEchoVar   0
 4.762           NAV_X                pEchoVar   0            
 4.762           NAV_Y                pEchoVar   0            
 4.965           NAV_X                pEchoVar   0            

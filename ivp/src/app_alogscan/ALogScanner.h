@@ -15,6 +15,7 @@
 #include <vector>
 #include <map>
 #include <string>
+#include "ScanReport.h"
 
 class ALogScanner
 {
@@ -32,15 +33,13 @@ class ALogScanner
 
  protected:
 
+  ScanReport m_report;
  private:
-  std::string m_infile;
-  std::string m_outfile;
-
   std::vector<std::string>  m_var_names;
   std::vector<unsigned int> m_var_count;
   std::vector<unsigned int> m_var_chars;
 
-  std::map<std::string, int>  vmap;
+  std::map<std::string, int>  m_vmap;
     
   FILE *m_file;
 };

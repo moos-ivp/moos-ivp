@@ -41,14 +41,15 @@ int main(int argc, char *argv[])
   bool ok = false;
     
   ALogScanner scanner;
-  if(scanner.openALogFile(alogfile))
+  if(scanner.openALogFile(alogfile)) {
     cout << "File " << alogfile << " found and opened. " << endl;
-    if(scanner.scan())
-      if(scanner.writeOutput()) {
-	cout << "...successfully completed" << endl;
-	ok = true;
-      }
+    if(scanner.scan()) {
+      cout << "...successfully completed" << endl;
+      ok = true;
+    }
+  }
 
+  
   if(ok)
     exit(0);
   if(!ok) {
