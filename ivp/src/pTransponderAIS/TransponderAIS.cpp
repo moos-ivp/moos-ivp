@@ -422,6 +422,10 @@ bool TransponderAIS::handleIncomingNaFConMessage(const string& rMsg)
       if(sourceID == "21") {vtype = "GLIDER"; vname = "SeaGlider-107";}
       if(sourceID == "22") {vtype = "GLIDER"; vname = "SeaGlider-116";}
       if(sourceID == "24") {vtype = "GLIDER"; vname = "SeaGlider-118";}
+      if(sourceID == "25") {vtype = "AUV";    vname = "NUWC-Iver2-Mako";}
+      if(sourceID == "26") {vtype = "AUV";    vname = "NUWC-Iver2-Whitetip";}
+      if(sourceID == "27") {vtype = "AUV";    vname = "NUWC-Iver2-Hammerhead";}
+      if(sourceID == "29") {vtype = "GLIDER";    vname = "Fologa";}
 
       if(MOOSStrCmp(messageType, "SENSOR_STATUS"))
       {
@@ -476,6 +480,89 @@ bool TransponderAIS::handleIncomingNaFConMessage(const string& rMsg)
       if(!m_geodesy.LatLong2LocalGrid(navLat, navLong, navY, navX))
 	return MOOSFail("Geodesy conversion failed\n");
       
+
+      //string vtype = "GLIDER";
+      //string vname = sourceID;
+      if(sourceID == "1") {
+	vtype = "AUV";
+	vname = "Sea-Horse";
+      }
+      if(sourceID == "2") {
+	vtype = "KAYAK";
+	vname = "Bobby";
+      }
+      if(sourceID == "3") {
+	vtype = "AUV";
+	vname = "Unicorn";
+      }
+      if(sourceID == "4") {
+	vtype = "AUV";
+	vname = "Macrura";
+      }
+      if(sourceID == "5") {
+	vtype = "KELP";
+	vname = "PN2";
+      }
+      if(sourceID == "7") {
+	vtype = "GLIDER";
+	vname = "X-RAY";
+      }
+      if(sourceID == "9") { 
+	vtype = "KAYAK";
+	vname = "DEE";
+      }
+      if(sourceID == "10") {
+	vtype = "AUV";
+	vname = "OEX";
+      }
+      if(sourceID == "11") {
+	vtype = "KAYAK";
+	vname = "Frankie";
+      }
+      if(sourceID == "14") {
+	vtype = "GLIDER";
+	vname = "SLOCUM-GTAS";
+      }
+      if(sourceID == "15") {
+	vtype = "KELP";
+	vname = "KELP-OBCI";
+      }
+      if(sourceID == "18") {
+	vtype = "VSA";
+	vname = "VSA-1";
+      }
+      if(sourceID == "19") {
+	vtype = "VSA";
+	vname = "VSA-2";
+      }
+      if(sourceID == "20") {
+	vtype = "GLIDER";
+	vname = "SeaGlider-106";
+      }
+      if(sourceID == "21") {
+	vtype = "GLIDER";
+	vname = "SeaGlider-107";
+      }
+      if(sourceID == "22") {
+	vtype = "GLIDER";
+	vname = "SeaGlider-116";
+      }
+      if(sourceID == "24") {
+	vtype = "GLIDER";
+	vname = "SeaGlider-118";
+      }
+      if(sourceID == "26") {
+	vtype = "AUV";
+	vname = "WHITETIP";
+      }//NUWC Iver
+      if(sourceID == "27") {
+	vtype = "AUV";
+	vname = "HAMMERHEAD";
+      }//NUWC Iver
+      if(sourceID == "28") {
+	vtype = "AUV";
+	vname = "MAKO";
+      }//NUWC Iver
 
       // temporary hack until we know OEXs real ID
       if(sourceID == "30") {vtype = "AUV";    vname = "OEX";}

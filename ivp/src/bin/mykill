@@ -15,7 +15,7 @@ killall pMOOSBridge  iVSA iCTD iCTDSBE49 pBearingsSim        \
         pRedirect pLoiterControl pTransponderAIS uMVS      \
         pMarinePID uTMS uMVS_Bluefin pEchoVar pDeployHandler \
         pTrafficControl pShipsideViewer uRepeater uXMS   \
-        pViewerRelay uHelmScope pClusterPriority
+        pViewerRelay uHelmScope pClusterPriority zLoggerNG
 
 killall -q iMicroModem pRouter pFramer pMessageSim  \
         pCSVLogger pBearings_VSA pEchoVar pTrackQuality \
@@ -24,6 +24,6 @@ killall -q iMicroModem pRouter pFramer pMessageSim  \
         pBearings_GENERIC pTargetSim pMBTracker zLoggerNG \
 	iModemSim pFunctionSender uFunctionViewer uFunctionVis
 
-killall -9 pSensorSim pArtifactMapper pNoiseSim pBlast pSweepLines
+killall -9 pSensorSim pArtifactMapper pNoiseSim uNafconSplitter pBlast pSweepLines
 
 echo Done - Killed all MOOS-Related Processes.....
