@@ -39,6 +39,7 @@ std::vector<std::string> removeDuplicates(const std::vector<std::string>&);
 bool vectorContains(const std::vector<std::string>&, 
 		    const std::string&);
 
+std::string biteString(std::string&, char);
 std::string stripBlankEnds(const std::string&);
 std::string tolower(const std::string&);
 std::string toupper(const std::string&);

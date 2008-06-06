@@ -127,6 +127,31 @@ vector<string> chompString(const string& string_str, char separator)
 }
 
 //----------------------------------------------------------------
+// Procedure: biteString(const string&, char)
+//   Example: input_str = "apples, pears, bananas"
+//            str = biteString(input_str, ',')
+//            str = "apples"
+//            input_str = " pears, bananas"
+
+string biteString(string& str, char separator)
+{
+  int i=0;
+  while((str[i]!=separator)&&(str[i]!='\0'))
+    i++;
+
+  string str_front(str.c_str(), i);
+
+  if(str[i] == '\0')
+    str = "";
+  else {  
+    string str_back(str.c_str()+i+1);
+    str = str_back;
+  }
+
+  return(str_front);
+}
+
+//----------------------------------------------------------------
 // Procedure: sortStrings
 //      Note: O(n^2) simple bubble-sort algorithm
 
