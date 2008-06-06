@@ -276,6 +276,10 @@ IvPFunction *BHV_Waypoint::buildOF(string method)
     if(ok) {
       OF_Reflector reflector(&aof_wpt);
       reflector.create(600, 500);
+      //reflector.setParam("uniform_piece", "discrete @ course:3,speed:3");
+      //reflector.create();
+      string info = reflector.getUniformPieceStr();
+      //postMessage("WAYPT_UPIECE", info);
       ipf = reflector.extractOF();
     }
   }    
