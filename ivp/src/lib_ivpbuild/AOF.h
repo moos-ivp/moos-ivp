@@ -45,7 +45,7 @@ public:
   virtual bool  initialize() 
     {return(true);};
 
-  double extract(std::string var, const IvPBox* pbox) {
+  double extract(const std::string& var, const IvPBox* pbox) const {
     int index = m_domain.getIndex(var);
     if(index == -1)
       return(0);
