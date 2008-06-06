@@ -92,6 +92,7 @@ SET(IVP_LIBS_TO_BUILD
   lib_ivpbuild
   lib_ivpcore
   lib_logic
+  lib_logutils
   lib_marineview
   lib_mbutil
   lib_navplot
@@ -120,6 +121,8 @@ SET(IVP_APPS_TO_BUILD
   app_ffview
   app_geoview
   app_logview
+  app_alogscan
+  app_alogclip
   app_splug
   iMarineSim
   pDeployHandler
