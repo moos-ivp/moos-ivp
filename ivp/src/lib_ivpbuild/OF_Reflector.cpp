@@ -284,26 +284,6 @@ bool OF_Reflector::setParam(string param, int value)
 }
 
 //-------------------------------------------------------------
-// Procedure: setParam
-
-bool OF_Reflector::setParam(string param, bool value)
-{
-  param = tolower(stripBlankEnds(param));
-  
-  if(param == "strict_range") {
-    if(m_regressor)
-      m_regressor->setStrictRange(value);
-  }
-  else if(param == "auto_peak") {
-    m_auto_peak = value;
-  }
-  else
-    return(false);
-  
-  return(true);
-}
-
-//-------------------------------------------------------------
 // Procedure: create
 
 int OF_Reflector::create(int unif_amt, int smart_amt, 
@@ -330,19 +310,41 @@ int OF_Reflector::create(int unif_amt, int smart_amt,
   PQueue pqueue(qlevels);
   m_pqueue = pqueue;
   
-  if(m_uniform_piece.null()) {
-    IvPDomain domain = m_aof->getDomain();
-    IvPBox unifbox   = genUnifBox(domain, m_uniform_amount);
-    m_pdmap = m_rt_uniform->create(&unifbox, 0, m_pqueue);
-  }
+  // Make a local copy of the uniform piece member variable
+  IvPBox uniform_piece = m_uniform_piece;
+  
+  if(m_uniform_piece.null())
+    uniform_piece = genUnifBox(m_domain, m_uniform_amount);
+
+  // Now check that our local copy, however made, is not null
+  if(!uniform_piece.null())
+    m_pdmap = m_rt_uniform->create(&uniform_piece, 0, m_pqueue);
+  
+  m_uniform_piece_str = "count:";
+
+  if(m_pdmap) 
+    m_uniform_piece_str += intToString(m_pdmap->size());
   else
-    m_pdmap = m_rt_uniform->create(&m_uniform_piece, 0, m_pqueue);
+    m_uniform_piece_str += "0";
+  
+  if((int)(m_domain.size()) == uniform_piece.getDim()) {
+    unsigned int dsize = m_domain.size();
+    for(unsigned int i=0; i<dsize; i++) {
+      int len = uniform_piece.pt(i,1) + 1;
+      m_uniform_piece_str += ", ";
+      m_uniform_piece_str += (m_domain.getVarName(i) + ":");
+      m_uniform_piece_str += intToString(len);
+    }
+  }
+
 
   if(!m_pdmap)  // This should never happen, but check anyway.
     return(0);
 
   // =============  Stage 2 - Directed Refinement ================
-
+  
+  int pcs_before_dref = m_pdmap->size();
+  
   int i; 
   int reg_size = m_refine_regions.size();
   int pce_size = m_refine_pieces.size();
@@ -356,12 +358,20 @@ int OF_Reflector::create(int unif_amt, int smart_amt,
     if(new_pdmap != 0)
       m_pdmap = new_pdmap;
   }
+  
+  int pcs_after_dref = m_pdmap->size();
+  int pcs_made_dref = pcs_after_dref - pcs_before_dref;
+
+  m_uniform_piece_str += ", dref_pcs:";
+  m_uniform_piece_str += (intToString(pcs_made_dref) + ", ");
 
   if(!m_pdmap)  // This should never happen, but check anyway.
     return(0);
 
   // =============  Stage 3 - Smart Refinement ================
 
+  int pcs_before_sref = m_pdmap->size();
+  
   if(!m_pqueue.null()) {
     if((m_smart_amount > 0) || (m_smart_percent > 0)) {
       int  psize   = m_pdmap->size();
@@ -376,6 +386,12 @@ int OF_Reflector::create(int unif_amt, int smart_amt,
     }
   }
 
+  int pcs_after_sref = m_pdmap->size();
+  int pcs_made_sref = pcs_after_sref - pcs_before_sref;
+
+  m_uniform_piece_str += ", sref_pcs:";
+  m_uniform_piece_str += (intToString(pcs_made_sref));
+  
   if(m_pdmap)
     return(m_pdmap->size());
   else

@@ -104,7 +104,8 @@ IvPBox genUnifBox(const IvPDomain &domain, int maxAmount)
       // the amount of uniform boxes that would be made. 
       double amt = 1.0;                    
       for(d=0; d<dim; d++) {            
-	double ddom =(double)(uhgh[d] + 1);
+	// double ddom =(double)(uhgh[d] + 1);  // benign bugfix
+	double ddom =(double)(uhgh[d]);
 	double dval = ceil(ddom / dsplit[d]);
 	if(d==bd) 
 	  dval = ceil(ddom / (dsplit[d]+1.0));	
@@ -444,6 +445,7 @@ string domainToString(const IvPDomain& domain)
   return(return_string);
 }
 
+
 //---------------------------------------------------------------
 // Procdudure: domainToBox
 //    Purpose: Return an IvPBox that has boundaries/intervals 
@@ -566,7 +568,7 @@ IvPBox stringToPointBox(const string& given_str,
   if((vsize == 0) || (vsize > 2))
     return(null_box);
   
-  // If now separator, then no preface, and assume float extents
+  // If no separator, then no preface, and assume float extents
   if(vsize == 1)
     return(stringFloatToPointBox(given_str, domain, gsep, lsep));
 

@@ -47,10 +47,11 @@ public:
   int    create(int unif_amt=-1, int smart_amt=-1, double thresh=-1);
 
   IvPFunction* extractOF(bool normalize=true);
+  
+  std::string getUniformPieceStr() const {return(m_uniform_piece_str);};
  
   bool   setParam(std::string);
   bool   setParam(std::string, std::string);
-  bool   setParam(std::string, bool);
   bool   setParam(std::string, int);
   
  protected:
@@ -80,6 +81,7 @@ protected:
   std::vector<IvPBox>  m_refine_pieces;
   std::vector<IvPBox>  m_refine_points;
 
+  std::string  m_uniform_piece_str;
 };
 #endif
 
