@@ -45,6 +45,13 @@ public:
   virtual bool  initialize() 
     {return(true);};
 
+  double extract(std::string var, const IvPBox* pbox) {
+    int index = m_domain.getIndex(var);
+    if(index == -1)
+      return(0);
+    return(m_domain.getVal(index, pbox->pt(index)));
+  }
+
   IvPDomain getDomain() const {return(m_domain);};
 
   int getDim() const {return(m_domain.size());};
