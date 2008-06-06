@@ -9,13 +9,10 @@
 /* except by the author(s).                                      */
 /*****************************************************************/
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <string>
 #include <iostream>
 #include "MBUtils.h"
-#include "ALogScanner.h"
+#include "ScanHandler.h"
 
 using namespace std;
 
@@ -29,33 +26,40 @@ int main(int argc, char *argv[])
   //  return(1);
   // }
   
+  string sort_style;
+
   string alogfile = "";
   for(int i=1; i<argc; i++) {
     string sarg = argv[i];
     if(strContains(sarg, ".alog"))
       alogfile = sarg;
+    else if(strContains(sarg, "sortchars-"))
+      sort_style = "bychars_descending";
+    else if(strContains(sarg, "sortchars"))
+      sort_style = "bychars_ascending";
+
+    else if(strContains(sarg, "sortlines-"))
+      sort_style = "bylines_descending";
+    else if(strContains(sarg, "sortlines"))
+      sort_style = "bylines_ascending";
+
+    else if(strContains(sarg, "sortstart-"))
+      sort_style = "bystarttime_descending";
+    else if(strContains(sarg, "sortstart"))
+      sort_style = "bystarttime_ascending";
+
+    else if(strContains(sarg, "sortstop-"))
+      sort_style = "bystoptime_descending";
+    else if(strContains(sarg, "sortstop"))
+      sort_style = "bystoptime_ascending";
   }
  
   cout << "Processing on file : " << alogfile << endl;
 
-  bool ok = false;
-    
-  ALogScanner scanner;
-  if(scanner.openALogFile(alogfile)) {
-    cout << "File " << alogfile << " found and opened. " << endl;
-    if(scanner.scan()) {
-      cout << "...successfully completed" << endl;
-      ok = true;
-    }
-  }
+  ScanHandler handler;
+  handler.setParam("sort_style", sort_style);
+  handler.handle(alogfile);
 
-  
-  if(ok)
-    exit(0);
-  if(!ok) {
-    cout << "ALog Scan NOT successfully completed" << endl;
-    exit(-1);
-  }
 }
 
 
