@@ -33,15 +33,10 @@ public:
 public:    
   double evalBox(const IvPBox*) const;
   bool   setParam(const std::string& param, double val); 
-  bool   initialize();
   
 private:
   double m_coeff;
   double n_coeff;
-  bool   m_coeff_set;
-  bool   n_coeff_set;
-  int    x_index;
-  int    y_index;
 };
 
 #endif

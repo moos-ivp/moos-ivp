@@ -26,6 +26,7 @@
 #ifndef AOF_HEADER
 #define AOF_HEADER
 
+#include <vector>
 #include <string>
 #include "IvPBox.h"
 #include "IvPDomain.h"
@@ -36,6 +37,8 @@ public:
 
   // PURE virtual function
   virtual double evalBox(const IvPBox*) const = 0;
+
+  virtual double evalPoint(const std::vector<int>&) {return(0);};
   
   // Virtual functions
   virtual bool  setParam(const std::string&, double) 
