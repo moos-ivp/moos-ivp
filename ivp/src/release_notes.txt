@@ -1,4 +1,6 @@
 
+- Changed interface to AOF class to simplify user coding.
+
 Version 3.0.2
 
 - Added BHV_AvoidObstacles to lib_behaviors-marine

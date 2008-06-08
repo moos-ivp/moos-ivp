@@ -45,12 +45,14 @@ protected:
   double  setWeight2(IvPBox*, bool);
   void    setQuadCoeffs(double, double,  double,  double, double, 
 			double, double&, double&, double&);
-  double  evalPtBox(const IvPBox*, const double*);
+  double  evalPtBox(const IvPBox*);
   bool    centerBox(const IvPBox*, IvPBox*);
   
 protected:
   // AOF represents the underlying function.
   const AOF* m_aof;         
+  IvPDomain  m_domain;
+
   int        m_dim;
   bool       m_strict_range;
 

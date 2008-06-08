@@ -45,8 +45,14 @@ public:
   double  getSquaredErr() const;
 
 protected:
+  double  evalPtBox(const IvPBox*);
+
+
+protected:
   const AOF*   m_aof;
   const PDMap* m_pdmap;
+
+  IvPDomain    m_domain;
   
   int     m_sample_count;   // Count of samples taken so far
   double  m_total_err;      // Total Err of all samples so far
@@ -58,10 +64,6 @@ protected:
 };
 
 #endif
-
-
-
-
 
 
 

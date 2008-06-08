@@ -42,6 +42,7 @@ Regressor::Regressor(const AOF *g_aof, int g_degree)
   assert(g_aof != 0);
 
   m_aof    = g_aof;
+  m_domain = m_aof->getDomain();
   m_degree = g_degree;
 
   // We don't know the dim until runtime, but when we do, it will
@@ -134,8 +135,8 @@ double Regressor::setWeight0(IvPBox *gbox, bool feedback)
   
   bool center_flag = centerBox(gbox, m_center_point);
   if(center_flag)
-    m_center_val = m_aof->evalBox(m_center_point);
-
+    m_center_val = this->evalPtBox(m_center_point);
+  
   double val = 0.0;
   for(i=0; (i < m_corners); i++)
     val += m_corner_val[i];
@@ -174,7 +175,7 @@ double Regressor::setWeight1(IvPBox *gbox, bool feedback)
   
   bool center_flag = centerBox(gbox, m_center_point);
   if(center_flag)
-    m_center_val = m_aof->evalBox(m_center_point);
+    m_center_val = this->evalPtBox(m_center_point);
 
   for(d=0; (d <= m_dim); d++)
     m_vals[d] = 0.0;
@@ -334,7 +335,7 @@ double Regressor::setWeight2(IvPBox *gbox, bool feedback)
   
   bool center_flag = centerBox(gbox, m_center_point);
   if(center_flag)
-    m_center_val = m_aof->evalBox(m_center_point);
+    m_center_val = this->evalPtBox(m_center_point);
 
   for(d=0; d<=(m_dim*2); d++)
     m_vals[d] = 0.0;
@@ -578,7 +579,7 @@ void Regressor::setCorners(IvPBox *gbox)
   // Evaluate the AOF at each of the corners. If one or more of the 
   // edge lengths of the gbox is 1 (high==low) then avoid evaluating
   // the AOF at that point by "borrowing" its value from another pt.
-  m_corner_val[0] = m_aof->evalBox(m_corner_point[0]);
+  m_corner_val[0] = this->evalPtBox(m_corner_point[0]);
   for(i=1; (i < m_corners); i++) {
     bool borrow = (emask & i);
     if(borrow) {
@@ -586,7 +587,7 @@ void Regressor::setCorners(IvPBox *gbox)
       m_corner_val[i] = m_corner_val[lender];
     }
     else
-      m_corner_val[i] = m_aof->evalBox(m_corner_point[i]);
+      m_corner_val[i] = this->evalPtBox(m_corner_point[i]);
 
   }
 }
@@ -595,15 +596,23 @@ void Regressor::setCorners(IvPBox *gbox)
 // Procedure: evalPtBox()
 //   Purpose: Evaluate a point box based on the set of linear coefficients.
 
-double Regressor::evalPtBox(const IvPBox *gbox, const double *vals)
+double Regressor::evalPtBox(const IvPBox *gbox)
 {
-  double return_value = vals[m_dim];
-  for(int d=0; (d < m_dim); d++)
-    return_value += (vals[d] * gbox->pt(d,0));
+  if(!m_aof) 
+    return(0);
   
-  return(return_value);
+  unsigned int dim = gbox->getDim();
+  if(dim != m_domain.size())
+    return(0);
+  
+  vector<double> pvals;
+  for(unsigned int d=0; d<dim; d++)
+    pvals.push_back(m_domain.getVal(d, gbox->pt(d)));
+  double val = m_aof->evalPoint(pvals);
+  if(val == 0)
+    return(m_aof->evalBox(gbox));
+  return(val);
 }
-
 
 
 //---------------------------------------------------------------

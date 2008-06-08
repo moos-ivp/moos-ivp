@@ -35,10 +35,11 @@ public:
   AOF(const IvPDomain& dom) {m_domain=dom;};
   virtual ~AOF() {};
 
-  // PURE virtual function
-  virtual double evalBox(const IvPBox*) const = 0;
-
-  virtual double evalPoint(const std::vector<int>&) {return(0);};
+  // Virtual function
+  virtual double evalBox(const IvPBox*) const {return(0);};
+  
+  virtual double evalPoint(const std::vector<double>&) const
+    {return(0);};
   
   // Virtual functions
   virtual bool  setParam(const std::string&, double) 
@@ -55,9 +56,17 @@ public:
     return(m_domain.getVal(index, pbox->pt(index)));
   }
 
+  double extract(const std::string& var, 
+		 const std::vector<int>& point) const {
+    int index = m_domain.getIndex(var);
+    if((index == -1) || ((unsigned int)(index) >= point.size()))
+      return(0);
+    return(m_domain.getVal(index, point[index]));
+  }
+
   IvPDomain getDomain() const {return(m_domain);};
 
-  int getDim() const {return(m_domain.size());};
+  int  getDim() const   {return(m_domain.size());};
 
 protected:
   IvPDomain m_domain;

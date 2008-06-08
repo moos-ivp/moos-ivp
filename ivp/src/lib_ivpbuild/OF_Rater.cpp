@@ -49,6 +49,9 @@ OF_Rater::OF_Rater(const PDMap *g_pdmap, const AOF *g_aof)
   m_samp_high     = 0.0;   // Not actual starting value. First
   m_samp_low      = 0.0;   // sample value will be assigned
   m_err          = 0;
+
+  if(m_aof)
+    m_domain = m_aof->getDomain();
 }
 
 //-------------------------------------------------------------
@@ -73,6 +76,9 @@ void OF_Rater::setAOF(const AOF *g_aof)
 {
   m_aof = g_aof;
   resetSamples();
+  
+  if(m_aof)
+    m_domain = m_aof->getDomain();
 }
 
 //-------------------------------------------------------------
@@ -182,10 +188,26 @@ double OF_Rater::getSquaredErr() const
 }
 
 
+//-------------------------------------------------------------
+// Procedure: evalPtBox()
+//   Purpose: Evaluate a point box based.
 
-
-
-
-
+double OF_Rater::evalPtBox(const IvPBox *gbox)
+{
+  if(!m_aof) 
+    return(0);
+  
+  unsigned int dim = gbox->getDim();
+  if(dim != m_domain.size())
+    return(0);
+  
+  vector<double> pvals;
+  for(unsigned int d=0; d<dim; d++)
+    pvals.push_back(m_domain.getVal(d, gbox->pt(d)));
+  double val = m_aof->evalPoint(pvals);
+  if(val == 0)
+    return(m_aof->evalBox(gbox));
+  return(val);
+}
 
 
