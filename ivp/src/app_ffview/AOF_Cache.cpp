@@ -35,6 +35,9 @@ void AOF_Cache::setAOF(AOF *g_aof)
 {
   aof = g_aof;
 
+  if(aof)
+    m_domain = aof->getDomain();
+
   // Even if new AOF is NULL or invalid, clear the cache
   clearCache();
   
@@ -205,7 +208,7 @@ void AOF_Cache::fillCache2D()
     ebox.setPTS(1, yc, yc);
     while(xc <= xmax) {
       ebox.setPTS(0, xc, xc);
-      double new_fval = aof->evalBox(&ebox);
+      double new_fval = this->evalPtBox(&ebox);
 
       // Update the Min/Max Values
       if(first_val) {
@@ -258,7 +261,7 @@ void AOF_Cache::fillCache3D()
       ebox.setPTS(1, yc, yc);
       while(xc <= xmax) {
 	ebox.setPTS(0, xc, xc);
-	double new_fval = aof->evalBox(&ebox);
+	double new_fval = this->evalPtBox(&ebox);
 	
 	// Update the Min/Max Values
 	if(first_val) {
@@ -308,5 +311,24 @@ void AOF_Cache::applyFColorMap(FColorMap map)
 }
 
 
+//-------------------------------------------------------------
+// Procedure: evalPtBox
+//      Note: 
+
+double AOF_Cache::evalPtBox(const IvPBox *gbox)
+{
+  if(!aof || !gbox) 
+    return(0);
+  
+  unsigned int dim = gbox->getDim();
+
+  vector<double> pvals;
+  for(unsigned int d=0; d<dim; d++)
+    pvals.push_back(m_domain.getVal(d, gbox->pt(d)));
+  double val = aof->evalPoint(pvals);
+  if(val == 0)
+    return(aof->evalBox(gbox));
+  return(val);
+}
 
 

@@ -45,9 +45,13 @@ protected:
   void fillCache3D();
   void applyFCMap();
 
+  double evalPtBox(const IvPBox*);
+
 protected:
   
-  AOF *aof;
+  AOF*      aof;
+  IvPDomain m_domain;
+
   double ***fvals;
   double ***rvals;
   double ***gvals;

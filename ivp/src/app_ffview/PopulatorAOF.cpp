@@ -15,6 +15,7 @@
 #include "IvPDomain.h"
 #include "AOF_Rings.h"
 #include "AOF_Ring.h"
+#include "AOF_Peaks.h"
 #include "AOF_Linear.h"
 #include "AOF_Quadratic.h"
 #include "AOF_AvoidCollision.h"
@@ -129,6 +130,8 @@ bool PopulatorAOF::handleLine(string line)
       aof = new AOF_Rings(domain);
     else if(right == "AOF_Ring")
       aof = new AOF_Ring(domain);
+    else if(right == "AOF_Peaks")
+      aof = new AOF_Peaks(domain);
     else if(right == "AOF_AvoidCollision")
       aof = new AOF_AvoidCollision(domain);
     else if(right == "AOF_Linear")
