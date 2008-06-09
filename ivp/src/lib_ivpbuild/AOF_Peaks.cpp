@@ -34,10 +34,10 @@ using namespace std;
  
 bool AOF_Peaks::setParam(const string& param, const string& val)
 {
-  m_xpos.push_back(tokDoubleParse(val, "xpos", ',', '='));
-  m_ypos.push_back(tokDoubleParse(val, "ypos", ',', '='));
+  m_xcent.push_back(tokDoubleParse(val, "xcent", ',', '='));
+  m_ycent.push_back(tokDoubleParse(val, "ycent", ',', '='));
   m_range.push_back(tokDoubleParse(val, "range", ',', '='));
-  m_gradient_dist.push_back(tokDoubleParse(val, "gradient", ',', '='));
+  m_sigma.push_back(tokDoubleParse(val, "sigma", ',', '='));
   return(true);
 }
 
@@ -48,36 +48,15 @@ double AOF_Peaks::evalPoint(const vector<double>& point) const
 {
   if(point.size() != 2)
     return(0);
-  
+
+  const double a = 1.0 / (sqrt(2*M_PI));
+
   double return_value = 0;
-
-  for(unsigned int i; i<m_xpos.size(); i++) {
-    
-    double xdist = (point[0] - m_xpos[i]);
-    double ydist = (point[1] - m_ypos[i]);
-
-    double distToCent = sqrt((xdist*xdist)+(ydist*ydist));
-
-    
-    double fudge =  (sqrt(0.5) - (0.5 * 0.5));
-    double ratio = distToCent / m_gradient_dist[i]; 
-    
-    if(distToCent < (m_gradient_dist[i] / 2.0)) {
-      ratio *= ratio;
-      ratio = 1 - ratio;
-      ratio = (ratio - fudge) / (1.0 - fudge);
-    }
-    else if(distToCent < m_gradient_dist[i]) {
-      ratio = sqrt(ratio);
-      ratio = (1 - ratio) + fudge;
-      ratio = (ratio - fudge) / (1.0 - fudge);
-    }
-    else
-      ratio = 0;
-    
-    return_value += (ratio * m_range[i]);
+  for(unsigned int i; i<m_xcent.size(); i++) {
+    double dist = hypot((point[0]-m_xcent[i]), (point[1]-m_ycent[i]));
+    double pct  = pow(M_E, -((dist*dist)/(2*(m_sigma[i]*m_sigma[i])))) * a;
+    return_value += (pct * m_range[i]);
   }
-
   return(return_value);
 }
 

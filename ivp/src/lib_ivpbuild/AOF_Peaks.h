@@ -33,14 +33,14 @@ public:
   AOF_Peaks(IvPDomain domain) : AOF(domain) {};
   virtual ~AOF_Peaks() {};
   
-public: // virtuals defined
+public:
   double evalPoint(const std::vector<double>& point) const;
   bool   setParam(const std::string&, const std::string&);
 
 private:
-  std::vector<double>  m_xpos;
-  std::vector<double>  m_ypos;
-  std::vector<double>  m_gradient_dist;
+  std::vector<double>  m_xcent;
+  std::vector<double>  m_ycent;
+  std::vector<double>  m_sigma;
   std::vector<double>  m_range;
 };
 
