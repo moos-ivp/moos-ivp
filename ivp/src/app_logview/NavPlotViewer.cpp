@@ -46,6 +46,20 @@ NavPlotViewer::NavPlotViewer(int x, int y, int w, int h, const char *l)
 }
 
 //-------------------------------------------------------------
+// Procedure: addLogPlot
+
+void NavPlotViewer::addLogPlot(const LogPlot& lp, string vid, string type)
+{
+  type = tolower(type);
+  if((type == "nav_x") || (type == "navx"))
+    m_plotmap_navx[vid] = lp;
+  else if((type == "nav_y") || (type == "navy"))
+    m_plotmap_navy[vid] = lp;
+  else if((type == "nav_heading") || (type == "navheading"))
+    m_plotmap_hdg[vid] = lp;
+}
+
+//-------------------------------------------------------------
 // Procedure: draw()
 
 void NavPlotViewer::draw()
@@ -289,6 +303,12 @@ void NavPlotViewer::drawNavPlots()
 {
   for(unsigned int i=0; i<m_navx_plot.size(); i++)
     drawNavPlot(i);
+
+#if 0
+  map<string, LogPlot>::iterator p;
+  p = m_plotmap
+#endif
+
 }
 
 //-------------------------------------------------------------
@@ -337,9 +357,19 @@ void NavPlotViewer::drawNavPlot(unsigned int index)
     }
   }
 
-  double x     = m_navx_plot[index].get_value_by_time(ctime);
-  double y     = m_navy_plot[index].get_value_by_time(ctime);
-  double theta = m_hdg_plot[index].get_value_by_time(ctime);
+  // [index] refers to the vehicle index.
+
+  // The size of the navx, navy, hdg vectors *should* all be the 
+  // same, one added for each vehicle. Do some checking here anyway.
+  double x = 0;
+  double y = 0;
+  double theta = 0;
+  if(index < m_navx_plot.size())
+    x = m_navx_plot[index].get_value_by_time(ctime);
+  if(index < m_navy_plot.size())
+    y = m_navy_plot[index].get_value_by_time(ctime);
+  if(index < m_hdg_plot.size())
+    theta = m_hdg_plot[index].get_value_by_time(ctime);
 
   ObjectPose opose(x,y,theta,0,0);
   double red=1.0, grn=0.906, blu=0.243;

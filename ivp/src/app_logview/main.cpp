@@ -264,9 +264,9 @@ int main(int argc, char *argv[])
 void help_message()
 {
   cout << endl;
-  cout << "Usage: logview file1.slog [file2.slog] [file3] [-h] [--help] " << endl;
-  cout << "   At least one .slog file must be provided " << endl;
-  cout << "   Non slog files will be scanned for polygons " << endl;
+  cout << "Usage: logview file1.alog [file2.alog] [-h] [--help] " << endl;
+  cout << "   At least one .alog file must be provided " << endl;
+  cout << "   Non alog files will be scanned for polygons " << endl;
   cout << endl;
 }
 

@@ -52,6 +52,9 @@ class NavPlotViewer : public MarineViewer
   void addLogPlotHDG(const LogPlot& lp) 
     {m_hdg_plot.push_back(lp);};
 
+  void addLogPlot(const LogPlot& lp, std::string vid, std::string type);
+
+
   void   draw();
   float  getMetersX();
   float  getMetersY();
@@ -90,6 +93,12 @@ private:
   std::vector<LogPlot>  m_navx_plot;
   std::vector<LogPlot>  m_navy_plot;
   std::vector<LogPlot>  m_hdg_plot;
+
+  std::map<std::string, LogPlot> m_plotmap_navx;
+  std::map<std::string, LogPlot> m_plotmap_navy;
+  std::map<std::string, LogPlot> m_plotmap_hdg;
+
+
 };
 
 #endif 
