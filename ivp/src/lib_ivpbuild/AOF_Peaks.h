@@ -1,8 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin and John Leonard                    */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
-/*    FILE: AOF.h                                                */
-/*    DATE:                                                      */
+/*    FILE: AOF_PEAKS.h                                          */
+/*    DATE: June 9th 2008                                        */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
 /* modify it under the terms of the GNU General Public License   */
@@ -19,60 +19,32 @@
 /* Software Foundation, Inc., 59 Temple Place - Suite 330,       */
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
-#ifdef _WIN32
-#pragma warning(disable : 4786)
-#pragma warning(disable : 4503)
-#endif
-#ifndef AOF_HEADER
-#define AOF_HEADER
+ 
+#ifndef AOF_PEAKS_HEADER
+#define AOF_PEAKS_HEADER
 
 #include <vector>
 #include <string>
-#include "IvPBox.h"
+#include "AOF.h"
 #include "IvPDomain.h"
-class AOF{
+
+class AOF_Peaks: public AOF {
 public:
-  AOF(const IvPDomain& dom) {m_domain=dom;};
-  virtual ~AOF() {};
-
-  // Virtual function
-  virtual double evalBox(const IvPBox*) const {return(0);};
+  AOF_Peaks(IvPDomain domain) : AOF(domain) {};
+  virtual ~AOF_Peaks() {};
   
-  virtual double evalPoint(const std::vector<double>&) const
-    {return(0);};
-  
-  // Virtual functions
-  virtual bool  setParam(const std::string&, double) 
-    {return(false);};
-  virtual bool  setParam(const std::string&, const std::string&) 
-    {return(false);};
-  virtual bool  initialize() 
-    {return(true);};
+public: // virtuals defined
+  double evalPoint(const std::vector<double>& point) const;
+  bool   setParam(const std::string&, const std::string&);
 
-  double extract(const std::string& var, const IvPBox* pbox) const {
-    int index = m_domain.getIndex(var);
-    if(index == -1)
-      return(0);
-    return(m_domain.getVal(index, pbox->pt(index)));
-  }
-
-  double extract(const std::string& varname, 
-		 const std::vector<double>& point) const {
-    int index = m_domain.getIndex(varname);
-    if((index == -1) || ((unsigned int)(index) >= point.size()))
-      return(0);
-    return(point[index]);
-  }
-
-  IvPDomain getDomain() const {return(m_domain);};
-
-  int  getDim() const   {return(m_domain.size());};
-
-protected:
-  IvPDomain m_domain;
+private:
+  std::vector<double>  m_xpos;
+  std::vector<double>  m_ypos;
+  std::vector<double>  m_gradient_dist;
+  std::vector<double>  m_range;
 };
-#endif
 
+#endif
 
 
 

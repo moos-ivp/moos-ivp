@@ -8,6 +8,7 @@ SET(SRC
    AOF_Quadratic.cpp
    AOF_Ring.cpp
    AOF_Rings.cpp
+   AOF_Peaks.cpp
    BuildUtils.cpp
    DemuxUnit.cpp
    Demuxer.cpp
