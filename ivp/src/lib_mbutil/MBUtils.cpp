@@ -595,6 +595,54 @@ bool tokParse(const string& str, const string& left,
 
 
 //----------------------------------------------------------------
+// Procedure: tokStringParse
+//   Example: info  = "fruit=apple, drink=water, temp=98.6";
+//     Input  result = str_tok(info, "drink", ',', '=');
+//    Result: result = "water"
+//     Input  result = str_tok(info, "foobar", ',', '=');
+//    Result: result = ""
+
+string tokStringParse(const string& str, const string& left, 
+		      char gsep, char lsep)
+{
+  vector<string> svector1 = parseString(str, gsep);
+  for(unsigned int i=0; i<svector1.size(); i++) {
+    vector<string> svector2 = parseString(svector1[i], lsep);
+    if(svector2.size() != 2)
+      return("");
+    svector2[0] = stripBlankEnds(svector2[0]);
+    if(svector2[0] == left)
+      return(svector2[1]);
+  }
+  return("");
+}
+
+
+//----------------------------------------------------------------
+// Procedure: tokDoubleParse
+//   Example: info  = "fruit=23, drink=0.4, temp=98.6";
+//     Input  result = str_tok(info, "drink", ',', '=');
+//    Result: result = 0.4
+//     Input  result = str_tok(info, "foobar", ',', '=');
+//    Result: result = 0.0
+
+double tokDoubleParse(const string& str, const string& left, 
+		      char gsep, char lsep)
+{
+  vector<string> svector1 = parseString(str, gsep);
+  for(unsigned int i=0; i<svector1.size(); i++) {
+    vector<string> svector2 = parseString(svector1[i], lsep);
+    if(svector2.size() != 2)
+      return(0);
+    svector2[0] = stripBlankEnds(svector2[0]);
+    if(svector2[0] == left)
+      return(atof(svector2[1].c_str()));
+  }
+  return(0);
+}
+
+
+//----------------------------------------------------------------
 // Procedure: tokParse
 //   Example: info  = "fruit=apple, drink=water, temp=98.6";
 //            match = str_tok(info, "temp", ',', '=', rval);

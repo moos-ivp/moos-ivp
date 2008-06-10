@@ -67,6 +67,11 @@ bool  tokParse(const std::string&, const std::string&,
 bool  tokParse(const std::string&, const std::string&, 
 		char, char, double&);
 
+std::string tokStringParse(const std::string&, const std::string&, 
+			   char, char);
+double tokDoubleParse(const std::string&, const std::string&, 
+		      char, char);
+
 bool  isNumber(const std::string&, bool=true);
 bool  isQuoted(const std::string&);
 
