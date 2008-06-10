@@ -15,7 +15,7 @@
 #include "IvPDomain.h"
 #include "AOF_Rings.h"
 #include "AOF_Ring.h"
-#include "AOF_Peaks.h"
+#include "AOF_Gaussian.h"
 #include "AOF_Linear.h"
 #include "AOF_Quadratic.h"
 #include "AOF_AvoidCollision.h"
@@ -82,16 +82,8 @@ bool PopulatorAOF::handleLine(string line)
   if(line.size() == 0)  // Either blank or comment line
     return(true);  
   
-  vector<string> svector = parseString(line, '=');
-  int vsize = svector.size();
-
-  string left, right, domain_str;
-
-  left  = stripBlankEnds(svector[0]);
-  if(vsize > 1)
-    right = stripBlankEnds(svector[1]);
-  if(vsize > 2)
-    domain_str = stripBlankEnds(svector[2]);
+  string left  = stripBlankEnds(biteString(line, '='));
+  string right = stripBlankEnds(line);
 
   if(right == "") {
     if((left != "{") && (left != "}"))
@@ -122,26 +114,32 @@ bool PopulatorAOF::handleLine(string line)
     if(left != "AOF")
       return(false);
     
+    string aof_type   = stripBlankEnds(biteString(right, '='));
+    string domain_str = stripBlankEnds(right);
     bool ok = buildDomain(domain_str);
     if(!ok)
       return(false);
-
-    if(right == "AOF_Rings")
+    
+    if(aof_type == "AOF_Rings")
       aof = new AOF_Rings(domain);
-    else if(right == "AOF_Ring")
+    else if(aof_type == "AOF_Ring")
       aof = new AOF_Ring(domain);
-    else if(right == "AOF_Peaks")
-      aof = new AOF_Peaks(domain);
-    else if(right == "AOF_AvoidCollision")
+    else if(aof_type == "AOF_Gaussian")
+      aof = new AOF_Gaussian(domain);
+    else if(aof_type == "AOF_AvoidCollision")
       aof = new AOF_AvoidCollision(domain);
-    else if(right == "AOF_Linear")
+    else if(aof_type == "AOF_Linear")
       aof = new AOF_Linear(domain);
-    else if(right == "AOF_Quadratic")
+    else if(aof_type == "AOF_Quadratic")
       aof = new AOF_Quadratic(domain);
     return(aof!=0);
   }
   
   if(define_mode == 1) {
+
+    cout << "left:"  << left  << endl;
+    cout << "right:" << right << endl;
+
     // First see if the parameter is a string parameter
     bool result = aof->setParam(left, right);
     // If it fails, try it as a "double" paramater
