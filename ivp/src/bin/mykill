@@ -24,7 +24,7 @@ killall -q iMicroModem pRouter pFramer pMessageSim  \
         pBearings_GENERIC pTargetSim pMBTracker zLoggerNG \
 	iModemSim pFunctionSender uFunctionViewer uFunctionVis
 
-killall -9 pSensorSim pArtifactMapper pNoiseSim uNafconSplitter 
+killall -9 pSensorSim pArtifactMapper pNoiseSim uNafconSplitter \
         pBlast pSweepLines pNSWCPC
 
 echo Done - Killed all MOOS-Related Processes.....
