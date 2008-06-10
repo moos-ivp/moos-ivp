@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin and John Leonard                    */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
-/*    FILE: AOF_Peaks.cpp                                        */
+/*    FILE: AOF_Gaussian.cpp                                     */
 /*    DATE: June 9th 2008                                        */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
@@ -22,14 +22,14 @@
 
 #include <math.h>
 #include "MBUtils.h"
-#include "AOF_Peaks.h"
+#include "AOF_Gaussian.h"
 
 using namespace std;
 
 //----------------------------------------------------------------
 // Procedure: setParam
  
-bool AOF_Peaks::setParam(const string& param, const string& val)
+bool AOF_Gaussian::setParam(const string& param, const string& val)
 {
   m_xcent.push_back(tokDoubleParse(val, "xcent", ',', '='));
   m_ycent.push_back(tokDoubleParse(val, "ycent", ',', '='));
@@ -41,7 +41,7 @@ bool AOF_Peaks::setParam(const string& param, const string& val)
 //----------------------------------------------------------------
 // Procedure: evalPoint
 
-double AOF_Peaks::evalPoint(const vector<double>& point) const
+double AOF_Gaussian::evalPoint(const vector<double>& point) const
 {
   if(point.size() != 2)  // Simple error checking
     return(0);

@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin and John Leonard                    */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
-/*    FILE: AOF_PEAKS.h                                          */
+/*    FILE: AOF_Gaussian.h                                       */
 /*    DATE: June 9th 2008                                        */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
@@ -20,17 +20,17 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
  
-#ifndef AOF_PEAKS_HEADER
-#define AOF_PEAKS_HEADER
+#ifndef AOF_GAUSSIAN_HEADER
+#define AOF_GAUSSIAN_HEADER
 
 #include <vector>
 #include <string>
 #include "AOF.h"
 
-class AOF_Peaks: public AOF {
-public:
-  AOF_Peaks(IvPDomain domain) : AOF(domain) {};
-  ~AOF_Peaks() {};
+class AOF_Gaussian: public AOF {
+ public:
+  AOF_Gaussian(IvPDomain domain) : AOF(domain) {};
+  ~AOF_Gaussian() {};
   
 public:
   double evalPoint(const std::vector<double>& point) const;
