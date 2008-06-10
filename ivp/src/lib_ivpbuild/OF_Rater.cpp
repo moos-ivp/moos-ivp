@@ -110,7 +110,7 @@ void OF_Rater::takeSamples(int amount, double winterruptVal)
     m_worst_err = 0.0;
     m_total_err = 0.0;
     m_squared_err = 0.0;
-    val1 = m_aof->evalBox(&rand_box);
+    val1 = this->evalPtBox(&rand_box);
     m_samp_high = val1;
     m_samp_low  = val1;
   }
@@ -118,7 +118,7 @@ void OF_Rater::takeSamples(int amount, double winterruptVal)
   while(amount > 0) {
     IvPBox rand_box = makeRand(domain);
     m_sample_count++;
-    val1 = m_aof->evalBox(&rand_box);
+    val1 = this->evalPtBox(&rand_box);
     val2 = m_pdmap->evalPoint(&rand_box);
 
     diff = (val1-val2);

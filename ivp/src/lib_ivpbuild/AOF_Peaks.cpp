@@ -20,12 +20,9 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
-#include <stdlib.h>
 #include <math.h>
 #include "MBUtils.h"
 #include "AOF_Peaks.h"
-#include "BuildUtils.h"
-#include "IO_Utilities.h"
 
 using namespace std;
 
@@ -46,25 +43,14 @@ bool AOF_Peaks::setParam(const string& param, const string& val)
 
 double AOF_Peaks::evalPoint(const vector<double>& point) const
 {
-  if(point.size() != 2)
+  if(point.size() != 2)  // Simple error checking
     return(0);
 
-  const double a = 1.0 / (sqrt(2*M_PI));
-
   double return_value = 0;
-  for(unsigned int i; i<m_xcent.size(); i++) {
+  for(unsigned int i=0; i<m_xcent.size(); i++) {
     double dist = hypot((point[0]-m_xcent[i]), (point[1]-m_ycent[i]));
-    double pct  = pow(M_E, -((dist*dist)/(2*(m_sigma[i]*m_sigma[i])))) * a;
+    double pct  = pow(M_E, -((dist*dist)/(2*(m_sigma[i]*m_sigma[i]))));
     return_value += (pct * m_range[i]);
   }
   return(return_value);
 }
-
-
-
-
-
-
-
-
-

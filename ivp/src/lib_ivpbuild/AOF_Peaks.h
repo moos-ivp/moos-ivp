@@ -26,12 +26,11 @@
 #include <vector>
 #include <string>
 #include "AOF.h"
-#include "IvPDomain.h"
 
 class AOF_Peaks: public AOF {
 public:
   AOF_Peaks(IvPDomain domain) : AOF(domain) {};
-  virtual ~AOF_Peaks() {};
+  ~AOF_Peaks() {};
   
 public:
   double evalPoint(const std::vector<double>& point) const;
