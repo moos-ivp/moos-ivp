@@ -1,6 +1,6 @@
 AOF = AOF_Peaks = 0,0,500,501:1,0,500,501
 {
-  component = xcent=450, ycent=100, sigma=0.1, range=100
-  component = xcent=50,  ycent=400, sigma=0.4, range=50
+  component = xcent=450, ycent=100, sigma=80.9, range=100
+  component = xcent=50,  ycent=400, sigma=22.4, range=150
 
 }
