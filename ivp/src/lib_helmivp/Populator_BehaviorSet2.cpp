@@ -23,17 +23,8 @@
 #pragma warning(disable : 4786)
 #endif
 
-// #ifdef _WIN32
-// #define strncasecmp _strnicmp
-// #endif
-
 #include <iostream>
 #include "Populator_BehaviorSet2.h"
-
-// #ifdef _WIN32
-// #define strncasecmp _strnicmp
-// #endif
-
 
 using namespace std;
 
@@ -55,7 +46,8 @@ void Populator_BehaviorSet2::load_behavior_libs(string dirname)
 
 //----------------------------------------------------------
 
-void Populator_BehaviorSet2::loadEnvVarDirectories(std::string envVar, bool verbose) {
+void Populator_BehaviorSet2::loadEnvVarDirectories(std::string envVar, 
+						   bool verbose) {
   bhv_factory.loadEnvVarDirectories(envVar, verbose);
 }
 
@@ -65,17 +57,20 @@ void Populator_BehaviorSet2::loadEnvVarDirectories(std::string envVar, bool verb
 IvPBehavior* Populator_BehaviorSet2::initializeBehavior(string bhv_name)
 {
   IvPBehavior* bhv = Populator_BehaviorSet::initializeBehavior(bhv_name);
-  if (bhv != NULL) {
-cerr << "Populator_BehaviorSet2::initializeBehavior: found static behavior " << bhv_name << endl;
-    return bhv;
+  if(bhv != NULL) {
+    cerr << "Populator_BehaviorSet2::initializeBehavior: ";
+    cerr << "found static behavior " << bhv_name << endl;
+    return(bhv);
   }
   
-  if (bhv_factory.is_known_behavior(bhv_name)) {
-cerr << "Populator_BehaviorSet2::initializeBehavior: found dynamic behavior " << bhv_name << endl;
-    return bhv_factory.new_behavior(bhv_name, domain);
+  if(bhv_factory.is_known_behavior(bhv_name)) {
+    cerr << "Populator_BehaviorSet2::initializeBehavior: ";
+    cerr << "found dynamic behavior " << bhv_name << endl;
+    return(bhv_factory.new_behavior(bhv_name, domain));
   }
 
-cerr << "Populator_BehaviorSet2::initializeBehavior: couldn't find behavior " << bhv_name << endl;
+  cerr << "Populator_BehaviorSet2::initializeBehavior: ";
+  cerr << "couldn't find behavior " << bhv_name << endl;
 
   return NULL;
 }

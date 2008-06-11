@@ -96,6 +96,8 @@ SET(IVP_LIBS_TO_BUILD
   lib_marineview
   lib_mbutil
   lib_navplot
+  lib_anrp_util
+  lib_newmat10D
 )
 
 FOREACH(L ${IVP_LIBS_TO_BUILD})
@@ -141,6 +143,7 @@ SET(IVP_APPS_TO_BUILD
   uPokeDB
   uFunctionVis
   ${LINUX_ONLY_APPS}
+  uFunctionVis
 )
 
 FOREACH(A ${IVP_APPS_TO_BUILD})

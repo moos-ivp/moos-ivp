@@ -297,8 +297,6 @@ IvPFunction *BHV_Waypoint::buildOF(string method)
     OF_Coupler coupler;
     ipf = coupler.couple(crs_of, spd_of);
   }    
-
-
   return(ipf);
 }
 

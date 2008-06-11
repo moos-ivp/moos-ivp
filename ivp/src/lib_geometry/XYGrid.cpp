@@ -361,7 +361,7 @@ bool XYGrid::initialize(XYPolygon poly,
 
   elements  = int_elements;
   values    = int_values;
-  utilities = int_utils;
+  utilities = int_values;
   min_val   = 0;
   max_val   = 0;
   return(true);

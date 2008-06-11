@@ -48,7 +48,7 @@ MarineViewer::MarineViewer(int x, int y, int w, int h, const char *l)
   m_y_origin    = 0;
   m_shape_scale = 0.12;
   m_hash_shade  = 0.65;
-  m_hash_delta  = -1;
+  m_hash_delta  = 100;
   m_fill_shade  = 0.7;
   m_texture_set = 0;
   m_textures    = new GLuint[1];

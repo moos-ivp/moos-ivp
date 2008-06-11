@@ -37,6 +37,7 @@ PMV_MOOSApp::PMV_MOOSApp()
 
   m_gui     = 0; 
   m_verbose = false;
+  m_vp_counter = 0;
 }
 
 //----------------------------------------------------------------
@@ -101,6 +102,7 @@ bool PMV_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
     }
     else if(key == "VIEW_POINT") { 
       receivePoint(Msg);
+      cout << "Num points recv'd: " << m_vp_counter++ << endl;
       gui_needs_redraw = true;
     }
     else if(key == "VIEW_CIRCLE") { 

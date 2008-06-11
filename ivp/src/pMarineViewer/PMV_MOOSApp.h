@@ -65,6 +65,9 @@ class PMV_MOOSApp : public CMOOSApp
   int    m_right_click_ix;
   bool   m_verbose;
   int    m_counter;
+  int   m_vp_counter;
+
+
 };
 
 #endif 
