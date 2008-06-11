@@ -9,6 +9,7 @@ SET(SRC
    AOF_Ring.cpp
    AOF_Rings.cpp
    AOF_Gaussian.cpp
+   AOF_MGaussian.cpp
    BuildUtils.cpp
    DemuxUnit.cpp
    Demuxer.cpp

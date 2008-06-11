@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin and John Leonard                    */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
-/*    FILE: AOF_Gaussian.cpp                                     */
+/*    FILE: AOF_MGaussian.h                                      */
 /*    DATE: June 9th 2008                                        */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
@@ -19,41 +19,37 @@
 /* Software Foundation, Inc., 59 Temple Place - Suite 330,       */
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
-
-#include <math.h>
-#include "MBUtils.h"
-#include "AOF_Gaussian.h"
-
-using namespace std;
-
-//----------------------------------------------------------------
-// Procedure: setParam
  
-bool AOF_Gaussian::setParam(const string& param, double value)
-{
-  if(param == "xcent")
-    m_xcent = value;
-  else if(param == "ycent")
-    m_ycent = value;
-  else if(param == "sigma")
-    m_sigma = value;
-  else if(param == "range")
-    m_range = value;
-  else
-    return(false);
-  return(true);
-}
+#ifndef AOF_MGAUSSIAN_HEADER
+#define AOF_MGAUSSIAN_HEADER
 
-//----------------------------------------------------------------
-// Procedure: evalPoint
+#include <vector>
+#include <string>
+#include "AOF.h"
 
-double AOF_Gaussian::evalPoint(const vector<double>& point) const
-{
-  double xval = extract("x", point);
-  double yval = extract("y", point);
-
-  double dist = hypot((xval - m_xcent), (yval - m_ycent));
-  double pct  = pow(M_E, -((dist*dist)/(2*(m_sigma * m_sigma))));
+class AOF_MGaussian: public AOF {
+ public:
+  AOF_MGaussian(IvPDomain domain) : AOF(domain) {};
+  ~AOF_MGaussian() {};
   
-  return(pct * m_range);
-}
+public:
+  double evalPoint(const std::vector<double>& point) const;
+  bool   setParam(const std::string&, const std::string&);
+
+private:
+  std::vector<double>  m_xcent;
+  std::vector<double>  m_ycent;
+  std::vector<double>  m_sigma;
+  std::vector<double>  m_range;
+};
+
+#endif
+
+
+
+
+
+
+
+
+

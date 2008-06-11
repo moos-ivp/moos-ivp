@@ -34,13 +34,13 @@ class AOF_Gaussian: public AOF {
   
 public:
   double evalPoint(const std::vector<double>& point) const;
-  bool   setParam(const std::string&, const std::string&);
+  bool   setParam(const std::string&, double);
 
 private:
-  std::vector<double>  m_xcent;
-  std::vector<double>  m_ycent;
-  std::vector<double>  m_sigma;
-  std::vector<double>  m_range;
+  double m_xcent;
+  double m_ycent;
+  double m_sigma;
+  double m_range;
 };
 
 #endif

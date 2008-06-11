@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin and John Leonard                    */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
-/*    FILE: AOF_Gaussian.cpp                                     */
+/*    FILE: AOF_MGaussian.cpp                                    */
 /*    DATE: June 9th 2008                                        */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
@@ -22,38 +22,35 @@
 
 #include <math.h>
 #include "MBUtils.h"
-#include "AOF_Gaussian.h"
+#include "AOF_MGaussian.h"
 
 using namespace std;
 
 //----------------------------------------------------------------
 // Procedure: setParam
  
-bool AOF_Gaussian::setParam(const string& param, double value)
+bool AOF_MGaussian::setParam(const string& param, const string& val)
 {
-  if(param == "xcent")
-    m_xcent = value;
-  else if(param == "ycent")
-    m_ycent = value;
-  else if(param == "sigma")
-    m_sigma = value;
-  else if(param == "range")
-    m_range = value;
-  else
-    return(false);
+  m_xcent.push_back(tokDoubleParse(val, "xcent", ',', '='));
+  m_ycent.push_back(tokDoubleParse(val, "ycent", ',', '='));
+  m_range.push_back(tokDoubleParse(val, "range", ',', '='));
+  m_sigma.push_back(tokDoubleParse(val, "sigma", ',', '='));
   return(true);
 }
 
 //----------------------------------------------------------------
 // Procedure: evalPoint
 
-double AOF_Gaussian::evalPoint(const vector<double>& point) const
+double AOF_MGaussian::evalPoint(const vector<double>& point) const
 {
-  double xval = extract("x", point);
-  double yval = extract("y", point);
+  if(point.size() != 2)  // Simple error checking
+    return(0);
 
-  double dist = hypot((xval - m_xcent), (yval - m_ycent));
-  double pct  = pow(M_E, -((dist*dist)/(2*(m_sigma * m_sigma))));
-  
-  return(pct * m_range);
+  double return_value = 0;
+  for(unsigned int i=0; i<m_xcent.size(); i++) {
+    double dist = hypot((point[0]-m_xcent[i]), (point[1]-m_ycent[i]));
+    double pct  = pow(M_E, -((dist*dist)/(2*(m_sigma[i]*m_sigma[i]))));
+    return_value += (pct * m_range[i]);
+  }
+  return(return_value);
 }
