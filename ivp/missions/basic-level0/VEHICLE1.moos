@@ -32,13 +32,13 @@ ProcessConfig = ANTLER
   Run = pEchoVar	@ NewConsole = false
   Run = pLogger		@ NewConsole = false
   Run = pTransponderAIS	@ NewConsole = false
-  Run = pMOOSBridge	@ NewConsole = false ~ pMOOSBridge_$(MYNAME)
+  Run = pMOOSBridge	@ NewConsole = false ~ pMOOSBridge_206
   Run = pHelmIvP	@ NewConsole = false
   Run = pMarinePID      @ NewConsole = false
   Run = pDeployHandler  @ NewConsole = false
   Run = iPWMController  @ NewConsole = false
   Run = uProcessWatch   @ NewConsole = false
-  Run = iGPS            @ NewConsole = false
+  Run = iGPS_CV          @ NewConsole = false
   //Run = iRemote		@ NewConsole = false
 }
 
@@ -267,10 +267,6 @@ ProcessConfig = uProcessWatch
   WATCH  = pHelmIvP
   WATCH  = iGPS
   WATCH  = iGPS_CV
-//  WATCH  = iWifi
-//  WATCH  = iMetaCompass
-//  WATCH  = iMetaMemCompass
-//  WATCH  = iOS5000
   WATCH  = iPWMController
 //  WATCH  = pMOOSBridge
   WATCH  = pEchoVar
@@ -278,21 +274,7 @@ ProcessConfig = uProcessWatch
   WATCH  = pMarinePID
   WATCH  = pTransponderAIS
   WATCH  = pDeployHandler
-//  WATCH  = zLoggerNG
-//  WATCH  = iMicroModem
-//  WATCH  = pFramer
-//  WATCH  = pNaFCon
-//  WATCH  = pRouter
-//  WATCH  = iWebsite
-//  WATCH  = pSamplingControl
-//  WATCH  = iWinchCtl
-//  WATCH  = iWinch
-//  WATCH  = iCTDSBE49
-//  WATCH  = uRepeater
-//  WATCH  = pClusterPriority
-  WATCH  = pArtifactMapper
-  WATCH  = pSensorSim
-}}
+}
 
 //------------------------------------------------------------------
 // iGPS configuration block
@@ -306,6 +288,21 @@ ProcessConfig = iGPS
   Streaming	= true
   Verbose 	= true
   Type		= GARMIN
+  PublishRaw    = true
+}
+
+//------------------------------------------------------------------
+// iGPS configuration block
+
+ProcessConfig = iGPS_CV
+{
+  AppTick 	= 10
+  CommsTick 	= 10
+  Port 		= /dev/ttyUSB1
+  BaudRate 	= 19200
+  Streaming	= true
+  Verbose 	= true
+  Type		= CVECT
   PublishRaw    = true
 }
 
