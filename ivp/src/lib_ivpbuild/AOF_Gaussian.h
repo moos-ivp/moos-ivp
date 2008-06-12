@@ -29,10 +29,11 @@
 
 class AOF_Gaussian: public AOF {
  public:
-  AOF_Gaussian(IvPDomain domain) : AOF(domain) {};
+  AOF_Gaussian(IvPDomain domain) : AOF(domain) 
+    {m_xcent=0; m_ycent=0; m_sigma=1; m_range=100;};
   ~AOF_Gaussian() {};
   
-public:
+ public:
   double evalPoint(const std::vector<double>& point) const;
   bool   setParam(const std::string&, double);
 

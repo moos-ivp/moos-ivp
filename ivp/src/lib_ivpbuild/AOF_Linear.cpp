@@ -9,15 +9,6 @@
 
 using namespace std;
 
-//----------------------------------------------------------
-// Procedure: Constructor
-
-AOF_Linear::AOF_Linear(IvPDomain domain) : AOF(domain)
-{
-  m_coeff = 0;
-  n_coeff = 0;
-}
-
 //----------------------------------------------------------------
 // Procedure: evalBox
 

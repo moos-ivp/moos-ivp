@@ -26,8 +26,9 @@
 #include "AOF.h"
 
 class AOF_Linear: public AOF {
-public:
-  AOF_Linear(IvPDomain g_domain);
+ public:
+  AOF_Linear(IvPDomain domain) : AOF(domain)
+    {m_coeff=0; n_coeff=0;};
   ~AOF_Linear() {};
 
 public:    
