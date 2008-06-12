@@ -1,0 +1,37 @@
+//------------------------------------------------------------------
+// uProcessWatch configuration block
+
+ProcessConfig = uProcessWatch
+{
+  AppTick 	= 2
+  CommsTick 	= 2
+
+  WATCH  = pHelmIvP
+  WATCH  = iGPS
+  WATCH  = iGPS_CV
+//  WATCH  = iWifi
+//  WATCH  = iMetaCompass
+//  WATCH  = iMetaMemCompass
+//  WATCH  = iOS5000
+  WATCH  = iPWMController
+//  WATCH  = pMOOSBridge
+  WATCH  = pEchoVar
+  WATCH  = pLogger
+  WATCH  = pMarinePID
+  WATCH  = pTransponderAIS
+  WATCH  = pDeployHandler
+//  WATCH  = zLoggerNG
+//  WATCH  = iMicroModem
+//  WATCH  = pFramer
+//  WATCH  = pNaFCon
+//  WATCH  = pRouter
+//  WATCH  = iWebsite
+//  WATCH  = pSamplingControl
+//  WATCH  = iWinchCtl
+//  WATCH  = iWinch
+//  WATCH  = iCTDSBE49
+//  WATCH  = uRepeater
+//  WATCH  = pClusterPriority
+  WATCH  = pArtifactMapper
+  WATCH  = pSensorSim
+}}
