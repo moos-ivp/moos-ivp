@@ -21,7 +21,6 @@
 /*****************************************************************/
 
 #include <math.h>
-#include "MBUtils.h"
 #include "AOF_Gaussian.h"
 
 using namespace std;
