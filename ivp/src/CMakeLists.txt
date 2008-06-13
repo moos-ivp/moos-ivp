@@ -143,7 +143,6 @@ SET(IVP_APPS_TO_BUILD
   uPokeDB
   uFunctionVis
   ${LINUX_ONLY_APPS}
-  uFunctionVis
 )
 
 FOREACH(A ${IVP_APPS_TO_BUILD})
