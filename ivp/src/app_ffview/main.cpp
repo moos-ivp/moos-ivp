@@ -48,10 +48,20 @@ int main(int argc, char *argv[])
 
   //-------------------------------------------- Handle AOF Files
   string aof_file;
-  for(i=1; i<argc; i++)
+  string frame_color;
+  string clear_color;
+  for(i=1; i<argc; i++) {
+    string argi = argv[i];
     if(strContains(argv[i], ".aof"))
       aof_file = argv[i];
- 
+    if(strContains(argv[i], "frame_color="))
+      frame_color = tokStringParse(argi, "frame_color", '#', '=');
+    if(strContains(argv[i], "clear_color="))
+      clear_color = tokStringParse(argi, "clear_color", '#', '=');
+    if(strContains(argv[i], "back_color="))
+      clear_color = tokStringParse(argi, "back_color", '#', '=');
+  }
+
   if(aof_file != "") {
     PopulatorAOF populator;
     aof = populator.populate(aof_file);
@@ -62,6 +72,11 @@ int main(int argc, char *argv[])
 
   if(aof)
     gui->setAOF(aof);
+
+  if(frame_color != "")
+    gui->viewer->setParam("frame_color", frame_color);
+  if(clear_color != "")
+    gui->viewer->setParam("clear_color", clear_color);
 
   return Fl::run();
 }

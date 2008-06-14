@@ -14,33 +14,32 @@ IF(BUILD_GUIS)
    )	  
 
    
-	  IF (${APPLE})
-		 ADD_EXECUTABLE(ffview MACOSX_BUNDLE ${SRC})
-	  ELSE (${APPLE})
-		 ADD_EXECUTABLE(ffview ${SRC})
-	  ENDIF (${APPLE})
+   IF (${APPLE})
+     ADD_EXECUTABLE(ffview MACOSX_BUNDLE ${SRC})
+   ELSE (${APPLE})
+     ADD_EXECUTABLE(ffview ${SRC})
+   ENDIF (${APPLE})
 	     
-	TARGET_LINK_LIBRARIES(ffview
-	  bhvutil
-	  ipfview
-	  behaviors
-	  geometry
-	  mbutil
-	  ivpbuild
-	  ivpcore
-	  m
+   TARGET_LINK_LIBRARIES(ffview
+     bhvutil
+     ipfview
+     behaviors
+     geometry
+     mbutil
+     ivpbuild
+     ivpcore
+     m
 	   
-	  # Standard libraries used by this project's FLTK apps...
-	  fltk 
-	  fltk_gl 
-	  tiff)
+     # Standard libraries used by this project's FLTK apps...
+     fltk 
+     fltk_gl 
+     tiff)
 
-	  # http://developer.apple.com/qa/qa2007/qa1567.html
-	  IF (${APPLE})
-		  SET_TARGET_PROPERTIES(ffview PROPERTIES	  
-		  	LINK_FLAGS "-Wl,-dylib_file,/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib:/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib"
+     # http://developer.apple.com/qa/qa2007/qa1567.html
+     IF (${APPLE})
+        SET_TARGET_PROPERTIES(ffview PROPERTIES	  
+        LINK_FLAGS "-Wl,-dylib_file,/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib:/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib"
 		  )
-	  ENDIF (${APPLE})
-
+    ENDIF (${APPLE})
 	  
 ENDIF(BUILD_GUIS)
