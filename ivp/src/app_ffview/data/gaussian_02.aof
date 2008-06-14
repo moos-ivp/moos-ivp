@@ -1,0 +1,7 @@
+AOF = AOF_Gaussian = x,-250,250,501:y,-250,250,501
+{
+  xcent = 50
+  ycent = -150
+  sigma = 32.4
+  range = 150
+}
