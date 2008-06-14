@@ -148,6 +148,34 @@ void Common_IPFViewer::setParam(string param, string value)
       {m_xRot=-72; m_yRot=0; m_zRot=122;}
   }
 
+  if(param == "frame_color") {
+    if(value == "black")
+      m_frame_red = m_frame_green = m_frame_blue = 0;
+    else {
+      vector<double> dv = colorParse(value);
+      // If all zeros (black), interpret as bad color string.
+      if((dv[0]==0) && (dv[1]==0) && (dv[2]==0))
+	return;      
+      m_frame_red   = dv[0];
+      m_frame_green = dv[1];
+      m_frame_blue  = dv[2];
+    }
+  }    
+  
+  if((param == "clear_color") || (param == "back_color")) {
+    if(value == "black")
+      m_clear_red = m_clear_green = m_clear_blue = 0;
+    else {
+      vector<double> dv = colorParse(value);
+      // If all zeros (black), interpret as bad color string.
+      if((dv[0]==0) && (dv[1]==0) && (dv[2]==0))
+	return;      
+      m_clear_red   = dv[0];
+      m_clear_green = dv[1];
+      m_clear_blue  = dv[2];
+    }
+  }    
+
   redraw();
 }
 
