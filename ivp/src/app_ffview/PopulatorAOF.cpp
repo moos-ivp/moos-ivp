@@ -136,10 +136,6 @@ bool PopulatorAOF::handleLine(string line)
   }
   
   if(define_mode == 1) {
-
-    cout << "left:"  << left  << endl;
-    cout << "right:" << right << endl;
-
     // First see if the parameter is a string parameter
     bool result = aof->setParam(left, right);
     // If it fails, try it as a "double" paramater

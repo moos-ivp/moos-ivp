@@ -185,7 +185,7 @@ void Viewer::printParams()
   cout << endl << endl;
   Common_IPFViewer::printParams();
 
-  cout << "// app_ffview Viewer -----------------------" << endl;
+  cout << "# app_ffview Viewer -----------------------" << endl;
   cout << "set_base_ipf=" << m_base_ipf << endl;
   cout << "set_base_aof=" << m_base_aof << endl;
 }
