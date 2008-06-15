@@ -102,23 +102,6 @@ bool Common_IPFViewer::setParam(string param, string value)
     m_draw_base = true;
   else if((param == "draw_base") && (value == "false"))
     m_draw_base = false;
-  else if((param == "color_scheme") && (value == "toggle-forward")) {
-    m_scheme_index++;
-    if(m_scheme_index > (int)(m_scheme_back.size()-1))
-      m_scheme_index = 0;
-  }
-  else if((param == "color_scheme") && (value == "toggle-back")) {
-    m_scheme_index--;
-    if(m_scheme_index < 0)
-      m_scheme_index = m_scheme_back.size()-1;
-  }
-  else if(param == "new_color_scheme") {
-    vector<string> svector = parseString(value, ',');
-    if(svector.size()==2) {
-      m_scheme_back.push_back(stripBlankEnds(svector[0]));
-      m_scheme_frame.push_back(stripBlankEnds(svector[1]));
-    }
-  }
   else if(param == "reset_view") {
     if(value=="1")
       {m_xRot=-72; m_zRot=40;}
@@ -169,8 +152,10 @@ bool Common_IPFViewer::setParam(string param, string value)
 
 bool Common_IPFViewer::setParam(string param, double value)
 {
-  if(param == "frame_height")
+  if(param == "mod_frame_height")
     m_frame_height += value;
+  else if(param == "set_frame_height")
+    m_frame_height = value;
   else if(param == "mod_zoom")
     m_zoom *= value;
   else if(param == "set_zoom")
@@ -199,14 +184,14 @@ bool Common_IPFViewer::setParam(string param, double value)
 
 void Common_IPFViewer::printParams()
 {
-  cout << "// lib_ipfview Common_IPFViewer -----------------" << endl;
-  cout << "frame_height="   << m_frame_height << endl;
-  cout << "set_zoom="       << m_zoom         << endl;
-  cout << "set_radius="     << m_rad_extra    << endl;
-  cout << "set_x_rotation=" << m_xRot         << endl;
-  cout << "set_z_rotation=" << m_zRot         << endl;
-  cout << "clear_color="    << m_clear_color  << endl;
-  cout << "frame_color="    << m_frame_color  << endl;
+  cout << "# lib_ipfview Common_IPFViewer -----------------" << endl;
+  cout << "set_frame_height=" << m_frame_height << endl;
+  cout << "set_zoom="         << m_zoom         << endl;
+  cout << "set_radius="       << m_rad_extra    << endl;
+  cout << "set_x_rotation="   << m_xRot         << endl;
+  cout << "set_z_rotation="   << m_zRot         << endl;
+  cout << "clear_color="      << m_clear_color  << endl;
+  cout << "frame_color="      << m_frame_color  << endl;
   if(m_draw_frame)
     cout << "draw_frame=true"  << endl;
   else

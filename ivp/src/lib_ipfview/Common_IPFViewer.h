@@ -55,10 +55,6 @@ protected:
   double       m_frame_green;
   double       m_frame_blue;
 
-  std::vector<std::string> m_scheme_back;
-  std::vector<std::string> m_scheme_frame;
-  int          m_scheme_index;
-
   double       m_xRot;
   double       m_zRot;
   double       m_zoom;
