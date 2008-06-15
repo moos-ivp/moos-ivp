@@ -28,7 +28,6 @@ Viewer::Viewer(int x, int y,
 	       int width, int height, const char *l)
   : Common_IPFViewer(x,y,width,height,l)
 {
-  setParam("reset_view", "1");
   m_base_aof   = -100;      // For shifting the AOF rendering
   m_base_ipf   =  150;      // For shifting the IPF rendering
   m_patch      = 5;         // Size of patch rendering the AOF
@@ -40,20 +39,10 @@ Viewer::Viewer(int x, int y,
   m_strict_rng = true;
   m_create_time = -1;
 
-  //m_clear_red   =  73.0 / 256.0;
-  //m_clear_green =  62.0 / 256.0;
-  //m_clear_blue  = 120.0 / 256.0;
-
-#if 1
-  m_clear_red   =  0.65;
-  m_clear_green =  0.7;
-  m_clear_blue  =  0.8;
-#endif
-#if 0
-  m_clear_red   =  0.9;
-  m_clear_green =  0.9;
-  m_clear_blue  =  0.9;
-#endif
+  setParam("set_scale", 1);
+  setParam("reset_view", "1");
+  setParam("clear_color", "white");
+  setParam("frame_color", "gray");
 
   m_smart_refine   = false;
   m_smart_count    = 1000;
@@ -76,7 +65,6 @@ void Viewer::draw()
 
   glPushMatrix();
   glRotatef(m_xRot, 1.0f, 0.0f, 0.0f);
-  glRotatef(m_yRot, 0.0f, 1.0f, 0.0f);
   glRotatef(m_zRot, 0.0f, 0.0f, 1.0f);
 
   if(m_draw_ipf && m_unif_ipf)
@@ -91,10 +79,6 @@ void Viewer::draw()
     drawFrame();
     //drawFocusBox();
   }
-
-  //cout << "x: " << m_xRot;
-  //cout << "y: " << m_yRot;
-  //cout << "z: " << m_zRot << endl;
 
   // Restore transformations
   glPopMatrix();
@@ -148,6 +132,64 @@ void Viewer::setAOF(AOF *aof)
   //cout << "m_focus_box_len: "  << m_focus_box_len << endl;
   //cout << "m_focus_unif_len: " << m_focus_unif_len << endl;
 }
+
+//-------------------------------------------------------------
+// Procedure: setParam
+
+bool Viewer::setParam(string param, string value)
+{
+  if(Common_IPFViewer::setParam(param, value))
+    return(true);
+
+  return(true);
+}
+
+//-------------------------------------------------------------
+// Procedure: setParam
+
+bool Viewer::setParam(string param, double value)
+{
+  if(Common_IPFViewer::setParam(param, value))
+    return(true);
+
+  if(param == "set_base_ipf")
+    m_base_ipf = value;
+  else if(param == "mod_base_ipf")
+    m_base_ipf += value;
+  else if(param == "set_base_aof")
+    m_base_aof = value;
+  else if(param == "mod_base_aof")
+    m_base_aof += value;
+  else if(param == "set_scale") {
+    m_scale = value;
+    if(m_scale < 0)
+      m_scale = 0;
+  }
+  else if(param == "mod_scale") {
+    m_scale += value;
+    if(m_scale < 0)
+      m_scale = 0;
+  }
+  else
+    return(false);
+
+  redraw();
+  return(true);
+}
+
+//-------------------------------------------------------------
+// Procedure: printParams
+
+void Viewer::printParams()
+{
+  cout << endl << endl;
+  Common_IPFViewer::printParams();
+
+  cout << "// app_ffview Viewer -----------------------" << endl;
+  cout << "set_base_ipf=" << m_base_ipf << endl;
+  cout << "set_base_aof=" << m_base_aof << endl;
+}
+
 
 //-------------------------------------------------------------
 // Procedure: toggleUniformAug
@@ -243,7 +285,6 @@ void Viewer::makeUniformIPF(int usize)
     ok = ok && reflector.setParam("smart_amount", pstr);
   }
 
-  cout << "OK: " << ok << endl;
   reflector.create();
 
   if(m_unif_ipf)
@@ -509,7 +550,7 @@ void Viewer::drawAOF()
   int xc = xmin;
   Quad3D q;
   q.base = m_base_aof; 
-  q.scale= m_scale_extra; 
+  q.scale= m_scale; 
   q.lines= false;
   q.xpts = (xmax - xmin) + 1;
   q.ypts = (ymax - ymin) + 1;

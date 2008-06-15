@@ -141,7 +141,6 @@ SET(IVP_APPS_TO_BUILD
   uTermCommand
   uXMS
   uPokeDB
-  uFunctionVis
   ${LINUX_ONLY_APPS}
 )
 

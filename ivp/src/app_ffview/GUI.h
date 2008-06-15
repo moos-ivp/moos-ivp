@@ -115,6 +115,9 @@ private:
   inline void cb_ColorBack_i(int);
   static void cb_ColorBack(Fl_Widget*, int);
 
+  inline void cb_PrintParams_i();
+  static void cb_PrintParams(Fl_Widget*);
+
   static void cb_Quit();
 };
 #endif

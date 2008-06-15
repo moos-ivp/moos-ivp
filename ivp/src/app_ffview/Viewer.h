@@ -32,11 +32,13 @@ public:
   void   setAOF(AOF *aof);
 
 public:
+  bool   setParam(std::string, std::string);
+  bool   setParam(std::string, double);
+  void   printParams();
+
   void   toggleAOF()              {m_draw_aof = !m_draw_aof; redraw();};
   void   toggleIPF()              {m_draw_ipf = !m_draw_ipf; redraw();};
   void   toggleStrict()           {m_strict_rng = !m_strict_rng; redraw();};
-  void   modBaseAOF(float amt)    {m_base_aof += amt; redraw();};
-  void   modBaseIPF(float amt)    {m_base_ipf += amt; redraw();};
   void   toggleUniformAug();
   void   toggleSmartAug();
   void   makeUniformIPF(int=0);

@@ -31,13 +31,10 @@ class Common_IPFViewer : public Fl_Gl_Window
   int    handle(int);
 
 public:
-  void   modBackColor(double r, double g, double b)
-    {m_clear_red=r; m_clear_green=g; m_clear_blue=b;};
-
   void   applyIPF(IvPFunction*, bool=false);
-
-  void   setParam(std::string, std::string);
-  void   setParam(std::string, double);
+  bool   setParam(std::string, std::string);
+  bool   setParam(std::string, double);
+  void   printParams();
   
 protected:
   void   drawFrame();
@@ -48,10 +45,12 @@ protected:
   void   handleRightMouse(int, int) {};
 
 protected:
+  std::string  m_clear_color;
   double       m_clear_red;
   double       m_clear_green;
   double       m_clear_blue;
   
+  std::string  m_frame_color;
   double       m_frame_red;
   double       m_frame_green;
   double       m_frame_blue;
@@ -61,13 +60,10 @@ protected:
   int          m_scheme_index;
 
   double       m_xRot;
-  double       m_yRot;
   double       m_zRot;
   double       m_zoom;
 
   double       m_rad_extra;
-  double       m_base_extra;
-  double       m_scale_extra;
   int          m_polar;
   
   bool         m_ipf_owner;

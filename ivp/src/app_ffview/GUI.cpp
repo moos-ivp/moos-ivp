@@ -77,6 +77,7 @@ GUI::GUI(int g_w, int g_h, const char *g_l)
 Fl_Menu_Item GUI::menu_[] = {
  {"File", 0,  0, 0, 64, 0, 0, 14, 0},
  {"Script", 0, (Fl_Callback*)GUI::cb_Script, 0, 0},
+ {"Print Params", 'p', (Fl_Callback*)GUI::cb_PrintParams, 0, 0},
  {"Quit ", FL_CTRL+'q', (Fl_Callback*)GUI::cb_Quit, 0, 0},
  {0},
 
@@ -255,7 +256,7 @@ void GUI::cb_ModScale(Fl_Widget* o, int v) {
 
 //----------------------------------------- Mod BaseAOF
 inline void GUI::cb_ModBaseAOF_i(int amt) {
-  viewer->modBaseAOF(amt);
+  viewer->setParam("mod_base_aof", amt);
 }
 
 void GUI::cb_ModBaseAOF(Fl_Widget* o, int v) {
@@ -264,7 +265,7 @@ void GUI::cb_ModBaseAOF(Fl_Widget* o, int v) {
 
 //----------------------------------------- Mod BaseIPF
 inline void GUI::cb_ModBaseIPF_i(int amt) {
-  viewer->modBaseIPF(amt);
+  viewer->setParam("mod_base_ipf", amt);
 }
 
 void GUI::cb_ModBaseIPF(Fl_Widget* o, int v) {
@@ -397,16 +398,20 @@ void GUI::cb_ColorMap(Fl_Widget* o, int v) {
   ((GUI*)(o->parent()->user_data()))->cb_ColorMap_i(v);
 }
 
+//----------------------------------------- PrintParams
+inline void GUI::cb_PrintParams_i() {
+  viewer->printParams();
+}
+void GUI::cb_PrintParams(Fl_Widget* o) {
+  ((GUI*)(o->parent()->user_data()))->cb_PrintParams_i();
+}
+
 //----------------------------------------- ColorBack
 inline void GUI::cb_ColorBack_i(int index) {
   if(index == 0)
-    viewer->modBackColor(1,1,1);
-  if(index == 1) {
-    double r = (double)(73)  / (double)(256);
-    double g = (double)(62)  / (double)(256);
-    double b = (double)(120) / (double)(256);
-    viewer->modBackColor(r,g,b);
-  }
+    viewer->setParam("clear_color", "white");
+  if(index == 1)
+    viewer->setParam("clear_color", "0.285,0.242,0.469");
 }
 void GUI::cb_ColorBack(Fl_Widget* o, int v) {
   ((GUI*)(o->parent()->user_data()))->cb_ColorBack_i(v);
