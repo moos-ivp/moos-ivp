@@ -123,6 +123,14 @@ int main(int argc, char *argv[])
       double frame_height = tokDoubleParse(argi, "frame_height", '#', '=');
       gui->viewer->setParam("set_frame_height", frame_height);
     }
+    else if(strContains(argv[i], "set_x_rotation=")) {
+      double xrot = tokDoubleParse(argi, "set_x_rotation", '#', '=');
+      gui->viewer->setParam("set_x_rotation", xrot);
+    }
+    else if(strContains(argv[i], "set_z_rotation=")) {
+      double zrot = tokDoubleParse(argi, "set_z_rotation", '#', '=');
+      gui->viewer->setParam("set_z_rotation", zrot);
+    }
   }
 
   return Fl::run();
