@@ -1,4 +1,4 @@
-AOF = AOF_Gaussian = x,-250,250,501:y,-250,250,501
+AOF = AOF_Gaussian = x,-250,249,500:y,-250,249,500
 {
   xcent = 50
   ycent = -150

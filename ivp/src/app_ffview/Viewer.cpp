@@ -262,22 +262,23 @@ void Viewer::makeUniformIPF(int usize)
     ok = ok && reflector.setParam("strict_range", "false");
   
   if(m_focus_box) {
+#if 1
     string foc_region1 = "";
-    foc_region1 += dim0_name + ":" + "100:300" + ",";
-    foc_region1 += dim1_name + ":" + "100:300";
-    
+    foc_region1 += dim0_name + ":" + "-50:150" + ",";
+    foc_region1 += dim1_name + ":" + "-250:-50";
+#endif
+#if 0
+    string foc_region1 = "native @";
+    foc_region1 += dim0_name + ":" + "-50:150" + ",";
+    foc_region1 += dim1_name + ":" + "-250:-50";
+#endif    
+
     string res_box = "discrete @";
     res_box += dim0_name + ":" + intToString(m_focus_unif_len) + ",";
     res_box += dim1_name + ":" + intToString(m_focus_unif_len);
     
-    string foc_region2 = "";
-    foc_region2 += dim0_name + ":" + "285:410" + ",";
-    foc_region2 += dim1_name + ":" + "0:110";
-    
     ok = ok && reflector.setParam("refine_region", foc_region1);
     ok = ok && reflector.setParam("refine_piece", res_box);
-    ok = ok && reflector.setParam("refine_region", foc_region2);
-    ok = ok && reflector.setParam("refine_piece", res_box);    
   }
   
   if(m_smart_refine) {
