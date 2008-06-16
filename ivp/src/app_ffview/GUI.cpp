@@ -69,18 +69,22 @@ GUI::GUI(int g_w, int g_h, const char *g_l)
   p_create_time->textsize(info_size); 
   p_create_time->labelsize(info_size);
 
-  p_uniform_str = new MY_Output(550, h()-90, 180, 20, "Uniform Piece:"); 
+  p_uniform_str = new MY_Output(530, h()-90, 180, 20, "Uniform Piece:"); 
   p_uniform_str->textsize(info_size); 
   p_uniform_str->labelsize(info_size);
   
-  p_refine_reg_str = new MY_Output(550, h()-60, 180, 20, "Refine Region:"); 
+  p_refine_reg_str = new MY_Output(530, h()-60, 180, 20, "Refine Region:"); 
   p_refine_reg_str->textsize(info_size); 
   p_refine_reg_str->labelsize(info_size);
   
-  p_refine_pce_str = new MY_Output(550, h()-30, 180, 20, "Refine Piece:"); 
+  p_refine_pce_str = new MY_Output(780, h()-60, 180, 20, "Refine Piece:"); 
   p_refine_pce_str->textsize(info_size); 
   p_refine_pce_str->labelsize(info_size);
   //i_refine_pce_str->callback((Fl_Callback*)GUI::cb_set_refine_pce);
+
+  p_reflector_errors  = new MY_Output(530, h()-30, 430, 20, "Reflector Errors:"); 
+  p_reflector_errors->textsize(info_size); 
+  p_reflector_errors->labelsize(info_size);
 
   this->end();
   this->resizable(this);
@@ -126,7 +130,7 @@ Fl_Menu_Item GUI::menu_[] = {
  {"Base +", 'e', (Fl_Callback*)GUI::cb_ModBaseIPF, (void*)+10, 0},
  {"Base -", 'r', (Fl_Callback*)GUI::cb_ModBaseIPF, (void*)-10, FL_MENU_DIVIDER},
  {"Toggle Strict", '`', (Fl_Callback*)GUI::cb_ToggleStrict, (void*)0, FL_MENU_RADIO|FL_MENU_DIVIDER},
- {"Uniform 1",   0, (Fl_Callback*)GUI::cb_MakeUniform, (void*)0, FL_MENU_RADIO},
+ {"Create   ",   0, (Fl_Callback*)GUI::cb_MakeUniform, (void*)0, FL_MENU_RADIO},
  {"Uniform 1",   0, (Fl_Callback*)GUI::cb_MakeUniform, (void*)1, FL_MENU_RADIO},
  {"Uniform 2",   0, (Fl_Callback*)GUI::cb_MakeUniform, (void*)2, FL_MENU_RADIO},
  {"Uniform 3",   0, (Fl_Callback*)GUI::cb_MakeUniform, (void*)3, FL_MENU_RADIO},
@@ -155,10 +159,10 @@ Fl_Menu_Item GUI::menu_[] = {
   {0},
 
  {"Augmentation", 0,  0, 0, 64, 0, 0, 14, 0},
- {"Toggle-Uniform-Aug",  0, (Fl_Callback*)GUI::cb_ToggleUniformAug, (void*)0, 0},
- {"Smaller-Uniform-Aug", '[', (Fl_Callback*)GUI::cb_ModUniformAug, (void*)-1, 0},
- {"Larger-Uniform-Aug",  ']', (Fl_Callback*)GUI::cb_ModUniformAug, (void*)1, FL_MENU_DIVIDER},
- {"Toggle-Smart-Aug",    0, (Fl_Callback*)GUI::cb_ToggleSmartAug, (void*)0, 0},
+ {"Toggle Directed Refine",  'd', (Fl_Callback*)GUI::cb_ToggleUniformAug, (void*)0, 0},
+ {"Smaller-Uniform-Refine", '[', (Fl_Callback*)GUI::cb_ModUniformAug, (void*)-1, 0},
+ {"Larger-Uniform-Refine",  ']', (Fl_Callback*)GUI::cb_ModUniformAug, (void*)1, FL_MENU_DIVIDER},
+ {"Toggle-Smart-Refine",    0, (Fl_Callback*)GUI::cb_ToggleSmartAug, (void*)0, 0},
  {"Smart-Aug 100",    0, (Fl_Callback*)GUI::cb_SmartAugAmt, (void*)100, 0},
  {"Smart-Aug 200",    0, (Fl_Callback*)GUI::cb_SmartAugAmt, (void*)200, 0},
  {"Smart-Aug 500",    0, (Fl_Callback*)GUI::cb_SmartAugAmt, (void*)500, 0},
@@ -296,7 +300,8 @@ void GUI::cb_ModPatchAOF(Fl_Widget* o, int v) {
 
 //----------------------------------------- Mod UniformAug
 inline void GUI::cb_ModUniformAug_i(int amt) {
-  viewer->modUniformAug(amt);
+  viewer->setParam("mod_focus_len", amt);
+  viewer->makeUniformIPF();
   updateXY();
 }
 void GUI::cb_ModUniformAug(Fl_Widget* o, int v) {
@@ -392,7 +397,8 @@ void GUI::cb_ToggleStrict(Fl_Widget* o) {
 
 //----------------------------------------- MakeUniform
 inline void GUI::cb_MakeUniform_i(int amt) {
-  viewer->setParam("uniform_piece", amt);
+  if(amt > 0)
+    viewer->setParam("uniform_piece", amt);
   viewer->makeUniformIPF();
   updateXY();
 }
@@ -496,6 +502,10 @@ void GUI::updateXY()
   
   str = viewer->getParam("refine_piece");
   p_refine_pce_str->value(str.c_str());
+  
+  str = viewer->getParam("reflector_errors");
+  p_reflector_errors->value(str.c_str());
+  
 }
 
 

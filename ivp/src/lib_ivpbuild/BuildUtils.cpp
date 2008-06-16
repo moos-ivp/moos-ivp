@@ -578,7 +578,7 @@ IvPBox stringToPointBox(const string& given_str,
 
   if(preface == "discrete") 
     return(stringDiscreteToPointBox(remainder, domain, gsep, lsep));
-  else if(preface == "float") 
+  else if((preface == "float") || (preface == "native"))
     return(stringFloatToPointBox(remainder, domain, gsep, lsep));
   else
     return(null_box);
@@ -906,14 +906,8 @@ IvPBox stringFloatToRegionBox(const string& given_str,
 	      else
 		dvar_val_high[i] = hval;
 	    }
-	    else 
-	      cout << "Bad 77" << endl;
 	  }
-	  else 
-	    cout << "Bad 88" << endl;
 	}
-	else
-	  cout << "badd 66" << endl;
       }  
     }
   }

@@ -143,9 +143,12 @@ bool Viewer::setParam(string param, string value)
   if(Common_IPFViewer::setParam(param, value))
     return(true);
 
-  if(param == "uniform_piece") {
+  if(param == "uniform_piece")
     m_uniform_piece_str = stripBlankEnds(value);
-  }
+  else if(param == "refine_region")
+    m_refine_region_str = stripBlankEnds(value);
+  else if(param == "refine_piece")
+    m_refine_piece_str = stripBlankEnds(value);
 
   return(true);
 }
@@ -181,6 +184,12 @@ bool Viewer::setParam(string param, double value)
       m_uniform_piece_size = (int)(value);
       m_uniform_piece_str  = "";
     }
+  }
+  else if(param == "mod_focus_len") {
+    m_focus_unif_len += (int)(value);
+    if(m_focus_unif_len < 1)
+      m_focus_unif_len = 1;
+    m_refine_piece_str  = "";
   }
   else
     return(false);
@@ -271,21 +280,21 @@ void Viewer::makeUniformIPF()
     reflector.setParam("strict_range", "false");
   
   if(m_focus_box) {
-    if(m_refine_reg_str == "") {
-      m_refine_reg_str += dim0_name + ":" + "-50:150" + ",";
-      m_refine_reg_str += dim1_name + ":" + "-250:-50";
+    if(m_refine_region_str == "") {
+      m_refine_region_str += dim0_name + ":" + "-50:150" + ",";
+      m_refine_region_str += dim1_name + ":" + "-250:-50";
     }
     
-    if(m_refine_box_str == "") {
-      m_refine_box_str = "discrete @";
-      m_refine_box_str += dim0_name + ":";
-      m_refine_box_str += intToString(m_focus_unif_len) + ",";
-      m_refine_box_str += dim1_name + ":";
-      m_refine_box_str += intToString(m_focus_unif_len);
+    if(m_refine_piece_str == "") {
+      m_refine_piece_str = "discrete @";
+      m_refine_piece_str += dim0_name + ":";
+      m_refine_piece_str += intToString(m_focus_unif_len) + ",";
+      m_refine_piece_str += dim1_name + ":";
+      m_refine_piece_str += intToString(m_focus_unif_len);
     }
     
-    reflector.setParam("refine_region", m_refine_reg_str);
-    reflector.setParam("refine_piece",  m_refine_box_str);
+    reflector.setParam("refine_region", m_refine_region_str);
+    reflector.setParam("refine_piece",  m_refine_piece_str);
   }
   
   if(m_smart_refine) {
@@ -293,7 +302,14 @@ void Viewer::makeUniformIPF()
     reflector.setParam("smart_amount", pstr);
   }
 
-  reflector.create();
+  if(reflector.hasErrors() == false) {
+    reflector.create();
+    m_reflector_errors = "";
+  }
+  else {
+    m_reflector_errors = reflector.getErrors();
+    cout << "Errs: " << m_reflector_errors << endl;
+  }
 
   if(m_unif_ipf)
     delete(m_unif_ipf);
@@ -449,9 +465,11 @@ string Viewer::getParam(const string& param)
   if(param == "uniform_piece")
     return(m_uniform_piece_str);
   else if(param == "refine_region")
-    return(m_refine_reg_str);
+    return(m_refine_region_str);
   else if(param == "refine_piece")
-    return(m_refine_box_str);
+    return(m_refine_piece_str);
+  else if(param == "reflector_errors")
+    return(m_reflector_errors);
   
   return("");
 }

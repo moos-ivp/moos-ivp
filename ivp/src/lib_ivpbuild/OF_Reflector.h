@@ -53,7 +53,11 @@ public:
   bool   setParam(std::string);
   bool   setParam(std::string, std::string);
   bool   setParam(std::string, int);
-  
+    
+  std::string              getErrors();
+  std::vector<std::string> getErrorsVector() {return(m_errors);};
+  bool                     hasErrors() {return(m_errors.size()>0);};
+
  protected:
   void   initializePDMap();
   void   clearPDMap();
@@ -82,6 +86,8 @@ protected:
   std::vector<IvPBox>  m_refine_points;
 
   std::string  m_uniform_piece_str;
+
+  std::vector<std::string> m_errors;
 };
 #endif
 

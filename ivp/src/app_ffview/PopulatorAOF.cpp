@@ -18,7 +18,6 @@
 #include "AOF_Gaussian.h"
 #include "AOF_Linear.h"
 #include "AOF_Quadratic.h"
-#include "AOF_AvoidCollision.h"
 #include "PopulatorAOF.h"
 #include "MBUtils.h"
 #include "FileBuffer.h"
@@ -126,8 +125,6 @@ bool PopulatorAOF::handleLine(string line)
       aof = new AOF_Ring(domain);
     else if(aof_type == "AOF_Gaussian")
       aof = new AOF_Gaussian(domain);
-    else if(aof_type == "AOF_AvoidCollision")
-      aof = new AOF_AvoidCollision(domain);
     else if(aof_type == "AOF_Linear")
       aof = new AOF_Linear(domain);
     else if(aof_type == "AOF_Quadratic")

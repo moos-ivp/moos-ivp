@@ -83,9 +83,9 @@ private:
   std::string m_uniform_piece_str;
   int         m_uniform_piece_size;
 
-  std::string m_refine_reg_str;
-  std::string m_refine_box_str;
-
+  std::string m_refine_region_str;
+  std::string m_refine_piece_str;
+  std::string m_reflector_errors;
 
   bool       m_focus_box;
   int        m_focus_box_x;

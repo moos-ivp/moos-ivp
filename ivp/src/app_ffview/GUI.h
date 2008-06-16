@@ -48,6 +48,8 @@ public:
   MY_Output   *p_uniform_str;
   MY_Output   *p_refine_reg_str;
   MY_Output   *p_refine_pce_str;
+  MY_Output   *p_reflector_errors;
+
 
 private:
   inline void cb_Zoom_i(int);

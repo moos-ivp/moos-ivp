@@ -104,6 +104,22 @@ IvPFunction *OF_Reflector::extractOF(bool normalize)
 }
 
 //-------------------------------------------------------------
+// Procedure: getErrors
+
+string OF_Reflector::getErrors()
+{
+  unsigned int vsize = m_errors.size();
+
+  string errors = "(" + intToString(vsize) + ") ";
+  for(unsigned int i=0; i<vsize; i++) {
+    errors += m_errors[i];
+    if(i < (vsize-1))
+      errors += " ### ";
+  }
+  return(errors);
+}
+    
+//-------------------------------------------------------------
 // Procedure: clearPDMap()
 
 void OF_Reflector::clearPDMap()
@@ -138,9 +154,11 @@ bool OF_Reflector::setParam(string str)
   vector<string> svector = parseString(str, '#');
   int vsize = svector.size();
 
-  if(vsize == 0)
+  if(vsize == 0) {
+    m_errors.push_back("Empty list of param/value pairs");
     return(false);
-  
+  }
+
   for(int i=0; i<vsize; i++) {
     svector[i] = stripBlankEnds(svector[i]);
     vector<string> tvector = parseString(svector[i], '=');
@@ -176,42 +194,62 @@ bool OF_Reflector::setParam(string param, string value)
   value = tolower(stripBlankEnds(value));
 
   if(param == "strict_range") {
-    if((value != "true") && (value != "false"))
+    if((value != "true") && (value != "false")) {
+      m_errors.push_back("strict_range value must be true/false");
       return(false);
+    }
     if(m_regressor)
       m_regressor->setStrictRange(value=="true");
   }
   else if((param=="uniform_amount")||(param=="uniform_amt")) {
     int uniform_amount = atoi(value.c_str());
-    if(!isNumber(value) || (uniform_amount < 1))
+    if(!isNumber(value)) {
+      m_errors.push_back(param + " value must be numerical");
       return(false);
+    }
+    if(!isNumber(value) || (uniform_amount < 1)) {
+      m_errors.push_back(param + " value must be >= 1");
+      return(false);
+    }
     m_uniform_amount = uniform_amount;
   }
   else if((param=="uniform_piece")||(param=="uniform_box")) {
-    m_uniform_piece = stringToPointBox(value, m_domain, ',', ':');
-    if(m_uniform_piece.null())
+    IvPBox foo = stringToPointBox(value, m_domain, ',', ':');
+    m_uniform_piece = foo;
+    if(m_uniform_piece.null()) {
+      m_errors.push_back(param + " value is ill-defined");
       return(false);
+    }
   }
   else if(param=="uniform_grid") {
     m_uniform_grid = stringToPointBox(value, m_domain, ',', ':');
-    if(m_uniform_grid.null())
+    if(m_uniform_grid.null()) {
+      m_errors.push_back(param + " value is ill-defined");
       return(false);
+    }
   }
   else if((param=="refine_region")||(param=="focus_region")) {
-    if(m_refine_regions.size() != m_refine_pieces.size())
+    if(m_refine_regions.size() != m_refine_pieces.size()) {
+      m_errors.push_back(param + " and refine_piece must be added in pairs");
       return(false);
+    }
     IvPBox refine_region = stringFloatToRegionBox(value, m_domain, ',', ':');
-    if(refine_region.null())
+    if(refine_region.null()) {
+      m_errors.push_back(param + " value is ill-defined");
       return(false);
+    }
     else
       m_refine_regions.push_back(refine_region);
   }
   else if((param=="refine_piece")||(param=="focus_box")) {
-    if((m_refine_regions.size() - m_refine_pieces.size()) != 1)
+    if((m_refine_regions.size() - m_refine_pieces.size()) != 1) {
+      m_errors.push_back(param + " and refine_region must be added in pairs");
       return(false);
+    }
     IvPBox refine_piece = stringToPointBox(value, m_domain, ',', ':');
     if(refine_piece.null()) {
       m_refine_regions.pop_back();
+      m_errors.push_back(param + " value is ill-defined");
       return(false);
     }
     m_refine_pieces.push_back(refine_piece);
@@ -222,35 +260,59 @@ bool OF_Reflector::setParam(string param, string value)
   }
   else if(param == "refine_point") {
     IvPBox refine_point = stringToPointBox(value, m_domain, ',', ':');
-    if(refine_point.null() || !refine_point.isPtBox())
+    if(refine_point.null() || !refine_point.isPtBox()) {
+      m_errors.push_back(param + " value is ill-defined");
       return(false);
+    }
     m_refine_points.push_back(refine_point);
   }
   else if((param=="smart_amount")||(param=="priority_amt")) {
     int smart_amount = atoi(value.c_str());
-    if(!isNumber(value) || (smart_amount < 0))
+    if(!isNumber(value)) {
+      m_errors.push_back(param + " value must be numerical");
       return(false);
+    }
+    if(smart_amount < 0) {
+      m_errors.push_back(param + " value must be >= 0");
+      return(false);
+    }
     m_smart_amount = smart_amount;
   }
   else if(param == "smart_percent") {
     int smart_percent = atoi(value.c_str());
-    if(!isNumber(value) || (smart_percent < 0))
+    if(!isNumber(value)) {
+      m_errors.push_back("smart_percent value must be numerical");
       return(false);
+    }
+    if(smart_percent < 0) {
+      m_errors.push_back("smart_percent value must be >= 0");
+      return(false);
+    }
     m_smart_percent = smart_percent;
   }
   else if((param=="smart_thresh")||(param=="priority_thresh")) {
     double smart_thresh = atof(value.c_str());
-    if(!isNumber(value) || (smart_thresh < 0))
+    if(!isNumber(value)) {
+      m_errors.push_back(param + " value must be numerical");
       return(false);
+    }
+    if(smart_thresh < 0) {
+      m_errors.push_back(param + " value must be >= 0");
+      return(false);
+    }
     m_smart_thresh = smart_thresh;
   }
   else if(param == "auto_peak") {
-    if((value != "true") && (value != "false"))
+    if((value != "true") && (value != "false")) {
+      m_errors.push_back("auto_peak value must be true/false");
       return(false);
+    }
     m_auto_peak = (value == "true");
   }
-  else
+  else {
+    m_errors.push_back(param + ": undefined parameter");
     return(false);
+  }
   
   return(true);
 }
@@ -263,22 +325,30 @@ bool OF_Reflector::setParam(string param, int value)
   param = tolower(stripBlankEnds(param));
   
   if((param=="uniform_amount")||(param=="uniform_amt")) {
-    if(value < 1)
+    if(value < 1) {
+      m_errors.push_back(param + " value must be >= 1");
       return(false);
+    }
     m_uniform_amount = value;
   }
   else if((param=="smart_amount")||(param=="priority_amt")) {
-    if(value < 0)
+    if(value < 0) {
+      m_errors.push_back(param + " value must be >= 0");
       return(false);
+    }
     m_smart_amount = value;
   }
   else if(param == "smart_percent") {
-    if(value < 0)
+    if(value < 0) {
+      m_errors.push_back(param + " value must be >= 0");
       return(false);
+    }
     m_smart_percent = value;
   }
-  else
+  else {
+    m_errors.push_back(param + ": undefined parameter");
     return(false);
+  }
   
   return(true);
 }
