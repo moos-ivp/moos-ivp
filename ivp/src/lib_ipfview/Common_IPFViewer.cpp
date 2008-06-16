@@ -104,7 +104,7 @@ bool Common_IPFViewer::setParam(string param, string value)
     m_draw_base = false;
   else if(param == "reset_view") {
     if(value=="1")
-      {m_xRot=-72; m_zRot=40;}
+      {m_xRot=-78; m_zRot=40;}
     else if(value=="2")
       {m_xRot=0;   m_zRot=0;}
     else if(value=="3")
