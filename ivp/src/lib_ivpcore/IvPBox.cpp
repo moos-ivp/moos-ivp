@@ -132,6 +132,8 @@ IvPBox::~IvPBox()
 //            memory if not necessary. If the dimension and
 //            degree of the two boxes are the same, NO new memory
 //            from the heap should be allocated.
+// Jun1608 - Added needed logic to handle the case where the right
+//           box is a null box. Null boxes have m_wts=0 pointer.
 
 const IvPBox &IvPBox::operator=(const IvPBox &right)
 {
@@ -150,8 +152,11 @@ const IvPBox &IvPBox::operator=(const IvPBox &right)
     }
     
     if((m_dim != right.m_dim) || (m_degree != right.m_degree)) {
-      if(m_wts) delete [] m_wts;
-      m_wts = new double[wtc];
+      if(m_wts) 
+	delete [] m_wts;
+      m_wts = 0;
+      if(right.m_dim > 0)
+	m_wts = new double[wtc];
     }
 
     m_dim     = right.m_dim;
@@ -162,9 +167,11 @@ const IvPBox &IvPBox::operator=(const IvPBox &right)
       m_bds[i] = right.m_bds[i];
     }
 
-    for(i=0; i<wtc; i++)
-      m_wts[i] = right.m_wts[i];
-  }  
+    if(m_wts) {
+      for(i=0; i<wtc; i++)
+	m_wts[i] = right.m_wts[i];
+    }  
+  }
 
   return(*this);
 }
