@@ -28,17 +28,17 @@ Viewer::Viewer(int x, int y,
 	       int width, int height, const char *l)
   : Common_IPFViewer(x,y,width,height,l)
 {
-  m_base_aof   = -100;      // For shifting the AOF rendering
-  m_base_ipf   =  150;      // For shifting the IPF rendering
+  m_base_aof   = -232;      // For shifting the AOF rendering
+  m_base_ipf   = -35;       // For shifting the IPF rendering
   m_patch      = 5;         // Size of patch rendering the AOF
   m_draw_aof   = true;
   m_draw_ipf   = true;
   m_unif_ipf   = 0;
-  m_unifsize   = 10;
   m_polar      = 0;
   m_strict_rng = true;
   m_create_time = -1;
 
+  setParam("uniform_piece", 10);
   setParam("set_scale", 1);
   setParam("reset_view", "1");
   setParam("clear_color", "white");
@@ -54,6 +54,8 @@ Viewer::Viewer(int x, int y,
   m_focus_unif_len = 5;
 
   m_zoom = m_zoom * 1.25 * 1.25;  // Two zoom clicks in.
+
+  cout << "m_xRot: " << m_xRot << endl;
 }
 
 //-------------------------------------------------------------
@@ -141,6 +143,10 @@ bool Viewer::setParam(string param, string value)
   if(Common_IPFViewer::setParam(param, value))
     return(true);
 
+  if(param == "uniform_piece") {
+    m_uniform_piece_str = stripBlankEnds(value);
+  }
+
   return(true);
 }
 
@@ -169,6 +175,12 @@ bool Viewer::setParam(string param, double value)
     m_scale += value;
     if(m_scale < 0)
       m_scale = 0;
+  }
+  else if(param == "uniform_piece") {
+    if(value >= 1) {
+      m_uniform_piece_size = (int)(value);
+      m_uniform_piece_str  = "";
+    }
   }
   else
     return(false);
@@ -232,58 +244,53 @@ void Viewer::makeUniformIPFxN(int iterations)
 //-------------------------------------------------------------
 // Procedure: makeUniformIPF
 
-void Viewer::makeUniformIPF(int usize)
+void Viewer::makeUniformIPF()
 {
   AOF *aof = m_aof_cache.getAOF();
   if(!aof)
     return;
 
-  if(usize <= 0)
-    usize = m_unifsize;
-  else
-    m_unifsize = usize;
-
   OF_Reflector reflector(aof, 1);
 
-  bool ok = true;
   string dim0_name = m_domain.getVarName(0);
   string dim1_name = m_domain.getVarName(1);
 
-  // Example String: "discrete @ x:40,y:20"
-  string unif_str = "discrete @ ";
-  unif_str += dim0_name + ":" + intToString(usize) + ",";
-  unif_str += dim1_name + ":" + intToString(usize);
+  if(m_uniform_piece_str == "") {
+    m_uniform_piece_str = "discrete @ ";
+    m_uniform_piece_str += dim0_name + ":";
+    m_uniform_piece_str += intToString(m_uniform_piece_size) + ",";
+    m_uniform_piece_str += dim1_name + ":";
+    m_uniform_piece_str += intToString(m_uniform_piece_size);
+  }
 
-  ok = ok && reflector.setParam("uniform_piece", unif_str);
+  reflector.setParam("uniform_piece", m_uniform_piece_str);
 
   if(m_strict_rng)
-    ok = ok && reflector.setParam("strict_range", "true");
+    reflector.setParam("strict_range", "true");
   else
-    ok = ok && reflector.setParam("strict_range", "false");
+    reflector.setParam("strict_range", "false");
   
   if(m_focus_box) {
-#if 1
-    string foc_region1 = "";
-    foc_region1 += dim0_name + ":" + "-50:150" + ",";
-    foc_region1 += dim1_name + ":" + "-250:-50";
-#endif
-#if 0
-    string foc_region1 = "native @";
-    foc_region1 += dim0_name + ":" + "-50:150" + ",";
-    foc_region1 += dim1_name + ":" + "-250:-50";
-#endif    
-
-    string res_box = "discrete @";
-    res_box += dim0_name + ":" + intToString(m_focus_unif_len) + ",";
-    res_box += dim1_name + ":" + intToString(m_focus_unif_len);
+    if(m_refine_reg_str == "") {
+      m_refine_reg_str += dim0_name + ":" + "-50:150" + ",";
+      m_refine_reg_str += dim1_name + ":" + "-250:-50";
+    }
     
-    ok = ok && reflector.setParam("refine_region", foc_region1);
-    ok = ok && reflector.setParam("refine_piece", res_box);
+    if(m_refine_box_str == "") {
+      m_refine_box_str = "discrete @";
+      m_refine_box_str += dim0_name + ":";
+      m_refine_box_str += intToString(m_focus_unif_len) + ",";
+      m_refine_box_str += dim1_name + ":";
+      m_refine_box_str += intToString(m_focus_unif_len);
+    }
+    
+    reflector.setParam("refine_region", m_refine_reg_str);
+    reflector.setParam("refine_piece",  m_refine_box_str);
   }
   
   if(m_smart_refine) {
     string pstr = intToString(m_smart_count);
-    ok = ok && reflector.setParam("smart_amount", pstr);
+    reflector.setParam("smart_amount", pstr);
   }
 
   reflector.create();
@@ -432,6 +439,21 @@ double Viewer::getParam(const string& param, bool&ok)
 
   ok = false;
   return(0);
+}
+
+//-------------------------------------------------------------
+// Procedure: getParam()
+
+string Viewer::getParam(const string& param)
+{
+  if(param == "uniform_piece")
+    return(m_uniform_piece_str);
+  else if(param == "refine_region")
+    return(m_refine_reg_str);
+  else if(param == "refine_piece")
+    return(m_refine_box_str);
+  
+  return("");
 }
 
 //-------------------------------------------------------------

@@ -31,43 +31,56 @@ GUI::GUI(int g_w, int g_h, const char *g_l)
     
   int info_size=10;
 
-  viewer = new Viewer(0, 30, w(), h()-100);
+  viewer = new Viewer(0, 30, w(), h()-125);
 
-  p_samp_count = new MY_Output(60, h()-60, 50, 20, "Samples:"); 
+  p_samp_count = new MY_Output(60, h()-90, 50, 20, "Samples:"); 
   p_samp_count->textsize(info_size); 
   p_samp_count->labelsize(info_size);
 
-  p_worst_err = new MY_Output(60, h()-30, 50, 20, "WST-ERR:"); 
+  p_worst_err = new MY_Output(60, h()-60, 50, 20, "WST-ERR:"); 
   p_worst_err->textsize(info_size); 
   p_worst_err->labelsize(info_size);
 
-  p_avg_err = new MY_Output(200, h()-60, 50, 20, "AVG-ERR:"); 
+  p_avg_err = new MY_Output(200, h()-90, 50, 20, "AVG-ERR:"); 
   p_avg_err->textsize(info_size); 
   p_avg_err->labelsize(info_size);
 
-  p_square_err = new MY_Output(200, h()-30, 50, 20, "SQR-ERR:"); 
+  p_square_err = new MY_Output(200, h()-60, 50, 20, "SQR-ERR:"); 
   p_square_err->textsize(info_size); 
   p_square_err->labelsize(info_size);
 
-  p_samp_high = new MY_Output(360, h()-60, 50, 20, "Sample High:"); 
+  p_samp_high = new MY_Output(360, h()-90, 50, 20, "Sample High:"); 
   p_samp_high->textsize(info_size); 
   p_samp_high->labelsize(info_size);
 
-  p_samp_low = new MY_Output(360, h()-30, 50, 20, "Sample Low:"); 
+  p_samp_low = new MY_Output(360, h()-60, 50, 20, "Sample Low:"); 
   p_samp_low->textsize(info_size); 
   p_samp_low->labelsize(info_size);
 
-  p_piece_count = new MY_Output(500, h()-60, 50, 20, "Pieces:"); 
+  p_piece_count = new MY_Output(60, h()-30, 50, 20, "Pieces:"); 
   p_piece_count->textsize(info_size); 
   p_piece_count->labelsize(info_size);
 
-  p_unif_aug_size = new MY_Output(500, h()-30, 50, 20, "Unif-Aug:"); 
+  p_unif_aug_size = new MY_Output(200, h()-30, 50, 20, "Unif-Aug:"); 
   p_unif_aug_size->textsize(info_size); 
   p_unif_aug_size->labelsize(info_size);
 
-  p_create_time = new MY_Output(650, h()-30, 50, 20, "Create-Time:"); 
+  p_create_time = new MY_Output(360, h()-30, 50, 20, "Create-Time:"); 
   p_create_time->textsize(info_size); 
   p_create_time->labelsize(info_size);
+
+  p_uniform_str = new MY_Output(550, h()-90, 180, 20, "Uniform Piece:"); 
+  p_uniform_str->textsize(info_size); 
+  p_uniform_str->labelsize(info_size);
+  
+  p_refine_reg_str = new MY_Output(550, h()-60, 180, 20, "Refine Region:"); 
+  p_refine_reg_str->textsize(info_size); 
+  p_refine_reg_str->labelsize(info_size);
+  
+  p_refine_pce_str = new MY_Output(550, h()-30, 180, 20, "Refine Piece:"); 
+  p_refine_pce_str->textsize(info_size); 
+  p_refine_pce_str->labelsize(info_size);
+  //i_refine_pce_str->callback((Fl_Callback*)GUI::cb_set_refine_pce);
 
   this->end();
   this->resizable(this);
@@ -379,7 +392,8 @@ void GUI::cb_ToggleStrict(Fl_Widget* o) {
 
 //----------------------------------------- MakeUniform
 inline void GUI::cb_MakeUniform_i(int amt) {
-  viewer->makeUniformIPF(amt);
+  viewer->setParam("uniform_piece", amt);
+  viewer->makeUniformIPF();
   updateXY();
 }
 void GUI::cb_MakeUniform(Fl_Widget* o, int v) {
@@ -473,4 +487,26 @@ void GUI::updateXY()
   if(!ok)
     str = "n/a";
   p_create_time->value(str.c_str());
+  
+  str = viewer->getParam("uniform_piece");
+  p_uniform_str->value(str.c_str());
+
+  str = viewer->getParam("refine_region");
+  p_refine_reg_str->value(str.c_str());
+  
+  str = viewer->getParam("refine_piece");
+  p_refine_pce_str->value(str.c_str());
 }
+
+
+#if 0
+//----------------------------------------- set_refine_piece
+void GUI::cb_set_refine_pce_i() {
+  if(viewer)
+    viewer->setParam("refine_piece", i_refine_pce_str->value());
+}
+
+void GUI::cb_set_refine_pce(Fl_Input* o, void* v) {
+  ((GUI*)(o->parent()->user_data()))->cb_set_refine_pce_i();
+}
+#endif

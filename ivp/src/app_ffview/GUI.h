@@ -15,6 +15,7 @@
 #include <FL/Fl.H>
 #include <FL/Fl_Window.H>
 #include <FL/Fl_Menu_Bar.H>
+#include <FL/Fl_Input.H>
 #include "MY_Output.h"
 
 #include "Viewer.h"
@@ -40,10 +41,13 @@ public:
   MY_Output   *p_samp_count;
   MY_Output   *p_samp_high;
   MY_Output   *p_samp_low;
-
   MY_Output   *p_piece_count;
   MY_Output   *p_unif_aug_size;
   MY_Output   *p_create_time;
+
+  MY_Output   *p_uniform_str;
+  MY_Output   *p_refine_reg_str;
+  MY_Output   *p_refine_pce_str;
 
 private:
   inline void cb_Zoom_i(int);
@@ -118,6 +122,16 @@ private:
   inline void cb_PrintParams_i();
   static void cb_PrintParams(Fl_Widget*);
 
+#if 0
+  inline void cb_set_uniform_str_i();
+  static void cb_set_uniform_str(Fl_Input*, void*);
+
+  inline void cb_set_refine_reg_i();
+  static void cb_set_refine_reg(Fl_Input*, void*);
+
+  inline void cb_set_refine_pce_i();
+  static void cb_set_refine_pce(Fl_Input*, void*);
+#endif
   static void cb_Quit();
 };
 #endif

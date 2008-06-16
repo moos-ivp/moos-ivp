@@ -41,7 +41,7 @@ public:
   void   toggleStrict()           {m_strict_rng = !m_strict_rng; redraw();};
   void   toggleUniformAug();
   void   toggleSmartAug();
-  void   makeUniformIPF(int=0);
+  void   makeUniformIPF();
   void   makeUniformIPFxN(int amt);
   void   modColorMap(const std::string&);
   void   modPatchAOF(int amt);
@@ -53,6 +53,7 @@ public:
 
   void   takeSamples(int amt)     {m_rater.takeSamples(amt);};
   double getParam(const std::string&, bool&);
+  std::string getParam(const std::string&);
 
 protected:
   void   drawIvPFunction(IvPFunction*);
@@ -65,7 +66,6 @@ private:
   float      m_base_ipf;
   float      m_scale;
   int        m_patch;
-  int        m_unifsize;
   bool       m_draw_aof;
   bool       m_draw_ipf;
   AOF_Cache  m_aof_cache;
@@ -79,6 +79,13 @@ private:
 
   bool       m_smart_refine;
   int        m_smart_count;
+
+  std::string m_uniform_piece_str;
+  int         m_uniform_piece_size;
+
+  std::string m_refine_reg_str;
+  std::string m_refine_box_str;
+
 
   bool       m_focus_box;
   int        m_focus_box_x;
