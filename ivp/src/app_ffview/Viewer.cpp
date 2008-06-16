@@ -35,7 +35,7 @@ Viewer::Viewer(int x, int y,
   m_draw_ipf   = true;
   m_unif_ipf   = 0;
   m_polar      = 0;
-  m_strict_rng = true;
+  m_strict_range = true;
   m_create_time = -1;
 
   setParam("uniform_piece", 10);
@@ -47,11 +47,11 @@ Viewer::Viewer(int x, int y,
   m_smart_refine   = false;
   m_smart_count    = 1000;
 
-  m_focus_box      = false;
-  m_focus_box_x    = 0;
-  m_focus_box_y    = 0;
-  m_focus_box_len  = 100;
-  m_focus_unif_len = 5;
+  m_directed_refine = false;
+  m_focus_box_x     = 0;
+  m_focus_box_y     = 0;
+  m_focus_box_len   = 100;
+  m_focus_unif_len  = 5;
 
   m_zoom = m_zoom * 1.25 * 1.25;  // Two zoom clicks in.
 
@@ -149,6 +149,28 @@ bool Viewer::setParam(string param, string value)
     m_refine_region_str = stripBlankEnds(value);
   else if(param == "refine_piece")
     m_refine_piece_str = stripBlankEnds(value);
+  else if(param == "directed_refine") {
+    value = tolower(value);
+    if(value == "toggle")
+      m_directed_refine = !m_directed_refine;
+    else if((value == "off") || (value == "false"))
+      m_directed_refine = false;
+    else if((value == "on") || (value == "true"))
+      m_directed_refine = true;
+    else
+      return(false);
+  }
+  else if(param == "strict_range") {
+    value = tolower(value);
+    if(value == "toggle")
+      m_strict_range = !m_strict_range;
+    else if((value == "off") || (value == "false"))
+      m_strict_range = false;
+    else if((value == "on") || (value == "true"))
+      m_strict_range = true;
+    else
+      return(false);
+  }
 
   return(true);
 }
@@ -211,19 +233,6 @@ void Viewer::printParams()
   cout << "set_base_aof=" << m_base_aof << endl;
 }
 
-
-//-------------------------------------------------------------
-// Procedure: toggleUniformAug
-
-void Viewer::toggleUniformAug()
-{
-  m_focus_box = !m_focus_box;
-
-  if(m_unif_ipf)
-    makeUniformIPF();
-}
-
-
 //-------------------------------------------------------------
 // Procedure: toggleSmartAug
 
@@ -274,12 +283,13 @@ void Viewer::makeUniformIPF()
 
   reflector.setParam("uniform_piece", m_uniform_piece_str);
 
-  if(m_strict_rng)
+  if(m_strict_range)
     reflector.setParam("strict_range", "true");
   else
     reflector.setParam("strict_range", "false");
   
-  if(m_focus_box) {
+  cout << "directed_refine: " << m_directed_refine << endl;
+  if(m_directed_refine) {
     if(m_refine_region_str == "") {
       m_refine_region_str += dim0_name + ":" + "-50:150" + ",";
       m_refine_region_str += dim1_name + ":" + "-250:-50";
@@ -318,7 +328,7 @@ void Viewer::makeUniformIPF()
 
   if(m_unif_ipf && m_unif_ipf->getPDMap())
     m_rater.setPDMap(m_unif_ipf->getPDMap());
-
+  redraw();
 }
 
 //-------------------------------------------------------------

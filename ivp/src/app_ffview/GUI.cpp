@@ -159,7 +159,7 @@ Fl_Menu_Item GUI::menu_[] = {
   {0},
 
  {"Augmentation", 0,  0, 0, 64, 0, 0, 14, 0},
- {"Toggle Directed Refine",  'd', (Fl_Callback*)GUI::cb_ToggleUniformAug, (void*)0, 0},
+ {"Toggle Directed Refine",  'd', (Fl_Callback*)GUI::cb_ToggleDirectedRefine, (void*)0, 0},
  {"Smaller-Uniform-Refine", '[', (Fl_Callback*)GUI::cb_ModUniformAug, (void*)-1, 0},
  {"Larger-Uniform-Refine",  ']', (Fl_Callback*)GUI::cb_ModUniformAug, (void*)1, FL_MENU_DIVIDER},
  {"Toggle-Smart-Refine",    0, (Fl_Callback*)GUI::cb_ToggleSmartAug, (void*)0, 0},
@@ -342,13 +342,14 @@ void GUI::cb_ToggleIPF(Fl_Widget* o) {
   ((GUI*)(o->parent()->user_data()))->cb_ToggleIPF_i();
 }
 
-//----------------------------------------- Toggle UniformAug
-inline void GUI::cb_ToggleUniformAug_i() {
-  viewer->toggleUniformAug();
+//----------------------------------------- ToggleDirectedRefine
+inline void GUI::cb_ToggleDirectedRefine_i() {
+  viewer->setParam("directed_refine", "toggle");
+  viewer->makeUniformIPF();
   updateXY();
 }
-void GUI::cb_ToggleUniformAug(Fl_Widget* o) {
-  ((GUI*)(o->parent()->user_data()))->cb_ToggleUniformAug_i();
+void GUI::cb_ToggleDirectedRefine(Fl_Widget* o) {
+  ((GUI*)(o->parent()->user_data()))->cb_ToggleDirectedRefine_i();
 }
 
 //----------------------------------------- Toggle SmartAug
@@ -387,7 +388,7 @@ void GUI::cb_FrameHeight(Fl_Widget* o, int v) {
 
 //----------------------------------------- Toggle Strict
 inline void GUI::cb_ToggleStrict_i() {
-  viewer->toggleStrict();
+  viewer->setParam("strict_range", "toggle");
   viewer->makeUniformIPF();
   updateXY();
 }

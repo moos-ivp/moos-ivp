@@ -82,8 +82,8 @@ private:
   inline void cb_ToggleIPF_i();
   static void cb_ToggleIPF(Fl_Widget*);
 
-  inline void cb_ToggleUniformAug_i();
-  static void cb_ToggleUniformAug(Fl_Widget*);
+  inline void cb_ToggleDirectedRefine_i();
+  static void cb_ToggleDirectedRefine(Fl_Widget*);
 
   inline void cb_ToggleSmartAug_i();
   static void cb_ToggleSmartAug(Fl_Widget*);

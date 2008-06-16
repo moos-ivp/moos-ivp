@@ -38,8 +38,6 @@ public:
 
   void   toggleAOF()              {m_draw_aof = !m_draw_aof; redraw();};
   void   toggleIPF()              {m_draw_ipf = !m_draw_ipf; redraw();};
-  void   toggleStrict()           {m_strict_rng = !m_strict_rng; redraw();};
-  void   toggleUniformAug();
   void   toggleSmartAug();
   void   makeUniformIPF();
   void   makeUniformIPFxN(int amt);
@@ -71,7 +69,7 @@ private:
   AOF_Cache  m_aof_cache;
   IvPDomain  m_domain;
   FColorMap  m_cmap;
-  bool       m_strict_rng;
+  bool       m_strict_range;
   double     m_create_time;
 
   IvPFunction *m_unif_ipf;
@@ -82,12 +80,12 @@ private:
 
   std::string m_uniform_piece_str;
   int         m_uniform_piece_size;
+  bool        m_directed_refine;
 
   std::string m_refine_region_str;
   std::string m_refine_piece_str;
   std::string m_reflector_errors;
 
-  bool       m_focus_box;
   int        m_focus_box_x;
   int        m_focus_box_y;
   int        m_focus_box_len;
