@@ -393,179 +393,127 @@ bool TransponderAIS::handleIncomingNaFConMessage(const string& rMsg)
   MOOSTrace("\n\n");
   
   //we have a status message                                                                           
-  if(MOOSStrCmp(messageType, "SENSOR_STATUS") || MOOSStrCmp(messageType, "SENSOR_CONTACT")) {
+  if(MOOSStrCmp(messageType, "SENSOR_STATUS") || MOOSStrCmp(messageType, "SENSOR_CONTACT") || MOOSStrCmp(messageType, "SENSOR_TRACK") ) {
     string sourceID;
     MOOSValFromString(sourceID, rMsg, "SourcePlatformId");
     
     // limit to vehicles specified in config file
     // and now stored in naFConPublishForID
-    if(naFConPublishForID[atoi(sourceID.c_str())]) {
-      MOOSTrace("Will publish for this ID. \n");
-      double navX, navY, navLat, navLong, navHeading, navSpeed, navDepth, navTime;
-
-      string vtype = "GLIDER";
-      string vname = sourceID;
-      if(sourceID == "1" ) {vtype = "AUV";    vname = "Sea-Horse";}
-      if(sourceID == "2")  {vtype = "KAYAK";  vname = "Bobby";}
-      if(sourceID == "3")  {vtype = "AUV";    vname = "Unicorn";}
-      if(sourceID == "4")  {vtype = "AUV";    vname = "Macrura";}
-      if(sourceID == "5")  {vtype = "KELP";   vname = "PN2";}
-      if(sourceID == "7")  {vtype = "GLIDER"; vname = "X-RAY";}
-      if(sourceID == "9")  {vtype = "KAYAK";  vname = "DEE";}
-      if(sourceID == "10") {vtype = "AUV";    vname = "OEX";}
-      if(sourceID == "11") {vtype = "KAYAK";  vname = "Frankie";}
-      if(sourceID == "14") {vtype = "GLIDER"; vname = "SLOCUM-GTAS";}
-      if(sourceID == "15") {vtype = "KELP";   vname = "KELP-OBCI";}
-      if(sourceID == "18") {vtype = "VSA";    vname = "VSA-1";}
-      if(sourceID == "19") {vtype = "VSA";    vname = "VSA-2";}
-      if(sourceID == "20") {vtype = "GLIDER"; vname = "SeaGlider-106";}
-      if(sourceID == "21") {vtype = "GLIDER"; vname = "SeaGlider-107";}
-      if(sourceID == "22") {vtype = "GLIDER"; vname = "SeaGlider-116";}
-      if(sourceID == "24") {vtype = "GLIDER"; vname = "SeaGlider-118";}
-      if(sourceID == "25") {vtype = "AUV";    vname = "NUWC-Iver2-Mako";}
-      if(sourceID == "26") {vtype = "AUV";    vname = "NUWC-Iver2-Whitetip";}
-      if(sourceID == "27") {vtype = "AUV";    vname = "NUWC-Iver2-Hammerhead";}
-      if(sourceID == "29") {vtype = "GLIDER";    vname = "Fologa";}
-
-      if(MOOSStrCmp(messageType, "SENSOR_STATUS"))
+    if(naFConPublishForID[atoi(sourceID.c_str())]) 
       {
-          
-          if(!MOOSValFromString(navLong, rMsg, "NodeLongitude"))
+	MOOSTrace("Will publish for this ID. \n");
+	double navX, navY, navLat, navLong, navHeading, navSpeed, navDepth, navTime;
+	
+	string vtype = "GLIDER";
+	string vname = sourceID;
+	if(sourceID == "1" ) {vtype = "AUV";    vname = "Sea-Horse";}
+	if(sourceID == "2")  {vtype = "KAYAK";  vname = "Bobby";}
+	if(sourceID == "3")  {vtype = "AUV";    vname = "Unicorn";}
+	if(sourceID == "4")  {vtype = "AUV";    vname = "Macrura";}
+	if(sourceID == "5")  {vtype = "KELP";   vname = "PN2";}
+	if(sourceID == "7")  {vtype = "GLIDER"; vname = "X-RAY";}
+	if(sourceID == "9")  {vtype = "KAYAK";  vname = "DEE";}
+	if(sourceID == "10") {vtype = "AUV";    vname = "OEX";}
+	if(sourceID == "11") {vtype = "KAYAK";  vname = "Frankie";}
+	if(sourceID == "14") {vtype = "GLIDER"; vname = "SLOCUM-GTAS";}
+	if(sourceID == "15") {vtype = "KELP";   vname = "KELP-OBCI";}
+	if(sourceID == "18") {vtype = "VSA";    vname = "VSA-1";}
+	if(sourceID == "19") {vtype = "VSA";    vname = "VSA-2";}
+	if(sourceID == "20") {vtype = "GLIDER"; vname = "SeaGlider-106";}
+	if(sourceID == "21") {vtype = "GLIDER"; vname = "SeaGlider-107";}
+	if(sourceID == "22") {vtype = "GLIDER"; vname = "SeaGlider-116";}
+	if(sourceID == "24") {vtype = "GLIDER"; vname = "SeaGlider-118";}
+	if(sourceID == "25") {vtype = "AUV";    vname = "Mako";}
+	if(sourceID == "26") {vtype = "AUV";    vname = "Whitetip";}
+	if(sourceID == "27") {vtype = "AUV";    vname = "Hammerhead";}
+	if(sourceID == "29") {vtype = "GLIDER";    vname = "Folaga";}
+	// temporary hack until we know OEXs real ID
+	if(sourceID == "30") {vtype = "AUV";    vname = "OEX";}
+	
+	if(MOOSStrCmp(messageType, "SENSOR_STATUS"))
+	  {
+	    
+	    if(!MOOSValFromString(navLong, rMsg, "NodeLongitude"))
               return MOOSFail("No NodeLongitude\n");
-          
-          if (!MOOSValFromString(navLat, rMsg, "NodeLatitude"))
+	    
+	    if (!MOOSValFromString(navLat, rMsg, "NodeLatitude"))
               return MOOSFail("No NodeLatitude\n");
-          
-          if (!MOOSValFromString(navHeading, rMsg, "NodeHeading"))
+	    
+	    if (!MOOSValFromString(navHeading, rMsg, "NodeHeading"))
               return MOOSFail("No NodeHeading\n");
-          
-          if (!MOOSValFromString(navSpeed, rMsg, "NodeSpeed"))
+	    
+	    if (!MOOSValFromString(navSpeed, rMsg, "NodeSpeed"))
               return MOOSFail("No NodeSpeed\n");
-          
-          if(!MOOSValFromString(navDepth, rMsg, "NodeDepth"))
+	    
+	    if(!MOOSValFromString(navDepth, rMsg, "NodeDepth"))
               return MOOSFail("No NodeDepth\n");      
-
-          if(!MOOSValFromString(navTime, rMsg, "Timestamp"))
+	    
+	    if(!MOOSValFromString(navTime, rMsg, "Timestamp"))
               return MOOSFail("No Timestamp\n");      
-      }
-
-      if(MOOSStrCmp(messageType, "SENSOR_CONTACT"))
-      {
-          
-          if(!MOOSValFromString(navLong, rMsg, "SensorLongitude"))
+	  }
+	
+	else if(MOOSStrCmp(messageType, "SENSOR_CONTACT"))
+	  {
+	    
+	    if(!MOOSValFromString(navLong, rMsg, "SensorLongitude"))
               return MOOSFail("No SensorLongitude\n");
-          
-          if (!MOOSValFromString(navLat, rMsg, "SensorLatitude"))
+	    
+	    if (!MOOSValFromString(navLat, rMsg, "SensorLatitude"))
               return MOOSFail("No SensorLatitude\n");
-          
-          if (!MOOSValFromString(navHeading, rMsg, "SensorHeading"))
+	    
+	    if (!MOOSValFromString(navHeading, rMsg, "SensorHeading"))
               return MOOSFail("No SensorHeading\n");
-          
-          if(!MOOSValFromString(navDepth, rMsg, "SensorDepth"))
+	    
+	    if(!MOOSValFromString(navDepth, rMsg, "SensorDepth"))
               return MOOSFail("No SensorDepth\n");      
-
-          if(!MOOSValFromString(navTime, rMsg, "ContactTimestamp"))
+	    
+	    if(!MOOSValFromString(navTime, rMsg, "ContactTimestamp"))
               return MOOSFail("No ContactTimestamp\n");      
+	    
+	    // Use previous speed for CONTACT_REPORT
+	    double node_utc,node_x,node_y,node_spd,node_hdg,node_dep;      
+	    
+	    if (prevContactInfo(vname,&node_utc,&node_x,&node_y,&node_spd,&node_hdg,&node_dep))
+	      navSpeed = node_spd;
+	    
+	    MOOSTrace("Status Info: Time = %f, Speed = %f, Heading = %f \n",node_utc,node_spd,node_hdg);
+	  }
+	else if(MOOSStrCmp(messageType, "SENSOR_TRACK"))
+	  {
+	    
+	    if(!MOOSValFromString(navLong, rMsg, "TrackLongitude"))
+              return MOOSFail("No TrackLongitude\n");
+	    
+	    if (!MOOSValFromString(navLat, rMsg, "TrackLatitude"))
+              return MOOSFail("No TrackLatitude\n");
+	    
+	    if (!MOOSValFromString(navHeading, rMsg, "TrackHeading"))
+              return MOOSFail("No TrackHeading\n");
+	    
+	    if(!MOOSValFromString(navDepth, rMsg, "TrackDepth"))
+              return MOOSFail("No TrackDepth\n");      
+	    
+	    if (!MOOSValFromString(navSpeed, rMsg, "TrackSpeed"))
+              return MOOSFail("No TrackSpeed\n");
+	    
+	    if(!MOOSValFromString(navTime, rMsg, "TrackTimestamp"))
+              return MOOSFail("No TrackTimestamp\n");      
+	    
+	    string trackID;
+	    MOOSValFromString(trackID, rMsg, "TrackNumber");
+	    int track_id = atoi(trackID.c_str());
+	    MOOSTrace("Track report. trackID = %d\n",track_id);
 
-	  // Use previous speed for CONTACT_REPORT
-	  double node_utc,node_x,node_y,node_spd,node_hdg,node_dep;      
-
-	  if (prevContactInfo(vname,&node_utc,&node_x,&node_y,&node_spd,&node_hdg,&node_dep))
-	    navSpeed = node_spd;
-
-	  MOOSTrace("Status Info: Time = %f, Speed = %f, Heading = %f \n",node_utc,node_spd,node_hdg);
-      }
-      
+	    // set track type to ship
+	    vtype = "TRACK";
+	    vname = "TRK_"+trackID+"_"+vname;
+	  }
+	
       // convert lat, long into x, y. 60 nautical miles per minute
       if(!m_geodesy.LatLong2LocalGrid(navLat, navLong, navY, navX))
 	return MOOSFail("Geodesy conversion failed\n");
       
 
-      //string vtype = "GLIDER";
-      //string vname = sourceID;
-      if(sourceID == "1") {
-	vtype = "AUV";
-	vname = "Sea-Horse";
-      }
-      if(sourceID == "2") {
-	vtype = "KAYAK";
-	vname = "Bobby";
-      }
-      if(sourceID == "3") {
-	vtype = "AUV";
-	vname = "Unicorn";
-      }
-      if(sourceID == "4") {
-	vtype = "AUV";
-	vname = "Macrura";
-      }
-      if(sourceID == "5") {
-	vtype = "KELP";
-	vname = "PN2";
-      }
-      if(sourceID == "7") {
-	vtype = "GLIDER";
-	vname = "X-RAY";
-      }
-      if(sourceID == "9") { 
-	vtype = "KAYAK";
-	vname = "DEE";
-      }
-      if(sourceID == "10") {
-	vtype = "AUV";
-	vname = "OEX";
-      }
-      if(sourceID == "11") {
-	vtype = "KAYAK";
-	vname = "Frankie";
-      }
-      if(sourceID == "14") {
-	vtype = "GLIDER";
-	vname = "SLOCUM-GTAS";
-      }
-      if(sourceID == "15") {
-	vtype = "KELP";
-	vname = "KELP-OBCI";
-      }
-      if(sourceID == "18") {
-	vtype = "VSA";
-	vname = "VSA-1";
-      }
-      if(sourceID == "19") {
-	vtype = "VSA";
-	vname = "VSA-2";
-      }
-      if(sourceID == "20") {
-	vtype = "GLIDER";
-	vname = "SeaGlider-106";
-      }
-      if(sourceID == "21") {
-	vtype = "GLIDER";
-	vname = "SeaGlider-107";
-      }
-      if(sourceID == "22") {
-	vtype = "GLIDER";
-	vname = "SeaGlider-116";
-      }
-      if(sourceID == "24") {
-	vtype = "GLIDER";
-	vname = "SeaGlider-118";
-      }
-      if(sourceID == "26") {
-	vtype = "AUV";
-	vname = "WHITETIP";
-      }//NUWC Iver
-      if(sourceID == "27") {
-	vtype = "AUV";
-	vname = "HAMMERHEAD";
-      }//NUWC Iver
-      if(sourceID == "28") {
-	vtype = "AUV";
-	vname = "MAKO";
-      }//NUWC Iver
-
-      // temporary hack until we know OEXs real ID
-      if(sourceID == "30") {vtype = "AUV";    vname = "OEX";}
 
       // publish it at AIS_REPORT
       // all strings: assembleAIS(name,type,db_time,utc_time,x,y,lat,lon,spd,hdg,depth)

@@ -1356,15 +1356,26 @@ void MarineViewer::drawCommonVehicle(string vname, ObjectPose opose,
     drawGLPoly(g_gliderBody, g_gliderBodySize, 0,0,0, 1, g_gliderScale);
     glTranslatef(cx, cy, 0);
   }
-  else {  // vehibody == "ship" is the default
-    double cx = g_shipCtrX * g_shipScale;
-    double cy = g_shipCtrY * g_shipScale;
-    glTranslatef(-cx, -cy, 0);
-    drawGLPoly(g_shipBody, g_shipBodySize, red, grn, blu, 0, g_shipScale);
-    if(outer_line > 0)
-      drawGLPoly(g_shipBody, g_shipBodySize, 0.0, 0.0, 0.0, outer_line, g_shipScale);
-    glTranslatef(cx, cy, 0);
-  }
+  else if(vehibody == "track")
+    {  
+      double cx = g_shipCtrX * g_shipScale;
+      double cy = g_shipCtrY * g_shipScale;
+      glTranslatef(-cx, -cy, 0);
+      drawGLPoly(g_shipBody, g_shipBodySize, red, grn, blu, 0, g_shipScale);
+      if(outer_line > 0)
+	drawGLPoly(g_shipBody, g_shipBodySize, 0.0, 0.0, 0.0, outer_line, g_shipScale);
+      glTranslatef(cx, cy, 0);
+    }
+  else 
+    {  // vehibody == "ship" is the default
+      double cx = g_shipCtrX * g_shipScale;
+      double cy = g_shipCtrY * g_shipScale;
+      glTranslatef(-cx, -cy, 0);
+      drawGLPoly(g_shipBody, g_shipBodySize, red, grn, blu, 0, g_shipScale);
+      if(outer_line > 0)
+	drawGLPoly(g_shipBody, g_shipBodySize, 0.0, 0.0, 0.0, outer_line, g_shipScale);
+      glTranslatef(cx, cy, 0);
+    }
 
   if(m_draw_vname) {
     if(m_vname_color == 0)
