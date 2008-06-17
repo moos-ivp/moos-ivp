@@ -1,4 +1,4 @@
 uniform_piece = discrete @ x:15,y:60
-refine_region = native   @ x:-100:100, y:all
-#refine_region = discrete   @ x:0:100, y:100:499
+#refine_region = native   @ x:-100:100, y:all
+refine_region = discrete   @ x:0:100, y:100:4d99
 refine_piece  = discrete @ x:10, y:10

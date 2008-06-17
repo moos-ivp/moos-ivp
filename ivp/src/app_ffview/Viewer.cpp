@@ -290,7 +290,7 @@ void Viewer::makeUniformIPF()
   
   cout << "directed_refine: " << m_directed_refine << endl;
   if(m_directed_refine) {
-    if(m_refine_region_str == "") {
+    if(m_refine_region_str == "native @") {
       m_refine_region_str += dim0_name + ":" + "-50:150" + ",";
       m_refine_region_str += dim1_name + ":" + "-250:-50";
     }

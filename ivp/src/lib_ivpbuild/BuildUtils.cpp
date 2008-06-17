@@ -568,9 +568,10 @@ IvPBox stringToPointBox(const string& given_str,
   if((vsize == 0) || (vsize > 2))
     return(null_box);
   
+  // CHANGED BY MIKERB - FORCE THE CALLER TO USE A PREFACE
   // If no separator, then no preface, and assume native extents
-  if(vsize == 1)
-    return(stringNativeToPointBox(given_str, domain, gsep, lsep));
+  //if(vsize == 1)
+  //  return(stringNativeToPointBox(given_str, domain, gsep, lsep));
 
   // Otherwise, a single separator gives a preface and remainder
   string preface = tolower(stripBlankEnds(svector[0]));
@@ -813,9 +814,10 @@ IvPBox stringToRegionBox(const string& given_str,
   if((vsize == 0) || (vsize > 2))
     return(null_box);
   
+  // CHANGED BY MIKERB - FORCE THE CALLER TO USE A PREFACE
   // If no separator, then no preface, and assume native extents
-  if(vsize == 1)
-    return(stringNativeToRegionBox(given_str, domain, gsep, lsep));
+  //if(vsize == 1)
+  //  return(stringNativeToRegionBox(given_str, domain, gsep, lsep));
   
   // Otherwise, a single separator gives a preface and remainder
   string preface = tolower(stripBlankEnds(svector[0]));
@@ -831,7 +833,7 @@ IvPBox stringToRegionBox(const string& given_str,
 
 
 //-------------------------------------------------------------
-// Procedure: stringToRegionBox
+// Procedure: stringNativeToRegionBox
 //
 // Purpose: This procedure takes a given IvPDomain and string which
 //          specifies low and high float values for a set of domain

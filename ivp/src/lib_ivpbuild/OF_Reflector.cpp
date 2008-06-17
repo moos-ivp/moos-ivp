@@ -109,12 +109,15 @@ IvPFunction *OF_Reflector::extractOF(bool normalize)
 string OF_Reflector::getErrors()
 {
   unsigned int vsize = m_errors.size();
-
-  string errors = "(" + intToString(vsize) + ") ";
+  string vs = ("/" + intToString(vsize));
+  
+  string errors;
   for(unsigned int i=0; i<vsize; i++) {
+    errors += ("(" + intToString(i+1) + vs + ") ");
     errors += m_errors[i];
     if(i < (vsize-1))
-      errors += " ### ";
+      errors += " ";
+	       
   }
   return(errors);
 }
