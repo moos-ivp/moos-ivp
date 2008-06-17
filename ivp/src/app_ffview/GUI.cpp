@@ -130,7 +130,7 @@ Fl_Menu_Item GUI::menu_[] = {
  {"Base +", 'e', (Fl_Callback*)GUI::cb_ModBaseIPF, (void*)+10, 0},
  {"Base -", 'r', (Fl_Callback*)GUI::cb_ModBaseIPF, (void*)-10, FL_MENU_DIVIDER},
  {"Toggle Strict", '`', (Fl_Callback*)GUI::cb_ToggleStrict, (void*)0, FL_MENU_RADIO|FL_MENU_DIVIDER},
- {"Create   ",   0, (Fl_Callback*)GUI::cb_MakeUniform, (void*)0, FL_MENU_RADIO},
+ {"Create   ", 'c', (Fl_Callback*)GUI::cb_MakeUniform, (void*)0, FL_MENU_RADIO},
  {"Uniform 1",   0, (Fl_Callback*)GUI::cb_MakeUniform, (void*)1, FL_MENU_RADIO},
  {"Uniform 2",   0, (Fl_Callback*)GUI::cb_MakeUniform, (void*)2, FL_MENU_RADIO},
  {"Uniform 3",   0, (Fl_Callback*)GUI::cb_MakeUniform, (void*)3, FL_MENU_RADIO},

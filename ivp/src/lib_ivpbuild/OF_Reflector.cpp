@@ -233,7 +233,7 @@ bool OF_Reflector::setParam(string param, string value)
       m_errors.push_back(param + " and refine_piece must be added in pairs");
       return(false);
     }
-    IvPBox refine_region = stringFloatToRegionBox(value, m_domain, ',', ':');
+    IvPBox refine_region = stringToRegionBox(value, m_domain, ',', ':');
     if(refine_region.null()) {
       m_errors.push_back(param + " value is ill-defined");
       return(false);
