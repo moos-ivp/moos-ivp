@@ -38,9 +38,9 @@ class AOF_Gaussian: public AOF {
   bool   setParam(const std::string&, double);
 
 private:
-  double m_xcent;
+  double m_xcent;  
   double m_ycent;
-  double m_sigma;
+  double m_sigma;  
   double m_range;
 };
 

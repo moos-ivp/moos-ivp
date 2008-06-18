@@ -756,14 +756,12 @@ IvPBox stringNativeToPointBox(const string& given_str,
     }
   }
 
-#if 0 // for Debugging/Validation
+#if 1 // for Debugging/Validation
   cout << endl << endl;
   for(i=0; i<dim; i++) {
     cout << "dvar_name["      << i << "]: [" << dvar_name[i] << "]" << endl;
     cout << "dvar_legal["     << i << "]: "  << dvar_legal[i] << endl;
     cout << "dvar_float_val[" << i << "]: "  << dvar_float_val[i] << endl;
-    cout << "dvar_discrete_val[" << i << "]: " 
-	 << dvar_discrete_val[i] << endl << endl;
   }
 #endif
 
@@ -777,6 +775,14 @@ IvPBox stringNativeToPointBox(const string& given_str,
   for(i=0; i<dim; i++)
     dvar_discrete_val[i] = domain.getDiscreteVal(i, dvar_float_val[i], 2); 
   
+#if 1 // for Debugging/Validation
+  cout << endl << endl;
+  for(i=0; i<dim; i++) {
+    cout << "dvar_discrete_val[" << i << "]: " 
+	 << dvar_discrete_val[i] << endl << endl;
+  }
+#endif
+
   // All is good, so go ahead and create the IvP Box.
   IvPBox ret_box(dim);
   for(i=0; i<dim; i++) {
@@ -1078,10 +1084,14 @@ IvPBox stringDiscreteToRegionBox(const string& given_str,
 	    int lval = atoi(svector2[1].c_str());
 	    int hval = atoi(svector2[2].c_str());
 	    
-	    if((lval >= 0)  && (lval <= hval) && (hval >= 0) &&
-	       (hval <= (int)(domain.getVarPoints(i)-1))) {
+	    if((lval <= hval) && (hval >= 0) && 
+	       (lval <= (int)domain.getVarPoints(i)-1)) {
 	      dvar_legal[i] = true;
 	    }
+	    if(lval < 0) 
+	      lval = 0;
+	    if(hval > (int)(domain.getVarPoints(i)-1))
+	      hval = (int)(domain.getVarPoints(i)-1);
 	    ret_box.pt(i,0) = lval;
 	    ret_box.pt(i,1) = hval;
 	  }
