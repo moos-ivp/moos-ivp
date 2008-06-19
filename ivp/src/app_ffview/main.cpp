@@ -17,6 +17,7 @@
 #include "IO_Utilities.h"
 #include "PopulatorAOF.h"
 #include "FileBuffer.h"
+#include <cstdlib>
 
 using namespace std;
 

@@ -12,6 +12,7 @@
 #include <math.h>
 #include "MBUtils.h"
 #include "ALogClipper.h"
+#include <cstdlib>
 
 using namespace std;
 

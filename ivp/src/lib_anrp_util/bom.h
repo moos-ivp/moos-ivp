@@ -7,6 +7,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <limits>
+#include <climits>
 
 #include "mymemmem.h"
 
