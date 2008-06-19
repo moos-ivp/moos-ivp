@@ -12,6 +12,7 @@
 #include <math.h>
 #include "MBUtils.h"
 #include "ALogScanner.h"
+#include <cstdlib>
 
 using namespace std;
 
