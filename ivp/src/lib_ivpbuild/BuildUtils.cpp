@@ -223,16 +223,20 @@ BoxSet* subtractBox(const IvPBox& orig_box, const IvPBox& sub_box)
     return(boxset);               
   }
   
+  IvPBox source_box = orig_box;
+
   int d;
   for(d=0; d<dim; d++) {
-    if(sub_box.pt(d,1) < orig_box.pt(d,1)) {
-      IvPBox *newbox = orig_box.copy();
+    if(sub_box.pt(d,1) < source_box.pt(d,1)) {
+      IvPBox *newbox = source_box.copy();
       newbox->pt(d,0) = sub_box.pt(d,1)+1;
+      source_box.pt(d,1) = sub_box.pt(d,1);
       boxset->addBox(newbox);
     }
-    if(sub_box.pt(d,0) > orig_box.pt(d,0)) {
-      IvPBox *newbox = orig_box.copy();
+    if(sub_box.pt(d,0) > source_box.pt(d,0)) {
+      IvPBox *newbox = source_box.copy();
       newbox->pt(d,1) = sub_box.pt(d,0)-1;
+      source_box.pt(d,0) = sub_box.pt(d,0);
       boxset->addBox(newbox);
     }
   }
@@ -756,7 +760,7 @@ IvPBox stringNativeToPointBox(const string& given_str,
     }
   }
 
-#if 1 // for Debugging/Validation
+#if 0 // for Debugging/Validation
   cout << endl << endl;
   for(i=0; i<dim; i++) {
     cout << "dvar_name["      << i << "]: [" << dvar_name[i] << "]" << endl;
@@ -772,10 +776,15 @@ IvPBox stringNativeToPointBox(const string& given_str,
       return(null_box);
   
   // Convert the raw float values into Domain discrete indices.
-  for(i=0; i<dim; i++)
-    dvar_discrete_val[i] = domain.getDiscreteVal(i, dvar_float_val[i], 2); 
+  // For a domain x,-250,249,1000, a float 20.0 --> 40-1 = 39
+  // For a domain x,-250,249,500, a float 20.0 --> 20-1 = 19
+  // A box edge of length 40 is indices 0-39, 20 is 0-19.
+  for(i=0; i<dim; i++) {
+    double val = (dvar_float_val[i] / domain.getVarDelta(i)) + 0.5;
+    dvar_discrete_val[i] = ((int)(val) - 1);
+  }
   
-#if 1 // for Debugging/Validation
+#if 0 // for Debugging/Validation
   cout << endl << endl;
   for(i=0; i<dim; i++) {
     cout << "dvar_discrete_val[" << i << "]: " 

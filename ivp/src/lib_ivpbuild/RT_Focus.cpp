@@ -135,6 +135,7 @@ PDMap* RT_Focus::create(PDMap *pdmap, const IvPBox& region,
     delete(boxset);
   }
 
+#if 1
   // Next create the set of uniform sized boxes in the voided region
   BoxSet* boxset = makeUniformDistro(region, unibox, degree);
   BoxSetNode *bsn = boxset->retBSN(FIRST);
@@ -143,10 +144,11 @@ PDMap* RT_Focus::create(PDMap *pdmap, const IvPBox& region,
     bsn = bsn->getNext();
   }
   delete(boxset);
-
+#endif
 
   int old_count = non_boxes.size();
   int new_count = new_boxes.size();
+
 
   int pcs = old_count + new_count;
   

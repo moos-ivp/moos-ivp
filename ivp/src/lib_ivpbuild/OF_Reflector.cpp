@@ -219,6 +219,7 @@ bool OF_Reflector::setParam(string param, string value)
   else if((param=="uniform_piece")||(param=="uniform_box")) {
     IvPBox foo = stringToPointBox(value, m_domain, ',', ':');
     m_uniform_piece = foo;
+    foo.print();
     if(m_uniform_piece.null()) {
       m_errors.push_back(param + " value is ill-defined");
       return(false);
