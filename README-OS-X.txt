@@ -1,5 +1,6 @@
 README-OS-X.txt
-Last updated: 19 June 2008
+Last updated: 20 June 2008
+Maintainer: Christian Convey ( christian.convey@navy.mil )
 
 ************************************************************
 ***   THIS FILE IS A WORK IN PROGRESS.  CORRECTIONS OR   ***
@@ -24,10 +25,6 @@ Website: http://libtiff.org
 (2) CMake (at least version 2.4)
 Website: cmake.org
 
-(3) XCode
-XCode, which appears on one of the OS X installation disks, includes 
-the Gnu C++ compiler.  If you don't want to install XCode, you can
-download the Gnu C++ compiler from http://gcc.gnu.org/
 
 
 BUILDING MOOS-IvP

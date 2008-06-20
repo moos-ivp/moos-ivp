@@ -1,5 +1,6 @@
 README-LINUX.txt
-Last updated: 19 June 2008
+Last updated: 20 June 2008
+Maintainer: Christian Convey ( christian.convey@navy.mil )
 
 ************************************************************
 ***   THIS FILE IS A WORK IN PROGRESS.  CORRECTIONS OR   ***
