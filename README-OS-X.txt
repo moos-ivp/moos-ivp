@@ -22,6 +22,12 @@ we've listed some information on how it can be obtained.
 (1) libtiff
 Website: http://libtiff.org
 
+(a) The page that has the actual tarfile to download is:
+    http://dl.maptools.org/dl/libtiff/
+(b) Look at the README, but it amounts to:
+    ./configure; make; sudo make install
+
+
 (2) CMake (at least version 2.4)
 Website: cmake.org
 
