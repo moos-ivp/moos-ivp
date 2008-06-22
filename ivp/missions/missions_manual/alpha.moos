@@ -15,19 +15,16 @@ ProcessConfig = ANTLER
 {
   MSBetweenLaunches = 200
 
-  Run = MOOSDB		@ NewConsole = true, LaunchString=block1
+  Run = MOOSDB		@ NewConsole = true
   Run = iMarineSim	@ NewConsole = true
   Run = pEchoVar	@ NewConsole = true
   Run = pLogger		@ NewConsole = true
   Run = pTransponderAIS	@ NewConsole = true
   Run = pMarinePID	@ NewConsole = true
-  Run = pMarineViewer	@ NewConsole = true, LaunchString=block0
-  Run = uXMS		@ NewConsole = true, LaunchString=block2 ~ uXMS, DB_TIME, AIS_REPORT_LOCAL
+  Run = pMarineViewer	@ NewConsole = true
+  Run = uXMS		@ NewConsole = true
   Run = pHelmIvP	@ NewConsole = true
   Run = iRemote		@ NewConsole = true
-
-  block2 = xterm, -bg, #FFFFFF, -fg, #000000, -geometry, 80x50+400+400
-
 }
 
 //------------------------------------------
