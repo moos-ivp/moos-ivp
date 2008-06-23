@@ -1,8 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin and John Leonard                    */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
-/*    FILE: RT_Focus.h                                           */
-/*    DATE: Mar 20th, 2007                                       */
+/*    FILE: RT_AutoPeak.h                                        */
+/*    DATE: June 21, 2008                                        */
 /*    NOTE: "RT_" stands for "Reflector Tool"                    */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
@@ -25,29 +25,35 @@
 #pragma warning(disable : 4786)
 #pragma warning(disable : 4503)
 #endif
-#ifndef RT_FOCUS_HEADER
-#define RT_FOCUS_HEADER
+#ifndef RT_AUTOPEAK_HEADER
+#define RT_AUTOPEAK_HEADER
 
-#include <vector>
 #include "PDMap.h"
 #include "PQueue.h"
 
 class Regressor;
-
-class RT_Focus {
+class RT_AutoPeak {
 public:
-  RT_Focus(Regressor*);
-  virtual ~RT_Focus() {};
+  RT_AutoPeak(Regressor*);
+  virtual ~RT_AutoPeak() {};
 
 public: 
-  PDMap* create(PDMap*, const IvPBox&, const IvPBox&, PQueue&);
-
- protected:
-  void   updatePQueue(PQueue&, const std::vector<int>& idx_map);
+  PDMap* create(PDMap*);
 
 protected:
   Regressor* m_regressor;
 };
 
 #endif
+
+
+
+
+
+
+
+
+
+
+
 

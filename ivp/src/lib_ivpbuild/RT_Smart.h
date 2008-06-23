@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin and John Leonard                    */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
-/*    FILE: RT_Priority.h                                        */
+/*    FILE: RT_Smart.h                                           */
 /*    DATE: Jan 20th, 2006                                       */
 /*    NOTE: "RT_" stands for "Reflector Tool"                    */
 /*                                                               */
@@ -25,17 +25,17 @@
 #pragma warning(disable : 4786)
 #pragma warning(disable : 4503)
 #endif
-#ifndef RT_PRIORITY_HEADER
-#define RT_PRIORITY_HEADER
+#ifndef RT_SMART_REFINE_HEADER
+#define RT_SMART_REFINE_HEADER
 
 #include "PDMap.h"
 #include "PQueue.h"
 
 class Regressor;
-class RT_Priority {
+class RT_Smart {
 public:
-  RT_Priority(Regressor*);
-  virtual ~RT_Priority() {};
+  RT_Smart(Regressor*);
+  virtual ~RT_Smart() {};
 
 public: 
   PDMap* create(PDMap*, PQueue&, int more_pcs, double thresh=0);

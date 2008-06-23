@@ -1,8 +1,25 @@
+Version 3.0.3
+----------------------------------------------------------------------
+- In the IvPBuild Toolbox - Changed the interface to the AOF class to
+simplify user coding and documentation. The current recommended
+interface is with the AOF::evalPoint() function, but the older
+AOF::evalBox() function is still supported.
 
-- Changed interface to AOF class to simplify user coding.
+- The CMakeLists.txt file for iRemote is included in this release. It
+was inadvertently ommitted in the prior release.
+
+-An updated version of pLogger (from the Oxford tree) is in this
+release. The version included in the previous release did not generate
+slog files.
+
+- Fixed a bug in the IvPBuild Toolbox (lib_ivpbuild) in the use of the
+directed-refine algorithm with the RT_Focus class.
+
+- The logview post-processing tool now accepts alog files instead of
+slog files.
 
 Version 3.0.2
-
+----------------------------------------------------------------------
 - Added BHV_AvoidObstacles to lib_behaviors-marine
 
 - Fixed a bug in IvPBehavior that would miss more than one update
@@ -14,7 +31,7 @@ Version 3.0.2
 - Change in uXMS key mapping - pause is done w/ space bar, not 'p'
 
 Version 3.0.1
-
+---------------------------------------------------------------------
 - Fixed a bug in lib_geometry/XYPolygon that failed to reset convexity
   local information after a polygon rotation. The lack of reset could
   cause XYPolygon::contains() function to malfunction in some instances.

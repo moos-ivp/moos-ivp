@@ -45,7 +45,6 @@ Viewer::Viewer(int x, int y,
   setParam("frame_color", "gray");
 
   m_smart_refine   = false;
-  m_smart_count    = 1000;
 
   m_directed_refine = false;
   m_focus_box_x     = 0;
@@ -54,8 +53,6 @@ Viewer::Viewer(int x, int y,
   m_focus_unif_len  = 5;
 
   m_zoom = m_zoom * 1.25 * 1.25;  // Two zoom clicks in.
-
-  cout << "m_xRot: " << m_xRot << endl;
 }
 
 //-------------------------------------------------------------
@@ -147,6 +144,10 @@ bool Viewer::setParam(string param, string value)
     m_uniform_piece_str = stripBlankEnds(value);
   else if(param == "refine_region")
     m_refine_region_str = stripBlankEnds(value);
+  else if(param == "smart_percent")
+    m_smart_percent_str = stripBlankEnds(value);
+  else if(param == "smart_amount")
+    m_smart_amount_str = stripBlankEnds(value);
   else if(param == "refine_piece")
     m_refine_piece_str = stripBlankEnds(value);
   else if(param == "directed_refine") {
@@ -157,6 +158,17 @@ bool Viewer::setParam(string param, string value)
       m_directed_refine = false;
     else if((value == "on") || (value == "true"))
       m_directed_refine = true;
+    else
+      return(false);
+  }
+  else if(param == "auto_peak") {
+    value = tolower(value);
+    if(value == "toggle")
+      m_autopeak_refine = !m_autopeak_refine;
+    else if((value == "off") || (value == "false"))
+      m_autopeak_refine = false;
+    else if((value == "on") || (value == "true"))
+      m_autopeak_refine = true;
     else
       return(false);
   }
@@ -288,9 +300,9 @@ void Viewer::makeUniformIPF()
   else
     reflector.setParam("strict_range", "false");
   
-  cout << "directed_refine: " << m_directed_refine << endl;
   if(m_directed_refine) {
-    if(m_refine_region_str == "native @") {
+    if(m_refine_region_str == "") {
+      m_refine_region_str = "native @";
       m_refine_region_str += dim0_name + ":" + "-50:150" + ",";
       m_refine_region_str += dim1_name + ":" + "-250:-50";
     }
@@ -308,9 +320,16 @@ void Viewer::makeUniformIPF()
   }
   
   if(m_smart_refine) {
-    string pstr = intToString(m_smart_count);
-    reflector.setParam("smart_amount", pstr);
+    if(m_smart_percent_str != "")
+      reflector.setParam("smart_percent", m_smart_percent_str);
+    if(m_smart_amount_str != "")
+      reflector.setParam("smart_amount",  m_smart_amount_str);
   }
+
+  if(m_autopeak_refine)
+    reflector.setParam("auto_peak", "true");
+  else
+    reflector.setParam("auto_peak", "false");
 
   if(reflector.hasErrors() == false) {
     reflector.create();
@@ -368,6 +387,7 @@ void Viewer::modUniformAug(int amt)
   redraw();
 }
 
+#if 0
 //-------------------------------------------------------------
 // Procedure: modSmartAugAmt
 
@@ -381,6 +401,7 @@ void Viewer::modSmartAugAmt(int amt)
 
   redraw();
 }
+#endif
 
 //-------------------------------------------------------------
 // Procedure: runScript

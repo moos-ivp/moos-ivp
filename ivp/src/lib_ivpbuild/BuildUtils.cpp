@@ -828,8 +828,8 @@ IvPBox stringToRegionBox(const string& given_str,
   // If string was empty or more then two separators found
   if((vsize == 0) || (vsize > 2))
     return(null_box);
-  
-  // CHANGED BY MIKERB - FORCE THE CALLER TO USE A PREFACE
+
+  // Changed BY MIKERB - FORCE THE CALLER TO USE A PREFACE
   // If no separator, then no preface, and assume native extents
   //if(vsize == 1)
   //  return(stringNativeToRegionBox(given_str, domain, gsep, lsep));

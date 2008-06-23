@@ -20,14 +20,16 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
+#include <iostream>
 #include <stdlib.h>
 #include "OF_Reflector.h"
 #include "BuildUtils.h"
 #include "IvPFunction.h"
 #include "Regressor.h"
 #include "RT_Uniform.h"
-#include "RT_Priority.h"
-#include "RT_Focus.h"
+#include "RT_Smart.h"
+#include "RT_Directed.h"
+#include "RT_AutoPeak.h"
 #include "MBUtils.h"
 
 using namespace std;
@@ -47,8 +49,9 @@ OF_Reflector::OF_Reflector(const AOF *g_aof, int g_degree)
     m_domain    = m_aof->getDomain();
 
   m_rt_uniform  = new RT_Uniform(m_regressor);
-  m_rt_priority = new RT_Priority(m_regressor);
-  m_rt_focus    = new RT_Focus(m_regressor);
+  m_rt_smart    = new RT_Smart(m_regressor);
+  m_rt_directed = new RT_Directed(m_regressor);
+  m_rt_autopeak = new RT_AutoPeak(m_regressor);
   
   m_uniform_amount = 1;
   m_smart_amount   = 0;
@@ -71,8 +74,9 @@ OF_Reflector::~OF_Reflector()
 
   delete(m_regressor);
   delete(m_rt_uniform);
-  delete(m_rt_priority);
-  delete(m_rt_focus);
+  delete(m_rt_smart);
+  delete(m_rt_directed);
+  delete(m_rt_autopeak);
 }
 
 //-------------------------------------------------------------
@@ -219,7 +223,6 @@ bool OF_Reflector::setParam(string param, string value)
   else if((param=="uniform_piece")||(param=="uniform_box")) {
     IvPBox foo = stringToPointBox(value, m_domain, ',', ':');
     m_uniform_piece = foo;
-    foo.print();
     if(m_uniform_piece.null()) {
       m_errors.push_back(param + " value is ill-defined");
       return(false);
@@ -239,6 +242,7 @@ bool OF_Reflector::setParam(string param, string value)
     }
     IvPBox refine_region = stringToRegionBox(value, m_domain, ',', ':');
     if(refine_region.null()) {
+      cout << "Bad Region Box" << endl;
       m_errors.push_back(param + " value is ill-defined");
       return(false);
     }
@@ -324,7 +328,7 @@ bool OF_Reflector::setParam(string param, string value)
 //-------------------------------------------------------------
 // Procedure: setParam
 
-bool OF_Reflector::setParam(string param, int value)
+bool OF_Reflector::setParam(string param, double value)
 {
   param = tolower(stripBlankEnds(param));
   
@@ -333,21 +337,28 @@ bool OF_Reflector::setParam(string param, int value)
       m_errors.push_back(param + " value must be >= 1");
       return(false);
     }
-    m_uniform_amount = value;
+    m_uniform_amount = (int)(value);
   }
   else if((param=="smart_amount")||(param=="priority_amt")) {
     if(value < 0) {
       m_errors.push_back(param + " value must be >= 0");
       return(false);
     }
-    m_smart_amount = value;
+    m_smart_amount = (int)(value);
   }
   else if(param == "smart_percent") {
     if(value < 0) {
       m_errors.push_back(param + " value must be >= 0");
       return(false);
     }
-    m_smart_percent = value;
+    m_smart_percent = (int)(value);
+  }
+  else if(param=="smart_thresh") {
+    if(value < 0) {
+      m_errors.push_back(param + " value must be >= 0");
+      return(false);
+    }
+    m_smart_thresh = value;
   }
   else {
     m_errors.push_back(param + ": undefined parameter");
@@ -427,8 +438,8 @@ int OF_Reflector::create(int unif_amt, int smart_amt,
   for(i=0; i<reg_size; i++) {
     IvPBox region = m_refine_regions[i];
     IvPBox resbox = m_refine_pieces[i];
-    PDMap *new_pdmap = m_rt_focus->create(m_pdmap, region, 
-					  resbox, m_pqueue);
+    PDMap *new_pdmap = m_rt_directed->create(m_pdmap, region, 
+					     resbox, m_pqueue);
     if(new_pdmap != 0)
       m_pdmap = new_pdmap;
   }
@@ -453,8 +464,8 @@ int OF_Reflector::create(int unif_amt, int smart_amt,
       int  pct_amt = (psize * m_smart_percent) / 100;
       if(pct_amt > m_smart_amount)
 	use_amt = pct_amt;    
-      PDMap *new_pdmap = m_rt_priority->create(m_pdmap, m_pqueue, use_amt, 
-					       m_smart_thresh);
+      PDMap *new_pdmap = m_rt_smart->create(m_pdmap, m_pqueue, use_amt, 
+					    m_smart_thresh);
       if(new_pdmap != 0)
 	m_pdmap = new_pdmap;
     }
@@ -465,6 +476,21 @@ int OF_Reflector::create(int unif_amt, int smart_amt,
 
   m_uniform_piece_str += ", sref_pcs:";
   m_uniform_piece_str += (intToString(pcs_made_sref));
+  
+  if(!m_pdmap)  // This should never happen, but check anyway.
+    return(0);
+
+  // =============  Stage 4 - AutoPeak Refinement ================
+
+  cout << "In OF_Reflector::autopeak " << endl;
+  if(m_auto_peak) {
+    cout << "  - performing autopeak " << endl;
+    PDMap *new_pdmap = m_rt_autopeak->create(m_pdmap);
+    if(new_pdmap != 0) 
+      m_pdmap = new_pdmap;
+    if(new_pdmap)
+      cout << "  - non-null pdmap" << endl;
+  }
   
   if(m_pdmap)
     return(m_pdmap->size());

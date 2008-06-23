@@ -1,8 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin and John Leonard                    */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
-/*    FILE: RT_Priority.cpp                                      */
-/*    DATE: Jan 20th, 2006                                       */
+/*    FILE: RT_AutoPeak.cpp                                      */
+/*    DATE: Jun 21st, 2008                                       */
 /*    NOTE: "RT_" stands for "Reflector Tool"                    */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
@@ -21,7 +21,7 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
-#include "RT_Priority.h"
+#include "RT_AutoPeak.h"
 #include "BuildUtils.h"
 #include "Regressor.h"
 
@@ -30,7 +30,7 @@ using namespace std;
 //-------------------------------------------------------------
 // Procedure: Constructor
 
-RT_Priority::RT_Priority(Regressor *g_reg) 
+RT_AutoPeak::RT_AutoPeak(Regressor *g_reg) 
 {
   m_regressor = g_reg;
 }
@@ -43,63 +43,71 @@ RT_Priority::RT_Priority(Regressor *g_reg)
 //            regression fit during the phase when uniform pieces
 //            were constructed.
 
-PDMap* RT_Priority::create(PDMap *pdmap, PQueue& pqueue, 
-			   int amt, double thresh)
+PDMap* RT_AutoPeak::create(PDMap *pdmap)
 {
-  if(!pdmap || pqueue.null() || (amt < 1))
-    return(pdmap);
+  if(!pdmap)
+    return(0);
 
-  pdmap->growBoxArray(amt);
-  int dim = pdmap->getDim();
+  int dim   = pdmap->getDim();
+  int psize = pdmap->size();
 
-  double worst_err = pqueue.returnBestVal();
-  int    worst_box = pqueue.removeBest();
-  while((amt > 0) && (worst_box != -1) && (worst_err > thresh)) {
+  PQueue pqueue(8,true);
 
-    IvPBox *cut_box = pdmap->bx(worst_box);
-
-    // Find the longest dimension the cut_box to split on
-    int sdim_ix = 0;
-    int sdim_sz = (cut_box->pt(0,1) - cut_box->pt(0,0)) + 1;
-    for(int d=1; d<dim; d++) {
-      int sz = (cut_box->pt(d,1) - cut_box->pt(d,0)) + 1;
-      if(sz > sdim_sz) {
-	sdim_sz = sz;
-	sdim_ix = d;
-      }
-    }
-
-    IvPBox *new_box = cutBox(cut_box, sdim_ix);
-
-    if(new_box) {
-      double err1 = m_regressor->setWeight(cut_box, true);
-      double err2 = m_regressor->setWeight(new_box, true);
-
-      int newix = pdmap->size();
-      pdmap->bx(newix) = new_box;
-      pdmap->growBoxCount();
-      
-      // Now update the PQueue if appropriate
-      if(!cut_box->isPtBox())
-	pqueue.insert(worst_box, err1);
-      if(!new_box->isPtBox())
-	pqueue.insert(newix, err2);
-      amt--;
-    }
-    worst_err = pqueue.returnBestVal();
-    worst_box = pqueue.removeBest();
+  for(int i=0; i<psize; i++) {
+    double pmax = pdmap->getBox(i)->maxVal();
+    pqueue.insert(i, pmax);
   }
 
+  vector<IvPBox*> newboxes;
+
+  bool done = false;
+  while(!done) {
+    int max_index = pqueue.removeBest();
+    IvPBox *cut_box;
+    if(max_index < psize) 
+      cut_box = pdmap->bx(max_index);
+    else
+      cut_box = newboxes[max_index-psize];
+    
+    if(cut_box->isPtBox())
+      done = true;
+    else {
+      
+      // Find the longest dimension the cut_box to split on
+      int sdim_ix = 0;
+      int sdim_sz = (cut_box->pt(0,1) - cut_box->pt(0,0)) + 1;
+      for(int d=1; d<dim; d++) {
+	int sz = (cut_box->pt(d,1) - cut_box->pt(d,0)) + 1;
+	if(sz > sdim_sz) {
+	  sdim_sz = sz;
+	  sdim_ix = d;
+	}
+      }
+      
+      // Now cut the box along the longest dimension
+      IvPBox *new_box = cutBox(cut_box, sdim_ix);
+
+      // If no errors, set the new weights, add back to the pqueue
+      if(new_box) {
+	m_regressor->setWeight(cut_box, false);
+	m_regressor->setWeight(new_box, false);
+	
+
+	// Now update the PQueue if appropriate
+	pqueue.insert(max_index, cut_box->maxVal());
+	pqueue.insert(psize+newboxes.size(), new_box->maxVal());
+	newboxes.push_back(new_box);
+      }
+    }
+  }
+
+  int amt = newboxes.size();
+  pdmap->growBoxArray(amt);
+  for(int k=0; k<amt; k++) {
+    pdmap->bx(psize+k) = newboxes[k];
+    pdmap->growBoxCount();
+  }
+  
   pdmap->updateGrid();
   return(pdmap);
 }
-
-
-
-
-
-
-
-
-
-

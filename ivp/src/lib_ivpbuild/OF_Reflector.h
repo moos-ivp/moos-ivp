@@ -34,8 +34,9 @@ class IvPFunction;
 class PDMap;
 class Regressor;
 class RT_Uniform;
-class RT_Focus;
-class RT_Priority;
+class RT_Directed;
+class RT_Smart;
+class RT_AutoPeak;
 
 class OF_Reflector {
 public:
@@ -52,7 +53,7 @@ public:
  
   bool   setParam(std::string);
   bool   setParam(std::string, std::string);
-  bool   setParam(std::string, int);
+  bool   setParam(std::string, double);
     
   std::string              getErrors();
   std::vector<std::string> getErrorsVector() {return(m_errors);};
@@ -69,8 +70,9 @@ protected:
 
   Regressor*   m_regressor;
   RT_Uniform*  m_rt_uniform;
-  RT_Focus*    m_rt_focus;
-  RT_Priority* m_rt_priority;
+  RT_Directed* m_rt_directed;
+  RT_Smart*    m_rt_smart;
+  RT_AutoPeak* m_rt_autopeak;
   PQueue       m_pqueue;
   
   IvPBox       m_uniform_piece;

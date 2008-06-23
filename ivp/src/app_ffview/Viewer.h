@@ -44,7 +44,6 @@ public:
   void   modColorMap(const std::string&);
   void   modPatchAOF(int amt);
   void   modUniformAug(int amt);
-  void   modSmartAugAmt(int amt);
 
   void   runScript();
   void   capture(int);
@@ -75,15 +74,18 @@ private:
   IvPFunction *m_unif_ipf;
   OF_Rater     m_rater;
 
-  bool       m_smart_refine;
-  int        m_smart_count;
+  bool        m_smart_refine;
+  bool        m_directed_refine;
+  bool        m_autopeak_refine;
 
   std::string m_uniform_piece_str;
   int         m_uniform_piece_size;
-  bool        m_directed_refine;
 
   std::string m_refine_region_str;
   std::string m_refine_piece_str;
+  std::string m_smart_percent_str;
+  std::string m_smart_amount_str;
+
   std::string m_reflector_errors;
 
   int        m_focus_box_x;

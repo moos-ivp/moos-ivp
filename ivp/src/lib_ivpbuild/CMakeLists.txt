@@ -20,9 +20,10 @@ SET(SRC
    OF_Rater.cpp
    OF_Reflector.cpp
    PQueue.cpp
-   RT_Focus.cpp
-   RT_Priority.cpp
+   RT_Directed.cpp
+   RT_Smart.cpp
    RT_Uniform.cpp
+   RT_AutoPeak.cpp
    Regressor.cpp
    ZAIC_HEQ.cpp
    ZAIC_HLEQ.cpp

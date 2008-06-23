@@ -158,18 +158,32 @@ Fl_Menu_Item GUI::menu_[] = {
  {"Back-Blue",  0, (Fl_Callback*)GUI::cb_ColorBack, (void*)1, 0},
   {0},
 
- {"Augmentation", 0,  0, 0, 64, 0, 0, 14, 0},
- {"Toggle Directed Refine",  'd', (Fl_Callback*)GUI::cb_ToggleDirectedRefine, (void*)0, 0},
+ {"Directed-Refine", 0,  0, 0, 64, 0, 0, 14, 0},
+ {"Toggle Directed Refine",  'd', (Fl_Callback*)GUI::cb_ToggleDirectedRefine, (void*)0, FL_MENU_DIVIDER},
  {"Smaller-Uniform-Refine", '[', (Fl_Callback*)GUI::cb_ModUniformAug, (void*)-1, 0},
- {"Larger-Uniform-Refine",  ']', (Fl_Callback*)GUI::cb_ModUniformAug, (void*)1, FL_MENU_DIVIDER},
- {"Toggle-Smart-Refine",    0, (Fl_Callback*)GUI::cb_ToggleSmartAug, (void*)0, 0},
- {"Smart-Aug 100",    0, (Fl_Callback*)GUI::cb_SmartAugAmt, (void*)100, 0},
- {"Smart-Aug 200",    0, (Fl_Callback*)GUI::cb_SmartAugAmt, (void*)200, 0},
- {"Smart-Aug 500",    0, (Fl_Callback*)GUI::cb_SmartAugAmt, (void*)500, 0},
- {"Smart-Aug 750",    0, (Fl_Callback*)GUI::cb_SmartAugAmt, (void*)750, 0},
- {"Smart-Aug 1000",   0, (Fl_Callback*)GUI::cb_SmartAugAmt, (void*)1000, 0},
- {"Smart-Aug 2000",   0, (Fl_Callback*)GUI::cb_SmartAugAmt, (void*)2000, 0},
- {"Smart-Aug 4000",   0, (Fl_Callback*)GUI::cb_SmartAugAmt, (void*)4000, 0},
+ {"Larger-Uniform-Refine",  ']', (Fl_Callback*)GUI::cb_ModUniformAug, (void*)1, 0},
+ {0},
+
+ {"Smart-Refine", 0,  0, 0, 64, 0, 0, 14, 0},
+ {"Toggle-Smart-Refine", 'm', (Fl_Callback*)GUI::cb_ToggleSmartAug, (void*)0, 0},
+ {"smart_amount=100",  0, (Fl_Callback*)GUI::cb_SmartAugAmt, (void*)100, 0},
+ {"smart_amount=200",  0, (Fl_Callback*)GUI::cb_SmartAugAmt, (void*)200, 0},
+ {"smart_amount=500",  0, (Fl_Callback*)GUI::cb_SmartAugAmt, (void*)500, 0},
+ {"smart_amount=750",  0, (Fl_Callback*)GUI::cb_SmartAugAmt, (void*)750, 0},
+ {"smart_amount=1000", 0, (Fl_Callback*)GUI::cb_SmartAugAmt, (void*)1000, 0},
+ {"smart_amount=2000", 0, (Fl_Callback*)GUI::cb_SmartAugAmt, (void*)2000, 0},
+ {"smart_amount=4000", 0, (Fl_Callback*)GUI::cb_SmartAugAmt, (void*)4000, FL_MENU_DIVIDER},
+ {"smart_percent= 10",  0, (Fl_Callback*)GUI::cb_SmartAugPct, (void*)10, 0},
+ {"smart_percent= 15",  0, (Fl_Callback*)GUI::cb_SmartAugPct, (void*)15, 0},
+ {"smart_percent= 25",  0, (Fl_Callback*)GUI::cb_SmartAugPct, (void*)25, 0},
+ {"smart_percent= 35",  0, (Fl_Callback*)GUI::cb_SmartAugPct, (void*)35, 0},
+ {"smart_percent= 50",  0, (Fl_Callback*)GUI::cb_SmartAugPct, (void*)50, 0},
+ {"smart_percent= 75",  0, (Fl_Callback*)GUI::cb_SmartAugPct, (void*)75, 0},
+ {"smart_percent= 100", 0, (Fl_Callback*)GUI::cb_SmartAugPct, (void*)100, 0},
+ {0},
+
+ {"AutoPeak", 0,  0, 0, 64, 0, 0, 14, 0},
+ {"Toggle-AutoPeak", 't', (Fl_Callback*)GUI::cb_ToggleAutoPeak, (void*)0, 0},
  {0},
 
  {"Analysis",     0,  0, 0, 64, 0, 0, 14, 0},
@@ -361,13 +375,36 @@ void GUI::cb_ToggleSmartAug(Fl_Widget* o) {
   ((GUI*)(o->parent()->user_data()))->cb_ToggleSmartAug_i();
 }
 
+//----------------------------------------- Toggle AutoPeak
+inline void GUI::cb_ToggleAutoPeak_i() {
+  viewer->setParam("auto_peak", "toggle");
+  viewer->makeUniformIPF();
+  updateXY();
+}
+void GUI::cb_ToggleAutoPeak(Fl_Widget* o) {
+  ((GUI*)(o->parent()->user_data()))->cb_ToggleAutoPeak_i();
+}
+
 //----------------------------------------- SmartAugAmt
 inline void GUI::cb_SmartAugAmt_i(int amt) {
-  viewer->modSmartAugAmt(amt);
+  viewer->setParam("smart_amount",  intToString(amt));
+  viewer->setParam("smart_percent", "0");
+  viewer->makeUniformIPF();
   updateXY();
 }
 void GUI::cb_SmartAugAmt(Fl_Widget* o, int i) {
   ((GUI*)(o->parent()->user_data()))->cb_SmartAugAmt_i(i);
+}
+
+//----------------------------------------- SmartAugPct
+inline void GUI::cb_SmartAugPct_i(int amt) {
+  viewer->setParam("smart_amount",  "0");
+  viewer->setParam("smart_percent", intToString(amt));
+  viewer->makeUniformIPF();
+  updateXY();
+}
+void GUI::cb_SmartAugPct(Fl_Widget* o, int i) {
+  ((GUI*)(o->parent()->user_data()))->cb_SmartAugPct_i(i);
 }
 
 //----------------------------------------- Toggle Frame

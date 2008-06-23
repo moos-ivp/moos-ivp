@@ -88,8 +88,14 @@ private:
   inline void cb_ToggleSmartAug_i();
   static void cb_ToggleSmartAug(Fl_Widget*);
 
+  inline void cb_ToggleAutoPeak_i();
+  static void cb_ToggleAutoPeak(Fl_Widget*);
+
   inline void cb_SmartAugAmt_i(int);
   static void cb_SmartAugAmt(Fl_Widget*, int);
+
+  inline void cb_SmartAugPct_i(int);
+  static void cb_SmartAugPct(Fl_Widget*, int);
 
   inline void cb_ToggleFrame_i();
   static void cb_ToggleFrame(Fl_Widget*);

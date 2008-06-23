@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin and John Leonard                    */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
-/*    FILE: RT_Focus.cpp                                         */
+/*    FILE: RT_Directed.cpp                                      */
 /*    DATE: Mar 20th, 2007                                       */
 /*    NOTE: "RT_" stands for "Reflector Tool"                    */
 /*                                                               */
@@ -21,7 +21,7 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
-#include "RT_Focus.h"
+#include "RT_Directed.h"
 #include "BuildUtils.h"
 #include "Regressor.h"
 
@@ -30,7 +30,7 @@ using namespace std;
 //-------------------------------------------------------------
 // Procedure: Constructor
 
-RT_Focus::RT_Focus(Regressor *g_reg) 
+RT_Directed::RT_Directed(Regressor *g_reg) 
 {
   m_regressor = g_reg;
 }
@@ -46,8 +46,8 @@ RT_Focus::RT_Focus(Regressor *g_reg)
 //            the new PDmap. 
 
 
-PDMap* RT_Focus::create(PDMap *pdmap, const IvPBox& region, 
-			const IvPBox& unibox, PQueue& pqueue)
+PDMap* RT_Directed::create(PDMap *pdmap, const IvPBox& region, 
+			   const IvPBox& unibox, PQueue& pqueue)
 {
   if(!pdmap || !m_regressor)
     return(0);
@@ -185,7 +185,7 @@ PDMap* RT_Focus::create(PDMap *pdmap, const IvPBox& region,
 //             with the new queue.
 
 
-void RT_Focus::updatePQueue(PQueue& pqueue, const vector<int>& idx_map)
+void RT_Directed::updatePQueue(PQueue& pqueue, const vector<int>& idx_map)
 {
   // If there is no priority queue being used - just return.
   if(pqueue.null())
