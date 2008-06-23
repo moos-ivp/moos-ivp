@@ -154,6 +154,7 @@ IvPFunction *BHV_AvoidObstacles::onRunState()
     postEMessage("BHV_AvoidObstacles: AOF-Init Error");
     return(0);
   }
+
   IvPFunction *ipf = 0;
 
   OF_Reflector reflector(&aof_avoid, 1);
@@ -161,7 +162,7 @@ IvPFunction *BHV_AvoidObstacles::onRunState()
   if(reflector.hasErrors())
     postWMessage(reflector.getErrors());
   else {
-    ipf = reflector.extractOF(false);
+    ipf = reflector.extractOF(true); // true means normalize [0,100]
     ipf->setPWT(m_priority_wt);
   }
   

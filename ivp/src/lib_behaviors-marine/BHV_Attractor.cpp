@@ -246,7 +246,7 @@ IvPFunction *BHV_Attractor::onRunState()
 	return(0);
       }
       
-      OF_Reflector reflector(&aof, 1);
+      OF_Reflector reflector(&aof);
       reflector.create(m_build_info);
       if(reflector.hasErrors())
 	postWMessage(reflector.getErrors());
