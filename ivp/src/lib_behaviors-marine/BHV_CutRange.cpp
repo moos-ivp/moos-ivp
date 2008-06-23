@@ -42,8 +42,8 @@ BHV_CutRange::BHV_CutRange(IvPDomain gdomain) :
   IvPBehavior(gdomain)
 {
   this->setParam("descriptor", "(d)bhv_cutrange");
-  this->setParam("build_info", "uniform_piece=course:2,speed:3");
-  this->setParam("build_info", "uniform_grid=course:8,speed:6");
+  this->setParam("build_info", "uniform_piece=discrete@course:2,speed:3");
+  this->setParam("build_info", "uniform_grid =discrete@course:8,speed:6");
   
   m_domain = subDomain(m_domain, "course,speed");
 
@@ -180,25 +180,24 @@ IvPFunction *BHV_CutRange::onRunState()
     postWMessage("Error in initializing AOF_CutRangeCPA.");
     return(0);
   }
-
-  OF_Reflector reflector(&aof, 1);
+  
+  IvPFunction *ipf = 0;
+  OF_Reflector reflector(&aof);
   reflector.create(m_build_info);
-  IvPFunction *ipf = reflector.extractOF();
+  if(reflector.hasErrors())
+    postWMessage(reflector.getErrors());
+  else {
+    ipf = reflector.extractOF();
+    ipf->setPWT(relevance * m_priority_wt);
+  }
 
 #if 0
   cout << "CutRange Pre-Normalize MIN-WT: " << ipf->getPDMap()->getMinWT() << endl;
   cout << "CutRange Pre-Normalize MAX-WT: " << ipf->getPDMap()->getMaxWT() << endl;
-#endif
-
-  ipf->getPDMap()->normalize(0.0, 100.0);
-
-#if 0
   cout << "CutRange MIN-WT: " << ipf->getPDMap()->getMinWT() << endl;
   cout << "CutRange MAX-WT: " << ipf->getPDMap()->getMaxWT() << endl;
 #endif
-
-  ipf->setPWT(relevance * m_priority_wt);
-
+  
   return(ipf);
 }
 
