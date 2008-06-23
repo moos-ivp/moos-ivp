@@ -30,7 +30,7 @@ Common_IPFViewer::Common_IPFViewer(int g_x, int g_y, int g_width,
   m_zRot         = 40;
   m_zoom         = 1;
   m_rad_extra    = 15;
-  m_draw_frame   = false;
+  m_draw_frame   = true;
   m_draw_base    = true;
   m_ipf_owner    = false;
   m_ivp_function = 0;
