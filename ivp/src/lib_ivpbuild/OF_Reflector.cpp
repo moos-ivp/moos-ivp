@@ -57,7 +57,7 @@ OF_Reflector::OF_Reflector(const AOF *g_aof, int g_degree)
   m_smart_amount   = 0;
   m_smart_percent  = 0;
   m_smart_thresh   = 0;
-  m_auto_peak      = true;
+  m_auto_peak      = false;
 }
 
 //-------------------------------------------------------------
@@ -242,7 +242,7 @@ bool OF_Reflector::setParam(string param, string value)
     }
     IvPBox refine_region = stringToRegionBox(value, m_domain, ',', ':');
     if(refine_region.null()) {
-      cout << "Bad Region Box" << endl;
+      //cout << "Bad Region Box" << endl;
       m_errors.push_back(param + " value is ill-defined");
       return(false);
     }
@@ -482,14 +482,12 @@ int OF_Reflector::create(int unif_amt, int smart_amt,
 
   // =============  Stage 4 - AutoPeak Refinement ================
 
-  cout << "In OF_Reflector::autopeak " << endl;
+  //cout << "In OF_Reflector::autopeak " << endl;
   if(m_auto_peak) {
-    cout << "  - performing autopeak " << endl;
+    //cout << "  - performing autopeak " << endl;
     PDMap *new_pdmap = m_rt_autopeak->create(m_pdmap);
     if(new_pdmap != 0) 
       m_pdmap = new_pdmap;
-    if(new_pdmap)
-      cout << "  - non-null pdmap" << endl;
   }
   
   if(m_pdmap)
