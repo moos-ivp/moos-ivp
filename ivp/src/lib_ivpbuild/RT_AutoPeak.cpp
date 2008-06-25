@@ -85,7 +85,25 @@ PDMap* RT_AutoPeak::create(PDMap *pdmap)
       }
       
       // Now cut the box along the longest dimension
-      IvPBox *new_box = cutBox(cut_box, sdim_ix);
+      // 
+      // If the piece interior function is linear (degree==1), then
+      // be smart about the split. Likely making the split near the 
+      // high end will result in a quicker convergence to isolating
+      // the maximum point in the function. The "quarterBox" function 
+      // will split a box with roughly a 2:1 ratio rather then the 
+      // cutBox which splits with roughly a 1;1 ratio. The decision
+      // on which way to skew the "quartering" is based on the slope
+      // of the coefficient for the chosen dimension. Slopes less than
+      // one are going "down", slopes greater than one are going "up".
+      IvPBox *new_box = 0;
+      if(m_regressor->getDegree()==1) {
+	bool split_high = true;
+	if(cut_box->wt(sdim_ix) < 1)
+	  split_high = false;
+	new_box = quarterBox(cut_box, sdim_ix, split_high);
+      }
+      else
+	new_box = cutBox(cut_box, sdim_ix);
 
       // If no errors, set the new weights, add back to the pqueue
       if(new_box) {

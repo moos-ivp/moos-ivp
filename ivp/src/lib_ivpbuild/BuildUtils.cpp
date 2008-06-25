@@ -298,6 +298,60 @@ IvPBox* cutBox(IvPBox* oldbox, int dim)
   return(newbox);
 }
 
+//---------------------------------------------------------------
+// Procdudure: quarterBox    
+//    Purpose: Split off a new box from oldbox. Return new box.
+//      Notes: Nothing is done with the WEIGHT of either box.
+//    Returns: A new box, or nullbox if cannot be split. Box cannot
+//             be split if demanded side has an edge length of one.
+
+IvPBox* quarterBox(IvPBox* oldbox, int dim, bool split_high)
+{
+  int split_length = (oldbox->pt(dim,1) - oldbox->pt(dim,0)) + 1;
+  if(split_length <= 1)
+    return(0);
+
+  IvPBox* newbox = oldbox->copy();
+
+  if(split_length == 2) {
+    oldbox->pt(dim,1) = oldbox->pt(dim,0);
+    newbox->pt(dim,0) = newbox->pt(dim,1); 
+  }
+  else {
+    //  splitlen          Delta  Start   Pc1   PC2
+    //    3     * (3/4) =  2       5-7:  5-6   7-7
+    //    4     * (3/4) =  3       5-8:  5-7   8-8
+    //    5     * (3/4) =  3       5-9:  5-7   8-9
+    //    6     * (3/4) =  4      5-10:  5-8   9-10
+    //    7     * (3/4) =  5      5-11:  5-9   10-11
+    //    8     * (3/4) =  6      5-12:  5-10  11-12
+
+    //  splitlen          Delta  Start   Pc1   PC2
+    //    3     * (1/4) =  0(1)    5-7:  5-5   6-7
+    //    4     * (1/4) =  1       5-8:  5-5   6-8
+    //    5     * (1/4) =  1       5-9:  5-5   7-9
+    //    6     * (1/4) =  1      5-10:  5-5   6-10
+    //    7     * (1/4) =  1      5-11:  5-5   6-11
+    //    8     * (1/4) =  2      5-12:  5-6   7-12
+
+    int delta = 0;
+    if(split_high)
+      delta = (int)((split_length)*(0.75));
+    else
+      delta = (int)((split_length)*(0.25));
+    
+    if(delta==0)
+      delta = 1;
+    oldbox->pt(dim, 1) = oldbox->pt(dim,0) + delta;
+    newbox->pt(dim, 0) = oldbox->pt(dim,1) + 1;
+  }
+
+  oldbox->bd(dim, 1) = 1;
+  newbox->bd(dim, 0) = 1;
+
+  return(newbox);
+}
+
 
 //---------------------------------------------------------------
 // Procdudure: intersectDomain

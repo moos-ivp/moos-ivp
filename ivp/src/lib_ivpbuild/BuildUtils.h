@@ -46,6 +46,7 @@ std::string domainAndBoxToString(const IvPBox&, const IvPDomain&);
 BoxSet*  makeUniformDistro(const IvPBox&, const IvPBox&, int=1);
 BoxSet*  subtractBox(const IvPBox&, const IvPBox&);
 IvPBox*  cutBox(IvPBox*, int);
+IvPBox*  quarterBox(IvPBox*, int, bool);
 
 //--------------------------------------------------------------------
 IvPBox  stringToPointBox(const std::string&, const IvPDomain&, 
