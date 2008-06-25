@@ -50,7 +50,9 @@ public:
 
   void   takeSamples(int amt)     {m_rater.takeSamples(amt);};
   double getParam(const std::string&, bool&);
+
   std::string getParam(const std::string&);
+  std::string getPeakDelta();
 
 protected:
   void   drawIvPFunction(IvPFunction*);
@@ -87,6 +89,7 @@ private:
   std::string m_smart_amount_str;
 
   std::string m_reflector_errors;
+  std::string m_aof_peak;
 
   int        m_focus_box_x;
   int        m_focus_box_y;

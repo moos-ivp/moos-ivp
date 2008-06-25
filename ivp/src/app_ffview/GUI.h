@@ -49,6 +49,7 @@ public:
   MY_Output   *p_refine_reg_str;
   MY_Output   *p_refine_pce_str;
   MY_Output   *p_reflector_errors;
+  MY_Output   *p_auto_peak;
 
 
 private:

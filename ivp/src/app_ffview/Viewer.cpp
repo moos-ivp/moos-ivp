@@ -150,6 +150,8 @@ bool Viewer::setParam(string param, string value)
     m_smart_amount_str = stripBlankEnds(value);
   else if(param == "refine_piece")
     m_refine_piece_str = stripBlankEnds(value);
+  else if(param == "aof_peak")
+    m_aof_peak = stripBlankEnds(value);
   else if(param == "directed_refine") {
     value = tolower(value);
     if(value == "toggle")
@@ -387,22 +389,6 @@ void Viewer::modUniformAug(int amt)
   redraw();
 }
 
-#if 0
-//-------------------------------------------------------------
-// Procedure: modSmartAugAmt
-
-void Viewer::modSmartAugAmt(int amt)
-{
-  if(amt >= 0)
-    m_smart_count = amt;
-
-  if(m_unif_ipf)
-    makeUniformIPF();
-
-  redraw();
-}
-#endif
-
 //-------------------------------------------------------------
 // Procedure: runScript
 
@@ -501,7 +487,21 @@ string Viewer::getParam(const string& param)
     return(m_refine_piece_str);
   else if(param == "reflector_errors")
     return(m_reflector_errors);
+  else if(param == "auto_peak") {
+    if(m_autopeak_refine)
+      return("true");
+    else
+      return("false");
+  }
   
+  return("");
+}
+
+//-------------------------------------------------------------
+// Procedure: getPeakDelta
+
+string Viewer::getPeakDelta()
+{
   return("");
 }
 

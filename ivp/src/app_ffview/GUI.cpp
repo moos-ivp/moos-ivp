@@ -73,6 +73,10 @@ GUI::GUI(int g_w, int g_h, const char *g_l)
   p_uniform_str->textsize(info_size); 
   p_uniform_str->labelsize(info_size);
   
+  p_auto_peak = new MY_Output(780, h()-90, 180, 20, "AutoPeak:"); 
+  p_auto_peak->textsize(info_size); 
+  p_auto_peak->labelsize(info_size);
+  
   p_refine_reg_str = new MY_Output(530, h()-60, 180, 20, "Refine Region:"); 
   p_refine_reg_str->textsize(info_size); 
   p_refine_reg_str->labelsize(info_size);
@@ -534,6 +538,9 @@ void GUI::updateXY()
   
   str = viewer->getParam("uniform_piece");
   p_uniform_str->value(str.c_str());
+
+  str = viewer->getParam("auto_peak");
+  p_auto_peak->value(str.c_str());
 
   str = viewer->getParam("refine_region");
   p_refine_reg_str->value(str.c_str());
