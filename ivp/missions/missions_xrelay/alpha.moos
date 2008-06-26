@@ -1,0 +1,75 @@
+ServerHost = localhost
+ServerPort = 9000
+Simulator  = true
+
+Community  = alpha
+
+LatOrigin  = 42.3584
+LongOrigin = -71.08745
+
+//------------------------------------------
+// Antler configuration  block
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+
+  Run = MOOSDB	 @ NewConsole = true
+  Run = uXMS	 @ NewConsole = true
+  Run = pXRelay	 @ NewConsole = true ~ pXRelay_PEARS
+  Run = pXRelay	 @ NewConsole = true ~ pXRelay_APPLES
+  Run = iRemote	 @ NewConsole = true
+}
+
+//------------------------------------------
+// iRemote configuration block
+
+ProcessConfig = iRemote
+{
+   CustomKey = 1 : HELM_VERBOSE @ "verbose"
+   CustomKey = 2 : HELM_VERBOSE @ "terse"
+   CustomKey = 3 : HELM_VERBOSE @ "quiet"
+   CustomKey = 4 : DEPLOY @ "true"
+   CustomKey = 5 : DEPLOY @ "false"
+   CustomKey = 6 : RETURN @ "true"
+   CustomKey = 7 : RETURN @ "false"
+   CustomKey = 9 : RESTART_HELM @ "true"
+}
+
+//------------------------------------------
+// pXRelay config block
+
+ProcessConfig = pXRelay_APPLES
+{
+  AppTick	= 5
+  CommsTick	= 5
+
+  OUTGOING_VAR  = APPLES
+  INCOMING_VAR  = PEARS
+}
+
+//------------------------------------------
+// pXRelay config block
+
+ProcessConfig = pXRelay_PEARS
+{
+  AppTick	= 5
+  CommsTick	= 5
+
+  INCOMING_VAR  = APPLES
+  OUTGOING_VAR  = PEARS
+}
+
+//------------------------------------------
+// uXMS config block
+
+ProcessConfig = uXMS
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  VAR        = APPLES
+  VAR        = PEARS
+}
+
+
+
