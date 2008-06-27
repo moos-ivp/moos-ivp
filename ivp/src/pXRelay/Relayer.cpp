@@ -16,7 +16,8 @@ using namespace std;
 
 Relayer::Relayer()
 {
-  m_tally = 0;
+  m_tally      = 0;
+  m_start_time = 0;
 }
 
 //---------------------------------------------------------
@@ -30,18 +31,23 @@ bool Relayer::OnNewMail(MOOSMSG_LIST &NewMail)
     CMOOSMsg &msg = *p;
 	
     string key   = msg.GetKey();
-    double dval  = msg.GetDouble();
+    //double dval  = msg.GetDouble();
     string sval  = msg.GetString(); 
-    double mtime = msg.GetTime();
-    bool   mdbl  = msg.IsDouble();
-    bool   mstr  = msg.IsString();
+    //double mtime = msg.GetTime();
+    //bool   mdbl  = msg.IsDouble();
+    //bool   mstr  = msg.IsString();
     string msrc  = msg.GetSource();
-
-    key = tolower(key);
 
     if(key == m_incoming_var) { 
       m_tally++;
       m_Comms.Notify(m_outgoing_var, m_tally);
+      if(m_start_time == 0)
+	m_start_time = MOOSTime();
+      else {
+	double delta = MOOSTime() - m_start_time;
+	double frequency = (double)(m_tally) / delta;
+	m_Comms.Notify(m_outgoing_var+"_HZ", frequency);
+      }
     }
   }
   return(true);

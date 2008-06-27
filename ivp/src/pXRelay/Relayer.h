@@ -26,7 +26,8 @@ class Relayer : public CMOOSApp
   unsigned long int m_tally;
   std::string       m_incoming_var;
   std::string       m_outgoing_var;
-    
+
+  double            m_start_time;
 };
 
 #endif 
