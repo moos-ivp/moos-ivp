@@ -129,6 +129,7 @@ SET(IVP_APPS_TO_BUILD
   iMarineSim
   pDeployHandler
   pEchoVar
+  pXRelay
   pHelmIvP
   pMarinePID
   pMarineViewer
