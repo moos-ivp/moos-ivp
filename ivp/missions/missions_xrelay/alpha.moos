@@ -25,14 +25,7 @@ ProcessConfig = ANTLER
 
 ProcessConfig = iRemote
 {
-   CustomKey = 1 : HELM_VERBOSE @ "verbose"
-   CustomKey = 2 : HELM_VERBOSE @ "terse"
-   CustomKey = 3 : HELM_VERBOSE @ "quiet"
-   CustomKey = 4 : DEPLOY @ "true"
-   CustomKey = 5 : DEPLOY @ "false"
-   CustomKey = 6 : RETURN @ "true"
-   CustomKey = 7 : RETURN @ "false"
-   CustomKey = 9 : RESTART_HELM @ "true"
+   CustomKey = 1 : APPLES @ 1
 }
 
 //------------------------------------------
@@ -40,8 +33,8 @@ ProcessConfig = iRemote
 
 ProcessConfig = pXRelay_APPLES
 {
-  AppTick	= 5
-  CommsTick	= 5
+  AppTick	= 50
+  CommsTick	= 50
 
   OUTGOING_VAR  = APPLES
   INCOMING_VAR  = PEARS
@@ -52,8 +45,8 @@ ProcessConfig = pXRelay_APPLES
 
 ProcessConfig = pXRelay_PEARS
 {
-  AppTick	= 5
-  CommsTick	= 5
+  AppTick	= 50
+  CommsTick	= 50
 
   INCOMING_VAR  = APPLES
   OUTGOING_VAR  = PEARS
@@ -69,6 +62,8 @@ ProcessConfig = uXMS
 
   VAR        = APPLES
   VAR        = PEARS
+  VAR        = APPLES_HZ
+  VAR        = PEARS_HZ
 }
 
 
