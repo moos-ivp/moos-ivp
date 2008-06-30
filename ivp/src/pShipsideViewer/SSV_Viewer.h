@@ -36,6 +36,7 @@
 #include "MarineViewer.h"
 #include "XYCircle.h"
 #include "MOOSGeodesy.h"
+#include "MOOSLock.h"
 
 class SSV_Viewer : public MarineViewer
 {
@@ -157,6 +158,8 @@ public:
   std::vector<double>    m_range_sensor_x;
   std::vector<double>    m_range_sensor_y;
   std::vector<double>    m_range_sensor_s;
+
+  CMOOSLock  m_mutex;
 };
 
 #endif 
