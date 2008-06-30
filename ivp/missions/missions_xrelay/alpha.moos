@@ -33,8 +33,8 @@ ProcessConfig = iRemote
 
 ProcessConfig = pXRelay_APPLES
 {
-  AppTick	= 50
-  CommsTick	= 50
+  AppTick	= 35
+  CommsTick	= 35
 
   OUTGOING_VAR  = APPLES
   INCOMING_VAR  = PEARS
@@ -45,8 +45,8 @@ ProcessConfig = pXRelay_APPLES
 
 ProcessConfig = pXRelay_PEARS
 {
-  AppTick	= 50
-  CommsTick	= 50
+  AppTick	= 35
+  CommsTick	= 35
 
   INCOMING_VAR  = APPLES
   OUTGOING_VAR  = PEARS

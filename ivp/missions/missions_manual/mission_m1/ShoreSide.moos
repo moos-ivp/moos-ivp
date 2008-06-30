@@ -16,7 +16,8 @@ ProcessConfig = ANTLER
 
   Run = MOOSDB          @ NewConsole = false
   Run = pMOOSBridge     @ NewConsole = false
-  Run = pMarineViewer   @ NewConsole = true
+//  Run = pMarineViewer   @ NewConsole = true
+  Run = pShipsideViewer @ NewConsole = true
   Run = uTermCommand    @ NewConsole = true
 }
 
