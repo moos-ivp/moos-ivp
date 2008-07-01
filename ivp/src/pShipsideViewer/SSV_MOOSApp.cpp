@@ -38,6 +38,8 @@ bool SSV_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
   double curr_time = MOOSTime() - m_start_time;
   m_gui->mviewer->setTime(curr_time);
 
+  m_gui->mviewer->mutexLock();
+
   //cout  << NewMail.size() << "," << flush;
   for(p = NewMail.rbegin();p!=NewMail.rend();p++) {
     CMOOSMsg &Msg = *p;
@@ -94,6 +96,8 @@ bool SSV_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
     }
     //cout << "Originating community: " << Msg.m_sOriginatingCommunity << endl;
   }
+  m_gui->mviewer->mutexUnLock();
+
   if(gui_needs_redraw && m_gui) {
     m_gui->updateXY();
     m_gui->mviewer->redraw();
@@ -295,8 +299,8 @@ bool SSV_MOOSApp::receiveAIS_REPORT(CMOOSMsg &Msg)
 
 bool SSV_MOOSApp::receiveGRID_CONFIG(CMOOSMsg &Msg)
 {
-  cout << "RECEIVED GRID CONFIGURATION!!!!" << endl << flush;
-  cout << "   Msg.m_sVal:" << Msg.m_sVal << endl << flush;
+  //cout << "RECEIVED GRID CONFIGURATION!!!!" << endl << flush;
+  //cout << "   Msg.m_sVal:" << Msg.m_sVal << endl << flush;
   XYGrid search_grid;
   
   bool ok = search_grid.initialize(Msg.m_sVal);
@@ -318,7 +322,6 @@ bool SSV_MOOSApp::receivePolygon(CMOOSMsg &Msg)
   XYPolygon new_poly = stringToPoly(Msg.m_sVal);
   
   if(new_poly.size() != 0) {
-    cout << "Receieved OK poly of size: " << new_poly.size() << endl;
     m_gui->addPoly(new_poly);
     return(true);
   }
@@ -334,7 +337,6 @@ bool SSV_MOOSApp::receivePolygon(CMOOSMsg &Msg)
 
 bool SSV_MOOSApp::receiveSegList(CMOOSMsg &Msg)
 {
-  cout << "In SSV_MOOSApp::receiveSegList()" << endl;
   XYSegList new_seglist = stringToSegList(Msg.m_sVal);
   
   bool ok = (new_seglist.size() > 0);
@@ -390,8 +392,8 @@ bool SSV_MOOSApp::receiveStationCircle(CMOOSMsg &Msg)
 
 void SSV_MOOSApp::receiveGRID_DELTA(CMOOSMsg &Msg)
 {
-  cout << "RECEIVED GRID ----------- DELTA   !!!!" << endl << flush;
-  cout << "   Msg.m_sVal:" << Msg.m_sVal << endl << flush;
+  //cout << "RECEIVED GRID ----------- DELTA   !!!!" << endl << flush;
+  //cout << "   Msg.m_sVal:" << Msg.m_sVal << endl << flush;
   m_gui->mviewer->updateGrid(Msg.m_sVal);
 }
 

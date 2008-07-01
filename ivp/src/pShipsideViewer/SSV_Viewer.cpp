@@ -55,14 +55,13 @@ SSV_Viewer::SSV_Viewer(int x, int y, int w, int h, const char *l)
 
 void SSV_Viewer::draw()
 {
-  m_mutex.Lock();
+  mutexLock();
   MarineViewer::draw();
 
   drawOpAreaGrid();
   //drawAGateways();
   //drawBGateways();
   //drawEFields();
-
 
   if(m_grid_offon)
     drawGrids();
@@ -112,7 +111,7 @@ void SSV_Viewer::draw()
     drawPoints(p2->second);
 
   glFlush();
-  m_mutex.UnLock();
+  mutexUnLock();
 }
 
 //-------------------------------------------------------------
@@ -155,8 +154,6 @@ void SSV_Viewer::updateVehiclePosition(string vname, float x,
   // Handle updating the ObjectPose with the new information
   ObjectPose opose(x,y,theta,speed,depth);
 
-  m_mutex.Lock();
-
   m_pos_map[vname] = opose;
   m_ais_map[vname] = m_curr_time;
  
@@ -188,7 +185,6 @@ void SSV_Viewer::updateVehiclePosition(string vname, float x,
     setParam("set_pan_x", -x_pixels);
     setParam("set_pan_y", -y_pixels);
   }
-  m_mutex.UnLock();
 }
 
 //-------------------------------------------------------------

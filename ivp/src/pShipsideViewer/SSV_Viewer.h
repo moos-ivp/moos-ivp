@@ -92,6 +92,9 @@ public:
   void  drawAGateways();
   void  drawBGateways();
   void  drawEFields();
+  void  mutexLock()   {m_mutex.Lock();};
+  void  mutexUnLock() {m_mutex.UnLock();};
+
 
  private:
   void  drawVehicle(std::string, bool, std::string);
