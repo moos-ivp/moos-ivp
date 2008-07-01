@@ -49,6 +49,8 @@ TransponderAIS::TransponderAIS()
   m_blackout_variance = 0;
   m_last_post_time    = -1;
   m_db_uptime         = 0;
+
+  m_contact_report_var = "AIS_REPORT";
 }
 
 //-----------------------------------------------------------------
@@ -81,7 +83,7 @@ bool TransponderAIS::OnNewMail(MOOSMSG_LIST &NewMail)
       m_nav_heading = (ddata*-180.0)/3.1415926;
     else if(key == "NAV_DEPTH")
       m_nav_depth = ddata;
-    else if(key == "AIS_REPORT") {
+    else if(key == m_contact_report_var) {
       bool ok = handleIncomingAISReport(sdata);
       if(!ok) 
 	MOOSTrace("TransponderAIS: Un-Parsed AIS-Report.\n");
@@ -118,7 +120,7 @@ bool TransponderAIS::OnConnectToServer()
   m_Comms.Register("NAV_HEADING", 0);
   m_Comms.Register("NAV_YAW", 0);
   m_Comms.Register("NAV_DEPTH", 0);
-  m_Comms.Register("AIS_REPORT", 0);
+  m_Comms.Register(m_contact_report_var, 0);
   m_Comms.Register("DB_UPTIME", 0);
 
   
@@ -167,8 +169,10 @@ bool TransponderAIS::Iterate()
 				 dstringCompact(doubleToString(m_nav_speed, 2)),\
 				 dstringCompact(doubleToString(m_nav_heading, 2)),\
 				 dstringCompact(doubleToString(m_nav_depth, 2)));
+
+    string local_var = m_contact_report_var + "_LOCAL";
     
-    m_Comms.Notify("AIS_REPORT_LOCAL", summary);
+    m_Comms.Notify(local_var, summary);
     m_last_post_time = moos_time;
 
     m_blackout_interval  = m_blackout_baseval;
@@ -257,7 +261,8 @@ bool TransponderAIS::OnStartUp()
       if(MOOSStrCmp(sVarName, "PARSE_NAFCON")) 
 	m_parseNaFCon = MOOSStrCmp(sLine, "true"); 
 
-
+      if(MOOSStrCmp(sVarName, "CONTACT_REPORT_VARIABLE"))
+          m_contact_report_var = sLine;
       
       
       // for each publish_for_nafcon_id config value
@@ -276,7 +281,9 @@ bool TransponderAIS::OnStartUp()
     if (!publishingSpecified)
       naFConPublishForID.assign(MAX_NAFCON_ID,true);
   }
+  // end tes 9-12-07
 
+  
   // find the lookup table file and parse it
   if(m_parseNaFCon)
   {
@@ -350,9 +357,11 @@ bool TransponderAIS::OnStartUp()
       
   }
 
-
+  MOOSTrace("Using %s for contact report variable and %s_LOCAL for local contact report variable\n", m_contact_report_var.c_str(), m_contact_report_var.c_str());
+  
+  
   return(true);
-  // end tes 9-12-07
+
 }
 
 
@@ -468,7 +477,7 @@ bool TransponderAIS::handleIncomingNaFConMessage(const string& rMsg)
         return false;
     } 
 
-    MOOSTrace("Began parsing NaFCon message to AIS_REPORT:\n");
+    MOOSTrace("Began parsing NaFCon message to %s:\n", m_contact_report_var.c_str());
     MOOSTrace(rMsg);
     MOOSTrace("\n\n");
   
@@ -587,7 +596,7 @@ bool TransponderAIS::handleIncomingNaFConMessage(const string& rMsg)
                                          dstringCompact(doubleToString(navHeading, 2)),\
                                          dstringCompact(doubleToString(navDepth, 2)));
       
-            m_Comms.Notify("AIS_REPORT", summary);
+            m_Comms.Notify(m_contact_report_var, summary);
             m_Comms.Notify("TRANSPONDER_NAFCON_REPORT", summary);
 
             MOOSTrace("Transponder NaFCon Report:\n");

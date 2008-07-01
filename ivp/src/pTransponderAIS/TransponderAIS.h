@@ -63,6 +63,7 @@ protected:
   std::string m_vessel_name;
   std::string m_vessel_type;
 
+
   std::vector<std::string> m_contact_list;
   std::vector<double>      m_contact_time;
   std::vector<double>      m_contact_utc;
@@ -83,7 +84,10 @@ protected:
   std::vector<bool> naFConPublishForID;
   // lookup read from a file for modem id -> name and type
   std::map<int, vehicle_nametype> nafcon_lookup;
-  
+
+  // moos variable name for the contact report
+  // default name is "AIS_REPORT"
+  std::string m_contact_report_var;
   
   // for lat long conversion
   CMOOSGeodesy m_geodesy;
