@@ -74,8 +74,17 @@ protected:
   
   // tes 9-12-07
   bool m_parseNaFCon;
+  struct vehicle_nametype 
+  {
+      std::string name;
+      std::string type;
+  };
   // vector to specify whether to publish for a given ID
   std::vector<bool> naFConPublishForID;
+  // lookup read from a file for modem id -> name and type
+  std::map<int, vehicle_nametype> nafcon_lookup;
+  
+  
   // for lat long conversion
   CMOOSGeodesy m_geodesy;
 

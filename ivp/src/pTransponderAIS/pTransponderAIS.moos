@@ -1,3 +1,8 @@
+Community = Unknown
+
+LatOrigin = 42
+LongOrigin = 9
+
 //------------------------------------------------------------------
 // pTransponderAIS config block
 //
@@ -18,13 +23,13 @@ ProcessConfig = pTransponderAIS
   VESSEL_TYPE   = SHIP
 
   // parse NaFCon strings (SENSOR_STATUS, SENSOR_TRACK, SENSOR_CONTACT) into ais_reports. default is false
-  PARSE_NAFCON = false
+  PARSE_NAFCON = true
 
   // specify publishing for modem ids below. if NO ids are specified
   // ALL ids will be published for (assuming PARSE_NAFCON = true)
   PUBLISH_FOR_NAFCON_ID = 3
 
   // lookup table to perform conversion from modem id to vehicle name
-  MODEM_ID_LOOKUP_PATH =  ~/moos-ivp-local/trunk/data/acomms/modemidlookup.txt
+  MODEM_ID_LOOKUP_PATH =  /home/toby/moos-ivp-local/trunk/data/acomms/modemidlookup.txt
 
 }
