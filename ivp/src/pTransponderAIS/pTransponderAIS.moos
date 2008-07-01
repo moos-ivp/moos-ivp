@@ -1,39 +1,30 @@
-ServerHost = localhost
-ServerPort = 9200
-
-// Community name IS the vehicle name
-Community  = nyak200
-
 //------------------------------------------------------------------
-// Antler configuration  block
-ProcessConfig = ANTLER
+// pTransponderAIS config block
+//
+// Note: Outgoing processed every other cycle..
+//       Incoming processed every cycle.
+
+ProcessConfig = pTransponderAIS
 {
-  MSBetweenLaunches = 200
+  AppTick       = 8
+  CommsTick     = 8
 
-  //crucial processes
-  Run = MOOSDB		@ NewConsole = true
-  Run = pLoiterControl	@ NewConsole = true
-}
+  // do not publish own info for this number of seconds after last publish
+  BLACKOUT_INTERVAL = 0;
 
+  BLACKOUT_VARIANCE = 0;
+  
+  // type of vessel in this community, default is ship
+  VESSEL_TYPE   = SHIP
 
-//------------------------------------------------------------------
-// pLoiterControl configuration  block
+  // parse NaFCon strings (SENSOR_STATUS, SENSOR_TRACK, SENSOR_CONTACT) into ais_reports. default is false
+  PARSE_NAFCON = false
 
-ProcessConfig = pLoiterControl
-{
-  AppTick    = 4
-  CommsTick  = 4
+  // specify publishing for modem ids below. if NO ids are specified
+  // ALL ids will be published for (assuming PARSE_NAFCON = true)
+  PUBLISH_FOR_NAFCON_ID = 3
 
-  WAIT_PERIOD = 1
-  ASSIGNMENT  = kayak_01, Region-A
-  ASSIGNMENT  = kayak_02, Region-B
-  ASSIGNMENT  = kayak_03, Region-C
-  ASSIGNMENT  = kayak_04, Region-D
-  ASSIGNMENT  = kayak_05, Region-E
-  ASSIGNMENT  = kayak_06, Region-F
-  ASSIGNMENT  = kayak_07, Region-G
-  ASSIGNMENT  = kayak_08, Region-H
-  ASSIGNMENT  = kayak_09, Region-I
-  ASSIGNMENT  = kayak_10, Region-J
-  ASSIGNMENT  = kayak_11, Region-K
+  // lookup table to perform conversion from modem id to vehicle name
+  MODEM_ID_LOOKUP_PATH =  ~/moos-ivp-local/trunk/data/acomms/modemidlookup.txt
+
 }
