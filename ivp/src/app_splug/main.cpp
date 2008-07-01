@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
 
   if(expander.verifyInfile())
     if(expander.expand())
-      if(expander.writeOutput())
-	cout << "...successfully completed" << endl;
+        expander.writeOutput();
+  
   
 }

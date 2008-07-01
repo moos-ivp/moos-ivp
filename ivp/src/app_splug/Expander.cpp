@@ -153,7 +153,7 @@ bool Expander::writeOutput()
   if(f) {
     fclose(f);
     bool done = false;
-    while(!done) {
+    while(!done && !m_force) {
       cout << "Warning: File " << outfile << " already exists.";
       
       char answer = 'y';
@@ -187,6 +187,9 @@ bool Expander::writeOutput()
 
   fclose(f);
 
+  if (!m_force)
+      cout << "...successfully completed" << endl;
+  
   return(true);
 }
 
