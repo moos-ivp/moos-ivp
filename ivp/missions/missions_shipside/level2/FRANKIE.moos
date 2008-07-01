@@ -1,0 +1,48 @@
+//************************************************************
+// Configuration file: M. Benjamin
+//
+// Note: level0 vs. level2  all references to machines names
+//          in this file would be replaced by "localhost" in 
+//          the level2 counterpart. Also, iPWMController, iGPS
+//          and iPNICController are not started up in level2.
+//          And level2 would launch iMarineSim.
+//
+// Note: level0 vs. level1  iMarineSim is run in the level1
+//          counterpart. In level1, iGPS and iPNICompass are 
+//          not run.
+
+
+
+ServerHost = localhost
+ServerPort = 9206
+Simulator  = true
+
+// Community name IS the vehicle name
+Community  = FRANKIE
+
+// PN07 Datum
+LatOrigin  = 47.73190
+LongOrigin = -122.850000
+
+//------------------------------------------------------------------
+// Antler configuration  block
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+
+  Run = MOOSDB		@ NewConsole = false
+  Run = iMarineSim	@ NewConsole = false
+  Run = pMOOSBridge     @ NewConsole = false ~ pMOOSBridge_FRANKIE
+  Run = pEchoVar	@ NewConsole = false
+  //Run = pLogger		@ NewConsole = false
+  Run = pTransponderAIS	@ NewConsole = false
+  Run = pDeployHandler	@ NewConsole = false
+  Run = pMarinePID	@ NewConsole = false
+  Run = uProcessWatch	@ NewConsole = false
+  Run = pMessageParser	@ NewConsole = false
+  //Run = pVirtualTether	@ NewConsole = false
+
+  //Run = pHelmIvP	@ NewConsole = false
+  //Run = iRemote	@ NewConsole = false
+}
+

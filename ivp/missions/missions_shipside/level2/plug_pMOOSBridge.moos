@@ -1,0 +1,28 @@
+//------------------------------------------------------------------
+// pMOOSBridge config block
+
+ProcessConfig = pMOOSBridge_$(VID)
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  // SHARE = [VAR] -> to-community @ to-host:to-port [VAR]
+
+  SHARE = [AIS_REPORT_LOCAL]   -> shipside @ localhost:9123 [AIS_REPORT]
+  SHARE = [STATION_CIRCLE]     -> shipside @ localhost:9123 [STATION_CIRCLE]
+  SHARE = [RSTATION_CIRCLE]    -> shipside @ localhost:9123 [STATION_CIRCLE]
+  SHARE = [VIEW_POLYGON]       -> shipside @ localhost:9123 [VIEW_POLYGON]
+  SHARE = [VIEW_POINT]         -> shipside @ localhost:9123 [VIEW_POINT]
+  SHARE = [RVIEW_POINT]        -> shipside @ localhost:9123 [VIEW_POINT]
+  SHARE = [PROC_WATCH_SUMMARY] -> shipside @ localhost:9123 [PROC_WATCH_SUMMARY_$(VID)]
+  SHARE = [PROC_WATCH_EVENT]   -> shipside @ localhost:9123 [PROC_WATCH_EVENT_$(VID)]
+
+  SHARE = [AIS_REPORT_LOCAL] -> BOBBY   @ localhost:9200 [AIS_REPORT]
+  SHARE = [AIS_REPORT_LOCAL] -> DEE     @ localhost:9201 [AIS_REPORT]
+  SHARE = [AIS_REPORT_LOCAL] -> ELANOR  @ localhost:9204 [AIS_REPORT]
+  SHARE = [AIS_REPORT_LOCAL] -> FRANKIE @ localhost:9206 [AIS_REPORT]
+
+  SHARE = [SOUNDSPEED_UPDATES_BOBBY] -> BOBBY @ localhost:9200 [SOUNDSPEED_UPDATES]
+  SHARE = [PROSECUTE_STATE_BOBBY] -> BOBBY @ localhost:9200  [PROSECUTE_STATE]
+
+}

@@ -1,0 +1,12 @@
+//************************************************************
+// Configuration file: M. Benjamin
+//
+// Note: level0 vs. level2  all references to machines names
+//          in this file would be replaced by "localhost" in 
+//          the level2 counterpart. Also, iPWMController, iGPS
+//          and iPNICController are not started up in level2.
+//          And level2 would launch iMarineSim.
+//
+// Note: level0 vs. level1  iMarineSim is run in the level1
+//          counterpart. In level1, iGPS and iPNICompass are 
+//          not run.

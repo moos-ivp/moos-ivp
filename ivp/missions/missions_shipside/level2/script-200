@@ -1,0 +1,3 @@
+pAntler  BOBBY.moos &;                     sleep 1; 
+pHelmIvP BOBBY.moos ../bobby-delta.bhv &;  sleep 1;
+
