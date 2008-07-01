@@ -52,6 +52,7 @@ PMV_Viewer::PMV_Viewer(int x, int y, int w, int h, const char *l)
 
 void PMV_Viewer::draw()
 {
+  mutexLock();
   MarineViewer::draw();
 
   if(m_poly_offon)
@@ -86,6 +87,7 @@ void PMV_Viewer::draw()
     drawPoints(p2->second);
 
   glFlush();
+  mutexUnLock();
 }
 
 //-------------------------------------------------------------
