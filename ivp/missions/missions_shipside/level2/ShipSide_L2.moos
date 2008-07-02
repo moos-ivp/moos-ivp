@@ -26,7 +26,7 @@ ProcessConfig = ANTLER
   Run = uRepeater       @ NewConsole = true
   Run = pViewerRelay    @ NewConsole = true
   Run = uXMS            @ NewConsole = true
-  //Run = pShipsideViewer	@ NewConsole = true
+  Run = pShipsideViewer	@ NewConsole = true
   Run = uTermCommand    @ NewConsole = true
 }
 
@@ -173,6 +173,9 @@ ProcessConfig = pShipsideViewer
   INFO_FILE  = /home/mikerb/Research/project-marine/data/AerialMIT.info
 
   VEHICOLOR    = PTSUR, dark_green
+  HASH_DELTA   = 500
+  HASH_VIEW    = on
+  HASH_SHADE   = 0.1
 
   OWNSHIP_NAME = PTSUR
   CONTACTS     = BOBBY, DEE, ELANOR, FRANKIE, MACRURA, UNICORN
