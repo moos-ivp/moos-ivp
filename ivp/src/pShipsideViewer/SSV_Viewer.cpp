@@ -339,19 +339,19 @@ float SSV_Viewer::getAgeAIS(int index)
 }
 
 // ----------------------------------------------------------
-// Procedure: getRelativeBearing
+// Procedure: getRelativeInfo
 //   Purpose: Index indicates which of the MAX_VEHICLES vehicles
 //            is being queried. 
 
-float SSV_Viewer::getRelativeBearing(int index)
+float SSV_Viewer::getRelativeInfo(int index, string info_type)
 {
   if(m_cross_offon)
     return(-1);
 
   string vname = getVehiName(index);
-  if(vname == m_ownship_name)
+  if((vname=="") || (vname == m_ownship_name) || (m_ownship_name==""))
     return(-1);
-
+  
   map<string,ObjectPose>::iterator p;
   p = m_pos_map.find(vname);
   if(p == m_pos_map.end())
@@ -370,7 +370,16 @@ float SSV_Viewer::getRelativeBearing(int index)
 
   double bearing = relAng(os_x, os_y, vh_x, vh_y);
 
-  return(0);
+  info_type = tolower(info_type);
+  if(info_type == "bearing")
+    return(angle360(bearing));
+  
+  double rbearing = bearing - pose_os.getTheta();
+  if(info_type == "relative_bearing")
+    return(angle360(rbearing));
+  
+  if(info_type == "range")
+    return(hypot((os_x - vh_x), (os_y - vh_y)));
 }
 
 // ----------------------------------------------------------

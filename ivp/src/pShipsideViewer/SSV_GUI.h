@@ -79,6 +79,8 @@ protected:
   MY_Output  *v_lon;
   MY_Output  *d_hash;
   MY_Output  *d_radial;
+  MY_Output  *m_rbearing;
+  MY_Output  *m_contact_range;
 
   Fl_Box     *m_deploy_box_text;
   Fl_Box     *m_deploy_box_body;

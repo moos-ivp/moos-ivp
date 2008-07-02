@@ -66,7 +66,7 @@ public:
   float getCrs(int);
   bool  getLatLon(int, double&, double&);
   float getAgeAIS(int);
-  float getRelativeBearing(int);
+  float getRelativeInfo(int index, std::string info_type);
 
   bool  hasVehiName(std::string);
   std::string getVehiName(int);
