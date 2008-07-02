@@ -228,20 +228,25 @@ bool SSV_MOOSApp::OnStartUp()
     
     if(MOOSStrCmp(sVarName, "OP_AREA"))
       op_area = tolower(sLine);
-    if(MOOSStrCmp(sVarName, "VEHICOLOR"))
+    else if(MOOSStrCmp(sVarName, "VEHICOLOR"))
       m_gui->mviewer->colorMapping(sLine);
-    if(MOOSStrCmp(sVarName, "OWNSHIP_NAME"))
+    else if(MOOSStrCmp(sVarName, "OWNSHIP_NAME"))
       m_gui->mviewer->setOwnShipName(sLine);
-    if(MOOSStrCmp(sVarName, "CONTACTS"))
+    else if(MOOSStrCmp(sVarName, "CONTACTS"))
       handleContactList(sLine);
-    if(MOOSStrCmp(sVarName, "PORTABLE_RANGE_SENSOR"))
+    else if(MOOSStrCmp(sVarName, "PORTABLE_RANGE_SENSOR"))
       handleMarker("portable_range_sensor", sLine);
-    if(MOOSStrCmp(sVarName, "GATEWAYA"))
+    else if(MOOSStrCmp(sVarName, "GATEWAYA"))
       handleMarker("gateway_a", sLine);
-    if(MOOSStrCmp(sVarName, "GATEWAYB"))
+    else if(MOOSStrCmp(sVarName, "GATEWAYB"))
       handleMarker("gateway_b", sLine);
-    if(MOOSStrCmp(sVarName, "EFIELD"))
+    else if(MOOSStrCmp(sVarName, "EFIELD"))
       handleMarker("efield", sLine);
+    else { 
+      bool handled = m_gui->mviewer->setParam(sVarName, sLine);
+      if(!handled)
+	m_gui->mviewer->setParam(sVarName, atof(sLine.c_str()));
+    }
   }
 
   m_start_time = MOOSTime();
