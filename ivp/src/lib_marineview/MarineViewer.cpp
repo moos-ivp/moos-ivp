@@ -867,9 +867,9 @@ bool MarineViewer::setCommonParam(string param, string value)
   if(param == "cross_view") {
     if(value == "toggle")
       m_cross_offon = !m_cross_offon;
-    else if(value == "on")
+    else if((value == "on") || (value == "true"))
       m_cross_offon = true;
-    else if(value == "off")
+    else if((value == "off") || (value == "false"))
       m_cross_offon = false;
     else
       return(false);
@@ -888,9 +888,9 @@ bool MarineViewer::setCommonParam(string param, string value)
   else if(param == "tiff_view") {
     if(value == "toggle")
       m_tiff_offon = !m_tiff_offon;
-    else if(value == "on")
+    else if((value == "on") || (value == "true"))
       m_tiff_offon = true;
-    else if(value == "off")
+    else if((value == "off") || (value == "false"))
       m_tiff_offon = false;
     else
       return(false);
@@ -898,9 +898,9 @@ bool MarineViewer::setCommonParam(string param, string value)
   else if(param == "hash_view") {
     if(value == "toggle")
       m_hash_offon = !m_hash_offon;
-    else if(value == "on")
+    else if((value == "on") || (value == "true"))
       m_hash_offon = true;
-    else if(value == "off")
+    else if((value == "off") || (value == "false"))
       m_hash_offon = false;
     else
       return(false);
@@ -908,9 +908,9 @@ bool MarineViewer::setCommonParam(string param, string value)
   else if(param == "trail_view") {
     if(value == "toggle")
       m_trails = !m_trails;
-    else if(value == "on")
+    else if((value == "on") || (value == "true"))
       m_trails = true;
-    else if(value == "off")
+    else if((value == "off") || (value == "false"))
       m_trails = false;
     else
       return(false);
@@ -918,9 +918,9 @@ bool MarineViewer::setCommonParam(string param, string value)
   else if(param == "trail_connect") {
     if(value == "toggle")
       m_trail_connect = !m_trail_connect;
-    else if(value == "on")
+    else if((value == "on") || (value == "true"))
       m_trail_connect = true;
-    else if(value == "off")
+    else if((value == "off") || (value == "false"))
       m_trail_connect = false;
     else
       return(false);
