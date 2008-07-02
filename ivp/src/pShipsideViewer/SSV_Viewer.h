@@ -104,6 +104,7 @@ public:
   void  handleLeftMouse(int, int);
   void  handleRightMouse(int, int);
   void  drawRadials();
+  void  drawBearingLine(int);
   void  drawStationCircles();
   void  drawCirc(XYCircle, int, bool, double, double, double,
 		 double=0, double=0, double=0);
@@ -140,6 +141,7 @@ public:
   int    m_right_click_ix;
 
   bool   m_centric_view;
+  bool   m_draw_bearing_lines;
   int    m_radial_size;
   float  m_curr_time;
 

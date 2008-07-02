@@ -57,6 +57,9 @@ private:
   inline void cb_Radial_i(int);
   static void cb_Radial(Fl_Widget*, int);
 
+  inline void cb_Bearings_i();
+  static void cb_Bearings(Fl_Widget*);
+
   inline void cb_CycleFocus_i(int);
   static void cb_CycleFocus(Fl_Widget*, int);
 

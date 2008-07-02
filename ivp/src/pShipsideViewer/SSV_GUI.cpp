@@ -304,7 +304,8 @@ void SSV_GUI::augmentMenu()
   mbar->add("Shipside/Radial  200",  0, (Fl_Callback*)SSV_GUI::cb_Radial,(void*)200, 0);
   mbar->add("Shipside/Radial  500",  0, (Fl_Callback*)SSV_GUI::cb_Radial,(void*)500, 0);
   mbar->add("Shipside/Radial 1000",  0, (Fl_Callback*)SSV_GUI::cb_Radial,(void*)1000, 0);
-  mbar->add("Shipside/Radial Cycle", 'r', (Fl_Callback*)SSV_GUI::cb_Radial,(void*)-1, 0);
+  mbar->add("Shipside/Radial Cycle", 'r', (Fl_Callback*)SSV_GUI::cb_Radial,(void*)-1, FL_MENU_DIVIDER);
+  mbar->add("Shipside/BearingLines", 'x', (Fl_Callback*)SSV_GUI::cb_Bearings,(void*)0, 0);
 
   mbar->add("ForeView/Cycle Focus", 'v', (Fl_Callback*)SSV_GUI::cb_CycleFocus,(void*)0, 0);
 
@@ -471,6 +472,17 @@ inline void SSV_GUI::cb_CycleFocus_i(int val) {
 void SSV_GUI::cb_CycleFocus(Fl_Widget* o, int v) {
   int val = (int)(v);
   ((SSV_GUI*)(o->parent()->user_data()))->cb_CycleFocus_i(val);
+}
+
+//----------------------------------------- Bearings
+inline void SSV_GUI::cb_Bearings_i() {
+  mviewer->setParam("bearing_lines", "toggle");
+  mviewer->redraw();
+  updateXY();
+}
+
+void SSV_GUI::cb_Bearings(Fl_Widget* o) {
+  ((SSV_GUI*)(o->parent()->user_data()))->cb_Bearings_i();
 }
 
 //----------------------------------------- MOOS_Button
