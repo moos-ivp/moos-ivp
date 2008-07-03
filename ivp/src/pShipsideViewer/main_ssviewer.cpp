@@ -96,10 +96,16 @@ void idleProc(void *)
 
 int main(int argc, char *argv[])
 {
+  string viewer_size = "large";
+
   for(int i=1; i<argc; i++) {
     string argi  = argv[i];
     if(strContains(argi, ".moos"))
       g_sMissionFile = argv[i];
+    else if(strContains(argi, "-med"))
+      viewer_size = "medium";
+    else if(strContains(argi, "-small"))
+      viewer_size = "small";
     else if(argi != "pShipsideViewer")
       exit_with_usage();
   }
@@ -107,8 +113,17 @@ int main(int argc, char *argv[])
   if(g_sMissionFile == 0)
     exit_with_usage();
   
+  cout << "vsize:" << viewer_size << endl;
 
-  SSV_GUI* gui = new SSV_GUI(1400,1100, "ShipSideViewer");
+
+  SSV_GUI* gui = 0;
+  if(viewer_size == "small")
+    gui = new SSV_GUI(1050,850, "ShipSideViewer");
+  else if(viewer_size == "medium")
+    gui = new SSV_GUI(1190,935, "ShipSideViewer");
+  else 
+    gui = new SSV_GUI(1400,1100, "ShipSideViewer");
+
 
   gui->readTiff("Default.tif");
   gui->readTiffB("DefaultB.tif");
