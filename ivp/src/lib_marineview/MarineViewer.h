@@ -67,7 +67,7 @@ public:
   void   addCircle(const XYCircle&);
   void   addHexagon(const XYHexagon&);
   void   addSegList(const XYSegList&);
-  void   colorMapping(const std::string&);
+  void   setColorMapping(const std::string&);
   void   updateGrid(std::string);
   double getHashDelta();
   float  getCrossHairMeters(char);

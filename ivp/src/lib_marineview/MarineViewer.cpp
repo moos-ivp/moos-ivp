@@ -1226,25 +1226,28 @@ double MarineViewer::getHashDelta()
 }
 
 //-------------------------------------------------------------
-// Procedure: colorMapping
+// Procedure: setColorMapping
 //            "label, DarkKhaki"
 //            "label, hex, bd, b7, 6b"
 //            "label, 0.741, 0.718, 0.420"
 
-void MarineViewer::colorMapping(const string& str)
+void MarineViewer::setColorMapping(const string& str)
 {
   vector<string> pair = chompString(str, ',');
-  string vname = stripBlankEnds(pair[0]);
-  string color = stripBlankEnds(pair[1]);
+  string attribute = stripBlankEnds(pair[0]);
+  string color_str = stripBlankEnds(pair[1]);
 
-  vector<double> cvector = colorParse(color);
+  vector<double> color_vector = colorParse(color_str);
   
+  m_color_map[attribute] = color_vector;
+  return;
+
   map<string,vector<double> >::iterator p1;
-  p1 = m_color_map.find(vname);
+  p1 = m_color_map.find(attribute);
   if(p1 != m_color_map.end())
-    p1->second = cvector;
+    p1->second = color_vector;
   else {
-    m_color_map[vname] = cvector;
+    m_color_map[attribute] = color_vector;
   }
 }
 

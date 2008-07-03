@@ -264,7 +264,7 @@ bool PMV_MOOSApp::OnStartUp()
 	m_verbose = false;
     }
     if(MOOSStrCmp(sVarName, "VEHICOLOR"))
-      m_gui->mviewer->colorMapping(sLine);
+      m_gui->mviewer->setColorMapping(sLine);
   }
 
   //if((tif_file != "") && (m_gui))

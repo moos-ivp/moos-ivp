@@ -26,20 +26,17 @@ Relayer::Relayer()
 bool Relayer::OnNewMail(MOOSMSG_LIST &NewMail)
 {
   MOOSMSG_LIST::reverse_iterator p;
-	
-  for(p = NewMail.rbegin(); p != NewMail.rend(); p++) {
+
+  bool done=false;
+  for(p = NewMail.rbegin(); !done && (p!=NewMail.rend()); p++) {
     CMOOSMsg &msg = *p;
 	
     string key   = msg.GetKey();
-    //double dval  = msg.GetDouble();
     string sval  = msg.GetString(); 
-    //double mtime = msg.GetTime();
-    //bool   mdbl  = msg.IsDouble();
-    //bool   mstr  = msg.IsString();
-    string msrc  = msg.GetSource();
 
     if(key == m_incoming_var) { 
       m_tally++;
+      done = true;
       m_Comms.Notify(m_outgoing_var, m_tally);
       if(m_start_time == 0)
 	m_start_time = MOOSTime();

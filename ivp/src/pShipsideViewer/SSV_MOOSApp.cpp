@@ -229,7 +229,7 @@ bool SSV_MOOSApp::OnStartUp()
     if(MOOSStrCmp(sVarName, "OP_AREA"))
       op_area = tolower(sLine);
     else if(MOOSStrCmp(sVarName, "VEHICOLOR"))
-      m_gui->mviewer->colorMapping(sLine);
+      m_gui->mviewer->setColorMapping(sLine);
     else if(MOOSStrCmp(sVarName, "OWNSHIP_NAME"))
       m_gui->mviewer->setOwnShipName(sLine);
     else if(MOOSStrCmp(sVarName, "CONTACTS"))
