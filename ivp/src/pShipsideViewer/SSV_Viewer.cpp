@@ -50,8 +50,7 @@ SSV_Viewer::SSV_Viewer(int x, int y, int w, int h, const char *l)
   m_centric_view       = true;
   m_draw_bearing_lines = true;
 
-
-  setColorMapping("bearing_line_color", "orange");
+  setColorMapping("bearing_color", "orange");
 }
 
 //-------------------------------------------------------------
@@ -423,24 +422,17 @@ void SSV_Viewer::drawVehicle(string vname, bool active, string vehibody)
   else 
     return;
 
-  // The default "non-active vehicle" color
-  double red = 1.0;
-  double grn = 0.906;
-  double blu = 0.243;
-
-  map<string,vector<double> >::iterator p2;
-  p2 = m_color_map.find(vname);
-  if(p2 != m_color_map.end()) {
-    red = p2->second[0];
-    grn = p2->second[1];
-    blu = p2->second[2];
-  }
-  
-  // Set the color for the "active" vehicle.
+  vector<double> cvect;
   if(active)
-    {red=1.0; grn=0; blu=0;}
+    cvect = getColorMapping("active_vcolor", "red");
+  else {
+    if(hasColorMapping(vname))
+      cvect = getColorMapping(vname, "1.0, 0.906, 0.243");
+    else
+      cvect = getColorMapping("inactive_vcolor", "1.0, 0.906, 0.243");
+  }
 
-  drawCommonVehicle(vname, opose, red, grn, blu, vehibody, 1);
+  drawCommonVehicle(vname, opose, cvect[0], cvect[1], cvect[1], vehibody, 1);
 }
 
 //-------------------------------------------------------------
@@ -705,8 +697,7 @@ void SSV_Viewer::drawRadials()
   int    psize = 60;
 
   bool   dashed = false;
-  double red=1, grn=0, blu=0;
-  
+
   string poly_str = "radial:";
   poly_str += doubleToString(px,2) + ",";
   poly_str += doubleToString(py,2) + ",";
@@ -753,7 +744,8 @@ void SSV_Viewer::drawRadials()
     glLineStipple(factor, pattern);
   }
 
-  glColor3f(red, grn, blu);
+  vector<double> cvect = getColorMapping("radial_color", "1,0,0");
+  glColor3f(cvect[0], cvect[1], cvect[2]);
 
   glBegin(GL_LINE_LOOP);
   for(int j=0; j<psize*2; j=j+2) 
@@ -809,7 +801,7 @@ void SSV_Viewer::drawBearingLine(int index)
   glTranslatef(qx, qy, 0);
   glScalef(m_zoom, m_zoom, m_zoom);
 
-  vector<double> cvect = getColorMapping("bearing_line_color", "orange");
+  vector<double> cvect = getColorMapping("bearing_color", "orange");
 
   // Draw the edges 
   glLineWidth(1.0);

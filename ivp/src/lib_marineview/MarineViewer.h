@@ -92,8 +92,6 @@ protected:
 		  bool filled=false, bool dashed=false,
 		  float=0.40, float=0.40, float=0.40,   
 		  float=0.20, float=0.80, float=0.20,   
-		  float=0.00, float=0.00, float=0.00,   
-		  float=0.00, float=0.00, float=0.00,   
 		  float=0.00, float=0.00, float=0.00);
 
   void   drawDatum();

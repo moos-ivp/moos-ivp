@@ -230,6 +230,8 @@ bool SSV_MOOSApp::OnStartUp()
       op_area = tolower(sLine);
     else if(MOOSStrCmp(sVarName, "VEHICOLOR"))
       m_gui->mviewer->setColorMapping(sLine);
+    else if(MOOSStrCmp(sVarName, "COLORMAP"))
+      m_gui->mviewer->setColorMapping(sLine);
     else if(MOOSStrCmp(sVarName, "OWNSHIP_NAME"))
       m_gui->mviewer->setOwnShipName(sLine);
     else if(MOOSStrCmp(sVarName, "CONTACTS"))
@@ -246,8 +248,8 @@ bool SSV_MOOSApp::OnStartUp()
       bool handled = m_gui->mviewer->setParam(sVarName, sLine);
       if(!handled)
 	m_gui->mviewer->setParam(sVarName, atof(sLine.c_str()));
-    }
-  }
+    } 
+ }
 
   m_start_time = MOOSTime();
   

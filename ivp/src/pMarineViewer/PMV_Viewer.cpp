@@ -126,25 +126,17 @@ void PMV_Viewer::drawVehicle(string vname, bool active, string vehibody)
   else 
     return;
 
-  // The default "non-active vehicle" color
-  double red = 1.0;
-  double grn = 0.906;
-  double blu = 0.243;
-
-  map<string,vector<double> >::iterator p2;
-  p2 = m_color_map.find(vname);
-  if(p2 != m_color_map.end()) {
-    red = p2->second[0];
-    grn = p2->second[1];
-    blu = p2->second[2];
-  }
-  
-  // Set the color for the "active" vehicle.
-  if(active) {
-    red=1.0; grn=0; blu=0;
+  vector<double> cvect;
+  if(active)
+    cvect = getColorMapping("active_vcolor", "red");
+  else {
+    if(hasColorMapping(vname))
+      cvect = getColorMapping(vname, "1.0, 0.906, 0.243");
+    else
+      cvect = getColorMapping("inactive_vcolor", "1.0, 0.906, 0.243");
   }
 
-  drawCommonVehicle(vname, opose, red, grn, blu, vehibody, 1);
+  drawCommonVehicle(vname, opose, cvect[0], cvect[1], cvect[1], vehibody, 1);
 }
 
 //-------------------------------------------------------------

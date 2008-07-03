@@ -58,12 +58,22 @@ void GeoViewer::draw()
 {
   MarineViewer::draw();
 
+  vector<double> cvect_edge = getColorMapping("edge_color", "red");
+  vector<double> cvect_vert = getColorMapping("vertex_color", "white");
+  vector<double> cvect_fill = getColorMapping("fill_color", "0.2,0.8,0.2");
+
   unsigned int vsize = m_poly.size();
   for(unsigned int i=0; i<vsize; i++) {
     if(i == m_active_poly)
-      drawPoly(m_poly[i], true, false, 1.0, 1.0, 0.0);
+      drawPoly(m_poly[i], true, false,
+	       cvect_edge[0], cvect_edge[1], cvect_edge[2],
+	       cvect_fill[0], cvect_fill[1], cvect_fill[2],
+	       cvect_vert[0], cvect_vert[1], cvect_vert[2]);
     else
-      drawPoly(m_poly[i], false, false);
+      drawPoly(m_poly[i], false, false, 
+	       cvect_edge[0], cvect_edge[1], cvect_edge[2],
+	       cvect_fill[0], cvect_fill[1], cvect_fill[2],
+	       cvect_vert[0], cvect_vert[1], cvect_vert[2]);
   }
 
   drawGrids();
@@ -326,6 +336,8 @@ void GeoViewer::clearActivePoly()
 
 void GeoViewer::reApplySnapToCurrent()
 {
+  if(m_poly.size() == 0)
+    return;
   m_poly[m_active_poly].apply_snap(m_snap_val);
 }
 

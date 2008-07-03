@@ -234,37 +234,22 @@ bool PMV_MOOSApp::OnStartUp()
     sLine    = stripBlankEnds(sLine);
     double dval = atof(sLine.c_str());
     
-    if(MOOSStrCmp(sVarName, "TIF_FILE"))
-      tif_file = sLine;
-    if(MOOSStrCmp(sVarName, "HASH_DELTA"))
-      m_gui->mviewer->setParam("hash_delta", dval);
-    if(MOOSStrCmp(sVarName, "HASH_SHADE"))
-      m_gui->mviewer->setParam("hash_shade", dval);
-    if(MOOSStrCmp(sVarName, "BACK_SHADE"))
-      m_gui->mviewer->setParam("back_shade", dval);
-    if(MOOSStrCmp(sVarName, "TRAIL_SIZE"))
-      m_gui->mviewer->setParam("trail_size", dval);
-    if(MOOSStrCmp(sVarName, "TRAIL_GAP"))
-      m_gui->mviewer->setParam("trail_gap",  dval);
-    if(MOOSStrCmp(sVarName, "ZOOM"))
-      m_gui->mviewer->setParam("zoom",       dval);
-    if(MOOSStrCmp(sVarName, "HASH_VIEW"))
-      m_gui->mviewer->setParam("hash_view",  sLine);
-    if(MOOSStrCmp(sVarName, "TIFF_VIEW"))
-      m_gui->mviewer->setParam("tiff_view",  sLine);
-    if(MOOSStrCmp(sVarName, "TRAIL_VIEW"))
-      m_gui->mviewer->setParam("trail_view", sLine);
-    if(MOOSStrCmp(sVarName, "DISPLAY_VNAME"))
-      m_gui->mviewer->setParam("display_vname", sLine);
+    //if(MOOSStrCmp(sVarName, "TIF_FILE"))
+    //  tif_file = sLine;
 
-    if(MOOSStrCmp(sVarName, "VERBOSE")) {
+    if(MOOSStrCmp(sVarName, "VEHICOLOR"))
+      m_gui->mviewer->setColorMapping(sLine);
+    else if(MOOSStrCmp(sVarName, "VERBOSE")) {
       if(tolower(sLine) == "true")
 	m_verbose = true;
       if(tolower(sLine) == "false")
 	m_verbose = false;
     }
-    if(MOOSStrCmp(sVarName, "VEHICOLOR"))
-      m_gui->mviewer->setColorMapping(sLine);
+    else { 
+      bool handled = m_gui->mviewer->setParam(sVarName, sLine);
+      if(!handled)
+	m_gui->mviewer->setParam(sVarName, atof(sLine.c_str()));
+    }
   }
 
   //if((tif_file != "") && (m_gui))

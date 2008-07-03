@@ -395,9 +395,7 @@ void MarineViewer::drawPoly(const XYPolygon& poly,
 			    bool filled, bool dashed,
 			    float edge_r, float edge_g, float edge_b,
 			    float fill_r, float fill_g, float fill_b,
-			    float vert_r, float vert_g, float vert_b,
-			    float ver1_r, float ver1_g, float ver1_b,
-			    float last_r, float last_g, float last_b)  
+			    float vert_r, float vert_g, float vert_b)  
 {
   unsigned int vsize = poly.size();
   if(vsize < 1)
@@ -490,16 +488,10 @@ void MarineViewer::drawPoly(const XYPolygon& poly,
   //glPointSize(1.0 * m_zoom);
   glPointSize(6.0);
 
-  // Draw the first vertex
-  glColor3f(ver1_r, ver1_g, ver1_b); 
-  glBegin(GL_POINTS);
-  glVertex2f(points[0], points[1]);
-  glEnd();
-
   // Draw the vertices in between the first and last ones
   glColor3f(vert_r, vert_g, vert_b);
   glBegin(GL_POINTS);
-  for(j=1; j<vsize; j++) {
+  for(j=0; j<vsize; j++) {
     glVertex2f(points[(j*2)], points[(j*2)+1]);
   }
   glEnd();
@@ -507,8 +499,7 @@ void MarineViewer::drawPoly(const XYPolygon& poly,
   // Draw the last vertex
   if(vsize > 1) {
     int k=vsize-1;
-    //glColor3f(last_r, last_g, last_b);
-    glColor3f(0.0, 1.0, 1.0);
+    glColor3f(vert_r, vert_g, vert_b);
     glBegin(GL_POINTS);
     glVertex2f(points[(k*2)], points[(k*2)+1]);
     glEnd();
@@ -789,10 +780,12 @@ void MarineViewer::drawDatum()
   glTranslatef(qx, qy, 0);
   glScalef(m_zoom, m_zoom, m_zoom);
 
+  vector<double> cvect = getColorMapping("datum_color", "0.0, 1.0, 0.3");
+
   // Draw the vertices in between the first and last ones
   glEnable(GL_POINT_SMOOTH);
   glPointSize(m_size_datum * m_zoom);
-  glColor3f(0, 1, 0.3);
+  glColor3f(cvect[0], cvect[1], cvect[2]);
   glBegin(GL_POINTS);
   glVertex2f(0, 0);
   glEnd();
