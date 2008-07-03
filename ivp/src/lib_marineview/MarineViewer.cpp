@@ -104,16 +104,15 @@ bool MarineViewer::readTiffB(string filename)
 
 bool MarineViewer::setTexture()
 {
-  glEnable(GL_TEXTURE_2D);
-  glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-
   static bool texture_init;
-  if (! texture_init) {
-     glGenTextures(1, m_textures);
-     texture_init = true;
+  if(!texture_init) {
+    glEnable(GL_TEXTURE_2D);
+    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+    glGenTextures(1, m_textures);
+    texture_init = true;
+    glBindTexture(GL_TEXTURE_2D, m_textures[0]);
   }	  
   
-  glBindTexture(GL_TEXTURE_2D, m_textures[0]);
   if((m_texture_set <2) || m_back_img_mod) {
     unsigned char *img_data;
     int img_width;
@@ -833,15 +832,7 @@ void MarineViewer::drawCircle(int ix)
   px *=  m_back_img.get_pix_per_mtr();
   py *=  m_back_img.get_pix_per_mtr();
 
-  vector<double> cvect;
-  cvect.push_back(0);
-  cvect.push_back(1);
-  cvect.push_back(1);
-
-  map<string,vector<double> >::iterator p2;
-  p2 = m_color_map.find(dlabel);
-  if(p2 != m_color_map.end())
-    cvect = p2->second;
+  vector<double> cvect = getColorMapping(dlabel, "yellow");
 
   // Draw the vertices in between the first and last ones
   glEnable(GL_POINT_SMOOTH);
@@ -948,6 +939,7 @@ bool MarineViewer::setCommonParam(string param, string value)
       m_draw_datum = false;
     else
       return(false);
+    cout << "In toggle-datum: " << m_draw_datum << endl;
   }
   else if(param == "poly_view") {
     if(value == "toggle")
@@ -1226,29 +1218,63 @@ double MarineViewer::getHashDelta()
 }
 
 //-------------------------------------------------------------
+// Procedure: hasColorMapping
+
+bool MarineViewer::hasColorMapping(string attribute)
+{
+  map<string, vector<double> >::iterator p;
+  p = m_color_map.find(attribute);
+  if(p != m_color_map.end())
+    return(true);
+  else
+    return(false);
+}
+
+//-------------------------------------------------------------
+// Procedure: getColorMapping
+//      Note: If the attribute is not found, the returned color
+//            vector can be determined by the optional def_color
+//            argument. 
+
+vector<double> MarineViewer::getColorMapping(string attribute, 
+					     string def_color)
+{
+  map<string, vector<double> >::iterator p;
+  p = m_color_map.find(attribute);
+  if(p != m_color_map.end())
+    return(p->second);
+  else {
+    vector<double> color_vector = colorParse(def_color);
+    return(color_vector);
+  }
+}
+
+//-------------------------------------------------------------
+// Procedure: setColorMapping
+//            "label", "DarkKhaki"
+//            "label"  " hex, bd, b7, 6b"
+//            "label", "0.741, 0.718, 0.420"
+
+void MarineViewer::setColorMapping(string attribute, string color_str)
+{
+  attribute = stripBlankEnds(attribute);
+  color_str = stripBlankEnds(color_str);
+  
+  vector<double> color_vector = colorParse(color_str);
+  
+  m_color_map[attribute] = color_vector;
+}
+
+//-------------------------------------------------------------
 // Procedure: setColorMapping
 //            "label, DarkKhaki"
 //            "label, hex, bd, b7, 6b"
 //            "label, 0.741, 0.718, 0.420"
 
-void MarineViewer::setColorMapping(const string& str)
+void MarineViewer::setColorMapping(string str)
 {
-  vector<string> pair = chompString(str, ',');
-  string attribute = stripBlankEnds(pair[0]);
-  string color_str = stripBlankEnds(pair[1]);
-
-  vector<double> color_vector = colorParse(color_str);
-  
-  m_color_map[attribute] = color_vector;
-  return;
-
-  map<string,vector<double> >::iterator p1;
-  p1 = m_color_map.find(attribute);
-  if(p1 != m_color_map.end())
-    p1->second = color_vector;
-  else {
-    m_color_map[attribute] = color_vector;
-  }
+  string attribute = biteString(str, ',');
+  setColorMapping(attribute, str);
 }
 
 //-------------------------------------------------------------

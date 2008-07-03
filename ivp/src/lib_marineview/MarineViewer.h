@@ -62,12 +62,17 @@ public:
   bool   readTiffB(std::string);
   bool   setTexture();
 
+public: // Color Mapping interface
+  bool   hasColorMapping(std::string);
+  void   setColorMapping(std::string);
+  void   setColorMapping(std::string, std::string);
+  std::vector<double> getColorMapping(std::string, std::string s="");
+
   void   addPoly(const XYPolygon&);
   void   addGrid(const XYGrid&);
   void   addCircle(const XYCircle&);
   void   addHexagon(const XYHexagon&);
   void   addSegList(const XYSegList&);
-  void   setColorMapping(const std::string&);
   void   updateGrid(std::string);
   double getHashDelta();
   float  getCrossHairMeters(char);
