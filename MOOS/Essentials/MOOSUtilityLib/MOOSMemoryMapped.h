@@ -401,6 +401,11 @@ struct ALogLineInfo : public TextLineInfo
         return std::find_if(pLineStart,pLineEnd,Printable)==pLineEnd;
     }
     
+    bool IsNumFirst()
+    {
+        return isdigit(*pLineStart);
+    }
+    
     bool IsWanted()
     {
         if(IsComment())
@@ -409,6 +414,8 @@ struct ALogLineInfo : public TextLineInfo
         if(IsEmpty())
             return false;
         
+        if(!IsNumFirst())
+            return false;
         return true;
     }
     

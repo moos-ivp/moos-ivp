@@ -5,7 +5,7 @@
 template <class TKey,class TData> class TMinPair
 {
 public:
-  
+
     TMinPair() : m_bLive(false){};
     TKey Key(){return m_Key;};
     TData Data(){return m_Data;};
@@ -15,8 +15,7 @@ public:
 
     void Update(const TKey & NewKey, const TData & NewData)
     {
-        //if(NewKey<m_Key || m_bLive==false)
-        if(NewData<m_Data || m_bLive==false)
+        if(NewKey<m_Key || m_bLive==false)
         {
             m_bLive = true;
             m_Key = NewKey;

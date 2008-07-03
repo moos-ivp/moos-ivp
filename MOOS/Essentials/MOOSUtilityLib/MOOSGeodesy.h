@@ -1,30 +1,30 @@
 ///////////////////////////////////////////////////////////////////////////
 //
-//   MOOS - Mission Oriented Operating Suite 
-//  
-//   A suit of Applications and Libraries for Mobile Robotics Research 
-//   Copyright (C) 2001-2005 Massachusetts Institute of Technology and 
-//   Oxford University. 
-//    
-//   This software was written by Paul Newman at MIT 2001-2002 and Oxford 
-//   University 2003-2005. email: pnewman@robots.ox.ac.uk. 
-//      
-//   This file is part of a  MOOS Core Component. 
-//        
-//   This program is free software; you can redistribute it and/or 
-//   modify it under the terms of the GNU General Public License as 
-//   published by the Free Software Foundation; either version 2 of the 
-//   License, or (at your option) any later version. 
-//          
-//   This program is distributed in the hope that it will be useful, 
-//   but WITHOUT ANY WARRANTY; without even the implied warranty of 
-//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
-//   General Public License for more details. 
-//            
-//   You should have received a copy of the GNU General Public License 
-//   along with this program; if not, write to the Free Software 
-//   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 
-//   02111-1307, USA. 
+//   MOOS - Mission Oriented Operating Suite
+//
+//   A suit of Applications and Libraries for Mobile Robotics Research
+//   Copyright (C) 2001-2005 Massachusetts Institute of Technology and
+//   Oxford University.
+//
+//   This software was written by Paul Newman at MIT 2001-2002 and Oxford
+//   University 2003-2005. email: pnewman@robots.ox.ac.uk.
+//
+//   This file is part of a  MOOS Core Component.
+//
+//   This program is free software; you can redistribute it and/or
+//   modify it under the terms of the GNU General Public License as
+//   published by the Free Software Foundation; either version 2 of the
+//   License, or (at your option) any later version.
+//
+//   This program is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+//   General Public License for more details.
+//
+//   You should have received a copy of the GNU General Public License
+//   along with this program; if not, write to the Free Software
+//   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+//   02111-1307, USA.
 //
 //////////////////////////    END_GPL    //////////////////////////////////
 // MOOSGeodesy.h: interface for the CMOOSGeodesy class.
@@ -49,7 +49,7 @@ const double rad2deg = 180.0 / PI;
 #define EARTH_RADIUS 6378137.0 //meters - WGS84 semi-major axis
 
 //! Implements simple geodesy calculations
-class CMOOSGeodesy  
+class CMOOSGeodesy
 {
 public:
     CMOOSGeodesy();
@@ -60,7 +60,7 @@ public:
     bool LatLong2LocalUTM(double lat, double lon, double & MetersNorth, double & MetersEast);
     bool LocalGrid2LatLong(double dfEast, double dfNorth, double &dfLat, double &dfLon);
     char * GetUTMZone();
-    
+
     int GetRefEllipsoid();
     double GetMetersEast();
     double GetMetersNorth();
@@ -80,22 +80,22 @@ private:
     double m_dOriginLatitude;
     double m_dLocalGridX;
     double m_dLocalGridY;
-    
+
     void SetUTMZone(char * utmZone);
     void SetRefEllipsoid(int refEllipsoid);
     void SetOriginEasting(double East);
-    
+
     void SetOriginNorthing(double North);
     bool LLtoUTM(int ReferenceEllipsoid, const double Lat, const double Long, double &UTMNorthing, double &UTMEasting, char* UTMZone);
     void SetMetersEast(double East);
     void SetMetersNorth(double North);
     char UTMLetterDesignator(double Lat);
-    
+
     void SetOriginLatitude(double lat);
     void SetOriginLongitude(double lon);
     void SetLocalGridY(double Y);
     void SetLocalGridX(double X);
-    
+
 
 public:
     double GetLocalGridY();
@@ -107,26 +107,26 @@ public:
     {
     public:
         CEllipsoid(){};
-        CEllipsoid(int Id, char* name, double radius, double ecc)
+        CEllipsoid(int Id, const char* name, double radius, double ecc)
         {
-            id = Id; 
-            ellipsoidName = name; 
-            EquatorialRadius = radius; 
+            id = Id;
+            ellipsoidName = name;
+            EquatorialRadius = radius;
             eccentricitySquared = ecc;
         };
 
         int id;
-        char* ellipsoidName;
-        double EquatorialRadius; 
-        double eccentricitySquared;  
+        const char* ellipsoidName;
+        double EquatorialRadius;
+        double eccentricitySquared;
 
     };
 
 };
 
 //! Ellposid information for CMOOSGeodesy
-static CMOOSGeodesy::CEllipsoid ellipsoid[] = 
-{//  id, Ellipsoid name, Equatorial Radius, square of eccentricity    
+static CMOOSGeodesy::CEllipsoid ellipsoid[] =
+{//  id, Ellipsoid name, Equatorial Radius, square of eccentricity
     CMOOSGeodesy::CEllipsoid( -1, "Placeholder", 0, 0),//placeholder only, To allow array indices to match id numbers
     CMOOSGeodesy::CEllipsoid( 1, "Airy", 6377563, 0.00667054),
     CMOOSGeodesy::CEllipsoid( 2, "Australian National", 6378160, 0.006694542),
