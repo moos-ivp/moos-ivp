@@ -41,6 +41,9 @@
 #include <stdarg.h>
 #include <math.h>
 
+#include <string.h>
+
+
 #ifndef _WIN32
 #include <unistd.h>
 #include <sys/times.h>
@@ -289,15 +292,6 @@ bool MOOSValFromString(string & sVal,const string & sStr,const string & sTk,bool
     }
 
     return false;
-}
-
-bool MOOSValFromString(unsigned int  & nVal,const string & sStr,const string & sTk,bool bInsensitive)
-{
-    int nIntVal;
-    bool bSuccess = MOOSValFromString(nIntVal,sStr,sTk,bInsensitive);
-    if(bSuccess)
-        nVal = (unsigned int) nIntVal;
-    return bSuccess;
 }
 
 

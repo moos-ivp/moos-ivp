@@ -66,7 +66,6 @@ bool MOOSValFromString(float  &  fVal,const std::string & sStr,const std::string
 bool MOOSValFromString(long   &  nVal,const std::string & sStr,const std::string & sTk,bool bInsensitive=false);
 bool MOOSValFromString(int    &  nVal,const std::string & sStr,const std::string & sTk,bool bInsensitive=false);
 bool MOOSValFromString(bool   &  bVal,const std::string & sStr,const std::string & sTk,bool bInsensitive=false);
-bool MOOSValFromString(unsigned int &  nVal,const std::string & sStr,const std::string & sTk,bool bInsensitive=false);
 bool MOOSValFromString(std::vector<double> &dfValVec,int &nRows,int &nCols, const std::string & sStr, const std::string & sToken,bool bInsensitive=false);
 bool MOOSValFromString(std::vector<unsigned int> &nValVec, int &nRows, int &nCols, const std::string & sStr, const std::string & sToken,bool bInsensitive=false);
 

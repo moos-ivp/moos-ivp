@@ -42,6 +42,9 @@
 #include "MOOSGlobalHelper.h"
 #include <assert.h>
 #include <iostream>
+#include <string.h>
+
+
 using namespace std;
 
 //////////////////////////////////////////////////////////////////////
@@ -133,7 +136,7 @@ bool CMOOSCommPkt::Serialize(MOOSMSG_LIST &List, bool bToStream, bool bNoNULL, d
         m_nByteCount+= 2* sizeof(int);
 
 
-        #define PKT_TMP_BUFFER_SIZE 40000
+        #define PKT_TMP_BUFFER_SIZE 10000
         unsigned char TmpBuffer[PKT_TMP_BUFFER_SIZE];
         unsigned char * pTmpBuffer = TmpBuffer;
 

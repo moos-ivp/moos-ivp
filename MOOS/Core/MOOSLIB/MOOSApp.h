@@ -135,8 +135,6 @@ protected:
     application - if so call this function with a false parameter*/
     bool UseMOOSComms(bool bUse);
 
-    /** call to say if you want mail to be delivered sorted by time*/
-    void SortMailByTime(bool bSort=true){m_bSortMailByTime = bSort;};
 
     /**  Call this to write a debug string to the DB under the name "MOOS_DEBUG"  */
     bool MOOSDebugWrite(const std::string & sTxt);
@@ -244,11 +242,6 @@ protected:
     /** Time at which the Run loop last ran (called Iterate)**/
     double m_dfLastRunTime;
 
-    
-    /**should mail be handed to the user sorted by increasing time*/
-    bool m_bSortMailByTime;
-    
-    
     /** Time since last iterate was called*/
     double GetTimeSinceIterate();
 
@@ -304,8 +297,6 @@ private:
     /** called before starting the Application running. If parameters have not beedn set correctly
     it prints a help statement and returns false */
     bool CheckSetUp();
-    
-   
 };
 
 #endif

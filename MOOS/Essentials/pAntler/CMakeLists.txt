@@ -6,7 +6,7 @@ ENDIF(WIN32)
 
 
 #build a list of files to compile
-SET(ANTLER_SRCS AntlerMain.cpp Antler.cpp Antler.h)
+SET(ANTLER_SRCS AntlerMain.cpp )
 IF(WIN32)
     SET(ANTLER_SRCS ${ANTLER_SRCS} XPCProcess.cpp XPCProcessAttrib.cpp XPCProcess.h XPCProcessAttrib.h ${RESOURCES})
 ENDIF(WIN32)
@@ -23,4 +23,3 @@ INSTALL(TARGETS
 pAntler
 RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
 )
-
