@@ -3,7 +3,7 @@
 # We no longer use the "-q" option because it is not supported on
 # the mac
 
-killall -9 MOOSDB iRemote MOOSRemote iGPS iGPSMonitor pNav \
+killall MOOSDB iRemote MOOSRemote iGPS iGPSMonitor pNav \
         pHelm pHelmIvP pMarineViewer iMarineSim \
         pLogger iPWMController MOOSDump pAntler MOOSDump \
         iINS iDepth pScheduler pThermoTrack pNaFCon pSearch \
@@ -17,14 +17,14 @@ killall pMOOSBridge  iVSA iCTD iCTDSBE49 pBearingsSim        \
         pTrafficControl pShipsideViewer uRepeater uXMS   \
         pViewerRelay uHelmScope pClusterPriority zLoggerNG
 
-killall -q iMicroModem pRouter pFramer pMessageSim  \
+killall iMicroModem pRouter pFramer pMessageSim  \
         pCSVLogger pBearings_VSA pEchoVar pTrackQuality \
         p1HTracker pGPSSim uBathy uCtdSim2 pTargetOpportunity \
         pBearings_DURIP uProcessWatch uPlayBack pSubIndex \
         pBearings_GENERIC pTargetSim pMBTracker zLoggerNG \
 	iModemSim pFunctionSender uFunctionViewer uFunctionVis
 
-killall -9 pSensorSim pArtifactMapper pNoiseSim uNafconSplitter \
+killall pSensorSim pArtifactMapper pNoiseSim uNafconSplitter \
         pBlast pSweepLines pNSWCPC pXRelay
 
 echo Done - Killed all MOOS-Related Processes.....
