@@ -51,6 +51,7 @@ MarineViewer::MarineViewer(int x, int y, int w, int h, const char *l)
   m_hash_delta  = 100;
   m_fill_shade  = 0.7;
   m_texture_set = 0;
+  m_texture_init = false;
   m_textures    = new GLuint[1];
 
   m_trails      = true;
@@ -104,15 +105,16 @@ bool MarineViewer::readTiffB(string filename)
 
 bool MarineViewer::setTexture()
 {
-  static bool texture_init;
-  if(!texture_init) {
-    glEnable(GL_TEXTURE_2D);
-    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+  //static bool texture_init;
+  
+  glEnable(GL_TEXTURE_2D);
+  glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+  if(!m_texture_init) {
     glGenTextures(1, m_textures);
-    texture_init = true;
-    glBindTexture(GL_TEXTURE_2D, m_textures[0]);
+    m_texture_init = true;
   }	  
   
+  glBindTexture(GL_TEXTURE_2D, m_textures[0]);
   if((m_texture_set <2) || m_back_img_mod) {
     unsigned char *img_data;
     int img_width;
@@ -505,7 +507,8 @@ void MarineViewer::drawPoly(const XYPolygon& poly,
   // Draw the last vertex
   if(vsize > 1) {
     int k=vsize-1;
-    glColor3f(last_r, last_g, last_b);
+    //glColor3f(last_r, last_g, last_b);
+    glColor3f(0.0, 1.0, 1.0);
     glBegin(GL_POINTS);
     glVertex2f(points[(k*2)], points[(k*2)+1]);
     glEnd();

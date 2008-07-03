@@ -127,6 +127,7 @@ protected:
   float      m_hash_delta;
   float      m_fill_shade;
   int        m_texture_set;
+  bool       m_texture_init;
   GLuint*    m_textures;
 
   bool       m_trails;
