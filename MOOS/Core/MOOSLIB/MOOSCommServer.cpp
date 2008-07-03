@@ -218,7 +218,9 @@ bool CMOOSCommServer::ListenLoop()
 
     try
     {
-        m_pListenSocket->vSetReuseAddr(1);
+		//PMN removes this after noticing it allows multiple
+		//servers to run simultaneously on Win32
+        //m_pListenSocket->vSetReuseAddr(1);
         m_pListenSocket->vBindSocket();
     }
     catch(XPCException e)

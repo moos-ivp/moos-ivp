@@ -43,7 +43,7 @@
 
 #include "MOOSMsg.h"
 
-#define MOOS_PKT_DEFAULT_SPACE 1000
+#define MOOS_PKT_DEFAULT_SPACE 4096
 
 typedef std::list<CMOOSMsg> MOOSMSG_LIST;
 

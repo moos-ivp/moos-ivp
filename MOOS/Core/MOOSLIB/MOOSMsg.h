@@ -79,43 +79,43 @@ public:
 
 
     /**check data type (MOOS_STRING or MOOS_DOUBLE) */
-    bool IsDataType(char cDataType);
+    bool IsDataType (char cDataType)const;
 
     /**check data type is double*/
-    bool IsDouble(){return IsDataType(MOOS_DOUBLE);}
+    bool IsDouble()const{return IsDataType(MOOS_DOUBLE);}
 
     /**check data type is string*/
-    bool IsString(){return IsDataType(MOOS_STRING);}    
+    bool IsString()const{return IsDataType(MOOS_STRING);}    
 
     /**return true if mesage is substantially (SKEW_TOLERANCE) older than dfTimeNow
        if pdfSkew is not NULL, the time skew is returned in *pdfSkew*/
     bool IsSkewed(double dfTimeNow, double * pdfSkew = NULL);
 
     /**return true if message is younger that dfAge*/
-    bool IsYoungerThan(double dfAge);
+    bool IsYoungerThan(double dfAge)const;
 
     /**check message type MOOS_NOTIFY, REGISTER etc*/
-    bool IsType(char  cType);
+    bool IsType (char  cType)const;
 
     /**return time stamp of message*/
-    double GetTime(){return m_dfTime;};
+    double GetTime()const {return m_dfTime;};
 
     /**return double val of message*/
-    double GetDouble(){return m_dfVal;};
+    double GetDouble()const {return m_dfVal;};
 
     /**return string value of message*/
-    std::string GetString(){return m_sVal;};
+    std::string GetString()const {return m_sVal;};
 
     /**return the name of the message*/
-    std::string GetKey(){return m_sKey;};
-    std::string GetName(){return GetKey();};
+    std::string GetKey()const {return m_sKey;};
+    std::string GetName()const{return GetKey();};
 
     /**return the name of the process (as registered with the DB) which
     posted this notification*/
-    std::string GetSource(){return m_sSrc;};
+    std::string GetSource()const {return m_sSrc;};
 
     /**return the name of the MOOS community in which the orginator lives*/
-    std::string GetCommunity(){return m_sOriginatingCommunity;};
+    std::string GetCommunity()const {return m_sOriginatingCommunity;};
 
     /**format the message as string regardless of type*/
     std::string GetAsString(int nFieldWidth=12);

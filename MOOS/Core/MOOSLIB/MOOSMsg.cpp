@@ -42,7 +42,6 @@
 #include <sstream>
 #include <iomanip>
 #include <math.h>
-#include <string.h>
 
 using namespace std;
 
@@ -409,7 +408,7 @@ bool CMOOSMsg::CanSerialiseN(int N)
     return      (m_pSerializeBuffer-m_pSerializeBufferStart)+N<=m_nSerializeBufferLen;
 }
 
-bool CMOOSMsg::IsType(char cType)
+bool CMOOSMsg::IsType(char cType) const
 {
     return m_cMsgType==cType;
 }
@@ -433,7 +432,7 @@ void CMOOSMsg::Trace()
     MOOSTrace("Source= %s Time = %10.3f\n",m_sSrc.c_str(),m_dfTime);
 }
 
-bool CMOOSMsg::IsYoungerThan(double dfAge)
+bool CMOOSMsg::IsYoungerThan(double dfAge) const
 {
     return m_dfTime>=dfAge;
 }
@@ -497,7 +496,7 @@ string CMOOSMsg::GetAsString(int nFieldWidth/*=12*/)
     return os.str();
 }
 
-bool CMOOSMsg::IsDataType(char cDataType)
+bool CMOOSMsg::IsDataType(char cDataType) const
 {
     return m_cDataType == cDataType;
 }

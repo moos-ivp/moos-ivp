@@ -45,6 +45,12 @@
 
 using namespace std;
 
+// predicate for sorting on time
+bool MOOSMsgTimeSorter(const CMOOSMsg  &M1, const CMOOSMsg &M2) 
+{
+    return (M1.GetTime() < M2.GetTime());
+}
+
 //////////////////////////////////////////////////
 //  these are file-scope methods which allow
 //  redirection of a call back into the CMOOSApp Class
@@ -99,6 +105,7 @@ CMOOSApp::CMOOSApp()
     m_dfLastRunTime = -1;
     m_bCommandMessageFiltering = false;
     m_dfLastStatusTime = -1;
+    m_bSortMailByTime = true;
 
 }
 
@@ -131,6 +138,10 @@ bool CMOOSApp::Run( const char * sName,
 
             //are we expected to use MOOS comms?
             m_MissionReader.GetConfigurationParam("UseMOOSComms",m_bUseMOOSComms);
+            
+            //are we being asked to sort mail by time..
+            m_MissionReader.GetConfigurationParam("SortMailByTime",m_bSortMailByTime);
+            
 
             //are we in debug mode
             m_MissionReader.GetConfigurationParam("DEBUG",m_bDebug);
@@ -222,6 +233,10 @@ bool CMOOSApp::Run( const char * sName,
                 /////////////////////////////
                 //   process mail
 
+                if(m_bSortMailByTime)
+                    MailIn.sort(MOOSMsgTimeSorter);
+	               
+                	
                 //call our own private version
                 OnNewMailPrivate(MailIn);
 
@@ -638,7 +653,7 @@ std::string CMOOSApp::MakeStatusString()
     ssStatus<<"Publishing=";
     std::copy(Published.begin(),Published.end(),std::ostream_iterator<string>(ssStatus,","));
 
-    ssStatus<<"Subsribing=";
+    ssStatus<<"Subscribing=";
     std::copy(Registered.begin(),Registered.end(),std::ostream_iterator<string>(ssStatus,","));
 
     return ssStatus.str();

@@ -140,10 +140,15 @@ public:
 
 
 
-    /**a static helper function hat lets a user browse a mail list 
+    /**a static helper function that lets a user browse a mail list 
     the message is removed if bremove is true*/
     static bool PeekMail(MOOSMSG_LIST &Mail, const std::string &sKey, CMOOSMsg &Msg,bool bErase = false, bool bFindYoungest = false);
     
+    
+    /**a static helper function that lets a user browse a mail list as for PeekMail. 
+     true is returned if mail is found and it is not more that 5 seconds old*/
+    static bool PeekAndCheckMail(MOOSMSG_LIST &Mail, const std::string &sKey, CMOOSMsg &Msg,bool bErase = false, bool bFindYoungest = false);
+      
     /** Have a peek at mail box and remove a particular message, by default all other messages
     are removed. Note this is quite different from ::PeekMail*/
     bool Peek(MOOSMSG_LIST &List, int nIDRequired, bool bClearBox = true);
