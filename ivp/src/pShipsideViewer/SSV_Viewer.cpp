@@ -49,6 +49,9 @@ SSV_Viewer::SSV_Viewer(int x, int y, int w, int h, const char *l)
   m_trail_size         = 0.1;
   m_centric_view       = true;
   m_draw_bearing_lines = true;
+
+
+  setColorMapping("bearing_line_color", "orange");
 }
 
 //-------------------------------------------------------------
@@ -806,9 +809,11 @@ void SSV_Viewer::drawBearingLine(int index)
   glTranslatef(qx, qy, 0);
   glScalef(m_zoom, m_zoom, m_zoom);
 
+  vector<double> cvect = getColorMapping("bearing_line_color", "orange");
+
   // Draw the edges 
   glLineWidth(1.0);
-  glColor3f(0.0, 0.2, 1.0);
+  glColor3f(cvect[0], cvect[1], cvect[2]);
   glBegin(GL_LINE_STRIP);
 
   glBegin(GL_LINE_STRIP);
