@@ -161,7 +161,6 @@ void REPLAY_GUI::augmentMenu()
   mbar->add("Replay/Step Back  10", FL_ALT+'{', (Fl_Callback*)REPLAY_GUI::cb_Step, (void*)-10, 0);
   mbar->add("Replay/Step Ahead 50", '>', (Fl_Callback*)REPLAY_GUI::cb_Step, (void*)50, 0);
   mbar->add("Replay/Step Back  50", '<', (Fl_Callback*)REPLAY_GUI::cb_Step, (void*)-50, FL_MENU_DIVIDER);
-  mbar->add("Replay/Poly Toggle", 'p', (Fl_Callback*)REPLAY_GUI::cb_PolyView, (void*)1, 0);
 };
 
 //----------------------------------------------------------
@@ -219,15 +218,6 @@ inline void REPLAY_GUI::cb_Jump_i(int val) {
 void REPLAY_GUI::cb_Jump(Fl_Widget* o, int v) {
   int val = (int)(v);
   ((REPLAY_GUI*)(o->parent()->user_data()))->cb_Jump_i(val);
-}
-
-//----------------------------------------- PolyView
-inline void REPLAY_GUI::cb_PolyView_i() {
-  np_viewer->setParam("poly_view", "toggle");
-  np_viewer->redraw();
-}
-void REPLAY_GUI::cb_PolyView(Fl_Widget* o) {
-  ((REPLAY_GUI*)(o->parent()->user_data()))->cb_PolyView_i();
 }
 
 //----------------------------------------- LeftLogPlot

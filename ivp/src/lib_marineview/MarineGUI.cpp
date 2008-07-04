@@ -112,7 +112,7 @@ void MarineGUI::augmentMenu()
   mbar->add("GeoAttr/Polygons - Edit/poly_vertex_size=8", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)144, 0);
   mbar->add("GeoAttr/Polygons - Edit/poly_vertex_size=10", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)145, 0);
 
-  mbar->add("GeoAttr/Polygons - Toggle", 'p', (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)-1, FL_MENU_DIVIDER);
+  mbar->add("GeoAttr/Polygons - Toggle", 'p', (Fl_Callback*)MarineGUI::cb_TogglePolys, (void*)0, FL_MENU_DIVIDER);
 
   // --------------------------------- SegLists
   mbar->add("GeoAttr/SegLists - Edit/seglist_vertex_color=red", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)200, 0);
@@ -344,6 +344,15 @@ inline void MarineGUI::cb_ToggleDatum_i() {
 }
 void MarineGUI::cb_ToggleDatum(Fl_Widget* o) {
   ((MarineGUI*)(o->parent()->user_data()))->cb_ToggleDatum_i();
+}
+
+//----------------------------------------- TogglePolys
+inline void MarineGUI::cb_TogglePolys_i() {
+  cmviewer->setParam("display_polys", "toggle");
+  cmviewer->redraw();
+}
+void MarineGUI::cb_TogglePolys(Fl_Widget* o) {
+  ((MarineGUI*)(o->parent()->user_data()))->cb_TogglePolys_i();
 }
 
 //----------------------------------------- ToggleGrids

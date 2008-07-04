@@ -384,6 +384,9 @@ void MarineViewer::drawHash()
 
 void MarineViewer::drawPolys()
 {
+  if(m_poly_offon == false)
+    return;
+
   int vsize = m_poly.size();
   for(int i=0; i<vsize; i++) 
     drawPoly(m_poly[i]);
@@ -398,6 +401,9 @@ void MarineViewer::drawPoly(const XYPolygon& poly,
 			    float fill_r, float fill_g, float fill_b,
 			    float vert_r, float vert_g, float vert_b)  
 {
+  if(m_poly_offon == false)
+    return;
+
   unsigned int vsize = poly.size();
   if(vsize < 1)
     return;
@@ -883,82 +889,26 @@ bool MarineViewer::setCommonParam(string param, string value)
     else
       return(false);
   }
-  else if(param == "tiff_view") {
-    if(value == "toggle")
-      m_tiff_offon = !m_tiff_offon;
-    else if((value == "on") || (value == "true"))
-      m_tiff_offon = true;
-    else if((value == "off") || (value == "false"))
-      m_tiff_offon = false;
-    else
-      return(false);
-  }
-  else if(param == "hash_view") {
-    if(value == "toggle")
-      m_hash_offon = !m_hash_offon;
-    else if((value == "on") || (value == "true"))
-      m_hash_offon = true;
-    else if((value == "off") || (value == "false"))
-      m_hash_offon = false;
-    else
-      return(false);
-  }
-  else if(param == "trail_view") {
-    if(value == "toggle")
-      m_trails = !m_trails;
-    else if((value == "on") || (value == "true"))
-      m_trails = true;
-    else if((value == "off") || (value == "false"))
-      m_trails = false;
-    else
-      return(false);
-  }
-  else if(param == "trail_connect") {
-    if(value == "toggle")
-      m_trail_connect = !m_trail_connect;
-    else if((value == "on") || (value == "true"))
-      m_trail_connect = true;
-    else if((value == "off") || (value == "false"))
-      m_trail_connect = false;
-    else
-      return(false);
-  }
-  else if(param == "display_vname") {
-    if(value == "toggle")
-      m_draw_vname = !m_draw_vname;
-    else if((value == "on") || (value == "true"))
-      m_draw_vname = true;
-    else if((value == "off") || (value == "false"))
-      m_draw_vname = false;
-    else
-      return(false);
-  }
+  else if(param == "tiff_view") 
+    return(setBooleanOnString(m_tiff_offon, value));
+  else if(param == "hash_view")
+    return(setBooleanOnString(m_hash_offon, value));
+  else if(param == "trail_view")
+    return(setBooleanOnString(m_trails, value));
+  else if(param == "trail_connect")
+    return(setBooleanOnString(m_trail_connect, value));
+  else if(param == "display_vname")
+    return(setBooleanOnString(m_draw_vname, value));
   else if(param == "vname_color") {
     if(value == "toggle")
       m_vname_color = (m_vname_color+1) % 3;
   }
-  else if(param == "display_datum") {
-    if(value == "toggle")
-      m_draw_datum = !m_draw_datum;
-    else if((value == "on") || (value == "true"))
-      m_draw_datum = true;
-    else if((value == "off") || (value == "false"))
-      m_draw_datum = false;
-    else
-      return(false);
-  }
-  else if(param == "poly_view") {
-    if(value == "toggle")
-      m_poly_offon = !m_poly_offon;
-    else
-      return(false);
-  }
-  else if(param == "display_grids") {
-    if(value == "toggle")
-      m_grid_offon = !m_grid_offon;
-    else
-      return(false);
-  }
+  else if(param == "display_datum")
+    return(setBooleanOnString(m_draw_datum, value));
+  else if(param == "display_polys")
+    return(setBooleanOnString(m_poly_offon, value));
+  else if(param == "display_grids")
+    return(setBooleanOnString(m_grid_offon, value));
   else if(param == "zoom") {
     if(value == "reset")
       m_zoom = 1.0;
@@ -1513,3 +1463,19 @@ void MarineViewer::drawCommonMarker(double x, double y,
 }
 
 
+//-------------------------------------------------------------
+// Procedure: setBooleanOnString
+
+bool MarineViewer::setBooleanOnString(bool& boolval, string str)
+{
+  str = tolower(str);
+  if(str == "toggle")
+    boolval = !boolval;
+  else if((str == "on") || (str == "true"))
+    boolval = true;
+  else if((str == "off") || (str == "false"))
+    boolval = false;
+  else
+    return(false);
+  return(true);
+}

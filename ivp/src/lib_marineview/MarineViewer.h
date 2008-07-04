@@ -107,6 +107,9 @@ protected:
   void   drawCommonVehicle(std::string vname, ObjectPose, double r, 
 			   double g, double b, std::string body, int line=0);
   void   drawCommonMarker(double x, double y, double scale, std::string);
+
+ private:
+  bool   setBooleanOnString(bool&, std::string);
   
 protected:
   BackImg    m_back_img;

@@ -58,7 +58,7 @@ GEO_GUI::GEO_GUI(int g_w, int g_h, const char *g_l)
 
 void GEO_GUI::augmentMenu() 
 {
-  mbar->add("EditMode/Append Vertex", 'p', (Fl_Callback*)GEO_GUI::cb_DropMode, (void*)0, FL_MENU_RADIO|FL_MENU_VALUE);
+  mbar->add("EditMode/Append Vertex", 0,   (Fl_Callback*)GEO_GUI::cb_DropMode, (void*)0, FL_MENU_RADIO|FL_MENU_VALUE);
   mbar->add("EditMode/Edit Vertex",   'e', (Fl_Callback*)GEO_GUI::cb_DropMode, (void*)1, FL_MENU_RADIO);
   mbar->add("EditMode/Delete Vertex", 'x', (Fl_Callback*)GEO_GUI::cb_DropMode, (void*)2, FL_MENU_RADIO);
   mbar->add("EditMode/Insert Vertex", 'a', (Fl_Callback*)GEO_GUI::cb_DropMode, (void*)3, FL_MENU_RADIO);
