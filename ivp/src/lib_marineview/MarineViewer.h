@@ -64,8 +64,8 @@ public:
 
 public: // Color Mapping interface
   bool   hasColorMapping(std::string);
-  void   setColorMapping(std::string);
-  void   setColorMapping(std::string, std::string);
+  bool   setColorMapping(std::string);
+  bool   setColorMapping(std::string, std::string);
   std::vector<double> getColorMapping(std::string, std::string s="");
 
   void   addPoly(const XYPolygon&);
@@ -134,6 +134,7 @@ protected:
   int        m_trail_gap;
   float      m_trail_size;
   bool       m_cross_offon;
+  float      m_poly_vsize;
   bool       m_poly_offon;
   bool       m_grid_offon;
   bool       m_tiff_offon;

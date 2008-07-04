@@ -58,6 +58,7 @@ MarineViewer::MarineViewer(int x, int y, int w, int h, const char *l)
   m_trail_connect = false;
   m_trail_gap   = 1;
   m_trail_size  = 0.1;
+  m_poly_vsize  = 5.0;
   m_cross_offon = false;
   m_poly_offon  = true;
   m_grid_offon  = true;
@@ -461,7 +462,6 @@ void MarineViewer::drawPoly(const XYPolygon& poly,
     glColor3f(edge_r, edge_g, edge_b);
 
     if(poly.is_convex())
-    //if(0)
       glBegin(GL_LINE_LOOP);
     else
       glBegin(GL_LINE_STRIP);
@@ -485,8 +485,8 @@ void MarineViewer::drawPoly(const XYPolygon& poly,
     glEnd();
   }
 
-  //glPointSize(1.0 * m_zoom);
-  glPointSize(6.0);
+  glEnable(GL_POINT_SMOOTH);
+  glPointSize(m_poly_vsize);
 
   // Draw the vertices in between the first and last ones
   glColor3f(vert_r, vert_g, vert_b);
@@ -495,7 +495,9 @@ void MarineViewer::drawPoly(const XYPolygon& poly,
     glVertex2f(points[(j*2)], points[(j*2)+1]);
   }
   glEnd();
+  glDisable(GL_POINT_SMOOTH);
 
+#if 0
   // Draw the last vertex
   if(vsize > 1) {
     int k=vsize-1;
@@ -504,6 +506,7 @@ void MarineViewer::drawPoly(const XYPolygon& poly,
     glVertex2f(points[(k*2)], points[(k*2)+1]);
     glEnd();
   }
+#endif
 
   delete [] points;
   glFlush();
@@ -851,7 +854,15 @@ bool MarineViewer::setCommonParam(string param, string value)
   param = tolower(stripBlankEnds(param));
   value = tolower(stripBlankEnds(value));
 
-  if(param == "cross_view") {
+  if(param == "datum_color")
+    return(setColorMapping("datum_color", value));
+  else if(param == "poly_edge_color")
+    return(setColorMapping("poly_edge_color", value));
+  else if(param == "poly_vertex_color")
+    return(setColorMapping("poly_vertex_color", value));
+  else if(param == "poly_fill_color")
+    return(setColorMapping("poly_fill_color", value));
+  else if(param == "cross_view") {
     if(value == "toggle")
       m_cross_offon = !m_cross_offon;
     else if((value == "on") || (value == "true"))
@@ -935,7 +946,6 @@ bool MarineViewer::setCommonParam(string param, string value)
       m_draw_datum = false;
     else
       return(false);
-    cout << "In toggle-datum: " << m_draw_datum << endl;
   }
   else if(param == "poly_view") {
     if(value == "toggle")
@@ -1005,6 +1015,10 @@ bool MarineViewer::setCommonParam(string param, float v)
     if(m_trail_size <= 0)
       m_trail_size = 0.05;
   }
+  else if(param == "poly_vertex_size") {
+    if((v >= 1) && (v <= 40))
+      m_poly_vsize = v;
+  }
   else if(param == "trail_gap") {
     if(m_trail_gap+v >= 1)      
       m_trail_gap += (int)v;
@@ -1014,6 +1028,10 @@ bool MarineViewer::setCommonParam(string param, float v)
       m_shape_scale *= v;
   }
   else if(param == "datum_size") {
+    if((v >= 1) && (v <= 50))
+      m_size_datum = v;
+  }
+  else if(param == "datum_size_add") {
     m_size_datum += v;
     if(m_size_datum < 0)
       m_size_datum = 0;
@@ -1251,14 +1269,18 @@ vector<double> MarineViewer::getColorMapping(string attribute,
 //            "label"  " hex, bd, b7, 6b"
 //            "label", "0.741, 0.718, 0.420"
 
-void MarineViewer::setColorMapping(string attribute, string color_str)
+bool MarineViewer::setColorMapping(string attribute, string color_str)
 {
   attribute = stripBlankEnds(attribute);
   color_str = stripBlankEnds(color_str);
   
-  vector<double> color_vector = colorParse(color_str);
+  vector<double> cvect = colorParse(color_str);
   
-  m_color_map[attribute] = color_vector;
+  m_color_map[attribute] = cvect;
+  if((cvect[0]==0) && (cvect[2]==0) && (cvect[2]==0) &&
+     (tolower(color_str) != "black"))
+    return(false);
+  return(true);    
 }
 
 //-------------------------------------------------------------
@@ -1267,10 +1289,10 @@ void MarineViewer::setColorMapping(string attribute, string color_str)
 //            "label, hex, bd, b7, 6b"
 //            "label, 0.741, 0.718, 0.420"
 
-void MarineViewer::setColorMapping(string str)
+bool MarineViewer::setColorMapping(string str)
 {
   string attribute = biteString(str, ',');
-  setColorMapping(attribute, str);
+  return(setColorMapping(attribute, str));
 }
 
 //-------------------------------------------------------------

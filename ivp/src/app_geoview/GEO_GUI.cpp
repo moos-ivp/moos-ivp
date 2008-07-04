@@ -96,21 +96,6 @@ void GEO_GUI::augmentMenu()
   mbar->add("SnapValue/ 0.01 meters", 0, (Fl_Callback*)GEO_GUI::cb_SnapVal, (void*)1, FL_MENU_RADIO);
   mbar->add("SnapValue/ 0.00 meters", 0, (Fl_Callback*)GEO_GUI::cb_SnapVal, (void*)0, FL_MENU_RADIO);
   mbar->add("SnapValue/Re-Apply To Current", 0, (Fl_Callback*)GEO_GUI::cb_ReApplySnapVal, (void*)0, 0);
-
-  mbar->add("Colors/Vertex/Red", 0, (Fl_Callback*)GEO_GUI::cb_SetColor, (void*)0, 0);
-  mbar->add("Colors/Vertex/White", 0, (Fl_Callback*)GEO_GUI::cb_SetColor, (void*)0, 0);
-  mbar->add("Colors/Vertex/Yellow", 0, (Fl_Callback*)GEO_GUI::cb_SetColor, (void*)0, 0);
-  mbar->add("Colors/Vertex/DarkBlue", 0, (Fl_Callback*)GEO_GUI::cb_SetColor, (void*)0, 0);
-  mbar->add("Colors/Vertex/DarkGreen", 0, (Fl_Callback*)GEO_GUI::cb_SetColor, (void*)0, 0);
-
-  mbar->add("Colors/Edge/Red", 0, (Fl_Callback*)GEO_GUI::cb_SetColor, (void*)0, 0);
-  mbar->add("Colors/Edge/White", 0, (Fl_Callback*)GEO_GUI::cb_SetColor, (void*)0, 0);
-  mbar->add("Colors/Edge/Yellow", 0, (Fl_Callback*)GEO_GUI::cb_SetColor, (void*)0, 0);
-  mbar->add("Colors/Edge/DarkBlue", 0, (Fl_Callback*)GEO_GUI::cb_SetColor, (void*)0, 0);
-  mbar->add("Colors/Edge/DarkGreen", 0, (Fl_Callback*)GEO_GUI::cb_SetColor, (void*)0, 0);
-
-
-
 }
 
 //----------------------------------------------------------
@@ -254,14 +239,6 @@ inline void GEO_GUI::cb_SnapVal_i(int v) {
 }
 void GEO_GUI::cb_SnapVal(Fl_Widget* o, int v) {
   ((GEO_GUI*)(o->parent()->user_data()))->cb_SnapVal_i(v);
-}
-
-//----------------------------------------- SetColor
-inline void GEO_GUI::cb_SetColor_i(int v) {
-  pviewer->redraw();
-}
-void GEO_GUI::cb_SetColor(Fl_Widget* o, int v) {
-  ((GEO_GUI*)(o->parent()->user_data()))->cb_SetColor_i(v);
 }
 
 //----------------------------------------- ReApplySnapVal

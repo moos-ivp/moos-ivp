@@ -44,6 +44,8 @@ public:
   void addCircle(XYCircle);
   virtual void updateXY() {};
 
+  void augmentMenu();
+
 public:
   Fl_Menu_Bar  *mbar;
   MarineViewer *cmviewer;
@@ -75,6 +77,9 @@ protected:
 
   inline void cb_HashShade_i(int);
   static void cb_HashShade(Fl_Widget*, int);
+
+  inline void cb_MG_SetGeoAttr_i(int);
+  static void cb_MG_SetGeoAttr(Fl_Widget*, int);
 
   inline void cb_ToggleDatum_i();
   static void cb_ToggleDatum(Fl_Widget*);
