@@ -69,6 +69,9 @@ private:
   inline void cb_MOOS_Button_i(int);
   static void cb_MOOS_Button(Fl_Widget*, int);
 
+  inline void cb_SSV_SetGeoAttr_i(int);
+  static void cb_SSV_SetGeoAttr(Fl_Widget*, int);
+
 protected:
   MY_Output  *v_nam;
   MY_Output  *time;

@@ -93,6 +93,9 @@ Fl_Menu_Item MarineGUI::menu_[] = {
 
 void MarineGUI::augmentMenu() 
 {
+  mbar->add("GeoAttr/Polygons - Edit/display_poly_labels=on", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)150, 0);
+  mbar->add("GeoAttr/Polygons - Edit/display_poly_labels=off", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)151, FL_MENU_DIVIDER);
+
   mbar->add("GeoAttr/Polygons - Edit/poly_vertex_color=red", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)100, 0);
   mbar->add("GeoAttr/Polygons - Edit/poly_vertex_color=white", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)101, 0);
   mbar->add("GeoAttr/Polygons - Edit/poly_vertex_color=yellow", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)102, 0);
@@ -159,7 +162,7 @@ void MarineGUI::augmentMenu()
   mbar->add("GeoAttr/Datum - Edit/datum_size=15", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)444, 0);
   mbar->add("GeoAttr/Datum - Edit/datum_size=20", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)445, 0);
 
-  mbar->add("GeoAttr/Datum - Toggle", 'd', (Fl_Callback*)MarineGUI::cb_ToggleDatum, (void*)0, 0);
+  mbar->add("GeoAttr/Datum - Toggle", 'd', (Fl_Callback*)MarineGUI::cb_ToggleDatum, (void*)0, FL_MENU_DIVIDER);
 }
 
 
@@ -315,6 +318,9 @@ inline void MarineGUI::cb_MG_SetGeoAttr_i(int v) {
   else if(v==143) cmviewer->setCommonParam("poly_vertex_size", 5);
   else if(v==144) cmviewer->setCommonParam("poly_vertex_size", 8);
   else if(v==145) cmviewer->setCommonParam("poly_vertex_size", 10);
+
+  else if(v==150) cmviewer->setCommonParam("display_poly_labels", "on");
+  else if(v==151) cmviewer->setCommonParam("display_poly_labels", "off");
 
   else if(v==400) cmviewer->setCommonParam("datum_color", "red");
   else if(v==401) cmviewer->setCommonParam("datum_color", "white");

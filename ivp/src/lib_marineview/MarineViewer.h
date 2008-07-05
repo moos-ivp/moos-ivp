@@ -108,7 +108,7 @@ protected:
 			   double g, double b, std::string body, int line=0);
   void   drawCommonMarker(double x, double y, double scale, std::string);
 
- private:
+protected:
   bool   setBooleanOnString(bool&, std::string);
   
 protected:
@@ -136,8 +136,10 @@ protected:
   int        m_trail_color;
   int        m_trail_gap;
   float      m_trail_size;
+
   bool       m_cross_offon;
   float      m_poly_vsize;
+  bool       m_poly_labels;
   bool       m_poly_offon;
   bool       m_grid_offon;
   bool       m_tiff_offon;

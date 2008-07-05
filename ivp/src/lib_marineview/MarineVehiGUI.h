@@ -57,6 +57,9 @@ protected:
 
   inline void cb_DataView_i(int);
   static void cb_DataView(Fl_Widget*, int);
+
+  inline void cb_MVG_SetGeoAttr_i(int);
+  static void cb_MVG_SetGeoAttr(Fl_Widget*, int);
 };
 #endif
 

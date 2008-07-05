@@ -50,7 +50,7 @@ SSV_Viewer::SSV_Viewer(int x, int y, int w, int h, const char *l)
   m_centric_view       = true;
   m_draw_bearing_lines = true;
 
-  setColorMapping("bearing_color", "orange");
+  setParam("bearing_color", "orange");
 }
 
 //-------------------------------------------------------------
@@ -599,39 +599,24 @@ void SSV_Viewer::handleRightMouse(int vx, int vy)
 
 //-------------------------------------------------------------
 // Procedure: setParam
+//      Note: setBooleanOnString defined in MarineViewer.cpp
 
 bool SSV_Viewer::setParam(string param, string value)
 {
   if(MarineViewer::setCommonParam(param, value))
     return(true);
-
+  
   param = tolower(stripBlankEnds(param));
   value = tolower(stripBlankEnds(value));
-
-  if(param == "centric_view") {
-    if(value == "toggle")
-      m_centric_view = !m_centric_view;
-    else if(value == "on")
-      m_centric_view = true;
-    else if(value == "off")
-      m_centric_view = false;
-    else
-      return(false);
-  }
-  else if(param == "op_area") {
+  
+  if(param == "centric_view")
+    return(setBooleanOnString(m_centric_view, value));
+  else if(param == "bearing_lines")
+    return(setBooleanOnString(m_draw_bearing_lines, value));
+  else if(param == "bearing_color")
+    return(setColorMapping("bearing_color", value));
+  else if(param == "op_area")
     m_op_area = value;
-  }
-  else if(param == "bearing_lines") {
-    if(value == "toggle")
-      m_draw_bearing_lines = !m_draw_bearing_lines;
-    else if((value == "on") || (value == "true"))
-      m_draw_bearing_lines = true;
-    else if((value == "off") || (value == "false"))
-      m_draw_bearing_lines = false;
-    else
-      return(false);
-  }
-
   else
     return(false);
 

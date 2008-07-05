@@ -305,9 +305,17 @@ void SSV_GUI::augmentMenu()
   mbar->add("Shipside/Radial  500",  0, (Fl_Callback*)SSV_GUI::cb_Radial,(void*)500, 0);
   mbar->add("Shipside/Radial 1000",  0, (Fl_Callback*)SSV_GUI::cb_Radial,(void*)1000, 0);
   mbar->add("Shipside/Radial Cycle", 'r', (Fl_Callback*)SSV_GUI::cb_Radial,(void*)-1, FL_MENU_DIVIDER);
-  mbar->add("Shipside/BearingLines", 'x', (Fl_Callback*)SSV_GUI::cb_Bearings,(void*)0, 0);
 
   mbar->add("ForeView/Cycle Focus", 'v', (Fl_Callback*)SSV_GUI::cb_CycleFocus,(void*)0, 0);
+
+  mbar->add("GeoAttr/BearingLine/bearing_color=white", 0, (Fl_Callback*)SSV_GUI::cb_SSV_SetGeoAttr, (void*)100, 0);
+  mbar->add("GeoAttr/BearingLine/bearing_color=yellow", 0, (Fl_Callback*)SSV_GUI::cb_SSV_SetGeoAttr, (void*)101, 0);
+  mbar->add("GeoAttr/BearingLine/bearing_color=red", 0, (Fl_Callback*)SSV_GUI::cb_SSV_SetGeoAttr, (void*)102, 0);
+  mbar->add("GeoAttr/BearingLine/bearing_color=dark_blue", 0, (Fl_Callback*)SSV_GUI::cb_SSV_SetGeoAttr, (void*)103, 0);
+  mbar->add("GeoAttr/BearingLine/bearing_color=dark_green", 0, (Fl_Callback*)SSV_GUI::cb_SSV_SetGeoAttr, (void*)104, 0);
+  mbar->add("GeoAttr/BearingLine/bearing_color=dark_red", 0, (Fl_Callback*)SSV_GUI::cb_SSV_SetGeoAttr, (void*)105, FL_MENU_DIVIDER);
+
+  mbar->add("GeoAttr/BearingLine - Toggle", 'x', (Fl_Callback*)SSV_GUI::cb_Bearings, (void*)0, 0);
 
 };
 
@@ -472,6 +480,23 @@ inline void SSV_GUI::cb_CycleFocus_i(int val) {
 void SSV_GUI::cb_CycleFocus(Fl_Widget* o, int v) {
   int val = (int)(v);
   ((SSV_GUI*)(o->parent()->user_data()))->cb_CycleFocus_i(val);
+}
+
+//----------------------------------------- SSV_SetGeoAttr
+inline void SSV_GUI::cb_SSV_SetGeoAttr_i(int v) {
+  if(v==100) mviewer->setParam("bearing_color", "white");
+  else if(v==101) mviewer->setParam("bearing_color", "yellow");
+  else if(v==102) mviewer->setParam("bearing_color", "red");
+  else if(v==103) mviewer->setParam("bearing_color", "dark_blue");
+  else if(v==104) mviewer->setParam("bearing_color", "dark_green");
+  else if(v==105) mviewer->setParam("bearing_color", "dark_red");
+
+  mviewer->redraw();
+}
+
+void SSV_GUI::cb_SSV_SetGeoAttr(Fl_Widget* o, int v) {
+  int val = (int)(v);
+  ((SSV_GUI*)(o->parent()->user_data()))->cb_SSV_SetGeoAttr_i(val);
 }
 
 //----------------------------------------- Bearings

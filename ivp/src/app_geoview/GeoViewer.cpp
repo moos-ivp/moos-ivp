@@ -58,7 +58,7 @@ void GeoViewer::draw()
 {
   MarineViewer::draw();
 
-  vector<double> cvect_edge = getColorMapping("poly_edge_color", "red");
+  vector<double> cvect_edge = getColorMapping("poly_edge_color", "dark_blue");
   vector<double> cvect_vert = getColorMapping("poly_vertex_color", "white");
   vector<double> cvect_fill = getColorMapping("poly_fill_color", "0.2,0.8,0.2");
 

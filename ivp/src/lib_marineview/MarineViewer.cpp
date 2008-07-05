@@ -59,8 +59,9 @@ MarineViewer::MarineViewer(int x, int y, int w, int h, const char *l)
   m_trail_gap   = 1;
   m_trail_size  = 0.1;
   m_poly_vsize  = 5.0;
-  m_cross_offon = false;
   m_poly_offon  = true;
+  m_poly_labels = true;
+  m_cross_offon = false;
   m_grid_offon  = true;
   m_tiff_offon  = true;
   m_hash_offon  = false;
@@ -503,15 +504,51 @@ void MarineViewer::drawPoly(const XYPolygon& poly,
   glEnd();
   glDisable(GL_POINT_SMOOTH);
 
-#if 0
-  // Draw the last vertex
-  if(vsize > 1) {
-    int k=vsize-1;
-    glColor3f(vert_r, vert_g, vert_b);
-    glBegin(GL_POINTS);
-    glVertex2f(points[(k*2)], points[(k*2)+1]);
-    glEnd();
+
+
+  //-------------------------------- perhaps draw poly label
+  if(m_poly_labels) {
+    double cx = poly.get_avg_x() * m_back_img.get_pix_per_mtr();
+    double cy = poly.get_avg_y() * m_back_img.get_pix_per_mtr();
+    glTranslatef(cx, cy, 0);
+
+    glColor3f(edge_r, edge_g, edge_b);
+    gl_font(1, 12);
+
+    string plabel = poly.get_label();
+    int slen = plabel.length();
+    char *buff = new char(slen+1);
+    glRasterPos3f(0, 0, 0);
+    strncpy(buff, plabel.c_str(), slen);
+    buff[slen] = '\0';
+    gl_draw(buff, slen);
+    delete(buff);
   }
+  //-------------------------------- perhaps draw poly label
+
+
+#if 0
+  //-------------------------------- perhaps draw poly vertex labels
+  if(m_poly_labels) {
+    glTranslatef(0, 0, 0);
+    char *buff = new char(100);
+    for(j=0; j<vsize; j++) {
+      double cx = points[(j*2)];
+      double cy = points[(j*2)+1];
+      
+      glColor3f(edge_r, edge_g, edge_b);
+      gl_font(1, 12);
+      
+      string vlabel = intToString(j);
+      int slen = vlabel.length();
+      glRasterPos3f(cx, cy, 0);
+      strncpy(buff, vlabel.c_str(), slen);
+      buff[slen] = '\0';
+      gl_draw(buff, slen);
+    }
+    delete(buff);
+  }
+  //-------------------------------- perhaps draw poly vertex_labels
 #endif
 
   delete [] points;
@@ -868,16 +905,12 @@ bool MarineViewer::setCommonParam(string param, string value)
     return(setColorMapping("poly_vertex_color", value));
   else if(param == "poly_fill_color")
     return(setColorMapping("poly_fill_color", value));
-  else if(param == "cross_view") {
-    if(value == "toggle")
-      m_cross_offon = !m_cross_offon;
-    else if((value == "on") || (value == "true"))
-      m_cross_offon = true;
-    else if((value == "off") || (value == "false"))
-      m_cross_offon = false;
-    else
-      return(false);
-  }
+  else if(param == "active_vcolor")
+    return(setColorMapping("active_vcolor", value));
+  else if(param == "inactive_vcolor")
+    return(setColorMapping("inactive_vcolor", value));
+  else if(param == "cross_view")
+    return(setBooleanOnString(m_cross_offon, value));
   else if(param == "tiff_type") {
     m_back_img_mod = true;
     if(value == "toggle")
@@ -907,6 +940,8 @@ bool MarineViewer::setCommonParam(string param, string value)
     return(setBooleanOnString(m_draw_datum, value));
   else if(param == "display_polys")
     return(setBooleanOnString(m_poly_offon, value));
+  else if(param == "display_poly_labels")
+    return(setBooleanOnString(m_poly_labels, value));
   else if(param == "display_grids")
     return(setBooleanOnString(m_grid_offon, value));
   else if(param == "zoom") {
