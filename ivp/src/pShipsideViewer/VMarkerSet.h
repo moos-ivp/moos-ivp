@@ -34,7 +34,7 @@ public:
 
   int            getMarkerColorCount(int ix);
   std::string    getMarkerColorString(int mix, int cix);
-  std::vector<double> getMarkerColorVector(int mix, int cix);
+  std::vector<std::vector<double> > getMarkerColorVectors(int mix);
 
 protected:
   std::vector<std::string>  m_marker_type;

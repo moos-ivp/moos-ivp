@@ -369,7 +369,8 @@ string SSV_Viewer::getVehiName(int index)
 
 void SSV_Viewer::drawCommonMarker(double x, double y, 
 				  double shape_scale, 
-				  string mtype)
+				  string mtype, string label,
+				  const vector<vector<double> >& color_vectors)
 {
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
@@ -391,10 +392,20 @@ void SSV_Viewer::drawCommonMarker(double x, double y,
 
   glScalef(m_zoom*shape_scale, m_zoom*shape_scale, m_zoom*shape_scale);
 
-  if(mtype == "gateway_a") {
+  if(mtype == "gateway") {
     double r1, r2, g1, g2, b1, b2;
     r1=1.0, g1=1.0, b1=0.0, r2=0, g2=0, b2=0;
 
+    if(color_vectors.size() >= 1) {
+      r1 = color_vectors[0][0];
+      g1 = color_vectors[0][1];
+      b1 = color_vectors[0][2];
+    }
+    if(color_vectors.size() >= 2) {
+      r2 = color_vectors[1][0];
+      g2 = color_vectors[1][1];
+      b2 = color_vectors[1][2];
+    }
     glTranslatef(-g_gatewayCtrX, -g_gatewayCtrY, 0);
     drawGLPoly(g_gatewayBody, g_gatewayBodySize, r1, g1, b1);    
     drawGLPoly(g_gatewayBody, g_gatewayBodySize, 0,0,0, 1);    
@@ -402,21 +413,20 @@ void SSV_Viewer::drawCommonMarker(double x, double y,
     glTranslatef(g_gatewayCtrX, g_gatewayCtrY, 0);
   }
 
-  if(mtype == "gateway_b") {
-    double r1, r2, g1, g2, b1, b2;
-    r1=0, g1=0.54, b1=0.54, r2=0, g2=0, b2=0;
-
-    glTranslatef(-g_gatewayCtrX, -g_gatewayCtrY, 0);
-    drawGLPoly(g_gatewayBody, g_gatewayBodySize, r1, g1, b1);    
-    drawGLPoly(g_gatewayBody, g_gatewayBodySize, 0,0,0, 1);    
-    drawGLPoly(g_gatewayMidBody, g_gatewayMidBodySize, r2, g2, b2);
-    glTranslatef(g_gatewayCtrX, g_gatewayCtrY, 0);
-  }
-
-  if(mtype == "efield") {
+  else if(mtype == "efield") {
     double r1, r2, g1, g2, b1, b2;
     r1=0, g1=0, b1=0, r2=1, g2=0.843, b2=0;
 
+    if(color_vectors.size() >= 1) {
+      r1 = color_vectors[0][0];
+      g1 = color_vectors[0][1];
+      b1 = color_vectors[0][2];
+    }
+    if(color_vectors.size() >= 2) {
+      r2 = color_vectors[1][0];
+      g2 = color_vectors[1][1];
+      b2 = color_vectors[1][2];
+    }
     glTranslatef(-g_efieldCtrX, -g_efieldCtrY, 0);
     drawGLPoly(g_efieldBody, g_efieldBodySize, r1, g1, b1);    
     drawGLPoly(g_efieldMidBody, g_efieldMidBodySize, r2, g2, b2);
@@ -1284,13 +1294,17 @@ void SSV_Viewer::drawMarkers()
 {
   double gscale = m_vmarkers.getMarkerGScale(); 
 
+  vector<vector<double> > color_vectors;
+
   unsigned int vsize = m_vmarkers.size();
   for(unsigned int i=0; i<vsize; i++) {
     string mtype = m_vmarkers.getMarkerType(i);
+    string label = m_vmarkers.getMarkerLabel(i);
     double xpos  = m_vmarkers.getMarkerXPos(i);
     double ypos  = m_vmarkers.getMarkerYPos(i);
     double scale = m_vmarkers.getMarkerScale(i) * gscale;
-    drawCommonMarker(xpos, ypos, scale, mtype);
+    color_vectors = m_vmarkers.getMarkerColorVectors(i);
+    drawCommonMarker(xpos, ypos, scale, mtype, label, color_vectors);
   }
 }
 

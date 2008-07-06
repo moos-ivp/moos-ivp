@@ -41,7 +41,7 @@ bool VMarkerSet::addVMarker(string mtype, double xpos, double ypos,
   }
 
   vector<vector<double> > color_vectors;
-  vector<string> svector = parseString(colors, ',');
+  vector<string> svector = parseString(colors, ':');
   vsize = svector.size();
   for(i=0; i<vsize; i++) {
     svector[i] = stripBlankEnds(svector[i]);
@@ -173,19 +173,13 @@ string VMarkerSet::getMarkerColorString(int mix, int cix)
 //-----------------------------------------------------------
 // Procedure: getMarkerColorVector
 
-vector<double> VMarkerSet::getMarkerColorVector(int mix, int cix)
+vector<vector<double> > VMarkerSet::getMarkerColorVectors(int mix)
 {
-  vector<double> fail_vector;
-  fail_vector.push_back(0);
-  fail_vector.push_back(0);
-  fail_vector.push_back(0);
+  vector<vector<double> > fail_vector;
 
   if((mix < 0) && (mix >= m_marker_color_vectors.size()))
     return(fail_vector);
-  
-  if((cix < 0) && (cix >= m_marker_color_vectors[mix].size()))
-    return(fail_vector);
-  
-  return(m_marker_color_vectors[mix][cix]);
+  else
+    return(m_marker_color_vectors[mix]);
 }
 
