@@ -30,6 +30,9 @@
 #include "MBUtils.h"
 #include "ColorParse.h"
 #include "XYBuildUtils.h"
+#include "Shape_Gateway.h"
+#include "Shape_EField.h"
+#include "Shape_Kelp.h"
 
 using namespace std;
 
@@ -62,9 +65,7 @@ void SSV_Viewer::draw()
   MarineViewer::draw();
 
   drawOpAreaGrid();
-  //drawAGateways();
-  //drawBGateways();
-  //drawEFields();
+  drawMarkers();
 
   if(m_grid_offon)
     drawGrids();
@@ -202,16 +203,6 @@ void SSV_Viewer::setVehicleBodyType(string vname, string vbody)
   m_vbody_map[vname] = tolower(stripBlankEnds(vbody));
 }  
 
-
-//-------------------------------------------------------------
-// Procedure: setOwnShipName
-
-void SSV_Viewer::setOwnShipName(string vname)
-{
-  vname = toupper(vname);
-  m_ownship_name = toupper(vname);
-}
-      
 //-------------------------------------------------------------
 // Procedure: resetVehicles()
 
@@ -220,96 +211,9 @@ void SSV_Viewer::resetVehicles()
   m_pos_map.clear();
   m_hist_map.clear();
   m_vbody_map.clear();
+  m_ais_map.clear();
 }
       
-// ----------------------------------------------------------
-// Procedure: getMetersX
-//   Purpose: For a given x position, return its position, in 
-//            terms of delta meters from the zero position.
-//            Index indicates which of the MAX_VEHICLES vehicles
-//            is being queried. 
-
-float SSV_Viewer::getMetersX(int index)
-{
-  if(m_cross_offon) {
-    int iwidth = m_back_img.get_img_width();
-    float x_pos = ((float)(iwidth) / 2.0) - (float)(m_vshift_x);
-    float x_pct = m_back_img.pixToPctX(x_pos);
-    float x_pct_cent = m_back_img.get_img_centx();
-    float x_pct_mtrs = m_back_img.get_img_meters();
-    float meters = (x_pct - x_pct_cent) / (x_pct_mtrs / 100.0);
-    return(meters);
-  }
-  
-  ObjectPose opose = getObjectPoseByIndex(index);
-  return(opose.getX());
-}
-
-// ----------------------------------------------------------
-// Procedure: getMetersY
-//   Purpose: For a given y position, return its position, in 
-//            terms of delta meters from the zero position.
-//            Index indicates which of the MAX_VEHICLES vehicles
-//            is being queried. 
-
-float SSV_Viewer::getMetersY(int index)
-{
-  if(m_cross_offon) {
-    int iheight = m_back_img.get_img_height();
-    float y_pos = ((float)(iheight) / 2.0) - (float)(m_vshift_y);
-    float y_pct = m_back_img.pixToPctY(y_pos);
-    float y_pct_cent = m_back_img.get_img_centy();
-    float y_pct_mtrs = m_back_img.get_img_meters();
-    float meters = (y_pct - y_pct_cent) / (y_pct_mtrs / 100.0);
-    return(meters);
-  }
-
-  ObjectPose opose = getObjectPoseByIndex(index);
-  return(opose.getY());
-}
-
-// ----------------------------------------------------------
-// Procedure: getSpd
-//   Purpose: Index indicates which of the MAX_VEHICLES vehicles
-//            is being queried. 
-
-float SSV_Viewer::getSpd(int index)
-{
-  if(m_cross_offon)
-    return(0.0);
-    
-  ObjectPose opose = getObjectPoseByIndex(index);
-  return(opose.getSpeed());
-}
-
-// ----------------------------------------------------------
-// Procedure: getDep
-//   Purpose: Index indicates which of the MAX_VEHICLES vehicles
-//            is being queried. 
-
-float SSV_Viewer::getDep(int index)
-{
-  if(m_cross_offon)
-    return(0.0);
-  
-  ObjectPose opose = getObjectPoseByIndex(index);
-  return(opose.getDepth());
-}
-
-// ----------------------------------------------------------
-// Procedure: getCrs
-//   Purpose: Index indicates which of the MAX_VEHICLES vehicles
-//            is being queried. 
-
-float SSV_Viewer::getCrs(int index)
-{
-  if(m_cross_offon)
-    return(0.0);
-  
-  ObjectPose opose = getObjectPoseByIndex(index);
-  return(opose.getTheta());
-}
-
 // ----------------------------------------------------------
 // Procedure: getLatLon
 //   Purpose: Index indicates which of the MAX_VEHICLES vehicles
@@ -325,23 +229,73 @@ bool SSV_Viewer::getLatLon(int index, double& rlat, double& rlon)
 }
 
 // ----------------------------------------------------------
-// Procedure: getAgeAIS
+// Procedure: getVehicleInfo
 //   Purpose: Index indicates which of the MAX_VEHICLES vehicles
 //            is being queried. 
 
-float SSV_Viewer::getAgeAIS(int index)
+float SSV_Viewer::getVehicleInfo(int index, string info_type)
 {
-  if(m_cross_offon)
-    return(-1);
+  if(info_type == "age_ais") {
+    if(m_cross_offon)
+      return(-1);
 
-  string vname = getVehiName(index);
-  map<string,double>::iterator p1;
-  p1 = m_ais_map.find(vname);
-  if(p1 != m_ais_map.end())
-    return(m_curr_time - p1->second);
-  else 
+    string vname = getVehiName(index);
+    map<string,double>::iterator p1;
+    p1 = m_ais_map.find(vname);
+    if(p1 != m_ais_map.end())
+      return(m_curr_time - p1->second);
     return(-1);
+  }
+  else if((info_type == "heading") || (info_type == "course")) {
+    if(m_cross_offon)
+      return(0.0);
+    
+    ObjectPose opose = getObjectPoseByIndex(index);
+    return(opose.getTheta());
+  }
+  else if((info_type == "xpos") || (info_type == "meters_x")) {
+    if(m_cross_offon) {
+      int iwidth = m_back_img.get_img_width();
+      float x_pos = ((float)(iwidth) / 2.0) - (float)(m_vshift_x);
+      float x_pct = m_back_img.pixToPctX(x_pos);
+      float x_pct_cent = m_back_img.get_img_centx();
+      float x_pct_mtrs = m_back_img.get_img_meters();
+      float meters = (x_pct - x_pct_cent) / (x_pct_mtrs / 100.0);
+      return(meters);
+    }
+    ObjectPose opose = getObjectPoseByIndex(index);
+    return(opose.getX());
+  }
+  else if((info_type == "ypos") || (info_type == "meters_y")) {
+    if(m_cross_offon) {
+      int iheight = m_back_img.get_img_height();
+      float y_pos = ((float)(iheight) / 2.0) - (float)(m_vshift_y);
+      float y_pct = m_back_img.pixToPctY(y_pos);
+      float y_pct_cent = m_back_img.get_img_centy();
+      float y_pct_mtrs = m_back_img.get_img_meters();
+      float meters = (y_pct - y_pct_cent) / (y_pct_mtrs / 100.0);
+      return(meters);
+    }
+    ObjectPose opose = getObjectPoseByIndex(index);
+    return(opose.getY());
+  }
+  else if(info_type == "speed") {
+    if(m_cross_offon)
+      return(0.0);
+    
+    ObjectPose opose = getObjectPoseByIndex(index);
+    return(opose.getSpeed());
+  }
+  else if(info_type == "depth") {
+    if(m_cross_offon)
+      return(0.0);
+    
+    ObjectPose opose = getObjectPoseByIndex(index);
+    return(opose.getDepth());
+  }
+  return(0);
 }
+
 
 // ----------------------------------------------------------
 // Procedure: getRelativeInfo
@@ -408,6 +362,70 @@ string SSV_Viewer::getVehiName(int index)
   }
   return("");
 }
+
+//-------------------------------------------------------------
+// Procedure: drawCommonMarker
+
+void SSV_Viewer::drawCommonMarker(double x, double y, 
+				  double shape_scale, 
+				  string mtype)
+{
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glOrtho(0, w(), 0, h(), -1 ,1);
+
+  // Determine position in terms of image percentage
+  float marker_ix = meters2img('x', x);
+  float marker_iy = meters2img('y', y);
+
+  // Determine position in terms of view percentage
+  float marker_vx = img2view('x', marker_ix);
+  float marker_vy = img2view('y', marker_iy);
+
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
+  glLoadIdentity();
+
+  glTranslatef(marker_vx, marker_vy, 0); // theses are in pixel units
+
+  glScalef(m_zoom*shape_scale, m_zoom*shape_scale, m_zoom*shape_scale);
+
+  if(mtype == "gateway_a") {
+    double r1, r2, g1, g2, b1, b2;
+    r1=1.0, g1=1.0, b1=0.0, r2=0, g2=0, b2=0;
+
+    glTranslatef(-g_gatewayCtrX, -g_gatewayCtrY, 0);
+    drawGLPoly(g_gatewayBody, g_gatewayBodySize, r1, g1, b1);    
+    drawGLPoly(g_gatewayBody, g_gatewayBodySize, 0,0,0, 1);    
+    drawGLPoly(g_gatewayMidBody, g_gatewayMidBodySize, r2, g2, b2);
+    glTranslatef(g_gatewayCtrX, g_gatewayCtrY, 0);
+  }
+
+  if(mtype == "gateway_b") {
+    double r1, r2, g1, g2, b1, b2;
+    r1=0, g1=0.54, b1=0.54, r2=0, g2=0, b2=0;
+
+    glTranslatef(-g_gatewayCtrX, -g_gatewayCtrY, 0);
+    drawGLPoly(g_gatewayBody, g_gatewayBodySize, r1, g1, b1);    
+    drawGLPoly(g_gatewayBody, g_gatewayBodySize, 0,0,0, 1);    
+    drawGLPoly(g_gatewayMidBody, g_gatewayMidBodySize, r2, g2, b2);
+    glTranslatef(g_gatewayCtrX, g_gatewayCtrY, 0);
+  }
+
+  if(mtype == "efield") {
+    double r1, r2, g1, g2, b1, b2;
+    r1=0, g1=0, b1=0, r2=1, g2=0.843, b2=0;
+
+    glTranslatef(-g_efieldCtrX, -g_efieldCtrY, 0);
+    drawGLPoly(g_efieldBody, g_efieldBodySize, r1, g1, b1);    
+    drawGLPoly(g_efieldMidBody, g_efieldMidBodySize, r2, g2, b2);
+    drawGLPoly(g_efieldMidBody, g_efieldMidBodySize, 0,0,0, 1);
+    glTranslatef(g_efieldCtrX, g_efieldCtrY, 0);
+  }
+
+  glPopMatrix();
+}
+
 
 //-------------------------------------------------------------
 // Procedure: drawVehicle(ObjectPose)
@@ -615,6 +633,8 @@ bool SSV_Viewer::setParam(string param, string value)
     return(setBooleanOnString(m_draw_bearing_lines, value));
   else if(param == "bearing_color")
     return(setColorMapping("bearing_color", value));
+  else if(param == "ownship_name")
+    m_ownship_name = toupper(value);
   else if(param == "op_area")
     m_op_area = value;
   else
@@ -1041,6 +1061,61 @@ void SSV_Viewer::cycleIndex()
 }
 
 //-------------------------------------------------------------
+// Procedure: addVMarker()
+
+
+bool SSV_Viewer::addVMarker(const std::string& mline)
+{
+  vector<string> svector = parseString(mline, ',');
+  unsigned int vsize = svector.size();
+
+  string mtype, xpos, ypos, lat, lon, scale, label, colors;
+  for(unsigned int i=0; i<vsize; i++) {
+    svector[i] = stripBlankEnds(svector[i]);
+    vector<string> ivector = parseString(svector[i], '=');
+    if(ivector.size() != 2)
+      return(false);
+    string left  = tolower(stripBlankEnds(ivector[0]));
+    string right = stripBlankEnds(ivector[1]);
+    if(left == "type")        mtype = right;
+    else if(left == "xpos")   xpos = right;
+    else if(left == "ypos")   ypos = right;
+    else if(left == "scale")  scale = right;
+    else if(left == "lat")    lat = right;
+    else if(left == "lon")    lon = right;
+    else if(left == "label")  label = right;
+    else if(left == "colors") colors = right;
+  }
+
+  if((mtype==""))
+    return(false);
+  
+  // The position has to be fully specified in terms of either lat/lon
+  // of the x-y position in local coords. Otherwise return(false);
+  if((lat=="")||(lon=="")||(!isNumber(lat))||(!isNumber(lon)))
+    if((xpos=="")||(ypos=="")||(!isNumber(xpos))||(!isNumber(ypos)))
+      return(false);
+
+  double xpos_d, ypos_d;
+  if((lat=="")||(lon=="")||(!isNumber(lat))||(!isNumber(lon))) {
+    xpos_d  = atof(xpos.c_str());
+    ypos_d  = atof(ypos.c_str());
+  }
+  else {
+    double lat_d = atof(lat.c_str());
+    double lon_d = atof(lon.c_str());
+    m_geodesy.LatLong2LocalGrid(lat_d, lon_d, ypos_d, xpos_d);
+  }
+
+  double scale_d = atof(scale.c_str());
+  if(scale_d < 0)
+    scale_d = 0;
+  
+  m_vmarkers.addVMarker(mtype, xpos_d, ypos_d, scale_d, label, colors);
+  return(true);
+}
+
+//-------------------------------------------------------------
 // Procedure: hasVehiName
 //            Given a vehicle name string, compare it to the map
 //            of known vehicles and, if found, return true.
@@ -1190,89 +1265,17 @@ void SSV_Viewer::drawCirc(XYCircle dcircle, int pts, bool filled,
 }
 
 //-------------------------------------------------------------
-// Procedure: drawEFields
+// Procedure: drawMarkers
 
-void SSV_Viewer::drawEFields()
+void SSV_Viewer::drawMarkers()
 {
-  int vsize = m_efield_x.size();
-  for(int i=0; i<vsize; i++)
-    drawCommonMarker(m_efield_x[i], m_efield_y[i], 
-		     m_efield_s[i], "efield");
+  unsigned int vsize = m_vmarkers.size();
+  for(unsigned int i=0; i<vsize; i++) {
+    string mtype = m_vmarkers.getMarkerType(i);
+    double xpos  = m_vmarkers.getMarkerXPos(i);
+    double ypos  = m_vmarkers.getMarkerYPos(i);
+    double scale = m_vmarkers.getMarkerScale(i);
+    drawCommonMarker(xpos, ypos, scale, mtype);
+  }
 }
 
-//-------------------------------------------------------------
-// Procedure: drawAGateways
-
-void SSV_Viewer::drawAGateways()
-{
-  int vsize = m_gateway_a_x.size();
-  for(int i=0; i<vsize; i++)
-    drawCommonMarker(m_gateway_a_x[i], m_gateway_a_y[i], 
-		     m_gateway_a_s[i], "gateway_a");
-}
-
-//-------------------------------------------------------------
-// Procedure: drawBGateways
-
-void SSV_Viewer::drawBGateways()
-{
-  int vsize = m_gateway_b_x.size();
-  for(int i=0; i<vsize; i++)
-    drawCommonMarker(m_gateway_b_x[i], m_gateway_b_y[i], 
-		     m_gateway_b_s[i], "gateway_b");
-}
-
-//-------------------------------------------------------------
-// Procedure: addGatewayA
-
-void SSV_Viewer::addGatewayA(double x, double y, double scale, bool latlon)
-{
-  double rx = x;
-  double ry = y;
-  if(latlon)
-    m_geodesy.LatLong2LocalGrid(x, y, ry, rx);
-  
-  m_gateway_a_x.push_back(rx);
-  m_gateway_a_y.push_back(ry);
-  m_gateway_a_s.push_back(scale);
-}
-
-//-------------------------------------------------------------
-// Procedure: addGatewayB
-
-void SSV_Viewer::addGatewayB(double x, double y, double scale, bool latlon)
-{
-  double rx = x;
-  double ry = y;
-  if(latlon)
-    m_geodesy.LatLong2LocalGrid(x, y, ry, rx);
-  
-  m_gateway_b_x.push_back(rx);
-  m_gateway_b_y.push_back(ry);
-  m_gateway_b_s.push_back(scale);
-}
-
-//-------------------------------------------------------------
-// Procedure: addEField
-
-void SSV_Viewer::addEField(double x, double y, double scale, bool latlon)
-{
-  double rx = x;
-  double ry = y;
-  if(latlon)
-    m_geodesy.LatLong2LocalGrid(x, y, ry, rx);
-  
-  m_efield_x.push_back(rx);
-  m_efield_y.push_back(ry);
-  m_efield_s.push_back(scale);
-}
-
-//-------------------------------------------------------------
-// Procedure: addRangeSensor
-
-void SSV_Viewer::addRangeSensor(double x, double y, double scale)
-{
-  m_range_sensor_x.push_back(x);
-  m_range_sensor_y.push_back(y);
-  m_range_sensor_s.push_back(scale);
-}

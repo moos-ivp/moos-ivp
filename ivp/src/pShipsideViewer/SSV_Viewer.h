@@ -37,6 +37,7 @@
 #include "XYCircle.h"
 #include "MOOSGeodesy.h"
 #include "MOOSLock.h"
+#include "VMarkerSet.h"
 
 class SSV_Viewer : public MarineViewer
 {
@@ -54,18 +55,12 @@ public:
   void  updateVehiclePosition(std::string, float x, float y, 
 			      float theta, float spd, float dep=0);  
   void  setVehicleBodyType(std::string, std::string);
-  void  setOwnShipName(std::string);
   void  addStationCircle(const XYCircle&);
   bool  initGeodesy(double, double);
 
   void  resetVehicles();
-  float getMetersX(int);
-  float getMetersY(int);
-  float getSpd(int);
-  float getDep(int);
-  float getCrs(int);
   bool  getLatLon(int, double&, double&);
-  float getAgeAIS(int);
+  float getVehicleInfo(int index, std::string info_type);
   float getRelativeInfo(int index, std::string info_type);
 
   bool  hasVehiName(std::string);
@@ -84,20 +79,15 @@ public:
   int   getDataIndex()           {return(m_global_ix);};
   void  setCurrent(std::string);
   void  cycleIndex();
-
+  
  public: // Geomarkers
-  void  addGatewayA(double, double, double, bool=true);
-  void  addGatewayB(double, double, double, bool=true);
-  void  addEField(double, double, double, bool=true);
-  void  addRangeSensor(double, double, double);
-  void  drawAGateways();
-  void  drawBGateways();
-  void  drawEFields();
+  bool  addVMarker(const std::string&);
+
   void  mutexLock()   {m_mutex.Lock();};
   void  mutexUnLock() {m_mutex.UnLock();};
 
-
- private:
+ protected:
+  void  drawCommonMarker(double x, double y, double scale, std::string);
   void  drawVehicle(std::string, bool, std::string);
   void  drawPoints(CPList&);
   void  drawPoint(float, float, int color=0);
@@ -113,6 +103,7 @@ public:
   void  drawGridBox(double, double, double, double, 
 		    double, double, double, double);
   void  drawGridPN();
+  void  drawMarkers();
 
   ObjectPose getObjectPoseByIndex(int);
 
@@ -145,27 +136,9 @@ public:
   int    m_radial_size;
   float  m_curr_time;
 
- private: // Geomarkers
   std::string m_op_area;
-  
-
-  std::vector<double>    m_gateway_a_x;
-  std::vector<double>    m_gateway_a_y;
-  std::vector<double>    m_gateway_a_s;
-
-  std::vector<double>    m_gateway_b_x;
-  std::vector<double>    m_gateway_b_y;
-  std::vector<double>    m_gateway_b_s;
-
-  std::vector<double>    m_efield_x;
-  std::vector<double>    m_efield_y;
-  std::vector<double>    m_efield_s;
-
-  std::vector<double>    m_range_sensor_x;
-  std::vector<double>    m_range_sensor_y;
-  std::vector<double>    m_range_sensor_s;
-
-  CMOOSLock  m_mutex;
+  VMarkerSet  m_vmarkers;
+  CMOOSLock   m_mutex;
 };
 
 #endif 

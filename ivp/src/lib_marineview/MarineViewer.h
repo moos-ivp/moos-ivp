@@ -106,7 +106,6 @@ protected:
 		    float b, float thickness=0, float scale=1);
   void   drawCommonVehicle(std::string vname, ObjectPose, double r, 
 			   double g, double b, std::string body, int line=0);
-  void   drawCommonMarker(double x, double y, double scale, std::string);
 
 protected:
   bool   setBooleanOnString(bool&, std::string);

@@ -233,17 +233,11 @@ bool SSV_MOOSApp::OnStartUp()
     else if(MOOSStrCmp(sVarName, "COLORMAP"))
       m_gui->mviewer->setColorMapping(sLine);
     else if(MOOSStrCmp(sVarName, "OWNSHIP_NAME"))
-      m_gui->mviewer->setOwnShipName(sLine);
+      m_gui->mviewer->setParam("ownship_name", sLine);
     else if(MOOSStrCmp(sVarName, "CONTACTS"))
       handleContactList(sLine);
-    else if(MOOSStrCmp(sVarName, "PORTABLE_RANGE_SENSOR"))
-      handleMarker("portable_range_sensor", sLine);
-    else if(MOOSStrCmp(sVarName, "GATEWAYA"))
-      handleMarker("gateway_a", sLine);
-    else if(MOOSStrCmp(sVarName, "GATEWAYB"))
-      handleMarker("gateway_b", sLine);
-    else if(MOOSStrCmp(sVarName, "EFIELD"))
-      handleMarker("efield", sLine);
+    else if(MOOSStrCmp(sVarName, "MARKER"))
+      m_gui->mviewer->addVMarker(sLine);
     else { 
       bool handled = m_gui->mviewer->setParam(sVarName, sLine);
       if(!handled)
@@ -435,48 +429,6 @@ bool SSV_MOOSApp::handleContactList(string clist)
     cout << "[" << i << "]: " << svector[i] << endl;
     m_gui->addContactButton(i, svector[i]);
   }
-  return(true);
-}
-
-
-//----------------------------------------------------------------------
-// Procedure: handleMarker
-
-bool SSV_MOOSApp::handleMarker(string marker_type, string clist)
-{
-  vector<string> svector = parseString(clist, ',');
-  int vsize = svector.size();
-
-  if(vsize != 3) {
-    cout << "Error processing clist: " << clist  << "(" << vsize << ")" << endl;
-    return(false);
-  }
-
-  for(int i=0; i<vsize; i++)
-    svector[i] = stripBlankEnds(svector[i]);
-
-  double x = atof(svector[0].c_str());
-  double y = atof(svector[1].c_str());
-  double s = atof(svector[2].c_str());
-  
-  cout << "Adding " << marker_type << ": " << endl;
-  cout << "  X: " << x << " y: " << y << " S:" << s << endl;
-
-
-  if(marker_type == "gateway_a")
-    m_gui->mviewer->addGatewayA(x, y, s);
-
-  if(marker_type == "gateway_b")
-    m_gui->mviewer->addGatewayB(x, y, s);
-
-  if(marker_type == "efield")
-    m_gui->mviewer->addEField(x, y, s);
-
-  if(marker_type == "portable_range_sensor")
-    m_gui->mviewer->addRangeSensor(x, y, s);
-  else
-    return(false);
-
   return(true);
 }
 

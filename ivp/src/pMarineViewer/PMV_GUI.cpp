@@ -152,20 +152,20 @@ void PMV_GUI::updateXY() {
   }
   v_lat->value(lat_str.c_str());
   v_lon->value(lon_str.c_str());
-
-  string mtrx_str = doubleToString(mviewer->getMetersX(index),1);
+  
+  string mtrx_str = doubleToString(mviewer->getVehicleInfo(index,"xpos"),1);
   x_mtr->value(mtrx_str.c_str());
-  string mtry_str = doubleToString(mviewer->getMetersY(index),1);
+  string mtry_str = doubleToString(mviewer->getVehicleInfo(index,"ypos"),1);
   y_mtr->value(mtry_str.c_str());
-
-  string spd_str = doubleToString(mviewer->getSpd(index),1);
+  
+  string spd_str = doubleToString(mviewer->getVehicleInfo(index,"speed"),1);
   v_spd->value(spd_str.c_str());
-  string crs_str = doubleToString(mviewer->getCrs(index),1);
+  string crs_str = doubleToString(mviewer->getVehicleInfo(index,"course"),1);
   v_crs->value(crs_str.c_str());
-  string dep_str = doubleToString(mviewer->getDep(index),1);
+  string dep_str = doubleToString(mviewer->getVehicleInfo(index,"depth"),1);
   v_dep->value(dep_str.c_str());
 
-  double age_ais = mviewer->getAgeAIS(index);
+  double age_ais = mviewer->getVehicleInfo(index,"age_ais");
   string ais_str = doubleToString(age_ais,3);
   if(age_ais == -1)
     ais_str = "n/a";

@@ -56,13 +56,8 @@ public:
 			      float theta, float spd, float dep=0);  
   void  setVehicleBodyType(const std::string&, const std::string&);
   void  resetVehicles();
-  float getMetersX(int);
-  float getMetersY(int);
-  float getSpd(int);
-  float getDep(int);
-  float getCrs(int);
-  float getAgeAIS(int);
   bool  getLatLon(int, double&, double&);
+  float getVehicleInfo(int index, std::string info_type);
   bool  initGeodesy(double, double);
   void  mutexLock()   {m_mutex.Lock();};
   void  mutexUnLock() {m_mutex.UnLock();};

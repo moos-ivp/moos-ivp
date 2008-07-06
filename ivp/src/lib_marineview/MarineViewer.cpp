@@ -32,9 +32,6 @@
 #include "Shape_Kayak.h"
 #include "Shape_AUV.h"
 #include "Shape_Glider.h"
-#include "Shape_Gateway.h"
-#include "Shape_EField.h"
-#include "Shape_Kelp.h"
 
 using namespace std;
 
@@ -1433,70 +1430,6 @@ void MarineViewer::drawCommonVehicle(string vname, ObjectPose opose,
 
   glPopMatrix();
 }
-
-//-------------------------------------------------------------
-// Procedure: drawCommonMarker
-
-void MarineViewer::drawCommonMarker(double x, double y, 
-				    double shape_scale, 
-				    string mtype)
-{
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  glOrtho(0, w(), 0, h(), -1 ,1);
-
-  // Determine position in terms of image percentage
-  float marker_ix = meters2img('x', x);
-  float marker_iy = meters2img('y', y);
-
-  // Determine position in terms of view percentage
-  float marker_vx = img2view('x', marker_ix);
-  float marker_vy = img2view('y', marker_iy);
-
-  glMatrixMode(GL_MODELVIEW);
-  glPushMatrix();
-  glLoadIdentity();
-
-  glTranslatef(marker_vx, marker_vy, 0); // theses are in pixel units
-
-  glScalef(m_zoom*shape_scale, m_zoom*shape_scale, m_zoom*shape_scale);
-
-  if(mtype == "gateway_a") {
-    double r1, r2, g1, g2, b1, b2;
-    r1=1.0, g1=1.0, b1=0.0, r2=0, g2=0, b2=0;
-
-    glTranslatef(-g_gatewayCtrX, -g_gatewayCtrY, 0);
-    drawGLPoly(g_gatewayBody, g_gatewayBodySize, r1, g1, b1);    
-    drawGLPoly(g_gatewayBody, g_gatewayBodySize, 0,0,0, 1);    
-    drawGLPoly(g_gatewayMidBody, g_gatewayMidBodySize, r2, g2, b2);
-    glTranslatef(g_gatewayCtrX, g_gatewayCtrY, 0);
-  }
-
-  if(mtype == "gateway_b") {
-    double r1, r2, g1, g2, b1, b2;
-    r1=0, g1=0.54, b1=0.54, r2=0, g2=0, b2=0;
-
-    glTranslatef(-g_gatewayCtrX, -g_gatewayCtrY, 0);
-    drawGLPoly(g_gatewayBody, g_gatewayBodySize, r1, g1, b1);    
-    drawGLPoly(g_gatewayBody, g_gatewayBodySize, 0,0,0, 1);    
-    drawGLPoly(g_gatewayMidBody, g_gatewayMidBodySize, r2, g2, b2);
-    glTranslatef(g_gatewayCtrX, g_gatewayCtrY, 0);
-  }
-
-  if(mtype == "efield") {
-    double r1, r2, g1, g2, b1, b2;
-    r1=0, g1=0, b1=0, r2=1, g2=0.843, b2=0;
-
-    glTranslatef(-g_efieldCtrX, -g_efieldCtrY, 0);
-    drawGLPoly(g_efieldBody, g_efieldBodySize, r1, g1, b1);    
-    drawGLPoly(g_efieldMidBody, g_efieldMidBodySize, r2, g2, b2);
-    drawGLPoly(g_efieldMidBody, g_efieldMidBodySize, 0,0,0, 1);
-    glTranslatef(g_efieldCtrX, g_efieldCtrY, 0);
-  }
-
-  glPopMatrix();
-}
-
 
 //-------------------------------------------------------------
 // Procedure: setBooleanOnString
