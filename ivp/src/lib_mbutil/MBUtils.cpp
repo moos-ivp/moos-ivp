@@ -913,6 +913,30 @@ float snapDownToStep(float gfloat, float step)
   return(fval);
 }
   
+//-------------------------------------------------------------
+// Procedure: setBooleanOnString
+//      Note: This function is designed to set the given boolean value
+//            based on its existing value and the contents of the str.
+//      Note: The case_tolow argument is true by default. By giving 
+//            the caller this option, some efficiency can be gained if
+//            the caller knows that the str argument has already been
+//            converted to lower case.
+
+bool setBooleanOnString(bool& boolval, string str, bool case_tolow)
+{
+  if(case_tolow)
+    str = tolower(str);
+  if(str == "toggle")
+    boolval = !boolval;
+  else if((str == "on") || (str == "true"))
+    boolval = true;
+  else if((str == "off") || (str == "false"))
+    boolval = false;
+  else
+    return(false);
+  return(true);
+}
+
 //----------------------------------------------------------------
 // Procedure: okFileToWrite
 //     Note1: Takes a given filename, breaks it into the preceding

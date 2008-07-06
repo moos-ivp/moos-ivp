@@ -82,6 +82,8 @@ int   validateArgs(int, char **, std::string);
 float snapToStep(float, float v=1.0);
 float snapDownToStep(float, float v=1.0);
 
+bool  setBooleanOnString(bool& boolval, std::string str, bool=true);
+
 bool  okFileToRead(std::string);
 bool  okFileToWrite(std::string);
 
