@@ -16,8 +16,13 @@ using namespace std;
 
 VMarkerSet::VMarkerSet()
 {
-  m_marker_scale_global  = 1.0;
-  m_marker_viewable_all  = true;
+  m_marker_scale_global    = 1.0;
+  m_marker_viewable_all    = true;
+  m_marker_viewable_labels = true;
+
+  m_label_color_default = colorParse("white");
+  m_label_color         = m_label_color_default;
+  m_label_color_index   = 0;
 }
 
 //-----------------------------------------------------------
@@ -76,6 +81,46 @@ bool VMarkerSet::setParam(string param, string value)
 {
   if(param == "viewable_all")
     return(setBooleanOnString(m_marker_viewable_all, value));
+  else if(param == "viewable_labels")
+    return(setBooleanOnString(m_marker_viewable_labels, value));
+  else if(param == "label_color") {
+    if(tolower(value) == "toggle") {
+      m_label_color_index++;
+      if(m_label_color_index > 9)
+	m_label_color_index = 0;
+
+      if(m_label_color_index == 0) 
+	m_label_color = m_label_color_default;
+      else if(m_label_color_index == 1)
+	m_label_color = colorParse("DarkBlue");
+      else if(m_label_color_index == 2)
+	m_label_color = colorParse("Yellow");
+      else if(m_label_color_index == 3)
+	m_label_color = colorParse("Red");
+      else if(m_label_color_index == 4)
+	m_label_color = colorParse("Green");
+      else if(m_label_color_index == 5)
+	m_label_color = colorParse("Azure");
+      else if(m_label_color_index == 6)
+	m_label_color = colorParse("Khaki");
+      else if(m_label_color_index == 7)
+	m_label_color = colorParse("DarkCyan");
+      else if(m_label_color_index == 8)
+	m_label_color = colorParse("Blue");
+      else
+	m_label_color = colorParse("Coral");
+    }
+    else {
+      vector<double> cvect = colorParse(value);
+      if(tolower(value)!="black") {
+	if((cvect[0]==0) && (cvect[1]==0) && (cvect[2]==0))
+	  return(false);
+      }    
+      m_label_color_default = cvect;
+      m_label_color         = cvect;
+      m_label_color_index   = 0;
+    }
+  }
   else
     return(false);
 
@@ -98,6 +143,18 @@ bool VMarkerSet::setParam(string param, double value)
   else
     return(false);
   return(true);
+}
+
+//-----------------------------------------------------------
+// Procedure: viewable
+
+bool VMarkerSet::viewable(const string& str)
+{
+  if(str == "all")
+    return(m_marker_viewable_all);
+  else if(str == "labels")
+    return(m_marker_viewable_labels);
+  return(false);
 }
 
 //-----------------------------------------------------------

@@ -367,9 +367,9 @@ string SSV_Viewer::getVehiName(int index)
 //-------------------------------------------------------------
 // Procedure: drawCommonMarker
 
-void SSV_Viewer::drawCommonMarker(double x, double y, 
-				  double shape_scale, 
-				  string mtype, string label,
+void SSV_Viewer::drawCommonMarker(double x, double y, double shape_scale, 
+				  const string& mtype, const string& label, 
+				  const vector<double>& label_color,
 				  const vector<vector<double> >& color_vectors)
 {
   glMatrixMode(GL_PROJECTION);
@@ -390,15 +390,16 @@ void SSV_Viewer::drawCommonMarker(double x, double y,
 
   glTranslatef(marker_vx, marker_vy, 0); // theses are in pixel units
 
-  glScalef(m_zoom*shape_scale, m_zoom*shape_scale, m_zoom*shape_scale);
+  double mz = sqrt(m_zoom);
+  glScalef(mz*shape_scale, mz*shape_scale, mz*shape_scale);
 
   if(mtype == "gateway") {
     double r1, r2, g1, g2, b1, b2;
     r1=1.0, g1=1.0, b1=0.0, r2=0, g2=0, b2=0;
 
     if(color_vectors.size() >= 1) {
-      r1 = color_vectors[0][0];
-      g1 = color_vectors[0][1];
+      r1 = color_vectors[0][0]; 
+      g1 = color_vectors[0][1]; 
       b1 = color_vectors[0][2];
     }
     if(color_vectors.size() >= 2) {
@@ -432,6 +433,24 @@ void SSV_Viewer::drawCommonMarker(double x, double y,
     drawGLPoly(g_efieldMidBody, g_efieldMidBodySize, r2, g2, b2);
     drawGLPoly(g_efieldMidBody, g_efieldMidBodySize, 0,0,0, 1);
     glTranslatef(g_efieldCtrX, g_efieldCtrY, 0);
+  }
+
+  if(label != "") {
+      glColor3f(label_color[0], label_color[1], label_color[2]);
+    gl_font(1, 12);
+    if(m_zoom > 4)
+      gl_font(1, 14);
+    double offset = 5.0;
+    offset = offset * (1/m_zoom);
+
+    int slen = label.length();
+    char *buff = new char(slen+1);
+    //glRasterPos3f(offset, offset, 0);
+    glRasterPos3f(offset, offset, 0);
+    strncpy(buff, label.c_str(), slen);
+    buff[slen] = '\0';
+    gl_draw(buff, slen);
+    delete(buff);
   }
 
   glPopMatrix();
@@ -644,6 +663,10 @@ bool SSV_Viewer::setParam(string param, string value)
     return(setBooleanOnString(m_draw_bearing_lines, value));
   else if(param == "bearing_color")
     return(setColorMapping("bearing_color", value));
+  else if(param == "draw_marker_labels")
+    m_vmarkers.setParam("viewable_labels", "toggle");
+  else if(param == "marker_label_color")
+    m_vmarkers.setParam("label_color", value);
   else if(param == "draw_markers")
     m_vmarkers.setParam("viewable_all", "toggle");
   else if(param == "marker_scale_all") {
@@ -1295,16 +1318,19 @@ void SSV_Viewer::drawMarkers()
   double gscale = m_vmarkers.getMarkerGScale(); 
 
   vector<vector<double> > color_vectors;
-
+  vector<double> label_color = m_vmarkers.getLabelColor();
+  
   unsigned int vsize = m_vmarkers.size();
   for(unsigned int i=0; i<vsize; i++) {
     string mtype = m_vmarkers.getMarkerType(i);
-    string label = m_vmarkers.getMarkerLabel(i);
+    string label;
+    if(m_vmarkers.viewable("labels"))
+      label = m_vmarkers.getMarkerLabel(i);
     double xpos  = m_vmarkers.getMarkerXPos(i);
     double ypos  = m_vmarkers.getMarkerYPos(i);
     double scale = m_vmarkers.getMarkerScale(i) * gscale;
     color_vectors = m_vmarkers.getMarkerColorVectors(i);
-    drawCommonMarker(xpos, ypos, scale, mtype, label, color_vectors);
+    drawCommonMarker(xpos, ypos, scale, mtype, label, label_color, color_vectors);
   }
 }
 

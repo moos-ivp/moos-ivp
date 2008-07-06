@@ -87,7 +87,9 @@ public:
   void  mutexUnLock() {m_mutex.UnLock();};
 
  protected:
-  void  drawCommonMarker(double x, double y, double scale, std::string, std::string, 
+  void  drawCommonMarker(double x, double y, double scale, 
+			 const std::string& mtype, const std::string& label, 
+			 const std::vector<double>& label_color, 
 			 const std::vector<std::vector<double> >& color_vectors);
   void  drawVehicle(std::string, bool, std::string);
   void  drawPoints(CPList&);

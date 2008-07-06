@@ -321,7 +321,10 @@ void SSV_GUI::augmentMenu()
   mbar->add("GeoAttr/Markers - Edit/marker_scale *= 0.80", FL_CTRL+'m', (Fl_Callback*)SSV_GUI::cb_SSV_SetGeoAttr, (void*)2001, 0);
   mbar->add("GeoAttr/Markers - Edit/marker_scale *= 1.25", FL_ALT+'m', (Fl_Callback*)SSV_GUI::cb_SSV_SetGeoAttr, (void*)2002, FL_MENU_DIVIDER);
 
-  mbar->add("GeoAttr/Markers - Toggle", 'm', (Fl_Callback*)SSV_GUI::cb_SSV_SetGeoAttr, (void*)2010, 0);
+  mbar->add("GeoAttr/Markers - Edit/draw labels  toggle", 'l', (Fl_Callback*)SSV_GUI::cb_SSV_SetGeoAttr, (void*)2020, FL_MENU_DIVIDER);
+  mbar->add("GeoAttr/Markers - Edit/label colors toggle", 'L', (Fl_Callback*)SSV_GUI::cb_SSV_SetGeoAttr, (void*)2030, 0);
+
+  mbar->add("GeoAttr/Markers - Toggle", 'm', (Fl_Callback*)SSV_GUI::cb_SSV_SetGeoAttr, (void*)2050, 0);
 
 };
 
@@ -500,7 +503,9 @@ inline void SSV_GUI::cb_SSV_SetGeoAttr_i(int v) {
   else if(v==2000) mviewer->setParam("marker_scale_all", "reset");
   else if(v==2001) mviewer->setParam("marker_scale_all", "smaller");
   else if(v==2002) mviewer->setParam("marker_scale_all", "bigger");
-  else if(v==2010) mviewer->setParam("draw_markers", "toggle");
+  else if(v==2020) mviewer->setParam("draw_marker_labels", "toggle");
+  else if(v==2030) mviewer->setParam("marker_label_color", "toggle");
+  else if(v==2050) mviewer->setParam("draw_markers", "toggle");
 
   mviewer->redraw();
 }

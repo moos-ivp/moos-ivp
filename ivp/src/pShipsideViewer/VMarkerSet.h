@@ -24,7 +24,7 @@ public:
   
   unsigned int size()          {return(m_marker_type.size());};
   double   getMarkerGScale()   {return(m_marker_scale_global);}
-  bool     viewable(std::string s="all") {return(m_marker_viewable_all);};
+  bool     viewable(const std::string& s="all");
 
   std::string getMarkerType(int ix);
   double      getMarkerXPos(int ix);
@@ -36,6 +36,8 @@ public:
   std::string    getMarkerColorString(int mix, int cix);
   std::vector<std::vector<double> > getMarkerColorVectors(int mix);
 
+  std::vector<double> getLabelColor() {return(m_label_color);};
+
 protected:
   std::vector<std::string>  m_marker_type;
   std::vector<double>       m_marker_xpos;
@@ -43,11 +45,17 @@ protected:
   std::vector<double>       m_marker_scale;
   std::vector<std::string>  m_marker_label;
 
+  std::vector<double>       m_label_color_default;
+  std::vector<double>       m_label_color;
+  int                       m_label_color_index;
+
   std::vector<std::vector<std::string> > m_marker_colors;
   std::vector<std::vector<std::vector<double> > > m_marker_color_vectors;
+  
 
   double m_marker_scale_global;
   bool   m_marker_viewable_all;
+  bool   m_marker_viewable_labels;
 
 };
 
