@@ -31,7 +31,10 @@
 #include "ColorParse.h"
 #include "XYBuildUtils.h"
 #include "Shape_Gateway.h"
+#include "Shape_Diamond.h"
+#include "Shape_Triangle.h"
 #include "Shape_EField.h"
+#include "Shape_Square.h"
 #include "Shape_Kelp.h"
 
 using namespace std;
@@ -433,6 +436,66 @@ void SSV_Viewer::drawCommonMarker(double x, double y, double shape_scale,
     drawGLPoly(g_efieldMidBody, g_efieldMidBodySize, r2, g2, b2);
     drawGLPoly(g_efieldMidBody, g_efieldMidBodySize, 0,0,0, 1);
     glTranslatef(g_efieldCtrX, g_efieldCtrY, 0);
+  }
+
+  else if(mtype == "diamond") {
+    double r, g, b;
+    r=1, g=0, b=0;
+
+    if(color_vectors.size() >= 1) {
+      r = color_vectors[0][0];
+      g = color_vectors[0][1];
+      b = color_vectors[0][2];
+    }
+    glTranslatef(-g_diamondCtrX, -g_diamondCtrY, 0);
+    drawGLPoly(g_diamondBody, g_diamondBodySize, r,g,b);    
+    drawGLPoly(g_diamondBody, g_diamondBodySize, 0,0,0, 1);    
+    glTranslatef(g_diamondCtrX, g_diamondCtrY, 0);
+  }
+
+  else if(mtype == "triangle") {
+    double r, g, b;
+    r=1, g=1, b=0;
+
+    if(color_vectors.size() >= 1) {
+      r = color_vectors[0][0];
+      g = color_vectors[0][1];
+      b = color_vectors[0][2];
+    }
+    glTranslatef(-g_triangleCtrX, -g_triangleCtrY, 0);
+    drawGLPoly(g_triangleBody, g_triangleBodySize, r,g,b);    
+    drawGLPoly(g_triangleBody, g_triangleBodySize, 0,0,0, 1);    
+    glTranslatef(g_triangleCtrX, g_triangleCtrY, 0);
+  }
+
+  else if(mtype == "square") {
+    double r, g, b;
+    r=0, g=1, b=0;
+
+    if(color_vectors.size() >= 1) {
+      r = color_vectors[0][0];
+      g = color_vectors[0][1];
+      b = color_vectors[0][2];
+    }
+    glTranslatef(-g_squareCtrX, -g_squareCtrY, 0);
+    drawGLPoly(g_squareBody, g_squareBodySize, r,g,b);    
+    drawGLPoly(g_squareBody, g_squareBodySize, 0,0,0, 1);    
+    glTranslatef(g_squareCtrX, g_squareCtrY, 0);
+  }
+
+  else if(mtype == "kelp") {
+    double r, g, b;
+    r=0, g=0.54, b=0.54;
+
+    if(color_vectors.size() >= 1) {
+      r = color_vectors[0][0];
+      g = color_vectors[0][1];
+      b = color_vectors[0][2];
+    }
+    glTranslatef(-g_kelpCtrX, -g_kelpCtrY, 0);
+    drawGLPoly(g_kelpBody, g_kelpBodySize, r,g,b);    
+    drawGLPoly(g_kelpBody, g_kelpBodySize, 0,0,0, 1);    
+    glTranslatef(g_kelpCtrX, g_kelpCtrY, 0);
   }
 
   if(label != "") {

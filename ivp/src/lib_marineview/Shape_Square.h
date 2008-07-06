@@ -1,8 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin and John Leonard                    */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
-/*    FILE: Shape_Triangle.h                                     */
-/*    DATE: September 21st 2007                                  */
+/*    FILE: Shape_Square.h                                       */
+/*    DATE: July 6th 2008                                        */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
 /* modify it under the terms of the GNU General Public License   */
@@ -20,16 +20,17 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
-float g_triangleBody[]=
+float g_squareBody[]=
 {
-  8.0,  0.0, 
-  0.0, 16.0,
- -8.0,  0.0, 
-  8.0,  0.0
+   6.0,   6.0, 
+  -6.0,   6.0, 
+  -6.0,  -6.0, 
+   6.0,  -6.0, 
+   6.0,   6.0, 
 };
 
-double       g_triangleCtrX =  0.0;
-double       g_triangleCtrY =  8.0;
-unsigned int g_triangleBodySize = 4;
+double       g_squareCtrX =  0.0;
+double       g_squareCtrY =  0.0;
+unsigned int g_squareBodySize = 5;
 
 
