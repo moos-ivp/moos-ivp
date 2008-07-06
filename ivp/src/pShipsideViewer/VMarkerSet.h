@@ -13,13 +13,18 @@
 
 class VMarkerSet {
 public:
-  VMarkerSet() {};
+  VMarkerSet();
   virtual ~VMarkerSet() {};
 
   bool addVMarker(std::string mtype, double xpos, double ypos,
 		   double mscale, std::string label, std::string colors);
 
-  unsigned int size() {return(m_marker_type.size());};
+  bool setParam(std::string param, std::string value);
+  bool setParam(std::string param, double);
+  
+  unsigned int size()          {return(m_marker_type.size());};
+  double   getMarkerGScale()   {return(m_marker_scale_global);}
+  bool     viewable(std::string s="all") {return(m_marker_viewable_all);};
 
   std::string getMarkerType(int ix);
   double      getMarkerXPos(int ix);
@@ -40,6 +45,10 @@ protected:
 
   std::vector<std::vector<std::string> > m_marker_colors;
   std::vector<std::vector<std::vector<double> > > m_marker_color_vectors;
+
+  double m_marker_scale_global;
+  bool   m_marker_viewable_all;
+
 };
 
 #endif

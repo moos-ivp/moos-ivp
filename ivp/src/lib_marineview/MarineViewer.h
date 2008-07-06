@@ -108,9 +108,6 @@ protected:
 			   double g, double b, std::string body, int line=0);
 
 protected:
-  bool   setBooleanOnString(bool&, std::string);
-  
-protected:
   BackImg    m_back_img;
   BackImg    m_back_img_b;
   bool       m_back_img_b_ok;

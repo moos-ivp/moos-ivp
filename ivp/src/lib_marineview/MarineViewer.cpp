@@ -1431,19 +1431,3 @@ void MarineViewer::drawCommonVehicle(string vname, ObjectPose opose,
   glPopMatrix();
 }
 
-//-------------------------------------------------------------
-// Procedure: setBooleanOnString
-
-bool MarineViewer::setBooleanOnString(bool& boolval, string str)
-{
-  str = tolower(str);
-  if(str == "toggle")
-    boolval = !boolval;
-  else if((str == "on") || (str == "true"))
-    boolval = true;
-  else if((str == "off") || (str == "false"))
-    boolval = false;
-  else
-    return(false);
-  return(true);
-}

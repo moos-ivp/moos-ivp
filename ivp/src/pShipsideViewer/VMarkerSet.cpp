@@ -12,7 +12,16 @@
 using namespace std;
 
 //-----------------------------------------------------------
-// Procedure: addDecision()
+// Constructor
+
+VMarkerSet::VMarkerSet()
+{
+  m_marker_scale_global  = 1.0;
+  m_marker_viewable_all  = true;
+}
+
+//-----------------------------------------------------------
+// Procedure: addVMarker()
 //      Note: return(true) if the given vmarker results in a new entry
 //            return(false) if the given marker replaces an old entry
 
@@ -58,6 +67,37 @@ bool VMarkerSet::addVMarker(string mtype, double xpos, double ypos,
     m_marker_color_vectors[found_ix] = color_vectors;
     return(false);
   }
+}
+
+//-----------------------------------------------------------
+// Procedure: setParam()
+
+bool VMarkerSet::setParam(string param, string value)
+{
+  if(param == "viewable_all")
+    return(setBooleanOnString(m_marker_viewable_all, value));
+  else
+    return(false);
+
+  return(true);
+}
+
+//-----------------------------------------------------------
+// Procedure: setParam()
+
+bool VMarkerSet::setParam(string param, double value)
+{
+  if(param == "mod_scale_all") {
+    if((m_marker_scale_global * value) > 0.1)
+      m_marker_scale_global *= value;
+  }
+  else if(param == "set_scale_all") {
+    if(value > 0.1)
+      m_marker_scale_global = value;
+  }
+  else
+    return(false);
+  return(true);
 }
 
 //-----------------------------------------------------------

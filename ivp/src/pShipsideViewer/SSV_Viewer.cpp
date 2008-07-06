@@ -65,7 +65,8 @@ void SSV_Viewer::draw()
   MarineViewer::draw();
 
   drawOpAreaGrid();
-  drawMarkers();
+  if(m_vmarkers.viewable())
+    drawMarkers();
 
   if(m_grid_offon)
     drawGrids();
@@ -633,6 +634,18 @@ bool SSV_Viewer::setParam(string param, string value)
     return(setBooleanOnString(m_draw_bearing_lines, value));
   else if(param == "bearing_color")
     return(setColorMapping("bearing_color", value));
+  else if(param == "draw_markers")
+    m_vmarkers.setParam("viewable_all", "toggle");
+  else if(param == "marker_scale_all") {
+    if(value == "smaller")
+      m_vmarkers.setParam("mod_scale_all", 0.8);
+    else if(value == "bigger")
+      m_vmarkers.setParam("mod_scale_all", 1.2);
+    else if(value == "reset")
+      m_vmarkers.setParam("set_scale_all", 1.0);
+    else
+      return(false);
+  }
   else if(param == "ownship_name")
     m_ownship_name = toupper(value);
   else if(param == "op_area")
@@ -1269,12 +1282,14 @@ void SSV_Viewer::drawCirc(XYCircle dcircle, int pts, bool filled,
 
 void SSV_Viewer::drawMarkers()
 {
+  double gscale = m_vmarkers.getMarkerGScale(); 
+
   unsigned int vsize = m_vmarkers.size();
   for(unsigned int i=0; i<vsize; i++) {
     string mtype = m_vmarkers.getMarkerType(i);
     double xpos  = m_vmarkers.getMarkerXPos(i);
     double ypos  = m_vmarkers.getMarkerYPos(i);
-    double scale = m_vmarkers.getMarkerScale(i);
+    double scale = m_vmarkers.getMarkerScale(i) * gscale;
     drawCommonMarker(xpos, ypos, scale, mtype);
   }
 }

@@ -308,14 +308,20 @@ void SSV_GUI::augmentMenu()
 
   mbar->add("ForeView/Cycle Focus", 'v', (Fl_Callback*)SSV_GUI::cb_CycleFocus,(void*)0, 0);
 
-  mbar->add("GeoAttr/BearingLine/bearing_color=white", 0, (Fl_Callback*)SSV_GUI::cb_SSV_SetGeoAttr, (void*)100, 0);
-  mbar->add("GeoAttr/BearingLine/bearing_color=yellow", 0, (Fl_Callback*)SSV_GUI::cb_SSV_SetGeoAttr, (void*)101, 0);
-  mbar->add("GeoAttr/BearingLine/bearing_color=red", 0, (Fl_Callback*)SSV_GUI::cb_SSV_SetGeoAttr, (void*)102, 0);
-  mbar->add("GeoAttr/BearingLine/bearing_color=dark_blue", 0, (Fl_Callback*)SSV_GUI::cb_SSV_SetGeoAttr, (void*)103, 0);
-  mbar->add("GeoAttr/BearingLine/bearing_color=dark_green", 0, (Fl_Callback*)SSV_GUI::cb_SSV_SetGeoAttr, (void*)104, 0);
-  mbar->add("GeoAttr/BearingLine/bearing_color=dark_red", 0, (Fl_Callback*)SSV_GUI::cb_SSV_SetGeoAttr, (void*)105, FL_MENU_DIVIDER);
+  mbar->add("GeoAttr/BearingLine - Edit/bearing_color=white", 0, (Fl_Callback*)SSV_GUI::cb_SSV_SetGeoAttr, (void*)100, 0);
+  mbar->add("GeoAttr/BearingLine - Edit/bearing_color=yellow", 0, (Fl_Callback*)SSV_GUI::cb_SSV_SetGeoAttr, (void*)101, 0);
+  mbar->add("GeoAttr/BearingLine - Edit/bearing_color=red", 0, (Fl_Callback*)SSV_GUI::cb_SSV_SetGeoAttr, (void*)102, 0);
+  mbar->add("GeoAttr/BearingLine - Edit/bearing_color=dark_blue", 0, (Fl_Callback*)SSV_GUI::cb_SSV_SetGeoAttr, (void*)103, 0);
+  mbar->add("GeoAttr/BearingLine - Edit/bearing_color=dark_green", 0, (Fl_Callback*)SSV_GUI::cb_SSV_SetGeoAttr, (void*)104, 0);
+  mbar->add("GeoAttr/BearingLine - Edit/bearing_color=dark_red", 0, (Fl_Callback*)SSV_GUI::cb_SSV_SetGeoAttr, (void*)105, FL_MENU_DIVIDER);
 
-  mbar->add("GeoAttr/BearingLine - Toggle", 'x', (Fl_Callback*)SSV_GUI::cb_Bearings, (void*)0, 0);
+  mbar->add("GeoAttr/BearingLine - Toggle", 'x', (Fl_Callback*)SSV_GUI::cb_Bearings, (void*)0, FL_MENU_DIVIDER);
+
+  mbar->add("GeoAttr/Markers - Edit/marker_scale reset", FL_CTRL+FL_ALT+'m', (Fl_Callback*)SSV_GUI::cb_SSV_SetGeoAttr, (void*)2000, 0);
+  mbar->add("GeoAttr/Markers - Edit/marker_scale *= 0.80", FL_CTRL+'m', (Fl_Callback*)SSV_GUI::cb_SSV_SetGeoAttr, (void*)2001, 0);
+  mbar->add("GeoAttr/Markers - Edit/marker_scale *= 1.25", FL_ALT+'m', (Fl_Callback*)SSV_GUI::cb_SSV_SetGeoAttr, (void*)2002, FL_MENU_DIVIDER);
+
+  mbar->add("GeoAttr/Markers - Toggle", 'm', (Fl_Callback*)SSV_GUI::cb_SSV_SetGeoAttr, (void*)2010, 0);
 
 };
 
@@ -490,6 +496,11 @@ inline void SSV_GUI::cb_SSV_SetGeoAttr_i(int v) {
   else if(v==103) mviewer->setParam("bearing_color", "dark_blue");
   else if(v==104) mviewer->setParam("bearing_color", "dark_green");
   else if(v==105) mviewer->setParam("bearing_color", "dark_red");
+
+  else if(v==2000) mviewer->setParam("marker_scale_all", "reset");
+  else if(v==2001) mviewer->setParam("marker_scale_all", "smaller");
+  else if(v==2002) mviewer->setParam("marker_scale_all", "bigger");
+  else if(v==2010) mviewer->setParam("draw_markers", "toggle");
 
   mviewer->redraw();
 }
