@@ -5,6 +5,7 @@
 /*    DATE: July 6th, 2008                                       */
 /*****************************************************************/
 
+#include <iostream>
 #include "OpAreaSpec.h"
 #include "MBUtils.h"
 #include "ColorParse.h"
@@ -18,27 +19,6 @@ using namespace std;
 OpAreaSpec::OpAreaSpec()
 {
   m_viewable_labels = true;
-}
-
-//-----------------------------------------------------------
-// Procedure: addVertex()
-
-void OpAreaSpec::addVertex(double xpos, double ypos, double lwidth,
-			   string group, string label, string lcolor,
-			   string vcolor, bool dashed)
-{
-  m_vertex_xpos.push_back(xpos);
-  m_vertex_ypos.push_back(ypos);
-  m_vertex_lwidth.push_back(lwidth);
-  m_vertex_group.push_back(group);
-  m_vertex_label.push_back(label);
-  m_vertex_dashed.push_back(dashed);
-
-  vector<double> cvect = colorParse(lcolor);
-  m_vertex_lcolor.push_back(cvect);
-  if(vcolor != "")
-    cvect = colorParse(vcolor);
-  m_vertex_vcolor.push_back(cvect);
 }
 
 //-----------------------------------------------------------
@@ -95,9 +75,37 @@ bool OpAreaSpec::addVertex(const std::string& str,
   }
 
   bool dashed_b = (dashed == "true");
+
+  cout << "addVertex() x:" << xpos_d << " y:" << ypos_d 
+       << "lwidth:" << lwidth_d 
+       << " group:" << group << " label:" << label << " lcolor:" 
+       << lcolor << " vcolor:" << vcolor << " dashed_b:" << dashed_b
+       << endl;
+
   
   addVertex(xpos_d, ypos_d, lwidth_d, group, label, lcolor,
 	    vcolor, dashed_b);
+}
+
+//-----------------------------------------------------------
+// Procedure: addVertex()
+
+void OpAreaSpec::addVertex(double xpos, double ypos, double lwidth,
+			   string group, string label, string lcolor,
+			   string vcolor, bool dashed)
+{
+  m_vertex_xpos.push_back(xpos);
+  m_vertex_ypos.push_back(ypos);
+  m_vertex_lwidth.push_back(lwidth);
+  m_vertex_group.push_back(group);
+  m_vertex_label.push_back(label);
+  m_vertex_dashed.push_back(dashed);
+
+  vector<double> cvect = colorParse(lcolor);
+  m_vertex_lcolor.push_back(cvect);
+  if(vcolor != "")
+    cvect = colorParse(vcolor);
+  m_vertex_vcolor.push_back(cvect);
 }
 
 //-----------------------------------------------------------
@@ -112,6 +120,101 @@ bool OpAreaSpec::setParam(string param, string value)
   
   return(true);
 }
+
+//-----------------------------------------------------------
+// Procedure: getXPos
+
+double OpAreaSpec::getXPos(int ix)
+{
+  if((ix >= 0) && (ix < m_vertex_xpos.size()))
+    return(m_vertex_xpos[ix]);
+  return(0);
+}
+
+//-----------------------------------------------------------
+// Procedure: getYPos
+
+double OpAreaSpec::getYPos(int ix)
+{
+  if((ix >= 0) && (ix < m_vertex_ypos.size()))
+    return(m_vertex_ypos[ix]);
+  return(0);
+}
+
+//-----------------------------------------------------------
+// Procedure: getLWidth
+
+double OpAreaSpec::getLWidth(int ix)
+{
+  if((ix >= 0) && (ix < m_vertex_lwidth.size()))
+    return(m_vertex_lwidth[ix]);
+  return(0);
+}
+
+//-----------------------------------------------------------
+// Procedure: getGroup
+
+string OpAreaSpec::getGroup(int ix)
+{
+  if((ix >= 0) && (ix < m_vertex_group.size()))
+    return(m_vertex_group[ix]);
+  return("");
+}
+
+//-----------------------------------------------------------
+// Procedure: getLabel
+
+string OpAreaSpec::getLabel(int ix)
+{
+  if((ix >= 0) && (ix < m_vertex_label.size()))
+    return(m_vertex_label[ix]);
+  return("");
+}
+
+//-----------------------------------------------------------
+// Procedure: getDashed
+
+bool OpAreaSpec::getDashed(int ix)
+{
+  if((ix >= 0) && (ix < m_vertex_dashed.size()))
+    return(m_vertex_dashed[ix]);
+  return(false);
+}
+
+//-----------------------------------------------------------
+// Procedure: getLColor
+
+vector<double> OpAreaSpec::getLColor(int ix)
+{
+  vector<double> grey_vector;
+  grey_vector.push_back(0.5);
+  grey_vector.push_back(0.5);
+  grey_vector.push_back(0.5);
+  
+  if((ix >= 0) && (ix < m_vertex_lcolor.size()))
+    return(m_vertex_lcolor[ix]);
+  return(grey_vector);
+}
+
+//-----------------------------------------------------------
+// Procedure: getVColor
+
+vector<double> OpAreaSpec::getVColor(int ix)
+{
+  vector<double> grey_vector;
+  grey_vector.push_back(0.5);
+  grey_vector.push_back(0.5);
+  grey_vector.push_back(0.5);
+  
+  if((ix >= 0) && (ix < m_vertex_vcolor.size()))
+    return(m_vertex_vcolor[ix]);
+  return(grey_vector);
+}
+
+
+
+
+
 
 #if 0
 //-----------------------------------------------------------

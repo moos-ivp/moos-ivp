@@ -936,6 +936,66 @@ void SSV_Viewer::drawBearingLine(int index)
 
 void SSV_Viewer::drawOpAreaGrid()
 {
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glOrtho(0, w(), 0, h(), -1 ,1);
+
+  float tx = meters2img('x', 0);
+  float ty = meters2img('y', 0);
+  float qx = img2view('x', tx);
+  float qy = img2view('y', ty);
+
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
+  glLoadIdentity();
+
+  glTranslatef(qx, qy, 0);
+  glScalef(m_zoom, m_zoom, m_zoom);
+
+
+  unsigned int index = 0;
+  unsigned int asize = m_op_area.size();
+
+  while(index < asize) {
+    string group  = m_op_area.getGroup(index);
+    string label  = m_op_area.getLabel(index);
+    double lwidth = m_op_area.getLWidth(index);
+    bool   dashed = m_op_area.getDashed(index);
+
+    vector<double> lcolor = m_op_area.getLColor(index);
+    vector<double> vcolor = m_op_area.getVColor(index);
+
+    vector<double> xpos, ypos;
+
+    bool done = false;
+    while(!done) {
+      double x = m_op_area.getXPos(index);
+      double y = m_op_area.getXPos(index);
+      index++;
+      if((index >= asize) || (group != m_op_area.getGroup(index)))
+	done = true;
+    }
+    
+    int vsize = xpos.size();
+    for(int i=0; i<vsize; i++) {
+      xpos[i] *= m_back_img.get_pix_per_mtr();
+      ypos[i] *= m_back_img.get_pix_per_mtr();
+    }
+
+    // Draw the edges 
+    glLineWidth(lwidth);
+    glColor3f(lcolor[0], lcolor[1], lcolor[2]);
+    
+    glBegin(GL_LINE_STRIP);
+    for(int j=0; j<vsize; j++)
+      glVertex2f(xpos[j],  ypos[j]);
+    glEnd();
+  }
+
+  glFlush();
+  glPopMatrix();
+
+
 #if 0
   if(m_op_area == "dabob_bay")
     drawGridPN();
@@ -998,7 +1058,6 @@ void SSV_Viewer::drawGridBox(double p0x, double p0y,
   glColor3f(0.0, 0.7, 0.5);
   glBegin(GL_LINE_STRIP);
 
-  glBegin(GL_LINE_STRIP);
   glVertex2f(points[2*0],  points[2*0+1]);
   glVertex2f(points[2*1],  points[2*1+1]);
   glVertex2f(points[2*2],  points[2*2+1]);

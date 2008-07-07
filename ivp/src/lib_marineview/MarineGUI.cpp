@@ -94,7 +94,8 @@ Fl_Menu_Item MarineGUI::menu_[] = {
 void MarineGUI::augmentMenu() 
 {
   mbar->add("GeoAttr/Polygons - Edit/display_poly_labels=on", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)150, 0);
-  mbar->add("GeoAttr/Polygons - Edit/display_poly_labels=off", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)151, FL_MENU_DIVIDER);
+  mbar->add("GeoAttr/Polygons - Edit/display_poly_labels=off", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)151, 0);
+  mbar->add("GeoAttr/Polygons - Edit/display_poly_labels toggle", 'P', (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)152, FL_MENU_DIVIDER);
 
   mbar->add("GeoAttr/Polygons - Edit/poly_vertex_color=red", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)100, 0);
   mbar->add("GeoAttr/Polygons - Edit/poly_vertex_color=white", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)101, 0);
@@ -321,6 +322,7 @@ inline void MarineGUI::cb_MG_SetGeoAttr_i(int v) {
 
   else if(v==150) cmviewer->setCommonParam("display_poly_labels", "on");
   else if(v==151) cmviewer->setCommonParam("display_poly_labels", "off");
+  else if(v==152) cmviewer->setCommonParam("display_poly_labels", "toggle");
 
   else if(v==400) cmviewer->setCommonParam("datum_color", "red");
   else if(v==401) cmviewer->setCommonParam("datum_color", "white");
