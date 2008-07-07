@@ -226,9 +226,7 @@ bool SSV_MOOSApp::OnStartUp()
     sVarName = toupper(sVarName);
     sLine    = stripBlankEnds(sLine);
     
-    if(MOOSStrCmp(sVarName, "OP_AREA"))
-      op_area = tolower(sLine);
-    else if(MOOSStrCmp(sVarName, "VEHICOLOR"))
+    if(MOOSStrCmp(sVarName, "VEHICOLOR"))
       m_gui->mviewer->setColorMapping(sLine);
     else if(MOOSStrCmp(sVarName, "COLORMAP"))
       m_gui->mviewer->setColorMapping(sLine);

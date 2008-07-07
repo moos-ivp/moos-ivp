@@ -9,6 +9,7 @@ IF(BUILD_GUIS)
        SSV_MOOSApp.cpp
        SSV_Viewer.cpp
        VMarkerSet.cpp
+       OpAreaSpec.cpp
        main_ssviewer.cpp)
    
        IF(${APPLE})

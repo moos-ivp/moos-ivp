@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin and John Leonard                    */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
-/*    FILE: Viewingset.h                                         */
+/*    FILE: VMarkerSet.h                                         */
 /*    DATE: July 5th, 2008                                       */
 /*****************************************************************/
 

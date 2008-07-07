@@ -38,6 +38,7 @@
 #include "MOOSGeodesy.h"
 #include "MOOSLock.h"
 #include "VMarkerSet.h"
+#include "OpAreaSpec.h"
 
 class SSV_Viewer : public MarineViewer
 {
@@ -139,8 +140,8 @@ public:
   int    m_radial_size;
   float  m_curr_time;
 
-  std::string m_op_area;
   VMarkerSet  m_vmarkers;
+  OpAreaSpec  m_op_area;
   CMOOSLock   m_mutex;
 };
 

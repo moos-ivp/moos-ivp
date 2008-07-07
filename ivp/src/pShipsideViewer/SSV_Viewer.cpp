@@ -718,7 +718,7 @@ bool SSV_Viewer::setParam(string param, string value)
     return(true);
   
   param = tolower(stripBlankEnds(param));
-  value = tolower(stripBlankEnds(value));
+  value = stripBlankEnds(value);
   
   if(param == "centric_view")
     return(setBooleanOnString(m_centric_view, value));
@@ -744,11 +744,11 @@ bool SSV_Viewer::setParam(string param, string value)
   }
   else if(param == "ownship_name")
     m_ownship_name = toupper(value);
-  else if(param == "op_area")
-    m_op_area = value;
+  else if(param == "op_vertex")
+    return(m_op_area.addVertex(value, m_geodesy));
   else
     return(false);
-
+  
   redraw();
   return(true);
 
@@ -936,6 +936,7 @@ void SSV_Viewer::drawBearingLine(int index)
 
 void SSV_Viewer::drawOpAreaGrid()
 {
+#if 0
   if(m_op_area == "dabob_bay")
     drawGridPN();
   else if(m_op_area == "tellaro")
@@ -947,6 +948,7 @@ void SSV_Viewer::drawOpAreaGrid()
   else if(m_op_area == "lotti")
     drawGridBox(926.7,   749.9,    1048.1,  642.4,
 		467.0,     0.0,       0.0,  342.0);
+#endif
 }
 
 
