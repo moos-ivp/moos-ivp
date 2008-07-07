@@ -180,16 +180,21 @@ ProcessConfig = pShipsideViewer
   OWNSHIP_NAME = PTSUR
   CONTACTS     = BOBBY, DEE, ELANOR, FRANKIE, MACRURA, UNICORN
 
-  GATEWAYA     = 47.753183, -122.841933, 1.7
-  GATEWAYA     = 47.735533, -122.847617, 1.7
-  GATEWAYA     = 47.720767, -122.851500, 1.7
-  GATEWAYA     = 47.692414, -122.866933, 1.7
+  MARKER       = type=diamond, xpos=100,  ypos=-200, scale=1, label=gateway-A21
+  MARKER       = type=square, xpos=200,  ypos=-200, scale=1, label=gateway-A21
+  MARKER       = type=triangle, xpos=300,  ypos=-200, scale=1, label=gateway-A20
+  MARKER       = type=gateway, xpos=-100, ypos=-200, scale=1, label=gateway-A22, colors=darkcyan:black
+  MARKER       = type=efield,  xpos=0,    ypos=-300, scale=1, label=gateway-A23
+  MARKER       = type=kelp,  xpos=0,    ypos=-425, scale=1, label=gateway-A24, colors=darkblue:white
 
-  GATEWAYB     = 47.724993, -122.852467, 1.7
-  GATEWAYB     = 47.707800, -122.860517, 1.7
+  OP_VERTEX    = xpos=200, ypos=0, group=a, label=A, lcolor=yellow, lwidth=2, dashed=true
+  OP_VERTEX    = xpos=200, ypos=-200, group=a, label=B
+  OP_VERTEX    = xpos=0, ypos=-200, group=a, label=C
+  OP_VERTEX    = xpos=0, ypos=0, group=a, label=D
 
-  EFIELD       = 47.716667, -122.8555500, 1.5
-  EFIELD       = 47.724167, -122.8600000, 1.5
+  //MARKER       = type=gateway_a, lat=47.7341, lon=-122.85, scale=1.7, label=gateway-A2
+  //MARKER       = type=gateway_a, lat=47.7291, lon=-122.85, scale=1.7, label=gateway-A3
+  //MARKER       = type=gateway_a, lat=47.7191, lon=-122.85, scale=1.7, label=gateway-A4
 }
 
 
