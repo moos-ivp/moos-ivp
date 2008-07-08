@@ -10,6 +10,7 @@ SET(SRC
   MarineViewer.cpp
   VMarkerSet.cpp
   OpAreaSpec.cpp
+  LMV_Utils.cpp
 )
 
 

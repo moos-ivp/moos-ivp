@@ -309,6 +309,9 @@ void MarineViewer::draw()
   // Draw the datum
   if(m_draw_datum)
     drawDatum();
+
+  drawOpArea();
+  drawMarkers();
 }
 
 // ----------------------------------------------------------
@@ -948,6 +951,41 @@ bool MarineViewer::setCommonParam(string param, string value)
     return(setBooleanOnString(m_poly_labels, value));
   else if(param == "display_grids")
     return(setBooleanOnString(m_grid_offon, value));
+
+  else if(param == "draw_marker_labels")
+    m_vmarkers.setParam("viewable_labels", "toggle");
+  else if(param == "marker_label_color")
+    m_vmarkers.setParam("label_color", value);
+  else if(param == "draw_markers")
+    m_vmarkers.setParam("viewable_all", value);
+  else if(param == "marker")
+    m_vmarkers.addVMarker(value, m_geodesy);
+
+  else if(param == "geodesy_init")
+    initGeodesy(value);
+
+  else if(param == "op_vertex")
+    m_op_area.addVertex(value, m_geodesy);
+  else if(param == "op_area_draw")
+    m_op_area.setParam("viewable_all", value);
+  else if(param == "op_area_labels")
+    m_op_area.setParam("viewable_labels", value);
+  else if(param == "op_area_config")
+    m_op_area.setParam("config", value);
+  else if(param == "op_area_shade")
+    m_op_area.setParam("config", value);
+
+  else if(param == "marker_scale_all") {
+    if(value == "smaller")
+      m_vmarkers.setParam("mod_scale_all", 0.8);
+    else if(value == "bigger")
+      m_vmarkers.setParam("mod_scale_all", 1.2);
+    else if(value == "reset")
+      m_vmarkers.setParam("set_scale_all", 1.0);
+    else
+      return(false);
+  }
+
   else if(param == "zoom") {
     if(value == "reset")
       m_zoom = 1.0;
@@ -1665,6 +1703,42 @@ void MarineViewer::drawOpArea()
 
   glFlush();
   glPopMatrix();
+}
+
+//-------------------------------------------------------------
+// Procedure: initGeodesy
+
+bool MarineViewer::initGeodesy(double lat, double lon)
+{
+  if((lat > 90) || (lat < -90))
+    return(false);
+  
+  if((lon > 180) || (lon < -180))
+    return(false);
+
+  return(m_geodesy.Initialise(lat, lon));
+}
+
+
+//-------------------------------------------------------------
+// Procedure: initGeodesy
+
+bool MarineViewer::initGeodesy(const string& str)
+{
+  vector<string> svector = parseString(str, ',');
+  if(svector.size() != 2)
+    return(false);
+  
+  string slat = stripBlankEnds(svector[0]);
+  string slon = stripBlankEnds(svector[1]);
+  
+  if((!isNumber(slat)) || (!isNumber(slon)))
+    return(false);
+  
+  double dlat = atof(slat.c_str());
+  double dlon = atof(slon.c_str());
+
+  return(m_geodesy.Initialise(dlat, dlon));
 }
 
 

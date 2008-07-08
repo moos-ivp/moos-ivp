@@ -122,15 +122,6 @@ int GEO_GUI::handle(int event)
   }
 }
 
-//----------------------------------------------------------
-// Procedure: addCircle
-
-void GEO_GUI::addCircle(XYCircle new_circle)
-{
-  if(pviewer)
-    pviewer->addCircle(new_circle);
-}
-
 //----------------------------------------- Clear
 inline void GEO_GUI::cb_Clear_i() {
   pviewer->setParam("clear", "polygons");

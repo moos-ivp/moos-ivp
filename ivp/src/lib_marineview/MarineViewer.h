@@ -39,6 +39,7 @@
 #include "ObjectPose.h"
 #include "VMarkerSet.h"
 #include "OpAreaSpec.h"
+#include "MOOSGeodesy.h"
 
 class MarineViewer : public Fl_Gl_Window
 {
@@ -58,6 +59,9 @@ class MarineViewer : public Fl_Gl_Window
 
   bool  setCommonParam(std::string, std::string);
   bool  setCommonParam(std::string, float);
+
+  bool  initGeodesy(double, double);
+  bool  initGeodesy(const std::string&);
 
 public:
   bool   readTiff(std::string);
@@ -163,6 +167,7 @@ protected:
   std::map<std::string, std::vector<double> >  m_color_map;
   VMarkerSet  m_vmarkers;
   OpAreaSpec  m_op_area;
+  CMOOSGeodesy m_geodesy;
 
 };
 

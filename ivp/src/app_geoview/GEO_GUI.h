@@ -23,7 +23,6 @@ public:
   
   void updateXY();
   int  handle(int);
-  void addCircle(XYCircle);
 
 public:
   GeoViewer  *pviewer;

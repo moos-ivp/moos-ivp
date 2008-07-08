@@ -164,6 +164,21 @@ void MarineGUI::augmentMenu()
   mbar->add("GeoAttr/Datum - Edit/datum_size=20", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)445, 0);
 
   mbar->add("GeoAttr/Datum - Toggle", 'd', (Fl_Callback*)MarineGUI::cb_ToggleDatum, (void*)0, FL_MENU_DIVIDER);
+
+  mbar->add("GeoAttr/Markers - Edit/marker_scale reset", FL_CTRL+FL_ALT+'m', (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)2000, 0);
+  mbar->add("GeoAttr/Markers - Edit/marker_scale *= 0.80", FL_CTRL+'m', (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)2001, 0);
+  mbar->add("GeoAttr/Markers - Edit/marker_scale *= 1.25", FL_ALT+'m', (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)2002, FL_MENU_DIVIDER);
+  mbar->add("GeoAttr/Markers - Edit/draw labels  toggle", 'l', (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)2020, FL_MENU_DIVIDER);
+  mbar->add("GeoAttr/Markers - Edit/label colors toggle", 'L', (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)2030, 0);
+
+  mbar->add("GeoAttr/Markers - Toggle", 'm', (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)2050, FL_MENU_DIVIDER);
+
+  mbar->add("GeoAttr/OpArea - Edit/op_area reset", FL_CTRL+FL_ALT+'u', (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)2100, 0);
+  mbar->add("GeoAttr/OpArea - Edit/op_area lighter *= 0.80", FL_CTRL+'u', (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)2101, 0);
+  mbar->add("GeoAttr/OpArea - Edit/op_area darker *= 1.25", FL_ALT+'u', (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)2102, FL_MENU_DIVIDER);
+  mbar->add("GeoAttr/OpArea - Edit/op_area labels  toggle", 'U', (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)2120, FL_MENU_DIVIDER);
+
+  mbar->add("GeoAttr/OpArea - Toggle", 'u', (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)2150, FL_MENU_DIVIDER);
 }
 
 
@@ -336,6 +351,20 @@ inline void MarineGUI::cb_MG_SetGeoAttr_i(int v) {
   else if(v==443) cmviewer->setCommonParam("datum_size", 10);
   else if(v==444) cmviewer->setCommonParam("datum_size", 15);
   else if(v==445) cmviewer->setCommonParam("datum_size", 20);
+
+  else if(v==2000) cmviewer->setCommonParam("marker_scale_all", "reset");
+  else if(v==2001) cmviewer->setCommonParam("marker_scale_all", "smaller");
+  else if(v==2002) cmviewer->setCommonParam("marker_scale_all", "bigger");
+  else if(v==2020) cmviewer->setCommonParam("draw_marker_labels", "toggle");
+  else if(v==2030) cmviewer->setCommonParam("marker_label_color", "toggle");
+  else if(v==2050) cmviewer->setCommonParam("draw_markers", "toggle");
+
+  else if(v==2100) cmviewer->setCommonParam("op_area_config", "reset");
+  else if(v==2101) cmviewer->setCommonParam("op_area_shade",  "lighter");
+  else if(v==2102) cmviewer->setCommonParam("op_area_shade",  "darker");
+  else if(v==2120) cmviewer->setCommonParam("op_area_labels", "toggle");
+  else if(v==2150) cmviewer->setCommonParam("op_area_draw",   "toggle");
+
   else 
     return;
 

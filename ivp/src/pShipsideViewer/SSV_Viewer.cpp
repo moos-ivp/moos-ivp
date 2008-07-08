@@ -61,9 +61,6 @@ void SSV_Viewer::draw()
   mutexLock();
   MarineViewer::draw();
 
-  drawOpArea();
-  drawMarkers();
-
   if(m_grid_offon)
     drawGrids();
 
@@ -566,34 +563,6 @@ bool SSV_Viewer::setParam(string param, string value)
     return(setBooleanOnString(m_draw_bearing_lines, value));
   else if(param == "bearing_color")
     return(setColorMapping("bearing_color", value));
-  else if(param == "draw_marker_labels")
-    m_vmarkers.setParam("viewable_labels", "toggle");
-  else if(param == "marker_label_color")
-    m_vmarkers.setParam("label_color", value);
-  else if(param == "draw_markers")
-    m_vmarkers.setParam("viewable_all", value);
-  else if(param == "marker")
-    m_vmarkers.addVMarker(value, m_geodesy);
-
-  else if(param == "op_area_draw")
-    m_op_area.setParam("viewable_all", value);
-  else if(param == "op_area_labels")
-    m_op_area.setParam("viewable_labels", value);
-  else if(param == "op_area_config")
-    m_op_area.setParam("config", value);
-  else if(param == "op_area_shade")
-    m_op_area.setParam("config", value);
-
-  else if(param == "marker_scale_all") {
-    if(value == "smaller")
-      m_vmarkers.setParam("mod_scale_all", 0.8);
-    else if(value == "bigger")
-      m_vmarkers.setParam("mod_scale_all", 1.2);
-    else if(value == "reset")
-      m_vmarkers.setParam("set_scale_all", 1.0);
-    else
-      return(false);
-  }
   else if(param == "ownship_name")
     m_ownship_name = toupper(value);
   else if(param == "op_vertex") {
@@ -1064,16 +1033,6 @@ void SSV_Viewer::addStationCircle(const XYCircle& new_circ)
   if(!prior_existed)
     m_station_circ.push_back(new_circ);
 }
-
-
-//-------------------------------------------------------------
-// Procedure: initGeodesy
-
-bool SSV_Viewer::initGeodesy(double lat, double lon)
-{
-  return(m_geodesy.Initialise(lat, lon));
-}
-
 
 //-------------------------------------------------------------
 // Procedure: drawStationCircles
