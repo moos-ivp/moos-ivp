@@ -187,10 +187,15 @@ ProcessConfig = pShipsideViewer
   MARKER       = type=efield,  xpos=0,    ypos=-300, scale=1, label=gateway-A23
   MARKER       = type=kelp,  xpos=0,    ypos=-425, scale=1, label=gateway-A24, colors=darkblue:white
 
-  OP_VERTEX    = xpos=200, ypos=0, group=a, label=A, lcolor=yellow, lwidth=2, dashed=true
+  OP_VERTEX    = xpos=200, ypos=0, group=a, label=A, lcolor=yellow, lwidth=1, dashed=true, looped=true
   OP_VERTEX    = xpos=200, ypos=-200, group=a, label=B
   OP_VERTEX    = xpos=0, ypos=-200, group=a, label=C
   OP_VERTEX    = xpos=0, ypos=0, group=a, label=D
+
+  OP_VERTEX    = xpos=-100, ypos=-160, group=b, label=A, lcolor=blue, lwidth=1, dashed=true, looped=true
+  OP_VERTEX    = xpos=-100, ypos=-200, group=b, label=B
+  OP_VERTEX    = xpos=-10, ypos=-200, group=b, label=C
+  OP_VERTEX    = xpos=-10, ypos=-160, group=b, label=D
 
   //MARKER       = type=gateway_a, lat=47.7341, lon=-122.85, scale=1.7, label=gateway-A2
   //MARKER       = type=gateway_a, lat=47.7291, lon=-122.85, scale=1.7, label=gateway-A3
