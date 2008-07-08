@@ -30,7 +30,9 @@ bool OpAreaSpec::addVertex(const std::string& str,
   vector<string> svector = parseString(str, ',');
   unsigned int vsize = svector.size();
 
-  string xpos, ypos, lat, lon, lwidth, group, label, lcolor, vcolor, dashed;
+  string xpos, ypos, lat, lon, lwidth, group, label, lcolor;
+  string vcolor, dashed, looped;
+
   for(unsigned int i=0; i<vsize; i++) {
     svector[i] = stripBlankEnds(svector[i]);
     vector<string> ivector = parseString(svector[i], '=');
@@ -48,7 +50,15 @@ bool OpAreaSpec::addVertex(const std::string& str,
     else if(left == "lcolor") lcolor = right;
     else if(left == "vcolor") vcolor = right;
     else if(left == "dashed") dashed = tolower(right);
+    else if(left == "looped") looped = tolower(right);
   }
+
+  cout << "addVertexA() x:" << xpos << " y:" << ypos
+       << "  lwidth:" << lwidth 
+       << "  group:" << group << "  label:" << label << "  lcolor:" 
+       << lcolor << "  vcolor:" << vcolor << "  dashed:" << dashed
+       << "  looped:" << looped << endl;
+
 
   // The position has to be fully specified in terms of either lat/lon
   // of the x-y position in local coords. Otherwise return(false);
@@ -56,12 +66,13 @@ bool OpAreaSpec::addVertex(const std::string& str,
     if((xpos=="")||(ypos=="")||(!isNumber(xpos))||(!isNumber(ypos)))
       return(false);
   
-  if(!isNumber(lwidth))
+  if((lwidth!="") && (!isNumber(lwidth)))
     return(false);
   double lwidth_d = atof(lwidth.c_str());
-  if(lwidth_d <= 0)
+  if(lwidth_d < 0)
     return(false);
-
+  if(lwidth_d < 1)
+    lwidth_d = 1.0;
 
   double xpos_d, ypos_d;
   if((lat=="")||(lon=="")||(!isNumber(lat))||(!isNumber(lon))) {
@@ -75,16 +86,17 @@ bool OpAreaSpec::addVertex(const std::string& str,
   }
 
   bool dashed_b = (dashed == "true");
+  bool looped_b = (looped == "true");
 
-  cout << "addVertex() x:" << xpos_d << " y:" << ypos_d 
-       << "lwidth:" << lwidth_d 
-       << " group:" << group << " label:" << label << " lcolor:" 
-       << lcolor << " vcolor:" << vcolor << " dashed_b:" << dashed_b
-       << endl;
+  cout << "addVertexB() x:" << xpos_d << " y:" << ypos_d 
+       << "  lwidth:" << lwidth_d 
+       << "  group:" << group << "  label:" << label << "  lcolor:" 
+       << lcolor << "  vcolor:" << vcolor << "  dashed_b:" << dashed_b
+       << "  looped_b:" << looped_b << endl;
 
   
   addVertex(xpos_d, ypos_d, lwidth_d, group, label, lcolor,
-	    vcolor, dashed_b);
+	    vcolor, looped_b, dashed_b);
 }
 
 //-----------------------------------------------------------
@@ -92,7 +104,7 @@ bool OpAreaSpec::addVertex(const std::string& str,
 
 void OpAreaSpec::addVertex(double xpos, double ypos, double lwidth,
 			   string group, string label, string lcolor,
-			   string vcolor, bool dashed)
+			   string vcolor, bool looped, bool dashed)
 {
   m_vertex_xpos.push_back(xpos);
   m_vertex_ypos.push_back(ypos);
@@ -100,6 +112,7 @@ void OpAreaSpec::addVertex(double xpos, double ypos, double lwidth,
   m_vertex_group.push_back(group);
   m_vertex_label.push_back(label);
   m_vertex_dashed.push_back(dashed);
+  m_vertex_looped.push_back(looped);
 
   vector<double> cvect = colorParse(lcolor);
   m_vertex_lcolor.push_back(cvect);
@@ -178,6 +191,16 @@ bool OpAreaSpec::getDashed(int ix)
 {
   if((ix >= 0) && (ix < m_vertex_dashed.size()))
     return(m_vertex_dashed[ix]);
+  return(false);
+}
+
+//-----------------------------------------------------------
+// Procedure: getLooped
+
+bool OpAreaSpec::getLooped(int ix)
+{
+  if((ix >= 0) && (ix < m_vertex_looped.size()))
+    return(m_vertex_looped[ix]);
   return(false);
 }
 

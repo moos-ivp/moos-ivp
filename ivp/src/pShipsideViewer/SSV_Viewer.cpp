@@ -744,8 +744,11 @@ bool SSV_Viewer::setParam(string param, string value)
   }
   else if(param == "ownship_name")
     m_ownship_name = toupper(value);
-  else if(param == "op_vertex")
+  else if(param == "op_vertex") {
+    cout << "SSV_Viewer.cpp: setParam() adding vertex to op_area: " << endl;
+    cout << value << endl;
     return(m_op_area.addVertex(value, m_geodesy));
+  }
   else
     return(false);
   
@@ -956,11 +959,16 @@ void SSV_Viewer::drawOpAreaGrid()
   unsigned int index = 0;
   unsigned int asize = m_op_area.size();
 
+  cout << "opa: index: " << index << endl;
+  cout << "opa: asize: " << asize << endl;
+
   while(index < asize) {
+    cout << "opa: index(b): " << index << endl;
     string group  = m_op_area.getGroup(index);
     string label  = m_op_area.getLabel(index);
     double lwidth = m_op_area.getLWidth(index);
     bool   dashed = m_op_area.getDashed(index);
+    bool   looped = m_op_area.getLooped(index);
 
     vector<double> lcolor = m_op_area.getLColor(index);
     vector<double> vcolor = m_op_area.getVColor(index);
@@ -970,10 +978,12 @@ void SSV_Viewer::drawOpAreaGrid()
     bool done = false;
     while(!done) {
       double x = m_op_area.getXPos(index);
-      double y = m_op_area.getXPos(index);
+      double y = m_op_area.getYPos(index);
       index++;
       if((index >= asize) || (group != m_op_area.getGroup(index)))
 	done = true;
+      xpos.push_back(x);
+      ypos.push_back(y);
     }
     
     int vsize = xpos.size();
@@ -986,15 +996,31 @@ void SSV_Viewer::drawOpAreaGrid()
     glLineWidth(lwidth);
     glColor3f(lcolor[0], lcolor[1], lcolor[2]);
     
-    glBegin(GL_LINE_STRIP);
-    for(int j=0; j<vsize; j++)
+    if(looped)
+      glBegin(GL_LINE_LOOP);
+    else
+      glBegin(GL_LINE_STRIP);
+    for(int j=0; j<vsize; j++) {
       glVertex2f(xpos[j],  ypos[j]);
+      cout << "opa: x:" << xpos[j] << "," << ypos[j] << "," << group << endl;
+    }
     glEnd();
   }
 
   glFlush();
   glPopMatrix();
 
+}
+
+
+//-------------------------------------------------------------
+// Procedure: drawGridBox
+
+void SSV_Viewer::drawGridBox(double p0x, double p0y,
+			     double p1x, double p1y,
+			     double p2x, double p2y,
+			     double p3x, double p3y)
+{
 
 #if 0
   if(m_op_area == "dabob_bay")
@@ -1009,17 +1035,7 @@ void SSV_Viewer::drawOpAreaGrid()
     drawGridBox(926.7,   749.9,    1048.1,  642.4,
 		467.0,     0.0,       0.0,  342.0);
 #endif
-}
 
-
-//-------------------------------------------------------------
-// Procedure: drawGridBox
-
-void SSV_Viewer::drawGridBox(double p0x, double p0y,
-			     double p1x, double p1y,
-			     double p2x, double p2y,
-			     double p3x, double p3y)
-{
   unsigned int i;
 
   unsigned int    vsize  = 4;

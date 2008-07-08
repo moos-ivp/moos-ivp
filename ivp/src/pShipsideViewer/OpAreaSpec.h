@@ -29,6 +29,7 @@ public:
   std::string getGroup(int ix);
   std::string getLabel(int ix);
   bool        getDashed(int ix);
+  bool        getLooped(int ix);
 
   std::vector<double> getLColor(int ix);
   std::vector<double> getVColor(int ix);
@@ -39,7 +40,7 @@ protected:
   void addVertex(double xpos, double ypos, double lwidth,
 		 std::string group, std::string label, 
 		 std::string lcolor, std::string vcolor, 
-		 bool ldashed=false);
+		 bool looped=false, bool ldashed=false);
 
 protected:
   std::vector<double>       m_vertex_xpos;
@@ -48,6 +49,7 @@ protected:
   std::vector<std::string>  m_vertex_group;
   std::vector<std::string>  m_vertex_label;
   std::vector<bool>         m_vertex_dashed;
+  std::vector<bool>         m_vertex_looped;
 
   std::vector<std::vector<double> > m_vertex_lcolor;
   std::vector<std::vector<double> > m_vertex_vcolor;
