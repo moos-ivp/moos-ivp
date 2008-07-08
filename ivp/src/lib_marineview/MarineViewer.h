@@ -37,6 +37,8 @@
 #include "XYCircle.h"
 #include "XYHexagon.h"
 #include "ObjectPose.h"
+#include "VMarkerSet.h"
+#include "OpAreaSpec.h"
 
 class MarineViewer : public Fl_Gl_Window
 {
@@ -94,18 +96,24 @@ protected:
 		  float=0.20, float=0.80, float=0.20,   
 		  float=0.00, float=0.00, float=0.00);
 
-  void   drawDatum();
-  void   drawHexagons();
-  void   drawSegLists();
-  void   drawSegList(int ix);
-  void   drawGrids();
-  void   drawGrid(const XYGrid&);
-  void   drawCircles();
-  void   drawCircle(int ix);
-  void   drawGLPoly(float *points, int numPoints, float r, float g, 
-		    float b, float thickness=0, float scale=1);
-  void   drawCommonVehicle(std::string vname, ObjectPose, double r, 
-			   double g, double b, std::string body, int line=0);
+  void  drawDatum();
+  void  drawHexagons();
+  void  drawSegLists();
+  void  drawSegList(int ix);
+  void  drawGrids();
+  void  drawMarkers();
+  void  drawOpArea();
+  void  drawGrid(const XYGrid&);
+  void  drawCircles();
+  void  drawCircle(int ix);
+  void  drawGLPoly(float *points, int numPoints, float r, float g, 
+		   float b, float thickness=0, float scale=1);
+  void  drawCommonVehicle(std::string vname, ObjectPose, double r, 
+			  double g, double b, std::string body, int line=0);
+  void  drawCommonMarker(double x, double y, double scale, 
+			 const std::string& mtype, const std::string& label, 
+			 const std::vector<double>& label_color, 
+			 const std::vector<std::vector<double> >& color_vectors);
 
 protected:
   BackImg    m_back_img;
@@ -153,6 +161,8 @@ protected:
   std::vector<XYSegList> m_segl;
 
   std::map<std::string, std::vector<double> >  m_color_map;
+  VMarkerSet  m_vmarkers;
+  OpAreaSpec  m_op_area;
 
 };
 

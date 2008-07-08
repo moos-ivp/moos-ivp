@@ -234,8 +234,6 @@ bool SSV_MOOSApp::OnStartUp()
       m_gui->mviewer->setParam("ownship_name", sLine);
     else if(MOOSStrCmp(sVarName, "CONTACTS"))
       handleContactList(sLine);
-    else if(MOOSStrCmp(sVarName, "MARKER"))
-      m_gui->mviewer->addVMarker(sLine);
     else { 
       bool handled = m_gui->mviewer->setParam(sVarName, sLine);
       if(!handled)

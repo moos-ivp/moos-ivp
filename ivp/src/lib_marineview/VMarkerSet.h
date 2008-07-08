@@ -11,13 +11,14 @@
 #include <vector>
 #include <string>
 
+class CMOOSGeodesy;
 class VMarkerSet {
 public:
   VMarkerSet();
   virtual ~VMarkerSet() {};
 
-  bool addVMarker(std::string mtype, double xpos, double ypos,
-		   double mscale, std::string label, std::string colors);
+  bool addVMarker(const std::string& description, 
+		  CMOOSGeodesy& geodesy);
 
   bool setParam(std::string param, std::string value);
   bool setParam(std::string param, double);
@@ -37,6 +38,11 @@ public:
   std::vector<std::vector<double> > getMarkerColorVectors(int mix);
 
   std::vector<double> getLabelColor() {return(m_label_color);};
+
+protected:
+  bool addVMarker(std::string mtype, double xpos, double ypos,
+		  double mscale, std::string label, std::string colors);
+
 
 protected:
   std::vector<std::string>  m_marker_type;

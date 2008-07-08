@@ -8,8 +8,6 @@ IF(BUILD_GUIS)
        SSV_GUI.cpp
        SSV_MOOSApp.cpp
        SSV_Viewer.cpp
-       VMarkerSet.cpp
-       OpAreaSpec.cpp
        main_ssviewer.cpp)
    
        IF(${APPLE})
@@ -21,8 +19,8 @@ IF(BUILD_GUIS)
        TARGET_LINK_LIBRARIES(pShipsideViewer
           MOOS
           MOOSGen
-          MOOSUtility
           marineview
+          MOOSUtility
           mbutil
           genutil
           geometry

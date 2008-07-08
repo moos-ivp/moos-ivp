@@ -37,8 +37,6 @@
 #include "XYCircle.h"
 #include "MOOSGeodesy.h"
 #include "MOOSLock.h"
-#include "VMarkerSet.h"
-#include "OpAreaSpec.h"
 
 class SSV_Viewer : public MarineViewer
 {
@@ -81,17 +79,10 @@ public:
   void  setCurrent(std::string);
   void  cycleIndex();
   
- public: // Geomarkers
-  bool  addVMarker(const std::string&);
-
   void  mutexLock()   {m_mutex.Lock();};
   void  mutexUnLock() {m_mutex.UnLock();};
 
  protected:
-  void  drawCommonMarker(double x, double y, double scale, 
-			 const std::string& mtype, const std::string& label, 
-			 const std::vector<double>& label_color, 
-			 const std::vector<std::vector<double> >& color_vectors);
   void  drawVehicle(std::string, bool, std::string);
   void  drawPoints(CPList&);
   void  drawPoint(float, float, int color=0);
@@ -103,11 +94,9 @@ public:
   void  drawCirc(XYCircle, int, bool, double, double, double,
 		 double=0, double=0, double=0);
 
-  void  drawOpArea();
   void  drawGridBox(double, double, double, double, 
 		    double, double, double, double);
   void  drawGridPN();
-  void  drawMarkers();
 
   ObjectPose getObjectPoseByIndex(int);
 
@@ -140,8 +129,6 @@ public:
   int    m_radial_size;
   float  m_curr_time;
 
-  VMarkerSet  m_vmarkers;
-  OpAreaSpec  m_op_area;
   CMOOSLock   m_mutex;
 };
 

@@ -8,6 +8,7 @@
 #include "VMarkerSet.h"
 #include "MBUtils.h"
 #include "ColorParse.h"
+#include "MOOSGeodesy.h"
 
 using namespace std;
 
@@ -24,6 +25,63 @@ VMarkerSet::VMarkerSet()
   m_label_color         = m_label_color_default;
   m_label_color_index   = 0;
 }
+
+//-----------------------------------------------------------
+// Procedure: addVMarker()
+//      Note: return(true) if the given vmarker results in a new entry
+//            return(false) if the given marker replaces an old entry
+
+bool VMarkerSet::addVMarker(const string& mline,
+			    CMOOSGeodesy& geodesy)
+{
+  vector<string> svector = parseString(mline, ',');
+  unsigned int vsize = svector.size();
+
+  string mtype, xpos, ypos, lat, lon, scale, label, colors;
+  for(unsigned int i=0; i<vsize; i++) {
+    svector[i] = stripBlankEnds(svector[i]);
+    vector<string> ivector = parseString(svector[i], '=');
+    if(ivector.size() != 2)
+      return(false);
+    string left  = tolower(stripBlankEnds(ivector[0]));
+    string right = stripBlankEnds(ivector[1]);
+    if(left == "type")        mtype = right;
+    else if(left == "xpos")   xpos = right;
+    else if(left == "ypos")   ypos = right;
+    else if(left == "scale")  scale = right;
+    else if(left == "lat")    lat = right;
+    else if(left == "lon")    lon = right;
+    else if(left == "label")  label = right;
+    else if(left == "colors") colors = right;
+  }
+
+  if((mtype==""))
+    return(false);
+  
+  // The position has to be fully specified in terms of either lat/lon
+  // of the x-y position in local coords. Otherwise return(false);
+  if((lat=="")||(lon=="")||(!isNumber(lat))||(!isNumber(lon)))
+    if((xpos=="")||(ypos=="")||(!isNumber(xpos))||(!isNumber(ypos)))
+      return(false);
+
+  double xpos_d, ypos_d;
+  if((lat=="")||(lon=="")||(!isNumber(lat))||(!isNumber(lon))) {
+    xpos_d  = atof(xpos.c_str());
+    ypos_d  = atof(ypos.c_str());
+  }
+  else {
+    double lat_d = atof(lat.c_str());
+    double lon_d = atof(lon.c_str());
+    geodesy.LatLong2LocalGrid(lat_d, lon_d, ypos_d, xpos_d);
+  }
+
+  double scale_d = atof(scale.c_str());
+  if(scale_d < 0)
+    scale_d = 0;
+  
+  return(addVMarker(mtype, xpos_d, ypos_d, scale_d, label, colors));
+}
+
 
 //-----------------------------------------------------------
 // Procedure: addVMarker()

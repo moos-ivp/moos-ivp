@@ -8,6 +8,8 @@ SET(SRC
   MarineGUI.cpp
   MarineVehiGUI.cpp
   MarineViewer.cpp
+  VMarkerSet.cpp
+  OpAreaSpec.cpp
 )
 
 

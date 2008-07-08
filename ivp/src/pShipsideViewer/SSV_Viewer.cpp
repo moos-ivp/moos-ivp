@@ -30,12 +30,6 @@
 #include "MBUtils.h"
 #include "ColorParse.h"
 #include "XYBuildUtils.h"
-#include "Shape_Gateway.h"
-#include "Shape_Diamond.h"
-#include "Shape_Triangle.h"
-#include "Shape_EField.h"
-#include "Shape_Square.h"
-#include "Shape_Kelp.h"
 
 using namespace std;
 
@@ -367,159 +361,6 @@ string SSV_Viewer::getVehiName(int index)
 }
 
 //-------------------------------------------------------------
-// Procedure: drawCommonMarker
-
-void SSV_Viewer::drawCommonMarker(double x, double y, double shape_scale, 
-				  const string& mtype, const string& label, 
-				  const vector<double>& label_color,
-				  const vector<vector<double> >& color_vectors)
-{
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  glOrtho(0, w(), 0, h(), -1 ,1);
-
-  // Determine position in terms of image percentage
-  float marker_ix = meters2img('x', x);
-  float marker_iy = meters2img('y', y);
-
-  // Determine position in terms of view percentage
-  float marker_vx = img2view('x', marker_ix);
-  float marker_vy = img2view('y', marker_iy);
-
-  glMatrixMode(GL_MODELVIEW);
-  glPushMatrix();
-  glLoadIdentity();
-
-  glTranslatef(marker_vx, marker_vy, 0); // theses are in pixel units
-
-  double mz = sqrt(m_zoom);
-  glScalef(mz*shape_scale, mz*shape_scale, mz*shape_scale);
-
-  if(mtype == "gateway") {
-    double r1, r2, g1, g2, b1, b2;
-    r1=1.0, g1=1.0, b1=0.0, r2=0, g2=0, b2=0;
-
-    if(color_vectors.size() >= 1) {
-      r1 = color_vectors[0][0]; 
-      g1 = color_vectors[0][1]; 
-      b1 = color_vectors[0][2];
-    }
-    if(color_vectors.size() >= 2) {
-      r2 = color_vectors[1][0];
-      g2 = color_vectors[1][1];
-      b2 = color_vectors[1][2];
-    }
-    glTranslatef(-g_gatewayCtrX, -g_gatewayCtrY, 0);
-    drawGLPoly(g_gatewayBody, g_gatewayBodySize, r1, g1, b1);    
-    drawGLPoly(g_gatewayBody, g_gatewayBodySize, 0,0,0, 1);    
-    drawGLPoly(g_gatewayMidBody, g_gatewayMidBodySize, r2, g2, b2);
-    glTranslatef(g_gatewayCtrX, g_gatewayCtrY, 0);
-  }
-
-  else if(mtype == "efield") {
-    double r1, r2, g1, g2, b1, b2;
-    r1=0, g1=0, b1=0, r2=1, g2=0.843, b2=0;
-
-    if(color_vectors.size() >= 1) {
-      r1 = color_vectors[0][0];
-      g1 = color_vectors[0][1];
-      b1 = color_vectors[0][2];
-    }
-    if(color_vectors.size() >= 2) {
-      r2 = color_vectors[1][0];
-      g2 = color_vectors[1][1];
-      b2 = color_vectors[1][2];
-    }
-    glTranslatef(-g_efieldCtrX, -g_efieldCtrY, 0);
-    drawGLPoly(g_efieldBody, g_efieldBodySize, r1, g1, b1);    
-    drawGLPoly(g_efieldMidBody, g_efieldMidBodySize, r2, g2, b2);
-    drawGLPoly(g_efieldMidBody, g_efieldMidBodySize, 0,0,0, 1);
-    glTranslatef(g_efieldCtrX, g_efieldCtrY, 0);
-  }
-
-  else if(mtype == "diamond") {
-    double r, g, b;
-    r=1, g=0, b=0;
-
-    if(color_vectors.size() >= 1) {
-      r = color_vectors[0][0];
-      g = color_vectors[0][1];
-      b = color_vectors[0][2];
-    }
-    glTranslatef(-g_diamondCtrX, -g_diamondCtrY, 0);
-    drawGLPoly(g_diamondBody, g_diamondBodySize, r,g,b);    
-    drawGLPoly(g_diamondBody, g_diamondBodySize, 0,0,0, 1);    
-    glTranslatef(g_diamondCtrX, g_diamondCtrY, 0);
-  }
-
-  else if(mtype == "triangle") {
-    double r, g, b;
-    r=1, g=1, b=0;
-
-    if(color_vectors.size() >= 1) {
-      r = color_vectors[0][0];
-      g = color_vectors[0][1];
-      b = color_vectors[0][2];
-    }
-    glTranslatef(-g_triangleCtrX, -g_triangleCtrY, 0);
-    drawGLPoly(g_triangleBody, g_triangleBodySize, r,g,b);    
-    drawGLPoly(g_triangleBody, g_triangleBodySize, 0,0,0, 1);    
-    glTranslatef(g_triangleCtrX, g_triangleCtrY, 0);
-  }
-
-  else if(mtype == "square") {
-    double r, g, b;
-    r=0, g=1, b=0;
-
-    if(color_vectors.size() >= 1) {
-      r = color_vectors[0][0];
-      g = color_vectors[0][1];
-      b = color_vectors[0][2];
-    }
-    glTranslatef(-g_squareCtrX, -g_squareCtrY, 0);
-    drawGLPoly(g_squareBody, g_squareBodySize, r,g,b);    
-    drawGLPoly(g_squareBody, g_squareBodySize, 0,0,0, 1);    
-    glTranslatef(g_squareCtrX, g_squareCtrY, 0);
-  }
-
-  else if(mtype == "kelp") {
-    double r, g, b;
-    r=0, g=0.54, b=0.54;
-
-    if(color_vectors.size() >= 1) {
-      r = color_vectors[0][0];
-      g = color_vectors[0][1];
-      b = color_vectors[0][2];
-    }
-    glTranslatef(-g_kelpCtrX, -g_kelpCtrY, 0);
-    drawGLPoly(g_kelpBody, g_kelpBodySize, r,g,b);    
-    drawGLPoly(g_kelpBody, g_kelpBodySize, 0,0,0, 1);    
-    glTranslatef(g_kelpCtrX, g_kelpCtrY, 0);
-  }
-
-  if(label != "") {
-      glColor3f(label_color[0], label_color[1], label_color[2]);
-    gl_font(1, 12);
-    if(m_zoom > 4)
-      gl_font(1, 14);
-    double offset = 5.0;
-    offset = offset * (1/m_zoom);
-
-    int slen = label.length();
-    char *buff = new char(slen+1);
-    //glRasterPos3f(offset, offset, 0);
-    glRasterPos3f(offset, offset, 0);
-    strncpy(buff, label.c_str(), slen);
-    buff[slen] = '\0';
-    gl_draw(buff, slen);
-    delete(buff);
-  }
-
-  glPopMatrix();
-}
-
-
-//-------------------------------------------------------------
 // Procedure: drawVehicle(ObjectPose)
 
 void SSV_Viewer::drawVehicle(string vname, bool active, string vehibody)
@@ -731,6 +572,8 @@ bool SSV_Viewer::setParam(string param, string value)
     m_vmarkers.setParam("label_color", value);
   else if(param == "draw_markers")
     m_vmarkers.setParam("viewable_all", value);
+  else if(param == "marker")
+    m_vmarkers.addVMarker(value, m_geodesy);
 
   else if(param == "op_area_draw")
     m_op_area.setParam("viewable_all", value);
@@ -940,100 +783,6 @@ void SSV_Viewer::drawBearingLine(int index)
   glFlush();
   glPopMatrix();
 }
-
-//-------------------------------------------------------------
-// Procedure: drawOpArea
-
-void SSV_Viewer::drawOpArea()
-{
-  if(m_op_area.viewable() == false)
-    return;
-
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  glOrtho(0, w(), 0, h(), -1 ,1);
-
-  float tx = meters2img('x', 0);
-  float ty = meters2img('y', 0);
-  float qx = img2view('x', tx);
-  float qy = img2view('y', ty);
-
-  glMatrixMode(GL_MODELVIEW);
-  glPushMatrix();
-  glLoadIdentity();
-
-  glTranslatef(qx, qy, 0);
-  glScalef(m_zoom, m_zoom, m_zoom);
-
-
-  unsigned int index = 0;
-  unsigned int asize = m_op_area.size();
-
-  while(index < asize) {
-    string group  = m_op_area.getGroup(index);
-    double lwidth = m_op_area.getLWidth(index);
-    bool   dashed = m_op_area.getDashed(index);
-    bool   looped = m_op_area.getLooped(index);
-
-    vector<double> lcolor = m_op_area.getLColor(index);
-    vector<double> vcolor = m_op_area.getVColor(index);
-
-    vector<double> xpos, ypos;
-    vector<string> labels;
-
-    bool done = false;
-    while(!done) {
-      double x = m_op_area.getXPos(index);
-      double y = m_op_area.getYPos(index);
-      string label = m_op_area.getLabel(index);
-
-      index++;
-      if((index >= asize) || (group != m_op_area.getGroup(index)))
-	done = true;
-      xpos.push_back(x);
-      ypos.push_back(y);
-      labels.push_back(label);
-    }
-    
-    int vsize = xpos.size();
-    for(int i=0; i<vsize; i++) {
-      xpos[i] *= m_back_img.get_pix_per_mtr();
-      ypos[i] *= m_back_img.get_pix_per_mtr();
-    }
-
-    // Draw the edges 
-    glLineWidth(lwidth);
-    glColor3f(lcolor[0], lcolor[1], lcolor[2]);
-    
-    if(looped)
-      glBegin(GL_LINE_LOOP);
-    else
-      glBegin(GL_LINE_STRIP);
-    for(int j=0; j<vsize; j++) {
-      glVertex2f(xpos[j],  ypos[j]);
-    }
-    glEnd();
-
-    if(m_op_area.viewable("labels")) {
-      glColor3f(lcolor[0], lcolor[1], lcolor[2]);
-      gl_font(1, 12);
-      for(int k=0; k<vsize; k++) {
-	int slen = labels[k].length();
-	char *buff = new char(slen+1);
-	glRasterPos3f(xpos[k]+8, ypos[k]+8, 0);
-	strncpy(buff, labels[k].c_str(), slen);
-	buff[slen] = '\0';
-	gl_draw(buff, slen);
-	delete(buff);
-      }
-    }
-  }
-
-
-  glFlush();
-  glPopMatrix();
-}
-
 
 //-------------------------------------------------------------
 // Procedure: drawGridBox
@@ -1269,61 +1018,6 @@ void SSV_Viewer::cycleIndex()
 }
 
 //-------------------------------------------------------------
-// Procedure: addVMarker()
-
-
-bool SSV_Viewer::addVMarker(const std::string& mline)
-{
-  vector<string> svector = parseString(mline, ',');
-  unsigned int vsize = svector.size();
-
-  string mtype, xpos, ypos, lat, lon, scale, label, colors;
-  for(unsigned int i=0; i<vsize; i++) {
-    svector[i] = stripBlankEnds(svector[i]);
-    vector<string> ivector = parseString(svector[i], '=');
-    if(ivector.size() != 2)
-      return(false);
-    string left  = tolower(stripBlankEnds(ivector[0]));
-    string right = stripBlankEnds(ivector[1]);
-    if(left == "type")        mtype = right;
-    else if(left == "xpos")   xpos = right;
-    else if(left == "ypos")   ypos = right;
-    else if(left == "scale")  scale = right;
-    else if(left == "lat")    lat = right;
-    else if(left == "lon")    lon = right;
-    else if(left == "label")  label = right;
-    else if(left == "colors") colors = right;
-  }
-
-  if((mtype==""))
-    return(false);
-  
-  // The position has to be fully specified in terms of either lat/lon
-  // of the x-y position in local coords. Otherwise return(false);
-  if((lat=="")||(lon=="")||(!isNumber(lat))||(!isNumber(lon)))
-    if((xpos=="")||(ypos=="")||(!isNumber(xpos))||(!isNumber(ypos)))
-      return(false);
-
-  double xpos_d, ypos_d;
-  if((lat=="")||(lon=="")||(!isNumber(lat))||(!isNumber(lon))) {
-    xpos_d  = atof(xpos.c_str());
-    ypos_d  = atof(ypos.c_str());
-  }
-  else {
-    double lat_d = atof(lat.c_str());
-    double lon_d = atof(lon.c_str());
-    m_geodesy.LatLong2LocalGrid(lat_d, lon_d, ypos_d, xpos_d);
-  }
-
-  double scale_d = atof(scale.c_str());
-  if(scale_d < 0)
-    scale_d = 0;
-  
-  m_vmarkers.addVMarker(mtype, xpos_d, ypos_d, scale_d, label, colors);
-  return(true);
-}
-
-//-------------------------------------------------------------
 // Procedure: hasVehiName
 //            Given a vehicle name string, compare it to the map
 //            of known vehicles and, if found, return true.
@@ -1470,32 +1164,5 @@ void SSV_Viewer::drawCirc(XYCircle dcircle, int pts, bool filled,
   glFlush();
   glPopMatrix();
 
-}
-
-//-------------------------------------------------------------
-// Procedure: drawMarkers
-
-void SSV_Viewer::drawMarkers()
-{
-  if(m_vmarkers.viewable() == false)
-    return;
-
-  double gscale = m_vmarkers.getMarkerGScale(); 
-
-  vector<vector<double> > color_vectors;
-  vector<double> label_color = m_vmarkers.getLabelColor();
-  
-  unsigned int vsize = m_vmarkers.size();
-  for(unsigned int i=0; i<vsize; i++) {
-    string mtype = m_vmarkers.getMarkerType(i);
-    string label;
-    if(m_vmarkers.viewable("labels"))
-      label = m_vmarkers.getMarkerLabel(i);
-    double xpos  = m_vmarkers.getMarkerXPos(i);
-    double ypos  = m_vmarkers.getMarkerYPos(i);
-    double scale = m_vmarkers.getMarkerScale(i) * gscale;
-    color_vectors = m_vmarkers.getMarkerColorVectors(i);
-    drawCommonMarker(xpos, ypos, scale, mtype, label, label_color, color_vectors);
-  }
 }
 
