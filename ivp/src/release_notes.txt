@@ -1,3 +1,9 @@
+
+Attempting to open tif file: /Users/mikerb/Research/moos-ivp/trunk/ivp/data/Default.tif
+/Users/mikerb/Research/moos-ivp/trunk/ivp/data/Default.tif: Sorry, requested compression method is not configured.
+
+
+
 Version 3.0.3
 ----------------------------------------------------------------------
 - In the IvPBuild Toolbox - Changed the interface to the AOF class to

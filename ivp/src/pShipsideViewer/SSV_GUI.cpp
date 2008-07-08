@@ -164,8 +164,6 @@ SSV_GUI::SSV_GUI(int g_w, int g_h, const char *g_l)
   m_engage_all_ok->callback((Fl_Callback*)SSV_GUI::cb_MOOS_Button,(void*)4);
   m_engage_all_off->callback((Fl_Callback*)SSV_GUI::cb_MOOS_Button,(void*)5);
   
-  
-
 
   int ca_top = h()-600;
   int ca_txt = 25;
@@ -320,12 +318,17 @@ void SSV_GUI::augmentMenu()
   mbar->add("GeoAttr/Markers - Edit/marker_scale reset", FL_CTRL+FL_ALT+'m', (Fl_Callback*)SSV_GUI::cb_SSV_SetGeoAttr, (void*)2000, 0);
   mbar->add("GeoAttr/Markers - Edit/marker_scale *= 0.80", FL_CTRL+'m', (Fl_Callback*)SSV_GUI::cb_SSV_SetGeoAttr, (void*)2001, 0);
   mbar->add("GeoAttr/Markers - Edit/marker_scale *= 1.25", FL_ALT+'m', (Fl_Callback*)SSV_GUI::cb_SSV_SetGeoAttr, (void*)2002, FL_MENU_DIVIDER);
-
   mbar->add("GeoAttr/Markers - Edit/draw labels  toggle", 'l', (Fl_Callback*)SSV_GUI::cb_SSV_SetGeoAttr, (void*)2020, FL_MENU_DIVIDER);
   mbar->add("GeoAttr/Markers - Edit/label colors toggle", 'L', (Fl_Callback*)SSV_GUI::cb_SSV_SetGeoAttr, (void*)2030, 0);
 
-  mbar->add("GeoAttr/Markers - Toggle", 'm', (Fl_Callback*)SSV_GUI::cb_SSV_SetGeoAttr, (void*)2050, 0);
+  mbar->add("GeoAttr/Markers - Toggle", 'm', (Fl_Callback*)SSV_GUI::cb_SSV_SetGeoAttr, (void*)2050, FL_MENU_DIVIDER);
 
+  mbar->add("GeoAttr/OpArea - Edit/op_area reset", FL_CTRL+FL_ALT+'u', (Fl_Callback*)SSV_GUI::cb_SSV_SetGeoAttr, (void*)2100, 0);
+  mbar->add("GeoAttr/OpArea - Edit/op_area lighter *= 0.80", FL_CTRL+'u', (Fl_Callback*)SSV_GUI::cb_SSV_SetGeoAttr, (void*)2101, 0);
+  mbar->add("GeoAttr/OpArea - Edit/op_area darker *= 1.25", FL_ALT+'u', (Fl_Callback*)SSV_GUI::cb_SSV_SetGeoAttr, (void*)2102, FL_MENU_DIVIDER);
+  mbar->add("GeoAttr/OpArea - Edit/op_area labels  toggle", 'U', (Fl_Callback*)SSV_GUI::cb_SSV_SetGeoAttr, (void*)2120, FL_MENU_DIVIDER);
+
+  mbar->add("GeoAttr/OpArea - Toggle", 'u', (Fl_Callback*)SSV_GUI::cb_SSV_SetGeoAttr, (void*)2150, 0);
 };
 
 
@@ -506,6 +509,13 @@ inline void SSV_GUI::cb_SSV_SetGeoAttr_i(int v) {
   else if(v==2020) mviewer->setParam("draw_marker_labels", "toggle");
   else if(v==2030) mviewer->setParam("marker_label_color", "toggle");
   else if(v==2050) mviewer->setParam("draw_markers", "toggle");
+
+  else if(v==2100) mviewer->setParam("op_area_config", "reset");
+  else if(v==2101) mviewer->setParam("op_area_shade",  "lighter");
+  else if(v==2102) mviewer->setParam("op_area_shade",  "darker");
+  else if(v==2120) mviewer->setParam("op_area_labels", "toggle");
+  else if(v==2150) mviewer->setParam("op_area_draw",   "toggle");
+
 
   mviewer->redraw();
 }

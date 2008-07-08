@@ -67,9 +67,8 @@ void SSV_Viewer::draw()
   mutexLock();
   MarineViewer::draw();
 
-  drawOpAreaGrid();
-  if(m_vmarkers.viewable())
-    drawMarkers();
+  drawOpArea();
+  drawMarkers();
 
   if(m_grid_offon)
     drawGrids();
@@ -731,7 +730,17 @@ bool SSV_Viewer::setParam(string param, string value)
   else if(param == "marker_label_color")
     m_vmarkers.setParam("label_color", value);
   else if(param == "draw_markers")
-    m_vmarkers.setParam("viewable_all", "toggle");
+    m_vmarkers.setParam("viewable_all", value);
+
+  else if(param == "op_area_draw")
+    m_op_area.setParam("viewable_all", value);
+  else if(param == "op_area_labels")
+    m_op_area.setParam("viewable_labels", value);
+  else if(param == "op_area_config")
+    m_op_area.setParam("config", value);
+  else if(param == "op_area_shade")
+    m_op_area.setParam("config", value);
+
   else if(param == "marker_scale_all") {
     if(value == "smaller")
       m_vmarkers.setParam("mod_scale_all", 0.8);
@@ -745,8 +754,6 @@ bool SSV_Viewer::setParam(string param, string value)
   else if(param == "ownship_name")
     m_ownship_name = toupper(value);
   else if(param == "op_vertex") {
-    cout << "SSV_Viewer.cpp: setParam() adding vertex to op_area: " << endl;
-    cout << value << endl;
     return(m_op_area.addVertex(value, m_geodesy));
   }
   else
@@ -935,10 +942,13 @@ void SSV_Viewer::drawBearingLine(int index)
 }
 
 //-------------------------------------------------------------
-// Procedure: drawOpAreaGrid
+// Procedure: drawOpArea
 
-void SSV_Viewer::drawOpAreaGrid()
+void SSV_Viewer::drawOpArea()
 {
+  if(m_op_area.viewable() == false)
+    return;
+
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   glOrtho(0, w(), 0, h(), -1 ,1);
@@ -959,13 +969,8 @@ void SSV_Viewer::drawOpAreaGrid()
   unsigned int index = 0;
   unsigned int asize = m_op_area.size();
 
-  cout << "opa: index: " << index << endl;
-  cout << "opa: asize: " << asize << endl;
-
   while(index < asize) {
-    cout << "opa: index(b): " << index << endl;
     string group  = m_op_area.getGroup(index);
-    string label  = m_op_area.getLabel(index);
     double lwidth = m_op_area.getLWidth(index);
     bool   dashed = m_op_area.getDashed(index);
     bool   looped = m_op_area.getLooped(index);
@@ -974,16 +979,20 @@ void SSV_Viewer::drawOpAreaGrid()
     vector<double> vcolor = m_op_area.getVColor(index);
 
     vector<double> xpos, ypos;
+    vector<string> labels;
 
     bool done = false;
     while(!done) {
       double x = m_op_area.getXPos(index);
       double y = m_op_area.getYPos(index);
+      string label = m_op_area.getLabel(index);
+
       index++;
       if((index >= asize) || (group != m_op_area.getGroup(index)))
 	done = true;
       xpos.push_back(x);
       ypos.push_back(y);
+      labels.push_back(label);
     }
     
     int vsize = xpos.size();
@@ -1002,14 +1011,27 @@ void SSV_Viewer::drawOpAreaGrid()
       glBegin(GL_LINE_STRIP);
     for(int j=0; j<vsize; j++) {
       glVertex2f(xpos[j],  ypos[j]);
-      cout << "opa: x:" << xpos[j] << "," << ypos[j] << "," << group << endl;
     }
     glEnd();
+
+    if(m_op_area.viewable("labels")) {
+      glColor3f(lcolor[0], lcolor[1], lcolor[2]);
+      gl_font(1, 12);
+      for(int k=0; k<vsize; k++) {
+	int slen = labels[k].length();
+	char *buff = new char(slen+1);
+	glRasterPos3f(xpos[k]+8, ypos[k]+8, 0);
+	strncpy(buff, labels[k].c_str(), slen);
+	buff[slen] = '\0';
+	gl_draw(buff, slen);
+	delete(buff);
+      }
+    }
   }
+
 
   glFlush();
   glPopMatrix();
-
 }
 
 
@@ -1455,6 +1477,9 @@ void SSV_Viewer::drawCirc(XYCircle dcircle, int pts, bool filled,
 
 void SSV_Viewer::drawMarkers()
 {
+  if(m_vmarkers.viewable() == false)
+    return;
+
   double gscale = m_vmarkers.getMarkerGScale(); 
 
   vector<vector<double> > color_vectors;

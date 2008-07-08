@@ -22,6 +22,10 @@ public:
 
   bool setParam(std::string param, std::string value);
 
+  unsigned int size() {return(m_vertex_xpos.size());}
+  
+  bool viewable(const std::string& s="all");
+
   double getXPos(int ix);
   double getYPos(int ix);
   double getLWidth(int ix);
@@ -33,8 +37,6 @@ public:
 
   std::vector<double> getLColor(int ix);
   std::vector<double> getVColor(int ix);
-
-  unsigned int size() {return(m_vertex_xpos.size());}
 
 protected:
   void addVertex(double xpos, double ypos, double lwidth,
@@ -55,7 +57,7 @@ protected:
   std::vector<std::vector<double> > m_vertex_vcolor;
 
   bool m_viewable_labels;
-
+  bool m_viewable_all;
 };
 
 #endif

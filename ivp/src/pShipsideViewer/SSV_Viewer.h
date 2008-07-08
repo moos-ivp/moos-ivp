@@ -103,7 +103,7 @@ public:
   void  drawCirc(XYCircle, int, bool, double, double, double,
 		 double=0, double=0, double=0);
 
-  void  drawOpAreaGrid();
+  void  drawOpArea();
   void  drawGridBox(double, double, double, double, 
 		    double, double, double, double);
   void  drawGridPN();

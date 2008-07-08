@@ -150,9 +150,9 @@ bool VMarkerSet::setParam(string param, double value)
 
 bool VMarkerSet::viewable(const string& str)
 {
-  if(str == "all")
+  if((str == "all") || (tolower(str) == "all"))
     return(m_marker_viewable_all);
-  else if(str == "labels")
+  else if((str == "labels") || (tolower(str) == "labels"))
     return(m_marker_viewable_labels);
   return(false);
 }

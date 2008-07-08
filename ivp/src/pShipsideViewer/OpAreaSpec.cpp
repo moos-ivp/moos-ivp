@@ -18,6 +18,7 @@ using namespace std;
 
 OpAreaSpec::OpAreaSpec()
 {
+  m_viewable_all    = true;
   m_viewable_labels = true;
 }
 
@@ -126,12 +127,26 @@ void OpAreaSpec::addVertex(double xpos, double ypos, double lwidth,
 
 bool OpAreaSpec::setParam(string param, string value)
 {
-  if(param == "viewable_labels")
+  if(param == "viewable_all")
+    return(setBooleanOnString(m_viewable_all, value));
+  else if(param == "viewable_labels")
     return(setBooleanOnString(m_viewable_labels, value));
   else
     return(false);
   
   return(true);
+}
+
+//-----------------------------------------------------------
+// Procedure: viewable
+
+bool OpAreaSpec::viewable(const string& str)
+{
+  if((str == "all") || (tolower(str) == "all"))
+    return(m_viewable_all);
+  else if((str == "labels") || (tolower(str) == "labels"))
+    return(m_viewable_labels);
+  return(false);
 }
 
 //-----------------------------------------------------------
@@ -233,36 +248,3 @@ vector<double> OpAreaSpec::getVColor(int ix)
     return(m_vertex_vcolor[ix]);
   return(grey_vector);
 }
-
-
-
-
-
-
-#if 0
-//-----------------------------------------------------------
-// Procedure: setParam()
-
-bool OpAreaSpec::setParam(string param, double value)
-{
-  if(param == "mod_scale_all") {
-    if((m_marker_scale_global * value) > 0.1)
-      m_marker_scale_global *= value;
-  }
-  else
-    return(false);
-  return(true);
-}
-
-//-----------------------------------------------------------
-// Procedure: viewable
-
-bool OpAreaSpec::viewable(const string& str)
-{
-  if(str == "all")
-    return(m_marker_viewable_all);
-  else if(str == "labels")
-    return(m_marker_viewable_labels);
-  return(false);
-}
-#endif
