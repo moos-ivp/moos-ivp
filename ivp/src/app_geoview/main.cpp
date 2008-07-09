@@ -10,6 +10,7 @@
 #include "MBUtils.h"
 #include "IO_GeomUtils.h"
 #include "XYPolygon.h"
+#include "XYSegList.h"
 #include "XYGrid.h"
 #include "XYCircle.h"
 #include "XYHexagon.h"
@@ -41,6 +42,7 @@ int main(int argc, char *argv[])
   string tif_file = "Default.tif";  // default
   
   vector<XYPolygon> all_polys;
+  vector<XYSegList> all_segls;
   vector<XYGrid>    all_grids;
   vector<XYCircle>  all_circles;
   vector<XYHexagon> all_hexagons;
@@ -89,6 +91,11 @@ int main(int argc, char *argv[])
       vector<string> dvector = readEntriesFromFile(argv[i], "geodesy");
       for(j=0; j<dvector.size(); j++)
 	all_geodesy.push_back(dvector[j]);
+#if 0
+      vector<strin> svector = readEntriesFromFile(argv[i], "seglist");
+      for(j=0; j<svector.size(); j++)
+	all_segls.push_back(svector[j]);
+#endif
     }
   }
  
@@ -101,6 +108,10 @@ int main(int argc, char *argv[])
   cout << "# of file grids: " << all_grids.size() << endl;
   for(j=0; j<all_grids.size(); j++)
     gui->addGrid(all_grids[j]);
+  
+  cout << "# of file seglists: " << all_segls.size() << endl;
+  for(j=0; j<all_segls.size(); j++)
+    gui->pviewer->addSegList(all_segls[j]);
   
   cout << "# of file circles: " << all_circles.size() << endl;
   for(j=0; j<all_circles.size(); j++)

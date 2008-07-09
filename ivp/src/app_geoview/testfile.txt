@@ -4,6 +4,7 @@ geodesy = 42.3584, -71.08745
 gpoly = ellipse:: x=100, y=-200, major=200, minor=70, degs=30, pts=20, snap=1.0, label=foobar
 
 gpoly = label,foobar: 0,-70:-40,-170:160,-260:320,-100:210,-20
+seglist = label,testseg: 0,-270 : -40,-370 : 160,-460 : 320,-300 : 210,-220
 
 
 MARKER  = type=diamond, xpos=100,  ypos=-200, scale=1, label=gateway-A21
