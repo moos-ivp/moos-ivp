@@ -46,11 +46,11 @@ bool XYHexagon::initialize(string str)
       return(false);
   }
   
-  double cx = atof(svector[0].c_str());
-  double cy = atof(svector[1].c_str());
-  double dist = atof(svector[2].c_str());
+  double m_cx = atof(svector[0].c_str());
+  double m_cy = atof(svector[1].c_str());
+  double m_dist = atof(svector[2].c_str());
   
-  return(initialize(cx, cy, dist));
+  return(initialize(m_cx, m_cy, m_dist));
 }
 
 //---------------------------------------------------------------
@@ -79,19 +79,19 @@ bool XYHexagon::initialize(double gcx, double gcy, double gdist)
   if(gdist <= 0)
     return(false);
 
-  cx   = gcx;
-  cy   = gcy;
-  dist = gdist;
+  m_cx   = gcx;
+  m_cy   = gcy;
+  m_dist = gdist;
 
   double x0, x1, x2, x3, x4, x5;
   double y0, y1, y2, y3, y4, y5;
 
-  x0 = cx + (dist/2);    y0 = cy + dist;
-  x1 = cx + dist;        y1 = cy;
-  x2 = cx + (dist/2);    y2 = cy - dist;
-  x3 = cx - (dist/2);    y3 = cy - dist;
-  x4 = cx - dist;        y4 = cy;
-  x5 = cx - (dist/2);    y5 = cy + dist;
+  x0 = m_cx + (m_dist/2);    y0 = m_cy + m_dist;
+  x1 = m_cx + m_dist;        y1 = m_cy;
+  x2 = m_cx + (m_dist/2);    y2 = m_cy - m_dist;
+  x3 = m_cx - (m_dist/2);    y3 = m_cy - m_dist;
+  x4 = m_cx - m_dist;        y4 = m_cy;
+  x5 = m_cx - (m_dist/2);    y5 = m_cy + m_dist;
 
   XYPolygon::add_vertex(x0, y0);
   XYPolygon::add_vertex(x1, y1);
@@ -129,17 +129,17 @@ XYHexagon XYHexagon::addNeighbor(int nix)
   XYHexagon newhex;
 
   if(nix == 0)
-    newhex.initialize(cx, cy+(2*dist), dist);
+    newhex.initialize(m_cx, m_cy+(2*m_dist), m_dist);
   else if(nix == 1)
-    newhex.initialize(cx+(1.5*dist), cy+dist, dist);
+    newhex.initialize(m_cx+(1.5*m_dist), m_cy+m_dist, m_dist);
   else if(nix == 2)
-    newhex.initialize(cx+(1.5*dist), cy-dist, dist);
+    newhex.initialize(m_cx+(1.5*m_dist), m_cy-m_dist, m_dist);
   else if(nix == 3)
-    newhex.initialize(cx, cy-(2*dist), dist);
+    newhex.initialize(m_cx, m_cy-(2*m_dist), m_dist);
   else if(nix == 4)
-    newhex.initialize(cx-(1.5*dist), cy-dist, dist);
+    newhex.initialize(m_cx-(1.5*m_dist), m_cy-m_dist, m_dist);
   else if(nix == 5)
-    newhex.initialize(cx-(1.5*dist), cy+dist, dist);
+    newhex.initialize(m_cx-(1.5*m_dist), m_cy+m_dist, m_dist);
 
   return(newhex);
 }

@@ -34,10 +34,11 @@ using namespace std;
 //---------------------------------------------------------------
 // Procedure: add_vertex
 
-inline void XYSegList::add_vertex(double x, double y)
+inline void XYSegList::add_vertex(double x, double y, double z)
 {
   vertex_x.push_back(x);
   vertex_y.push_back(y);
+  vertex_z.push_back(z);
 }
 
 //---------------------------------------------------------------
@@ -45,7 +46,7 @@ inline void XYSegList::add_vertex(double x, double y)
 //   Purpose: Given a new vertex, find the existing vertex that is
 //            closest, and replace it with the new one.
 
-void XYSegList::alter_vertex(double x, double y)
+void XYSegList::alter_vertex(double x, double y, double z)
 {
   int vsize = vertex_x.size();
 
@@ -55,6 +56,7 @@ void XYSegList::alter_vertex(double x, double y)
   int ix   = closest_vertex(x, y); 
   vertex_x[ix] = x;
   vertex_y[ix] = y;
+  vertex_z[ix] = z;
 }
 
 //---------------------------------------------------------------
@@ -73,18 +75,22 @@ void XYSegList::delete_vertex(double x, double y)
 
   vector<double> new_x;
   vector<double> new_y;
+  vector<double> new_z;
   
   for(i=0; i<ix; i++) {
     new_x.push_back(vertex_x[i]);
     new_y.push_back(vertex_y[i]);
+    new_z.push_back(vertex_z[i]);
   }
   for(i=ix+1; i<vsize; i++) {
     new_x.push_back(vertex_x[i]);
     new_y.push_back(vertex_y[i]);
+    new_z.push_back(vertex_z[i]);
   }
   
   vertex_x = new_x;
   vertex_y = new_y;
+  vertex_z = new_z;
 }
 
 //---------------------------------------------------------------
@@ -92,7 +98,7 @@ void XYSegList::delete_vertex(double x, double y)
 //   Purpose: Given a new vertex, find the existing segment that is
 //            closest, and add the vertex between points
 
-void XYSegList::insert_vertex(double x, double y)
+void XYSegList::insert_vertex(double x, double y, double z)
 {
   int vsize = vertex_x.size();
 
@@ -103,22 +109,27 @@ void XYSegList::insert_vertex(double x, double y)
 
   vector<double> new_x;
   vector<double> new_y;
+  vector<double> new_z;
   
   for(i=0; i<=ix; i++) {
     new_x.push_back(vertex_x[i]);
     new_y.push_back(vertex_y[i]);
+    new_z.push_back(vertex_z[i]);
   }
   
   new_x.push_back(x);
   new_y.push_back(y);
+  new_z.push_back(z);
 
   for(i=ix+1; i<vsize; i++) {
     new_x.push_back(vertex_x[i]);
     new_y.push_back(vertex_y[i]);
+    new_z.push_back(vertex_z[i]);
   }
   
   vertex_x = new_x;
   vertex_y = new_y;
+  vertex_z = new_z;
 }
 
 //---------------------------------------------------------------
@@ -128,6 +139,7 @@ void XYSegList::clear()
 {
   vertex_x.clear();
   vertex_y.clear();
+  vertex_z.clear();
 }
 
 
@@ -209,14 +221,17 @@ void XYSegList::reverse()
 {
   vector<double> new_x;
   vector<double> new_y;
+  vector<double> new_z;
 
   int vsize = vertex_y.size();
   for(int i=0; i<vsize; i++) {
     new_x.push_back(vertex_x[(vsize-1)-i]);
     new_y.push_back(vertex_y[(vsize-1)-i]);
+    new_z.push_back(vertex_z[(vsize-1)-i]);
   }
   vertex_x = new_x;
   vertex_y = new_y;
+  vertex_z = new_z;
 }
 
 //---------------------------------------------------------------
@@ -236,12 +251,13 @@ void XYSegList::new_center(double new_cx, double new_cy)
 
 void XYSegList::print() const
 {
-  cout << "label:" << label << endl;
+  cout << "label:" << m_label << endl;
   int vsize = vertex_x.size();
   for(int i=0; i<vsize; i++)
-    cout << "x=" << vertex_x[i] << "  y=" << vertex_y[i] << endl;
+    cout << "  x=" << vertex_x[i] 
+	 << "  y=" << vertex_y[i]
+	 << "  z=" << vertex_z[i] << endl;
 }
-
 
 //---------------------------------------------------------------
 // Procedure: get_vx
@@ -254,7 +270,6 @@ double XYSegList::get_vx(unsigned int i) const
     return(0);
 }
 
-
 //---------------------------------------------------------------
 // Procedure: get_vy
 
@@ -266,6 +281,16 @@ double XYSegList::get_vy(unsigned int i) const
     return(0);
 }
 
+//---------------------------------------------------------------
+// Procedure: get_vz
+
+double XYSegList::get_vz(unsigned int i) const
+{
+  if((i>=0) && (i<vertex_z.size()))
+    return(vertex_z[i]);
+  else
+    return(0);
+}
 
 //---------------------------------------------------------------
 // Procedure: get_center_x
@@ -352,14 +377,16 @@ string XYSegList::get_spec() const
 {
   string spec;
 
-  if(label != "")
-    spec += "label," + label + " : "; 
+  if(m_label != "")
+    spec += "label," + m_label + " : "; 
 
   int vsize = vertex_x.size();
   for(int i=0; i<vsize; i++) {
     spec += dstringCompact(doubleToString(vertex_x[i]));
     spec += ",";
     spec += dstringCompact(doubleToString(vertex_y[i]));
+    //  spec += ",";
+    //  spec += dstringCompact(doubleToString(vertex_z[i]));
     if(i != vsize-1)
       spec += ":";
   }

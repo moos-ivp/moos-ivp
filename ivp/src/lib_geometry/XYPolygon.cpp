@@ -63,13 +63,35 @@ bool XYPolygon::add_vertex(double x, double y, bool check_convexity)
 }
 
 //---------------------------------------------------------------
+// Procedure: add_vertex
+//    o A call to "determine_convexity()" is made since this
+//      operation may result in a change in the convexity.
+//    o The check_convexity option allows a bunch of vertices to be
+//      added and then just check for convexity at the end. 
+
+bool XYPolygon::add_vertex(double x, double y, 
+			   double z, bool check_convexity)
+{
+  XYSegList::add_vertex(x,y,z);
+  side_xy.push_back(-1);
+  
+  // With new vertex, we don't know if the new polygon is valid
+  if(check_convexity) {
+    determine_convexity();
+    return(convex_state);
+  }
+  else
+    return(true);
+}
+
+//---------------------------------------------------------------
 // Procedure: alter_vertex
 //   Purpose: Given a new vertex, find the existing vertex that is
 //            closest, and replace it with the new one.
 //      Note: A call to "determine_convexity()" is made since this
 //            operation may result in a change in the convexity.
 
-bool XYPolygon::alter_vertex(double x, double y)
+bool XYPolygon::alter_vertex(double x, double y, double z)
 {
   XYSegList::alter_vertex(x,y);
 
@@ -115,12 +137,12 @@ bool XYPolygon::delete_vertex(double x, double y)
 //      Note: A call to "determine_convexity()" is made since this
 //            operation may result in a change in the convexity.
 
-bool XYPolygon::insert_vertex(double x, double y)
+bool XYPolygon::insert_vertex(double x, double y, double z)
 {
   int vsize = vertex_x.size();
 
   if(vsize <= 1)
-    return(add_vertex(x,y));
+    return(add_vertex(x, y, z));
 
   int i, ix = XYPolygon::closest_segment(x, y); 
 
@@ -134,7 +156,7 @@ bool XYPolygon::insert_vertex(double x, double y)
   
   side_xy  = new_xy;
 
-  XYSegList::insert_vertex(x,y);
+  XYSegList::insert_vertex(x,y,z);
 
   determine_convexity();
   return(convex_state);

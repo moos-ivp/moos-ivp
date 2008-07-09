@@ -27,16 +27,17 @@
 
 class XYHexagon : public XYPolygon {
 public:
-  XYHexagon() {cx=0;cy=0;dist=0;};
+  XYHexagon() {m_cx=0; m_cy=0; m_cz=0; m_dist=0;};
   ~XYHexagon() {};
 
   // The only two ways to build a pentagon
   bool   initialize(double, double, double);
   bool   initialize(std::string);       
 
-  double get_cx()   {return(cx);};
-  double get_cy()   {return(cy);};
-  double get_dist() {return(dist);};
+  double get_cx()   {return(m_cx);};
+  double get_cy()   {return(m_cy);};
+  double get_cz()   {return(m_cz);};
+  double get_dist() {return(m_dist);};
 
   XYHexagon addNeighbor(int);
 
@@ -47,9 +48,10 @@ public:
   bool   insert_vertex(double, double) {return(false);};
 
 protected:
-  double cx;
-  double cy;
-  double dist;
+  double m_cx;
+  double m_cy;
+  double m_cz;
+  double m_dist;
 };
 
 #endif

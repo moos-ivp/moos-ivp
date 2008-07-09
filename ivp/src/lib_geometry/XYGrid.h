@@ -54,7 +54,6 @@ public:
   double    getMinUtilPoss() const {return(min_util_possible);};
   double    getMaxUtilPoss() const {return(max_util_possible);};
   
-
   void      handleSegment(double, double, double, double);
   void      resetFromMin();
 
