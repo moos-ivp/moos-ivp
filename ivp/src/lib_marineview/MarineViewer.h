@@ -150,6 +150,7 @@ protected:
   bool       m_poly_labels;
   bool       m_poly_offon;
   bool       m_grid_offon;
+  bool       m_segl_offon;
   bool       m_tiff_offon;
   bool       m_hash_offon;
   bool       m_draw_vname;

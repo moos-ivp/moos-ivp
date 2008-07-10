@@ -65,6 +65,7 @@ MarineViewer::MarineViewer(int x, int y, int w, int h, const char *l)
   m_poly_vsize  = 5.0;
   m_poly_offon  = true;
   m_poly_labels = true;
+  m_segl_offon  = true;
   m_cross_offon = false;
   m_grid_offon  = true;
   m_tiff_offon  = true;
@@ -675,7 +676,7 @@ void MarineViewer::drawSegList(int ix)
 
   // Now draw the edges
   if(vsize >= 2) {
-    glLineWidth(1.0);
+    glLineWidth(2.0);
     glColor3f(edge_r, edge_g, edge_b);
 
     glBegin(GL_LINE_STRIP);
@@ -687,7 +688,7 @@ void MarineViewer::drawSegList(int ix)
 
   // If the seglist is just a single point, draw it big!
   if(vsize==1) {
-    glPointSize(2.0 * m_zoom);
+    glPointSize(6.0 * m_zoom);
     // Draw the vertices with color coding for the first and last
     
     //glColor3f(0.7,0.13,0.13);  // Firebrick red b2 22 22
@@ -698,7 +699,7 @@ void MarineViewer::drawSegList(int ix)
   }
 
   //glPointSize(1.0 * m_zoom);
-  glPointSize(1.0);
+  glPointSize(6.0);
 
   // Draw the vertices in between the first and last ones
   glColor3f(vert_r, vert_g, vert_b);
@@ -947,6 +948,8 @@ bool MarineViewer::setCommonParam(string param, string value)
     return(setBooleanOnString(m_draw_datum, value));
   else if(param == "display_polys")
     return(setBooleanOnString(m_poly_offon, value));
+  else if(param == "display_seglists")
+    return(setBooleanOnString(m_segl_offon, value));
   else if(param == "display_poly_labels")
     return(setBooleanOnString(m_poly_labels, value));
   else if(param == "display_grids")

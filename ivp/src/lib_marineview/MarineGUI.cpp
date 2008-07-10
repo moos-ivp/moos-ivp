@@ -138,7 +138,7 @@ void MarineGUI::augmentMenu()
   mbar->add("GeoAttr/SegLists - Edit/seglist_vertex_size=8", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)244, 0);
   mbar->add("GeoAttr/SegLists - Edit/seglist_vertex_size=10", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)245, 0);
 
-  mbar->add("GeoAttr/SegLists - Toggle", 's', (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)-1, FL_MENU_DIVIDER);
+  mbar->add("GeoAttr/SegLists - Toggle", 's', (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)250, FL_MENU_DIVIDER);
 
   // -------------------------------- XYGrids
   mbar->add("GeoAttr/XYGrids - Edit/grid_edge_color=red", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)300, 0);
@@ -338,6 +338,8 @@ inline void MarineGUI::cb_MG_SetGeoAttr_i(int v) {
   else if(v==150) cmviewer->setCommonParam("display_poly_labels", "on");
   else if(v==151) cmviewer->setCommonParam("display_poly_labels", "off");
   else if(v==152) cmviewer->setCommonParam("display_poly_labels", "toggle");
+
+  else if(v==250) cmviewer->setCommonParam("display_seglists", "toggle");
 
   else if(v==400) cmviewer->setCommonParam("datum_color", "red");
   else if(v==401) cmviewer->setCommonParam("datum_color", "white");
