@@ -76,6 +76,12 @@ void GeoViewer::draw()
 	       cvect_vert[0], cvect_vert[1], cvect_vert[2]);
   }
 
+  if(m_segl_offon) {
+    vsize = m_segl.size();
+    for(unsigned int i=0; i<vsize; i++) 
+      drawSegList(i);
+  }
+
   drawGrids();
   drawHexagons();
 }

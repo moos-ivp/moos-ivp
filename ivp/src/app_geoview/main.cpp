@@ -14,6 +14,7 @@
 #include "XYGrid.h"
 #include "XYCircle.h"
 #include "XYHexagon.h"
+#include "XYBuildUtils.h"
 #include "LMV_Utils.h"
 
 using namespace std;
@@ -91,10 +92,13 @@ int main(int argc, char *argv[])
       vector<string> dvector = readEntriesFromFile(argv[i], "geodesy");
       for(j=0; j<dvector.size(); j++)
 	all_geodesy.push_back(dvector[j]);
-#if 0
-      vector<strin> svector = readEntriesFromFile(argv[i], "seglist");
-      for(j=0; j<svector.size(); j++)
-	all_segls.push_back(svector[j]);
+#if 1
+      vector<string> svector = readEntriesFromFile(argv[i], "seglist");
+      for(j=0; j<svector.size(); j++) {
+	XYSegList new_segl = stringToSegList(svector[j]);
+	if(new_segl.size() != 0)
+	  all_segls.push_back(new_segl);
+      }
 #endif
     }
   }
