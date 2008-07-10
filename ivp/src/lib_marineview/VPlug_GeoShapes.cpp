@@ -16,49 +16,73 @@ using namespace std;
 
 VPlug_GeoShapes::VPlug_GeoShapes()
 {
-  m_poly_viewable_all    = true;
-  m_poly_viewable_labels = true;
-  m_segl_viewable_all    = true;
-  m_segl_viewable_labels = true;
-  m_grid_viewable_all    = true;
-  m_grid_viewable_labels = true;
-  m_circ_viewable_all    = true;
-  m_circ_viewable_labels = true;
+  setColorMapping("m_poly_edge_color",  "khaki");
+  setColorMapping("m_poly_vert_color",  "dark_blue");
+  setColorMapping("m_poly_label_color", "khaki");
+  setColorMapping("m_segl_edge_color",  "orange");
+  setColorMapping("m_segl_vert_color",  "dark_green");
+  setColorMapping("m_segl_label_color", "orange");
+  setColorMapping("m_circ_edge_color",  "yellow");
+  setColorMapping("m_grid_edge_color",  "white");
 
-  m_poly_edge_color  = colorParse("khaki");
-  m_poly_vert_color  = colorParse("dark_blue");
-  m_poly_label_color = colorParse("khaki");
-  m_segl_edge_color  = colorParse("orange");
-  m_segl_vert_color  = colorParse("dark_green");
-  m_segl_label_color = colorParse("orange");
-  m_circ_edge_color  = colorParse("yellow");
-  m_grid_edge_color  = colorParse("white");
-
-  m_poly_edge_width  = 2.0;
-  m_poly_vert_size   = 5.0;
-  m_segl_edge_width  = 2.0;
-  m_segl_vert_size   = 5.0;
-  m_grid_edge_width  = 2.0;
-  m_grid_edge_width  = 2.0;
+  m_gsize_map["m_poly_edge_width"]  = 2.0;
+  m_gsize_map["m_poly_vert_size"]   = 5.0;
+  m_gsize_map["m_segl_edge_width"]  = 2.0;
+  m_gsize_map["m_segl_vert_size"]   = 5.0;
+  m_gsize_map["m_grid_edge_width"]  = 2.0;
+  m_gsize_map["m_grid_edge_width"]  = 2.0;
 }
 
 //-----------------------------------------------------------
-// Procedure: addPolyon, addSegList, addGrid, addCircle
+// Procedure: addPolyon
 
-void VPlug_GeoShapes::addPolygon(const XYPolygon& poly)
+void VPlug_GeoShapes::addPolygon(const XYPolygon& new_poly)
 {
-  m_polygons.push_back(poly);
+  string new_label = new_poly.get_label();
+  if(new_label == "") {
+    m_polygons.push_back(new_poly);
+    return;
+  }
+
+  for(int i=0; i<m_polygons.size(); i++) {
+    if(m_polygons[i].get_label() == new_label) {
+      m_polygons[i] = new_poly;
+      return;
+    }
+  }
+  m_polygons.push_back(new_poly);  
 }
+
+//-----------------------------------------------------------
+// Procedure: addSegList
 
 void VPlug_GeoShapes::addSegList(const XYSegList& segl)
 {
-  m_seglists.push_back(segl);
+  string new_label = new_segl.get_label();
+  if(new_label == "") {
+    m_seglists.push_back(new_segl);
+    return;
+  }
+  
+  for(int i=0; i<m_seglists.size(); i++) {
+    if(m_seglists[i].get_label() == new_label) {
+      m_seglists[i] = new_segl;
+      return;
+    }
+  }
+  m_seglists.push_back(new_segl);  
 }
+
+//-----------------------------------------------------------
+// Procedure: addGrid
 
 void VPlug_GeoShapes::addGrid(const XYGrid& grid)
 {
   m_grids.push_back(grid);
 }
+
+//-----------------------------------------------------------
+// Procedure: addCircle
 
 void VPlug_GeoShapes::addCircle(const XYCircle& circ)
 {
@@ -121,10 +145,45 @@ bool VPlug_GeoShapes::setParam(string param, string value)
     return(setViewableMapping(param, value));
   else if(strContains(param, "_color"))
     return(setColorMapping(param, value));
+  else if(strContains(param, "_width"))
+    return(setGSizeMapping(param, value));
+  else if(strContains(param, "_size"))
+    return(setGSizeMapping(param, value));
   else
     return(false);
   
   return(true);
+}
+
+//-------------------------------------------------------------
+// Procedure: setColorMapping
+//            "label", "DarkKhaki"
+//            "label"  " hex, bd, b7, 6b"
+//            "label", "0.741, 0.718, 0.420"
+
+bool VPlug_GeoShapes::setColorMapping(string attribute, string color_str)
+{
+  attribute = tolower(stripBlankEnds(attribute));
+  color_str = stripBlankEnds(color_str);
+  
+  vector<double> cvect = colorParse(color_str);
+  
+  m_color_map[attribute] = cvect;
+  if((cvect[0]==0) && (cvect[2]==0) && (cvect[2]==0) &&
+     (tolower(color_str) != "black"))
+    return(false);
+  return(true);    
+}
+//-------------------------------------------------------------
+// Procedure: setColorMapping
+//            "label, DarkKhaki"
+//            "label, hex, bd, b7, 6b"
+//            "label, 0.741, 0.718, 0.420"
+
+bool VPlug_GeoShapes::setColorMapping(string str)
+{
+  string attribute = biteString(str, ',');
+  return(setColorMapping(attribute, str));
 }
 
 //-------------------------------------------------------------
@@ -158,18 +217,23 @@ bool VPlug_GeoShapes::setViewableMapping(string param, string value)
   return(true);
 }
 
-//-------------------------------------------------------------
-// Procedure: setColorMapping
-//            "label", "DarkKhaki"
-//            "label"  " hex, bd, b7, 6b"
-//            "label", "0.741, 0.718, 0.420"
 
-bool VPlug_GeoShapes::setColorMapping(string attribute, string color_str)
+//-------------------------------------------------------------
+// Procedure: setGSizeMapping
+
+bool VPlug_GeoShapes::setGSizeMapping(string attribute, string gsize)
 {
-  attribute = stripBlankEnds(attribute);
-  color_str = stripBlankEnds(color_str);
+  attribute = tolower(stripBlankEnds(attribute));
+  gsize = stripBlankEnds(color_str);
   
-  vector<double> cvect = colorParse(color_str);
+  if(!isNumber(gsize))
+    return(false);
+
+  double dval = atof(gsize.c_str());
+  if(dval < 0) 
+    return(false);
+
+  m_gsize_map[atrribute]
   
   m_color_map[attribute] = cvect;
   if((cvect[0]==0) && (cvect[2]==0) && (cvect[2]==0) &&
@@ -179,28 +243,23 @@ bool VPlug_GeoShapes::setColorMapping(string attribute, string color_str)
 }
 
 //-------------------------------------------------------------
-// Procedure: setColorMapping
-//            "label, DarkKhaki"
-//            "label, hex, bd, b7, 6b"
-//            "label, 0.741, 0.718, 0.420"
-
-bool VPlug_GeoShapes::setColorMapping(string str)
-{
-  string attribute = biteString(str, ',');
-  return(setColorMapping(attribute, str));
-}
-
-//-------------------------------------------------------------
 // Procedure: getColorMapping
 //      Note: If the attribute is not found, the returned color
 //            vector can be determined by the optional def_color
 //            argument. 
+//      Note: Attributes are case-insensitive by always converting
+//            to lower case when added to the structure. The queried
+//            attribute is converted to lower case only if the query
+//            initially fails. 
 
 vector<double> VPlug_GeoShapes::getColorMapping(string attribute, 
 						string def_color)
 {
   map<string, vector<double> >::iterator p;
   p = m_color_map.find(attribute);
+  if(p == m_color_map.end())
+    p = m_color_map.find(tolower(attribute));
+
   if(p != m_color_map.end())
     return(p->second);
   else {
@@ -209,134 +268,49 @@ vector<double> VPlug_GeoShapes::getColorMapping(string attribute,
   }
 }
 
-
-#if 0
-
 //-----------------------------------------------------------
-// Procedure: setColorParam
+// Procedure: getViewableMapping
+//      Note: If the attribute is not found, the returned bolean
+//            can be determined by the optional default boolean value.
+//      Note: Attributes are case-insensitive by always converting
+//            to lower case when added to the structure. The queried
+//            attribute is converted to lower case only if the query
+//            initially fails. 
 
-bool VPlug_GeoShapes::setColorParam(vector<double>& cvect,
-				    const string& color_str)
+bool VPlug_GeoShapes::getViewableMapping(const string& str, 
+					 bool default)
 {
-  vector<double> cv = colorParse(color_str);
-  if((cv[0]==0) && (cv[1]==0) && (cv[2]==0) && (tolower(color_str)!="black"))
-    return(false);
-  else {
-    cvect = cv;
-    return(true);
-  }
-}
-
-//-----------------------------------------------------------
-// Procedure: setParam()
-
-bool VPlug_GeoShapes::setParam(string param, double value)
-{
-  if(param == "mod_scale_all") {
-    if((m_marker_scale_global * value) > 0.1)
-      m_marker_scale_global *= value;
-  }
-  else if(param == "set_scale_all") {
-    if(value > 0.1)
-      m_marker_scale_global = value;
-  }
-  else
-    return(false);
-  return(true);
-}
-
-//-----------------------------------------------------------
-// Procedure: viewable
-
-bool VPlug_GeoShapes::viewable(const string& str)
-{
-  if((str == "all") || (tolower(str) == "all"))
-    return(m_marker_viewable_all);
-  else if((str == "labels") || (tolower(str) == "labels"))
-    return(m_marker_viewable_labels);
-  return(false);
-}
-
-//-----------------------------------------------------------
-// Procedure: getMarkerType()
-
-string VPlug_GeoShapes::getMarkerType(int ix)
-{
-  if((ix >= 0) && (ix < m_marker_type.size()))
-    return(m_marker_type[ix]);
-  else
-    return("");
-}
-
-//-----------------------------------------------------------
-// Procedure: getMarkerXPos()
-
-double VPlug_GeoShapes::getMarkerXPos(int ix)
-{
-  if((ix >= 0) && (ix < m_marker_xpos.size()))
-    return(m_marker_xpos[ix]);
-  else
-    return(0);
-}
-
-//-----------------------------------------------------------
-// Procedure: getMarkerYPos()
-
-double VPlug_GeoShapes::getMarkerYPos(int ix)
-{
-  if((ix >= 0) && (ix < m_marker_ypos.size()))
-    return(m_marker_ypos[ix]);
-  else
-    return(0);
-}
-
-//-----------------------------------------------------------
-// Procedure: getMarkerScale()
-
-double VPlug_GeoShapes::getMarkerScale(int ix)
-{
-  if((ix >= 0) && (ix < m_marker_scale.size()))
-    return(m_marker_scale[ix]);
-  else
-    return(0);
-}
-
-//-----------------------------------------------------------
-// Procedure: getMarkerLabel()
-
-string VPlug_GeoShapes::getMarkerLabel(int ix)
-{
-  if((ix >= 0) && (ix < m_marker_label.size()))
-    return(m_marker_label[ix]);
-  else
-    return("");
-}
-
-//-----------------------------------------------------------
-// Procedure: getMarkerColorString
-
-string VPlug_GeoShapes::getMarkerColorString(int mix, int cix)
-{
-  if((mix < 0) && (mix >= m_marker_colors.size()))
-    return("");
+  map<string, bool>::iterator p;
+  p = m_viewable_map.find(attribute);
+  if(p == m_viewable_map.end())
+    p m_viewable_map.find(tolower(attribute));
   
-  if((cix < 0) && (cix >= m_marker_colors[mix].size()))
-    return("");
-  
-  return(m_marker_colors[mix][cix]);
+  if(p != m_viewable_map.end())
+    return(p->second);
+  else 
+    return(default);
 }
-
 
 //-----------------------------------------------------------
-// Procedure: getMarkerColorVector
+// Procedure: getGSizeMapping
+//      Note: If the attribute is not found, the returned double
+//            can be determined by the optional default double value.
+//      Note: Attributes are case-insensitive by always converting
+//            to lower case when added to the structure. The queried
+//            attribute is converted to lower case only if the query
+//            initially fails. 
 
-vector<vector<double> > VPlug_GeoShapes::getMarkerColorVectors(int mix)
+double VPlug_GeoShapes::getGSizeMapping(const string& str, 
+					double default)
 {
-  vector<vector<double> > fail_vector;
+  map<string, bool>::iterator p;
+  p = m_gsize_map.find(attribute);
+  if(p == m_gsize_map.end())
+    p = m_gsize_map.find(tolower(attribute));
 
-  if((mix < 0) && (mix >= m_marker_color_vectors.size()))
-    return(fail_vector);
-  else
-    return(m_marker_color_vectors[mix]);
+  if(p != m_gsize_map.end())
+    return(p->second);
+  else 
+    return(default);
 }
-#endif
+
