@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin and John Leonard                    */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
-/*    FILE: VPlug-GeoShapes.cpp                                  */
+/*    FILE: VPlug_GeoShapes.cpp                                  */
 /*    DATE: July 9th, 2008                                       */
 /*****************************************************************/
 
@@ -156,6 +156,7 @@ bool VPlug_GeoShapes::setParam(string param, string value)
   return(true);
 }
 
+
 //-------------------------------------------------------------
 // Procedure: setColorMapping
 //            "label", "DarkKhaki"
@@ -175,6 +176,8 @@ bool VPlug_GeoShapes::setColorMapping(string attribute, string color_str)
     return(false);
   return(true);    
 }
+
+
 //-------------------------------------------------------------
 // Procedure: setColorMapping
 //            "label, DarkKhaki"

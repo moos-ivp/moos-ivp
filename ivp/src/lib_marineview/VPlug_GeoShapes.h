@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin and John Leonard                    */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
-/*    FILE: VPlug-GeoShapes.h                                    */
+/*    FILE: VPlug_GeoShapes.h                                    */
 /*    DATE: July 9th, 2008                                       */
 /*****************************************************************/
 
@@ -32,7 +32,10 @@ public:
   bool setParam(std::string param, std::string value);
   bool setParam(std::string param, double);
   
-  unsigned int size(const std::string& s="all");
+  int sizePolygons() {return(m_polygons.size());};
+  int sizeSegLists() {return(m_seglists.size());};
+  int sizeGrids()    {return(m_grids.size());};
+  int sizeCircles()  {return(m_circles.size());};
 
   void remove(const std::string& gtype, int index);
 
