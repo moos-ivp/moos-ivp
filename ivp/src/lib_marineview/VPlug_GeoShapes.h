@@ -9,6 +9,7 @@
 #define VPLUG_GEOSHAPES_HEADER
 
 #include <vector>
+#include <map>
 #include <string>
 #include "XYPolygon.h"
 #include "XYSegList.h"
@@ -42,13 +43,14 @@ public:
 
   bool   setColorMapping(std::string);
   bool   setColorMapping(std::string, std::string);
-  std::vector<double> getColorMapping(std::string, std::string s="");
+  std::vector<double> getColorMapping(const std::string&, 
+				      std::string def="");
 
   bool   setViewableMapping(std::string, std::string);
-  bool   getViewableMapping(std::string, bool default=true);
+  bool   getViewableMapping(const std::string&, bool def=true);
 
   bool   setGSizeMapping(std::string, std::string);
-  double getGSizeMapping(std::string, double default=0);
+  double getGSizeMapping(const std::string&, double def=0);
 
 protected:
   std::vector<XYPolygon>  m_polygons;

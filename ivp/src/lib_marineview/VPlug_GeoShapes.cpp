@@ -7,6 +7,7 @@
 
 #include "VPlug_GeoShapes.h"
 #include "MBUtils.h"
+#include "XYBuildUtils.h"
 #include "ColorParse.h"
 
 using namespace std;
@@ -56,7 +57,7 @@ void VPlug_GeoShapes::addPolygon(const XYPolygon& new_poly)
 //-----------------------------------------------------------
 // Procedure: addSegList
 
-void VPlug_GeoShapes::addSegList(const XYSegList& segl)
+void VPlug_GeoShapes::addSegList(const XYSegList& new_segl)
 {
   string new_label = new_segl.get_label();
   if(new_label == "") {
@@ -91,7 +92,7 @@ void VPlug_GeoShapes::addCircle(const XYCircle& circ)
 
 bool VPlug_GeoShapes::addPolygon(const string& poly_str)
 {
-  XYPoloygon new_poly = stringToPolygon(poly_str);
+  XYPolygon new_poly = stringToPoly(poly_str);
   if(new_poly.size() == 0)
     return(false);
   m_polygons.push_back(new_poly);
@@ -141,7 +142,7 @@ bool VPlug_GeoShapes::addSegList(const string& segl_str)
 
 bool VPlug_GeoShapes::setParam(string param, string value)
 {
-  if(strContains(param == "_viewable_"))
+  if(strContains(param, "_viewable_"))
     return(setViewableMapping(param, value));
   else if(strContains(param, "_color"))
     return(setColorMapping(param, value));
@@ -205,12 +206,12 @@ bool VPlug_GeoShapes::setViewableMapping(string param, string value)
   if(value != "toggle")
     return(false);
   else {
-    map<string, vector<double> >::iterator p;
-    p = m_viewable_map.find(attribute);
-    if(p == m_color_map.end())
+    map<string, bool>::iterator p;
+    p = m_viewable_map.find(param);
+    if(p == m_viewable_map.end())
       m_viewable_map[param] = true;
     else {
-      book curr_value = p->second;
+      bool curr_value = p->second;
       m_viewable_map[param] = !curr_value;
     }
   }
@@ -224,7 +225,7 @@ bool VPlug_GeoShapes::setViewableMapping(string param, string value)
 bool VPlug_GeoShapes::setGSizeMapping(string attribute, string gsize)
 {
   attribute = tolower(stripBlankEnds(attribute));
-  gsize = stripBlankEnds(color_str);
+  gsize = stripBlankEnds(gsize);
   
   if(!isNumber(gsize))
     return(false);
@@ -233,12 +234,7 @@ bool VPlug_GeoShapes::setGSizeMapping(string attribute, string gsize)
   if(dval < 0) 
     return(false);
 
-  m_gsize_map[atrribute]
-  
-  m_color_map[attribute] = cvect;
-  if((cvect[0]==0) && (cvect[2]==0) && (cvect[2]==0) &&
-     (tolower(color_str) != "black"))
-    return(false);
+  m_gsize_map[attribute] = dval;
   return(true);    
 }
 
@@ -252,7 +248,7 @@ bool VPlug_GeoShapes::setGSizeMapping(string attribute, string gsize)
 //            attribute is converted to lower case only if the query
 //            initially fails. 
 
-vector<double> VPlug_GeoShapes::getColorMapping(string attribute, 
+vector<double> VPlug_GeoShapes::getColorMapping(const string& attribute, 
 						string def_color)
 {
   map<string, vector<double> >::iterator p;
@@ -277,18 +273,18 @@ vector<double> VPlug_GeoShapes::getColorMapping(string attribute,
 //            attribute is converted to lower case only if the query
 //            initially fails. 
 
-bool VPlug_GeoShapes::getViewableMapping(const string& str, 
-					 bool default)
+bool VPlug_GeoShapes::getViewableMapping(const string& attribute, 
+					 bool default_value)
 {
   map<string, bool>::iterator p;
   p = m_viewable_map.find(attribute);
   if(p == m_viewable_map.end())
-    p m_viewable_map.find(tolower(attribute));
+    p = m_viewable_map.find(tolower(attribute));
   
   if(p != m_viewable_map.end())
     return(p->second);
   else 
-    return(default);
+    return(default_value);
 }
 
 //-----------------------------------------------------------
@@ -300,10 +296,10 @@ bool VPlug_GeoShapes::getViewableMapping(const string& str,
 //            attribute is converted to lower case only if the query
 //            initially fails. 
 
-double VPlug_GeoShapes::getGSizeMapping(const string& str, 
-					double default)
+double VPlug_GeoShapes::getGSizeMapping(const string& attribute, 
+					double default_value)
 {
-  map<string, bool>::iterator p;
+  map<string, double>::iterator p;
   p = m_gsize_map.find(attribute);
   if(p == m_gsize_map.end())
     p = m_gsize_map.find(tolower(attribute));
@@ -311,6 +307,6 @@ double VPlug_GeoShapes::getGSizeMapping(const string& str,
   if(p != m_gsize_map.end())
     return(p->second);
   else 
-    return(default);
+    return(default_value);
 }
 
