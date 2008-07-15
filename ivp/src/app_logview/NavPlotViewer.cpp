@@ -43,6 +43,7 @@ NavPlotViewer::NavPlotViewer(int x, int y, int w, int h, const char *l)
   m_trail_size   = 1;
   m_alltrail     = true;
   m_vehibody     = "kayak";  // "auv" or "kayak"
+  m_gridplots_draw = true;
 }
 
 //-------------------------------------------------------------
@@ -66,10 +67,9 @@ void NavPlotViewer::draw()
 {
   MarineViewer::draw();
 
-  if(m_poly_offon)
-    drawPolys();
+  drawPolygons();
 
-  if(m_grid_offon)
+  if(m_gridplots_draw)
     drawGridPlots();
 
   drawNavPlots();

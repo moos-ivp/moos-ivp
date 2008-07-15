@@ -524,6 +524,7 @@ void XYSegList::rotate_pt(double deg, double cx, double cy,
   projectPoint(new_angle, curr_dist, cx, cy, nx, ny);
 
   //cout << "dist: " << curr_dist << endl;
+  //cout << "deg:  " << deg << endl;
   //cout << "cang: " << curr_angle << endl;
   //cout << "nang: " << new_angle << endl;
   //cout << "nx: " << nx << "  ny: " << ny << endl;

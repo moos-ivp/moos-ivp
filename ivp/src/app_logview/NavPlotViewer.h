@@ -88,6 +88,7 @@ private:
   std::string           m_vehibody;
   std::string           m_frame;
   std::vector<GridPlot> m_gridplots;
+  bool                  m_gridplots_draw;
   bool                  m_alltrail;
 
   std::vector<LogPlot>  m_navx_plot;

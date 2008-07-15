@@ -61,12 +61,8 @@ void SSV_Viewer::draw()
   mutexLock();
   MarineViewer::draw();
 
-  if(m_grid_offon)
-    drawGrids();
-
-  if(m_poly_offon)
-    drawPolys();
-
+  drawGrids();
+  drawPolygons();
   drawSegLists();
   drawStationCircles();
   drawCircles();

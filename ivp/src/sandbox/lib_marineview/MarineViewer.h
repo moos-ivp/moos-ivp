@@ -58,7 +58,7 @@ class MarineViewer : public Fl_Gl_Window
   virtual bool setParam(std::string p, std::string v) = 0;
   virtual bool setParam(std::string p, float v)       = 0;
 
-  bool  setGeoShapeParam(const std::string& p, const std::string& v)
+  bool  setGeoParam(const std::string& p, const std::string& v)
     {return(m_geoshapes.setParam(p, v));};
   
   bool  setCommonParam(std::string, std::string);
@@ -82,9 +82,8 @@ public: // Color Mapping interface
   void   addGrid(const XYGrid& g)         {m_geoshapes.addGrid(g);};
   void   addCircle(const XYCircle& c)     {m_geoshapes.addCircle(c);};
   void   addSegList(const XYSegList& s)   {m_geoshapes.addSegList(s);};
+  void   addHexagon(const XYHexagon& s)   {m_geoshapes.addHexagon(s);};
   void   updateGrid(const std::string& d) {m_geoshapes.updateGrid(d);};
-  void   addHexagon(const XYHexagon&); 
-  void   updateGrid(std::string);
   double getHashDelta();
   float  getCrossHairMeters(char);
 
@@ -97,24 +96,12 @@ protected:
   void   drawTiff();
   void   drawHash();
   void   drawCrossHairs();
-  void   drawPolys();
   void   drawSegment(float, float, float, float, float, float, float);
-  void   drawPoly(const XYPolygon&, 
-		  bool filled=false, bool dashed=false,
-		  float=0.40, float=0.40, float=0.40,   
-		  float=0.20, float=0.80, float=0.20,   
-		  float=0.00, float=0.00, float=0.00);
+  void   drawDatum();
 
-  void  drawDatum();
-  void  drawHexagons();
-  void  drawSegLists();
-  void  drawSegList(int ix);
-  void  drawGrids();
-  void  drawMarkers();
-  void  drawOpArea();
-  void  drawGrid(const XYGrid&);
-  void  drawCircles();
-  void  drawCircle(int ix);
+  void   drawMarkers();
+  void   drawOpArea();
+
   void  drawGLPoly(float *points, int numPoints, float r, float g, 
 		   float b, float thickness=0, float scale=1);
   void  drawCommonVehicle(std::string vname, ObjectPose, double r, 
@@ -123,6 +110,30 @@ protected:
 			 const std::string& mtype, const std::string& label, 
 			 const std::vector<double>& label_color, 
 			 const std::vector<std::vector<double> >& color_vectors);
+
+
+  void  drawPolygons();
+  void  drawPolygon(const XYPolygon&, bool filled, bool dashed,
+		    float line_width, float vertex_size,
+		    const std::vector<double>& edge_color,
+		    const std::vector<double>& fill_color,
+		    const std::vector<double>& vert_color,
+		    const std::vector<double>& labl_color);
+  
+  void  drawSegLists();
+  void  drawSegList(const XYSegList&, float lwid, float vsize, bool zdash,
+		    const std::vector<double>& edge_color,
+		    const std::vector<double>& vert_color,
+		    const std::vector<double>& labl_color);
+
+  void  drawGrids();
+  void  drawGrid(const XYGrid&);
+
+  void  drawCircles();
+  void  drawCircle(const XYCircle&);
+
+  void   drawHexagons();
+
 
 protected:
   BackImg    m_back_img;
@@ -136,40 +147,29 @@ protected:
   float      m_vshift_y; 
   float      m_x_origin;
   float      m_y_origin;
-  float      m_shape_scale;
+  bool       m_texture_init;
+  GLuint*    m_textures;
+  int        m_texture_set;
+  bool       m_tiff_offon;
+
   float      m_hash_shade;
   float      m_hash_delta;
   float      m_fill_shade;
-  int        m_texture_set;
-  bool       m_texture_init;
-  GLuint*    m_textures;
+  bool       m_cross_offon;
+  bool       m_hash_offon;
+  bool       m_draw_datum;
 
+  float      m_shape_scale;
   bool       m_trails;
   bool       m_trail_connect;
   int        m_trail_color;
   int        m_trail_gap;
   float      m_trail_size;
-
-  bool       m_cross_offon;
-  bool       m_tiff_offon;
-  bool       m_hash_offon;
-  bool       m_draw_vname;
   int        m_vname_color;
-  bool       m_draw_datum;
+  bool       m_draw_vname;
   float      m_size_datum;
   unsigned int m_global_ix;
 
-
-  bool       m_grid_offon;
-  bool       m_segl_offon;
-  float      m_poly_vsize;
-  bool       m_poly_labels;
-  bool       m_poly_offon;
-  std::vector<XYCircle>  m_circ;
-  std::vector<XYPolygon> m_poly;
-  std::vector<XYGrid>    m_grid;
-  std::vector<XYHexagon> m_hexa;
-  std::vector<XYSegList> m_segl;
 
   std::map<std::string, std::vector<double> >  m_color_map;
   VMarkerSet       m_vmarkers;

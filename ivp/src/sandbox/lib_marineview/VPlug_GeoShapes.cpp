@@ -26,6 +26,9 @@ VPlug_GeoShapes::VPlug_GeoShapes()
   setColorMapping("circle_edge_color", "yellow");
   setColorMapping("grid_edge_color", "white");
 
+  m_viewable_map["polygon_viewable_labels"] = true;
+  m_viewable_map["polygon_viewable_all"]    = true;
+
   m_gsize_map["poly_edge_width"]     = 2.0;
   m_gsize_map["poly_vertex_size"]    = 5.0;
   m_gsize_map["seglist_edge_width"]  = 2.0;
@@ -86,9 +89,22 @@ void VPlug_GeoShapes::updateGrid(const string& delta)
 //-----------------------------------------------------------
 // Procedure: addGrid
 
-void VPlug_GeoShapes::addGrid(const XYGrid& grid)
+void VPlug_GeoShapes::addGrid(const XYGrid& new_grid)
 {
-  m_grids.push_back(grid);
+  string new_label = new_grid.getLabel();
+  if(new_label == "") {
+    m_grids.push_back(new_grid);
+    return;
+  }
+  
+  for(int i=0; i<m_grids.size(); i++) {
+    if(m_grids[i].getLabel() == new_label) {
+      m_grids[i] = new_grid;
+      return;
+    }
+  }
+
+  m_grids.push_back(new_grid);
 }
 
 //-----------------------------------------------------------
@@ -149,9 +165,9 @@ bool VPlug_GeoShapes::addSegList(const string& segl_str)
 //         circle_viewable_labels
 //    Each accepting a "double string": 
 //         poly_line_width
-//         poly_vert_size
+//         poly_vertex_size
 //         seglist_line_width
-//         seglist_vert_size
+//         seglist_vertex_size
 //         grid_line_width
 //         circle_line_width
 
@@ -171,6 +187,70 @@ bool VPlug_GeoShapes::setParam(string param, string value)
   return(true);
 }
 
+//-------------------------------------------------------------
+// Procedure: getPolygon(int)
+
+XYPolygon VPlug_GeoShapes::getPolygon(int index)
+{
+  if((index < 0) || (index >= m_polygons.size())) {
+    XYPolygon null_poly;
+    return(null_poly);
+  }
+  else
+    return(m_polygons[index]);
+}
+
+//-------------------------------------------------------------
+// Procedure: getSegList(int)
+
+XYSegList VPlug_GeoShapes::getSegList(int index)
+{
+  if((index < 0) || (index >= m_seglists.size())) {
+    XYSegList null_segl;
+    return(null_segl);
+  }
+  else
+    return(m_seglists[index]);
+}
+
+//-------------------------------------------------------------
+// Procedure: getHexagon(int)
+
+XYHexagon VPlug_GeoShapes::getHexagon(int index)
+{
+  if((index < 0) || (index >= m_hexagons.size())) {
+    XYHexagon null_hexagon;
+    return(null_hexagon);
+  }
+  else
+    return(m_hexagons[index]);
+}
+
+//-------------------------------------------------------------
+// Procedure: getGrid(int)
+
+XYGrid VPlug_GeoShapes::getGrid(int index)
+{
+  if((index < 0) || (index >= m_grids.size())) {
+    XYGrid null_grid;
+    return(null_grid);
+  }
+  else
+    return(m_grids[index]);
+}
+
+//-------------------------------------------------------------
+// Procedure: getCircle(int)
+
+XYCircle VPlug_GeoShapes::getCircle(int index)
+{
+  if((index < 0) || (index >= m_circles.size())) {
+    XYCircle null_circle;
+    return(null_circle);
+  }
+  else
+    return(m_circles[index]);
+}
 
 //-------------------------------------------------------------
 // Procedure: setColorMapping

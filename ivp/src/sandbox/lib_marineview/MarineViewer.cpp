@@ -384,30 +384,44 @@ void MarineViewer::drawHash()
 }
 
 //-------------------------------------------------------------
-// Procedure: drawPolys
+// Procedure: drawPolygons
 
-void MarineViewer::drawPolys()
+void MarineViewer::drawPolygons()
 {
-  if(m_geoshapes.viewable("poly_viewable_all") == false)
+  if(m_geoshapes.viewable("polygon_viewable_all", true) == false)
     return;
 
   int vsize = m_geoshapes.sizePolygons();
-  for(int i=0; i<vsize; i++)
-    drawPoly(m_geoshapes.getPolygon(i));
+  if(vsize == 0)
+    return;
+
+  vector<double> edge_c, fill_c, vert_c, labl_c;
+  edge_c = m_geoshapes.geocolor("polygon_edge_color", "khaki");
+  fill_c = m_geoshapes.geocolor("polygon_fill_color", "dark_green");
+  vert_c = m_geoshapes.geocolor("polygon_vertex_color", "red");
+  labl_c = m_geoshapes.geocolor("polygon_label_color", "white");
+
+  float line_width  = m_geoshapes.geosize("polygon_line_size");
+  float vertex_size = m_geoshapes.geosize("polygon_vertex_size");
+  
+  for(int i=0; i<vsize; i++) {
+    XYPolygon poly = m_geoshapes.getPolygon(i);
+    drawPolygon(poly, false, false, line_width, vertex_size, 
+		edge_c, fill_c, vert_c, labl_c);
+  }
 }
 
 //-------------------------------------------------------------
 // Procedure: drawPoly
 
-void MarineViewer::drawPoly(const XYPolygon& poly, 
-			    bool filled, bool dashed,
-			    float edge_r, float edge_g, float edge_b,
-			    float fill_r, float fill_g, float fill_b,
-			    float vert_r, float vert_g, float vert_b)  
+void MarineViewer::drawPolygon(const XYPolygon& poly, 
+			       bool filled, bool dashed,
+			       float line_width, float vertex_size,
+			       const vector<double>& edge_c, 
+			       const vector<double>& fill_c, 
+			       const vector<double>& vert_c, 
+			       const vector<double>& labl_c)
 {
-  if(m_poly_offon == false)
-    return;
-
   unsigned int vsize = poly.size();
   if(vsize < 1)
     return;
@@ -448,7 +462,7 @@ void MarineViewer::drawPoly(const XYPolygon& poly,
   // "valid" too, but we decide here not to draw the interior
   if((vsize > 2) && poly.is_convex() && filled) {
     glEnable(GL_BLEND);
-    glColor4f(fill_r,fill_g,fill_b,0.1);
+    glColor4f(fill_c[0], fill_c[1], fill_c[2], 0.1);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glBegin(GL_POLYGON);
     for(i=0; i<vsize*2; i=i+2) {
@@ -460,8 +474,8 @@ void MarineViewer::drawPoly(const XYPolygon& poly,
   
   // Now draw the edges - if the polygon is invalid, don't draw
   // the last edge.
-  if(vsize > 2) {
-    glLineWidth(1.0);
+  if(vsize > 1) {
+    glLineWidth(line_width);
     if(dashed) {
       glEnable(GL_LINE_STIPPLE);
       GLushort pattern = 0x5555;
@@ -469,7 +483,7 @@ void MarineViewer::drawPoly(const XYPolygon& poly,
       glLineStipple(factor, pattern);
     }
 
-    glColor3f(edge_r, edge_g, edge_b);
+    glColor3f(edge_c[0], edge_c[1], edge_c[2]);
 
     if(poly.is_convex())
       glBegin(GL_LINE_LOOP);
@@ -496,10 +510,10 @@ void MarineViewer::drawPoly(const XYPolygon& poly,
   }
 
   glEnable(GL_POINT_SMOOTH);
-  glPointSize(m_poly_vsize);
+  glPointSize(vertex_size);
 
   // Draw the vertices in between the first and last ones
-  glColor3f(vert_r, vert_g, vert_b);
+  glColor3f(vert_c[0], vert_c[1], vert_c[2]);
   glBegin(GL_POINTS);
   for(j=0; j<vsize; j++) {
     glVertex2f(points[(j*2)], points[(j*2)+1]);
@@ -510,12 +524,12 @@ void MarineViewer::drawPoly(const XYPolygon& poly,
 
 
   //-------------------------------- perhaps draw poly label
-  if(m_poly_labels) {
+  if(m_geoshapes.viewable("polygon_viewable_labels")) {
     double cx = poly.get_avg_x() * m_back_img.get_pix_per_mtr();
     double cy = poly.get_avg_y() * m_back_img.get_pix_per_mtr();
     glTranslatef(cx, cy, 0);
-
-    glColor3f(edge_r, edge_g, edge_b);
+    
+    glColor3f(labl_c[0], labl_c[1], labl_c[2]);
     gl_font(1, 12);
 
     string plabel = poly.get_label();
@@ -532,14 +546,14 @@ void MarineViewer::drawPoly(const XYPolygon& poly,
 
 #if 0
   //-------------------------------- perhaps draw poly vertex labels
-  if(m_poly_labels) {
+  if(m_geoshapes.viewable("polygon_viewable_vertex_labels") {
     glTranslatef(0, 0, 0);
     char *buff = new char(100);
     for(j=0; j<vsize; j++) {
       double cx = points[(j*2)];
       double cy = points[(j*2)+1];
       
-      glColor3f(edge_r, edge_g, edge_b);
+      glColor3f(edge_c[0], edge_c[1], edge_c[2]);
       gl_font(1, 12);
       
       string vlabel = intToString(j);
@@ -605,10 +619,20 @@ void MarineViewer::drawSegment(float x1, float y1, float x2, float y2,
 
 void MarineViewer::drawHexagons()
 {
-  int hsize = m_hexa.size();
+  int hsize = m_geoshapes.sizeHexagons();
 
+  vector<double> edge_c, fill_c, vert_c, labl_c;
+  edge_c = m_geoshapes.geocolor("polygon_edge_color", "yellow");
+  fill_c = m_geoshapes.geocolor("polygon_vertex_color", "white");
+  vert_c = m_geoshapes.geocolor("polygon_vertex_color", "white");
+  labl_c = m_geoshapes.geocolor("polygon_label_color", "white");
+
+  float line_width  = m_geoshapes.geosize("polygon_line_size");
+  float vertex_size = m_geoshapes.geosize("polygon_vertex_size");
+  
   for(int i=0; i<hsize; i++)
-    drawPoly(m_hexa[i]);
+    drawPolygon(m_geoshapes.getHexagon(i), false, false, line_width, 
+	     vertex_size, edge_c, fill_c, vert_c, labl_c);
 }
 
 //-------------------------------------------------------------
@@ -616,26 +640,36 @@ void MarineViewer::drawHexagons()
 
 void MarineViewer::drawSegLists()
 {
-  int vsize = m_segl.size();
+  if(!m_geoshapes.viewable("seglist_viewable_all"))
+    return;
 
-  for(int i=0; i<vsize; i++)
-    drawSegList(i );
+  int vsize = m_geoshapes.sizeSegLists();
+  if(vsize == 0)
+    return;
+ 
+  vector<double> edge_c, vert_c, labl_c;
+  edge_c = m_geoshapes.geocolor("seglist_edge_color", "yellow");
+  vert_c = m_geoshapes.geocolor("seglist_vertex_color", "white");
+  labl_c = m_geoshapes.geocolor("seglist_label_color", "white");
+  
+  float lwid = m_geoshapes.geosize("seglist_line_size");
+  float vert = m_geoshapes.geosize("seglist_vertex_size");
+  
+  for(int i=0; i<vsize; i++) {
+    XYSegList segl = m_geoshapes.getSegList(i);
+    drawSegList(segl, lwid, false, vert, edge_c, vert_c, labl_c); 
+  }
 }
 
 //-------------------------------------------------------------
 // Procedure: drawSegList
 
-void MarineViewer::drawSegList(int ix)
+void MarineViewer::drawSegList(const XYSegList& segl, float lwid, 
+			       float vert, bool z_dash,
+			       const vector<double>& edge_c,
+			       const vector<double>& vert_c,
+			       const vector<double>& labl_c)
 {
-  float edge_r = 0.5;
-  float edge_g = 0.5;
-  float edge_b = 0.5;
-  
-  float vert_r = 1.0;
-  float vert_g = 0.6;
-  float vert_b = 0.6;
-
-  XYSegList segl = m_segl[ix];
   unsigned int vsize = segl.size();
 
   unsigned int i, j;
@@ -672,7 +706,7 @@ void MarineViewer::drawSegList(int ix)
   // Now draw the edges
   if(vsize >= 2) {
     glLineWidth(2.0);
-    glColor3f(edge_r, edge_g, edge_b);
+    glColor3f(edge_c[0], edge_c[1], edge_c[2]);
 
     glBegin(GL_LINE_STRIP);
     for(i=0; i<vsize*2; i=i+2) {
@@ -697,7 +731,7 @@ void MarineViewer::drawSegList(int ix)
   glPointSize(6.0);
 
   // Draw the vertices in between the first and last ones
-  glColor3f(vert_r, vert_g, vert_b);
+  glColor3f(vert_c[0], vert_c[1], vert_c[2]);
   glBegin(GL_POINTS);
   for(j=0; j<vsize; j++) {
     glVertex2f(points[(j*2)], points[(j*2)+1]);
@@ -714,9 +748,15 @@ void MarineViewer::drawSegList(int ix)
 
 void MarineViewer::drawGrids()
 {
-  int vsize = m_grid.size();
+  if(m_geoshapes.viewable("grid_viewable_all", true) == false)
+    return;
+
+  int vsize = m_geoshapes.sizeGrids();
+  if(vsize == 0)
+    return;
+
   for(int i=0; i<vsize; i++)
-    drawGrid(m_grid[i]);
+    drawGrid(m_geoshapes.grid(i));
 }
 
 //-------------------------------------------------------------
@@ -800,9 +840,15 @@ void MarineViewer::drawGrid(const XYGrid& grid)
 
 void MarineViewer::drawCircles()
 {
-  int vsize = m_circ.size();
+  if(m_geoshapes.viewable("circle_viewable_all", true) == false)
+    return;
+
+  int vsize = m_geoshapes.sizeCircles();
+  if(vsize == 0)
+    return;
+
   for(int i=0; i<vsize; i++)
-    drawCircle(i);
+    drawCircle(m_geoshapes.circ(i));
 }
 
 //-------------------------------------------------------------
@@ -847,9 +893,8 @@ void MarineViewer::drawDatum()
 //-------------------------------------------------------------
 // Procedure: drawCircle
 
-void MarineViewer::drawCircle(int ix)
+void MarineViewer::drawCircle(const XYCircle& dcircle)
 {
-  XYCircle dcircle = m_circ[ix];
   string dlabel = dcircle.getLabel();
   double rad = dcircle.getRad();
   if(rad <= 0)
@@ -971,11 +1016,13 @@ bool MarineViewer::setCommonParam(string param, string value)
   }
   else if(p=="clear") {
     if(v == "polygons")
-      m_poly.clear();
+      m_geoshapes.clearPolygons();
+    else if(v == "seglists")
+      m_geoshapes.clearSegLists();
     else if(v == "grids")
-      m_grid.clear();
+      m_geoshapes.clearGrids();
     else if(v == "circles")
-      m_circ.clear();
+      m_geoshapes.clearCircles();
     else
       return(false);
   }
@@ -1060,34 +1107,6 @@ bool MarineViewer::setCommonParam(string param, float v)
   redraw();
   return(true);
 
-}
-
-//-------------------------------------------------------------
-// Procedure: addHexagon
-
-void MarineViewer::addHexagon(const XYHexagon& new_hexa)
-{
-  string new_label = new_hexa.get_label();
-  
-  // If given hexa doesn't use a label it is automatically
-  // considered to be unique.
-  if(new_label == "") {
-    m_hexa.push_back(new_hexa);
-    return;
-  }
-  
-  bool prior_existed = false;
-
-  int vsize = m_hexa.size();
-  for(int i=0; i<vsize; i++) {
-    if(m_hexa[i].get_label() == new_label) {
-      m_hexa[i] = new_hexa;
-      prior_existed = true;
-    }
-  }
-  
-  if(!prior_existed)
-    m_hexa.push_back(new_hexa);
 }
 
 //-------------------------------------------------------------

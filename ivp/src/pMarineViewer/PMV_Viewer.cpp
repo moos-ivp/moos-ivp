@@ -55,16 +55,11 @@ void PMV_Viewer::draw()
   mutexLock();
   MarineViewer::draw();
 
-  if(m_poly_offon)
-    drawPolys();
-
-  if(m_grid_offon)
-    drawGrids();
-
+  drawPolygons();
+  drawGrids();
   drawSegLists();
   drawCircles();
   drawDatum();
-
 
   // Next draw the vehicle shapes. If the vehicle index is the 
   // one "active", draw it in a different color.
