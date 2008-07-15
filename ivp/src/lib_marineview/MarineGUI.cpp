@@ -116,7 +116,7 @@ void MarineGUI::augmentMenu()
   mbar->add("GeoAttr/Polygons - Edit/poly_vertex_size=8", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)144, 0);
   mbar->add("GeoAttr/Polygons - Edit/poly_vertex_size=10", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)145, 0);
 
-  mbar->add("GeoAttr/Polygons - Toggle", 'p', (Fl_Callback*)MarineGUI::cb_TogglePolys, (void*)0, FL_MENU_DIVIDER);
+  mbar->add("GeoAttr/Polygons - Toggle", 'p', (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)160, FL_MENU_DIVIDER);
 
   // --------------------------------- SegLists
   mbar->add("GeoAttr/SegLists - Edit/seglist_vertex_color=red", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)200, 0);
@@ -316,30 +316,33 @@ void MarineGUI::cb_HashShade(Fl_Widget* o, int v) {
 
 //----------------------------------------- MG_SetGeoAttr
 inline void MarineGUI::cb_MG_SetGeoAttr_i(int v) {
-  if(v==100) cmviewer->setCommonParam("poly_vertex_color", "red");
-  else if(v==101) cmviewer->setCommonParam("poly_vertex_color", "white");
-  else if(v==102) cmviewer->setCommonParam("poly_vertex_color", "yellow");
-  else if(v==103) cmviewer->setCommonParam("poly_vertex_color", "DarkBlue");
-  else if(v==104) cmviewer->setCommonParam("poly_vertex_color", "DarkGreen");
+  if(v==100) cmviewer->setGeoParam("poly_vertex_color", "red");
+  else if(v==101) cmviewer->setGeoParam("polygon_vertex_color", "white");
+  else if(v==102) cmviewer->setGeoParam("polygon_vertex_color", "yellow");
+  else if(v==103) cmviewer->setGeoParam("polygon_vertex_color", "DarkBlue");
+  else if(v==104) cmviewer->setGeoParam("polygon_vertex_color", "DarkGreen");
 
-  else if(v==120) cmviewer->setCommonParam("poly_edge_color", "red");
-  else if(v==121) cmviewer->setCommonParam("poly_edge_color", "white");
-  else if(v==122) cmviewer->setCommonParam("poly_edge_color", "yellow");
-  else if(v==123) cmviewer->setCommonParam("poly_edge_color", "DarkBlue");
-  else if(v==124) cmviewer->setCommonParam("poly_edge_color", "DarkGreen");
+  else if(v==120) cmviewer->setGeoParam("polygon_edge_color", "red");
+  else if(v==121) cmviewer->setGeoParam("polygon_edge_color", "white");
+  else if(v==122) cmviewer->setGeoParam("polygon_edge_color", "yellow");
+  else if(v==123) cmviewer->setGeoParam("polygon_edge_color", "DarkBlue");
+  else if(v==124) cmviewer->setGeoParam("polygon_edge_color", "DarkGreen");
 
-  else if(v==140) cmviewer->setCommonParam("poly_vertex_size", 1);
-  else if(v==141) cmviewer->setCommonParam("poly_vertex_size", 2);
-  else if(v==142) cmviewer->setCommonParam("poly_vertex_size", 3);
-  else if(v==143) cmviewer->setCommonParam("poly_vertex_size", 5);
-  else if(v==144) cmviewer->setCommonParam("poly_vertex_size", 8);
-  else if(v==145) cmviewer->setCommonParam("poly_vertex_size", 10);
+  else if(v==140) cmviewer->setGeoParam("polygon_vertex_size", "1");
+  else if(v==141) cmviewer->setGeoParam("polygon_vertex_size", "2");
+  else if(v==142) cmviewer->setGeoParam("polygon_vertex_size", "3");
+  else if(v==143) cmviewer->setGeoParam("polygon_vertex_size", "5");
+  else if(v==144) cmviewer->setGeoParam("polygon_vertex_size", "8");
+  else if(v==145) cmviewer->setGeoParam("polygon_vertex_size", "10");
 
-  else if(v==150) cmviewer->setCommonParam("display_poly_labels", "on");
-  else if(v==151) cmviewer->setCommonParam("display_poly_labels", "off");
-  else if(v==152) cmviewer->setCommonParam("display_poly_labels", "toggle");
+  else if(v==150) cmviewer->setGeoParam("polygon_viewable_labels", "on");
+  else if(v==151) cmviewer->setGeoParam("polygon_viewable_labels", "off");
+  else if(v==152) cmviewer->setGeoParam("polygon_viewable_labels", "toggle");
 
-  else if(v==250) cmviewer->setCommonParam("display_seglists", "toggle");
+  else if(v==160) cmviewer->setGeoParam("polygon_viewable_all", "toggle");
+
+
+  else if(v==250) cmviewer->setGeoParam("display_seglists", "toggle");
 
   else if(v==400) cmviewer->setCommonParam("datum_color", "red");
   else if(v==401) cmviewer->setCommonParam("datum_color", "white");
@@ -383,15 +386,6 @@ inline void MarineGUI::cb_ToggleDatum_i() {
 }
 void MarineGUI::cb_ToggleDatum(Fl_Widget* o) {
   ((MarineGUI*)(o->parent()->user_data()))->cb_ToggleDatum_i();
-}
-
-//----------------------------------------- TogglePolys
-inline void MarineGUI::cb_TogglePolys_i() {
-  cmviewer->setParam("display_polys", "toggle");
-  cmviewer->redraw();
-}
-void MarineGUI::cb_TogglePolys(Fl_Widget* o) {
-  ((MarineGUI*)(o->parent()->user_data()))->cb_TogglePolys_i();
 }
 
 //----------------------------------------- ToggleGrids

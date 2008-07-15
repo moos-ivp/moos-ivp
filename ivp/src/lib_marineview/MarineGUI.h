@@ -84,9 +84,6 @@ protected:
   inline void cb_ToggleDatum_i();
   static void cb_ToggleDatum(Fl_Widget*);
 
-  inline void cb_TogglePolys_i();
-  static void cb_TogglePolys(Fl_Widget*);
-
   inline void cb_ToggleGrids_i();
   static void cb_ToggleGrids(Fl_Widget*);
 
