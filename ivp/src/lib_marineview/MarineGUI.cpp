@@ -223,7 +223,7 @@ void MarineGUI::readTiffB(string filename)
 //----------------------------------------------------------
 // Procedure: addGrid
 
-void MarineGUI::addGrid(XYGrid new_grid)
+void MarineGUI::addGrid(const XYGrid& new_grid)
 {
   if(cmviewer) {
     cmviewer->addGrid(new_grid);
@@ -234,19 +234,37 @@ void MarineGUI::addGrid(XYGrid new_grid)
 //----------------------------------------------------------
 // Procedure: addPoly
 
-void MarineGUI::addPoly(XYPolygon new_poly)
+void MarineGUI::addPoly(const XYPolygon& new_poly)
 {
   if(cmviewer)
     cmviewer->addPoly(new_poly);
 }
 
 //----------------------------------------------------------
+// Procedure: addSegList
+
+void MarineGUI::addSegList(const XYSegList& new_seglist)
+{
+  if(cmviewer)
+    cmviewer->addSegList(new_seglist);
+}
+
+//----------------------------------------------------------
 // Procedure: addCircle
 
-void MarineGUI::addCircle(XYCircle new_circ)
+void MarineGUI::addCircle(const XYCircle& new_circ)
 {
   if(cmviewer)
     cmviewer->addCircle(new_circ);
+}
+
+//----------------------------------------------------------
+// Procedure: addPoint
+
+void MarineGUI::addPoint(const XYPoint& new_point)
+{
+  if(cmviewer)
+    cmviewer->addPoint(new_point);
 }
 
 //----------------------------------------- Zoom In

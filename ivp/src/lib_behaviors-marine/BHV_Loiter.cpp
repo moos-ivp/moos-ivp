@@ -339,8 +339,11 @@ void BHV_Loiter::updateInfoOut()
   m_poly_changed = false;
   
   if(m_waypoint_engine.currPtChanged()) {
-    string ptmsg = doubleToString(m_ptx,2) + ",";
-    ptmsg += doubleToString(m_pty,2) + ",5," + m_us_name;
+    string ptmsg;
+    ptmsg =  "x=" + dstringCompact(doubleToString(m_ptx,2));
+    ptmsg += ",y=" + dstringCompact(doubleToString(m_pty,2));
+    ptmsg += ",label=loiter_" + m_us_name;
+    ptmsg += ",type=waypoint";
     postMessage("VIEW_POINT", ptmsg);
   }
   

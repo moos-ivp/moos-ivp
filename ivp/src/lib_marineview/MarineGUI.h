@@ -39,9 +39,11 @@ public:
   void readTiff(std::string);
   void readTiffB(std::string);
   int  handle(int);
-  void addGrid(XYGrid);
-  void addPoly(XYPolygon);
-  void addCircle(XYCircle);
+  void addGrid(const XYGrid&);
+  void addPoly(const XYPolygon&);
+  void addSegList(const XYSegList&);
+  void addCircle(const XYCircle&);
+  void addPoint(const XYPoint&);
   virtual void updateXY() {};
 
   void augmentMenu();

@@ -356,13 +356,18 @@ void BHV_RStationKeep::postStationMessage(bool post)
 
   string ptmsg;
   if(post) {
-    ptmsg += doubleToString(m_station_x, 2) + ",";
-    ptmsg += doubleToString(m_station_y, 2) + ",5," + m_us_name + "_rstation";
+    ptmsg += "x=" + dstringCompact(doubleToString(m_station_x,2));
+    ptmsg += ",y=" + dstringCompact(doubleToString(m_station_y,2));
+    ptmsg += ",label=" + m_us_name + "_rstation";
+    ptmsg += ",type=rstation";
   }
   else {
-    ptmsg += doubleToString(m_station_x, 2) + ",";
-    ptmsg += doubleToString(m_station_y, 2) + ",0," + m_us_name + "_rstation";
+    ptmsg += "x=" + dstringCompact(doubleToString(m_station_x,2));
+    ptmsg += ",y=" + dstringCompact(doubleToString(m_station_y,2));
+    ptmsg += ",label=" + m_us_name + "_rstation";
+    ptmsg += ",type=rstation";
   }    
+
   postMessage("RVIEW_POINT", ptmsg);
 }
 

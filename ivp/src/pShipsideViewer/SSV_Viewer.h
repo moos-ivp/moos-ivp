@@ -89,8 +89,6 @@ public:
   void  drawRadials();
   void  drawBearingLine(int);
   void  drawStationCircles();
-  void  drawCirc(XYCircle, int, bool, double, double, double,
-		 double=0, double=0, double=0);
 
   void  drawGridBox(double, double, double, double, 
 		    double, double, double, double);

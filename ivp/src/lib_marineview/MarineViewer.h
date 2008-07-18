@@ -83,6 +83,7 @@ public: // Color Mapping interface
   void   addCircle(const XYCircle& c)     {m_geoshapes.addCircle(c);};
   void   addSegList(const XYSegList& s)   {m_geoshapes.addSegList(s);};
   void   addHexagon(const XYHexagon& s)   {m_geoshapes.addHexagon(s);};
+  void   addPoint(const XYPoint& p)       {m_geoshapes.addPoint(p);};
   void   updateGrid(const std::string& d) {m_geoshapes.updateGrid(d);};
   double getHashDelta();
   float  getCrossHairMeters(char);
@@ -130,9 +131,18 @@ protected:
   void  drawGrid(const XYGrid&);
 
   void  drawCircles();
-  void  drawCircle(const XYCircle&);
+  void  drawCircle(const XYCircle&, int pts, bool filled, 
+		   const std::vector<double>& edge_color,
+		   const std::vector<double>& fill_color,
+		   const std::vector<double>& vert_color,
+		   const std::vector<double>& labl_color);
 
-  void   drawHexagons();
+  void  drawPoints();
+  void  drawPoint(const XYPoint&, double vertex_size,
+		  const std::vector<double>& vert_color,
+		  const std::vector<double>& labl_color);
+
+  void  drawHexagons();
 
 
 protected:
@@ -169,7 +179,6 @@ protected:
   bool       m_draw_vname;
   float      m_size_datum;
   unsigned int m_global_ix;
-
 
   std::map<std::string, std::vector<double> >  m_color_map;
   VMarkerSet       m_vmarkers;

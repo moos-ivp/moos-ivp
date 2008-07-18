@@ -25,9 +25,12 @@ VPlug_GeoShapes::VPlug_GeoShapes()
   setColorMapping("seglist_label_color", "orange");
   setColorMapping("circle_edge_color", "yellow");
   setColorMapping("grid_edge_color", "white");
+  setColorMapping("pointe_vertex_color", "blue");
 
   m_viewable_map["polygon_viewable_labels"] = true;
   m_viewable_map["polygon_viewable_all"]    = true;
+  m_viewable_map["seglist_viewable_all"]    = true;
+  m_viewable_map["point_viewable_all"]      = true;
 
   m_gsize_map["poly_edge_width"]     = 2.0;
   m_gsize_map["poly_vertex_size"]    = 5.0;
@@ -35,6 +38,59 @@ VPlug_GeoShapes::VPlug_GeoShapes()
   m_gsize_map["seglist_vertex_size"] = 5.0;
   m_gsize_map["grid_edge_width"]     = 2.0;
   m_gsize_map["circle_edge_width"]   = 2.0;
+  m_gsize_map["point_vertex_size"]   = 5.0;
+}
+
+//-----------------------------------------------------------
+// Procedure: setParam()
+//     Notes: The possibly accepted parameters are unlimited, but 
+//            must fit one of the below patterns. The following is 
+//            a list (perhaps incomplete) of acceptable parameters.
+//    Each accepting a "color string": 
+//         polygon_edge_color
+//         polygon_vertex_color
+//         polygon_label_color
+//         seglist_edge_color
+//         seglist_vertex_color
+//         seglist_label_color
+//         grid_vertex_color
+//         circle_edge_color
+//         point_vertex_color
+//         point_label_color
+//    Each accepting a "bool string": 
+//         polygon_viewable_all
+//         polygon_viewable_labels
+//         seglist_viewable_all
+//         seglist_viewable_labels
+//         grid_viewable_all
+//         grid_viewable_labels
+//         circle_viewable_all
+//         circle_viewable_labels
+//         point_viewable_all
+//         point_viewable_labels
+//    Each accepting a "double string": 
+//         poly_line_width
+//         poly_vertex_size
+//         seglist_line_width
+//         seglist_vertex_size
+//         grid_line_width
+//         circle_line_width
+//         point_vertex_size
+
+bool VPlug_GeoShapes::setParam(string param, string value)
+{
+  if(strContains(param, "_viewable_"))
+    return(setViewableMapping(param, value));
+  else if(strContains(param, "_color"))
+    return(setColorMapping(param, value));
+  else if(strContains(param, "_width"))
+    return(setGSizeMapping(param, value));
+  else if(strContains(param, "_size"))
+    return(setGSizeMapping(param, value));
+  else
+    return(false);
+  
+  return(true);
 }
 
 //-----------------------------------------------------------
@@ -110,9 +166,37 @@ void VPlug_GeoShapes::addGrid(const XYGrid& new_grid)
 //-----------------------------------------------------------
 // Procedure: addCircle
 
-void VPlug_GeoShapes::addCircle(const XYCircle& circ)
+void VPlug_GeoShapes::addCircle(const XYCircle& circle)
 {
-  m_circles.push_back(circ);
+  m_circles.push_back(circle);
+}
+
+
+//-----------------------------------------------------------
+// Procedure: addHexagon
+
+void VPlug_GeoShapes::addHexagon(const XYHexagon& hexagon)
+{
+  m_hexagons.push_back(hexagon);
+}
+
+
+//-----------------------------------------------------------
+// Procedure: addPoint
+
+void VPlug_GeoShapes::addPoint(const XYPoint& new_point)
+{
+  string new_label = new_point.get_label();
+  string new_type  = new_point.get_type();
+  for(int i=0; i<m_points.size(); i++) {
+    if((m_points[i].get_label() == new_label) &&
+       (m_points[i].get_type() == new_type)) {
+      m_points[i] = new_point;
+      return;
+    }
+  }
+  
+  m_points.push_back(new_point);
 }
 
 //-----------------------------------------------------------
@@ -141,51 +225,15 @@ bool VPlug_GeoShapes::addSegList(const string& segl_str)
 
 
 //-----------------------------------------------------------
-// Procedure: setParam()
-//     Notes: The possibly accepted parameters are unlimited, but 
-//            must fit one of the below patterns. The following is 
-//            a list (perhaps incomplete) of acceptable parameters.
-//    Each accepting a "color string": 
-//         poly_edge_color
-//         poly_vert_color
-//         poly_label_color
-//         seglist_edge_color
-//         seglist_vertex_color
-//         seglist_label_color
-//         grid_vertex_color
-//         circle_edge_color
-//    Each accepting a "bool string": 
-//         poly_viewable_all
-//         poly_viewable_labels
-//         seglist_viewable_all
-//         seglist_viewable_labels
-//         grid_viewable_all
-//         grid_viewable_labels
-//         circle_viewable_all
-//         circle_viewable_labels
-//    Each accepting a "double string": 
-//         poly_line_width
-//         poly_vertex_size
-//         seglist_line_width
-//         seglist_vertex_size
-//         grid_line_width
-//         circle_line_width
+// Procedure: addPoint
 
-bool VPlug_GeoShapes::setParam(string param, string value)
+bool VPlug_GeoShapes::addPoint(const string& point_str)
 {
-  if(strContains(param, "_viewable_"))
-    return(setViewableMapping(param, value));
-  else if(strContains(param, "_color"))
-    return(setColorMapping(param, value));
-  else if(strContains(param, "_width"))
-    return(setGSizeMapping(param, value));
-  else if(strContains(param, "_size"))
-    return(setGSizeMapping(param, value));
-  else
-    return(false);
-  
+  XYPoint new_point = stringToPoint(point_str);
+  m_points.push_back(new_point);
   return(true);
 }
+
 
 //-------------------------------------------------------------
 // Procedure: getPolygon(int)
@@ -214,19 +262,6 @@ XYSegList VPlug_GeoShapes::getSegList(int index)
 }
 
 //-------------------------------------------------------------
-// Procedure: getHexagon(int)
-
-XYHexagon VPlug_GeoShapes::getHexagon(int index)
-{
-  if((index < 0) || (index >= m_hexagons.size())) {
-    XYHexagon null_hexagon;
-    return(null_hexagon);
-  }
-  else
-    return(m_hexagons[index]);
-}
-
-//-------------------------------------------------------------
 // Procedure: getGrid(int)
 
 XYGrid VPlug_GeoShapes::getGrid(int index)
@@ -250,6 +285,32 @@ XYCircle VPlug_GeoShapes::getCircle(int index)
   }
   else
     return(m_circles[index]);
+}
+
+//-------------------------------------------------------------
+// Procedure: getHexagon(int)
+
+XYHexagon VPlug_GeoShapes::getHexagon(int index)
+{
+  if((index < 0) || (index >= m_hexagons.size())) {
+    XYHexagon null_hexagon;
+    return(null_hexagon);
+  }
+  else
+    return(m_hexagons[index]);
+}
+
+//-------------------------------------------------------------
+// Procedure: getPoint(int)
+
+XYPoint VPlug_GeoShapes::getPoint(int index)
+{
+  if((index < 0) || (index >= m_points.size())) {
+    XYPoint null_point;
+    return(null_point);
+  }
+  else
+    return(m_points[index]);
 }
 
 //-------------------------------------------------------------

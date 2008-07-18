@@ -498,10 +498,8 @@ void XYSegList::grow_pt_by_pct(double pct, double cx, double cy,
 void XYSegList::grow_pt_by_amt(double amt, double cx, double cy, 
 			       double &px, double &py)
 {
-#if 1
   double angle = relAng(cx, cy, px, py);
   projectPoint(angle, amt, px, py, px, py);
-#endif
 }
 
 

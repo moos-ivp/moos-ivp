@@ -64,6 +64,7 @@ void SSV_Viewer::draw()
   drawGrids();
   drawPolygons();
   drawSegLists();
+  MarineViewer::drawPoints();
   drawStationCircles();
   drawCircles();
   drawRadials();
@@ -1035,89 +1036,14 @@ void SSV_Viewer::addStationCircle(const XYCircle& new_circ)
 
 void SSV_Viewer::drawStationCircles()
 {
+  vector<double> edge_c = colorParse("blue");
+  vector<double> fill_c = colorParse("dark_blue");
+  vector<double> vert_c = colorParse("blue");
+  vector<double> labl_c = colorParse("white");
+  
   int vsize = m_station_circ.size();
   for(int i=0; i<vsize; i++)
-    drawCirc(m_station_circ[i], 30, true, 0,0,0.6, 0,0,0.4);
-}
-
-//-------------------------------------------------------------
-// Procedure: drawCircle
-
-void SSV_Viewer::drawCirc(XYCircle dcircle, int pts, bool filled,
-			  double l_red, double l_grn, double l_blu,
-			  double f_red, double f_grn, double f_blu)
-{
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  glOrtho(0, w(), 0, h(), -1 ,1);
-  
-  float tx = meters2img('x', 0);
-  float ty = meters2img('y', 0);
-  float qx = img2view('x', tx);
-  float qy = img2view('y', ty);
-
-  glMatrixMode(GL_MODELVIEW);
-  glPushMatrix();
-  glLoadIdentity();
-  
-  glLineWidth(1.0);  // added dec1306
-  glTranslatef(qx, qy, 0);
-  glScalef(m_zoom, m_zoom, m_zoom);
-
-  double px  = dcircle.getX();
-  double py  = dcircle.getY();
-  double rad = dcircle.getRad();
-
-  string poly_str = "radial:";
-  poly_str += doubleToString(px,2) + ",";
-  poly_str += doubleToString(py,2) + ",";
-  poly_str += doubleToString(rad,2) + ",";
-  poly_str += intToString(pts);
-  
-  XYPolygon poly = stringToPoly(poly_str);
-
-  // Now set points to the actual size vs. the requested size
-  unsigned int actual_pts = poly.size();
-
-  if(actual_pts == 0)
-    return;
-
-  unsigned int i;
-  float *points = new float[2 * actual_pts];
-  unsigned int pindex = 0;
-  for(i=0; i<actual_pts; i++) {
-    points[pindex]   = poly.get_vx(i);
-    points[pindex+1] = poly.get_vy(i);
-
-    points[pindex]   *=  m_back_img.get_pix_per_mtr();
-    points[pindex+1] *=  m_back_img.get_pix_per_mtr();
-    pindex += 2;
-  }
-
-  glColor3f(l_red, l_grn, l_blu);
-  glBegin(GL_LINE_LOOP);
-  for(i=0; i<actual_pts*2; i=i+2) {
-    glVertex2f(points[i], points[i+1]);
-  }
-  glEnd();
-
-  // If filled option is on, draw the interior of the circle
-  if(filled) {
-    glEnable(GL_BLEND);
-    glColor4f(f_red,f_grn,f_blu,0.1);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glBegin(GL_POLYGON);
-    for(i=0; i<actual_pts*2; i=i+2) {
-      glVertex2f(points[i], points[i+1]);
-    }
-    glEnd();
-    glDisable(GL_BLEND);
-  }
-  
-
-  delete [] points;
-  glFlush();
-  glPopMatrix();
-
+    drawCircle(m_station_circ[i], 16, true, 
+	       edge_c, fill_c, vert_c, labl_c);
 }
 

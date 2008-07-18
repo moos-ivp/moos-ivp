@@ -353,15 +353,15 @@ bool SSV_MOOSApp::receiveSegList(CMOOSMsg &Msg)
 
 bool SSV_MOOSApp::receivePoint(CMOOSMsg &Msg)
 {
-  XYCircle new_circ;
-  
-  bool ok = new_circ.initialize(Msg.m_sVal);
-  if(ok) {
-    m_gui->addCircle(new_circ);
+  XYPoint new_point = stringToPoint(Msg.m_sVal);
+
+  if(new_point.valid()) {
+    m_gui->addPoint(new_point);
     return(true);
   }
   else {
     cout << "Parse Error in receivePoint" << endl;
+    cout << " String: " << Msg.m_sVal << endl;
     return(false);
   }
 }

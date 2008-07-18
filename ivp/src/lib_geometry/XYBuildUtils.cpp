@@ -33,6 +33,78 @@
 using namespace std;
 
 //---------------------------------------------------------------
+// Procedure: stringToPoint
+//
+/// Initializes a point based on a string specification
+/// Format of the string is "x=val, y=val, z=val, label=val, type=val"
+
+
+XYPoint stringToPoint(string str)
+{
+  XYPoint null_point;
+
+  str = tolower(stripBlankEnds(str));
+  vector<string> mvector = parseString(str, ',');
+  int vsize = mvector.size();
+  
+  // Below are the mandatory parameters - check they are set.
+  bool x_set  = false;
+  bool y_set  = false;
+
+  string label, type;
+  double x, y;
+  double z    = 0;
+  double snap = 0;
+  double size = 1;
+  
+  for(int i=0; i<vsize; i++) {
+    vector<string> svector = parseString(mvector[i], '=');
+    if(svector.size() != 2)
+      return(null_point);
+    string param = stripBlankEnds(svector[0]);
+    string value = stripBlankEnds(svector[1]);
+    double dval  = atof(value.c_str());
+    if((param == "x") && isNumber(value)) {
+      x_set = true;
+      x = dval;
+    }
+    else if((param == "y") && isNumber(value)) {
+      y_set = true;
+      y = dval;
+    }
+    else if((param == "z") && isNumber(value))
+      z = dval;
+    else if((param == "size") && isNumber(value))
+      size = dval;
+    else if((param == "snap") && (isNumber(value))) {
+      if(dval >= 0)
+	snap = dval;
+    }
+    else if(param == "label")
+      label = value;
+    else if(param == "type")
+      label = value;
+  }
+
+    
+  if(!x_set || !y_set)
+    return(null_point);
+  
+  XYPoint new_point;
+  
+  new_point.set_vertex(x,y,z);
+  new_point.set_label(label);
+  new_point.set_type(type);
+  new_point.set_size(size);
+  
+  if(snap>=0)
+    new_point.apply_snap(snap);
+  
+  return(new_point);
+}
+
+
+//---------------------------------------------------------------
 // Procedure: stringToPoly
 //
 

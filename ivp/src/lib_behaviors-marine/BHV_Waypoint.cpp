@@ -326,14 +326,16 @@ void BHV_Waypoint::updateInfoOut(bool post)
 
   if(post) {
     if(m_waypoint_engine.currPtChanged()) {
-      string ptmsg;
-      ptmsg += doubleToString(m_ptx,2) + ",";
-      ptmsg += doubleToString(m_pty,2) + ",5," + m_us_name + "_wpt";
+      string ptmsg = "x=";
+      ptmsg += dstringCompact(doubleToString(m_ptx,2)) + ",y=";
+      ptmsg += dstringCompact(doubleToString(m_pty,2)) + ",label=";
+      ptmsg += m_us_name + "_wpt, type=waypoint, size=1";
       postMessage("VIEW_POINT", ptmsg);
     }
   }
   else {
-    string ptmsg = "0,0,0," + m_descriptor;
+    string ptmsg = "x=0, y=0, z=0";
+    ptmsg += "label=" + m_us_name + "_wpt, type=waypoint, size=0";
     postMessage("VIEW_POINT", ptmsg);
   }
 

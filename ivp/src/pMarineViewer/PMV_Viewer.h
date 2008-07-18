@@ -84,8 +84,6 @@ public:
 
   ObjectPose getObjectPoseByIndex(int);
 
-  CMOOSGeodesy m_geodesy;
-
  private:
   // Mapping from Vehicle Name to Vehicle Position
   std::map<std::string, ObjectPose>   m_pos_map;

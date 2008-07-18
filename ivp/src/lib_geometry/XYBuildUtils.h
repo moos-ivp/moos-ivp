@@ -26,6 +26,13 @@
 #include <string>
 #include "XYPolygon.h"
 #include "XYSegList.h"
+#include "XYPoint.h"
+
+//---------------------------------------------------------------
+// Create a point from a string specification. 
+// Example: label=bobby, type=destination, x=val, y=val, z=val
+XYPoint stringToPoint(std::string);
+
 
 //---------------------------------------------------------------
 // Create a polygon from a string specification. This function will
