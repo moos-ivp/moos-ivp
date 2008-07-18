@@ -297,12 +297,15 @@ void SSV_GUI::augmentMenu()
   mbar->add("Shipside/ShipCentric Toggle", FL_CTRL+'s',(Fl_Callback*)SSV_GUI::cb_CentricToggle,(void*)0, 0);
   mbar->add("Shipside/ShipCentric Off",    0, (Fl_Callback*)SSV_GUI::cb_CentricToggle,(void*)1, 0);
   mbar->add("Shipside/ShipCentric On",     0, (Fl_Callback*)SSV_GUI::cb_CentricToggle,(void*)2, FL_MENU_DIVIDER);
-  mbar->add("Shipside/Radial Off",   0, (Fl_Callback*)SSV_GUI::cb_Radial,(void*)0, 0);
+  mbar->add("Shipside/Radial Off", 0, (Fl_Callback*)SSV_GUI::cb_Radial,(void*)-90, 0);
+  mbar->add("Shipside/Radial On", 0, (Fl_Callback*)SSV_GUI::cb_Radial,(void*)-91, 0);
+  mbar->add("Shipside/Radial Toggle", 'r', (Fl_Callback*)SSV_GUI::cb_Radial,(void*)-99, FL_MENU_DIVIDER);
   mbar->add("Shipside/Radial  100",  0, (Fl_Callback*)SSV_GUI::cb_Radial,(void*)100, 0);
   mbar->add("Shipside/Radial  200",  0, (Fl_Callback*)SSV_GUI::cb_Radial,(void*)200, 0);
   mbar->add("Shipside/Radial  500",  0, (Fl_Callback*)SSV_GUI::cb_Radial,(void*)500, 0);
-  mbar->add("Shipside/Radial 1000",  0, (Fl_Callback*)SSV_GUI::cb_Radial,(void*)1000, 0);
-  mbar->add("Shipside/Radial Cycle", 'r', (Fl_Callback*)SSV_GUI::cb_Radial,(void*)-1, FL_MENU_DIVIDER);
+  mbar->add("Shipside/Radial 1000",  0, (Fl_Callback*)SSV_GUI::cb_Radial,(void*)1000, FL_MENU_DIVIDER);
+  mbar->add("Shipside/Radial Smaller", FL_CTRL+'r', (Fl_Callback*)SSV_GUI::cb_Radial,(void*)-1, 0);
+  mbar->add("Shipside/Radial Bigger", FL_ALT+'r', (Fl_Callback*)SSV_GUI::cb_Radial,(void*)1, FL_MENU_DIVIDER);
 
   mbar->add("ForeView/Cycle Focus", 'v', (Fl_Callback*)SSV_GUI::cb_CycleFocus,(void*)0, 0);
 
@@ -454,10 +457,20 @@ void SSV_GUI::cb_CentricToggle(Fl_Widget* o, int val) {
 
 //----------------------------------------- Radial
 inline void SSV_GUI::cb_Radial_i(int val) {
-  if(val >= 0)
+
+  if(val == -90)
+    mviewer->setParam("draw_radial", "false");
+  if(val == -91)
+    mviewer->setParam("draw_radial", "true");
+  if(val == -99)
+    mviewer->setParam("draw_radial", "toggle");
+  else if(val == 1)
+    mviewer->setParam("radial_increment", 100);
+  else if(val == -1)
+    mviewer->setParam("radial_increment", -100);
+  else if(val >= 0)
     mviewer->setParam("radial_size", (float)(val));
-  else
-    mviewer->setParam("radial_increment", (float)(val));
+
   mviewer->redraw();
   updateXY();
 }

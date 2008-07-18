@@ -5,6 +5,7 @@
 /*    DATE: July 9th, 2008                                       */
 /*****************************************************************/
 
+#include <iostream>
 #include "VPlug_GeoShapes.h"
 #include "MBUtils.h"
 #include "XYBuildUtils.h"
@@ -38,7 +39,7 @@ VPlug_GeoShapes::VPlug_GeoShapes()
   m_gsize_map["seglist_vertex_size"] = 5.0;
   m_gsize_map["grid_edge_width"]     = 2.0;
   m_gsize_map["circle_edge_width"]   = 2.0;
-  m_gsize_map["point_vertex_size"]   = 5.0;
+  m_gsize_map["point_vertex_size"]   = 2.0;
 }
 
 //-----------------------------------------------------------
@@ -69,8 +70,8 @@ VPlug_GeoShapes::VPlug_GeoShapes()
 //         point_viewable_all
 //         point_viewable_labels
 //    Each accepting a "double string": 
-//         poly_line_width
-//         poly_vertex_size
+//         polygon_line_width
+//         polygon_vertex_size
 //         seglist_line_width
 //         seglist_vertex_size
 //         grid_line_width
@@ -380,20 +381,42 @@ bool VPlug_GeoShapes::setViewableMapping(string param, string value)
 
 //-------------------------------------------------------------
 // Procedure: setGSizeMapping
+//      Note: Can accept string size args such as "+1", or "-10"
 
 bool VPlug_GeoShapes::setGSizeMapping(string attribute, string gsize)
 {
   attribute = tolower(stripBlankEnds(attribute));
   gsize = stripBlankEnds(gsize);
-  
+
+  bool add = false;
+  bool sub = false;
+  if(strContains(gsize, "+")) {
+    gsize = findReplace(gsize, "+", "");
+    add = true;
+  }
+  else if(strContains(gsize, "-")) {
+    gsize = findReplace(gsize, "-", "");
+    sub = true;
+  }
+
   if(!isNumber(gsize))
     return(false);
 
   double dval = atof(gsize.c_str());
-  if(dval < 0) 
+  if(dval < 0)
     return(false);
+  
+  double current_size = m_gsize_map[attribute];
 
-  m_gsize_map[attribute] = dval;
+  if(add)
+    m_gsize_map[attribute] = current_size + dval;
+  else if(sub) {
+    if((current_size - dval) >= 0)
+      m_gsize_map[attribute] = current_size - dval;
+  }
+  else
+    m_gsize_map[attribute] = dval;
+
   return(true);    
 }
 

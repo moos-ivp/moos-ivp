@@ -140,6 +140,28 @@ void MarineGUI::augmentMenu()
 
   mbar->add("GeoAttr/SegLists - Toggle", 's', (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)250, FL_MENU_DIVIDER);
 
+  // --------------------------------- Points
+  mbar->add("GeoAttr/Points - Edit/display_point_labels=on", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)500, 0);
+  mbar->add("GeoAttr/Points - Edit/display_point_labels=off", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)501, 0);
+  mbar->add("GeoAttr/Points - Edit/display_point_labels toggle", 'J', (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)502, FL_MENU_DIVIDER);
+
+  mbar->add("GeoAttr/Points - Edit/point_vertex_color=red", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)510, 0);
+  mbar->add("GeoAttr/Points - Edit/point_vertex_color=white", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)511, 0);
+  mbar->add("GeoAttr/Points - Edit/point_vertex_color=yellow", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)512, 0);
+  mbar->add("GeoAttr/Points - Edit/point_vertex_color=dark_blue", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)513, 0);
+  mbar->add("GeoAttr/Points - Edit/point_vertex_color=dark_green", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)514, FL_MENU_DIVIDER);
+
+  mbar->add("GeoAttr/Points - Edit/point_vertex_size=1", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)520, 0);
+  mbar->add("GeoAttr/Points - Edit/point_vertex_size=2", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)521, 0);
+  mbar->add("GeoAttr/Points - Edit/point_vertex_size=3", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)522, 0);
+  mbar->add("GeoAttr/Points - Edit/point_vertex_size=5", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)523, 0);
+  mbar->add("GeoAttr/Points - Edit/point_vertex_size=8", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)524, 0);
+  mbar->add("GeoAttr/Points - Edit/point_vertex_size=10", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)525, FL_MENU_DIVIDER);
+  mbar->add("GeoAttr/Points - Edit/point_vertex_size smaller", FL_CTRL+'j', (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)530, 0);
+  mbar->add("GeoAttr/Points - Edit/point_vertex_size bigger", FL_ALT+'j', (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)531, 0);
+
+  mbar->add("GeoAttr/Points - Toggle", 'j', (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)550, FL_MENU_DIVIDER);
+
   // -------------------------------- XYGrids
   mbar->add("GeoAttr/XYGrids - Edit/grid_edge_color=red", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)300, 0);
   mbar->add("GeoAttr/XYGrids - Edit/grid_edge_color=white", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)301, 0);
@@ -161,7 +183,10 @@ void MarineGUI::augmentMenu()
   mbar->add("GeoAttr/Datum - Edit/datum_size=5", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)442, 0);
   mbar->add("GeoAttr/Datum - Edit/datum_size=10", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)443, 0);
   mbar->add("GeoAttr/Datum - Edit/datum_size=15", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)444, 0);
-  mbar->add("GeoAttr/Datum - Edit/datum_size=20", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)445, 0);
+  mbar->add("GeoAttr/Datum - Edit/datum_size=20", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)445, FL_MENU_DIVIDER);
+
+  mbar->add("GeoAttr/Datum - Edit/datum_size smaller", FL_CTRL+'d', (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)448, 0);
+  mbar->add("GeoAttr/Datum - Edit/datum_size larger", FL_CTRL+'d', (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)449, 0);
 
   mbar->add("GeoAttr/Datum - Toggle", 'd', (Fl_Callback*)MarineGUI::cb_ToggleDatum, (void*)0, FL_MENU_DIVIDER);
 
@@ -334,7 +359,7 @@ void MarineGUI::cb_HashShade(Fl_Widget* o, int v) {
 
 //----------------------------------------- MG_SetGeoAttr
 inline void MarineGUI::cb_MG_SetGeoAttr_i(int v) {
-  if(v==100) cmviewer->setGeoParam("poly_vertex_color", "red");
+  if(v==100) cmviewer->setGeoParam("polygon_vertex_color", "red");
   else if(v==101) cmviewer->setGeoParam("polygon_vertex_color", "white");
   else if(v==102) cmviewer->setGeoParam("polygon_vertex_color", "yellow");
   else if(v==103) cmviewer->setGeoParam("polygon_vertex_color", "DarkBlue");
@@ -358,9 +383,35 @@ inline void MarineGUI::cb_MG_SetGeoAttr_i(int v) {
   else if(v==152) cmviewer->setGeoParam("polygon_viewable_labels", "toggle");
 
   else if(v==160) cmviewer->setGeoParam("polygon_viewable_all", "toggle");
-
+  
+  //---------------------------------- SegLists
 
   else if(v==250) cmviewer->setGeoParam("display_seglists", "toggle");
+
+  //---------------------------------- Points
+  else if(v==500) cmviewer->setGeoParam("point_viewable_labels", "on");
+  else if(v==501) cmviewer->setGeoParam("point_viewable_labels", "off");
+  else if(v==502) cmviewer->setGeoParam("point_viewable_labels", "toggle");
+
+  else if(v==510) cmviewer->setGeoParam("point_vertex_color", "red");
+  else if(v==511) cmviewer->setGeoParam("point_vertex_color", "white");
+  else if(v==512) cmviewer->setGeoParam("point_vertex_color", "yellow");
+  else if(v==513) cmviewer->setGeoParam("point_vertex_color", "DarkBlue");
+  else if(v==514) cmviewer->setGeoParam("point_vertex_color", "DarkGreen");
+
+  else if(v==520) cmviewer->setGeoParam("point_vertex_size", "1");
+  else if(v==521) cmviewer->setGeoParam("point_vertex_size", "2");
+  else if(v==522) cmviewer->setGeoParam("point_vertex_size", "3");
+  else if(v==523) cmviewer->setGeoParam("point_vertex_size", "5");
+  else if(v==524) cmviewer->setGeoParam("point_vertex_size", "8");
+  else if(v==525) cmviewer->setGeoParam("point_vertex_size", "10");
+
+  else if(v==530) cmviewer->setGeoParam("point_vertex_size", "-1");
+  else if(v==531) cmviewer->setGeoParam("point_vertex_size", "+1");
+
+  else if(v==550) cmviewer->setGeoParam("point_viewable_all", "toggle");
+
+  //---------------------------------- Datum
 
   else if(v==400) cmviewer->setCommonParam("datum_color", "red");
   else if(v==401) cmviewer->setCommonParam("datum_color", "white");
@@ -374,6 +425,8 @@ inline void MarineGUI::cb_MG_SetGeoAttr_i(int v) {
   else if(v==443) cmviewer->setCommonParam("datum_size", 10);
   else if(v==444) cmviewer->setCommonParam("datum_size", 15);
   else if(v==445) cmviewer->setCommonParam("datum_size", 20);
+  else if(v==448) cmviewer->setCommonParam("datum_size", "-1");
+  else if(v==449) cmviewer->setCommonParam("datum_size", "+1");
 
   else if(v==2000) cmviewer->setCommonParam("marker_scale_all", "reset");
   else if(v==2001) cmviewer->setCommonParam("marker_scale_all", "smaller");

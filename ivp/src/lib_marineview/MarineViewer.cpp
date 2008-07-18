@@ -1052,7 +1052,7 @@ void MarineViewer::drawOpArea()
       for(int k=0; k<vsize; k++) {
 	int slen = labels[k].length();
 	char *buff = new char(slen+1);
-	glRasterPos3f(xpos[k]+8, ypos[k]+8, 0);
+	glRasterPos3f(xpos[k]+1, ypos[k]+1, 0);
 	strncpy(buff, labels[k].c_str(), slen);
 	buff[slen] = '\0';
 	gl_draw(buff, slen);
@@ -1690,7 +1690,7 @@ void MarineViewer::drawPoints()
 
   // The second argument to geosize is what is returned if no size
   // mapping is present in the geoshapes data structure.
-  double vertex_size = m_geoshapes.geosize("point_vertex_size", 5);
+  double vertex_size = m_geoshapes.geosize("point_vertex_size", 3);
   
   for(int i=0; i<vsize; i++) {
     XYPoint point = m_geoshapes.point(i);
@@ -1728,7 +1728,7 @@ void MarineViewer::drawPoint(const XYPoint& point, double vertex_size,
   double px  = point.get_vx() * m_back_img.get_pix_per_mtr();
   double py  = point.get_vy() * m_back_img.get_pix_per_mtr();
 
-  glPointSize(vertex_size * m_zoom);
+  glPointSize(vertex_size * sqrt(m_zoom));
   glColor3f(vert_c[0], vert_c[1], vert_c[2]); 
   glEnable(GL_POINT_SMOOTH);
   glBegin(GL_POINTS);

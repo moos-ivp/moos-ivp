@@ -49,6 +49,7 @@ SSV_Viewer::SSV_Viewer(int x, int y, int w, int h, const char *l)
   m_trail_size         = 0.1;
   m_centric_view       = true;
   m_draw_bearing_lines = true;
+  m_draw_radial        = true;
 
   setParam("bearing_color", "orange");
 }
@@ -67,7 +68,8 @@ void SSV_Viewer::draw()
   MarineViewer::drawPoints();
   drawStationCircles();
   drawCircles();
-  drawRadials();
+  if(m_draw_radial)
+    drawRadials();
   if(m_draw_bearing_lines)
     drawBearingLine(m_global_ix);
 
@@ -562,9 +564,10 @@ bool SSV_Viewer::setParam(string param, string value)
     return(setColorMapping("bearing_color", value));
   else if(param == "ownship_name")
     m_ownship_name = toupper(value);
-  else if(param == "op_vertex") {
+  else if(param == "op_vertex") 
     return(m_op_area.addVertex(value, m_geodesy));
-  }
+  else if(param == "draw_radial")
+    return(setBooleanOnString(m_draw_radial, value));
   else
     return(false);
   
@@ -597,9 +600,9 @@ bool SSV_Viewer::setParam(string param, float v)
        m_radial_size = 2000;
   }
   else if(param == "radial_increment") {
-    m_radial_size += 100;
-    if(m_radial_size > 2000)
-      m_radial_size = 0;
+    int new_size = m_radial_size + ((int)v);
+    if((new_size >= 0) && (new_size <= 2000))
+      m_radial_size = new_size;
   }
   else 
     return(false);

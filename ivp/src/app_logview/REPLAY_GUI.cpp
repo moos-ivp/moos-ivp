@@ -141,7 +141,7 @@ REPLAY_GUI::REPLAY_GUI(int g_w, int g_h, const char *g_l)
 
 void REPLAY_GUI::augmentMenu()
 {
-  mbar->add("File/Delete ", FL_CTRL+'d', (Fl_Callback*)REPLAY_GUI::cb_Delete, 0, 0);
+  mbar->add("File/Delete ", 0, (Fl_Callback*)REPLAY_GUI::cb_Delete, 0, 0);
 
   mbar->add("Replay/Collecting Toggle",  'w', (Fl_Callback*)REPLAY_GUI::cb_CollectToggle,(void*)0, FL_MENU_DIVIDER);
   mbar->add("Replay/Streaming Toggle",  ' ', (Fl_Callback*)REPLAY_GUI::cb_StreamToggle,(void*)0, 0);

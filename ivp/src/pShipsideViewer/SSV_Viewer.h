@@ -120,6 +120,7 @@ public:
 
   bool   m_centric_view;
   bool   m_draw_bearing_lines;
+  bool   m_draw_radial;
   int    m_radial_size;
   float  m_curr_time;
 
