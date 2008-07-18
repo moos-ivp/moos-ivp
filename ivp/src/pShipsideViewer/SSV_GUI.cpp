@@ -294,7 +294,7 @@ void SSV_GUI::pushPending(string var, string val)
 
 void SSV_GUI::augmentMenu()
 {
-  mbar->add("Shipside/ShipCentric Toggle",'s',(Fl_Callback*)SSV_GUI::cb_CentricToggle,(void*)0, 0);
+  mbar->add("Shipside/ShipCentric Toggle", FL_CTRL+'s',(Fl_Callback*)SSV_GUI::cb_CentricToggle,(void*)0, 0);
   mbar->add("Shipside/ShipCentric Off",    0, (Fl_Callback*)SSV_GUI::cb_CentricToggle,(void*)1, 0);
   mbar->add("Shipside/ShipCentric On",     0, (Fl_Callback*)SSV_GUI::cb_CentricToggle,(void*)2, FL_MENU_DIVIDER);
   mbar->add("Shipside/Radial Off",   0, (Fl_Callback*)SSV_GUI::cb_Radial,(void*)0, 0);

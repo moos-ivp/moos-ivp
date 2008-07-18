@@ -1,8 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin and John Leonard                    */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
-/*    FILE: XYPoint.h                                            */
-/*    DATE: July 17th, 2008                                      */
+/*    FILE: XYObject.h                                           */
+/*    DATE: July 18th, 2008                                      */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
 /* modify it under the terms of the GNU General Public License   */
@@ -20,44 +20,46 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
  
-#ifndef XY_POINT_HEADER
-#define XY_POINT_HEADER
+#ifndef XY_OBJECT_HEADER
+#define XY_OBJECT_HEADER
 
 #include <string>
-#include "XYObject.h"
 
-class XYPoint : public XYObject {
+class XYObject {
 public:
-  XYPoint() {m_x=0; m_y=0; m_z=0; m_size=1; m_valid=false;};
-  virtual ~XYPoint() {};
+  XYObject() {m_active=true; m_time=0;};
+  virtual ~XYObject() {};
 
-  void   set_vertex(double x, double y, double z=0) 
-    {m_x=x; m_y=y; m_z=z; m_valid=true;};
+  virtual void clear() {
+    m_active=true; m_time=0; m_label="", m_type="";
+    m_source=""; m_string="";
+  };
 
-  void clear();
+  virtual bool valid() const  {return(true);};
   
-public:
-  void   shift_horz(double val) {m_x += val;};
-  void   shift_vert(double val) {m_y += val;};;
-  void   apply_snap(double snapval);
-  void   print() const;
+  void   set_label(std::string str)   {m_label=str;};
+  void   set_type(std::string str)    {m_type=str;};
+  void   set_source(std::string str)  {m_source=str;};
+  void   set_string(std::string str)  {m_string=str;};
+  void   set_active(bool val)         {m_active=val;};
+  void   set_time(double val)         {m_time=val;};
 
-public:
-  void   set_size(double val) {m_size=val;};
-  double get_vx()   const  {return(m_x);};
-  double get_vy()   const  {return(m_y);};
-  double get_vz()   const  {return(m_z);};
-  double get_size() const  {return(m_size);};
-  bool   valid()    const  {return(m_valid);};
 
-  std::string get_spec() const;
+  std::string get_label()  const {return(m_label);};
+  std::string get_type()   const {return(m_type);};
+  std::string get_source() const {return(m_source);};
+  std::string get_string() const {return(m_string);};
+  bool        active()     const {return(m_active);};
+  double      get_time()   const {return(m_time);};
 
 protected:
-  double       m_x;
-  double       m_y;
-  double       m_z;
-  double       m_size;
-  bool         m_valid;
+  std::string  m_label;
+  std::string  m_type;
+  std::string  m_source;
+  std::string  m_string;
+  bool         m_active;
+  double       m_time;
+  
 };
 
 #endif

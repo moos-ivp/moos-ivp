@@ -29,6 +29,20 @@
 using namespace std;
 
 //---------------------------------------------------------------
+// Procedure: clear
+
+void XYPoint::clear()
+{
+  XYObject::clear();
+
+  m_x     = 0; 
+  m_y     = 0; 
+  m_z     = 0; 
+  m_size  = 1;
+  m_valid = false;
+}
+
+//---------------------------------------------------------------
 // Procedure: apply_snap
 
 void XYPoint::apply_snap(double snapval)

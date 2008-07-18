@@ -362,10 +362,9 @@ void BHV_RStationKeep::postStationMessage(bool post)
     ptmsg += ",type=rstation";
   }
   else {
-    ptmsg += "x=" + dstringCompact(doubleToString(m_station_x,2));
-    ptmsg += ",y=" + dstringCompact(doubleToString(m_station_y,2));
+    ptmsg += "x=0,y=0"; 
     ptmsg += ",label=" + m_us_name + "_rstation";
-    ptmsg += ",type=rstation";
+    ptmsg += ",type=rstation, active=false";
   }    
 
   postMessage("RVIEW_POINT", ptmsg);

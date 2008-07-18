@@ -334,7 +334,7 @@ void BHV_Waypoint::updateInfoOut(bool post)
     }
   }
   else {
-    string ptmsg = "x=0, y=0, z=0";
+    string ptmsg = "x=0, y=0, z=0, active=false, source=bhv_waypoint,";
     ptmsg += "label=" + m_us_name + "_wpt, type=waypoint, size=0";
     postMessage("VIEW_POINT", ptmsg);
   }

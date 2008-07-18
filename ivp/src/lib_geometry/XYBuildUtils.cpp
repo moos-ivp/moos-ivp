@@ -56,7 +56,8 @@ XYPoint stringToPoint(string str)
   double z    = 0;
   double snap = 0;
   double size = 1;
-  
+  bool   active = true;
+
   for(int i=0; i<vsize; i++) {
     vector<string> svector = parseString(mvector[i], '=');
     if(svector.size() != 2)
@@ -84,9 +85,10 @@ XYPoint stringToPoint(string str)
       label = value;
     else if(param == "type")
       label = value;
+    else if(param == "active")
+      active = (tolower(value) == "true");
   }
 
-    
   if(!x_set || !y_set)
     return(null_point);
   
@@ -96,6 +98,7 @@ XYPoint stringToPoint(string str)
   new_point.set_label(label);
   new_point.set_type(type);
   new_point.set_size(size);
+  new_point.set_active(active);
   
   if(snap>=0)
     new_point.apply_snap(snap);
