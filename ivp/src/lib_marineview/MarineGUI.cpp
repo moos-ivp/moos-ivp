@@ -74,7 +74,7 @@ Fl_Menu_Item MarineGUI::menu_[] = {
  {"Hash 10",      FL_ALT+'1', (Fl_Callback*)MarineGUI::cb_HashDelta,  (void*)10,  FL_MENU_RADIO},
  {"Hash 50",      FL_ALT+'2', (Fl_Callback*)MarineGUI::cb_HashDelta,  (void*)50,  FL_MENU_RADIO},
  {"Hash 100",     FL_ALT+'3', (Fl_Callback*)MarineGUI::cb_HashDelta,  (void*)100, FL_MENU_RADIO|FL_MENU_VALUE},
- {"Hash 200",     FL_ALT+'4', (Fl_Callback*)MarineGUI::cb_HashDelta,  (void*)200, FL_MENU_RADIO},
+{"Hash 200",     FL_ALT+'4', (Fl_Callback*)MarineGUI::cb_HashDelta,  (void*)200, FL_MENU_RADIO},
  {"Hash 500",     FL_ALT+'5', (Fl_Callback*)MarineGUI::cb_HashDelta,  (void*)500, FL_MENU_RADIO},
  {"Hash 1000",     FL_ALT+'6', (Fl_Callback*)MarineGUI::cb_HashDelta,  (void*)1000, FL_MENU_RADIO},
  {"Hash Auto",    FL_ALT+'7', (Fl_Callback*)MarineGUI::cb_HashDelta,  (void*)-1, FL_MENU_RADIO},
@@ -399,7 +399,7 @@ void MarineGUI::cb_MG_SetGeoAttr(Fl_Widget* o, int v) {
 
 //----------------------------------------- ToggleDatum
 inline void MarineGUI::cb_ToggleDatum_i() {
-  cmviewer->setParam("display_datum", "toggle");
+  cmviewer->setCommonParam("display_datum", "toggle");
   cmviewer->redraw();
 }
 void MarineGUI::cb_ToggleDatum(Fl_Widget* o) {
@@ -408,7 +408,7 @@ void MarineGUI::cb_ToggleDatum(Fl_Widget* o) {
 
 //----------------------------------------- ToggleGrids
 inline void MarineGUI::cb_ToggleGrids_i() {
-  cmviewer->setParam("display_grids", "toggle");
+  cmviewer->setCommonParam("display_grids", "toggle");
   cmviewer->redraw();
 }
 void MarineGUI::cb_ToggleGrids(Fl_Widget* o) {
@@ -417,7 +417,7 @@ void MarineGUI::cb_ToggleGrids(Fl_Widget* o) {
 
 //----------------------------------------- DatumSize
 inline void MarineGUI::cb_DatumSize_i(int amt) {
-  cmviewer->setParam("datum_size_add", (float)(amt));
+  cmviewer->setCommonParam("datum_size_add", (float)(amt));
   cmviewer->redraw();
 }
 void MarineGUI::cb_DatumSize(Fl_Widget* o, int v) {

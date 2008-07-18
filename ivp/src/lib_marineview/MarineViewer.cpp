@@ -389,9 +389,6 @@ void MarineViewer::drawHash()
 
 void MarineViewer::drawDatum()
 {
-  if(!m_draw_datum)
-    return;
-
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   glOrtho(0, w(), 0, h(), -1 ,1);
@@ -1698,7 +1695,7 @@ void MarineViewer::drawPoints()
   for(int i=0; i<vsize; i++) {
     XYPoint point = m_geoshapes.point(i);
     point.print();
-    if(point.get_size() > 0)
+    if((point.get_size() > 0) && (point.active()))
       drawPoint(point, vertex_size, vert_c, labl_c);
   }
 }
@@ -1733,9 +1730,11 @@ void MarineViewer::drawPoint(const XYPoint& point, double vertex_size,
 
   glPointSize(vertex_size * m_zoom);
   glColor3f(vert_c[0], vert_c[1], vert_c[2]); 
+  glEnable(GL_POINT_SMOOTH);
   glBegin(GL_POINTS);
   glVertex2f(px, py);
   glEnd();
+  glDisable(GL_POINT_SMOOTH);
 
   glFlush();
   glPopMatrix();
