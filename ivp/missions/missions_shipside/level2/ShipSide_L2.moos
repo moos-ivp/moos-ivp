@@ -23,11 +23,12 @@ ProcessConfig = ANTLER
   //crucial processes
   Run = MOOSDB		@ NewConsole = false
   Run = pMOOSBridge     @ NewConsole = false
+  Run = pLogger         @ NewConsole = false
   Run = uRepeater       @ NewConsole = true
   Run = pViewerRelay    @ NewConsole = true
   Run = uXMS            @ NewConsole = true
-  Run = pShipsideViewer	@ NewConsole = true
   Run = uTermCommand    @ NewConsole = true
+  Run = pShipsideViewer	@ NewConsole = true
 }
 
 //------------------------------------------------------------------
@@ -398,5 +399,22 @@ ProcessConfig = uRepeater
   VAR        = ENGAGE_DEE, 5, 1
   VAR        = ENGAGE_ELANOR, 5, 1
   VAR        = ENGAGE_FRANKIE, 5, 1
+}
+
+//------------------------------------------------------------------
+// Logger configuration block
+
+ProcessConfig = pLogger
+{
+  //over loading basic params...
+  AppTick 	= 10.0
+  CommsTick 	= 10.0
+
+  File		= L2_BOBBY
+  PATH		= ../data_from_runs/
+  SyncLog 	= true @ 0.2
+  AsyncLog 	= true
+  FileTimeStamp = true
+  WildcardLogging = true
 }
 
