@@ -35,18 +35,9 @@ using namespace std;
 MarineVehiGUI::MarineVehiGUI(int g_w, int g_h, const char *g_l)
   : MarineGUI(g_w, g_h, g_l) 
 {
-  mbar->add("ForeView/Focus Vehicle 0", '0', (Fl_Callback*)MarineVehiGUI::cb_DataView, (void*)0, 0);
-  mbar->add("ForeView/Focus Vehicle 1", '1', (Fl_Callback*)MarineVehiGUI::cb_DataView, (void*)1, 0);
-  mbar->add("ForeView/Focus Vehicle 2", '2', (Fl_Callback*)MarineVehiGUI::cb_DataView, (void*)2, 0);
-  mbar->add("ForeView/Focus Vehicle 3", '3', (Fl_Callback*)MarineVehiGUI::cb_DataView, (void*)3, 0);
-  mbar->add("ForeView/Focus Vehicle 4", '4', (Fl_Callback*)MarineVehiGUI::cb_DataView, (void*)4, 0);
-  mbar->add("ForeView/Focus Vehicle 5", '5', (Fl_Callback*)MarineVehiGUI::cb_DataView, (void*)5, 0);
-  mbar->add("ForeView/Focus Vehicle 6", '6', (Fl_Callback*)MarineVehiGUI::cb_DataView, (void*)6, 0);
-  mbar->add("ForeView/Focus Vehicle 7", '7', (Fl_Callback*)MarineVehiGUI::cb_DataView, (void*)7, 0);
-  mbar->add("ForeView/Focus Vehicle 8", '8', (Fl_Callback*)MarineVehiGUI::cb_DataView, (void*)8, 0);
-  mbar->add("ForeView/Focus Vehicle 9", '9', (Fl_Callback*)MarineVehiGUI::cb_DataView, (void*)9, FL_MENU_DIVIDER);
-  mbar->add("ForeView/Shape Larger",    '+', (Fl_Callback*)MarineVehiGUI::cb_AltShapeScale, (void*)+1, 0);
-  mbar->add("ForeView/Shape Smaller",   '-', (Fl_Callback*)MarineVehiGUI::cb_AltShapeScale, (void*)-1, FL_MENU_DIVIDER);
+  mbar->add("ForeView/vehicle_size larger",    '+', (Fl_Callback*)MarineVehiGUI::cb_AltShapeScale, (void*)+1, 0);
+  mbar->add("ForeView/vehicle_size smaller",   '-', (Fl_Callback*)MarineVehiGUI::cb_AltShapeScale, (void*)-1, 0);
+  mbar->add("ForeView/vehicle_size to-scale(unimplemented)", FL_ALT+'v', (Fl_Callback*)MarineVehiGUI::cb_AltShapeScale, (void*)0, FL_MENU_DIVIDER);
   mbar->add("ForeView/Toggle Trails",   't', (Fl_Callback*)MarineVehiGUI::cb_ToggleTrails, 0, 134);
   mbar->add("ForeView/Toggle TrailColor", FL_CTRL+'t', (Fl_Callback*)MarineVehiGUI::cb_ToggleTrailColor, 0, 0);
   mbar->add("ForeView/Toggle TrailConnect", 'y', (Fl_Callback*)MarineVehiGUI::cb_ToggleTrailConnect, 0, 0);

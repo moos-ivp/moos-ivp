@@ -439,26 +439,24 @@ bool PMV_MOOSApp::receiveSegList(CMOOSMsg &Msg)
 
 bool PMV_MOOSApp::receivePoint(CMOOSMsg &Msg)
 {
-  XYCircle new_circ;
-  
-  bool ok = new_circ.initialize(Msg.m_sVal);
+  XYPoint new_point = stringToPoint(Msg.m_sVal);
   
   string label = "ERR";
-  if(ok)
-    label = new_circ.getLabel();
+  if(new_point.valid())
+    label = new_point.get_label();
   
   if(m_verbose)
     MOOSTrace("   Point(%s)\n", label.c_str());
   else
     MOOSTrace(".");
-
-  if(ok) {
-    m_gui->addCircle(new_circ);
+  
+  if(new_point.valid()) {
+    m_gui->addPoint(new_point);
     return(true);
   }
   else {
     MOOSTrace("Parse Error in receivePoint. \n");
-    MOOSTrace("Msg: %s\n", Msg.m_sVal.c_str());
+    MOOSTrace(" String: %s \n", Msg.m_sVal.c_str());
     return(false);
   }
 }

@@ -84,7 +84,7 @@ XYPoint stringToPoint(string str)
     else if(param == "label")
       label = value;
     else if(param == "type")
-      label = value;
+      type = value;
     else if(param == "active")
       active = (tolower(value) == "true");
   }

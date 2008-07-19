@@ -1117,7 +1117,7 @@ void MarineViewer::drawPolygons()
     return;
 
   vector<double> edge_c, fill_c, vert_c, labl_c;
-  edge_c = m_geoshapes.geocolor("polygon_edge_color", "khaki");
+  edge_c = m_geoshapes.geocolor("polygon_edge_color", "aqua");
   fill_c = m_geoshapes.geocolor("polygon_fill_color", "dark_green");
   vert_c = m_geoshapes.geocolor("polygon_vertex_color", "red");
   labl_c = m_geoshapes.geocolor("polygon_label_color", "white");
@@ -1355,12 +1355,12 @@ void MarineViewer::drawSegLists()
   vert_c = m_geoshapes.geocolor("seglist_vertex_color", "white");
   labl_c = m_geoshapes.geocolor("seglist_label_color", "white");
   
-  float lwid = m_geoshapes.geosize("seglist_line_size");
-  float vert = m_geoshapes.geosize("seglist_vertex_size");
+  float lwid = m_geoshapes.geosize("seglist_edge_width", 1);
+  float vert = m_geoshapes.geosize("seglist_vertex_size", 2);
   
   for(int i=0; i<vsize; i++) {
     XYSegList segl = m_geoshapes.getSegList(i);
-    drawSegList(segl, lwid, false, vert, edge_c, vert_c, labl_c); 
+    drawSegList(segl, lwid, vert, false, edge_c, vert_c, labl_c); 
   }
 }
 
@@ -1408,7 +1408,7 @@ void MarineViewer::drawSegList(const XYSegList& segl, float lwid,
 
   // Now draw the edges
   if(vsize >= 2) {
-    glLineWidth(2.0);
+    glLineWidth(lwid);
     glColor3f(edge_c[0], edge_c[1], edge_c[2]);
 
     glBegin(GL_LINE_STRIP);
@@ -1420,18 +1420,16 @@ void MarineViewer::drawSegList(const XYSegList& segl, float lwid,
 
   // If the seglist is just a single point, draw it big!
   if(vsize==1) {
-    glPointSize(6.0 * m_zoom);
+    glPointSize(6 * m_zoom);
     // Draw the vertices with color coding for the first and last
     
-    //glColor3f(0.7,0.13,0.13);  // Firebrick red b2 22 22
-    glColor3f(0.13, 0.13, 0.7);  // Blueish
+    glColor3f(vert_c[0], vert_c[1], vert_c[2]);
     glBegin(GL_POINTS);
     glVertex2f(points[0], points[1]);
     glEnd();
   }
 
-  //glPointSize(1.0 * m_zoom);
-  glPointSize(6.0);
+  glPointSize(vert * sqrt(m_zoom));
 
   // Draw the vertices in between the first and last ones
   glColor3f(vert_c[0], vert_c[1], vert_c[2]);
@@ -1679,13 +1677,16 @@ void MarineViewer::drawPoints()
 
   // If no points are present just return.
   int vsize = m_geoshapes.sizePoints();
+
+  cout << "drawPoints: #pts: " << vsize << endl;
+
   if(vsize == 0)
     return;
 
   // The second argument to geocolor is what is returned if no color
   // mapping is present in the geoshapes data structure.
   vector<double> vert_c, labl_c;
-  vert_c = m_geoshapes.geocolor("point_vertex_color", "dark_green");
+  vert_c = m_geoshapes.geocolor("point_vertex_color", "red");
   labl_c = m_geoshapes.geocolor("point_label_color", "aqua_marine");
 
   // The second argument to geosize is what is returned if no size

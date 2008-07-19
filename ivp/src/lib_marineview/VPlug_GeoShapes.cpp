@@ -18,28 +18,28 @@ using namespace std;
 
 VPlug_GeoShapes::VPlug_GeoShapes()
 {
-  setColorMapping("poly_edge_color", "khaki");
-  setColorMapping("poly_vertex_color", "dark_blue");
-  setColorMapping("poly_label_color", "khaki");
-  setColorMapping("seglist_edge_color", "orange");
-  setColorMapping("seglist_vertex_color", "dark_green");
+  setColorMapping("polygon_edge_color", "yellow");
+  setColorMapping("polygon_vertex_color", "red");
+  setColorMapping("polygon_label_color", "khaki");
+  setColorMapping("seglist_edge_color", "white");
+  setColorMapping("seglist_vertex_color", "dark_blue");
   setColorMapping("seglist_label_color", "orange");
   setColorMapping("circle_edge_color", "yellow");
   setColorMapping("grid_edge_color", "white");
-  setColorMapping("pointe_vertex_color", "blue");
+  setColorMapping("point_vertex_color", "yellow");
 
   m_viewable_map["polygon_viewable_labels"] = true;
   m_viewable_map["polygon_viewable_all"]    = true;
   m_viewable_map["seglist_viewable_all"]    = true;
   m_viewable_map["point_viewable_all"]      = true;
 
-  m_gsize_map["poly_edge_width"]     = 2.0;
-  m_gsize_map["poly_vertex_size"]    = 5.0;
-  m_gsize_map["seglist_edge_width"]  = 2.0;
+  m_gsize_map["polygon_edge_width"]  = 1.0;
+  m_gsize_map["polygon_vertex_size"] = 5.0;
+  m_gsize_map["seglist_edge_width"]  = 1.0;
   m_gsize_map["seglist_vertex_size"] = 5.0;
   m_gsize_map["grid_edge_width"]     = 2.0;
   m_gsize_map["circle_edge_width"]   = 2.0;
-  m_gsize_map["point_vertex_size"]   = 2.0;
+  m_gsize_map["point_vertex_size"]   = 4.0;
 }
 
 //-----------------------------------------------------------
@@ -231,7 +231,7 @@ bool VPlug_GeoShapes::addSegList(const string& segl_str)
 bool VPlug_GeoShapes::addPoint(const string& point_str)
 {
   XYPoint new_point = stringToPoint(point_str);
-  m_points.push_back(new_point);
+  addPoint(new_point);
   return(true);
 }
 

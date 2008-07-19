@@ -60,6 +60,7 @@ void PMV_Viewer::draw()
   drawSegLists();
   drawCircles();
   drawDatum();
+  MarineViewer::drawPoints();
 
   // Next draw the vehicle shapes. If the vehicle index is the 
   // one "active", draw it in a different color.

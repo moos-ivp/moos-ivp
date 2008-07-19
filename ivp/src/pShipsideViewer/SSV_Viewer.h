@@ -53,6 +53,7 @@ public:
   void  updateVehiclePosition(std::string, float x, float y, 
 			      float theta, float spd, float dep=0);  
   void  setVehicleBodyType(std::string, std::string);
+  void  setVehicleLength(std::string, double);
   void  addStationCircle(const XYCircle&);
 
   void  resetVehicles();
@@ -103,6 +104,8 @@ public:
   std::map<std::string, CPList>       m_hist_map;
   // Mapping from Vehicle Name to Vehicle Body Type
   std::map<std::string, std::string>  m_vbody_map;
+  // Mapping from Vehicle Name to Vehicle Length in Meters
+  std::map<std::string, double>       m_vlength_map;
   // Mapping from Vehicle Name to Time of last AIS report
   std::map<std::string, double>       m_ais_map;
 

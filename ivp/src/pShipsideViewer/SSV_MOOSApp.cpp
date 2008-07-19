@@ -221,23 +221,22 @@ bool SSV_MOOSApp::OnStartUp()
 
   STRING_LIST::reverse_iterator p;
   for(p = sParams.rbegin();p!=sParams.rend();p++) {
-    string sLine    = *p;
-    string sVarName = MOOSChomp(sLine, "=");
-    sVarName = toupper(sVarName);
-    sLine    = stripBlankEnds(sLine);
+    string sLine = *p;
+    string param = toupper(MOOSChomp(sLine, "="));
+    string value = stripBlankEnds(sLine);
     
-    if(MOOSStrCmp(sVarName, "VEHICOLOR"))
+    if((param == "VEHICOLOR") || (param == "VEHI_COLOR"))
+      m_gui->mviewer->setColorMapping(value);
+    else if(param == "COLORMAP")
       m_gui->mviewer->setColorMapping(sLine);
-    else if(MOOSStrCmp(sVarName, "COLORMAP"))
-      m_gui->mviewer->setColorMapping(sLine);
-    else if(MOOSStrCmp(sVarName, "OWNSHIP_NAME"))
+    else if(param == "OWNSHIP_NAME")
       m_gui->mviewer->setParam("ownship_name", sLine);
-    else if(MOOSStrCmp(sVarName, "CONTACTS"))
+    else if(param == "CONTACTS")
       handleContactList(sLine);
     else { 
-      bool handled = m_gui->mviewer->setParam(sVarName, sLine);
+      bool handled = m_gui->mviewer->setParam(param, value);
       if(!handled)
-	m_gui->mviewer->setParam(sVarName, atof(sLine.c_str()));
+	m_gui->mviewer->setParam(param, atof(value.c_str()));
     } 
  }
 
@@ -360,8 +359,8 @@ bool SSV_MOOSApp::receivePoint(CMOOSMsg &Msg)
     return(true);
   }
   else {
-    cout << "Parse Error in receivePoint" << endl;
-    cout << " String: " << Msg.m_sVal << endl;
+    MOOSTrace("Parse Error in receivePoint. \n");
+    MOOSTrace(" String: %s \n", Msg.m_sVal.c_str());
     return(false);
   }
 }
