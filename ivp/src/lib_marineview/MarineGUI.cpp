@@ -186,7 +186,7 @@ void MarineGUI::augmentMenu()
   mbar->add("GeoAttr/Datum - Edit/datum_size=20", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)445, FL_MENU_DIVIDER);
 
   mbar->add("GeoAttr/Datum - Edit/datum_size smaller", FL_CTRL+'d', (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)448, 0);
-  mbar->add("GeoAttr/Datum - Edit/datum_size larger", FL_CTRL+'d', (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)449, 0);
+  mbar->add("GeoAttr/Datum - Edit/datum_size larger", FL_ALT+'d', (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)449, 0);
 
   mbar->add("GeoAttr/Datum - Toggle", 'd', (Fl_Callback*)MarineGUI::cb_ToggleDatum, (void*)0, FL_MENU_DIVIDER);
 
@@ -425,8 +425,8 @@ inline void MarineGUI::cb_MG_SetGeoAttr_i(int v) {
   else if(v==443) cmviewer->setCommonParam("datum_size", 10);
   else if(v==444) cmviewer->setCommonParam("datum_size", 15);
   else if(v==445) cmviewer->setCommonParam("datum_size", 20);
-  else if(v==448) cmviewer->setCommonParam("datum_size", "-1");
-  else if(v==449) cmviewer->setCommonParam("datum_size", "+1");
+  else if(v==448) cmviewer->setCommonParam("datum_size_add", -1);
+  else if(v==449) cmviewer->setCommonParam("datum_size_add", +1);
 
   else if(v==2000) cmviewer->setCommonParam("marker_scale_all", "reset");
   else if(v==2001) cmviewer->setCommonParam("marker_scale_all", "smaller");
