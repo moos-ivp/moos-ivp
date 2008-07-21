@@ -187,11 +187,13 @@ void VPlug_GeoShapes::addHexagon(const XYHexagon& hexagon)
 
 void VPlug_GeoShapes::addPoint(const XYPoint& new_point)
 {
-  string new_label = new_point.get_label();
-  string new_type  = new_point.get_type();
+  string new_label  = new_point.get_label();
+  string new_type   = new_point.get_type();
+  string new_source = new_point.get_source();
   for(int i=0; i<m_points.size(); i++) {
-    if((m_points[i].get_label() == new_label) &&
-       (m_points[i].get_type() == new_type)) {
+    if((m_points[i].get_label()  == new_label)  &&
+       (m_points[i].get_type()   == new_type)   &&
+       (m_points[i].get_source() == new_source)) {
       m_points[i] = new_point;
       return;
     }
