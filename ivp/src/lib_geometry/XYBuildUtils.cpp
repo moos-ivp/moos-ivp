@@ -51,7 +51,7 @@ XYPoint stringToPoint(string str)
   bool x_set  = false;
   bool y_set  = false;
 
-  string label, type;
+  string label, type, source;
   double x, y;
   double z    = 0;
   double snap = 0;
@@ -83,6 +83,8 @@ XYPoint stringToPoint(string str)
     }
     else if(param == "label")
       label = value;
+    else if(param == "source")
+      source = value;
     else if(param == "type")
       type = value;
     else if(param == "active")
@@ -99,6 +101,7 @@ XYPoint stringToPoint(string str)
   new_point.set_type(type);
   new_point.set_size(size);
   new_point.set_active(active);
+  new_point.set_source(source);
   
   if(snap>=0)
     new_point.apply_snap(snap);
