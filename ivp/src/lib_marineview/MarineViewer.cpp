@@ -473,8 +473,14 @@ bool MarineViewer::setCommonParam(string param, string value)
 
   else if(p=="op_vertex")
     m_op_area.addVertex(v, m_geodesy);
-  else if(p=="op_area_draw")
-    m_op_area.setParam("viewable_all", v);
+  else if((p=="op_area_viewable_all")    ||
+	  (p=="op_area_viewable_labels") ||
+	  (p=="op_area_line_shade")      ||
+	  (p=="op_area_line_shade_mod")  ||
+	  (p=="op_area_label_shade")     ||
+	  (p=="op_area_label_shade_mod") ||
+	  (p=="op_area_config"))
+    m_op_area.setParam(p, v);
   else if(p=="op_area_labels")
     m_op_area.setParam("viewable_labels", v);
   else if(p=="op_area_config")
@@ -818,7 +824,7 @@ void MarineViewer::drawCommonVehicle(string vname, ObjectPose opose,
     offset = offset * (1/m_zoom);
 
     int slen = vname.length();
-    char *buff = new char(slen+1);
+    char *buff = new char[slen+1];
     glRasterPos3f(offset,offset,0);
     strncpy(buff, vname.c_str(), slen);
     buff[slen] = '\0';
@@ -933,7 +939,7 @@ void MarineViewer::drawCommonMarker(double x, double y, double shape_scale,
     offset = offset * (1/m_zoom);
 
     int slen = label.length();
-    char *buff = new char(slen+1);
+    char *buff = new char[slen+1];
     //glRasterPos3f(offset, offset, 0);
     glRasterPos3f(offset, offset, 0);
     strncpy(buff, label.c_str(), slen);
@@ -1001,6 +1007,9 @@ void MarineViewer::drawOpArea()
   unsigned int index = 0;
   unsigned int asize = m_op_area.size();
 
+  double line_shade  = m_op_area.getLineShade();
+  double label_shade = m_op_area.getLabelShade();
+
   while(index < asize) {
     string group  = m_op_area.getGroup(index);
     double lwidth = m_op_area.getLWidth(index);
@@ -1035,7 +1044,8 @@ void MarineViewer::drawOpArea()
 
     // Draw the edges 
     glLineWidth(lwidth);
-    glColor3f(lcolor[0], lcolor[1], lcolor[2]);
+    glColor3f(lcolor[0]*line_shade, lcolor[1]*line_shade, 
+	      lcolor[2]*line_shade);
     
     if(looped)
       glBegin(GL_LINE_LOOP);
@@ -1051,8 +1061,9 @@ void MarineViewer::drawOpArea()
       gl_font(1, 12);
       for(int k=0; k<vsize; k++) {
 	int slen = labels[k].length();
-	char *buff = new char(slen+1);
-	glRasterPos3f(xpos[k]+1, ypos[k]+1, 0);
+	char *buff = new char[slen+1];
+	// +3 below is a draw offset
+	glRasterPos3f(xpos[k]+3, ypos[k]+3, 0);
 	strncpy(buff, labels[k].c_str(), slen);
 	buff[slen] = '\0';
 	gl_draw(buff, slen);
@@ -1255,7 +1266,7 @@ void MarineViewer::drawPolygon(const XYPolygon& poly,
 
     string plabel = poly.get_label();
     int slen = plabel.length();
-    char *buff = new char(slen+1);
+    char *buff = new char[slen+1];
     glRasterPos3f(0, 0, 0);
     strncpy(buff, plabel.c_str(), slen);
     buff[slen] = '\0';
@@ -1269,7 +1280,7 @@ void MarineViewer::drawPolygon(const XYPolygon& poly,
   //-------------------------------- perhaps draw poly vertex labels
   if(m_geoshapes.viewable("polygon_viewable_vertex_labels") {
     glTranslatef(0, 0, 0);
-    char *buff = new char(100);
+    char *buff = new char[100];
     for(j=0; j<vsize; j++) {
       double cx = points[(j*2)];
       double cy = points[(j*2)+1];
@@ -1678,8 +1689,6 @@ void MarineViewer::drawPoints()
   // If no points are present just return.
   int vsize = m_geoshapes.sizePoints();
 
-  cout << "drawPoints: #pts: " << vsize << endl;
-
   if(vsize == 0)
     return;
 
@@ -1695,7 +1704,6 @@ void MarineViewer::drawPoints()
   
   for(int i=0; i<vsize; i++) {
     XYPoint point = m_geoshapes.point(i);
-    point.print();
     if((point.get_size() > 0) && (point.active()))
       drawPoint(point, vertex_size, vert_c, labl_c);
   }

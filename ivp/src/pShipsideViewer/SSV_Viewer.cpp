@@ -564,8 +564,8 @@ bool SSV_Viewer::setParam(string param, string value)
     return(setColorMapping("bearing_color", value));
   else if(param == "ownship_name")
     m_ownship_name = toupper(value);
-  else if(param == "op_vertex") 
-    return(m_op_area.addVertex(value, m_geodesy));
+  //else if(param == "op_vertex") 
+  //  return(m_op_area.addVertex(value, m_geodesy));
   else if(param == "draw_radial")
     return(setBooleanOnString(m_draw_radial, value));
   else

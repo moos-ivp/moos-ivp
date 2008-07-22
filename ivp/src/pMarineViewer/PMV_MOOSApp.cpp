@@ -226,8 +226,8 @@ bool PMV_MOOSApp::OnStartUp()
   }
 
 
-  STRING_LIST::iterator p;
-  for(p = sParams.begin();p!=sParams.end();p++) {
+  STRING_LIST::reverse_iterator p;
+  for(p = sParams.rbegin();p!=sParams.rend();p++) {
     string sLine    = *p;
     string sVarName = MOOSChomp(sLine, "=");
     sVarName = toupper(sVarName);

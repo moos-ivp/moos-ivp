@@ -25,6 +25,8 @@ public:
   unsigned int size() {return(m_vertex_xpos.size());}
   
   bool viewable(const std::string& s="all");
+  double getLineShade()   {return(m_line_shade);};
+  double getLabelShade()  {return(m_label_shade);};
 
   double getXPos(int ix);
   double getYPos(int ix);
@@ -58,6 +60,8 @@ protected:
 
   bool m_viewable_labels;
   bool m_viewable_all;
+  double m_line_shade;
+  double m_label_shade;
 };
 
 #endif

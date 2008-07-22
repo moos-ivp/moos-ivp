@@ -436,10 +436,10 @@ inline void MarineGUI::cb_MG_SetGeoAttr_i(int v) {
   else if(v==2050) cmviewer->setCommonParam("draw_markers", "toggle");
 
   else if(v==2100) cmviewer->setCommonParam("op_area_config", "reset");
-  else if(v==2101) cmviewer->setCommonParam("op_area_shade",  "lighter");
-  else if(v==2102) cmviewer->setCommonParam("op_area_shade",  "darker");
-  else if(v==2120) cmviewer->setCommonParam("op_area_labels", "toggle");
-  else if(v==2150) cmviewer->setCommonParam("op_area_draw",   "toggle");
+  else if(v==2101) cmviewer->setCommonParam("op_area_line_shade_mod", "1.05");
+  else if(v==2102) cmviewer->setCommonParam("op_area_line_shade_mod", "0.95");
+  else if(v==2120) cmviewer->setCommonParam("op_area_viewable_labels", "toggle");
+  else if(v==2150) cmviewer->setCommonParam("op_area_viewable_all", "toggle");
 
   else 
     return;

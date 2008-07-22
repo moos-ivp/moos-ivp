@@ -20,6 +20,8 @@ OpAreaSpec::OpAreaSpec()
 {
   m_viewable_all    = true;
   m_viewable_labels = true;
+  m_line_shade      = 1.0;
+  m_label_shade     = 1.0;
 }
 
 //-----------------------------------------------------------
@@ -60,7 +62,6 @@ bool OpAreaSpec::addVertex(const std::string& str,
        << lcolor << "  vcolor:" << vcolor << "  dashed:" << dashed
        << "  looped:" << looped << endl;
 
-
   // The position has to be fully specified in terms of either lat/lon
   // of the x-y position in local coords. Otherwise return(false);
   if((lat=="")||(lon=="")||(!isNumber(lat))||(!isNumber(lon)))
@@ -89,13 +90,6 @@ bool OpAreaSpec::addVertex(const std::string& str,
   bool dashed_b = (dashed == "true");
   bool looped_b = (looped == "true");
 
-  cout << "addVertexB() x:" << xpos_d << " y:" << ypos_d 
-       << "  lwidth:" << lwidth_d 
-       << "  group:" << group << "  label:" << label << "  lcolor:" 
-       << lcolor << "  vcolor:" << vcolor << "  dashed_b:" << dashed_b
-       << "  looped_b:" << looped_b << endl;
-
-  
   addVertex(xpos_d, ypos_d, lwidth_d, group, label, lcolor,
 	    vcolor, looped_b, dashed_b);
 }
@@ -127,10 +121,46 @@ void OpAreaSpec::addVertex(double xpos, double ypos, double lwidth,
 
 bool OpAreaSpec::setParam(string param, string value)
 {
-  if(param == "viewable_all")
+  if(param == "op_area_viewable_all")
     return(setBooleanOnString(m_viewable_all, value));
-  else if(param == "viewable_labels")
+  else if(param == "op_area_viewable_labels")
     return(setBooleanOnString(m_viewable_labels, value));
+  else if(param == "op_area_line_shade") {
+    if(!isNumber(value))
+      return(false);
+    double dval = atof(value.c_str());
+    if(dval < 0)
+      dval = 0;
+    if(dval > 1)
+      dval = 1;
+    m_line_shade = dval;
+  }
+  else if(param == "op_area_line_shade_mod") {
+    if(!isNumber(value))
+      return(false);
+    double dval = atof(value.c_str());
+    if(dval < 0)
+      dval = 0;
+    m_line_shade *= dval;
+  }
+  else if(param == "op_area_label_shade") {
+    if(!isNumber(value))
+      return(false);
+    double dval = atof(value.c_str());
+    if(dval < 0)
+      dval = 0;
+    if(dval > 1)
+      dval = 1;
+    m_label_shade = dval;
+  }
+  else if(param == "op_area_label_shade_mod") {
+    if(!isNumber(value)) 
+      return(false);
+   double dval = atof(value.c_str());
+    if(dval < 0)
+      dval = 0;
+    m_label_shade *= dval;
+  }
   else
     return(false);
   
