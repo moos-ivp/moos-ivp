@@ -343,7 +343,7 @@ void TermCommand::tabExpand()
 
 void TermCommand::handleCharInput(char c)
 {
-  for(int k=0; k<10; k++)
+  for(int k=0; k<100; k++)
     printf("\n");
   
   if((c==32)||(c==27) || (c==67) || (c==68)) {
