@@ -343,12 +343,14 @@ void TermCommand::tabExpand()
 
 void TermCommand::handleCharInput(char c)
 {
-  if((c==32)||(c==27)) {
+  cout << "char = " << c << endl;
+  cout << "char(int) = " << (int)c << endl;
+  if((c==32)||(c==27) || (c=67) || (c=68)) {
     m_tc_mutex.UnLock();
     return;
   }
 
-  for(int k=0; k<100; k++)
+  for(int k=0; k<10; k++)
     printf("\n");
   
   if((c==65) || (c==66))
@@ -360,7 +362,7 @@ void TermCommand::handleCharInput(char c)
   }
 
   // Special case the DELETE key - reduce buff string at end
-  if(c==127) {
+  if((c==127) || (c==8)) {
     int buff_len = m_cmd_buffer.length();
     if(buff_len >= 1)
       m_cmd_buffer.assign(m_cmd_buffer.c_str(), buff_len-1);
