@@ -343,16 +343,14 @@ void TermCommand::tabExpand()
 
 void TermCommand::handleCharInput(char c)
 {
-  cout << "char = " << c << endl;
-  cout << "char(int) = " << (int)c << endl;
+  for(int k=0; k<10; k++)
+    printf("\n");
+  
   if((c==32)||(c==27) || (c==67) || (c==68)) {
     m_tc_mutex.UnLock();
     return;
   }
 
-  for(int k=0; k<10; k++)
-    printf("\n");
-  
   if((c==65) || (c==66))
     handleArrow(c);
 
