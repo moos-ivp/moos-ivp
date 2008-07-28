@@ -345,7 +345,7 @@ void TermCommand::handleCharInput(char c)
 {
   cout << "char = " << c << endl;
   cout << "char(int) = " << (int)c << endl;
-  if((c==32)||(c==27) || (c=67) || (c=68)) {
+  if((c==32)||(c==27) || (c==67) || (c==68)) {
     m_tc_mutex.UnLock();
     return;
   }
