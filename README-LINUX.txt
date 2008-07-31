@@ -74,7 +74,7 @@ your PATH environment variable.  This is especially important because the
 "pAntler" program, which can launch other MOOS/IvP programs, relies on the
 PATH variable to find those programs.
 
-We normally just at lines to our ~/.bashrc or ~/.cshrc files to always append
+We normally just add lines to our ~/.bashrc or ~/.cshrc files to always append
 these two directories to the PATH environment variable.
 
 
