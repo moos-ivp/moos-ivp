@@ -1,0 +1,62 @@
+initialize   DEPLOY = false
+initialize   RETURN = false
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name      = waypt_survey
+  pwt       = 100
+  condition = RETURN = false
+  condition = DEPLOY = true
+  endflag   = RETURN = true
+
+  speed     = 2.0
+  radius    = 8.0
+  points    = 60,-40:60,-160:150,-160:180,-100:150,-40
+}
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name       = waypt_return
+  pwt        = 100
+  condition  = RETURN = true
+  condition  = DEPLOY = true
+
+  speed      = 2.0
+  radius     = 8.0
+  points     = 0,0
+}
+
+
+//----------------------------------------------
+Behavior = BHV_AvoidObstacles
+{
+  name       = obavoid
+  pwt        = 100
+  condition  = DEPLOY = true
+
+              poly = 40,-80:40,-110:80,-110:80,-80 
+     allowable_ttc = 20
+//   activation_dist = 50
+       buffer_dist = 10
+}
+
+//----------------------------------------------
+Behavior = BHV_ConstantDepth
+{
+  name       = const_depth
+  pwt        = 100
+  condition  = DEPLOY = true
+
+       depth = 15
+    duration = 300
+}
+
+
+
+
+//--> info on bugs and deficiencies you've found in my code
+//--> new utility modules you've written released back to Open Source community
+//--> info on your project so I can assert that my work is having an impact
+//--> funding from your organization to mine.
