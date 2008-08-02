@@ -170,8 +170,6 @@ ProcessConfig = pShipsideViewer
 {
   AppTick    = 4
   CommsTick  = 4
-  IMAGE_FILE = /home/mikerb/Research/project-marine/data/AerialMIT.tif
-  INFO_FILE  = /home/mikerb/Research/project-marine/data/AerialMIT.info
 
   VEHICOLOR    = PTSUR, dark_green
   HASH_DELTA   = 500
