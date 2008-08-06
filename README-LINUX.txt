@@ -19,14 +19,17 @@ The following software packages must must installed on the
 Linux computer in order to build MOOS-IvP.  For each package 
 we've listed some information on how it can be obtained.
 
+*******************
+* Ubuntu packages *
+*******************
+
 (1) OpenGL development libraries.
 We're a little sketchy on which particular packages we need 
 for OpenGL support.  The following is our best guess:
 
-Ubuntu:
-   Regardless of your graphics card, you need: libglut-dev
+(1A) Regardless of your graphics card, you need: libglut-dev
 
-   Then you also need basic 3D support within X-Windows on 
+(1B) Then you also need basic 3D support within X-Windows on 
    your system.  To get it, you may need to install one of
    the following packages.  Which one you install depends on
    your video card:
@@ -40,15 +43,17 @@ Ubuntu:
    ATI-based card (closed-source driver) --> xorg-driver-fglrx,
        and maybe xorg-driver-fglrx-dev
 
-(2) libtiff
+(2) libx11-dev
+
+(3) libtiff
 Website: http://libtiff.org
 Ubuntu package: libtiff-dev
 
-(3) CMake (at least version 2.4)
+(4) CMake (at least version 2.4)
 Website: cmake.org
 Ubuntu package: cmake
 
-(4) The Gnu C++ compiler (recommend version >= 4.0)
+(5) The Gnu C++ compiler (recommend version >= 4.0)
 Website: http://gcc.gnu.org/
 Ubuntu package: g++
 
