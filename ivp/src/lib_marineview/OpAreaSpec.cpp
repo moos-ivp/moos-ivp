@@ -6,6 +6,7 @@
 /*****************************************************************/
 
 #include <iostream>
+#include <cstdlib>
 #include "OpAreaSpec.h"
 #include "MBUtils.h"
 #include "ColorParse.h"

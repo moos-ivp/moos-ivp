@@ -21,8 +21,9 @@
 /*****************************************************************/
 
 #include <iostream>
-#include <math.h>
-#include <string.h>
+#include <cmath>
+#include <cstring>
+#include <cstdlib>
 #include <tiffio.h>
 #include "MarineViewer.h"
 #include "MBUtils.h"

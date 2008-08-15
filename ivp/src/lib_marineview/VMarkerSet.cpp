@@ -5,6 +5,7 @@
 /*    DATE: July 5th, 2008                                       */
 /*****************************************************************/
 
+#include <cstdlib>
 #include "VMarkerSet.h"
 #include "MBUtils.h"
 #include "ColorParse.h"
