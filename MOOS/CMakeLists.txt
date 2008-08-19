@@ -1,4 +1,3 @@
-   
 ###########################################################
 #   Top level CMakeLists.txt file for the MOOS Project
 #   pnewman@robots.ox.ac.uk
