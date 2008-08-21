@@ -10,6 +10,7 @@
 /*****************************************************************/
 
 #include <iostream>
+#include <cstdlib>
 #include <math.h>
 #include "MBUtils.h"
 #include "ALogScanner.h"

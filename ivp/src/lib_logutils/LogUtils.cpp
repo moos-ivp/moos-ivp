@@ -10,6 +10,7 @@
 /*****************************************************************/
 
 #include <iostream>
+#include <cstdlib>
 #include "MBUtils.h"
 #include "LogUtils.h"
 

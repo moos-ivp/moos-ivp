@@ -10,6 +10,7 @@
 /*****************************************************************/
 
 #include <string>
+#include <cstdlib>
 #include <iostream>
 #include "MBUtils.h"
 #include "ScanHandler.h"
