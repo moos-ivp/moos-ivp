@@ -315,7 +315,7 @@ void BHV_Loiter::updateInfoOut()
   int curr_index   = m_waypoint_engine.getCurrIndex();
 
   string loiter_report = "Pt:" + intToString(curr_index);
-  loiter_report += " Dist:"    + doubleToString(m_dist_to_poly,2);
+  loiter_report += " Dist:"    + doubleToString(m_dist_to_poly,0);
   loiter_report += " CP Hits:" + intToString(capture_hits);
   loiter_report += " NM_Hits:" + intToString(nonmono_hits);
   loiter_report += " AQ_MODE:" + boolToString(m_acquire_mode);
@@ -347,7 +347,7 @@ void BHV_Loiter::updateInfoOut()
     postMessage("VIEW_POINT", ptmsg);
   }
   
-  postMessage("DIST_TO_REGION", m_dist_to_poly);
+  postIntMessage("DIST_TO_REGION", m_dist_to_poly);
 }
 
 //-----------------------------------------------------------
@@ -356,8 +356,6 @@ void BHV_Loiter::updateInfoOut()
 void BHV_Loiter::updateInfoOutNull()
 {
   string bhv_tag = toupper(getDescriptor());
-  bhv_tag = findReplace(bhv_tag, "BHV_", "");
-  bhv_tag = findReplace(bhv_tag, "(d)", "");
 
   string null_poly_spec = "label," + bhv_tag + ":0,0:0,0:0,0";
   postMessage("VIEW_POLYGON", null_poly_spec);

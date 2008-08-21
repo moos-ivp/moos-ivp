@@ -47,6 +47,8 @@ public:
 
   bool getPosition(double& xpos, double& ypos, double timestamp);
   
+  bool isDecayMaxed() {return(m_decay_maxed);};
+
   double m_xpos;         // Position in meters
   double m_ypos;         // Position in meters
   double m_spd;          // Speed in meters per second
@@ -55,6 +57,9 @@ public:
   double m_decay_end;    // Time in seconds
   double m_timestamp;    // Time in seconds
   bool   m_position_set; // false until first setPosition
+
+  bool   m_decay_maxed;
+
 };
 
 #endif

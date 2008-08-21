@@ -61,6 +61,14 @@ BHV_AvoidCollision::BHV_AvoidCollision(IvPDomain gdomain) :
 
   m_on_no_contact_ok  = true;
 
+  m_extrapolate  = true;
+
+  m_decay_start = 60;
+  m_decay_end   = 120;
+  
+  m_extrapolator.setDecay(m_decay_start, m_decay_end);
+  
+
   addInfoVars("NAV_X, NAV_Y, NAV_SPEED, NAV_HEADING");
 }
 
@@ -74,6 +82,7 @@ bool BHV_AvoidCollision::setParam(string g_param, string g_val)
 
   if((g_param == "them") || (g_param == "contact")) {
     m_contact = toupper(g_val);
+    addInfoVars(m_contact+"_NAV_UTC");
     addInfoVars(m_contact+"_NAV_X");
     addInfoVars(m_contact+"_NAV_Y");
     addInfoVars(m_contact+"_NAV_SPEED");
@@ -147,7 +156,37 @@ bool BHV_AvoidCollision::setParam(string g_param, string g_val)
     m_on_no_contact_ok = ((g_val == "true") || (g_val == "yes"));
     return(true);
   }  
-  return(false);
+  else if (g_param == "extrapolate") 
+    {
+      string extrap = toupper(g_val);
+      m_extrapolate = (extrap == "TRUE");
+      return(true);
+    }
+  else if(g_param == "decay") {
+    vector<string> svector = parseString(g_val, ',');
+    if(svector.size() == 2) {
+      svector[0] = stripBlankEnds(svector[0]);
+      svector[1] = stripBlankEnds(svector[1]);
+      if(isNumber(svector[0]) && isNumber(svector[1])) {
+	double start = atof(svector[0].c_str());
+	double end   = atof(svector[1].c_str());
+	if((start >= 0) && (start <= end)) {
+	  m_decay_start = start;
+	  m_decay_end   = end;
+	  m_extrapolator.setDecay(start,end);
+	  return(true);
+	}
+      }
+    }
+  }  
+  else if(g_param == "decay_end") {
+    if(isNumber(g_val)) {
+      m_decay_end = atof(g_val.c_str());
+      
+      return(true);
+    }
+  }  
+    return(false);
 }
 
 
@@ -226,20 +265,22 @@ IvPFunction *BHV_AvoidCollision::onRunState()
 
 bool BHV_AvoidCollision::getBufferInfo()
 {
-  bool ok1, ok2;
+  bool ok = true;
 
-  m_cnh = getBufferDoubleVal(m_contact+"_NAV_HEADING", ok1);
-  m_cnv = getBufferDoubleVal(m_contact+"_NAV_SPEED",   ok2);
-  if(!ok1 || !ok2) {    
-    string msg = m_contact + " heading/speed info not found";
-    if(!m_on_no_contact_ok)
+  if(ok) m_cnh = getBufferDoubleVal(m_contact+"_NAV_HEADING", ok);
+  if(ok) m_cnv = getBufferDoubleVal(m_contact+"_NAV_SPEED",   ok);
+  if(ok) m_cnutc = getBufferDoubleVal(m_contact+"_NAV_UTC", ok);
+  if(!ok) {    
+    if(!m_on_no_contact_ok) {
+      string msg = m_contact + " heading/speed info not found";
       postEMessage(msg);
+    }
     return(false);
   }
 
-  m_osh = getBufferDoubleVal("NAV_HEADING", ok1);
-  m_osv = getBufferDoubleVal("NAV_SPEED", ok2);
-  if(!ok1 || !ok2) {
+  if(ok) m_osh = getBufferDoubleVal("NAV_HEADING", ok);
+  if(ok) m_osv = getBufferDoubleVal("NAV_SPEED", ok);
+  if(!ok) {
     postEMessage("ownship course/speed info not found.");
     return(false);
   }
@@ -247,21 +288,51 @@ bool BHV_AvoidCollision::getBufferInfo()
   m_osh = angle360(m_osh);
   m_cnh = angle360(m_cnh);
 
-  m_cnx = getBufferDoubleVal(m_contact+"_NAV_X", ok2);
-  m_cny = getBufferDoubleVal(m_contact+"_NAV_Y", ok1);
-  if(!ok1 || !ok2) {
-    string msg = m_contact + " NAV_X/Y info not found";
-    if(m_on_no_contact_ok)
-      postWMessage(msg);
-    else
+  if(ok) m_cnx = getBufferDoubleVal(m_contact+"_NAV_X", ok);
+  if(ok) m_cny = getBufferDoubleVal(m_contact+"_NAV_Y", ok);
+  if(!ok) {
+    if(!m_on_no_contact_ok) {
+      string msg = m_contact + " NAV_X/Y info not found";
       postEMessage(msg);
+    }
+    return(false);
+  }
+  
+  if(ok) m_osx = getBufferDoubleVal("NAV_X", ok);
+  if(ok) m_osy = getBufferDoubleVal("NAV_Y", ok);
+  if(!ok) {
+    postEMessage("ownship x/y info not found.");
     return(false);
   }
 
-  m_osx = getBufferDoubleVal("NAV_X", ok2);
-  m_osy = getBufferDoubleVal("NAV_Y", ok1);
-  if(!ok1 || !ok2) {
-    postEMessage("ownship x/y info not found.");
+  // extrapolation added by H. Schmidt in GLINT08 for use underwater with spotty comms.
+
+  double curr_time = getBufferCurrTime();
+  double delta_time = curr_time - m_cnutc;
+  
+  postIntMessage(m_contact+"_CONTACT_TIME", m_cnutc);
+  postIntMessage(m_contact+"_DELTA_TIME", delta_time);
+  
+  if(!m_extrapolate)
+    return(true);
+  
+  m_extrapolator.setPosition(m_cnx, m_cny, m_cnv, m_cnh, m_cnutc);
+  
+  // Even if mark_time is zero and thus "fresh", still derive the 
+  // the contact position from the extrapolator since the UTC time
+  // of the position in this report may still be substantially 
+  // behind the current own-platform UTC time.
+  
+  double new_cnx, new_cny;
+  ok = m_extrapolator.getPosition(new_cnx, new_cny, curr_time);
+  
+  if(ok) {
+    m_cnx = new_cnx;
+    m_cny = new_cny;
+    return(true);
+  }
+  else {
+    postWMessage("Incomplete Linear Extrapolation");
     return(false);
   }
 
@@ -286,7 +357,7 @@ double BHV_AvoidCollision::getRelevance()
 				    m_cnx, m_cny, m_cnv, m_cnh);
   
   if(m_curr_distance >= m_active_outer_dist) {
-    postInfo(0,0);
+    //postInfo(0,0);
     return(0);
   }
 
@@ -376,8 +447,17 @@ void BHV_AvoidCollision::postRange(bool ok)
     postMessage("CLSG_SPD_AVD_"+ m_contact, 0);
   }
   else {
-    postMessage("RANGE_AVD_" + m_contact, m_curr_distance);
-    postMessage("CLSG_SPD_AVD_" + m_contact, m_curr_closing_spd);
+    // round the speed a bit first so to reduce the number of 
+    // posts to the db which are based on change detection.
+    double cls_speed = snapToStep(m_curr_closing_spd, 0.1);
+    postMessage(("CLSG_SPD_AVD_"+m_contact), cls_speed);
+    //postMessage(("CLSG_SPD_AVD_"+m_contact), m_curr_closing_spd);
+    
+    // Post to integer precision unless very close to contact
+    if(m_curr_distance <= 10)
+      postMessage(("RANGE_AVD_"+m_contact), m_curr_distance);
+    else
+      postIntMessage(("RANGE_AVD_"+m_contact), m_curr_distance);
   }
 }
 

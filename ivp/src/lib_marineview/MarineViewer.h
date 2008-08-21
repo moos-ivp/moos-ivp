@@ -142,6 +142,10 @@ protected:
 		  const std::vector<double>& vert_color,
 		  const std::vector<double>& labl_color);
 
+  void  drawPointList(const std::vector<double>& xvect,
+		      const std::vector<double>& yvect, float vsize,
+		      const std::vector<double>& vert_color);
+
   void  drawHexagons();
 
 

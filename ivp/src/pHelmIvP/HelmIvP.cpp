@@ -105,6 +105,11 @@ void HelmIvP::cleanup()
 
 bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
 {
+  // The curr_time is set in *both* the OnNewMail and Iterate functions.
+  // In the OnNewMail function so the most up-to-date time is available
+  // when processing mail.
+  // In the Iterate method to ensure behaviors are not iterated with an
+  // un-initialized timestamp on startup, and in case there is no Mail 
   double curr_time = MOOSTime();
   m_info_buffer->setCurrTime(curr_time);
 
@@ -174,7 +179,13 @@ bool HelmIvP::Iterate()
   if(!m_has_control)
     return(false);
 
+  // The curr_time is set in *both* the OnNewMail and Iterate functions.
+  // In the OnNewMail function so the most up-to-date time is available
+  // when processing mail.
+  // In the Iterate method to ensure behaviors are not iterated with an
+  // un-initialized timestamp on startup, and in case there is no Mail 
   double curr_time = MOOSTime();
+  m_info_buffer->setCurrTime(curr_time);
 
   HelmReport helm_report;
   helm_report = m_hengine->determineNextDecision(m_bhv_set, curr_time);
@@ -296,19 +307,35 @@ void HelmIvP::postBehaviorMessages()
       string var   = msg.get_var();
       string sdata = msg.get_sdata();
       double ddata = msg.get_ddata();
+      string mkey  = msg.get_key();
 
-      if(bhv_postings_summary == "") {
-	bhv_postings_summary += bhv_descriptor;
-	bhv_postings_summary += "$@!$";
-	bhv_postings_summary += intToString(m_iteration);
-      }
-      if(var != "BHV_IPF") {
-	string pair_printable = msg.getPrintable();
-	bhv_postings_summary += "$@!$";
-	bhv_postings_summary += pair_printable;
-      }
+      bool key_change = true;
+      if(sdata == "")
+	key_change = detectChangeOnKey(mkey, ddata);
+      else
+	key_change = detectChangeOnKey(mkey, sdata);
+      
+      // Keep track of warnings count for inclusion in IVPHELM_SUMMARY
       if(var == "BHV_WARNING")
 	m_warning_count++;
+
+
+      // Possibly augment the postings_summary
+      if(key_change) {
+	// If first var-data tuple then tack header info on front
+	if(bhv_postings_summary == "") {
+	  bhv_postings_summary += bhv_descriptor;
+	  bhv_postings_summary += "$@!$";
+	  bhv_postings_summary += intToString(m_iteration);
+	}
+	// Handle BHV_IPF tuples separately below
+	if(var != "BHV_IPF") {
+	  string pair_printable = msg.getPrintable();
+	  bhv_postings_summary += "$@!$";
+	  bhv_postings_summary += pair_printable;
+	}
+      }
+
 
       // If posting an IvP Function, mux first and post the parts.
       if(var == "BHV_IPF") {
@@ -319,25 +346,19 @@ void HelmIvP::postBehaviorMessages()
       }
       // Otherwise just post to the DB directly.
       else {
-	string padvar = padString(var, 22, false);
 	if(sdata != "") {
-	  if(sdata != "PRIVATE_INFO") {
-	    m_info_buffer->setValue(var, sdata);
+	  m_info_buffer->setValue(var, sdata);
+	  if(key_change)
 	    m_Comms.Notify(var, sdata);
-	    if(m_verbose == "verbose")
-	      MOOSTrace("  %s %s \n", padvar.c_str(), sdata.c_str());
-	  }
 	}
 	else {
 	  m_info_buffer->setValue(var, ddata);
-	  m_Comms.Notify(var, ddata);
-	  if(m_verbose == "verbose") {
-	    string dstr = dstringCompact(doubleToString(ddata));
-	    MOOSTrace("  %s %s \n", padvar.c_str(), dstr.c_str());
-	  }
+	  if(key_change)
+	    m_Comms.Notify(var, ddata);
 	}
       }
     }
+
     if(bhv_postings_summary != "")
       m_Comms.Notify("IVPHELM_POSTINGS", bhv_postings_summary);
   }
@@ -636,8 +657,6 @@ bool HelmIvP::OnStartUp()
   Populator_BehaviorSet p_bset(m_ivp_domain, m_info_buffer);
 #endif
 
-//   Populator_BehaviorSet p_bset(m_ivp_domain, m_info_buffer);
-
   m_bhv_set = p_bset.populate(m_bhv_files);
   
   if(m_bhv_set == 0) {
@@ -699,4 +718,57 @@ bool HelmIvP::handleDomainEntry(const string& g_entry)
 
   bool ok = m_ivp_domain.addDomain(dname.c_str(), dlow, dhgh, dcnt);
   return(ok);
+}
+
+
+//--------------------------------------------------------------------
+// Procedure: detectChangeOnKey
+//   Purpose: To determine if the given key-value pair is unique 
+//            against the last key-value posting.
+
+bool HelmIvP::detectChangeOnKey(const string& key, const string& value)
+{
+  if(key == "")
+    return(true);
+  map<string, string>::iterator p;
+  p = m_outgoing_strings.find(key);
+  if(p == m_outgoing_strings.end()) {
+    m_outgoing_strings[key] = value;
+    return(true);
+  }
+  else {
+    string old_value = p->second;
+    if(old_value == value)
+      return(false);
+    else {
+      m_outgoing_strings[key] = value;
+      return(true);
+    }
+  }
+}
+
+//--------------------------------------------------------------------
+// Procedure: detectChangeOnKey
+//   Purpose: To determine if the given key-value pair is unique 
+//            against the last key-value posting.
+
+bool HelmIvP::detectChangeOnKey(const string& key, double value)
+{
+  if(key == "")
+    return(true);
+  map<string, double>::iterator p;
+  p = m_outgoing_doubles.find(key);
+  if(p == m_outgoing_doubles.end()) {
+    m_outgoing_doubles[key] = value;
+    return(true);
+  }
+  else {
+    double old_value = p->second;
+    if(old_value == value)
+      return(false);
+    else {
+      m_outgoing_doubles[key] = value;
+      return(true);
+    }
+  }
 }

@@ -47,15 +47,20 @@ BHV_Trail::BHV_Trail(IvPDomain gdomain) : IvPBehavior(gdomain)
   this->setParam("build_info", "uniform_piece=discrete@course:3,speed:2");
   this->setParam("build_info", "uniform_grid =discrete@course:9,speed:6");
   
+  // These parameters really should be set in the behavior file, but are
+  // left here for now to smoothen the transition (Aug 10, 2008, mikerb)
+  this->setParam("activeflag",   "PURSUIT=1");
+  this->setParam("inactiveflag", "PURSUIT=0");
+  
   m_domain = subDomain(m_domain, "course,speed");
   
-  m_trail_range  = 0;
-  m_trail_angle  = 180;
-  m_radius       = 5;
-  m_nm_radius    = 20;
-  m_max_range    = 0;
-  m_extrapolate  = true;
-  
+  m_trail_range    = 0;
+  m_trail_angle    = 180;
+  m_radius         = 5;
+  m_nm_radius      = 20;
+  m_max_range      = 0;
+  m_extrapolate    = true;
+  m_angle_relative = true; // as opposed to angle being absolute
   m_decay_start = 5;
   m_decay_end   = 10;
   
@@ -107,6 +112,17 @@ bool BHV_Trail::setParam(string g_param, string g_val)
       m_trail_angle = angle180(atof(g_val.c_str()));
       return(true);
     }  
+  }
+  else if(g_param == "trail_angle_type") {
+    g_val = tolower(g_val);
+    if(g_val == "absolute")
+      m_angle_relative = false;
+    else if(g_val == "relative")
+      m_angle_relative = true;
+    else
+      return(false);
+
+    return(true);
   }
   else if(g_param == "radius") {
     if(isNumber(g_val)) {
@@ -168,30 +184,38 @@ IvPFunction *BHV_Trail::onRunState()
   if(!updateInfoIn())
     return(0);
   
+  // Added Aug11,2008 on GLINT to handle sync AUV multistatic - mikerb
+  if(m_extrapolate && m_extrapolator.isDecayMaxed())
+    return(0);
+
   // Calculate the trail point based on trail_angle, trail_range.
   double posX, posY; 
+
+  if(m_angle_relative) {
+    double abs_angle = headingToRadians(angle360(m_cnh+m_trail_angle));
+    posX = m_cnx + m_trail_range*cos(abs_angle);
+    posY = m_cny + m_trail_range*sin(abs_angle);
+  }
+  else 
+    projectPoint(m_trail_angle, m_trail_range, m_cnx, m_cny, posX, posY);
+  
+
   // double adjusted_angle = angle180(m_cnh + m_trail_angle);
   // projectPoint(adjusted_angle, m_trail_range, m_cnx, m_cny, posX, posY);
-  double abs_angle = headingToRadians(angle360(m_cnh+m_trail_angle));
-  posX = m_cnx + m_trail_range*cos(abs_angle);
-  posY = m_cny + m_trail_range*sin(abs_angle);
-  
-  postMessage("TRAIL_POINT_X", posX);
-  postMessage("TRAIL_POINT_Y", posY);
-  
-  
+
+  string ptmsg;
+  ptmsg =  "x=" + dstringCompact(doubleToString(posX,0));
+  ptmsg += ",y=" + dstringCompact(doubleToString(posY,0));
+  ptmsg += ",label=trailpoint_" + m_us_name;
+  ptmsg += ",type=trailpoint";
+  postMessage("VIEW_POINT", ptmsg);
+
   // Calculate the relevance first. If zero-relevance, we won't
   // bother to create the objective function.
   double relevance = getRelevance();
   
   m_cnh =angle360(m_cnh);  
-  postMessage("TRAIL_CONTACT_X", m_cnx);
-  postMessage("TRAIL_CONTACT_Y", m_cny);
-  postMessage("TRAIL_CONTACT_SPEED", m_cnv);
-  postMessage("TRAIL_CONTACT_HEADING", m_cnh);
-  postMessage("TRAIL_RELEVANCE", relevance);
-  
-  
+
   if(relevance <= 0) {
     postMessage("PURSUIT", 0);
     return(0);
@@ -204,9 +228,9 @@ IvPFunction *BHV_Trail::onRunState()
   double head_x = cos(headingToRadians(m_cnh));
   double head_y = sin(headingToRadians(m_cnh));
   double distance = distPointToPoint(m_osx, m_osy, posX, posY); 
-  bool outside = (distance > m_radius);   
+  bool   outside = (distance > m_radius);   
   
-  postMessage("TRAIL_DISTANCE", distance);
+  postIntMessage("TRAIL_DISTANCE", distance);
 
   if(outside) {
     if(distance > m_nm_radius) {  // Outside nm_radius
@@ -248,7 +272,7 @@ IvPFunction *BHV_Trail::onRunState()
       double bear_y = (head_y*m_nm_radius+posY-m_osy)/distp;
       double modh = radToHeading(atan2(bear_y,bear_x));
       
-      postMessage("TRAIL_HEADING", modh);
+      postIntMessage("TRAIL_HEADING", modh);
       
       ZAIC_PEAK hdg_zaic(m_domain, "course");
       
@@ -266,7 +290,9 @@ IvPFunction *BHV_Trail::onRunState()
       if(modv < 0 || !m_extrapolate)
 	modv = 0;
       
-      postMessage("TRAIL_SPEED", modv);
+      // snap to one decimal precision to reduce excess postings.
+      double snapped_modv = snapToStep(modv, 0.1);
+      postMessage("TRAIL_SPEED", snapped_modv);
       
       ZAIC_PEAK spd_zaic(m_domain, "speed");
       
@@ -382,9 +408,8 @@ bool BHV_Trail::updateInfoIn()
   double curr_time = getBufferCurrTime();
   // double mark_time = getBufferTimeVal(m_contact+"_NAV_X");
   
-  postMessage("TRAIL_CONTACT_TIME", m_cnutc);
-  postMessage("TRAIL_CURRENT_TIME", curr_time);
-  postMessage("TRAIL_DELTA_TIME", curr_time-m_cnutc);
+  postIntMessage("TRAIL_CONTACT_TIME", m_cnutc);
+  postIntMessage("TRAIL_DELTA_TIME", curr_time-m_cnutc);
   
   if(!m_extrapolate)
     return(true);
@@ -426,7 +451,7 @@ double BHV_Trail::getRelevance()
     return(1.0);
   
   double contact_range = hypot((m_osx-m_cnx), (m_osy-m_cny));
-  postMessage("TRAIL_RANGE",contact_range );
+  postIntMessage("TRAIL_RANGE",contact_range );
   
   if(contact_range < m_max_range)
     return(1.0);

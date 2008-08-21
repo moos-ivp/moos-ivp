@@ -78,8 +78,11 @@ public:
 
 protected:
   void    setComplete();
-  void    postMessage(std::string, double);
-  void    postMessage(std::string, std::string);
+  void    postMessage(std::string, double, std::string key="");
+  void    postMessage(std::string, std::string, std::string key="");
+  void    postRepeatableMessage(std::string, double);
+  void    postRepeatableMessage(std::string, std::string);
+  void    postIntMessage(std::string, double, std::string key="");
   void    postEMessage(std::string);
   void    postWMessage(std::string);
   void    postVMessage(std::string);
@@ -111,6 +114,8 @@ protected:
   std::vector<VarDataPair>       m_messages;
   std::vector<LogicCondition>    m_logic_conditions;
   std::vector<VarDataPair>       m_run_flags;
+  std::vector<VarDataPair>       m_active_flags;
+  std::vector<VarDataPair>       m_inactive_flags;
   std::vector<VarDataPair>       m_end_flags;
   std::vector<VarDataPair>       m_idle_flags;
   std::map<std::string, double>  m_starve_vars;

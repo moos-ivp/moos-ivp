@@ -53,6 +53,12 @@ class HelmScope : public CMOOSApp
   void setDisplayTrunc(bool v)   {m_display_truncate = v;};
   void setDisplayVirgins(bool v) {m_display_virgins = v;};
 
+#if 0 // modification in progress 
+  bool configureComms(std::string, std::string, double, std::string);
+  void setAppTick(double v)      {SetAppFreq(v);};
+  void setServer(const char *s, long v) {SetServer(s,v);};
+#endif
+
  public:  // Public Functions for basic DB Scoping
   void addVariables(const std::string&, const std::string&);
   void addVariable(const std::string&, const std::string&);

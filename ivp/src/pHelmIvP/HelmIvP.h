@@ -57,6 +57,11 @@ protected:
   void registerNewVariables();
   void requestBehaviorLogging();
 
+  bool detectChangeOnKey(const std::string& key, 
+			 const std::string& sval);
+  bool detectChangeOnKey(const std::string& key, 
+			 double dval);
+
 protected:
   InfoBuffer*   m_info_buffer;
   bool          m_has_control;
@@ -72,9 +77,19 @@ protected:
   HelmEngine*   m_hengine;
   std::string   m_ownship;
 
+  // For each decision variable in decision space, note if it is 
+  // optional. Optional means a decision need not be rendered on it.
   std::map<std::string, bool> m_optional_var;
 
+  // List of behavior input files. To be fed to Populator. Also sent
+  // to the logger so it may record the .bhv files alongside others.
   std::set<std::string> m_bhv_files;
+
+  // Maps for keeping track of the previous outgoing behavior postings
+  // for comparison on current posting. Possibly supress if they match
+  std::map<std::string, std::string> m_outgoing_strings;
+  std::map<std::string, double>      m_outgoing_doubles;
+
 };
 
 #endif 

@@ -45,16 +45,25 @@
 class VarDataPair
 {
 public:
-  VarDataPair(const std::string&, double);
-  VarDataPair(const std::string&, const std::string&);
-  VarDataPair(const std::string&, const std::string&, const std::string&);
+  VarDataPair(const std::string& varname, 
+	      double varvalue);
+
+  VarDataPair(const std::string& varname, 
+	      const std::string& varvalue);
+
+  VarDataPair(const std::string& varname, 
+	      const std::string& varvalue, 
+	      const std::string& typehint);
 
   virtual ~VarDataPair() {};
   
-  std::string get_var() const    {return(m_var);};
-  std::string get_sdata() const  {return(m_sdata);};
-  double      get_ddata() const  {return(m_ddata);};
-  bool        is_string() const  {return(m_is_string);};
+  void        set_key(const std::string& s) {m_key=s;};
+
+  std::string get_var()   const {return(m_var);};
+  std::string get_sdata() const {return(m_sdata);};
+  double      get_ddata() const {return(m_ddata);};
+  bool        is_string() const {return(m_is_string);};
+  std::string get_key()   const {return(m_key);};
 
   std::string getPrintable();
 
@@ -63,26 +72,7 @@ protected:
   std::string m_sdata;
   double      m_ddata;
   bool        m_is_string;
+  std::string m_key;
 };
 
 #endif 
-
-
-
-
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-

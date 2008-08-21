@@ -34,7 +34,6 @@ class ScanReport
   std::string getVarSources(const std::string& varname)
     {return(getVarSources(getVarIndex(varname)));};
 
-  
   double getVarFirstTime(unsigned int index);
   double getVarLastTime(unsigned int index);
   
@@ -67,6 +66,14 @@ class ScanReport
   void         sortByStartTime(bool ascending=true);
   void         sortByStopTime(bool ascending=true);
 
+  // Routines for building and retrieving app stat summary info
+  void fillAppStats();
+  std::vector<std::string> getAllSources()  {return(m_all_sources);};
+  double getLinesBySource(std::string s)    {return(m_app_lines[s]);};
+  double getCharsBySource(std::string s)    {return(m_app_chars[s]);};
+  double getLinesPctBySource(std::string s) {return(m_app_lines_pct[s]);};
+  double getCharsPctBySource(std::string s) {return(m_app_chars_pct[s]);};
+
  protected:
   void switchItems(unsigned int, unsigned int);
 
@@ -78,7 +85,18 @@ class ScanReport
   std::vector<unsigned int> m_var_lines;
   std::vector<unsigned int> m_var_chars;
 
+  // A convenience map for finding the var index in above vectors
   std::map<std::string, int>  m_vmap;
+
+  // Application statistics  - Done on optionsl Pass #2A
+  std::map<std::string, double>  m_app_lines;
+  std::map<std::string, double>  m_app_chars;
+  std::map<std::string, double>  m_app_vars;
+  
+  // Application statistics  - Done on optionsl Pass #2B
+  std::map<std::string, double>  m_app_lines_pct;
+  std::map<std::string, double>  m_app_chars_pct;
+  std::vector<std::string>       m_all_sources;
 
   unsigned int m_lines;
 };

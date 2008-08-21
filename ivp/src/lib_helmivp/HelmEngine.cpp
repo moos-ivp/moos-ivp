@@ -40,8 +40,8 @@ using namespace std;
 
 HelmEngine::HelmEngine(IvPDomain g_ivp_domain)
 {
-  ivp_domain   = g_ivp_domain;
-  iteration    = 0;
+  m_ivp_domain = g_ivp_domain;
+  m_iteration  = 0;
 }
 
 //------------------------------------------------------------------
@@ -50,10 +50,12 @@ HelmEngine::HelmEngine(IvPDomain g_ivp_domain)
 HelmReport HelmEngine::determineNextDecision(BehaviorSet *bhv_set, 
 					     double curr_time)
 {
-  iteration++;
+  m_iteration++;
 
   HelmReport helm_report;
-  helm_report.m_iteration = iteration;
+
+  helm_report.m_domain    = m_ivp_domain;
+  helm_report.m_iteration = m_iteration;
   helm_report.m_time_utc  = curr_time;
 
   if(!bhv_set) {
@@ -78,7 +80,7 @@ HelmReport HelmEngine::determineNextDecision(BehaviorSet *bhv_set,
     MBTimer of_timer;
     of_timer.start();
     string astate;
-    IvPFunction *newof = bhv_set->produceOF(bhv_ix, iteration, astate);
+    IvPFunction *newof = bhv_set->produceOF(bhv_ix, m_iteration, astate);
     of_timer.stop();
     
     // Determine the amt of time the bhv has been in this state
@@ -147,7 +149,7 @@ HelmReport HelmEngine::determineNextDecision(BehaviorSet *bhv_set,
     return(helm_report);
   }
 
-  ivp_problem->setDomain(sub_domain);
+  ivp_problem->setDomain(m_sub_domain);
   ivp_problem->alignOFs();
   create_timer.stop();
 
@@ -162,9 +164,9 @@ HelmReport HelmEngine::determineNextDecision(BehaviorSet *bhv_set,
   helm_report.m_solve_time  = solve_time;
   helm_report.m_loop_time   = create_time + solve_time;
   
-  int dsize = sub_domain.size();
+  int dsize = m_sub_domain.size();
   for(i=0; i<dsize; i++) {
-    string dom_name = sub_domain.getVarName(i);
+    string dom_name = m_sub_domain.getVarName(i);
     bool   dec_made;
     double decision = ivp_problem->getResult(dom_name, &dec_made);
     
@@ -190,7 +192,7 @@ HelmReport HelmEngine::determineNextDecision(BehaviorSet *bhv_set,
 // Procedure: checkOFDomains()
 //      Note: 
 //            Ensure all OF domain names are contained in the 
-//              ivp_domain. Indicate result=false if not.
+//              m_ivp_domain. Indicate result=false if not.
 //            Build a modified ivp_domain that contains only 
 //              those domain names found in one or more OF's.
 //            If the modified ivp_domain has *no* domains, 
@@ -224,16 +226,16 @@ bool HelmEngine::checkOFDomains(vector<IvPFunction*> ofs)
   unsigned int domsize = of_domains.size();
   for(unsigned int i=0; i<domsize; i++) {
     bool ok_domain = false;
-    int count = ivp_domain.size();
+    int count = m_ivp_domain.size();
     for(int j=0; (!ok_domain && (j<count)); j++) {
-      string dname = ivp_domain.getVarName(j);
+      string dname = m_ivp_domain.getVarName(j);
       if(of_domains[i] == dname)
 	ok_domain = true;
     }
     if(!ok_domain) {
       cout << "DomainVar " << of_domains[i] << " is not recognized ";
       cout << " by the IvPDomain configured to pHelmIvP" << endl;
-      sub_domain = IvPDomain();
+      m_sub_domain = IvPDomain();
       return(false);
     }
   }
@@ -246,19 +248,19 @@ bool HelmEngine::checkOFDomains(vector<IvPFunction*> ofs)
   // necessary. If of_domains is smaller, we want to build a smaller
   // modified ivp_domain, and return it.
 
-  if(domsize == ivp_domain.size()) {
-    sub_domain = ivp_domain;
+  if(domsize == m_ivp_domain.size()) {
+    m_sub_domain = m_ivp_domain;
     return(true);
   }
   else {
-    sub_domain = IvPDomain();
+    m_sub_domain = IvPDomain();
     for(unsigned int i=0; i<domsize; i++) {
       const char* dname = of_domains[i].c_str();
-      int    index = ivp_domain.getIndex(dname);
-      double dlow  = ivp_domain.getVarLow(index);
-      double dhigh = ivp_domain.getVarHigh(index);
-      int    dpoints = ivp_domain.getVarPoints(index);
-      sub_domain.addDomain(dname, dlow, dhigh, dpoints);
+      int    index = m_ivp_domain.getIndex(dname);
+      double dlow  = m_ivp_domain.getVarLow(index);
+      double dhigh = m_ivp_domain.getVarHigh(index);
+      int    dpoints = m_ivp_domain.getVarPoints(index);
+      m_sub_domain.addDomain(dname, dlow, dhigh, dpoints);
     }
     return(true);
   }

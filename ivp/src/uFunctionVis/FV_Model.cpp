@@ -119,6 +119,17 @@ string FV_Model::getCurrDescriptor()
 }
 
 //-------------------------------------------------------------
+// Procedure: getCurrFuncSize()
+
+string FV_Model::getCurrFuncSize()
+{
+  if(m_collective)
+    return("n/a");
+  else
+    return(m_curr_func_size);
+}
+
+//-------------------------------------------------------------
 // Procedure: getQuadSet()
 
 const QuadSet* FV_Model::getQuadSet()

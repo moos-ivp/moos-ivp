@@ -191,7 +191,10 @@ IvPFunction *BHV_RStationKeep::onRunState()
   double dist_to_station  = distPointToPoint(nav_x, nav_y, 
 					     m_station_x, m_station_y);
 
-  postMessage("DIST_TO_RSTATION", dist_to_station);
+  if(dist_to_station <= 1)
+    postMessage("DIST_TO_RSTATION", dist_to_station);
+  else
+    postIntMessage("DIST_TO_RSTATION", dist_to_station);
 
   postStationMessage(true);
   if(dist_to_station <= m_inner_radius)
@@ -356,8 +359,8 @@ void BHV_RStationKeep::postStationMessage(bool post)
 
   string ptmsg;
   if(post) {
-    ptmsg += "x=" + dstringCompact(doubleToString(m_station_x,2));
-    ptmsg += ",y=" + dstringCompact(doubleToString(m_station_y,2));
+    ptmsg += "x=" + dstringCompact(doubleToString(m_station_x,0));
+    ptmsg += ",y=" + dstringCompact(doubleToString(m_station_y,0));
     ptmsg += ",label=" + m_us_name + "_rstation";
     ptmsg += ",type=rstation";
   }

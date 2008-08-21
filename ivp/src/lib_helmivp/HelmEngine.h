@@ -40,9 +40,9 @@ protected:
   bool   checkOFDomains(std::vector<IvPFunction*>);
 
 protected:
-  IvPDomain  ivp_domain;
-  IvPDomain  sub_domain;
-  int        iteration;
+  IvPDomain  m_ivp_domain;
+  IvPDomain  m_sub_domain;
+  int        m_iteration;
 };
 
 #endif

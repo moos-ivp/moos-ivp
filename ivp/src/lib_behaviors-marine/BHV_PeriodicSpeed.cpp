@@ -38,7 +38,12 @@ using namespace std;
 BHV_PeriodicSpeed::BHV_PeriodicSpeed(IvPDomain gdomain) : 
   IvPBehavior(gdomain)
 {
-  this->setParam("descriptor", "(d)bhv_periodic_speed");
+  this->setParam("descriptor", "periodic_speed");
+
+  // These parameters really should be set in the behavior file, but are
+  // left here for now to smoothen the transition (Aug 10, 2008, mikerb)
+  this->setParam("activeflag",   "PERIODIC_SPEED=1");
+  this->setParam("inactiveflag", "PERIODIC_SPEED=0");
 
   m_domain = subDomain(m_domain, "speed");
 
@@ -153,14 +158,26 @@ IvPFunction *BHV_PeriodicSpeed::onRunState()
       time_to_slowdown = m_period_gap - time_since_mark;
   }
 
-  postMessage("TIME_TO_SPEEDUP",  time_to_speedup);
-  postMessage("TIME_TO_SLOWDOWN", time_to_slowdown);
+  // For double-value postings of time, we post at integer precision 
+  // when not close to zero to reduce the number of postings to the DB. 
 
+  if(time_to_speedup <= 1)
+    postMessage("TIME_TO_SPEEDUP",  time_to_speedup);
+  else
+    postIntMessage("TIME_TO_SPEEDUP",  time_to_speedup);
+
+  if(time_to_slowdown <= 1)
+    postMessage("TIME_TO_SLOWDOWN", time_to_slowdown);
+  else
+    postIntMessage("TIME_TO_SLOWDOWN", time_to_slowdown);
+
+  // The below is obviated now w/ use of active,inactive flags
+#if 0
   if(m_state_inperiod)
     postMessage("PERIODIC_SPEED", 1);
   else
     postMessage("PERIODIC_SPEED", 0);
-
+#endif
 
   if(!m_state_inperiod)
     return(0);

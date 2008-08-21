@@ -38,6 +38,8 @@ LinearExtrapolator::LinearExtrapolator()
   m_decay_end    = 0;
   m_timestamp    = 0;
   m_position_set = false;
+
+  m_decay_maxed  = false;
 }
 
 //---------------------------------------------------------------
@@ -68,6 +70,10 @@ bool LinearExtrapolator::getPosition(double& r_xpos, double& r_ypos,
     return(true);
   }
 
+  // By default, assume more decay remaining unless calculated otherwise
+  // below.
+  m_decay_maxed = false;
+
   double distance = 0;
   if(delta_time <= m_decay_start)
     distance = m_spd * delta_time;
@@ -75,21 +81,25 @@ bool LinearExtrapolator::getPosition(double& r_xpos, double& r_ypos,
   if(delta_time > m_decay_start) {
     double decay_range = m_decay_end - m_decay_start;
     // Handle special case where decay is instantaneous
-    if(decay_range <= 0)
+    if(decay_range <= 0) {
       distance = m_spd * m_decay_start;
+      m_decay_maxed = true;
+    }
     else {
-      double decay_rate = (m_spd / (m_decay_end - m_decay_start));
       if(delta_time <= m_decay_end) {
+	double decay_rate = (m_spd / (m_decay_end - m_decay_start));
 	double decay_time = delta_time - m_decay_start;
 	double curr_speed = m_spd - (decay_rate * decay_time);
 	double avg_speed  = (m_spd + curr_speed) / 2.0;
 	distance = (m_spd * m_decay_start) + (avg_speed * decay_time);
       }
-      else {
+      else { 
+	m_decay_maxed = true;
 	distance = (m_spd * m_decay_start) + ((m_spd/2.0) * decay_range);
       }
     }
   }
+
 
   projectPoint(m_hdg, distance, m_xpos, m_ypos, r_xpos, r_ypos);
   return(true);

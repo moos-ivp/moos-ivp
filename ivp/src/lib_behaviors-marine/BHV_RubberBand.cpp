@@ -195,7 +195,11 @@ IvPFunction *BHV_RubberBand::onRunState()
   double dist_to_station  = distPointToPoint(nav_x, nav_y, 
 					     m_station_x, m_station_y);
 
-  postMessage("DIST_TO_STATION", dist_to_station);
+  // Post distance at integer precision unless close to zero
+  if(dist_to_station <= 1)
+    postMessage("DIST_TO_STATION", dist_to_station);
+  else
+    postIntMessage("DIST_TO_STATION", dist_to_station);
 
   postStationMessage(true);
   if(dist_to_station <= m_inner_radius)
@@ -325,12 +329,12 @@ bool BHV_RubberBand::updateCenter()
 
 void BHV_RubberBand::postStationMessage(bool post)
 {
-  string str_x = doubleToString(m_station_x,1);
-  string str_y = doubleToString(m_station_y,1);
+  string str_x = doubleToString(m_station_x,0);
+  string str_y = doubleToString(m_station_y,0);
   string station = str_x + "," + str_y + ",";
   
   if(post)
-    station += doubleToString(m_outer_radius,1) + ",";
+    station += doubleToString(m_outer_radius,0) + ",";
   else
     station += "0,";
 

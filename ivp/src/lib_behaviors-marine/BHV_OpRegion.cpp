@@ -346,17 +346,25 @@ void BHV_OpRegion::postPolyStatus()
   if(osSPD > 0)
     trajectory_perim_eta = trajectory_perim_dist / osSPD;
   
-  postMessage("OPREG_TRAJECTORY_PERIM_DIST", trajectory_perim_dist);
-  postMessage("OPREG_TRAJECTORY_PERIM_ETA",  trajectory_perim_eta);
+  // post the distance at integer precision unless close to zero
+  if(trajectory_perim_dist <= 1)
+    postMessage("OPREG_TRAJECTORY_PERIM_DIST", trajectory_perim_dist);
+  else  
+    postIntMessage("OPREG_TRAJECTORY_PERIM_DIST", trajectory_perim_dist);
+  postIntMessage("OPREG_TRAJECTORY_PERIM_ETA",  trajectory_perim_eta);
   
   // Calculate the absolute (ABS) distance and ETA to the perimeter.
   double absolute_perim_dist = polygon.dist_to_poly(osX, osY);
   double absolute_perim_eta  = 0;
   if(osTopSpeed > 0)
     absolute_perim_eta  = absolute_perim_dist / osTopSpeed;
-
-  postMessage("OPREG_ABSOLUTE_PERIM_DIST", absolute_perim_dist);
-  postMessage("OPREG_ABSOLUTE_PERIM_ETA",  absolute_perim_eta);
+  
+  // post the distance at integer precision unless close to zero
+  if(absolute_perim_dist <= 1)
+    postMessage("OPREG_ABSOLUTE_PERIM_DIST", absolute_perim_dist);
+  else
+    postIntMessage("OPREG_ABSOLUTE_PERIM_DIST", absolute_perim_dist);
+  postIntMessage("OPREG_ABSOLUTE_PERIM_ETA",  absolute_perim_eta);
   
   if(max_time > 0) {
     double remaining_time = max_time - elapsed_time;

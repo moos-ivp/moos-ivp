@@ -30,6 +30,7 @@ public:
 
 protected:
   Fl_Menu_Bar *mbar;
+  MY_Output   *curr_func_size;
   MY_Output   *curr_function;
   MY_Output   *curr_iteration;
   FV_Model    *model;

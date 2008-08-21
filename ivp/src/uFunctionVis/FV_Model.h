@@ -32,6 +32,7 @@ public:
   bool     isLocked()         {return(m_lock_ipf);};
 
   std::string getCurrDescriptor();
+  std::string getCurrFuncSize();
 
   const QuadSet* getQuadSet();
 
@@ -39,6 +40,7 @@ protected:
   FunctionQueue   m_fqueue;
   CMOOSLock       m_ipf_mutex;
   std::string     m_curr_descriptor;
+  std::string     m_curr_func_size;
   bool            m_collective;
   bool            m_lock_ipf;
 

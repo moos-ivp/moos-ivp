@@ -51,6 +51,9 @@ TransponderAIS::TransponderAIS()
   m_db_uptime         = 0;
 
   m_contact_report_var = "AIS_REPORT";
+
+  first_from_oex = true;
+
 }
 
 //-----------------------------------------------------------------
@@ -581,8 +584,19 @@ bool TransponderAIS::handleIncomingNaFConMessage(const string& rMsg)
             // convert lat, long into x, y. 60 nautical miles per minute
             if(!m_geodesy.LatLong2LocalGrid(navLat, navLong, navY, navX))
                 return MOOSFail("Geodesy conversion failed\n");
-      
-
+ 
+	    /// GLINT08 hack last day, 11. Aug.to set OEX_NAV_UTC to my UTC.
+	    if (sourceID == 10)
+	      {
+		if (first_from_oex)
+		  {
+		    oex_offset = MOOSTime() - navTime;
+		    first_from_oex = false;
+		    navTime = MOOSTime();
+		  }
+		else
+		  navTime = navTime + oex_offset;
+	      }
 
             // publish it at AIS_REPORT
             // all strings: assembleAIS(name,type,db_time,utc_time,x,y,lat,lon,spd,hdg,depth)

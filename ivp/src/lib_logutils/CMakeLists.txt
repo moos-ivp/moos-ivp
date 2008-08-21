@@ -6,6 +6,7 @@
 SET(SRC
   ScanReport.cpp
   ALogScanner.cpp
+  LogUtils.cpp
 )
 
 ADD_LIBRARY(logutils ${SRC})

@@ -312,8 +312,8 @@ void BHV_Waypoint::updateInfoOut(bool post)
 
     string stat = "vname=" + m_us_name + ",";
     stat += "index=" + intToString(current_waypt)   + ",";
-    stat += "dist="  + doubleToString(dist_meters)  + ",";
-    stat += "eta="   + doubleToString(eta_seconds);
+    stat += "dist="  + doubleToString(dist_meters, 0)  + ",";
+    stat += "eta="   + doubleToString(eta_seconds, 0);
     
     postMessage("WPT_STAT_LOCAL", stat);
     postMessage("WPT_INDEX", current_waypt);
@@ -327,8 +327,8 @@ void BHV_Waypoint::updateInfoOut(bool post)
   if(post) {
     if(m_waypoint_engine.currPtChanged()) {
       string ptmsg;
-      ptmsg += "x=" + dstringCompact(doubleToString(m_ptx,2));
-      ptmsg += ",y=" + dstringCompact(doubleToString(m_pty,2));
+      ptmsg += "x=" + dstringCompact(doubleToString(m_ptx,1));
+      ptmsg += ",y=" + dstringCompact(doubleToString(m_pty,1));
       ptmsg += ",label=" + m_descriptor;
       ptmsg += ",type=waypoint, size=1";
       ptmsg += ",source=" + m_us_name;

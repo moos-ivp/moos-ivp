@@ -44,8 +44,8 @@ BHV_AvoidObstacles::BHV_AvoidObstacles(IvPDomain gdomain) :
   IvPBehavior(gdomain)
 {
   this->setParam("descriptor", "(d)bhv_avoid_obstacles");
-  this->setParam("build_info", "uniform_piece=discrete@course:1,speed:1");
-  this->setParam("build_info", "uniform_grid =discrete@course:9,speed:6");
+  //this->setParam("build_info", "uniform_piece=discrete@course:2,speed:3");
+  //this->setParam("build_info", "uniform_grid =discrete@course:9,speed:6");
 
   m_domain = subDomain(m_domain, "course,speed");
 
@@ -59,6 +59,15 @@ BHV_AvoidObstacles::BHV_AvoidObstacles(IvPDomain gdomain) :
 }
 
 //-----------------------------------------------------------
+// Procedure: Destructor
+
+BHV_AvoidObstacles::~BHV_AvoidObstacles()
+{
+  if(m_aof_avoid)
+    delete(m_aof_avoid);
+}
+
+//-----------------------------------------------------------
 // Procedure: setParam
 //     Notes: We expect the "waypoint" entries will be of the form
 //            "xposition,yposition".
@@ -69,13 +78,12 @@ bool BHV_AvoidObstacles::setParam(string param, string val)
 {
   if(IvPBehavior::setParam(param, val))
     return(true);
-
+  
   if((param=="polygon") || (param=="points") || (param=="poly")) {
     XYPolygon new_polygon = stringToPoly(val);
     if(!new_polygon.is_convex())
       return(false);
-    addNewObstacle(new_polygon);
-    m_aof_avoid->setParam("polygon", val);
+    m_aof_avoid->addObstacle(new_polygon);
     return(true);
   }
   else if(param == "allowable_ttc") {
@@ -113,101 +121,63 @@ IvPFunction *BHV_AvoidObstacles::onRunState()
   double os_y = getBufferDoubleVal("NAV_Y", ok2);
 
   if(!ok1 || !ok2) {
-    postEMessage("No Ownship NAV_X and/or NAV_Y in info_buffer");
+    postWMessage("No Ownship NAV_X and/or NAV_Y in info_buffer");
     return(false);
   }
 
   if(!m_aof_avoid) {
-    postEMessage("AOF Not properly set in BHV_AvoidObstacles");
+    postWMessage("AOF Not properly set in BHV_AvoidObstacles");
     return(false);
   }
-
-  unsigned int i;
-  for(i=0; i<m_obstacles_orig.size(); i++)
-    postMessage("VIEW_POLYGON", m_obstacles_orig[i].get_spec());
   
-  AOF_AvoidObstacles aof_avoid(m_domain);
+  for(int i=0; i<m_aof_avoid->size(); i++) {
+    string spec_orig = m_aof_avoid->getObstacleSpec(i,false);
+    string spec_buff = m_aof_avoid->getObstacleSpec(i,true);
+    postMessage("VIEW_POLYGON", spec_orig, "orig");
+    postMessage("VIEW_POLYGON", spec_buff, "buff");
+  }
   
-  for(i=0; i<m_obstacles_orig.size(); i++)
-    if(m_obstacles_orig[i].contains(os_x, os_y))
-      postEMessage("Ownship position within stated space of obstacle");
+  if(m_aof_avoid->objectInObstacle(os_x, os_y, false))
+    postWMessage("Ownship position within stated space of obstacle");
   
-  for(i=0; i<m_obstacles_buff.size(); i++)
-    if(m_obstacles_buff[i].contains(os_x, os_y))
-      postWMessage("Ownship position within stated BUFFER space of obstacle");
+  if(m_aof_avoid->objectInObstacle(os_x, os_y, true))
+    postWMessage("Ownship position within stated BUFFER space of obstacle");
   
+  m_aof_avoid->setParam("os_x", os_x);
+  m_aof_avoid->setParam("os_y", os_y);
+  m_aof_avoid->setParam("buffer_dist", m_buffer_dist);
+  m_aof_avoid->setParam("activation_dist", m_activation_dist);
+  m_aof_avoid->setParam("allowable_ttc", m_allowable_ttc);
 
-  for(i=0; i<m_obstacles_buff.size(); i++)
-    aof_avoid.addObstacle(m_obstacles_buff[i]);
-
-  aof_avoid.setParam("os_x", os_x);
-  aof_avoid.setParam("os_y", os_y);
-  aof_avoid.setParam("buffer_dist", m_buffer_dist);
-  aof_avoid.setParam("activation_dist", m_activation_dist);
-  aof_avoid.setParam("allowable_ttc", m_allowable_ttc);
-
-  if(aof_avoid.obstaclesInRange() == 0)
+  if(m_aof_avoid->obstaclesInRange() == 0)
     return(0);
 
-  bool ok_init = aof_avoid.initialize();
+  bool ok_init = m_aof_avoid->initialize();
   if(!ok_init) {
-    postEMessage("BHV_AvoidObstacles: AOF-Init Error");
+    postWMessage("BHV_AvoidObstacles: AOF-Init Error");
     return(0);
   }
 
   IvPFunction *ipf = 0;
 
-  OF_Reflector reflector(&aof_avoid, 1);
-  reflector.create(m_build_info);
+  OF_Reflector reflector(m_aof_avoid, 1);
+
+  if(m_build_info != "")
+    reflector.create(m_build_info);
+  else {
+    reflector.setParam("uniform_piece", "discrete@course:3,speed:3");
+    reflector.setParam("uniform_grid",  "discrete@course:6,speed:6");
+    reflector.create();
+  }
+
   if(reflector.hasErrors())
     postWMessage(reflector.getErrors());
   else {
     ipf = reflector.extractOF(true); // true means normalize [0,100]
-    ipf->setPWT(m_priority_wt);
+    if(ipf)
+      ipf->setPWT(m_priority_wt);
   }
   
   return(ipf);
 }
 
-
-//-----------------------------------------------------------
-// Procedure: addNewPolygon
-//      Note: The label of the new polygon is checked against the 
-//            labels of existing polygons. If the label matches then
-//            new polygon *replaces* the previously added polygon 
-//            of the same label.
-//      Note: If the label of the new polygon is the empty string, 
-//            then it is assumed to be unique and is added without
-//            any checking.
-
-void BHV_AvoidObstacles::addNewObstacle(const XYPolygon& newpoly_orig)
-{
-  XYPolygon newpoly_buff = newpoly_orig;
-  if(m_buffer_dist > 0)
-    newpoly_buff.grow_by_amt(m_buffer_dist);
-
-  
-  string newlabel = newpoly_orig.get_label();
-  bool unique_label = true;
-  
-  if(newlabel != "") {
-    unsigned int i;
-    unsigned int vsize = m_obstacles_orig.size();
-    for(i=0; i<vsize; i++) {
-      if(m_obstacles_orig[i].get_label() == newlabel) {
-	unique_label = false;
-	m_obstacles_orig[i] = newpoly_orig;
-	m_obstacles_buff[i] = newpoly_buff;
-      }
-    }
-  }
-  
-  if(unique_label) {
-    m_obstacles_orig.push_back(newpoly_orig);
-    m_obstacles_buff.push_back(newpoly_buff);
-  }
-}
-    
-
-
-  

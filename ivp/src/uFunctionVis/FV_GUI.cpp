@@ -34,7 +34,11 @@ FV_GUI::FV_GUI(int g_w, int g_h, const char *g_l)
   curr_iteration->textsize(info_size); 
   curr_iteration->labelsize(info_size);
 
-  curr_function = new MY_Output(220, h()-25, 200, 20, "Current Function:"); 
+  curr_func_size = new MY_Output(150, h()-25, 50, 20, "Pieces:"); 
+  curr_func_size->textsize(info_size); 
+  curr_func_size->labelsize(info_size);
+
+  curr_function = new MY_Output(300, h()-25, 200, 20, "Current Function:"); 
   curr_function->textsize(info_size); 
   curr_function->labelsize(info_size);
 
@@ -271,6 +275,10 @@ void FV_GUI::updateFields()
   if(descriptor == "")
     descriptor = " - no function - ";
   curr_function->value(descriptor.c_str());
+
+  string func_size;
+  if(model)
+    func_size = model->getCurrFuncSize();
 
   string iteration = intToString(model->getCurrIteration());
   if(model->isLocked())

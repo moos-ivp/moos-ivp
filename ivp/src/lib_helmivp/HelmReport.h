@@ -25,6 +25,7 @@
 
 #include <vector>
 #include <string>
+#include "IvPDomain.h"
 
 class HelmReport {
   friend class HelmEngine;
@@ -44,6 +45,8 @@ public:
   void addCompletedBHV(const std::string& descriptor, double time,
 		       const std::string& update_summary);
   
+  void setIvPDomain(const IvPDomain &dom) {m_domain = dom;};
+
   void setTimeUTC(double v)   {m_time_utc = v;};
   void setWarningCount(int v) {m_warning_count = v;};
   
@@ -84,6 +87,8 @@ protected:
   bool                      m_halted;
   std::vector<std::string>  m_decision_var;
   std::vector<double>       m_decision_val;
+
+  IvPDomain                 m_domain;
 };
 
 #endif

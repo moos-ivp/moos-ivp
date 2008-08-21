@@ -80,7 +80,6 @@ protected:
   void  drawGridPlots();
   void  drawGridPlot(unsigned int ix);
   void  drawFrame();
-  void  drawPoint(float x, float y, float cr, float cg, float cb, float sz);
   
 private:
   unsigned int          m_local_ix;

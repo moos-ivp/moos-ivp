@@ -12,6 +12,7 @@
 #ifndef SCAN_HANDLER_HEADER
 #define SCAN_HANDLER_HEADER
 
+#include "ScanReport.h"
 
 class ScanHandler
 {
@@ -22,9 +23,14 @@ class ScanHandler
   void setParam(const std::string&, const std::string&);
   void handle(const std::string&);
 
+  void appStatReport();
+
  protected:
 
   std::string m_sort_style;
+
+  ScanReport  m_report;
+
 };
 
 #endif

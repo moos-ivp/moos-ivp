@@ -370,21 +370,85 @@ double XYSegList::get_avg_y() const
 
 
 //---------------------------------------------------------------
-// Procedure: get_specification
-//   Purpose: 
+// Procedure: segs_cross
+//   Purpose: Determine if any two segments intersect one another
+//            We exclude from consideration any two segments that
+//            share a vertex. If the result is false, then this set
+//            of line segments should form a polygon, although not
+//            necessarily a convex polygon.
+//                                                                       
+//         (implied line segment)                                      
+//   0 o ~~~~~~~~~~~~~~~~~~~~~~~~~ o 7    vsize = 8                      
+//     |                           |                                      
+//     |       3 o--------o 4      |     last pair of edges considered:  
+//     |         |        |        |       5-6 with 7-0 (loop==true)
+//     |         |        |        |       4-5 with 6-7 (loop==false) 
+//     |         |        |        |                         
+//   1 o---------o 2    5 o--------o 6               
 
-string XYSegList::get_spec() const
+bool XYSegList::segs_cross(bool loop) const
+{
+  int i, j, k, vsize = vertex_x.size();
+  if(vsize <= 3)
+    return(false);
+
+  int limit = vsize-1;
+  if(loop)
+    limit = vsize;
+
+  for(i=0; i<limit; i++) {
+    double x1 = vertex_x[i];
+    double y1 = vertex_y[i];
+    double x2 = vertex_x[i+1];
+    double y2 = vertex_y[i+1];
+
+    for(int j=i+2; j<limit; j++) {
+      double x3 = vertex_x[j];
+      double y3 = vertex_y[j];
+      
+      int k = j+1;
+      // Check if we're at the end and considering the last implied
+      // segment made by connecting the last vertex to the first 
+      // vertex. This will not be reached if loop==false
+      if(k >= vsize)
+	k = 0;
+      if(!((k==0)&&(i==0))) {
+
+	double x4 = vertex_x[k];
+	double y4 = vertex_y[k];
+	
+	if(segmentsCross(x1,y1, x2,y2, x3,y3, x4,y4))
+	  return(true);
+      }
+    }
+  }
+
+  return(false);
+}
+
+//---------------------------------------------------------------
+// Procedure: get_spec
+//   Purpose: Get a string specification of the seglist. We set 
+//            the vertex precision to be at the integer by default.
+
+string XYSegList::get_spec(int precision) const
 {
   string spec;
 
+  // Clip the precision to be between 0 and 6
+  if(precision < 0)
+    precision = 0;
+  else if(precision > 6)
+    precision = 6;
+  
   if(m_label != "")
     spec += "label," + m_label + " : "; 
 
   int vsize = vertex_x.size();
   for(int i=0; i<vsize; i++) {
-    spec += dstringCompact(doubleToString(vertex_x[i]));
+    spec += dstringCompact(doubleToString(vertex_x[i],precision));
     spec += ",";
-    spec += dstringCompact(doubleToString(vertex_y[i]));
+    spec += dstringCompact(doubleToString(vertex_y[i],precision));
     //  spec += ",";
     //  spec += dstringCompact(doubleToString(vertex_z[i]));
     if(i != vsize-1)

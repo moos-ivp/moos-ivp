@@ -62,7 +62,6 @@ BHV_PeriodicSurface::BHV_PeriodicSurface(IvPDomain gdomain) :
 
   m_depth_at_ascent_begin = 0;
   m_speed_at_ascent_begin = 0;
-  m_mark_time             = 0;
 
   m_curr_mark_string_val  = "";
   m_curr_mark_double_val  = 0;
@@ -70,8 +69,13 @@ BHV_PeriodicSurface::BHV_PeriodicSurface(IvPDomain gdomain) :
   m_surface_mark_time     = 0;
   m_at_surface            = false;
 
+  m_curr_depth = 0;
+
+  m_state = "waiting";
+
+  m_ascending_flag = "PERIODIC_ASCEND";
+
   // Declare information needed by this behavior
-  addInfoVars(m_mark_variable);
   addInfoVars("NAV_DEPTH, NAV_SPEED");
 }
 
@@ -90,26 +94,21 @@ bool BHV_PeriodicSurface::setParam(string g_param, string g_val)
     if((dval <= 0) || (!isNumber(g_val)))
       return(false);
     m_period = dval;
-    return(true);
   } 
   else if(g_param == "mark_variable") {
     if(g_val == "")
       return(false);
     m_mark_variable = g_val;
-    addInfoVars(m_mark_variable);
-    return(true);
   }
   else if(g_param == "pending_status_var") {
     if(g_val == "")
       return(false);
     m_pending_status_var = g_val;
-    return(true);
   }
   else if(g_param == "atsurface_status_var") {
     if(g_val == "")
       return(false);
     m_atsurface_status_var = g_val;
-    return(true);
   }
   else if((g_param == "speed_to_surface") || 
 	  (g_param == "ascent_speed")) {
@@ -126,21 +125,18 @@ bool BHV_PeriodicSurface::setParam(string g_param, string g_val)
 	return(false);
     }
     m_ascent_speed = dval;
-    return(true);
   }
   else if(g_param == "zero_speed_depth") {
     double dval = atof(g_val.c_str());
     if((dval < 0) || (!isNumber(g_val)))
       return(false);
     m_zero_speed_depth = dval;
-    return(true);
   }
   else if(g_param == "max_time_at_surface") {
     double dval = atof(g_val.c_str());
     if((dval < 0) || (!isNumber(g_val)))
       return(false);
     m_max_time_at_surface = dval;
-    return(true);
   }
   else if(g_param == "ascent_grade") {
     g_val = tolower(g_val);
@@ -148,10 +144,43 @@ bool BHV_PeriodicSurface::setParam(string g_param, string g_val)
        (g_val!="quasi") && (g_val != "fullspeed"))
       return(false);
     m_ascent_grade = g_val;
-    return(true);
+  }
+else  
+  return(false);
+
+  addInfoVars(m_mark_variable);
+  //  string buf = "Timestamp="+doubleToString(m_curr_time)+",START";
+  //  postMessage(m_mark_variable,buf);  
+  //  m_mark_time  = getBufferCurrTime();
+
+
+  return(true);
+}
+
+//-----------------------------------------------------------
+// Procedure: onIdleState
+//      Note: This function overrides the onIdleState() virtual
+//            function defined for the IvPBehavior superclass
+//            This function will be executed by the helm each
+//            time the behavior FAILS to meet its run conditions.
+
+void BHV_PeriodicSurface::onIdleState()
+{
+  updateInfoIn();
+  if((m_curr_depth >= m_zero_speed_depth) && m_first_iteration) {
+    m_first_iteration = false;
+    m_mark_time = m_curr_time;
   }
   
-  return(false);
+  double time_since_mark       = m_curr_time - m_mark_time;
+  double period_wait_remaining = m_period - time_since_mark;
+  
+  //  if(period_wait_remaining < 0)
+  //  period_wait_remaining = 0;
+  
+  if(m_pending_status_var != "")
+    postIntMessage(m_pending_status_var, period_wait_remaining);
+
 }
 
 //-----------------------------------------------------------
@@ -165,16 +194,18 @@ IvPFunction *BHV_PeriodicSurface::onRunState()
     return(0);
   }
 
-  checkForMarking();
-  
   double time_since_mark       = m_curr_time - m_mark_time;
   double period_wait_remaining = m_period - time_since_mark;
-  if(period_wait_remaining < 0)
-    period_wait_remaining = 0;
+
+  //  if(period_wait_remaining < 0)
+  //  period_wait_remaining = 0;
   
   if(m_pending_status_var != "")
-    postMessage(m_pending_status_var, period_wait_remaining);
+    postIntMessage(m_pending_status_var, period_wait_remaining);
 
+  if(checkForMarking())
+    return(0);
+  
   if(period_wait_remaining > 0) {
     m_state = "waiting";
     postMessage(m_atsurface_status_var, 0);
@@ -183,6 +214,7 @@ IvPFunction *BHV_PeriodicSurface::onRunState()
 
   if(m_state == "waiting") {
     m_state = "ascending";
+    postMessage(m_ascending_flag, "true");
     m_depth_at_ascent_begin = m_curr_depth;
     if(m_ascent_speed != -1)
       m_speed_at_ascent_begin = m_ascent_speed;
@@ -192,6 +224,7 @@ IvPFunction *BHV_PeriodicSurface::onRunState()
   
   if(m_state == "ascending") {
     if(m_curr_depth <= m_zero_speed_depth) {
+      postMessage(m_ascending_flag, "false");
       m_state = "at_surface";
       m_surface_mark_time = m_curr_time;
     }
@@ -200,10 +233,13 @@ IvPFunction *BHV_PeriodicSurface::onRunState()
 
   if(m_state == "at_surface") {
     double time_at_surface = m_curr_time - m_surface_mark_time;
-    postMessage(m_atsurface_status_var, time_at_surface);
+    postIntMessage(m_atsurface_status_var, time_at_surface);
     if(time_at_surface >= m_max_time_at_surface) {
       m_mark_time = m_curr_time;
       m_state = "waiting";
+      // here we should post GPS_UPDATE_RECEIVED
+      string buf = "Timestamp="+doubleToString(m_curr_time,2)+",GPS_TIMEOUT";
+      postMessage(m_mark_variable,buf);  
       return(0);
     }
   }
@@ -271,37 +307,47 @@ bool BHV_PeriodicSurface::updateInfoIn()
 //   examined and if different than the previous value, a "marking"
 //   is declared to have occurred. 
 
-void BHV_PeriodicSurface::checkForMarking()
+bool BHV_PeriodicSurface::checkForMarking()
 {
   bool   mark_noted = false;
 
-  bool   ok1, ok2;
-  double double_mark_val = getBufferDoubleVal(m_mark_variable, ok1);
-  string string_mark_val = getBufferStringVal(m_mark_variable, ok2);
-
-  if(m_first_iteration) {
-    m_first_iteration = false;
-    mark_noted = true;
-  }  
-
-  if(ok1) {
-    if(m_first_marking_double || (double_mark_val != m_curr_mark_double_val)) {
+  if(m_first_iteration) 
+    {
+      m_first_iteration = false;
       mark_noted = true;
-      m_curr_mark_double_val = double_mark_val;
-      m_first_marking_double = false;
+      m_mark_time = m_curr_time;
+    }  
+  else
+    {
+      bool   ok1, ok2;
+      double double_mark_val = getBufferDoubleVal(m_mark_variable, ok1);
+      string string_mark_val = getBufferStringVal(m_mark_variable, ok2);
+      
+      if(ok1) 
+	{
+	  if(m_first_marking_double || (double_mark_val != m_curr_mark_double_val)) 
+	    {
+	      mark_noted = true;
+	      m_curr_mark_double_val = double_mark_val;
+	      m_first_marking_double = false;
+	    }
+	}
+      
+      if(ok2) 
+	{
+	  if(m_first_marking_string || (string_mark_val != m_curr_mark_string_val)) 
+	    {
+	      mark_noted = true;
+	      m_curr_mark_string_val = string_mark_val;
+	      m_first_marking_string = false;
+	    }
+	}
     }
-  }
-  
-  if(ok2) {
-    if(m_first_marking_string || (string_mark_val != m_curr_mark_string_val)) {
-      mark_noted = true;
-      m_curr_mark_string_val = string_mark_val;
-      m_first_marking_string = false;
-    }
-  }
-
+      
   if(mark_noted)
     m_mark_time = m_curr_time;
+
+  return(mark_noted);
 }
 
 

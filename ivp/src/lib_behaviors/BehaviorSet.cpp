@@ -96,6 +96,7 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix, unsigned int iteration,
 
   if((ix >= 0) && (ix < behaviors.size())) {
     
+    // Look for possible dynamic updates to the behavior parameters
     behaviors[ix]->checkUpdates();
 
     if(behaviors[ix]->isCompleted())
@@ -108,15 +109,13 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix, unsigned int iteration,
     }
 
     if(new_activity_state == "idle") {
-      if(behavior_states[ix] != "idle")
-	behaviors[ix]->postFlags("idleflags");
+      behaviors[ix]->postFlags("idleflags");
+      behaviors[ix]->postFlags("inactiveflags");
       behaviors[ix]->onIdleState();
     }
     
     if(new_activity_state == "running") {
-      if((behavior_states[ix] != "running") && 
-	 (behavior_states[ix] != "active"))
-	behaviors[ix]->postFlags("runflags");
+      behaviors[ix]->postFlags("runflags");
       ipf = behaviors[ix]->onRunState();
       if(ipf && !ipf->freeOfNan()) {
 	behaviors[ix]->postEMessage("NaN detected in IvP Function");
@@ -140,14 +139,19 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix, unsigned int iteration,
 	string ipf_str = IvPFunctionToString(ipf);
 	behaviors[ix]->postMessage("BHV_IPF", ipf_str);
       }
-      if(ipf)
+      if(ipf) {
 	new_activity_state = "active";
+	behaviors[ix]->postFlags("activeflags");
+      }
+      else
+	behaviors[ix]->postFlags("inactiveflags");
     }
 
     string bhv_tag = toupper(behaviors[ix]->getDescriptor());
     bhv_tag = findReplace(bhv_tag, "BHV_", "");
     bhv_tag = findReplace(bhv_tag, "(d)", "");
 
+#if 1
     behaviors[ix]->postMessage("PWT_BHV_"+bhv_tag, pwt);
 
     if(new_activity_state == "idle")
@@ -158,6 +162,7 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix, unsigned int iteration,
       behaviors[ix]->postMessage("STATE_BHV_"+bhv_tag, 2);
     else if(new_activity_state == "completed") 
       behaviors[ix]->postMessage("STATE_BHV_"+bhv_tag, 3);
+#endif
 
     if(behavior_states[ix] != new_activity_state)
       behavior_state_time_entered[ix] = m_curr_time;

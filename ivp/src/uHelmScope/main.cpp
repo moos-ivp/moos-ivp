@@ -5,6 +5,7 @@
 /*    DATE: Apr 12th 2008                                        */
 /*****************************************************************/
 
+#include <iostream>
 #include <string>
 #include "MOOSLib.h"
 #include "MOOSGenLib.h"
@@ -13,6 +14,8 @@
 #include "MBUtils.h"
 
 using namespace std;
+
+string getUserLine();
 
 // ----------------------------------------------------------
 // global variables here
@@ -90,6 +93,24 @@ int main(int argc ,char * argv[])
   if(!g_sMissionFile) {
     MOOSTrace("Failed to provide a MOOS (.moos) file... Exiting now.\n");
     return(0);
+#if 0
+    cout << "Server Address (default LOCALHOST): ";
+    string server_address = getUserLine();
+    cout << "Server Port (default 9000): ";
+    string server_port_s = getUserLine();
+    double server_port = atof(server_port_s.c_str());
+    cout << "AppTick (default 2): ";
+    string app_tick_s = getUserLine();
+    double app_tick = atof(app_tick_s.c_str());
+   
+    cout << "Launching with: " << endl;
+    cout << "  Server Address: " << server_address << endl;
+    cout << "  Server Port:    " << server_port << endl;
+    cout << "  AppTick:        " << app_tick << endl;
+  
+    g_theHelmScope.setAppTick(app_tick);
+    g_theHelmScope.setServer(server_address.c_str(), server_port);    
+#endif
   }
     
   bool seed = true;
@@ -148,5 +169,17 @@ int main(int argc ,char * argv[])
 
 
 
+//-------------------------------------------------------------
+// Procedure: getUserLine
 
-
+string getUserLine()
+{
+  char buffer[1000];
+  int  ix = 0;
+  while((buffer[ix]=getchar())!='\n')
+    ix++;
+  buffer[ix] = '\0';
+  string rval = buffer;
+  return(rval);
+}
+      

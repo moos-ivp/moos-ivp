@@ -57,6 +57,15 @@ protected: // State values
   int     m_ipt_high;
   int     i_basewidth;
 
+
+  int     m_domain_pts;
+  int     m_domain_ix;
+  double  m_domain_high;
+  double  m_domain_low;
+  double  m_domain_delta;
+
+
+
   bool         m_state_ok;
   std::string  m_warning;
   IvPDomain    m_ivp_domain;

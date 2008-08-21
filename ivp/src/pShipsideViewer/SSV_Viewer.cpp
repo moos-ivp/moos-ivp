@@ -51,6 +51,9 @@ SSV_Viewer::SSV_Viewer(int x, int y, int w, int h, const char *l)
   m_draw_bearing_lines = true;
   m_draw_radial        = true;
 
+  m_avg_vehipos_x      = 0;
+  m_avg_vehipos_y      = 0;
+
   setParam("bearing_color", "orange");
 }
 
@@ -170,7 +173,9 @@ void SSV_Viewer::updateVehiclePosition(string vname, float x,
     m_hist_map[vname] = newlist;
   }
   
-  if((m_centric_view) && (toupper(vname) == m_ownship_name)) {
+  if((m_centric_view) && (m_ownship_name == ""))
+    setWeightedCenterView();
+  else if((m_centric_view) && (toupper(vname) == m_ownship_name)) {
 
     // First determine how much we're off in terms of meters
     double delta_x = x - m_back_img.get_x_at_img_ctr();
@@ -560,6 +565,10 @@ bool SSV_Viewer::setParam(string param, string value)
     return(setBooleanOnString(m_centric_view, value));
   else if(param == "bearing_lines")
     return(setBooleanOnString(m_draw_bearing_lines, value));
+  else if(param == "weighted_center_view") {
+    setWeightedCenterView();
+    return(true);
+  }
   else if(param == "bearing_color")
     return(setColorMapping("bearing_color", value));
   else if(param == "ownship_name")
@@ -1048,5 +1057,45 @@ void SSV_Viewer::drawStationCircles()
   for(int i=0; i<vsize; i++)
     drawCircle(m_station_circ[i], 16, true, 
 	       edge_c, fill_c, vert_c, labl_c);
+}
+
+//-------------------------------------------------------------
+// Procedure: setWeightedCenterView()
+
+void SSV_Viewer::setWeightedCenterView()
+{
+  double total_x = 0;
+  double total_y = 0;
+
+  int counter = 0;
+  
+  map<string,ObjectPose>::iterator p;
+  p = m_pos_map.begin();
+  while(p != m_pos_map.end()) {
+    ObjectPose opose = p->second;
+    total_x += opose.getX();
+    total_y += opose.getY();
+    counter++;
+    p++;
+  }
+
+  if(counter == 0)
+    return;
+  
+  m_centric_view = false;
+  m_avg_vehipos_x = total_x / (double)(counter);
+  m_avg_vehipos_y = total_y / (double)(counter);
+
+  // First determine how much we're off in terms of meters
+  double delta_x = m_avg_vehipos_x - m_back_img.get_x_at_img_ctr();
+  double delta_y = m_avg_vehipos_y - m_back_img.get_y_at_img_ctr();
+  
+  // Next determine how much in terms of pixels
+  double pix_per_mtr = m_back_img.get_pix_per_mtr();
+  double x_pixels = pix_per_mtr * delta_x;
+  double y_pixels = pix_per_mtr * delta_y;
+  
+  setParam("set_pan_x", -x_pixels);
+  setParam("set_pan_y", -y_pixels);
 }
 

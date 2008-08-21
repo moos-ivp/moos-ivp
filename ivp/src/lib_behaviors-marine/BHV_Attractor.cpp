@@ -1,8 +1,8 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
+/*    NAME: Henrik Schmidt and Michael Benjamin                  */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
-/*    FILE: BHV_Attractor.cpp                                     */
-/*    DATE: May 10th 2005                                        */
+/*    FILE: BHV_Attractor.cpp                                    */
+/*    DATE: June 2008                                            */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
 /* modify it under the terms of the GNU General Public License   */
@@ -46,6 +46,15 @@ BHV_Attractor::BHV_Attractor(IvPDomain gdomain) :
   this->setParam("descriptor", "(d)bhv_cutrange");
   this->setParam("build_info", "uniform_box =discrete@course:2,speed:3");
   this->setParam("build_info", "uniform_grid=discrete@course:8,speed:6");
+
+
+  // These parameters really should be set in the behavior file, but are
+  // left here for now to smoothen the transition (Aug 10, 2008, mikerb)
+  this->setParam("runflag",  "ATTRACTOR_ACTIVE=1");
+  this->setParam("idleflag", "ATTRACTOR_ACTIVE=0");
+
+  this->setParam("activeflag",   "ATTRACTED=1");
+  this->setParam("inactiveflag", "ATTRACTED=0");
   
   m_domain = subDomain(m_domain, "course,speed");
 
@@ -187,8 +196,11 @@ bool BHV_Attractor::setParam(string g_param, string g_val)
 
 void BHV_Attractor::onIdleState()
 {
-  postMessage("ATTRACTOR_ACTIVE", 0);
-  postMessage("PURSUIT", 0);
+  // Below commented out now since we can accomlish this now with 
+  // runflags, idleflags, activeflags, inactiveflags
+
+  // postMessage("ATTRACTOR_ACTIVE", 0);
+  // postMessage("ATTRACTED", 0);
 }
 
 
@@ -197,7 +209,8 @@ void BHV_Attractor::onIdleState()
 
 IvPFunction *BHV_Attractor::onRunState() 
 {
-  postMessage("ATTRACTOR_ACTIVE", 1);
+  // Below handled now with active/inactive flags - mikerb, Aug10,08
+  // postMessage("ATTRACTOR_ACTIVE", 1);
 
   if(m_contact_name == "") 
     {
@@ -218,11 +231,13 @@ IvPFunction *BHV_Attractor::onRunState()
   double relevance = getRelevance(m_osx, m_osy, m_cnx, m_cny);
 
   if(relevance <= 0) {
-    postMessage("PURSUIT", 0);
+    // Below handled now with active/inactive flags - mikerb, Aug10,08
+    //postMessage("ATTRACTED", 0);
     return(0);
   }
 
-  postMessage("PURSUIT", 1);
+  // Below handled now with active/inactive flags - mikerb, Aug10,08
+  //postMessage("ATTRACTED", 1);
 
   double dist = hypot((m_osx - m_cnx), (m_osy - m_cny));
 
@@ -318,9 +333,8 @@ bool BHV_Attractor::updateInfoIn()
   double curr_time = getBufferCurrTime();
   // double mark_time = getBufferTimeVal(m_contact_name+"_NAV_X");
 
-  postMessage("TRAIL_CONTACT_TIME", m_cnutc);
-  postMessage("TRAIL_CURRENT_TIME", curr_time);
-  postMessage("TRAIL_DELTA_TIME", curr_time-m_cnutc);
+  postIntMessage("ATTRACTOR_CONTACT_TIME", m_cnutc);
+  postIntMessage("ATTRACTOR_DELTA_TIME", curr_time-m_cnutc);
 
   if(!m_extrapolate)
     return(true);
@@ -363,7 +377,7 @@ double BHV_Attractor::getRelevance(double osX, double osY,
   }
   
   double dist = hypot((osX - cnX), (osY - cnY));
-  postMessage("TRAIL_RANGE",dist );
+  postIntMessage("ATTRACTOR_RANGE_TO_CONTACT",dist );
 
   if((m_giveup_range > 0) && (dist > m_giveup_range))
     return(0);
@@ -386,7 +400,10 @@ double BHV_Attractor::getRelevance(double osX, double osY,
       else
 	pct = 1;
 
-  postMessage("TRAIL_RELEVANCE", pct);
+  // Changed to be ATTACTOR_RELEVANCE instead of TRAIL_RELEVANCE and 
+  // to post as integer between 0-100, not 0-1.0 to reduce postings.
+  // mikerb Aug 09, 2008
+  postIntMessage("ATRACTOR_RELEVANCE", pct*100);
   return(pct);
 }
 

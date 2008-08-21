@@ -1232,14 +1232,16 @@ void MarineViewer::drawPolygon(const XYPolygon& poly,
 
   // If the polygon is just a single point, draw it big!
   if(vsize==1) {
-    glPointSize(2.0 * m_zoom);
+    glPointSize(1.2 * m_zoom);
     // Draw the vertices with color coding for the first and last
     
     //glColor3f(0.7,0.13,0.13);  // Firebrick red b2 22 22
     glColor3f(0.13, 0.13, 0.7);  // Blueish
+    glEnable(GL_POINT_SMOOTH);
     glBegin(GL_POINTS);
     glVertex2f(points[0], points[1]);
     glEnd();
+    glDisable(GL_POINT_SMOOTH);
   }
 
   glEnable(GL_POINT_SMOOTH);
@@ -1445,11 +1447,73 @@ void MarineViewer::drawSegList(const XYSegList& segl, float lwid,
 
   // Draw the vertices in between the first and last ones
   glColor3f(vert_c[0], vert_c[1], vert_c[2]);
+  glEnable(GL_POINT_SMOOTH);
   glBegin(GL_POINTS);
   for(j=0; j<vsize; j++) {
     glVertex2f(points[(j*2)], points[(j*2)+1]);
   }
   glEnd();
+  glDisable(GL_POINT_SMOOTH);
+  
+  delete [] points;
+  glFlush();
+  glPopMatrix();
+}
+
+//-------------------------------------------------------------
+// Procedure: drawSegList
+
+void MarineViewer::drawPointList(const vector<double>& xvect,
+				 const vector<double>& yvect,
+				 float vertsize, 
+				 const vector<double>& vert_c)
+{
+  unsigned int vsize = xvect.size();
+  if(yvect.size() != xvect.size())
+    return;
+
+  unsigned int i, j;
+  float *points = new float[2*vsize];
+
+  unsigned int pindex = 0;
+  for(i=0; i<vsize; i++) {
+    points[pindex]   = xvect[i];
+    points[pindex+1] = yvect[i];
+
+    points[pindex]   *=  m_back_img.get_pix_per_mtr();
+    points[pindex+1] *=  m_back_img.get_pix_per_mtr();
+
+    pindex++;
+    pindex++;
+  }
+
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glOrtho(0, w(), 0, h(), -1 ,1);
+
+  float tx = meters2img('x', 0);
+  float ty = meters2img('y', 0);
+  float qx = img2view('x', tx);
+  float qy = img2view('y', ty);
+
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
+  glLoadIdentity();
+
+  glTranslatef(qx, qy, 0);
+  glScalef(m_zoom, m_zoom, m_zoom);
+
+  glPointSize(vertsize * sqrt(m_zoom));
+
+  // Draw the vertices in between the first and last ones
+  glColor3f(vert_c[0], vert_c[1], vert_c[2]);
+  glEnable(GL_POINT_SMOOTH);
+  glBegin(GL_POINTS);
+  for(j=0; j<vsize; j++) {
+    glVertex2f(points[(j*2)], points[(j*2)+1]);
+  }
+  glEnd();
+  glDisable(GL_POINT_SMOOTH);
   
   delete [] points;
   glFlush();

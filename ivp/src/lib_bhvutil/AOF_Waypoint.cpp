@@ -141,10 +141,12 @@ double AOF_Waypoint::evalBox(const IvPBox *b) const
   double rate_of_detour  = (angle_180 * eval_spd);
   
   double rod_range = (m_max_speed * 180);
-  double rod_pct = (rate_of_detour / rod_range);
+  double rod_pct   = (rate_of_detour / rod_range);
   double score_ROD = (1.0 - rod_pct) * 100;
 
-  double combined_score = (0.6 * score_ROC) + (0.4 * score_ROD);
+  double combined_score = (0.8 * score_ROC) + (0.2 * score_ROD);
+  //double combined_score = (0.6 * score_ROC) + (0.4 * score_ROD);
+  //double combined_score = (0.6 * score_ROC);
   
   return(combined_score);
 }

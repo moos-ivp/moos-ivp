@@ -1,0 +1,25 @@
+//-------------------------------------------------------------
+// uHelmScope configuration block
+
+ProcessConfig = uHelmScope
+{
+  AppTick   = 1
+  CommsTick = 1
+
+  ProcessConfig = uHelmScope
+  {
+    AppTick    = 1
+    CommsTick  = 1
+  
+    PAUSED             = true     // All Parameters and Parameter-Values
+    HZ_MEMORY          = 5, 100   // are __NOT__ Case Sensitive
+    DISPLAY_MOOS_SCOPE = true
+    DISPLAY_BHV_POSTS  = true
+    DISPLAY_VIRGINS    = true
+    DISPLAY_STATEVARS  = true
+    TRUNCATED_OUTPUT   = false
+    BEHAVIORS_CONCISE  = false 
+
+    VAR = BHV_WARNING, AIS_REPORT_LOCAL   // MOOS Variable names 
+    VAR = PROC_WATCH_SUMMARY              // __ARE__ Case Sensitive
+ }

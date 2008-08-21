@@ -779,3 +779,18 @@ XYSegList stringShortToZigZagSegList(string str)
 }
 
 
+
+#if 0 // Currently un-implemented 08-03-08
+
+//---------------------------------------------------------------
+// Procedure: stringShortToPolySet
+//
+
+vector<XYPolygon> stringShortToPolySet(const string& str)
+{
+  XYSegList segl = stringToSegList(str);
+
+  return(segl.get_poly_set());
+}
+
+#endif

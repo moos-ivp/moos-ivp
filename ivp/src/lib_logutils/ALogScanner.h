@@ -26,7 +26,6 @@ class ALogScanner
   bool       openALogFile(std::string);
   ScanReport scan();
 
- protected:
   std::string getNextLine();
 
  private:

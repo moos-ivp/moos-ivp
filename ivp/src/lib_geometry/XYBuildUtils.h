@@ -89,5 +89,11 @@ XYSegList stringShortToPointsSegList(std::string);
 // Example: "startx, starty, angle, length, period,
 //            amplitude"
 XYSegList stringShortToZigZagSegList(std::string);
+
+
+// Create a vector of convex Polygons given a set of points
+// Examples: "pts:    10,15 : 20,25 : 30,35 : label,foobar"
+//           "points: label, foobar : 10,15 : 20,25 : 30,35"
+std::vector<XYPolygon> stringShortToPolySet(const std::string&);
   
 #endif

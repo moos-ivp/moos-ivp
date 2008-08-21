@@ -25,6 +25,7 @@
 1.645           NAV_X                pEchoVar   0            
 1.645           NAV_Y                pEchoVar   0            
 1.226           DESIRED_RUDDER       iRemote    0            
+1.226           DESIRED_RUDDER       pReallyLongApplication    0            
 1.226           DESIRED_THRUST       iRemote    0            
 2.277           NAV_X                pEchoVar   0            
 2.277           NAV_Y                pEchoVar   0            

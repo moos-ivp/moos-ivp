@@ -37,7 +37,6 @@
 /* enhancements or modifications.                                */
 /*****************************************************************/
 
-#include <iostream>
 #include "VarDataPair.h"
 #include "MBUtils.h"
 #include <stdlib.h>
@@ -71,16 +70,15 @@ VarDataPair::VarDataPair(const string& var, const string& sdata)
 //      Note: For convenience, check whether the given data string is
 //            meant to represent a numerical value and do the conversion.
 
-
 VarDataPair::VarDataPair(const string& var, const string& sdata,
-			 const string& flag)
+			 const string& hint)
 {
   m_var   = stripBlankEnds(var);
   m_ddata = 0;
 
   string data = stripBlankEnds(sdata);
 
-  if(flag != "auto")
+  if(hint != "auto")
     return;
 
   if(isNumber(data)) {
@@ -95,7 +93,6 @@ VarDataPair::VarDataPair(const string& var, const string& sdata,
     m_is_string = true;
   }
 }
-
 
 //------------------------------------------------------------------
 // Procedure: getPrintable

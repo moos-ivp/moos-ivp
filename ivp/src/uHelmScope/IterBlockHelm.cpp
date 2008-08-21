@@ -197,7 +197,7 @@ vector<string> IterBlockHelm::getCompletedBHV(bool concise) const
 //------------------------------------------------------------
 // Procedure: addDecVarVal
 
-void IterBlockHelm::addDecVarVal(string varname, double value)
+void IterBlockHelm::addDecVarVal(const string& varname, const string& value)
 {
   if(vectorContains(m_decvar, varname))
     return;
@@ -220,7 +220,7 @@ string IterBlockHelm::getDecVar(unsigned int ix) const
 //------------------------------------------------------------
 // Procedure: getDecVal(int)
 
-double IterBlockHelm::getDecVal(unsigned int ix) const
+string IterBlockHelm::getDecVal(unsigned int ix) const
 {
   if((ix >= 0) && (ix < m_decvar.size()))
     return(m_decval[ix]);

@@ -22,7 +22,7 @@ public:
   void addRunningBHVs(const std::string&);
   void addIdleBHVs(const std::string&);
   void addCompletedBHVs(const std::string&);
-  void addDecVarVal(std::string, double val);
+  void addDecVarVal(const std::string&, const std::string&);
 
   void setIteration(int v)     {m_iteration=v;};
   void setCountIPF(int v)      {m_count_ipf=v;};
@@ -40,7 +40,7 @@ public:
 
   int         getDecVarCnt()  const {return(m_decvar.size());};
   std::string getDecVar(unsigned int) const;
-  double      getDecVal(unsigned int) const;
+  std::string getDecVal(unsigned int) const;
   int         getIteration() const  {return(m_iteration);};
   int         getCountIPF() const   {return(m_count_ipf);};
   double      getSolveTime() const  {return(m_solve_time);};
@@ -57,7 +57,7 @@ protected:
   std::vector<std::string> m_completed_bhv;
 
   std::vector<std::string> m_decvar;
-  std::vector<double>      m_decval;
+  std::vector<std::string> m_decval;
 
   int    m_iteration;
   int    m_count_ipf;

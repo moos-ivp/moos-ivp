@@ -78,6 +78,15 @@ bool AOF_AvoidObstacles::setParam(const string& param, double param_val)
     activation_dist_set = true;
     return(true);
   }
+  else if(param == "buffer_dist") {
+    if(param_val < 0)
+      return(false);
+    if(m_buffer_dist != param_val) {
+      m_buffer_dist = param_val;
+      applyBuffer();
+    }
+    return(true);
+  }
   else
     return(false);
 }
@@ -105,15 +114,17 @@ bool AOF_AvoidObstacles::initialize()
   if(!activation_dist_set)
     return(false);
   
-  if(m_obstacles.size() == 0)
+  if(m_obstacles_buff.size() == 0)
     return(false);
+
+  bufferBackOff(os_x, os_y);
 
   // Fill in a cache of distances mapping a particular heading to
   // the minimum/closest distance to any of the obstacle polygons.
   // A distance of -1 indicates infinite distance.
 
   unsigned int  i, j;
-  unsigned int  osize = m_obstacles.size();
+  unsigned int  osize = m_obstacles_buff.size();
   unsigned int  hsize = m_domain.getVarPoints(crs_ix);
   for(i=0; i<hsize; i++)
     cache_distance.push_back(-1);
@@ -126,9 +137,9 @@ bool AOF_AvoidObstacles::initialize()
     double min_dist = -1; 
     bool   min_dist_set = false;
     for(j=0; j<osize; j++) {
-      double position_dist_to_poly = m_obstacles[j].dist_to_poly(os_x, os_y);
+      double position_dist_to_poly = m_obstacles_buff[j].dist_to_poly(os_x, os_y);
       if(position_dist_to_poly < activation_dist) {
-	dist_to_poly = m_obstacles[j].dist_to_poly(os_x, os_y, heading);
+	dist_to_poly = m_obstacles_buff[j].dist_to_poly(os_x, os_y, heading);
 	if(dist_to_poly != -1) {
 	  if(!min_dist_set || (dist_to_poly < min_dist))
 	    min_dist = dist_to_poly;
@@ -143,20 +154,138 @@ bool AOF_AvoidObstacles::initialize()
 
 //----------------------------------------------------------------
 // Procedure: obstaclesInRange
+//      Note: Return the number of obstacles within a given range
 
 unsigned int AOF_AvoidObstacles::obstaclesInRange()
 {
-  unsigned int  vsize = m_obstacles.size();
+  unsigned int  vsize = m_obstacles_buff.size();
   unsigned int  count = 0;
 
   for(unsigned int i=0; i<vsize; i++) {
-    double position_dist_to_poly = m_obstacles[i].dist_to_poly(os_x, os_y);
-    cout << "pdist: " << position_dist_to_poly << "  adist: " << activation_dist << endl;
+    double position_dist_to_poly = m_obstacles_buff[i].dist_to_poly(os_x, os_y);
+    //cout << "pdist: " << position_dist_to_poly << "  adist: " << activation_dist << endl;
     if(position_dist_to_poly < activation_dist)
       count++;
   }
-  cout << "vsize: " << vsize << "  count: " << count << endl << endl;
+  //cout << "vsize: " << vsize << "  count: " << count << endl << endl;
   return(count);
+}
+
+//----------------------------------------------------------------
+// Procedure: addObstacle
+
+void AOF_AvoidObstacles::addObstacle(const XYPolygon& new_poly)
+{
+  XYPolygon new_buff_poly = new_poly;
+  new_buff_poly.grow_by_amt(m_buffer_dist);
+
+  string new_poly_label = new_poly.get_label();
+  
+  string new_buff_poly_label = new_poly_label + "_buff";
+  new_buff_poly.set_label(new_buff_poly_label);
+  
+  m_obstacles_orig.push_back(new_poly);
+  m_obstacles_buff.push_back(new_buff_poly);
+}
+
+
+//----------------------------------------------------------------
+// Procedure: objectInObstacle
+
+bool AOF_AvoidObstacles::objectInObstacle(double dx, double dy, 
+					  bool use_buffered)
+{
+  int ix = objectInWhichObstacle(dx, dy, use_buffered);
+  if(ix == -1)
+    return(false);
+  else
+    return(true);
+}
+
+//----------------------------------------------------------------
+// Procedure: objectInWhichObstacle
+//      Note: Checks to see if the given point is within any of the
+//            obstacles. If so, the index of the object is returned.
+//            Otherwise -1 is returned. 
+
+int AOF_AvoidObstacles::objectInWhichObstacle(double dx, double dy, 
+					      bool use_buffered)
+{
+  if(!use_buffered) {
+    int vsize = m_obstacles_orig.size();
+    for(int i=0; i<vsize; i++) {
+      if(m_obstacles_orig[i].contains(dx, dy))
+	return(i);
+    }
+  }
+  else {
+    int vsize = m_obstacles_buff.size();
+    for(int i=0; i<vsize; i++) {
+      if(m_obstacles_buff[i].contains(dx, dy))
+	return(i);
+    }
+  }
+
+  return(-1);
+}
+
+
+//----------------------------------------------------------------
+// Procedure: applyBuffer
+
+void AOF_AvoidObstacles::applyBuffer()
+{
+  int vsize = m_obstacles_orig.size();
+  for(int i=0; i<vsize; i++) {
+    m_obstacles_buff[i] = m_obstacles_orig[i];
+    m_obstacles_buff[i].grow_by_amt(m_buffer_dist);
+  }    
+}
+
+//----------------------------------------------------------------
+// Procedure: getObstacleSpec
+
+string AOF_AvoidObstacles::getObstacleSpec(int ix, bool use_buffered)
+{
+  if((ix < 0) || (ix >= m_obstacles_buff.size()))
+    return("");
+
+  if(use_buffered)
+    return(m_obstacles_buff[ix].get_spec(0));
+  else
+    return(m_obstacles_orig[ix].get_spec(0));
+}
+
+//----------------------------------------------------------------
+// Procedure: bufferBackOff
+//            For each of the buffered obstacles, if the ownship 
+//            position is within the obstacle boundary, it will 
+//            shrink until ownship is no longer inside.
+
+void AOF_AvoidObstacles::bufferBackOff(double osx, double osy)
+{
+  int vsize = m_obstacles_buff.size();
+  for(int i=0; i<vsize; i++) {
+    bool contained = m_obstacles_buff[i].contains(osx, osy);
+    
+    double shrink_pct = 0.02;
+    while((contained) && (shrink_pct < 100.0)) {
+      XYPolygon new_poly = m_obstacles_buff[i];
+      new_poly.grow_by_pct(-1*shrink_pct);
+      contained = new_poly.contains(osx, osy);
+      if(!contained) 
+	m_obstacles_buff[i] = new_poly;
+      else
+	shrink_pct += 0.02;
+    }
+
+    // In the exceptionally rare possibility that the polygon was shrunk
+    // down to as far as possible and it *still* contains the ownship
+    // position, we concede and drop this obstacle from the list by 
+    // clearing the buffered obstacle - detectable by size() == 0
+    if(contained) 
+      m_obstacles_buff[i].clear();
+  }
 }
 
 //----------------------------------------------------------------
@@ -167,7 +296,7 @@ double AOF_AvoidObstacles::evalBox(const IvPBox *b) const
   double max_utility = 100;
   double min_utility = 0;
 
-  int osize = m_obstacles.size();
+  int osize = m_obstacles_buff.size();
   if(osize == 0)
     return(max_utility);
   

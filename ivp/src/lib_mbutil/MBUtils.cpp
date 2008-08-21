@@ -71,7 +71,7 @@ vector<string> parseString(const string& string_str, char separator)
 
 //----------------------------------------------------------------
 // Procedure: parseString(string, string)
-//   Example: svector = parseString("apples $@$ pears $@$ banannas");
+//   Example: svector = parseString("apples $@$ pears $@$ banannas", "$@$");
 //            svector[0] = "apples "
 //            svector[1] = " pears "
 //            svector[2] = " bananas"
@@ -90,6 +90,52 @@ vector<string> parseString(const string& string_str,
   return(rvector);
 }
 
+
+//----------------------------------------------------------------
+// Procedure: parseQuotedString(string, char)
+//   Example: svector = parseQuotedString(""apples,pears",banannas", ',');
+//            svector[0] = "apples,pears"
+//            svector[1] = "bananas"
+
+vector<string> parseQuotedString(const string& string_str, char separator)
+{
+  const char *str = string_str.c_str();
+
+  char *buff = new char[strlen(str)+1];
+
+  vector<string> rvector;
+
+  // First count the number of double-quotes. If not an even number, 
+  // return an empty vector.  
+  int len = string_str.length();
+  int quote_counter = 0;
+  for(int i=0; i<len; i++)
+    if(string_str.at(i) == '"')
+      quote_counter++;
+  
+  if((quote_counter % 2) != 0)
+    return(rvector);
+
+  bool even_quote = true;
+  while(str[0] != '\0') {    
+    int i=0;
+    while(((str[i]!=separator) || !even_quote) && (str[i]!='\0')) {
+      if(str[i]=='"')
+	even_quote = !even_quote;
+      i++;
+    }
+    strncpy(buff, str, i);
+    buff[i] = '\0';
+    string nstr = buff;
+
+    rvector.push_back(nstr);
+    str += i;
+    if(str[0]==separator)
+      str++;
+  }
+  delete [] buff;
+  return(rvector);
+}
 
 //----------------------------------------------------------------
 // Procedure: chompString(const string&, char)
@@ -365,7 +411,7 @@ string intToString(int val)
 string floatToString(float val, int digits)
 {
   char buffAUX[10] = "%.5f\0";
-  if((digits>0)&&(digits<7))
+  if((digits>=0)&&(digits<9))
     buffAUX[2] = digits+48;
 
   char buff[100];
@@ -378,7 +424,7 @@ string floatToString(float val, int digits)
 string doubleToString(double val, int digits)
 {
   char buffAUX[10] = "%.5f\0";
-  if((digits>0)&&(digits<7))
+  if((digits>=0)&&(digits<=9))
     buffAUX[2] = digits+48;
 
   char buff[100];
@@ -396,7 +442,9 @@ string doubleToString(double val, int digits)
 
 string dstringCompact(const string& str)
 {
-  if(str=="0") return("123456");
+  //if(str=="0")     return("123456");
+  if(str=="0") 
+    return("0");
 
   bool has_decimal = false;
 

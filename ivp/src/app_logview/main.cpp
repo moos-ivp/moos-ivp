@@ -147,6 +147,7 @@ int main(int argc, char *argv[])
   vector<GridPlot> gridplots;
 
   MBTimer parse_timer;
+#if 0
   parse_timer.start();
   cout << "Parsing alog files to build GridPlots..." << endl;
   
@@ -163,7 +164,7 @@ int main(int argc, char *argv[])
   cout << "Done: GridPlot parse time: " << parse_timer.get_float_cpu_time();
   cout << endl << endl;
 
-
+#endif
   // Build all the logplots from the vector of slog files.
   //---------------------------------------------------------------------
   vector<vector<LogPlot> > logplots;
@@ -217,13 +218,13 @@ int main(int argc, char *argv[])
 
   Fl::add_idle(idleProc);
   if(gui_size=="large")
-    gui = new REPLAY_GUI(1400, 1100, "OpRegion-Viewer");
+    gui = new REPLAY_GUI(1400, 1100, "logview");
   if(gui_size=="medium")
-    gui = new REPLAY_GUI(1190, 935, "OpRegion-Viewer");
+    gui = new REPLAY_GUI(1190, 935, "logview");
   if(gui_size=="small")
-    gui = new REPLAY_GUI(980, 770, "OpRegion-Viewer");
+    gui = new REPLAY_GUI(980, 770, "logview");
   if(gui_size=="xsmall")
-    gui = new REPLAY_GUI(770, 605, "OpRegion-Viewer");
+    gui = new REPLAY_GUI(770, 605, "logview");
 
   // Populate the GUI with the GridPlots built above
   for(j=0; j<gridplots.size(); j++)

@@ -34,12 +34,12 @@ public:
   
   bool         setParam(std::string, std::string);
   IvPFunction* onRunState();
-  void         onIdleState() {checkForMarking();};
+  void         onIdleState();
 
 protected:
   bool         updateInfoIn();  
   void         noteTimeAtSurface();
-  void         checkForMarking();
+  bool         checkForMarking();
   double       setDesiredSpeed();
 
 private: // Behavior Parameters
@@ -49,6 +49,7 @@ private: // Behavior Parameters
   double      m_period;
   double      m_zero_speed_depth;
   double      m_max_time_at_surface;
+  double      m_time_at_surface;
   double      m_ascent_speed;
   std::string m_ascent_grade;
 
@@ -79,6 +80,10 @@ private: // Behavior State Variables
   // don't know a priori the mark message type.
   std::string m_curr_mark_string_val;
   double      m_curr_mark_double_val;
+
+  // The variable name posted (var==true) when first entering 
+  // the ascending state
+  std::string m_ascending_flag;
 
   // Time at which the vehicle reached the surface, zero_speed_depth
   double      m_surface_mark_time;

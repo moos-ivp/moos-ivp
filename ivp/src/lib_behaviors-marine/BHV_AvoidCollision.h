@@ -24,6 +24,7 @@
 #define BHV_AVOID_COLLISION_HEADER
 
 #include "IvPBehavior.h"
+#include "LinearExtrapolator.h"
 
 class IvPDomain;
 class BHV_AvoidCollision : public IvPBehavior {
@@ -67,11 +68,19 @@ private:  // State Variables
   double m_cny; // Current contact y position (meters) 
   double m_cnh; // Current contact heading (degrees 0-359)
   double m_cnv; // Current contact speed (meters) 
+  double m_cnutc; // UTC time of last contact report
 
   double m_curr_distance;
   double m_curr_closing_spd;
 
   bool   m_on_no_contact_ok;  // true if no trouble reported on no contact
+
+  bool    m_extrapolate;
+  double  m_decay_start;
+  double  m_decay_end;
+
+  LinearExtrapolator m_extrapolator;
+
 
 };
 #endif

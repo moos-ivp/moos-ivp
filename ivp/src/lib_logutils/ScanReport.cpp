@@ -49,6 +49,59 @@ void ScanReport::addLine(double timestamp, const string& varname,
 
 
 //--------------------------------------------------------
+// Procedure: fillAppStats()
+
+void ScanReport::fillAppStats()
+{
+  double total_lines = 0;
+  double total_chars = 0;
+
+
+  // Pass 2A
+
+  int vsize = m_var_names.size();
+  for(int i=0; i<vsize; i++) {
+    string sources = m_var_sources[i];
+    vector<string> ivector = parseString(sources, ',');
+    int isize = ivector.size();
+    for(int j=0; j<isize; j++) {
+      string app_name = ivector[j];
+      m_app_lines[app_name] += m_var_lines[i];
+      m_app_chars[app_name] += m_var_chars[i];
+      m_app_vars[app_name]++;
+    }
+
+    total_lines += m_var_lines[i];
+    total_chars += m_var_chars[i];
+  }
+
+  // Pass 2B - fill in lines, chars as percentage of total
+  
+  map<string, double>::iterator p;
+  p = m_app_lines.begin();
+  while(p != m_app_lines.end()) {
+    string app_name  = p->first;
+    double app_lines = p->second;
+    double percent   = app_lines / total_lines;
+    m_app_lines_pct[app_name] = percent;
+    m_all_sources.push_back(app_name);
+    p++;
+  }
+
+  p = m_app_chars.begin();
+  while(p != m_app_chars.end()) {
+    string app_name  = p->first;
+    double app_chars = p->second;
+    double percent   = app_chars / total_chars;
+    m_app_chars_pct[app_name] = percent;
+    p++;
+  }
+
+
+}
+
+
+//--------------------------------------------------------
 // Procedure: getVarName
 
 string ScanReport::getVarName(unsigned int index)

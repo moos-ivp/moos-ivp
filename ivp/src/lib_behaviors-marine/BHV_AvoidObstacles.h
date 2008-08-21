@@ -30,18 +30,12 @@
 class BHV_AvoidObstacles : public IvPBehavior {
 public:
   BHV_AvoidObstacles(IvPDomain);
-  ~BHV_AvoidObstacles() {};
+  ~BHV_AvoidObstacles();
   
   IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
 
- protected:
-  void addNewObstacle(const XYPolygon&);
-
 protected:
-  std::vector<XYPolygon> m_obstacles_buff;
-  std::vector<XYPolygon> m_obstacles_orig;
-
   AOF_AvoidObstacles    *m_aof_avoid;
 
   double  m_allowable_ttc;    // Allowable time to collision

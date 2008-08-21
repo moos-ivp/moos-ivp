@@ -297,6 +297,7 @@ void SSV_GUI::augmentMenu()
   mbar->add("Shipside/ShipCentric Toggle", FL_CTRL+'s',(Fl_Callback*)SSV_GUI::cb_CentricToggle,(void*)0, 0);
   mbar->add("Shipside/ShipCentric Off",    0, (Fl_Callback*)SSV_GUI::cb_CentricToggle,(void*)1, 0);
   mbar->add("Shipside/ShipCentric On",     0, (Fl_Callback*)SSV_GUI::cb_CentricToggle,(void*)2, FL_MENU_DIVIDER);
+  mbar->add("Shipside/WeightedCenterView", FL_ALT+'s', (Fl_Callback*)SSV_GUI::cb_CentricToggle,(void*)3, FL_MENU_DIVIDER);
   mbar->add("Shipside/Radial Off", 0, (Fl_Callback*)SSV_GUI::cb_Radial,(void*)-90, 0);
   mbar->add("Shipside/Radial On", 0, (Fl_Callback*)SSV_GUI::cb_Radial,(void*)-91, 0);
   mbar->add("Shipside/Radial Toggle", 'r', (Fl_Callback*)SSV_GUI::cb_Radial,(void*)-99, FL_MENU_DIVIDER);
@@ -448,6 +449,8 @@ inline void SSV_GUI::cb_CentricToggle_i(int val) {
     mviewer->setParam("centric_view", "off");
   if(val == 2)
     mviewer->setParam("centric_view", "on");
+  if(val == 3)
+    mviewer->setParam("weighted_center_view", "set");
   mviewer->redraw();
   updateXY();
 }

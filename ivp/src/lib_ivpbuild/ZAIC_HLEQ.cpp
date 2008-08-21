@@ -42,6 +42,12 @@ ZAIC_HLEQ::ZAIC_HLEQ(IvPDomain g_domain, const string& varname)
   if(m_ivp_domain.getVarDelta(0) <= 0)
     m_state_ok = false;
 
+  m_domain_ix    = m_ivp_domain.getIndex(varname);
+  m_domain_high  = m_ivp_domain.getVarHigh(m_domain_ix);
+  m_domain_low   = m_ivp_domain.getVarLow(m_domain_ix);
+  m_domain_pts   = m_ivp_domain.getVarPoints(m_domain_ix);
+  m_domain_delta = m_ivp_domain.getVarDelta(m_domain_ix);
+  
   m_summit       = 0;
   m_basewidth    = 0;
   m_minutil      = 0;
@@ -55,10 +61,17 @@ ZAIC_HLEQ::ZAIC_HLEQ(IvPDomain g_domain, const string& varname)
 
 //-------------------------------------------------------------
 // Procedure: setSummit
+//      Note: Setting the summit outside of the domain range is *not* 
+//            treated as a hard error resulting in setting state_ok to
+//            false, but will merely generate a warning.
 
 bool ZAIC_HLEQ::setSummit(double val)
 {
   m_summit = val;
+
+  if((m_summit < m_domain_low) || (m_summit > m_domain_high))
+    m_warning += "given summit value out of domain range (suspicious):";
+
   return(true);
 }
 

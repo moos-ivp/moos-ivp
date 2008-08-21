@@ -37,7 +37,7 @@ VPlug_GeoShapes::VPlug_GeoShapes()
   m_gsize_map["polygon_edge_width"]  = 1.0;
   m_gsize_map["polygon_vertex_size"] = 5.0;
   m_gsize_map["seglist_edge_width"]  = 1.0;
-  m_gsize_map["seglist_vertex_size"] = 5.0;
+  m_gsize_map["seglist_vertex_size"] = 2.0;
   m_gsize_map["grid_edge_width"]     = 2.0;
   m_gsize_map["circle_edge_width"]   = 2.0;
   m_gsize_map["point_vertex_size"]   = 4.0;

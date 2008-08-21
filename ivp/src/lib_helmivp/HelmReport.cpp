@@ -165,7 +165,7 @@ string HelmReport::getActiveBehaviors()
 
 string HelmReport::getReportAsString()
 {
-  int i, vsize;
+  int i, j, vsize;
   string report;
 
   report += ("iter=" + intToString(m_iteration));
@@ -182,6 +182,20 @@ string HelmReport::getReportAsString()
     report += m_decision_var[i];
     report += ":";
     report += doubleToString(m_decision_val[i], 1);
+  }
+
+  // Now check to see if the helm did not produce a decision for one
+  // of the variables in the originally declared domain for the helm
+  int dsize = m_domain.size();
+  for(i=0; i<dsize; i++) {
+    bool found = false;
+    string varname = m_domain.getVarName(i);
+    for(j=0; j<vsize; j++) { 
+      if(varname == m_decision_var[j])
+	found = true;
+    }
+    if(!found)
+      report += (",var=" + varname + ":varbalk");
   }
 
   if(m_halted)

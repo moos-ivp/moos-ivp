@@ -121,9 +121,7 @@ bool IvPBehavior::setParam(string g_param, string g_val)
       m_logic_conditions.push_back(new_condition);
     return(ok);
   }
-
   else if(g_param == "runflag") {
-    //g_val = findReplace(g_val, ',', '=');
     vector<string> svector = parseString(g_val, '=');
     if(svector.size() != 2)
       return(false);
@@ -131,6 +129,26 @@ bool IvPBehavior::setParam(string g_param, string g_val)
     string val = stripBlankEnds(svector[1]);
     VarDataPair pair(var, val, "auto");
     m_run_flags.push_back(pair);
+    return(true);
+  }
+  else if(g_param == "activeflag") {
+    vector<string> svector = parseString(g_val, '=');
+    if(svector.size() != 2)
+      return(false);
+    string var = stripBlankEnds(svector[0]);
+    string val = stripBlankEnds(svector[1]);
+    VarDataPair pair(var, val, "auto");
+    m_active_flags.push_back(pair);
+    return(true);
+  }
+  else if(g_param == "inactiveflag") {
+    vector<string> svector = parseString(g_val, '=');
+    if(svector.size() != 2)
+      return(false);
+    string var = stripBlankEnds(svector[0]);
+    string val = stripBlankEnds(svector[1]);
+    VarDataPair pair(var, val, "auto");
+    m_inactive_flags.push_back(pair);
     return(true);
   }
   else if(g_param == "idleflag") {
@@ -262,7 +280,7 @@ bool IvPBehavior::isRunnable()
   }
   
   if(!checkNoStarve()) {
-    m_state_ok = false;
+    //m_state_ok = false;
     postPCMessage("----- STARVED VARIABLE ----");
     return(false);
   }
@@ -282,15 +300,60 @@ void IvPBehavior::setInfoBuffer(const InfoBuffer *ib)
 //-----------------------------------------------------------
 // Procedure: postMessage
 
-void IvPBehavior::postMessage(string var, string sdata)
+void IvPBehavior::postMessage(string var, string sdata, string key)
 {
-  m_messages.push_back(VarDataPair(var, sdata));
+  VarDataPair pair(var, sdata);
+
+  key = (m_descriptor + var + key);
+  pair.set_key(key);
+
+  m_messages.push_back(pair);
 }
 
 //-----------------------------------------------------------
 // Procedure: postMessage
 
-void IvPBehavior::postMessage(string var, double ddata)
+void IvPBehavior::postMessage(string var, double ddata, string key)
+{
+  VarDataPair pair(var, ddata);
+
+  key = (m_descriptor + var + key);
+  pair.set_key(key);
+
+  m_messages.push_back(pair);
+}
+
+//-----------------------------------------------------------
+// Procedure: postIntMessage
+//      Note: A convenience method for posting the double data rounded
+//            to the nearest integer. This may reduce the number of 
+//            posts out to the DB, since the posts are done by default
+//            on change detection. For doubles representing for example
+//            meters, seconds, or heading, this function is useful.
+
+void IvPBehavior::postIntMessage(string var, double ddata, string key)
+{
+  int idata = (int)(ddata + 0.5);
+  VarDataPair pair(var, idata);
+
+  key = (m_descriptor + var + key);
+  pair.set_key(key);
+
+  m_messages.push_back(pair);
+}
+
+//-----------------------------------------------------------
+// Procedure: postRepeatableMessage
+
+void IvPBehavior::postRepeatableMessage(string var, string sdata)
+{
+  m_messages.push_back(VarDataPair(var, sdata));
+}
+
+//-----------------------------------------------------------
+// Procedure: postRepeatableMessage
+
+void IvPBehavior::postRepeatableMessage(string var, double ddata)
 {
   m_messages.push_back(VarDataPair(var, ddata));
 }
@@ -301,6 +364,7 @@ void IvPBehavior::postMessage(string var, double ddata)
 void IvPBehavior::setComplete()
 {
   postFlags("endflags");
+  postFlags("inactiveflags");
   if(!m_perpetual)
     m_completed = true;
 }
@@ -359,8 +423,9 @@ void IvPBehavior::postPCMessage(string g_msg)
   //string mval = str_time + g_msg;
   string mval = g_msg;
   
-  VarDataPair msg(mvar, mval);
-  m_messages.push_back(msg);
+  postMessage(mvar, mval);
+  //VarDataPair msg(mvar, mval);
+  //m_messages.push_back(msg);
 }
 
 
@@ -601,6 +666,10 @@ void IvPBehavior::postFlags(const string& str)
     flags = m_end_flags;
   else if(str == "idleflags")
     flags = m_idle_flags;
+  else if(str == "activeflags")
+    flags = m_active_flags;
+  else if(str == "inactiveflags")
+    flags = m_inactive_flags;
 
   int vsize = flags.size();
   for(int i=0; i<vsize; i++) {

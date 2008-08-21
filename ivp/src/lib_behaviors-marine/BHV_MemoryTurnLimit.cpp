@@ -126,11 +126,12 @@ IvPFunction *BHV_MemoryTurnLimit::onRunState()
   if(!ok)
     return(0);
   
-  postMessage("MEM_HDG_AVG", heading_avg);
+  postIntMessage("MEM_HDG_AVG", heading_avg);
 
   ZAIC_PEAK crs_zaic(m_domain, "course");
   crs_zaic.setSummit(heading_avg);
   crs_zaic.setValueWrap(true);
+  //  crs_zaic.setSummitDelta(0.2);
   crs_zaic.setPeakWidth(m_turn_range*speed/1.5);  //dpe-make 1.5 a param in future
 
   IvPFunction *ipf = crs_zaic.extractOF();

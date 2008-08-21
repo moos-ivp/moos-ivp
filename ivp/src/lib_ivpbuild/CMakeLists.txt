@@ -29,6 +29,7 @@ SET(SRC
    ZAIC_HLEQ.cpp
    ZAIC_LEQ.cpp
    ZAIC_PEAK.cpp
+   ZAIC_MANUAL.cpp
 )
 
 ADD_LIBRARY(ivpbuild ${SRC})

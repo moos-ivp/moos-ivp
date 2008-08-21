@@ -36,13 +36,21 @@ public: // virtual functions
   double evalBox(const IvPBox*) const; 
   bool   setParam(const std::string&, double);
   bool   setParam(const std::string&, const std::string&);
-  void   addObstacle(const XYPolygon &p) {m_obstacles.push_back(p);};
+  void   addObstacle(const XYPolygon&);
   bool   initialize();
-
-public:
+  
   unsigned int  obstaclesInRange();
-
+  
+  bool  objectInObstacle(double, double, bool=false);
+  int   objectInWhichObstacle(double, double, bool=false);
   void  applyBuffer();
+  
+  int   size() {return(m_obstacles_orig.size());};
+
+  std::string getObstacleSpec(int, bool=false);
+
+ protected:
+  void   bufferBackOff(double osx, double osy);
 
 private:
   int    crs_ix;  // Index of "course" variable in IvPDomain
@@ -53,15 +61,17 @@ private:
   double activation_dist;
   double allowable_ttc;
 
+  double m_buffer_dist;
+
   bool   os_x_set;
   bool   os_y_set;
   bool   activation_dist_set;
   bool   allowable_ttc_set;
 
-  std::vector<XYPolygon> m_obstacles;
+  std::vector<XYPolygon> m_obstacles_orig;
+  std::vector<XYPolygon> m_obstacles_buff;
 
   std::vector<double>    cache_distance;
-
 };
 
 #endif

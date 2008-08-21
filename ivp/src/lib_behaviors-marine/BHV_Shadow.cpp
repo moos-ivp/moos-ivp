@@ -133,11 +133,11 @@ IvPFunction *BHV_Shadow::onRunState()
   // bother to create the objective function.
   double relevance = getRelevance();
 
-  postMessage("SHADOW_CONTACT_X", m_cnx);
-  postMessage("SHADOW_CONTACT_Y", m_cny);
-  postMessage("SHADOW_CONTACT_SPEED", m_cnv);
-  postMessage("SHADOW_CONTACT_HEADING", m_cnh);
-  postMessage("SHADOW_RELEVANCE", relevance);
+  postIntMessage("SHADOW_CONTACT_X", m_cnx);
+  postIntMessage("SHADOW_CONTACT_Y", m_cny);
+  postIntMessage("SHADOW_CONTACT_SPEED", m_cnv);
+  postIntMessage("SHADOW_CONTACT_HEADING", m_cnh);
+  postIntMessage("SHADOW_RELEVANCE", relevance);
   
 
   if(relevance <= 0)
@@ -179,8 +179,8 @@ IvPFunction *BHV_Shadow::onRunState()
     }
   
 #if 0
-    postMessage("SHADOW_MIN_WT", ipf->getPDMap()->getMinWT());
-    postMessage("SHADOW_MAX_WT", ipf->getPDMap()->getMaxWT());
+    postIntMessage("SHADOW_MIN_WT", ipf->getPDMap()->getMinWT());
+    postIntMessage("SHADOW_MAX_WT", ipf->getPDMap()->getMaxWT());
 #endif
 
   return(ipf);

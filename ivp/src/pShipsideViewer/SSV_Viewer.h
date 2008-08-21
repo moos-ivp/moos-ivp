@@ -77,6 +77,7 @@ public:
   int   getDataIndex()           {return(m_global_ix);};
   void  setCurrent(std::string);
   void  cycleIndex();
+  void  setWeightedCenterView();
   
   void  mutexLock()   {m_mutex.Lock();};
   void  mutexUnLock() {m_mutex.UnLock();};
@@ -126,6 +127,9 @@ public:
   bool   m_draw_radial;
   int    m_radial_size;
   float  m_curr_time;
+
+  double m_avg_vehipos_x;
+  double m_avg_vehipos_y;
 
   CMOOSLock   m_mutex;
 };

@@ -42,6 +42,7 @@
 #include "BHV_OpRegion.h"
 #include "BHV_ConstantDepth.h"
 #include "BHV_ConstantHeading.h"
+#include "BHV_MaintainHeading.h"
 #include "BHV_ConstantSpeed.h"
 #include "BHV_PeriodicSpeed.h"
 #include "BHV_PeriodicSurface.h"
@@ -55,6 +56,7 @@
 #include "BHV_AvoidObstacles.h"
 #include "BHV_GoToDepth.h"
 #include "BHV_MemoryTurnLimit.h"
+#include "BHV_Hysteresis.h"
 #include "BHV_Attractor.h"
 #include "BHV_RubberBand.h"
 
@@ -263,6 +265,8 @@ IvPBehavior* Populator_BehaviorSet::initializeBehavior(string bhv_name)
     bhv = new BHV_ConstantDepth(domain);
   else if(bhv_name == "BHV_ConstantHeading")      
     bhv = new BHV_ConstantHeading(domain);
+  else if(bhv_name == "BHV_MaintainHeading")      
+    bhv = new BHV_MaintainHeading(domain);
   else if(bhv_name == "BHV_Loiter")     
     bhv = new BHV_Loiter(domain);
   else if(bhv_name == "BHV_StationKeep")     
@@ -287,6 +291,8 @@ IvPBehavior* Populator_BehaviorSet::initializeBehavior(string bhv_name)
     bhv = new BHV_GoToDepth(domain);
   else if(bhv_name == "BHV_MemoryTurnLimit")      
     bhv = new BHV_MemoryTurnLimit(domain);
+  else if(bhv_name == "BHV_Hysteresis")      
+    bhv = new BHV_Hysteresis(domain);
   else if(bhv_name == "BHV_Attractor")      
     bhv = new BHV_Attractor(domain);
   else if(bhv_name == "BHV_RubberBand")      

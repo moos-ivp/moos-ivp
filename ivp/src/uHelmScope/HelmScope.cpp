@@ -39,7 +39,7 @@ HelmScope::HelmScope()
   m_display_help       = false;
   m_paused             = true;
   m_display_truncate   = false;
-  m_concise_bhv_list   = false;
+  m_concise_bhv_list   = true;
   m_warning_count      = 0;
 
   // Default Settings for the Postings Report
@@ -373,7 +373,7 @@ void HelmScope::handleNewHelmSummary(const string& str)
 	  pvector[0] = stripBlankEnds(pvector[0]);
 	  pvector[1] = stripBlankEnds(pvector[1]);
 	  string var = pvector[0];
-	  double val = atof(pvector[1].c_str());
+	  string val = pvector[1];
 	  hblock.addDecVarVal(var, val);
 	}
       }
@@ -886,7 +886,7 @@ void HelmScope::printHelmReport(int index)
   int vars = hblock.getDecVarCnt();
   for(int j=0; j<vars; j++) {
     string var = hblock.getDecVar(j);
-    string val = doubleToString(hblock.getDecVal(j),2);
+    string val = hblock.getDecVal(j);
     printf("  %s = %s \n", var.c_str(), val.c_str());
   }
 
@@ -1093,3 +1093,29 @@ void HelmScope::printPostingReport(int index)
   if(prev_behavior == "")
     printf("@  <empty>           <empty>\n"); 
 }
+
+
+#if 0
+//------------------------------------------------------------
+// Procedure: configureComms()
+
+bool HelmScope::configureComms(string host, string port, 
+			       int freq, string appname)
+{
+  m_sServerHost = host;
+  m_sServerPort = port;
+  m_lServerPort = atoi(port.c_str());
+  //if(!CheckSetUp())
+  //  return false;
+
+  m_nCommsFreq = freq;
+
+  //register a callback for On Connect
+  m_Comms.SetOnConnectCallBack(MOOSAPP_OnConnect,this);
+
+  //start the comms client....
+  m_Comms.Run(m_sServerHost.c_str(),m_lServerPort,m_sAppName.c_str(),m_nCommsFreq);
+
+  return(true);
+}
+#endif

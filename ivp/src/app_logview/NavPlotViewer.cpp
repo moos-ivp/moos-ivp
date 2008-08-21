@@ -28,6 +28,7 @@
 #include <tiffio.h>
 #include "NavPlotViewer.h"
 #include "MBUtils.h"
+#include "ColorParse.h"
 #include "GeomUtils.h"
 #include "IO_GeomUtils.h"
 
@@ -259,11 +260,13 @@ float NavPlotViewer::getAvgStepTime()
   return((max_time - min_time) / (plt_size - 1));
 }
 
+#if 0
 //-------------------------------------------------------------
-// Procedure: drawPoint
+// Procedure: drawPoints
 
-void NavPlotViewer::drawPoint(float px, float py, float cr, 
-			      float cg, float cb, float sz)
+void NavPlotViewer::drawPoints(const vector<double>& vx, 
+			       const vector<double>& vy,
+			       float cr, float cg, float cb, float sz)
 {
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
@@ -295,6 +298,7 @@ void NavPlotViewer::drawPoint(float px, float py, float cr,
   glFlush();
   glPopMatrix();
 }
+#endif
 
 //-------------------------------------------------------------
 // Procedure: drawNavPlots
@@ -328,33 +332,28 @@ void NavPlotViewer::drawNavPlot(unsigned int index)
   // Draw all the non_current points
   if(m_trails) {
     double pt_size = m_trail_size * m_zoom;
-    double pt_red  = 0;
-    double pt_grn  = 0;
-    double pt_blu  = 0;
+    vector<double> cvect = colorParse("red");
 
-    if(index == 0) {
-      pt_red=0.5; pt_grn=0; pt_blu=0;
-    }
-    else if(index == 1) {
-      pt_red=0; pt_grn=0.5; pt_blu=0;
-    }
-    else if(index == 2){
-      pt_red=0; pt_grn=0; pt_blu=0.5;
-    }
-    else if(index == 3) {
-      pt_red=0.7; pt_grn=0.7; pt_blu=0.7;
-    }
+    if(index == 0) 
+      cvect = colorParse("green");
+    else if(index == 1) 
+      cvect = colorParse("red");
+    else if(index == 2)
+      cvect = colorParse("yellow");
+    else if(index == 3) 
+      cvect = colorParse("white");
     
+    vector<double> xvect, yvect;
     for(int i=0; i<npsize; i++) {
       double itime = m_navx_plot[index].get_time_by_index(i);
       if(m_alltrail || (itime < ctime)) {
 	if((i % m_trail_gap) == 0) {
-	  double x = m_navx_plot[index].get_value_by_index(i);
-	  double y = m_navy_plot[index].get_value_by_index(i);
-	  drawPoint(x, y, pt_red, pt_grn, pt_blu, pt_size);
+	  xvect.push_back(m_navx_plot[index].get_value_by_index(i));
+	  yvect.push_back(m_navy_plot[index].get_value_by_index(i));
 	}
       }
     }
+    drawPointList(xvect, yvect, pt_size, cvect);
   }
 
   // [index] refers to the vehicle index.

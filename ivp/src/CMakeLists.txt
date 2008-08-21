@@ -124,6 +124,8 @@ SET(IVP_APPS_TO_BUILD
   app_geoview
   app_logview
   app_alogscan
+  app_aloggrab
+  app_alogfilt
   app_alogclip
   app_splug
   iMarineSim
@@ -140,6 +142,7 @@ SET(IVP_APPS_TO_BUILD
   uProcessWatch
   uRepeater
   uTermCommand
+  uFunctionVis
   uXMS
   uPokeDB
   ${LINUX_ONLY_APPS}

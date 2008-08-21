@@ -60,8 +60,9 @@ public:
   double get_center_y() const;
   double get_avg_x() const;
   double get_avg_y() const;
+  bool   segs_cross(bool loop=true) const;
 
-  std::string get_spec() const;
+  std::string get_spec(int vertex_precision=1) const;
 
 protected:
   int    closest_vertex(double, double) const; 
@@ -77,12 +78,4 @@ protected:
 };
 
 #endif
-
-
-
-
-
-
-
-
 

@@ -280,7 +280,6 @@ bool PMV_MOOSApp::parseSingleReport(string sReport)
   string vessel_name = "";
   string vessel_type = "";
 
-  MOOSTrace("Received Msg = %s\n", sReport.c_str());
 
   bool bVName = tokParse(sReport, "NAME",   ',', '=', vessel_name);
   bool bVType = tokParse(sReport, "TYPE",   ',', '=', vessel_type);
@@ -324,7 +323,7 @@ bool PMV_MOOSApp::receivePK_SOL(CMOOSMsg &Msg)
 
   vector<string> svector = parseString(Msg.m_sVal, ';');
 
-  MOOSTrace("Received PK_SOL Msg\n");
+  //MOOSTrace("Received PK_SOL Msg\n");
 
   // cycle through all reports
 
@@ -349,8 +348,7 @@ bool PMV_MOOSApp::receivePK_SOL(CMOOSMsg &Msg)
 
 bool PMV_MOOSApp::receiveAIS_REPORT(CMOOSMsg &Msg)
 {
-  MOOSTrace("Received AIS_REPORT Msg\n");
-  return( parseSingleReport( Msg.m_sVal ) );
+  return(parseSingleReport( Msg.m_sVal ));
 }
 
 //--------------------------------------------------------------

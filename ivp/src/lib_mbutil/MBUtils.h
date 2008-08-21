@@ -30,6 +30,7 @@
 std::vector<std::string> parseString(const std::string&, char);
 std::vector<std::string> parseString(const std::string&, 
 				     const std::string&);
+std::vector<std::string> parseQuotedString(const std::string&, char);
 std::vector<std::string> chompString(const std::string&, char);
 std::vector<std::string> sortStrings(std::vector<std::string>);
 std::vector<std::string> mergeVectors(std::vector<std::string>,
@@ -46,8 +47,8 @@ std::string toupper(const std::string&);
 std::string truncString(const std::string&, int, std::string="");
 std::string boolToString(bool);
 std::string intToString(int);
-std::string floatToString(float, int=0);
-std::string doubleToString(double, int=0);
+std::string floatToString(float, int=5);
+std::string doubleToString(double, int=5);
 std::string dstringCompact(const std::string&);
 std::string compactConsecutive(const std::string&, char);
 std::string findReplace(const std::string&, char, char);
