@@ -9,6 +9,9 @@ Behavior = BHV_Waypoint
   condition = RETURN = false
   condition = DEPLOY = true
   endflag   = RETURN = true
+  runflag   = ONE = "hello"
+  runflag   = TWO = world
+//  ipf-type  = rate_of_closure
 
   speed     = 2.0
   radius    = 8.0
@@ -38,7 +41,7 @@ Behavior = BHV_AvoidObstacles
   pwt        = 100
   condition  = DEPLOY = true
 
-              poly = 3550,9850:3550,9820:3590,9820:3590,9850
+              poly = label,obstacle:3560,9850:3560,9820:3600,9820:3600,9850
 //            poly = 30,-80:30,-110:70,-110:70,-80
 //            poly = 40,-80:40,-110:80,-110:80,-80 
      allowable_ttc = 20
@@ -55,6 +58,44 @@ Behavior = BHV_AvoidObstacles
 
        depth = 15
     duration = 300
+}
+
+
+//----------------------------------------------
+Behavior = BHV_Hysteresis
+{
+  name       = hysteresis
+  pwt        = 30
+  condition  = DEPLOY = true
+
+  memory_time = 20
+}
+
+
+//----------------------------------------------
+Behavior = BHV_Timer
+{
+  name       = generic_timer
+  duration_status = FOOBAR
+  duration   = 10
+  perpetual  = true
+}
+
+
+//----------------------------------------------
+Behavior = BHV_MaintainHeading
+{
+  name       = maintain_heading
+  pwt        = 200
+  condition  = SURFACING = true
+  nostarve   = SURFACING, 20
+  duration   = 60
+  duration_status = MAINTAINING
+
+         heading = on_active
+       peakwidth = 20
+       basewidth = 160
+     summitdelta = 95
 }
 
 

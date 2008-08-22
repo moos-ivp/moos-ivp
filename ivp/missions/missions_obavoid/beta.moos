@@ -19,9 +19,9 @@ ProcessConfig = ANTLER
   Run = pTransponderAIS	@ NewConsole = true
   Run = uXMS		@ NewConsole = true
   Run = iRemote		@ NewConsole = true
-  Run = pMarineViewer	@ NewConsole = true
+  //Run = pMarineViewer	@ NewConsole = true
   Run = pMarinePID	@ NewConsole = false
-  //Run = pShipsideViewer	@ NewConsole = true
+  Run = pShipsideViewer	@ NewConsole = true
   Run = pHelmIvP	@ NewConsole = false
   Run = iMarineSim	@ NewConsole = false
   Run = pEchoVar	@ NewConsole = false
