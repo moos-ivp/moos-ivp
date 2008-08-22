@@ -20,7 +20,7 @@ public:
   bool addVertex(const std::string& description, 
 		 CMOOSGeodesy& m_geodesy);
 
-  bool setParam(std::string param, std::string value);
+  bool setParam(const std::string& param, std::string value);
 
   unsigned int size() {return(m_vertex_xpos.size());}
   
@@ -65,6 +65,8 @@ protected:
   bool   m_viewable_all;
   double m_line_shade;
   double m_label_shade;
+
+  std::string m_param_warning;
 
   // Datum member variables
   bool   m_datum_viewable;

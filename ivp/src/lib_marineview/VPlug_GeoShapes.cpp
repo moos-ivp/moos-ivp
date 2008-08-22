@@ -78,8 +78,9 @@ VPlug_GeoShapes::VPlug_GeoShapes()
 //         circle_line_width
 //         point_vertex_size
 
-bool VPlug_GeoShapes::setParam(string param, string value)
+bool VPlug_GeoShapes::setParam(const string& param, string value)
 {
+  m_param_warning = "";
   if(strContains(param, "_viewable_"))
     return(setViewableMapping(param, value));
   else if(strContains(param, "_color"))
@@ -88,8 +89,27 @@ bool VPlug_GeoShapes::setParam(string param, string value)
     return(setGSizeMapping(param, value));
   else if(strContains(param, "_size"))
     return(setGSizeMapping(param, value));
-  else
+  else if(param == "clear") {
+    if(value == "seglists")
+      m_polygons.clear();
+    else if(value == "polygons")
+      m_seglists.clear();
+    else if(value == "grids")
+      m_grids.clear();
+    else if(value == "circles")
+      m_circles.clear();
+    else if(value == "points")
+      m_points.clear();
+    else if(value == "hexagons")
+      m_hexagons.clear();
+    else
+      m_param_warning = "VPlug_GeoShapes: unknown value for clear param";
+      return(false);
+  }
+  else {
+    m_param_warning = "VPlug_GeoShapes: unknown param: " + param;
     return(false);
+  }
   
   return(true);
 }
@@ -99,6 +119,10 @@ bool VPlug_GeoShapes::setParam(string param, string value)
 
 void VPlug_GeoShapes::addPolygon(const XYPolygon& new_poly)
 {
+  // We reject zero-sized polygons
+  if(new_poly.size() == 0)
+    return;
+
   string new_label = new_poly.get_label();
   if(new_label == "") {
     m_polygons.push_back(new_poly);
@@ -119,6 +143,10 @@ void VPlug_GeoShapes::addPolygon(const XYPolygon& new_poly)
 
 void VPlug_GeoShapes::addSegList(const XYSegList& new_segl)
 {
+  // We reject zero-sized seglists
+  if(new_segl.size() == 0)
+    return;
+
   string new_label = new_segl.get_label();
   if(new_label == "") {
     m_seglists.push_back(new_segl);

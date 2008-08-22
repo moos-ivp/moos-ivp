@@ -125,9 +125,9 @@ void OpAreaSpec::addVertex(double xpos, double ypos, double lwidth,
 //-----------------------------------------------------------
 // Procedure: setParam()
 
-bool OpAreaSpec::setParam(string param, string value)
+bool OpAreaSpec::setParam(const string& param, string value)
 {
-  //cout << "OpAreaSpec::setParam: param:" << param << "  val:" << value << endl;
+  m_param_warning = "";
   if(param == "op_area_viewable_all")
     return(setBooleanOnString(m_viewable_all, value));
   else if(param == "op_area_viewable_labels")

@@ -409,22 +409,23 @@ bool MarineViewer::setCommonParam(string param, string value)
     else
       return(false);
   }
-  else if(p=="clear") {
-    if(v == "polygons")
-      m_geoshapes.clearPolygons();
-    else if(v == "seglists")
-      m_geoshapes.clearSegLists();
-    else if(v == "grids")
-      m_geoshapes.clearGrids();
-    else if(v == "circles")
-      m_geoshapes.clearCircles();
-    else
-      return(false);
+  else if(p=="polygon") {
+    XYPolygon new_poly = stringToPoly(value);
+    m_geoshapes.addPolygon(new_poly);
+  }
+  else if(p=="seglist") {
+    XYSegList new_segl = stringToSegList(value);
+    m_geoshapes.addSegList(new_segl);
+  }
+  else if(p=="view_point") {
+    XYPoint new_point = stringToPoint(value);
+    m_geoshapes.addPoint(new_point);
   }
   else {
     bool handled = false;
     handled = handled || m_op_area.setParam(p,v);
     handled = handled || m_vmarkers.setParam(p,v);
+    handled = handled || m_geoshapes.setParam(p,v);
     return(handled);
   }
 

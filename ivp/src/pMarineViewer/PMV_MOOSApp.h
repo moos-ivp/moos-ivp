@@ -50,7 +50,6 @@ class PMV_MOOSApp : public CMOOSApp
   bool receivePK_SOL(CMOOSMsg &Msg);
   bool receiveGRID_CONFIG(CMOOSMsg &Msg);
   void receiveGRID_DELTA(CMOOSMsg &Msg);
-  bool receivePolygon(CMOOSMsg &Msg);
   bool receiveSegList(CMOOSMsg &Msg);
   bool receivePoint(CMOOSMsg &Msg);
   bool parseSingleReport(std::string sReport);

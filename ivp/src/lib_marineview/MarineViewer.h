@@ -173,6 +173,8 @@ protected:
   OpAreaSpec       m_op_area;
   VPlug_GeoShapes  m_geoshapes;
   CMOOSGeodesy     m_geodesy;
+
+  std::string m_param_warning;
 };
 
 #endif 

@@ -135,8 +135,9 @@ bool VMarkerSet::addVMarker(string mtype, double xpos, double ypos,
 //-----------------------------------------------------------
 // Procedure: setParam()
 
-bool VMarkerSet::setParam(string param, string value)
+bool VMarkerSet::setParam(const string& param, string value)
 {
+  m_param_warning = "";
   if(param == "markers_viewable")
     return(setBooleanOnString(m_markers_viewable, value));
   else if(param == "marker_labels_viewable")
@@ -154,8 +155,10 @@ bool VMarkerSet::setParam(string param, string value)
 	m_marker_scale_global *= 1.25;
       else if(value == "reset")
 	m_marker_scale_global = 1;
-      else
+      else {
+	m_param_warning = "VMarkerSet: unkown value for marker_scale_global";
 	return(false);
+      }
     }
   }
        
@@ -187,8 +190,10 @@ bool VMarkerSet::setParam(string param, string value)
 	m_label_color = colorParse("Coral");
     }
     else {
-      if(!isColor(value))
+      if(!isColor(value)) {
+	m_param_warning = "VMarkerSet: unknown label_color:" + value;
 	return(false);
+      }
       vector<double> cvect = colorParse(value);
       m_label_color_default = cvect;
       m_label_color         = cvect;
@@ -198,24 +203,6 @@ bool VMarkerSet::setParam(string param, string value)
   else
     return(false);
 
-  return(true);
-}
-
-//-----------------------------------------------------------
-// Procedure: setParam()
-
-bool VMarkerSet::setParam(string param, double value)
-{
-  if(param == "mod_scale_all") {
-    if((m_marker_scale_global * value) > 0.1)
-      m_marker_scale_global *= value;
-  }
-  else if(param == "set_scale_all") {
-    if(value > 0.1)
-      m_marker_scale_global = value;
-  }
-  else
-    return(false);
   return(true);
 }
 

@@ -23,8 +23,10 @@ public:
   VPlug_GeoShapes();
   virtual ~VPlug_GeoShapes() {};
 
-  bool setParam(std::string param, std::string value);
+  bool setParam(const std::string& param, std::string value);
   
+  std::string getParamWarning() {return(m_param_warning);};
+
   void addPolygon(const XYPolygon&);
   void addSegList(const XYSegList&);
   void addGrid(const XYGrid&);
@@ -43,13 +45,6 @@ public:
   int sizeCircles()  {return(m_circles.size());};
   int sizeHexagons() {return(m_hexagons.size());};
   int sizePoints()   {return(m_points.size());};
-
-  void clearPolygons() {m_polygons.clear();};
-  void clearSegLists() {m_seglists.clear();};
-  void clearGrids()    {m_grids.clear();};
-  void clearCircles()  {m_circles.clear();};
-  void clearHexagons() {m_hexagons.clear();};
-  void clearPoints()   {m_points.clear();};
 
   void remove(const std::string& gtype, int index);
 
@@ -89,6 +84,8 @@ protected:
   std::map<std::string, std::vector<double> >  m_color_map;
   std::map<std::string, bool>                  m_viewable_map;
   std::map<std::string, double>                m_gsize_map;
+
+  std::string m_param_warning;
 };
 
 #endif

@@ -60,7 +60,20 @@ bool PMV_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
   for(p = NewMail.begin();p!=NewMail.end();p++) {
     CMOOSMsg &Msg = *p;
 
-    string key = Msg.m_sKey;
+    string key  = Msg.m_sKey;
+    string sval = Msg.m_sVal;
+
+#if 0
+    bool ok = m_gui->setParam(key, sval);
+    if(!ok) {
+      MOOSTrace("pMarineViewer OnNewMail Unhandled msg: \n");
+      MOOSTrace("  [key:%s val:%s]\n", key.c_str(), sval.c_str());
+    }
+
+    if(key == "VIEW_POLYGON") MOOSTrace("P");
+    else if(key == "VIEW_SEGLIST") MOOSTrace("S");
+#endif
+
 
     if(key == "PK_SOL") {
       MOOSTrace("\nProcessing PK_SOL Message\n");
@@ -83,18 +96,12 @@ bool PMV_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
       receiveGRID_DELTA(Msg);
       gui_needs_redraw = true;
     }
-    else if(key == "VIEW_POLYGON") { 
-      receivePolygon(Msg);
-      gui_needs_redraw = true;
-    }
-    else if(key == "VIEW_SEGLIST") { 
-      receiveSegList(Msg);
-      gui_needs_redraw = true;
-    }
-    else if(key == "VIEW_POINT") { 
-      receivePoint(Msg);
-      gui_needs_redraw = true;
-    }
+    else if(key == "VIEW_POLYGON")
+      m_gui->mviewer->setParam("polygon", sval);
+    else if(key == "VIEW_SEGLIST")
+      m_gui->mviewer->setParam("seglist", sval);
+    else if(key == "VIEW_POINT") 
+      m_gui->mviewer->setParam(key, sval);
     else if(key == "VIEW_CIRCLE") { 
       receivePoint(Msg);
       gui_needs_redraw = true;
@@ -300,63 +307,6 @@ bool PMV_MOOSApp::receiveGRID_CONFIG(CMOOSMsg &Msg)
   }
   else {
     MOOSTrace("Parse Error in receiveGridConfig. \n");
-    MOOSTrace("Msg: %s\n", Msg.m_sVal.c_str());
-    return(false);
-  }
-}
-
-//----------------------------------------------------------
-// Procedure: receivePolygon
-
-bool PMV_MOOSApp::receivePolygon(CMOOSMsg &Msg)
-{
-  XYPolygon new_poly = stringToPoly(Msg.m_sVal);
-
-  string label = "ERR";
-  bool ok = (new_poly.size() != 0);
-  if(ok)
-    label = new_poly.get_label();
-  
-  if(m_verbose)
-    MOOSTrace("   Poly(%s)\n",label.c_str());
-  else
-    MOOSTrace("P");
-
-  if(ok) {
-    m_gui->mviewer->addPoly(new_poly);
-    return(true);
-  }
-  else {
-    MOOSTrace("Parse Error in receivePolygon. \n");
-    MOOSTrace("Msg: %s\n", Msg.m_sVal.c_str());
-    return(false);
-  }
-}
-
-//----------------------------------------------------------
-// Procedure: receiveSegList
-
-bool PMV_MOOSApp::receiveSegList(CMOOSMsg &Msg)
-{
-  XYSegList new_seglist = stringToSegList(Msg.m_sVal);
-
-  bool ok = (new_seglist.size() > 0);
-
-  string label = "ERR";
-  if(ok)
-    label = new_seglist.get_label();
-  
-  if(m_verbose)
-    MOOSTrace("   SegList(%s)\n", label.c_str());
-  else
-    MOOSTrace("S");
-
-  if(ok) {
-    m_gui->mviewer->addSegList(new_seglist);
-    return(true);
-  }
-  else {
-    MOOSTrace("Parse Error in receiveSegList. \n");
     MOOSTrace("Msg: %s\n", Msg.m_sVal.c_str());
     return(false);
   }
