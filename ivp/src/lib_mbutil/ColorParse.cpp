@@ -64,11 +64,7 @@ vector<double> colorParse(const std::string &str)
 
 vector<double> colorHexToVector(const std::string& str)
 {
-  vector<double> return_vector;
-  return_vector.push_back(0);
-  return_vector.push_back(0);
-  return_vector.push_back(0);
-  
+  vector<double> return_vector(3,0);
   int i;
 
   // convert to lower so we only have to check half cases.
@@ -119,11 +115,7 @@ vector<double> colorHexToVector(const std::string& str)
 
 vector<double> colorDecToVector(const std::string& str)
 {
-  vector<double> return_vector;
-  return_vector.push_back(0);
-  return_vector.push_back(0);
-  return_vector.push_back(0);
-  
+  vector<double> return_vector(3,0);
   int i;
 
   vector<string> svector = parseString(str, ',');
@@ -151,6 +143,22 @@ vector<double> colorDecToVector(const std::string& str)
 
 			 
 //-------------------------------------------------------------
+// Procedure: isColor
+
+bool isColor(const std::string &str)
+{
+  if(tolower(str) == "black")
+    return(true);
+  
+  vector<double> cvect = colorParse(str);
+  if((cvect[0]==0)&&(cvect[1]==0)&&(cvect[2]==0))
+    return(false);
+  else
+    return(true);
+}
+
+
+//-------------------------------------------------------------
 // Procedure: colorNameToHex
 
 string colorNameToHex(const std::string &str)
@@ -158,15 +166,25 @@ string colorNameToHex(const std::string &str)
   string cstr = tolower(stripBlankEnds(str));
   cstr = findReplace(cstr, "_", "");
 
+  // Check for the most common ones first
+  if(cstr == "black")          return("hex:00,00,00");
+  if(cstr == "blue")           return("hex:00,00,ff");
+  if(cstr == "darkgreen")      return("hex:00,64,00");
+  if(cstr == "darkolivegreen") return("hex:55,6b,2f");
+  if(cstr == "darkred")        return("hex:8b,00,00");
+  if(cstr == "green")          return("hex:00,80,00");
+  if(cstr == "red")            return("hex:ff,00,00");
+  if(cstr == "yellow")         return("hex:ff,ff,00");
+  if(cstr == "white")          return("hex:ff,ff,ff");
+
+  // Then check for lesser common colors
   if(cstr == "antiquewhite")   return("hex:fa,eb,d7");
   if(cstr == "aqua")           return("hex:00,ff,ff");
   if(cstr == "aquamarine")     return("hex:7f,ff,d4");
   if(cstr == "azure")          return("hex:f0,ff,ff");
   if(cstr == "beige")          return("hex:f5,f5,dc");
   if(cstr == "bisque")         return("hex:ff,e4,c4");
-  if(cstr == "black")          return("hex:00,00,00");
   if(cstr == "blanchedalmond") return("hex:ff,eb,cd");
-  if(cstr == "blue")           return("hex:00,00,ff");
   if(cstr == "blueviolet")     return("hex:8a,2b,e2");
   if(cstr == "brown")          return("hex:a5,2a,2a");
   if(cstr == "burlywood")      return("hex:de,b8,87");
@@ -182,13 +200,10 @@ string colorNameToHex(const std::string &str)
   if(cstr == "darkcyan")       return("hex:00,8b,8b");
   if(cstr == "darkgoldenrod")  return("hex:b8,86,0b");
   if(cstr == "darkgray")       return("hex:a9,a9,a9");
-  if(cstr == "darkgreen")      return("hex:00,64,00");
   if(cstr == "darkkhaki")      return("hex:bd,b7,6b");
   if(cstr == "darkmagenta")    return("hex:8b,00,8b");
-  if(cstr == "darkolivegreen") return("hex:55,6b,2f");
   if(cstr == "darkorange")     return("hex:ff,8c,00");
   if(cstr == "darkorchid")     return("hex:99,32,cc");
-  if(cstr == "darkred")        return("hex:8b,00,00");
   if(cstr == "darksalmon")     return("hex:e9,96,7a");
   if(cstr == "darkseagreen")   return("hex:8f,bc,8f");
   if(cstr == "darkslateblue")  return("hex:48,3d,8b");
@@ -208,7 +223,6 @@ string colorNameToHex(const std::string &str)
   if(cstr == "gold")           return("hex:ff,d7,00");
   if(cstr == "goldenrod")      return("hex:da,a5,20");
   if(cstr == "gray")           return("hex:80,80,80");
-  if(cstr == "green")          return("hex:00,80,00");
   if(cstr == "greenyellow")    return("hex:ad,ff,2f");
   if(cstr == "honeydew")       return("hex:f0,ff,f0");
   if(cstr == "hotpink")        return("hex:ff,69,b4");
@@ -268,7 +282,6 @@ string colorNameToHex(const std::string &str)
   if(cstr == "plum")           return("hex:dd,a0,dd");
   if(cstr == "powderblue")     return("hex:b0,e0,e6");
   if(cstr == "purple")         return("hex:80,00,80");
-  if(cstr == "red")            return("hex:ff,00,00");
   if(cstr == "rosybrown")      return("hex:bc,8f,8f");
   if(cstr == "royalblue")      return("hex:41,69,e1");
   if(cstr == "saddlebrowm")    return("hex:8b,45,13");
@@ -291,9 +304,7 @@ string colorNameToHex(const std::string &str)
   if(cstr == "turquoise")      return("hex:40,e0,d0");
   if(cstr == "violet")         return("hex:ee,82,ee");
   if(cstr == "wheat")          return("hex:f5,de,b3");
-  if(cstr == "white")          return("hex:ff,ff,ff");
   if(cstr == "whitesmoke")     return("hex:f5,f5,f5");
-  if(cstr == "yellow")         return("hex:ff,ff,00");
   if(cstr == "yellowgreen")    return("hex:9a,cd,32");
 
   return("error");

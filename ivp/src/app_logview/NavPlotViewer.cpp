@@ -41,10 +41,13 @@ NavPlotViewer::NavPlotViewer(int x, int y, int w, int h, const char *l)
   m_gridplot_ix  = 0;
   m_local_ix     = 0;
   m_trail_gap    = 1;
-  m_trail_size   = 1;
+  m_trail_size   = 0.5;
   m_alltrail     = true;
   m_vehibody     = "kayak";  // "auv" or "kayak"
   m_gridplots_draw = true;
+  m_shape_scale  = 0.12;
+  m_trails       = true;
+  m_draw_vname   = false;
 }
 
 //-------------------------------------------------------------
@@ -60,6 +63,52 @@ void NavPlotViewer::addLogPlot(const LogPlot& lp, string vid, string type)
   else if((type == "nav_heading") || (type == "navheading"))
     m_plotmap_hdg[vid] = lp;
 }
+
+//-------------------------------------------------------------
+// Procedure: setParam
+
+bool NavPlotViewer::setParam(string param, string value)
+{
+  if(setCommonParam(param, value))
+    return(true);
+  
+  if(param == "trail_view")
+    return(setBooleanOnString(m_trails, value));
+  else if(param=="display_vname")
+    return(setBooleanOnString(m_draw_vname, value));
+  else
+    return(false);
+  
+  return(true);
+}
+
+//-------------------------------------------------------------
+// Procedure: setParam
+
+bool NavPlotViewer::setParam(string param, double value)
+{
+  if(setCommonParam(param, value))
+    return(true);
+  
+  if(param == "shape_scale") {
+    if(m_shape_scale * value > 0.01)      
+      m_shape_scale *= value;
+  }
+  else if(param == "trail_gap") {
+    if(m_trail_gap + value >= 1)      
+      m_trail_gap += (int)value;
+  }
+  else if(param == "trail_size") {
+    m_trail_size += value;
+    if(m_trail_size <= 0)
+      m_trail_size = 0.05;
+  }
+  else
+    return(false);
+  
+  return(true);
+}
+
 
 //-------------------------------------------------------------
 // Procedure: draw()
@@ -82,15 +131,15 @@ void NavPlotViewer::draw()
 //   Purpose: For a given x position, return its position, in 
 //            terms of delta meters from the zero position.
 
-float NavPlotViewer::getMetersX()
+double NavPlotViewer::getMetersX()
 {
   if(m_cross_offon) {
     int iwidth = m_back_img.get_img_width();
-    float x_pos = ((float)(iwidth) / 2.0) - (float)(m_vshift_x);
-    float x_pct = m_back_img.pixToPctX(x_pos);
-    float x_pct_cent = m_back_img.get_img_centx();
-    float x_pct_mtrs = m_back_img.get_img_meters();
-    float meters = (x_pct - x_pct_cent) / (x_pct_mtrs / 100.0);
+    double x_pos = ((double)(iwidth) / 2.0) - (double)(m_vshift_x);
+    double x_pct = m_back_img.pixToPctX(x_pos);
+    double x_pct_cent = m_back_img.get_img_centx();
+    double x_pct_mtrs = m_back_img.get_img_meters();
+    double meters = (x_pct - x_pct_cent) / (x_pct_mtrs / 100.0);
     return(meters);
   }
   else {
@@ -107,15 +156,15 @@ float NavPlotViewer::getMetersX()
 //   Purpose: For a given y position, return its position, in 
 //            terms of delta meters from the zero position.
 
-float NavPlotViewer::getMetersY()
+double NavPlotViewer::getMetersY()
 {
   if(m_cross_offon) {
     int iheight = m_back_img.get_img_height();
-    float y_pos = ((float)(iheight) / 2.0) - (float)(m_vshift_y);
-    float y_pct = m_back_img.pixToPctY(y_pos);
-    float y_pct_cent = m_back_img.get_img_centy();
-    float y_pct_mtrs = m_back_img.get_img_meters();
-    float meters = (y_pct - y_pct_cent) / (y_pct_mtrs / 100.0);
+    double y_pos = ((double)(iheight) / 2.0) - (double)(m_vshift_y);
+    double y_pct = m_back_img.pixToPctY(y_pos);
+    double y_pct_cent = m_back_img.get_img_centy();
+    double y_pct_mtrs = m_back_img.get_img_meters();
+    double meters = (y_pct - y_pct_cent) / (y_pct_mtrs / 100.0);
     return(meters);
   }
   else {
@@ -234,7 +283,7 @@ int NavPlotViewer::addGridPlot(const GridPlot &given_gridplot)
 //-------------------------------------------------------------
 // Procedure: getCurrTime
 
-float NavPlotViewer::getCurrTime()
+double NavPlotViewer::getCurrTime()
 {
   if(m_navx_plot.size() > 0)
     return(m_navx_plot[m_global_ix].get_time_by_index(m_local_ix));
@@ -248,14 +297,14 @@ float NavPlotViewer::getCurrTime()
 //            NavPlot. Useful for determining a delay in between
 //            index increments to simulate "real-time" stepping.
 
-float NavPlotViewer::getAvgStepTime()
+double NavPlotViewer::getAvgStepTime()
 {
   if(m_navx_plot.size() == 0)
     return(0);
   
-  float max_time = m_navx_plot[m_global_ix].get_max_time();
-  float min_time = m_navx_plot[m_global_ix].get_min_time();
-  float plt_size = m_navx_plot[m_global_ix].size();
+  double max_time = m_navx_plot[m_global_ix].get_max_time();
+  double min_time = m_navx_plot[m_global_ix].get_min_time();
+  double plt_size = m_navx_plot[m_global_ix].size();
   
   return((max_time - min_time) / (plt_size - 1));
 }
@@ -266,7 +315,7 @@ float NavPlotViewer::getAvgStepTime()
 
 void NavPlotViewer::drawPoints(const vector<double>& vx, 
 			       const vector<double>& vy,
-			       float cr, float cg, float cb, float sz)
+			       double cr, double cg, double cb, double sz)
 {
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
@@ -277,12 +326,12 @@ void NavPlotViewer::drawPoints(const vector<double>& vx,
   glLoadIdentity();
 
   // Determine position in terms of image percentage
-  float pt_ix = meters2img('x', px);
-  float pt_iy = meters2img('y', py);
+  double pt_ix = meters2img('x', px);
+  double pt_iy = meters2img('y', py);
 
   // Determine position in terms of view percentage
-  float pt_vx = img2view('x', pt_ix);
-  float pt_vy = img2view('y', pt_iy);
+  double pt_vx = img2view('x', pt_ix);
+  double pt_vy = img2view('y', pt_iy);
 
   glTranslatef(pt_vx, pt_vy, 0); // theses are in pixel units
 
@@ -307,12 +356,6 @@ void NavPlotViewer::drawNavPlots()
 {
   for(unsigned int i=0; i<m_navx_plot.size(); i++)
     drawNavPlot(i);
-
-#if 0
-  map<string, LogPlot>::iterator p;
-  p = m_plotmap
-#endif
-
 }
 
 //-------------------------------------------------------------
@@ -371,14 +414,18 @@ void NavPlotViewer::drawNavPlot(unsigned int index)
     theta = m_hdg_plot[index].get_value_by_time(ctime);
 
   ObjectPose opose(x,y,theta,0,0);
-  double red=1.0, grn=0.906, blu=0.243;
+  vector<double> cvect = colorParse("1.0, 0.906, 0.243");
   if(index==1) 
-    {red=1.0; grn=0; blu=0;}
+    cvect = colorParse("red");    
   if(index==2)
-    {red=0; grn=1; blu=0;}
+    cvect = colorParse("green");
   if(index==2) 
-    {red=0; grn=0; blu=2;}
-  drawCommonVehicle("", opose, red, grn, blu, m_vehibody);
+    cvect = colorParse("blue");
+
+  vector<double> vname_color(3,1); // Vehicle name will be drawn "white"
+
+  drawCommonVehicle("", opose, cvect, vname_color, m_vehibody, 
+		    m_shape_scale, m_draw_vname);
 }
 
 

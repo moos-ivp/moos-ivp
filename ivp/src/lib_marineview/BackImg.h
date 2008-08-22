@@ -38,39 +38,39 @@ public:
   void setTexture();
 
   unsigned char* get_img_data() {return(img_data);};
-  int   get_img_width()    {return(img_width);};
-  int   get_img_height()   {return(img_height);};
-  float get_img_centx()    {return(img_centx);};
-  float get_img_centy()    {return(img_centy);};
-  float get_img_meters()   {return(img_meters);};
+  int    get_img_width()    {return(img_width);};
+  int    get_img_height()   {return(img_height);};
+  double get_img_centx()    {return(img_centx);};
+  double get_img_centy()    {return(img_centy);};
+  double get_img_meters()   {return(img_meters);};
 
-  float get_x_at_img_left()   {return(x_at_img_left);};
-  float get_x_at_img_right()  {return(x_at_img_right);};
-  float get_y_at_img_bottom() {return(y_at_img_bottom);};
-  float get_y_at_img_top()    {return(y_at_img_top);};
-  float get_x_at_img_ctr()    {return(x_at_img_ctr);};
-  float get_y_at_img_ctr()    {return(y_at_img_ctr);};
+  double get_x_at_img_left()   {return(x_at_img_left);};
+  double get_x_at_img_right()  {return(x_at_img_right);};
+  double get_y_at_img_bottom() {return(y_at_img_bottom);};
+  double get_y_at_img_top()    {return(y_at_img_top);};
+  double get_x_at_img_ctr()    {return(x_at_img_ctr);};
+  double get_y_at_img_ctr()    {return(y_at_img_ctr);};
 
-  float get_pix_per_mtr()     {return(img_meters*img_width/100);};
+  double get_pix_per_mtr()     {return(img_meters*img_width/100);};
 
-  float pixToPctX(float pix);
-  float pixToPctY(float pix);
+  double pixToPctX(double pix);
+  double pixToPctY(double pix);
 
 private:
   int            img_width;
   int            img_height;
   unsigned char* img_data;
-  float          img_theta;
-  float          img_centx;
-  float          img_centy;
-  float          img_meters;
+  double         img_theta;
+  double         img_centx;
+  double         img_centy;
+  double         img_meters;
 
-  float          x_at_img_ctr;
-  float          y_at_img_ctr;
-  float          x_at_img_left;
-  float          x_at_img_right;
-  float          y_at_img_top;
-  float          y_at_img_bottom;
+  double         x_at_img_ctr;
+  double         y_at_img_ctr;
+  double         x_at_img_left;
+  double         x_at_img_right;
+  double         y_at_img_top;
+  double         y_at_img_bottom;
 
 };
 

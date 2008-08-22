@@ -23,7 +23,7 @@
 #ifndef SHAPE_SHIP_HEADER
 #define SHAPE_SHIP_HEADER
 
-float g_shipBody[]=
+double g_shipBody[]=
 {
   30.0,   0.0,      
   39.0,  40.0,
@@ -45,9 +45,9 @@ float g_shipBody[]=
 double       g_shipCtrX     = 0.0;
 double       g_shipCtrY     = 106.5;
 unsigned int g_shipBodySize = 15;
-float        g_shipScale    = 0.8;
+double       g_shipScale    = 0.8;
 
-float g_shipFatBody[]=
+double g_shipFatBody[]=
 {
   40.0,   0.0,      
   52.0,  40.0,
@@ -69,7 +69,7 @@ float g_shipFatBody[]=
 double       g_shipFatCtrX     = 0.0;
 double       g_shipFatCtrY     = 106.5;
 unsigned int g_shipFatBodySize = 15;
-float        g_shipFatScale    = 1.0;
+double        g_shipFatScale    = 1.0;
 
 #endif
 

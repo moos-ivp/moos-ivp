@@ -60,9 +60,8 @@ protected:
   
 
   double m_marker_scale_global;
-  bool   m_marker_viewable_all;
-  bool   m_marker_viewable_labels;
-
+  bool   m_markers_viewable;
+  bool   m_marker_labels_viewable;
 };
 
 #endif

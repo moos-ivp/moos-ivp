@@ -107,11 +107,11 @@ int main(int argc, char *argv[])
 
   cout << "# of file polys: " << all_polys.size() << endl;
   for(j=0; j<all_polys.size(); j++)
-    gui->addPoly(all_polys[j]);
+    gui->pviewer->addPoly(all_polys[j]);
 
   cout << "# of file grids: " << all_grids.size() << endl;
   for(j=0; j<all_grids.size(); j++)
-    gui->addGrid(all_grids[j]);
+    gui->pviewer->addGrid(all_grids[j]);
   
   cout << "# of file seglists: " << all_segls.size() << endl;
   for(j=0; j<all_segls.size(); j++)
@@ -123,7 +123,7 @@ int main(int argc, char *argv[])
   
   cout << "# of file hexagons: " << all_hexagons.size() << endl;
   for(j=0; j<all_hexagons.size(); j++)
-    gui->addPoly(all_hexagons[j]);
+    gui->pviewer->addPoly(all_hexagons[j]);
   
   cout << "# of file marker entries: " << all_markers.size() << endl;
   for(j=0; j<all_markers.size(); j++)

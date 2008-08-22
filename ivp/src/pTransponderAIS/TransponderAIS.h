@@ -102,10 +102,6 @@ protected:
 
   std::string interval_history;
 
-  // GLINT08 oex hack variables
-  bool first_from_oex;
-  double oex_offset;
-
   };
 
 #endif

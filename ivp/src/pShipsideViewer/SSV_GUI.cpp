@@ -36,6 +36,7 @@ SSV_GUI::SSV_GUI(int g_w, int g_h, const char *g_l)
   this->begin();
 
   augmentMenu();
+  m_curr_time = 0;
 
   int info_size=12;
   //int bcol_width = 100;
@@ -308,7 +309,7 @@ void SSV_GUI::augmentMenu()
   mbar->add("Shipside/Radial Smaller", FL_CTRL+'r', (Fl_Callback*)SSV_GUI::cb_Radial,(void*)-1, 0);
   mbar->add("Shipside/Radial Bigger", FL_ALT+'r', (Fl_Callback*)SSV_GUI::cb_Radial,(void*)1, FL_MENU_DIVIDER);
 
-  mbar->add("ForeView/Cycle Focus", 'v', (Fl_Callback*)SSV_GUI::cb_CycleFocus,(void*)0, 0);
+  mbar->add("Vehicles/Cycle Focus", 'v', (Fl_Callback*)SSV_GUI::cb_CycleFocus,(void*)0, 0);
 
   mbar->add("GeoAttr/BearingLine - Edit/bearing_color=white", 0, (Fl_Callback*)SSV_GUI::cb_SSV_SetGeoAttr, (void*)100, 0);
   mbar->add("GeoAttr/BearingLine - Edit/bearing_color=yellow", 0, (Fl_Callback*)SSV_GUI::cb_SSV_SetGeoAttr, (void*)101, 0);
@@ -334,31 +335,24 @@ int SSV_GUI::handle(int event)
 
 //----------------------------------------- UpdateXY
 void SSV_GUI::updateXY() {
-  int    index = mviewer->getDataIndex();
-  string vname = mviewer->getVehiName(index);
+  string time_str = doubleToString(m_curr_time, 1);
+  time->value(time_str.c_str());
+
+  string vname = mviewer->getStringInfo("active_vehicle_name");
+
   v_nam->value(vname.c_str());
+
   if(vname == "")
     m_cdeploy_box_text->copy_label("- none -");
   else
     m_cdeploy_box_text->copy_label(vname.c_str());
   
-  double curr_time = mviewer->getTime();
-  string time_str = doubleToString(curr_time, 1);
-  time->value(time_str.c_str());
-
   double hash = mviewer->getHashDelta();
   string hash_str = doubleToString(hash,1);
   d_hash->value(hash_str.c_str());
-  
-  if(mviewer->hasVehiName("ownship")) {
-    double radial_size = mviewer->getRadialSize();
-    string radial_str = doubleToString(radial_size,1);
-    d_radial->value(radial_str.c_str());
-    d_radial->value(radial_str.c_str());
-  }
-  else
-    d_radial->value(" /na");
-    
+
+  string radial_size = mviewer->getStringInfo("radial_size");
+  d_radial->value(radial_size.c_str());
 
   if(vname == "") {
     x_mtr->value(" n/a");
@@ -373,54 +367,49 @@ void SSV_GUI::updateXY() {
     return;
   }
 
-  string mtrx_str = doubleToString(mviewer->getVehicleInfo(index,"xpos"),1);
-  x_mtr->value(mtrx_str.c_str());
-  string mtry_str = doubleToString(mviewer->getVehicleInfo(index,"ypos"),1);
-  y_mtr->value(mtry_str.c_str());
 
-  string spd_str = doubleToString(mviewer->getVehicleInfo(index,"speed"),1);
-  v_spd->value(spd_str.c_str());
+  string xpos = mviewer->getStringInfo("xpos", 1);
+  x_mtr->value(xpos.c_str());
+
+  string ypos = mviewer->getStringInfo("ypos", 1);
+  y_mtr->value(ypos.c_str());
   
-  string crs_str = doubleToString(mviewer->getVehicleInfo(index,"course"),1);
-  v_crs->value(crs_str.c_str());
+  string lat = mviewer->getStringInfo("lat", 6);
+  v_lat->value(lat.c_str());
 
-  string dep_str = doubleToString(mviewer->getVehicleInfo(index,"depth"),1);
-  v_dep->value(dep_str.c_str());
+  string lon = mviewer->getStringInfo("lon", 6);
+  v_lon->value(lon.c_str());
 
+  string spd = mviewer->getStringInfo("speed", 1);
+  v_spd->value(spd.c_str());
+  
+  string crs = mviewer->getStringInfo("course", 1);
+  v_crs->value(crs.c_str());
 
-  string lat_str = "??";
-  string lon_str = "??";
-  double dlat, dlon;
-  bool ok = mviewer->getLatLon(index, dlat, dlon);
-  if(ok) {
-    lat_str = doubleToString(dlat,6);
-    lon_str = doubleToString(dlon,6);
-  }
-  v_lat->value(lat_str.c_str());
-  v_lon->value(lon_str.c_str());
+  string dep = mviewer->getStringInfo("depth", 1);
+  v_dep->value(dep.c_str());
+  
+  string age_ais = mviewer->getStringInfo("age_ais", 2);
+  if(age_ais == "-1")
+    age_ais = "n/a";
+  v_ais->value(age_ais.c_str());
 
-  double age_ais = mviewer->getVehicleInfo(index,"age_ais");
-  string ais_str = doubleToString(age_ais,3);
-  if(age_ais == -1)
-    ais_str = "n/a";
-  v_ais->value(ais_str.c_str());
+  string rbearing = mviewer->getStringInfo("relative_bearing", 1);
+  if(rbearing == "-1")
+    rbearing = "n/a";
+  m_rbearing->value(rbearing.c_str());
+  
+  string vrange = mviewer->getStringInfo("relative_range", 1);
+  if(vrange == "-1")
+    vrange = "n/a";
+  m_contact_range->value(vrange.c_str());
 
-  double rbearing     = mviewer->getRelativeInfo(index, "relative_bearing");
-  string rbearing_str = doubleToString(rbearing,1);
-  if(rbearing == -1)
-    rbearing_str = "n/a";
-  m_rbearing->value(rbearing_str.c_str());
-
-  double vrange     = mviewer->getRelativeInfo(index, "range");
-  string vrange_str = doubleToString(vrange,1);
-  if(vrange == -1)
-    vrange_str = "n/a";
-  m_contact_range->value(vrange_str.c_str());
-
+#if 0
   if(mviewer->hasVehiName(ownship_b0->label()))
     ownship_b0->labelcolor(FL_BLACK);
   else
     ownship_b0->labelcolor(FL_DARK_RED);
+#endif
 
   updateButtonColor(ownship_b0);
   updateButtonColor(contact_b1);
@@ -432,13 +421,15 @@ void SSV_GUI::updateXY() {
 }
 
 //----------------------------------------- UpdateButtonColor
-void SSV_GUI::updateButtonColor(MY_Button* b) {
-
-  if(mviewer->hasVehiName(b->label()))
+void SSV_GUI::updateButtonColor(MY_Button* b) 
+{
+#if 0
+  if(mviewer->m_vehiset.hasVehiName(b->label()))
     b->labelcolor(FL_BLACK);
   else
     b->labelcolor(FL_WHITE);
   b->redraw();
+#endif
 }
 
 //----------------------------------------- CentricToggle
@@ -485,7 +476,7 @@ void SSV_GUI::cb_Radial(Fl_Widget* o, int v) {
 
 //----------------------------------------- CycleFocus
 inline void SSV_GUI::cb_CycleFocus_i(int val) {
-  mviewer->cycleIndex();
+  mviewer->setParam("cycle_active");
   mviewer->redraw();
   updateXY();
 }
@@ -526,8 +517,9 @@ void SSV_GUI::cb_Bearings(Fl_Widget* o) {
 //----------------------------------------- MOOS_Button
 inline void SSV_GUI::cb_MOOS_Button_i(int val) {
   
-  string vname = toupper(mviewer->getCurrVName());
-
+  string vname = mviewer->getStringInfo("active_vehicle_name");
+  vname = toupper(vname);
+  
   if(val == 0)
     pushPending("DEPLOY_ALL", "true");
   else if(val == 1)
@@ -581,7 +573,7 @@ inline void SSV_GUI::cb_ButtonView_i(int val) {
   if(val == 6) 
     blabel = contact_b6->label();
 
-  mviewer->setCurrent(blabel);
+  mviewer->setParam("active_vehicle_name", blabel);
   mviewer->redraw();
   updateXY();
 }

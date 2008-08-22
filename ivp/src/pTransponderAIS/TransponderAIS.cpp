@@ -51,9 +51,6 @@ TransponderAIS::TransponderAIS()
   m_db_uptime         = 0;
 
   m_contact_report_var = "AIS_REPORT";
-
-  first_from_oex = true;
-
 }
 
 //-----------------------------------------------------------------
@@ -584,19 +581,8 @@ bool TransponderAIS::handleIncomingNaFConMessage(const string& rMsg)
             // convert lat, long into x, y. 60 nautical miles per minute
             if(!m_geodesy.LatLong2LocalGrid(navLat, navLong, navY, navX))
                 return MOOSFail("Geodesy conversion failed\n");
- 
-	    /// GLINT08 hack last day, 11. Aug.to set OEX_NAV_UTC to my UTC.
-	    if (sourceID == 10)
-	      {
-		if (first_from_oex)
-		  {
-		    oex_offset = MOOSTime() - navTime;
-		    first_from_oex = false;
-		    navTime = MOOSTime();
-		  }
-		else
-		  navTime = navTime + oex_offset;
-	      }
+      
+
 
             // publish it at AIS_REPORT
             // all strings: assembleAIS(name,type,db_time,utc_time,x,y,lat,lon,spd,hdg,depth)
@@ -740,23 +726,22 @@ void TransponderAIS::postContactList()
 // Purpose: builds the string used for AIS_REPORT
 // tes 11.19.07
 
-string TransponderAIS::assembleAIS(string name, string type, string db_time, string utc_time,
-                                   string x, string y, string lat, string lon, string spd,
+string TransponderAIS::assembleAIS(string name, string type, string db_time, 
+				   string utc_time, string x, string y, 
+				   string lat, string lon, string spd,
                                    string hdg, string depth)
 {
-
-    string summary = "NAME=" + name;
-    summary += ",TYPE=" + type;
-    summary += ",MOOSDB_TIME=" + db_time;
-    summary += ",UTC_TIME=" + utc_time;
-    summary += ",X="   + x;
-    summary += ",Y="   + y;
-    summary += ",LAT=" + lat;
-    summary += ",LON=" + lon;
-    summary += ",SPD=" + spd;
-    summary += ",HDG=" + hdg;
-    summary += ",DEPTH=" + depth;
-    
-    return summary;
-
+  string summary = "NAME=" + name;
+  summary += ",TYPE=" + type;
+  summary += ",MOOSDB_TIME=" + db_time;
+  summary += ",UTC_TIME=" + utc_time;
+  summary += ",X="   + x;
+  summary += ",Y="   + y;
+  summary += ",LAT=" + lat;
+  summary += ",LON=" + lon;
+  summary += ",SPD=" + spd;
+  summary += ",HDG=" + hdg;
+  summary += ",DEPTH=" + depth;
+  
+  return summary;
 }

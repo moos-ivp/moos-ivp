@@ -245,11 +245,11 @@ int main(int argc, char *argv[])
 
   // Populate the GUI with the polygons built above
   for(j=0; j<polygons.size(); j++)
-    gui->addPoly(polygons[j]);
+    gui->np_viewer->addPoly(polygons[j]);
 
   // Populate the GUI with the search grids build above
   for(j=0; j<searchgrids.size(); j++)
-    gui->addGrid(searchgrids[j]);
+    gui->np_viewer->addGrid(searchgrids[j]);
 
   gui->updateXY();
   gui->readTiff(tif_file);

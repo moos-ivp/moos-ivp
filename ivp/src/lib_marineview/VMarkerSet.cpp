@@ -5,7 +5,6 @@
 /*    DATE: July 5th, 2008                                       */
 /*****************************************************************/
 
-#include <cstdlib>
 #include "VMarkerSet.h"
 #include "MBUtils.h"
 #include "ColorParse.h"
@@ -19,8 +18,8 @@ using namespace std;
 VMarkerSet::VMarkerSet()
 {
   m_marker_scale_global    = 1.0;
-  m_marker_viewable_all    = true;
-  m_marker_viewable_labels = true;
+  m_markers_viewable       = true;
+  m_marker_labels_viewable = true;
 
   m_label_color_default = colorParse("white");
   m_label_color         = m_label_color_default;
@@ -138,12 +137,30 @@ bool VMarkerSet::addVMarker(string mtype, double xpos, double ypos,
 
 bool VMarkerSet::setParam(string param, string value)
 {
-  if(param == "viewable_all")
-    return(setBooleanOnString(m_marker_viewable_all, value));
-  else if(param == "viewable_labels")
-    return(setBooleanOnString(m_marker_viewable_labels, value));
+  if(param == "markers_viewable")
+    return(setBooleanOnString(m_markers_viewable, value));
+  else if(param == "marker_labels_viewable")
+    return(setBooleanOnString(m_marker_labels_viewable, value));
+  else if(param == "marker_scale_global") {
+    if(isNumber(value)) {
+      double dval = atof(value.c_str());
+      if(dval > 0.1)
+	m_marker_scale_global = dval;
+    }
+    else {
+      if(value == "smaller")
+	m_marker_scale_global *= 0.8;
+      else if(value == "bigger")
+	m_marker_scale_global *= 1.25;
+      else if(value == "reset")
+	m_marker_scale_global = 1;
+      else
+	return(false);
+    }
+  }
+       
   else if(param == "label_color") {
-    if(tolower(value) == "toggle") {
+    if(value == "toggle") {
       m_label_color_index++;
       if(m_label_color_index > 9)
 	m_label_color_index = 0;
@@ -170,11 +187,9 @@ bool VMarkerSet::setParam(string param, string value)
 	m_label_color = colorParse("Coral");
     }
     else {
+      if(!isColor(value))
+	return(false);
       vector<double> cvect = colorParse(value);
-      if(tolower(value)!="black") {
-	if((cvect[0]==0) && (cvect[1]==0) && (cvect[2]==0))
-	  return(false);
-      }    
       m_label_color_default = cvect;
       m_label_color         = cvect;
       m_label_color_index   = 0;
@@ -210,9 +225,9 @@ bool VMarkerSet::setParam(string param, double value)
 bool VMarkerSet::viewable(const string& str)
 {
   if((str == "all") || (tolower(str) == "all"))
-    return(m_marker_viewable_all);
+    return(m_markers_viewable);
   else if((str == "labels") || (tolower(str) == "labels"))
-    return(m_marker_viewable_labels);
+    return(m_marker_labels_viewable);
   return(false);
 }
 

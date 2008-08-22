@@ -5,8 +5,6 @@
 /*    DATE: July 6th, 2008                                       */
 /*****************************************************************/
 
-#include <iostream>
-#include <cstdlib>
 #include "OpAreaSpec.h"
 #include "MBUtils.h"
 #include "ColorParse.h"
@@ -23,6 +21,11 @@ OpAreaSpec::OpAreaSpec()
   m_viewable_labels = true;
   m_line_shade      = 1.0;
   m_label_shade     = 1.0;
+
+  m_datum_color     = colorParse("red");
+  m_datum_viewable  = false;
+  m_datum_size      = 3;
+
 }
 
 //-----------------------------------------------------------
@@ -57,11 +60,13 @@ bool OpAreaSpec::addVertex(const std::string& str,
     else if(left == "looped") looped = tolower(right);
   }
 
+#if 0
   cout << "addVertexA() x:" << xpos << " y:" << ypos
        << "  lwidth:" << lwidth 
        << "  group:" << group << "  label:" << label << "  lcolor:" 
        << lcolor << "  vcolor:" << vcolor << "  dashed:" << dashed
        << "  looped:" << looped << endl;
+#endif
 
   // The position has to be fully specified in terms of either lat/lon
   // of the x-y position in local coords. Otherwise return(false);
@@ -122,6 +127,7 @@ void OpAreaSpec::addVertex(double xpos, double ypos, double lwidth,
 
 bool OpAreaSpec::setParam(string param, string value)
 {
+  //cout << "OpAreaSpec::setParam: param:" << param << "  val:" << value << endl;
   if(param == "op_area_viewable_all")
     return(setBooleanOnString(m_viewable_all, value));
   else if(param == "op_area_viewable_labels")
@@ -162,6 +168,33 @@ bool OpAreaSpec::setParam(string param, string value)
       dval = 0;
     m_label_shade *= dval;
   }
+  else if(param == "datum_viewable") 
+    return(setBooleanOnString(m_datum_viewable, value));
+  else if(param == "datum_size") {
+    if(!isNumber(value)) 
+      return(false);
+    double dval = atof(value.c_str());
+    if(dval < 0)
+      dval = 0;
+    m_datum_size = dval;
+  }
+  else if(param == "datum_size_add") {
+    if(value == "bigger")
+      m_datum_size *= 1.25;
+    else if (value == "smaller")
+      m_datum_size *= 0.8;
+    else
+      return(false);
+    if(m_datum_size < 1)
+      m_datum_size = 1;
+    else if(m_datum_size > 20)
+      m_datum_size = 20;
+  }
+  else if(param == "datum_color") {
+    if(!isColor(value))
+      return(false);
+    m_datum_color = colorParse(value);
+  }
   else
     return(false);
   
@@ -177,6 +210,8 @@ bool OpAreaSpec::viewable(const string& str)
     return(m_viewable_all);
   else if((str == "labels") || (tolower(str) == "labels"))
     return(m_viewable_labels);
+  else if((str == "datum") || (tolower(str) == "datum"))
+    return(m_datum_viewable);
   return(false);
 }
 
@@ -255,10 +290,7 @@ bool OpAreaSpec::getLooped(int ix)
 
 vector<double> OpAreaSpec::getLColor(int ix)
 {
-  vector<double> grey_vector;
-  grey_vector.push_back(0.5);
-  grey_vector.push_back(0.5);
-  grey_vector.push_back(0.5);
+  vector<double> grey_vector(3, 0.5);
   
   if((ix >= 0) && (ix < m_vertex_lcolor.size()))
     return(m_vertex_lcolor[ix]);
@@ -270,10 +302,7 @@ vector<double> OpAreaSpec::getLColor(int ix)
 
 vector<double> OpAreaSpec::getVColor(int ix)
 {
-  vector<double> grey_vector;
-  grey_vector.push_back(0.5);
-  grey_vector.push_back(0.5);
-  grey_vector.push_back(0.5);
+  vector<double> grey_vector(3, 0.5);
   
   if((ix >= 0) && (ix < m_vertex_vcolor.size()))
     return(m_vertex_vcolor[ix]);

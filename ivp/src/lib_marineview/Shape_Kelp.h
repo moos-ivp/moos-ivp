@@ -23,7 +23,7 @@
 #ifndef SHAPE_KELP_HEADER
 #define SHAPE_KELP_HEADER
 
-float g_kelpBody[]=
+double g_kelpBody[]=
 {
    1.95,   9.81,
    1.94,   4.00,

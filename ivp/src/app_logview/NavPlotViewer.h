@@ -40,10 +40,8 @@ class NavPlotViewer : public MarineViewer
   NavPlotViewer(int x,int y,int w,int h,const char *l=0);
   virtual ~NavPlotViewer() {};
   
-  bool  setParam(std::string p, std::string v)
-    {return(setCommonParam(p,v));};
-  bool  setParam(std::string p, float v)
-    {return(setCommonParam(p,v));};
+  bool  setParam(std::string p, std::string v);
+  bool  setParam(std::string p, double v);
   
   void addLogPlotNAVX(const LogPlot& lp) 
     {m_navx_plot.push_back(lp);};
@@ -54,10 +52,9 @@ class NavPlotViewer : public MarineViewer
 
   void addLogPlot(const LogPlot& lp, std::string vid, std::string type);
 
-
   void   draw();
-  float  getMetersX();
-  float  getMetersY();
+  double getMetersX();
+  double getMetersY();
 
   bool   setCurrIndex(int);
   bool   incCurrIndex(int);
@@ -66,8 +63,8 @@ class NavPlotViewer : public MarineViewer
   void   setGlobalIndex(unsigned int);
   bool   vehicle(unsigned int);
   int    addGridPlot(const GridPlot&);
-  float  getCurrTime();
-  float  getAvgStepTime();
+  double getCurrTime();
+  double getAvgStepTime();
 
  public: // Configuration parameters
   void   setVehiBody(std::string s)  {m_vehibody = s;};
@@ -98,7 +95,13 @@ private:
   std::map<std::string, LogPlot> m_plotmap_navy;
   std::map<std::string, LogPlot> m_plotmap_hdg;
 
+  int    m_global_ix;
 
+  double m_shape_scale;
+  bool   m_trails;
+  int    m_trail_gap;
+  double m_trail_size;
+  bool   m_draw_vname;
 };
 
 #endif 

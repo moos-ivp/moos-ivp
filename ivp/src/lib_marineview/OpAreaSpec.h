@@ -40,6 +40,9 @@ public:
   std::vector<double> getLColor(int ix);
   std::vector<double> getVColor(int ix);
 
+  std::vector<double> getDatumColor() {return(m_datum_color);};
+  double getDatumSize() {return(m_datum_size);};
+
 protected:
   void addVertex(double xpos, double ypos, double lwidth,
 		 std::string group, std::string label, 
@@ -58,10 +61,15 @@ protected:
   std::vector<std::vector<double> > m_vertex_lcolor;
   std::vector<std::vector<double> > m_vertex_vcolor;
 
-  bool m_viewable_labels;
-  bool m_viewable_all;
+  bool   m_viewable_labels;
+  bool   m_viewable_all;
   double m_line_shade;
   double m_label_shade;
+
+  // Datum member variables
+  bool   m_datum_viewable;
+  double m_datum_size;
+  std::vector<double> m_datum_color;
 };
 
 #endif

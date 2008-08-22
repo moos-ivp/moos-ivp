@@ -31,6 +31,8 @@ std::vector<double> colorHexToVector(const std::string&);
 std::vector<double> colorDecToVector(const std::string&);
 std::string         colorNameToHex(const std::string&);
 
+bool isColor(const std::string&);
+
 double rOfRGB(const std::string);
 double gOfRGB(const std::string);
 double bOfRGB(const std::string);

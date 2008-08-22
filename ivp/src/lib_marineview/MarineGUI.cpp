@@ -74,7 +74,7 @@ Fl_Menu_Item MarineGUI::menu_[] = {
  {"Hash 10",      FL_ALT+'1', (Fl_Callback*)MarineGUI::cb_HashDelta,  (void*)10,  FL_MENU_RADIO},
  {"Hash 50",      FL_ALT+'2', (Fl_Callback*)MarineGUI::cb_HashDelta,  (void*)50,  FL_MENU_RADIO},
  {"Hash 100",     FL_ALT+'3', (Fl_Callback*)MarineGUI::cb_HashDelta,  (void*)100, FL_MENU_RADIO|FL_MENU_VALUE},
-{"Hash 200",     FL_ALT+'4', (Fl_Callback*)MarineGUI::cb_HashDelta,  (void*)200, FL_MENU_RADIO},
+ {"Hash 200",     FL_ALT+'4', (Fl_Callback*)MarineGUI::cb_HashDelta,  (void*)200, FL_MENU_RADIO},
  {"Hash 500",     FL_ALT+'5', (Fl_Callback*)MarineGUI::cb_HashDelta,  (void*)500, FL_MENU_RADIO},
  {"Hash 1000",     FL_ALT+'6', (Fl_Callback*)MarineGUI::cb_HashDelta,  (void*)1000, FL_MENU_RADIO},
  {"Hash Auto",    FL_ALT+'7', (Fl_Callback*)MarineGUI::cb_HashDelta,  (void*)-1, FL_MENU_RADIO},
@@ -245,52 +245,6 @@ void MarineGUI::readTiffB(string filename)
   cmviewer->readTiffB(filename);
 }  
 
-//----------------------------------------------------------
-// Procedure: addGrid
-
-void MarineGUI::addGrid(const XYGrid& new_grid)
-{
-  if(cmviewer) {
-    cmviewer->addGrid(new_grid);
-    grid_labels.push_back(new_grid.getLabel());
-  }
-}
-
-//----------------------------------------------------------
-// Procedure: addPoly
-
-void MarineGUI::addPoly(const XYPolygon& new_poly)
-{
-  if(cmviewer)
-    cmviewer->addPoly(new_poly);
-}
-
-//----------------------------------------------------------
-// Procedure: addSegList
-
-void MarineGUI::addSegList(const XYSegList& new_seglist)
-{
-  if(cmviewer)
-    cmviewer->addSegList(new_seglist);
-}
-
-//----------------------------------------------------------
-// Procedure: addCircle
-
-void MarineGUI::addCircle(const XYCircle& new_circ)
-{
-  if(cmviewer)
-    cmviewer->addCircle(new_circ);
-}
-
-//----------------------------------------------------------
-// Procedure: addPoint
-
-void MarineGUI::addPoint(const XYPoint& new_point)
-{
-  if(cmviewer)
-    cmviewer->addPoint(new_point);
-}
 
 //----------------------------------------- Zoom In
 inline void MarineGUI::cb_Zoom_i(int val) {
@@ -304,7 +258,7 @@ void MarineGUI::cb_Zoom(Fl_Widget* o, int v) {
 
 //----------------------------------------- Pan Y
 inline void MarineGUI::cb_PanY_i(int amt) {
-  cmviewer->setParam("pan_y", ((float)(amt))/10);
+  cmviewer->setParam("pan_y", ((double)(amt))/10);
   this->updateXY();
 }
 void MarineGUI::cb_PanY(Fl_Widget* o, int v) {
@@ -314,7 +268,7 @@ void MarineGUI::cb_PanY(Fl_Widget* o, int v) {
 
 //----------------------------------------- Pan X
 inline void MarineGUI::cb_PanX_i(int amt) {
-  cmviewer->setParam("pan_x", ((float)(amt))/10);
+  cmviewer->setParam("pan_x", ((double)(amt))/10);
   this->updateXY();
 }
 void MarineGUI::cb_PanX(Fl_Widget* o, int v) {
@@ -350,7 +304,7 @@ void MarineGUI::cb_ToggleHash(Fl_Widget* o) {
 
 //----------------------------------------- HashShade
 inline void MarineGUI::cb_HashShade_i(int amt) {
-  cmviewer->setParam("hash_shade", (float)(amt)/20.0);
+  cmviewer->setParam("hash_shade", (double)(amt)/20.0);
   cmviewer->redraw();
 }
 void MarineGUI::cb_HashShade(Fl_Widget* o, int v) {
@@ -425,15 +379,15 @@ inline void MarineGUI::cb_MG_SetGeoAttr_i(int v) {
   else if(v==443) cmviewer->setCommonParam("datum_size", 10);
   else if(v==444) cmviewer->setCommonParam("datum_size", 15);
   else if(v==445) cmviewer->setCommonParam("datum_size", 20);
-  else if(v==448) cmviewer->setCommonParam("datum_size_add", -1);
-  else if(v==449) cmviewer->setCommonParam("datum_size_add", +1);
+  else if(v==448) cmviewer->setCommonParam("datum_size_add", "smaller");
+  else if(v==449) cmviewer->setCommonParam("datum_size_add", "bigger");
 
-  else if(v==2000) cmviewer->setCommonParam("marker_scale_all", "reset");
-  else if(v==2001) cmviewer->setCommonParam("marker_scale_all", "smaller");
-  else if(v==2002) cmviewer->setCommonParam("marker_scale_all", "bigger");
-  else if(v==2020) cmviewer->setCommonParam("draw_marker_labels", "toggle");
+  else if(v==2000) cmviewer->setCommonParam("marker_scale_global", "reset");
+  else if(v==2001) cmviewer->setCommonParam("marker_scale_global", "smaller");
+  else if(v==2002) cmviewer->setCommonParam("marker_scale_global", "bigger");
+  else if(v==2020) cmviewer->setCommonParam("marker_labels_viewable", "toggle");
   else if(v==2030) cmviewer->setCommonParam("marker_label_color", "toggle");
-  else if(v==2050) cmviewer->setCommonParam("draw_markers", "toggle");
+  else if(v==2050) cmviewer->setCommonParam("markers_viewable", "toggle");
 
   else if(v==2100) cmviewer->setCommonParam("op_area_config", "reset");
   else if(v==2101) cmviewer->setCommonParam("op_area_line_shade_mod", "1.05");
@@ -452,7 +406,7 @@ void MarineGUI::cb_MG_SetGeoAttr(Fl_Widget* o, int v) {
 
 //----------------------------------------- ToggleDatum
 inline void MarineGUI::cb_ToggleDatum_i() {
-  cmviewer->setCommonParam("display_datum", "toggle");
+  cmviewer->setCommonParam("datum_viewable", "toggle");
   cmviewer->redraw();
 }
 void MarineGUI::cb_ToggleDatum(Fl_Widget* o) {
@@ -468,18 +422,9 @@ void MarineGUI::cb_ToggleGrids(Fl_Widget* o) {
   ((MarineGUI*)(o->parent()->user_data()))->cb_ToggleGrids_i();
 }
 
-//----------------------------------------- DatumSize
-inline void MarineGUI::cb_DatumSize_i(int amt) {
-  cmviewer->setCommonParam("datum_size_add", (float)(amt));
-  cmviewer->redraw();
-}
-void MarineGUI::cb_DatumSize(Fl_Widget* o, int v) {
-  ((MarineGUI*)(o->parent()->user_data()))->cb_DatumSize_i(v);
-}
-
 //----------------------------------------- HashDelta
 inline void MarineGUI::cb_HashDelta_i(int amt) {
-  cmviewer->setParam("hash_delta", (float)(amt));
+  cmviewer->setParam("hash_delta", (double)(amt));
   cmviewer->redraw();
 }
 void MarineGUI::cb_HashDelta(Fl_Widget* o, int v) {
@@ -488,7 +433,7 @@ void MarineGUI::cb_HashDelta(Fl_Widget* o, int v) {
 
 //----------------------------------------- BackShade
 inline void MarineGUI::cb_BackShade_i(int amt) {
-  cmviewer->setParam("back_shade", (float)(amt)/20.0);
+  cmviewer->setParam("back_shade", (double)(amt)/20.0);
   cmviewer->redraw();
 }
 void MarineGUI::cb_BackShade(Fl_Widget* o, int v) {

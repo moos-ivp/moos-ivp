@@ -28,33 +28,33 @@ class GeoViewer : public MarineViewer
   void  handle_right_mouse(int, int);
   bool  setParam(std::string p, std::string v)
     {return(setCommonParam(p,v));};
-  bool  setParam(std::string p, float v);
+  bool  setParam(std::string p, double v);
   //    {return(setCommonParam(p,v));};
 
 public:
   std::string getPolySpec();
 
-  void  adjustActive(int);
-  void  createNew(); 
-  void  shiftHorzPoly(double);
-  void  shiftVertPoly(double);
-  void  rotatePoly(int);
-  void  growPoly(int);
-  void  reversePoly();
-  void  duplicateActive();
-  void  clearActivePoly();
-  int   getMode()                 {return(m_drop_mode);};
-  float getSnap()                 {return(m_snap_val);};
-  void  reApplySnapToCurrent();   
-  void  addCircle(XYCircle);
-  void  drawCircles();
-  void  drawCircle(unsigned int ix);
-  void  drawVector(double, double, double);
+  void   adjustActive(int);
+  void   createNew(); 
+  void   shiftHorzPoly(double);
+  void   shiftVertPoly(double);
+  void   rotatePoly(int);
+  void   growPoly(int);
+  void   reversePoly();
+  void   duplicateActive();
+  void   clearActivePoly();
+  int    getMode()                 {return(m_drop_mode);};
+  double getSnap()                 {return(m_snap_val);};
+  void   reApplySnapToCurrent();   
+  void   addCircle(XYCircle);
+  void   drawCircles();
+  void   drawCircle(unsigned int ix);
+  void   drawVector(double, double, double);
 
  private:
   unsigned int  m_active_poly;
 
-  float   m_snap_val;
+  double  m_snap_val;
   int     m_drop_mode;
 
   std::vector<XYCircle>   m_circle;

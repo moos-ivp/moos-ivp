@@ -23,7 +23,7 @@
 #ifndef SHAPE_AUV_HEADER
 #define SHAPE_AUV_HEADER
 
-float g_auvBody[]=
+double g_auvBody[]=
 {
     5.0,    0.0,    
    15.5,   18.0,
@@ -43,9 +43,9 @@ float g_auvBody[]=
    -5.0,    0.0
 };
 unsigned int g_auvBodySize = 16;
-float        g_auvScale = 1.0;
+double       g_auvScale = 1.0;
 
-float g_propUnit[]=
+double g_propUnit[]=
 {
    16.0,  0.0,   
    16.0, -9.0,

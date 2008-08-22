@@ -39,11 +39,6 @@ public:
   void readTiff(std::string);
   void readTiffB(std::string);
   int  handle(int);
-  void addGrid(const XYGrid&);
-  void addPoly(const XYPolygon&);
-  void addSegList(const XYSegList&);
-  void addCircle(const XYCircle&);
-  void addPoint(const XYPoint&);
   virtual void updateXY() {};
 
   void augmentMenu();
@@ -52,9 +47,6 @@ public:
   Fl_Menu_Bar  *mbar;
   MarineViewer *cmviewer;
 
-protected:
-  std::vector<std::string> grid_labels;
- 
 protected:
   inline void cb_Zoom_i(int);
   static void cb_Zoom(Fl_Widget*, int);

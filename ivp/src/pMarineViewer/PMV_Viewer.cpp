@@ -21,30 +21,16 @@
 /*****************************************************************/
 
 #include <iostream>
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <tiffio.h>
 #include "PMV_Viewer.h"
-#include "AngleUtils.h"
 #include "MBUtils.h"
 #include "ColorParse.h"
 
 using namespace std;
 
-#define HISTORY_SIZE  1000
-#define MAX_VEHICLES    20
-
 PMV_Viewer::PMV_Viewer(int x, int y, int w, int h, const char *l)
   : MarineViewer(x,y,w,h,l)
 {
-  m_curr_time = 0;
-
-  m_default_vehibody = "kayak";
-  m_left_click_ix    = 0;
-  m_right_click_ix   = 0;
-
-  m_hash_delta       = 100;
+  m_centric_view = true;
 }
 
 //-------------------------------------------------------------
@@ -59,28 +45,27 @@ void PMV_Viewer::draw()
   drawGrids();
   drawSegLists();
   drawCircles();
-  drawDatum();
   MarineViewer::drawPoints();
 
-  // Next draw the vehicle shapes. If the vehicle index is the 
-  // one "active", draw it in a different color.
-  unsigned int ix = 0;
-  map<string,ObjectPose>::iterator p1;
-  for(p1=m_pos_map.begin(); p1!=m_pos_map.end(); p1++) {
-    string vname = p1->first;
-    bool active = (ix == m_global_ix);
-    
-    string vehibody = m_vbody_map[vname];
-    if(vehibody == "")
-      vehibody = m_default_vehibody;
-    drawVehicle(vname, active, vehibody);
-    ix++;
+  if(m_vehiset.isViewable("vehicles")) {
+    vector<string> svector = m_vehiset.getVehiNames();
+    int vsize = svector.size();
+    for(int i=0; i<vsize; i++) {
+      string vehiname = svector[i];
+      bool   isactive = (vehiname == m_vehiset.getActiveVehicle());
+      string vehibody = m_vehiset.getStringInfo(vehiname, "body");
+      
+      // Next draw the vehicle shapes. If the vehicle index is the 
+      // one "active", draw it in a different color.
+      drawVehicle(vehiname, isactive, vehibody);
+      
+      // Perhaps draw the history points for each vehicle.
+      if(m_vehiset.isViewable("trails")) {
+	CPList point_list = m_vehiset.getVehiHist(vehiname);
+	drawPoints(point_list);
+      }
+    }
   }
-
-  // Finally, draw the history points for each vehicle.
-  map<string,CPList>::iterator p2;
-  for(p2=m_hist_map.begin(); p2!=m_hist_map.end(); p2++)
-    drawPoints(p2->second);
 
   glFlush();
   mutexUnLock();
@@ -110,290 +95,152 @@ int PMV_Viewer::handle(int event)
 }
 
 //-------------------------------------------------------------
+// Procedure: setParam
+//      Note: setBooleanOnString defined in MarineViewer.cpp
+
+bool PMV_Viewer::setParam(string param, string value)
+{
+  if(MarineViewer::setCommonParam(param, value))
+    return(true);
+  
+  param = tolower(stripBlankEnds(param));
+  value = stripBlankEnds(value);
+  
+  bool ok = false;
+
+  if(param == "weighted_center_view") {
+    setWeightedCenterView();
+    m_centric_view = true;
+  }
+  else if(param == "ais_report") {
+    ok = m_vehiset.setParam(param, value);
+    if(ok && m_centric_view)
+      setWeightedCenterView();
+  }
+  else
+    ok = m_vehiset.setParam(param, value);
+
+  if(ok)
+    redraw();
+  return(ok);
+
+}
+
+
+//-------------------------------------------------------------
+// Procedure: setParam
+
+bool PMV_Viewer::setParam(string param, double value)
+{
+  param = tolower(stripBlankEnds(param));
+  
+  bool ok = false;
+
+  // Intercept and disallow any panning if in "centric" mode.
+  if((param == "pan_x") || (param == "pan_y")) {
+    m_centric_view = false;
+    return(setCommonParam(param, value));
+  }
+  // Then do the normal check of it is handled by the parent class
+  else if(MarineViewer::setCommonParam(param, value))
+    return(true);
+  // Then see if its handled by the vehiset
+  else
+    ok = m_vehiset.setParam(param, value);
+
+  if(ok)
+    redraw();
+  return(ok);
+}
+
+// ----------------------------------------------------------
+// Procedure: getStringInfo
+
+string PMV_Viewer::getStringInfo(const string& info_type, int precision)
+{
+  mutexLock();
+  string result = "error";
+
+  if(info_type == "left_click_info")
+    result = m_left_click;
+  else if(info_type == "right_click_info")
+    result = m_right_click;
+  else {
+    string sresult;
+    bool   shandled = m_vehiset.getStringInfo("active", info_type, sresult);
+    if(shandled) {
+      result = sresult;
+    }
+    else {
+      double dresult;
+      bool   dhandled = m_vehiset.getDoubleInfo("active", info_type, dresult);
+      if(dhandled)
+	result = doubleToString(dresult, precision);
+    }
+  }
+  
+  mutexUnLock();
+  return(result);
+}
+  
+
+//-------------------------------------------------------------
 // Procedure: drawVehicle(ObjectPose)
 
 void PMV_Viewer::drawVehicle(string vname, bool active, string vehibody)
 {
-  ObjectPose opose;
-  map<string,ObjectPose>::iterator p1;
-  p1 = m_pos_map.find(vname);
-  if(p1 != m_pos_map.end())
-    opose = p1->second;
-  else 
+  ObjectPose opose = m_vehiset.getObjectPose(vname);
+  if(!opose.isValid())
     return;
 
-  vector<double> cvect;
+  // If there has been no explicit mapping of color to the given vehicle
+  // name then the "inactive_vehicle_color" will be returned below.
+  vector<double> vehi_color;
   if(active)
-    cvect = getColorMapping("active_vcolor", "red");
-  else {
-    if(hasColorMapping(vname))
-      cvect = getColorMapping(vname, "1.0, 0.906, 0.243");
-    else
-      cvect = getColorMapping("inactive_vcolor", "1.0, 0.906, 0.243");
-  }
+    vehi_color = m_vehiset.getColor("active_vehicle_color");
+  else
+    vehi_color = m_vehiset.getColor(vname);
 
-  drawCommonVehicle(vname, opose, cvect[0], cvect[1], cvect[1], vehibody, 1);
+  vector<double> vname_color = m_vehiset.getColor("vehicle_name_color");
+  
+  bool vname_draw = m_vehiset.isViewable("vehicle_names");
+  
+  double shape_scale = m_vehiset.getDoubleInfo("vehicle_shape_scale");
+  
+  drawCommonVehicle(vname, opose, vehi_color, vname_color, vehibody, 
+		    shape_scale, vname_draw, 1);
 }
-
-//-------------------------------------------------------------
-// Procedure: resetVehicles()
-
-void PMV_Viewer::resetVehicles()
-{
-  m_pos_map.clear();
-  m_hist_map.clear();
-  m_vbody_map.clear();
-}
-      
-//-------------------------------------------------------------
-// Procedure: setVehicleBodyType
-//      Note: 
-
-void PMV_Viewer::setVehicleBodyType(const string& vname, 
-				    const string& vbody)
-{
-  m_vbody_map[vname] = tolower(stripBlankEnds(vbody));
-}  
-
-
-//-------------------------------------------------------------
-// Procedure: updateVehiclePosition
-//      Note: We don't redraw or call "redraw" in this method since
-//            if there are several updates backlogged that need 
-//            to be applied, we want to apply them all to have 
-//            the history, but only really want to redraw the 
-//            vehicles after the last update is done.
-
-void PMV_Viewer::updateVehiclePosition(string vname, float x, 
-				       float y, float theta, 
-				       float speed, float depth)
-{
-  // Handle updating the ObjectPose with the new information
-  ObjectPose opose(x,y,theta,speed,depth);
-
-  m_pos_map[vname] = opose;
-  m_ais_map[vname] = m_curr_time;
- 
-  ColoredPoint point(x,y,0,0,255);
-  map<string,CPList>::iterator p2;
-  p2 = m_hist_map.find(vname);
-  if(p2 != m_hist_map.end()) {
-    p2->second.push_back(point);
-    if(p2->second.size() > HISTORY_SIZE)
-      p2->second.pop_front();
-  }
-  else {
-    list<ColoredPoint> newlist;
-    newlist.push_back(point);
-    m_hist_map[vname] = newlist;
-  }
-}
-
-// ----------------------------------------------------------
-// Procedure: getVehiName
-//   Purpose: Index indicates which of the MAX_VEHICLES vehicles
-//            is being queried. Anything outside this range 
-//            results in an empty string being returned.
-
-string PMV_Viewer::getVehiName(int index)
-{
-  if((m_cross_offon) || (index == -1))
-    return("cross-hairs");
-
-  int ix = index;
-  map<string,ObjectPose>::iterator p;
-  for(p=m_pos_map.begin(); p!=m_pos_map.end(); p++) {
-    if(ix==0)
-      return(p->first);
-    else
-      ix--;
-  }
-  return("");
-}
-
-// ----------------------------------------------------------
-// Procedure: getVehiType
-//   Purpose: Index indicates which of the MAX_VEHICLES vehicles
-//            is being queried. Anything outside this range 
-//            results in an empty string being returned.
-
-string PMV_Viewer::getVehiType(int index)
-{
-  if((m_cross_offon) || (index == -1))
-    return("n/a");
-
-  int ix = index;
-  map<string,string>::iterator p;
-  for(p=m_vbody_map.begin(); p!=m_vbody_map.end(); p++) {
-    if(ix==0)
-      return(p->second);
-    else
-      ix--;
-  }
-  return("???");
-}
-
-
-// ----------------------------------------------------------
-// Procedure: getVehicleInfo
-//   Purpose: Index indicates which of the MAX_VEHICLES vehicles
-//            is being queried. 
-
-float PMV_Viewer::getVehicleInfo(int index, string info_type)
-{
-  if(info_type == "age_ais") {
-    if(m_cross_offon)
-      return(-1);
-
-    string vname = getVehiName(index);
-    map<string,double>::iterator p1;
-    p1 = m_ais_map.find(vname);
-    if(p1 != m_ais_map.end())
-      return(m_curr_time - p1->second);
-    return(-1);
-  }
-  else if((info_type == "heading") || (info_type == "course")) {
-    if(m_cross_offon)
-      return(0.0);
-    
-    ObjectPose opose = getObjectPoseByIndex(index);
-    return(opose.getTheta());
-  }
-  else if((info_type == "xpos") || (info_type == "meters_x")) {
-    if(m_cross_offon) {
-      int iwidth = m_back_img.get_img_width();
-      float x_pos = ((float)(iwidth) / 2.0) - (float)(m_vshift_x);
-      float x_pct = m_back_img.pixToPctX(x_pos);
-      float x_pct_cent = m_back_img.get_img_centx();
-      float x_pct_mtrs = m_back_img.get_img_meters();
-      float meters = (x_pct - x_pct_cent) / (x_pct_mtrs / 100.0);
-      return(meters);
-    }
-    ObjectPose opose = getObjectPoseByIndex(index);
-    return(opose.getX());
-  }
-  else if((info_type == "ypos") || (info_type == "meters_y")) {
-    if(m_cross_offon) {
-      int iheight = m_back_img.get_img_height();
-      float y_pos = ((float)(iheight) / 2.0) - (float)(m_vshift_y);
-      float y_pct = m_back_img.pixToPctY(y_pos);
-      float y_pct_cent = m_back_img.get_img_centy();
-      float y_pct_mtrs = m_back_img.get_img_meters();
-      float meters = (y_pct - y_pct_cent) / (y_pct_mtrs / 100.0);
-      return(meters);
-    }
-    ObjectPose opose = getObjectPoseByIndex(index);
-    return(opose.getY());
-  }
-  else if(info_type == "speed") {
-    if(m_cross_offon)
-      return(0.0);
-    
-    ObjectPose opose = getObjectPoseByIndex(index);
-    return(opose.getSpeed());
-  }
-  else if(info_type == "depth") {
-    if(m_cross_offon)
-      return(0.0);
-    
-    ObjectPose opose = getObjectPoseByIndex(index);
-    return(opose.getDepth());
-  }
-  return(0);
-}
-
-
-//-------------------------------------------------------------
-// Procedure: cycleIndex
-
-void PMV_Viewer::cycleIndex()
-{
-  m_global_ix += 1;
-  if(m_global_ix >= m_pos_map.size())
-    m_global_ix = 0;
-}
-
 
 //-------------------------------------------------------------
 // Procedure: drawPoints
 
 void PMV_Viewer::drawPoints(CPList &cps)
 {
-  if(!m_trails) 
+  if(!m_vehiset.isViewable("trails"))
     return;
 
-  list<ColoredPoint>::iterator p;
+  vector<double> xvect;
+  vector<double> yvect;
 
+  int trail_gap = (int)(m_vehiset.getDoubleInfo("trail_gap"));
+
+  list<ColoredPoint>::iterator p;
   int i=0;
   for(p=cps.begin(); p!=cps.end(); p++) {
-    if((i % m_trail_gap) == 0) {
-      if(p->isValid()) 
-	drawPoint(p->m_x, p->m_y, m_trail_color);
+    if((i % trail_gap) == 0) {
+      if(p->isValid()) {
+	xvect.push_back(p->m_x);
+	yvect.push_back(p->m_y);
+      }
     }
     i++;
   }
+
+  vector<double> cvect = m_vehiset.getColor("trail_color");
+  double point_size = m_vehiset.getDoubleInfo("trail_point_size");
+
+  drawPointList(xvect, yvect, point_size, cvect);
 }
-
-//-------------------------------------------------------------
-// Procedure: drawPoint
-
-void PMV_Viewer::drawPoint(float px, float py, int color)
-{
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  glOrtho(0, w(), 0, h(), -1 ,1);
-
-  glMatrixMode(GL_MODELVIEW);
-  glPushMatrix();
-  glLoadIdentity();
-
-  // Determine position in terms of image percentage
-  float pt_ix = meters2img('x', px);
-  float pt_iy = meters2img('y', py);
-
-  // Determine position in terms of view percentage
-  float pt_vx = img2view('x', pt_ix);
-  float pt_vy = img2view('y', pt_iy);
-
-  glTranslatef(pt_vx, pt_vy, 0); // theses are in pixel units
-
-  float pt_size = ((float)(m_trail_size) / 1.0) * m_zoom;
-
-  glEnable(GL_POINT_SMOOTH);
-  glPointSize(pt_size);
-  
-  if(color==0)  glColor3f(0, 0, 1);
-  if(color==1)  glColor3f(0, 1, 0);
-  if(color==2)  glColor3f(1, 0, 0);
-  
-  glBegin(GL_POINTS);
-  glVertex2f(0, 0);
-  glEnd();
-  glDisable(GL_POINT_SMOOTH);
-
-  glFlush();
-  glPopMatrix();
-}
-
-//-------------------------------------------------------------
-// Procedure: getObjectPoseByIndex
-
-ObjectPose PMV_Viewer::getObjectPoseByIndex(int index)
-{
-  int ix = index;
-  map<string,ObjectPose>::iterator p;
-  for(p=m_pos_map.begin(); p!=m_pos_map.end(); p++) {
-    if(ix==0)
-      return(p->second);
-    else
-      ix--;
-  }
-
-  ObjectPose op;
-  return(op);
-}
-
-
 
 //-------------------------------------------------------------
 // Procedure: handleLeftMouse
@@ -407,15 +254,13 @@ void PMV_Viewer::handleLeftMouse(int vx, int vy)
   double sx = snapToStep(mx, 1.0);
   double sy = snapToStep(my, 1.0);
 
+  mutexLock();
   m_left_click =  "x=" + doubleToString(sx,1) + ",";
   m_left_click += "y=" + doubleToString(sy,1);
+  mutexUnLock();
 
-  m_left_click_ix++;
-  
   cout << "Left Mouse click at [" << m_left_click << "] meters." << endl;
 }
-
-
 
 //-------------------------------------------------------------
 // Procedure: handleRightMouse
@@ -429,34 +274,37 @@ void PMV_Viewer::handleRightMouse(int vx, int vy)
   double sx = snapToStep(mx, 1.0);
   double sy = snapToStep(my, 1.0);
   
+  mutexLock();
   m_right_click =  "x=" + doubleToString(sx,1) + ",";
   m_right_click += "y=" + doubleToString(sy,1);
+  mutexUnLock();
 
-  m_right_click_ix++;
-  
   cout << "Right Mouse click at [" << m_right_click << "] meters." << endl;
 }
 
 //-------------------------------------------------------------
-// Procedure: initGeodesy
+// Procedure: setWeightedCenterView()
 
-bool PMV_Viewer::initGeodesy(double lat, double lon)
+void PMV_Viewer::setWeightedCenterView()
 {
-  return(m_geodesy.Initialise(lat, lon));
-}
+  if(!m_centric_view)
+    return;
 
+  double avg_pos_x, avg_pos_y;
+  bool ok = m_vehiset.getWeightedCenter(avg_pos_x, avg_pos_y);
+  if(!ok)
+    return;
 
-// ----------------------------------------------------------
-// Procedure: getLatLon
-//   Purpose: Index indicates which of the MAX_VEHICLES vehicles
-//            is being queried. 
-
-bool PMV_Viewer::getLatLon(int index, double& rlat, double& rlon)
-{
-  ObjectPose opose = getObjectPoseByIndex(index);
-  return(m_geodesy.LocalGrid2LatLong(opose.getX(), opose.getY(), rlat, rlon));
+  // First determine how much we're off in terms of meters
+  double delta_x = avg_pos_x - m_back_img.get_x_at_img_ctr();
+  double delta_y = avg_pos_y - m_back_img.get_y_at_img_ctr();
   
-  if(m_cross_offon)
-    return(0.0);
+  // Next determine how much in terms of pixels
+  double pix_per_mtr = m_back_img.get_pix_per_mtr();
+  double x_pixels = pix_per_mtr * delta_x;
+  double y_pixels = pix_per_mtr * delta_y;
+  
+  setParam("set_pan_x", -x_pixels);
+  setParam("set_pan_y", -y_pixels);
 }
 

@@ -23,7 +23,7 @@
 #ifndef SHAPE_THIN_AUV_HEADER
 #define SHAPE_THIN_AUV_HEADER
 
-float g_thin_auvBody[]=
+double g_thin_auvBody[]=
 {
    5.0,    0.0,    
   10.5,   18.0,
@@ -45,7 +45,7 @@ float g_thin_auvBody[]=
 
 unsigned int g_thin_auvBodySize = 16;
 
-float g_thin_propUnit[]=
+double g_thin_propUnit[]=
 {
   11.0,  0.0,   
   11.0, -9.0,

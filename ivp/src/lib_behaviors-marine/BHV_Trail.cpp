@@ -54,7 +54,7 @@ BHV_Trail::BHV_Trail(IvPDomain gdomain) : IvPBehavior(gdomain)
   
   m_domain = subDomain(m_domain, "course,speed");
   
-  m_trail_range    = 0;
+  m_trail_range    = 50;
   m_trail_angle    = 180;
   m_radius         = 5;
   m_nm_radius      = 20;

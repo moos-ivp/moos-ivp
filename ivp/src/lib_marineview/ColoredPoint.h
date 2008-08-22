@@ -30,31 +30,21 @@ class ColoredPoint
  public:
   ColoredPoint() 
     {m_valid=false;};
-  ColoredPoint(float x, float y, unsigned char r, 
-	       unsigned char g,unsigned char b)
-    {m_x=x; m_y=y; m_r=r; m_g=g; m_b=b; m_valid=true;};
+  ColoredPoint(double x, double y)
+    {m_x=x; m_y=y; m_valid=true;};
   
-  bool isValid()    { return(m_valid); };  
-  void setInvalid() { m_valid = false; };
-  void setValid()   { m_valid = true;  };
+  bool isValid()    {return(m_valid);};  
+  void setInvalid() {m_valid = false;};
+  void setValid()   {m_valid = true;};
 
-  float         m_x;
-  float         m_y;
-  unsigned char m_r;
-  unsigned char m_g;
-  unsigned char m_b;
-  bool          m_valid;
+  double  m_x;
+  double  m_y;
+  bool    m_valid;
 };
 
 //typedef std::vector<ColoredPoint> CPVector;
 typedef std::list<ColoredPoint> CPList;
 
 #endif 
-
-
-
-
-
-
 
 

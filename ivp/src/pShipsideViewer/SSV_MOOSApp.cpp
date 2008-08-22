@@ -27,6 +27,20 @@
 
 using namespace std;
 
+//-----------------------------------------------------------------
+// Procedure: Constructor
+
+SSV_MOOSApp::SSV_MOOSApp() 
+{
+  m_gui = 0;
+  
+  m_left_click_str  = "null"; 
+  m_right_click_str = "null";
+}
+
+//-----------------------------------------------------------------
+// Procedure: OnNewMail
+
 bool SSV_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 {
   NewMail.sort();
@@ -35,26 +49,25 @@ bool SSV_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
   bool gui_clear_trails = false;
   MOOSMSG_LIST::reverse_iterator p;
 
-  double curr_time = MOOSTime() - m_start_time;
-  m_gui->mviewer->setTime(curr_time);
-
   m_gui->mviewer->mutexLock();
+  double curr_time = MOOSTime();
 
-  //cout  << NewMail.size() << "," << flush;
+  m_gui->mviewer->setParam("curr_time", curr_time);
+
   for(p = NewMail.rbegin();p!=NewMail.rend();p++) {
     CMOOSMsg &Msg = *p;
 
     string key = Msg.m_sKey;
 
-    if(key == "AIS_REPORT") {
-      cout << "*" << flush;
-      receiveAIS_REPORT(Msg);
-      gui_needs_redraw = true;
-    }
-    else if(key == "AIS_REPORT_LOCAL") {
-      cout << "*" << flush;
-      receiveAIS_REPORT(Msg);
-      gui_needs_redraw = true;
+    if((key == "AIS_REPORT") || (key == "AIS_REPORT_LOCAL")) {
+      if(m_gui) {
+	bool ok = m_gui->mviewer->setParam("ais_report", Msg.m_sVal);
+	if(!ok)
+	  cout << "Problem with parsing AIS_REPORT" << endl;
+	else
+	  gui_needs_redraw = true;
+	cout << "*" << flush;
+      }
     }
     else if(key == "GRID_CONFIG") { 
       receiveGRID_CONFIG(Msg);
@@ -96,14 +109,16 @@ bool SSV_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
     }
     //cout << "Originating community: " << Msg.m_sOriginatingCommunity << endl;
   }
+
+  if(gui_clear_trails && m_gui)
+    m_gui->mviewer->setParam("clear_trails");
+
   m_gui->mviewer->mutexUnLock();
 
   if(gui_needs_redraw && m_gui) {
     m_gui->updateXY();
     m_gui->mviewer->redraw();
   }
-  if(gui_clear_trails && m_gui)
-    m_gui->mviewer->clearTrails();
 
   return(true);
 }
@@ -137,17 +152,17 @@ bool SSV_MOOSApp::Iterate()
   cout << "." << flush;
 
   double curr_time = MOOSTime() - m_start_time;
-  m_gui->mviewer->setTime(curr_time);
-  m_gui->updateXY();
-  
-  int left_click_ix = m_gui->mviewer->getLeftClickIX();
-  if(left_click_ix > m_left_click_ix) {
-    m_left_click_ix = left_click_ix;
-    string left_click_str = m_gui->mviewer->getLeftClick();
+  if(m_gui) {
+    m_gui->setCurrTime(curr_time);
+    m_gui->updateXY();
+  }
+
+  string left_click_str = m_gui->mviewer->getStringInfo("left_click_info");
+  if(left_click_str != m_left_click_str) {
+    m_left_click_str = left_click_str;
     
-    if(left_click_str != "") {
-      int    index   = m_gui->mviewer->getDataIndex();
-      string vname   = m_gui->mviewer->getVehiName(index);
+    if(m_left_click_str != "") {
+      string vname   = m_gui->mviewer->getStringInfo("active_vehicle_name");
       string postval = left_click_str;
       if(vname != "")
 	postval += (",vname=" + vname);
@@ -155,21 +170,16 @@ bool SSV_MOOSApp::Iterate()
     }
   }
 
-  int right_click_ix = m_gui->mviewer->getRightClickIX();
-  if(right_click_ix > m_right_click_ix) {
-    m_right_click_ix = right_click_ix;
-    string right_click_str    = m_gui->mviewer->getRightClick();
-    string right_click_rp_str = m_gui->mviewer->getRightClickRP();
+  string right_click_str = m_gui->mviewer->getStringInfo("right_click_info");
+  if(m_right_click_str != m_right_click_str) {
+    m_right_click_str = right_click_str;
     
-    if(right_click_str != "") {
-      int    index  = m_gui->mviewer->getDataIndex();
-      string vname  = m_gui->mviewer->getVehiName(index);
-      if(vname != "") {
-	right_click_str += (",vname=" + vname);
-	right_click_rp_str += (",vname=" + vname);
-      }
-      m_Comms.Notify("MVIEWER_RCLICK", right_click_str);
-      m_Comms.Notify("MVIEWER_RCLICK_RP", right_click_rp_str);
+    if(m_right_click_str != "") {
+      string vname   = m_gui->mviewer->getStringInfo("active_vehicle_name");
+      string postval = right_click_str;
+      if(vname != "")
+	postval += (",vname=" + vname);
+      m_Comms.Notify("MVIEWER_RCLICK", postval);
     }
   }
 
@@ -193,7 +203,6 @@ bool SSV_MOOSApp::OnStartUp()
   string sVal;
   double dfLatOrigin;
   double dfLongOrigin;
-  string op_area;
 
   if(m_MissionReader.GetValue("LatOrigin",sVal)) {
     dfLatOrigin = atof(sVal.c_str());
@@ -218,77 +227,30 @@ bool SSV_MOOSApp::OnStartUp()
     return(false);
   }
 
-
+  
+  m_gui->mviewer->mutexLock();
   STRING_LIST::reverse_iterator p;
   for(p = sParams.rbegin();p!=sParams.rend();p++) {
     string sLine = *p;
     string param = toupper(MOOSChomp(sLine, "="));
     string value = stripBlankEnds(sLine);
     
-    if((param == "VEHICOLOR") || (param == "VEHI_COLOR"))
-      m_gui->mviewer->setColorMapping(value);
-    else if(param == "COLORMAP")
-      m_gui->mviewer->setColorMapping(sLine);
-    else if(param == "OWNSHIP_NAME")
-      m_gui->mviewer->setParam("ownship_name", sLine);
-    else if(param == "CONTACTS")
+    if(param == "CONTACTS")
       handleContactList(sLine);
     else { 
       bool handled = m_gui->mviewer->setParam(param, value);
       if(!handled)
 	m_gui->mviewer->setParam(param, atof(value.c_str()));
     } 
- }
+  }
+  m_gui->mviewer->mutexUnLock();
 
   m_start_time = MOOSTime();
-  
-  if(m_gui && m_gui->mviewer)
-    if(op_area != "")
-      m_gui->mviewer->setParam("op_area", op_area);
-    m_gui->mviewer->redraw();
+  m_gui->mviewer->redraw();
   
   return(true);
 }
 
-
-//----------------------------------------------------------------------
-// Procedure: receiveAIS_REPORT
-
-bool SSV_MOOSApp::receiveAIS_REPORT(CMOOSMsg &Msg)
-{
-  string sVal = Msg.m_sVal;
-  double dfX  = 0;
-  double dfY  = 0; 
-
-  double dfSpeed     = 0;
-  double dfHeading   = 0;
-  double dfDepth     = 0;
-  string vessel_name = "";
-  string vessel_type = "";
-
-  string community(Msg.m_sOriginatingCommunity);
-
-  bool bVName = tokParse(sVal, "NAME",   ',', '=', vessel_name);
-  bool bVType = tokParse(sVal, "TYPE",   ',', '=', vessel_type);
-  bool bX     = tokParse(sVal, "X",      ',', '=', dfX);
-  bool bY     = tokParse(sVal, "Y",      ',', '=', dfY);
-  bool bSpeed = tokParse(sVal, "SPD",    ',', '=', dfSpeed);
-  bool bHeading = tokParse(sVal, "HDG",  ',', '=', dfHeading);
-  bool bDepth = tokParse(sVal, "DEPTH",  ',', '=', dfDepth);
-
-  if(bVName && bVType && bX && bY && bHeading && bSpeed && bDepth) {
-    if(m_gui) {
-      m_gui->mviewer->updateVehiclePosition(vessel_name, dfX, dfY, 
-					    dfHeading, dfSpeed, dfDepth);
-      m_gui->mviewer->setVehicleBodyType(vessel_name, vessel_type);
-    }
-    return(true);
-  }
-  else {
-    cout << "Parse Error in receiveAIS_REPORT" << endl;
-    return(false);
-  }
-}
 
 //----------------------------------------------------------------------
 // Procedure: receiveGRID_CONFIG
@@ -301,7 +263,7 @@ bool SSV_MOOSApp::receiveGRID_CONFIG(CMOOSMsg &Msg)
   
   bool ok = search_grid.initialize(Msg.m_sVal);
   if(ok) {
-    m_gui->addGrid(search_grid);
+    m_gui->mviewer->addGrid(search_grid);
     return(true);
   }
   else {
@@ -318,7 +280,7 @@ bool SSV_MOOSApp::receivePolygon(CMOOSMsg &Msg)
   XYPolygon new_poly = stringToPoly(Msg.m_sVal);
   
   if(new_poly.size() != 0) {
-    m_gui->addPoly(new_poly);
+    m_gui->mviewer->addPoly(new_poly);
     return(true);
   }
   else {
@@ -355,7 +317,7 @@ bool SSV_MOOSApp::receivePoint(CMOOSMsg &Msg)
   XYPoint new_point = stringToPoint(Msg.m_sVal);
 
   if(new_point.valid()) {
-    m_gui->addPoint(new_point);
+    m_gui->mviewer->addPoint(new_point);
     return(true);
   }
   else {

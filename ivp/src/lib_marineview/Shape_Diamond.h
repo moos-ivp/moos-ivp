@@ -23,7 +23,7 @@
 #ifndef SHAPE_DIAMOND_HEADER
 #define SHAPE_DIAMOND_HEADER
 
-float g_diamondBody[]=
+double g_diamondBody[]=
 {
    0.0,    12.0,
   -8.0,     0.0,

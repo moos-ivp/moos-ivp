@@ -23,7 +23,7 @@
 #ifndef SHAPE_EFIELD_HEADER
 #define SHAPE_EFIELD_HEADER
 
-float g_efieldBody[]=
+double g_efieldBody[]=
 {
   0.00,   0.00,
   0.00,   5.00,
@@ -53,7 +53,7 @@ double       g_efieldCtrX     = 0.0;
 double       g_efieldCtrY     = 0.0;
 unsigned int g_efieldBodySize = 22;
 
-float g_efieldMidBody[]=
+double g_efieldMidBody[]=
 {
   0.00,   0.00,
   0.00,  -5.00,

@@ -70,8 +70,8 @@ void GeoViewer::draw()
       vert_c = m_geoshapes.geocolor("polygon_vertex_color", "red");
       labl_c = m_geoshapes.geocolor("polygon_label_color", "white");
 
-      float line_width  = m_geoshapes.geosize("polygon_line_size");
-      float vertex_size = m_geoshapes.geosize("polygon_vertex_size");
+      double line_width  = m_geoshapes.geosize("polygon_line_size");
+      double vertex_size = m_geoshapes.geosize("polygon_vertex_size");
         
       for(int i=0; i<vsize; i++) {
 	XYPolygon poly = m_geoshapes.getPolygon(i);
@@ -164,7 +164,7 @@ void GeoViewer::handle_right_mouse(int vx, int vy)
 //-------------------------------------------------------------
 // Procedure: setParam
 
-bool GeoViewer::setParam(string param, float pval)
+bool GeoViewer::setParam(string param, double pval)
 {
   if(setCommonParam(param, pval))
     return(true);
@@ -391,8 +391,8 @@ void GeoViewer::drawCircle(unsigned int ix)
   vert_c = m_geoshapes.geocolor("polygon_vertex_color", "white");
   labl_c = m_geoshapes.geocolor("polygon_label_color", "white");
 
-  float lwid = m_geoshapes.geosize("polygon_line_size");
-  float vert = m_geoshapes.geosize("polygon_vertex_size");
+  double lwid = m_geoshapes.geosize("polygon_line_size");
+  double vert = m_geoshapes.geosize("polygon_vertex_size");
     
   for(int i=0; i<m_circle.size(); i++) {
     XYPolygon poly = m_circle_poly[i];
@@ -410,10 +410,10 @@ void GeoViewer::drawVector(double g_x, double g_y, double g_angle)
   glLoadIdentity();
   glOrtho(0, w(), 0, h(), -1 ,1);
 
-  float tx = meters2img('x', 0);
-  float ty = meters2img('y', 0);
-  float qx = img2view('x', tx);
-  float qy = img2view('y', ty);
+  double tx = meters2img('x', 0);
+  double ty = meters2img('y', 0);
+  double qx = img2view('x', tx);
+  double qy = img2view('y', ty);
 
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();

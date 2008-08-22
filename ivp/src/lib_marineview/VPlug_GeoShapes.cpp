@@ -6,7 +6,6 @@
 /*****************************************************************/
 
 #include <iostream>
-#include <cstdlib>
 #include "VPlug_GeoShapes.h"
 #include "MBUtils.h"
 #include "XYBuildUtils.h"
@@ -424,7 +423,7 @@ bool VPlug_GeoShapes::setGSizeMapping(string attribute, string gsize)
 }
 
 //-------------------------------------------------------------
-// Procedure: getColorMapping
+// Procedure: geocolor
 //      Note: If the attribute is not found, the returned color
 //            vector can be determined by the optional def_color
 //            argument. 

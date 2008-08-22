@@ -23,7 +23,7 @@
 #ifndef SHAPE_GLIDER_HEADER
 #define SHAPE_GLIDER_HEADER
 
-float g_gliderBody[]=
+double g_gliderBody[]=
 {
    2.0,   0.0,
    3.0,   2.0, 
@@ -51,7 +51,7 @@ double       g_gliderCtrY     = 35.0;
 unsigned int g_gliderBodySize = 19;
 double       g_gliderScale    = 1.5;
 
-float g_gliderWing[]=
+double g_gliderWing[]=
 {
     5.0,  10.0, 
    33.0,  12.0, 

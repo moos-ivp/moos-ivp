@@ -37,6 +37,7 @@ public:
 
   void updateXY();
   int  handle(int);
+  void setCurrTime(double v) {m_curr_time = v;};
   void augmentMenu();
   void addContactButton(int ix, std::string vname);
 
@@ -124,6 +125,8 @@ protected:
   std::vector<std::string> m_pending_vals;
 
   CMOOSLock  m_ssv_mutex;
+
+  double m_curr_time;
 };
 #endif
 

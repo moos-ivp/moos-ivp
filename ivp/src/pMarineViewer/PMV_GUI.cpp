@@ -35,11 +35,10 @@ PMV_GUI::PMV_GUI(int g_w, int g_h, const char *g_l)
   this->when(FL_WHEN_CHANGED);
   this->begin();
 
-  augmentMenu();
-  
   int info_size=12;
- 
-  m_curr_time = 0;
+  
+  m_trail_color_ix = 0;
+  m_curr_time      = 0;
 
   mviewer  = new PMV_Viewer(0, 30, w(), h()-100);
   cmviewer = mviewer;
@@ -93,17 +92,6 @@ PMV_GUI::PMV_GUI(int g_w, int g_h, const char *g_l)
   this->show();
 }
 
-
-
-//-------------------------------------------------------------------
-// Procedure: augmentMenu()
-
-void PMV_GUI::augmentMenu()
-{
-  mbar->add("ForeView/Cycle Focus", 'v', (Fl_Callback*)PMV_GUI::cb_CycleFocus,(void*)0, 0);
-}
-
-
 //----------------------------------------------------------
 // Procedure: handle
 //      Note: As it stands, this method could be eliminated entirely, and the 
@@ -117,12 +105,10 @@ int PMV_GUI::handle(int event)
 
 //----------------------------------------- UpdateXY
 void PMV_GUI::updateXY() {
-  int  index = mviewer->getDataIndex();
-
   string time_str = doubleToString(m_curr_time, 1);
   time->value(time_str.c_str());
 
-  string vname = mviewer->getVehiName(index);
+  string vname = mviewer->getStringInfo("active_vehicle_name");
 
   if(vname == "") {
     v_nam->value(" n/a");
@@ -139,48 +125,33 @@ void PMV_GUI::updateXY() {
 
   v_nam->value(vname.c_str());
 
-  string vtype = mviewer->getVehiType(index);
+  string vtype = mviewer->getStringInfo("body");
   v_typ->value(vtype.c_str());
 
-  string lat_str = "??";
-  string lon_str = "??";
-  double dlat, dlon;
-  bool ok = mviewer->getLatLon(index, dlat, dlon);
-  if(ok) {
-    lat_str = doubleToString(dlat,6);
-    lon_str = doubleToString(dlon,6);
-  }
-  v_lat->value(lat_str.c_str());
-  v_lon->value(lon_str.c_str());
+  string xpos = mviewer->getStringInfo("xpos", 1);
+  x_mtr->value(xpos.c_str());
+
+  string ypos = mviewer->getStringInfo("ypos", 1);
+  y_mtr->value(ypos.c_str());
   
-  string mtrx_str = doubleToString(mviewer->getVehicleInfo(index,"xpos"),1);
-  x_mtr->value(mtrx_str.c_str());
-  string mtry_str = doubleToString(mviewer->getVehicleInfo(index,"ypos"),1);
-  y_mtr->value(mtry_str.c_str());
+  string lat = mviewer->getStringInfo("lat", 6);
+  v_lat->value(lat.c_str());
+
+  string lon = mviewer->getStringInfo("lon", 6);
+  v_lon->value(lon.c_str());
+
+  string spd = mviewer->getStringInfo("speed", 1);
+  v_spd->value(spd.c_str());
+
+  string crs = mviewer->getStringInfo("course", 1);
+  v_crs->value(crs.c_str());
+
+  string dep = mviewer->getStringInfo("depth", 1);
+  v_dep->value(dep.c_str());
   
-  string spd_str = doubleToString(mviewer->getVehicleInfo(index,"speed"),1);
-  v_spd->value(spd_str.c_str());
-  string crs_str = doubleToString(mviewer->getVehicleInfo(index,"course"),1);
-  v_crs->value(crs_str.c_str());
-  string dep_str = doubleToString(mviewer->getVehicleInfo(index,"depth"),1);
-  v_dep->value(dep_str.c_str());
-
-  double age_ais = mviewer->getVehicleInfo(index,"age_ais");
-  string ais_str = doubleToString(age_ais,3);
-  if(age_ais == -1)
-    ais_str = "n/a";
-  v_ais->value(ais_str.c_str());
+  string age_ais = mviewer->getStringInfo("age_ais", 2);
+  if(age_ais == "-1")
+    age_ais = "n/a";
+  v_ais->value(age_ais.c_str());
 }
 
-
-//----------------------------------------- CycleFocus
-inline void PMV_GUI::cb_CycleFocus_i(int val) {
-  mviewer->cycleIndex();
-  mviewer->redraw();
-  updateXY();
-}
-
-void PMV_GUI::cb_CycleFocus(Fl_Widget* o, int v) {
-  int val = (int)(v);
-  ((PMV_GUI*)(o->parent()->user_data()))->cb_CycleFocus_i(val);
-}

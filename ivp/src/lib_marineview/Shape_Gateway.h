@@ -23,7 +23,7 @@
 #ifndef SHAPE_GATEWAY_HEADER
 #define SHAPE_GATEWAY_HEADER
 
-float g_gatewayBody[]=
+double g_gatewayBody[]=
 {
    0.0,   0.0,
    3.0,   0.0,
@@ -41,7 +41,7 @@ double       g_gatewayCtrX     = 0.0;
 double       g_gatewayCtrY     = 5.0;
 unsigned int g_gatewayBodySize = 10;
 
-float g_gatewayMidBody[]=
+double g_gatewayMidBody[]=
 {
    1.0,   3.0,
    2.0,   4.0,

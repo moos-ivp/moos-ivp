@@ -30,7 +30,7 @@
 class SSV_MOOSApp : public CMOOSApp  
 {
  public:
-  SSV_MOOSApp() {m_left_click_ix=-1; m_right_click_ix=-1;};
+  SSV_MOOSApp();
   virtual ~SSV_MOOSApp() {};
 
   void setGUI(SSV_GUI* g_gui) {m_gui=g_gui;};
@@ -63,9 +63,8 @@ class SSV_MOOSApp : public CMOOSApp
 
   double m_start_time;
   
-  int m_left_click_ix;
-  int m_right_click_ix;
-
+  std::string  m_left_click_str;
+  std::string  m_right_click_str;
 };
 
 #endif 

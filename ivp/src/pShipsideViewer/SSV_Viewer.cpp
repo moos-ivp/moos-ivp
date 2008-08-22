@@ -39,22 +39,14 @@ using namespace std;
 SSV_Viewer::SSV_Viewer(int x, int y, int w, int h, const char *l)
   : MarineViewer(x,y,w,h,l)
 {
-  m_curr_time   = 0;
-  m_tiff_offon  = 1;
-
-  m_default_vehibody   = "kayak";
-  m_left_click_ix      = 0;
-  m_right_click_ix     = 0;
   m_radial_size        = 100;
-  m_trail_size         = 0.1;
   m_centric_view       = true;
   m_draw_bearing_lines = true;
   m_draw_radial        = true;
 
-  m_avg_vehipos_x      = 0;
-  m_avg_vehipos_y      = 0;
-
   setParam("bearing_color", "orange");
+  setParam("radial_color",  "red");
+  
 }
 
 //-------------------------------------------------------------
@@ -65,53 +57,38 @@ void SSV_Viewer::draw()
   mutexLock();
   MarineViewer::draw();
 
-  drawGrids();
   drawPolygons();
+  drawGrids();
   drawSegLists();
+  drawCircles();
   MarineViewer::drawPoints();
   drawStationCircles();
-  drawCircles();
   if(m_draw_radial)
     drawRadials();
   if(m_draw_bearing_lines)
-    drawBearingLine(m_global_ix);
+    drawBearingLine();
 
-  // Next draw the ownship vehicle shape. If the vehicle 
-  // index is the one "active", draw it in a different color.
-  unsigned int ix = 0;
-  map<string,ObjectPose>::iterator p1;
-  for(p1=m_pos_map.begin(); p1!=m_pos_map.end(); p1++) {
-    string vname = p1->first;
-    if(vname == m_ownship_name) {
-      bool active = (ix == m_global_ix);
-      string vehibody = m_vbody_map[vname];
-      if(vehibody == "")
-	vehibody = m_default_vehibody;
-      drawVehicle(vname, active, vehibody);
+  if(m_vehiset.isViewable("vehicles")) {
+    vector<string> svector = m_vehiset.getVehiNames();
+    int vsize = svector.size();
+    for(int i=0; i<vsize; i++) {
+      string vehiname = svector[i];
+      bool   isactive = (vehiname == m_vehiset.getActiveVehicle());
+      string vehibody;
+      bool   handled  = m_vehiset.getStringInfo(vehiname, "body", vehibody);
+      
+      // Next draw the vehicle shapes. If the vehicle index is the 
+      // one "active", draw it in a different color.
+      if(handled)
+	drawVehicle(vehiname, isactive, vehibody);
+      
+      // Perhaps draw the history points for each vehicle.
+      if(m_vehiset.isViewable("trails")) {
+	CPList point_list = m_vehiset.getVehiHist(vehiname);
+	drawPoints(point_list);
+      }
     }
-    ix++;
   }
-
-  // Next draw the non-ownship vehicle shapes. If the vehicle 
-  // index is the one "active", draw it in a different color.
-  ix = 0;
-  for(p1=m_pos_map.begin(); p1!=m_pos_map.end(); p1++) {
-    string vname = p1->first;
-    if(vname != m_ownship_name) {
-      bool active = (ix == m_global_ix);
-      string vehibody = m_vbody_map[vname];
-      if(vehibody == "")
-	vehibody = m_default_vehibody;
-      drawVehicle(vname, active, vehibody);
-    }
-    ix++;
-  }
-
-  // Finally, draw the history points for each vehicle.
-  map<string,CPList>::iterator p2;
-  for(p2=m_hist_map.begin(); p2!=m_hist_map.end(); p2++)
-    drawPoints(p2->second);
-
   glFlush();
   mutexUnLock();
 }
@@ -139,186 +116,67 @@ int SSV_Viewer::handle(int event)
   }
 }
 
-//-------------------------------------------------------------
-// Procedure: updateVehiclePosition
-//      Note: We don't redraw or call "redraw" in this method since
-//            if there are several updates backlogged that need 
-//            to be applied, we want to apply them all to have 
-//            the history, but only really want to redraw the 
-//            vehicles after the last update is done.
+// ----------------------------------------------------------
+// Procedure: getStringInfo
 
-void SSV_Viewer::updateVehiclePosition(string vname, float x, 
-				       float y, float theta, 
-				       float speed, float depth)
+string SSV_Viewer::getStringInfo(const string& info_type, int precision)
 {
-  vname = toupper(vname);
+  mutexLock();
+  string result = "error";
 
-  // Handle updating the ObjectPose with the new information
-  ObjectPose opose(x,y,theta,speed,depth);
-
-  m_pos_map[vname] = opose;
-  m_ais_map[vname] = m_curr_time;
- 
-  ColoredPoint point(x,y,0,0,255);
-  map<string,CPList>::iterator p2;
-  p2 = m_hist_map.find(vname);
-  if(p2 != m_hist_map.end()) {
-    p2->second.push_back(point);
-    if(p2->second.size() > HISTORY_SIZE)
-      p2->second.pop_front();
-  }
+  if(info_type == "radial_size")
+    result = doubleToString(m_radial_size, precision);
+  else if(info_type == "left_click_info")
+    result = m_left_click;
+  else if(info_type == "right_click_info")
+    result = m_right_click;
+  else if(info_type == "right_click_rp_info")
+    result = m_right_click_rp;
+  else if(info_type == "absolute_bearing")
+    result = doubleToString(getRelativeInfo("absolute_bearing"),precision);
+  else if(info_type == "relative_bearing")
+    result = doubleToString(getRelativeInfo("relatvie_bearing"),precision);
+  else if(info_type == "relative_range")
+    result = doubleToString(getRelativeInfo("relatvie_range"),precision);
   else {
-    list<ColoredPoint> newlist;
-    newlist.push_back(point);
-    m_hist_map[vname] = newlist;
+    string sresult;
+    bool   shandled = m_vehiset.getStringInfo("active", info_type, sresult);
+    if(shandled) {
+      result = sresult;
+    }
+    else {
+      double dresult;
+      bool   dhandled = m_vehiset.getDoubleInfo("active", info_type, dresult);
+      if(dhandled)
+	result = doubleToString(dresult, precision);
+    }
   }
   
-  if((m_centric_view) && (m_ownship_name == ""))
-    setWeightedCenterView();
-  else if((m_centric_view) && (toupper(vname) == m_ownship_name)) {
-
-    // First determine how much we're off in terms of meters
-    double delta_x = x - m_back_img.get_x_at_img_ctr();
-    double delta_y = y - m_back_img.get_y_at_img_ctr();
-
-    // Next determine how much in terms of pixels
-    double pix_per_mtr = m_back_img.get_pix_per_mtr();
-    double x_pixels = pix_per_mtr * delta_x;
-    double y_pixels = pix_per_mtr * delta_y;
-
-    setParam("set_pan_x", -x_pixels);
-    setParam("set_pan_y", -y_pixels);
-  }
+  mutexUnLock();
+  return(result);
 }
-
-//-------------------------------------------------------------
-// Procedure: setVehicleBodyType
-//      Note: 
-
-void SSV_Viewer::setVehicleBodyType(string vname, string vbody)
-{
-  vname = toupper(vname);
-  m_vbody_map[vname] = tolower(stripBlankEnds(vbody));
-}  
-
-//-------------------------------------------------------------
-// Procedure: resetVehicles()
-
-void SSV_Viewer::resetVehicles()
-{
-  m_pos_map.clear();
-  m_hist_map.clear();
-  m_vbody_map.clear();
-  m_ais_map.clear();
-}
-      
-// ----------------------------------------------------------
-// Procedure: getLatLon
-//   Purpose: Index indicates which of the MAX_VEHICLES vehicles
-//            is being queried. 
-
-bool SSV_Viewer::getLatLon(int index, double& rlat, double& rlon)
-{
-  ObjectPose opose = getObjectPoseByIndex(index);
-  return(m_geodesy.LocalGrid2LatLong(opose.getX(), opose.getY(), rlat, rlon));
   
-  if(m_cross_offon)
-    return(0.0);
-}
-
-// ----------------------------------------------------------
-// Procedure: getVehicleInfo
-//   Purpose: Index indicates which of the MAX_VEHICLES vehicles
-//            is being queried. 
-
-float SSV_Viewer::getVehicleInfo(int index, string info_type)
-{
-  if(info_type == "age_ais") {
-    if(m_cross_offon)
-      return(-1);
-
-    string vname = getVehiName(index);
-    map<string,double>::iterator p1;
-    p1 = m_ais_map.find(vname);
-    if(p1 != m_ais_map.end())
-      return(m_curr_time - p1->second);
-    return(-1);
-  }
-  else if((info_type == "heading") || (info_type == "course")) {
-    if(m_cross_offon)
-      return(0.0);
-    
-    ObjectPose opose = getObjectPoseByIndex(index);
-    return(opose.getTheta());
-  }
-  else if((info_type == "xpos") || (info_type == "meters_x")) {
-    if(m_cross_offon) {
-      int iwidth = m_back_img.get_img_width();
-      float x_pos = ((float)(iwidth) / 2.0) - (float)(m_vshift_x);
-      float x_pct = m_back_img.pixToPctX(x_pos);
-      float x_pct_cent = m_back_img.get_img_centx();
-      float x_pct_mtrs = m_back_img.get_img_meters();
-      float meters = (x_pct - x_pct_cent) / (x_pct_mtrs / 100.0);
-      return(meters);
-    }
-    ObjectPose opose = getObjectPoseByIndex(index);
-    return(opose.getX());
-  }
-  else if((info_type == "ypos") || (info_type == "meters_y")) {
-    if(m_cross_offon) {
-      int iheight = m_back_img.get_img_height();
-      float y_pos = ((float)(iheight) / 2.0) - (float)(m_vshift_y);
-      float y_pct = m_back_img.pixToPctY(y_pos);
-      float y_pct_cent = m_back_img.get_img_centy();
-      float y_pct_mtrs = m_back_img.get_img_meters();
-      float meters = (y_pct - y_pct_cent) / (y_pct_mtrs / 100.0);
-      return(meters);
-    }
-    ObjectPose opose = getObjectPoseByIndex(index);
-    return(opose.getY());
-  }
-  else if(info_type == "speed") {
-    if(m_cross_offon)
-      return(0.0);
-    
-    ObjectPose opose = getObjectPoseByIndex(index);
-    return(opose.getSpeed());
-  }
-  else if(info_type == "depth") {
-    if(m_cross_offon)
-      return(0.0);
-    
-    ObjectPose opose = getObjectPoseByIndex(index);
-    return(opose.getDepth());
-  }
-  return(0);
-}
-
 
 // ----------------------------------------------------------
 // Procedure: getRelativeInfo
-//   Purpose: Index indicates which of the MAX_VEHICLES vehicles
-//            is being queried. 
+//   Purpose: Return info regarding the relationship between the special
+//            ownship vehicle, and the currently "active" vehicle. 
+// InfoTypes: (a) bearing (absolute)
+//            (b) relative bearing
+//            (c) range between vehicles
 
-float SSV_Viewer::getRelativeInfo(int index, string info_type)
+double SSV_Viewer::getRelativeInfo(const string& info_type)
 {
-  if(m_cross_offon)
-    return(-1);
-
-  string vname = getVehiName(index);
-  if((vname=="") || (vname == m_ownship_name) || (m_ownship_name==""))
-    return(-1);
+  ObjectPose pose_vh = m_vehiset.getObjectPose("active");
+  ObjectPose pose_os = m_vehiset.getObjectPose(m_ownship_name);
   
-  map<string,ObjectPose>::iterator p;
-  p = m_pos_map.find(vname);
-  if(p == m_pos_map.end())
-    return(-1);
-  ObjectPose pose_vh = p->second;
+  bool os_is_active = (m_ownship_name == m_vehiset.getActiveVehicle());
 
-  p = m_pos_map.find(m_ownship_name);
-  if(p == m_pos_map.end())
+  if(!pose_vh.isValid() || !pose_os.isValid() || os_is_active)
     return(-1);
-  ObjectPose pose_os = p->second;
+  // The value -1 is not returned on any conceivable cases below so
+  // we use it as a way of indicating an error condition.
+
 
   double os_x = pose_os.getX();
   double os_y = pose_os.getY();
@@ -327,38 +185,16 @@ float SSV_Viewer::getRelativeInfo(int index, string info_type)
 
   double bearing = relAng(os_x, os_y, vh_x, vh_y);
 
-  info_type = tolower(info_type);
-  if(info_type == "bearing")
+  string info_type_lower = tolower(info_type);
+  if(info_type_lower == "absolute_bearing")
     return(angle360(bearing));
   
   double rbearing = bearing - pose_os.getTheta();
-  if(info_type == "relative_bearing")
+  if(info_type_lower == "relative_bearing")
     return(angle360(rbearing));
   
-  if(info_type == "range")
+  if(info_type_lower == "relative_range")
     return(hypot((os_x - vh_x), (os_y - vh_y)));
-}
-
-// ----------------------------------------------------------
-// Procedure: getVehiName
-//   Purpose: Index indicates which of the MAX_VEHICLES vehicles
-//            is being queried. Anything outside this range 
-//            results in an empty string being returned.
-
-string SSV_Viewer::getVehiName(int index)
-{
-  if((m_cross_offon) || (index == -1))
-    return("cross-hairs");
-
-  int ix = index;
-  map<string,ObjectPose>::iterator p;
-  for(p=m_pos_map.begin(); p!=m_pos_map.end(); p++) {
-    if(ix==0)
-      return(p->first);
-    else
-      ix--;
-  }
-  return("");
 }
 
 //-------------------------------------------------------------
@@ -366,25 +202,28 @@ string SSV_Viewer::getVehiName(int index)
 
 void SSV_Viewer::drawVehicle(string vname, bool active, string vehibody)
 {
-  ObjectPose opose;
-  map<string,ObjectPose>::iterator p1;
-  p1 = m_pos_map.find(vname);
-  if(p1 != m_pos_map.end())
-    opose = p1->second;
-  else 
+  ObjectPose opose = m_vehiset.getObjectPose(vname);
+  if(!opose.isValid())
     return;
 
-  vector<double> cvect;
+  // If there has been no explicit mapping of color to the given vehicle
+  // name then the "inactive_vehicle_color" will be returned below.
+  vector<double> vehi_color;
   if(active)
-    cvect = getColorMapping("active_vcolor", "red");
-  else {
-    if(hasColorMapping(vname))
-      cvect = getColorMapping(vname, "1.0, 0.906, 0.243");
-    else
-      cvect = getColorMapping("inactive_vcolor", "1.0, 0.906, 0.243");
-  }
+    vehi_color = m_vehiset.getColor("active_vehicle_color");
+  else
+    vehi_color = m_vehiset.getColor(vname);
+  
+  vector<double> name_color = m_vehiset.getColor("vehicle_name_color");
 
-  drawCommonVehicle(vname, opose, cvect[0], cvect[1], cvect[1], vehibody, 1);
+  double shape_scale = m_vehiset.getDoubleInfo("active", "vehicle_shape_scale");
+
+  bool vname_draw = m_vehiset.isViewable("vehicle_names");
+
+  m_vehiset.getDoubleInfo("active", "vehicle_shape_scale", shape_scale);
+
+  drawCommonVehicle(vname, opose, vehi_color, name_color, vehibody, 
+		    shape_scale, vname_draw, 1);
 }
 
 //-------------------------------------------------------------
@@ -392,92 +231,31 @@ void SSV_Viewer::drawVehicle(string vname, bool active, string vehibody)
 
 void SSV_Viewer::drawPoints(CPList &cps)
 {
-  if(!m_trails) 
+  if(!m_vehiset.isViewable("trails"))
     return;
 
-  list<ColoredPoint>::iterator p, o;
+  vector<double> xvect;
+  vector<double> yvect;
 
-  // Line colors
-  double r=1.0;
-  double g=0.0;
-  double b=0.0;
+  int trail_gap = (int)(m_vehiset.getDoubleInfo("active", "trail_gap"));
 
+  list<ColoredPoint>::iterator p;
   int i=0;
-  double prev_x = 0;
-  double prev_y = 0;
   for(p=cps.begin(); p!=cps.end(); p++) {
-    if(m_trail_connect && (i!=0))
-      drawSegment(prev_x, prev_y, p->m_x, p->m_y, r, g, b);
-    if((i % m_trail_gap) == 0) {
-      if(p->isValid()) 
-	drawPoint(p->m_x, p->m_y, m_trail_color);
+    if((i % trail_gap) == 0) {
+      if(p->isValid()) {
+	xvect.push_back(p->m_x);
+	yvect.push_back(p->m_y);
+      }
     }
-    prev_x = p->m_x;
-    prev_y = p->m_y;
     i++;
   }
+
+  vector<double> cvect = m_vehiset.getColor("trail_color");
+  double point_size = m_vehiset.getDoubleInfo("active", "trail_point_size");
+
+  drawPointList(xvect, yvect, point_size, cvect);
 }
-
-//-------------------------------------------------------------
-// Procedure: drawPoint
-
-void SSV_Viewer::drawPoint(float px, float py, int color)
-{
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-
-  glOrtho(0, w(), 0, h(), -1 ,1);
-
-  glMatrixMode(GL_MODELVIEW);
-  glPushMatrix();
-  glLoadIdentity();
-
-  // Determine position in terms of image percentage
-  float pt_ix = meters2img('x', px);
-  float pt_iy = meters2img('y', py);
-
-  // Determine position in terms of view percentage
-  float pt_vx = img2view('x', pt_ix);
-  float pt_vy = img2view('y', pt_iy);
-
-  glTranslatef(pt_vx, pt_vy, 0); // theses are in pixel units
-
-  float pt_size = ((float)(m_trail_size) / 1.0) * m_zoom;
-
-  glEnable(GL_POINT_SMOOTH);
-  glPointSize(pt_size);
-  
-  if(color==0)  glColor3f(0, 0, 1);
-  if(color==1)  glColor3f(0, 1, 0);
-  if(color==2)  glColor3f(1, 0, 0);
-  
-  glBegin(GL_POINTS);
-  glVertex2f(0, 0);
-  glEnd();
-  glDisable(GL_POINT_SMOOTH);
-
-  glFlush();
-  glPopMatrix();
-}
-
-//-------------------------------------------------------------
-// Procedure: getObjectPoseByIndex
-
-ObjectPose SSV_Viewer::getObjectPoseByIndex(int index)
-{
-  int ix = index;
-  map<string,ObjectPose>::iterator p;
-  for(p=m_pos_map.begin(); p!=m_pos_map.end(); p++) {
-    if(ix==0)
-      return(p->second);
-    else
-      ix--;
-  }
-
-  ObjectPose op;
-  return(op);
-}
-
 
 //-------------------------------------------------------------
 // Procedure: handleLeftMouse
@@ -491,10 +269,10 @@ void SSV_Viewer::handleLeftMouse(int vx, int vy)
   double sx = snapToStep(mx, 1.0);
   double sy = snapToStep(my, 1.0);
 
+  mutexLock();
   m_left_click =  "x=" + doubleToString(sx,1) + ",";
   m_left_click += "y=" + doubleToString(sy,1);
-
-  m_left_click_ix++;
+  mutexUnLock();
   
   // cout << "Left Mouse click at [" << m_left_click << "] meters." << endl;
 }
@@ -511,22 +289,14 @@ void SSV_Viewer::handleRightMouse(int vx, int vy)
   double sx = snapToStep(mx, 1.0);
   double sy = snapToStep(my, 1.0);
   
+  mutexLock();
   m_right_click =  "x=" + doubleToString(sx,1) + ",";
   m_right_click += "y=" + doubleToString(sy,1);
+  mutexUnLock();
 
-  bool ownship_position_known = false;
-  ObjectPose opose;
-  map<string,ObjectPose>::iterator p;
-  for(p=m_pos_map.begin(); p!=m_pos_map.end(); p++) {
-    string map_vname = tolower(p->first);
-    if(map_vname == tolower(m_ownship_name)) {
-      ownship_position_known = true;
-      opose = p->second;
-    }
-  }
+  ObjectPose opose = m_vehiset.getObjectPose(m_ownship_name);
   
-  cout << endl;
-  if(ownship_position_known) {
+  if(opose.isValid()) {
     double osx = opose.getX();
     double osy = opose.getY();
     double osh = opose.getTheta();
@@ -542,8 +312,6 @@ void SSV_Viewer::handleRightMouse(int vx, int vy)
     cout << "Right Mouse click at [" << m_right_click_rp << "] relpos." << endl;
     cout << "Ownship-X: " << osx << "  Ownship-Y: " << osy << endl;
   }
-  m_right_click_ix++;
-
   
   cout << "Right Mouse click at [" << m_right_click << "] meters." << endl;
 }
@@ -561,64 +329,71 @@ bool SSV_Viewer::setParam(string param, string value)
   param = tolower(stripBlankEnds(param));
   value = stripBlankEnds(value);
   
+  bool ok = true;
+
   if(param == "centric_view")
     return(setBooleanOnString(m_centric_view, value));
   else if(param == "bearing_lines")
     return(setBooleanOnString(m_draw_bearing_lines, value));
   else if(param == "weighted_center_view") {
     setWeightedCenterView();
-    return(true);
+    m_centric_view = true;
   }
   else if(param == "bearing_color")
-    return(setColorMapping("bearing_color", value));
+    m_bearing_color = colorParse(value);  
+  else if(param == "radial_color")
+    m_radial_color = colorParse(value);  
   else if(param == "ownship_name")
     m_ownship_name = toupper(value);
-  //else if(param == "op_vertex") 
-  //  return(m_op_area.addVertex(value, m_geodesy));
+  else if(param == "op_vertex") 
+    return(m_op_area.addVertex(value, m_geodesy));
   else if(param == "draw_radial")
     return(setBooleanOnString(m_draw_radial, value));
   else
-    return(false);
-  
-  redraw();
-  return(true);
+    ok = m_vehiset.setParam(param, value);
 
+  if(ok)
+    redraw();
+  return(ok);
 }
 
 //-------------------------------------------------------------
 // Procedure: setParam
 
-bool SSV_Viewer::setParam(string param, float v)
+bool SSV_Viewer::setParam(string param, double value)
 {
+  param = tolower(stripBlankEnds(param));
+  
+  bool ok = false;
+
   // Intercept and disallow any panning if in "centric" mode.
   if((param == "pan_x") || (param == "pan_y")) {
     m_centric_view = false;
-    return(setCommonParam(param, v));
+    return(setCommonParam(param, value));
   }
-
-  if(MarineViewer::setCommonParam(param, v))
+  // Then do the normal check of it is handled by the parent class
+  else if(MarineViewer::setCommonParam(param, value))
     return(true);
   
-  param = tolower(stripBlankEnds(param));
-  
   if(param == "radial_size") {
-    m_radial_size = (int)(v);
+    m_radial_size = (int)(value);
     if(m_radial_size < 0)
       m_radial_size = 0;
     if(m_radial_size > 2000)
        m_radial_size = 2000;
   }
   else if(param == "radial_increment") {
-    int new_size = m_radial_size + ((int)v);
+    int new_size = m_radial_size + ((int)(value));
     if((new_size >= 0) && (new_size <= 2000))
       m_radial_size = new_size;
   }
-  else 
-    return(false);
-  
-  redraw();
-  return(true);
+  // Then see if its handled by the vehiset
+  else
+    ok = m_vehiset.setParam(param, value);
 
+  if(ok)
+    redraw();
+  return(ok);
 }
 
 //-------------------------------------------------------------
@@ -628,13 +403,9 @@ void SSV_Viewer::drawRadials()
 {
   // First determine the position of "ownship". If this isn't 
   // known we return right away.
-
-  ObjectPose opose;
-  map<string,ObjectPose>::iterator p1;
-  p1 = m_pos_map.find(m_ownship_name);
-  if(p1 != m_pos_map.end())
-    opose = p1->second;
-  else
+  
+  ObjectPose opose = m_vehiset.getObjectPose(m_ownship_name);
+  if(!opose.isValid())
     return;
 
   double px = opose.getX();
@@ -651,7 +422,7 @@ void SSV_Viewer::drawRadials()
   
   XYPolygon poly = stringToPoly(poly_str);
 
-  float *points = new float[2*psize];
+  double *points = new double[2*psize];
   
   int pindex = 0;
   for(int i=0; i<psize; i++) {
@@ -668,10 +439,10 @@ void SSV_Viewer::drawRadials()
   glLoadIdentity();
   glOrtho(0, w(), 0, h(), -1 ,1);
 
-  float tx = meters2img('x', 0);
-  float ty = meters2img('y', 0);
-  float qx = img2view('x', tx);
-  float qy = img2view('y', ty);
+  double tx = meters2img('x', 0);
+  double ty = meters2img('y', 0);
+  double qx = img2view('x', tx);
+  double qy = img2view('y', ty);
 
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
@@ -689,7 +460,7 @@ void SSV_Viewer::drawRadials()
     glLineStipple(factor, pattern);
   }
 
-  vector<double> cvect = getColorMapping("radial_color", "1,0,0");
+  vector<double> cvect = m_radial_color;
   glColor3f(cvect[0], cvect[1], cvect[2]);
 
   glBegin(GL_LINE_LOOP);
@@ -708,36 +479,27 @@ void SSV_Viewer::drawRadials()
 //-------------------------------------------------------------
 // Procedure: drawBearingLine
 
-void SSV_Viewer::drawBearingLine(int index)
+void SSV_Viewer::drawBearingLine()
 {
-  string vname = getVehiName(index);
-  if((vname=="") || (vname == m_ownship_name) || (m_ownship_name==""))
-    return;
-  
-  map<string,ObjectPose>::iterator p;
-  p = m_pos_map.find(vname);
-  if(p == m_pos_map.end())
-    return;
-  ObjectPose pose_vh = p->second;
+  ObjectPose pose_vh = m_vehiset.getObjectPose("active");
+  ObjectPose pose_os = m_vehiset.getObjectPose(m_ownship_name);
 
-  p = m_pos_map.find(m_ownship_name);
-  if(p == m_pos_map.end())
+  if(!pose_vh.isValid() || !pose_os.isValid())
     return;
-  ObjectPose pose_os = p->second;
 
-  float pt_0 = pose_os.getX() * m_back_img.get_pix_per_mtr();
-  float pt_1 = pose_os.getY() * m_back_img.get_pix_per_mtr();
-  float pt_2 = pose_vh.getX() * m_back_img.get_pix_per_mtr();
-  float pt_3 = pose_vh.getY() * m_back_img.get_pix_per_mtr();
+  double pt_0 = pose_os.getX() * m_back_img.get_pix_per_mtr();
+  double pt_1 = pose_os.getY() * m_back_img.get_pix_per_mtr();
+  double pt_2 = pose_vh.getX() * m_back_img.get_pix_per_mtr();
+  double pt_3 = pose_vh.getY() * m_back_img.get_pix_per_mtr();
   
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   glOrtho(0, w(), 0, h(), -1 ,1);
 
-  float tx = meters2img('x', 0);
-  float ty = meters2img('y', 0);
-  float qx = img2view('x', tx);
-  float qy = img2view('y', ty);
+  double tx = meters2img('x', 0);
+  double ty = meters2img('y', 0);
+  double qx = img2view('x', tx);
+  double qy = img2view('y', ty);
 
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
@@ -746,7 +508,7 @@ void SSV_Viewer::drawBearingLine(int index)
   glTranslatef(qx, qy, 0);
   glScalef(m_zoom, m_zoom, m_zoom);
 
-  vector<double> cvect = getColorMapping("bearing_color", "orange");
+  vector<double> cvect = m_bearing_color;
 
   // Draw the edges 
   glLineWidth(1.0);
@@ -760,262 +522,6 @@ void SSV_Viewer::drawBearingLine(int index)
 
   glFlush();
   glPopMatrix();
-}
-
-//-------------------------------------------------------------
-// Procedure: drawGridBox
-
-void SSV_Viewer::drawGridBox(double p0x, double p0y,
-			     double p1x, double p1y,
-			     double p2x, double p2y,
-			     double p3x, double p3y)
-{
-
-#if 0
-  if(m_op_area == "dabob_bay")
-    drawGridPN();
-  else if(m_op_area == "tellaro")
-    drawGridBox(0.0,    1542.6,	  1510.2,  2690.7,
-		2839.8, 1227.0,	  1382.2,     0.0);
-  else if((m_op_area == "palmara") || (m_op_area == "palmaria"))
-    drawGridBox(0.0,       0.0,      0.0,  1347.0,
-		1071.3, 1347.0,   1071.3,     0.0);
-  else if(m_op_area == "lotti")
-    drawGridBox(926.7,   749.9,    1048.1,  642.4,
-		467.0,     0.0,       0.0,  342.0);
-#endif
-
-  unsigned int i;
-
-  unsigned int    vsize  = 4;
-  float *points = new float[2*4];
-
-  points[0]  = p0x;    points[1] = p0y;
-  points[2]  = p1x;    points[3] = p1y;
-  points[4]  = p2x;    points[5] = p2y;
-  points[6]  = p3x;    points[7] = p3y;
-
-  unsigned int pindex = 0;
-  for(i=0; i<vsize; i++) {
-    points[pindex]   *=  m_back_img.get_pix_per_mtr();
-    points[pindex+1] *=  m_back_img.get_pix_per_mtr();
-    pindex+=2;
-  }
-
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  glOrtho(0, w(), 0, h(), -1 ,1);
-
-  float tx = meters2img('x', 0);
-  float ty = meters2img('y', 0);
-  float qx = img2view('x', tx);
-  float qy = img2view('y', ty);
-
-  glMatrixMode(GL_MODELVIEW);
-  glPushMatrix();
-  glLoadIdentity();
-
-  glTranslatef(qx, qy, 0);
-  glScalef(m_zoom, m_zoom, m_zoom);
-
-  // Draw the edges 
-  glLineWidth(2.0);
-  glColor3f(0.0, 0.7, 0.5);
-  glBegin(GL_LINE_STRIP);
-
-  glVertex2f(points[2*0],  points[2*0+1]);
-  glVertex2f(points[2*1],  points[2*1+1]);
-  glVertex2f(points[2*2],  points[2*2+1]);
-  glVertex2f(points[2*3],  points[2*3+1]);
-  glVertex2f(points[2*0],  points[2*0+1]);
-  glEnd();
-
-  glFlush();
-  glPopMatrix();
-}
-
-
-//-------------------------------------------------------------
-// Procedure: drawGridPN
-
-void SSV_Viewer::drawGridPN()
-{
-  unsigned int i;
-
-  unsigned int vsize     = 18;
-  float *points = new float[2*18];
-
-  points[0]  =   932;    points[1]  =  4339;
-  points[2]  =  1905;    points[3]  =  4122;
-  points[4]  =  2879;    points[5]  =  3905;
-  points[6]  =   501;    points[7]  =  2385;
-  points[8]  =  1475;    points[9]  =  2170;
-  points[10] =  2449;    points[11] =  1953;
-  points[12] =    72;    points[13] =   433;
-  points[14] =  1046;    points[15] =   218;
-  points[16] =  2019;    points[17] =     1;
-  points[18] =  -357;    points[19] = -1518;
-  points[20] =   615;    points[21] = -1698;
-  points[22] =  1588;    points[23] = -1950;
-  points[24] =  -787;    points[25] = -3472;
-  points[26] =   185;    points[27] = -3687;
-  points[28] =  1159;    points[29] = -3902;
-  points[30] = -1216;    points[31] = -5424;
-  points[32] =  -243;    points[33] = -5639;
-  points[34] =   729;    points[35] = -5855;
-
-  unsigned int pindex = 0;
-  for(i=0; i<vsize; i++) {
-    points[pindex]   *=  m_back_img.get_pix_per_mtr();
-    points[pindex+1] *=  m_back_img.get_pix_per_mtr();
-    pindex+=2;
-  }
-
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  glOrtho(0, w(), 0, h(), -1 ,1);
-
-  float tx = meters2img('x', 0);
-  float ty = meters2img('y', 0);
-  float qx = img2view('x', tx);
-  float qy = img2view('y', ty);
-
-  glMatrixMode(GL_MODELVIEW);
-  glPushMatrix();
-  glLoadIdentity();
-
-  glTranslatef(qx, qy, 0);
-  glScalef(m_zoom, m_zoom, m_zoom);
-
-  // Draw the edges 
-  glLineWidth(1.0);
-
-  glColor3f(0.0, 0.7, 0.5);
-
-  glBegin(GL_LINE_STRIP);
-
-  glBegin(GL_LINE_STRIP);
-  glVertex2f(points[2*0],  points[2*0+1]);
-  glVertex2f(points[2*3],  points[2*3+1]);
-  glVertex2f(points[2*6],  points[2*6+1]);
-  glVertex2f(points[2*9],  points[2*9+1]);
-  glVertex2f(points[2*12], points[2*12+1]);
-  glVertex2f(points[2*15], points[2*15+1]);
-  glEnd();
-
-  glBegin(GL_LINE_STRIP);
-  glVertex2f(points[2*1],  points[2*1+1]);
-  glVertex2f(points[2*4],  points[2*4+1]);
-  glVertex2f(points[2*7],  points[2*7+1]);
-  glVertex2f(points[2*10], points[2*10+1]);
-  glVertex2f(points[2*13], points[2*13+1]);
-  glVertex2f(points[2*16], points[2*16+1]);
-  glEnd();
-
-  glBegin(GL_LINE_STRIP);
-  glVertex2f(points[2*2],  points[2*2+1]);
-  glVertex2f(points[2*5],  points[2*5+1]);
-  glVertex2f(points[2*8],  points[2*8+1]);
-  glVertex2f(points[2*11], points[2*11+1]);
-  glVertex2f(points[2*14], points[2*14+1]);
-  glVertex2f(points[2*17], points[2*17+1]);
-  glEnd();
-
-  glBegin(GL_LINE_STRIP);
-  glVertex2f(points[2*0], points[2*0+1]);
-  glVertex2f(points[2*2], points[2*2+1]);
-  glEnd();
-
-  glBegin(GL_LINE_STRIP);
-  glVertex2f(points[2*3], points[2*3+1]);
-  glVertex2f(points[2*5], points[2*5+1]);
-  glEnd();
-
-  glBegin(GL_LINE_STRIP);
-  glVertex2f(points[2*6], points[2*6+1]);
-  glVertex2f(points[2*8], points[2*8+1]);
-  glEnd();
-
-  glBegin(GL_LINE_STRIP);
-  glVertex2f(points[2*9],  points[2*9+1]);
-  glVertex2f(points[2*11], points[2*11+1]);
-  glEnd();
-
-  glBegin(GL_LINE_STRIP);
-  glVertex2f(points[2*12], points[2*12+1]);
-  glVertex2f(points[2*14], points[2*14+1]);
-  glEnd();
-
-  glBegin(GL_LINE_STRIP);
-  glVertex2f(points[2*15], points[2*15+1]);
-  glVertex2f(points[2*17], points[2*17+1]);
-  glEnd();
-
-  glFlush();
-  glPopMatrix();
-}
-
-//-------------------------------------------------------------
-// Procedure: setCurrent
-//            Given a vehicle name string, compare it to the map
-//            of known vehicles and, if found, let the 
-//            "global_index" point to that index. The global_index
-//            indicates which vehicle is "active". 
-
-void SSV_Viewer::setCurrent(string vname)
-{
-  vname = tolower(vname);
-
-  // Special case: the alias "ownship" can be used even if the value
-  // of m_ownship_name is something completely different
-  if(vname == "ownship")
-    vname = tolower(m_ownship_name);
-
-  int the_index = -1;
-  int cur_index = 0;
-  map<string,ObjectPose>::iterator p;
-  for(p=m_pos_map.begin(); p!=m_pos_map.end(); p++) {
-    string map_vname = tolower(p->first);
-    if(map_vname == vname)
-      the_index = cur_index;
-    cur_index++;
-  }
-  
-  if(the_index != -1)
-    m_global_ix = the_index;
-}
-
-//-------------------------------------------------------------
-// Procedure: cycleIndex
-
-void SSV_Viewer::cycleIndex()
-{
-  m_global_ix += 1;
-  if(m_global_ix >= m_pos_map.size())
-    m_global_ix = 0;
-}
-
-//-------------------------------------------------------------
-// Procedure: hasVehiName
-//            Given a vehicle name string, compare it to the map
-//            of known vehicles and, if found, return true.
-
-bool SSV_Viewer::hasVehiName(string vname)
-{
-  vname = tolower(vname);
-
-  // Special case: the alias "ownship" can be used even if the value
-  // of m_ownship_name is something completely different
-  if(vname == "ownship")
-    vname = tolower(m_ownship_name);
-  
-  map<string,ObjectPose>::iterator p;
-  for(p=m_pos_map.begin(); p!=m_pos_map.end(); p++) {
-    string map_vname = tolower(p->first);
-    if(map_vname == vname)
-      return(true);
-  }
-  return(false);
 }
 
 //-------------------------------------------------------------
@@ -1064,31 +570,17 @@ void SSV_Viewer::drawStationCircles()
 
 void SSV_Viewer::setWeightedCenterView()
 {
-  double total_x = 0;
-  double total_y = 0;
-
-  int counter = 0;
-  
-  map<string,ObjectPose>::iterator p;
-  p = m_pos_map.begin();
-  while(p != m_pos_map.end()) {
-    ObjectPose opose = p->second;
-    total_x += opose.getX();
-    total_y += opose.getY();
-    counter++;
-    p++;
-  }
-
-  if(counter == 0)
+  if(!m_centric_view)
     return;
-  
-  m_centric_view = false;
-  m_avg_vehipos_x = total_x / (double)(counter);
-  m_avg_vehipos_y = total_y / (double)(counter);
+
+  double avg_pos_x, avg_pos_y;
+  bool ok = m_vehiset.getWeightedCenter(avg_pos_x, avg_pos_y);
+  if(!ok)
+    return;
 
   // First determine how much we're off in terms of meters
-  double delta_x = m_avg_vehipos_x - m_back_img.get_x_at_img_ctr();
-  double delta_y = m_avg_vehipos_y - m_back_img.get_y_at_img_ctr();
+  double delta_x = avg_pos_x - m_back_img.get_x_at_img_ctr();
+  double delta_y = avg_pos_y - m_back_img.get_y_at_img_ctr();
   
   // Next determine how much in terms of pixels
   double pix_per_mtr = m_back_img.get_pix_per_mtr();

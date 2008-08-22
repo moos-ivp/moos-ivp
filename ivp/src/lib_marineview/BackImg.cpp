@@ -81,14 +81,14 @@ BackImg::~BackImg()
 // Procedure: pixToPctX,Y()
 //     Notes: pix is an absolute amount of the image
 
-float BackImg::pixToPctX(float pix)
+double BackImg::pixToPctX(double pix)
 {
-  return((float)(pix) / (float)(img_width));
+  return((double)(pix) / (double)(img_width));
 }
 
-float BackImg::pixToPctY(float pix)
+double BackImg::pixToPctY(double pix)
 {
-  return((float)(pix) / (float)(img_height));
+  return((double)(pix) / (double)(img_height));
 }
 
 // ----------------------------------------------------------

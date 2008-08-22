@@ -31,6 +31,12 @@ public:
   virtual ~MarineVehiGUI() {};
 
 protected:
+  inline void cb_ToggleVehicles_i();
+  static void cb_ToggleVehicles(Fl_Widget*);
+
+  inline void cb_CycleFocus_i();
+  static void cb_CycleFocus(Fl_Widget*);
+
   inline void cb_ToggleTrails_i();
   static void cb_ToggleTrails(Fl_Widget*);
 
@@ -60,6 +66,8 @@ protected:
 
   inline void cb_MVG_SetGeoAttr_i(int);
   static void cb_MVG_SetGeoAttr(Fl_Widget*, int);
+
+  int    m_trail_color_ix;
 };
 #endif
 

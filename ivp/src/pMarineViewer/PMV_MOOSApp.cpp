@@ -32,12 +32,11 @@ using namespace std;
 
 PMV_MOOSApp::PMV_MOOSApp() 
 {
-  m_left_click_ix  = -1; 
-  m_right_click_ix = -1; 
+  m_left_click_str  = "null"; 
+  m_right_click_str = "null"; 
 
   m_gui     = 0; 
   m_verbose = false;
-  m_vp_counter = 0;
 }
 
 //----------------------------------------------------------------
@@ -45,28 +44,19 @@ PMV_MOOSApp::PMV_MOOSApp()
 
 bool PMV_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 {
+  if(!m_gui)
+    return(true);
   NewMail.sort();
   
   bool gui_needs_redraw = false;
   bool gui_clear_trails = false;
-  //MOOSMSG_LIST::reverse_iterator p;
   MOOSMSG_LIST::iterator p;
 
-  double curr_time = MOOSTime() - m_start_time;
-  m_gui->mviewer->setTime(curr_time);
-
-  //if(NewMail.rbegin() != NewMail.rend()) {
-  if(NewMail.begin() != NewMail.end()) {
-    double curr_time = MOOSTime() - m_start_time;
-    string ctime_str = doubleToString(curr_time, 2);
-    MOOSTrace("\n%s > ", ctime_str.c_str());
-    if(m_verbose)
-      MOOSTrace("\n");
-  }
+  double curr_time = MOOSTime();
 
   m_gui->mviewer->mutexLock();
+  m_gui->mviewer->setParam("curr_time", curr_time);
 
-  //for(p = NewMail.rbegin();p!=NewMail.rend();p++) {
   for(p = NewMail.begin();p!=NewMail.end();p++) {
     CMOOSMsg &Msg = *p;
 
@@ -78,8 +68,12 @@ bool PMV_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
       gui_needs_redraw = true;
     }
     else if((key == "AIS_REPORT_LOCAL") || (key == "AIS_REPORT")) {
-      receiveAIS_REPORT(Msg);
-      gui_needs_redraw = true;
+      bool ok = m_gui->mviewer->setParam("ais_report", Msg.m_sVal);
+      if(!ok)
+	cout << "Problem with parsing AIS_REPORT" << endl;
+      else
+	gui_needs_redraw = true;
+      cout << "*" << flush;
     }
     else if(key == "GRID_CONFIG") { 
       receiveGRID_CONFIG(Msg);
@@ -99,7 +93,6 @@ bool PMV_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
     }
     else if(key == "VIEW_POINT") { 
       receivePoint(Msg);
-      cout << "Num points recv'd: " << m_vp_counter++ << endl;
       gui_needs_redraw = true;
     }
     else if(key == "VIEW_CIRCLE") { 
@@ -113,14 +106,16 @@ bool PMV_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
       MOOSTrace("Unknown msg [%s]\n",key.c_str());
     }
   }
+  if(gui_clear_trails && m_gui)
+    m_gui->mviewer->setParam("clear_trails");
+
+  m_gui->mviewer->mutexUnLock();
+
   if(gui_needs_redraw && m_gui) {
     m_gui->updateXY();
     m_gui->mviewer->redraw();
   }
-  if(gui_clear_trails && m_gui)
-    m_gui->mviewer->clearTrails();
 
-  m_gui->mviewer->mutexUnLock();
 
   return(true);
 }
@@ -150,14 +145,12 @@ bool PMV_MOOSApp::Iterate()
     m_gui->updateXY();
   }
 
-  int left_click_ix = m_gui->mviewer->getLeftClickIX();
-  if(left_click_ix > m_left_click_ix) {
-    m_left_click_ix = left_click_ix;
-    string left_click_str = m_gui->mviewer->getLeftClick();
+  string left_click_str = m_gui->mviewer->getStringInfo("left_click_info");
+  if(left_click_str != m_left_click_str) {
+    m_left_click_str = left_click_str;
     
-    if(left_click_str != "") {
-      int    index   = m_gui->mviewer->getDataIndex();
-      string vname   = m_gui->mviewer->getVehiName(index);
+    if(m_left_click_str != "") {
+      string vname   = m_gui->mviewer->getStringInfo("active_vehicle_name");
       string postval = left_click_str;
       if(vname != "")
 	postval += (",vname=" + vname);
@@ -165,14 +158,12 @@ bool PMV_MOOSApp::Iterate()
     }
   }
 
-  int right_click_ix = m_gui->mviewer->getRightClickIX();
-  if(right_click_ix > m_right_click_ix) {
-    m_right_click_ix = right_click_ix;
-    string right_click_str = m_gui->mviewer->getRightClick();
+  string right_click_str = m_gui->mviewer->getStringInfo("right_click_info");
+  if(m_right_click_str != m_right_click_str) {
+    m_right_click_str = right_click_str;
     
-    if(right_click_str != "") {
-      int    index  = m_gui->mviewer->getDataIndex();
-      string vname  = m_gui->mviewer->getVehiName(index);
+    if(m_right_click_str != "") {
+      string vname   = m_gui->mviewer->getStringInfo("active_vehicle_name");
       string postval = right_click_str;
       if(vname != "")
 	postval += (",vname=" + vname);
@@ -237,23 +228,22 @@ bool PMV_MOOSApp::OnStartUp()
     //if(MOOSStrCmp(sVarName, "TIF_FILE"))
     //  tif_file = sLine;
 
-    if(MOOSStrCmp(sVarName, "VEHICOLOR"))
-      m_gui->mviewer->setColorMapping(sLine);
-    else if(MOOSStrCmp(sVarName, "VERBOSE")) {
+    if(MOOSStrCmp(sVarName, "VERBOSE")) {
       if(tolower(sLine) == "true")
 	m_verbose = true;
       if(tolower(sLine) == "false")
 	m_verbose = false;
     }
     else { 
-      bool handled = m_gui->mviewer->setParam(sVarName, sLine);
-      if(!handled)
-	m_gui->mviewer->setParam(sVarName, atof(sLine.c_str()));
+      if(m_gui) {
+	m_gui->mviewer->mutexLock();
+	bool handled = m_gui->mviewer->setParam(sVarName, sLine);
+	if(!handled)
+	  m_gui->mviewer->setParam(sVarName, atof(sLine.c_str()));
+	m_gui->mviewer->mutexUnLock();
+      }
     }
   }
-
-  //if((tif_file != "") && (m_gui))
-  //  m_gui->readTiff(tif_file.c_str());
 
   m_start_time = MOOSTime();
   
@@ -266,67 +256,18 @@ bool PMV_MOOSApp::OnStartUp()
 
 
 //---------------------------------------------------------------
-// Procedure: parseSingleReport
-
-bool PMV_MOOSApp::parseSingleReport(string sReport)
-{
-  bool returnStatus = false;
-  double dfX  = 0;
-  double dfY  = 0; 
-
-  double dfSpeed     = 0;
-  double dfHeading   = 0;
-  double dfDepth     = 0;
-  string vessel_name = "";
-  string vessel_type = "";
-
-
-  bool bVName = tokParse(sReport, "NAME",   ',', '=', vessel_name);
-  bool bVType = tokParse(sReport, "TYPE",   ',', '=', vessel_type);
-  bool bX     = tokParse(sReport, "X",      ',', '=', dfX);
-  bool bY     = tokParse(sReport, "Y",      ',', '=', dfY);
-  bool bSpeed = tokParse(sReport, "SPD",    ',', '=', dfSpeed);
-  bool bHeading = tokParse(sReport, "HDG",  ',', '=', dfHeading);
-  bool bDepth = tokParse(sReport, "DEPTH",  ',', '=', dfDepth);
-
-  if(m_verbose)
-    MOOSTrace("   AIS(%s)\n", vessel_name.c_str());
-  else
-    MOOSTrace("*");
-  
-  if(bVName && bVType && bX && bY && bHeading && bSpeed && bDepth) {
-    if(m_gui) {
-      m_gui->mviewer->updateVehiclePosition(vessel_name, dfX, dfY, 
-					    dfHeading, dfSpeed, dfDepth);
-      m_gui->mviewer->setVehicleBodyType(vessel_name, vessel_type);
-    }
-    returnStatus = true;
-  }
-  else {
-    MOOSTrace("Parse Error in ParseSingleReport. \n");
-    MOOSTrace("Msg: %s\n", sReport.c_str());
-    returnStatus = false;
-  }
-  return( returnStatus );
-}
-
-//---------------------------------------------------------------
 // Procedure: receivePK_SOL
 
 bool PMV_MOOSApp::receivePK_SOL(CMOOSMsg &Msg)
 {
-  bool returnStatus = true;
-  bool singleStatus = false;
+  bool return_status = true;
   vector<string> rvector;
 
   // REPORTS in PK_SOL message are separated by ";"
 
   vector<string> svector = parseString(Msg.m_sVal, ';');
 
-  //MOOSTrace("Received PK_SOL Msg\n");
-
-  // cycle through all reports
-
+  // Cycle through all reports
   for(unsigned int i=0;i<svector.size()-1;i++) {
     // Remove first item of string - it is the type of report
     // (e.g. REPORT_TYPE = AIS_REPORT) so strip that off and 
@@ -334,21 +275,10 @@ bool PMV_MOOSApp::receivePK_SOL(CMOOSMsg &Msg)
     
     rvector = chompString(svector[i], ',');
     if(rvector.size() > 1 ) {
-      singleStatus = parseSingleReport( rvector[1].c_str());
-      if(singleStatus == false) {
-	returnStatus = false;
-      }
+      return_status = m_gui->mviewer->setParam("ais_report", rvector[1].c_str());
     }
   }
-  return(returnStatus);
-}
-
-//---------------------------------------------------------------
-// Procedure: receiveAIS_REPORT
-
-bool PMV_MOOSApp::receiveAIS_REPORT(CMOOSMsg &Msg)
-{
-  return(parseSingleReport( Msg.m_sVal ));
+  return(return_status);
 }
 
 //--------------------------------------------------------------
@@ -365,7 +295,7 @@ bool PMV_MOOSApp::receiveGRID_CONFIG(CMOOSMsg &Msg)
   
   bool ok = search_grid.initialize(Msg.m_sVal);
   if(ok) {
-    m_gui->addGrid(search_grid);
+    m_gui->mviewer->addGrid(search_grid);
     return(true);
   }
   else {
@@ -393,7 +323,7 @@ bool PMV_MOOSApp::receivePolygon(CMOOSMsg &Msg)
     MOOSTrace("P");
 
   if(ok) {
-    m_gui->addPoly(new_poly);
+    m_gui->mviewer->addPoly(new_poly);
     return(true);
   }
   else {
@@ -449,7 +379,7 @@ bool PMV_MOOSApp::receivePoint(CMOOSMsg &Msg)
     MOOSTrace(".");
   
   if(new_point.valid()) {
-    m_gui->addPoint(new_point);
+    m_gui->mviewer->addPoint(new_point);
     return(true);
   }
   else {

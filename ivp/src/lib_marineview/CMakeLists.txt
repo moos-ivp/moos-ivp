@@ -12,6 +12,7 @@ SET(SRC
   OpAreaSpec.cpp
   LMV_Utils.cpp
   VPlug_GeoShapes.cpp
+  VehicleSet.cpp
 )
 
 

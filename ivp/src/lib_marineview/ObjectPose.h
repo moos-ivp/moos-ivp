@@ -27,9 +27,9 @@ class ObjectPose
 {
  public:
   ObjectPose() 
-    {m_valid=false;};
-  ObjectPose(float x, float y, float theta, 
-	     float spd, float depth=0) {
+    {m_valid=false; m_ll_set=false;};
+  ObjectPose(double x, double y, double theta, 
+	     double spd, double depth=0) {
     m_x=x; 
     m_y=y; 
     m_theta=theta; 
@@ -39,29 +39,38 @@ class ObjectPose
       m_valid=true;
   };
 
-  bool  isValid()           {return(m_valid); };
-  float getX()              {return(m_x);};
-  float getY()              {return(m_y);};
-  float getTheta()          {return(m_theta);};
-  float getSpeed()          {return(m_speed);};
-  float getDepth()          {return(m_depth);};
+  bool   isValid() const     {return(m_valid); };
+  bool   isLatLonSet() const {return(m_ll_set);};
+  double getX() const        {return(m_x);};
+  double getY() const        {return(m_y);};
+  double getTheta() const    {return(m_theta);};
+  double getSpeed() const    {return(m_speed);};
+  double getDepth() const    {return(m_depth);};
+  double getLat() const      {return(m_lat);};
+  double getLon() const      {return(m_lon);};
 
-  void  setX(float val)     {m_x = val;};
-  void  setY(float val)     {m_y = val;};
-  void  setTheta(float val) {m_theta = val;};
-  void  setSpeed(float val) {m_speed = val;};
-  void  setDepth(float val) {m_depth = val;};
-  void  setInvalid()        {m_valid = false;};
-  void  setValid()          {m_valid = true;};
+  void  setX(double val)     {m_x = val;};
+  void  setY(double val)     {m_y = val;};
+  void  setTheta(double val) {m_theta = val;};
+  void  setSpeed(double val) {m_speed = val;};
+  void  setDepth(double val) {m_depth = val;};
 
- private:
-  float m_x; 
-  float m_y; 
-  float m_theta;
-  float m_speed;  
-  float m_depth;
-  bool  m_valid;
+  void  setLatLon(double lat, double lon) {
+    m_lat = lat;
+    m_lon = lon;
+    m_ll_set = true;
+  };
   
+ private:
+  double m_x; 
+  double m_y; 
+  double m_theta;
+  double m_speed;  
+  double m_depth;
+  bool   m_valid;
+  bool   m_ll_set;
+  double m_lat;
+  double m_lon;
 };
 
 #endif
