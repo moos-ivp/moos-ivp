@@ -22,8 +22,6 @@ public:
 
   bool setParam(const std::string& param, std::string value);
   
-  std::string getParamWarning() {return(m_param_warning);};
-
   unsigned int size()          {return(m_marker_type.size());};
   double   getMarkerGScale()   {return(m_marker_scale_global);}
   bool     viewable(const std::string& s="all");
@@ -63,8 +61,6 @@ protected:
   double m_marker_scale_global;
   bool   m_markers_viewable;
   bool   m_marker_labels_viewable;
-
-  std::string m_param_warning;
 };
 
 #endif

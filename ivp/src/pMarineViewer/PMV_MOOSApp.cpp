@@ -72,6 +72,7 @@ bool PMV_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 
     if(key == "VIEW_POLYGON") MOOSTrace("P");
     else if(key == "VIEW_SEGLIST") MOOSTrace("S");
+    else if(key == "GRID_CONFIG") MOOSTrace("X");
 #endif
 
 
@@ -88,24 +89,18 @@ bool PMV_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 	gui_needs_redraw = true;
       cout << "*" << flush;
     }
-    else if(key == "GRID_CONFIG") { 
-      receiveGRID_CONFIG(Msg);
-      gui_needs_redraw = true;
-    }
     else if(key == "GRID_DELTA") { 
       receiveGRID_DELTA(Msg);
       gui_needs_redraw = true;
     }
     else if(key == "VIEW_POLYGON")
-      m_gui->mviewer->setParam("polygon", sval);
+      m_gui->mviewer->setParam(key, sval);
     else if(key == "VIEW_SEGLIST")
-      m_gui->mviewer->setParam("seglist", sval);
+      m_gui->mviewer->setParam(key, sval);
     else if(key == "VIEW_POINT") 
       m_gui->mviewer->setParam(key, sval);
-    else if(key == "VIEW_CIRCLE") { 
-      receivePoint(Msg);
-      gui_needs_redraw = true;
-    }
+    else if(key == "GRID_CONFIG")
+      m_gui->mviewer->setParam(key, sval);
     else if(key == "TRAIL_RESET") { 
       gui_clear_trails = true;
     }
@@ -286,57 +281,6 @@ bool PMV_MOOSApp::receivePK_SOL(CMOOSMsg &Msg)
     }
   }
   return(return_status);
-}
-
-//--------------------------------------------------------------
-// Procedure: receiveGRID_CONFIG
-
-bool PMV_MOOSApp::receiveGRID_CONFIG(CMOOSMsg &Msg)
-{
-  if(m_verbose)
-    MOOSTrace("   Grid-Config\n");
-  else
-    MOOSTrace("X");
-
-  XYGrid search_grid;
-  
-  bool ok = search_grid.initialize(Msg.m_sVal);
-  if(ok) {
-    m_gui->mviewer->addGrid(search_grid);
-    return(true);
-  }
-  else {
-    MOOSTrace("Parse Error in receiveGridConfig. \n");
-    MOOSTrace("Msg: %s\n", Msg.m_sVal.c_str());
-    return(false);
-  }
-}
-
-//----------------------------------------------------------
-// Procedure: receivePoint
-
-bool PMV_MOOSApp::receivePoint(CMOOSMsg &Msg)
-{
-  XYPoint new_point = stringToPoint(Msg.m_sVal);
-  
-  string label = "ERR";
-  if(new_point.valid())
-    label = new_point.get_label();
-  
-  if(m_verbose)
-    MOOSTrace("   Point(%s)\n", label.c_str());
-  else
-    MOOSTrace(".");
-  
-  if(new_point.valid()) {
-    m_gui->mviewer->addPoint(new_point);
-    return(true);
-  }
-  else {
-    MOOSTrace("Parse Error in receivePoint. \n");
-    MOOSTrace(" String: %s \n", Msg.m_sVal.c_str());
-    return(false);
-  }
 }
 
 //----------------------------------------------------------

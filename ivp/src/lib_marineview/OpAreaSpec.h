@@ -66,8 +66,6 @@ protected:
   double m_line_shade;
   double m_label_shade;
 
-  std::string m_param_warning;
-
   // Datum member variables
   bool   m_datum_viewable;
   double m_datum_size;

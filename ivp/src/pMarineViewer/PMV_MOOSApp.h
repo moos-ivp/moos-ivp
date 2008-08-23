@@ -48,10 +48,7 @@ class PMV_MOOSApp : public CMOOSApp
   void receiveVehicleState(CMOOSMsg &Msg);
   bool receiveAIS_REPORT(CMOOSMsg &Msg);
   bool receivePK_SOL(CMOOSMsg &Msg);
-  bool receiveGRID_CONFIG(CMOOSMsg &Msg);
   void receiveGRID_DELTA(CMOOSMsg &Msg);
-  bool receiveSegList(CMOOSMsg &Msg);
-  bool receivePoint(CMOOSMsg &Msg);
   bool parseSingleReport(std::string sReport);
   void registerVariables();
 

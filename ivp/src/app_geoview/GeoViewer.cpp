@@ -105,13 +105,20 @@ void GeoViewer::handle_left_mouse(int vx, int vy)
     if(vsize == 0) {
       m_active_poly = 0;
       XYPolygon newpoly;
-      char buff[2];
-      buff[0] = 65+vsize;
-      buff[1] = '\0';
-      newpoly.set_label(buff);
+      string new_label;
+      int vvsize = vsize;
+      while(vvsize >= 0) {
+	int rem = vvsize % 26;
+	char next_char = 65 + rem;
+	new_label += next_char;
+	vvsize = vvsize - 26;
+      }
+      newpoly.set_label(new_label);
+      newpoly.add_vertex(sx, sy);
       m_geoshapes.addPolygon(newpoly);
     }
-    m_geoshapes.poly(m_active_poly).add_vertex(sx, sy);
+    else
+      m_geoshapes.poly(m_active_poly).add_vertex(sx, sy);
   }
   if(m_drop_mode == 1) {
     if(vsize > 0)
@@ -197,10 +204,17 @@ void GeoViewer::createNew()
   }
   else {
     XYPolygon newpoly;
-    char buff[2];
-    buff[0] = 65+vsize;
-    buff[1] = '\0';
-    newpoly.set_label(buff);
+
+    string new_label;
+    int vvsize = vsize;
+    while(vvsize >= 0) {
+      cout << "vvsize: " << vvsize << endl;
+      int rem = vvsize % 26;
+      char next_char = 65 + rem;
+      new_label += next_char;
+      vvsize = vvsize - 26;
+    }
+    newpoly.set_label(new_label);
     m_geoshapes.addPolygon(newpoly);
     m_active_poly = vsize;
   }

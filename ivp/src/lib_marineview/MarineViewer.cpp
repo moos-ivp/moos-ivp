@@ -396,31 +396,23 @@ bool MarineViewer::setCommonParam(string param, string value)
     return(setBooleanOnString(m_hash_offon, v));
   else if(p=="geodesy_init")
     initGeodesy(v);
-
   else if(p=="marker")
     m_vmarkers.addVMarker(v, m_geodesy);
-
   else if(p=="op_vertex")
     m_op_area.addVertex(v, m_geodesy);
-
   else if(p=="zoom") {
-    if(v == "reset")
-      m_zoom = 1.0;
-    else
+    if(v != "reset")
       return(false);
+    m_zoom = 1.0;
   }
-  else if(p=="polygon") {
-    XYPolygon new_poly = stringToPoly(value);
-    m_geoshapes.addPolygon(new_poly);
-  }
-  else if(p=="seglist") {
-    XYSegList new_segl = stringToSegList(value);
-    m_geoshapes.addSegList(new_segl);
-  }
-  else if(p=="view_point") {
-    XYPoint new_point = stringToPoint(value);
-    m_geoshapes.addPoint(new_point);
-  }
+  else if(p=="view_polygon")
+    return(m_geoshapes.addPolygon(value));
+  else if(p=="view_seglist")
+    return(m_geoshapes.addSegList(value));
+  else if(p=="view_point")
+    return(m_geoshapes.addPoint(value));
+  else if(p=="grid_config")
+    return(m_geoshapes.addGrid(value));
   else {
     bool handled = false;
     handled = handled || m_op_area.setParam(p,v);

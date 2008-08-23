@@ -25,8 +25,6 @@ public:
 
   bool setParam(const std::string& param, std::string value);
   
-  std::string getParamWarning() {return(m_param_warning);};
-
   void addPolygon(const XYPolygon&);
   void addSegList(const XYSegList&);
   void addGrid(const XYGrid&);
@@ -37,6 +35,7 @@ public:
   bool addPolygon(const std::string&);
   bool addSegList(const std::string&);
   bool addPoint(const std::string&);
+  bool addGrid(const std::string&);
   void updateGrid(const std::string&);
 
   int sizePolygons() {return(m_polygons.size());};
@@ -84,8 +83,6 @@ protected:
   std::map<std::string, std::vector<double> >  m_color_map;
   std::map<std::string, bool>                  m_viewable_map;
   std::map<std::string, double>                m_gsize_map;
-
-  std::string m_param_warning;
 };
 
 #endif
