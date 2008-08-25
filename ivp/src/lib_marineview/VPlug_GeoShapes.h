@@ -36,7 +36,7 @@ public:
   bool addSegList(const std::string&);
   bool addPoint(const std::string&);
   bool addGrid(const std::string&);
-  void updateGrid(const std::string&);
+  bool updateGrid(const std::string&);
 
   int sizePolygons() {return(m_polygons.size());};
   int sizeSegLists() {return(m_seglists.size());};

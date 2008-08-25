@@ -43,7 +43,7 @@ VehicleSet::VehicleSet()
 bool VehicleSet::setParam(string param, string value)
 {
   param = tolower(param);
-  if(param == "ais_report")
+  if((param == "ais_report") || (param == "ais_report_local"))
     return(updateVehiclePosition(value));
   else if(param == "active_vehicle_color")
     m_active_vehicle_color = colorParse(value);
@@ -53,7 +53,7 @@ bool VehicleSet::setParam(string param, string value)
     m_vehicle_name_color = colorParse(value);
   else if(param=="trail_color")
     m_trail_color = colorParse(value);
-  else if(param == "clear_trails")
+  else if(param == "clear_vehicle_trails")
     m_hist_map.clear();
   else if(param == "vehicles_viewable")
     return(setBooleanOnString(m_vehicles_viewable, value));

@@ -23,7 +23,6 @@
 #include <iostream>
 #include "SSV_MOOSApp.h"
 #include "MBUtils.h"
-#include "XYBuildUtils.h"
 
 using namespace std;
 
@@ -33,7 +32,9 @@ using namespace std;
 SSV_MOOSApp::SSV_MOOSApp() 
 {
   m_gui = 0;
-  
+
+  // We hold a local copy of last click-string to repeatedly compare
+  // against the currently generated one and only post when different
   m_left_click_str  = "null"; 
   m_right_click_str = "null";
 }
@@ -43,86 +44,51 @@ SSV_MOOSApp::SSV_MOOSApp()
 
 bool SSV_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 {
+ if(!m_gui)
+    return(true);
   NewMail.sort();
   
-  bool gui_needs_redraw = false;
-  bool gui_clear_trails = false;
-  MOOSMSG_LIST::reverse_iterator p;
 
   m_gui->mviewer->mutexLock();
-  double curr_time = MOOSTime();
+  m_gui->mviewer->setParam("curr_time", MOOSTime());
 
-  m_gui->mviewer->setParam("curr_time", curr_time);
+  int handled_msgs = 0;
 
-  for(p = NewMail.rbegin();p!=NewMail.rend();p++) {
+  MOOSMSG_LIST::iterator p;
+  for(p = NewMail.begin();p!=NewMail.end();p++) {
     CMOOSMsg &Msg = *p;
-
-    string key = Msg.m_sKey;
-
-    if((key == "AIS_REPORT") || (key == "AIS_REPORT_LOCAL")) {
-      if(m_gui) {
-	bool ok = m_gui->mviewer->setParam("ais_report", Msg.m_sVal);
-	if(!ok)
-	  cout << "Problem with parsing AIS_REPORT" << endl;
-	else
-	  gui_needs_redraw = true;
-	cout << "*" << flush;
-      }
-    }
-    else if(key == "GRID_CONFIG") { 
-      receiveGRID_CONFIG(Msg);
-      gui_needs_redraw = true;
-    }
-    else if(key == "GRID_DELTA") { 
-      receiveGRID_DELTA(Msg);
-      gui_needs_redraw = true;
-    }
-    else if(key == "VIEW_POLYGON") { 
-      receivePolygon(Msg);
-      gui_needs_redraw = true;
-    }
-    else if(key == "VIEW_SEGLIST") { 
-      receiveSegList(Msg);
-      gui_needs_redraw = true;
-    }
-    else if(key == "VIEW_POINT") { 
-      receivePoint(Msg);
-      gui_needs_redraw = true;
-    }
-    else if(key == "VIEW_CIRCLE") { 
-      receivePoint(Msg);
-      gui_needs_redraw = true;
-    }
-    else if(key == "STATION_CIRCLE") { 
-      receiveStationCircle(Msg);
-      gui_needs_redraw = true;
-    }
-    else if(key == "RTATION_CIRCLE") { 
-      receiveStationCircle(Msg);
-      gui_needs_redraw = true;
-    }
-    else if(key == "TRAIL_RESET") { 
-      gui_clear_trails = true;
+    
+    string key  = Msg.m_sKey;
+    string sval = Msg.m_sVal;
+    
+    bool handled = m_gui->mviewer->setParam(key, sval);
+    if(!handled) {
+      MOOSTrace("pMarineViewer OnNewMail Unhandled msg: \n");
+      MOOSTrace("  [key:%s val:%s]\n", key.c_str(), sval.c_str());
     }
     else {
-      MOOSTrace("Unknown msg [%s]\n",key.c_str());
+      if(key == "VIEW_POLYGON")          MOOSTrace("P");
+      else if(key == "VIEW_SEGLIST")     MOOSTrace("S");
+      else if(key == "VIEW_POINT")       MOOSTrace(".");
+      else if(key == "GRID_CONFIG")      MOOSTrace("X");
+      else if(key == "AIS_REPORT")       MOOSTrace("*");
+      else if(key == "AIS_REPORT_LOCAL") MOOSTrace("*");
+      else if(key == "GRID_CONFIG")      MOOSTrace("X");
+      else if(key == "GRID_DELTA")       MOOSTrace("G");
+      else MOOSTrace("?");
+      handled_msgs++;
     }
-    //cout << "Originating community: " << Msg.m_sOriginatingCommunity << endl;
   }
-
-  if(gui_clear_trails && m_gui)
-    m_gui->mviewer->setParam("clear_trails");
 
   m_gui->mviewer->mutexUnLock();
 
-  if(gui_needs_redraw && m_gui) {
+  if(handled_msgs > 0) {
     m_gui->updateXY();
     m_gui->mviewer->redraw();
   }
 
   return(true);
 }
-
 
 //----------------------------------------------------------------------
 // Procedure: OnConnectToServer()
@@ -149,13 +115,12 @@ bool SSV_MOOSApp::OnConnectToServer()
 
 bool SSV_MOOSApp::Iterate()
 {
-  cout << "." << flush;
+  if(!m_gui)
+    return(false);
 
   double curr_time = MOOSTime() - m_start_time;
-  if(m_gui) {
-    m_gui->setCurrTime(curr_time);
-    m_gui->updateXY();
-  }
+  m_gui->setCurrTime(curr_time);
+  m_gui->updateXY();  // do we need this here?
 
   string left_click_str = m_gui->mviewer->getStringInfo("left_click_info");
   if(left_click_str != m_left_click_str) {
@@ -200,29 +165,32 @@ bool SSV_MOOSApp::OnStartUp()
   m_MissionReader.GetConfiguration(GetAppName(), sParams);
   
   //Initialize m_Geodesy from lat lon origin in .moos file
-  string sVal;
-  double dfLatOrigin;
-  double dfLongOrigin;
+  string str;
+  double lat_origin;
+  double lon_origin;
 
-  if(m_MissionReader.GetValue("LatOrigin",sVal)) {
-    dfLatOrigin = atof(sVal.c_str());
-    MOOSTrace("  LatOrigin  = %10.5f deg.\n",dfLatOrigin);
+  // First get the latitude origin from the mission file
+  if(m_MissionReader.GetValue("LatOrigin", str)) {
+    lat_origin = atof(str.c_str());
+    MOOSTrace("  LatOrigin  = %10.5f deg.\n", lat_origin);
   }
   else {
     MOOSTrace("LatOrigin not specified in mission file - FAIL\n");
     return(false);
   }
 
-  if(m_MissionReader.GetValue("LongOrigin",sVal)) {
-    dfLongOrigin = atof(sVal.c_str());
-    MOOSTrace("  LongOrigin = %10.5f deg.\n",dfLongOrigin);
+  // Next get the longitude origin from the mission file
+  if(m_MissionReader.GetValue("LongOrigin", str)) {
+    lon_origin = atof(str.c_str());
+    MOOSTrace("  LongOrigin = %10.5f deg.\n", lon_origin);
   }
   else {
     MOOSTrace("LongOrigin not specified in mission file - FAIL\n");
     return(false);
   }
   
-  if(!m_gui->mviewer->initGeodesy(dfLatOrigin, dfLongOrigin)) {
+  // If the lat and lon origins both ok - then initialize the geodesy
+  if(!m_gui->mviewer->initGeodesy(lat_origin, lon_origin)) {
     MOOSTrace("Geodesy Init inside pShipSideViewer failed - FAIL\n");
     return(false);
   }
@@ -235,10 +203,15 @@ bool SSV_MOOSApp::OnStartUp()
     string param = toupper(MOOSChomp(sLine, "="));
     string value = stripBlankEnds(sLine);
     
-    if(param == "CONTACTS")
-      handleContactList(sLine);
+    if(param == "CONTACTS") {
+      vector<string> svector = parseString(sLine, ',');
+      for(int i=0; i<svector.size(); i++)
+	m_gui->addContactButton(i, svector[i]);
+    }
     else { 
+      // First try as if the param-value pair had a string value
       bool handled = m_gui->mviewer->setParam(param, value);
+      // Then try as if the param-value pair had a double value
       if(!handled)
 	m_gui->mviewer->setParam(param, atof(value.c_str()));
     } 
@@ -251,109 +224,6 @@ bool SSV_MOOSApp::OnStartUp()
   return(true);
 }
 
-
-//----------------------------------------------------------------------
-// Procedure: receiveGRID_CONFIG
-
-bool SSV_MOOSApp::receiveGRID_CONFIG(CMOOSMsg &Msg)
-{
-  //cout << "RECEIVED GRID CONFIGURATION!!!!" << endl << flush;
-  //cout << "   Msg.m_sVal:" << Msg.m_sVal << endl << flush;
-  XYGrid search_grid;
-  
-  bool ok = search_grid.initialize(Msg.m_sVal);
-  if(ok) {
-    m_gui->mviewer->addGrid(search_grid);
-    return(true);
-  }
-  else {
-    cout << "Parse Error in receiveGRID_CONFIG" << endl;
-    return(false);
-  }
-}
-
-//----------------------------------------------------------------------
-// Procedure: receivePolygon
-
-bool SSV_MOOSApp::receivePolygon(CMOOSMsg &Msg)
-{
-  XYPolygon new_poly = stringToPoly(Msg.m_sVal);
-  
-  if(new_poly.size() != 0) {
-    m_gui->mviewer->addPoly(new_poly);
-    return(true);
-  }
-  else {
-    cout << "Parse Error in receivePolygon" << endl;
-    cout << "Msg: " << Msg.m_sVal << endl;
-    return(false);
-  }
-}
-
-//----------------------------------------------------------------------
-// Procedure: receiveSegList
-
-bool SSV_MOOSApp::receiveSegList(CMOOSMsg &Msg)
-{
-  XYSegList new_seglist = stringToSegList(Msg.m_sVal);
-  
-  bool ok = (new_seglist.size() > 0);
-  if(ok) {
-    m_gui->mviewer->addSegList(new_seglist);
-    return(true);
-  }
-  else {
-    cout << "Parse Error in receiveSegList" << endl;
-    cout << "Msg: " << Msg.m_sVal << endl;
-    return(false);
-  }
-}
-
-//----------------------------------------------------------------------
-// Procedure: receivePoint
-
-bool SSV_MOOSApp::receivePoint(CMOOSMsg &Msg)
-{
-  XYPoint new_point = stringToPoint(Msg.m_sVal);
-
-  if(new_point.valid()) {
-    m_gui->mviewer->addPoint(new_point);
-    return(true);
-  }
-  else {
-    MOOSTrace("Parse Error in receivePoint. \n");
-    MOOSTrace(" String: %s \n", Msg.m_sVal.c_str());
-    return(false);
-  }
-}
-
-//----------------------------------------------------------------------
-// Procedure: receiveStationCircle
-
-bool SSV_MOOSApp::receiveStationCircle(CMOOSMsg &Msg)
-{
-  XYCircle new_circ;
-  
-  bool ok = new_circ.initialize(Msg.m_sVal);
-  if(ok) {
-    m_gui->mviewer->addStationCircle(new_circ);
-    return(true);
-  }
-  else {
-    cout << "Parse Error in receiveStationCircle" << endl;
-    return(false);
-  }
-}
-
-//----------------------------------------------------------------------
-// Procedure: receiveGRID_DELTA
-
-void SSV_MOOSApp::receiveGRID_DELTA(CMOOSMsg &Msg)
-{
-  //cout << "RECEIVED GRID ----------- DELTA   !!!!" << endl << flush;
-  //cout << "   Msg.m_sVal:" << Msg.m_sVal << endl << flush;
-  m_gui->mviewer->updateGrid(Msg.m_sVal);
-}
 
 //----------------------------------------------------------------------
 // Procedure: handlePendingGUI
@@ -371,22 +241,6 @@ void SSV_MOOSApp::handlePendingGUI()
     m_Comms.Notify(var, val);
   }
   m_gui->clearPending();
-}
-
-
-//----------------------------------------------------------------------
-// Procedure: handleContactList
-
-bool SSV_MOOSApp::handleContactList(string clist)
-{
-  vector<string> svector = parseString(clist, ',');
-  int vsize = svector.size();
-
-  for(int i=0; i<vsize; i++) {
-    cout << "[" << i << "]: " << svector[i] << endl;
-    m_gui->addContactButton(i, svector[i]);
-  }
-  return(true);
 }
 
 

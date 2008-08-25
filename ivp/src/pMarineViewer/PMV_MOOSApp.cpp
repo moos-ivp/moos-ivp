@@ -46,78 +46,48 @@ bool PMV_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 {
   if(!m_gui)
     return(true);
+
   NewMail.sort();
-  
-  bool gui_needs_redraw = false;
-  bool gui_clear_trails = false;
+
+  m_gui->mviewer->setParam("curr_time", MOOSTime());
+
+  int handled_msgs = 0;
+
   MOOSMSG_LIST::iterator p;
-
-  double curr_time = MOOSTime();
-
-  m_gui->mviewer->mutexLock();
-  m_gui->mviewer->setParam("curr_time", curr_time);
-
   for(p = NewMail.begin();p!=NewMail.end();p++) {
     CMOOSMsg &Msg = *p;
-
+    
     string key  = Msg.m_sKey;
     string sval = Msg.m_sVal;
-
-#if 0
-    bool ok = m_gui->setParam(key, sval);
-    if(!ok) {
+    
+    bool handled = m_gui->mviewer->setParam(key, sval);
+    if(!handled && (key == "PK_SOL")) {
+      MOOSTrace("\nProcessing PK_SOL Message\n");
+      receivePK_SOL(Msg);
+    }
+    if(!handled) {
       MOOSTrace("pMarineViewer OnNewMail Unhandled msg: \n");
       MOOSTrace("  [key:%s val:%s]\n", key.c_str(), sval.c_str());
     }
+    
+    if(key == "VIEW_POLYGON")          MOOSTrace("P");
+    else if(key == "VIEW_SEGLIST")     MOOSTrace("S");
+    else if(key == "VIEW_POINT")       MOOSTrace(".");
+    else if(key == "GRID_CONFIG")      MOOSTrace("X");
+    else if(key == "AIS_REPORT")       MOOSTrace("*");
+    else if(key == "AIS_REPORT_LOCAL") MOOSTrace("*");
+    else if(key == "GRID_CONFIG")      MOOSTrace("X");
+    else if(key == "GRID_DELTA")       MOOSTrace("G");
+    else MOOSTrace("?");
 
-    if(key == "VIEW_POLYGON") MOOSTrace("P");
-    else if(key == "VIEW_SEGLIST") MOOSTrace("S");
-    else if(key == "GRID_CONFIG") MOOSTrace("X");
-#endif
-
-
-    if(key == "PK_SOL") {
-      MOOSTrace("\nProcessing PK_SOL Message\n");
-      receivePK_SOL(Msg);
-      gui_needs_redraw = true;
-    }
-    else if((key == "AIS_REPORT_LOCAL") || (key == "AIS_REPORT")) {
-      bool ok = m_gui->mviewer->setParam("ais_report", Msg.m_sVal);
-      if(!ok)
-	cout << "Problem with parsing AIS_REPORT" << endl;
-      else
-	gui_needs_redraw = true;
-      cout << "*" << flush;
-    }
-    else if(key == "GRID_DELTA") { 
-      receiveGRID_DELTA(Msg);
-      gui_needs_redraw = true;
-    }
-    else if(key == "VIEW_POLYGON")
-      m_gui->mviewer->setParam(key, sval);
-    else if(key == "VIEW_SEGLIST")
-      m_gui->mviewer->setParam(key, sval);
-    else if(key == "VIEW_POINT") 
-      m_gui->mviewer->setParam(key, sval);
-    else if(key == "GRID_CONFIG")
-      m_gui->mviewer->setParam(key, sval);
-    else if(key == "TRAIL_RESET") { 
-      gui_clear_trails = true;
-    }
-    else {
-      MOOSTrace("Unknown msg [%s]\n",key.c_str());
-    }
+    if(handled)
+      handled_msgs++;
   }
-  if(gui_clear_trails && m_gui)
-    m_gui->mviewer->setParam("clear_trails");
 
-  m_gui->mviewer->mutexUnLock();
-
-  if(gui_needs_redraw && m_gui) {
+  if(handled_msgs > 0) {
     m_gui->updateXY();
     m_gui->mviewer->redraw();
   }
-
 
   return(true);
 }
@@ -140,12 +110,12 @@ bool PMV_MOOSApp::OnConnectToServer()
 
 bool PMV_MOOSApp::Iterate()
 {
-  double curr_time = MOOSTime() - m_start_time;
+  if(!m_gui)
+    return(false);
 
-  if(m_gui) {
-    m_gui->setCurrTime(curr_time);
-    m_gui->updateXY();
-  }
+  double curr_time = MOOSTime() - m_start_time;
+  m_gui->setCurrTime(curr_time);
+  m_gui->updateXY();
 
   string left_click_str = m_gui->mviewer->getStringInfo("left_click_info");
   if(left_click_str != m_left_click_str) {
@@ -184,73 +154,54 @@ bool PMV_MOOSApp::OnStartUp()
 {
   MOOSTrace("pMarineViewer starting....\n");
   
-  STRING_LIST sParams;
-  m_MissionReader.GetConfiguration(GetAppName(), sParams);
-  
-  string tif_file = "Default.tif";
-
-
   //Initialize m_Geodesy from lat lon origin in .moos file
-  string sVal;
-  double dfLatOrigin;
-  double dfLongOrigin;
-  
-  if(m_MissionReader.GetValue("LatOrigin",sVal)) {
-    dfLatOrigin = atof(sVal.c_str());
-    MOOSTrace("  LatOrigin  = %10.5f deg.\n",dfLatOrigin);
-  }
+  string str;
+  double lat_origin = 0;
+  double lon_origin = 0;
+
+  // First get the Latitude Origine from the MOOS file
+  if(m_MissionReader.GetValue("LatOrigin", str))
+    lat_origin = atof(str.c_str());
   else {
     MOOSTrace("LatOrigin not specified in mission file - FAIL\n");
     return(false);
   }
 
-  if(m_MissionReader.GetValue("LongOrigin",sVal)) {
-    dfLongOrigin = atof(sVal.c_str());
-    MOOSTrace("  LongOrigin = %10.5f deg.\n",dfLongOrigin);
-  }
+  // First get the Londitude Origine from the MOOS file
+  if(m_MissionReader.GetValue("LongOrigin",str))
+    lon_origin = atof(str.c_str());
   else {
     MOOSTrace("LongOrigin not specified in mission file - FAIL\n");
     return(false);
   }
   
-  if(!m_gui->mviewer->initGeodesy(dfLatOrigin, dfLongOrigin)) {
+  // If both lat and lon origin ok - then initialize the Geodesy.
+  if(!m_gui->mviewer->initGeodesy(lat_origin, lon_origin)) {
     MOOSTrace("Geodesy Init inside pShipSideViewer failed - FAIL\n");
     return(false);
   }
 
-
+  STRING_LIST sParams;
+  m_MissionReader.GetConfiguration(GetAppName(), sParams);
   STRING_LIST::reverse_iterator p;
   for(p = sParams.rbegin();p!=sParams.rend();p++) {
     string sLine    = *p;
     string sVarName = MOOSChomp(sLine, "=");
-    sVarName = toupper(sVarName);
-    sLine    = stripBlankEnds(sLine);
-    double dval = atof(sLine.c_str());
+    sVarName = stripBlankEnds(tolower(sVarName));
+    sLine    = stripBlankEnds(tolower(sLine));
     
-    //if(MOOSStrCmp(sVarName, "TIF_FILE"))
-    //  tif_file = sLine;
-
-    if(MOOSStrCmp(sVarName, "VERBOSE")) {
-      if(tolower(sLine) == "true")
-	m_verbose = true;
-      if(tolower(sLine) == "false")
-	m_verbose = false;
-    }
+    if(sVarName == "verbose")
+      m_verbose = (sLine == "true");
     else { 
-      if(m_gui) {
-	m_gui->mviewer->mutexLock();
-	bool handled = m_gui->mviewer->setParam(sVarName, sLine);
-	if(!handled)
-	  m_gui->mviewer->setParam(sVarName, atof(sLine.c_str()));
-	m_gui->mviewer->mutexUnLock();
-      }
+      bool handled = m_gui->mviewer->setParam(sVarName, sLine);
+      if(!handled)
+	m_gui->mviewer->setParam(sVarName, atof(sLine.c_str()));
     }
   }
-
+  
   m_start_time = MOOSTime();
   
-  if(m_gui && m_gui->mviewer)
-    m_gui->mviewer->redraw();
+  m_gui->mviewer->redraw();
   
   registerVariables();
   return(true);
@@ -283,28 +234,11 @@ bool PMV_MOOSApp::receivePK_SOL(CMOOSMsg &Msg)
   return(return_status);
 }
 
-//----------------------------------------------------------
-// Procedure: receiveGRID_DELTA
-
-void PMV_MOOSApp::receiveGRID_DELTA(CMOOSMsg &Msg)
-{
-  string msg_community = Msg.GetCommunity();
-  
-  if(m_verbose)
-    MOOSTrace("   GDelta(%s)\n", msg_community.c_str());
-  else
-    MOOSTrace("G");
-
-  m_gui->mviewer->updateGrid(Msg.m_sVal);
-}
-
-
 //------------------------------------------------------------
 // Procedure: registerVariables
 
 void PMV_MOOSApp::registerVariables()
 {
-//  m_Comms.Register("AIS_REPORT", 0);
   m_Comms.Register("PK_SOL", 0);
   m_Comms.Register("AIS_REPORT_LOCAL", 0);
   m_Comms.Register("AIS_REPORT",       0);

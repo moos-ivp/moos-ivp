@@ -46,7 +46,6 @@ SSV_Viewer::SSV_Viewer(int x, int y, int w, int h, const char *l)
 
   setParam("bearing_color", "orange");
   setParam("radial_color",  "red");
-  
 }
 
 //-------------------------------------------------------------
@@ -333,6 +332,10 @@ bool SSV_Viewer::setParam(string param, string value)
 
   if(param == "centric_view")
     return(setBooleanOnString(m_centric_view, value));
+  else if(param == "station_circle")
+    addStationCircle(value);
+  else if(param == "rstation_circle")
+    addStationCircle(value);
   else if(param == "bearing_lines")
     return(setBooleanOnString(m_draw_bearing_lines, value));
   else if(param == "weighted_center_view") {
@@ -527,13 +530,19 @@ void SSV_Viewer::drawBearingLine()
 //-------------------------------------------------------------
 // Procedure: addStationCircle
 
-void SSV_Viewer::addStationCircle(const XYCircle& new_circ)
+bool SSV_Viewer::addStationCircle(const string& str)
 {
+  XYCircle new_circ;
+  
+  bool ok = new_circ.initialize(str);
+  if(!ok)
+    return(false);
+
   string new_label = new_circ.getLabel();
   
   // Station Keeping Circles must have a label or else disregard
   if(new_label == "")
-    return;
+    return(false);
   
   bool prior_existed = false;
   
@@ -547,6 +556,8 @@ void SSV_Viewer::addStationCircle(const XYCircle& new_circ)
   
   if(!prior_existed)
     m_station_circ.push_back(new_circ);
+
+  return(true);
 }
 
 //-------------------------------------------------------------

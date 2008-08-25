@@ -153,10 +153,12 @@ void VPlug_GeoShapes::addSegList(const XYSegList& new_segl)
 //-----------------------------------------------------------
 // Procedure: updateGrid
 
-void VPlug_GeoShapes::updateGrid(const string& delta)
+bool VPlug_GeoShapes::updateGrid(const string& delta)
 {
+  bool ok = true;
   for(int i=0; i<m_grids.size(); i++)
-    m_grids[i].processDelta(delta);
+    ok = ok && m_grids[i].processDelta(delta);
+  return(ok);
 }
 
 //-----------------------------------------------------------

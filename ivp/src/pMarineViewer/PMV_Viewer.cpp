@@ -38,7 +38,7 @@ PMV_Viewer::PMV_Viewer(int x, int y, int w, int h, const char *l)
 
 void PMV_Viewer::draw()
 {
-  mutexLock();
+  cout << "requesting A"; mutexLock(); cout << "got A" << endl;
   MarineViewer::draw();
 
   drawPolygons();
@@ -68,7 +68,7 @@ void PMV_Viewer::draw()
   }
 
   glFlush();
-  mutexUnLock();
+  cout << "releasing A "; mutexUnLock(); cout << "released A" << endl;
 }
 
 //-------------------------------------------------------------
@@ -100,9 +100,12 @@ int PMV_Viewer::handle(int event)
 
 bool PMV_Viewer::setParam(string param, string value)
 {
-  if(MarineViewer::setCommonParam(param, value))
+  cout << "requesting B"; mutexLock(); cout << "got B" << endl;
+  if(MarineViewer::setCommonParam(param, value)) {
+    cout << "releasing B "; mutexUnLock(); cout << "released B" << endl;
     return(true);
-  
+  }
+
   param = tolower(stripBlankEnds(param));
   value = stripBlankEnds(value);
   
@@ -120,10 +123,8 @@ bool PMV_Viewer::setParam(string param, string value)
   else
     ok = m_vehiset.setParam(param, value);
 
-  if(ok)
-    redraw();
+  cout << "releasing B "; mutexUnLock(); cout << "released B" << endl;
   return(ok);
-
 }
 
 
@@ -132,25 +133,18 @@ bool PMV_Viewer::setParam(string param, string value)
 
 bool PMV_Viewer::setParam(string param, double value)
 {
-  param = tolower(stripBlankEnds(param));
-  
-  bool ok = false;
+  cout << "requesting C"; mutexLock(); cout << "got C" << endl;
 
-  // Intercept and disallow any panning if in "centric" mode.
-  if((param == "pan_x") || (param == "pan_y")) {
+  // Intercept and disable the centric mode if user pans
+  if((param == "pan_x") || (param == "pan_y"))
     m_centric_view = false;
-    return(setCommonParam(param, value));
-  }
-  // Then do the normal check of it is handled by the parent class
-  else if(MarineViewer::setCommonParam(param, value))
-    return(true);
-  // Then see if its handled by the vehiset
-  else
-    ok = m_vehiset.setParam(param, value);
 
-  if(ok)
-    redraw();
-  return(ok);
+  bool handled = MarineViewer::setCommonParam(param, value);
+  if(!handled)
+    handled = m_vehiset.setParam(param, value);
+
+  cout << "releasing C "; mutexUnLock(); cout << "released C" << endl;
+  return(handled);
 }
 
 // ----------------------------------------------------------
@@ -158,7 +152,7 @@ bool PMV_Viewer::setParam(string param, double value)
 
 string PMV_Viewer::getStringInfo(const string& info_type, int precision)
 {
-  mutexLock();
+  cout << "requesting D"; mutexLock(); cout << "got D" << endl;
   string result = "error";
 
   if(info_type == "left_click_info")
@@ -179,7 +173,7 @@ string PMV_Viewer::getStringInfo(const string& info_type, int precision)
     }
   }
   
-  mutexUnLock();
+  cout << "releasing D "; mutexUnLock(); cout << "released D" << endl;
   return(result);
 }
   
@@ -254,10 +248,10 @@ void PMV_Viewer::handleLeftMouse(int vx, int vy)
   double sx = snapToStep(mx, 1.0);
   double sy = snapToStep(my, 1.0);
 
-  mutexLock();
+  cout << "requesting E"; mutexLock(); cout << "got E" << endl;
   m_left_click =  "x=" + doubleToString(sx,1) + ",";
   m_left_click += "y=" + doubleToString(sy,1);
-  mutexUnLock();
+  cout << "releasing E "; mutexUnLock(); cout << "released E" << endl;
 
   cout << "Left Mouse click at [" << m_left_click << "] meters." << endl;
 }
@@ -274,10 +268,10 @@ void PMV_Viewer::handleRightMouse(int vx, int vy)
   double sx = snapToStep(mx, 1.0);
   double sy = snapToStep(my, 1.0);
   
-  mutexLock();
+  cout << "requesting F"; mutexLock(); cout << "got F" << endl;
   m_right_click =  "x=" + doubleToString(sx,1) + ",";
   m_right_click += "y=" + doubleToString(sy,1);
-  mutexUnLock();
+  cout << "releasing F "; mutexUnLock(); cout << "released F" << endl;
 
   cout << "Right Mouse click at [" << m_right_click << "] meters." << endl;
 }

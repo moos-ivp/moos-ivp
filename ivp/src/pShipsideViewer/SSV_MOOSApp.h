@@ -36,26 +36,11 @@ class SSV_MOOSApp : public CMOOSApp
   void setGUI(SSV_GUI* g_gui) {m_gui=g_gui;};
 
   bool Iterate();
-
-  // virtual overide of base class CMOOSApp member.
-  // Here we register for data we wish be informed about
   bool OnConnectToServer();
-
   bool OnStartUp();
   bool OnNewMail(MOOSMSG_LIST &NewMail);
 
  protected:
-  void receiveVehicleState(CMOOSMsg &Msg);
-  bool receiveAIS_REPORT(CMOOSMsg &Msg);
-  bool receiveGRID_CONFIG(CMOOSMsg &Msg);
-  void receiveGRID_DELTA(CMOOSMsg &Msg);
-  bool receivePolygon(CMOOSMsg &Msg);
-  bool receiveSegList(CMOOSMsg &Msg);
-  bool receivePoint(CMOOSMsg &Msg);
-  bool receiveStationCircle(CMOOSMsg &Msg);
-
-  bool handleContactList(std::string);
-
   void handlePendingGUI();
 
  protected:
@@ -63,6 +48,8 @@ class SSV_MOOSApp : public CMOOSApp
 
   double m_start_time;
   
+  // We hold a local copy of last click-string to repeatedly compare
+  // against the currently generated one and only post when different
   std::string  m_left_click_str;
   std::string  m_right_click_str;
 };

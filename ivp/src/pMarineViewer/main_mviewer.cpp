@@ -123,7 +123,11 @@ int main(int argc, char *argv[])
   
 
   PMV_GUI* gui = new PMV_GUI(1100,850, "pMarineViewer");
-  
+  if(!gui) {
+    cout << "Unable to instantiate the GUI - exiting." << endl;
+    return(-1);
+  }
+
   if(tif_file_a == "")
     tif_file_a = "Default.tif";
   if(tif_file_b == "")

@@ -43,7 +43,7 @@ class SSV_Viewer : public MarineViewer
   bool  setParam(std::string p, double v);
   
 public:
-  void   addStationCircle(const XYCircle&);
+  bool   addStationCircle(const std::string& spec);
 
   std::string getStringInfo(const std::string& info_type, int precision=0);
 

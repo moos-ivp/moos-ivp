@@ -413,6 +413,8 @@ bool MarineViewer::setCommonParam(string param, string value)
     return(m_geoshapes.addPoint(value));
   else if(p=="grid_config")
     return(m_geoshapes.addGrid(value));
+  else if(p=="grid_delta")
+    return(m_geoshapes.updateGrid(value));
   else {
     bool handled = false;
     handled = handled || m_op_area.setParam(p,v);
@@ -421,7 +423,7 @@ bool MarineViewer::setCommonParam(string param, string value)
     return(handled);
   }
 
-  redraw();
+  //redraw();
   return(true);
 
 }
@@ -468,7 +470,7 @@ bool MarineViewer::setCommonParam(string param, double v)
   else 
     return(false);
   
-  redraw();
+  //redraw();
   return(true);
 
 }
