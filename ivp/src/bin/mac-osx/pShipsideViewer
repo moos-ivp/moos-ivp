@@ -1,0 +1,3 @@
+#!/bin/sh
+
+`dirname $0`/../pShipsideViewer.app/Contents/MacOS/pShipsideViewer $*

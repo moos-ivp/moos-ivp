@@ -1,0 +1,3 @@
+#!/bin/sh
+
+`dirname $0`/../ffview.app/Contents/MacOS/ffview $*

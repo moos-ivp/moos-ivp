@@ -16,6 +16,14 @@ IF(BUILD_GUIS)
    
    IF (${APPLE})
      ADD_EXECUTABLE(ffview MACOSX_BUNDLE ${SRC})
+# 
+# message("@@@!!@@@   	ln -s ${EXECUTABLE_OUTPUT_PATH}/ffview.app/Contents/MacOS/ffview ${EXECUTABLE_OUTPUT_PATH}/ffview")
+#      ADD_CUSTOM_COMMAND(
+#          TARGET ffview
+#          POST_BUILD
+#          COMMAND ln ARGS -s ${EXECUTABLE_OUTPUT_PATH}/ffview.app/Contents/MacOS/ffview ${EXECUTABLE_OUTPUT_PATH}/ffview
+#          COMMENT "Creating symbolic link to program ffview"
+#       )
    ELSE (${APPLE})
      ADD_EXECUTABLE(ffview ${SRC})
    ENDIF (${APPLE})
