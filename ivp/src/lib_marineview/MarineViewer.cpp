@@ -384,47 +384,47 @@ bool MarineViewer::setCommonParam(string param, string value)
   string p = tolower(stripBlankEnds(param));
   string v = tolower(stripBlankEnds(value));
 
+  cout << "requesting W"; mutexLock(); cout << "got W" << endl;
+  bool handled = false;
   if(p=="cross_view")
-    return(setBooleanOnString(m_cross_offon, v));
+    handled = setBooleanOnString(m_cross_offon, v);
   else if(p=="tiff_type") {
     m_back_img_mod = true;
-    return(setBooleanOnString(m_back_img_b_on, v));
+    handled = setBooleanOnString(m_back_img_b_on, v);
   }
   else if(p=="tiff_view") 
-    return(setBooleanOnString(m_tiff_offon, v));
+    handled = setBooleanOnString(m_tiff_offon, v);
   else if(p=="hash_view")
-    return(setBooleanOnString(m_hash_offon, v));
+    handled = setBooleanOnString(m_hash_offon, v);
   else if(p=="geodesy_init")
-    initGeodesy(v);
+    handled = initGeodesy(v);
   else if(p=="marker")
-    m_vmarkers.addVMarker(v, m_geodesy);
+    handled = m_vmarkers.addVMarker(v, m_geodesy);
   else if(p=="op_vertex")
-    m_op_area.addVertex(v, m_geodesy);
+    handled = m_op_area.addVertex(v, m_geodesy);
   else if(p=="zoom") {
-    if(v != "reset")
-      return(false);
-    m_zoom = 1.0;
+    handled = (p=="reset");
+    if(handled)
+      m_zoom = 1.0;
   }
   else if(p=="view_polygon")
-    return(m_geoshapes.addPolygon(value));
+    handled = m_geoshapes.addPolygon(value);
   else if(p=="view_seglist")
-    return(m_geoshapes.addSegList(value));
+    handled = m_geoshapes.addSegList(value);
   else if(p=="view_point")
-    return(m_geoshapes.addPoint(value));
+    handled = m_geoshapes.addPoint(value);
   else if(p=="grid_config")
-    return(m_geoshapes.addGrid(value));
+    handled = m_geoshapes.addGrid(value);
   else if(p=="grid_delta")
-    return(m_geoshapes.updateGrid(value));
+    handled = m_geoshapes.updateGrid(value);
   else {
-    bool handled = false;
     handled = handled || m_op_area.setParam(p,v);
     handled = handled || m_vmarkers.setParam(p,v);
     handled = handled || m_geoshapes.setParam(p,v);
-    return(handled);
   }
 
-  //redraw();
-  return(true);
+  cout << "releasing W"; mutexUnLock(); cout << "released W" << endl;
+  return(handled);
 
 }
 
@@ -435,6 +435,8 @@ bool MarineViewer::setCommonParam(string param, double v)
 {
   param = tolower(stripBlankEnds(param));
   
+  cout << "requesting X"; mutexLock(); cout << "got X" << endl;
+  bool handled = true;
   if(param == "hash_shade") {
     if((m_hash_shade+v >= 0) && (m_hash_shade+v <= 1.0))
       m_hash_shade += v;
@@ -468,10 +470,10 @@ bool MarineViewer::setCommonParam(string param, double v)
     m_vshift_y = v;
   }
   else 
-    return(false);
+    handled = false;
   
-  //redraw();
-  return(true);
+  cout << "releasing X"; mutexUnLock(); cout << "released X" << endl;
+  return(handled);
 
 }
 

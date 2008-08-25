@@ -35,10 +35,13 @@ PMV_Viewer::PMV_Viewer(int x, int y, int w, int h, const char *l)
 
 //-------------------------------------------------------------
 // Procedure: draw()
+//      Note: A mutex is put around all the drawing calls since it
+//            is accessing information that is perhaps being 
+//            altered by another thread.
 
 void PMV_Viewer::draw()
 {
-  cout << "requesting A"; mutexLock(); cout << "got A" << endl;
+  mutexLock();
   MarineViewer::draw();
 
   drawPolygons();
@@ -67,8 +70,8 @@ void PMV_Viewer::draw()
     }
   }
 
+  mutexUnLock();
   glFlush();
-  cout << "releasing A "; mutexUnLock(); cout << "released A" << endl;
 }
 
 //-------------------------------------------------------------
@@ -96,63 +99,82 @@ int PMV_Viewer::handle(int event)
 
 //-------------------------------------------------------------
 // Procedure: setParam
-//      Note: setBooleanOnString defined in MarineViewer.cpp
+//      Note: A mutex is used since the member variables being set
+//            are perhaps being altered by another thread.
+//      Note: The parent class has its own mutex protection for
+//            its setParam implementation.
 
 bool PMV_Viewer::setParam(string param, string value)
 {
-  cout << "requesting B"; mutexLock(); cout << "got B" << endl;
-  if(MarineViewer::setCommonParam(param, value)) {
-    cout << "releasing B "; mutexUnLock(); cout << "released B" << endl;
+  // Parent class has its own mutex protection - none needed here.
+  if(MarineViewer::setCommonParam(param, value))
     return(true);
-  }
 
   param = tolower(stripBlankEnds(param));
   value = stripBlankEnds(value);
   
-  bool ok = false;
+  bool handled = false;
+  bool center_needs_adjusting = false;
 
+  mutexLock();
   if(param == "weighted_center_view") {
-    setWeightedCenterView();
+    center_needs_adjusting = true;
     m_centric_view = true;
+    handled = true;
   }
-  else if(param == "ais_report") {
-    ok = m_vehiset.setParam(param, value);
-    if(ok && m_centric_view)
-      setWeightedCenterView();
+  else if((param == "ais_report") || (param == "ais_report_local")){
+    handled = m_vehiset.setParam(param, value);
+    if(handled && m_centric_view) {
+      center_needs_adjusting = true;
+    }
   }
   else
-    ok = m_vehiset.setParam(param, value);
+    handled = m_vehiset.setParam(param, value);
+  mutexUnLock();
+  
+  if(center_needs_adjusting)
+    setWeightedCenterView();
 
-  cout << "releasing B "; mutexUnLock(); cout << "released B" << endl;
-  return(ok);
+  return(handled);
 }
 
 
 //-------------------------------------------------------------
 // Procedure: setParam
+//      Note: A mutex is used since the member variables being set
+//            are perhaps being altered by another thread.
+//      Note: The parent class has its own mutex protection for
+//            its setParam implementation.
 
 bool PMV_Viewer::setParam(string param, double value)
 {
-  cout << "requesting C"; mutexLock(); cout << "got C" << endl;
-
   // Intercept and disable the centric mode if user pans
-  if((param == "pan_x") || (param == "pan_y"))
+  if((param == "pan_x") || (param == "pan_y")) {
+    mutexLock();
     m_centric_view = false;
+    mutexUnLock();
+  }
 
+  // Parent class has its own mutex protection - none needed here.
   bool handled = MarineViewer::setCommonParam(param, value);
-  if(!handled)
-    handled = m_vehiset.setParam(param, value);
 
-  cout << "releasing C "; mutexUnLock(); cout << "released C" << endl;
+  if(!handled) {
+    mutexLock();
+    handled = m_vehiset.setParam(param, value);
+    mutexUnLock();
+  }
+
   return(handled);
 }
 
 // ----------------------------------------------------------
 // Procedure: getStringInfo
+//      Note: A mutex is used since the info being accessed here
+//            is perhaps being altered by another thread.
 
 string PMV_Viewer::getStringInfo(const string& info_type, int precision)
 {
-  cout << "requesting D"; mutexLock(); cout << "got D" << endl;
+  mutexLock();
   string result = "error";
 
   if(info_type == "left_click_info")
@@ -173,13 +195,17 @@ string PMV_Viewer::getStringInfo(const string& info_type, int precision)
     }
   }
   
-  cout << "releasing D "; mutexUnLock(); cout << "released D" << endl;
+  mutexUnLock();
   return(result);
 }
   
 
 //-------------------------------------------------------------
 // Procedure: drawVehicle(ObjectPose)
+// Notes: No mutex is used here despite its accessing of data structures
+//        written to by other threads. This is because this is a 
+//        PRIVATE class function called only by a function which 
+//        is using its own mutex.
 
 void PMV_Viewer::drawVehicle(string vname, bool active, string vehibody)
 {
@@ -207,6 +233,10 @@ void PMV_Viewer::drawVehicle(string vname, bool active, string vehibody)
 
 //-------------------------------------------------------------
 // Procedure: drawPoints
+// Notes: No mutex is used here despite its accessing of data structures
+//        written to by other threads. This is because this is a 
+//        PRIVATE class function called only by a function which 
+//        is using its own mutex.
 
 void PMV_Viewer::drawPoints(CPList &cps)
 {
@@ -238,6 +268,8 @@ void PMV_Viewer::drawPoints(CPList &cps)
 
 //-------------------------------------------------------------
 // Procedure: handleLeftMouse
+//      Note: A mutex is used since the member variables being set
+//            are perhaps being altered by another thread.
 
 void PMV_Viewer::handleLeftMouse(int vx, int vy)
 {
@@ -248,16 +280,18 @@ void PMV_Viewer::handleLeftMouse(int vx, int vy)
   double sx = snapToStep(mx, 1.0);
   double sy = snapToStep(my, 1.0);
 
-  cout << "requesting E"; mutexLock(); cout << "got E" << endl;
+  mutexLock();
   m_left_click =  "x=" + doubleToString(sx,1) + ",";
   m_left_click += "y=" + doubleToString(sy,1);
-  cout << "releasing E "; mutexUnLock(); cout << "released E" << endl;
+  mutexUnLock();
 
-  cout << "Left Mouse click at [" << m_left_click << "] meters." << endl;
+  //cout << "Left Mouse click at [" << m_left_click << "] meters." << endl;
 }
 
 //-------------------------------------------------------------
 // Procedure: handleRightMouse
+//      Note: A mutex is used since the member variables being set
+//            are perhaps being altered by another thread.
 
 void PMV_Viewer::handleRightMouse(int vx, int vy)
 {
@@ -268,16 +302,18 @@ void PMV_Viewer::handleRightMouse(int vx, int vy)
   double sx = snapToStep(mx, 1.0);
   double sy = snapToStep(my, 1.0);
   
-  cout << "requesting F"; mutexLock(); cout << "got F" << endl;
+  mutexLock();
   m_right_click =  "x=" + doubleToString(sx,1) + ",";
   m_right_click += "y=" + doubleToString(sy,1);
-  cout << "releasing F "; mutexUnLock(); cout << "released F" << endl;
+  mutexUnLock();
 
-  cout << "Right Mouse click at [" << m_right_click << "] meters." << endl;
+  //cout << "Right Mouse click at [" << m_right_click << "] meters." << endl;
 }
 
 //-------------------------------------------------------------
 // Procedure: setWeightedCenterView()
+//      Note: A mutex is used since the member variables being set
+//            are perhaps being altered by another thread.
 
 void PMV_Viewer::setWeightedCenterView()
 {
@@ -298,7 +334,9 @@ void PMV_Viewer::setWeightedCenterView()
   double x_pixels = pix_per_mtr * delta_x;
   double y_pixels = pix_per_mtr * delta_y;
   
-  setParam("set_pan_x", -x_pixels);
-  setParam("set_pan_y", -y_pixels);
+  mutexLock();
+  m_vshift_x = -x_pixels;
+  m_vshift_y = -y_pixels;
+  mutexUnLock();
 }
 

@@ -23,6 +23,7 @@
 #ifndef COMMON_MARINE_VIEWER_HEADER
 #define COMMON_MARINE_VIEWER_HEADER
 
+#include <iostream>
 #include <string>
 #include <vector>
 #include "FL/Fl.H"
@@ -63,6 +64,9 @@ class MarineViewer : public Fl_Gl_Window
 
   bool  initGeodesy(double, double);
   bool  initGeodesy(const std::string&);
+
+  virtual void mutexLock()   {std::cout << "MV-Lock" << std::endl;};
+  virtual void mutexUnLock() {std::cout << "MV-UnLock" << std::endl;};
 
 public:
   bool   readTiff(std::string);
