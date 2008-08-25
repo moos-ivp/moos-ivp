@@ -20,10 +20,7 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
-#include <iostream>
 #include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <tiffio.h>
 #include "SSV_Viewer.h"
 #include "AngleUtils.h"
@@ -32,9 +29,6 @@
 #include "XYBuildUtils.h"
 
 using namespace std;
-
-#define HISTORY_SIZE  1000
-#define MAX_VEHICLES    20
 
 SSV_Viewer::SSV_Viewer(int x, int y, int w, int h, const char *l)
   : MarineViewer(x,y,w,h,l)
@@ -50,12 +44,15 @@ SSV_Viewer::SSV_Viewer(int x, int y, int w, int h, const char *l)
 
 //-------------------------------------------------------------
 // Procedure: draw()
+//      Note: A mutex is put around all the drawing calls since it
+//            is accessing information that is perhaps being 
+//            altered by another thread.
 
 void SSV_Viewer::draw()
 {
-  mutexLock();
   MarineViewer::draw();
 
+  mutexLock();
   drawPolygons();
   drawGrids();
   drawSegLists();
@@ -88,8 +85,8 @@ void SSV_Viewer::draw()
       }
     }
   }
-  glFlush();
   mutexUnLock();
+  glFlush();
 }
 
 //-------------------------------------------------------------
@@ -115,8 +112,117 @@ int SSV_Viewer::handle(int event)
   }
 }
 
+//-------------------------------------------------------------
+// Procedure: setParam
+//      Note: A mutex is used since the member variables being set
+//            are perhaps being altered by another thread.
+//      Note: The parent class has its own mutex protection for
+//            its setParam implementation.
+
+bool SSV_Viewer::setParam(string param, string value)
+{
+  // Parent class has its own mutex protection - none needed here.
+  if(MarineViewer::setCommonParam(param, value))
+    return(true);
+  
+  param = tolower(stripBlankEnds(param));
+  value = stripBlankEnds(value);
+  
+  bool handled = false;
+  bool center_needs_adjusting = false;
+
+  mutexLock();
+  if(param == "centric_view")
+    handled = setBooleanOnString(m_centric_view, value);
+  else if(param == "station_circle")
+    handled = addStationCircle(value);
+  else if(param == "rstation_circle")
+    handled = addStationCircle(value);
+  else if(param == "bearing_lines")
+    handled = setBooleanOnString(m_draw_bearing_lines, value);
+  else if(param == "weighted_center_view") {
+    center_needs_adjusting = true;
+    m_centric_view = true;
+    handled = true;
+  }
+  else if(param == "bearing_color") {
+    handled = isColor(value);
+    if(handled)
+      m_bearing_color = colorParse(value);  
+  }
+  else if(param == "radial_color") {
+    handled = isColor(value);
+    if(handled)
+      m_radial_color = colorParse(value);  
+  }
+  else if(param == "ownship_name") {
+    m_ownship_name = toupper(value);
+    handled = true;
+  }
+  else if(param == "op_vertex") 
+    handled = m_op_area.addVertex(value, m_geodesy);
+  else if(param == "draw_radial")
+    handled = setBooleanOnString(m_draw_radial, value);
+  else
+    handled = m_vehiset.setParam(param, value);
+
+  mutexUnLock();
+
+  if(center_needs_adjusting)
+    setWeightedCenterView();
+
+  return(handled);
+}
+
+//-------------------------------------------------------------
+// Procedure: setParam
+//      Note: A mutex is used since the member variables being set
+//            are perhaps being altered by another thread.
+//      Note: The parent class has its own mutex protection for
+//            its setParam implementation.
+
+bool SSV_Viewer::setParam(string param, double value)
+{
+  param = tolower(stripBlankEnds(param));
+  
+  // Intercept and disable the centric mode if user pans
+  if((param == "pan_x") || (param == "pan_y")) {
+    mutexLock();
+    m_centric_view = false;
+    mutexUnLock();
+  }
+
+  // Parent class has its own mutex protection - none needed here.
+  bool handled = MarineViewer::setCommonParam(param, value);
+
+  if(!handled) {
+    mutexLock();
+    if(param == "radial_size") {
+      m_radial_size = (int)(value);
+      if(m_radial_size < 0)
+	m_radial_size = 0;
+      if(m_radial_size > 2000)
+       m_radial_size = 2000;
+      handled = true;
+    }
+    else if(param == "radial_increment") {
+      int new_size = m_radial_size + ((int)(value));
+      if((new_size >= 0) && (new_size <= 2000))
+	m_radial_size = new_size;
+      handled = true;
+    }
+    else 
+      handled = m_vehiset.setParam(param, value);
+    mutexUnLock();
+  }
+  
+  return(handled);
+}
+
 // ----------------------------------------------------------
 // Procedure: getStringInfo
+//      Note: A mutex is used since the info being accessed here
+//            is perhaps being altered by another thread.
 
 string SSV_Viewer::getStringInfo(const string& info_type, int precision)
 {
@@ -163,12 +269,16 @@ string SSV_Viewer::getStringInfo(const string& info_type, int precision)
 // InfoTypes: (a) bearing (absolute)
 //            (b) relative bearing
 //            (c) range between vehicles
+// Notes: No mutex is used here despite its accessing of data structures
+//        written to by other threads. This is because this is a 
+//        PRIVATE class function called only by a function which 
+//        is using its own mutex.
 
 double SSV_Viewer::getRelativeInfo(const string& info_type)
 {
   ObjectPose pose_vh = m_vehiset.getObjectPose("active");
   ObjectPose pose_os = m_vehiset.getObjectPose(m_ownship_name);
-  
+
   bool os_is_active = (m_ownship_name == m_vehiset.getActiveVehicle());
 
   if(!pose_vh.isValid() || !pose_os.isValid() || os_is_active)
@@ -198,6 +308,11 @@ double SSV_Viewer::getRelativeInfo(const string& info_type)
 
 //-------------------------------------------------------------
 // Procedure: drawVehicle(ObjectPose)
+// Notes: No mutex is used here despite its accessing of data structures
+//        written to by other threads. This is because this is a 
+//        PRIVATE class function called only by a function which 
+//        is using its own mutex.
+
 
 void SSV_Viewer::drawVehicle(string vname, bool active, string vehibody)
 {
@@ -227,6 +342,11 @@ void SSV_Viewer::drawVehicle(string vname, bool active, string vehibody)
 
 //-------------------------------------------------------------
 // Procedure: drawPoints
+// Notes: No mutex is used here despite its accessing of data structures
+//        written to by other threads. This is because this is a 
+//        PRIVATE class function called only by a function which 
+//        is using its own mutex.
+
 
 void SSV_Viewer::drawPoints(CPList &cps)
 {
@@ -258,6 +378,8 @@ void SSV_Viewer::drawPoints(CPList &cps)
 
 //-------------------------------------------------------------
 // Procedure: handleLeftMouse
+//      Note: A mutex is used since the info being accessed here
+//            is perhaps being altered by another thread.
 
 void SSV_Viewer::handleLeftMouse(int vx, int vy)
 {
@@ -278,6 +400,8 @@ void SSV_Viewer::handleLeftMouse(int vx, int vy)
 
 //-------------------------------------------------------------
 // Procedure: handleRightMouse
+//      Note: A mutex is used since the info being accessed here
+//            is perhaps being altered by another thread.
 
 void SSV_Viewer::handleRightMouse(int vx, int vy)
 {
@@ -304,100 +428,19 @@ void SSV_Viewer::handleRightMouse(int vx, int vy)
     double relang = relAng(osx, osy, sx, sy);
 
     relang = angle360(relang - osh);
+    mutexLock();
     m_right_click_rp  = "range=" + doubleToString(range,1) + ",";
     m_right_click_rp += "bearing=" + doubleToString(relang) + ",";
     m_right_click_rp += "contact=" + m_ownship_name;
-
-    cout << "Right Mouse click at [" << m_right_click_rp << "] relpos." << endl;
-    cout << "Ownship-X: " << osx << "  Ownship-Y: " << osy << endl;
+    mutexUnLock();
+  
+    //cout << "Right Mouse click at [" << m_right_click_rp << "] relpos." << endl;
+    //cout << "Ownship-X: " << osx << "  Ownship-Y: " << osy << endl;
   }
   
-  cout << "Right Mouse click at [" << m_right_click << "] meters." << endl;
+  //cout << "Right Mouse click at [" << m_right_click << "] meters." << endl;
 }
 
-
-//-------------------------------------------------------------
-// Procedure: setParam
-//      Note: setBooleanOnString defined in MarineViewer.cpp
-
-bool SSV_Viewer::setParam(string param, string value)
-{
-  if(MarineViewer::setCommonParam(param, value))
-    return(true);
-  
-  param = tolower(stripBlankEnds(param));
-  value = stripBlankEnds(value);
-  
-  bool ok = true;
-
-  if(param == "centric_view")
-    return(setBooleanOnString(m_centric_view, value));
-  else if(param == "station_circle")
-    addStationCircle(value);
-  else if(param == "rstation_circle")
-    addStationCircle(value);
-  else if(param == "bearing_lines")
-    return(setBooleanOnString(m_draw_bearing_lines, value));
-  else if(param == "weighted_center_view") {
-    setWeightedCenterView();
-    m_centric_view = true;
-  }
-  else if(param == "bearing_color")
-    m_bearing_color = colorParse(value);  
-  else if(param == "radial_color")
-    m_radial_color = colorParse(value);  
-  else if(param == "ownship_name")
-    m_ownship_name = toupper(value);
-  else if(param == "op_vertex") 
-    return(m_op_area.addVertex(value, m_geodesy));
-  else if(param == "draw_radial")
-    return(setBooleanOnString(m_draw_radial, value));
-  else
-    ok = m_vehiset.setParam(param, value);
-
-  if(ok)
-    redraw();
-  return(ok);
-}
-
-//-------------------------------------------------------------
-// Procedure: setParam
-
-bool SSV_Viewer::setParam(string param, double value)
-{
-  param = tolower(stripBlankEnds(param));
-  
-  bool ok = false;
-
-  // Intercept and disallow any panning if in "centric" mode.
-  if((param == "pan_x") || (param == "pan_y")) {
-    m_centric_view = false;
-    return(setCommonParam(param, value));
-  }
-  // Then do the normal check of it is handled by the parent class
-  else if(MarineViewer::setCommonParam(param, value))
-    return(true);
-  
-  if(param == "radial_size") {
-    m_radial_size = (int)(value);
-    if(m_radial_size < 0)
-      m_radial_size = 0;
-    if(m_radial_size > 2000)
-       m_radial_size = 2000;
-  }
-  else if(param == "radial_increment") {
-    int new_size = m_radial_size + ((int)(value));
-    if((new_size >= 0) && (new_size <= 2000))
-      m_radial_size = new_size;
-  }
-  // Then see if its handled by the vehiset
-  else
-    ok = m_vehiset.setParam(param, value);
-
-  if(ok)
-    redraw();
-  return(ok);
-}
 
 //-------------------------------------------------------------
 // Procedure: drawRadials
@@ -529,6 +572,10 @@ void SSV_Viewer::drawBearingLine()
 
 //-------------------------------------------------------------
 // Procedure: addStationCircle
+// Notes: No mutex is used here despite its accessing of data structures
+//        written to by other threads. This is because this is a 
+//        PRIVATE class function called only by a function which 
+//        is using its own mutex.
 
 bool SSV_Viewer::addStationCircle(const string& str)
 {
@@ -553,7 +600,6 @@ bool SSV_Viewer::addStationCircle(const string& str)
       prior_existed = true;
     }
   }
-  
   if(!prior_existed)
     m_station_circ.push_back(new_circ);
 
@@ -578,6 +624,8 @@ void SSV_Viewer::drawStationCircles()
 
 //-------------------------------------------------------------
 // Procedure: setWeightedCenterView()
+//      Note: A mutex is used since the member variables being set
+//            are perhaps being altered by another thread.
 
 void SSV_Viewer::setWeightedCenterView()
 {
@@ -598,7 +646,9 @@ void SSV_Viewer::setWeightedCenterView()
   double x_pixels = pix_per_mtr * delta_x;
   double y_pixels = pix_per_mtr * delta_y;
   
-  setParam("set_pan_x", -x_pixels);
-  setParam("set_pan_y", -y_pixels);
+  mutexLock();
+  m_vshift_x = -x_pixels;
+  m_vshift_y = -y_pixels;
+  mutexUnLock();
 }
 

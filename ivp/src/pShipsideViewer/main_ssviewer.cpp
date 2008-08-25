@@ -113,8 +113,6 @@ int main(int argc, char *argv[])
   if(g_sMissionFile == 0)
     exit_with_usage();
   
-  cout << "vsize:" << viewer_size << endl;
-
 
   SSV_GUI* gui = 0;
   if(viewer_size == "small")
@@ -123,7 +121,6 @@ int main(int argc, char *argv[])
     gui = new SSV_GUI(1190,935, "ShipSideViewer");
   else 
     gui = new SSV_GUI(1400,1100, "ShipSideViewer");
-
 
   gui->readTiff("Default.tif");
   gui->readTiffB("DefaultB.tif");

@@ -46,7 +46,6 @@ bool PMV_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 {
   if(!m_gui)
     return(true);
-
   NewMail.sort();
 
   m_gui->mviewer->setParam("curr_time", MOOSTime());
@@ -200,7 +199,6 @@ bool PMV_MOOSApp::OnStartUp()
   }
   
   m_start_time = MOOSTime();
-  
   m_gui->mviewer->redraw();
   
   registerVariables();

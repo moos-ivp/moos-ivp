@@ -20,6 +20,7 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
+#include <iostream>
 #include <math.h>
 #include <tiffio.h>
 #include "MarineViewer.h"
@@ -74,7 +75,10 @@ MarineViewer::MarineViewer(int x, int y, int w, int h, const char *l)
 
 bool MarineViewer::readTiff(string filename)
 {
-  return(m_back_img.readTiff(filename));
+  mutexLock();
+  bool ok = m_back_img.readTiff(filename);
+  mutexUnLock();
+  return(ok);
 }
 
 // ----------------------------------------------------------
@@ -84,11 +88,10 @@ bool MarineViewer::readTiff(string filename)
 
 bool MarineViewer::readTiffB(string filename)
 {
-  bool ok = m_back_img_b.readTiff(filename);
-  if(ok)
-    m_back_img_b_ok = true;
-
-  return(ok);
+  mutexLock();
+  m_back_img_b_ok = m_back_img_b.readTiff(filename);
+  mutexUnLock();
+  return(m_back_img_b_ok);
 }
 
 // ----------------------------------------------------------

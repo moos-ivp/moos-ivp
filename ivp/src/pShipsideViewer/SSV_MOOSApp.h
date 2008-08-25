@@ -42,6 +42,7 @@ class SSV_MOOSApp : public CMOOSApp
 
  protected:
   void handlePendingGUI();
+  void registerVariables();
 
  protected:
   SSV_GUI* m_gui;

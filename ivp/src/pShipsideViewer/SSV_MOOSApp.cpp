@@ -48,8 +48,6 @@ bool SSV_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
     return(true);
   NewMail.sort();
   
-
-  m_gui->mviewer->mutexLock();
   m_gui->mviewer->setParam("curr_time", MOOSTime());
 
   int handled_msgs = 0;
@@ -80,8 +78,6 @@ bool SSV_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
     }
   }
 
-  m_gui->mviewer->mutexUnLock();
-
   if(handled_msgs > 0) {
     m_gui->updateXY();
     m_gui->mviewer->redraw();
@@ -96,16 +92,7 @@ bool SSV_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 
 bool SSV_MOOSApp::OnConnectToServer()
 {
-  m_Comms.Register("AIS_REPORT", 0);
-  m_Comms.Register("AIS_REPORT_LOCAL", 0);
-  m_Comms.Register("GRID_CONFIG", 0);
-  m_Comms.Register("GRID_DELTA", 0);
-  m_Comms.Register("VIEW_POLYGON", 0);
-  m_Comms.Register("VIEW_SEGLIST", 0);
-  m_Comms.Register("VIEW_POINT", 0);
-  m_Comms.Register("TRAIL_RESET", 0);
-  m_Comms.Register("STATION_CIRCLE", 0);
-  m_Comms.Register("RSTATION_CIRCLE", 0);
+  registerVariables();
   return(true);
 }
 
@@ -170,33 +157,25 @@ bool SSV_MOOSApp::OnStartUp()
   double lon_origin;
 
   // First get the latitude origin from the mission file
-  if(m_MissionReader.GetValue("LatOrigin", str)) {
+  if(m_MissionReader.GetValue("LatOrigin", str))
     lat_origin = atof(str.c_str());
-    MOOSTrace("  LatOrigin  = %10.5f deg.\n", lat_origin);
-  }
   else {
     MOOSTrace("LatOrigin not specified in mission file - FAIL\n");
     return(false);
   }
-
   // Next get the longitude origin from the mission file
-  if(m_MissionReader.GetValue("LongOrigin", str)) {
+  if(m_MissionReader.GetValue("LongOrigin", str))
     lon_origin = atof(str.c_str());
-    MOOSTrace("  LongOrigin = %10.5f deg.\n", lon_origin);
-  }
   else {
     MOOSTrace("LongOrigin not specified in mission file - FAIL\n");
     return(false);
   }
-  
-  // If the lat and lon origins both ok - then initialize the geodesy
+  // If both lat and lon - then initialize the geodesy
   if(!m_gui->mviewer->initGeodesy(lat_origin, lon_origin)) {
     MOOSTrace("Geodesy Init inside pShipSideViewer failed - FAIL\n");
     return(false);
   }
 
-  
-  m_gui->mviewer->mutexLock();
   STRING_LIST::reverse_iterator p;
   for(p = sParams.rbegin();p!=sParams.rend();p++) {
     string sLine = *p;
@@ -216,11 +195,11 @@ bool SSV_MOOSApp::OnStartUp()
 	m_gui->mviewer->setParam(param, atof(value.c_str()));
     } 
   }
-  m_gui->mviewer->mutexUnLock();
 
   m_start_time = MOOSTime();
   m_gui->mviewer->redraw();
   
+  registerVariables();
   return(true);
 }
 
@@ -244,3 +223,19 @@ void SSV_MOOSApp::handlePendingGUI()
 }
 
 
+//----------------------------------------------------------------------
+// Procedure: registerVariables
+
+void SSV_MOOSApp::registerVariables()
+{
+  m_Comms.Register("AIS_REPORT", 0);
+  m_Comms.Register("AIS_REPORT_LOCAL", 0);
+  m_Comms.Register("GRID_CONFIG", 0);
+  m_Comms.Register("GRID_DELTA", 0);
+  m_Comms.Register("VIEW_POLYGON", 0);
+  m_Comms.Register("VIEW_SEGLIST", 0);
+  m_Comms.Register("VIEW_POINT", 0);
+  m_Comms.Register("TRAIL_RESET", 0);
+  m_Comms.Register("STATION_CIRCLE", 0);
+  m_Comms.Register("RSTATION_CIRCLE", 0);
+}
