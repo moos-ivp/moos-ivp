@@ -5,6 +5,7 @@
 /*    DATE: July 6th, 2008                                       */
 /*****************************************************************/
 
+#include <cstdlib>
 #include "OpAreaSpec.h"
 #include "MBUtils.h"
 #include "ColorParse.h"

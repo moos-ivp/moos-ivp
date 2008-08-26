@@ -21,6 +21,8 @@
 /*****************************************************************/
 
 #include <iostream>
+#include <cstring>
+#include <cstdlib>
 #include <math.h>
 #include <tiffio.h>
 #include "MarineViewer.h"

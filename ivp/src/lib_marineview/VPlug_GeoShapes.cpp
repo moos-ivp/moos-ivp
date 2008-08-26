@@ -6,6 +6,7 @@
 /*****************************************************************/
 
 #include <iostream>
+#include <cstdlib>
 #include "VPlug_GeoShapes.h"
 #include "MBUtils.h"
 #include "XYBuildUtils.h"
