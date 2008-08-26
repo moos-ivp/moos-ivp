@@ -100,7 +100,7 @@ bool BackImg::readTiff(string filename)
   filename = stripBlankEnds(filename);
   if(filename == "") {
     readBlankTiff();
-    return(true);
+    return(false);
   }
 
   string info_file = findReplace(filename, ".tif", ".info");
@@ -140,8 +140,6 @@ bool BackImg::readTiffData(string filename)
     file += filename;
   } 
 
-  cout << "Attempting to open tif file: " << file << endl;
-
   // we turn off Warnings (maybe a bad idea) since many photoshop 
   // images have newfangled tags that confuse libtiff
   TIFFErrorHandler warn = TIFFSetWarningHandler(0);
@@ -152,7 +150,7 @@ bool BackImg::readTiffData(string filename)
   TIFFSetWarningHandler(warn);
 
   if(tiff) {
-    int rc = 1;			// what to return
+    bool rval = true;			// what to return
     uint32 w, h;
     size_t npixels;
     uint32* raster;
@@ -171,18 +169,18 @@ bool BackImg::readTiffData(string filename)
 	img_data = (unsigned char*) raster;
       } 
       else {
-	rc=0;
+	rval=false;
 	_TIFFfree(raster);
       }
     } 
     else 
-      rc = 0;
+      rval = false;
     
     TIFFClose(tiff);
-    return(rc);
+    return(rval);
   } 
   else
-    return(0);
+    return(false);
 }
 
 // ----------------------------------------------------------
@@ -202,14 +200,14 @@ bool BackImg::readTiffInfo(string filename)
     file += filename;
   } 
 
-  cout << "Attempting to open: " << file << endl;
+  //cout << "Attempting to open: " << file << endl;
 
   vector<string> buffer = fileBuffer(file);
   //vector<string> buffer;
   int vsize = buffer.size();
 
   if(vsize == 0) {
-    cout << file << " contains zero lines" << endl;
+    //cout << file << " contains zero lines" << endl;
     return(false);
   }
 
@@ -220,7 +218,7 @@ bool BackImg::readTiffInfo(string filename)
     if(line.size() > 0) {
       vector<string> svector = parseString(line, '=');
       if(svector.size() != 2) {
-	cout << "A Problem w/ line " << i << " in " << file << endl;
+	//cout << "A Problem w/ line " << i << " in " << file << endl;
 	return(false);
       }
       string left  = stripBlankEnds(svector[0]);
@@ -234,8 +232,8 @@ bool BackImg::readTiffInfo(string filename)
       else if(left == "img_meters") 
 	img_meters = atof(right.c_str());
       else {
-	cout << "Problem w/ line " << i << " in " << file << endl;
-	cout << "Lefthand argument: " << left << endl;
+	//cout << "Problem w/ line " << i << " in " << file << endl;
+	//cout << "Lefthand argument: " << left << endl;
 	return(false);
       }
     }

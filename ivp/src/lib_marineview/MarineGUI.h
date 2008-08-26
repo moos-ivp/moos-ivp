@@ -36,8 +36,8 @@ public:
 
   static Fl_Menu_Item menu_[];
 
-  void readTiff(std::string);
-  void readTiffB(std::string);
+  bool readTiff(std::string);
+  bool readTiffB(std::string);
   int  handle(int);
   virtual void updateXY() {};
 

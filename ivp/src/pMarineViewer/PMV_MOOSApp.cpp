@@ -44,8 +44,9 @@ PMV_MOOSApp::PMV_MOOSApp()
 
 bool PMV_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 {
-  if(!m_gui)
+  if(!m_gui) 
     return(true);
+
   NewMail.sort();
 
   m_gui->mviewer->setParam("curr_time", MOOSTime());
@@ -109,6 +110,7 @@ bool PMV_MOOSApp::OnConnectToServer()
 
 bool PMV_MOOSApp::Iterate()
 {
+  cout << "Iterate" << endl;
   if(!m_gui)
     return(false);
 

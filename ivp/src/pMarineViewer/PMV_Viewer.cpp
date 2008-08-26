@@ -41,9 +41,9 @@ PMV_Viewer::PMV_Viewer(int x, int y, int w, int h, const char *l)
 
 void PMV_Viewer::draw()
 {
-  mutexLock();
   MarineViewer::draw();
 
+  mutexLock();
   drawPolygons();
   drawGrids();
   drawSegLists();

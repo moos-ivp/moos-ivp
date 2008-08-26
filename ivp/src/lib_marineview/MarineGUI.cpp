@@ -221,28 +221,30 @@ int MarineGUI::handle(int event)
 //-------------------------------------------------------------------
 // Procedure: readTiff
 
-void MarineGUI::readTiff(string filename)
+bool MarineGUI::readTiff(string filename)
 {
   if(!cmviewer)
-    return;
+    return(false);
 
-  cout << "MarineGUI:readTiff: " << filename << endl;
+  bool read_file_ok  = false;
+  bool read_blank_ok = false;
 
-  bool ok = cmviewer->readTiff(filename);
-
-  if(!ok) 
-    ok = cmviewer->readTiff("");
-
-  if(ok)
+  read_file_ok = cmviewer->readTiff(filename);
+  if(!read_file_ok) 
+    read_blank_ok = cmviewer->readTiff("");
+  
+  if(read_file_ok || read_blank_ok)
     cmviewer->setTexture();
+
+  return(read_file_ok);
 }  
 
 //-------------------------------------------------------------------
 // Procedure: readTiffB
 
-void MarineGUI::readTiffB(string filename)
+bool MarineGUI::readTiffB(string filename)
 {
-  cmviewer->readTiffB(filename);
+  return(cmviewer->readTiffB(filename));
 }  
 
 
