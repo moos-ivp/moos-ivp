@@ -110,7 +110,6 @@ bool PMV_MOOSApp::OnConnectToServer()
 
 bool PMV_MOOSApp::Iterate()
 {
-  cout << "Iterate" << endl;
   if(!m_gui)
     return(false);
 
