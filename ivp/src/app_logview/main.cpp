@@ -33,6 +33,7 @@
 #include "LogPlot.h"
 #include "Populator_LogPlots.h"
 #include "Populator_GridPlot.h"
+#include "LMV_Utils.h"
 
 using namespace std;
 
@@ -200,16 +201,18 @@ int main(int argc, char *argv[])
 
   // Build all the Polygons and Grids from the vector of non-slog files.
   //---------------------------------------------------------------------
-  vector<XYPolygon> polygons;
-  vector<XYGrid>    searchgrids;
+  vector<string>  polygons;
+  vector<string>  searchgrids;
 
   for(j=0; j<non_log_files.size(); j++) {
-    vector<XYPolygon> pvector = readPolysFromFile(non_log_files[j]);
-    vector<XYGrid>    qvector = readGridsFromFile(non_log_files[j]);
-    for(k=0; k<pvector.size(); k++)
-      polygons.push_back(pvector[k]);
-    for(k=0; k<qvector.size(); k++)
-      searchgrids.push_back(qvector[k]);
+    vector<string> svector;
+    svector = readEntriesFromFile(non_log_files[j], "poly:polygon");
+    for(k=0; k<svector.size(); k++)
+      polygons.push_back(svector[k]);
+
+    svector = readEntriesFromFile(non_log_files[j], "grid:xygrid");
+    for(k=0; k<svector.size(); k++)
+      searchgrids.push_back(svector[k]);
   }
   
   // If we've gotten this far without errors, go ahead and create the GUI
@@ -245,11 +248,11 @@ int main(int argc, char *argv[])
 
   // Populate the GUI with the polygons built above
   for(j=0; j<polygons.size(); j++)
-    gui->np_viewer->addPoly(polygons[j]);
+    gui->np_viewer->setParam("poly", polygons[j]);
 
   // Populate the GUI with the search grids build above
   for(j=0; j<searchgrids.size(); j++)
-    gui->np_viewer->addGrid(searchgrids[j]);
+    gui->np_viewer->setCommonParam("grid", searchgrids[j]);
 
   gui->updateXY();
   gui->readTiff(tif_file);

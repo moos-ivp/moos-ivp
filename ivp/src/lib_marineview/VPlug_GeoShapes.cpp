@@ -88,6 +88,12 @@ bool VPlug_GeoShapes::setParam(const string& param, string value)
     return(setGSizeMapping(param, value));
   else if(strContains(param, "_size"))
     return(setGSizeMapping(param, value));
+  else if((param ==  "poly") || (param == "polygon"))
+    return(addPolygon(value));
+  else if((param ==  "segl") || (param == "seglist"))
+    return(addSegList(value));
+  else if((param ==  "grid") || (param == "xygrid"))
+    return(addGrid(value));
   else if(param == "clear") {
     if(value == "seglists")
       m_polygons.clear();

@@ -34,6 +34,11 @@ vector<string> readEntriesFromFile(const string& filestr,
 {
   vector<string> return_vector;
 
+  // Can take multiple parameter strings separated by colons. 
+  // For example "polygon:poly" or "seglist:segl:seg_list"
+  vector<string> pvector = parseString(param, ':');
+  int psize = pvector.size();
+
   vector<string> file_vector = fileBuffer(filestr);
   int lineCount = file_vector.size();
   
@@ -43,8 +48,12 @@ vector<string> readEntriesFromFile(const string& filestr,
     if((line.length()!=0) && ((line)[0]!='#')) {
       vector<string> svector = chompString(line, '=');
       if(svector.size() == 2) {
-	string left = stripBlankEnds(svector[0]);
-	if(tolower(left) == tolower(param)) {
+	string left = tolower(stripBlankEnds(svector[0]));
+	bool param_match = false;
+	for(int j=0; j<psize; j++)
+	  if(left == pvector[j])
+	    param_match = true;
+	if(param_match) {
 	  string right = stripBlankEnds(svector[1]);
 	  return_vector.push_back(right);
 	}

@@ -32,6 +32,8 @@
 #include "XYArc.h"
 #include "XYHexagon.h"
 
+std::vector<std::string> readPolyStringsFromFile(const std::string&);
+
 std::vector<XYPolygon> readPolysFromFile(const std::string&);
 std::vector<XYGrid>    readGridsFromFile(const std::string&);
 std::vector<XYCircle>  readCirclesFromFile(const std::string&);

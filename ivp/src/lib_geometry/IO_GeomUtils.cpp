@@ -31,6 +31,36 @@
 using namespace std;
 
 //--------------------------------------------------------
+// Procedure: readPolyStringsFromFile
+
+vector<string> readPolyStringsFromFile(const string& filestr)
+{
+  vector<string> poly_vector;
+
+  vector<string> file_vector = fileBuffer(filestr);
+  int lineCount = file_vector.size();
+  
+  for(int i=0; i<lineCount; i++) {
+    string line = stripBlankEnds(file_vector[i]);
+    
+    if((line.length()!=0) && ((line)[0]!='#')) {
+      vector<string> svector = chompString(line, '=');
+      if(svector.size() == 2) {
+	string left = stripBlankEnds(svector[0]);
+	if((left == "polygon")  || 
+	   (left == "poly")     ||
+	   (left == "points")) {
+	  string right = stripBlankEnds(svector[1]);
+	  poly_vector.push_back(right);
+	}
+      }
+    }
+  }
+  return(poly_vector);
+}
+
+
+//--------------------------------------------------------
 // Procedure: readPolysFromFile
 
 vector<XYPolygon> readPolysFromFile(const string& filestr)

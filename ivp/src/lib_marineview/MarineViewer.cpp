@@ -65,7 +65,112 @@ MarineViewer::MarineViewer(int x, int y, int w, int h, const char *l)
   m_back_img_b_ok = false;
   m_back_img_b_on = false;
   m_back_img_mod  = false;
-//  glGenTextures(1, m_textures);
+  //  glGenTextures(1, m_textures);
+}
+
+//-------------------------------------------------------------
+// Procedure: setCommonParam
+//      Note: A mutex is used since the member variables being set
+//            are perhaps being altered or read by another thread.
+
+bool MarineViewer::setCommonParam(string param, string value)
+{
+  string p = tolower(stripBlankEnds(param));
+  string v = tolower(stripBlankEnds(value));
+
+  cout << "requesting W"; mutexLock(); cout << "got W" << endl;
+  bool handled = false;
+  if(p=="cross_view")
+    handled = setBooleanOnString(m_cross_offon, v);
+  else if(p=="tiff_type") {
+    m_back_img_mod = true;
+    handled = setBooleanOnString(m_back_img_b_on, v);
+  }
+  else if(p=="tiff_view") 
+    handled = setBooleanOnString(m_tiff_offon, v);
+  else if(p=="hash_view")
+    handled = setBooleanOnString(m_hash_offon, v);
+  else if(p=="geodesy_init")
+    handled = initGeodesy(v);
+  else if(p=="marker")
+    handled = m_vmarkers.addVMarker(v, m_geodesy);
+  else if(p=="op_vertex")
+    handled = m_op_area.addVertex(v, m_geodesy);
+  else if(p=="zoom") {
+    handled = (p=="reset");
+    if(handled)
+      m_zoom = 1.0;
+  }
+  else if(p=="view_polygon")
+    handled = m_geoshapes.addPolygon(value);
+  else if(p=="view_seglist")
+    handled = m_geoshapes.addSegList(value);
+  else if(p=="view_point")
+    handled = m_geoshapes.addPoint(value);
+  else if(p=="grid_config")
+    handled = m_geoshapes.addGrid(value);
+  else if(p=="grid_delta")
+    handled = m_geoshapes.updateGrid(value);
+  else {
+    handled = handled || m_op_area.setParam(p,v);
+    handled = handled || m_vmarkers.setParam(p,v);
+    handled = handled || m_geoshapes.setParam(p,v);
+  }
+
+  cout << "releasing W"; mutexUnLock(); cout << "released W" << endl;
+  return(handled);
+
+}
+
+//-------------------------------------------------------------
+// Procedure: setCommonParam
+//      Note: A mutex is used since the member variables being set
+//            are perhaps being altered or read by another thread.
+
+bool MarineViewer::setCommonParam(string param, double v)
+{
+  param = tolower(stripBlankEnds(param));
+  
+  cout << "requesting X"; mutexLock(); cout << "got X" << endl;
+  bool handled = true;
+  if(param == "hash_shade") {
+    if((m_hash_shade+v >= 0) && (m_hash_shade+v <= 1.0))
+      m_hash_shade += v;
+  }
+  else if(param == "hash_delta") {
+    if(((v >= 10) && (v <= 1000)) || (v==-1))
+      m_hash_delta = v;
+  }
+  else if(param == "back_shade") {
+    if(!m_tiff_offon) {
+      if((m_fill_shade+v > 0) && (m_fill_shade+v <= 1.0))
+	m_fill_shade += v;
+    }
+  }
+  else if(param == "zoom") {
+    if(m_zoom*v > 0.05)      
+      m_zoom *= v;
+  }
+  else if(param == "pan_x") {
+    double pix_shift = v * m_back_img.get_pix_per_mtr();
+    m_vshift_x += pix_shift;
+  }
+  else if(param == "set_pan_x") {
+    m_vshift_x = v;
+  }
+  else if(param == "pan_y") {
+    double pix_shift = v * m_back_img.get_pix_per_mtr();
+    m_vshift_y += pix_shift;
+  }
+  else if(param == "set_pan_y") {
+    m_vshift_y = v;
+  }
+  else 
+    handled = false;
+  
+  cout << "releasing X"; mutexUnLock(); cout << "released X" << endl;
+  return(handled);
+
 }
 
 // ----------------------------------------------------------
@@ -256,10 +361,15 @@ double MarineViewer::getCrossHairMeters(char xy)
 
 // ----------------------------------------------------------
 // Procedure: draw
-//   Purpose: 
+//   Purpose: This is the "root" drawing routine - it is typically
+//            invoked in the draw routines of subclasses. 
+//      Note: A mutex is put around all the drawing calls since it
+//            is accessing information that is perhaps being 
+//            altered by another thread.
 
 void MarineViewer::draw()
 {
+  mutexLock();
   double r = m_fill_shade;
   double g = m_fill_shade;
   double b = m_fill_shade + 0.1;
@@ -304,11 +414,15 @@ void MarineViewer::draw()
 
   drawOpArea();
   drawMarkers();
+  mutexUnLock();
 }
 
 // ----------------------------------------------------------
 // Procedure: drawTiff
-//   Purpose: 
+// Notes: No mutex is used here despite its accessing of data structures
+//        written to by other threads. This is because this is a 
+//        PRIVATE class function called only by a function which 
+//        is using its own mutex.
 
 void MarineViewer::drawTiff()
 {
@@ -377,107 +491,6 @@ void MarineViewer::drawHash()
     drawSegment(i, ylow, i, yhgh, r, g, b);
   for(double j=ylow; j<yhgh; j+=hash_delta)
     drawSegment(xlow, j, xhgh, j, r, g, b);
-}
-
-//-------------------------------------------------------------
-// Procedure: setCommonParam
-
-bool MarineViewer::setCommonParam(string param, string value)
-{
-  string p = tolower(stripBlankEnds(param));
-  string v = tolower(stripBlankEnds(value));
-
-  cout << "requesting W"; mutexLock(); cout << "got W" << endl;
-  bool handled = false;
-  if(p=="cross_view")
-    handled = setBooleanOnString(m_cross_offon, v);
-  else if(p=="tiff_type") {
-    m_back_img_mod = true;
-    handled = setBooleanOnString(m_back_img_b_on, v);
-  }
-  else if(p=="tiff_view") 
-    handled = setBooleanOnString(m_tiff_offon, v);
-  else if(p=="hash_view")
-    handled = setBooleanOnString(m_hash_offon, v);
-  else if(p=="geodesy_init")
-    handled = initGeodesy(v);
-  else if(p=="marker")
-    handled = m_vmarkers.addVMarker(v, m_geodesy);
-  else if(p=="op_vertex")
-    handled = m_op_area.addVertex(v, m_geodesy);
-  else if(p=="zoom") {
-    handled = (p=="reset");
-    if(handled)
-      m_zoom = 1.0;
-  }
-  else if(p=="view_polygon")
-    handled = m_geoshapes.addPolygon(value);
-  else if(p=="view_seglist")
-    handled = m_geoshapes.addSegList(value);
-  else if(p=="view_point")
-    handled = m_geoshapes.addPoint(value);
-  else if(p=="grid_config")
-    handled = m_geoshapes.addGrid(value);
-  else if(p=="grid_delta")
-    handled = m_geoshapes.updateGrid(value);
-  else {
-    handled = handled || m_op_area.setParam(p,v);
-    handled = handled || m_vmarkers.setParam(p,v);
-    handled = handled || m_geoshapes.setParam(p,v);
-  }
-
-  cout << "releasing W"; mutexUnLock(); cout << "released W" << endl;
-  return(handled);
-
-}
-
-//-------------------------------------------------------------
-// Procedure: setCommonParam
-
-bool MarineViewer::setCommonParam(string param, double v)
-{
-  param = tolower(stripBlankEnds(param));
-  
-  cout << "requesting X"; mutexLock(); cout << "got X" << endl;
-  bool handled = true;
-  if(param == "hash_shade") {
-    if((m_hash_shade+v >= 0) && (m_hash_shade+v <= 1.0))
-      m_hash_shade += v;
-  }
-  else if(param == "hash_delta") {
-    if(((v >= 10) && (v <= 1000)) || (v==-1))
-      m_hash_delta = v;
-  }
-  else if(param == "back_shade") {
-    if(!m_tiff_offon) {
-      if((m_fill_shade+v > 0) && (m_fill_shade+v <= 1.0))
-	m_fill_shade += v;
-    }
-  }
-  else if(param == "zoom") {
-    if(m_zoom*v > 0.05)      
-      m_zoom *= v;
-  }
-  else if(param == "pan_x") {
-    double pix_shift = v * m_back_img.get_pix_per_mtr();
-    m_vshift_x += pix_shift;
-  }
-  else if(param == "set_pan_x") {
-    m_vshift_x = v;
-  }
-  else if(param == "pan_y") {
-    double pix_shift = v * m_back_img.get_pix_per_mtr();
-    m_vshift_y += pix_shift;
-  }
-  else if(param == "set_pan_y") {
-    m_vshift_y = v;
-  }
-  else 
-    handled = false;
-  
-  cout << "releasing X"; mutexUnLock(); cout << "released X" << endl;
-  return(handled);
-
 }
 
 //-------------------------------------------------------------

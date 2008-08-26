@@ -177,7 +177,7 @@ bool SSV_Viewer::setParam(string param, string value)
 //-------------------------------------------------------------
 // Procedure: setParam
 //      Note: A mutex is used since the member variables being set
-//            are perhaps being altered by another thread.
+//            are perhaps being altered or read by another thread.
 //      Note: The parent class has its own mutex protection for
 //            its setParam implementation.
 

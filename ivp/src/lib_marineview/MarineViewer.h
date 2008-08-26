@@ -68,21 +68,20 @@ class MarineViewer : public Fl_Gl_Window
   virtual void mutexLock()   {std::cout << "MV-Lock" << std::endl;};
   virtual void mutexUnLock() {std::cout << "MV-UnLock" << std::endl;};
 
-public:
   bool   readTiff(std::string);
   bool   readTiffB(std::string);
   bool   setTexture();
 
 public:
-  void   addPoly(const XYPolygon& p)      {m_geoshapes.addPolygon(p);};
-  void   addGrid(const XYGrid& g)         {m_geoshapes.addGrid(g);};
   void   addCircle(const XYCircle& c)     {m_geoshapes.addCircle(c);};
-  void   addSegList(const XYSegList& s)   {m_geoshapes.addSegList(s);};
   void   addHexagon(const XYHexagon& s)   {m_geoshapes.addHexagon(s);};
   void   addPoint(const XYPoint& p)       {m_geoshapes.addPoint(p);};
   void   updateGrid(const std::string& d) {m_geoshapes.updateGrid(d);};
   double getHashDelta();
   double getCrossHairMeters(char);
+
+ private:
+  void   drawTiff();
 
 protected:
   double img2view(char, double);
@@ -90,7 +89,6 @@ protected:
   double meters2img(char, double);
   double img2meters(char, double);
 
-  void   drawTiff();
   void   drawHash();
   void   drawCrossHairs();
   void   drawSegment(double, double, double, double, double, double, double);
