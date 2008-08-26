@@ -6,6 +6,7 @@
 /*          (Broken out from the Viewer class(es)                */
 /*****************************************************************/
 
+#include <iostream> 
 #include "VehicleSet.h"
 #include "MBUtils.h"
 #include "ColorParse.h"

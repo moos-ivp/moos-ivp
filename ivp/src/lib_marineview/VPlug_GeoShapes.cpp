@@ -48,28 +48,6 @@ VPlug_GeoShapes::VPlug_GeoShapes()
 //     Notes: The possibly accepted parameters are unlimited, but 
 //            must fit one of the below patterns. The following is 
 //            a list (perhaps incomplete) of acceptable parameters.
-//    Each accepting a "color string": 
-//         polygon_edge_color
-//         polygon_vertex_color
-//         polygon_label_color
-//         seglist_edge_color
-//         seglist_vertex_color
-//         seglist_label_color
-//         grid_vertex_color
-//         circle_edge_color
-//         point_vertex_color
-//         point_label_color
-//    Each accepting a "bool string": 
-//         polygon_viewable_all
-//         polygon_viewable_labels
-//         seglist_viewable_all
-//         seglist_viewable_labels
-//         grid_viewable_all
-//         grid_viewable_labels
-//         circle_viewable_all
-//         circle_viewable_labels
-//         point_viewable_all
-//         point_viewable_labels
 //    Each accepting a "double string": 
 //         polygon_line_width
 //         polygon_vertex_size
@@ -81,20 +59,56 @@ VPlug_GeoShapes::VPlug_GeoShapes()
 
 bool VPlug_GeoShapes::setParam(const string& param, string value)
 {
-  if(strContains(param, "_viewable_"))
-    return(setViewableMapping(param, value));
-  else if(strContains(param, "_color"))
-    return(setColorMapping(param, value));
-  else if(strContains(param, "_width"))
-    return(setGSizeMapping(param, value));
-  else if(strContains(param, "_size"))
-    return(setGSizeMapping(param, value));
-  else if((param ==  "poly") || (param == "polygon"))
+  // First check the parameters that may be arriving in streams
+  if((param ==  "poly") || (param == "polygon"))
     return(addPolygon(value));
   else if((param ==  "segl") || (param == "seglist"))
     return(addSegList(value));
   else if((param ==  "grid") || (param == "xygrid"))
     return(addGrid(value));
+
+  // Then check the parameters that may be arriving occasionally
+  else if(param == "polygon_viewable_all")
+    return(setViewableMapping(param, value));
+  else if(param == "polygon_viewable_labels")
+    return(setViewableMapping(param, value));
+  else if(param == "seglist_viewable_all")
+    return(setViewableMapping(param, value));
+  else if(param == "seglist_viewable_labels")
+    return(setViewableMapping(param, value));
+  else if(param == "grid_viewable_all")
+    return(setViewableMapping(param, value));
+  else if(param == "grid_viewable_labels")
+    return(setViewableMapping(param, value));
+  else if(param == "circle_viewable_all")
+    return(setViewableMapping(param, value));
+  else if(param == "circle_viewable_labels")
+    return(setViewableMapping(param, value));
+  else if(param == "point_viewable_all")
+    return(setViewableMapping(param, value));
+  else if(param == "point_viewable_labels")
+    return(setViewableMapping(param, value));
+
+  else if(strContains(param, "polygon_edge_color"))
+    return(setColorMapping(param, value));
+  else if(strContains(param, "polygon_vertex_color"))
+    return(setColorMapping(param, value));
+  else if(strContains(param, "polygon_label_color"))
+    return(setColorMapping(param, value));
+  else if(strContains(param, "selist_edge_color"))
+    return(setColorMapping(param, value));
+  else if(strContains(param, "seglist_vertex_color"))
+    return(setColorMapping(param, value));
+  else if(strContains(param, "circle_edge_color"))
+    return(setColorMapping(param, value));
+  else if(strContains(param, "grid_edge_color"))
+    return(setColorMapping(param, value));
+  else if(strContains(param, "point_vertex_color"))
+    return(setColorMapping(param, value));
+  else if(strContains(param, "_width"))
+    return(setGSizeMapping(param, value));
+  else if(strContains(param, "_size"))
+    return(setGSizeMapping(param, value));
   else if(param == "clear") {
     if(value == "seglists")
       m_polygons.clear();

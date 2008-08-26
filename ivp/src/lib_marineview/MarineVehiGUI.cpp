@@ -20,10 +20,6 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
-#include <iostream>
-#include <stdio.h>
-#include <stdlib.h>
-#include <iostream>
 #include "MarineVehiGUI.h"
 #include "MBUtils.h"
 
@@ -72,6 +68,7 @@ MarineVehiGUI::MarineVehiGUI(int g_w, int g_h, const char *g_l)
 //----------------------------------------- ToggleVehicles
 inline void MarineVehiGUI::cb_ToggleVehicles_i() {
   cmviewer->setParam("vehicles_viewable", "toggle");
+  cmviewer->redraw();
 }
 void MarineVehiGUI::cb_ToggleVehicles(Fl_Widget* o) {
   ((MarineVehiGUI*)(o->parent()->user_data()))->cb_ToggleVehicles_i();
@@ -90,6 +87,7 @@ void MarineVehiGUI::cb_CycleFocus(Fl_Widget* o) {
 //----------------------------------------- ToggleTrails
 inline void MarineVehiGUI::cb_ToggleTrails_i() {
   cmviewer->setParam("trails_viewable", "toggle");
+  cmviewer->redraw();
 }
 void MarineVehiGUI::cb_ToggleTrails(Fl_Widget* o) {
   ((MarineVehiGUI*)(o->parent()->user_data()))->cb_ToggleTrails_i();
@@ -98,6 +96,7 @@ void MarineVehiGUI::cb_ToggleTrails(Fl_Widget* o) {
 //----------------------------------------- ToggleTrailConnect
 inline void MarineVehiGUI::cb_ToggleTrailConnect_i() {
   cmviewer->setParam("trail_connect", "toggle");
+  cmviewer->redraw();
 }
 void MarineVehiGUI::cb_ToggleTrailConnect(Fl_Widget* o) {
   ((MarineVehiGUI*)(o->parent()->user_data()))->cb_ToggleTrailConnect_i();
@@ -106,6 +105,7 @@ void MarineVehiGUI::cb_ToggleTrailConnect(Fl_Widget* o) {
 //----------------------------------------- ToggleVName
 inline void MarineVehiGUI::cb_ToggleVName_i() {
   cmviewer->setParam("display_vname", "toggle");
+  cmviewer->redraw();
 }
 void MarineVehiGUI::cb_ToggleVName(Fl_Widget* o) {
   ((MarineVehiGUI*)(o->parent()->user_data()))->cb_ToggleVName_i();
@@ -114,6 +114,7 @@ void MarineVehiGUI::cb_ToggleVName(Fl_Widget* o) {
 //----------------------------------------- ToggleVNameColor
 inline void MarineVehiGUI::cb_ToggleVNameColor_i() {
   cmviewer->setParam("vname_color", "toggle");
+  cmviewer->redraw();
 }
 void MarineVehiGUI::cb_ToggleVNameColor(Fl_Widget* o) {
   ((MarineVehiGUI*)(o->parent()->user_data()))->cb_ToggleVNameColor_i();
@@ -128,6 +129,7 @@ inline void MarineVehiGUI::cb_ToggleTrailColor_i() {
     cmviewer->setParam("trail_color", "blue");
   else
     cmviewer->setParam("trail_color", "green");
+  cmviewer->redraw();
 }
 void MarineVehiGUI::cb_ToggleTrailColor(Fl_Widget* o) {
   ((MarineVehiGUI*)(o->parent()->user_data()))->cb_ToggleTrailColor_i();
@@ -136,6 +138,7 @@ void MarineVehiGUI::cb_ToggleTrailColor(Fl_Widget* o) {
 //----------------------------------------- Alt Trail Gap
 inline void MarineVehiGUI::cb_AltTrailGap_i(int delta) {
   cmviewer->setParam("trail_gap", (delta));
+  cmviewer->redraw();
 }
 void MarineVehiGUI::cb_AltTrailGap(Fl_Widget* o, int v) {
   ((MarineVehiGUI*)(o->parent()->user_data()))->cb_AltTrailGap_i(v);
@@ -172,6 +175,7 @@ inline void MarineVehiGUI::cb_AltTrailSize_i(int delta) {
     cmviewer->setParam("trail_point_size", "bigger");
   else
     cmviewer->setParam("trail_point_size", "smaller");
+  cmviewer->redraw();
 }
 void MarineVehiGUI::cb_AltTrailSize(Fl_Widget* o, int v) {
   ((MarineVehiGUI*)(o->parent()->user_data()))->cb_AltTrailSize_i(v);
@@ -183,6 +187,7 @@ inline void MarineVehiGUI::cb_AltShapeScale_i(int delta) {
     cmviewer->setParam("vehicle_shape_scale", "bigger");
   if(delta < 0)
     cmviewer->setParam("vehicle_shape_scale", "smaller");
+  cmviewer->redraw();
 }
 void MarineVehiGUI::cb_AltShapeScale(Fl_Widget* o, int v) {
   ((MarineVehiGUI*)(o->parent()->user_data()))->cb_AltShapeScale_i(v);

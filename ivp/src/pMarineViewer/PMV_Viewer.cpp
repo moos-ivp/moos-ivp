@@ -130,6 +130,7 @@ bool PMV_Viewer::setParam(string param, string value)
   }
   else
     handled = m_vehiset.setParam(param, value);
+
   mutexUnLock();
   
   if(center_needs_adjusting)
