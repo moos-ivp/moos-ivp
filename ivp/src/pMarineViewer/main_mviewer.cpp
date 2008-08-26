@@ -133,6 +133,7 @@ int main(int argc, char *argv[])
   if(tif_file_b == "")
     tif_file_b = "DefaultB.tif";
 
+  // First try reading in the first tif file and info file
   cout << "Reading tiff-file: " << tif_file_a << endl;
   bool oka = gui->readTiff(tif_file_a);
   if(oka) 
@@ -140,8 +141,8 @@ int main(int argc, char *argv[])
   else
     cout << "Could not read tiff-file. Continuing without it...." << endl;
 
-  
-  cout << "Reading the 2nd, optional tiff-file: " << tif_file_b << endl;
+  // Then try reading in the second tif file and info file
+    cout << "Reading the 2nd, optional tiff-file: " << tif_file_b << endl;
   bool okb = gui->readTiffB(tif_file_b);
   if(oka) 
     cout << "Successfully read the 2nd tiff-file. Proceeding..." << endl;

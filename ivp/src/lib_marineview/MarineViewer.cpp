@@ -80,7 +80,7 @@ bool MarineViewer::setCommonParam(string param, string value)
   string p = tolower(stripBlankEnds(param));
   string v = tolower(stripBlankEnds(value));
 
-  cout << "requesting W"; mutexLock(); cout << "got W" << endl;
+  mutexLock();
   bool handled = false;
   if(p=="cross_view")
     handled = setBooleanOnString(m_cross_offon, v);
@@ -119,7 +119,7 @@ bool MarineViewer::setCommonParam(string param, string value)
     handled = handled || m_geoshapes.setParam(p,v);
   }
 
-  cout << "releasing W"; mutexUnLock(); cout << "released W" << endl;
+  mutexUnLock();
   return(handled);
 
 }
@@ -133,7 +133,7 @@ bool MarineViewer::setCommonParam(string param, double v)
 {
   param = tolower(stripBlankEnds(param));
   
-  cout << "requesting X"; mutexLock(); cout << "got X" << endl;
+  mutexLock();
   bool handled = true;
   if(param == "hash_shade") {
     if((m_hash_shade+v >= 0) && (m_hash_shade+v <= 1.0))
@@ -170,7 +170,7 @@ bool MarineViewer::setCommonParam(string param, double v)
   else 
     handled = false;
   
-  cout << "releasing X"; mutexUnLock(); cout << "released X" << endl;
+  mutexUnLock();
   return(handled);
 
 }
