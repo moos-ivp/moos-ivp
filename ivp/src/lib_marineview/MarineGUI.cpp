@@ -262,6 +262,7 @@ void MarineGUI::cb_Zoom(Fl_Widget* o, int v) {
 inline void MarineGUI::cb_PanY_i(int amt) {
   cmviewer->setParam("pan_y", ((double)(amt))/10);
   this->updateXY();
+  cmviewer->redraw();
 }
 void MarineGUI::cb_PanY(Fl_Widget* o, int v) {
   ((MarineGUI*)(o->parent()->user_data()))->cb_PanY_i(v);
@@ -272,6 +273,7 @@ void MarineGUI::cb_PanY(Fl_Widget* o, int v) {
 inline void MarineGUI::cb_PanX_i(int amt) {
   cmviewer->setParam("pan_x", ((double)(amt))/10);
   this->updateXY();
+  cmviewer->redraw();
 }
 void MarineGUI::cb_PanX(Fl_Widget* o, int v) {
   ((MarineGUI*)(o->parent()->user_data()))->cb_PanX_i(v);
