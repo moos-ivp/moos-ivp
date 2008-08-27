@@ -67,6 +67,9 @@ protected:
   inline void cb_MVG_SetGeoAttr_i(int);
   static void cb_MVG_SetGeoAttr(Fl_Widget*, int);
 
+  inline void cb_CenterView_i(int);
+  static void cb_CenterView(Fl_Widget*, int);
+
   int    m_trail_color_ix;
 };
 #endif

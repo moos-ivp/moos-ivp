@@ -36,6 +36,9 @@ MarineVehiGUI::MarineVehiGUI(int g_w, int g_h, const char *g_l)
   mbar->add("Vehicles/Vehicles-Toggle", FL_CTRL+'v', (Fl_Callback*)MarineVehiGUI::cb_ToggleVehicles, (void*)0, FL_MENU_DIVIDER);
   mbar->add("Vehicles/Cycle Focus", 'v', (Fl_Callback*)MarineVehiGUI::cb_CycleFocus,(void*)0, FL_MENU_DIVIDER);
 
+  mbar->add("Vehicles/center_view = vehicle_average", 'c', (Fl_Callback*)MarineVehiGUI::cb_CenterView,  (void*)0, 0);
+  mbar->add("Vehicles/center_view = vehicle_active",  'C', (Fl_Callback*)MarineVehiGUI::cb_CenterView,  (void*)1, FL_MENU_DIVIDER);
+
   mbar->add("Vehicles/VehicleSize/vehicle_size larger",    '+', (Fl_Callback*)MarineVehiGUI::cb_AltShapeScale, (void*)+1, 0);
   mbar->add("Vehicles/VehicleSize/vehicle_size smaller",   '-', (Fl_Callback*)MarineVehiGUI::cb_AltShapeScale, (void*)-1, 0);
   mbar->add("Vehicles/VehicleSize/vehicle_size to-scale", FL_ALT+'v', (Fl_Callback*)MarineVehiGUI::cb_AltShapeScale, (void*)0, FL_MENU_DIVIDER);
@@ -192,4 +195,20 @@ inline void MarineVehiGUI::cb_AltShapeScale_i(int delta) {
 void MarineVehiGUI::cb_AltShapeScale(Fl_Widget* o, int v) {
   ((MarineVehiGUI*)(o->parent()->user_data()))->cb_AltShapeScale_i(v);
 }
+
+//----------------------------------------- CenterView
+inline void MarineVehiGUI::cb_CenterView_i(int v) {
+  if(v == 0)
+    cmviewer->setParam("center_view", "vehicle_average");
+  if(v == 1)
+    cmviewer->setParam("center_view", "vehicle_active");
+
+  cmviewer->redraw();
+  updateXY();
+}
+
+void MarineVehiGUI::cb_CenterView(Fl_Widget* o, int v) {
+  ((MarineVehiGUI*)(o->parent()->user_data()))->cb_CenterView_i(v);
+}
+
 

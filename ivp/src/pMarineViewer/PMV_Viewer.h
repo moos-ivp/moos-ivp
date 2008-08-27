@@ -60,6 +60,7 @@ class PMV_Viewer : public MarineViewer
   std::string m_left_click;
   std::string m_right_click;
   bool        m_centric_view;
+  bool        m_centric_view_sticky;
   CMOOSLock   m_mutex;
 };
 

@@ -1635,7 +1635,7 @@ void MarineViewer::drawPoint(const XYPoint& point, double vertex_size,
   glEnd();
   glDisable(GL_POINT_SMOOTH);
 
-
+  // Now draw the point labels if turned on
   if(m_geoshapes.viewable("point_viewable_labels")) {
     glColor3f(labl_c[0], labl_c[1], labl_c[2]);
     gl_font(1, 10);

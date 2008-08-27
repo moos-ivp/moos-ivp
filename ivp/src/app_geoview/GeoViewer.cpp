@@ -173,7 +173,7 @@ void GeoViewer::handle_right_mouse(int vx, int vy)
 
 bool GeoViewer::setParam(string param, double pval)
 {
-  if(setParam(param, pval))
+  if(MarineViewer::setParam(param, pval))
     return(true);
 
   else if(param == "mode") {

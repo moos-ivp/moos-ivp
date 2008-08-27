@@ -31,6 +31,7 @@ PMV_Viewer::PMV_Viewer(int x, int y, int w, int h, const char *l)
   : MarineViewer(x,y,w,h,l)
 {
   m_centric_view = true;
+  m_centric_view_sticky = false;
 }
 
 //-------------------------------------------------------------
@@ -117,14 +118,14 @@ bool PMV_Viewer::setParam(string param, string value)
   bool center_needs_adjusting = false;
 
   mutexLock();
-  if(param == "weighted_center_view") {
+  if(param == "center_view") {
     center_needs_adjusting = true;
     m_centric_view = true;
     handled = true;
   }
   else if((param == "ais_report") || (param == "ais_report_local")){
     handled = m_vehiset.setParam(param, value);
-    if(handled && m_centric_view) {
+    if(handled && m_centric_view && m_centric_view_sticky) {
       center_needs_adjusting = true;
     }
   }

@@ -63,7 +63,7 @@ Fl_Menu_Item MarineGUI::menu_[] = {
  {"Pan Down (v. slow) ", FL_CTRL + FL_Down, (Fl_Callback*)MarineGUI::cb_PanY, (void*)1, 0},
  {"Pan Left (v. slow) ", FL_CTRL + FL_Left, (Fl_Callback*)MarineGUI::cb_PanX, (void*)1, 0},
  {"Pan Right (v. slow)", FL_CTRL + FL_Right, (Fl_Callback*)MarineGUI::cb_PanX, (void*)-1, FL_MENU_DIVIDER},
- {"Cross Hairs",      'c', (Fl_Callback*)MarineGUI::cb_ToggleCross, (void*)-1, FL_MENU_DIVIDER},
+ {"Cross Hairs",      0, (Fl_Callback*)MarineGUI::cb_ToggleCross, (void*)-1, FL_MENU_DIVIDER},
  {"Toggle BGround Off/On",  'b', (Fl_Callback*)MarineGUI::cb_ToggleTiff, (void*)-1, 0},
  {"Toggle BGround Type",  '`', (Fl_Callback*)MarineGUI::cb_ToggleTiffType, (void*)-1, 0},
  {"Background Lighter", FL_CTRL+'b', (Fl_Callback*)MarineGUI::cb_BackShade,  (void*)+1, 0},
@@ -463,11 +463,6 @@ void MarineGUI::cb_BackShade(Fl_Widget* o, int v) {
   ((MarineGUI*)(o->parent()->user_data()))->cb_BackShade_i(v);
 }
 
-//----------------------------------------- Quit
-void MarineGUI::cb_Quit() {
-  exit(0);
-}
-
 //----------------------------------------- ToggleCross
 inline void MarineGUI::cb_ToggleCross_i() {
   cmviewer->setParam("cross_view", "toggle");
@@ -478,4 +473,8 @@ void MarineGUI::cb_ToggleCross(Fl_Widget* o) {
   ((MarineGUI*)(o->parent()->user_data()))->cb_ToggleCross_i();
 }
 
+//----------------------------------------- Quit
+void MarineGUI::cb_Quit() {
+  exit(0);
+}
 
