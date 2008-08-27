@@ -252,7 +252,7 @@ int main(int argc, char *argv[])
 
   // Populate the GUI with the search grids build above
   for(j=0; j<searchgrids.size(); j++)
-    gui->np_viewer->setCommonParam("grid", searchgrids[j]);
+    gui->np_viewer->setParam("grid", searchgrids[j]);
 
   gui->updateXY();
   gui->readTiff(tif_file);

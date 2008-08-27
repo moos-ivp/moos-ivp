@@ -107,7 +107,7 @@ int PMV_Viewer::handle(int event)
 bool PMV_Viewer::setParam(string param, string value)
 {
   // Parent class has its own mutex protection - none needed here.
-  if(MarineViewer::setCommonParam(param, value))
+  if(MarineViewer::setParam(param, value))
     return(true);
 
   param = tolower(stripBlankEnds(param));
@@ -157,7 +157,7 @@ bool PMV_Viewer::setParam(string param, double value)
   }
 
   // Parent class has its own mutex protection - none needed here.
-  bool handled = MarineViewer::setCommonParam(param, value);
+  bool handled = MarineViewer::setParam(param, value);
 
   if(!handled) {
     mutexLock();
@@ -202,7 +202,7 @@ string PMV_Viewer::getStringInfo(const string& info_type, int precision)
   
 
 //-------------------------------------------------------------
-// Procedure: drawVehicle(ObjectPose)
+// Procedure: drawVehicle
 // Notes: No mutex is used here despite its accessing of data structures
 //        written to by other threads. This is because this is a 
 //        PRIVATE class function called only by a function which 

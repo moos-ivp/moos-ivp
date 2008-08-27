@@ -29,10 +29,12 @@ VPlug_GeoShapes::VPlug_GeoShapes()
   setColorMapping("grid_edge_color", "white");
   setColorMapping("point_vertex_color", "yellow");
 
-  m_viewable_map["polygon_viewable_labels"] = true;
   m_viewable_map["polygon_viewable_all"]    = true;
+  m_viewable_map["polygon_viewable_labels"] = true;
   m_viewable_map["seglist_viewable_all"]    = true;
+  m_viewable_map["seglist_viewable_labels"] = true;
   m_viewable_map["point_viewable_all"]      = true;
+  m_viewable_map["point_viewable_labels"]   = true;
 
   m_gsize_map["polygon_edge_width"]  = 1.0;
   m_gsize_map["polygon_vertex_size"] = 5.0;
@@ -89,21 +91,21 @@ bool VPlug_GeoShapes::setParam(const string& param, string value)
   else if(param == "point_viewable_labels")
     return(setViewableMapping(param, value));
 
-  else if(strContains(param, "polygon_edge_color"))
+  else if(param == "polygon_edge_color")
     return(setColorMapping(param, value));
-  else if(strContains(param, "polygon_vertex_color"))
+  else if(param == "polygon_vertex_color")
     return(setColorMapping(param, value));
-  else if(strContains(param, "polygon_label_color"))
+  else if(param == "polygon_label_color")
     return(setColorMapping(param, value));
-  else if(strContains(param, "selist_edge_color"))
+  else if(param == "seglist_edge_color")
     return(setColorMapping(param, value));
-  else if(strContains(param, "seglist_vertex_color"))
+  else if(param == "seglist_vertex_color")
     return(setColorMapping(param, value));
-  else if(strContains(param, "circle_edge_color"))
+  else if(param == "circle_edge_color")
     return(setColorMapping(param, value));
-  else if(strContains(param, "grid_edge_color"))
+  else if(param == "grid_edge_color")
     return(setColorMapping(param, value));
-  else if(strContains(param, "point_vertex_color"))
+  else if(param == "point_vertex_color")
     return(setColorMapping(param, value));
   else if(strContains(param, "_width"))
     return(setGSizeMapping(param, value));

@@ -20,7 +20,6 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
-#include <iostream>
 #include <cstring>
 #include <cstdlib>
 #include <math.h>
@@ -71,11 +70,11 @@ MarineViewer::MarineViewer(int x, int y, int w, int h, const char *l)
 }
 
 //-------------------------------------------------------------
-// Procedure: setCommonParam
+// Procedure: setParam
 //      Note: A mutex is used since the member variables being set
 //            are perhaps being altered or read by another thread.
 
-bool MarineViewer::setCommonParam(string param, string value)
+bool MarineViewer::setParam(string param, string value)
 {
   string p = tolower(stripBlankEnds(param));
   string v = tolower(stripBlankEnds(value));
@@ -129,7 +128,7 @@ bool MarineViewer::setCommonParam(string param, string value)
 //      Note: A mutex is used since the member variables being set
 //            are perhaps being altered or read by another thread.
 
-bool MarineViewer::setCommonParam(string param, double v)
+bool MarineViewer::setParam(string param, double v)
 {
   param = tolower(stripBlankEnds(param));
   
@@ -766,7 +765,7 @@ void MarineViewer::drawCommonMarker(double x, double y, double shape_scale,
   }
 
   if(label != "") {
-      glColor3f(label_color[0], label_color[1], label_color[2]);
+    glColor3f(label_color[0], label_color[1], label_color[2]);
     gl_font(1, 12);
     if(m_zoom > 4)
       gl_font(1, 14);
@@ -914,6 +913,9 @@ void MarineViewer::drawOpArea()
 
 //-------------------------------------------------------------
 // Procedure: initGeodesy
+//      Note: A check on legal boundaries is made here since it
+//            does not appear to be checked for in the MOOSGeodesy
+//            initialization implementation.
 
 bool MarineViewer::initGeodesy(double lat, double lon)
 {
@@ -926,9 +928,13 @@ bool MarineViewer::initGeodesy(double lat, double lon)
   return(m_geodesy.Initialise(lat, lon));
 }
 
-
 //-------------------------------------------------------------
 // Procedure: initGeodesy
+//      Note: After the double values are determined be legitimate
+//            numbers, a call is made to the initGeodesy function
+//            to check on the legal boundaries since it does not
+//            appear to be checked for in the MOOSGeodesy
+//            initialization implementation.
 
 bool MarineViewer::initGeodesy(const string& str)
 {
@@ -945,7 +951,7 @@ bool MarineViewer::initGeodesy(const string& str)
   double dlat = atof(slat.c_str());
   double dlon = atof(slon.c_str());
 
-  return(m_geodesy.Initialise(dlat, dlon));
+  return(initGeodesy(dlat, dlon));
 }
 
 //-------------------------------------------------------------
@@ -1097,7 +1103,6 @@ void MarineViewer::drawPolygon(const XYPolygon& poly,
     
     glColor3f(labl_c[0], labl_c[1], labl_c[2]);
     gl_font(1, 12);
-
     string plabel = poly.get_label();
     int slen = plabel.length();
     char *buff = new char[slen+1];
@@ -1259,15 +1264,17 @@ void MarineViewer::drawSegList(const XYSegList& segl, double lwid,
     glEnd();
   }
 
-  // If the seglist is just a single point, draw it big!
+  // If the seglist is just a single point, draw it twice as big
   if(vsize==1) {
-    glPointSize(6 * m_zoom);
+    glEnable(GL_POINT_SMOOTH);
+    glPointSize((vert*2) * m_zoom);
     // Draw the vertices with color coding for the first and last
     
     glColor3f(vert_c[0], vert_c[1], vert_c[2]);
     glBegin(GL_POINTS);
     glVertex2f(points[0], points[1]);
     glEnd();
+    glDisable(GL_POINT_SMOOTH);
   }
 
   glPointSize(vert * sqrt(m_zoom));
@@ -1627,6 +1634,20 @@ void MarineViewer::drawPoint(const XYPoint& point, double vertex_size,
   glVertex2f(px, py);
   glEnd();
   glDisable(GL_POINT_SMOOTH);
+
+
+  if(m_geoshapes.viewable("point_viewable_labels")) {
+    glColor3f(labl_c[0], labl_c[1], labl_c[2]);
+    gl_font(1, 10);
+    string plabel = point.get_label();
+    int slen = plabel.length();
+    char *buff = new char[slen+1];
+    glRasterPos3f(px+1, py+1, 0);
+    strncpy(buff, plabel.c_str(), slen);
+    buff[slen] = '\0';
+    gl_draw(buff, slen);
+    delete(buff);
+  }
 
   glFlush();
   glPopMatrix();

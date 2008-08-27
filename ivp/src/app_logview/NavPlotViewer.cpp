@@ -69,7 +69,7 @@ void NavPlotViewer::addLogPlot(const LogPlot& lp, string vid, string type)
 
 bool NavPlotViewer::setParam(string param, string value)
 {
-  if(setCommonParam(param, value))
+  if(setParam(param, value))
     return(true);
   
   if(param == "trail_view")
@@ -87,7 +87,7 @@ bool NavPlotViewer::setParam(string param, string value)
 
 bool NavPlotViewer::setParam(string param, double value)
 {
-  if(setCommonParam(param, value))
+  if(setParam(param, value))
     return(true);
   
   if(param == "shape_scale") {

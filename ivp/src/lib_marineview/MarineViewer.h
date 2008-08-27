@@ -23,7 +23,6 @@
 #ifndef COMMON_MARINE_VIEWER_HEADER
 #define COMMON_MARINE_VIEWER_HEADER
 
-#include <iostream>
 #include <string>
 #include <vector>
 #include "FL/Fl.H"
@@ -50,40 +49,26 @@ class MarineViewer : public Fl_Gl_Window
   
   // Pure virtuals that need to be defined
   virtual void  draw();
-  virtual int   handle(int event)
-    {return(Fl_Gl_Window::handle(event));};
+  virtual int   handle(int event) {return(Fl_Gl_Window::handle(event));};
 
-  virtual bool setParam(std::string p, std::string v="") = 0;
-  virtual bool setParam(std::string p, double v)         = 0;
+  virtual bool setParam(std::string p, std::string v="");
+  virtual bool setParam(std::string p, double v);
 
-  bool  setGeoParam(const std::string& p, const std::string& v)
-    {return(m_geoshapes.setParam(p, v));};
-  
-  bool  setCommonParam(std::string, std::string);
-  bool  setCommonParam(std::string, double);
+  virtual void mutexLock() {};   
+  virtual void mutexUnLock() {}; 
 
-  bool  initGeodesy(double, double);
-  bool  initGeodesy(const std::string&);
-
-  virtual void mutexLock()   {std::cout << "MV-Lock" << std::endl;};
-  virtual void mutexUnLock() {std::cout << "MV-UnLock" << std::endl;};
+  bool   initGeodesy(double, double);
+  bool   initGeodesy(const std::string&);
 
   bool   readTiff(std::string);
   bool   readTiffB(std::string);
   bool   setTexture();
 
-public:
-  void   addCircle(const XYCircle& c)     {m_geoshapes.addCircle(c);};
-  void   addHexagon(const XYHexagon& s)   {m_geoshapes.addHexagon(s);};
-  void   addPoint(const XYPoint& p)       {m_geoshapes.addPoint(p);};
-  void   updateGrid(const std::string& d) {m_geoshapes.updateGrid(d);};
   double getHashDelta();
   double getCrossHairMeters(char);
 
- private:
-  void   drawTiff();
-
 protected:
+  void   drawTiff();
   double img2view(char, double);
   double view2img(char, double);
   double meters2img(char, double);

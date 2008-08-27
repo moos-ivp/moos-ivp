@@ -27,9 +27,8 @@ class GeoViewer : public MarineViewer
   void  handle_left_mouse(int, int);
   void  handle_right_mouse(int, int);
   bool  setParam(std::string p, std::string v)
-    {return(setCommonParam(p,v));};
+    {return(MarineViewer::setParam(p,v));};
   bool  setParam(std::string p, double v);
-  //    {return(setCommonParam(p,v));};
 
 public:
   std::string getPolySpec();

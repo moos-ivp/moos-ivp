@@ -122,7 +122,7 @@ int SSV_Viewer::handle(int event)
 bool SSV_Viewer::setParam(string param, string value)
 {
   // Parent class has its own mutex protection - none needed here.
-  if(MarineViewer::setCommonParam(param, value))
+  if(MarineViewer::setParam(param, value))
     return(true);
   
   param = tolower(stripBlankEnds(param));
@@ -193,7 +193,7 @@ bool SSV_Viewer::setParam(string param, double value)
   }
 
   // Parent class has its own mutex protection - none needed here.
-  bool handled = MarineViewer::setCommonParam(param, value);
+  bool handled = MarineViewer::setParam(param, value);
 
   if(!handled) {
     mutexLock();

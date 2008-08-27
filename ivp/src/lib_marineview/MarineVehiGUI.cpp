@@ -146,19 +146,19 @@ void MarineVehiGUI::cb_AltTrailGap(Fl_Widget* o, int v) {
 
 //----------------------------------------- MVG_SetGeoAttr
 inline void MarineVehiGUI::cb_MVG_SetGeoAttr_i(int v) {
-  if(v==700) cmviewer->setCommonParam("active_vcolor", "red");
-  else if(v==701) cmviewer->setCommonParam("active_vcolor", "crimson");
-  else if(v==702) cmviewer->setCommonParam("active_vcolor", "white");
-  else if(v==703) cmviewer->setCommonParam("active_vcolor", "blue_violet");
-  else if(v==704) cmviewer->setCommonParam("active_vcolor", "dark_olive_green");
-  else if(v==705) cmviewer->setCommonParam("active_vcolor", "orange_red");
+  if(v==700) cmviewer->setParam("active_vcolor", "red");
+  else if(v==701) cmviewer->setParam("active_vcolor", "crimson");
+  else if(v==702) cmviewer->setParam("active_vcolor", "white");
+  else if(v==703) cmviewer->setParam("active_vcolor", "blue_violet");
+  else if(v==704) cmviewer->setParam("active_vcolor", "dark_olive_green");
+  else if(v==705) cmviewer->setParam("active_vcolor", "orange_red");
 
-  else if(v==800) cmviewer->setCommonParam("inactive_vcolor", "1.0,0.9,0.243");
-  else if(v==801) cmviewer->setCommonParam("inactive_vcolor", "dark_sea_green");
-  else if(v==802) cmviewer->setCommonParam("inactive_vcolor", "khaki");
-  else if(v==803) cmviewer->setCommonParam("inactive_vcolor", "gold");
-  else if(v==804) cmviewer->setCommonParam("inactive_vcolor", "goldenrod");
-  else if(v==805) cmviewer->setCommonParam("inactive_vcolor", "green_yellow");
+  else if(v==800) cmviewer->setParam("inactive_vcolor", "1.0,0.9,0.243");
+  else if(v==801) cmviewer->setParam("inactive_vcolor", "dark_sea_green");
+  else if(v==802) cmviewer->setParam("inactive_vcolor", "khaki");
+  else if(v==803) cmviewer->setParam("inactive_vcolor", "gold");
+  else if(v==804) cmviewer->setParam("inactive_vcolor", "goldenrod");
+  else if(v==805) cmviewer->setParam("inactive_vcolor", "green_yellow");
 
   else 
     return;

@@ -48,7 +48,7 @@ using namespace std;
 BHV_Waypoint::BHV_Waypoint(IvPDomain gdomain) : 
   IvPBehavior(gdomain)
 {
-  this->setParam("descriptor", "(d)bhv_waypoint");
+  this->setParam("descriptor", "bhv_waypoint");
   m_domain = subDomain(m_domain, "course,speed");
 
   m_cruise_speed    = 0;  // Meters/second
@@ -329,7 +329,8 @@ void BHV_Waypoint::updateInfoOut(bool post)
       string ptmsg;
       ptmsg += "x=" + dstringCompact(doubleToString(m_ptx,1));
       ptmsg += ",y=" + dstringCompact(doubleToString(m_pty,1));
-      ptmsg += ",label=" + m_descriptor;
+      // ptmsg += ",label=" + m_descriptor;
+      ptmsg += ",label=" + m_us_name + "'s next waypoint";
       ptmsg += ",type=waypoint, size=1";
       ptmsg += ",source=" + m_us_name;
       postMessage("VIEW_POINT", ptmsg);

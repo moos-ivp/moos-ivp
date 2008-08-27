@@ -317,87 +317,106 @@ void MarineGUI::cb_HashShade(Fl_Widget* o, int v) {
 
 //----------------------------------------- MG_SetGeoAttr
 inline void MarineGUI::cb_MG_SetGeoAttr_i(int v) {
-  if(v==100) cmviewer->setGeoParam("polygon_vertex_color", "red");
-  else if(v==101) cmviewer->setGeoParam("polygon_vertex_color", "white");
-  else if(v==102) cmviewer->setGeoParam("polygon_vertex_color", "yellow");
-  else if(v==103) cmviewer->setGeoParam("polygon_vertex_color", "DarkBlue");
-  else if(v==104) cmviewer->setGeoParam("polygon_vertex_color", "DarkGreen");
+  if(v==100) cmviewer->setParam("polygon_vertex_color", "red");
+  else if(v==101) cmviewer->setParam("polygon_vertex_color", "white");
+  else if(v==102) cmviewer->setParam("polygon_vertex_color", "yellow");
+  else if(v==103) cmviewer->setParam("polygon_vertex_color", "DarkBlue");
+  else if(v==104) cmviewer->setParam("polygon_vertex_color", "DarkGreen");
 
-  else if(v==120) cmviewer->setGeoParam("polygon_edge_color", "red");
-  else if(v==121) cmviewer->setGeoParam("polygon_edge_color", "white");
-  else if(v==122) cmviewer->setGeoParam("polygon_edge_color", "yellow");
-  else if(v==123) cmviewer->setGeoParam("polygon_edge_color", "DarkBlue");
-  else if(v==124) cmviewer->setGeoParam("polygon_edge_color", "DarkGreen");
+  else if(v==120) cmviewer->setParam("polygon_edge_color", "red");
+  else if(v==121) cmviewer->setParam("polygon_edge_color", "white");
+  else if(v==122) cmviewer->setParam("polygon_edge_color", "yellow");
+  else if(v==123) cmviewer->setParam("polygon_edge_color", "DarkBlue");
+  else if(v==124) cmviewer->setParam("polygon_edge_color", "DarkGreen");
 
-  else if(v==140) cmviewer->setGeoParam("polygon_vertex_size", "1");
-  else if(v==141) cmviewer->setGeoParam("polygon_vertex_size", "2");
-  else if(v==142) cmviewer->setGeoParam("polygon_vertex_size", "3");
-  else if(v==143) cmviewer->setGeoParam("polygon_vertex_size", "5");
-  else if(v==144) cmviewer->setGeoParam("polygon_vertex_size", "8");
-  else if(v==145) cmviewer->setGeoParam("polygon_vertex_size", "10");
+  else if(v==140) cmviewer->setParam("polygon_vertex_size", "1");
+  else if(v==141) cmviewer->setParam("polygon_vertex_size", "2");
+  else if(v==142) cmviewer->setParam("polygon_vertex_size", "3");
+  else if(v==143) cmviewer->setParam("polygon_vertex_size", "5");
+  else if(v==144) cmviewer->setParam("polygon_vertex_size", "8");
+  else if(v==145) cmviewer->setParam("polygon_vertex_size", "10");
 
-  else if(v==150) cmviewer->setGeoParam("polygon_viewable_labels", "on");
-  else if(v==151) cmviewer->setGeoParam("polygon_viewable_labels", "off");
-  else if(v==152) cmviewer->setGeoParam("polygon_viewable_labels", "toggle");
+  else if(v==150) cmviewer->setParam("polygon_viewable_labels", "on");
+  else if(v==151) cmviewer->setParam("polygon_viewable_labels", "off");
+  else if(v==152) cmviewer->setParam("polygon_viewable_labels", "toggle");
 
-  else if(v==160) cmviewer->setGeoParam("polygon_viewable_all", "toggle");
+  else if(v==160) cmviewer->setParam("polygon_viewable_all", "toggle");
   
   //---------------------------------- SegLists
 
-  else if(v==250) cmviewer->setGeoParam("display_seglists", "toggle");
+  else if(v==200) cmviewer->setParam("seglist_vertex_color", "red");
+  else if(v==201) cmviewer->setParam("seglist_vertex_color", "white");
+  else if(v==202) cmviewer->setParam("seglist_vertex_color", "yellow");
+  else if(v==203) cmviewer->setParam("seglist_vertex_color", "dark_blue");
+  else if(v==204) cmviewer->setParam("seglist_vertex_color", "dark_green");
+
+  else if(v==220) cmviewer->setParam("seglist_edge_color", "red");
+  else if(v==221) cmviewer->setParam("seglist_edge_color", "white");
+  else if(v==222) cmviewer->setParam("seglist_edge_color", "yellow");
+  else if(v==223) cmviewer->setParam("seglist_edge_color", "dark_blue");
+  else if(v==224) cmviewer->setParam("seglist_edge_color", "dark_green");
+
+  else if(v==240) cmviewer->setParam("seglist_vertex_size", "1");
+  else if(v==241) cmviewer->setParam("seglist_vertex_size", "2");
+  else if(v==242) cmviewer->setParam("seglist_vertex_size", "3");
+  else if(v==243) cmviewer->setParam("seglist_vertex_size", "5");
+  else if(v==244) cmviewer->setParam("seglist_vertex_size", "8");
+  else if(v==245) cmviewer->setParam("seglist_vertex_size", "10");
+
+  else if(v==250) cmviewer->setParam("seglist_viewable_all", "toggle");
 
   //---------------------------------- Points
-  else if(v==500) cmviewer->setGeoParam("point_viewable_labels", "on");
-  else if(v==501) cmviewer->setGeoParam("point_viewable_labels", "off");
-  else if(v==502) cmviewer->setGeoParam("point_viewable_labels", "toggle");
+  else if(v==500) cmviewer->setParam("point_viewable_labels", "on");
+  else if(v==501) cmviewer->setParam("point_viewable_labels", "off");
+  else if(v==502) cmviewer->setParam("point_viewable_labels", "toggle");
 
-  else if(v==510) cmviewer->setGeoParam("point_vertex_color", "red");
-  else if(v==511) cmviewer->setGeoParam("point_vertex_color", "white");
-  else if(v==512) cmviewer->setGeoParam("point_vertex_color", "yellow");
-  else if(v==513) cmviewer->setGeoParam("point_vertex_color", "DarkBlue");
-  else if(v==514) cmviewer->setGeoParam("point_vertex_color", "DarkGreen");
+  else if(v==510) cmviewer->setParam("point_vertex_color", "red");
+  else if(v==511) cmviewer->setParam("point_vertex_color", "white");
+  else if(v==512) cmviewer->setParam("point_vertex_color", "yellow");
+  else if(v==513) cmviewer->setParam("point_vertex_color", "DarkBlue");
+  else if(v==514) cmviewer->setParam("point_vertex_color", "DarkGreen");
 
-  else if(v==520) cmviewer->setGeoParam("point_vertex_size", "1");
-  else if(v==521) cmviewer->setGeoParam("point_vertex_size", "2");
-  else if(v==522) cmviewer->setGeoParam("point_vertex_size", "3");
-  else if(v==523) cmviewer->setGeoParam("point_vertex_size", "5");
-  else if(v==524) cmviewer->setGeoParam("point_vertex_size", "8");
-  else if(v==525) cmviewer->setGeoParam("point_vertex_size", "10");
+  else if(v==520) cmviewer->setParam("point_vertex_size", "1");
+  else if(v==521) cmviewer->setParam("point_vertex_size", "2");
+  else if(v==522) cmviewer->setParam("point_vertex_size", "3");
+  else if(v==523) cmviewer->setParam("point_vertex_size", "5");
+  else if(v==524) cmviewer->setParam("point_vertex_size", "8");
+  else if(v==525) cmviewer->setParam("point_vertex_size", "10");
 
-  else if(v==530) cmviewer->setGeoParam("point_vertex_size", "-1");
-  else if(v==531) cmviewer->setGeoParam("point_vertex_size", "+1");
+  else if(v==530) cmviewer->setParam("point_vertex_size", "-1");
+  else if(v==531) cmviewer->setParam("point_vertex_size", "+1");
 
-  else if(v==550) cmviewer->setGeoParam("point_viewable_all", "toggle");
+  else if(v==550) cmviewer->setParam("point_viewable_all", "toggle");
 
   //---------------------------------- Datum
 
-  else if(v==400) cmviewer->setCommonParam("datum_color", "red");
-  else if(v==401) cmviewer->setCommonParam("datum_color", "white");
-  else if(v==402) cmviewer->setCommonParam("datum_color", "yellow");
-  else if(v==403) cmviewer->setCommonParam("datum_color", "dark_blue");
-  else if(v==404) cmviewer->setCommonParam("datum_color", "dark_green");
+  else if(v==400) cmviewer->setParam("datum_color", "red");
+  else if(v==401) cmviewer->setParam("datum_color", "white");
+  else if(v==402) cmviewer->setParam("datum_color", "yellow");
+  else if(v==403) cmviewer->setParam("datum_color", "dark_blue");
+  else if(v==404) cmviewer->setParam("datum_color", "dark_green");
 
-  else if(v==440) cmviewer->setCommonParam("datum_size", 1);
-  else if(v==441) cmviewer->setCommonParam("datum_size", 3);
-  else if(v==442) cmviewer->setCommonParam("datum_size", 5);
-  else if(v==443) cmviewer->setCommonParam("datum_size", 10);
-  else if(v==444) cmviewer->setCommonParam("datum_size", 15);
-  else if(v==445) cmviewer->setCommonParam("datum_size", 20);
-  else if(v==448) cmviewer->setCommonParam("datum_size_add", "smaller");
-  else if(v==449) cmviewer->setCommonParam("datum_size_add", "bigger");
+  else if(v==440) cmviewer->setParam("datum_size", 1);
+  else if(v==441) cmviewer->setParam("datum_size", 3);
+  else if(v==442) cmviewer->setParam("datum_size", 5);
+  else if(v==443) cmviewer->setParam("datum_size", 10);
+  else if(v==444) cmviewer->setParam("datum_size", 15);
+  else if(v==445) cmviewer->setParam("datum_size", 20);
+  else if(v==448) cmviewer->setParam("datum_size_add", "smaller");
+  else if(v==449) cmviewer->setParam("datum_size_add", "bigger");
 
-  else if(v==2000) cmviewer->setCommonParam("marker_scale_global", "reset");
-  else if(v==2001) cmviewer->setCommonParam("marker_scale_global", "smaller");
-  else if(v==2002) cmviewer->setCommonParam("marker_scale_global", "bigger");
-  else if(v==2020) cmviewer->setCommonParam("marker_labels_viewable", "toggle");
-  else if(v==2030) cmviewer->setCommonParam("marker_label_color", "toggle");
-  else if(v==2050) cmviewer->setCommonParam("markers_viewable", "toggle");
+  else if(v==2000) cmviewer->setParam("marker_scale_global", "reset");
+  else if(v==2001) cmviewer->setParam("marker_scale_global", "smaller");
+  else if(v==2002) cmviewer->setParam("marker_scale_global", "bigger");
+  else if(v==2020) cmviewer->setParam("marker_labels_viewable", "toggle");
+  else if(v==2030) cmviewer->setParam("marker_label_color", "toggle");
+  else if(v==2050) cmviewer->setParam("markers_viewable", "toggle");
 
-  else if(v==2100) cmviewer->setCommonParam("op_area_config", "reset");
-  else if(v==2101) cmviewer->setCommonParam("op_area_line_shade_mod", "1.05");
-  else if(v==2102) cmviewer->setCommonParam("op_area_line_shade_mod", "0.95");
-  else if(v==2120) cmviewer->setCommonParam("op_area_viewable_labels", "toggle");
-  else if(v==2150) cmviewer->setCommonParam("op_area_viewable_all", "toggle");
+  else if(v==2100) cmviewer->setParam("op_area_config", "reset");
+  else if(v==2101) cmviewer->setParam("op_area_line_shade_mod", "1.05");
+  else if(v==2102) cmviewer->setParam("op_area_line_shade_mod", "0.95");
+  else if(v==2120) cmviewer->setParam("op_area_viewable_labels", "toggle");
+  else if(v==2150) cmviewer->setParam("op_area_viewable_all", "toggle");
 
   else 
     return;
@@ -410,7 +429,7 @@ void MarineGUI::cb_MG_SetGeoAttr(Fl_Widget* o, int v) {
 
 //----------------------------------------- ToggleDatum
 inline void MarineGUI::cb_ToggleDatum_i() {
-  cmviewer->setCommonParam("datum_viewable", "toggle");
+  cmviewer->setParam("datum_viewable", "toggle");
   cmviewer->redraw();
 }
 void MarineGUI::cb_ToggleDatum(Fl_Widget* o) {
@@ -419,7 +438,7 @@ void MarineGUI::cb_ToggleDatum(Fl_Widget* o) {
 
 //----------------------------------------- ToggleGrids
 inline void MarineGUI::cb_ToggleGrids_i() {
-  cmviewer->setCommonParam("display_grids", "toggle");
+  cmviewer->setParam("display_grids", "toggle");
   cmviewer->redraw();
 }
 void MarineGUI::cb_ToggleGrids(Fl_Widget* o) {

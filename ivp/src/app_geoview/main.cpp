@@ -106,11 +106,11 @@ int main(int argc, char *argv[])
 
   cout << "# of file polys: " << all_poly_strings.size() << endl;
   for(j=0; j<all_poly_strings.size(); j++)
-    gui->pviewer->setCommonParam("polygon", all_poly_strings[j]);
+    gui->pviewer->setParam("polygon", all_poly_strings[j]);
 
   cout << "# of file seglists: " << all_segl_strings.size() << endl;
   for(j=0; j<all_segl_strings.size(); j++)
-    gui->pviewer->setCommonParam("seglist", all_segl_strings[j]);
+    gui->pviewer->setParam("seglist", all_segl_strings[j]);
   
 
   cout << "# of file grids: " << all_grid_strings.size() << endl;
@@ -129,15 +129,15 @@ int main(int argc, char *argv[])
 
   cout << "# of file marker entries: " << all_markers.size() << endl;
   for(j=0; j<all_markers.size(); j++)
-    bool ok = gui->pviewer->setCommonParam("marker", all_markers[j]);
+    bool ok = gui->pviewer->setParam("marker", all_markers[j]);
 
   cout << "# of file op entries: " << all_opvertices.size() << endl;
   for(j=0; j<all_opvertices.size(); j++)
-    bool ok = gui->pviewer->setCommonParam("op_vertex", all_opvertices[j]);
+    bool ok = gui->pviewer->setParam("op_vertex", all_opvertices[j]);
 
   cout << "# of file geodesy entries: " << all_geodesy.size() << endl;
   for(j=0; j<all_geodesy.size(); j++)
-    bool ok = gui->pviewer->setCommonParam("geodesy_init", all_geodesy[j]);
+    bool ok = gui->pviewer->setParam("geodesy_init", all_geodesy[j]);
 
   gui->updateXY();
 
