@@ -250,9 +250,13 @@ bool MarineGUI::readTiffB(string filename)
 
 //----------------------------------------- Zoom In
 inline void MarineGUI::cb_Zoom_i(int val) {
-  if(val < 0) cmviewer->setParam("zoom", 1.05);
-  if(val > 0) cmviewer->setParam("zoom", 0.80);
-  if(val ==0) cmviewer->setParam("zoom", "reset");
+  if(val < 0) 
+    cmviewer->setParam("zoom", 1.05);
+  else if(val > 0) 
+    cmviewer->setParam("zoom", 0.80);
+  else 
+    cmviewer->setParam("zoom", "reset");
+  cmviewer->redraw();
 }
 void MarineGUI::cb_Zoom(Fl_Widget* o, int v) {
   ((MarineGUI*)(o->parent()->user_data()))->cb_Zoom_i(v);
