@@ -30,7 +30,9 @@ cmake                                           \
    -DBUILD_TOOLS=ON                             \
    -DBUILD_OCEAN_SIM=ON                         \
    -DBUILD_NEWMAT=OFF                           \
-   -DBUILD_MATLAB_TOOLS=OFF                     \
+   -DBUILD_GRAPHICAL_TOOLS=ON                   \
+   -DBUILD_MATLAB_TOOLS=OFF                      \
+   -DMATLAB_DIR=/usr/local/matlab-2007a   \
    -DBUILD_LAND_INSTRUMENTS=OFF                 \
    -DBUILD_OCEAN_INSTRUMENTS=OFF                \
    -DBUILD_UMVS=ON                              \
