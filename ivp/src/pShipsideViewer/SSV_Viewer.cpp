@@ -132,19 +132,17 @@ bool SSV_Viewer::setParam(string param, string value)
   bool center_needs_adjusting = false;
 
   mutexLock();
-  if(param == "centric_view")
-    handled = setBooleanOnString(m_centric_view, value);
+  if(param == "center_view") {
+    center_needs_adjusting = true;
+    m_centric_view = true;
+    handled = true;
+  }
   else if(param == "station_circle")
     handled = addStationCircle(value);
   else if(param == "rstation_circle")
     handled = addStationCircle(value);
   else if(param == "bearing_lines")
     handled = setBooleanOnString(m_draw_bearing_lines, value);
-  else if(param == "weighted_center_view") {
-    center_needs_adjusting = true;
-    m_centric_view = true;
-    handled = true;
-  }
   else if(param == "bearing_color") {
     handled = isColor(value);
     if(handled)
