@@ -128,8 +128,10 @@ bool BackImg::readTiffData(string filename)
   img_height = 0;
   img_width  = 0;
 
-
   string file = filename;
+
+  cout << "Reading Tiff(1) Data: " << file << endl;
+
   FILE *f = fopen(file.c_str(), "r");
   if(f) {
     fclose(f);
@@ -140,7 +142,10 @@ bool BackImg::readTiffData(string filename)
     file += filename;
   } 
 
-  // we turn off Warnings (maybe a bad idea) since many photoshop 
+  cout << "Reading Tiff(2) Data: " << file << endl;
+
+
+  // We turn off Warnings (maybe a bad idea) since many photoshop 
   // images have newfangled tags that confuse libtiff
   TIFFErrorHandler warn = TIFFSetWarningHandler(0);
   

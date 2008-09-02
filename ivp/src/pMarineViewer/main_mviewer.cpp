@@ -96,26 +96,12 @@ void idleProc(void *)
 
 int main(int argc, char *argv[])
 {
-  string tif_file_a = "";
-  string tif_file_b = "";
-
   for(int i=1; i<argc; i++) {
     string argi  = argv[i];
     if(strContains(argi, ".moos"))
       g_sMissionFile = argv[i];
-    else if(strContains(argi, ".tif")) {
-      if(tif_file_a == "")
-	tif_file_a = argv[i];
-      else if(tif_file_b == "")
-	tif_file_b = argv[i];
-    }
-    else if(strContains(argi, "-noimg")) {
-      tif_file_a = "";
-      tif_file_b = "";
-    }
-    else 
-      if(!strContains(argi, "pMarineViewer"))
-	exit_with_usage();
+    else if(!strContains(argi, "pMarineViewer"))
+      exit_with_usage();
   }
   
   if(g_sMissionFile == 0)
@@ -128,31 +114,10 @@ int main(int argc, char *argv[])
     return(-1);
   }
 
-  if(tif_file_a == "")
-    tif_file_a = "Default.tif";
-  if(tif_file_b == "")
-    tif_file_b = "DefaultB.tif";
-
-  // First try reading in the first tif file and info file
-  cout << "Reading tiff-file: " << tif_file_a << endl;
-  bool oka = gui->readTiff(tif_file_a);
-  if(oka) 
-    cout << "Successfully read the tiff-file. Proceeding..." << endl;
-  else
-    cout << "Could not read tiff-file. Continuing without it...." << endl;
-
-  // Then try reading in the second tif file and info file
-    cout << "Reading the 2nd, optional tiff-file: " << tif_file_b << endl;
-  bool okb = gui->readTiffB(tif_file_b);
-  if(oka) 
-    cout << "Successfully read the 2nd tiff-file. Proceeding..." << endl;
-  else
-    cout << "Did not read 2nd tiff-file. Continuing without it...." << endl;
-
   g_thePort.setGUI(gui);
 
   // start the MOOSPort in its own thread
-  ThreadParams params = {&g_thePort, "pMarineViewer"};
+  ThreadParams params = {&g_thePort, argv[0]};
   g_portThreadID = spawn_thread(&params);	
 
   Fl::add_idle(idleProc);

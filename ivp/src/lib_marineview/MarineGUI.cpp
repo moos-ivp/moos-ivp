@@ -218,36 +218,6 @@ int MarineGUI::handle(int event)
   return(Fl_Window::handle(event));
 }
 
-//-------------------------------------------------------------------
-// Procedure: readTiff
-
-bool MarineGUI::readTiff(string filename)
-{
-  if(!cmviewer)
-    return(false);
-
-  bool read_file_ok  = false;
-  bool read_blank_ok = false;
-
-  read_file_ok = cmviewer->readTiff(filename);
-  if(!read_file_ok) 
-    read_blank_ok = cmviewer->readTiff("");
-  
-  if(read_file_ok || read_blank_ok)
-    cmviewer->setTexture();
-
-  return(read_file_ok);
-}  
-
-//-------------------------------------------------------------------
-// Procedure: readTiffB
-
-bool MarineGUI::readTiffB(string filename)
-{
-  return(cmviewer->readTiffB(filename));
-}  
-
-
 //----------------------------------------- Zoom In
 inline void MarineGUI::cb_Zoom_i(int val) {
   if(val < 0) 

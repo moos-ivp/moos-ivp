@@ -60,14 +60,15 @@ class MarineViewer : public Fl_Gl_Window
   bool   initGeodesy(double, double);
   bool   initGeodesy(const std::string&);
 
-  bool   readTiff(std::string);
-  bool   readTiffB(std::string);
   bool   setTexture();
 
   double getHashDelta();
   double getCrossHairMeters(char);
 
 protected:
+  bool   readTiff(std::string);
+  bool   readTiffB(std::string);
+
   void   drawTiff();
   double img2view(char, double);
   double view2img(char, double);
@@ -128,7 +129,8 @@ protected:
 
   void  drawPointList(const std::vector<double>& xvect,
 		      const std::vector<double>& yvect, double vsize,
-		      const std::vector<double>& vert_color);
+		      const std::vector<double>& vert_color, 
+		      bool point_edges_viewable=false);
 
   void  drawHexagons();
 

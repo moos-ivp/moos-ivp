@@ -297,3 +297,33 @@ vector<vector<double> > VMarkerSet::getMarkerColorVectors(int mix)
     return(m_marker_color_vectors[mix]);
 }
 
+
+//-----------------------------------------------------------
+// Procedure: getParamReport
+//   Purpose: Return a set of strings where each is of the type:
+//            "parameter = value".
+//            The set returned should be enough to bring future
+//            instantiations back to the same current state 
+//            should the vector param-value pairs be re-applied 
+//            using the setParam interface. This allows a user
+//            to "save his/her preferences" in a file or some
+//            other configuration block.
+
+vector<string> VMarkerSet::getParamReport() const
+{
+  vector<string> svect;
+
+  svect.push_back("// Parameters for Marker Attributes");
+
+  string val = dstringCompact(doubleToString(m_marker_scale_global));
+  svect.push_back("marker_scale_global = " + val);
+
+  val = boolToString(m_markers_viewable);
+  svect.push_back("markers_viewable = " + val);
+
+  val = boolToString(m_marker_labels_viewable);
+  svect.push_back("marker_labels_viewable = " + val);
+
+  return(svect);
+
+}

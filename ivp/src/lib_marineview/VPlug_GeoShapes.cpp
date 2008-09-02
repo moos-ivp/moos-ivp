@@ -380,15 +380,19 @@ XYPoint VPlug_GeoShapes::getPoint(int index)
 
 bool VPlug_GeoShapes::setColorMapping(string attribute, string color_str)
 {
+  if(!isColor(color_str))
+    return(false);
+
   attribute = tolower(stripBlankEnds(attribute));
   color_str = stripBlankEnds(color_str);
+
+  // Store the string value solely for purposes of reporting back
+  // state in the getParamReport queries.
+  m_color_string_map[attribute] = color_str;
   
   vector<double> cvect = colorParse(color_str);
-  
   m_color_map[attribute] = cvect;
-  if((cvect[0]==0) && (cvect[2]==0) && (cvect[2]==0) &&
-     (tolower(color_str) != "black"))
-    return(false);
+
   return(true);    
 }
 
@@ -550,3 +554,44 @@ double VPlug_GeoShapes::geosize(const string& attribute,
     return(default_value);
 }
 
+//-----------------------------------------------------------
+// Procedure: getParamReport
+//   Purpose: Return a set of strings where each is of the type:
+//            "parameter = value".
+//            The set returned should be enough to bring future
+//            instantiations back to the same current state 
+//            should the vector param-value pairs be re-applied 
+//            using the setParam interface. This allows a user
+//            to "save his/her preferences" in a file or some
+//            other configuration block.
+
+vector<string> VPlug_GeoShapes::getParamReport() const
+{
+  vector<string> svect;
+
+  svect.push_back("// Parameters for Geometry Shapes");
+
+  map<string, string>::const_iterator p1;
+  for(p1=m_color_string_map.begin(); p1!= m_color_string_map.end(); p1++) {
+    string param = p1->first;
+    string value = p1->second;
+    svect.push_back(param + " = " + value);
+  }
+  
+  map<string, bool>::const_iterator p2;
+  for(p2=m_viewable_map.begin(); p2!= m_viewable_map.end(); p2++) {
+    string param = p2->first;
+    string value = boolToString(p2->second);
+    svect.push_back(param + " = " + value);
+  }
+
+  map<string, double>::const_iterator p3;
+  for(p3=m_gsize_map.begin(); p3!= m_gsize_map.end(); p3++) {
+    string param = p3->first;
+    string value = dstringCompact(doubleToString(p3->second, 4));
+    svect.push_back(param + " = " + value);
+  }
+
+  return(svect);
+
+}

@@ -20,6 +20,7 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
+#include <iostream>
 #include <cstring>
 #include <cstdlib>
 #include <math.h>
@@ -89,6 +90,13 @@ bool MarineViewer::setParam(string param, string value)
   }
   else if(p=="tiff_view") 
     handled = setBooleanOnString(m_tiff_offon, v);
+  else if(p=="tiff_file")
+    handled = m_back_img.readTiff(value);
+  else if(p=="tiff_file_b") {
+    handled = m_back_img_b.readTiff(value);
+    if(handled)
+      m_back_img_b_ok = true;
+  }
   else if(p=="hash_view")
     handled = setBooleanOnString(m_hash_offon, v);
   else if(p=="geodesy_init")
@@ -172,32 +180,6 @@ bool MarineViewer::setParam(string param, double v)
   mutexUnLock();
   return(handled);
 
-}
-
-// ----------------------------------------------------------
-// Procedure: readTiff
-//   Purpose: This routine reads in a tiff file and stores it 
-//            in a very simple data structure
-
-bool MarineViewer::readTiff(string filename)
-{
-  mutexLock();
-  bool ok = m_back_img.readTiff(filename);
-  mutexUnLock();
-  return(ok);
-}
-
-// ----------------------------------------------------------
-// Procedure: readTiffB
-//   Purpose: This routine reads in a tiff file and stores it 
-//            in a very simple data structure
-
-bool MarineViewer::readTiffB(string filename)
-{
-  mutexLock();
-  m_back_img_b_ok = m_back_img_b.readTiff(filename);
-  mutexUnLock();
-  return(m_back_img_b_ok);
 }
 
 // ----------------------------------------------------------
@@ -1252,7 +1234,7 @@ void MarineViewer::drawSegList(const XYSegList& segl, double lwid,
   glTranslatef(qx, qy, 0);
   glScalef(m_zoom, m_zoom, m_zoom);
 
-  // Now draw the edges
+  // First draw the edges
   if(vsize >= 2) {
     glLineWidth(lwid);
     glColor3f(edge_c[0], edge_c[1], edge_c[2]);
@@ -1264,10 +1246,10 @@ void MarineViewer::drawSegList(const XYSegList& segl, double lwid,
     glEnd();
   }
 
-  // If the seglist is just a single point, draw it twice as big
+  // If the seglist is just a single point, draw it bigger (x 1.4)
   if(vsize==1) {
     glEnable(GL_POINT_SMOOTH);
-    glPointSize((vert*2) * m_zoom);
+    glPointSize((vert * 1.4) * m_zoom);
     // Draw the vertices with color coding for the first and last
     
     glColor3f(vert_c[0], vert_c[1], vert_c[2]);
@@ -1295,12 +1277,13 @@ void MarineViewer::drawSegList(const XYSegList& segl, double lwid,
 }
 
 //-------------------------------------------------------------
-// Procedure: drawSegList
+// Procedure: drawPointList
 
 void MarineViewer::drawPointList(const vector<double>& xvect,
 				 const vector<double>& yvect,
 				 double vertsize, 
-				 const vector<double>& vert_c)
+				 const vector<double>& vert_c,
+				 bool  point_edges_viewable)
 {
   unsigned int vsize = xvect.size();
   if(yvect.size() != xvect.size())
@@ -1323,8 +1306,8 @@ void MarineViewer::drawPointList(const vector<double>& xvect,
 
   double tx = meters2img('x', 0);
   double ty = meters2img('y', 0);
-  double  qx = img2view('x', tx);
-  double  qy = img2view('y', ty);
+  double qx = img2view('x', tx);
+  double qy = img2view('y', ty);
 
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
@@ -1332,6 +1315,15 @@ void MarineViewer::drawPointList(const vector<double>& xvect,
 
   glTranslatef(qx, qy, 0);
   glScalef(m_zoom, m_zoom, m_zoom);
+
+  if(point_edges_viewable) {
+    glLineWidth(1.0);
+    glColor3f(vert_c[0], vert_c[1], vert_c[2]);
+    glBegin(GL_LINE_STRIP);
+    for(i=0; i<vsize*2; i=i+2)
+      glVertex2f(points[i], points[i+1]);
+    glEnd();
+  }
 
   glPointSize(vertsize * sqrt(m_zoom));
 

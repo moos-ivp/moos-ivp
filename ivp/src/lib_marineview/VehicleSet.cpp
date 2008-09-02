@@ -6,7 +6,6 @@
 /*          (Broken out from the Viewer class(es)                */
 /*****************************************************************/
 
-#include <iostream> 
 #include "VehicleSet.h"
 #include "MBUtils.h"
 #include "ColorParse.h"
@@ -15,79 +14,109 @@ using namespace std;
 
 //-------------------------------------------------------------
 // Constructor
+// Note: The setParam routines are used rather than initializing 
+//       the variables directly so the automatic recording in the 
+//       m_report_map is performed for reporting on the state of 
+//       variables in later queries.
 
 VehicleSet::VehicleSet()
 {
   m_history_size = 1000;
   m_curr_time    = 0;
 
-  m_vehicle_shape_scale = 0.1;
-  m_trail_point_size    = 1;
-  m_trail_length        = 100; // unused as of now
-  m_trail_gap           = 1;   // unused as of now
-  m_trail_color         = colorParse("white");
+  setParam("m_vehicle_shape_scale", 0.1);
+  setParam("m_trails_point_size", 1);
+  setParam("m_trails_length", 100);
+  setParam("m_trails_gap", 1);
 
-  m_trails_viewable         = true;
-  m_trails_connect_viewable = false;
-  m_vehicles_viewable       = true;
-  m_vehicle_names_viewable  = false;
+  setParam("m_trails_viewable", "true");
+  setParam("m_trails_connect_viewable", "false");
+  setParam("m_vehicles_viewable", "true");
+  setParam("m_vehicle_names_viewable", "false");
 
-  m_active_vehicle_color   = colorParse("red");
-  m_inactive_vehicle_color = colorParse("yellow");
-  m_vehicle_name_color     = colorParse("white");
+  setParam("m_trails_color", "white");
+  setParam("m_active_vehicle_color", "red");
+  setParam("m_inactive_vehicle_color", "yellow");
+  setParam("m_vehicle_name_color", "white");
 }
 
 
 //-------------------------------------------------------------
 // Procedure: setParam
+//     Ntoes: The "handled" variable is set to true if a known
+//            and acceptable value are passed. This boolean is 
+//            returned and may be vital to the caller to either
+//            pass a warning or error to the user, or perhaps
+//            allow the parameter and value to be processed in 
+//            some other way.
+//            The "makenote" parameter indicates that the param
+//            value pair should be noted in the m_param_report
+//            mapping for later reporting of all param-value 
+//            pairs used for reconstructing the current state.
 
 bool VehicleSet::setParam(string param, string value)
 {
+  bool handled  = false;
+  bool makenote = true;
   param = tolower(param);
-  if((param == "ais_report") || (param == "ais_report_local"))
-    return(updateVehiclePosition(value));
-  else if(param == "active_vehicle_color")
+  if((param == "ais_report") || (param == "ais_report_local")) {
+    handled  = updateVehiclePosition(value);
+    makenote = false;
+  }
+  else if((param == "active_vehicle_color") && isColor(value)) {
     m_active_vehicle_color = colorParse(value);
-  else if(param == "inactive_vehicle_color")
+    handled = true;
+  }
+  else if((param == "inactive_vehicle_color") && isColor(value)) {
     m_inactive_vehicle_color = colorParse(value);
-  else if(param == "vehicle_name_color")
+    handled = true;
+  }
+  else if((param == "vehicle_name_color") && isColor(value)) {
     m_vehicle_name_color = colorParse(value);
-  else if(param=="trail_color")
-    m_trail_color = colorParse(value);
-  else if(param == "clear_vehicle_trails")
+    handled = true;
+  }
+  else if((param=="trails_color") && isColor(value)) {
+    m_trails_color = colorParse(value);
+    handled = true;
+  }
+  else if(param == "clear_vehicle_trails") {
     m_hist_map.clear();
+    handled  = true;
+    makenote = false;
+  }
   else if(param == "vehicles_viewable")
-    return(setBooleanOnString(m_vehicles_viewable, value));
+    handled = setBooleanOnString(m_vehicles_viewable, value);
   else if(param == "vnames_viewable")
-    return(setBooleanOnString(m_vehicle_names_viewable, value));
+    handled = setBooleanOnString(m_vehicle_names_viewable, value);
   else if(param == "trails_viewable")
-    return(setBooleanOnString(m_trails_viewable, value));
+    handled = setBooleanOnString(m_trails_viewable, value);
   else if(param == "trails_connect_viewable")
-    return(setBooleanOnString(m_trails_connect_viewable, value));
-  else if(param == "trail_point_size") {
+    handled = setBooleanOnString(m_trails_connect_viewable, value);
+  else if(param == "trails_point_size") {
+    makenote = false;
     if(value == "bigger")
-      m_trail_point_size *= 1.25;
+      handled = setParam("trails_point_size", m_trails_point_size*1.25);
     else if(value == "smaller")
-      m_trail_point_size *= 0.80;
-    else
-      return(false);
+      handled = setParam("trails_point_size", m_trails_point_size*0.80);
   }
   else if(param == "vehicle_shape_scale") {
+    makenote = false;
     if(value == "bigger")
-      m_vehicle_shape_scale *= 1.25;
+      handled = setParam("vehicle_shape_scale", m_vehicle_shape_scale*1.25);
     else if(value == "smaller")
-      m_vehicle_shape_scale *= 0.80;
-    else
-      return(false);
+      handled = setParam("vehicle_shape_scale", m_vehicle_shape_scale*0.80);
   }
   else if(param == "active_vehicle_name") {
+    handled = true;
     map<string,ObjectPose>::iterator p = m_pos_map.find(value);
     if(p == m_pos_map.end())
-      return(false);
+      handled = false;
     else
       m_active_vehicle_name = value;
   }
   else if(param == "cycle_active") {
+    handled = true;
+    makenote = false;
     map<string, ObjectPose>::iterator p;
     for(p=m_pos_map.begin(); p!=m_pos_map.end(); p++) {
       string vname = p->first;
@@ -101,49 +130,70 @@ bool VehicleSet::setParam(string param, string value)
   }
   else if(param == "vehicolor") {
     vector<string> svector = parseString(value, ',');
-    if(svector.size() != 2)
-      return(false);
-    string vname  = stripBlankEnds(svector[0]);
-    string vcolor = stripBlankEnds(svector[1]);
-    if(!isColor(vcolor))
-      return(false);
-    m_vehi_color[param] = colorParse(value);
+    if(svector.size() == 2) {
+      string vname  = stripBlankEnds(svector[0]);
+      string vcolor = stripBlankEnds(svector[1]);
+      if(isColor(vcolor)) {
+	m_vehi_color[param] = colorParse(value);
+	handled = true;
+      }
+    }
   }
-  else
-    return(false);
 
-  return(true);
+  if(handled && makenote)
+    m_param_report[param] = value;
+
+  return(handled);
 }
 
 
 //-------------------------------------------------------------
 // Procedure: setParam
+//     Ntoes: The "handled" variable is set to true if a known
+//            and acceptable value are passed. This boolean is 
+//            returned and may be vital to the caller to either
+//            pass a warning or error to the user, or perhaps
+//            allow the parameter and value to be processed in 
+//            some other way.
+//            The "makenote" parameter indicates that the param
+//            value pair should be noted in the m_param_report
+//            mapping for later reporting of all param-value 
+//            pairs used for reconstructing the current state.
 
 bool VehicleSet::setParam(string param, double value)
 {
+  bool handled  = false;
+  bool makenote = true;
   if(param == "history_size") {
-    if(value < 0)
-      return(false);
-    m_history_size = (int)(value);
+    if(value > 0) {
+      m_history_size = (int)(value);
+      handled = true;
+    }
   }
   else if(param == "curr_time") {
-    if(value < m_curr_time)
-      return(false);
-    m_curr_time = value;
+    makenote = false;
+    if(value >= m_curr_time) {
+      m_curr_time = value;
+      handled = true;
+    }
   }
-  else if(param == "trail_point_size") {
-    if(value < 0)
-      return(false);
-    m_trail_point_size = value;
+  else if(param == "trails_point_size") {
+    if(value >= 0) {
+      m_trails_point_size = value;
+      handled = true;
+    }
   }
   else if(param == "vehicle_shape_scale") {
-    if(value < 0)
-      return(false);
-    m_vehicle_shape_scale = value;
+    if(value >= 0) {
+      m_vehicle_shape_scale = value;
+      handled = true;
+    }
   }
-  else
-    return(false);
-  return(true);
+
+  if(handled && makenote)
+    m_param_report[param] = value;
+
+  return(handled);
 }
 
 
@@ -192,10 +242,10 @@ bool VehicleSet::getDoubleInfo(const string& g_vname,
     result = opose.getDepth();
   else if(info_type == "curr_time")
     result = m_curr_time;
-  else if(info_type == "trail_point_size")
-    result = m_trail_point_size;
-  else if(info_type == "trail_gap")
-    result = m_trail_gap;
+  else if(info_type == "trails_point_size")
+    result = m_trails_point_size;
+  else if(info_type == "trails_gap")
+    result = m_trails_gap;
   else if(info_type == "vehicle_shape_scale")
     result = m_vehicle_shape_scale;
   else
@@ -313,8 +363,8 @@ double VehicleSet::getDoubleInfo(const string& info_type) const
 vector<double> VehicleSet::getColor(const string& key) const
 {
   vector<double> cvect = m_inactive_vehicle_color;
-  if(key == "trail_color")
-    return(m_trail_color);
+  if(key == "trails_color")
+    return(m_trails_color);
   else if(key == "active_vehicle_color")
     return(m_active_vehicle_color);
   else if(key == "inactive_vehicle_color")
@@ -376,6 +426,33 @@ vector<string> VehicleSet::getVehiNames() const
     rvect.push_back(p->first);
 
   return(rvect);
+}
+
+//-------------------------------------------------------------
+// Procedure: getParamReport
+//   Purpose: Return a set of strings where each is of the type:
+//            "parameter = value".
+//            The set returned should be enough to bring future
+//            instantiations back to the same current state 
+//            should the vector param-value pairs be re-applied 
+//            using the setParam interface. This allows a user
+//            to "save his/her preferences" in a file or some
+//            other configuration block.
+
+vector<string> VehicleSet::getParamReport() const
+{
+  vector<string> svect;
+
+  svect.push_back("// Parameters for Vehicle Attributes");
+
+  map<string, string>::const_iterator p;
+  for(p=m_param_report.begin(); p!= m_param_report.end(); p++) {
+    string param = p->first;
+    string value = p->second;
+    svect.push_back(param + " = " + value);
+  }
+
+  return(svect);
 }
 
 //-------------------------------------------------------------

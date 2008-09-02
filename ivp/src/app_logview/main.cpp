@@ -255,7 +255,7 @@ int main(int argc, char *argv[])
     gui->np_viewer->setParam("grid", searchgrids[j]);
 
   gui->updateXY();
-  gui->readTiff(tif_file);
+  gui->np_viewer->setParam("tiff_file", tif_file);
 
   // Enter the GUI event loop.
   return Fl::run();

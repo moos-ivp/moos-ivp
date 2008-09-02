@@ -176,14 +176,19 @@ bool SSV_MOOSApp::OnStartUp()
     return(false);
   }
 
+  // Keep track of whether the back images were user configured.
+  // If not, we'll use the default image afterwards.
+  bool tiff_a_set = false;
+  bool tiff_b_set = false;
+
   STRING_LIST::reverse_iterator p;
   for(p = sParams.rbegin();p!=sParams.rend();p++) {
     string sLine = *p;
-    string param = toupper(MOOSChomp(sLine, "="));
+    string param = tolower(MOOSChomp(sLine, "="));
     string value = stripBlankEnds(sLine);
     
-    if(param == "CONTACTS") {
-      vector<string> svector = parseString(sLine, ',');
+    if(param == "contacts") {
+      vector<string> svector = parseString(value, ',');
       for(int i=0; i<svector.size(); i++)
 	m_gui->addContactButton(i, svector[i]);
     }
@@ -192,8 +197,18 @@ bool SSV_MOOSApp::OnStartUp()
       bool handled = m_gui->mviewer->setParam(param, value);
       // Then try as if the param-value pair had a double value
       if(!handled)
-	m_gui->mviewer->setParam(param, atof(value.c_str()));
+	handled = m_gui->mviewer->setParam(param, atof(value.c_str()));
+      if(handled && (param == "tiff_file"))
+	tiff_a_set = true;
+      if(handled && (param == "tiff_file_b"))
+	tiff_b_set = true;	
     } 
+  }
+
+  // If no images were specified, use the default images.
+  if(!tiff_a_set && !tiff_b_set) {
+    m_gui->mviewer->setParam("tiff_file", "Default.tif");
+    m_gui->mviewer->setParam("tiff_file_b", "DefaultB.tif");
   }
 
   m_start_time = MOOSTime();

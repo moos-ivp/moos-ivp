@@ -38,6 +38,8 @@ public:
 
   std::vector<double> getLabelColor() {return(m_label_color);};
 
+  std::vector<std::string> getParamReport() const;
+
 protected:
   bool addVMarker(std::string mtype, double xpos, double ypos,
 		  double mscale, std::string label, std::string colors);

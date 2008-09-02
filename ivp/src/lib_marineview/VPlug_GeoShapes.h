@@ -72,6 +72,8 @@ public:
   bool   setGSizeMapping(std::string, std::string);
   double geosize(const std::string&, double size_default=0);
 
+  std::vector<std::string> getParamReport() const;
+
 protected:
   std::vector<XYPolygon>  m_polygons;
   std::vector<XYSegList>  m_seglists;
@@ -83,6 +85,11 @@ protected:
   std::map<std::string, std::vector<double> >  m_color_map;
   std::map<std::string, bool>                  m_viewable_map;
   std::map<std::string, double>                m_gsize_map;
+
+  // The below is strictly for parameter reporting and not used
+  // in drawing. Should be identical to the m_color_map except
+  // in form (string vs. vector<double>) only.
+  std::map<std::string, std::string>           m_color_string_map;
 };
 
 #endif

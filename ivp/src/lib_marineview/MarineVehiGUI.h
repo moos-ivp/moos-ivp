@@ -37,14 +37,14 @@ protected:
   inline void cb_CycleFocus_i();
   static void cb_CycleFocus(Fl_Widget*);
 
-  inline void cb_ToggleTrails_i();
-  static void cb_ToggleTrails(Fl_Widget*);
+  inline void cb_AltTrails_i(int);
+  static void cb_AltTrails(Fl_Widget*, int);
 
   inline void cb_ToggleTrailColor_i();
   static void cb_ToggleTrailColor(Fl_Widget*);
 
-  inline void cb_ToggleTrailConnect_i();
-  static void cb_ToggleTrailConnect(Fl_Widget*);
+  inline void cb_AltTrailConnect_i(int);
+  static void cb_AltTrailConnect(Fl_Widget*, int);
 
   inline void cb_AltTrailGap_i(int);
   static void cb_AltTrailGap(Fl_Widget*, int);

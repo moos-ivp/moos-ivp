@@ -370,8 +370,9 @@ void SSV_Viewer::drawPoints(CPList &cps)
 
   vector<double> cvect = m_vehiset.getColor("trail_color");
   double point_size = m_vehiset.getDoubleInfo("active", "trail_point_size");
+  bool connections  = m_vehiset.isViewable("trails_connect");
 
-  drawPointList(xvect, yvect, point_size, cvect);
+  drawPointList(xvect, yvect, point_size, cvect, connections);
 }
 
 //-------------------------------------------------------------

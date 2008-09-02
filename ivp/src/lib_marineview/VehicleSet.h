@@ -24,6 +24,7 @@ class VehicleSet
   bool  setParam(std::string param, std::string value="");
   bool  setParam(std::string param, double value);
 
+  //------ General Purpose Information retrieval --------------
   bool  getDoubleInfo(const std::string& vname, 
 		      const std::string& info_type, 
 		      double& result) const;
@@ -32,17 +33,20 @@ class VehicleSet
 		      const std::string& info_type, 
 		      std::string& result) const;
 
+  //------ Simplified Information retrieval --------------
   std::string getStringInfo(const std::string& vname, 
 			    const std::string& info_type) const;
   double      getDoubleInfo(const std::string& vname, 
 			    const std::string& info_type) const;
 
+  //------ Very Simplified Information retrieval --------------
   std::string getStringInfo(const std::string& info_type) const;
   double      getDoubleInfo(const std::string& info_type) const;
 
 
   std::vector<double> getColor(const std::string& key) const;
   std::vector<std::string> getVehiNames() const;
+  std::vector<std::string> getParamReport() const;
 
   std::string getActiveVehicle() const  {return(m_active_vehicle_name);};
 
@@ -71,23 +75,24 @@ class VehicleSet
   // Mapping from Vehicle Name to Vehicle Color
   std::map<std::string, std::vector<double> > m_vehi_color;
 
+  std::map<std::string, std::string> m_param_report;
+
   std::string m_active_vehicle_name;
 
   int    m_history_size;
   double m_curr_time;
 
-
   // Rendering characteristics (colors, sizes etc)
   double m_vehicle_shape_scale;  
-  double m_trail_length;         
-  double m_trail_point_size;           
-  double m_trail_gap;            
+  double m_trails_length;         
+  double m_trails_point_size;           
+  double m_trails_gap;            
   bool   m_trails_viewable;      
   bool   m_trails_connect_viewable;
   bool   m_vehicles_viewable;
   bool   m_vehicle_names_viewable;
   
-  std::vector<double> m_trail_color; 
+  std::vector<double> m_trails_color; 
   std::vector<double> m_active_vehicle_color;
   std::vector<double> m_inactive_vehicle_color; 
   std::vector<double> m_vehicle_name_color;

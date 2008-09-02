@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
     }
   }
  
-  gui->readTiff(tif_file);
+  gui->pviewer->setParam("tiff_file", tif_file);
 
   cout << "# of file polys: " << all_poly_strings.size() << endl;
   for(j=0; j<all_poly_strings.size(); j++)

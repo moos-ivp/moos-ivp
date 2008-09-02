@@ -177,28 +177,42 @@ bool PMV_MOOSApp::OnStartUp()
   
   // If both lat and lon origin ok - then initialize the Geodesy.
   if(!m_gui->mviewer->initGeodesy(lat_origin, lon_origin)) {
-    MOOSTrace("Geodesy Init inside pShipSideViewer failed - FAIL\n");
+    MOOSTrace("Geodesy Init inside pMarineViewer failed - FAIL\n");
     return(false);
   }
+
+  // Keep track of whether the back images were user configured.
+  // If not, we'll use the default image afterwards.
+  bool tiff_a_set = false;
+  bool tiff_b_set = false;
 
   STRING_LIST sParams;
   m_MissionReader.GetConfiguration(GetAppName(), sParams);
   STRING_LIST::reverse_iterator p;
   for(p = sParams.rbegin();p!=sParams.rend();p++) {
     string sLine    = *p;
-    string sVarName = MOOSChomp(sLine, "=");
-    sVarName = stripBlankEnds(tolower(sVarName));
-    sLine    = stripBlankEnds(tolower(sLine));
+    string param = tolower(MOOSChomp(sLine, "="));
+    string value = stripBlankEnds(sLine);
     
-    if(sVarName == "verbose")
-      m_verbose = (sLine == "true");
+    if(param == "verbose")
+      m_verbose = (tolower(value) == "true");
     else { 
-      bool handled = m_gui->mviewer->setParam(sVarName, sLine);
+      bool handled = m_gui->mviewer->setParam(param, value);
       if(!handled)
-	m_gui->mviewer->setParam(sVarName, atof(sLine.c_str()));
+	handled = m_gui->mviewer->setParam(param, atof(value.c_str()));
+      if(handled && (param == "tiff_file"))
+	tiff_a_set = true;
+      if(handled && (param == "tiff_file_b"))
+	tiff_b_set = true;	
     }
   }
-  
+
+  // If no images were specified, use the default images.
+  if(!tiff_a_set && !tiff_b_set) {
+    m_gui->mviewer->setParam("tiff_file", "Default.tif");
+    m_gui->mviewer->setParam("tiff_file_b", "DefaultB.tif");
+  }
+
   m_start_time = MOOSTime();
   m_gui->mviewer->redraw();
   
