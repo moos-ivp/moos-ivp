@@ -1,5 +1,11 @@
 PROJECT(IVP)
 
+
+# Force -fPIC because gcc complains when we don't use it with x86_64 code.
+# Note sure why: -fPIC should only be needed for shared objects, and
+# AFAIK, CMake gets that right when building shared objects. -CJC
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+
 #===============================================================================
 # FINDING MOOS' HEADERS AND LIBRARIES...
 #===============================================================================
@@ -7,7 +13,6 @@ PROJECT(IVP)
 # *** REPLACE "../../MOOS" WITH WHATEVER VALUE IS REQUIRED.  THE DIRECTORY 
 # *** SHOULD HAVE CHILD DIRECTORIES SUCH AS "Core", "Essentials", ETC.
 SET(MOOS_BASE_DIR ../../MOOS)
-
 
 # Using absolute pathnames seems to work better then relative, because you're 
 # never sure from which directory a relative path will be employed in commands
@@ -25,9 +30,6 @@ IF(NOT EXISTS ${MOOS_BASE_DIR_ABSOLUTE}/Core)
       "You need to set the CMake variable 'MOOS_BASE_DIR' to a different value."
 )
 ENDIF(NOT EXISTS ${MOOS_BASE_DIR_ABSOLUTE}/Core)
-
-SET(CMAKE_CXX_FLAGS "-g -fPIC")
-
 
 SET(MOOS_LIB_DIR ${MOOS_BASE_DIR_ABSOLUTE}/MOOSBin)
 LINK_DIRECTORIES(${MOOS_LIB_DIR})
