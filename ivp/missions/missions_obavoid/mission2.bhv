@@ -15,7 +15,6 @@ Behavior = BHV_Waypoint
 
   speed     = 2.0
   radius    = 8.0
-  //points    = 60,-40:60,-160:150,-160:180,-100:150,-40
   points    = 3570,9900:3570,9780:3660,9780:3690,9840:3660,9900
 }
 
@@ -29,7 +28,7 @@ Behavior = BHV_Waypoint
 
   speed      = 2.0
   radius     = 8.0
-  points     = 3550,9970
+  points     = 3570,10000
   //points     = 0,0
 }
 
@@ -42,8 +41,6 @@ Behavior = BHV_AvoidObstacles
   condition  = DEPLOY = true
 
               poly = label,obstacle:3560,9850:3560,9820:3600,9820:3600,9850
-//            poly = 30,-80:30,-110:70,-110:70,-80
-//            poly = 40,-80:40,-110:80,-110:80,-80 
      allowable_ttc = 20
    activation_dist = 50
        buffer_dist = 25

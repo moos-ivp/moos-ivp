@@ -19,26 +19,14 @@ ProcessConfig = ANTLER
   Run = pTransponderAIS	@ NewConsole = true
   Run = uXMS		@ NewConsole = true
   Run = iRemote		@ NewConsole = true
-  //Run = pMarineViewer	@ NewConsole = true
+  Run = pMarineViewer	@ NewConsole = true
   Run = pMarinePID	@ NewConsole = false
-  Run = pShipsideViewer	@ NewConsole = true
+  //Run = pShipsideViewer	@ NewConsole = true
   Run = pHelmIvP	@ NewConsole = false
-  Run = iMarineSim	@ NewConsole = false
-  Run = pEchoVar	@ NewConsole = false
-  Run = pLogger		@ NewConsole = false
-  Run = uProcessWatch   @ NewConsole = false
-}
-
-//------------------------------------------
-// pShipsideViewer config block
-
-ProcessConfig = pShipsideViewer
-{
-  AppTick	= 4
-  CommsTick	= 4
-
-  TIFF_FILE     = glint_leo15.tif
-  TIFF_FILE_B   = glint_leo15s.tif
+  Run = iMarineSim	@ NewConsole =  true
+  Run = pEchoVar	@ NewConsole = true
+  Run = pLogger		@ NewConsole = true
+  Run = uProcessWatch   @ NewConsole = true
 }
 
 //------------------------------------------
@@ -49,8 +37,12 @@ ProcessConfig = iMarineSim
   AppTick	= 10
   CommsTick	= 10
 
-  START_X       = 3620
-  START_Y       = 9740
+//  START_X       = 3550
+//  START_Y       = 9970
+//  START_X       = 3620
+//  START_Y       = 9740
+  START_X       = 1520
+  START_Y       = 10340
   START_SPEED   = 0
   START_HEADING = 180
   START_DEPTH   = 4
@@ -174,7 +166,6 @@ ProcessConfig = pEchoVar
   CommsTick   = 5
 
   Echo    = MARINESIM_X       ->  NAV_X
-  Echo    = MARINESIM_X       ->  NAV_XX
   Echo    = MARINESIM_Y       ->  NAV_Y
   Echo    = MARINESIM_YAW     ->  NAV_YAW
   Echo    = MARINESIM_HEADING ->  NAV_HEADING
@@ -190,6 +181,18 @@ ProcessConfig = pTransponderAIS
   AppTick	= 2
   CommsTick	= 2
   VESSEL_TYPE   = KAYAK
+}
+
+//------------------------------------------
+// pMarineViewer config block
+
+ProcessConfig = pMarineViewer
+{
+  AppTick	= 4
+  CommsTick	= 4
+
+  TIFF_FILE     = /home/mikerb/Research/moos-ivp/trunk/ivp/data/glint_leo15.tif
+  TIFF_FILE_B   = /home/mikerb/Research/moos-ivp/trunk/ivp/data/glint_leo15s.tif
 }
 
 //------------------------------------------
@@ -240,4 +243,4 @@ ProcessConfig = uXMS
 }
 
 
-
+ 
