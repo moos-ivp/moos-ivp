@@ -20,22 +20,29 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
+#include <string>
 #include "MOOSLib.h"
 #include "MOOSGenLib.h"
 #include "HelmIvP.h"
+
+using namespace std;
 
 int main(int argc, char *argv[])
 {
   HelmIvP helmIvP;
   
-  char *sMissionFile = "pHelmIvP.moos";
-  if(argc > 1)
-    sMissionFile = argv[1];
+  string sMissionFile = "pHelmIvP.moos";
+  string sMOOSName = "pHelmIvP";
 
+  switch(argc) {
+  case 2:
+    sMissionFile = argv[1];
+  }
+  
   for(int i=2; i<argc; i++)
     helmIvP.addBehaviorFile(argv[i]);
 
-  helmIvP.Run("pHelmIvP", sMissionFile);
+  helmIvP.Run(sMOOSName.c_str(), sMissionFile.c_str());
   
   return(0);
 }

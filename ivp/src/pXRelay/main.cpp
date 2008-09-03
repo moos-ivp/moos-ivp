@@ -5,15 +5,17 @@
 /*    DATE: Jun 26th 2008                                   */
 /************************************************************/
 
+#include <string>
 #include "MOOSLib.h"
 #include "MOOSGenLib.h"
 #include "Relayer.h"
 
+using namespace std;
+
 int main(int argc, char *argv[])
 {
-
-  char *sMissionFile = "Mission.moos";
-  char *sMOOSName = "pRelayer";
+  string sMissionFile = "Mission.moos";
+  string sMOOSName = "pXRelay";
 
   switch(argc) {
   case 3:
@@ -24,7 +26,7 @@ int main(int argc, char *argv[])
   
   Relayer relayer;
 	
-  relayer.Run(sMOOSName, sMissionFile);
+  relayer.Run(sMOOSName.c_str(), sMissionFile.c_str());
 
   return(0);
 }

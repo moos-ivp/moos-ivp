@@ -20,18 +20,26 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
+#include <string>
 #include "TransponderAIS.h"
+
+using namespace std;
 
 int main(int argc, char *argv[])
 {
-  char *sMissionFile = "pTransponderAIS.moos";
-  
-  if(argc > 1)
+  string sMissionFile = "pTransponderAIS.moos";
+  string sMOOSName = "iMarineSim";
+
+  switch(argc) {
+  case 3:
+    sMOOSName = argv[2];
+  case 2:
     sMissionFile = argv[1];
+  }
   
   TransponderAIS transponder;
   
-  transponder.Run("pTransponderAIS", sMissionFile);
+  transponder.Run(sMOOSName.c_str(), sMissionFile.c_str());
 
   return(0);
 }

@@ -20,20 +20,28 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
+#include <string>
 #include "MOOSLib.h"
 #include "MOOSGenLib.h"
 #include "ProcessWatch.h"
 
+using namespace std;
+
 int main(int argc, char *argv[])
 {
-  char *sMissionFile = "ProcessWatch.moos";
-  
-  if(argc > 1) 
+  string sMissionFile = "ProcessWatch.moos";
+  string sMOOSName = "uProcessWatch";
+
+  switch(argc) {
+  case 3:
+    sMOOSName = argv[2];
+  case 2:
     sMissionFile = argv[1];
+  }
   
   ProcessWatch ProcessWatch;
   
-  ProcessWatch.Run("uProcessWatch", sMissionFile);
+  ProcessWatch.Run(sMOOSName.c_str(), sMissionFile.c_str());
   
   return(0);
 }
