@@ -44,7 +44,7 @@ std::string biteString(std::string&, char);
 std::string stripBlankEnds(const std::string&);
 std::string tolower(const std::string&);
 std::string toupper(const std::string&);
-std::string truncString(const std::string&, int, std::string="");
+std::string truncString(const std::string&, std::string::size_type, std::string="");
 std::string boolToString(bool);
 std::string intToString(int);
 std::string floatToString(float, int=5);
@@ -54,7 +54,7 @@ std::string compactConsecutive(const std::string&, char);
 std::string findReplace(const std::string&, char, char);
 std::string findReplace(const std::string&, const std::string&, 
 			 const std::string&);
-std::string padString(const std::string&, int, bool=true);
+std::string padString(const std::string&, std::string::size_type, bool=true);
 std::string stripComment(const std::string&, const std::string&);
 std::string stripQuotes(const std::string&);
 std::string doubleToHex(double);
