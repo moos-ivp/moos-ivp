@@ -24,6 +24,7 @@
 #include "MOOSLib.h"
 #include "MOOSGenLib.h"
 #include "HelmIvP.h"
+#include "MBUtils.h"
 
 using namespace std;
 
@@ -38,9 +39,11 @@ int main(int argc, char *argv[])
   case 2:
     sMissionFile = argv[1];
   }
-  
-  for(int i=2; i<argc; i++)
-    helmIvP.addBehaviorFile(argv[i]);
+
+  for(int i=2; i<argc; i++) {
+    if(strContains(argv[i], ".bhv"))
+      helmIvP.addBehaviorFile(argv[i]);
+  }
 
   helmIvP.Run(sMOOSName.c_str(), sMissionFile.c_str());
   
