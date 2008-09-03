@@ -38,15 +38,12 @@
 #endif // _MSC_VER > 1000
 
 #include <string>
+#include <cstring>
 #include <FL/fl_draw.H>
 #include <FLTKVW/Flv_Table.H>
 #include <FL/Fl_Menu_Window.H>
 #include "DBImage.h"
 #include <MOOSLIB/MOOSCommClient.h>
-
-
-
-
 
 // FLOATING TIP WINDOW
 
