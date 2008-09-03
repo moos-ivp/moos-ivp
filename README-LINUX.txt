@@ -27,15 +27,19 @@ we've listed some information on how it can be obtained.
 We're a little sketchy on which particular packages we need 
 for OpenGL support.  The following is our best guess:
 
-(1A) Regardless of your graphics card, you need: libglut-dev
+(1A) Regardless of your graphics card, you need: 
+   libglut-dev
 
 (1B) Then you also need basic 3D support within X-Windows on 
    your system.  To get it, you may need to install one of
    the following packages.  Which one you install depends on
    your video card:
 
-   nVidia-based card --> nvidia-glx-new, 
-       and maybe nvidia-glx-new-dev
+   nVidia-based card --> 
+      nvidia-glx-new 
+      nvidia-glx-new-dev
+      libsm-dev
+      libXext-dev
 
    ATI-based card (open-source driver) --> xorg-driver-fglrx,  
        and maybe xorg-driver-fglrx-dev
