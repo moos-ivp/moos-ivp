@@ -44,23 +44,26 @@ SET(MOOS_INCLUDE_DIRS
    )
 INCLUDE_DIRECTORIES(${MOOS_INCLUDE_DIRS})
 
-IF(CMAKE_COMPILER_IS_GNUCXX)
-    SET( WALL_ON OFF CACHE BOOL "tell me about all compiler warnings (-Wall) ")
-    IF(WALL_ON)
-	    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
-    ENDIF( WALL_ON)
-ELSE(CMAKE_COMPILER_IS_GNUCXX)
-    IF(MSVC)
-	    SET( WALL_ON OFF CACHE BOOL "tell me about all compiler warnings (-Wall) ")
-	    IF(WALL_ON)
-	        SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
-		ENDIF(WALL_ON)
-	ELSE(MSVC)
-        # Other compilers go here	
-	
-	ENDIF(MSVC)
-ENDIF(CMAKE_COMPILER_IS_GNUCXX)
-
+   #----------------------------------------------
+   # This was added by Andrew Shafer...
+   IF(CMAKE_COMPILER_IS_GNUCXX)
+      SET( WALL_ON OFF CACHE BOOL "tell me about all compiler warnings (-Wall) ")
+      IF(WALL_ON)
+               SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
+      ENDIF( WALL_ON)
+   ELSE(CMAKE_COMPILER_IS_GNUCXX)
+      IF(MSVC)
+               SET( WALL_ON OFF CACHE BOOL "tell me about all compiler warnings (-Wall) ")
+               IF(WALL_ON)
+                  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
+                  ENDIF(WALL_ON)
+         ELSE(MSVC)
+         # Other compilers go here	
+         
+         ENDIF(MSVC)
+   ENDIF(CMAKE_COMPILER_IS_GNUCXX)
+   #----------------------------------------------
+   
 #===============================================================================
 # BUILDING IvP...
 #===============================================================================
