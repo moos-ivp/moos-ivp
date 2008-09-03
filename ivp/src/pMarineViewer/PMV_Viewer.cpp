@@ -20,6 +20,7 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
+#include <iostream>
 #include "PMV_Viewer.h"
 #include "MBUtils.h"
 #include "ColorParse.h"
@@ -123,6 +124,7 @@ bool PMV_Viewer::setParam(string param, string value)
     handled = true;
   }
   else if((param == "ais_report") || (param == "ais_report_local")){
+    cout << "PMV_Viewer handling ais report" << endl;
     handled = m_vehiset.setParam(param, value);
     if(handled && m_centric_view && m_centric_view_sticky) {
       center_needs_adjusting = true;
@@ -247,12 +249,15 @@ void PMV_Viewer::drawPoints(CPList &cps)
   vector<double> xvect;
   vector<double> yvect;
 
-  int trail_gap = (int)(m_vehiset.getDoubleInfo("trail_gap"));
+  int trails_gap = (int)(m_vehiset.getDoubleInfo("trails_gap"));
+  if(trails_gap <= 0)
+    trails_gap = 1;
+
 
   list<ColoredPoint>::iterator p;
   int i=0;
   for(p=cps.begin(); p!=cps.end(); p++) {
-    if((i % trail_gap) == 0) {
+    if((i % trails_gap) == 0) {
       if(p->isValid()) {
 	xvect.push_back(p->m_x);
 	yvect.push_back(p->m_y);

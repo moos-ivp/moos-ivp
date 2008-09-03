@@ -6,6 +6,7 @@
 /*          (Broken out from the Viewer class(es)                */
 /*****************************************************************/
 
+#include <iostream>
 #include "VehicleSet.h"
 #include "MBUtils.h"
 #include "ColorParse.h"
@@ -24,20 +25,39 @@ VehicleSet::VehicleSet()
   m_history_size = 1000;
   m_curr_time    = 0;
 
-  setParam("m_vehicle_shape_scale", 0.1);
-  setParam("m_trails_point_size", 1);
-  setParam("m_trails_length", 100);
-  setParam("m_trails_gap", 1);
+#if 0
+  setParam("vehicle_shape_scale", 0.1);
+  setParam("trails_point_size", 1);
+  setParam("trails_length", 100);
+  setParam("trails_gap", 1);
 
-  setParam("m_trails_viewable", "true");
-  setParam("m_trails_connect_viewable", "false");
-  setParam("m_vehicles_viewable", "true");
-  setParam("m_vehicle_names_viewable", "false");
+  setParam("trails_viewable", "true");
+  setParam("trails_connect_viewable", "false");
+  setParam("vehicles_viewable", "true");
+  setParam("vehicle_names_viewable", "false");
 
-  setParam("m_trails_color", "white");
-  setParam("m_active_vehicle_color", "red");
-  setParam("m_inactive_vehicle_color", "yellow");
-  setParam("m_vehicle_name_color", "white");
+  setParam("trails_color", "white");
+  setParam("active_vehicle_color", "red");
+  setParam("inactive_vehicle_color", "yellow");
+  setParam("vehicle_name_color", "white");
+#endif
+
+#if 1
+  m_vehicle_shape_scale = 0.1;
+  m_trails_point_size = 1;
+  m_trails_length = 100;
+  m_trails_gap = 1;
+
+  m_trails_viewable = true;
+  m_trails_connect_viewable = false;
+  m_vehicles_viewable = true;
+  m_vehicle_names_viewable = false;
+
+  m_trails_color = colorParse("white");
+  m_active_vehicle_color = colorParse("red");
+  m_inactive_vehicle_color = colorParse("yellow");
+  m_vehicle_name_color = colorParse("white");
+#endif
 }
 
 
@@ -60,6 +80,7 @@ bool VehicleSet::setParam(string param, string value)
   bool makenote = true;
   param = tolower(param);
   if((param == "ais_report") || (param == "ais_report_local")) {
+    cout << "VehicleSet handling ais report" << endl;
     handled  = updateVehiclePosition(value);
     makenote = false;
   }

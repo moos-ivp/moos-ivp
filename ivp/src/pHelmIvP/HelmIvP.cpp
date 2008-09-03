@@ -105,6 +105,7 @@ void HelmIvP::cleanup()
 
 bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
 {
+  cout << "M" << endl; 
   // The curr_time is set in *both* the OnNewMail and Iterate functions.
   // In the OnNewMail function so the most up-to-date time is available
   // when processing mail.
@@ -174,6 +175,7 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
 
 bool HelmIvP::Iterate()
 {
+  cout << "I" << endl;
   postCharStatus();
 
   if(!m_has_control)
@@ -498,7 +500,9 @@ bool HelmIvP::updateInfoBuffer(CMOOSMsg &msg)
 bool HelmIvP::OnConnectToServer()
 {
   registerVariables();
+  cout << "Here 1" << endl;
   requestBehaviorLogging();
+  cout << "Here 2" << endl;
   return(true);
 }
 
@@ -525,6 +529,7 @@ void HelmIvP::registerVariables()
       m_Comms.Register(info_vars[j], 0.0);
     }
   }
+  cout << "Done registering. " << endl;
 }
 
 //------------------------------------------------------------
