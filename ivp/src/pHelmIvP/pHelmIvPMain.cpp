@@ -33,12 +33,10 @@ int main(int argc, char *argv[])
   HelmIvP helmIvP;
   
   string sMissionFile = "pHelmIvP.moos";
-  string sMOOSName = "pHelmIvP";
+  string sMOOSName    = "pHelmIvP";
 
-  switch(argc) {
-  case 2:
+  if(argc > 1) 
     sMissionFile = argv[1];
-  }
 
   for(int i=2; i<argc; i++) {
     if(strContains(argv[i], ".bhv"))
