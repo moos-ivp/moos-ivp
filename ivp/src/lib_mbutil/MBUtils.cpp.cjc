@@ -467,7 +467,7 @@ string dstringCompact(const string& str)
     else {
       if(buff[j] == '.')
 	buff[j] = '\0';
-      j = -1;
+      break;
     }
   }
 
