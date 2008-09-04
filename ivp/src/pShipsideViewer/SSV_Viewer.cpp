@@ -354,12 +354,14 @@ void SSV_Viewer::drawPoints(CPList &cps)
   vector<double> xvect;
   vector<double> yvect;
 
-  int trail_gap = (int)(m_vehiset.getDoubleInfo("active", "trail_gap"));
+  int trails_gap = (int)(m_vehiset.getDoubleInfo("active", "trails_gap"));
+  if(trails_gap < 1)
+    trails_gap = 1;
 
   list<ColoredPoint>::iterator p;
   int i=0;
   for(p=cps.begin(); p!=cps.end(); p++) {
-    if((i % trail_gap) == 0) {
+    if((i % trails_gap) == 0) {
       if(p->isValid()) {
 	xvect.push_back(p->m_x);
 	yvect.push_back(p->m_y);
@@ -368,8 +370,8 @@ void SSV_Viewer::drawPoints(CPList &cps)
     i++;
   }
 
-  vector<double> cvect = m_vehiset.getColor("trail_color");
-  double point_size = m_vehiset.getDoubleInfo("active", "trail_point_size");
+  vector<double> cvect = m_vehiset.getColor("trails_color");
+  double point_size = m_vehiset.getDoubleInfo("active", "trails_point_size");
   bool connections  = m_vehiset.isViewable("trails_connect");
 
   drawPointList(xvect, yvect, point_size, cvect, connections);
