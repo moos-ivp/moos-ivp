@@ -59,15 +59,15 @@ void PMV_Viewer::draw()
       bool   isactive = (vehiname == m_vehiset.getActiveVehicle());
       string vehibody = m_vehiset.getStringInfo(vehiname, "body");
       
-      // Next draw the vehicle shapes. If the vehicle index is the 
-      // one "active", draw it in a different color.
-      drawVehicle(vehiname, isactive, vehibody);
-      
       // Perhaps draw the history points for each vehicle.
       if(m_vehiset.isViewable("trails")) {
 	CPList point_list = m_vehiset.getVehiHist(vehiname);
 	drawPoints(point_list);
       }
+
+      // Next draw the vehicle shapes. If the vehicle index is the 
+      // one "active", draw it in a different color.
+      drawVehicle(vehiname, isactive, vehibody);
     }
   }
 

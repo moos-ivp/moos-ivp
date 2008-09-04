@@ -25,7 +25,6 @@ VehicleSet::VehicleSet()
   m_history_size = 1000;
   m_curr_time    = 0;
 
-#if 0
   setParam("vehicle_shape_scale", 0.1);
   setParam("trails_point_size", 1);
   setParam("trails_length", 100);
@@ -40,24 +39,6 @@ VehicleSet::VehicleSet()
   setParam("active_vehicle_color", "red");
   setParam("inactive_vehicle_color", "yellow");
   setParam("vehicle_name_color", "white");
-#endif
-
-#if 1
-  m_vehicle_shape_scale = 0.1;
-  m_trails_point_size = 1;
-  m_trails_length = 100;
-  m_trails_gap = 1;
-
-  m_trails_viewable = true;
-  m_trails_connect_viewable = false;
-  m_vehicles_viewable = true;
-  m_vehicle_names_viewable = false;
-
-  m_trails_color = colorParse("white");
-  m_active_vehicle_color = colorParse("red");
-  m_inactive_vehicle_color = colorParse("yellow");
-  m_vehicle_name_color = colorParse("white");
-#endif
 }
 
 

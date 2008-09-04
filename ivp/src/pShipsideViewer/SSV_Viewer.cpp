@@ -73,16 +73,16 @@ void SSV_Viewer::draw()
       string vehibody;
       bool   handled  = m_vehiset.getStringInfo(vehiname, "body", vehibody);
       
-      // Next draw the vehicle shapes. If the vehicle index is the 
-      // one "active", draw it in a different color.
-      if(handled)
-	drawVehicle(vehiname, isactive, vehibody);
-      
       // Perhaps draw the history points for each vehicle.
       if(m_vehiset.isViewable("trails")) {
 	CPList point_list = m_vehiset.getVehiHist(vehiname);
 	drawPoints(point_list);
       }
+      
+      // Next draw the vehicle shapes. If the vehicle index is the 
+      // one "active", draw it in a different color.
+      if(handled)
+	drawVehicle(vehiname, isactive, vehibody);
     }
   }
   mutexUnLock();
