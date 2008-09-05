@@ -144,7 +144,7 @@ IvPBehavior* BehaviorFactory::new_behavior(string name, IvPDomain domain) {
    }
 
    TFuncPtrCreateBehavior createFunc = creation_funcs[name];
-   IvPBehavior * pBehavior = createFunc(domain);
+   IvPBehavior * pBehavior = createFunc(name, domain);
 
    // We need to remember the deletion function for each instance, because it's
    // recommended here:  http://www.faqs.org/docs/Linux-mini/C++-dlopen.html

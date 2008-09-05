@@ -44,7 +44,7 @@ class BehaviorFactory {
       // a Behavior object.  Each shared library that implements a behavior
       // must have one of each of these functions, and they must be named
       // "create_behavior" and "delete_behavior", respectively...
-      typedef IvPBehavior * (*TFuncPtrCreateBehavior) (IvPDomain);
+      typedef IvPBehavior * (*TFuncPtrCreateBehavior) (std::string, IvPDomain);
 //       typedef void (*TFuncPtrDeleteBehavior) (IvPBehavior*);
 
       typedef std::map<std::string, TFuncPtrCreateBehavior> CreationFuncsMap;
