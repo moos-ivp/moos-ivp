@@ -65,8 +65,20 @@ void BehaviorFactory::load_directory(string dirname) {
      }
 
      const char *dlsym_error;
+
+     // Apparently ISO C++ doesnt' permit you to cast a (pointer to an object) 
+     // to (a pointer to a function).  And (at least) gcc 3.3 treads "void *" 
+     // as a pointer to an object.  To it gives a compiler error when we use
+     // "reinterpret_cast" in the statement below.  This problem seems absent
+     // from (at lesat) gcc 4.2.3 and later.  But, we still want older compilers
+     // to be able to build IvP, so we're going to use an old-style C cast to 
+     // side-step the compiler error. -CJC
+
+     // TFuncPtrCreateBehavior createFn = 
+     //   reinterpret_cast<TFuncPtrCreateBehavior>(dlsym(handle, "createBehavior"));
      TFuncPtrCreateBehavior createFn = 
-       reinterpret_cast<TFuncPtrCreateBehavior>(dlsym(handle, "createBehavior"));
+       (TFuncPtrCreateBehavior)(dlsym(handle, "createBehavior"));
+
      dlsym_error = dlerror();
      if (dlsym_error) {
          cerr << "Cannot load symbol 'createBehavior' from file " << fname << endl;
