@@ -49,6 +49,9 @@ protected:
   inline void cb_AltTrailGap_i(int);
   static void cb_AltTrailGap(Fl_Widget*, int);
 
+  inline void cb_AltTrailLength_i(int);
+  static void cb_AltTrailLength(Fl_Widget*, int);
+
   inline void cb_AltTrailSize_i(int);
   static void cb_AltTrailSize(Fl_Widget*, int);
 

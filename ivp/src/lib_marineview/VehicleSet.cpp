@@ -101,6 +101,13 @@ bool VehicleSet::setParam(string param, string value)
     else if(value == "smaller")
       handled = setParam("trails_point_size", m_trails_point_size*0.80);
   }
+  else if(param == "trails_length") {
+    makenote = false;
+    if(value == "longer")
+      handled = setParam("trails_length", m_trails_length*1.25);
+    else if(value == "shorter")
+      handled = setParam("trails_length", m_trails_length*0.80);
+  }
   else if(param == "vehicle_shape_scale") {
     makenote = false;
     if(value == "bigger")
@@ -182,6 +189,12 @@ bool VehicleSet::setParam(string param, double value)
   else if(param == "trails_point_size") {
     if(value >= 0) {
       m_trails_point_size = value;
+      handled = true;
+    }
+  }
+  else if(param == "trails_length") {
+    if(value >= 0) {
+      m_trails_length = value;
       handled = true;
     }
   }
