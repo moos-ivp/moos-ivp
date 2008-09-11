@@ -45,7 +45,7 @@ MarineVehiGUI::MarineVehiGUI(int g_w, int g_h, const char *g_l)
   mbar->add("Vehicles/VehicleNames/vehicle_names_viewable = true", 'n', (Fl_Callback*)MarineVehiGUI::cb_ToggleVName, 0, 0);
   mbar->add("Vehicles/VehicleNames/vehicle_names_viewable = false", 'n', (Fl_Callback*)MarineVehiGUI::cb_ToggleVName, 0, 0);
   mbar->add("Vehicles/VehicleNames/vehicle_names_viewable = toggle", 'n', (Fl_Callback*)MarineVehiGUI::cb_ToggleVName, 0, FL_MENU_DIVIDER);
-  mbar->add("Vehicles/VehicleNames/vehicle_name_color = toggle", FL_CTRL+'n', (Fl_Callback*)MarineVehiGUI::cb_ToggleVNameColor, 0, 0);
+  mbar->add("Vehicles/VehicleNames/vehicle_names_color = toggle", FL_CTRL+'n', (Fl_Callback*)MarineVehiGUI::cb_ToggleVNameColor, 0, 0);
 
   mbar->add("Vehicles/Trails/trails_viewable = true",    0, (Fl_Callback*)MarineVehiGUI::cb_AltTrails, (void*)1, 0);
   mbar->add("Vehicles/Trails/trails_viewable = false",   0, (Fl_Callback*)MarineVehiGUI::cb_AltTrails, (void*)0, 0);
@@ -123,7 +123,7 @@ void MarineVehiGUI::cb_AltTrailConnect(Fl_Widget* o, int v) {
 
 //----------------------------------------- ToggleVName
 inline void MarineVehiGUI::cb_ToggleVName_i() {
-  cmviewer->setParam("display_vname", "toggle");
+  cmviewer->setParam("vehicle_names_viewable", "toggle");
   cmviewer->redraw();
 }
 void MarineVehiGUI::cb_ToggleVName(Fl_Widget* o) {
@@ -132,7 +132,7 @@ void MarineVehiGUI::cb_ToggleVName(Fl_Widget* o) {
 
 //----------------------------------------- ToggleVNameColor
 inline void MarineVehiGUI::cb_ToggleVNameColor_i() {
-  cmviewer->setParam("vname_color", "toggle");
+  cmviewer->setParam("vehicle_names_color", "toggle");
   cmviewer->redraw();
 }
 void MarineVehiGUI::cb_ToggleVNameColor(Fl_Widget* o) {

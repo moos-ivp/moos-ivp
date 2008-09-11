@@ -160,7 +160,7 @@ bool VMarkerSet::setParam(const string& param, string value)
     }
   }
        
-  else if(param == "label_color") {
+  else if(param == "markers_label_color") {
     if(value == "toggle") {
       m_label_color_index++;
       if(m_label_color_index > 9)
@@ -316,7 +316,7 @@ vector<string> VMarkerSet::getParamReport() const
   svect.push_back("// Parameters for Marker Attributes");
 
   string val = dstringCompact(doubleToString(m_marker_scale_global));
-  svect.push_back("marker_scale_global = " + val);
+  svect.push_back("markers_scale_global = " + val);
 
   val = boolToString(m_markers_viewable);
   svect.push_back("markers_viewable = " + val);

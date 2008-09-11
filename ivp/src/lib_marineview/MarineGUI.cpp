@@ -379,11 +379,11 @@ inline void MarineGUI::cb_MG_SetGeoAttr_i(int v) {
   else if(v==448) cmviewer->setParam("datum_size_add", "smaller");
   else if(v==449) cmviewer->setParam("datum_size_add", "bigger");
 
-  else if(v==2000) cmviewer->setParam("marker_scale_global", "reset");
-  else if(v==2001) cmviewer->setParam("marker_scale_global", "smaller");
-  else if(v==2002) cmviewer->setParam("marker_scale_global", "bigger");
-  else if(v==2020) cmviewer->setParam("marker_labels_viewable", "toggle");
-  else if(v==2030) cmviewer->setParam("marker_label_color", "toggle");
+  else if(v==2000) cmviewer->setParam("markers_scale_global", "reset");
+  else if(v==2001) cmviewer->setParam("markers_scale_global", "smaller");
+  else if(v==2002) cmviewer->setParam("markers_scale_global", "bigger");
+  else if(v==2020) cmviewer->setParam("markers_labels_viewable", "toggle");
+  else if(v==2030) cmviewer->setParam("markers_label_color", "toggle");
   else if(v==2050) cmviewer->setParam("markers_viewable", "toggle");
 
   else if(v==2100) cmviewer->setParam("op_area_config", "reset");

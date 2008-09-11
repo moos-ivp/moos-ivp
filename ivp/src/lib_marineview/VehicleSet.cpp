@@ -38,7 +38,7 @@ VehicleSet::VehicleSet()
   setParam("trails_color", "white");
   setParam("active_vehicle_color", "red");
   setParam("inactive_vehicle_color", "yellow");
-  setParam("vehicle_name_color", "white");
+  setParam("vehicle_names_color", "white");
 }
 
 
@@ -73,7 +73,7 @@ bool VehicleSet::setParam(string param, string value)
     m_inactive_vehicle_color = colorParse(value);
     handled = true;
   }
-  else if((param == "vehicle_name_color") && isColor(value)) {
+  else if((param == "vehicle_names_color") && isColor(value)) {
     m_vehicle_name_color = colorParse(value);
     handled = true;
   }
@@ -88,7 +88,7 @@ bool VehicleSet::setParam(string param, string value)
   }
   else if(param == "vehicles_viewable")
     handled = setBooleanOnString(m_vehicles_viewable, value);
-  else if(param == "vnames_viewable")
+  else if(param == "vehicle_names_viewable")
     handled = setBooleanOnString(m_vehicle_names_viewable, value);
   else if(param == "trails_viewable")
     handled = setBooleanOnString(m_trails_viewable, value);
@@ -193,7 +193,7 @@ bool VehicleSet::setParam(string param, double value)
   }
 
   if(handled && makenote)
-    m_param_report[param] = value;
+    m_param_report[param] = dstringCompact(doubleToString(value));
 
   return(handled);
 }

@@ -636,9 +636,9 @@ void MarineViewer::drawCommonVehicle(const string& vname,
 
   if(vname_draw) {
     glColor3f(vname_color[0], vname_color[1], vname_color[2]);
-    gl_font(1, 12);
+    gl_font(1, 10);
     if(m_zoom > 4)
-      gl_font(1, 14);
+      gl_font(1, 12);
     double offset = 100.0;
     offset = offset * (1/m_zoom);
 
@@ -748,9 +748,9 @@ void MarineViewer::drawCommonMarker(double x, double y, double shape_scale,
 
   if(label != "") {
     glColor3f(label_color[0], label_color[1], label_color[2]);
-    gl_font(1, 12);
+    gl_font(1, 10);
     if(m_zoom > 4)
-      gl_font(1, 14);
+      gl_font(1, 12);
     double offset = 5.0;
     offset = offset * (1/m_zoom);
 
@@ -875,7 +875,7 @@ void MarineViewer::drawOpArea()
 
     if(m_op_area.viewable("labels")) {
       glColor3f(lcolor[0], lcolor[1], lcolor[2]);
-      gl_font(1, 12);
+      gl_font(1, 10);
       for(int k=0; k<vsize; k++) {
 	int slen = labels[k].length();
 	char *buff = new char[slen+1];
@@ -1084,7 +1084,7 @@ void MarineViewer::drawPolygon(const XYPolygon& poly,
     glTranslatef(cx, cy, 0);
     
     glColor3f(labl_c[0], labl_c[1], labl_c[2]);
-    gl_font(1, 12);
+    gl_font(1, 10);
     string plabel = poly.get_label();
     int slen = plabel.length();
     char *buff = new char[slen+1];
@@ -1107,7 +1107,7 @@ void MarineViewer::drawPolygon(const XYPolygon& poly,
       double cy = points[(j*2)+1];
       
       glColor3f(edge_c[0], edge_c[1], edge_c[2]);
-      gl_font(1, 12);
+      gl_font(1, 10);
       
       string vlabel = intToString(j);
       int slen = vlabel.length();
