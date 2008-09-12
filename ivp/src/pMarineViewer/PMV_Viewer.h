@@ -48,7 +48,7 @@ class PMV_Viewer : public MarineViewer
  private:
   void   setWeightedCenterView();
   void   drawVehicle(std::string, bool, std::string);
-  void   drawPoints(CPList&);
+  void   drawPoints(CPList&, int=0);
   void   handleLeftMouse(int, int);
   void   handleRightMouse(int, int);
 

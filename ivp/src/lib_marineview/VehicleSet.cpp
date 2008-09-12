@@ -259,6 +259,8 @@ bool VehicleSet::getDoubleInfo(const string& g_vname,
     result = m_curr_time;
   else if(info_type == "trails_point_size")
     result = m_trails_point_size;
+  else if(info_type == "trails_length")
+    result = m_trails_length;
   else if(info_type == "trails_gap")
     result = m_trails_gap;
   else if(info_type == "vehicle_shape_scale")

@@ -278,6 +278,123 @@ XYPolygon stringPairsToEllipsePoly(string str)
 
 
 
+
+//---------------------------------------------------------------
+// Procedure: stringPairsToWedgePoly
+//
+/// Initializes a polygon that approximates an wedge
+/// Format of the string is "type=wedge, x=val, y=val, lang=val, 
+//  rang=val, pts=val, range=val, snap_value=val, label=val"
+
+XYPolygon stringPairsToWedgePoly(string str)
+{
+  XYPolygon null_poly;
+
+  str = tolower(stripBlankEnds(str));
+  vector<string> mvector = parseString(str, ',');
+  int vsize = mvector.size();
+
+  // Below are the mandatory parameters - check they are set.
+  bool xpos_set  = false;
+  bool ypos_set  = false;
+  bool lang_set  = false;
+  bool rang_set  = false;
+  bool range_set = false;
+
+  double xpos, ypos, lang, rang, range, snap=0;
+  string label;
+  int    pts=0;
+  
+  for(int i=0; i<vsize; i++) {
+    vector<string> svector = parseString(mvector[i], '=');
+    if(svector.size() != 2)
+      return(null_poly);
+    string param = stripBlankEnds(svector[0]);
+    string value = stripBlankEnds(svector[1]);
+    if(param == "type") {
+      if(value != "wedge")
+	return(null_poly);
+    }
+    else if((param == "x") && (isNumber(value))) {
+      xpos_set = true;
+      xpos = atof(value.c_str());
+    }
+    else if((param == "y") && (isNumber(value))) {
+      ypos_set = true;
+      ypos = atof(value.c_str());
+    }
+    else if((param == "lang") && (isNumber(value))) {
+      lang_set = true;
+      lang = atof(value.c_str());
+    }
+    else if((param == "rang") && (isNumber(value))) {
+      rang_set = true;
+      rang = atof(value.c_str());
+    }
+    else if((param == "range") && (isNumber(value))) {
+      range_set = true;
+      range = atof(value.c_str());
+    }
+    else if((param == "pts") && (isNumber(value))) {
+      int ival = atoi(value.c_str());
+      if(ival >= 0)
+	pts = ival;
+    }
+    else if((param == "snap") && (isNumber(value))) {
+      double dval = atof(value.c_str());
+      if(dval >= 0)
+	snap = dval;
+    }
+    else if(param == "label") {
+      label = value;
+    }
+  }
+
+  if(!xpos_set || !ypos_set || !lang_set || !rang_set || !rang_set)
+    return(null_poly);
+
+  lang = angle360(lang);
+  rang = angle360(rang);
+  if(rang < lang)
+    rang += 360;
+
+  double delta = 0;
+  if(rang > lang)
+    delta = (rang - lang) / ((double)(pts));
+
+  XYPolygon new_poly;
+  new_poly.add_vertex(xpos, ypos);
+
+  double ptx, pty;
+  projectPoint(lang, range, xpos, ypos, ptx, pty);
+  new_poly.add_vertex(ptx, pty);
+
+  double project_angle = lang;
+  while(project_angle < rang) {
+    project_angle += delta;
+    if(project_angle > rang)
+      project_angle = rang;
+    projectPoint(project_angle, range, xpos, ypos, ptx, pty);
+    new_poly.add_vertex(ptx, pty);
+  }
+  
+  // Make a call to determine_convexity here because convexity 
+  // determinations are not made when adding vertices above.
+  // The convexity determination needs to be done before applying
+  // the snap value since a snap is rejected if it creates a non-
+  // convex poly from a previously determined convex poly. 
+  new_poly.determine_convexity();
+  if(snap>=0)
+    new_poly.apply_snap(snap);
+  new_poly.set_label(label);
+
+  if(new_poly.is_convex())
+    return(new_poly);
+  else
+    return(null_poly);
+}
+
+
 //---------------------------------------------------------------
 // Procedure: stringPairsToPylonPoly
 //

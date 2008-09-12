@@ -62,7 +62,8 @@ void PMV_Viewer::draw()
       // Perhaps draw the history points for each vehicle.
       if(m_vehiset.isViewable("trails")) {
 	CPList point_list = m_vehiset.getVehiHist(vehiname);
-	drawPoints(point_list);
+	int trails_length = (int)(m_vehiset.getDoubleInfo("trails_length"));
+	drawPoints(point_list, trails_length);
       }
 
       // Next draw the vehicle shapes. If the vehicle index is the 
@@ -241,7 +242,7 @@ void PMV_Viewer::drawVehicle(string vname, bool active, string vehibody)
 //        PRIVATE class function called only by a function which 
 //        is using its own mutex.
 
-void PMV_Viewer::drawPoints(CPList &cps)
+void PMV_Viewer::drawPoints(CPList &cps, int trail_length)
 {
   if(!m_vehiset.isViewable("trails"))
     return;
@@ -254,9 +255,9 @@ void PMV_Viewer::drawPoints(CPList &cps)
     trails_gap = 1;
 
 
-  list<ColoredPoint>::iterator p;
+  list<ColoredPoint>::reverse_iterator p;
   int i=0;
-  for(p=cps.begin(); p!=cps.end(); p++) {
+  for(p=cps.rbegin(); (p!=cps.rend() && (i<trail_length)); p++) {
     if((i % trails_gap) == 0) {
       if(p->isValid()) {
 	xvect.push_back(p->m_x);
