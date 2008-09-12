@@ -1,0 +1,2 @@
+
+poly = wedge:x=100, y=-100, lang=345, rang=135, pts=100, range=200, snap_value=1.0, label=wedge-111
