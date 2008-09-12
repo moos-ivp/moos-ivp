@@ -20,7 +20,6 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
  
-#include <iostream>
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
@@ -126,6 +125,10 @@ XYPolygon stringToPoly(string str)
   else if(!strncasecmp("radial:", str.c_str(), 7)) {
     str = str.c_str()+7;
     return(stringShortToRadialPoly(str));
+  }
+  else if(!strncasecmp("wedge:", str.c_str(), 6)) {
+    str = str.c_str()+6;
+    return(stringPairsToWedgePoly(str));
   }
   else if(!strncasecmp("ellipse::", str.c_str(), 9)) {
     str = str.c_str()+9;
@@ -350,7 +353,7 @@ XYPolygon stringPairsToWedgePoly(string str)
     }
   }
 
-  if(!xpos_set || !ypos_set || !lang_set || !rang_set || !rang_set)
+  if(!xpos_set || !ypos_set || !lang_set || !rang_set || !range_set)
     return(null_poly);
 
   lang = angle360(lang);

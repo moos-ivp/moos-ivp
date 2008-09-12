@@ -500,9 +500,7 @@ bool HelmIvP::updateInfoBuffer(CMOOSMsg &msg)
 bool HelmIvP::OnConnectToServer()
 {
   registerVariables();
-  cout << "Here 1" << endl;
   requestBehaviorLogging();
-  cout << "Here 2" << endl;
   return(true);
 }
 
