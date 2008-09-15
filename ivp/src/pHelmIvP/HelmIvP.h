@@ -69,6 +69,8 @@ protected:
   IvPDomain     m_ivp_domain;
   BehaviorSet*  m_bhv_set;
   std::string   m_verbose;
+  std::string   m_refresh_var;
+  double        m_max_refresh;
   int           m_iteration;
   double        m_ok_skew;
   bool          m_skews_matter;

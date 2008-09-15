@@ -68,6 +68,8 @@ HelmIvP::HelmIvP()
   m_ok_skew       = 360; 
   m_skews_matter  = true;
   m_warning_count = 0;
+  m_refresh_var   = "HELM_REFRESH";
+  m_max_refresh   = 10.0;
 }
 
 //--------------------------------------------------------------------
@@ -105,7 +107,6 @@ void HelmIvP::cleanup()
 
 bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
 {
-  cout << "M" << endl; 
   // The curr_time is set in *both* the OnNewMail and Iterate functions.
   // In the OnNewMail function so the most up-to-date time is available
   // when processing mail.
@@ -175,7 +176,6 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
 
 bool HelmIvP::Iterate()
 {
-  cout << "I" << endl;
   postCharStatus();
 
   if(!m_has_control)
@@ -518,6 +518,7 @@ void HelmIvP::registerVariables()
   m_Comms.Register("NAV_HEADING", 0);
   m_Comms.Register("NAV_PITCH", 0);
   m_Comms.Register("NAV_DEPTH", 0);
+  m_Comms.Register(m_refresh_var, 0);
 
   if(m_bhv_set) {
     vector<string> info_vars = m_bhv_set->getInfoVars();
@@ -527,7 +528,6 @@ void HelmIvP::registerVariables()
       m_Comms.Register(info_vars[j], 0.0);
     }
   }
-  cout << "Done registering. " << endl;
 }
 
 //------------------------------------------------------------
