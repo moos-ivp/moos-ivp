@@ -95,7 +95,7 @@ class XMS : public CMOOSApp
   bool   m_display_empty_strings;
   
   bool   m_ignore_vars;
-  double m_db_uptime;
+  double m_db_start_time;
   
   std::string m_filter;
   

@@ -56,12 +56,14 @@ protected:
   void registerVariables();
   void registerNewVariables();
   void requestBehaviorLogging();
+  void refreshDetectionBuffers(double);
 
   bool detectChangeOnKey(const std::string& key, 
 			 const std::string& sval);
   bool detectChangeOnKey(const std::string& key, 
 			 double dval);
-
+  
+  
 protected:
   InfoBuffer*   m_info_buffer;
   bool          m_has_control;
@@ -69,8 +71,12 @@ protected:
   IvPDomain     m_ivp_domain;
   BehaviorSet*  m_bhv_set;
   std::string   m_verbose;
+
   std::string   m_refresh_var;
-  double        m_max_refresh;
+  bool          m_refresh_pending;
+  double        m_refresh_time;
+  double        m_refresh_interval;
+  
   int           m_iteration;
   double        m_ok_skew;
   bool          m_skews_matter;

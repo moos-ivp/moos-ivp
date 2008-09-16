@@ -68,8 +68,11 @@ HelmIvP::HelmIvP()
   m_ok_skew       = 360; 
   m_skews_matter  = true;
   m_warning_count = 0;
-  m_refresh_var   = "HELM_REFRESH";
-  m_max_refresh   = 10.0;
+
+  m_refresh_var      = "HELM_REFRESH";
+  m_refresh_interval = 10.0;
+  m_refresh_pending  = false;
+  m_refresh_time     = 0;
 }
 
 //--------------------------------------------------------------------
@@ -156,6 +159,9 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
 	MOOSTrace("\n");
 	MOOSDebugWrite("pHelmIvP Has Been Re-Started");
       }
+      else if(msg.m_sKey == m_refresh_var) {
+	m_refresh_pending = true;
+      }
       else
 	updateInfoBuffer(msg);
     }
@@ -203,6 +209,13 @@ bool HelmIvP::Iterate()
       MOOSTrace("%s\n", svector[i].c_str());
   }
   
+  if(m_refresh_pending && ((curr_time-m_refresh_time) > m_refresh_interval)) {
+    m_outgoing_strings.clear();
+    m_outgoing_doubles.clear();
+    m_refresh_time = curr_time;
+    m_refresh_pending = false;
+  }
+
   registerNewVariables();
   postBehaviorMessages();
   postDefaultVariables();
