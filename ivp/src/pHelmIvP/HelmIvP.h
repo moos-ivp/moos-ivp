@@ -72,6 +72,13 @@ protected:
   BehaviorSet*  m_bhv_set;
   std::string   m_verbose;
 
+  // The refresh vars handle the occasional clearing of the m_outgoing
+  // maps. These maps will be cleared when MOOS mail is received for the
+  // variable given by m_refresh_var. The user can set minimum interval
+  // between refreshes so the helm retains some control over refresh rate.
+  // Motivated by the need for a viewer handling geometric postings from
+  // behaviors. The new arrival of a viewer into the MOOS community can 
+  // request a refresh and then get new geometry mail to process.
   std::string   m_refresh_var;
   bool          m_refresh_pending;
   double        m_refresh_time;

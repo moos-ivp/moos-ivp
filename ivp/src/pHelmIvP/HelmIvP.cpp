@@ -69,6 +69,13 @@ HelmIvP::HelmIvP()
   m_skews_matter  = true;
   m_warning_count = 0;
 
+  // The refresh vars handle the occasional clearing of the m_outgoing
+  // maps. These maps will be cleared when MOOS mail is received for the
+  // variable given by m_refresh_var. The user can set minimum interval
+  // between refreshes so the helm retains some control over refresh rate.
+  // Motivated by the need for a viewer handling geometric postings from
+  // behaviors. The new arrival of a viewer into the MOOS community can 
+  // request a refresh and then get new geometry mail to process.
   m_refresh_var      = "HELM_REFRESH";
   m_refresh_interval = 10.0;
   m_refresh_pending  = false;
@@ -209,6 +216,9 @@ bool HelmIvP::Iterate()
       MOOSTrace("%s\n", svector[i].c_str());
   }
   
+  // Check if refresh conditions are met - potentiall clear outgoing maps.
+  // This will result in all behavior postings being posted to the MOOSDB
+  // on the current iteration.
   if(m_refresh_pending && ((curr_time-m_refresh_time) > m_refresh_interval)) {
     m_outgoing_strings.clear();
     m_outgoing_doubles.clear();
