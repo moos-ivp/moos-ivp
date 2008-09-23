@@ -1,0 +1,341 @@
+
+
+\documentclass[a4paper,10pt]{article}
+\usepackage{listings,color,epsfig,amsmath,url}
+\definecolor{codecolor}{rgb}{0.99,0.97,0.94} % color values Red, Green, Blue
+\definecolor{commentcolor}{rgb}{0.1,0.5,0.1} % color values Red, Green, Blue
+\definecolor{stringcolor}{rgb}{0.3,0.1,0.1} % color values Red, Green, Blue
+\newcommand{\Code}[1]{\texttt{#1} }
+\newcommand{\code}[1]{\Code{#1} }
+\newcommand{\DB}   {\code{{MOOSDB}}}
+\newcommand{\MA}   {\code{{MOOSApp}}}
+\newcommand{\Ignore}[1]   {}
+
+
+
+% Title Page
+\title{Under the Hood of the MOOS Communications API}
+\author{Paul Newman}
+
+
+\begin{document}
+\maketitle
+
+\begin{center}
+\epsfig{file=images/moose6.eps,width = 0.2\linewidth}
+\end{center}
+\begin{abstract}
+This document will  give you all the gory details about the mechanisms and protocols
+lying at the heart of the MOOS Communications API. The casual or novice user need not worry about many of these details
+in the first instance.
+\end{abstract}
+
+
+\section{Introduction}
+
+Much of the text that follows is taken from the original ``MOOS document;;
+found on the project website. I have carved this section out as I think it stands alone
+as a description of the low level how and why of the MOOS communications architecture.
+
+
+\subsection{Topology}\label{Sec:Topology}
+MOOS has a star-like topology. Each application within a MOOS
+community ( a \MA) has a connection to a single ``MOOS Database''
+(called \DB) that lies at the heart of the software suite. All
+communication happens via this central ``server'' application. The
+network has the following properties:
+\begin{itemize}
+\item No Peer to Peer communication.
+\item All communication  between the client and server is instigated by the
+client. (ie the \DB {\textbf{never}} makes a unsolicited attempt
+to contact a \MA.)
+\item Each client has a unique name.
+\item A given client need have no knowledge of what other clients exist.
+\item A client has no way of transmitting data to a given client -
+it can only be sent to  the \DB.
+\item The network can be distributed over any number of machines
+running any combination of supported operating systems.
+\end{itemize}
+This centralized topology is obviously vulnerable to
+``bottle-necking'' at the server regardless of how well written
+the server is. However the advantages of such a design are perhaps
+greater than its disadvantages. Firstly the network remains simple
+regardless of the number of participating clients. The server has
+complete knowledge of all active connections and can take
+responsibility for the allocation of communication resources. The
+clients operate independently  with inter-connections. This
+prevents rogue clients (badly written or hung) from directly
+interfering with other clients.
+
+\begin{figure}[ht!]
+\centering  \epsfig{figure=./images/Topology.eps,width=0.4\linewidth}
+\caption{MOOS binds applications into a network with a star-shaped
+topology. Each client has a single communications channel to a
+server (\DB).} \label{fig:Topology}
+\end{figure}
+
+\section{MOOS Communities (and multiples
+of)}\label{sec:Communities}
+
+Post 2002 releases of MOOS have included explicit support
+for multiple communities. The idea is that is is sometimes
+advantageous to have groups of processes (bound together by mutual
+connection to a MOOSDB hub) communicating with each other. To this
+end, MOOSMsg's have been extended to included a ``Source
+Community'' field which names the community from whence the
+message came.
+
+Under the ``one mission one mission file'' paradigm all processes
+running  in a community read from the same mission file (see the Programming with MOOS Document and also the Architecture document for more on this paradigm). The community name is specified by
+the line \code{Community = <Name> } at the top of the mission
+file. \footnote{Perhaps near the \code{ServerPort=} and
+\code{ServerHost=} global definitions.}
+
+The question remains --- how does this information get used? Well,
+when the MOOSDB serving each community starts up (see Section
+\ref{sec:DB}) the community name will be read and all messages
+sent from the DB will be tagged with this community name (see
+Section \ref{sec:Content}. However this tagging only happens if
+the data content originated from the \DB's own local community
+--- if it did not (i.e. it came from another community) then the
+community name of the orginating community is preserved. To
+understand how data from an external community could appear in one
+particular \DB see the document on \code{MOOSBridge} for more information.
+
+\section{Message Content}\label{sec:Content}
+The communications API in MOOS allows data to be transmitted
+between \DB and a client. The meaning of that data is dependent on
+the role of the client. However the form of that data is
+constrained by MOOS. Somewhat unusually MOOS only allows for data
+to be sent in string or double form. Data is packed into messages
+(CMOOSMsg class) which contains other salient information shown in
+Table \ref{tab:MOOSMsg}.
+\begin{table*}
+\centering
+\begin{tabular}{l|l}\hline
+  % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+  {\textbf{Variable}} & {\textbf{Meaning}} \\ \hline
+  Name  & The name of the data \\
+  String Val & Data in string format \\
+  Double Val & Numeric double float data \\
+  Source & Name of client that sent this data to the \DB \\
+  Time & Time at which the data was written \\
+  Data Type & Type of data (STRING or DOUBLE)  \\
+  Message Type & Type of Message (usually NOTIFICATION) \\
+  Source Community & The community to which the source process
+belongs---see Sec \ref{sec:Communities}\\\hline
+\end{tabular}\vspace{7mm}
+  \caption{Contents of MOOS Message}\label{tab:MOOSMsg}
+\end{table*}
+The fact that data is commonly sent in string format is often seen
+as a strange and inefficient aspect of MOOS. For example the
+string \verb"Type=EST,Name=AUV,Pos=[3x1]{3.4,6.3,-0.23}" might
+describe the position estimate of a vehicle called ``AUV'' as a
+3x1 column vector\footnote{Typically string data in MOOS is a
+concatenation of comma separated "name = value" pairs.}. It is
+true that using custom binary data formats does decrease the
+number of bytes sent. However binary data is unreadable to humans
+and requires structure declarations to decode it and header file
+dependencies are to be avoided where possible. The communications
+efficiency argument is not as compelling as one may initially
+think. The CPU cost invoked in sending a TCP/IP packet is largely
+independent of size up to about one thousand bytes. So it is as
+costly to send two bytes as it is one thousand. In this light
+there is basically no penalty in using strings. There is however a
+additional cost incurred in parsing string data which is far in
+excess of that incurred when simply casting binary data.
+Irrespective of this, experience has shown that the benefits of
+using strings far outweighs the difficulties. In particular:
+\begin{itemize}
+\item Strings are human readable - debugging is trivial especially
+using a tool like MOOSScope. (see the document on Graphical Tools for more on MOOSScope (\code{uMS}) )
+\item All data becomes the same type
+\item Logging files are human readable (they can be compressed for
+storage).
+\item Replaying a log file is simply a case of reading strings from
+a file and ``throwing'' them back at the \DB in time order.
+\item The contents and internal order of strings transmitted by an application can be changed
+without the need to recompile consumers (subscribers to that data)
+- users simply would not understand new data fields but they would
+not crash.
+\end{itemize}
+Of course, scalar data need not be transmitted in string format -
+for example the depth of a sub-sea vehicle. In this case the data
+would be sent while setting the data type to  \verb"MOOS_DOUBLE"
+and writing the numeric value in the double data field of the
+message.
+
+\section{Threading and Process Models}
+The choice of processes over threads was made on two counts,
+firstly that of stability - a rogue process cannot corrupt the
+program/data space of another process (in a sane OS that is).
+Secondly on the basis of swift and pain-free development by
+several programmers with diverse backgrounds. Building a single
+monolithic executable by several people requires, at a minimum,
+adherence to programming guidelines and styles that may not be
+native to all those included - especially in an academic
+environment. The use of small-footprint, independent processes
+implies developers can use whatever means they see fit to
+accomplish the job. Linking with the communications library
+integrates them seamlessly with all other processes but denies a
+process the means of interfering with others.
+
+
+
+\section{Communications API Mechanics}
+%%%%%%%%%%%%%%%% FIGURE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure*}[ht!]
+\centering \epsfig{figure = ./images/Comms.eps,width = 1.0\linewidth}
+\caption{The mechanics of the client server interaction in MOOS.
+The user code calls the \code{Notify} method to transmit data.
+This method simply adds a message to the ``outbox''. Some time
+later (1) the communications thread calls into the database. When
+the database is not busy it accepts the client's call (2). The
+client then packs the entire outbox into a single large
+transmission which is sent to and read by the server (3). The
+server unpacks the packet into its constituent messages and place
+copies (according to subscriptions and timing ) in the mailboxes
+of other connected clients. The server then compresses the mailbox
+of the current client into a packet and sends it back to the
+client (4). At this point the transaction is then complete and the
+server terminates the conversation and looks to begin the same
+process with a different client. Upon receiving the reply packet
+the client communications thread unpacks it and places the
+resulting messages in the ``inbox'' of the client. The user code
+can retrieve this list of messages at {\it{any time}} by calling
+the \code{Fetch} method.}
+\end{figure*}
+
+Each client has a connection to the DB. This connection is made on
+the client side by instantiating a class provided in the core
+\code{MOOSLIB} library called \code{CMOOSCommClient}. This class
+manages a private thread that coordinates the communication with
+the \DB. The \code{CMOOSCommClient} object completely hides the
+intricacies and timings of the communications from the rest of the
+application and provides a small, well defined set of methods to
+handle data transfer. Using the \code{CMOOSCommClient} each
+application can:
+\begin{enumerate}
+\item Publish data - issue a notification on named data.
+\item Register for notifications on named data.
+\item Collect notifications on named  data.
+\end{enumerate}
+
+\subsection{Publishing Data - notification} Assume as a result of
+ some computation or input, a process \code{A} has a result that
+is likely to be of use other undisclosed (remember MOOS
+applications do not know about each other) processes \code{B} and
+\code{C} - for example a position estimate. The simplest way in
+which \code{A} can transmit its new data is to simply call the
+\code{Notify} method on its local \code{CMOOSCommClient} object
+specifying the data, its name and the time at which it is valid.
+Behind the scenes this method then creates a suitable
+\code{CMOOSMsg} filling in the relevant fields. The action of
+publishing data in this way should be viewed as a
+{\emph{notification}} on a named data variable. Crucially this
+does not imply a change in the {\emph{value}} - the outcome of the
+computations resulting in the need to publish data may remain not
+change . For example two sequential estimates of location of a
+vehicle may remain numerically the same but the {\it{time}} at
+which they are valid changes - this constitutes a data
+notification.
+
+As far as the application-specific code in \code{A} is concerned
+the invocation of the \code{Notify} method results in the data
+being sent to the \DB. What is really happening however is that
+the \code{CMOOSCommClient} object is placing the data in an
+``outbox''  of \code{CMOOSMsg}s that need to be sent to the \DB at
+the next available opportunity. The next obvious question is
+``when does the  data reach the \DB?''. The \code{CMOOSCommClient}
+object thread has a ``Comms Tick'' - essentially a timer that
+contacts the \DB at a configurable rate (typically 10Hz but up to
+50Hz ). All the messages in the outbox are packed into a single
+packet or ``super message'' called a \code{CMOOSPkt}. Eventually
+the \DB will accept the incoming call from the client \code{A} and
+receive the packet. At this point the data flow is reversed and
+the \DB replies with another \code{CMOOSPkt} containing
+notifications (issued by other processes like \code{B} and
+\code{C}) that are relevant to  \code{A}. How a process declares
+what constitutes a relevant notification is discussed in section
+\ref{sec:Registration}. If at the time the thread calls into the
+\DB the outbox is empty (i.e there is nothing to notify) a NULL
+message is created and sent. Similarly the \DB my reply with a
+\code{CMOOSPkt} containing only a NULL message if  nothing of
+interest to the client has happened since its last call in. This
+policy preserves the strict symmetry of ``one packet sent, one
+packet received'' for all occasions.
+
+
+\subsection{Registration}\label{sec:Registration} Assume that a
+list of names of data published has been provided by the author of
+a particular MOOS application. For example, a application that
+interfaces to a GPS sensor may publish data called \code{GPS\_X}
+and \code{GPS\_Y}. A different application may register its
+interest in this data by {\it{subscribing }} or {\it{registering}}
+for it. An application can register for  notifications using a
+single method \code{Register} specifying both the name of the data
+and the maximum rate at which the client would like to be informed
+that the data has been changed. The latter parameter is specified
+in terms of the minimum possible time between notifications for a
+named variable. For example setting it to zero would result in the
+client receiving in the \code{CMOOSPkt} (that is the \DB's reply)
+a collection of messages describing each and every change
+notification issued on that variable.
+
+\subsection{Collecting Notifications}\label{sec:CollectingNotifications}
+At any time the owner of a \code{CMOOSCommClient} object can
+enquire whether it has received any new notifications from the \DB
+by invoking the \code{Fetch} method. The function fills in a list
+of notification \code{CMOOSMsg}s describing what has changed, what
+client made the change, when it was done and what the data type is
+(see table \ref{tab:MOOSMsg} in section \ref{sec:Content}). Note
+that a single call to \code{Fetch} may result in being presented
+with several notifications corresponding to the same named data.
+This implies that several changes were made to the data since the
+last client-server conversation. However, the time difference
+between these similar messages will never be less than that
+specified in the \code{Register} function described in section
+\ref{sec:Registration}.
+
+
+\section{The MOOSDB}\label{sec:DB}
+The \DB is the heart of the system. It serves as the hub through
+which all communication occurs. It is tempting to think of the \DB
+as simply a blackboard - an entity which stores the current state
+(represented by values of named variables) of the system.
+Typically a blackboard allows clients shared access to a
+centralized repository of information. Although the \DB does
+maintain the most recently set value of all variables and in that
+way is similar to a blackboard, the way in which data is retrieved
+is very different. The \DB records, on  behalf of its connected
+clients, the {\it{history}} of changes to data. Assume a client
+\code{A} has subscribed to variables called \code{p} and \code{q}
+with a minimum notification period of $\tau_{p}$ and  $\tau_{q}$
+seconds respectively. The time is now $t$ and the last call-in was
+at time $t'$,$\Delta = t-t'$ seconds ago. When \code{A} calls in,
+it is not simply presented with the most recent values of \code{p}
+and \code{q} but rather all the {\it{changes}} that have occurred
+to them between $t'$ and $t'$. Imagine that some other process
+\code{B} is publishing changes (value and/or time-stamp) to $p$
+and $q$ every $\tau_B$ seconds. The call in will result in $n_p$
+and $n_q$ notification messages being returned to the client where
+\begin{align*}
+n_p &= \begin{cases}
+    floor(\frac{\Delta}{\tau_{p}}) & \text{$\tau_{p} \geq \tau_B$}, \\
+    floor(\frac{\Delta}{\tau_{B}}) & \text{otherwise}.
+  \end{cases}\\
+n_q &= \begin{cases}
+    floor(\frac{\Delta}{\tau_{q}}) & \text{$\tau_{q} \geq \tau_B$}, \\
+    floor(\frac{\Delta}{\tau_{B}}) & \text{otherwise}.
+  \end{cases}
+\end{align*}
+
+If no clients have issued relevant notifications since $t'$ then
+there will be no notification messages stored at the \DB for
+collection by the client. The only exception to this rule is the
+first time a client calls in after registering for a notification
+on a variable. In this case the value of the variable is returned
+in a notification message with a time-stamp specifying when the
+data was last set.
+
+\end{document} 
