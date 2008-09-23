@@ -125,7 +125,7 @@ bool BHV_Waypoint::setParam(string param, string val)
     m_waypoint_engine.setRepeat(ival);
     return(true);
   }
-  else if(param == "radius") {
+  else if((param == "radius") || (param == "capture_radius")) {
     double dval = atof(val.c_str());
     if(dval <= 0)
       return(false);
