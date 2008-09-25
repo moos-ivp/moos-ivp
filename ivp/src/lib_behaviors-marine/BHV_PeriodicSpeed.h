@@ -46,9 +46,12 @@ private: // Configuration Parameters
 
   std::string m_period_start_flag;
 
+  std::string m_var_pending_active;
+  std::string m_var_pending_inactive;
+
 
 private: // State Variables
-  bool    m_state_inperiod;
+  bool    m_state_active;
   bool    m_first_iteration;
   double  m_mark_time;
 
