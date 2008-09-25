@@ -278,10 +278,14 @@ bool VehicleSet::getDoubleInfo(const string& g_vname,
 //            returned indicating whether the vname and info_type
 //            were matched.
 
-bool VehicleSet::getStringInfo(const string& vname, 
+bool VehicleSet::getStringInfo(const string& g_vname, 
 			       const string& info_type, 
 			       string& result) const
 {
+  string vname = g_vname;
+  if(g_vname == "active")
+    vname = m_active_vehicle_name;
+
   if(info_type == "active_vehicle_name")
     result = m_active_vehicle_name; 
   else if((info_type == "body") || (info_type == "type")) {

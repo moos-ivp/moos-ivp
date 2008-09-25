@@ -112,6 +112,7 @@ void PMV_GUI::updateXY() {
 
   if(vname == "") {
     v_nam->value(" n/a");
+    v_typ->value(" n/a");
     x_mtr->value(" n/a");
     y_mtr->value(" n/a");
     v_spd->value(" n/a");
