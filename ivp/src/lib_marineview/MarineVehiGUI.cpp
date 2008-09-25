@@ -32,6 +32,7 @@ MarineVehiGUI::MarineVehiGUI(int g_w, int g_h, const char *g_l)
   : MarineGUI(g_w, g_h, g_l) 
 {
   m_trail_color_ix = 0;
+  m_vname_color_ix = 0;
 
   mbar->add("Vehicles/Vehicles-Toggle", FL_CTRL+'v', (Fl_Callback*)MarineVehiGUI::cb_ToggleVehicles, (void*)0, FL_MENU_DIVIDER);
   mbar->add("Vehicles/Cycle Focus", 'v', (Fl_Callback*)MarineVehiGUI::cb_CycleFocus,(void*)0, FL_MENU_DIVIDER);
@@ -134,7 +135,19 @@ void MarineVehiGUI::cb_ToggleVName(Fl_Widget* o) {
 
 //----------------------------------------- ToggleVNameColor
 inline void MarineVehiGUI::cb_ToggleVNameColor_i() {
-  cmviewer->setParam("vehicle_names_color", "toggle");
+  m_vname_color_ix = (m_vname_color_ix+1) % 6;
+  if(m_vname_color_ix == 0)
+    cmviewer->setParam("vehicle_names_color", "blue");
+  else if(m_vname_color_ix == 1)
+    cmviewer->setParam("vehicle_names_color", "darkblue");
+  else if(m_vname_color_ix == 2)
+    cmviewer->setParam("vehicle_names_color", "yellow");
+  else if(m_vname_color_ix == 3)
+    cmviewer->setParam("vehicle_names_color", "red");
+  else if(m_vname_color_ix == 4)
+    cmviewer->setParam("vehicle_names_color", "green");
+  else
+    cmviewer->setParam("vehicle_names_color", "white");
   cmviewer->redraw();
 }
 void MarineVehiGUI::cb_ToggleVNameColor(Fl_Widget* o) {
