@@ -9,7 +9,7 @@ MOOSPlayBackV2.h
 MOOSPlayBackV2.cpp)
 
 #look for FLTK ourselves
-INCLUDE(${MOOS_SOURCE_DIR}/cmake_modules/FindFLTK.cmake)
+INCLUDE(${MOOS_SOURCE_DIR}/MOOSFindFLTK.cmake)
 
 IF(FLTK_FOUND)
 
