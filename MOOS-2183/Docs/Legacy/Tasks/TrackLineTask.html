@@ -1,0 +1,98 @@
+<HTML>
+<HEAD>
+<TITLE>TrackLine Task</TITLE>
+</HEAD>
+<BODY>
+
+<H1><img src="moose6.gif"> <center>TrackLine Task</center></H1>
+
+<H2>Description</H2>
+This tasks directs the vehicle along a line from <b>P1</b> to <b>P2</b>. Underlying the task is
+a constantly varying waypoint which <i>leads</i> the vehicle along the line. The goal way point
+is determined by finding the perpendicular intersection from the line to the vehicle location.
+This gives the nears point on the line to the vehicle. This point is then advanced <b>LEAD</b>m
+towards <b>P2</b>. If the resulting goal point (which continually changes) is outside <b>P1</b>
+or <b>P2</b> then the closest way point is choosen as the goal. Note <b>LEAD</b> needs to be big
+enough to give smooth performance. If oscillator performance results increase <b>LEAD</b>
+
+<H2>Publishes</H2>
+<ul>
+	<li>EndFlags
+	<li>EventFlags
+</ul>
+<p>
+
+
+<H2>Subscribes</H2>
+<ul>
+	<li><b>StartFlags</b>
+	<li><b>NAV_X</b>
+	<li><b>NAV_Y</b>
+	<li><b>NAV_YAW</b>
+</ul>
+<p>
+
+<H2>Configuration Block</H2>
+<ul>
+
+
+
+	<li><a href="CommonMOOSTask.html"> Common Task Parameters</a>
+	<p>
+
+	<li><H3>P1 / P2</H3>
+	<ul>
+		<li><b>Syntax:	</b> 	P2 = X,Y (m)
+		<li><b>Meaning:	</b>	Set location of start and end of track line
+		<li><b>Example:	</b> <i>	P2 = 55,200 </i> trackline ends at 55,200
+	</ul>
+	<p>
+
+	<li><H3>Thrust</H3>
+	<ul>
+		<li><b>Syntax:	</b> 	Thrust = Thrust[0-100]
+		<li><b>Meaning:	</b>	Set Thrust of survey operation
+		<li><b>Example:	</b> <i>	Thrust = 10 </i> go at ten percent throttle.
+	</ul>
+	<p>
+
+
+	<li><H3>RADIUS</H3>
+	<ul>
+		<li><b>Syntax:	</b> RADIUS = distance (m)
+		<li><b>Meaning:	</b> Set the tolerance on waypoint goal (see WayPointTask)
+		<li><b>Example:	</b> <i>RADIUS = 8</i> the tackline will complete when the distance to <b>P2</b> is within 8 m.
+	</ul>
+	<p>
+	
+	<li><H3>LEAD</H3>
+	<ul>
+		<li><b>Syntax:	</b> LEAD = distance (m)
+		<li><b>Meaning:	</b> Set the "lead" on each trackline. The distance ahead of the perpendicular bisector that the vehicle heads for on a trackline.
+		<li><b>Example:	</b> <i>LEAD = 10</i> aim 10 m ahead
+	</ul>
+	<p>
+	
+</ul>
+
+<H2>Example Block</H2>
+<pre>
+Task = TrackLine
+{
+	Name = East
+	Priority = 3
+	InitialState = ON
+	TimeOut = 200
+	FinishFlag = EndMission
+	Thrust = 6
+	P1 = 2,0,0
+	P2 = 2,6,0
+	Radius = 1	
+	Lead = 1
+	LOGPID = true
+}<pre>
+
+<hr>
+<H4>The MOOS &#169;  P. Newman 2001-2002 <img src="moose2.gif"></H4>
+</BODY>
+</HTML>
