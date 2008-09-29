@@ -155,6 +155,8 @@ ProcessConfig = pTransponderAIS
   AppTick	= 2
   CommsTick	= 2
   VESSEL_TYPE   = KAYAK
+
+  //BLACKOUT_INTERVAL = 15
 }
 
 //------------------------------------------

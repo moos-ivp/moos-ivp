@@ -412,7 +412,7 @@ void MarineGUI::cb_ToggleDatum(Fl_Widget* o) {
 
 //----------------------------------------- ToggleGrids
 inline void MarineGUI::cb_ToggleGrids_i() {
-  cmviewer->setParam("display_grids", "toggle");
+  cmviewer->setParam("grid_viewable_all", "toggle");
   cmviewer->redraw();
 }
 void MarineGUI::cb_ToggleGrids(Fl_Widget* o) {

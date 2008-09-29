@@ -41,7 +41,7 @@ using namespace std;
 BHV_ConstantDepth::BHV_ConstantDepth(IvPDomain gdomain) : 
   IvPBehavior(gdomain)
 {
-  this->setParam("descriptor", "(d)bhv_constantdepth");
+  this->setParam("descriptor", "bhv_constantdepth");
 
   m_domain = subDomain(m_domain, "depth");
 

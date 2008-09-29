@@ -21,12 +21,23 @@ ProcessConfig = ANTLER
   Run = iRemote		@ NewConsole = true
   Run = pMarineViewer	@ NewConsole = true
   Run = pMarinePID	@ NewConsole = false
-  //Run = pShipsideViewer	@ NewConsole = true
   Run = pHelmIvP	@ NewConsole = false
   Run = iMarineSim	@ NewConsole = false
   Run = pEchoVar	@ NewConsole = false
   Run = pLogger		@ NewConsole = false
   Run = uProcessWatch   @ NewConsole = false
+}
+
+//------------------------------------------
+// pMarineViewer config block
+
+ProcessConfig = pMarineViewer
+{
+  AppTick	= 4
+  CommsTick	= 4
+
+  TIFF_FILE     = AerialMIT.tif
+  TIFF_FILE_B    = AerialMIT.tif
 }
 
 //------------------------------------------

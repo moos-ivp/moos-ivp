@@ -807,6 +807,14 @@ vector<string> IvPBehavior::getStateSpaceVars()
   for(i=0; i<vsize; i++)
     rvector.push_back(m_end_flags[i].get_var());
 
+  vsize = m_active_flags.size();
+  for(i=0; i<vsize; i++)
+    rvector.push_back(m_active_flags[i].get_var());
+  
+  vsize = m_inactive_flags.size();
+  for(i=0; i<vsize; i++)
+    rvector.push_back(m_inactive_flags[i].get_var());
+  
   return(rvector);
 }
 

@@ -40,13 +40,13 @@ using namespace std;
 BHV_ConstantHeading::BHV_ConstantHeading(IvPDomain gdomain) : 
   IvPBehavior(gdomain)
 {
-  this->setParam("descriptor", "(d)bhv_constantHeading");
+  this->setParam("descriptor", "bhv_constantHeading");
 
   m_domain = subDomain(m_domain, "course");
 
   m_desired_heading = 0;
-  m_peakwidth       = 0;
-  m_basewidth       = 40;
+  m_peakwidth       = 10;
+  m_basewidth       = 170;
 
   // The default duration at the IvPBehavior level is "-1", which
   // indicates no duration applied to the behavior by default. By

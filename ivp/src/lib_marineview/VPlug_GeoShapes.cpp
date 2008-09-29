@@ -35,6 +35,8 @@ VPlug_GeoShapes::VPlug_GeoShapes()
   m_viewable_map["seglist_viewable_labels"] = true;
   m_viewable_map["point_viewable_all"]      = true;
   m_viewable_map["point_viewable_labels"]   = true;
+  m_viewable_map["grid_viewable_all"]      = true;
+  m_viewable_map["grid_viewable_labels"]   = true;
 
   m_gsize_map["polygon_edge_width"]  = 1.0;
   m_gsize_map["polygon_vertex_size"] = 5.0;
@@ -89,6 +91,10 @@ bool VPlug_GeoShapes::setParam(const string& param, string value)
   else if(param == "point_viewable_all")
     return(setViewableMapping(param, value));
   else if(param == "point_viewable_labels")
+    return(setViewableMapping(param, value));
+  else if(param == "grid_viewable_all")
+    return(setViewableMapping(param, value));
+  else if(param == "grid_viewable_labels")
     return(setViewableMapping(param, value));
 
   else if(param == "polygon_edge_color")

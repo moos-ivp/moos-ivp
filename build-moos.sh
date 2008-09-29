@@ -25,14 +25,14 @@ cmake                                           \
    -DFLTK_INCLUDE_DIR=/usr/include              \
    -DPYTHON_INCLUDE_PATH=/usr/include/python2.5 \
    -DBUILD_CONTROL_AND_NAV=ON                   \
-   -DBUILD_INSTRUMENTS=ON                       \
+   -DBUILD_INSTRUMENTS=ON                      \
    -DDB_HAS_HTTP=ON                             \
    -DBUILD_TOOLS=ON                             \
    -DBUILD_OCEAN_SIM=ON                         \
    -DBUILD_NAVIGATION=OFF                       \
    -DBUILD_HELM=OFF                             \
    -DBUILD_NEWMAT=OFF                           \
-   -DBUILD_GRAPHICAL_TOOLS=ON                   \
+   -DBUILD_GRAPHICAL_TOOLS=OFF                   \
    -DBUILD_MATLAB_TOOLS=OFF                     \
    -DMATLAB_DIR=/usr/local/matlab-2007a         \
    -DBUILD_LAND_INSTRUMENTS=OFF                 \

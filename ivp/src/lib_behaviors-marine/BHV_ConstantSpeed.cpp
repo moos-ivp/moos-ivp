@@ -40,7 +40,7 @@ using namespace std;
 BHV_ConstantSpeed::BHV_ConstantSpeed(IvPDomain gdomain) : 
   IvPBehavior(gdomain)
 {
-  this->setParam("descriptor", "(d)bhv_constant_speed");
+  this->setParam("descriptor", "bhv_constant_speed");
 
   m_domain = subDomain(m_domain, "speed");
 

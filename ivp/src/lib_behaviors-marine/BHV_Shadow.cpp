@@ -72,14 +72,14 @@ bool BHV_Shadow::setParam(string g_param, string g_val)
     m_max_range = atof(g_val.c_str());
     return(true);
   }  
-  if(g_param == "hdg_peakwidth") {
+  if((g_param == "hdg_peakwidth") || (g_param == "heading_peakwidth")) {
     double dval = atof(g_val.c_str());
     if((dval < 0) || (!isNumber(g_val)))
       return(false);
     m_hdg_peakwidth = dval;
     return(true);
   }
-  if(g_param == "hdg_basewidth") {
+  if((g_param == "hdg_basewidth") || (g_param == "heading_basewidth")) {
     double dval = atof(g_val.c_str());
     if((dval < 0) || (!isNumber(g_val)))
       return(false);
@@ -87,14 +87,14 @@ bool BHV_Shadow::setParam(string g_param, string g_val)
     return(true);
   }
 
-  if(g_param == "spd_peakwidth") {
+  if((g_param == "spd_peakwidth") || (g_param == "speed_peakwidth")) {
     double dval = atof(g_val.c_str());
     if((dval < 0) || (!isNumber(g_val)))
       return(false);
     m_spd_peakwidth = dval;
     return(true);
   }
-  if(g_param == "spd_basewidth") {
+  if((g_param == "spd_basewidth") || (g_param == "speed_basewidth")) {
     double dval = atof(g_val.c_str());
     if((dval < 0) || (!isNumber(g_val)))
       return(false);
