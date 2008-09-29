@@ -42,6 +42,7 @@
 #include "MOOSGlobalHelper.h"
 #include <assert.h>
 #include <iostream>
+#include <string.h>
 using namespace std;
 
 //////////////////////////////////////////////////////////////////////

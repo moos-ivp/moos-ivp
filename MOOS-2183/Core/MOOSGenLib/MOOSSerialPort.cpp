@@ -50,7 +50,7 @@
 
 #include "MOOSGenLibGlobalHelper.h"
 #include "MOOSSerialPort.h"
-
+#include <string.h>
 
 
 //////////////////////////////////////////////////////////////////////

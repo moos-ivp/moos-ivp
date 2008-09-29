@@ -44,6 +44,7 @@
 #include <algorithm>
 #include <MOOSGenLib/MOOSAssert.h>
 #include <cmath>
+#include <string.h>
 
 #ifndef _WIN32
 #include <errno.h>

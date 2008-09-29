@@ -41,6 +41,7 @@
 #include "MOOSCommObject.h"
 #include <set>
 #include <string>
+#include <memory>
 
 #define OUTBOX_PENDING_LIMIT 1000
 #define INBOX_PENDING_LIMIT 1000

@@ -38,6 +38,7 @@
 #include "MOOSException.h"
 #include <string>
 #include <iostream>
+#include <string.h>
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
