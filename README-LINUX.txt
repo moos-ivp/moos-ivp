@@ -38,8 +38,8 @@ for OpenGL support.  The following is our best guess:
    nVidia-based card --> 
       nvidia-glx-new      (Ubuntu 8.04)
       nvidia-glx-new-dev  (Ubuntu 8.04)
-      nvidia-glx          (Ubuntu 8.10)
-      nvidia-glx-dev      (Ubuntu 8.10)
+      nvidia-glx-dev      (Ubuntu 8.10)  ** You'll have to choose a particular
+                                         ** version, such as nvidia-glx-177
       libsm-dev
       libXext-dev
 
