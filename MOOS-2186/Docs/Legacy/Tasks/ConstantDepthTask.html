@@ -1,0 +1,63 @@
+<HTML>
+<HEAD>
+<TITLE>ConstantDepth Task</TITLE>
+</HEAD>
+<BODY>
+
+<H1><img src="moose6.gif"> <center>The ConstantDepth Task</center></H1>
+
+<H2>Description</H2>
+Attempt to obtain specified depth and hold it. Note this task does NOT control thrust.
+
+<H2>Publishes</H2>
+<ul>
+	<li>EndFlags
+</ul>
+<p>
+
+
+<H2>Subscribes</H2>
+<ul>
+	<li>StartFlags
+	<li><b>NAV_DEPTH</b>
+	<li><b>NAV_PITCH</b>
+</ul>
+<p>
+
+<H2>Configuration Block</H2>
+<ul>
+
+	<li><a href="CommonMOOSTask.html"> Common Task Parameters</a>
+	<p>
+
+	
+	<li><H3>Depth</H3>
+	<ul>
+		<li><b>Syntax:	</b> Depth = Depth (m)
+		<li><b>Example:	</b> <i>Depth =5</i> go to 5m of depth
+	</ul>
+	<p>
+
+	<p>
+</ul>
+
+
+<H2>Example Block</H2>
+<pre>
+Task = ConstantDepth
+{
+	Name = KeepDepth
+	Priority = 3
+	InitialState = ON
+	StartFlag = MissionStart
+	FinishFlag = EndMission
+	TimeOut = NEVER
+	Depth = 10.0
+}
+</pre>
+
+
+<hr>
+<H4>The MOOS &#169;  P. Newman 2001-2002 <img src="moose2.gif"></H4>
+</BODY>
+</HTML>

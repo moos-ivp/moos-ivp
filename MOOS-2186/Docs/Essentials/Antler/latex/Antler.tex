@@ -1,0 +1,347 @@
+
+
+\documentclass[a4paper,10pt]{article}
+\usepackage{listings,color,epsfig,amsmath,url}
+\definecolor{codecolor}{rgb}{0.99,0.97,0.94} % color values Red, Green, Blue
+\definecolor{commentcolor}{rgb}{0.1,0.5,0.1} % color values Red, Green, Blue
+\definecolor{stringcolor}{rgb}{0.3,0.1,0.1} % color values Red, Green, Blue
+\newcommand{\Code}[1]{\texttt{#1} }
+\newcommand{\code}[1]{\Code{#1} }
+\newcommand{\DB}   {\code{{MOOSDB}}}
+\newcommand{\MA}   {\code{{MOOSApp}}}
+\newcommand{\Ignore}[1]   {}
+
+
+
+\lstset{ frame = shadowbox,
+ %language=[Visual]{c++},
+ rulesepcolor=\color{black},
+ basicstyle=\small } \lstset{
+backgroundcolor=\color{codecolor},
+keywordstyle=\color{blue}\bfseries,
+commentstyle=\color{commentcolor},
+stringstyle=\color{stringcolor}\ttfamily, linewidth =
+1.2\linewidth,
+breaklines=true} %
+
+\lstset{language=C++}
+
+
+% Title Page
+\title{Launching Processes and Running Mission Scripts with \code{Antler}}
+\author{Paul Newman}
+
+
+\begin{document}
+\maketitle
+
+\begin{center}
+\epsfig{file=images/moose6.eps,width = 0.2\linewidth} 
+\end{center}
+
+
+\begin{abstract}
+This document tells you how to use the application \code{pAntler} to launch multiple MOOS processes. This is usefultool for starting up a whole bunch of processes all of which share a single configuration file.
+\end{abstract}
+
+\newpage
+\tableofcontents
+\newpage
+
+\section{Synopsis}
+The process \code{pAntler} is used to launch/create a MOOS
+community. It is  simple to use and Post V7.0.2 very extensible. 
+
+One of the ideas underlying MOOS is the one mission file one mission paradigm. A single mission file contains all the information required to configure all the processes needed to undertake the task (mission) in hand \footnote{And the \code{pLogger} application backs up each mission file so you know exactly what mission file was run at the time data was recorded --- see \code{pLogger documentation}}.  Note a collection of MOOS processes is commonly referred to as a ``community''. 
+
+
+\subsection{Basic Syntax}
+
+\code{Antler} provides a simple and compact way to start a MOOS mission. For example if the desired mission file is
+{\it{Mission.moos}} then executing
+\begin{center}
+\code{pAntler Mission.moos}
+\end{center}
+will launch the required processes/community for the  mission
+
+It reads from its configuration block {\textbf{(which is declared as  \code{ProcessConfig=ANTLER})}} a list of process names that will constitute
+the MOOS community. Each process to be launched is specfied with a line with the general syntax
+\begin{center}
+{\code{Run}} = {\it{procname}} [ @ \code{LaunchConfiguration}] [$\sim$ \code{MOOSName}]
+\end{center}
+where LaunchConfiguration is an optional  comma separated list of ``parameter=value'' pairs which collectively control how the process ``procname'' (for example iGPS, or iRemote or MOOSDB) is launched. Exactly what parameters can be specified is detailed later in the document.
+
+\code{Antler} looks through its entire configuration block an launches one process for every line which begins with \code{RUN=}. When all processes have been launched \code{Antler} waits for all of them to exit and then quits itself.
+
+
+
+\section{Controlling Process Launch}
+
+Immediately after the ``@'' symbol in a \code{RUN} directive the user can supply a list of ``parameter=value'' pairs (comma separated) which control how the process in question should be launched. The following subsections will explain the action of available parameters.
+
+
+\subsubsection{Launching Processes in new console windows (or not)}
+
+\begin{lstlisting}
+Run = MOOSDB  @NewConsole = true
+\end{lstlisting}
+ 
+The optional \code{NewConsole} parameter specifies whether the named process
+should be launched in a new  window (an xterm in Unix or cmd-prompt in Win32 derived platforms). By default a new console is launched.
+
+\subsection{Controlling Console Appearance}\label{Sec:Appearance}
+
+Post V7.0.2 releases allow a good deal of control over the appearance of the windows in which processes will be launched. Especially so on the 'nix side of life \footnote{the native win32 console has less flexibility than the xterm. Deep apologies for Win32 users who may feel hard done by by the asymmetry here}
+
+By specifying \code{XConfig=$<$\it{Name}$>$} or \code{Win32Config=$<$\it{Name}$>$} (depending on OS) the user can have \code{Antler} apply customisations to the new console in a process is launched. For example:
+\begin{lstlisting}
+Run = MOOSDB  @NewConsole = true,XConfig=DBXConsoleSettings,Win32Config=DBW32ConsoleSettings
+\end{lstlisting}
+will cause \code{Antler} to search through its configuration block to find a line which begins with \code{DBXConsoleSettings =}. or   \code{DBW32ConsoleSettings =} -- depending on OS). What is is the left of the equality determines the appearance of the new console and is a function of the host operating system.
+
+
+\subsubsection{Console Appearance in Unix like OS's}
+
+In unix derived operating systems the appearance string (referenced by ``XConfig'') is a comma separated list of parameters that would be used to configure an xterm. So continuing by way of the DBConsoleSettings example. If the DBConsoleSettings was specified ( on its own line) as follows
+\begin{lstlisting}
+DBXConsoleSettings = -bg, \#FF0000,-fg,\#FFFFFF,-geometry,80x12+2+00,+sb,-T,TheMOOSDB
+\end{lstlisting}
+then the MOOSDB would be  launched in 12 rows by 80 columns window, white text on red at the top left of teh screen. The string ``TheMOOSDB'' would appear in the title. Note any xterm configuration parameters can specified in this way. See the manual page for xterm for information on the options allowed.
+
+\subsubsection{Console Appearance in Win32 OS's}
+The only native WIN32 console options supported control the background color of the terminal (text is always white). The LHS of the configuration line (referenced by ``Win32Config'')  can contain a comma separated list of \code{BACKGROUND\_RED} \code{BACKGROUND\_BLUE}  and \code{BACKGROUND\_GREEN}. In this way
+\begin{lstlisting}
+DBW32ConsoleSettings = BACKGROUND_RED
+\end{lstlisting}
+would produce a white on red win32 console.
+
+\subsubsection{Appearance Example}
+
+\begin{lstlisting}
+ProcessConfig = Antler
+{
+	//look on system path
+	ExecutablePath = system
+
+
+	//launch a DB
+	Run = MOOSDB  @NewConsole = true,XConfig=DBXConsoleSettings,Win32Config=DBW32ConsoleSettings
+	
+          //xterm configuration for DB
+          DBXConsoleSettings = -bg, \#FF0000,-fg,\#FFFFFF,-geometry,80x12+2+00,+sb,-T,TheMOOSDB
+         
+          //Win32 Configuration for DB
+          DBW32ConsoleSettings = BACKGROUND_RED	
+}
+\end{lstlisting}
+
+\subsection{Controlling Search Paths}
+
+Post V7.0.2 \code{Antler} offers extended functionality regarding specifying how executables are located on the host file system. The paths which you wish the OS to use when searching for executable to launch can be specified globally (a common path for all processes) or on a process by process basis.
+
+\subsubsection{Specifying Global Executable Paths}\label{Sec:ExecPath}
+
+Adding line of the form
+\begin{center}
+\code{ExecutablePath = {\it{path}}}
+\end{center}
+to Antler's configuration block where {\it{path}} is a suitable path string, will make \code{Antler} search in that place for the exectables  to launch. Not specifying this variable or setting path to "SYSTEM" will  cause Antler to relie on the host OS being able to locate the executable in its own executable paths.
+
+\subsubsection{Specifying Paths for an Individual Process}
+
+The global executable path (default "system") can be overridden for a particular process by providing your prefered path in the ``RUN'' directive line. For example
+\begin{lstlisting}
+Run = pP1        @  NewConsole = true,path=/usr/strangeplace
+\end{lstlisting}
+
+will try to launch a process called ``pP1'' from a the directory ``/usr/strangeplace''.  Such process specific path directives overide any path set with \code{ExecutablePath=...} (Section \ref{Sec:ExecPath}
+
+\section{Passing Parameters to Launched Processes}\label{Sec:ExeParameters}
+
+
+\subsection{The Two Default Parameters}
+Unless told otherwise (see \ref{Sec:Inhibit}  each process launched is
+passed the mission file name  as a command line argument and also the name it should use to register with the MOOSDB. This means
+that by default \code{argv[1]} of \code{main} is the name of the mission file currently in play (the one which \code{pAntler} is itself reading) and argv[2] is the name of the process in to be launched (for example \code{iGPS} or \code{pLogger}). By default pAntler assumes the name which a process will be registering with the MOOSDB with is the name of the process itself. For example \code{pLogger} will register with the MOOSDB with the name "pLogger". However this can be changed using the \code{$\sim$ MOOSName} syntax:
+
+\begin{lstlisting}
+Run = iGPS  @NewConsole = true ~ GPS_A
+\end{lstlisting}
+
+will cause the executable called "iGPS" to be launched in a new console but (because iGPS handles command line parameters appropriately) it will register with the MOOSDB under the name of ``GPS\_A''. 
+
+\subsubsection{Handling default parameters}
+Of course just passing the MOOSName to a process doesn't mean automagically that all MOOS connections within that process will use this name. Supporting code must be provided. Listing \ref{Code:Argv} illustrates just one way in which this can be done.
+
+
+\lstinputlisting[ caption = {Handling default command line parameters. Note how the MOOSName and Mission file are passed to the CMOOSApp derived object.},label = {Code:Argv} ]{../code/main.cpp}
+ 
+
+
+\section{Running Multiple Instances of a Particular Process}
+
+As already described in Section \ref{Sec:ExeParameters}, the optional \code{MOOSName} parameter allows MOOSProcesses to
+connect to the \DB under a specified name. Why is this useful? Well for example a vehicle
+may have two GPS instruments onboard. Now by default \code{iGPS}
+may register it existence with the \DB under the name ``iGPS''. This name is now taken and no other MOOSClient can use the name "iGPS"\footnote{if they try the MOOSDB will not accept them into the fold}. By using the $\sim$ syntax multiple instances of the executable \code{iGPS} can be run but with each connecting to a the \DB using a different name. For example
+
+\begin{lstlisting}
+Run = iGPS @ NewConsole = true ~iGPSA
+Run = iGPS @ NewConsole = true ~iGPSB
+\end{lstlisting}
+
+would launch two instances of \code{iGPS} registering under
+``iGPSA'' and ``iGPSB'' respectively. {\textbf{Note there would need to be
+\emph{two} GPS configuration blocks in the mission file -- one for
+each and the process names  (RHS of \code{ProcessConfig=}) would be ``iGPSA'' and ``iGPSB''}}
+
+
+
+
+
+\subsection{Customising the Command Line Parameters Passed to a Launched Process}
+But what if your beloved new process which you desire \code{Antler} to launch requires extra command line configuration? Or what if you don't want \code{Antler} to pass the Mission file name and the MOOS name in a parameters? Fear not, just read on.
+
+\subsubsection{Specifying Additional Process Command Line Parameters}
+
+You can specify additional parameters which should be passed to a launched process using a syntax similar to that used to specify console appearance (see Section \ref{Sec:Appearance}) The trick is to specify the name of a parameter string (R.H.S of a \code{ExtraProcessParams=...} in the process's \code{RUN} directive line. \code{Antler} the rescans its configuration block looking for this named string which must be a comma separated list of parameters. An example will make this blindingly obvious.
+
+\begin{lstlisting}
+ProcessConfig = Antler
+{
+	Run = iProcA @ NewConsole = true,path=/usr/local/bin, ExtraProcessParams=ProcAParams 
+	ProcAParams =-o,--verbose,--clever
+}
+\end{lstlisting}
+
+The above would launch a process called \"iProcA" in a new console, (with default appearance as no appearance string is specified see Section \ref{Sec:Appearance}), and the process will be passed {\textbf{six}} parameters at launch time:
+\begin{description}
+\item [argv[0]] the executable image name. 
+\item [argv[1]] the mission file name
+\item [argv[2]] the process's MOOS name
+\item [argv[3]] -o
+\item [argv[4]] --verbose
+\item [argv[5]] --clever
+\end{description}
+
+\subsubsection{Inhibiting default parameters and Launching Arbitrary (non-MOOS) Processes}
+
+If you want to launch a process with \code{Antler} that has not been designed to handle the mission file name an MOOS name as the first two parameters passed in the command line then it is possible to tell \code{Antler} not to pass these parameters. This is done using the \code{InhibitMOOSParams}  key word. For example if you wanted to launch the executable \code{top} in its own window you would use configuration similar to that in Listing \ref{Code:Top}
+
+\lstinputlisting[ caption = {Launching a non moos process -like top (here on a 'nix system). Note the use of \code{InhibitMOOSParams}},label = {Code:Top} ]{../code/top.moos}
+ 
+
+
+\section{Distributing  a Community over Multiple Machines}
+
+\subsection{Motivation}
+
+Up until now we have implicitly assumed that all processes launched by a single instance of \code{Antler} reside on the same physical computer. Surely this is conflicts with the idea that any MOOS process can run on any machine under any (common) OS? You're right it does and this issue has been addressed in post V7.0.2 versions. Excellent. In the broadest of terms it is possible to have have one Antler send a single mission file to a host of other Antlers (presumably but not necessarily sitting on a different machine or OS) which they then process and launch processes locally. The idea is that you still only need to edit one mission file to control a suite of processes running over any number of physical machines. The operating paradigm is that once a suitably configured \code{Antler} has been started on a machine you need never kill or restart it. It stays alive patiently waiting for a instructions. See Figure \ref{Fig:Distributed}
+
+\begin{figure}\label{Fig:Distributed}
+\centering
+\epsfig{figure=images/distributed.eps,width = \linewidth}
+\caption{In distributed mode, \code{Antler} can be started in one of two ways. Here on the machine lisa1.robots.ox.ac.uk it is started  in "Top MOOS" mode with the name of a mission file on the command line. On the two other machines (lisa2 and lisa3) Antler is started in headless mode receiving three command line parameters - the machine name on which a \code{MOOSDB} can be found, the port that \code{MOOSDB} is serving on and an AntlerID name which in this case is simply set to the machine name. When the "topMOOS" has spawned its processes it pushes the mission file to the DB. The headless Antlers pick up this notification and run themselves from the newly received Mission file. Each headless Antler  only launches processes which have a Run directive line containing that particular instantiation of Antler's ID.} 
+\end{figure}
+
+\subsection{Antler Modes: Monach and Headless}
+
+The idea is that \code{Antler} can be run in one of two modes which we shall refer to as ``headless'' and ``monach''\footnote{as in Monach of the Glen - referring to the size antlers}. These terms only have meaning if the \code{EnableDistributed} flag is set to \code{true} in the Antler configuration block -- ie when Antler is being told to support distributed process control. If this flag is set and \code{Antler} is launched in the usual way:
+
+\begin{lstlisting}
+./pAntler Mission.moos
+\end{lstlisting}
+
+then this will become a ``Monach''. Think of it as king/governing/top/controlling \code{Antler} which will take responsibility for distributing (via the MOOSDB) the mission file to any other ``headless'' Antlers sitting on other machines.  If however you start \code{Antler} with three command line parameters as follows
+
+\begin{lstlisting}
+./pAntler lisa1.robots.ox.ac.uk 9000 lisa2
+\end{lstlisting}
+
+then Antler will launch in ``headless'' mode. Headless \code{Antlers} are bound to a single ``Monachs'' via a MOOSDB (which will usually be lauched by the monach itself. ) The three parameters specify the location and port of this MOOSDB and alls an AntlerID. This last parameter is a string which is used by headless Antlers to figure out which Run directives they should execute.
+
+Consider the following simple example:
+
+\begin{lstlisting}
+ProcessConfig = Antler
+{
+	EnableDistributed = true
+	Run = iProcA @ AntlerID = lisa2, NewConsole = true	
+	Run = MOOSDB @ NewConsole=true
+}
+\end{lstlisting}
+
+Note how \code{iProcA} has an \code{AntlerID} specified. Now if as above I started a headless \code{Antler} with ``lisa2'' as its Antler ID on machine ``B'' and then started another instance of \code{Antler}  on machine ``B'' \footnote{ A can equal B but whats the point?} but this time only specifying a mission file (ie start Antler as a ``monach'') you would witness a MOOSDB coming up on machine A and iProcA
+starting on machine B. If no AntlerID is specified in a run directive, it is assumed that the monach is required to  process the directive. Headless \code{Antlers} only process run directives possessing an AntlerID matching their own. Each headless Antler writes the runtime received mission file (stripped of comments and superfluous white space) to local disk (working directory) under the name \code{dynamic\_<TIMESTAMP>.moos} for future perusal.
+
+
+\subsubsection{Shutdown Behaviour}
+
+The default behaviour is for headless Antlers to shut down all their spawned processes when contact is lost with the MOOSDB. If this is not the desired behaviour and you want launched processes to carry on running simply add the directive ``KillOnDBDisconnect=false'' to the configuration block.
+
+\begin{lstlisting}
+ProcessConfig = Antler
+{
+	EnableDistributed = true
+	KillOnDBDisconnect=false
+	Run = iProcA @ AntlerID = lisa2, NewConsole = true	
+	Run = MOOSDB @ NewConsole=true
+}
+\end{lstlisting}
+
+In any case as soon as a Mission file is received by a headless Antler any and all running processes will be shutdown before processing the new Mission file.
+
+
+\section{Examples}
+
+If you enable the building of examples via the CMake build screen (See Figure \ref{Fig:Build}) then the example configurations in Sections \ref{Sec:Local} and \ref{Sec:Distrib} serve as a good starting point in experimenting with \code{Antler}.  There are three examples processes supplied in the sibling code directory of the documentation:
+
+\begin{description}
+\item [pAnterTestAppA] is nothing more than a dumb CMOOSApp that prints a string declared in its configuration block
+\item [pAnterTestAppB] is nothing more than a dumb CMOOSApp which takes more than the standard two command line arguments, it uses these additional params to publish a variable to a MOOSDB  
+\item [pAnterTestAppC] is not a CMOOSApp. its just a program which prints out its command line arguments and spins in a do nothing loop. 
+\
+\end{description}
+
+\begin{figure}\label{Fig:Build}
+\centering
+\epsfig{figure=./images/buildexample.eps, width = 1.0\linewidth}
+\caption{selecting the building of examples in the MOOS build screen}
+\end{figure} 
+
+
+\subsection{Local Configurations}\label{Sec:Local}
+
+\lstinputlisting[ caption = {Example Configuration Blocks for Antler where all process are run on the same host machine. This file can be found in the sibling code directory of Antler in the documentation tree},label = {Code:LocalExampleSet} ]{../code/LocalExampleSet.moos}
+
+
+\subsection{Distributed Configuration}\label{Sec:Distrib}
+\lstinputlisting[ caption = {Example Configuration Blocks for Antler where  process are run on different. This file can be found in the sibling code directory of Antler in the documentation tree},label = {Code:DistributedExampleSet} ]{../code/DistributedExampleSet.moos}
+
+
+\section{Application note : I/O Redirection - Deployment} 
+Frequently \code{iRemote}, displayed on a remote machine, will be
+the only interface a user has to the MOOS community.  We
+must ask the question -  ``where does all the IO from other
+processes go to prevent I/O blocking?''. One answer to this is I/O
+redirection and backgrounding MOOS processes - a simple task in
+unix derived systems \footnote{some OS are good for development
+others for running...}/
+
+Running \code{Antler} in the following fashion followed by a
+manual start up of \code{iRemote} is the recommended way of
+running MOOS in the field on a `nix platform.
+
+\begin{enumerate}
+\item \code{./pAntler} {\it{mission.moos}} $>$ ptyZ0 $>$ /dev/null \&
+\item \code{./iRemote} {\it{mission.moos}}
+\end{enumerate}
+
+This redirection of \code{iRemote} is encapsulated in the
+\code{moosbg} script included with the MOOS installations. In the
+case of an AUV the interface can only be reached  through in-air
+wireless communications, which will clearly disappear when the
+vehicle submerges but will gracefully re-connect when surfacing(
+not so easy to do with a PPP or similar link). 
+
+\end{document}

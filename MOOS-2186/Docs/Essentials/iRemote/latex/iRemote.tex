@@ -1,0 +1,151 @@
+
+
+
+\documentclass[a4paper,10pt]{article}
+\usepackage{listings,color,epsfig,amsmath,url,tabularx}
+\definecolor{codecolor}{rgb}{0.99,0.97,0.94} % color values Red, Green, Blue
+\definecolor{commentcolor}{rgb}{0.1,0.5,0.1} % color values Red, Green, Blue
+\definecolor{stringcolor}{rgb}{0.3,0.1,0.1} % color values Red, Green, Blue
+\newcommand{\Code}[1]{\texttt{#1} }
+\newcommand{\code}[1]{\Code{#1} }
+\newcommand{\DB}   {\code{{MOOSDB}}}
+\newcommand{\MA}   {\code{{MOOSApp}}}
+\newcommand{\Ignore}[1]   {}
+
+
+
+% Title Page
+\title{The Human Touch with \code{iRemote}}
+\author{Paul Newman}
+
+
+\begin{document}
+\maketitle
+
+\begin{center}
+\epsfig{file=images/moose6.eps,width = 0.2\linewidth} 
+\end{center}
+\begin{abstract}
+This document will give you a description of how to use and configure \code{iRemote} to inject commands into a community and 
+also to query the status of certain commonly used variables from a terminal.
+\end{abstract}
+
+\section{Manual Control - \code{iRemote}}\label{sec:iRemote}
+%
+\code{iRemote} was designed to be a control terminal for a
+deployed vehicle. It is really nothing more than a long
+\code{switch} statement based on characters input from the
+keyboard. One of its many functions is to allow remote control of
+the actuators of the vehicle. This is an invaluable asset for land
+and sub-sea vehicles alike. The application is multithreaded. The
+primary thread blocks on a read of keyboard input. When a
+character is pressed some action is taken - for example publishing
+a new value for \code{DESIRED\_THRUST}. The fact that \code{iRemote}
+can take control of a real vehicle presents a safety problem. What
+if the human controller walks away or even worse the vehicle moves
+out of communication range (eg a submarine dives) and the console
+is not available? To prevent the last issued actuator command
+being carried out {\it{ad-infinitum }} a secondary in thread
+\code{iRemote} prompts the user to hit an acknowledge key (') at
+least every 15 seconds. If the human driver does not respond the
+all actuators are set to the zero position.\footnote{The actuation
+driver  in iActuation will also shut down all motors if it does
+not receive control commands for an extended period of time. In
+the Bluefin vehicle the driver class within iActuation sends a
+message to the Janitor processes which resets a watchdog on the
+power management board - keeping the tail cone powered.}
+
+\subsection{Summary of Functionality}
+The following (not exhaustive) list describes some of the online
+functionality that \code{iRemote} provides:
+
+\begin{tabularx}{\linewidth}{l|c|X}
+\textbf{Function} & \textbf{Key} & \textbf{Comment} \\ \hline
+
+ Reload Mission File & \textsc{R} & Tells \code{pHelm} to
+rebuild its
+tasks \\
+%
+Restart Navigation & \textsc{V} & Tells \code{pNav} to reboot all
+navigation filters
+\\
+%
+Restart Logger  & \textsc{G} & Tells \code{pLogger} to begin
+recording to a new set of log files \\
+%
+Begin Mission & \textsc{O} & Instructs \code{pHelm} to go online\\
+%
+Halt Mission & \textsc{O} or {\it{space}} & \code{pHelm} goes
+offline and \code{iRemote} takes control immediately. \\
+%
+Navigation Summary & \textsc{*} & Prints a summary of salient
+navigation information \\
+%
+Rudder Left/Right & \textsc{n},\textsc{m} & Steer control \\
+%
+Elevator Up/Down & \textsc{p},\textsc{l} & Pitch control \\
+%
+Thrust Up/Down & \textsc{a},\textsc{z} & Throttle control (+ shift
+gives 100 percent) \\
+%
+Stop        & {\it{space}} & Immediate zero of all degrees of
+freedom \\
+%
+Fetch DB       & \textsc{F} & Prints a summary of the contents of the entire \DB \\
+%
+CustomKey & $[0 \rightarrow 9]$ & The numeric keys can be made
+(via \code{iRemote}s configuration block) to publish any named
+variable with a specified value. In the example configuration
+block below (Figure \ref{fig:iRemoteBlock}), pressing  key ``2''
+will cause \code{iRemote} to write the variable
+\code{JANITOR\_SWITCH} with the string value (quotes)
+ACTUATION::OFF \\
+%
+CustomSummary & \textsc{+} & The configuration block allows a
+custom summary to be built consisting of any variable names used
+within the system. \code{iRemote} subscribes to this data and
+prints its current value when requested.\\
+%
+{{CustomJournal}} & $[0 \rightarrow 9]$ & Similar to
+{\it{CustomSummary}} but instead of keeping the most recently
+published variable it keeps a history of values. Each Journal can
+be  bound to a numeric key. In the example below pressing key
+``6'' will show the past 10 values of \code{DESIRED\_RUDDER} with
+every delta captured as the
+capture time is 0.\\
+\end{tabularx}
+
+\begin{figure}[ht]
+\begin{lstlisting}[ ]{}
+///////////////////////////////////////////////
+// iRemote config block
+ProcessConfig = iRemote
+{
+    CustomJournal = Name = DESIRED_RUDDER,Key =6, History = 10,Period = 0
+    CustomSummary = DESIRED_THRUST
+    CustomKey = 2 : JANITOR_SWITCH @ "ACTUATION:OFF"
+}
+\end{lstlisting}
+\caption{A small configuration block for iRemote showing typical
+usage of the \code{CustomX} commands}\label{fig:iRemoteBlock}
+\end{figure}
+
+
+\subsection{Informing the Pilot}
+In most missions \code{iRemote} is the only interface the vehicle
+pilot has with the vehicle. Clearly then a method is needed by
+which {\em{important}} information can be sent to the
+\code{iRemote} console from any process. The \code{CMOOSApp}
+member function \code{MOOSDebugWrite} achieves this by issuing a
+notification on a variable watched by \code{iRemote}. Such
+messages are displayed on the iRemote console at run time along
+with the process making the announcement. Note that this  name is
+somewhat unfortunate as this function should not be used for
+debugging - it is a run-time thing. It is frustrating to have a
+cornucopia of messages flashing on the screen during a mission the
+content of which is meaningless to the pilot. Typical uses of this
+functionality would be a very occasional summary of navigation
+status and system level warning messages - for example
+notification of unexpected mission task  termination.
+\end{document}
+%

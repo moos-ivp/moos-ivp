@@ -1,0 +1,150 @@
+//Thirdparty Strings
+
+Thirdparty strings allow any process to invoke a motion control task
+
+The idea is that the Helm process subscribes to messages containing
+ descriptions of a task to be executed. If the issuing process has been given
+ explicit permission to execute this task in the Helms configuration block in the missions .moos file
+the helm will invoke and manage the task.
+
+The general format is as follows:
+
+{JobName} @ {ClientProcessName}:TASK={TaskName}|{Param=Value}{..}....
+
+
+For example imagine a program called iVoice wanted to run a task of type
+"GoToWayPoint", one of the many tasks that the helm can execute. We choose to name this
+task "T1". We would form the following string:
+
+
+"T1@iVoice:TASK=GOTOWAYPOINT|NAME=GOTOWAYPOINT_1|PRIORITY=3|INITIALSTATE=ON|TIMEOUT=200|THRUST=6|LOCATION=10,10,0|RADIUS=1"
+
+Everything after the "TASK=GOTOWAYPOINT" substring is a list of parameter value
+pairs required by the task, in this case a task of type GOTOWAYPOINT. 
+
+How do you know which parameters are required? Well, there is documentation on the MOOS web page
+but it is perhaps easier to look at examples. Normaly tasks are written within {} blocks in
+either a mission file (*.moos) or a task file *.hoof. The Thirdparty string is simply one of these
+block laid out flat. For example the above string would appear as:
+
+//this task moves towards a waypoint, when it reaches it the task
+//finishes
+Task = GotoWayPoint
+{
+	Name = GOTOWAYPOINT_1
+	Priority = 3
+	InitialState = ON
+	TimeOut = 200
+	Thrust = 6
+	Location = 10,10,0
+	Radius = 1	
+}
+
+Okay, with this in hand here are a few other useful task blocks
+
+
+//This task turns towards a goal and then heads towards it. When
+//a "location" is reached it turns its attention to the next location
+//the whole pattern can be repeated:
+Task = SteerThenDriveXYPattern
+{
+	Name = XY1
+	Priority = 3
+
+	//set this to on and task will go live instantly
+	InitialState = ON
+
+	//if task doesn't complete in this time task will stop
+	TimeOut = 300
+	
+	//a flag that is written when the task ends
+	FinishFlag = EndMission
+
+	//if Initial state is not On task will only activate
+	//when the followin flag is written by anothe task or process
+	StartFlag = WP1Done
+
+	//how fast do you wanna go (100 is 100 pc throttle)
+	Thrust = 30
+
+	//specify as many location way points as you like
+	//the vehicle will visit all of them
+	Location = 0,5,0
+	Location = 5,5,0
+	Location = 0,0,0
+
+	//how close you wanna get to each point
+	Radius = 0.4
+
+	//how many times do you want to repeat?
+	Repeat = 2
+
+	//misc params
+	ThrustDamping = 0.1;
+	OuterYawLimit = 20
+	InnerYawLimit = 5
+
+
+}
+
+
+//this task is similar to the above one only
+//it does not turn to face the next location
+//before translating
+Task = XYPattern
+{
+	Name = XY1
+	Priority = 3
+	InitialState = ON
+	TimeOut = 300
+	FinishFlag = EndMission
+	StartFlag = WP1Done
+	Thrust = 70
+	Location = 100,50,0
+	Location = 20,50,0
+	Radius = 10	
+	Repeat = 2
+}
+
+
+//pretty obvious - orbits a given Location
+Task = Orbit
+{
+	Name = ORBIT1
+	Priority = 3
+	InitialState = OFF
+	TimeOut = 300
+	FinishFlag = EndMission
+	StartFlag = WP1Done
+	Thrust = 40
+	Location = 20,20,0
+	Direction = CCW
+	Radius = 40	
+	Repeat = 2
+
+	//how many points in a circle?
+	TotalPos = 6
+
+	//how close do you have to get 
+	//to have reached one point on a circle?
+	PosRadius = 5
+}
+
+
+//moves along a straight line between P1 and P2
+//Initially vehicle moves towards line until it joins it
+Task = TrackLine
+{
+	Name = East
+	Priority = 3
+	InitialState = ON
+	TimeOut = 200
+	FinishFlag = EndMission
+	Thrust = 60
+	P1 = 0,0,0
+	P2 = 100,0,0
+	Radius = 1	
+	Lead = 1
+}
+
+
