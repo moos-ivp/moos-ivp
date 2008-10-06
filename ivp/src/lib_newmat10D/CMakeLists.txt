@@ -9,7 +9,6 @@ SET(SRC
    bandmat.cpp                                                       
    cholesky.cpp                                                      
    evalue.cpp                                                        
-   example.cpp                                                       
    fft.cpp                                                           
    hholder.cpp                                                       
    jacobi.cpp
