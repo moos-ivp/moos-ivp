@@ -44,7 +44,7 @@ public:
 protected:
   bool     initialize(XYPolygon, const XYSquare&);
   bool     initialize(const XYSquare&, const XYSquare&);
-  void     clear();
+  void     clear() {};
     
 protected:
   std::vector<XYHexagon> elements;
