@@ -40,19 +40,15 @@ int main(int argc ,char * argv[])
       }
     }
     else if(strContains(sarg, "=")) {
-      vector<string> svector = parseString(sarg, '=');
-      if(svector.size() != 2)
-	help_requested = true;
+      string left = biteString(sarg, '=');
+      varname.push_back(stripBlankEnds(left));
+      if(isNumber(stripBlankEnds(sarg))) {
+	varvalue.push_back(stripBlankEnds(sarg));
+	vartype.push_back("double");
+      }
       else {
-	varname.push_back(stripBlankEnds(svector[0]));
-	if(isNumber(stripBlankEnds(svector[1]))) {
-	  varvalue.push_back(stripBlankEnds(svector[1]));
-	  vartype.push_back("double");
-	}
-	else {
-	  varvalue.push_back(svector[1]);
-	  vartype.push_back("string");
-	}
+	varvalue.push_back(sarg);
+	vartype.push_back("string");
       }
     }
   }
