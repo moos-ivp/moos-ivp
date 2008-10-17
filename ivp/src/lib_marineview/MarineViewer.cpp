@@ -1063,18 +1063,19 @@ void MarineViewer::drawPolygon(const XYPolygon& poly,
     glDisable(GL_POINT_SMOOTH);
   }
 
-  glEnable(GL_POINT_SMOOTH);
-  glPointSize(vertex_size);
+  if(vertex_size > 0) {
+    glEnable(GL_POINT_SMOOTH);
+    glPointSize(vertex_size);
 
-  // Draw the vertices in between the first and last ones
-  glColor3f(vert_c[0], vert_c[1], vert_c[2]);
-  glBegin(GL_POINTS);
-  for(j=0; j<vsize; j++) {
-    glVertex2f(points[(j*2)], points[(j*2)+1]);
+    // Draw the vertices in between the first and last ones
+    glColor3f(vert_c[0], vert_c[1], vert_c[2]);
+    glBegin(GL_POINTS);
+    for(j=0; j<vsize; j++) {
+      glVertex2f(points[(j*2)], points[(j*2)+1]);
+    }
+    glEnd();
+    glDisable(GL_POINT_SMOOTH);
   }
-  glEnd();
-  glDisable(GL_POINT_SMOOTH);
-
 
 
   //-------------------------------- perhaps draw poly label

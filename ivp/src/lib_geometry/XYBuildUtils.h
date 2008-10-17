@@ -40,12 +40,12 @@ XYPoint stringToPoint(std::string);
 XYPolygon stringToPoly(std::string);
 
 // Create a polygon that approximates an ellipse
-// Example: "type=elipse, x=val, y=val, major=val, minor=val, 
+// Example: "ellipse:: x=val, y=val, major=val, minor=val, 
 //    degs=val, rads=val, pts=val, snap_value=val, label=val"
 XYPolygon stringPairsToEllipsePoly(std::string);
 
 // Create a polygon that approximates radial wedge
-// Example: "type=wedge, x=val, y=val, lang=val, rang=val,
+// Example: "wedge:: x=val, y=val, lang=val, rang=val,
 //    pts=val, range=val, snap_value=val, label=val"
 XYPolygon stringPairsToWedgePoly(std::string);
 

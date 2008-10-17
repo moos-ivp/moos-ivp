@@ -97,24 +97,24 @@ void MarineGUI::augmentMenu()
   mbar->add("GeoAttr/Polygons - Edit/display_poly_labels=off", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)151, 0);
   mbar->add("GeoAttr/Polygons - Edit/display_poly_labels toggle", 'P', (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)152, FL_MENU_DIVIDER);
 
-  mbar->add("GeoAttr/Polygons - Edit/poly_vertex_color=red", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)100, 0);
-  mbar->add("GeoAttr/Polygons - Edit/poly_vertex_color=white", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)101, 0);
-  mbar->add("GeoAttr/Polygons - Edit/poly_vertex_color=yellow", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)102, 0);
-  mbar->add("GeoAttr/Polygons - Edit/poly_vertex_color=dark_blue", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)103, 0);
-  mbar->add("GeoAttr/Polygons - Edit/poly_vertex_color=dark_green", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)104, FL_MENU_DIVIDER);
+  mbar->add("GeoAttr/Polygons - Edit/polygon_vertex_color=red", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)100, 0);
+  mbar->add("GeoAttr/Polygons - Edit/polygon_vertex_color=white", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)101, 0);
+  mbar->add("GeoAttr/Polygons - Edit/polygon_vertex_color=yellow", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)102, 0);
+  mbar->add("GeoAttr/Polygons - Edit/polygon_vertex_color=dark_blue", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)103, 0);
+  mbar->add("GeoAttr/Polygons - Edit/polygon_vertex_color=dark_green", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)104, FL_MENU_DIVIDER);
 
-  mbar->add("GeoAttr/Polygons - Edit/poly_edge_color=red", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)120, 0);
-  mbar->add("GeoAttr/Polygons - Edit/poly_edge_color=white", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)121, 0);
-  mbar->add("GeoAttr/Polygons - Edit/poly_edge_color=yellow", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)122, 0);
-  mbar->add("GeoAttr/Polygons - Edit/poly_edge_color=dark_blue", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)123, 0);
-  mbar->add("GeoAttr/Polygons - Edit/poly_edge_color=dark_green", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)124, FL_MENU_DIVIDER);
+  mbar->add("GeoAttr/Polygons - Edit/polygon_edge_color=red", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)120, 0);
+  mbar->add("GeoAttr/Polygons - Edit/polygon_edge_color=white", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)121, 0);
+  mbar->add("GeoAttr/Polygons - Edit/polygon_edge_color=yellow", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)122, 0);
+  mbar->add("GeoAttr/Polygons - Edit/polygon_edge_color=dark_blue", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)123, 0);
+  mbar->add("GeoAttr/Polygons - Edit/polygon_edge_color=dark_green", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)124, FL_MENU_DIVIDER);
 
-  mbar->add("GeoAttr/Polygons - Edit/poly_vertex_size=1", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)140, 0);
-  mbar->add("GeoAttr/Polygons - Edit/poly_vertex_size=2", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)141, 0);
-  mbar->add("GeoAttr/Polygons - Edit/poly_vertex_size=3", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)142, 0);
-  mbar->add("GeoAttr/Polygons - Edit/poly_vertex_size=5", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)143, 0);
-  mbar->add("GeoAttr/Polygons - Edit/poly_vertex_size=8", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)144, 0);
-  mbar->add("GeoAttr/Polygons - Edit/poly_vertex_size=10", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)145, 0);
+  mbar->add("GeoAttr/Polygons - Edit/polygon_vertex_size=1", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)140, 0);
+  mbar->add("GeoAttr/Polygons - Edit/polygon_vertex_size=2", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)141, 0);
+  mbar->add("GeoAttr/Polygons - Edit/polygon_vertex_size=3", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)142, 0);
+  mbar->add("GeoAttr/Polygons - Edit/polygon_vertex_size=5", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)143, 0);
+  mbar->add("GeoAttr/Polygons - Edit/polygon_vertex_size=8", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)144, 0);
+  mbar->add("GeoAttr/Polygons - Edit/polygon_vertex_size=10", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)145, 0);
 
   mbar->add("GeoAttr/Polygons - Toggle", 'p', (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)160, FL_MENU_DIVIDER);
 
