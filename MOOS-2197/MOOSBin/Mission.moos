@@ -1,0 +1,14 @@
+// This is the smallest *.moos file you can imagine
+
+
+//  global variables anyone can use them
+//ServerHost = robots.ox.ac.uk
+ServerHost = localhost
+ServerPort = 9000
+
+// you can name tag processes connected to a particular
+// DB under a community name
+Community = V1
+
+//some processes look at this flag to see wether things are for real (or not)
+Simulator = false

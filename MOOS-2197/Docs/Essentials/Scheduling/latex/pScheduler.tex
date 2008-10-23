@@ -1,0 +1,145 @@
+
+
+
+\documentclass[a4paper,10pt]{article}
+\usepackage{listings,color,epsfig,amsmath,url}
+\definecolor{codecolor}{rgb}{0.99,0.97,0.94} % color values Red, Green, Blue
+\definecolor{commentcolor}{rgb}{0.1,0.5,0.1} % color values Red, Green, Blue
+\definecolor{stringcolor}{rgb}{0.3,0.1,0.1} % color values Red, Green, Blue
+\newcommand{\Code}[1]{\texttt{#1} }
+\newcommand{\code}[1]{\Code{#1} }
+\newcommand{\DB}   {\code{{MOOSDB}}}
+\newcommand{\MA}   {\code{{MOOSApp}}}
+\newcommand{\Ignore}[1]   {}
+
+
+
+% Title Page
+\title{Scheduling Communications --- \code{pScheduler}}
+\author{Paul Newman}
+
+
+\begin{document}
+\maketitle
+
+\begin{center}
+\epsfig{file=images/moose6.eps,width = 0.2\linewidth} 
+\end{center}
+\begin{abstract}
+This document will give you a description of \code{pScheduler} ---  a process useful for generating and marhsalling communication packets within a MOOS community.
+\end{abstract}
+
+\section{Introduction}\label{Sec:pScheduler}
+
+\code{pScheduler} is a simple tool for generating and responding
+to messages send to the \code{MOOSDB} by processes in a MOOS
+community. It supports three competencies which will now be
+described. Example configuration blocks will also be given.
+
+
+\begin{description}
+\item[SEQUENCES] A looping sequence of messages can be created and published by \code{pScheduler}. Each element of a
+sequence is specified in the configuration block  with a line:
+\code{SEQUENCE = PUBLISH\_NAME @ VALUE : TIME\_OFFSET }. For
+example the configuration in figure \ref{Fig:Sequences} would
+write the variable \code{LIGHT\_CONTROL} to the DB every 2 seconds
+with its String value alternating between "ON" and "OFF". The
+total sequence period is given by the maximum \code{TIME\_OFFSET}
+parameter. Figure \ref{Fig:SchedulerExt} shows a more complicated
+configuration block in which a sequence is constructed from
+several different variables.
+\begin{figure}[ht]
+\label{Fig:Sequences}
+\begin{lstlisting}[]{}
+ProcessConfig  = pScheduler
+{
+    SEQUENCE   = LIGHT_CONTROL @ ON : 2
+    SEQUENCE   = LIGHT_CONTROL @ OFF : 4
+}
+\end{lstlisting}\caption{Configuring a sequence with \code{pScheduler}}
+\end{figure}
+\item[TIMERS] A ``timer'' allows a variable to be written to the
+data base repetitively. A timer can be started and stopped by
+publication (by some other application) of user specified
+variables. The scheduler can also be told  to derive the  value of
+the periodic variable from another MOOS variable, which, if
+arrives in the Scheduler's mail box overrides the initial value.
+This sounds complicated but isn't. An example is useful. The
+general syntax is as follows\\
+\code{TIMER = PUBLISH\_NAME @ TIME , START\_VARIABLE,
+STOP\_VARIABLE,VALUE\_VARIABLE -> VALUE}\\
+Figure \ref{Fig:TIMER} shows a typical configuration block.
+\begin{figure}[ht]
+\label{Fig:TIMER}
+\begin{lstlisting}[]{}
+ProcessConfig  = pScheduler 
+{
+    TIMER = CAMERA_CONTROL @ 4.0 , MISSION_START,  MISSION_END,DESIRED_CAMERA_ANGLE -> 0.0
+    TIMER = CAMERA_GRAB @ 4.0, MISSION_START -> GRAB
+    TIMER = CAMERA_GRAB @ 4.0,  -> GRAB
+}
+\end{lstlisting}\caption{Configuring a timer with \code{pScheduler}}
+\end{figure}
+In this case the variable \code{CAMERA\_CONTROL} will be published
+every 4 seconds after some third party application writes
+(publishes) the \code{MISSION\_START} variable. If, while the
+timer is active, the variable \code{CAMERA\_ANGLE} is published
+the value of \code{CAMERA\_CONTROL} will be copied from that
+message. If \code{CAMERA\_ANGLE} is never published it will always
+have its default value of $0.0$. The timer turns off if any
+process publishes \code{MISSION\_END}. The second example is
+simpler and writes \code{CAMERA\_GRAB} with value "GRAB" every 4
+seconds as soon as \code{MISSION\_START} is written. The third
+version starts immediately (note the comma is required...). Figure
+\ref{Fig:SchedulerExt} shows a few more examples of the
+configuration of timers in  \code{pScheduler}.
+\item[RESPONSES] The last competency is one of responding to the
+publication of one variable with the publication of one or more
+different variables. The syntax is obvious: \code{RESPONSE =
+STIMULUS\_VARIABLE : RESPONSE\_VARIABLE @
+VALUE,RESPONSE\_VARIABLE2 @ VALUE,....  }. Here
+\code{STIMULUS\_VARIABLE} is the name of the variable we wish
+\code{pScheduler} to respond to and after the colon comes a
+command separated list of response variables with the values they
+should contain. Figure \ref{Fig:SchedulerExt} shows some clear
+example configurations of "responses" in \code{pScheduler}
+\end{description}
+
+\begin{figure}
+\label{Fig:SchedulerExt}
+\begin{lstlisting}[]{}
+ProcessConfig = pScheduler
+{
+    //generate a sequence 6 seconds long ....
+    // VAR1 will fire after 1 second
+    // VAR2 fire after 3 seconds
+    // VAR3 fire after 6 seconds
+    // one second later VAR1 will fire again..repeat...
+    SEQUENCE = VAR1 : RED @ 1 SEQUENCE = VAR2 : ORANGE @ 3 SEQUENCE =
+    VAR3 : GREEN @ 6
+
+    //generate a timer that writes "VAR_T1" with value "TimerData"
+    TIMER = VAR_T1 @ 3.0, -> TimerData
+
+    // generate a timer that writes "VAR_T2" with a string version
+    // of the current value of DB_TIME (published by the DB) TIMER =
+    VAR_T2 @ 2.0 ,,,DB_TIME -> TimerData
+
+    // generate a timer that writes "VAR_T3" with the current
+    // value of DB_TIME (published by the DB)
+    // which only starts when "GO_T3" is published and stops
+    // when "STOP_T3" is published
+    TIMER = VAR_T3 @ 4.0,GO_T3,STOP_T3,DB_TIME -> TimerData
+
+    //generate a response to "SURPRISE_ME". The variable "BOO"
+    // takes on string value "HOO" and variable R9 has value
+    //"get_a_grip"
+    RESPONSE = SURPRISE_ME : BOO @ HOO, R9 @ get_a_grip
+
+    //generate a response to "DB_TIME".
+    RESPONSE = DB_TIME : ACKNOWLEDGMENT @ I_GOT_THE_TIME
+
+}
+\end{lstlisting}\caption{An extended \code{pScheduler} configuration block}
+\end{figure}
+\end{document}

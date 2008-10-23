@@ -1,0 +1,24 @@
+/name of the machine hosting the MOOSDB 
+//(can be an I.P address aswell as a FQDN)
+ServerHost = localhost
+
+//port DB listens on (make sure you are not blocking the port you request)
+ServerPort = 9000
+
+//all connected process can be tagged as belonging to a named community
+Community = AnExample
+
+ProcessConfig = iMatlab
+{
+
+	AppTick		= 10
+	CommsTick	= 10
+	Port		= COM6
+	BaudRate	= 4800
+	Verbose		= false
+	Streaming 	= false
+	MOOSComms = true
+	SerialComms = false
+	SERIAL_TIMEOUT = 10.0
+	SUBSCRIBE = DB_TIME @ 0.0
+}
