@@ -22,6 +22,7 @@
 
 #include "SSV_GUI.h"
 #include "MBUtils.h"
+#include "MOOSGenLibGlobalHelper.h"
 
 using namespace std;
 
@@ -119,6 +120,10 @@ SSV_GUI::SSV_GUI(int g_w, int g_h, const char *g_l)
   m_contact_range = new MY_Output(900, h()-30, 55, 20, "Range(m):"); 
   m_contact_range->textsize(info_size); 
   m_contact_range->labelsize(info_size);
+
+  m_warp = new MY_Output(1000, h()-60, 35, 20, "Warp:"); 
+  m_warp->textsize(info_size); 
+  m_warp->labelsize(info_size);
 
 
   int a_top = h()-323; // eyeballing it
@@ -337,6 +342,10 @@ int SSV_GUI::handle(int event)
 void SSV_GUI::updateXY() {
   string time_str = doubleToString(m_curr_time, 1);
   time->value(time_str.c_str());
+
+  double dwarp = GetMOOSTimeWarp();
+  string swarp = dstringCompact(doubleToString(dwarp, 2));
+  m_warp->value(swarp.c_str());
 
   string vname = mviewer->getStringInfo("active_vehicle_name");
 

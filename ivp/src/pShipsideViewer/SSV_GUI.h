@@ -88,6 +88,7 @@ protected:
   MY_Output  *d_radial;
   MY_Output  *m_rbearing;
   MY_Output  *m_contact_range;
+  MY_Output  *m_warp;
 
   Fl_Box     *m_deploy_box_text;
   Fl_Box     *m_deploy_box_body;
