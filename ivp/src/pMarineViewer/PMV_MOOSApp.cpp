@@ -51,6 +51,9 @@ bool PMV_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 
   m_gui->mviewer->setParam("curr_time", MOOSTime());
 
+  cout << "time_warp = " << GetMOOSTimeWarp() << endl;
+  MOOSTrace("moos_time = %3f\n", MOOSTime());
+
   int handled_msgs = 0;
 
   MOOSMSG_LIST::iterator p;

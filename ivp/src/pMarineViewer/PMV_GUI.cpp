@@ -22,6 +22,7 @@
 
 #include "PMV_GUI.h"
 #include "MBUtils.h"
+#include "MOOSGenLibGlobalHelper.h"
 
 using namespace std;
 
@@ -87,6 +88,10 @@ PMV_GUI::PMV_GUI(int g_w, int g_h, const char *g_l)
   time->textsize(info_size); 
   time->labelsize(info_size);
 
+  warp = new MY_Output(720, h()-30, 70, 20, "Warp:"); 
+  warp->textsize(info_size); 
+  warp->labelsize(info_size);
+
   this->end();
   this->resizable(this);
   this->show();
@@ -123,6 +128,10 @@ void PMV_GUI::updateXY() {
     v_ais->value(" n/a");
     return;
   }
+
+  double dwarp = GetMOOSTimeWarp();
+  string swarp = dstringCompact(doubleToString(dwarp,2));
+  warp->value(swarp.c_str());
 
   v_nam->value(vname.c_str());
 

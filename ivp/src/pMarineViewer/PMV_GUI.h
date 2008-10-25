@@ -50,6 +50,7 @@ protected:
   MY_Output  *v_dep;
   MY_Output  *v_ais;
   MY_Output  *time;
+  MY_Output  *warp;
 
   double m_curr_time;
 };
