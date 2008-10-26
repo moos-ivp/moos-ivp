@@ -216,7 +216,7 @@ protected:
     virtual bool OnStartUp();
 
     /** start up the comms */
-    bool ConfigureComms();
+    virtual bool ConfigureComms();
 
     /** Port on which server application listens for new connection */
     long m_lServerPort;

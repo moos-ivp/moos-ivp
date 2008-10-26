@@ -53,6 +53,9 @@ typedef std::list<std::string> STRING_LIST ;
 //find the location of sToken in a string sSource with or without case sensitivity
 size_t  MOOSStrFind( const std::string &sSource , const std::string & sToken,bool bInsensitive=false);
 
+// Added by mikerb so callers of this on the IvP side that haven't upgraded
+// their MOOS will not get a Function-Undefined compile error.
+double GetMOOSTimeWarp();
 
 //following function finds token = value in a list of such strings
 bool MOOSGetValueFromToken(STRING_LIST & sParams,const std::string & sToken,std::string & sVal);

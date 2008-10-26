@@ -93,6 +93,11 @@ typedef std::map<int,bool> THREAD2TRACE_MAP;
 typedef std::map<pthread_t,bool> THREAD2TRACE_MAP;
 #endif
 
+double GetMOOSTimeWarp()
+{
+  return(1);
+}
+
 
 double gdfMOOSSkew =0.0;
 
@@ -220,11 +225,11 @@ double MOOSLocalTime()
 
 double HPMOOSTime()
 {
-	return MOOSTime();
+  return MOOSTime();
 }
 double MOOSTime()
 {
-	return MOOSLocalTime()+gdfMOOSSkew;
+  return (MOOSLocalTime()+gdfMOOSSkew)*4;
 }
 
 void MOOSPause(int nMS)
@@ -233,6 +238,7 @@ void MOOSPause(int nMS)
 	::Sleep(nMS);
 #else
 
+  nMS /= 4;
     timespec TimeSpec;
     TimeSpec.tv_sec     = nMS / 1000;
     TimeSpec.tv_nsec    = (nMS%1000) *1000000;
