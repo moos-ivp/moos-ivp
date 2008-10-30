@@ -32,7 +32,7 @@ using namespace std;
 // ----------------------------------------------------------
 // global variables here
 
-char*       g_sMissionFile = 0;
+const char*       g_sMissionFile = 0;
 XMS         g_theXMS;
 pthread_t   g_threadID;
 
@@ -97,10 +97,11 @@ int main(int argc ,char * argv[])
   }
 
   
-  if(!g_sMissionFile) {
-    MOOSTrace("Failed to provide a MOOS (.moos) file... Exiting now.\n");
-    return(0);
-  }
+   if(!g_sMissionFile) {
+       
+       MOOSTrace("Failed to provide a MOOS (.moos) file... trying default.\n");
+       g_sMissionFile = "uXMS.moos";
+   }
   
   
   bool seed = true;
