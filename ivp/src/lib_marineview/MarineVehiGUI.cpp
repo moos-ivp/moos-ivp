@@ -43,8 +43,8 @@ MarineVehiGUI::MarineVehiGUI(int g_w, int g_h, const char *g_l)
   mbar->add("Vehicles/VehicleSize/vehicle_shape_scale = larger",    '+', (Fl_Callback*)MarineVehiGUI::cb_AltShapeScale, (void*)+1, 0);
   mbar->add("Vehicles/VehicleSize/vehicle_shape_scale = smaller",   '-', (Fl_Callback*)MarineVehiGUI::cb_AltShapeScale, (void*)-1, 0);
   mbar->add("Vehicles/VehicleSize/vehicle_shape_scale = actual", FL_ALT+'v', (Fl_Callback*)MarineVehiGUI::cb_AltShapeScale, (void*)0, FL_MENU_DIVIDER);
-  mbar->add("Vehicles/VehicleNames/vehicle_names_viewable = true", 'n', (Fl_Callback*)MarineVehiGUI::cb_ToggleVName, 0, 0);
-  mbar->add("Vehicles/VehicleNames/vehicle_names_viewable = false", 'n', (Fl_Callback*)MarineVehiGUI::cb_ToggleVName, 0, 0);
+  mbar->add("Vehicles/VehicleNames/vehicle_names_viewable = true", 0, (Fl_Callback*)MarineVehiGUI::cb_ToggleVName, 0, 0);
+  mbar->add("Vehicles/VehicleNames/vehicle_names_viewable = false", 0, (Fl_Callback*)MarineVehiGUI::cb_ToggleVName, 0, 0);
   mbar->add("Vehicles/VehicleNames/vehicle_names_viewable = toggle", 'n', (Fl_Callback*)MarineVehiGUI::cb_ToggleVName, 0, FL_MENU_DIVIDER);
   mbar->add("Vehicles/VehicleNames/vehicle_names_color = toggle", FL_CTRL+'n', (Fl_Callback*)MarineVehiGUI::cb_ToggleVNameColor, 0, 0);
 

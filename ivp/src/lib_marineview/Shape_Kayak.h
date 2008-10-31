@@ -82,7 +82,7 @@ double g_kayakBody[]=
   -5.25,      6.0,   
    0.0,       0.0
 };
-unsigned int g_kayakBodySize = 58;
+unsigned int g_kayakBodySize = 56;
 double        g_kayakScale = 1.0;
 
 double g_kayakMidOpen[]=
