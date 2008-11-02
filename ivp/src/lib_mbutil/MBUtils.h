@@ -47,6 +47,7 @@ std::string toupper(const std::string&);
 std::string truncString(const std::string&, std::string::size_type, std::string="");
 std::string boolToString(bool);
 std::string intToString(int);
+std::string intToCommaString(int);
 std::string floatToString(float, int=5);
 std::string doubleToString(double, int=5);
 std::string dstringCompact(const std::string&);

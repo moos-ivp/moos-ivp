@@ -435,6 +435,25 @@ string doubleToString(double val, int digits)
 }
 
 //----------------------------------------------------------------
+// Procedure: intToCommaString
+
+string intToCommaString(int ival)
+{
+  string str = intToString(ival);
+  string new_str;
+  int len = str.length();
+
+  for(int i=0; i<len; i++) {
+    new_str += str.at(i);
+    if((((len-(i+1))%3)==0) && (i!=len-1))
+      new_str += ',';
+  }
+
+  return(new_str);
+}
+
+
+//----------------------------------------------------------------
 // Procedure: dstringCompact
 //      Note: Convert 6.43000 to 6.43
 //                    6.00000 to 6
