@@ -104,7 +104,7 @@ bool PMV_MOOSApp::OnConnectToServer()
 {
   registerVariables();
 
-  m_Comms.Notify("HELM_REFRESH", 0);
+  m_Comms.Notify("HELM_MAP_CLEAR", 0);
   return(true);
 }
 

@@ -76,7 +76,7 @@ HelmIvP::HelmIvP()
   // Motivated by the need for a viewer handling geometric postings from
   // behaviors. The new arrival of a viewer into the MOOS community can 
   // request a refresh and then get new geometry mail to process.
-  m_refresh_var      = "HELM_REFRESH";
+  m_refresh_var      = "HELM_MAP_CLEAR";
   m_refresh_interval = 10.0;
   m_refresh_pending  = false;
   m_refresh_time     = 0;
@@ -166,10 +166,12 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
 	MOOSTrace("\n");
 	MOOSDebugWrite("pHelmIvP Has Been Re-Started");
       }
+#if 0
       else if(msg.m_sKey == "HELM_MAP_CLEAR") {
 	m_outgoing_strings.clear();
 	m_outgoing_doubles.clear();
       }
+#endif
       else if(msg.m_sKey == m_refresh_var) {
 	m_refresh_pending = true;
       }
