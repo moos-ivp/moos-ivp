@@ -93,6 +93,7 @@ bool SSV_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 bool SSV_MOOSApp::OnConnectToServer()
 {
   registerVariables();
+  m_Comms.Notify("HELM_MAP_CLEAR", 0);
   return(true);
 }
 
