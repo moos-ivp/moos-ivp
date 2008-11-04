@@ -166,12 +166,6 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
 	MOOSTrace("\n");
 	MOOSDebugWrite("pHelmIvP Has Been Re-Started");
       }
-#if 0
-      else if(msg.m_sKey == "HELM_MAP_CLEAR") {
-	m_outgoing_strings.clear();
-	m_outgoing_doubles.clear();
-      }
-#endif
       else if(msg.m_sKey == m_refresh_var) {
 	m_refresh_pending = true;
       }
@@ -541,7 +535,6 @@ void HelmIvP::registerVariables()
   m_Comms.Register("MOOS_MANUAL_OVERIDE", 0);
   m_Comms.Register("RESTART_HELM", 0);
   m_Comms.Register("HELM_VERBOSE", 0);
-  m_Comms.Register("HELM_MAP_CLEAR", 0);
 
   m_Comms.Register("NAV_YAW", 0);
   m_Comms.Register("NAV_SPEED", 0);
