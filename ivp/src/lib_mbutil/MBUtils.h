@@ -91,6 +91,8 @@ bool  okFileToWrite(std::string);
 
 void  millipause(int milliseconds);
 
+std::string  getReleaseVersion();
+
 #endif
 
 

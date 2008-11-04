@@ -1061,6 +1061,14 @@ void millipause(int milliseconds)
 #endif
 }
 
+//----------------------------------------------------------------
+// Procedure: getReleaseVersion
+// 
+
+string getReleaseVersion()
+{
+  return("3.1");
+}
 
 
 
