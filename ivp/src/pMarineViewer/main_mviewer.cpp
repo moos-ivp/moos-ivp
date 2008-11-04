@@ -50,6 +50,15 @@ void exit_with_usage()
 }
 
 //--------------------------------------------------------
+// Procedure: exit_with_version
+
+void exit_with_version()
+{
+  cout << "pMarineViewer - Version" << getReleaseVersion() << endl;
+  exit(0);
+}
+
+//--------------------------------------------------------
 // Procedure: exit_with_switches
 
 void exit_with_switches()
@@ -150,16 +159,24 @@ void idleProc(void *)
 int main(int argc, char *argv[])
 {
   bool switches = false;
+  bool version  = false;
   for(int i=1; i<argc; i++) {
     string argi  = argv[i];
     if(strContains(argi, ".moos"))
       g_sMissionFile = argv[i];
     else if(strContains(argi, "-sw"))
       switches = true;
+    else if((argi == "-v") || (argi == "-version"))
+      version = true;
+    else if(argi == "--version")
+      version = true;
     else if(!strContains(argi, "pMarineViewer"))
       exit_with_usage();
   }
   
+  if(version)
+    exit_with_version();
+
   if(switches)
     exit_with_switches();
 
