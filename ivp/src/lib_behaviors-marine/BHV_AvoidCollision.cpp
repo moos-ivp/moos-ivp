@@ -59,13 +59,12 @@ BHV_AvoidCollision::BHV_AvoidCollision(IvPDomain gdomain) :
   m_roc_max_dampen    = -2.0; 
   m_roc_max_heighten  = 2.0; 
 
+  // Behavior will only post a warning - not error - if no contact info
   m_on_no_contact_ok  = true;
 
   m_extrapolate  = true;
-
   m_decay_start = 60;
   m_decay_end   = 120;
-  
   m_extrapolator.setDecay(m_decay_start, m_decay_end);
   
 

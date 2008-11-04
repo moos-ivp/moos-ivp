@@ -31,7 +31,7 @@ PMV_Viewer::PMV_Viewer(int x, int y, int w, int h, const char *l)
   : MarineViewer(x,y,w,h,l)
 {
   m_centric_view = true;
-  m_centric_view_sticky = false;
+  m_centric_view_sticky = true;
 }
 
 //-------------------------------------------------------------
@@ -125,7 +125,6 @@ bool PMV_Viewer::setParam(string param, string value)
     handled = true;
   }
   else if((param == "ais_report") || (param == "ais_report_local")){
-    cout << "PMV_Viewer handling ais report" << endl;
     handled = m_vehiset.setParam(param, value);
     if(handled && m_centric_view && m_centric_view_sticky) {
       center_needs_adjusting = true;
