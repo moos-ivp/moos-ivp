@@ -1202,7 +1202,7 @@ void MarineViewer::drawSegLists()
 // Procedure: drawSegList
 
 void MarineViewer::drawSegList(const XYSegList& segl, double lwid, 
-			       double vert, bool z_dash,
+			       double vertex_size, bool z_dash,
 			       const vector<double>& edge_c,
 			       const vector<double>& vert_c,
 			       const vector<double>& labl_c)
@@ -1251,7 +1251,7 @@ void MarineViewer::drawSegList(const XYSegList& segl, double lwid,
   // If the seglist is just a single point, draw it bigger (x 1.4)
   if(vsize==1) {
     glEnable(GL_POINT_SMOOTH);
-    glPointSize((vert * 1.4) * m_zoom);
+    glPointSize((vertex_size * 1.4) * m_zoom);
     // Draw the vertices with color coding for the first and last
     
     glColor3f(vert_c[0], vert_c[1], vert_c[2]);
@@ -1260,19 +1260,21 @@ void MarineViewer::drawSegList(const XYSegList& segl, double lwid,
     glEnd();
     glDisable(GL_POINT_SMOOTH);
   }
-
-  glPointSize(vert * sqrt(m_zoom));
-
-  // Draw the vertices in between the first and last ones
-  glColor3f(vert_c[0], vert_c[1], vert_c[2]);
-  glEnable(GL_POINT_SMOOTH);
-  glBegin(GL_POINTS);
-  for(j=0; j<vsize; j++) {
-    glVertex2f(points[(j*2)], points[(j*2)+1]);
+  else {
+    if(vertex_size > 0) {
+      glPointSize(vertex_size * sqrt(m_zoom));
+      // Draw the vertices in between the first and last ones
+      glColor3f(vert_c[0], vert_c[1], vert_c[2]);
+      glEnable(GL_POINT_SMOOTH);
+      glBegin(GL_POINTS);
+      for(j=0; j<vsize; j++) {
+	glVertex2f(points[(j*2)], points[(j*2)+1]);
+      }
+      glEnd();
+      glDisable(GL_POINT_SMOOTH);
+    }
   }
-  glEnd();
-  glDisable(GL_POINT_SMOOTH);
-  
+
   delete [] points;
   glFlush();
   glPopMatrix();
