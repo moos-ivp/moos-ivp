@@ -6,6 +6,7 @@
 /*          (Broken out from the Viewer class(es)                */
 /*****************************************************************/
 
+#include <iostream>
 #include "VehicleSet.h"
 #include "MBUtils.h"
 #include "ColorParse.h"
@@ -141,7 +142,7 @@ bool VehicleSet::setParam(string param, string value)
       string vname  = stripBlankEnds(svector[0]);
       string vcolor = stripBlankEnds(svector[1]);
       if(isColor(vcolor)) {
-	m_vehi_color[param] = colorParse(value);
+	m_vehi_color[vname] = colorParse(vcolor);
 	handled = true;
       }
     }
