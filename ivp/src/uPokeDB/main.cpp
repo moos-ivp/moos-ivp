@@ -67,6 +67,7 @@ int main(int argc ,char * argv[])
       else
 	Poker.setPokeDouble(varname[j], atof(varvalue[j].c_str()));
     }
+
     Poker.Run(sMOOSName, sMissionFile);
   }
 

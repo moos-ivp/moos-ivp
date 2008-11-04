@@ -11,6 +11,37 @@
 
 using namespace std;
 
+extern bool MOOSAPP_OnConnect(void*);
+extern bool MOOSAPP_OnDisconnect(void*);
+
+
+//------------------------------------------------------------
+// Procedure: ConfigureComms
+//      Note: Overload the MOOSApp::ConfigureComms implementation
+//            which would have grabbed the port/host info from the
+//            .moos file instead.
+
+bool PokeDB::ConfigureComms()
+{
+  //register a callback for On Connect
+  m_Comms.SetOnConnectCallBack(MOOSAPP_OnConnect, this);
+  
+  //and one for the disconnect callback
+  m_Comms.SetOnDisconnectCallBack(MOOSAPP_OnDisconnect, this);
+  
+  //start the comms client....
+  if(m_sMOOSName.empty())
+    m_sMOOSName = m_sAppName;
+  
+  m_nCommsFreq = 10;
+
+  m_Comms.Run(m_sServerHost.c_str(),m_lServerPort,m_sMOOSName.c_str(), m_nCommsFreq);
+  
+  return(true);
+}
+
+
+
 //------------------------------------------------------------
 // Procedure: Iterate()
 
