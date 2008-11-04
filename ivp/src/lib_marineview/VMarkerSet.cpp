@@ -5,6 +5,7 @@
 /*    DATE: July 5th, 2008                                       */
 /*****************************************************************/
 
+#include <iostream>
 #include <cstdlib>
 #include "VMarkerSet.h"
 #include "MBUtils.h"
@@ -38,7 +39,10 @@ bool VMarkerSet::addVMarker(const string& mline,
   vector<string> svector = parseString(mline, ',');
   unsigned int vsize = svector.size();
 
-  string mtype, xpos, ypos, lat, lon, scale, label, colors;
+  cout << "Handling marker line: " << mline << endl;
+
+  string mtype, xpos, ypos, lat, lon, label, colors;
+  string scale = "1";
   for(unsigned int i=0; i<vsize; i++) {
     svector[i] = stripBlankEnds(svector[i]);
     vector<string> ivector = parseString(svector[i], '=');
@@ -49,11 +53,14 @@ bool VMarkerSet::addVMarker(const string& mline,
     if(left == "type")        mtype = right;
     else if(left == "xpos")   xpos = right;
     else if(left == "ypos")   ypos = right;
+    else if(left == "x")      xpos = right;
+    else if(left == "y")      ypos = right;
     else if(left == "scale")  scale = right;
     else if(left == "lat")    lat = right;
     else if(left == "lon")    lon = right;
     else if(left == "label")  label = right;
     else if(left == "colors") colors = right;
+    else if(left == "color")  colors = right;
   }
 
   if((mtype==""))
@@ -64,6 +71,8 @@ bool VMarkerSet::addVMarker(const string& mline,
   if((lat=="")||(lon=="")||(!isNumber(lat))||(!isNumber(lon)))
     if((xpos=="")||(ypos=="")||(!isNumber(xpos))||(!isNumber(ypos)))
       return(false);
+
+  cout << "Accepted Marker" << endl;
 
   double xpos_d, ypos_d;
   if((lat=="")||(lon=="")||(!isNumber(lat))||(!isNumber(lon))) {
@@ -140,9 +149,9 @@ bool VMarkerSet::setParam(const string& param, string value)
 {
   if(param == "markers_viewable")
     return(setBooleanOnString(m_markers_viewable, value));
-  else if(param == "marker_labels_viewable")
+  else if(param == "markers_labels_viewable")
     return(setBooleanOnString(m_marker_labels_viewable, value));
-  else if(param == "marker_scale_global") {
+  else if(param == "markers_scale_global") {
     if(isNumber(value)) {
       double dval = atof(value.c_str());
       if(dval > 0.1)

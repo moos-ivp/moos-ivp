@@ -697,7 +697,7 @@ void MarineViewer::drawCommonMarker(double x, double y, double shape_scale,
   vector<double> black(3,0);
   if(mtype == "gateway") {
     if(cvect2.size() != 3) cvect2 = black;
-    if(cvect1.size() != 3) cvect1 = colorParse("1.0, 1.0, 0.0");
+    if(cvect1.size() != 3) cvect1 = colorParse("green");
     glTranslatef(-g_gatewayCtrX, -g_gatewayCtrY, 0);
     drawGLPoly(g_gatewayBody, g_gatewayBodySize, cvect1);    
     drawGLPoly(g_gatewayBody, g_gatewayBodySize, black, 1);    
@@ -716,7 +716,7 @@ void MarineViewer::drawCommonMarker(double x, double y, double shape_scale,
   }
 
   else if(mtype == "diamond") {
-    if(cvect1.size() != 3) cvect1 = colorParse("red");
+    if(cvect1.size() != 3) cvect1 = colorParse("orange");
     glTranslatef(-g_diamondCtrX, -g_diamondCtrY, 0);
     drawGLPoly(g_diamondBody, g_diamondBodySize, cvect1);    
     drawGLPoly(g_diamondBody, g_diamondBodySize, black, 1);    
@@ -724,7 +724,7 @@ void MarineViewer::drawCommonMarker(double x, double y, double shape_scale,
   }
 
   else if(mtype == "triangle") {
-    if(cvect1.size() != 3) cvect1 = colorParse("1, 1, 0");
+    if(cvect1.size() != 3) cvect1 = colorParse("red");
     glTranslatef(-g_triangleCtrX, -g_triangleCtrY, 0);
     drawGLPoly(g_triangleBody, g_triangleBodySize, cvect1);    
     drawGLPoly(g_triangleBody, g_triangleBodySize, black, 1);    
@@ -732,7 +732,7 @@ void MarineViewer::drawCommonMarker(double x, double y, double shape_scale,
   }
 
   else if(mtype == "square") {
-    if(cvect1.size() != 3) cvect1 = colorParse("green");
+    if(cvect1.size() != 3) cvect1 = colorParse("blue");
     glTranslatef(-g_squareCtrX, -g_squareCtrY, 0);
     drawGLPoly(g_squareBody, g_squareBodySize, cvect1);    
     drawGLPoly(g_squareBody, g_squareBodySize, black, 1);    

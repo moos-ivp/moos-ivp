@@ -6,7 +6,6 @@
 /*          (Broken out from the Viewer class(es)                */
 /*****************************************************************/
 
-#include <iostream>
 #include "VehicleSet.h"
 #include "MBUtils.h"
 #include "ColorParse.h"
@@ -61,7 +60,6 @@ bool VehicleSet::setParam(string param, string value)
   bool makenote = true;
   param = tolower(param);
   if((param == "ais_report") || (param == "ais_report_local")) {
-    cout << "VehicleSet handling ais report" << endl;
     handled  = updateVehiclePosition(value);
     makenote = false;
   }
