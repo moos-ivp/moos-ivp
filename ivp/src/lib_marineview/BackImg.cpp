@@ -40,11 +40,10 @@
    #error "Unknown OS"
 #endif
 
-
-
 #include "BackImg.h"
 #include "MBUtils.h"
 #include "FileBuffer.h"
+#include "MOOSGeodesy.h"
 
 using namespace std;
 
@@ -130,8 +129,6 @@ bool BackImg::readTiffData(string filename)
 
   string file = filename;
 
-  cout << "Reading Tiff(1) Data: " << file << endl;
-
   FILE *f = fopen(file.c_str(), "r");
   if(f) {
     fclose(f);
@@ -141,9 +138,6 @@ bool BackImg::readTiffData(string filename)
     file += "/";
     file += filename;
   } 
-
-  cout << "Reading Tiff(2) Data: " << file << endl;
-
 
   // We turn off Warnings (maybe a bad idea) since many photoshop 
   // images have newfangled tags that confuse libtiff
@@ -216,33 +210,116 @@ bool BackImg::readTiffInfo(string filename)
     return(false);
   }
 
+  bool img_centx_set = false;
+  bool img_centy_set = false;
+  bool img_meters_set = false;
+
+  double lat_north, lat_south, lon_west, lon_east;
+  double datum_lat, datum_lon;
+  int    img_pixels;
+
+  bool   lat_north_set  = false;
+  bool   lat_south_set  = false;
+  bool   lon_west_set   = false;
+  bool   lon_east_set   = false;
+  bool   datum_lat_set  = false;
+  bool   datum_lon_set  = false;
+  bool   img_pixels_set = false;
+
   for(int i=0; i<vsize; i++) {
     string line = stripComment(buffer[i], "//");
     line = stripBlankEnds(line);
 
     if(line.size() > 0) {
       vector<string> svector = parseString(line, '=');
-      if(svector.size() != 2) {
-	//cout << "A Problem w/ line " << i << " in " << file << endl;
+      if(svector.size() != 2)
 	return(false);
-      }
       string left  = stripBlankEnds(svector[0]);
       string right = stripBlankEnds(svector[1]);
       
-      if(left == "img_centx") 
+      if((left == "img_centx") && (isNumber(right))) {
 	img_centx = atof(right.c_str());
-      else if(left == "img_centy") 
-	img_centy = atof(right.c_str());
-
-      else if(left == "img_meters") 
-	img_meters = atof(right.c_str());
-      else {
-	//cout << "Problem w/ line " << i << " in " << file << endl;
-	//cout << "Lefthand argument: " << left << endl;
-	return(false);
+	img_centx_set = true;
       }
+      else if((left == "img_centy") && (isNumber(right))) {
+	img_centy = atof(right.c_str());
+	img_centy_set = true;
+      }
+      else if((left == "img_meters") && (isNumber(right))) {
+	img_meters = atof(right.c_str());
+	img_meters_set = true;
+      }
+      //--------------------------------------------------
+      else if((left == "lat_north") && (isNumber(right))) {
+	lat_north = atof(right.c_str());
+	lat_north_set = true;
+      }
+      else if((left == "lat_south") && (isNumber(right))) {
+	lat_south = atof(right.c_str());
+	lat_south_set = true;
+      }
+      else if((left == "lon_west") && (isNumber(right))) {
+	lon_west = atof(right.c_str());
+	lon_west_set = true;
+      }
+      else if((left == "lon_east") && (isNumber(right))) {
+	lon_east = atof(right.c_str());
+	lon_east_set = true;
+      }
+      else if((left == "datum_lat") && (isNumber(right))) {
+	datum_lat = atof(right.c_str());
+	datum_lat_set = true;
+      }
+      else if((left == "datum_lon") && (isNumber(right))) {
+	datum_lon = atof(right.c_str());
+	datum_lon_set = true;
+      }
+      else if((left == "img_pixels") && (isNumber(right))) {
+	img_pixels = atoi(right.c_str());
+	img_pixels_set = true;
+      }
+      else
+	return(false);
     }
   }
+  
+  // Must provide the essential info in one of the two allowable
+  // forms. Either with the six lat/lon/datum values or with the
+  // three image values.
+  if((!img_centx_set || !img_centy_set || !img_meters_set) && 
+     (!lat_north_set || !lat_south_set || !lon_west_set ||
+      !lon_east_set  || !datum_lat_set || !datum_lon_set ||
+      !img_pixels_set))
+    return(false);
+
+  // If info *not* in the image-values format, derive from the 
+  // lat/lon info.
+  if(!img_centx_set || !img_centy_set || !img_meters_set) {
+    if((lat_north <= lat_south) || (lon_east <= lon_west)) {
+      cout << "Problem with BackImg Lat/Lon specs. " << endl;
+      return(false);
+    }
+    if(img_pixels <= 0) {
+      cout << "Problem with BackImg img_pixels spec. " << endl;
+      return(false);
+    }
+    
+    CMOOSGeodesy geodesy;
+    geodesy.Initialise(datum_lat, datum_lon);
+    double x1,x2,y1,y2;
+    bool ok1 = geodesy.LatLong2LocalGrid(lat_north, lon_west, y1, x1);
+    bool ok2 = geodesy.LatLong2LocalGrid(lat_south, lon_east, y2, x2);
+    if(!ok1 || !ok2) {
+      cout << "Problem with BackImg Geodesy conversion. " << endl;
+      return(false);
+    }
+    double length_meters = y1-y2;
+
+    img_meters = (img_pixels / length_meters) / 10.0;
+    img_centx = (datum_lon - lon_west) / (lon_east - lon_west);
+    img_centy = (datum_lat - lat_south) / (lat_north - lat_south);
+  }
+
 
   double x_img_diff = 0.50 - img_centx;
   x_at_img_ctr = (x_img_diff * 100) / img_meters;

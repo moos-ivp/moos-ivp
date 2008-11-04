@@ -43,12 +43,13 @@ double g_gliderBody[]=
   -9.0,  32.0, 
   -6.0,  13.0, 
   -3.0,   2.0, 
-  -2.0,   0.0
+  -2.0,   0.0,
+   2.0,   0.0
 };
 
 double       g_gliderCtrX     = 0.0;
 double       g_gliderCtrY     = 35.0;
-unsigned int g_gliderBodySize = 19;
+unsigned int g_gliderBodySize = 20;
 double       g_gliderScale    = 1.5;
 
 double g_gliderWing[]=
