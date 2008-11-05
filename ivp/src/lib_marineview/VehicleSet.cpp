@@ -137,14 +137,11 @@ bool VehicleSet::setParam(string param, string value)
     }
   }
   else if(param == "vehicolor") {
-    vector<string> svector = parseString(value, ',');
-    if(svector.size() == 2) {
-      string vname  = stripBlankEnds(svector[0]);
-      string vcolor = stripBlankEnds(svector[1]);
-      if(isColor(vcolor)) {
-	m_vehi_color[vname] = colorParse(vcolor);
-	handled = true;
-      }
+    string vname  = stripBlankEnds(biteString(value, ','));
+    string vcolor = stripBlankEnds(value);
+    if(isColor(vcolor)) {
+      m_vehi_color[vname] = colorParse(vcolor);
+      handled = true;
     }
   }
 
