@@ -29,12 +29,12 @@ PokeDB::PokeDB()
 //------------------------------------------------------------
 // Constructor
 
-PokeDB::PokeDB(string g_server, double g_port)
+PokeDB::PokeDB(string g_server, long int g_port)
 {
   m_db_start_time = 0; 
   m_iteration     = 0; 
   m_sServerHost   = g_server; 
-  m_lServerPort   = g_port;};
+  m_lServerPort   = g_port;
 }
 
 

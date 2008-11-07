@@ -12,10 +12,8 @@
 class PokeDB : public CMOOSApp  
 {
  public:
-  PokeDB(std::string g_server, double g_port) 
-    {m_db_start_time=0; m_iteration=0; m_sServerHost=g_server; m_lServerPort=g_port;};
-
-  PokeDB() {m_db_start_time=0; m_iteration=0; m_sServerHost="localhost"; m_lServerPort=9000;};
+  PokeDB(std::string g_server, long int g_port); 
+  PokeDB();
 
   virtual ~PokeDB() {};
   
