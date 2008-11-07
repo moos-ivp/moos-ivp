@@ -44,10 +44,15 @@ XYPolygon stringToPoly(std::string);
 //    degs=val, rads=val, pts=val, snap_value=val, label=val"
 XYPolygon stringPairsToEllipsePoly(std::string);
 
-// Create a polygon that approximates radial wedge
+// Create a polygon that approximates radial pie wedge
 // Example: "wedge:: x=val, y=val, lang=val, rang=val,
 //    pts=val, range=val, snap_value=val, label=val"
-XYPolygon stringPairsToWedgePoly(std::string);
+XYPolygon stringPairsToPieWedgePoly(std::string);
+
+// Create a polygon that approximates radial range wedge
+// Example: "type=wedge, x=val, y=val, lang=val, rang=val,
+//    pts=val, range=val, snap_value=val, label=val"
+XYPolygon stringPairsToRangeWedgePoly(std::string);
 
 
 

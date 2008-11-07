@@ -128,7 +128,11 @@ XYPolygon stringToPoly(string str)
   }
   else if(!strncasecmp("wedge:", str.c_str(), 6)) {
     str = str.c_str()+6;
-    return(stringPairsToWedgePoly(str));
+    return(stringPairsToPieWedgePoly(str));
+  }
+  else if(!strncasecmp("rangewedge:", str.c_str(), 6)) {
+    str = str.c_str()+11;
+    return(stringPairsToRangeWedgePoly(str));
   }
   else if(!strncasecmp("ellipse::", str.c_str(), 9)) {
     str = str.c_str()+9;
@@ -283,13 +287,13 @@ XYPolygon stringPairsToEllipsePoly(string str)
 
 
 //---------------------------------------------------------------
-// Procedure: stringPairsToWedgePoly
+// Procedure: stringPairsToPieWedgePoly
 //
-/// Initializes a polygon that approximates an wedge
+/// Initializes a polygon that approximates a pie wedge
 /// Format of the string is "type=wedge, x=val, y=val, lang=val, 
 //  rang=val, pts=val, range=val, snap_value=val, label=val"
 
-XYPolygon stringPairsToWedgePoly(string str)
+XYPolygon stringPairsToPieWedgePoly(string str)
 {
   XYPolygon null_poly;
 
@@ -395,6 +399,133 @@ XYPolygon stringPairsToWedgePoly(string str)
     return(new_poly);
   else
     return(null_poly);
+}
+
+
+//---------------------------------------------------------------
+// Procedure: stringPairsToRangeWedgePoly
+//
+/// Initializes a polygon that approximates a range wedge
+/// Format of the string is "type=wedge, x=val, y=val, lang=val, 
+//  rang=val, pts=val, range=val, snap_value=val, label=val"
+
+XYPolygon stringPairsToRangeWedgePoly(string str)
+{
+  XYPolygon null_poly;
+
+  str = tolower(stripBlankEnds(str));
+  vector<string> mvector = parseString(str, ',');
+  int vsize = mvector.size();
+
+  // Below are the mandatory parameters - check they are set.
+  bool xpos_set  = false;
+  bool ypos_set  = false;
+  bool lang_set  = false;
+  bool rang_set  = false;
+  bool range_set = false;
+
+  double range_min = 0;
+  double xpos, ypos, lang, rang, range_max, snap=0;
+  string label;
+  int    pts=0;
+  
+  for(int i=0; i<vsize; i++) {
+    vector<string> svector = parseString(mvector[i], '=');
+    if(svector.size() != 2)
+      return(null_poly);
+    string param = stripBlankEnds(svector[0]);
+    string value = stripBlankEnds(svector[1]);
+    if(param == "type") {
+      if(value != "wedge")
+	return(null_poly);
+    }
+    else if((param == "x") && (isNumber(value))) {
+      xpos_set = true;
+      xpos = atof(value.c_str());
+    }
+    else if((param == "y") && (isNumber(value))) {
+      ypos_set = true;
+      ypos = atof(value.c_str());
+    }
+    else if((param == "lang") && (isNumber(value))) {
+      lang_set = true;
+      lang = atof(value.c_str());
+    }
+    else if((param == "rang") && (isNumber(value))) {
+      rang_set = true;
+      rang = atof(value.c_str());
+    }
+    else if((param == "range_min") && (isNumber(value)))
+      range_min = atof(value.c_str());
+    else if((param == "range_max") && (isNumber(value))) {
+      range_set = true;
+      range_max = atof(value.c_str());
+    }
+    else if((param == "pts") && (isNumber(value))) {
+      int ival = atoi(value.c_str());
+      if(ival >= 0)
+	pts = ival;
+    }
+    else if((param == "snap") && (isNumber(value))) {
+      double dval = atof(value.c_str());
+      if(dval >= 0)
+	snap = dval;
+    }
+    else if(param == "label") {
+      label = value;
+    }
+  }
+
+  if(!xpos_set || !ypos_set || !lang_set || !rang_set || !range_set)
+    return(null_poly);
+
+  if(range_min >= range_max)
+    return(null_poly);
+
+  lang = angle360(lang);
+  rang = angle360(rang);
+  if(rang < lang)
+    rang += 360;
+
+  double delta = 0;
+  if(rang > lang)
+    delta = (rang - lang) / ((double)(pts));
+
+
+  XYPolygon new_poly;
+
+  double ptx, pty, project_angle;
+
+
+  // First add the points from the outer arc
+  projectPoint(lang, range_max, xpos, ypos, ptx, pty);
+  new_poly.add_vertex(ptx, pty);
+  project_angle = lang;
+  while(project_angle < rang) {
+    project_angle += delta;
+    if(project_angle > rang)
+      project_angle = rang;
+    projectPoint(project_angle, range_max, xpos, ypos, ptx, pty);
+    new_poly.add_vertex(ptx, pty);
+  }
+
+  // Then add the points from the inner arc
+  projectPoint(rang, range_min, xpos, ypos, ptx, pty);
+  new_poly.add_vertex(ptx, pty);
+  project_angle = rang;
+  while(project_angle > lang) {
+    project_angle -= delta;
+    if(project_angle < lang)
+      project_angle = lang;
+    projectPoint(project_angle, range_min, xpos, ypos, ptx, pty);
+    new_poly.add_vertex(ptx, pty);
+  }
+  
+  if(snap>=0)
+    new_poly.apply_snap(snap);
+  new_poly.set_label(label);
+
+  return(new_poly);
 }
 
 
