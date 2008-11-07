@@ -51,5 +51,6 @@ protected:
   int    m_iteration;
 
   std::string m_server;
-  double m_port;
+  double      m_port;
+  bool        m_configure_comms_locally;
 };

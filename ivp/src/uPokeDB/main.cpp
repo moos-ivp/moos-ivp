@@ -6,6 +6,7 @@
 /*          Motivated by Matt Grund's uMOOSPoke App              */
 /*****************************************************************/
 
+#include <cstring>
 #include <vector>
 #include "PokeDB.h"
 #include "MBUtils.h"
@@ -53,23 +54,39 @@ int main(int argc ,char * argv[])
     }
   }
 
+  string server = "localhost";
+  int    port   = 9000;
+
+  if(!strcmp(sMissionFile, "Mission.moos")) {
+    char buff[1000];
+    cout << "Enter IP address:  [localhost] ";
+    fgets(buff, 999, stdin);
+    if(buff[0] != '\n') 
+      server = buff;    
+    cout << "Enter Port number: [9000] ";
+    fgets(buff, 999, stdin);
+    if(buff[0] != '\n') 
+      port = atoi(buff);    
+  }
+
+
   if(help_requested) {
     MOOSTrace("uPokeDB: Usage:\n\n");
     MOOSTrace("  PokeDB [foo.moos] <varname=value> <varname=value>\n\n");
     return(0);
   }
-  else {
-    PokeDB Poker;
-    int vsize = varname.size();
-    for(int j=0; j<vsize; j++) {
-      if(vartype[j] == "string")
-	Poker.setPokeString(varname[j], varvalue[j]);
-      else
-	Poker.setPokeDouble(varname[j], atof(varvalue[j].c_str()));
-    }
 
-    Poker.Run(sMOOSName, sMissionFile);
+  PokeDB Poker(server, port);
+  int vsize = varname.size();
+  for(int j=0; j<vsize; j++) {
+    if(vartype[j] == "string")
+      Poker.setPokeString(varname[j], varvalue[j]);
+    else
+      Poker.setPokeDouble(varname[j], atof(varvalue[j].c_str()));
   }
+  
+
+  Poker.Run(sMOOSName, sMissionFile);
 
   return(0);
 }
