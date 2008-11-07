@@ -190,7 +190,7 @@ bool SSV_MOOSApp::OnStartUp()
     
     if(param == "contacts") {
       vector<string> svector = parseString(value, ',');
-      for(int i=0; i<svector.size(); i++)
+      for(unsigned int i=0; i<svector.size(); i++)
 	m_gui->addContactButton(i, svector[i]);
     }
     else { 

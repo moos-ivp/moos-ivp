@@ -76,7 +76,7 @@ int main(int argc ,char * argv[])
   }
  
   // start the TermCommand in its own thread
-  ThreadParams params = {&g_theTermCommand, "uTermCommand"};
+  ThreadParams params = {&g_theTermCommand, argv[0]};
   g_threadID = spawn_thread(&params);	
 
   bool quit = false;

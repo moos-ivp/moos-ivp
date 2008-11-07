@@ -299,9 +299,10 @@ double SSV_Viewer::getRelativeInfo(const string& info_type)
   double rbearing = bearing - pose_os.getTheta();
   if(info_type_lower == "relative_bearing")
     return(angle360(rbearing));
-  
-  if(info_type_lower == "relative_range")
+  else if(info_type_lower == "relative_range")
     return(hypot((os_x - vh_x), (os_y - vh_y)));
+  else
+    return(0);
 }
 
 //-------------------------------------------------------------

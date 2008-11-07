@@ -679,12 +679,14 @@ void HelmScope::updateVariable(CMOOSMsg &msg)
 void HelmScope::updateVarVal(const string& varname, 
 			     const string& val)
 {
-  for(unsigned int i=0; i<m_var_names.size(); i++)
-    if(m_var_names[i] == varname)
+  for(unsigned int i=0; i<m_var_names.size(); i++) {
+    if(m_var_names[i] == varname) {
       if(isNumber(val))
 	m_var_vals[i] = dstringCompact(val);
       else
 	m_var_vals[i] = val;
+    }
+  }
 }
 
 void HelmScope::updateVarType(const string& varname, 
