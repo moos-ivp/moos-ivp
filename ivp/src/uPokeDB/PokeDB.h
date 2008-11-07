@@ -22,8 +22,11 @@ class PokeDB : public CMOOSApp
   bool OnConnectToServer();
   bool OnStartUp();
 
+  void setConfigureCommsLocally(bool v) {m_configure_comms_locally=v;};
+
   void setPokeDouble(const std::string& varname, double val);
   void setPokeString(const std::string& varname, const std::string& val);
+  
 
  protected:
   void registerVariables();

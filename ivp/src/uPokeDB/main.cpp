@@ -71,7 +71,17 @@ int main(int argc ,char * argv[])
     }
   }
 
-  if(!strcmp(sMissionFile, "Mission.moos")) {
+  if(help_requested) {
+    MOOSTrace("uPokeDB: Usage:\n\n");
+    MOOSTrace("  PokeDB [foo.moos] [server=val] [port=val] <varname=value> <varname=value>\n\n");
+    return(0);
+  }
+
+  bool mission_file_provided = false;
+  if(strcmp(sMissionFile, "Mission.moos"))
+    mission_file_provided = true;
+
+  if(!mission_file_provided) {
     char buff[1000];
     cout << "Enter IP address:  [localhost] ";
     fgets(buff, 999, stdin);
@@ -87,14 +97,11 @@ int main(int argc ,char * argv[])
     }
   }
   
-
-  if(help_requested) {
-    MOOSTrace("uPokeDB: Usage:\n\n");
-    MOOSTrace("  PokeDB [foo.moos] [server=val] [port=val] <varname=value> <varname=value>\n\n");
-    return(0);
-  }
-
   PokeDB Poker(server, port);
+
+  if(mission_file_provided)
+    Poker.setConfigureCommsLocally(true);
+
   int vsize = varname.size();
   for(int j=0; j<vsize; j++) {
     if(vartype[j] == "string")

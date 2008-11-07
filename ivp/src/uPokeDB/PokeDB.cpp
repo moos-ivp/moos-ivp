@@ -24,6 +24,8 @@ PokeDB::PokeDB()
   m_iteration     = 0; 
   m_sServerHost   = "localhost"; 
   m_lServerPort   = 9000;
+
+  m_configure_comms_locally = false;
 }
 
 //------------------------------------------------------------
@@ -35,10 +37,9 @@ PokeDB::PokeDB(string g_server, long int g_port)
   m_iteration     = 0; 
   m_sServerHost   = g_server; 
   m_lServerPort   = g_port;
+
+  m_configure_comms_locally = false;
 }
-
-
-
 
 //------------------------------------------------------------
 // Procedure: ConfigureComms
@@ -48,6 +49,9 @@ PokeDB::PokeDB(string g_server, long int g_port)
 
 bool PokeDB::ConfigureComms()
 {
+  if(!m_configure_comms_locally) 
+    return(CMOOSApp::ConfigureComms());
+
   //register a callback for On Connect
   m_Comms.SetOnConnectCallBack(MOOSAPP_OnConnect, this);
   
