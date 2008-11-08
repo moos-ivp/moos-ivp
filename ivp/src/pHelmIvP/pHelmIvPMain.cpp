@@ -20,12 +20,33 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
+#include <iostream>
 #include "MOOSLib.h"
 #include "MOOSGenLib.h"
 #include "HelmIvP.h"
+#include "MBUtils.h"
+
+using namespace std;
 
 int main(int argc, char *argv[])
 {
+  bool version_requested = false;
+
+  for(int i=0; i<argc; i++) {
+    string str = argv[i];
+    if((str=="-v") || (str=="--version") || (str=="-version"))
+      version_requested = true;
+  }
+  
+  if(version_requested) {
+    vector<string> svector = getReleaseInfo("pHelmIvP");
+    for(int i=0; i<svector.size(); i++)
+      if(!strContains(svector[i], "ree"))
+	cout << svector[i] << endl;
+    return(0);
+  }
+
+
   HelmIvP helmIvP;
   
   char *sMissionFile = "pHelmIvP.moos";

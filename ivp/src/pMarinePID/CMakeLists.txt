@@ -13,9 +13,9 @@ SET(SRC
 ADD_EXECUTABLE(pMarinePID ${SRC})
    
 TARGET_LINK_LIBRARIES(pMarinePID 
-MOOS
-MOOSGen
-mbutil
-geometry
-m
-pthread)
+  MOOS
+  MOOSGen
+  mbutil
+  geometry 
+  m
+  pthread)

@@ -22,12 +22,23 @@ char*           g_sMissionFile = 0;
 FV_MOOSApp      g_thePort;
 
 //--------------------------------------------------------
-// Procedure: usage
+// Procedure: exit_with_usage
 
 void exit_with_usage()
 {
   cout << "Usage: uFunctionViewer file.moos" << endl;
-  exit(-1);
+  exit(0);
+}
+
+//--------------------------------------------------------
+// Procedure: exit_with_version
+
+void exit_with_version()
+{
+  vector<string> svector = getReleaseInfo("uFunctionVis");
+  for(int i=0; i<svector.size(); i++)
+    cout << svector[i] << endl;
+  exit(0);
 }
 
 
@@ -45,12 +56,18 @@ void idleProc(void *)
 
 int main(int argc, char *argv[])
 {
+  bool version_requested = false;
   for(int i=1; i<argc; i++) {
-    string argi  = argv[i];
-    if(strContains(argi, ".moos"))
+    string str  = argv[i];
+    if(strContains(str, ".moos"))
       g_sMissionFile = argv[i];
+    if((str=="-v") || (str=="--version") || (str=="-version"))
+      version_requested = true;
   }
-
+  
+  if(version_requested)
+    exit_with_version();
+  
   if(g_sMissionFile == 0)
     exit_with_usage();
 

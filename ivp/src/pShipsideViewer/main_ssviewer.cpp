@@ -41,12 +41,23 @@ struct ThreadParams {
 };
 
 //--------------------------------------------------------
-// Procedure: usage
+// Procedure: exit_with_usage
 
 void exit_with_usage()
 {
   cout << "Usage: pShipsideViewer file.moos [file.tif] [-noimg]" << endl;
   exit(-1);
+}
+
+//--------------------------------------------------------
+// Procedure: exit_with_version
+
+void exit_with_version()
+{
+  vector<string> svector = getReleaseInfo("pShipsideViewer");
+  for(int i=0; i<svector.size(); i++)
+    cout << svector[i] << endl;
+  exit(0);
 }
 
 
@@ -99,15 +110,17 @@ int main(int argc, char *argv[])
   string viewer_size = "large";
 
   for(int i=1; i<argc; i++) {
-    string argi  = argv[i];
-    if(strContains(argi, ".moos"))
+    string str  = argv[i];
+    if(strContains(str, ".moos"))
       g_sMissionFile = argv[i];
-    else if(strContains(argi, "-med"))
+    else if(strContains(str, "-med"))
       viewer_size = "medium";
-    else if(strContains(argi, "-small"))
+    else if(strContains(str, "-small"))
       viewer_size = "small";
-    else if(argi != "pShipsideViewer")
+    else if((str=="-h") || (str=="--help") || (str=="-help"))
       exit_with_usage();
+    else if((str=="-v") || (str=="--version") || (str=="-version"))
+      exit_with_version();
   }
   
   if(g_sMissionFile == 0)

@@ -9,6 +9,7 @@
 #include "MOOSLib.h"
 #include "MOOSGenLib.h"
 #include "ViewerRelay.h"
+#include "MBUtils.h"
 
 using namespace std;
 
@@ -16,6 +17,21 @@ int main(int argc, char *argv[])
 {
   string sMissionFile = "ViewerRelay.moos";
   string sMOOSName = "pViewerRelay";
+
+  bool version_requested = false;
+
+  for(int i=0; i<argc; i++) {
+    string str = argv[i];
+    if((str=="-v") || (str=="--version") || (str=="-version"))
+      version_requested = true;
+  }
+  
+  if(version_requested) {
+    vector<string> svector = getReleaseInfo("pViewerRelay");
+    for(int i=0; i<svector.size(); i++)
+      cout << svector[i] << endl;
+    return(0);
+  }
 
   switch(argc) {
   case 3:

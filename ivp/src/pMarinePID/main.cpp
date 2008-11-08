@@ -20,12 +20,32 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
+#include <string>
 #include "MOOSLib.h"
 #include "MOOSGenLib.h"
 #include "MarinePID.h"
+#include "MBUtils.h"
+
+using namespace std;
 
 int main(int argc, char *argv[])
 {
+  bool version_requested = false;
+
+  for(int i=0; i<argc; i++) {
+    string str = argv[i];
+    if((str=="-v") || (str=="--version") || (str=="-version"))
+      version_requested = true;
+  }
+  
+  if(version_requested) {
+    vector<string> svector = getReleaseInfo("pMarinePID");
+    for(int i=0; i<svector.size(); i++)
+      cout << svector[i] << endl;
+    return(0);
+  }
+
+
   MarinePID marinePID;
   
   char *sMissionFile = "pMarinePID.moos";
