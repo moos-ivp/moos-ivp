@@ -78,7 +78,8 @@ pthread_t spawn_thread(ThreadParams *pParams)
 
 int main(int argc ,char * argv[])
 {
-  bool help_requested   = false;
+  bool help_requested    = false;
+  bool version_requested = false;
   //bool ignore_file_vars = false;
 
   g_sMissionFile = 0;
@@ -86,6 +87,9 @@ int main(int argc ,char * argv[])
     string str = argv[i];
     if(strContains(str, ".moos"))
       g_sMissionFile = argv[i];
+    
+    if((str=="-v") || (str=="--version") || (str == "-version"))
+      version_requested = true;
 
     if((str == "-h") || (str == "--help") || (str == "-help"))
       help_requested = true;
@@ -96,12 +100,18 @@ int main(int argc ,char * argv[])
     return(0);
   }
 
+  if(version_requested) {
+    vector<string> svector = getReleaseInfo("uXMS");
+    for(int i=0; i<svector.size(); i++)
+      cout << svector[i] << endl;
+    return(0);
+  }
+
   
-   if(!g_sMissionFile) {
-       
-       MOOSTrace("Failed to provide a MOOS (.moos) file... trying default.\n");
-       g_sMissionFile = "uXMS.moos";
-   }
+  if(!g_sMissionFile) {       
+    MOOSTrace("Failed to provide a MOOS (.moos) file... trying default.\n");
+    g_sMissionFile = "uXMS.moos";
+  }
   
   
   bool seed = true;

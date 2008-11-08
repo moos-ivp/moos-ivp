@@ -54,7 +54,9 @@ void exit_with_usage()
 
 void exit_with_version()
 {
-  cout << "pMarineViewer - Version" << getReleaseVersion() << endl;
+  vector<string> svector = getReleaseInfo("pMarineViewer");
+  for(int i=0; i<svector.size(); i++)
+    cout << svector[i] << endl;
   exit(0);
 }
 

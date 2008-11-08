@@ -14,10 +14,10 @@ SET(SRC
 ADD_EXECUTABLE(iMarineSim ${SRC})
 
 TARGET_LINK_LIBRARIES(iMarineSim 
-MOOS
-MOOSGen
-MOOSUtility
-mbutil
-geometry
-m
-pthread)
+  MOOS
+  MOOSGen
+  MOOSUtility
+  mbutil
+  geometry 
+  m
+  pthread)

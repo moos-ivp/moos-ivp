@@ -63,11 +63,22 @@ pthread_t spawn_thread(ThreadParams *pParams)
 
 int main(int argc ,char * argv[])
 {
+  bool version_requested = false;
+
   g_sMissionFile = 0;
   for(int i=1; i<argc; i++) {
     string str = argv[i];
     if(strContains(str, ".moos"))
       g_sMissionFile = argv[i];
+    else if((str == "-v") || (str == "--version") || (str == "-version"))
+      version_requested = true;
+  }
+
+  if(version_requested) {
+    vector<string> svector = getReleaseInfo("uTermCommand");
+    for(int i=0; i<svector.size(); i++)
+      cout << svector[i] << endl;
+    return(0);
   }
 
   if(!g_sMissionFile) {

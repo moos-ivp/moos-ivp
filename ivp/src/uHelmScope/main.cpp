@@ -66,16 +66,18 @@ pthread_t spawn_thread(ThreadParams *pParams)
 
 int main(int argc ,char * argv[])
 {
-  bool help_requested   = false;
+  bool help_requested    = false;
+  bool version_requested = false;
 
   g_sMissionFile = 0;
   for(int i=1; i<argc; i++) {
     string str = argv[i];
     if(strContains(str, ".moos"))
       g_sMissionFile = argv[i];
-
-    if((str == "-h") || (str == "--help") || (str == "-help"))
+    else if((str == "-h") || (str == "--help") || (str == "-help"))
       help_requested = true;
+    else if((str == "-v") || (str == "--version") || (str == "-version"))
+      version_requested = true;
   }
   
   if(help_requested) {
@@ -87,6 +89,13 @@ int main(int argc ,char * argv[])
     MOOSTrace("  -v:  Suppress display of virgins in MOOSDB-Scope block \n");
     MOOSTrace("  -r:  Streaming (unpaused) output of helm iterations    \n");
     MOOSTrace("  MOOSVAR_1 MOOSVAR_2 .... MOOSVAR_N\n\n");
+    return(0);
+  }
+
+  if(version_requested) {
+    vector<string> svector = getReleaseInfo("uHelmScope");
+    for(int i=0; i<svector.size(); i++)
+      cout << svector[i] << endl;
     return(0);
   }
 

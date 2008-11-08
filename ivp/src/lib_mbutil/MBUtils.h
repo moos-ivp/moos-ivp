@@ -91,7 +91,7 @@ bool  okFileToWrite(std::string);
 
 void  millipause(int milliseconds);
 
-std::string  getReleaseVersion();
+std::vector<std::string>  getReleaseInfo(const std::string&);
 
 #endif
 

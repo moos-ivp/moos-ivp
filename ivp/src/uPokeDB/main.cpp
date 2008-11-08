@@ -18,7 +18,8 @@ int main(int argc ,char * argv[])
   const char *sMissionFile = "Mission.moos";
   const char *sMOOSName    = "uPokeDB";
 
-  bool help_requested = false;
+  bool help_requested    = false;
+  bool version_requested = false;
 
   vector<string> varname;
   vector<string> varvalue;
@@ -35,6 +36,8 @@ int main(int argc ,char * argv[])
       sMissionFile = argv[i];
     else if(strContains(sarg, "-h"))
       help_requested = true;
+    else if((sarg == "-v") || (sarg == "--version") || (sarg == "-version"))
+      version_requested = true;
     else if(strContains(sarg, ":=")) {
       vector<string> svector = parseString(sarg, ":=");
       if(svector.size() != 2)
@@ -76,6 +79,14 @@ int main(int argc ,char * argv[])
     MOOSTrace("  PokeDB [foo.moos] [server=val] [port=val] <varname=value> <varname=value>\n\n");
     return(0);
   }
+
+  if(version_requested) {
+    vector<string> svector = getReleaseInfo("uPokeDB");
+    for(int i=0; i<svector.size(); i++)
+      cout << svector[i] << endl;
+    return(0);
+  }
+
 
   bool mission_file_provided = false;
   if(strcmp(sMissionFile, "Mission.moos"))
