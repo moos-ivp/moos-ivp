@@ -48,10 +48,10 @@ int main(int argc ,char * argv[])
   vector<string> varvalue;
   vector<string> vartype;
 
-  string server     = "localhost";
-  bool   server_set = false;
-  int    port       = 9000;
-  bool   port_set   = false;
+  string server_host     = "localhost";
+  bool   server_host_set = false;
+  int    server_port     = 9000;
+  bool   server_port_set = false;
 
   for(int i=0; i<argc; i++) {
     string sarg = argv[i];
@@ -71,15 +71,18 @@ int main(int argc ,char * argv[])
     }
 
     else if(strContains(sarg, "=")) {
-      string left = stripBlankEnds(biteString(sarg, '='));
+      string left  = stripBlankEnds(biteString(sarg, '='));
       string right = stripBlankEnds(sarg);
-      if(left == "server") {
-	server = right;
-	server_set = true;
+      string lleft = tolower(left);
+      if((lleft == "server_host") || (lleft == "serverhost")) {
+	server_host     = right;
+	server_host_set = true;
       }
-      else if((left == "port") && (isNumber(right))) {
-	port = atoi(right.c_str());
-	port_set = true;
+      else if((lleft == "server_port") || (lleft=="serverport")) {
+	if(isNumber(right)) {
+	  server_port     = atoi(right.c_str());
+	  server_port_set = true;
+	}
       }
       else {
 	varname.push_back(left);
@@ -99,26 +102,41 @@ int main(int argc ,char * argv[])
   if(strcmp(sMissionFile, "Mission.moos"))
     mission_file_provided = true;
 
+  // If the mission file is not provided, we prompt the user if the 
+  // server_host or server_port information is not on command line.
   if(!mission_file_provided) {
     char buff[1000];
-    cout << "Enter IP address:  [localhost] ";
-    fgets(buff, 999, stdin);
-    if(buff[0] != '\n') {
-      server = buff;    
-      server_set = true;
+    // If server_host info was not on the command line, prompt here.
+    if(!server_host_set) {
+      cout << "Enter IP address:  [localhost] ";
+      fgets(buff, 999, stdin);
+      if(buff[0] != '\n') {
+	server_host     = buff;    
+	server_host_set = true;
+      }
     }
-    cout << "Enter Port number: [9000] ";
-    fgets(buff, 999, stdin);
-    if(buff[0] != '\n') {
-      port = atoi(buff); 
-      port_set = true;
+    // If server_port info was not on the command line, prompt here.
+    if(!server_port_set) {
+      cout << "Enter Port number: [9000] ";
+      fgets(buff, 999, stdin);
+      if(buff[0] != '\n') {
+	server_port     = atoi(buff); 
+	server_port_set = true;
+      }
     }
   }
   
-  PokeDB Poker(server, port);
+  PokeDB Poker(server_host, server_port);
 
-  if(mission_file_provided)
+  if(mission_file_provided == false) {
+    cout << "Mission File not provided. " << endl;
+    cout << "  server_host  = " << server_host << endl;
+    cout << "  server_port  = " << server_port << endl;
     Poker.setConfigureCommsLocally(true);
+  }
+  else {
+    cout << "Mission File was provided: " << sMissionFile << endl;
+  }
 
   int vsize = varname.size();
   for(int j=0; j<vsize; j++) {

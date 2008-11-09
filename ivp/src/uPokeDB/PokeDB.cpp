@@ -49,8 +49,14 @@ PokeDB::PokeDB(string g_server, long int g_port)
 
 bool PokeDB::ConfigureComms()
 {
+  cout << "PokeDB::ConfigureComms:" << endl;
+  cout << "  m_sServerHost: " << m_sServerHost << endl;
+  cout << "  m_lServerPort: " << m_lServerPort << endl;
+
   if(!m_configure_comms_locally) 
     return(CMOOSApp::ConfigureComms());
+
+  cout << "**Doing things locally. " << endl;
 
   //register a callback for On Connect
   m_Comms.SetOnConnectCallBack(MOOSAPP_OnConnect, this);
@@ -64,7 +70,10 @@ bool PokeDB::ConfigureComms()
   
   m_nCommsFreq = 10;
 
-  m_Comms.Run(m_sServerHost.c_str(),m_lServerPort,m_sMOOSName.c_str(), m_nCommsFreq);
+  m_Comms.Run(m_sServerHost.c_str(), 
+	      m_lServerPort,
+	      m_sMOOSName.c_str(), 
+	      m_nCommsFreq);
   
   return(true);
 }
