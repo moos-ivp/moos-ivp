@@ -216,7 +216,6 @@ bool BackImg::readTiffInfo(string filename)
 
   double lat_north, lat_south, lon_west, lon_east;
   double datum_lat, datum_lon;
-  int    img_pixels;
 
   bool   lat_north_set  = false;
   bool   lat_south_set  = false;
@@ -224,7 +223,6 @@ bool BackImg::readTiffInfo(string filename)
   bool   lon_east_set   = false;
   bool   datum_lat_set  = false;
   bool   datum_lon_set  = false;
-  bool   img_pixels_set = false;
 
   for(int i=0; i<vsize; i++) {
     string line = stripComment(buffer[i], "//");
@@ -249,6 +247,7 @@ bool BackImg::readTiffInfo(string filename)
 	img_meters = atof(right.c_str());
 	img_meters_set = true;
       }
+
       //--------------------------------------------------
       else if((left == "lat_north") && (isNumber(right))) {
 	lat_north = atof(right.c_str());
@@ -274,10 +273,6 @@ bool BackImg::readTiffInfo(string filename)
 	datum_lon = atof(right.c_str());
 	datum_lon_set = true;
       }
-      else if((left == "img_pixels") && (isNumber(right))) {
-	img_pixels = atoi(right.c_str());
-	img_pixels_set = true;
-      }
       else
 	return(false);
     }
@@ -288,8 +283,7 @@ bool BackImg::readTiffInfo(string filename)
   // three image values.
   if((!img_centx_set || !img_centy_set || !img_meters_set) && 
      (!lat_north_set || !lat_south_set || !lon_west_set ||
-      !lon_east_set  || !datum_lat_set || !datum_lon_set ||
-      !img_pixels_set))
+      !lon_east_set  || !datum_lat_set || !datum_lon_set))
     return(false);
 
   // If info *not* in the image-values format, derive from the 
@@ -297,10 +291,6 @@ bool BackImg::readTiffInfo(string filename)
   if(!img_centx_set || !img_centy_set || !img_meters_set) {
     if((lat_north <= lat_south) || (lon_east <= lon_west)) {
       cout << "Problem with BackImg Lat/Lon specs. " << endl;
-      return(false);
-    }
-    if(img_pixels <= 0) {
-      cout << "Problem with BackImg img_pixels spec. " << endl;
       return(false);
     }
     
@@ -315,11 +305,23 @@ bool BackImg::readTiffInfo(string filename)
     }
     double length_meters = y1-y2;
 
-    img_meters = (img_pixels / length_meters) / 10.0;
+    img_meters = (1 / (length_meters / 100.0));
     img_centx = (datum_lon - lon_west) / (lon_east - lon_west);
     img_centy = (datum_lat - lat_south) / (lat_north - lat_south);
-  }
 
+#if 0 // For debugging
+    cout << "*************************************************" << endl;
+    cout << "Length(m)  :" << length_meters << endl;
+    cout << "datum_lon  :" << datum_lon  << endl;
+    cout << "lon_west   :" << lon_west   << endl;
+    cout << "lon_east   :" << lon_east   << endl;
+
+    cout << "img_meters :" << img_meters << endl;
+    cout << "img_centx  :" << img_centx  << endl;
+    cout << "img_centy  :" << img_centy  << endl;
+    cout << "*************************************************" << endl;
+#endif
+  }
 
   double x_img_diff = 0.50 - img_centx;
   x_at_img_ctr = (x_img_diff * 100) / img_meters;
