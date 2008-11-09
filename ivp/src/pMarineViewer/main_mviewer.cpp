@@ -172,9 +172,6 @@ int main(int argc, char *argv[])
       exit_with_usage();
   }
   
-  if(version)
-    exit_with_version();
-
   if(switches)
     exit_with_switches();
 

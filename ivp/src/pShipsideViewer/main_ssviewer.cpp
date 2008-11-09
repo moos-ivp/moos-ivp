@@ -110,12 +110,12 @@ int main(int argc, char *argv[])
       viewer_size = "medium";
     else if(strContains(str, "-small"))
       viewer_size = "small";
-    else if((str=="-h") || (str=="--help") || (str=="-help"))
-      exit_with_usage();
   }
   
-  if(g_sMissionFile == 0)
-    exit_with_usage();
+  if(g_sMissionFile == 0) {
+    cout << "Usage: pShipsideViewer file.moos [file.tif] [-noimg]" << endl;
+    return(0);
+  }
   
   SSV_GUI* gui = 0;
   if(viewer_size == "small")
