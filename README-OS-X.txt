@@ -12,6 +12,10 @@ OVERVIEW
 This file gives OS X-specific steps for building and running 
 MOOS-IvP software.
 
+XCODE
+======== 
+You need to install the XCode development package for OS-X available 
+at http://developer.apple.com/technology/xcode.html
 
 PACKAGES
 ========

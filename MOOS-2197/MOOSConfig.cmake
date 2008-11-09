@@ -1,6 +1,6 @@
 # MOOS source dir
-SET( MOOS_SOURCE_DIR "/Users/mikerb/Research/moos-ivp/trunk/MOOS")
+SET( MOOS_SOURCE_DIR "/home/toby/moos-ivp/MOOS")
 
 # MOOS build dir
-SET( MOOS_DIR "/Users/mikerb/Research/moos-ivp/trunk/MOOS")
+SET( MOOS_DIR "/home/toby/moos-ivp/MOOS")
 
