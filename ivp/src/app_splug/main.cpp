@@ -23,27 +23,17 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-  bool help_requested    = false;
-  bool version_requested = false;
-  for(int i=1; i<argc; i++) {
-    string sarg = argv[i];
-    if((sarg=="-v") || (sarg=="--version") || (sarg=="-version")) 
-      version_requested = true;
-    else if((sarg=="-h") || (sarg=="--help") || (sarg=="-help")) 
-      help_requested = true;
-  }
-
-  if(help_requested) {
-    cout << "Usage: splug filename newfilename [-f, --force][MACRO=VAL]" << endl;
+  // Look for a request for version information
+  if(scanArgs(argc, argv, "-v", "--version", "-version")) {
+    vector<string> svector = getReleaseInfo("splug");
+    for(unsigned int j=0; j<svector.size(); j++)
+      cout << svector[j] << endl;    
     return(0);
   }
-
-  //----------------------------------------------------------------
-  // Check if version output is requested
-  if(version_requested) {
-    vector<string> svector = getReleaseInfo("splug");
-    for(int i=0; i<svector.size(); i++)
-      cout << svector[i] << endl;
+  
+  // Look for a request for usage information
+  if(scanArgs(argc, argv, "-h", "--help", "-help")) {
+    cout << "Usage: splug filename newfilename [-f, --force][MACRO=VAL]" << endl;
     return(0);
   }
 

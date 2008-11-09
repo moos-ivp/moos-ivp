@@ -50,18 +50,6 @@ void exit_with_usage()
 }
 
 //--------------------------------------------------------
-// Procedure: exit_with_version
-
-void exit_with_version()
-{
-  vector<string> svector = getReleaseInfo("pShipsideViewer");
-  for(int i=0; i<svector.size(); i++)
-    cout << svector[i] << endl;
-  exit(0);
-}
-
-
-//--------------------------------------------------------
 // Procedure: RunProc
 
 void* RunProc(void *lpParameter)
@@ -107,6 +95,14 @@ void idleProc(void *)
 
 int main(int argc, char *argv[])
 {
+  // Look for a request for version information
+  if(scanArgs(argc, argv, "-v", "--version", "-version")) {
+    vector<string> svector = getReleaseInfo("pShipsideViewer");
+    for(unsigned int j=0; j<svector.size(); j++)
+      cout << svector[j] << endl;    
+    return(0);
+  }
+  
   string viewer_size = "large";
 
   for(int i=1; i<argc; i++) {
@@ -119,14 +115,11 @@ int main(int argc, char *argv[])
       viewer_size = "small";
     else if((str=="-h") || (str=="--help") || (str=="-help"))
       exit_with_usage();
-    else if((str=="-v") || (str=="--version") || (str=="-version"))
-      exit_with_version();
   }
   
   if(g_sMissionFile == 0)
     exit_with_usage();
   
-
   SSV_GUI* gui = 0;
   if(viewer_size == "small")
     gui = new SSV_GUI(1050,850, "ShipSideViewer");

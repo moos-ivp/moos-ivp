@@ -22,14 +22,30 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-  //if((argc != 5) || (!strcmp(argv[1], "-h"))) {
-  //  cout << "Usage: alogscan filename newfilename  " << endl;
-  //  return(1);
-  // }
+ // Look for a request for version information
+  if(scanArgs(argc, argv, "-v", "--version", "-version")) {
+    vector<string> svector = getReleaseInfo("alogscan");
+    for(unsigned int j=0; j<svector.size(); j++)
+      cout << svector[j] << endl;    
+    return(0);
+  }
+  
+  // Look for a request for usage information
+  if(scanArgs(argc, argv, "-h", "--help", "-help")) {
+    cout << "Usage: alogscan [OPTIONS] alog-file           " << endl;
+    cout << "                                              " << endl;
+    cout << "Options:                                      " << endl;
+    cout << "  -chars   Sort by total characters (default) " << endl;
+    cout << "  -lines   Sort by total lines (descending)   " << endl;
+    cout << "  -start   Sort by starting time (descending) " << endl;
+    cout << "  -stop    Sort by stop time (descending)     " << endl;
+    cout << "  -appstat Output application statistics      " << endl;
+    cout << "  -r       Reverse the sorting output         " << endl;
+    cout << "  -h       Output this message                " << endl;
+    return(0);
+  }
 
   bool   reverse_requested  = false;
-  bool   help_requested     = false;
-  bool   version_requested  = false;
   bool   app_stat_requested = false;
   string sort_style = "bychars_ascending";
 
@@ -38,11 +54,6 @@ int main(int argc, char *argv[])
     string sarg = argv[i];
     if(strContains(sarg, ".alog"))
       alogfile = sarg;
-    else if(strContains(sarg, "-h"))
-      help_requested = true;
-
-    else if((sarg=="-v") || (sarg=="--version") || (sarg=="-version")) 
-      version_requested = true;
     else if(strContains(sarg, "-chars"))
       sort_style = "bychars_descending";
     else if(strContains(sarg, "-lines"))
@@ -57,15 +68,6 @@ int main(int argc, char *argv[])
       app_stat_requested = true;
   }
  
-  //----------------------------------------------------------------
-  // Check if version output is requested
-  if(version_requested) {
-    vector<string> svector = getReleaseInfo("alogscan");
-    for(int i=0; i<svector.size(); i++)
-      cout << svector[i] << endl;
-    return(0);
-  }
-
   if(reverse_requested) {
     if(sort_style == "bychars_ascending")
       sort_style = "bychars_descending";
@@ -77,21 +79,6 @@ int main(int argc, char *argv[])
       sort_style = "bystop_descending";
   }
 
-
-  if(help_requested) {
-    cout << "Usage: alogscan [OPTIONS] alog-file           " << endl;
-    cout << "                                              " << endl;
-    cout << "Options:                                      " << endl;
-    cout << "  -chars   Sort by total characters (default) " << endl;
-    cout << "  -lines   Sort by total lines (descending)   " << endl;
-    cout << "  -start   Sort by starting time (descending) " << endl;
-    cout << "  -stop    Sort by stop time (descending)     " << endl;
-    cout << "  -appstat Output application statistics      " << endl;
-    cout << "  -r       Reverse the sorting output         " << endl;
-    cout << "  -h       Output this message                " << endl;
-    exit(0);
-  }    
-  
   cout << "Processing on file : " << alogfile << endl;
 
   ScanHandler handler;

@@ -20,22 +20,46 @@
 using namespace std;
 
 //--------------------------------------------------------
+// Procedure: exit_with_usage
+
+void display_usage()
+{
+  cout << "Usage: " << endl;
+  cout << "  alogclip in.alog out.alog mintime maxtime" << endl;
+  cout << "                                           " << endl;
+  cout << "  Order of arguments may vary. The first alog file is   " << endl;
+  cout << "  treated as the input file, and the 2nd is the output. " << endl;
+  cout << "  The first numerical argument is treated as the mintime" << endl;
+  cout << "  and the 2nd is treated as the maxtime. If more than   " << endl;
+  cout << "  two alog files, or more than two numerical arguments  " << endl;
+  cout << "  are provided, this usage message will be displayed.   " << endl;
+}
+
+//--------------------------------------------------------
 // Procedure: main
 
 int main(int argc, char *argv[])
 {
-  //if((argc != 5) || (!strcmp(argv[1], "-h"))) {
-  //  cout << "Usage: alogscan filename newfilename  " << endl;
-  //  return(1);
-  // }
+ // Look for a request for version information
+  if(scanArgs(argc, argv, "-v", "--version", "-version")) {
+    vector<string> svector = getReleaseInfo("alogclip");
+    for(unsigned int j=0; j<svector.size(); j++)
+      cout << svector[j] << endl;    
+    return(0);
+  }
   
+  // Look for a request for usage information
+  if(scanArgs(argc, argv, "-h", "--help", "-help")) {
+    display_usage();
+    return(0);
+  }
+
   bool   okargs = true;
   
   double min_time = 0; 
   double max_time = 0;
   bool   min_time_set = false;
   bool   max_time_set = false;
-  bool   version_reqd = false;
   
   string alog_infile  = "";
   string alog_outfile = "";
@@ -50,8 +74,6 @@ int main(int argc, char *argv[])
       else // Three alog files on command line - error.
 	okargs = false;
     }
-    else if((sarg=="-v") || (sarg=="--version") || (sarg=="-version")) 
-      version_reqd = true;
     else if(isNumber(sarg)) {
       if(!min_time_set) {
 	min_time = atof(sarg.c_str());
@@ -67,23 +89,14 @@ int main(int argc, char *argv[])
   }
   
   //----------------------------------------------------------------
-  // Check if version output is requested
-  if(version_reqd) {
-    vector<string> svector = getReleaseInfo("alogclip");
-    for(int i=0; i<svector.size(); i++)
-      cout << svector[i] << endl;
-    return(0);
-  }
-
-  //----------------------------------------------------------------
   // Check that all the appropriate parameters were provided, no more
   // and no less. Also check that min/max time range is valid
   if(min_time > max_time)
     okargs = false;
 
   if(!okargs) {
-    cout << "Usage: alogclip in.alog out.alog mintime maxtime" << endl;
-    exit(0);
+    display_usage();
+    return(0);
   }
 
   ALogClipper clipper;

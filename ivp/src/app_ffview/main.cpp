@@ -45,6 +45,14 @@ void idleProc(void *)
 
 int main(int argc, char *argv[])
 {
+  // Look for a request for version information
+  if(scanArgs(argc, argv, "-v", "--version", "-version")) {
+    vector<string> svector = getReleaseInfo("ffview");
+    for(unsigned int j=0; j<svector.size(); j++)
+      cout << svector[j] << endl;    
+    return(0);
+  }
+
   int i;
   GUI *gui  = new GUI(1000, 900, "aof-ipf-function-viewer");
 

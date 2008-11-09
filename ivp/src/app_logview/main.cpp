@@ -38,6 +38,7 @@
 using namespace std;
 
 void help_message();
+void version_message();
 
 REPLAY_GUI* gui = 0;
 
@@ -62,9 +63,14 @@ int main(int argc, char *argv[])
   string gui_size = "large";
 
   // Look for a request for help
-  res = getArg(argc, argv, 0, "-h", "--help");
-  if(res) {
+  if(scanArgs(argc, argv, "-h", "--help", "-help")) {
     help_message();
+    return(0);
+  }
+
+  // Look for a request for version information
+  if(scanArgs(argc, argv, "-v", "--version", "-version")) {
+    version_message();
     return(0);
   }
 
@@ -100,7 +106,7 @@ int main(int argc, char *argv[])
     if(arg=="xsmall") gui_size = "xsmall";
   }
 
-  // Find all the slog files provided on the command line
+  // Find all the alog files provided on the command line
   //---------------------------------------------------------------------
   vector<string> alog_files;
   vector<double> alog_files_skew;
@@ -119,7 +125,7 @@ int main(int argc, char *argv[])
     return(0);
   }
   
-  // Read in the skews from each slog file
+  // Read in the skews from each alog file
   //---------------------------------------------------------------------
   double min_skew = 0;
   for(k=0; k<alog_files.size(); k++) {
@@ -166,13 +172,13 @@ int main(int argc, char *argv[])
   cout << endl << endl;
 
 #endif
-  // Build all the logplots from the vector of slog files.
+  // Build all the logplots from the vector of alog files.
   //---------------------------------------------------------------------
   vector<vector<LogPlot> > logplots;
 
   parse_timer.reset();
   parse_timer.start();
-  cout << "Parsing slog files to build LogPlots..." << endl;
+  cout << "Parsing alog files to build LogPlots..." << endl;
 
   for(j=0; j<alog_files.size(); j++) {
     Populator_LogPlots pop_lp;
@@ -199,7 +205,7 @@ int main(int argc, char *argv[])
   cout << endl << endl;
 
 
-  // Build all the Polygons and Grids from the vector of non-slog files.
+  // Build all the Polygons and Grids from the vector of non-alog files.
   //---------------------------------------------------------------------
   vector<string>  polygons;
   vector<string>  searchgrids;
@@ -272,6 +278,16 @@ void help_message()
   cout << "   At least one .alog file must be provided " << endl;
   cout << "   Non alog files will be scanned for polygons " << endl;
   cout << endl;
+}
+
+//--------------------------------------------------------
+// Procedure: version_message()
+
+void version_message()
+{
+  vector<string> svector = getReleaseInfo("logview");
+  for(int j=0; j<svector.size(); j++)
+    cout << svector[j] << endl;
 }
 
 

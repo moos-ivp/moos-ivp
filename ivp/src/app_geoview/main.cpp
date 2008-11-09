@@ -36,20 +36,24 @@ int main(int argc, char *argv[])
   int i;
   unsigned int j;
 
-  Fl::add_idle(idleProc);
+  // Look for a request for version information
+  if(scanArgs(argc, argv, "-v", "--version", "-version")) {
+    vector<string> svector = getReleaseInfo("geoview");
+    for(unsigned int j=0; j<svector.size(); j++)
+      cout << svector[j] << endl;    
+    return(0);
+  }
+  
+  // Look for a request for usage information
+  if(scanArgs(argc, argv, "-h", "--help", "-help")) {
+    cout << "Usage: geoview [filename] [filename]..." << endl;
+    return(0);
+  }
 
+  Fl::add_idle(idleProc);
   GEO_GUI* gui = new GEO_GUI(900, 800, "geoview");
 
   string tif_file = "Default.tif";  // default
-
-  vector<string>    all_poly_strings;
-  vector<string>    all_segl_strings;
-  vector<string>    all_grid_strings;
-  vector<XYCircle>  all_circles;
-  vector<XYHexagon> all_hexagons;
-  vector<string>    all_markers;
-  vector<string>    all_opvertices;
-  vector<string>    all_geodesy;
 
   for(i=1; i<argc; i++) {
     string argi  = tolower(argv[i]);
@@ -62,6 +66,15 @@ int main(int argc, char *argv[])
     if((argi == "mbd"))
       tif_file = "Monterey-2048-30-30-100.tif";
   }
+
+  vector<string>    all_poly_strings;
+  vector<string>    all_segl_strings;
+  vector<string>    all_grid_strings;
+  vector<XYCircle>  all_circles;
+  vector<XYHexagon> all_hexagons;
+  vector<string>    all_markers;
+  vector<string>    all_opvertices;
+  vector<string>    all_geodesy;
 
   for(i=1; i<argc; i++) {
     string argi  = argv[i];
@@ -112,7 +125,6 @@ int main(int argc, char *argv[])
   for(j=0; j<all_segl_strings.size(); j++)
     gui->pviewer->setParam("seglist", all_segl_strings[j]);
   
-
   cout << "# of file grids: " << all_grid_strings.size() << endl;
   for(j=0; j<all_grid_strings.size(); j++)
     gui->pviewer->setParam("grid", all_grid_strings[j]);
