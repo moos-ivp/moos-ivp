@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
   double max_time = 0;
   bool   min_time_set = false;
   bool   max_time_set = false;
-  
+  bool   version_reqd = false;
   
   string alog_infile  = "";
   string alog_outfile = "";
@@ -50,6 +50,8 @@ int main(int argc, char *argv[])
       else // Three alog files on command line - error.
 	okargs = false;
     }
+    else if((sarg=="-v") || (sarg=="--version") || (sarg=="-version")) 
+      version_reqd = true;
     else if(isNumber(sarg)) {
       if(!min_time_set) {
 	min_time = atof(sarg.c_str());
@@ -64,6 +66,15 @@ int main(int argc, char *argv[])
     }
   }
   
+  //----------------------------------------------------------------
+  // Check if version output is requested
+  if(version_reqd) {
+    vector<string> svector = getReleaseInfo("alogclip");
+    for(int i=0; i<svector.size(); i++)
+      cout << svector[i] << endl;
+    return(0);
+  }
+
   //----------------------------------------------------------------
   // Check that all the appropriate parameters were provided, no more
   // and no less. Also check that min/max time range is valid

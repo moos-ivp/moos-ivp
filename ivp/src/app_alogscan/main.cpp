@@ -29,6 +29,7 @@ int main(int argc, char *argv[])
 
   bool   reverse_requested  = false;
   bool   help_requested     = false;
+  bool   version_requested  = false;
   bool   app_stat_requested = false;
   string sort_style = "bychars_ascending";
 
@@ -40,6 +41,8 @@ int main(int argc, char *argv[])
     else if(strContains(sarg, "-h"))
       help_requested = true;
 
+    else if((sarg=="-v") || (sarg=="--version") || (sarg=="-version")) 
+      version_requested = true;
     else if(strContains(sarg, "-chars"))
       sort_style = "bychars_descending";
     else if(strContains(sarg, "-lines"))
@@ -54,6 +57,15 @@ int main(int argc, char *argv[])
       app_stat_requested = true;
   }
  
+  //----------------------------------------------------------------
+  // Check if version output is requested
+  if(version_requested) {
+    vector<string> svector = getReleaseInfo("alogscan");
+    for(int i=0; i<svector.size(); i++)
+      cout << svector[i] << endl;
+    return(0);
+  }
+
   if(reverse_requested) {
     if(sort_style == "bychars_ascending")
       sort_style = "bychars_descending";

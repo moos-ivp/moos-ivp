@@ -27,7 +27,9 @@ int main(int argc, char *argv[])
   string alogfile_in;
   string alogfile_out;
 
-  bool help = false;
+  bool   help_requested = false;
+  bool   version_requested  = false;
+
   for(int i=1; i<argc; i++) {
     string sarg = argv[i];
     if(strContains(sarg, ".alog")) {
@@ -36,13 +38,24 @@ int main(int argc, char *argv[])
       else 
 	alogfile_out = sarg;
     }
-    else if(strContains(sarg, "-h"))
-      help = true;
+    else if((sarg=="-v") || (sarg=="--version") || (sarg=="-version")) 
+      version_requested = true;
+    else if((sarg=="-h") || (sarg=="--help") || (sarg=="-help")) 
+      help_requested = true;
     else
       keys.push_back(sarg);
   }
  
-  if(help) {
+  //----------------------------------------------------------------
+  // Check if version output is requested
+  if(version_requested) {
+    vector<string> svector = getReleaseInfo("aloggrab");
+    for(int i=0; i<svector.size(); i++)
+      cout << svector[i] << endl;
+    return(0);
+  }
+
+  if(help_requested) {
     cout << "Usage: " << endl;
     cout << "  aloggrab input.alog VAR [VAR] [VAR] [output.alog]" << endl;
     cout << "  (#2 alog is output - otherwise order is irrelevent)" << endl;
