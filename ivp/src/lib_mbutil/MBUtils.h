@@ -77,8 +77,8 @@ double tokDoubleParse(const std::string&, const std::string&,
 bool  isNumber(const std::string&, bool=true);
 bool  isQuoted(const std::string&);
 
-
 int   getArg(int, char**, int, const char*, const char *s=0);
+bool  scanArgs(int, char**, const char*, const char *a=0, const char *b=0);
 int   validateArgs(int, char **, std::string);
 
 float snapToStep(float, float v=1.0);

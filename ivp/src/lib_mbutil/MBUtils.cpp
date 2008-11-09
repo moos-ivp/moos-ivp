@@ -890,6 +890,37 @@ int getArg(int argc, char **argv, int pos,
 }
 
 //----------------------------------------------------------------
+// Procedure: scanArgs
+//     Note1: Searches the array of strings (argv) looking for a 
+//            match to the given string (str). 
+
+bool scanArgs(int argc, char **argv, const char* str1, 
+	      const char *str2, const char *str3)
+{
+  for(int i=0; i<argc; i++) {
+    bool match1 = !strncmp(str1, argv[i], strlen(argv[i]));
+    bool match2 = !strncmp(str1, argv[i], strlen(str1));
+    if(match1 && match2)
+      return(true);
+
+    if(str2) {
+      match1 = !strncmp(str2, argv[i], strlen(argv[i]));
+      match2 = !strncmp(str2, argv[i], strlen(str2));
+      if(match1 && match2)
+	return(true);   
+    }
+
+    if(str3) {
+      match1 = !strncmp(str3, argv[i], strlen(argv[i]));
+      match2 = !strncmp(str3, argv[i], strlen(str2));
+      if(match1 && match2)
+	return(true);   
+    }
+  }
+  return(false);
+}
+
+//----------------------------------------------------------------
 // Procedure: validateArgs
 //     Note1: Ensures that each argument in argv is legal, has the
 //            correct number of arguments, and is not duplicated.
