@@ -41,15 +41,6 @@ struct ThreadParams {
 };
 
 //--------------------------------------------------------
-// Procedure: exit_with_usage
-
-void exit_with_usage()
-{
-  cout << "Usage: pShipsideViewer file.moos [file.tif] [-noimg]" << endl;
-  exit(-1);
-}
-
-//--------------------------------------------------------
 // Procedure: RunProc
 
 void* RunProc(void *lpParameter)
@@ -103,6 +94,12 @@ int main(int argc, char *argv[])
     return(0);
   }
   
+  // Look for a request for usage information
+  if(scanArgs(argc, argv, "-h", "--help", "-help")) {
+    cout << "Usage: pShipsideViewer file.moos [file.tif] [-noimg]" << endl;
+    return(0);
+  }
+
   string viewer_size = "large";
 
   for(int i=1; i<argc; i++) {

@@ -50,17 +50,6 @@ void exit_with_usage()
 }
 
 //--------------------------------------------------------
-// Procedure: exit_with_version
-
-void exit_with_version()
-{
-  vector<string> svector = getReleaseInfo("pMarineViewer");
-  for(int i=0; i<svector.size(); i++)
-    cout << svector[i] << endl;
-  exit(0);
-}
-
-//--------------------------------------------------------
 // Procedure: exit_with_switches
 
 void exit_with_switches()
@@ -160,18 +149,25 @@ void idleProc(void *)
 
 int main(int argc, char *argv[])
 {
+  // Look for a request for version information
+  if(scanArgs(argc, argv, "-v", "--version", "-version")) {
+    vector<string> svector = getReleaseInfo("pMarineViewer");
+    for(unsigned int j=0; j<svector.size(); j++)
+      cout << svector[j] << endl;    
+    return(0);
+  }
+  
+  // Look for a request for usage information
+  if(scanArgs(argc, argv, "-h", "--help", "-help"))
+    exit_with_usage();
+
   bool switches = false;
-  bool version  = false;
   for(int i=1; i<argc; i++) {
     string argi  = argv[i];
     if(strContains(argi, ".moos"))
       g_sMissionFile = argv[i];
     else if(strContains(argi, "-sw"))
       switches = true;
-    else if((argi == "-v") || (argi == "-version"))
-      version = true;
-    else if(argi == "--version")
-      version = true;
     else if(!strContains(argi, "pMarineViewer"))
       exit_with_usage();
   }
