@@ -28,23 +28,16 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-  string sMissionFile = "pTransponderAIS.moos";
-  string sMOOSName = "iMarineSim";
-
-  bool version_requested = false;
-
-  for(int i=0; i<argc; i++) {
-    string str = argv[i];
-    if((str=="-v") || (str=="--version") || (str=="-version"))
-      version_requested = true;
-  }
-  
-  if(version_requested) {
+  // Look for a request for version information
+  if(scanArgs(argc, argv, "-v", "--version", "-version")) {
     vector<string> svector = getReleaseInfo("pTransponderAIS");
-    for(int i=0; i<svector.size(); i++)
-      cout << svector[i] << endl;
+    for(unsigned int j=0; j<svector.size(); j++)
+      cout << svector[j] << endl;    
     return(0);
   }
+  
+  string sMissionFile = "pTransponderAIS.moos";
+  string sMOOSName    = "iMarineSim";
 
   switch(argc) {
   case 3:

@@ -6,7 +6,6 @@
 /*****************************************************************/
 
 #include <iostream>
-#include <string>
 #include "MOOSLib.h"
 #include "MOOSGenLib.h"
 #include "HelmScope.h"
@@ -66,21 +65,16 @@ pthread_t spawn_thread(ThreadParams *pParams)
 
 int main(int argc ,char * argv[])
 {
-  bool help_requested    = false;
-  bool version_requested = false;
-
-  g_sMissionFile = 0;
-  for(int i=1; i<argc; i++) {
-    string str = argv[i];
-    if(strContains(str, ".moos"))
-      g_sMissionFile = argv[i];
-    else if((str == "-h") || (str == "--help") || (str == "-help"))
-      help_requested = true;
-    else if((str == "-v") || (str == "--version") || (str == "-version"))
-      version_requested = true;
+  // Look for a request for version information
+  if(scanArgs(argc, argv, "-v", "--version", "-version")) {
+    vector<string> svector = getReleaseInfo("uHelmScope");
+    for(unsigned int j=0; j<svector.size(); j++)
+      cout << svector[j] << endl;    
+    return(0);
   }
-  
-  if(help_requested) {
+
+  // Look for a request for help or usage information
+  if(scanArgs(argc, argv, "-h", "--help", "-help")) {
     MOOSTrace("Usage: uHelmScope moosfile.moos [switches] [MOOSVARS]    \n");
     MOOSTrace("  -t:  Column truncation is on (off by default)          \n");
     MOOSTrace("  -c:  Exclude MOOS Vars in MOOS file from MOOSDB-Scope  \n");
@@ -92,13 +86,13 @@ int main(int argc ,char * argv[])
     return(0);
   }
 
-  if(version_requested) {
-    vector<string> svector = getReleaseInfo("uHelmScope");
-    for(int i=0; i<svector.size(); i++)
-      cout << svector[i] << endl;
-    return(0);
+  g_sMissionFile = 0;
+  for(int i=1; i<argc; i++) {
+    string str = argv[i];
+    if(strContains(str, ".moos"))
+      g_sMissionFile = argv[i];
   }
-
+  
   if(!g_sMissionFile) {
     MOOSTrace("Failed to provide a MOOS (.moos) file... Exiting now.\n");
     return(0);

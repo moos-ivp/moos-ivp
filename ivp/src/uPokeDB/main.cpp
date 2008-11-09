@@ -13,13 +13,36 @@
 
 using namespace std;
 
+//-----------------------------------------------------------------
+// Procedure: display_usage
+
+void display_usage()
+{
+  cout << "uPokeDB: Usage: " << endl;
+  cout << "  PokeDB [foo.moos] [server=val] [port=val] <var=value> <var=value>" << endl;
+}
+
+//-----------------------------------------------------------------
+// Procedure: main
+
 int main(int argc ,char * argv[])
 {
+  // Look for a request for version information
+  if(scanArgs(argc, argv, "-v", "--version", "-version")) {
+    vector<string> svector = getReleaseInfo("uPokeDB");
+    for(unsigned int j=0; j<svector.size(); j++)
+      cout << svector[j] << endl;    
+    return(0);
+  }
+
+  // Look for a request for help or usage information
+  if(scanArgs(argc, argv, "-h", "--help", "-help")) {
+    display_usage();
+    return(0);
+  }
+
   const char *sMissionFile = "Mission.moos";
   const char *sMOOSName    = "uPokeDB";
-
-  bool help_requested    = false;
-  bool version_requested = false;
 
   vector<string> varname;
   vector<string> varvalue;
@@ -34,14 +57,12 @@ int main(int argc ,char * argv[])
     string sarg = argv[i];
     if(strContains(sarg, ".moos"))
       sMissionFile = argv[i];
-    else if(strContains(sarg, "-h"))
-      help_requested = true;
-    else if((sarg == "-v") || (sarg == "--version") || (sarg == "-version"))
-      version_requested = true;
     else if(strContains(sarg, ":=")) {
       vector<string> svector = parseString(sarg, ":=");
-      if(svector.size() != 2)
-	help_requested = true;
+      if(svector.size() != 2) {
+	display_usage();
+	return(0);
+      }
       else {
 	varname.push_back(stripBlankEnds(svector[0]));
 	varvalue.push_back(svector[1]);
@@ -73,20 +94,6 @@ int main(int argc ,char * argv[])
       }
     }
   }
-
-  if(help_requested) {
-    MOOSTrace("uPokeDB: Usage:\n\n");
-    MOOSTrace("  PokeDB [foo.moos] [server=val] [port=val] <varname=value> <varname=value>\n\n");
-    return(0);
-  }
-
-  if(version_requested) {
-    vector<string> svector = getReleaseInfo("uPokeDB");
-    for(int i=0; i<svector.size(); i++)
-      cout << svector[i] << endl;
-    return(0);
-  }
-
 
   bool mission_file_provided = false;
   if(strcmp(sMissionFile, "Mission.moos"))

@@ -32,9 +32,9 @@ using namespace std;
 // ----------------------------------------------------------
 // global variables here
 
-const char*       g_sMissionFile = 0;
-XMS         g_theXMS;
-pthread_t   g_threadID;
+const char*  g_sMissionFile = 0;
+XMS          g_theXMS;
+pthread_t     g_threadID;
 
 struct ThreadParams {
     CMOOSApp *app;
@@ -78,8 +78,19 @@ pthread_t spawn_thread(ThreadParams *pParams)
 
 int main(int argc ,char * argv[])
 {
-  bool help_requested    = false;
-  bool version_requested = false;
+  // Look for a request for version information
+  if(scanArgs(argc, argv, "-v", "--version", "-version")) {
+    vector<string> svector = getReleaseInfo("uXMS");
+    for(unsigned int j=0; j<svector.size(); j++)
+      cout << svector[j] << endl;    
+    return(0);
+  }
+
+  if(scanArgs(argc, argv, "-h", "--help", "-help")) {
+    MOOSTrace("Usage: uXMS moosfile.moos -nav -helm -pid -clean [VARS] \n");
+    return(0);
+  }
+
   //bool ignore_file_vars = false;
 
   g_sMissionFile = 0;
@@ -87,26 +98,7 @@ int main(int argc ,char * argv[])
     string str = argv[i];
     if(strContains(str, ".moos"))
       g_sMissionFile = argv[i];
-    
-    if((str=="-v") || (str=="--version") || (str == "-version"))
-      version_requested = true;
-
-    if((str == "-h") || (str == "--help") || (str == "-help"))
-      help_requested = true;
   }
-  
-  if(help_requested) {
-    MOOSTrace("Usage: uXMS moosfile.moos -nav -helm -pid -clean [VARS] \n");
-    return(0);
-  }
-
-  if(version_requested) {
-    vector<string> svector = getReleaseInfo("uXMS");
-    for(int i=0; i<svector.size(); i++)
-      cout << svector[i] << endl;
-    return(0);
-  }
-
   
   if(!g_sMissionFile) {       
     MOOSTrace("Failed to provide a MOOS (.moos) file... trying default.\n");
