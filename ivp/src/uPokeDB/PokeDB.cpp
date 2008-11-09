@@ -14,7 +14,6 @@ using namespace std;
 extern bool MOOSAPP_OnConnect(void*);
 extern bool MOOSAPP_OnDisconnect(void*);
 
-
 //------------------------------------------------------------
 // Constructor
 
@@ -31,12 +30,12 @@ PokeDB::PokeDB()
 //------------------------------------------------------------
 // Constructor
 
-PokeDB::PokeDB(string g_server, long int g_port)
+PokeDB::PokeDB(string g_server_host, long int g_server_port)
 {
   m_db_start_time = 0; 
   m_iteration     = 0; 
-  m_sServerHost   = g_server; 
-  m_lServerPort   = g_port;
+  m_sServerHost   = g_server_host; 
+  m_lServerPort   = g_server_port;
 
   m_configure_comms_locally = false;
 }
@@ -49,14 +48,14 @@ PokeDB::PokeDB(string g_server, long int g_port)
 
 bool PokeDB::ConfigureComms()
 {
-  cout << "PokeDB::ConfigureComms:" << endl;
-  cout << "  m_sServerHost: " << m_sServerHost << endl;
-  cout << "  m_lServerPort: " << m_lServerPort << endl;
+  //cout << "PokeDB::ConfigureComms:" << endl;
+  //cout << "  m_sServerHost: " << M_Sserverhost << endl;
+  //cout << "  m_lServErport: " << m_lServerPort << endl;
 
   if(!m_configure_comms_locally) 
     return(CMOOSApp::ConfigureComms());
 
-  cout << "**Doing things locally. " << endl;
+  //cout << "**Doing things locally. " << endl;
 
   //register a callback for On Connect
   m_Comms.SetOnConnectCallBack(MOOSAPP_OnConnect, this);
@@ -77,8 +76,6 @@ bool PokeDB::ConfigureComms()
   
   return(true);
 }
-
-
 
 //------------------------------------------------------------
 // Procedure: Iterate()
