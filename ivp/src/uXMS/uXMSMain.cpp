@@ -105,15 +105,15 @@ int main(int argc ,char * argv[])
     g_sMissionFile = "uXMS.moos";
   }
   
-  
   bool seed = true;
   if(seed) {
-    unsigned long tseed = time(NULL);
-    unsigned long hostid = gethostid();
-    unsigned long pid = (long)getpid();
+    // Add 1 to each in case one returns a zero in an error case
+    unsigned long tseed = time(NULL) + 1;
+    unsigned long hostid = gethostid() + 1;
+    unsigned long pid = (long)getpid() + 1;
     unsigned long seed = (tseed%999999);
-    seed = ((rand())*seed*hostid)%999999;
-    seed = (seed*pid)%999999;
+    seed = ((rand()) * seed * hostid) % 999999;
+    seed = (seed * pid) % 999999;
     srand(seed);
   }
 
