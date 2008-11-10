@@ -99,8 +99,8 @@ int main(int argc ,char * argv[])
     string str = tolower(argv[i]);
     if(strContains(str, ".moos"))
       g_sMissionFile = argv[i];
-    //else if(str == "-noseed")
-    //  seed = false;
+    else if(str == "-noseed")
+      seed = false;
   }
   
   if(!g_sMissionFile) {       
