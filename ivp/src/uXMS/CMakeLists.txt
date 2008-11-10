@@ -5,7 +5,7 @@
 
 SET(SRC 
   XMS.cpp
-  uXMSMain.cpp
+  main_uXMS.cpp
 )
 
 ADD_EXECUTABLE(uXMS ${SRC})

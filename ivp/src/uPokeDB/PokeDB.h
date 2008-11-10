@@ -26,7 +26,6 @@ class PokeDB : public CMOOSApp
 
   void setPokeDouble(const std::string& varname, double val);
   void setPokeString(const std::string& varname, const std::string& val);
-  
 
  protected:
   void registerVariables();

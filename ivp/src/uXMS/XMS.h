@@ -49,8 +49,10 @@ class XMS : public CMOOSApp
   void setDispSource(bool v)    {m_display_source = v;};
   void setDispCommunity(bool v) {m_display_community = v;};
   void setDispEmptyStrings(bool v) {m_display_empty_strings = v;};
-  void setDispAll(bool v) {m_display_all = v;};
-  
+  void setDispAll(bool v)       {m_display_all = v;};
+ 
+  void setConfigureCommsLocally(bool v) {m_configure_comms_locally=v;};
+
  protected:
   void registerVariables();
   
@@ -65,7 +67,10 @@ class XMS : public CMOOSApp
   void printReport();
   
   void refreshAllVarsList();
-  
+
+  // An overloading of the CMOOSApp ConfigureComms function
+  bool ConfigureComms();
+
  protected:
   std::vector<std::string> var_names;
   std::vector<std::string> var_vals;
@@ -81,7 +86,6 @@ class XMS : public CMOOSApp
   std::vector<std::string> orig_var_time;
   std::vector<std::string> orig_var_community;
   
-  
   bool   m_display_help;
   bool   m_display_source;
   bool   m_display_time;
@@ -93,6 +97,7 @@ class XMS : public CMOOSApp
   
   bool   m_display_virgins;
   bool   m_display_empty_strings;
+  bool   m_configure_comms_locally;
   
   bool   m_ignore_vars;
   double m_db_start_time;

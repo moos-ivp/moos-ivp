@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin and John Leonard                    */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
-/*    FILE: uXMSMain.cpp                                         */
+/*    FILE: main_uXMS.cpp                                        */
 /*    DATE: May 27th 2007                                        */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
@@ -33,8 +33,7 @@ using namespace std;
 // global variables here
 
 const char*  g_sMissionFile = 0;
-XMS          g_theXMS;
-pthread_t     g_threadID;
+pthread_t    g_threadID;
 
 struct ThreadParams {
     CMOOSApp *app;
@@ -86,18 +85,22 @@ int main(int argc ,char * argv[])
     return(0);
   }
 
+  // Look for a request for usage information
   if(scanArgs(argc, argv, "-h", "--help", "-help")) {
     MOOSTrace("Usage: uXMS moosfile.moos -nav -helm -pid -clean [VARS] \n");
     return(0);
   }
 
-  //bool ignore_file_vars = false;
+  XMS g_theXMS;
 
+  bool seed = true;
   g_sMissionFile = 0;
   for(int i=1; i<argc; i++) {
-    string str = argv[i];
+    string str = tolower(argv[i]);
     if(strContains(str, ".moos"))
       g_sMissionFile = argv[i];
+    //else if(str == "-noseed")
+    //  seed = false;
   }
   
   if(!g_sMissionFile) {       
@@ -105,7 +108,8 @@ int main(int argc ,char * argv[])
     g_sMissionFile = "uXMS.moos";
   }
   
-  bool seed = true;
+  // Handle the building of the uXMS process name.
+  string process_name = "uXMS";
   if(seed) {
     // Add 1 to each in case one returns a zero in an error case
     unsigned long tseed = time(NULL) + 1;
@@ -115,12 +119,10 @@ int main(int argc ,char * argv[])
     seed = ((rand()) * seed * hostid) % 999999;
     seed = (seed * pid) % 999999;
     srand(seed);
+    int    rand_int = rand() % 1000;
+    string rand_str = intToString(rand_int);
+    process_name = "uXMS_" + rand_str;
   }
-
-  int rand_int = rand() % 1000;
-  string rand_str = intToString(rand_int);
-
-  string process_name = "uXMS_" + rand_str;
 
   // start the XMS in its own thread
   ThreadParams params = {&g_theXMS, (char*)(process_name.c_str())};

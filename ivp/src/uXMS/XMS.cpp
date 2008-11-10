@@ -30,6 +30,9 @@
 
 using namespace std;
 
+extern bool MOOSAPP_OnConnect(void*);
+extern bool MOOSAPP_OnDisconnect(void*);
+
 //------------------------------------------------------------
 // Procedure: Constructor
 
@@ -54,6 +57,42 @@ XMS::XMS()
   
   m_display_all = false;
   m_last_all_refresh = 0;
+
+  m_configure_comms_locally = false;
+}
+
+//------------------------------------------------------------
+//  Proc: ConfigureComms
+//  Note: Overload MOOSApp::ConfigureComms implementation which would
+//        have grabbed port/host info from the .moos file instead
+
+bool XMS::ConfigureComms()
+{
+  cout << "XMS::ConfigureComms:" << endl;
+  cout << "  m_sServerHost: " << m_sServerHost << endl;
+  cout << "  m_lServErport: " << m_lServerPort << endl;
+
+  if(!m_configure_comms_locally) 
+    return(CMOOSApp::ConfigureComms());
+
+  //cout << "**Doing things locally. " << endl;
+
+  //register a callback for On Connect
+  m_Comms.SetOnConnectCallBack(MOOSAPP_OnConnect, this);
+  
+  //and one for the disconnect callback
+  m_Comms.SetOnDisconnectCallBack(MOOSAPP_OnDisconnect, this);
+  
+  //start the comms client....
+  if(m_sMOOSName.empty())
+    m_sMOOSName = m_sAppName;
+  
+  m_nCommsFreq = 10;
+
+  m_Comms.Run(m_sServerHost.c_str(),  m_lServerPort,
+	      m_sMOOSName.c_str(),    m_nCommsFreq);
+  
+  return(true);
 }
 
 //------------------------------------------------------------
