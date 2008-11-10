@@ -36,7 +36,7 @@ extern bool MOOSAPP_OnDisconnect(void*);
 //------------------------------------------------------------
 // Procedure: Constructor
 
-XMS::XMS()
+XMS::XMS(string server_host, long int server_port)
 {    
   m_display_source    = false;
   m_display_time      = false;
@@ -53,10 +53,14 @@ XMS::XMS()
   m_display_empty_strings = true;
   m_db_start_time     = 0;
   
-  m_filter = "";
+  m_filter            = "";
   
-  m_display_all = false;
-  m_last_all_refresh = 0;
+  m_display_all       = false;
+  m_last_all_refresh  = 0;
+  m_paused            = true;
+
+  m_sServerHost       = server_host; 
+  m_lServerPort       = server_port;
 
   m_configure_comms_locally = false;
 }

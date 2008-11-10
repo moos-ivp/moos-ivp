@@ -31,7 +31,7 @@
 class XMS : public CMOOSApp  
 {
  public:
-  XMS();
+  XMS(std::string server_host="localhost", long int server_port=9000);
   virtual ~XMS() {};
   
   bool OnNewMail(MOOSMSG_LIST &NewMail);

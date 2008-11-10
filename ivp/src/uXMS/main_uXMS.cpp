@@ -32,7 +32,7 @@ using namespace std;
 // ----------------------------------------------------------
 // global variables here
 
-const char*  g_sMissionFile = 0;
+const char*  g_sMissionFile = "uXMS.moos";
 pthread_t    g_threadID;
 
 struct ThreadParams {
@@ -91,23 +91,76 @@ int main(int argc ,char * argv[])
     return(0);
   }
 
-  XMS g_theXMS;
-
-  bool seed = true;
-  g_sMissionFile = 0;
+  string server_host     = "localhost";
+  bool   server_host_set = false;
+  int    server_port     = 9000;
+  bool   server_port_set = false;
+  bool   seed = true;
   for(int i=1; i<argc; i++) {
     string str = tolower(argv[i]);
     if(strContains(str, ".moos"))
       g_sMissionFile = argv[i];
     else if(str == "-noseed")
       seed = false;
+    else if(strContains(str, "=")) {
+      string left  = stripBlankEnds(biteString(str, '='));
+      string right = stripBlankEnds(str);
+      string lleft = tolower(left);
+      if((lleft == "server_host") || (lleft == "serverhost")) {
+	server_host     = right;
+	server_host_set = true;
+      }
+      else if((lleft == "server_port") || (lleft=="serverport")) {
+	if(isNumber(right)) {
+	  server_port     = atoi(right.c_str());
+	  server_port_set = true;
+	}
+      }
+    }
+  }
+
+  bool mission_file_provided = false;
+  if(strcmp(g_sMissionFile, "uXMS.moos"))
+    mission_file_provided = true;
+
+  // If the mission file is not provided, we prompt the user if the 
+  // server_host or server_port information is not on command line.
+  if(!mission_file_provided) {
+    char buff[1000];
+    // If server_host info was not on the command line, prompt here.
+    if(!server_host_set) {
+      cout << "Enter IP address:  [localhost] ";
+      fgets(buff, 999, stdin);
+      if(buff[0] != '\n') {
+	server_host     = buff;    
+	server_host_set = true;
+      }
+    }
+    // If server_port info was not on the command line, prompt here.
+    if(!server_port_set) {
+      cout << "Enter Port number: [9000] ";
+      fgets(buff, 999, stdin);
+      if(buff[0] != '\n') {
+	server_port     = atoi(buff); 
+	server_port_set = true;
+      }
+    }
   }
   
-  if(!g_sMissionFile) {       
-    MOOSTrace("Failed to provide a MOOS (.moos) file... trying default.\n");
-    g_sMissionFile = "uXMS.moos";
+  XMS g_theXMS(server_host, server_port);
+
+  if(mission_file_provided == false) {
+    cout << "Mission File not provided. " << endl;
+    cout << "  server_host  = " << server_host << endl;
+    cout << "  server_port  = " << server_port << endl;
+    g_theXMS.setConfigureCommsLocally(true);
   }
-  
+  else {
+    cout << "Mission File was provided: " << g_sMissionFile << endl;
+  }
+
+
+
   // Handle the building of the uXMS process name.
   string process_name = "uXMS";
   if(seed) {
@@ -181,7 +234,7 @@ int main(int argc ,char * argv[])
     else if(str == "-a") 
       g_theXMS.setDispAll(true);
     
-    else if(!strContains(argv[i], ".moos"))
+    else if((!strContains(argv[i], ".moos")) && (str != "-noseed"))
       g_theXMS.addVariable(argv[i]);
 
     
