@@ -255,8 +255,6 @@ int main(int argc ,char * argv[])
     
     else if((!strContains(argv[i], ".moos")) && (str != "-noseed"))
       g_theXMS.addVariable(argv[i]);
-
-    
   }
 
   bool quit = false;
