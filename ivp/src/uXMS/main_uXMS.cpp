@@ -87,7 +87,7 @@ int main(int argc ,char * argv[])
 
   // Look for a request for usage information
   if(scanArgs(argc, argv, "-h", "--help", "-help")) {
-    cout << "Usage: uXMS [file.moos] [-nav] [-helm] [-pid] [--proc]" << endl;
+    cout << "Usage: uXMS [file.moos] [-nav] [-helm] [-pid] [-proc] " << endl;
     cout << "       [--clean|-c] [--resumed|-r] [--virgins|-v]     " << endl;
     cout << "       [--source|-s] [--time|-t] [--all|-a]           " << endl;
     cout << "       [server_host=value] [server_port=value]        " << endl;
@@ -230,6 +230,7 @@ int main(int argc ,char * argv[])
     }
     else if(str == "-proc") {
       g_theXMS.addVariable("PROC_WATCH_SUMMARY");
+      g_theXMS.addVariable("PROC_WATCH_EVENT");
     }
 
     else if((str == "-c") || (str == "--clean") || (str == "-clean"))
