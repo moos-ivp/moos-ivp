@@ -1,0 +1,205 @@
+// Level 2 Configuration file: M. Benjamin
+
+ServerHost = localhost
+ServerPort = 9006
+Simulator  = true
+
+Community  = alpha
+
+MOOSTimeWarp = 8
+
+LatOrigin  = 42.3584
+LongOrigin = -71.08745
+
+//------------------------------------------
+// Antler configuration  block
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+
+  Run = MOOSDB		@ NewConsole = true
+  Run = iMarineSim	@ NewConsole = true
+  Run = pEchoVar	@ NewConsole = true
+  Run = pLogger		@ NewConsole = true
+  Run = pTransponderAIS	@ NewConsole = true
+  Run = pMarinePID	@ NewConsole = true
+  Run = pMarineViewer	@ NewConsole = true
+  Run = uXMS		@ NewConsole = true
+  Run = pHelmIvP	@ NewConsole = true
+  Run = iRemote		@ NewConsole = true
+}
+
+//------------------------------------------
+// iMarineSim config block
+
+
+ProcessConfig = iMarineSim
+{
+  AppTick	= 10
+  CommsTick	= 10
+
+  START_X       = 0
+  START_Y       = 0
+  START_SPEED   = 0
+  START_HEADING = 180
+}
+
+//------------------------------------------
+// pHelmIvP config block
+
+ProcessConfig = pHelmIvP
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  Behaviors  = mission1.bhv
+  Verbose    = true
+  Domain     = course:0:359:360
+  Domain     = speed:0:4:21
+
+  ACTIVE_START = true
+}
+
+//------------------------------------------
+// pMarinePID config block
+
+ProcessConfig = pMarinePID
+{
+  AppTick    = 20
+  CommsTick  = 20
+
+  Verbose    = true
+
+  DEPTH_CONTROL = false
+
+  // Yaw PID controller
+  YAW_PID_KP		 = 0.5
+  YAW_PID_KD		 = 0.0
+  YAW_PID_KI		 = 0.0
+  YAW_PID_INTEGRAL_LIMIT = 0.07
+
+  // Speed PID controller
+  SPEED_PID_KP		 = 1.0
+  SPEED_PID_KD		 = 0.0
+  SPEED_PID_KI		 = 0.0
+  SPEED_PID_INTEGRAL_LIMIT = 0.07
+
+  //MAXIMUMS
+  MAXRUDDER    = 100
+  MAXTHRUST    = 100
+
+  // A non-zero SPEED_FACTOR overrides use of SPEED_PID
+  // Will set DESIRED_THRUST = DESIRED_SPEED * SPEED_FACTOR
+  SPEED_FACTOR = 20
+}
+
+//------------------------------------------
+// pMarineViewer config block
+
+ProcessConfig = pMarineViewer
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  polygon_vertex_size = 0
+}
+
+//------------------------------------------
+// iRemote configuration block
+
+ProcessConfig = iRemote
+{
+   CustomKey = 1 : HELM_VERBOSE @ "verbose"
+   CustomKey = 2 : HELM_VERBOSE @ "terse"
+   CustomKey = 3 : HELM_VERBOSE @ "quiet"
+   CustomKey = 4 : DEPLOY @ "true"
+   CustomKey = 5 : DEPLOY @ "false"
+   CustomKey = 6 : RETURN @ "true"
+   CustomKey = 7 : RETURN @ "false"
+   CustomKey = 9 : RESTART_HELM @ "true"
+}
+
+//------------------------------------------
+// Logger configuration block
+
+ProcessConfig = pLogger
+{
+  //over loading basic params...
+  AppTick 	= 20.0
+  CommsTick 	= 20.0
+
+  File		= HW
+  PATH		= ../data_from_runs/
+  SyncLog 	= true @ 0.2
+  AsyncLog 	= true
+  FileTimeStamp = true
+
+  Log		= DESIRED_THRUST @ 0.1
+  Log		= DESIRED_RUDDER @ 0.1
+  Log           = NAV_X          @ 0.1
+  Log           = NAV_Y          @ 0.1
+  Log           = NAV_HEADING    @ 0.1
+  Log           = NAV_SPEED      @ 0.1
+  Log           = LOOP_WALL      @ 0.1
+  Log           = LOOP_CPU       @ 0.1
+  Log           = AIS_REPORT     @ 0.1
+}
+
+//------------------------------------------
+// pEchoVar configuration block
+
+ProcessConfig = pEchoVar
+{
+  AppTick     = 5
+  CommsTick   = 5
+
+  Echo    = MARINESIM_X       ->  NAV_X
+  Echo    = MARINESIM_Y       ->  NAV_Y
+  Echo    = MARINESIM_YAW     ->  NAV_YAW
+  Echo    = MARINESIM_HEADING ->  NAV_HEADING
+  Echo    = MARINESIM_SPEED   ->  NAV_SPEED
+}
+
+//------------------------------------------
+// pTransponderAIS config block
+
+ProcessConfig = pTransponderAIS
+{
+  AppTick	= 2
+  CommsTick	= 2
+  VESSEL_TYPE   = KAYAK
+
+  //BLACKOUT_INTERVAL = 15
+}
+
+//------------------------------------------
+// uXMS config block
+
+ProcessConfig = uXMS
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  VAR        = WATCH_PROC_EVENT, WATCH_PROC_SUMMARY
+
+  VAR        = DESIRED_HEADING, DESIRED_SPEED, DESIRED_DEPTH
+
+  VAR        = DESIRED_RUDDER, DESIRED_THRUST, DESIRED_ELEVATOR
+  VAR        = NAV_X, NAV_Y, NAV_SPEED, NAV_YAW
+
+  VAR        = MARINESIM_X
+  VAR        = MARINESIM_Y
+  VAR        = MARINESIM_HEADING
+  VAR        = MARINESIM_YAW
+  VAR        = MARINESIM_SPEED
+
+  VAR        = MOOS_MANUAL_OVERIDE
+  VAR        = DEPLOY
+  VAR        = RETURN
+  VAR        = NEW_WAYPOINTS
+  VAR        = HELM_RESTART
+  VAR        = UPDATE_HISTORY
+}
+
+
+

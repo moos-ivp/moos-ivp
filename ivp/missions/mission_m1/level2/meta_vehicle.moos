@@ -1,0 +1,33 @@
+ServerHost = localhost
+ServerPort = 920$(VID)
+Simulator  = true
+
+// Community name IS the vehicle name
+Community  = vehicle$(VID)
+  
+#include plug_datum.moos
+   
+//------------------------------------------------------------
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+   
+  Run = MOOSDB          @ NewConsole = false
+  Run = iMarineSim      @ NewConsole = false
+  Run = pMOOSBridge     @ NewConsole = false ~ pMOOSBridge_$(VID)
+  Run = pEchoVar        @ NewConsole = false
+  Run = pLogger         @ NewConsole = false
+  Run = pTransponderAIS @ NewConsole = false
+  Run = pMarinePID      @ NewConsole = false
+  Run = pHelmIvP        @ NewConsole = false
+  Run = uProcessWatch   @ NewConsole = false
+}
+  
+#include plug_pMOOSBridge.moos
+#include plug_iMarineSim.moos
+#include plug_pHelmIvP.moos
+#include plug_pMarinePID.moos
+#include plug_pLogger.moos
+#include plug_pEchoVar.moos
+#include plug_pTransponderAIS.moos
+#include plug_uProcessWatch.moos

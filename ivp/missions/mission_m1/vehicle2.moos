@@ -1,0 +1,172 @@
+ServerHost = localhost
+ServerPort = 9202
+Simulator  = true
+
+// Community name IS the vehicle name
+Community  = vehicle2
+  
+LatOrigin  = 42.3584
+LongOrigin = -71.08745
+
+   
+//------------------------------------------------------------
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+   
+  Run = MOOSDB          @ NewConsole = false
+  Run = iMarineSim      @ NewConsole = false
+  Run = pMOOSBridge     @ NewConsole = false ~ pMOOSBridge_2
+  Run = pEchoVar        @ NewConsole = false
+  Run = pLogger         @ NewConsole = false
+  Run = pTransponderAIS @ NewConsole = false
+  Run = pMarinePID      @ NewConsole = false
+  Run = pHelmIvP        @ NewConsole = false
+  Run = uProcessWatch   @ NewConsole = false
+}
+  
+//---------------------------------------
+ProcessConfig = pMOOSBridge_2
+{
+  AppTick    = 4
+  CommsTick  = 4
+  
+  SHARE = [AIS_REPORT_LOCAL]   -> shoreside @ localhost:9123 [AIS_REPORT]
+  SHARE = [VIEW_POLYGON]       -> shoreside @ localhost:9123 [VIEW_POLYGON]
+  SHARE = [VIEW_POINT]         -> shoreside @ localhost:9123 [VIEW_POINT]
+  SHARE = [PROC_WATCH_SUMMARY] -> shoreside @ localhost:9123 [PROC_WATCH_SUMMARY_VH2]
+  
+  SHARE = [AIS_REPORT_LOCAL]   -> vehicle1  @ localhost:9201 [AIS_REPORT]
+  SHARE = [AIS_REPORT_LOCAL]   -> vehicle2  @ localhost:9202 [AIS_REPORT]
+}
+
+//------------------------------------------
+ProcessConfig = iMarineSim
+{
+  AppTick   = 10
+  CommsTic  = 10
+
+  START_POS = -10,-25,180,0
+}
+
+//---------------------------------------
+ProcessConfig = pHelmIvP
+{
+  AppTick    = 4
+  CommsTick  = 4
+  
+  Behaviors    = vehicle2.bhv  
+  Verbose      = false
+  Domain       = course:0:359:360
+  Domain       = speed:0:5:26
+  ACTIVE_START = true
+}
+
+//---------------------------------------
+ProcessConfig = pMarinePID
+{
+  AppTick    = 10
+  CommsTick  = 10
+  
+  VERBOSE       = true
+  DEPTH_CONTROL = false
+  ACTIVE_START  = true
+  
+  // Yaw PID controller
+  YAW_PID_KP             = 0.4
+  YAW_PID_KD             = 0.1
+  YAW_PID_KI             = 0.0
+  YAW_PID_INTEGRAL_LIMIT = 0.07
+  
+  // Speed PID controller
+  SPEED_PID_KP           = 1.0
+  SPEED_PID_KD           = 0.0
+  SPEED_PID_KI           = 0.0
+  SPEED_PID_INTEGRAL_LIMIT = 0.07
+  
+  // Maximums
+  MAXRUDDER  = 100
+  MAXTHRUST  = 100
+  
+  // A non-zero SPEED_FACTOR overrides use of SPEED_PID
+  // Will set DESIRED_THRUST = DESIRED_SPEED * SPEED_FACTOR
+  SPEED_FACTOR = 20
+}
+
+//---------------------------------------
+ProcessConfig = pLogger
+{
+  AppTick 	= 10
+  CommsTick 	= 10
+  
+  File		= M1_V2_
+  PATH		= ./
+  SyncLog 	= true @ 0.2
+  AsyncLog 	= true
+  FileTimeStamp = true
+
+  // Log it all!!!!!
+  WildCardLogging = true 
+  
+  // PID Output
+  Log		= DESIRED_THRUST     @ 0
+  Log		= DESIRED_RUDDER     @ 0
+  
+  // Helm Output
+  Log           = DESIRED_SPEED      @ 0
+  Log           = DESIRED_HEADING    @ 0
+  Log           = HELM_ACTIVE_BHV    @ 0   NOSYNC
+  Log           = HELM_NONIDLE_BHV   @ 0   NOSYNC
+  log           = DEPLOY             @ 0   NOSYNC
+  
+  // Vehicle-Level IO
+  Log           = PROC_WATCH_SUMMARY @ 0   NOSYNC
+  Log           = PROC_WATCH_EVENT   @ 0   NOSYNC
+  Log           = AIS_REPORT_LOCAL   @ 0   NOSYNC
+  Log           = AIS_REPORT         @ 0   NOSYNC
+  
+  // Navigation information
+  Log           = NAV_X              @ 0
+  Log           = NAV_Y              @ 0
+  Log           = NAV_HEADING        @ 0
+  Log           = NAV_SPEED          @ 0
+}
+
+//---------------------------------------
+ProcessConfig = pEchoVar
+{
+  AppTick   = 20
+  CommsTick = 20
+  
+  Echo = MARINESIM_X       ->  NAV_X
+  Echo = MARINESIM_Y       ->  NAV_Y
+  Echo = MARINESIM_HEADING ->  NAV_HEADING
+  Echo = MARINESIM_SPEED   ->  NAV_SPEED
+}
+
+
+//---------------------------------------
+ProcessConfig = pTransponderAIS
+{
+  AppTick     = 5
+  CommsTick   = 5
+  
+  VESSEL_TYPE = KAYAK
+}
+
+//---------------------------------------
+ProcessConfig = uProcessWatch
+{
+  AppTick   = 2
+  CommsTick = 2
+  
+  WATCH  = iMarineSim
+  WATCH  = pMOOSBridge*
+  WATCH  = pEchoVar
+  WATCH  = pLogger
+  WATCH  = pTransponderAIS
+  WATCH  = pMarinePID
+  WATCH  = pHelmIvP
+}
+
+

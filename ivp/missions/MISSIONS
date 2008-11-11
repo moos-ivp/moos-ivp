@@ -1,0 +1,22 @@
+
+Mission 1: 
+  Files: alpha.moos,  mission1.bhv
+  About: Simple waypoint mission with a return-home waypoint triggered 
+    after a box-run.
+    
+Mission 2: (alpha.moos,  mission2.bhv)
+  Files: alpha.moos, mission2.bhv
+  About: Simple waypoint mission. Box run repeats itself. The user will 
+    set RETURN true to trigger the return-home behavior and interupt 
+    the first waypoint behavior.
+  
+Mission 3: 
+  Files: alpha.moos, mission3.bhv
+  About: Test the OpRegion. A waypoint behavior takes the vehicle outside 
+    the OpRegion polygon and the helm posts all-stop.
+
+Mission_M1:
+  Files: vehicle1.moos, vehicle2.moos, ShoreSide.moos, 
+    vehicle1.bhv, vehicle2.bhv
+  About: One vehicle goes on a loiter mission and the seconde vehicle 
+    follows at a relative position.

@@ -1,0 +1,39 @@
+initialize   DEPLOY = false
+initialize   RETURN = false
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name      = waypt_survey
+  pwt       = 100
+  speed     = 2.4
+  radius    = 8.0
+  points    = 60,-40:60,-160:150,-160:220,-100:150,-40
+  condition = RETURN = false
+  condition = DEPLOY = true
+  endflag   = RETURN = true
+}
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name      = waypt_return
+  pwt       = 100
+  speed     = 2.4
+  radius    = 8.0
+  points    = 0,0
+  condition = RETURN = true
+  condition = DEPLOY = true
+}
+
+//----------------------------------------------
+Behavior = BHV_OpRegion
+{
+  polygon  = 90,20:-80,-60:-80,-210:200,-210:200,20
+  name     = bhv_op_region
+  max_time = 1800
+  max_depth = 200
+
+  trigger_entry_time    = 1.0
+  trigger_exit_time     = 1.0
+}
