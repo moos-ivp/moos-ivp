@@ -1,6 +1,0 @@
-pAntler  BOBBY.moos &;               sleep 1; 
-pHelmIvP BOBBY.moos ../bobby.bhv &;  sleep 1;
-
-pAntler  DEE.moos &;              sleep 1; 
-pHelmIvP DEE.moos  ../dee.bhv &;  sleep 1;
-

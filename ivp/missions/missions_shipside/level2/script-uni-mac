@@ -1,6 +1,0 @@
-pAntler  UNI.moos &;                   sleep 1; 
-pHelmIvP UNI.moos ../uni-delta.bhv &;  sleep 1;
-
-pAntler  MAC.moos &;                   sleep 1; 
-pHelmIvP MAC.moos ../mac-delta.bhv &;  sleep 1;
-
