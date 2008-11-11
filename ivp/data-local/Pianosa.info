@@ -1,0 +1,21 @@
+// This is an "image-info" file. It is meant to accompany a tif
+// file of a geometrical background, typically a satellite image.
+// The below info is necessary for correlating distances and
+// position in "pixel" values with distances and positions in 
+// "meters".
+
+//--------------------------------------------------------------
+// img_centx and img_centy tell us at what position, in terms 
+// of the percentage of the image, is the point known as (0,0)
+// Percentage taken from lower-left.
+
+img_centx   = 0.50  
+img_centy   = 0.50
+
+//--------------------------------------------------------------
+// img_meters tells us what percentage of the image corresponds
+// to 100 meters.
+
+img_meters  = 0.048
+//img_meters  = 0.01953125
+

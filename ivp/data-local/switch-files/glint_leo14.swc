@@ -1,0 +1,8 @@
+rm -f   Default.tif
+rm -f   Default.info
+rm -f   DefaultB.tif
+rm -f   DefaultB.info
+cp glint_leo14.tif   Default.tif
+cp glint_leo14.info  Default.info
+cp glint_leo14s.tif  DefaultB.tif
+cp glint_leo14.info  DefaultB.info

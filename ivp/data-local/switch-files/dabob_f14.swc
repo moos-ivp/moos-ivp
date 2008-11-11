@@ -1,0 +1,9 @@
+rm -f Default.tif;
+rm -f DefaultB.tif;
+rm -f Default.info;
+rm -f DefaultB.info;
+cp    dabob_f14.tif   Default.tif;
+cp    dabob_f14.info  Default.info;
+cp    dabob_f14s.tif  DefaultB.tif;
+cp    dabob_f14s.info DefaultB.info;
+
