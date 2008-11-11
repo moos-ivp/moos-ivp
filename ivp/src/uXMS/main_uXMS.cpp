@@ -87,7 +87,26 @@ int main(int argc ,char * argv[])
 
   // Look for a request for usage information
   if(scanArgs(argc, argv, "-h", "--help", "-help")) {
-    MOOSTrace("Usage: uXMS moosfile.moos -nav -helm -pid -clean [VARS] \n");
+    cout << "Usage: uXMS [file.moos] [-nav] [-helm] [-pid] [--proc]" << endl;
+    cout << "       [--clean|-c] [--resumed|-r] [--virgins|-v]     " << endl;
+    cout << "       [--source|-s] [--time|-t] [--all|-a]           " << endl;
+    cout << "       [server_host=value] [server_port=value]        " << endl;
+    cout << "       [MOOS_VARIABLES]                               " << endl;
+    cout << "                                                      " << endl;
+    cout << "[file.moos] Filename to get configuration parameters  " << endl;
+    cout << "[-nav]      Auto-subscribe for NAV_* variables        " << endl;
+    cout << "[-helm]     Auto-subscribe for IvPHelm variables      " << endl;
+    cout << "[-pid]      Auto-subscribe for PID (DESIRED_*) vars   " << endl;
+    cout << "[-proc]     Auto-subscribe for uProcessWatch vars     " << endl;
+    cout << "[-c]        Ignore scope variables in file.moos       " << endl;
+    cout << "[-r]        Start in data-streaming mode              " << endl;
+    cout << "[-v]        Don't display virgin variables            " << endl;
+    cout << "[-s]        Show the Source field in the data report  " << endl;
+    cout << "[-t]        Show the Time field in the data report    " << endl;
+    cout << "[-a]        Show ALL MOOS variables in the MOOSDB     " << endl;
+    cout << "[server_host=value]  Connect to MOOSDB at IP=value    " << endl;
+    cout << "[server_port=value]  Connect to MOOSDB at port=value  " << endl;
+    cout << endl;
     return(0);
   }
 
@@ -216,22 +235,22 @@ int main(int argc ,char * argv[])
     else if((str == "-c") || (str == "--clean") || (str == "-clean"))
       g_theXMS.ignoreVars(true);
     
-    else if(str == "-r") 
+    else if((str == "-r") || (str == "--resumed"))
       g_theXMS.setPaused(false);
 
-    else if(str == "-v") 
+    else if((str == "-v") || (str == "--virgins"))
       g_theXMS.setDispVirgins(false);
 
     else if(str == "-e") 
       g_theXMS.setDispEmptyStrings(false);
 
-    else if(str == "-s") 
+    else if((str == "-s") || (str == "--source"))
       g_theXMS.setDispSource(true);
 
-    else if(str == "-t") 
+    else if((str == "-t") || (str == "--time"))
       g_theXMS.setDispTime(true);
 
-    else if(str == "-a") 
+    else if((str == "-a") || (str == "--all"))
       g_theXMS.setDispAll(true);
     
     else if((!strContains(argv[i], ".moos")) && (str != "-noseed"))
