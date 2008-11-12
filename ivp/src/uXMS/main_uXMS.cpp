@@ -21,6 +21,7 @@
 /*****************************************************************/
 
 #include <string>
+#include <cstring>
 #include "MOOSLib.h"
 #include "MOOSGenLib.h"
 #include "XMS.h"

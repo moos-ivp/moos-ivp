@@ -33,4 +33,5 @@ SET(SRC
 )
 
 ADD_LIBRARY(ivpbuild ${SRC})
+TARGET_LINK_LIBRARIES(ivpbuild ivpcore)
 

@@ -13,3 +13,4 @@ SET(SRC
 )
 
 ADD_LIBRARY(navplot ${SRC})
+TARGET_LINK_LIBRARIES(navplot ivpbuild)
