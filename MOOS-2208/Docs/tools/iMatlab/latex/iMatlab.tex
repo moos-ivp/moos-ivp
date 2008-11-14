@@ -1,0 +1,198 @@
+
+
+\documentclass[a4paper,10pt]{article}
+\usepackage{listings,color,epsfig,amsmath,url,tabularx}
+\definecolor{codecolor}{rgb}{0.99,0.97,0.94} % color values Red, Green, Blue
+\definecolor{commentcolor}{rgb}{0.1,0.5,0.1} % color values Red, Green, Blue
+\definecolor{stringcolor}{rgb}{0.3,0.1,0.1} % color values Red, Green, Blue
+\newcommand{\Code}[1]{\texttt{#1} }
+\newcommand{\code}[1]{\Code{#1} }
+\newcommand{\DB}   {\code{{MOOSDB}}}
+\newcommand{\MA}   {\code{{MOOSApp}}}
+\newcommand{\Ignore}[1]   {}
+
+
+
+% Title Page
+\title{MOOS Meets Matlab --- \code{iMatlab} }
+\author{Paul Newman}
+
+
+\begin{document}
+\maketitle
+
+\begin{center}
+\epsfig{file=images/moose6.eps,width = 0.2\linewidth} 
+\end{center}
+
+\section{Introduction}
+
+Not everyone want to program in C++. Many folks are happy using
+matlab as their research tool. Whilst not advising the use of
+matlab to control a real vehicle, it seemed a useful to build an
+application that allows matlab to join a MOOS community - if only
+for listening in and rendering sensor data. The project
+\code{iMatlab} allows that to happen. In essence it ``mex''s up
+some central MOOS code so it can be called from inside matlab. The
+\code{CMake} build system supported by current releases of MOOS
+will build the project for Linux or Windows version of matlab.
+
+
+\subsection{Configuration}
+
+\code{iMatlab} allows Matlab programmers to access some of the
+benefits of MOOS. It allows connection to the MOOSDB and access to
+local serial ports. Configuration for the most part is done via a
+*.moos file which is either the default iMatlab.moos found locally
+or at a location specified at initialisation. Figure
+\ref{fig:iMatlab} shows a typical configuration block for
+\code{iMatlab}.
+
+\begin{figure}[ht]
+\begin{lstlisting}[ ]{}
+    ProcessConfig = iMatlab
+    {
+        AppTick     = 10
+        CommsTick   = 10
+        Port        = COM6
+        BaudRate    = 4800
+        Verbose     = false
+        Streaming   = false
+        MOOSComms = true
+        SerialComms = false
+        SERIAL_TIMEOUT = 10.0
+        SUBSCRIBE = DB_TIME @ 0.0
+    }
+\end{lstlisting}
+\caption{A typical configuration block for \code{iMatlab}
+}\label{fig:iMatlab}
+\end{figure}
+
+Most of the fields are understandable by reading the MOOS
+documentation. The application specific fields are:
+\begin{description}
+\item [MOOSComms]: ``true'' or ``false'' - do you want to connect to a
+community?
+%
+\item [SerialComms]: ``true'' or ``false''  - do you want to use serial
+ports ?
+%
+\item [SUBSCRIBE]: {\it{VariableName @ Period}} - one entry for each
+variable you want to subscribe to and the maximum update rate you
+are interested in . You can have many SUBSCRIBE lines.
+\end{description}
+
+Importantly always call \code{iMatlab('init')} first --- an error
+message is printed if you forget. By default iMatlab looks to read
+configuration data from iMatlab.moos. Alternatively you can use
+\code{iMatlab('init','CONFIG\_FILE','XYZ.moos')} to read from the
+file ``XYZ.moos''  You can specify a process name other than the
+default ``iMatlab'' by passing the \code{MOOSName} parameter at
+initialisation:
+\code{iMatlab('init','MOOSNAME','MyName',.......)}.
+
+
+
+\subsection{Usage}
+
+If \code{MOOSComms} is ``true''  in the configuration file  then
+MOOS Comms functionality is enabled.
+
+\subsubsection{Publishing}
+To send data use the following syntax
+\code{iMatlab(\'MOOS\_MAIL\_TX\',VARNAME,VARVAL)} e.g
+\newline \code{iMatlab('MOOS\_MAIL\_TX','A\_DATA\_VALUE',10)}
+or\\
+\code{iMatlab('MOOS\_MAIL\_TX','MY\_NAME','PMN')}\\
+
+\subsubsection{Receiving Notifications}
+
+To receive data use the syntax \code{ D =
+iMatlab('MOOS\_MAIL\_RX')}.    This will return a structure array
+describing the data that has arrived  (because of a subscription)
+since the last call \code{'MOOS\_MAIL\_RX'} call . Each element of
+$D$ will be a structure with the following fields given in Table
+\ref{Tab:iMatlabMail}.
+
+\begin{table}[ht]
+\centering
+\begin{tabularx}{\linewidth}{p{2.5in}|p{1in}|X}
+\textbf{Field} &  \textbf{type} &\textbf{Description}\\
+\hline
+KEY                    & string & the name of the variable\\
+TYPE                   & string & the type of the variable
+('DBL'/'STR')\\
+TIME                    &double & the time the data was valid\\
+STR                    & string & the string value of the data if TYPE=='STR'\\
+DBL                     &double & the double value of the data if TYPE=='DBL'\\
+SRC                    & string & the name of the process that issued the data\\
+ORIGINATING\_COMMUNITY &  string & the name of the community which
+SRC belongs to\\\hline
+\end{tabularx}
+\label{Tab:iMatlabMail} \caption{The contents of a MOOS mail
+structure in iMatlab} \normalsize
+\end{table}
+
+
+
+
+\subsubsection{Registering for Notifications}
+
+This is done either through the configuration file using
+\code{SUBSCRIBE=...} or by calling
+\code{iMatlab('MOOS\_REGISTER',VarName,MinTime)} For example
+calling \code{iMatlab('MOOS\_REGISTER','DESIRED\_RUDDER',0.0)}
+will subscribe to \emph{every} change in \code{'DESIRED\_RUDDER'}
+while calling
+\code{iMatlab('MOOS\_REGISTER','DESIRED\_RUDDER',0.2)} will
+subscribe in a way that means we'll only be told about changes in
+'DESIRED\_RUDDER' every 0.2 seconds.
+
+
+\subsection{Serial Ports}
+
+If "SerialComms = true"  in the configuration file then serial
+port functionality is enabled.
+
+\subsubsection{Sending Data}
+
+Call \code{iMatlab('SERIAL\_TX',Data)} where \code{Data} is a
+string or a vector of type uint8.
+
+\subsubsection{Reading Data}
+
+To receive data on a serial port call \code{ D =
+iMatlab('SERIAL\_RX',Data)}.If "Streaming=false" in the
+configuration file then the function will block until a timeout
+occurs or a telegram is received (ASCII, carriage return
+terminated only in the release). If  \code{"Streaming  = true"}
+the function returns immediately with a structure array containing
+all the telegrams received since the last call. Each element of
+$D$ is a structure described by Table \ref{Tab:iMatlabSerial}.
+
+
+\begin{table}[ht]
+\centering
+\begin{tabularx}{\linewidth}{p{2.5in}|X}
+\textbf{Field} &  \textbf{Description}\\\hline
+            STR   & the data Rx'd\\
+            TIME  & the time it was received\\
+\hline
+\end{tabularx}
+\label{Tab:iMatlabSerial} \caption{The contents of the data
+structure pertaining to received serial data in \code{iMatlab}}
+\normalsize
+\end{table}
+
+
+
+\subsection{Other Functionality}
+
+\subsubsection{Pausing}
+Calling \code{ iMatlab('MOOS\_PAUSE',T)}  suspends the calling
+thread (matlab itself in this case) for T seconds. This is pretty
+useful for a non-busy wait in contrast to the CPU loading when
+calling Matlab's own \code{pause} function.
+
+
+\end{document}
