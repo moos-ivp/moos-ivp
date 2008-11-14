@@ -291,6 +291,10 @@ bool BackImg::readTiffInfo(string filename)
   if(!img_centx_set || !img_centy_set || !img_meters_set) {
     if((lat_north <= lat_south) || (lon_east <= lon_west)) {
       cout << "Problem with BackImg Lat/Lon specs. " << endl;
+      cout << "lat_north: " << lat_north << endl;
+      cout << "lat_south: " << lat_south << endl;
+      cout << "lon_west:  " << lon_west  << endl;
+      cout << "lon_east:  " << lon_east  << endl;
       return(false);
     }
     

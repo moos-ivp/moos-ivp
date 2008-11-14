@@ -566,9 +566,12 @@ bool VehicleSet::updateVehiclePosition(const string& ais_report)
   bool b_lat   = tokParse(ais_report, "LAT", ',', '=', lat);
   bool b_lon   = tokParse(ais_report, "LON", ',', '=', lon);
 
-  if(!b_pos_x || !b_pos_y || !b_vname || !b_vtype || 
-     !b_speed ||!b_hding || !b_utime)
+  if((!b_pos_x || !b_pos_y) && (!b_lat || !b_lon))
     return(false);
+
+  if(!b_vname || !b_vtype || !b_speed ||!b_hding || !b_utime)
+    return(false);
+
   if(((vtype == "auv") || (vtype == "glider")) && !b_depth)
     return(false);
   
@@ -580,7 +583,10 @@ bool VehicleSet::updateVehiclePosition(const string& ais_report)
   
   // Handle updating the ObjectPose with the new information
   ObjectPose opose(pos_x, pos_y, hding, speed, depth);
-  opose.setLatLon(lat, lon);
+
+  // If the lat/lon was included in the report, add to the object pose
+  if(b_lat && b_lon)
+    opose.setLatLon(lat, lon);
   
   m_pos_map[vname] = opose;
   m_ais_map[vname] = utime;

@@ -158,8 +158,9 @@ bool MarineViewer::setParam(string param, double v)
     }
   }
   else if(param == "zoom") {
-    if(m_zoom*v > 0.05)      
-      m_zoom *= v;
+    m_zoom *= v;
+    if(m_zoom < 0.00001)      
+      m_zoom = 0.00001;
   }
   else if(param == "pan_x") {
     double pix_shift = v * m_back_img.get_pix_per_mtr();
@@ -562,6 +563,14 @@ void MarineViewer::drawCommonVehicle(const string& vname,
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   glOrtho(0, w(), 0, h(), -1 ,1);
+
+  double xpos = 0;
+  double ypos = 0;
+  if(opose.isLatLonSet()) {
+    double dlat = opose.getLat();
+    double dlon = opose.getLon();
+    //    m_geode
+  }
 
   // Determine position in terms of image percentage
   double vehicle_ix = meters2img('x', opose.getX());
