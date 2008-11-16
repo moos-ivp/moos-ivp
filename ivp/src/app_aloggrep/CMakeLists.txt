@@ -1,13 +1,13 @@
 #--------------------------------------------------------
-# The CMakeLists.txt for:                        alogfilt
+# The CMakeLists.txt for:                        aloggrep
 # Author(s):                                Mike Benjamin
 #--------------------------------------------------------
 
 FILE(GLOB SRC *.cpp)
 
-ADD_EXECUTABLE(alogfilt ${SRC})
+ADD_EXECUTABLE(aloggrep ${SRC})
    
-TARGET_LINK_LIBRARIES(alogfilt
+TARGET_LINK_LIBRARIES(aloggrep
   mbutil
   logutils
   m)

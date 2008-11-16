@@ -146,8 +146,8 @@ SET(IVP_APPS_TO_BUILD
   app_geoview
   app_logview
   app_alogscan
-  app_aloggrab
-  app_alogfilt
+  app_aloggrep
+  app_alogrm
   app_alogclip
   app_splug
   iMarineSim
