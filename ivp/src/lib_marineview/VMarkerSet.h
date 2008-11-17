@@ -41,9 +41,9 @@ public:
   std::vector<std::string> getParamReport() const;
 
 protected:
-  bool addVMarker(std::string mtype, double xpos, double ypos,
+  void addVMarker(std::string mtype, double xpos, double ypos,
 		  double mscale, std::string label, std::string colors);
-
+  
 
 protected:
   std::vector<std::string>  m_marker_type;

@@ -89,16 +89,15 @@ bool VMarkerSet::addVMarker(const string& mline,
   if(scale_d < 0)
     scale_d = 0;
   
-  return(addVMarker(mtype, xpos_d, ypos_d, scale_d, label, colors));
+  addVMarker(mtype, xpos_d, ypos_d, scale_d, label, colors);
+  return(true);
 }
 
 
 //-----------------------------------------------------------
 // Procedure: addVMarker()
-//      Note: return(true) if the given vmarker results in a new entry
-//            return(false) if the given marker replaces an old entry
 
-bool VMarkerSet::addVMarker(string mtype, double xpos, double ypos,
+void VMarkerSet::addVMarker(string mtype, double xpos, double ypos,
 			    double mscale, string label, string colors)
 {
   // First check to see if the given VMarker matches the type and label
@@ -130,7 +129,6 @@ bool VMarkerSet::addVMarker(string mtype, double xpos, double ypos,
     m_marker_label.push_back(label);
     m_marker_colors.push_back(svector);
     m_marker_color_vectors.push_back(color_vectors);
-    return(true);
   }
   else {
     m_marker_xpos[found_ix] = xpos;
@@ -138,7 +136,6 @@ bool VMarkerSet::addVMarker(string mtype, double xpos, double ypos,
     m_marker_scale[found_ix] = mscale;
     m_marker_colors[found_ix] = svector;
     m_marker_color_vectors[found_ix] = color_vectors;
-    return(false);
   }
 }
 
