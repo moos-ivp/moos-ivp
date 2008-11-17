@@ -124,6 +124,9 @@ bool PMV_Viewer::setParam(string param, string value)
     m_centric_view = true;
     handled = true;
   }
+  else if(param == "view_marker") {
+    handled = m_vmarkers.addVMarker(value, m_geodesy);
+  }
   else if((param == "ais_report") || (param == "ais_report_local")){
     handled = m_vehiset.setParam(param, value);
     if(handled && m_centric_view && m_centric_view_sticky) {

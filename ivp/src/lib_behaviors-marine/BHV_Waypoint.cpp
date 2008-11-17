@@ -329,7 +329,6 @@ void BHV_Waypoint::updateInfoOut(bool post)
       string ptmsg;
       ptmsg += "x=" + dstringCompact(doubleToString(m_ptx,1));
       ptmsg += ",y=" + dstringCompact(doubleToString(m_pty,1));
-      // ptmsg += ",label=" + m_descriptor;
       ptmsg += ",label=" + m_us_name + "'s next waypoint";
       ptmsg += ",type=waypoint, size=1";
       ptmsg += ",source=" + m_us_name;

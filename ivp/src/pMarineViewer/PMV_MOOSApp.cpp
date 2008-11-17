@@ -78,6 +78,7 @@ bool PMV_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
     else if(key == "AIS_REPORT_LOCAL") MOOSTrace("*");
     else if(key == "GRID_CONFIG")      MOOSTrace("X");
     else if(key == "GRID_DELTA")       MOOSTrace("G");
+    else if(key == "VIEW_MARKER")      MOOSTrace("M");
     else MOOSTrace("?");
 
     if(handled)
@@ -262,6 +263,7 @@ void PMV_MOOSApp::registerVariables()
   m_Comms.Register("VIEW_POINT",       0);
   m_Comms.Register("VIEW_SEGLIST",     0);
   m_Comms.Register("TRAIL_RESET",      0);
+  m_Comms.Register("VIEW_MARKER",      0);
 }
 
 
