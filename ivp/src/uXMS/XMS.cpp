@@ -439,15 +439,15 @@ void XMS::printHelp()
   
   printf("KeyStroke    Function                             \n");
   printf("---------    ---------------------------          \n");
-  printf("    s        Surpress Source of variables         \n");
+  printf("    s        Suppress Source of variables         \n");
   printf("    S        Display Source of variables          \n");
-  printf("    t        Surpress Time of variables           \n");
+  printf("    t        Suppress Time of variables           \n");
   printf("    T        Display Time of variables            \n");
-  printf("    c        Surpress Community of variables      \n");
+  printf("    c        Suppress Community of variables      \n");
   printf("    C        Display Community of variables       \n");
-  printf("    v        Surpress virgin variables            \n");
+  printf("    v        Suppress virgin variables            \n");
   printf("    V        Display virgin variables             \n");
-  printf("    e        Surpress empty strings               \n");
+  printf("    e        Suppress empty strings               \n");
   printf("    E        Display empty strings                \n");
   printf("    /        Begin entering a filter string       \n");
   printf("    ?        Clear current filter                 \n");    
