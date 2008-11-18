@@ -6,7 +6,7 @@ Simulator  = true
 
 Community  = alpha
 
-MOOSTimeWarp = 8
+MOOSTimeWarp = 5
 
 LatOrigin  = 42.3584
 LongOrigin = -71.08745
@@ -129,7 +129,7 @@ ProcessConfig = pLogger
   CommsTick 	= 20.0
 
   File		= HW
-  PATH		= ../data_from_runs/
+  PATH		= ./data_from_runs/
   SyncLog 	= true @ 0.2
   AsyncLog 	= true
   FileTimeStamp = true
