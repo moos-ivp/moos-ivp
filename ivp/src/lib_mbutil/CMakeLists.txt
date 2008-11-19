@@ -12,5 +12,9 @@ SET(SRC
   TermUtils.cpp
 )
 
+# SET_SOURCE_FILES_PROPERTIES(
+#    MBUtils.cpp 
+#    PROPERTIES OBJECT_DEPENDS ${IVP_SRC_DIR_ABSOLUTE}/svn_revision_number.h
+#    )
 
 ADD_LIBRARY(mbutil ${SRC})
