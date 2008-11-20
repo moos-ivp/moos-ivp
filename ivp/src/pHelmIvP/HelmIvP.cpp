@@ -604,15 +604,6 @@ bool HelmIvP::OnStartUp()
     return(false);
   }
   
-  string simulator;
-  if(!m_MissionReader.GetValue("Simulator",simulator)) {
-    MOOSTrace("Simulation flag not provided\n");
-    //return(false);
-  }
-  vector<string> must_bhvs;
-  must_bhvs.push_back("BHV_OpRegion");
-
-
   STRING_LIST sParams;
   m_MissionReader.GetConfiguration(GetAppName(), sParams);
     

@@ -6,7 +6,7 @@ Simulator  = true
 
 Community  = alpha
 
-MOOSTimeWarp = 5
+MOOSTimeWarp = 2
 
 LatOrigin  = 42.3584
 LongOrigin = -71.08745
