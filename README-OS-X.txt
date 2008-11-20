@@ -31,10 +31,8 @@ Website: http://libtiff.org
 (b) Look at the README, but it amounts to:
     ./configure; make; sudo make install
 
-
 (2) CMake (at least version 2.4)
 Website: cmake.org
-
 
 
 BUILDING MOOS-IvP
