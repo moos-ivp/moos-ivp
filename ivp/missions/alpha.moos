@@ -1,7 +1,7 @@
 // Level 2 Configuration file: M. Benjamin
 
 ServerHost = localhost
-ServerPort = 9006
+ServerPort = 9000
 Simulator  = true
 
 Community  = alpha
