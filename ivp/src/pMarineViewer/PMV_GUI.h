@@ -23,9 +23,11 @@
 #ifndef PMV_GUI_HEADER
 #define PMV_GUI_HEADER
 
+#include "MOOSLock.h"
 #include "PMV_Viewer.h"
 #include "MarineVehiGUI.h"
 #include "MY_Output.h"
+#include "MY_Button.h"
 
 class PMV_GUI : public MarineVehiGUI {
 public:
@@ -33,10 +35,21 @@ public:
   virtual ~PMV_GUI() {};
 
   void updateXY();
+  void addButton(std::string, std::string);
   int  handle(int);
   void setCurrTime(double v) {m_curr_time = v;};
-  
+
   PMV_Viewer *mviewer;
+
+  std::string  getPendingVar(unsigned int index);
+  std::string  getPendingVal(unsigned int index);
+  void         clearPending();
+  void         pushPending(std::string, std::string);
+  unsigned int getPendingSize() {return(m_pending_vars.size());};
+
+ private:
+  inline void cb_MOOS_Button_i(int);
+  static void cb_MOOS_Button(Fl_Widget*, int);
 
 protected:
   MY_Output  *v_nam;
@@ -51,6 +64,16 @@ protected:
   MY_Output  *v_ais;
   MY_Output  *time;
   MY_Output  *warp;
+
+  MY_Button  *user_defined_button_one;
+  MY_Button  *user_defined_button_two;
+
+  std::vector<std::string> m_button_keys;
+  std::vector<std::string> m_button_vars;
+  std::vector<std::string> m_button_vals;
+
+
+  CMOOSLock  m_pmv_mutex;
 
   double m_curr_time;
 };

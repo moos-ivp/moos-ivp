@@ -56,9 +56,12 @@ class PMV_Viewer : public MarineViewer
  private:
   VehicleSet  m_vehiset;
 
-  // Member variables for holding/conveying mouse click info
+  // Member variables for holding/conveying mouse/button click info
   std::string m_left_click;
   std::string m_right_click;
+  std::string m_button_one;
+  std::string m_button_two;
+
   bool        m_centric_view;
   bool        m_centric_view_sticky;
   CMOOSLock   m_mutex;

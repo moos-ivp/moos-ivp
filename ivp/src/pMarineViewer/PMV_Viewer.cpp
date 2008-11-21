@@ -117,7 +117,7 @@ bool PMV_Viewer::setParam(string param, string value)
   
   bool handled = false;
   bool center_needs_adjusting = false;
-
+  
   mutexLock();
   if(param == "center_view") {
     center_needs_adjusting = true;

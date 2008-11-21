@@ -45,6 +45,7 @@ class PMV_MOOSApp : public CMOOSApp
   bool OnNewMail(MOOSMSG_LIST &NewMail);
 
  protected:
+  void handlePendingGUI();
   void receiveVehicleState(CMOOSMsg &Msg);
   bool receivePK_SOL(CMOOSMsg &Msg);
   void registerVariables();

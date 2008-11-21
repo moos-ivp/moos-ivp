@@ -145,6 +145,7 @@ bool PMV_MOOSApp::Iterate()
     }
   }
 
+  handlePendingGUI();
   return(true);
 }
 
@@ -198,6 +199,10 @@ bool PMV_MOOSApp::OnStartUp()
     
     if(param == "verbose")
       m_verbose = (tolower(value) == "true");
+    else if(param == "button_one")
+      m_gui->addButton(param, value);
+    else if(param == "button_two")
+      m_gui->addButton(param, value);
     else { 
       bool handled = m_gui->mviewer->setParam(param, value);
       if(!handled)
@@ -264,6 +269,24 @@ void PMV_MOOSApp::registerVariables()
   m_Comms.Register("VIEW_SEGLIST",     0);
   m_Comms.Register("TRAIL_RESET",      0);
   m_Comms.Register("VIEW_MARKER",      0);
+}
+
+//----------------------------------------------------------------------
+// Procedure: handlePendingGUI
+
+void PMV_MOOSApp::handlePendingGUI()
+{
+  if(!m_gui)
+    return;
+  
+  int pendingSize = m_gui->getPendingSize();
+
+  for(int i=0; i<pendingSize; i++) {
+    string var = m_gui->getPendingVar(i);
+    string val = m_gui->getPendingVal(i);
+    m_Comms.Notify(var, val);
+  }
+  m_gui->clearPending();
 }
 
 

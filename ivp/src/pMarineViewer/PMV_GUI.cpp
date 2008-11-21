@@ -91,10 +91,74 @@ PMV_GUI::PMV_GUI(int g_w, int g_h, const char *g_l)
   warp = new MY_Output(720, h()-30, 70, 20, "Warp:"); 
   warp->textsize(info_size); 
   warp->labelsize(info_size);
+  
+  user_defined_button_one = 0;
+  user_defined_button_two = 0;
+
+  addButton("button_one", "HELLO, DEPLOY=true");
+  addButton("button_two", "BYE, RETURN=true");
+
+  //  user_defined_button = new MY_Button(col_b+2, row_b, 
+  //  wid_b-4, hgt_b, "ownship");
+
 
   this->end();
   this->resizable(this);
   this->show();
+}
+
+//----------------------------------------------------------
+// Procedure: addButton
+//      Note: 
+//            
+void PMV_GUI::addButton(string btype, string svalue) 
+{
+  if((btype != "button_one") && (btype != "button_two"))
+    return;
+  
+  string button_label = btype; // For lack of a better default
+  
+  vector<string> svector = parseString(svalue, ',');
+  int vsize = svector.size();
+  for(int i=0; i<vsize; i++) {
+    vector<string> ivector = parseString(svector[i], '=');
+    int isize = ivector.size();
+    for(int j=0; j<isize; j++)
+      ivector[j] = stripBlankEnds(ivector[j]);
+    if(isize > 2) 
+      return;
+    if(isize == 1)
+      button_label = ivector[0];
+    else if(isize == 2) {
+      m_button_keys.push_back("button_one");
+      m_button_vars.push_back(ivector[0]);
+      m_button_vals.push_back(ivector[1]);
+    }
+  }
+
+  int wid_b = 100;
+  int hgt_b = 20;
+  int col_b = w() - wid_b;
+  int row_b = (h() - 46) - hgt_b;
+
+  if(btype == "button_one") {
+    if(user_defined_button_one)
+      delete(user_defined_button_one);
+    user_defined_button_one = new MY_Button(col_b+2, row_b, 
+					    wid_b-4, hgt_b, "");
+    user_defined_button_one->copy_label(button_label.c_str());
+    user_defined_button_one->callback((Fl_Callback*)PMV_GUI::cb_MOOS_Button,(void*)1);
+  }
+  else if (btype == "button_two") {
+    if(user_defined_button_two)
+      delete(user_defined_button_two);
+    
+    row_b = (h() -22) - hgt_b;
+    user_defined_button_two = new MY_Button(col_b+2, row_b, 
+					    wid_b-4, hgt_b, "");
+    user_defined_button_two->copy_label(button_label.c_str());
+    user_defined_button_two->callback((Fl_Callback*)PMV_GUI::cb_MOOS_Button,(void*)2);
+  }
 }
 
 //----------------------------------------------------------
@@ -163,5 +227,83 @@ void PMV_GUI::updateXY() {
   if(age_ais == "-1")
     age_ais = "n/a";
   v_ais->value(age_ais.c_str());
+}
+
+//----------------------------------------- MOOS_Button
+inline void PMV_GUI::cb_MOOS_Button_i(int val) {  
+  string key = "";
+  if(val == 1)
+    key = "button_one";
+  else if(val == 2)
+    key = "button_two";
+  
+  int vsize = m_button_keys.size();
+  for(int i=0; i<vsize; i++) {
+    if(m_button_keys[i] == key) 
+      pushPending(m_button_vars[i], m_button_vals[i]);
+  }
+}
+
+void PMV_GUI::cb_MOOS_Button(Fl_Widget* o, int v) {
+  int val = (int)(v);
+  ((PMV_GUI*)(o->parent()->user_data()))->cb_MOOS_Button_i(val);
+}
+
+
+
+//-------------------------------------------------------------------
+// Procedure: getPendingVar
+
+string PMV_GUI::getPendingVar(unsigned int ix)
+{
+  m_pmv_mutex.Lock();
+
+  string return_value;
+  if((ix >=0) && (ix < m_pending_vars.size()))
+    return_value = m_pending_vars[ix];
+
+  m_pmv_mutex.UnLock();
+  return(return_value);
+}
+
+//-------------------------------------------------------------------
+// Procedure: getPendingVal
+
+string PMV_GUI::getPendingVal(unsigned int ix)
+{
+  m_pmv_mutex.Lock();
+
+  string return_value;
+  if((ix >=0) && (ix < m_pending_vals.size()))
+    return_value = m_pending_vals[ix];
+
+  m_pmv_mutex.UnLock();
+  return(return_value);
+}
+
+//-------------------------------------------------------------------
+// Procedure: clearPending
+
+void PMV_GUI::clearPending()
+{
+  m_pmv_mutex.Lock();
+
+  m_pending_vars.clear();
+  m_pending_vals.clear();
+
+  m_pmv_mutex.UnLock();
+}
+
+//-------------------------------------------------------------------
+// Procedure: pushPending
+
+void PMV_GUI::pushPending(string var, string val)
+{
+  m_pmv_mutex.Lock();
+
+  m_pending_vars.push_back(var);
+  m_pending_vals.push_back(val);
+
+  m_pmv_mutex.UnLock();
 }
 
