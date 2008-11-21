@@ -14,8 +14,7 @@ SET(SRC
 ADD_EXECUTABLE(uHelmScope ${SRC})
 
 TARGET_LINK_LIBRARIES(uHelmScope 
-  MOOS
-  MOOSGen
+  ${MOOS_LIBS}
   genutil
   mbutil 
   m

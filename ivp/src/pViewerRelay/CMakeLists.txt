@@ -11,9 +11,7 @@ SET(SRC
 ADD_EXECUTABLE(pViewerRelay ${SRC})
 
 TARGET_LINK_LIBRARIES(pViewerRelay 
-MOOS
-MOOSGen
-MOOSUtility
-mbutil
-m
-pthread)
+   ${MOOS_LIBS}
+   mbutil
+   m
+   pthread)

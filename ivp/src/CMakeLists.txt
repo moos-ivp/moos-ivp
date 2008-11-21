@@ -1,3 +1,4 @@
+# CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 PROJECT(IVP)
 
 # Force -fPIC because gcc complains when we don't use it with x86_64 code.
@@ -9,63 +10,45 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
 # FINDING MOOS' HEADERS AND LIBRARIES...
 #===============================================================================
 
-# *** REPLACE "../../MOOS" WITH WHATEVER VALUE IS REQUIRED.  THE DIRECTORY 
-# *** SHOULD HAVE CHILD DIRECTORIES SUCH AS "Core", "Essentials", ETC.
-SET(MOOS_BASE_DIR ../../MOOS)
 
-# Using absolute pathnames seems to work better then relative, because you're 
-# never sure from which directory a relative path will be employed in commands
-# such as LINK_DIRECTORIES() ...
-GET_FILENAME_COMPONENT(MOOS_BASE_DIR_ABSOLUTE ../../MOOS ABSOLUTE)
+#===============================================================================
+# FINDING MOOS' HEADERS AND LIBRARIES...
+#===============================================================================
 
-# Confirm that MOOS_BASE_DIR seems to be set to a valid value...
-IF(NOT EXISTS ${MOOS_BASE_DIR_ABSOLUTE}/Core)
-   MESSAGE(FATAL_ERROR 
-      "The CMake variable MOOS_BASE_DIR_ABSOLUTE has the value "
-      "'${MOOS_BASE_DIR_ABSOLUTE}'.\n\n"
-      "That directory doesn't have a 'Core' subdirectory, which means it's "
-      "definitely not the base directory of a MOOS source tree."
-      "\n\n"
-      "You need to set the CMake variable 'MOOS_BASE_DIR' to a different value."
-)
-ENDIF(NOT EXISTS ${MOOS_BASE_DIR_ABSOLUTE}/Core)
-
-SET(MOOS_LIB_DIR ${MOOS_BASE_DIR_ABSOLUTE}/MOOSBin)
-LINK_DIRECTORIES(${MOOS_LIB_DIR})
-
-# No harm in giving all IvP software access to MOOS's include libraries.
-SET(MOOS_INCLUDE_DIRS
-   ${MOOS_BASE_DIR_ABSOLUTE}/Essentials
-   ${MOOS_BASE_DIR_ABSOLUTE}/Core
-   ${MOOS_BASE_DIR_ABSOLUTE}/Essentials/MOOSUtilityLib
-   ${MOOS_BASE_DIR_ABSOLUTE}/Core/MOOSLIB
-   ${MOOS_BASE_DIR_ABSOLUTE}/Core/MOOSGenLib
+FIND_PACKAGE(MOOS REQUIRED
+   PATHS ../../
+   NO_DEFAULT_PATH
    )
-INCLUDE_DIRECTORIES(${MOOS_INCLUDE_DIRS})
 
-   #----------------------------------------------
-   # This was added by Andrew Shafer...
-   IF(CMAKE_COMPILER_IS_GNUCXX)
-      SET( WALL_ON OFF CACHE BOOL "tell me about all compiler warnings (-Wall) ")
-      IF(WALL_ON)
-               SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
-      ENDIF( WALL_ON)
-   ELSE(CMAKE_COMPILER_IS_GNUCXX)
-      IF(MSVC)
-               SET( WALL_ON OFF CACHE BOOL "tell me about all compiler warnings (-Wall) ")
-               IF(WALL_ON)
-                  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
-                  ENDIF(WALL_ON)
-         ELSE(MSVC)
-         # Other compilers go here	
-         
-         ENDIF(MSVC)
-   ENDIF(CMAKE_COMPILER_IS_GNUCXX)
-   #----------------------------------------------
+IF (NOT ${MOOS_ALL_FILES_FOUND} STREQUAL "TRUE")
+   MESSAGE(FATAL_ERROR "Problem: Couldn't find all MOOS headers/libraries.")
+ENDIF ()
+
+INCLUDE_DIRECTORIES(${MOOS_HEADER_DIRECTORIES})
    
 #===============================================================================
 # BUILDING IvP...
 #===============================================================================
+
+#----------------------------------------------
+# This was added by Andrew Shafer...
+IF(CMAKE_COMPILER_IS_GNUCXX)
+   SET( WALL_ON OFF CACHE BOOL "tell me about all compiler warnings (-Wall) ")
+   IF(WALL_ON)
+            SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
+   ENDIF( WALL_ON)
+ELSE(CMAKE_COMPILER_IS_GNUCXX)
+   IF(MSVC)
+            SET( WALL_ON OFF CACHE BOOL "tell me about all compiler warnings (-Wall) ")
+            IF(WALL_ON)
+               SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
+               ENDIF(WALL_ON)
+      ELSE(MSVC)
+      # Other compilers go here      
+      
+      ENDIF(MSVC)
+ENDIF(CMAKE_COMPILER_IS_GNUCXX)
+#----------------------------------------------
 
 # GET_FILENAME_COMPONENT(IVP_SRC_DIR_ABSOLUTE . ABSOLUTE)
 #    ADD_DEFINITIONS(-DIVP_RELEASE_NAME="

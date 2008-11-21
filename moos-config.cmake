@@ -93,6 +93,9 @@ SET(MOOS_HEADER_DIRECTORIES
    ${MOOS_LIB_HEADERS}
    ${MOOS_UTILITY_LIB_HEADERS}
    ${MOOS_GEN_LIB_HEADERS}
+   # Some MOOS code has #include's relative to these directories...
+   "${MOOS_BASE_DIR}/Core"
+   "${MOOS_BASE_DIR}/Essentials"
    )
 
 # Rely on CMake's... "expansive" ... definition of Boolean expressions.  If a

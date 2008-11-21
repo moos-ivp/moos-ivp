@@ -14,9 +14,7 @@ SET(SRC
 ADD_EXECUTABLE(iMarineSim ${SRC})
 
 TARGET_LINK_LIBRARIES(iMarineSim 
-  MOOS
-  MOOSGen
-  MOOSUtility
+  ${MOOS_LIBS}
   mbutil
   geometry 
   m

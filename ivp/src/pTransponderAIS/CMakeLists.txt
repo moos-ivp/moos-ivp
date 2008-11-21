@@ -11,9 +11,7 @@ SET(SRC
 ADD_EXECUTABLE(pTransponderAIS ${SRC})
    
 TARGET_LINK_LIBRARIES(pTransponderAIS 
-   MOOS
-   MOOSGen
-   MOOSUtility
+   ${MOOS_LIBS}
    mbutil
    m
    pthread)

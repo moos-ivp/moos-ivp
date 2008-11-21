@@ -19,7 +19,7 @@ IF(BUILD_GUIS)
          
    TARGET_LINK_LIBRARIES(geoview
       marineview
-      MOOSUtility
+      ${MOOS_LIBS}
       mbutil
       geometry
       m

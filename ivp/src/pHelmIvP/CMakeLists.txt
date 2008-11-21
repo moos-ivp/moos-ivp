@@ -11,8 +11,7 @@ SET(SRC
 ADD_EXECUTABLE(pHelmIvP ${SRC})
    
 TARGET_LINK_LIBRARIES(pHelmIvP 
-  MOOS
-  MOOSGen
+  ${MOOS_LIBS}
   helmivp
   behaviors-marine
   bhvutil	

@@ -10,8 +10,7 @@ SET(SRC
 ADD_EXECUTABLE(uTermCommand ${SRC})
 
 TARGET_LINK_LIBRARIES(uTermCommand 
-  MOOS
-  MOOSGen
+  ${MOOS_LIBS}
   mbutil
   genutil
   m

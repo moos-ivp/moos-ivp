@@ -8,8 +8,7 @@ FILE(GLOB SRC *.cpp)
 ADD_EXECUTABLE(uPokeDB ${SRC})
 
 TARGET_LINK_LIBRARIES(uPokeDB
-   MOOS
-   MOOSGen
+   ${MOOS_LIBS}
    mbutil
    m
    pthread)

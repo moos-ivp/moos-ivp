@@ -17,8 +17,7 @@ IF(BUILD_GUIS)
 	ADD_EXECUTABLE(uFunctionVis ${SRC})
 	      
 	TARGET_LINK_LIBRARIES(uFunctionVis
-	  MOOS
-	  MOOSGen
+	  ${MOOS_LIBS}
 	  pthread
 	  ipfview
 	  geometry

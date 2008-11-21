@@ -11,8 +11,7 @@ SET(SRC
 ADD_EXECUTABLE(pDeployHandler ${SRC})
 
 TARGET_LINK_LIBRARIES(pDeployHandler
-   MOOS
-   MOOSGen
+   ${MOOS_LIBS}
    mbutil
    m
    pthread

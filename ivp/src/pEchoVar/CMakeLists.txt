@@ -11,8 +11,7 @@ SET(SRC
 ADD_EXECUTABLE(pEchoVar ${SRC})
 
 TARGET_LINK_LIBRARIES(pEchoVar 
-  MOOS
-  MOOSGen
+  ${MOOS_LIBS}
   mbutil 
   m
   pthread)
