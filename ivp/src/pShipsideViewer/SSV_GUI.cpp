@@ -252,10 +252,14 @@ void SSV_GUI::addContactButton(int index, string vname)
 
 string SSV_GUI::getPendingVar(unsigned int ix)
 {
+  m_ssv_mutex.Lock();
+
+  string return_value;
   if((ix >=0) && (ix < m_pending_vars.size()))
-    return(m_pending_vars[ix]);
-  else
-    return("");
+    return_value = m_pending_vars[ix];
+
+  m_ssv_mutex.UnLock();
+  return(return_value);
 }
 
 //-------------------------------------------------------------------
@@ -263,10 +267,14 @@ string SSV_GUI::getPendingVar(unsigned int ix)
 
 string SSV_GUI::getPendingVal(unsigned int ix)
 {
+  m_ssv_mutex.Lock();
+
+  string return_value;
   if((ix >=0) && (ix < m_pending_vals.size()))
-    return(m_pending_vals[ix]);
-  else
-    return("");
+    return_value = m_pending_vals[ix];
+
+  m_ssv_mutex.UnLock();
+  return(return_value);
 }
 
 //-------------------------------------------------------------------
