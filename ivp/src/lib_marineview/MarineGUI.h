@@ -46,6 +46,9 @@ public:
   MarineViewer *cmviewer;
 
 protected:
+  std::vector<std::string> m_pending_vars;
+  std::vector<std::string> m_pending_vals;
+
   inline void cb_Zoom_i(int);
   static void cb_Zoom(Fl_Widget*, int);
 
