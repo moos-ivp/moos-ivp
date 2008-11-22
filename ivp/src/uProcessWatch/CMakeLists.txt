@@ -10,6 +10,7 @@ SET(SRC
 ADD_EXECUTABLE(uProcessWatch ${SRC})
  
 TARGET_LINK_LIBRARIES(uProcessWatch 
-  ${MOOS_LIBS}
+  MOOS
+  MOOSGen
   mbutil
   pthread)

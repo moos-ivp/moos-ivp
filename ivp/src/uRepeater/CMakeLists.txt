@@ -11,6 +11,7 @@ SET(SRC
 ADD_EXECUTABLE(uRepeater ${SRC})
  
 TARGET_LINK_LIBRARIES(uRepeater
-  ${MOOS_LIBS}
+  MOOS
+  MOOSGen
   mbutil
   pthread)

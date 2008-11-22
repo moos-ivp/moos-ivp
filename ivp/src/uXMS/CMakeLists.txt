@@ -11,7 +11,8 @@ SET(SRC
 ADD_EXECUTABLE(uXMS ${SRC})
 
 TARGET_LINK_LIBRARIES(uXMS 
-  ${MOOS_LIBS}
+  MOOS
+  MOOSGen
   genutil
   mbutil 
   m

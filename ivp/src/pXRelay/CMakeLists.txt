@@ -11,7 +11,8 @@ SET(SRC
 ADD_EXECUTABLE(pXRelay ${SRC}	)
 
 TARGET_LINK_LIBRARIES(pXRelay
-   ${MOOS_LIBS}
+   MOOS
+   MOOSGen
    mbutil
    m
    pthread)

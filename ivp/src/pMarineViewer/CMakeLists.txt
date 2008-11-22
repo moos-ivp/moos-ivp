@@ -19,8 +19,10 @@ IF(BUILD_GUIS)
 	  ENDIF (${APPLE})
          
    TARGET_LINK_LIBRARIES(pMarineViewer         
-      ${MOOS_LIBS}
+      MOOS
+      MOOSGen
       marineview
+      MOOSUtility
       mbutil
       genutil
       geometry
