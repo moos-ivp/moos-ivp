@@ -151,6 +151,7 @@ void PMV_GUI::addButton(string btype, string svalue)
   else if (btype == "button_two")
     user_defined_button_two->copy_label(button_label.c_str());
 
+#if 0
   cout << "Report --------------------------------" << endl;
   vsize = m_button_keys.size();
   for(int h=0; h<vsize; h++) {
@@ -159,6 +160,7 @@ void PMV_GUI::addButton(string btype, string svalue)
     cout << "[" << h << "] val: [" << m_button_vals[h] << "]" << endl;
   }
   cout << "End------------------------------------" << endl;
+#endif
 
   m_pmv_mutex.UnLock();
 }
@@ -250,7 +252,6 @@ inline void PMV_GUI::cb_MOOS_Button_i(int val) {
 }
 
 void PMV_GUI::cb_MOOS_Button(Fl_Widget* o, int v) {
-  cout << "Got Here FOO 000" << endl;
   int val = (int)(v);
   ((PMV_GUI*)(o->parent()->user_data()))->cb_MOOS_Button_i(val);
 }
