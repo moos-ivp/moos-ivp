@@ -43,12 +43,6 @@ SET(MOOS_INCLUDE_DIRS
    ${MOOS_BASE_DIR_ABSOLUTE}/Core/MOOSGenLib
    )
 INCLUDE_DIRECTORIES(${MOOS_INCLUDE_DIRS})
-
-IF (NOT ${MOOS_ALL_FILES_FOUND} STREQUAL "TRUE")
-   MESSAGE(FATAL_ERROR "Problem: Couldn't find all MOOS headers/libraries.")
-ENDIF ()
-
-INCLUDE_DIRECTORIES(${MOOS_HEADER_DIRECTORIES})
    
 #===============================================================================
 # BUILDING IvP...
