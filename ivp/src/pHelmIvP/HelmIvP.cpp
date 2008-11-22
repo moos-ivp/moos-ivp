@@ -77,7 +77,7 @@ HelmIvP::HelmIvP()
   // behaviors. The new arrival of a viewer into the MOOS community can 
   // request a refresh and then get new geometry mail to process.
   m_refresh_var      = "HELM_MAP_CLEAR";
-  m_refresh_interval = 10.0;
+  m_refresh_interval = 2.0;
   m_refresh_pending  = false;
   m_refresh_time     = 0;
 }

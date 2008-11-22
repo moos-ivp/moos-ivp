@@ -56,7 +56,6 @@ protected:
   void registerVariables();
   void registerNewVariables();
   void requestBehaviorLogging();
-  void refreshDetectionBuffers(double);
 
   bool detectChangeOnKey(const std::string& key, 
 			 const std::string& sval);
