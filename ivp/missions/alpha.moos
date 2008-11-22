@@ -22,7 +22,7 @@ ProcessConfig = ANTLER
   Run = pEchoVar	@ NewConsole = false
   Run = pTransponderAIS	@ NewConsole = false
   Run = pMarinePID	@ NewConsole = false
-  Run = pMarineViewer	@ NewConsole = false
+  Run = pMarineViewer	@ NewConsole = true
   Run = pHelmIvP	@ NewConsole = false
 }
 
@@ -98,7 +98,10 @@ ProcessConfig = pMarineViewer
   CommsTick  = 4
 
   TIFF_FILE           = forrest19.tif
-  polygon_vertex_size = 0
+  set_pan_x           = -90
+  set_pan_y           = -280
+  zoom                = 0.65
+  vehicle_shape_scale = 0.40
 
   BUTTON_ONE = DEPLOY,DEPLOY=true,MOOS_MANUAL_OVERIDE=false,RETURN=false
   BUTTON_TWO = RETURN,RETURN=true
