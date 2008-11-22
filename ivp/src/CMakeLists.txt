@@ -16,7 +16,8 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
 #===============================================================================
 
 FIND_PACKAGE(MOOS REQUIRED
-   PATHS ../../
+#    PATHS ../../
+   PATHS ./
    NO_DEFAULT_PATH
    )
 
