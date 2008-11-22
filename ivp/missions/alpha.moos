@@ -17,21 +17,17 @@ ProcessConfig = ANTLER
 {
   MSBetweenLaunches = 200
 
-  Run = MOOSDB		@ NewConsole = true
-  Run = iMarineSim	@ NewConsole = true
-  Run = pEchoVar	@ NewConsole = true
-  Run = pLogger		@ NewConsole = true
-  Run = pTransponderAIS	@ NewConsole = true
-  Run = pMarinePID	@ NewConsole = true
-  Run = pMarineViewer	@ NewConsole = true
-  Run = uXMS		@ NewConsole = true
-  Run = pHelmIvP	@ NewConsole = true
-  Run = iRemote		@ NewConsole = true
+  Run = MOOSDB		@ NewConsole = false
+  Run = iMarineSim	@ NewConsole = false
+  Run = pEchoVar	@ NewConsole = false
+  Run = pTransponderAIS	@ NewConsole = false
+  Run = pMarinePID	@ NewConsole = false
+  Run = pMarineViewer	@ NewConsole = false
+  Run = pHelmIvP	@ NewConsole = false
 }
 
 //------------------------------------------
 // iMarineSim config block
-
 
 ProcessConfig = iMarineSim
 {
@@ -101,48 +97,11 @@ ProcessConfig = pMarineViewer
   AppTick    = 4
   CommsTick  = 4
 
+  TIFF_FILE           = forrest19.tif
   polygon_vertex_size = 0
-}
 
-//------------------------------------------
-// iRemote configuration block
-
-ProcessConfig = iRemote
-{
-   CustomKey = 1 : HELM_VERBOSE @ "verbose"
-   CustomKey = 2 : HELM_VERBOSE @ "terse"
-   CustomKey = 3 : HELM_VERBOSE @ "quiet"
-   CustomKey = 4 : DEPLOY @ "true"
-   CustomKey = 5 : DEPLOY @ "false"
-   CustomKey = 6 : RETURN @ "true"
-   CustomKey = 7 : RETURN @ "false"
-   CustomKey = 9 : RESTART_HELM @ "true"
-}
-
-//------------------------------------------
-// Logger configuration block
-
-ProcessConfig = pLogger
-{
-  //over loading basic params...
-  AppTick 	= 20.0
-  CommsTick 	= 20.0
-
-  File		= HW
-  PATH		= ./data_from_runs/
-  SyncLog 	= true @ 0.2
-  AsyncLog 	= true
-  FileTimeStamp = true
-
-  Log		= DESIRED_THRUST @ 0.1
-  Log		= DESIRED_RUDDER @ 0.1
-  Log           = NAV_X          @ 0.1
-  Log           = NAV_Y          @ 0.1
-  Log           = NAV_HEADING    @ 0.1
-  Log           = NAV_SPEED      @ 0.1
-  Log           = LOOP_WALL      @ 0.1
-  Log           = LOOP_CPU       @ 0.1
-  Log           = AIS_REPORT     @ 0.1
+  BUTTON_ONE = DEPLOY,DEPLOY=true,MOOS_MANUAL_OVERIDE=false,RETURN=false
+  BUTTON_TWO = RETURN,RETURN=true
 }
 
 //------------------------------------------
@@ -155,7 +114,6 @@ ProcessConfig = pEchoVar
 
   Echo    = MARINESIM_X       ->  NAV_X
   Echo    = MARINESIM_Y       ->  NAV_Y
-  Echo    = MARINESIM_YAW     ->  NAV_YAW
   Echo    = MARINESIM_HEADING ->  NAV_HEADING
   Echo    = MARINESIM_SPEED   ->  NAV_SPEED
 }
@@ -170,35 +128,6 @@ ProcessConfig = pTransponderAIS
   VESSEL_TYPE   = KAYAK
 
   //BLACKOUT_INTERVAL = 15
-}
-
-//------------------------------------------
-// uXMS config block
-
-ProcessConfig = uXMS
-{
-  AppTick    = 4
-  CommsTick  = 4
-
-  VAR        = WATCH_PROC_EVENT, WATCH_PROC_SUMMARY
-
-  VAR        = DESIRED_HEADING, DESIRED_SPEED, DESIRED_DEPTH
-
-  VAR        = DESIRED_RUDDER, DESIRED_THRUST, DESIRED_ELEVATOR
-  VAR        = NAV_X, NAV_Y, NAV_SPEED, NAV_YAW
-
-  VAR        = MARINESIM_X
-  VAR        = MARINESIM_Y
-  VAR        = MARINESIM_HEADING
-  VAR        = MARINESIM_YAW
-  VAR        = MARINESIM_SPEED
-
-  VAR        = MOOS_MANUAL_OVERIDE
-  VAR        = DEPLOY
-  VAR        = RETURN
-  VAR        = NEW_WAYPOINTS
-  VAR        = HELM_RESTART
-  VAR        = UPDATE_HISTORY
 }
 
 
