@@ -286,6 +286,7 @@ void PMV_MOOSApp::handlePendingGUI()
     string val = m_gui->getPendingVal(i);
     m_Comms.Notify(var, val);
   }
+
   m_gui->clearPending();
 }
 

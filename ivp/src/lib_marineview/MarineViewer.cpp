@@ -133,7 +133,7 @@ bool MarineViewer::setParam(string param, string value)
 }
 
 //-------------------------------------------------------------
-// Procedure: setCommonParam
+// Procedure: setParam
 //      Note: A mutex is used since the member variables being set
 //            are perhaps being altered or read by another thread.
 
@@ -143,9 +143,18 @@ bool MarineViewer::setParam(string param, double v)
   
   mutexLock();
   bool handled = true;
-  if(param == "hash_shade") {
+  if(param == "hash_shade_mod") {
     if((m_hash_shade+v >= 0) && (m_hash_shade+v <= 1.0))
       m_hash_shade += v;
+    cout << "m_hash_shade: " << m_hash_shade << endl;
+  }
+  if(param == "hash_shade") {
+    if(v > 1.0)
+      m_hash_shade = 1.0;
+    else if (v < 0)
+      m_hash_shade = 0.0;
+    else
+      m_hash_shade = v;
   }
   else if(param == "hash_delta") {
     if(((v >= 10) && (v <= 1000)) || (v==-1))
@@ -161,20 +170,25 @@ bool MarineViewer::setParam(string param, double v)
     m_zoom *= v;
     if(m_zoom < 0.00001)      
       m_zoom = 0.00001;
+    cout << "zoom:" << m_zoom << endl;
   }
   else if(param == "pan_x") {
     double pix_shift = v * m_back_img.get_pix_per_mtr();
     m_vshift_x += pix_shift;
+    cout << "pan_x:" << m_vshift_x << endl;
   }
   else if(param == "set_pan_x") {
     m_vshift_x = v;
-  }
+    cout << "set_pan_x:" << m_vshift_x << endl;
+   }
   else if(param == "pan_y") {
     double pix_shift = v * m_back_img.get_pix_per_mtr();
     m_vshift_y += pix_shift;
-  }
+    cout << "pan_y:" << m_vshift_y << endl;
+ }
   else if(param == "set_pan_y") {
     m_vshift_y = v;
+    cout << "set_pan_y:" << m_vshift_y << endl;
   }
   else 
     handled = false;

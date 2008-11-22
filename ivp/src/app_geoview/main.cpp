@@ -59,11 +59,13 @@ int main(int argc, char *argv[])
     string argi  = tolower(argv[i]);
     if((argi == "mit") || (argi=="charles"))
       tif_file = "AerialMIT-1024.tif";
-    if((argi == "wmit") || (argi=="wireframe") || (argi=="wf"))
+    else if((argi == "wmit") || (argi=="wireframe") || (argi=="wf"))
       tif_file = "WireFrameMIT-1024.tif";
-    if((argi == "mb") || (argi=="monterey"))
+    else if((argi == "mb") || (argi=="monterey"))
       tif_file = "Monterey-2048.tif";
-    if((argi == "mbd"))
+    else if((argi == "forrest-lake") || (argi=="fl"))
+      tif_file = "forrest19.tif";
+    else if((argi == "mbd"))
       tif_file = "Monterey-2048-30-30-100.tif";
   }
 

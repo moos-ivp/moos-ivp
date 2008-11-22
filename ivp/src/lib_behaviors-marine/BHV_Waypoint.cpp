@@ -325,15 +325,13 @@ void BHV_Waypoint::updateInfoOut(bool post)
   postMessage("VIEW_SEGLIST", segmsg);
 
   if(post) {
-    if(m_waypoint_engine.currPtChanged()) {
-      string ptmsg;
-      ptmsg += "x=" + dstringCompact(doubleToString(m_ptx,1));
-      ptmsg += ",y=" + dstringCompact(doubleToString(m_pty,1));
-      ptmsg += ",label=" + m_us_name + "'s next waypoint";
-      ptmsg += ",type=waypoint, size=1";
-      ptmsg += ",source=" + m_us_name;
-      postMessage("VIEW_POINT", ptmsg);
-    }
+    string ptmsg;
+    ptmsg += "x=" + dstringCompact(doubleToString(m_ptx,1));
+    ptmsg += ",y=" + dstringCompact(doubleToString(m_pty,1));
+    ptmsg += ",label=" + m_us_name + "'s next waypoint";
+    ptmsg += ",type=waypoint, size=1";
+    ptmsg += ",source=" + m_us_name;
+    postMessage("VIEW_POINT", ptmsg);
   }
   else {
     string ptmsg = "x=0, y=0, z=0, active=false, size=0";

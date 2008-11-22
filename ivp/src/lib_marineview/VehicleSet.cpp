@@ -113,6 +113,7 @@ bool VehicleSet::setParam(string param, string value)
       handled = setParam("vehicle_shape_scale", m_vehicle_shape_scale*1.25);
     else if(value == "smaller")
       handled = setParam("vehicle_shape_scale", m_vehicle_shape_scale*0.80);
+    cout << "Vehicle_shape_scale: " << m_vehicle_shape_scale << endl;
   }
   else if(param == "active_vehicle_name") {
     handled = true;

@@ -282,7 +282,7 @@ void MarineGUI::cb_ToggleHash(Fl_Widget* o) {
 
 //----------------------------------------- HashShade
 inline void MarineGUI::cb_HashShade_i(int amt) {
-  cmviewer->setParam("hash_shade", (double)(amt)/20.0);
+  cmviewer->setParam("hash_shade_mod", (double)(amt)/20.0);
   cmviewer->redraw();
 }
 void MarineGUI::cb_HashShade(Fl_Widget* o, int v) {

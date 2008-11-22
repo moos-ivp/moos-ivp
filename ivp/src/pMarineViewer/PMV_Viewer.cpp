@@ -30,7 +30,7 @@ using namespace std;
 PMV_Viewer::PMV_Viewer(int x, int y, int w, int h, const char *l)
   : MarineViewer(x,y,w,h,l)
 {
-  m_centric_view = true;
+  m_centric_view = false;
   m_centric_view_sticky = true;
 }
 

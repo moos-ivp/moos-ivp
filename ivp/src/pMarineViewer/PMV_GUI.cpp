@@ -92,15 +92,20 @@ PMV_GUI::PMV_GUI(int g_w, int g_h, const char *g_l)
   warp->textsize(info_size); 
   warp->labelsize(info_size);
   
-  user_defined_button_one = 0;
-  user_defined_button_two = 0;
+  int wid_b = 100;
+  int hgt_b = 20;
+  int col_b = w() - wid_b;
+  int row_b = h() - hgt_b;
 
-  addButton("button_one", "HELLO, DEPLOY=true");
-  addButton("button_two", "BYE, RETURN=true");
-
-  //  user_defined_button = new MY_Button(col_b+2, row_b, 
-  //  wid_b-4, hgt_b, "ownship");
-
+  user_defined_button_one = new MY_Button(col_b+2, row_b-46, 
+					  wid_b-4, hgt_b, "Disabled");
+  user_defined_button_two = new MY_Button(col_b+2, row_b-22, 
+					  wid_b-4, hgt_b, "Disabled");
+  user_defined_button_one->callback((Fl_Callback*)PMV_GUI::cb_MOOS_Button,(void*)1);
+  user_defined_button_two->callback((Fl_Callback*)PMV_GUI::cb_MOOS_Button,(void*)2);
+    
+  //addButton("button_one", "HELLO, DEPLOY=true");
+  //addButton("button_two", "BYE, RETURN=true");
 
   this->end();
   this->resizable(this);
@@ -115,7 +120,9 @@ void PMV_GUI::addButton(string btype, string svalue)
 {
   if((btype != "button_one") && (btype != "button_two"))
     return;
-  
+
+  m_pmv_mutex.Lock();
+
   string button_label = btype; // For lack of a better default
   
   vector<string> svector = parseString(svalue, ',');
@@ -125,12 +132,10 @@ void PMV_GUI::addButton(string btype, string svalue)
     int isize = ivector.size();
     for(int j=0; j<isize; j++)
       ivector[j] = stripBlankEnds(ivector[j]);
-    if(isize > 2) 
-      return;
     if(isize == 1)
       button_label = ivector[0];
     else if(isize == 2) {
-      m_button_keys.push_back("button_one");
+      m_button_keys.push_back(btype);
       m_button_vars.push_back(ivector[0]);
       m_button_vals.push_back(ivector[1]);
     }
@@ -141,24 +146,21 @@ void PMV_GUI::addButton(string btype, string svalue)
   int col_b = w() - wid_b;
   int row_b = (h() - 46) - hgt_b;
 
-  if(btype == "button_one") {
-    if(user_defined_button_one)
-      delete(user_defined_button_one);
-    user_defined_button_one = new MY_Button(col_b+2, row_b, 
-					    wid_b-4, hgt_b, "");
+  if(btype == "button_one") 
     user_defined_button_one->copy_label(button_label.c_str());
-    user_defined_button_one->callback((Fl_Callback*)PMV_GUI::cb_MOOS_Button,(void*)1);
-  }
-  else if (btype == "button_two") {
-    if(user_defined_button_two)
-      delete(user_defined_button_two);
-    
-    row_b = (h() -22) - hgt_b;
-    user_defined_button_two = new MY_Button(col_b+2, row_b, 
-					    wid_b-4, hgt_b, "");
+  else if (btype == "button_two")
     user_defined_button_two->copy_label(button_label.c_str());
-    user_defined_button_two->callback((Fl_Callback*)PMV_GUI::cb_MOOS_Button,(void*)2);
+
+  cout << "Report --------------------------------" << endl;
+  vsize = m_button_keys.size();
+  for(int h=0; h<vsize; h++) {
+    cout << "[" << h << "] key: [" << m_button_keys[h] << "]" << endl;
+    cout << "[" << h << "] var: [" << m_button_vars[h] << "]" << endl;
+    cout << "[" << h << "] val: [" << m_button_vals[h] << "]" << endl;
   }
+  cout << "End------------------------------------" << endl;
+
+  m_pmv_mutex.UnLock();
 }
 
 //----------------------------------------------------------
@@ -231,20 +233,24 @@ void PMV_GUI::updateXY() {
 
 //----------------------------------------- MOOS_Button
 inline void PMV_GUI::cb_MOOS_Button_i(int val) {  
-  string key = "";
+  string skey = "";
   if(val == 1)
-    key = "button_one";
+    skey = "button_one";
   else if(val == 2)
-    key = "button_two";
+    skey = "button_two";
   
   int vsize = m_button_keys.size();
+  int varsize = m_button_vars.size();
+  int valsize = m_button_vals.size();
   for(int i=0; i<vsize; i++) {
-    if(m_button_keys[i] == key) 
+    if(m_button_keys[i] == skey)  {
       pushPending(m_button_vars[i], m_button_vals[i]);
+    }
   }
 }
 
 void PMV_GUI::cb_MOOS_Button(Fl_Widget* o, int v) {
+  cout << "Got Here FOO 000" << endl;
   int val = (int)(v);
   ((PMV_GUI*)(o->parent()->user_data()))->cb_MOOS_Button_i(val);
 }
