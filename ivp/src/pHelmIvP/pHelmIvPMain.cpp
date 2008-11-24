@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
 
   HelmIvP helmIvP;
   
-  char *sMissionFile = "pHelmIvP.moos";
+  const char *sMissionFile = "pHelmIvP.moos";
   if(argc > 1)
     sMissionFile = argv[1];
 
