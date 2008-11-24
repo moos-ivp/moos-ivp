@@ -58,6 +58,9 @@ void exit_with_switches()
   cout << "(viewer switches)                              " << endl;
   cout << "   center_view                 true            " << endl; 
   cout << "   center_view_sticky          false           " << endl; 
+  cout << "   hash_view                   false           " << endl; 
+  cout << "   hash_delta                  100             " << endl; 
+  cout << "   hash_shade                  0.65            " << endl; 
   cout << "(vehicles)                                     " << endl;
   cout << "   vehicle_shape_scale         0.1             " << endl;
   cout << "   trails_point_size           1               " << endl;

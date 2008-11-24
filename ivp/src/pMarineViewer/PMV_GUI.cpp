@@ -104,9 +104,6 @@ PMV_GUI::PMV_GUI(int g_w, int g_h, const char *g_l)
   user_defined_button_one->callback((Fl_Callback*)PMV_GUI::cb_MOOS_Button,(void*)1);
   user_defined_button_two->callback((Fl_Callback*)PMV_GUI::cb_MOOS_Button,(void*)2);
     
-  //addButton("button_one", "HELLO, DEPLOY=true");
-  //addButton("button_two", "BYE, RETURN=true");
-
   this->end();
   this->resizable(this);
   this->show();
@@ -123,7 +120,12 @@ void PMV_GUI::addButton(string btype, string svalue)
 
   m_pmv_mutex.Lock();
 
-  string button_label = btype; // For lack of a better default
+  // Set the default label if none is provided in the svalue.
+  // The default is the *current* value of the label.
+  string button_label = user_defined_button_one->label();
+  if(btype == "button_two")
+    button_label = user_defined_button_two->label();
+
   
   vector<string> svector = parseString(svalue, ',');
   int vsize = svector.size();
