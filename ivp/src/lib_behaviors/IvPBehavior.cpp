@@ -671,15 +671,30 @@ void IvPBehavior::postFlags(const string& str)
   else if(str == "inactiveflags")
     flags = m_inactive_flags;
 
+  // The endflags are treated as a special case in that they are 
+  // posted as "repeatable" - that is they will be posted to the 
+  // MOOSDB regardless of whether the "outgoing" cache of postings
+  // maintained by the helm indicates that the posting is the same
+  // as the previous posting to that MOOS variable. 
+  bool endflags = (str == "endflags");
+
   int vsize = flags.size();
   for(int i=0; i<vsize; i++) {
     string var   = flags[i].get_var();
     string sdata = flags[i].get_sdata();
     double ddata = flags[i].get_ddata();
-    if(sdata != "")
-      postMessage(var, sdata);
-    else
-      postMessage(var, ddata);
+    if(sdata != "") {
+      if(endflags) 
+	postRepeatableMessage(var, sdata);
+      else
+	postMessage(var, sdata);
+    }
+    else {
+      if(endflags)
+	postRepeatableMessage(var, ddata);
+      else
+	postMessage(var, ddata);
+    }	
   }    
 }
 
