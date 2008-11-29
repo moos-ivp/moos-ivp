@@ -324,20 +324,21 @@ void BHV_Waypoint::updateInfoOut(bool post)
   string segmsg = seglist.get_spec();
   postMessage("VIEW_SEGLIST", segmsg);
 
+  // Note the labels in the two cases match identically. This is 
+  // important. It is capitalizing on viewers that key on the label
+  // for replacement of previous posts, thus erasing one for the other.
+  string ptmsg;
+  ptmsg = "label=" + m_us_name + "'s next waypoint";
+  ptmsg += ",type=waypoint";
+  ptmsg += ",source=" + m_us_name;
   if(post) {
-    string ptmsg;
-    ptmsg += "x=" + dstringCompact(doubleToString(m_ptx,1));
+    ptmsg += ",x=" + dstringCompact(doubleToString(m_ptx,1));
     ptmsg += ",y=" + dstringCompact(doubleToString(m_pty,1));
-    ptmsg += ",label=" + m_us_name + "'s next waypoint";
-    ptmsg += ",type=waypoint, size=1";
-    ptmsg += ",source=" + m_us_name;
+    ptmsg += ",size=1";
     postMessage("VIEW_POINT", ptmsg);
   }
   else {
-    string ptmsg = "x=0, y=0, z=0, active=false, size=0";
-    ptmsg += ",label=" + m_descriptor;
-    ptmsg += ",type=waypoint, size=1";
-    ptmsg += ",source=" + m_us_name;
+    ptmsg += ",x=0, y=0, z=0, active=false, size=0";
     postMessage("VIEW_POINT", ptmsg);
   }
 

@@ -155,6 +155,7 @@ bool BHV_Loiter::setParam(string g_param, string g_val)
 
 void BHV_Loiter::onIdleState()
 {
+  updateInfoOutNull();
   if(!m_center_activate)
     return;
   m_center_pending = true;
@@ -308,49 +309,6 @@ IvPFunction *BHV_Loiter::buildIPF(const string& method)
 //-----------------------------------------------------------
 // Procedure: updateInfoOut()
 
-#if 0
-void BHV_Loiter::updateInfoOut()
-{
-  int nonmono_hits = m_waypoint_engine.getNonmonoHits();
-  int capture_hits = m_waypoint_engine.getCaptureHits();
-  int curr_index   = m_waypoint_engine.getCurrIndex();
-
-  string loiter_report = "Pt:" + intToString(curr_index);
-  loiter_report += " Dist:"    + doubleToString(m_dist_to_poly,0);
-  loiter_report += " CP Hits:" + intToString(capture_hits);
-  loiter_report += " NM_Hits:" + intToString(nonmono_hits);
-  loiter_report += " AQ_MODE:" + boolToString(m_acquire_mode);
-  postMessage("LOITER_REPORT", loiter_report);
-
-  postMessage("LOITER_INDEX", curr_index);
-  if(m_acquire_mode)
-    postMessage("LOITER_ACQUIRE", 1);
-  else
-    postMessage("LOITER_ACQUIRE", 0);
-
-  XYSegList seglist = m_waypoint_engine.getSegList();
-  string bhv_tag = toupper(getDescriptor());
-  bhv_tag = findReplace(bhv_tag, "BHV_", "");
-  bhv_tag = findReplace(bhv_tag, "(d)", "");
-  bhv_tag = m_us_name + "-" + bhv_tag;
-  string spec = "label," + bhv_tag + ":" + seglist.get_spec();
-  postMessage("VIEW_POLYGON", spec);
-  
-  string ptmsg;
-  ptmsg =  "x=" + dstringCompact(doubleToString(m_ptx,2));
-  ptmsg += ",y=" + dstringCompact(doubleToString(m_pty,2));
-  ptmsg += ",label=loiter_" + m_us_name;
-  ptmsg += ",type=waypoint";
-  postMessage("VIEW_POINT", ptmsg);
-  
-  postIntMessage("DIST_TO_REGION", m_dist_to_poly);
-}
-#endif
-
-#if 1
-//-----------------------------------------------------------
-// Procedure: updateInfoOut()
-
 void BHV_Loiter::updateInfoOut()
 {
   int nonmono_hits = m_waypoint_engine.getNonmonoHits();
@@ -392,7 +350,6 @@ void BHV_Loiter::updateInfoOut()
   
   postIntMessage("DIST_TO_REGION", m_dist_to_poly);
 }
-#endif
 
 //-----------------------------------------------------------
 // Procedure: updateInfoOutNull()
@@ -401,11 +358,8 @@ void BHV_Loiter::updateInfoOutNull()
 {
   string bhv_tag = toupper(getDescriptor());
 
-  string null_poly_spec = "label," + bhv_tag + ":0,0:0,0:0,0";
-  postMessage("VIEW_POLYGON", null_poly_spec);
-  
   string null_point_spec;
-  null_point_spec =  "x=0,y=0,active=false,type=waypoint,";
+  null_point_spec =  "x=0,y=0,size=0,active=false,type=waypoint,";
   null_point_spec += "label=loiter_" + m_us_name;
   postMessage("VIEW_POINT", null_point_spec);
 }
