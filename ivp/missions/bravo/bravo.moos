@@ -4,9 +4,9 @@ ServerHost = localhost
 ServerPort = 9000
 Simulator  = true
 
-Community  = alpha
+Community  = henry
 
-MOOSTimeWarp = 2
+MOOSTimeWarp = 5
 
 LatOrigin  = 43.825300 
 LongOrigin = -70.330400 
@@ -21,7 +21,7 @@ ProcessConfig = ANTLER
   Run = iMarineSim	@ NewConsole = false
   Run = pTransponderAIS	@ NewConsole = false
   Run = pMarinePID	@ NewConsole = false
-  Run = pMarineViewer	@ NewConsole = true
+  Run = pMarineViewer	@ NewConsole = false
   Run = pHelmIvP	@ NewConsole = false
 }
 
