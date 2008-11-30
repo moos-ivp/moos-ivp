@@ -65,8 +65,10 @@ protected:
   MY_Output  *time;
   MY_Output  *warp;
 
-  MY_Button  *user_defined_button_one;
-  MY_Button  *user_defined_button_two;
+  MY_Button  *user_button_1;
+  MY_Button  *user_button_2;
+  MY_Button  *user_button_3;
+  MY_Button  *user_button_4;
 
   std::vector<std::string> m_button_keys;
   std::vector<std::string> m_button_vars;

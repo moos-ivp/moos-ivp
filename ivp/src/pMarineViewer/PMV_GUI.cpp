@@ -92,17 +92,31 @@ PMV_GUI::PMV_GUI(int g_w, int g_h, const char *g_l)
   warp->textsize(info_size); 
   warp->labelsize(info_size);
   
-  int wid_b = 100;
-  int hgt_b = 20;
-  int col_b = w() - wid_b;
-  int row_b = h() - hgt_b;
+  int wid_b  = 120;
+  int hgt_b  = 24;
+  int col_b  = w() - wid_b;
+  int col_bb = w() - (wid_b * 2);
+  int row_b  = (h() - 20) - (2* hgt_b) ;
+  int row_bb = ((h() - 20) - hgt_b) + 2;
 
-  user_defined_button_one = new MY_Button(col_b+2, row_b-46, 
-					  wid_b-4, hgt_b, "Disabled");
-  user_defined_button_two = new MY_Button(col_b+2, row_b-22, 
-					  wid_b-4, hgt_b, "Disabled");
-  user_defined_button_one->callback((Fl_Callback*)PMV_GUI::cb_MOOS_Button,(void*)1);
-  user_defined_button_two->callback((Fl_Callback*)PMV_GUI::cb_MOOS_Button,(void*)2);
+  user_button_1 = new MY_Button(col_b+2, row_b, 
+				wid_b-4, hgt_b, "Disabled");
+  user_button_2 = new MY_Button(col_b+2, row_bb, 
+				wid_b-4, hgt_b, "Disabled");
+  user_button_3 = new MY_Button(col_bb, row_b, 
+				wid_b-4, hgt_b, "Disabled");
+  user_button_4 = new MY_Button(col_bb, row_bb, 
+				wid_b-4, hgt_b, "Disabled");
+
+  user_button_1->callback((Fl_Callback*)PMV_GUI::cb_MOOS_Button,(void*)1);
+  user_button_2->callback((Fl_Callback*)PMV_GUI::cb_MOOS_Button,(void*)2);
+  user_button_3->callback((Fl_Callback*)PMV_GUI::cb_MOOS_Button,(void*)3);
+  user_button_4->callback((Fl_Callback*)PMV_GUI::cb_MOOS_Button,(void*)4);
+
+  user_button_1->hide();
+  user_button_2->hide();
+  user_button_3->hide();
+  user_button_4->hide();
     
   this->end();
   this->resizable(this);
@@ -115,16 +129,21 @@ PMV_GUI::PMV_GUI(int g_w, int g_h, const char *g_l)
 //            
 void PMV_GUI::addButton(string btype, string svalue) 
 {
-  if((btype != "button_one") && (btype != "button_two"))
+  if((btype != "button_one") && (btype != "button_two") &&
+     (btype != "button_three") && (btype != "button_four"))
     return;
 
   m_pmv_mutex.Lock();
 
   // Set the default label if none is provided in the svalue.
   // The default is the *current* value of the label.
-  string button_label = user_defined_button_one->label();
+  string button_label = user_button_1->label();
   if(btype == "button_two")
-    button_label = user_defined_button_two->label();
+    button_label = user_button_2->label();
+  else if(btype == "button_three")
+    button_label = user_button_3->label();
+  else if(btype == "button_four")
+    button_label = user_button_4->label();
 
   
   vector<string> svector = parseString(svalue, ',');
@@ -143,15 +162,22 @@ void PMV_GUI::addButton(string btype, string svalue)
     }
   }
 
-  int wid_b = 100;
-  int hgt_b = 20;
-  int col_b = w() - wid_b;
-  int row_b = (h() - 46) - hgt_b;
-
-  if(btype == "button_one") 
-    user_defined_button_one->copy_label(button_label.c_str());
-  else if (btype == "button_two")
-    user_defined_button_two->copy_label(button_label.c_str());
+  if(btype == "button_one") { 
+    user_button_1->copy_label(button_label.c_str());
+    user_button_1->show();
+  }    
+  else if (btype == "button_two") {
+    user_button_2->copy_label(button_label.c_str());
+    user_button_2->show();
+  }
+  else if (btype == "button_three") {
+    user_button_3->copy_label(button_label.c_str());
+    user_button_3->show();
+  }
+  else if (btype == "button_four") {
+    user_button_4->copy_label(button_label.c_str());
+    user_button_4->show();
+  }
 
 #if 0
   cout << "Report --------------------------------" << endl;
@@ -242,6 +268,10 @@ inline void PMV_GUI::cb_MOOS_Button_i(int val) {
     skey = "button_one";
   else if(val == 2)
     skey = "button_two";
+  else if(val == 3)
+    skey = "button_three";
+  else if(val == 4)
+    skey = "button_four";
   
   int vsize = m_button_keys.size();
   int varsize = m_button_vars.size();

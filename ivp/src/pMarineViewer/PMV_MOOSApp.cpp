@@ -203,6 +203,10 @@ bool PMV_MOOSApp::OnStartUp()
       m_gui->addButton(param, value);
     else if(param == "button_two")
       m_gui->addButton(param, value);
+    else if(param == "button_three")
+      m_gui->addButton(param, value);
+    else if(param == "button_four")
+      m_gui->addButton(param, value);
     else { 
       bool handled = m_gui->mviewer->setParam(param, value);
       if(!handled)
