@@ -145,20 +145,22 @@ void PMV_GUI::addButton(string btype, string svalue)
   else if(btype == "button_four")
     button_label = user_button_4->label();
 
-  
-  vector<string> svector = parseString(svalue, ',');
+  bool ok_line = true;
+  vector<string> svector = parseString(svalue, '#');
   int vsize = svector.size();
   for(int i=0; i<vsize; i++) {
-    vector<string> ivector = parseString(svector[i], '=');
-    int isize = ivector.size();
-    for(int j=0; j<isize; j++)
-      ivector[j] = stripBlankEnds(ivector[j]);
-    if(isize == 1)
-      button_label = ivector[0];
-    else if(isize == 2) {
-      m_button_keys.push_back(btype);
-      m_button_vars.push_back(ivector[0]);
-      m_button_vals.push_back(ivector[1]);
+    string param = stripBlankEnds(biteString(svector[i], '='));
+    string value = stripBlankEnds(svector[i]);
+    if(param == "") 
+      ok_line = false;
+    else {
+      if(value == "")
+	button_label = param;
+      else {
+	m_button_keys.push_back(btype);
+	m_button_vars.push_back(param);
+	m_button_vals.push_back(value);
+      }
     }
   }
 
