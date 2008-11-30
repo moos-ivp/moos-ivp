@@ -1,5 +1,6 @@
 initialize   DEPLOY = false
 initialize   RETURN = false
+initialize   CWISE  = true
  
 //----------------------------------------------
 Behavior = BHV_Loiter
@@ -10,8 +11,10 @@ Behavior = BHV_Loiter
   condition = DEPLOY = true
   condition = LTIMER < 150
   endflag   = RETURN = true
+  updates   = UP_LOITERA
 
   speed     = 2.0
+  clockwise = false
   radius    = 8.0
   nm_radius = 15.0
   polygon   = radial:: x=10, y=-100, radius=35, pts=12, snap=1, label=a 
@@ -26,8 +29,10 @@ Behavior = BHV_Loiter
   condition = DEPLOY = true
   condition = LTIMER >= 150
   endflag   = RETURN = true
+  updates   = UP_LOITERB
 
   speed     = 2.0
+  clockwise = false
   radius    = 8.0
   nm_radius = 15.0
   polygon   = radial:: x=110, y=-100, radius=35, pts=12, snap=1, label=b

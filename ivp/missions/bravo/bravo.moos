@@ -110,10 +110,13 @@ ProcessConfig = pMarineViewer
   hash_shade           = 0.4
   hash_view            = true
 
-  //BUTTON_ONE = DEPLOY,DEPLOY=true,MOOS_MANUAL_OVERIDE=false,RETURN=false
-  BUTTON_ONE = DEPLOY,DEPLOY=true
-  BUTTON_ONE = MOOS_MANUAL_OVERIDE=false,RETURN=false
-  BUTTON_TWO = RETURN,RETURN=true
+  BUTTON_ONE   = DEPLOY # DEPLOY=true
+  BUTTON_ONE   = MOOS_MANUAL_OVERIDE=false # RETURN=false
+  BUTTON_TWO   = RETURN # RETURN=true
+  BUTTON_THREE = CWISE # UP_LOITERA=clockwise=true
+  BUTTON_THREE = UP_LOITERB=clockwise=true
+  BUTTON_FOUR  = CCWISE # UP_LOITERA=clockwise=false
+  BUTTON_FOUR  = UP_LOITERB=clockwise=false
 }
 
 //------------------------------------------
