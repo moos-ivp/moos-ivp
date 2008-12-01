@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
   }
   
   string sMissionFile = "pTransponderAIS.moos";
-  string sMOOSName    = "iMarineSim";
+  string sMOOSName    = "pTransponderAIS";
 
   switch(argc) {
   case 3:
