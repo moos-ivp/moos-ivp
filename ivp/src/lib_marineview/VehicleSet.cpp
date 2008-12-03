@@ -564,13 +564,17 @@ bool VehicleSet::updateVehiclePosition(const string& ais_report)
   bool b_hding = tokParse(ais_report, "HDG",   ',', '=', hding);
   bool b_depth = tokParse(ais_report, "DEPTH", ',', '=', depth);
   bool b_utime = tokParse(ais_report, "UTC_TIME", ',', '=', utime);
+  bool b_mtime = tokParse(ais_report, "MOOS_TIME", ',', '=', utime);
   bool b_lat   = tokParse(ais_report, "LAT", ',', '=', lat);
   bool b_lon   = tokParse(ais_report, "LON", ',', '=', lon);
 
   if((!b_pos_x || !b_pos_y) && (!b_lat || !b_lon))
     return(false);
 
-  if(!b_vname || !b_vtype || !b_speed ||!b_hding || !b_utime)
+  if(!b_vname || !b_vtype || !b_speed ||!b_hding)
+    return(false);
+
+  if(!b_mtime && !b_utime)
     return(false);
 
   if(((vtype == "auv") || (vtype == "glider")) && !b_depth)
