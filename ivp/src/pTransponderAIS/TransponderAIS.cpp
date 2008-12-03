@@ -398,6 +398,10 @@ bool TransponderAIS::handleIncomingAISReport(const string& sdata)
 	nav_utc_val = atof(right.c_str());
 	nav_utc_set = true;
       }
+      else if((left == "MOOS_TIME") && right_isnum) {
+	nav_utc_val = atof(right.c_str());
+	nav_utc_set = true;
+      }
       else if((left == "X") && right_isnum) {
 	nav_x_val = atof(right.c_str());
 	nav_x_set = true;
