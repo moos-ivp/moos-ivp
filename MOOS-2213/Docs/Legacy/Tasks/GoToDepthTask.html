@@ -1,0 +1,89 @@
+<HTML>
+<HEAD>
+<TITLE>GoToDepth Task</TITLE>
+</HEAD>
+<BODY>
+
+<H1><img src="moose6.gif"> <center>The GoToDepth Task</center></H1>
+
+<H2>Description</H2>
+Attempt to obtain specified depth and terminates upon getting with TOLERANCE of goal
+
+<H2>Publishes</H2>
+<ul>
+	<li>EndFlags
+</ul>
+<p>
+
+
+<H2>Subscribes</H2>
+<ul>
+	<li>StartFlags
+	<li><b>NAV_DEPTH</b>
+	<li><b>NAV_PITCH</b>
+</ul>
+<p>
+
+<H2>Configuration Block</H2>
+<ul>
+
+	<li><a href="CommonMOOSTask.html"> Common Task Parameters</a>
+	<p>
+
+	<li><H3>Thrust</H3>
+	<ul>
+		<li><b>Syntax:	</b> Thrust = Thrust [0-100]
+	</ul>
+	<p>
+	
+	<li><H3>Rudder</H3>
+	<ul>
+		<li><b>Syntax:	</b> Rudder = Angle (Deg)
+		<li><b>Example:	</b> <i>Rudder =5</i> 
+	</ul>
+	<p>
+
+	<li><H3>Depth</H3>
+	<ul>
+		<li><b>Syntax:	</b> Depth = Depth (m)
+		<li><b>Example:	</b> <i>Depth =5</i> go to 5m of depth
+	</ul>
+	<p>
+
+
+	<li><H3>Tolerance</H3>
+	<ul>
+		<li><b>Syntax:	</b> Tolerance = DepthTolerance (m)
+		<li><b>Meaning:	</b> Task completes when depth is within Tolerance m of desired depth
+		<li><b>Example:	</b> <i>Tolerance =0.5</i> 
+	</ul>
+	<p>
+</ul>
+
+
+<H2>Example Block</H2>
+<pre>
+//Go To 21m depth +/- 1m at 30 percent thrust, turning right
+Task = Dive
+{
+	Name 		= Dive
+	Priority	= 3
+	InitialState 	= ON
+	TimeOut 	= 30
+	StartFlag 	= Dive
+	FinishFlag 	= DiveCompleted
+
+	Tolerance = 1.0
+	Depth		= 21.0
+
+	Thrust 		= 30
+	Rudder		= 4
+}
+
+</pre>
+
+
+<hr>
+<H4>The MOOS &#169;  P. Newman 2001-2002 <img src="moose2.gif"></H4>
+</BODY>
+</HTML>

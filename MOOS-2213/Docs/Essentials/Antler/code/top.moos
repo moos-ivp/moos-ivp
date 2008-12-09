@@ -1,0 +1,11 @@
+
+ProcessConfig = Antler
+{
+Run = top @ NewConsole = true,path=system, InhibitMOOSParams=true, XConfig = TopX, ExtraProcessParams=TopParams 	
+
+ //xterm configuration	
+ TopX = -bg, #F00000,-fg,#FFFFFF,-geometry,80x40+200+300,+sb,-T,top_top
+    
+  //list of parameters	
+  TopParams =-o,cpu      
+}
