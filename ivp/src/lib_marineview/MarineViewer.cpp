@@ -146,7 +146,6 @@ bool MarineViewer::setParam(string param, double v)
   if(param == "hash_shade_mod") {
     if((m_hash_shade+v >= 0) && (m_hash_shade+v <= 1.0))
       m_hash_shade += v;
-    cout << "m_hash_shade: " << m_hash_shade << endl;
   }
   if(param == "hash_shade") {
     if(v > 1.0)

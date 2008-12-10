@@ -23,6 +23,7 @@
 #ifndef COMMON_MARINE_VIEWER_HEADER
 #define COMMON_MARINE_VIEWER_HEADER
 
+#include <iostream>
 #include <string>
 #include <vector>
 #include "FL/Fl.H"

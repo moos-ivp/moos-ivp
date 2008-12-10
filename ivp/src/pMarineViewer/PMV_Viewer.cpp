@@ -327,20 +327,29 @@ void PMV_Viewer::handleRightMouse(int vx, int vy)
 
 void PMV_Viewer::setWeightedCenterView()
 {
-  if(!m_centric_view)
+  mutexLock();
+  bool centric_view = m_centric_view;
+  mutexUnLock();
+
+  if(!centric_view)
     return;
 
   double avg_pos_x, avg_pos_y;
+  mutexLock();
   bool ok = m_vehiset.getWeightedCenter(avg_pos_x, avg_pos_y);
+  mutexUnLock();
   if(!ok)
     return;
 
   // First determine how much we're off in terms of meters
+  mutexLock();
   double delta_x = avg_pos_x - m_back_img.get_x_at_img_ctr();
   double delta_y = avg_pos_y - m_back_img.get_y_at_img_ctr();
   
   // Next determine how much in terms of pixels
   double pix_per_mtr = m_back_img.get_pix_per_mtr();
+  mutexUnLock();
+
   double x_pixels = pix_per_mtr * delta_x;
   double y_pixels = pix_per_mtr * delta_y;
   

@@ -23,6 +23,7 @@
 #ifndef MARINE_VIEWER_HEADER
 #define MARINE_VIEWER_HEADER
 
+#include <iostream>
 #include <string>
 #include "MarineViewer.h"
 #include "MOOSLock.h"

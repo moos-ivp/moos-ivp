@@ -88,7 +88,6 @@ bool BHV_Loiter::setParam(string g_param, string g_val)
     new_poly.apply_snap(0.1); // snap to tenth of meter
     m_loiter_engine.setPoly(new_poly);
     m_waypoint_engine.setSegList(new_poly);
-    m_poly_changed  = true;
     m_acquire_mode  = true;
     return(true);
   }  
@@ -257,7 +256,6 @@ void BHV_Loiter::updateCenter()
   if(m_center_assign == "present_position") {
     m_loiter_engine.setCenter(m_osx, m_osy);
     m_waypoint_engine.setCenter(m_osx, m_osy);
-    m_poly_changed = true;
   }
   else {
     vector<string> svector = parseString(m_center_assign, ',');
@@ -269,7 +267,6 @@ void BHV_Loiter::updateCenter()
 	double yval = atof(svector[1].c_str());
 	m_loiter_engine.setCenter(xval, yval);
 	m_waypoint_engine.setCenter(xval, yval);
-	m_poly_changed = true;
     }
   }
 
@@ -328,16 +325,15 @@ void BHV_Loiter::updateInfoOut()
   else
     postMessage("LOITER_ACQUIRE", 0);
 
+  // We post the spec each time regarless of whether it changed.
+  // We let the helm filter out unnecessary duplicate posts.
   XYSegList seglist = m_waypoint_engine.getSegList();
-  if(m_poly_changed) {
-    string bhv_tag = toupper(getDescriptor());
-    bhv_tag = findReplace(bhv_tag, "BHV_", "");
-    bhv_tag = findReplace(bhv_tag, "(d)", "");
-    bhv_tag = m_us_name + "-" + bhv_tag;
-    string spec = "label," + bhv_tag + ":" + seglist.get_spec();
-    postMessage("VIEW_POLYGON", spec);
-  }
-  m_poly_changed = false;
+  string bhv_tag = toupper(getDescriptor());
+  bhv_tag = findReplace(bhv_tag, "(d)", "");
+  bhv_tag = m_us_name + "-" + bhv_tag;
+  seglist.set_label(bhv_tag);
+  string spec = seglist.get_spec();
+  postMessage("VIEW_POLYGON", spec);
   
   if(m_waypoint_engine.currPtChanged()) {
     string ptmsg;
