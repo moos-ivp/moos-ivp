@@ -46,22 +46,23 @@ public:
   double getDepth()     {return(m_vstate.m_dfDepth);};
   double getYaw();
 
-  void   setRudder(double v)      {m_rudder = v;};
-  void   setThrust(double v)      {m_thrust = v;};
-  void   setElevator(double v)    {m_elevator = v;};
-  void   setPushX(double v)       {m_push_x = v;};
-  void   setPushY(double v)       {m_push_y = v;};
-  void   setPushTheta(double v)   {m_push_theta = v;};
-  void   setFloatRate(double v)   {m_float_rate = v;};
+  void   setRudder(double v)       {m_rudder = v;};
+  void   setThrust(double v)       {m_thrust = v;};
+  void   setElevator(double v)     {m_elevator = v;};
+  void   setPushX(double v)        {m_push_x = v;};
+  void   setPushY(double v)        {m_push_y = v;};
+  void   setPushTheta(double v)    {m_push_theta = v;};
+  void   setFloatRate(double v)    {m_float_rate = v;};
   void   setPaused(bool);
+  void   setThrustFactor(double v) {m_thrust_factor = v;};
 
-  void   setPositionX(double v)   {m_vstate.m_dfX = v;};
-  void   setPositionY(double v)   {m_vstate.m_dfY = v;};
-  void   setHeadingRAD(double v)  {m_vstate.m_dfHeading = v;};
+  void   setPositionX(double v)    {m_vstate.m_dfX = v;};
+  void   setPositionY(double v)    {m_vstate.m_dfY = v;};
+  void   setHeadingRAD(double v)   {m_vstate.m_dfHeading = v;};
   void   setHeadingDEG(double v)  
     {m_vstate.m_dfHeading = degToRadians(v);};
-  void   setSpeed(double v)       {m_vstate.m_dfSpeed = v;};
-  void   setDepth(double v)       {m_vstate.m_dfDepth = v;};
+  void   setSpeed(double v)        {m_vstate.m_dfSpeed = v;};
+  void   setDepth(double v)        {m_vstate.m_dfDepth = v;};
   void   setPosition(std::string);
 
 protected:
@@ -73,6 +74,7 @@ protected:
   double    m_push_y;
   double    m_push_theta;
   double    m_float_rate;
+  double    m_thrust_factor;
   VState    m_vstate; // with no noise
   MBTimer   m_pause_timer;
   SimEngine m_sim_engine;

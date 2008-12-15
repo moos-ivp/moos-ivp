@@ -47,6 +47,7 @@ IMS_Model::IMS_Model()
   m_push_theta    = 0;
   m_float_rate    = 0;
   m_paused        = false;
+  m_thrust_factor = 20;
 }
 
 //------------------------------------------------------------------------
@@ -63,7 +64,7 @@ bool IMS_Model::propagate(double g_curr_time)
   // Calculate actual current time considering time spent paused.
   double a_curr_time = g_curr_time - m_pause_timer.get_wall_time();
   double delta_time  = a_curr_time - m_vstate.m_dfTime;
-  double next_speed  = m_thrust / 20.0;
+  double next_speed  = m_thrust / m_thrust_factor;
 
   m_vstate.m_dfSpeed = next_speed;
 

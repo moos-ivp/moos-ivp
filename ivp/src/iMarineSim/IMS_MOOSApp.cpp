@@ -156,6 +156,8 @@ bool IMS_MOOSApp::OnStartUp()
       m_model->setPushX(dVal);
     else if(sVarName == "FORCE_Y")
       m_model->setPushY(dVal);
+    else if(sVarName == "THRUST_FACTOR")
+      m_model->setThrustFactor(dVal);
     else if(sVarName == "SIM_PAUSE")
       m_model->setPaused(toupper(sVal) == "TRUE");
 
