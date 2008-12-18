@@ -25,20 +25,28 @@
 #include "MOOSGenLib.h"
 #include "HelmIvP.h"
 #include "MBUtils.h"
+#include <vector>
+#include <string>
 
 using namespace std;
 
 int main(int argc, char *argv[])
 {
-  bool version_requested = false;
-
-  for(int i=0; i<argc; i++) {
-    string str = argv[i];
-    if((str=="-v") || (str=="--version") || (str=="-version"))
-      version_requested = true;
+  // Look for a request for usage information
+  if(scanArgs(argc, argv, "-h", "--help", "-help")) {
+    cout << "Usage: pHelmIvP file.moos [file.bhv]...[file.bhv]     " << endl;
+    cout << "       [--help|-h] [--version|-v]                     " << endl;
+    cout << "                                                      " << endl;
+    cout << "[file.moos] Filename to get MOOS config parameters.   " << endl;
+    cout << "[file.bhv]  Filename to get IvP Helm config paramters." << endl;
+    cout << "[-v]        Output version number and exit.           " << endl;
+    cout << "[-h]        Output this usage information and exit.   " << endl;
+    cout << endl;
+    return(0);
   }
-  
-  if(version_requested) {
+
+  // Look for a request for version information
+  if(scanArgs(argc, argv, "-v", "--version", "-version")) {
     vector<string> svector = getReleaseInfo("pHelmIvP");
     for(int i=0; i<svector.size(); i++)
       if(!strContains(svector[i], "ree"))
@@ -46,15 +54,31 @@ int main(int argc, char *argv[])
     return(0);
   }
 
+  vector<string>  bhv_files;
+  vector<string>  moos_files;
+
+  for(int i=1; i<argc; i++) {
+    if(strContains(argv[i], ".bhv"))
+      bhv_files.push_back(argv[i]);
+    else if(strContains(argv[i], ".moos"))
+      moos_files.push_back(argv[i]);
+
+  }
+
+  if(moos_files.size() != 1) {
+    cout << "A *single* .moos file must be provided. Exiting" << endl;
+    exit(-1);
+  }
 
   HelmIvP helmIvP;
   
-  const char *sMissionFile = "pHelmIvP.moos";
-  if(argc > 1)
-    sMissionFile = argv[1];
+  const char *sMissionFile = moos_files[0].c_str();
 
-  for(int i=2; i<argc; i++)
-    helmIvP.addBehaviorFile(argv[i]);
+  int vsize = bhv_files.size();
+  for(int i=0; i<vsize; i++) {
+    if(strContains(argv[i], ".bhv"))
+      helmIvP.addBehaviorFile(argv[i]);
+  }
 
   helmIvP.Run("pHelmIvP", sMissionFile);
   

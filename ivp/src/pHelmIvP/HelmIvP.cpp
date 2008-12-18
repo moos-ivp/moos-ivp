@@ -65,7 +65,7 @@ HelmIvP::HelmIvP()
   m_info_buffer   = new InfoBuffer;
   m_verbose       = "terse";
   m_iteration     = 0;
-  m_ok_skew       = 360; 
+  m_ok_skew       = 60; 
   m_skews_matter  = true;
   m_warning_count = 0;
 
@@ -588,13 +588,11 @@ void HelmIvP::requestBehaviorLogging()
 
 bool HelmIvP::OnStartUp()
 {
-  cerr << "HelmIvP::OnStartUp()" << endl;
-
   cleanup();
   if(!m_info_buffer)
     m_info_buffer = new InfoBuffer;
 
-  MOOSTrace("pHelmIvP starting....\n");
+  MOOSTrace("The IvP Helm (pHelmIvP) is starting....\n");
 
   // Look for ownship name first - a "global" variable in the 
   // Configuration file. 
