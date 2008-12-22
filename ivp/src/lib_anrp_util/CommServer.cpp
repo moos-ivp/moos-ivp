@@ -14,7 +14,7 @@ CommServer::CommServer(int port)
 	this->port = port;
 
 	pipe(cp);
-        thr.Initialise(&(CommServer::ThreadTrampoline), this);
+        thr.Run(&(CommServer::ThreadTrampoline), this);
 }
 
 CommServer::~CommServer()
@@ -32,7 +32,7 @@ void CommServer::WriteString(char *str, int len)
 		((*it).second)->AppendWriteQueue(str, len);
 	}
 
-	client_list.UnLock();
+	client_list.Unlock();
 
 	/* force a wakeup */
 	write(cp[1], "W", 1);
@@ -52,15 +52,15 @@ void CommServer::WriteStringIfEmpty(char *str, int len)
 		}
 	}
 
-	client_list.UnLock();
+	client_list.Unlock();
 
 	write(cp[1], "W", 1);
 }
 
-bool CommServer::ThreadTrampoline(void *p)
+void *CommServer::ThreadTrampoline(void *p)
 {
 	((CommServer *)p)->AsyncThread();
-	return true;
+	return NULL;
 }
 
 void CommServer::AsyncThread()
@@ -112,7 +112,7 @@ void CommServer::AsyncThread()
 			
 			i++;
 		}
-		client_list.UnLock();
+		client_list.Unlock();
 
 		int pr = poll(fds, i, -1);
 		
@@ -141,7 +141,7 @@ void CommServer::AsyncThread()
 
 			client_list.Lock();
 			clients[newfd] = new CFDCtl(newfd);
-			client_list.UnLock();
+			client_list.Unlock();
 		}
 
 		for(int j=2; j<i; j++) {
@@ -153,11 +153,11 @@ void CommServer::AsyncThread()
 				close(fds[j].fd);
 				delete clients[fds[j].fd];
 				clients.erase(fds[j].fd);
-				client_list.UnLock();
+				client_list.Unlock();
 			} else if(fds[j].revents & POLLOUT) {
 				client_list.Lock();
 				(clients[fds[j].fd])->NonBlockingWrite();
-				client_list.UnLock();
+				client_list.Unlock();
 			}
 		}
 

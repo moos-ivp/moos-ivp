@@ -2,6 +2,7 @@
 #include <math.h>
 #include <sys/time.h>
 #include <unistd.h>
+
 SimulatedSurfaceObject::SimulatedSurfaceObject()
 {
 	cps = x = y = rcs = ts = cd = cs = sp = cmdthrust = cmdrudder = rudder =
@@ -24,7 +25,7 @@ void SimulatedSurfaceObject::Run(void (*uf)(void *, SimulatedSurfaceObject *),
 {
 	up = uptr;
 	ufn = uf;
-        thr.Initialise(&trampoline, this);
+        thr.Run(&trampoline, this);
 }
 
 static inline double gethrtime() {

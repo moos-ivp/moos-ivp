@@ -2,7 +2,7 @@
 #define __SimulatedSurfaceObject_h__
 
 #include <string>
-#include <MOOSThread.h>
+#include "athread.h"
 
 using namespace std;
 
@@ -45,7 +45,7 @@ private:
 	double speed;
 	bool verbose;
 
-	CMOOSThread thr;
+	AThread thr;
 	void (*ufn)(void *, SimulatedSurfaceObject *);
 	bool running;
 	void *up;
@@ -53,9 +53,9 @@ private:
 
         // The 'bool' return value is just to satisfy CMOOSThread's signature
         // requirements.
-	static bool trampoline(void *p) {
+	static void *trampoline(void *p) {
 		((SimulatedSurfaceObject *)p)->RunThread();
-		return true;
+		return NULL;
 	}
 };
 

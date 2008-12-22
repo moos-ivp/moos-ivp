@@ -25,13 +25,13 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
-#include <MOOSLock.h>
 #include <queue>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <netdb.h>
+#include "alock.h"
 
 using namespace std;
 
@@ -75,10 +75,10 @@ class CDatagramCtl
 		bool is_open;
 		bool isEOF;
 
-		CMOOSLock rdM;
+		ALock rdM;
 		queue<datagram_t> rdBuf;
 
-		CMOOSLock wrM;
+		ALock wrM;
 		queue<datagram_t> wrBuf;
 
 	public:

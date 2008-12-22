@@ -19,10 +19,10 @@
 *************************************************************************/
 
 #include "ResolverLock.h"
-#include <MOOSLock.h>
+#include "alock.h"
 #include <errno.h>
 
-static CMOOSLock resm;
+static ALock resm;
 
 void LockResolver()
 {
@@ -31,7 +31,7 @@ void LockResolver()
 
 void UnlockResolver()
 {
-        resm.UnLock();
+        resm.Unlock();
 }
 
 // bool IsResolverLocked()

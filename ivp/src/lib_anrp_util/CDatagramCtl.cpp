@@ -122,7 +122,7 @@ int CDatagramCtl::DirectRead(void)
 	
 	rdM.Lock();
 	amtRd = recvfrom(fd, buf, 65536, 0, &r_their_addr, (socklen_t *)&r_addr_len);
-	rdM.UnLock();
+	rdM.Unlock();
 
 	if (amtRd == -1 && (errno == EWOULDBLOCK || errno == EAGAIN)) {
 		errno = 0;
@@ -142,7 +142,7 @@ int CDatagramCtl::DirectRead(void)
 		tmp.len = amtRd;
 		tmp.data = buf;
 		rdBuf.push(tmp);
-		rdM.UnLock();
+		rdM.Unlock();
 		return amtRd;
 	}
 }
@@ -225,7 +225,7 @@ int CDatagramCtl::DirectWrite(void)
 	wrM.Lock();
 	datagram_t &tmp = wrBuf.front();
 	amtWr = sendto(fd, tmp.data, tmp.len, 0, (struct sockaddr *)&(tmp.to), sizeof(struct sockaddr));
-	wrM.UnLock();
+	wrM.Unlock();
 
 	if (amtWr == -1 && (errno == EWOULDBLOCK || errno == EAGAIN)) {
 		errno = 0;
@@ -237,7 +237,7 @@ int CDatagramCtl::DirectWrite(void)
 	} else {
 		wrM.Lock();
 		wrBuf.pop();
-		wrM.UnLock();
+		wrM.Unlock();
 
 		return amtWr;
 	}
@@ -274,7 +274,7 @@ datagram_t CDatagramCtl::Read()
 	rdM.Lock();
 	datagram_t tmp = rdBuf.front();
 	rdBuf.pop();
-	rdM.UnLock();
+	rdM.Unlock();
 
 	return tmp;
 }
@@ -283,7 +283,7 @@ datagram_t CDatagramCtl::Peek()
 {
 	rdM.Lock();
 	datagram_t tmp = rdBuf.front();
-	rdM.UnLock();
+	rdM.Unlock();
 
 	return tmp;
 }
@@ -297,7 +297,7 @@ int CDatagramCtl::AppendWriteQueue(datagram_t tmp)
 {
 	wrM.Lock();
 	wrBuf.push(tmp);
-	wrM.UnLock();
+	wrM.Unlock();
 
 	return 0;
 }
@@ -308,7 +308,7 @@ int CDatagramCtl::WriteQueueFlush(void)
 	while(wrBuf.size()) {
 		wrBuf.pop();
 	}
-	wrM.UnLock();
+	wrM.Unlock();
 
 	return 0;
 }
@@ -319,7 +319,7 @@ int CDatagramCtl::ReadQueueFlush(void)
 	while(rdBuf.size()) {
 		rdBuf.pop();
 	}
-	rdM.UnLock();
+	rdM.Unlock();
 
 	return 0;
 }

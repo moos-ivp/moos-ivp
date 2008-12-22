@@ -2,7 +2,7 @@
 #define __ndatagram_t_h__
 
 #include <unistd.h>
-#include <MOOSLock.h>
+#include "alock.h"
 #include <queue>
 #include <sys/types.h>
 #include <sys/socket.h>

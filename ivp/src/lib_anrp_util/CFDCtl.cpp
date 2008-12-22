@@ -135,7 +135,7 @@ int CFDCtl::DirectRead(void)
 
 	rdM.Lock();
 	amtRd = read(fd, buf, blocksize);
-	rdM.UnLock();
+	rdM.Unlock();
 
 	if (amtRd == -1 && (errno == EWOULDBLOCK || errno == EAGAIN)) {
 		errno = 0;
@@ -153,7 +153,7 @@ int CFDCtl::DirectRead(void)
 		rdBuf = (char *)realloc((void *)rdBuf, rdBufLen + amtRd);
 		memcpy(rdBuf + rdBufLen, buf, amtRd);
 		rdBufLen += amtRd;
-		rdM.UnLock();
+		rdM.Unlock();
 		free(buf);
 		return amtRd;
 	}
@@ -268,7 +268,7 @@ int CFDCtl::DirectWrite(void)
 
 	wrM.Lock();
 	amtWr = write(fd, wrBuf, mtw);
-	wrM.UnLock();
+	wrM.Unlock();
 
 	if (amtWr == -1 && (errno == EWOULDBLOCK || errno == EAGAIN)) {
 		errno = 0;
@@ -286,7 +286,7 @@ int CFDCtl::DirectWrite(void)
 		if (wrBufLen == 0)
 			wrBuf = NULL;
 
-		wrM.UnLock();
+		wrM.Unlock();
 
 		return amtWr;
 	}
@@ -342,7 +342,7 @@ char *CFDCtl::Read(int nb)
 
 	ptr[nb] = 0;
 
-	rdM.UnLock();
+	rdM.Unlock();
 
 	return ptr;
 }
@@ -358,7 +358,7 @@ char *CFDCtl::Peek(int nb)
 
 	memcpy(ptr, rdBuf, nb);
 
-	rdM.UnLock();
+	rdM.Unlock();
 
 	return ptr;
 }
@@ -374,7 +374,7 @@ int CFDCtl::FindCharIndex(char c)
 
 	int pos = p - rdBuf;
 
-	rdM.UnLock();
+	rdM.Unlock();
 
 	if (p == NULL)
 		return -1;
@@ -393,7 +393,7 @@ int CFDCtl::FindStrIndex(int l, char *s)
 
 	int pos = p - rdBuf;
 
-	rdM.UnLock();
+	rdM.Unlock();
 
 	if (p == NULL)
 		return -1;
@@ -422,7 +422,7 @@ int CFDCtl::AppendWriteQueue(const char *ptr, int len)
 
 	wrBufLen += len;
 
-	wrM.UnLock();
+	wrM.Unlock();
 
 	return 0;
 }
@@ -437,7 +437,7 @@ int CFDCtl::WriteQueueFlush(void)
 		wrBuf = NULL;
 	}
 
-	wrM.UnLock();
+	wrM.Unlock();
 
 	return 0;
 }
@@ -452,7 +452,7 @@ int CFDCtl::ReadQueueFlush(void)
 		rdBuf = NULL;
 	}
 
-	rdM.UnLock();
+	rdM.Unlock();
 
 	return 0;
 }

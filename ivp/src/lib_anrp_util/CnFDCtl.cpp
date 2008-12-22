@@ -119,7 +119,7 @@ int CnFDCtl::DirectRead(void)
 		int oldl = rdBuf.size();
 		rdBuf.resize(rdBuf.size() + amtRd);
 		memcpy(rdBuf + oldl, buf.p(), amtRd);
-		rdM.UnLock();
+		rdM.Unlock();
 		return amtRd;
 	}
 }
@@ -230,18 +230,18 @@ int CnFDCtl::DirectWrite(void)
 
 	if (amtWr == -1 && (errno == EWOULDBLOCK || errno == EAGAIN)) {
 		errno = 0;
-		wrM.UnLock();
+		wrM.Unlock();
 		return 0;
 	} else if (amtWr == -1) {
-		wrM.UnLock();
+		wrM.Unlock();
 		throw runtime_error(ssp("Error on write(fd = %i): %s", fd, strerror(errno)));
 	} else if (amtWr == 0) {
-		wrM.UnLock();
+		wrM.Unlock();
 		return 0;
 	} else {
 		memmove(wrBuf.p(), wrBuf + amtWr, wrBuf.size() - amtWr);
 		wrBuf.resize(wrBuf.size() - amtWr);
-		wrM.UnLock();
+		wrM.Unlock();
 
 		return amtWr;
 	}
@@ -286,7 +286,7 @@ bom CnFDCtl::Read(int nb)
 
 	rdBuf.resize(rdBuf.size() - nb);
 
-	rdM.UnLock();
+	rdM.Unlock();
 
 	return ptr;
 }
@@ -300,7 +300,7 @@ bom CnFDCtl::Peek(int nb)
 
 	rdM.Lock();
 	memcpy(ptr.p(), rdBuf.p(), nb);
-	rdM.UnLock();
+	rdM.Unlock();
 
 	return ptr;
 }
@@ -316,7 +316,7 @@ int CnFDCtl::FindCharIndex(char c)
 
 	int pos = p - rdBuf.c();
 
-	rdM.UnLock();
+	rdM.Unlock();
 
 	if (p == NULL)
 		return -1;
@@ -334,7 +334,7 @@ int CnFDCtl::FindStrIndex(int l, char *s)
 	char *p = (char *)mymemmem(rdBuf.c(), rdBuf.size(), s, l);
 	int pos = p - rdBuf.c();
 
-	rdM.UnLock();
+	rdM.Unlock();
 
 	if (p == NULL)
 		return -1;
@@ -362,7 +362,7 @@ int CnFDCtl::AppendWriteQueue(const char *ptr, int len)
 
 	memcpy(wrBuf + olds, ptr, len);
 
-	wrM.UnLock();
+	wrM.Unlock();
 
 	return 0;
 }
@@ -378,7 +378,7 @@ int CnFDCtl::WriteQueueFlush(void)
 
 	wrBuf.resize(0);
 
-	wrM.UnLock();
+	wrM.Unlock();
 
 	return 0;
 }
@@ -389,7 +389,7 @@ int CnFDCtl::ReadQueueFlush(void)
 
 	rdBuf.resize(0);
 
-	rdM.UnLock();
+	rdM.Unlock();
 
 	return 0;
 }

@@ -3,7 +3,7 @@
 
 #include "Position.h"
 
-#ifdef TESTING
+#ifdef TESTING1
 
 int main(int argc, char *argv[])
 {
@@ -111,6 +111,45 @@ int main(int argc, char *argv[])
 	fprintf(stderr, "Origin: %s\n", wo.ToHRString().c_str());
 	wo.Project(Heading(90), 1000); 
 	fprintf(stderr, "Changed: %s\n", wo.ToHRString().c_str());
+}
+
+#elif TESTING2
+
+int main(int argc, char *argv[])
+{
+	if(argc != 5) {
+		printf("Usage: %s [latin] [lonin] [range] [bearing]\n", argv[0]);
+		return 0;
+	}
+
+	double lat = atof(argv[1]);
+	double lon = atof(argv[2]);
+	double range = atof(argv[3]);
+	double bearing = atof(argv[4]);
+
+	LLPosition np(lat, lon);
+	np.Project(bearing, range);
+
+	printf("%lf %lf\n", np.Lat(), np.Lon());
+}
+
+#elif TESTING3
+
+int main(int argc, char *argv[])
+{
+	if(argc != 5) {
+		printf("Usage: %s [lat1] [lon1] [lat2] [lon2]\n", argv[0]);
+		return 0;
+	}
+
+	double lat1 = atof(argv[1]);
+	double lon1 = atof(argv[2]);
+	double lat2 = atof(argv[3]);
+	double lon2 = atof(argv[4]);
+	
+	LLPosition p1(lat1, lon1), p2(lat2, lon2);
+
+	printf("%lf %lf\n", p1.Distance(p2), p1.AbsoluteBearing(p2).GetHeading());
 }
 
 #endif // TESTING

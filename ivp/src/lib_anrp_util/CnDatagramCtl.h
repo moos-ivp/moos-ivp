@@ -4,7 +4,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
-#include <MOOSLock.h>
+#include "alock.h"
 #include <queue>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -23,10 +23,10 @@ protected:
 	bool is_open;
 	bool isEOF;
 
-	CMOOSLock rdM;
+	ALock rdM;
 	std::queue<ndatagram_t> rdBuf;
 
-	CMOOSLock wrM;
+	ALock wrM;
 	std::queue<ndatagram_t> wrBuf;
 
 public:

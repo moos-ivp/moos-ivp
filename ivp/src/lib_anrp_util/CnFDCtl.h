@@ -2,7 +2,7 @@
 #define __CnFDCtl_h__
 
 #include <unistd.h>
-#include <MOOSLock.h>
+#include "alock.h"
 #include "bom.h"
 
 class CnFDCtl
@@ -12,10 +12,10 @@ protected:
 	bool is_open;
 	bool isEOF;
 
-	CMOOSLock rdM;
+	ALock rdM;
 	bom rdBuf;
 
-	CMOOSLock wrM;
+	ALock wrM;
 	bom wrBuf;
 	int wrMaxLen;
 

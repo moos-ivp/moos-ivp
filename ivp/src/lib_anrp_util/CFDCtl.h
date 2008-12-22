@@ -23,7 +23,7 @@
 #define __CFDCtl_h__
 
 #include <unistd.h>
-#include <MOOSLock.h>
+#include "alock.h"
 
 class CFDCtl
 {
@@ -33,11 +33,11 @@ class CFDCtl
 		bool is_open;
 		bool isEOF;
 
-		CMOOSLock rdM;
+		ALock rdM;
 		char *rdBuf;
 		int rdBufLen;
 
-		CMOOSLock wrM;
+		ALock wrM;
 		char *wrBuf;
 		int wrBufLen;
 		int wrMaxLen;
