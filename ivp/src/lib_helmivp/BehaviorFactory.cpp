@@ -11,13 +11,13 @@ using namespace std;
 //========================================================================
 
 BehaviorFactory::BehaviorFactory() {
-  cerr << "BehaviorFactory::BehaviorFactory()" << endl;
+  //cerr << "BehaviorFactory::BehaviorFactory()" << endl;
 }
 
 //========================================================================
 
 BehaviorFactory::~BehaviorFactory() {
-  cerr << "BehaviorFactory::~BehaviorFactory()" << endl;
+  //cerr << "BehaviorFactory::~BehaviorFactory()" << endl;
   // If this is being called as the program is being shut down, it's probably
   // superfluous.  But just in case it's not...
   
@@ -95,38 +95,40 @@ void BehaviorFactory::load_directory(string dirname) {
 
 void BehaviorFactory::loadEnvVarDirectories(std::string envVar, bool verbose) {
   if (verbose) {
-    cerr << ">>> Loading behavior dynamic libraries." << endl;
+    cerr << "Loading behavior dynamic libraries...." << endl;
   }
 
   const char * dirs = getenv(envVar.c_str());
   if (! dirs) {
     if (verbose) {
-      cerr << "Can't load behavior libraries.  Environment variable " << envVar << " isn't set." << endl;
+      cerr << "    Can't load behavior libraries." << endl;
+      cerr << "    Environment variable " << envVar << " isn't set." << endl;
     }
 
-    cerr << ">>> Exiting" << endl;
+    cerr << "Loading behavior dynamic libraries - skipped." << endl;
     return;
   }
   
   vector<string> v = tokenize(dirs, ":");
   for(unsigned int i=0; i<v.size(); ++i) {
-    string d = v.at(i);
+    string directory = v.at(i);
 
-    if (isdir(d)) {
+    if (isdir(directory)) {
       if (verbose) {
-        cerr << ">>> Loading directory: " << d << endl;
+        cerr << "    Loading directory: " << directory << endl;
       }
 
-      load_directory(d);
+      load_directory(directory);
     }
     else {
       if (verbose) {
-        cerr << ">>> Seems not not be a directory.  Skipping: " << d << endl;
+        cerr << "    Skipping: " << directory << endl;
+        cerr << "    (Seems not not be a directory.)" << endl;
       }
     }
   }
 
-  cerr << ">>> Exiting" << endl;
+  cerr << "Loading behavior dynamic libraries - FINISHED." << endl;
 }
 
 //==============================================================================
