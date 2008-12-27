@@ -7,6 +7,7 @@ SET(SRC
    BehaviorFactory.cpp
    HelmEngine.cpp
    HelmReport.cpp
+   ModeSet.cpp
    Populator_BehaviorSet.cpp
    Populator_BehaviorSet2.cpp
 )

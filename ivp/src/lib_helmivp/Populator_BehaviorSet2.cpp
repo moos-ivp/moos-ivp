@@ -58,18 +58,18 @@ IvPBehavior* Populator_BehaviorSet2::initializeBehavior(string bhv_name)
 {
   IvPBehavior* bhv = Populator_BehaviorSet::initializeBehavior(bhv_name);
   if(bhv != NULL) {
-    cerr << "Populator_BehaviorSet2::initializeBehavior: ";
+    cerr << "    InitializeBehavior: ";
     cerr << "found static behavior " << bhv_name << endl;
     return(bhv);
   }
   
   if(bhv_factory.is_known_behavior(bhv_name)) {
-    cerr << "Populator_BehaviorSet2::initializeBehavior: ";
+    cerr << "    InitializeBehavior: ";
     cerr << "found dynamic behavior " << bhv_name << endl;
     return(bhv_factory.new_behavior(bhv_name, domain));
   }
 
-  cerr << "Populator_BehaviorSet2::initializeBehavior: ";
+  cerr << "    InitializeBehavior: ";
   cerr << "couldn't find behavior " << bhv_name << endl;
 
   return NULL;

@@ -84,6 +84,7 @@ Populator_BehaviorSet::Populator_BehaviorSet(IvPDomain g_domain,
 
 BehaviorSet *Populator_BehaviorSet::populate(set<string> bhv_files)
 {
+  cout << "Number of behavior files: " << bhv_files.size() << endl;
   unsigned int i;
   set<string>::const_iterator p;
   for(p=bhv_files.begin(); p!=bhv_files.end(); p++) {
@@ -92,10 +93,12 @@ BehaviorSet *Populator_BehaviorSet::populate(set<string> bhv_files)
 
     FILE *f = fopen(filename.c_str(), "r");
     
+    cout << "Processing Behavior File: " << filename << "  START" << endl;
+
     if(!f) 
-      cout << "Could not find File: " << filename << endl;
+      cout << "    Could not find File: " << filename << endl;
     else {
-      cout << "Successfully found file: " << filename << endl;
+      cout << "    Successfully found file: " << filename << endl;
       fclose(f);
       
       vector<string> file_vector = fileBufferSlash(filename);
@@ -107,15 +110,17 @@ BehaviorSet *Populator_BehaviorSet::populate(set<string> bhv_files)
 	if((line.length()!=0) && ((line)[0]!='#')) {
 	  int res = handleLine(line);
 	  if(!res) {
-	    cout << " Problem with line " << i+1;
-	    cout << " in the BehaviorSet file: " << filename << endl;
+	    cout << "    Problem with line " << i+1;
+	    cout << "    in the BehaviorSet file: " << filename << endl;
 	    cout << line << endl;
 	    return(0);
 	  }
 	}
       }
     }
+    cout << "Processing Behavior File: " << filename << "  END" << endl;
   }
+
 
   if(behaviors.size() == 0) 
     return(0);
