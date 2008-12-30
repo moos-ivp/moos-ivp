@@ -49,5 +49,33 @@ void ModeSet::print()
     m_entries[i].print();
   }
 
-  //cout << "MOOS variables (" << vsize << "): " << endl;
+  vector<string> con_vars = getConditionVars();
+  vsize = con_vars.size();
+  cout << "MOOS variables (" << vsize << "): " << endl;
+
+  for(i=0; i<vsize; i++) {
+    cout << con_vars[i];
+    if(i < (vsize-1))
+      cout << ", "; 
+    else
+      cout << endl;
+  }
+}
+
+
+//------------------------------------------------------------------
+// Procedure: getConditionVars
+
+vector<string> ModeSet::getConditionVars()
+{
+  vector<string> union_vector;
+  
+  unsigned int i, vsize = m_entries.size();
+  for(i=0; i<vsize; i++) {
+    vector<string> svector = m_entries[i].getConditionVars();
+    union_vector = mergeVectors(union_vector, svector);
+  }
+
+  union_vector = removeDuplicates(union_vector);
+  return(union_vector);
 }

@@ -40,7 +40,8 @@ public:
   //std::vector<std::string> getMOOSVars()  {return(m_moos_vars);};
   //std::string getModeVar(unsigned int ix) {return(m_mode_vars[ix]);}; 
   //std::string getModeVal(unsigned int ix) {return(m_mode_vals[ix]);}; 
-    
+
+  std::vector<std::string> getConditionVars();
   void print();
 
 

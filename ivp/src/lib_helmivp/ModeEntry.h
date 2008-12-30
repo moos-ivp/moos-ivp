@@ -25,6 +25,7 @@
 
 #include <vector>
 #include <string>
+#include "LogicCondition.h"
 
 class ModeEntry {
 public:
@@ -36,11 +37,15 @@ public:
   bool setEntry(std::string);
   bool setEntry(std::string, std::string, std::string, std::string s="");
 
+  std::vector<std::string> getConditionVars();
+
 protected:
   std::string  m_mode_var;
   std::string  m_mode_val;
   std::string  m_mode_val_else;
   std::string  m_mode_condition;
+
+  LogicCondition m_logic_condition;
 };
 
 #endif
