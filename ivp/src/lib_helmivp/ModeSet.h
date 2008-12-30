@@ -26,25 +26,26 @@
 #include <vector>
 #include <string>
 #include "IvPDomain.h"
+#include "ModeEntry.h"
 
 class ModeSet {
 public:
   ModeSet() {};
   ~ModeSet() {};
 
-  unsigned int modeCount() {return(m_mode_vars.size());};
+  bool addEntry(const std::string&);
+
+  unsigned int size() {return(m_entries.size());};
   
-  std::vector<std::string> getMOOSVars()  {return(m_moos_vars);};
-  std::string getModeVar(unsigned int ix) {return(m_mode_vars[ix]);}; 
-  std::string getModeVal(unsigned int ix) {return(m_mode_vals[ix]);}; 
+  //std::vector<std::string> getMOOSVars()  {return(m_moos_vars);};
+  //std::string getModeVar(unsigned int ix) {return(m_mode_vars[ix]);}; 
+  //std::string getModeVal(unsigned int ix) {return(m_mode_vals[ix]);}; 
     
   void print();
 
 
 protected:
-  std::vector<std::string>  m_moos_vars;
-  std::vector<std::string>  m_mode_vars;
-  std::vector<std::string>  m_mode_vals;
+  std::vector<ModeEntry>  m_entries;
 };
 
 #endif

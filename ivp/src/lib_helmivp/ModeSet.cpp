@@ -27,20 +27,27 @@
 using namespace std;
 
 //------------------------------------------------------------------
+// Procedure: addEntry
+
+bool ModeSet::addEntry(const string& str)
+{
+  ModeEntry new_entry;
+  bool ok = new_entry.setEntry(str);
+  if(ok)
+    m_entries.push_back(new_entry);
+  return(ok);
+}
+
+//------------------------------------------------------------------
 // Procedure: print()
 
 void ModeSet::print()
 {
-  int i, vsize = m_moos_vars.size();
-  cout << "MOOS variables as input: (" << vsize << "): " << endl;
+  unsigned int i, vsize = m_entries.size();
   for(i=0; i<vsize; i++) {
-    cout << "  " << m_moos_vars[i] << endl;
+    cout << "Mode Entry # " << i << ": " << endl;
+    m_entries[i].print();
   }
 
-  vsize = m_mode_vars.size();
-  cout << "MOOS variables (" << vsize << "): " << endl;
-  for(i=0; i<vsize; i++) {
-    cout << "   " << m_mode_vars[i];
-    cout << " = " << m_mode_vals[i] << endl;
-  }
+  //cout << "MOOS variables (" << vsize << "): " << endl;
 }

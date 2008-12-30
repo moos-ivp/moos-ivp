@@ -25,7 +25,6 @@
 
 #include <vector>
 #include <string>
-#include "IvPDomain.h"
 
 class ModeEntry {
 public:
@@ -33,6 +32,9 @@ public:
   ~ModeEntry() {};
 
   void print();
+
+  bool setEntry(std::string);
+  bool setEntry(std::string, std::string, std::string, std::string s="");
 
 protected:
   std::string  m_mode_var;

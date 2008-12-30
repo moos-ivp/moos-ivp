@@ -31,4 +31,70 @@ using namespace std;
 
 void ModeEntry::print()
 {
+  cout << "++Mode Var:   " << m_mode_var       << endl;
+  cout << "  Mode Val:   " << m_mode_val       << endl;
+  cout << "  Mode Else:  " << m_mode_val_else  << endl;
+  cout << "  Mode Cond:  " << m_mode_condition << endl;
+}
+
+//------------------------------------------------------------------
+// Procedure: setEntry
+// Example:   MODE = ACTIVE {DEPLOY==TRUE} INACTIVE
+
+bool ModeEntry::setEntry(string str)
+{
+  string mode_var  = stripBlankEnds(biteString(str, '='));
+  string remainder = stripBlankEnds(str);
+
+  if((mode_var == "") || (remainder == ""))
+    return(false);
+
+  // Ensure that there is only one open brace and one close brace
+  // And that the open brace is to the left of the close brace
+  int leftcnt  = 0;
+  int leftix   = -1;
+  int rightcnt = 0;
+  int rightix  = -1;
+  int len = remainder.length();
+  for(int i=0; i<len; i++) {
+    if(remainder[i] == '{') {
+      leftcnt++;
+      leftix = i;
+    }
+    else if(remainder[i] == '}') {
+      rightcnt++;
+      rightix = i;
+    }
+  }
+  if((leftcnt != 1) || (rightcnt != 1))
+    return(false);
+  if(leftix >= rightix)
+    return(false);
+
+  string mode_val = stripBlankEnds(biteString(remainder, '{'));
+  remainder = stripBlankEnds(remainder);
+
+  string condition = stripBlankEnds(biteString(remainder, '}'));
+  string else_val  = stripBlankEnds(remainder);
+
+  return(setEntry(mode_var, mode_val, condition, else_val));
+  
+}
+
+
+//------------------------------------------------------------------
+// Procedure: setEntry
+
+bool ModeEntry::setEntry(string mode_var,  string mode_val, 
+			 string condition, string else_val)
+{
+  if((strContains(mode_var, ' ')) || strContains(mode_var, '\t'))
+    return(false);
+  
+  m_mode_var       = mode_var;
+  m_mode_val       = mode_val;
+  m_mode_condition = condition;
+  m_mode_val_else  = else_val;
+
+  return(true);
 }
