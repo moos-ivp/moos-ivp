@@ -31,10 +31,11 @@ using namespace std;
 
 void ModeEntry::print()
 {
-  cout << "++Mode Var:   " << m_mode_var       << endl;
-  cout << "  Mode Val:   " << m_mode_val       << endl;
-  cout << "  Mode Else:  " << m_mode_val_else  << endl;
-  cout << "  Mode Cond:  " << m_mode_condition << endl;
+  cout << "++Mode Var:    " << m_mode_var       << endl;
+  cout << "  Mode Val:    " << m_mode_val       << endl;
+  cout << "  Mode Else:   " << m_mode_val_else  << endl;
+  cout << "  Mode Cond:   " << m_mode_condition << endl;
+  cout << "  Mode Prefix: " << m_mode_prefix    << endl;
 }
 
 //------------------------------------------------------------------
@@ -77,8 +78,7 @@ bool ModeEntry::setEntry(string str)
   string condition = stripBlankEnds(biteString(remainder, '}'));
   string else_val  = stripBlankEnds(remainder);
 
-  return(setEntry(mode_var, mode_val, condition, else_val));
-  
+  return(setEntry(mode_var, mode_val, condition, else_val));  
 }
 
 
@@ -105,6 +105,19 @@ bool ModeEntry::setEntry(string mode_var,  string mode_val,
       return(false);
     else
       lvector.push_back(logic_condition);
+  }
+
+  // Check for a prefix condition - a condition that the mode variable
+  // being set is currently equal to some value.
+  // Example "MODE = ACTIVE"
+  vsize = lvector.size();
+  for(i=0; i<vsize; i++) {
+    LogicCondition logic_condition = lvector[i];
+    string raw   = logic_condition.getRawCondition();
+    string left  = stripBlankEnds(biteString(raw, '='));
+    string right = stripBlankEnds(raw); 
+    if((left == mode_var) && (raw != "") && (m_mode_prefix == ""))
+      m_mode_prefix = right;
   }
 
   m_logic_conditions = lvector;

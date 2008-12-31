@@ -44,6 +44,7 @@ protected:
   std::string  m_mode_val;
   std::string  m_mode_val_else;
   std::string  m_mode_condition;
+  std::string  m_mode_prefix;
 
   std::vector<LogicCondition> m_logic_conditions;
 };
