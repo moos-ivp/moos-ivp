@@ -32,12 +32,19 @@ public:
   ModeEntry() {};
   ~ModeEntry() {};
 
-  void print();
-
   bool setEntry(std::string);
   bool setEntry(std::string, std::string, std::string, std::string s="");
 
   std::vector<std::string> getConditionVars();
+
+  void print();
+  void clearConditionVarVals();
+
+  void setVarVal(const std::string&, const std::string&);
+  void setVarVal(const std::string&, double);
+
+ protected:
+  bool evalConditions();
 
 protected:
   std::string  m_mode_var;

@@ -39,6 +39,50 @@ void ModeEntry::print()
 }
 
 //------------------------------------------------------------------
+// Procedure: clearConditionVarVals
+
+void ModeEntry::clearConditionVarVals()
+{
+  unsigned int i, vsize = m_logic_conditions.size();
+  for(i=0; i<vsize; i++)
+    m_logic_conditions[i].clearVarVals();
+}
+
+//------------------------------------------------------------------
+// Procedure: setVarVal(string,string)
+
+void ModeEntry::setVarVal(const string& var, const string& val)
+{
+  unsigned int i, vsize = m_logic_conditions.size();
+  for(i=0; i<vsize; i++)
+    m_logic_conditions[i].setVarVal(var, val);
+}
+
+//------------------------------------------------------------------
+// Procedure: setVarVal(string,double)
+
+void ModeEntry::setVarVal(const string& var, double val)
+{
+  unsigned int i, vsize = m_logic_conditions.size();
+  for(i=0; i<vsize; i++)
+    m_logic_conditions[i].setVarVal(var, val);
+}
+
+//------------------------------------------------------------------
+// Procedure: evalConditions
+
+bool ModeEntry::evalConditions()
+{
+  bool result = true;
+  unsigned int i, vsize = m_logic_conditions.size();
+  for(i=0; i<vsize; i++)
+    result = result && m_logic_conditions[i].eval();
+
+  return(result);
+}
+
+
+//------------------------------------------------------------------
 // Procedure: setEntry
 // Example:   MODE = ACTIVE {DEPLOY==TRUE} INACTIVE
 
