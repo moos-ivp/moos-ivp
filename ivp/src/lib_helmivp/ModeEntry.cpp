@@ -91,18 +91,27 @@ bool ModeEntry::setEntry(string mode_var,  string mode_val,
   if((strContains(mode_var, ' ')) || strContains(mode_var, '\t'))
     return(false);
 
-  // Make sure the logic condtion string can be used to create a
+  // Make sure the logic condtions string can be used to create a
   // syntactically correct LogicCondition object.
-  LogicCondition logic_condition;
-  bool ok_condition = logic_condition.setCondition(condition);
-  if(!ok_condition)
-    return(false);
-  
-  m_logic_condition = logic_condition;
-  m_mode_var        = mode_var;
-  m_mode_val        = mode_val;
-  m_mode_condition  = condition;
-  m_mode_val_else   = else_val;
+  // The separator "@#!#@" was added presumably by the caller most
+  // likely representing a line-break in the input file.
+  vector<LogicCondition> lvector;
+  vector<string> svector = parseString(condition, "@#!#@");
+  unsigned int i, vsize = svector.size();
+  for(i=0; i<vsize; i++) {
+    LogicCondition logic_condition;
+    bool ok_condition = logic_condition.setCondition(svector[i]);
+    if(!ok_condition)
+      return(false);
+    else
+      lvector.push_back(logic_condition);
+  }
+
+  m_logic_conditions = lvector;
+  m_mode_var         = mode_var;
+  m_mode_val         = mode_val;
+  m_mode_condition   = condition;
+  m_mode_val_else    = else_val;
 
   return(true);
 }
@@ -113,5 +122,13 @@ bool ModeEntry::setEntry(string mode_var,  string mode_val,
 
 vector<string> ModeEntry::getConditionVars()
 {
-  return(m_logic_condition.getVarNames());
+  vector<string> return_vector;
+  unsigned int i, vsize = m_logic_conditions.size();
+  for(i=0; i<vsize; i++) {
+    vector<string> svector = m_logic_conditions[i].getVarNames();
+    return_vector = mergeVectors(return_vector, svector);
+  }
+  
+  return_vector = removeDuplicates(return_vector);
+  return(return_vector);
 }
