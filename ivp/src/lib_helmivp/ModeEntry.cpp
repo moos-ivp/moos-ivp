@@ -132,7 +132,6 @@ bool ModeEntry::setEntry(string str)
 bool ModeEntry::setEntry(string mode_var,  string mode_val, 
 			 string condition, string else_val)
 {
-#if 0
   if(strContains(mode_var, ' ') || strContains(mode_var, '\t'))
     return(false);
 
@@ -170,7 +169,7 @@ bool ModeEntry::setEntry(string mode_var,  string mode_val,
   m_mode_val         = mode_val;
   m_mode_condition   = condition;
   m_mode_val_else    = else_val;
-#endif
+
   return(true);
 }
 
