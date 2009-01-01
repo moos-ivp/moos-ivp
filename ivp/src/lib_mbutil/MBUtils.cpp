@@ -624,6 +624,18 @@ bool strContains(const string& str, const string& qstr)
     return(true);
 }
     
+//----------------------------------------------------------------
+// Procedure: strContains
+
+bool strContains(const string& str, const char c)
+{
+  string::size_type posn = str.find_first_of(c, 0);
+  if(posn == string::npos)
+    return(false);
+  else
+    return(true);
+}
+    
 
 //----------------------------------------------------------------
 // Procedure: packageToString
@@ -1109,13 +1121,4 @@ vector<string> getReleaseInfo(const string& app)
   v.push_back("");
   return(v);
 }
-
-
-
-
-
-
-
-
-
 
