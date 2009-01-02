@@ -68,6 +68,11 @@ HelmReport HelmEngine::determineNextDecision(BehaviorSet *bhv_set,
 
   bhv_set->setCurrTime(curr_time);
 
+  // Update Modes and add mode_summary to the helm_report.
+  bhv_set->consultModeSet();
+  string mode_summary = bhv_set->getModeSummary();
+  helm_report.setModeSummary(mode_summary);
+
   int i, bhv_ix;
   int bhv_cnt = bhv_set->getCount();
 

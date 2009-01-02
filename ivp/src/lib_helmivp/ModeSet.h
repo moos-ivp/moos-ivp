@@ -25,28 +25,39 @@
 
 #include <vector>
 #include <string>
-#include "IvPDomain.h"
 #include "ModeEntry.h"
+#include "InfoBuffer.h"
+#include "VarDataPair.h"
 
 class ModeSet {
 public:
-  ModeSet() {};
+  ModeSet() {m_info_buffer=0;};
   ~ModeSet() {};
 
   bool addEntry(const std::string&);
+  bool addEntry(ModeEntry entry) {m_entries.push_back(entry);};
 
+  void setInfoBuffer(InfoBuffer *b) {m_info_buffer = b;};
+  
   unsigned int size() {return(m_entries.size());};
   
-  //std::vector<std::string> getMOOSVars()  {return(m_moos_vars);};
-  //std::string getModeVar(unsigned int ix) {return(m_mode_vars[ix]);}; 
-  //std::string getModeVal(unsigned int ix) {return(m_mode_vals[ix]);}; 
-
-  std::vector<std::string> getConditionVars();
+  void evaluate();
   void print();
 
+  std::vector<VarDataPair> getVarDataPairs() 
+    {return(m_mode_var_data_pairs);};
+  std::string getModeSummary();
+
+ protected:
+  std::vector<std::string> getConditionVars();
+  void consultFromInfoBuffer();
+  void updateInfoBuffer();
 
 protected:
-  std::vector<ModeEntry>  m_entries;
+  std::vector<ModeEntry>    m_entries;
+  std::vector<VarDataPair>  m_mode_var_data_pairs;
+
+  InfoBuffer *m_info_buffer;
 };
 
 #endif

@@ -44,6 +44,7 @@
 #include <vector>
 #include "IvPBehavior.h"
 #include "VarDataPair.h"
+#include "ModeSet.h"
 
 class IvPFunction;
 class BehaviorSet
@@ -57,6 +58,7 @@ public:
   void addDefaultVar(VarDataPair msg) {default_vars.push_back(msg);};
   int  getCount()                     {return(behaviors.size());};
   void setCurrTime(double v)          {m_curr_time = v;};
+  void setModeSet(ModeSet v)          {m_mode_set = v;};
   
   void         setReportIPF(bool v)   {m_report_ipf=v;};
   bool         stateOK(unsigned int);
@@ -78,6 +80,11 @@ public:
   bool        updateStateSpaceVars();
   std::string getStateSpaceVars();
 
+  bool consultModeSet() {m_mode_set.evaluate();};
+  std::vector<VarDataPair> getModeVarDataPairs()    
+    {return(m_mode_set.getVarDataPairs());};
+  std::string getModeSummary()  {return(m_mode_set.getModeSummary());};
+
   void print();
 
 protected:
@@ -94,6 +101,8 @@ protected:
 
   bool   m_report_ipf;
   double m_curr_time;
+
+  ModeSet m_mode_set;
 };
 
 #endif 

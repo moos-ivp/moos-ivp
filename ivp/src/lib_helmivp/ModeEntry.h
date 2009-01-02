@@ -34,25 +34,33 @@ public:
 
   bool setEntry(std::string);
   bool setEntry(std::string, std::string, std::string, std::string s="");
+  
+  bool setHead(std::string mode_var, std::string mode_val);
+  bool addCondition(std::string);
+  bool setElseValue(std::string);
 
   std::vector<std::string> getConditionVars();
 
-  void print();
-  void clearConditionVarVals();
+  std::string getModeVarName()  {return(m_mode_var);};
+  std::string getModeVarValue() {return(m_mode_val);};
+  std::string getModePrefix()   {return(m_mode_prefix);};
 
+  void print();
+  void clear();
+
+  // IO for Conditions - Related to conditions evaluations.
+  void clearConditionVarVals();
   void setVarVal(const std::string&, const std::string&);
   void setVarVal(const std::string&, double);
 
- protected:
   bool evalConditions();
 
 protected:
   std::string  m_mode_var;
   std::string  m_mode_val;
   std::string  m_mode_val_else;
-  std::string  m_mode_condition;
   std::string  m_mode_prefix;
-
+  
   std::vector<LogicCondition> m_logic_conditions;
 };
 

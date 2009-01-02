@@ -228,6 +228,7 @@ bool HelmIvP::Iterate()
 
   registerNewVariables();
   postBehaviorMessages();
+  postModeMessages();
   postDefaultVariables();
 
   // Should be called after postBehaviorMessages() where warnings
@@ -320,8 +321,8 @@ void HelmIvP::postBehaviorMessages()
 
   int bhv_cnt = m_bhv_set->getCount();
   for(int i=0; i < bhv_cnt; i++) {
-    vector<VarDataPair> mvector = m_bhv_set->getMessages(i);
     string bhv_descriptor = m_bhv_set->getDescriptor(i);
+    vector<VarDataPair> mvector = m_bhv_set->getMessages(i);
     int msize = mvector.size();
 
     string bhv_postings_summary;
@@ -395,6 +396,43 @@ void HelmIvP::postBehaviorMessages()
   if(changed) {
     string state_vars = m_bhv_set->getStateSpaceVars();
     m_Comms.Notify("IVPHELM_STATEVARS", state_vars);
+  }
+}
+
+//------------------------------------------------------------
+// Procedure: postModeMessages()
+//      Note: Run once after every iteration of control loop.
+
+void HelmIvP::postModeMessages()
+{
+  if(!m_bhv_set) 
+    return;
+  
+  vector<VarDataPair> mvector = m_bhv_set->getModeVarDataPairs();
+  int msize = mvector.size();
+
+  for(int j=0; j<msize; j++) {
+    VarDataPair msg = mvector[j];
+    
+    string str = msg.getPrintable();
+    cout << "postModeMessages: " << str << endl;
+
+    string var   = msg.get_var();
+    string sdata = msg.get_sdata();
+    double ddata = msg.get_ddata();
+    string mkey  = msg.get_key();
+
+    bool key_change = true;
+    if(msg.is_string()) {
+      key_change = detectChangeOnKey(mkey, sdata);
+      if(key_change)
+	m_Comms.Notify(var, sdata);
+    }
+    else {
+      key_change = detectChangeOnKey(mkey, ddata);
+      if(key_change)
+	m_Comms.Notify(var, ddata);
+    }
   }
 }
 

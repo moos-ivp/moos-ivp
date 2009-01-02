@@ -30,6 +30,8 @@
 #include "IvPDomain.h"
 #include "IvPBehavior.h"
 #include "InfoBuffer.h"
+#include "ModeSet.h"
+#include "ModeEntry.h"
 
 class Populator_BehaviorSet {
 
@@ -51,13 +53,11 @@ protected:
   std::vector<VarDataPair>   initial_vars;
   std::vector<VarDataPair>   default_vars;
 
-  IvPDomain    domain;
-  InfoBuffer*  info_buffer;
-  int          define_mode;
-  bool         open_behavior_mode;
-
-  bool ok;
-  
+  IvPDomain    m_domain;
+  InfoBuffer*  m_info_buffer;
+  ModeSet      m_mode_set;
+  ModeEntry    m_mode_entry;
+  std::string  m_parse_mode;
 };
 #endif
 

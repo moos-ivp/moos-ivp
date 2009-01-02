@@ -72,11 +72,11 @@ Populator_BehaviorSet::Populator_BehaviorSet(IvPDomain g_domain,
   // g_domain.print();
   // cout << endl << endl;
 
-  domain             = g_domain;
-  info_buffer        = g_buffer;
-  define_mode        = 0;
-  open_behavior_mode = false;
-  ok                 = false;
+  m_domain             = g_domain;
+  m_info_buffer        = g_buffer;
+  m_parse_mode         = "top";
+
+  m_mode_set.setInfoBuffer(g_buffer);
 }
 
 //-------------------------------------------------------------
@@ -106,10 +106,35 @@ BehaviorSet *Populator_BehaviorSet::populate(set<string> bhv_files)
     
       for(i=0; i<lineCount; i++) {
 	string line = stripBlankEnds(file_vector[i]);
-	
-	if((line.length()!=0) && ((line)[0]!='#')) {
-	  int res = handleLine(line);
-	  if(!res) {
+
+	// Begin Brace-Separate.
+	// If the beginning or end of a line has a brace, pretend as if it was
+	// given on two separate lines.
+	unsigned int len = line.length();	
+	string pre_line, post_line;
+	if((len!=0) && ((line)[0]!='#')) {
+	  if((len>1) && ((line.at(0) == '{') || (line.at(0) == '}'))) {
+	    pre_line += line.at(0);
+	    line.erase(0,1);
+	  }
+	  len = line.length();	
+	  if((len>1) && ((line.at(len-1) == '{') || (line.at(len-1) == '}'))) {
+	    post_line += line.at(len-1);
+	    line.erase(len-1,1);
+	  }
+	  // End Brace-Separate.
+	  
+	  bool ok = true;
+	  if(pre_line != "")
+	    ok = ok && handleLine(pre_line);
+	  ok = ok && handleLine(line);
+	  if(post_line != "")
+	    ok = ok && handleLine(post_line);
+	  
+	  //cout << "After line " << i+1 << "  mode:[" << m_parse_mode << "]" << endl;
+	  //cout << "(" << line << ")" << endl;
+
+	  if(!ok) {
 	    cout << "    Problem with line " << i+1;
 	    cout << "    in the BehaviorSet file: " << filename << endl;
 	    cout << line << endl;
@@ -127,15 +152,17 @@ BehaviorSet *Populator_BehaviorSet::populate(set<string> bhv_files)
   else {
     BehaviorSet *bset = new BehaviorSet;
     for(i=0; i<behaviors.size(); i++) {
-      behaviors[i]->setInfoBuffer(info_buffer);
+      behaviors[i]->setInfoBuffer(m_info_buffer);
       bset->addBehavior(behaviors[i]);
     }
     for(i=0; i<initial_vars.size(); i++)
       bset->addInitialVar(initial_vars[i]);
     for(i=0; i<default_vars.size(); i++)
       bset->addDefaultVar(default_vars[i]);
+    bset->setModeSet(m_mode_set);
+    m_mode_set.print();
     return(bset);
-  }
+  }  
 }
 
 //-------------------------------------------------------------
@@ -161,88 +188,129 @@ bool Populator_BehaviorSet::handleLine(string line)
   line = stripComment(line, "//");
   line = stripComment(line, "#");
   line = stripBlankEnds(line);
-  if(line.size() == 0)  // Either blank or comment line
+
+  // HANDLE A BLANK LINE or COMMMENT LINE 
+  if(line.size() == 0)  { 
+    if(m_parse_mode == "misc-defined-ish") 
+      m_parse_mode = "top";
+    else if(m_parse_mode == "set-defined-ish") {
+      m_parse_mode = "top";
+      m_mode_set.addEntry(m_mode_entry);
+      m_mode_entry.clear();
+    }
     return(true);  
+  }
   
-  if(!strncasecmp("initialize", line.c_str(), 10))
-    line = findReplace(line, "initialize", "initial_var = ");
-
-  vector<string> svector = chompString(line, '=');
-
-  string left  = stripBlankEnds(svector[0]);
-  string right = stripBlankEnds(svector[1]);
-
-  if(right == "") {
-    if((left != "{") && (left != "}")) {
-      cout << "PROBLEM #1" << endl;
+  // Handle LEFT BRACE
+  if(line == "{") {
+    if(m_parse_mode == "top")
+      m_parse_mode = "misc-defining";
+    else if(m_parse_mode == "bhv-declared")
+      m_parse_mode = "bhv-defining";
+    else if(m_parse_mode == "set-declared")
+      m_parse_mode = "set-defining";
+    else { 
+      cout << "Unexpected open brace '{'" << endl;
       return(false);
     }
+    return(true);
+  }
 
-    if(left == "{") {
-      if(define_mode == 0) {
-	if(open_behavior_mode)
-	  define_mode = 1;
-	return(true);
-      }
-      else { 
-	cout << "PROBLEM #2" << endl;
+  // Handle RIGHT BRACE
+  if(line == "}") {
+    //cout << "handling the '}' char " << endl;
+    //cout << "m_parse_mode = " << m_parse_mode << endl;
+    if(m_parse_mode == "misc-defining")
+      m_parse_mode = "misc-defined-ish";
+    else if(m_parse_mode == "bhv-defining")
+      m_parse_mode = "top";
+    else if(m_parse_mode == "set-defining")
+      m_parse_mode = "set-defined-ish";
+    else { 
+      cout << "Unexpected close brace '}'" << endl;
+      cout << "PH-8" << endl;
+      return(false);
+    }
+    //cout << "m_parse_mode(2) = " << m_parse_mode << endl;
+    return(true);
+  }
+     
+  // If we're in a misc-defining or -ish mode, ignore any non-empty
+  // line as the possible trailing entry(ies).
+  if((m_parse_mode == "misc-defining") || 
+     (m_parse_mode == "misc-defining-ish"))
+    return(true);
+ 
+  if(m_parse_mode == "top") {
+    if(!strncasecmp("initialize", line.c_str(), 10)) {
+      string init_str = biteString(line, ' ');
+      string init_val = stripBlankEnds(line);
+      vector<string> dvector = parseString(init_val, '=');
+      if(dvector.size() != 2) {
+	cout << "PH-7" << endl;
 	return(false);
       }
+      VarDataPair msg(dvector[0], dvector[1], "auto");
+      initial_vars.push_back(msg);
+      return(true);
     }
-      
-    if(left == "}") {
-      open_behavior_mode = false;
-      define_mode = 0;
+    else if(!strncasecmp("behavior", line.c_str(), 8)) {
+      string bhv_str  = biteString(line, '=');
+      string bhv_name = stripBlankEnds(line);
+      IvPBehavior *bhv = initializeBehavior(bhv_name); 
+      if(bhv) {
+	behaviors.push_back(bhv);
+	m_parse_mode = "bhv-declared";
+	return(true);
+      }
+      cout << "PH-6" << endl;
+      return(false);
+    }    
+    else if(!strncasecmp("set", line.c_str(), 3)) {
+      string set_str = tolower(biteString(line, ' '));
+      string set_val = stripBlankEnds(line);
+      if((set_str != "set") || (set_val == "")) {
+	cout << "PH-5" << endl;
+	return(false);
+      }
+      m_mode_entry.clear();
+      string mode_var = stripBlankEnds(biteString(set_val, '='));
+      string mode_val = stripBlankEnds(set_val);
+      if((mode_var != "") && (mode_val != ""))
+	m_mode_entry.setHead(mode_var, mode_val);
+      else {
+	cout << "PH-4" << endl;
+	return(false);
+      }
+      m_parse_mode = "set-declared";
       return(true);
     }
   }
-  
-  // Handle initialization lines
-  string str = tolower(left);
-  if((str == "initial_var") && (define_mode == 0)) {
-    right = findReplace(right, ',', '=');
-    vector<string> dvector = parseString(right, '=');
-    if(dvector.size() != 2) {
-      cout << "PROBLEM #2" << endl;
-      return(false);
-    }
-    VarDataPair msg(dvector[0], dvector[1], "auto");
-    initial_vars.push_back(msg);
-    return(true);
-  }
 
-  // Handle default lines
-  if((str == "default") && (define_mode == 0)) {
-    vector<string> dvector = parseString(right, '=');
-    if(dvector.size() != 2)
-      return(false);
-    VarDataPair msg(dvector[0], dvector[1], "auto");
-    default_vars.push_back(msg);
-    return(true);
+  if(m_parse_mode == "set-defined-ish") {
+    bool ok = m_mode_entry.setElseValue(line);
+    if(ok) 
+      m_mode_set.addEntry(m_mode_entry);
+    m_mode_entry.clear();
+    m_parse_mode = "top";
+    cout << "PH-1" << endl;
+    return(ok);
   }
   
-  if(define_mode == 0) {
-    if(left != "Behavior") {
-      if(open_behavior_mode)
-	return(false);
-      else
-	return(true);
-    }
-    else
-      open_behavior_mode = true;
-
-    IvPBehavior *bhv = initializeBehavior(right); 
-
-    if(bhv)
-      behaviors.push_back(bhv);
-    return(bhv!=0);
-  }
-  
-  if(define_mode == 1) {
-    left = tolower(left);
+  if(m_parse_mode == "bhv-defining") {
+    string left  = stripBlankEnds(tolower(biteString(line, '=')));
+    string right = stripBlankEnds(line); 
     IvPBehavior *bhv = behaviors[behaviors.size()-1];
     bool result = bhv->setParam(left.c_str(), right.c_str());
+    cout << "PH-3" << endl;
     return(result);
+  }
+
+  if(m_parse_mode == "set-defining")  {
+    string a_condition_string = line;
+    bool ok = m_mode_entry.addCondition(a_condition_string);
+    cout << "PH-2" << endl;
+    return(ok);
   }
 
   return(false);
@@ -257,51 +325,51 @@ IvPBehavior* Populator_BehaviorSet::initializeBehavior(string bhv_name)
   IvPBehavior *bhv = 0;      
 
   if(bhv_name == "BHV_OpRegion")
-    bhv = new BHV_OpRegion(domain);
+    bhv = new BHV_OpRegion(m_domain);
   else if(bhv_name == "BHV_SimpleWaypoint")   
-    bhv = new BHV_SimpleWaypoint(domain);
+    bhv = new BHV_SimpleWaypoint(m_domain);
   else if(bhv_name == "BHV_Waypoint")   
-    bhv = new BHV_Waypoint(domain);
+    bhv = new BHV_Waypoint(m_domain);
   else if(bhv_name == "BHV_ConstantSpeed")     
-    bhv = new BHV_ConstantSpeed(domain);
+    bhv = new BHV_ConstantSpeed(m_domain);
   else if(bhv_name == "BHV_Trail")      
-    bhv = new BHV_Trail(domain);
-  else if(bhv_name == "BHV_ConstantDepth")      
-    bhv = new BHV_ConstantDepth(domain);
+    bhv = new BHV_Trail(m_domain);
+  if(bhv_name == "BHV_ConstantDepth")      
+    bhv = new BHV_ConstantDepth(m_domain);
   else if(bhv_name == "BHV_ConstantHeading")      
-    bhv = new BHV_ConstantHeading(domain);
+    bhv = new BHV_ConstantHeading(m_domain);
   else if(bhv_name == "BHV_MaintainHeading")      
-    bhv = new BHV_MaintainHeading(domain);
+    bhv = new BHV_MaintainHeading(m_domain);
   else if(bhv_name == "BHV_Loiter")     
-    bhv = new BHV_Loiter(domain);
+    bhv = new BHV_Loiter(m_domain);
   else if(bhv_name == "BHV_StationKeep")     
-    bhv = new BHV_StationKeep(domain);
+    bhv = new BHV_StationKeep(m_domain);
   else if(bhv_name == "BHV_RStationKeep")     
-    bhv = new BHV_RStationKeep(domain);
-  else if(bhv_name == "BHV_Timer")     
-    bhv = new BHV_Timer(domain);
+    bhv = new BHV_RStationKeep(m_domain);
+  if(bhv_name == "BHV_Timer")     
+    bhv = new BHV_Timer(m_domain);
   else if(bhv_name == "BHV_Shadow")     
-    bhv = new BHV_Shadow(domain);
+    bhv = new BHV_Shadow(m_domain);
   else if(bhv_name == "BHV_CutRange")   
-    bhv = new BHV_CutRange(domain);
+    bhv = new BHV_CutRange(m_domain);
   else if(bhv_name == "BHV_AvoidCollision") 
-    bhv = new BHV_AvoidCollision(domain);
+    bhv = new BHV_AvoidCollision(m_domain);
   else if(bhv_name == "BHV_AvoidObstacles") 
-    bhv = new BHV_AvoidObstacles(domain);
+    bhv = new BHV_AvoidObstacles(m_domain);
   else if(bhv_name == "BHV_PeriodicSpeed") 
-    bhv = new BHV_PeriodicSpeed(domain);
+    bhv = new BHV_PeriodicSpeed(m_domain);
   else if(bhv_name == "BHV_PeriodicSurface") 
-    bhv = new BHV_PeriodicSurface(domain);
+    bhv = new BHV_PeriodicSurface(m_domain);
   else if(bhv_name == "BHV_GoToDepth")      
-    bhv = new BHV_GoToDepth(domain);
+    bhv = new BHV_GoToDepth(m_domain);
   else if(bhv_name == "BHV_MemoryTurnLimit")      
-    bhv = new BHV_MemoryTurnLimit(domain);
+    bhv = new BHV_MemoryTurnLimit(m_domain);
   else if(bhv_name == "BHV_Hysteresis")      
-    bhv = new BHV_Hysteresis(domain);
+    bhv = new BHV_Hysteresis(m_domain);
   else if(bhv_name == "BHV_Attractor")      
-    bhv = new BHV_Attractor(domain);
+    bhv = new BHV_Attractor(m_domain);
   else if(bhv_name == "BHV_RubberBand")      
-    bhv = new BHV_RubberBand(domain);
+    bhv = new BHV_RubberBand(m_domain);
 
   return(bhv);
 }

@@ -76,8 +76,7 @@ int main(int argc, char *argv[])
 
   int vsize = bhv_files.size();
   for(int i=0; i<vsize; i++) {
-    if(strContains(argv[i], ".bhv"))
-      helmIvP.addBehaviorFile(argv[i]);
+    helmIvP.addBehaviorFile(bhv_files[i]);
   }
 
   helmIvP.Run("pHelmIvP", sMissionFile);

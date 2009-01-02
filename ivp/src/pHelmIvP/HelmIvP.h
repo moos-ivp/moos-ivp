@@ -50,6 +50,7 @@ protected:
   bool updateInfoBuffer(CMOOSMsg &Msg);
   void postCharStatus();
   void postBehaviorMessages();
+  void postModeMessages();
   void postInitialVariables();
   void postDefaultVariables();
   void postSummary();

@@ -66,7 +66,7 @@ IvPBehavior* Populator_BehaviorSet2::initializeBehavior(string bhv_name)
   if(bhv_factory.is_known_behavior(bhv_name)) {
     cerr << "    InitializeBehavior: ";
     cerr << "found dynamic behavior " << bhv_name << endl;
-    return(bhv_factory.new_behavior(bhv_name, domain));
+    return(bhv_factory.new_behavior(bhv_name, m_domain));
   }
 
   cerr << "    InitializeBehavior: ";

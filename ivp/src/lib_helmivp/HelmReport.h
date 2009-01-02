@@ -44,7 +44,9 @@ public:
 		  const std::string& updated_summary);
   void addCompletedBHV(const std::string& descriptor, double time,
 		       const std::string& update_summary);
-  
+  void setModeSummary(const std::string& s) {m_modes=s;};
+
+
   void setIvPDomain(const IvPDomain &dom) {m_domain = dom;};
 
   void setTimeUTC(double v)   {m_time_utc = v;};
@@ -76,6 +78,7 @@ protected:
   std::string               m_all_bhvs;
   std::string               m_completed_bhvs;
   std::string               m_idle_bhvs;
+  std::string               m_modes;
 
   int                       m_warning_count;
   double                    m_time_utc;

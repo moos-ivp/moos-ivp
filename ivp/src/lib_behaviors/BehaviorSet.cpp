@@ -75,8 +75,6 @@ BehaviorSet::~BehaviorSet()
 
 void BehaviorSet::addBehavior(IvPBehavior *bhv)
 {
-cout << "BehaviorSet::addBehavior( " << ((void*) bhv) << ")" << endl;
-
   behaviors.push_back(bhv);
   behavior_states.push_back("");
   behavior_state_time_entered.push_back(-1);
@@ -347,12 +345,6 @@ void BehaviorSet::print()
     cout << "-------" << endl;
   }
 }
-
-
-
-
-
-
 
 
 

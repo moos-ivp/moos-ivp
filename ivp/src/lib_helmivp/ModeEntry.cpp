@@ -34,8 +34,26 @@ void ModeEntry::print()
   cout << "++Mode Var:    " << m_mode_var       << endl;
   cout << "  Mode Val:    " << m_mode_val       << endl;
   cout << "  Mode Else:   " << m_mode_val_else  << endl;
-  cout << "  Mode Cond:   " << m_mode_condition << endl;
   cout << "  Mode Prefix: " << m_mode_prefix    << endl;
+  cout << "  Conditions:  " << endl;
+  unsigned int i, vsize = m_logic_conditions.size();
+  for(i=0; i<vsize; i++) {
+    string raw = m_logic_conditions[i].getRawCondition();
+    cout << "    " << raw << endl;
+  }
+}
+
+//------------------------------------------------------------------
+// Procedure: clear()
+
+void ModeEntry::clear()
+{
+  m_mode_var       = "";
+  m_mode_val       = "";
+  m_mode_val_else  = "";
+  m_mode_prefix    = "";
+
+  m_logic_conditions.clear();
 }
 
 //------------------------------------------------------------------
@@ -50,6 +68,13 @@ void ModeEntry::clearConditionVarVals()
 
 //------------------------------------------------------------------
 // Procedure: setVarVal(string,string)
+//      Note: Conditions have variables whose values determine whether
+//            the condition will evaluate to true/false. This function
+//            takes a variable value pair, and for each condition will
+//            SET the variable to that value. If a given condition has
+//            no component related to the particular variable, or if the
+//            variable's value type is a mis-match, the operation is 
+//            simply ignored for that condition.
 
 void ModeEntry::setVarVal(const string& var, const string& val)
 {
@@ -60,6 +85,13 @@ void ModeEntry::setVarVal(const string& var, const string& val)
 
 //------------------------------------------------------------------
 // Procedure: setVarVal(string,double)
+//      Note: Conditions have variables whose values determine whether
+//            the condition will evaluate to true/false. This function
+//            takes a variable value pair, and for each condition will
+//            SET the variable to that value. If a given condition has
+//            no component related to the particular variable, or if the
+//            variable's value type is a mis-match, the operation is 
+//            simply ignored for that condition.
 
 void ModeEntry::setVarVal(const string& var, double val)
 {
@@ -70,6 +102,11 @@ void ModeEntry::setVarVal(const string& var, double val)
 
 //------------------------------------------------------------------
 // Procedure: evalConditions
+//      Note: This function will evaluate each of the logic conditions
+//            and return true only if EACH of them evaluates to true. 
+//            Presumably a series of setVarVal calls were previously 
+//            made such that all the variables in the conditions 
+//            reflect current values.
 
 bool ModeEntry::evalConditions()
 {
@@ -167,12 +204,71 @@ bool ModeEntry::setEntry(string mode_var,  string mode_val,
   m_logic_conditions = lvector;
   m_mode_var         = mode_var;
   m_mode_val         = mode_val;
-  m_mode_condition   = condition;
   m_mode_val_else    = else_val;
 
   return(true);
 }
 
+//------------------------------------------------------------------
+// Procedure: setHead
+
+bool ModeEntry::setHead(string mode_var,  string mode_val)
+{
+  if(strContains(mode_var, ' ') || strContains(mode_var, '\t'))
+    return(false);
+
+  m_mode_var   = mode_var;
+  m_mode_val   = mode_val;
+  
+  return(true);
+}
+
+//------------------------------------------------------------------
+// Procedure: addCondition
+
+bool ModeEntry::addCondition(string condition)
+{
+  condition = stripBlankEnds(condition);
+
+  // Make sure the logic condtions string can be used to create a
+  // syntactically correct LogicCondition object.
+  LogicCondition logic_condition;
+  bool ok_condition = logic_condition.setCondition(condition);
+  if(!ok_condition)
+    return(false);
+  else
+    m_logic_conditions.push_back(logic_condition);
+
+  // Check for a prefix condition - a condition that the mode variable
+  // being set is currently equal to some value.
+  // Example "MODE = ACTIVE"
+  unsigned int i, vsize = m_logic_conditions.size();
+  for(i=0; i<vsize; i++) {
+    LogicCondition logic_condition = m_logic_conditions[i];
+    string raw   = logic_condition.getRawCondition();
+    string left  = stripBlankEnds(biteString(raw, '='));
+    string right = stripBlankEnds(raw); 
+    if((left == m_mode_var) && (raw != "") && (m_mode_prefix == ""))
+      m_mode_prefix = right;
+  }
+
+  return(true);
+}
+
+
+//------------------------------------------------------------------
+// Procedure: setElseValue
+
+bool ModeEntry::setElseValue(string else_val)
+{
+  vector<string> svector = parseString(else_val, ' ');
+  if(svector.size() != 1)
+    return(false);
+
+  m_mode_val_else    = else_val;
+
+  return(true);
+}
 
 //------------------------------------------------------------------
 // Procedure: getConditionVars

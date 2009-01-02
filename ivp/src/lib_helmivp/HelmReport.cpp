@@ -111,7 +111,6 @@ void HelmReport::addCompletedBHV(const string& descriptor, double time,
   m_completed_bhvs += "$" + update_summary;
 }
 
-
 //-----------------------------------------------------------
 // Procedure: addActiveBHV
 

@@ -453,7 +453,6 @@ bool IvPBehavior::checkConditions()
   vsize = all_vars.size();
   for(i=0; i<vsize; i++) {
     string varname = all_vars[i];
-    string community = m_us_name;
     bool   ok_s, ok_d;
     string s_result = m_info_buffer->sQuery(varname, ok_s);
     double d_result = m_info_buffer->dQuery(varname, ok_d);
