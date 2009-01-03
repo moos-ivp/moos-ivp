@@ -636,7 +636,6 @@ bool strContains(const string& str, const char c)
     return(true);
 }
     
-
 //----------------------------------------------------------------
 // Procedure: packageToString
 //      Note: Added Jan 18 07 

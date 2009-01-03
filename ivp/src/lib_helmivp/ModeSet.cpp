@@ -112,17 +112,29 @@ void ModeSet::evaluate()
   // on later entries. We use a map as a convenient structure for this.
   map<string, string> var_val_map;
 
-  unsigned int i, vsize = m_entries.size();
+  unsigned int i, j, vsize = m_entries.size();
   for(i=0; i<vsize; i++) {
-    bool result = m_entries[i].evalConditions();
-    if(result) {
-      string varname  = m_entries[i].getModeVarName();
-      string varvalue = m_entries[i].getModeVarValue();
-      string prefix   = m_entries[i].getModePrefix();
+    bool   result  = m_entries[i].evalConditions();
+    string varname = m_entries[i].getModeVarName();
+    string prefix  = m_entries[i].getModePrefix();
+    string elseval = m_entries[i].getModeVarElseValue();
+    string varvalue = "";
+    if(result) 
+      varvalue = m_entries[i].getModeVarValue();
+    else {
+      if(m_entries[i].evalModeVarConditions())
+	varvalue = m_entries[i].getModeVarElseValue();
+    }
+
+    if(varvalue != "") {
       if(prefix != "")
 	varvalue = (prefix + ":" + varvalue);
       var_val_map[varname] = varvalue;
+      // Important to propagate the var-val down to ALL the entries 
+      for(j=0; j<vsize; j++)
+	m_entries[j].setVarVal(varname, varvalue);
     }
+
   }
 
   // Now that the map has been built, create a VarDataPair for each entry.
@@ -141,6 +153,7 @@ void ModeSet::evaluate()
     pair.set_key("mode_set");
     m_mode_var_data_pairs.push_back(pair);
   }
+  cout << endl << "ModeSet::evaluate: done" << endl;
 
   // Now that we have a bunch of var-value pairs, push this info out to the
   // info buffer.

@@ -371,6 +371,8 @@ bool ParseNode::evaluate(const string& relation,
   
   if(relation == "=")  
     return(left == right);
+  else if(relation == "==")  
+    return(strFieldMatch(left,right));
   else if(relation == "!=") 
     return(left != right);
   else if(relation == "<")  
@@ -391,7 +393,7 @@ bool ParseNode::evaluate(const string& relation,
 bool ParseNode::evaluate(const string& relation, 
 			 double left, double right)
 {
-  if(relation == "=")  
+  if((relation == "=") || (relation == "=="))
     return(left == right);
   else if(relation == "!=") 
     return(left != right);

@@ -87,6 +87,12 @@ vector<string> parseRelation(string gstr)
 	rvector.push_back("and");
 	done = true;
       }
+      else if(((len-i) >= 2) && (!strncmp("==", str+i, 2))) {
+	left.replace(i, len-i, "");
+	right.replace(0, i+2, "");
+	rvector.push_back("==");
+	done = true;
+      }
       else if(((len-i) >= 1) && (!strncmp("=", str+i, 1))) {
 	left.replace(i, len-i, "");
 	right.replace(0, i+1, "");

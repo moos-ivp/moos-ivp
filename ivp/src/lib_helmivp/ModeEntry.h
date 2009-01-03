@@ -41,9 +41,10 @@ public:
 
   std::vector<std::string> getConditionVars();
 
-  std::string getModeVarName()  {return(m_mode_var);};
-  std::string getModeVarValue() {return(m_mode_val);};
-  std::string getModePrefix()   {return(m_mode_prefix);};
+  std::string getModeVarName()      {return(m_mode_var);};
+  std::string getModeVarValue()     {return(m_mode_val);};
+  std::string getModeVarElseValue() {return(m_mode_val_else);};
+  std::string getModePrefix()       {return(m_mode_prefix);};
 
   void print();
   void clear();
@@ -54,6 +55,7 @@ public:
   void setVarVal(const std::string&, double);
 
   bool evalConditions();
+  bool evalModeVarConditions();
 
 protected:
   std::string  m_mode_var;
@@ -62,6 +64,7 @@ protected:
   std::string  m_mode_prefix;
   
   std::vector<LogicCondition> m_logic_conditions;
+  std::vector<bool>           m_modevar_conditions;
 };
 
 #endif

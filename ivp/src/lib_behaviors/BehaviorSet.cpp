@@ -259,6 +259,10 @@ vector<string> BehaviorSet::getInfoVars()
       rvector.push_back(bvector[j]);
   }
 
+  vector<string> mvector = m_mode_set.getConditionVars();
+
+  rvector = mergeVectors(rvector, mvector);
+
   rvector = removeDuplicates(rvector);
   
   return(rvector);

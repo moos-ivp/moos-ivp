@@ -118,6 +118,21 @@ bool ModeEntry::evalConditions()
   return(result);
 }
 
+//------------------------------------------------------------------
+// Procedure: evalModeVarConditions
+
+bool ModeEntry::evalModeVarConditions()
+{
+  bool result = true;
+  unsigned int i, vsize = m_logic_conditions.size();
+  for(i=0; i<vsize; i++) {
+    if(m_modevar_conditions[i])
+      result = result && m_logic_conditions[i].eval();
+  }
+
+  return(result);
+}
+
 
 //------------------------------------------------------------------
 // Procedure: setEntry
@@ -236,8 +251,10 @@ bool ModeEntry::addCondition(string condition)
   bool ok_condition = logic_condition.setCondition(condition);
   if(!ok_condition)
     return(false);
-  else
+  else {
     m_logic_conditions.push_back(logic_condition);
+    m_modevar_conditions.push_back(false);
+  }
 
   // Check for a prefix condition - a condition that the mode variable
   // being set is currently equal to some value.
@@ -248,8 +265,10 @@ bool ModeEntry::addCondition(string condition)
     string raw   = logic_condition.getRawCondition();
     string left  = stripBlankEnds(biteString(raw, '='));
     string right = stripBlankEnds(raw); 
-    if((left == m_mode_var) && (raw != "") && (m_mode_prefix == ""))
+    if((left == m_mode_var) && (right != "") && (m_mode_prefix == "")) {
       m_mode_prefix = right;
+      m_modevar_conditions[i] = true;
+    }
   }
 
   return(true);

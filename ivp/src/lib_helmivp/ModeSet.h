@@ -48,8 +48,9 @@ public:
     {return(m_mode_var_data_pairs);};
   std::string getModeSummary();
 
- protected:
   std::vector<std::string> getConditionVars();
+
+ protected:
   void consultFromInfoBuffer();
   void updateInfoBuffer();
 

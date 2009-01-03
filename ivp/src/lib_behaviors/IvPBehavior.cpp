@@ -113,7 +113,7 @@ bool IvPBehavior::setParam(string g_param, string g_val)
   }
   else if(g_param == "condition") {
     g_val = findReplace(g_val, ',', '=');
-    g_val = findReplace(g_val, "==", "=");
+    //g_val = findReplace(g_val, "==", "=");
     bool ok = true;
     LogicCondition new_condition;
     ok = new_condition.setCondition(g_val);
