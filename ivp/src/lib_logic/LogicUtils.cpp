@@ -373,3 +373,32 @@ bool isConditionalParamString(const string& giv_str,
 }
 
 
+//----------------------------------------------------------------
+// Procedure: strFieldMatch
+//   Purpose: Performs a certain kind of string match. One string 
+//            will match the other if exactly matches a component
+//            of the other string. Components are separated by a
+//            a single separator character - by default ':'.
+//  Examples: "alpha:bravo:charlie" matches "charlie"
+//  Examples: "alpha"               matches "alpha:bravo:charlie"
+
+bool strFieldMatch(const string& str1, 
+		   const string& str2, char separator)
+{
+  vector<string> svector1 = parseString(str1, separator);
+  unsigned int i, vsize = svector1.size();
+  for(i=0; i<vsize; i++) 
+    if(str2 == svector1[i])
+      return(true);
+
+  vector<string> svector2 = parseString(str2, separator);
+  vsize = svector2.size();
+  for(i=0; i<vsize; i++) 
+    if(str1 == svector2[i])
+      return(true);
+
+  return(false);
+
+}
+    
+

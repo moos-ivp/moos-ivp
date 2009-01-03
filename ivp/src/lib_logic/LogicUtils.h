@@ -45,6 +45,10 @@ bool isValidRightVariable(std::string);
 bool isConditionalParamString(const std::string&, 
 			      const std::string& s="//");
 
+bool strFieldMatch(const std::string&, 
+		   const std::string&, char c=':');
+
+
 #endif
 
 
