@@ -54,6 +54,8 @@ BHV_Waypoint::BHV_Waypoint(IvPDomain gdomain) :
   m_cruise_speed    = 0;  // Meters/second
   m_lead_distance   = -1;
   m_ipf_type        = "zaic";
+  m_update_str      = "WPT_STAT";
+  m_index_str       = "WPT_INDEX";
 
   // The completed and perpetual vars are initialized in superclass
   // but we initialize here just to be safe and clear.
@@ -96,6 +98,18 @@ bool BHV_Waypoint::setParam(string param, string val)
     if((dval <= 0) || (!isNumber(val)))
       return(false);
     m_cruise_speed = dval;
+    return(true);
+  }
+  else if(param == "wpt_status") {
+    if(val == "")
+      return(false);
+    m_update_str = val;
+    return(true);
+  }
+  else if(param == "wpt_index") {
+    if(val == "")
+      return(false);
+    m_index_str = val;
     return(true);
   }
   else if(param == "ipf-type") {
@@ -217,7 +231,8 @@ bool BHV_Waypoint::setNextWaypoint()
   string feedback_msg = m_waypoint_engine.setNextWaypoint(m_osx, m_osy);
 
   if(m_waypoint_engine.isComplete()) {
-    postMessage("WPT_STAT", "complete");
+    if(m_update_str != "silent")
+      postMessage(m_update_str, "complete");
     setComplete();
     if(m_perpetual)
       m_waypoint_engine.reset();
@@ -315,8 +330,10 @@ void BHV_Waypoint::updateInfoOut(bool post)
     stat += "dist="  + doubleToString(dist_meters, 0)  + ",";
     stat += "eta="   + doubleToString(eta_seconds, 0);
     
-    postMessage("WPT_STAT_LOCAL", stat);
-    postMessage("WPT_INDEX", current_waypt);
+    if(m_update_str != "silent")
+      postMessage(m_update_str, stat);
+    if(m_index_str != "silent")
+      postMessage(m_index_str, current_waypt);
   }
 
   XYSegList seglist = m_waypoint_engine.getSegList();

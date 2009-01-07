@@ -49,6 +49,8 @@ protected: // configuration parameters
   double      m_cruise_speed;
   double      m_lead_distance;
   std::string m_ipf_type;
+  std::string m_update_str;
+  std::string m_index_str;
 
 protected: // intermediate or object global variables.
   double    m_osv;  // Ownship velocity
