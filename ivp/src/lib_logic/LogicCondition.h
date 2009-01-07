@@ -43,6 +43,7 @@ public:
   const LogicCondition &operator=(const LogicCondition&);
 
   bool setCondition(std::string);
+  void setAllowDoubleEquals(bool v) {m_allow_dblequals=v;};
 
   std::string getRawCondition() {
     if(m_node) 
@@ -70,6 +71,7 @@ public:
 protected:
   ParseNode *m_node;
 
+  bool  m_allow_dblequals;
 };
 
 #endif

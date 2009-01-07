@@ -415,7 +415,6 @@ void HelmIvP::postModeMessages()
     VarDataPair msg = mvector[j];
     
     string str = msg.getPrintable();
-    cout << "postModeMessages: " << str << endl;
 
     string var   = msg.get_var();
     string sdata = msg.get_sdata();

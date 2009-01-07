@@ -44,7 +44,7 @@ public:
   bool recursiveEvaluate();
 
   bool recursiveSyntaxCheck(int=0);
-  void recursiveParse();
+  bool recursiveParse(bool allow_dblequals=true);
 
   void print(std::string s="");
 

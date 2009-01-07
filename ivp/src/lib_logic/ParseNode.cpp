@@ -326,15 +326,15 @@ bool ParseNode::recursiveSyntaxCheck(int side)
 
 
 //----------------------------------------------------------------
-// Procedure: recursiveParse()
+// Procedure: recursiveParse(bool)
 
-void ParseNode::recursiveParse()
+bool ParseNode::recursiveParse(bool allow_double_equals)
 {
   vector<string> svector = parseRelation(m_raw_string);
   int vsize = svector.size();
-
+  
   if((vsize != 2) && (vsize != 3))
-    return;
+    return(true);
 
   if(vsize == 2) {
     m_relation  = "not";
@@ -347,16 +347,20 @@ void ParseNode::recursiveParse()
     // Enforce that left/right args to and/or must be in parens
     if((m_relation=="and") || (m_relation=="or")) {
       if(!globalParens(svector[1]) && !globalNotParens(svector[1]))
-	return;
+	return(false);
       if(!globalParens(svector[2]) && !globalNotParens(svector[2]))
-	return;
+	return(false);
     }
+
+    if((m_relation == "==") && !allow_double_equals)
+      return(false);
 
     m_left_node  = new ParseNode(svector[1]);
     m_right_node = new ParseNode(svector[2]);
     m_left_node->recursiveParse();
     m_right_node->recursiveParse();
   }
+  return(true);
 }
 
 

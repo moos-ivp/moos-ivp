@@ -160,7 +160,7 @@ BehaviorSet *Populator_BehaviorSet::populate(set<string> bhv_files)
     for(i=0; i<default_vars.size(); i++)
       bset->addDefaultVar(default_vars[i]);
     bset->setModeSet(m_mode_set);
-    m_mode_set.print();
+    //m_mode_set.print();
     return(bset);
   }  
 }
@@ -228,7 +228,6 @@ bool Populator_BehaviorSet::handleLine(string line)
       m_parse_mode = "set-defined-ish";
     else { 
       cout << "Unexpected close brace '}'" << endl;
-      cout << "PH-8" << endl;
       return(false);
     }
     //cout << "m_parse_mode(2) = " << m_parse_mode << endl;
@@ -247,7 +246,6 @@ bool Populator_BehaviorSet::handleLine(string line)
       string init_val = stripBlankEnds(line);
       vector<string> dvector = parseString(init_val, '=');
       if(dvector.size() != 2) {
-	cout << "PH-7" << endl;
 	return(false);
       }
       VarDataPair msg(dvector[0], dvector[1], "auto");
@@ -263,25 +261,20 @@ bool Populator_BehaviorSet::handleLine(string line)
 	m_parse_mode = "bhv-declared";
 	return(true);
       }
-      cout << "PH-6" << endl;
       return(false);
     }    
     else if(!strncasecmp("set", line.c_str(), 3)) {
       string set_str = tolower(biteString(line, ' '));
       string set_val = stripBlankEnds(line);
-      if((set_str != "set") || (set_val == "")) {
-	cout << "PH-5" << endl;
+      if((set_str != "set") || (set_val == ""))
 	return(false);
-      }
       m_mode_entry.clear();
       string mode_var = stripBlankEnds(biteString(set_val, '='));
       string mode_val = stripBlankEnds(set_val);
       if((mode_var != "") && (mode_val != ""))
 	m_mode_entry.setHead(mode_var, mode_val);
-      else {
-	cout << "PH-4" << endl;
+      else
 	return(false);
-      }
       m_parse_mode = "set-declared";
       return(true);
     }
@@ -293,7 +286,6 @@ bool Populator_BehaviorSet::handleLine(string line)
       m_mode_set.addEntry(m_mode_entry);
     m_mode_entry.clear();
     m_parse_mode = "top";
-    cout << "PH-1" << endl;
     return(ok);
   }
   
@@ -302,14 +294,12 @@ bool Populator_BehaviorSet::handleLine(string line)
     string right = stripBlankEnds(line); 
     IvPBehavior *bhv = behaviors[behaviors.size()-1];
     bool result = bhv->setParam(left.c_str(), right.c_str());
-    cout << "PH-3" << endl;
     return(result);
   }
 
   if(m_parse_mode == "set-defining")  {
     string a_condition_string = line;
     bool ok = m_mode_entry.addCondition(a_condition_string);
-    cout << "PH-2" << endl;
     return(ok);
   }
 

@@ -93,7 +93,7 @@ void ModeSet::updateInfoBuffer()
 //------------------------------------------------------------------
 // Procedure: evaluate()
 //   Purpose: Go through each entry and evaluate the conditions. If the 
-//            conditions for an entry is met, the collect the varname and
+//            conditions for an entry is met, then collect the varname and
 //            varvalue into a VarDataPair to be added to a vector - the
 //            member variable m_mode_var_data_paris, which can be 
 //            retrieved on a separate call to this instance.
@@ -138,13 +138,13 @@ void ModeSet::evaluate()
   }
 
   // Now that the map has been built, create a VarDataPair for each entry.
-  cout << endl << "ModeSet::evaluate: " << var_val_map.size() << endl;
+  //cout << endl << "ModeSet::evaluate: " << var_val_map.size() << endl;
   map<string, string>::iterator p;
   for(p=var_val_map.begin(); p!=var_val_map.end(); p++) {
     string varname = p->first;
     string varvalue = p->second;
     
-    cout << "  varname:" << varname << "  varval:" << varvalue << endl;
+    //cout << "  varname:" << varname << "  varval:" << varvalue << endl;
     VarDataPair pair(varname, varvalue, "auto");
     
     // By setting the key we declare that all these pairs are being 
@@ -153,7 +153,7 @@ void ModeSet::evaluate()
     pair.set_key("mode_set");
     m_mode_var_data_pairs.push_back(pair);
   }
-  cout << endl << "ModeSet::evaluate: done" << endl;
+  //cout << endl << "ModeSet::evaluate: done" << endl;
 
   // Now that we have a bunch of var-value pairs, push this info out to the
   // info buffer.

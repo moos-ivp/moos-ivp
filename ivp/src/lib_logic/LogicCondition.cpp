@@ -32,6 +32,7 @@ using namespace std;
 LogicCondition::LogicCondition()
 {
   m_node = 0;
+  m_allow_dblequals = true;
 }
 
 //------------------------------------------------------ 
@@ -52,6 +53,7 @@ LogicCondition::LogicCondition(const LogicCondition &b)
     m_node = b.m_node->copy();
   else
     m_node = 0;
+  m_allow_dblequals = true;
 }
 
 //----------------------------------------------------------------
@@ -90,14 +92,20 @@ bool LogicCondition::setCondition(string str)
     delete(m_node);
 
   m_node = new ParseNode(str);
-  m_node->recursiveParse();
-  
-  bool ok = m_node->recursiveSyntaxCheck();
 
-  if(!ok)
+  bool ok_parse = m_node->recursiveParse(m_allow_dblequals);
+  if(!ok_parse) {
     delete(m_node);
+    return(false);
+  }
 
-  return(ok);
+  bool ok_syntax = m_node->recursiveSyntaxCheck();
+  if(!ok_syntax) {
+    delete(m_node);
+    return(false);
+  }
+
+  return(true);
 }
 
 

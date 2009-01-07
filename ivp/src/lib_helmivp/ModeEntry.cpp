@@ -196,6 +196,7 @@ bool ModeEntry::setEntry(string mode_var,  string mode_val,
   unsigned int i, vsize = svector.size();
   for(i=0; i<vsize; i++) {
     LogicCondition logic_condition;
+    logic_condition.setAllowDoubleEquals(false);
     bool ok_condition = logic_condition.setCondition(svector[i]);
     if(!ok_condition)
       return(false);
@@ -248,6 +249,7 @@ bool ModeEntry::addCondition(string condition)
   // Make sure the logic condtions string can be used to create a
   // syntactically correct LogicCondition object.
   LogicCondition logic_condition;
+  logic_condition.setAllowDoubleEquals(false);
   bool ok_condition = logic_condition.setCondition(condition);
   if(!ok_condition)
     return(false);
