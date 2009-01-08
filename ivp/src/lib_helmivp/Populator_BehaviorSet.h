@@ -48,6 +48,8 @@ protected:
 
   virtual IvPBehavior *initializeBehavior(std::string);
 
+  void closeSetMode(); 
+
 protected:
   std::vector<IvPBehavior*>  behaviors;
   std::vector<VarDataPair>   initial_vars;

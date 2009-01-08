@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
       for(j=0; j<svector.size(); j++)
 	all_poly_strings.push_back(svector[j]);
 
-      svector = readEntriesFromFile(argv[i], "segl:seglist");
+      svector = readEntriesFromFile(argv[i], "segl:seglist:points");
       for(j=0; j<svector.size(); j++)
 	all_segl_strings.push_back(svector[j]);
 

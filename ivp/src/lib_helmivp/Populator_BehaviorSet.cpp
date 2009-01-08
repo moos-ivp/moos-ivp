@@ -131,8 +131,8 @@ BehaviorSet *Populator_BehaviorSet::populate(set<string> bhv_files)
 	  if(post_line != "")
 	    ok = ok && handleLine(post_line);
 	  
-	  //cout << "After line " << i+1 << "  mode:[" << m_parse_mode << "]" << endl;
-	  //cout << "(" << line << ")" << endl;
+	  cout << "After line " << i+1 << "  mode:[" << m_parse_mode << "]" << endl;
+	  cout << "(" << line << ")" << endl;
 
 	  if(!ok) {
 	    cout << "    Problem with line " << i+1;
@@ -233,15 +233,21 @@ bool Populator_BehaviorSet::handleLine(string line)
     //cout << "m_parse_mode(2) = " << m_parse_mode << endl;
     return(true);
   }
-     
-  // If we're in a misc-defining or -ish mode, ignore any non-empty
-  // line as the possible trailing entry(ies).
-  if((m_parse_mode == "misc-defining") || 
-     (m_parse_mode == "misc-defining-ish"))
-    return(true);
- 
-  if(m_parse_mode == "top") {
-    if(!strncasecmp("initialize", line.c_str(), 10)) {
+    
+  bool ish_mode = false;
+  if((m_parse_mode == "misc-defined-ish") || 
+     (m_parse_mode == "set-defined-ish"))
+    ish_mode = true;
+    
+  // In each of the strncasecmp lines below we pattern match on the
+  // string PLUS ONE BLANK, to allow for the possibility that a 
+  // symbol such as "set", if it were alone on a line, might actually
+  // be something picked up by one of the ish_modes.
+  if((m_parse_mode == "top") || (ish_mode == true)) {
+    if(!strncasecmp("initialize ", line.c_str(), 11)) {
+      if(m_parse_mode == "set-defined-ish")
+	closeSetMode();
+      m_parse_mode = "top";
       string init_str = biteString(line, ' ');
       string init_val = stripBlankEnds(line);
       vector<string> dvector = parseString(init_val, '=');
@@ -252,7 +258,9 @@ bool Populator_BehaviorSet::handleLine(string line)
       initial_vars.push_back(msg);
       return(true);
     }
-    else if(!strncasecmp("behavior", line.c_str(), 8)) {
+    else if(!strncasecmp("behavior ", line.c_str(), 9)) {
+      if(m_parse_mode == "set-defined-ish")
+	closeSetMode();
       string bhv_str  = biteString(line, '=');
       string bhv_name = stripBlankEnds(line);
       IvPBehavior *bhv = initializeBehavior(bhv_name); 
@@ -263,11 +271,11 @@ bool Populator_BehaviorSet::handleLine(string line)
       }
       return(false);
     }    
-    else if(!strncasecmp("set", line.c_str(), 3)) {
+    else if(!strncasecmp("set ", line.c_str(), 4)) {
+      if(m_parse_mode == "set-defined-ish")
+	closeSetMode();
       string set_str = tolower(biteString(line, ' '));
       string set_val = stripBlankEnds(line);
-      if((set_str != "set") || (set_val == ""))
-	return(false);
       m_mode_entry.clear();
       string mode_var = stripBlankEnds(biteString(set_val, '='));
       string mode_val = stripBlankEnds(set_val);
@@ -280,11 +288,16 @@ bool Populator_BehaviorSet::handleLine(string line)
     }
   }
 
+  // If we're in a misc-defining or -ish mode, ignore any non-empty
+  // line as the possible trailing entry(ies).
+  if((m_parse_mode == "misc-defining") || 
+     (m_parse_mode == "misc-defining-ish"))
+    return(true);
+ 
   if(m_parse_mode == "set-defined-ish") {
     bool ok = m_mode_entry.setElseValue(line);
     if(ok) 
-      m_mode_set.addEntry(m_mode_entry);
-    m_mode_entry.clear();
+      closeSetMode();
     m_parse_mode = "top";
     return(ok);
   }
@@ -365,8 +378,11 @@ IvPBehavior* Populator_BehaviorSet::initializeBehavior(string bhv_name)
 }
 
 
+//----------------------------------------------------------
+// Procedure: closeSetMode
 
-
-
-
-
+void Populator_BehaviorSet::closeSetMode()
+{
+  m_mode_set.addEntry(m_mode_entry);
+  m_mode_entry.clear();
+}
