@@ -131,8 +131,8 @@ BehaviorSet *Populator_BehaviorSet::populate(set<string> bhv_files)
 	  if(post_line != "")
 	    ok = ok && handleLine(post_line);
 	  
-	  cout << "After line " << i+1 << "  mode:[" << m_parse_mode << "]" << endl;
-	  cout << "(" << line << ")" << endl;
+	  //cout << "After line " << i+1 << "  mode:[" << m_parse_mode << "]" << endl;
+	  //cout << "(" << line << ")" << endl;
 
 	  if(!ok) {
 	    cout << "    Problem with line " << i+1;
