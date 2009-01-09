@@ -34,8 +34,9 @@ public:
   ~StringTree() {};
 
   bool addParChild(const std::string& parent, 
-		   const std::string& childe);
+		   const std::string& child);
   
+  void print();
   std::vector<std::string> getPrintableSet();
 
 protected:

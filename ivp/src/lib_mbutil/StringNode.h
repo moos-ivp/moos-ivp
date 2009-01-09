@@ -29,13 +29,16 @@
 class StringNode
 {
 public:
-  StringNode() {};
+  StringNode(const std::string& s) {m_value = s;};
   ~StringNode() {};
 
-  void print();
+  void print(int indent=0);
+  bool addParChild(const std::string& parent, 
+		   const std::string& child);
+
 
 protected:
-  std::string m_value;
+  std::string             m_value;
   std::vector<StringNode> m_children;
 };
 #endif

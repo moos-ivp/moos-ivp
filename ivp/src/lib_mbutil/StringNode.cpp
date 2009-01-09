@@ -20,6 +20,7 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
+#include <iostream>
 #include "StringNode.h"
 
 using namespace std;
@@ -27,8 +28,37 @@ using namespace std;
 //-------------------------------------------------------------
 // Procedure: print
 
-void StringNode::print()
+void StringNode::print(int indent)
 {
+  cout << m_value << endl;
+  unsigned int i, vsize = m_children.size();
+  for(i=0; i<vsize; i++)
+    m_children[i].print(indent + 2);
+}
 
+
+//-------------------------------------------------------------
+// Procedure: addParChild
+
+bool StringNode::addParChild(const string& parent, 
+			     const string& child)
+{
+  if(parent == child)
+    return(false);
+
+  if(parent == m_value) {
+    StringNode new_node(child);
+    m_children.push_back(new_node);
+    return(true);
+  }
+
+  unsigned int i, vsize = m_children.size();
+  for(i=0; i<vsize; i++) {
+    bool result = m_children[i].addParChild(parent, child);
+    if(result == true)
+      return(true);
+  }
+
+  return(false);
 }
 

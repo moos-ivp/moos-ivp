@@ -30,7 +30,20 @@ using namespace std;
 bool StringTree::addParChild(const string& parent, 
 			     const string& child)
 {
-  return(true);
+  if(parent == "") {
+    StringNode new_node(child);
+    m_nodes.push_back(new_node);
+    return(true);
+  }
+  
+  unsigned int i, vsize = m_nodes.size();
+  for(i=0; i<vsize; i++) {
+    bool added = m_nodes[i].addParChild(parent, child);
+    if(added)
+      return(true);
+  }
+
+  return(false);
 }
 
 
@@ -41,5 +54,15 @@ vector<string> StringTree::getPrintableSet()
 {
   vector<string> rvector;
   return(rvector);
+}
+
+//-------------------------------------------------------------
+// Procedure: print
+
+void StringTree::print()
+{
+  unsigned int i, vsize = m_nodes.size();
+  for(i=0; i<vsize; i++)
+    m_nodes[i].print();
 }
 
