@@ -34,10 +34,16 @@ public:
   ~StringTree() {};
 
   bool addParChild(const std::string& parent, 
-		   const std::string& child);
+		   const std::string& child, 
+		   bool handle_waiters=true);
   
   void print();
   std::vector<std::string> getPrintableSet();
+
+  bool allHandled();
+
+ protected:
+  void handleWaiters();
 
 protected:
   std::vector<StringNode>  m_nodes;

@@ -20,6 +20,7 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
+#include <iostream>
 #include "StringTree.h"
 
 using namespace std;
@@ -28,7 +29,8 @@ using namespace std;
 // Procedure: addParChild
 
 bool StringTree::addParChild(const string& parent, 
-			     const string& child)
+			     const string& child, 
+			     bool handle_waiters)
 {
   if(parent == "") {
     StringNode new_node(child);
@@ -39,9 +41,16 @@ bool StringTree::addParChild(const string& parent,
   unsigned int i, vsize = m_nodes.size();
   for(i=0; i<vsize; i++) {
     bool added = m_nodes[i].addParChild(parent, child);
-    if(added)
+    if(added) {
+      if(handle_waiters)
+	handleWaiters();
       return(true);
+    }
   }
+
+  m_parents_waiting.push_back(parent);
+  m_children_waiting.push_back(child);
+
 
   return(false);
 }
@@ -64,5 +73,46 @@ void StringTree::print()
   unsigned int i, vsize = m_nodes.size();
   for(i=0; i<vsize; i++)
     m_nodes[i].print();
+}
+
+
+//-------------------------------------------------------------
+// Procedure: handleWaiters
+
+void StringTree::handleWaiters()
+{
+  bool done = false;
+  while(!done) {
+    done = true;
+    unsigned int i, vsize = m_parents_waiting.size();
+    for(i=0; i<vsize; i++) {
+      string parent = m_parents_waiting[i];
+      string child  = m_children_waiting[i];
+      if(parent != "") {
+	bool added = addParChild(parent, child, false);
+	if(added) {
+	  done = false;
+	  m_parents_waiting[i] = "";
+	}
+      }
+    }
+  }
+
+}
+
+
+//-------------------------------------------------------------
+// Procedure: allHandled
+
+bool StringTree::allHandled()
+{
+  unsigned int i, vsize = m_parents_waiting.size();
+  for(i=0; i<vsize; i++) {
+    if(m_parents_waiting[i] != "")
+      return(false);
+  }
+
+  return(true);
+
 }
 

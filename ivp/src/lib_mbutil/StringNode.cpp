@@ -30,8 +30,11 @@ using namespace std;
 
 void StringNode::print(int indent)
 {
-  cout << m_value << endl;
   unsigned int i, vsize = m_children.size();
+  for(i=0; i<indent; i++)
+    cout << " ";
+ 
+  cout << m_value << endl;
   for(i=0; i<vsize; i++)
     m_children[i].print(indent + 2);
 }
