@@ -100,12 +100,14 @@ bool BHV_PeriodicSurface::setParam(string g_param, string g_val)
       return(false);
     m_mark_variable = g_val;
   }
-  else if(g_param == "pending_status_var") {
+  else if((g_param == "pending_status_variable") ||
+	  (g_param == "pending_status_var")) {
     if(g_val == "")
       return(false);
     m_pending_status_var = g_val;
   }
-  else if(g_param == "atsurface_status_var") {
+  else if((g_param == "atsurface_status_variable") ||
+	  (g_param == "atsurface_status_var")) {
     if(g_val == "")
       return(false);
     m_atsurface_status_var = g_val;
@@ -152,7 +154,6 @@ else
   //  string buf = "Timestamp="+doubleToString(m_curr_time)+",START";
   //  postMessage(m_mark_variable,buf);  
   //  m_mark_time  = getBufferCurrTime();
-
 
   return(true);
 }
@@ -238,8 +239,9 @@ IvPFunction *BHV_PeriodicSurface::onRunState()
       m_mark_time = m_curr_time;
       m_state = "waiting";
       // here we should post GPS_UPDATE_RECEIVED
-      string buf = "Timestamp="+doubleToString(m_curr_time,2)+",GPS_TIMEOUT";
-      postMessage(m_mark_variable,buf);  
+      string buf = "Timestamp="+doubleToString(m_curr_time,2);
+      buf += ",ATSURFACE_WAIT_TIMEOUT";
+      postMessage(m_mark_variable, buf);  
       return(0);
     }
   }
