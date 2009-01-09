@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin and John Leonard                    */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
-/*    FILE: StringTree.cpp                                       */
+/*    FILE: StringTree.h                                         */
 /*    DATE: Jan 9th 2009                                         */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
@@ -20,26 +20,24 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
-#include "StringTree.h"
+#ifndef STRING_NODE_HEADER
+#define STRING_NODE_HEADER
 
-using namespace std;
+#include <vector>
+#include <string>
 
-//-------------------------------------------------------------
-// Procedure: addParChild
-
-bool StringTree::addParChild(const string& parent, 
-			     const string& child)
+class StringNode
 {
-  return(true);
-}
+public:
+  StringNode() {};
+  ~StringNode() {};
 
+  void print();
 
-//-------------------------------------------------------------
-// Procedure: getPrintableSet
+protected:
+  std::string m_value;
+  std::vector<StringNode> m_children;
+};
+#endif
 
-vector<string> StringTree::getPrintableSet()
-{
-  vector<string> rvector;
-  return(rvector);
-}
 

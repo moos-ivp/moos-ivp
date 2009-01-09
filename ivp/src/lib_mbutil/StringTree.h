@@ -25,6 +25,7 @@
 
 #include <vector>
 #include <string>
+#include "StringNode.h"
 
 class StringTree
 {

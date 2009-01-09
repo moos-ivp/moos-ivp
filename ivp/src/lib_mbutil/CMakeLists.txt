@@ -10,6 +10,8 @@ SET(SRC
   MBTimer.cpp
   MBUtils.cpp
   TermUtils.cpp
+  StringTree.cpp
+  StringNode.cpp
 )
 
 # SET_SOURCE_FILES_PROPERTIES(
