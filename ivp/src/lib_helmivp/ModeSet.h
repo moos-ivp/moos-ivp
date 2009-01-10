@@ -34,7 +34,6 @@ public:
   ModeSet() {m_info_buffer=0;};
   ~ModeSet() {};
 
-  bool addEntry(const std::string&);
   bool addEntry(ModeEntry entry) {m_entries.push_back(entry);};
 
   void setInfoBuffer(InfoBuffer *b) {m_info_buffer = b;};
@@ -49,6 +48,8 @@ public:
   std::string getModeSummary();
 
   std::vector<std::string> getConditionVars();
+
+  std::string getStringDescription();
 
  protected:
   void consultFromInfoBuffer();

@@ -32,9 +32,6 @@ public:
   ModeEntry() {};
   ~ModeEntry() {};
 
-  bool setEntry(std::string);
-  bool setEntry(std::string, std::string, std::string, std::string s="");
-  
   bool setHead(std::string mode_var, std::string mode_val);
   bool addCondition(std::string);
   bool setElseValue(std::string);
@@ -45,6 +42,7 @@ public:
   std::string getModeVarValue()     {return(m_mode_val);};
   std::string getModeVarElseValue() {return(m_mode_val_else);};
   std::string getModePrefix()       {return(m_mode_prefix);};
+  std::string getModeParent();
 
   void print();
   void clear();

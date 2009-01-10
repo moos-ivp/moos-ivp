@@ -27,46 +27,6 @@
 using namespace std;
 
 //------------------------------------------------------------------
-// Procedure: print()
-
-void ModeEntry::print()
-{
-  cout << "++Mode Var:    " << m_mode_var       << endl;
-  cout << "  Mode Val:    " << m_mode_val       << endl;
-  cout << "  Mode Else:   " << m_mode_val_else  << endl;
-  cout << "  Mode Prefix: " << m_mode_prefix    << endl;
-  cout << "  Conditions:  " << endl;
-  unsigned int i, vsize = m_logic_conditions.size();
-  for(i=0; i<vsize; i++) {
-    string raw = m_logic_conditions[i].getRawCondition();
-    cout << "    " << raw << endl;
-  }
-}
-
-//------------------------------------------------------------------
-// Procedure: clear()
-
-void ModeEntry::clear()
-{
-  m_mode_var       = "";
-  m_mode_val       = "";
-  m_mode_val_else  = "";
-  m_mode_prefix    = "";
-
-  m_logic_conditions.clear();
-}
-
-//------------------------------------------------------------------
-// Procedure: clearConditionVarVals
-
-void ModeEntry::clearConditionVarVals()
-{
-  unsigned int i, vsize = m_logic_conditions.size();
-  for(i=0; i<vsize; i++)
-    m_logic_conditions[i].clearVarVals();
-}
-
-//------------------------------------------------------------------
 // Procedure: setVarVal(string,string)
 //      Note: Conditions have variables whose values determine whether
 //            the condition will evaluate to true/false. This function
@@ -133,97 +93,6 @@ bool ModeEntry::evalModeVarConditions()
   return(result);
 }
 
-
-//------------------------------------------------------------------
-// Procedure: setEntry
-// Example:   MODE = ACTIVE {DEPLOY==TRUE} INACTIVE
-
-bool ModeEntry::setEntry(string str)
-{
-  string mode_var  = stripBlankEnds(biteString(str, '='));
-  string remainder = stripBlankEnds(str);
-
-  if((mode_var == "") || (remainder == ""))
-    return(false);
-
-  // Ensure that there is only one open brace and one close brace
-  // And that the open brace is to the left of the close brace
-  int leftcnt  = 0;
-  int leftix   = -1;
-  int rightcnt = 0;
-  int rightix  = -1;
-  int len = remainder.length();
-  for(int i=0; i<len; i++) {
-    if(remainder[i] == '{') {
-      leftcnt++;
-      leftix = i;
-    }
-    else if(remainder[i] == '}') {
-      rightcnt++;
-      rightix = i;
-    }
-  }
-  if((leftcnt != 1) || (rightcnt != 1))
-    return(false);
-  if(leftix >= rightix)
-    return(false);
-
-  string mode_val = stripBlankEnds(biteString(remainder, '{'));
-  remainder = stripBlankEnds(remainder);
-
-  string condition = stripBlankEnds(biteString(remainder, '}'));
-  string else_val  = stripBlankEnds(remainder);
-
-  return(setEntry(mode_var, mode_val, condition, else_val));  
-}
-
-
-//------------------------------------------------------------------
-// Procedure: setEntry
-
-bool ModeEntry::setEntry(string mode_var,  string mode_val, 
-			 string condition, string else_val)
-{
-  if(strContains(mode_var, ' ') || strContains(mode_var, '\t'))
-    return(false);
-
-  // Make sure the logic condtions string can be used to create a
-  // syntactically correct LogicCondition object.
-  // The separator "@#!#@" was added presumably by the caller most
-  // likely representing a line-break in the input file.
-  vector<LogicCondition> lvector;
-  vector<string> svector = parseString(condition, "@#!#@");
-  unsigned int i, vsize = svector.size();
-  for(i=0; i<vsize; i++) {
-    LogicCondition logic_condition;
-    logic_condition.setAllowDoubleEquals(false);
-    bool ok_condition = logic_condition.setCondition(svector[i]);
-    if(!ok_condition)
-      return(false);
-    else
-      lvector.push_back(logic_condition);
-  }
-
-  // Check for a prefix condition - a condition that the mode variable
-  // being set is currently equal to some value.
-  // Example "MODE = ACTIVE"
-  vsize = lvector.size();
-  for(i=0; i<vsize; i++) {
-    LogicCondition logic_condition = lvector[i];
-    string raw   = logic_condition.getRawCondition();
-    string left  = stripBlankEnds(biteString(raw, '='));
-    string right = stripBlankEnds(raw); 
-    if((left == mode_var) && (raw != "") && (m_mode_prefix == ""))
-      m_mode_prefix = right;
-  }
-
-  m_logic_conditions = lvector;
-  m_mode_var         = mode_var;
-  m_mode_val         = mode_val;
-  m_mode_val_else    = else_val;
-
-  return(true);
-}
 
 //------------------------------------------------------------------
 // Procedure: setHead
@@ -306,3 +175,57 @@ vector<string> ModeEntry::getConditionVars()
   return_vector = removeDuplicates(return_vector);
   return(return_vector);
 }
+
+//------------------------------------------------------------------
+// Procedure: getModeParent
+
+string ModeEntry::getModeParent()
+{
+  vector<string> svector = parseString(m_mode_prefix, ':');
+  unsigned int vsize = svector.size();
+  if(vsize > 0) 
+    return(svector[vsize-1]);
+  else
+    return("");
+}
+
+//------------------------------------------------------------------
+// Procedure: print()
+
+void ModeEntry::print()
+{
+  cout << "++Mode Var:    " << m_mode_var       << endl;
+  cout << "  Mode Val:    " << m_mode_val       << endl;
+  cout << "  Mode Else:   " << m_mode_val_else  << endl;
+  cout << "  Mode Prefix: " << m_mode_prefix    << endl;
+  cout << "  Conditions:  " << endl;
+  unsigned int i, vsize = m_logic_conditions.size();
+  for(i=0; i<vsize; i++) {
+    string raw = m_logic_conditions[i].getRawCondition();
+    cout << "    " << raw << endl;
+  }
+}
+
+//------------------------------------------------------------------
+// Procedure: clear()
+
+void ModeEntry::clear()
+{
+  m_mode_var       = "";
+  m_mode_val       = "";
+  m_mode_val_else  = "";
+  m_mode_prefix    = "";
+
+  m_logic_conditions.clear();
+}
+
+//------------------------------------------------------------------
+// Procedure: clearConditionVarVals
+
+void ModeEntry::clearConditionVarVals()
+{
+  unsigned int i, vsize = m_logic_conditions.size();
+  for(i=0; i<vsize; i++)
+    m_logic_conditions[i].clearVarVals();
+}
+

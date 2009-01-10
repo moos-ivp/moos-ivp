@@ -27,70 +27,6 @@
 using namespace std;
 
 //------------------------------------------------------------------
-// Procedure: addEntry
-
-bool ModeSet::addEntry(const string& str)
-{
-  ModeEntry new_entry;
-  bool ok = new_entry.setEntry(str);
-  if(ok)
-    m_entries.push_back(new_entry);
-  return(ok);
-}
-
-//------------------------------------------------------------------
-// Procedure: consultFromInfoBuffer
-//      Note: Get values of all variables from the info_buffer and 
-//            propogate these values down to all the logic conditions.
-
-void ModeSet::consultFromInfoBuffer()
-{
-  unsigned int j, esize = m_entries.size();
-
-  vector<string> all_vars = getConditionVars();
-  unsigned int i, vsize = all_vars.size();
-  for(i=0; i<vsize; i++) {
-    string varname = all_vars[i];
-    bool   ok_s, ok_d;
-    string s_result = m_info_buffer->sQuery(varname, ok_s);
-    double d_result = m_info_buffer->dQuery(varname, ok_d);
-
-    for(j=0; ((j<esize) && (ok_s)); j++)
-      m_entries[j].setVarVal(varname, s_result);
-
-    for(j=0; ((j<esize) && (ok_d)); j++)
-      m_entries[j].setVarVal(varname, d_result);    
-  }
-
-}
-//------------------------------------------------------------------
-// Procedure: updateInfoBuffer
-//      Note: For each of the VarDataPairs stored locally in the member
-//            variable m_mode_var_data_pairs, push those postings to 
-//            the info_buffer.
-
-void ModeSet::updateInfoBuffer()
-{
-  if(!m_info_buffer)
-    return;
-
-  unsigned int i, vsize = m_mode_var_data_pairs.size();
-  for(i=0; i<vsize; i++) {
-    VarDataPair pair = m_mode_var_data_pairs[i];
-    string varname = pair.get_var();
-    if(pair.is_string()) {
-      string varvalue = pair.get_sdata();
-      m_info_buffer->setValue(varname, varvalue);
-    }
-    else {
-      double varvalue = pair.get_ddata();
-      m_info_buffer->setValue(varname, varvalue);
-    }
-  }
-
-}
-
-//------------------------------------------------------------------
 // Procedure: evaluate()
 //   Purpose: Go through each entry and evaluate the conditions. If the 
 //            conditions for an entry is met, then collect the varname and
@@ -231,3 +167,79 @@ vector<string> ModeSet::getConditionVars()
   union_vector = removeDuplicates(union_vector);
   return(union_vector);
 }
+
+//------------------------------------------------------------------
+// Procedure: getStringDescription
+
+string ModeSet::getStringDescription()
+{
+  string return_value;
+  unsigned int i, vsize = m_entries.size();
+  for(i=0; i<vsize; i++) {
+    string  child = m_entries[i].getModeVarValue();
+    string parent = m_entries[i].getModeParent();
+    if(parent == "")
+      parent = "---";
+    if(i > 0)
+      return_value += "#";
+    return_value += (parent + "," + child);
+    string else_val = m_entries[i].getModeVarElseValue();
+    if(else_val != "")
+      return_value += ("#" + parent + "," + else_val);
+  }
+
+  return(return_value);
+}
+
+//------------------------------------------------------------------
+// Procedure: consultFromInfoBuffer
+//      Note: Get values of all variables from the info_buffer and 
+//            propogate these values down to all the logic conditions.
+
+void ModeSet::consultFromInfoBuffer()
+{
+  unsigned int j, esize = m_entries.size();
+
+  vector<string> all_vars = getConditionVars();
+  unsigned int i, vsize = all_vars.size();
+  for(i=0; i<vsize; i++) {
+    string varname = all_vars[i];
+    bool   ok_s, ok_d;
+    string s_result = m_info_buffer->sQuery(varname, ok_s);
+    double d_result = m_info_buffer->dQuery(varname, ok_d);
+
+    for(j=0; ((j<esize) && (ok_s)); j++)
+      m_entries[j].setVarVal(varname, s_result);
+
+    for(j=0; ((j<esize) && (ok_d)); j++)
+      m_entries[j].setVarVal(varname, d_result);    
+  }
+
+}
+//------------------------------------------------------------------
+// Procedure: updateInfoBuffer
+//      Note: For each of the VarDataPairs stored locally in the member
+//            variable m_mode_var_data_pairs, push those postings to 
+//            the info_buffer.
+
+void ModeSet::updateInfoBuffer()
+{
+  if(!m_info_buffer)
+    return;
+
+  unsigned int i, vsize = m_mode_var_data_pairs.size();
+  for(i=0; i<vsize; i++) {
+    VarDataPair pair = m_mode_var_data_pairs[i];
+    string varname = pair.get_var();
+    if(pair.is_string()) {
+      string varvalue = pair.get_sdata();
+      m_info_buffer->setValue(varname, varvalue);
+    }
+    else {
+      double varvalue = pair.get_ddata();
+      m_info_buffer->setValue(varname, varvalue);
+    }
+  }
+
+}
+
