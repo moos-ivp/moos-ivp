@@ -22,6 +22,7 @@
 
 #include <iostream>
 #include "StringTree.h"
+#include "MBUtils.h"
 
 using namespace std;
 
@@ -32,7 +33,7 @@ bool StringTree::addParChild(const string& parent,
 			     const string& child, 
 			     bool handle_waiters)
 {
-  if(parent == "") {
+  if((parent == "") || (parent == "---")) {
     StringNode new_node(child);
     m_nodes.push_back(new_node);
     return(true);
@@ -51,7 +52,6 @@ bool StringTree::addParChild(const string& parent,
   m_parents_waiting.push_back(parent);
   m_children_waiting.push_back(child);
 
-
   return(false);
 }
 
@@ -62,6 +62,12 @@ bool StringTree::addParChild(const string& parent,
 vector<string> StringTree::getPrintableSet()
 {
   vector<string> rvector;
+  unsigned int i, vsize = m_nodes.size();
+  for(i=0; i<vsize; i++) {
+    vector<string> ivector = m_nodes[i].getPrintableSet();
+    rvector = mergeVectors(rvector, ivector);
+  }
+
   return(rvector);
 }
 

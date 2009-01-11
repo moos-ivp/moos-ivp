@@ -37,6 +37,7 @@ using namespace std;
 HelmScope::HelmScope()
 {    
   m_display_help       = false;
+  m_display_modeset    = false;
   m_paused             = true;
   m_display_truncate   = false;
   m_concise_bhv_list   = true;
@@ -99,6 +100,8 @@ bool HelmScope::OnNewMail(MOOSMSG_LIST &NewMail)
       handleNewIvPDomain(msg.m_sVal);
     if(msg.m_sKey == "IVPHELM_SUMMARY")
       handleNewHelmSummary(msg.m_sVal);
+    if(msg.m_sKey == "IVPHELM_MODESET")
+      handleNewHelmModeSet(msg.m_sVal);
     else if(msg.m_sKey == "IVPHELM_POSTINGS")
       handleNewHelmPostings(msg.m_sVal);
     else if(msg.m_sKey == "IVPHELM_STATEVARS")
@@ -126,6 +129,8 @@ bool HelmScope::Iterate()
 {
   if(m_display_help)
     printHelp();
+  else if(m_display_modeset)
+    printModeSet();
   else
     printReport();
 
@@ -226,6 +231,11 @@ void HelmScope::handleCommand(char c)
     m_paused = true;
     m_display_help = true;
     break;
+  case 'm':
+  case 'M':
+    m_paused = true;
+    m_display_modeset = true;
+    break;
   case 'b':
   case 'B':
     m_concise_bhv_list = !m_concise_bhv_list;
@@ -246,13 +256,13 @@ void HelmScope::handleCommand(char c)
     m_display_virgins = !m_display_virgins;
     m_update_requested = true;
     break;
-  case 'm':
+  case 'f':
     m_display_msgs_pwt = false;
     m_display_msgs_upd = false;
     m_display_msgs_state = false;
     m_update_requested = true;
     break;
-  case 'M':
+  case 'F':
     m_display_msgs_pc   = false;
     m_display_msgs_view = false;
     m_update_requested  = true;
@@ -341,6 +351,7 @@ void HelmScope::handleNewHelmSummary(const string& str)
   vector<string> svector = parseString(summary, ',');
   int vsize = svector.size();
   
+  string curr_mode; 
   double time_loop   = 0;
   double time_create = 0;
   double time_solve  = 0;
@@ -363,6 +374,8 @@ void HelmScope::handleNewHelmSummary(const string& str)
 	time_utc = atof(right.c_str());
       else if(left == "solve_time")
 	time_solve = atof(right.c_str());
+      else if(left == "modes")
+	hblock.setModeString(right);
       else if(left == "create_time")
 	time_create = atof(right.c_str());
       else if(left == "loop_time")
@@ -481,6 +494,26 @@ void HelmScope::handleNewHelmPostings(const string& str)
 }
 
 //------------------------------------------------------------
+// Procedure: handleNewHelmPostings
+//    
+//    Note: This msg is generated in HelmIvP.cpp::OnStartUp()
+//    IVPHELM_MODESET=
+//       "---,ACTIVE#---,INACTIVE#ACTIVE,SURVEYING#ACTIVE,RETURNING"
+
+void HelmScope::handleNewHelmModeSet(const string& str)
+{
+  cout << "Handling New Helm MODESET: " << endl;
+  cout << "  " << str << endl;
+  vector<string> svector = parseString(str, '#');
+  unsigned int i, vsize = svector.size();
+  for(i=0; i<vsize; i++) {
+    string parent = stripBlankEnds(biteString(svector[i], ','));
+    string child  = stripBlankEnds(svector[i]);
+    m_mode_tree.addParChild(parent, child);
+  }
+}
+
+//------------------------------------------------------------
 // Procedure: handleNewIterXMS
 //    
 
@@ -522,6 +555,7 @@ void HelmScope::registerVariables()
   m_Comms.Register("IVPHELM_POSTINGS", 0);
   m_Comms.Register("IVPHELM_STATEVARS", 0);
   m_Comms.Register("IVPHELM_DOMAIN", 0);
+  m_Comms.Register("IVPHELM_MODESET", 0);
 }
 
 //------------------------------------------------------------
@@ -741,7 +775,7 @@ void HelmScope::printHelp()
   printf("   s/S     Toggle Behavior State Vars in MOOSDB-Scope Report\n");
   printf("   u/U     Unmask all variables in Behavior-Posts Report    \n");
   printf("   v/V     Toggle display of virgins in MOOSDB-Scope output \n");
-  printf("   [/]     Display Iteration 1 step prev/forward            \n");
+  printf("   [/]     Display Iteration 1 step p rev/forward            \n");
   printf("   {/}     Display Iteration 10 steps prev/forward          \n");
   printf("   (/)     Display Iteration 100 steps prev/forward         \n");
   printf("    #      Toggle Show the MOOSDB-Scope Report              \n");
@@ -751,6 +785,37 @@ void HelmScope::printHelp()
 
   m_paused = true;
   m_display_help = false;
+}
+
+//------------------------------------------------------------
+// Procedure: printModeSet()
+
+void HelmScope::printModeSet()
+{
+  vector<string> svector = m_mode_tree.getPrintableSet();
+  unsigned int i, j, vsize = svector.size();
+
+  unsigned int lead_lines = (25 - vsize);
+  if(lead_lines < 4)
+    lead_lines = 4;
+
+  for(j=0; j<lead_lines; j++)
+    printf("\n");
+ 
+  printf("ModeSet Hierarchy: \n");
+  printf("---------------------------------------------- \n");
+  if(vsize == 0)
+    printf("Undefined ModeSet for this Helm Invocation   \n");
+  
+  for(i=0; i<vsize; i++) {
+    printf("%s\n",  svector[i].c_str());
+  }
+
+  printf("---------------------------------------------- \n");
+  printf("CURENT MODE(S): \n");
+
+  m_paused = true;
+  m_display_modeset = false;
 }
 
 //------------------------------------------------------------
@@ -830,6 +895,7 @@ void HelmScope::printHelmReport(int index)
   double loop_time   = hblock.getLoopTime();
   //double utc_time    = hblock.getUTCTime();
   bool   halted      = hblock.getHalted();
+  string modes       = hblock.getModeStr();
 
   //--------------------------------------------
   double max_interval  = 0;
@@ -864,6 +930,7 @@ void HelmScope::printHelmReport(int index)
   printf("  (hz=%.2f)(%d)", avg_samples_b, num_samples_b);
   printf("  (hz=%.2f)(max)\n", max_interval);
   printf("  IvP functions:  %d\n", ipfs);
+  printf("  Mode(s):  %s\n", modes.c_str());
   printf("  SolveTime:      %.2f  ", solve_time);
   printf("  (max=%.2f)\n", m_max_time_solve);
   

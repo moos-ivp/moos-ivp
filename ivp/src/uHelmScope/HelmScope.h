@@ -33,6 +33,7 @@
 #include "IterBlockHelm.h"
 #include "IterBlockPosts.h"
 #include "IterBlockXMS.h"
+#include "StringTree.h"
 
 class HelmScope : public CMOOSApp  
 {
@@ -68,6 +69,7 @@ class HelmScope : public CMOOSApp
   void handleNewIvPDomain(const std::string&);
   void handleNewHelmSummary(const std::string&);
   void handleNewHelmPostings(const std::string&);
+  void handleNewHelmModeSet(const std::string&);
   void handleNewStateVars(const std::string&);
   void handleNewIterXMS();
   void pruneHistory();
@@ -81,6 +83,7 @@ class HelmScope : public CMOOSApp
   void updateVarCommunity(const std::string&, const std::string&);
 
   void printHelp();
+  void printModeSet();
   void printReport();
   void printHelmReport(int ix);
   void printDBReport(int);
@@ -91,7 +94,11 @@ class HelmScope : public CMOOSApp
   std::map<int, IterBlockPosts> m_blocks_posts;
   std::map<int, IterBlockXMS>   m_blocks_xms;
 
+  StringTree  m_mode_tree;
+  std::string m_current_mode;
+
   bool   m_display_help;
+  bool   m_display_modeset;
   bool   m_paused;
   bool   m_display_truncate;
   bool   m_concise_bhv_list;

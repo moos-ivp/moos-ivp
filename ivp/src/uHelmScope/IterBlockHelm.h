@@ -23,6 +23,7 @@ public:
   void addIdleBHVs(const std::string&);
   void addCompletedBHVs(const std::string&);
   void addDecVarVal(const std::string&, const std::string&);
+  void setModeString(std::string v)  {m_modes=v;};
 
   void setIteration(int v)     {m_iteration=v;};
   void setCountIPF(int v)      {m_count_ipf=v;};
@@ -41,6 +42,7 @@ public:
   int         getDecVarCnt()  const {return(m_decvar.size());};
   std::string getDecVar(unsigned int) const;
   std::string getDecVal(unsigned int) const;
+  std::string getModeStr() const    {return(m_modes);};
   int         getIteration() const  {return(m_iteration);};
   int         getCountIPF() const   {return(m_count_ipf);};
   double      getSolveTime() const  {return(m_solve_time);};
@@ -59,6 +61,8 @@ protected:
   std::vector<std::string> m_decvar;
   std::vector<std::string> m_decval;
 
+  std::string  m_modes;
+
   int    m_iteration;
   int    m_count_ipf;
   double m_solve_time;
@@ -76,11 +80,4 @@ protected:
   std::vector<std::vector<IterBlockBHV> > m_blocks_bhv;
 };
 
-
 #endif 
-
-
-
-
-
-

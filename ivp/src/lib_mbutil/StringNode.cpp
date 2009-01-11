@@ -22,6 +22,7 @@
 
 #include <iostream>
 #include "StringNode.h"
+#include "MBUtils.h"
 
 using namespace std;
 
@@ -37,6 +38,29 @@ void StringNode::print(int indent)
   cout << m_value << endl;
   for(i=0; i<vsize; i++)
     m_children[i].print(indent + 2);
+}
+
+
+//-------------------------------------------------------------
+// Procedure: getPrintableSet
+
+vector<string> StringNode::getPrintableSet(int indent)
+{
+  vector<string> rvector;
+  string this_nodes_str;
+
+  unsigned int i, vsize = m_children.size();
+  for(i=0; i<indent; i++)
+    this_nodes_str += "  ";
+ 
+  this_nodes_str += m_value;
+  rvector.push_back(this_nodes_str);
+
+  for(i=0; i<vsize; i++) {
+    vector<string> ivector = m_children[i].getPrintableSet(indent+2);
+    rvector = mergeVectors(rvector, ivector);
+  }
+  return(rvector);
 }
 
 

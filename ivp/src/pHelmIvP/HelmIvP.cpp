@@ -722,11 +722,15 @@ bool HelmIvP::OnStartUp()
   if(m_verbose == "verbose")
     m_bhv_set->print();
   
+  string mode_set_string_description = m_bhv_set->getModeSetDefinition();
+
   postInitialVariables();
   registerVariables();
   requestBehaviorLogging();
 
-  m_Comms.Notify("IVPHELM_DOMAIN", domainToString(m_ivp_domain));
+  m_Comms.Notify("IVPHELM_DOMAIN",  domainToString(m_ivp_domain));
+  m_Comms.Notify("IVPHELM_MODESET", mode_set_string_description);
+
 
   return(true);
 }

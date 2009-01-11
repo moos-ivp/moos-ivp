@@ -208,6 +208,12 @@ string HelmReport::getReportAsString()
   else
     report += m_running_bhvs;
 
+  report += ",modes=";
+  if(m_modes == "")
+    report += "none";
+  else
+    report += m_modes;
+
   report += ",active_bhvs=";
   if(m_active_bhvs == "")
     report += "none";

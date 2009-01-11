@@ -160,6 +160,10 @@ BehaviorSet *Populator_BehaviorSet::populate(set<string> bhv_files)
     for(i=0; i<default_vars.size(); i++)
       bset->addDefaultVar(default_vars[i]);
     bset->setModeSet(m_mode_set);
+#if 1
+    string sval = m_mode_set.getStringDescription();
+    cout << "mode description: " << sval << endl;
+#endif    
     //m_mode_set.print();
     return(bset);
   }  

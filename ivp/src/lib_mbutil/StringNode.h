@@ -32,10 +32,11 @@ public:
   StringNode(const std::string& s) {m_value = s;};
   ~StringNode() {};
 
-  void print(int indent=0);
   bool addParChild(const std::string& parent, 
 		   const std::string& child);
 
+  void print(int indent=0);
+  std::vector<std::string> getPrintableSet(int index=0);
 
 protected:
   std::string             m_value;

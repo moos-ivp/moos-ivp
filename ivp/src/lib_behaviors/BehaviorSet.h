@@ -83,7 +83,10 @@ public:
   bool consultModeSet() {m_mode_set.evaluate();};
   std::vector<VarDataPair> getModeVarDataPairs()    
     {return(m_mode_set.getVarDataPairs());};
-  std::string getModeSummary()  {return(m_mode_set.getModeSummary());};
+  std::string getModeSummary()     
+    {return(m_mode_set.getModeSummary());};
+  std::string getModeSetDefinition()  
+    {return(m_mode_set.getStringDescription());};
 
   void print();
 
