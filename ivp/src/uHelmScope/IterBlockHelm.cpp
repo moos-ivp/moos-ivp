@@ -207,6 +207,27 @@ void IterBlockHelm::addDecVarVal(const string& varname, const string& value)
     
 
 //------------------------------------------------------------
+// Procedure: setModeString
+
+void IterBlockHelm::setModeString(string str)
+{
+  m_modes = "";
+
+  vector<string> svector = parseString(str, '#');
+  unsigned int i, vsize = svector.size();
+    
+  for(i=0; i<vsize; i++) {
+    string mode_name  = biteString(svector[i], '@');
+    string mode_value = stripBlankEnds(svector[i]);
+    if(vsize > 1) 
+      m_modes += (mode_name + "=");
+    m_modes += mode_value;
+  }
+
+}
+    
+
+//------------------------------------------------------------
 // Procedure: getDecVar(int)
 
 string IterBlockHelm::getDecVar(unsigned int ix) const

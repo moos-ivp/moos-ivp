@@ -23,7 +23,7 @@ public:
   void addIdleBHVs(const std::string&);
   void addCompletedBHVs(const std::string&);
   void addDecVarVal(const std::string&, const std::string&);
-  void setModeString(std::string v)  {m_modes=v;};
+  void setModeString(std::string v);
 
   void setIteration(int v)     {m_iteration=v;};
   void setCountIPF(int v)      {m_count_ipf=v;};

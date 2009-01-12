@@ -145,7 +145,7 @@ string ModeSet::getModeSummary()
       varvalue = dstringCompact(doubleToString(pair.get_ddata()));
     if(result != "")
       result += "#";
-    result += (varname + ":" + varvalue);
+    result += (varname + "@" + varvalue);
   }
   return(result);
 }

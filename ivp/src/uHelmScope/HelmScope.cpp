@@ -351,7 +351,6 @@ void HelmScope::handleNewHelmSummary(const string& str)
   vector<string> svector = parseString(summary, ',');
   int vsize = svector.size();
   
-  string curr_mode; 
   double time_loop   = 0;
   double time_create = 0;
   double time_solve  = 0;
@@ -770,8 +769,9 @@ void HelmScope::printHelp()
   printf("   h/H     Show this Help msg - 'r' to resume               \n");
   printf("   b/B     Toggle Show Idle/Completed Behavior Details      \n");
   printf("   t/T     Toggle truncation of column output               \n");
-  printf("    m      Mask PWT_* UH_* STATE_* in Behavior-Posts Report \n");
-  printf("    M      Mask PC_* VIEW_* in Behavior-Posts Report        \n");
+  printf("   m/M     Show the Hierarchical Mode Structure             \n");
+  printf("    f      Filter PWT_* UH_* STATE_* in Behavior-Posts Report \n");
+  printf("    F      Filter PC_* VIEW_* in Behavior-Posts Report      \n");
   printf("   s/S     Toggle Behavior State Vars in MOOSDB-Scope Report\n");
   printf("   u/U     Unmask all variables in Behavior-Posts Report    \n");
   printf("   v/V     Toggle display of virgins in MOOSDB-Scope output \n");
@@ -792,6 +792,11 @@ void HelmScope::printHelp()
 
 void HelmScope::printModeSet()
 {
+  IterBlockHelm hblock = m_blocks_helm[m_iter_next_post];
+  string modes         = hblock.getModeStr();
+
+
+
   vector<string> svector = m_mode_tree.getPrintableSet();
   unsigned int i, j, vsize = svector.size();
 
@@ -812,7 +817,9 @@ void HelmScope::printModeSet()
   }
 
   printf("---------------------------------------------- \n");
-  printf("CURENT MODE(S): \n");
+  printf("CURENT MODE(S): %s\n", modes.c_str());
+  printf("                                                            \n");
+  printf("Hit 'r' to resume outputs, or SPACEBAR for a single update  \n");
 
   m_paused = true;
   m_display_modeset = false;
@@ -930,7 +937,7 @@ void HelmScope::printHelmReport(int index)
   printf("  (hz=%.2f)(%d)", avg_samples_b, num_samples_b);
   printf("  (hz=%.2f)(max)\n", max_interval);
   printf("  IvP functions:  %d\n", ipfs);
-  printf("  Mode(s):  %s\n", modes.c_str());
+  printf("  Mode(s):        %s\n", modes.c_str());
   printf("  SolveTime:      %.2f  ", solve_time);
   printf("  (max=%.2f)\n", m_max_time_solve);
   
@@ -1158,9 +1165,11 @@ void HelmScope::printPostingReport(int index)
       }
     }
   }
-
-  if(prev_behavior == "")
-    printf("@  <empty>           <empty>\n"); 
+  
+  if(prev_behavior == "") {
+    printf("@  -------------     -------- \n"); 
+    printf("@  <empty>           <empty>  \n"); 
+  }
 }
 
 
