@@ -117,7 +117,9 @@ class HelmScope : public CMOOSApp
   bool   m_display_statevars;
   bool   m_ignore_filevars;
 
-  bool   m_update_requested;
+  bool   m_update_pending;
+  bool   m_modeset_pending;
+  bool   m_helpmsg_pending;
 
   int    m_moosapp_iter;
   int    m_warning_count;

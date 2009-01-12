@@ -59,7 +59,9 @@ HelmScope::HelmScope()
   // config block unless overridden from the command line
   m_ignore_filevars    = false;
 
-  m_update_requested   = true;
+  m_update_pending     = true;
+  m_modeset_pending    = false;
+  m_helpmsg_pending    = false;
   m_moosapp_iter       = 0;
   m_iteration_helm     = -1;
   m_iter_last_post     = -1;
@@ -127,9 +129,9 @@ bool HelmScope::OnNewMail(MOOSMSG_LIST &NewMail)
 
 bool HelmScope::Iterate()
 {
-  if(m_display_help)
+  if(m_display_help && m_helpmsg_pending)
     printHelp();
-  else if(m_display_modeset)
+  else if(m_display_modeset && m_modeset_pending)
     printModeSet();
   else
     printReport();
@@ -219,54 +221,63 @@ void HelmScope::handleCommand(char c)
   case 'r':
   case 'R':
     m_paused = false;
-    m_update_requested = true;
+    m_update_pending = true;
     break;
   case ' ':
     m_paused = true;
     m_iter_next_post = m_iteration_helm;
-    m_update_requested = true;
+    m_update_pending = true;
     break;
   case 'h':
   case 'H':
     m_paused = true;
-    m_display_help = true;
+    m_display_help = !m_display_help;
+    if(!m_display_help) 
+      m_update_pending = true;
+    else
+      m_helpmsg_pending = true;
+    m_display_modeset = false;
     break;
   case 'm':
   case 'M':
     m_paused = true;
     m_display_modeset = !m_display_modeset;
-    m_update_requested = true;
+    if(!m_display_modeset)
+      m_update_pending = true;
+    else
+      m_modeset_pending = true;
+    m_display_help = false;
     break;
   case 'b':
   case 'B':
     m_concise_bhv_list = !m_concise_bhv_list;
-    m_update_requested = true;
+    m_update_pending = true;
     break;
   case 's':
   case 'S':
     m_display_statevars = !m_display_statevars;
-    m_update_requested = true;
+    m_update_pending = true;
     break;
   case 't':
   case 'T':
     m_display_truncate = !m_display_truncate;
-    m_update_requested = true;
+    m_update_pending = true;
     break;
   case 'v':
   case 'V':
     m_display_virgins = !m_display_virgins;
-    m_update_requested = true;
+    m_update_pending = true;
     break;
   case 'f':
     m_display_msgs_pwt = false;
     m_display_msgs_upd = false;
     m_display_msgs_state = false;
-    m_update_requested = true;
+    m_update_pending = true;
     break;
   case 'F':
     m_display_msgs_pc   = false;
     m_display_msgs_view = false;
-    m_update_requested  = true;
+    m_update_pending  = true;
     break;
   case 'u':
   case 'U':
@@ -275,42 +286,42 @@ void HelmScope::handleCommand(char c)
     m_display_msgs_state = true;
     m_display_msgs_pc    = true;
     m_display_msgs_view  = true;
-    m_update_requested   = true;
+    m_update_pending   = true;
     break;
   case '[':
     m_paused = true;
     m_iter_next_post = m_iter_last_post - 1;
-    m_update_requested = true;
+    m_update_pending = true;
     break;
   case ']':
     m_iter_next_post = m_iter_last_post + 1;
-    m_update_requested = true;
+    m_update_pending = true;
     break;
   case '{':
     m_paused = true;
     m_iter_next_post = m_iter_last_post - 10;
-    m_update_requested = true;
+    m_update_pending = true;
     break;
   case '}':
     m_iter_next_post = m_iter_last_post + 10;
-    m_update_requested = true;
+    m_update_pending = true;
     break;
   case '(':
     m_paused = true;
     m_iter_next_post = m_iter_last_post - 100;
-    m_update_requested = true;
+    m_update_pending = true;
     break;
   case ')':
     m_iter_next_post = m_iter_last_post + 100;
-    m_update_requested = true;
+    m_update_pending = true;
     break;
   case '#':
     m_display_xms = !m_display_xms;
-    m_update_requested = true;
+    m_update_pending = true;
     break;
   case '@':
     m_display_posts = !m_display_posts;
-    m_update_requested = true;
+    m_update_pending = true;
     break;
   default:
     break;
@@ -509,8 +520,15 @@ void HelmScope::handleNewHelmModeSet(const string& str)
   for(i=0; i<vsize; i++) {
     string parent = stripBlankEnds(biteString(svector[i], ','));
     string child  = stripBlankEnds(svector[i]);
+    cout << "[" << i << "] parent:" << parent << "  child:" << child << endl;
     m_mode_tree.addParChild(parent, child);
   }
+  cout << "Full Tree: " << endl;
+  vector<string> jvector = m_mode_tree.getPrintableSet();
+  unsigned int j, jsize = jvector.size();
+  for(j=0; j<jsize; j++) 
+    cout << jvector[j] << endl;
+
 }
 
 //------------------------------------------------------------
@@ -785,7 +803,7 @@ void HelmScope::printHelp()
   printf("Hit 'r' to resume outputs, or SPACEBAR for a single update  \n");
 
   m_paused = true;
-  m_display_help = false;
+  m_helpmsg_pending = false;
 }
 
 //------------------------------------------------------------
@@ -796,12 +814,12 @@ void HelmScope::printModeSet()
   IterBlockHelm hblock = m_blocks_helm[m_iter_next_post];
   string modes         = hblock.getModeStr();
 
-
+  cout << "modes: " << modes << endl;
 
   vector<string> svector = m_mode_tree.getPrintableSet();
   unsigned int i, j, vsize = svector.size();
 
-  unsigned int lead_lines = (25 - vsize);
+  int lead_lines = (45 - vsize);
   if(lead_lines < 4)
     lead_lines = 4;
 
@@ -823,7 +841,8 @@ void HelmScope::printModeSet()
   printf("Hit 'r' to resume outputs, or SPACEBAR for a single update  \n");
 
   m_paused = true;
-  //m_display_modeset = false;
+  m_modeset_pending = false;
+  return;
 }
 
 //------------------------------------------------------------
@@ -833,10 +852,10 @@ void HelmScope::printReport()
 {
   // If we're paused and no update was requested, plain and simple, 
   // do not print a new report.
-  if(m_paused && !m_update_requested)
+  if(m_paused && !m_update_pending)
     return;
 
-  if((m_iter_next_post == m_iter_last_post) && !m_update_requested)
+  if((m_iter_next_post == m_iter_last_post) && !m_update_pending)
     return;
   
   if((m_iter_next_post == -1) || (m_iter_next_post > m_iteration_helm))
@@ -852,7 +871,7 @@ void HelmScope::printReport()
   if(m_iter_next_post == -1)
     m_iter_next_post = m_iteration_helm;
   if(m_iter_next_post != -1)
-    m_update_requested = false;
+    m_update_pending = false;
 
   
   printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
