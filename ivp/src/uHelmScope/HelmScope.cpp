@@ -234,7 +234,8 @@ void HelmScope::handleCommand(char c)
   case 'm':
   case 'M':
     m_paused = true;
-    m_display_modeset = true;
+    m_display_modeset = !m_display_modeset;
+    m_update_requested = true;
     break;
   case 'b':
   case 'B':
@@ -822,7 +823,7 @@ void HelmScope::printModeSet()
   printf("Hit 'r' to resume outputs, or SPACEBAR for a single update  \n");
 
   m_paused = true;
-  m_display_modeset = false;
+  //m_display_modeset = false;
 }
 
 //------------------------------------------------------------
