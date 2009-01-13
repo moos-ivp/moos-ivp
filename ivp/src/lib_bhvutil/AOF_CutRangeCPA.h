@@ -36,6 +36,9 @@ public:
   bool   setParam(const std::string&, double);
   bool   initialize();
   
+  void   discourageLowSpeeds(double thresh=0, double value=0);
+  void   okLowSpeeds();
+
 protected:
   double metric(double) const;
 
@@ -70,6 +73,10 @@ protected:
   bool   m_cnh_set;
   bool   m_cnv_set;
   bool   m_tol_set;
+
+  bool   m_discourage_low_speeds;
+  double m_discourage_low_speeds_thresh;
+  double m_discourage_low_speeds_value;
 };
 
 #endif

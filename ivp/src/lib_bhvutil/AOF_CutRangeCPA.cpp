@@ -55,6 +55,10 @@ AOF_CutRangeCPA::AOF_CutRangeCPA(IvPDomain gdomain)
 
   m_cpa_engine = 0;
   m_patience   = 100;
+
+  m_discourage_low_speeds        = false;
+  m_discourage_low_speeds_value  = 0.0;
+  m_discourage_low_speeds_thresh = 0.0;
 }
 
 //----------------------------------------------------------------
@@ -149,6 +153,34 @@ bool AOF_CutRangeCPA::initialize()
 }
 
 //----------------------------------------------------------------
+// Procedure: discourageLowSpeed
+//     Notes: Under certain circumstances, the AOF will need to 
+//            discourage low or zero speeds, despite the fact that a 
+//            zero/low speed may be effective for cutting the range.
+//    Params: thresh - speed at or below which will be considered low
+//            value  - the utility given to a low speed regardless of
+//                     the CPA value.
+
+void AOF_CutRangeCPA::discourageLowSpeeds(double thresh, double value)
+{    
+  m_discourage_low_speeds = true;
+  m_discourage_low_speeds_thresh = thresh;
+  m_discourage_low_speeds_value  = value;
+}
+
+//----------------------------------------------------------------
+// Procedure: okLowSpeeds
+//     Notes: Switch off the low/zero speed handling and reset the 
+//            threshold and utility values.
+
+void AOF_CutRangeCPA::okLowSpeeds()
+{    
+  m_discourage_low_speeds = false;
+  m_discourage_low_speeds_thresh = 0;
+  m_discourage_low_speeds_value  = 0;
+}
+
+//----------------------------------------------------------------
 // Procedure: evalBox
 //   Purpose: Eval given <Course, Speed> tuple given by a 2D ptBox (b).
 //            Determines naut mile Closest-Point-of-Approach (CPA)
@@ -162,6 +194,12 @@ double AOF_CutRangeCPA::evalBox(const IvPBox *b) const
 
   m_domain.getVal(m_crs_ix, b->pt(m_crs_ix,0), eval_crs);
   m_domain.getVal(m_spd_ix, b->pt(m_spd_ix,0), eval_spd);
+
+  if((m_discourage_low_speeds == true) && 
+     (eval_spd <= m_discourage_low_speeds_thresh)) {
+    return(m_discourage_low_speeds_value);
+  }
+
 
   // Calculate the CPA distance and the RateOfClosure for a maneuver
   double roc;
