@@ -31,7 +31,7 @@ public:
 
 public:    
   double evalCPA(double, double, double, double* calc_roc=0);
-  double evalROC(double, double);
+  double evalROC(double hdg, double spd);
   bool   crossesBow(double, double);
 
   double minMaxROC(double, double, double&, double&);
