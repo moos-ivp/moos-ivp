@@ -6,6 +6,7 @@
 SET(SRC
   BHV_AbortToPoint.cpp
   BHV_Attractor.cpp
+  BHV_HAttractor.cpp
   BHV_AvoidCollision.cpp
   BHV_AvoidCollisionDepth.cpp
   BHV_AvoidObstacles.cpp
