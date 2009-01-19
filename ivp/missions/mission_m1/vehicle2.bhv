@@ -3,21 +3,24 @@ initialize   RETURN   = false
 initialize   TRAIL    = false
 
 //----------------------------------------------
-//Behavior = BHV_Trail
+Behavior = BHV_Trail
 {
   name       = trail_vehi1
   pwt        = 100
   condition  = (DEPLOY = true) and (TRAIL == true)
   condition  = (RETURN != true)
 
-         contact = vehicle1
-     trail_range = 30
-     trail_angle = 190
-          radius = 8
+          updates = TRAIL_UPDATES
+         contact  = vehicle1
+     trail_range  = 30
+     trail_angle  = 190
+          radius  = 8
+ trail_angle_type = absolute
 }
 
+
 //----------------------------------------------
-Behavior = BHV_Attractor
+//Behavior = BHV_Attractor
 {
   name       = attract_vehi1
   pwt        = 100
