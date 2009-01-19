@@ -42,6 +42,10 @@ ProcessConfig = pMarineViewer
 
   vehicolor  = vehicle1, blue
   vehicolor  = vehicle2, green
+
+  BUTTON_ONE   = DEPLOY    # DEPLOY_ALL=true
+  BUTTON_TWO   = TRAIL-YES # TRAIL_VH2=true
+  BUTTON_THREE = TRAIL-OFF # TRAIL_VH2=false
 }
 
 //--------------------------------------------------------
