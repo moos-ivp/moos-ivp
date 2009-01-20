@@ -23,11 +23,15 @@ class Relayer : public CMOOSApp
   void RegisterVariables();
 
  protected:
-  unsigned long int m_tally;
+  unsigned long int m_tally_recd;
+  unsigned long int m_tally_sent;
+  unsigned long int m_iterations;
+
   std::string       m_incoming_var;
   std::string       m_outgoing_var;
 
-  double            m_start_time;
+  double            m_start_time_postings;
+  double            m_start_time_iterations;
 };
 
 #endif 

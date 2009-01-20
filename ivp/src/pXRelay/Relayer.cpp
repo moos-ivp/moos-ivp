@@ -16,8 +16,12 @@ using namespace std;
 
 Relayer::Relayer()
 {
-  m_tally      = 0;
-  m_start_time = 0;
+  m_tally_recd = 0;
+  m_tally_sent = 0;
+  m_iterations = 0;
+
+  m_start_time_postings   = 0;
+  m_start_time_iterations = 0;
 }
 
 //---------------------------------------------------------
@@ -27,28 +31,20 @@ bool Relayer::OnNewMail(MOOSMSG_LIST &NewMail)
 {
   MOOSMSG_LIST::reverse_iterator p;
 
-  bool done=false;
-  for(p = NewMail.rbegin(); !done && (p!=NewMail.rend()); p++) {
+  for(p = NewMail.rbegin(); p!=NewMail.rend(); p++) {
     CMOOSMsg &msg = *p;
 	
     string key   = msg.GetKey();
     string sval  = msg.GetString(); 
 
     if(key == m_incoming_var) { 
-      m_tally++;
-      done = true;
-      m_Comms.Notify(m_outgoing_var, m_tally);
-      if(m_start_time == 0)
-	m_start_time = MOOSTime();
-      else {
-	double delta = MOOSTime() - m_start_time;
-	double frequency = (double)(m_tally) / delta;
-	m_Comms.Notify(m_outgoing_var+"_HZ", frequency);
-      }
+      m_tally_recd++;
     }
   }
   return(true);
 }
+
+
 
 //---------------------------------------------------------
 // Procedure: OnConnectToServer
@@ -75,8 +71,40 @@ void Relayer::RegisterVariables()
 
 bool Relayer::Iterate()
 {
+  m_iterations++;
+
+  unsigned int i, amt = (m_tally_recd - m_tally_sent);
+  for(i=0; i<amt; i++) {
+    m_tally_sent++;
+    m_Comms.Notify(m_outgoing_var, m_tally_sent);
+  }
+  
+  // If this is the first iteration just note the start time, otherwise
+  // note the currently calculated frequency and post it to the DB.
+  if(m_start_time_iterations == 0)
+    m_start_time_iterations = MOOSTime();
+  else {
+    double delta_time = (MOOSTime() - m_start_time_iterations) + 0.01;
+    double frequency  = (double)(m_iterations) / delta_time;
+    m_Comms.Notify(m_outgoing_var+"_ITER_HZ", frequency);
+  }
+    
+
+  // If this is the first time a received msg has been noted, just
+  // note the start time, otherwise calculate and post the frequency.
+  if(amt > 0) {
+    if(m_start_time_postings == 0)
+      m_start_time_postings = MOOSTime();
+    else {
+      double delta_time = (MOOSTime() - m_start_time_postings) + 0.01;
+      double frequency = (double)(m_tally_sent) / delta_time;
+      m_Comms.Notify(m_outgoing_var+"_POST_HZ", frequency);
+    }
+  }
   return(true);
 }
+
+
 
 //---------------------------------------------------------
 // Procedure: OnStartUp()
