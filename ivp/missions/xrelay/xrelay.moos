@@ -1,11 +1,7 @@
 ServerHost = localhost
 ServerPort = 9000
 Simulator  = true
-
-Community  = alpha
-
-LatOrigin  = 42.3584
-LongOrigin = -71.08745
+Community  = xrelay
 
 //------------------------------------------
 // Antler configuration  block
@@ -20,24 +16,24 @@ ProcessConfig = ANTLER
 }
 
 //------------------------------------------
-// pXRelay config block
+// pXRelay_APPLES config block
 
 ProcessConfig = pXRelay_APPLES
 {
-  AppTick	= 50
-  CommsTick	= 50
+  AppTick	= 25
+  CommsTick	= 25
 
   OUTGOING_VAR  = APPLES
   INCOMING_VAR  = PEARS
 }
 
 //------------------------------------------
-// pXRelay config block
+// pXRelay_PEARS config block
 
 ProcessConfig = pXRelay_PEARS
 {
-  AppTick	= 50
-  CommsTick	= 50
+  AppTick	= 25
+  CommsTick	= 25
 
   INCOMING_VAR  = APPLES
   OUTGOING_VAR  = PEARS
@@ -51,14 +47,17 @@ ProcessConfig = uXMS
   AppTick    = 4
   CommsTick  = 4
 
-  PAUSED     = false
+  PAUSED            = false
+  DISPLAY_SOURCE    = true
+  DISPLAY_TIME      = true
+  DISPLAY_COMMUNITY = true
 
-  VAR        = APPLES
-  VAR        = PEARS
-  VAR        = APPLES_ITER_HZ
-  VAR        = PEARS_ITER_HZ
-  VAR        = APPLES_POST_HZ
-  VAR        = PEARS_POST_HZ
+  VAR  = APPLES
+  VAR  = PEARS
+  VAR  = APPLES_ITER_HZ
+  VAR  = PEARS_ITER_HZ
+  VAR  = APPLES_POST_HZ
+  VAR  = PEARS_POST_HZ
 }
 
 
