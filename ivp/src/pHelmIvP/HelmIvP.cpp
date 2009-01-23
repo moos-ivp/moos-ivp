@@ -58,16 +58,17 @@ using namespace std;
 
 HelmIvP::HelmIvP()
 {
-  m_has_control   = false;
-  m_allow_overide = true;
-  m_bhv_set       = 0;
-  m_hengine       = 0;
-  m_info_buffer   = new InfoBuffer;
-  m_verbose       = "terse";
-  m_iteration     = 0;
-  m_ok_skew       = 60; 
-  m_skews_matter  = true;
-  m_warning_count = 0;
+  m_has_control    = false;
+  m_allow_overide  = true;
+  m_allstop_posted = false;
+  m_bhv_set        = 0;
+  m_hengine        = 0;
+  m_info_buffer    = new InfoBuffer;
+  m_verbose        = "terse";
+  m_iteration      = 0;
+  m_ok_skew        = 60; 
+  m_skews_matter   = true;
+  m_warning_count  = 0;
 
   // The refresh vars handle the occasional clearing of the m_outgoing
   // maps. These maps will be cleared when MOOS mail is received for the
@@ -191,8 +192,10 @@ bool HelmIvP::Iterate()
 {
   postCharStatus();
 
-  if(!m_has_control)
+  if(!m_has_control) {
+    postAllStop();
     return(false);
+  }
 
   // The curr_time is set in *both* the OnNewMail and Iterate functions.
   // In the OnNewMail function so the most up-to-date time is available
@@ -272,21 +275,21 @@ bool HelmIvP::Iterate()
 	}
     }
   }
-
-  // Post all the Decision Variable Results
-  for(int j=0; j<dsize; j++) {
-    string domain_var = m_ivp_domain.getVarName(j);
-    string post_alias = "DESIRED_"+ toupper(domain_var);
-    if(post_alias == "DESIRED_COURSE")
-      post_alias = "DESIRED_HEADING";
-    if(m_has_control) {
+  
+  if(!m_has_control)
+    postAllStop();
+  else {  // Post all the Decision Variable Results
+    m_allstop_posted = false;
+    for(int j=0; j<dsize; j++) {
+      string domain_var = m_ivp_domain.getVarName(j);
+      string post_alias = "DESIRED_"+ toupper(domain_var);
+      if(post_alias == "DESIRED_COURSE")
+	post_alias = "DESIRED_HEADING";
       double domain_val = helm_report.getDecision(domain_var);
       m_Comms.Notify(post_alias, domain_val);
     }
-    else
-      m_Comms.Notify(post_alias, 0.0);
   }
-
+  
   double create_cpu  = helm_report.getCreateTime();
   m_Comms.Notify("CREATE_CPU", create_cpu);
 
@@ -827,4 +830,26 @@ bool HelmIvP::detectChangeOnKey(const string& key, double value)
       return(true);
     }
   }
+}
+
+//--------------------------------------------------------------------
+// Procedure: postAllStop
+//   Purpose: Post zero-values to all decision variables. 
+
+void HelmIvP::postAllStop()
+{
+  if(m_allstop_posted)
+    return;
+
+  // Post all the Decision Variable Results
+  int dsize = m_ivp_domain.size();
+  for(int j=0; j<dsize; j++) {
+    string domain_var = m_ivp_domain.getVarName(j);
+    string post_alias = "DESIRED_"+ toupper(domain_var);
+    if(post_alias == "DESIRED_COURSE")
+      post_alias = "DESIRED_HEADING";    
+    m_Comms.Notify(post_alias, 0.0);
+  }
+
+  m_allstop_posted = true;
 }

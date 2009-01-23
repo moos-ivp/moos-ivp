@@ -62,12 +62,13 @@ protected:
 			 const std::string& sval);
   bool detectChangeOnKey(const std::string& key, 
 			 double dval);
-  
+  void postAllStop();  
   
 protected:
   InfoBuffer*   m_info_buffer;
   bool          m_has_control;
   bool          m_allow_overide;
+  bool          m_allstop_posted;
   IvPDomain     m_ivp_domain;
   BehaviorSet*  m_bhv_set;
   std::string   m_verbose;
