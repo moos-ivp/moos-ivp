@@ -30,20 +30,14 @@ Relayer::Relayer()
 bool Relayer::OnNewMail(MOOSMSG_LIST &NewMail)
 {
   MOOSMSG_LIST::reverse_iterator p;
-
   for(p = NewMail.rbegin(); p!=NewMail.rend(); p++) {
     CMOOSMsg &msg = *p;
-	
     string key   = msg.GetKey();
-    string sval  = msg.GetString(); 
-
-    if(key == m_incoming_var) { 
+    if(key == m_incoming_var) 
       m_tally_recd++;
-    }
   }
   return(true);
 }
-
 
 
 //---------------------------------------------------------
@@ -112,7 +106,6 @@ bool Relayer::Iterate()
 
 bool Relayer::OnStartUp()
 {
-	
   STRING_LIST sParams;
   m_MissionReader.GetConfiguration(GetAppName(), sParams);
     
