@@ -48,6 +48,7 @@ public:
 protected:
   bool handleDomainEntry(const std::string&);
   bool updateInfoBuffer(CMOOSMsg &Msg);
+  void postEngagedStatus();
   void postCharStatus();
   void postBehaviorMessages();
   void postModeMessages();

@@ -139,14 +139,15 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
     msg.IsSkewed(MOOSTime(),&dfT);
     
     if(!m_skews_matter || (fabs(dfT) < m_ok_skew)) {
-      if(msg.m_sKey == "MOOS_MANUAL_OVERIDE") {
+      if((msg.m_sKey == "MOOS_MANUAL_OVERIDE") || 
+	 (msg.m_sKey == "MOOS_MANUAL_OVERRIDE")) {
 	if(MOOSStrCmp(msg.m_sVal, "FALSE")) {
 	  m_has_control = true;
 	  MOOSTrace("\n");
 	  MOOSDebugWrite("pHelmIvP Control Is On");
 	  m_info_buffer->setCurrTime(curr_time);
 	}
-	else {
+	else if(MOOSStrCmp(msg.m_sVal, "TRUE")) {
 	  if(m_allow_overide) {
 	    m_has_control = false;
 	    MOOSTrace("\n");
@@ -190,8 +191,9 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
 
 bool HelmIvP::Iterate()
 {
+  postEngagedStatus();
   postCharStatus();
-
+  
   if(!m_has_control) {
     postAllStop();
     return(false);
@@ -516,6 +518,20 @@ void HelmIvP::postDefaultVariables()
 }
 
 //------------------------------------------------------------
+// Procedure: postEngagedStatus()
+
+void HelmIvP::postEngagedStatus()
+{
+  string engaged_status = "ENGAGED";
+  if(!m_has_control)
+    engaged_status = "DISENGAGED";
+  
+  bool changed = detectChangeOnKey("IVPHELM_ENGAGED", engaged_status);
+  if(changed)
+    m_Comms.Notify("IVPHELM_ENGAGED", engaged_status);
+}
+
+//------------------------------------------------------------
 // Procedure: postCharStatus()
 
 void HelmIvP::postCharStatus()
@@ -573,6 +589,7 @@ bool HelmIvP::OnConnectToServer()
 void HelmIvP::registerVariables()
 {
   m_Comms.Register("MOOS_MANUAL_OVERIDE", 0);
+  m_Comms.Register("MOOS_MANUAL_OVERRIDE", 0);
   m_Comms.Register("RESTART_HELM", 0);
   m_Comms.Register("HELM_VERBOSE", 0);
 
