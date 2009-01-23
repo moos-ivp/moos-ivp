@@ -38,6 +38,7 @@ public:
   bool OnConnectToServer();
   bool OnStartUp();
   void postCharStatus();
+  void postAllStop();
   void registerVariables();
   bool handleYawSettings();
   bool handleSpeedSettings();

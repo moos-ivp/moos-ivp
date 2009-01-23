@@ -40,11 +40,12 @@ using namespace std;
 
 MarinePID::MarinePID()
 {
-  m_has_control   = false;
-  m_allow_overide = true;
-  m_depth_control = true;
-  m_verbose       = "terse";
-  m_speed_factor  = 0;
+  m_has_control    = false;
+  m_allow_overide  = true;
+  m_allstop_posted = false;
+  m_depth_control  = true;
+  m_verbose        = "terse";
+  m_speed_factor   = 0;
 
   m_desired_heading = 0;
   m_desired_speed   = 0;
@@ -155,8 +156,10 @@ bool MarinePID::Iterate()
   m_iteration++;
   postCharStatus();
 
-  if(!m_has_control)
+  if(!m_has_control) {
+    postAllStop();
     return(false);
+  }
 
   double m_current_time = MOOSTime();
 
@@ -220,6 +223,8 @@ bool MarinePID::Iterate()
   m_Comms.Notify("DESIRED_THRUST", thrust);
   if(m_depth_control)
     m_Comms.Notify("DESIRED_ELEVATOR", elevator);
+
+  m_allstop_posted = false;
   
   return(true);
 }
@@ -236,6 +241,22 @@ void MarinePID::postCharStatus()
   }
   else
     MOOSTrace("*");
+}
+
+//------------------------------------------------------------
+// Procedure: postAllStop()
+
+void MarinePID::postAllStop()
+{
+  if(m_allstop_posted)
+    return;
+
+  m_Comms.Notify("DESIRED_RUDDER", 0);
+  m_Comms.Notify("DESIRED_THRUST", 0);
+  if(m_depth_control)
+    m_Comms.Notify("DESIRED_ELEVATOR", 0);
+
+  m_allstop_posted = true;
 }
 
 //------------------------------------------------------------
