@@ -93,13 +93,14 @@ bool MarinePID::OnNewMail(MOOSMSG_LIST &NewMail)
 
     #define ACCEPTABLE_SKEW_FIX_ME 360.0
     if(fabs(dfT)<ACCEPTABLE_SKEW_FIX_ME) {
-      if(key == "MOOS_MANUAL_OVERIDE") {
+      if((key == "MOOS_MANUAL_OVERIDE") ||
+	 (key == "MOOS_MANUAL_OVERRIDE")) {
 	if(MOOSStrCmp(msg.m_sVal, "FALSE")) {
 	  m_has_control = true;
 	  MOOSTrace("\n");
 	  MOOSDebugWrite("pMarinePID Control Is On");
 	}
-	else {
+	else if(MOOSStrCmp(msg.m_sVal, "TRUE")) {
 	  if(m_allow_overide) {
 	    m_has_control = false;
 	    MOOSTrace("\n");
