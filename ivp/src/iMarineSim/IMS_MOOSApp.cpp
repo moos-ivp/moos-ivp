@@ -46,15 +46,17 @@ bool IMS_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
   
   double curr_moos_time = MOOSTime();
 
-  MOOSMSG_LIST::reverse_iterator p;
-  for(p = NewMail.rbegin(); p != NewMail.rend(); p++) {
+  MOOSMSG_LIST::iterator p;
+  for(p = NewMail.begin(); p != NewMail.end(); p++) {
     CMOOSMsg &Msg = *p;
 
     double dfTimeDiff = curr_moos_time - Msg.m_dfTime;
 
     if(m_model) {
-      if((Msg.m_sKey == "DESIRED_THRUST") && (dfTimeDiff <= 1.0))
+      if((Msg.m_sKey == "DESIRED_THRUST") && (dfTimeDiff <= 1.0)) {
+	cout << "Desired_thrust: " << Msg.m_dfVal << endl;
 	m_model->setThrust(Msg.m_dfVal);
+      }
       else if((Msg.m_sKey == "DESIRED_RUDDER")  && (dfTimeDiff <= 1.0))
 	m_model->setRudder(Msg.m_dfVal);
       else if((Msg.m_sKey == "DESIRED_ELEVATOR")  && (dfTimeDiff <= 1.0))
