@@ -44,37 +44,36 @@ public:
   bool handleDepthSettings();
 
 protected:
-  bool     has_control;
-  bool     allow_overide;
-  bool     ylog_flag;
-  double   speed_factor;
+  bool     m_has_control;
+  bool     m_allow_overide;
+  bool     m_allstop_posted;
+  double   m_speed_factor;
 
-  double   current_heading;
-  double   current_speed;
-  double   current_depth;
-  double   current_pitch;
+  double   m_current_heading;
+  double   m_current_speed;
+  double   m_current_depth;
+  double   m_current_pitch;
 
-  double   desired_heading;
-  double   desired_speed;
-  double   desired_depth;
-  double   current_thrust;
+  double   m_desired_heading;
+  double   m_desired_speed;
+  double   m_desired_depth;
+  double   m_current_thrust;
 
-  double   max_pitch;
-  double   max_rudder;
-  double   max_thrust;
-  double   max_elevator;
+  double   m_max_pitch;
+  double   m_max_rudder;
+  double   m_max_thrust;
+  double   m_max_elevator;
 
-  PIDEngine     pengine;
-  std::string   ownship;
-  std::string   verbose;
+  PIDEngine     m_pengine;
+  std::string   m_verbose;
 
-  int     iteration;
-  double  start_time;
-  bool    depth_control;
-  bool    paused;
+  int     m_iteration;
+  double  m_start_time;
+  bool    m_depth_control;
+  bool    m_paused;
 
-  double  time_of_last_helm_msg;
-  double  time_of_last_nav_msg;
+  double  m_time_of_last_helm_msg;
+  double  m_time_of_last_nav_msg;
 };
 
 #endif 

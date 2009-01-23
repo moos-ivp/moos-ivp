@@ -40,33 +40,32 @@ using namespace std;
 
 MarinePID::MarinePID()
 {
-  has_control   = false;
-  allow_overide = true;
-  depth_control = true;
-  ylog_flag     = true;
-  verbose       = "terse";
-  speed_factor  = 0;
+  m_has_control   = false;
+  m_allow_overide = true;
+  m_depth_control = true;
+  m_verbose       = "terse";
+  m_speed_factor  = 0;
 
-  desired_heading = 0;
-  desired_speed   = 0;
-  desired_depth   = 0;
+  m_desired_heading = 0;
+  m_desired_speed   = 0;
+  m_desired_depth   = 0;
 
-  current_heading = 0;
-  current_speed   = 0;
-  current_depth   = 0;
-  current_pitch   = 0;
+  m_current_heading = 0;
+  m_current_speed   = 0;
+  m_current_depth   = 0;
+  m_current_pitch   = 0;
 
-  max_thrust   = 100;
-  max_rudder   = 100;
-  max_pitch    = 15;
-  max_elevator = 13;
-  iteration    = 0;
-  start_time   = 0;
+  m_max_thrust   = 100;
+  m_max_rudder   = 100;
+  m_max_pitch    = 15;
+  m_max_elevator = 13;
+  m_iteration    = 0;
+  m_start_time   = 0;
 
-  paused       = false;
+  m_paused       = false;
 
-  time_of_last_helm_msg = 0;
-  time_of_last_nav_msg  = 0;
+  m_time_of_last_helm_msg = 0;
+  m_time_of_last_nav_msg  = 0;
 }
 
 //--------------------------------------------------------------------
@@ -87,21 +86,21 @@ bool MarinePID::OnNewMail(MOOSMSG_LIST &NewMail)
 
     string key = toupper(stripBlankEnds(msg.m_sKey));
     if(key == "SPEED_FACTOR") {
-      speed_factor = msg.m_dfVal;
-      pengine.setSpeedFactor(speed_factor);
+      m_speed_factor = msg.m_dfVal;
+      m_pengine.setSpeedFactor(m_speed_factor);
     }
 
     #define ACCEPTABLE_SKEW_FIX_ME 360.0
     if(fabs(dfT)<ACCEPTABLE_SKEW_FIX_ME) {
       if(key == "MOOS_MANUAL_OVERIDE") {
 	if(MOOSStrCmp(msg.m_sVal, "FALSE")) {
-	  has_control = true;
+	  m_has_control = true;
 	  MOOSTrace("\n");
 	  MOOSDebugWrite("pMarinePID Control Is On");
 	}
 	else {
-	  if(allow_overide) {
-	    has_control = false;
+	  if(m_allow_overide) {
+	    m_has_control = false;
 	    MOOSTrace("\n");
 	    MOOSDebugWrite("pMarinePID Control Is Off");
 	  }
@@ -109,39 +108,38 @@ bool MarinePID::OnNewMail(MOOSMSG_LIST &NewMail)
       }
       else if(key == "PID_VERBOSE") {
 	if(msg.m_sVal == "verbose")
-	  verbose = "verbose";
+	  m_verbose = "verbose";
 	else if(msg.m_sVal == "quiet")
-	  verbose = "quiet";
+	  m_verbose = "quiet";
 	else
-	  verbose = "terse";
+	  m_verbose = "terse";
       }
       else if(key == "NAV_YAW")
-	current_heading = -MOOSRad2Deg(msg.m_dfVal);
+	m_current_heading = -MOOSRad2Deg(msg.m_dfVal);
       else if(key == "NAV_HEADING")
-	current_heading = msg.m_dfVal;
+	m_current_heading = msg.m_dfVal;
       else if(key == "NAV_SPEED")
-	current_speed = msg.m_dfVal;
+	m_current_speed = msg.m_dfVal;
       else if(key == "NAV_DEPTH")
-	current_depth = msg.m_dfVal;
+	m_current_depth = msg.m_dfVal;
       else if(key == "NAV_PITCH")
-	current_pitch = msg.m_dfVal;
+	m_current_pitch = msg.m_dfVal;
       
       if(!strncmp(key.c_str(), "NAV_", 4))
-	time_of_last_nav_msg = MOOSTime();
+	m_time_of_last_nav_msg = MOOSTime();
 
       else if(key == "DESIRED_THRUST")
-	current_thrust = msg.m_dfVal;
+	m_current_thrust = msg.m_dfVal;
       else if(key == "DESIRED_HEADING") {
-	desired_heading = msg.m_dfVal;
-	time_of_last_helm_msg = MOOSTime();
+	m_desired_heading = msg.m_dfVal;
+	m_time_of_last_helm_msg = MOOSTime();
       }
       else if(key == "DESIRED_SPEED") {
-	desired_speed = msg.m_dfVal;
-	time_of_last_helm_msg = MOOSTime();
+	m_desired_speed = msg.m_dfVal;
+	m_time_of_last_helm_msg = MOOSTime();
       }
       else if(key == "DESIRED_DEPTH")
-	desired_depth = msg.m_dfVal;
-
+	m_desired_depth = msg.m_dfVal;
       }
   }
   return(true);
@@ -154,36 +152,36 @@ bool MarinePID::OnNewMail(MOOSMSG_LIST &NewMail)
 
 bool MarinePID::Iterate()
 {
-  iteration++;
+  m_iteration++;
   postCharStatus();
 
-  if(!has_control)
+  if(!m_has_control)
     return(false);
 
-  double current_time = MOOSTime();
+  double m_current_time = MOOSTime();
 
-  if(verbose == "verbose") {
-    double hz = iteration / (MOOSTime() - start_time);
+  if(m_verbose == "verbose") {
+    double hz = m_iteration / (MOOSTime() - m_start_time);
     cout << endl << endl << endl;
-    cout << "PID REPORT: (" << iteration << ")";
+    cout << "PID REPORT: (" << m_iteration << ")";
     cout << "(" << hz << "/sec)" << endl;
   }
 
 
-  if((current_time - time_of_last_helm_msg) > 2) {
-    if(!paused)
+  if((m_current_time - m_time_of_last_helm_msg) > 2) {
+    if(!m_paused)
       MOOSDebugWrite("Paused Due To Tardy HELM Input: THRUST=0");
     cout << "Paused Due To Tardy HELM Input: THRUST=0" << endl;
-    paused = true;
+    m_paused = true;
     m_Comms.Notify("DESIRED_THRUST", 0);
     return(true);
   }
   
-  if((current_time - time_of_last_nav_msg) > 2) {
-    if(!paused)
+  if((m_current_time - m_time_of_last_nav_msg) > 2) {
+    if(!m_paused)
       MOOSDebugWrite("Paused Due To Tardy NAV Input: THRUST=0");
     cout << "Paused Due To Tardy NAV Input: THRUST=0" << endl;
-    paused = true;
+    m_paused = true;
     m_Comms.Notify("DESIRED_THRUST", 0);
     return(true);
   }
@@ -192,35 +190,35 @@ bool MarinePID::Iterate()
   double thrust = 0;
   double elevator = 0;
 
-  pengine.updateTime(current_time);
+  m_pengine.updateTime(m_current_time);
 
-  rudder = pengine.getDesiredRudder(desired_heading, current_heading, 
-				    max_rudder);
-  thrust = pengine.getDesiredThrust(desired_speed, current_speed, 
-				    current_thrust, max_thrust);
-  if(depth_control)
-    elevator = pengine.getDesiredElevator(desired_depth, current_depth,
-					  current_pitch, max_pitch, 
-					  max_elevator);
+  rudder = m_pengine.getDesiredRudder(m_desired_heading, m_current_heading, 
+				    m_max_rudder);
+  thrust = m_pengine.getDesiredThrust(m_desired_speed, m_current_speed, 
+				    m_current_thrust, m_max_thrust);
+  if(m_depth_control)
+    elevator = m_pengine.getDesiredElevator(m_desired_depth, m_current_depth,
+					  m_current_pitch, m_max_pitch, 
+					  m_max_elevator);
   
-  if((desired_speed <= 0.001) && (desired_speed >= -0.001))
+  if((m_desired_speed <= 0.001) && (m_desired_speed >= -0.001))
     thrust = 0;
 
   vector<string> pid_report;
-  if(verbose == "verbose") {
-    pid_report = pengine.getPIDReport();
-    pengine.clearReport();
+  if(m_verbose == "verbose") {
+    pid_report = m_pengine.getPIDReport();
+    m_pengine.clearReport();
     for(unsigned int i=0; i<pid_report.size(); i++)
       cout << pid_report[i] << endl;
   }
 
-  paused = false;
+  m_paused = false;
 
   if(thrust ==0)
     rudder = 0;
   m_Comms.Notify("DESIRED_RUDDER", rudder);
   m_Comms.Notify("DESIRED_THRUST", thrust);
-  if(depth_control)
+  if(m_depth_control)
     m_Comms.Notify("DESIRED_ELEVATOR", elevator);
   
   return(true);
@@ -232,8 +230,8 @@ bool MarinePID::Iterate()
 
 void MarinePID::postCharStatus()
 {
-  if(has_control) {
-    if(verbose == "terse")
+  if(m_has_control) {
+    if(m_verbose == "terse")
       MOOSTrace("$");
   }
   else
@@ -281,9 +279,9 @@ bool MarinePID::OnStartUp()
 {
   MOOSTrace("pMarinePID starting....\n");
   
-  start_time = MOOSTime();
-  // speed_factor=0 means speed PID will be used.
-  speed_factor = 0;
+  m_start_time = MOOSTime();
+  // m_speed_factor=0 means speed PID will be used.
+  m_speed_factor = 0;
   
   string pid_logpath  = "";
   
@@ -298,27 +296,24 @@ bool MarinePID::OnStartUp()
     sLine    = stripBlankEnds(sLine);
     
     if(MOOSStrCmp(sVarName, "SPEED_FACTOR"))
-      speed_factor = atof(sLine.c_str());
+      m_speed_factor = atof(sLine.c_str());
     
     if(MOOSStrCmp(sVarName, "ACTIVE_START")) {
       sLine = tolower(sLine);
       if(sLine == "true") {
-	has_control   = true;
-	//allow_overide = false;
+	m_has_control = true;
+	//m_allow_overide = false;
       }
     }
     
     if(MOOSStrCmp(sVarName, "VERBOSE")) {
       if((sLine == "true") || (sLine == "verbose"))
-	verbose = "verbose";
+	m_verbose = "verbose";
       if(sLine == "terse") 
-	verbose = "terse";
+	m_verbose = "terse";
       if(sLine == "quiet")
-	verbose = "quiet";
+	m_verbose = "quiet";
     }
-    
-    if(MOOSStrCmp(sVarName, "YLOG"))
-      ylog_flag = (sLine == "true");
     
     if(MOOSStrCmp(sVarName, "LOGPATH"))
       pid_logpath = sLine;
@@ -333,7 +328,7 @@ bool MarinePID::OnStartUp()
     return(false);
   }
 
-  if(depth_control)
+  if(m_depth_control)
     cout << "Depth Control is ON" << endl;
   else
     cout << "Depth Control is OFF" << endl;
@@ -368,7 +363,7 @@ bool MarinePID::handleYawSettings()
     MOOSDebugWrite("YAW_PID_INTEGRAL_LIMIT not found in Mission File");
     ok = false;
   }
-  if(!m_MissionReader.GetConfigurationParam("MAXRUDDER",max_rudder)) {
+  if(!m_MissionReader.GetConfigurationParam("MAXRUDDER",m_max_rudder)) {
     MOOSDebugWrite("MAXRUDDER not found in Mission File");
     ok = false;
   }
@@ -376,14 +371,14 @@ bool MarinePID::handleYawSettings()
   ScalarPID crsPID;
   crsPID.SetGains(yaw_pid_Kp, yaw_pid_Kd, yaw_pid_Ki);
   crsPID.SetLimits(yaw_pid_ilim, 100);
-  pengine.setPID(0, crsPID);
+  m_pengine.setPID(0, crsPID);
 
   MOOSDebugWrite(MOOSFormat("** NEW CONTROLLER GAINS ARE **"));
   MOOSDebugWrite(MOOSFormat("YAW_PID_KP             = %.3f",yaw_pid_Kp));
   MOOSDebugWrite(MOOSFormat("YAW_PID_KD             = %.3f",yaw_pid_Kd));
   MOOSDebugWrite(MOOSFormat("YAW_PID_KI             = %.3f",yaw_pid_Ki));
   MOOSDebugWrite(MOOSFormat("YAW_PID_INTEGRAL_LIMIT = %.3f",yaw_pid_ilim));
-  MOOSDebugWrite(MOOSFormat("MAXRUDDER              = %.3f",max_rudder));
+  MOOSDebugWrite(MOOSFormat("MAXRUDDER              = %.3f",m_max_rudder));
   
   return(ok);
 }
@@ -395,7 +390,7 @@ bool MarinePID::handleYawSettings()
 bool MarinePID::handleSpeedSettings()
 {
   int ok = true;
-  pengine.setSpeedFactor(speed_factor);
+  m_pengine.setSpeedFactor(m_speed_factor);
 
   double spd_pid_Kp, spd_pid_Kd, spd_pid_Ki, spd_pid_ilim;
   if(!m_MissionReader.GetConfigurationParam("SPEED_PID_KP", spd_pid_Kp)) {
@@ -414,7 +409,7 @@ bool MarinePID::handleSpeedSettings()
     MOOSDebugWrite("SPEED_PID_INTEGRAL_LIMIT not found in Mission File");
     ok = false;
   }
-  if(!m_MissionReader.GetConfigurationParam("MAXTHRUST",max_thrust))
+  if(!m_MissionReader.GetConfigurationParam("MAXTHRUST",m_max_thrust))
   {
     MOOSDebugWrite("MAXTHRUST not found in Mission File");
     ok = false;
@@ -423,13 +418,13 @@ bool MarinePID::handleSpeedSettings()
   ScalarPID spdPID;
   spdPID.SetGains(spd_pid_Kp, spd_pid_Kd, spd_pid_Ki);
   spdPID.SetLimits(spd_pid_ilim, 100);
-  pengine.setPID(1, spdPID);
+  m_pengine.setPID(1, spdPID);
 
   MOOSDebugWrite(MOOSFormat("SPEED_PID_KP           = %.3f",spd_pid_Kp));
   MOOSDebugWrite(MOOSFormat("SPEED_PID_KD           = %.3f",spd_pid_Kd));
   MOOSDebugWrite(MOOSFormat("SPEED_PID_KI           = %.3f",spd_pid_Ki));
   MOOSDebugWrite(MOOSFormat("SPEED_PID_KI_LIMIT     = %.3f",spd_pid_ilim));
-  MOOSDebugWrite(MOOSFormat("MAXTHRUST              = %.3f",max_thrust));
+  MOOSDebugWrite(MOOSFormat("MAXTHRUST              = %.3f",m_max_thrust));
 
   return(ok);
 }
@@ -446,21 +441,21 @@ bool MarinePID::handleDepthSettings()
   string depth_control_str = "false";
   m_MissionReader.GetConfigurationParam("DEPTH_CONTROL", depth_control_str);
   depth_control_str = tolower(depth_control_str);
-  depth_control = ((depth_control_str == "true") ||
+  m_depth_control = ((depth_control_str == "true") ||
 		   (depth_control_str == "1") ||
 		   (depth_control_str == "yes"));
 #endif
 
 #if 0
-  m_MissionReader.GetConfigurationParam("DEPTH_CONTROL", depth_control);
+  m_MissionReader.GetConfigurationParam("DEPTH_CONTROL", m_depth_control);
 #endif
 #if 0
   double dc;
   m_MissionReader.GetConfigurationParam("DEPTH_CONTROL", dc);
-  depth_control = (int)dc;
+  m_depth_control = (int)dc;
 #endif
   
-  if(!depth_control)
+  if(!m_depth_control)
     return(true);
   
 
@@ -481,24 +476,24 @@ bool MarinePID::handleDepthSettings()
     MOOSDebugWrite("Z_TO_PITCH_PID_INTEGRAL_LIMIT not found in Mission File");
     ok = false;
   }
-  if(!m_MissionReader.GetConfigurationParam("MAXPITCH",max_pitch))
+  if(!m_MissionReader.GetConfigurationParam("MAXPITCH",m_max_pitch))
   {
     MOOSDebugWrite("MAXPITCH not found in Mission File");
     ok = false;
   }
   // Convert pitch limit to radians
-  max_pitch=MOOSDeg2Rad(max_pitch);
+  m_max_pitch=MOOSDeg2Rad(m_max_pitch);
 
   ScalarPID ztopPID;
   ztopPID.SetGains(z_top_pid_Kp, z_top_pid_Kd, z_top_pid_Ki);
   ztopPID.SetLimits(z_top_pid_ilim, 100);
-  pengine.setPID(2, ztopPID);
+  m_pengine.setPID(2, ztopPID);
 
   MOOSDebugWrite(MOOSFormat("Z_TO_PITCH_PID_KP      = %.3f",z_top_pid_Kp));
   MOOSDebugWrite(MOOSFormat("Z_TO_PITCH_PID_KD      = %.3f",z_top_pid_Kd));
   MOOSDebugWrite(MOOSFormat("Z_TO_PITCH_PID_KI      = %.3f",z_top_pid_Ki));
   MOOSDebugWrite(MOOSFormat("Z_TO_PITCH_PID_KI_LIMIT= %.3f",z_top_pid_ilim));
-  MOOSDebugWrite(MOOSFormat("MAXELEVATOR            = %.3f",max_elevator));
+  MOOSDebugWrite(MOOSFormat("MAXELEVATOR            = %.3f",m_max_elevator));
   
   double pitch_pid_Kp, pitch_pid_Kd, pitch_pid_Ki, pitch_pid_ilim;
   if(!m_MissionReader.GetConfigurationParam("PITCH_PID_KP", pitch_pid_Kp)) {
@@ -517,7 +512,7 @@ bool MarinePID::handleDepthSettings()
     MOOSDebugWrite("PITCH_PID_INTEGRAL_LIMIT not found in Mission File");
     ok = false;
   }
-  if(!m_MissionReader.GetConfigurationParam("MAXELEVATOR",max_elevator))
+  if(!m_MissionReader.GetConfigurationParam("MAXELEVATOR",m_max_elevator))
   {
     MOOSDebugWrite("MAXELEVATOR not found in Mission File");
     ok = false;
@@ -526,13 +521,13 @@ bool MarinePID::handleDepthSettings()
   ScalarPID pitchPID;
   pitchPID.SetGains(pitch_pid_Kp, pitch_pid_Kd, pitch_pid_Ki);
   pitchPID.SetLimits(pitch_pid_ilim, 100);
-  pengine.setPID(3, pitchPID);
+  m_pengine.setPID(3, pitchPID);
 
   MOOSDebugWrite(MOOSFormat("PITCH_PID_KP           = %.3f",pitch_pid_Kp));
   MOOSDebugWrite(MOOSFormat("PITCH_PID_KD           = %.3f",pitch_pid_Kd));
   MOOSDebugWrite(MOOSFormat("PITCH_PID_KI           = %.3f",pitch_pid_Ki));
   MOOSDebugWrite(MOOSFormat("PITCH_PID_KI_LIMIT     = %.3f",pitch_pid_ilim));
-  MOOSDebugWrite(MOOSFormat("MAXPITCH               = %.3f",max_pitch));
+  MOOSDebugWrite(MOOSFormat("MAXPITCH               = %.3f",m_max_pitch));
 
 
   return(ok);
