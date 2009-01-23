@@ -97,6 +97,8 @@ class HelmScope : public CMOOSApp
   StringTree  m_mode_tree;
   std::string m_current_mode;
 
+  bool   m_helm_engaged;
+
   bool   m_display_help;
   bool   m_display_modeset;
   bool   m_paused;

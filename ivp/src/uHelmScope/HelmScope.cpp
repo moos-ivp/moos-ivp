@@ -36,6 +36,8 @@ using namespace std;
 
 HelmScope::HelmScope()
 {    
+  m_helm_engaged       = false;
+
   m_display_help       = false;
   m_display_modeset    = false;
   m_paused             = true;
@@ -108,6 +110,10 @@ bool HelmScope::OnNewMail(MOOSMSG_LIST &NewMail)
       handleNewHelmPostings(msg.m_sVal);
     else if(msg.m_sKey == "IVPHELM_STATEVARS")
       handleNewStateVars(msg.m_sVal);
+    else if(msg.m_sKey == "IVPHELM_ENGAGED") {
+      m_helm_engaged = (msg.m_sVal == "ENGAGED");
+      m_update_pending = true;
+    }
   }
 
   // Update the values of all variables we have registered for.  
@@ -528,7 +534,6 @@ void HelmScope::handleNewHelmModeSet(const string& str)
   unsigned int j, jsize = jvector.size();
   for(j=0; j<jsize; j++) 
     cout << jvector[j] << endl;
-
 }
 
 //------------------------------------------------------------
@@ -574,6 +579,7 @@ void HelmScope::registerVariables()
   m_Comms.Register("IVPHELM_STATEVARS", 0);
   m_Comms.Register("IVPHELM_DOMAIN", 0);
   m_Comms.Register("IVPHELM_MODESET", 0);
+  m_Comms.Register("IVPHELM_ENGAGED", 0);
 }
 
 //------------------------------------------------------------
@@ -873,11 +879,14 @@ void HelmScope::printReport()
   if(m_iter_next_post != -1)
     m_update_pending = false;
 
+  string engaged_status = "";
+  if(!m_helm_engaged)
+    engaged_status = " DIS-ENGAGED!!! ";
   
   printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-  printf("==============   uHelmScope Report  ============== (%d)\n",
-	 m_moosapp_iter); 
-
+  printf("==============   uHelmScope Report  ==============%s (%d)\n",
+	 engaged_status.c_str(), m_moosapp_iter); 
+  
   printHelmReport(m_iter_next_post);
   printf("\n\n");
 
