@@ -24,6 +24,7 @@
 #include <cstring>
 #include "HelmScope.h"
 #include "MBUtils.h"
+//#include "ColorConsole.h"
 
 #define BACKSPACE_ASCII 127
 // number of seconds before checking for new moos vars (in all mode)
@@ -879,10 +880,12 @@ void HelmScope::printReport()
   if(m_iter_next_post != -1)
     m_update_pending = false;
 
-  string engaged_status = "";
+  string engaged_status = " ENGAGED ";
   if(!m_helm_engaged)
     engaged_status = " DIS-ENGAGED!!! ";
   
+  cout << "DISENGAGED!!!" << endl;
+
   printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
   printf("==============   uHelmScope Report  ==============%s (%d)\n",
 	 engaged_status.c_str(), m_moosapp_iter); 
