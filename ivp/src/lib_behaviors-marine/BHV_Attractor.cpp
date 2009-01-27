@@ -403,7 +403,7 @@ double BHV_Attractor::getRelevance(double osX, double osY,
   // Changed to be ATTACTOR_RELEVANCE instead of TRAIL_RELEVANCE and 
   // to post as integer between 0-100, not 0-1.0 to reduce postings.
   // mikerb Aug 09, 2008
-  postIntMessage("ATRACTOR_RELEVANCE", pct*100);
+  postIntMessage("ATTRACTOR_RELEVANCE", pct*100);
   return(pct);
 }
 

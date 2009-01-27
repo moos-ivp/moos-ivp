@@ -583,7 +583,9 @@ bool TransponderAIS::handleIncomingNaFConMessage(const string& rMsg)
             }
 	
             // convert lat, long into x, y. 60 nautical miles per minute
-            if(!m_geodesy.LatLong2LocalGrid(navLat, navLong, navY, navX))
+	    //            if(!m_geodesy.LatLong2LocalGrid(navLat, navLong, navY, navX))
+	    //Changed to UTM for consistency
+            if(!m_geodesy.LatLong2LocalUTM(navLat, navLong, navY, navX))
                 return MOOSFail("Geodesy conversion failed\n");
       
 
