@@ -132,7 +132,19 @@ IvPFunction *BHV_MemoryTurnLimit::onRunState()
   crs_zaic.setSummit(heading_avg);
   crs_zaic.setValueWrap(true);
     crs_zaic.setSummitDelta(0.2);
-  crs_zaic.setPeakWidth(m_turn_range*speed/1.5);  //dpe-make 1.5 a param in future
+
+    // Min. width added by HS 020409
+    double ref_speed = 1.5;
+    double min_speed = 0.3;
+    double pk_width;
+    if (speed < min_speed)
+      pk_width = m_turn_range*min_speed/ref_speed;
+    else if (speed < ref_speed)
+      pk_width = m_turn_range*speed/ref_speed;
+    else
+      pk_width = m_turn_range;
+
+    crs_zaic.setPeakWidth(pk_width);
 
   IvPFunction *ipf = crs_zaic.extractOF();
 
