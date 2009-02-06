@@ -196,6 +196,58 @@ void PMV_GUI::addButton(string btype, string svalue)
 }
 
 //----------------------------------------------------------
+// Procedure: addAction
+//      Note: 
+//            
+void PMV_GUI::addAction(string svalue, bool separator) 
+{
+  m_pmv_mutex.Lock();
+
+  vector<string> svector = parseString(svalue, '#');
+  unsigned int i, vsize = svector.size();
+  unsigned int pindex = m_action_vars.size();
+
+  vector<string> vars, vals;
+  string key = "";
+  for(i=0; i<vsize; i++) {
+    string param = stripBlankEnds(biteString(svector[i], '='));
+    string value = stripBlankEnds(svector[i]);
+    if(param == "")
+      return;
+    if(tolower(param)=="menu_key") 
+      key = value;
+    else {
+      vars.push_back(param);
+      vals.push_back(value);
+    }
+  }
+  
+  unsigned int psize = vars.size();
+  for(i=0; i<psize; i++) {
+    m_action_vars.push_back(vars[i]);
+    m_action_vals.push_back(vals[i]);
+    m_action_keys.push_back(key);
+  }
+
+  for(i=0; i<psize; i++) {
+    unsigned int index = pindex + i;
+    string left  = truncString(vars[i], 16, "middle");
+    string right = truncString(vals[i], 16, "middle");
+    string label = ("Action/" + left + "=" + right);
+    label = padString(label, 25, false);
+    if(key != "")
+      label += (" <" + key + ">");
+    if(separator)
+      mbar->add(label.c_str(), 0, (Fl_Callback*)PMV_GUI::cb_DoAction, (void*)index, FL_MENU_DIVIDER);
+    else
+      mbar->add(label.c_str(), 0, (Fl_Callback*)PMV_GUI::cb_DoAction, (void*)index, 0);
+  }
+  mbar->redraw();
+
+  m_pmv_mutex.UnLock();
+}
+
+//----------------------------------------------------------
 // Procedure: handle
 //      Note: As it stands, this method could be eliminated entirely, and the 
 //            default behavior of the parent class should work fine. But if
@@ -288,6 +340,30 @@ inline void PMV_GUI::cb_MOOS_Button_i(int val) {
 void PMV_GUI::cb_MOOS_Button(Fl_Widget* o, int v) {
   int val = (int)(v);
   ((PMV_GUI*)(o->parent()->user_data()))->cb_MOOS_Button_i(val);
+}
+
+
+//----------------------------------------- DoAction
+inline void PMV_GUI::cb_DoAction_i(int i) {  
+  string key = m_action_keys[i];
+  if(key == "") {
+    cout << m_action_vars[i] << " = " << m_action_vals[i] << endl;
+    pushPending(m_action_vars[i], m_action_vals[i]);
+  }
+  else {
+    unsigned int j, vsize = m_action_vars.size();
+    for(j=0; j<vsize; j++) {
+      if(m_action_keys[j] == key) {
+	cout << m_action_vars[j] << " = " << m_action_vals[j] << endl;
+	pushPending(m_action_vars[j], m_action_vals[j]);
+      }
+    }
+  }
+}
+
+void PMV_GUI::cb_DoAction(Fl_Widget* o, int v) {
+  int val = (int)(v);
+  ((PMV_GUI*)(o->parent()->user_data()))->cb_DoAction_i(val);
 }
 
 

@@ -35,7 +35,8 @@ public:
   virtual ~PMV_GUI() {};
 
   void updateXY();
-  void addButton(std::string, std::string);
+  void addButton(std::string button, std::string pairs);
+  void addAction(std::string pair, bool separator=false);
   int  handle(int);
   void setCurrTime(double v) {m_curr_time = v;};
 
@@ -50,6 +51,8 @@ public:
  private:
   inline void cb_MOOS_Button_i(int);
   static void cb_MOOS_Button(Fl_Widget*, int);
+  inline void cb_DoAction_i(int);
+  static void cb_DoAction(Fl_Widget*, int);
 
 protected:
   MY_Output  *v_nam;
@@ -74,10 +77,13 @@ protected:
   std::vector<std::string> m_button_vars;
   std::vector<std::string> m_button_vals;
 
+  std::vector<std::string> m_action_vars;
+  std::vector<std::string> m_action_vals;
+  std::vector<std::string> m_action_keys;
 
   CMOOSLock  m_pmv_mutex;
 
-  double m_curr_time;
+  double     m_curr_time;
 };
 #endif
 

@@ -207,6 +207,10 @@ bool PMV_MOOSApp::OnStartUp()
       m_gui->addButton(param, value);
     else if(param == "button_four")
       m_gui->addButton(param, value);
+    else if(param == "action")
+      m_gui->addAction(value);
+    else if(param == "action+")
+      m_gui->addAction(value, true);
     else { 
       bool handled = m_gui->mviewer->setParam(param, value);
       if(!handled)
@@ -288,6 +292,7 @@ void PMV_MOOSApp::handlePendingGUI()
   for(int i=0; i<pendingSize; i++) {
     string var = m_gui->getPendingVar(i);
     string val = m_gui->getPendingVal(i);
+    cout << "Notifying - var: " << var << "  val:" << val << endl;
     m_Comms.Notify(var, val);
   }
 
