@@ -34,8 +34,8 @@ public:
   bool         setParam(std::string, std::string);
 
 protected:  // configuration parameters
-  int       m_time_on_leg;
-  double    m_max_des_speed_observed;
+  double    m_time_on_leg;               // seconds
+  double    m_max_des_speed_observed;    // meters/second
 };
 #endif
 
