@@ -30,20 +30,25 @@ public:
   AVD_Table();
   ~AVD_Table() {};
 
-  void initialize(double max_heading_delta, double max_speed, 
+  bool initialize(double max_heading_delta, double max_speed, 
 		  int heading_points, int speed_points, 
 		  double default_radius);
+
+  bool addMeasurement(double hdelta, double speed, double radius);
+
+  double getRadius(double hdelta, double speed);
 
   unsigned int  tsize();
 
  protected:
-  std::vector<std::vector<double> > m_table;
+  std::vector<std::vector<double> > m_table_value;
+  std::vector<std::vector<bool> >   m_table_guess;
 
   double m_max_heading_delta;
   double m_max_speed;
   int    m_heading_points;
   int    m_speed_points;
-
+  bool   m_initialized;
 };
 
 #endif

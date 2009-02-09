@@ -34,28 +34,43 @@ AVD_Table::AVD_Table()
   m_max_speed          = 4.0;
   m_heading_points     = 181;
   m_speed_points       = 41;
+  m_initialized        = false;
 }
 
 //------------------------------------------------------------------
 // Procedure: initialize()
 
-void AVD_Table::initialize(double max_heading_delta, double max_speed, 
+bool AVD_Table::initialize(double max_heading_delta, double max_speed, 
 			   int heading_points, int speed_points,
 			   double default_radius)
 {
+  if((max_heading_delta <= 0)  ||
+     (max_speed <= 0)      ||
+     (heading_points <= 0) ||
+     (speed_points <= 0)   ||
+     (default_radius < 0)) 
+    return(false);
+
   m_max_heading_delta  = max_heading_delta;
   m_max_speed          = max_speed;
   m_heading_points     = heading_points;
   m_speed_points       = speed_points;
 
-  m_table.clear();
+  m_table_value.clear();
+  m_table_guess.clear();
 
-  m_table.reserve(heading_points);
+  m_table_value.reserve(heading_points);
+  m_table_guess.reserve(heading_points);
   unsigned int i, j;
   for(i=0; i<m_heading_points; i++) {
     vector<double> ivector(speed_points, default_radius);
-    m_table.push_back(ivector);
+    vector<bool>   bvector(speed_points, true);
+    m_table_value.push_back(ivector);
+    m_table_guess.push_back(bvector);
   }
+
+  m_initialized = true;
+  return(true);
 }
 
 //------------------------------------------------------------------
@@ -63,12 +78,43 @@ void AVD_Table::initialize(double max_heading_delta, double max_speed,
 
 unsigned int AVD_Table::tsize()
 {
-  unsigned int vsize = m_table.size();
+  if(!m_initialized)
+    return(0);
+
+  unsigned int vsize = m_table_value.size();
   unsigned int total = 0;
   
   for(unsigned int i=0; i<vsize; i++)
-    total += m_table[i].size();
+    total += m_table_value[i].size();
 
   return(total);
 }
 
+//------------------------------------------------------------------
+// Procedure: addMeasurement
+
+bool AVD_Table::addMeasurement(double hdelta, double speed, double radius)
+{
+  if(!m_initialized)
+    return(false);
+
+  unsigned int hd_ix, spd_ix;
+
+  if(m_heading_points == 0)
+    return(false);
+
+  double hdelta_delta = (m_max_heading_delta / m_heading_points);
+  double dbl_hunits = (hdelta / hdelta_delta);
+  hd_ix = (int)(dbl_hunits + 0.5);
+  if(hd_ix >= m_heading_points)
+    hd_ix = m_heading_points-1;
+
+  double speed_delta = (m_max_speed / m_speed_points);
+  double dbl_sunits = (speed / speed_delta);
+  spd_ix = (int)(dbl_sunits + 0.5);
+  if(spd_ix >= m_speed_points)
+    spd_ix = m_speed_points-1;
+
+  m_table_value[hd_ix][spd_ix] = radius;
+  m_table_guess[hd_ix][spd_ix] = false;
+}

@@ -11,6 +11,7 @@ SET(SRC
    ModeEntry.cpp
    Populator_BehaviorSet.cpp
    Populator_BehaviorSet2.cpp
+   AVD_Table.cpp
 )
 
 ADD_LIBRARY(helmivp ${SRC})
