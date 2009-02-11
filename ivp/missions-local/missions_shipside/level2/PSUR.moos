@@ -1,0 +1,317 @@
+//************************************************************
+// Configuration file: M. Benjamin
+//
+// Note: level0 vs. level2  all references to machines names
+//          in this file would be replaced by "localhost" in 
+//          the level2 counterpart. Also, iPWMController, iGPS
+//          and iPNICController are not started up in level2.
+//          And level2 would launch iMarineSim.
+//
+// Note: level0 vs. level1  iMarineSim is run in the level1
+//          counterpart. In level1, iGPS and iPNICompass are 
+//          not run.
+
+
+
+ServerHost = localhost
+ServerPort = 9222
+Simulator  = true
+
+// Community name IS the vehicle name
+Community  = ptsur
+
+LatOrigin  = 42.3584
+LongOrigin = -71.08745
+
+//------------------------------------------------------------------
+// Antler configuration  block
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+
+  Run = MOOSDB		@ NewConsole = false
+  Run = iMarineSim	@ NewConsole = false
+  Run = pMOOSBridge     @ NewConsole = false ~ pMOOSBridge_PSUR
+  Run = pEchoVar	@ NewConsole = false
+  Run = pLogger		@ NewConsole = false
+  Run = pTransponderAIS	@ NewConsole = false
+  Run = pDeployHandler	@ NewConsole = false
+  Run = pMarinePID	@ NewConsole = false
+  Run = uProcessWatch	@ NewConsole = false
+  Run = pMessageParser	@ NewConsole = false
+
+  //Run = pHelmIvP	@ NewConsole = false
+  //Run = iRemote	@ NewConsole = false
+}
+
+//------------------------------------------------------------------
+// pMOOSBridge config block
+
+ProcessConfig = pMOOSBridge_PSUR
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  // SHARE = [VAR] -> to-community @ to-host:to-port [VAR]
+
+  SHARE = [AIS_REPORT_LOCAL]   -> shipside @ localhost:9123 [AIS_REPORT]
+  SHARE = [STATION_CIRCLE]     -> shipside @ localhost:9123 [STATION_CIRCLE]
+  SHARE = [RSTATION_CIRCLE]    -> shipside @ localhost:9123 [STATION_CIRCLE]
+  SHARE = [VIEW_POLYGON]       -> shipside @ localhost:9123 [VIEW_POLYGON]
+  SHARE = [VIEW_POINT]         -> shipside @ localhost:9123 [VIEW_POINT]
+  SHARE = [RVIEW_POINT]        -> shipside @ localhost:9123 [VIEW_POINT]
+  SHARE = [PROC_WATCH_SUMMARY] -> shipside @ localhost:9123 [PROC_WATCH_SUMMARY_PSUR]
+  SHARE = [PROC_WATCH_EVENT]   -> shipside @ localhost:9123 [PROC_WATCH_EVENT_PSUR]
+
+  SHARE = [AIS_REPORT_LOCAL] -> BOBBY   @ localhost:9200 [AIS_REPORT]
+  SHARE = [AIS_REPORT_LOCAL] -> DEE     @ localhost:9201 [AIS_REPORT]
+  SHARE = [AIS_REPORT_LOCAL] -> ELANOR  @ localhost:9204 [AIS_REPORT]
+  SHARE = [AIS_REPORT_LOCAL] -> FRANKIE @ localhost:9206 [AIS_REPORT]
+
+  SHARE = [SOUNDSPEED_UPDATES_BOBBY] -> BOBBY @ localhost:9200 [SOUNDSPEED_UPDATES]
+  SHARE = [PROSECUTE_STATE_BOBBY] -> BOBBY @ localhost:9200  [PROSECUTE_STATE]
+
+}
+
+//#include plug_iMarineSim_PSUR.moos
+//------------------------------------------------------------------
+// pHelmIvP config block
+
+ProcessConfig = pHelmIvP
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  Verbose      = false
+  Domain       = course:0:359:360
+  Domain       = speed:0:5:26
+  Domain       = depth:0:100:101:optional
+  ACTIVE_START = true
+
+  //IF BELOW IS COMMENTED OUT - BHV FILE IS GIVEN AS COMMAND LINE ARG	
+  //Behaviors = ../$(BHV).bhv  
+}
+
+//------------------------------------------------------------------
+// pMarine config block
+
+ProcessConfig = pMarinePID
+{
+  AppTick    = 10
+  CommsTick  = 10
+
+  Verbose    = true
+
+  ACTIVE_START  = true
+
+  // Yaw PID controller
+  YAW_PID_KP		 = 0.5
+  YAW_PID_KD		 = 0.0
+  YAW_PID_KI		 = 0.0
+  YAW_PID_INTEGRAL_LIMIT = 0.07
+
+  // Speed PID controller
+  SPEED_PID_KP		 = 1.0
+  SPEED_PID_KD		 = 0.0
+  SPEED_PID_KI		 = 0.0
+  SPEED_PID_INTEGRAL_LIMIT = 0.07
+
+
+  DEPTH_CONTROL = true
+
+  //Pitch PID controller
+  PITCH_PID_KP                  = 0.4
+  PITCH_PID_KD                  = 0.8
+  PITCH_PID_KI                  = 0.0
+  PITCH_PID_INTEGRAL_LIMIT      = 0
+  
+ //ZPID controller
+  Z_TO_PITCH_PID_KP             = 0.12
+  Z_TO_PITCH_PID_KD             = 0.0
+  Z_TO_PITCH_PID_KI             = 0.004
+  Z_TO_PITCH_PID_INTEGRAL_LIMIT = 0.05
+
+  // Maximums
+  MAXRUDDER   = 100
+  MAXTHRUST   = 100
+  MAXELEVATOR = 14
+  MAXPITCH    = 30
+
+  // A non-zero SPEED_FACTOR overrides use of SPEED_PID
+  // Will set DESIRED_THRUST = DESIRED_SPEED * SPEED_FACTOR
+  SPEED_FACTOR           = 20
+}
+
+//------------------------------------------------------------------
+// iRemote configuration block
+
+ProcessConfig = iRemote
+{
+   CustomKey = 1 : HELM_VERBOSE @ "verbose"
+   CustomKey = 2 : HELM_VERBOSE @ "terse"
+   CustomKey = 3 : HELM_VERBOSE @ "quiet"
+   CustomKey = 4 : DEPLOY @ "true"
+   CustomKey = 5 : DEPLOY @ "false"
+   CustomKey = 6 : RETURN_HOME @ "true"
+   CustomKey = 7 : RETURN_HOME @ "false"
+}
+
+//------------------------------------------------------------------
+// Logger configuration block
+
+ProcessConfig = pLogger
+{
+  //over loading basic params...
+  AppTick 	= 10.0
+  CommsTick 	= 10.0
+
+  File		= L2_PSUR
+  PATH		= ../data_from_runs/
+  SyncLog 	= true @ 0.2
+  AsyncLog 	= true
+  FileTimeStamp = true
+
+  // PID Output
+  Log		= DESIRED_THRUST     @ 0.1
+  Log		= DESIRED_RUDDER     @ 0.1
+
+  // Helm Output
+  Log           = DESIRED_SPEED      @ 0
+  Log           = DESIRED_HEADING    @ 0
+  //Log           = BHV_IPF            @ 0   nosync
+  Log           = HELM_ACTIVE_BHV    @ 0   nosync
+  Log           = HELM_NONIDLE_BHV   @ 0   nosync
+  Log           = HELM_IPF_COUNT     @ 0 
+  log           = LOOP_CPU           @ 0
+  log           = LOOP_WALL          @ 0
+  log           = DEPLOY             @ 0   nosync
+  log           = RETURN             @ 0   nosync
+  log           = STATION_KEEP       @ 0   nosync
+  Log           = VEHICLE_WPT_INDEX  @ 0
+  Log           = DIST_TO_STATION    @ 0
+  Log           = DIST_TO_REGION     @ 0
+  Log           = LOITER_AQUIRE      @ 0
+  Log           = LOITER_INDEX       @ 0
+  Log           = LOITER_REPORT      @ 0   nosync
+
+  Log           = SAT_BHV_AVD_200    @ 0
+  Log           = SAT_BHV_AVD_201    @ 0
+  Log           = SAT_BHV_AVD_204    @ 0
+  Log           = SAT_BHV_AVD_206    @ 0
+
+  Log           = PWT_BHV_AVD_200    @ 0
+  Log           = PWT_BHV_AVD_201    @ 0
+  Log           = PWT_BHV_AVD_204    @ 0
+  Log           = PWT_BHV_AVD_206    @ 0
+
+  Log           = DPCT_BHV_AVD_200    @ 0
+  Log           = DPCT_BHV_AVD_201    @ 0
+  Log           = DPCT_BHV_AVD_204    @ 0
+  Log           = DPCT_BHV_AVD_206    @ 0
+
+  Log           = SPCT_BHV_AVD_200    @ 0
+  Log           = SPCT_BHV_AVD_201    @ 0
+  Log           = SPCT_BHV_AVD_204    @ 0
+  Log           = SPCT_BHV_AVD_206    @ 0
+
+  Log           = CSPD_BHV_AVD_200    @ 0
+  Log           = CSPD_BHV_AVD_201    @ 0
+  Log           = CSPD_BHV_AVD_204    @ 0
+  Log           = CSPD_BHV_AVD_206    @ 0
+
+  // Vehicle-Level IO
+  Log           = PROC_WATCH_SUMMARY @ 0   nosync
+  Log           = PROC_WATCH_EVENT   @ 0   nosync
+  Log           = AIS_REPORT_LOCAL   @ 0   nosync
+  Log           = AIS_REPORT         @ 0   nosync
+
+  Log           = NAV_X              @ 0.1
+  Log           = NAV_Y              @ 0.1
+  Log           = NAV_HEADING        @ 0.1
+  Log           = NAV_SPEED          @ 0.1
+}
+
+//------------------------------------------
+// pEchoVar configuration block
+
+ProcessConfig = pEchoVar
+{
+  AppTick     = 20
+  CommsTick   = 20
+
+  Echo    = MARINESIM_X       ->  NAV_X
+  Echo    = MARINESIM_Y       ->  NAV_Y
+  Echo    = MARINESIM_YAW     ->  NAV_YAW
+  Echo    = MARINESIM_HEADING ->  NAV_HEADING
+  Echo    = META_HEADING      ->  NAV_HEADING
+  Echo    = MARINESIM_SPEED   ->  NAV_SPEED
+  Echo    = MARINESIM_DEPTH   ->  NAV_DEPTH
+}
+
+
+//------------------------------------------------------------------
+// pTransponderAIS config block
+//
+// Note: Outgoing processed every other cycle..
+//       Incoming processed every cycle.
+
+ProcessConfig = pTransponderAIS
+{
+  AppTick	= 8
+  CommsTick	= 8
+
+  VESSEL_TYPE   = SHIP
+}
+
+//------------------------------------------------------------------
+// uProcessWatch configuration block
+
+ProcessConfig = uProcessWatch
+{
+  AppTick 	= 2
+  CommsTick 	= 2
+
+  WATCH  = pHelmIvP
+  WATCH  = pMOOSBridge_PSUR
+  WATCH  = pEchoVar
+  WATCH  = pLogger
+  WATCH  = pMarinePID
+  WATCH  = pTransponderAIS
+  WATCH  = pDeployHandler
+  WATCH  = pVirtualTether
+}
+
+//------------------------------------------------------------------
+// pDeployHandler config block
+
+ProcessConfig = pDeployHandler
+{
+  AppTick	= 5
+  CommsTick	= 5
+}
+
+
+
+//------------------------------------------------------------------
+// iMarineSim config block
+
+ProcessConfig = iMarineSim
+{
+  AppTick	= 10
+  CommsTick	= 10
+
+  MAX_TRANS_VEL = 5.0
+  MAX_ROT_VEL   = 0.6
+  START_X       = 450
+  START_Y       = 350
+  START_SPEED   = 0
+  START_HEADING = 45
+ 
+  FORCE_X       = 0.15
+  FORCE_Y       = -0.08
+  FORCE_THETA   = 0.3
+
+  FLOAT_RATE    = 0.5
+}
+
+

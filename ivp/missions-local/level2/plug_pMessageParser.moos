@@ -1,0 +1,10 @@
+//------------------------------------------------------------------
+// pMessageParser config block
+	
+ProcessConfig = pMessageParser
+{
+  AppTick   = 2	
+  CommsTick = 2
+
+  KEY_VAR   = MESSAGE_POOL
+}

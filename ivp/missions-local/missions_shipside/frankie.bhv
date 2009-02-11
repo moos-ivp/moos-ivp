@@ -1,0 +1,209 @@
+initialize   DEPLOY           = false
+initialize   STATION_KEEP     = false
+initialize   RELATIVE_STATION = false
+initialize   DEPLOY_TRANSIT   = false
+initialize   AVOID_POLICY     = basic
+initialize   ENGAGE           = false
+initialize   LOITER           = false
+initialize   PS_TRAIL         = false
+initialize   DEPLOY_STATE     = false
+
+
+//----------------------------------------------
+Behavior = BHV_StationKeep
+{
+  name      = bhv_station_keep_BOBBY
+  pwt       = 200
+  condition = (DEPLOY = true) and (STATION_KEEP = true)
+  condition = (RELATIVE_STATION != true)
+  condition = (LOITER != true)
+  condition = (PS_TRAIL != true)
+  condition = !(((DEPLOY_STATE = DEPLOY) or (DEPLOY_STATE = PROSECUTE)) and (ENGAGE = true))
+
+  center_activate = true
+}
+
+//----------------------------------------------
+Behavior = BHV_RStationKeep
+{
+  name      = bhv_rstation_keep_BOBBY
+  pwt       = 200
+  updates   = RSTATION_UPDATES
+
+  condition = (DEPLOY = true) and (RELATIVE_STATION = true)
+  condition = (STATION_KEEP != true)
+  condition = (LOITER != true)	
+  condition = (PS_TRAIL != true)
+  condition = !(((DEPLOY_STATE = DEPLOY) or (DEPLOY_STATE = PROSECUTE)) and (ENGAGE = true))
+
+  center_activate = true
+}
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name      = bhv_waypt_transit_BOBBY
+  pwt       = 100
+  updates   = TRANSIT_UPDATES
+  perpetual = true
+
+  condition = (DEPLOY = true) and (DEPLOY_TRANSIT = true)
+  condition = (LOITER != true)
+  condition = (STATION_KEEP != true)
+  condition = (RELATIVE_STATION != true)
+  condition = !(((DEPLOY_STATE = DEPLOY) or (DEPLOY_STATE = PROSECUTE)) and (ENGAGE = true))
+
+  endflag   = STATION_KEEP   = true
+  endflag   = DEPLOY_TRANSIT = false
+
+  speed     = 2.0
+  radius    = 10.0
+  points    = 0,0
+}
+
+//----------------------------------------------
+Behavior = BHV_Loiter
+{
+  name      = bhv_loiter_BOBBY
+  pwt       = 100
+  updates   = LOITER_UPDATES
+
+  condition = (DEPLOY = true) and (LOITER = true)
+  condition = (DEPLOY_TRANSIT != true)
+  condition = (STATION_KEEP != true)
+  condition = (RELATIVE_STATION != true)
+  condition = !(((DEPLOY_STATE = DEPLOY) or (DEPLOY_STATE = PROSECUTE)) and (ENGAGE = true))
+
+           speed = 2.0
+          radius = 10.0
+       nm_radius = 25.0
+    acquire_dist = 25.0
+         polygon = radial:0,0,80,8  
+}
+
+//----------------------------------------------
+//Behavior = BHV_Trail
+{
+  name       = bhv_trail_mac
+  pwt        = 200	
+  condition  = (DEPLOY = true)	
+  condition  = (DEPLOY_STATE = PROSECUTE) and (ENGAGE = true)
+
+           contact = MACRURA
+       trail_range = 50
+       trail_angle = 210
+            radius = 15
+         max_range = 0
+}
+
+//----------------------------------------------
+//Behavior = BHV_Trail
+{
+  name       = bhv_trail_uni
+  pwt        = 200	
+  condition  = (DEPLOY = true)
+  condition  = (DEPLOY_STATE = PROSECUTE) and (ENGAGE = true)
+
+           contact = UNICORN
+       trail_range = 50
+       trail_angle = 150
+            radius = 15
+         max_range = 0
+}
+
+//----------------------------------------------
+Behavior = BHV_Trail
+{
+  name       = bhv_trail_psur
+  pwt        = 200	
+  condition  = (DEPLOY = true) and (PS_TRAIL = true)
+  condition  = (DEPLOY_TRANSIT != true)
+  condition  = (STATION_KEEP != true)
+  condition  = (RELATIVE_STATION != true)
+  condition = !(((DEPLOY_STATE = DEPLOY) or (DEPLOY_STATE = PROSECUTE)) and (ENGAGE = true))
+
+       contact = PTSUR
+   trail_range = 100
+   trail_angle = 160
+        radius = 15
+     max_range = 0
+}
+
+
+
+//==============================================
+//----------------------------------------------
+Behavior = BHV_AvoidCollision
+{
+  name       = bhv_avd_bobby
+  pwt        = 200
+  condition  = (DEPLOY = true) and (AVOID_POLICY = basic)
+
+                contact = BOBBY     // Not case sensitive
+           active_grade = linear
+  active_outer_distance = 100
+  active_inner_distance = 50
+     collision_distance = 25	
+     all_clear_distance = 100
+}
+
+//----------------------------------------------
+Behavior = BHV_AvoidCollision
+{
+  name       = bhv_avd_dee
+  pwt        = 200
+  condition  = (DEPLOY = true) and (AVOID_POLICY = basic)
+
+                contact = DEE     // Not case sensitive
+           active_grade = linear
+  active_outer_distance = 100
+  active_inner_distance = 50
+     collision_distance = 25
+     all_clear_distance = 100
+}
+
+//----------------------------------------------
+Behavior = BHV_AvoidCollision
+{
+  name       = bhv_avd_elanor
+  pwt        = 200
+  condition  = (DEPLOY = true) and (AVOID_POLICY = basic)
+
+                contact = ELANOR   // Not case sensitive
+           active_grade = linear
+  active_outer_distance = 100
+  active_inner_distance = 50
+     collision_distance = 25
+     all_clear_distance = 100
+}
+
+
+
+//----------------------------------------------
+Behavior = BHV_AvoidCollision
+{
+  name       = bhv_avd_ptsur
+  pwt        = 300
+  condition  = (DEPLOY = true) and (AVOID_POLICY = basic)
+
+               contact = PTSUR      // Not case sensitive
+          active_grade = linear
+ active_outer_distance = 150
+ active_inner_distance = 50
+    collision_distance = 45
+    all_clear_distance = 150
+}
+
+//==============================================
+//----------------------------------------------
+//Behavior = BHV_OpRegion
+{	
+   name      = bhv_op_region
+   pwt       = 100
+
+   polygon = label,SafeOpBox:-180,-90:-64,-374:340,-212:220,32:114,38
+   trigger_entry_time = 2
+   trigger_exit_time  = 2
+}
+
+

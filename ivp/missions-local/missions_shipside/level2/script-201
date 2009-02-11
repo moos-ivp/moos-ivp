@@ -1,0 +1,3 @@
+pAntler  DEE.moos &;                    sleep 1; 
+pHelmIvP DEE.moos  ../dee-delta+.bhv &;  sleep 1;
+
