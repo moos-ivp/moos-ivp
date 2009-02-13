@@ -38,9 +38,10 @@ public:
 protected:
   AOF_AvoidObstacles    *m_aof_avoid;
 
-  double  m_allowable_ttc;    // Allowable time to collision
-  double  m_activation_dist;  // Outside of which no IPF created
-  double  m_buffer_dist;       // Between OS and obstacle(s)
+  double  m_allowable_ttc;      // Allowable time to collision
+  double  m_activation_dist;    // Outside of which no IPF created
+  double  m_buffer_dist;        // Between OS and obstacle(s)
+  double  m_pheading_influence;
 };
 #endif
 

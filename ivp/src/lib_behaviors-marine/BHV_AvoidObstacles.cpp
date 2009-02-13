@@ -49,13 +49,14 @@ BHV_AvoidObstacles::BHV_AvoidObstacles(IvPDomain gdomain) :
 
   m_domain = subDomain(m_domain, "course,speed");
 
-  m_buffer_dist     = 0;
-  m_activation_dist = -1;
-  m_allowable_ttc   = 20;
+  m_buffer_dist        = 0;
+  m_activation_dist    = -1;
+  m_allowable_ttc      = 20;
+  m_pheading_influence = 10;
 
   m_aof_avoid = new AOF_AvoidObstacles(m_domain);
 
-  addInfoVars("NAV_X, NAV_Y");
+  addInfoVars("NAV_X, NAV_Y, NAV_HEADING");
 }
 
 //-----------------------------------------------------------
@@ -100,6 +101,13 @@ bool BHV_AvoidObstacles::setParam(string param, string val)
     m_activation_dist = dval;
     return(true);
   }
+  else if(param == "pheading_influence") {
+    double dval = atof(val.c_str());
+    if((dval < 0) || (dval > 100) || (!isNumber(val)))
+      return(false);
+    m_pheading_influence = dval;
+    return(true);
+  }
   else if(param == "buffer_dist") {
     double dval = atof(val.c_str());
     if((dval < 0) || (!isNumber(val)))
@@ -116,12 +124,18 @@ bool BHV_AvoidObstacles::setParam(string param, string val)
 
 IvPFunction *BHV_AvoidObstacles::onRunState() 
 {
-  bool ok1, ok2;
-  double os_x = getBufferDoubleVal("NAV_X", ok1);
-  double os_y = getBufferDoubleVal("NAV_Y", ok2);
+  bool ok1, ok2, ok3;
+  double os_x   = getBufferDoubleVal("NAV_X", ok1);
+  double os_y   = getBufferDoubleVal("NAV_Y", ok2);
+  double os_hdg = getBufferDoubleVal("NAV_HEADING", ok3);
 
   if(!ok1 || !ok2) {
     postWMessage("No Ownship NAV_X and/or NAV_Y in info_buffer");
+    return(false);
+  }
+
+  if(!ok3) {
+    postWMessage("No Ownship NAV_HEADING in info_buffer");
     return(false);
   }
 
@@ -145,6 +159,8 @@ IvPFunction *BHV_AvoidObstacles::onRunState()
   
   m_aof_avoid->setParam("os_x", os_x);
   m_aof_avoid->setParam("os_y", os_y);
+  m_aof_avoid->setParam("present_heading", os_hdg);
+  m_aof_avoid->setParam("present_heading_influence", 2);
   m_aof_avoid->setParam("buffer_dist", m_buffer_dist);
   m_aof_avoid->setParam("activation_dist", m_activation_dist);
   m_aof_avoid->setParam("allowable_ttc", m_allowable_ttc);

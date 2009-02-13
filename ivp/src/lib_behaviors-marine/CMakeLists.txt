@@ -34,6 +34,7 @@ SET(SRC
   BHV_Waypoint.cpp
   BHV_HPeriodicSurface.cpp
   BHV_HSLine.cpp
+  BHV_HeadingChange.cpp
 )
 
 ADD_LIBRARY(behaviors-marine ${SRC})
