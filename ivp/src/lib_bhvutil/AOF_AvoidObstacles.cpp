@@ -47,6 +47,10 @@ AOF_AvoidObstacles::AOF_AvoidObstacles(IvPDomain gdomain) : AOF(gdomain)
   os_y_set        = false;
   activation_dist_set = false;
   allowable_ttc_set   = false;
+
+  m_present_heading = 0;
+  m_present_heading_set = false;
+  m_present_heading_influence = 0;
 }
 
 //----------------------------------------------------------------
@@ -76,6 +80,19 @@ bool AOF_AvoidObstacles::setParam(const string& param, double param_val)
       return(false);
     activation_dist = param_val;
     activation_dist_set = true;
+    return(true);
+  }
+  else if(param == "present_heading") {
+    m_present_heading = param_val;
+    m_present_heading_set = true;
+    return(true);
+  }
+  else if(param == "present_heading_influence") {
+    if(param_val < 0)
+      param_val = 0;
+    else if(param_val > 90)
+      param_val = 90;
+    m_present_heading_influence = param_val;
     return(true);
   }
   else if(param == "buffer_dist") {
@@ -305,6 +322,20 @@ double AOF_AvoidObstacles::evalBox(const IvPBox *b) const
   
   m_domain.getVal(crs_ix, b->pt(crs_ix,0), eval_crs);
   m_domain.getVal(spd_ix, b->pt(spd_ix,0), eval_spd);
+
+  // Possibly calculate the "heading delta" and adjust "max_utility" 
+  // based on the heading delta.
+  double heading_delta = -1;
+  if(m_present_heading_set && (m_present_heading_influence > 0)) {
+    heading_delta = angle180(eval_crs - m_present_heading);
+    if(heading_delta < 0)
+      heading_delta *= -1;
+    double pct = (100 - (heading_delta / 180));
+    double base = (100 - m_present_heading_influence);
+    double more = (pct * m_present_heading_influence);
+    max_utility = base + more;
+  }
+
 
   double lowest_utility;
   for(int i=0; i<osize; i++) {

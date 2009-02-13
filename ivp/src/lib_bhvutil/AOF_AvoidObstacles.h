@@ -63,6 +63,10 @@ private:
 
   double m_buffer_dist;
 
+  double m_present_heading;
+  double m_present_heading_set;
+  double m_present_heading_influence;
+
   bool   os_x_set;
   bool   os_y_set;
   bool   activation_dist_set;
