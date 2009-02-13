@@ -6,7 +6,7 @@ Simulator  = true
 
 Community  = golf
 
-MOOSTimeWarp = 2
+MOOSTimeWarp = 5
 
 LatOrigin  = 43.825300 
 LongOrigin = -70.330400 
@@ -49,7 +49,7 @@ ProcessConfig = pHelmIvP
   AppTick    = 4
   CommsTick  = 4
 
-  Behaviors  = alpha.bhv
+  Behaviors  = golf.bhv
   Verbose    = quiet
   Domain     = course:0:359:360
   Domain     = speed:0:4:21
@@ -116,7 +116,13 @@ ProcessConfig = pMarineViewer
 
   ACTION  = MENU_KEY=port100 # UPDATES_HC="heading_delta=100"
   ACTION  = MENU_KEY=port100 # UPDATES_HC="turn_type=port"
-  ACTION+ = MENU_KEY=port100 # HDG_CHANGE_REQUESTED=true
+  ACTION+ = MENU_KEY=port100 # HC_REQ=true
+  ACTION  = MENU_KEY=port200 # UPDATES_HC="heading_delta=200"
+  ACTION  = MENU_KEY=port200 # UPDATES_HC="turn_type=port"
+  ACTION+ = MENU_KEY=port200 # HC_REQ=true
+  ACTION  = MENU_KEY=star120 # UPDATES_HC="heading_delta=120"
+  ACTION  = MENU_KEY=star120 # UPDATES_HC="turn_type=starboard"
+  ACTION+ = MENU_KEY=star120 # HC_REQ=true
   ACTION  = RETURN=true
 }
 
@@ -129,6 +135,4 @@ ProcessConfig = pTransponderAIS
   CommsTick	= 2
   VESSEL_TYPE   = KAYAK
 }
-
-
 

@@ -1,22 +1,41 @@
-//--------    FILE: alpha.bhv   -------------
+//--------    FILE: golf.bhv   -------------
 
 initialize   DEPLOY = false
 initialize   RETURN = false
+initialize   HC_REQ = false
+
+Set MODE = ACTIVE {
+  DEPLOY = true
+} INACTIVE
+
+Set MODE = LOITERING {
+  MODE   = ACTIVE
+  HC_REQ = false
+  RETURN = false
+} 
+
+Set MODE = HEADING_CHANGE {
+  MODE   = ACTIVE
+  RETURN = false
+  (HC_REQ = true) or (HC_REQ = pending)
+} RETURNING
 
 //----------------------------------------------
-Behavior = BHV_Waypoint
-{ 
-  name      = waypt_survey
+Behavior = BHV_Loiter
+{
+  name      = loiter_a
   pwt       = 100
-  condition = RETURN = false
-  condition = DEPLOY = true
+  condition = MODE == LOITERING
   endflag   = RETURN = true
+  updates   = UP_LOITERA
 
-  wpt_status = SURVEY_STATUS
-  wpt_index  = SURVEY_INDEX
-  speed      = 2.0   // meters per second
-  radius      = 8.0
-  points    = 60,-40:60,-160:150,-160:180,-100:150,-40
+  speed     = 2.5
+  clockwise = false
+  //radius    = 8.0
+  //nm_radius = 15.0
+  radius    = 12.0
+  nm_radius = 30.0
+  polygon   = radial:: x=10, y=-100, radius=35, pts=12, snap=1, label=a 
 }
 
 //----------------------------------------------
@@ -24,8 +43,7 @@ Behavior = BHV_Waypoint
 {
   name       = waypt_return
   pwt        = 100
-  condition  = RETURN = true
-  condition  = DEPLOY = true
+  condition  = MODE == RETURNING
   updates    = UPDATES_RETURN
 
   speed      = 2.0
@@ -38,5 +56,18 @@ Behavior = BHV_HSLine
 {
   name = hsline
   time_on_leg = 20
+}
+
+//----------------------------------------------
+Behavior = BHV_HeadingChange 
+{
+  name      = hdg_change
+  condition = MODE == HEADING_CHANGE
+  updates   = UPDATES_HC  
+  perpetual = true
+  endflag   = HC_REQ = false
+
+  heading_delta = 25
+      turn_type = port
 }
 
