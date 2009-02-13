@@ -324,6 +324,22 @@ void IvPBehavior::postMessage(string var, double ddata, string key)
 }
 
 //-----------------------------------------------------------
+// Procedure: postBoolMessage
+
+void IvPBehavior::postBoolMessage(string var, bool bdata, string key)
+{
+  string bool_str = "true";
+  if(!bdata)
+    bool_str = "false";
+  VarDataPair pair(var, bool_str);
+
+  key = (m_descriptor + var + key);
+  pair.set_key(key);
+
+  m_messages.push_back(pair);
+}
+
+//-----------------------------------------------------------
 // Procedure: postIntMessage
 //      Note: A convenience method for posting the double data rounded
 //            to the nearest integer. This may reduce the number of 
