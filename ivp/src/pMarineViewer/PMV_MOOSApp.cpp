@@ -290,10 +290,23 @@ void PMV_MOOSApp::handlePendingGUI()
   int pendingSize = m_gui->getPendingSize();
 
   for(int i=0; i<pendingSize; i++) {
-    string var = m_gui->getPendingVar(i);
-    string val = m_gui->getPendingVal(i);
+    string var  = m_gui->getPendingVar(i);
+    string val  = m_gui->getPendingVal(i);
+    double dval = 0;
+
+    string val_type = "string";
+    if(isQuoted(val))  
+      val = stripQuotes(val);
+    else if(isNumber(val)) {
+      val_type = "double";
+      dval = atof(val.c_str());
+    }
+    
     cout << "Notifying - var: " << var << "  val:" << val << endl;
-    m_Comms.Notify(var, val);
+    if(val_type == "string")
+      m_Comms.Notify(var, val);
+    else
+      m_Comms.Notify(var, dval);
   }
 
   m_gui->clearPending();

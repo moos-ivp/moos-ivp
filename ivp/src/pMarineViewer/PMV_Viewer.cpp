@@ -202,6 +202,7 @@ string PMV_Viewer::getStringInfo(const string& info_type, int precision)
   }
   
   mutexUnLock();
+  //cout << "GSI type:" << info_type << " result:[" << result << "]" << endl;
   return(result);
 }
   

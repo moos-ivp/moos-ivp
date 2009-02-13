@@ -26,13 +26,19 @@
 #include "MOOSLock.h"
 #include "PMV_Viewer.h"
 #include "MarineVehiGUI.h"
-#include "MY_Output.h"
+#include "MY_LockableOutput.h"
 #include "MY_Button.h"
 
 class PMV_GUI : public MarineVehiGUI {
 public:
   PMV_GUI(int w, int h, const char *l=0);
   virtual ~PMV_GUI() {};
+
+  void draw() {
+    //m_pmv_mutex.Lock();
+    MarineVehiGUI::draw();
+    //m_pmv_mutex.UnLock();
+  };
 
   void updateXY();
   void addButton(std::string button, std::string pairs);
@@ -55,18 +61,18 @@ public:
   static void cb_DoAction(Fl_Widget*, int);
 
 protected:
-  MY_Output  *v_nam;
-  MY_Output  *v_typ;
-  MY_Output  *x_mtr;
-  MY_Output  *y_mtr;
-  MY_Output  *v_spd;
-  MY_Output  *v_lat;
-  MY_Output  *v_lon;
-  MY_Output  *v_crs;
-  MY_Output  *v_dep;
-  MY_Output  *v_ais;
-  MY_Output  *time;
-  MY_Output  *warp;
+  MY_LockableOutput  *v_nam;
+  MY_LockableOutput  *v_typ;
+  MY_LockableOutput  *x_mtr;
+  MY_LockableOutput  *y_mtr;
+  MY_LockableOutput  *v_spd;
+  MY_LockableOutput  *v_lat;
+  MY_LockableOutput  *v_lon;
+  MY_LockableOutput  *v_crs;
+  MY_LockableOutput  *v_dep;
+  MY_LockableOutput  *v_ais;
+  MY_LockableOutput  *time;
+  MY_LockableOutput  *warp;
 
   MY_Button  *user_button_1;
   MY_Button  *user_button_2;
@@ -84,6 +90,7 @@ protected:
   CMOOSLock  m_pmv_mutex;
 
   double     m_curr_time;
+  double     m_prev_out_time;
 };
 #endif
 

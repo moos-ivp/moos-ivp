@@ -40,57 +40,71 @@ PMV_GUI::PMV_GUI(int g_w, int g_h, const char *g_l)
   
   m_trail_color_ix = 0;
   m_curr_time      = 0;
+  m_prev_out_time  = 0;
 
   mviewer  = new PMV_Viewer(0, 30, w(), h()-100);
   cmviewer = mviewer;
 
-  v_nam = new MY_Output(60, h()-60, 70, 20, "VName:"); 
+  v_nam = new MY_LockableOutput(60, h()-60, 70, 20, "VName:"); 
   v_nam->textsize(info_size); 
   v_nam->labelsize(info_size);
+  v_nam->setMutex(&m_pmv_mutex);
 
-  v_typ = new MY_Output(60, h()-30, 70, 20, "VType:"); 
+  v_typ = new MY_LockableOutput(60, h()-30, 70, 20, "VType:"); 
   v_typ->textsize(info_size); 
   v_typ->labelsize(info_size);
+  v_typ->value("unknown");
+  v_typ->setMutex(&m_pmv_mutex);
 
-  x_mtr = new MY_Output(190, h()-60, 70, 20, "X(m):"); 
+  x_mtr = new MY_LockableOutput(190, h()-60, 70, 20, "X(m):"); 
   x_mtr->textsize(info_size); 
   x_mtr->labelsize(info_size);
+  x_mtr->setMutex(&m_pmv_mutex);
 
-  y_mtr = new MY_Output(190, h()-30, 70, 20, "Y(m):"); 
+  y_mtr = new MY_LockableOutput(190, h()-30, 70, 20, "Y(m):"); 
   y_mtr->textsize(info_size); 
   y_mtr->labelsize(info_size);
+  y_mtr->setMutex(&m_pmv_mutex);
 
-  v_lat = new MY_Output(305, h()-60, 90, 20, "Lat:"); 
+  v_lat = new MY_LockableOutput(305, h()-60, 90, 20, "Lat:"); 
   v_lat->textsize(info_size); 
   v_lat->labelsize(info_size);
+  v_lat->setMutex(&m_pmv_mutex);
 
-  v_lon = new MY_Output(305, h()-30, 90, 20, "long:"); 
+  v_lon = new MY_LockableOutput(305, h()-30, 90, 20, "long:"); 
   v_lon->textsize(info_size); 
   v_lon->labelsize(info_size);
+  v_lon->setMutex(&m_pmv_mutex);
 
-  v_spd = new MY_Output(470, h()-60, 55, 20, "Spd(m/s):"); 
+  v_spd = new MY_LockableOutput(470, h()-60, 55, 20, "Spd(m/s):"); 
   v_spd->textsize(info_size); 
   v_spd->labelsize(info_size);
+  v_spd->setMutex(&m_pmv_mutex);
 
-  v_crs = new MY_Output(470, h()-30, 55, 20, "Heading:"); 
+  v_crs = new MY_LockableOutput(470, h()-30, 55, 20, "Heading:"); 
   v_crs->textsize(info_size); 
   v_crs->labelsize(info_size);
+  v_crs->setMutex(&m_pmv_mutex);
 
-  v_dep = new MY_Output(610, h()-60, 55, 20, "Dep(m):"); 
+  v_dep = new MY_LockableOutput(610, h()-60, 55, 20, "Dep(m):"); 
   v_dep->textsize(info_size); 
   v_dep->labelsize(info_size);
+  v_dep->setMutex(&m_pmv_mutex);
 
-  v_ais = new MY_Output(610, h()-30, 55, 20, "Age-AIS:"); 
+  v_ais = new MY_LockableOutput(610, h()-30, 55, 20, "Age-AIS:"); 
   v_ais->textsize(info_size); 
   v_ais->labelsize(info_size);
+  v_ais->setMutex(&m_pmv_mutex);
 
-  time = new MY_Output(720, h()-60, 70, 20, "Time:"); 
+  time = new MY_LockableOutput(720, h()-60, 70, 20, "Time:"); 
   time->textsize(info_size); 
   time->labelsize(info_size);
+  time->setMutex(&m_pmv_mutex);
 
-  warp = new MY_Output(720, h()-30, 70, 20, "Warp:"); 
+  warp = new MY_LockableOutput(720, h()-30, 70, 20, "Warp:"); 
   warp->textsize(info_size); 
   warp->labelsize(info_size);
+  warp->setMutex(&m_pmv_mutex);
   
   int wid_b  = 120;
   int hgt_b  = 24;
@@ -260,6 +274,13 @@ int PMV_GUI::handle(int event)
 
 //----------------------------------------- UpdateXY
 void PMV_GUI::updateXY() {
+  double dwarp = GetMOOSTimeWarp();
+  if((m_curr_time - m_prev_out_time) < (0.25 * dwarp))
+    return;
+
+  m_prev_out_time = m_curr_time;
+  m_pmv_mutex.Lock();
+
   string time_str = doubleToString(m_curr_time, 1);
   time->value(time_str.c_str());
 
@@ -276,43 +297,45 @@ void PMV_GUI::updateXY() {
     v_lon->value(" n/a");
     v_dep->value(" n/a");
     v_ais->value(" n/a");
+    m_pmv_mutex.UnLock();
     return;
   }
 
-  double dwarp = GetMOOSTimeWarp();
   string swarp = dstringCompact(doubleToString(dwarp,2));
-  warp->value(swarp.c_str());
-
-  v_nam->value(vname.c_str());
-
   string vtype = mviewer->getStringInfo("body");
-  v_typ->value(vtype.c_str());
-
   string xpos = mviewer->getStringInfo("xpos", 1);
-  x_mtr->value(xpos.c_str());
-
   string ypos = mviewer->getStringInfo("ypos", 1);
-  y_mtr->value(ypos.c_str());
-  
   string lat = mviewer->getStringInfo("lat", 6);
-  v_lat->value(lat.c_str());
-
   string lon = mviewer->getStringInfo("lon", 6);
-  v_lon->value(lon.c_str());
-
   string spd = mviewer->getStringInfo("speed", 1);
-  v_spd->value(spd.c_str());
-
   string crs = mviewer->getStringInfo("course", 1);
-  v_crs->value(crs.c_str());
-
   string dep = mviewer->getStringInfo("depth", 1);
-  v_dep->value(dep.c_str());
-  
   string age_ais = mviewer->getStringInfo("age_ais", 2);
   if(age_ais == "-1")
     age_ais = "n/a";
+
+  mviewer->mutexLock();
+  warp->value(swarp.c_str());
+  v_nam->value(vname.c_str());
+  v_typ->value(vtype.c_str());
+  x_mtr->value(xpos.c_str());
+  y_mtr->value(ypos.c_str());
+  v_lat->value(lat.c_str());
+  v_lon->value(lon.c_str());
+  v_spd->value(spd.c_str());
+  v_crs->value(crs.c_str());
+  v_dep->value(dep.c_str());
   v_ais->value(age_ais.c_str());
+
+  warp->redraw();
+  v_nam->redraw();
+  v_typ->redraw();
+  v_spd->redraw();
+  v_dep->redraw();
+  v_ais->redraw();
+
+  mviewer->mutexUnLock();
+  m_pmv_mutex.UnLock();
 }
 
 //----------------------------------------- MOOS_Button
