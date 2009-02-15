@@ -136,6 +136,7 @@ SET(IVP_LIBS_TO_BUILD
   lib_marineview
   lib_mbutil
   lib_navplot
+  lib_avd
   lib_anrp_util
   lib_newmat10D
 )
