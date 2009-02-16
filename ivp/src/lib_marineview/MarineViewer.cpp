@@ -35,6 +35,7 @@
 #include "Shape_Glider.h"
 #include "Shape_Gateway.h"
 #include "Shape_Diamond.h"
+#include "Shape_Circle.h"
 #include "Shape_Triangle.h"
 #include "Shape_EField.h"
 #include "Shape_Square.h"
@@ -743,6 +744,14 @@ void MarineViewer::drawCommonMarker(double x, double y, double shape_scale,
     drawGLPoly(g_diamondBody, g_diamondBodySize, cvect1);    
     drawGLPoly(g_diamondBody, g_diamondBodySize, black, 1);    
     glTranslatef(g_diamondCtrX, g_diamondCtrY, 0);
+  }
+
+  else if(mtype == "circle") {
+    if(cvect1.size() != 3) cvect1 = colorParse("orange");
+    glTranslatef(-g_circleCtrX, -g_circleCtrY, 0);
+    drawGLPoly(g_circleBody, g_circleBodySize, cvect1);    
+    drawGLPoly(g_circleBody, g_circleBodySize, black, 1);    
+    glTranslatef(g_circleCtrX, g_circleCtrY, 0);
   }
 
   else if(mtype == "triangle") {
