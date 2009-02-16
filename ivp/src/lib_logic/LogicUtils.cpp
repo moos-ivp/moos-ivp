@@ -382,7 +382,7 @@ bool isConditionalParamString(const string& giv_str,
 //----------------------------------------------------------------
 // Procedure: strFieldMatch
 //   Purpose: Performs a certain kind of string match. One string 
-//            will match the other if exactly matches a component
+//            will match the other if it exactly matches a component
 //            of the other string. Components are separated by a
 //            a single separator character - by default ':'.
 //  Examples: "alpha:bravo:charlie" matches "charlie"
@@ -391,20 +391,59 @@ bool isConditionalParamString(const string& giv_str,
 bool strFieldMatch(const string& str1, 
 		   const string& str2, char separator)
 {
-  vector<string> svector1 = parseString(str1, separator);
-  unsigned int i, vsize = svector1.size();
-  for(i=0; i<vsize; i++) 
-    if(str2 == svector1[i])
-      return(true);
+  // First we can eliminate pairs where one side is not a substring
+  // of the other, regardless of separators.
 
+  bool contains12 = strContains(str1, str2);
+  bool contains21 = strContains(str2, str1);
+  if(!contains12 && !contains21)
+    return(false);
+
+  // Now check the more complex case where one side is a proper sub-
+  // component of the other. For example:
+  // For Example: "alpha:bravo" == "alpha:bravo:charlie"
+  // But Not:     "pha:bra" == "alpha:bravo:charlie"
+  
+  vector<string> svector1 = parseString(str1, separator);
   vector<string> svector2 = parseString(str2, separator);
-  vsize = svector2.size();
-  for(i=0; i<vsize; i++) 
-    if(str1 == svector2[i])
-      return(true);
+  unsigned vsize1 = svector1.size();
+  unsigned vsize2 = svector2.size();
+  if((vsize1 == 0) || (vsize2 == 0))
+    return(false);
+
+  unsigned int k;
+  for(k=0; k<vsize1; k++)
+    svector1[k] = stripBlankEnds(svector1[k]);
+  for(k=0; k<vsize2; k++)
+    svector2[k] = stripBlankEnds(svector2[k]);
+
+  vector<string> short_vector, long_vector;
+  if(vsize1 < vsize2) {
+    short_vector = svector1;
+    long_vector  = svector2;
+  }
+  else {
+    short_vector = svector2;
+    long_vector  = svector1;
+  }
+  unsigned int short_size = short_vector.size();
+  unsigned int long_size  = long_vector.size();
+
+  unsigned int i, j;
+  for(j=0; j<long_size; j++) {
+    if(short_vector[0] == long_vector[j]) {
+      bool possible_match = true;
+      for(i=1; i<short_size; i++) {
+	j = j+i; 
+	if((j>=long_size) || (short_vector[i] != long_vector[j]))
+	  possible_match = false;
+      }
+      if(possible_match == true)
+	return(true);
+    }
+  }
 
   return(false);
-
 }
     
 
