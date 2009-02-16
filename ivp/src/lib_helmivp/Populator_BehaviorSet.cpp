@@ -50,6 +50,7 @@
 #include "BHV_Shadow.h"
 #include "BHV_Timer.h"
 #include "BHV_HSLine.h"
+#include "BHV_HeadingChange.h"
 #include "BHV_StationKeep.h"
 #include "BHV_RStationKeep.h"
 #include "BHV_CutRange.h"
@@ -358,6 +359,8 @@ IvPBehavior* Populator_BehaviorSet::initializeBehavior(string bhv_name)
     bhv = new BHV_Timer(m_domain);
   if(bhv_name == "BHV_HSLine")     
     bhv = new BHV_HSLine(m_domain);
+  if(bhv_name == "BHV_HeadingChange")     
+    bhv = new BHV_HeadingChange(m_domain);
   else if(bhv_name == "BHV_Shadow")     
     bhv = new BHV_Shadow(m_domain);
   else if(bhv_name == "BHV_CutRange")   
