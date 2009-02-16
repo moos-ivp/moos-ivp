@@ -65,6 +65,9 @@ bool AVD_Regressor::addMeasurementSet(vector<double> times,
 
 //------------------------------------------------------------------
 // Procedure: addMeasurementSet
+//   Example: "0.5,1.2: 0.8,2.3: ... :12.2,45.0"
+//      Note: If even one of the pairs are not of the right syntax,
+//            then none of the pairs are added.
 
 bool AVD_Regressor::addMeasurementSet(string pairs)
 {

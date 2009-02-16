@@ -35,11 +35,12 @@ public:
   bool addMeasurementSet(std::vector<double>, std::vector<double>);
 
   double fit();
-
   void   clear();
+  double getCoeff()    {return(m_coeff);};
+  double getScalar()   {return(m_scalar);};
 
-  double getCoeff();
-  double getScalar();
+ protected:
+  double evaluate(double coeff, double scalar);
 
  protected:
   std::vector<double> m_times;
