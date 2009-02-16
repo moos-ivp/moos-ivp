@@ -36,6 +36,8 @@ BHV_HeadingChange::BHV_HeadingChange(IvPDomain gdomain) :
   m_turn_speed      = -1;
   m_completions     = 0;
 
+  m_turn_time_commenced = 0;
+
   addInfoVars("NAV_HEADING, NAV_X, NAV_Y, DESIRED_HEADING");
   addInfoVars("DESIRED_SPEED, NAV_SPEED");
 }
@@ -68,8 +70,9 @@ bool BHV_HeadingChange::setParam(string param, string val)
   }
   else if(param == "turn_type") {
     val = tolower(val);
-    if((val == "port") || (val == "starboard"))
-      m_turn_type = val;
+    if((val != "port") && (val != "starboard"))
+      return(false);
+    m_turn_type = val;
     return(true);
   }
   
@@ -110,15 +113,19 @@ IvPFunction *BHV_HeadingChange::onRunState()
     m_start_ypos      = m_curr_ypos;
     m_start_des_speed = m_curr_des_speed;
     m_state           = "running";
-    m_heading_goal    = m_curr_heading + m_heading_delta;
+    if(m_turn_type == "starboard")
+      m_heading_goal    = m_curr_heading + m_heading_delta;
+    else
+      m_heading_goal    = m_curr_heading - m_heading_delta;
+    m_heading_goal = angle360(m_heading_goal);
     // Cannot infer the sign based on port/starboard due to wraparound
     m_sign_positive   = (m_curr_heading > m_heading_goal);
+    m_turn_time_commenced = m_curr_time;
   }
   else {
     bool tcomplete = checkForTurnCompletion();
     if(tcomplete) {
-      m_completions++;
-      postMessage("TURNS", m_completions);
+      postTrend();
       setComplete();
       m_state = "idle";
       return(0);
@@ -170,11 +177,17 @@ bool BHV_HeadingChange::checkForTurnCompletion()
   }
 #endif
 
+  double accumulated_turn_time = m_curr_time - m_turn_time_commenced;
   bool   curr_sign_positive = (m_curr_heading > m_heading_goal);
   double curr_hdg_delta = (m_curr_heading - m_heading_goal);
   curr_hdg_delta = angle180(curr_hdg_delta);
   if(curr_hdg_delta < 0)
     curr_hdg_delta *= -1;
+
+  m_acc_turn_time.push_back(accumulated_turn_time);
+  m_acc_heading_delta.push_back(curr_hdg_delta);
+  m_turn_xpos.push_back(m_curr_xpos);
+  m_turn_ypos.push_back(m_curr_ypos);
 
   cout << "HeadingDelta: " << curr_hdg_delta << endl;
   postMessage("CURR_HDG_DELTA", curr_hdg_delta);
@@ -187,4 +200,52 @@ bool BHV_HeadingChange::checkForTurnCompletion()
     return(true);
   else
     return(false);
+}
+
+//-----------------------------------------------------------
+// Procedure: postTrend
+
+void BHV_HeadingChange::postTrend()
+{
+  m_completions++;
+  postMessage("TURNS", m_completions);
+
+  string result1;
+  unsigned int i, vsize = m_acc_turn_time.size();
+  for(i=0; i<vsize; i++) {
+    result1 += doubleToString(m_acc_turn_time[i], 2);
+    result1 += ",";
+    result1 += doubleToString(m_acc_heading_delta[i], 2);
+    if(i < (vsize-1))
+      result1 += ":";
+  }
+  postMessage("HEADING_TREND_1", result1);
+
+
+  string result2;
+  for(i=0; i<vsize; i++) {
+    result2 += doubleToString(m_acc_turn_time[i], 2);
+    result2 += ",";
+    double val = (m_heading_delta - m_acc_heading_delta[i]);
+    result2 += doubleToString(val, 2);
+    if(i < (vsize-1))
+      result2 += ":";
+  }
+  postMessage("HEADING_TREND_2", result2);
+
+  string result3;
+  for(i=0; i<vsize; i++) {
+    result3 += doubleToString(m_turn_xpos[i], 2);
+    result3 += ",";
+    result3 += doubleToString(m_turn_ypos[i], 2);
+    if(i < (vsize-1))
+      result3 += ":";
+  }
+  postMessage("POS_TREND", result3);
+
+  m_acc_turn_time.clear();
+  m_acc_heading_delta.clear();
+  m_turn_xpos.clear();
+  m_turn_ypos.clear();
+
 }

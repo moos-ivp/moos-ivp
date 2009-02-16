@@ -20,10 +20,7 @@ public:
   void         onIdleState();
 
 protected:
-  void         markTurnStart();
-  void         interrupt();
-  void         markTurnStop();
-  void         postResults();
+  void         postTrend();
   bool         checkForTurnCompletion();
 
  protected: // Configuration parameters
@@ -49,5 +46,14 @@ protected:
   double       m_curr_ypos;
 
   int          m_completions;
+
+  double       m_turn_time_commenced;
+
+  std::vector<double> m_acc_turn_time;
+  std::vector<double> m_acc_heading_delta;
+  
+  std::vector<double> m_turn_xpos;
+  std::vector<double> m_turn_ypos;
+
 };
 #endif
