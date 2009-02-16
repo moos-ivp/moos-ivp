@@ -54,7 +54,6 @@ protected:
   void postModeMessages();
   void postInitialVariables();
   void postDefaultVariables();
-  void postSummary();
   void registerVariables();
   void registerNewVariables();
   void requestBehaviorLogging();

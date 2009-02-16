@@ -701,8 +701,9 @@ bool HelmIvP::OnStartUp()
 	return(false);
       }
     }
-
-    else if(MOOSStrCmp(sVarName, "ACTIVE_START")) {
+    
+    else if((MOOSStrCmp(sVarName, "ACTIVE_START")) ||
+	    (MOOSStrCmp(sVarName, "START_ENGAGED"))) {
       sLine = tolower(sLine);
       if(sLine == "true") {
 	m_has_control = true;
