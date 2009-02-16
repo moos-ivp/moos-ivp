@@ -181,18 +181,22 @@ void PMV_GUI::addButton(string btype, string svalue)
   if(btype == "button_one") { 
     user_button_1->copy_label(button_label.c_str());
     user_button_1->show();
+    user_button_1->redraw();
   }    
   else if (btype == "button_two") {
     user_button_2->copy_label(button_label.c_str());
     user_button_2->show();
+    user_button_2->redraw();
   }
   else if (btype == "button_three") {
     user_button_3->copy_label(button_label.c_str());
     user_button_3->show();
+    user_button_3->redraw();
   }
   else if (btype == "button_four") {
     user_button_4->copy_label(button_label.c_str());
     user_button_4->show();
+    user_button_4->redraw();
   }
 
 #if 0
