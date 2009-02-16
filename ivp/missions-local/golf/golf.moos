@@ -70,6 +70,7 @@ ProcessConfig = pMarinePID
 
   // Yaw PID controller
   YAW_PID_KP		 = 0.5
+  //YAW_PID_KP		 = 0.25
   YAW_PID_KD		 = 0.0
   YAW_PID_KI		 = 0.0
   YAW_PID_INTEGRAL_LIMIT = 0.07
@@ -117,12 +118,15 @@ ProcessConfig = pMarineViewer
   ACTION  = MENU_KEY=port100 # UPDATES_HC="heading_delta=100"
   ACTION  = MENU_KEY=port100 # UPDATES_HC="turn_type=port"
   ACTION+ = MENU_KEY=port100 # HC_REQ=true
-  ACTION  = MENU_KEY=port200 # UPDATES_HC="heading_delta=200"
-  ACTION  = MENU_KEY=port200 # UPDATES_HC="turn_type=port"
-  ACTION+ = MENU_KEY=port200 # HC_REQ=true
-  ACTION  = MENU_KEY=star120 # UPDATES_HC="heading_delta=120"
-  ACTION  = MENU_KEY=star120 # UPDATES_HC="turn_type=starboard"
-  ACTION+ = MENU_KEY=star120 # HC_REQ=true
+  ACTION  = MENU_KEY=port178 # UPDATES_HC="heading_delta=178"
+  ACTION  = MENU_KEY=port178 # UPDATES_HC="turn_type=port"
+  ACTION+ = MENU_KEY=port178 # HC_REQ=true
+  ACTION  = MENU_KEY=starboard178 # UPDATES_HC="heading_delta=178"
+  ACTION  = MENU_KEY=starboard178 # UPDATES_HC="turn_type=starboard"
+  ACTION+ = MENU_KEY=starboard178 # HC_REQ=true
+  ACTION  = MENU_KEY=starboard120 # UPDATES_HC="heading_delta=120"
+  ACTION  = MENU_KEY=starboard120 # UPDATES_HC="turn_type=starboard"
+  ACTION+ = MENU_KEY=starboard120 # HC_REQ=true
   ACTION  = RETURN=true
 }
 
