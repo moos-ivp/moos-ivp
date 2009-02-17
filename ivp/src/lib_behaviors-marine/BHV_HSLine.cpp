@@ -20,6 +20,7 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
+#include <cstdlib>
 #include "BHV_HSLine.h"
 #include "MBUtils.h"
 #include "GeomUtils.h"
