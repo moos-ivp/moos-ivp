@@ -107,7 +107,7 @@ void BehaviorFactory::load_directory(string dirname) {
          exit(1);
      }
 
-     cerr << "  SUCCESS" << endl;
+     cerr << "SUCCESS" << endl;
 
      creation_funcs[bhv_name] = createFn;
      open_library_handles.push_back(handle);
