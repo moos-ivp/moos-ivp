@@ -72,10 +72,13 @@ void BehaviorFactory::load_directory(string dirname) {
      // Strip off the leading 'lib' and trailing '.so'  / '.dylib' from the filename, 
      // because people using the behaviors want to call them just "BHV_...".
      string bhv_name = fname.substr(3, fname.length() - (3 + suffix_len));
+
+      cerr << "        About to load behavior library: " << bhv_name << " ... ";
      
      // Load the .so file, then go after the symbols we need...
      void* handle = dlopen(fpath.c_str(), RTLD_LAZY);
      if (handle == NULL) {
+       cerr << endl;
        cerr << "Error calling dlopen() on file " << fname << endl;
          cerr << "dlerror() returns: " << dlerror() << endl;
          exit(1);
@@ -98,10 +101,13 @@ void BehaviorFactory::load_directory(string dirname) {
 
      dlsym_error = dlerror();
      if (dlsym_error) {
+         cerr << endl;
          cerr << "Cannot load symbol 'createBehavior' from file " << fname << endl;
          cerr << "dlerror() returns: " << dlsym_error << endl;
          exit(1);
-      }
+     }
+
+     cerr << "  SUCCESS" << endl;
 
      creation_funcs[bhv_name] = createFn;
      open_library_handles.push_back(handle);
