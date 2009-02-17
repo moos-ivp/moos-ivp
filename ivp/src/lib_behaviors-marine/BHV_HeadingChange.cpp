@@ -5,6 +5,7 @@
 /*    DATE: Feb 11th 2009                                        */
 /*****************************************************************/
 
+#include <cstdlib>
 #include <iostream>
 #include "BHV_HeadingChange.h"
 #include "ZAIC_PEAK.h"
