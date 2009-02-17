@@ -45,9 +45,9 @@ void BehaviorFactory::load_directory(string dirname) {
     
      // Make sure it looks like a behavior's .so file...
      if(fname.substr(0, 7) != "libBHV_")
-       {
+     {
          continue;
-       }
+     }
 
 
      #ifdef __APPLE__
@@ -69,26 +69,27 @@ void BehaviorFactory::load_directory(string dirname) {
        continue;
      }
 
-     // Strip off the leading 'lib' and trailing '.so'  / '.dylib' from the filename, 
-     // because people using the behaviors want to call them just "BHV_...".
+     // Strip off the leading 'lib' and trailing '.so'  / '.dylib' from the 
+     // filename, because people using the behaviors want to call them just 
+     // "BHV_...".
      string bhv_name = fname.substr(3, fname.length() - (3 + suffix_len));
 
-      cerr << "        About to load behavior library: " << bhv_name << " ... ";
+     cerr << "        About to load behavior library: " << bhv_name << " ... ";
      
-     // Load the .so file, then go after the symbols we need...
+     // Load the library file, then go after the symbols we need...
      void* handle = dlopen(fpath.c_str(), RTLD_LAZY);
      if (handle == NULL) {
        cerr << endl;
        cerr << "Error calling dlopen() on file " << fname << endl;
-         cerr << "dlerror() returns: " << dlerror() << endl;
-         exit(1);
+       cerr << "dlerror() returns: " << dlerror() << endl;
+       exit(1);
      }
 
      const char *dlsym_error;
 
      // Apparently ISO C++ doesnt' permit you to cast a (pointer to an object) 
      // to (a pointer to a function).  And (at least) gcc 3.3 treads "void *" 
-     // as a pointer to an object.  To it gives a compiler error when we use
+     // as a pointer to an object.  So it gives a compiler error when we use
      // "reinterpret_cast" in the statement below.  This problem seems absent
      // from (at lesat) gcc 4.2.3 and later.  But, we still want older compilers
      // to be able to build IvP, so we're going to use an old-style C cast to 
