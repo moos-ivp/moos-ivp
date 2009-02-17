@@ -25,7 +25,6 @@ SET(SRC
   BHV_RStationKeep.cpp
   BHV_RubberBand.cpp
   BHV_Shadow.cpp
-  BHV_SimpleWaypoint.cpp
   BHV_StationKeep.cpp
   BHV_TimeOut.cpp
   BHV_Timer.cpp
