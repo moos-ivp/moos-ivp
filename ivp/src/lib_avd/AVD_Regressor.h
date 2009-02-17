@@ -24,6 +24,7 @@
 #define AVD_REGRESSOR_HEADER
 
 #include <vector>
+#include <string>
 
 class AVD_Regressor {
 public:
