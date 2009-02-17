@@ -28,6 +28,9 @@ BehaviorFactory::~BehaviorFactory() {
 
 //========================================================================
 
+#include <iostream>
+using namespace std;
+
 void BehaviorFactory::load_directory(string dirname) {
    vector<string> files;
    int status = listdir (dirname, files);
@@ -39,22 +42,42 @@ void BehaviorFactory::load_directory(string dirname) {
    for(unsigned int i=0; i<files.size(); ++i) {
      const string & fname = files[i];
      const string fpath = dirname + '/' + fname;
-     
+ 
+cout << "fname = " << fname << endl;
+    
      // Make sure it looks like a behavior's .so file...
      if(fname.substr(0, 7) != "libBHV_")
+{
+cout << "Skipping for reason A" << endl;
        continue;
+}
 
-     if(fname.substr(fname.length() - 3, 3) != ".so")
+     #ifdef __APPLE__
+     if (fname.substr(fname.length() - 6, 6) != ".dylib")
+{
+cout << "Skipping for reason B: " << fname << endl;
        continue;
+}
+     #else
+     if (fname.substr(fname.length() - 3, 3) != ".so") 
+{
+cout << "Skipping for reason C: " << fname << endl;
+       continue;
+}
+     #endif
 
      if(! is_regular_file(fpath)) {
        cerr << "Warning: File " << fname << " isn't a regular file." << endl;
        continue;
      }
 
-     // Strip off the leading 'lib' and trailing '.so' from the filename, 
+     // Strip off the leading 'lib' and trailing '.so'  / '.dylib' from the filename, 
      // because people using the behaviors want to call them just "BHV_...".
+#ifdef __APPLE__
+     string bhv_name = fname.substr(3, fname.length() - (3 + 6));
+#else
      string bhv_name = fname.substr(3, fname.length() - (3 + 3));
+#endif
      
      // Load the .so file, then go after the symbols we need...
      void* handle = dlopen(fpath.c_str(), RTLD_LAZY);
@@ -63,6 +86,8 @@ void BehaviorFactory::load_directory(string dirname) {
          cerr << "dlerror() returns: " << dlerror() << endl;
          exit(1);
      }
+
+cout << "@@@@ handle = " << handle << endl;
 
      const char *dlsym_error;
 
