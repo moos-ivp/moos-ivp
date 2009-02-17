@@ -31,4 +31,6 @@ killall pSensorSim pArtifactMapper pNoiseSim uNafconSplitter \
         pMultiTargetSim pMultiAcousticSim iOS5000 pGeneralCodec \
         pCBF pBTracker pTrackMonitor
 
+killall pFleetControl
+
 echo Done - Killed all MOOS-Related Processes.....
