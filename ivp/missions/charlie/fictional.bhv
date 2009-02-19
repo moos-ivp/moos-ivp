@@ -3,14 +3,30 @@
 initialize   DEPLOY = false
 initialize   RETURN = false
 
-set MODE = ACTIVE {
+set MODE = Alpha {
   DEPLOY = true
-} INACTIVE
+}
+set MODE = Bravo {
+  DEPLOY = truedf
+} Charlie
 
-set MODE = SURVEYING {
-  MODE = ACTIVE
+set MODE = Delta {
+  MODE = Alpha
   RETURN != true
-} RETURNING                        
+} Echo
+set MODE = Foxtrot {
+  MODE = Charlie
+  RETURN != true
+} Golf
+
+Set MODE = Sierra {
+  MODE = Echo
+  Foo = sdf
+}
+Set MODE = Tango {
+  MODE = Echo
+  Foo = sdfsdf
+}
 
 //----------------------------------------------
 Behavior = BHV_Waypoint
@@ -37,18 +53,6 @@ Behavior = BHV_Waypoint
   radius     = 8.0
   points     = 0,0
 }
-
-Behavior = BHV_ConstantSpeed
-{
-  name          = search_min_speed
-  pwt           = 100
-  speed         = 1.5
-  duration	= no-time-limit
-  condition     = DESIRED_SPEED < 2.0
-  condition     = (MODE == NO_TRACK)
-}
-
-
 
 
 // Things to do
