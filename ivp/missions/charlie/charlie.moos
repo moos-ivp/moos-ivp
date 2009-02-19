@@ -22,7 +22,7 @@ ProcessConfig = ANTLER
   Run = pTransponderAIS	@ NewConsole = false
   Run = pMarinePID	@ NewConsole = false
   Run = pMarineViewer	@ NewConsole = true
-  //Run = pHelmIvP	@ NewConsole = false
+  Run = pHelmIvP	@ NewConsole = false
 }
 
 //------------------------------------------
@@ -49,7 +49,8 @@ ProcessConfig = pHelmIvP
   AppTick    = 4
   CommsTick  = 4
 
-  Behaviors  = charlie.bhv
+  Behaviors  = Unicorn_HSM.bhv
+  //Behaviors  = charlie.bhv
   Verbose    = quiet
   Domain     = course:0:359:360
   Domain     = speed:0:4:21

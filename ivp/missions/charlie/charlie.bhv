@@ -10,12 +10,8 @@ set MODE = ACTIVE {
 set MODE = SURVEYING {
   MODE = ACTIVE
   RETURN != true
-} RETURNING
+} RETURNING                        
 
-set MODE = FOOBAR {
-  MODE = ACTIVEBAR
-  A = B
-} TESTMODE
 
 
 //----------------------------------------------
@@ -43,6 +39,18 @@ Behavior = BHV_Waypoint
   radius     = 8.0
   points     = 0,0
 }
+
+Behavior = BHV_ConstantSpeed
+{
+  name          = search_min_speed
+  pwt           = 100
+  speed         = 1.5
+  duration	= no-time-limit
+  condition     = DESIRED_SPEED < 2.0
+  condition     = (MODE == NO_TRACK)
+}
+
+
 
 
 // Things to do
