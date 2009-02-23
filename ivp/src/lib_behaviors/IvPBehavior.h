@@ -81,9 +81,9 @@ protected:
   void    postMessage(std::string, double, std::string key="");
   void    postMessage(std::string, std::string, std::string key="");
   void    postBoolMessage(std::string, bool, std::string key="");
+  void    postIntMessage(std::string, double, std::string key="");
   void    postRepeatableMessage(std::string, double);
   void    postRepeatableMessage(std::string, std::string);
-  void    postIntMessage(std::string, double, std::string key="");
   void    postEMessage(std::string);
   void    postWMessage(std::string);
   void    postVMessage(std::string);

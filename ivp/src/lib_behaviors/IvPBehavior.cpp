@@ -304,8 +304,10 @@ void IvPBehavior::postMessage(string var, string sdata, string key)
 {
   VarDataPair pair(var, sdata);
 
-  key = (m_descriptor + var + key);
-  pair.set_key(key);
+  if(key != "repeatable") {
+    key = (m_descriptor + var + key);
+    pair.set_key(key);
+  }
 
   m_messages.push_back(pair);
 }
@@ -317,8 +319,10 @@ void IvPBehavior::postMessage(string var, double ddata, string key)
 {
   VarDataPair pair(var, ddata);
 
-  key = (m_descriptor + var + key);
-  pair.set_key(key);
+  if(key != "repeatable") {
+    key = (m_descriptor + var + key);
+    pair.set_key(key);
+  }
 
   m_messages.push_back(pair);
 }
@@ -332,9 +336,11 @@ void IvPBehavior::postBoolMessage(string var, bool bdata, string key)
   if(!bdata)
     bool_str = "false";
   VarDataPair pair(var, bool_str);
-
-  key = (m_descriptor + var + key);
-  pair.set_key(key);
+  
+  if(key != "repeatable") {
+    key = (m_descriptor + var + key);
+    pair.set_key(key);
+  }
 
   m_messages.push_back(pair);
 }
@@ -351,10 +357,12 @@ void IvPBehavior::postIntMessage(string var, double ddata, string key)
 {
   int idata = (int)(ddata + 0.5);
   VarDataPair pair(var, idata);
-
-  key = (m_descriptor + var + key);
-  pair.set_key(key);
-
+  
+  if(key != "repeatable") {
+    key = (m_descriptor + var + key);
+    pair.set_key(key);
+  }
+  
   m_messages.push_back(pair);
 }
 
