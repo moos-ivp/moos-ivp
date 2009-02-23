@@ -659,9 +659,13 @@ bool IvPBehavior::durationExceeded()
   double remaining_time = m_duration - elapsed_time;
   if(remaining_time < 0)
     remaining_time = 0;
-  if(m_duration_status != "")
-    postMessage(m_duration_status, remaining_time);
-  
+  if(m_duration_status != "") {
+    if(remaining_time <= 10)
+      postMessage(m_duration_status, remaining_time);
+    else
+      postIntMessage(m_duration_status, remaining_time);
+  }
+
   if(elapsed_time >= m_duration)
     return(true);
 
