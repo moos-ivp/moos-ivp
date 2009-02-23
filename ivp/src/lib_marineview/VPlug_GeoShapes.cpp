@@ -425,11 +425,11 @@ bool VPlug_GeoShapes::setViewableMapping(string param, string value)
   param = tolower(param);
   value = tolower(value);
 
-  if((value == "true") or (value == "on")) {
+  if((value == "true") || (value == "on")) {
     m_viewable_map[param] = true;
     return(true);
   }
-  if((value == "false") or (value == "off")) {
+  if((value == "false") || (value == "off")) {
     m_viewable_map[param] = false;
     return(true);
   }
