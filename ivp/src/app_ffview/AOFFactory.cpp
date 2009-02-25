@@ -43,7 +43,7 @@ void AOFFactory::load_directory(string dirname) {
      const string & fname = files[i];
      const string fpath = dirname + '/' + fname;
     
-     // Make sure it looks like a behavior's .so file...
+     // Make sure it looks like an AOF's .so file...
      if(fname.substr(0, 7) != "libAOF_")
      {
          continue;
@@ -70,7 +70,7 @@ void AOFFactory::load_directory(string dirname) {
      }
 
      // Strip off the leading 'lib' and trailing '.so'  / '.dylib' from the 
-     // filename, because people using the behaviors want to call them just 
+     // filename, because people using the AOFs want to call them just 
      // "AOF_...".
      string aof_name = fname.substr(3, fname.length() - (3 + suffix_len));
 
@@ -117,7 +117,7 @@ void AOFFactory::load_directory(string dirname) {
 
 void AOFFactory::loadEnvVarDirectories(std::string envVar, bool verbose) {
   if (verbose) {
-    cerr << "Loading behavior dynamic libraries...." << endl;
+    cerr << "Loading AOF dynamic libraries...." << endl;
   }
 
   const char * dirs = getenv(envVar.c_str());
