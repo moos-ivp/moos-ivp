@@ -1,4 +1,4 @@
-#include "BehaviorFactory.h"
+#include "AOFFactory.h"
 #include "fileutil.h"
 #include "stringutil.h"
 #include <dlfcn.h>
@@ -10,14 +10,14 @@ using namespace std;
 
 //========================================================================
 
-BehaviorFactory::BehaviorFactory() {
-  //cerr << "BehaviorFactory::BehaviorFactory()" << endl;
+AOFFactory::AOFFactory() {
+  //cerr << "AOFFactory::AOFFactory()" << endl;
 }
 
 //========================================================================
 
-BehaviorFactory::~BehaviorFactory() {
-  //cerr << "BehaviorFactory::~BehaviorFactory()" << endl;
+AOFFactory::~AOFFactory() {
+  //cerr << "AOFFactory::~AOFFactory()" << endl;
   // If this is being called as the program is being shut down, it's probably
   // superfluous.  But just in case it's not...
   
@@ -31,7 +31,7 @@ BehaviorFactory::~BehaviorFactory() {
 #include <iostream>
 using namespace std;
 
-void BehaviorFactory::load_directory(string dirname) {
+void AOFFactory::load_directory(string dirname) {
    vector<string> files;
    int status = listdir (dirname, files);
    if (status) {
@@ -44,7 +44,7 @@ void BehaviorFactory::load_directory(string dirname) {
      const string fpath = dirname + '/' + fname;
     
      // Make sure it looks like a behavior's .so file...
-     if(fname.substr(0, 7) != "libBHV_")
+     if(fname.substr(0, 7) != "libAOF_")
      {
          continue;
      }
@@ -72,9 +72,9 @@ void BehaviorFactory::load_directory(string dirname) {
      // Strip off the leading 'lib' and trailing '.so'  / '.dylib' from the 
      // filename, because people using the behaviors want to call them just 
      // "BHV_...".
-     string bhv_name = fname.substr(3, fname.length() - (3 + suffix_len));
+     string aof_name = fname.substr(3, fname.length() - (3 + suffix_len));
 
-     cerr << "        About to load behavior library: " << bhv_name << " ... ";
+     cerr << "        About to load AOF library: " << aof_name << " ... ";
      
      // Load the library file, then go after the symbols we need...
      void* handle = dlopen(fpath.c_str(), RTLD_LAZY);
@@ -95,29 +95,27 @@ void BehaviorFactory::load_directory(string dirname) {
      // to be able to build IvP, so we're going to use an old-style C cast to 
      // side-step the compiler error. -CJC
 
-     // TFuncPtrCreateBehavior createFn = 
-     //   reinterpret_cast<TFuncPtrCreateBehavior>(dlsym(handle, "createBehavior"));
-     TFuncPtrCreateBehavior createFn = 
-       (TFuncPtrCreateBehavior)(dlsym(handle, "createBehavior"));
+     TFuncPtrCreateAOF createFn = 
+       (TFuncPtrCreateAOF)(dlsym(handle, "createAOF"));
 
      dlsym_error = dlerror();
      if (dlsym_error) {
          cerr << endl;
-         cerr << "Cannot load symbol 'createBehavior' from file " << fname << endl;
+         cerr << "Cannot load symbol 'createAOF' from file " << fname << endl;
          cerr << "dlerror() returns: " << dlsym_error << endl;
          exit(1);
      }
 
      cerr << "SUCCESS" << endl;
 
-     creation_funcs[bhv_name] = createFn;
+     creation_funcs[aof_name] = createFn;
      open_library_handles.push_back(handle);
    }
 }
 
 //=========================================================================
 
-void BehaviorFactory::loadEnvVarDirectories(std::string envVar, bool verbose) {
+void AOFFactory::loadEnvVarDirectories(std::string envVar, bool verbose) {
   if (verbose) {
     cerr << "Loading behavior dynamic libraries...." << endl;
   }
@@ -125,11 +123,11 @@ void BehaviorFactory::loadEnvVarDirectories(std::string envVar, bool verbose) {
   const char * dirs = getenv(envVar.c_str());
   if (! dirs) {
     if (verbose) {
-      cerr << "    Can't load behavior libraries." << endl;
+      cerr << "    Can't load AOF libraries." << endl;
       cerr << "    Environment variable " << envVar << " isn't set." << endl;
     }
 
-    cerr << "Loading behavior dynamic libraries - skipped." << endl;
+    cerr << "Loading AOF dynamic libraries - skipped." << endl;
     return;
   }
   
@@ -152,67 +150,39 @@ void BehaviorFactory::loadEnvVarDirectories(std::string envVar, bool verbose) {
     }
   }
 
-  cerr << "Loading behavior dynamic libraries - FINISHED." << endl;
+  cerr << "Loading AOF dynamic libraries - FINISHED." << endl;
 }
 
 //==============================================================================
 
-bool BehaviorFactory::is_known_behavior(string bhv_name) const {
-   return (creation_funcs.find(bhv_name) != creation_funcs.end());
+bool AOFFactory::is_known_aof(string aof_name) const {
+   return (creation_funcs.find(aof_name) != creation_funcs.end());
 }
 
 //==============================================================================
 
-vector<string> BehaviorFactory::get_behavior_names() const {
-   vector<string> behavior_names;
+vector<string> AOFFactory::get_aof_names() const {
+   vector<string> aof_names;
    
    for (CreationFuncsMap::const_iterator p = creation_funcs.begin();
          p != creation_funcs.end(); ++p) {
-      behavior_names.push_back(p->first);
+      aof_names.push_back(p->first);
    }
 
-   return behavior_names;
+   return aof_names;
 }
 
 //==============================================================================
 
-IvPBehavior* BehaviorFactory::new_behavior(string name, IvPDomain domain) {
+AOF* AOFFactory::new_aof(string name, IvPDomain domain) {
    if (creation_funcs.find(name) == creation_funcs.end()) {
       return NULL;
    }
 
-   TFuncPtrCreateBehavior createFunc = creation_funcs[name];
-   IvPBehavior * pBehavior = createFunc(name, domain);
+   TFuncPtrCreateAOF createFunc = creation_funcs[name];
+   AOF * pAOF = createFunc(name, domain);
 
-   // We need to remember the deletion function for each instance, because it's
-   // recommended here:  http://www.faqs.org/docs/Linux-mini/C++-dlopen.html
-   // (near the end of that document's Section 3).
-   // It may be overkill though.  If it is overkill, we can totally stop
-   // thinking about deletion functions (even to the point of not requiring them
-   // to be defined in the behavior libraries), and this class can top trying
-   // to remember each Behavior instance just so it can look up the proper
-   // delete function.
-//    bhv_delete_fn_map[pBehavior] = deletion_funcs[name];
-
-   return pBehavior;
-}
-/*
-//==============================================================================
-
-void BehaviorFactory::delete_behavior(IvPBehavior* pBehavior) {
-   if (bhv_delete_fn_map.find(pBehavior) == bhv_delete_fn_map.end()) {
-      cerr << "BehaviorFactory::delete_behavior: Tried to delete "
-         << "behavior at address " << static_cast<void*>(pBehavior)
-         << ", but this factory has no record of it." << endl;
-      exit(1);
-   }
-
-   TFuncPtrDeleteBehavior deletionFunc = bhv_delete_fn_map[pBehavior];
-   deletionFunc(pBehavior);
+   return pAOF;
 }
 
 //==============================================================================
-
-
-*/
-

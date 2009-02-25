@@ -9,6 +9,7 @@ IF(BUILD_GUIS)
       AOF_Cache.cpp
       GUI.cpp
       PopulatorAOF.cpp
+      AOFFactory.cpp
       Viewer.cpp
       main.cpp
    )	  
@@ -32,6 +33,7 @@ IF(BUILD_GUIS)
      ipfview
      geometry
      mbutil
+     genutil
      ivpbuild
      ivpcore
      m

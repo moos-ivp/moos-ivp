@@ -1,5 +1,5 @@
-#ifndef BEHAVIOR_LOADER_HEADER
-#define BEHAVIOR_LOADER_HEADER
+#ifndef BEHAVIORFACTORY_HEADER
+#define BEHAVIORFACTORY_HEADER
 
 #include<string>
 #include<map>
@@ -13,8 +13,8 @@ class BehaviorFactory {
       BehaviorFactory();
       virtual ~BehaviorFactory();
 
-      // Loads all the .so libraries named BHV_*.so from the specified
-      // directory.  Calls exit() if anything goes wrong.
+      // Loads all the libraries named BHV_*.so (Linux) or BHV_*.dylib (OS X)
+      // from the specified directory.  Calls exit() if anything goes wrong.
       void load_directory(std::string dirname);
 
       // envVar is the name of an environment variable.  That variable should
@@ -40,10 +40,9 @@ class BehaviorFactory {
 //       void delete_behavior(IvPBehavior* pBehavior);
 
    private:
-      // These describe the signature of the functions that create and delete
-      // a Behavior object.  Each shared library that implements a behavior
-      // must have one of each of these functions, and they must be named
-      // "create_behavior" and "delete_behavior", respectively...
+      // These describe the signature of the function that creates an AOF
+      // object.  Each shared library that implements a behavior must have one 
+      // of each of these functions, and it must be named "createBehavior".
       typedef IvPBehavior * (*TFuncPtrCreateBehavior) (std::string, IvPDomain);
 //       typedef void (*TFuncPtrDeleteBehavior) (IvPBehavior*);
 

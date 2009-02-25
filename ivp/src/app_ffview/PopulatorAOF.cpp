@@ -21,6 +21,7 @@
 #include "PopulatorAOF.h"
 #include "MBUtils.h"
 #include "FileBuffer.h"
+#include "AOFFactory.h"
 
 using namespace std;
 
@@ -129,6 +130,37 @@ bool PopulatorAOF::handleLine(string line)
       aof = new AOF_Linear(domain);
     else if(aof_type == "AOF_Quadratic")
       aof = new AOF_Quadratic(domain);
+    else {
+      const string envVar = "IVP_AOF_DIRS";
+      const char * dirs = getenv(envVar.c_str());
+      if (! dirs) {
+        cerr << "The AOF type \"" << aof_type << "\" wasn't recognized as"
+                " a built-in AOF name.  But ffview couldn't attempt to"
+                " dynamically load that AOF either, because the \"" << envVar
+             << "\" environment variable isn't set." << endl;
+      }
+      else {
+        AOFFactory factory;
+        factory.loadEnvVarDirectories(envVar, true);
+
+        aof = factory.new_aof(aof_type, domain);
+        if (! aof) {
+          cerr << "The AOF type \"" << aof_type << "\" wasn't recognized as"
+                  " a built-in AOF name.  But there no matching dynamically "
+                  " loadable AOF name was found, either." << endl
+               << endl
+               << "Here are the discovered dynamically loadable AOFs:" << endl;
+          const vector<string> aof_names = factory.get_aof_names();
+          for (size_t i = 0; i < aof_names.size(); ++i) {
+            cerr << "   " << aof_names.at(i) << endl;
+          }
+          cerr << endl;
+        }
+      }
+      
+      // This will return NULL if 'aof_type' isn't known to the factory.
+    }
+
     return(aof!=0);
   }
   
