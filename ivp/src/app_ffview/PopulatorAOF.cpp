@@ -146,15 +146,9 @@ bool PopulatorAOF::handleLine(string line)
         aof = factory.new_aof(aof_type, domain);
         if (! aof) {
           cerr << "The AOF type \"" << aof_type << "\" wasn't recognized as"
-                  " a built-in AOF name.  But there no matching dynamically "
-                  " loadable AOF name was found, either." << endl
-               << endl
-               << "Here are the discovered dynamically loadable AOFs:" << endl;
-          const vector<string> aof_names = factory.get_aof_names();
-          for (size_t i = 0; i < aof_names.size(); ++i) {
-            cerr << "   " << aof_names.at(i) << endl;
-          }
-          cerr << endl;
+                  " either a built-in or" << endl
+               << "dynamically loaded AOF type." << endl
+               << endl;
         }
       }
       
