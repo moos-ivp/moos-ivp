@@ -311,7 +311,9 @@ bool Populator_BehaviorSet::handleLine(string line)
     string left  = stripBlankEnds(tolower(biteString(line, '=')));
     string right = stripBlankEnds(line); 
     IvPBehavior *bhv = behaviors[behaviors.size()-1];
-    bool result = bhv->setParam(left.c_str(), right.c_str());
+    bool result = bhv->IvPBehavior::setParam(left.c_str(), right.c_str());
+    if(!result)
+      result = bhv->setParam(left.c_str(), right.c_str());
     return(result);
   }
 
@@ -334,6 +336,11 @@ IvPBehavior* Populator_BehaviorSet::initializeBehavior(string bhv_name)
 
   if(bhv_name == "BHV_OpRegion")
     bhv = new BHV_OpRegion(m_domain);
+<<<<<<< .mine
+  //  else if(bhv_name == "BHV_SimpleWaypoint")   
+  //    bhv = new BHV_SimpleWaypoint(m_domain);
+=======
+>>>>>>> .r1731
   else if(bhv_name == "BHV_Waypoint")   
     bhv = new BHV_Waypoint(m_domain);
   else if(bhv_name == "BHV_ConstantSpeed")     

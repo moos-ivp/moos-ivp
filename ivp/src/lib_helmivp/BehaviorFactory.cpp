@@ -1,4 +1,5 @@
 #include "BehaviorFactory.h"
+#include "MBUtils.h"
 #include "fileutil.h"
 #include "stringutil.h"
 #include <dlfcn.h>
@@ -135,7 +136,7 @@ void BehaviorFactory::loadEnvVarDirectories(std::string envVar, bool verbose) {
   
   vector<string> v = tokenize(dirs, ":");
   for(unsigned int i=0; i<v.size(); ++i) {
-    string directory = v.at(i);
+    string directory = stripBlankEnds(v.at(i));
 
     if (isdir(directory)) {
       if (verbose) {
