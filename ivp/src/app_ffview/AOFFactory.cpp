@@ -71,7 +71,7 @@ void AOFFactory::load_directory(string dirname) {
 
      // Strip off the leading 'lib' and trailing '.so'  / '.dylib' from the 
      // filename, because people using the behaviors want to call them just 
-     // "BHV_...".
+     // "AOF_...".
      string aof_name = fname.substr(3, fname.length() - (3 + suffix_len));
 
      cerr << "        About to load AOF library: " << aof_name << " ... ";
