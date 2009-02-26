@@ -44,10 +44,14 @@ PMV_MOOSApp::PMV_MOOSApp()
 
 bool PMV_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 {
+// return true;
+
   if(!m_gui) 
     return(true);
 
   NewMail.sort();
+
+  Fl::lock();  
 
   m_gui->mviewer->setParam("curr_time", MOOSTime());
 
@@ -90,6 +94,8 @@ bool PMV_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
     m_gui->mviewer->redraw();
   }
 
+  Fl::unlock();  
+
   return(true);
 }
 
@@ -114,6 +120,8 @@ bool PMV_MOOSApp::Iterate()
 {
   if(!m_gui)
     return(false);
+
+  Fl::lock();  
 
   double curr_time = MOOSTime() - m_start_time;
   m_gui->setCurrTime(curr_time);
@@ -146,6 +154,9 @@ bool PMV_MOOSApp::Iterate()
   }
 
   handlePendingGUI();
+
+  Fl::unlock();  
+
   return(true);
 }
 
@@ -189,6 +200,8 @@ bool PMV_MOOSApp::OnStartUp()
   bool tiff_a_set = false;
   bool tiff_b_set = false;
 
+  Fl::lock();  
+
   STRING_LIST sParams;
   m_MissionReader.GetConfiguration(GetAppName(), sParams);
   STRING_LIST::reverse_iterator p;
@@ -230,6 +243,8 @@ bool PMV_MOOSApp::OnStartUp()
 
   m_start_time = MOOSTime();
   m_gui->mviewer->redraw();
+
+  Fl::unlock();  
   
   registerVariables();
   return(true);

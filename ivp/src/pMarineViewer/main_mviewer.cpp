@@ -143,8 +143,16 @@ pthread_t spawn_thread(ThreadParams *pParams)
 
 void idleProc(void *)
 {
+// cout << "idleProc: A" << endl;
+Fl::lock();
+// cout << "idleProc: B" << endl;
+
   Fl::flush();
+// cout << "idleProc: C" << endl;
   MOOSPause(10);
+// cout << "idleProc: D" << endl;
+Fl::unlock();
+// cout << "idleProc: E" << endl;
 }
 
 //--------------------------------------------------------
@@ -180,7 +188,9 @@ int main(int argc, char *argv[])
 
   if(g_sMissionFile == 0)
     exit_with_usage();
-  
+
+Fl::lock();  
+// Fl::unlock();
 
   PMV_GUI* gui = new PMV_GUI(1100,800, "pMarineViewer");
   //PMV_GUI* gui = new PMV_GUI(1100,585, "pMarineViewer");

@@ -18,6 +18,11 @@ SET(SRC
 
 ADD_LIBRARY(marineview ${SRC})
 
+TARGET_LINK_LIBRARIES(marineview
+  fltk 
+  fltk_gl 
+  )
+
 ADD_DEFINITIONS(-DDATA_DIR=\\"${IVP_DATA_DIR}\\")
 
 #SET(Z  ${CXXFLAGS}\ -F/System/Library/Frameworks/OpenGL.framework)
