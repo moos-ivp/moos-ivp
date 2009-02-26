@@ -1,2 +1,0 @@
-/usr/bin/ar cr libfltk_png.a  CMakeFiles/fltk_png.dir/pngget.o CMakeFiles/fltk_png.dir/pngrio.o CMakeFiles/fltk_png.dir/pngwrite.o CMakeFiles/fltk_png.dir/png.o CMakeFiles/fltk_png.dir/pngmem.o CMakeFiles/fltk_png.dir/pngrtran.o CMakeFiles/fltk_png.dir/pngtrans.o CMakeFiles/fltk_png.dir/pngwtran.o CMakeFiles/fltk_png.dir/pngerror.o CMakeFiles/fltk_png.dir/pngpread.o CMakeFiles/fltk_png.dir/pngrutil.o CMakeFiles/fltk_png.dir/pngwutil.o CMakeFiles/fltk_png.dir/pngread.o CMakeFiles/fltk_png.dir/pngset.o CMakeFiles/fltk_png.dir/pngwio.o
-/usr/bin/ranlib libfltk_png.a

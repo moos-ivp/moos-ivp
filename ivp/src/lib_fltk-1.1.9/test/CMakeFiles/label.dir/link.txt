@@ -1,1 +1,0 @@
-/usr/bin/c++    -fPIC -g   CMakeFiles/label.dir/label.o  -o ../../bin/label -rdynamic -L/home/cjc/moos-ivp/MOOS/MOOSBin -L/home/cjc/moos-ivp/ivp/src/lib_fltk-1.1.9/src ../src/libfltk.a ../src/libfltk_forms.a ../src/libfltk.a -lSM -lICE -lX11 -lXext -lm -lpthread -lSM -lICE -lX11 -lXext -lm -lpthread -Wl,-rpath,/home/cjc/moos-ivp/MOOS/MOOSBin 

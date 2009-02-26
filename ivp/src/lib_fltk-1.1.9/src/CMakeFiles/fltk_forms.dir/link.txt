@@ -1,2 +1,0 @@
-/usr/bin/ar cr libfltk_forms.a  CMakeFiles/fltk_forms.dir/forms_compatability.o CMakeFiles/fltk_forms.dir/forms_bitmap.o CMakeFiles/fltk_forms.dir/forms_free.o CMakeFiles/fltk_forms.dir/forms_fselect.o CMakeFiles/fltk_forms.dir/forms_pixmap.o CMakeFiles/fltk_forms.dir/forms_timer.o
-/usr/bin/ranlib libfltk_forms.a

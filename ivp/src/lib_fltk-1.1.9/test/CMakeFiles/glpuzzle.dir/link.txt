@@ -1,1 +1,0 @@
-/usr/bin/c++    -fPIC -g   CMakeFiles/glpuzzle.dir/glpuzzle.o  -o ../../bin/glpuzzle -rdynamic -L/home/cjc/moos-ivp/MOOS/MOOSBin -L/home/cjc/moos-ivp/ivp/src/lib_fltk-1.1.9/src ../src/libfltk.a ../src/libfltk_gl.a -lGL -lSM -lICE -lX11 -lXext ../src/libfltk.a -lm -lpthread -lSM -lICE -lX11 -lXext -Wl,-rpath,/home/cjc/moos-ivp/MOOS/MOOSBin 
