@@ -1,0 +1,1 @@
+/usr/bin/c++    -fPIC -g   CMakeFiles/fast_slow.dir/fast_slow.o  -o ../../bin/fast_slow -rdynamic -L/home/cjc/moos-ivp/MOOS/MOOSBin -L/home/cjc/moos-ivp/ivp/src/lib_fltk-1.1.9/src ../src/libfltk.a -lSM -lICE -lX11 -lXext -lm -lpthread -lSM -lICE -lX11 -lXext -lm -lpthread -Wl,-rpath,/home/cjc/moos-ivp/MOOS/MOOSBin 

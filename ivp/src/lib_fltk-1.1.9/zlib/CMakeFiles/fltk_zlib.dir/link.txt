@@ -1,0 +1,2 @@
+/usr/bin/ar cr libfltk_zlib.a  CMakeFiles/fltk_zlib.dir/adler32.o CMakeFiles/fltk_zlib.dir/compress.o CMakeFiles/fltk_zlib.dir/crc32.o CMakeFiles/fltk_zlib.dir/deflate.o CMakeFiles/fltk_zlib.dir/gzio.o CMakeFiles/fltk_zlib.dir/inffast.o CMakeFiles/fltk_zlib.dir/inflate.o CMakeFiles/fltk_zlib.dir/inftrees.o CMakeFiles/fltk_zlib.dir/trees.o CMakeFiles/fltk_zlib.dir/uncompr.o CMakeFiles/fltk_zlib.dir/zutil.o
+/usr/bin/ranlib libfltk_zlib.a
