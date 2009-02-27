@@ -6,7 +6,7 @@ Simulator  = true
 
 Community  = alpha
 
-MOOSTimeWarp = 50
+MOOSTimeWarp = 1
 
 LatOrigin  = 43.825300 
 LongOrigin = -70.330400 
@@ -18,9 +18,9 @@ ProcessConfig = ANTLER
   MSBetweenLaunches = 200
 
   Run = MOOSDB		@ NewConsole = false
-  Run = iMarineSim	@ NewConsole = false
+  Run = iMarineSim	@ NewConsole = true
   Run = pTransponderAIS	@ NewConsole = false
-  Run = pMarinePID	@ NewConsole = false
+  Run = pMarinePID	@ NewConsole = true
   Run = pMarineViewer	@ NewConsole = true
   Run = pHelmIvP	@ NewConsole = false
 }
@@ -50,11 +50,11 @@ ProcessConfig = pHelmIvP
   CommsTick  = 4
 
   Behaviors  = alpha.bhv
-  Verbose    = true
+  Verbose    = quiet
   Domain     = course:0:359:360
   Domain     = speed:0:4:21
 
-  ACTIVE_START = true
+  ACTIVE_START = false
 }
 
 //------------------------------------------
@@ -113,6 +113,10 @@ ProcessConfig = pMarineViewer
   BUTTON_ONE = DEPLOY # DEPLOY=true
   BUTTON_ONE = MOOS_MANUAL_OVERIDE=false # RETURN=false
   BUTTON_TWO = RETURN # RETURN=true
+
+  ACTION  = MENU_KEY=deploy # DEPLOY = true # RETURN = false
+  ACTION+ = MENU_KEY=deploy # MOOS_MANUAL_OVERIDE=false
+  ACTION  = RETURN=true
 }
 
 //------------------------------------------
@@ -124,6 +128,3 @@ ProcessConfig = pTransponderAIS
   CommsTick	= 2
   VESSEL_TYPE   = KAYAK
 }
-
-
-
