@@ -13,28 +13,21 @@ fi
 mkdir $2$1
 cd $2$1
 
-cat >> makefile <<EOF
-# Makefile for $1
+cat >> CMakeLists.txt <<EOF
+#--------------------------------------------------------
+# The CMakeLists.txt for:                       $2$1
+# Author(s):                               YOUR-NAME-HERE
+#--------------------------------------------------------
 
-LTARGET  = $2$1
-LIFLAGS  =
-LCFLAGS  =
+FILE(GLOB SRC *.cpp)
 
-REQUIRED_MOOS_LIBS = 	\
-	libMOOS.a 	\
-	libMOOSGen.a 		
+ADD_EXECUTABLE($2$1 \${SRC})
 
-PLIBS    = libmbutil.a
-LIBS     = -lm -lpthread \$(patsubst lib%.a,-l%,\$(PLIBS)) \
-           \$(patsubst lib%.a,-l%,\$(REQUIRED_MOOS_LIBS))
-
-PLDIRS   = \$(wildcard ../lib_*)
-
-# Make configuration parameters
-include ../make_config.mk
-# Generic makefile structure for all application modules
-include ../make_app.mk
-# DO NOT DELETE
+TARGET_LINK_LIBRARIES($2$1
+   MOOS
+   MOOSGen
+   m
+   pthread)
 
 EOF
 
@@ -157,8 +150,6 @@ bool ${1}::OnNewMail(MOOSMSG_LIST &NewMail)
     bool   mdbl  = msg.IsDouble();
     bool   mstr  = msg.IsString();
     string msrc  = msg.GetSource();
-
-    key = tolower(key);
 
 //    if(key == "FOOBAR")
 //      handleNewFOOBAR(sval);

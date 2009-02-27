@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
   }
 
   int i;
-  GUI *gui  = new GUI(1000, 900, "aof-ipf-function-viewer");
+  GUI *gui  = new GUI(1000, 700, "aof-ipf-function-viewer");
 
   //-------------------------------------------- Handle AOF Files
   string aof_file;

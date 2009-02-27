@@ -24,10 +24,10 @@ killall iMicroModem pRouter pFramer pMessageSim  \
         pBearings_GENERIC pTargetSim pMBTracker zLoggerNG \
 	iModemSim pFunctionSender uFunctionViewer uFunctionVis
 
-killall pSensorSim pArtifactMapper pNoiseSim uNafconSplitter \
-        pBlast pSweepLines pNSWCPC pXRelay geoview logview \
-        pAcommsHandler pCTDCodec pBTRCodec iDAS iOEX pGateway \
-        pAcommsPoller pArraySim pSimpleAcousticSim \
+killall pSensorSim pArtifactMapper pNoiseSim uNafconSplitter    \
+        pBlast pSweepLines pNSWCPC pXRelay pXRelayTest logview  \
+        pAcommsHandler pCTDCodec pBTRCodec iDAS iOEX pGateway   \
+        pAcommsPoller pArraySim pSimpleAcousticSim geoview      \
         pMultiTargetSim pMultiAcousticSim iOS5000 pGeneralCodec \
         pCBF pBTracker pTrackMonitor
 

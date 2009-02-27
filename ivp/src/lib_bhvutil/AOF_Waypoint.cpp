@@ -44,7 +44,6 @@ AOF_Waypoint::AOF_Waypoint(IvPDomain g_domain)
   m_pty_set         = false;
   m_ptx_set         = false;
   m_desired_spd_set = false;
-
 }
 
 //----------------------------------------------------------------
