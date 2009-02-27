@@ -34,6 +34,8 @@ using namespace std;
 BHV_HSLine::BHV_HSLine(IvPDomain gdomain) : 
   IvPBehavior(gdomain)
 {
+  m_descriptor = "bhv_hsline";  // variable at superclass level
+
   // configuration parameters
   m_time_on_leg = 60;
   m_max_des_speed_observed = -1;
@@ -47,9 +49,6 @@ BHV_HSLine::BHV_HSLine(IvPDomain gdomain) :
 
 bool BHV_HSLine::setParam(string param, string val) 
 {
-  if(IvPBehavior::setParam(param, val))
-    return(true);
-
   if(param == "time_on_leg") { 
     double dval = atof(val.c_str());
     if((dval <= 0) || (!isNumber(val)))

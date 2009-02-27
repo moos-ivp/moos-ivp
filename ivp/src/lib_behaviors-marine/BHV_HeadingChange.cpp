@@ -22,8 +22,9 @@ using namespace std;
 BHV_HeadingChange::BHV_HeadingChange(IvPDomain gdomain) : 
   IvPBehavior(gdomain)
 {
-  this->setParam("descriptor", "hdg_change");
-  m_domain = subDomain(m_domain, "course,speed");
+  // First set variables at the superclass level
+  m_descriptor = "hdg_change";  
+  m_domain     = subDomain(m_domain, "course,speed");
 
   m_heading_delta = 20;
   m_turn_type     = "starboard";

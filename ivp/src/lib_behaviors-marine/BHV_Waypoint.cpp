@@ -48,8 +48,9 @@ using namespace std;
 BHV_Waypoint::BHV_Waypoint(IvPDomain gdomain) : 
   IvPBehavior(gdomain)
 {
-  this->setParam("descriptor", "bhv_waypoint");
-  m_domain = subDomain(m_domain, "course,speed");
+  // First set variables at the superclass level
+  m_descriptor = "bhv_waypoint";  
+  m_domain     = subDomain(m_domain, "course,speed");
 
   m_cruise_speed    = 0;  // Meters/second
   m_lead_distance   = -1;
@@ -83,9 +84,6 @@ BHV_Waypoint::BHV_Waypoint(IvPDomain gdomain) :
 
 bool BHV_Waypoint::setParam(string param, string val) 
 {
-  if(IvPBehavior::setParam(param, val))
-    return(true);
-
   if((param == "polygon") || (param == "points")) {
     XYSegList new_seglist = stringToSegList(val);
     if(new_seglist.size() == 0)

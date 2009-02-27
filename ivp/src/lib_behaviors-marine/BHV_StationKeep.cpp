@@ -44,9 +44,9 @@ using namespace std;
 BHV_StationKeep::BHV_StationKeep(IvPDomain gdomain) : 
   IvPBehavior(gdomain)
 {
-  this->setParam("descriptor", "(d)bhv_waypoint");
-
-  m_domain = subDomain(m_domain, "course,speed");
+  // First set variables at the superclass level
+  m_descriptor = "station_keep";  
+  m_domain     = subDomain(m_domain, "course,speed");
 
   // Default values for Configuration Parameters
   m_station_x    = 0;

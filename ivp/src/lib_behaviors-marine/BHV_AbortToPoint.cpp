@@ -46,8 +46,9 @@ using namespace std;
 BHV_AbortToPoint::BHV_AbortToPoint(IvPDomain gdomain) : 
   IvPBehavior(gdomain)
 {
-  this->setParam("descriptor", "(d)bhv_waypoint");
-  m_domain = subDomain(m_domain, "course,speed");
+  // First set variables at the superclass level
+  m_descriptor = "bhv_abort2point";  
+  m_domain     = subDomain(m_domain, "course,speed");
 
   m_cruise_speed  = 0;  // Meters/second
   m_ipf_type      = "zaic";
@@ -82,9 +83,6 @@ BHV_AbortToPoint::BHV_AbortToPoint(IvPDomain gdomain) :
 
 bool BHV_AbortToPoint::setParam(string param, string val) 
 {
-  if(IvPBehavior::setParam(param, val))
-    return(true);
-
   if(param == "point") {
     XYPoint apt = stringToPoint(val);
     if(!apt.valid())

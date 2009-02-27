@@ -37,10 +37,16 @@ using namespace std;
 BHV_MaintainHeading::BHV_MaintainHeading(IvPDomain gdomain) : 
   IvPBehavior(gdomain)
 {
-  this->setParam("descriptor", "maintain-heading");
+  // First set variables at the superclass level
+  m_descriptor = "maintain_heading";  
+  m_domain     = subDomain(m_domain, "course");
+  // The default duration at the IvPBehavior level is "-1", which
+  // indicates no duration applied to the behavior by default. By
+  // setting to zero here, we force the user to provide a duration
+  // value otherwise it will timeout immediately.
+  m_duration        = 0;
 
-  m_domain = subDomain(m_domain, "course");
-
+  // Then set variables specific to this behavior
   m_desired_heading = 0;
   m_peakwidth       = 30;
   m_basewidth       = 150;
@@ -48,12 +54,6 @@ BHV_MaintainHeading::BHV_MaintainHeading(IvPDomain gdomain) :
 
   m_running         = false;
   m_heading_on_active = true;
-
-  // The default duration at the IvPBehavior level is "-1", which
-  // indicates no duration applied to the behavior by default. By
-  // setting to zero here, we force the user to provide a duration
-  // value otherwise it will timeout immediately.
-  m_duration        = 0;
 
   addInfoVars("NAV_HEADING");
 }

@@ -38,14 +38,14 @@ using namespace std;
 BHV_PeriodicSpeed::BHV_PeriodicSpeed(IvPDomain gdomain) : 
   IvPBehavior(gdomain)
 {
-  this->setParam("descriptor", "periodic_speed");
+  // First set variables at the superclass level
+  m_descriptor = "periodic_speed";  
+  m_domain     = subDomain(m_domain, "speed");
 
   // These parameters really should be set in the behavior file, but are
   // left here for now to smoothen the transition (Aug 10, 2008, mikerb)
-  this->setParam("activeflag",   "PERIODIC_SPEED=1");
-  this->setParam("inactiveflag", "PERIODIC_SPEED=0");
-
-  m_domain = subDomain(m_domain, "speed");
+  IvPBehavior::setParam("activeflag",   "PERIODIC_SPEED=1");
+  IvPBehavior::setParam("inactiveflag", "PERIODIC_SPEED=0");
 
   // Initialize Configuration Parameters
   m_period_gap       = 0;

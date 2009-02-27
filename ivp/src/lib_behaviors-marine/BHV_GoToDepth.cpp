@@ -40,7 +40,9 @@ using namespace std;
 BHV_GoToDepth::BHV_GoToDepth(IvPDomain gdomain) : 
   IvPBehavior(gdomain)
 {
-  m_domain = subDomain(m_domain, "depth");
+  // First set variables at the superclass level
+  m_descriptor = "bhv_goto_depth";  
+  m_domain     = subDomain(m_domain, "depth");
 
   // configuration parameters
   m_repeat        = 0;
@@ -64,9 +66,6 @@ BHV_GoToDepth::BHV_GoToDepth(IvPDomain gdomain) :
 
 bool BHV_GoToDepth::setParam(string param, string val) 
 {
-  if(IvPBehavior::setParam(param, val))
-    return(true);
-
   //  50,10;10,10;50,10;50
   if(param == "depth") {
     vector<string> out_vector = parseString(val, ':');

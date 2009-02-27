@@ -43,8 +43,9 @@ using namespace std;
 BHV_Loiter::BHV_Loiter(IvPDomain gdomain) : 
   IvPBehavior(gdomain)
 {
-  this->setParam("descriptor", "(d)bhv_loiter");
-  m_domain = subDomain(m_domain, "course,speed");
+  // First set variables at the superclass level
+  m_descriptor = "bhv_loiter";  
+  m_domain     = subDomain(m_domain, "course,speed");
 
   // Initialize State Variable with meaningful initial vals
   m_acquire_mode    = true;
@@ -76,9 +77,6 @@ BHV_Loiter::BHV_Loiter(IvPDomain gdomain) :
 
 bool BHV_Loiter::setParam(string g_param, string g_val) 
 {
-  if(IvPBehavior::setParam(g_param, g_val))
-    return(true);
-
   if(g_param == "polygon") {
     XYPolygon new_poly = stringToPoly(g_val);
     if(!new_poly.is_convex())  // Should be convex - false otherwise
