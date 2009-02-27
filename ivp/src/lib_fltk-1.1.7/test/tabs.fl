@@ -1,0 +1,129 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0107 
+header_name {.h} 
+code_name {.cxx}
+Function {} {open
+} {
+  Fl_Window foo_window {open
+    xywh {733 489 320 320} type Double resizable visible
+  } {
+    Fl_Tabs {} {open selected
+      xywh {10 10 300 200} selection_color 4 labelcolor 7 resizable
+    } {
+      Fl_Group {} {
+        label Label1 open
+        xywh {10 30 300 180} selection_color 1 hide resizable
+      } {
+        Fl_Input {} {
+          label {input:}
+          xywh {60 50 240 40}
+        }
+        Fl_Input {} {
+          label {input2:}
+          xywh {60 90 240 30}
+        }
+        Fl_Input {} {
+          label {input3:}
+          xywh {60 120 240 80}
+        }
+      }
+      Fl_Group {} {
+        label tab2 open
+        xywh {10 30 300 180} selection_color 2
+      } {
+        Fl_Button {} {
+          label button1
+          callback {fl_message("Test to see if this modal window prevents you from "
+           "changing the tabs. It should.");}
+          xywh {20 60 100 30}
+          code0 {\#include <FL/fl_ask.H>}
+        }
+        Fl_Input {} {
+          label {input in box2}
+          xywh {140 100 100 30}
+        }
+        Fl_Button {} {
+          label {This is stuff inside the Fl_Group "tab2"}
+          xywh {30 140 260 30}
+        }
+        Fl_Button {} {
+          label {Test event blocking by modal window}
+          callback {fl_message("Make sure you cannot change the tabs while this modal window is up");}
+          xywh {30 170 260 30}
+          code0 {\#include <FL/fl_ask.H>}
+        }
+      }
+      Fl_Group {} {
+        label tab3 open
+        xywh {10 30 300 180} selection_color 3 hide
+      } {
+        Fl_Button {} {
+          label button2
+          xywh {20 60 60 80}
+        }
+        Fl_Button {} {
+          label button
+          xywh {80 60 60 80}
+        }
+        Fl_Button {} {
+          label button
+          xywh {140 60 60 80}
+        }
+      }
+      Fl_Group {} {
+        label tab4 open
+        xywh {10 30 300 180} selection_color 5 labelfont 2 hide
+      } {
+        Fl_Button {} {
+          label button2
+          xywh {20 50 60 110}
+        }
+        Fl_Button {} {
+          label button
+          xywh {80 50 60 110}
+        }
+        Fl_Button {} {
+          label button
+          xywh {140 50 60 110}
+        }
+      }
+      Fl_Group {} {
+        label {     tab5      } open
+        xywh {10 30 300 180} labeltype ENGRAVED_LABEL hide
+      } {
+        Fl_Button {} {
+          label button2
+          xywh {20 80 60 80}
+        }
+        Fl_Button {} {
+          label button
+          xywh {90 90 60 80}
+        }
+        Fl_Clock {} {
+          label {Make sure this clock does not use processor time when this tab is hidden or window is iconized}
+          xywh {160 50 100 100} box OSHADOW_BOX color 238 selection_color 0 labelfont 8 labelsize 10 align 130
+        }
+      }
+    }
+    Fl_Input {} {
+      label {inputA:}
+      xywh {60 220 130 30}
+    }
+    Fl_Input {} {
+      label {inputB:}
+      xywh {60 250 250 30}
+    }
+    Fl_Button {} {
+      label cancel
+      callback {exit(1);}
+      xywh {180 290 60 30}
+      code0 {\#include <stdlib.h>}
+    }
+    Fl_Return_Button {} {
+      label OK
+      callback {exit(0);}
+      xywh {250 290 60 30}
+      code0 {\#include <stdlib.h>}
+    }
+  }
+} 
