@@ -124,7 +124,7 @@ SET(IVP_LIBS_TO_BUILD
   lib_behaviors
   lib_behaviors-marine
   lib_bhvutil
-  lib_fltk-1.1.9
+  lib_fltk-1.1.7
   lib_genutil
   lib_geometry
   lib_helmivp
