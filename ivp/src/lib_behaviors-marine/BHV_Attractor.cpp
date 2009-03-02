@@ -50,11 +50,11 @@ BHV_Attractor::BHV_Attractor(IvPDomain gdomain) :
 
   // These parameters really should be set in the behavior file, but are
   // left here for now to smoothen the transition (Aug 10, 2008, mikerb)
-  this->setParam("runflag",  "ATTRACTOR_ACTIVE=1");
-  this->setParam("idleflag", "ATTRACTOR_ACTIVE=0");
+  //this->setParam("runflag",  "ATTRACTOR_ACTIVE=1");
+  //this->setParam("idleflag", "ATTRACTOR_ACTIVE=0");
 
-  this->setParam("activeflag",   "ATTRACTED=1");
-  this->setParam("inactiveflag", "ATTRACTED=0");
+  //this->setParam("activeflag",   "ATTRACTED=1");
+  //this->setParam("inactiveflag", "ATTRACTED=0");
   
   m_domain = subDomain(m_domain, "course,speed");
 
