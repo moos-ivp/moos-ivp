@@ -35,15 +35,17 @@ public:
     ZAIC_HLEQ(domain, varname) {};
   virtual ~ZAIC_HEQ() {};
 
+  // The older way of expressing this function, still supported.
   IvPFunction* extractOF();
+  
+  // The newer way of expressing this function
+  IvPFunction* extractIvPFunction() {return(extractOF());};
 
 protected:
   void   setPointLocations();
   PDMap* setPDMap();
 };
 #endif
-
-
 
 
 

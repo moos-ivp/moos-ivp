@@ -60,7 +60,9 @@ public:
   bool         stateOK()    {return(m_state_ok);};
   std::string  getWarning() {return(m_warning);};
   IvPFunction* extractOF(bool maxval=true);
-
+  IvPFunction* extractIvPFunction(bool maxval=true) 
+  {return(extractOF(maxval));};
+  
 protected:
   double evalPoint(unsigned int pt_ix, bool maxval=true);
   double evalPoint(unsigned int summit_ix, unsigned int pt_ix);
