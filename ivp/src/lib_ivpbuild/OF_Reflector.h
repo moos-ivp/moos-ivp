@@ -47,7 +47,10 @@ public:
   int    create(const std::string);
   int    create(int unif_amt=-1, int smart_amt=-1, double thresh=-1);
 
+  // extractOF is depricated, supported for now, use extractIvPFunction
   IvPFunction* extractOF(bool normalize=true);
+  IvPFunction* extractIvPFunction(bool normalize=true)
+  {return(extractOF(normalize));};
   
   std::string getUniformPieceStr() const {return(m_uniform_piece_str);};
  

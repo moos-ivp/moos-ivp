@@ -57,8 +57,8 @@ public:
   bool   getSummitInsist()  {return(m_summit_insist);};
   int    getSummitCount()   {return(v_summit.size());};
 
-  bool         stateOK()    {return(m_state_ok);};
-  std::string  getWarning() {return(m_warning);};
+  bool         stateOK()     {return(m_state_ok);};
+  std::string  getWarnings() {return(m_warning);};
   IvPFunction* extractOF(bool maxval=true);
   IvPFunction* extractIvPFunction(bool maxval=true) 
   {return(extractOF(maxval));};
