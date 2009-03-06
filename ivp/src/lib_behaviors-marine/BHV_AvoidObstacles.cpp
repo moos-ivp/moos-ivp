@@ -186,8 +186,8 @@ IvPFunction *BHV_AvoidObstacles::onRunState()
     reflector.create();
   }
 
-  if(reflector.hasErrors())
-    postWMessage(reflector.getErrors());
+  if(!reflector.stateOK())
+    postWMessage(reflector.getWarnings());
   else {
     ipf = reflector.extractOF(true); // true means normalize [0,100]
     if(ipf)

@@ -108,25 +108,6 @@ IvPFunction *OF_Reflector::extractOF(bool normalize)
 }
 
 //-------------------------------------------------------------
-// Procedure: getErrors
-
-string OF_Reflector::getErrors()
-{
-  unsigned int vsize = m_errors.size();
-  string vs = ("/" + intToString(vsize));
-  
-  string errors;
-  for(unsigned int i=0; i<vsize; i++) {
-    errors += ("(" + intToString(i+1) + vs + ") ");
-    errors += m_errors[i];
-    if(i < (vsize-1))
-      errors += " ";
-	       
-  }
-  return(errors);
-}
-    
-//-------------------------------------------------------------
 // Procedure: clearPDMap()
 
 void OF_Reflector::clearPDMap()
@@ -162,7 +143,7 @@ bool OF_Reflector::setParam(string str)
   int vsize = svector.size();
 
   if(vsize == 0) {
-    m_errors.push_back("Empty list of param/value pairs");
+    addWarning("setParam(string) Empty list of param/value pairs");
     return(false);
   }
 
@@ -202,7 +183,7 @@ bool OF_Reflector::setParam(string param, string value)
 
   if(param == "strict_range") {
     if((value != "true") && (value != "false")) {
-      m_errors.push_back("strict_range value must be true/false");
+      addWarning("strict_range value must be true/false");
       return(false);
     }
     if(m_regressor)
@@ -211,11 +192,11 @@ bool OF_Reflector::setParam(string param, string value)
   else if((param=="uniform_amount")||(param=="uniform_amt")) {
     int uniform_amount = atoi(value.c_str());
     if(!isNumber(value)) {
-      m_errors.push_back(param + " value must be numerical");
+      addWarning(param + " value must be numerical");
       return(false);
     }
     if(!isNumber(value) || (uniform_amount < 1)) {
-      m_errors.push_back(param + " value must be >= 1");
+      addWarning(param + " value must be >= 1");
       return(false);
     }
     m_uniform_amount = uniform_amount;
@@ -224,26 +205,26 @@ bool OF_Reflector::setParam(string param, string value)
     IvPBox foo = stringToPointBox(value, m_domain, ',', ':');
     m_uniform_piece = foo;
     if(m_uniform_piece.null()) {
-      m_errors.push_back(param + " value is ill-defined");
+      addWarning(param + " value is ill-defined");
       return(false);
     }
   }
   else if(param=="uniform_grid") {
     m_uniform_grid = stringToPointBox(value, m_domain, ',', ':');
     if(m_uniform_grid.null()) {
-      m_errors.push_back(param + " value is ill-defined");
+      addWarning(param + " value is ill-defined");
       return(false);
     }
   }
   else if((param=="refine_region")||(param=="focus_region")) {
     if(m_refine_regions.size() != m_refine_pieces.size()) {
-      m_errors.push_back(param + " and refine_piece must be added in pairs");
+      addWarning(param + " and refine_piece must be added in pairs");
       return(false);
     }
     IvPBox refine_region = stringToRegionBox(value, m_domain, ',', ':');
     if(refine_region.null()) {
       //cout << "Bad Region Box" << endl;
-      m_errors.push_back(param + " value is ill-defined");
+      addWarning(param + " value is ill-defined");
       return(false);
     }
     else
@@ -251,13 +232,13 @@ bool OF_Reflector::setParam(string param, string value)
   }
   else if((param=="refine_piece")||(param=="focus_box")) {
     if((m_refine_regions.size() - m_refine_pieces.size()) != 1) {
-      m_errors.push_back(param + " and refine_region must be added in pairs");
+      addWarning(param + " and refine_region must be added in pairs");
       return(false);
     }
     IvPBox refine_piece = stringToPointBox(value, m_domain, ',', ':');
     if(refine_piece.null()) {
       m_refine_regions.pop_back();
-      m_errors.push_back(param + " value is ill-defined");
+      addWarning(param + " value is ill-defined");
       return(false);
     }
     m_refine_pieces.push_back(refine_piece);
@@ -269,7 +250,7 @@ bool OF_Reflector::setParam(string param, string value)
   else if(param == "refine_point") {
     IvPBox refine_point = stringToPointBox(value, m_domain, ',', ':');
     if(refine_point.null() || !refine_point.isPtBox()) {
-      m_errors.push_back(param + " value is ill-defined");
+      addWarning(param + " value is ill-defined");
       return(false);
     }
     m_refine_points.push_back(refine_point);
@@ -277,11 +258,11 @@ bool OF_Reflector::setParam(string param, string value)
   else if((param=="smart_amount")||(param=="priority_amt")) {
     int smart_amount = atoi(value.c_str());
     if(!isNumber(value)) {
-      m_errors.push_back(param + " value must be numerical");
+      addWarning(param + " value must be numerical");
       return(false);
     }
     if(smart_amount < 0) {
-      m_errors.push_back(param + " value must be >= 0");
+      addWarning(param + " value must be >= 0");
       return(false);
     }
     m_smart_amount = smart_amount;
@@ -289,11 +270,11 @@ bool OF_Reflector::setParam(string param, string value)
   else if(param == "smart_percent") {
     int smart_percent = atoi(value.c_str());
     if(!isNumber(value)) {
-      m_errors.push_back("smart_percent value must be numerical");
+      addWarning("smart_percent value must be numerical");
       return(false);
     }
     if(smart_percent < 0) {
-      m_errors.push_back("smart_percent value must be >= 0");
+      addWarning("smart_percent value must be >= 0");
       return(false);
     }
     m_smart_percent = smart_percent;
@@ -301,24 +282,24 @@ bool OF_Reflector::setParam(string param, string value)
   else if((param=="smart_thresh")||(param=="priority_thresh")) {
     double smart_thresh = atof(value.c_str());
     if(!isNumber(value)) {
-      m_errors.push_back(param + " value must be numerical");
+      addWarning(param + " value must be numerical");
       return(false);
     }
     if(smart_thresh < 0) {
-      m_errors.push_back(param + " value must be >= 0");
+      addWarning(param + " value must be >= 0");
       return(false);
     }
     m_smart_thresh = smart_thresh;
   }
   else if(param == "auto_peak") {
     if((value != "true") && (value != "false")) {
-      m_errors.push_back("auto_peak value must be true/false");
+      addWarning("auto_peak value must be true/false");
       return(false);
     }
     m_auto_peak = (value == "true");
   }
   else {
-    m_errors.push_back(param + ": undefined parameter");
+    addWarning(param + ": undefined parameter");
     return(false);
   }
   
@@ -334,34 +315,34 @@ bool OF_Reflector::setParam(string param, double value)
   
   if((param=="uniform_amount")||(param=="uniform_amt")) {
     if(value < 1) {
-      m_errors.push_back(param + " value must be >= 1");
+      addWarning(param + " value must be >= 1");
       return(false);
     }
     m_uniform_amount = (int)(value);
   }
   else if((param=="smart_amount")||(param=="priority_amt")) {
     if(value < 0) {
-      m_errors.push_back(param + " value must be >= 0");
+      addWarning(param + " value must be >= 0");
       return(false);
     }
     m_smart_amount = (int)(value);
   }
   else if(param == "smart_percent") {
     if(value < 0) {
-      m_errors.push_back(param + " value must be >= 0");
+      addWarning(param + " value must be >= 0");
       return(false);
     }
     m_smart_percent = (int)(value);
   }
   else if(param=="smart_thresh") {
     if(value < 0) {
-      m_errors.push_back(param + " value must be >= 0");
+      addWarning(param + " value must be >= 0");
       return(false);
     }
     m_smart_thresh = value;
   }
   else {
-    m_errors.push_back(param + ": undefined parameter");
+    addWarning(param + ": undefined parameter");
     return(false);
   }
   
@@ -494,4 +475,15 @@ int OF_Reflector::create(int unif_amt, int smart_amt,
     return(m_pdmap->size());
   else
     return(0);
+}
+
+
+//-------------------------------------------------------------
+// Procedure: addWarning
+
+void OF_Reflector::addWarning(string new_warning)
+{
+  if(m_warnings != "")
+    m_warnings += " # ";
+  m_warnings += new_warning;
 }

@@ -279,8 +279,8 @@ int PMV_GUI::handle(int event)
 //----------------------------------------- UpdateXY
 void PMV_GUI::updateXY() {
   double dwarp = GetMOOSTimeWarp();
-  if((m_curr_time - m_prev_out_time) < (0.25 * dwarp))
-    return;
+  //if((m_curr_time - m_prev_out_time) < (0.25 * dwarp))
+  //  return;
 
   m_prev_out_time = m_curr_time;
   m_pmv_mutex.Lock();

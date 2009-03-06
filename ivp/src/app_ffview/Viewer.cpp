@@ -333,13 +333,13 @@ void Viewer::makeUniformIPF()
   else
     reflector.setParam("auto_peak", "false");
 
-  if(reflector.hasErrors() == false) {
+  if(reflector.stateOK()) {
     reflector.create();
-    m_reflector_errors = "";
+    m_reflector_warnings = "";
   }
   else {
-    m_reflector_errors = reflector.getErrors();
-    cout << "Errs: " << m_reflector_errors << endl;
+    m_reflector_warnings = reflector.getWarnings();
+    cout << "Warnings: " << m_reflector_warnings << endl;
   }
 
   if(m_unif_ipf)
@@ -486,7 +486,9 @@ string Viewer::getParam(const string& param)
   else if(param == "refine_piece")
     return(m_refine_piece_str);
   else if(param == "reflector_errors")
-    return(m_reflector_errors);
+    return(m_reflector_warnings);
+  else if(param == "reflector_warnings")
+    return(m_reflector_warnings);
   else if(param == "auto_peak") {
     if(m_autopeak_refine)
       return("true");

@@ -264,8 +264,8 @@ IvPFunction *BHV_HAttractor::onRunState()
       
       OF_Reflector reflector(&aof);
       reflector.create(m_build_info);
-      if(reflector.hasErrors())
-	postWMessage(reflector.getErrors());
+      if(!reflector.stateOK())
+	postWMessage(reflector.getWarnings());
       else
 	ipf = reflector.extractOF();
     }

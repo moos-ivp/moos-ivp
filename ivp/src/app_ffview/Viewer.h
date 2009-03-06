@@ -88,7 +88,7 @@ private:
   std::string m_smart_percent_str;
   std::string m_smart_amount_str;
 
-  std::string m_reflector_errors;
+  std::string m_reflector_warnings;
   std::string m_aof_peak;
 
   int        m_focus_box_x;

@@ -184,8 +184,8 @@ IvPFunction *BHV_CutRange::onRunState()
   IvPFunction *ipf = 0;
   OF_Reflector reflector(&aof);
   reflector.create(m_build_info);
-  if(reflector.hasErrors())
-    postWMessage(reflector.getErrors());
+  if(!reflector.stateOK())
+    postWMessage(reflector.getWarnings());
   else {
     ipf = reflector.extractOF(true); // true means normalize [0,100]
     ipf->setPWT(relevance * m_priority_wt);

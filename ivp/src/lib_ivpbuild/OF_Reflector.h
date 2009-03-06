@@ -27,6 +27,8 @@
 #ifndef OF_REFLECTOR_HEADER
 #define OF_REFLECTOR_HEADER
 
+#include <string>
+#include <vector>
 #include "AOF.h"
 #include "PQueue.h"
 
@@ -53,18 +55,17 @@ public:
   {return(extractOF(normalize));};
   
   std::string getUniformPieceStr() const {return(m_uniform_piece_str);};
- 
+  std::string getWarnings() const        {return(m_warnings);};
+
+  bool   stateOK() const    {return(m_warnings=="");};
   bool   setParam(std::string);
   bool   setParam(std::string, std::string);
   bool   setParam(std::string, double);
     
-  std::string              getErrors();
-  std::vector<std::string> getErrorsVector() {return(m_errors);};
-  bool                     hasErrors() {return(m_errors.size()>0);};
-
  protected:
   void   initializePDMap();
   void   clearPDMap();
+  void   addWarning(std::string);
 
 protected:
   const AOF*   m_aof;
@@ -92,7 +93,7 @@ protected:
 
   std::string  m_uniform_piece_str;
 
-  std::vector<std::string> m_errors;
+  std::string m_warnings;
 };
 #endif
 
