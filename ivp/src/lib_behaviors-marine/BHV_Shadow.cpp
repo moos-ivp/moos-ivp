@@ -152,7 +152,7 @@ IvPFunction *BHV_Shadow::onRunState()
       hdg_zaic.setMinMaxUtil(0,100);
       //  hdg_zaic.addSummit(m_cnh, m_hdg_peakwidth, m_hdg_basewidth, 50, 0, 100);
       // hdg_zaic.setValueWrap(true);
-      IvPFunction *hdg_ipf = hdg_zaic.extractOF();
+      IvPFunction *hdg_ipf = hdg_zaic.extractIvPFunction();
   
       ZAIC_PEAK spd_zaic(m_domain, "speed");
       spd_zaic.setSummit(m_cnv);
@@ -163,7 +163,7 @@ IvPFunction *BHV_Shadow::onRunState()
       
       //  spd_zaic.addSummit(m_cnv, m_spd_peakwidth, m_spd_basewidth, 10, 0, 25);
       // spd_zaic.setValueWrap(true);
-      IvPFunction *spd_ipf = spd_zaic.extractOF();
+      IvPFunction *spd_ipf = spd_zaic.extractIvPFunction();
   
       OF_Coupler coupler;
       IvPFunction *ipf = coupler.couple(hdg_ipf, spd_ipf);

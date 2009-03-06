@@ -189,7 +189,7 @@ IvPFunction *BHV_AvoidObstacles::onRunState()
   if(!reflector.stateOK())
     postWMessage(reflector.getWarnings());
   else {
-    ipf = reflector.extractOF(true); // true means normalize [0,100]
+    ipf = reflector.extractIvPFunction(true); // true means normalize [0,100]
     if(ipf)
       ipf->setPWT(m_priority_wt);
   }

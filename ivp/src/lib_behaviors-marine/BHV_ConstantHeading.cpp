@@ -104,7 +104,7 @@ IvPFunction *BHV_ConstantHeading::onRunState()
   zaic.setPeakWidth(m_peakwidth);
   zaic.setValueWrap(true);
   
-  IvPFunction *ipf = zaic.extractOF();
+  IvPFunction *ipf = zaic.extractIvPFunction();
   if(ipf)
     ipf->setPWT(m_priority_wt);
 

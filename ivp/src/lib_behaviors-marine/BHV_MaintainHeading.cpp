@@ -145,7 +145,7 @@ IvPFunction *BHV_MaintainHeading::onRunState()
   zaic.setSummitDelta(m_summit_delta);
   zaic.setValueWrap(true);
   
-  IvPFunction *ipf = zaic.extractOF();
+  IvPFunction *ipf = zaic.extractIvPFunction();
   if(ipf)
     ipf->setPWT(m_priority_wt);
 

@@ -266,7 +266,7 @@ IvPFunction *BHV_Attractor::onRunState()
       if(!reflector.stateOK())
 	postWMessage(reflector.getWarnings());
       else
-	ipf = reflector.extractOF();
+	ipf = reflector.extractIvPFunction();
     }
   else
     {
@@ -277,7 +277,7 @@ IvPFunction *BHV_Attractor::onRunState()
       hdg_zaic.setBaseWidth(60);
       hdg_zaic.setSummitDelta(10.0);
       hdg_zaic.setMinMaxUtil(0,100);
-      IvPFunction *hdg_ipf = hdg_zaic.extractOF();
+      IvPFunction *hdg_ipf = hdg_zaic.extractIvPFunction();
       
       ZAIC_PEAK spd_zaic(m_domain, "speed");
       
@@ -286,7 +286,7 @@ IvPFunction *BHV_Attractor::onRunState()
       spd_zaic.setBaseWidth(2.0);
       spd_zaic.setSummitDelta(50.0); 
       
-      IvPFunction *spd_ipf = spd_zaic.extractOF();
+      IvPFunction *spd_ipf = spd_zaic.extractIvPFunction();
       
       OF_Coupler coupler;
       ipf = coupler.couple(hdg_ipf, spd_ipf);

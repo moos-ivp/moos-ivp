@@ -287,13 +287,13 @@ IvPFunction *BHV_Loiter::buildIPF(const string& method)
     spd_zaic.setBaseWidth(0.3);
     spd_zaic.setPeakWidth(0.0);
     spd_zaic.setSummitDelta(0.0);
-    IvPFunction *spd_of = spd_zaic.extractOF();
+    IvPFunction *spd_of = spd_zaic.extractIvPFunction();
     double rel_ang_to_wpt = relAng(m_osx, m_osy, m_ptx, m_pty);
     ZAIC_PEAK crs_zaic(m_domain, "course");
     crs_zaic.setSummit(rel_ang_to_wpt);
     crs_zaic.setBaseWidth(180.0);
     crs_zaic.setValueWrap(true);
-    IvPFunction *crs_of = crs_zaic.extractOF();
+    IvPFunction *crs_of = crs_zaic.extractIvPFunction();
     OF_Coupler coupler;
     ipf = coupler.couple(crs_of, spd_of);
   }

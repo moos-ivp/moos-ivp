@@ -235,7 +235,7 @@ IvPFunction *BHV_RubberBand::onRunState()
   spd_zaic.setPeakWidth(0.5);
   spd_zaic.setSummitDelta(50.0);
   spd_zaic.setMinMaxUtil(0, 25);
-  IvPFunction *spd_ipf = spd_zaic.extractOF();
+  IvPFunction *spd_ipf = spd_zaic.extractIvPFunction();
   
   ZAIC_PEAK crs_zaic(m_domain, "course");
   crs_zaic.setSummit(angle_to_station);
@@ -244,7 +244,7 @@ IvPFunction *BHV_RubberBand::onRunState()
   crs_zaic.setSummitDelta(10.0);
   crs_zaic.setMinMaxUtil(0, 100);
   crs_zaic.setValueWrap(true);
-  IvPFunction *crs_ipf = crs_zaic.extractOF();
+  IvPFunction *crs_ipf = crs_zaic.extractIvPFunction();
   
   OF_Coupler coupler;
   ipf = coupler.couple(crs_ipf, spd_ipf);

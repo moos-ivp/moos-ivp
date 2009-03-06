@@ -250,7 +250,7 @@ IvPFunction *BHV_AvoidCollision::onRunState()
   
 
   reflector.create(m_build_info);
-  IvPFunction *ipf = reflector.extractOF();
+  IvPFunction *ipf = reflector.extractIvPFunction();
 
   ipf->getPDMap()->normalize(0.0, 100.0);
 

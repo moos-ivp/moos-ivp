@@ -258,7 +258,7 @@ IvPFunction *BHV_HPeriodicSurface::onRunState()
   zaic_speed.setPeakWidth(0);
   zaic_speed.setMinMaxUtil(0, 100);
   
-  IvPFunction *ipf_speed = zaic_speed.extractOF();
+  IvPFunction *ipf_speed = zaic_speed.extractIvPFunction();
   
   ZAIC_PEAK zaic_depth(m_domain, "depth");
   zaic_depth.setSummit(0);
@@ -266,7 +266,7 @@ IvPFunction *BHV_HPeriodicSurface::onRunState()
   zaic_depth.setPeakWidth(0);
   zaic_depth.setMinMaxUtil(0, 100);
   
-  IvPFunction *ipf_depth = zaic_depth.extractOF();
+  IvPFunction *ipf_depth = zaic_depth.extractIvPFunction();
   
   ZAIC_PEAK zaic_heading(m_domain,"course");
   zaic_heading.setSummit(m_surface_heading);
@@ -275,7 +275,7 @@ IvPFunction *BHV_HPeriodicSurface::onRunState()
   zaic_heading.setBaseWidth(150.0);
   zaic_heading.setSummitDelta(50.0);
   
-  IvPFunction *ipf_heading = zaic_heading.extractOF();
+  IvPFunction *ipf_heading = zaic_heading.extractIvPFunction();
   
   OF_Coupler coupler;
   IvPFunction *new_ipf = coupler.couple(ipf_speed, ipf_depth);

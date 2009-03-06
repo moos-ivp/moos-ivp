@@ -143,7 +143,7 @@ IvPFunction *BHV_HeadingChange::onRunState()
   spd_zaic.setPeakWidth(0.4);
   spd_zaic.setBaseWidth(0.6);
   spd_zaic.setSummitDelta(50);
-  IvPFunction *spd_ipf = spd_zaic.extractOF();
+  IvPFunction *spd_ipf = spd_zaic.extractIvPFunction();
 
   ZAIC_PEAK crs_zaic(m_domain, "course");
   crs_zaic.setSummit(m_heading_goal);
@@ -152,7 +152,7 @@ IvPFunction *BHV_HeadingChange::onRunState()
   crs_zaic.setBaseWidth(160);
   crs_zaic.setSummitDelta(50);
 
-  IvPFunction *crs_ipf = crs_zaic.extractOF();
+  IvPFunction *crs_ipf = crs_zaic.extractIvPFunction();
 
   OF_Coupler coupler;
   IvPFunction *ipf = coupler.couple(crs_ipf, spd_ipf);

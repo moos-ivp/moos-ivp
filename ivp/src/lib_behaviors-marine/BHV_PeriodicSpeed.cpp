@@ -188,7 +188,7 @@ IvPFunction *BHV_PeriodicSpeed::onRunState()
   zaic.setBaseWidth(m_period_basewidth);
   zaic.setPeakWidth(m_period_peakwidth);
 
-  IvPFunction *new_of = zaic.extractOF();
+  IvPFunction *new_of = zaic.extractIvPFunction();
   new_of->getPDMap()->normalize(0,100);
   new_of->setPWT(m_priority_wt);
 

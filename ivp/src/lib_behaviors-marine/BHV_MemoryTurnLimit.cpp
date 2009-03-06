@@ -146,7 +146,7 @@ IvPFunction *BHV_MemoryTurnLimit::onRunState()
 
     crs_zaic.setPeakWidth(pk_width);
 
-  IvPFunction *ipf = crs_zaic.extractOF();
+  IvPFunction *ipf = crs_zaic.extractIvPFunction();
 
   if(ipf)
     ipf->setPWT(m_priority_wt);

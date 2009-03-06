@@ -205,19 +205,19 @@ IvPFunction *BHV_AbortToPoint::buildOF(string method)
       OF_Reflector reflector(&aof_wpt);
       reflector.create(600, 500);
       string info = reflector.getUniformPieceStr();
-      ipf = reflector.extractOF();
+      ipf = reflector.extractIvPFunction();
     }
   }    
   else { // if (method == "zaic")
     ZAIC_PEAK spd_zaic(m_domain, "speed");
     spd_zaic.setParams(m_cruise_speed, 0, 2.6, 0, 0, 100);
-    IvPFunction *spd_of = spd_zaic.extractOF();
+    IvPFunction *spd_of = spd_zaic.extractIvPFunction();
     
     double rel_ang_to_wpt = relAng(m_osx, m_osy, m_abort_x, m_abort_y);
     ZAIC_PEAK crs_zaic(m_domain, "course");
     crs_zaic.setValueWrap(true);
     crs_zaic.setParams(rel_ang_to_wpt, 0, 180, 50, 0, 100);
-    IvPFunction *crs_of = crs_zaic.extractOF();
+    IvPFunction *crs_of = crs_zaic.extractIvPFunction();
 
     OF_Coupler coupler;
     ipf = coupler.couple(crs_of, spd_of);

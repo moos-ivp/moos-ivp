@@ -293,7 +293,7 @@ IvPFunction *BHV_Waypoint::buildOF(string method)
       //reflector.create();
       string info = reflector.getUniformPieceStr();
       //postMessage("WAYPT_UPIECE", info);
-      ipf = reflector.extractOF();
+      ipf = reflector.extractIvPFunction();
     }
   }    
   else { // if (method == "zaic")
@@ -305,7 +305,7 @@ IvPFunction *BHV_Waypoint::buildOF(string method)
     ZAIC_PEAK crs_zaic(m_domain, "course");
     crs_zaic.setValueWrap(true);
     crs_zaic.setParams(rel_ang_to_wpt, 0, 180, 50, 0, 100);
-    IvPFunction *crs_of = crs_zaic.extractOF();
+    IvPFunction *crs_of = crs_zaic.extractIvPFunction();
 
     OF_Coupler coupler;
     ipf = coupler.couple(crs_of, spd_of);

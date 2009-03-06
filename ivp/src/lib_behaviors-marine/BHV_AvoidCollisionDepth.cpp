@@ -264,7 +264,7 @@ IvPFunction *BHV_AvoidCollisionDepth::onRunState()
   OF_Reflector reflector(&aof, 1);
   
   reflector.create(m_build_info);
-  IvPFunction *ipf = reflector.extractOF();
+  IvPFunction *ipf = reflector.extractIvPFunction();
 
 
   if(m_collision_depth > 0) {
@@ -275,7 +275,7 @@ IvPFunction *BHV_AvoidCollisionDepth::onRunState()
     if(warnings != "")
       postMessage("AVD_COLL_DEPTH_WARNING", warnings);
     if(mzaic.stateOK()) {
-      IvPFunction *depth_ipf = reflector.extractOF();
+      IvPFunction *depth_ipf = reflector.extractIvPFunction();
       if(depth_ipf) {
 	OF_Coupler coupler;
 	ipf = coupler.couple(ipf, depth_ipf);

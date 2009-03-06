@@ -256,7 +256,7 @@ IvPFunction *BHV_Trail::onRunState()
       if(!reflector.stateOK())
 	postWMessage(reflector.getWarnings());
       else
-	ipf = reflector.extractOF();
+	ipf = reflector.extractIvPFunction();
     }
     else { // inside nm_radius
       postMessage("REGION", "Inside nm_radius");
@@ -280,7 +280,7 @@ IvPFunction *BHV_Trail::onRunState()
       hdg_zaic.setParams(modh, 30, 150, 50, 0, 100);
       hdg_zaic.setValueWrap(true);
       
-      IvPFunction *hdg_ipf = hdg_zaic.extractOF();
+      IvPFunction *hdg_ipf = hdg_zaic.extractIvPFunction();
       
       // If ahead, reduce speed proportionally
       // if behind, increaase speed proportionally
@@ -305,7 +305,7 @@ IvPFunction *BHV_Trail::onRunState()
       //      spd_zaic.addSummit(modv, 0, 2.0, 10, 0, 25);
       //	  spd_zaic.setValueWrap(true);
       
-      IvPFunction *spd_ipf = spd_zaic.extractOF();
+      IvPFunction *spd_ipf = spd_zaic.extractIvPFunction();
       
       OF_Coupler coupler;
       ipf = coupler.couple(hdg_ipf, spd_ipf);
@@ -319,7 +319,7 @@ IvPFunction *BHV_Trail::onRunState()
     hdg_zaic.setParams(m_cnh, 30, 150, 50, 0, 100);
     hdg_zaic.setValueWrap(true);
     
-    IvPFunction *hdg_ipf = hdg_zaic.extractOF();
+    IvPFunction *hdg_ipf = hdg_zaic.extractIvPFunction();
     
     ZAIC_PEAK spd_zaic(m_domain, "speed");
     
@@ -340,7 +340,7 @@ IvPFunction *BHV_Trail::onRunState()
     //      spd_zaic.addSummit(modv, 0, 2.0, 10, 0, 25);
     //      spd_zaic.setValueWrap(true);
     
-    IvPFunction *spd_ipf = spd_zaic.extractOF();
+    IvPFunction *spd_ipf = spd_zaic.extractIvPFunction();
     
     OF_Coupler coupler;
     ipf = coupler.couple(hdg_ipf, spd_ipf);
