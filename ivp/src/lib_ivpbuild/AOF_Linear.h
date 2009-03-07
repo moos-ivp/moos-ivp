@@ -28,7 +28,7 @@
 class AOF_Linear: public AOF {
  public:
   AOF_Linear(IvPDomain domain) : AOF(domain)
-    {m_coeff=0; n_coeff=0;};
+  {m_coeff=0; n_coeff=0; b_scalar=0;};
   ~AOF_Linear() {};
 
 public:    
@@ -38,6 +38,7 @@ public:
 private:
   double m_coeff;
   double n_coeff;
+  double b_scalar;
 };
 
 #endif

@@ -17,7 +17,7 @@ double AOF_Linear::evalBox(const IvPBox *ptbox) const
   double x_val = extract("x", ptbox);
   double y_val = extract("y", ptbox);
   
-  return((m_coeff * x_val) + (n_coeff * y_val));
+  return((m_coeff * x_val) + (n_coeff * y_val) + b_scalar);
 }
 
 //----------------------------------------------------------------
@@ -29,6 +29,8 @@ bool AOF_Linear::setParam(const std::string& param, double val)
     m_coeff = val;
   else if(param == "ncoeff")
     n_coeff = val;
+  else if(param == "bscalar")
+    b_scalar = val;
   else
     return(false);
   return(true);
