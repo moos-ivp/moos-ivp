@@ -53,7 +53,7 @@ AOF_Ring::AOF_Ring(IvPDomain g_domain) : AOF(g_domain)
   gradient_type = 0;
   
   // Calculate default gradient_dist once here so we don't 
-  // have to do it each time when we call evalBox().
+  // have to do it each time when we call evalPoint().
 
   gradient_dist  = 0.0;
   for(unsigned int d=0; d<dim; d++)
@@ -180,9 +180,9 @@ bool AOF_Ring::randomize()
 }
 
 //----------------------------------------------------------------
-// Procedure: evalBox
+// Procedure: evalPoint
 
-double AOF_Ring::evalBox(const IvPBox *gbox) const
+double AOF_Ring::evalPoint(const IvPBox *gbox) const
 {
   double ratio, weight;
 

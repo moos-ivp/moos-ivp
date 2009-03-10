@@ -51,9 +51,9 @@ bool AOF_Quadratic::initialize()
 };
 
 //----------------------------------------------------------------
-// Procedure: evalBox
+// Procedure: evalPoint
 
-double AOF_Quadratic::evalBox(const IvPBox *ptbox) const
+double AOF_Quadratic::evalPoint(const IvPBox *ptbox) const
 {
   double x_val = m_domain.getVal(x_index, ptbox->pt(x_index));
   double y_val = m_domain.getVal(y_index, ptbox->pt(y_index));

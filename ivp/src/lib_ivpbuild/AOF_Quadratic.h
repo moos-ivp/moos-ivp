@@ -31,7 +31,7 @@ public:
   ~AOF_Quadratic() {};
 
 public:    
-  double evalBox(const IvPBox*) const;
+  double evalPoint(const IvPBox*) const;
   bool   setParam(const std::string& param, double val); 
   bool   initialize();
   

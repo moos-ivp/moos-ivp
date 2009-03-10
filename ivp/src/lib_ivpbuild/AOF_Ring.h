@@ -33,7 +33,7 @@ public:
   virtual ~AOF_Ring() {};
 
 public: // virtuals defined
-  double evalBox(const IvPBox *b) const;
+  double evalPoint(const IvPBox *b) const;
   bool   setParam(const std::string&, double);
   bool   setParam(const std::string&, const std::string&);
 

@@ -10,18 +10,7 @@
 using namespace std;
 
 //----------------------------------------------------------------
-// Procedure: evalBox
-
-double AOF_Linear::evalBox(const IvPBox *ptbox) const
-{
-  double x_val = extract("x", ptbox);
-  double y_val = extract("y", ptbox);
-  
-  return((m_coeff * x_val) + (n_coeff * y_val) + b_scalar);
-}
-
-//----------------------------------------------------------------
-// Procedure: evalBox
+// Procedure: setParam
 
 bool AOF_Linear::setParam(const std::string& param, double val) 
 {
@@ -35,4 +24,15 @@ bool AOF_Linear::setParam(const std::string& param, double val)
     return(false);
   return(true);
 };
+
+//----------------------------------------------------------------
+// Procedure: evalPoint
+
+double AOF_Linear::evalPoint(const IvPBox *ptbox) const
+{
+  double x_val = extract("x", ptbox);
+  double y_val = extract("y", ptbox);
+  
+  return((m_coeff * x_val) + (n_coeff * y_val) + b_scalar);
+}
 
