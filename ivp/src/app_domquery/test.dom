@@ -1,0 +1,2 @@
+variable=x, low=-250, high=249, points=500
+variable=y, low=-250, high=249, points=500

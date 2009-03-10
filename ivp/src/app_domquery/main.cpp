@@ -1,0 +1,52 @@
+/*****************************************************************/
+/*    NAME: Michael Benjamin, H. Schmidt, J. Leonard             */
+/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    FILE: main.cpp                                             */
+/*    DATE: March 10th, 2009                                     */
+/*                                                               */
+/* This is unreleased BETA code. No permission is granted or     */
+/* implied to use, copy, modify, and distribute this software    */
+/* except by the author(s).                                      */
+/*****************************************************************/
+
+#include <stdio.h>
+#include <cstring>
+#include <iostream>
+#include "DomQUery.h"
+#include "MBUtils.h"
+
+using namespace std;
+
+//--------------------------------------------------------
+// Procedure: main
+
+int main(int argc, char *argv[])
+{
+  // Look for a request for version information
+  if(scanArgs(argc, argv, "-v", "--version", "-version")) {
+    vector<string> svector = getReleaseInfo("domquery");
+    for(unsigned int j=0; j<svector.size(); j++)
+      cout << svector[j] << endl;    
+    return(0);
+  }
+  
+  // Look for a request for usage information
+  if(scanArgs(argc, argv, "-h", "--help", "-help")) {
+    cout << "Usage: domquery filename.dom" << endl;
+    return(0);
+  }
+
+  DomQuery dom_query;
+  string   dom_file;
+
+  for(int i=1; i<argc; i++) {
+    string arg = argv[i];
+    if(strContains(arg, ".dom"))
+      dom_file = arg;
+  }
+
+  dom_query.setInFile(dom_file);
+  dom_query.buildDomain();
+  
+  return(0);
+}
