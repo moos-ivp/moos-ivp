@@ -151,7 +151,15 @@ Fl_Menu_Item GUI::menu_[] = {
  {"Uniform 75",  0, (Fl_Callback*)GUI::cb_MakeUniform, (void*)75, FL_MENU_RADIO},
  {"Uniform 100", 0, (Fl_Callback*)GUI::cb_MakeUniform, (void*)100, FL_MENU_RADIO},
  {"Uniform 250", 0, (Fl_Callback*)GUI::cb_MakeUniform, (void*)250, FL_MENU_RADIO},
- {"Uniform 500", 0, (Fl_Callback*)GUI::cb_MakeUniform, (void*)500, FL_MENU_RADIO},
+ {"Uniform 500", 0, (Fl_Callback*)GUI::cb_MakeUniform, (void*)500, FL_MENU_RADIO|FL_MENU_DIVIDER},
+ {"Pieces 63", 0, (Fl_Callback*)GUI::cb_MakePieces, (void*)63, FL_MENU_RADIO},
+ {"Pieces 64", 0, (Fl_Callback*)GUI::cb_MakePieces, (void*)64, FL_MENU_RADIO},
+ {"Pieces 500", 0, (Fl_Callback*)GUI::cb_MakePieces, (void*)500, FL_MENU_RADIO},
+ {"Pieces 512", 0, (Fl_Callback*)GUI::cb_MakePieces, (void*)512, FL_MENU_RADIO},
+ {"Pieces 1000", 0, (Fl_Callback*)GUI::cb_MakePieces, (void*)1000, FL_MENU_RADIO},
+ {"Pieces 1024", 0, (Fl_Callback*)GUI::cb_MakePieces, (void*)1024, FL_MENU_RADIO},
+ {"Pieces 1025", 0, (Fl_Callback*)GUI::cb_MakePieces, (void*)1025, FL_MENU_RADIO},
+ {"Pieces 4000", 0, (Fl_Callback*)GUI::cb_MakePieces, (void*)4000, FL_MENU_RADIO},
  {0},
 
  {"Color-Map", 0,  0, 0, 64, 0, 0, 14, 0},
@@ -446,6 +454,17 @@ inline void GUI::cb_MakeUniform_i(int amt) {
 }
 void GUI::cb_MakeUniform(Fl_Widget* o, int v) {
   ((GUI*)(o->parent()->user_data()))->cb_MakeUniform_i(v);
+}
+
+//----------------------------------------- MakePieces
+inline void GUI::cb_MakePieces_i(int amt) {
+  if(amt > 0)
+    viewer->setParam("uniform_amount", amt);
+  viewer->makeUniformIPF();
+  updateXY();
+}
+void GUI::cb_MakePieces(Fl_Widget* o, int v) {
+  ((GUI*)(o->parent()->user_data()))->cb_MakePieces_i(v);
 }
 
 //----------------------------------------- ColorMap

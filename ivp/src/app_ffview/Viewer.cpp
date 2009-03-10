@@ -37,6 +37,7 @@ Viewer::Viewer(int x, int y,
   m_polar      = 0;
   m_strict_range = true;
   m_create_time = -1;
+  m_piece_count = 0;
 
   setParam("uniform_piece", 10);
   setParam("set_scale", 1);
@@ -199,6 +200,8 @@ bool Viewer::setParam(string param, double value)
 
   if(param == "set_base_ipf")
     m_base_ipf = value;
+  else if(param == "uniform_amount")
+    m_piece_count = value;
   else if(param == "mod_base_ipf")
     m_base_ipf += value;
   else if(param == "set_base_aof")
@@ -295,7 +298,10 @@ void Viewer::makeUniformIPF()
     m_uniform_piece_str += intToString(m_uniform_piece_size);
   }
 
-  reflector.setParam("uniform_piece", m_uniform_piece_str);
+  if(m_piece_count > 0) 
+    reflector.setParam("uniform_amount", m_piece_count);
+  else
+    reflector.setParam("uniform_piece", m_uniform_piece_str);
 
   if(m_strict_range)
     reflector.setParam("strict_range", "true");

@@ -72,7 +72,8 @@ private:
   FColorMap  m_cmap;
   bool       m_strict_range;
   double     m_create_time;
-
+  int        m_piece_count;
+ 
   IvPFunction *m_unif_ipf;
   OF_Rater     m_rater;
 

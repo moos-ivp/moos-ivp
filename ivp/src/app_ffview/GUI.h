@@ -122,6 +122,9 @@ private:
   inline void cb_MakeUniform_i(int);
   static void cb_MakeUniform(Fl_Widget*, int);
 
+  inline void cb_MakePieces_i(int);
+  static void cb_MakePieces(Fl_Widget*, int);
+
   inline void cb_ColorMap_i(int);
   static void cb_ColorMap(Fl_Widget*, int);
 
