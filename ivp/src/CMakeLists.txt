@@ -169,6 +169,7 @@ SET(IVP_APPS_TO_BUILD
   app_alogrm
   app_alogclip
   app_splug
+  app_domquery
   iMarineSim
   pDeployHandler
   pEchoVar
