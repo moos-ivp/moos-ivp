@@ -56,29 +56,29 @@ IvPBox genUnifBox(const IvPDomain &domain, int maxAmount)
   }
   
   // Allocate some arrays determined from the value of "dim". 
-  vector<double> uhgh(dim,0);                    
-  vector<bool>   dmaxed(dim, false);
+  vector<double> pts_on_edge(dim,0);                    
+  vector<bool>   pcs_maxed(dim, false);
   vector<double> pcs_on_edge(dim, 1);
   
   // Store val locally to minimize function calls.
   for(d=0; d<dim; d++)
-    uhgh[d] = (double)(domain.getVarPoints(d));  
+    pts_on_edge[d] = (double)(domain.getVarPoints(d));  
 
   bool done = false;
   while(!done) {
     done = true;                      // Check to see if all dims 
     for(d=0; d<dim; d++)              // have been maxed-out. If so
-      done = done && dmaxed[d];       // we're done, and loop ends.
+      done = done && pcs_maxed[d];    // we're done, and loop ends.
 
     if(!done) {                       // Find the dimension most  
       int    augment_dim;             // worthy of one more split.
       double biggestVal = 0.0;        // It is the dimension that
       for(d=0; d<dim; d++) {          // has the largest dsize
-	if(!dmaxed[d]) {               // value that has not been
-	  double dsize  = uhgh[d] / pcs_on_edge[d];
+	if(!pcs_maxed[d]) {           // value that has not been
+	  double dsize  = pts_on_edge[d] / pcs_on_edge[d];
 	  if(dsize > biggestVal) {    // deemed to be maxed-out. A
 	    biggestVal = dsize;       // maxed-out dim, d, has the
-	    augment_dim  = d;         // value dmaxed[d] = TRUE.
+	    augment_dim  = d;         // value pcs_maxed[d] = TRUE.
 	  }
 	}
       }
@@ -91,20 +91,20 @@ IvPBox genUnifBox(const IvPDomain &domain, int maxAmount)
 
       // If max_amt exceeded, undo augment, max-out the dimension
       if(hypothetical_amt > maxAmount) {
-	dmaxed[augment_dim] = true;
+	pcs_maxed[augment_dim] = true;
 	pcs_on_edge[augment_dim]--;
       }  
 
       // Cant have more pieces on an edge than points on an edge
-      if(pcs_on_edge[augment_dim] >= uhgh[augment_dim])  
-	dmaxed[augment_dim] = true;            
+      if(pcs_on_edge[augment_dim] >= pts_on_edge[augment_dim])  
+	pcs_maxed[augment_dim] = true;            
     }
   }
 
   // Now build the uniform box based on the splits
   IvPBox ubox(dim,0);
   for(d=0; d<dim; d++) {
-    double edge_size = ceil(uhgh[d] / pcs_on_edge[d]);
+    double edge_size = ceil(pts_on_edge[d] / pcs_on_edge[d]);
     ubox.setPTS(d, 0, (int)(edge_size) -1);
   }
   return(ubox);
