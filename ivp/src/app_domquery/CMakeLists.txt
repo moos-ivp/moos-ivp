@@ -11,5 +11,7 @@ SET(SRC
 ADD_EXECUTABLE(domquery ${SRC})
      
 TARGET_LINK_LIBRARIES(domquery
-  mbutil
+  mbutil 
+  ivpbuild
+  ivpcore
   m)
