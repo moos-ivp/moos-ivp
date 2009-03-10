@@ -34,6 +34,87 @@ using namespace std;
 
 //-------------------------------------------------------------
 // Procedure: genUnifBox
+//   Purpose: Generate an IvPBox s.t. if a uniform PDMap were
+//            made with box, it would have no more than "maxAmount"
+//            of pieces, with the given IvPDomain. 
+//      Note: The algorithm tries to generate a ubox with low aspect
+//            ratio. But once it becomes impossible to grow an
+//            edge of ubox due to the maxAmount restriction, it will
+//            grow the other edges regardless of the aspect ratio
+//            until it is as large as possible.
+//      Note: The significant info of the returned box, is the value
+//            of the high edge. A domain of [0,283] would indicate
+//            an edge length of 284, for example.
+
+IvPBox genUnifBox(const IvPDomain &domain, int maxAmount)
+{
+  int d, dim = domain.size();
+
+  if((maxAmount <= 0) || (dim <= 0)) {
+    IvPBox null_box;
+    return(null_box);
+  }
+  
+  // Allocate some arrays determined from the value of "dim". 
+  vector<double> uhgh(dim,0);                    
+  vector<int>    maxSplit(dim, 0);
+  vector<bool>   dmaxed(dim, false);
+  vector<double> dsplit(dim, 1);
+  
+  // Store val locally to minimize function calls.
+  for(d=0; d<dim; d++) {          
+    uhgh[d]     = (double)(domain.getVarPoints(d));  
+    maxSplit[d] = (int)(ceil(uhgh[d]/2));
+  }
+
+  bool done = false;
+  while(!done) {
+    done = true;                      // Check to see if all dims 
+    for(d=0; d<dim; d++)              // have been maxed-out. If so
+      done = done && dmaxed[d];       // we're done, and loop ends.
+
+    if(!done) {                       // Find the dimension most  
+      int    split_dim;               // worthy of one more split.
+      double biggestVal = 0.0;        // It is the dimension that
+      for(d=0; d<dim; d++) {          // has the largest dsize
+	if(!dmaxed[d]) {               // value that has not been
+	  double dsize  = uhgh[d] / dsplit[d];
+	  if(dsize > biggestVal) {    // deemed to be maxed-out. A
+	    biggestVal = dsize;       // maxed-out dim, d, has the
+	    split_dim  = d;           // value dmaxed[d] = TRUE.
+	  }
+	}
+      }
+      dsplit[split_dim]++;
+
+      // Calc hypothetical number of unif boxes given new split.
+      double amt = 1.0;                    
+      for(d=0; d<dim; d++)
+	amt = amt * dsplit[d];
+
+      // If amt exceeded, undo the split, max-out the dimension
+      if(amt > maxAmount) {
+	dmaxed[split_dim] = true;
+	dsplit[split_dim]--;
+      }  
+
+      if(dsplit[split_dim] >= maxSplit[split_dim])  
+	dmaxed[split_dim] = true;            
+    }
+  }
+
+  // Now build the uniform box based on the splits
+  IvPBox ubox(dim,0);
+  for(d=0; d<dim; d++) {
+    double dval = ceil(uhgh[d] / dsplit[d]);
+    ubox.setPTS(d, 0, (int)(dval) -1);
+  }
+  return(ubox);
+}
+
+
+//-------------------------------------------------------------
+// Procedure: genUnifBox
 //   Purpose: Generate a box, "ubox" s.t. if a uniform PDMap were
 //            made with ubox, it would have no more than "maxAmount"
 //            of pieces. 
@@ -45,7 +126,7 @@ using namespace std;
 //      Note: The significant info of the returned box, is the value
 //            of the high edge. A domain of [0,283] would indicate
 //            an edge length of 284, for example.
-
+#if 0
 IvPBox genUnifBox(const IvPDomain &domain, int maxAmount)
 {
   if(maxAmount <= 0) {
@@ -77,7 +158,6 @@ IvPBox genUnifBox(const IvPDomain &domain, int maxAmount)
   for(d=0; d<dim; d++) {
     dsplit[d] = 1.0;                   // Num splits for dim d
     dmaxed[d] = false;                 // False if more splits ok
-    //dsize[d]  = (double)(uhgh[d]+1); // benign bugfix
     dsize[d]  = (double)(uhgh[d]);     // Size of unif box for dim d    
   }
 
@@ -104,7 +184,6 @@ IvPBox genUnifBox(const IvPDomain &domain, int maxAmount)
       // the amount of uniform boxes that would be made. 
       double amt = 1.0;                    
       for(d=0; d<dim; d++) {            
-	// double ddom =(double)(uhgh[d] + 1);  // benign bugfix
 	double ddom =(double)(uhgh[d]);
 	double dval = ceil(ddom / dsplit[d]);
 	if(d==bd) 
@@ -117,7 +196,6 @@ IvPBox genUnifBox(const IvPDomain &domain, int maxAmount)
 	dmaxed[bd] = true;
       else {
 	dsplit[bd] = dsplit[bd] + 1.0;  
-	//dsize[bd]  = (double)(uhgh[bd]+1); // benign bugfix
 	dsize[bd]  = (double)(uhgh[bd]);
 	dsize[bd]  = dsize[bd] / dsplit[bd];
       }
@@ -130,13 +208,10 @@ IvPBox genUnifBox(const IvPDomain &domain, int maxAmount)
   // the splits, and calculate the total anticipated boxes.
   
   IvPBox ubox(dim,0);
-  double total = 1.0;
   for(d=0; d<dim; d++) {
     //double ddom =(double)(uhgh[d] + 1); // benign bugfix
     double ddom =(double)(uhgh[d]);
     double dval = ceil(ddom / dsplit[d]);
-    double boxesPerEdge = ceil(ddom / dval);
-    total = total * boxesPerEdge;
     ubox.setPTS(d, 0, (int)(dval) -1);
   }
 
@@ -148,7 +223,7 @@ IvPBox genUnifBox(const IvPDomain &domain, int maxAmount)
 
   return(ubox);
 }
-
+#endif
 
 //-------------------------------------------------------------
 // Procedure: makeRand
