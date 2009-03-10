@@ -84,7 +84,7 @@ IvPBox genUnifBox(const IvPDomain &domain, int maxAmount)
       }
       pcs_on_edge[augment_dim]++;
 
-      // Calc hypothetical number of unif boxes given new split.
+      // Calc hypothetical number of boxes given new augmentation.
       double hypothetical_amt = 1.0;                    
       for(d=0; d<dim; d++)
 	hypothetical_amt *= pcs_on_edge[d];
@@ -101,7 +101,7 @@ IvPBox genUnifBox(const IvPDomain &domain, int maxAmount)
     }
   }
 
-  // Now build the uniform box based on the splits
+  // Now build uniform box based on pts_on_edge and pcs_on_edge
   IvPBox ubox(dim,0);
   for(d=0; d<dim; d++) {
     double edge_size = ceil(pts_on_edge[d] / pcs_on_edge[d]);
