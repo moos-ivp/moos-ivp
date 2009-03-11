@@ -314,6 +314,11 @@ string stripBlankEnds(const string& str)
     }
   }
 
+  if(startIX > endIX) {      // Handle case where the
+    string ret_string = "";  // whole string was blanks,
+    return(ret_string);      // tabs, newlines, or car-return
+  }
+
   length = (endIX - startIX) + 1;
   
   char *buff = new char [length+1];
