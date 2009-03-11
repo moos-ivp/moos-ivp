@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include <cstring>
 #include <iostream>
-#include "DomQUery.h"
+#include "DomQuery.h"
 #include "MBUtils.h"
 
 using namespace std;
