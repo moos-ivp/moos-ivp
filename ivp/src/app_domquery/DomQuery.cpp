@@ -10,11 +10,14 @@
 /*****************************************************************/
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string>
 #include <iostream>
 #include "MBUtils.h"
 #include "FileBuffer.h"
 #include "DomQuery.h"
+#include "BuildUtils.h"
+#include "BoxSet.h"
 
 using namespace std;
 
@@ -81,10 +84,31 @@ void DomQuery::buildDomain()
       new_domain.addDomain(var, dlow, dhgh, dpts);
     }
   }
-
   new_domain.print();
+
+  m_domain = new_domain;
 }
   
+//--------------------------------------------------------
+// Procedure: requestPieceCount()
+
+void DomQuery::requestPieceCount(int pieces)
+{
+  if(m_domain.size() == 0)
+    cout << "Empty Domain - exiting now." << endl;
+
+  IvPBox ubox = genUnifBox(m_domain, pieces);
+  ubox.print();
+
+  IvPBox universe = domainToBox(m_domain);
+  BoxSet *boxset = makeUniformDistro(universe, ubox, 1);
+  
+  int bsize = boxset->size();
+    
+  cout << "Actual pieces created: " << bsize << endl;
+
+}
+
 //--------------------------------------------------------
 // Procedure: verifyInfile()
 

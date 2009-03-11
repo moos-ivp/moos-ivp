@@ -24,6 +24,8 @@ class DomQuery
 
   void buildDomain();
   void setInFile(std::string s) {m_infile=s;};  
+
+  void requestPieceCount(int);
   
  protected:
   bool verifyInfile();

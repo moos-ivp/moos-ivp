@@ -38,15 +38,21 @@ int main(int argc, char *argv[])
 
   DomQuery dom_query;
   string   dom_file;
+  string   req_pieces;
 
   for(int i=1; i<argc; i++) {
     string arg = argv[i];
     if(strContains(arg, ".dom"))
       dom_file = arg;
+    else if((arg == "-pieces") && (i+1 < argc))
+      req_pieces = argv[i+1];    
   }
 
   dom_query.setInFile(dom_file);
   dom_query.buildDomain();
+
+  if(isNumber(req_pieces))
+    dom_query.requestPieceCount(atoi(req_pieces.c_str()));
   
   return(0);
 }
