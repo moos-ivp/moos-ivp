@@ -9,7 +9,8 @@
 /* except by the author(s).                                      */
 /*****************************************************************/
 
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
 #include <cstring>
 #include <iostream>
 #include "DomQuery.h"
