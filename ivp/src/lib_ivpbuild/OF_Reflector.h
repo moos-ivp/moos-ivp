@@ -86,6 +86,7 @@ protected:
   int          m_smart_percent;
   double       m_smart_thresh;
   bool         m_auto_peak;
+  int          m_auto_peak_max_pcs;
 
   std::vector<IvPBox>  m_refine_regions;
   std::vector<IvPBox>  m_refine_pieces;

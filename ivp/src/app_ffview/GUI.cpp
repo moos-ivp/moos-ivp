@@ -152,6 +152,7 @@ Fl_Menu_Item GUI::menu_[] = {
  {"Uniform 100", 0, (Fl_Callback*)GUI::cb_MakeUniform, (void*)100, FL_MENU_RADIO},
  {"Uniform 250", 0, (Fl_Callback*)GUI::cb_MakeUniform, (void*)250, FL_MENU_RADIO},
  {"Uniform 500", 0, (Fl_Callback*)GUI::cb_MakeUniform, (void*)500, FL_MENU_RADIO|FL_MENU_DIVIDER},
+ {"Pieces 35", 0, (Fl_Callback*)GUI::cb_MakePieces, (void*)35, FL_MENU_RADIO},
  {"Pieces 63", 0, (Fl_Callback*)GUI::cb_MakePieces, (void*)63, FL_MENU_RADIO},
  {"Pieces 64", 0, (Fl_Callback*)GUI::cb_MakePieces, (void*)64, FL_MENU_RADIO},
  {"Pieces 500", 0, (Fl_Callback*)GUI::cb_MakePieces, (void*)500, FL_MENU_RADIO},

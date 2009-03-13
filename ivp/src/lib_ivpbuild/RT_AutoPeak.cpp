@@ -43,7 +43,7 @@ RT_AutoPeak::RT_AutoPeak(Regressor *g_reg)
 //            regression fit during the phase when uniform pieces
 //            were constructed.
 
-PDMap* RT_AutoPeak::create(PDMap *pdmap)
+PDMap* RT_AutoPeak::create(PDMap *pdmap, int max_more_pcs)
 {
   if(!pdmap)
     return(0);
@@ -117,6 +117,8 @@ PDMap* RT_AutoPeak::create(PDMap *pdmap)
 	newboxes.push_back(new_box);
       }
     }
+    if((max_more_pcs != -1) && (newboxes.size() >= max_more_pcs))
+      done = true;
   }
 
   int amt = newboxes.size();

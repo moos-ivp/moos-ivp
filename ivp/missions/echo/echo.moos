@@ -6,7 +6,7 @@ Simulator  = true
 
 Community  = henry
 
-MOOSTimeWarp = 3
+MOOSTimeWarp = 25
 
 LatOrigin  = 43.825300 
 LongOrigin = -70.330400 

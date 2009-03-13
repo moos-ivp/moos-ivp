@@ -38,7 +38,7 @@ public:
   virtual ~RT_AutoPeak() {};
 
 public: 
-  PDMap* create(PDMap*);
+  PDMap* create(PDMap*, int max_more_pcs=-1);
 
 protected:
   Regressor* m_regressor;

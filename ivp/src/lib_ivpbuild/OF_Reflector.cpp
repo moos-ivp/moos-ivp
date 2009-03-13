@@ -298,6 +298,18 @@ bool OF_Reflector::setParam(string param, string value)
     }
     m_auto_peak = (value == "true");
   }
+  else if(param == "auto_peak_max_pcs") {
+    if(!isNumber(value)) {
+      addWarning("auto_peak_max_pcs value must be numerical");
+      return(false);
+    }
+    int auto_peak_max_pcs = atoi(value.c_str());
+    if(auto_peak_max_pcs <= 0) {
+      addWarning("auto_peak_max_pcs value must be > 0");
+      return(false);
+    }
+    m_auto_peak_max_pcs = auto_peak_max_pcs;
+  }
   else {
     addWarning(param + ": undefined parameter");
     return(false);

@@ -13,7 +13,7 @@ Behavior = BHV_Loiter
   endflag   = RETURN = true
   updates   = UP_LOITERA
 
-  speed     = 7.0
+  speed     = 1.0
   clockwise = false
   radius    = 8.0
   nm_radius = 15.0
@@ -31,7 +31,7 @@ Behavior = BHV_Loiter
   endflag   = RETURN = true
   updates   = UP_LOITERB
 
-  speed     = 6.5
+  speed     = 1.5
   clockwise = false
   radius    = 8.0
   nm_radius = 15.0
@@ -58,6 +58,6 @@ Behavior = BHV_Timer
   duration   = 300
   perpetual  = true
   duration_status = LTIMER
-
+  condition  = DEPLOY = true
 }
 
