@@ -1,0 +1,53 @@
+<HTML>
+<HEAD>
+<TITLE>Limit Depth  Task</TITLE>
+</HEAD>
+<BODY>
+
+<H1><img src="moose6.gif"> <center>Limit Depth Task</center></H1>
+
+<H2>Description</H2>
+This task prevents the vehicle from exceeding a script specified depth. The Event flags are published
+when this depth is exceeded.
+
+
+<H2>Publishes</H2>
+<ul>
+	<li>EndFlags
+	<li>EventFlags
+</ul>
+<p>
+
+
+<H2>Subscribes</H2>
+<ul>
+	<li><b>StartFlags</b>
+	<li><b>AUV_DEPTH</b>
+	<li><b>DEPTH_LIMIT</b>
+</ul>
+<p>
+
+<H2>Configuration Block</H2>
+<ul>
+
+
+
+	<li><a href="CommonMOOSTask.html"> Common Task Parameters</a>
+	<p>
+
+	<li><H3>MaximumDepth</H3>
+	<ul>
+		<li><b>Syntax:	</b> MaximumDepth = MaxDepth
+		<li><b>Meaning:	</b> Set the maximum permissble depth
+		<li><b>Example:	</b> <i>MaximumDepth = 50</i> set max depth to 50m
+	</ul>
+	<p>
+	
+
+</ul>
+
+
+<hr>
+<H4>The MOOS &#169;  P. Newman 2001-2002 <img src="moose2.gif"></H4>
+</BODY>
+</HTML>

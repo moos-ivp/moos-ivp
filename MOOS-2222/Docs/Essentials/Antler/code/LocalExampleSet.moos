@@ -1,0 +1,109 @@
+
+//Un-Comment/Comment the first line of each each example block
+//to play with various Antler configurations
+
+
+//simplest possible example
+//ProcessConfig = Antler
+{
+    Run = MOOSDB @ NewConsole = true
+    Run = pAntlerTestAppA @ NewConsole = true
+    
+}
+
+//Run two instances of pAntlerTestAppA under different names
+//note two new configuration blocks are needed (Oxford and FenTech)
+//ProcessConfig = Antler
+{
+    Run = MOOSDB @ NewConsole = true
+    Run = pAntlerTestAppA @ NewConsole = true  ~ Oxford
+    Run = pAntlerTestAppA @ NewConsole = true ~ FenTech
+}
+
+
+//passing an additional two parameters to pTestAppB
+//ProcessConfig = Antler
+{
+    Run = MOOSDB @ NewConsole = true
+    Run = pAntlerTestAppA @ NewConsole = true
+    
+    Run = pAntlerTestAppB @ ExtraProcessParams = BParams , NewConsole = true
+    BParams = CustomVar,ThisIsAString
+    
+}
+
+//specifying a default executable path and overloading it for MOOSBD
+ProcessConfig = Antler
+{
+    ExecutablePath  = C:/codescratch/MOOS/MOOSBin/debug/q
+    Run = MOOSDB @ path=C:/codescratch/MOOS/MOOSBin/debug, NewConsole = true
+    Run = qq @ NewConsole = true
+       
+}
+
+
+//passing three parameters to pTestAppC which is not expecting the first
+//two parameters to be Mission File and MOOSName
+//ProcessConfig = Antler
+{
+    Run = MOOSDB @ NewConsole = true
+  
+    Run = pAntlerTestAppA @ NewConsole = true
+    
+    Run = pAntlerTestAppB @ ExtraProcessParams = BParams , NewConsole = true
+    BParams = CustomVar,ThisIsAString
+    
+    Run = pAntlerTestAppC @ ExtraProcessParams = CParams, InhibitMOOSParams=true , NewConsole = true
+    CParams = set,the,moos,loose,1,2,3,45.6
+    
+}
+
+//Adding some colour to MOOSDB, pAntlerTestB and pAntlerTestC
+ProcessConfig = Antler
+{
+    Run = MOOSDB @Win32Config=DBWin32,XConfig=DBX , NewConsole = true
+    DBX = -bg,#FF0000, -geometry, 80x40+200+300
+    DBWin32 = BACKGROUND_RED
+    
+    Run = pAntlerTestAppA @ NewConsole = true
+    
+    Run = pAntlerTestAppB @ Win32Config=BWin32,XConfig=BX, ExtraProcessParams = BParams , NewConsole = true
+    BParams = CustomVar,ThisIsAString
+    BWin32 = BACKGROUND_GREEN,BACKGROUND_BLUE
+    BX = -bg,#00FFFF, -geometry, 80x40+350+300
+    
+    Run = pAntlerTestAppC @ Win32Config=CWin32,XConfig=CX,ExtraProcessParams = CParams, InhibitMOOSParams=true , NewConsole = true
+    CParams = set,the,moos,loose,1,2,3,45.6
+    CWin32 = BACKGROUND_RED,BACKGROUND_BLUE
+    CX = -bg,#FF00FF, -geometry, 80x40+400+300
+    
+}
+
+
+//Configuration for TestAppA - just looks for a string to print
+ProcessConfig = pAntlerTestAppA
+{
+    PrintThis = SetTheMOOSLoose
+}
+
+//configuration for pTestAppB  - nothing but it expects a third and fourth
+//command line tell it what to publish...
+ProcessConfig = pAntlerTestAppB
+{
+
+}
+
+//Configuration for FenTech (which is actually  and instantiation of
+// pAntlerTestAppA) - just looks for a string to print
+ProcessConfig = FenTech
+{
+    PrintThis = ThisIsTestAppAAsFenTech
+}
+
+//Configuration for Oxford (which is actually  an instantiation of
+// pAntlerTestAppA) - just looks for a string to print
+ProcessConfig = Oxford
+{
+    PrintThis = ThisIsTestAppAAsOxford
+}
+

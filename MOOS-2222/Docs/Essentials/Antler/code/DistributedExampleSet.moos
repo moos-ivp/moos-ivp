@@ -1,0 +1,94 @@
+//if you are really runing this on different hosts
+//makesure you set the server hostname below
+//if you are simply testing how to run multiple
+//instances of MOOS using localhost is just fine
+
+
+ServerHost = host1.robots.ox.ac.uk
+ServerPort = 9000
+
+
+//you need to start three instances of pAntler...
+//On host3: pAntler host1.robots.ox.ac.uk 9000 jupiter
+//On host2: pAntler host1.robots.ox.ac.uk 9000 neptune
+//On host 1: pAntler <MissionFile.moos>
+
+//Running AppA on jupiter(host3) B on neptune(host2), DB and C on host1 
+ProcessConfig = Antler
+{
+    EnableDistributed = true
+    
+    
+    Run = MOOSDB @Win32Config=DBWin32,XConfig=DBX , NewConsole = true
+    DBX = -bg,#FF0000, -geometry, 80x40+200+300
+    DBWin32 = BACKGROUND_RED
+    
+    Run = pAntlerTestAppA @ AntlerID = jupiter, NewConsole = true
+    
+    Run = pAntlerTestAppB @ AntlerID = neptune,Win32Config=BWin32,XConfig=BX, ExtraProcessParams = BParams , NewConsole = true
+    BParams = CustomVar,ThisIsAString
+    BWin32 = BACKGROUND_GREEN,BACKGROUND_BLUE
+    BX = -bg,#00FFFF, -geometry, 80x40+350+300
+    
+    Run = pAntlerTestAppC @ Win32Config=CWin32,XConfig=CX,ExtraProcessParams = CParams, InhibitMOOSParams=true , NewConsole = true
+    CParams = set,the,moos,loose,1,2,3,45.6
+    CWin32 = BACKGROUND_RED,BACKGROUND_BLUE
+    CX = -bg,#FF00FF, -geometry, 80x40+400+300
+    
+}
+
+//As above but now with three versions of AppA
+//ProcessConfig = Antler
+{
+    
+    EnableDistributed = true
+    
+    Run = MOOSDB @Win32Config=DBWin32,XConfig=DBX , NewConsole = true
+    DBX = -bg,#FF0000, -geometry, 80x40+200+300
+    DBWin32 = BACKGROUND_RED
+    
+    Run = pAntlerTestAppA @ AntlerID = jupiter, NewConsole = true
+    Run = pAntlerTestAppA @ AntlerID = jupiter, NewConsole = true ~ FenTech
+    Run = pAntlerTestAppA @ AntlerID = jupiter, NewConsole = true ~ Oxford
+    
+    Run = pAntlerTestAppB @ AntlerID = neptune,Win32Config=BWin32,XConfig=BX, ExtraProcessParams = BParams , NewConsole = true
+    BParams = CustomVar,ThisIsAString
+    BWin32 = BACKGROUND_GREEN,BACKGROUND_BLUE
+    BX = -bg,#00FFFF, -geometry, 80x40+350+300
+    
+    Run = pAntlerTestAppC @ Win32Config=CWin32,XConfig=CX,ExtraProcessParams = CParams, InhibitMOOSParams=true , NewConsole = true
+    CParams = set,the,moos,loose,1,2,3,45.6
+    CWin32 = BACKGROUND_RED,BACKGROUND_BLUE
+    CX = -bg,#FF00FF, -geometry, 80x40+400+300
+    
+}
+
+
+
+//Configuration for TestAppA - just looks for a string to print
+ProcessConfig = pAntlerTestAppA
+{
+    PrintThis = SetTheMOOSLoose
+}
+
+//configuration for pTestAppB  - nothing but it expects a third and fourth
+//command line tell it what to publish...
+ProcessConfig = pAntlerTestAppB
+{
+
+}
+
+//Configuration for FenTech (which is actually  and instantiation of
+// pAntlerTestAppA) - just looks for a string to print
+ProcessConfig = FenTech
+{
+    PrintThis = ThisIsTestAppAAsFenTech
+}
+
+//Configuration for Oxford (which is actually  an instantiation of
+// pAntlerTestAppA) - just looks for a string to print
+ProcessConfig = Oxford
+{
+    PrintThis = ThisIsTestAppAAsOxford
+}
+

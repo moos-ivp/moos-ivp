@@ -1,0 +1,93 @@
+/////////////////////////////////////////////////////////////////////////
+// This example MOOS file shows (will show) some of the configuration that
+// Core MOOS applications support. In time each application subdirectory 
+// will sport an Example.moos which will illustrate the configuration
+// options offered by that process
+/////////////////////////////////////////////////////////////////////////
+
+
+//name of the machine hosting the MOOSDB 
+//(can be an I.P address aswell as a FQDN)
+ServerHost = localhost
+
+//port DB listens on (make sure you are blocking the port you request)
+ServerPort = 9000
+
+//optional global simualtion flags (some processes use this to fake reality when required)
+Simulator = false
+
+//all connected process can be tagged as belonging to a named community
+Community = AnExample
+
+
+//////////////////////////////////
+// pAntler configuration  block  //
+//////////////////////////////////
+ProcessConfig = ANTLER
+{
+    // pAntler launches processes for you
+    // you can specify whether or not each process gets a new window or not
+    // you can specify the name under which each process registers with MOOSDB
+    // Run = PROC_NAME @ [ NewConsole = [TRUE/FALSE] [~ MOOSNAME]]
+
+
+    //crucial processes
+    Run = MOOSDB        @   NewConsole = true
+  
+   //this next line sets the executable paths explicitly
+   //ExecutablePath = /home/pnewman/code/MOOS/MOOSBin
+
+   //this uses system the path
+   ExecutablePath = SYSTEMPATH
+
+   //thsi sets how quickly processes are launched in milliseconds
+   MSBetweenLaunches = 200
+}
+
+
+
+//////////////////////////////////
+// Logger configuration  block  //
+//////////////////////////////////
+ProcessConfig = pLogger
+{
+    //over loading basic params...
+    //How often to run and how often to contact the MOOSDB
+    AppTick     = 30.0
+    CommsTick   = 30.0
+
+    //what is the stem name you wish all log files
+    //to adopt ?
+    File        = SLAMDev
+
+    // where do you want the files to be placed
+    // don't forget the trailinbg slash and to ensure
+    // the directory exists (you'll be warned if there
+    // is a problem
+    PATH        = C:/users/pnewman/data/dev/
+
+    // do you want to generate a synchronous (slog) file
+    // how often (number in seconds after @ ) 
+    SyncLog     = true @ 0.2
+
+    // do you want to generate an alog
+    AsyncLog    = true
+
+    // do you want the stem name to be appended with a time stamp?
+    FileTimeStamp   = false
+
+
+    // here are the logging requests:
+    // log = VariableName [@ MINIMUM PERIOD]
+    // so log = MyVar @ 0.1 will record every change
+    // to the  values of MayVar at upto 10Hz 
+    // setting MINIMUM_PREIOD  to zero logs
+    // every change. This variable only effects
+    // a log files. Teh freqeuncy of slog entries
+    // is determined by the SyncLog variable
+
+    Log     = DB_TIME @ 0
+
+}
+
+
