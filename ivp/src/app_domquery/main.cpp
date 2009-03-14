@@ -2,7 +2,7 @@
 /*    NAME: Michael Benjamin, H. Schmidt, J. Leonard             */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
 /*    FILE: main.cpp                                             */
-/*    DATE: March 10th, __2009                                    */
+/*    DATE: March 10th, _._2009                                    */
 /*                                                               */
 /* This is unreleased BETA code. No permission is granted or     */
 /* implied to use, copy, modify, and distribute this software    */
