@@ -120,20 +120,25 @@ GET_FILENAME_COMPONENT(IVP_DATA_DIR ../data ABSOLUTE)
 #---------------------------------------------------------------------
 #  Build the Libraries
 #---------------------------------------------------------------------
+IF(BUILD_GUIS)
+  SET(GUI_LIBS_TO_BUILD
+    lib_ipfview
+    lib_marineview
+    lib_fltk-1.1.7
+    )
+ENDIF(BUILD_GUIS)
+
 SET(IVP_LIBS_TO_BUILD
   lib_behaviors
   lib_behaviors-marine
   lib_bhvutil
-  lib_fltk-1.1.7
   lib_genutil
   lib_geometry
   lib_helmivp
-  lib_ipfview
   lib_ivpbuild
   lib_ivpcore
   lib_logic
   lib_logutils
-  lib_marineview
   lib_mbutil
   lib_navplot
   lib_avd
@@ -141,7 +146,7 @@ SET(IVP_LIBS_TO_BUILD
   lib_newmat10D
 )
 
-FOREACH(L ${IVP_LIBS_TO_BUILD})
+FOREACH(L ${IVP_LIBS_TO_BUILD} ${GUI_LIBS_TO_BUILD} )
   # As a matter of preference, each built IvP library file (.a) should be placed 
   # in its source directory.
   SET( LIBRARY_OUTPUT_PATH "" CACHE PATH "" FORCE )
