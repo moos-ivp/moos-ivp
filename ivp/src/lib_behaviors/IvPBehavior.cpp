@@ -173,7 +173,7 @@ bool IvPBehavior::setParam(string g_param, string g_val)
     m_end_flags.push_back(pair);
     return(true);
   }
-  else if(g_param == "nostarve") {
+  else if((g_param == "no_starve") || (g_param == "nostarve")) {
     vector<string> svector = parseString(g_val, ',');
     int vsize = svector.size();
     // must have at least one var,time pair.

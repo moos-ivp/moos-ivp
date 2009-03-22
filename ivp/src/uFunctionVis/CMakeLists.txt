@@ -14,8 +14,12 @@ IF(BUILD_GUIS)
 	  QueueEntry.cpp
 	  uFunctionVisMain.cpp)
 
-	ADD_EXECUTABLE(uFunctionVis ${SRC})
-	      
+	  IF (${APPLE})
+		 ADD_EXECUTABLE(uFunctionVis MACOSX_BUNDLE ${SRC})
+	  ELSE (${APPLE})
+		 ADD_EXECUTABLE(uFunctionVis ${SRC})
+	  ENDIF (${APPLE})
+         
 	TARGET_LINK_LIBRARIES(uFunctionVis
 	  MOOS
 	  MOOSGen
