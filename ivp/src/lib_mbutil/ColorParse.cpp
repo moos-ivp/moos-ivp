@@ -176,6 +176,8 @@ string colorNameToHex(const std::string &str)
   if(cstr == "red")            return("hex:ff,00,00");
   if(cstr == "yellow")         return("hex:ff,ff,00");
   if(cstr == "white")          return("hex:ff,ff,ff");
+  if(cstr == "macbeige")       return("hex:df,db,c3");
+  if(cstr == "macpurple")      return("hex:49,3d,78");
 
   // Then check for lesser common colors
   if(cstr == "antiquewhite")   return("hex:fa,eb,d7");
