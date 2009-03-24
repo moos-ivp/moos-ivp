@@ -33,8 +33,13 @@ using namespace std;
 IvPFunction *OF_Coupler::couple(IvPFunction* ipf1, 
 				IvPFunction* ipf2)
 {
-  if((ipf1==0) || (ipf2==0))
+  if((ipf1==0) || (ipf2==0)) {
+    if(ipf1)
+      delete(ipf1);
+    if(ipf2)
+      delete(ipf2);
     return(0);
+  }
 
   int degree1 = ipf1->getPDMap()->getDegree();
   int degree2 = ipf2->getPDMap()->getDegree();
@@ -87,11 +92,35 @@ IvPFunction *OF_Coupler::couple(IvPFunction* ipf1,
   return(new_ipf);
 }
     
+//-------------------------------------------------------------
+// Procedure: couple
 
+IvPFunction *OF_Coupler::couple(IvPFunction* ipf1, double wt1, 
+				IvPFunction* ipf2, double wt2, 
+				double minwt, double maxwt)
+{
+  bool ok = true;
+  if((ipf1==0) || (ipf2==0))
+    ok = false;
+  if((wt1 <= 0) || (wt2 <= 0))
+    ok = false;
+  if(minwt >= maxwt)
+    ok = false;
+  if(!ok) {
+    if(ipf1)
+      delete(ipf1);
+    if(ipf2)
+      delete(ipf2);
+    return(0);
+  }
+  
+  ipf1->getPDMap()->normalize(0, wt1);
+  ipf2->getPDMap()->normalize(0, wt2);
 
+  IvPFunction *ipf = couple(ipf1, ipf2);
+  if(ipf)
+    ipf->getPDMap()->normalize(minwt, maxwt);
 
-
-
-
-
+  return(ipf);    
+}
 

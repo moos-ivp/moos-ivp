@@ -37,6 +37,10 @@ public:
 public: 
   IvPFunction *couple(IvPFunction*, IvPFunction*);
 
+  IvPFunction *couple(IvPFunction* ipf_one, double pwt_one, 
+		      IvPFunction* ipf_two, double pwt_two,
+		      double min_norm_wt=0, double max_norm_wt=100);
+
 };
 #endif
 
