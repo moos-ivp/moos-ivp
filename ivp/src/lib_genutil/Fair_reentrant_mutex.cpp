@@ -59,9 +59,9 @@ void Fair_reentrant_mutex::lock() {
       // The queue might or might not be empty, but either way, go to the back
       // of it.
       waiters.push(self);
-      
-      // pthread conditions can experience spurious wakeups, so we can't assume
-      // that being signalled means our condition has been met...
+
+      // The broadcast will wake up *all* threads, and even if this is the only
+      // thread waiting on the condition, spurious wakeups can still occur.
       while (waiters.front() != self) {
          rc = pthread_cond_wait(& lock_available_cond, & mtx);
          assert(! rc);
@@ -93,7 +93,7 @@ void Fair_reentrant_mutex::unlock() {
       waiters.pop();
       
       if (! waiters.empty()) {
-         rc = pthread_cond_signal(& lock_available_cond);
+         rc = pthread_cond_broadcast(& lock_available_cond);
          assert(! rc);
       }
    }
