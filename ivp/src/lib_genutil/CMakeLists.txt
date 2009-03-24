@@ -3,11 +3,7 @@
 # Author(s):                             Christian Convey
 #--------------------------------------------------------
 
-SET(SRC
-   MOOSAppRunnerThread.cpp
-   fileutil.cpp
-   stringutil.cpp
-)
+FILE(GLOB SRC *.cpp)
 
 ADD_LIBRARY(genutil ${SRC})
 

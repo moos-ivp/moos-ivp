@@ -5,23 +5,39 @@ using namespace std;
 
 //==============================================================================
 
-Fair_reentrant_mutex::Fair_lock() {
+Fair_reentrant_mutex::Fair_reentrant_mutex() 
+   : hold_depth(0)
+{
+   // Let's ensure that the mutex does error checking, just to be safe...
    int rc;
-   rc = pthread_mutex_init(& mtx);
+   pthread_mutexattr_t mtx_attr;
+   
+   rc = pthread_mutexattr_init(& mtx_attr);
    assert(! rc);
    
-   rc = pthread_mutex_init(& lock_available_cond);
+   rc = pthread_mutexattr_settype(& mtx_attr, PTHREAD_MUTEX_ERRORCHECK);
+   assert(! rc);
+   
+   rc = pthread_mutex_init(& mtx, & mtx_attr);
+   assert(! rc);
+
+   rc = pthread_mutexattr_destroy(& mtx_attr);
+   assert(! rc);
+
+   //---------------------------------------------------------------------------
+
+   rc = pthread_cond_init(& lock_available_cond, NULL);
    assert(! rc);
 }
 
 //==============================================================================
 
-Fair_reentrant_mutex::~Fair_lock() {
+Fair_reentrant_mutex::~Fair_reentrant_mutex() {
    int rc;
    rc = pthread_mutex_destroy(& mtx);
    assert(! rc);
    
-   rc = pthread_mutex_destroy(& lock_available_cond);
+   rc = pthread_cond_destroy(& lock_available_cond);
    assert(! rc);
 }
 
@@ -73,6 +89,7 @@ void Fair_reentrant_mutex::unlock() {
       hold_depth--;
    }
    else {
+      hold_depth = 0;
       waiters.pop();
       
       if (! waiters.empty()) {

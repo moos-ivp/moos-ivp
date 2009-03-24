@@ -10,8 +10,8 @@
 // moosthreads and/or win32 threads.
 class Fair_reentrant_mutex {
    public:
-      Fair_lock();
-      virtual ~Fair_lock();
+      Fair_reentrant_mutex();
+      virtual ~Fair_reentrant_mutex();
       
       void lock();
       void unlock();
@@ -26,10 +26,8 @@ class Fair_reentrant_mutex {
       
       pthread_mutex_t mtx;
       
-      // Only the thread at the frond of the queue should be waiting on this
-      // condition.  When that thread is signalled by this condition *and*
-      // sees that hold_depth == 0, then the thread knows that it can proceed
-      // with taking ownership of the lock.
+      // Indicates that the lock might be available for acquisition.  Only the
+      // thread that's next in line for the lock should wait on this condition.
       pthread_cond_t lock_available_cond;
 };
 
