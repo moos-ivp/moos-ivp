@@ -31,16 +31,29 @@ class IvPFunction;
 
 class OF_Coupler {
 public:
-  OF_Coupler() {};
+  OF_Coupler();
   virtual ~OF_Coupler() {};
 
-public: 
-  IvPFunction *couple(IvPFunction*, IvPFunction*);
+  void disableNormalize() {
+    m_normalize=false;
+  };
+  
+  void enableNormalize(double minwt=0, double maxwt=100);
+  
+  IvPFunction *couple(IvPFunction* ipf_one, IvPFunction* ipf_two) {
+    return(couple(ipf_one, ipf_two, 0, 100));
+  };
 
-  IvPFunction *couple(IvPFunction* ipf_one, double pwt_one, 
-		      IvPFunction* ipf_two, double pwt_two,
-		      double min_norm_wt=0, double max_norm_wt=100);
+  IvPFunction *couple(IvPFunction* ipf_one, IvPFunction* ipf_two, 
+		      double pwt_one, double pwt_two);
 
+ protected:
+  IvPFunction *coupleRaw(IvPFunction*, IvPFunction*);
+
+ protected:
+  bool   m_normalize;
+  double m_normalmin;
+  double m_normalmax;
 };
 #endif
 

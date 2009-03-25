@@ -28,10 +28,61 @@
 using namespace std;
 
 //-------------------------------------------------------------
+// Procedure: Constructor
+
+OF_Coupler::OF_Coupler()
+{
+  m_normalize = true;
+  m_normalmin = 0;
+  m_normalmax = 0;
+}
+
+//-------------------------------------------------------------
+// Procedure: enableNormalize
+
+void OF_Coupler::enableNormalize(double min, double max)
+{
+  if(min < max) {
+    m_normalize = true;
+    m_normalmin = min;
+    m_normalmax = max;
+  }
+}
+
+//-------------------------------------------------------------
 // Procedure: couple
 
-IvPFunction *OF_Coupler::couple(IvPFunction* ipf1, 
-				IvPFunction* ipf2)
+IvPFunction *OF_Coupler::couple(IvPFunction* ipf1, IvPFunction* ipf2, 
+				double wt1, double wt2)
+{
+  bool ok = true;
+  if((ipf1==0) || (ipf2==0))
+    ok = false;
+  if((wt1 <= 0) || (wt2 <= 0))
+    ok = false;
+  if(!ok) {
+    if(ipf1)
+      delete(ipf1);
+    if(ipf2)
+      delete(ipf2);
+    return(0);
+  }
+  
+  ipf1->getPDMap()->normalize(0, wt1);
+  ipf2->getPDMap()->normalize(0, wt2);
+
+  IvPFunction *ipf = couple(ipf1, ipf2);
+  if(ipf && m_normalize)
+    ipf->getPDMap()->normalize(m_normalmin, m_normalmax);
+
+  return(ipf);    
+}
+
+//-------------------------------------------------------------
+// Procedure: coupleRaw
+
+IvPFunction *OF_Coupler::coupleRaw(IvPFunction* ipf1, 
+				   IvPFunction* ipf2)
 {
   if((ipf1==0) || (ipf2==0)) {
     if(ipf1)
@@ -92,35 +143,3 @@ IvPFunction *OF_Coupler::couple(IvPFunction* ipf1,
   return(new_ipf);
 }
     
-//-------------------------------------------------------------
-// Procedure: couple
-
-IvPFunction *OF_Coupler::couple(IvPFunction* ipf1, double wt1, 
-				IvPFunction* ipf2, double wt2, 
-				double minwt, double maxwt)
-{
-  bool ok = true;
-  if((ipf1==0) || (ipf2==0))
-    ok = false;
-  if((wt1 <= 0) || (wt2 <= 0))
-    ok = false;
-  if(minwt >= maxwt)
-    ok = false;
-  if(!ok) {
-    if(ipf1)
-      delete(ipf1);
-    if(ipf2)
-      delete(ipf2);
-    return(0);
-  }
-  
-  ipf1->getPDMap()->normalize(0, wt1);
-  ipf2->getPDMap()->normalize(0, wt2);
-
-  IvPFunction *ipf = couple(ipf1, ipf2);
-  if(ipf)
-    ipf->getPDMap()->normalize(minwt, maxwt);
-
-  return(ipf);    
-}
-
