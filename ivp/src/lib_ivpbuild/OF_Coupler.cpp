@@ -38,6 +38,14 @@ OF_Coupler::OF_Coupler()
 }
 
 //-------------------------------------------------------------
+// Procedure: disableNormalize
+
+void OF_Coupler::disableNormalize()
+{
+  m_normalize = false;
+}
+
+//-------------------------------------------------------------
 // Procedure: enableNormalize
 
 void OF_Coupler::enableNormalize(double min, double max)
@@ -47,6 +55,14 @@ void OF_Coupler::enableNormalize(double min, double max)
     m_normalmin = min;
     m_normalmax = max;
   }
+}
+
+//-------------------------------------------------------------
+// Procedure: couple
+
+IvPFunction *OF_Coupler::couple(IvPFunction* ipf1, IvPFunction* ipf2)
+{
+  return(couple(ipf1, ipf2, 0, 100));    
 }
 
 //-------------------------------------------------------------

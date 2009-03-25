@@ -34,16 +34,10 @@ public:
   OF_Coupler();
   virtual ~OF_Coupler() {};
 
-  void disableNormalize() {
-    m_normalize=false;
-  };
-  
+  void disableNormalize();
   void enableNormalize(double minwt=0, double maxwt=100);
   
-  IvPFunction *couple(IvPFunction* ipf_one, IvPFunction* ipf_two) {
-    return(couple(ipf_one, ipf_two, 0, 100));
-  };
-
+  IvPFunction *couple(IvPFunction* ipf_one, IvPFunction* ipf_two);
   IvPFunction *couple(IvPFunction* ipf_one, IvPFunction* ipf_two, 
 		      double pwt_one, double pwt_two);
 
