@@ -34,7 +34,7 @@ OF_Coupler::OF_Coupler()
 {
   m_normalize = true;
   m_normalmin = 0;
-  m_normalmax = 0;
+  m_normalmax = 100;
 }
 
 //-------------------------------------------------------------
@@ -62,7 +62,7 @@ void OF_Coupler::enableNormalize(double min, double max)
 
 IvPFunction *OF_Coupler::couple(IvPFunction* ipf1, IvPFunction* ipf2)
 {
-  return(couple(ipf1, ipf2, 0, 100));    
+  return(couple(ipf1, ipf2, 50, 50));    
 }
 
 //-------------------------------------------------------------
@@ -87,7 +87,7 @@ IvPFunction *OF_Coupler::couple(IvPFunction* ipf1, IvPFunction* ipf2,
   ipf1->getPDMap()->normalize(0, wt1);
   ipf2->getPDMap()->normalize(0, wt2);
 
-  IvPFunction *ipf = couple(ipf1, ipf2);
+  IvPFunction *ipf = coupleRaw(ipf1, ipf2);
   if(ipf && m_normalize)
     ipf->getPDMap()->normalize(m_normalmin, m_normalmax);
 
