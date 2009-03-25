@@ -1,0 +1,11 @@
+lat_north = 30.061056
+lat_south = 30.043216  
+lon_east  = -85.697121
+lon_west  = -85.718097
+datum_lat = 30.045
+datum_lon = -85.716
+// lat south -200 meters
+// lon west  -200 meters
+// lat north +1800 meters
+// lon east  + 1800 meters
+
