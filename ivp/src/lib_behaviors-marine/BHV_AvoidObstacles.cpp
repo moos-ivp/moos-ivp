@@ -43,7 +43,7 @@ using namespace std;
 BHV_AvoidObstacles::BHV_AvoidObstacles(IvPDomain gdomain) : 
   IvPBehavior(gdomain)
 {
-  this->setParam("descriptor", "(d)bhv_avoid_obstacles");
+  this->setParam("descriptor", "avoid_obstacles");
   //this->setParam("build_info", "uniform_piece=discrete@course:2,speed:3");
   //this->setParam("build_info", "uniform_grid =discrete@course:9,speed:6");
 
@@ -160,7 +160,7 @@ IvPFunction *BHV_AvoidObstacles::onRunState()
   m_aof_avoid->setParam("os_x", os_x);
   m_aof_avoid->setParam("os_y", os_y);
   m_aof_avoid->setParam("present_heading", os_hdg);
-  m_aof_avoid->setParam("present_heading_influence", 2);
+  m_aof_avoid->setParam("present_heading_influence", m_pheading_influence);
   m_aof_avoid->setParam("buffer_dist", m_buffer_dist);
   m_aof_avoid->setParam("activation_dist", m_activation_dist);
   m_aof_avoid->setParam("allowable_ttc", m_allowable_ttc);

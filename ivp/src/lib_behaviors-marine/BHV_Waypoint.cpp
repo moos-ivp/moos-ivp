@@ -299,16 +299,22 @@ IvPFunction *BHV_Waypoint::buildOF(string method)
   else { // if (method == "zaic")
     ZAIC_PEAK spd_zaic(m_domain, "speed");
     spd_zaic.setParams(m_cruise_speed, 0, 2.6, 0, 0, 100);
-    IvPFunction *spd_of = spd_zaic.extractOF();
+    IvPFunction *spd_of = spd_zaic.extractIvPFunction();
+    if(!spd_of)
+      postWMessage("Failure on the SPD ZAIC");
     
     double rel_ang_to_wpt = relAng(m_osx, m_osy, m_trackpt_x, m_trackpt_y);
     ZAIC_PEAK crs_zaic(m_domain, "course");
     crs_zaic.setValueWrap(true);
     crs_zaic.setParams(rel_ang_to_wpt, 0, 180, 50, 0, 100);
     IvPFunction *crs_of = crs_zaic.extractIvPFunction();
+    if(!crs_of)
+      postWMessage("Failure on the CRS ZAIC");
 
     OF_Coupler coupler;
     ipf = coupler.couple(crs_of, spd_of);
+    if(!ipf)
+      postWMessage("Failure on the COUPLER");
   }    
   return(ipf);
 }
