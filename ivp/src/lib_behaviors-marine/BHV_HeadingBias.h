@@ -36,7 +36,6 @@ public:
  protected:
   bool         updateInfoIn();
 
-
 protected:
   bool    m_bias_right;
   double  m_os_heading;
