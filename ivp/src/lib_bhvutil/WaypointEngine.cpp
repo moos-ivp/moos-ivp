@@ -247,9 +247,10 @@ string WaypointEngine::setNextWaypoint(double os_x, double os_y)
     pt_x = m_seglist.get_vx(m_curr_ix);
     pt_y = m_seglist.get_vy(m_curr_ix);
     m_current_cpa = hypot((os_x - pt_x), (os_y - pt_y));    
+    return("advanced");
   }
 
-  return("advanced");
+  return("in-transit");
 }
 
 
