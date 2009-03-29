@@ -67,7 +67,6 @@ BHV_Loiter::BHV_Loiter(IvPDomain gdomain) :
   m_center_pending  = false;
   m_center_activate = false;
 
-  m_reached_first_point = false;
   m_waypoint_engine.setPerpetual(true);
 
   addInfoVars("NAV_X, NAV_Y, NAV_HEADING");
