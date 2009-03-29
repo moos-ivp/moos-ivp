@@ -67,6 +67,7 @@ BHV_Loiter::BHV_Loiter(IvPDomain gdomain) :
   m_center_pending  = false;
   m_center_activate = false;
 
+  m_reached_first_point = false;
   m_waypoint_engine.setPerpetual(true);
 
   addInfoVars("NAV_X, NAV_Y, NAV_HEADING");
@@ -177,8 +178,11 @@ IvPFunction *BHV_Loiter::onRunState()
 
   if(m_dist_to_poly > m_acquire_dist)
     m_acquire_mode = true;
-  
-  if(m_acquire_mode) {
+  else
+    m_acquire_mode = false;
+
+  //if(m_acquire_mode) {
+    if(0) {
     int curr_waypt = m_loiter_engine.acquireVertex(m_osh, m_osx, m_osy); 
     m_waypoint_engine.setCurrIndex(curr_waypt);
   }

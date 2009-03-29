@@ -66,6 +66,7 @@ private:  // State Variables
   double       m_osh;            // Curr ownship Heading (degs)
   int          m_iterations;     // Number of calls to onRunState
 
+  bool         m_reached_first_point;
   bool         m_center_pending; 
   std::string  m_center_assign;  
 };
