@@ -181,8 +181,7 @@ IvPFunction *BHV_Loiter::onRunState()
   else
     m_acquire_mode = false;
 
-  //if(m_acquire_mode) {
-    if(0) {
+  if(m_acquire_mode) {
     int curr_waypt = m_loiter_engine.acquireVertex(m_osh, m_osx, m_osy); 
     m_waypoint_engine.setCurrIndex(curr_waypt);
   }
