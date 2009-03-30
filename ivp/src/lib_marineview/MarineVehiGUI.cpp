@@ -231,8 +231,10 @@ void MarineVehiGUI::cb_AltTrailSize(Fl_Widget* o, int v) {
 inline void MarineVehiGUI::cb_AltShapeScale_i(int delta) {
   if(delta > 0)
     cmviewer->setParam("vehicle_shape_scale", "bigger");
-  if(delta < 0)
+  else if(delta < 0)
     cmviewer->setParam("vehicle_shape_scale", "smaller");
+  else 
+    cmviewer->setParam("vehicle_shape_scale", "reset");
   cmviewer->redraw();
 }
 void MarineVehiGUI::cb_AltShapeScale(Fl_Widget* o, int v) {

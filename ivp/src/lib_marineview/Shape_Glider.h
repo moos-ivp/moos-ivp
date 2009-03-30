@@ -50,7 +50,7 @@ double g_gliderBody[]=
 double       g_gliderCtrX     = 0.0;
 double       g_gliderCtrY     = 35.0;
 unsigned int g_gliderBodySize = 20;
-double       g_gliderScale    = 1.5;
+double       g_gliderLength   = 70.5;
 
 double g_gliderWing[]=
 {

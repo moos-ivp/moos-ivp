@@ -36,7 +36,13 @@ VMarkerSet::VMarkerSet()
 bool VMarkerSet::addVMarker(const string& mline,
 			    CMOOSGeodesy& geodesy)
 {
-  vector<string> svector = parseString(mline, ',');
+  string newline = mline;
+
+  // In case the user provides a line with quotes around it, handle.
+  if(isQuoted(mline))
+    newline = stripQuotes(mline);
+
+  vector<string> svector = parseString(newline, ',');
   unsigned int vsize = svector.size();
 
   cout << "Handling marker line: " << mline << endl;
@@ -50,6 +56,7 @@ bool VMarkerSet::addVMarker(const string& mline,
       return(false);
     string left  = tolower(stripBlankEnds(ivector[0]));
     string right = stripBlankEnds(ivector[1]);
+    cout << "left:[" << left << "]  right:[" << right << "]" << endl;
     if(left == "type")        mtype = right;
     else if(left == "xpos")   xpos = right;
     else if(left == "ypos")   ypos = right;
@@ -63,14 +70,19 @@ bool VMarkerSet::addVMarker(const string& mline,
     else if(left == "color")  colors = right;
   }
 
-  if((mtype==""))
+  cout << "mtype:[" << mtype << "]" << endl;
+  if(mtype=="") {
+    cout << "Marker Rejected - improper type" << endl;
     return(false);
-  
+  }
+
   // The position has to be fully specified in terms of either lat/lon
   // of the x-y position in local coords. Otherwise return(false);
   if((lat=="")||(lon=="")||(!isNumber(lat))||(!isNumber(lon)))
-    if((xpos=="")||(ypos=="")||(!isNumber(xpos))||(!isNumber(ypos)))
+    if((xpos=="")||(ypos=="")||(!isNumber(xpos))||(!isNumber(ypos))) {
+      cout << "Marker Rejected - improper position" << endl;
       return(false);
+    }
 
   cout << "Accepted Marker" << endl;
 

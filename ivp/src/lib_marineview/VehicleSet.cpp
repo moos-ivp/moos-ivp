@@ -25,7 +25,7 @@ VehicleSet::VehicleSet()
   m_history_size = 1000;
   m_curr_time    = 0;
 
-  setParam("vehicle_shape_scale", 0.1);
+  setParam("vehicle_shape_scale", 1.0);
   setParam("trails_point_size", 1);
   setParam("trails_length", 100);
   setParam("trails_gap", 1);
@@ -113,7 +113,8 @@ bool VehicleSet::setParam(string param, string value)
       handled = setParam("vehicle_shape_scale", m_vehicle_shape_scale*1.25);
     else if(value == "smaller")
       handled = setParam("vehicle_shape_scale", m_vehicle_shape_scale*0.80);
-    cout << "Vehicle_shape_scale: " << m_vehicle_shape_scale << endl;
+    else if(value == "reset")
+      handled = setParam("vehicle_shape_scale", 1.0);
   }
   else if(param == "active_vehicle_name") {
     handled = true;
@@ -237,6 +238,13 @@ bool VehicleSet::getDoubleInfo(const string& g_vname,
     if(p1 == m_ais_map.end())
       return(false);
     result = m_curr_time - p1->second;
+  }
+  if(info_type == "vlength") {
+    map<string,double>::const_iterator p1;
+    p1 = m_vlen_map.find(vname);
+    if(p1 == m_vlen_map.end())
+      return(false);
+    result = p1->second;
   }
   else if((info_type == "heading") || (info_type == "course"))
     result = opose.getTheta();
@@ -554,6 +562,7 @@ bool VehicleSet::updateVehiclePosition(const string& ais_report)
   double utime = 0;
   double lat   = 0;
   double lon   = 0;
+  double vlen  = 0;
   string vname = "";
   string vtype = "";
   bool b_vname = tokParse(ais_report, "NAME",  ',', '=', vname);
@@ -567,6 +576,7 @@ bool VehicleSet::updateVehiclePosition(const string& ais_report)
   bool b_mtime = tokParse(ais_report, "MOOS_TIME", ',', '=', utime);
   bool b_lat   = tokParse(ais_report, "LAT", ',', '=', lat);
   bool b_lon   = tokParse(ais_report, "LON", ',', '=', lon);
+  bool b_vlen  = tokParse(ais_report, "LENGTH", ',', '=', vlen);
 
   if((!b_pos_x || !b_pos_y) && (!b_lat || !b_lon))
     return(false);
@@ -580,7 +590,15 @@ bool VehicleSet::updateVehiclePosition(const string& ais_report)
   if(((vtype == "auv") || (vtype == "glider")) && !b_depth)
     return(false);
   
-  
+  if(!b_vlen) {
+    if((vtype=="auv") || (vtype=="kayak"))
+      vlen = 3.0; // meters
+    if(vtype=="glider")
+      vlen = 2.0; // meters
+    if(vtype=="ship")
+      vlen = 50; // meters
+  }
+
   // If there is no active vehicle declared - make the active vehicle
   // the first one that the VehicleSet knows about.
   if(m_active_vehicle_name == "")
@@ -592,9 +610,10 @@ bool VehicleSet::updateVehiclePosition(const string& ais_report)
   // If the lat/lon was included in the report, add to the object pose
   if(b_lat && b_lon)
     opose.setLatLon(lat, lon);
-  
-  m_pos_map[vname] = opose;
-  m_ais_map[vname] = utime;
+
+  m_vlen_map[vname] = vlen; 
+  m_pos_map[vname]  = opose;
+  m_ais_map[vname]  = utime;
  
   ColoredPoint point(pos_x, pos_y);
   map<string,CPList>::iterator p2;

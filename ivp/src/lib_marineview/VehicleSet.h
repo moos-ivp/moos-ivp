@@ -62,10 +62,11 @@ class VehicleSet
  private:
   bool  updateVehiclePosition(const std::string& ais_report); 
 
-
  private:
   // Mapping from Vehicle Name to Vehicle Position
   std::map<std::string, ObjectPose>   m_pos_map;
+  // Mapping from Vehicle Name to Vehicle Length
+  std::map<std::string, double>       m_vlen_map;
   // Mapping from Vehicle Name to Vehicle Position History
   std::map<std::string, CPList>       m_hist_map;
   // Mapping from Vehicle Name to Vehicle Body Type

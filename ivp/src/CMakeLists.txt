@@ -4,7 +4,7 @@ PROJECT(IVP)
 # Force -fPIC because gcc complains when we don't use it with x86_64 code.
 # Note sure why: -fPIC should only be needed for shared objects, and
 # AFAIK, CMake gets that right when building shared objects. -CJC
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -g")
 
 #===============================================================================
 # FINDING MOOS' HEADERS AND LIBRARIES...

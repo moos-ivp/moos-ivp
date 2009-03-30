@@ -569,6 +569,7 @@ void MarineViewer::drawCommonVehicle(const string& vname,
 				     const vector<double>& vname_color,
 				     const string& vehibody, 
 				     double shape_scale, 
+				     double shape_length, 
 				     bool  vname_draw, int outer_line)
 {
   if(body_color.size() != 3)
@@ -583,7 +584,6 @@ void MarineViewer::drawCommonVehicle(const string& vname,
   if(opose.isLatLonSet()) {
     double dlat = opose.getLat();
     double dlon = opose.getLon();
-    //    m_geode
   }
 
   // Determine position in terms of image percentage
@@ -600,62 +600,81 @@ void MarineViewer::drawCommonVehicle(const string& vname,
 
   glTranslatef(vehicle_vx, vehicle_vy, 0); // theses are in pixel units
 
-  glScalef(m_zoom*shape_scale, m_zoom*shape_scale, m_zoom*shape_scale);
-
+  glScalef(m_zoom, m_zoom, m_zoom);
   glRotatef(-opose.getTheta(),0,0,1);  
 
   vector<double> black(3,0);
   vector<double> gray(3,0.5);
 
+  // The raw numerical values representing the shapes should be interpreted
+  // as being in "meters". When passed to GLPoly, they are interpreted as
+  // being in pixels. So There are two components to drawing the vehicle
+  // as "actual size". First convert the pixels to meters and then multiply
+  // by the (shapelength / length_in_meters). A third factor is the 
+  // shapescale - the user tweaking of shape, by default 1. Since we know
+  // the shapescale and pix_per_mtr first, set "factor" initially to that.
+  // Then when we know what kind of vehicle we're drawing, adjust the 
+  // factor accordingly.
+
+  double factor = m_back_img.get_pix_per_mtr() * shape_scale;
+
   if(vehibody == "kayak") {
-    double cx = g_auvCtrX * g_auvScale;
-    double cy = g_auvCtrY * g_auvScale;
+    if(shape_length > 0)
+      factor *= (shape_length / g_kayakLength);
+    double cx = g_kayakCtrX * factor;
+    double cy = g_kayakCtrY * factor;
     glTranslatef(-cx, -cy, 0);
-    drawGLPoly(g_kayakBody, g_kayakBodySize, body_color, 0, g_kayakScale);    
+    drawGLPoly(g_kayakBody, g_kayakBodySize, body_color, 0, factor);    
     if(outer_line)
-      drawGLPoly(g_kayakBody, g_kayakBodySize, black, outer_line, g_kayakScale);    
-    drawGLPoly(g_kayakMidOpen, g_kayakMidOpenSize, gray, 0, g_kayakScale);
+      drawGLPoly(g_kayakBody, g_kayakBodySize, black, outer_line, factor);    
+    drawGLPoly(g_kayakMidOpen, g_kayakMidOpenSize, gray, 0, factor);
     glTranslatef(cx, cy, 0);
   }
   else if(vehibody == "auv") {
+    if(shape_length > 0)
+      factor *= (shape_length / g_auvLength);
     vector<double> blue = colorParse("blue");
-    double cx = g_auvCtrX * g_auvScale;
-    double cy = g_auvCtrY * g_auvScale;
+    double cx = g_auvCtrX * factor;
+    double cy = g_auvCtrY * factor;
     glTranslatef(-cx, -cy, 0);
-    drawGLPoly(g_auvBody, g_auvBodySize, body_color, 0, g_auvScale);
+    drawGLPoly(g_auvBody, g_auvBodySize, body_color, 0, factor);
     if(outer_line > 0)
-      drawGLPoly(g_auvBody, g_auvBodySize, black, outer_line, g_auvScale);
-    drawGLPoly(g_propUnit, g_propUnitSize, blue, 0, g_auvScale);
+      drawGLPoly(g_auvBody, g_auvBodySize, black, outer_line, factor);
+    drawGLPoly(g_propUnit, g_propUnitSize, blue, 0, factor);
     glTranslatef(cx, cy, 0);
   }
   else if(vehibody == "glider") {
-    double cx = g_gliderCtrX * g_gliderScale;
-    double cy = g_gliderCtrY * g_gliderScale;
+    if(shape_length > 0)
+      factor *= (shape_length / g_gliderLength);
+    double cx = g_gliderCtrX * factor;
+    double cy = g_gliderCtrY * factor;
     glTranslatef(-cx, -cy, 0);
-    drawGLPoly(g_gliderWing, g_gliderWingSize, body_color,  0, g_gliderScale);
-    drawGLPoly(g_gliderWing, g_gliderWingSize, black, 1, g_gliderScale);
-    drawGLPoly(g_gliderBody, g_gliderBodySize, body_color,  0, g_gliderScale);
-    drawGLPoly(g_gliderBody, g_gliderBodySize, black, 1, g_gliderScale);
+    drawGLPoly(g_gliderWing, g_gliderWingSize, body_color,  0, factor);
+    drawGLPoly(g_gliderWing, g_gliderWingSize, black, 1, factor);
+    drawGLPoly(g_gliderBody, g_gliderBodySize, body_color,  0, factor);
+    drawGLPoly(g_gliderBody, g_gliderBodySize, black, 1, factor);
     glTranslatef(cx, cy, 0);
   }
   else if(vehibody == "track") {  
-      double cx = g_shipCtrX * g_shipScale;
-      double cy = g_shipCtrY * g_shipScale;
-      glTranslatef(-cx, -cy, 0);
-      drawGLPoly(g_shipBody, g_shipBodySize, body_color, 0, g_shipScale);
-      if(outer_line > 0)
-	drawGLPoly(g_shipBody, g_shipBodySize, black, outer_line, g_shipScale);
-      glTranslatef(cx, cy, 0);
-    }
+    double cx = g_shipCtrX * factor;
+    double cy = g_shipCtrY * factor;
+    glTranslatef(-cx, -cy, 0);
+    drawGLPoly(g_shipBody, g_shipBodySize, body_color, 0, factor);
+    if(outer_line > 0)
+      drawGLPoly(g_shipBody, g_shipBodySize, black, outer_line, factor);
+    glTranslatef(cx, cy, 0);
+  }
   else {  // vehibody == "ship" is the default
-      vector<double> blue = colorParse("blue");
-      double cx = g_shipCtrX * g_shipScale;
-      double cy = g_shipCtrY * g_shipScale;
-      glTranslatef(-cx, -cy, 0);
-      drawGLPoly(g_shipBody, g_shipBodySize, body_color, 0, g_shipScale);
-      if(outer_line > 0)
-	drawGLPoly(g_shipBody, g_shipBodySize, blue, outer_line, g_shipScale);
-      glTranslatef(cx, cy, 0);
+    vector<double> blue = colorParse("blue");
+    if(shape_length > 0)
+      factor *= (shape_length / g_shipLength);
+    double cx = g_shipCtrX * factor;
+    double cy = g_shipCtrY * factor;
+    glTranslatef(-cx, -cy, 0);
+    drawGLPoly(g_shipBody, g_shipBodySize, body_color, 0, factor);
+    if(outer_line > 0)
+      drawGLPoly(g_shipBody, g_shipBodySize, blue, outer_line, factor);
+    glTranslatef(cx, cy, 0);
   }
 
   if(vname_draw) {

@@ -45,7 +45,7 @@ double g_shipBody[]=
 double       g_shipCtrX     = 0.0;
 double       g_shipCtrY     = 106.5;
 unsigned int g_shipBodySize = 15;
-double       g_shipScale    = 0.8;
+double       g_shipLength   = 212.0;
 
 double g_shipFatBody[]=
 {

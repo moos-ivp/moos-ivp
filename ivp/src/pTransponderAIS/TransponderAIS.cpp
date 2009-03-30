@@ -42,6 +42,7 @@ TransponderAIS::TransponderAIS()
   m_nav_depth   = 0;
   m_vessel_name = "UNKNOWN_VESSEL_NAME";
   m_vessel_type = "UNKNOWN_VESSEL_TYPE";
+  m_vessel_len  = 0; // Zero indicates unspecified length
   m_parseNaFCon = false;
 
   m_blackout_interval = 0;
@@ -161,14 +162,15 @@ bool TransponderAIS::Iterate()
 
 
     //all strings: assembleAIS(name,type,db_time,utc_time,x,y,lat,lon,spd,hdg,depth)
-    string summary = assembleAIS(m_vessel_name, m_vessel_type, moosdb_time, utc_time,\
-				 dstringCompact(doubleToString(m_nav_x, 2)),\
-				 dstringCompact(doubleToString(m_nav_y, 2)),\
-				 dstringCompact(doubleToString(lat, 6)),\
-				 dstringCompact(doubleToString(lon, 6)),\
-				 dstringCompact(doubleToString(m_nav_speed, 2)),\
-				 dstringCompact(doubleToString(m_nav_heading, 2)),\
-				 dstringCompact(doubleToString(m_nav_depth, 2)));
+    string summary = assembleAIS(m_vessel_name, m_vessel_type, moosdb_time, utc_time, 
+				 dstringCompact(doubleToString(m_nav_x, 2)), 
+				 dstringCompact(doubleToString(m_nav_y, 2)),
+				 dstringCompact(doubleToString(lat, 6)), 
+				 dstringCompact(doubleToString(lon, 6)),
+				 dstringCompact(doubleToString(m_nav_speed, 2)),
+				 dstringCompact(doubleToString(m_nav_heading, 2)),
+				 dstringCompact(doubleToString(m_nav_depth, 2)),
+				 dstringCompact(doubleToString(m_vessel_len, 2)));
 
     string local_var = m_contact_report_var + "_LOCAL";
     
@@ -244,31 +246,28 @@ bool TransponderAIS::OnStartUp()
 
       if(MOOSStrCmp(sVarName, "VESSEL_TYPE"))
 	m_vessel_type = sLine;
-      
-      if(MOOSStrCmp(sVarName, "BLACKOUT_INTERVAL")) {
+      else if(MOOSStrCmp(sVarName, "VESSEL_LENGTH"))
+	m_vessel_len = atof(sLine.c_str());
+      else if(MOOSStrCmp(sVarName, "BLACKOUT_INTERVAL")) {
 	double dval = atof(sLine.c_str());
 	if(dval >= 0)
 	  m_blackout_baseval  = dval;
 	  m_blackout_interval = dval;
       }
-      
-      if(MOOSStrCmp(sVarName, "BLACKOUT_VARIANCE")) {
+      else if(MOOSStrCmp(sVarName, "BLACKOUT_VARIANCE")) {
 	double dval = atof(sLine.c_str());
 	if(dval >= 0)
 	  m_blackout_variance = dval;
       }
-      
-      if(MOOSStrCmp(sVarName, "PARSE_NAFCON")) 
+      else if(MOOSStrCmp(sVarName, "PARSE_NAFCON")) 
 	m_parseNaFCon = MOOSStrCmp(sLine, "true"); 
-
-      if(MOOSStrCmp(sVarName, "CONTACT_REPORT_VARIABLE"))
-          m_contact_report_var = sLine;
-      
-      
+      else if(MOOSStrCmp(sVarName, "CONTACT_REPORT_VARIABLE"))
+	m_contact_report_var = sLine;
+            
       // for each publish_for_nafcon_id config value
       // insert a true in the appropriate entry of the 
       // naFConPublishForID vector.
-      if(MOOSStrCmp(sVarName, "PUBLISH_FOR_NAFCON_ID")) {
+      else if(MOOSStrCmp(sVarName, "PUBLISH_FOR_NAFCON_ID")) {
 	int id = atoi(sLine.c_str());
 	naFConPublishForID[id] = true;
 	// since the user specified id(s), do not publish
@@ -592,15 +591,15 @@ bool TransponderAIS::handleIncomingNaFConMessage(const string& rMsg)
 
             // publish it at AIS_REPORT
             // all strings: assembleAIS(name,type,db_time,utc_time,x,y,lat,lon,spd,hdg,depth)
-            string summary = assembleAIS(vname, vtype, "-1",\
-                                         dstringCompact(doubleToString(navTime)),\
-                                         dstringCompact(doubleToString(navX, 2)),\
-                                         dstringCompact(doubleToString(navY, 2)),\
-                                         dstringCompact(doubleToString(navLat, 6)),\
-                                         dstringCompact(doubleToString(navLong, 6)),\
-                                         dstringCompact(doubleToString(navSpeed, 2)),\
-                                         dstringCompact(doubleToString(navHeading, 2)),\
-                                         dstringCompact(doubleToString(navDepth, 2)));
+            string summary = assembleAIS(vname, vtype, "-1",
+                                         dstringCompact(doubleToString(navTime)), 
+                                         dstringCompact(doubleToString(navX, 2)),
+                                         dstringCompact(doubleToString(navY, 2)), 
+                                         dstringCompact(doubleToString(navLat, 6)), 
+                                         dstringCompact(doubleToString(navLong, 6)), 
+                                         dstringCompact(doubleToString(navSpeed, 2)),
+                                         dstringCompact(doubleToString(navHeading, 2)),
+                                         dstringCompact(doubleToString(navDepth, 2)), 0);
       
             m_Comms.Notify(m_contact_report_var, summary);
             m_Comms.Notify("TRANSPONDER_NAFCON_REPORT", summary);
@@ -732,13 +731,25 @@ void TransponderAIS::postContactList()
 // Purpose: builds the string used for AIS_REPORT
 // tes 11.19.07
 
-string TransponderAIS::assembleAIS(string name, string type, string db_time, 
+string TransponderAIS::assembleAIS(string vname, string vtype, string db_time, 
 				   string utc_time, string x, string y, 
 				   string lat, string lon, string spd,
-                                   string hdg, string depth)
+                                   string hdg, string depth, string vlen)
 {
-  string summary = "NAME=" + name;
-  summary += ",TYPE=" + type;
+  // If the length is unknown, put in some good guesses
+  if(atof(vlen.c_str()) == 0) {
+    if(tolower(vtype) == "kayak")
+      vlen = "4.0"; // meters;
+    if(tolower(vtype) == "auv")
+      vlen = "4.0"; // meters;
+    if(tolower(vtype) == "ship")
+      vlen = "18.0"; // meters
+    if(tolower(vtype) == "glider")
+      vlen = "3.0"; // meters
+  }
+
+  string summary = "NAME=" + vname;
+  summary += ",TYPE=" + vtype;
   summary += ",MOOSDB_TIME=" + db_time;
   summary += ",UTC_TIME=" + utc_time;
   summary += ",X="   + x;
@@ -748,6 +759,7 @@ string TransponderAIS::assembleAIS(string name, string type, string db_time,
   summary += ",SPD=" + spd;
   summary += ",HDG=" + hdg;
   summary += ",DEPTH=" + depth;
+  summary += ",LENGTH=" + vlen;
   
   return summary;
 }

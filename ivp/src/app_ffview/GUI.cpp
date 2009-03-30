@@ -169,6 +169,7 @@ Fl_Menu_Item GUI::menu_[] = {
  {"Bone",      0, (Fl_Callback*)GUI::cb_ColorMap,  (void*)3, FL_MENU_RADIO|FL_MENU_DIVIDER},
  {"Back-White", 0, (Fl_Callback*)GUI::cb_ColorBack, (void*)0, 0},
  {"Back-Blue",  0, (Fl_Callback*)GUI::cb_ColorBack, (void*)1, 0},
+ {"Mac-Beige", 0, (Fl_Callback*)GUI::cb_ColorBack, (void*)2, 0},
   {0},
 
  {"Directed-Refine", 0,  0, 0, 64, 0, 0, 14, 0},
@@ -493,8 +494,13 @@ void GUI::cb_PrintParams(Fl_Widget* o) {
 inline void GUI::cb_ColorBack_i(int index) {
   if(index == 0)
     viewer->setParam("clear_color", "white");
-  if(index == 1)
+  else if(index == 1)  // PurplishBlue
     viewer->setParam("clear_color", "0.285,0.242,0.469");
+  else if(index == 2)  // PurplishBlue
+    viewer->setParam("clear_color", "macbeige");
+  else
+    return;
+  viewer->redraw();
 }
 void GUI::cb_ColorBack(Fl_Widget* o, int v) {
   ((GUI*)(o->parent()->user_data()))->cb_ColorBack_i(v);

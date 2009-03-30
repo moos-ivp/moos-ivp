@@ -48,10 +48,11 @@ public:
   void updateContactList(std::string, double, double, double, double, double, double);
   bool prevContactInfo(std::string, double*, double*, double*, double*, double*, double*);
   void postContactList();
-  std::string assembleAIS(std::string,std::string,std::string,std::string,\
-			  std::string,std::string,std::string,std::string,\
-			  std::string,std::string,std::string);
-
+  std::string assembleAIS(std::string vname, std::string vtype, std::string dbtime,
+			  std::string utime, std::string navx,  std::string navy,
+			  std::string lat, std::string lon, std::string spd,
+			  std::string hdg, std::string depth, std::string vlen);
+  
 protected:
   double      m_db_uptime;
   double      m_start_time;
@@ -62,7 +63,7 @@ protected:
   double      m_nav_depth;
   std::string m_vessel_name;
   std::string m_vessel_type;
-
+  double      m_vessel_len;
 
   std::vector<std::string> m_contact_list;
   std::vector<double>      m_contact_time;
