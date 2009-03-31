@@ -40,6 +40,7 @@ double g_gatewayBody[]=
 double       g_gatewayCtrX     = 0.0;
 double       g_gatewayCtrY     = 5.0;
 unsigned int g_gatewayBodySize = 10;
+double       g_gatewayWidth    = 10;
 
 double g_gatewayMidBody[]=
 {

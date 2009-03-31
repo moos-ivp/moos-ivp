@@ -239,7 +239,7 @@ bool VehicleSet::getDoubleInfo(const string& g_vname,
       return(false);
     result = m_curr_time - p1->second;
   }
-  if(info_type == "vlength") {
+  else if(info_type == "vlength") {
     map<string,double>::const_iterator p1;
     p1 = m_vlen_map.find(vname);
     if(p1 == m_vlen_map.end())

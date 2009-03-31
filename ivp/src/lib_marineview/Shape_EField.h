@@ -51,6 +51,7 @@ double g_efieldBody[]=
 
 double       g_efieldCtrX     = 0.0;
 double       g_efieldCtrY     = 0.0;
+double       g_efieldWidth    = 9.96;
 unsigned int g_efieldBodySize = 22;
 
 double g_efieldMidBody[]=

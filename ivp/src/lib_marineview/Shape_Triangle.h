@@ -28,8 +28,9 @@ double g_triangleBody[]=
   8.0,  0.0
 };
 
-double       g_triangleCtrX =  0.0;
-double       g_triangleCtrY =  8.0;
+double       g_triangleCtrX   =  0.0;
+double       g_triangleCtrY   =  8.0;
+double       g_triangleWidth  = 16.0;
 unsigned int g_triangleBodySize = 4;
 
 

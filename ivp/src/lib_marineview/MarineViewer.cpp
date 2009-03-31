@@ -56,7 +56,6 @@ MarineViewer::MarineViewer(int x, int y, int w, int h, const char *l)
 
   m_hash_shade  = 0.65;
   m_hash_delta  = 100;
-  //m_fill_shade  = 0.7;
   m_fill_shade  = 0.55;
   m_texture_set = 0;
   m_texture_init = false;
@@ -568,7 +567,6 @@ void MarineViewer::drawCommonVehicle(const string& vname,
 				     const vector<double>& body_color,
 				     const vector<double>& vname_color,
 				     const string& vehibody, 
-				     double shape_scale, 
 				     double shape_length, 
 				     bool  vname_draw, int outer_line)
 {
@@ -610,13 +608,11 @@ void MarineViewer::drawCommonVehicle(const string& vname,
   // as being in "meters". When passed to GLPoly, they are interpreted as
   // being in pixels. So There are two components to drawing the vehicle
   // as "actual size". First convert the pixels to meters and then multiply
-  // by the (shapelength / length_in_meters). A third factor is the 
-  // shapescale - the user tweaking of shape, by default 1. Since we know
-  // the shapescale and pix_per_mtr first, set "factor" initially to that.
+  // by the (shapelength / length_in_meters). 
+  // Since we know pix_per_mtr first, set "factor" initially to that.
   // Then when we know what kind of vehicle we're drawing, adjust the 
   // factor accordingly.
-
-  double factor = m_back_img.get_pix_per_mtr() * shape_scale;
+  double factor = m_back_img.get_pix_per_mtr();
 
   if(vehibody == "kayak") {
     if(shape_length > 0)
@@ -682,7 +678,7 @@ void MarineViewer::drawCommonVehicle(const string& vname,
     gl_font(1, 10);
     if(m_zoom > 4)
       gl_font(1, 12);
-    double offset = 100.0;
+    double offset = 3.0;
     offset = offset * (1/m_zoom);
 
     int slen = vname.length();
@@ -701,11 +697,14 @@ void MarineViewer::drawCommonVehicle(const string& vname,
 //-------------------------------------------------------------
 // Procedure: drawCommonMarker
 
-void MarineViewer::drawCommonMarker(double x, double y, double shape_scale, 
+void MarineViewer::drawCommonMarker(double x, double y, double shape_width, 
 				    const string& mtype, const string& label, 
 				    const vector<double>& label_color,
 				    const vector<vector<double> >& color_vectors)
 {
+  if(shape_width <= 0)
+    return;
+
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   glOrtho(0, w(), 0, h(), -1 ,1);
@@ -723,14 +722,12 @@ void MarineViewer::drawCommonMarker(double x, double y, double shape_scale,
   glLoadIdentity();
 
   glTranslatef(marker_vx, marker_vy, 0); // theses are in pixel units
+  glScalef(m_zoom, m_zoom, m_zoom);
 
-  double mz = sqrt(m_zoom);
-  glScalef(mz*shape_scale, mz*shape_scale, mz*shape_scale);
+  double factor = m_back_img.get_pix_per_mtr();
 
   int vsize = color_vectors.size();
-
   vector<double> cvect1, cvect2;
-
   if(vsize >= 1) 
     cvect1 = color_vectors[0];
   if(vsize >= 2) 
@@ -738,63 +735,84 @@ void MarineViewer::drawCommonMarker(double x, double y, double shape_scale,
 
   vector<double> black(3,0);
   if(mtype == "gateway") {
+    factor *= (shape_width / g_gatewayWidth);
     if(cvect2.size() != 3) cvect2 = black;
     if(cvect1.size() != 3) cvect1 = colorParse("green");
-    glTranslatef(-g_gatewayCtrX, -g_gatewayCtrY, 0);
-    drawGLPoly(g_gatewayBody, g_gatewayBodySize, cvect1);    
-    drawGLPoly(g_gatewayBody, g_gatewayBodySize, black, 1);    
-    drawGLPoly(g_gatewayMidBody, g_gatewayMidBodySize, cvect2);
-    glTranslatef(g_gatewayCtrX, g_gatewayCtrY, 0);
+    double cx = g_gatewayCtrX * factor;
+    double cy = g_gatewayCtrY * factor;
+    glTranslatef(-cx, -cy, 0);
+    drawGLPoly(g_gatewayBody, g_gatewayBodySize, cvect1, factor);    
+    drawGLPoly(g_gatewayBody, g_gatewayBodySize, black, 1, factor);    
+    drawGLPoly(g_gatewayMidBody, g_gatewayMidBodySize, cvect2, factor);
+    glTranslatef(cx, cy, 0);
   }
 
   else if(mtype == "efield") {
+    factor *= (shape_width / g_efieldWidth);
     if(cvect2.size() != 3) cvect2 = colorParse("1.0, 0.843, 0.0");
     if(cvect1.size() != 3) cvect1 = black;
-    glTranslatef(-g_efieldCtrX, -g_efieldCtrY, 0);
-    drawGLPoly(g_efieldBody, g_efieldBodySize, cvect1);    
-    drawGLPoly(g_efieldMidBody, g_efieldMidBodySize, cvect2);
-    drawGLPoly(g_efieldMidBody, g_efieldMidBodySize, black, 1);
-    glTranslatef(g_efieldCtrX, g_efieldCtrY, 0);
+    double cx = g_efieldCtrX * factor;
+    double cy = g_efieldCtrY * factor;
+    glTranslatef(-cx, -cy, 0);
+    drawGLPoly(g_efieldBody, g_efieldBodySize, cvect1, 0, factor);    
+    drawGLPoly(g_efieldMidBody, g_efieldMidBodySize, cvect2, 0, factor);
+    drawGLPoly(g_efieldMidBody, g_efieldMidBodySize, black, 1, factor);
+    glTranslatef(cx, cy, 0);
   }
 
   else if(mtype == "diamond") {
+    factor *= (shape_width / g_diamondWidth);
     if(cvect1.size() != 3) cvect1 = colorParse("orange");
-    glTranslatef(-g_diamondCtrX, -g_diamondCtrY, 0);
-    drawGLPoly(g_diamondBody, g_diamondBodySize, cvect1);    
-    drawGLPoly(g_diamondBody, g_diamondBodySize, black, 1);    
-    glTranslatef(g_diamondCtrX, g_diamondCtrY, 0);
+    double cx = g_diamondCtrX * factor;
+    double cy = g_diamondCtrY * factor;
+    glTranslatef(-cx, -cy, 0);
+    drawGLPoly(g_diamondBody, g_diamondBodySize, cvect1, 0, factor);    
+    drawGLPoly(g_diamondBody, g_diamondBodySize, black, 1, factor);    
+    glTranslatef(cx, cy, 0);
   }
 
   else if(mtype == "circle") {
+    factor *= (shape_width / g_circleWidth);
     if(cvect1.size() != 3) cvect1 = colorParse("orange");
-    glTranslatef(-g_circleCtrX, -g_circleCtrY, 0);
-    drawGLPoly(g_circleBody, g_circleBodySize, cvect1);    
-    drawGLPoly(g_circleBody, g_circleBodySize, black, 1);    
-    glTranslatef(g_circleCtrX, g_circleCtrY, 0);
+    double cx = g_circleCtrX * factor;
+    double cy = g_circleCtrY * factor;
+    glTranslatef(-cx, -cy, 0);
+    drawGLPoly(g_circleBody, g_circleBodySize, cvect1, 0, factor);    
+    drawGLPoly(g_circleBody, g_circleBodySize, black, 1, factor);    
+    glTranslatef(cx, cy, 0);
   }
 
   else if(mtype == "triangle") {
+    factor *= (shape_width / g_triangleWidth);
     if(cvect1.size() != 3) cvect1 = colorParse("red");
-    glTranslatef(-g_triangleCtrX, -g_triangleCtrY, 0);
-    drawGLPoly(g_triangleBody, g_triangleBodySize, cvect1);    
-    drawGLPoly(g_triangleBody, g_triangleBodySize, black, 1);    
-    glTranslatef(g_triangleCtrX, g_triangleCtrY, 0);
+    double cx = g_triangleCtrX * factor;
+    double cy = g_triangleCtrY * factor;
+    glTranslatef(-cx, -cy, 0);
+    drawGLPoly(g_triangleBody, g_triangleBodySize, cvect1, 0, factor);    
+    drawGLPoly(g_triangleBody, g_triangleBodySize, black, 1, factor);    
+    glTranslatef(cx, cy, 0);
   }
 
   else if(mtype == "square") {
+    factor *= (shape_width / g_squareWidth);
     if(cvect1.size() != 3) cvect1 = colorParse("blue");
-    glTranslatef(-g_squareCtrX, -g_squareCtrY, 0);
-    drawGLPoly(g_squareBody, g_squareBodySize, cvect1);    
-    drawGLPoly(g_squareBody, g_squareBodySize, black, 1);    
-    glTranslatef(g_squareCtrX, g_squareCtrY, 0);
+    double cx = g_squareCtrX * factor;
+    double cy = g_squareCtrY * factor;
+    glTranslatef(-cx, -cy, 0);
+    drawGLPoly(g_squareBody, g_squareBodySize, cvect1, 0, factor);    
+    drawGLPoly(g_squareBody, g_squareBodySize, black, 1, factor);    
+    glTranslatef(cx, cy, 0);
   }
 
   else if(mtype == "kelp") {
+    factor *= (shape_width / g_kelpWidth);
     if(cvect1.size() != 3) cvect1 = colorParse("0, 0.54, 0.54");
-    glTranslatef(-g_kelpCtrX, -g_kelpCtrY, 0);
-    drawGLPoly(g_kelpBody, g_kelpBodySize, cvect1);    
-    drawGLPoly(g_kelpBody, g_kelpBodySize, black, 1);    
-    glTranslatef(g_kelpCtrX, g_kelpCtrY, 0);
+    double cx = g_kelpCtrX * factor;
+    double cy = g_kelpCtrY * factor;
+    glTranslatef(-cx, -cy, 0);
+    drawGLPoly(g_kelpBody, g_kelpBodySize, cvect1, 0, factor);    
+    drawGLPoly(g_kelpBody, g_kelpBodySize, black, 1, factor);    
+    glTranslatef(cx, cy, 0);
   }
 
   if(label != "") {
@@ -840,9 +858,9 @@ void MarineViewer::drawMarkers()
       label = m_vmarkers.getMarkerLabel(i);
     double xpos  = m_vmarkers.getMarkerXPos(i);
     double ypos  = m_vmarkers.getMarkerYPos(i);
-    double scale = m_vmarkers.getMarkerScale(i) * gscale;
+    double width = m_vmarkers.getMarkerWidth(i) * gscale;
     color_vectors = m_vmarkers.getMarkerColorVectors(i);
-    drawCommonMarker(xpos, ypos, scale, mtype, label, label_color, color_vectors);
+    drawCommonMarker(xpos, ypos, width, mtype, label, label_color, color_vectors);
   }
 }
 
@@ -1298,10 +1316,10 @@ void MarineViewer::drawSegList(const XYSegList& segl, double lwid,
     glEnd();
   }
 
-  // If the seglist is just a single point, draw it bigger (x 1.4)
+  // If the seglist is just a single point, draw it bigger (x 1.5)
   if(vsize==1) {
     glEnable(GL_POINT_SMOOTH);
-    glPointSize((vertex_size * 1.4) * m_zoom);
+    glPointSize(vertex_size * 1.5);
     // Draw the vertices with color coding for the first and last
     
     glColor3f(vert_c[0], vert_c[1], vert_c[2]);
@@ -1312,7 +1330,7 @@ void MarineViewer::drawSegList(const XYSegList& segl, double lwid,
   }
   else {
     if(vertex_size > 0) {
-      glPointSize(vertex_size * sqrt(m_zoom));
+      glPointSize(vertex_size);
       // Draw the vertices in between the first and last ones
       glColor3f(vert_c[0], vert_c[1], vert_c[2]);
       glEnable(GL_POINT_SMOOTH);
@@ -1379,7 +1397,7 @@ void MarineViewer::drawPointList(const vector<double>& xvect,
     glEnd();
   }
 
-  glPointSize(vertsize * sqrt(m_zoom));
+  glPointSize(vertsize);
 
   // Draw the vertices in between the first and last ones
   glColor3f(vert_c[0], vert_c[1], vert_c[2]);
@@ -1673,7 +1691,7 @@ void MarineViewer::drawPoint(const XYPoint& point, double vertex_size,
   double px  = point.get_vx() * m_back_img.get_pix_per_mtr();
   double py  = point.get_vy() * m_back_img.get_pix_per_mtr();
 
-  glPointSize(vertex_size * sqrt(m_zoom));
+  glPointSize(vertex_size);
   glColor3f(vert_c[0], vert_c[1], vert_c[2]); 
   glEnable(GL_POINT_SMOOTH);
   glBegin(GL_POINTS);

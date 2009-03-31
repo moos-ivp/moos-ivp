@@ -329,16 +329,14 @@ void SSV_Viewer::drawVehicle(string vname, bool active, string vehibody)
   
   vector<double> name_color = m_vehiset.getColor("vehicle_name_color");
 
-  double shape_scale = m_vehiset.getDoubleInfo("active", "vehicle_shape_scale");
-
-  double shape_length = m_vehiset.getDoubleInfo("vlength");
-
-  bool vname_draw = m_vehiset.isViewable("vehicle_names");
+  double shape_scale  = m_vehiset.getDoubleInfo("vehicle_shape_scale");
+  double shape_length = m_vehiset.getDoubleInfo("vlength") * shape_scale;
+  bool   vname_draw   = m_vehiset.isViewable("vehicle_names");
 
   m_vehiset.getDoubleInfo("active", "vehicle_shape_scale", shape_scale);
 
   drawCommonVehicle(vname, opose, vehi_color, name_color, vehibody, 
-		    shape_scale, shape_length, vname_draw, 1);
+		    shape_length, vname_draw, 1);
 }
 
 //-------------------------------------------------------------

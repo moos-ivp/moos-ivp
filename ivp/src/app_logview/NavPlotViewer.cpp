@@ -425,9 +425,10 @@ void NavPlotViewer::drawNavPlot(unsigned int index)
   vector<double> vname_color(3,1); // Vehicle name will be drawn "white"
 
   // Not sure how we handle vehicle lengths - hard code 3 meters for now.
-  
+  double shape_length = 3 * m_shape_scale;
+
   drawCommonVehicle("", opose, cvect, vname_color, m_vehibody, 
-		    m_shape_scale, 3, m_draw_vname);
+		    shape_length, m_draw_vname);
 }
 
 

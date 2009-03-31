@@ -48,7 +48,7 @@ bool VMarkerSet::addVMarker(const string& mline,
   cout << "Handling marker line: " << mline << endl;
 
   string mtype, xpos, ypos, lat, lon, label, colors;
-  string scale = "1";
+  string width = "1";
   for(unsigned int i=0; i<vsize; i++) {
     svector[i] = stripBlankEnds(svector[i]);
     vector<string> ivector = parseString(svector[i], '=');
@@ -62,7 +62,8 @@ bool VMarkerSet::addVMarker(const string& mline,
     else if(left == "ypos")   ypos = right;
     else if(left == "x")      xpos = right;
     else if(left == "y")      ypos = right;
-    else if(left == "scale")  scale = right;
+    else if(left == "scale")  width = right;
+    else if(left == "width")  width = right;
     else if(left == "lat")    lat = right;
     else if(left == "lon")    lon = right;
     else if(left == "label")  label = right;
@@ -97,11 +98,11 @@ bool VMarkerSet::addVMarker(const string& mline,
     geodesy.LatLong2LocalGrid(lat_d, lon_d, ypos_d, xpos_d);
   }
 
-  double scale_d = atof(scale.c_str());
-  if(scale_d < 0)
-    scale_d = 0;
+  double width_d = atof(width.c_str());
+  if(width_d < 0)
+    width_d = 0;
   
-  addVMarker(mtype, xpos_d, ypos_d, scale_d, label, colors);
+  addVMarker(mtype, xpos_d, ypos_d, width_d, label, colors);
   return(true);
 }
 
@@ -110,7 +111,7 @@ bool VMarkerSet::addVMarker(const string& mline,
 // Procedure: addVMarker()
 
 void VMarkerSet::addVMarker(string mtype, double xpos, double ypos,
-			    double mscale, string label, string colors)
+			    double mwid, string label, string colors)
 {
   // First check to see if the given VMarker matches the type and label
   // of a VMarker already added. If the label is the empty string, it
@@ -137,7 +138,7 @@ void VMarkerSet::addVMarker(string mtype, double xpos, double ypos,
     m_marker_type.push_back(mtype);
     m_marker_xpos.push_back(xpos);
     m_marker_ypos.push_back(ypos);
-    m_marker_scale.push_back(mscale);
+    m_marker_width.push_back(mwid);
     m_marker_label.push_back(label);
     m_marker_colors.push_back(svector);
     m_marker_color_vectors.push_back(color_vectors);
@@ -145,7 +146,7 @@ void VMarkerSet::addVMarker(string mtype, double xpos, double ypos,
   else {
     m_marker_xpos[found_ix] = xpos;
     m_marker_ypos[found_ix] = ypos;
-    m_marker_scale[found_ix] = mscale;
+    m_marker_width[found_ix] = mwid;
     m_marker_colors[found_ix] = svector;
     m_marker_color_vectors[found_ix] = color_vectors;
   }
@@ -266,12 +267,12 @@ double VMarkerSet::getMarkerYPos(int ix)
 }
 
 //-----------------------------------------------------------
-// Procedure: getMarkerScale()
+// Procedure: getMarkerWidth()
 
-double VMarkerSet::getMarkerScale(int ix)
+double VMarkerSet::getMarkerWidth(int ix)
 {
-  if((ix >= 0) && (ix < m_marker_scale.size()))
-    return(m_marker_scale[ix]);
+  if((ix >= 0) && (ix < m_marker_width.size()))
+    return(m_marker_width[ix]);
   else
     return(0);
 }

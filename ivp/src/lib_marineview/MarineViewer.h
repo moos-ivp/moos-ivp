@@ -91,8 +91,8 @@ protected:
 			   const std::vector<double>& body_color,
 			   const std::vector<double>& vname_color,
 			   const std::string& body, double shape_length,
-			   double shape_scale, bool vname_draw, int line=0);
-  void   drawCommonMarker(double x, double y, double scale, 
+			   bool vname_draw, int line=0);
+  void   drawCommonMarker(double x, double y, double shape_width, 
 			  const std::string& mtype, 
 			  const std::string& label, 
 			  const std::vector<double>& label_color, 

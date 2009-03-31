@@ -232,12 +232,11 @@ void PMV_Viewer::drawVehicle(string vname, bool active, string vehibody)
   
   bool vname_draw = m_vehiset.isViewable("vehicle_names");
   
-  double shape_scale = m_vehiset.getDoubleInfo("vehicle_shape_scale");
-  
-  double shape_length = m_vehiset.getDoubleInfo("vlength");
+  double shape_scale  = m_vehiset.getDoubleInfo("vehicle_shape_scale");
+  double shape_length = m_vehiset.getDoubleInfo("vlength") * shape_scale;
   
   drawCommonVehicle(vname, opose, vehi_color, vname_color, vehibody, 
-		    shape_scale, shape_length, vname_draw, 1);
+		    shape_length, vname_draw, 1);
 }
 
 //-------------------------------------------------------------

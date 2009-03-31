@@ -22,20 +22,15 @@
 
 double g_squareBody[]=
 {
-   50.0,   50.0, 
-  -50.0,  50.0, 
-  -50.0,  -50.0, 
-  50.0,  -50.0, 
-  50.0,   50.0, 
-   //   6.0,   6.0, 
-   //  -6.0,   6.0, 
-   //  -6.0,  -6.0, 
-   //   6.0,  -6.0, 
-   //   6.0,   6.0, 
+   10.0,   10.0, 
+  -10.0,  10.0, 
+  -10.0,  -10.0, 
+  10.0,  -10.0, 
+  10.0,   10.0, 
 };
 
-double       g_squareCtrX =  0.0;
-double       g_squareCtrY =  0.0;
+double       g_squareCtrX     = 0.0;
+double       g_squareCtrY     = 0.0;
 unsigned int g_squareBodySize = 5;
-
+double       g_squareWidth    = 20;
 

@@ -66,5 +66,6 @@ double g_circleBody[]=
 double       g_circleCtrX     = 0.0;
 double       g_circleCtrY     = 0.0;
 unsigned int g_circleBodySize = 36;
+double       g_circleWidth    = 10;
 
 #endif

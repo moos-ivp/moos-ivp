@@ -50,6 +50,8 @@ bool OpAreaSpec::addVertex(const std::string& str,
     string right = stripBlankEnds(ivector[1]);
     if(left == "xpos")   xpos = right;
     else if(left == "ypos")   ypos = right;
+    else if(left == "x")      xpos = right;
+    else if(left == "y")      ypos = right;
     else if(left == "lat")    lat = right;
     else if(left == "lon")    lon = right;
     else if(left == "lwidth") lwidth = right;

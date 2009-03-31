@@ -42,10 +42,11 @@ double g_shipBody[]=
   30.0,   0.0
 };
 
-double       g_shipCtrX     = 0.0;
-double       g_shipCtrY     = 106.5;
-unsigned int g_shipBodySize = 15;
-double       g_shipLength   = 212.0;
+double       g_shipCtrX      = 0.0;
+double       g_shipCtrY      = 106.5;
+unsigned int g_shipBodySize  = 15;
+double       g_shipLength    = 212.0;
+double       g_shipLengthDef = 25; // meters
 
 double g_shipFatBody[]=
 {

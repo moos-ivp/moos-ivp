@@ -35,6 +35,7 @@ double g_diamondBody[]=
 double       g_diamondCtrX     = 0.0;
 double       g_diamondCtrY     = 0.0;
 unsigned int g_diamondBodySize = 5;
+double       g_diamondWidth    = 16;
 
 #endif
 

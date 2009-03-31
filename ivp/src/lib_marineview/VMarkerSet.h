@@ -29,7 +29,7 @@ public:
   std::string getMarkerType(int ix);
   double      getMarkerXPos(int ix);
   double      getMarkerYPos(int ix);
-  double      getMarkerScale(int ix);
+  double      getMarkerWidth(int ix);
   std::string getMarkerLabel(int ix);
 
   int            getMarkerColorCount(int ix);
@@ -49,7 +49,7 @@ protected:
   std::vector<std::string>  m_marker_type;
   std::vector<double>       m_marker_xpos;
   std::vector<double>       m_marker_ypos;
-  std::vector<double>       m_marker_scale;
+  std::vector<double>       m_marker_width;
   std::vector<std::string>  m_marker_label;
 
   std::vector<double>       m_label_color_default;
