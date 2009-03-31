@@ -22,7 +22,7 @@ ProcessConfig = ANTLER
   Run = pTransponderAIS	@ NewConsole = false
   Run = pMarinePID	@ NewConsole = false
   Run = pMarineViewer	@ NewConsole = false
-  Run = pHelmIvP	@ NewConsole = false
+  Run = pHelmIvP	@ NewConsole = true
 }
 
 //------------------------------------------
@@ -101,7 +101,7 @@ ProcessConfig = pMarineViewer
   set_pan_x            = -90
   set_pan_y            = -280
   zoom                 = 0.65
-  vehicle_shape_scale  = 0.40
+  vehicle_shape_scale  = 1.0
   seglist_edge_width   = 2.0
   seglist_vertex_size  = 8
   seglist_vertex_color = red
@@ -117,6 +117,10 @@ ProcessConfig = pMarineViewer
   BUTTON_THREE = UP_LOITERB=clockwise=true
   BUTTON_FOUR  = CCWISE # UP_LOITERA=clockwise=false
   BUTTON_FOUR  = UP_LOITERB=clockwise=false
+
+  marker       = type=square,x=50,y=-100,label=sq_one,width=5
+  marker       = type=diamond,x=70,y=-120,label=di_one,color=macbeige,width=10
+  marker       = type=circle,x=90,y=-140,label=circ_one,color=yellow,width=25
 }
 
 //------------------------------------------
@@ -126,7 +130,8 @@ ProcessConfig = pTransponderAIS
 {
   AppTick	= 2
   CommsTick	= 2
-  VESSEL_TYPE   = KAYAK
+  VESSEL_TYPE   = glider
+  VESSEL_LENGTH = 3
 }
 
 

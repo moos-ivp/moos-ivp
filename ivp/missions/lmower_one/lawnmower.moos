@@ -121,6 +121,9 @@ ProcessConfig = pMarineViewer
   ACTION  = SURVEY_UPDATES = lead=4.0
   ACTION  = SURVEY_UPDATES = lead=6.0
   ACTION  = SURVEY_UPDATES = lead=10.0
+
+  VEHICOLOR = alpha,blue
+  VEHITYPE  = alpha,auv
 }
 
 //------------------------------------------
