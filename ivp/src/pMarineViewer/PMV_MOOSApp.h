@@ -26,6 +26,8 @@
 #include <string>
 #include "MOOSLib.h"
 #include "PMV_GUI.h"
+#include "Threadsafe_pipe.h"
+#include "MOOS_event.h"
 
 class PMV_MOOSApp : public CMOOSApp  
 {
@@ -34,6 +36,10 @@ class PMV_MOOSApp : public CMOOSApp
   virtual ~PMV_MOOSApp() {};
 
   void setGUI(PMV_GUI* g_gui) {m_gui=g_gui;};
+  
+  void setPendingEventsPipe(Threadsafe_pipe<MOOS_event> * pending_moos_events) {
+    m_pending_moos_events = pending_moos_events;
+  }
 
   bool Iterate();
 
@@ -44,14 +50,22 @@ class PMV_MOOSApp : public CMOOSApp
   bool OnStartUp();
   bool OnNewMail(MOOSMSG_LIST &NewMail);
 
+  // Only call these methods in the main FLTK l thread, for thread safety w.r.t.
+  // that  library...
+  void handleNewMail(const MOOS_event & e);
+  void handleIterate(const MOOS_event & e);
+  void handleStartUp(const MOOS_event & e);
+
  protected:
+ 
   void handlePendingGUI();
   void receiveVehicleState(CMOOSMsg &Msg);
-  bool receivePK_SOL(CMOOSMsg &Msg);
+  bool receivePK_SOL(std::string sval);
   void registerVariables();
 
  protected:
   PMV_GUI* m_gui;
+  Threadsafe_pipe<MOOS_event> * m_pending_moos_events;
 
   double m_start_time;
   bool   m_verbose;

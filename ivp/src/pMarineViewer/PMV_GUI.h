@@ -23,10 +23,9 @@
 #ifndef PMV_GUI_HEADER
 #define PMV_GUI_HEADER
 
-#include "MOOSLock.h"
 #include "PMV_Viewer.h"
 #include "MarineVehiGUI.h"
-#include "MY_LockableOutput.h"
+#include <FL/Fl_Output.H>
 #include "MY_Button.h"
 
 class PMV_GUI : public MarineVehiGUI {
@@ -61,18 +60,18 @@ public:
   static void cb_DoAction(Fl_Widget*, int);
 
 protected:
-  MY_LockableOutput  *v_nam;
-  MY_LockableOutput  *v_typ;
-  MY_LockableOutput  *x_mtr;
-  MY_LockableOutput  *y_mtr;
-  MY_LockableOutput  *v_spd;
-  MY_LockableOutput  *v_lat;
-  MY_LockableOutput  *v_lon;
-  MY_LockableOutput  *v_crs;
-  MY_LockableOutput  *v_dep;
-  MY_LockableOutput  *v_ais;
-  MY_LockableOutput  *time;
-  MY_LockableOutput  *warp;
+  Fl_Output  *v_nam;
+  Fl_Output  *v_typ;
+  Fl_Output  *x_mtr;
+  Fl_Output  *y_mtr;
+  Fl_Output  *v_spd;
+  Fl_Output  *v_lat;
+  Fl_Output  *v_lon;
+  Fl_Output  *v_crs;
+  Fl_Output  *v_dep;
+  Fl_Output  *v_ais;
+  Fl_Output  *time;
+  Fl_Output  *warp;
 
   MY_Button  *user_button_1;
   MY_Button  *user_button_2;
@@ -87,7 +86,7 @@ protected:
   std::vector<std::string> m_action_vals;
   std::vector<std::string> m_action_keys;
 
-  CMOOSLock  m_pmv_mutex;
+//   CMOOSLock  m_pmv_mutex;
 
   double     m_curr_time;
   double     m_prev_out_time;

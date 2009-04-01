@@ -81,7 +81,7 @@ bool MarineViewer::setParam(string param, string value)
   string p = tolower(stripBlankEnds(param));
   string v = tolower(stripBlankEnds(value));
 
-  mutexLock();
+//   mutexLock();
   bool handled = false;
   if(p=="cross_view")
     handled = setBooleanOnString(m_cross_offon, v);
@@ -127,7 +127,7 @@ bool MarineViewer::setParam(string param, string value)
     handled = handled || m_geoshapes.setParam(p,v);
   }
 
-  mutexUnLock();
+//   mutexUnLock();
   return(handled);
 
 }
@@ -141,7 +141,7 @@ bool MarineViewer::setParam(string param, double v)
 {
   param = tolower(stripBlankEnds(param));
   
-  mutexLock();
+//   mutexLock();
   bool handled = true;
   if(param == "hash_shade_mod") {
     if((m_hash_shade+v >= 0) && (m_hash_shade+v <= 1.0))
@@ -192,7 +192,7 @@ bool MarineViewer::setParam(string param, double v)
   else 
     handled = false;
   
-  mutexUnLock();
+//   mutexUnLock();
   return(handled);
 
 }
@@ -367,7 +367,7 @@ double MarineViewer::getCrossHairMeters(char xy)
 
 void MarineViewer::draw()
 {
-  mutexLock();
+//   mutexLock();
   double r = m_fill_shade;
   double g = m_fill_shade;
   double b = m_fill_shade + 0.1;
@@ -412,7 +412,7 @@ void MarineViewer::draw()
 
   drawOpArea();
   drawMarkers();
-  mutexUnLock();
+//   mutexUnLock();
 }
 
 // ----------------------------------------------------------

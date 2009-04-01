@@ -36,6 +36,7 @@ PMV_MOOSApp::PMV_MOOSApp()
   m_right_click_str = "null"; 
 
   m_gui     = 0; 
+  m_pending_moos_events = 0;
   m_verbose = false;
 }
 
@@ -44,56 +45,24 @@ PMV_MOOSApp::PMV_MOOSApp()
 
 bool PMV_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 {
-  if(!m_gui) 
+  if((!m_gui) || (!m_pending_moos_events))
     return(true);
 
   NewMail.sort();
-
-  Fl::lock();  
-
-  m_gui->mviewer->setParam("curr_time", MOOSTime());
-
-  int handled_msgs = 0;
+  
+  MOOS_event e;
+  e.type="OnNewMail";
+  e.moos_time = MOOSTime();
 
   MOOSMSG_LIST::iterator p;
   for(p = NewMail.begin();p!=NewMail.end();p++) {
     CMOOSMsg &Msg = *p;
-    
-    string key  = Msg.m_sKey;
-    string sval = Msg.m_sVal;
-    
-    bool handled = m_gui->mviewer->setParam(key, sval);
-    if(!handled && (key == "PK_SOL")) {
-      MOOSTrace("\nProcessing PK_SOL Message\n");
-      receivePK_SOL(Msg);
-    }
-    if(!handled) {
-      MOOSTrace("pMarineViewer OnNewMail Unhandled msg: \n");
-      MOOSTrace("  [key:%s val:%s]\n", key.c_str(), sval.c_str());
-    }
-    
-    if(key == "VIEW_POLYGON")          MOOSTrace("P");
-    else if(key == "VIEW_SEGLIST")     MOOSTrace("S");
-    else if(key == "VIEW_POINT")       MOOSTrace(".");
-    else if(key == "GRID_CONFIG")      MOOSTrace("X");
-    else if(key == "AIS_REPORT")       MOOSTrace("*");
-    else if(key == "AIS_REPORT_LOCAL") MOOSTrace("*");
-    else if(key == "GRID_CONFIG")      MOOSTrace("X");
-    else if(key == "GRID_DELTA")       MOOSTrace("G");
-    else if(key == "VIEW_MARKER")      MOOSTrace("M");
-    else MOOSTrace("?");
-
-    if(handled)
-      handled_msgs++;
+    e.mail.push_back(MOOS_event::Mail_message(Msg.m_sKey, Msg.m_sVal));
   }
-
-  if(handled_msgs > 0) {
-    m_gui->updateXY();
-    m_gui->mviewer->redraw();
-  }
-
-  Fl::unlock();  
-
+  
+  m_pending_moos_events->enqueue(e);
+  Fl::awake();
+  
   return(true);
 }
 
@@ -116,45 +85,16 @@ bool PMV_MOOSApp::OnConnectToServer()
 
 bool PMV_MOOSApp::Iterate()
 {
-  if(!m_gui)
-    return(false);
+  if((!m_gui) || (!m_pending_moos_events))
+    return(true);
+  
+  MOOS_event e;
+  e.type="Iterate";
+  e.moos_time = MOOSTime();
 
-  Fl::lock();  
-
-  double curr_time = MOOSTime() - m_start_time;
-  m_gui->setCurrTime(curr_time);
-  m_gui->updateXY();
-
-  string left_click_str = m_gui->mviewer->getStringInfo("left_click_info");
-  if(left_click_str != m_left_click_str) {
-    m_left_click_str = left_click_str;
-    
-    if(m_left_click_str != "") {
-      string vname   = m_gui->mviewer->getStringInfo("active_vehicle_name");
-      string postval = left_click_str;
-      if(vname != "")
-	postval += (",vname=" + vname);
-      m_Comms.Notify("MVIEWER_LCLICK", postval);
-    }
-  }
-
-  string right_click_str = m_gui->mviewer->getStringInfo("right_click_info");
-  if(m_right_click_str != m_right_click_str) {
-    m_right_click_str = right_click_str;
-    
-    if(m_right_click_str != "") {
-      string vname   = m_gui->mviewer->getStringInfo("active_vehicle_name");
-      string postval = right_click_str;
-      if(vname != "")
-	postval += (",vname=" + vname);
-      m_Comms.Notify("MVIEWER_RCLICK", postval);
-    }
-  }
-
-  handlePendingGUI();
-
-  Fl::unlock();  
-
+  m_pending_moos_events->enqueue(e);
+  Fl::awake();
+  
   return(true);
 }
 
@@ -193,58 +133,16 @@ bool PMV_MOOSApp::OnStartUp()
     return(false);
   }
 
-  // Keep track of whether the back images were user configured.
-  // If not, we'll use the default image afterwards.
-  bool tiff_a_set = false;
-  bool tiff_b_set = false;
-
-  Fl::lock();  
-
-  STRING_LIST sParams;
-  m_MissionReader.GetConfiguration(GetAppName(), sParams);
-  STRING_LIST::reverse_iterator p;
-  for(p = sParams.rbegin();p!=sParams.rend();p++) {
-    string sLine    = *p;
-    string param = tolower(MOOSChomp(sLine, "="));
-    string value = stripBlankEnds(sLine);
-    
-    if(param == "verbose")
-      m_verbose = (tolower(value) == "true");
-    else if(param == "button_one")
-      m_gui->addButton(param, value);
-    else if(param == "button_two")
-      m_gui->addButton(param, value);
-    else if(param == "button_three")
-      m_gui->addButton(param, value);
-    else if(param == "button_four")
-      m_gui->addButton(param, value);
-    else if(param == "action")
-      m_gui->addAction(value);
-    else if(param == "action+")
-      m_gui->addAction(value, true);
-    else { 
-      bool handled = m_gui->mviewer->setParam(param, value);
-      if(!handled)
-	handled = m_gui->mviewer->setParam(param, atof(value.c_str()));
-      if(handled && (param == "tiff_file"))
-	tiff_a_set = true;
-      if(handled && (param == "tiff_file_b"))
-	tiff_b_set = true;	
-    }
-  }
-
-  // If no images were specified, use the default images.
-  if(!tiff_a_set && !tiff_b_set) {
-    m_gui->mviewer->setParam("tiff_file", "Default.tif");
-    m_gui->mviewer->setParam("tiff_file_b", "DefaultB.tif");
-  }
-
-  m_start_time = MOOSTime();
-  m_gui->mviewer->redraw();
-
-  Fl::unlock();  
+  if((!m_gui) || (!m_pending_moos_events))
+    return(true);
   
-  registerVariables();
+  MOOS_event e;
+  e.type="OnStartUp";
+  e.moos_time = MOOSTime();
+
+  m_pending_moos_events->enqueue(e);
+  Fl::awake();
+
   return(true);
 }
 
@@ -252,14 +150,14 @@ bool PMV_MOOSApp::OnStartUp()
 //---------------------------------------------------------------
 // Procedure: receivePK_SOL
 
-bool PMV_MOOSApp::receivePK_SOL(CMOOSMsg &Msg)
+bool PMV_MOOSApp::receivePK_SOL(string sval)
 {
   bool return_status = true;
   vector<string> rvector;
 
   // REPORTS in PK_SOL message are separated by ";"
 
-  vector<string> svector = parseString(Msg.m_sVal, ';');
+  vector<string> svector = parseString(sval, ';');
 
   // Cycle through all reports
   for(unsigned int i=0;i<svector.size()-1;i++) {
@@ -326,3 +224,139 @@ void PMV_MOOSApp::handlePendingGUI()
 }
 
 
+
+//----------------------------------------------------------------------
+// Procedure: handleNewMail
+
+void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
+{
+  m_gui->mviewer->setParam("curr_time", e.moos_time);
+  
+  int handled_msgs = 0;
+  for (size_t i = 0; i < e.mail.size(); ++i) {
+    string key = e.mail[i].key;
+    string sval = e.mail[i].sval;
+    
+    bool handled = m_gui->mviewer->setParam(key, sval);
+    if(!handled && (key == "PK_SOL")) {
+      MOOSTrace("\nProcessing PK_SOL Message\n");
+      receivePK_SOL(sval);
+    }
+    if(!handled) {
+      MOOSTrace("pMarineViewer OnNewMail Unhandled msg: \n");
+      MOOSTrace("  [key:%s val:%s]\n", key.c_str(), sval.c_str());
+    }
+    
+    if(key == "VIEW_POLYGON")          MOOSTrace("P");
+    else if(key == "VIEW_SEGLIST")     MOOSTrace("S");
+    else if(key == "VIEW_POINT")       MOOSTrace(".");
+    else if(key == "GRID_CONFIG")      MOOSTrace("X");
+    else if(key == "AIS_REPORT")       MOOSTrace("*");
+    else if(key == "AIS_REPORT_LOCAL") MOOSTrace("*");
+    else if(key == "GRID_CONFIG")      MOOSTrace("X");
+    else if(key == "GRID_DELTA")       MOOSTrace("G");
+    else if(key == "VIEW_MARKER")      MOOSTrace("M");
+    else MOOSTrace("?");
+
+    if(handled)
+      handled_msgs++;
+  }
+
+  if(handled_msgs > 0) {
+    m_gui->updateXY();
+    m_gui->mviewer->redraw();
+  }
+}
+
+
+//----------------------------------------------------------------------
+// Procedure: handleIterate
+
+void PMV_MOOSApp::handleIterate(const MOOS_event & e) {
+  double curr_time = e.moos_time - m_start_time;
+  m_gui->setCurrTime(curr_time);
+  m_gui->updateXY();
+
+  string left_click_str = m_gui->mviewer->getStringInfo("left_click_info");
+  if(left_click_str != m_left_click_str) {
+    m_left_click_str = left_click_str;
+    
+    if(m_left_click_str != "") {
+      string vname   = m_gui->mviewer->getStringInfo("active_vehicle_name");
+      string postval = left_click_str;
+      if(vname != "")
+        postval += (",vname=" + vname);
+      m_Comms.Notify("MVIEWER_LCLICK", postval);
+    }
+  }
+
+  string right_click_str = m_gui->mviewer->getStringInfo("right_click_info");
+  if(m_right_click_str != m_right_click_str) {
+    m_right_click_str = right_click_str;
+    
+    if(m_right_click_str != "") {
+      string vname   = m_gui->mviewer->getStringInfo("active_vehicle_name");
+      string postval = right_click_str;
+      if(vname != "")
+        postval += (",vname=" + vname);
+      m_Comms.Notify("MVIEWER_RCLICK", postval);
+    }
+  }
+
+  handlePendingGUI();
+}
+
+
+//----------------------------------------------------------------------
+// Procedure: handleStartUp
+
+void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
+  // Keep track of whether the back images were user configured.
+  // If not, we'll use the default image afterwards.
+  bool tiff_a_set = false;
+  bool tiff_b_set = false;
+
+  STRING_LIST sParams;
+  m_MissionReader.GetConfiguration(GetAppName(), sParams);
+  STRING_LIST::reverse_iterator p;
+  for(p = sParams.rbegin();p!=sParams.rend();p++) {
+    string sLine    = *p;
+    string param = tolower(MOOSChomp(sLine, "="));
+    string value = stripBlankEnds(sLine);
+    
+    if(param == "verbose")
+      m_verbose = (tolower(value) == "true");
+    else if(param == "button_one")
+      m_gui->addButton(param, value);
+    else if(param == "button_two")
+      m_gui->addButton(param, value);
+    else if(param == "button_three")
+      m_gui->addButton(param, value);
+    else if(param == "button_four")
+      m_gui->addButton(param, value);
+    else if(param == "action")
+      m_gui->addAction(value);
+    else if(param == "action+")
+      m_gui->addAction(value, true);
+    else { 
+      bool handled = m_gui->mviewer->setParam(param, value);
+      if(!handled)
+        handled = m_gui->mviewer->setParam(param, atof(value.c_str()));
+      if(handled && (param == "tiff_file"))
+        tiff_a_set = true;
+      if(handled && (param == "tiff_file_b"))
+        tiff_b_set = true;      
+    }
+  }
+
+  // If no images were specified, use the default images.
+  if(!tiff_a_set && !tiff_b_set) {
+    m_gui->mviewer->setParam("tiff_file", "Default.tif");
+    m_gui->mviewer->setParam("tiff_file_b", "DefaultB.tif");
+  }
+
+  m_start_time = MOOSTime();
+  m_gui->mviewer->redraw();
+  
+  registerVariables();
+}

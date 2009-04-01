@@ -26,7 +26,6 @@
 #include <iostream>
 #include <string>
 #include "MarineViewer.h"
-#include "MOOSLock.h"
 #include "VehicleSet.h"
 
 class PMV_Viewer : public MarineViewer
@@ -42,9 +41,6 @@ class PMV_Viewer : public MarineViewer
   bool  setParam(std::string p, double v);
   
   std::string getStringInfo(const std::string& info_type, int precision=0);
-
-  void  mutexLock()   {m_mutex.Lock();};
-  void  mutexUnLock() {m_mutex.UnLock();};
 
  private:
   void   setWeightedCenterView();
@@ -65,7 +61,6 @@ class PMV_Viewer : public MarineViewer
 
   bool        m_centric_view;
   bool        m_centric_view_sticky;
-  CMOOSLock   m_mutex;
 };
 
 #endif 

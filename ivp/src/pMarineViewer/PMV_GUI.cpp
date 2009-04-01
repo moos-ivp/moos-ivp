@@ -45,66 +45,66 @@ PMV_GUI::PMV_GUI(int g_w, int g_h, const char *g_l)
   mviewer  = new PMV_Viewer(0, 30, w(), h()-100);
   cmviewer = mviewer;
 
-  v_nam = new MY_LockableOutput(60, h()-60, 70, 20, "VName:"); 
+  v_nam = new Fl_Output(60, h()-60, 70, 20, "VName:"); 
+  v_nam->set_output();
   v_nam->textsize(info_size); 
   v_nam->labelsize(info_size);
-  v_nam->setMutex(&m_pmv_mutex);
 
-  v_typ = new MY_LockableOutput(60, h()-30, 70, 20, "VType:"); 
+  v_typ = new Fl_Output(60, h()-30, 70, 20, "VType:"); 
+  v_typ->set_output();
   v_typ->textsize(info_size); 
   v_typ->labelsize(info_size);
   v_typ->value("unknown");
-  v_typ->setMutex(&m_pmv_mutex);
 
-  x_mtr = new MY_LockableOutput(190, h()-60, 70, 20, "X(m):"); 
+  x_mtr = new Fl_Output(190, h()-60, 70, 20, "X(m):"); 
+  x_mtr->set_output();
   x_mtr->textsize(info_size); 
   x_mtr->labelsize(info_size);
-  x_mtr->setMutex(&m_pmv_mutex);
 
-  y_mtr = new MY_LockableOutput(190, h()-30, 70, 20, "Y(m):"); 
+  y_mtr = new Fl_Output(190, h()-30, 70, 20, "Y(m):"); 
+  y_mtr->set_output();
   y_mtr->textsize(info_size); 
   y_mtr->labelsize(info_size);
-  y_mtr->setMutex(&m_pmv_mutex);
 
-  v_lat = new MY_LockableOutput(305, h()-60, 90, 20, "Lat:"); 
+  v_lat = new Fl_Output(305, h()-60, 90, 20, "Lat:"); 
+  v_lat->set_output();
   v_lat->textsize(info_size); 
   v_lat->labelsize(info_size);
-  v_lat->setMutex(&m_pmv_mutex);
 
-  v_lon = new MY_LockableOutput(305, h()-30, 90, 20, "long:"); 
+  v_lon = new Fl_Output(305, h()-30, 90, 20, "long:"); 
+  v_lon->set_output();
   v_lon->textsize(info_size); 
   v_lon->labelsize(info_size);
-  v_lon->setMutex(&m_pmv_mutex);
 
-  v_spd = new MY_LockableOutput(470, h()-60, 55, 20, "Spd(m/s):"); 
+  v_spd = new Fl_Output(470, h()-60, 55, 20, "Spd(m/s):"); 
+  v_spd->set_output();
   v_spd->textsize(info_size); 
   v_spd->labelsize(info_size);
-  v_spd->setMutex(&m_pmv_mutex);
 
-  v_crs = new MY_LockableOutput(470, h()-30, 55, 20, "Heading:"); 
+  v_crs = new Fl_Output(470, h()-30, 55, 20, "Heading:"); 
+  v_crs->set_output();
   v_crs->textsize(info_size); 
   v_crs->labelsize(info_size);
-  v_crs->setMutex(&m_pmv_mutex);
 
-  v_dep = new MY_LockableOutput(610, h()-60, 55, 20, "Dep(m):"); 
+  v_dep = new Fl_Output(610, h()-60, 55, 20, "Dep(m):"); 
+  v_dep->set_output();
   v_dep->textsize(info_size); 
   v_dep->labelsize(info_size);
-  v_dep->setMutex(&m_pmv_mutex);
 
-  v_ais = new MY_LockableOutput(610, h()-30, 55, 20, "Age-AIS:"); 
+  v_ais = new Fl_Output(610, h()-30, 55, 20, "Age-AIS:"); 
+  v_ais->set_output();
   v_ais->textsize(info_size); 
   v_ais->labelsize(info_size);
-  v_ais->setMutex(&m_pmv_mutex);
 
-  time = new MY_LockableOutput(720, h()-60, 70, 20, "Time:"); 
+  time = new Fl_Output(720, h()-60, 70, 20, "Time:"); 
+  time->set_output();
   time->textsize(info_size); 
   time->labelsize(info_size);
-  time->setMutex(&m_pmv_mutex);
 
-  warp = new MY_LockableOutput(720, h()-30, 70, 20, "Warp:"); 
+  warp = new Fl_Output(720, h()-30, 70, 20, "Warp:"); 
+  warp->set_output();
   warp->textsize(info_size); 
   warp->labelsize(info_size);
-  warp->setMutex(&m_pmv_mutex);
   
   int wid_b  = 120;
   int hgt_b  = 24;
@@ -114,13 +114,13 @@ PMV_GUI::PMV_GUI(int g_w, int g_h, const char *g_l)
   int row_bb = ((h() - 20) - hgt_b) + 2;
 
   user_button_1 = new MY_Button(col_b+2, row_b, 
-				wid_b-4, hgt_b, "Disabled");
+                                wid_b-4, hgt_b, "Disabled");
   user_button_2 = new MY_Button(col_b+2, row_bb, 
-				wid_b-4, hgt_b, "Disabled");
+                                wid_b-4, hgt_b, "Disabled");
   user_button_3 = new MY_Button(col_bb, row_b, 
-				wid_b-4, hgt_b, "Disabled");
+                                wid_b-4, hgt_b, "Disabled");
   user_button_4 = new MY_Button(col_bb, row_bb, 
-				wid_b-4, hgt_b, "Disabled");
+                                wid_b-4, hgt_b, "Disabled");
 
   user_button_1->callback((Fl_Callback*)PMV_GUI::cb_MOOS_Button,(void*)1);
   user_button_2->callback((Fl_Callback*)PMV_GUI::cb_MOOS_Button,(void*)2);
@@ -147,8 +147,6 @@ void PMV_GUI::addButton(string btype, string svalue)
      (btype != "button_three") && (btype != "button_four"))
     return;
 
-  m_pmv_mutex.Lock();
-
   // Set the default label if none is provided in the svalue.
   // The default is the *current* value of the label.
   string button_label = user_button_1->label();
@@ -169,11 +167,11 @@ void PMV_GUI::addButton(string btype, string svalue)
       ok_line = false;
     else {
       if(value == "")
-	button_label = param;
+        button_label = param;
       else {
-	m_button_keys.push_back(btype);
-	m_button_vars.push_back(param);
-	m_button_vals.push_back(value);
+        m_button_keys.push_back(btype);
+        m_button_vars.push_back(param);
+        m_button_vals.push_back(value);
       }
     }
   }
@@ -209,8 +207,6 @@ void PMV_GUI::addButton(string btype, string svalue)
   }
   cout << "End------------------------------------" << endl;
 #endif
-
-  m_pmv_mutex.UnLock();
 }
 
 //----------------------------------------------------------
@@ -219,8 +215,6 @@ void PMV_GUI::addButton(string btype, string svalue)
 //            
 void PMV_GUI::addAction(string svalue, bool separator) 
 {
-  m_pmv_mutex.Lock();
-
   vector<string> svector = parseString(svalue, '#');
   unsigned int i, vsize = svector.size();
   unsigned int pindex = m_action_vars.size();
@@ -261,8 +255,6 @@ void PMV_GUI::addAction(string svalue, bool separator)
       mbar->add(label.c_str(), 0, (Fl_Callback*)PMV_GUI::cb_DoAction, (void*)index, 0);
   }
   mbar->redraw();
-
-  m_pmv_mutex.UnLock();
 }
 
 //----------------------------------------------------------
@@ -283,7 +275,6 @@ void PMV_GUI::updateXY() {
   //  return;
 
   m_prev_out_time = m_curr_time;
-  m_pmv_mutex.Lock();
 
   string time_str = doubleToString(m_curr_time, 1);
   time->value(time_str.c_str());
@@ -301,7 +292,6 @@ void PMV_GUI::updateXY() {
     v_lon->value(" n/a");
     v_dep->value(" n/a");
     v_ais->value(" n/a");
-    m_pmv_mutex.UnLock();
     return;
   }
 
@@ -318,7 +308,6 @@ void PMV_GUI::updateXY() {
   if(age_ais == "-1")
     age_ais = "n/a";
 
-  mviewer->mutexLock();
   warp->value(swarp.c_str());
   v_nam->value(vname.c_str());
   v_typ->value(vtype.c_str());
@@ -337,9 +326,6 @@ void PMV_GUI::updateXY() {
   v_spd->redraw();
   v_dep->redraw();
   v_ais->redraw();
-
-  mviewer->mutexUnLock();
-  m_pmv_mutex.UnLock();
 }
 
 //----------------------------------------- MOOS_Button
@@ -381,8 +367,8 @@ inline void PMV_GUI::cb_DoAction_i(int i) {
     unsigned int j, vsize = m_action_vars.size();
     for(j=0; j<vsize; j++) {
       if(m_action_keys[j] == key) {
-	cout << m_action_vars[j] << " = " << m_action_vals[j] << endl;
-	pushPending(m_action_vars[j], m_action_vals[j]);
+        cout << m_action_vars[j] << " = " << m_action_vals[j] << endl;
+        pushPending(m_action_vars[j], m_action_vals[j]);
       }
     }
   }
@@ -400,13 +386,10 @@ void PMV_GUI::cb_DoAction(Fl_Widget* o, int v) {
 
 string PMV_GUI::getPendingVar(unsigned int ix)
 {
-  m_pmv_mutex.Lock();
-
   string return_value;
   if((ix >=0) && (ix < m_pending_vars.size()))
     return_value = m_pending_vars[ix];
 
-  m_pmv_mutex.UnLock();
   return(return_value);
 }
 
@@ -415,13 +398,10 @@ string PMV_GUI::getPendingVar(unsigned int ix)
 
 string PMV_GUI::getPendingVal(unsigned int ix)
 {
-  m_pmv_mutex.Lock();
-
   string return_value;
   if((ix >=0) && (ix < m_pending_vals.size()))
     return_value = m_pending_vals[ix];
 
-  m_pmv_mutex.UnLock();
   return(return_value);
 }
 
@@ -430,12 +410,8 @@ string PMV_GUI::getPendingVal(unsigned int ix)
 
 void PMV_GUI::clearPending()
 {
-  m_pmv_mutex.Lock();
-
   m_pending_vars.clear();
   m_pending_vals.clear();
-
-  m_pmv_mutex.UnLock();
 }
 
 //-------------------------------------------------------------------
@@ -443,11 +419,7 @@ void PMV_GUI::clearPending()
 
 void PMV_GUI::pushPending(string var, string val)
 {
-  m_pmv_mutex.Lock();
-
   m_pending_vars.push_back(var);
   m_pending_vals.push_back(val);
-
-  m_pmv_mutex.UnLock();
 }
 

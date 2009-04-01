@@ -44,7 +44,6 @@ void PMV_Viewer::draw()
 {
   MarineViewer::draw();
 
-  mutexLock();
   drawPolygons();
   drawGrids();
   drawSegLists();
@@ -72,7 +71,6 @@ void PMV_Viewer::draw()
     }
   }
 
-  mutexUnLock();
   glFlush();
 }
 
@@ -118,7 +116,6 @@ bool PMV_Viewer::setParam(string param, string value)
   bool handled = false;
   bool center_needs_adjusting = false;
   
-  mutexLock();
   if(param == "center_view") {
     center_needs_adjusting = true;
     m_centric_view = true;
@@ -135,8 +132,6 @@ bool PMV_Viewer::setParam(string param, string value)
   }
   else
     handled = m_vehiset.setParam(param, value);
-
-  mutexUnLock();
   
   if(center_needs_adjusting)
     setWeightedCenterView();
@@ -156,18 +151,14 @@ bool PMV_Viewer::setParam(string param, double value)
 {
   // Intercept and disable the centric mode if user pans
   if((param == "pan_x") || (param == "pan_y")) {
-    mutexLock();
     m_centric_view = false;
-    mutexUnLock();
   }
 
   // Parent class has its own mutex protection - none needed here.
   bool handled = MarineViewer::setParam(param, value);
 
   if(!handled) {
-    mutexLock();
     handled = m_vehiset.setParam(param, value);
-    mutexUnLock();
   }
 
   return(handled);
@@ -180,7 +171,6 @@ bool PMV_Viewer::setParam(string param, double value)
 
 string PMV_Viewer::getStringInfo(const string& info_type, int precision)
 {
-  mutexLock();
   string result = "error";
 
   if(info_type == "left_click_info")
@@ -201,7 +191,6 @@ string PMV_Viewer::getStringInfo(const string& info_type, int precision)
     }
   }
   
-  mutexUnLock();
   //cout << "GSI type:" << info_type << " result:[" << result << "]" << endl;
   return(result);
 }
@@ -292,10 +281,8 @@ void PMV_Viewer::handleLeftMouse(int vx, int vy)
   double sx = snapToStep(mx, 1.0);
   double sy = snapToStep(my, 1.0);
 
-  mutexLock();
   m_left_click =  "x=" + doubleToString(sx,1) + ",";
   m_left_click += "y=" + doubleToString(sy,1);
-  mutexUnLock();
 
   //cout << "Left Mouse click at [" << m_left_click << "] meters." << endl;
 }
@@ -314,10 +301,8 @@ void PMV_Viewer::handleRightMouse(int vx, int vy)
   double sx = snapToStep(mx, 1.0);
   double sy = snapToStep(my, 1.0);
   
-  mutexLock();
   m_right_click =  "x=" + doubleToString(sx,1) + ",";
   m_right_click += "y=" + doubleToString(sy,1);
-  mutexUnLock();
 
   //cout << "Right Mouse click at [" << m_right_click << "] meters." << endl;
 }
@@ -329,35 +314,27 @@ void PMV_Viewer::handleRightMouse(int vx, int vy)
 
 void PMV_Viewer::setWeightedCenterView()
 {
-  mutexLock();
   bool centric_view = m_centric_view;
-  mutexUnLock();
 
   if(!centric_view)
     return;
 
   double avg_pos_x, avg_pos_y;
-  mutexLock();
   bool ok = m_vehiset.getWeightedCenter(avg_pos_x, avg_pos_y);
-  mutexUnLock();
   if(!ok)
     return;
 
   // First determine how much we're off in terms of meters
-  mutexLock();
   double delta_x = avg_pos_x - m_back_img.get_x_at_img_ctr();
   double delta_y = avg_pos_y - m_back_img.get_y_at_img_ctr();
   
   // Next determine how much in terms of pixels
   double pix_per_mtr = m_back_img.get_pix_per_mtr();
-  mutexUnLock();
 
   double x_pixels = pix_per_mtr * delta_x;
   double y_pixels = pix_per_mtr * delta_y;
   
-  mutexLock();
   m_vshift_x = -x_pixels;
   m_vshift_y = -y_pixels;
-  mutexUnLock();
 }
 

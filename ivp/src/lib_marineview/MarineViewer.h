@@ -55,8 +55,8 @@ class MarineViewer : public Fl_Gl_Window
   virtual bool setParam(std::string p, std::string v="");
   virtual bool setParam(std::string p, double v);
 
-  virtual void mutexLock() {};   
-  virtual void mutexUnLock() {}; 
+//   virtual void mutexLock() {};   
+//   virtual void mutexUnLock() {}; 
 
   bool   initGeodesy(double, double);
   bool   initGeodesy(const std::string&);

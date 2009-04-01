@@ -146,23 +146,27 @@ SET(IVP_LIBS_TO_BUILD
   lib_newmat10D
 )
 
+# As a matter of preference, each built IvP library file (.a) should be placed 
+# in its source directory.
+SET( LIBRARY_OUTPUT_PATH "" CACHE PATH "" FORCE )
+
 FOREACH(L ${IVP_LIBS_TO_BUILD} ${GUI_LIBS_TO_BUILD} )
-  # As a matter of preference, each built IvP library file (.a) should be placed 
-  # in its source directory.
-  SET( LIBRARY_OUTPUT_PATH "" CACHE PATH "" FORCE )
   ADD_SUBDIRECTORY(${L})
+  # We're actually fighting the lib_fltk-1.1.7 CMake files for control over this
+  # detail, so we have to reassert it after adding the FLTK subdirectory.
+  SET( LIBRARY_OUTPUT_PATH "" CACHE PATH "" FORCE )
 ENDFOREACH(L)
 
 #---------------------------------------------------------------------
 #  Build the Applications
 #---------------------------------------------------------------------
 
-  if (${APPLE})
-     set(LINUX_ONLY_APPS "")
-  else (${APPLE})
-     #  Doesn't build on OS X 10.5
-     SET(LINUX_ONLY_APPS "")
-  endif (${APPLE})
+if (${APPLE})
+    set(LINUX_ONLY_APPS "")
+else (${APPLE})
+    #  Doesn't build on OS X 10.5
+    SET(LINUX_ONLY_APPS "")
+endif (${APPLE})
 
 
 SET(IVP_APPS_TO_BUILD
