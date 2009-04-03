@@ -258,7 +258,6 @@ bool VPlug_GeoShapes::addPolygon(const string& poly_str)
   if(new_poly.size() == 0)
     return(false);
   addPolygon(new_poly);
-  //m_polygons.push_back(new_poly);
   return(true);
 }
 
@@ -270,8 +269,7 @@ bool VPlug_GeoShapes::addSegList(const string& segl_str)
   XYSegList new_segl = stringToSegList(segl_str);
   if(new_segl.size() == 0)
     return(false);
-  //m_seglists.push_back(new_segl);
-  addSegList(new_segl);
+   addSegList(new_segl);
   return(true);
 }
 

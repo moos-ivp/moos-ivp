@@ -198,10 +198,11 @@ int main(int argc, char *argv[])
   
   // start the MOOSPort in its own thread
   
-  // At least on OS X we can get a complete pathanme as argv[0], rather than 
-  // just a simple file name for the executable.  Since sections are looked up
-  // in the .moos file based on the simple filename, we need to strip off other
-  // pathname components.
+  // At least on OS X we can get a complete pathanme as argv[0],
+  // rather than just a simple file name for the executable.  Since
+  // sections are looked up in the .moos file based on the simple
+  // filename, we need to strip off other pathname components.
+
   vector<string> pathnameParts = parseString(argv[0], '/');
   char * appFilename = const_cast<char*>(pathnameParts.back().c_str());
   

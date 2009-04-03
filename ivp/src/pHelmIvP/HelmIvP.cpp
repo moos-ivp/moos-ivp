@@ -739,7 +739,7 @@ bool HelmIvP::OnStartUp()
 
   // Set the "ownship" parameter for all behaviors
   for(int i=0; i<m_bhv_set->getCount(); i++)
-    m_bhv_set->getBehavior(i)->setParam("us", m_ownship);
+    m_bhv_set->getBehavior(i)->IvPBehavior::setParam("us", m_ownship);
   if(m_verbose == "verbose")
     m_bhv_set->print();
   

@@ -139,6 +139,10 @@ bool BHV_Loiter::setParam(string g_param, string g_val)
     m_waypoint_engine.setNonmonotonicRadius(dval);
     return(true);
   }
+  else if(g_param == "post_suffix")  {
+    m_post_suffix = "_" + toupper(g_val);
+    return(true);
+  }
   return(false);
 }
 
@@ -312,20 +316,26 @@ void BHV_Loiter::updateInfoOut()
   int capture_hits = m_waypoint_engine.getCaptureHits();
   int curr_index   = m_waypoint_engine.getCurrIndex();
 
-  string loiter_report = "Pt:" + intToString(curr_index);
-  loiter_report += " Dist:"    + doubleToString(m_dist_to_poly,0);
-  loiter_report += " CP Hits:" + intToString(capture_hits);
-  loiter_report += " NM_Hits:" + intToString(nonmono_hits);
-  loiter_report += " AQ_MODE:" + boolToString(m_acquire_mode);
-  postMessage("LOITER_REPORT", loiter_report);
+  //string loiter_report = "Pt:" + intToString(curr_index);
+  //loiter_report += " Dist:"    + doubleToString(m_dist_to_poly,0);
+  //loiter_report += " CP Hits:" + intToString(capture_hits);
+  //loiter_report += " NM_Hits:" + intToString(nonmono_hits);
+  //loiter_report += " AQ_MODE:" + boolToString(m_acquire_mode);
+  //postMessage("LOITER_REPORT", loiter_report);
 
-  postMessage("LOITER_INDEX", curr_index);
+  string loiter_report = "index=" + intToString(curr_index);
+  loiter_report += ",capture_hits=" + intToString(capture_hits);
+  loiter_report += ",nonmono_hits=" + intToString(nonmono_hits);
+  loiter_report += ",acquire_mode=" + boolToString(m_acquire_mode);
+  postMessage("LOITER_REPORT"+m_post_suffix, loiter_report);
+
+  postMessage("LOITER_INDEX"+m_post_suffix, curr_index);
   if(m_acquire_mode)
-    postMessage("LOITER_ACQUIRE", 1);
+    postMessage("LOITER_ACQUIRE"+m_post_suffix, 1);
   else
-    postMessage("LOITER_ACQUIRE", 0);
+    postMessage("LOITER_ACQUIRE"+m_post_suffix, 0);
 
-  // We post the spec each time regarless of whether it changed.
+  // We post the spec each time regardless of whether it changed.
   // We let the helm filter out unnecessary duplicate posts.
   XYSegList seglist = m_waypoint_engine.getSegList();
   string bhv_tag = toupper(getDescriptor());
@@ -339,12 +349,13 @@ void BHV_Loiter::updateInfoOut()
     string ptmsg;
     ptmsg =  "x=" + dstringCompact(doubleToString(m_ptx,2));
     ptmsg += ",y=" + dstringCompact(doubleToString(m_pty,2));
-    ptmsg += ",label=loiter_" + m_us_name;
+    ptmsg += ",label=" + m_us_name + "'s next waypoint";
     ptmsg += ",type=waypoint";
+    ptmsg += ",source=" + m_us_name + "_" + bhv_tag;
     postMessage("VIEW_POINT", ptmsg);
   }
   
-  postIntMessage("DIST_TO_REGION", m_dist_to_poly);
+  postIntMessage("DIST_TO_REGION"+m_post_suffix, m_dist_to_poly);
 }
 
 //-----------------------------------------------------------
@@ -356,7 +367,8 @@ void BHV_Loiter::updateInfoOutNull()
 
   string null_point_spec;
   null_point_spec =  "x=0,y=0,size=0,active=false,type=waypoint,";
-  null_point_spec += "label=loiter_" + m_us_name;
+  null_point_spec += "label=" + m_us_name + "'s next waypoint";
+  null_point_spec += ",source=" + m_us_name + "_" + bhv_tag;
   postMessage("VIEW_POINT", null_point_spec);
 }
 

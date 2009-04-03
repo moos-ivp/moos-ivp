@@ -51,6 +51,7 @@ private:  // Configuration Parameters
   double       m_desired_speed;
   double       m_acquire_dist;
   bool         m_center_activate;
+  std::string  m_post_suffix;
 
 private:  // State Structures
   LoiterEngine   m_loiter_engine;
@@ -67,7 +68,7 @@ private:  // State Variables
   int          m_iterations;     // Number of calls to onRunState
 
   bool         m_center_pending; 
-  std::string  m_center_assign;  
+  std::string  m_center_assign;
 };
 #endif
 
