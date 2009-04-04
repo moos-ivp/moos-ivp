@@ -444,6 +444,9 @@ string XYSegList::get_spec(int precision) const
   if(m_label != "")
     spec += "label," + m_label + " : "; 
 
+  if(m_active == false)
+    spec += "active,false:";
+
   int vsize = vertex_x.size();
   for(int i=0; i<vsize; i++) {
     spec += dstringCompact(doubleToString(vertex_x[i],precision));

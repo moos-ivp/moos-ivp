@@ -156,7 +156,8 @@ bool BHV_Loiter::setParam(string g_param, string g_val)
 
 void BHV_Loiter::onIdleState()
 {
-  updateInfoOutNull();
+  postErasablePoint();
+  postErasablePolygon();
   if(!m_center_activate)
     return;
   m_center_pending = true;
@@ -173,7 +174,7 @@ IvPFunction *BHV_Loiter::onRunState()
 
   // Set m_osx, m_osy, m_osh
   if(!updateInfoIn()) {
-    updateInfoOutNull();
+    postErasablePoint();
     return(0);
   }
 
@@ -203,7 +204,9 @@ IvPFunction *BHV_Loiter::onRunState()
     ipf->setPWT(m_priority_wt);
   }
 
-  updateInfoOut();
+  postViewablePolygon();
+  postViewablePoint();
+  postStatusReports();
   return(ipf);
 }
 
@@ -308,20 +311,13 @@ IvPFunction *BHV_Loiter::buildIPF(const string& method)
 }
 
 //-----------------------------------------------------------
-// Procedure: updateInfoOut()
+// Procedure: postStatusReports()
 
-void BHV_Loiter::updateInfoOut()
+void BHV_Loiter::postStatusReports()
 {
   int nonmono_hits = m_waypoint_engine.getNonmonoHits();
   int capture_hits = m_waypoint_engine.getCaptureHits();
   int curr_index   = m_waypoint_engine.getCurrIndex();
-
-  //string loiter_report = "Pt:" + intToString(curr_index);
-  //loiter_report += " Dist:"    + doubleToString(m_dist_to_poly,0);
-  //loiter_report += " CP Hits:" + intToString(capture_hits);
-  //loiter_report += " NM_Hits:" + intToString(nonmono_hits);
-  //loiter_report += " AQ_MODE:" + boolToString(m_acquire_mode);
-  //postMessage("LOITER_REPORT", loiter_report);
 
   string loiter_report = "index=" + intToString(curr_index);
   loiter_report += ",capture_hits=" + intToString(capture_hits);
@@ -335,33 +331,65 @@ void BHV_Loiter::updateInfoOut()
   else
     postMessage("LOITER_ACQUIRE"+m_post_suffix, 0);
 
-  // We post the spec each time regardless of whether it changed.
-  // We let the helm filter out unnecessary duplicate posts.
+  postIntMessage("DIST_TO_REGION"+m_post_suffix, m_dist_to_poly);
+}
+
+//-----------------------------------------------------------
+// Procedure: postViewablePolygon()
+//      Note: Even if the polygon is posted on each iteration, the
+//            helm will filter out unnecessary duplicate posts.
+
+void BHV_Loiter::postViewablePolygon()
+{
   XYSegList seglist = m_waypoint_engine.getSegList();
   string bhv_tag = toupper(getDescriptor());
   bhv_tag = findReplace(bhv_tag, "(d)", "");
   bhv_tag = m_us_name + "-" + bhv_tag;
   seglist.set_label(bhv_tag);
-  string spec = seglist.get_spec();
-  postMessage("VIEW_POLYGON", spec);
-  
-  if(m_waypoint_engine.currPtChanged()) {
-    string ptmsg;
-    ptmsg =  "x=" + dstringCompact(doubleToString(m_ptx,2));
-    ptmsg += ",y=" + dstringCompact(doubleToString(m_pty,2));
-    ptmsg += ",label=" + m_us_name + "'s next waypoint";
-    ptmsg += ",type=waypoint";
-    ptmsg += ",source=" + m_us_name + "_" + bhv_tag;
-    postMessage("VIEW_POINT", ptmsg);
-  }
-  
-  postIntMessage("DIST_TO_REGION"+m_post_suffix, m_dist_to_poly);
+
+  string poly_spec = seglist.get_spec();
+  postMessage("VIEW_POLYGON", poly_spec);
 }
 
 //-----------------------------------------------------------
-// Procedure: updateInfoOutNull()
+// Procedure: postErasablePolygon()
+//      Note: Even if the polygon is posted on each iteration, the
+//            helm will filter out unnecessary duplicate posts.
 
-void BHV_Loiter::updateInfoOutNull()
+void BHV_Loiter::postErasablePolygon()
+{
+  XYSegList seglist = m_waypoint_engine.getSegList();
+  string bhv_tag = toupper(getDescriptor());
+  bhv_tag = findReplace(bhv_tag, "(d)", "");
+  bhv_tag = m_us_name + "-" + bhv_tag;
+  seglist.set_label(bhv_tag);
+  seglist.set_active(false);
+
+  string null_poly_spec = seglist.get_spec();
+  postMessage("VIEW_POLYGON", null_poly_spec);
+}
+
+//-----------------------------------------------------------
+// Procedure: postViewablePoint()
+
+void BHV_Loiter::postViewablePoint()
+{
+  string bhv_tag = toupper(getDescriptor());
+
+  string point_spec;
+  point_spec =  "x=" + dstringCompact(doubleToString(m_ptx,2));
+  point_spec += ",y=" + dstringCompact(doubleToString(m_pty,2));
+  point_spec += ",label=" + m_us_name + "'s next waypoint";
+  point_spec += ",type=waypoint";
+  point_spec += ",source=" + m_us_name + "_" + bhv_tag;
+  postMessage("VIEW_POINT", point_spec);
+}
+
+
+//-----------------------------------------------------------
+// Procedure: postErasablePoint()
+
+void BHV_Loiter::postErasablePoint()
 {
   string bhv_tag = toupper(getDescriptor());
 

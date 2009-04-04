@@ -41,6 +41,7 @@ protected:
   bool         setNextWaypoint();
   IvPFunction* buildOF(std::string);
   void         updateInfoOut(bool post=true);
+  void         updateInfoOutNull();
 
 protected: 
   WaypointEngine m_waypoint_engine;

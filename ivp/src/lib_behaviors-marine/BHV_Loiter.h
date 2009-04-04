@@ -43,8 +43,12 @@ protected:
   bool         updateInfoIn();
   void         updateCenter();
   IvPFunction* buildIPF(const std::string&);
-  void         updateInfoOut();
-  void         updateInfoOutNull();
+  void         postStatusReports();
+  void         postViewablePolygon();
+  void         postErasablePolygon();
+  void         postViewablePoint();
+  void         postErasablePoint();
+    
 
 private:  // Configuration Parameters
   bool         m_clockwise;

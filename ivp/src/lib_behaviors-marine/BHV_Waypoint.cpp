@@ -322,7 +322,7 @@ IvPFunction *BHV_Waypoint::buildOF(string method)
 //-----------------------------------------------------------
 // Procedure: updateInfoOut()
 
-void BHV_Waypoint::updateInfoOut(bool post)
+void BHV_Waypoint::updateInfoOut(bool post_viewable_waypoint)
 {
   if(m_osv > 0) {
     int    current_waypt = m_waypoint_engine.getCurrIndex();
@@ -352,7 +352,7 @@ void BHV_Waypoint::updateInfoOut(bool post)
   ptmsg = "label=" + m_us_name + "'s next waypoint";
   ptmsg += ",type=waypoint";
   ptmsg += ",source=" + m_us_name;
-  if(post) {
+  if(post_viewable_waypoint) {
     ptmsg += ",x=" + dstringCompact(doubleToString(m_ptx,1));
     ptmsg += ",y=" + dstringCompact(doubleToString(m_pty,1));
     ptmsg += ",size=1";

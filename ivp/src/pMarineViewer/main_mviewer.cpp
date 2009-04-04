@@ -203,8 +203,12 @@ int main(int argc, char *argv[])
   // sections are looked up in the .moos file based on the simple
   // filename, we need to strip off other pathname components.
 
+  cout << "argv[0]:" << argv[0] << endl;
+
   vector<string> pathnameParts = parseString(argv[0], '/');
   char * appFilename = const_cast<char*>(pathnameParts.back().c_str());
+
+  cout << "appFilename:" << appFilename << endl;
   
   ThreadParams params = {&g_thePort, appFilename};
   g_portThreadID = spawn_thread(&params);	

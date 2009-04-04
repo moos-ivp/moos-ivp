@@ -1031,8 +1031,9 @@ void MarineViewer::drawPolygons()
   
   for(int i=0; i<vsize; i++) {
     XYPolygon poly = m_geoshapes.getPolygon(i);
-    drawPolygon(poly, false, false, line_width, vertex_size, 
-		edge_c, fill_c, vert_c, labl_c);
+    if(poly.active())
+      drawPolygon(poly, false, false, line_width, vertex_size, 
+		  edge_c, fill_c, vert_c, labl_c);
   }
 }
 

@@ -178,6 +178,7 @@ XYPolygon stringPairsToEllipsePoly(string str)
   bool degrees_set = false;  // Either degrees OR radians must
   bool radians_set = false;  // be specified.
   bool pts_set     = false;
+  bool active      = true;
 
   double xpos, ypos, zval, major, minor, radians, degrees, snap=0;
   string label;
@@ -242,6 +243,8 @@ XYPolygon stringPairsToEllipsePoly(string str)
     else if(param == "label") {
       label = value;
     }
+    else if(param == "active")
+      active = (tolower(value) == "true");
   }
 
   if(!xpos_set || !ypos_set || !major_set || !minor_set || !pts_set)
@@ -251,6 +254,7 @@ XYPolygon stringPairsToEllipsePoly(string str)
     return(null_poly);
 
   XYPolygon new_poly;
+  new_poly.set_active(active);
 
   double rads = radians;
   if(!radians_set && degrees_set)
@@ -307,7 +311,8 @@ XYPolygon stringPairsToPieWedgePoly(string str)
   bool lang_set  = false;
   bool rang_set  = false;
   bool range_set = false;
-
+  bool active    = true;
+  
   double xpos, ypos, lang, rang, range, snap=0;
   string label;
   int    pts=0;
@@ -355,6 +360,8 @@ XYPolygon stringPairsToPieWedgePoly(string str)
     else if(param == "label") {
       label = value;
     }
+    else if(param == "active")
+      active = (tolower(value) == "true");
   }
 
   if(!xpos_set || !ypos_set || !lang_set || !rang_set || !range_set)
@@ -371,6 +378,7 @@ XYPolygon stringPairsToPieWedgePoly(string str)
 
   XYPolygon new_poly;
   new_poly.add_vertex(xpos, ypos);
+  new_poly.set_active(active);
 
   double ptx, pty;
   projectPoint(lang, range, xpos, ypos, ptx, pty);
@@ -423,6 +431,7 @@ XYPolygon stringPairsToRangeWedgePoly(string str)
   bool lang_set  = false;
   bool rang_set  = false;
   bool range_set = false;
+  bool active    = true;
 
   double range_min = 0;
   double xpos, ypos, lang, rang, range_max, snap=0;
@@ -474,6 +483,8 @@ XYPolygon stringPairsToRangeWedgePoly(string str)
     else if(param == "label") {
       label = value;
     }
+    else if(param == "active")
+      active = (tolower(value) == "true");
   }
 
   if(!xpos_set || !ypos_set || !lang_set || !rang_set || !range_set)
@@ -493,6 +504,7 @@ XYPolygon stringPairsToRangeWedgePoly(string str)
 
 
   XYPolygon new_poly;
+  new_poly.set_active(active);
 
   double ptx, pty, project_angle;
 
@@ -558,6 +570,7 @@ XYPolygon stringPairsToPylonPoly(string str)
   bool zval_set = false;
   bool axis_pad_set = false;
   bool perp_pad_set = false;  // Either degrees OR radians must
+  bool active  = true;
 
   double x1, y1, x2, y2, zval, axis_pad, perp_pad, snap=0;
   string label;
@@ -608,6 +621,8 @@ XYPolygon stringPairsToPylonPoly(string str)
     else if(param == "label") {
       label = value;
     }
+    else if(param == "active")
+      active = (tolower(value) == "true");
   }
 
   if(!x1_set || !y1_set || !x2_set || !y2_set)
@@ -617,6 +632,7 @@ XYPolygon stringPairsToPylonPoly(string str)
     return(null_poly);
 
   XYPolygon new_poly;
+  new_poly.set_active(active);
 
   double rel_ang = relAng(x1,y1,x2,y2);
   
@@ -682,6 +698,7 @@ XYPolygon stringPairsToRadialPoly(string str)
   double xpos, ypos, zval, radius, snap=0;
   string label;
   int    pts;
+  bool   active = true;
   
   for(int i=0; i<vsize; i++) {
     vector<string> svector = parseString(mvector[i], '=');
@@ -727,12 +744,15 @@ XYPolygon stringPairsToRadialPoly(string str)
     else if(param == "label") {
       label = value;
     }
+    else if(param == "active")
+      active = (tolower(value) == "true");
   }
 
   if(!xpos_set || !ypos_set || !radius_set || !pts_set)
     return(null_poly);
   
   XYPolygon new_poly;
+  new_poly.set_active(active);
 
   double delta = 360.0 / pts;
   for(double deg=(delta/2); deg<360; deg+=delta) {
@@ -851,11 +871,13 @@ XYPolygon stringShortToPointsPoly(string str)
     
     if((zstr != "") && (!isNumber(zstr)))
       return(null_poly);
-
+    
     if((!isNumber(xstr)) || (!isNumber(ystr))) {
       xstr = tolower(xstr);
       if(xstr == "label") 
 	new_poly.set_label(ystr);
+      else if(xstr == "active") 
+	new_poly.set_active(tolower(ystr)=="true");
       else
 	return(null_poly);
     }
@@ -940,6 +962,8 @@ XYSegList stringShortToPointsSegList(string str)
       xstr = tolower(xstr);
       if(xstr == "label") 
 	new_seglist.set_label(ystr);
+      else if(xstr == "active") 
+	new_seglist.set_active(tolower(ystr)=="true");
       else
 	return(null_seglist);
     }
