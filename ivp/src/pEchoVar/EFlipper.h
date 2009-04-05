@@ -37,15 +37,18 @@ public:
   bool valid();
   void print();
   
-  std::string  getKey() {return(m_key);};
+  std::string  getKey()       {return(m_key);};
+  std::string  getSourceVar() {return(m_source_variable);};
+  std::string  getDestVar()   {return(m_source_variable);};
 
+  std::string  flip(std::string);
 
 protected:
-  std::string    m_key;
-  std::string    m_source_variable;
-  std::string    m_dest_variable; 
-  std::string    m_source_separator;
-  std::string    m_dest_separator;
+  std::string  m_key;
+  std::string  m_source_variable;
+  std::string  m_dest_variable; 
+  std::string  m_source_separator;
+  std::string  m_dest_separator;
 
   // The "component" mapping, e.g. "x" -> "xpos"
   std::map<std::string, std::string> m_cmap;
@@ -53,15 +56,6 @@ protected:
   // The "filter" mapping, e.g. "key" -> "foobar"
   std::map<std::string, std::string> m_fmap;
 };
-
 #endif
-
-
-
-
-
-
-
-
 
 

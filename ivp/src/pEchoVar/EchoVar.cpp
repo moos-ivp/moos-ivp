@@ -88,14 +88,17 @@ bool EchoVar::OnStartUp()
   list<string> sParams;
   if(m_MissionReader.GetConfiguration(GetAppName(), sParams)) {
     
-    list<string>::iterator p;
-    for(p = sParams.begin();p!=sParams.end();p++) {
+    list<string>::reverse_iterator p;
+    for(p=sParams.rbegin(); p!=sParams.rend(); p++) {
       string original_line = *p;
       string sLine  = stripBlankEnds(*p);
       string sKey   = stripBlankEnds(MOOSChomp(sLine, "="));
 
+      cout << "sKey: [" << sKey << "]" << endl;
+      cout << "  sLine: [" << sLine << "]" << endl;
+
       sKey = tolower(sKey);
-      if(strContains(sKey, "flip")) {
+      if(!strncmp(sKey.c_str(), "flip", 4)) {
 	bool ok = handleFlipEntry(sKey, sLine);
 	if(!ok) {
 	  cout << "Probem with " << original_line << endl;
@@ -125,6 +128,12 @@ bool EchoVar::OnStartUp()
     MOOSTrace("A cycle was detected - aborting the startup.\n");
     return(false);
   }
+
+  unsigned int i, vsize = m_eflippers.size();
+  for(i=0; i<vsize; i++) {
+    m_eflippers[i].print();
+  }
+
 
   registerVariables();
   return(true);
@@ -237,8 +246,10 @@ bool EchoVar::handleFlipEntry(string sKey, string sLine)
     return(false);
   string tag = stripBlankEnds(svector[0]);
   string key = stripBlankEnds(svector[1]);
-  if(tolower(tag) != "flip")
+  if(tolower(tag) != "flip") {
+    cout << "probhere" << endl;
     return(false);
+  }
 
   // Determine the index of the given flipper reference
   int index = -1;
@@ -253,7 +264,7 @@ bool EchoVar::handleFlipEntry(string sKey, string sLine)
     EFlipper new_flipper;
     new_flipper.setParam("key", key);
     m_eflippers.push_back(new_flipper);
-    return(true);
+    index = esize;
   }
     
   if(!strncmp(sLine.c_str(), "source_variable", 15)) {
@@ -280,11 +291,30 @@ bool EchoVar::handleFlipEntry(string sKey, string sLine)
     bool ok = m_eflippers[index].setParam("dest_separator", right);
     return(ok);
   }
+  if(!strncmp(sLine.c_str(), "filter", 6)) {
+    string left = biteString(sLine, '=');
+    string right = stripBlankEnds(sLine);
+    bool ok = m_eflippers[index].setParam("filter", right);
+    return(ok);
+  }
+  if(!strncmp(sLine.c_str(), "component", 9)) {
+    string left = biteString(sLine, '=');
+    string right = stripBlankEnds(sLine);
+    bool ok = m_eflippers[index].setParam("component", right);
+    return(ok);
+  }
+  if(strContains(sLine, "->")) {
+    cout << "Handling:" << sLine << endl;
+    bool ok = m_eflippers[index].setParam("component", sLine);
+    return(ok);
+  }
+  if(strContains(sLine, "==")) {
+    bool ok = m_eflippers[index].setParam("filter", sLine);
+    cout << "ok" << ok << endl;
+    return(ok);
+  }
 
-
-
-
-  return(true);
+  return(false);
 }
 
 

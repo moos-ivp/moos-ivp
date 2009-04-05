@@ -57,9 +57,10 @@ bool EFlipper::setParam(string param, string value)
     vector<string> svector = parseString(value, "->");
     unsigned int vsize = svector.size();
     if(vsize == 2) {
-      string left = stripBlankEnds(svector[0]);
+      string left  = stripBlankEnds(svector[0]);
       string right = stripBlankEnds(svector[1]);
       m_cmap[left] = right;
+      cout << "Adding: " << left << "," << right << endl;
       return(true);
     }
     else
@@ -78,6 +79,28 @@ bool EFlipper::setParam(string param, string value)
       return(false);
   }
   return(true);
+}
+
+//----------------------------------------------------------------
+// Procedure: flip
+
+string EFlipper::flip(string input)
+{
+  string response;
+
+  vector<string> svector = parseString(input, m_source_separator);
+  unsigned int i, vsize = svector.size();
+  for(i=0; i<vsize; i++) {
+    string left = stripBlankEnds(biteString(svector[i], '='));
+    string right = stripBlankEnds(right);
+    string match = m_cmap[left];
+    if(match != "") {
+      if(response != "") 
+	response += m_dest_separator;
+      response += (match + "=" + right);
+    }
+  }
+  return(response);
 }
 
 //----------------------------------------------------------------
@@ -115,7 +138,7 @@ void EFlipper::print()
   cout << "  SourceSep: " << m_source_separator << endl;
   cout << "  DestSep:   " << m_dest_separator << endl;
 
-  cout << "  Components: " << endl;
+  cout << "  Components: " << m_cmap.size() << endl;
   map<string,string>::iterator p;
   for(p=m_cmap.begin(); p!=m_cmap.end(); p++) {
     string left  = p->first;
