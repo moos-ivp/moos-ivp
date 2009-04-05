@@ -35,16 +35,23 @@ public:
 
   bool setParam(std::string param, std::string value);
   bool valid();
+  void print();
   
+  std::string  getKey() {return(m_key);};
+
+
 protected:
-  std::string    m_id;
+  std::string    m_key;
   std::string    m_source_variable;
   std::string    m_dest_variable; 
   std::string    m_source_separator;
   std::string    m_dest_separator;
 
-  // The component mapping, e.g. "x" -> "xpos"
+  // The "component" mapping, e.g. "x" -> "xpos"
   std::map<std::string, std::string> m_cmap;
+
+  // The "filter" mapping, e.g. "key" -> "foobar"
+  std::map<std::string, std::string> m_fmap;
 };
 
 #endif

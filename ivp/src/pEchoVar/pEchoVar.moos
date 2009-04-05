@@ -16,6 +16,7 @@ ProcessConfig = pEchoVar
   FLIP:1    = dest_variable    = UP_LOITERA
   FLIP:1    = source_separator = ,
   FLIP:1    = dest_separator   = #
+  FLIP:1    = type == redeploy
   FLIP:1    = x -> xcenter_assign
   FLIP:1    = y -> xcenter_assign
 

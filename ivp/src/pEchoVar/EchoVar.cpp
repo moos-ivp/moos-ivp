@@ -90,11 +90,19 @@ bool EchoVar::OnStartUp()
     
     list<string>::iterator p;
     for(p = sParams.begin();p!=sParams.end();p++) {
+      string original_line = *p;
       string sLine  = stripBlankEnds(*p);
       string sKey   = stripBlankEnds(MOOSChomp(sLine, "="));
 
       sKey = tolower(sKey);
-      if(sKey == "echo") {
+      if(strContains(sKey, "flip")) {
+	bool ok = handleFlipEntry(sKey, sLine);
+	if(!ok) {
+	  cout << "Probem with " << original_line << endl;
+	  return(false);
+	}
+      }
+      else if(sKey == "echo") {
 	sLine = findReplace(sLine, "->", ">");
 	vector<string> svector = parseString(sLine, '>');
 	if(svector.size() != 2)
@@ -102,8 +110,10 @@ bool EchoVar::OnStartUp()
 	string sLeft  = stripBlankEnds(svector[0]);
 	string sRight = stripBlankEnds(svector[1]);
 	bool ok = addMapping(sLeft, sRight);
-	if(!ok) 
+	if(!ok) { 
+	  cout << "Probem with " << original_line << endl;
 	  return(false);
+	}
       }
     }
   }
@@ -174,7 +184,6 @@ bool EchoVar::noCycles()
 
   vector<string> key_vector;
   vector<string> new_vector;
-
   for(i=0; i<vsize; i++) {
     key_vector.clear();
     
@@ -216,4 +225,66 @@ vector<string> EchoVar::expand(vector<string> key_vector)
     return(expand(key_vector));
 
 }
+
+//-----------------------------------------------------------------
+// Procedure: handleFlipEntry
+
+bool EchoVar::handleFlipEntry(string sKey, string sLine)
+{
+  vector<string> svector = parseString(sKey, ':');
+  unsigned int vsize = svector.size();
+  if(vsize != 2) 
+    return(false);
+  string tag = stripBlankEnds(svector[0]);
+  string key = stripBlankEnds(svector[1]);
+  if(tolower(tag) != "flip")
+    return(false);
+
+  // Determine the index of the given flipper reference
+  int index = -1;
+  unsigned int i, esize = m_eflippers.size();
+  for(i=0; i<esize; i++) {
+    if(key == m_eflippers[i].getKey())
+      index = i;
+  }
+  
+  // If pre-existing EFlipper not found, create a new one
+  if(index == -1) {
+    EFlipper new_flipper;
+    new_flipper.setParam("key", key);
+    m_eflippers.push_back(new_flipper);
+    return(true);
+  }
+    
+  if(!strncmp(sLine.c_str(), "source_variable", 15)) {
+    string left = biteString(sLine, '=');
+    string right = stripBlankEnds(sLine);
+    bool ok = m_eflippers[index].setParam("source_variable", right);
+    return(ok);
+  }
+  if(!strncmp(sLine.c_str(), "dest_variable", 13)) {
+    string left = biteString(sLine, '=');
+    string right = stripBlankEnds(sLine);
+    bool ok = m_eflippers[index].setParam("dest_variable", right);
+    return(ok);
+  }
+  if(!strncmp(sLine.c_str(), "source_separator", 16)) {
+    string left = biteString(sLine, '=');
+    string right = stripBlankEnds(sLine);
+    bool ok = m_eflippers[index].setParam("source_separator", right);
+    return(ok);
+  }
+  if(!strncmp(sLine.c_str(), "dest_separator", 14)) {
+    string left = biteString(sLine, '=');
+    string right = stripBlankEnds(sLine);
+    bool ok = m_eflippers[index].setParam("dest_separator", right);
+    return(ok);
+  }
+
+
+
+
+  return(true);
+}
+
 

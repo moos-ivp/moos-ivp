@@ -26,6 +26,7 @@
 #include <vector>
 #include <string>
 #include "MOOSLib.h"
+#include "EFlipper.h"
 
 class EchoVar : public CMOOSApp
 {
@@ -42,6 +43,7 @@ public:
 protected:
   bool addMapping(std::string, std::string);
   bool noCycles();
+  bool handleFlipEntry(std::string key, std::string line);
   
   std::vector<std::string> expand(std::vector<std::string> v);
 
@@ -49,6 +51,8 @@ protected:
   std::vector<std::string>  m_var_source;
   std::vector<std::string>  m_var_target;
   std::vector<std::string>  m_unique_sources;
+
+  std::vector<EFlipper>     m_eflippers;
 };
 
 #endif
