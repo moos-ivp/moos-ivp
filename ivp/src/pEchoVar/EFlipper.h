@@ -39,7 +39,7 @@ public:
   
   std::string  getKey()       {return(m_key);};
   std::string  getSourceVar() {return(m_source_variable);};
-  std::string  getDestVar()   {return(m_source_variable);};
+  std::string  getDestVar()   {return(m_dest_variable);};
 
   std::string  flip(std::string);
 

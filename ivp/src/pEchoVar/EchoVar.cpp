@@ -31,8 +31,8 @@ using namespace std;
 
 bool EchoVar::OnNewMail(MOOSMSG_LIST &NewMail)
 {
-  int i;
-  int vsize = m_var_source.size();
+  unsigned int i, vsize = m_var_source.size();
+  unsigned int j, fsize = m_eflippers.size();
 
   MOOSMSG_LIST::reverse_iterator p;
   for(p = NewMail.rbegin(); p != NewMail.rend(); p++) {
@@ -52,6 +52,15 @@ bool EchoVar::OnNewMail(MOOSMSG_LIST &NewMail)
 	  m_Comms.Notify(new_key, sdata);
       }
     }
+
+    for(j=0; j<fsize; j++) {
+      if(key == m_eflippers[j].getSourceVar()) {
+	string flip_result = m_eflippers[j].flip(sdata);
+	if(flip_result != "")
+	  m_Comms.Notify(m_eflippers[j].getDestVar(), flip_result);
+      }
+    }
+
   }
   return(true);
 }
@@ -134,7 +143,6 @@ bool EchoVar::OnStartUp()
     m_eflippers[i].print();
   }
 
-
   registerVariables();
   return(true);
 }
@@ -143,9 +151,12 @@ bool EchoVar::OnStartUp()
 // Procedure: registerVariables()
 
 void EchoVar::registerVariables()
-{
+{  
   for(unsigned int i=0; i<m_unique_sources.size(); i++)
     m_Comms.Register(m_unique_sources[i], 0);
+  
+  for(unsigned int j=0; j<m_eflippers.size(); j++)
+    m_Comms.Register(m_eflippers[j].getSourceVar(), 0);
 }
 
 //-----------------------------------------------------------------

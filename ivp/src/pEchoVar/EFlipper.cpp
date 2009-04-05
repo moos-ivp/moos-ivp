@@ -87,20 +87,28 @@ bool EFlipper::setParam(string param, string value)
 string EFlipper::flip(string input)
 {
   string response;
+  bool   filtered = false;
 
   vector<string> svector = parseString(input, m_source_separator);
   unsigned int i, vsize = svector.size();
   for(i=0; i<vsize; i++) {
     string left = stripBlankEnds(biteString(svector[i], '='));
-    string right = stripBlankEnds(right);
-    string match = m_cmap[left];
-    if(match != "") {
+    string right = stripBlankEnds(svector[i]);
+    string cmatch = m_cmap[left];
+    if(cmatch != "") {
       if(response != "") 
 	response += m_dest_separator;
-      response += (match + "=" + right);
+      response += (cmatch + "=" + right);
     }
+    string fmatch = m_fmap[left];
+    if((fmatch != "") && (fmatch != right))
+      filtered = true;
   }
-  return(response);
+
+  if(!filtered)
+    return(response);
+  else
+    return("");
 }
 
 //----------------------------------------------------------------
