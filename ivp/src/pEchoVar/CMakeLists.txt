@@ -5,6 +5,7 @@
 
 SET(SRC
    EchoVar.cpp  
+   EFlipper.cpp
    mainEchoVar.cpp
 )
 
