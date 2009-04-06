@@ -56,7 +56,7 @@ XMS::XMS(string server_host, long int server_port)
   m_db_start_time     = 0;
   
   m_filter            = "";
-  m_history_length    = 40;
+  m_history_length    = 20;
   m_history_mode      = false;
   m_report_histvar    = true;
   
@@ -725,7 +725,7 @@ void XMS::printHistoryReport()
   else
     printf(" (T) ");
 
-  printf("VarValue %s\n", mode_str.c_str());
+  printf(" VarValue %s\n", mode_str.c_str());
   
   if(m_report_histvar)
     printf("  %-22s", "----------------");
