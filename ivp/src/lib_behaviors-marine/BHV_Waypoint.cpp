@@ -169,7 +169,7 @@ bool BHV_Waypoint::setParam(string param, string val)
 
 void BHV_Waypoint::onIdleState() 
 {
-  //postErasablePoint();
+  postErasablePoint();
 }
 
 
@@ -366,9 +366,10 @@ void BHV_Waypoint::postViewablePoint()
   // Recall that for a point to be drawn and erased, it must match
   // in the (1) label (2) type (3) and source.
 
+  string source_tag = (m_us_name + tolower(getDescriptor()));
   string ptmsg;
   ptmsg = "label=" + m_us_name + "'s next waypoint";
-  ptmsg += ",type=waypoint, source=" + m_us_name;
+  ptmsg += ",type=waypoint, source=" + source_tag;
   ptmsg += ",x=" + dstringCompact(doubleToString(m_ptx,1));
   ptmsg += ",y=" + dstringCompact(doubleToString(m_pty,1));
   ptmsg += ",size=1";
@@ -384,9 +385,10 @@ void BHV_Waypoint::postErasablePoint()
   // in the (1) label (2) type (3) and source.
   // For a point to be "ignored" it must set active=false.
 
+  string source_tag = (m_us_name + tolower(getDescriptor()));
   string ptmsg;
   ptmsg = "label=" + m_us_name + "'s next waypoint";
-  ptmsg += ",type=waypoint, source=" + m_us_name;
+  ptmsg += ",type=waypoint, source=" + source_tag;
   ptmsg += ",x=0, y=0, z=0, active=false, size=0";
   postMessage("VIEW_POINT", ptmsg);
 }
