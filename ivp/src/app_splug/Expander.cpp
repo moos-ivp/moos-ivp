@@ -80,7 +80,8 @@ bool Expander::expand()
   
   if(!ok) {
     cout << "Aborted: The file " << infile; 
-    cout << "contains dubious entry on line " << bad_line << endl;
+    cout << "contains dubious entry on line " << bad_line << ":" << endl;
+    cout << fvector[bad_line-1] << endl;
   }
 
   return(true);
@@ -209,7 +210,7 @@ void Expander::addNewLine(string newline)
   string res = containsMacro(newline);
 
   if(res != "") {
-    cout << "Warning: The following line may contain an undefined macro:" << endl;
+      cout << "Warning: The following line may contain an undefined macro::" << endl;
     cout << "> " << res << endl;
   }
   

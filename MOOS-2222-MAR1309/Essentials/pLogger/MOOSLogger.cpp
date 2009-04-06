@@ -493,7 +493,7 @@ std::string CMOOSLogger::MakeLogName(string sStem)
     struct tm *Now;
     time_t aclock;
     time( &aclock );
-    Now = localtime( &aclock );
+    Now = gmtime( &aclock );
 
     std::string  sTmp;
 

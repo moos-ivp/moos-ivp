@@ -767,11 +767,9 @@ string MOOSGetTimeStampString()
     struct tm *Now;
     time_t aclock;
     time( &aclock );
-    Now = localtime( &aclock );
+    Now = gmtime( &aclock );
 
     char sTmp[1000];
-
-    // Print local time as a string
 
     //14_5_1993_____9_30
     sprintf(sTmp, "_%d_%d_%d_____%.2d_%.2d",

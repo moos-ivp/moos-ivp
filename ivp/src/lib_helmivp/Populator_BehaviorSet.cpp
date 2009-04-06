@@ -60,6 +60,8 @@
 #include "BHV_Hysteresis.h"
 #include "BHV_Attractor.h"
 #include "BHV_RubberBand.h"
+// Mikes new collision fix
+#include "BHV_HeadingBias.h"
 
 using namespace std;
 
@@ -342,7 +344,7 @@ IvPBehavior* Populator_BehaviorSet::initializeBehavior(string bhv_name)
     bhv = new BHV_ConstantSpeed(m_domain);
   else if(bhv_name == "BHV_Trail")      
     bhv = new BHV_Trail(m_domain);
-  if(bhv_name == "BHV_ConstantDepth")      
+  else if(bhv_name == "BHV_ConstantDepth")      
     bhv = new BHV_ConstantDepth(m_domain);
   else if(bhv_name == "BHV_ConstantHeading")      
     bhv = new BHV_ConstantHeading(m_domain);
@@ -354,11 +356,11 @@ IvPBehavior* Populator_BehaviorSet::initializeBehavior(string bhv_name)
     bhv = new BHV_StationKeep(m_domain);
   else if(bhv_name == "BHV_RStationKeep")     
     bhv = new BHV_RStationKeep(m_domain);
-  if(bhv_name == "BHV_Timer")     
+  else if(bhv_name == "BHV_Timer")     
     bhv = new BHV_Timer(m_domain);
-  if(bhv_name == "BHV_HSLine")     
+  else if(bhv_name == "BHV_HSLine")     
     bhv = new BHV_HSLine(m_domain);
-  if(bhv_name == "BHV_HeadingChange")     
+  else if(bhv_name == "BHV_HeadingChange")     
     bhv = new BHV_HeadingChange(m_domain);
   else if(bhv_name == "BHV_Shadow")     
     bhv = new BHV_Shadow(m_domain);
@@ -382,6 +384,8 @@ IvPBehavior* Populator_BehaviorSet::initializeBehavior(string bhv_name)
     bhv = new BHV_Attractor(m_domain);
   else if(bhv_name == "BHV_RubberBand")      
     bhv = new BHV_RubberBand(m_domain);
+  else if(bhv_name == "BHV_HeadingBias")     
+    bhv = new BHV_HeadingBias(m_domain);
 
   return(bhv);
 }

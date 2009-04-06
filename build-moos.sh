@@ -47,9 +47,9 @@ cmake                                           \
    -DBUILD_NAVIGATION=OFF                       \
    -DBUILD_HELM=OFF                             \
    -DBUILD_NEWMAT=OFF                           \
-   -DBUILD_GRAPHICAL_TOOLS=OFF                  \
-   -DBUILD_MATLAB_TOOLS=OFF                     \
-   -DMATLAB_DIR=/usr/local/matlab-2007a         \
+   -DBUILD_GRAPHICAL_TOOLS=ON                  \
+   -DBUILD_MATLAB_TOOLS=ON                     \
+   -DMATLAB_DIR=/usr/local/pkg/matlab/matlab-2007b         \
    -DBUILD_LAND_INSTRUMENTS=OFF                 \
    -DBUILD_OCEAN_INSTRUMENTS=OFF                \
    -DBUILD_UMVS=ON                              \

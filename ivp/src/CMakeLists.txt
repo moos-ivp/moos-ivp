@@ -1,6 +1,12 @@
 # CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 PROJECT(IVP)
 
+CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
+if(COMMAND cmake_policy)
+  cmake_policy(SET CMP0003 OLD)
+  cmake_policy(SET CMP0005 OLD)
+endif(COMMAND cmake_policy)
+
 # Force -fPIC because gcc complains when we don't use it with x86_64 code.
 # Note sure why: -fPIC should only be needed for shared objects, and
 # AFAIK, CMake gets that right when building shared objects. -CJC
