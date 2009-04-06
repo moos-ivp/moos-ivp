@@ -642,6 +642,24 @@ bool strContains(const string& str, const char c)
 }
     
 //----------------------------------------------------------------
+// Procedure: strContainsWhite
+//      Note: Returns true if the given string contains either a 
+//            blank or tab character.
+
+bool strContainsWhite(const string& str)
+{
+  string::size_type posn = str.find_first_of(' ', 0);
+  if(posn != string::npos)
+    return(true);
+  
+  posn = str.find_first_of('\t', 0);
+  if(posn != string::npos)
+    return(true);
+
+  return(false);
+}
+
+//----------------------------------------------------------------
 // Procedure: packageToString
 //      Note: Added Jan 18 07 
 
