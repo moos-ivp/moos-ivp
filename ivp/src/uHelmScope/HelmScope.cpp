@@ -62,27 +62,27 @@ HelmScope::HelmScope()
   // config block unless overridden from the command line
   m_ignore_filevars    = false;
 
-  m_update_pending     = true;
-  m_modeset_pending    = false;
-  m_helpmsg_pending    = false;
-  m_moosapp_iter       = 0;
-  m_iteration_helm     = -1;
-  m_iter_last_post     = -1;
-  m_iter_next_post     = -1;
+  m_update_pending     = true; 
+  m_modeset_pending    = false; 
+  m_helpmsg_pending    = false; 
+  m_moosapp_iter       = 0; 
+  m_iteration_helm     = -1; 
+  m_iter_last_post     = -1; 
+  m_iter_next_post     = -1; 
 
   // A history size of 0 indicates unlimited history kept
-  m_history_size_max   = 2000;
-  m_history_last_cut   = 0;
+  m_history_size_max   = 2000; 
+  m_history_last_cut   = 0; 
   
-  m_db_uptime          = 0;
-  m_max_time_loop      = 0;
-  m_max_time_create    = 0;
-  m_max_time_solve     = 0;
+  m_db_uptime          = 0; 
+  m_max_time_loop      = 0; 
+  m_max_time_create    = 0; 
+  m_max_time_solve     = 0; 
 
-  m_last_iter_recd     = -1;
-  m_last_iter_time     = 0;
-  m_interval_samples_a = 5;
-  m_interval_samples_b = 100;
+  m_last_iter_recd     = -1; 
+  m_last_iter_time     = 0; 
+  m_interval_samples_a = 5; 
+  m_interval_samples_b = 100; 
 }
 
 //------------------------------------------------------------
@@ -92,42 +92,42 @@ bool HelmScope::OnNewMail(MOOSMSG_LIST &NewMail)
 {    
   // First scan the mail for the DB_UPTIME message to get an 
   // up-to-date value of DB uptime *before* handling other vars
-  MOOSMSG_LIST::reverse_iterator p;
-  for(p = NewMail.rbegin(); p != NewMail.rend(); p++) {
+  MOOSMSG_LIST::iterator p;
+  for(p=NewMail.begin(); p!=NewMail.end(); p++) {
     CMOOSMsg &msg = *p;
     if(msg.m_sKey == "DB_UPTIME")
       m_db_uptime = msg.m_dfVal;
   }
   
-  for(p = NewMail.rbegin(); p != NewMail.rend(); p++) {
-    CMOOSMsg &msg = *p;
-    if(msg.m_sKey == "IVPHELM_DOMAIN")
-      handleNewIvPDomain(msg.m_sVal);
-    if(msg.m_sKey == "IVPHELM_SUMMARY")
-      handleNewHelmSummary(msg.m_sVal);
-    if(msg.m_sKey == "IVPHELM_MODESET")
-      handleNewHelmModeSet(msg.m_sVal);
-    else if(msg.m_sKey == "IVPHELM_POSTINGS")
-      handleNewHelmPostings(msg.m_sVal);
-    else if(msg.m_sKey == "IVPHELM_STATEVARS")
-      handleNewStateVars(msg.m_sVal);
-    else if(msg.m_sKey == "IVPHELM_ENGAGED") {
-      m_helm_engaged = (msg.m_sVal == "ENGAGED");
-      m_update_pending = true;
-    }
+  for(p = NewMail.begin(); p!=NewMail.end(); p++) { 
+    CMOOSMsg &msg = *p; 
+    if(msg.m_sKey == "IVPHELM_DOMAIN") 
+      handleNewIvPDomain(msg.m_sVal); 
+    if(msg.m_sKey == "IVPHELM_SUMMARY") 
+      handleNewHelmSummary(msg.m_sVal); 
+    if(msg.m_sKey == "IVPHELM_MODESET") 
+      handleNewHelmModeSet(msg.m_sVal); 
+    else if(msg.m_sKey == "IVPHELM_POSTINGS") 
+      handleNewHelmPostings(msg.m_sVal); 
+    else if(msg.m_sKey == "IVPHELM_STATEVARS") 
+      handleNewStateVars(msg.m_sVal); 
+    else if(msg.m_sKey == "IVPHELM_ENGAGED") { 
+      m_helm_engaged = (msg.m_sVal == "ENGAGED"); 
+      m_update_pending = true; 
+    } 
   }
 
   // Update the values of all variables we have registered for.  
   // All variables "values" are stored as strings. We let MOOS
   // tell us the type of the variable, and we keep track of the
   // type locally, just so we can put quotes around string values.
-  for(p = NewMail.rbegin(); p != NewMail.rend(); p++) {
-    CMOOSMsg &msg = *p;
-    updateVariable(msg);
-  }
+  for(p=NewMail.begin(); p!=NewMail.end(); p++) { 
+    CMOOSMsg &msg = *p; 
+    updateVariable(msg); 
+  } 
 
-  handleNewIterXMS();
-  return(true);
+  handleNewIterXMS(); 
+  return(true); 
 }
 
 

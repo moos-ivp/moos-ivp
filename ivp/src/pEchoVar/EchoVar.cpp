@@ -82,6 +82,8 @@ bool EchoVar::OnConnectToServer()
 
 bool EchoVar::Iterate()
 {
+  iteration++;
+  m_Comms.Notify("ECHO_ITER", iteration);
   return(true);
 }
 

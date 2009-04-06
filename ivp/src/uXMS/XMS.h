@@ -117,6 +117,7 @@ class XMS : public CMOOSApp
   std::list<double>       m_history_times;
   int                     m_history_length;
   bool                    m_history_mode;
+  bool                    m_report_histvar;
 
   bool   m_display_all;
   double m_last_all_refresh;    

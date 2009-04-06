@@ -31,7 +31,7 @@
 class EchoVar : public CMOOSApp
 {
 public:
-  EchoVar() {};
+  EchoVar() {iteration=0;};
   virtual ~EchoVar() {};
   
   bool OnNewMail(MOOSMSG_LIST &NewMail);
@@ -53,6 +53,8 @@ protected:
   std::vector<std::string>  m_unique_sources;
 
   std::vector<EFlipper>     m_eflippers;
+
+  int iteration;
 };
 
 #endif

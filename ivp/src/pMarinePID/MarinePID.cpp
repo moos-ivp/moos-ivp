@@ -74,16 +74,12 @@ MarinePID::MarinePID()
 
 bool MarinePID::OnNewMail(MOOSMSG_LIST &NewMail)
 {
-  // Iterate through the list in reverse since the most recent
-  // information is at the beginning and we dont want older
-  // actuation commands overwriting newer ones.
-  MOOSMSG_LIST::reverse_iterator p;
-  for(p = NewMail.rbegin(); p != NewMail.rend(); p++) {
+  MOOSMSG_LIST::iterator p;
+  for(p=NewMail.begin(); p!=NewMail.end(); p++) {
     CMOOSMsg &msg = *p;
     double dfT;
 
     msg.IsSkewed(MOOSTime(),&dfT);
-
 
     string key = toupper(stripBlankEnds(msg.m_sKey));
     if(key == "SPEED_FACTOR") {
