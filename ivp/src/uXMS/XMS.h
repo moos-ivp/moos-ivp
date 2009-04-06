@@ -42,14 +42,15 @@ class XMS : public CMOOSApp
   void handleCommand(char);
   void addVariables(std::string);
   bool addVariable(std::string);
-  void ignoreVars(bool v)       {m_ignore_vars = v;};
-  void setPaused(bool v)        {m_paused = v;};
-  void setDispVirgins(bool v)   {m_display_virgins = v;};
-  void setDispTime(bool v)      {m_display_time = v;};
-  void setDispSource(bool v)    {m_display_source = v;};
-  void setDispCommunity(bool v) {m_display_community = v;};
-  void setDispEmptyStrings(bool v) {m_display_empty_strings = v;};
-  void setDispAll(bool v)       {m_display_all = v;};
+  void setHistoryVar(std::string);
+  void ignoreVars(bool v)            {m_ignore_vars = v;};
+  void setRefreshMode(std::string s) {m_refresh_mode = s;};
+  void setDispVirgins(bool v)        {m_display_virgins = v;};
+  void setDispTime(bool v)           {m_display_time = v;};
+  void setDispSource(bool v)         {m_display_source = v;};
+  void setDispCommunity(bool v)      {m_display_community = v;};
+  void setDispEmptyStrings(bool v)   {m_display_null_strings = v;};
+  void setDispAll(bool v)            {m_display_all = v;};
  
   void setConfigureCommsLocally(bool v) {m_configure_comms_locally=v;};
 
@@ -62,9 +63,11 @@ class XMS : public CMOOSApp
   void updateVarSource(std::string, std::string);
   void updateVarTime(std::string, std::string);
   void updateVarCommunity(std::string, std::string);
+  void updateHistory(std::string, std::string, double);
   
   void printHelp();
   void printReport();
+  void printHistoryReport();
   
   void refreshAllVarsList();
 
@@ -86,24 +89,35 @@ class XMS : public CMOOSApp
   std::vector<std::string> orig_var_time;
   std::vector<std::string> orig_var_community;
   
+  bool   m_update_requested;
+  bool   m_scope_event;
+  bool   m_history_event;
   bool   m_display_help;
   bool   m_display_source;
   bool   m_display_time;
   bool   m_display_community;
-  bool   m_paused;
-  bool   m_update_requested;
   bool   m_help_requested;
   int    m_iteration;
+  std::string m_refresh_mode;
+
   
   bool   m_display_virgins;
-  bool   m_display_empty_strings;
+  bool   m_display_null_strings;
   bool   m_configure_comms_locally;
   
   bool   m_ignore_vars;
   double m_db_start_time;
   
   std::string m_filter;
-  
+
+  std::string             m_history_var;
+  std::list<std::string>  m_history_list;
+  std::list<std::string>  m_history_sources;
+  std::list<int>          m_history_counts;
+  std::list<double>       m_history_times;
+  int                     m_history_length;
+  bool                    m_history_mode;
+
   bool   m_display_all;
   double m_last_all_refresh;    
 };

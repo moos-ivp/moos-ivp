@@ -238,13 +238,16 @@ int main(int argc ,char * argv[])
       g_theXMS.ignoreVars(true);
     
     else if((str == "-r") || (str == "--resumed"))
-      g_theXMS.setPaused(false);
+      g_theXMS.setRefreshMode("streaming");
 
     else if((str == "-v") || (str == "--virgins"))
       g_theXMS.setDispVirgins(false);
 
-    else if(str == "-e") 
+    else if(str == "-n") 
       g_theXMS.setDispEmptyStrings(false);
+
+    else if(str == "-e") 
+      g_theXMS.setRefreshMode("events");
 
     else if((str == "-s") || (str == "--source"))
       g_theXMS.setDispSource(true);
@@ -254,7 +257,10 @@ int main(int argc ,char * argv[])
 
     else if((str == "-a") || (str == "--all"))
       g_theXMS.setDispAll(true);
-    
+
+    else if(!strncmp( (tolower(str).c_str()), "history=", 8))
+      g_theXMS.setHistoryVar(str.substr(8));
+
     else if((!strContains(argv[i], ".moos")) && (str != "-noseed"))
       g_theXMS.addVariable(argv[i]);
   }

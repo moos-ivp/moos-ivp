@@ -45,19 +45,22 @@ XMS::XMS(string server_host, long int server_port)
   
   m_ignore_vars       = false;
   
-  m_paused            = true;
   m_update_requested  = true;
+  m_scope_event       = true;
+  m_history_event     = true;
+  m_refresh_mode      = "paused";
   m_iteration         = 0;
   
   m_display_virgins   = true;
-  m_display_empty_strings = true;
+  m_display_null_strings = true;
   m_db_start_time     = 0;
   
   m_filter            = "";
+  m_history_length    = 40;
+  m_history_mode      = false;
   
   m_display_all       = false;
   m_last_all_refresh  = 0;
-  m_paused            = true;
 
   m_sServerHost       = server_host; 
   m_lServerPort       = server_port;
@@ -123,6 +126,8 @@ bool XMS::OnNewMail(MOOSMSG_LIST &NewMail)
   for(p = NewMail.rbegin(); p != NewMail.rend(); p++) {
     CMOOSMsg &msg = *p;
     updateVariable(msg);
+    if(msg.m_sKey != "DB_UPTIME")
+      m_scope_event = true;
   }
   return(true);
 }
@@ -142,6 +147,8 @@ bool XMS::Iterate()
   
   if(m_display_help)
     printHelp();
+  else if(m_history_mode)
+    printHistoryReport();
   else
     printReport();
   return(true);
@@ -179,28 +186,42 @@ bool XMS::OnStartUp()
     sVarName = stripBlankEnds(toupper(sVarName));
     sLine    = stripBlankEnds(sLine);
     
-    if(sVarName == "PAUSED")
-      m_paused = (tolower(sLine) == "true");
-    
-    if(sVarName == "DISPLAY_VIRGINS")
+    if(sVarName == "REFRESH_MODE") {
+      string str = tolower(sLine);
+      if((str=="paused") || (str=="events") || (str=="streaming"))
+	m_refresh_mode = str;
+    }
+
+    // Depricated PAUSED
+    else if(sVarName == "PAUSED") {
+      if((tolower(sLine) == "true"))
+	m_refresh_mode = "paused";
+      else
+	m_refresh_mode = "events";
+    }
+
+    else if(sVarName == "HISTORY_VAR") 
+      setHistoryVar(sLine);
+
+    else if(sVarName == "DISPLAY_VIRGINS")
       m_display_virgins = (tolower(sLine) == "true");
     
-    if(sVarName == "DISPLAY_EMPTY_STRINGS")
-      m_display_empty_strings = (tolower(sLine) == "true");
+    else if(sVarName == "DISPLAY_EMPTY_STRINGS")
+      m_display_null_strings = (tolower(sLine) == "true");
     
-    if(sVarName == "DISPLAY_SOURCE")
+    else if(sVarName == "DISPLAY_SOURCE")
       m_display_source = (tolower(sLine) == "true");
     
-    if(sVarName == "DISPLAY_TIME")
+    else if(sVarName == "DISPLAY_TIME")
       m_display_time = (tolower(sLine) == "true");
     
-    if(sVarName == "DISPLAY_COMMUNITY")
+    else if(sVarName == "DISPLAY_COMMUNITY")
       m_display_community = (tolower(sLine) == "true");
     
-    if(sVarName == "DISPLAY_ALL")
+    else if(sVarName == "DISPLAY_ALL")
       m_display_all = (tolower(sLine) == "true");
     
-    if(!(m_ignore_vars || m_display_all) && MOOSStrCmp(sVarName, "VAR"))
+    else if(!(m_ignore_vars || m_display_all) && MOOSStrCmp(sVarName, "VAR"))
       addVariables(sLine);
   }
   
@@ -243,12 +264,12 @@ void XMS::handleCommand(char c)
     m_display_virgins = true;
     m_update_requested = true;
     break;
-  case 'e':
-    m_display_empty_strings = false;
+  case 'n':
+    m_display_null_strings = false;
     m_update_requested  = true;
     break;
-  case 'E':
-    m_display_empty_strings = true;
+  case 'N':
+    m_display_null_strings = true;
     m_update_requested = true;
     break;
   case 'c':
@@ -261,14 +282,26 @@ void XMS::handleCommand(char c)
     break;
   case 'p':
   case 'P':
-    m_paused = true;
+    m_refresh_mode = "paused";
+    break;
+  case 'w':
+    m_update_requested = true;
+    m_history_mode = true;
+    break;
+  case 'W':
+    m_update_requested = true;
+    m_history_mode = false;
     break;
   case 'r':
   case 'R':
-    m_paused = false;
+    m_refresh_mode = "streaming";
+    break;
+  case 'e':
+  case 'E':
+    m_refresh_mode = "events";
     break;
   case ' ':
-    m_paused = true;
+    m_refresh_mode = "paused";
   case 'u':
   case 'U':
     m_update_requested = true;
@@ -280,7 +313,7 @@ void XMS::handleCommand(char c)
     
     // turn filtering on
   case '/':
-    m_paused = true;
+    m_refresh_mode = "paused";
     
     printf("%c", c);
     cin >> m_filter;
@@ -374,6 +407,15 @@ bool XMS::addVariable(string varname)
   return(true);
 }
 
+//------------------------------------------------------------
+// Procedure: setHistoryVar
+
+void XMS::setHistoryVar(string varname)
+{
+  if(strContainsWhite(varname))
+    return;
+  m_history_var = varname;
+}
 
 //------------------------------------------------------------
 // Procedure: registerVariables
@@ -381,11 +423,12 @@ bool XMS::addVariable(string varname)
 void XMS::registerVariables()
 {
   int vsize = var_names.size();
-  for(int i=0; i<vsize; i++) {
+  for(int i=0; i<vsize; i++)
     m_Comms.Register(var_names[i], 0);
-    // tes - commented out to minimize startup text (for low bandwidth)
-    // cout << "Registering for: [" << var_names[i] << "]" << endl;
-  }
+
+  if(m_history_var != "")
+    m_Comms.Register(m_history_var, 0);
+
   m_Comms.Register("DB_UPTIME", 0);
 }
 
@@ -429,6 +472,28 @@ void XMS::updateVarCommunity(string varname, string vcommunity)
       var_community[i] = vcommunity;
 }
 
+void XMS::updateHistory(string entry, string source, double htime)
+{
+  if((entry  == m_history_list.front()) &&
+     (source == m_history_sources.front())) {
+    m_history_counts.front()++;
+    m_history_times.front() = htime;
+    return;
+  }
+  
+  m_history_list.push_front(entry);
+  m_history_counts.push_front(1);
+  m_history_sources.push_front(source);
+  m_history_times.push_front(htime);
+
+  if(m_history_list.size() > m_history_length) {
+    m_history_list.pop_back();
+    m_history_counts.pop_back();
+    m_history_sources.pop_back();
+    m_history_times.pop_back();
+  }
+}
+
 //------------------------------------------------------------
 // Procedure: printHelp()
 
@@ -447,18 +512,21 @@ void XMS::printHelp()
   printf("    C        Display Community of variables       \n");
   printf("    v        Suppress virgin variables            \n");
   printf("    V        Display virgin variables             \n");
-  printf("    e        Suppress empty strings               \n");
-  printf("    E        Display empty strings                \n");
+  printf("    n        Suppress null/empty strings          \n");
+  printf("    N        Display null/empty strings           \n");
+  printf("    w        Show History Variable if enabled     \n");
+  printf("    W        Hide History Variable                \n");
   printf("    /        Begin entering a filter string       \n");
   printf("    ?        Clear current filter                 \n");    
   printf("    a        Revert to variables shown at startup \n");
   printf("    A        Display all variables in the database\n");
-  printf("   u/U       Update information once - now        \n");
+  printf(" u/U/SPC     Update infor once-now, then Pause    \n");
   printf("   p/P       Pause information refresh            \n");
-  printf("   r/R       resume information refresh           \n");
+  printf("   r/R       Resume information refresh           \n");
+  printf("   e/E       Information refresh is event-driven  \n");
   printf("   h/H       Show this Help msg - 'R' to resume   \n");
   
-  m_paused = true;
+  m_refresh_mode = "paused";
   m_display_help = false;
 }
 
@@ -467,8 +535,18 @@ void XMS::printHelp()
 
 void XMS::printReport()
 {
-  if(m_paused && !m_update_requested)
+  bool do_the_report = false;
+  if((m_refresh_mode == "paused") && m_update_requested)
+    do_the_report = true;
+  if(m_refresh_mode == "streaming")
+    do_the_report = true;
+  if((m_refresh_mode == "events") && m_scope_event)
+    do_the_report = true;
+
+  if(!do_the_report)
     return;
+
+  m_scope_event = false;
   m_update_requested = false;
   m_iteration++;
   
@@ -513,7 +591,7 @@ void XMS::printReport()
   for(int i=0; i<vsize; i++) {
     
     if(((m_display_virgins) || (var_vals[i] != "n/a")) &&
-       ((m_display_empty_strings) || (var_vals[i] != "")) &&
+       ((m_display_null_strings) || (var_vals[i] != "")) &&
        MOOSStrCmp(m_filter, var_names[i].substr(0, m_filter.length()))) {
       
       printf("  %-22s ", var_names[i].c_str());
@@ -562,6 +640,93 @@ void XMS::printReport()
 
 
 //------------------------------------------------------------
+// Procedure: printHistoryReport()
+
+void XMS::printHistoryReport()
+{
+  bool do_the_report = false;
+  if((m_refresh_mode == "paused") && m_update_requested)
+    do_the_report = true;
+  if(m_refresh_mode == "streaming")
+    do_the_report = true;
+  if((m_refresh_mode == "events") && m_history_event)
+    do_the_report = true;
+
+  if(!do_the_report)
+    return;
+
+  m_history_event = false;
+  m_update_requested = false;
+  m_iteration++;
+  
+  for(int j=0; j<5; j++)
+    printf("\n");
+  
+  printf("HISTORY VAR [%s]\n", m_history_var.c_str());
+  printf("HISTORY REPORT(2) %d\n", m_history_list.size());
+  printf("  %-22s", "VarName");
+  
+  if(m_display_source)
+    printf("%-12s", "(S)ource");
+  else
+    printf(" (S) ");
+
+  if(m_display_time)
+    printf("%-12s", "(T)ime");
+  else
+    printf(" (T) ");
+
+  printf("VarValue\n");
+  
+  printf("  %-22s", "----------------");
+  
+  if(m_display_source)
+    printf("%-12s", "----------");
+  else
+    printf(" --- ");
+  
+  if(m_display_time)
+    printf("%-12s", "----------");
+  else
+    printf(" --- ");
+  
+  printf(" ----------- (%d)\n", m_iteration);
+  
+  list<string> hist_list    = m_history_list;
+  list<string> hist_sources = m_history_sources;
+  list<int>    hist_counts  = m_history_counts;
+  list<double> hist_times   = m_history_times;
+
+  while(hist_list.size() > 0) {    
+    string entry  = hist_list.back();
+    string source = hist_sources.back();
+    int    count  = hist_counts.back();
+    string htime  = doubleToString(hist_times.back(), 2);
+    
+    printf("  %-22s ", m_history_var.c_str());
+      
+    if(m_display_source)
+      printf("%-12s", source.c_str());
+    else
+      printf("     ");
+    
+    if(m_display_time)
+      printf("%-12s", htime.c_str());
+    else
+      printf("     ");
+    
+    printf("(%d) %s", count, entry.c_str());
+    printf("\n");		
+
+    hist_list.pop_back();
+    hist_sources.pop_back();
+    hist_counts.pop_back();
+    hist_times.pop_back();
+  }
+}
+
+
+//------------------------------------------------------------
 // Procedure: updateVariable
 //      Note: Will read a MOOS Mail message and grab the fields
 //            and update the variable only if its in the vector 
@@ -583,6 +748,18 @@ void XMS::updateVariable(CMOOSMsg &msg)
   updateVarTime(varname, vtime_str);
   updateVarCommunity(varname, msg.m_sOriginatingCommunity);
   
+  if(varname == m_history_var) {
+    m_history_event = true;
+    if(msg.m_cDataType == MOOS_STRING) {
+      string entry = ("\"" + msg.m_sVal + "\""); 
+      updateHistory(entry, msg.m_sSrc, vtime);
+    }
+    else if(msg.m_cDataType == MOOS_DOUBLE) {
+      string entry = dstringCompact(doubleToString(msg.m_dfVal,6));
+      updateHistory(entry, msg.m_sSrc, vtime);
+    }
+  }
+
   if(msg.m_cDataType == MOOS_STRING) {
     updateVarVal(varname, msg.m_sVal);
     updateVarType(varname, "string");
