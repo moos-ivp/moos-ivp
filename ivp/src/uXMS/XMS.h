@@ -41,7 +41,7 @@ class XMS : public CMOOSApp
   
   void handleCommand(char);
   void addVariables(std::string);
-  bool addVariable(std::string);
+  bool addVariable(std::string, bool histvar=false);
   void setHistoryVar(std::string);
   void ignoreVars(bool v)            {m_ignore_vars = v;};
   void setRefreshMode(std::string s) {m_refresh_mode = s;};

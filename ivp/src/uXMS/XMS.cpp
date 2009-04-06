@@ -48,7 +48,7 @@ XMS::XMS(string server_host, long int server_port)
   m_update_requested  = true;
   m_scope_event       = true;
   m_history_event     = true;
-  m_refresh_mode      = "paused";
+  m_refresh_mode      = "events";
   m_iteration         = 0;
   
   m_display_virgins   = true;
@@ -127,7 +127,7 @@ bool XMS::OnNewMail(MOOSMSG_LIST &NewMail)
   for(p = NewMail.begin(); p!=NewMail.end(); p++) {
     CMOOSMsg &msg = *p;
     updateVariable(msg);
-    if(msg.m_sKey != "DB_UPTIME")
+    if((msg.m_sKey != "DB_UPTIME") && (msg.m_sKey != m_history_var))
       m_scope_event = true;
   }
   return(true);
@@ -177,7 +177,8 @@ bool XMS::OnStartUp()
   //m_MissionReader.GetConfiguration(GetAppName(), sParams);
   m_MissionReader.GetConfiguration("uXMS", sParams);
 
-  // tes 2.21.08 - variables will be shown in the order they appear in the config file
+  // tes 2.21.08 - variables will be shown in the 
+  //    order they appear in the config file
   sParams.reverse();
   
   STRING_LIST::iterator p;
@@ -403,20 +404,28 @@ void XMS::addVariables(string line)
 //------------------------------------------------------------
 // Procedure: addVariable
 
-bool XMS::addVariable(string varname)
+bool XMS::addVariable(string varname, bool histvar)
 {
   // Check if the varname contains uXMS. Antler has the effect of
   // artificially giving the process name as an argument to itself.
   // This would have the effect of registering uXMS as variable to
   // be scoped on. We assert here that we don't want that.
-  if(strContains(varname, "uXMS"))
+  if(strContains(varname, "uXMS") || strContainsWhite(varname))
     return(false);
   
-  // Simply return false if the variable has already been added.
+  // Handle if this var is a "history" variable
+  if(histvar) {
+    m_history_var = varname;
+    // If currently no variables scoped, hist_mode=true
+    if(var_names.size() == 0)
+      m_history_mode = true;
+  }    
+
+  // Simply return true if the variable has already been added.
   int vsize = var_names.size();
   for(int i=0; i<vsize; i++)
     if(var_names[i] == varname)
-      return(false);
+      return(true);
   
   var_names.push_back(varname);
   var_vals.push_back("n/a");
@@ -424,7 +433,12 @@ bool XMS::addVariable(string varname)
   var_source.push_back(" n/a");
   var_time.push_back(" n/a");
   var_community.push_back(" n/a");
-  // added a new variable, return true
+
+  // If not a history variable, then go back to being in scope
+  // mode by default.
+  if(!histvar)
+    m_history_mode = false;
+
   return(true);
 }
 
@@ -435,6 +449,12 @@ void XMS::setHistoryVar(string varname)
 {
   if(strContainsWhite(varname))
     return;
+
+  // If there are currently no variables being scoped, put
+  // into the history mode
+  if(var_names.size() == 0)
+    m_history_mode = true;
+
   m_history_var = varname;
 }
 
@@ -559,6 +579,8 @@ void XMS::printHelp()
 
 void XMS::printReport()
 {
+  string mode_str = "(MODE = SCOPE:" + toupper(m_refresh_mode) + ")";   
+
   bool do_the_report = false;
   if((m_refresh_mode == "paused") && m_update_requested)
     do_the_report = true;
@@ -592,7 +614,7 @@ void XMS::printReport()
     printf("%-14s", "(C)ommunity");
   else
     printf(" (C) ");
-  printf("VarValue\n");
+  printf("VarValue %s\n", mode_str.c_str());
   
   printf("  %-22s", "----------------");
   
@@ -669,6 +691,8 @@ void XMS::printReport()
 
 void XMS::printHistoryReport()
 {
+  string mode_str = "(MODE = HISTORY:" + toupper(m_refresh_mode) + ")";   
+
   bool do_the_report = false;
   if((m_refresh_mode == "paused") && m_update_requested)
     do_the_report = true;
@@ -701,7 +725,7 @@ void XMS::printHistoryReport()
   else
     printf(" (T) ");
 
-  printf("VarValue\n");
+  printf("VarValue %s\n", mode_str.c_str());
   
   if(m_report_histvar)
     printf("  %-22s", "----------------");

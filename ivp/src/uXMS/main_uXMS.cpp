@@ -92,6 +92,7 @@ int main(int argc ,char * argv[])
     cout << "       [--clean|-c] [--resumed|-r] [--virgins|-v]     " << endl;
     cout << "       [--source|-s] [--time|-t] [--all|-a]           " << endl;
     cout << "       [server_host=value] [server_port=value]        " << endl;
+    cout << "       [history=variable] [--paused|-p] [--events|-e] " << endl;
     cout << "       [MOOS_VARIABLES]                               " << endl;
     cout << "                                                      " << endl;
     cout << "[file.moos] Filename to get configuration parameters  " << endl;
@@ -100,13 +101,16 @@ int main(int argc ,char * argv[])
     cout << "[-pid]      Auto-subscribe for PID (DESIRED_*) vars   " << endl;
     cout << "[-proc]     Auto-subscribe for uProcessWatch vars     " << endl;
     cout << "[-c]        Ignore scope variables in file.moos       " << endl;
-    cout << "[-r]        Start in data-streaming mode              " << endl;
+    cout << "[-r]        Start refresh mode in streaming mode      " << endl;
+    cout << "[-p]        Start refresh mode in paused mode         " << endl;
+    cout << "[-p]        Start refresh mode in events mode         " << endl;
     cout << "[-v]        Don't display virgin variables            " << endl;
     cout << "[-s]        Show the Source field in the data report  " << endl;
     cout << "[-t]        Show the Time field in the data report    " << endl;
     cout << "[-a]        Show ALL MOOS variables in the MOOSDB     " << endl;
     cout << "[server_host=value]  Connect to MOOSDB at IP=value    " << endl;
     cout << "[server_port=value]  Connect to MOOSDB at port=value  " << endl;
+    cout << "[history=variable] Allow history-scoping on variable  " << endl;
     cout << endl;
     return(0);
   }
@@ -237,17 +241,20 @@ int main(int argc ,char * argv[])
     else if((str == "-c") || (str == "--clean") || (str == "-clean"))
       g_theXMS.ignoreVars(true);
     
+    else if((str == "-p") || (str == "--paused"))
+      g_theXMS.setRefreshMode("paused");
+
     else if((str == "-r") || (str == "--resumed"))
       g_theXMS.setRefreshMode("streaming");
+
+    else if((str == "-e") || (str == "--events"))
+      g_theXMS.setRefreshMode("events");
 
     else if((str == "-v") || (str == "--virgins"))
       g_theXMS.setDispVirgins(false);
 
     else if(str == "-n") 
       g_theXMS.setDispEmptyStrings(false);
-
-    else if(str == "-e") 
-      g_theXMS.setRefreshMode("events");
 
     else if((str == "-s") || (str == "--source"))
       g_theXMS.setDispSource(true);
@@ -259,7 +266,7 @@ int main(int argc ,char * argv[])
       g_theXMS.setDispAll(true);
 
     else if(!strncmp( (tolower(str).c_str()), "history=", 8))
-      g_theXMS.setHistoryVar(str.substr(8));
+      g_theXMS.addVariable(str.substr(8), true);
 
     else if((!strContains(argv[i], ".moos")) && (str != "-noseed"))
       g_theXMS.addVariable(argv[i]);
