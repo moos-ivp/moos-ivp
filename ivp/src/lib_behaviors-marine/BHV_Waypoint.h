@@ -43,6 +43,12 @@ protected:
   void         updateInfoOut(bool post=true);
   void         updateInfoOutNull();
 
+  void         postStatusReport();
+  void         postViewableSegList();
+  void         postErasableSegList();
+  void         postViewablePoint();
+  void         postErasablePoint();
+
 protected: 
   WaypointEngine m_waypoint_engine;
 
@@ -50,8 +56,11 @@ protected: // configuration parameters
   double      m_cruise_speed;
   double      m_lead_distance;
   std::string m_ipf_type;
-  std::string m_update_str;
-  std::string m_index_str;
+
+  std::string m_var_report;
+  std::string m_var_index;
+  std::string m_var_suffix;
+
 
 protected: // intermediate or object global variables.
   double    m_osv;  // Ownship velocity

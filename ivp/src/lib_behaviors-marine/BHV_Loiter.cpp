@@ -51,7 +51,7 @@ BHV_Loiter::BHV_Loiter(IvPDomain gdomain) :
   m_acquire_mode    = true;
   m_iterations      = 0;
 
-  // Initialize State Variable with initial vals of zero which
+  // Initialize State Variables with initial vals of zero which
   // have no real meaning, but better than nondeterministic.
   m_osx             = 0;
   m_osy             = 0;
@@ -59,6 +59,14 @@ BHV_Loiter::BHV_Loiter(IvPDomain gdomain) :
   m_ptx             = 0;
   m_pty             = 0;
   m_dist_to_poly    = 0;
+
+  // Initialize postMessage state variables.
+  m_var_report    = "LOITER_REPORT";
+  m_var_index     = "LOITER_INDEX";
+  m_var_acquire   = "LOITER_ACQUIRE";
+  m_var_dist2poly = "LOITER_DIST_TO_POLY";
+  m_var_eta2poly  = "LOITER_ETA_TO_POLY";
+  m_var_suffix    = "";
 
   // Initialize Configuration Parameters
   m_desired_speed   = 0;      // m/s
@@ -91,6 +99,16 @@ bool BHV_Loiter::setParam(string g_param, string g_val)
   }  
   else if(g_param == "center_assign") {
     m_center_assign  = g_val;
+    m_center_pending = true;
+    return(true);
+  }  
+  else if(g_param == "xcenter_assign") {
+    m_center_assign  += (",x=" + g_val);
+    m_center_pending = true;
+    return(true);
+  }  
+  else if(g_param == "ycenter_assign") {
+    m_center_assign  += (",y=" + g_val);
     m_center_pending = true;
     return(true);
   }  
@@ -140,7 +158,33 @@ bool BHV_Loiter::setParam(string g_param, string g_val)
     return(true);
   }
   else if(g_param == "post_suffix")  {
-    m_post_suffix = "_" + toupper(g_val);
+    if(strContainsWhite(g_val) || (g_val == ""))
+      return(false);
+    m_var_suffix = "_" + toupper(g_val);
+    return(true);
+  }
+  else if(g_param == "var_report")  {
+    if(strContainsWhite(g_val) || (g_val == ""))
+      return(false);
+    m_var_report = g_val;
+    return(true);
+  }
+  else if(g_param == "var_acquire")  {
+    if(strContainsWhite(g_val) || (g_val == ""))
+      return(false);
+    m_var_acquire = g_val;
+    return(true);
+  }
+  else if(g_param == "var_dist2poly")  {
+    if(strContainsWhite(g_val) || (g_val == ""))
+      return(false);
+    m_var_dist2poly = g_val;
+    return(true);
+  }
+  else if(g_param == "var_index")  {
+    if(strContainsWhite(g_val) || (g_val == ""))
+      return(false);
+    m_var_index = g_val;
     return(true);
   }
   return(false);
@@ -252,6 +296,12 @@ bool BHV_Loiter::updateInfoIn()
 
 //-----------------------------------------------------------
 // Procedure: updateCenter()
+//      Note: Can handle strings of type:
+//              "present_position"
+//              "54.0,-120"
+//              "x=54.0, y=-120"
+//              "x=54.0"
+//              "y=-120"
 
 void BHV_Loiter::updateCenter()
 {
@@ -260,10 +310,41 @@ void BHV_Loiter::updateCenter()
   
   m_center_assign = tolower(m_center_assign);
 
+  // Handle updates of the type: "present_position"
   if(m_center_assign == "present_position") {
     m_loiter_engine.setCenter(m_osx, m_osy);
     m_waypoint_engine.setCenter(m_osx, m_osy);
   }
+  // Handle updates of the type: "x=45" and "x=54,y=-105"
+  else if(strContains(m_center_assign, '=')) {
+    double pending_center_x = m_loiter_engine.getCenterX();
+    double pending_center_y = m_loiter_engine.getCenterY();
+    bool   update_needed = false;
+
+    vector<string> svector = parseString(m_center_assign, ',');
+    unsigned int i, vsize = svector.size();
+    for(i=0; i<vsize; i++) {
+      vector<string> ivector = parseString(svector[i], '=');
+      unsigned int j, isize = ivector.size();
+      if(isize == 2) {
+	string left  = stripBlankEnds(ivector[0]);
+	string right = stripBlankEnds(ivector[1]);
+	if((left == "x") && isNumber(right)) {
+	  pending_center_x = atof(right.c_str());
+	  update_needed = true;
+	}
+	else if((left == "y") && isNumber(right)) {
+	  pending_center_y = atof(right.c_str());
+	  update_needed = true;
+	}
+      }
+    }
+    if(update_needed) {
+      m_loiter_engine.setCenter(pending_center_x, pending_center_y);
+      m_waypoint_engine.setCenter(pending_center_x, pending_center_y);
+    }
+  } 
+  // Handle updates of the type: "54,-105"
   else {
     vector<string> svector = parseString(m_center_assign, ',');
     if(svector.size() == 2) {
@@ -323,15 +404,26 @@ void BHV_Loiter::postStatusReports()
   loiter_report += ",capture_hits=" + intToString(capture_hits);
   loiter_report += ",nonmono_hits=" + intToString(nonmono_hits);
   loiter_report += ",acquire_mode=" + boolToString(m_acquire_mode);
-  postMessage("LOITER_REPORT"+m_post_suffix, loiter_report);
 
-  postMessage("LOITER_INDEX"+m_post_suffix, curr_index);
-  if(m_acquire_mode)
-    postMessage("LOITER_ACQUIRE"+m_post_suffix, 1);
-  else
-    postMessage("LOITER_ACQUIRE"+m_post_suffix, 0);
+  // Default for m_var_dist2poly = LOITER_REPORT
+  if((m_var_report != "SILENT") && (m_var_report != "OFF"))
+    postMessage((m_var_report + m_var_suffix), loiter_report);
 
-  postIntMessage("DIST_TO_REGION"+m_post_suffix, m_dist_to_poly);
+  // Default for m_var_dist2poly = LOITER_INDEX
+  if((m_var_index != "SILENT") && (m_var_index != "OFF"))
+    postMessage((m_var_index + m_var_suffix), curr_index);
+
+  // Default for m_var_dist2poly = LOITER_ACQUIRE
+  if((m_var_acquire != "SILENT") && (m_var_acquire != "OFF")) {
+    if(m_acquire_mode)
+      postMessage((m_var_acquire + m_var_suffix), 1);
+    else
+      postMessage((m_var_acquire + m_var_suffix), 0);
+  }
+  
+  // Default for m_var_dist2poly = LOITER_DIST_TO_POLY
+  if((m_var_dist2poly != "SILENT") && (m_var_dist2poly != "OFF")) 
+    postIntMessage((m_var_dist2poly + m_var_suffix), m_dist_to_poly);
 }
 
 //-----------------------------------------------------------

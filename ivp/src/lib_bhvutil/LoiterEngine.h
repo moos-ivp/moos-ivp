@@ -30,9 +30,12 @@ class LoiterEngine {
   LoiterEngine() {m_clockwise=true;};
   ~LoiterEngine() {};
 
-  void setPoly(const XYPolygon& poly) {m_polygon = poly;};
-  void setCenter(double x, double y)  {m_polygon.new_center(x,y);};
-  void setClockwise(bool);
+  void   setClockwise(bool);
+  void   setPoly(const XYPolygon& poly) {m_polygon = poly;};
+  void   setCenter(double x, double y)  {m_polygon.new_center(x,y);};
+
+  double getCenterX() const     {return(m_polygon.get_center_x());}
+  double getCenterY() const     {return(m_polygon.get_center_y());}
   
   XYPolygon getPolygon() {return(m_polygon);};
   

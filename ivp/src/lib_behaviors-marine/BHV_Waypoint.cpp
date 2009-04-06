@@ -52,11 +52,14 @@ BHV_Waypoint::BHV_Waypoint(IvPDomain gdomain) :
   m_descriptor = "bhv_waypoint";  
   m_domain     = subDomain(m_domain, "course,speed");
 
+  // Set behavior configuration variables
   m_cruise_speed    = 0;  // Meters/second
   m_lead_distance   = -1;
   m_ipf_type        = "zaic";
-  m_update_str      = "WPT_STAT";
-  m_index_str       = "WPT_INDEX";
+
+  m_var_report      = "WPT_STAT";
+  m_var_index       = "WPT_INDEX";
+  m_var_suffix      = "";
 
   // The completed and perpetual vars are initialized in superclass
   // but we initialize here just to be safe and clear.
@@ -99,15 +102,21 @@ bool BHV_Waypoint::setParam(string param, string val)
     return(true);
   }
   else if(param == "wpt_status") {
-    if(val == "")
+    if(strContainsWhite(val) || (val == ""))
       return(false);
-    m_update_str = val;
+    m_var_report = val;
     return(true);
   }
   else if(param == "wpt_index") {
-    if(val == "")
+    if(strContainsWhite(val) || (val == ""))
       return(false);
-    m_index_str = val;
+    m_var_index = val;
+    return(true);
+  }
+  else if(param == "post_suffix") {
+    if(strContainsWhite(val))
+      return(false);
+    m_var_suffix = val;
     return(true);
   }
   else if(param == "ipf-type") {
@@ -160,7 +169,7 @@ bool BHV_Waypoint::setParam(string param, string val)
 
 void BHV_Waypoint::onIdleState() 
 {
-  updateInfoOut(false);
+  //postErasablePoint();
 }
 
 
@@ -173,12 +182,13 @@ IvPFunction *BHV_Waypoint::onRunState()
 
   // Set m_osx, m_osy, m_osv
   if(!updateInfoIn()) {
-    updateInfoOut(false);
+    postErasablePoint();
     return(0);
   }
+
   // Set m_ptx, m_pty, m_trackpt_x, m_trackpt_y;
   if(!setNextWaypoint()) {
-    updateInfoOut(false);
+    postErasablePoint();
     return(0);
   }
   
@@ -186,6 +196,7 @@ IvPFunction *BHV_Waypoint::onRunState()
   if(ipf)
     ipf->setPWT(m_priority_wt);
 
+  postViewablePoint();
   updateInfoOut(true);
 
   return(ipf);
@@ -229,8 +240,8 @@ bool BHV_Waypoint::setNextWaypoint()
   string feedback_msg = m_waypoint_engine.setNextWaypoint(m_osx, m_osy);
 
   if(m_waypoint_engine.isComplete()) {
-    if(m_update_str != "silent")
-      postMessage(m_update_str, "complete");
+    if(tolower(m_var_report) != "silent")
+      postMessage((m_var_report + m_var_suffix), "complete");
     setComplete();
     if(m_perpetual)
       m_waypoint_engine.reset();
@@ -334,35 +345,48 @@ void BHV_Waypoint::updateInfoOut(bool post_viewable_waypoint)
     stat += "dist="  + doubleToString(dist_meters, 0)  + ",";
     stat += "eta="   + doubleToString(eta_seconds, 0);
     
-    if(m_update_str != "silent")
-      postMessage(m_update_str, stat);
-    if(m_index_str != "silent")
-      postMessage(m_index_str, current_waypt);
+    if(m_var_report != "silent")
+      postMessage((m_var_report + m_var_suffix), stat);
+    if(m_var_index != "silent")
+      postMessage((m_var_index + m_var_suffix), current_waypt);
   }
 
   XYSegList seglist = m_waypoint_engine.getSegList();
   seglist.set_label(m_us_name + "_" + m_descriptor);
   string segmsg = seglist.get_spec();
   postMessage("VIEW_SEGLIST", segmsg);
-
-  // Note the labels in the two cases match identically. This is 
-  // important. It is capitalizing on viewers that key on the label
-  // for replacement of previous posts, thus erasing one for the other.
-  string ptmsg;
-  ptmsg = "label=" + m_us_name + "'s next waypoint";
-  ptmsg += ",type=waypoint";
-  ptmsg += ",source=" + m_us_name;
-  if(post_viewable_waypoint) {
-    ptmsg += ",x=" + dstringCompact(doubleToString(m_ptx,1));
-    ptmsg += ",y=" + dstringCompact(doubleToString(m_pty,1));
-    ptmsg += ",size=1";
-    postMessage("VIEW_POINT", ptmsg);
-  }
-  else {
-    ptmsg += ",x=0, y=0, z=0, active=false, size=0";
-    postMessage("VIEW_POINT", ptmsg);
-  }
-
 }
 
 
+//-----------------------------------------------------------
+// Procedure: postViewablePoint()
+
+void BHV_Waypoint::postViewablePoint()
+{
+  // Recall that for a point to be drawn and erased, it must match
+  // in the (1) label (2) type (3) and source.
+
+  string ptmsg;
+  ptmsg = "label=" + m_us_name + "'s next waypoint";
+  ptmsg += ",type=waypoint, source=" + m_us_name;
+  ptmsg += ",x=" + dstringCompact(doubleToString(m_ptx,1));
+  ptmsg += ",y=" + dstringCompact(doubleToString(m_pty,1));
+  ptmsg += ",size=1";
+  postMessage("VIEW_POINT", ptmsg);
+}
+
+//-----------------------------------------------------------
+// Procedure: postErasablePoint()
+
+void BHV_Waypoint::postErasablePoint()
+{
+  // Recall that for a point to be drawn and erased, it must match
+  // in the (1) label (2) type (3) and source.
+  // For a point to be "ignored" it must set active=false.
+
+  string ptmsg;
+  ptmsg = "label=" + m_us_name + "'s next waypoint";
+  ptmsg += ",type=waypoint, source=" + m_us_name;
+  ptmsg += ",x=0, y=0, z=0, active=false, size=0";
+  postMessage("VIEW_POINT", ptmsg);
+}

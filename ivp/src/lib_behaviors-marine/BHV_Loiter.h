@@ -55,7 +55,14 @@ private:  // Configuration Parameters
   double       m_desired_speed;
   double       m_acquire_dist;
   bool         m_center_activate;
-  std::string  m_post_suffix;
+
+  std::string  m_var_suffix;
+  std::string  m_var_report;
+  std::string  m_var_acquire;
+  std::string  m_var_dist2poly;
+  std::string  m_var_eta2poly;
+  std::string  m_var_index;
+
 
 private:  // State Structures
   LoiterEngine   m_loiter_engine;
