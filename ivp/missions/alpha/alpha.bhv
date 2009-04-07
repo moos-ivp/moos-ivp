@@ -11,6 +11,7 @@ Behavior = BHV_Waypoint
   condition = RETURN = false
   condition = DEPLOY = true
   endflag   = RETURN = true
+  perpetual = true
 
   wpt_status = SURVEY_STATUS
   wpt_index  = SURVEY_INDEX
@@ -27,9 +28,13 @@ Behavior = BHV_Waypoint
   condition  = RETURN = true
   condition  = DEPLOY = true
   updates    = UPDATES_RETURN
+  perpetual  = true
+  endflag    = RETURN = false
+  endflag    = DEPLOY = false
 
   speed      = 2.0
-  radius     = 8.0
+  radius     = 2.0
+  nm_radius  = 2.0
   points     = 0,0
 }
 
