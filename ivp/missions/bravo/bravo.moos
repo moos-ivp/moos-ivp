@@ -45,8 +45,8 @@ ProcessConfig = pLogger
 
 ProcessConfig = pEchoVar
 {
-  AppTick   = 4
-  CommsTick = 4
+  AppTick   = 10
+  CommsTick = 10
 
   FLIP:1    = source_variable = MVIEWER_LCLICK
   FLIP:1    = dest_variable   = UP_LOITERA
