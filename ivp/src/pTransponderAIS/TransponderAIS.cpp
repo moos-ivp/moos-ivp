@@ -59,9 +59,9 @@ TransponderAIS::TransponderAIS()
 
 bool TransponderAIS::OnNewMail(MOOSMSG_LIST &NewMail)
 {
-  MOOSMSG_LIST::reverse_iterator p;
+  MOOSMSG_LIST::iterator p;
   
-  for(p = NewMail.rbegin(); p != NewMail.rend(); p++) {
+  for(p=NewMail.begin(); p!=NewMail.end(); p++) {
     CMOOSMsg &msg = *p;
 
     string key = msg.m_sKey;

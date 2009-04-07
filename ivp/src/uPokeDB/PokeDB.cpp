@@ -117,12 +117,12 @@ bool PokeDB::Iterate()
 
 bool PokeDB::OnNewMail(MOOSMSG_LIST &NewMail)
 {    
-  MOOSMSG_LIST::reverse_iterator p;
+  MOOSMSG_LIST::iterator p;
 
   // First scan the mail for the DB_UPTIME message to get an 
   // up-to-date value of DB uptime *before* handling other vars
   if(m_db_start_time == 0) {
-    for(p = NewMail.rbegin(); p != NewMail.rend(); p++) {
+    for(p=NewMail.begin(); p!=NewMail.end(); p++) {
       CMOOSMsg &msg = *p;
       if(msg.m_sKey == "DB_UPTIME") 
 	m_db_start_time = MOOSTime() - msg.m_dfVal;

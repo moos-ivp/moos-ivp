@@ -35,9 +35,8 @@ FV_MOOSApp::FV_MOOSApp()
 
 bool FV_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 {
-  MOOSMSG_LIST::reverse_iterator p;
-  
-  for(p = NewMail.rbegin(); p != NewMail.rend(); p++) {
+  MOOSMSG_LIST::iterator p;  
+  for(p=NewMail.begin(); p!=NewMail.end(); p++) {
     CMOOSMsg &msg = *p;
 
     if(msg.m_sKey == ipf_name) {

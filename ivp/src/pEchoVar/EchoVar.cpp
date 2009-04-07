@@ -35,8 +35,8 @@ bool EchoVar::OnNewMail(MOOSMSG_LIST &NewMail)
   unsigned int i, vsize = m_var_source.size();
   unsigned int j, fsize = m_eflippers.size();
 
-  MOOSMSG_LIST::reverse_iterator p;
-  for(p = NewMail.rbegin(); p != NewMail.rend(); p++) {
+  MOOSMSG_LIST::iterator p;
+  for(p=NewMail.begin(); p!=NewMail.end(); p++) {
     CMOOSMsg &msg = *p;
 
     string key   = msg.m_sKey;
