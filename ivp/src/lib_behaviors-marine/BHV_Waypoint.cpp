@@ -105,12 +105,16 @@ bool BHV_Waypoint::setParam(string param, string val)
     if(strContainsWhite(val) || (val == ""))
       return(false);
     m_var_report = val;
+    if(tolower(m_var_report)=="silent")
+      m_var_report = "silent";
     return(true);
   }
   else if(param == "wpt_index") {
     if(strContainsWhite(val) || (val == ""))
       return(false);
     m_var_index = val;
+    if(tolower(m_var_index)=="silent")
+      m_var_index = "silent";
     return(true);
   }
   else if(param == "post_suffix") {
@@ -170,6 +174,7 @@ bool BHV_Waypoint::setParam(string param, string val)
 void BHV_Waypoint::onIdleState() 
 {
   postErasablePoint();
+  postErasableSegList();
 }
 
 
@@ -195,7 +200,8 @@ IvPFunction *BHV_Waypoint::onRunState()
     ipf->setPWT(m_priority_wt);
 
   postViewablePoint();
-  updateInfoOut(true);
+  postViewableSegList();
+  postStatusReport();
 
   return(ipf);
 }
@@ -330,28 +336,52 @@ IvPFunction *BHV_Waypoint::buildOF(string method)
 }
 
 //-----------------------------------------------------------
-// Procedure: updateInfoOut()
+// Procedure: postStatusReport()
 
-void BHV_Waypoint::updateInfoOut(bool post_viewable_waypoint)
+void BHV_Waypoint::postStatusReport()
 {
-  if(m_osv > 0) {
-    int    current_waypt = m_waypoint_engine.getCurrIndex();
-    double dist_meters   = hypot((m_osx - m_ptx), (m_osy - m_pty));
-    double eta_seconds   = dist_meters / m_osv;
+  int    current_waypt = m_waypoint_engine.getCurrIndex();
+  double dist_meters   = hypot((m_osx - m_ptx), (m_osy - m_pty));
+  double eta_seconds   = dist_meters / m_osv;
+  
+  string stat = "vname=" + m_us_name + ",";
+  stat += "index=" + intToString(current_waypt)   + ",";
+  stat += "dist="  + doubleToString(dist_meters, 0)  + ",";
+  stat += "eta="   + doubleToString(eta_seconds, 0);
+  
+  if(m_var_report != "silent")
+    postMessage((m_var_report + m_var_suffix), stat);
+  if(m_var_index != "silent")
+    postMessage((m_var_index + m_var_suffix), current_waypt);
+}
 
-    string stat = "vname=" + m_us_name + ",";
-    stat += "index=" + intToString(current_waypt)   + ",";
-    stat += "dist="  + doubleToString(dist_meters, 0)  + ",";
-    stat += "eta="   + doubleToString(eta_seconds, 0);
-    
-    if(m_var_report != "silent")
-      postMessage((m_var_report + m_var_suffix), stat);
-    if(m_var_index != "silent")
-      postMessage((m_var_index + m_var_suffix), current_waypt);
-  }
 
+//-----------------------------------------------------------
+// Procedure: postViewableSegList()
+//      Note: Recall that for a seglist to be drawn and erased, 
+//            it must match in the label. For a seglist to be 
+//            "ignored" it must set active=false.
+
+void BHV_Waypoint::postViewableSegList()
+{
   XYSegList seglist = m_waypoint_engine.getSegList();
   seglist.set_label(m_us_name + "_" + m_descriptor);
+  string segmsg = seglist.get_spec();
+  postMessage("VIEW_SEGLIST", segmsg);
+}
+
+
+//-----------------------------------------------------------
+// Procedure: postErasableSegList()
+//      Note: Recall that for a seglist to be drawn and erased, 
+//            it must match in the label. For a seglist to be 
+//            "ignored" it must set active=false.
+
+void BHV_Waypoint::postErasableSegList()
+{
+  XYSegList seglist = m_waypoint_engine.getSegList();
+  seglist.set_label(m_us_name + "_" + m_descriptor);
+  seglist.set_active(false);
   string segmsg = seglist.get_spec();
   postMessage("VIEW_SEGLIST", segmsg);
 }

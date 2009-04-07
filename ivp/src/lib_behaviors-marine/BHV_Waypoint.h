@@ -40,8 +40,6 @@ protected:
   bool         updateInfoIn();
   bool         setNextWaypoint();
   IvPFunction* buildOF(std::string);
-  void         updateInfoOut(bool post=true);
-  void         updateInfoOutNull();
 
   void         postStatusReport();
   void         postViewableSegList();

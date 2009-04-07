@@ -1263,7 +1263,8 @@ void MarineViewer::drawSegLists()
   
   for(int i=0; i<vsize; i++) {
     XYSegList segl = m_geoshapes.getSegList(i);
-    drawSegList(segl, lwid, vert, false, edge_c, vert_c, labl_c); 
+    if(segl.active())
+      drawSegList(segl, lwid, vert, false, edge_c, vert_c, labl_c); 
   }
 }
 
