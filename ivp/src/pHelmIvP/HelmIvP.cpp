@@ -130,9 +130,9 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
   // new MOOS Mail is applied to the info buffer.
   m_info_buffer->clearDeltaVectors();
 
-  MOOSMSG_LIST::reverse_iterator p;
+  MOOSMSG_LIST::iterator p;
   
-  for(p = NewMail.rbegin(); p != NewMail.rend(); p++) {
+  for(p=NewMail.begin(); p!=NewMail.end(); p++) {
     CMOOSMsg &msg = *p;
     double dfT;
 
