@@ -194,7 +194,6 @@ SET(IVP_APPS_TO_BUILD
   pMarineViewer
   pShipsideViewer
   pTransponderAIS
-  pViewerRelay
   uHelmScope
   uProcessWatch
   uRepeater
