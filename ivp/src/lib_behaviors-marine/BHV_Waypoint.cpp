@@ -178,8 +178,6 @@ void BHV_Waypoint::onIdleState()
 
 IvPFunction *BHV_Waypoint::onRunState() 
 {
-  //waypoint_engine.setPerpetual(perpetual);
-
   // Set m_osx, m_osy, m_osv
   if(!updateInfoIn()) {
     postErasablePoint();
@@ -239,7 +237,8 @@ bool BHV_Waypoint::setNextWaypoint()
 {
   string feedback_msg = m_waypoint_engine.setNextWaypoint(m_osx, m_osy);
 
-  if(m_waypoint_engine.isComplete()) {
+  if((feedback_msg=="completed") || (feedback_msg=="advanced and completed")) {
+    //if(m_waypoint_engine.isComplete()) {
     if(tolower(m_var_report) != "silent")
       postMessage((m_var_report + m_var_suffix), "complete");
     setComplete();
