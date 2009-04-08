@@ -127,7 +127,7 @@ bool XMS::OnNewMail(MOOSMSG_LIST &NewMail)
   for(p = NewMail.begin(); p!=NewMail.end(); p++) {
     CMOOSMsg &msg = *p;
     updateVariable(msg);
-    if((msg.m_sKey != "DB_UPTIME") && (msg.m_sKey != m_history_var))
+    if(msg.m_sKey != "DB_UPTIME")
       m_scope_event = true;
   }
   return(true);
@@ -285,6 +285,7 @@ void XMS::handleCommand(char c)
   case 'p':
   case 'P':
     m_refresh_mode = "paused";
+    m_update_requested = true;
     break;
   case 'j':
     m_report_histvar = false;
@@ -311,6 +312,7 @@ void XMS::handleCommand(char c)
   case 'e':
   case 'E':
     m_refresh_mode = "events";
+    m_update_requested = true;
     break;
   case '<':
     m_history_length -= 5;
@@ -414,7 +416,7 @@ bool XMS::addVariable(string varname, bool histvar)
     return(false);
   
   // Handle if this var is a "history" variable
-  if(histvar) {
+  if(histvar || (var_names.size() == 0)) {
     m_history_var = varname;
     // If currently no variables scoped, hist_mode=true
     if(var_names.size() == 0)
