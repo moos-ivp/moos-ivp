@@ -147,7 +147,6 @@ SET(IVP_LIBS_TO_BUILD
   lib_logutils
   lib_mbutil
   lib_navplot
-  lib_avd
   lib_anrp_util
   lib_newmat10D
 )
@@ -186,7 +185,6 @@ SET(IVP_APPS_TO_BUILD
   app_splug
   app_domquery
   iMarineSim
-  pDeployHandler
   pEchoVar
   pXRelay
   pHelmIvP
@@ -196,7 +194,6 @@ SET(IVP_APPS_TO_BUILD
   pTransponderAIS
   uHelmScope
   uProcessWatch
-  uRepeater
   uTermCommand
   uFunctionVis
   uXMS
