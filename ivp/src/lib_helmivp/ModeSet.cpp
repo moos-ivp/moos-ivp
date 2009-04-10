@@ -173,17 +173,24 @@ vector<string> ModeSet::getConditionVars()
 
 string ModeSet::getStringDescription()
 {
+  string curr_mode_varname;
+
   string return_value;
   unsigned int i, vsize = m_entries.size();
   for(i=0; i<vsize; i++) {
-    if(i>0)
-      return_value += ", ";
+    if(i > 0)
+      return_value += "#";
+
+    string i_mode_varname = m_entries[i].getModeVarName();
+    if(i_mode_varname != curr_mode_varname) {
+      return_value += (i_mode_varname + "#");
+      curr_mode_varname = i_mode_varname;
+    }
+
     string  child = m_entries[i].getModeVarValue();
     string parent = m_entries[i].getModeParent();
     if(parent == "")
       parent = "---";
-    if(i > 0)
-      return_value += "#";
     return_value += (parent + "," + child);
     string else_val = m_entries[i].getModeVarElseValue();
     if(else_val != "")

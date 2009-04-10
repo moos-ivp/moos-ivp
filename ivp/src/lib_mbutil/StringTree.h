@@ -33,6 +33,8 @@ public:
   StringTree() {};
   ~StringTree() {};
 
+  void setKey(std::string s) {m_key=s;};
+
   bool addParChild(const std::string& parent, 
 		   const std::string& child, 
 		   bool handle_waiters=true);
@@ -46,6 +48,7 @@ public:
   void handleWaiters();
 
 protected:
+  std::string              m_key;
   std::vector<StringNode>  m_nodes;
   std::vector<std::string> m_parents_waiting;
   std::vector<std::string> m_children_waiting;

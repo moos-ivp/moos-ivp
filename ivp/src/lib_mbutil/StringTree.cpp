@@ -62,6 +62,8 @@ bool StringTree::addParChild(const string& parent,
 vector<string> StringTree::getPrintableSet()
 {
   vector<string> rvector;
+  rvector.push_back("Mode-Variable="+m_key);
+  
   unsigned int i, vsize = m_nodes.size();
   for(i=0; i<vsize; i++) {
     vector<string> ivector = m_nodes[i].getPrintableSet();

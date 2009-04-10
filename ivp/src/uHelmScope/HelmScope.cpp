@@ -527,14 +527,26 @@ void HelmScope::handleNewHelmModeSet(const string& str)
   for(i=0; i<vsize; i++) {
     string parent = stripBlankEnds(biteString(svector[i], ','));
     string child  = stripBlankEnds(svector[i]);
-    cout << "[" << i << "] parent:" << parent << "  child:" << child << endl;
-    m_mode_tree.addParChild(parent, child);
+    if(child == "") {
+      StringTree new_tree;
+      new_tree.setKey(parent);
+      m_mode_trees.push_back(new_tree);
+    }
+    else {
+      int index = m_mode_trees.size()-1;
+      cout << "[" << i << "] parent:" << parent << "  child:" << child << endl;
+      m_mode_trees[index].addParChild(parent, child);
+    }
   }
+
   cout << "Full Tree: " << endl;
-  vector<string> jvector = m_mode_tree.getPrintableSet();
-  unsigned int j, jsize = jvector.size();
-  for(j=0; j<jsize; j++) 
-    cout << jvector[j] << endl;
+  vsize = m_mode_trees.size();
+  for(i=0; i<vsize; i++) {
+    vector<string> jvector = m_mode_trees[i].getPrintableSet();
+    unsigned int j, jsize = jvector.size();
+    for(j=0; j<jsize; j++) 
+      cout << jvector[j] << endl;
+  }
 }
 
 //------------------------------------------------------------
@@ -821,25 +833,25 @@ void HelmScope::printModeSet()
   IterBlockHelm hblock = m_blocks_helm[m_iter_next_post];
   string modes         = hblock.getModeStr();
 
-  cout << "modes: " << modes << endl;
-
-  vector<string> svector = m_mode_tree.getPrintableSet();
-  unsigned int i, j, vsize = svector.size();
-
-  int lead_lines = (45 - vsize);
-  if(lead_lines < 4)
-    lead_lines = 4;
-
+  int lead_lines = 10;
+  unsigned int j;
   for(j=0; j<lead_lines; j++)
     printf("\n");
- 
   printf("ModeSet Hierarchy: \n");
   printf("---------------------------------------------- \n");
-  if(vsize == 0)
-    printf("Undefined ModeSet for this Helm Invocation   \n");
-  
-  for(i=0; i<vsize; i++) {
-    printf("%s\n",  svector[i].c_str());
+
+  unsigned int t, tsize = m_mode_trees.size();
+
+  for(t=0; t<tsize; t++) {
+    vector<string> svector = m_mode_trees[t].getPrintableSet();
+    unsigned int i, j, vsize = svector.size();
+    if(vsize == 0)
+      printf("Undefined ModeSet for this Helm Invocation   \n");
+    for(i=0; i<vsize; i++) {
+      printf("%s\n",  svector[i].c_str());
+    }
+    if(t < (tsize-1))
+      printf("\n");
   }
 
   printf("---------------------------------------------- \n");

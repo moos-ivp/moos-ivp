@@ -94,7 +94,7 @@ class HelmScope : public CMOOSApp
   std::map<int, IterBlockPosts> m_blocks_posts;
   std::map<int, IterBlockXMS>   m_blocks_xms;
 
-  StringTree  m_mode_tree;
+  std::vector<StringTree>  m_mode_trees;
   std::string m_current_mode;
 
   bool   m_helm_engaged;
