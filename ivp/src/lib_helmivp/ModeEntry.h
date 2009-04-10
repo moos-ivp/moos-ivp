@@ -64,5 +64,4 @@ protected:
   std::vector<LogicCondition> m_logic_conditions;
   std::vector<bool>           m_modevar_conditions;
 };
-
 #endif

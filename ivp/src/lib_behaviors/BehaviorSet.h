@@ -80,6 +80,7 @@ public:
   bool        updateStateSpaceVars();
   std::string getStateSpaceVars();
 
+  void printModeSet() {m_mode_set.print();};
   bool consultModeSet() {m_mode_set.evaluate();};
   std::vector<VarDataPair> getModeVarDataPairs()    
     {return(m_mode_set.getVarDataPairs());};

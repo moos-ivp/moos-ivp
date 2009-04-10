@@ -86,10 +86,10 @@ bool ModeEntry::evalModeVarConditions()
   bool result = true;
   unsigned int i, vsize = m_logic_conditions.size();
   for(i=0; i<vsize; i++) {
-    if(m_modevar_conditions[i])
+    if(m_modevar_conditions[i]) {
       result = result && m_logic_conditions[i].eval();
+    }
   }
-
   return(result);
 }
 
@@ -198,11 +198,16 @@ void ModeEntry::print()
   cout << "  Mode Val:    " << m_mode_val       << endl;
   cout << "  Mode Else:   " << m_mode_val_else  << endl;
   cout << "  Mode Prefix: " << m_mode_prefix    << endl;
-  cout << "  Conditions:  " << endl;
+  cout << "  MVConds:    (" << m_modevar_conditions.size() <<")"<< endl;
+  cout << "  Conditions: (" << m_logic_conditions.size() << ")"<<endl;
   unsigned int i, vsize = m_logic_conditions.size();
   for(i=0; i<vsize; i++) {
     string raw = m_logic_conditions[i].getRawCondition();
-    cout << "    " << raw << endl;
+    cout << "    " << raw;
+    if(m_modevar_conditions[i])
+      cout << "(modevar)" << endl;
+    else
+      cout << "(not-modevar)" << endl;
   }
 }
 
@@ -217,6 +222,7 @@ void ModeEntry::clear()
   m_mode_prefix    = "";
 
   m_logic_conditions.clear();
+  m_modevar_conditions.clear();
 }
 
 //------------------------------------------------------------------
