@@ -217,6 +217,8 @@ void IterBlockHelm::setModeString(string str)
   unsigned int i, vsize = svector.size();
     
   for(i=0; i<vsize; i++) {
+    if(i>0)
+      m_modes += ", ";
     string mode_name  = biteString(svector[i], '@');
     string mode_value = stripBlankEnds(svector[i]);
     if(vsize > 1) 
