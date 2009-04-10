@@ -235,7 +235,7 @@ IvPFunction *BHV_Loiter::onRunState()
   }
   
   string feedback_msg = m_waypoint_engine.setNextWaypoint(m_osx, m_osy);
-  if(feedback_msg == "advanced")
+  if((feedback_msg == "advanced") || (feedback_msg == "cycled"))
     m_acquire_mode = false;
   
   m_ptx = m_waypoint_engine.getPointX();

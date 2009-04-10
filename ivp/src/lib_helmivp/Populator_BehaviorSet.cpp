@@ -110,12 +110,19 @@ BehaviorSet *Populator_BehaviorSet::populate(set<string> bhv_files)
       for(i=0; i<lineCount; i++) {
 	string line = stripBlankEnds(file_vector[i]);
 
-	// Begin Brace-Separate.
-	// If the beginning or end of a line has a brace, pretend as if it was
-	// given on two separate lines.
+	bool is_comment = false;
+	line = stripBlankEnds(line);
+	if(!strncmp("//", line.c_str(), 2))
+	  is_comment = true;
+	if(!strncmp("#", line.c_str(), 1))
+	  is_comment = true;
+	
+	// Begin Brace-Separate.  If the beginning or end of a line
+	// has a brace, pretend as if it was given on two separate
+	// lines.
 	unsigned int len = line.length();	
 	string pre_line, post_line;
-	if((len!=0) && ((line)[0]!='#')) {
+	if((len!=0) && !is_comment) {
 	  if((len>1) && ((line.at(0) == '{') || (line.at(0) == '}'))) {
 	    pre_line += line.at(0);
 	    line.erase(0,1);
@@ -134,8 +141,8 @@ BehaviorSet *Populator_BehaviorSet::populate(set<string> bhv_files)
 	  if(post_line != "")
 	    ok = ok && handleLine(post_line);
 	  
-	  //cout << "After line " << i+1 << "  mode:[" << m_parse_mode << "]" << endl;
-	  //cout << "(" << line << ")" << endl;
+	  //cout << "After line " << i+1 << " mode:[" << m_parse_mode
+	  //<< "]" << endl; cout << "(" << line << ")" << endl;
 
 	  if(!ok) {
 	    cout << "    Problem with line " << i+1;
@@ -324,7 +331,6 @@ bool Populator_BehaviorSet::handleLine(string line)
     bool ok = m_mode_entry.addCondition(a_condition_string);
     return(ok);
   }
-
   return(false);
 }
 

@@ -40,7 +40,7 @@ WaypointEngine::WaypointEngine()
   m_prev_ix         = -1;
   m_reverse         = false;
   m_perpetual       = false;
-  m_repeat          = 0;
+  m_repeat          = -1;
   m_capture_radius  = 0;
   m_nm_radius       = 0;
   m_complete        = true;
@@ -235,14 +235,21 @@ string WaypointEngine::setNextWaypoint(double os_x, double os_y)
     m_curr_ix++;
     if(m_curr_ix >= (int)(vsize)) {
       m_curr_ix = 0;
-      if(!m_perpetual) {
-	if(m_repeat > 0)
+      m_current_cpa = -1;
+      if(m_perpetual == true) {
+	if(m_repeat != -1) {
 	  m_repeat--;
-	else {
-	  m_complete = true;
-	  return("advanced and completed");
+	  if(m_repeat <= 0) 
+	    m_complete = true;
 	}
       }
+      else
+	m_complete = true;
+
+      if(m_complete)
+	return("completed");
+      else
+	return("cycled");
     }
     pt_x = m_seglist.get_vx(m_curr_ix);
     pt_y = m_seglist.get_vy(m_curr_ix);

@@ -38,7 +38,6 @@ class WaypointEngine {
   void   setCurrIndex(unsigned int);
   void   setPerpetual(bool v) {m_perpetual = v;};
   void   setCenter(double, double);
-  void   reset() {m_complete=false; m_curr_ix=0;};
   
   double getPointX(unsigned int);
   double getPointY(unsigned int);  

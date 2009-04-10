@@ -177,12 +177,13 @@ void BHV_Waypoint::onIdleState()
   postErasableSegList();
 }
 
-
 //-----------------------------------------------------------
 // Procedure: onRunState
 
 IvPFunction *BHV_Waypoint::onRunState() 
 {
+  m_waypoint_engine.setPerpetual(m_perpetual);
+
   // Set m_osx, m_osy, m_osv
   if(!updateInfoIn()) {
     postErasablePoint();
@@ -243,13 +244,14 @@ bool BHV_Waypoint::setNextWaypoint()
 {
   string feedback_msg = m_waypoint_engine.setNextWaypoint(m_osx, m_osy);
 
-  if((feedback_msg=="completed") || (feedback_msg=="advanced and completed")) {
-    //if(m_waypoint_engine.isComplete()) {
+  if((feedback_msg=="completed") || (feedback_msg=="cycled")) {
     if(tolower(m_var_report) != "silent")
-      postMessage((m_var_report + m_var_suffix), "complete");
+      postMessage((m_var_report + m_var_suffix), feedback_msg);
+
+    if(feedback_msg == "completed")
+      m_perpetual = false;    
     setComplete();
-    if(m_perpetual)
-      m_waypoint_engine.reset();
+
     return(false);
   }
   
