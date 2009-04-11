@@ -242,6 +242,7 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
     string key   = msg.m_sKey;
     string sval  = msg.m_sVal;
     
+    bool scope_handled = false;
     unsigned int i, vsize = m_scope_vars.size();
     for(i=0; i<vsize; i++) {
       if(key == m_scope_vars[i]) {
@@ -250,6 +251,7 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
 	if(msg.IsDouble())
 	  sval = dstringCompact(doubleToString(msg.m_dfVal, 8));
 	m_gui->mviewer->updateScopeVariable(key, sval, mtime, source);
+	scope_handled = true;
       }
     }
 
@@ -261,7 +263,7 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
       receivePK_SOL(sval);
       handled = true;
     }
-    if(!handled) {
+    if(!handled && !scope_handled) {
       MOOSTrace("pMarineViewer OnNewMail Unhandled msg: \n");
       MOOSTrace("  [key:%s val:%s]\n", key.c_str(), sval.c_str());
     }
