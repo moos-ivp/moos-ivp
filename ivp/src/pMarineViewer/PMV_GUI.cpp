@@ -318,11 +318,6 @@ void PMV_GUI::updateXY() {
     v_ais->value(" n/a");
     return;
   }
-  // draw the line separating the scope field on the bottom
-  //Fl_Color saved_color = fl_color();
-  //fl_color(100,100,100);
-  //fl_line(0, h()-43, w(), h()-43);
-  //fl_color(saved_color);
 
   string swarp = dstringCompact(doubleToString(dwarp,2));
   string vtype = mviewer->getStringInfo("body");
