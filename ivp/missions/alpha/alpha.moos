@@ -111,12 +111,7 @@ ProcessConfig = pMarineViewer
   hash_delta           = 50
   hash_shade           = 0.4
   hash_view            = true
-
   scope                = VIEW_POINT
-  scope                = VIEW_SEGLIST
-  scope                = VIEW_POLYGON
-  scope                = NAV_X
-  scope                = NAV_Y
 
   BUTTON_ONE = DEPLOY # DEPLOY=true
   BUTTON_ONE = MOOS_MANUAL_OVERIDE=false # RETURN=false
