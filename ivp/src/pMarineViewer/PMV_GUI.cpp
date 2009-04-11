@@ -36,7 +36,8 @@ PMV_GUI::PMV_GUI(int g_w, int g_h, const char *g_l)
   this->when(FL_WHEN_CHANGED);
   this->begin();
 
-  int info_size=12;
+  int info_size = 12;
+  int small_info_size = 10;
   
   m_trail_color_ix = 0;
   m_curr_time      = 0;
@@ -108,17 +109,17 @@ PMV_GUI::PMV_GUI(int g_w, int g_h, const char *g_l)
   
   m_scope_variable = new Fl_Output(60, h()-30, 100, 20, "Variable:"); 
   m_scope_variable->set_output();
-  m_scope_variable->textsize(info_size); 
+  m_scope_variable->textsize(small_info_size); 
   m_scope_variable->labelsize(info_size);
 
   m_scope_time = new Fl_Output(200, h()-30, 60, 20, "Time:"); 
   m_scope_time->set_output();
-  m_scope_time->textsize(info_size); 
+  m_scope_time->textsize(small_info_size); 
   m_scope_time->labelsize(info_size);
 
   m_scope_value = new Fl_Output(305, h()-30, w()-350, 20, "Value:"); 
   m_scope_value->set_output();
-  m_scope_value->textsize(info_size); 
+  m_scope_value->textsize(small_info_size); 
   m_scope_value->labelsize(info_size);
 
   int wid_b  = 120;
