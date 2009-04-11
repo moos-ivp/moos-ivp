@@ -247,6 +247,8 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
       if(key == m_scope_vars[i]) {
 	string mtime = doubleToString((msg.m_dfTime-m_start_time),2);
 	string source = msg.m_sSrc;
+	if(msg.IsDouble())
+	  sval = dstringCompact(doubleToString(msg.m_dfVal, 8));
 	m_gui->mviewer->updateScopeVariable(key, sval, mtime, source);
       }
     }

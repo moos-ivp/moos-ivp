@@ -411,15 +411,15 @@ void PMV_GUI::cb_DoAction(Fl_Widget* o, int v) {
 
 //----------------------------------------- Scope
 inline void PMV_GUI::cb_Scope_i(int i) {  
-  //if((i<0) || (i>=m_scope_vars.size()))
-  //  return;
-  // string varname = m_scope_vars[i];
-  //mviewer->setActiveScope(varname);
+  if((i<0) || (i>=m_scope_vars.size()))
+    return;
+  string varname = m_scope_vars[i];
+  mviewer->setActiveScope(varname);
 }
 
 void PMV_GUI::cb_Scope(Fl_Widget* o, int v) {
-  //int val = (int)(v);
-  //((PMV_GUI*)(o->parent()->user_data()))->cb_Scope_i(val);
+  int val = (int)(v);
+  ((PMV_GUI*)(o->parent()->user_data()))->cb_Scope_i(val);
 }
 
 
