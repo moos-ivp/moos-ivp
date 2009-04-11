@@ -266,6 +266,7 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
     if(!handled && !scope_handled) {
       MOOSTrace("pMarineViewer OnNewMail Unhandled msg: \n");
       MOOSTrace("  [key:%s val:%s]\n", key.c_str(), sval.c_str());
+      MOOSTrace("?");
     }
     
     if(key == "VIEW_POLYGON")          MOOSTrace("P");
@@ -277,8 +278,6 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
     else if(key == "GRID_CONFIG")      MOOSTrace("X");
     else if(key == "GRID_DELTA")       MOOSTrace("G");
     else if(key == "VIEW_MARKER")      MOOSTrace("M");
-
-    else MOOSTrace("?");
 
     if(handled)
       handled_msgs++;
