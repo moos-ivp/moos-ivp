@@ -30,15 +30,13 @@ using namespace std;
 PMV_Viewer::PMV_Viewer(int x, int y, int w, int h, const char *l)
   : MarineViewer(x,y,w,h,l)
 {
+  m_var_index = -1;
   m_centric_view = false;
   m_centric_view_sticky = true;
 }
 
 //-------------------------------------------------------------
 // Procedure: draw()
-//      Note: A mutex is put around all the drawing calls since it
-//            is accessing information that is perhaps being 
-//            altered by another thread.
 
 void PMV_Viewer::draw()
 {
@@ -99,14 +97,9 @@ int PMV_Viewer::handle(int event)
 
 //-------------------------------------------------------------
 // Procedure: setParam
-//      Note: A mutex is used since the member variables being set
-//            are perhaps being altered by another thread.
-//      Note: The parent class has its own mutex protection for
-//            its setParam implementation.
 
 bool PMV_Viewer::setParam(string param, string value)
 {
-  // Parent class has its own mutex protection - none needed here.
   if(MarineViewer::setParam(param, value))
     return(true);
 
@@ -130,6 +123,8 @@ bool PMV_Viewer::setParam(string param, string value)
       center_needs_adjusting = true;
     }
   }
+  else if((param == "scope") || (param == "scope_variable"))
+    handled = addScopeVariable(value);
   else
     handled = m_vehiset.setParam(param, value);
   
@@ -142,10 +137,6 @@ bool PMV_Viewer::setParam(string param, string value)
 
 //-------------------------------------------------------------
 // Procedure: setParam
-//      Note: A mutex is used since the member variables being set
-//            are perhaps being altered by another thread.
-//      Note: The parent class has its own mutex protection for
-//            its setParam implementation.
 
 bool PMV_Viewer::setParam(string param, double value)
 {
@@ -154,7 +145,6 @@ bool PMV_Viewer::setParam(string param, double value)
     m_centric_view = false;
   }
 
-  // Parent class has its own mutex protection - none needed here.
   bool handled = MarineViewer::setParam(param, value);
 
   if(!handled) {
@@ -164,44 +154,8 @@ bool PMV_Viewer::setParam(string param, double value)
   return(handled);
 }
 
-// ----------------------------------------------------------
-// Procedure: getStringInfo
-//      Note: A mutex is used since the info being accessed here
-//            is perhaps being altered by another thread.
-
-string PMV_Viewer::getStringInfo(const string& info_type, int precision)
-{
-  string result = "error";
-
-  if(info_type == "left_click_info")
-    result = m_left_click;
-  else if(info_type == "right_click_info")
-    result = m_right_click;
-  else {
-    string sresult;
-    bool   shandled = m_vehiset.getStringInfo("active", info_type, sresult);
-    if(shandled) {
-      result = sresult;
-    }
-    else {
-      double dresult;
-      bool   dhandled = m_vehiset.getDoubleInfo("active", info_type, dresult);
-      if(dhandled)
-	result = doubleToString(dresult, precision);
-    }
-  }
-  
-  //cout << "GSI type:" << info_type << " result:[" << result << "]" << endl;
-  return(result);
-}
-  
-
 //-------------------------------------------------------------
 // Procedure: drawVehicle
-// Notes: No mutex is used here despite its accessing of data structures
-//        written to by other threads. This is because this is a 
-//        PRIVATE class function called only by a function which 
-//        is using its own mutex.
 
 void PMV_Viewer::drawVehicle(string vname, bool active, string vehibody)
 {
@@ -230,10 +184,6 @@ void PMV_Viewer::drawVehicle(string vname, bool active, string vehibody)
 
 //-------------------------------------------------------------
 // Procedure: drawPoints
-// Notes: No mutex is used here despite its accessing of data structures
-//        written to by other threads. This is because this is a 
-//        PRIVATE class function called only by a function which 
-//        is using its own mutex.
 
 void PMV_Viewer::drawPoints(CPList &cps, int trail_length)
 {
@@ -269,8 +219,6 @@ void PMV_Viewer::drawPoints(CPList &cps, int trail_length)
 
 //-------------------------------------------------------------
 // Procedure: handleLeftMouse
-//      Note: A mutex is used since the member variables being set
-//            are perhaps being altered by another thread.
 
 void PMV_Viewer::handleLeftMouse(int vx, int vy)
 {
@@ -289,8 +237,6 @@ void PMV_Viewer::handleLeftMouse(int vx, int vy)
 
 //-------------------------------------------------------------
 // Procedure: handleRightMouse
-//      Note: A mutex is used since the member variables being set
-//            are perhaps being altered by another thread.
 
 void PMV_Viewer::handleRightMouse(int vx, int vy)
 {
@@ -309,8 +255,6 @@ void PMV_Viewer::handleRightMouse(int vx, int vy)
 
 //-------------------------------------------------------------
 // Procedure: setWeightedCenterView()
-//      Note: A mutex is used since the member variables being set
-//            are perhaps being altered by another thread.
 
 void PMV_Viewer::setWeightedCenterView()
 {
@@ -337,4 +281,123 @@ void PMV_Viewer::setWeightedCenterView()
   m_vshift_x = -x_pixels;
   m_vshift_y = -y_pixels;
 }
+
+
+//-------------------------------------------------------------
+// Procedure: addScopeVariable
+//      Note: 
+
+bool PMV_Viewer::addScopeVariable(string varname)
+{
+  varname = stripBlankEnds(varname);
+  if(strContainsWhite(varname))
+    return(false);
+  
+  bool scoping_already = false;
+  unsigned int i, vsize = m_var_names.size();
+  for(i=0; i<vsize; i++) 
+    if(m_var_names[i] == varname)
+      scoping_already = true;
+
+  if(scoping_already)
+    return(false);
+
+  m_var_names.push_back(varname);
+  m_var_vals.push_back("");
+  m_var_source.push_back("");
+  m_var_time.push_back("");
+  if(m_var_index == -1)
+    m_var_index = 0;
+  return(true);    
+}
+
+
+//-------------------------------------------------------------
+// Procedure: updateScopeVariable
+//      Note: 
+
+bool PMV_Viewer::updateScopeVariable(string varname, string value, 
+				     string vtime, string vsource)
+{
+  unsigned int i, vsize = m_var_names.size();
+  for(i=0; i<vsize; i++) {
+    if(m_var_names[i] == varname) {
+      m_var_vals[i] = value;
+      m_var_source[i] = vsource;
+      m_var_time[i] = vtime;
+      return(true);
+    }
+  }
+  return(false);
+}
+
+//-------------------------------------------------------------
+// Procedure: setActiveScope
+//      Note: 
+
+void PMV_Viewer::setActiveScope(string varname)
+{
+  unsigned int i, vsize = m_var_names.size();
+  for(i=0; i<vsize; i++) {
+    if(m_var_names[i] == varname) {
+      m_var_index = i;
+      return;
+    }
+  }
+}
+
+
+// ----------------------------------------------------------
+// Procedure: getStringInfo
+
+string PMV_Viewer::getStringInfo(const string& info_type, int precision)
+{
+  string result = "error";
+
+  if(info_type == "scope_var") {
+    if(m_var_index != -1)
+      return(m_var_names[m_var_index]);
+    else
+      return("n/a");
+  }
+  else if(info_type == "scope_val") {
+    if(m_var_index != -1)
+      return(m_var_vals[m_var_index]);
+    else
+      return("To add Scope Variables: SCOPE=VARNAME in the MOOS config block");
+  }
+  else if(info_type == "scope_time") {
+    if(m_var_index != -1)
+      return(m_var_time[m_var_index]);
+    else
+      return("n/a");
+  }
+  else if(info_type == "scope_source") {
+    if(m_var_index != -1)
+      return(m_var_source[m_var_index]);
+    else
+      return("n/a");
+  }
+  else if(info_type == "left_click_info")
+    result = m_left_click;
+  else if(info_type == "right_click_info")
+    result = m_right_click;
+  else {
+    string sresult;
+    bool   shandled = m_vehiset.getStringInfo("active", info_type, sresult);
+    if(shandled) {
+      result = sresult;
+    }
+    else {
+      double dresult;
+      bool   dhandled = m_vehiset.getDoubleInfo("active", info_type, dresult);
+      if(dhandled)
+	result = doubleToString(dresult, precision);
+    }
+  }
+  
+  //cout << "GSI type:" << info_type << " result:[" << result << "]" << endl;
+  return(result);
+}
+  
 

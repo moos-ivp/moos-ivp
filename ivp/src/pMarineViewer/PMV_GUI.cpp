@@ -42,76 +42,91 @@ PMV_GUI::PMV_GUI(int g_w, int g_h, const char *g_l)
   m_curr_time      = 0;
   m_prev_out_time  = 0;
 
-  mviewer  = new PMV_Viewer(0, 30, w(), h()-100);
+  mviewer  = new PMV_Viewer(0, 30, w(), h()-140);
   cmviewer = mviewer;
 
-  v_nam = new Fl_Output(60, h()-60, 70, 20, "VName:"); 
+  v_nam = new Fl_Output(60, h()-100, 70, 20, "VName:"); 
   v_nam->set_output();
   v_nam->textsize(info_size); 
   v_nam->labelsize(info_size);
 
-  v_typ = new Fl_Output(60, h()-30, 70, 20, "VType:"); 
+  v_typ = new Fl_Output(60, h()-70, 70, 20, "VType:"); 
   v_typ->set_output();
   v_typ->textsize(info_size); 
   v_typ->labelsize(info_size);
   v_typ->value("unknown");
 
-  x_mtr = new Fl_Output(190, h()-60, 70, 20, "X(m):"); 
+  x_mtr = new Fl_Output(190, h()-100, 70, 20, "X(m):"); 
   x_mtr->set_output();
   x_mtr->textsize(info_size); 
   x_mtr->labelsize(info_size);
 
-  y_mtr = new Fl_Output(190, h()-30, 70, 20, "Y(m):"); 
+  y_mtr = new Fl_Output(190, h()-70, 70, 20, "Y(m):"); 
   y_mtr->set_output();
   y_mtr->textsize(info_size); 
   y_mtr->labelsize(info_size);
 
-  v_lat = new Fl_Output(305, h()-60, 90, 20, "Lat:"); 
+  v_lat = new Fl_Output(305, h()-100, 90, 20, "Lat:"); 
   v_lat->set_output();
   v_lat->textsize(info_size); 
   v_lat->labelsize(info_size);
 
-  v_lon = new Fl_Output(305, h()-30, 90, 20, "long:"); 
+  v_lon = new Fl_Output(305, h()-70, 90, 20, "long:"); 
   v_lon->set_output();
   v_lon->textsize(info_size); 
   v_lon->labelsize(info_size);
 
-  v_spd = new Fl_Output(470, h()-60, 55, 20, "Spd(m/s):"); 
+  v_spd = new Fl_Output(470, h()-100, 55, 20, "Spd(m/s):"); 
   v_spd->set_output();
   v_spd->textsize(info_size); 
   v_spd->labelsize(info_size);
 
-  v_crs = new Fl_Output(470, h()-30, 55, 20, "Heading:"); 
+  v_crs = new Fl_Output(470, h()-70, 55, 20, "Heading:"); 
   v_crs->set_output();
   v_crs->textsize(info_size); 
   v_crs->labelsize(info_size);
 
-  v_dep = new Fl_Output(610, h()-60, 55, 20, "Dep(m):"); 
+  v_dep = new Fl_Output(610, h()-100, 55, 20, "Dep(m):"); 
   v_dep->set_output();
   v_dep->textsize(info_size); 
   v_dep->labelsize(info_size);
 
-  v_ais = new Fl_Output(610, h()-30, 55, 20, "Age-AIS:"); 
+  v_ais = new Fl_Output(610, h()-70, 55, 20, "Age-AIS:"); 
   v_ais->set_output();
   v_ais->textsize(info_size); 
   v_ais->labelsize(info_size);
 
-  time = new Fl_Output(720, h()-60, 70, 20, "Time:"); 
+  time = new Fl_Output(720, h()-100, 70, 20, "Time:"); 
   time->set_output();
   time->textsize(info_size); 
   time->labelsize(info_size);
 
-  warp = new Fl_Output(720, h()-30, 70, 20, "Warp:"); 
+  warp = new Fl_Output(720, h()-70, 70, 20, "Warp:"); 
   warp->set_output();
   warp->textsize(info_size); 
   warp->labelsize(info_size);
   
+  m_scope_variable = new Fl_Output(60, h()-30, 100, 20, "Variable:"); 
+  m_scope_variable->set_output();
+  m_scope_variable->textsize(info_size); 
+  m_scope_variable->labelsize(info_size);
+
+  m_scope_time = new Fl_Output(200, h()-30, 60, 20, "Time:"); 
+  m_scope_time->set_output();
+  m_scope_time->textsize(info_size); 
+  m_scope_time->labelsize(info_size);
+
+  m_scope_value = new Fl_Output(305, h()-30, w()-350, 20, "Value:"); 
+  m_scope_value->set_output();
+  m_scope_value->textsize(info_size); 
+  m_scope_value->labelsize(info_size);
+
   int wid_b  = 120;
   int hgt_b  = 24;
   int col_b  = w() - wid_b;
   int col_bb = w() - (wid_b * 2);
-  int row_b  = (h() - 20) - (2* hgt_b) ;
-  int row_bb = ((h() - 20) - hgt_b) + 2;
+  int row_b  = (h() - 57) - (2* hgt_b) ;
+  int row_bb = ((h() - 57) - hgt_b) + 2;
 
   user_button_1 = new MY_Button(col_b+2, row_b, 
                                 wid_b-4, hgt_b, "Disabled");
@@ -279,6 +294,15 @@ void PMV_GUI::updateXY() {
   string time_str = doubleToString(m_curr_time, 1);
   time->value(time_str.c_str());
 
+
+  string scope_var  = mviewer->getStringInfo("scope_var");
+  string scope_time = mviewer->getStringInfo("scope_time");
+  string scope_val  = mviewer->getStringInfo("scope_val");
+
+  m_scope_variable->value(scope_var.c_str());
+  m_scope_time->value(scope_time.c_str());
+  m_scope_value->value(scope_val.c_str());
+
   string vname = mviewer->getStringInfo("active_vehicle_name");
 
   if(vname == "") {
@@ -294,6 +318,11 @@ void PMV_GUI::updateXY() {
     v_ais->value(" n/a");
     return;
   }
+  // draw the line separating the scope field on the bottom
+  Fl_Color saved_color = fl_color();
+  fl_color(100,100,100);
+  fl_line(0, h()-43, w(), h()-43);
+  fl_color(saved_color);
 
   string swarp = dstringCompact(doubleToString(dwarp,2));
   string vtype = mviewer->getStringInfo("body");
@@ -380,6 +409,20 @@ void PMV_GUI::cb_DoAction(Fl_Widget* o, int v) {
 }
 
 
+//----------------------------------------- Scope
+inline void PMV_GUI::cb_Scope_i(int i) {  
+  //if((i<0) || (i>=m_scope_vars.size()))
+  //  return;
+  // string varname = m_scope_vars[i];
+  //mviewer->setActiveScope(varname);
+}
+
+void PMV_GUI::cb_Scope(Fl_Widget* o, int v) {
+  //int val = (int)(v);
+  //((PMV_GUI*)(o->parent()->user_data()))->cb_Scope_i(val);
+}
+
+
 
 //-------------------------------------------------------------------
 // Procedure: getPendingVar
@@ -421,5 +464,28 @@ void PMV_GUI::pushPending(string var, string val)
 {
   m_pending_vars.push_back(var);
   m_pending_vals.push_back(val);
+}
+
+//-------------------------------------------------------------------
+// Procedure: addScopeVariable
+
+void PMV_GUI::addScopeVariable(string varname)
+{
+  if(strContainsWhite(varname))
+    return;
+  unsigned int i, vsize = m_scope_vars.size();
+  for(i=0; i<vsize; i++) {
+    if(varname == m_scope_vars[i])
+      return;
+  }
+  
+  m_scope_vars.push_back(varname);
+  
+  int index = m_scope_vars.size()-1;
+  
+  string label = "Scope/";
+  label += (truncString(varname, 16, "middle"));
+  mbar->add(label.c_str(), 0, (Fl_Callback*)PMV_GUI::cb_Scope, (void*)index, 0);
+  mbar->redraw();
 }
 

@@ -37,7 +37,8 @@ class PMV_MOOSApp : public CMOOSApp
 
   void setGUI(PMV_GUI* g_gui) {m_gui=g_gui;};
   
-  void setPendingEventsPipe(Threadsafe_pipe<MOOS_event> * pending_moos_events) {
+  void setPendingEventsPipe(Threadsafe_pipe<MOOS_event> *pending_moos_events) 
+  {
     m_pending_moos_events = pending_moos_events;
   }
 
@@ -50,8 +51,8 @@ class PMV_MOOSApp : public CMOOSApp
   bool OnStartUp();
   bool OnNewMail(MOOSMSG_LIST &NewMail);
 
-  // Only call these methods in the main FLTK l thread, for thread safety w.r.t.
-  // that  library...
+  // Only call these methods in the main FLTK l thread, for thread
+  // safety w.r.t. that  library...
   void handleNewMail(const MOOS_event & e);
   void handleIterate(const MOOS_event & e);
   void handleStartUp(const MOOS_event & e);
@@ -73,14 +74,8 @@ class PMV_MOOSApp : public CMOOSApp
 
   std::string  m_left_click_str;
   std::string  m_right_click_str;
+  std::vector<std::string> m_scope_vars;
 };
 
 #endif 
-
-
-
-
-
-
-
 

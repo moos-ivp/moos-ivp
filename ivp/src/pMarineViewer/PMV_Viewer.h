@@ -39,19 +39,31 @@ class PMV_Viewer : public MarineViewer
 
   bool  setParam(std::string p, std::string v="");
   bool  setParam(std::string p, double v);
-  
+  bool  addScopeVariable(std::string);
+  bool  updateScopeVariable(std::string varname, std::string value, 
+			    std::string vtime, std::string vsource);
+  void  setActiveScope(std::string);
+
   std::string getStringInfo(const std::string& info_type, int precision=0);
 
  private:
-  void   setWeightedCenterView();
   void   drawVehicle(std::string, bool, std::string);
   void   drawPoints(CPList&, int=0);
   void   handleLeftMouse(int, int);
   void   handleRightMouse(int, int);
+  void   setWeightedCenterView();
 
 
  private:
   VehicleSet  m_vehiset;
+
+  // Member variables for holding scoped info
+  std::vector<std::string> m_var_names;
+  std::vector<std::string> m_var_vals;
+  std::vector<std::string> m_var_source;
+  std::vector<std::string> m_var_time;
+  int                      m_var_index;
+  
 
   // Member variables for holding/conveying mouse/button click info
   std::string m_left_click;

@@ -52,12 +52,15 @@ public:
   void         clearPending();
   void         pushPending(std::string, std::string);
   unsigned int getPendingSize() {return(m_pending_vars.size());};
+  void         addScopeVariable(std::string);
 
  private:
   inline void cb_MOOS_Button_i(int);
   static void cb_MOOS_Button(Fl_Widget*, int);
   inline void cb_DoAction_i(int);
   static void cb_DoAction(Fl_Widget*, int);
+  inline void cb_Scope_i(int);
+  static void cb_Scope(Fl_Widget*, int);
 
 protected:
   Fl_Output  *v_nam;
@@ -73,6 +76,10 @@ protected:
   Fl_Output  *time;
   Fl_Output  *warp;
 
+  Fl_Output  *m_scope_variable;
+  Fl_Output  *m_scope_time;
+  Fl_Output  *m_scope_value;
+
   MY_Button  *user_button_1;
   MY_Button  *user_button_2;
   MY_Button  *user_button_3;
@@ -85,6 +92,8 @@ protected:
   std::vector<std::string> m_action_vars;
   std::vector<std::string> m_action_vals;
   std::vector<std::string> m_action_keys;
+
+  std::vector<std::string> m_scope_vars;
 
 //   CMOOSLock  m_pmv_mutex;
 

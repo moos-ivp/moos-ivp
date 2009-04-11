@@ -57,7 +57,7 @@ bool PMV_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
   MOOSMSG_LIST::iterator p;
   for(p = NewMail.begin();p!=NewMail.end();p++) {
     CMOOSMsg &Msg = *p;
-    e.mail.push_back(MOOS_event::Mail_message(Msg.m_sKey, Msg.m_sVal));
+    e.mail.push_back(MOOS_event::Mail_message(Msg));
   }
   
   m_pending_moos_events->enqueue(e);
@@ -188,6 +188,10 @@ void PMV_MOOSApp::registerVariables()
   m_Comms.Register("VIEW_SEGLIST",     0);
   m_Comms.Register("TRAIL_RESET",      0);
   m_Comms.Register("VIEW_MARKER",      0);
+
+  unsigned int i, vsize = m_scope_vars.size();
+  for(i=0; i<vsize; i++)
+    m_Comms.Register(m_scope_vars[i], 0);
 }
 
 //----------------------------------------------------------------------
@@ -234,13 +238,26 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
   
   int handled_msgs = 0;
   for (size_t i = 0; i < e.mail.size(); ++i) {
-    string key = e.mail[i].key;
-    string sval = e.mail[i].sval;
+    CMOOSMsg msg = e.mail[i].msg;
+    string key   = msg.m_sKey;
+    string sval  = msg.m_sVal;
     
-    bool handled = m_gui->mviewer->setParam(key, sval);
+    unsigned int i, vsize = m_scope_vars.size();
+    for(i=0; i<vsize; i++) {
+      if(key == m_scope_vars[i]) {
+	string mtime = doubleToString((msg.m_dfTime-m_start_time),2);
+	string source = msg.m_sSrc;
+	m_gui->mviewer->updateScopeVariable(key, sval, mtime, source);
+      }
+    }
+
+    bool handled = false;
+    if(!handled)
+      handled = m_gui->mviewer->setParam(key, sval);
     if(!handled && (key == "PK_SOL")) {
       MOOSTrace("\nProcessing PK_SOL Message\n");
       receivePK_SOL(sval);
+      handled = true;
     }
     if(!handled) {
       MOOSTrace("pMarineViewer OnNewMail Unhandled msg: \n");
@@ -256,6 +273,7 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
     else if(key == "GRID_CONFIG")      MOOSTrace("X");
     else if(key == "GRID_DELTA")       MOOSTrace("G");
     else if(key == "VIEW_MARKER")      MOOSTrace("M");
+
     else MOOSTrace("?");
 
     if(handled)
@@ -338,6 +356,13 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
       m_gui->addAction(value);
     else if(param == "action+")
       m_gui->addAction(value, true);
+    else if(param == "scope") {
+      bool ok = m_gui->mviewer->addScopeVariable(value);
+      if(ok)  {
+	m_gui->addScopeVariable(value);
+	m_scope_vars.push_back(value);
+      }
+    }
     else { 
       bool handled = m_gui->mviewer->setParam(param, value);
       if(!handled)
