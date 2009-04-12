@@ -190,7 +190,6 @@ SET(IVP_APPS_TO_BUILD
   pHelmIvP
   pMarinePID
   pMarineViewer
-  pShipsideViewer
   pTransponderAIS
   uHelmScope
   uProcessWatch
