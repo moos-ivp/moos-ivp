@@ -33,11 +33,7 @@ public:
   PMV_GUI(int w, int h, const char *l=0);
   virtual ~PMV_GUI() {};
 
-  void draw() {
-    //m_pmv_mutex.Lock();
-    MarineVehiGUI::draw();
-    //m_pmv_mutex.UnLock();
-  };
+  void draw() {MarineVehiGUI::draw();};
 
   void updateXY();
   void addButton(std::string button, std::string pairs);
@@ -53,6 +49,7 @@ public:
   void         pushPending(std::string, std::string);
   unsigned int getPendingSize() {return(m_pending_vars.size());};
   void         addScopeVariable(std::string);
+  void         addContext(std::string side, std::string context);
 
  private:
   inline void cb_MOOS_Button_i(int);
@@ -61,6 +58,10 @@ public:
   static void cb_DoAction(Fl_Widget*, int);
   inline void cb_Scope_i(int);
   static void cb_Scope(Fl_Widget*, int);
+  inline void cb_LeftContext_i(int);
+  static void cb_LeftContext(Fl_Widget*, int);
+  inline void cb_RightContext_i(int);
+  static void cb_RightContext(Fl_Widget*, int);
 
 protected:
   Fl_Output  *v_nam;
@@ -75,6 +76,8 @@ protected:
   Fl_Output  *v_ais;
   Fl_Output  *time;
   Fl_Output  *warp;
+  Fl_Output  *range;
+  Fl_Output  *bearing;
 
   Fl_Output  *m_scope_variable;
   Fl_Output  *m_scope_time;
@@ -95,7 +98,8 @@ protected:
 
   std::vector<std::string> m_scope_vars;
 
-//   CMOOSLock  m_pmv_mutex;
+  std::vector<std::string> m_left_context;
+  std::vector<std::string> m_right_context;
 
   double     m_curr_time;
   double     m_prev_out_time;

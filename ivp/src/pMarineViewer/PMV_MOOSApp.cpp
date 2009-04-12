@@ -340,7 +340,7 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
   STRING_LIST sParams;
   m_MissionReader.GetConfiguration(GetAppName(), sParams);
   STRING_LIST::reverse_iterator p;
-  for(p = sParams.rbegin();p!=sParams.rend();p++) {
+  for(p=sParams.rbegin(); p!=sParams.rend(); p++) {
     string sLine    = *p;
     string param = tolower(MOOSChomp(sLine, "="));
     string value = stripBlankEnds(sLine);
@@ -359,13 +359,6 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
       m_gui->addAction(value);
     else if(param == "action+")
       m_gui->addAction(value, true);
-    else if(param == "scope") {
-      bool ok = m_gui->mviewer->addScopeVariable(value);
-      if(ok)  {
-	m_gui->addScopeVariable(value);
-	m_scope_vars.push_back(value);
-      }
-    }
     else { 
       bool handled = m_gui->mviewer->setParam(param, value);
       if(!handled)
@@ -376,6 +369,32 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
         tiff_b_set = true;      
     }
   }
+
+  m_MissionReader.GetConfiguration(GetAppName(), sParams);
+  for(p=sParams.rbegin(); p!=sParams.rend();p++) {
+    string sLine    = *p;
+    string param = stripBlankEnds(tolower(MOOSChomp(sLine, "=")));
+    string value = stripBlankEnds(sLine);
+    if(param == "scope") {
+      bool ok = m_gui->mviewer->addScopeVariable(value);
+      if(ok)  {
+	m_gui->addScopeVariable(value);
+	m_scope_vars.push_back(value);
+      }
+    }
+  }
+
+  for(p = sParams.rbegin();p!=sParams.rend();p++) {
+    string sLine    = *p;
+    string param = tolower(MOOSChomp(sLine, "="));
+    string value = stripBlankEnds(sLine);
+    
+    if(param == "left_context")
+      m_gui->addContext("left", value);
+    else if(param == "right_context")
+      m_gui->addContext("right", value);
+  }
+
 
   // If no images were specified, use the default images.
   if(!tiff_a_set && !tiff_b_set) {

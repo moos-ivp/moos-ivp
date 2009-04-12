@@ -123,8 +123,6 @@ bool PMV_Viewer::setParam(string param, string value)
       center_needs_adjusting = true;
     }
   }
-  else if((param == "scope") || (param == "scope_variable"))
-    handled = addScopeVariable(value);
   else
     handled = m_vehiset.setParam(param, value);
   
@@ -232,7 +230,10 @@ void PMV_Viewer::handleLeftMouse(int vx, int vy)
   m_left_click =  "x=" + doubleToString(sx,1) + ",";
   m_left_click += "y=" + doubleToString(sy,1);
 
-  //cout << "Left Mouse click at [" << m_left_click << "] meters." << endl;
+  if(m_left_click_context != "")
+    m_left_click += (",context=" + m_left_click_context);
+
+  cout << "Left Mouse click at [" << m_left_click << "] meters." << endl;
 }
 
 //-------------------------------------------------------------
@@ -250,7 +251,10 @@ void PMV_Viewer::handleRightMouse(int vx, int vy)
   m_right_click =  "x=" + doubleToString(sx,1) + ",";
   m_right_click += "y=" + doubleToString(sy,1);
 
-  //cout << "Right Mouse click at [" << m_right_click << "] meters." << endl;
+  if(m_right_click_context != "")
+    m_right_click += (",context=" + m_right_click_context);
+
+  cout << "Right Mouse click at [" << m_right_click << "] meters." << endl;
 }
 
 //-------------------------------------------------------------

@@ -37,7 +37,7 @@ PMV_GUI::PMV_GUI(int g_w, int g_h, const char *g_l)
   this->begin();
 
   int info_size = 12;
-  int small_info_size = 10;
+  int small_info_size = 11;
   
   m_trail_color_ix = 0;
   m_curr_time      = 0;
@@ -57,55 +57,65 @@ PMV_GUI::PMV_GUI(int g_w, int g_h, const char *g_l)
   v_typ->labelsize(info_size);
   v_typ->value("unknown");
 
-  x_mtr = new Fl_Output(190, h()-100, 70, 20, "X(m):"); 
+  x_mtr = new Fl_Output(175, h()-100, 75, 20, "X(m):"); 
   x_mtr->set_output();
   x_mtr->textsize(info_size); 
   x_mtr->labelsize(info_size);
 
-  y_mtr = new Fl_Output(190, h()-70, 70, 20, "Y(m):"); 
+  y_mtr = new Fl_Output(175, h()-70, 75, 20, "Y(m):"); 
   y_mtr->set_output();
   y_mtr->textsize(info_size); 
   y_mtr->labelsize(info_size);
 
-  v_lat = new Fl_Output(305, h()-100, 90, 20, "Lat:"); 
+  v_lat = new Fl_Output(295, h()-100, 80, 20, "Lat:"); 
   v_lat->set_output();
   v_lat->textsize(info_size); 
   v_lat->labelsize(info_size);
 
-  v_lon = new Fl_Output(305, h()-70, 90, 20, "long:"); 
+  v_lon = new Fl_Output(295, h()-70, 80, 20, "Long:"); 
   v_lon->set_output();
   v_lon->textsize(info_size); 
   v_lon->labelsize(info_size);
 
-  v_spd = new Fl_Output(470, h()-100, 55, 20, "Spd(m/s):"); 
+  v_spd = new Fl_Output(445, h()-100, 55, 20, "Spd(m/s):"); 
   v_spd->set_output();
   v_spd->textsize(info_size); 
   v_spd->labelsize(info_size);
 
-  v_crs = new Fl_Output(470, h()-70, 55, 20, "Heading:"); 
+  v_crs = new Fl_Output(445, h()-70, 55, 20, "Heading:"); 
   v_crs->set_output();
   v_crs->textsize(info_size); 
   v_crs->labelsize(info_size);
 
-  v_dep = new Fl_Output(610, h()-100, 55, 20, "Dep(m):"); 
+  v_dep = new Fl_Output(560, h()-100, 50, 20, "Dep(m):"); 
   v_dep->set_output();
   v_dep->textsize(info_size); 
   v_dep->labelsize(info_size);
 
-  v_ais = new Fl_Output(610, h()-70, 55, 20, "Age-AIS:"); 
+  v_ais = new Fl_Output(560, h()-70, 50, 20, "Age-AIS:"); 
   v_ais->set_output();
   v_ais->textsize(info_size); 
   v_ais->labelsize(info_size);
 
-  time = new Fl_Output(720, h()-100, 70, 20, "Time:"); 
+  time = new Fl_Output(660, h()-100, 60, 20, "Time:"); 
   time->set_output();
   time->textsize(info_size); 
   time->labelsize(info_size);
 
-  warp = new Fl_Output(720, h()-70, 70, 20, "Warp:"); 
+  warp = new Fl_Output(660, h()-70, 60, 20, "Warp:"); 
   warp->set_output();
   warp->textsize(info_size); 
   warp->labelsize(info_size);
+  
+  range = new Fl_Output(785, h()-100, 60, 20, "Range:"); 
+  range->set_output();
+  range->textsize(info_size); 
+  range->labelsize(info_size);
+
+  bearing = new Fl_Output(785, h()-70, 60, 20, "Bearing:"); 
+  bearing->set_output();
+  bearing->textsize(info_size); 
+  bearing->labelsize(info_size);
   
   m_scope_variable = new Fl_Output(60, h()-30, 100, 20, "Variable:"); 
   m_scope_variable->set_output();
@@ -126,8 +136,8 @@ PMV_GUI::PMV_GUI(int g_w, int g_h, const char *g_l)
   int hgt_b  = 24;
   int col_b  = w() - wid_b;
   int col_bb = w() - (wid_b * 2);
-  int row_b  = (h() - 57) - (2* hgt_b) ;
-  int row_bb = ((h() - 57) - hgt_b) + 2;
+  int row_b  = (h() - 53) - (2* hgt_b) ;
+  int row_bb = ((h() - 53) - hgt_b) + 2;
 
   user_button_1 = new MY_Button(col_b+2, row_b, 
                                 wid_b-4, hgt_b, "Disabled");
@@ -418,7 +428,31 @@ void PMV_GUI::cb_Scope(Fl_Widget* o, int v) {
   ((PMV_GUI*)(o->parent()->user_data()))->cb_Scope_i(val);
 }
 
+//----------------------------------------- LeftContext
+inline void PMV_GUI::cb_LeftContext_i(int i) {  
+  if((i<0) || (i>=m_left_context.size()))
+    return;
+  string context_str = m_left_context[i];
+  mviewer->setLeftMouseContext(context_str);
+}
 
+void PMV_GUI::cb_LeftContext(Fl_Widget* o, int v) {
+  int val = (int)(v);
+  ((PMV_GUI*)(o->parent()->user_data()))->cb_LeftContext_i(val);
+}
+
+//----------------------------------------- RightContext
+inline void PMV_GUI::cb_RightContext_i(int i) {  
+  if((i<0) || (i>=m_left_context.size()))
+    return;
+  string context_str = m_left_context[i];
+  mviewer->setRightMouseContext(context_str);
+}
+
+void PMV_GUI::cb_RightContext(Fl_Widget* o, int v) {
+  int val = (int)(v);
+  ((PMV_GUI*)(o->parent()->user_data()))->cb_RightContext_i(val);
+}
 
 //-------------------------------------------------------------------
 // Procedure: getPendingVar
@@ -483,5 +517,45 @@ void PMV_GUI::addScopeVariable(string varname)
   label += (truncString(varname, 16, "middle"));
   mbar->add(label.c_str(), 0, (Fl_Callback*)PMV_GUI::cb_Scope, (void*)index, 0);
   mbar->redraw();
+}
+
+//-------------------------------------------------------------------
+// Procedure: addContext
+
+void PMV_GUI::addContext(string side, string context)
+{
+
+  if(side == "left") {
+    unsigned int i, vsize = m_left_context.size();
+    for(i=0; i<vsize; i++) {
+      if(context == m_left_context[i])
+	return;
+    }
+    m_left_context.push_back(context);
+    int index = m_left_context.size()-1;
+    
+    string label = "Mouse-Context/Left/";
+    label += (truncString(context, 16, "middle"));
+    mbar->add(label.c_str(), 0, 
+	      (Fl_Callback*)PMV_GUI::cb_LeftContext, (void*)index, 0);
+    mbar->redraw();
+  }
+  else if(side == "right") {
+    unsigned int i, vsize = m_right_context.size();
+    for(i=0; i<vsize; i++) {
+      if(context == m_right_context[i])
+	return;
+    }
+    m_right_context.push_back(context);
+    int index = m_right_context.size()-1;
+    
+    string label = "Mouse-Context/Right/";
+    label += (truncString(context, 16, "middle"));
+    mbar->add(label.c_str(), 0, 
+	      (Fl_Callback*)PMV_GUI::cb_RightContext, (void*)index, 0);
+    mbar->redraw();
+  }
+
+
 }
 

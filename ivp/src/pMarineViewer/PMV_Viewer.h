@@ -43,6 +43,8 @@ class PMV_Viewer : public MarineViewer
   bool  updateScopeVariable(std::string varname, std::string value, 
 			    std::string vtime, std::string vsource);
   void  setActiveScope(std::string);
+  void  setLeftMouseContext(std::string s)  {m_left_click_context=s;};
+  void  setRightMouseContext(std::string s) {m_right_click_context=s;};
 
   std::string getStringInfo(const std::string& info_type, int precision=0);
 
@@ -53,7 +55,6 @@ class PMV_Viewer : public MarineViewer
   void   handleRightMouse(int, int);
   void   setWeightedCenterView();
 
-
  private:
   VehicleSet  m_vehiset;
 
@@ -63,13 +64,14 @@ class PMV_Viewer : public MarineViewer
   std::vector<std::string> m_var_source;
   std::vector<std::string> m_var_time;
   int                      m_var_index;
-  
 
   // Member variables for holding/conveying mouse/button click info
   std::string m_left_click;
   std::string m_right_click;
   std::string m_button_one;
   std::string m_button_two;
+  std::string m_left_click_context;
+  std::string m_right_click_context;
 
   bool        m_centric_view;
   bool        m_centric_view_sticky;
