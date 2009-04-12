@@ -76,8 +76,8 @@ protected:
   Fl_Output  *v_ais;
   Fl_Output  *time;
   Fl_Output  *warp;
-  Fl_Output  *range;
-  Fl_Output  *bearing;
+  Fl_Output  *v_range;
+  Fl_Output  *v_bearing;
 
   Fl_Output  *m_scope_variable;
   Fl_Output  *m_scope_time;

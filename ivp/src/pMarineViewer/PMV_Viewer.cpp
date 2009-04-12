@@ -21,8 +21,10 @@
 /*****************************************************************/
 
 #include <iostream>
+#include <math.h>
 #include "PMV_Viewer.h"
 #include "MBUtils.h"
+#include "AngleUtils.h"
 #include "ColorParse.h"
 
 using namespace std;
@@ -386,6 +388,30 @@ string PMV_Viewer::getStringInfo(const string& info_type, int precision)
     result = m_left_click;
   else if(info_type == "right_click_info")
     result = m_right_click;
+  else if(info_type == "range") {
+    double xpos;
+    bool   dhandled1 = m_vehiset.getDoubleInfo("active", "xpos", xpos);
+    double ypos;
+    bool   dhandled2 = m_vehiset.getDoubleInfo("active", "ypos", ypos);
+    if(dhandled1 && dhandled2) {
+      double x_center = 0;
+      double y_center = 0;
+      double range = hypot((xpos-x_center), (ypos-y_center));
+      result = doubleToString(range, precision);
+    }
+  }
+  else if(info_type == "bearing") {
+    double xpos;
+    bool   dhandled1 = m_vehiset.getDoubleInfo("active", "xpos", xpos);
+    double ypos;
+    bool   dhandled2 = m_vehiset.getDoubleInfo("active", "ypos", ypos);
+    if(dhandled1 && dhandled2) {
+      double x_center = 0;
+      double y_center = 0;
+      double bearing = relAng(x_center, y_center, xpos, ypos);
+      result = doubleToString(bearing, precision);
+    }
+  }
   else {
     string sresult;
     bool   shandled = m_vehiset.getStringInfo("active", info_type, sresult);

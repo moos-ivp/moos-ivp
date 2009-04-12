@@ -107,15 +107,15 @@ PMV_GUI::PMV_GUI(int g_w, int g_h, const char *g_l)
   warp->textsize(info_size); 
   warp->labelsize(info_size);
   
-  range = new Fl_Output(785, h()-100, 60, 20, "Range:"); 
-  range->set_output();
-  range->textsize(info_size); 
-  range->labelsize(info_size);
+  v_range = new Fl_Output(785, h()-100, 60, 20, "Range:"); 
+  v_range->set_output();
+  v_range->textsize(info_size); 
+  v_range->labelsize(info_size);
 
-  bearing = new Fl_Output(785, h()-70, 60, 20, "Bearing:"); 
-  bearing->set_output();
-  bearing->textsize(info_size); 
-  bearing->labelsize(info_size);
+  v_bearing = new Fl_Output(785, h()-70, 60, 20, "Bearing:"); 
+  v_bearing->set_output();
+  v_bearing->textsize(info_size); 
+  v_bearing->labelsize(info_size);
   
   m_scope_variable = new Fl_Output(60, h()-30, 100, 20, "Variable:"); 
   m_scope_variable->set_output();
@@ -327,6 +327,8 @@ void PMV_GUI::updateXY() {
     v_lon->value(" n/a");
     v_dep->value(" n/a");
     v_ais->value(" n/a");
+    v_range->value(" n/a");
+    v_bearing->value(" n/a");
     return;
   }
 
@@ -340,6 +342,8 @@ void PMV_GUI::updateXY() {
   string crs = mviewer->getStringInfo("course", 1);
   string dep = mviewer->getStringInfo("depth", 1);
   string age_ais = mviewer->getStringInfo("age_ais", 2);
+  string range = mviewer->getStringInfo("range", 1);
+  string bearing = mviewer->getStringInfo("bearing", 2);
   if(age_ais == "-1")
     age_ais = "n/a";
 
@@ -354,6 +358,8 @@ void PMV_GUI::updateXY() {
   v_crs->value(crs.c_str());
   v_dep->value(dep.c_str());
   v_ais->value(age_ais.c_str());
+  v_range->value(range.c_str());
+  v_bearing->value(bearing.c_str());
 
   warp->redraw();
   v_nam->redraw();
