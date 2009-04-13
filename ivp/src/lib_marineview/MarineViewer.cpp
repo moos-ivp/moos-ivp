@@ -150,7 +150,7 @@ bool MarineViewer::setParam(string param, double v)
   }
   else if(param == "hash_delta") {
     if(((v >= 10) && (v <= 1000)) || (v==-1))
-      m_hash_delta = v;
+      m_hash_delta = (int)v;
   }
   else if(param == "back_shade") {
     if(!m_tiff_offon) {
