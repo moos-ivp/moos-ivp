@@ -1,0 +1,8 @@
+//------------------------------------------
+ProcessConfig = iMarineSim
+{
+  AppTick   = 10
+  CommsTic  = 10
+
+  START_POS = $(SIM_START_POS)
+}
