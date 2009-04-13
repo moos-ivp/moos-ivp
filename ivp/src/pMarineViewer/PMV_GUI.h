@@ -50,6 +50,7 @@ public:
   unsigned int getPendingSize() {return(m_pending_vars.size());};
   void         addScopeVariable(std::string);
   void         addContext(std::string side, std::string context);
+  void         addCenterVehicle(std::string vname);
 
  private:
   inline void cb_MOOS_Button_i(int);
@@ -62,6 +63,8 @@ public:
   static void cb_LeftContext(Fl_Widget*, int);
   inline void cb_RightContext_i(int);
   static void cb_RightContext(Fl_Widget*, int);
+  inline void cb_Reference_i(int);
+  static void cb_Reference(Fl_Widget*, int);
 
 protected:
   Fl_Output  *v_nam;
@@ -100,6 +103,8 @@ protected:
 
   std::vector<std::string> m_left_context;
   std::vector<std::string> m_right_context;
+
+  std::vector<std::string> m_reference_tags;
 
   double     m_curr_time;
   double     m_prev_out_time;

@@ -49,6 +49,7 @@ class VehicleSet
   std::vector<std::string> getParamReport() const;
 
   std::string getActiveVehicle() const  {return(m_active_vehicle_name);};
+  std::string getCenterVehicle() const  {return(m_center_vehicle_name);};
 
   CPList     getVehiHist(const std::string&   s="active") const;   
   ObjectPose getObjectPose(const std::string& s="active") const;
@@ -79,6 +80,7 @@ class VehicleSet
   std::map<std::string, std::string> m_param_report;
 
   std::string m_active_vehicle_name;
+  std::string m_center_vehicle_name;
 
   int    m_history_size;
   double m_curr_time;

@@ -38,7 +38,7 @@ MarineVehiGUI::MarineVehiGUI(int g_w, int g_h, const char *g_l)
   mbar->add("Vehicles/Cycle Focus", 'v', (Fl_Callback*)MarineVehiGUI::cb_CycleFocus,(void*)0, FL_MENU_DIVIDER);
 
   mbar->add("Vehicles/center_view = vehicle_average", 'c', (Fl_Callback*)MarineVehiGUI::cb_CenterView,  (void*)0, 0);
-  mbar->add("Vehicles/center_view = vehicle_active",  'C', (Fl_Callback*)MarineVehiGUI::cb_CenterView,  (void*)1, FL_MENU_DIVIDER);
+  mbar->add("Vehicles/center_view = vehicle_active", FL_CTRL+'c', (Fl_Callback*)MarineVehiGUI::cb_CenterView,  (void*)1, FL_MENU_DIVIDER);
 
   mbar->add("Vehicles/VehicleSize/vehicle_shape_scale = larger",    '+', (Fl_Callback*)MarineVehiGUI::cb_AltShapeScale, (void*)+1, 0);
   mbar->add("Vehicles/VehicleSize/vehicle_shape_scale = smaller",   '-', (Fl_Callback*)MarineVehiGUI::cb_AltShapeScale, (void*)-1, 0);
@@ -244,9 +244,9 @@ void MarineVehiGUI::cb_AltShapeScale(Fl_Widget* o, int v) {
 //----------------------------------------- CenterView
 inline void MarineVehiGUI::cb_CenterView_i(int v) {
   if(v == 0)
-    cmviewer->setParam("center_view", "vehicle_average");
+    cmviewer->setParam("center_view", "average");
   if(v == 1)
-    cmviewer->setParam("center_view", "vehicle_active");
+    cmviewer->setParam("center_view", "active");
 
   cmviewer->redraw();
   updateXY();

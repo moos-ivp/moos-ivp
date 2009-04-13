@@ -124,6 +124,9 @@ bool VehicleSet::setParam(string param, string value)
     else
       m_active_vehicle_name = value;
   }
+  else if(param == "center_vehicle_name") {
+    m_center_vehicle_name = value;
+  }
   else if(param == "cycle_active") {
     handled = true;
     makenote = false;
@@ -225,6 +228,8 @@ bool VehicleSet::getDoubleInfo(const string& g_vname,
   string vname = g_vname;  
   if(vname == "active")
     vname = m_active_vehicle_name;
+  else if(vname == "center_vehicle")
+    vname = m_center_vehicle_name;
 
   map<string,ObjectPose>::const_iterator p;
   p = m_pos_map.find(vname);

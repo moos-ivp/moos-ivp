@@ -460,6 +460,19 @@ void PMV_GUI::cb_RightContext(Fl_Widget* o, int v) {
   ((PMV_GUI*)(o->parent()->user_data()))->cb_RightContext_i(val);
 }
 
+//----------------------------------------- Reference
+inline void PMV_GUI::cb_Reference_i(int i) {  
+  if((i<0) || (i>=m_reference_tags.size()))
+    return;
+  string str = m_reference_tags[i];
+  mviewer->setParam("reference_tag", str);
+}
+
+void PMV_GUI::cb_Reference(Fl_Widget* o, int v) {
+  int val = (int)(v);
+  ((PMV_GUI*)(o->parent()->user_data()))->cb_Reference_i(val);
+}
+
 //-------------------------------------------------------------------
 // Procedure: getPendingVar
 
@@ -561,7 +574,49 @@ void PMV_GUI::addContext(string side, string context)
 	      (Fl_Callback*)PMV_GUI::cb_RightContext, (void*)index, 0);
     mbar->redraw();
   }
+}
 
+//-------------------------------------------------------------------
+// Procedure: addCenterVehicle
+//      NOte: Add the vehicle with the given name as one of the possible
+//            reference vehicles. When none are given the datum is the
+//            the default reference point. So when the first vehicle is
+//            given, the datum is added as one of the menu choices. 
 
+void PMV_GUI::addCenterVehicle(string vehicle_name)
+{
+  // First check the current list of vehicles, ignore duplicates
+  unsigned int i, vsize = m_reference_tags.size();
+  for(i=0; i<vsize; i++) {
+    if(vehicle_name == m_reference_tags[i])
+      return;
+  }
+
+  // If the list is currently empty, create the "datum" as a choice first.
+  if(vsize == 0) {
+    m_reference_tags.push_back("bearing-absolute");
+    string label = "ReferencePoint/Bearing-Absolute";
+    mbar->add(label.c_str(), 'a', (Fl_Callback*)PMV_GUI::cb_Reference, 
+	      (void*)0, FL_MENU_RADIO|FL_MENU_VALUE);
+    m_reference_tags.push_back("bearing-relative");
+    label = "ReferencePoint/Bearing-Relative";
+    mbar->add(label.c_str(), 'r', (Fl_Callback*)PMV_GUI::cb_Reference, 
+	      (void*)1, FL_MENU_DIVIDER|FL_MENU_RADIO);
+
+    m_reference_tags.push_back("datum");
+    label = "ReferencePoint/Datum";
+    mbar->add(label.c_str(), 0, (Fl_Callback*)PMV_GUI::cb_Reference, 
+	      (void*)2, FL_MENU_RADIO|FL_MENU_VALUE);
+  }
+
+  // Add the new vehicle name as a menu choice
+  m_reference_tags.push_back(vehicle_name);
+  int index = m_reference_tags.size()-1;
+  string label = "ReferencePoint/";
+  label += (truncString(vehicle_name, 16, "middle"));
+  mbar->add(label.c_str(), 0, 
+	    (Fl_Callback*)PMV_GUI::cb_Reference, (void*)index, FL_MENU_RADIO);
+
+  mbar->redraw();
 }
 

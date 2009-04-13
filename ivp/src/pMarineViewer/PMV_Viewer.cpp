@@ -33,8 +33,10 @@ PMV_Viewer::PMV_Viewer(int x, int y, int w, int h, const char *l)
   : MarineViewer(x,y,w,h,l)
 {
   m_var_index = -1;
-  m_centric_view = false;
+  m_centric_view = "";
   m_centric_view_sticky = true;
+  m_reference_point = "datum";
+  m_reference_bearing = "relative";
 }
 
 //-------------------------------------------------------------
@@ -112,16 +114,30 @@ bool PMV_Viewer::setParam(string param, string value)
   bool center_needs_adjusting = false;
   
   if(param == "center_view") {
-    center_needs_adjusting = true;
-    m_centric_view = true;
-    handled = true;
+    if((value=="average") || (value=="active") || (value=="reference")) {
+      center_needs_adjusting = true;
+      m_centric_view = value;
+      handled = true;
+    }
+  }
+  else if(param == "reference_tag") {
+    if(value == "bearing-absolute")
+      m_reference_bearing = "absolute";
+    else if(value == "bearing-relative")
+      m_reference_bearing = "relative";
+    else if(value == "datum")
+      m_reference_point = "datum";
+    else if(!strContainsWhite(value)) {
+      m_vehiset.setParam("center_vehicle_name", value);
+      m_reference_point = value;
+    }
   }
   else if(param == "view_marker") {
     handled = m_vmarkers.addVMarker(value, m_geodesy);
   }
   else if((param == "ais_report") || (param == "ais_report_local")){
     handled = m_vehiset.setParam(param, value);
-    if(handled && m_centric_view && m_centric_view_sticky) {
+    if(handled && (m_centric_view != "") && m_centric_view_sticky) {
       center_needs_adjusting = true;
     }
   }
@@ -142,7 +158,7 @@ bool PMV_Viewer::setParam(string param, double value)
 {
   // Intercept and disable the centric mode if user pans
   if((param == "pan_x") || (param == "pan_y")) {
-    m_centric_view = false;
+    m_centric_view = "";
   }
 
   bool handled = MarineViewer::setParam(param, value);
@@ -235,7 +251,7 @@ void PMV_Viewer::handleLeftMouse(int vx, int vy)
   if(m_left_click_context != "")
     m_left_click += (",context=" + m_left_click_context);
 
-  cout << "Left Mouse click at [" << m_left_click << "] meters." << endl;
+  //cout << "Left Mouse click at [" << m_left_click << "] meters." << endl;
 }
 
 //-------------------------------------------------------------
@@ -256,7 +272,7 @@ void PMV_Viewer::handleRightMouse(int vx, int vy)
   if(m_right_click_context != "")
     m_right_click += (",context=" + m_right_click_context);
 
-  cout << "Right Mouse click at [" << m_right_click << "] meters." << endl;
+  //cout << "Right Mouse click at [" << m_right_click << "] meters." << endl;
 }
 
 //-------------------------------------------------------------
@@ -264,19 +280,31 @@ void PMV_Viewer::handleRightMouse(int vx, int vy)
 
 void PMV_Viewer::setWeightedCenterView()
 {
-  bool centric_view = m_centric_view;
-
-  if(!centric_view)
+  if(m_centric_view == "")
     return;
 
-  double avg_pos_x, avg_pos_y;
-  bool ok = m_vehiset.getWeightedCenter(avg_pos_x, avg_pos_y);
-  if(!ok)
+  double pos_x, pos_y;
+  bool ok1 = false;
+  bool ok2 = false;
+  if(m_centric_view == "average") {
+    ok1 = m_vehiset.getWeightedCenter(pos_x, pos_y);
+    ok2 = true;
+  }
+  else if(m_centric_view == "active") {
+    ok1 = m_vehiset.getDoubleInfo("active", "xpos", pos_x);
+    ok2 = m_vehiset.getDoubleInfo("active", "ypos", pos_y);
+  }
+  else if(m_centric_view == "reference") {
+    ok1 = m_vehiset.getDoubleInfo("center_vehicle", "xpos", pos_x);
+    ok2 = m_vehiset.getDoubleInfo("center_vehicle", "ypos", pos_y);
+  }
+
+  if(!ok1 || !ok2)
     return;
 
   // First determine how much we're off in terms of meters
-  double delta_x = avg_pos_x - m_back_img.get_x_at_img_ctr();
-  double delta_y = avg_pos_y - m_back_img.get_y_at_img_ctr();
+  double delta_x = pos_x - m_back_img.get_x_at_img_ctr();
+  double delta_y = pos_y - m_back_img.get_y_at_img_ctr();
   
   // Next determine how much in terms of pixels
   double pix_per_mtr = m_back_img.get_pix_per_mtr();
@@ -389,26 +417,51 @@ string PMV_Viewer::getStringInfo(const string& info_type, int precision)
   else if(info_type == "right_click_info")
     result = m_right_click;
   else if(info_type == "range") {
-    double xpos;
+    double xpos, ypos;
     bool   dhandled1 = m_vehiset.getDoubleInfo("active", "xpos", xpos);
-    double ypos;
     bool   dhandled2 = m_vehiset.getDoubleInfo("active", "ypos", ypos);
     if(dhandled1 && dhandled2) {
       double x_center = 0;
       double y_center = 0;
+      if(m_reference_point != "datum") {
+	double cxpos, cypos;
+	dhandled1 = m_vehiset.getDoubleInfo("center_vehicle", "xpos", cxpos);
+	dhandled2 = m_vehiset.getDoubleInfo("center_vehicle", "ypos", cypos);
+	if(dhandled1 && dhandled2) {
+	  x_center = cxpos;
+	  y_center = cypos;
+	}
+      }
       double range = hypot((xpos-x_center), (ypos-y_center));
       result = doubleToString(range, precision);
     }
   }
   else if(info_type == "bearing") {
-    double xpos;
+    double xpos, ypos;
     bool   dhandled1 = m_vehiset.getDoubleInfo("active", "xpos", xpos);
-    double ypos;
     bool   dhandled2 = m_vehiset.getDoubleInfo("active", "ypos", ypos);
     if(dhandled1 && dhandled2) {
       double x_center = 0;
       double y_center = 0;
-      double bearing = relAng(x_center, y_center, xpos, ypos);
+      double h_heading = 0;
+      if(m_reference_point != "datum") {
+	double cxpos, cypos, heading;
+	bool ok1 = m_vehiset.getDoubleInfo("center_vehicle", "xpos", cxpos);
+	bool ok2 = m_vehiset.getDoubleInfo("center_vehicle", "ypos", cypos);
+	bool ok3 = m_vehiset.getDoubleInfo("center_vehicle", "heading", heading);
+	if(ok1 && ok2 && ok3) {
+	  x_center = cxpos;
+	  y_center = cypos;
+	  h_heading = heading;
+	}
+      }
+      double bearing = 0;
+      if((m_reference_bearing == "absolute") || (m_reference_point == "datum"))
+	bearing = relAng(x_center, y_center, xpos, ypos);
+      else if(m_reference_bearing == "relative") {
+	bearing = relAng(x_center, y_center, xpos, ypos);
+	bearing = angle360(bearing - h_heading);
+      }
       result = doubleToString(bearing, precision);
     }
   }

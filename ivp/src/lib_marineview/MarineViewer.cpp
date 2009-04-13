@@ -73,15 +73,12 @@ MarineViewer::MarineViewer(int x, int y, int w, int h, const char *l)
 
 //-------------------------------------------------------------
 // Procedure: setParam
-//      Note: A mutex is used since the member variables being set
-//            are perhaps being altered or read by another thread.
 
 bool MarineViewer::setParam(string param, string value)
 {
   string p = tolower(stripBlankEnds(param));
   string v = tolower(stripBlankEnds(value));
-
-//   mutexLock();
+  
   bool handled = false;
   if(p=="cross_view")
     handled = setBooleanOnString(m_cross_offon, v);
@@ -107,7 +104,7 @@ bool MarineViewer::setParam(string param, string value)
   else if(p=="op_vertex")
     handled = m_op_area.addVertex(v, m_geodesy);
   else if(p=="zoom") {
-    handled = (p=="reset");
+    handled = (v=="reset");
     if(handled)
       m_zoom = 1.0;
   }
@@ -127,21 +124,17 @@ bool MarineViewer::setParam(string param, string value)
     handled = handled || m_geoshapes.setParam(p,v);
   }
 
-//   mutexUnLock();
   return(handled);
 
 }
 
 //-------------------------------------------------------------
 // Procedure: setParam
-//      Note: A mutex is used since the member variables being set
-//            are perhaps being altered or read by another thread.
 
 bool MarineViewer::setParam(string param, double v)
 {
   param = tolower(stripBlankEnds(param));
   
-//   mutexLock();
   bool handled = true;
   if(param == "hash_shade_mod") {
     if((m_hash_shade+v >= 0) && (m_hash_shade+v <= 1.0))
@@ -192,7 +185,6 @@ bool MarineViewer::setParam(string param, double v)
   else 
     handled = false;
   
-//   mutexUnLock();
   return(handled);
 
 }
@@ -361,13 +353,9 @@ double MarineViewer::getCrossHairMeters(char xy)
 // Procedure: draw
 //   Purpose: This is the "root" drawing routine - it is typically
 //            invoked in the draw routines of subclasses. 
-//      Note: A mutex is put around all the drawing calls since it
-//            is accessing information that is perhaps being 
-//            altered by another thread.
 
 void MarineViewer::draw()
 {
-//   mutexLock();
   double r = m_fill_shade;
   double g = m_fill_shade;
   double b = m_fill_shade + 0.1;
@@ -412,15 +400,10 @@ void MarineViewer::draw()
 
   drawOpArea();
   drawMarkers();
-//   mutexUnLock();
 }
 
 // ----------------------------------------------------------
 // Procedure: drawTiff
-// Notes: No mutex is used here despite its accessing of data structures
-//        written to by other threads. This is because this is a 
-//        PRIVATE class function called only by a function which 
-//        is using its own mutex.
 
 void MarineViewer::drawTiff()
 {

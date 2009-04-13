@@ -58,6 +58,9 @@ class PMV_Viewer : public MarineViewer
  private:
   VehicleSet  m_vehiset;
 
+  std::string m_reference_point;
+  std::string m_reference_bearing;
+
   // Member variables for holding scoped info
   std::vector<std::string> m_var_names;
   std::vector<std::string> m_var_vals;
@@ -73,7 +76,7 @@ class PMV_Viewer : public MarineViewer
   std::string m_left_click_context;
   std::string m_right_click_context;
 
-  bool        m_centric_view;
+  std::string m_centric_view; // average, active, or reference
   bool        m_centric_view_sticky;
 };
 

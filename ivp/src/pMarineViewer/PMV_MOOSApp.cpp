@@ -372,7 +372,7 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
 
   m_MissionReader.GetConfiguration(GetAppName(), sParams);
   for(p=sParams.rbegin(); p!=sParams.rend();p++) {
-    string sLine    = *p;
+    string sLine = *p;
     string param = stripBlankEnds(tolower(MOOSChomp(sLine, "=")));
     string value = stripBlankEnds(sLine);
     if(param == "scope") {
@@ -384,15 +384,22 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
     }
   }
 
-  for(p = sParams.rbegin();p!=sParams.rend();p++) {
-    string sLine    = *p;
+  for(p=sParams.rbegin(); p!=sParams.rend(); p++) {
+    string sLine = *p;
     string param = tolower(MOOSChomp(sLine, "="));
     string value = stripBlankEnds(sLine);
-    
     if(param == "left_context")
       m_gui->addContext("left", value);
     else if(param == "right_context")
       m_gui->addContext("right", value);
+  }
+
+  for(p=sParams.rbegin(); p!=sParams.rend(); p++) {
+    string sLine = *p;
+    string param = tolower(MOOSChomp(sLine, "="));
+    string value = stripBlankEnds(sLine);
+    if(param == "center_vehicle")
+      m_gui->addCenterVehicle(value);
   }
 
 
