@@ -6,7 +6,7 @@ Simulator  = true
 
 Community  = alpha
 
-MOOSTimeWarp = 3
+MOOSTimeWarp = 5
 
 LatOrigin  = 43.825300 
 LongOrigin = -70.330400 
@@ -111,7 +111,22 @@ ProcessConfig = pMarineViewer
   hash_delta           = 50
   hash_shade           = 0.4
   hash_view            = true
-  scope                = VIEW_POINT
+
+  scope  = VIEW_POINT
+  scope  = VIEW_SEGLIST
+  scope  = VIEW_POLYGON
+  scope  = NAV_X
+  scope  = NAV_Y
+  scope  = MVIEWER_LCLICK
+  scope  = MVIEWER_RCLICK
+
+  left_context   = surface_point
+  left_context   = station_point
+  left_context   = return_point
+
+  right_context  = loiter_point
+  right_context  = station_point
+  right_context  = surface_point
 
   BUTTON_ONE = DEPLOY # DEPLOY=true
   BUTTON_ONE = MOOS_MANUAL_OVERIDE=false # RETURN=false
