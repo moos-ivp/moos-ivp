@@ -3,7 +3,7 @@ ServerPort = 920$(VID)
 Simulator  = true
 
 // Community name IS the vehicle name
-Community  = vehicle$(VID)
+Community  = $(VNAME)
   
 #include plug_datum.moos
    

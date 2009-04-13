@@ -4,5 +4,5 @@ ProcessConfig = pTransponderAIS
   AppTick     = 5
   CommsTick   = 5
   
-  VESSEL_TYPE = KAYAK
+  VESSEL_TYPE = $(VEHI_TYPE)
 }

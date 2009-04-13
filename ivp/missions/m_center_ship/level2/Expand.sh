@@ -1,12 +1,12 @@
 #!/bin/sh
 
-splug meta_vehicle.moos ../vehicle1.moos \
-    VID=1                                \
-    SIM_START_POS=10,-15,180,0
+splug meta_vehicle.moos ../charlie.moos \
+    VID=1 VNAME=charlie VEHI_TYPE=KAYAK  \
+    SIM_START_POS=10,0,180,0
 
-splug meta_vehicle.moos ../vehicle2.moos \
-    VID=2                                \
-    SIM_START_POS=-10,-25,180,0
+splug meta_vehicle.moos ../unicorn.moos \
+    VID=2 VNAME=unicorn VEHI_TYPE=AUV    \
+    SIM_START_POS=-10,0,180,0
 
 splug meta_shoreside.moos ../shoreside.moos
 
