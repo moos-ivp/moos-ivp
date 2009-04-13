@@ -22,7 +22,7 @@ ProcessConfig = ANTLER
   Run = pTransponderAIS	@ NewConsole = false
   Run = pMarinePID	@ NewConsole = false
   Run = pMarineViewer	@ NewConsole = true
-  Run = pHelmIvP	@ NewConsole = false
+  Run = pHelmIvP	@ NewConsole = true
 }
 
 //------------------------------------------
@@ -102,7 +102,7 @@ ProcessConfig = pMarineViewer
   set_pan_x            = -90
   set_pan_y            = -280
   zoom                 = 0.65
-  vehicle_shape_scale  = 0.40
+  vehicle_shape_scale  = 1.5
   seglist_edge_width   = 2.0
   seglist_vertex_size  = 8
   seglist_vertex_color = red

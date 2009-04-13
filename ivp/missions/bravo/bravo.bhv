@@ -10,7 +10,6 @@ Behavior = BHV_Loiter
   condition = RETURN = false
   condition = DEPLOY = true
   condition = LTIMER < 150
-  endflag   = RETURN = true
   updates   = UP_LOITERA
 
   post_suffix = A
@@ -29,7 +28,6 @@ Behavior = BHV_Loiter
   condition = RETURN = false
   condition = DEPLOY = true
   condition = LTIMER >= 150
-  endflag   = RETURN = true
   updates   = UP_LOITERB
 
   post_suffix = B
@@ -47,6 +45,9 @@ Behavior = BHV_Waypoint
   pwt        = 100
   condition  = RETURN = true
   condition  = DEPLOY = true
+  perpetual  = true
+  endflag    = RETURN = false
+  endflag    = DEPLOY = false
  
        speed = 2.0
       radius = 2.0
@@ -61,6 +62,5 @@ Behavior = BHV_Timer
   duration        = 300
   perpetual       = true
   duration_status = LTIMER
-
 }
 

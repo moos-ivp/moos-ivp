@@ -12,12 +12,15 @@ set MODE = SURVEYING {
   RETURN != true
 } RETURNING                        
 
+// set DEPTH_MODE = MIRROR
+
 //----------------------------------------------
 Behavior = BHV_Waypoint
 { 
   name      = waypt_survey
   pwt       = 100
   condition = MODE == SURVEYING
+  perpetual = true
   endflag   = RETURN = true
 
   speed     = 2.0   // meters per second
@@ -32,24 +35,14 @@ Behavior = BHV_Waypoint
   pwt        = 100
   condition  = MODE == RETURNING
   updates    = UPDATES_RETURN
+  perpetual  = true
+  endflag    = RETURNING = false
+  endflag    = DEPLOY = false
 
-  speed      = 2.0
-  radius     = 8.0
-  points     = 0,0
+       speed = 2.0
+      radius = 2.0
+   nm_radius = 8.0
+      points = 0,0
 }
 
-Behavior = BHV_ConstantSpeed
-{
-  name          = search_min_speed
-  pwt           = 100
-  speed         = 1.5
-  duration	= no-time-limit
-  condition     = DESIRED_SPEED < 2.0
-  condition     = (MODE == NO_TRACK)
-}
-
-
-
-
-// Things to do
-// o Do we need a !== relation definition?
+// Do we need a !== relation definition?
