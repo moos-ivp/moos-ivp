@@ -67,6 +67,7 @@ class PMV_Viewer : public MarineViewer
   std::vector<std::string> m_var_source;
   std::vector<std::string> m_var_time;
   int                      m_var_index;
+  int                      m_var_index_prev;
 
   // Member variables for holding/conveying mouse/button click info
   std::string m_left_click;

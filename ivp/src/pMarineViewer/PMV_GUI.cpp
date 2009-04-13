@@ -528,13 +528,22 @@ void PMV_GUI::addScopeVariable(string varname)
       return;
   }
   
+  if(vsize == 0) {
+    m_scope_vars.push_back("_previous_scope_var_");
+    mbar->add("Scope/Toggle-Previous-Scope", '/', 
+	      (Fl_Callback*)PMV_GUI::cb_Scope, (void*)0, FL_MENU_DIVIDER);
+    m_scope_vars.push_back("_cycle_scope_var_");
+    mbar->add("Scope/Cycle-Scope-Variables", FL_CTRL+'/', 
+	      (Fl_Callback*)PMV_GUI::cb_Scope, (void*)1, FL_MENU_DIVIDER);
+  }
+
   m_scope_vars.push_back(varname);
-  
   int index = m_scope_vars.size()-1;
   
   string label = "Scope/";
   label += (truncString(varname, 16, "middle"));
-  mbar->add(label.c_str(), 0, (Fl_Callback*)PMV_GUI::cb_Scope, (void*)index, 0);
+  mbar->add(label.c_str(), 0, 
+	    (Fl_Callback*)PMV_GUI::cb_Scope, (void*)index, 0);
   mbar->redraw();
 }
 

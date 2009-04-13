@@ -33,6 +33,7 @@ PMV_Viewer::PMV_Viewer(int x, int y, int w, int h, const char *l)
   : MarineViewer(x,y,w,h,l)
 {
   m_var_index = -1;
+  m_var_index_prev = -1;
   m_centric_view = "";
   m_centric_view_sticky = true;
   m_reference_point = "datum";
@@ -340,8 +341,10 @@ bool PMV_Viewer::addScopeVariable(string varname)
   m_var_vals.push_back("");
   m_var_source.push_back("");
   m_var_time.push_back("");
-  if(m_var_index == -1)
+  if(m_var_index == -1) {
     m_var_index = 0;
+    m_var_index_prev = 0;
+  }
   return(true);    
 }
 
@@ -371,9 +374,27 @@ bool PMV_Viewer::updateScopeVariable(string varname, string value,
 
 void PMV_Viewer::setActiveScope(string varname)
 {
+  if(varname == "_previous_scope_var_") {
+    int tmp = m_var_index;
+    m_var_index = m_var_index_prev;
+    m_var_index_prev = tmp;
+    return;
+  }
+
   unsigned int i, vsize = m_var_names.size();
+  if(varname == "_cycle_scope_var_") {
+    m_var_index_prev = m_var_index;
+    m_var_index++;
+    if(m_var_index >= vsize) {
+      m_var_index_prev = vsize-1;
+      m_var_index = 0;
+    }
+    return;
+  }
+
   for(i=0; i<vsize; i++) {
     if(m_var_names[i] == varname) {
+      m_var_index_prev = m_var_index;
       m_var_index = i;
       return;
     }
