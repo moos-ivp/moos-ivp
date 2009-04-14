@@ -20,6 +20,8 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
+
+#include <FL/fl_ask.H>
 #include "PMV_GUI.h"
 #include "MBUtils.h"
 #include "MOOSGenLibGlobalHelper.h"
@@ -157,6 +159,9 @@ PMV_GUI::PMV_GUI(int g_w, int g_h, const char *g_l)
   user_button_2->hide();
   user_button_3->hide();
   user_button_4->hide();
+
+  mbar->add("MOOS-Scope/Add a Variable", 'a', 
+	    (Fl_Callback*)PMV_GUI::cb_Scope, (void*)0, FL_MENU_DIVIDER);
     
   this->end();
   this->resizable(this);
@@ -423,8 +428,27 @@ void PMV_GUI::cb_DoAction(Fl_Widget* o, int v) {
 
 //----------------------------------------- Scope
 inline void PMV_GUI::cb_Scope_i(int i) {  
+  if(i==0) {
+    const char *str = fl_input("Enter a new MOOS variable for scoping:", 
+			       "DB_CLIENTS");
+    if(str != 0) {
+      string new_var = str;
+      new_var = stripBlankEnds(new_var);
+      if(!strContainsWhite(new_var)) {
+	bool added = addScopeVariable(new_var);
+	if(added) {
+	  mviewer->addScopeVariable(new_var);
+	  mviewer->setActiveScope(new_var);
+	  pushPending("scope_register", new_var);
+	}
+      }
+    }
+    return;
+  }
+
   if((i<0) || (i>=m_scope_vars.size()))
     return;
+ 
   string varname = m_scope_vars[i];
   mviewer->setActiveScope(varname);
 }
@@ -518,33 +542,35 @@ void PMV_GUI::pushPending(string var, string val)
 //-------------------------------------------------------------------
 // Procedure: addScopeVariable
 
-void PMV_GUI::addScopeVariable(string varname)
+bool PMV_GUI::addScopeVariable(string varname)
 {
   if(strContainsWhite(varname))
-    return;
+    return(false);
   unsigned int i, vsize = m_scope_vars.size();
   for(i=0; i<vsize; i++) {
     if(varname == m_scope_vars[i])
-      return;
+      return(false);
   }
   
   if(vsize == 0) {
     m_scope_vars.push_back("_previous_scope_var_");
-    mbar->add("Scope/Toggle-Previous-Scope", '/', 
-	      (Fl_Callback*)PMV_GUI::cb_Scope, (void*)0, FL_MENU_DIVIDER);
     m_scope_vars.push_back("_cycle_scope_var_");
-    mbar->add("Scope/Cycle-Scope-Variables", FL_CTRL+'/', 
+    mbar->add("MOOS-Scope/Toggle-Previous-Scope", '/', 
 	      (Fl_Callback*)PMV_GUI::cb_Scope, (void*)1, FL_MENU_DIVIDER);
+    mbar->add("MOOS-Scope/Cycle-Scope-Variables", FL_CTRL+'/', 
+	      (Fl_Callback*)PMV_GUI::cb_Scope, (void*)2, FL_MENU_DIVIDER);
   }
 
   m_scope_vars.push_back(varname);
   int index = m_scope_vars.size()-1;
   
-  string label = "Scope/";
+  string label = "MOOS-Scope/";
   label += (truncString(varname, 16, "middle"));
   mbar->add(label.c_str(), 0, 
 	    (Fl_Callback*)PMV_GUI::cb_Scope, (void*)index, 0);
+  
   mbar->redraw();
+  return(true);
 }
 
 //-------------------------------------------------------------------

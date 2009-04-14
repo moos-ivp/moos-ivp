@@ -37,7 +37,8 @@ class PMV_MOOSApp : public CMOOSApp
 
   void setGUI(PMV_GUI* g_gui) {m_gui=g_gui;};
   
-  void setPendingEventsPipe(Threadsafe_pipe<MOOS_event> *pending_moos_events) 
+  void setPendingEventsPipe(Threadsafe_pipe<MOOS_event> 
+			    *pending_moos_events) 
   {
     m_pending_moos_events = pending_moos_events;
   }

@@ -48,7 +48,7 @@ public:
   void         clearPending();
   void         pushPending(std::string, std::string);
   unsigned int getPendingSize() {return(m_pending_vars.size());};
-  void         addScopeVariable(std::string);
+  bool         addScopeVariable(std::string);
   void         addContext(std::string side, std::string context);
   void         addCenterVehicle(std::string vname);
 

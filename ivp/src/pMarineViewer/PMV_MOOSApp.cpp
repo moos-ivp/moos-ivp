@@ -209,19 +209,25 @@ void PMV_MOOSApp::handlePendingGUI()
     string val  = m_gui->getPendingVal(i);
     double dval = 0;
 
-    string val_type = "string";
-    if(isQuoted(val))  
-      val = stripQuotes(val);
-    else if(isNumber(val)) {
-      val_type = "double";
-      dval = atof(val.c_str());
+    if(var == "scope_register") {
+      m_Comms.Register(val, 0);
+      m_scope_vars.push_back(val);
     }
-    
-    cout << "Notifying - var: " << var << "  val:" << val << endl;
-    if(val_type == "string")
-      m_Comms.Notify(var, val);
-    else
-      m_Comms.Notify(var, dval);
+    else {
+      string val_type = "string";
+      if(isQuoted(val))  
+	val = stripQuotes(val);
+      else if(isNumber(val)) {
+	val_type = "double";
+	dval = atof(val.c_str());
+      }
+      
+      //cout << "Notifying - var: " << var << "  val:" << val << endl;
+      if(val_type == "string")
+	m_Comms.Notify(var, val);
+      else
+	m_Comms.Notify(var, dval);
+    }
   }
 
   m_gui->clearPending();
