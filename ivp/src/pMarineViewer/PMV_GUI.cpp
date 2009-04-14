@@ -553,6 +553,7 @@ bool PMV_GUI::addScopeVariable(string varname)
   }
   
   if(vsize == 0) {
+    m_scope_vars.push_back("_add_moos_var_");
     m_scope_vars.push_back("_previous_scope_var_");
     m_scope_vars.push_back("_cycle_scope_var_");
     mbar->add("MOOS-Scope/Toggle-Previous-Scope", '/', 

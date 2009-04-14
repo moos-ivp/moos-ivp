@@ -36,7 +36,7 @@ PMV_Viewer::PMV_Viewer(int x, int y, int w, int h, const char *l)
   m_var_index_prev = -1;
   m_centric_view = "";
   m_centric_view_sticky = true;
-  m_reference_point = "datum";
+  m_reference_point   = "datum";
   m_reference_bearing = "relative";
 }
 
