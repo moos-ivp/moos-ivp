@@ -70,6 +70,49 @@ vector<string> parseString(const string& string_str, char separator)
 }
 
 //----------------------------------------------------------------
+// Procedure: parseStringQ(string, char)
+//     Notes: Differs from "parseString" in that the separator is 
+//            ignored if it is found in an open-quote mode. That is
+//            after an odd # of double-quote characters have appeared.
+//   Example: str = "left=apples # left=pears # left=\"bana#nas\""
+//   w/out Q: svector = parseString(str, '#');
+//            svector[0] = [left=apples ]
+//            svector[1] = [ left=pears ]
+//            svector[2] = [ left="bana#]
+//            svector[3] = [nas"]
+//  Compare:  svector = parseStringQ(str, '#');
+//            svector[0] = [left=apples ]
+//            svector[1] = [ left=pears ]
+//            svector[2] = [ left="bana#nas"]
+
+vector<string> parseStringQ(const string& string_str, char separator)
+{
+  bool in_quotes = false;
+
+  const char *str = string_str.c_str();
+  char *buff = new char[strlen(str)+1];
+  vector<string> rvector;
+  while(str[0] != '\0') {    
+    int i=0;
+    while(((str[i]!=separator) || in_quotes) && (str[i]!='\0')) {
+      if(str[i]=='"')
+	in_quotes = !in_quotes;
+      i++;
+    }
+    strncpy(buff, str, i);
+    buff[i] = '\0';
+    string nstr = buff;
+
+    rvector.push_back(nstr);
+    str += i;
+    if(str[0]==separator)
+      str++;
+  }
+  delete [] buff;
+  return(rvector);
+}
+
+//----------------------------------------------------------------
 // Procedure: parseString(string, string)
 //   Example: svector = parseString("apples $@$ pears $@$ banannas", "$@$");
 //            svector[0] = "apples "
