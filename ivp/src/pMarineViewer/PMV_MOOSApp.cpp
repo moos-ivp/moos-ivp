@@ -386,7 +386,7 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
       unsigned int i, vsize = svector.size();
       for(i=0; i<vsize; i++) {
 	string new_var = stripBlankEnds(svector[i]);
-	bool ok = m_gui->mviewer->addScopeVariable(value);
+	bool ok = m_gui->mviewer->addScopeVariable(new_var);
 	if(ok)  {
 	  m_gui->addScopeVariable(new_var);
 	  m_scope_vars.push_back(new_var);
