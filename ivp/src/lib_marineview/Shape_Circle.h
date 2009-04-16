@@ -60,12 +60,13 @@ double g_circleBody[]=
   -2.9,     4.1,
   -2.1,     4.5,
   -1.3,     4.8,
-  -0.4,     5
+  -0.4,     5,
+   0.4,     5
 };
 
 double       g_circleCtrX     = 0.0;
 double       g_circleCtrY     = 0.0;
-unsigned int g_circleBodySize = 36;
+unsigned int g_circleBodySize = 37;
 double       g_circleWidth    = 10;
 
 #endif

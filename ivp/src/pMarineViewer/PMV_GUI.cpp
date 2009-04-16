@@ -246,7 +246,8 @@ void PMV_GUI::addButton(string btype, string svalue)
 //            
 void PMV_GUI::addAction(string svalue, bool separator) 
 {
-  vector<string> svector = parseString(svalue, '#');
+  // We call the Q-version of parseString to allow separators in vals
+  vector<string> svector = parseStringQ(svalue, '#');
   unsigned int i, vsize = svector.size();
   unsigned int pindex = m_action_vars.size();
 
@@ -255,6 +256,8 @@ void PMV_GUI::addAction(string svalue, bool separator)
   for(i=0; i<vsize; i++) {
     string param = stripBlankEnds(biteString(svector[i], '='));
     string value = stripBlankEnds(svector[i]);
+    if(isQuoted(value))
+      value = stripQuotes(value);
     if(param == "")
       return;
     if(tolower(param)=="menu_key") 
@@ -541,17 +544,26 @@ void PMV_GUI::pushPending(string var, string val)
 
 //-------------------------------------------------------------------
 // Procedure: addScopeVariable
+//   Returns: false if no variable added
+//            true if the given variable is added
 
 bool PMV_GUI::addScopeVariable(string varname)
 {
+  // We dont allow white space in MOOS variables
   if(strContainsWhite(varname))
     return(false);
+
+  // If the varname is already added, just return false now.
   unsigned int i, vsize = m_scope_vars.size();
   for(i=0; i<vsize; i++) {
     if(varname == m_scope_vars[i])
       return(false);
   }
-  
+
+  // The index/ordering in the m_scope_vars vector is important. It is
+  // correlated to the cb_Scope callback index in each of the new menu
+  // items. The zero'th index is meaningless since zero is handled 
+  // as a special case in cb_Scope. 
   if(vsize == 0) {
     m_scope_vars.push_back("_add_moos_var_");
     m_scope_vars.push_back("_previous_scope_var_");
@@ -613,13 +625,13 @@ void PMV_GUI::addContext(string side, string context)
 }
 
 //-------------------------------------------------------------------
-// Procedure: addCenterVehicle
+// Procedure: addReferenceVehicle
 //      NOte: Add the vehicle with the given name as one of the possible
 //            reference vehicles. When none are given the datum is the
 //            the default reference point. So when the first vehicle is
 //            given, the datum is added as one of the menu choices. 
 
-void PMV_GUI::addCenterVehicle(string vehicle_name)
+void PMV_GUI::addReferenceVehicle(string vehicle_name)
 {
   // First check the current list of vehicles, ignore duplicates
   unsigned int i, vsize = m_reference_tags.size();
@@ -632,11 +644,13 @@ void PMV_GUI::addCenterVehicle(string vehicle_name)
   if(vsize == 0) {
     m_reference_tags.push_back("bearing-absolute");
     string label = "ReferencePoint/Bearing-Absolute";
-    mbar->add(label.c_str(), 'a', (Fl_Callback*)PMV_GUI::cb_Reference, 
+    mbar->add(label.c_str(), FL_CTRL+'a', 
+	      (Fl_Callback*)PMV_GUI::cb_Reference, 
 	      (void*)0, FL_MENU_RADIO|FL_MENU_VALUE);
     m_reference_tags.push_back("bearing-relative");
     label = "ReferencePoint/Bearing-Relative";
-    mbar->add(label.c_str(), 'r', (Fl_Callback*)PMV_GUI::cb_Reference, 
+    mbar->add(label.c_str(), FL_CTRL+'r', 
+	      (Fl_Callback*)PMV_GUI::cb_Reference, 
 	      (void*)1, FL_MENU_DIVIDER|FL_MENU_RADIO);
 
     m_reference_tags.push_back("datum");

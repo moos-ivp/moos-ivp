@@ -715,6 +715,8 @@ void MarineViewer::drawCommonMarker(double x, double y, double shape_width,
     cvect1 = color_vectors[0];
   if(vsize >= 2) 
     cvect2 = color_vectors[1];
+  
+  int bw = 2; // border width
 
   vector<double> black(3,0);
   if(mtype == "gateway") {
@@ -725,7 +727,7 @@ void MarineViewer::drawCommonMarker(double x, double y, double shape_width,
     double cy = g_gatewayCtrY * factor;
     glTranslatef(-cx, -cy, 0);
     drawGLPoly(g_gatewayBody, g_gatewayBodySize, cvect1, 0, factor);    
-    drawGLPoly(g_gatewayBody, g_gatewayBodySize, black, 1, factor);    
+    drawGLPoly(g_gatewayBody, g_gatewayBodySize, black, bw, factor);    
     drawGLPoly(g_gatewayMidBody, g_gatewayMidBodySize, cvect2, 0, factor);
     glTranslatef(cx, cy, 0);
   }
@@ -739,7 +741,7 @@ void MarineViewer::drawCommonMarker(double x, double y, double shape_width,
     glTranslatef(-cx, -cy, 0);
     drawGLPoly(g_efieldBody, g_efieldBodySize, cvect1, 0, factor);    
     drawGLPoly(g_efieldMidBody, g_efieldMidBodySize, cvect2, 0, factor);
-    drawGLPoly(g_efieldMidBody, g_efieldMidBodySize, black, 1, factor);
+    drawGLPoly(g_efieldMidBody, g_efieldMidBodySize, black, bw, factor);
     glTranslatef(cx, cy, 0);
   }
 
@@ -750,7 +752,7 @@ void MarineViewer::drawCommonMarker(double x, double y, double shape_width,
     double cy = g_diamondCtrY * factor;
     glTranslatef(-cx, -cy, 0);
     drawGLPoly(g_diamondBody, g_diamondBodySize, cvect1, 0, factor);    
-    drawGLPoly(g_diamondBody, g_diamondBodySize, black, 1, factor);    
+    drawGLPoly(g_diamondBody, g_diamondBodySize, black, bw, factor);    
     glTranslatef(cx, cy, 0);
   }
 
@@ -761,7 +763,7 @@ void MarineViewer::drawCommonMarker(double x, double y, double shape_width,
     double cy = g_circleCtrY * factor;
     glTranslatef(-cx, -cy, 0);
     drawGLPoly(g_circleBody, g_circleBodySize, cvect1, 0, factor);    
-    drawGLPoly(g_circleBody, g_circleBodySize, black, 1, factor);    
+    drawGLPoly(g_circleBody, g_circleBodySize, black, bw, factor);    
     glTranslatef(cx, cy, 0);
   }
 
@@ -772,7 +774,7 @@ void MarineViewer::drawCommonMarker(double x, double y, double shape_width,
     double cy = g_triangleCtrY * factor;
     glTranslatef(-cx, -cy, 0);
     drawGLPoly(g_triangleBody, g_triangleBodySize, cvect1, 0, factor);    
-    drawGLPoly(g_triangleBody, g_triangleBodySize, black, 1, factor);    
+    drawGLPoly(g_triangleBody, g_triangleBodySize, black, bw, factor);    
     glTranslatef(cx, cy, 0);
   }
 
@@ -783,7 +785,7 @@ void MarineViewer::drawCommonMarker(double x, double y, double shape_width,
     double cy = g_squareCtrY * factor;
     glTranslatef(-cx, -cy, 0);
     drawGLPoly(g_squareBody, g_squareBodySize, cvect1, 0, factor);    
-    drawGLPoly(g_squareBody, g_squareBodySize, black, 1, factor);    
+    drawGLPoly(g_squareBody, g_squareBodySize, black, bw, factor);    
     glTranslatef(cx, cy, 0);
   }
 
@@ -794,7 +796,7 @@ void MarineViewer::drawCommonMarker(double x, double y, double shape_width,
     double cy = g_kelpCtrY * factor;
     glTranslatef(-cx, -cy, 0);
     drawGLPoly(g_kelpBody, g_kelpBodySize, cvect1, 0, factor);    
-    drawGLPoly(g_kelpBody, g_kelpBodySize, black, 1, factor);    
+    drawGLPoly(g_kelpBody, g_kelpBodySize, black, bw, factor);    
     glTranslatef(cx, cy, 0);
   }
 

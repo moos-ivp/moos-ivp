@@ -50,7 +50,7 @@ public:
   unsigned int getPendingSize() {return(m_pending_vars.size());};
   bool         addScopeVariable(std::string);
   void         addContext(std::string side, std::string context);
-  void         addCenterVehicle(std::string vname);
+  void         addReferenceVehicle(std::string vname);
 
  private:
   inline void cb_MOOS_Button_i(int);

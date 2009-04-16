@@ -384,8 +384,13 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
     if(param == "scope") {
       bool ok = m_gui->mviewer->addScopeVariable(value);
       if(ok)  {
-	m_gui->addScopeVariable(value);
-	m_scope_vars.push_back(value);
+	vector<string> svector = parseString(value, ',');
+	unsigned int i, vsize = svector.size();
+	for(i=0; i<vsize; i++) {
+	  string new_var = stripBlankEnds(svector[i]);
+	  m_gui->addScopeVariable(new_var);
+	  m_scope_vars.push_back(new_var);
+	}
       }
     }
   }
@@ -404,8 +409,8 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
     string sLine = *p;
     string param = tolower(MOOSChomp(sLine, "="));
     string value = stripBlankEnds(sLine);
-    if(param == "center_vehicle")
-      m_gui->addCenterVehicle(value);
+    if((param == "center_vehicle") || (param == "reference_vehicle"))
+      m_gui->addReferenceVehicle(value);
   }
 
 
