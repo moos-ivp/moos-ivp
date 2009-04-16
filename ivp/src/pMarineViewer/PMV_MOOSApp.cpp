@@ -382,12 +382,12 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
     string param = stripBlankEnds(tolower(MOOSChomp(sLine, "=")));
     string value = stripBlankEnds(sLine);
     if(param == "scope") {
-      bool ok = m_gui->mviewer->addScopeVariable(value);
-      if(ok)  {
-	vector<string> svector = parseString(value, ',');
-	unsigned int i, vsize = svector.size();
-	for(i=0; i<vsize; i++) {
-	  string new_var = stripBlankEnds(svector[i]);
+      vector<string> svector = parseString(value, ',');
+      unsigned int i, vsize = svector.size();
+      for(i=0; i<vsize; i++) {
+	string new_var = stripBlankEnds(svector[i]);
+	bool ok = m_gui->mviewer->addScopeVariable(value);
+	if(ok)  {
 	  m_gui->addScopeVariable(new_var);
 	  m_scope_vars.push_back(new_var);
 	}
