@@ -51,12 +51,13 @@ double g_gatewayMidBody[]=
   -1.0,   7.0,
   -2.0,   6.0,
   -2.0,   4.0,
-  -1.0,   3.0
+  -1.0,   3.0,
+   1.0,   3.0
 };
 
 double       g_gatewayMidCtrX     = 0.0;
 double       g_gatewayMidCtrY     = 5.0;
-unsigned int g_gatewayMidBodySize = 8;
+unsigned int g_gatewayMidBodySize = 9;
 
 #endif
 

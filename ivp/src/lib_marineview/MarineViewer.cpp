@@ -724,9 +724,9 @@ void MarineViewer::drawCommonMarker(double x, double y, double shape_width,
     double cx = g_gatewayCtrX * factor;
     double cy = g_gatewayCtrY * factor;
     glTranslatef(-cx, -cy, 0);
-    drawGLPoly(g_gatewayBody, g_gatewayBodySize, cvect1, factor);    
+    drawGLPoly(g_gatewayBody, g_gatewayBodySize, cvect1, 0, factor);    
     drawGLPoly(g_gatewayBody, g_gatewayBodySize, black, 1, factor);    
-    drawGLPoly(g_gatewayMidBody, g_gatewayMidBodySize, cvect2, factor);
+    drawGLPoly(g_gatewayMidBody, g_gatewayMidBodySize, cvect2, 0, factor);
     glTranslatef(cx, cy, 0);
   }
 
