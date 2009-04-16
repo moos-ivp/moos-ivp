@@ -119,12 +119,20 @@ ProcessConfig = pMarineViewer
   ACTION  = RETURN=true
 
 
-  marker = type=triangle,x=100,y=0,label=lobster_pot,color=orange,width=5
-  marker = type=square,x=-20,y=35,label=home,color=blue,width=5
-  marker = type=circle,x=-10,y=-130,label=rock1,color=brown,width=2
-  marker = type=circle,x=-5,y=-125,label=rock2,color=brown,width=2
-  marker = type=circle,x=37,y=-110,label=rock3,color=brown,width=2
-  marker = type=diamond,x=100,y=-100,label=hazard,color=red,width=5
+  marker = type=triangle,x=100,y=100,label=lobster_pot,color=orange,width=5
+  marker = type=square  ,x=120,y=100,label=home,color=blue,width=5
+  marker = type=circle,  x=140,y=100,label=rock1,color=brown,width=5
+  marker = type=diamond, x=160,y=100,label=hazard,color=red,width=5
+  marker = type=efield,  x=180,y=100,label=hazard,color=black,width=5
+  marker = type=gateway, x=200,y=100,label=hazard,color=dark_green,width=5
+
+
+  //marker = type=triangle,x=100,y=0,label=lobster_pot,color=orange,width=5
+  //marker = type=square,x=-20,y=35,label=home,color=blue,width=5
+  //marker = type=circle,x=-10,y=-130,label=rock1,color=brown,width=2
+  //marker = type=circle,x=-5,y=-125,label=rock2,color=brown,width=2
+  //marker = type=circle,x=37,y=-110,label=rock3,color=brown,width=2
+  //marker = type=diamond,x=100,y=-100,label=hazard,color=red,width=5
 
   // SWAMSI OP-AREA
   op_vertex = x=-10, y=10,lwidth=2,lcolor=yellow,looped=true,group=soa
