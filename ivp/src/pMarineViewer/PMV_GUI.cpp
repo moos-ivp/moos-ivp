@@ -160,7 +160,7 @@ PMV_GUI::PMV_GUI(int g_w, int g_h, const char *g_l)
   user_button_3->hide();
   user_button_4->hide();
 
-  mbar->add("MOOS-Scope/Add a Variable", 'a', 
+  mbar->add("MOOS-Scope/Add Variable", 'a', 
 	    (Fl_Callback*)PMV_GUI::cb_Scope, (void*)0, FL_MENU_DIVIDER);
     
   this->end();
