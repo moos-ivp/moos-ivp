@@ -295,6 +295,12 @@ void XMS::handleCommand(char c)
     m_report_histvar = true;
     m_update_requested = true;
     break;
+  case 'z':
+    if(m_history_var != "") {
+      m_update_requested = true;
+      m_history_mode = !m_history_mode;
+    }
+    break;
   case 'w':
     if(m_history_var != "") {
       m_update_requested = true;
@@ -559,6 +565,7 @@ void XMS::printHelp()
   printf("    N        Display null/empty strings           \n");
   printf("    w        Show Variable History if enabled     \n");
   printf("    W        Hide Variable History                \n");
+  printf("    z        Toggle the Variable History mode     \n");
   printf("    j        Truncate Hist Variable in Hist Report\n");
   printf("    J        Show Hist Variable in Hist Report    \n");
   printf("  > or <     Show More or Less Variable History   \n");

@@ -311,6 +311,10 @@ bool EchoVar::handleFlipEntry(string sKey, string sLine)
     bool ok = m_eflippers[index].setParam("filter", right);
     return(ok);
   }
+  if(strContains(sLine, "==")) {
+    bool ok = m_eflippers[index].setParam("filter", sLine);
+    return(ok);
+  }
   if(!strncmp(sLine.c_str(), "component", 9)) {
     string left = biteString(sLine, '=');
     string right = stripBlankEnds(sLine);
@@ -318,13 +322,7 @@ bool EchoVar::handleFlipEntry(string sKey, string sLine)
     return(ok);
   }
   if(strContains(sLine, "->")) {
-    cout << "Handling:" << sLine << endl;
     bool ok = m_eflippers[index].setParam("component", sLine);
-    return(ok);
-  }
-  if(strContains(sLine, "==")) {
-    bool ok = m_eflippers[index].setParam("filter", sLine);
-    cout << "ok" << ok << endl;
     return(ok);
   }
 

@@ -45,10 +45,16 @@ bool EFlipper::setParam(string param, string value)
   value = stripBlankEnds(value);
   if(tolower(param) == "key")
     m_key = value;
-  else if(tolower(param) == "source_variable")
+  else if(tolower(param) == "source_variable") {
+    if(value == m_dest_variable)
+      return(false);
     m_source_variable = value;
-  else if(tolower(param) == "dest_variable")
+  }
+  else if(tolower(param) == "dest_variable") {
+    if(value == m_source_variable)
+      return(false);
     m_dest_variable = value;
+  }
   else if(tolower(param) == "source_separator")
     m_source_separator = value;
   else if(tolower(param) == "dest_separator")
@@ -60,7 +66,6 @@ bool EFlipper::setParam(string param, string value)
       string left  = stripBlankEnds(svector[0]);
       string right = stripBlankEnds(svector[1]);
       m_cmap[left] = right;
-      cout << "Adding: " << left << "," << right << endl;
       return(true);
     }
     else
