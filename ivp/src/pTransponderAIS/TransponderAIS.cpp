@@ -68,6 +68,7 @@ bool TransponderAIS::OnNewMail(MOOSMSG_LIST &NewMail)
     string community = msg.m_sOriginatingCommunity;
     string sdata = msg.m_sVal;
     double ddata = msg.m_dfVal;
+    double mtime = msg.m_dfTime;
     //char   mtype = msg.m_cDataType;
 
     if(key == "DB_UPTIME")
@@ -84,6 +85,12 @@ bool TransponderAIS::OnNewMail(MOOSMSG_LIST &NewMail)
       m_nav_heading = (ddata*-180.0)/3.1415926;
     else if(key == "NAV_DEPTH")
       m_nav_depth = ddata;
+    else if(key == "IVPHELM_SUMMARY") {
+      bool ok = handleLocalHelmSummary(sdata, mtime);
+      if(!ok) 
+	MOOSTrace("TransponderAIS: Unhandled IVPHELM_SUMMARY.\n");
+    }
+      
     else if(key == m_contact_report_var) {
       bool ok = handleIncomingAISReport(sdata);
       if(!ok) 
@@ -123,6 +130,7 @@ bool TransponderAIS::OnConnectToServer()
   m_Comms.Register("NAV_DEPTH", 0);
   m_Comms.Register(m_contact_report_var, 0);
   m_Comms.Register("DB_UPTIME", 0);
+  m_Comms.Register("IVPHELM_SUMMARY", 0);
 
   
   // tes 9-12-07. added NAFCON_MESSAGES registration
@@ -170,7 +178,8 @@ bool TransponderAIS::Iterate()
 				 dstringCompact(doubleToString(m_nav_speed, 2)),
 				 dstringCompact(doubleToString(m_nav_heading, 2)),
 				 dstringCompact(doubleToString(m_nav_depth, 2)),
-				 dstringCompact(doubleToString(m_vessel_len, 2)));
+				 dstringCompact(doubleToString(m_vessel_len, 2)),
+				 m_helm_mode);
 
     string local_var = m_contact_report_var + "_LOCAL";
     
@@ -361,6 +370,25 @@ bool TransponderAIS::OnStartUp()
   
   return(true);
 
+}
+
+
+//-----------------------------------------------------------------
+// Procedure: handleLocalHelmSummary()
+
+bool TransponderAIS::handleLocalHelmSummary(const string& sdata, 
+					    double stime)
+{
+  vector<string> svector = parseString(sdata, ',');
+  unsigned int i, vsize = svector.size();
+  string helm_summary;
+  for(i=0; i<vsize; i++) {
+    svector[i] = stripBlankEnds(svector[i]);
+    string left = biteString(svector[i], '=');
+    string right = stripBlankEnds(svector[i]);
+    if(left == "modes")
+      m_helm_mode = right;
+  }
 }
 
 
@@ -599,7 +627,8 @@ bool TransponderAIS::handleIncomingNaFConMessage(const string& rMsg)
                                          dstringCompact(doubleToString(navLong, 6)), 
                                          dstringCompact(doubleToString(navSpeed, 2)),
                                          dstringCompact(doubleToString(navHeading, 2)),
-                                         dstringCompact(doubleToString(navDepth, 2)), 0);
+                                         dstringCompact(doubleToString(navDepth, 2)), 
+					 0, "unknown-mode");
       
             m_Comms.Notify(m_contact_report_var, summary);
             m_Comms.Notify("TRANSPONDER_NAFCON_REPORT", summary);
@@ -734,7 +763,7 @@ void TransponderAIS::postContactList()
 string TransponderAIS::assembleAIS(string vname, string vtype, string db_time, 
 				   string utc_time, string x, string y, 
 				   string lat, string lon, string spd,
-                                   string hdg, string depth, string vlen)
+                                   string hdg, string depth, string vlen, string mode)
 {
   // If the length is unknown, put in some good guesses
   if(atof(vlen.c_str()) == 0) {
@@ -760,6 +789,7 @@ string TransponderAIS::assembleAIS(string vname, string vtype, string db_time,
   summary += ",HDG=" + hdg;
   summary += ",DEPTH=" + depth;
   summary += ",LENGTH=" + vlen;
+  summary += ",MODE=" + mode;
   
   return summary;
 }
