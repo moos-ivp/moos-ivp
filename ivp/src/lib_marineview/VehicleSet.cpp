@@ -306,6 +306,14 @@ bool VehicleSet::getStringInfo(const string& g_vname,
     else
       result = "unknown-type";
   }
+  else if(info_type == "helm_mode") {
+    map<string,string>::const_iterator p;
+    p = m_vmode_map.find(vname);
+    if(p != m_vmode_map.end()) 
+      result = p->second;
+    else
+      result = "unknown-mode";
+  }
   else  
     return(false);
 
@@ -570,6 +578,7 @@ bool VehicleSet::updateVehiclePosition(const string& ais_report)
   double vlen  = 0;
   string vname = "";
   string vtype = "";
+  string vmode = "";
   bool b_vname = tokParse(ais_report, "NAME",  ',', '=', vname);
   bool b_vtype = tokParse(ais_report, "TYPE",  ',', '=', vtype);
   bool b_pos_x = tokParse(ais_report, "X",     ',', '=', pos_x);
@@ -582,6 +591,7 @@ bool VehicleSet::updateVehiclePosition(const string& ais_report)
   bool b_lat   = tokParse(ais_report, "LAT", ',', '=', lat);
   bool b_lon   = tokParse(ais_report, "LON", ',', '=', lon);
   bool b_vlen  = tokParse(ais_report, "LENGTH", ',', '=', vlen);
+  bool b_vmode = tokParse(ais_report, "MODE", ',', '=', vmode);
 
   if((!b_pos_x || !b_pos_y) && (!b_lat || !b_lon))
     return(false);
@@ -619,7 +629,8 @@ bool VehicleSet::updateVehiclePosition(const string& ais_report)
   m_vlen_map[vname] = vlen; 
   m_pos_map[vname]  = opose;
   m_ais_map[vname]  = utime;
- 
+  m_vmode_map[vname] = vmode;
+
   ColoredPoint point(pos_x, pos_y);
   map<string,CPList>::iterator p2;
   p2 = m_hist_map.find(vname);

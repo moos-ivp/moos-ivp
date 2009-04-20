@@ -72,6 +72,8 @@ class VehicleSet
   std::map<std::string, CPList>       m_hist_map;
   // Mapping from Vehicle Name to Vehicle Body Type
   std::map<std::string, std::string>  m_vbody_map;
+  // Mapping from Vehicle Name to Vehicle Helm Mode (in AIS_REPORT)
+  std::map<std::string, std::string>  m_vmode_map;
   // Mapping from Vehicle Name to Time of last AIS report
   std::map<std::string, double>       m_ais_map;
   // Mapping from Vehicle Name to Vehicle Color
