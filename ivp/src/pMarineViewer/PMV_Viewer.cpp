@@ -190,14 +190,23 @@ void PMV_Viewer::drawVehicle(string vname, bool active, string vehibody)
 
   vector<double> vname_color = m_vehiset.getColor("vehicle_name_color");
   
-  bool vname_draw = m_vehiset.isViewable("vehicle_names");
+  string vnames_mode = m_vehiset.getStringInfo("vehicle_names_mode");
   
   double shape_scale  = m_vehiset.getDoubleInfo("vehicle_shape_scale");
   double shape_length = m_vehiset.getDoubleInfo("vlength") * shape_scale;
   
-  string helm_mode = m_vehiset.getStringInfo("helm_mode");
-  if((helm_mode != "none") && (helm_mode != "unknown-mode"))
-    vname += " (" + helm_mode + ")";
+  bool vname_draw = true;
+  if(vnames_mode == "off")
+    vname_draw = false;
+  else if(vnames_mode == "names+mode") {
+    string helm_mode = m_vehiset.getStringInfo("helm_mode");
+    if((helm_mode != "none") && (helm_mode != "unknown-mode"))
+      vname += " (" + helm_mode + ")";
+  }
+  else if(vnames_mode == "names+depth") {
+    string str_depth = dstringCompact(doubleToString(opose.getDepth(),1));
+    vname += " (depth=" + str_depth + ")";
+  }
 
   drawCommonVehicle(vname, opose, vehi_color, vname_color, vehibody, 
 		    shape_length, vname_draw, 1);

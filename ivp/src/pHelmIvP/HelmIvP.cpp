@@ -69,6 +69,7 @@ HelmIvP::HelmIvP()
   m_ok_skew        = 60; 
   m_skews_matter   = true;
   m_warning_count  = 0;
+  m_last_heartbeat = 0;
 
   // The refresh vars handle the occasional clearing of the m_outgoing
   // maps. These maps will be cleared when MOOS mail is received for the
@@ -520,14 +521,23 @@ void HelmIvP::postDefaultVariables()
 //------------------------------------------------------------
 // Procedure: postEngagedStatus()
 
+
 void HelmIvP::postEngagedStatus()
 {
   string engaged_status = "ENGAGED";
   if(!m_has_control)
     engaged_status = "DISENGAGED";
-  
+
+  double heartbeat_interval = 1.0;  // seconds
+  double curr_time = MOOSTime();
+  bool time_for_a_new_heartbeat = false;
+  if((curr_time-m_last_heartbeat) >= heartbeat_interval) {
+      time_for_a_new_heartbeat = true;
+      m_last_heartbeat = curr_time;
+  }
+
   bool changed = detectChangeOnKey("IVPHELM_ENGAGED", engaged_status);
-  if(changed)
+  if(changed || time_for_a_new_heartbeat)
     m_Comms.Notify("IVPHELM_ENGAGED", engaged_status);
 }
 

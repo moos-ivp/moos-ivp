@@ -94,8 +94,9 @@ class VehicleSet
   double m_trails_gap;            
   bool   m_trails_viewable;      
   bool   m_trails_connect_viewable;
-  bool   m_vehicles_viewable;
-  bool   m_vehicle_names_viewable;
+  bool   m_vehicles_viewable; 
+
+  std::string   m_vehicle_names_mode; // off; names; names_mode; names_depth
   
   std::vector<double> m_trails_color; 
   std::vector<double> m_active_vehicle_color;

@@ -68,6 +68,7 @@ protected:
 
   std::string m_helm_mode;
   bool        m_helm_engaged;
+  double      m_helm_lastmsg;
 
   std::string m_vessel_name;
   std::string m_vessel_type;

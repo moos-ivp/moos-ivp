@@ -46,6 +46,7 @@ TransponderAIS::TransponderAIS()
   m_parseNaFCon  = false;
   m_helm_mode    = "none";
   m_helm_engaged = false;
+  m_helm_lastmsg = -1;
 
   m_blackout_interval = 0;
   m_blackout_baseval  = 0;
@@ -87,9 +88,12 @@ bool TransponderAIS::OnNewMail(MOOSMSG_LIST &NewMail)
       m_nav_heading = (ddata*-180.0)/3.1415926;
     else if(key == "NAV_DEPTH")
       m_nav_depth = ddata;
-    else if(key == "IVPHELM_SUMMARY")
+    else if(key == "IVPHELM_SUMMARY") {
+      m_helm_lastmsg = m_db_uptime;
       handleLocalHelmSummary(sdata, mtime);
+    }
     else if(key == "IVPHELM_ENGAGED") {
+      m_helm_lastmsg = m_db_uptime;
       string value = tolower(stripBlankEnds(sdata));
       m_helm_engaged = (value == "engaged");
     }
@@ -793,14 +797,23 @@ string TransponderAIS::assembleAIS(string vname, string vtype, string db_time,
   summary += ",DEPTH=" + depth;
   summary += ",LENGTH=" + vlen;
 
-  if(m_helm_engaged == false)
-    summary += ",MODE=DISENGAGED";
+  // We choose a duration of 2 seconds because the helm is 
+  // configured to provide a heartbeat once per second.
+  double timeout_duration = 2.0; // seconds
+  string  mode_str = ",MODE=";
+  if((m_db_uptime-m_helm_lastmsg) > timeout_duration) {
+    string awol_time = doubleToString((m_db_uptime-m_helm_lastmsg), 0);
+    mode_str += "NOHELM-" + awol_time;
+  }
+  else if(m_helm_engaged == false)
+    mode_str += "DISENGAGED";
   else {
     if(mode != "none")
-      summary += ",MODE=" + mode;
+      mode_str += mode;
     else
-      summary += ",MODE=ENGAGED";
+      mode_str += "ENGAGED";
   }
+  summary += mode_str;
 
   return summary;
 }

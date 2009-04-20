@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    ORGN: NAVSAE Newport RI and MIT Cambridge MA               */
 /*    FILE: VehicleSet.cpp                                       */
 /*    DATE: Aug 12th 2008                                        */
 /*          (Broken out from the Viewer class(es)                */
@@ -33,7 +33,7 @@ VehicleSet::VehicleSet()
   setParam("trails_viewable", "true");
   setParam("trails_connect_viewable", "false");
   setParam("vehicles_viewable", "true");
-  setParam("vehicle_names_viewable", "false");
+  setParam("vehicle_names_viewable", "names+mode");
 
   setParam("trails_color", "white");
   setParam("active_vehicle_color", "red");
@@ -87,8 +87,30 @@ bool VehicleSet::setParam(string param, string value)
   }
   else if(param == "vehicles_viewable")
     handled = setBooleanOnString(m_vehicles_viewable, value);
-  else if(param == "vehicle_names_viewable")
-    handled = setBooleanOnString(m_vehicle_names_viewable, value);
+  else if(param == "vehicle_names_viewable") {
+    handled = true;
+    value = tolower(stripBlankEnds(value));
+    if((value == "true") || (value == "names"))
+      m_vehicle_names_mode = "names";
+    else if((value == "false") || (value == "off"))
+      m_vehicle_names_mode = "off";
+    else if(value == "names+mode")
+      m_vehicle_names_mode = value;
+    else if(value == "names+depth")
+      m_vehicle_names_mode = value;
+    else if(value == "toggle") {
+      if(m_vehicle_names_mode == "off")
+	m_vehicle_names_mode = "names";
+      else if(m_vehicle_names_mode == "names")
+	m_vehicle_names_mode = "names+mode";
+      else if(m_vehicle_names_mode == "names+mode")
+	m_vehicle_names_mode = "names+depth";
+      else if(m_vehicle_names_mode == "names+depth")
+	m_vehicle_names_mode = "off";
+    }
+    else
+      handled = false;
+  }
   else if(param == "trails_viewable")
     handled = setBooleanOnString(m_trails_viewable, value);
   else if(param == "trails_connect_viewable")
@@ -298,6 +320,8 @@ bool VehicleSet::getStringInfo(const string& g_vname,
 
   if(info_type == "active_vehicle_name")
     result = m_active_vehicle_name; 
+  else if(info_type == "vehicle_names_mode")
+    result = m_vehicle_names_mode; 
   else if((info_type == "body") || (info_type == "type")) {
     map<string,string>::const_iterator p;
     p = m_vbody_map.find(vname);
@@ -444,7 +468,7 @@ bool VehicleSet::isViewable(const string& feature) const
   if(feature == "vehicles")
     return(m_vehicles_viewable);
   else if(feature == "vehicle_names")
-    return(m_vehicle_names_viewable);
+    return(m_vehicle_names_mode != "off");
   else if(feature == "trails")
     return(m_trails_viewable);
   else if(feature == "trails_connect")
