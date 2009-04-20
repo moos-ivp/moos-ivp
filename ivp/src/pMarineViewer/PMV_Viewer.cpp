@@ -194,21 +194,29 @@ void PMV_Viewer::drawVehicle(string vname, bool active, string vehibody)
   
   double shape_scale  = m_vehiset.getDoubleInfo("vehicle_shape_scale");
   double shape_length = m_vehiset.getDoubleInfo("vlength") * shape_scale;
-  
-  bool vname_draw = true;
+  double age_ais      = m_vehiset.getDoubleInfo("age_ais");
+
+  string vname_aug = vname;
+  bool  vname_draw = true;
   if(vnames_mode == "off")
     vname_draw = false;
   else if(vnames_mode == "names+mode") {
     string helm_mode = m_vehiset.getStringInfo("helm_mode");
     if((helm_mode != "none") && (helm_mode != "unknown-mode"))
-      vname += " (" + helm_mode + ")";
+      vname_aug += " (" + helm_mode + ")";
   }
   else if(vnames_mode == "names+depth") {
     string str_depth = dstringCompact(doubleToString(opose.getDepth(),1));
-    vname += " (depth=" + str_depth + ")";
+    vname_aug += " (depth=" + str_depth + ")";
   }
 
-  drawCommonVehicle(vname, opose, vehi_color, vname_color, vehibody, 
+  // If the AIS is old, disregard the vname_mode and indicated staleness
+  if(age_ais > 3) {
+    string age_str = doubleToString(age_ais,0);
+    vname_aug = vname + "(Stale AIS - " + age_str + ")";
+  } 
+
+  drawCommonVehicle(vname_aug, opose, vehi_color, vname_color, vehibody, 
 		    shape_length, vname_draw, 1);
 }
 

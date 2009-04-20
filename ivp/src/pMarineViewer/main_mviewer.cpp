@@ -217,13 +217,15 @@ int main(int argc, char *argv[])
   Fl::lock();
   
   while (Fl::wait() > 0) {
-    // We use the posting of a thread message (Fl::awake()) entirely to cause 
-    // Fl::wait() to return.  That should minimize the latency between when we 
-    // enqueue MOOS_events into g_pending_moos_events, and when this thread gets
-    // a chance to act on them.
+    // We use the posting of a thread message (Fl::awake()) entirely
+    // to cause Fl::wait() to return.  That should minimize the
+    // latency between when we enqueue MOOS_events into
+    // g_pending_moos_events, and when this thread gets a chance to
+    // act on them.
     while (! g_pending_moos_events.empty()) {
-      // This is the only thread performing dequeues, so this call should never
-      // block, since we already confirmed the pipe isn't empty.
+      // This is the only thread performing dequeues, so this call
+      // should never block, since we already confirmed the pipe isn't
+      // empty.
       MOOS_event e;
       bool success = g_pending_moos_events.dequeue(e);
       assert(success);

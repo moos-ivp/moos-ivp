@@ -70,6 +70,7 @@ class PMV_MOOSApp : public CMOOSApp
   Threadsafe_pipe<MOOS_event> * m_pending_moos_events;
 
   double m_start_time;
+  double m_lastredraw_time;
   bool   m_verbose;
   int    m_counter;
 

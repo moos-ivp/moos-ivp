@@ -35,9 +35,10 @@ PMV_MOOSApp::PMV_MOOSApp()
   m_left_click_str  = "null"; 
   m_right_click_str = "null"; 
 
-  m_gui     = 0; 
+  m_verbose         = false;
+  m_gui             = 0; 
+  m_lastredraw_time = 0;
   m_pending_moos_events = 0;
-  m_verbose = false;
 }
 
 //----------------------------------------------------------------
@@ -290,6 +291,7 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
   }
 
   if(handled_msgs > 0) {
+    m_lastredraw_time = e.moos_time;
     m_gui->updateXY();
     m_gui->mviewer->redraw();
   }
@@ -301,8 +303,14 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
 
 void PMV_MOOSApp::handleIterate(const MOOS_event & e) {
   double curr_time = e.moos_time - m_start_time;
-  m_gui->setCurrTime(curr_time);
+  double time_diff = (e.moos_time - m_lastredraw_time);
+  if(time_diff > 1) {
+    m_gui->mviewer->redraw();
+    m_lastredraw_time = e.moos_time;
+  }
   m_gui->updateXY();
+  m_gui->mviewer->setParam("curr_time", e.moos_time);
+  m_gui->setCurrTime(curr_time);
 
   string left_click_str = m_gui->mviewer->getStringInfo("left_click_info");
   if(left_click_str != m_left_click_str) {
