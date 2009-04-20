@@ -43,7 +43,7 @@ public:
   bool OnStartUp();
 
  protected:
-  bool handleLocalHelmSummary(const std::string&, double);
+  void handleLocalHelmSummary(const std::string&, double);
   bool handleIncomingAISReport(const std::string&);
   bool handleIncomingNaFConMessage(const std::string&);
   void updateContactList(std::string, double, double, double, double, double, double);
@@ -65,7 +65,9 @@ protected:
   double      m_nav_heading;
   double      m_nav_speed;
   double      m_nav_depth;
+
   std::string m_helm_mode;
+  bool        m_helm_engaged;
 
   std::string m_vessel_name;
   std::string m_vessel_type;

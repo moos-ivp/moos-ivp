@@ -196,8 +196,8 @@ void PMV_Viewer::drawVehicle(string vname, bool active, string vehibody)
   double shape_length = m_vehiset.getDoubleInfo("vlength") * shape_scale;
   
   string helm_mode = m_vehiset.getStringInfo("helm_mode");
-
-  vname += " (" + helm_mode + ")";
+  if((helm_mode != "none") && (helm_mode != "unknown-mode"))
+    vname += " (" + helm_mode + ")";
 
   drawCommonVehicle(vname, opose, vehi_color, vname_color, vehibody, 
 		    shape_length, vname_draw, 1);

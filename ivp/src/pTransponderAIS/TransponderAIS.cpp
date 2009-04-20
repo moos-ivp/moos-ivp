@@ -35,15 +35,17 @@ using namespace std;
 
 TransponderAIS::TransponderAIS()
 {
-  m_nav_x       = 0;
-  m_nav_y       = 0;
-  m_nav_speed   = 0;
-  m_nav_heading = 0;
-  m_nav_depth   = 0;
-  m_vessel_name = "UNKNOWN_VESSEL_NAME";
-  m_vessel_type = "UNKNOWN_VESSEL_TYPE";
-  m_vessel_len  = 0; // Zero indicates unspecified length
-  m_parseNaFCon = false;
+  m_nav_x        = 0;
+  m_nav_y        = 0;
+  m_nav_speed    = 0;
+  m_nav_heading  = 0;
+  m_nav_depth    = 0;
+  m_vessel_name  = "UNKNOWN_VESSEL_NAME";
+  m_vessel_type  = "UNKNOWN_VESSEL_TYPE";
+  m_vessel_len   = 0; // Zero indicates unspecified length
+  m_parseNaFCon  = false;
+  m_helm_mode    = "none";
+  m_helm_engaged = false;
 
   m_blackout_interval = 0;
   m_blackout_baseval  = 0;
@@ -85,12 +87,12 @@ bool TransponderAIS::OnNewMail(MOOSMSG_LIST &NewMail)
       m_nav_heading = (ddata*-180.0)/3.1415926;
     else if(key == "NAV_DEPTH")
       m_nav_depth = ddata;
-    else if(key == "IVPHELM_SUMMARY") {
-      bool ok = handleLocalHelmSummary(sdata, mtime);
-      if(!ok) 
-	MOOSTrace("TransponderAIS: Unhandled IVPHELM_SUMMARY.\n");
+    else if(key == "IVPHELM_SUMMARY")
+      handleLocalHelmSummary(sdata, mtime);
+    else if(key == "IVPHELM_ENGAGED") {
+      string value = tolower(stripBlankEnds(sdata));
+      m_helm_engaged = (value == "engaged");
     }
-      
     else if(key == m_contact_report_var) {
       bool ok = handleIncomingAISReport(sdata);
       if(!ok) 
@@ -131,6 +133,7 @@ bool TransponderAIS::OnConnectToServer()
   m_Comms.Register(m_contact_report_var, 0);
   m_Comms.Register("DB_UPTIME", 0);
   m_Comms.Register("IVPHELM_SUMMARY", 0);
+  m_Comms.Register("IVPHELM_ENGAGED", 0);
 
   
   // tes 9-12-07. added NAFCON_MESSAGES registration
@@ -376,7 +379,7 @@ bool TransponderAIS::OnStartUp()
 //-----------------------------------------------------------------
 // Procedure: handleLocalHelmSummary()
 
-bool TransponderAIS::handleLocalHelmSummary(const string& sdata, 
+void TransponderAIS::handleLocalHelmSummary(const string& sdata, 
 					    double stime)
 {
   vector<string> svector = parseString(sdata, ',');
@@ -789,7 +792,15 @@ string TransponderAIS::assembleAIS(string vname, string vtype, string db_time,
   summary += ",HDG=" + hdg;
   summary += ",DEPTH=" + depth;
   summary += ",LENGTH=" + vlen;
-  summary += ",MODE=" + mode;
-  
+
+  if(m_helm_engaged == false)
+    summary += ",MODE=DISENGAGED";
+  else {
+    if(mode != "none")
+      summary += ",MODE=" + mode;
+    else
+      summary += ",MODE=ENGAGED";
+  }
+
   return summary;
 }
