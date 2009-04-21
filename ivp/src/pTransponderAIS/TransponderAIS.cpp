@@ -767,10 +767,11 @@ void TransponderAIS::postContactList()
 // Purpose: builds the string used for AIS_REPORT
 // tes 11.19.07
 
-string TransponderAIS::assembleAIS(string vname, string vtype, string db_time, 
-				   string utc_time, string x, string y, 
-				   string lat, string lon, string spd,
-                                   string hdg, string depth, string vlen, string mode)
+string TransponderAIS::assembleAIS(string vname, string vtype, 
+				   string db_time, string utc_time, 
+				   string x, string y, string lat, 
+				   string lon, string spd, string hdg, 
+				   string depth, string vlen, string mode)
 {
   // If the length is unknown, put in some good guesses
   if(atof(vlen.c_str()) == 0) {
@@ -783,6 +784,24 @@ string TransponderAIS::assembleAIS(string vname, string vtype, string db_time,
     if(tolower(vtype) == "glider")
       vlen = "3.0"; // meters
   }
+#if 0
+  // VAR1@FOOBAR#VAR2@FOO:BAR:YOU
+  string new_mode_str;
+  vector<string> svector = parseString(mode, '#');
+  unsigned int i, vsize = svector.size();
+  for(i=0; i<vsize; i++) {    
+    string left  = biteString(svector[i], '@');
+    string right = svector[i];
+    new_mode_str += (left + "@");
+    vector<string> ivector = parseString(right, ':');
+    unsigned int isize = ivector.size();
+    string last = ivector[isize-1];
+    new_mode_str += last;
+    if(i < (vsize-1))
+      new_mode_str += "#";
+  }
+  mode = new_mode_str;
+#endif
 
   string summary = "NAME=" + vname;
   summary += ",TYPE=" + vtype;
@@ -797,9 +816,9 @@ string TransponderAIS::assembleAIS(string vname, string vtype, string db_time,
   summary += ",DEPTH=" + depth;
   summary += ",LENGTH=" + vlen;
 
-  // We choose a duration of 2 seconds because the helm is 
+  // We choose a duration of 3 seconds because the helm is 
   // configured to provide a heartbeat once per second.
-  double timeout_duration = 2.0; // seconds
+  double timeout_duration = 3.0; // seconds
   string  mode_str = ",MODE=";
   if((m_db_uptime-m_helm_lastmsg) > timeout_duration) {
     string awol_time = doubleToString((m_db_uptime-m_helm_lastmsg), 0);
