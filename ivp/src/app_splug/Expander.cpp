@@ -100,6 +100,9 @@ void Expander::addMacro(string key, string value, bool over_ok)
     return;
   }
   
+  macros[key] = value;
+
+#if 0
   // Don't allow over-writes of previous mappings
   map<string, string>::iterator p;
   p = macros.find(key);
@@ -107,6 +110,7 @@ void Expander::addMacro(string key, string value, bool over_ok)
     return;
   else
     macros[key] = value;
+#endif
 }
 
 
