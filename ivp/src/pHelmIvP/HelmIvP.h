@@ -62,6 +62,8 @@ protected:
 			 const std::string& sval);
   bool detectChangeOnKey(const std::string& key, 
 			 double dval);
+  bool detectRepeatOnKey(const std::string& key);
+
   void postAllStop();  
   
 protected:
@@ -90,6 +92,7 @@ protected:
   double        m_ok_skew;
   bool          m_skews_matter;
   int           m_warning_count;
+  double        m_curr_time;
 
   HelmEngine*   m_hengine;
   std::string   m_ownship;
@@ -107,6 +110,10 @@ protected:
   std::map<std::string, std::string> m_outgoing_strings;
   std::map<std::string, double>      m_outgoing_doubles;
 
+  // Maps for keeping track of when the last time a post happened for
+  // a particular variable, and whether or not repeat posts are wanted.
+  std::map<std::string, double>      m_outgoing_timestamp;
+  std::map<std::string, double>      m_outgoing_repinterval;
 };
 
 #endif 

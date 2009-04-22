@@ -20,8 +20,6 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
-// Trivial change
-
 #ifdef _WIN32
 #pragma warning(disable : 4786)
 #pragma warning(disable : 4503)
@@ -82,6 +80,10 @@ HelmIvP::HelmIvP()
   m_refresh_interval = 2.0;
   m_refresh_pending  = false;
   m_refresh_time     = 0;
+
+  m_outgoing_repinterval["VIEW_POINT"] = 5;
+  m_outgoing_repinterval["VIEW_POLYGON"] = 5;
+  m_outgoing_repinterval["VIEW_SEGLIST"] = 5;
 }
 
 //--------------------------------------------------------------------
@@ -124,8 +126,8 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
   // when processing mail.
   // In the Iterate method to ensure behaviors are not iterated with an
   // un-initialized timestamp on startup, and in case there is no Mail 
-  double curr_time = MOOSTime();
-  m_info_buffer->setCurrTime(curr_time);
+  m_curr_time = MOOSTime();
+  m_info_buffer->setCurrTime(m_curr_time);
 
   // Clear the delta vectors in the info_buffer here, before any
   // new MOOS Mail is applied to the info buffer.
@@ -137,7 +139,7 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
     CMOOSMsg &msg = *p;
     double dfT;
 
-    msg.IsSkewed(MOOSTime(),&dfT);
+    msg.IsSkewed(m_curr_time, &dfT);
     
     if(!m_skews_matter || (fabs(dfT) < m_ok_skew)) {
       if((msg.m_sKey == "MOOS_MANUAL_OVERIDE") || 
@@ -146,7 +148,7 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
 	  m_has_control = true;
 	  MOOSTrace("\n");
 	  MOOSDebugWrite("pHelmIvP Control Is On");
-	  m_info_buffer->setCurrTime(curr_time);
+	  m_info_buffer->setCurrTime(m_curr_time);
 	}
 	else if(MOOSStrCmp(msg.m_sVal, "TRUE")) {
 	  if(m_allow_overide) {
@@ -205,11 +207,11 @@ bool HelmIvP::Iterate()
   // when processing mail.
   // In the Iterate method to ensure behaviors are not iterated with an
   // un-initialized timestamp on startup, and in case there is no Mail 
-  double curr_time = MOOSTime();
-  m_info_buffer->setCurrTime(curr_time);
+  m_curr_time = MOOSTime();
+  m_info_buffer->setCurrTime(m_curr_time);
 
   HelmReport helm_report;
-  helm_report = m_hengine->determineNextDecision(m_bhv_set, curr_time);
+  helm_report = m_hengine->determineNextDecision(m_bhv_set, m_curr_time);
 
   m_iteration = helm_report.getIteration();
   if(m_verbose == "verbose") {
@@ -222,13 +224,13 @@ bool HelmIvP::Iterate()
       MOOSTrace("%s\n", svector[i].c_str());
   }
   
-  // Check if refresh conditions are met - potentiall clear outgoing maps.
+  // Check if refresh conditions are met - perhaps clear outgoing maps.
   // This will result in all behavior postings being posted to the MOOSDB
   // on the current iteration.
-  if(m_refresh_pending && ((curr_time-m_refresh_time) > m_refresh_interval)) {
+  if(m_refresh_pending && ((m_curr_time-m_refresh_time) > m_refresh_interval)) {
     m_outgoing_strings.clear();
     m_outgoing_doubles.clear();
-    m_refresh_time = curr_time;
+    m_refresh_time = m_curr_time;
     m_refresh_pending = false;
   }
 
@@ -342,6 +344,7 @@ void HelmIvP::postBehaviorMessages()
       string mkey  = msg.get_key();
 
       bool key_change = true;
+      bool key_repeat = detectRepeatOnKey(var);
       if(sdata == "")
 	key_change = detectChangeOnKey(mkey, ddata);
       else
@@ -380,13 +383,17 @@ void HelmIvP::postBehaviorMessages()
       else {
 	if(sdata != "") {
 	  m_info_buffer->setValue(var, sdata);
-	  if(key_change)
+	  if(key_change || key_repeat) {
 	    m_Comms.Notify(var, sdata);
+	    m_outgoing_timestamp[var] = m_curr_time;
+	  }
 	}
 	else {
 	  m_info_buffer->setValue(var, ddata);
-	  if(key_change)
+	  if(key_change) {
 	    m_Comms.Notify(var, ddata);
+	    m_outgoing_timestamp[var] = m_curr_time;
+	  }
 	}
       }
     }
@@ -529,11 +536,10 @@ void HelmIvP::postEngagedStatus()
     engaged_status = "DISENGAGED";
 
   double heartbeat_interval = 1.0;  // seconds
-  double curr_time = MOOSTime();
   bool time_for_a_new_heartbeat = false;
-  if((curr_time-m_last_heartbeat) >= heartbeat_interval) {
+  if((m_curr_time-m_last_heartbeat) >= heartbeat_interval) {
       time_for_a_new_heartbeat = true;
-      m_last_heartbeat = curr_time;
+      m_last_heartbeat = m_curr_time;
   }
 
   bool changed = detectChangeOnKey("IVPHELM_ENGAGED", engaged_status);
@@ -807,6 +813,54 @@ bool HelmIvP::handleDomainEntry(const string& g_entry)
   return(ok);
 }
 
+
+//--------------------------------------------------------------------
+// Procedure: detectRepeatOnKey
+// Notes: When the helm posts a VarDataPair it may be posted with the
+//        understanding that subsequent posts are disallowed if the
+//        value has not changed. To indicate this, the VarDataPair sets
+//        its KEY field. 
+//        The helm may be configured to allow subsequent posts be made
+//        even if the value has not changed, even if the VarDataPair has
+//        set its key field. 
+//        This process determines if a given variable should be allowed
+//        to re-post, given the values in m_outgoing_timestamp, and 
+//        m_outgoing_repinterval.
+
+bool HelmIvP::detectRepeatOnKey(const string& key)
+{
+  // If no interval has been declared for this variable, repeat fails.
+  double interval = 0;
+  map<string, double>::iterator p;
+  p = m_outgoing_repinterval.find(key);
+  if(p==m_outgoing_repinterval.end())
+    return(false);
+  else
+    interval = p->second;
+  
+  if(interval <= 0)
+    return(false);
+
+  // If no interval has been declared for this variable, repeat fails.
+  double timestamp = 0;
+  p = m_outgoing_timestamp.find(key);
+  if(p == m_outgoing_timestamp.end())
+    return(false);
+  else
+    timestamp = p->second;
+
+  int    random_range = 100;
+  double elapsed_time = m_curr_time - timestamp;
+  if(elapsed_time < interval) {
+    int rand_int = rand() % random_range;
+    double threshold = (1 / interval) * random_range; 
+    if(rand_int < threshold)
+      return(true);
+    else
+      return(false);
+  }
+  return(false);
+}
 
 //--------------------------------------------------------------------
 // Procedure: detectChangeOnKey
