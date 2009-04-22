@@ -27,17 +27,23 @@ class Expander
   bool writeOutput();
   void addMacro(std::string, std::string, bool=false);
   void setForce(bool v) {m_force=v;};
+  void addPath(std::string);
 
  protected:
   void addNewLine(std::string);
 
   std::string containsMacro(std::string);
 
+  std::string findFileInPath(std::string);
+
  private:
-  std::vector<std::string> newlines;
-  std::map<std::string, std::string> macros;
-  std::string infile;
-  std::string outfile;
+  std::vector<std::string> m_path;
+  std::vector<std::string> m_newlines;
+
+  std::map<std::string, std::string> m_macros;
+
+  std::string m_infile;
+  std::string m_outfile;
 
   bool m_force;
 };

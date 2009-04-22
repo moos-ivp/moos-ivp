@@ -43,11 +43,15 @@ int main(int argc, char *argv[])
     string arg = argv[i];
     if((arg == "-f") || (arg == "--force"))
       expander.setForce(true);
-    vector<string> svector = parseString(argv[i], '=');
-    if(svector.size() == 2) {
-      string left  = stripBlankEnds(svector[0]);
-      string right = stripBlankEnds(svector[1]);
-      expander.addMacro(left, right);
+    else if(((arg=="-p") || (arg=="--path")) && (i<(argc-1)))
+      expander.addPath(argv[i+1]);
+    else {
+      vector<string> svector = parseString(arg, '=');
+      if(svector.size() == 2) {
+	string left  = stripBlankEnds(svector[0]);
+	string right = stripBlankEnds(svector[1]);
+	expander.addMacro(left, right);
+      }
     }
   }
 
