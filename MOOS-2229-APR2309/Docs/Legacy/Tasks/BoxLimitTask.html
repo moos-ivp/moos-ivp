@@ -1,0 +1,78 @@
+<HTML>
+<HEAD>
+<TITLE>BoxLimit Task</TITLE>
+</HEAD>
+<BODY>
+
+<H1><img src="moose6.gif"> <center>The Box Limit Task</center></H1>
+
+<H2>Description</H2>
+This task fires its event flag when the NAV_X NAV_Y or NAV_DEPTH variables are outside 
+acceptable ranges for more than a specified length of time.
+
+
+<H2>Publishes</H2>
+<ul>
+	<li>EndFlags
+	<li>EventFlags
+</ul>
+<p>
+
+
+<H2>Subscribes</H2>
+<ul>
+	<li><b>StartFlags</b>
+	<li><b>NAV_X</b>
+	<li><b>NAV_Y</b>
+	<li><b>NAV_DEPTH</b>
+</ul>
+<p>
+
+<H2>Configuration Block</H2>
+<ul>
+
+
+
+	<li><a href="CommonMOOSTask.html"> Common Task Parameters</a>
+	<p>
+
+	<li><H3>XMax,XMin,YMax,YMin,DepthMax</H3>
+	<ul>
+		<li><b>Syntax:	</b> XMax/XMin/YMax/YMin = Val (m)
+		<li><b>Meaning:	</b> The Maximum or minum permissible working area for the vehicle XY and depth
+		<li><b>Example:	</b> <i>XMax = 500</i> NAV_X must be less than 500m
+	</ul>
+	<p>
+	
+	<li><H3>IgnoreTime</H3>
+	<ul>
+		<li><b>Syntax:	</b> 	IgnoreTime = Time (s)
+		<li><b>Meaning:	</b>	Set time after which a continous NAV* output exceeding a limit will cause the event flags to fire.
+		<li><b>Example:	</b> <i>	IgnoreTime = 10 </i> Fire after a 10 second work area breech.
+	</ul>
+	<p>
+
+</ul>
+
+<H2>Example Block</H2>
+<pre>
+Task = LimitBox
+{
+	Name = LimitBox
+	Priority = 0
+	InitialState = ON
+	TimeOut = NEVER
+	EventFlag = EndMission
+
+	XMax = 30
+	XMin = -30
+	YMax = 30
+	YMin = -30
+	DepthMax = 10
+}
+</pre>
+
+<hr>
+<H4>The MOOS &#169;  P. Newman 2001-2002 <img src="moose2.gif"></H4>
+</BODY>
+</HTML>
