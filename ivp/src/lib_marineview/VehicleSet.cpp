@@ -650,12 +650,10 @@ bool VehicleSet::updateVehiclePosition(const string& ais_report)
   if(b_lat && b_lon)
     opose.setLatLon(lat, lon);
 
-  m_vlen_map[vname] = vlen; 
-  m_pos_map[vname]  = opose;
-  m_ais_map[vname]  = utime;
+  m_vlen_map[vname]  = vlen; 
+  m_pos_map[vname]   = opose;
+  m_ais_map[vname]   = utime;
   m_vmode_map[vname] = vmode;
-
-  cout << vname << ": " << vmode << endl;
 
   ColoredPoint point(pos_x, pos_y);
   map<string,CPList>::iterator p2;
