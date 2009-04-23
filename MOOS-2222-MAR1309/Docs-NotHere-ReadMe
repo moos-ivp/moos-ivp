@@ -1,0 +1,3 @@
+The MOOS documents are only kept in the most recent snapshot of the MOOS
+tree to reduce the tree size. So go to moos-ivp/trunk/ and cd into MOOS/Docs
+and you should find what you're looking for.
