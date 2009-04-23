@@ -193,15 +193,15 @@ void PMV_Viewer::drawVehicle(string vname, bool active, string vehibody)
   string vnames_mode = m_vehiset.getStringInfo("vehicle_names_mode");
   
   double shape_scale  = m_vehiset.getDoubleInfo("vehicle_shape_scale");
-  double shape_length = m_vehiset.getDoubleInfo("vlength") * shape_scale;
-  double age_ais      = m_vehiset.getDoubleInfo("age_ais");
+  double shape_length = m_vehiset.getDoubleInfo(vname, "vlength") * shape_scale;
+  double age_ais      = m_vehiset.getDoubleInfo(vname, "age_ais");
 
   string vname_aug = vname;
   bool  vname_draw = true;
   if(vnames_mode == "off")
     vname_draw = false;
   else if(vnames_mode == "names+mode") {
-    string helm_mode = m_vehiset.getStringInfo("helm_mode");
+    string helm_mode = m_vehiset.getStringInfo(vname, "helm_mode");
     if((helm_mode != "none") && (helm_mode != "unknown-mode"))
       vname_aug += " (" + helm_mode + ")";
   }

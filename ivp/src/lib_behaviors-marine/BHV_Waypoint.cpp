@@ -175,6 +175,7 @@ void BHV_Waypoint::onIdleState()
 {
   postErasablePoint();
   postErasableSegList();
+  m_waypoint_engine.resetCPA();
 }
 
 //-----------------------------------------------------------

@@ -49,6 +49,7 @@ class WaypointEngine {
   int    getNonmonoHits() {return(m_nonmono_hits);};
   int    getTotalHits()   {return(m_capture_hits + m_nonmono_hits);};
   bool   currPtChanged();
+  void   resetCPA()       {m_current_cpa = -1;};
 
   XYSegList getSegList()  {return(m_seglist);};
 

@@ -264,15 +264,18 @@ bool HelmIvP::Iterate()
   int dsize = m_ivp_domain.size();
 
   // First make sure the HelmEngine has made a decision for all 
-  // non-optional variables - otherwise declare has_control = false.
-  // If HelmEngine hasn't made *any* decisions, indicated by OFNUM
-  // of zero, then a lack of decision on a non-optional var is ok.
+  // non-optional variables - otherwise declare an incomplete decision.
+  // If a complete decision is not generated, this does not mean the 
+  // helm relinquishes control, only that an all-stop is posted on 
+  // this iteration.
+  bool complete_decision = false;
   if(m_has_control && helm_report.getOFNUM() > 0) {
+    complete_decision = true;
     for(int i=0; i<dsize; i++) {
       string domain_var = m_ivp_domain.getVarName(i);
       if(!helm_report.hasDecision(domain_var))
 	if(m_optional_var[domain_var] == false) {
-	  m_has_control = false;
+	  complete_decision = false;
 	  string s1 = "ERROR! No decision for mandatory var - " + domain_var;
 	  string s2 = "pHelmIvP Control is Off: All Dec-Vars set to ZERO";
 	  MOOSDebugWrite(s1);
@@ -281,7 +284,7 @@ bool HelmIvP::Iterate()
     }
   }
   
-  if(!m_has_control)
+  if(!m_has_control || !complete_decision)
     postAllStop();
   else {  // Post all the Decision Variable Results
     m_allstop_posted = false;

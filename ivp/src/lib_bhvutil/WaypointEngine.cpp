@@ -209,6 +209,7 @@ string WaypointEngine::setNextWaypoint(double os_x, double os_y)
   double dist  = hypot((os_x - pt_x),(os_y - pt_y));
 
   // (m_current_cpa == -1) indicates first time this function called
+  // or the engine has had its CPA reset by the caller.
   if((m_current_cpa == -1) || (dist < m_current_cpa))
     m_current_cpa = dist;
   
