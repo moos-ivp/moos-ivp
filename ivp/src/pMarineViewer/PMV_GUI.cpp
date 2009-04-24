@@ -277,8 +277,8 @@ void PMV_GUI::addAction(string svalue, bool separator)
 
   for(i=0; i<psize; i++) {
     unsigned int index = pindex + i;
-    string left  = truncString(vars[i], 16, "middle");
-    string right = truncString(vals[i], 16, "middle");
+    string left  = truncString(vars[i], 25, "middle");
+    string right = truncString(vals[i], 25, "middle");
     string label = ("Action/" + left + "=" + right);
     label = padString(label, 25, false);
     if(key != "")
@@ -578,7 +578,7 @@ bool PMV_GUI::addScopeVariable(string varname)
   int index = m_scope_vars.size()-1;
   
   string label = "MOOS-Scope/";
-  label += (truncString(varname, 16, "middle"));
+  label += (truncString(varname, 25, "middle"));
   mbar->add(label.c_str(), 0, 
 	    (Fl_Callback*)PMV_GUI::cb_Scope, (void*)index, 0);
   
@@ -602,7 +602,7 @@ void PMV_GUI::addContext(string side, string context)
     int index = m_left_context.size()-1;
     
     string label = "Mouse-Context/Left/";
-    label += (truncString(context, 16, "middle"));
+    label += (truncString(context, 25, "middle"));
     mbar->add(label.c_str(), 0, 
 	      (Fl_Callback*)PMV_GUI::cb_LeftContext, (void*)index, 0);
     mbar->redraw();
@@ -617,7 +617,7 @@ void PMV_GUI::addContext(string side, string context)
     int index = m_right_context.size()-1;
     
     string label = "Mouse-Context/Right/";
-    label += (truncString(context, 16, "middle"));
+    label += (truncString(context, 25, "middle"));
     mbar->add(label.c_str(), 0, 
 	      (Fl_Callback*)PMV_GUI::cb_RightContext, (void*)index, 0);
     mbar->redraw();
@@ -663,7 +663,7 @@ void PMV_GUI::addReferenceVehicle(string vehicle_name)
   m_reference_tags.push_back(vehicle_name);
   int index = m_reference_tags.size()-1;
   string label = "ReferencePoint/";
-  label += (truncString(vehicle_name, 16, "middle"));
+  label += (truncString(vehicle_name, 25, "middle"));
   mbar->add(label.c_str(), 0, 
 	    (Fl_Callback*)PMV_GUI::cb_Reference, (void*)index, FL_MENU_RADIO);
 

@@ -230,7 +230,9 @@ void Expander::addNewLine(string newline)
   string res = containsMacro(newline);
 
   if(res != "") {
-      cout << "Warning: The following line may contain an undefined macro::" << endl;
+    cout << "Warning: The following line of " << m_infile
+	 << " creating" << m_outfile
+	 << " may contain an undefined macro::" << endl;
     cout << "> " << res << endl;
   }
   

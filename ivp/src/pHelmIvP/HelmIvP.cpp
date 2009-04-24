@@ -171,6 +171,14 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
 	MOOSTrace("\n");
 	MOOSDebugWrite("pHelmIvP Has Been Re-Started");
       }
+      else if((msg.m_sKey == "AIS_REPORT_LOCAL") ||
+	      (msg.m_sKey == "AIS_REPORT")) {
+	bool ok = processAISReport(msg.m_sVal);
+	if(!ok) {
+	  m_Comms.Notify("BHV_WARNING", "Unhandled AIS REPORT");
+	  m_warning_count++;
+	}
+      }
       else if(msg.m_sKey == m_refresh_var) {
 	m_refresh_pending = true;
       }
@@ -617,6 +625,8 @@ void HelmIvP::registerVariables()
   m_Comms.Register("NAV_HEADING", 0);
   m_Comms.Register("NAV_PITCH", 0);
   m_Comms.Register("NAV_DEPTH", 0);
+  m_Comms.Register("AIS_REPORT", 0);
+  m_Comms.Register("AIS_REPORT_LOCAL", 0);
   m_Comms.Register(m_refresh_var, 0);
 
   if(m_bhv_set) {
@@ -937,4 +947,58 @@ void HelmIvP::postAllStop()
   }
 
   m_allstop_posted = true;
+}
+
+//--------------------------------------------------------------------
+// Procedure: processAISReport
+//   Purpose: 
+
+bool HelmIvP::processAISReport(const string& report)
+{
+  string x_val, dep_val, spd_val, hdg_val, vname;
+  string y_val, utc_val, lat_val, long_val;
+  
+  vector<string> svector = parseString(report, ',');
+  unsigned int i, vsize = svector.size();
+  for(i=0; i<vsize; i++) {
+    string left  = stripBlankEnds(biteString(svector[i], '='));
+    string right = stripBlankEnds(svector[i]);
+    bool right_isnum = isNumber(right);
+
+    if(left=="NAME")
+      vname = toupper(right);
+    else if((left == "UTC_TIME") && right_isnum)
+      utc_val = right;
+    else if((left == "MOOS_TIME") && right_isnum) 
+      utc_val = right;
+    else if((left == "X") && right_isnum)
+      x_val = right;
+    else if((left == "Y") && right_isnum)
+      y_val = right;
+    else if((left == "LAT") && right_isnum)
+      lat_val = right;
+    else if((left == "LON") && right_isnum)
+      long_val = right;
+    else if((left == "SPD") && right_isnum)
+      spd_val = right;
+    else if((left == "HDG") && right_isnum)
+      hdg_val = right;
+    else if((left == "DEPTH") && right_isnum) 
+      dep_val = right;
+  }
+
+  if((x_val=="") || (spd_val=="") || (utc_val=="") || (vname=="") ||
+     (y_val=="") || (hdg_val=="") || (dep_val==""))
+    return(false);
+
+  m_info_buffer->setValue(vname+"_NAV_UTC", atof(utc_val.c_str()));
+  m_info_buffer->setValue(vname+"_NAV_X", atof(x_val.c_str()));
+  m_info_buffer->setValue(vname+"_NAV_Y", atof(y_val.c_str()));
+  m_info_buffer->setValue(vname+"_NAV_SPEED", atof(spd_val.c_str()));
+  m_info_buffer->setValue(vname+"_NAV_HEADING", atof(hdg_val.c_str()));
+  m_info_buffer->setValue(vname+"_NAV_DEPTH", atof(dep_val.c_str()));
+  m_info_buffer->setValue(vname+"_NAV_LAT", atof(lat_val.c_str()));
+  m_info_buffer->setValue(vname+"_NAV_LONG", atof(long_val.c_str()));
+  
+  return(true);
 }

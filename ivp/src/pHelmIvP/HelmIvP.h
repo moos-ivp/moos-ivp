@@ -65,6 +65,7 @@ protected:
   bool detectRepeatOnKey(const std::string& key);
 
   void postAllStop();  
+  bool processAISReport(const std::string &);
   
 protected:
   InfoBuffer*   m_info_buffer;

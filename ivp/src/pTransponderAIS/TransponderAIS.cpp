@@ -97,11 +97,6 @@ bool TransponderAIS::OnNewMail(MOOSMSG_LIST &NewMail)
       string value = tolower(stripBlankEnds(sdata));
       m_helm_engaged = (value == "engaged");
     }
-    else if(key == m_contact_report_var) {
-      bool ok = handleIncomingAISReport(sdata);
-      if(!ok) 
-	MOOSTrace("TransponderAIS: Un-Parsed AIS-Report.\n");
-    }
     // tes 9-12-07 added support for NAFCON_MESSAGES
     else if((key == "NAFCON_MESSAGES") || (key == "NAFCON_MESSAGES_WLAN")) {
       if(m_parseNaFCon) {
@@ -134,7 +129,6 @@ bool TransponderAIS::OnConnectToServer()
   m_Comms.Register("NAV_HEADING", 0);
   m_Comms.Register("NAV_YAW", 0);
   m_Comms.Register("NAV_DEPTH", 0);
-  m_Comms.Register(m_contact_report_var, 0);
   m_Comms.Register("DB_UPTIME", 0);
   m_Comms.Register("IVPHELM_SUMMARY", 0);
   m_Comms.Register("IVPHELM_ENGAGED", 0);
@@ -175,6 +169,10 @@ bool TransponderAIS::Iterate()
     string moosdb_time = dstringCompact(doubleToString(m_db_uptime,3));
     string utc_time = dstringCompact(doubleToString(moos_time,3));
 
+    while(m_nav_heading >=360)
+      m_nav_heading -= 360;
+    while(m_nav_heading < 0)
+      m_nav_heading += 360;
 
     //all strings: assembleAIS(name,type,db_time,utc_time,x,y,lat,lon,spd,hdg,depth)
     string summary = assembleAIS(m_vessel_name, m_vessel_type, moosdb_time, utc_time, 
@@ -300,83 +298,65 @@ bool TransponderAIS::OnStartUp()
 
   
   // find the lookup table file and parse it
-  if(m_parseNaFCon)
-  {
-      string path;
+  if(m_parseNaFCon) {
+    string path;
+    if(!m_MissionReader.GetConfigurationParam("MODEM_ID_LOOKUP_PATH", path)) {
+      MOOSTrace("nafcon message parsing enabled but MODEM_ID_LOOKUP_PATH specified!\n");
+      exit(1);
+    }
+    ifstream fin;
+    fin.open(path.c_str(), ifstream::in);
+    if(fin.fail()) {
+      MOOSTrace("cannot open %s for reading!\n", path.c_str());
+      exit(1);   
+    }
+
+    MOOSTrace("reading in modem id lookup table:\n");
       
-      if (!m_MissionReader.GetConfigurationParam("MODEM_ID_LOOKUP_PATH", path))
-      {
-          MOOSTrace("nafcon message parsing enabled but MODEM_ID_LOOKUP_PATH specified!\n");
-          exit(1);
-      }
-
-      ifstream fin;
-
-      fin.open(path.c_str(), ifstream::in);
-
-      if (fin.fail())
-      {
-          MOOSTrace("cannot open %s for reading!\n", path.c_str());
-          exit(1);   
-      }
-
-      MOOSTrace("reading in modem id lookup table:\n");
+    while(fin) {
+      char line[5000];
+      fin.getline(line, 5000);
       
-      while(fin)
-      {
-          char line[5000];
-          fin.getline(line, 5000);
-
-          string sline = line;
-
-          // strip the spaces and comments out
-          int pos = sline.find(' ');
-          while(pos != string::npos)
-          {
-              sline.erase(pos, 1);
-              pos = sline.find(' ');
-          }
-          pos = sline.find('#');
-          while(pos != string::npos)
-          {
-              sline.erase(pos);
-              pos = sline.find('#');
-          }
-          pos = sline.find("//");
-          while(pos != string::npos)
-          {
-              sline.erase(pos);
-              pos = sline.find("//");
-          }
-
-          // ignore blank lines
-          if(sline != "")
-          {
-              vector<string> line_parsed = parseString(sline, ",");
-              if(line_parsed.size() < 3)
-                  MOOSTrace("invalid line: %s\n", line);
-              else
-              {
-                  cout << "modem id [" << line_parsed[0] << "], name [" << line_parsed[1] << "], type [" << line_parsed[2] << "]" << endl;
-
-                  vehicle_nametype new_vehicle =
-                      {line_parsed[1], line_parsed[2]};
-
-                  //add the entry to our lookup map
-                  nafcon_lookup[atoi(line_parsed[0].c_str())] = new_vehicle;
-              }
-          }
-      }
-
-      fin.close();
+      string sline = line;
       
+      // strip the spaces and comments out
+      int pos = sline.find(' ');
+      while(pos != string::npos) {
+	sline.erase(pos, 1);
+	pos = sline.find(' ');
+      }
+      pos = sline.find('#');
+      while(pos != string::npos) {
+	sline.erase(pos);
+	pos = sline.find('#');
+      }
+      pos = sline.find("//");
+      while(pos != string::npos) {
+	sline.erase(pos);
+	pos = sline.find("//");
+      }
+      
+      // ignore blank lines
+      if(sline != "") {
+	vector<string> line_parsed = parseString(sline, ",");
+	if(line_parsed.size() < 3)
+	  MOOSTrace("invalid line: %s\n", line);
+	else {
+	  cout << "modem id [" << line_parsed[0] << "], name [" << line_parsed[1] << "], type [" << line_parsed[2] << "]" << endl;
+	  
+	  vehicle_nametype new_vehicle =
+	    {line_parsed[1], line_parsed[2]};
+	  
+	  //add the entry to our lookup map
+	  nafcon_lookup[atoi(line_parsed[0].c_str())] = new_vehicle;
+	}
+      }
+    }
+    fin.close();
   }
 
   MOOSTrace("Using %s for contact report variable and %s_LOCAL for local contact report variable\n", m_contact_report_var.c_str(), m_contact_report_var.c_str());
-  
-  
   return(true);
-
 }
 
 
@@ -400,104 +380,6 @@ void TransponderAIS::handleLocalHelmSummary(const string& sdata,
 
 
 //-----------------------------------------------------------------
-// Procedure: handleIncomingAISReport()
-
-bool TransponderAIS::handleIncomingAISReport(const string& sdata)
-{
-  string vname;         bool vname_set   = false;
-  double nav_x_val;     bool nav_x_set   = false;
-  double nav_y_val;     bool nav_y_set   = false;
-  double nav_spd_val;   bool nav_spd_set = false;
-  double nav_hdg_val;   bool nav_hdg_set = false;
-  double nav_dep_val;   bool nav_dep_set = false;
-  double nav_utc_val;   bool nav_utc_set = false;
-  double nav_lat_val; 
-  double nav_long_val;
-  
-  
-  vector<string> svector = parseString(sdata, ',');
-  int vsize = svector.size();
-  for(int i=0; i<vsize; i++) {
-    vector<string> svector2 = parseString(svector[i], '=');
-    if(svector2.size() == 2) {
-      string left = stripBlankEnds(svector2[0]);
-      string right = stripBlankEnds(svector2[1]);
-      bool right_isnum = isNumber(right);
-
-      if(left=="NAME") {
-	vname = right;
-	vname_set = true;
-      }
-      else if((left == "UTC_TIME") && right_isnum) {
-	nav_utc_val = atof(right.c_str());
-	nav_utc_set = true;
-      }
-      else if((left == "MOOS_TIME") && right_isnum) {
-	nav_utc_val = atof(right.c_str());
-	nav_utc_set = true;
-      }
-      else if((left == "X") && right_isnum) {
-	nav_x_val = atof(right.c_str());
-	nav_x_set = true;
-      }
-      else if((left == "Y") && right_isnum) {
-	nav_y_val = atof(right.c_str());
-	nav_y_set = true;
-      }
-      else if((left == "LAT") && right_isnum) {
-	nav_lat_val = atof(right.c_str());
-      }
-      else if((left == "LON") && right_isnum) {
-	nav_long_val = atof(right.c_str());
-      }
-      else if((left == "SPD") && right_isnum) {
-	nav_spd_val = atof(right.c_str());
-	nav_spd_set = true;
-      }
-      else if((left == "HDG") && right_isnum) {
-	nav_hdg_val = atof(right.c_str());
-	if (nav_hdg_val < 0.0)
-	  nav_hdg_val += 360.0;
-	if (nav_hdg_val >= 360.0)
-	  nav_hdg_val -= 360.0;
-	nav_hdg_set = true;
-      }
-      else if((left == "DEPTH") && right_isnum) {
-	nav_dep_val = atof(right.c_str());
-	nav_dep_set = true;
-      }
-    }
-  }
-
-  if(!vname_set || !nav_x_set || !nav_y_set || !nav_utc_set ||
-     !nav_spd_set || !nav_hdg_set || !nav_dep_set)
-    return(false);
-
-
-  vname = toupper(vname);
-  
-  updateContactList(vname,
-		    nav_utc_val,
-		    nav_x_val,
-		    nav_y_val,
-		    nav_spd_val,
-		    nav_hdg_val,
-		    nav_dep_val);
-
-  m_Comms.Notify(vname+"_NAV_UTC", nav_utc_val);
-  m_Comms.Notify(vname+"_NAV_X", nav_x_val);
-  m_Comms.Notify(vname+"_NAV_Y", nav_y_val);
-  m_Comms.Notify(vname+"_NAV_SPEED", nav_spd_val);
-  m_Comms.Notify(vname+"_NAV_HEADING", nav_hdg_val);
-  m_Comms.Notify(vname+"_NAV_DEPTH", nav_dep_val);
-  m_Comms.Notify(vname+"_NAV_LAT", nav_lat_val);
-  m_Comms.Notify(vname+"_NAV_LONG", nav_long_val);
-  
-  return(true);
-}
-
-
-//-----------------------------------------------------------------
 // Procedure: handleIncomingNaFConMessage()
 //
 //  tes 9-12-07
@@ -507,145 +389,139 @@ bool TransponderAIS::handleIncomingAISReport(const string& sdata)
 
 bool TransponderAIS::handleIncomingNaFConMessage(const string& rMsg)
 {    
-    //check message type                                                                                 
-    string messageType = "unknown";
+  //check message type                                                                                 
+  string messageType = "unknown";
   
-    if (!(MOOSValFromString(messageType, rMsg, "MessageType"))) {
-        MOOSTrace("pTransponderAIS: Bad message. No message type found.\n");
-        return false;
+  if (!(MOOSValFromString(messageType, rMsg, "MessageType"))) {
+    MOOSTrace("pTransponderAIS: Bad message. No message type found.\n");
+    return false;
+  } 
+  
+  MOOSTrace("Began parsing NaFCon message to %s:\n", m_contact_report_var.c_str());
+  MOOSTrace(rMsg);
+  MOOSTrace("\n\n");
+  
+  //we have a status message                                                                           
+  if(MOOSStrCmp(messageType, "SENSOR_STATUS") || MOOSStrCmp(messageType, "SENSOR_CONTACT") || MOOSStrCmp(messageType, "SENSOR_TRACK") ) {
+    int sourceID;
+    MOOSValFromString(sourceID, rMsg, "SourcePlatformId");
+    
+    // limit to vehicles specified in config file
+    // and now stored in naFConPublishForID
+    if(naFConPublishForID[sourceID])  {
+      MOOSTrace("Will publish for this ID. \n");
+      double navX, navY, navLat, navLong, navHeading, navSpeed, navDepth, navTime;            
+      string vname = nafcon_lookup[sourceID].name;
+      string vtype = nafcon_lookup[sourceID].type;
+      
+      if (vname == "")
+	vname = intToString(sourceID);
+      
+      
+      if(MOOSStrCmp(messageType, "SENSOR_STATUS")) {
+	if(!MOOSValFromString(navLong, rMsg, "NodeLongitude"))
+	  return MOOSFail("No NodeLongitude\n");
+	
+	if (!MOOSValFromString(navLat, rMsg, "NodeLatitude"))
+	  return MOOSFail("No NodeLatitude\n");
+	
+	if (!MOOSValFromString(navHeading, rMsg, "NodeHeading"))
+	  return MOOSFail("No NodeHeading\n");
+	
+	if (!MOOSValFromString(navSpeed, rMsg, "NodeSpeed"))
+	  return MOOSFail("No NodeSpeed\n");
+	
+	if(!MOOSValFromString(navDepth, rMsg, "NodeDepth"))
+	  return MOOSFail("No NodeDepth\n");      
+	
+	if(!MOOSValFromString(navTime, rMsg, "Timestamp"))
+	  return MOOSFail("No Timestamp\n");      
+      }
+      
+      else if(MOOSStrCmp(messageType, "SENSOR_CONTACT")) {
+	if(!MOOSValFromString(navLong, rMsg, "SensorLongitude"))
+	  return MOOSFail("No SensorLongitude\n");
+	
+	if (!MOOSValFromString(navLat, rMsg, "SensorLatitude"))
+	  return MOOSFail("No SensorLatitude\n");
+	
+	if (!MOOSValFromString(navHeading, rMsg, "SensorHeading"))
+	  return MOOSFail("No SensorHeading\n");
+	
+	if(!MOOSValFromString(navDepth, rMsg, "SensorDepth"))
+	  return MOOSFail("No SensorDepth\n");      
+	
+	if(!MOOSValFromString(navTime, rMsg, "ContactTimestamp"))
+	  return MOOSFail("No ContactTimestamp\n");      
+	
+	// Use previous speed for CONTACT_REPORT
+	double node_utc,node_x,node_y,node_spd,node_hdg,node_dep;      
+	
+	if (prevContactInfo(vname,&node_utc,&node_x,&node_y,&node_spd,&node_hdg,&node_dep))
+	  navSpeed = node_spd;
+	
+	MOOSTrace("Status Info: Time = %f, Speed = %f, Heading = %f \n",node_utc,node_spd,node_hdg);
+      }
+      else if(MOOSStrCmp(messageType, "SENSOR_TRACK")) {
+	
+	if(!MOOSValFromString(navLong, rMsg, "TrackLongitude"))
+	  return MOOSFail("No TrackLongitude\n");
+	
+	if (!MOOSValFromString(navLat, rMsg, "TrackLatitude"))
+	  return MOOSFail("No TrackLatitude\n");
+	
+	if (!MOOSValFromString(navHeading, rMsg, "TrackHeading"))
+	  return MOOSFail("No TrackHeading\n");
+	
+	if(!MOOSValFromString(navDepth, rMsg, "TrackDepth"))
+	  return MOOSFail("No TrackDepth\n");      
+	
+	if (!MOOSValFromString(navSpeed, rMsg, "TrackSpeed"))
+	  return MOOSFail("No TrackSpeed\n");
+	
+	if(!MOOSValFromString(navTime, rMsg, "TrackTimestamp"))
+	  return MOOSFail("No TrackTimestamp\n");      
+	
+	string trackID;
+	MOOSValFromString(trackID, rMsg, "TrackNumber");
+	int track_id = atoi(trackID.c_str());
+	MOOSTrace("Track report. trackID = %d\n",track_id);
+	
+	// set track type to ship
+	vtype = "TRACK";
+	vname = "TRK_"+trackID+"_"+vname;
+      }
+      
+      // convert lat, long into x, y. 60 nautical miles per minute
+      //            if(!m_geodesy.LatLong2LocalGrid(navLat, navLong, navY, navX))
+      //Changed to UTM for consistency
+      if(!m_geodesy.LatLong2LocalUTM(navLat, navLong, navY, navX))
+	return MOOSFail("Geodesy conversion failed\n");
+      
+      
+      
+      // publish it at AIS_REPORT
+      // all strings: assembleAIS(name,type,db_time,utc_time,x,y,lat,lon,spd,hdg,depth)
+      string summary = assembleAIS(vname, vtype, "-1",
+				   dstringCompact(doubleToString(navTime)), 
+				   dstringCompact(doubleToString(navX, 2)),
+				   dstringCompact(doubleToString(navY, 2)), 
+				   dstringCompact(doubleToString(navLat, 6)), 
+				   dstringCompact(doubleToString(navLong, 6)), 
+				   dstringCompact(doubleToString(navSpeed, 2)),
+				   dstringCompact(doubleToString(navHeading, 2)),
+				   dstringCompact(doubleToString(navDepth, 2)), 
+				   0, "unknown-mode");
+      
+      m_Comms.Notify(m_contact_report_var, summary);
+      m_Comms.Notify("TRANSPONDER_NAFCON_REPORT", summary);
+      
+      MOOSTrace("Transponder NaFCon Report:\n");
+      MOOSTrace(summary);
+      MOOSTrace("\n");
     } 
-
-    MOOSTrace("Began parsing NaFCon message to %s:\n", m_contact_report_var.c_str());
-    MOOSTrace(rMsg);
-    MOOSTrace("\n\n");
-  
-    //we have a status message                                                                           
-    if(MOOSStrCmp(messageType, "SENSOR_STATUS") || MOOSStrCmp(messageType, "SENSOR_CONTACT") || MOOSStrCmp(messageType, "SENSOR_TRACK") ) {
-        int sourceID;
-        MOOSValFromString(sourceID, rMsg, "SourcePlatformId");
-      
-        // limit to vehicles specified in config file
-        // and now stored in naFConPublishForID
-        if(naFConPublishForID[sourceID]) 
-        {
-            MOOSTrace("Will publish for this ID. \n");
-            double navX, navY, navLat, navLong, navHeading, navSpeed, navDepth, navTime;            
-            string vname = nafcon_lookup[sourceID].name;
-            string vtype = nafcon_lookup[sourceID].type;
-
-            if (vname == "")
-                vname = intToString(sourceID);
-
-            
-            if(MOOSStrCmp(messageType, "SENSOR_STATUS"))
-            {
-	    
-                if(!MOOSValFromString(navLong, rMsg, "NodeLongitude"))
-                    return MOOSFail("No NodeLongitude\n");
-	    
-                if (!MOOSValFromString(navLat, rMsg, "NodeLatitude"))
-                    return MOOSFail("No NodeLatitude\n");
-	    
-                if (!MOOSValFromString(navHeading, rMsg, "NodeHeading"))
-                    return MOOSFail("No NodeHeading\n");
-	    
-                if (!MOOSValFromString(navSpeed, rMsg, "NodeSpeed"))
-                    return MOOSFail("No NodeSpeed\n");
-	    
-                if(!MOOSValFromString(navDepth, rMsg, "NodeDepth"))
-                    return MOOSFail("No NodeDepth\n");      
-	    
-                if(!MOOSValFromString(navTime, rMsg, "Timestamp"))
-                    return MOOSFail("No Timestamp\n");      
-            }
-	
-            else if(MOOSStrCmp(messageType, "SENSOR_CONTACT"))
-            {
-	    
-                if(!MOOSValFromString(navLong, rMsg, "SensorLongitude"))
-                    return MOOSFail("No SensorLongitude\n");
-	    
-                if (!MOOSValFromString(navLat, rMsg, "SensorLatitude"))
-                    return MOOSFail("No SensorLatitude\n");
-	    
-                if (!MOOSValFromString(navHeading, rMsg, "SensorHeading"))
-                    return MOOSFail("No SensorHeading\n");
-	    
-                if(!MOOSValFromString(navDepth, rMsg, "SensorDepth"))
-                    return MOOSFail("No SensorDepth\n");      
-	    
-                if(!MOOSValFromString(navTime, rMsg, "ContactTimestamp"))
-                    return MOOSFail("No ContactTimestamp\n");      
-	    
-                // Use previous speed for CONTACT_REPORT
-                double node_utc,node_x,node_y,node_spd,node_hdg,node_dep;      
-	    
-                if (prevContactInfo(vname,&node_utc,&node_x,&node_y,&node_spd,&node_hdg,&node_dep))
-                    navSpeed = node_spd;
-	    
-                MOOSTrace("Status Info: Time = %f, Speed = %f, Heading = %f \n",node_utc,node_spd,node_hdg);
-            }
-            else if(MOOSStrCmp(messageType, "SENSOR_TRACK"))
-            {
-	    
-                if(!MOOSValFromString(navLong, rMsg, "TrackLongitude"))
-                    return MOOSFail("No TrackLongitude\n");
-	    
-                if (!MOOSValFromString(navLat, rMsg, "TrackLatitude"))
-                    return MOOSFail("No TrackLatitude\n");
-	    
-                if (!MOOSValFromString(navHeading, rMsg, "TrackHeading"))
-                    return MOOSFail("No TrackHeading\n");
-	    
-                if(!MOOSValFromString(navDepth, rMsg, "TrackDepth"))
-                    return MOOSFail("No TrackDepth\n");      
-	    
-                if (!MOOSValFromString(navSpeed, rMsg, "TrackSpeed"))
-                    return MOOSFail("No TrackSpeed\n");
-	    
-                if(!MOOSValFromString(navTime, rMsg, "TrackTimestamp"))
-                    return MOOSFail("No TrackTimestamp\n");      
-	    
-                string trackID;
-                MOOSValFromString(trackID, rMsg, "TrackNumber");
-                int track_id = atoi(trackID.c_str());
-                MOOSTrace("Track report. trackID = %d\n",track_id);
-
-                // set track type to ship
-                vtype = "TRACK";
-                vname = "TRK_"+trackID+"_"+vname;
-            }
-	
-            // convert lat, long into x, y. 60 nautical miles per minute
-	    //            if(!m_geodesy.LatLong2LocalGrid(navLat, navLong, navY, navX))
-	    //Changed to UTM for consistency
-            if(!m_geodesy.LatLong2LocalUTM(navLat, navLong, navY, navX))
-                return MOOSFail("Geodesy conversion failed\n");
-      
-
-
-            // publish it at AIS_REPORT
-            // all strings: assembleAIS(name,type,db_time,utc_time,x,y,lat,lon,spd,hdg,depth)
-            string summary = assembleAIS(vname, vtype, "-1",
-                                         dstringCompact(doubleToString(navTime)), 
-                                         dstringCompact(doubleToString(navX, 2)),
-                                         dstringCompact(doubleToString(navY, 2)), 
-                                         dstringCompact(doubleToString(navLat, 6)), 
-                                         dstringCompact(doubleToString(navLong, 6)), 
-                                         dstringCompact(doubleToString(navSpeed, 2)),
-                                         dstringCompact(doubleToString(navHeading, 2)),
-                                         dstringCompact(doubleToString(navDepth, 2)), 
-					 0, "unknown-mode");
-      
-            m_Comms.Notify(m_contact_report_var, summary);
-            m_Comms.Notify("TRANSPONDER_NAFCON_REPORT", summary);
-
-            MOOSTrace("Transponder NaFCon Report:\n");
-            MOOSTrace(summary);
-            MOOSTrace("\n");
-        } 
-    }
-    return true;
+  }
+  return true;
 }
 
 
@@ -664,38 +540,37 @@ void TransponderAIS::updateContactList(string contact_name,
                                        double cn_hdg,
                                        double cn_dep)
 {
-    contact_name = toupper(stripBlankEnds(contact_name));
-
-    double moos_time = MOOSTime();
-
-    unsigned int i;
+  contact_name = toupper(stripBlankEnds(contact_name));
   
-    for(i=0; i<m_contact_list.size(); i++) {
-        if(m_contact_list[i] == contact_name) {
-            m_contact_time[i] = moos_time;
-            m_contact_utc[i] = cn_utc;
-            m_contact_x[i] = cn_x;
-            m_contact_y[i] = cn_y;
-            m_contact_spd[i] = cn_spd;
-            m_contact_hdg[i] = cn_hdg;
-            m_contact_dep[i] = cn_dep;
-            MOOSTrace("Existing Contact %d, Time = %f, Speed = %f, Heading = %f \n",
-                      i+1,cn_utc,cn_spd,cn_hdg);
-            return;
-        }
+  double moos_time = MOOSTime();
+  unsigned int i;
+  
+  for(i=0; i<m_contact_list.size(); i++) {
+    if(m_contact_list[i] == contact_name) {
+      m_contact_time[i] = moos_time;
+      m_contact_utc[i] = cn_utc;
+      m_contact_x[i] = cn_x;
+      m_contact_y[i] = cn_y;
+      m_contact_spd[i] = cn_spd;
+      m_contact_hdg[i] = cn_hdg;
+      m_contact_dep[i] = cn_dep;
+      MOOSTrace("Existing Contact %d, Time = %f, Speed = %f, Heading = %f \n",
+		i+1,cn_utc,cn_spd,cn_hdg);
+      return;
     }
+  }
   
-    m_contact_list.push_back(contact_name);
-    m_contact_time.push_back(moos_time);
-    m_contact_utc.push_back(cn_utc);
-    m_contact_x.push_back(cn_x);
-    m_contact_y.push_back(cn_y);
-    m_contact_spd.push_back(cn_spd);
-    m_contact_hdg.push_back(cn_hdg);
-    m_contact_dep.push_back(cn_dep);
-
-    MOOSTrace("New Contact %d, Time = %f, Speed = %f, Heading = %f \n",
-              m_contact_list.size(),cn_utc,cn_spd,cn_hdg);
+  m_contact_list.push_back(contact_name);
+  m_contact_time.push_back(moos_time);
+  m_contact_utc.push_back(cn_utc);
+  m_contact_x.push_back(cn_x);
+  m_contact_y.push_back(cn_y);
+  m_contact_spd.push_back(cn_spd);
+  m_contact_hdg.push_back(cn_hdg);
+  m_contact_dep.push_back(cn_dep);
+  
+  MOOSTrace("New Contact %d, Time = %f, Speed = %f, Heading = %f \n",
+	    m_contact_list.size(),cn_utc,cn_spd,cn_hdg);
 }
 
 //-----------------------------------------------------------------
@@ -711,30 +586,27 @@ bool TransponderAIS::prevContactInfo(string contact_name,
                                      double* cn_dep)
   
 {
-    contact_name = toupper(stripBlankEnds(contact_name));
-
-    //  i=m_contact_list.size();
-    // MOOSTrace("Last Contact %d, Time = %f, Speed = %f, 
-    //    Heading = %f \n",i,m_contact_utc[i-1],m_contact_spd[i-1],
-    //    m_contact_hdg[i-1]);
-
-    for(unsigned int i=0; i<m_contact_list.size(); i++) {
-        if(m_contact_list[i] == contact_name) {
-            *cn_utc = m_contact_utc[i];
-            *cn_x    = m_contact_x[i];
-            *cn_y   = m_contact_y[i];
-            *cn_spd  = m_contact_spd[i];
-            *cn_hdg  = m_contact_hdg[i];
-            *cn_dep  = m_contact_dep[i];
-            //  MOOSTrace("Old Contact %d, Time = %f, Speed = %f, Heading = %f \n",i+1,cn_utc,cn_spd,cn_hdg);
-            return(true);
-        }
-    }
+  contact_name = toupper(stripBlankEnds(contact_name));
   
-    return(false);
+  //  i=m_contact_list.size();
+  // MOOSTrace("Last Contact %d, Time = %f, Speed = %f, 
+  //    Heading = %f \n",i,m_contact_utc[i-1],m_contact_spd[i-1],
+  //    m_contact_hdg[i-1]);
+  
+  for(unsigned int i=0; i<m_contact_list.size(); i++) {
+    if(m_contact_list[i] == contact_name) {
+      *cn_utc = m_contact_utc[i];
+      *cn_x    = m_contact_x[i];
+      *cn_y   = m_contact_y[i];
+      *cn_spd  = m_contact_spd[i];
+      *cn_hdg  = m_contact_hdg[i];
+      *cn_dep  = m_contact_dep[i];
+      //  MOOSTrace("Old Contact %d, Time = %f, Speed = %f, Heading = %f \n",i+1,cn_utc,cn_spd,cn_hdg);
+      return(true);
+    }
+  }
+  return(false);
 }
-
-
 
 //-----------------------------------------------------------------
 // Procedure: postContactList
@@ -742,24 +614,21 @@ bool TransponderAIS::prevContactInfo(string contact_name,
 
 void TransponderAIS::postContactList()
 {
-    double moos_time = MOOSTime();
-
-    int vsize = m_contact_list.size();
-
- 
-    string contact_list_string;
+  double moos_time = MOOSTime();
+  int vsize = m_contact_list.size();
+  string contact_list_string;
   
-    for(int i=0; i<vsize; i++) {
-        double time_since_update = moos_time - m_contact_time[i];
-        if(i!=0)
-            contact_list_string += ",";
-        contact_list_string += m_contact_list[i];
-        contact_list_string += "(";
-        contact_list_string += doubleToString(time_since_update, 2);
-        contact_list_string += ")";    
-    }
-
-    m_Comms.Notify("CONTACT_LIST", contact_list_string);
+  for(int i=0; i<vsize; i++) {
+    double time_since_update = moos_time - m_contact_time[i];
+    if(i!=0)
+      contact_list_string += ",";
+    contact_list_string += m_contact_list[i];
+    contact_list_string += "(";
+    contact_list_string += doubleToString(time_since_update, 2);
+    contact_list_string += ")";    
+  }
+  
+  m_Comms.Notify("CONTACT_LIST", contact_list_string);
 }
 
 //------------------------------------------------------------------
@@ -784,24 +653,6 @@ string TransponderAIS::assembleAIS(string vname, string vtype,
     if(tolower(vtype) == "glider")
       vlen = "3.0"; // meters
   }
-#if 0
-  // VAR1@FOOBAR#VAR2@FOO:BAR:YOU
-  string new_mode_str;
-  vector<string> svector = parseString(mode, '#');
-  unsigned int i, vsize = svector.size();
-  for(i=0; i<vsize; i++) {    
-    string left  = biteString(svector[i], '@');
-    string right = svector[i];
-    new_mode_str += (left + "@");
-    vector<string> ivector = parseString(right, ':');
-    unsigned int isize = ivector.size();
-    string last = ivector[isize-1];
-    new_mode_str += last;
-    if(i < (vsize-1))
-      new_mode_str += "#";
-  }
-  mode = new_mode_str;
-#endif
 
   string summary = "NAME=" + vname;
   summary += ",TYPE=" + vtype;
@@ -834,5 +685,5 @@ string TransponderAIS::assembleAIS(string vname, string vtype,
   }
   summary += mode_str;
 
-  return summary;
+  return(summary);
 }

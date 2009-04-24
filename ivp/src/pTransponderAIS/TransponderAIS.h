@@ -44,7 +44,6 @@ public:
 
  protected:
   void handleLocalHelmSummary(const std::string&, double);
-  bool handleIncomingAISReport(const std::string&);
   bool handleIncomingNaFConMessage(const std::string&);
   void updateContactList(std::string, double, double, double, double, double, double);
   bool prevContactInfo(std::string, double*, double*, double*, double*, double*, double*);
