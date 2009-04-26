@@ -190,7 +190,7 @@ void PMV_Viewer::drawVehicle(string vname, bool active, string vehibody)
 
   vector<double> vname_color = m_vehiset.getColor("vehicle_name_color");
   
-  string vnames_mode = m_vehiset.getStringInfo("vehicle_names_mode");
+  string vnames_mode = m_vehiset.getStringInfo("vehicles_name_mode");
   
   double shape_scale  = m_vehiset.getDoubleInfo("vehicle_shape_scale");
   double shape_length = m_vehiset.getDoubleInfo(vname, "vlength") * shape_scale;

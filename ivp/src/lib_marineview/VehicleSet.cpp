@@ -22,23 +22,21 @@ using namespace std;
 
 VehicleSet::VehicleSet()
 {
-  m_history_size = 1000;
   m_curr_time    = 0;
 
-  setParam("vehicle_shape_scale", 1.0);
+  setParam("trails_history_size", 1000);
   setParam("trails_point_size", 1);
   setParam("trails_length", 100);
-  setParam("trails_gap", 1);
-
+  setParam("trails_color", "white");
   setParam("trails_viewable", "true");
   setParam("trails_connect_viewable", "false");
-  setParam("vehicles_viewable", "true");
-  setParam("vehicle_names_viewable", "names+mode");
 
-  setParam("trails_color", "white");
-  setParam("active_vehicle_color", "red");
-  setParam("inactive_vehicle_color", "yellow");
-  setParam("vehicle_names_color", "white");
+  setParam("vehicles_active_color", "red");
+  setParam("vehicles_inactive_color", "yellow");
+  setParam("vehicles_name_color", "white");
+  setParam("vehicles_name_viewable", "names+mode");
+  setParam("vehicles_shape_scale", 1.0);
+  setParam("vehicles_viewable", "true");
 }
 
 
@@ -64,16 +62,19 @@ bool VehicleSet::setParam(string param, string value)
     handled  = updateVehiclePosition(value);
     makenote = false;
   }
-  else if((param == "active_vehicle_color") && isColor(value)) {
-    m_active_vehicle_color = colorParse(value);
+  else if(((param == "active_vehicle_color") ||
+	   (param == "vehicles_active_color")) && isColor(value)) {
+    m_vehicles_active_color = colorParse(value);
     handled = true;
   }
-  else if((param == "inactive_vehicle_color") && isColor(value)) {
-    m_inactive_vehicle_color = colorParse(value);
+  else if(((param == "inactive_vehicle_color") ||
+	   (param == "vehicles_inactive_color")) && isColor(value)) {
+    m_vehicles_inactive_color = colorParse(value);
     handled = true;
   }
-  else if((param == "vehicle_names_color") && isColor(value)) {
-    m_vehicle_name_color = colorParse(value);
+  else if(((param == "vehicle_names_color") ||
+	   (param == "vehicles_name_color")) && isColor(value)) {
+    m_vehicles_name_color = colorParse(value);
     handled = true;
   }
   else if((param=="trails_color") && isColor(value)) {
@@ -87,26 +88,27 @@ bool VehicleSet::setParam(string param, string value)
   }
   else if(param == "vehicles_viewable")
     handled = setBooleanOnString(m_vehicles_viewable, value);
-  else if(param == "vehicle_names_viewable") {
+  else if((param == "vehicle_name_viewable") ||
+	  (param == "vehicles_name_viewable")) {
     handled = true;
     value = tolower(stripBlankEnds(value));
     if((value == "true") || (value == "names"))
-      m_vehicle_names_mode = "names";
+      m_vehicles_name_mode = "names";
     else if((value == "false") || (value == "off"))
-      m_vehicle_names_mode = "off";
+      m_vehicles_name_mode = "off";
     else if(value == "names+mode")
-      m_vehicle_names_mode = value;
+      m_vehicles_name_mode = value;
     else if(value == "names+depth")
-      m_vehicle_names_mode = value;
+      m_vehicles_name_mode = value;
     else if(value == "toggle") {
-      if(m_vehicle_names_mode == "off")
-	m_vehicle_names_mode = "names";
-      else if(m_vehicle_names_mode == "names")
-	m_vehicle_names_mode = "names+mode";
-      else if(m_vehicle_names_mode == "names+mode")
-	m_vehicle_names_mode = "names+depth";
-      else if(m_vehicle_names_mode == "names+depth")
-	m_vehicle_names_mode = "off";
+      if(m_vehicles_name_mode == "off")
+	m_vehicles_name_mode = "names";
+      else if(m_vehicles_name_mode == "names")
+	m_vehicles_name_mode = "names+mode";
+      else if(m_vehicles_name_mode == "names+mode")
+	m_vehicles_name_mode = "names+depth";
+      else if(m_vehicles_name_mode == "names+depth")
+	m_vehicles_name_mode = "off";
     }
     else
       handled = false;
@@ -129,25 +131,26 @@ bool VehicleSet::setParam(string param, string value)
     else if(value == "shorter")
       handled = setParam("trails_length", m_trails_length*0.80);
   }
-  else if(param == "vehicle_shape_scale") {
+  else if((param == "vehicle_shape_scale") ||
+	  (param == "vehicles_shape_scale")) {
     makenote = false;
     if(value == "bigger")
-      handled = setParam("vehicle_shape_scale", m_vehicle_shape_scale*1.25);
+      handled = setParam(param, m_vehicles_shape_scale*1.25);
     else if(value == "smaller")
-      handled = setParam("vehicle_shape_scale", m_vehicle_shape_scale*0.80);
+      handled = setParam(param, m_vehicles_shape_scale*0.80);
     else if(value == "reset")
-      handled = setParam("vehicle_shape_scale", 1.0);
+      handled = setParam(param, 1.0);
   }
-  else if(param == "active_vehicle_name") {
+  else if((param == "active_vehicle_name") || (param == "vehicles_active_name")) {
     handled = true;
     map<string,ObjectPose>::iterator p = m_pos_map.find(value);
     if(p == m_pos_map.end())
       handled = false;
     else
-      m_active_vehicle_name = value;
+      m_vehicles_active_name = value;
   }
-  else if(param == "center_vehicle_name") {
-    m_center_vehicle_name = value;
+  else if((param == "center_vehicle_name") || (param == "vehicles_center_name")) {
+    m_vehicles_center_name = value;
   }
   else if(param == "cycle_active") {
     handled = true;
@@ -155,11 +158,11 @@ bool VehicleSet::setParam(string param, string value)
     map<string, ObjectPose>::iterator p;
     for(p=m_pos_map.begin(); p!=m_pos_map.end(); p++) {
       string vname = p->first;
-      if(vname == m_active_vehicle_name) {
+      if(vname == m_vehicles_active_name) {
 	p++;
 	if(p == m_pos_map.end())
 	  p = m_pos_map.begin();
-	m_active_vehicle_name = p->first;
+	m_vehicles_active_name = p->first;
       }
     }
   }
@@ -196,11 +199,12 @@ bool VehicleSet::setParam(string param, double value)
 {
   bool handled  = false;
   bool makenote = true;
-  if(param == "history_size") {
+  if((param == "history_size") || (param == "trails_history_size")) {
     if(value > 0) {
       m_history_size = (int)(value);
       handled = true;
     }
+    m_history_size = vclip(m_history_size, 0, 10000);
   }
   else if(param == "curr_time") {
     makenote = false;
@@ -214,18 +218,22 @@ bool VehicleSet::setParam(string param, double value)
       m_trails_point_size = value;
       handled = true;
     }
+    m_trails_point_size = vclip(m_trails_point_size, 0, 100);
   }
   else if(param == "trails_length") {
     if(value >= 0) {
       m_trails_length = value;
       handled = true;
     }
+    m_trails_length = vclip(m_trails_length, 0, 10000);
   }
-  else if(param == "vehicle_shape_scale") {
+  else if((param == "vehicle_shape_scale") ||
+	  (param == "vehicles_shape_scale")) {
     if(value >= 0) {
-      m_vehicle_shape_scale = value;
+      m_vehicles_shape_scale = value;
       handled = true;
     }
+    m_vehicles_shape_scale = vclip(m_vehicles_shape_scale, 0.1, 100);
   }
 
   if(handled && makenote)
@@ -249,9 +257,9 @@ bool VehicleSet::getDoubleInfo(const string& g_vname,
 {
   string vname = g_vname;  
   if(vname == "active")
-    vname = m_active_vehicle_name;
+    vname = m_vehicles_active_name;
   else if(vname == "center_vehicle")
-    vname = m_center_vehicle_name;
+    vname = m_vehicles_center_name;
 
   map<string,ObjectPose>::const_iterator p;
   p = m_pos_map.find(vname);
@@ -296,7 +304,7 @@ bool VehicleSet::getDoubleInfo(const string& g_vname,
   else if(info_type == "trails_gap")
     result = m_trails_gap;
   else if(info_type == "vehicle_shape_scale")
-    result = m_vehicle_shape_scale;
+    result = m_vehicles_shape_scale;
   else
     return(false);
   return(true);
@@ -316,12 +324,12 @@ bool VehicleSet::getStringInfo(const string& g_vname,
 {
   string vname = g_vname;
   if(g_vname == "active")
-    vname = m_active_vehicle_name;
+    vname = m_vehicles_active_name;
 
   if(info_type == "active_vehicle_name")
-    result = m_active_vehicle_name; 
-  else if(info_type == "vehicle_names_mode")
-    result = m_vehicle_names_mode; 
+    result = m_vehicles_active_name; 
+  else if(info_type == "vehicles_name_mode")
+    result = m_vehicles_name_mode; 
   else if((info_type == "body") || (info_type == "type")) {
     map<string,string>::const_iterator p;
     p = m_vbody_map.find(vname);
@@ -425,15 +433,15 @@ double VehicleSet::getDoubleInfo(const string& info_type) const
 
 vector<double> VehicleSet::getColor(const string& key) const
 {
-  vector<double> cvect = m_inactive_vehicle_color;
+  vector<double> cvect = m_vehicles_inactive_color;
   if(key == "trails_color")
     return(m_trails_color);
   else if(key == "active_vehicle_color")
-    return(m_active_vehicle_color);
+    return(m_vehicles_active_color);
   else if(key == "inactive_vehicle_color")
-    return(m_inactive_vehicle_color);
+    return(m_vehicles_inactive_color);
   else if(key == "vehicle_name_color")
-    return(m_vehicle_name_color);
+    return(m_vehicles_name_color);
   else {
     map<string, vector<double> >::const_iterator p;
     p = m_vehi_color.find(key);
@@ -468,7 +476,7 @@ bool VehicleSet::isViewable(const string& feature) const
   if(feature == "vehicles")
     return(m_vehicles_viewable);
   else if(feature == "vehicle_names")
-    return(m_vehicle_names_mode != "off");
+    return(m_vehicles_name_mode != "off");
   else if(feature == "trails")
     return(m_trails_viewable);
   else if(feature == "trails_connect")
@@ -525,7 +533,7 @@ ObjectPose VehicleSet::getObjectPose(const string& given_vname) const
 {
   string vname = given_vname;
   if(vname == "active")
-    vname = m_active_vehicle_name;
+    vname = m_vehicles_active_name;
 
   map<string, ObjectPose>::const_iterator p;
   p = m_pos_map.find(vname);
@@ -544,7 +552,7 @@ CPList VehicleSet::getVehiHist(const string& given_vname) const
 {
   string vname = given_vname;
   if(vname == "active")
-    vname = m_active_vehicle_name;
+    vname = m_vehicles_active_name;
 
   map<string, CPList>::const_iterator p;
   p = m_hist_map.find(vname);
@@ -640,8 +648,8 @@ bool VehicleSet::updateVehiclePosition(const string& ais_report)
 
   // If there is no active vehicle declared - make the active vehicle
   // the first one that the VehicleSet knows about.
-  if(m_active_vehicle_name == "")
-    m_active_vehicle_name = vname;
+  if(m_vehicles_active_name == "")
+    m_vehicles_active_name = vname;
   
   // Handle updating the ObjectPose with the new information
   ObjectPose opose(pos_x, pos_y, hding, speed, depth);

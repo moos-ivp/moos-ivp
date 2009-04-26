@@ -785,6 +785,18 @@ double tokDoubleParse(const string& str, const string& left,
   return(0);
 }
 
+//----------------------------------------------------------------
+// Procedure: vclip
+
+double vclip(double var, double low, double high)
+{
+  if(var < low)
+    return(low);
+  if(var > high)
+    return(high);
+  return(var);
+}
+
 
 //----------------------------------------------------------------
 // Procedure: tokParse

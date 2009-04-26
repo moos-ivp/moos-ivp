@@ -48,8 +48,8 @@ class VehicleSet
   std::vector<std::string> getVehiNames() const;
   std::vector<std::string> getParamReport() const;
 
-  std::string getActiveVehicle() const  {return(m_active_vehicle_name);};
-  std::string getCenterVehicle() const  {return(m_center_vehicle_name);};
+  std::string getActiveVehicle() const  {return(m_vehicles_active_name);};
+  std::string getCenterVehicle() const  {return(m_vehicles_center_name);};
 
   CPList     getVehiHist(const std::string&   s="active") const;   
   ObjectPose getObjectPose(const std::string& s="active") const;
@@ -81,14 +81,14 @@ class VehicleSet
 
   std::map<std::string, std::string> m_param_report;
 
-  std::string m_active_vehicle_name;
-  std::string m_center_vehicle_name;
+  std::string m_vehicles_active_name;
+  std::string m_vehicles_center_name;
 
   int    m_history_size;
   double m_curr_time;
 
   // Rendering characteristics (colors, sizes etc)
-  double m_vehicle_shape_scale;  
+  double m_vehicles_shape_scale;  
   double m_trails_length;         
   double m_trails_point_size;           
   double m_trails_gap;            
@@ -96,12 +96,12 @@ class VehicleSet
   bool   m_trails_connect_viewable;
   bool   m_vehicles_viewable; 
 
-  std::string   m_vehicle_names_mode; // off; names; names_mode; names_depth
+  std::string   m_vehicles_name_mode; // off; names; names_mode; names_depth
   
   std::vector<double> m_trails_color; 
-  std::vector<double> m_active_vehicle_color;
-  std::vector<double> m_inactive_vehicle_color; 
-  std::vector<double> m_vehicle_name_color;
+  std::vector<double> m_vehicles_active_color;
+  std::vector<double> m_vehicles_inactive_color; 
+  std::vector<double> m_vehicles_name_color;
 };
 
 #endif 

@@ -40,13 +40,13 @@ MarineVehiGUI::MarineVehiGUI(int g_w, int g_h, const char *g_l)
   mbar->add("Vehicles/center_view = vehicle_average", 'c', (Fl_Callback*)MarineVehiGUI::cb_CenterView,  (void*)0, 0);
   mbar->add("Vehicles/center_view = vehicle_active", FL_CTRL+'c', (Fl_Callback*)MarineVehiGUI::cb_CenterView,  (void*)1, FL_MENU_DIVIDER);
 
-  mbar->add("Vehicles/VehicleSize/vehicle_shape_scale = larger",    '+', (Fl_Callback*)MarineVehiGUI::cb_AltShapeScale, (void*)+1, 0);
-  mbar->add("Vehicles/VehicleSize/vehicle_shape_scale = smaller",   '-', (Fl_Callback*)MarineVehiGUI::cb_AltShapeScale, (void*)-1, 0);
-  mbar->add("Vehicles/VehicleSize/vehicle_shape_scale = actual", FL_ALT+'v', (Fl_Callback*)MarineVehiGUI::cb_AltShapeScale, (void*)0, FL_MENU_DIVIDER);
-  mbar->add("Vehicles/VehicleNames/vehicle_names_viewable = true", 0, (Fl_Callback*)MarineVehiGUI::cb_ToggleVName, 0, 0);
-  mbar->add("Vehicles/VehicleNames/vehicle_names_viewable = false", 0, (Fl_Callback*)MarineVehiGUI::cb_ToggleVName, 0, 0);
-  mbar->add("Vehicles/VehicleNames/vehicle_names_viewable = toggle", 'n', (Fl_Callback*)MarineVehiGUI::cb_ToggleVName, 0, FL_MENU_DIVIDER);
-  mbar->add("Vehicles/VehicleNames/vehicle_names_color = toggle", FL_CTRL+'n', (Fl_Callback*)MarineVehiGUI::cb_ToggleVNameColor, 0, 0);
+  mbar->add("Vehicles/VehicleSize/vehicles_shape_scale = larger",    '+', (Fl_Callback*)MarineVehiGUI::cb_AltShapeScale, (void*)+1, 0);
+  mbar->add("Vehicles/VehicleSize/vehicles_shape_scale = smaller",   '-', (Fl_Callback*)MarineVehiGUI::cb_AltShapeScale, (void*)-1, 0);
+  mbar->add("Vehicles/VehicleSize/vehicles_shape_scale = actual", FL_ALT+'v', (Fl_Callback*)MarineVehiGUI::cb_AltShapeScale, (void*)0, FL_MENU_DIVIDER);
+  mbar->add("Vehicles/VehicleNames/vehicles_name_viewable = true", 0, (Fl_Callback*)MarineVehiGUI::cb_ToggleVName, 0, 0);
+  mbar->add("Vehicles/VehicleNames/vehicles_name_viewable = false", 0, (Fl_Callback*)MarineVehiGUI::cb_ToggleVName, 0, 0);
+  mbar->add("Vehicles/VehicleNames/vehicles_name_viewable = toggle", 'n', (Fl_Callback*)MarineVehiGUI::cb_ToggleVName, 0, FL_MENU_DIVIDER);
+  mbar->add("Vehicles/VehicleNames/vehicles_name_color = toggle", FL_CTRL+'n', (Fl_Callback*)MarineVehiGUI::cb_ToggleVNameColor, 0, 0);
 
   mbar->add("Vehicles/Trails/trails_viewable = true",    0, (Fl_Callback*)MarineVehiGUI::cb_AltTrails, (void*)1, 0);
   mbar->add("Vehicles/Trails/trails_viewable = false",   0, (Fl_Callback*)MarineVehiGUI::cb_AltTrails, (void*)0, 0);
@@ -126,7 +126,7 @@ void MarineVehiGUI::cb_AltTrailConnect(Fl_Widget* o, int v) {
 
 //----------------------------------------- ToggleVName
 inline void MarineVehiGUI::cb_ToggleVName_i() {
-  cmviewer->setParam("vehicle_names_viewable", "toggle");
+  cmviewer->setParam("vehicles_name_viewable", "toggle");
   cmviewer->redraw();
 }
 void MarineVehiGUI::cb_ToggleVName(Fl_Widget* o) {
@@ -137,17 +137,17 @@ void MarineVehiGUI::cb_ToggleVName(Fl_Widget* o) {
 inline void MarineVehiGUI::cb_ToggleVNameColor_i() {
   m_vname_color_ix = (m_vname_color_ix+1) % 6;
   if(m_vname_color_ix == 0)
-    cmviewer->setParam("vehicle_names_color", "blue");
+    cmviewer->setParam("vehicles_name_color", "blue");
   else if(m_vname_color_ix == 1)
-    cmviewer->setParam("vehicle_names_color", "darkblue");
+    cmviewer->setParam("vehicles_name_color", "darkblue");
   else if(m_vname_color_ix == 2)
-    cmviewer->setParam("vehicle_names_color", "yellow");
+    cmviewer->setParam("vehicles_name_color", "yellow");
   else if(m_vname_color_ix == 3)
-    cmviewer->setParam("vehicle_names_color", "red");
+    cmviewer->setParam("vehicles_name_color", "red");
   else if(m_vname_color_ix == 4)
-    cmviewer->setParam("vehicle_names_color", "green");
+    cmviewer->setParam("vehicles_name_color", "green");
   else
-    cmviewer->setParam("vehicle_names_color", "white");
+    cmviewer->setParam("vehicles_name_color", "white");
   cmviewer->redraw();
 }
 void MarineVehiGUI::cb_ToggleVNameColor(Fl_Widget* o) {
