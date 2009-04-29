@@ -136,18 +136,10 @@ bool MarineViewer::setParam(string param, double v)
   param = tolower(stripBlankEnds(param));
   
   bool handled = true;
-  if(param == "hash_shade_mod") {
-    if((m_hash_shade+v >= 0) && (m_hash_shade+v <= 1.0))
-      m_hash_shade += v;
-  }
-  if(param == "hash_shade") {
-    if(v > 1.0)
-      m_hash_shade = 1.0;
-    else if (v < 0)
-      m_hash_shade = 0.0;
-    else
-      m_hash_shade = v;
-  }
+  if(param == "hash_shade_mod")
+    m_hash_shade = vclip((m_hash_shade+v), 0, 1);
+  if(param == "hash_shade")
+    m_hash_shade = vclip(v, 0, 1);
   else if(param == "hash_delta") {
     if(((v >= 10) && (v <= 1000)) || (v==-1))
       m_hash_delta = (int)v;
@@ -716,7 +708,7 @@ void MarineViewer::drawCommonMarker(double x, double y, double shape_width,
   if(vsize >= 2) 
     cvect2 = color_vectors[1];
   
-  int bw = 2; // border width
+  int bw = 1; // border width
 
   vector<double> black(3,0);
   if(mtype == "gateway") {

@@ -114,9 +114,9 @@ bool VPlug_GeoShapes::setParam(const string& param, string value)
   else if(param == "point_vertex_color")
     return(setColorMapping(param, value));
   else if(strContains(param, "_width"))
-    return(setGSizeMapping(param, value));
+    return(setGSizeMapping(param, value), 10);
   else if(strContains(param, "_size"))
-    return(setGSizeMapping(param, value));
+    return(setGSizeMapping(param, value), 10);
   else if(param == "clear") {
     if(value == "seglists")
       m_polygons.clear();
@@ -460,7 +460,8 @@ bool VPlug_GeoShapes::setViewableMapping(string param, string value)
 // Procedure: setGSizeMapping
 //      Note: Can accept string size args such as "+1", or "-10"
 
-bool VPlug_GeoShapes::setGSizeMapping(string attribute, string gsize)
+bool VPlug_GeoShapes::setGSizeMapping(string attribute, string gsize,
+				      double optional_max_limit)
 {
   attribute = tolower(stripBlankEnds(attribute));
   gsize = stripBlankEnds(gsize);
@@ -482,6 +483,8 @@ bool VPlug_GeoShapes::setGSizeMapping(string attribute, string gsize)
   double dval = atof(gsize.c_str());
   if(dval < 0)
     return(false);
+  if((optional_max_limit != 0) && (dval > optional_max_limit))
+    dval = optional_max_limit;
   
   double current_size = m_gsize_map[attribute];
 
@@ -493,6 +496,8 @@ bool VPlug_GeoShapes::setGSizeMapping(string attribute, string gsize)
   }
   else
     m_gsize_map[attribute] = dval;
+
+    
 
   return(true);    
 }

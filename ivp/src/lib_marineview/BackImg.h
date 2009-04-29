@@ -71,7 +71,6 @@ private:
   double         x_at_img_right;
   double         y_at_img_top;
   double         y_at_img_bottom;
-
 };
 
 #endif 

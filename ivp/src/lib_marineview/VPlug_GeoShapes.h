@@ -69,7 +69,7 @@ public:
   bool   setViewableMapping(std::string, std::string);
   bool   viewable(const std::string&, bool view_default=true);
   
-  bool   setGSizeMapping(std::string, std::string);
+  bool   setGSizeMapping(std::string, std::string, double max=0);
   double geosize(const std::string&, double size_default=0);
 
   std::vector<std::string> getParamReport() const;

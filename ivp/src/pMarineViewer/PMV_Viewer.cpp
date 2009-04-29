@@ -270,6 +270,11 @@ void PMV_Viewer::handleLeftMouse(int vx, int vy)
   m_left_click =  "x=" + doubleToString(sx,1) + ",";
   m_left_click += "y=" + doubleToString(sy,1);
 
+  double dlat, dlon;
+  m_geodesy.LocalGrid2LatLong(sx, sy, dlat, dlon);
+  m_left_click += ",lat=" + dstringCompact(doubleToString(dlat, 8));
+  m_left_click += ",lon=" + dstringCompact(doubleToString(dlon, 8));
+
   if(m_left_click_context != "")
     m_left_click += (",context=" + m_left_click_context);
 
@@ -290,6 +295,11 @@ void PMV_Viewer::handleRightMouse(int vx, int vy)
   
   m_right_click =  "x=" + doubleToString(sx,1) + ",";
   m_right_click += "y=" + doubleToString(sy,1);
+
+  double dlat, dlon;
+  m_geodesy.LocalGrid2LatLong(sx, sy, dlat, dlon);
+  m_right_click += ",lat=" + dstringCompact(doubleToString(dlat, 8));
+  m_right_click += ",lon=" + dstringCompact(doubleToString(dlon, 8));
 
   if(m_right_click_context != "")
     m_right_click += (",context=" + m_right_click_context);

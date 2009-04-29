@@ -164,8 +164,7 @@ bool VMarkerSet::setParam(const string& param, string value)
   else if(param == "markers_scale_global") {
     if(isNumber(value)) {
       double dval = atof(value.c_str());
-      if(dval > 0.1)
-	m_marker_scale_global = dval;
+      m_marker_scale_global = vclip(dval, 0.1, 100);
     }
     else {
       if(value == "smaller")
@@ -176,6 +175,7 @@ bool VMarkerSet::setParam(const string& param, string value)
 	m_marker_scale_global = 1;
       else
 	return(false);
+      m_marker_scale_global = vclip(m_marker_scale_global, 0.1, 100);
     }
   }
        
