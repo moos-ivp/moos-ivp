@@ -59,7 +59,6 @@ protected:
   std::string  m_string;
   bool         m_active;
   double       m_time;
-  
 };
 
 #endif

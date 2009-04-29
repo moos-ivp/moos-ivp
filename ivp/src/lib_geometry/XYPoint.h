@@ -50,7 +50,10 @@ public:
   double get_size() const  {return(m_size);};
   bool   valid()    const  {return(m_valid);};
 
+  XYPoint projectPt(XYPoint, double dist, double angle) const;
+
   std::string get_spec() const;
+
 
 protected:
   double       m_x;
@@ -61,7 +64,6 @@ protected:
 };
 
 #endif
-
 
 
 

@@ -25,6 +25,7 @@
 #include <string.h>
 #include "XYPoint.h"
 #include "MBUtils.h"
+#include "GeomUtils.h"
 
 using namespace std;
 
@@ -61,6 +62,22 @@ void XYPoint::print() const
   cout << " type: " << m_type;
   cout << " size: " << m_size;
   cout << "  x=" << m_x << "  y=" << m_y << "  z=" << m_z << endl;
+}
+
+//---------------------------------------------------------------
+// Procedure: projectPt
+//   Purpose: 
+
+XYPoint XYPoint::projectPt(XYPoint pt, double ang, double dist) const
+{
+  double new_x, ptx = pt.get_vx();
+  double new_y, pty = pt.get_vy();
+  
+  projectPoint(ang, dist, ptx, pty, new_x, new_y);
+  XYPoint new_pt;
+  new_pt.set_vertex(new_x, new_y);
+  
+  return(new_pt);
 }
 
 //---------------------------------------------------------------
