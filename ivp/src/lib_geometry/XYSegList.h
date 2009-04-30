@@ -51,7 +51,7 @@ public:
   void   print() const;
 
 public:
-  unsigned int size() const          {return(vertex_x.size());};
+  unsigned int size() const     {return(vertex_x.size());};
 
   double get_vx(unsigned int) const;
   double get_vy(unsigned int) const;

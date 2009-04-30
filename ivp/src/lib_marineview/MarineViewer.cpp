@@ -42,7 +42,6 @@
 #include "Shape_Kelp.h"
 #include "XYBuildUtils.h"
 
-
 using namespace std;
 
 MarineViewer::MarineViewer(int x, int y, int w, int h, const char *l)

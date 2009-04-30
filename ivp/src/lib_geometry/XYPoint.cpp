@@ -92,6 +92,8 @@ string XYPoint::get_spec() const
     spec += "label=" + m_label + ","; 
   if(m_label != "")
     spec += "type=" + m_type + ","; 
+  if(m_source != "")
+    spec += "source=" + m_source + ","; 
   
   spec += "x=";
   spec += dstringCompact(doubleToString(m_x));
