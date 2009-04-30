@@ -6,7 +6,7 @@ Simulator  = true
 
 Community  = alpha
 
-MOOSTimeWarp = 5
+MOOSTimeWarp = 1
 
 LatOrigin  = 43.825300 
 LongOrigin = -70.330400 
@@ -102,7 +102,6 @@ ProcessConfig = pMarineViewer
   set_pan_x            = -90
   set_pan_y            = -280
   zoom                 = 0.65
-  vehicle_shape_scale  = 2.0
   vehicle_shape_scale  = 1.5
   seglist_edge_width   = 2.0
   seglist_vertex_size  = 4
@@ -135,6 +134,9 @@ ProcessConfig = pMarineViewer
   ACTION  = MENU_KEY=deploy # DEPLOY = true # RETURN = false
   ACTION+ = MENU_KEY=deploy # MOOS_MANUAL_OVERIDE=false
   ACTION  = RETURN=true
+  ACTION  = HSLINE=off
+  ACTION  = HSLINE=on
+  ACTION  = UPDATES_RETURN=speed=1.4
 }
 
 //------------------------------------------
