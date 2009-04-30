@@ -1,0 +1,72 @@
+//--------    FILE: alpha.bhv   -------------
+
+// field: 100,1000:100,-300:1300,-800:1300,1000
+
+initialize   DEPLOY = false
+initialize   RETURN = false
+initialize   HSLINE = off
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{ 
+  name      = waypt_survey
+  pwt       = 100
+  condition = RETURN = false
+  condition = DEPLOY = true
+  endflag   = RETURN = true
+  perpetual = true
+
+  wpt_status = SURVEY_STATUS
+   wpt_index = SURVEY_INDEX
+       speed = 2.0   // meters per second
+      radius = 8.0
+//      points = 60,-40:60,-160:150,-160:180,-100:150,-40
+      points = 100,-300:100,1000:200,1000:200,-400:300,-400:300,1000:400,1000:400,-5\
+00:500,-500:500,1000:600,1000:600,-600:700,-600:700,1000:800,1000:800,1000:800,\
+-700:900,-700:900,1000:1000,1000:1000,-800:1100,-800:1100,1000:1200,1000:1200,-\
+900:1300,-900:1300,1000
+}
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name       = waypt_return
+  pwt        = 100
+  condition  = RETURN = true
+  condition  = DEPLOY = true
+  updates    = UPDATES_RETURN
+  perpetual  = true
+  endflag    = RETURN = false
+  endflag    = DEPLOY = false
+
+       speed = 2.0
+      radius = 2.0
+   nm_radius = 8.0
+      points = 0,0
+}
+
+//----------------------------------------------
+Behavior = BHV_HSLine
+{
+  name      = hsline
+  condition = HSLINE=on
+
+  time_on_leg = 10
+}
+
+
+//----------------------------------------------
+//Behavior = BHV_HSLine
+{
+  name      = hsline
+  condition = HSLINE=on
+
+  time_on_leg = 10
+}
+//----------------------------------------------
+//Behavior = BHV_Timer
+{
+  name      = foovar
+  condition = HSLINE=on
+}
+
