@@ -45,7 +45,7 @@ bool VMarkerSet::addVMarker(const string& mline,
   vector<string> svector = parseString(newline, ',');
   unsigned int vsize = svector.size();
 
-  cout << "Handling marker line: " << mline << endl;
+  //cout << "Handling marker line: " << mline << endl;
 
   string mtype, xpos, ypos, lat, lon, label, colors;
   string width = "1";
@@ -56,7 +56,7 @@ bool VMarkerSet::addVMarker(const string& mline,
       return(false);
     string left  = tolower(stripBlankEnds(ivector[0]));
     string right = stripBlankEnds(ivector[1]);
-    cout << "left:[" << left << "]  right:[" << right << "]" << endl;
+    //cout << "left:[" << left << "]  right:[" << right << "]" << endl;
     if(left == "type")        mtype = right;
     else if(left == "xpos")   xpos = right;
     else if(left == "ypos")   ypos = right;
