@@ -643,7 +643,7 @@ bool VehicleSet::updateVehiclePosition(const string& ais_report)
     if(vtype=="glider")
       vlen = 2.0; // meters
     if(vtype=="ship")
-      vlen = 50; // meters
+      vlen = 15; // meters
   }
 
   // If there is no active vehicle declared - make the active vehicle
