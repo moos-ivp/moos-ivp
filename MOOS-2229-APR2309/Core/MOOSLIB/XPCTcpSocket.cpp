@@ -106,9 +106,9 @@ XPCTcpSocket *XPCTcpSocket::Accept(char *_sHost)
         // Get the host name given the address
         try
         {
-            XPCGetHostInfo getHostInfo(sAddress, ADDRESS);
-            // Store the host name
-            strcpy(_sHost, getHostInfo.sGetHostName());
+//            XPCGetHostInfo getHostInfo(sAddress, ADDRESS);
+//            // Store the host name
+//            strcpy(_sHost, getHostInfo.sGetHostName());
         }
         catch(XPCException e)
         {
