@@ -29,9 +29,12 @@
 class XYPoint : public XYObject {
 public:
   XYPoint() {m_x=0; m_y=0; m_z=0; m_size=1; m_valid=false;};
+  XYPoint(double x, double y) 
+    {m_x=x; m_y=y; m_z=0; m_size=1; m_valid=true;};
+
   virtual ~XYPoint() {};
 
-  void   set_vertex(double x, double y, double z=0) 
+  void set_vertex(double x, double y, double z=0) 
     {m_x=x; m_y=y; m_z=z; m_valid=true;};
 
   void clear();
