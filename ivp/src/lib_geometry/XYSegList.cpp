@@ -427,6 +427,29 @@ bool XYSegList::segs_cross(bool loop) const
 }
 
 //---------------------------------------------------------------
+// Procedure: length
+//   Purpose: Determine the overall length between the first and
+//            the last point - in the X-Y Plane only
+
+double XYSegList::length()
+{
+  unsigned int i, vsize = vertex_x.size();
+  if(vsize == 0)
+    return(0);
+
+  double prev_x = vertex_x[0];
+  double prev_y = vertex_y[0];
+
+  double total_length = 0;
+  for(i=1; i<vsize; i++) {
+    double x = vertex_x[i];
+    double y = vertex_y[i];
+    total_length += hypot(x-prev_x, y-prev_y);
+  }
+  return(total_length);
+}
+
+//---------------------------------------------------------------
 // Procedure: get_spec
 //   Purpose: Get a string specification of the seglist. We set 
 //            the vertex precision to be at the integer by default.

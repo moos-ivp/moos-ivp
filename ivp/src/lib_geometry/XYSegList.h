@@ -61,6 +61,7 @@ public:
   double get_avg_x() const;
   double get_avg_y() const;
   bool   segs_cross(bool loop=true) const;
+  double length();
 
   std::string get_spec(int vertex_precision=1) const;
 
