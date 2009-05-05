@@ -429,7 +429,7 @@ bool XYSegList::segs_cross(bool loop) const
 //---------------------------------------------------------------
 // Procedure: length
 //   Purpose: Determine the overall length between the first and
-//            the last point - in the X-Y Plane only
+//            the last point - distance in the X-Y Plane only
 
 double XYSegList::length()
 {
@@ -491,7 +491,6 @@ string XYSegList::get_spec(int precision) const
 int XYSegList::closest_vertex(double x, double y) const
 {
   int vsize = vertex_x.size();
-
   if(vsize == 0)
     return(0);
 
