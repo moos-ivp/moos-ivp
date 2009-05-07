@@ -760,3 +760,40 @@ void XYPolygon::determine_convexity()
   for(i=0; i<size(); i++)
     convex_state = convex_state && (side_xy[i] != -1);
 }
+
+
+//---------------------------------------------------------------
+// Procedure: exportSegList
+//   Purpose: Build an XYSegList from the polygon. Make the first 
+//            point in the XYSegList the point in the polygon
+//            that is closest to the x,y point.
+
+XYSegList XYPolygon::exportSegList(double x, double y)
+{
+  unsigned int start_index = 0;
+  double shortest_dist = -1;
+
+  unsigned int i, vsize = vertex_x.size();
+  for(i=0; i<vsize; i++) {
+    double vx = vertex_x[i];
+    double vy = vertex_y[i];
+    double dist = hypot((x-vx), (y-vy));
+    if((i==0) || (dist < shortest_dist)) {
+      shortest_dist = dist;
+      start_index = i;
+    }
+  }
+
+  XYSegList new_segl;
+  unsigned int count = 0;
+  
+  while(count < vsize) {
+    unsigned int index = start_index + count;
+    if(index >= vsize) 
+      index -= vsize;
+    new_segl.add_vertex(vertex_x[index], vertex_y[index]);
+    count++;
+  }
+
+  return(new_segl);
+}

@@ -56,6 +56,8 @@ public:
   bool   is_convex() const  {return(convex_state);};
   void   determine_convexity();
 
+  XYSegList exportSegList(double x=0, double y=0);
+
 protected:
   int    side(double x1, double y1, double x2, 
 	      double y2, double x3, double y3) const;
@@ -68,12 +70,3 @@ private:
 };
 
 #endif
-
-
-
-
-
-
-
-
-

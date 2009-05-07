@@ -89,6 +89,10 @@ bool BHV_Waypoint::setParam(string param, string val)
 {
   if((param == "polygon") || (param == "points")) {
     XYSegList new_seglist = stringToSegList(val);
+    if(new_seglist.size() == 0) {
+      XYPolygon new_poly = stringToPoly(val);
+      new_seglist = new_poly.exportSegList(0,0);
+    }
     if(new_seglist.size() == 0)
       return(false);
     m_waypoint_engine.setSegList(new_seglist);
@@ -144,6 +148,7 @@ bool BHV_Waypoint::setParam(string param, string val)
     return(true);
   }
   else if(param == "repeat") {
+    IvPBehavior::setParam("perpetual", "true");
     int ival = atoi(val.c_str());
     if((ival < 0) || (!isNumber(val)))
       return(false);

@@ -581,7 +581,6 @@ void perpLineIntPt(double x1, double y1, double x2, double y2,
   }
 
   // Now handle the general case
-
   double seg_m = (y2-y1) / (x2-x1);
   double seg_b = y1 - (seg_m * x1);
   double oth_m = -1.0 / seg_m;
@@ -589,7 +588,6 @@ void perpLineIntPt(double x1, double y1, double x2, double y2,
 
   rx = (oth_b - seg_b) / (seg_m - oth_m);
   ry = (oth_m * rx) + oth_b;
-
 }
 
 //---------------------------------------------------------------
