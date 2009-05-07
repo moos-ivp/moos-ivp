@@ -102,6 +102,7 @@ IvPFunction *BHV_ConstantHeading::onRunState()
   zaic.setSummit(m_desired_heading);
   zaic.setBaseWidth(m_basewidth);
   zaic.setPeakWidth(m_peakwidth);
+  zaic.setSummitDelta(25);
   zaic.setValueWrap(true);
   
   IvPFunction *ipf = zaic.extractIvPFunction();
