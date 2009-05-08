@@ -83,7 +83,8 @@ bool BHV_RubberBand::setParam(string param, string val)
 
   val = stripBlankEnds(val);
 
-  if(param == "station_pt") {
+  //  if(param == "station_pt") {
+  if(param == "points") {
     m_center_assign  = val;
     m_center_pending = true;
     return(updateCenter());
