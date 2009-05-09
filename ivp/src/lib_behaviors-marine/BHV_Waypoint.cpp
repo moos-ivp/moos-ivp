@@ -53,8 +53,9 @@ BHV_Waypoint::BHV_Waypoint(IvPDomain gdomain) :
   m_domain     = subDomain(m_domain, "course,speed");
 
   // Set behavior configuration variables
-  m_cruise_speed    = 0;  // Meters/second
-  m_lead_distance   = -1;
+  m_cruise_speed    = 0;  // meters/second
+  m_lead_distance   = -1; // meters - default of -1 means unused
+  m_lead_damper     = -1; // meters - default of -1 means unused
   m_ipf_type        = "zaic";
 
   m_var_report      = "WPT_STAT";
@@ -138,6 +139,13 @@ bool BHV_Waypoint::setParam(string param, string val)
     if((dval < 0) || (!isNumber(val)))
       return(false);
     m_lead_distance = dval;
+    return(true);
+  }
+  else if(param == "lead_damper") {
+    double dval = atof(val.c_str());
+    if((dval <= 0) || (!isNumber(val)))
+      return(false);
+    m_lead_damper = dval;
     return(true);
   }
   else if(param == "order") {
@@ -249,7 +257,8 @@ bool BHV_Waypoint::updateInfoIn()
 bool BHV_Waypoint::setNextWaypoint()
 {
   string feedback_msg = m_waypoint_engine.setNextWaypoint(m_osx, m_osy);
-
+  feedback_msg = ("behavior-name=" + m_descriptor + "," + feedback_msg);
+  
   if((feedback_msg=="completed") || (feedback_msg=="cycled")) {
     if(tolower(m_var_report) != "silent")
       postMessage((m_var_report + m_var_suffix), feedback_msg);
@@ -282,10 +291,19 @@ bool BHV_Waypoint::setNextWaypoint()
       double nx, ny;
       perpSegIntPt(x1,y1,m_ptx,m_pty,m_osx,m_osy,nx,ny);
 
+      double damper_factor = 1.0;
+      if(m_lead_damper > 0) {
+	double dist_to_trackline = hypot((nx-m_osx),(ny-m_osy));
+	if(dist_to_trackline < m_lead_damper) {
+	  double augment = 1 - (dist_to_trackline / m_lead_damper);
+	  damper_factor += 2*augment;
+	}
+      }
+	  
       double angle = relAng(x1, y1, m_ptx, m_pty);
       double dist  = distPointToPoint(nx, ny, m_ptx, m_pty);
-      if(dist > m_lead_distance) 
-	dist = m_lead_distance; 
+      if(dist > (m_lead_distance * damper_factor)) 
+	dist = m_lead_distance * damper_factor;  
       projectPoint(angle, dist, nx, ny, m_trackpt_x, m_trackpt_y);
     }
   }
@@ -353,6 +371,7 @@ void BHV_Waypoint::postStatusReport()
   double eta_seconds   = dist_meters / m_osv;
   
   string stat = "vname=" + m_us_name + ",";
+  stat += "behavior-name=" + m_descriptor + ",";
   stat += "index=" + intToString(current_waypt)   + ",";
   stat += "dist="  + doubleToString(dist_meters, 0)  + ",";
   stat += "eta="   + doubleToString(eta_seconds, 0);

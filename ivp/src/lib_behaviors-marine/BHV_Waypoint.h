@@ -53,6 +53,7 @@ protected:
 protected: // configuration parameters
   double      m_cruise_speed;
   double      m_lead_distance;
+  double      m_lead_damper;
   std::string m_ipf_type;
 
   std::string m_var_report;
