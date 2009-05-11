@@ -300,16 +300,21 @@ void BHV_StationKeep::postStationMessage(bool post)
 {
   string str_x = doubleToString(m_station_x,1);
   string str_y = doubleToString(m_station_y,1);
-  string station = str_x + "," + str_y + ",";
-  
-  if(post)
-    station += doubleToString(m_outer_radius,1) + ",";
-  else
-    station += "0,";
 
-  station += m_us_name;
-  postMessage("STATION_CIRCLE", station);
+  string poly_str = "radial:: x=" + str_x;
 
+  string label  = m_us_name + ":station-keep";
+  string source = m_us_name + ":" + m_descriptor;
+
+  poly_str += ",y=" + str_y;
+  poly_str += ",radius=" + doubleToString(m_outer_radius,1);
+  poly_str += ",pts=12, label=" + label;
+  poly_str += ",source=" + source;
+
+  if(post==false)
+    poly_str += ",active=false";
+
+  postMessage("VIEW_POLYGON", poly_str);
 }
 
 
