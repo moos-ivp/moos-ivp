@@ -41,6 +41,7 @@ protected:
   bool         updateInfoIn();  
   bool         updateCenter();
   void         postStationMessage(bool);
+  void         updateStationDepthState();
 
 private:  // Configuration Parameters
   double      m_station_x;
@@ -60,12 +61,18 @@ private:  // Configuration Parameters
   // vehicle drift outside the outer radius.
   double      m_extra_speed;
 
+  // A UUV station-keeping may need to go to a depth in order to
+  // make progress toward the station point.
+  double      m_station_depth_radius;
+  double      m_station_depth;
 
 private:  // State Variables
   bool         m_center_pending;
   std::string  m_center_assign;
   double       m_osx;
   double       m_osy;
+  double       m_dist_to_station;
+  std::string  m_station_depth_state;
 };
 
 #endif

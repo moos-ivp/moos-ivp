@@ -35,7 +35,6 @@
 #include "ZAIC_PEAK.h"
 #include "OF_Coupler.h"
 
-
 using namespace std;
 
 //-----------------------------------------------------------
@@ -57,6 +56,11 @@ BHV_StationKeep::BHV_StationKeep(IvPDomain gdomain) :
   m_extra_speed  = 2.5;
   m_center_activate = false;
 
+  // Configuration parameters for UUV station-keeping
+  m_station_depth_radius   = -1;   // -1 indicates not enabled
+  m_station_depth          = 5.0;  // meters
+  m_station_depth_state    = "disabled";
+
   // Default values for State  Variables
   m_center_pending  = false;
   m_center_assign   = "";
@@ -75,15 +79,36 @@ BHV_StationKeep::BHV_StationKeep(IvPDomain gdomain) :
 
 bool BHV_StationKeep::setParam(string param, string val) 
 {
-  if(IvPBehavior::setParam(param, val))
-    return(true);
-
-  val = stripBlankEnds(val);
+  param = tolower(param);
+  val   = stripBlankEnds(val);
 
   if(param == "station_pt") {
     m_center_assign  = val;
     m_center_pending = true;
     return(updateCenter());
+    return(true);
+  }
+
+  else if(param == "station_depth_radius") {
+    if((tolower(val) == "off") || (val == "-1")) {
+      m_station_depth_state = "disabled";
+      m_station_depth_radius = -1;
+      return(true);
+    }
+    double dval = atof(val.c_str());
+    if((dval <= 0) || (!isNumber(val)))
+      return(false);
+    m_station_depth_radius = dval;
+    if(m_station_depth_state == "disabled")
+      m_station_depth_state = "inactive";
+    return(true);
+  }
+
+  else if(param == "station_depth") {
+    double dval = atof(val.c_str());
+    if((dval <= 0) || (!isNumber(val)))
+      return(false);
+    m_station_depth = dval;
     return(true);
   }
 
@@ -167,38 +192,39 @@ IvPFunction *BHV_StationKeep::onRunState()
     return(0);
   }
 
-  IvPFunction *ipf = 0;
+  // Calculate and post the distance to station only after updateInfoIn()
+  // and updateCenter() are called and m_station_set is determined set.
+  m_dist_to_station  = hypot((m_osx-m_station_x), (m_osy-m_station_y));
+  postMessage("DIST_TO_STATION", m_dist_to_station);
 
-  bool ok1, ok2;
-  double nav_x = getBufferDoubleVal("NAV_X", ok1);
-  double nav_y = getBufferDoubleVal("NAV_Y", ok2);
+  // If station-keeping at depth is enabled, determine current state.
+  updateStationDepthState();
 
-  // If no ownship position from info_buffer, return null
-  if(!ok1 || !ok2) {
-    postStationMessage(false);
-    return(0);
-  }
-
-  double dist_to_station  = distPointToPoint(nav_x, nav_y, 
-					     m_station_x, m_station_y);
-
-  postMessage("DIST_TO_STATION", dist_to_station);
+  postMessage("STATION_DEPTH_STATE", toupper(m_station_depth_state));
 
   postStationMessage(true);
-  if(dist_to_station <= m_inner_radius)
+
+  // If the station_depth_state is inactive it means that station-keeping
+  // at depth is enabled, but currently not warranting action.
+  if(m_station_depth_state == "inactive")
     return(0);
 
-  double angle_to_station = relAng(nav_x, nav_y, 
+  // Action may also not be warranted due to being close enough to the 
+  // station-keep point.
+  if(m_dist_to_station <= m_inner_radius)
+    return(0);
+  
+  double angle_to_station = relAng(m_osx, m_osy, 
 				   m_station_x, m_station_y);
 
   double desired_speed = 0;
-  if((dist_to_station > m_inner_radius) && (dist_to_station < m_outer_radius)) {
+  if((m_dist_to_station > m_inner_radius) && (m_dist_to_station < m_outer_radius)) {
     double range  = m_outer_radius - m_inner_radius;
-    double pct    = (dist_to_station - m_inner_radius) / range;
+    double pct    = (m_dist_to_station - m_inner_radius) / range;
     desired_speed = pct * m_outer_speed;
   }
 
-  if(dist_to_station >= m_outer_radius)
+  if(m_dist_to_station >= m_outer_radius)
     desired_speed = m_extra_speed;
 
   ZAIC_PEAK spd_zaic(m_domain, "speed");
@@ -216,7 +242,7 @@ IvPFunction *BHV_StationKeep::onRunState()
   IvPFunction *crs_ipf = crs_zaic.extractIvPFunction();
   
   OF_Coupler coupler;
-  ipf = coupler.couple(crs_ipf, spd_ipf);
+  IvPFunction *ipf = coupler.couple(crs_ipf, spd_ipf);
 
   if(ipf)
     ipf->setPWT(m_priority_wt);
@@ -315,6 +341,27 @@ void BHV_StationKeep::postStationMessage(bool post)
     poly_str += ",active=false";
 
   postMessage("VIEW_POLYGON", poly_str);
+}
+
+
+//-----------------------------------------------------------
+// Procedure: updateStationDepthState
+
+void BHV_StationKeep::updateStationDepthState()
+{
+  if(m_station_depth_state == "disabled")
+    return;
+  
+  if(m_station_depth_state == "inactive") {
+    if(m_dist_to_station > m_station_depth_radius)
+      m_station_depth_state = "active";
+    return;
+  }
+
+  if(m_station_depth_state == "active")
+    if(m_dist_to_station <= m_inner_radius)
+      m_station_depth_state = "inactive";
+  
 }
 
 
