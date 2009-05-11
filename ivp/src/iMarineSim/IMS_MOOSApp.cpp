@@ -54,7 +54,7 @@ bool IMS_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 
     if(m_model) {
       if((Msg.m_sKey == "DESIRED_THRUST") && (dfTimeDiff <= 1.0)) {
-	cout << "Desired_thrust: " << Msg.m_dfVal << endl;
+	//cout << "Desired_thrust: " << Msg.m_dfVal << endl;
 	m_model->setThrust(Msg.m_dfVal);
       }
       else if((Msg.m_sKey == "DESIRED_RUDDER")  && (dfTimeDiff <= 1.0))
@@ -267,8 +267,11 @@ bool IMS_MOOSApp::Iterate()
       m_Comms.Notify(m_sim_prefix+"_LONG", lon, ctime);
     }
 
+  double new_speed = m_model->getSpeed();
+  new_speed = snapToStep(new_speed, 0.01);
+
   m_Comms.Notify(m_sim_prefix+"_HEADING", m_model->getHeading(), ctime);
-  m_Comms.Notify(m_sim_prefix+"_SPEED", m_model->getSpeed(), ctime);
+  m_Comms.Notify(m_sim_prefix+"_SPEED", new_speed, ctime);
   m_Comms.Notify(m_sim_prefix+"_DEPTH", m_model->getDepth(), ctime);
   m_Comms.Notify(m_sim_prefix+"_YAW", m_model->getYaw(), ctime);
   m_Comms.Notify(m_sim_prefix+"_STATE", "off",ctime);

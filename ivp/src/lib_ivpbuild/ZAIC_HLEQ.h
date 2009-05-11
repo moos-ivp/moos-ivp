@@ -39,8 +39,9 @@ public:
   virtual ~ZAIC_HLEQ() {};
 
   bool  setSummit(double);
+  bool  setSummitDelta(double=1);
   bool  setBaseWidth(double);
-  bool  setMinMaxUtil(double, double);
+  bool  setMinMaxUtil(double=0, double=100);
 
   double getParam(std::string);
   bool   stateOK()          {return(m_state_ok);};
@@ -48,6 +49,7 @@ public:
 
 protected:  // Parameters
   double  m_summit;
+  double  m_summit_delta;
   double  m_basewidth;
   double  m_minutil;
   double  m_maxutil;

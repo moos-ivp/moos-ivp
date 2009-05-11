@@ -39,6 +39,7 @@ SimEngine::SimEngine(double g_push_x, double g_push_y,
   m_push_theta     = 0;
   m_float_rate     = 0;
   m_top_turn_speed = 3.0; // meters per second
+  m_deceleration   = 0.5; // meters per second^2
 }
 
 
@@ -93,6 +94,24 @@ void SimEngine::propagate(VState &vstate, double velocity,
     rudder_angle   = 0;
     elevator_angle = 0;
   }
+
+#if 1
+  
+  double prev_velocity = vstate.m_dfSpeed; 
+  //cout << "vel:" << velocity;
+  //cout << "  pv:" << prev_velocity;
+  if(prev_velocity > velocity) {
+    double mtr_sec_slower = (m_deceleration * delta_time);
+    //cout << "  mss:" << mtr_sec_slower;
+    //cout << "  rnv:" << velocity;
+    //cout << "  dt:" << delta_time;
+    if((prev_velocity - mtr_sec_slower) > velocity)
+      velocity = prev_velocity - mtr_sec_slower;
+    //cout << "  anv:" << velocity;
+  }
+  //cout << endl;
+#endif
+
 
   double delta_theta_deg = rudder_angle * 40 * delta_time;
 

@@ -108,8 +108,8 @@ PDMap *ZAIC_LEQ::setPDMap()
   int i;
   int piece_count = 0;
 
-  IvPBox *piece[3];
-  for(i=0; i<3; i++)
+  IvPBox *piece[4];
+  for(i=0; i<4; i++)
     piece[i] = 0;
 
   // Handle piece0 if it exists
@@ -121,10 +121,22 @@ PDMap *ZAIC_LEQ::setPDMap()
     piece_count++;
   }
 
-  // Handle piece1 if it exists
-  if(m_ipt_one < m_ipt_two) {
+  // Handle piece1 if it exists. Building this piece involves
+  // reclaiming one point from the first piece - the point at 
+  // the summit.
+  if((m_summit_delta > 0) && (m_ipt_one > 1)) {
     piece[1] = new IvPBox(1,1);
-    piece[1]->setPTS(0, m_ipt_one+1, m_ipt_two);
+    piece[1]->setPTS(0, m_ipt_one, m_ipt_one);
+    piece[1]->wt(0) = 0.0;
+    piece[1]->wt(1) = m_maxutil + m_summit_delta;
+    piece[0]->setPTS(0, 0, m_ipt_one-1);
+    piece_count++;
+  }
+
+  // Handle piece2 if it exists
+  if(m_ipt_one < m_ipt_two) {
+    piece[2] = new IvPBox(1,1);
+    piece[2]->setPTS(0, m_ipt_one+1, m_ipt_two);
 
     double run    = (double)(i_basewidth);
     double slope  = -(m_maxutil - m_minutil) / run;
@@ -134,26 +146,26 @@ PDMap *ZAIC_LEQ::setPDMap()
     else
       intcpt = m_minutil + (-slope * m_ipt_two);
 
-    piece[1]->wt(0) = slope;
-    piece[1]->wt(1) = intcpt;
+    piece[2]->wt(0) = slope;
+    piece[2]->wt(1) = intcpt;
     piece_count++;
   }
 
-  // Handle piece2 if it exists
+  // Handle piece3 if it exists
   if(m_ipt_two < m_ipt_high) {
-    piece[2] = new IvPBox(1,1);
-    piece[2]->setPTS(0, m_ipt_two+1, m_ipt_high);
-    piece[2]->wt(0) = 0.0;
-    piece[2]->wt(1) = m_minutil;
+    piece[3] = new IvPBox(1,1);
+    piece[3]->setPTS(0, m_ipt_two+1, m_ipt_high);
+    piece[3]->wt(0) = 0.0;
+    piece[3]->wt(1) = m_minutil;
     piece_count++;
   }
 
+  
   PDMap *pdmap;
   pdmap = new PDMap(piece_count, m_ivp_domain, 1);
 
-
   int ix = 0;
-  for(i=0; i<3; i++) {
+  for(i=0; i<4; i++) {
     if(piece[i]) {
       pdmap->bx(ix) = piece[i];
       ix++;

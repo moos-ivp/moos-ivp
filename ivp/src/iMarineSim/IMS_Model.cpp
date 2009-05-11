@@ -66,7 +66,7 @@ bool IMS_Model::propagate(double g_curr_time)
   double delta_time  = a_curr_time - m_vstate.m_dfTime;
   double next_speed  = m_thrust / m_thrust_factor;
 
-  m_vstate.m_dfSpeed = next_speed;
+  //m_vstate.m_dfSpeed = next_speed; // mikerb
 
   // Convert rudder_angle to RADIANS
   double radian_rudder_angle = m_rudder * M_PI / 180.0;
@@ -83,7 +83,9 @@ bool IMS_Model::propagate(double g_curr_time)
   m_sim_engine.setParam("push_y", m_push_y);
   m_sim_engine.setParam("push_theta", m_push_theta);
   m_sim_engine.setParam("float_rate", m_float_rate);
-  m_sim_engine.propagate(m_vstate, m_vstate.m_dfSpeed, radian_rudder_angle, 
+  //  m_sim_engine.propagate(m_vstate, m_vstate.m_dfSpeed, radian_rudder_angle, 
+  //			 delta_time, m_elevator);
+  m_sim_engine.propagate(m_vstate, next_speed, radian_rudder_angle, 
 			 delta_time, m_elevator);
    
   return(true);

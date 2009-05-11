@@ -32,14 +32,16 @@ public:
   virtual ~SimEngine() {};
   
 public:
-  void   propagate(VState&, double, double, double, double=0);
-  bool   setParam(const std::string&, double);
+  void   propagate(VState&, double velocity, double rudder_angle, 
+		   double delta_time, double elevator_angle=0);
+  bool   setParam(const std::string& param, double value);
 
 protected:
-  double m_push_x;
-  double m_push_y;
-  double m_push_theta;
+  double m_push_x;        // An external translational force
+  double m_push_y;        // An external translational force
+  double m_push_theta;    // An external rotational force
   double m_top_turn_speed;
+  double m_deceleration;  // meters/sec^2
   double m_float_rate;
 };
 

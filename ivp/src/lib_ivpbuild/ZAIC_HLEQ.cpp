@@ -49,6 +49,7 @@ ZAIC_HLEQ::ZAIC_HLEQ(IvPDomain g_domain, const string& varname)
   m_domain_delta = m_ivp_domain.getVarDelta(m_domain_ix);
   
   m_summit       = 0;
+  m_summit_delta = 0;
   m_basewidth    = 0;
   m_minutil      = 0;
   m_maxutil      = 100.0;
@@ -72,6 +73,18 @@ bool ZAIC_HLEQ::setSummit(double val)
   if((m_summit < m_domain_low) || (m_summit > m_domain_high))
     m_warning += "given summit value out of domain range (suspicious):";
 
+  return(true);
+}
+
+//-------------------------------------------------------------
+// Procedure: setSummitDelta
+
+bool ZAIC_HLEQ::setSummitDelta(double val)
+{
+  if(val < 0)
+    val = 0;
+
+  m_summit_delta = val;
   return(true);
 }
 
@@ -115,6 +128,8 @@ double ZAIC_HLEQ::getParam(string param)
   param = tolower(param);
   if(param == "summit")
     return(m_summit);
+  else if(param == "summit_delta")
+    return(m_summit_delta);
   else if(param == "basewidth")
     return(m_basewidth);
   else if(param == "minutil")

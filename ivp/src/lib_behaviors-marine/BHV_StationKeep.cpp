@@ -121,7 +121,7 @@ bool BHV_StationKeep::setParam(string param, string val)
     return(true);
   }
 
-  else if(param == "extra_speed") {
+  else if((param == "extra_speed") || (param == "transit_speed")) {
     double dval = atof(val.c_str());
     if((dval <= 0) || (!isNumber(val)))
       return(false);
@@ -162,7 +162,7 @@ IvPFunction *BHV_StationKeep::onRunState()
   updateCenter();
 
   if(!m_station_set) {
-    postWMessage("STATION_NOT_SET");
+    postWMessage("STATION_POINT_NOT_SET");
     postStationMessage(false);
     return(0);
   }
