@@ -111,9 +111,11 @@ ProcessConfig = pMarineViewer
   hash_shade           = 0.4
   hash_view            = true
 
-  BUTTON_ONE = DEPLOY # DEPLOY=true
-  BUTTON_ONE = MOOS_MANUAL_OVERIDE=false # RETURN=false
-  BUTTON_TWO = RETURN # RETURN=true
+  BUTTON_ONE   = DEPLOY # DEPLOY=true
+  BUTTON_ONE   = MOOS_MANUAL_OVERIDE=false # RETURN=false
+  BUTTON_TWO   = RETURN # RETURN=true
+  BUTTON_THREE = STATION # STATION=true
+  BUTTON_FOUR = NO-STATION # STATION=false
 }
 
 //------------------------------------------
