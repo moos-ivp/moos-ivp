@@ -55,16 +55,16 @@ BHV_StationKeep::BHV_StationKeep(IvPDomain gdomain) :
   m_outer_speed  = 1.2;
   m_extra_speed  = 2.5;
   m_center_activate = false;
-
-  // Configuration parameters for UUV station-keeping
-  m_station_depth_radius   = -1;   // -1 indicates not enabled
-  m_station_depth          = 5.0;  // meters
-  m_station_depth_state    = "disabled";
+  m_hibernation_radius = -1;   // -1 indicates not enabled
 
   // Default values for State  Variables
-  m_center_pending  = false;
-  m_center_assign   = "";
-  m_station_set     = false;
+  m_center_pending     = false;
+  m_center_assign      = "";
+  m_station_set        = false;
+  m_hibernation_state  = "disabled";
+  m_transit_state      = "disabled";
+  m_dist_to_station    = -1;
+  m_dist_to_station_prev = -1;
 
   // Declare information needed by this behavior
   addInfoVars("NAV_X, NAV_Y");
@@ -85,30 +85,22 @@ bool BHV_StationKeep::setParam(string param, string val)
   if(param == "station_pt") {
     m_center_assign  = val;
     m_center_pending = true;
-    return(updateCenter());
+    //return(updateCenter());
     return(true);
   }
 
-  else if(param == "station_depth_radius") {
+  else if(param == "hibernation_radius") {
     if((tolower(val) == "off") || (val == "-1")) {
-      m_station_depth_state = "disabled";
-      m_station_depth_radius = -1;
+      m_hibernation_state = "disabled";
+      m_hibernation_radius = -1;
       return(true);
     }
     double dval = atof(val.c_str());
     if((dval <= 0) || (!isNumber(val)))
       return(false);
-    m_station_depth_radius = dval;
-    if(m_station_depth_state == "disabled")
-      m_station_depth_state = "inactive";
-    return(true);
-  }
-
-  else if(param == "station_depth") {
-    double dval = atof(val.c_str());
-    if((dval <= 0) || (!isNumber(val)))
-      return(false);
-    m_station_depth = dval;
+    m_hibernation_radius = dval;
+    if(m_hibernation_state == "disabled")
+      m_hibernation_state = "hibernating";
     return(true);
   }
 
@@ -167,9 +159,13 @@ bool BHV_StationKeep::setParam(string param, string val)
 
 void BHV_StationKeep::onIdleState()
 {
+  m_distance_history.clear();
+  m_distance_thistory.clear();
   postStationMessage(false);
+
   if(!m_center_activate)
     return;
+
   m_center_pending = true;
   m_center_assign  = "present_position";
 }
@@ -180,11 +176,10 @@ void BHV_StationKeep::onIdleState()
 
 IvPFunction *BHV_StationKeep::onRunState() 
 {
-  // Set m_osx, m_osy
+  // Set m_osx, m_osy, m_currtime, m_dist_to_station
   if(!updateInfoIn())
     return(0);
-
-  updateCenter();
+  postMessage("DIST_TO_STATION", m_dist_to_station);
 
   if(!m_station_set) {
     postWMessage("STATION_POINT_NOT_SET");
@@ -192,40 +187,38 @@ IvPFunction *BHV_StationKeep::onRunState()
     return(0);
   }
 
-  // Calculate and post the distance to station only after updateInfoIn()
-  // and updateCenter() are called and m_station_set is determined set.
-  m_dist_to_station  = hypot((m_osx-m_station_x), (m_osy-m_station_y));
-  postMessage("DIST_TO_STATION", m_dist_to_station);
-
   // If station-keeping at depth is enabled, determine current state.
-  updateStationDepthState();
+  updateHibernationState();
 
-  postMessage("STATION_DEPTH_STATE", toupper(m_station_depth_state));
+  postMessage("STATION_HIBERNATION", toupper(m_hibernation_state));
+  postMessage("STATION_TRANSIT", toupper(m_transit_state));
+  postMessage("FOOBAR", m_transit_state);
+
+  cout << "station_transit:[" << m_transit_state << "]" << endl;
 
   postStationMessage(true);
 
-  // If the station_depth_state is inactive it means that station-keeping
-  // at depth is enabled, but currently not warranting action.
-  if(m_station_depth_state == "inactive")
-    return(0);
-
-  // Action may also not be warranted due to being close enough to the 
-  // station-keep point.
-  if(m_dist_to_station <= m_inner_radius)
-    return(0);
-  
   double angle_to_station = relAng(m_osx, m_osy, 
 				   m_station_x, m_station_y);
 
   double desired_speed = 0;
-  if((m_dist_to_station > m_inner_radius) && (m_dist_to_station < m_outer_radius)) {
+  // If the hibernation_state is hibernating it means that
+  // station-keeping at depth is enabled, but currently not warranting
+  // action. Action may also not be warranted due to being close
+  // enough to the station-keep point.
+  if((m_hibernation_state == "hibernating") || 
+     (m_dist_to_station <= m_inner_radius)) {
+    desired_speed = 0;
+  }
+  else if((m_dist_to_station > m_inner_radius) && 
+	  (m_dist_to_station < m_outer_radius)) {
     double range  = m_outer_radius - m_inner_radius;
     double pct    = (m_dist_to_station - m_inner_radius) / range;
     desired_speed = pct * m_outer_speed;
   }
-
-  if(m_dist_to_station >= m_outer_radius)
+  else // m_dist_to_station >= m_outer_radius
     desired_speed = m_extra_speed;
+
 
   ZAIC_PEAK spd_zaic(m_domain, "speed");
   spd_zaic.setSummit(desired_speed);
@@ -265,6 +258,7 @@ bool BHV_StationKeep::updateInfoIn()
 {
   bool ok1, ok2;
   // ownship position in meters from some 0,0 reference point.
+  m_currtime = getBufferCurrTime();
   m_osx = getBufferDoubleVal("NAV_X", ok1);
   m_osy = getBufferDoubleVal("NAV_Y", ok2);
 
@@ -274,48 +268,58 @@ bool BHV_StationKeep::updateInfoIn()
     return(false);
   }
   
-  return(true);
-}
-
-
-
-//-----------------------------------------------------------
-// Procedure: updateCenter()
-
-bool BHV_StationKeep::updateCenter()
-{
-  if(!m_center_pending)
-    return(true);
-  
-  bool ok_update = false;
-
-  m_center_assign = tolower(m_center_assign);
-
-  if(m_center_assign == "present_position") {
-    m_station_x   = m_osx;
-    m_station_y   = m_osy;
-    m_station_set = true;
-    ok_update = true;
-  }
-  else {
-    vector<string> svector = parseString(m_center_assign, ',');
-    if(svector.size() == 2) {
-      svector[0] = stripBlankEnds(svector[0]);
-      svector[1] = stripBlankEnds(svector[1]);
-      if(isNumber(svector[0]) && isNumber(svector[1])) {
-	double xval = atof(svector[0].c_str());
-	double yval = atof(svector[1].c_str());
-	m_station_x   = xval;
-	m_station_y   = yval;
-	m_station_set = true;
-	ok_update     = true;
+  bool ok_center_update = true;
+  if(m_center_pending) {
+    m_center_assign = tolower(m_center_assign);
+    if(m_center_assign == "present_position") {
+      m_station_x   = m_osx;
+      m_station_y   = m_osy;
+      m_station_set = true;
+    }
+    else {
+      vector<string> svector = parseString(m_center_assign, ',');
+      if(svector.size() != 2)
+	ok_center_update = false;
+      else {
+	svector[0] = stripBlankEnds(svector[0]);
+	svector[1] = stripBlankEnds(svector[1]);
+	if(!isNumber(svector[0]) || !isNumber(svector[1]))
+	  ok_center_update = false;
+	else {
+	  double xval = atof(svector[0].c_str());
+	  double yval = atof(svector[1].c_str());
+	  m_station_x   = xval;
+	  m_station_y   = yval;
+	  m_station_set = true;
+	}
       }
     }
   }
-  
   m_center_assign = "";
   m_center_pending = false;
-  return(ok_update);
+  if(ok_center_update == false)
+    return(false);
+  
+  // Calculate the distance to the station-point
+  m_dist_to_station = hypot((m_osx-m_station_x), (m_osy-m_station_y));
+
+  // Update the distance and time histories
+  m_distance_history.push_front(m_dist_to_station);
+  m_distance_thistory.push_front(m_currtime);
+
+  // Remove all elements of the list(s) greater then 10 seconds old 
+  unsigned int i, amt_to_remove = 0;
+  list<double>::reverse_iterator p;
+  for(p=m_distance_thistory.rbegin(); p!=m_distance_thistory.rend(); p++) {
+    double ptime = *p;
+    if((m_currtime - ptime) > 10)
+      amt_to_remove++;
+  }
+  for(i=0; i<amt_to_remove; i++) {
+    m_distance_history.pop_back();
+    m_distance_thistory.pop_back();
+  }
+  return(true);
 }
 
 
@@ -345,23 +349,124 @@ void BHV_StationKeep::postStationMessage(bool post)
 
 
 //-----------------------------------------------------------
-// Procedure: updateStationDepthState
+// Procedure: updateHibernationState
 
-void BHV_StationKeep::updateStationDepthState()
+void BHV_StationKeep::updateHibernationState()
 {
-  if(m_station_depth_state == "disabled")
+  if(m_hibernation_state == "disabled")
     return;
   
-  if(m_station_depth_state == "inactive") {
-    if(m_dist_to_station > m_station_depth_radius)
-      m_station_depth_state = "active";
+  
+  if(m_transit_state == "pending_progress_start") {
+    if(historyShowsProgressStart())
+      m_transit_state = "noted_progress_start";
+  }
+  else if(m_transit_state == "noted_progress_start") {
+    if(historyShowsProgressEnd())
+      m_transit_state = "noted_progress_end";
+  }
+  
+  if(m_hibernation_state == "hibernating") {
+    if(m_dist_to_station > m_hibernation_radius) {
+      m_hibernation_state = "active";
+      m_distance_history.clear();
+      m_distance_thistory.clear();
+      m_transit_state = "pending_progress_start";
+    }
     return;
   }
 
-  if(m_station_depth_state == "active")
-    if(m_dist_to_station <= m_inner_radius)
-      m_station_depth_state = "inactive";
+  if(m_hibernation_state == "active") {
+    if((m_dist_to_station <= m_inner_radius) || 
+       (m_transit_state == "noted_progress_end")) {
+      m_hibernation_state = "hibernating";
+      m_transit_state = "hibernating";
+      m_distance_history.clear();
+      m_distance_thistory.clear();
+    }
+  }
   
+}
+
+
+//-----------------------------------------------------------
+// Procedure: historyShowsProgressStart
+//
+//     |                               
+//     |                               
+//     |                            o     Progress declared   
+// DIST| o                       o      due to 3+ consecutive    
+//     |    o                 o         closer distances
+//     |       o           o                  
+//     |          o  o  o                          
+//     |                               
+//     ----------------------------------------------------->
+//       0  1  2  3  4  5  6  7  8  9  
+//
+//     |                               
+//     |                   o              
+//     |                o     o           Progress declared   
+// DIST| o     o  o  o           o        due to overall closer
+//     |    o                       o     from beginning to end
+//     |                                     
+//     |                                          
+//     |                               
+//     ----------------------------------------------------->
+//       0  1  2  3  4  5  6  7  8  9  
+//
+
+bool BHV_StationKeep::historyShowsProgressStart()
+{
+  double oldest_dist = m_distance_history.back();
+  double newest_dist = m_distance_history.front();
+
+  double oldest_time = m_distance_thistory.back();
+  double newest_time = m_distance_thistory.front();
+
+  double delta_time = newest_time - oldest_time;
+  if(delta_time <= 5)
+    return(false);
+
+  double rate = (newest_dist - oldest_dist) / delta_time;
+  if(rate < 0)
+    return(true);
+
+  return(false);
+}
+
+
+//-----------------------------------------------------------
+// Procedure: historyShowsProgressEnd
+//
+//     |                               
+//     |                   o              
+//     |                o     o     o    Progress END declared due
+// DIST| o     o  o  o           o       to overall opening dist
+//     |    o                            from beginning to end
+//     |                                     
+//     |                                          
+//     |                               
+//     ----------------------------------------------------->
+//       0  1  2  3  4  5  6  7  8  9  
+//
+
+bool BHV_StationKeep::historyShowsProgressEnd()
+{
+  double oldest_dist = m_distance_history.back();
+  double newest_dist = m_distance_history.front();
+
+  double oldest_time = m_distance_thistory.back();
+  double newest_time = m_distance_thistory.front();
+
+  double delta_time = newest_time - oldest_time;
+  if(delta_time <= 5)
+    return(false);
+
+  double rate = (newest_dist - oldest_dist) / delta_time;
+  if(rate > -0.05)
+    return(true);
+
+  return(false);
 }
 
 

@@ -25,6 +25,7 @@
 
 #include <string>
 #include <vector>
+#include <list>
 #include "IvPBehavior.h"
 #include "XYSegList.h"
 
@@ -41,7 +42,9 @@ protected:
   bool         updateInfoIn();  
   bool         updateCenter();
   void         postStationMessage(bool);
-  void         updateStationDepthState();
+  void         updateHibernationState();
+  bool         historyShowsProgressStart();
+  bool         historyShowsProgressEnd();
 
 private:  // Configuration Parameters
   double      m_station_x;
@@ -61,18 +64,24 @@ private:  // Configuration Parameters
   // vehicle drift outside the outer radius.
   double      m_extra_speed;
 
-  // A UUV station-keeping may need to go to a depth in order to
-  // make progress toward the station point.
-  double      m_station_depth_radius;
-  double      m_station_depth;
+  // A UUV station-keeping may need to hibernate until it drifts
+  // beyond a radius. The hibernation allows it to float to zero
+  // depth. It may need to dive to depth when it is not hibernating.
+  double      m_hibernation_radius;
 
 private:  // State Variables
   bool         m_center_pending;
   std::string  m_center_assign;
   double       m_osx;
   double       m_osy;
+  double       m_currtime;
   double       m_dist_to_station;
-  std::string  m_station_depth_state;
+  double       m_dist_to_station_prev;
+  std::string  m_hibernation_state;
+  std::string  m_transit_state;
+
+  std::list<double> m_distance_history;    // distance
+  std::list<double> m_distance_thistory;   // time recorded
 };
 
 #endif
