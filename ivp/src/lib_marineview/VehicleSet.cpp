@@ -625,6 +625,14 @@ bool VehicleSet::updateVehiclePosition(const string& ais_report)
   bool b_vlen  = tokParse(ais_report, "LENGTH", ',', '=', vlen);
   bool b_vmode = tokParse(ais_report, "MODE", ',', '=', vmode);
 
+  vtype = tolower(vtype);
+
+  // Do some "Type-Fixing"
+  if(vtype == "uuv")
+    vtype = "auv";
+  if((vtype!="auv")&&(vtype!="ship")&&(vtype!="glider")&&(vtype!="kayak"))
+    vtype = "ship";
+
   if((!b_pos_x || !b_pos_y) && (!b_lat || !b_lon))
     return(false);
 
@@ -637,13 +645,13 @@ bool VehicleSet::updateVehiclePosition(const string& ais_report)
   if(((vtype == "auv") || (vtype == "glider")) && !b_depth)
     return(false);
   
-  if(!b_vlen) {
+  if(!b_vlen || (vlen==0)) {
     if((vtype=="auv") || (vtype=="kayak"))
       vlen = 3.0; // meters
     if(vtype=="glider")
       vlen = 2.0; // meters
     if(vtype=="ship")
-      vlen = 15; // meters
+      vlen = 10; // meters
   }
 
   // If there is no active vehicle declared - make the active vehicle

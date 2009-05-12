@@ -43,7 +43,6 @@ double g_auvBody[]=
    -5.0,    0.0
 };
 unsigned int g_auvBodySize = 16;
-double       g_auvScale    = 1.0;
 double       g_auvLength   = 100.0;
 
 double g_propUnit[]=
