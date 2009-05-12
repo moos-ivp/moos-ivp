@@ -23,7 +23,7 @@ ProcessConfig = ANTLER
   Run = pMarinePID	@ NewConsole = true
   Run = pMarineViewer	@ NewConsole = true
   //Run = pLogger         @ NewConsole = false
-  Run = pHelmIvP	@ NewConsole = false
+  Run = pHelmIvP	@ NewConsole = true
 }
 
 //------------------------------------------
@@ -131,6 +131,8 @@ ProcessConfig = pMarineViewer
   hash_shade           = 0.4
   hash_view            = true
 
+  scope  = STATION_HIBERNATION
+  scope  = STATION_TRANSIT
   scope  = VIEW_POINT
   scope  = VIEW_SEGLIST
   scope  = VIEW_POLYGON

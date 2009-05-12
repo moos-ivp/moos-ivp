@@ -61,12 +61,12 @@ Behavior = BHV_StationKeep
   condition  = MODE == STATION-KEEPING
   updates    = UPDATES_STATION
 
-       center_activate = true
-          inner_radius = 2.0
-          outer_radius = 15.0
-          outer_speed  = 1.5
-        transit_speed  = 2.5
-  station_depth_radius = 25
+     center_activate = true
+        inner_radius = 2.0
+        outer_radius = 15.0
+        outer_speed  = 1.5
+      transit_speed  = 2.5
+  hibernation_radius = 25
 }
 
 //----------------------------------------------
@@ -75,10 +75,11 @@ Behavior = BHV_ConstantDepth
   name       = station_depth
   pwt        = 100
   condition  = MODE == STATION-KEEPING
-  condition  = STATION_DEPTH_STATE = ACTIVE
+  condition  = STATION_HIBERNATION = ACTIVE
   updates    = UPDATES_STATION_DEPTH
 
        depth = 5
+    duration = no-time-limit
 }
 
 
