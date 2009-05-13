@@ -68,6 +68,7 @@ private:  // Configuration Parameters
   // beyond a radius. The hibernation allows it to float to zero
   // depth. It may need to dive to depth when it is not hibernating.
   double      m_hibernation_radius;
+  std::string m_pskmode_variable;
 
 private:  // State Variables
   bool         m_center_pending;

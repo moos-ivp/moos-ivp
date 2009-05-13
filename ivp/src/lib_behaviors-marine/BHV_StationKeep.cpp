@@ -56,6 +56,7 @@ BHV_StationKeep::BHV_StationKeep(IvPDomain gdomain) :
   m_extra_speed  = 2.5;
   m_center_activate = false;
   m_hibernation_radius = -1;   // -1 indicates not enabled
+  m_pskmode_variable = "PSKEEP_MODE";
 
   // Default values for State  Variables
   m_center_pending     = false;
@@ -85,7 +86,6 @@ bool BHV_StationKeep::setParam(string param, string val)
   if(param == "station_pt") {
     m_center_assign  = val;
     m_center_pending = true;
-    //return(updateCenter());
     return(true);
   }
 
@@ -109,6 +109,8 @@ bool BHV_StationKeep::setParam(string param, string val)
     if((val!="true")&&(val!="false"))
       return(false);
     m_center_activate = (val == "true");
+    m_center_pending = true;
+    m_center_assign  = "present_position";
     return(true);
   }  
 
@@ -163,13 +165,14 @@ void BHV_StationKeep::onIdleState()
   m_distance_thistory.clear();
   postStationMessage(false);
 
-  if(!m_center_activate)
-    return;
-
-  m_center_pending = true;
-  m_center_assign  = "present_position";
+  // If conigured for center_activation, declare the need for it
+  // here so when/if the behavior goes into the runstate, it will
+  // know that it needs to update the station-keep position.
+  if(m_center_activate) {
+    m_center_pending = true;
+    m_center_assign  = "present_position";
+  }
 }
-
 
 //-----------------------------------------------------------
 // Procedure: onRunState
@@ -190,17 +193,13 @@ IvPFunction *BHV_StationKeep::onRunState()
   // If station-keeping at depth is enabled, determine current state.
   updateHibernationState();
 
-  postMessage("STATION_HIBERNATION", toupper(m_hibernation_state));
-  postMessage("STATION_TRANSIT", toupper(m_transit_state));
-  postMessage("FOOBAR", m_transit_state);
-
-  cout << "station_transit:[" << m_transit_state << "]" << endl;
+  postMessage(m_pskmode_variable, toupper(m_hibernation_state));
 
   postStationMessage(true);
 
   double angle_to_station = relAng(m_osx, m_osy, 
 				   m_station_x, m_station_y);
-
+  
   double desired_speed = 0;
   // If the hibernation_state is hibernating it means that
   // station-keeping at depth is enabled, but currently not warranting
@@ -256,6 +255,7 @@ IvPFunction *BHV_StationKeep::onRunState()
 
 bool BHV_StationKeep::updateInfoIn()
 {
+  // PART 1: GET THE INFORMATION NEEDED FROM THE INFO_BUFFER
   bool ok1, ok2;
   // ownship position in meters from some 0,0 reference point.
   m_currtime = getBufferCurrTime();
@@ -267,7 +267,8 @@ bool BHV_StationKeep::updateInfoIn()
     postEMessage("No ownship X/Y info in info_buffer.");
     return(false);
   }
-  
+
+  // PART 2: UPDATE THE STATION-KEEP POINT IF NECESSARY
   bool ok_center_update = true;
   if(m_center_pending) {
     m_center_assign = tolower(m_center_assign);
@@ -275,6 +276,8 @@ bool BHV_StationKeep::updateInfoIn()
       m_station_x   = m_osx;
       m_station_y   = m_osy;
       m_station_set = true;
+      cout << "New center position: " << m_station_x << ", " 
+	   << m_station_y << endl;
     }
     else {
       vector<string> svector = parseString(m_center_assign, ',');
@@ -294,12 +297,14 @@ bool BHV_StationKeep::updateInfoIn()
 	}
       }
     }
+    m_center_assign = "";
+    m_center_pending = false;
   }
-  m_center_assign = "";
-  m_center_pending = false;
   if(ok_center_update == false)
     return(false);
   
+
+  // PART 3: CALCULATE DISTANCE TO STATION-PT AND UPDATE HISTORIES
   // Calculate the distance to the station-point
   m_dist_to_station = hypot((m_osx-m_station_x), (m_osy-m_station_y));
 
@@ -319,9 +324,11 @@ bool BHV_StationKeep::updateInfoIn()
     m_distance_history.pop_back();
     m_distance_thistory.pop_back();
   }
+
+
+
   return(true);
 }
-
 
 //-----------------------------------------------------------
 // Procedure: postStationMessage()
@@ -391,17 +398,6 @@ void BHV_StationKeep::updateHibernationState()
 
 //-----------------------------------------------------------
 // Procedure: historyShowsProgressStart
-//
-//     |                               
-//     |                               
-//     |                            o     Progress declared   
-// DIST| o                       o      due to 3+ consecutive    
-//     |    o                 o         closer distances
-//     |       o           o                  
-//     |          o  o  o                          
-//     |                               
-//     ----------------------------------------------------->
-//       0  1  2  3  4  5  6  7  8  9  
 //
 //     |                               
 //     |                   o              
