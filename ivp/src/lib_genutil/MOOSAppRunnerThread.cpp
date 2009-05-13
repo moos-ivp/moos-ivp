@@ -4,20 +4,21 @@
 
 //==============================================================================
 
-MOOSAppRunnerThread::MOOSAppRunnerThread(CMOOSApp *app, char *name, char *mission_file)
+MOOSAppRunnerThread::MOOSAppRunnerThread(CMOOSApp *app, const char *name, const char *mission_file)
+   : m_name(name), m_mission_file(mission_file)
 {
+   
+   
   this->m_pApp = app;
-  this->m_name = name;
-  this->m_mission_file = mission_file;
-
+  
   void * pMoosThreadParams = static_cast<void*>(this);
 
   this->m_thread = new CMOOSThread(thread_func, pMoosThreadParams);
   if (this->m_thread->Start()) {
-    MOOSTrace("%s thread spawned\n", m_name);
+    MOOSTrace("%s thread spawned\n", m_name.c_str());
   }
   else {
-    MOOSTrace("failed to start %s thread\n", m_name);
+    MOOSTrace("failed to start %s thread\n", m_name.c_str());
   }
 }
 
@@ -42,8 +43,8 @@ bool MOOSAppRunnerThread::thread_func(void *pThreadData)
     reinterpret_cast<MOOSAppRunnerThread*>(pThreadData);
 
   CMOOSApp *app      = params->m_pApp;
-  char *name         = params->m_name;
-  char *mission_file = params->m_mission_file;
+  const char *name         = params->m_name.c_str();
+  const char *mission_file = params->m_mission_file.c_str();
   
   MOOSTrace("starting %s thread\n", name);
   app->Run(name, mission_file);

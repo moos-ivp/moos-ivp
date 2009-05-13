@@ -3,6 +3,7 @@
 
 #include "MOOSApp.h"
 #include "MOOSThread.h"
+#include <string>
 
 /**
 Creates a thread in which to run the specified CMOOSApp, and starts that thread.
@@ -19,7 +20,7 @@ class MOOSAppRunnerThread {
     @param name
     @param mission_file
     */
-    MOOSAppRunnerThread(CMOOSApp *app, char *name, char *mission_file);
+    MOOSAppRunnerThread(CMOOSApp *app, const char *name, const char *mission_file);
 
     /**
     At present this is no-op.
@@ -33,8 +34,8 @@ class MOOSAppRunnerThread {
   
   private:
     CMOOSApp * m_pApp;
-    char * m_name;
-    char * m_mission_file;
+    const std::string m_name;
+    const std::string m_mission_file;
     CMOOSThread * m_thread;
     static bool thread_func(void *pThreadData);
 };
