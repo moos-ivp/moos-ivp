@@ -6,6 +6,7 @@
 # by Oxford. This script is used simply to facilitate the 
 # switching off of modules that are not typically built in 
 # local users of MOOS-IvP at MIT. 
+#
 
 INVOCATION_ABS_DIR="`pwd`"
 
@@ -35,6 +36,53 @@ fi
 mkdir -p "${TARGET_ABS_DIR}"
 cd "${TARGET_ABS_DIR}"
 
+
+echo "MOOS_BUILD_GRAPHICAL_TOOLS='"${MOOS_BUILD_GRAPHICAL_TOOLS}"'"
+
+case "${MOOS_BUILD_GRAPHICAL_TOOLS}" in
+   'ON'|'YES'|'TRUE'|'' )
+      MOOS_BUILD_GRAPHICAL_TOOLS=ON
+      ;;
+   'OFF'|'NO'|'FALSE' )
+      MOOS_BUILD_GRAPHICAL_TOOLS=OFF
+      ;;
+   *)
+      echo 'Invalid value for the environment variable "MOOS_BUILD_GRAPHICAL_TOOLS"'
+      echo '  If you set it at all, please set it to "ON" or "OFF"'
+      return 1
+      ;;
+esac
+
+echo ""
+echo "Environment variable 'MOOS_BUILD_GRAPHICAL_TOOLS' = '"${MOOS_BUILD_GRAPHICAL_TOOLS}"'"
+echo "   So will invoke cmake with -DBUILD_GRAPHICAL_TOOLS="${MOOS_BUILD_GRAPHICAL_TOOLS}" argument."
+
+case "${MOOS_BUILD_MATLAB_TOOLS}" in
+   'ON'|'YES'|'TRUE'|'')
+      MOOS_BUILD_MATLAB_TOOLS=ON
+      ;;
+   'OFF'|'NO'|'FALSE')
+      MOOS_BUILD_MATLAB_TOOLS=OFF
+      ;;
+   *)
+      echo 'Invalid value for the environment variable "MOOS_BUILD_MATLAB_TOOLS"'
+      echo '  If you set it at all, please set it to "ON" or "OFF"'
+      return 1
+      ;;
+esac
+
+echo ""
+echo "Environment variable '${MOOS_BUILD_MATLAB_TOOLS}' = '"${MOOS_BUILD_MATLAB_TOOLS}"'"
+   echo "   So will invoke cmake with -DBUILD_MATLAB_TOOLS=${MOOS_BUILD_MATLAB_TOOLS}"
+
+echo ""
+echo "Environment variable MOOS_MATLAB_DIR = '"${MOOS_MATLAB_DIR}"'"
+echo "   So will invoke cmake with -DMATLAB_DIR=${MOOS_MATLAB_DIR}"
+
+echo ""
+echo "Invoking cmake..."
+echo ""
+
 cmake                                           \
    -DFLTK_DIR=/usr/lib                          \
    -DFLTK_INCLUDE_DIR=/usr/include              \
@@ -47,14 +95,18 @@ cmake                                           \
    -DBUILD_NAVIGATION=OFF                       \
    -DBUILD_HELM=OFF                             \
    -DBUILD_NEWMAT=OFF                           \
-   -DBUILD_GRAPHICAL_TOOLS=ON                  \
-   -DBUILD_MATLAB_TOOLS=ON                     \
-   -DMATLAB_DIR=/usr/local/pkg/matlab/matlab-2007b         \
+   -DBUILD_GRAPHICAL_TOOLS=${MOOS_BUILD_GRAPHICAL_TOOLS} \
+   -DBUILD_MATLAB_TOOLS=${MOOS_BUILD_MATLAB_TOOLS} \
+   -DMATLAB_DIR=${MOOS_MATLAB_DIR}          \
    -DBUILD_LAND_INSTRUMENTS=OFF                 \
    -DBUILD_OCEAN_INSTRUMENTS=OFF                \
    -DBUILD_UMVS=ON                              \
    -DBUILD_UPB=ON                               \
    "${SRC_ABS_DIR}"
+
+echo ""
+echo "Invoking make..."
+echo ""
 
 make
 

@@ -31,7 +31,22 @@ fi
 mkdir -p "${TARGET_ABS_DIR}"
 cd "${TARGET_ABS_DIR}"
 
-cmake "${SRC_ABS_DIR}"
+echo ""
+echo "The IVP_CMAKE_FLAGS environment variable = '${IVP_CMAKE_FLAGS}'"
+echo "   That variable's value(s) will be added as command-line arguments"
+echo "   to our invocation of cmake."
+
+echo ""
+echo "Invoking cmake..."
+echo ""
+
+cmake "${IVP_CMAKE_FLAGS}" "${SRC_ABS_DIR}"
+
+
+echo ""
+echo "Invoking make..."
+echo ""
+
 make
 
 cd ${INVOCATION_ABS_DIR}
