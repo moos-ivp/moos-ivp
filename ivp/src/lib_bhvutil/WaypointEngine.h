@@ -70,7 +70,9 @@ class WaypointEngine {
   int       m_prev_ix;
   int       m_curr_ix;
 
-  unsigned int  m_repeat;
+  // m_repeat needs to be signed int, since -1 is significant
+  int       m_repeat; 
+
   unsigned int  m_capture_hits;
   unsigned int  m_nonmono_hits;
 };

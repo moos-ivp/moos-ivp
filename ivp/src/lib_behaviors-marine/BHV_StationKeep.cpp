@@ -55,17 +55,16 @@ BHV_StationKeep::BHV_StationKeep(IvPDomain gdomain) :
   m_outer_speed  = 1.2;
   m_extra_speed  = 2.5;
   m_center_activate = false;
-  m_hibernation_radius = -1;   // -1 indicates not enabled
-  m_pskmode_variable = "PSKEEP_MODE";
+  m_pskeep_radius = -1;   // -1 indicates not enabled
+  m_pskeep_variable = "PSKEEP_MODE";
 
   // Default values for State  Variables
   m_center_pending     = false;
   m_center_assign      = "";
   m_station_set        = false;
-  m_hibernation_state  = "disabled";
+  m_pskeep_state       = "disabled";
   m_transit_state      = "disabled";
   m_dist_to_station    = -1;
-  m_dist_to_station_prev = -1;
 
   // Declare information needed by this behavior
   addInfoVars("NAV_X, NAV_Y");
@@ -91,16 +90,16 @@ bool BHV_StationKeep::setParam(string param, string val)
 
   else if(param == "hibernation_radius") {
     if((tolower(val) == "off") || (val == "-1")) {
-      m_hibernation_state = "disabled";
-      m_hibernation_radius = -1;
+      m_pskeep_state = "disabled";
+      m_pskeep_radius = -1;
       return(true);
     }
     double dval = atof(val.c_str());
     if((dval <= 0) || (!isNumber(val)))
       return(false);
-    m_hibernation_radius = dval;
-    if(m_hibernation_state == "disabled")
-      m_hibernation_state = "hibernating";
+    m_pskeep_radius = dval;
+    if(m_pskeep_state == "disabled")
+      m_pskeep_state = "hibernating";
     return(true);
   }
 
@@ -189,11 +188,14 @@ IvPFunction *BHV_StationKeep::onRunState()
     postStationMessage(false);
     return(0);
   }
+  
+  if(m_inner_radius > m_outer_radius)
+    m_outer_radius = m_inner_radius;
 
   // If station-keeping at depth is enabled, determine current state.
   updateHibernationState();
 
-  postMessage(m_pskmode_variable, toupper(m_hibernation_state));
+  postMessage(m_pskeep_variable, toupper(m_pskeep_state));
 
   postStationMessage(true);
 
@@ -201,16 +203,17 @@ IvPFunction *BHV_StationKeep::onRunState()
 				   m_station_x, m_station_y);
   
   double desired_speed = 0;
-  // If the hibernation_state is hibernating it means that
-  // station-keeping at depth is enabled, but currently not warranting
-  // action. Action may also not be warranted due to being close
-  // enough to the station-keep point.
-  if((m_hibernation_state == "hibernating") || 
+  // If the pskeepp_state is hibernating it means that station-keeping
+  // at depth is enabled, but currently not warranting action. Action
+  // may also not be warranted due to being close enough to the
+  // station-keep point.
+  if((m_pskeep_state == "hibernating") || 
      (m_dist_to_station <= m_inner_radius)) {
     desired_speed = 0;
   }
   else if((m_dist_to_station > m_inner_radius) && 
 	  (m_dist_to_station < m_outer_radius)) {
+    // Note: range cannot be zero due to above if-condition
     double range  = m_outer_radius - m_inner_radius;
     double pct    = (m_dist_to_station - m_inner_radius) / range;
     desired_speed = pct * m_outer_speed;
@@ -360,7 +363,7 @@ void BHV_StationKeep::postStationMessage(bool post)
 
 void BHV_StationKeep::updateHibernationState()
 {
-  if(m_hibernation_state == "disabled")
+  if(m_pskeep_state == "disabled")
     return;
   
   
@@ -373,9 +376,9 @@ void BHV_StationKeep::updateHibernationState()
       m_transit_state = "noted_progress_end";
   }
   
-  if(m_hibernation_state == "hibernating") {
-    if(m_dist_to_station > m_hibernation_radius) {
-      m_hibernation_state = "active";
+  if(m_pskeep_state == "hibernating") {
+    if(m_dist_to_station > m_pskeep_radius) {
+      m_pskeep_state = "seeking_station";
       m_distance_history.clear();
       m_distance_thistory.clear();
       m_transit_state = "pending_progress_start";
@@ -383,10 +386,10 @@ void BHV_StationKeep::updateHibernationState()
     return;
   }
 
-  if(m_hibernation_state == "active") {
+  if(m_pskeep_state == "seeking_station") {
     if((m_dist_to_station <= m_inner_radius) || 
        (m_transit_state == "noted_progress_end")) {
-      m_hibernation_state = "hibernating";
+      m_pskeep_state = "hibernating";
       m_transit_state = "hibernating";
       m_distance_history.clear();
       m_distance_thistory.clear();

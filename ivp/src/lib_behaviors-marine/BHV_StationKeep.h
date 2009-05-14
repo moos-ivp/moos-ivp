@@ -67,8 +67,8 @@ private:  // Configuration Parameters
   // A UUV station-keeping may need to hibernate until it drifts
   // beyond a radius. The hibernation allows it to float to zero
   // depth. It may need to dive to depth when it is not hibernating.
-  double      m_hibernation_radius;
-  std::string m_pskmode_variable;
+  double      m_pskeep_radius;
+  std::string m_pskeep_variable;
 
 private:  // State Variables
   bool         m_center_pending;
@@ -77,8 +77,7 @@ private:  // State Variables
   double       m_osy;
   double       m_currtime;
   double       m_dist_to_station;
-  double       m_dist_to_station_prev;
-  std::string  m_hibernation_state;
+  std::string  m_pskeep_state;
   std::string  m_transit_state;
 
   std::list<double> m_distance_history;    // distance

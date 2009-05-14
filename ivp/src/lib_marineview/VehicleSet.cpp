@@ -630,6 +630,8 @@ bool VehicleSet::updateVehiclePosition(const string& ais_report)
   // Do some "Type-Fixing"
   if(vtype == "uuv")
     vtype = "auv";
+  if((vtype == "slocum") || (vtype == "seaglider") || (vtype == "ant"))
+    vtype = "glider";
   if((vtype!="auv")&&(vtype!="ship")&&(vtype!="glider")&&(vtype!="kayak"))
     vtype = "ship";
 

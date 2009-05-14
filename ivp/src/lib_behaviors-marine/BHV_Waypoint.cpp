@@ -257,17 +257,20 @@ bool BHV_Waypoint::updateInfoIn()
 bool BHV_Waypoint::setNextWaypoint()
 {
   string feedback_msg = m_waypoint_engine.setNextWaypoint(m_osx, m_osy);
-  feedback_msg = ("behavior-name=" + m_descriptor + "," + feedback_msg);
   
   if((feedback_msg=="completed") || (feedback_msg=="cycled")) {
-    if(tolower(m_var_report) != "silent")
-      postMessage((m_var_report + m_var_suffix), feedback_msg);
-
-    if(feedback_msg == "completed")
+    if(tolower(m_var_report) != "silent") {
+      string feedback_msg_aug = "behavior-name=" + m_descriptor + ",";
+      feedback_msg_aug += feedback_msg;
+      postMessage((m_var_report + m_var_suffix), feedback_msg_aug);
+    }
+    
+    cout << "feedback_msg: " << feedback_msg << endl;
+    if(feedback_msg == "completed") {
       m_perpetual = false;    
-    setComplete();
-
-    return(false);
+      setComplete();
+      return(false);
+    }
   }
   
   m_ptx = m_waypoint_engine.getPointX();

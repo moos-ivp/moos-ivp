@@ -238,14 +238,14 @@ string WaypointEngine::setNextWaypoint(double os_x, double os_y)
       m_curr_ix = 0;
       m_current_cpa = -1;
       if(m_perpetual == true) {
-	if(m_repeat != -1) {
-	  m_repeat--;
-	  if(m_repeat <= 0) 
-	    m_complete = true;
-	}
+	m_repeat--;
+	if(m_repeat <= 0) 
+	  m_complete = true;
       }
       else
 	m_complete = true;
+
+      cout << "m_repeat: " << m_repeat << endl;
 
       if(m_complete)
 	return("completed");

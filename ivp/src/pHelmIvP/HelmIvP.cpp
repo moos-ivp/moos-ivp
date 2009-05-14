@@ -353,6 +353,7 @@ void HelmIvP::postBehaviorMessages()
       string sdata = msg.get_sdata();
       double ddata = msg.get_ddata();
       string mkey  = msg.get_key();
+      bool   msg_is_string = msg.is_string();
 
       bool key_change = true;
       bool key_repeat = detectRepeatOnKey(var);
@@ -392,7 +393,7 @@ void HelmIvP::postBehaviorMessages()
       }
       // Otherwise just post to the DB directly.
       else {
-	if(sdata != "") {
+	if(msg_is_string) {
 	  m_info_buffer->setValue(var, sdata);
 	  if(key_change || key_repeat) {
 	    m_Comms.Notify(var, sdata);
