@@ -451,7 +451,7 @@ bool TransponderAIS::handleIncomingNaFConMessage(const string& rMsg)
 	if(!MOOSValFromString(navDepth, rMsg, "SensorDepth"))
 	  return MOOSFail("No SensorDepth\n");      
 	
-	if(!MOOSValFromString(navTime, rMsg, "ContactTimestamp"))
+	if(!MOOSValFromString(navTime, rMsg, "Timestamp"))
 	  return MOOSFail("No ContactTimestamp\n");      
 	
 	// Use previous speed for CONTACT_REPORT
@@ -479,7 +479,7 @@ bool TransponderAIS::handleIncomingNaFConMessage(const string& rMsg)
 	if (!MOOSValFromString(navSpeed, rMsg, "TrackSpeed"))
 	  return MOOSFail("No TrackSpeed\n");
 	
-	if(!MOOSValFromString(navTime, rMsg, "TrackTimestamp"))
+	if(!MOOSValFromString(navTime, rMsg, "Timestamp"))
 	  return MOOSFail("No TrackTimestamp\n");      
 	
 	string trackID;
