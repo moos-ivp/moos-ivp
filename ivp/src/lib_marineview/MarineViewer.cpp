@@ -1695,7 +1695,7 @@ void MarineViewer::drawPoint(const XYPoint& point, double vertex_size,
     strncpy(buff, plabel.c_str(), slen);
     buff[slen] = '\0';
     gl_draw(buff, slen);
-    delete(buff);
+    delete [] buff;
   }
 
   glFlush();
