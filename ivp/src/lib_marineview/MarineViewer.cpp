@@ -71,6 +71,13 @@ MarineViewer::MarineViewer(int x, int y, int w, int h, const char *l)
 }
 
 //-------------------------------------------------------------
+
+MarineViewer::~MarineViewer()
+{
+   delete [] m_textures;
+}
+
+//-------------------------------------------------------------
 // Procedure: setParam
 
 bool MarineViewer::setParam(string param, string value)
@@ -661,7 +668,7 @@ void MarineViewer::drawCommonVehicle(const string& vname,
     strncpy(buff, vname.c_str(), slen);
     buff[slen] = '\0';
     gl_draw(buff, slen);
-    delete(buff);
+    delete [] buff;
   }
 
   glPopMatrix();

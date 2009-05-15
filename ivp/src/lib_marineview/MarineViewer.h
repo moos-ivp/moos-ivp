@@ -46,7 +46,7 @@ class MarineViewer : public Fl_Gl_Window
 {
  public:
   MarineViewer(int x,int y,int w,int h,const char *l=0);
-  ~MarineViewer() {};
+  ~MarineViewer();
   
   // Pure virtuals that need to be defined
   virtual void  draw();
