@@ -655,6 +655,7 @@ string stripComment(const string& str, const string& cstr)
   buff[posn]  = '\0';
 
   string return_string = buff;
+  delete(buff);
   return(return_string);
 }
     
