@@ -51,15 +51,17 @@ for OpenGL support.  The following is our best guess:
 
 (2) libx11-dev
 
-(3) libtiff
+(3) libxft-dev
+
+(4) libtiff
 Website: http://libtiff.org
 Ubuntu package: libtiff-dev
 
-(4) CMake (at least version 2.4)
+(5) CMake (at least version 2.4)
 Website: cmake.org
 Ubuntu package: cmake
 
-(5) The Gnu C++ compiler (recommend version >= 4.0)
+(6) The Gnu C++ compiler (recommend version >= 4.0)
 Website: http://gcc.gnu.org/
 Ubuntu package: g++
 
