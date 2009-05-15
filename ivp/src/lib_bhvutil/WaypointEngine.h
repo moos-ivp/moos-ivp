@@ -47,6 +47,7 @@ class WaypointEngine {
   double getPointY()      {return(m_seglist.get_vy(m_curr_ix));};
   bool   isComplete()     {return(m_complete);};
   int    getCurrIndex()   {return(m_curr_ix);};
+  int    getCycleCount()  {return(m_cycle_count);};
   int    getCaptureHits() {return(m_capture_hits);};
   int    getNonmonoHits() {return(m_nonmono_hits);};
   int    getTotalHits()   {return(m_capture_hits + m_nonmono_hits);};
@@ -71,6 +72,7 @@ class WaypointEngine {
   bool      m_complete;
   int       m_prev_ix;
   int       m_curr_ix;
+  int       m_cycle_count;
 
   bool          m_repeats_endless;
   unsigned int  m_repeats_allowed;

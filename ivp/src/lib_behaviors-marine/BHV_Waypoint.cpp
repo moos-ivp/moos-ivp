@@ -60,6 +60,7 @@ BHV_Waypoint::BHV_Waypoint(IvPDomain gdomain) :
 
   m_var_report      = "WPT_STAT";
   m_var_index       = "WPT_INDEX";
+  m_var_cyindex     = "CYCLE_INDEX";
   m_var_suffix      = "";
 
   // The completed and perpetual vars are initialized in superclass
@@ -106,7 +107,7 @@ bool BHV_Waypoint::setParam(string param, string val)
     m_cruise_speed = dval;
     return(true);
   }
-  else if(param == "wpt_status") {
+  else if((param == "wpt_status") || (param == "wpt_status_var")) {
     if(strContainsWhite(val) || (val == ""))
       return(false);
     m_var_report = val;
@@ -114,7 +115,7 @@ bool BHV_Waypoint::setParam(string param, string val)
       m_var_report = "silent";
     return(true);
   }
-  else if(param == "wpt_index") {
+  else if((param == "wpt_index") || (param == "wpt_index_var")) {
     if(strContainsWhite(val) || (val == ""))
       return(false);
     m_var_index = val;
@@ -122,10 +123,29 @@ bool BHV_Waypoint::setParam(string param, string val)
       m_var_index = "silent";
     return(true);
   }
+  else if(param == "cycle_index_var") {
+    if(strContainsWhite(val) || (val == ""))
+      return(false);
+    m_var_cyindex = val;
+    if(tolower(m_var_cyindex)=="silent")
+      m_var_index = "silent";
+    return(true);
+  }
   else if(param == "post_suffix") {
     if(strContainsWhite(val))
       return(false);
+    if((val.length() > 0) && (val.at(0) != '_'))
+      val = '_' + val;
     m_var_suffix = val;
+    return(true);
+  }
+  else if(param == "cycleflag") {
+    string variable = stripBlankEnds(biteString(val, '='));
+    string value    = stripBlankEnds(val);
+    if((variable=="") || (value==""))
+      return(false);
+    VarDataPair pair(variable, value, "auto");
+    m_cycle_flags.push_back(pair);
     return(true);
   }
   else if(param == "ipf-type") {
@@ -205,7 +225,25 @@ IvPFunction *BHV_Waypoint::onRunState()
   }
 
   // Set m_ptx, m_pty, m_trackpt_x, m_trackpt_y;
-  if(!setNextWaypoint()) {
+  
+  bool next_point = setNextWaypoint();
+
+  // We want to report the updated cycle info regardless of the 
+  // above result. Even if the next_point is false and there are
+  // no more points, this means the cyindex is probably incremented.
+  if(m_var_cyindex != "silent") {
+    int waypt_cycles  = m_waypoint_engine.getCycleCount();
+    postMessage((m_var_cyindex + m_var_suffix), waypt_cycles);
+  }
+
+  // Only publish these reports if we have another point to go.
+  if(next_point) {
+    postStatusReport();
+    postViewablePoint();
+    postViewableSegList();
+  }
+  // Otherwise "erase" the next waypoint marker
+  else {
     postErasablePoint();
     return(0);
   }
@@ -214,9 +252,6 @@ IvPFunction *BHV_Waypoint::onRunState()
   if(ipf)
     ipf->setPWT(m_priority_wt);
 
-  postViewablePoint();
-  postViewableSegList();
-  postStatusReport();
 
   return(ipf);
 }
@@ -265,6 +300,8 @@ bool BHV_Waypoint::setNextWaypoint()
       postMessage((m_var_report + m_var_suffix), feedback_msg_aug);
     }
     
+    postCycleFlags();
+
     if(feedback_msg == "completed") {
       setComplete();
       if(m_perpetual)
@@ -370,15 +407,17 @@ IvPFunction *BHV_Waypoint::buildOF(string method)
 void BHV_Waypoint::postStatusReport()
 {
   int    current_waypt = m_waypoint_engine.getCurrIndex();
+  int    waypt_cycles  = m_waypoint_engine.getCycleCount();
   double dist_meters   = hypot((m_osx - m_ptx), (m_osy - m_pty));
   double eta_seconds   = dist_meters / m_osv;
   
   string stat = "vname=" + m_us_name + ",";
   stat += "behavior-name=" + m_descriptor + ",";
   stat += "index=" + intToString(current_waypt)   + ",";
+  stat += "cycles=" + intToString(waypt_cycles)   + ",";
   stat += "dist="  + doubleToString(dist_meters, 0)  + ",";
   stat += "eta="   + doubleToString(eta_seconds, 0);
-  
+
   if(m_var_report != "silent")
     postMessage((m_var_report + m_var_suffix), stat);
   if(m_var_index != "silent")
@@ -450,4 +489,22 @@ void BHV_Waypoint::postErasablePoint()
   ptmsg += ",type=waypoint, source=" + source_tag;
   ptmsg += ",x=0, y=0, z=0, active=false, size=0";
   postMessage("VIEW_POINT", ptmsg);
+}
+
+
+//-----------------------------------------------------------
+// Procedure: postCycleFlags()
+
+void BHV_Waypoint::postCycleFlags()
+{
+  int vsize = m_cycle_flags.size();
+  for(int i=0; i<vsize; i++) {
+    string var   = m_cycle_flags[i].get_var();
+    string sdata = m_cycle_flags[i].get_sdata();
+    double ddata = m_cycle_flags[i].get_ddata();
+    if(m_cycle_flags[i].is_string())
+      postRepeatableMessage(var, sdata);
+    else
+      postRepeatableMessage(var, ddata);
+  }
 }

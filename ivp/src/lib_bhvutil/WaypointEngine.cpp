@@ -46,10 +46,12 @@ WaypointEngine::WaypointEngine()
   m_current_cpa     = -1;
   m_capture_hits    = 0;
   m_nonmono_hits    = 0;
+  m_cycle_count     = 0;
 
   m_repeats_allowed = 0;
   m_repeats_sofar   = 0;
   m_repeats_endless = false;
+  cout << "In WaypointEngine Constructor!!!!!" << endl;
 }
 
 //-----------------------------------------------------------
@@ -251,6 +253,7 @@ string WaypointEngine::setNextWaypoint(double os_x, double os_y)
   if(point_advance) {
     m_curr_ix++;
     if(m_curr_ix >= (int)(vsize)) {
+      m_cycle_count++;
       m_curr_ix = 0;
       m_current_cpa = -1;
       if(m_perpetual == true) {

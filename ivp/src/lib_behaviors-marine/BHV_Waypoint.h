@@ -46,6 +46,7 @@ protected:
   void         postErasableSegList();
   void         postViewablePoint();
   void         postErasablePoint();
+  void         postCycleFlags();
 
 protected: 
   WaypointEngine m_waypoint_engine;
@@ -58,7 +59,10 @@ protected: // configuration parameters
 
   std::string m_var_report;
   std::string m_var_index;
+  std::string m_var_cyindex;
   std::string m_var_suffix;
+
+  std::vector<VarDataPair> m_cycle_flags;
 
 
 protected: // intermediate or object global variables.

@@ -710,7 +710,8 @@ void IvPBehavior::postFlags(const string& str)
     string var   = flags[i].get_var();
     string sdata = flags[i].get_sdata();
     double ddata = flags[i].get_ddata();
-    if(sdata != "") {
+    //if(sdata != "") {
+    if(flags[i].is_string()) {
       if(endflags) 
 	postRepeatableMessage(var, sdata);
       else
