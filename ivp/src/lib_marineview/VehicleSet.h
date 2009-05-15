@@ -91,7 +91,6 @@ class VehicleSet
   double m_vehicles_shape_scale;  
   double m_trails_length;         
   double m_trails_point_size;           
-  double m_trails_gap;            
   bool   m_trails_viewable;      
   bool   m_trails_connect_viewable;
   bool   m_vehicles_viewable; 

@@ -231,19 +231,12 @@ void PMV_Viewer::drawPoints(CPList &cps, int trail_length)
   vector<double> xvect;
   vector<double> yvect;
 
-  int trails_gap = (int)(m_vehiset.getDoubleInfo("trails_gap"));
-  if(trails_gap <= 0)
-    trails_gap = 1;
-
-
   list<ColoredPoint>::reverse_iterator p;
   int i=0;
   for(p=cps.rbegin(); (p!=cps.rend() && (i<trail_length)); p++) {
-    if((i % trails_gap) == 0) {
-      if(p->isValid()) {
-	xvect.push_back(p->m_x);
-	yvect.push_back(p->m_y);
-      }
+    if(p->isValid()) {
+      xvect.push_back(p->m_x);
+      yvect.push_back(p->m_y);
     }
     i++;
   }

@@ -59,8 +59,6 @@ MarineVehiGUI::MarineVehiGUI(int g_w, int g_h, const char *g_l)
   mbar->add("Vehicles/Trails/trails_point_size = smaller", '[', (Fl_Callback*)MarineVehiGUI::cb_AltTrailSize, (void*)-1, 0);
   mbar->add("Vehicles/Trails/trails_length = longer", ')', (Fl_Callback*)MarineVehiGUI::cb_AltTrailLength, (void*)+1, 0);
   mbar->add("Vehicles/Trails/trails_length = shorter", '(', (Fl_Callback*)MarineVehiGUI::cb_AltTrailLength, (void*)-1, 0);
-  //mbar->add("Vehicles/Trails/trails_gap_size = larger",  '}', (Fl_Callback*)MarineVehiGUI::cb_AltTrailGap, (void*)1,  0);
-  //mbar->add("Vehicles/Trails/trails_gap_size = smaller",  '{', (Fl_Callback*)MarineVehiGUI::cb_AltTrailGap, (void*)-1, FL_MENU_DIVIDER);
 
   mbar->add("Vehicles/ActiveColor/active_vcolor=red", 0, (Fl_Callback*)MarineVehiGUI::cb_MVG_SetGeoAttr, (void*)700, 0);
   mbar->add("Vehicles/ActiveColor/active_vcolor=crimson", 0, (Fl_Callback*)MarineVehiGUI::cb_MVG_SetGeoAttr, (void*)701, 0);
@@ -179,15 +177,6 @@ inline void MarineVehiGUI::cb_AltTrailLength_i(int delta) {
 }
 void MarineVehiGUI::cb_AltTrailLength(Fl_Widget* o, int v) {
   ((MarineVehiGUI*)(o->parent()->user_data()))->cb_AltTrailLength_i(v);
-}
-
-//----------------------------------------- Alt Trail Gap
-inline void MarineVehiGUI::cb_AltTrailGap_i(int delta) {
-  cmviewer->setParam("trails_gap_size", (delta));
-  cmviewer->redraw();
-}
-void MarineVehiGUI::cb_AltTrailGap(Fl_Widget* o, int v) {
-  ((MarineVehiGUI*)(o->parent()->user_data()))->cb_AltTrailGap_i(v);
 }
 
 //----------------------------------------- MVG_SetGeoAttr
