@@ -38,7 +38,9 @@ class WaypointEngine {
   void   setCurrIndex(unsigned int);
   void   setPerpetual(bool v) {m_perpetual = v;};
   void   setCenter(double, double);
-  
+  void   resetForNewTraversal();
+  void   setRepeatsEndless(bool v) {m_repeats_endless=v;};
+
   double getPointX(unsigned int);
   double getPointY(unsigned int);  
   double getPointX()      {return(m_seglist.get_vx(m_curr_ix));};
@@ -70,8 +72,10 @@ class WaypointEngine {
   int       m_prev_ix;
   int       m_curr_ix;
 
-  // m_repeat needs to be signed int, since -1 is significant
-  int       m_repeat; 
+  bool          m_repeats_endless;
+  unsigned int  m_repeats_allowed;
+  unsigned int  m_repeats_sofar;
+
 
   unsigned int  m_capture_hits;
   unsigned int  m_nonmono_hits;

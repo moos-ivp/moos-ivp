@@ -40,13 +40,16 @@ WaypointEngine::WaypointEngine()
   m_prev_ix         = -1;
   m_reverse         = false;
   m_perpetual       = false;
-  m_repeat          = -1;
   m_capture_radius  = 0;
   m_nm_radius       = 0;
   m_complete        = true;
   m_current_cpa     = -1;
   m_capture_hits    = 0;
   m_nonmono_hits    = 0;
+
+  m_repeats_allowed = 0;
+  m_repeats_sofar   = 0;
+  m_repeats_endless = false;
 }
 
 //-----------------------------------------------------------
@@ -95,6 +98,7 @@ void WaypointEngine::setReverse(bool g_val)
   // This setting should reset the curr_ix to zero should this
   // function call come in-progress.
   m_curr_ix  = 0;
+  m_prev_ix  = -1;
   m_complete = false;
 }
 
@@ -104,7 +108,7 @@ void WaypointEngine::setReverse(bool g_val)
 void WaypointEngine::setRepeat(unsigned int g_repeat)
 {
   if(g_repeat >= 0)
-    m_repeat = g_repeat;
+    m_repeats_allowed = g_repeat;
 }
 
 //-----------------------------------------------------------
@@ -189,6 +193,18 @@ double WaypointEngine::getPointY(unsigned int i)
 }
 
 //-----------------------------------------------------------
+// Procedure: resetForNewTraversal
+
+void WaypointEngine::resetForNewTraversal()
+{
+  m_repeats_sofar = 0;
+  m_current_cpa   = -1;
+  m_curr_ix       = 0;
+  m_prev_ix       = -1;
+  m_complete      = false;
+}
+
+//-----------------------------------------------------------
 // Procedure: setNextWaypoint
 //   Returns: true if waypoint index is advanced on this iteration
 //            false if not advanced (or not advanced through error)
@@ -238,14 +254,12 @@ string WaypointEngine::setNextWaypoint(double os_x, double os_y)
       m_curr_ix = 0;
       m_current_cpa = -1;
       if(m_perpetual == true) {
-	m_repeat--;
-	if(m_repeat <= 0) 
+	m_repeats_sofar++;
+	if(!m_repeats_endless && (m_repeats_sofar > m_repeats_allowed))
 	  m_complete = true;
       }
       else
 	m_complete = true;
-
-      cout << "m_repeat: " << m_repeat << endl;
 
       if(m_complete)
 	return("completed");

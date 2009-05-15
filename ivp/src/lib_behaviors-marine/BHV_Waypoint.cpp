@@ -265,10 +265,10 @@ bool BHV_Waypoint::setNextWaypoint()
       postMessage((m_var_report + m_var_suffix), feedback_msg_aug);
     }
     
-    cout << "feedback_msg: " << feedback_msg << endl;
     if(feedback_msg == "completed") {
-      m_perpetual = false;    
       setComplete();
+      if(m_perpetual)
+	m_waypoint_engine.resetForNewTraversal();
       return(false);
     }
   }
