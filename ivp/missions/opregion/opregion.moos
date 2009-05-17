@@ -80,7 +80,7 @@ ProcessConfig = pHelmIvP
   CommsTick  = 4
 
   Behaviors  = opregion.bhv
-  Verbose    = true
+  Verbose    = terse
   Domain     = course:0:359:360
   Domain     = speed:0:4:21
 
@@ -143,10 +143,8 @@ ProcessConfig = pMarineViewer
   BUTTON_ONE   = DEPLOY # DEPLOY=true
   BUTTON_ONE   = MOOS_MANUAL_OVERIDE=false # RETURN=false
   BUTTON_TWO   = RETURN # RETURN=true
-  BUTTON_THREE = CWISE # UP_LOITERA=clockwise=true
-  BUTTON_THREE = UP_LOITERB=clockwise=true
-  BUTTON_FOUR  = CCWISE # UP_LOITERA=clockwise=false
-  BUTTON_FOUR  = UP_LOITERB=clockwise=false
+  BUTTON_THREE = SAFETY-YES # SAFETY=true
+  BUTTON_FOUR  = SAFETY-NO  # SAFETY=false
 }
 
 //------------------------------------------

@@ -1,5 +1,6 @@
 initialize   DEPLOY = false
 initialize   RETURN = false
+initialize   SAFETY = true
  
 //----------------------------------------------
 Behavior = BHV_Loiter
@@ -62,7 +63,8 @@ Behavior = BHV_OpRegion
   pwt        = 100
   condition  = SAFETY = true
  
-             poylgon = label,SAFETY:0,-100:0,-200:150,-200:150,-100
+             polygon = 0,-50:0,-150:150,-150:150,-50
+//             polygon = pts="0,-100:0,-200:150,-200:150,-100"
   trigger_entry_time = 1
   trigger_exit_time  = 1
 }
