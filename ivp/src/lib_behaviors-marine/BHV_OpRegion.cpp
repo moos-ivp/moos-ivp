@@ -37,46 +37,46 @@ using namespace std;
 
 BHV_OpRegion::BHV_OpRegion(IvPDomain gdomain) : IvPBehavior(gdomain)
 {
-  this->setParam("descriptor", "(d)bhv_opregion");
-  max_depth    = 0;
-  min_altitude = 0;
-  max_time     = 0;
+  this->setParam("descriptor", "bhv_opregion");
+  m_max_depth    = 0;
+  m_min_altitude = 0;
+  m_max_time     = 0;
 
   // Keep track of whether the vehicle was in the polygon on the
   // previous invocation of the behavior. Initially assume false.
-  previously_in_poly = false;
+  m_previously_in_poly = false;
 
   // Keep a flag indicating whether this is the first time the
   // behavior is invoked.
-  first_time   = true;
+  m_first_time   = true;
 
   // Time stamps for calculating how long the vehicle has been
   // inside or out of the polygon.
-  previous_time = 0;
-  current_time  = 0;
-  elapsed_time  = 0;
-  start_time    = 0;
-  delta_time    = 0;
-  secs_in_poly  = 0;
-  secs_out_poly = 0;
+  m_previous_time = 0;
+  m_current_time  = 0;
+  m_elapsed_time  = 0;
+  m_start_time    = 0;
+  m_delta_time    = 0;
+  m_secs_in_poly  = 0;
+  m_secs_out_poly = 0;
   
   // Declare whether the polygon containment condition is effective
   // immediately (default) or triggered only when the vehicle has
   // first entered the polygon region. This is useful if the vehicle
   // is being launched from a dock or area which is outside the 
   // safe zone
-  trigger_on_poly_entry = false;
+  m_trigger_on_poly_entry = false;
 
   // Maintain a flag indicating whether the vehicle has entered
   // the polygon region. This value is only relevant if the 
   // trigger_on_poly_entry flag is set to be true.
-  poly_entry_made = false;
+  m_poly_entry_made = false;
 
   // Declare the amount of time required for the vehicle to be 
   // within the polygon region before the polygon containment 
   // condition is enforced. This value is only relevant if the 
   // trigger_on_poly_entry flag is set to be true.
-  trigger_entry_time = 1.0;
+  m_trigger_entry_time = 1.0;
 
   // Declare the amount of time required for the vehicle to be 
   // outside the polygon region before the polygon containment 
@@ -84,7 +84,7 @@ BHV_OpRegion::BHV_OpRegion(IvPDomain gdomain) : IvPBehavior(gdomain)
   // to be non-zero may be useful if the position sensor (GPS) 
   // occasionally has a whacky single position reading outside
   // the polygon region.
-  trigger_exit_time = 0.5;
+  m_trigger_exit_time = 0.5;
 
   // Declare the variables we will need from the info_buffer
   addInfoVars("NAV_X, NAV_Y, NAV_HEADING");
@@ -109,47 +109,56 @@ bool BHV_OpRegion::setParam(string param, string val)
     XYPolygon new_poly = stringToPoly(val);
     if(!new_poly.is_convex())  // Should be convex - false otherwise
       return(false);
-    polygon = new_poly;
+    m_polygon = new_poly;
+    m_polygons.push_back(new_poly);
     return(true);
   }
   else if(param == "max_depth") {
     double dval = atof(val.c_str());
     if((dval < 0) || (!isNumber(val)))
       return(false);
-    max_depth = dval;
+    m_max_depth = dval;
     return(true);
   }
   else if(param == "min_altitude") {
     double dval = atof(val.c_str());
     if((dval < 0) || (!isNumber(val)))
       return(false);
-    min_altitude = dval;
+    m_min_altitude = dval;
     return(true);
   }
   else if(param == "max_time") {
     double dval = atof(val.c_str());
     if((dval < 0) || (!isNumber(val)))
       return(false);
-    max_time = dval;
+    m_max_time = dval;
     return(true);
   }
   else if(param == "trigger_entry_time") {
     double dval = atof(val.c_str());
     if((dval < 0) || (!isNumber(val)))
       return(false);
-    trigger_entry_time = dval;
-    if(trigger_entry_time > 0)
-      trigger_on_poly_entry = true;
+    m_trigger_entry_time = dval;
+    if(m_trigger_entry_time > 0)
+      m_trigger_on_poly_entry = true;
     return(true);
   }
   else if(param == "trigger_exit_time") {
     double dval = atof(val.c_str());
     if((dval < 0) || (!isNumber(val)))
       return(false);
-    trigger_exit_time = dval;
+    m_trigger_exit_time = dval;
     return(true);
   }
   return(false);
+}
+
+//-----------------------------------------------------------
+// Procedure: onIdleState
+
+void BHV_OpRegion::onIdleState() 
+{
+  postErasablePolygon();
 }
 
 //-----------------------------------------------------------
@@ -170,6 +179,7 @@ IvPFunction *BHV_OpRegion::onRunState()
   altitudeVerify();
   timeoutVerify();
   
+  postViewablePolygon();
   return(0);
 }
 
@@ -191,26 +201,31 @@ void BHV_OpRegion::polygonVerify()
     postEMessage(msg);
     return;
   }
-  
-  bool contained = polygon.contains(osX, osY);
+
+  bool contained = true;
+  unsigned int i, vsize = m_polygons.size();
+  for(i=0; i<vsize; i++) {
+    if(!m_polygons[i].contains(osX, osY))
+      contained = false;
+  }
 
   // Determine the accumulated time within the polygon
   if(contained) {
-    secs_out_poly = 0;
-    if(previously_in_poly)
-      secs_in_poly += delta_time;
+    m_secs_out_poly = 0;
+    if(m_previously_in_poly)
+      m_secs_in_poly += m_delta_time;
     else
-      secs_in_poly = 0;
-    previously_in_poly = true;
+      m_secs_in_poly = 0;
+    m_previously_in_poly = true;
   }
   // Determine the accumulated time outside the polygon
   if(!contained) {
-    secs_in_poly = 0;
-    if(!previously_in_poly)
-      secs_out_poly += delta_time;
+    m_secs_in_poly = 0;
+    if(!m_previously_in_poly)
+      m_secs_out_poly += m_delta_time;
     else
-      secs_out_poly = 0;
-    previously_in_poly = false;
+      m_secs_out_poly = 0;
+    m_previously_in_poly = false;
   }
 
   //cout << "---------------------------" << endl;
@@ -225,28 +240,28 @@ void BHV_OpRegion::polygonVerify()
   //         in the poly long enough to be considered an 
   //         official entry into the polygon.
   if(contained) {
-    if(secs_in_poly >= trigger_entry_time)
-      poly_entry_made = true;
+    if(m_secs_in_poly >= m_trigger_entry_time)
+      m_poly_entry_made = true;
     return;
   }
 
   // Case 2: Vehicle not in polygon and no prior polygon
   //         entry is required for triggering emergency flag.
   //         Return based on accumulated time outside of poly.
-  if(!contained && !trigger_on_poly_entry)
-    if(secs_out_poly < trigger_exit_time)
+  if(!contained && !m_trigger_on_poly_entry)
+    if(m_secs_out_poly < m_trigger_exit_time)
       return;
 
   // Case 3: Vehicle not in polygon, poly entry is needed to
   //         trigger emergency, but no entry has been made yet.
-  if(!contained && trigger_on_poly_entry && !poly_entry_made)
+  if(!contained && m_trigger_on_poly_entry && !m_poly_entry_made)
     return;
 
   // Case 4: Vehicle not in polygon, poly entry is needed to
   //         trigger emergency, and previous entry detected.
   //         Return based on accumulated time outside of poly.
-  if(!contained && trigger_on_poly_entry && poly_entry_made)
-    if(secs_out_poly < trigger_exit_time)
+  if(!contained && m_trigger_on_poly_entry && m_poly_entry_made)
+    if(m_secs_out_poly < m_trigger_exit_time)
       return;
 
 
@@ -341,7 +356,7 @@ void BHV_OpRegion::postPolyStatus()
   
   // Calculate the time and the distance to the perimeter along the
   // current heading (CH).
-  double trajectory_perim_dist = polygon.dist_to_poly(osX, osY, osHDG);
+  double trajectory_perim_dist = m_polygon.dist_to_poly(osX, osY, osHDG);
   double trajectory_perim_eta = 0;
   if(osSPD > 0)
     trajectory_perim_eta = trajectory_perim_dist / osSPD;
@@ -354,7 +369,7 @@ void BHV_OpRegion::postPolyStatus()
   postIntMessage("OPREG_TRAJECTORY_PERIM_ETA",  trajectory_perim_eta);
   
   // Calculate the absolute (ABS) distance and ETA to the perimeter.
-  double absolute_perim_dist = polygon.dist_to_poly(osX, osY);
+  double absolute_perim_dist = m_polygon.dist_to_poly(osX, osY);
   double absolute_perim_eta  = 0;
   if(osTopSpeed > 0)
     absolute_perim_eta  = absolute_perim_dist / osTopSpeed;
@@ -366,8 +381,8 @@ void BHV_OpRegion::postPolyStatus()
     postIntMessage("OPREG_ABSOLUTE_PERIM_DIST", absolute_perim_dist);
   postIntMessage("OPREG_ABSOLUTE_PERIM_ETA",  absolute_perim_eta);
   
-  if(max_time > 0) {
-    double remaining_time = max_time - elapsed_time;
+  if(m_max_time > 0) {
+    double remaining_time = m_max_time - m_elapsed_time;
     if(remaining_time < 0)
       remaining_time = 0;
     postMessage("OPREG_TIME_REMAINING", remaining_time);
@@ -383,7 +398,7 @@ void BHV_OpRegion::postPolyStatus()
 void BHV_OpRegion::depthVerify()
 {
   // If no max_depth specified, return with no error message posted.
-  if(max_depth <= 0)
+  if(m_max_depth <= 0)
     return;
 
   bool ok;
@@ -397,8 +412,9 @@ void BHV_OpRegion::depthVerify()
     return;
   }
 
-  if(depth > max_depth) {
-    string emsg = "OpRegion Depth failure: max:" + doubleToString(max_depth);
+  if(depth > m_max_depth) {
+    string emsg = "OpRegion Depth failure: max:";
+    emsg += doubleToString(m_max_depth);
     emsg += " detected:" + doubleToString(depth);
     postEMessage(emsg);
   }
@@ -413,7 +429,7 @@ void BHV_OpRegion::depthVerify()
 void BHV_OpRegion::altitudeVerify()
 {
   // If no min_altitude specified, return with no error message posted.
-  if(min_altitude <= 0)
+  if(m_min_altitude <= 0)
     return;
 
   bool ok;
@@ -425,9 +441,9 @@ void BHV_OpRegion::altitudeVerify()
     return;
   }
 
-  if(curr_altitude < min_altitude) {
+  if(curr_altitude < m_min_altitude) {
     string emsg = "OpRegion Altitude failure: Min-Altitude:";
-    emsg += doubleToString(min_altitude);
+    emsg += doubleToString(m_min_altitude);
     emsg += "  Detected Altitude: ";
     emsg += doubleToString(curr_altitude);
     postEMessage(emsg);
@@ -443,14 +459,14 @@ void BHV_OpRegion::altitudeVerify()
 void BHV_OpRegion::timeoutVerify()
 {
   // If no max_time specified, return with no error message posted.
-  if(max_time <= 0)
+  if(m_max_time <= 0)
     return;
 
-  if(elapsed_time > max_time) {
+  if(m_elapsed_time > m_max_time) {
     string emsg = "OpRegion timeout failure: MaxTime:";
-    emsg += doubleToString(max_time);
+    emsg += doubleToString(m_max_time);
     emsg += "  Elapsed Time: ";
-    emsg += doubleToString(elapsed_time);
+    emsg += doubleToString(m_elapsed_time);
     postEMessage(emsg);
   }
 }
@@ -462,26 +478,50 @@ void BHV_OpRegion::timeoutVerify()
 void BHV_OpRegion::setTimeStamps()
 {
   // Grab current time from Info Buffer
-  current_time = getBufferCurrTime();
+  m_current_time = getBufferCurrTime();
   
   //cout << "Current Time -    " << delta_time << endl;
   //cout << "Previous Time -    " << delta_time << endl;
 
   // Calculate the Delta time since this behavior was invoked.
   // The delta time is 0 on first invocation.
-  if(first_time) {
-    start_time = current_time;
-    delta_time = 0;
-    first_time = false;
+  if(m_first_time) {
+    m_start_time = m_current_time;
+    m_delta_time = 0;
+    m_first_time = false;
   }
   else
-    delta_time = current_time - previous_time;
+    m_delta_time = m_current_time - m_previous_time;
 
   // No longer need to access previous time. Set it now for
   // access on the next invocation of this behavior.
-  previous_time = current_time;
+  m_previous_time = m_current_time;
 
-  elapsed_time = current_time - start_time;
+  m_elapsed_time = m_current_time - m_start_time;
 }
 
+
+//-----------------------------------------------------------
+// Procedure: postViewablePolygon()
+//      Note: Even if the polygon is posted on each iteration, the
+//            helm will filter out unnecessary duplicate posts.
+
+void BHV_OpRegion::postViewablePolygon()
+{
+  string poly_spec = m_polygon.get_spec();
+  postMessage("VIEW_POLYGON", poly_spec);
+}
+
+//-----------------------------------------------------------
+// Procedure: postErasablePolygon()
+//      Note: Even if the polygon is posted on each iteration, the
+//            helm will filter out unnecessary duplicate posts.
+
+void BHV_OpRegion::postErasablePolygon()
+{
+  XYPolygon poly_duplicate = m_polygon;
+  poly_duplicate.set_active(false);
+  string poly_spec = poly_duplicate.get_spec();
+  postMessage("VIEW_POLYGON", poly_spec);
+}
 

@@ -31,8 +31,9 @@ class BHV_OpRegion : public IvPBehavior {
   BHV_OpRegion(IvPDomain);
   ~BHV_OpRegion() {};
   
-  IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
+  void         onIdleState();
+  IvPFunction* onRunState();
 
  protected:
   void      polygonVerify();
@@ -41,29 +42,33 @@ class BHV_OpRegion : public IvPBehavior {
   void      altitudeVerify();
   void      timeoutVerify();
   void      setTimeStamps();
+  void      postViewablePolygon();
+  void      postErasablePolygon();
 
- protected:
-  XYPolygon polygon;
-  double    max_depth;
-  double    min_altitude;
-  double    max_time;
+ protected: // Parameters
+  std::vector<XYPolygon> m_polygons;
+  XYPolygon m_polygon;
+  double    m_max_depth;
+  double    m_min_altitude;
+  double    m_max_time;
+  double    m_trigger_entry_time;
+  double    m_trigger_exit_time;
 
-  bool      trigger_on_poly_entry;
-  double    trigger_entry_time;
-  double    trigger_exit_time;
-  bool      poly_entry_made;
+  bool      m_trigger_on_poly_entry;
 
-  double    previous_time;  // Seconds
-  double    current_time;
-  double    delta_time;
-  double    start_time;
-  double    elapsed_time;
+ protected: // State Variables
+  bool      m_poly_entry_made;
+  double    m_previous_time;  // Seconds
+  double    m_current_time;
+  double    m_delta_time;
+  double    m_start_time;
+  double    m_elapsed_time;
 
-  double    secs_in_poly;
-  double    secs_out_poly;
+  double    m_secs_in_poly;
+  double    m_secs_out_poly;
 
-  bool      first_time;
-  bool      previously_in_poly;
+  bool      m_first_time;
+  bool      m_previously_in_poly;
 };
 #endif
 

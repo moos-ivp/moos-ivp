@@ -39,6 +39,7 @@
 #include "ZAIC_PEAK.h"
 #include "OF_Coupler.h"
 #include "XYBuildUtils.h"
+#include "XYFormatUtilsPoly.h"
 
 using namespace std;
 
@@ -93,6 +94,7 @@ bool BHV_Waypoint::setParam(string param, string val)
     XYSegList new_seglist = stringToSegList(val);
     if(new_seglist.size() == 0) {
       XYPolygon new_poly = stringToPoly(val);
+      //XYPolygon new_poly = stringToPoly(val);
       new_seglist = new_poly.exportSegList(0,0);
     }
     if(new_seglist.size() == 0)

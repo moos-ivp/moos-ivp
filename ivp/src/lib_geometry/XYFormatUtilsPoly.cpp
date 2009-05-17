@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <vector>
+#include <iostream>
 #include "XYFormatUtilsPoly.h"
 #include "MBUtils.h"
 #include "AngleUtils.h"
@@ -57,9 +58,11 @@ using namespace std;
 // format=radial # pts=12 # radius=40 # label=val # source=val # active=val
 
 
-XYPolygon stringToPoly(string str)
+XYPolygon string2Poly(string str)
 {
   XYPolygon null_poly;
+
+  cout << "STARTING_STRING1: " << str << endl;
 
   str = stripBlankEnds(str);
   vector<string> svector = parseStringQ(str, '#');
@@ -74,6 +77,9 @@ XYPolygon stringToPoly(string str)
   }
   format=tolower(format);
   
+  cout << "POLYGON FORMAT: " << format << endl;
+  cout << "STARTING_STRING2: " << str << endl;
+
   if((format == "default") || (format == "points"))
     return(stringPoints2Poly(str));
   else if(format == "radial")
@@ -636,17 +642,22 @@ XYPolygon stringRadial2Poly(string str)
   int    pts;
   bool   active = true;
   
+  cout << "Handling string: " << endl;
+  cout << "   [" << str << "]" << endl;
+
   str = stripBlankEnds(str);
   vector<string> mvector = parseStringQ(str, '#');
   unsigned int i, vsize = mvector.size();
 
+  cout << "components: " << vsize << endl;
+  
   for(i=0; i<vsize; i++) {
     string param = tolower(stripBlankEnds(biteString(mvector[i], '=')));
     string value = stripBlankEnds(mvector[i]);
-    if(param == "format") {
-      if(value != "radial")
-	return(null_poly);
-    }
+    cout << "param=[" << param << "]" << endl;
+    cout << "value=[" << value << "]" << endl;
+    if((param == "format") && (value != "radial"))
+      return(null_poly);
     else if((param == "x") && (isNumber(value))) {
       xpos_set = true;
       xpos = atof(value.c_str());
@@ -685,8 +696,10 @@ XYPolygon stringRadial2Poly(string str)
       active = (tolower(value) == "true");
   }
 
-  if(!xpos_set || !ypos_set || !radius_set || !pts_set)
+  if(!xpos_set || !ypos_set || !radius_set || !pts_set) {
+    cout << "SOMETHING IS NOT SET" << endl;
     return(null_poly);
+  }
   
   XYPolygon new_poly;
   new_poly.set_active(active);
