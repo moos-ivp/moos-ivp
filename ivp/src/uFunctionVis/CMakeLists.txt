@@ -30,8 +30,7 @@ TARGET_LINK_LIBRARIES(uFunctionVis
    genutil
    m
    fltk 
-   fltk_gl
-   GL)
+   fltk_gl)
 
 # http://developer.apple.com/qa/qa2007/qa1567.html
 IF (${APPLE})
