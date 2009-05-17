@@ -36,15 +36,16 @@ fi
 mkdir -p "${TARGET_ABS_DIR}"
 cd "${TARGET_ABS_DIR}"
 
+################################################################################
 
 echo "MOOS_BUILD_GRAPHICAL_TOOLS='"${MOOS_BUILD_GRAPHICAL_TOOLS}"'"
 
 case "${MOOS_BUILD_GRAPHICAL_TOOLS}" in
    'ON'|'YES'|'TRUE'|'' )
-      MOOS_BUILD_GRAPHICAL_TOOLS=ON
+      CLEANED_MOOS_BUILD_GRAPHICAL_TOOLS=ON
       ;;
    'OFF'|'NO'|'FALSE' )
-      MOOS_BUILD_GRAPHICAL_TOOLS=OFF
+      CLEANED_MOOS_BUILD_GRAPHICAL_TOOLS=OFF
       ;;
    *)
       echo 'Invalid value for the environment variable "MOOS_BUILD_GRAPHICAL_TOOLS"'
@@ -55,14 +56,16 @@ esac
 
 echo ""
 echo "Environment variable 'MOOS_BUILD_GRAPHICAL_TOOLS' = '"${MOOS_BUILD_GRAPHICAL_TOOLS}"'"
-echo "   So will invoke cmake with -DBUILD_GRAPHICAL_TOOLS="${MOOS_BUILD_GRAPHICAL_TOOLS}" argument."
+echo "   So will invoke cmake with -DBUILD_GRAPHICAL_TOOLS="${CLEANED_MOOS_BUILD_GRAPHICAL_TOOLS}" argument."
+
+################################################################################
 
 case "${MOOS_BUILD_MATLAB_TOOLS}" in
-   'ON'|'YES'|'TRUE'|'')
-      MOOS_BUILD_MATLAB_TOOLS=ON
+   'ON'|'YES'|'TRUE')
+      CLEANED_MOOS_BUILD_MATLAB_TOOLS=ON
       ;;
-   'OFF'|'NO'|'FALSE')
-      MOOS_BUILD_MATLAB_TOOLS=OFF
+   'OFF'|'NO'|'FALSE'|'')
+      CLEANED_MOOS_BUILD_MATLAB_TOOLS=OFF
       ;;
    *)
       echo 'Invalid value for the environment variable "MOOS_BUILD_MATLAB_TOOLS"'
@@ -72,12 +75,16 @@ case "${MOOS_BUILD_MATLAB_TOOLS}" in
 esac
 
 echo ""
-echo "Environment variable '${MOOS_BUILD_MATLAB_TOOLS}' = '"${MOOS_BUILD_MATLAB_TOOLS}"'"
-   echo "   So will invoke cmake with -DBUILD_MATLAB_TOOLS=${MOOS_BUILD_MATLAB_TOOLS}"
+echo "Environment variable 'MOOS_BUILD_MATLAB_TOOLS' = '"${MOOS_BUILD_MATLAB_TOOLS}"'"
+   echo "   So will invoke cmake with -DBUILD_MATLAB_TOOLS=${CLEANED_MOOS_BUILD_MATLAB_TOOLS}"
+
+################################################################################
 
 echo ""
 echo "Environment variable MOOS_MATLAB_DIR = '"${MOOS_MATLAB_DIR}"'"
 echo "   So will invoke cmake with -DMATLAB_DIR=${MOOS_MATLAB_DIR}"
+
+################################################################################
 
 echo ""
 echo "Invoking cmake..."
@@ -95,8 +102,8 @@ cmake                                           \
    -DBUILD_NAVIGATION=OFF                       \
    -DBUILD_HELM=OFF                             \
    -DBUILD_NEWMAT=OFF                           \
-   -DBUILD_GRAPHICAL_TOOLS=${MOOS_BUILD_GRAPHICAL_TOOLS} \
-   -DBUILD_MATLAB_TOOLS=${MOOS_BUILD_MATLAB_TOOLS} \
+   -DBUILD_GRAPHICAL_TOOLS=${CLEANED_MOOS_BUILD_GRAPHICAL_TOOLS} \
+   -DBUILD_MATLAB_TOOLS=${CLEANED_MOOS_BUILD_MATLAB_TOOLS} \
    -DMATLAB_DIR=${MOOS_MATLAB_DIR}          \
    -DBUILD_LAND_INSTRUMENTS=OFF                 \
    -DBUILD_OCEAN_INSTRUMENTS=OFF                \

@@ -3,8 +3,6 @@
 # Author(s):                                Mike Benjamin
 #--------------------------------------------------------
 
-IF(BUILD_GUIS)
-
    SET(SRC
       GEO_GUI.cpp
       GeoViewer.cpp
@@ -36,4 +34,3 @@ IF(BUILD_GUIS)
 		  )
 	  ENDIF (${APPLE})
 
-ENDIF(BUILD_GUIS)

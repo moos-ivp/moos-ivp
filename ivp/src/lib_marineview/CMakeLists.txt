@@ -20,10 +20,6 @@ ADD_LIBRARY(marineview ${SRC})
 
 ADD_DEFINITIONS(-DDATA_DIR=\\"${IVP_DATA_DIR}\\")
 
-#SET(Z  ${CXXFLAGS}\ -F/System/Library/Frameworks/OpenGL.framework)
-#message("Z = #${Z}#")
-
-
 # http://developer.apple.com/qa/qa2007/qa1567.html
 IF (${APPLE})
  

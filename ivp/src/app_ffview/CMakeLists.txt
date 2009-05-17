@@ -3,8 +3,6 @@
 # Author(s):                                Mike Benjamin
 #--------------------------------------------------------
 
-IF(BUILD_GUIS)
-
    SET(SRC
       AOF_Cache.cpp
       GUI.cpp
@@ -49,4 +47,3 @@ IF(BUILD_GUIS)
 		  )
     ENDIF (${APPLE})
 	  
-ENDIF(BUILD_GUIS)
