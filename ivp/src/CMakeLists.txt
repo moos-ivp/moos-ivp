@@ -1,11 +1,8 @@
-# CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
-PROJECT(IVP)
+# We require CMake 2.6 or higher because there are some syntatic constructs
+# we use that aren't supported in earlier versions of CMake. -CJC
+CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
-if(COMMAND cmake_policy)
-  cmake_policy(SET CMP0003 OLD)
-  cmake_policy(SET CMP0005 OLD)
-endif(COMMAND cmake_policy)
+PROJECT(IVP)
 
 # Force -fPIC because gcc complains when we don't use it with x86_64 code.
 # Note sure why: -fPIC should only be needed for shared objects, and
