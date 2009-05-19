@@ -51,7 +51,6 @@ WaypointEngine::WaypointEngine()
   m_repeats_allowed = 0;
   m_repeats_sofar   = 0;
   m_repeats_endless = false;
-  cout << "In WaypointEngine Constructor!!!!!" << endl;
 }
 
 //-----------------------------------------------------------
