@@ -107,10 +107,6 @@ bool IvPBehavior::setParam(string g_param, string g_val)
     m_descriptor = g_val;
     return(true);
   }
-  else if(g_param == "duration_status") {
-    m_duration_status = g_val;
-    return(true);
-  }
   else if((g_param == "pwt") || 
 	  (g_param == "priwt") || 
 	  (g_param == "priority")) {   // Alt way of setting priority
@@ -128,6 +124,10 @@ bool IvPBehavior::setParam(string g_param, string g_val)
     if(ok)
       m_logic_conditions.push_back(new_condition);
     return(ok);
+  }
+  else if(g_param == "duration_status") {
+    m_duration_status = g_val;
+    return(true);
   }
   else if(g_param == "duration_reset") {
     string var = stripBlankEnds(biteString(g_val, '='));
