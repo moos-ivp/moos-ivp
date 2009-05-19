@@ -20,7 +20,7 @@ SET(SRC
 # code, such as lib_marineview.  I really dislike this approach because it's 
 # very brittle w.r.t. anything getting moved around, or if you use the code on
 # a different system than that on which it was compiled. -CJC
-GET_FILENAME_COMPONENT(IVP_DATA_DIR ../data ABSOLUTE)
+GET_FILENAME_COMPONENT(IVP_DATA_DIR ../../data ABSOLUTE)
 
 SET(ESCAPED_DATA_DIR \\"${IVP_DATA_DIR}\\")
 SET(CMAKE_CXX_FLAGS "-DDATA_DIR=${ESCAPED_DATA_DIR} ${CMAKE_CXX_FLAGS}")
