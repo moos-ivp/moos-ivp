@@ -14,7 +14,8 @@ SET(SRC
    XYHexagon.cpp         XYPolygon.cpp          
    XYSegList.cpp         XYSquare.cpp         
    XYArtifactGrid.cpp    XYPoint.cpp
-   XYSegment.cpp         XYFormatUtilsPoly.cpp
+   XYFormatUtilsSegl.cpp XYFormatUtilsPoly.cpp
+   XYSegment.cpp         XYPatternBlock.cpp
 )
 
 ADD_LIBRARY(geometry ${SRC})
