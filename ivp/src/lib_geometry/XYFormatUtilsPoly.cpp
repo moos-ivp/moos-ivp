@@ -62,10 +62,8 @@ XYPolygon string2Poly(string str)
 {
   XYPolygon null_poly;
 
-  cout << "STARTING_STRING1: " << str << endl;
-
   str = stripBlankEnds(str);
-  vector<string> svector = parseStringQ(str, '#');
+  vector<string> svector = parseStringQ(str, ',');
   unsigned int i, vsize = svector.size();
   string format = "default";
   for(i=0; i<vsize; i++) {
@@ -126,37 +124,36 @@ XYPolygon stringEllipse2Poly(string str)
   int    pts;
    
   str = stripBlankEnds(str);
-  vector<string> mvector = parseStringQ(str, '#');
+  vector<string> mvector = parseStringQ(str, ',');
   unsigned int i, vsize = mvector.size();
 
   for(i=0; i<vsize; i++) {
     string param = tolower(stripBlankEnds(biteString(mvector[i], '=')));
     string value = stripBlankEnds(mvector[i]);
+    double dval  = atof(value.c_str());
     if(param == "format") {
       if(value != "ellipse")
 	return(null_poly);
     }
     else if((param == "x") && (isNumber(value))) {
       xpos_set = true;
-      xpos = atof(value.c_str());
+      xpos = dval;
     }
     else if((param == "y") && (isNumber(value))) {
       ypos_set = true;
-      ypos = atof(value.c_str());
+      ypos = dval;
     }
     else if((param == "z") && (isNumber(value))) {
       zval_set = true;
-      zval = atof(value.c_str());
+      zval = dval;
     }
     else if((param == "major") && (isNumber(value))) {
-      double dval = atof(value.c_str());
       if(dval > 0) {
 	major_set = true;
 	major = dval;
       }
     }
     else if((param == "minor") && (isNumber(value))) {
-      double dval = atof(value.c_str());
       if(dval > 0) {
 	minor_set = true;
 	minor = dval;
@@ -164,11 +161,11 @@ XYPolygon stringEllipse2Poly(string str)
     }
     else if((param == "rads") && (isNumber(value))) {
       radians_set = true;
-      radians = atof(value.c_str());
+      radians = dval;
     }
     else if((param == "degs") && (isNumber(value))) {
       degrees_set = true;
-      degrees = atof(value.c_str());
+      degrees = dval;
     }
     else if((param == "pts") && (isNumber(value))) {
       int ival = atoi(value.c_str());
@@ -178,7 +175,6 @@ XYPolygon stringEllipse2Poly(string str)
       }
     }
     else if((param == "snap") && (isNumber(value))) {
-      double dval = atof(value.c_str());
       if(dval >= 0)
 	snap = dval;
     }
@@ -253,7 +249,7 @@ XYPolygon stringPieWedge2Poly(string str)
   int    pts=0;
   
   str = stripBlankEnds(str);
-  vector<string> mvector = parseStringQ(str, '#');
+  vector<string> mvector = parseStringQ(str, ',');
   unsigned int i, vsize = mvector.size();
 
   for(i=0; i<vsize; i++) {
@@ -371,7 +367,7 @@ XYPolygon stringRangeWedge2Poly(string str)
   int    pts=0;
   
   str = stripBlankEnds(str);
-  vector<string> mvector = parseStringQ(str, '#');
+  vector<string> mvector = parseStringQ(str, ',');
   unsigned int i, vsize = mvector.size();
 
   for(i=0; i<vsize; i++) {
@@ -515,7 +511,7 @@ XYPolygon stringPylon2Poly(string str)
   string label;
   
   str = stripBlankEnds(str);
-  vector<string> mvector = parseStringQ(str, '#');
+  vector<string> mvector = parseStringQ(str, ',');
   unsigned int i, vsize = mvector.size();
 
   for(i=0; i<vsize; i++) {
@@ -646,7 +642,7 @@ XYPolygon stringRadial2Poly(string str)
   cout << "   [" << str << "]" << endl;
 
   str = stripBlankEnds(str);
-  vector<string> mvector = parseStringQ(str, '#');
+  vector<string> mvector = parseStringQ(str, ',');
   unsigned int i, vsize = mvector.size();
 
   cout << "components: " << vsize << endl;
@@ -743,7 +739,7 @@ XYPolygon stringPoints2Poly(string str)
 
   double snap_val = 0;
   str = stripBlankEnds(str);
-  vector<string> mvector = parseStringQ(str, '#');
+  vector<string> mvector = parseStringQ(str, ',');
   unsigned int i, vsize = mvector.size();
 
 

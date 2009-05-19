@@ -44,4 +44,10 @@ XYSegList stringPoints2SegList(std::string);
 //            amplitude"
 XYSegList stringZigZag2SegList(std::string);
 
+// Create a seglist given a set of points for a lawnmower pattern
+// Example: "format=lawnmower, x=0, y=8, width=100, height=80, 
+//          degs=45, swath=20, startx=-40, starty=80, start=tl"
+
+XYSegList stringLawnmower2SegList(std::string);
+
 #endif

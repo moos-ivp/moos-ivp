@@ -20,11 +20,13 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
+#include <iostream>
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
 #include <vector>
 #include "XYFormatUtilsSegl.h"
+#include "XYPatternBlock.h"
 #include "MBUtils.h"
 #include "AngleUtils.h"
 #include "GeomUtils.h"
@@ -44,28 +46,41 @@ using namespace std;
 
 XYSegList string2SegList(string str)
 {
-  str = stripBlankEnds(str);
-  
-  XYPolygon null_seglist;
-  if(!strncasecmp("zigzag:", str.c_str(), 7)) {
-    str = str.c_str()+7;
-    return(stringZigZag2SegList(str));
-  }
-  else if(!strncasecmp("pts:", str.c_str(), 5)) {
-    str = str.c_str()+5;
-    return(stringPoints2SegList(str));
-  }
-  else
-    return(stringPoints2SegList(str));
+  XYSegList null_segl;
 
-  return(null_seglist);
+  str = stripBlankEnds(str);
+  vector<string> svector = parseStringQ(str, ',');
+  unsigned int i, vsize = svector.size();
+  string format = "default";
+  for(i=0; i<vsize; i++) {
+    svector[i] = stripBlankEnds(svector[i]);
+    string left  = stripBlankEnds(biteString(svector[i], '='));
+    string right = stripBlankEnds(svector[i]);
+    if((left == "format") && (right != ""))
+      format = right;
+  }
+  format=tolower(format);
+  
+  cout << "SEGLIST FORMAT: " << format << endl;
+  cout << "STARTING_STRING2: " << str << endl;
+
+  if((format == "default") || (format == "points"))
+    return(stringPoints2SegList(str));
+  else if(format == "zigzag")
+    return(stringZigZag2SegList(str));
+  else if(format == "lawnmower")
+    return(stringLawnmower2SegList(str));
+  else
+    return(null_segl);
+
+  return(null_segl);
 }
 
 //---------------------------------------------------------------
 // Procedure: stringPoints2SegList
 //
 
-XYSegList stringShortToPointsSegList(string str)
+XYSegList stringPoints2SegList(string str)
 {
   XYSegList null_seglist;
   
@@ -132,7 +147,7 @@ XYSegList stringShortToPointsSegList(string str)
 //  p1     p2              p3             p4               p5     p6  |  
 //                                                                  
 
-XYSegList stringShortToZigZagSegList(string str)
+XYSegList stringZigZag2SegList(string str)
 {
   XYSegList null_seglist;
   
@@ -183,6 +198,124 @@ XYSegList stringShortToZigZagSegList(string str)
   // Now apply the snapval if a valid one was requested
   if(snapval > 0)
     new_seglist.apply_snap(snapval);
+
+  return(new_seglist);
+}
+
+
+//---------------------------------------------------------------
+// Procedure: stringLawnmower2SegList
+
+XYSegList stringLawnmower2SegList(string str)
+{
+  XYSegList null_seglist;
+
+  // Below are the mandatory parameters - check they are set.
+  bool xpos_set    = false;
+  bool ypos_set    = false;
+  bool width_set   = false;
+  bool height_set  = false;
+  bool swath_set   = false;
+  bool startx_set  = false;
+  bool starty_set  = false;
+  bool start_set   = false;
+  bool degs_set    = false;
+  bool rads_set    = false;
+
+  bool active      = true;
+
+  string xpos, ypos, start, label, source, type, rows="ew";
+  double height, width, degs, rads, swath;
+  double startx=0;
+  double starty=0;
+
+  vector<string> mvector = parseStringQ(str, ',');
+  unsigned int i, vsize = mvector.size();
+  
+  for(i=0; i<vsize; i++) {
+    string param = tolower(stripBlankEnds(biteString(mvector[i], '=')));
+    string value = stripBlankEnds(mvector[i]);
+    double dval  = atof(value.c_str());
+    cout << "param: " << param << endl;
+    cout << "  value: " << value << endl;
+    if((param == "format") && (value != "lawnmower"))
+      return(null_seglist);
+    else if((param == "x") && isNumber(value)) {
+      xpos = value;
+      xpos_set = true;
+    }
+    else if((param == "y") && isNumber(value)) {
+      ypos = value;
+      ypos_set = true;
+    }
+    else if((param == "height") && isNumber(value)) {
+      height = dval;
+      height_set = true;
+    }
+    else if((param == "width") && isNumber(value)) {
+      width = dval;
+      width_set = true;
+    }
+    else if((param == "degs") && isNumber(value)) {
+      degs = dval;
+      degs_set = true;
+    }
+    else if((param == "rads") && isNumber(value)) {
+      rads = dval;
+      rads_set = true;
+    }
+    else if((param == "swath") && isNumber(value)) {
+      swath = dval;
+      swath_set = true;
+    }
+    else if((param == "startx") && isNumber(value)) {
+      startx = dval;
+      startx_set = true;
+    }
+    else if((param == "starty") && isNumber(value)) {
+      starty = dval;
+      starty_set = true;
+    }
+    else if(param == "start") {
+      start = value;
+      start_set = true;
+    }
+    else if(param == "rows")
+      rows = tolower(value);
+    else if(param == "label")
+      label = value;
+    else if(param == "type")
+      type = value;
+    else if(param == "source")
+      source = value;
+  }
+
+  if(!xpos_set || !ypos_set || !height_set || !width_set || !swath_set)
+    return(null_seglist);
+
+  if(!rads_set && !degs_set)
+    return(null_seglist);
+
+  if((rows != "ew") && (rows != "ns"))
+    rows = "ew";
+
+  if(rows == "ew") {
+    double tmp = width;
+    width = height;
+    height = tmp;
+    degs += 90;
+  }
+
+  XYPatternBlock pblock;
+  pblock.setParam("id_point", (xpos + "," + ypos));
+  pblock.setParam("block_width", width);
+  pblock.setParam("block_length", height);
+  pblock.setParam("swath_width", swath);
+  pblock.setParam("angle", degs);
+
+  pblock.buildCompositeSegList(startx, starty);
+  
+  XYSegList new_seglist = pblock.getCompositeSegList();
 
   return(new_seglist);
 }
