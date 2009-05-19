@@ -43,10 +43,11 @@
 #endif
 
 #include <vector>
+#include <iostream>
+#include <stdlib.h>
 #include "IvPBehavior.h"
 #include "MBUtils.h"
 #include "BuildUtils.h"
-#include <stdlib.h>
 
 using namespace std;
 
@@ -60,13 +61,21 @@ IvPBehavior::IvPBehavior(IvPDomain g_domain)
   m_priority_wt  = 100.0;  // Default Priority Weight
   m_descriptor   = "???";  // Default descriptor
   m_state_ok     = true;
-  m_started      =  false;
-  m_start_time   = -1;
-  m_duration     = -1;
   m_completed    = false;
   m_good_updates = 0;
   m_bad_updates  = 0;
   m_perpetual    = false;
+
+  m_duration     = -1;
+  m_duration_started         =  false;
+  m_duration_start_time      = -1;
+  m_duration_reset_timestamp = -1;
+  m_duration_running_time    = 0;
+  m_duration_idle_time       = 0;
+  m_duration_prev_timestamp  = 0;
+  m_duration_prev_state      = "";
+  m_duration_idle_decay      = true;
+  m_duration_reset_on_transition = false;
 }
   
 //-----------------------------------------------------------
@@ -113,12 +122,24 @@ bool IvPBehavior::setParam(string g_param, string g_val)
   }
   else if(g_param == "condition") {
     g_val = findReplace(g_val, ',', '=');
-    //g_val = findReplace(g_val, "==", "=");
     bool ok = true;
     LogicCondition new_condition;
     ok = new_condition.setCondition(g_val);
     if(ok)
       m_logic_conditions.push_back(new_condition);
+    return(ok);
+  }
+  else if(g_param == "duration_reset") {
+    string var = stripBlankEnds(biteString(g_val, '='));
+    string val = stripBlankEnds(g_val);
+    if(var == "")
+      return(false);
+    m_duration_reset_var = var;
+    m_duration_reset_val = val;
+    return(true);
+  }
+  else if(g_param == "duration_idle_decay") {
+    bool ok = setBooleanOnString(m_duration_idle_decay, g_val);
     return(ok);
   }
   else if(g_param == "runflag") {
@@ -267,7 +288,7 @@ bool IvPBehavior::isRunnable()
     postPCMessage(" -- completed (duration exceeded) -- ");
     setComplete();
     if(m_perpetual)
-      m_started = false;
+      m_duration_started = false;
     if(!m_perpetual)
       return(false);
   }
@@ -289,8 +310,8 @@ bool IvPBehavior::isRunnable()
   return(true);
 }
   
-  //-----------------------------------------------------------
-  // Procedure: setInfoBuffer
+//-----------------------------------------------------------
+// Procedure: setInfoBuffer
 
 void IvPBehavior::setInfoBuffer(const InfoBuffer *ib)
 {
@@ -502,6 +523,51 @@ bool IvPBehavior::checkConditions()
 }
 
 //-----------------------------------------------------------
+// Procedure: checkForDurationReset()
+
+bool IvPBehavior::checkForDurationReset()
+{
+  if(!m_info_buffer) 
+    return(false);
+
+  int i, j, vsize, csize;
+
+  // Phase 2: get values of all variables from the info_buffer and 
+  // propogate these values down to all the logic conditions.
+  string varname = m_duration_reset_var;
+  bool   ok_s, ok_d;
+  string s_result = m_info_buffer->sQuery(varname, ok_s);
+  double d_result = m_info_buffer->dQuery(varname, ok_d);
+
+  bool reset_triggered = false;
+  if(ok_s && (m_duration_reset_val == s_result))
+    reset_triggered = true;
+  if(ok_d && (atof(m_duration_reset_val.c_str()) == d_result))
+    reset_triggered = true;
+
+  if(!reset_triggered)
+    return(false);
+
+  // Get the absolute, not relative, timestamp from the info_buffer
+  double curr_reset_timestamp = m_info_buffer->tQuery(varname, false);
+
+  if((m_duration_reset_timestamp == -1) || 
+     (curr_reset_timestamp > m_duration_reset_timestamp)) {
+    m_duration_reset_timestamp = curr_reset_timestamp;
+    m_duration_idle_time = 0;
+    m_duration_running_time = 0;
+    m_duration_start_time = -1;
+    m_duration_started = false;
+    if(m_duration_status != "")
+      postMessage(m_duration_status, m_duration);
+    return(true);
+  }
+  else
+    return(false);
+
+}
+
+//-----------------------------------------------------------
 // Procedure: addInfoVars
 
 void IvPBehavior::addInfoVars(string var_string)
@@ -524,6 +590,9 @@ vector<string> IvPBehavior::getInfoVars()
   vector<string> svector;
   for(i=0; i<m_logic_conditions.size(); i++)
     svector = mergeVectors(svector, m_logic_conditions[i].getVarNames());
+
+  if(m_duration_reset_var != "")
+    svector.push_back(m_duration_reset_var);
 
   svector = mergeVectors(svector, m_info_vars);
   svector = removeDuplicates(svector);
@@ -649,6 +718,10 @@ void IvPBehavior::checkUpdates()
 
 //-----------------------------------------------------------
 // Procedure: durationExceeded()
+//   Purpose: Check to see if the duration time limit has been 
+//            exceeded. If so, simply return true. No action is
+//            taken other than to possibly post the time remaining
+//            if the duration_status parameter is set.
 
 bool IvPBehavior::durationExceeded()
 {
@@ -658,13 +731,19 @@ bool IvPBehavior::durationExceeded()
 
   double curr_time = m_info_buffer->getCurrTime();
 
-  if(!m_started) {
-    m_started = true;
-    m_start_time = m_info_buffer->getCurrTime();
+  if(!m_duration_started) {
+    m_duration_started = true;
+    m_duration_start_time = curr_time;
   }
 
-  double elapsed_time = (curr_time - m_start_time);
+  double elapsed_time = (curr_time - m_duration_start_time);
   double remaining_time = m_duration - elapsed_time;
+
+  // If time spent in the idle state is not counted toward the 
+  // duration timer, ADD it back here.
+  if(m_duration_idle_decay)
+    remaining_time += m_duration_idle_time;
+
   if(remaining_time < 0)
     remaining_time = 0;
   if(m_duration_status != "") {
@@ -680,6 +759,35 @@ bool IvPBehavior::durationExceeded()
   return(false);
 }
 
+
+//-----------------------------------------------------------
+// Procedure: updateStateDurations
+//      Note: Update the two variables representing how long
+//            the behavior has been in the "idle" state and 
+//            how long in the "running" state.
+
+void IvPBehavior::updateStateDurations(string bhv_state) 
+{
+  double curr_time = m_info_buffer->getCurrTime();
+
+  if(m_duration_prev_state == "") {
+    m_duration_prev_state     = bhv_state;
+    m_duration_prev_timestamp = curr_time;
+    return;
+  }
+
+  if(bhv_state == "idle") {
+    double delta_time = curr_time - m_duration_prev_timestamp;
+    m_duration_idle_time += delta_time;
+  }
+  else if(bhv_state == "running") {
+    double delta_time = curr_time - m_duration_prev_timestamp;
+    m_duration_running_time += delta_time;
+  }
+  
+  m_duration_prev_timestamp = curr_time;
+  m_duration_prev_state = bhv_state;
+}
 
 //-----------------------------------------------------------
 // Procedure: postFlags()

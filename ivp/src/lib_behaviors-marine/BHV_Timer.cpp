@@ -45,10 +45,22 @@ bool BHV_Timer::setParam(string param, string val)
 }
 
 //-----------------------------------------------------------
+// Procedure: onIdleState
+
+void BHV_Timer::onIdleState() 
+{
+  postMessage("TIMER_IDLE", m_duration_idle_time);
+  postMessage("TIMER_RUNNING", m_duration_running_time);
+}
+
+//-----------------------------------------------------------
 // Procedure: onRunState
 
 IvPFunction *BHV_Timer::onRunState() 
 {
+  postMessage("TIMER_IDLE", m_duration_idle_time);
+  postMessage("TIMER_RUNNING", m_duration_running_time);
+
   return(0);
 }
 

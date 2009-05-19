@@ -115,7 +115,7 @@ void BHV_MaintainHeading::onIdleState()
 
   // The below is a IvPBehavior variable that when set to false
   // effectively resets the timer
-  m_started = false;
+  m_duration_started = false;
 }
 
 

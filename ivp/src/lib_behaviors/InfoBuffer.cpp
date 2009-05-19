@@ -68,12 +68,15 @@ double InfoBuffer::dQuery(string var, bool& result) const
 //      Note: Returns the time since the given variable was
 //            last updated.
 
-double InfoBuffer::tQuery(string var) const
+double InfoBuffer::tQuery(string var, bool elapsed) const
 {
   map<string, double>::const_iterator p2;
   p2 = tmap.find(var);
   if(p2 != tmap.end()) {
-    return(m_curr_time_utc - p2->second);
+    if(elapsed)
+      return(m_curr_time_utc - p2->second);
+    else
+      return(p2->second);
   }
   else
     return(-1);
@@ -151,13 +154,10 @@ void InfoBuffer::clearDeltaVectors()
 // Procedure: setValue
 //      Note: 
 
-bool InfoBuffer::setValue(string var, double val, double force_utc)
+bool InfoBuffer::setValue(string var, double val)
 {
   dmap[var] = val;
-  if(force_utc == 0)
-    tmap[var] = m_curr_time_utc;
-  else
-    tmap[var] = force_utc;
+  tmap[var] = m_curr_time_utc;
 
   vdmap[var].push_back(val);
 
@@ -168,13 +168,10 @@ bool InfoBuffer::setValue(string var, double val, double force_utc)
 // Procedure: setValue
 //
 
-bool InfoBuffer::setValue(string var, string val, double force_utc)
+bool InfoBuffer::setValue(string var, string val)
 {
   smap[var] = val;
-  if(force_utc == 0)
-    tmap[var] = m_curr_time_utc;
-  else
-    tmap[var] = force_utc;
+  tmap[var] = m_curr_time_utc;
 
   vsmap[var].push_back(val);
 

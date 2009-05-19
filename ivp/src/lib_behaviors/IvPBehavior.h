@@ -92,7 +92,9 @@ protected:
   void    addInfoVars(std::string);
 
   bool    durationExceeded();
+  void    updateStateDurations(std::string);
   bool    checkConditions();
+  bool    checkForDurationReset();
   bool    checkNoStarve();
 
   double                   getBufferCurrTime();
@@ -132,8 +134,19 @@ protected:
 
   // variables for providing behaviors w/ "duration" capability
   double      m_duration;
-  double      m_start_time;
-  bool        m_started;
+  double      m_duration_start_time;
+  bool        m_duration_started;
+  std::string m_duration_reset_var;
+  std::string m_duration_reset_val;
+  std::string m_duration_prev_state;
+  double      m_duration_reset_timestamp;
+  bool        m_duration_reset_on_transition;
+  bool        m_duration_idle_decay;
+
+  double      m_duration_running_time;
+  double      m_duration_idle_time;
+  double      m_duration_prev_timestamp;
+
   bool        m_completed;
   bool        m_perpetual; 
 

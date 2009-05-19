@@ -97,6 +97,9 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix, unsigned int iteration,
     // Look for possible dynamic updates to the behavior parameters
     behaviors[ix]->checkUpdates();
 
+    // Check if the behavior duration is to be reset
+    behaviors[ix]->checkForDurationReset();
+
     if(behaviors[ix]->isCompleted())
       new_activity_state = "completed";
     else {
@@ -106,10 +109,14 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix, unsigned int iteration,
 	new_activity_state = "running";
     }
 
+    // Now that the new_activity_state is set, act appropriately for
+    // each behavior.
+
     if(new_activity_state == "idle") {
       behaviors[ix]->postFlags("idleflags");
       behaviors[ix]->postFlags("inactiveflags");
       behaviors[ix]->onIdleState();
+      behaviors[ix]->updateStateDurations("idle");
     }
     
     if(new_activity_state == "running") {
@@ -143,15 +150,15 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix, unsigned int iteration,
       }
       else
 	behaviors[ix]->postFlags("inactiveflags");
+      behaviors[ix]->updateStateDurations("running");
     }
 
     string bhv_tag = toupper(behaviors[ix]->getDescriptor());
     bhv_tag = findReplace(bhv_tag, "BHV_", "");
-    bhv_tag = findReplace(bhv_tag, "(d)", "");
+    bhv_tag = findReplace(bhv_tag, "(D)", "");
 
 #if 1
     behaviors[ix]->postMessage("PWT_BHV_"+bhv_tag, pwt);
-
     if(new_activity_state == "idle")
       behaviors[ix]->postMessage("STATE_BHV_"+bhv_tag, 0);
     else if(new_activity_state == "running")
@@ -162,6 +169,8 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix, unsigned int iteration,
       behaviors[ix]->postMessage("STATE_BHV_"+bhv_tag, 3);
 #endif
 
+    // If this represents a change in states from the previous
+    // iteration, note the time at which the state changed.
     if(behavior_states[ix] != new_activity_state)
       behavior_state_time_entered[ix] = m_curr_time;
     

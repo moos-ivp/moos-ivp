@@ -1021,7 +1021,7 @@ void MarineViewer::drawPolygons()
 }
 
 //-------------------------------------------------------------
-// Procedure: drawPoly
+// Procedure: drawPolygon
 
 void MarineViewer::drawPolygon(const XYPolygon& poly, 
 			       bool filled, bool dashed,
@@ -1120,12 +1120,10 @@ void MarineViewer::drawPolygon(const XYPolygon& poly,
     glEnable(GL_POINT_SMOOTH);
     glPointSize(vertex_size);
 
-    // Draw the vertices in between the first and last ones
     glColor3f(vert_c[0], vert_c[1], vert_c[2]);
     glBegin(GL_POINTS);
-    for(j=0; j<vsize; j++) {
+    for(j=0; j<vsize; j++) 
       glVertex2f(points[(j*2)], points[(j*2)+1]);
-    }
     glEnd();
     glDisable(GL_POINT_SMOOTH);
   }

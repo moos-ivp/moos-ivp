@@ -58,7 +58,7 @@ public: // virtuals defined
   std::string sQuery(std::string, bool&) const;
 
   double dQuery(std::string, bool&) const;
-  double tQuery(std::string) const;
+  double tQuery(std::string, bool elapsed=true) const;
 
   std::vector<std::string> sQueryDeltas(std::string, bool&) const;
   
@@ -67,8 +67,8 @@ public: // virtuals defined
   void   print() const;
 
 public:
-  bool  setValue(std::string, double, double=0);
-  bool  setValue(std::string, std::string, double=0);
+  bool  setValue(std::string, double);
+  bool  setValue(std::string, std::string);
   void  clearDeltaVectors();
 
   void   setCurrTime(double t)         {m_curr_time_utc = t;};

@@ -31,7 +31,7 @@ public:
   ~BHV_Timer() {};
   
   IvPFunction* onRunState();
-  void         onIdleState() {};
+  void         onIdleState();
   bool         setParam(std::string, std::string);
 };
 
