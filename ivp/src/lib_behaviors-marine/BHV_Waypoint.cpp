@@ -40,6 +40,7 @@
 #include "OF_Coupler.h"
 #include "XYBuildUtils.h"
 #include "XYFormatUtilsPoly.h"
+#include "XYFormatUtilsSegl.h"
 
 using namespace std;
 
@@ -91,7 +92,8 @@ BHV_Waypoint::BHV_Waypoint(IvPDomain gdomain) :
 bool BHV_Waypoint::setParam(string param, string val) 
 {
   if((param == "polygon") || (param == "points")) {
-    XYSegList new_seglist = stringToSegList(val);
+    XYSegList new_seglist = string2SegList(val);
+    cout << "SEGL_SIZE: " << new_seglist.size() << endl;
     if(new_seglist.size() == 0) {
       XYPolygon new_poly = stringToPoly(val);
       //XYPolygon new_poly = stringToPoly(val);

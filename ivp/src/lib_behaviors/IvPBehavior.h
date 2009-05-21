@@ -77,6 +77,7 @@ public:
   void   resetStateOK()                  {m_state_ok=true;};
 
 protected:
+  void    addInfoVars(std::string);
   void    setComplete();
   void    postMessage(std::string, double, std::string key="");
   void    postMessage(std::string, std::string, std::string key="");
@@ -89,9 +90,10 @@ protected:
   void    postVMessage(std::string);
   void    postPCMessage(std::string);
   void    postFlags(const std::string&);
-  void    addInfoVars(std::string);
 
+  void    postDurationStatus();
   bool    durationExceeded();
+  void    durationReset();
   void    updateStateDurations(std::string);
   bool    checkConditions();
   bool    checkForDurationReset();

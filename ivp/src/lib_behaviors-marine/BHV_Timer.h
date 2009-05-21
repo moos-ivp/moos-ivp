@@ -33,6 +33,11 @@ public:
   IvPFunction* onRunState();
   void         onIdleState();
   bool         setParam(std::string, std::string);
+
+ protected:
+  std::string  m_var_status_idle;
+  std::string  m_var_status_running;
+  std::string  m_var_status_suffix;
 };
 
 #endif

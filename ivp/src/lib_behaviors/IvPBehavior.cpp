@@ -288,7 +288,7 @@ bool IvPBehavior::isRunnable()
     postPCMessage(" -- completed (duration exceeded) -- ");
     setComplete();
     if(m_perpetual)
-      m_duration_started = false;
+      durationReset();
     if(!m_perpetual)
       return(false);
   }
@@ -532,8 +532,7 @@ bool IvPBehavior::checkForDurationReset()
 
   int i, j, vsize, csize;
 
-  // Phase 2: get values of all variables from the info_buffer and 
-  // propogate these values down to all the logic conditions.
+  // Phase 1: get the value of the duration_reset_var from info_buffer
   string varname = m_duration_reset_var;
   bool   ok_s, ok_d;
   string s_result = m_info_buffer->sQuery(varname, ok_s);
@@ -553,18 +552,27 @@ bool IvPBehavior::checkForDurationReset()
 
   if((m_duration_reset_timestamp == -1) || 
      (curr_reset_timestamp > m_duration_reset_timestamp)) {
+    // Note the timestamp so we wont reset unless a fresh post detected.
     m_duration_reset_timestamp = curr_reset_timestamp;
-    m_duration_idle_time = 0;
-    m_duration_running_time = 0;
-    m_duration_start_time = -1;
-    m_duration_started = false;
-    if(m_duration_status != "")
-      postMessage(m_duration_status, m_duration);
+    durationReset();
     return(true);
   }
   else
     return(false);
 
+}
+
+//-----------------------------------------------------------
+// Procedure: durationReset()
+
+void IvPBehavior::durationReset()
+{
+  m_duration_started      = false;
+  m_duration_start_time   = -1;
+  m_duration_idle_time    = 0;
+  m_duration_running_time = 0;
+  if(m_duration_status != "")
+    postMessage(m_duration_status, m_duration);
 }
 
 //-----------------------------------------------------------
@@ -737,12 +745,15 @@ bool IvPBehavior::durationExceeded()
   }
 
   double elapsed_time = (curr_time - m_duration_start_time);
-  double remaining_time = m_duration - elapsed_time;
 
   // If time spent in the idle state is not counted toward the 
   // duration timer, ADD it back here.
-  if(m_duration_idle_decay)
-    remaining_time += m_duration_idle_time;
+  if(!m_duration_idle_decay)
+    elapsed_time -= m_duration_idle_time;
+  
+#if 0
+  double remaining_time = m_duration - elapsed_time;
+
 
   if(remaining_time < 0)
     remaining_time = 0;
@@ -752,12 +763,44 @@ bool IvPBehavior::durationExceeded()
     else
       postIntMessage(m_duration_status, remaining_time);
   }
+#endif
 
   if(elapsed_time >= m_duration)
     return(true);
 
   return(false);
 }
+
+
+//-----------------------------------------------------------
+// Procedure: postDurationStatus
+//      Note: 
+
+void IvPBehavior::postDurationStatus()
+{
+  double elapsed_time = 0;
+  if(m_duration_started) {
+    double curr_time = m_info_buffer->getCurrTime();
+    elapsed_time = (curr_time - m_duration_start_time);
+  }
+  
+  double remaining_time = m_duration - elapsed_time;
+
+  // If time spent in the idle state is not counted toward the 
+  // duration timer, ADD it back here.
+  if(!m_duration_idle_decay)
+    remaining_time += m_duration_idle_time;
+  
+  if(remaining_time < 0)
+    remaining_time = 0;
+  if(m_duration_status != "") {
+    if(remaining_time <= 10)
+      postMessage(m_duration_status, remaining_time);
+    else
+      postIntMessage(m_duration_status, remaining_time);
+  }
+}
+
 
 
 //-----------------------------------------------------------

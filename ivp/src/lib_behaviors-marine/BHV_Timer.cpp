@@ -25,6 +25,7 @@
 #endif
 
 #include "BHV_Timer.h"
+#include "MBUtils.h"
 
 using namespace std;
 
@@ -34,6 +35,10 @@ using namespace std;
 BHV_Timer::BHV_Timer(IvPDomain gdomain) : IvPBehavior(gdomain)
 {
   this->setParam("descriptor", "bhv_timer");
+
+  m_var_status_idle    = "TIMER_IDLE";
+  m_var_status_running = "TIMER_RUNNING";
+  m_var_status_suffix  = "";
 }
 
 //-----------------------------------------------------------
@@ -41,7 +46,21 @@ BHV_Timer::BHV_Timer(IvPDomain gdomain) : IvPBehavior(gdomain)
 
 bool BHV_Timer::setParam(string param, string val) 
 {
-  return(IvPBehavior::setParam(param, val));
+  if((param == "var_status_idle") && !strContainsWhite(val))
+    m_var_status_idle = val;
+
+  else if((param == "var_status_running") && !strContainsWhite(val))
+    m_var_status_running = val;
+
+  else if((param == "status_suffix") && !strContainsWhite(val)) {
+    if(val.at(0) != '_')
+      val = "_" + val;
+    m_var_status_suffix  = val;
+  }
+  else
+    return(false);
+
+  return(true);      
 }
 
 //-----------------------------------------------------------
@@ -49,8 +68,11 @@ bool BHV_Timer::setParam(string param, string val)
 
 void BHV_Timer::onIdleState() 
 {
-  postMessage("TIMER_IDLE", m_duration_idle_time);
-  postMessage("TIMER_RUNNING", m_duration_running_time);
+  string ivar = m_var_status_idle + m_var_status_suffix;
+  postMessage(ivar, m_duration_idle_time);
+
+  string rvar = m_var_status_running + m_var_status_suffix;
+  postMessage(rvar, m_duration_running_time);
 }
 
 //-----------------------------------------------------------
@@ -58,9 +80,12 @@ void BHV_Timer::onIdleState()
 
 IvPFunction *BHV_Timer::onRunState() 
 {
-  postMessage("TIMER_IDLE", m_duration_idle_time);
-  postMessage("TIMER_RUNNING", m_duration_running_time);
+  string ivar = m_var_status_idle + m_var_status_suffix;
+  postMessage(ivar, m_duration_idle_time);
 
+  string rvar = m_var_status_running + m_var_status_suffix;
+  postMessage(rvar, m_duration_running_time);
+  
   return(0);
 }
 

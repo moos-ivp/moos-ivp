@@ -120,6 +120,7 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix, unsigned int iteration,
     }
     
     if(new_activity_state == "running") {
+      behaviors[ix]->postDurationStatus();
       behaviors[ix]->postFlags("runflags");
       ipf = behaviors[ix]->onRunState();
       if(ipf && !ipf->freeOfNan()) {
