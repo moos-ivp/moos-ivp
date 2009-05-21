@@ -143,6 +143,7 @@ SET(IVP_NON_GUI_APPS
   pHelmIvP
   pMarinePID
   pTransponderAIS
+  pTimerScript
   uHelmScope
   uProcessWatch
   uTermCommand
