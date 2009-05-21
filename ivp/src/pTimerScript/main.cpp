@@ -1,5 +1,5 @@
 /************************************************************/
-/*    NAME: Michael Benjamin                                */
+/*    NAME: Michael Benjamin, H.Schmidt, J.Leonard          */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge             */
 /*    FILE: main.cpp                                        */
 /*    DATE: May 21 2009                                     */

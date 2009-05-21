@@ -1,5 +1,5 @@
 /************************************************************/
-/*    NAME: Michael Benjamin                                */
+/*    NAME: Michael Benjamin, H.Schmidt, J.Leonard          */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge             */
 /*    FILE: TS_MOOSApp.cpp                                  */
 /*    DATE: May 21st 2009                                   */
@@ -16,6 +16,8 @@ using namespace std;
 
 TS_MOOSApp::TS_MOOSApp()
 {
+  m_elapsed_time = 0;
+  m_start_time   = 0;
 }
 
 //---------------------------------------------------------
@@ -67,15 +69,6 @@ bool TS_MOOSApp::OnConnectToServer()
 }
 
 
-//------------------------------------------------------------
-// Procedure: RegisterVariables
-
-void TS_MOOSApp::RegisterVariables()
-{
-  m_Comms.Register("FOO_BAR", 0);
-}
-
-
 //---------------------------------------------------------
 // Procedure: Iterate()
 
@@ -91,9 +84,63 @@ bool TS_MOOSApp::Iterate()
 
 bool TS_MOOSApp::OnStartUp()
 {
-  // happens before connection is open
-	
+  CMOOSApp::OnStartUp();
+  MOOSTrace("pTimerScript starting....\n");
+
+  list<string> sParams;
+  if(m_MissionReader.GetConfiguration(GetAppName(), sParams)) {
+    
+    list<string>::reverse_iterator p;
+    for(p=sParams.rbegin(); p!=sParams.rend(); p++) {
+      string line  = stripBlankEnds(*p);
+      string param = tolower(stripBlankEnds(biteString(line, '=')));
+      string value = stripBlankEnds(line);
+
+      cout << "param: [" << param << "]" << endl;
+      cout << "  value: [" << value << "]" << endl;
+
+      // EVENT = var=FOOBAR, val=true, time=45.0
+      
+      if(param == "event") {
+	bool ok = addNewEvent(value);
+	return(ok);
+      }
+      
+    }
+  }
+
   RegisterVariables();
   return(true);
 }
+
+//------------------------------------------------------------
+// Procedure: RegisterVariables
+
+void TS_MOOSApp::RegisterVariables()
+{
+  m_Comms.Register("FOO_BAR", 0);
+}
+
+
+//------------------------------------------------------------
+// Procedure: addNewEvent()
+
+bool TS_MOOSApp::addNewEvent(string event_str)
+{
+  string variable;
+  string value;
+  double time_of_event = -1;
+
+  vector<string> svector = parseStringQ(event_str, ',');
+  unsigned int i, vsize = svector.size();
+  for(i=0; i<vsize; i++) {
+    string param = tolower(stripBlankEnds(biteString(svector[i], '=')));
+    string value = stripBlankEnds(svector[i]);
+  }
+  
+  
+  
+  return(true);
+}
+
 

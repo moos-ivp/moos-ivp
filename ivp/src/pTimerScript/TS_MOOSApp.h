@@ -1,5 +1,5 @@
 /************************************************************/
-/*    NAME: Michael Benjamin                                */
+/*    NAME: Michael Benjamin, H.Schmidt, J.Leonard          */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge             */
 /*    FILE: TS_MOOSApp.h                                    */
 /*    DATE: May 21st 2009                                   */
@@ -19,18 +19,25 @@ class TS_MOOSApp : public CMOOSApp
   TS_MOOSApp();
   virtual ~TS_MOOSApp();
 
+ public: // Standard MOOSApp functions to overload
   bool OnNewMail(MOOSMSG_LIST &NewMail);
   bool Iterate();
   bool OnConnectToServer();
   bool OnStartUp();
+
+ public: // Locally defined functions
   void RegisterVariables();
+  bool addNewEvent(std::string);
 
- protected:
-  
+
+ protected: // Configuration parameters
   std::vector<VarDataPair> m_pairs;
+  std::vector<double>      m_post_time;
+  std::vector<bool>        m_posted;
   
-
-  // insert local vars here
+ protected: // State variables
+  double   m_elapsed_time;
+  double   m_start_time;
 };
 
 #endif 

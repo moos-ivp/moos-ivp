@@ -11,5 +11,6 @@ TARGET_LINK_LIBRARIES(pTimerScript
    MOOS
    MOOSGen
    m
+   mbutil
    pthread)
 
