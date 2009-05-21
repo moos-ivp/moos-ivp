@@ -101,14 +101,13 @@ bool TS_MOOSApp::OnStartUp()
 
       // EVENT = var=FOOBAR, val=true, time=45.0
       
-      if(param == "event") {
-	bool ok = addNewEvent(value);
-	return(ok);
-      }
+      if(param == "event")
+	addNewEvent(value);
       
     }
   }
 
+  printScript();
   RegisterVariables();
   return(true);
 }
@@ -124,23 +123,62 @@ void TS_MOOSApp::RegisterVariables()
 
 //------------------------------------------------------------
 // Procedure: addNewEvent()
+// EVENT = var=FOOBAR, val=true, time=45.0
 
 bool TS_MOOSApp::addNewEvent(string event_str)
 {
-  string variable;
-  string value;
-  double time_of_event = -1;
+  string new_var;
+  string new_val;
+  double new_time_of_event = -1;
 
   vector<string> svector = parseStringQ(event_str, ',');
   unsigned int i, vsize = svector.size();
   for(i=0; i<vsize; i++) {
     string param = tolower(stripBlankEnds(biteString(svector[i], '=')));
     string value = stripBlankEnds(svector[i]);
+    if(param == "var")
+      new_var = value;
+    else if(param == "val")
+      new_val = value;
+    else if((param == "time") && isNumber(value)) {
+      double dval = atof(value.c_str());
+      if(dval > 0)
+	new_time_of_event = dval;
+    }
   }
   
-  
-  
+  if((new_var=="") || (new_val=="") || (new_time_of_event <=0))
+    return(false);
+
+  VarDataPair new_pair(new_var, new_val, "auto");
+  m_pairs.push_back(new_pair);
+  m_post_time.push_back(new_time_of_event);
+  m_posted.push_back(false);
+
   return(true);
 }
+
+
+//------------------------------------------------------------
+// Procedure: printScript
+// 
+
+void TS_MOOSApp::printScript()
+{
+  unsigned int i, vsize = m_pairs.size();
+  
+  cout << "The Script: ========================================" << endl;
+  cout << "Total Elements: " << vsize << endl;
+  for(i=0; i<vsize; i++) {
+    string vdpair_str = m_pairs[i].getPrintable();
+    double etime   = m_post_time[i];
+    bool   posted  = m_posted[i];
+
+    cout << "[" << i << "] " << vdpair_str << ", TIME:" << etime;
+    cout << ", POSTED=" << boolToString(posted) << endl;
+  }
+  cout << "====================================================" << endl;
+}
+    
 
 

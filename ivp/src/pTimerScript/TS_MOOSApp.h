@@ -25,9 +25,10 @@ class TS_MOOSApp : public CMOOSApp
   bool OnConnectToServer();
   bool OnStartUp();
 
- public: // Locally defined functions
+ protected: // Locally defined and locally used functions
   void RegisterVariables();
   bool addNewEvent(std::string);
+  void printScript();
 
 
  protected: // Configuration parameters
@@ -35,6 +36,8 @@ class TS_MOOSApp : public CMOOSApp
   std::vector<double>      m_post_time;
   std::vector<bool>        m_posted;
   
+  std::string m_var_next_event;
+
  protected: // State variables
   double   m_elapsed_time;
   double   m_start_time;
