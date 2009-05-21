@@ -8,9 +8,9 @@ ProcessConfig = pTimerScript
    AppTick   = 4
    CommsTick = 4
 
-   EVENT = var=alpha, val=true, time=23
-   EVENT = var=bravo, val=false, time=24
    EVENT = var=charlie, val="99", time=28
+   EVENT = var=alpha, val=true, time=23
    EVENT = var=delta, val=43, time=29
+   EVENT = var=bravo, val=false, time=24
 }
 

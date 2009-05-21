@@ -18,6 +18,7 @@ TS_MOOSApp::TS_MOOSApp()
 {
   m_elapsed_time = 0;
   m_start_time   = 0;
+  m_skip_time    = 0;
 }
 
 //---------------------------------------------------------
@@ -74,8 +75,14 @@ bool TS_MOOSApp::OnConnectToServer()
 
 bool TS_MOOSApp::Iterate()
 {
-  // happens AppTick times per second
-	
+  double curr_time = MOOSTime();
+  if(m_start_time == 0)
+    m_start_time = curr_time;
+
+  m_elapsed_time = (curr_time - m_start_time) + m_skip_time;
+  
+  checkForPostings();
+
   return(true);
 }
 
@@ -120,7 +127,6 @@ void TS_MOOSApp::RegisterVariables()
   m_Comms.Register("FOO_BAR", 0);
 }
 
-
 //------------------------------------------------------------
 // Procedure: addNewEvent()
 // EVENT = var=FOOBAR, val=true, time=45.0
@@ -152,13 +158,51 @@ bool TS_MOOSApp::addNewEvent(string event_str)
 
   VarDataPair new_pair(new_var, new_val, "auto");
   m_pairs.push_back(new_pair);
-  m_post_time.push_back(new_time_of_event);
-  m_posted.push_back(false);
+  m_ptime.push_back(new_time_of_event);
+  m_poked.push_back(false);
 
+  sortEvents();
   return(true);
 }
 
+//------------------------------------------------------------
+// Procedure: sortEvents
+// 
 
+void TS_MOOSApp::sortEvents()
+{
+  unsigned int count = 0;
+  unsigned int i, vsize = m_pairs.size();
+  vector<bool> sorted(vsize,false);
+  
+  vector<VarDataPair> new_pairs;
+  vector<double>      new_ptime;
+  vector<bool>        new_poked;
+
+  while(count < vsize) {
+    unsigned int oldest_index = 0;
+    double       oldest_ptime = -1;
+    for(i=0; i<vsize; i++) {
+      if((m_ptime[i] > oldest_ptime) && !sorted[i]) {
+	oldest_ptime = m_ptime[i];
+	oldest_index = i;
+      }
+    }
+    sorted[oldest_index] = true;
+    new_pairs.push_back(m_pairs[oldest_index]);
+    new_ptime.push_back(m_ptime[oldest_index]);
+    new_poked.push_back(m_poked[oldest_index]);
+    count++;
+  }
+
+  m_pairs = new_pairs;
+  m_ptime = new_ptime;
+  m_poked = new_poked;
+  std::reverse(m_pairs.begin(), m_pairs.end());
+  std::reverse(m_ptime.begin(), m_ptime.end());
+  std::reverse(m_poked.begin(), m_poked.end());
+}
+    
 //------------------------------------------------------------
 // Procedure: printScript
 // 
@@ -171,14 +215,36 @@ void TS_MOOSApp::printScript()
   cout << "Total Elements: " << vsize << endl;
   for(i=0; i<vsize; i++) {
     string vdpair_str = m_pairs[i].getPrintable();
-    double etime   = m_post_time[i];
-    bool   posted  = m_posted[i];
+    double ptime  = m_ptime[i];
+    bool   poked  = m_poked[i];
 
-    cout << "[" << i << "] " << vdpair_str << ", TIME:" << etime;
-    cout << ", POSTED=" << boolToString(posted) << endl;
+    cout << "[" << i << "] " << vdpair_str << ", TIME:" << ptime;
+    cout << ", POSTED=" << boolToString(poked) << endl;
   }
   cout << "====================================================" << endl;
 }
     
+//------------------------------------------------------------
+// Procedure: checkForPostings()
+//   Purpose: Go through the list of events and possibly post the
+//            event if the elapsed time is greater or equal to the
+//            post time, and if not posted previously.
+
+void TS_MOOSApp::checkForPostings()
+{
+  unsigned int i, vsize = m_pairs.size();
+  for(i=0; i<vsize; i++) {
+    if((m_elapsed_time > m_ptime[i]) && !m_poked[i]) {
+      string variable = m_pairs[i].get_var();
+      if(m_pairs[i].is_string()) 
+	m_Comms.Notify(variable, m_pairs[i].get_sdata());
+      else
+	m_Comms.Notify(variable, m_pairs[i].get_ddata());
+      m_poked[i] = true;
+    }
+    else // Since ordered events, return on first failure.
+      return;
+  }
+}
 
 
