@@ -22,9 +22,11 @@ TS_MOOSApp::TS_MOOSApp()
   m_skip_time     = 0;
   m_pause_time    = 0;
   m_paused        = false;
+  m_posted_count  = 0;
   
   m_var_next_event = "TIMER_SCRIPT_JUMP";
   m_var_pause      = "TIMER_SCRIPT_PAUSE";
+  m_var_status     = "TIMER_SCRIPT_STATUS";
 }
 
 //---------------------------------------------------------
@@ -79,11 +81,10 @@ bool TS_MOOSApp::Iterate()
 
   m_elapsed_time = (curr_time - m_start_time) + m_skip_time - m_pause_time;
 
-  cout << "elapsed_time: " << m_elapsed_time  << endl;
-  
   checkForReadyPostings();
 
   m_previous_time = curr_time;
+  postStatus();
   return(true);
 }
 
@@ -133,6 +134,10 @@ bool TS_MOOSApp::OnStartUp()
 	  m_var_pause = value;
 	  m_Comms.Register(m_var_pause, 0);
 	}
+      }
+      else if(param == "status_var") {
+	if(!strContainsWhite(value))
+	  m_var_status = value;
       }
     }
   }
@@ -259,13 +264,14 @@ void TS_MOOSApp::checkForReadyPostings()
   unsigned int i, vsize = m_pairs.size();
   for(i=0; i<vsize; i++) {
     // First check to see if the pair is ready, and not poked already
-    if((m_elapsed_time > m_ptime[i]) && !m_poked[i]) {
+    if((m_elapsed_time >= m_ptime[i]) && !m_poked[i]) {
       string variable = m_pairs[i].get_var();
       if(m_pairs[i].is_string()) 
 	m_Comms.Notify(variable, m_pairs[i].get_sdata());
       else
 	m_Comms.Notify(variable, m_pairs[i].get_ddata());
       // If just now poked, note it, so it won't be poked again
+      m_posted_count++;
       m_poked[i] = true;
     }
   }
@@ -292,3 +298,24 @@ void TS_MOOSApp::jumpToNextPostingTime()
   m_skip_time += skip_amt;
 }
 
+
+//----------------------------------------------------------------
+// Procedure: postStatus
+
+void TS_MOOSApp::postStatus()
+{
+  if((m_var_status == "") || (m_var_status == "silent"))
+    return;
+
+  string status = "elapsed_time=" + doubleToString(m_elapsed_time,2);
+  status += ", posted=" + intToString(m_posted_count);
+  
+  int pending = (m_pairs.size() - m_posted_count);
+  status += ", pending=" + intToString(pending);
+
+  status += ", paused=" + boolToString(m_paused);
+  
+  m_Comms.Notify(m_var_status, status);
+}
+  
+  

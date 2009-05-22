@@ -11,8 +11,8 @@ ProcessConfig = ANTLER
   MSBetweenLaunches = 200
 
   Run = MOOSDB		@ NewConsole = false
-  Run = uXMS		@ NewConsole = true
   Run = pTimerScript    @ NewConsole = true
+  Run = uXMS		@ NewConsole = true
 }
 
 
@@ -23,6 +23,8 @@ ProcessConfig = pTimerScript
 {
    AppTick   = 4
    CommsTick = 4
+
+   PAUSED = true
 
    EVENT = var=charlie, val="99", time=28
    EVENT = var=alpha, val=true, time=23
@@ -44,4 +46,6 @@ ProcessConfig = uXMS
    VAR = bravo
    VAR = charlie
    VAR = delta
+
+   VAR = TIMER_SCRIPT_STATUS
 }

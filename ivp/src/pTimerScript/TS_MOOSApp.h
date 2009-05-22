@@ -32,6 +32,7 @@ class TS_MOOSApp : public CMOOSApp
   void printScript();
   void checkForReadyPostings();
   void jumpToNextPostingTime();
+  void postStatus();
 
  protected: // Configuration parameters
   std::vector<VarDataPair> m_pairs;
@@ -40,6 +41,7 @@ class TS_MOOSApp : public CMOOSApp
   
   std::string m_var_next_event;
   std::string m_var_pause;
+  std::string m_var_status;
 
  protected: // State variables
   double   m_previous_time;
@@ -48,6 +50,7 @@ class TS_MOOSApp : public CMOOSApp
   double   m_skip_time;
   double   m_pause_time;
   bool     m_paused;
+  int      m_posted_count;
 };
 
 #endif 
