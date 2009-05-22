@@ -39,11 +39,15 @@ class TS_MOOSApp : public CMOOSApp
   std::vector<bool>        m_poked;
   
   std::string m_var_next_event;
+  std::string m_var_pause;
 
  protected: // State variables
+  double   m_previous_time;
   double   m_elapsed_time;
   double   m_start_time;
   double   m_skip_time;
+  double   m_pause_time;
+  bool     m_paused;
 };
 
 #endif 

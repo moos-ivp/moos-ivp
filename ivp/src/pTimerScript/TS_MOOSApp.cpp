@@ -16,11 +16,15 @@ using namespace std;
 
 TS_MOOSApp::TS_MOOSApp()
 {
-  m_elapsed_time = 0;
-  m_start_time   = 0;
-  m_skip_time    = 0;
+  m_elapsed_time  = 0;
+  m_previous_time = -1;
+  m_start_time    = 0;
+  m_skip_time     = 0;
+  m_pause_time    = 0;
+  m_paused        = false;
   
   m_var_next_event = "TIMER_SCRIPT_JUMP";
+  m_var_pause      = "TIMER_SCRIPT_PAUSE";
 }
 
 //---------------------------------------------------------
@@ -43,8 +47,43 @@ bool TS_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 
     if(key == m_var_next_event)
       jumpToNextPostingTime();
+    else if(key == m_var_pause) {
+      string pause_val = tolower(sval);
+      if(pause_val == "true")
+	m_paused = true;
+      else if(pause_val == "false")
+	m_paused = false;
+      else if(pause_val == "toggle")
+	m_paused = !m_paused;
+    }
   }
 
+  return(true);
+}
+
+//---------------------------------------------------------
+// Procedure: Iterate()
+
+bool TS_MOOSApp::Iterate()
+{
+  double curr_time = MOOSTime();
+  if(m_start_time == 0)
+    m_start_time = curr_time;  
+
+  if(m_paused) {
+    double delta_time = 0;
+    if(m_previous_time != -1)
+      delta_time = curr_time - m_previous_time;
+    m_pause_time += delta_time;
+  }
+
+  m_elapsed_time = (curr_time - m_start_time) + m_skip_time - m_pause_time;
+
+  cout << "elapsed_time: " << m_elapsed_time  << endl;
+  
+  checkForReadyPostings();
+
+  m_previous_time = curr_time;
   return(true);
 }
 
@@ -57,29 +96,11 @@ bool TS_MOOSApp::OnConnectToServer()
   // possibly look at the mission file?
   // m_MissionReader.GetConfigurationParam("Name", <string>);
   // m_Comms.Register("VARNAME", is_float(int));
-	
   RegisterVariables();  
 
   return(true);
 }
 
-
-//---------------------------------------------------------
-// Procedure: Iterate()
-
-bool TS_MOOSApp::Iterate()
-{
-  double curr_time = MOOSTime();
-  if(m_start_time == 0)
-    m_start_time = curr_time;
-
-  m_elapsed_time = (curr_time - m_start_time) + m_skip_time;
-  cout << m_elapsed_time << endl;
-  
-  checkForReadyPostings();
-
-  return(true);
-}
 
 //---------------------------------------------------------
 // Procedure: OnStartUp()
@@ -99,10 +120,18 @@ bool TS_MOOSApp::OnStartUp()
 
       if(param == "event")
 	addNewEvent(value);
-      if((param == "jump_var") || (param == "jump_variable")) {
+      else if(param == "paused")
+	setBooleanOnString(m_paused, value);
+      else if((param == "jump_var") || (param == "jump_variable")) {
 	if(!strContainsWhite(value)) {
 	  m_var_next_event = value;
 	  m_Comms.Register(m_var_next_event, 0);
+	}
+      }
+      else if((param == "pause_var") || (param == "pause_variable")) {
+	if(!strContainsWhite(value)) {
+	  m_var_pause = value;
+	  m_Comms.Register(m_var_pause, 0);
 	}
       }
     }
@@ -119,6 +148,7 @@ bool TS_MOOSApp::OnStartUp()
 void TS_MOOSApp::RegisterVariables()
 {
   m_Comms.Register(m_var_next_event, 0);
+  m_Comms.Register(m_var_pause, 0);
 }
 
 //------------------------------------------------------------
