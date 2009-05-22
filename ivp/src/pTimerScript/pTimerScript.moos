@@ -3,6 +3,22 @@
 ServerHost = localhost
 ServerPort = 9000
 
+//------------------------------------------
+// Antler configuration  block
+
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+
+  Run = MOOSDB		@ NewConsole = false
+  Run = uXMS		@ NewConsole = true
+  Run = pTimerScript    @ NewConsole = true
+}
+
+
+//------------------------------------------
+// pTimerScript configuration  block
+
 ProcessConfig = pTimerScript
 {
    AppTick   = 4
@@ -12,5 +28,20 @@ ProcessConfig = pTimerScript
    EVENT = var=alpha, val=true, time=23
    EVENT = var=delta, val=43, time=29
    EVENT = var=bravo, val=false, time=24
+   
+   JUMP_VAR = FOOBAR
 }
 
+//------------------------------------------
+// uXMS configuration  block
+
+ProcessConfig = uXMS
+{
+   AppTick   = 4
+   CommsTick = 4
+
+   VAR = alpha
+   VAR = bravo
+   VAR = charlie
+   VAR = delta
+}

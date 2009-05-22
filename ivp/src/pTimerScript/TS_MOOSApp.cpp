@@ -19,13 +19,8 @@ TS_MOOSApp::TS_MOOSApp()
   m_elapsed_time = 0;
   m_start_time   = 0;
   m_skip_time    = 0;
-}
-
-//---------------------------------------------------------
-// Destructor
-
-TS_MOOSApp::~TS_MOOSApp()
-{
+  
+  m_var_next_event = "TIMER_SCRIPT_JUMP";
 }
 
 //---------------------------------------------------------
@@ -46,9 +41,8 @@ bool TS_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
     bool   mstr  = msg.IsString();
     string msrc  = msg.GetSource();
 
-//    if(key == "FOOBAR")
-//      handleNewFOOBAR(sval);
-
+    if(key == m_var_next_event)
+      jumpToNextPostingTime();
   }
 
   return(true);
@@ -80,8 +74,9 @@ bool TS_MOOSApp::Iterate()
     m_start_time = curr_time;
 
   m_elapsed_time = (curr_time - m_start_time) + m_skip_time;
+  cout << m_elapsed_time << endl;
   
-  checkForPostings();
+  checkForReadyPostings();
 
   return(true);
 }
@@ -96,21 +91,20 @@ bool TS_MOOSApp::OnStartUp()
 
   list<string> sParams;
   if(m_MissionReader.GetConfiguration(GetAppName(), sParams)) {
-    
     list<string>::reverse_iterator p;
     for(p=sParams.rbegin(); p!=sParams.rend(); p++) {
       string line  = stripBlankEnds(*p);
       string param = tolower(stripBlankEnds(biteString(line, '=')));
       string value = stripBlankEnds(line);
 
-      cout << "param: [" << param << "]" << endl;
-      cout << "  value: [" << value << "]" << endl;
-
-      // EVENT = var=FOOBAR, val=true, time=45.0
-      
       if(param == "event")
 	addNewEvent(value);
-      
+      if((param == "jump_var") || (param == "jump_variable")) {
+	if(!strContainsWhite(value)) {
+	  m_var_next_event = value;
+	  m_Comms.Register(m_var_next_event, 0);
+	}
+      }
     }
   }
 
@@ -124,7 +118,7 @@ bool TS_MOOSApp::OnStartUp()
 
 void TS_MOOSApp::RegisterVariables()
 {
-  m_Comms.Register("FOO_BAR", 0);
+  m_Comms.Register(m_var_next_event, 0);
 }
 
 //------------------------------------------------------------
@@ -224,27 +218,47 @@ void TS_MOOSApp::printScript()
   cout << "====================================================" << endl;
 }
     
-//------------------------------------------------------------
-// Procedure: checkForPostings()
+//----------------------------------------------------------------
+// Procedure: checkForReadyPostings()
 //   Purpose: Go through the list of events and possibly post the
 //            event if the elapsed time is greater or equal to the
 //            post time, and if not posted previously.
 
-void TS_MOOSApp::checkForPostings()
+void TS_MOOSApp::checkForReadyPostings()
 {
   unsigned int i, vsize = m_pairs.size();
   for(i=0; i<vsize; i++) {
+    // First check to see if the pair is ready, and not poked already
     if((m_elapsed_time > m_ptime[i]) && !m_poked[i]) {
       string variable = m_pairs[i].get_var();
       if(m_pairs[i].is_string()) 
 	m_Comms.Notify(variable, m_pairs[i].get_sdata());
       else
 	m_Comms.Notify(variable, m_pairs[i].get_ddata());
+      // If just now poked, note it, so it won't be poked again
       m_poked[i] = true;
     }
-    else // Since ordered events, return on first failure.
-      return;
   }
 }
 
+
+//----------------------------------------------------------------
+// Procedure: jumpToNextPosting()
+//   Purpose: Go through the list of events and find the next un-poked
+//            var-data pair and jump forward in time to the time at 
+//            which the next unpoked var-data pair is ready.
+//            The member variable "m_skip_time" is incremented to hold
+//            the cumulative time jumped forward.
+
+void TS_MOOSApp::jumpToNextPostingTime()
+{
+  unsigned int i, vsize = m_pairs.size();
+  double skip_amt = 0;
+  for(i=0; ((i<vsize)&&(skip_amt==0)); i++) {
+    if(!m_poked[i])
+      skip_amt = m_ptime[i] - m_elapsed_time;
+  }
+   
+  m_skip_time += skip_amt;
+}
 

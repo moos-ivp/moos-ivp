@@ -17,7 +17,7 @@ class TS_MOOSApp : public CMOOSApp
 {
  public:
   TS_MOOSApp();
-  virtual ~TS_MOOSApp();
+  virtual ~TS_MOOSApp() {};
 
  public: // Standard MOOSApp functions to overload
   bool OnNewMail(MOOSMSG_LIST &NewMail);
@@ -30,7 +30,8 @@ class TS_MOOSApp : public CMOOSApp
   bool addNewEvent(std::string);
   void sortEvents();
   void printScript();
-  void checkForPostings();
+  void checkForReadyPostings();
+  void jumpToNextPostingTime();
 
  protected: // Configuration parameters
   std::vector<VarDataPair> m_pairs;
