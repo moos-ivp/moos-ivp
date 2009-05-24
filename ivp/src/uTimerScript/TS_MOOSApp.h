@@ -32,6 +32,7 @@ class TS_MOOSApp : public CMOOSApp
   void printScript();
   void checkForReadyPostings();
   void jumpToNextPostingTime();
+  void handleReset();
   void postStatus();
 
  protected: // Configuration parameters
@@ -43,6 +44,7 @@ class TS_MOOSApp : public CMOOSApp
   std::string m_var_forward;
   std::string m_var_pause;
   std::string m_var_status;
+  std::string m_var_reset;
 
  protected: // State variables
   double   m_previous_time;

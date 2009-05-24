@@ -28,6 +28,7 @@ TS_MOOSApp::TS_MOOSApp()
   m_var_forward    = "TIMER_SCRIPT_FORWARD";
   m_var_pause      = "TIMER_SCRIPT_PAUSE";
   m_var_status     = "TIMER_SCRIPT_STATUS";
+  m_var_reset      = "TIMER_SCRIPT_RESET";
 }
 
 //---------------------------------------------------------
@@ -52,6 +53,8 @@ bool TS_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
       jumpToNextPostingTime();
     else if((key == m_var_forward) && !mstr && (dval>0))
       m_skip_time += dval;
+    else if(key == m_var_reset)
+      handleReset();
     else if(key == m_var_pause) {
       string pause_val = tolower(sval);
       if(pause_val == "true")
@@ -309,6 +312,27 @@ void TS_MOOSApp::jumpToNextPostingTime()
 }
 
 
+//----------------------------------------------------------------
+// Procedure: handleReset()
+//   Purpose: Reset the script to how it was at the initial launch.
+//            HOWEVER, the PAUSE state is not reset. 
+
+void TS_MOOSApp::handleReset()
+{
+  m_elapsed_time  = 0;
+  m_previous_time = -1;
+  m_start_time    = 0;
+  m_skip_time     = 0;
+  m_pause_time    = 0;
+  m_posted_count  = 0;
+
+  // Mark all the posts as being unposted
+  unsigned int i, vsize=m_poked.size();
+  for(i=0; i<vsize; i++)
+    m_poked[i] = false;
+}
+  
+  
 //----------------------------------------------------------------
 // Procedure: postStatus
 
