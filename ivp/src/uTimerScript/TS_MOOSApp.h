@@ -40,6 +40,7 @@ class TS_MOOSApp : public CMOOSApp
   std::vector<bool>        m_poked;
   
   std::string m_var_next_event;
+  std::string m_var_forward;
   std::string m_var_pause;
   std::string m_var_status;
 

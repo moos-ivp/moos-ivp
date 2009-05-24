@@ -24,7 +24,8 @@ TS_MOOSApp::TS_MOOSApp()
   m_paused        = false;
   m_posted_count  = 0;
   
-  m_var_next_event = "TIMER_SCRIPT_JUMP";
+  m_var_next_event = "TIMER_SCRIPT_NEXT";
+  m_var_forward    = "TIMER_SCRIPT_FORWARD";
   m_var_pause      = "TIMER_SCRIPT_PAUSE";
   m_var_status     = "TIMER_SCRIPT_STATUS";
 }
@@ -47,8 +48,10 @@ bool TS_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
     bool   mstr  = msg.IsString();
     string msrc  = msg.GetSource();
 
-    if(key == m_var_next_event)
+    if((key == m_var_next_event) && (tolower(sval) == "next"))
       jumpToNextPostingTime();
+    else if((key == m_var_forward) && !mstr && (dval>0))
+      m_skip_time += dval;
     else if(key == m_var_pause) {
       string pause_val = tolower(sval);
       if(pause_val == "true")
@@ -129,6 +132,12 @@ bool TS_MOOSApp::OnStartUp()
 	  m_Comms.Register(m_var_next_event, 0);
 	}
       }
+      else if((param == "forward_var") || (param == "forward_variable")) {
+	if(!strContainsWhite(value)) {
+	  m_var_forward = value;
+	  m_Comms.Register(m_var_forward, 0);
+	}
+      }
       else if((param == "pause_var") || (param == "pause_variable")) {
 	if(!strContainsWhite(value)) {
 	  m_var_pause = value;
@@ -153,6 +162,7 @@ bool TS_MOOSApp::OnStartUp()
 void TS_MOOSApp::RegisterVariables()
 {
   m_Comms.Register(m_var_next_event, 0);
+  m_Comms.Register(m_var_forward, 0);
   m_Comms.Register(m_var_pause, 0);
 }
 
@@ -288,8 +298,8 @@ void TS_MOOSApp::checkForReadyPostings()
 
 void TS_MOOSApp::jumpToNextPostingTime()
 {
-  unsigned int i, vsize = m_pairs.size();
   double skip_amt = 0;
+  unsigned int i, vsize = m_pairs.size();
   for(i=0; ((i<vsize)&&(skip_amt==0)); i++) {
     if(!m_poked[i])
       skip_amt = m_ptime[i] - m_elapsed_time;
