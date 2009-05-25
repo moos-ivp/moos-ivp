@@ -35,6 +35,8 @@ class TS_MOOSApp : public CMOOSApp
   void handleReset();
   void postStatus();
   void seedRandom();
+  void expandIndexPairs();
+
 
  protected: // Configuration parameters
   std::vector<VarDataPair> m_pairs;
@@ -48,7 +50,7 @@ class TS_MOOSApp : public CMOOSApp
   std::string m_var_reset;
 
   int      m_reset_max;
-  double   m_reset_time;  // numerical, after-last
+  double   m_reset_time;  // -1:none, 0:after-last, NUM:atNUM
 
  protected: // State variables
   double   m_previous_time;
@@ -59,6 +61,7 @@ class TS_MOOSApp : public CMOOSApp
   bool     m_paused;
   int      m_posted_count;
   int      m_reset_count;
+  int      m_iteration;
 };
 
 #endif 

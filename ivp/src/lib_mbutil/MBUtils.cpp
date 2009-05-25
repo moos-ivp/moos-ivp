@@ -575,7 +575,7 @@ string compactConsecutive(const string& str, char dchar)
 
 //----------------------------------------------------------------
 // Procedure: findReplace
-//      Note: Added May 2905
+//      Note: Added May 29, 2005
 //            Replace all occurances of fchar with rchar in str
 
 string findReplace(const string& str, char fchar, char rchar)
@@ -837,7 +837,7 @@ bool isNumber(const string& str, bool blanks_allowed)
   bool ok       = true;
 
   for(string::size_type i=0; (i<len)&&ok; i++) {
-    if((buff[i] >= 48) && (buff[i] <= 59))
+    if((buff[i] >= 48) && (buff[i] <= 57))
       digi_cnt++;
     else if(buff[i] == '.') {
       deci_cnt++;

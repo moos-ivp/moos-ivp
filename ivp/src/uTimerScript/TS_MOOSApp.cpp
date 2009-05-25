@@ -25,10 +25,11 @@ TS_MOOSApp::TS_MOOSApp()
   m_paused        = false;
   m_posted_count  = 0;
   m_reset_count   = 0;
+  m_iteration     = 0; 
 
   // Default values for configuration parameters.
   m_reset_max      = -1;
-  m_reset_time     = 0;
+  m_reset_time     = -1; // -1:none, 0:after-last, NUM:atNUM
   m_var_next_event = "TIMER_SCRIPT_NEXT";
   m_var_forward    = "TIMER_SCRIPT_FORWARD";
   m_var_pause      = "TIMER_SCRIPT_PAUSE";
@@ -84,6 +85,13 @@ bool TS_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 
 bool TS_MOOSApp::Iterate()
 {
+
+  if(m_iteration == 0) {
+    sortEvents();
+    expandIndexPairs();
+    printScript();
+  }
+
   double curr_time = MOOSTime();
   if(m_start_time == 0)
     m_start_time = curr_time;  
@@ -101,6 +109,7 @@ bool TS_MOOSApp::Iterate()
 
   m_previous_time = curr_time;
   postStatus();
+  m_iteration++;
   return(true);
 }
 
@@ -184,7 +193,6 @@ bool TS_MOOSApp::OnStartUp()
     }
   }
 
-  printScript();
   RegisterVariables();
   return(true);
 }
@@ -217,8 +225,15 @@ bool TS_MOOSApp::addNewEvent(string event_str)
     string value = stripBlankEnds(svector[i]);
     if(param == "var")
       new_var = value;
-    else if(param == "val")
+    else if(param == "val") {
+      if(strContains(value, "$$IDsdfsdfX")) {
+	string idx_string = intToString(m_pairs.size());
+	idx_string = padString(idx_string, 3);
+	idx_string = findReplace(idx_string, ' ', '0');
+	value = findReplace(value, "$$IDX", idx_string);
+      }
       new_val = value;
+    }
     else if(param == "time") {
       if(isNumber(value)) {
 	double dval = atof(value.c_str());
@@ -254,6 +269,27 @@ bool TS_MOOSApp::addNewEvent(string event_str)
   sortEvents();
   return(true);
 }
+
+//------------------------------------------------------------
+// Procedure: expandIndexInPairs
+// 
+
+void TS_MOOSApp::expandIndexPairs()
+{
+  unsigned int i, vsize = m_pairs.size();
+  for(i=0; i<vsize; i++) {
+    string value = m_pairs[i].get_sdata();
+    if(strContains(value, "$$IDX")) {
+      string idx_string = intToString(i);
+      idx_string = padString(idx_string, 3);
+      idx_string = findReplace(idx_string, ' ', '0');
+      value = findReplace(value, "$$IDX", idx_string);
+      m_pairs[i].set_sdata(value);
+    }
+  }
+}
+    
+
 
 //------------------------------------------------------------
 // Procedure: sortEvents
@@ -324,8 +360,10 @@ void TS_MOOSApp::checkForReadyPostings()
 {
   unsigned int i, vsize = m_pairs.size();
   for(i=0; i<vsize; i++) {
-    // First check to see if the pair is ready, and not poked already
-    if((m_elapsed_time >= m_ptime[i]) && !m_poked[i]) {
+    // Condtions for posting: (1) enough elapsed time, (2) not already
+    // poked, (3) poke time is not after reset-time if reset-time set.
+    if((m_elapsed_time >= m_ptime[i]) && !m_poked[i] && 
+       ((m_reset_time == -1) || (m_ptime[i] <= m_reset_time))) {
       string variable = m_pairs[i].get_var();
       if(m_pairs[i].is_string()) 
 	m_Comms.Notify(variable, m_pairs[i].get_sdata());

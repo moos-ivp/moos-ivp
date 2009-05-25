@@ -24,15 +24,28 @@ ProcessConfig = uTimerScript
    AppTick   = 4
    CommsTick = 4
 
-   PAUSED    = true
+   PAUSED    = false
    RESET_MAX = 4
 
    DURATION = 600
 
-   EVENT = time=0:100, var=charlie, val="99", 
-   EVENT = time=0:100, var=alpha, val="true", 
-   EVENT = time=0:100, var=delta, val=43
-   EVENT = time=0:100, var=bravo, val=false
+   //EVENT = time=0:20, var=charlie$$IDX, val="99", 
+   //EVENT = time=0:20, var=alpha$$IDX, val="true", 
+   //EVENT = time=0:20, var=delta$$IDX, val=43
+   //EVENT = time=0:20, var=bravo$$IDX, val=false
+   //EVENT = time=0:20, var=echo$$IDX, val=false
+
+   EVENT  = var=FINDING, val="object-$$IDX", time=30:60
+   EVENT  = var=FINDING, val="object-$$IDX", time=30:60
+   EVENT  = var=FINDING, val="object-$$IDX", time=30:60
+   EVENT  = var=FINDING, val="object-$$IDX", time=30:60
+
+   //EVENT = time=0:20, var=charlie, val="$$IDX"
+   //EVENT = time=0:20, var=alpha,   val="$$IDX" 
+   //EVENT = time=0:20, var=delta,   val="$$IDX"
+   //EVENT = time=0:20, var=bravo,   val="$$IDX"
+   //EVENT = time=0:20, var=echo,    val="$$IDX"
+
    //EVENT = time=0:100, var=TIMER_SCRIPT_RESET, val="reset"
 }
 
@@ -48,6 +61,10 @@ ProcessConfig = uXMS
    VAR = bravo
    VAR = charlie
    VAR = delta
+   VAR = echo
+   VAR = FINDING
+
+   HISTORY_VAR=FINDING   
 
    VAR = TIMER_SCRIPT_STATUS
    VAR = TIMER_SCRIPT_RESET
