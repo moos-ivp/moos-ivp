@@ -11,27 +11,27 @@ ProcessConfig = ANTLER
   MSBetweenLaunches = 200
 
   Run = MOOSDB		@ NewConsole = false
-  Run = pTimerScript    @ NewConsole = true
+  Run = uTimerScript    @ NewConsole = true
   Run = uXMS		@ NewConsole = true
 }
 
 
 //------------------------------------------
-// pTimerScript configuration  block
+// uTimerScript configuration  block
 
-ProcessConfig = pTimerScript
+ProcessConfig = uTimerScript
 {
    AppTick   = 4
    CommsTick = 4
 
-   PAUSED = true
+   PAUSED    = true
+   RESET_MAX = 4
 
-   EVENT = var=charlie, val="99", time=28
-   EVENT = var=alpha, val=true, time=23
-   EVENT = var=delta, val=43, time=29
-   EVENT = var=bravo, val=false, time=24
-   
-   JUMP_VAR = FOOBAR
+   EVENT = var=charlie, val="99", time=8
+   EVENT = var=alpha, val="true", time=3
+   EVENT = var=delta, val=43, time=9
+   EVENT = var=TIMER_SCRIPT_RESET, val="reset", time=9
+   EVENT = var=bravo, val=false, time=4
 }
 
 //------------------------------------------
@@ -48,4 +48,5 @@ ProcessConfig = uXMS
    VAR = delta
 
    VAR = TIMER_SCRIPT_STATUS
+   VAR = TIMER_SCRIPT_RESET
 }

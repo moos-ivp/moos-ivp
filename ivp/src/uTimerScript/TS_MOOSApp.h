@@ -54,6 +54,8 @@ class TS_MOOSApp : public CMOOSApp
   double   m_pause_time;
   bool     m_paused;
   int      m_posted_count;
+  int      m_reset_count;
+  int      m_reset_max;
 };
 
 #endif 

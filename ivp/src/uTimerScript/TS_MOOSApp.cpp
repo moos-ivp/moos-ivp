@@ -23,6 +23,8 @@ TS_MOOSApp::TS_MOOSApp()
   m_pause_time    = 0;
   m_paused        = false;
   m_posted_count  = 0;
+  m_reset_count   = 0;
+  m_reset_max     = -1;
   
   m_var_next_event = "TIMER_SCRIPT_NEXT";
   m_var_forward    = "TIMER_SCRIPT_FORWARD";
@@ -53,8 +55,11 @@ bool TS_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
       jumpToNextPostingTime();
     else if((key == m_var_forward) && !mstr && (dval>0))
       m_skip_time += dval;
-    else if(key == m_var_reset)
-      handleReset();
+    else if(key == m_var_reset) {
+      string str = tolower(sval);
+      if((str == "reset") || (str == "true"))
+	handleReset();
+    }
     else if(key == m_var_pause) {
       string pause_val = tolower(sval);
       if(pause_val == "true")
@@ -129,6 +134,13 @@ bool TS_MOOSApp::OnStartUp()
 	addNewEvent(value);
       else if(param == "paused")
 	setBooleanOnString(m_paused, value);
+      else if(param == "reset_max") {
+	string str = tolower(value);
+	if((str == "any") || (str == "unlimited"))
+	  m_reset_max = -1;
+	else if(isNumber(value) && (atoi(value.c_str()) >= 0))
+	  m_reset_max = atoi(value.c_str());
+      }
       else if((param == "jump_var") || (param == "jump_variable")) {
 	if(!strContainsWhite(value)) {
 	  m_var_next_event = value;
@@ -139,6 +151,12 @@ bool TS_MOOSApp::OnStartUp()
 	if(!strContainsWhite(value)) {
 	  m_var_forward = value;
 	  m_Comms.Register(m_var_forward, 0);
+	}
+      }
+      else if((param == "reset_var") || (param == "reset_variable")) {
+	if(!strContainsWhite(value)) {
+	  m_var_reset = value;
+	  m_Comms.Register(m_var_reset, 0);
 	}
       }
       else if((param == "pause_var") || (param == "pause_variable")) {
@@ -167,6 +185,7 @@ void TS_MOOSApp::RegisterVariables()
   m_Comms.Register(m_var_next_event, 0);
   m_Comms.Register(m_var_forward, 0);
   m_Comms.Register(m_var_pause, 0);
+  m_Comms.Register(m_var_reset, 0);
 }
 
 //------------------------------------------------------------
@@ -319,6 +338,13 @@ void TS_MOOSApp::jumpToNextPostingTime()
 
 void TS_MOOSApp::handleReset()
 {
+  // Check if the number of allowed resets has been reached. Unlimited
+  // resets are indicated by (m_reset_max == -1).
+  if((m_reset_max != -1) && (m_reset_count >= m_reset_max))
+    return;
+
+  m_reset_count++;
+
   m_elapsed_time  = 0;
   m_previous_time = -1;
   m_start_time    = 0;
@@ -338,7 +364,7 @@ void TS_MOOSApp::handleReset()
 
 void TS_MOOSApp::postStatus()
 {
-  if((m_var_status == "") || (m_var_status == "silent"))
+  if((m_var_status == "") || (tolower(m_var_status) == "silent"))
     return;
 
   string status = "elapsed_time=" + doubleToString(m_elapsed_time,2);
@@ -348,6 +374,11 @@ void TS_MOOSApp::postStatus()
   status += ", pending=" + intToString(pending);
 
   status += ", paused=" + boolToString(m_paused);
+  
+  string maxresets = "/any";
+  if(m_reset_max != -1)
+    maxresets = "/" + intToString(m_reset_max);
+  status += ", resets=" + intToString(m_reset_count) + maxresets;
   
   m_Comms.Notify(m_var_status, status);
 }
