@@ -118,9 +118,9 @@ int main(int argc ,char * argv[])
     
   bool seed = true;
   if(seed) {
-    unsigned long tseed = time(NULL);
-    unsigned long hostid = gethostid();
-    unsigned long pid = (long)getpid();
+    unsigned long tseed = time(NULL)+1;
+    unsigned long hostid = gethostid()+1;
+    unsigned long pid = (long)getpid()+1;
     unsigned long seed = (tseed%999999);
     seed = ((rand())*seed*hostid)%999999;
     seed = (seed*pid)%999999;
