@@ -11,8 +11,8 @@ ProcessConfig = ANTLER
   MSBetweenLaunches = 200
 
   Run = MOOSDB		@ NewConsole = false
-  Run = uTimerScript    @ NewConsole = true
   Run = uXMS		@ NewConsole = true
+  Run = uTimerScript    @ NewConsole = true
 }
 
 
@@ -27,11 +27,13 @@ ProcessConfig = uTimerScript
    PAUSED    = true
    RESET_MAX = 4
 
-   EVENT = var=charlie, val="99", time=8
-   EVENT = var=alpha, val="true", time=3
-   EVENT = var=delta, val=43, time=9
-   EVENT = var=TIMER_SCRIPT_RESET, val="reset", time=9
-   EVENT = var=bravo, val=false, time=4
+   DURATION = 600
+
+   EVENT = time=0:100, var=charlie, val="99", 
+   EVENT = time=0:100, var=alpha, val="true", 
+   EVENT = time=0:100, var=delta, val=43
+   EVENT = time=0:100, var=bravo, val=false
+   //EVENT = time=0:100, var=TIMER_SCRIPT_RESET, val="reset"
 }
 
 //------------------------------------------

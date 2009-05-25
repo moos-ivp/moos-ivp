@@ -16,6 +16,7 @@ using namespace std;
 
 TS_MOOSApp::TS_MOOSApp()
 {
+  // Initial values for state variables.
   m_elapsed_time  = 0;
   m_previous_time = -1;
   m_start_time    = 0;
@@ -24,13 +25,17 @@ TS_MOOSApp::TS_MOOSApp()
   m_paused        = false;
   m_posted_count  = 0;
   m_reset_count   = 0;
-  m_reset_max     = -1;
-  
+
+  // Default values for configuration parameters.
+  m_reset_max      = -1;
+  m_reset_time     = 0;
   m_var_next_event = "TIMER_SCRIPT_NEXT";
   m_var_forward    = "TIMER_SCRIPT_FORWARD";
   m_var_pause      = "TIMER_SCRIPT_PAUSE";
   m_var_status     = "TIMER_SCRIPT_STATUS";
   m_var_reset      = "TIMER_SCRIPT_RESET";
+
+  seedRandom();
 }
 
 //---------------------------------------------------------
@@ -141,6 +146,13 @@ bool TS_MOOSApp::OnStartUp()
 	else if(isNumber(value) && (atoi(value.c_str()) >= 0))
 	  m_reset_max = atoi(value.c_str());
       }
+      else if(param == "reset_time") {
+	string str = tolower(value);
+	if((str == "end") || (str == "finished"))
+	  m_reset_time = 0;
+	else if(isNumber(value) && (atof(value.c_str()) > 0))
+	  m_reset_time = atof(value.c_str());
+      }
       else if((param == "jump_var") || (param == "jump_variable")) {
 	if(!strContainsWhite(value)) {
 	  m_var_next_event = value;
@@ -207,10 +219,27 @@ bool TS_MOOSApp::addNewEvent(string event_str)
       new_var = value;
     else if(param == "val")
       new_val = value;
-    else if((param == "time") && isNumber(value)) {
-      double dval = atof(value.c_str());
-      if(dval > 0)
-	new_time_of_event = dval;
+    else if(param == "time") {
+      if(isNumber(value)) {
+	double dval = atof(value.c_str());
+	if(dval > 0)
+	  new_time_of_event = dval;
+      }
+      else if(strContains(value, ':')) {
+	string left   = stripBlankEnds(biteString(value, ':'));
+	string right  = stripBlankEnds(value);
+	double dleft  = atof(left.c_str());
+	double dright = atof(right.c_str());
+	if(isNumber(left) && isNumber(right) && (dleft <= dright)) {
+	  double delta = (100 * (dright - dleft));
+	  if(delta < 2) 
+	    new_time_of_event = dleft;
+	  else {
+	    int rand_int = rand() % ((int)(delta));
+	    new_time_of_event = dleft + ((double)(rand_int)/100);
+	  }
+	}
+      }
     }
   }
   
@@ -384,3 +413,16 @@ void TS_MOOSApp::postStatus()
 }
   
   
+//----------------------------------------------------------------
+// Procedure: seedRandom
+
+void TS_MOOSApp::seedRandom()
+{
+  unsigned long tseed = time(NULL)+1;
+  unsigned long hostid = gethostid()+1;
+  unsigned long pid = (long)getpid()+1;
+  unsigned long seed = (tseed%999999);
+  seed = ((rand())*seed*hostid)%999999;
+  seed = (seed*pid)%999999;
+  srand(seed);
+}
