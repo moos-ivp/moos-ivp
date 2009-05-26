@@ -20,6 +20,7 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
+#include <string>
 #include "MOOSLib.h"
 #include "MOOSGenLib.h"
 #include "MarinePID.h"
@@ -39,11 +40,11 @@ int main(int argc, char *argv[])
 
   MarinePID marinePID;
   
-  char *sMissionFile = "pMarinePID.moos";
+  std::string sMissionFile = "pMarinePID.moos";
   if(argc > 1)
     sMissionFile = argv[1];
 
-  marinePID.Run("pMarinePID", sMissionFile);
+  marinePID.Run("pMarinePID", sMissionFile.c_str());
   
   return(0);
 }
