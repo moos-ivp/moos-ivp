@@ -201,7 +201,7 @@ bool Viewer::setParam(string param, double value)
   if(param == "set_base_ipf")
     m_base_ipf = value;
   else if(param == "uniform_amount")
-    m_piece_count = value;
+    m_piece_count = (int)(value);
   else if(param == "mod_base_ipf")
     m_base_ipf += value;
   else if(param == "set_base_aof")
