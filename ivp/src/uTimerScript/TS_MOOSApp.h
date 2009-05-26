@@ -30,7 +30,7 @@ class TS_MOOSApp : public CMOOSApp
   bool addNewEvent(std::string);
   void sortEvents();
   void printScript();
-  void checkForReadyPostings();
+  bool checkForReadyPostings();
   void jumpToNextPostingTime();
   void handleReset();
   void postStatus();

@@ -3,6 +3,8 @@
 ServerHost = localhost
 ServerPort = 9000
 
+MOOSTimeWarp = 1
+
 //------------------------------------------
 // Antler configuration  block
 
@@ -24,10 +26,9 @@ ProcessConfig = uTimerScript
    AppTick   = 4
    CommsTick = 4
 
-   PAUSED    = false
-   RESET_MAX = 4
-
-   DURATION = 600
+   PAUSED     = false
+   RESET_MAX  = 4
+   RESET_TIME = end
 
    //EVENT = time=0:20, var=charlie$$IDX, val="99", 
    //EVENT = time=0:20, var=alpha$$IDX, val="true", 
@@ -35,6 +36,7 @@ ProcessConfig = uTimerScript
    //EVENT = time=0:20, var=bravo$$IDX, val=false
    //EVENT = time=0:20, var=echo$$IDX, val=false
 
+   EVENT  = var=FINDING, val="none", time=0
    EVENT  = var=FINDING, val="object-$$IDX", time=30:60
    EVENT  = var=FINDING, val="object-$$IDX", time=30:60
    EVENT  = var=FINDING, val="object-$$IDX", time=30:60

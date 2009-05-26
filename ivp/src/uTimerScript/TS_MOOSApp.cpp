@@ -102,13 +102,26 @@ bool TS_MOOSApp::Iterate()
       delta_time = curr_time - m_previous_time;
     m_pause_time += delta_time;
   }
-
-  m_elapsed_time = (curr_time - m_start_time) + m_skip_time - m_pause_time;
-
-  checkForReadyPostings();
-
+  // Make sure these three steps are done *before* any resets.
   m_previous_time = curr_time;
+  m_elapsed_time = (curr_time - m_start_time) + m_skip_time - m_pause_time;
   postStatus();
+  
+  bool all_posted = checkForReadyPostings();
+
+  // Do the reset only if all events are posted AND the reset_time is 
+  // set to zero reset indicating desired after all postings complete.
+  if((all_posted) && (m_reset_time ==0))
+    handleReset();
+
+  // The below check for reset (based on purely elapsed time) is done
+  // in addition to, and after the above check for reset (based on all
+  // events being posted). Because - it is possible to have (a) elapsed
+  // time > reset time, but some events not posted (b) those unposted
+  // events having a time less than reset time.
+  if((m_reset_time > 0) && (m_elapsed_time >= m_reset_time))
+    handleReset();
+
   m_iteration++;
   return(true);
 }
@@ -237,7 +250,7 @@ bool TS_MOOSApp::addNewEvent(string event_str)
     else if(param == "time") {
       if(isNumber(value)) {
 	double dval = atof(value.c_str());
-	if(dval > 0)
+	if(dval >= 0)
 	  new_time_of_event = dval;
       }
       else if(strContains(value, ':')) {
@@ -258,7 +271,7 @@ bool TS_MOOSApp::addNewEvent(string event_str)
     }
   }
   
-  if((new_var=="") || (new_val=="") || (new_time_of_event <=0))
+  if((new_var=="") || (new_val=="") || (new_time_of_event <0))
     return(false);
 
   VarDataPair new_pair(new_var, new_val, "auto");
@@ -355,8 +368,10 @@ void TS_MOOSApp::printScript()
 //   Purpose: Go through the list of events and possibly post the
 //            event if the elapsed time is greater or equal to the
 //            post time, and if not posted previously.
+//   Returns: True if all postings have been made by the end of this
+//            function call - false otherwise
 
-void TS_MOOSApp::checkForReadyPostings()
+bool TS_MOOSApp::checkForReadyPostings()
 {
   unsigned int i, vsize = m_pairs.size();
   bool all_poked = true;
@@ -364,7 +379,7 @@ void TS_MOOSApp::checkForReadyPostings()
     // Condtions for posting: (1) enough elapsed time, (2) not already
     // poked, (3) poke time is not after reset-time if reset-time set.
     if((m_elapsed_time >= m_ptime[i]) && !m_poked[i] && 
-       ((m_reset_time == -1) || (m_ptime[i] <= m_reset_time))) {
+       ((m_reset_time <= 0) || (m_ptime[i] <= m_reset_time))) {
       string variable = m_pairs[i].get_var();
       if(m_pairs[i].is_string()) 
 	m_Comms.Notify(variable, m_pairs[i].get_sdata());
@@ -377,8 +392,7 @@ void TS_MOOSApp::checkForReadyPostings()
     all_poked = all_poked && m_poked[i];
   }
 
-  if(all_poked)
-    handleReset();
+  return(all_poked);
 }
 
 
