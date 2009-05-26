@@ -359,6 +359,7 @@ void TS_MOOSApp::printScript()
 void TS_MOOSApp::checkForReadyPostings()
 {
   unsigned int i, vsize = m_pairs.size();
+  bool all_poked = true;
   for(i=0; i<vsize; i++) {
     // Condtions for posting: (1) enough elapsed time, (2) not already
     // poked, (3) poke time is not after reset-time if reset-time set.
@@ -373,7 +374,11 @@ void TS_MOOSApp::checkForReadyPostings()
       m_posted_count++;
       m_poked[i] = true;
     }
+    all_poked = all_poked && m_poked[i];
   }
+
+  if(all_poked)
+    handleReset();
 }
 
 
