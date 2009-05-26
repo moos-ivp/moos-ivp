@@ -170,8 +170,10 @@ bool TS_MOOSApp::OnStartUp()
       }
       else if(param == "reset_time") {
 	string str = tolower(value);
-	if((str == "end") || (str == "finished"))
+	if((str == "end") || (str == "all-posted"))
 	  m_reset_time = 0;
+	else if(str == "none")  // Default
+	  m_reset_time = -1;
 	else if(isNumber(value) && (atof(value.c_str()) > 0))
 	  m_reset_time = atof(value.c_str());
       }
