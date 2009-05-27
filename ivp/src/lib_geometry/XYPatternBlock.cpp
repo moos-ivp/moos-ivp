@@ -103,7 +103,7 @@ int XYPatternBlock::setLanePoints()
   double alter_ang2 = angle360(m_angle + 90);
   
   double lane_pts_count_d = (m_blockwid / m_swathwid) + 1; 
-  int i, lane_pts_count = trunc(lane_pts_count_d + 0.99999);
+  int i, lane_pts_count = (int)(trunc(lane_pts_count_d + 0.99999));
 
   double cptx, cpty;
   idPointCenter(cptx, cpty);
