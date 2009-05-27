@@ -55,8 +55,9 @@ BHV_StationKeep::BHV_StationKeep(IvPDomain gdomain) :
   m_outer_speed  = 1.2;
   m_extra_speed  = 2.5;
   m_center_activate = false;
-  m_pskeep_radius = -1;   // -1 indicates not enabled
+  m_pskeep_radius   = -1;   // -1 indicates not enabled
   m_pskeep_variable = "PSKEEP_MODE";
+  m_swing_time      = 0;
 
   // Default values for State  Variables
   m_center_pending     = false;
@@ -65,6 +66,7 @@ BHV_StationKeep::BHV_StationKeep(IvPDomain gdomain) :
   m_pskeep_state       = "disabled";
   m_transit_state      = "disabled";
   m_dist_to_station    = -1;
+  m_mark_time          = -1;
 
   // Declare information needed by this behavior
   addInfoVars("NAV_X, NAV_Y");
@@ -139,6 +141,16 @@ bool BHV_StationKeep::setParam(string param, string val)
     return(true);
   }
 
+  else if(param == "swing_time") {
+    double dval = atof(val.c_str());
+    if((dval < 0) || (!isNumber(val)))
+      return(false);
+    m_swing_time = dval;
+    if(m_swing_time > 60) // Disallow swing times greater than 1min.
+      m_swing_time = 60;
+    return(true);
+  }
+
   else if((param == "extra_speed") || (param == "transit_speed")) {
     double dval = atof(val.c_str());
     if((dval <= 0) || (!isNumber(val)))
@@ -171,6 +183,10 @@ void BHV_StationKeep::onIdleState()
     m_center_pending = true;
     m_center_assign  = "present_position";
   }
+
+  // Time at which the behavior transitioned from idle to running.
+  // So when idle, always reset to -1.
+  m_mark_time = -1;
 }
 
 //-----------------------------------------------------------
@@ -265,6 +281,11 @@ bool BHV_StationKeep::updateInfoIn()
   m_osx = getBufferDoubleVal("NAV_X", ok1);
   m_osy = getBufferDoubleVal("NAV_Y", ok2);
 
+  // If previous state was idle (mark_time=-1), note the time entered
+  // into the running state.
+  if(m_mark_time == -1)
+    m_mark_time = m_currtime;
+
   // Must get ownship position from InfoBuffer
   if(!ok1 || !ok2) {
     postEMessage("No ownship X/Y info in info_buffer.");
@@ -279,8 +300,10 @@ bool BHV_StationKeep::updateInfoIn()
       m_station_x   = m_osx;
       m_station_y   = m_osy;
       m_station_set = true;
-      cout << "New center position: " << m_station_x << ", " 
-	   << m_station_y << endl;
+      if(m_currtime >= (m_mark_time + m_swing_time)) {
+	m_center_assign = "";
+	m_center_pending = false;
+      }
     }
     else {
       vector<string> svector = parseString(m_center_assign, ',');
@@ -299,9 +322,9 @@ bool BHV_StationKeep::updateInfoIn()
 	  m_station_set = true;
 	}
       }
+      m_center_assign = "";
+      m_center_pending = false;
     }
-    m_center_assign = "";
-    m_center_pending = false;
   }
   if(ok_center_update == false)
     return(false);

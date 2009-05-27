@@ -80,6 +80,13 @@ private:  // State Variables
   std::string  m_pskeep_state;
   std::string  m_transit_state;
 
+  // Time at which the behavior transitioned from idle to running.
+  double       m_mark_time;
+  // Amount of time the station circle is allowed to drift with the
+  // vehicle after first entering the station mode. Only relevant 
+  // when activate under "center-active" style.
+  double       m_swing_time;
+
   std::list<double> m_distance_history;    // distance
   std::list<double> m_distance_thistory;   // time recorded
 };
