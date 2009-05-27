@@ -143,11 +143,9 @@ bool BHV_StationKeep::setParam(string param, string val)
 
   else if(param == "swing_time") {
     double dval = atof(val.c_str());
-    if((dval < 0) || (!isNumber(val)))
+    if(!isNumber(val))
       return(false);
-    m_swing_time = dval;
-    if(m_swing_time > 60) // Disallow swing times greater than 1min.
-      m_swing_time = 60;
+    m_swing_time = vclip(dval, 0, 60);
     return(true);
   }
 
