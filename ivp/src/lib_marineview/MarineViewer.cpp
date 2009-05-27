@@ -83,7 +83,10 @@ MarineViewer::~MarineViewer()
 bool MarineViewer::setParam(string param, string value)
 {
   string p = tolower(stripBlankEnds(param));
-  string v = tolower(stripBlankEnds(value));
+
+  // For some, we want value without tolower performed.
+  value = stripBlankEnds(value);
+  string v = tolower(value);
   
   bool handled = false;
   if(p=="cross_view")
@@ -108,7 +111,7 @@ bool MarineViewer::setParam(string param, string value)
   else if(p=="marker")
     handled = m_vmarkers.addVMarker(v, m_geodesy);
   else if(p=="op_vertex")
-    handled = m_op_area.addVertex(v, m_geodesy);
+    handled = m_op_area.addVertex(value, m_geodesy);
   else if(p=="zoom") {
     handled = (v=="reset");
     if(handled)
