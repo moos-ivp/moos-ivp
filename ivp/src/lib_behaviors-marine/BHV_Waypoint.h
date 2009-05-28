@@ -47,6 +47,7 @@ protected:
   void         postViewablePoint();
   void         postErasablePoint();
   void         postCycleFlags();
+  void         handleVisualHint(std::string);
 
 protected: 
   WaypointEngine m_waypoint_engine;
@@ -63,6 +64,9 @@ protected: // configuration parameters
   std::string m_var_suffix;
 
   std::vector<VarDataPair> m_cycle_flags;
+
+  std::string m_hint_nextpt_color;
+  std::string m_hint_nextpt_lcolor;
 
 
 protected: // intermediate or object global variables.

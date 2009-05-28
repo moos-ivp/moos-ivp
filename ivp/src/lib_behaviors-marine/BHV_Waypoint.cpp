@@ -41,6 +41,7 @@
 #include "XYBuildUtils.h"
 #include "XYFormatUtilsPoly.h"
 #include "XYFormatUtilsSegl.h"
+#include "ColorParse.h"
 
 using namespace std;
 
@@ -64,6 +65,8 @@ BHV_Waypoint::BHV_Waypoint(IvPDomain gdomain) :
   m_var_index       = "WPT_INDEX";
   m_var_cyindex     = "CYCLE_INDEX";
   m_var_suffix      = "";
+  m_hint_nextpt_color  = "";
+  m_hint_nextpt_lcolor = "";
 
   // The completed and perpetual vars are initialized in superclass
   // but we initialize here just to be safe and clear.
@@ -199,6 +202,13 @@ bool BHV_Waypoint::setParam(string param, string val)
     if(dval <= 0) 
       return(false);
     m_waypoint_engine.setNonmonotonicRadius(dval);
+    return(true);
+  }
+  else if(param == "visual_hints")  {
+    vector<string> svector = parseStringQ(val, ',');
+    unsigned int i, vsize = svector.size();
+    for(i=0; i<vsize; i++) 
+      handleVisualHint(svector[i]);
     return(true);
   }
   return(false);
@@ -474,7 +484,11 @@ void BHV_Waypoint::postViewablePoint()
   ptmsg += ",type=waypoint, source=" + source_tag;
   ptmsg += ",x=" + dstringCompact(doubleToString(m_ptx,1));
   ptmsg += ",y=" + dstringCompact(doubleToString(m_pty,1));
-  ptmsg += ",size=1,labcolor=pink,pcolor=red";
+  ptmsg += ",size=1";
+  if(m_hint_nextpt_lcolor != "")
+    ptmsg += ",labcolor=" + m_hint_nextpt_lcolor;
+  if(m_hint_nextpt_color != "")
+    ptmsg += ",pcolor=" + m_hint_nextpt_color;
   postMessage("VIEW_POINT", ptmsg);
 }
 
@@ -511,4 +525,18 @@ void BHV_Waypoint::postCycleFlags()
     else
       postRepeatableMessage(var, ddata);
   }
+}
+
+//-----------------------------------------------------------
+// Procedure: handleVisualHint()
+
+void BHV_Waypoint::handleVisualHint(string hint)
+{
+  string param = tolower(stripBlankEnds(biteString(hint, '=')));
+  string value = stripBlankEnds(hint);
+
+  if((param == "nextpt_color") && isColor(value))
+    m_hint_nextpt_color = value;
+  else if((param == "nextpt_lcolor") && isColor(value))
+    m_hint_nextpt_lcolor = value;
 }

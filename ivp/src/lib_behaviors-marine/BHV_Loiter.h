@@ -48,7 +48,7 @@ protected:
   void         postErasablePolygon();
   void         postViewablePoint();
   void         postErasablePoint();
-    
+  void         handleVisualHint(std::string);
 
 private:  // Configuration Parameters
   bool         m_clockwise;
@@ -63,6 +63,8 @@ private:  // Configuration Parameters
   std::string  m_var_eta2poly;
   std::string  m_var_index;
 
+  std::string  m_hint_nextpt_color;
+  std::string  m_hint_nextpt_lcolor;
 
 private:  // State Structures
   LoiterEngine   m_loiter_engine;

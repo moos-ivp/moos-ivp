@@ -188,6 +188,13 @@ bool BHV_Loiter::setParam(string g_param, string g_val)
     m_var_index = g_val;
     return(true);
   }
+  else if(g_param == "visual_hints")  {
+    vector<string> svector = parseStringQ(g_val, ',');
+    unsigned int i, vsize = svector.size();
+    for(i=0; i<vsize; i++) 
+      handleVisualHint(svector[i]);
+    return(true);
+  }
   return(false);
 }
 
@@ -475,6 +482,10 @@ void BHV_Loiter::postViewablePoint()
   point_spec += ",label=" + m_us_name + "'s next waypoint";
   point_spec += ",type=waypoint";
   point_spec += ",source=" + m_us_name + "_" + bhv_tag;
+  if(m_hint_nextpt_lcolor != "")
+    point_spec += ",labcolor=" + m_hint_nextpt_lcolor;
+  if(m_hint_nextpt_color != "")
+    point_spec += ",pcolor=" + m_hint_nextpt_color;
   postMessage("VIEW_POINT", point_spec);
 }
 
@@ -494,3 +505,16 @@ void BHV_Loiter::postErasablePoint()
 }
 
 
+//-----------------------------------------------------------
+// Procedure: handleVisualHint()
+
+void BHV_Loiter::handleVisualHint(string hint)
+{
+  string param = tolower(stripBlankEnds(biteString(hint, '=')));
+  string value = stripBlankEnds(hint);
+  
+  if((param == "nextpt_color") && isColor(value))
+    m_hint_nextpt_color = value;
+  else if((param == "nextpt_lcolor") && isColor(value))
+    m_hint_nextpt_lcolor = value;
+}
