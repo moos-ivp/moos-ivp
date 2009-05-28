@@ -5,6 +5,7 @@
 /*    DATE: July 6th, 2008                                       */
 /*****************************************************************/
 
+#include <iostream>
 #include <cstdlib>
 #include "OpAreaSpec.h"
 #include "MBUtils.h"
@@ -26,7 +27,6 @@ OpAreaSpec::OpAreaSpec()
   m_datum_color     = colorParse("red");
   m_datum_viewable  = false;
   m_datum_size      = 3;
-
 }
 
 //-----------------------------------------------------------
@@ -99,6 +99,8 @@ bool OpAreaSpec::addVertex(const std::string& str,
   bool dashed_b = (dashed == "true");
   bool looped_b = (looped == "true");
 
+  cout << "Adding OpVertex: x=" << xpos_d << ", y=" << ypos_d << endl;
+
   addVertex(xpos_d, ypos_d, lwidth_d, group, label, lcolor,
 	    vcolor, looped_b, dashed_b);
 }
@@ -138,37 +140,27 @@ bool OpAreaSpec::setParam(const string& param, string value)
     if(!isNumber(value))
       return(false);
     double dval = atof(value.c_str());
-    if(dval < 0)
-      dval = 0;
-    if(dval > 1)
-      dval = 1;
-    m_line_shade = dval;
+    m_line_shade = vclip(dval, 0, 1);
   }
   else if(param == "op_area_line_shade_mod") {
     if(!isNumber(value))
       return(false);
     double dval = atof(value.c_str());
-    if(dval < 0)
-      dval = 0;
     m_line_shade *= dval;
+    m_line_shade = vclip(m_line_shade, 0, 1);
   }
   else if(param == "op_area_label_shade") {
     if(!isNumber(value))
       return(false);
     double dval = atof(value.c_str());
-    if(dval < 0)
-      dval = 0;
-    if(dval > 1)
-      dval = 1;
-    m_label_shade = dval;
+    m_label_shade = vclip(dval, 0, 1);
   }
   else if(param == "op_area_label_shade_mod") {
     if(!isNumber(value)) 
       return(false);
-   double dval = atof(value.c_str());
-    if(dval < 0)
-      dval = 0;
+    double dval = atof(value.c_str());
     m_label_shade *= dval;
+    m_label_shade = vclip(m_label_shade, 0, 1);
   }
   else if(param == "datum_viewable") 
     return(setBooleanOnString(m_datum_viewable, value));
@@ -176,8 +168,7 @@ bool OpAreaSpec::setParam(const string& param, string value)
     if(!isNumber(value)) 
       return(false);
     double dval = atof(value.c_str());
-    if(dval < 0)
-      dval = 0;
+    dval = vclip(dval, 1, 20);
     m_datum_size = dval;
   }
   else if(param == "datum_size_add") {
@@ -187,10 +178,7 @@ bool OpAreaSpec::setParam(const string& param, string value)
       m_datum_size *= 0.8;
     else
       return(false);
-    if(m_datum_size < 1)
-      m_datum_size = 1;
-    else if(m_datum_size > 20)
-      m_datum_size = 20;
+    m_datum_size = vclip(m_datum_size, 1, 20);
   }
   else if(param == "datum_color") {
     if(!isColor(value))

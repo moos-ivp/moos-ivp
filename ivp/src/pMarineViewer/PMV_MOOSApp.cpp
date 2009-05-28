@@ -120,7 +120,7 @@ bool PMV_MOOSApp::OnStartUp()
     return(false);
   }
 
-  // First get the Londitude Origine from the MOOS file
+  // Then get the Londitude Origine from the MOOS file
   if(m_MissionReader.GetValue("LongOrigin",str))
     lon_origin = atof(str.c_str());
   else {
