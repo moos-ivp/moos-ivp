@@ -17,10 +17,10 @@ TARGET_LINK_LIBRARIES(pHelmIvP
   behaviors-marine
   bhvutil	
   behaviors
-  mbutil 
   ivpbuild 
   ivpcore 
   geometry
+  mbutil 
   logic 
   m
   dl

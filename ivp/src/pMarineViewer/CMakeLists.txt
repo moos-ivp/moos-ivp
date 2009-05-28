@@ -20,9 +20,9 @@ TARGET_LINK_LIBRARIES(pMarineViewer
    MOOSGen
    marineview
    MOOSUtility
-   mbutil
    genutil
    geometry
+   mbutil
    m
    
    # Standard libraries used by this project's FLTK apps...

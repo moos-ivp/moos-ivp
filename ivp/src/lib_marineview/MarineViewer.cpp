@@ -1247,8 +1247,11 @@ void MarineViewer::drawSegLists()
   
   for(int i=0; i<vsize; i++) {
     XYSegList segl = m_geoshapes.getSegList(i);
-    if(segl.active())
+    if(segl.active()) {
+      if(segl.get_label_color_s() != "")
+	labl_c = segl.get_label_color_v();
       drawSegList(segl, lwid, vert, false, edge_c, vert_c, labl_c); 
+    }
   }
 }
 
@@ -1645,8 +1648,13 @@ void MarineViewer::drawPoints()
   
   for(int i=0; i<vsize; i++) {
     XYPoint point = m_geoshapes.point(i);
-    if((point.get_size() > 0) && (point.active()))
+    if((point.get_size() > 0) && (point.active())) {
+      if(point.get_label_color_s() != "")
+	labl_c = point.get_label_color_v();
+      if(point.get_point_color_s() != "")
+	vert_c = point.get_point_color_v();
       drawPoint(point, vertex_size, vert_c, labl_c);
+    }
   }
 }
 

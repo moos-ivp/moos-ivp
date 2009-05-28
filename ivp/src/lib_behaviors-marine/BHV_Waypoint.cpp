@@ -474,7 +474,7 @@ void BHV_Waypoint::postViewablePoint()
   ptmsg += ",type=waypoint, source=" + source_tag;
   ptmsg += ",x=" + dstringCompact(doubleToString(m_ptx,1));
   ptmsg += ",y=" + dstringCompact(doubleToString(m_pty,1));
-  ptmsg += ",size=1";
+  ptmsg += ",size=1,labcolor=pink,pcolor=red";
   postMessage("VIEW_POINT", ptmsg);
 }
 

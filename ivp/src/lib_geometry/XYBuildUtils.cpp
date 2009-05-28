@@ -51,7 +51,7 @@ XYPoint stringToPoint(string str)
   bool x_set  = false;
   bool y_set  = false;
 
-  string label, type, source;
+  string label, label_color, point_color, type, source;
   double x, y;
   double z    = 0;
   double snap = 0;
@@ -83,6 +83,10 @@ XYPoint stringToPoint(string str)
     }
     else if(param == "label")
       label = value;
+    else if((param == "labcolor") || (param == "labelcolor"))
+      label_color = value;
+    else if(param == "pcolor")
+      point_color = value;
     else if(param == "source")
       source = value;
     else if(param == "type")
@@ -97,12 +101,19 @@ XYPoint stringToPoint(string str)
   XYPoint new_point;
   
   new_point.set_vertex(x,y,z);
-  new_point.set_label(label);
-  new_point.set_type(type);
   new_point.set_size(size);
   new_point.set_active(active);
-  new_point.set_source(source);
-  
+
+  if(label != "")
+    new_point.set_label(label);
+  if(label_color != "")
+    new_point.set_label_color(label_color);
+  if(point_color != "")
+    new_point.set_point_color(point_color);
+  if(type != "")
+    new_point.set_type(type);
+  if(source != "")
+    new_point.set_source(source);
   if(snap>=0)
     new_point.apply_snap(snap);
   

@@ -111,6 +111,8 @@ XYSegList stringPoints2SegList(string str)
       xstr = tolower(xstr);
       if(xstr == "label") 
 	new_seglist.set_label(ystr);
+      else if(xstr == "labcolor") 
+	new_seglist.set_label_color(ystr);
       else if(xstr == "active") 
 	new_seglist.set_active(tolower(ystr)=="true");
       else
@@ -129,8 +131,6 @@ XYSegList stringPoints2SegList(string str)
   }
   return(new_seglist);
 }
-
-
 
 //---------------------------------------------------------------
 // Procedure: init_zigzag                                             |
@@ -224,7 +224,7 @@ XYSegList stringLawnmower2SegList(string str)
 
   bool active      = true;
 
-  string xpos, ypos, start, label, source, type, rows="ew";
+  string xpos, ypos, start, label, label_color, source, type, rows="ew";
   double height, width, degs, rads, swath;
   double startx=0;
   double starty=0;
@@ -284,6 +284,8 @@ XYSegList stringLawnmower2SegList(string str)
       rows = tolower(value);
     else if(param == "label")
       label = value;
+    else if(param == "labcolor")
+      label_color = value;
     else if(param == "type")
       type = value;
     else if(param == "source")
@@ -316,6 +318,15 @@ XYSegList stringLawnmower2SegList(string str)
   pblock.buildCompositeSegList(startx, starty);
   
   XYSegList new_seglist = pblock.getCompositeSegList();
+
+  if(label != "")
+    new_seglist.set_label(label);
+  if(label_color != "")
+    new_seglist.set_label_color(label_color);
+  if(type != "")
+    new_seglist.set_type(type);
+  if(source != "")
+    new_seglist.set_source(type);
 
   return(new_seglist);
 }

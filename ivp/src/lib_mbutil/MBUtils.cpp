@@ -789,7 +789,7 @@ double tokDoubleParse(const string& str, const string& left,
 //----------------------------------------------------------------
 // Procedure: vclip
 
-double vclip(double var, double low, double high)
+double vclip(const double& var, const double& low, const double& high)
 {
   if(var < low)
     return(low);

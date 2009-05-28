@@ -77,7 +77,7 @@ std::string tokStringParse(const std::string&, const std::string&,
 double tokDoubleParse(const std::string&, const std::string&, 
 		      char, char);
 
-double vclip(double var, double low, double high);
+double vclip(const double& var, const double& low, const double& high);
 
 bool  isNumber(const std::string&, bool=true);
 bool  isQuoted(const std::string&);

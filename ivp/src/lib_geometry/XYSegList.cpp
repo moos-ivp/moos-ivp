@@ -465,10 +465,13 @@ string XYSegList::get_spec(int precision) const
     precision = 6;
   
   if(m_label != "")
-    spec += "label," + m_label + " : "; 
+    spec += "label," + m_label + ":"; 
 
   if(m_active == false)
     spec += "active,false:";
+
+  if(m_label_color_s != "")
+    spec += "labcolor=" + m_label_color_s + ":";
 
   int vsize = vertex_x.size();
   for(int i=0; i<vsize; i++) {

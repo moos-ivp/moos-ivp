@@ -30,6 +30,7 @@ std::vector<double> colorParse(const std::string&);
 std::vector<double> colorHexToVector(const std::string&);
 std::vector<double> colorDecToVector(const std::string&);
 std::string         colorNameToHex(const std::string&);
+std::string         colorVectorToString(const std::vector<double>&);
 
 bool isColor(const std::string&);
 

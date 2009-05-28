@@ -312,3 +312,21 @@ string colorNameToHex(const std::string &str)
   return("error");
 }
 
+//-------------------------------------------------------------
+// Procedure: colorVectorToString
+
+string colorVectorToString(const vector<double>& cvect)
+{
+  if(cvect.size() != 3)
+    return("0,0,0");
+
+  double red = vclip(cvect[0], 0, 1);
+  double grn = vclip(cvect[1], 0, 1);
+  double blu = vclip(cvect[2], 0, 1);
+
+  string rval = doubleToString(red, 3) + ",";
+  rval += doubleToString(grn, 3) + ",";
+  rval += doubleToString(blu, 3);
+
+  return(rval);
+}

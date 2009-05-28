@@ -46,6 +46,7 @@ public:
   void   print() const;
 
 public:
+  void   set_point_color(const std::string&);
   void   set_size(double val) {m_size=val;};
   double get_vx()   const  {return(m_x);};
   double get_vy()   const  {return(m_y);};
@@ -57,6 +58,12 @@ public:
 
   std::string get_spec() const;
 
+  std::vector<double> get_point_color_v() const 
+    {return(m_point_color_v);};
+
+  std::string get_point_color_s() const 
+    {return(m_point_color_s);};
+
 
 protected:
   double       m_x;
@@ -64,6 +71,9 @@ protected:
   double       m_z;
   double       m_size;
   bool         m_valid;
+
+  std::vector<double> m_point_color_v;
+  std::string         m_point_color_s;
 };
 
 #endif
