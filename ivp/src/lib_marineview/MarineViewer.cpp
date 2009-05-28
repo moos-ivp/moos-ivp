@@ -1700,7 +1700,8 @@ void MarineViewer::drawPoint(const XYPoint& point, double vertex_size,
     string plabel = point.get_label();
     int slen = plabel.length();
     char *buff = new char[slen+1];
-    glRasterPos3f(px+1, py+1, 0);
+    //glRasterPos3f(px+1, py+1, 0);
+    glRasterPos3f(px+0.1, py+0.1, 0);
     strncpy(buff, plabel.c_str(), slen);
     buff[slen] = '\0';
     gl_draw(buff, slen);
