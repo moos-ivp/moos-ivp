@@ -14,11 +14,14 @@ Behavior = BHV_Waypoint
   endflag   = RETURN = true
   perpetual = true
 
-  wpt_status = SURVEY_STATUS
-   wpt_index = SURVEY_INDEX
-       speed = 2.0   // meters per second
-      radius = 8.0
-      points = 60,-40:60,-160:150,-160:180,-100:150,-40
+    wpt_status = SURVEY_STATUS
+     wpt_index = SURVEY_INDEX
+         speed = 2.0   // meters per second
+        radius = 8.0
+        points = 60,-40:60,-160:150,-160:180,-100:150,-40
+  visual_hints = nextpt_color=red, nextpt_lcolor=green
+  visual_hints = vertex_color=yellow, line_color=white
+
 }
 
 //----------------------------------------------
@@ -33,10 +36,10 @@ Behavior = BHV_Waypoint
   endflag    = RETURN = false
   endflag    = DEPLOY = false
 
-       speed = 2.0
-      radius = 2.0
-   nm_radius = 8.0
-      points = 0,0
+         speed = 2.0
+        radius = 2.0
+     nm_radius = 8.0
+        points = 0,0
 }
 
 //----------------------------------------------
