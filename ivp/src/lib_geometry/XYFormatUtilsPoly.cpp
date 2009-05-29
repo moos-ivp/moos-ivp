@@ -61,6 +61,17 @@ using namespace std;
 XYPolygon string2Poly(string str)
 {
   XYPolygon null_poly;
+  
+  str = stripBlankEnds(str);
+  
+  // Support for now a few depricated ways of specifying a poly
+  str = findReplace(str, "radial::", "format=radial,");
+  str = findReplace(str, "ellipse::", "format=ellipse,");
+
+  if(!strncasecmp("radial:", str.c_str(), 7)) {
+    str = str.c_str()+7;
+    return(stringShortRadial2Poly(str));
+  }
 
   str = stripBlankEnds(str);
   vector<string> svector = parseStringQ(str, ',');
@@ -75,11 +86,10 @@ XYPolygon string2Poly(string str)
   }
   format=tolower(format);
   
-  cout << "POLYGON FORMAT: " << format << endl;
-  cout << "STARTING_STRING2: " << str << endl;
-
-  if((format == "default") || (format == "points"))
+  if(format == "points")
     return(stringPoints2Poly(str));
+  if(format == "default")
+    return(stringShortPoints2Poly(str));
   else if(format == "radial")
     return(stringRadial2Poly(str));
   else if(format == "ellipse")
@@ -93,8 +103,6 @@ XYPolygon string2Poly(string str)
   else
     return(null_poly);
 }
-
-
 
 //---------------------------------------------------------------
 // Procedure: stringEllipse2Poly
@@ -727,10 +735,9 @@ XYPolygon stringRadial2Poly(string str)
 //---------------------------------------------------------------
 // Procedure: stringPoints2Poly
 // 
-// Examples: "pts = 
-// Examples: "pts = 10,15 : 20,25 : 30,35 # label=foobar"
-//           "label=foobar # pts= 10,15 : 20,25 : 30,35"
-//           "label=foobar # 10,15 : 20,25 : 30,35"
+// Examples: [pts="10,15:20,25:30,35", label=foobar]
+//           [label=foobar, pts="10,15:20,25:30,35"]
+//           [label=foobar, "10,15 : 20,25 : 30,35"]
 
 XYPolygon stringPoints2Poly(string str)
 {
@@ -811,5 +818,117 @@ XYPolygon stringPoints2Poly(string str)
     return(new_poly);
   else
     return(null_poly);
+}
+
+//---------------------------------------------------------------
+// Procedure: stringShortRadial2Poly
+//
+// Examples: "radial: px, py, prad, ppts, snapval, label"
+//           "px, py, prad, ppts, snapval, label"
+
+XYPolygon stringShortRadial2Poly(string str)
+{
+  XYPolygon null_poly;
+
+  if(!strncasecmp("radial:", str.c_str(), 7))
+    str = str.c_str()+7;
+
+  vector<string> svector = parseString(str, ',');
+  int vsize = svector.size();
+  for(int i=0; i<vsize; i++)
+    svector[i] = stripBlankEnds(svector[i]);
+
+  if((vsize < 4) || (vsize > 6))
+    return(null_poly);
+
+  double px   = atof(svector[0].c_str());
+  double py   = atof(svector[1].c_str());
+  double prad = atof(svector[2].c_str());
+  double ppts = atof(svector[3].c_str());
+
+  if(prad <= 0)
+    return(null_poly);
+
+  XYPolygon new_poly;
+  double snap_value = 0;
+  if(vsize >= 5) {
+    snap_value = atof(svector[4].c_str());
+    if(snap_value < 0)
+      snap_value = 0;
+  }
+
+  if(vsize == 6) // Label present
+    new_poly.set_label(svector[5]);
+
+  double delta = 360.0 / ppts;
+  for(double deg=(delta/2); deg<360; deg+=delta) {
+    double new_x, new_y;
+    projectPoint(deg, prad, px, py, new_x, new_y);
+    new_poly.add_vertex(new_x, new_y, false);
+  }
+
+  // Make a call to determine_convexity here because convexity 
+  // determinations are not made when adding vertices above.
+  // The convexity determination needs to be done before applying
+  // the snap value since a snap is rejected if it creates a non-
+  // convex poly from a previously determined convex poly. 
+  new_poly.determine_convexity();
+  if(snap_value >= 0)
+    new_poly.apply_snap(snap_value);
+
+  if(new_poly.is_convex())
+    return(new_poly);
+  else
+    return(null_poly);
+}
+
+
+//---------------------------------------------------------------
+// Procedure: stringShortPoints2Poly
+//
+
+XYPolygon stringShortPoints2Poly(string str)
+{
+  XYPolygon null_poly;
+  XYPolygon new_poly;
+
+  vector<string> mvector = parseString(str, ':');
+  int vsize = mvector.size();
+  for(int i=0; i<vsize; i++) {
+    mvector[i] = stripBlankEnds(mvector[i]);
+    string left = tolower(stripBlankEnds(biteString(mvector[i], ',')));
+    string rest = stripBlankEnds(mvector[i]);
+    
+    if(left == "label") 
+      new_poly.set_label(rest);
+    else if(left == "labcolor") 
+      new_poly.set_label_color(rest);
+    else if(left == "vertcolor") 
+      new_poly.set_vert_color(rest);
+    else if(left == "linecolor") {
+      cout << "vertcolor = " << rest << endl;
+      new_poly.set_line_color(rest);
+    }
+    else if(left == "active") 
+      new_poly.set_active(tolower(rest)=="true");
+    else {
+      string xstr = left;
+      string ystr = stripBlankEnds(biteString(rest, ','));
+      string zstr = stripBlankEnds(rest);
+      if((zstr != "") && !isNumber(zstr))
+	return(null_poly);
+      if(!isNumber(xstr) || !isNumber(ystr))
+	return(null_poly);
+      double xval = atof(xstr.c_str());
+      double yval = atof(ystr.c_str());
+      if(zstr == "")
+	new_poly.add_vertex(xval, yval);
+      else {
+	double zval = atof(zstr.c_str());
+	new_poly.add_vertex(xval, yval, zval);	
+      }
+    }
+  }
+  return(new_poly);
 }
 

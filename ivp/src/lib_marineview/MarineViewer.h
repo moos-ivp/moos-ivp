@@ -41,6 +41,7 @@
 #include "OpAreaSpec.h"
 #include "MOOSGeodesy.h"
 #include "VPlug_GeoShapes.h"
+#include "ColorPack.h"
 
 class MarineViewer : public Fl_Gl_Window
 {
@@ -81,53 +82,53 @@ protected:
   void   drawOpArea();
 
   void   drawGLPoly(double *points, int numPoints, 
-		    const std::vector<double>& fill_color,
+		    ColorPack fill_color,
 		    double thickness=0, double scale=1);
   void   drawCommonVehicle(const std::string& vname, 
 			   const ObjectPose&, 
-			   const std::vector<double>& body_color,
-			   const std::vector<double>& vname_color,
+			   const ColorPack& body_color,
+			   const ColorPack& vname_color,
 			   const std::string& body, double shape_length,
 			   bool vname_draw, int line=0);
   void   drawCommonMarker(double x, double y, double shape_width, 
 			  const std::string& mtype, 
 			  const std::string& label, 
-			  const std::vector<double>& label_color, 
-			  const std::vector<std::vector<double> >& color_vectors);
+			  const ColorPack& label_color, 
+			  const std::vector<ColorPack>& color_packs);
 
 
   void  drawPolygons();
   void  drawPolygon(const XYPolygon&, bool filled, bool dashed,
 		    double line_width, double vertex_size,
-		    const std::vector<double>& edge_color,
-		    const std::vector<double>& fill_color,
-		    const std::vector<double>& vert_color,
-		    const std::vector<double>& labl_color);
+		    const ColorPack& edge_color, 
+		    const ColorPack& fill_color,
+		    const ColorPack& vert_color,
+		    const ColorPack& labl_color);
   
   void  drawSegLists();
   void  drawSegList(const XYSegList&, double lwid, double vsize, bool zdash,
-		    const std::vector<double>& edge_color,
-		    const std::vector<double>& vert_color,
-		    const std::vector<double>& labl_color);
+		    const ColorPack& edge_color,
+		    const ColorPack& vert_color,
+		    const ColorPack& labl_color);
 
   void  drawGrids();
   void  drawGrid(const XYGrid&);
 
   void  drawCircles();
   void  drawCircle(const XYCircle&, int pts, bool filled, 
-		   const std::vector<double>& edge_color,
-		   const std::vector<double>& fill_color,
-		   const std::vector<double>& vert_color,
-		   const std::vector<double>& labl_color);
+		   const ColorPack& edge_color,
+		   const ColorPack& fill_color,
+		   const ColorPack& vert_color,
+		   const ColorPack& labl_color);
 
   void  drawPoints();
   void  drawPoint(const XYPoint&, double vertex_size,
-		  const std::vector<double>& vert_color,
-		  const std::vector<double>& labl_color);
+		  const ColorPack& vert_color,
+		  const ColorPack& labl_color);
 
   void  drawPointList(const std::vector<double>& xvect,
 		      const std::vector<double>& yvect, double vsize,
-		      const std::vector<double>& vert_color, 
+		      const ColorPack& vert_color, 
 		      bool point_edges_viewable=false);
 
   void  drawHexagons();

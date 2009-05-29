@@ -17,6 +17,7 @@
 #include "XYGrid.h"
 #include "XYCircle.h"
 #include "XYPoint.h"
+#include "ColorPack.h"
 
 class VPlug_GeoShapes {
 public:
@@ -63,8 +64,8 @@ public:
 
   bool   setColorMapping(std::string);
   bool   setColorMapping(std::string, std::string);
-  std::vector<double> geocolor(const std::string&, 
-			       std::string color_default="");
+  ColorPack geocolor(const std::string&, 
+		     std::string color_default="");
 
   bool   setViewableMapping(std::string, std::string);
   bool   viewable(const std::string&, bool view_default=true);
@@ -82,9 +83,9 @@ protected:
   std::vector<XYCircle>   m_circles;
   std::vector<XYPoint>    m_points;
   
-  std::map<std::string, std::vector<double> >  m_color_map;
-  std::map<std::string, bool>                  m_viewable_map;
-  std::map<std::string, double>                m_gsize_map;
+  std::map<std::string, ColorPack>  m_color_map;
+  std::map<std::string, bool>       m_viewable_map;
+  std::map<std::string, double>     m_gsize_map;
 
   // The below is strictly for parameter reporting and not used
   // in drawing. Should be identical to the m_color_map except

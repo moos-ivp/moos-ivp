@@ -1,8 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin and John Leonard                    */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
-/*    FILE: XYObject.cpp                                         */
-/*    DATE: July 18th, 2008                                      */
+/*    FILE: XYFormatUtilsPoint.h                                 */
+/*    DATE: May 16, 2008 Sunday afternoon at Brueggers           */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
 /* modify it under the terms of the GNU General Public License   */
@@ -19,43 +19,16 @@
 /* Software Foundation, Inc., 59 Temple Place - Suite 330,       */
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
+ 
+#ifndef XY_FORMAT_UTILS_POINT_HEADER
+#define XY_FORMAT_UTILS_POINT_HEADER
 
-#include <iostream>
-#include <math.h>
-#include <stdlib.h>
-#include <string.h>
-#include "XYObject.h" 
-
-using namespace std;
+#include <string>
+#include "XYPoint.h"
 
 //---------------------------------------------------------------
-// Constructor
+// Create a point from a string specification. 
+// Example: label=bobby, type=destination, x=val, y=val, z=val
+XYPoint string2Point(std::string);
 
-XYObject::XYObject()
-{
-  m_active = true;
-  m_time   = 0;
-}
-
-
-//---------------------------------------------------------------
-// Procedure: clear
-
-void XYObject::clear()
-{
-  m_active = true; 
-  m_time   = 0; 
-  m_label  = ""; 
-  m_type   = "";
-  m_source = ""; 
-  m_string = ""; 
-}
-
-
-//---------------------------------------------------------------
-// Procedure: set_label_color()
-
-void XYObject::set_label_color(const string& str)
-{
-  m_label_color.setColor(str);
-}
+#endif

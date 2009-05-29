@@ -46,34 +46,30 @@ public:
   void   print() const;
 
 public:
-  void   set_point_color(const std::string&);
-  void   set_size(double val) {m_size=val;};
-  double get_vx()   const  {return(m_x);};
-  double get_vy()   const  {return(m_y);};
-  double get_vz()   const  {return(m_z);};
-  double get_size() const  {return(m_size);};
-  bool   valid()    const  {return(m_valid);};
+  void      set_point_color(const std::string&);
+  void      set_size(double val)    {m_size=val;};
+  double    get_vx() const          {return(m_x);};
+  double    get_vy() const          {return(m_y);};
+  double    get_vz() const          {return(m_z);};
+  double    get_size() const        {return(m_size);};
+  bool      valid() const           {return(m_valid);};
 
-  XYPoint projectPt(XYPoint, double dist, double angle) const;
+  ColorPack get_point_color() const {return(m_point_color);};
+  bool      point_color_set() const {return(m_point_color.set());};
+
+  XYPoint   projectPt(XYPoint, double dist, double angle) const;
 
   std::string get_spec() const;
 
-  std::vector<double> get_point_color_v() const 
-    {return(m_point_color_v);};
-
-  std::string get_point_color_s() const 
-    {return(m_point_color_s);};
-
 
 protected:
-  double       m_x;
-  double       m_y;
-  double       m_z;
-  double       m_size;
-  bool         m_valid;
+  double    m_x;
+  double    m_y;
+  double    m_z;
+  double    m_size;
+  bool      m_valid;
 
-  std::vector<double> m_point_color_v;
-  std::string         m_point_color_s;
+  ColorPack m_point_color;
 };
 
 #endif

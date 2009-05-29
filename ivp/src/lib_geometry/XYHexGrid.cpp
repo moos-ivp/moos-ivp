@@ -25,7 +25,7 @@
 #include <stdlib.h>
 #include "XYHexGrid.h"
 #include "MBUtils.h"
-#include "XYBuildUtils.h"
+#include "XYFormatUtilsPoly.h"
 
 using namespace std;
 
@@ -64,7 +64,7 @@ bool XYHexGrid::initialize(string given_config_str)
   if(vsize == 3)
     initial_val = atof(svector[2].c_str());
 
-  XYPolygon poly = stringToPoly(poly_string);
+  XYPolygon poly = string2Poly(poly_string);
   if(poly.size() == 0)
     return(false);
   

@@ -36,7 +36,7 @@
 #include "AngleUtils.h"
 #include "GeomUtils.h"
 #include "BuildUtils.h"
-#include "XYBuildUtils.h"
+#include "XYFormatUtilsPoint.h"
 
 using namespace std;
 
@@ -84,7 +84,7 @@ BHV_AbortToPoint::BHV_AbortToPoint(IvPDomain gdomain) :
 bool BHV_AbortToPoint::setParam(string param, string val) 
 {
   if(param == "point") {
-    XYPoint apt = stringToPoint(val);
+    XYPoint apt = string2Point(val);
     if(!apt.valid())
       return(false);
     m_abort_x = apt.get_vx();

@@ -1,4 +1,4 @@
-/*****************************************************************/
+/****************************************************/
 /*    NAME: Michael Benjamin and John Leonard                    */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
 /*    FILE: VMarkerSet.cpp                                       */
@@ -125,13 +125,13 @@ void VMarkerSet::addVMarker(string mtype, double xpos, double ypos,
     }
   }
 
-  vector<vector<double> > color_vectors;
+  vector<ColorPack> color_packs;
   vector<string> svector = parseString(colors, ':');
   vsize = svector.size();
   for(i=0; i<vsize; i++) {
     svector[i] = stripBlankEnds(svector[i]);
-    vector<double> cvect = colorParse(svector[i]);
-    color_vectors.push_back(cvect);
+    ColorPack cpack(svector[i]);
+    color_packs.push_back(cpack);
   }
 
   if(found_ix == -1) {
@@ -141,14 +141,14 @@ void VMarkerSet::addVMarker(string mtype, double xpos, double ypos,
     m_marker_width.push_back(mwid);
     m_marker_label.push_back(label);
     m_marker_colors.push_back(svector);
-    m_marker_color_vectors.push_back(color_vectors);
+    m_marker_cpacks.push_back(color_packs);
   }
   else {
     m_marker_xpos[found_ix] = xpos;
     m_marker_ypos[found_ix] = ypos;
     m_marker_width[found_ix] = mwid;
     m_marker_colors[found_ix] = svector;
-    m_marker_color_vectors[found_ix] = color_vectors;
+    m_marker_cpacks[found_ix] = color_packs;
   }
 }
 
@@ -306,14 +306,14 @@ string VMarkerSet::getMarkerColorString(int mix, int cix)
 //-----------------------------------------------------------
 // Procedure: getMarkerColorVector
 
-vector<vector<double> > VMarkerSet::getMarkerColorVectors(int mix)
+vector<ColorPack> VMarkerSet::getMarkerColorVectors(int mix)
 {
-  vector<vector<double> > fail_vector;
+  vector<ColorPack> fail_vector;
 
-  if((mix < 0) && (mix >= m_marker_color_vectors.size()))
+  if((mix < 0) && (mix >= m_marker_cpacks.size()))
     return(fail_vector);
   else
-    return(m_marker_color_vectors[mix]);
+    return(m_marker_cpacks[mix]);
 }
 
 

@@ -31,7 +31,7 @@
 #include "BHV_Loiter.h"
 #include "MBUtils.h"
 #include "BuildUtils.h"
-#include "XYBuildUtils.h"
+#include "XYFormatUtilsPoly.h"
 #include "ZAIC_PEAK.h"
 #include "OF_Coupler.h"
 
@@ -87,7 +87,7 @@ BHV_Loiter::BHV_Loiter(IvPDomain gdomain) :
 bool BHV_Loiter::setParam(string g_param, string g_val) 
 {
   if(g_param == "polygon") {
-    XYPolygon new_poly = stringToPoly(g_val);
+    XYPolygon new_poly = string2Poly(g_val);
     if(!new_poly.is_convex())  // Should be convex - false otherwise
       return(false);
     if(new_poly.is_clockwise() != m_clockwise)

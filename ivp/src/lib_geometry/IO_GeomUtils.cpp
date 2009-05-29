@@ -26,7 +26,7 @@
 #include "XYEncoders.h"
 #include "MBUtils.h"
 #include "FileBuffer.h"
-#include "XYBuildUtils.h"
+#include "XYFormatUtilsPoly.h"
 
 using namespace std;
 
@@ -80,7 +80,7 @@ vector<XYPolygon> readPolysFromFile(const string& filestr)
 	if(left == "gpoly") {
 	  string right = stripBlankEnds(svector[1]);
 	  XYPolygon poly;
-	  poly = stringToPoly(right);
+	  poly = string2Poly(right);
 	  if(poly.size() != 0)
 	    poly_vector.push_back(poly);
 	}
@@ -92,12 +92,12 @@ vector<XYPolygon> readPolysFromFile(const string& filestr)
 	  string right = stripBlankEnds(svector[1]);
 	  XYPolygon poly;
 	  if(left=="ellipse") {
-	    poly = stringPairsToEllipsePoly(right);
+	    poly = stringEllipse2Poly(right);
 	  }
 	  else if(left=="radial")
-	    poly = stringPairsToRadialPoly(right);
+	    poly = stringRadial2Poly(right);
 	  else
-	    poly = stringToPoly(right);
+	    poly = string2Poly(right);
 	  if(poly.size() != 0)
 	    poly_vector.push_back(poly);
 	}

@@ -61,9 +61,6 @@ XYSegList string2SegList(string str)
   }
   format=tolower(format);
   
-  cout << "SEGLIST FORMAT: " << format << endl;
-  cout << "STARTING_STRING2: " << str << endl;
-
   if((format == "default") || (format == "points"))
     return(stringPoints2SegList(str));
   else if(format == "zigzag")
@@ -95,30 +92,29 @@ XYSegList stringPoints2SegList(string str)
   int vsize = mvector.size();
   for(int i=0; i<vsize; i++) {
     mvector[i] = stripBlankEnds(mvector[i]);
-    vector<string> svector = parseString(mvector[i], ',');
-    if((svector.size() < 2) || (svector.size() > 3))
-      return(null_seglist);
-    string xstr = stripBlankEnds(svector[0]);
-    string ystr = stripBlankEnds(svector[1]);
-    string zstr = "";
-    if(svector.size()==3)
-      zstr = stripBlankEnds(svector[2]);
+    string left = tolower(stripBlankEnds(biteString(mvector[i], ',')));
+    string rest = stripBlankEnds(mvector[i]);
     
-    if((zstr != "") && (!isNumber(zstr)))
-      return(null_seglist);
-    
-    if((!isNumber(xstr)) || (!isNumber(ystr))) {
-      xstr = tolower(xstr);
-      if(xstr == "label") 
-	new_seglist.set_label(ystr);
-      else if(xstr == "labcolor") 
-	new_seglist.set_label_color(ystr);
-      else if(xstr == "active") 
-	new_seglist.set_active(tolower(ystr)=="true");
-      else
-	return(null_seglist);
+    if(left == "label") 
+      new_seglist.set_label(rest);
+    else if(left == "labcolor") 
+      new_seglist.set_label_color(rest);
+    else if(left == "vertcolor") 
+      new_seglist.set_vert_color(rest);
+    else if(left == "linecolor") {
+      cout << "vertcolor = " << rest << endl;
+      new_seglist.set_line_color(rest);
     }
+    else if(left == "active") 
+      new_seglist.set_active(tolower(rest)=="true");
     else {
+      string xstr = left;
+      string ystr = stripBlankEnds(biteString(rest, ','));
+      string zstr = stripBlankEnds(rest);
+      if((zstr != "") && !isNumber(zstr))
+	return(null_seglist);
+      if(!isNumber(xstr) || !isNumber(ystr))
+	return(null_seglist);
       double xval = atof(xstr.c_str());
       double yval = atof(ystr.c_str());
       if(zstr == "")
@@ -218,13 +214,13 @@ XYSegList stringLawnmower2SegList(string str)
   bool swath_set   = false;
   bool startx_set  = false;
   bool starty_set  = false;
-  bool start_set   = false;
   bool degs_set    = false;
   bool rads_set    = false;
 
   bool active      = true;
 
-  string xpos, ypos, start, label, label_color, source, type, rows="ew";
+  string xpos, ypos, vert_color, line_color, label, label_color;
+  string start, source, type, rows="ew";
   double height, width, degs, rads, swath;
   double startx=0;
   double starty=0;
@@ -276,16 +272,16 @@ XYSegList stringLawnmower2SegList(string str)
       starty = dval;
       starty_set = true;
     }
-    else if(param == "start") {
+    else if(param == "start")
       start = value;
-      start_set = true;
-    }
     else if(param == "rows")
       rows = tolower(value);
     else if(param == "label")
       label = value;
-    else if(param == "labcolor")
-      label_color = value;
+    else if(param == "linecolor")
+      line_color = value;
+    else if(param == "vertcolor")
+      vert_color = value;
     else if(param == "type")
       type = value;
     else if(param == "source")

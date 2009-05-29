@@ -20,13 +20,10 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
-#include <iostream> 
-#include <math.h>
 #include <string>
 #include "AOF_AvoidObstacles.h"
 #include "AngleUtils.h"
 #include "GeomUtils.h"
-#include "XYBuildUtils.h"
 
 using namespace std;
 
@@ -180,11 +177,9 @@ unsigned int AOF_AvoidObstacles::obstaclesInRange()
 
   for(unsigned int i=0; i<vsize; i++) {
     double position_dist_to_poly = m_obstacles_buff[i].dist_to_poly(os_x, os_y);
-    //cout << "pdist: " << position_dist_to_poly << "  adist: " << activation_dist << endl;
     if(position_dist_to_poly < activation_dist)
       count++;
   }
-  //cout << "vsize: " << vsize << "  count: " << count << endl << endl;
   return(count);
 }
 

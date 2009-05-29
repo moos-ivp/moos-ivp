@@ -41,8 +41,6 @@ void XYPoint::clear()
   m_z     = 0; 
   m_size  = 1;
   m_valid = false;
-  m_point_color_v = vector<double>(3,0);
-  m_point_color_s = "";
 }
 
 //---------------------------------------------------------------
@@ -63,8 +61,8 @@ void XYPoint::print() const
   cout << "label:" << m_label;
   cout << " type: " << m_type;
   cout << " size: " << m_size;
-  if(m_point_color_s != "")
-    cout << " pcolor: " << m_point_color_s << endl;
+  if(m_point_color.set())
+    cout << " pcolor: " << m_point_color.str() << endl;
   cout << "  x=" << m_x << "  y=" << m_y << "  z=" << m_z << endl;
 }
 
@@ -98,8 +96,8 @@ string XYPoint::get_spec() const
     spec += "type=" + m_type + ","; 
   if(m_source != "")
     spec += "source=" + m_source + ","; 
-  if(m_point_color_s != "")
-    spec += "pcolor=" + m_point_color_s + ","; 
+  if(m_point_color.set())
+    spec += "pcolor=" + m_point_color.str() + ","; 
   
   spec += "x=";
   spec += dstringCompact(doubleToString(m_x));
@@ -117,8 +115,5 @@ string XYPoint::get_spec() const
 
 void XYPoint::set_point_color(const string& str)
 {
-  if(isColor(str))
-    m_point_color_v = colorParse(str);
-  
-  m_point_color_s = colorVectorToString(m_point_color_v);
+  m_point_color.setColor(str);
 }

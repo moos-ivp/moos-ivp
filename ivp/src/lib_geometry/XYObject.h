@@ -24,7 +24,7 @@
 #define XY_OBJECT_HEADER
 
 #include <string>
-#include "ColorParse.h"
+#include "ColorPack.h"
 
 class XYObject {
 public:
@@ -49,11 +49,8 @@ public:
   std::string get_source()       const {return(m_source);};
   std::string get_string()       const {return(m_string);};
 
-  std::vector<double> get_label_color_v() const 
-    {return(m_label_color_v);};
-
-  std::string get_label_color_s() const 
-    {return(m_label_color_s);};
+  ColorPack get_label_color() const {return(m_label_color);};
+  bool      label_color_set() const {return(m_label_color.set());};
 
 protected:
   std::string  m_label;
@@ -63,9 +60,7 @@ protected:
   bool         m_active;
   double       m_time;
 
-  std::vector<double> m_label_color_v;
-  std::string         m_label_color_s;
-
+  ColorPack    m_label_color;
 };
 
 #endif

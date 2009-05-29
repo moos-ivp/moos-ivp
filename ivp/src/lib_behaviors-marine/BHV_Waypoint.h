@@ -67,7 +67,8 @@ protected: // configuration parameters
 
   std::string m_hint_nextpt_color;
   std::string m_hint_nextpt_lcolor;
-
+  std::string m_hint_vert_color;
+  std::string m_hint_line_color;
 
 protected: // intermediate or object global variables.
   double    m_osv;  // Ownship velocity

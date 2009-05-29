@@ -8,7 +8,7 @@ SET(SRC
    CPAEngine.cpp         CPA_Utils.cpp          
    CircularUtils.cpp     GeomUtils.cpp          
    IO_GeomUtils.cpp      LinearExtrapolator.cpp 
-   XYArc.cpp             XYBuildUtils.cpp       
+   XYArc.cpp             XYFormatUtilsPoint.cpp
    XYCircle.cpp          XYEncoders.cpp         
    XYGrid.cpp            XYHexGrid.cpp          
    XYHexagon.cpp         XYPolygon.cpp          
@@ -16,7 +16,7 @@ SET(SRC
    XYArtifactGrid.cpp    XYPoint.cpp
    XYFormatUtilsSegl.cpp XYFormatUtilsPoly.cpp
    XYSegment.cpp         XYPatternBlock.cpp
-   XYObject.cpp
+   XYObject.cpp          
 )
 
 ADD_LIBRARY(geometry ${SRC})

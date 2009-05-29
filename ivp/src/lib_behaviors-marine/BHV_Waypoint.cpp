@@ -38,7 +38,6 @@
 #include "FunctionEncoder.h"
 #include "ZAIC_PEAK.h"
 #include "OF_Coupler.h"
-#include "XYBuildUtils.h"
 #include "XYFormatUtilsPoly.h"
 #include "XYFormatUtilsSegl.h"
 #include "ColorParse.h"
@@ -98,8 +97,7 @@ bool BHV_Waypoint::setParam(string param, string val)
     XYSegList new_seglist = string2SegList(val);
     cout << "SEGL_SIZE: " << new_seglist.size() << endl;
     if(new_seglist.size() == 0) {
-      XYPolygon new_poly = stringToPoly(val);
-      //XYPolygon new_poly = stringToPoly(val);
+      XYPolygon new_poly = string2Poly(val);
       new_seglist = new_poly.exportSegList(0,0);
     }
     if(new_seglist.size() == 0)
@@ -449,6 +447,10 @@ void BHV_Waypoint::postViewableSegList()
 {
   XYSegList seglist = m_waypoint_engine.getSegList();
   seglist.set_label(m_us_name + "_" + m_descriptor);
+  if(m_hint_vert_color != "")
+    seglist.set_vert_color(m_hint_vert_color);
+  if(m_hint_line_color != "")
+    seglist.set_line_color(m_hint_line_color);
   string segmsg = seglist.get_spec();
   postMessage("VIEW_SEGLIST", segmsg);
 }
@@ -539,4 +541,8 @@ void BHV_Waypoint::handleVisualHint(string hint)
     m_hint_nextpt_color = value;
   else if((param == "nextpt_lcolor") && isColor(value))
     m_hint_nextpt_lcolor = value;
+  else if((param == "vertex_color") && isColor(value))
+    m_hint_vert_color = value;
+  else if((param == "line_color") && isColor(value))
+    m_hint_line_color = value;
 }

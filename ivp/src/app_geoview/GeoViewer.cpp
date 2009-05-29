@@ -13,7 +13,7 @@
 #include "GeomUtils.h"
 #include "CircularUtils.h"
 #include "AngleUtils.h"
-#include "XYBuildUtils.h"
+#include "XYFormatUtilsPoly.h"
 
 using namespace std;
 
@@ -64,7 +64,7 @@ void GeoViewer::draw()
     int vsize = m_geoshapes.sizePolygons();
     if(vsize > 0) {
 
-      vector<double> edge_c, fill_c, vert_c, labl_c;
+      ColorPack edge_c, fill_c, vert_c, labl_c;
       edge_c = m_geoshapes.geocolor("polygon_edge_color", "khaki");
       fill_c = m_geoshapes.geocolor("polygon_fill_color", "dark_green");
       vert_c = m_geoshapes.geocolor("polygon_vertex_color", "red");
@@ -372,7 +372,7 @@ void GeoViewer::addCircle(XYCircle g_circle)
   double c_r = g_circle.getRad();
   string str = "radial:" + doubleToString(c_x) + ",";
   str += doubleToString(c_y) + "," + doubleToString(c_r) + ",36";
-  XYPolygon circle_poly = stringToPoly(str);
+  XYPolygon circle_poly = string2Poly(str);
   if(circle_poly.size() == 0)
     return;
   
@@ -399,7 +399,7 @@ void GeoViewer::drawCircle(unsigned int ix)
   if((ix < 0) || (ix >= m_circle.size()))
     return;
 
-  vector<double> edge_c, fill_c, vert_c, labl_c;
+  ColorPack edge_c, fill_c, vert_c, labl_c;
   edge_c = m_geoshapes.geocolor("polygon_edge_color", "yellow");
   fill_c = m_geoshapes.geocolor("polygon_vertex_color", "white");
   vert_c = m_geoshapes.geocolor("polygon_vertex_color", "white");

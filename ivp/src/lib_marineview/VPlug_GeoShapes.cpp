@@ -9,7 +9,9 @@
 #include <cstdlib>
 #include "VPlug_GeoShapes.h"
 #include "MBUtils.h"
-#include "XYBuildUtils.h"
+#include "XYFormatUtilsSegl.h"
+#include "XYFormatUtilsPoly.h"
+#include "XYFormatUtilsPoint.h"
 #include "ColorParse.h"
 
 using namespace std;
@@ -263,7 +265,7 @@ void VPlug_GeoShapes::addPoint(const XYPoint& new_point)
 
 bool VPlug_GeoShapes::addPolygon(const string& poly_str)
 {
-  XYPolygon new_poly = stringToPoly(poly_str);
+  XYPolygon new_poly = string2Poly(poly_str);
   if(new_poly.size() == 0)
     return(false);
   addPolygon(new_poly);
@@ -275,7 +277,7 @@ bool VPlug_GeoShapes::addPolygon(const string& poly_str)
 
 bool VPlug_GeoShapes::addSegList(const string& segl_str)
 {
-  XYSegList new_segl = stringToSegList(segl_str);
+  XYSegList new_segl = string2SegList(segl_str);
   if(new_segl.size() == 0)
     return(false);
    addSegList(new_segl);
@@ -288,7 +290,7 @@ bool VPlug_GeoShapes::addSegList(const string& segl_str)
 
 bool VPlug_GeoShapes::addPoint(const string& point_str)
 {
-  XYPoint new_point = stringToPoint(point_str);
+  XYPoint new_point = string2Point(point_str);
   if(!new_point.valid())
     return(false);
   addPoint(new_point);
@@ -405,8 +407,8 @@ bool VPlug_GeoShapes::setColorMapping(string attribute, string color_str)
   // state in the getParamReport queries.
   m_color_string_map[attribute] = color_str;
   
-  vector<double> cvect = colorParse(color_str);
-  m_color_map[attribute] = cvect;
+  ColorPack cpack(color_str);
+  m_color_map[attribute] = cpack;
 
   return(true);    
 }
@@ -512,10 +514,10 @@ bool VPlug_GeoShapes::setGSizeMapping(string attribute, string gsize,
 //            attribute is converted to lower case only if the query
 //            initially fails. 
 
-vector<double> VPlug_GeoShapes::geocolor(const string& attribute, 
-					 string def_color)
+ColorPack VPlug_GeoShapes::geocolor(const string& attribute, 
+				    string def_color)
 {
-  map<string, vector<double> >::iterator p;
+  map<string, ColorPack>::iterator p;
   p = m_color_map.find(attribute);
   if(p == m_color_map.end())
     p = m_color_map.find(tolower(attribute));
@@ -523,8 +525,8 @@ vector<double> VPlug_GeoShapes::geocolor(const string& attribute,
   if(p != m_color_map.end())
     return(p->second);
   else {
-    vector<double> color_vector = colorParse(def_color);
-    return(color_vector);
+    ColorPack cpack(def_color);
+    return(cpack);
   }
 }
 

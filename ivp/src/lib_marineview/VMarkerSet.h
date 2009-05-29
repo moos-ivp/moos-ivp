@@ -10,6 +10,7 @@
 
 #include <vector>
 #include <string>
+#include "ColorPack.h"
 
 class CMOOSGeodesy;
 class VMarkerSet {
@@ -34,9 +35,9 @@ public:
 
   int            getMarkerColorCount(int ix);
   std::string    getMarkerColorString(int mix, int cix);
-  std::vector<std::vector<double> > getMarkerColorVectors(int mix);
+  std::vector<ColorPack> getMarkerColorVectors(int mix);
 
-  std::vector<double> getLabelColor() {return(m_label_color);};
+  ColorPack getLabelColor() {return(m_label_color);};
 
   std::vector<std::string> getParamReport() const;
 
@@ -52,12 +53,12 @@ protected:
   std::vector<double>       m_marker_width;
   std::vector<std::string>  m_marker_label;
 
-  std::vector<double>       m_label_color_default;
-  std::vector<double>       m_label_color;
-  int                       m_label_color_index;
+  ColorPack  m_label_color_default;
+  ColorPack  m_label_color;
+  int        m_label_color_index;
 
   std::vector<std::vector<std::string> > m_marker_colors;
-  std::vector<std::vector<std::vector<double> > > m_marker_color_vectors;
+  std::vector<std::vector<ColorPack> >   m_marker_cpacks;
   
 
   double m_marker_scale_global;

@@ -182,13 +182,13 @@ void PMV_Viewer::drawVehicle(string vname, bool active, string vehibody)
 
   // If there has been no explicit mapping of color to the given vehicle
   // name then the "inactive_vehicle_color" will be returned below.
-  vector<double> vehi_color;
+  ColorPack vehi_color;
   if(active)
     vehi_color = m_vehiset.getColor("active_vehicle_color");
   else
     vehi_color = m_vehiset.getColor(vname);
 
-  vector<double> vname_color = m_vehiset.getColor("vehicle_name_color");
+  ColorPack vname_color = m_vehiset.getColor("vehicle_name_color");
   
   string vnames_mode = m_vehiset.getStringInfo("vehicles_name_mode");
   
@@ -241,11 +241,11 @@ void PMV_Viewer::drawPoints(CPList &cps, int trail_length)
     i++;
   }
 
-  vector<double> cvect = m_vehiset.getColor("trails_color");
-  double point_size = m_vehiset.getDoubleInfo("trails_point_size");
-  bool connections  = m_vehiset.isViewable("trails_connect");
+  ColorPack   cpack = m_vehiset.getColor("trails_color");
+  double    pt_size = m_vehiset.getDoubleInfo("trails_point_size");
+  bool    connected = m_vehiset.isViewable("trails_connect");
 
-  drawPointList(xvect, yvect, point_size, cvect, connections);
+  drawPointList(xvect, yvect, pt_size, cpack, connected);
 }
 
 //-------------------------------------------------------------

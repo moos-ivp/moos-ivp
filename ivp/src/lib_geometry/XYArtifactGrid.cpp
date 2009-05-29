@@ -27,7 +27,7 @@
 #include <stdlib.h>
 #include <numeric> // For accumulate
 #include "MBUtils.h"
-#include "XYBuildUtils.h"
+#include "XYFormatUtilsPoly.h"
 #include "XYSquare.h"
 #include "XYPolygon.h"
 
@@ -141,7 +141,7 @@ bool XYArtifactGrid::initialize(string given_config_str)
   string poly_string  = svector.at(0);
   string unit_string  = svector.at(1);
   
-  bounding_poly = stringToPoly(poly_string);
+  bounding_poly = string2Poly(poly_string);
   if(!bounding_poly.is_convex()){
     cout << "Bounding poly failed initialization" << endl;
     cout << "I tried: " << poly_string << endl;

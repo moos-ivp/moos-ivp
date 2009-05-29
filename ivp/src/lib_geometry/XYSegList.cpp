@@ -470,8 +470,12 @@ string XYSegList::get_spec(int precision) const
   if(m_active == false)
     spec += "active,false:";
 
-  if(m_label_color_s != "")
-    spec += "labcolor=" + m_label_color_s + ":";
+  if(m_label_color.set())
+    spec += "labcolor," + m_label_color.str() + ":";
+  if(m_vert_color.set())
+    spec += "vertcolor," + m_vert_color.str() + ":";
+  if(m_line_color.set())
+    spec += "linecolor," + m_line_color.str() + ":";
 
   int vsize = vertex_x.size();
   for(int i=0; i<vsize; i++) {

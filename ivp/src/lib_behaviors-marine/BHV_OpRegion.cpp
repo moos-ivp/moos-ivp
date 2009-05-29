@@ -28,7 +28,7 @@
 #include <stdlib.h>
 #include "BHV_OpRegion.h"
 #include "MBUtils.h"
-#include "XYBuildUtils.h"
+#include "XYFormatUtilsPoly.h"
 
 using namespace std;
 
@@ -106,7 +106,7 @@ bool BHV_OpRegion::setParam(string param, string val)
 
   // Typical line: polygon  = 0,0:0,100:100,0:100,100
   if(param == "polygon") {
-    XYPolygon new_poly = stringToPoly(val);
+    XYPolygon new_poly = string2Poly(val);
     if(!new_poly.is_convex())  // Should be convex - false otherwise
       return(false);
     m_polygon = new_poly;

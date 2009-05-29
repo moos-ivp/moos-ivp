@@ -14,7 +14,6 @@
 #include "XYGrid.h"
 #include "XYCircle.h"
 #include "XYHexagon.h"
-#include "XYBuildUtils.h"
 #include "LMV_Utils.h"
 
 using namespace std;

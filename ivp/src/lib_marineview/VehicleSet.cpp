@@ -429,9 +429,9 @@ double VehicleSet::getDoubleInfo(const string& info_type) const
 //            vehicle is returned (if it is in the m_vehi_color map)
 //            or else the "inactive_vehicle_color" is returned.
 
-vector<double> VehicleSet::getColor(const string& key) const
+ColorPack VehicleSet::getColor(const string& key) const
 {
-  vector<double> cvect = m_vehicles_inactive_color;
+  ColorPack cpack = m_vehicles_inactive_color;
   if(key == "trails_color")
     return(m_trails_color);
   else if(key == "active_vehicle_color")
@@ -441,10 +441,10 @@ vector<double> VehicleSet::getColor(const string& key) const
   else if(key == "vehicle_name_color")
     return(m_vehicles_name_color);
   else {
-    map<string, vector<double> >::const_iterator p;
+    map<string, ColorPack>::const_iterator p;
     p = m_vehi_color.find(key);
     if(p == m_vehi_color.end())
-      return(cvect);
+      return(cpack);
     else
       return(p->second);
   }

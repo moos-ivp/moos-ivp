@@ -14,6 +14,7 @@
 #include <map>
 #include "ObjectPose.h"
 #include "ColoredPoint.h"
+#include "ColorPack.h"
 
 class VehicleSet
 {
@@ -44,7 +45,7 @@ class VehicleSet
   double      getDoubleInfo(const std::string& info_type) const;
 
 
-  std::vector<double> getColor(const std::string& key) const;
+  ColorPack getColor(const std::string& key) const;
   std::vector<std::string> getVehiNames() const;
   std::vector<std::string> getParamReport() const;
 
@@ -77,7 +78,7 @@ class VehicleSet
   // Mapping from Vehicle Name to Time of last AIS report
   std::map<std::string, double>       m_ais_map;
   // Mapping from Vehicle Name to Vehicle Color
-  std::map<std::string, std::vector<double> > m_vehi_color;
+  std::map<std::string, ColorPack>    m_vehi_color;
 
   std::map<std::string, std::string> m_param_report;
 
@@ -97,10 +98,10 @@ class VehicleSet
 
   std::string   m_vehicles_name_mode; // off; names; names_mode; names_depth
   
-  std::vector<double> m_trails_color; 
-  std::vector<double> m_vehicles_active_color;
-  std::vector<double> m_vehicles_inactive_color; 
-  std::vector<double> m_vehicles_name_color;
+  ColorPack m_trails_color; 
+  ColorPack m_vehicles_active_color;
+  ColorPack m_vehicles_inactive_color; 
+  ColorPack m_vehicles_name_color;
 };
 
 #endif 

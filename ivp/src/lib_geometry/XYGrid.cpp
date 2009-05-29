@@ -25,7 +25,7 @@
 #include <stdlib.h>
 #include "XYGrid.h"
 #include "MBUtils.h"
-#include "XYBuildUtils.h"
+#include "XYFormatUtilsPoly.h"
 
 using namespace std;
 
@@ -158,7 +158,7 @@ bool XYGrid::initialize(string given_config_str)
   if(vsize == 3)
     initial_val = atof(svector[2].c_str());
 
-  bounding_poly = stringToPoly(poly_string);
+  bounding_poly = string2Poly(poly_string);
   if(bounding_poly.size() == 0)
     return(false);
 
