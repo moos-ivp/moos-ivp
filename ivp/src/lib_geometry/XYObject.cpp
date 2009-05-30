@@ -33,8 +33,9 @@ using namespace std;
 
 XYObject::XYObject()
 {
-  m_active = true;
-  m_time   = 0;
+  m_active   = true;
+  m_time     = 0;
+  m_time_set = false;
 }
 
 
@@ -43,12 +44,13 @@ XYObject::XYObject()
 
 void XYObject::clear()
 {
-  m_active = true; 
-  m_time   = 0; 
-  m_label  = ""; 
-  m_type   = "";
-  m_source = ""; 
-  m_string = ""; 
+  m_active   = true; 
+  m_time     = 0; 
+  m_time_set = false; 
+  m_label    = ""; 
+  m_type     = "";
+  m_source   = ""; 
+  m_string   = ""; 
 }
 
 

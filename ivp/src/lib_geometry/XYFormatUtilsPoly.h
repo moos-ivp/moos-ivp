@@ -67,7 +67,7 @@ XYPolygon stringShortRadial2Poly(std::string);
 XYPolygon stringPoints2Poly(std::string);
   
 // Create a polygon given a set of points
-// Examples: "10,15 : 20,25 : 30,35 : label,foobar"
+// Examples: [10,15:20,25:30,35:label,foobar]
 XYPolygon stringShortPoints2Poly(std::string);
   
 #endif

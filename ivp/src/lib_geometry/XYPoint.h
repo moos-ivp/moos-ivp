@@ -61,7 +61,6 @@ public:
 
   std::string get_spec() const;
 
-
 protected:
   double    m_x;
   double    m_y;

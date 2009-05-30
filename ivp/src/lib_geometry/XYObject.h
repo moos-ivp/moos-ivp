@@ -39,11 +39,12 @@ public:
   void   set_source(std::string str)    {m_source=str;};
   void   set_string(std::string str)    {m_string=str;};
   void   set_active(bool val)           {m_active=val;};
-  void   set_time(double val)           {m_time=val;};
+  void   set_time(double val)           {m_time=val;m_time_set=true;};
   void   set_label_color(const std::string&);
 
   bool        active()           const {return(m_active);};
   double      get_time()         const {return(m_time);};
+  bool        time_set()         const {return(m_time_set);};
   std::string get_label()        const {return(m_label);};
   std::string get_type()         const {return(m_type);};
   std::string get_source()       const {return(m_source);};
@@ -59,6 +60,7 @@ protected:
   std::string  m_string;
   bool         m_active;
   double       m_time;
+  bool         m_time_set;
 
   ColorPack    m_label_color;
 };

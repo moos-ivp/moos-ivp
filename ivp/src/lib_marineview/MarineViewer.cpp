@@ -1008,9 +1008,16 @@ void MarineViewer::drawPolygons()
   
   for(int i=0; i<vsize; i++) {
     XYPolygon poly = m_geoshapes.getPolygon(i);
-    if(poly.active())
+    if(poly.active()) {
+      if(poly.label_color_set())
+	labl_c = poly.get_label_color();
+      if(poly.vert_color_set())
+	vert_c = poly.get_vert_color();
+      if(poly.line_color_set())
+	edge_c = poly.get_line_color();
       drawPolygon(poly, false, false, line_width, vertex_size, 
 		  edge_c, fill_c, vert_c, labl_c);
+    }
   }
 }
 

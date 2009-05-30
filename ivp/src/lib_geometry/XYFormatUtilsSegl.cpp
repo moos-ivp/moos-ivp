@@ -89,8 +89,8 @@ XYSegList stringPoints2SegList(string str)
   XYSegList new_seglist;
   
   vector<string> mvector = parseString(str, ':');
-  int vsize = mvector.size();
-  for(int i=0; i<vsize; i++) {
+  unsigned int i, vsize = mvector.size();
+  for(i=0; i<vsize; i++) {
     mvector[i] = stripBlankEnds(mvector[i]);
     string left = tolower(stripBlankEnds(biteString(mvector[i], ',')));
     string rest = stripBlankEnds(mvector[i]);
@@ -101,10 +101,8 @@ XYSegList stringPoints2SegList(string str)
       new_seglist.set_label_color(rest);
     else if(left == "vertcolor") 
       new_seglist.set_vert_color(rest);
-    else if(left == "linecolor") {
-      cout << "vertcolor = " << rest << endl;
+    else if(left == "linecolor")
       new_seglist.set_line_color(rest);
-    }
     else if(left == "active") 
       new_seglist.set_active(tolower(rest)=="true");
     else {
@@ -232,8 +230,6 @@ XYSegList stringLawnmower2SegList(string str)
     string param = tolower(stripBlankEnds(biteString(mvector[i], '=')));
     string value = stripBlankEnds(mvector[i]);
     double dval  = atof(value.c_str());
-    cout << "param: " << param << endl;
-    cout << "  value: " << value << endl;
     if((param == "format") && (value != "lawnmower"))
       return(null_seglist);
     else if((param == "x") && isNumber(value)) {

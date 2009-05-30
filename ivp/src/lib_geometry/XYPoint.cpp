@@ -91,19 +91,22 @@ string XYPoint::get_spec() const
   string spec;
 
   if(m_label != "")
-    spec += "label=" + m_label + ","; 
-  if(m_label != "")
-    spec += "type=" + m_type + ","; 
+    spec += "label," + m_label + ":"; 
+  if(m_label_color.set())
+    spec += "label_color," + m_label_color.str() + ":"; 
+  if(m_type != "")
+    spec += "type," + m_type + ":"; 
+  if(m_time_set)
+    spec += "time," + doubleToString(m_time,2) + ":"; 
   if(m_source != "")
-    spec += "source=" + m_source + ","; 
+    spec += "source," + m_source + ":"; 
+  if(m_active == false)
+    spec += "active,false:";
   if(m_point_color.set())
-    spec += "pcolor=" + m_point_color.str() + ","; 
+    spec += "point_color," + m_point_color.str() + ":"; 
   
-  spec += "x=";
-  spec += dstringCompact(doubleToString(m_x));
-  spec += ",y=";
-  spec += dstringCompact(doubleToString(m_y));
-  spec += ",z=";
+  spec += dstringCompact(doubleToString(m_x)) + ",";
+  spec += dstringCompact(doubleToString(m_y)) + ",";
   spec += dstringCompact(doubleToString(m_z));
 
   return(spec);
@@ -117,3 +120,4 @@ void XYPoint::set_point_color(const string& str)
 {
   m_point_color.setColor(str);
 }
+

@@ -29,11 +29,20 @@ using namespace std;
 //---------------------------------------------------------------
 // Procedure: string2Point
 //
-/// Initializes a point based on a string specification
-/// Format of the string is "x=val, y=val, z=val, label=val, type=val"
-
 
 XYPoint string2Point(string str)
+{
+  if(strContains(str, "x=") && strContains(str, "y="))
+    return(stringPairs2Point(str));
+  else
+    return(stringShort2Point(str));
+}
+
+//---------------------------------------------------------------
+// Procedure: stringPairs2Point
+//
+
+XYPoint stringPairs2Point(string str)
 {
   XYPoint null_point;
 
@@ -76,9 +85,9 @@ XYPoint string2Point(string str)
     }
     else if(param == "label")
       label = value;
-    else if((param == "labcolor") || (param == "labelcolor"))
+    else if(param == "label_color")
       label_color = value;
-    else if(param == "pcolor")
+    else if(param == "point_color")
       point_color = value;
     else if(param == "source")
       source = value;
@@ -113,4 +122,57 @@ XYPoint string2Point(string str)
   return(new_point);
 }
 
+//---------------------------------------------------------------
+// Procedure: stringShort2Point
+//
 
+XYPoint stringShort2Point(string str)
+{
+  XYPoint null_point;
+  XYPoint new_point;
+
+  str = tolower(stripBlankEnds(str));
+  vector<string> mvector = parseString(str, ':');
+  unsigned int i, vsize = mvector.size();
+  
+  for(i=0; i<vsize; i++) {
+    mvector[i] = stripBlankEnds(mvector[i]);
+    string left = tolower(stripBlankEnds(biteString(mvector[i], ',')));
+    string rest = stripBlankEnds(mvector[i]);
+    
+    if(left == "label") 
+      new_point.set_label(rest);
+    else if(left == "label_color") 
+      new_point.set_label_color(rest);
+    else if(left == "type") 
+      new_point.set_type(rest);
+    else if(left == "source") 
+      new_point.set_source(rest);
+    else if(left == "time") 
+      new_point.set_time(atof(rest.c_str()));
+    else if(left == "point_color") 
+      new_point.set_point_color(rest);
+    else if(left == "active") 
+      new_point.set_active(tolower(rest)=="true");
+    else if(left == "size") 
+      new_point.set_size(atof(rest.c_str()));
+    else {
+      string xstr = left;
+      string ystr = stripBlankEnds(biteString(rest, ','));
+      string zstr = stripBlankEnds(rest);
+      if((zstr != "") && !isNumber(zstr))
+	return(null_point);
+      if(!isNumber(xstr) || !isNumber(ystr))
+	return(null_point);
+      double xval = atof(xstr.c_str());
+      double yval = atof(ystr.c_str());
+      if(zstr == "")
+	new_point.set_vertex(xval, yval);
+      else {
+	double zval = atof(zstr.c_str());
+	new_point.set_vertex(xval, yval, zval);	
+      }
+    }
+  }
+  return(new_point);
+}

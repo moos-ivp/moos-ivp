@@ -31,4 +31,8 @@
 // Example: label=bobby, type=destination, x=val, y=val, z=val
 XYPoint string2Point(std::string);
 
+XYPoint stringPairs2Point(std::string);
+XYPoint stringShort2Point(std::string);
+
+
 #endif

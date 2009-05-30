@@ -446,6 +446,8 @@ void BHV_Loiter::postViewablePolygon()
   bhv_tag = findReplace(bhv_tag, "(d)", "");
   bhv_tag = m_us_name + "-" + bhv_tag;
   seglist.set_label(bhv_tag);
+  seglist.set_vert_color(m_hint_vert_color);
+  seglist.set_line_color(m_hint_line_color);
 
   string poly_spec = seglist.get_spec();
   postMessage("VIEW_POLYGON", poly_spec);
@@ -517,4 +519,8 @@ void BHV_Loiter::handleVisualHint(string hint)
     m_hint_nextpt_color = value;
   else if((param == "nextpt_lcolor") && isColor(value))
     m_hint_nextpt_lcolor = value;
+  else if((param == "vertex_color") && isColor(value))
+    m_hint_vert_color = value;
+  else if((param == "line_color") && isColor(value))
+    m_hint_line_color = value;
 }
