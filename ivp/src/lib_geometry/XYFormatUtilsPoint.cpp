@@ -45,20 +45,17 @@ XYPoint string2Point(string str)
 XYPoint stringPairs2Point(string str)
 {
   XYPoint null_point;
+  XYPoint new_point;
 
   str = tolower(stripBlankEnds(str));
   vector<string> mvector = parseString(str, ',');
   int vsize = mvector.size();
   
   // Below are the mandatory parameters - check they are set.
-  bool x_set  = false;
-  bool y_set  = false;
-
-  string label, label_color, point_color, type, source;
+  bool   x_set   = false;
+  bool   y_set   = false;
   double x, y, z = 0;
-  double snap    = 0;
-  double size    = 1;
-  bool   active  = true;
+  double snap    = -1;
 
   for(int i=0; i<vsize; i++) {
     vector<string> svector = parseString(mvector[i], '=');
@@ -77,45 +74,30 @@ XYPoint stringPairs2Point(string str)
     }
     else if((param == "z") && isNumber(value))
       z = dval;
-    else if((param == "size") && isNumber(value))
-      size = dval;
-    else if((param == "snap") && (isNumber(value))) {
-      if(dval >= 0)
-	snap = dval;
-    }
+    else if((param == "point_size") && isNumber(value))
+      new_point.set_point_size(dval);
+    else if((param == "snap") && isNumber(value) && (dval >= 0))
+      snap = dval;
     else if(param == "label")
-      label = value;
+      new_point.set_label(value);
     else if(param == "label_color")
-      label_color = value;
+      new_point.set_label_color(value);
     else if(param == "point_color")
-      point_color = value;
+      new_point.set_point_color(value);
+    else if(param == "point_size")
+      new_point.set_point_size(dval);
     else if(param == "source")
-      source = value;
+      new_point.set_source(value);
     else if(param == "type")
-      type = value;
+      new_point.set_type(value);
     else if(param == "active")
-      active = (tolower(value) == "true");
+      new_point.set_active(tolower(value) == "true");
   }
 
   if(!x_set || !y_set)
     return(null_point);
   
-  XYPoint new_point;
-  
   new_point.set_vertex(x,y,z);
-  new_point.set_size(size);
-  new_point.set_active(active);
-
-  if(label != "")
-    new_point.set_label(label);
-  if(label_color != "")
-    new_point.set_label_color(label_color);
-  if(point_color != "")
-    new_point.set_point_color(point_color);
-  if(type != "")
-    new_point.set_type(type);
-  if(source != "")
-    new_point.set_source(source);
   if(snap>=0)
     new_point.apply_snap(snap);
   
@@ -139,7 +121,8 @@ XYPoint stringShort2Point(string str)
     mvector[i] = stripBlankEnds(mvector[i]);
     string left = tolower(stripBlankEnds(biteString(mvector[i], ',')));
     string rest = stripBlankEnds(mvector[i]);
-    
+    double dval = atof(rest.c_str());
+
     if(left == "label") 
       new_point.set_label(rest);
     else if(left == "label_color") 
@@ -149,13 +132,13 @@ XYPoint stringShort2Point(string str)
     else if(left == "source") 
       new_point.set_source(rest);
     else if(left == "time") 
-      new_point.set_time(atof(rest.c_str()));
+      new_point.set_time(dval);
     else if(left == "point_color") 
       new_point.set_point_color(rest);
     else if(left == "active") 
       new_point.set_active(tolower(rest)=="true");
-    else if(left == "size") 
-      new_point.set_size(atof(rest.c_str()));
+    else if((left == "point_size") && (dval >= 0))
+      new_point.set_point_size(dval);
     else {
       string xstr = left;
       string ystr = stripBlankEnds(biteString(rest, ','));

@@ -66,13 +66,21 @@ public:
     m_set = true;
   };
 
+  // Destructor
   ~ColorPack() {};
 
-  void   setColor(const std::string& s) {
+  // setColor
+  void setColor(const std::string& s) {
     if(isColor(s)) {
       m_color_vector=colorParse(s);
       m_set = true;
     }
+  };
+
+  // clear
+  void clear() {
+    m_color_vector = std::vector<double>(3,0);
+    m_set = false;
   };
 
   double red() const {return(m_color_vector[0]);};

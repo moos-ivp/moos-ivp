@@ -1634,7 +1634,6 @@ void MarineViewer::drawPoints()
 
   // If no points are present just return.
   int vsize = m_geoshapes.sizePoints();
-
   if(vsize == 0)
     return;
 
@@ -1655,11 +1654,12 @@ void MarineViewer::drawPoints()
 	labl_c = point.get_label_color();
       if(point.point_color_set())
 	vert_c = point.get_point_color();
+      if(point.get_point_size() != -1)
+	vertex_size = point.get_point_size();
       drawPoint(point, vertex_size, vert_c, labl_c);
     }
   }
 }
-
 
 //-------------------------------------------------------------
 // Procedure: drawPoint

@@ -29,46 +29,6 @@
 using namespace std;
 
 //--------------------------------------------------------------
-// Procedure: XYPolygonToString
-
-string XYPolygonToString(const XYPolygon& g_poly, int digits)
-{
-  string str;
-  int size = g_poly.size();
-  
-  string label = g_poly.get_label();
-  if(label != "")
-    str += ("label," + label + ":");
-
-  for(int i=0; i<size; i++) {
-    str += dstringCompact(doubleToString(g_poly.get_vx(i),digits)) + ","; 
-    str += dstringCompact(doubleToString(g_poly.get_vy(i),digits));
-    if(i < size-1)
-      str += ":";
-  }
-  return(str);
-}
-
-
-//--------------------------------------------------------------
-// Procedure: XYSegListToString
-
-string XYSegListToString(const XYSegList& g_seglist)
-{
-  string str;
-  int size = g_seglist.size();
-
-  for(int i=0; i<size; i++) {
-    str += dstringCompact(doubleToString(g_seglist.get_vx(i))) + ","; 
-    str += dstringCompact(doubleToString(g_seglist.get_vy(i)));
-    if(i < size-1)
-      str += ":";
-  }
-  return(str);
-}
-
-
-//--------------------------------------------------------------
 // Procedure: XYSquareToString
 
 string XYSquareToString(const XYSquare& g_square)
@@ -104,7 +64,7 @@ string XYGridToString(const XYGrid& g_grid)
   str += "sbound=" + XYSquareToString(sbound) + "#";
   
   XYPolygon pbound = g_grid.getPBound();
-  str += "pbound=" + XYPolygonToString(pbound) + "#";
+  str += "pbound=" + pbound.get_spec() + "#";
   
   str += "squares=";
   for(int i=0; i<gsize; i++) {

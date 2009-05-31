@@ -40,7 +40,11 @@ public:
   void   set_string(std::string str)    {m_string=str;};
   void   set_active(bool val)           {m_active=val;};
   void   set_time(double val)           {m_time=val;m_time_set=true;};
+  void   set_point_size(double val);
+  void   set_edge_size(double val);
   void   set_label_color(const std::string&);
+  void   set_point_color(const std::string&);
+  void   set_edge_color(const std::string&);
 
   bool        active()           const {return(m_active);};
   double      get_time()         const {return(m_time);};
@@ -52,6 +56,12 @@ public:
 
   ColorPack get_label_color() const {return(m_label_color);};
   bool      label_color_set() const {return(m_label_color.set());};
+  ColorPack get_point_color() const {return(m_point_color);};
+  bool      point_color_set() const {return(m_point_color.set());};
+  ColorPack get_edge_color()  const {return(m_edge_color);};
+  bool      label_edge_set()  const {return(m_edge_color.set());};
+  double    get_point_size()  const {return(m_point_size);};
+  double    get_edge_size()   const {return(m_edge_size);};
 
 protected:
   std::string  m_label;
@@ -63,6 +73,10 @@ protected:
   bool         m_time_set;
 
   ColorPack    m_label_color;
+  ColorPack    m_point_color;
+  ColorPack    m_edge_color;
+  double       m_point_size;
+  double       m_edge_size;
 };
 
 #endif

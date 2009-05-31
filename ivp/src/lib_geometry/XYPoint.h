@@ -37,6 +37,10 @@ public:
   void set_vertex(double x, double y, double z=0) 
     {m_x=x; m_y=y; m_z=z; m_valid=true;};
 
+  void set_vx(double v) {m_x=v;};
+  void set_vy(double v) {m_y=v;};
+  void set_vz(double v) {m_z=v;};
+
   void clear();
   
 public:
@@ -46,16 +50,12 @@ public:
   void   print() const;
 
 public:
-  void      set_point_color(const std::string&);
   void      set_size(double val)    {m_size=val;};
   double    get_vx() const          {return(m_x);};
   double    get_vy() const          {return(m_y);};
   double    get_vz() const          {return(m_z);};
   double    get_size() const        {return(m_size);};
   bool      valid() const           {return(m_valid);};
-
-  ColorPack get_point_color() const {return(m_point_color);};
-  bool      point_color_set() const {return(m_point_color.set());};
 
   XYPoint   projectPt(XYPoint, double dist, double angle) const;
 
@@ -67,8 +67,6 @@ protected:
   double    m_z;
   double    m_size;
   bool      m_valid;
-
-  ColorPack m_point_color;
 };
 
 #endif

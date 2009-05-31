@@ -115,6 +115,7 @@ XYPolygon string2Poly(string str)
 XYPolygon stringEllipse2Poly(string str)
 {
   XYPolygon null_poly;
+  XYPolygon new_poly;
 
   // Below are the mandatory parameters - check they are set.
   bool xpos_set    = false;
@@ -125,10 +126,8 @@ XYPolygon stringEllipse2Poly(string str)
   bool degrees_set = false;  // Either degrees OR radians must
   bool radians_set = false;  // be specified.
   bool pts_set     = false;
-  bool active      = true;
 
   double xpos, ypos, zval, major, minor, radians, degrees, snap=0;
-  string label;
   int    pts;
    
   str = stripBlankEnds(str);
@@ -182,15 +181,26 @@ XYPolygon stringEllipse2Poly(string str)
 	pts = ival;
       }
     }
-    else if((param == "snap") && (isNumber(value))) {
-      if(dval >= 0)
-	snap = dval;
-    }
-    else if(param == "label") {
-      label = value;
-    }
+    else if((param == "snap") && isNumber(value) && (dval>0))
+      snap = dval;
+    else if(param == "label")
+      new_poly.set_label(value);
+    else if(param == "type")
+      new_poly.set_type(value);
+    else if(param == "source")
+      new_poly.set_source(value);
+    else if(param == "point_color")
+      new_poly.set_point_color(value);
+    else if(param == "edge_color")
+      new_poly.set_edge_color(value);
+    else if((param == "point_size") && (dval >= 0))
+      new_poly.set_point_size(dval);
+    else if((param == "edge_size") && (dval >= 0))
+      new_poly.set_edge_size(dval);
     else if(param == "active")
-      active = (tolower(value) == "true");
+      new_poly.set_active(tolower(value) == "true");
+    else
+      return(null_poly);
   }
 
   if(!xpos_set || !ypos_set || !major_set || !minor_set || !pts_set)
@@ -199,13 +209,16 @@ XYPolygon stringEllipse2Poly(string str)
   if(!radians_set && !degrees_set)
     return(null_poly);
 
-  XYPolygon new_poly;
-  new_poly.set_active(active);
-
   double rads = radians;
   if(!radians_set && degrees_set)
     rads = degToRadians(degrees);
 
+  // The "false" parameter in add_vertex() below indicates that a
+  // convexity determination is *not* to be made as part of the call
+  // which would be the default behavior. The convexity determination
+  // is instead delayed until after all the vertices are added to for
+  // the sake of efficiency. The determine_convexity() call is made
+  // below this block.
   double delta = (2*M_PI) / pts;
   for(int i=0; i<pts; i++) {
     double angle = -M_PI + (i*delta);
@@ -224,7 +237,6 @@ XYPolygon stringEllipse2Poly(string str)
   new_poly.determine_convexity();
   if(snap>=0)
     new_poly.apply_snap(snap);
-  new_poly.set_label(label);
 
   if(new_poly.is_convex())
     return(new_poly);
@@ -243,6 +255,7 @@ XYPolygon stringEllipse2Poly(string str)
 XYPolygon stringPieWedge2Poly(string str)
 {
   XYPolygon null_poly;
+  XYPolygon new_poly;
 
   // Below are the mandatory parameters - check they are set.
   bool xpos_set  = false;
@@ -250,10 +263,8 @@ XYPolygon stringPieWedge2Poly(string str)
   bool lang_set  = false;
   bool rang_set  = false;
   bool range_set = false;
-  bool active    = true;
   
   double xpos, ypos, lang, rang, range, snap=0;
-  string label;
   int    pts=0;
   
   str = stripBlankEnds(str);
@@ -263,6 +274,7 @@ XYPolygon stringPieWedge2Poly(string str)
   for(i=0; i<vsize; i++) {
     string param = tolower(stripBlankEnds(biteString(mvector[i], '=')));
     string value = stripBlankEnds(mvector[i]);
+    double dval  = atof(value.c_str());
     if(param == "format") {
       if((value != "wedge") && (value != "piewedge"))
 	return(null_poly);
@@ -292,16 +304,26 @@ XYPolygon stringPieWedge2Poly(string str)
       if(ival >= 0)
 	pts = ival;
     }
-    else if((param == "snap") && (isNumber(value))) {
-      double dval = atof(value.c_str());
-      if(dval >= 0)
+    else if((param == "snap") && isNumber(value) && (dval > 0))
 	snap = dval;
-    }
-    else if(param == "label") {
-      label = value;
-    }
+    else if(param == "label")
+      new_poly.set_label(value);
+    else if(param == "type")
+      new_poly.set_type(value);
+    else if(param == "source")
+      new_poly.set_source(value);
+    else if(param == "point_color")
+      new_poly.set_point_color(value);
+    else if(param == "edge_color")
+      new_poly.set_edge_color(value);
+    else if((param == "point_size") && (dval >= 0))
+      new_poly.set_point_size(dval);
+    else if((param == "edge_size") && (dval >= 0))
+      new_poly.set_edge_size(dval);
     else if(param == "active")
-      active = (tolower(value) == "true");
+      new_poly.set_active(tolower(value) == "true");
+    else
+      return(null_poly);
   }
 
   if(!xpos_set || !ypos_set || !lang_set || !rang_set || !range_set)
@@ -316,13 +338,17 @@ XYPolygon stringPieWedge2Poly(string str)
   if(rang > lang)
     delta = (rang - lang) / ((double)(pts));
 
-  XYPolygon new_poly;
   new_poly.add_vertex(xpos, ypos);
-  new_poly.set_active(active);
 
+  // The "false" parameter in add_vertex() below indicates that a
+  // convexity determination is *not* to be made as part of the call
+  // which would be the default behavior. The convexity determination
+  // is instead delayed until after all the vertices are added to for
+  // the sake of efficiency. The determine_convexity() call is made
+  // below this block.
   double ptx, pty;
   projectPoint(lang, range, xpos, ypos, ptx, pty);
-  new_poly.add_vertex(ptx, pty);
+  new_poly.add_vertex(ptx, pty, 0, false);
 
   double project_angle = lang;
   while(project_angle < rang) {
@@ -330,7 +356,7 @@ XYPolygon stringPieWedge2Poly(string str)
     if(project_angle > rang)
       project_angle = rang;
     projectPoint(project_angle, range, xpos, ypos, ptx, pty);
-    new_poly.add_vertex(ptx, pty);
+    new_poly.add_vertex(ptx, pty, 0, false);
   }
   
   // Make a call to determine_convexity here because convexity 
@@ -341,7 +367,6 @@ XYPolygon stringPieWedge2Poly(string str)
   new_poly.determine_convexity();
   if(snap>=0)
     new_poly.apply_snap(snap);
-  new_poly.set_label(label);
 
   if(new_poly.is_convex())
     return(new_poly);
@@ -360,6 +385,7 @@ XYPolygon stringPieWedge2Poly(string str)
 XYPolygon stringRangeWedge2Poly(string str)
 {
   XYPolygon null_poly;
+  XYPolygon new_poly;
 
   // Below are the mandatory parameters - check they are set.
   bool xpos_set  = false;
@@ -367,11 +393,9 @@ XYPolygon stringRangeWedge2Poly(string str)
   bool lang_set  = false;
   bool rang_set  = false;
   bool range_set = false;
-  bool active    = true;
 
   double range_min = 0;
   double xpos, ypos, lang, rang, range_max, snap=0;
-  string label;
   int    pts=0;
   
   str = stripBlankEnds(str);
@@ -381,6 +405,7 @@ XYPolygon stringRangeWedge2Poly(string str)
   for(i=0; i<vsize; i++) {
     string param = tolower(stripBlankEnds(biteString(mvector[i], '=')));
     string value = stripBlankEnds(mvector[i]);
+    double dval  = atof(value.c_str());
     if(param == "format") {
       if(value != "rangewedge")
 	return(null_poly);
@@ -412,16 +437,26 @@ XYPolygon stringRangeWedge2Poly(string str)
       if(ival >= 0)
 	pts = ival;
     }
-    else if((param == "snap") && (isNumber(value))) {
-      double dval = atof(value.c_str());
-      if(dval >= 0)
-	snap = dval;
-    }
-    else if(param == "label") {
-      label = value;
-    }
+    else if((param == "snap") && isNumber(value) && (dval>0))
+      snap = dval;
+    else if(param == "label")
+      new_poly.set_label(value);
+    else if(param == "type")
+      new_poly.set_type(value);
+    else if(param == "source")
+      new_poly.set_source(value);
+    else if(param == "point_color")
+      new_poly.set_point_color(value);
+    else if(param == "edge_color")
+      new_poly.set_edge_color(value);
+    else if((param == "point_size") && (dval >= 0))
+      new_poly.set_point_size(dval);
+    else if((param == "edge_size") && (dval >= 0))
+      new_poly.set_edge_size(dval);
     else if(param == "active")
-      active = (tolower(value) == "true");
+      new_poly.set_active(tolower(value) == "true");
+    else
+      return(null_poly);
   }
 
   if(!xpos_set || !ypos_set || !lang_set || !rang_set || !range_set)
@@ -439,11 +474,14 @@ XYPolygon stringRangeWedge2Poly(string str)
   if(rang > lang)
     delta = (rang - lang) / ((double)(pts));
 
-
-  XYPolygon new_poly;
-  new_poly.set_active(active);
-
   double ptx, pty, project_angle;
+
+  // The "false" parameter in add_vertex() below indicates that a
+  // convexity determination is *not* to be made as part of the call
+  // which would be the default behavior. The convexity determination
+  // is instead delayed until after all the vertices are added to for
+  // the sake of efficiency. The determine_convexity() call is made
+  // below this block.
 
   // First add the points from the outer arc
   projectPoint(lang, range_max, xpos, ypos, ptx, pty);
@@ -468,8 +506,6 @@ XYPolygon stringRangeWedge2Poly(string str)
     projectPoint(project_angle, range_min, xpos, ypos, ptx, pty);
     new_poly.add_vertex(ptx, pty);
   }
-  new_poly.set_label(label);
-
 
   // Make a call to determine_convexity here because convexity 
   // determinations are not made when adding vertices above.
@@ -479,7 +515,6 @@ XYPolygon stringRangeWedge2Poly(string str)
   new_poly.determine_convexity();
   if(snap>=0)
     new_poly.apply_snap(snap);
-  new_poly.set_label(label);
 
   if(new_poly.is_convex())
     return(new_poly);
@@ -504,6 +539,7 @@ XYPolygon stringRangeWedge2Poly(string str)
 XYPolygon stringPylon2Poly(string str)
 {
   XYPolygon null_poly;
+  XYPolygon new_poly;
 
   // Below are the mandatory parameters - check they are set.
   bool x1_set  = false;
@@ -513,10 +549,8 @@ XYPolygon stringPylon2Poly(string str)
   bool zval_set = false;
   bool axis_pad_set = false;
   bool perp_pad_set = false;  // Either degrees OR radians must
-  bool active  = true;
 
   double x1, y1, x2, y2, zval, axis_pad, perp_pad, snap=0;
-  string label;
   
   str = stripBlankEnds(str);
   vector<string> mvector = parseStringQ(str, ',');
@@ -558,15 +592,26 @@ XYPolygon stringPylon2Poly(string str)
 	perp_pad = dval;
       }
     }
-    else if((param == "snap") && (isNumber(value))) {
-      if(dval >= 0)
-	snap = dval;
-    }
-    else if(param == "label") {
-      label = value;
-    }
+    else if((param == "snap") && isNumber(value) && (dval>0))
+      snap = dval;
+    else if(param == "label")
+      new_poly.set_label(value);
+    else if(param == "type")
+      new_poly.set_type(value);
+    else if(param == "source")
+      new_poly.set_source(value);
+    else if(param == "point_color")
+      new_poly.set_point_color(value);
+    else if(param == "edge_color")
+      new_poly.set_edge_color(value);
+    else if((param == "point_size") && (dval >= 0))
+      new_poly.set_point_size(dval);
+    else if((param == "edge_size") && (dval >= 0))
+      new_poly.set_edge_size(dval);
     else if(param == "active")
-      active = (tolower(value) == "true");
+      new_poly.set_active(tolower(value) == "true");
+    else
+      return(null_poly);
   }
 
   if(!x1_set || !y1_set || !x2_set || !y2_set)
@@ -574,9 +619,6 @@ XYPolygon stringPylon2Poly(string str)
 
   if(!axis_pad_set || !perp_pad_set)
     return(null_poly);
-
-  XYPolygon new_poly;
-  new_poly.set_active(active);
 
   double rel_ang = relAng(x1,y1,x2,y2);
   
@@ -597,13 +639,16 @@ XYPolygon stringPylon2Poly(string str)
   projectPoint(rel_ang-90, perp_pad, px4, py4, px4, py4);
 
 
-  // Now add the four points. The "false" in the first three
-  // calls indicates that no determination of convexity is made.
-  // That is saved only for the last call - minor time savings.
-  new_poly.add_vertex(px1,py1,zval,false);
-  new_poly.add_vertex(px2,py2,zval,false);
-  new_poly.add_vertex(px3,py3,zval,false);
-  new_poly.add_vertex(px4,py4,zval,true);
+  // The "false" parameter in add_vertex() below indicates that a
+  // convexity determination is *not* to be made as part of the call
+  // which would be the default behavior. The convexity determination
+  // is instead delayed until after all the vertices are added to for
+  // the sake of efficiency. The determine_convexity() call is made
+  // below this block.
+  new_poly.add_vertex(px1, py1, zval, false);
+  new_poly.add_vertex(px2, py2, zval, false);
+  new_poly.add_vertex(px3, py3, zval, false);
+  new_poly.add_vertex(px4, py4, zval, false);
 
   // Make a call to determine_convexity here because convexity 
   // determinations are not made when adding vertices above.
@@ -613,7 +658,6 @@ XYPolygon stringPylon2Poly(string str)
   new_poly.determine_convexity();
   if(snap>=0)
     new_poly.apply_snap(snap);
-  new_poly.set_label(label);
 
   if(new_poly.is_convex())
     return(new_poly);
@@ -633,6 +677,7 @@ XYPolygon stringPylon2Poly(string str)
 XYPolygon stringRadial2Poly(string str)
 {
   XYPolygon null_poly;
+  XYPolygon new_poly;
 
   // Below are the mandatory parameters - check they are set.
   bool xpos_set   = false;
@@ -642,26 +687,20 @@ XYPolygon stringRadial2Poly(string str)
   bool pts_set    = false;
 
   double xpos, ypos, zval, radius, snap=0;
-  string label;
   int    pts;
-  bool   active = true;
   
-  cout << "Handling string: " << endl;
-  cout << "   [" << str << "]" << endl;
-
   str = stripBlankEnds(str);
   vector<string> mvector = parseStringQ(str, ',');
   unsigned int i, vsize = mvector.size();
 
-  cout << "components: " << vsize << endl;
-  
   for(i=0; i<vsize; i++) {
     string param = tolower(stripBlankEnds(biteString(mvector[i], '=')));
     string value = stripBlankEnds(mvector[i]);
-    cout << "param=[" << param << "]" << endl;
-    cout << "value=[" << value << "]" << endl;
-    if((param == "format") && (value != "radial"))
-      return(null_poly);
+    double dval  = atof(value.c_str());
+    if(param == "format") {
+      if(value != "radial")
+	return(null_poly);
+    }
     else if((param == "x") && (isNumber(value))) {
       xpos_set = true;
       xpos = atof(value.c_str());
@@ -688,26 +727,39 @@ XYPolygon stringRadial2Poly(string str)
 	pts = ival;
       }
     }
-    else if((param == "snap") && (isNumber(value))) {
-      double dval = atof(value.c_str());
-      if(dval >= 0)
-	snap = dval;
-    }
-    else if(param == "label") {
-      label = value;
-    }
+    else if((param == "snap") && isNumber(value) && (dval>0))
+      snap = dval;
+    else if(param == "label")
+      new_poly.set_label(value);
+    else if(param == "type")
+      new_poly.set_type(value);
+    else if(param == "source")
+      new_poly.set_source(value);
+    else if(param == "point_color")
+      new_poly.set_point_color(value);
+    else if(param == "edge_color")
+      new_poly.set_edge_color(value);
+    else if((param == "point_size") && (dval >= 0))
+      new_poly.set_point_size(dval);
+    else if((param == "edge_size") && (dval >= 0))
+      new_poly.set_edge_size(dval);
     else if(param == "active")
-      active = (tolower(value) == "true");
+      new_poly.set_active(tolower(value) == "true");
+    else {
+      cout << "badparam:" << param << "  val:" <<value << endl;
+      return(null_poly);
+    }
   }
 
-  if(!xpos_set || !ypos_set || !radius_set || !pts_set) {
-    cout << "SOMETHING IS NOT SET" << endl;
+  if(!xpos_set || !ypos_set || !radius_set || !pts_set)
     return(null_poly);
-  }
   
-  XYPolygon new_poly;
-  new_poly.set_active(active);
-
+  // The "false" parameter in add_vertex() below indicates that a
+  // convexity determination is *not* to be made as part of the call
+  // which would be the default behavior. The convexity determination
+  // is instead delayed until after all the vertices are added to for
+  // the sake of efficiency. The determine_convexity() call is made
+  // below this block.
   double delta = 360.0 / pts;
   for(double deg=(delta/2); deg<360; deg+=delta) {
     double new_x, new_y;
@@ -723,7 +775,6 @@ XYPolygon stringRadial2Poly(string str)
   new_poly.determine_convexity();
   if(snap >= 0)
     new_poly.apply_snap(snap);
-  new_poly.set_label(label);
 
   if(new_poly.is_convex())
     return(new_poly);
@@ -749,12 +800,13 @@ XYPolygon stringPoints2Poly(string str)
   vector<string> mvector = parseStringQ(str, ',');
   unsigned int i, vsize = mvector.size();
 
-
   for(i=0; i<vsize; i++) {
     string param = tolower(stripBlankEnds(biteString(mvector[i], '=')));
     string value = stripBlankEnds(mvector[i]);
-    if((param=="format")&&(value!="default"))
-      return(null_poly);
+    if(param=="format") {
+      if(value!="default")
+	return(null_poly);
+    }
     else if(param == "label")
       new_poly.set_label(value);
     else if(param == "active")

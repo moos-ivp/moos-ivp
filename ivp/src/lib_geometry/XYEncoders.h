@@ -25,15 +25,7 @@
 
 #include <string>
 #include "XYGrid.h"
-#include "XYSegList.h"
-#include "XYPolygon.h"
 #include "XYSquare.h"
-
-// Convert an XYSegList to string represntation
-std::string XYSegListToString(const XYSegList&);
-
-// Convert an XYPolygon to string represntation
-std::string XYPolygonToString(const XYPolygon&, int digits=0);
 
 // Convert an XYSquare to string represntation
 std::string XYSquareToString(const XYSquare&);

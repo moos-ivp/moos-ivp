@@ -62,7 +62,7 @@ void XYPoint::print() const
   cout << " type: " << m_type;
   cout << " size: " << m_size;
   if(m_point_color.set())
-    cout << " pcolor: " << m_point_color.str() << endl;
+    cout << " point_color: " << m_point_color.str() << endl;
   cout << "  x=" << m_x << "  y=" << m_y << "  z=" << m_z << endl;
 }
 
@@ -104,6 +104,14 @@ string XYPoint::get_spec() const
     spec += "active,false:";
   if(m_point_color.set())
     spec += "point_color," + m_point_color.str() + ":"; 
+  if(m_point_size >= 0) {
+    spec += "point_size,";
+    spec += dstringCompact(doubleToString(m_point_size,3)) + ":"; 
+  }
+  if(m_edge_size >= 0) {
+    spec += "edge_size,";
+    spec += dstringCompact(doubleToString(m_edge_size,3)) + ":"; 
+  }
   
   spec += dstringCompact(doubleToString(m_x)) + ",";
   spec += dstringCompact(doubleToString(m_y)) + ",";
@@ -113,11 +121,4 @@ string XYPoint::get_spec() const
 }
 
 
-//---------------------------------------------------------------
-// Procedure: set_point_color()
-
-void XYPoint::set_point_color(const string& str)
-{
-  m_point_color.setColor(str);
-}
 
