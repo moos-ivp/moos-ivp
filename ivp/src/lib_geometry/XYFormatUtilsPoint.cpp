@@ -21,6 +21,7 @@
 /*****************************************************************/
 
 #include <vector>
+#include <stdlib.h>
 #include "XYFormatUtilsPoint.h"
 #include "MBUtils.h"
 
