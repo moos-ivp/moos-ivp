@@ -261,7 +261,8 @@ XYSegList stringLawnmower2SegList(string str)
       rads = dval;
       rads_set = true;
     }
-    else if((param == "swath") && isNumber(value)) {
+    else if(((param == "swath") || (param == "lane_width")) 
+	    && isNumber(value)) {
       swath = dval;
       swath_set = true;
     }

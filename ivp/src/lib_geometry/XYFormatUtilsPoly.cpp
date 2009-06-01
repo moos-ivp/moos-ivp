@@ -180,7 +180,7 @@ XYPolygon stringEllipse2Poly(string str)
 	pts = ival;
       }
     }
-    else if(((param == "snap") && isNumber(value) && (dval>0))
+    else if((param == "snap") && isNumber(value) && (dval>0))
       snap = dval;
     else if(param == "label")
       new_poly.set_label(value);
