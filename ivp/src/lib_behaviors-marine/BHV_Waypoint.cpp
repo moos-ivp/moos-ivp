@@ -496,6 +496,14 @@ void BHV_Waypoint::postViewablePoint()
   view_point.set_label_color(m_hint_nextpt_lcolor);
   view_point.set_vertex_color(m_hint_nextpt_color);
   postMessage("VIEW_POINT", view_point.get_spec());
+
+  XYPoint view_point_track(m_trackpt_x, m_trackpt_y);
+  view_point_track.set_source(m_us_name + tolower(getDescriptor()));
+  view_point_track.set_type("track_point");
+  view_point_track.set_label(m_us_name + "'s track-point");
+  view_point_track.set_label_color(m_hint_nextpt_lcolor);
+  view_point_track.set_vertex_color(m_hint_nextpt_color);
+  postMessage("VIEW_POINT", view_point_track.get_spec());
 }
 
 //-----------------------------------------------------------
