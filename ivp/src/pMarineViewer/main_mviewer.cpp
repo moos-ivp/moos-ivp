@@ -174,7 +174,7 @@ int main(int argc, char *argv[])
   bool switches = false;
   for(int i=1; i<argc; i++) {
     string argi  = argv[i];
-    if(strContains(argi, ".moos"))
+    if(strContains(argi, ".moos") || strContains(argi, "._moos"))
       g_sMissionFile = argv[i];
     else if(strContains(argi, "-sw"))
       switches = true;
