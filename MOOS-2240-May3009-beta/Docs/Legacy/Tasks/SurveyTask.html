@@ -1,0 +1,124 @@
+<HTML>
+<HEAD>
+<TITLE>Survey Task</TITLE>
+</HEAD>
+<BODY>
+
+<H1><img src="moose6.gif"> <center>Survey Task</center></H1>
+
+<H2>Description</H2>
+This task directs the vehicle along a series of TrackLines arranged in a "lawnmower" pattern. The pattern is a rectangle
+<b>A</b> by <b>B</b> (m) rotated anticlockwise by <b>Rotation</b> degrees. The legs of the survey are <b>Spacing</b> m apart
+and along the <b>A</b> direction. The pattern is centered on a specified XY locations
+
+<H2>Publishes</H2>
+<ul>
+	<li>EndFlags
+	<li>EventFlags
+</ul>
+<p>
+
+
+<H2>Subscribes</H2>
+<ul>
+	<li><b>StartFlags</b>
+	<li><b>NAV_X</b>
+	<li><b>NAV_Y</b>
+	<li><b>NAV_YAW</b>
+</ul>
+<p>
+
+<H2>Configuration Block</H2>
+<ul>
+
+
+
+	<li><a href="CommonMOOSTask.html"> Common Task Parameters</a>
+	<p>
+
+	<li><H3>Thrust</H3>
+	<ul>
+		<li><b>Syntax:	</b> 	Thrust = Thrust[0-100]
+		<li><b>Meaning:	</b>	Set Thrust of survey operation
+		<li><b>Example:	</b> <i>	Thrust = 10 </i> go at ten percent throttle.
+	</ul>
+	<p>
+
+
+	<li><H3>CENTER</H3>
+	<ul>
+		<li><b>Syntax:	</b> CENTER = X,Y
+		<li><b>Meaning:	</b> Set the center of teh survey rectangle
+		<li><b>Example:	</b> <i>CENTER = 80,80</i> vehicle will survey around 80,80
+	</ul>
+	<p>
+	
+	<li><H3>A/B</H3>
+	<ul>
+		<li><b>Syntax:	</b> A/B = Length B
+		<li><b>Meaning:	</b> Set the survey rectangle dimensions
+		<li><b>Example:	</b> <i>A = 80</i> each track line will be 80 m long
+	</ul>
+	<p>
+	
+	<li><H3>LEGTIMEOUT</H3>
+	<ul>
+		<li><b>Syntax:	</b> LEGTIMEOUT = Timeout (s)
+		<li><b>Meaning:	</b> Set the maximum time any one leg should take.
+		 If a leg takes longer than this then the next trackline will take over. NOTE the task will not time out. However the inherited 
+		 task timeout will cause the task to terminate after the specified time. See <a href="CommonMOOSTask.html"> Common Task Parameters</a>
+		<li><b>Example:	</b> <i>LEGTIMEOUT = 200</i> no leg can take longer than 200 s
+	</ul>
+	<p>
+	
+
+	<li><H3>SPACING</H3>
+	<ul>
+		<li><b>Syntax:	</b> SPACING = Distance (m)
+		<li><b>Meaning:	</b> Set the distance between track lines
+		<li><b>Example:	</b> <i>SPACING = 20</i> 20m between tracks
+	</ul>
+	<p>
+
+	<li><H3>ROTATION</H3>
+	<ul>
+		<li><b>Syntax:	</b> ROTATION = angle (deg)
+		<li><b>Meaning:	</b> Set the (anticlockwise) rotation of teh survey rectangle about <b>CENTER</b>
+		<li><b>Example:	</b> <i>ROTATION = 45</i> 45 deg rotations
+	</ul>
+	<p>
+	
+	<li><H3>LEAD</H3>
+	<ul>
+		<li><b>Syntax:	</b> LEAD = distance (m)
+		<li><b>Meaning:	</b> Set the "lead" on each trackline. The distance ahead of the perpendicular bisector that the vehicle heads for on a trackline.
+		<li><b>Example:	</b> <i>LEAD = 10</i> aim 10 m ahead
+	</ul>
+	<p>
+	
+</ul>
+
+<H2>Example Block</H2>
+<pre>
+Task = Survey
+{
+	Name = Survey1
+	Priority = 3
+	InitialState = ON
+	TimeOut = 800
+	FinishFlag = EndMission
+	Thrust = 60
+	Center = 0,0
+	A = 100
+	B = 100
+	Spacing = 10
+	Rotation = 270
+	Radius = 10
+	Lead = 5
+}
+<pre>
+
+<hr>
+<H4>The MOOS &#169;  P. Newman 2001-2002 <img src="moose2.gif"></H4>
+</BODY>
+</HTML>

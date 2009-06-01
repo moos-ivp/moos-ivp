@@ -1,0 +1,6 @@
+# MOOS source dir
+SET( MOOS_SOURCE_DIR "@MOOS_SOURCE_DIR@")
+
+# MOOS build dir
+SET( MOOS_DIR "@CMAKE_BINARY_DIR@")
+
