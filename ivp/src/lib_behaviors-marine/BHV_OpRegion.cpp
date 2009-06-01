@@ -150,6 +150,13 @@ bool BHV_OpRegion::setParam(string param, string val)
     m_trigger_exit_time = dval;
     return(true);
   }
+  else if(param == "visual_hints")  {
+    vector<string> svector = parseStringQ(val, ',');
+    unsigned int i, vsize = svector.size();
+    for(i=0; i<vsize; i++) 
+      handleVisualHint(svector[i]);
+    return(true);
+  }
   return(false);
 }
 
@@ -307,43 +314,21 @@ void BHV_OpRegion::postPolyStatus()
   double osSPD = getBufferDoubleVal("NAV_SPEED", ok3);
   double osHDG = getBufferDoubleVal("NAV_HEADING", ok4);
 
-#if 0
+  string msg;
+  if(!ok1) 
+    msg = "No ownship NAV_X (" + m_us_name + ") in info_buffer";
+  if(!ok2) 
+    msg = "No ownship NAV_Y (" + m_us_name + ") in info_buffer";
+  if(!ok3) 
+    msg = "No ownship NAV_SPEED (" + m_us_name + ") in info_buffer";
+  if(!ok4) 
+    msg = "No ownship NAV_HEADING (" + m_us_name + ") in info_buffer";
+
   // Must get ownship position from InfoBuffer
   if(!ok1 || !ok2 || !ok3 || !ok4) {
-    string msg = "No ownship info (" + m_us_name + ") in info_buffer";
     postEMessage(msg);
     return;
   }
-#endif  
-
-#if 0
-  // Must get ownship position from InfoBuffer
-  if(!ok1) {
-    string msg = "No ownship NAV_X (" + m_us_name + ") in info_buffer";
-    postEMessage(msg);
-    return;
-  }
-#endif
-  // Must get ownship position from InfoBuffer
-  if(!ok2) {
-    string msg = "No ownship NAV_Y (" + m_us_name + ") in info_buffer";
-    postEMessage(msg);
-    return;
-  }
-  // Must get ownship position from InfoBuffer
-  if(!ok3) {
-    string msg = "No ownship NAV_SPEED (" + m_us_name + ") in info_buffer";
-    postEMessage(msg);
-    return;
-  }
-  // Must get ownship position from InfoBuffer
-  if(!ok4) {
-    string msg = "No ownship NAV_HEADING (" + m_us_name + ") in info_buffer";
-    postEMessage(msg);
-    return;
-  }
-  
-
 
   // Must find the top vehicle speed in the behavior ivp domain
   int index = m_domain.getIndex("speed");
@@ -508,7 +493,17 @@ void BHV_OpRegion::setTimeStamps()
 
 void BHV_OpRegion::postViewablePolygon()
 {
-  string poly_spec = m_polygon.get_spec();
+  XYPolygon poly_duplicate = m_polygon;
+  if(m_hint_vertex_color != "")
+    poly_duplicate.set_vertex_color(m_hint_vertex_color);
+  if(m_hint_edge_color != "")
+    poly_duplicate.set_edge_color(m_hint_edge_color);
+  if(m_hint_edge_size >= 0)
+    poly_duplicate.set_edge_size(m_hint_edge_size);
+  if(m_hint_vertex_size >= 0)
+    poly_duplicate.set_vertex_size(m_hint_vertex_size);
+
+  string poly_spec = poly_duplicate.get_spec();
   postMessage("VIEW_POLYGON", poly_spec);
 }
 
@@ -525,3 +520,21 @@ void BHV_OpRegion::postErasablePolygon()
   postMessage("VIEW_POLYGON", poly_spec);
 }
 
+//-----------------------------------------------------------
+// Procedure: handleVisualHint()
+
+void BHV_OpRegion::handleVisualHint(string hint)
+{
+  string param = tolower(stripBlankEnds(biteString(hint, '=')));
+  string value = stripBlankEnds(hint);
+  double dval  = atof(value.c_str());
+
+  if((param == "vertex_color") && isColor(value))
+    m_hint_vertex_color = value;
+  else if((param == "edge_color") && isColor(value))
+    m_hint_edge_color = value;
+  else if((param == "edge_size") && isNumber(value) && (dval >= 0))
+    m_hint_edge_size = dval;
+  else if((param == "vertex_size") && isNumber(value) && (dval >= 0))
+    m_hint_vertex_size = dval;
+}

@@ -58,13 +58,16 @@ protected: // configuration parameters
   double      m_lead_damper;
   std::string m_ipf_type;
 
+  // Configurable names of MOOS variables for reports
   std::string m_var_report;
   std::string m_var_index;
   std::string m_var_cyindex;
   std::string m_var_suffix;
 
+  // Var-Data flags for posting when behavior finishes cycle
   std::vector<VarDataPair> m_cycle_flags;
 
+  // Visual hints affecting properties of polygons/points
   std::string m_hint_nextpt_color;
   std::string m_hint_nextpt_lcolor;
   std::string m_hint_vertex_color;

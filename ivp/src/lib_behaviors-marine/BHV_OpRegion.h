@@ -42,6 +42,7 @@ class BHV_OpRegion : public IvPBehavior {
   void      altitudeVerify();
   void      timeoutVerify();
   void      setTimeStamps();
+  void      handleVisualHint(std::string);
   void      postViewablePolygon();
   void      postErasablePolygon();
 
@@ -53,8 +54,13 @@ class BHV_OpRegion : public IvPBehavior {
   double    m_max_time;
   double    m_trigger_entry_time;
   double    m_trigger_exit_time;
-
   bool      m_trigger_on_poly_entry;
+
+  // Visual hints affecting properties of polygons/points
+  std::string m_hint_vertex_color;
+  std::string m_hint_edge_color;
+  double      m_hint_vertex_size;
+  double      m_hint_edge_size;
 
  protected: // State Variables
   bool      m_poly_entry_made;
@@ -69,6 +75,8 @@ class BHV_OpRegion : public IvPBehavior {
 
   bool      m_first_time;
   bool      m_previously_in_poly;
+
+
 };
 #endif
 
