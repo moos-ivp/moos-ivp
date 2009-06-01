@@ -45,6 +45,7 @@ protected:
   void         updateHibernationState();
   bool         historyShowsProgressStart();
   bool         historyShowsProgressEnd();
+  void         handleVisualHint(std::string);
 
 private:  // Configuration Parameters
   double      m_station_x;
@@ -89,16 +90,11 @@ private:  // State Variables
 
   std::list<double> m_distance_history;    // distance
   std::list<double> m_distance_thistory;   // time recorded
+
+  std::string  m_hint_vertex_color;
+  std::string  m_hint_edge_color;
+  double       m_hint_vertex_size;
+  double       m_hint_edge_size;
 };
 
 #endif
-
-
-
-
-
-
-
-
-
-

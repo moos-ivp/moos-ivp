@@ -74,18 +74,16 @@ XYPoint stringPairs2Point(string str)
     }
     else if((param == "z") && isNumber(value))
       z = dval;
-    else if((param == "point_size") && isNumber(value))
-      new_point.set_point_size(dval);
+    else if((param == "vertex_size") && isNumber(value))
+      new_point.set_vertex_size(dval);
     else if((param == "snap") && isNumber(value) && (dval >= 0))
       snap = dval;
     else if(param == "label")
       new_point.set_label(value);
     else if(param == "label_color")
       new_point.set_label_color(value);
-    else if(param == "point_color")
-      new_point.set_point_color(value);
-    else if(param == "point_size")
-      new_point.set_point_size(dval);
+    else if(param == "vertex_color")
+      new_point.set_vertex_color(value);
     else if(param == "source")
       new_point.set_source(value);
     else if(param == "type")
@@ -133,12 +131,12 @@ XYPoint stringShort2Point(string str)
       new_point.set_source(rest);
     else if(left == "time") 
       new_point.set_time(dval);
-    else if(left == "point_color") 
-      new_point.set_point_color(rest);
+    else if(left == "vertex_color") 
+      new_point.set_vertex_color(rest);
     else if(left == "active") 
       new_point.set_active(tolower(rest)=="true");
-    else if((left == "point_size") && (dval >= 0))
-      new_point.set_point_size(dval);
+    else if((left == "vertex_size") && (dval >= 0))
+      new_point.set_vertex_size(dval);
     else {
       string xstr = left;
       string ystr = stripBlankEnds(biteString(rest, ','));

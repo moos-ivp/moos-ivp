@@ -65,8 +65,10 @@ private:  // Configuration Parameters
 
   std::string  m_hint_nextpt_color;
   std::string  m_hint_nextpt_lcolor;
-  std::string  m_hint_vert_color;
-  std::string  m_hint_line_color;
+  std::string  m_hint_vertex_color;
+  std::string  m_hint_edge_color;
+  double       m_hint_vertex_size;
+  double       m_hint_edge_size;
 
 private:  // State Structures
   LoiterEngine   m_loiter_engine;

@@ -471,19 +471,23 @@ string XYSegList::get_spec(int precision) const
     spec += "active,false:";
 
   if(m_label_color.set())
-    spec += "labcolor," + m_label_color.str() + ":";
-  if(m_vert_color.set())
-    spec += "vertcolor," + m_vert_color.str() + ":";
-  if(m_line_color.set())
-    spec += "linecolor," + m_line_color.str() + ":";
+    spec += "label_color," + m_label_color.str() + ":";
+  if(m_vertex_color.set())
+    spec += "vertex_color," + m_vertex_color.str() + ":";
+  if(m_edge_color.set())
+    spec += "edge_color," + m_edge_color.str() + ":";
+  if(m_edge_size >= 0)
+    spec += "edge_size," + doubleToString(m_edge_size,1) + ":";
+  if(m_vertex_size >= 0)
+    spec += "vertex_size," + doubleToString(m_vertex_size,1) + ":";
 
   int vsize = vertex_x.size();
   for(int i=0; i<vsize; i++) {
     spec += dstringCompact(doubleToString(vertex_x[i],precision));
     spec += ",";
     spec += dstringCompact(doubleToString(vertex_y[i],precision));
-    //  spec += ",";
-    //  spec += dstringCompact(doubleToString(vertex_z[i]));
+    if(vertex_z[i] != 0)
+      spec += "," + dstringCompact(doubleToString(vertex_z[i], precision));
     if(i != vsize-1)
       spec += ":";
   }

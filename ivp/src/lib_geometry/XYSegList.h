@@ -49,8 +49,6 @@ public:
   void   reverse();
   void   new_center(double x, double y);
   void   print() const;
-  void   set_vert_color(const std::string& s) {m_vert_color.setColor(s);};
-  void   set_line_color(const std::string& s) {m_line_color.setColor(s);};
 
 public:
   unsigned int size() const     {return(vertex_x.size());};
@@ -67,11 +65,6 @@ public:
 
   std::string get_spec(int vertex_precision=1) const;
 
-  ColorPack get_vert_color() const {return(m_vert_color);};
-  bool      vert_color_set() const {return(m_vert_color.set());};
-  ColorPack get_line_color() const {return(m_line_color);};
-  bool      line_color_set() const {return(m_line_color.set());};
-
 protected:
   int    closest_vertex(double, double) const; 
   int    closest_segment(double, double) const;
@@ -83,9 +76,6 @@ protected:
   std::vector<double> vertex_x;
   std::vector<double> vertex_y;
   std::vector<double> vertex_z;
-
-  ColorPack m_vert_color;
-  ColorPack m_line_color;
 };
 
 #endif

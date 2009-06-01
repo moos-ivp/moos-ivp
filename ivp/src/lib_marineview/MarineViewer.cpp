@@ -1009,12 +1009,16 @@ void MarineViewer::drawPolygons()
   for(int i=0; i<vsize; i++) {
     XYPolygon poly = m_geoshapes.getPolygon(i);
     if(poly.active()) {
-      if(poly.label_color_set())
+      if(poly.label_color_set())            // label_color
 	labl_c = poly.get_label_color();
-      if(poly.vert_color_set())
-	vert_c = poly.get_vert_color();
-      if(poly.line_color_set())
-	edge_c = poly.get_line_color();
+      if(poly.vertex_color_set())           // vertex_color
+	vert_c = poly.get_vertex_color();
+      if(poly.edge_color_set())             // edge_color
+	edge_c = poly.get_edge_color();
+      if(poly.get_edge_size() >= 0)         // edge_size
+	line_width = poly.get_edge_size();
+      if(poly.get_vertex_size() >= 0)       // vertex_size
+	vertex_size = poly.get_vertex_size();
       drawPolygon(poly, false, false, line_width, vertex_size, 
 		  edge_c, fill_c, vert_c, labl_c);
     }
@@ -1246,12 +1250,16 @@ void MarineViewer::drawSegLists()
   for(int i=0; i<vsize; i++) {
     XYSegList segl = m_geoshapes.getSegList(i);
     if(segl.active()) {
-      if(segl.label_color_set())
+      if(segl.label_color_set())          // label_color
 	labl_c = segl.get_label_color();
-      if(segl.vert_color_set())
-	vert_c = segl.get_vert_color();
-      if(segl.line_color_set())
-	edge_c = segl.get_line_color();
+      if(segl.vertex_color_set())         // vertex_color
+	vert_c = segl.get_vertex_color();
+      if(segl.edge_color_set())           // edge_color
+	edge_c = segl.get_edge_color();
+      if(segl.get_edge_size() >= 0)       // edge_size
+	lwid = segl.get_edge_size();
+      if(segl.get_vertex_size() >= 0)     // vertex_color
+	vert = segl.get_vertex_size();
       drawSegList(segl, lwid, vert, false, edge_c, vert_c, labl_c); 
     }
   }
@@ -1652,10 +1660,10 @@ void MarineViewer::drawPoints()
     if((point.get_size() > 0) && (point.active())) {
       if(point.label_color_set())
 	labl_c = point.get_label_color();
-      if(point.point_color_set())
-	vert_c = point.get_point_color();
-      if(point.get_point_size() != -1)
-	vertex_size = point.get_point_size();
+      if(point.vertex_color_set())
+	vert_c = point.get_vertex_color();
+      if(point.get_vertex_size() != -1)
+	vertex_size = point.get_vertex_size();
       drawPoint(point, vertex_size, vert_c, labl_c);
     }
   }

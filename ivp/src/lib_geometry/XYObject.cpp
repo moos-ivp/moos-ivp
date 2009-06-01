@@ -33,11 +33,11 @@ using namespace std;
 
 XYObject::XYObject()
 {
-  m_active     = true;
-  m_time       = 0;
-  m_time_set   = false;
-  m_point_size = -1;
-  m_edge_size  = -1;
+  m_active      = true;
+  m_time        = 0;
+  m_time_set    = false;
+  m_vertex_size = -1;
+  m_edge_size   = -1;
 }
 
 
@@ -46,43 +46,43 @@ XYObject::XYObject()
 
 void XYObject::clear()
 {
-  m_active     = true; 
-  m_time       = 0; 
-  m_time_set   = false; 
-  m_label      = ""; 
-  m_type       = "";
-  m_source     = ""; 
-  m_string     = ""; 
-  m_point_size = -1;
-  m_edge_size  = -1;
+  m_active      = true; 
+  m_time        = 0; 
+  m_time_set    = false; 
+  m_label       = ""; 
+  m_type        = "";
+  m_source      = ""; 
+  m_string      = ""; 
+  m_vertex_size = -1;
+  m_edge_size   = -1;
   m_label_color.clear();
-  m_point_color.clear();
+  m_vertex_color.clear();
   m_edge_color.clear();
 }
 
 
 //---------------------------------------------------------------
 // Procedure: set_label_color()
-// Procedure: set_point_color()
+// Procedure: set_vertex_color()
 // Procedure: set_edge_color()
-// Procedure: set_point_size()
+// Procedure: set_vertex_size()
 // Procedure: set_edge_size()
 
 void XYObject::set_label_color(const string& str)
 {
   m_label_color.setColor(str);
 }
-void XYObject::set_point_color(const string& str)
+void XYObject::set_vertex_color(const string& str)
 {
-  m_point_color.setColor(str);
+  m_vertex_color.setColor(str);
 }
 void XYObject::set_edge_color(const string& str)
 {
   m_edge_color.setColor(str);
 }
-void XYObject::set_point_size(double val)
+void XYObject::set_vertex_size(double val)
 {
-  if(val >= 0) m_point_size = val;
+  if(val >= 0) m_vertex_size = val;
 }
 void XYObject::set_edge_size(double val)
 {

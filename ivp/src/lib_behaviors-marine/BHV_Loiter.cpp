@@ -34,6 +34,7 @@
 #include "XYFormatUtilsPoly.h"
 #include "ZAIC_PEAK.h"
 #include "OF_Coupler.h"
+#include "XYPoint.h"
 
 using namespace std;
 
@@ -446,8 +447,10 @@ void BHV_Loiter::postViewablePolygon()
   bhv_tag = findReplace(bhv_tag, "(d)", "");
   bhv_tag = m_us_name + "-" + bhv_tag;
   seglist.set_label(bhv_tag);
-  seglist.set_vert_color(m_hint_vert_color);
-  seglist.set_line_color(m_hint_line_color);
+  seglist.set_vertex_color(m_hint_vertex_color);
+  seglist.set_edge_color(m_hint_edge_color);
+  seglist.set_edge_size(m_hint_edge_size);
+  seglist.set_vertex_size(m_hint_vertex_size);
 
   string poly_spec = seglist.get_spec();
   postMessage("VIEW_POLYGON", poly_spec);
@@ -478,17 +481,13 @@ void BHV_Loiter::postViewablePoint()
 {
   string bhv_tag = toupper(getDescriptor());
 
-  string point_spec;
-  point_spec =  "x=" + dstringCompact(doubleToString(m_ptx,2));
-  point_spec += ",y=" + dstringCompact(doubleToString(m_pty,2));
-  point_spec += ",label=" + m_us_name + "'s next waypoint";
-  point_spec += ",type=waypoint";
-  point_spec += ",source=" + m_us_name + "_" + bhv_tag;
-  if(m_hint_nextpt_lcolor != "")
-    point_spec += ",labcolor=" + m_hint_nextpt_lcolor;
-  if(m_hint_nextpt_color != "")
-    point_spec += ",pcolor=" + m_hint_nextpt_color;
-  postMessage("VIEW_POINT", point_spec);
+  XYPoint view_point(m_ptx, m_pty);
+  view_point.set_label(m_us_name + "'s next waypoint");
+  view_point.set_type("waypoint");
+  view_point.set_source(m_us_name + "_" + bhv_tag);
+  view_point.set_label_color(m_hint_nextpt_lcolor);
+  view_point.set_vertex_color(m_hint_nextpt_color);
+  postMessage("VIEW_POINT", view_point.get_spec());
 }
 
 
@@ -499,11 +498,12 @@ void BHV_Loiter::postErasablePoint()
 {
   string bhv_tag = toupper(getDescriptor());
 
-  string null_point_spec;
-  null_point_spec =  "x=0,y=0,size=0,active=false,type=waypoint,";
-  null_point_spec += "label=" + m_us_name + "'s next waypoint";
-  null_point_spec += ",source=" + m_us_name + "_" + bhv_tag;
-  postMessage("VIEW_POINT", null_point_spec);
+  XYPoint view_point(m_ptx, m_pty);
+  view_point.set_label(m_us_name + "'s next waypoint");
+  view_point.set_type("waypoint");
+  view_point.set_source(m_us_name + "_" + bhv_tag);
+  view_point.set_active(false);
+  postMessage("VIEW_POINT", view_point.get_spec());
 }
 
 
@@ -520,7 +520,11 @@ void BHV_Loiter::handleVisualHint(string hint)
   else if((param == "nextpt_lcolor") && isColor(value))
     m_hint_nextpt_lcolor = value;
   else if((param == "vertex_color") && isColor(value))
-    m_hint_vert_color = value;
-  else if((param == "line_color") && isColor(value))
-    m_hint_line_color = value;
+    m_hint_vertex_color = value;
+  else if((param == "edge_color") && isColor(value))
+    m_hint_edge_color = value;
+  else if((param == "edge_size") && isNumber(value))
+    m_hint_edge_size = atof(value.c_str());
+  else if((param == "vertex_size") && isNumber(value))
+    m_hint_vertex_size = atof(value.c_str());
 }

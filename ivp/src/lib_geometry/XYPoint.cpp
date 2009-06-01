@@ -61,8 +61,8 @@ void XYPoint::print() const
   cout << "label:" << m_label;
   cout << " type: " << m_type;
   cout << " size: " << m_size;
-  if(m_point_color.set())
-    cout << " point_color: " << m_point_color.str() << endl;
+  if(m_vertex_color.set())
+    cout << " vertex_color: " << m_vertex_color.str() << endl;
   cout << "  x=" << m_x << "  y=" << m_y << "  z=" << m_z << endl;
 }
 
@@ -102,11 +102,11 @@ string XYPoint::get_spec() const
     spec += "source," + m_source + ":"; 
   if(m_active == false)
     spec += "active,false:";
-  if(m_point_color.set())
-    spec += "point_color," + m_point_color.str() + ":"; 
-  if(m_point_size >= 0) {
-    spec += "point_size,";
-    spec += dstringCompact(doubleToString(m_point_size,3)) + ":"; 
+  if(m_vertex_color.set())
+    spec += "vertex_color," + m_vertex_color.str() + ":"; 
+  if(m_vertex_size >= 0) {
+    spec += "vertex_size,";
+    spec += dstringCompact(doubleToString(m_vertex_size,3)) + ":"; 
   }
   if(m_edge_size >= 0) {
     spec += "edge_size,";

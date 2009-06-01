@@ -58,6 +58,12 @@ BHV_StationKeep::BHV_StationKeep(IvPDomain gdomain) :
   m_pskeep_radius   = -1;   // -1 indicates not enabled
   m_pskeep_variable = "PSKEEP_MODE";
   m_swing_time      = 0;
+  
+  // All visual hints initially turned off
+  m_hint_vertex_color = "";
+  m_hint_edge_color   = "";
+  m_hint_vertex_size  = -1;
+  m_hint_edge_size    = -1;
 
   // Default values for State  Variables
   m_center_pending     = false;
@@ -67,6 +73,8 @@ BHV_StationKeep::BHV_StationKeep(IvPDomain gdomain) :
   m_transit_state      = "disabled";
   m_dist_to_station    = -1;
   m_mark_time          = -1;
+
+  
 
   // Declare information needed by this behavior
   addInfoVars("NAV_X, NAV_Y");
@@ -154,6 +162,13 @@ bool BHV_StationKeep::setParam(string param, string val)
     if((dval <= 0) || (!isNumber(val)))
       return(false);
     m_extra_speed = dval;
+    return(true);
+  }
+  else if(param == "visual_hints")  {
+    vector<string> svector = parseStringQ(val, ',');
+    unsigned int i, vsize = svector.size();
+    for(i=0; i<vsize; i++) 
+      handleVisualHint(svector[i]);
     return(true);
   }
   return(false);
@@ -348,9 +363,6 @@ bool BHV_StationKeep::updateInfoIn()
     m_distance_history.pop_back();
     m_distance_thistory.pop_back();
   }
-
-
-
   return(true);
 }
 
@@ -363,14 +375,17 @@ void BHV_StationKeep::postStationMessage(bool post)
   string str_y = doubleToString(m_station_y,1);
 
   string poly_str = "radial:: x=" + str_x;
-
-  string label  = m_us_name + ":station-keep";
-  string source = m_us_name + ":" + m_descriptor;
-
   poly_str += ",y=" + str_y;
+  poly_str += ",label="  + m_us_name + ":station-keep";
+  poly_str += ",source=" + m_us_name+ ":" + m_descriptor;
   poly_str += ",radius=" + doubleToString(m_outer_radius,1);
-  poly_str += ",pts=12, label=" + label;
-  poly_str += ",source=" + source;
+  poly_str += ",pts=24";
+  if(m_hint_edge_size >= 0)
+    poly_str += ",edge_size=" + doubleToString(m_hint_edge_size);
+  if(m_hint_vertex_size >= 0)
+    poly_str += ",vertex_size=" + doubleToString(m_hint_vertex_size);
+  if(m_hint_edge_color != "")
+    poly_str += ",edge_color=" + m_hint_edge_color;
 
   if(post==false)
     poly_str += ",active=false";
@@ -490,3 +505,20 @@ bool BHV_StationKeep::historyShowsProgressEnd()
 }
 
 
+//-----------------------------------------------------------
+// Procedure: handleVisualHint()
+
+void BHV_StationKeep::handleVisualHint(string hint)
+{
+  string param = tolower(stripBlankEnds(biteString(hint, '=')));
+  string value = stripBlankEnds(hint);
+  
+  if((param == "vertex_color") && isColor(value))
+    m_hint_vertex_color = value;
+  else if((param == "edge_color") && isColor(value))
+    m_hint_edge_color = value;
+  else if((param == "edge_size") && isNumber(value))
+    m_hint_edge_size = atof(value.c_str());
+  else if((param == "vertex_size") && isNumber(value))
+    m_hint_vertex_size = atof(value.c_str());
+}

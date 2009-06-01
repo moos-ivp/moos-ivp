@@ -94,15 +94,20 @@ XYSegList stringPoints2SegList(string str)
     mvector[i] = stripBlankEnds(mvector[i]);
     string left = tolower(stripBlankEnds(biteString(mvector[i], ',')));
     string rest = stripBlankEnds(mvector[i]);
+    double dval = atof(rest.c_str());
     
     if(left == "label") 
       new_seglist.set_label(rest);
-    else if(left == "labcolor") 
+    else if(left == "label_color") 
       new_seglist.set_label_color(rest);
-    else if(left == "vertcolor") 
-      new_seglist.set_vert_color(rest);
-    else if(left == "linecolor")
-      new_seglist.set_line_color(rest);
+    else if(left == "vertex_color") 
+      new_seglist.set_vertex_color(rest);
+    else if((left == "vertex_size") && isNumber(rest))
+      new_seglist.set_vertex_size(dval);
+    else if(left == "edge_color")
+      new_seglist.set_edge_color(rest);
+    else if((left == "edge_size") && isNumber(rest))
+      new_seglist.set_edge_size(dval);
     else if(left == "active") 
       new_seglist.set_active(tolower(rest)=="true");
     else {
@@ -217,7 +222,7 @@ XYSegList stringLawnmower2SegList(string str)
 
   bool active      = true;
 
-  string xpos, ypos, vert_color, line_color, label, label_color;
+  string xpos, ypos, vertex_color, edge_color, label, label_color;
   string start, source, type, rows="ew";
   double height, width, degs, rads, swath;
   double startx=0;
@@ -274,10 +279,10 @@ XYSegList stringLawnmower2SegList(string str)
       rows = tolower(value);
     else if(param == "label")
       label = value;
-    else if(param == "linecolor")
-      line_color = value;
-    else if(param == "vertcolor")
-      vert_color = value;
+    else if(param == "edge_color")
+      edge_color = value;
+    else if(param == "vertex_color")
+      vertex_color = value;
     else if(param == "type")
       type = value;
     else if(param == "source")
@@ -315,6 +320,10 @@ XYSegList stringLawnmower2SegList(string str)
     new_seglist.set_label(label);
   if(label_color != "")
     new_seglist.set_label_color(label_color);
+  if(vertex_color != "")
+    new_seglist.set_vertex_color(vertex_color);
+  if(edge_color != "")
+    new_seglist.set_edge_color(edge_color);
   if(type != "")
     new_seglist.set_type(type);
   if(source != "")

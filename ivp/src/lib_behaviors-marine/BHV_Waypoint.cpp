@@ -64,8 +64,13 @@ BHV_Waypoint::BHV_Waypoint(IvPDomain gdomain) :
   m_var_index       = "WPT_INDEX";
   m_var_cyindex     = "CYCLE_INDEX";
   m_var_suffix      = "";
+
   m_hint_nextpt_color  = "";
   m_hint_nextpt_lcolor = "";
+  m_hint_vertex_color  = "";
+  m_hint_edge_color    = "";
+  m_hint_vertex_size   = -1;
+  m_hint_edge_size     = -1;
 
   // The completed and perpetual vars are initialized in superclass
   // but we initialize here just to be safe and clear.
@@ -447,10 +452,14 @@ void BHV_Waypoint::postViewableSegList()
 {
   XYSegList seglist = m_waypoint_engine.getSegList();
   seglist.set_label(m_us_name + "_" + m_descriptor);
-  if(m_hint_vert_color != "")
-    seglist.set_vert_color(m_hint_vert_color);
-  if(m_hint_line_color != "")
-    seglist.set_line_color(m_hint_line_color);
+  if(m_hint_vertex_color != "")
+    seglist.set_vertex_color(m_hint_vertex_color);
+  if(m_hint_edge_color != "")
+    seglist.set_edge_color(m_hint_edge_color);
+  if(m_hint_edge_size >= 0)
+    seglist.set_edge_size(m_hint_edge_size);
+  if(m_hint_vertex_size >= 0)
+    seglist.set_vertex_size(m_hint_vertex_size);
   string segmsg = seglist.get_spec();
   postMessage("VIEW_SEGLIST", segmsg);
 }
@@ -480,18 +489,13 @@ void BHV_Waypoint::postViewablePoint()
   // Recall that for a point to be drawn and erased, it must match
   // in the (1) label (2) type (3) and source.
 
-  string source_tag = (m_us_name + tolower(getDescriptor()));
-  string ptmsg;
-  ptmsg = "label=" + m_us_name + "'s next waypoint";
-  ptmsg += ",type=waypoint, source=" + source_tag;
-  ptmsg += ",x=" + dstringCompact(doubleToString(m_ptx,1));
-  ptmsg += ",y=" + dstringCompact(doubleToString(m_pty,1));
-  ptmsg += ",size=1";
-  if(m_hint_nextpt_lcolor != "")
-    ptmsg += ",labcolor=" + m_hint_nextpt_lcolor;
-  if(m_hint_nextpt_color != "")
-    ptmsg += ",pcolor=" + m_hint_nextpt_color;
-  postMessage("VIEW_POINT", ptmsg);
+  XYPoint view_point(m_ptx, m_pty);
+  view_point.set_source(m_us_name + tolower(getDescriptor()));
+  view_point.set_type("waypoint");
+  view_point.set_label(m_us_name + "'s next waypoint");
+  view_point.set_label_color(m_hint_nextpt_lcolor);
+  view_point.set_vertex_color(m_hint_nextpt_color);
+  postMessage("VIEW_POINT", view_point.get_spec());
 }
 
 //-----------------------------------------------------------
@@ -503,12 +507,12 @@ void BHV_Waypoint::postErasablePoint()
   // in the (1) label (2) type (3) and source.
   // For a point to be "ignored" it must set active=false.
 
-  string source_tag = (m_us_name + tolower(getDescriptor()));
-  string ptmsg;
-  ptmsg = "label=" + m_us_name + "'s next waypoint";
-  ptmsg += ",type=waypoint, source=" + source_tag;
-  ptmsg += ",x=0, y=0, z=0, active=false, size=0";
-  postMessage("VIEW_POINT", ptmsg);
+  XYPoint view_point(m_ptx, m_pty);
+  view_point.set_source(m_us_name + tolower(getDescriptor()));
+  view_point.set_type("waypoint");
+  view_point.set_label(m_us_name + "'s next waypoint");
+  view_point.set_active(false);
+  postMessage("VIEW_POINT", view_point.get_spec());
 }
 
 
@@ -536,13 +540,18 @@ void BHV_Waypoint::handleVisualHint(string hint)
 {
   string param = tolower(stripBlankEnds(biteString(hint, '=')));
   string value = stripBlankEnds(hint);
+  double dval  = atof(value.c_str());
 
   if((param == "nextpt_color") && isColor(value))
     m_hint_nextpt_color = value;
   else if((param == "nextpt_lcolor") && isColor(value))
     m_hint_nextpt_lcolor = value;
   else if((param == "vertex_color") && isColor(value))
-    m_hint_vert_color = value;
-  else if((param == "line_color") && isColor(value))
-    m_hint_line_color = value;
+    m_hint_vertex_color = value;
+  else if((param == "edge_color") && isColor(value))
+    m_hint_edge_color = value;
+  else if((param == "edge_size") && isNumber(value) && (dval >= 0))
+    m_hint_edge_size = dval;
+  else if((param == "vertex_size") && isNumber(value) && (dval >= 0))
+    m_hint_vertex_size = dval;
 }
