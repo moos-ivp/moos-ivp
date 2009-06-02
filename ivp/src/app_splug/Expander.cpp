@@ -224,7 +224,17 @@ void Expander::addNewLine(string newline)
   for(p = m_macros.begin(); p != m_macros.end(); p++) {
     string key = p->first;
     string val = p->second;
-    newline = findReplace(newline, key, val);
+
+    // Assuming key is of the form "$(FOOBAR)"
+    string pkey = key;
+    if((pkey.length() > 0) && (pkey.at(0) == '$'))
+      pkey.at(0) = '%';
+
+    if(strContains(newline, pkey))
+      newline = findReplace(newline, pkey, toupper(val));
+
+    if(strContains(newline, key))
+      newline = findReplace(newline, key, val);
   }
 
   string res = containsMacro(newline);
@@ -247,8 +257,13 @@ string Expander::containsMacro(string line)
   int pos = line.find("$(");
   if(pos != -1)
     return(line);
-  else
-    return("");
+  else {
+    pos = line.find("%(");
+    if(pos != -1)
+      return(line);
+    else
+      return("");
+  }
 }
 
 //--------------------------------------------------------

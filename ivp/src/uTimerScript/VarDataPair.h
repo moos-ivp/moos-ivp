@@ -60,11 +60,11 @@ public:
   void        set_key(const std::string& s) {m_key=s;};
   void        set_sdata(const std::string& s) {m_sdata=s;};
   
-  std::string get_var()   const {return(m_var);};
-  std::string get_sdata() const {return(m_sdata);};
-  double      get_ddata() const {return(m_ddata);};
-  bool        is_string() const {return(m_is_string);};
-  std::string get_key()   const {return(m_key);};
+  std::string get_var()    const {return(m_var);};
+  std::string get_sdata()  const {return(m_sdata);};
+  double      get_ddata()  const {return(m_ddata);};
+  bool        is_string()  const {return(m_is_string);};
+  std::string get_key()    const {return(m_key);};
 
   std::string getPrintable();
 

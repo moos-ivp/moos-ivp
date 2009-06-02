@@ -15,8 +15,21 @@ ProcessConfig = ANTLER
   Run = MOOSDB		@ NewConsole = false
   Run = uXMS		@ NewConsole = true
   Run = uTimerScript    @ NewConsole = true
+  Run = pTallyomatic    @ NewConsole = true
 }
 
+
+//------------------------------------------
+// pTallyomatic configuration block
+
+ProcessConfig = pTallyomatic
+{
+   AppTick   = 4
+   CommsTick = 4
+
+   varname = BISCUIT
+
+}
 
 //------------------------------------------
 // uTimerScript configuration  block

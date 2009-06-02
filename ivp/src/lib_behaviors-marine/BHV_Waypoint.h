@@ -46,6 +46,8 @@ protected:
   void         postErasableSegList();
   void         postViewablePoint();
   void         postErasablePoint();
+  void         postViewableTrackPoint();
+  void         postErasableTrackPoint();
   void         postCycleFlags();
   void         handleVisualHint(std::string);
 

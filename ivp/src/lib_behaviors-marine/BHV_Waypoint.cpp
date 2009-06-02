@@ -224,6 +224,7 @@ bool BHV_Waypoint::setParam(string param, string val)
 void BHV_Waypoint::onIdleState() 
 {
   postErasablePoint();
+  postErasableTrackPoint();
   postErasableSegList();
   m_waypoint_engine.resetCPA();
 }
@@ -256,8 +257,15 @@ IvPFunction *BHV_Waypoint::onRunState()
   // Only publish these reports if we have another point to go.
   if(next_point) {
     postStatusReport();
-    postViewablePoint();
     postViewableSegList();
+    postViewablePoint();
+    double dist = hypot((m_ptx-m_trackpt_x), (m_pty-m_trackpt_y));
+    // If the trackpoint and next waypoint differ by more than five
+    // meters then post a visual cue for the track point.
+    if(dist > 5)
+      postViewableTrackPoint();
+    else
+      postErasableTrackPoint();
   }
   // Otherwise "erase" the next waypoint marker
   else {
@@ -496,7 +504,8 @@ void BHV_Waypoint::postViewablePoint()
   view_point.set_label_color(m_hint_nextpt_lcolor);
   view_point.set_vertex_color(m_hint_nextpt_color);
   postMessage("VIEW_POINT", view_point.get_spec());
-
+  
+  
   if((m_ptx != m_trackpt_x) || (m_pty != m_trackpt_y)) {
     XYPoint view_point_track(m_trackpt_x, m_trackpt_y);
     view_point_track.set_source(m_us_name + tolower(getDescriptor()));
@@ -506,6 +515,23 @@ void BHV_Waypoint::postViewablePoint()
     view_point_track.set_vertex_color(m_hint_nextpt_color);
     postMessage("VIEW_POINT", view_point_track.get_spec());
   }
+}
+
+//-----------------------------------------------------------
+// Procedure: postViewableTrackPoint()
+
+void BHV_Waypoint::postViewableTrackPoint()
+{
+  // Recall that for a point to be drawn and erased, it must match
+  // in the (1) label (2) type (3) and source.
+
+  XYPoint view_point_track(m_trackpt_x, m_trackpt_y);
+  view_point_track.set_source(m_us_name + tolower(getDescriptor()));
+  view_point_track.set_type("track_point");
+  view_point_track.set_label(m_us_name + "'s track-point");
+  view_point_track.set_label_color(m_hint_nextpt_lcolor);
+  view_point_track.set_vertex_color(m_hint_nextpt_color);
+  postMessage("VIEW_POINT", view_point_track.get_spec());
 }
 
 //-----------------------------------------------------------
@@ -523,6 +549,22 @@ void BHV_Waypoint::postErasablePoint()
   view_point.set_label(m_us_name + "'s next waypoint");
   view_point.set_active(false);
   postMessage("VIEW_POINT", view_point.get_spec());
+}
+
+//-----------------------------------------------------------
+// Procedure: postErasableTrackPoint()
+
+void BHV_Waypoint::postErasableTrackPoint()
+{
+  // Recall that for a point to be drawn and erased, it must match
+  // in the (1) label (2) type (3) and source.
+  // For a point to be "ignored" it must set active=false.
+  XYPoint view_point_track(m_trackpt_x, m_trackpt_y);
+  view_point_track.set_source(m_us_name + tolower(getDescriptor()));
+  view_point_track.set_type("track_point");
+  view_point_track.set_label(m_us_name + "'s track-point");
+  view_point_track.set_active(false);
+  postMessage("VIEW_POINT", view_point_track.get_spec());
 }
 
 
