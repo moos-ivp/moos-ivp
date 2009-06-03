@@ -39,6 +39,7 @@ TransponderAIS::TransponderAIS()
   m_nav_y        = 0;
   m_nav_speed    = 0;
   m_nav_heading  = 0;
+  m_nav_yaw      = 0;
   m_nav_depth    = 0;
   m_vessel_name  = "UNKNOWN_VESSEL_NAME";
   m_vessel_type  = "UNKNOWN_VESSEL_TYPE";
@@ -85,7 +86,7 @@ bool TransponderAIS::OnNewMail(MOOSMSG_LIST &NewMail)
     else if(key == "NAV_HEADING")
       m_nav_heading = ddata;
     else if(key == "NAV_YAW")
-      m_nav_heading = (ddata*-180.0)/3.1415926;
+      m_nav_yaw = (ddata*-180.0)/3.1415926;
     else if(key == "NAV_DEPTH")
       m_nav_depth = ddata;
     else if(key == "IVPHELM_SUMMARY") {
@@ -184,6 +185,7 @@ bool TransponderAIS::Iterate()
 				 dstringCompact(doubleToString(m_nav_heading, 2)),
 				 dstringCompact(doubleToString(m_nav_depth, 2)),
 				 dstringCompact(doubleToString(m_vessel_len, 2)),
+				 dstringCompact(doubleToString(m_nav_yaw,5)),
 				 m_helm_mode);
 
     string local_var = m_contact_report_var + "_LOCAL";
@@ -511,7 +513,7 @@ bool TransponderAIS::handleIncomingNaFConMessage(const string& rMsg)
 				   dstringCompact(doubleToString(navSpeed, 2)),
 				   dstringCompact(doubleToString(navHeading, 2)),
 				   dstringCompact(doubleToString(navDepth, 2)), 
-				   0, "unknown-mode");
+				   "0", "0", "unknown-mode");
       
       m_Comms.Notify(m_contact_report_var, summary);
       m_Comms.Notify("TRANSPONDER_NAFCON_REPORT", summary);
@@ -640,7 +642,8 @@ string TransponderAIS::assembleAIS(string vname, string vtype,
 				   string db_time, string utc_time, 
 				   string x, string y, string lat, 
 				   string lon, string spd, string hdg, 
-				   string depth, string vlen, string mode)
+				   string depth, string vlen, 
+				   string navyaw, string mode)
 {
   // If the length is unknown, put in some good guesses
   if(atof(vlen.c_str()) == 0) {
@@ -664,6 +667,7 @@ string TransponderAIS::assembleAIS(string vname, string vtype,
   summary += ",LON=" + lon;
   summary += ",SPD=" + spd;
   summary += ",HDG=" + hdg;
+  summary += ",YAW=" + navyaw;
   summary += ",DEPTH=" + depth;
   summary += ",LENGTH=" + vlen;
 

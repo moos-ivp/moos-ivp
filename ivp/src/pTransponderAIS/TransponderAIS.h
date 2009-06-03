@@ -54,7 +54,7 @@ public:
 			  std::string lat, std::string lon, 
 			  std::string spd, std::string hdg, 
 			  std::string depth, std::string vlen, 
-			  std::string mode);
+			  std::string navyaw, std::string mode);
   
 protected:
   double      m_db_uptime;
@@ -62,6 +62,7 @@ protected:
   double      m_nav_x;
   double      m_nav_y;
   double      m_nav_heading;
+  double      m_nav_yaw;
   double      m_nav_speed;
   double      m_nav_depth;
 
