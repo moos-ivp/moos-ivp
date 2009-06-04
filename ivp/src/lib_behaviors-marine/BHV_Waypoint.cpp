@@ -349,13 +349,24 @@ bool BHV_Waypoint::setNextWaypoint()
   
   int current_waypt = m_waypoint_engine.getCurrIndex();
   if(m_lead_distance >= 0) {
+    bool track_anchor = false;
+    double tx, ty;
     if(current_waypt > 0) {
-      double x1 = m_waypoint_engine.getPointX(current_waypt-1);
-      double y1 = m_waypoint_engine.getPointY(current_waypt-1);
+      tx = m_waypoint_engine.getPointX(current_waypt-1);
+      ty = m_waypoint_engine.getPointY(current_waypt-1);
+      track_anchor = true;
+    }
+    else if(m_waypoint_engine.getCycleCount() > 0) {
+      unsigned int pt_count = m_waypoint_engine.size();
+      tx = m_waypoint_engine.getPointX(pt_count-1);
+      ty = m_waypoint_engine.getPointY(pt_count-1);
+      track_anchor = true;
+    }
 
+    if(track_anchor) {
       double nx, ny;
-      perpSegIntPt(x1,y1,m_ptx,m_pty,m_osx,m_osy,nx,ny);
-
+      perpSegIntPt(tx,ty,m_ptx,m_pty,m_osx,m_osy,nx,ny);
+      
       double damper_factor = 1.0;
       if(m_lead_damper > 0) {
 	double dist_to_trackline = hypot((nx-m_osx),(ny-m_osy));
@@ -365,7 +376,7 @@ bool BHV_Waypoint::setNextWaypoint()
 	}
       }
 	  
-      double angle = relAng(x1, y1, m_ptx, m_pty);
+      double angle = relAng(tx, ty, m_ptx, m_pty);
       double dist  = distPointToPoint(nx, ny, m_ptx, m_pty);
       if(dist > (m_lead_distance * damper_factor)) 
 	dist = m_lead_distance * damper_factor;  
