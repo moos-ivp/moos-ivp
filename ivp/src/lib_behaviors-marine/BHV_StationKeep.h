@@ -51,6 +51,9 @@ private:  // Configuration Parameters
   double      m_station_x;
   double      m_station_y;
   bool        m_station_set;
+  double      m_static_station_x;
+  double      m_static_station_y;
+  bool        m_static_station_defined;
 
   double      m_outer_radius;
   double      m_inner_radius;

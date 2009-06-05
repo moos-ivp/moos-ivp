@@ -48,16 +48,19 @@ BHV_StationKeep::BHV_StationKeep(IvPDomain gdomain) :
   m_domain     = subDomain(m_domain, "course,speed");
 
   // Default values for Configuration Parameters
-  m_station_x    = 0;
-  m_station_y    = 0;
-  m_outer_radius = 15;
-  m_inner_radius = 4;
-  m_outer_speed  = 1.2;
-  m_extra_speed  = 2.5;
-  m_center_activate = false;
-  m_pskeep_radius   = -1;   // -1 indicates not enabled
-  m_pskeep_variable = "PSKEEP_MODE";
-  m_swing_time      = 0;
+  m_station_x        = 0;
+  m_station_y        = 0;
+  m_static_station_x = 0;
+  m_static_station_y = 0;
+  m_static_station_defined = false;
+  m_outer_radius     = 15;
+  m_inner_radius     = 4;
+  m_outer_speed      = 1.2;
+  m_extra_speed      = 2.5;
+  m_center_activate  = false;
+  m_pskeep_radius    = -1;   // -1 indicates not enabled
+  m_pskeep_variable  = "PSKEEP_MODE";
+  m_swing_time       = 0;
   
   // All visual hints initially turned off
   m_hint_vertex_color = "";
@@ -67,14 +70,11 @@ BHV_StationKeep::BHV_StationKeep(IvPDomain gdomain) :
 
   // Default values for State  Variables
   m_center_pending     = false;
-  m_center_assign      = "";
   m_station_set        = false;
   m_pskeep_state       = "disabled";
   m_transit_state      = "disabled";
   m_dist_to_station    = -1;
   m_mark_time          = -1;
-
-  
 
   // Declare information needed by this behavior
   addInfoVars("NAV_X, NAV_Y");
@@ -93,7 +93,13 @@ bool BHV_StationKeep::setParam(string param, string val)
   val   = stripBlankEnds(val);
 
   if(param == "station_pt") {
-    m_center_assign  = val;
+    string left  = stripBlankEnds(biteString(val, ','));
+    string right = stripBlankEnds(val);
+    if(!isNumber(left) || !isNumber(right))
+      return(false);
+    m_static_station_x = atof(left.c_str());
+    m_static_station_y = atof(right.c_str());
+    m_static_station_defined = true;
     m_center_pending = true;
     return(true);
   }
@@ -119,7 +125,6 @@ bool BHV_StationKeep::setParam(string param, string val)
       return(false);
     m_center_activate = (val == "true");
     m_center_pending = true;
-    m_center_assign  = "present_position";
     return(true);
   }  
 
@@ -192,10 +197,8 @@ void BHV_StationKeep::onIdleState()
   // If conigured for center_activation, declare the need for it
   // here so when/if the behavior goes into the runstate, it will
   // know that it needs to update the station-keep position.
-  if(m_center_activate) {
+  if(m_center_activate)
     m_center_pending = true;
-    m_center_assign  = "present_position";
-  }
 
   // Time at which the behavior transitioned from idle to running.
   // So when idle, always reset to -1.
@@ -308,35 +311,20 @@ bool BHV_StationKeep::updateInfoIn()
   // PART 2: UPDATE THE STATION-KEEP POINT IF NECESSARY
   bool ok_center_update = true;
   if(m_center_pending) {
-    m_center_assign = tolower(m_center_assign);
-    if(m_center_assign == "present_position") {
+    if(m_center_activate) {
       m_station_x   = m_osx;
       m_station_y   = m_osy;
       m_station_set = true;
-      if(m_currtime >= (m_mark_time + m_swing_time)) {
-	m_center_assign = "";
+      if(m_currtime >= (m_mark_time + m_swing_time))
 	m_center_pending = false;
-      }
     }
     else {
-      vector<string> svector = parseString(m_center_assign, ',');
-      if(svector.size() != 2)
-	ok_center_update = false;
-      else {
-	svector[0] = stripBlankEnds(svector[0]);
-	svector[1] = stripBlankEnds(svector[1]);
-	if(!isNumber(svector[0]) || !isNumber(svector[1]))
-	  ok_center_update = false;
-	else {
-	  double xval = atof(svector[0].c_str());
-	  double yval = atof(svector[1].c_str());
-	  m_station_x   = xval;
-	  m_station_y   = yval;
-	  m_station_set = true;
-	}
+      if(m_static_station_defined) {
+	m_station_x = m_static_station_x;
+	m_station_y = m_static_station_y;
+	m_station_set = true;
+	m_center_pending = false;
       }
-      m_center_assign = "";
-      m_center_pending = false;
     }
   }
   if(ok_center_update == false)

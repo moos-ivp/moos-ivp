@@ -83,9 +83,12 @@ BHV_Waypoint::BHV_Waypoint(IvPDomain gdomain) :
   m_ptx   = -1;
   m_pty   = -1;
 
-  m_trackpt_x = -1;
-  m_trackpt_y = -1;
-
+  m_trackpt_x  = -1;
+  m_trackpt_y  = -1;
+  m_markpt_x   = -1;
+  m_markpt_y   = -1;
+  m_markpt_set = false;
+  
   addInfoVars("NAV_X, NAV_Y, NAV_SPEED");
 }
 
@@ -227,6 +230,7 @@ void BHV_Waypoint::onIdleState()
   postErasableTrackPoint();
   postErasableSegList();
   m_waypoint_engine.resetCPA();
+  m_markpt_set = false;
 }
 
 //-----------------------------------------------------------
@@ -242,8 +246,15 @@ IvPFunction *BHV_Waypoint::onRunState()
     return(0);
   }
 
+  // Note where the vehicle is when transitioned to the Runstate. 
+  // May use this as an anchor point for trackline following.
+  if(m_markpt_set) {
+    m_markpt_x = m_osx;
+    m_markpt_y = m_osy;
+    m_markpt_set = true;
+  }
+
   // Set m_ptx, m_pty, m_trackpt_x, m_trackpt_y;
-  
   bool next_point = setNextWaypoint();
 
   // We want to report the updated cycle info regardless of the 
@@ -360,6 +371,11 @@ bool BHV_Waypoint::setNextWaypoint()
       unsigned int pt_count = m_waypoint_engine.size();
       tx = m_waypoint_engine.getPointX(pt_count-1);
       ty = m_waypoint_engine.getPointY(pt_count-1);
+      track_anchor = true;
+    }
+    else {
+      tx = m_markpt_x;
+      ty = m_markpt_y;
       track_anchor = true;
     }
 

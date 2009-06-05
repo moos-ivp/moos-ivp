@@ -85,6 +85,10 @@ protected: // intermediate or object global variables.
   double    m_pty;
   double    m_trackpt_x;
   double    m_trackpt_y;
+
+  double    m_markpt_x;
+  double    m_markpt_y;
+  bool      m_markpt_set;
 };
 #endif
 
