@@ -34,10 +34,14 @@ PMV_MOOSApp::PMV_MOOSApp()
   m_left_click_str  = "null"; 
   m_right_click_str = "null"; 
 
+  m_pending_moos_events = 0;
   m_verbose         = false;
   m_gui             = 0; 
   m_lastredraw_time = 0;
-  m_pending_moos_events = 0;
+  m_node_report_vars.push_back("AIS_REPORT");
+  m_node_report_vars.push_back("AIS_REPORT_LOCAL");
+  m_node_report_vars.push_back("NODE_REPORT");
+  m_node_report_vars.push_back("NODE_REPORT_LOCAL");
 }
 
 //----------------------------------------------------------------
@@ -106,32 +110,16 @@ bool PMV_MOOSApp::OnStartUp()
 {
   MOOSTrace("pMarineViewer starting....\n");
   
-  //Initialize m_Geodesy from lat lon origin in .moos file
-  string str;
-  double lat_origin = 0;
-  double lon_origin = 0;
+  // look for latitude, longitude global variables
+  double lat_origin, lon_origin;
+  bool ok1 = m_MissionReader.GetValue("LatOrigin", lat_origin);
+  bool ok2 = m_MissionReader.GetValue("LatOrigin", lon_origin);
+  if(!ok1 || !ok2)
+    return(MOOSFail("Lat or Lon Origin not set in *.moos file.\n"));
 
-  // First get the Latitude Origine from the MOOS file
-  if(m_MissionReader.GetValue("LatOrigin", str))
-    lat_origin = atof(str.c_str());
-  else {
-    MOOSTrace("LatOrigin not specified in mission file - FAIL\n");
-    return(false);
-  }
-
-  // Then get the Londitude Origine from the MOOS file
-  if(m_MissionReader.GetValue("LongOrigin",str))
-    lon_origin = atof(str.c_str());
-  else {
-    MOOSTrace("LongOrigin not specified in mission file - FAIL\n");
-    return(false);
-  }
-  
   // If both lat and lon origin ok - then initialize the Geodesy.
-  if(!m_gui->mviewer->initGeodesy(lat_origin, lon_origin)) {
-    MOOSTrace("Geodesy Init inside pMarineViewer failed - FAIL\n");
-    return(false);
-  }
+  if(!m_gui->mviewer->initGeodesy(lat_origin, lon_origin))
+    return(MOOSFail("Geodesy Init in pMarineViewer failed - FAIL\n"));
 
   if((!m_gui) || (!m_pending_moos_events))
     return(true);
@@ -179,8 +167,6 @@ bool PMV_MOOSApp::receivePK_SOL(string sval)
 void PMV_MOOSApp::registerVariables()
 {
   m_Comms.Register("PK_SOL", 0);
-  m_Comms.Register("AIS_REPORT_LOCAL", 0);
-  m_Comms.Register("AIS_REPORT",       0);
   m_Comms.Register("GRID_CONFIG",      0);
   m_Comms.Register("GRID_DELTA",       0);
   m_Comms.Register("VIEW_POLYGON",     0);
@@ -192,6 +178,10 @@ void PMV_MOOSApp::registerVariables()
   unsigned int i, vsize = m_scope_vars.size();
   for(i=0; i<vsize; i++)
     m_Comms.Register(m_scope_vars[i], 0);
+
+  vsize = m_node_report_vars.size();
+  for(i=0; i<vsize; i++)
+    m_Comms.Register(m_node_report_vars[i], 0);
 }
 
 //----------------------------------------------------------------------
@@ -261,9 +251,7 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
       }
     }
 
-    bool handled = false;
-    if(!handled)
-      handled = m_gui->mviewer->setParam(key, sval);
+    bool handled = m_gui->mviewer->setParam(key, sval);
     if(!handled && (key == "PK_SOL")) {
       MOOSTrace("\nProcessing PK_SOL Message\n");
       receivePK_SOL(sval);
@@ -372,6 +360,12 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
       m_gui->addAction(value);
     else if(param == "action+")
       m_gui->addAction(value, true);
+    else if(param == "node_report_variable") {
+      if(!strContainsWhite(value)) {
+	m_gui->mviewer->setParam(param, value);
+	m_node_report_vars.push_back(value);
+      }
+    }
     else { 
       bool handled = m_gui->mviewer->setParam(param, value);
       if(!handled)

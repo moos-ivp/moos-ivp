@@ -102,6 +102,9 @@ class VehicleSet
   ColorPack m_vehicles_active_color;
   ColorPack m_vehicles_inactive_color; 
   ColorPack m_vehicles_name_color;
+
+  std::vector<std::string> m_node_report_vars;
+
 };
 
 #endif 

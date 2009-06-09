@@ -76,6 +76,8 @@ class PMV_MOOSApp : public CMOOSApp
 
   std::string  m_left_click_str;
   std::string  m_right_click_str;
+
+  std::vector<std::string> m_node_report_vars;
   std::vector<std::string> m_scope_vars;
 };
 

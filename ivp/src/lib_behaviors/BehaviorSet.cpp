@@ -85,7 +85,8 @@ void BehaviorSet::addBehavior(IvPBehavior *bhv)
 //------------------------------------------------------------
 // Procedure: produceOF
 
-IvPFunction* BehaviorSet::produceOF(unsigned int ix, unsigned int iteration, 
+IvPFunction* BehaviorSet::produceOF(unsigned int ix, 
+				    unsigned int iteration, 
 				    string& new_activity_state)
 {
   IvPFunction *ipf = 0;
@@ -93,9 +94,10 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix, unsigned int iteration,
   int    pcs = 0;
 
   if((ix >= 0) && (ix < behaviors.size())) {
-    
     // Look for possible dynamic updates to the behavior parameters
-    behaviors[ix]->checkUpdates();
+    bool update_made = behaviors[ix]->checkUpdates();
+    if(update_made)
+      behaviors[ix]->onSetParamComplete();
 
     // Check if the behavior duration is to be reset
     behaviors[ix]->checkForDurationReset();
@@ -115,6 +117,9 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix, unsigned int iteration,
     if(new_activity_state == "idle") {
       behaviors[ix]->postFlags("idleflags");
       behaviors[ix]->postFlags("inactiveflags");
+      if((behavior_states[ix] == "running") ||
+	 (behavior_states[ix] == "active"))
+	behaviors[ix]->onRunToIdleState();
       behaviors[ix]->onIdleState();
       behaviors[ix]->updateStateDurations("idle");
     }
@@ -122,6 +127,8 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix, unsigned int iteration,
     if(new_activity_state == "running") {
       behaviors[ix]->postDurationStatus();
       behaviors[ix]->postFlags("runflags");
+      if(behavior_states[ix] == "idle") 
+	behaviors[ix]->onIdleToRunState();
       ipf = behaviors[ix]->onRunState();
       if(ipf && !ipf->freeOfNan()) {
 	behaviors[ix]->postEMessage("NaN detected in IvP Function");

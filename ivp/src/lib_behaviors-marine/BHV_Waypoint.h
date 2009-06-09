@@ -26,15 +26,19 @@
 #include <string>
 #include "IvPBehavior.h"
 #include "WaypointEngine.h"
+#include "XYPoint.h"
 
 class BHV_Waypoint : public IvPBehavior {
 public:
   BHV_Waypoint(IvPDomain);
   ~BHV_Waypoint() {};
   
-  bool         setParam(std::string, std::string);
-  void         onIdleState();
   IvPFunction* onRunState();
+  bool         setParam(std::string, std::string);
+  void         onIdleState() {};
+  void         onRunToIdleState();
+  void         onIdleToRunState();
+  void         onSetParamComplete();
 
 protected:
   bool         updateInfoIn();
@@ -44,10 +48,6 @@ protected:
   void         postStatusReport();
   void         postViewableSegList();
   void         postErasableSegList();
-  void         postViewablePoint();
-  void         postErasablePoint();
-  void         postViewableTrackPoint();
-  void         postErasableTrackPoint();
   void         postCycleFlags();
   void         handleVisualHint(std::string);
 
@@ -70,8 +70,6 @@ protected: // configuration parameters
   std::vector<VarDataPair> m_cycle_flags;
 
   // Visual hints affecting properties of polygons/points
-  std::string m_hint_nextpt_color;
-  std::string m_hint_nextpt_lcolor;
   std::string m_hint_vertex_color;
   std::string m_hint_edge_color;
   double      m_hint_vertex_size;
@@ -81,14 +79,10 @@ protected: // intermediate or object global variables.
   double    m_osv;  // Ownship velocity
   double    m_osx;  // Ownship x position
   double    m_osy;  // Ownship y position
-  double    m_ptx;
-  double    m_pty;
-  double    m_trackpt_x;
-  double    m_trackpt_y;
 
-  double    m_markpt_x;
-  double    m_markpt_y;
-  bool      m_markpt_set;
+  XYPoint   m_nextpt;
+  XYPoint   m_trackpt;
+  XYPoint   m_markpt;
 };
 #endif
 

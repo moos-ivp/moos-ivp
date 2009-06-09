@@ -133,6 +133,9 @@ bool PMV_Viewer::setParam(string param, string value)
       m_reference_point = value;
     }
   }
+  else if(param == "new_report_variable") {
+    handled = m_vehiset.setParam(param, value);
+  }
   else if(param == "view_marker") {
     handled = m_vmarkers.addVMarker(value, m_geodesy);
   }

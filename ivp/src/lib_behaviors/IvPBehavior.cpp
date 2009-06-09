@@ -666,14 +666,15 @@ bool IvPBehavior::checkNoStarve()
 //
 // (3) A write to the update_var with an empty string is just ignored.
 
-void IvPBehavior::checkUpdates()
+bool IvPBehavior::checkUpdates()
 {
   if(m_update_var == "")
-    return;
+    return(false);
 
-  bool   ok;
+  bool ok;
   vector<string> new_update_strs = getBufferStringVector(m_update_var, ok);
   
+  bool update_made = false;
   int vsize = new_update_strs.size();
   for(int i=0; i<vsize; i++) {
     string new_update_str = new_update_strs[i];
@@ -710,6 +711,7 @@ void IvPBehavior::checkUpdates()
 	postMessage("BHV_WARNING", wmsg);
       }
       else {
+	update_made = true;
 	m_good_updates++;
 	m_prev_update_str = new_update_str;
       }
@@ -722,6 +724,7 @@ void IvPBehavior::checkUpdates()
     string bstr = intToString(m_bad_updates) + " failure(s)";
     postMessage(varname, gstr+bstr);
   }
+  return(update_made);
 }
 
 //-----------------------------------------------------------

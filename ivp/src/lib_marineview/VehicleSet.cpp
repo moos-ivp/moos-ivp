@@ -37,6 +37,11 @@ VehicleSet::VehicleSet()
   setParam("vehicles_name_viewable", "names+mode");
   setParam("vehicles_shape_scale", 1.0);
   setParam("vehicles_viewable", "true");
+
+  m_node_report_vars.push_back("AIS_REPORT");
+  m_node_report_vars.push_back("AIS_REPORT_LOCAL");
+  m_node_report_vars.push_back("NODE_REPORT");
+  m_node_report_vars.push_back("NODE_REPORT_LOCAL");
 }
 
 
@@ -58,9 +63,21 @@ bool VehicleSet::setParam(string param, string value)
   bool handled  = false;
   bool makenote = true;
   param = tolower(param);
-  if((param == "ais_report") || (param == "ais_report_local")) {
+  value = stripBlankEnds(value);
+
+  bool vehicle_report = false;
+  unsigned int i, vsize = m_node_report_vars.size();
+  for(i=0; i<vsize; i++)
+    if(param == tolower(m_node_report_vars[i]))
+      vehicle_report = true;
+
+  if(vehicle_report) {
     handled  = updateVehiclePosition(value);
     makenote = false;
+  }
+  else if(param == "node_report_variable") {
+    if(!strContainsWhite(value))
+      m_node_report_vars.push_back(value);
   }
   else if(((param == "active_vehicle_color") ||
 	   (param == "vehicles_active_color")) && isColor(value)) {

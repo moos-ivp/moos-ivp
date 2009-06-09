@@ -43,19 +43,18 @@ vector<double> colorParse(const std::string &str)
   // CASE 1: string is apparently a named description of the color
   // e.g., "blue". Detected by lack of comma-separated fields
 
-  if(!strContains(str, ",")) {
-    string hex_str = colorNameToHex(str);
-    return(colorHexToVector(hex_str));
-  }
+  string numerical_str;
+  if(!strContains(str, ","))
+    numerical_str = colorNameToHex(str);
+  else
+    numerical_str = str;
 
   // CASE 2: string is hex representation of the color
-
-  if(strContains(str, "hex"))
-    return(colorHexToVector(str));
+  if(strContains(numerical_str, "hex"))
+    return(colorHexToVector(numerical_str));
 
   // CASE 3: string is decimal representation of the color
-
-  return(colorDecToVector(str));
+  return(colorDecToVector(numerical_str));
 }
 
 
@@ -225,6 +224,25 @@ string colorNameToHex(const std::string &str)
   if(cstr == "gold")           return("hex:ff,d7,00");
   if(cstr == "goldenrod")      return("hex:da,a5,20");
   if(cstr == "gray")           return("hex:80,80,80");
+  if(cstr == "gray05")         return("0.05,0.05,0.05");
+  if(cstr == "gray10")         return("0.10,0.10,0.10");
+  if(cstr == "gray15")         return("0.15,0.15,0.15");
+  if(cstr == "gray20")         return("0.20,0.20,0.20");
+  if(cstr == "gray25")         return("0.25,0.25,0.25");
+  if(cstr == "gray30")         return("0.30,0.30,0.30");
+  if(cstr == "gray35")         return("0.35,0.35,0.35");
+  if(cstr == "gray40")         return("0.40,0.40,0.40");
+  if(cstr == "gray45")         return("0.45,0.45,0.45");
+  if(cstr == "gray50")         return("0.50,0.50,0.50");
+  if(cstr == "gray55")         return("0.55,0.55,0.55");
+  if(cstr == "gray60")         return("0.60,0.60,0.60");
+  if(cstr == "gray65")         return("0.65,0.65,0.65");
+  if(cstr == "gray70")         return("0.70,0.70,0.70");
+  if(cstr == "gray75")         return("0.75,0.75,0.75");
+  if(cstr == "gray80")         return("0.80,0.80,0.80");
+  if(cstr == "gray85")         return("0.85,0.85,0.85");
+  if(cstr == "gray90")         return("0.90,0.90,0.90");
+  if(cstr == "gray95")         return("0.95,0.95,0.95");
   if(cstr == "greenyellow")    return("hex:ad,ff,2f");
   if(cstr == "honeydew")       return("hex:f0,ff,f0");
   if(cstr == "hotpink")        return("hex:ff,69,b4");

@@ -80,6 +80,25 @@ double relAng(double xa, double ya, double xb, double yb)
   return(retVal);
 }
 
+//-------------------------------------------------------------
+// Procedure: relAng
+//   Purpose: Returns relative angle of pt B to pt A. Treats A
+//            as the center.
+//
+//                   0
+//                   |
+//                   |
+//         270 ----- A ----- 90      
+//                   |
+//                   |
+//                  180
+
+double relAng(const XYPoint& a, const XYPoint& b)
+{ 
+  return(relAng(a.get_vx(), a.get_vy(), b.get_vx(), b.get_vy()));
+}
+
+
 //---------------------------------------------------------------
 // Procedure: radAngleWrap
 

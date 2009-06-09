@@ -61,10 +61,13 @@ public:
   virtual IvPFunction* onRunState() {return(0);};
   virtual bool setParam(std::string, std::string);
   virtual void onIdleState() {};
+  virtual void onSetParamComplete() {};
+  virtual void onIdleToRunState() {};
+  virtual void onRunToIdleState() {};
 
   bool   setParamCommon(std::string, std::string);
   void   setInfoBuffer(const InfoBuffer*);
-  void   checkUpdates();
+  bool   checkUpdates();
   bool   isCompleted();
   bool   isRunnable();
 

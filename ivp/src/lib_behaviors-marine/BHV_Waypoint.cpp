@@ -65,8 +65,6 @@ BHV_Waypoint::BHV_Waypoint(IvPDomain gdomain) :
   m_var_cyindex     = "CYCLE_INDEX";
   m_var_suffix      = "";
 
-  m_hint_nextpt_color  = "";
-  m_hint_nextpt_lcolor = "";
   m_hint_vertex_color  = "";
   m_hint_edge_color    = "";
   m_hint_vertex_size   = -1;
@@ -80,16 +78,22 @@ BHV_Waypoint::BHV_Waypoint(IvPDomain gdomain) :
   m_osx   = -1;
   m_osy   = -1;
   m_osv   = -1;
-  m_ptx   = -1;
-  m_pty   = -1;
 
-  m_trackpt_x  = -1;
-  m_trackpt_y  = -1;
-  m_markpt_x   = -1;
-  m_markpt_y   = -1;
-  m_markpt_set = false;
-  
   addInfoVars("NAV_X, NAV_Y, NAV_SPEED");
+}
+
+//-----------------------------------------------------------
+// Procedure: onSetParamComplete()
+
+void BHV_Waypoint::onSetParamComplete()
+{
+  m_trackpt.set_source(m_us_name + tolower(getDescriptor()));
+  m_trackpt.set_label(m_us_name + "'s track-point");
+  m_trackpt.set_type("track_point");
+
+  m_nextpt.set_source(m_us_name + tolower(getDescriptor()));
+  m_nextpt.set_label(m_us_name + "'s next waypoint");
+  m_nextpt.set_type("waypoint");
 }
 
 //-----------------------------------------------------------
@@ -101,9 +105,9 @@ BHV_Waypoint::BHV_Waypoint(IvPDomain gdomain) :
 
 bool BHV_Waypoint::setParam(string param, string val) 
 {
+  double dval = atof(val.c_str());
   if((param == "polygon") || (param == "points")) {
     XYSegList new_seglist = string2SegList(val);
-    cout << "SEGL_SIZE: " << new_seglist.size() << endl;
     if(new_seglist.size() == 0) {
       XYPolygon new_poly = string2Poly(val);
       new_seglist = new_poly.exportSegList(0,0);
@@ -113,10 +117,7 @@ bool BHV_Waypoint::setParam(string param, string val)
     m_waypoint_engine.setSegList(new_seglist);
     return(true);
   }
-  else if(param == "speed") {
-    double dval = atof(val.c_str());
-    if((dval <= 0) || (!isNumber(val)))
-      return(false);
+  else if((param == "speed") && (dval > 0)) {
     m_cruise_speed = dval;
     return(true);
   }
@@ -167,17 +168,11 @@ bool BHV_Waypoint::setParam(string param, string val)
       m_ipf_type = val;
     return(true);
   }
-  else if(param == "lead") {
-    double dval = atof(val.c_str());
-    if((dval < 0) || (!isNumber(val)))
-      return(false);
+  else if((param == "lead") && (dval > 0)) {
     m_lead_distance = dval;
     return(true);
   }
-  else if(param == "lead_damper") {
-    double dval = atof(val.c_str());
-    if((dval <= 0) || (!isNumber(val)))
-      return(false);
+  else if((param == "lead_damper") && (dval > 0)) {
     m_lead_damper = dval;
     return(true);
   }
@@ -197,16 +192,12 @@ bool BHV_Waypoint::setParam(string param, string val)
     return(true);
   }
   else if((param == "radius") || (param == "capture_radius")) {
-    double dval = atof(val.c_str());
     if(dval <= 0)
       return(false);
     m_waypoint_engine.setCaptureRadius(dval);
     return(true);
   }
-  else if(param == "nm_radius")  {
-    double dval = atof(val.c_str());
-    if(dval <= 0) 
-      return(false);
+  else if((param == "nm_radius") && (dval > 0)) {
     m_waypoint_engine.setNonmonotonicRadius(dval);
     return(true);
   }
@@ -222,15 +213,30 @@ bool BHV_Waypoint::setParam(string param, string val)
 
 
 //-----------------------------------------------------------
-// Procedure: onIdleState
+// Procedure: onRunToIdleState
+//      Note: Invoked automatically by the helm when the behavior
+//            first transitions from the Running to Idle state.
 
-void BHV_Waypoint::onIdleState() 
+void BHV_Waypoint::onRunToIdleState() 
+//void BHV_Waypoint::onIdleState() 
 {
-  postErasablePoint();
-  postErasableTrackPoint();
+  postMessage("VIEW_POINT", m_trackpt.get_spec("active=false"));
+  postMessage("VIEW_POINT", m_nextpt.get_spec("active=false"));
   postErasableSegList();
   m_waypoint_engine.resetCPA();
-  m_markpt_set = false;
+}
+
+//-----------------------------------------------------------
+// Procedure: onIdleToRunState
+//      Note: Invoked automatically by the helm when the behavior 
+//            is in the running state, *and* in the idle state on 
+//            the previous iteration.
+
+void BHV_Waypoint::onIdleToRunState() 
+{
+  // Note where the vehicle is when transitioned to the Runstate. 
+  // May use this as an anchor point for trackline following.
+  m_markpt.set_vertex(m_osx, m_osy);
 }
 
 //-----------------------------------------------------------
@@ -242,19 +248,11 @@ IvPFunction *BHV_Waypoint::onRunState()
 
   // Set m_osx, m_osy, m_osv
   if(!updateInfoIn()) {
-    postErasablePoint();
+    postMessage("VIEW_POINT", m_nextpt.get_spec("active=false"));
     return(0);
   }
 
-  // Note where the vehicle is when transitioned to the Runstate. 
-  // May use this as an anchor point for trackline following.
-  if(m_markpt_set) {
-    m_markpt_x = m_osx;
-    m_markpt_y = m_osy;
-    m_markpt_set = true;
-  }
-
-  // Set m_ptx, m_pty, m_trackpt_x, m_trackpt_y;
+  // Set m_nextpt, m_trackpt
   bool next_point = setNextWaypoint();
 
   // We want to report the updated cycle info regardless of the 
@@ -269,18 +267,19 @@ IvPFunction *BHV_Waypoint::onRunState()
   if(next_point) {
     postStatusReport();
     postViewableSegList();
-    postViewablePoint();
-    double dist = hypot((m_ptx-m_trackpt_x), (m_pty-m_trackpt_y));
+    postMessage("VIEW_POINT", m_nextpt.get_spec("active=true"));
+    double dist = hypot((m_nextpt.x() - m_trackpt.x()), 
+			(m_nextpt.y() - m_trackpt.y()));
     // If the trackpoint and next waypoint differ by more than five
     // meters then post a visual cue for the track point.
     if(dist > 5)
-      postViewableTrackPoint();
+      postMessage("VIEW_POINT", m_trackpt.get_spec("active=true"));
     else
-      postErasableTrackPoint();
+      postMessage("VIEW_POINT", m_trackpt.get_spec("active=false"));
   }
   // Otherwise "erase" the next waypoint marker
   else {
-    postErasablePoint();
+    postMessage("VIEW_POINT", m_nextpt.get_spec("active=false"));
     return(0);
   }
   
@@ -340,26 +339,27 @@ bool BHV_Waypoint::setNextWaypoint()
 
     if(feedback_msg == "completed") {
       setComplete();
+      m_markpt.set_active(false);
       if(m_perpetual)
 	m_waypoint_engine.resetForNewTraversal();
       return(false);
     }
   }
   
-  m_ptx = m_waypoint_engine.getPointX();
-  m_pty = m_waypoint_engine.getPointY();
-  
+  double next_ptx = m_waypoint_engine.getPointX();
+  double next_pty = m_waypoint_engine.getPointY();
+  m_nextpt.set_vertex(next_ptx, next_pty);
+
   // By default, the steering point is the next waypoint.
-  m_trackpt_x = m_ptx;
-  m_trackpt_y = m_pty;
+  m_trackpt.set_vertex(next_ptx, next_pty);
 
   // If m_lead_distance is non-neg, and we've already hit the
   // first waypoint, then steer to an intermediate point that
   // is m_lead_distance away from the perpendicular intersection
   // point between the current position and the trackline.
   
-  int current_waypt = m_waypoint_engine.getCurrIndex();
   if(m_lead_distance >= 0) {
+    int current_waypt = m_waypoint_engine.getCurrIndex();
     bool track_anchor = false;
     double tx, ty;
     if(current_waypt > 0) {
@@ -373,16 +373,18 @@ bool BHV_Waypoint::setNextWaypoint()
       ty = m_waypoint_engine.getPointY(pt_count-1);
       track_anchor = true;
     }
-    else {
-      tx = m_markpt_x;
-      ty = m_markpt_y;
+    else if(m_markpt.active()) {
+      tx = m_markpt.x();
+      ty = m_markpt.y();
       track_anchor = true;
     }
 
     if(track_anchor) {
       double nx, ny;
-      perpSegIntPt(tx,ty,m_ptx,m_pty,m_osx,m_osy,nx,ny);
-      
+      perpSegIntPt(tx, ty, m_nextpt.x(), m_nextpt.y(), 
+		   m_osx, m_osy, nx, ny);
+      XYPoint perp_pt(nx, ny);
+
       double damper_factor = 1.0;
       if(m_lead_damper > 0) {
 	double dist_to_trackline = hypot((nx-m_osx),(ny-m_osy));
@@ -392,11 +394,11 @@ bool BHV_Waypoint::setNextWaypoint()
 	}
       }
 	  
-      double angle = relAng(tx, ty, m_ptx, m_pty);
-      double dist  = distPointToPoint(nx, ny, m_ptx, m_pty);
+      double angle = relAng(tx, ty, m_nextpt.x(), m_nextpt.y());
+      double dist  = distPointToPoint(nx, ny, m_nextpt.x(), m_nextpt.y());
       if(dist > (m_lead_distance * damper_factor)) 
 	dist = m_lead_distance * damper_factor;  
-      projectPoint(angle, dist, nx, ny, m_trackpt_x, m_trackpt_y);
+      m_trackpt.projectPt(perp_pt, angle, dist);
     }
   }
   return(true);
@@ -416,8 +418,8 @@ IvPFunction *BHV_Waypoint::buildOF(string method)
     ok = ok && aof_wpt.setParam("desired_speed", m_cruise_speed);
     ok = ok && aof_wpt.setParam("osx", m_osx);
     ok = ok && aof_wpt.setParam("osy", m_osy);
-    ok = ok && aof_wpt.setParam("ptx", m_trackpt_x);
-    ok = ok && aof_wpt.setParam("pty", m_trackpt_y);
+    ok = ok && aof_wpt.setParam("ptx", m_trackpt.x());
+    ok = ok && aof_wpt.setParam("pty", m_trackpt.y());
     ok = ok && aof_wpt.initialize();
     
     if(ok) {
@@ -437,7 +439,8 @@ IvPFunction *BHV_Waypoint::buildOF(string method)
     if(!spd_of)
       postWMessage("Failure on the SPD ZAIC");
     
-    double rel_ang_to_wpt = relAng(m_osx, m_osy, m_trackpt_x, m_trackpt_y);
+    double rel_ang_to_wpt = relAng(m_osx, m_osy, 
+				   m_trackpt.x(), m_trackpt.y());
     ZAIC_PEAK crs_zaic(m_domain, "course");
     crs_zaic.setValueWrap(true);
     crs_zaic.setParams(rel_ang_to_wpt, 0, 180, 50, 0, 100);
@@ -460,7 +463,8 @@ void BHV_Waypoint::postStatusReport()
 {
   int    current_waypt = m_waypoint_engine.getCurrIndex();
   int    waypt_cycles  = m_waypoint_engine.getCycleCount();
-  double dist_meters   = hypot((m_osx - m_ptx), (m_osy - m_pty));
+  double dist_meters   = hypot((m_osx - m_nextpt.x()), 
+			       (m_osy - m_nextpt.y()));
   double eta_seconds   = dist_meters / m_osv;
   
   string stat = "vname=" + m_us_name + ",";
@@ -517,85 +521,6 @@ void BHV_Waypoint::postErasableSegList()
 
 
 //-----------------------------------------------------------
-// Procedure: postViewablePoint()
-
-void BHV_Waypoint::postViewablePoint()
-{
-  // Recall that for a point to be drawn and erased, it must match
-  // in the (1) label (2) type (3) and source.
-
-  XYPoint view_point(m_ptx, m_pty);
-  view_point.set_source(m_us_name + tolower(getDescriptor()));
-  view_point.set_type("waypoint");
-  view_point.set_label(m_us_name + "'s next waypoint");
-  view_point.set_label_color(m_hint_nextpt_lcolor);
-  view_point.set_vertex_color(m_hint_nextpt_color);
-  postMessage("VIEW_POINT", view_point.get_spec());
-  
-  
-  if((m_ptx != m_trackpt_x) || (m_pty != m_trackpt_y)) {
-    XYPoint view_point_track(m_trackpt_x, m_trackpt_y);
-    view_point_track.set_source(m_us_name + tolower(getDescriptor()));
-    view_point_track.set_type("track_point");
-    view_point_track.set_label(m_us_name + "'s track-point");
-    view_point_track.set_label_color(m_hint_nextpt_lcolor);
-    view_point_track.set_vertex_color(m_hint_nextpt_color);
-    postMessage("VIEW_POINT", view_point_track.get_spec());
-  }
-}
-
-//-----------------------------------------------------------
-// Procedure: postViewableTrackPoint()
-
-void BHV_Waypoint::postViewableTrackPoint()
-{
-  // Recall that for a point to be drawn and erased, it must match
-  // in the (1) label (2) type (3) and source.
-
-  XYPoint view_point_track(m_trackpt_x, m_trackpt_y);
-  view_point_track.set_source(m_us_name + tolower(getDescriptor()));
-  view_point_track.set_type("track_point");
-  view_point_track.set_label(m_us_name + "'s track-point");
-  view_point_track.set_label_color(m_hint_nextpt_lcolor);
-  view_point_track.set_vertex_color(m_hint_nextpt_color);
-  postMessage("VIEW_POINT", view_point_track.get_spec());
-}
-
-//-----------------------------------------------------------
-// Procedure: postErasablePoint()
-
-void BHV_Waypoint::postErasablePoint()
-{
-  // Recall that for a point to be drawn and erased, it must match
-  // in the (1) label (2) type (3) and source.
-  // For a point to be "ignored" it must set active=false.
-
-  XYPoint view_point(m_ptx, m_pty);
-  view_point.set_source(m_us_name + tolower(getDescriptor()));
-  view_point.set_type("waypoint");
-  view_point.set_label(m_us_name + "'s next waypoint");
-  view_point.set_active(false);
-  postMessage("VIEW_POINT", view_point.get_spec());
-}
-
-//-----------------------------------------------------------
-// Procedure: postErasableTrackPoint()
-
-void BHV_Waypoint::postErasableTrackPoint()
-{
-  // Recall that for a point to be drawn and erased, it must match
-  // in the (1) label (2) type (3) and source.
-  // For a point to be "ignored" it must set active=false.
-  XYPoint view_point_track(m_trackpt_x, m_trackpt_y);
-  view_point_track.set_source(m_us_name + tolower(getDescriptor()));
-  view_point_track.set_type("track_point");
-  view_point_track.set_label(m_us_name + "'s track-point");
-  view_point_track.set_active(false);
-  postMessage("VIEW_POINT", view_point_track.get_spec());
-}
-
-
-//-----------------------------------------------------------
 // Procedure: postCycleFlags()
 
 void BHV_Waypoint::postCycleFlags()
@@ -621,10 +546,14 @@ void BHV_Waypoint::handleVisualHint(string hint)
   string value = stripBlankEnds(hint);
   double dval  = atof(value.c_str());
 
-  if((param == "nextpt_color") && isColor(value))
-    m_hint_nextpt_color = value;
-  else if((param == "nextpt_lcolor") && isColor(value))
-    m_hint_nextpt_lcolor = value;
+  if((param == "nextpt_color") && isColor(value)) {
+    m_trackpt.set_vertex_color(hint);
+    m_nextpt.set_vertex_color(hint);
+  }
+  else if((param == "nextpt_lcolor") && isColor(value)) {
+    m_trackpt.set_label_color(hint);
+    m_nextpt.set_label_color(hint);
+  }
   else if((param == "vertex_color") && isColor(value))
     m_hint_vertex_color = value;
   else if((param == "edge_color") && isColor(value))

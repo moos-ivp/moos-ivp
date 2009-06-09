@@ -70,6 +70,7 @@ void XYPoint::print() const
 // Procedure: projectPt
 //   Purpose: 
 
+#if 0
 XYPoint XYPoint::projectPt(XYPoint pt, double ang, double dist) const
 {
   double new_x, ptx = pt.get_vx();
@@ -81,14 +82,36 @@ XYPoint XYPoint::projectPt(XYPoint pt, double ang, double dist) const
   
   return(new_pt);
 }
+#endif
+
+//---------------------------------------------------------------
+// Procedure: projectPt
+//   Purpose: 
+
+#if 1
+void XYPoint::projectPt(const XYPoint& pt, double ang, double dist)
+{
+  projectPoint(ang, dist, pt.x(), pt.y(), m_x, m_y);
+}
+#endif
 
 //---------------------------------------------------------------
 // Procedure: get_spec
 //   Purpose: 
 
-string XYPoint::get_spec() const
+string XYPoint::get_spec(string param) const
 {
   string spec;
+  
+  if(param == "") {
+    if(m_active == false)
+      spec += "active,false:";
+  }
+  else if(param == "active=true") 
+    spec += "active,true:";
+  else if(param == "active=false") 
+    spec += "active,false:";
+    
 
   if(m_label != "")
     spec += "label," + m_label + ":"; 
@@ -100,8 +123,6 @@ string XYPoint::get_spec() const
     spec += "time," + doubleToString(m_time,2) + ":"; 
   if(m_source != "")
     spec += "source," + m_source + ":"; 
-  if(m_active == false)
-    spec += "active,false:";
   if(m_vertex_color.set())
     spec += "vertex_color," + m_vertex_color.str() + ":"; 
   if(m_vertex_size >= 0) {

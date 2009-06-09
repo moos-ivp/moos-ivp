@@ -1,8 +1,9 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin and John Leonard                    */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
-/*    FILE: AngleUtils.h                                         */
-/*    DATE: Nov 26, 2000                                         */
+/*    FILE: main.cpp                                             */
+/*    DATE: Feb 13th 2006 (TransponderAIS)                       */
+/*    DATE: Jun  8th 2009 (NodeReporter)                         */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
 /* modify it under the terms of the GNU General Public License   */
@@ -19,32 +20,37 @@
 /* Software Foundation, Inc., 59 Temple Place - Suite 330,       */
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
- 
-#ifndef ANGLEUTILS_HEADER
-#define ANGLEUTILS_HEADER
 
-#include "XYPoint.h"
+#include <string>
+#include "NodeReporter.h"
+#include "MBUtils.h"
 
-double  relAng(double xa, double ya, double xb, double yb);
-double  relAng(const XYPoint& a, const XYPoint& b);
-double  radAngleWrap(double radians);
-double  degToRadians(double degrees);
-double  radToDegrees(double radians);
-double  angle180(double degrees);
-double  angle360(double degrees);
-// true heading/E-N conversion added by henrik
-double  radToHeading(double radians);
-double  headingToRadians(double degrees);
+using namespace std;
 
-bool    containsAngle(double deg1, double deg2, double deg3);
+int main(int argc, char *argv[])
+{
+  // Look for a request for version information
+  if(scanArgs(argc, argv, "-v", "--version", "-version")) {
+    vector<string> svector = getReleaseInfo("pNodeReporter");
+    for(unsigned int j=0; j<svector.size(); j++)
+      cout << svector[j] << endl;    
+    return(0);
+  }
+  
+  string sMissionFile = "pNodeReporter.moos";
+  string sMOOSName    = "pNodeReporter";
 
-#endif
+  switch(argc) {
+  case 3:
+    sMOOSName = argv[2];
+  case 2:
+    sMissionFile = argv[1];
+  }
+  
+  NodeReporter node_reporter;
+  
+  node_reporter.Run(sMOOSName.c_str(), sMissionFile.c_str());
 
-
-
-
-
-
-
-
+  return(0);
+}
 

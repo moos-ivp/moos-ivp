@@ -23,8 +23,11 @@
 #ifndef XY_GEOM_UTILS_HEADER
 #define XY_GEOM_UTILS_HEADER
 
+#include "XYPoint.h"
+
 // Determines the distance between two points
 double distPointToPoint(double x1, double y1, double x2, double y2);
+double distPointToPoint(const XYPoint& pt1, const XYPoint& pt2);
 
 // Determine the distance from a line segment to a point (px,py)
 double distPointToSeg(double x1, double y1, double x2, 
@@ -34,7 +37,6 @@ double distPointToSeg(double x1, double y1, double x2,
 // at a particular given angle. Returns -1 if doesn't intersect
 double distPointToSeg(double x1, double y1, double x2, double y2,
                       double px, double py, double ANGLE);
-		      
 
 // Determine the distance between two line segments
 double distSegToSeg(double x1, double y1, double x2, double y2, 
@@ -56,8 +58,8 @@ double segmentAngle(double x1, double y1, double x2, double y2,
 
 // Determine a point on a segment that, with another point, makes
 // a line that is a right angle to the segment
-void   perpSegIntPt(double x1, double y1, double x2, double y2,
-		    double qx, double qy, double& rx, double& ry);
+void    perpSegIntPt(double x1, double y1, double x2, double y2,
+		     double qx, double qy, double& rx, double& ry);
 
 // Determine a point on a line that, with another point, makes
 // a line that is a right angle to the given line
@@ -66,8 +68,10 @@ void   perpLineIntPt(double x1, double y1, double x2, double y2,
 
 // Determine a point that is a certain angle and distance from 
 // another point
-void   projectPoint(double ANGLE, double DIST, double cx, 
-		    double cy,    double& rx,  double &ry);
+void    projectPoint(double ANGLE, double DIST, double cx, 
+		     double cy,    double& rx,  double &ry);
+XYPoint projectPoint(double ANGLE, double DIST, double cx, double cy);
+
 
 void   addVectors(double deg1, double mag1, double deg2, double mag2,
 		  double& rdeg, double& rmag); 

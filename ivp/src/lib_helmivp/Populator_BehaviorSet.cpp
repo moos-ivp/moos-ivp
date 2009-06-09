@@ -233,8 +233,6 @@ bool Populator_BehaviorSet::handleLine(string line)
 
   // Handle RIGHT BRACE
   if(line == "}") {
-    //cout << "handling the '}' char " << endl;
-    //cout << "m_parse_mode = " << m_parse_mode << endl;
     if(m_parse_mode == "misc-defining")
       m_parse_mode = "misc-defined-ish";
     else if(m_parse_mode == "bhv-defining")
@@ -245,7 +243,6 @@ bool Populator_BehaviorSet::handleLine(string line)
       cout << "Unexpected close brace '}'" << endl;
       return(false);
     }
-    //cout << "m_parse_mode(2) = " << m_parse_mode << endl;
     return(true);
   }
     

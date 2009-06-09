@@ -54,12 +54,16 @@ public:
   double    get_vx() const          {return(m_x);};
   double    get_vy() const          {return(m_y);};
   double    get_vz() const          {return(m_z);};
+  double    x() const               {return(m_x);};
+  double    y() const               {return(m_y);};
+  double    z() const               {return(m_z);};
   double    get_size() const        {return(m_size);};
   bool      valid() const           {return(m_valid);};
 
-  XYPoint   projectPt(XYPoint, double dist, double angle) const;
+  //XYPoint   projectPt(XYPoint, double dist, double angle) const;
+  void      projectPt(const XYPoint&, double ang, double dist);
 
-  std::string get_spec() const;
+  std::string get_spec(std::string s="") const;
 
 protected:
   double    m_x;

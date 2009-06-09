@@ -34,6 +34,12 @@ double distPointToPoint(double x1, double y1, double x2, double y2)
   return(hypot((x1-x2), (y1-y2)));
 }
   
+double distPointToPoint(const XYPoint& pt1, const XYPoint& pt2)
+{
+  return(hypot((pt1.get_vx() - pt2.get_vx()), 
+	       (pt2.get_vy() - pt2.get_vy())));
+}
+  
 double distToPoint(double x1, double y1, double x2, double y2)
 {
   return(hypot((x1-x2), (y1-y2)));
@@ -606,6 +612,28 @@ void projectPoint(double degval, double dist, double cx,
 
   rx = cx + delta_x;
   ry = cy + delta_y;
+}
+
+
+//---------------------------------------------------------------
+// Procedure: projectPoint
+//   Purpose: Same as the other projectPoint function except this 
+//            function returns an XYPoint object.
+
+XYPoint projectPoint(double degval, double dist, double cx, double cy)
+{
+  if((degval < 0) || (degval >= 360))
+    degval = angle360(degval);
+  
+  double radang  = degToRadians(degval);
+  double delta_x = sin(radang) * dist;
+  double delta_y = cos(radang) * dist;
+
+  double rx = cx + delta_x;
+  double ry = cy + delta_y;
+
+  XYPoint return_point(rx, ry);
+  return(return_point);
 }
 
 

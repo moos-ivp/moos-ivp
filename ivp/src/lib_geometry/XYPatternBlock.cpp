@@ -153,8 +153,8 @@ int XYPatternBlock::setLaneSegments()
   unsigned int i, vsize = m_lane_points.size();
   for(i=0; i<vsize; i++) {
     XYPoint midpt = m_lane_points[i];
-    XYPoint pt1 = midpt.projectPt(midpt, ang1, (m_blocklen/2));
-    XYPoint pt2 = midpt.projectPt(midpt, ang2, (m_blocklen/2));
+    XYPoint pt1 = projectPoint(ang1, (m_blocklen/2), midpt.x(), midpt.y());
+    XYPoint pt2 = projectPoint(ang2, (m_blocklen/2), midpt.x(), midpt.y());
 
     XYSegList new_segl;
     new_segl.add_vertex(pt1.get_vx(), pt1.get_vy());
