@@ -17,12 +17,12 @@ ProcessConfig = ANTLER
 {
   MSBetweenLaunches = 200
 
-  Run = MOOSDB		@ NewConsole = false
-  Run = iMarineSim	@ NewConsole = false
-  Run = pTransponderAIS	@ NewConsole = false
-  Run = pMarinePID	@ NewConsole = false
-  Run = pMarineViewer	@ NewConsole = false
-  Run = pHelmIvP	@ NewConsole = true
+  Run = MOOSDB          @ NewConsole = false
+  Run = iMarineSim      @ NewConsole = false
+  Run = pNodeReporter   @ NewConsole = false
+  Run = pMarinePID      @ NewConsole = false
+  Run = pMarineViewer   @ NewConsole = false
+  Run = pHelmIvP        @ NewConsole = true
   //Run = pLogger       @ NewConsole = true
   Run = pEchoVar        @ NewConsole = true
 }
@@ -150,9 +150,9 @@ ProcessConfig = pMarineViewer
 }
 
 //------------------------------------------
-// pTransponderAIS config block
+// pNodeReporter config block
 
-ProcessConfig = pTransponderAIS
+ProcessConfig = pNodeReporter
 {
   AppTick	= 2
   CommsTick	= 2

@@ -67,6 +67,9 @@ Behavior = BHV_StationKeep
         outer_speed  = 1.5
       transit_speed  = 2.5
   hibernation_radius = 25
+          swing_time = 8
+        visual_hints = edge_size=1, vertex_size=0
+        visual_hints = edge_color=white
 }
 
 //----------------------------------------------

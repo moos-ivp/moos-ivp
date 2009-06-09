@@ -97,6 +97,7 @@ protected:
 
   HelmEngine*   m_hengine;
   std::string   m_ownship;
+  std::vector<std::string> m_node_report_vars;
 
   // For each decision variable in decision space, note if it is 
   // optional. Optional means a decision need not be rendered on it.

@@ -22,7 +22,7 @@ ProcessConfig = ANTLER
   Run = pTransponderAIS	@ NewConsole = false
   Run = pMarinePID	@ NewConsole = false
   Run = pMarineViewer	@ NewConsole = true
-  Run = pHelmIvP	@ NewConsole = false
+  Run = pHelmIvP	@ NewConsole = true
 }
 
 //------------------------------------------

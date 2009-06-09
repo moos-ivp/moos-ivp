@@ -84,7 +84,7 @@ ProcessConfig = pHelmIvP
   Domain     = course:0:359:360
   Domain     = speed:0:4:21
 
-  ACTIVE_START = true
+  ACTIVE_START = false
 }
 
 //------------------------------------------
@@ -140,11 +140,20 @@ ProcessConfig = pMarineViewer
   hash_shade           = 0.4
   hash_view            = true
 
+  SCOPE        = LTIMER
+
+  ACTION       = JAKE=7
+  ACTION       = JAKE=8
+  ACTION       = MOOS_MANUAL_OVERIDE=true
+  ACTION       = MOOS_MANUAL_OVERIDE=false
+
   BUTTON_ONE   = DEPLOY # DEPLOY=true
   BUTTON_ONE   = MOOS_MANUAL_OVERIDE=false # RETURN=false
   BUTTON_TWO   = RETURN # RETURN=true
-  BUTTON_THREE = SAFETY-YES # SAFETY=true
-  BUTTON_FOUR  = SAFETY-NO  # SAFETY=false
+//  BUTTON_THREE = SAFETY-YES # SAFETY=true
+//  BUTTON_FOUR  = SAFETY-NO  # SAFETY=false
+  BUTTON_THREE = TIMER_ON # TIMER=true
+  BUTTON_FOUR  = TIMER_OFF  # TIMER=false
 }
 
 //------------------------------------------

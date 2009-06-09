@@ -84,6 +84,12 @@ HelmIvP::HelmIvP()
   m_outgoing_repinterval["VIEW_POINT"] = 5;
   m_outgoing_repinterval["VIEW_POLYGON"] = 5;
   m_outgoing_repinterval["VIEW_SEGLIST"] = 5;
+
+  m_node_report_vars.push_back("AIS_REPORT");
+  m_node_report_vars.push_back("NODE_REPORT");
+  m_node_report_vars.push_back("AIS_REPORT_LOCAL");
+  m_node_report_vars.push_back("NODE_REPORT_LOCAL");
+
 }
 
 //--------------------------------------------------------------------
@@ -171,8 +177,8 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
 	MOOSTrace("\n");
 	MOOSDebugWrite("pHelmIvP Has Been Re-Started");
       }
-      else if((msg.m_sKey == "AIS_REPORT_LOCAL") ||
-	      (msg.m_sKey == "AIS_REPORT")) {
+      
+      else if(vectorContains(m_node_report_vars, msg.m_sKey)) {
 	bool ok = processAISReport(msg.m_sVal);
 	if(!ok) {
 	  m_Comms.Notify("BHV_WARNING", "Unhandled AIS REPORT");
@@ -626,10 +632,13 @@ void HelmIvP::registerVariables()
   m_Comms.Register("NAV_HEADING", 0);
   m_Comms.Register("NAV_PITCH", 0);
   m_Comms.Register("NAV_DEPTH", 0);
-  m_Comms.Register("AIS_REPORT", 0);
-  m_Comms.Register("AIS_REPORT_LOCAL", 0);
   m_Comms.Register(m_refresh_var, 0);
 
+  // Register for node report variables, e.g., AIS_REPORT, NODE_REPORT
+  unsigned int i, vsize = m_node_report_vars.size();
+  for(i=0; i<vsize; i++) 
+    m_Comms.Register(m_node_report_vars[i], 0);
+  
   if(m_bhv_set) {
     vector<string> info_vars = m_bhv_set->getInfoVars();
     for(unsigned int j=0; j<info_vars.size(); j++) {

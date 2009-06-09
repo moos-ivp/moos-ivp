@@ -12,12 +12,15 @@ Behavior = BHV_Loiter
   condition = LTIMER < 150
   updates   = UP_LOITERA
 
-  post_suffix = A
-        speed = 2.0
-    clockwise = false
-       radius = 8.0
-    nm_radius = 15.0
-      polygon = radial:: x=10, y=-100, radius=35, pts=12, snap=1, label=a 
+   post_suffix = A
+         speed = 2.0
+     clockwise = false
+        radius = 8.0
+     nm_radius = 15.0
+       polygon = radial:: x=10, y=-100, radius=35, pts=12, snap=1, label=a 
+  visual_hints = nextpt_color=white, nextpt_lcolor=khaki
+  visual_hints = edge_color=blue, vertex_color=blue
+  visual_hints = edge_size=1, vertex_size=2
 }
 
 //----------------------------------------------
@@ -30,12 +33,15 @@ Behavior = BHV_Loiter
   condition = LTIMER >= 150
   updates   = UP_LOITERB
 
-  post_suffix = B
-        speed = 2.0
-    clockwise = false
-       radius = 8.0
-    nm_radius = 15.0
-      polygon = radial:: x=110, y=-100, radius=35, pts=12, snap=1, label=b
+  post_suffix  = B
+        speed  = 2.0
+    clockwise  = false
+       radius  = 8.0
+    nm_radius  = 15.0
+      polygon  = radial:: x=110, y=-100, radius=35, pts=12, snap=1, label=b
+  visual_hints = nextpt_color=white, nextpt_lcolor=khaki
+  visual_hints = edge_color=black, vertex_color=orange
+  visual_hints = edge_size=1, vertex_size=2
 }
 
 //----------------------------------------------

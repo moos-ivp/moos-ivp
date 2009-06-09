@@ -1,6 +1,7 @@
 initialize   DEPLOY = false
 initialize   RETURN = false
 initialize   SAFETY = true
+initialize   TIMER  = true
  
 //----------------------------------------------
 Behavior = BHV_Loiter
@@ -18,7 +19,7 @@ Behavior = BHV_Loiter
        radius = 8.0
     nm_radius = 15.0
 //      polygon = radial:: x=10, y=-100, radius=35, pts=12, snap=1, label=a 
-       polygon = ellipse::type=ellipse, x=50, y=-100, major=80, minor=40, degs=45, pts=20, snap_value=1, label=foobar
+       polygon = ellipse::type=ellipse, x=50, y=-100, major=80, minor=40, degs=90, rads=0.785398, pts=20, snap_value=1, label=foobar
 }
 
 //----------------------------------------------
@@ -36,7 +37,7 @@ Behavior = BHV_Loiter
     clockwise = false
        radius = 8.0
     nm_radius = 15.0
-      polygon = radial:: x=110, y=-100, radius=35, pts=12, snap=1, label=b
+      polygon = radial:: x=110, y=-100, radius=35, pts=3, snap=1, label=b
 }
 
 //----------------------------------------------
@@ -73,8 +74,18 @@ Behavior = BHV_OpRegion
 Behavior = BHV_Timer
 {
   name            = loiter_timer
-  duration        = 300
+  duration        = 200
   perpetual       = true
+  condition       = TIMER=true
+  runflag         = TIMER_STATE=running
+  idleflag        = TIMER_STATE=idle
+
   duration_status = LTIMER
+  duration_reset  = JAKE=7
+  duration_idle_decay = false
+
+     var_status_idle = LTIMER_IDLE
+  var_status_running = LTIMER_RUNNING
 }
+
 
