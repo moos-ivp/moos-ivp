@@ -17,12 +17,12 @@ ProcessConfig = ANTLER
 {
   MSBetweenLaunches = 200
 
-  Run = MOOSDB		@ NewConsole = false
-  Run = iMarineSim	@ NewConsole = false
-  Run = pTransponderAIS	@ NewConsole = false
-  Run = pMarinePID	@ NewConsole = false
-  Run = pMarineViewer	@ NewConsole = true
-  Run = pHelmIvP	@ NewConsole = true
+  Run = MOOSDB          @ NewConsole = false
+  Run = iMarineSim      @ NewConsole = false
+  Run = pNodeReporter   @ NewConsole = false
+  Run = pMarinePID      @ NewConsole = false
+  Run = pMarineViewer   @ NewConsole = true
+  Run = pHelmIvP        @ NewConsole = true
 }
 
 //------------------------------------------
@@ -107,7 +107,7 @@ ProcessConfig = pMarineViewer
   seglist_edge_width   = 2.0
   seglist_vertex_size  = 8
   seglist_vertex_color = red
-  point_vertex_size    = 12
+  point_vertex_size    = 6
   hash_delta           = 50
   hash_shade           = 0.4
   hash_view            = true
@@ -127,9 +127,9 @@ ProcessConfig = pMarineViewer
 }
 
 //------------------------------------------
-// pTransponderAIS config block
+// pNodeReporter config block
 
-ProcessConfig = pTransponderAIS
+ProcessConfig = pNodeReporter 
 {
   AppTick	= 2
   CommsTick	= 2

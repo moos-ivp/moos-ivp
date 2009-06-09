@@ -342,9 +342,9 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
   m_MissionReader.GetConfiguration(GetAppName(), sParams);
   STRING_LIST::reverse_iterator p;
   for(p=sParams.rbegin(); p!=sParams.rend(); p++) {
-    string sLine    = *p;
-    string param = tolower(MOOSChomp(sLine, "="));
-    string value = stripBlankEnds(sLine);
+    string line  = *p;
+    string param = stripBlankEnds(tolower(biteString(line, '=')));
+    string value = stripBlankEnds(line);
     
     if(param == "verbose")
       m_verbose = (tolower(value) == "true");
@@ -360,28 +360,22 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
       m_gui->addAction(value);
     else if(param == "action+")
       m_gui->addAction(value, true);
+    else if((param == "center_vehicle") || (param == "reference_vehicle"))
+      m_gui->addReferenceVehicle(value);
+    else if(param == "left_context")
+      m_gui->addContext("left", value);
+    else if(param == "right_context")
+      m_gui->addContext("right", value);
+    else if(param == "tiff_file")
+      tiff_a_set = m_gui->mviewer->setParam(param, value);
+    else if(param == "tiff_file_b")
+      tiff_b_set = m_gui->mviewer->setParam(param, value);
     else if(param == "node_report_variable") {
       if(!strContainsWhite(value)) {
 	m_gui->mviewer->setParam(param, value);
 	m_node_report_vars.push_back(value);
       }
     }
-    else { 
-      bool handled = m_gui->mviewer->setParam(param, value);
-      if(!handled)
-        handled = m_gui->mviewer->setParam(param, atof(value.c_str()));
-      if(handled && (param == "tiff_file"))
-        tiff_a_set = true;
-      if(handled && (param == "tiff_file_b"))
-        tiff_b_set = true;      
-    }
-  }
-
-  m_MissionReader.GetConfiguration(GetAppName(), sParams);
-  for(p=sParams.rbegin(); p!=sParams.rend();p++) {
-    string sLine = *p;
-    string param = stripBlankEnds(tolower(MOOSChomp(sLine, "=")));
-    string value = stripBlankEnds(sLine);
     if(param == "scope") {
       vector<string> svector = parseString(value, ',');
       unsigned int i, vsize = svector.size();
@@ -394,27 +388,13 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
 	}
       }
     }
+    else { 
+      bool handled = m_gui->mviewer->setParam(param, value);
+      if(!handled)
+        handled = m_gui->mviewer->setParam(param, atof(value.c_str()));
+    }
   }
-
-  for(p=sParams.rbegin(); p!=sParams.rend(); p++) {
-    string sLine = *p;
-    string param = tolower(MOOSChomp(sLine, "="));
-    string value = stripBlankEnds(sLine);
-    if(param == "left_context")
-      m_gui->addContext("left", value);
-    else if(param == "right_context")
-      m_gui->addContext("right", value);
-  }
-
-  for(p=sParams.rbegin(); p!=sParams.rend(); p++) {
-    string sLine = *p;
-    string param = tolower(MOOSChomp(sLine, "="));
-    string value = stripBlankEnds(sLine);
-    if((param == "center_vehicle") || (param == "reference_vehicle"))
-      m_gui->addReferenceVehicle(value);
-  }
-
-
+  
   // If no images were specified, use the default images.
   if(!tiff_a_set && !tiff_b_set) {
     m_gui->mviewer->setParam("tiff_file", "Default.tif");

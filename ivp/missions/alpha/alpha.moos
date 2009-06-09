@@ -137,9 +137,6 @@ ProcessConfig = pMarineViewer
   ACTION  = HSLINE=off
   ACTION  = HSLINE=on
   ACTION  = UPDATES_RETURN=speed=1.4
-
-  NODE_REPORT_VARIABLE = SCOOBY_COW
-  NODE_REPORT_VARIABLE = SCOOBY_COW_LOCAL
 }
 
 //------------------------------------------
@@ -149,7 +146,5 @@ ProcessConfig = pNodeReporter
 {
   AppTick	= 2
   CommsTick	= 2
-  VESSEL_TYPE   = GLIDER
-
-  REPORT_VARIABLE = SCOOBY_COW
+  VESSEL_TYPE   = KAYAK
 }

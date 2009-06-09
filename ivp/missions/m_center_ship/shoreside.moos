@@ -60,7 +60,7 @@ ProcessConfig = pMarineViewer
 
   point_vertex_color   = dark_green
   polygon_edge_color   = dark_blue
-  display_poly_labels  = off
+  polygon_viewable_labels = false
 
   //scope  = VIEW_POINT
   //scope  = VIEW_SEGLIST

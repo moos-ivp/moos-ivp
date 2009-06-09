@@ -17,7 +17,7 @@ ProcessConfig = ANTLER
   Run = pMOOSBridge     @ NewConsole = false ~ pMOOSBridge_$(VID)
   Run = pEchoVar        @ NewConsole = false
   Run = pLogger         @ NewConsole = false
-  Run = pTransponderAIS @ NewConsole = false
+  Run = pNodeReporter   @ NewConsole = false
   Run = pMarinePID      @ NewConsole = false
   Run = pHelmIvP        @ NewConsole = false
   Run = uProcessWatch   @ NewConsole = false
@@ -29,5 +29,5 @@ ProcessConfig = ANTLER
 #include plug_pMarinePID.moos
 #include plug_pLogger.moos
 #include plug_pEchoVar.moos
-#include plug_pTransponderAIS.moos
+#include plug_pNodeReporter.moos
 #include plug_uProcessWatch.moos

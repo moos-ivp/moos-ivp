@@ -109,7 +109,7 @@ XYPolygon string2Poly(string str)
 /// Initializes a polygon that approximates an ellipse
 /// The format of the string is "type=elipse, x=val, y=val, 
 /// major=val, minor=val, degs=val, rads=val, pts=val,
-//  snap_value=val, label=val"
+//  snap=val, label=val"
 
 XYPolygon stringEllipse2Poly(string str)
 {
@@ -137,6 +137,9 @@ XYPolygon stringEllipse2Poly(string str)
     string param = tolower(stripBlankEnds(biteString(mvector[i], '=')));
     string value = stripBlankEnds(mvector[i]);
     double dval  = atof(value.c_str());
+    if(param == "snap_value")
+      param = "snap";
+
     if(param == "format") {
       if(value != "ellipse")
 	return(null_poly);
@@ -442,6 +445,9 @@ XYPolygon stringPoints2Poly(string str)
     string param = tolower(stripBlankEnds(biteString(mvector[i], '=')));
     string value = stripBlankEnds(mvector[i]);
     double dval  = atof(value.c_str());
+    if(param == "snap_value")
+      param = "snap";
+
     if(param=="format") {
       if(value!="default")
 	return(null_poly);
@@ -577,7 +583,7 @@ XYPolygon stringShortPoints2Poly(string str)
 //
 /// Initializes a polygon that approximates a pie wedge
 /// Format of the string is "type=wedge, x=val, y=val, lang=val, 
-//  rang=val, pts=val, range=val, snap_value=val, label=val"
+//  rang=val, pts=val, range=val, snap=val, label=val"
 
 XYPolygon stringPieWedge2Poly(string str)
 {
@@ -602,6 +608,9 @@ XYPolygon stringPieWedge2Poly(string str)
     string param = tolower(stripBlankEnds(biteString(mvector[i], '=')));
     string value = stripBlankEnds(mvector[i]);
     double dval  = atof(value.c_str());
+    if(param == "snap_value")
+      param = "snap";
+
     if(param == "format") {
       if((value != "wedge") && (value != "piewedge"))
 	return(null_poly);
@@ -707,7 +716,7 @@ XYPolygon stringPieWedge2Poly(string str)
 //
 /// Initializes a polygon that approximates a range wedge
 /// Format of the string is "type=wedge, x=val, y=val, lang=val, 
-//  rang=val, pts=val, range=val, snap_value=val, label=val"
+//  rang=val, pts=val, range=val, snap=val, label=val"
 
 XYPolygon stringRangeWedge2Poly(string str)
 {
@@ -733,6 +742,9 @@ XYPolygon stringRangeWedge2Poly(string str)
     string param = tolower(stripBlankEnds(biteString(mvector[i], '=')));
     string value = stripBlankEnds(mvector[i]);
     double dval  = atof(value.c_str());
+    if(param == "snap_value")
+      param = "snap";
+
     if(param == "format") {
       if(value != "rangewedge")
 	return(null_poly);
@@ -886,6 +898,9 @@ XYPolygon stringPylon2Poly(string str)
     string param = tolower(stripBlankEnds(biteString(mvector[i], '=')));
     string value = stripBlankEnds(mvector[i]);
     double dval  = atof(value.c_str());
+    if(param == "snap_value")
+      param = "snap";
+
     if((param == "x1") && isNumber(value)) {
       x1_set = true;
       x1 = dval;

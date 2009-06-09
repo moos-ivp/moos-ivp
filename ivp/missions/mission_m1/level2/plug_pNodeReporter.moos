@@ -1,5 +1,5 @@
 //---------------------------------------
-ProcessConfig = pTransponderAIS
+ProcessConfig = pNodeReporter
 {
   AppTick     = 5
   CommsTick   = 5
