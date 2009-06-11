@@ -1,0 +1,51 @@
+<HTML>
+<HEAD>
+<TITLE>Basic MOOS Process Configuration</TITLE>
+</HEAD>
+<BODY>
+
+<H1><img src="moose6.gif"> <center>Common MOOS Process Config</center></H1>
+
+<H2>Description</H2>
+This pages describes the fields that apply to all MOOSProcess that are derived from CMOOSApp.
+
+
+<H2>Publishes</H2>
+<ul>
+	<li>nothing
+</ul>
+<p>
+
+
+<H2>Subscribes</H2>
+<ul>
+	<li>nothing
+</ul>
+<p>
+
+<H2>Configuration Block</H2>
+<ul>
+
+	<li><H3>AppTick</H3>
+	<ul>
+		<li><b>Syntax:	</b> AppTick = Frequency
+		<li><b>Meaning:	</b> The MOOSApp will iterate at "Freqency" Hz
+		<li><b>Example:	</b> <i>AppTick = 8.0</i> this application will iterate at 8 Hz
+	</ul>
+	<p>
+	
+	<li><H3>CommsTick</H3>
+	<ul>
+		<li><b>Syntax:	</b> CommsTick = Frequency
+		<li><b>Meaning:	</b> The CommsThread withing this MOOSApp will iterate at "Freqency" Hz
+		<li><b>Example:	</b> <i>CommsTick = 20</i> the server will be contacted and mail sent/retreived at 20 Hz (this is very fast for our expected needs)
+	</ul>
+	<p>
+
+</ul>
+
+
+<hr>
+<H4>The MOOS &#169;  P. Newman 2001-2002 <img src="moose2.gif"></H4>
+</BODY>
+</HTML>
