@@ -113,7 +113,7 @@ bool PMV_MOOSApp::OnStartUp()
   // look for latitude, longitude global variables
   double lat_origin, lon_origin;
   bool ok1 = m_MissionReader.GetValue("LatOrigin", lat_origin);
-  bool ok2 = m_MissionReader.GetValue("LatOrigin", lon_origin);
+  bool ok2 = m_MissionReader.GetValue("LongOrigin", lon_origin);
   if(!ok1 || !ok2)
     return(MOOSFail("Lat or Lon Origin not set in *.moos file.\n"));
 
