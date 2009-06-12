@@ -65,7 +65,7 @@ bool OpAreaSpec::addVertex(const std::string& str,
 
 #if 0
   cout << "addVertexA() x:" << xpos << " y:" << ypos
-       << "  lwidth:" << lwidth 
+       << "  lwidth:" << lwidth << "  lat:" << lat << "  lon:" << lon
        << "  group:" << group << "  label:" << label << "  lcolor:" 
        << lcolor << "  vcolor:" << vcolor << "  dashed:" << dashed
        << "  looped:" << looped << endl;
