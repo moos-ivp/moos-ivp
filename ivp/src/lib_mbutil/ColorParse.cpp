@@ -146,7 +146,7 @@ vector<double> colorDecToVector(const std::string& str)
 
 bool isColor(const std::string &str)
 {
-  if(tolower(str) == "black")
+  if((tolower(str) == "black") || (tolower(str) == "invisible"))
     return(true);
   
   vector<double> cvect = colorParse(str);
