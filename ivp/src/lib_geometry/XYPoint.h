@@ -28,19 +28,22 @@
 
 class XYPoint : public XYObject {
 public:
-  XYPoint() {m_x=0; m_y=0; m_z=0; m_size=1; m_valid=false;};
+  XYPoint() 
+    {m_x=0; m_y=0; m_z=0; m_size=1; m_valid=false; m_sdigits=2;};
   XYPoint(double x, double y) 
-    {m_x=x; m_y=y; m_z=0; m_size=1; m_valid=true;};
+    {m_x=x; m_y=y; m_z=0; m_size=1; m_valid=true; m_sdigits=2;};
 
   virtual ~XYPoint() {};
 
   void set_vertex(double x, double y, double z=0) 
     {m_x=x; m_y=y; m_z=z; m_valid=true;};
 
-  void set_vx(double v) {m_x=v;};
-  void set_vy(double v) {m_y=v;};
-  void set_vz(double v) {m_z=v;};
-
+  void set_vx(double v)       {m_x=v;};
+  void set_vy(double v)       {m_y=v;};
+  void set_vz(double v)       {m_z=v;};
+  void set_spec_digits(int v) 
+  {if((v>=0) && (v<=6)) m_sdigits=v;};
+  
   void clear();
   
 public:
@@ -60,7 +63,6 @@ public:
   double    get_size() const        {return(m_size);};
   bool      valid() const           {return(m_valid);};
 
-  //XYPoint   projectPt(XYPoint, double dist, double angle) const;
   void      projectPt(const XYPoint&, double ang, double dist);
 
   std::string get_spec(std::string s="") const;
@@ -71,6 +73,7 @@ protected:
   double    m_z;
   double    m_size;
   bool      m_valid;
+  int       m_sdigits;
 };
 
 #endif

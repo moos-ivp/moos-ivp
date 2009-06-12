@@ -70,30 +70,10 @@ void XYPoint::print() const
 // Procedure: projectPt
 //   Purpose: 
 
-#if 0
-XYPoint XYPoint::projectPt(XYPoint pt, double ang, double dist) const
-{
-  double new_x, ptx = pt.get_vx();
-  double new_y, pty = pt.get_vy();
-  
-  projectPoint(ang, dist, ptx, pty, new_x, new_y);
-  XYPoint new_pt;
-  new_pt.set_vertex(new_x, new_y);
-  
-  return(new_pt);
-}
-#endif
-
-//---------------------------------------------------------------
-// Procedure: projectPt
-//   Purpose: 
-
-#if 1
 void XYPoint::projectPt(const XYPoint& pt, double ang, double dist)
 {
   projectPoint(ang, dist, pt.x(), pt.y(), m_x, m_y);
 }
-#endif
 
 //---------------------------------------------------------------
 // Procedure: get_spec
@@ -134,12 +114,9 @@ string XYPoint::get_spec(string param) const
     spec += dstringCompact(doubleToString(m_edge_size,3)) + ":"; 
   }
   
-  spec += dstringCompact(doubleToString(m_x)) + ",";
-  spec += dstringCompact(doubleToString(m_y)) + ",";
-  spec += dstringCompact(doubleToString(m_z));
+  spec += dstringCompact(doubleToString(m_x, m_sdigits)) + ",";
+  spec += dstringCompact(doubleToString(m_y, m_sdigits)) + ",";
+  spec += dstringCompact(doubleToString(m_z, m_sdigits));
 
   return(spec);
 }
-
-
-
