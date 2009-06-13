@@ -1695,13 +1695,15 @@ void MarineViewer::drawPoint(const XYPoint& point, double vertex_size,
   double px  = point.get_vx() * m_back_img.get_pix_per_mtr();
   double py  = point.get_vy() * m_back_img.get_pix_per_mtr();
 
-  glPointSize(vertex_size);
-  glColor3f(vert_c.red(), vert_c.grn(), vert_c.blu()); 
-  glEnable(GL_POINT_SMOOTH);
-  glBegin(GL_POINTS);
-  glVertex2f(px, py);
-  glEnd();
-  glDisable(GL_POINT_SMOOTH);
+  if(vert_c.visible()) {
+    glPointSize(vertex_size);
+    glColor3f(vert_c.red(), vert_c.grn(), vert_c.blu()); 
+    glEnable(GL_POINT_SMOOTH);
+    glBegin(GL_POINTS);
+    glVertex2f(px, py);
+    glEnd();
+    glDisable(GL_POINT_SMOOTH);
+  }
 
   // Now draw the point labels if turned on
   if((m_geoshapes.viewable("point_viewable_labels")) &&
@@ -1719,6 +1721,46 @@ void MarineViewer::drawPoint(const XYPoint& point, double vertex_size,
     delete [] buff;
   }
 
+  glFlush();
+  glPopMatrix();
+}
+
+//-------------------------------------------------------------
+// Procedure: drawText
+
+void MarineViewer::drawText(double px, double py, const string& text,
+			    const ColorPack& font_c, double font_size) 
+{
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glOrtho(0, w(), 0, h(), -1 ,1);
+  
+  double tx = meters2img('x', 0);
+  double ty = meters2img('y', 0);
+  double qx = img2view('x', tx);
+  double qy = img2view('y', ty);
+
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
+  glLoadIdentity();
+  
+  glTranslatef(qx, qy, 0);
+  glScalef(m_zoom, m_zoom, m_zoom);
+  
+  px *= m_back_img.get_pix_per_mtr();
+  py *= m_back_img.get_pix_per_mtr();
+
+  if(font_c.visible()) {
+    glColor3f(font_c.red(), font_c.grn(), font_c.blu());
+    gl_font(1, font_size);
+    int slen = text.length();
+    char *buff = new char[slen+1];
+    glRasterPos3f(px, py, 0);
+    strncpy(buff, text.c_str(), slen);
+    buff[slen] = '\0';
+    gl_draw(buff, slen);
+    delete [] buff;
+  }
   glFlush();
   glPopMatrix();
 }

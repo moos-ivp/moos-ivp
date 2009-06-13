@@ -131,6 +131,9 @@ protected:
 		      const ColorPack& vert_color, 
 		      bool point_edges_viewable=false);
 
+  void  drawText(double px, double py, const std::string&, 
+		 const ColorPack&, double font_size);
+
   void  drawHexagons();
 
 
