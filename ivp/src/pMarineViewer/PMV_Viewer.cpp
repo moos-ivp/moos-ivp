@@ -26,6 +26,7 @@
 #include "MBUtils.h"
 #include "AngleUtils.h"
 #include "ColorParse.h"
+#include <FL/Fl.h>
 
 using namespace std;
 
@@ -38,6 +39,10 @@ PMV_Viewer::PMV_Viewer(int x, int y, int w, int h, const char *l)
   m_centric_view_sticky = true;
   m_reference_point   = "datum";
   m_reference_bearing = "relative";
+  m_mouse_x   = 0;
+  m_mouse_y   = 0;
+  m_mouse_lat = 0;
+  m_mouse_lon = 0;
 }
 
 //-------------------------------------------------------------
@@ -51,6 +56,22 @@ void PMV_Viewer::draw()
   drawGrids();
   drawSegLists();
   drawCircles();
+
+  // Draw Mouse position
+  if(Fl::event_state(FL_SHIFT)) {
+    string str = "(" + intToString(m_mouse_x) + "," +
+      intToString(m_mouse_y) + ")";
+    ColorPack cpack("yellow");
+    drawText(m_mouse_x, m_mouse_y, str, cpack, 12);
+  }
+  if(Fl::event_state(FL_CTRL)) {
+    string str = "(" + doubleToString(m_mouse_lat,6) + ", " +
+      doubleToString(m_mouse_lon,6) + ")";    
+    ColorPack cpack("yellow");
+    drawText(m_mouse_x, m_mouse_y, str, cpack, 12);
+  }
+  // End Draw Mouse position
+
   MarineViewer::drawPoints();
 
   if(m_vehiset.isViewable("vehicles")) {
@@ -93,6 +114,17 @@ int PMV_Viewer::handle(int event)
       if(Fl::event_button() == FL_RIGHT_MOUSE)
 	handleRightMouse(vx, vy);
     }
+    return(1);
+    break;
+  case FL_ENTER:
+    return(1);
+    break;
+  case FL_SHIFT:
+    cout << "shift is on !!!!!" << endl;
+  case FL_MOVE:
+    vx = Fl::event_x();
+    vy = h() - Fl::event_y();
+    handleMoveMouse(vx, vy);
     return(1);
     break;
   default:
@@ -252,7 +284,22 @@ void PMV_Viewer::drawPoints(CPList &cps, int trail_length)
 }
 
 //-------------------------------------------------------------
-// Procedure: handleLeftMouse
+// Procedure: handleMoveMouse
+
+void PMV_Viewer::handleMoveMouse(int vx, int vy)
+{
+  double ix = view2img('x', vx);
+  double iy = view2img('y', vy);
+  double mx = img2meters('x', ix);
+  double my = img2meters('y', iy);
+  m_mouse_x = snapToStep(mx, 0.1);
+  m_mouse_y = snapToStep(my, 0.1);
+  m_geodesy.LocalGrid2LatLong(m_mouse_x, m_mouse_y, 
+			      m_mouse_lat, m_mouse_lon);
+}
+
+//-------------------------------------------------------------
+// Procedure: handleLeftMouse                       
 
 void PMV_Viewer::handleLeftMouse(int vx, int vy)
 {
@@ -273,8 +320,6 @@ void PMV_Viewer::handleLeftMouse(int vx, int vy)
 
   if(m_left_click_context != "")
     m_left_click += (",context=" + m_left_click_context);
-
-  //cout << "Left Mouse click at [" << m_left_click << "] meters." << endl;
 }
 
 //-------------------------------------------------------------

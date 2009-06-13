@@ -53,6 +53,7 @@ class PMV_Viewer : public MarineViewer
   void   drawPoints(CPList&, int=0);
   void   handleLeftMouse(int, int);
   void   handleRightMouse(int, int);
+  void   handleMoveMouse(int, int);
   void   setWeightedCenterView();
 
  private:
@@ -70,6 +71,11 @@ class PMV_Viewer : public MarineViewer
   int                      m_var_index_prev;
 
   // Member variables for holding/conveying mouse/button click info
+  double   m_mouse_x;
+  double   m_mouse_y;
+  double   m_mouse_lat;
+  double   m_mouse_lon;
+
   std::string m_left_click;
   std::string m_right_click;
   std::string m_button_one;
