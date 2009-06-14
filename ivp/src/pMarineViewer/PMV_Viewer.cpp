@@ -56,15 +56,16 @@ void PMV_Viewer::draw()
   drawGrids();
   drawSegLists();
   drawCircles();
+  drawDropPoints();
 
   // Draw Mouse position
   if(Fl::event_state(FL_SHIFT)) {
-    string str = "(" + intToString(m_mouse_x) + "," +
+    string str = "(" + intToString(m_mouse_x) + ", " +
       intToString(m_mouse_y) + ")";
     ColorPack cpack("yellow");
     drawText(m_mouse_x, m_mouse_y, str, cpack, 12);
   }
-  if(Fl::event_state(FL_CTRL)) {
+  else if(Fl::event_state(FL_CTRL)) {
     string str = "(" + doubleToString(m_mouse_lat,6) + ", " +
       doubleToString(m_mouse_lon,6) + ")";    
     ColorPack cpack("yellow");
@@ -119,8 +120,6 @@ int PMV_Viewer::handle(int event)
   case FL_ENTER:
     return(1);
     break;
-  case FL_SHIFT:
-    cout << "shift is on !!!!!" << endl;
   case FL_MOVE:
     vx = Fl::event_x();
     vy = h() - Fl::event_y();
@@ -310,16 +309,31 @@ void PMV_Viewer::handleLeftMouse(int vx, int vy)
   double sx = snapToStep(mx, 1.0);
   double sy = snapToStep(my, 1.0);
 
-  m_left_click =  "x=" + doubleToString(sx,1) + ",";
-  m_left_click += "y=" + doubleToString(sy,1);
-
   double dlat, dlon;
   m_geodesy.LocalGrid2LatLong(sx, sy, dlat, dlon);
-  m_left_click += ",lat=" + dstringCompact(doubleToString(dlat, 8));
-  m_left_click += ",lon=" + dstringCompact(doubleToString(dlon, 8));
+  string slat = doubleToString(dlat, 8);
+  string slon = doubleToString(dlon, 8);
 
-  if(m_left_click_context != "")
-    m_left_click += (",context=" + m_left_click_context);
+  if((Fl::event_state(FL_SHIFT)) || (Fl::event_state(FL_CTRL))) {
+    XYPoint dpt(mx, my);
+    string latlon, localg, native;
+    localg = "(" + intToString(mx) + ", " + intToString(my) + ")";
+    latlon = "("  + slat + ", " + slon + ")";
+    if(Fl::event_state(FL_SHIFT))
+      native = localg;
+    else 
+      native = latlon;
+    dpt.set_label(native);
+    m_drop_points.addPoint(dpt, latlon, localg, native);
+  }
+  else {
+    m_left_click =  "x=" + doubleToString(sx,1) + ",";
+    m_left_click += "y=" + doubleToString(sy,1);
+    m_left_click += ",lat=" + dstringCompact(doubleToString(dlat, 8));
+    m_left_click += ",lon=" + dstringCompact(doubleToString(dlon, 8));
+    if(m_left_click_context != "")
+      m_left_click += (",context=" + m_left_click_context);
+  }
 }
 
 //-------------------------------------------------------------

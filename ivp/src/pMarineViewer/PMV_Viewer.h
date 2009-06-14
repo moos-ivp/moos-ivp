@@ -57,7 +57,7 @@ class PMV_Viewer : public MarineViewer
   void   setWeightedCenterView();
 
  private:
-  VehicleSet  m_vehiset;
+  VehicleSet       m_vehiset;
 
   std::string m_reference_point;
   std::string m_reference_bearing;
