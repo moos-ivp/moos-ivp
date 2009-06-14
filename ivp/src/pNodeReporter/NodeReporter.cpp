@@ -251,6 +251,8 @@ string NodeReporter::assembleReport()
       m_vessel_len = "4.0"; // meters;
     if(tolower(m_vessel_type) == "auv")
       m_vessel_len = "4.0"; // meters;
+    if(tolower(m_vessel_type) == "uuv")
+      m_vessel_len = "4.0"; // meters;
     if(tolower(m_vessel_type) == "ship")
       m_vessel_len = "18.0"; // meters
     if(tolower(m_vessel_type) == "glider")
