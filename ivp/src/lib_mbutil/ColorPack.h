@@ -48,6 +48,7 @@ public:
     else {
       m_color_vector=colorParse(s);
       m_set = true;
+      m_visible = true;
       if(m_color_vector.size() != 3) {
 	m_color_vector = std::vector<double>(3,0);
 	m_set = false;
