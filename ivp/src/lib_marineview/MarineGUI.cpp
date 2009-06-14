@@ -63,7 +63,6 @@ Fl_Menu_Item MarineGUI::menu_[] = {
  {"Pan Down (v. slow) ", FL_CTRL + FL_Down, (Fl_Callback*)MarineGUI::cb_PanY, (void*)1, 0},
  {"Pan Left (v. slow) ", FL_CTRL + FL_Left, (Fl_Callback*)MarineGUI::cb_PanX, (void*)1, 0},
  {"Pan Right (v. slow)", FL_CTRL + FL_Right, (Fl_Callback*)MarineGUI::cb_PanX, (void*)-1, FL_MENU_DIVIDER},
- //{"Cross Hairs",      0, (Fl_Callback*)MarineGUI::cb_ToggleCross, (void*)-1, FL_MENU_DIVIDER},
  {"tiff_view toggle",  'b', (Fl_Callback*)MarineGUI::cb_ToggleTiff, (void*)-1, 0},
  {"tiff_type toggle",  '`', (Fl_Callback*)MarineGUI::cb_ToggleTiffType, (void*)-1, 0},
  {"back_shade lighter", FL_CTRL+'b', (Fl_Callback*)MarineGUI::cb_BackShade,  (void*)+1, 0},
@@ -204,6 +203,21 @@ void MarineGUI::augmentMenu()
   mbar->add("GeoAttr/OpArea - Edit/op_area labels  toggle", 'U', (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)2120, FL_MENU_DIVIDER);
 
   mbar->add("GeoAttr/OpArea - Toggle", 'u', (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)2150, FL_MENU_DIVIDER);
+
+  mbar->add("GeoAttr/DropPoints - Edit/clear all", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)3100, 0);
+  mbar->add("GeoAttr/DropPoints - Edit/clear last", FL_CTRL+'r', (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)3101, FL_MENU_DIVIDER);
+  mbar->add("GeoAttr/DropPoints - Edit/drop_point_coords=as-dropped", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)3110, 0);
+  mbar->add("GeoAttr/DropPoints - Edit/drop_point_coords=lat-lon", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)3111, 0);
+  mbar->add("GeoAttr/DropPoints - Edit/drop_point_coords=local-grid", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)3112, FL_MENU_DIVIDER);
+
+  mbar->add("GeoAttr/DropPoints - Edit/drop_point_vertex_size=1", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)3120, 0);
+  mbar->add("GeoAttr/DropPoints - Edit/drop_point_vertex_size=2", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)3121, 0);
+  mbar->add("GeoAttr/DropPoints - Edit/drop_point_vertex_size=3", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)3122, 0);
+  mbar->add("GeoAttr/DropPoints - Edit/drop_point_vertex_size=4", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)3123, 0);
+  mbar->add("GeoAttr/DropPoints - Edit/drop_point_vertex_size=5", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)3124, 0);
+  mbar->add("GeoAttr/DropPoints - Edit/drop_point_vertex_size=10", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)3125, 0);
+
+  mbar->add("GeoAttr/DropPoints - Toggle", 'r', (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)3150, FL_MENU_DIVIDER);
 }
 
 
@@ -245,6 +259,10 @@ void MarineGUI::cb_PanY(Fl_Widget* o, int v) {
 
 //----------------------------------------- Pan X
 inline void MarineGUI::cb_PanX_i(int amt) {
+  if(Fl::event_state(FL_SHIFT))
+    cout << "SHIFT-X" << endl;
+  if(Fl::event_state(FL_CTRL))
+    cout << "CTRL-X" << endl;
   cmviewer->setParam("pan_x", ((double)(amt))/10);
   this->updateXY();
   cmviewer->redraw();
@@ -392,6 +410,19 @@ inline void MarineGUI::cb_MG_SetGeoAttr_i(int v) {
   else if(v==2120) cmviewer->setParam("op_area_viewable_labels", "toggle");
   else if(v==2150) cmviewer->setParam("op_area_viewable_all", "toggle");
 
+  else if(v==3100) cmviewer->setParam("drop_point_edit", "clear");
+  else if(v==3101) cmviewer->setParam("drop_point_edit", "clear_last");
+  else if(v==3110) cmviewer->setParam("drop_point_coords", "as-dropped");
+  else if(v==3111) cmviewer->setParam("drop_point_coords", "lat-lon");
+  else if(v==3112) cmviewer->setParam("drop_point_coords", "local-grid");
+  else if(v==3120) cmviewer->setParam("drop_point_vertex_size", "1");
+  else if(v==3121) cmviewer->setParam("drop_point_vertex_size", "2");
+  else if(v==3122) cmviewer->setParam("drop_point_vertex_size", "3");
+  else if(v==3123) cmviewer->setParam("drop_point_vertex_size", "4");
+  else if(v==3124) cmviewer->setParam("drop_point_vertex_size", "5");
+  else if(v==3125) cmviewer->setParam("drop_point_vertex_size", "10");
+  else if(v==3150) cmviewer->setParam("drop_point_viewable_all", "toggle");
+
   else 
     return;
 
@@ -435,16 +466,6 @@ inline void MarineGUI::cb_BackShade_i(int amt) {
 }
 void MarineGUI::cb_BackShade(Fl_Widget* o, int v) {
   ((MarineGUI*)(o->parent()->user_data()))->cb_BackShade_i(v);
-}
-
-//----------------------------------------- ToggleCross
-inline void MarineGUI::cb_ToggleCross_i() {
-  cmviewer->setParam("cross_view", "toggle");
-  cmviewer->redraw();
-  updateXY();
-}
-void MarineGUI::cb_ToggleCross(Fl_Widget* o) {
-  ((MarineGUI*)(o->parent()->user_data()))->cb_ToggleCross_i();
 }
 
 //----------------------------------------- Quit

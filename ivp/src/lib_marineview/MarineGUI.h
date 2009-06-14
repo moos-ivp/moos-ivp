@@ -88,9 +88,6 @@ protected:
   inline void cb_BackShade_i(int);
   static void cb_BackShade(Fl_Widget*, int);
 
-  inline void cb_ToggleCross_i();
-  static void cb_ToggleCross(Fl_Widget*);
-
   static void cb_Quit();
 };
 #endif

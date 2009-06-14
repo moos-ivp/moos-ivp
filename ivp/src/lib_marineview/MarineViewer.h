@@ -41,6 +41,7 @@
 #include "OpAreaSpec.h"
 #include "MOOSGeodesy.h"
 #include "VPlug_GeoShapes.h"
+#include "VPlug_DropPoints.h"
 #include "ColorPack.h"
 
 class MarineViewer : public Fl_Gl_Window
@@ -131,6 +132,7 @@ protected:
 		      const ColorPack& vert_color, 
 		      bool point_edges_viewable=false);
 
+  void  drawDropPoints();
   void  drawText(double px, double py, const std::string&, 
 		 const ColorPack&, double font_size);
 
@@ -163,6 +165,7 @@ protected:
   VMarkerSet       m_vmarkers;
   OpAreaSpec       m_op_area;
   VPlug_GeoShapes  m_geoshapes;
+  VPlug_DropPoints m_drop_points;
   CMOOSGeodesy     m_geodesy;
 
   std::string m_param_warning;

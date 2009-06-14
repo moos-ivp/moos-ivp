@@ -128,6 +128,7 @@ bool MarineViewer::setParam(string param, string value)
   else if(p=="grid_delta")
     handled = m_geoshapes.updateGrid(value);
   else {
+    handled = handled || m_drop_points.setParam(p,v);
     handled = handled || m_op_area.setParam(p,v);
     handled = handled || m_vmarkers.setParam(p,v);
     handled = handled || m_geoshapes.setParam(p,v);
@@ -1723,6 +1724,27 @@ void MarineViewer::drawPoint(const XYPoint& point, double vertex_size,
 
   glFlush();
   glPopMatrix();
+}
+
+//-------------------------------------------------------------
+// Procedure: drawDropPoints
+
+void MarineViewer::drawDropPoints()
+{
+  if(!m_drop_points.viewable())
+    return;
+  unsigned int i, vsize = m_drop_points.size();
+  if(vsize == 0)
+    return;
+
+  double vertex_size = 3;
+  if(m_drop_points.point(0).get_vertex_size() > 0)
+    vertex_size = m_drop_points.point(0).get_vertex_size();
+  
+  for(i=0; i<vsize; i++) {
+    ColorPack cpack = m_drop_points.point(i).get_label_color();
+    drawPoint(m_drop_points.point(i), vertex_size, cpack, cpack);
+  }
 }
 
 //-------------------------------------------------------------
