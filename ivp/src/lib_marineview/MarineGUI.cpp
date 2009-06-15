@@ -36,7 +36,6 @@ MarineGUI::MarineGUI(int g_w, int g_h, const char *g_l)
   mbar->menu(menu_);
     
   cmviewer = 0;
-
   augmentMenu();
 }
 

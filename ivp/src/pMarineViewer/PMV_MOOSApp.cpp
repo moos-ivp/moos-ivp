@@ -155,7 +155,8 @@ bool PMV_MOOSApp::receivePK_SOL(string sval)
     
     rvector = chompString(svector[i], ',');
     if(rvector.size() > 1 ) {
-      return_status = m_gui->mviewer->setParam("ais_report", rvector[1].c_str());
+      return_status = m_gui->mviewer->setParam("node_report", 
+					       rvector[1].c_str());
     }
   }
   return(return_status);
@@ -263,15 +264,15 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
       MOOSTrace("?");
     }
     
-    if(key == "VIEW_POLYGON")          MOOSTrace("P");
-    else if(key == "VIEW_SEGLIST")     MOOSTrace("S");
-    else if(key == "VIEW_POINT")       MOOSTrace(".");
-    else if(key == "GRID_CONFIG")      MOOSTrace("X");
-    else if(key == "AIS_REPORT")       MOOSTrace("*");
-    else if(key == "AIS_REPORT_LOCAL") MOOSTrace("*");
-    else if(key == "GRID_CONFIG")      MOOSTrace("X");
-    else if(key == "GRID_DELTA")       MOOSTrace("G");
-    else if(key == "VIEW_MARKER")      MOOSTrace("M");
+    if(key == "VIEW_POLYGON")           MOOSTrace("P");
+    else if(key == "VIEW_SEGLIST")      MOOSTrace("S");
+    else if(key == "VIEW_POINT")        MOOSTrace(".");
+    else if(key == "GRID_CONFIG")       MOOSTrace("X");
+    else if(key == "NODE_REPORT")       MOOSTrace("*");
+    else if(key == "NODE_REPORT_LOCAL") MOOSTrace("*");
+    else if(key == "GRID_CONFIG")       MOOSTrace("X");
+    else if(key == "GRID_DELTA")        MOOSTrace("G");
+    else if(key == "VIEW_MARKER")       MOOSTrace("M");
 
     if(handled)
       handled_msgs++;

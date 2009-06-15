@@ -79,22 +79,22 @@ PMV_GUI::PMV_GUI(int g_w, int g_h, const char *g_l)
   v_lon->textsize(info_size); 
   v_lon->labelsize(info_size);
 
-  v_spd = new Fl_Output(445, h()-100, 55, 20, "Spd(m/s):"); 
+  v_spd = new Fl_Output(440, h()-100, 50, 20, "Spd(m/s):"); 
   v_spd->set_output();
   v_spd->textsize(info_size); 
   v_spd->labelsize(info_size);
 
-  v_crs = new Fl_Output(445, h()-70, 55, 20, "Heading:"); 
+  v_crs = new Fl_Output(440, h()-70, 50, 20, "Heading:"); 
   v_crs->set_output();
   v_crs->textsize(info_size); 
   v_crs->labelsize(info_size);
 
-  v_dep = new Fl_Output(560, h()-100, 50, 20, "Dep(m):"); 
+  v_dep = new Fl_Output(565, h()-100, 50, 20, "Dep(m):"); 
   v_dep->set_output();
   v_dep->textsize(info_size); 
   v_dep->labelsize(info_size);
 
-  v_ais = new Fl_Output(560, h()-70, 50, 20, "Age-AIS:"); 
+  v_ais = new Fl_Output(565, h()-70, 50, 20, "Report-Age:"); 
   v_ais->set_output();
   v_ais->textsize(info_size); 
   v_ais->labelsize(info_size);

@@ -81,9 +81,9 @@ HelmIvP::HelmIvP()
   m_refresh_pending  = false;
   m_refresh_time     = 0;
 
-  m_outgoing_repinterval["VIEW_POINT"] = 5;
-  m_outgoing_repinterval["VIEW_POLYGON"] = 5;
-  m_outgoing_repinterval["VIEW_SEGLIST"] = 5;
+  //m_outgoing_repinterval["VIEW_POINT"] = 5;
+  //m_outgoing_repinterval["VIEW_POLYGON"] = 5;
+  //m_outgoing_repinterval["VIEW_SEGLIST"] = 5;
 
   m_node_report_vars.push_back("AIS_REPORT");
   m_node_report_vars.push_back("NODE_REPORT");

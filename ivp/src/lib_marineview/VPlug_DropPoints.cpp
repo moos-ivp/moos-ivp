@@ -32,14 +32,9 @@ VPlug_DropPoints::VPlug_DropPoints()
 //            a list (perhaps incomplete) of acceptable parameters.
 //
 //         drop_point_viewable_all
+//         drop_point_coords
 //         drop_point_vertex_color
 //         drop_point_vertex_size
-//         drop_point_label_color_latlon
-//         drop_point_label_color_localg
-//         drop_point_label_size
-//         drop_point_units_native
-//         drop_point_units_latlon
-//         drop_point_units_localg
 
 bool VPlug_DropPoints::setParam(const string& param, string value)
 {
@@ -55,7 +50,7 @@ bool VPlug_DropPoints::setParam(const string& param, string value)
   else if(param == "drop_point_edit") {
     if(value == "clear")
       m_points.clear();
-    else if(value == "clear_last")
+    else if((value == "clear_last") && (m_points.size() > 0))
       m_points.pop_back();
     else
       return(false);

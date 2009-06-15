@@ -170,7 +170,7 @@ bool PMV_Viewer::setParam(string param, string value)
   else if(param == "view_marker") {
     handled = m_vmarkers.addVMarker(value, m_geodesy);
   }
-  else if((param == "ais_report") || (param == "ais_report_local")){
+  else if((param == "node_report") || (param == "node_report_local")){
     handled = m_vehiset.setParam(param, value);
     if(handled && (m_centric_view != "") && m_centric_view_sticky) {
       center_needs_adjusting = true;
@@ -228,7 +228,7 @@ void PMV_Viewer::drawVehicle(string vname, bool active, string vehibody)
   
   double shape_scale  = m_vehiset.getDoubleInfo("vehicle_shape_scale");
   double shape_length = m_vehiset.getDoubleInfo(vname, "vlength") * shape_scale;
-  double age_ais      = m_vehiset.getDoubleInfo(vname, "age_ais");
+  double age_report   = m_vehiset.getDoubleInfo(vname, "age_ais");
 
   string vname_aug = vname;
   bool  vname_draw = true;
@@ -244,10 +244,11 @@ void PMV_Viewer::drawVehicle(string vname, bool active, string vehibody)
     vname_aug += " (depth=" + str_depth + ")";
   }
 
-  // If the AIS is old, disregard the vname_mode and indicated staleness
-  if(age_ais > 3) {
-    string age_str = doubleToString(age_ais,0);
-    vname_aug = vname + "(Stale AIS - " + age_str + ")";
+  // If the NODE_REPORT is old, disregard the vname_mode and indicated
+  // staleness
+  if(age_report > 3) {
+    string age_str = doubleToString(age_report,0);
+    vname_aug = vname + "(Stale Report - " + age_str + ")";
   } 
 
   drawCommonVehicle(vname_aug, opose, vehi_color, vname_color, vehibody, 
