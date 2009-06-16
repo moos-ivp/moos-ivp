@@ -33,7 +33,6 @@ class Expander
   void addNewLine(std::string);
 
   std::string containsMacro(std::string);
-
   std::string findFileInPath(std::string);
 
  private:

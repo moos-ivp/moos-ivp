@@ -39,6 +39,8 @@ bool Expander::expand()
   bool ok = true;
   int  bad_line = -1;
 
+  bool skip_lines = false;
+
   vector<string> fvector = fileBuffer(m_infile);
   int vsize = fvector.size();
   if(vsize == 0)
@@ -49,7 +51,19 @@ bool Expander::expand()
     line = stripBlankEnds(line);
     line = findReplace(line, '\t', ' ');
     vector<string> svector = chompString(line, ' ');
-    if(svector[0] == "#include") {
+    if(!skip_lines && (svector[0] == "#ifdef")) {
+      string clause = "$("+stripBlankEnds(svector[1])+")";
+      if(m_macros[clause] == "")
+	skip_lines = true;
+    }
+    else if(!skip_lines && (svector[0] == "#ifndef")) {
+      string clause = "$("+stripBlankEnds(svector[1])+")";
+      if(m_macros[clause] != "")
+	skip_lines = true;
+    }
+    else if(svector[0] == "#endif")
+      skip_lines = false;
+    else if(!skip_lines && (svector[0] == "#include")) {
       string file_str = stripBlankEnds(svector[1]);
       string full_file_str = findFileInPath(file_str);
       vector<string> ivector = fileBuffer(full_file_str);
@@ -61,21 +75,18 @@ bool Expander::expand()
       for(int j=0; j<isize; j++)
 	addNewLine(ivector[j]);
     }
-    else if(svector[0] == "#define") {
+    else if(!skip_lines && (svector[0] == "#define")) {
       svector[1] = stripBlankEnds(svector[1]);
       svector[1] = compactConsecutive(svector[1], ' ');
       vector<string> mvector = parseString(svector[1], ' ');
-      if(mvector.size() == 2) {
+      if(mvector.size() == 2)
 	addMacro(mvector[0], mvector[1]);
-	//	string key = "$(" + mvector[0] + ")";
-	//	macros[key] = mvector[1];
-      }
       else {
 	ok = false;
 	bad_line = i+1;
       }
     }
-    else
+    else if(!skip_lines)
       addNewLine(fvector[i]);
   }      
   
