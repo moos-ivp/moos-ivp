@@ -196,6 +196,10 @@ bool BHV_Loiter::setParam(string g_param, string g_val)
       handleVisualHint(svector[i]);
     return(true);
   }
+  else if(g_param == "spiral_factor")  {
+    m_loiter_engine.setSpiralFactor(atof(g_val.c_str()));
+    return(true);
+  }
   return(false);
 }
 

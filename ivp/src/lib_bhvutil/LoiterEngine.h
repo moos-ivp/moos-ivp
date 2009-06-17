@@ -27,16 +27,18 @@
 
 class LoiterEngine {
  public:
-  LoiterEngine() {m_clockwise=true;};
+  LoiterEngine();
   ~LoiterEngine() {};
 
   void   setClockwise(bool);
   void   setPoly(const XYPolygon& poly) {m_polygon = poly;};
   void   setCenter(double x, double y)  {m_polygon.new_center(x,y);};
+  void   setSpiralFactor(double v);
 
-  double getCenterX() const     {return(m_polygon.get_center_x());}
-  double getCenterY() const     {return(m_polygon.get_center_y());}
-  
+  double getCenterX() const      {return(m_polygon.get_center_x());}
+  double getCenterY() const      {return(m_polygon.get_center_y());}
+  double getSpiralFactor() const {return(m_spiral_factor);};
+
   XYPolygon getPolygon() {return(m_polygon);};
   
  public:
@@ -49,6 +51,7 @@ class LoiterEngine {
  protected:
   XYPolygon m_polygon;
   bool      m_clockwise;
+  double    m_spiral_factor;
 };
 
 #endif

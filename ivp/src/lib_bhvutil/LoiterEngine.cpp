@@ -34,6 +34,16 @@
 using namespace std;
 
 //-----------------------------------------------------------
+// Constructor:
+
+LoiterEngine::LoiterEngine()
+{
+  m_clockwise      = true;
+  m_spiral_factor  = -2;
+}
+
+
+//-----------------------------------------------------------
 // Procedure: setClockwise
 //   Purpose: Set the clockwise flag - adjust the polygon if needed
 
@@ -43,6 +53,27 @@ void LoiterEngine::setClockwise(bool g_clockwise)
   
   if(m_polygon.is_clockwise() != m_clockwise)
 	m_polygon.reverse();
+}
+
+//-----------------------------------------------------------
+// Procedure: setSpiralFactor
+//      Note: 0 is little or no spiraling
+//            100 is lots of spiraling
+
+
+void LoiterEngine::setSpiralFactor(double val)
+{
+  if(m_spiral_factor < 0)
+    m_spiral_factor = 0;
+  if(m_spiral_factor > 100)
+    m_spiral_factor = 100;
+
+  double pct = val / 100.0;
+  double range_low  = -75;
+  double range_high = -1;
+  double range = range_high - range_low;
+
+  m_spiral_factor = range_low + (pct * range);
 }
 
 //-----------------------------------------------------------
@@ -161,7 +192,7 @@ int LoiterEngine::acquireVertexIn(double os_hdg, double os_x, double os_y)
   }
   
   // Give a bonus to the vertex to which we are heading already
-  pt_segangle[smallest_delta_ix] -= 2.0;
+  pt_segangle[smallest_delta_ix] += m_spiral_factor;
   
   // Find the highst ranking vertex (lowest angle value)
   double low_angle = pt_segangle[0];
@@ -172,7 +203,6 @@ int LoiterEngine::acquireVertexIn(double os_hdg, double os_x, double os_y)
       low_angle = pt_segangle[i];
     }
   }
-  
   return(low_ix);
 }
 
