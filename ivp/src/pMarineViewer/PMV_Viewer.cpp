@@ -26,7 +26,6 @@
 #include "MBUtils.h"
 #include "AngleUtils.h"
 #include "ColorParse.h"
-#include <FL/Fl.h>
 
 using namespace std;
 
