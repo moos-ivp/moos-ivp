@@ -114,6 +114,8 @@ bool BHV_Waypoint::setParam(string param, string val)
     }
     if(new_seglist.size() == 0)
       return(false);
+    string spec = new_seglist.get_spec();
+    new_seglist = string2SegList(spec);
     m_waypoint_engine.setSegList(new_seglist);
     return(true);
   }

@@ -30,7 +30,7 @@ killall pSensorSim pArtifactMapper pNoiseSim uNafconSplitter    \
         pAcommsPoller pArraySim pSimpleAcousticSim geoview      \
         pMultiTargetSim pMultiAcousticSim iOS5000 pGeneralCodec \
         pCBF pBTracker pTrackMonitor uTimerScript pNotDTSP      \
-        pTallyomatic pNodeReporter
+        pTallyomatic pNodeReporter iCommStack pMissionCtl iDSP
 
 killall pFleetControl
 
