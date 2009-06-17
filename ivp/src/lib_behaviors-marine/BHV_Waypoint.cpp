@@ -25,7 +25,6 @@
 #pragma warning(disable : 4503)
 #endif
 
-#include <iostream>
 #include <math.h> 
 #include <stdlib.h>
 #include "BHV_Waypoint.h"
@@ -114,8 +113,6 @@ bool BHV_Waypoint::setParam(string param, string val)
     }
     if(new_seglist.size() == 0)
       return(false);
-    string spec = new_seglist.get_spec();
-    new_seglist = string2SegList(spec);
     m_waypoint_engine.setSegList(new_seglist);
     return(true);
   }
@@ -386,7 +383,7 @@ bool BHV_Waypoint::setNextWaypoint()
       perpSegIntPt(tx, ty, m_nextpt.x(), m_nextpt.y(), 
 		   m_osx, m_osy, nx, ny);
       XYPoint perp_pt(nx, ny);
-
+      
       double damper_factor = 1.0;
       if(m_lead_damper > 0) {
 	double dist_to_trackline = hypot((nx-m_osx),(ny-m_osy));
@@ -400,6 +397,7 @@ bool BHV_Waypoint::setNextWaypoint()
       double dist  = distPointToPoint(nx, ny, m_nextpt.x(), m_nextpt.y());
       if(dist > (m_lead_distance * damper_factor)) 
 	dist = m_lead_distance * damper_factor;  
+
       m_trackpt.projectPt(perp_pt, angle, dist);
     }
   }

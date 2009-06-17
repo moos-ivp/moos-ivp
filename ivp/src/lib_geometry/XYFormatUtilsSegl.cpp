@@ -170,7 +170,7 @@ XYSegList stringZigZag2SegList(string str)
   double length  = atof(svector[3].c_str());
   double period  = atof(svector[4].c_str());
   double amplit  = atof(svector[5].c_str());
-  double snapval = 0;
+  double snapval = 0.0001;
   if(vsize == 7)
     snapval = atof(svector[6].c_str());
   
@@ -227,6 +227,7 @@ XYSegList stringLawnmower2SegList(string str)
   double height, width, degs, rads, swath;
   double startx=0;
   double starty=0;
+  double snapval = 0.00001;
 
   vector<string> mvector = parseStringQ(str, ',');
   unsigned int i, vsize = mvector.size();
@@ -274,8 +275,8 @@ XYSegList stringLawnmower2SegList(string str)
       starty = dval;
       starty_set = true;
     }
-    else if(param == "start")
-      start = value;
+    else if((param == "snap") && isNumber(value) && (dval >= 0))
+      snapval = dval;
     else if(param == "rows")
       rows = tolower(value);
     else if(param == "label")
@@ -330,5 +331,7 @@ XYSegList stringLawnmower2SegList(string str)
   if(source != "")
     new_seglist.set_source(type);
 
+  if(snapval > 0)
+    new_seglist.apply_snap(snapval);
   return(new_seglist);
 }

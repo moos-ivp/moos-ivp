@@ -19,7 +19,8 @@
 /* Software Foundation, Inc., 59 Temple Place - Suite 330,       */
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
- 
+
+#include <iostream> 
 #include <math.h>
 #include "GeomUtils.h"
 #include "AngleUtils.h"
@@ -472,8 +473,12 @@ double segmentAngle(double x1, double y1, double x2,
 void perpSegIntPt(double x1, double y1, double x2, double y2, 
 		  double qx, double qy, double& rx, double& ry)
 {
+  double delta_x = x1<x2 ? x2-x1 : x1-x2;
+  double delta_y = y1<y2 ? y2-y1 : y1-y2;
+
   // handle the special case where the segment is vertical
-  if(x1 == x2) {
+  // Or nearly vertical
+  if(delta_x < 0.0000001) {
     rx = x1;
     if(y2 > y1) {
       if(qy > y2)
@@ -495,7 +500,8 @@ void perpSegIntPt(double x1, double y1, double x2, double y2,
   }
 
   // handle the special case where the segment is horizontal
-  if(y1 == y2) {
+  // Or nearly vertical
+  if(delta_y < 0.0000001) {
     ry = y1;
     if(x2 > x1) {
       if(qx > x2) 
@@ -522,46 +528,29 @@ void perpSegIntPt(double x1, double y1, double x2, double y2,
   double seg_b = y1 - (seg_m * x1);
   double oth_m = -1.0 / seg_m;
   double oth_b = qy - (oth_m * qx);
-
   double int_x = (oth_b - seg_b) / (seg_m - oth_m);
   double int_y = (oth_m * int_x) + oth_b;
 
-  bool   on_segment = true;
-
   if(x2 > x1) {
-    if((int_x < x1-1) || (int_x > x2+1))
-      on_segment = false;
+    if(int_x < x1)  int_x = x1;
+    if(int_x > x2)  int_x = x2;
   }
   else {
-    if((int_x < x2-1) || (int_x > x1+1))
-      on_segment = false;
+    if(int_x < x2)  int_x = x2;
+    if(int_x > x1)  int_x = x1;
   }
 
   if(y2 > y1) {
-    if((int_y < y1-1) || (int_y > y2+1))
-      on_segment = false;
+    if(int_y < y1)  int_y = y1;
+    if(int_y > y2)  int_y = y2;
   }
   else {
-    if((int_y < y2-1) || (int_y > y1+1))
-      on_segment = false;
+    if(int_y < y2)  int_y = y2;
+    if(int_y > y1)  int_y = y1;
   }
 
-  if(on_segment) {
-    rx = int_x;
-    ry = int_y;
-  }
-  else {
-    double dist1 = distPointToPoint(x1,y1,qx,qy);
-    double dist2 = distPointToPoint(x2,y2,qx,qy);
-    if(dist1 < dist2) {
-      rx = x1;
-      ry = y1;
-    }
-    else {
-      rx = x2;
-      ry = y2;
-    }
-  }
+  rx = int_x;
+  ry = int_y;
 }
 
 //---------------------------------------------------------------
