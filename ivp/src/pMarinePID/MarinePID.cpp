@@ -207,10 +207,10 @@ bool MarinePID::Iterate()
   vector<string> pid_report;
   if(m_verbose == "verbose") {
     pid_report = m_pengine.getPIDReport();
-    m_pengine.clearReport();
     for(unsigned int i=0; i<pid_report.size(); i++)
       cout << pid_report[i] << endl;
   }
+  m_pengine.clearReport();
 
   m_paused = false;
 
