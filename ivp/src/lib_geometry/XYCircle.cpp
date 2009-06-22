@@ -34,9 +34,16 @@ using namespace std;
 
 XYCircle::XYCircle()
 {
-  m_x   = 0;
-  m_y   = 0;
-  m_rad = 0;
+  m_x    = 0;
+  m_y    = 0;
+  m_rad  = 0;
+
+  m_x_set   = false;
+  m_y_set   = false;
+  m_rad_set = false;
+  
+  // Number of significant digits in x,y,rad fields in string spec
+  m_sdigits = 2;
 }
 
 //-------------------------------------------------------------
@@ -45,6 +52,9 @@ XYCircle::XYCircle()
 XYCircle::XYCircle(double g_x, double g_y, double g_rad)
 {
   set(g_x, g_y, g_rad);
+
+  // Number of significant digits in x,y,rad fields in string spec
+  m_sdigits = 2;  
 }
 
 //-------------------------------------------------------------
@@ -66,42 +76,78 @@ bool XYCircle::initialize(const string& g_str)
       return(false);
   }
 
-  m_x   = atof(svector[0].c_str());
-  m_y   = atof(svector[1].c_str());
-  m_rad = atof(svector[2].c_str());
-      
-  if(m_rad < 0) {
-    set(0,0,0);
-    return(false);
-  }
-  return(true);
+  double new_x   = atof(svector[0].c_str());
+  double new_y   = atof(svector[1].c_str());
+  double new_rad = atof(svector[2].c_str());
+  
+  return(set(new_x, new_y, new_rad));
 }
 
 //-------------------------------------------------------------
 // Procedure: set
 
-void XYCircle::set(double g_x, double g_y, double g_rad)
+bool XYCircle::set(double g_x, double g_y, double g_rad)
 {
+  if(g_rad < 0)
+    return(false);
+
   m_x    = g_x;
   m_y    = g_y;
   m_rad  = g_rad;
   
-  if(m_rad < 0) 
-    m_rad = 0;
+  m_x_set = true;
+  m_y_set = true;
+  m_rad_set = true;
+  return(true);
 }
 
 //-------------------------------------------------------------
-// Procedure: getDescription()
+// Procedure: get_spec
 
-string XYCircle::getDescription() const
+string XYCircle::get_spec(string param) const
 {
-  string str;
-  str += doubleToString(m_x,2) + ",";
-  str += doubleToString(m_y,2) + ",";
-  str += doubleToString(m_rad,2) + ",";
-  str += m_label;
+  string spec;
+  
+  if(param == "") {
+    if((m_active == false) || !valid())
+      spec += "active,false:";
+  }
+  else if(param == "active=true") 
+    spec += "active,true:";
+  else if(param == "active=false") 
+    spec += "active,false:";
+    
+  spec += "x,";
+  spec += dstringCompact(doubleToString(m_x, m_sdigits)) + ":"; 
+  spec += "y,";
+  spec += dstringCompact(doubleToString(m_y, m_sdigits)) + ":"; 
+  spec += "radius,";
+  spec += dstringCompact(doubleToString(m_rad, m_sdigits)) + ":"; 
+  
+  if(m_label != "")
+    spec += "label," + m_label + ":"; 
+  if(m_label_color.set())
+    spec += "label_color," + m_label_color.str() + ":"; 
+  if(m_type != "")
+    spec += "type," + m_type + ":"; 
+  if(m_time_set)
+    spec += "time," + doubleToString(m_time,2) + ":"; 
+  if(m_source != "")
+    spec += "source," + m_source + ":"; 
+  if(m_vertex_color.set())
+    spec += "vertex_color," + m_vertex_color.str() + ":"; 
+  if(vertex_size_set()) {
+    spec += "vertex_size,";
+    spec += dstringCompact(doubleToString(m_vertex_size,3)) + ":"; 
+  }
+  if(edge_color_set())
+    spec += "edge_color," + m_edge_color.str() + ":"; 
+  if(edge_size_set()) {
+    spec += "edge_size,";
+    spec += dstringCompact(doubleToString(m_edge_size,3)) + ":"; 
+  }
 
-  return(str);
+  return(spec);
 }
 
 //-------------------------------------------------------------

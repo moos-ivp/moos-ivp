@@ -123,6 +123,8 @@ bool MarineViewer::setParam(string param, string value)
     handled = m_geoshapes.addSegList(value);
   else if(p=="view_point")
     handled = m_geoshapes.addPoint(value);
+  else if(p=="view_circle")
+    handled = m_geoshapes.addCircle(value);
   else if(p=="grid_config")
     handled = m_geoshapes.addGrid(value);
   else if(p=="grid_delta")
@@ -1544,9 +1546,22 @@ void MarineViewer::drawCircles()
   ColorPack vert_c("blue");
   ColorPack labl_c("white");
   
-  for(int i=0; i<vsize; i++)
-    drawCircle(m_geoshapes.circ(i), 16, true, 
-	       edge_c, fill_c, vert_c, labl_c);
+  for(int i=0; i<vsize; i++) {
+    XYCircle circ = m_geoshapes.circ(i);
+    if(circ.active()) {
+      if(circ.label_color_set())          // label_color
+	labl_c = circ.get_label_color();
+      if(circ.vertex_color_set())         // vertex_color
+	vert_c = circ.get_vertex_color();
+      if(circ.edge_color_set())           // edge_color
+	edge_c = circ.get_edge_color();
+      // if(circ.get_edge_size() >= 0)       // edge_size
+      //   lwid = circ.get_edge_size();
+      // if(circ.get_vertex_size() >= 0)     // vertex_color
+      //   vert = circ.get_vertex_size();
+      drawCircle(circ, 180, true, edge_c, fill_c, vert_c, labl_c); 
+    }
+  }
 }
 
 //-------------------------------------------------------------

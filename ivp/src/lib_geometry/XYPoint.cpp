@@ -105,11 +105,13 @@ string XYPoint::get_spec(string param) const
     spec += "source," + m_source + ":"; 
   if(m_vertex_color.set())
     spec += "vertex_color," + m_vertex_color.str() + ":"; 
-  if(m_vertex_size >= 0) {
+  if(vertex_size_set()) {
     spec += "vertex_size,";
     spec += dstringCompact(doubleToString(m_vertex_size,3)) + ":"; 
   }
-  if(m_edge_size >= 0) {
+  if(edge_color_set())
+    spec += "edge_color," + m_edge_color.str() + ":"; 
+  if(edge_size_set()) {
     spec += "edge_size,";
     spec += dstringCompact(doubleToString(m_edge_size,3)) + ":"; 
   }

@@ -20,8 +20,8 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
  
-#ifndef XY_FORMAT_UTILS_HEADER
-#define XY_FORMAT_UTILS_HEADER
+#ifndef XY_FORMAT_UTILS_SEGLIST_HEADER
+#define XY_FORMAT_UTILS_SEGLIST_HEADER
 
 #include <string>
 #include "XYPolygon.h"

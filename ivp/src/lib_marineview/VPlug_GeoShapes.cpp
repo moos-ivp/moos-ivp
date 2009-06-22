@@ -12,6 +12,7 @@
 #include "XYFormatUtilsSegl.h"
 #include "XYFormatUtilsPoly.h"
 #include "XYFormatUtilsPoint.h"
+#include "XYFormatUtilsCircle.h"
 #include "ColorParse.h"
 
 using namespace std;
@@ -294,6 +295,19 @@ bool VPlug_GeoShapes::addPoint(const string& point_str)
   if(!new_point.valid())
     return(false);
   addPoint(new_point);
+  return(true);
+}
+
+//-----------------------------------------------------------
+// Procedure: addCircle
+
+bool VPlug_GeoShapes::addCircle(const string& circle_str)
+{
+  cout << "VPlug_GeoShapes: addCircle: " << circle_str << endl;
+  XYCircle new_circle = string2Circle(circle_str);
+  if(!new_circle.valid())
+    return(false);
+  addCircle(new_circle);
   return(true);
 }
 

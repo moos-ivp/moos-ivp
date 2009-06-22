@@ -54,15 +54,17 @@ public:
   std::string get_source()    const {return(m_source);};
   std::string get_string()    const {return(m_string);};
 
-  ColorPack get_label_color() const {return(m_label_color);};
-  bool      label_color_set() const {return(m_label_color.set());};
+  ColorPack get_label_color() const  {return(m_label_color);};
+  bool      label_color_set() const  {return(m_label_color.set());};
   ColorPack get_vertex_color() const {return(m_vertex_color);};
   bool      vertex_color_set() const {return(m_vertex_color.set());};
-  ColorPack get_edge_color()  const {return(m_edge_color);};
-  bool      edge_color_set()  const {return(m_edge_color.set());};
+  ColorPack get_edge_color()  const  {return(m_edge_color);};
+  bool      edge_color_set()  const  {return(m_edge_color.set());};
 
-  double    get_vertex_size()  const {return(m_vertex_size);};
-  double    get_edge_size()   const {return(m_edge_size);};
+  double    get_vertex_size() const {return(m_vertex_size);};
+  bool      vertex_size_set() const {return(m_vertex_size>=0);};
+  double    get_edge_size() const   {return(m_edge_size);};
+  bool      edge_size_set() const   {return(m_edge_size>=0);};
 
 protected:
   std::string  m_label;

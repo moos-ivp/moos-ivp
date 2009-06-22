@@ -172,6 +172,7 @@ void PMV_MOOSApp::registerVariables()
   m_Comms.Register("GRID_DELTA",       0);
   m_Comms.Register("VIEW_POLYGON",     0);
   m_Comms.Register("VIEW_POINT",       0);
+  m_Comms.Register("VIEW_CIRCLE",      0);
   m_Comms.Register("VIEW_SEGLIST",     0);
   m_Comms.Register("TRAIL_RESET",      0);
   m_Comms.Register("VIEW_MARKER",      0);

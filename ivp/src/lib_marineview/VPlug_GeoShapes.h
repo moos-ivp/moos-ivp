@@ -36,6 +36,7 @@ public:
   bool addPolygon(const std::string&);
   bool addSegList(const std::string&);
   bool addPoint(const std::string&);
+  bool addCircle(const std::string&);
   bool addGrid(const std::string&);
   bool updateGrid(const std::string&);
 

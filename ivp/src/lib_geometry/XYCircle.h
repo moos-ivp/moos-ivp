@@ -33,22 +33,23 @@ public:
   virtual ~XYCircle() {};
 
   bool   initialize(const std::string&);
-  void   set(double, double, double);
-  void   setX(double v)          {m_x=v;}
-  void   setY(double v)          {m_y=v;}
-  void   setRad(double v)        {m_rad=v; if(v<0) m_rad=0;};
-  void   setLabel(std::string s) {m_label=s;};
+  bool   set(double, double, double);
+  void   setX(double v)          {m_x=v; m_x_set=true;}
+  void   setY(double v)          {m_y=v; m_y_set=true;}
+  void   setRad(double v)        {m_rad=v; m_rad_set=true;if(v<0) m_rad=0;};
+  void   set_spec_digits(int v)  {if((v>=0) && (v<=6)) m_sdigits=v;};
+
+  bool   valid() const {return(m_x_set && m_y_set && m_rad_set);};
 
   double getX()    const         {return(m_x);};
   double getY()    const         {return(m_y);};
   double getRad()  const         {return(m_rad);};
-  std::string getLabel() const   {return(m_label);};
-  std::string getDescription() const;
-
   void   alterX(double v)        {m_x+=v;};
   void   alterY(double v)        {m_y+=v;};
   void   alterRad(double v)      {m_rad+=v; if(m_rad<0) m_rad=0;};
   void   alterRadPct(double v)   {m_rad*=v; if(m_rad<0) m_rad=0;};
+
+  std::string get_spec(std::string) const;
   
   
   // True if on or inside circle, need not intersect perimeter
@@ -72,9 +73,14 @@ public:
   double segIntersectLen(double, double, double, double) const;
   
 protected:
-  double       m_x;
-  double       m_y;
-  double       m_rad;
+  double   m_x;
+  double   m_y;
+  double   m_rad;
+  int      m_sdigits;
+
+  bool     m_x_set;
+  bool     m_y_set;
+  bool     m_rad_set;
 };
 #endif
 
