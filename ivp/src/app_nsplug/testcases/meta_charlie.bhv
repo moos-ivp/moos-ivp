@@ -1,0 +1,42 @@
+//--------    FILE: meta_charlie.bhv   -------------
+
+#include  plug_initial_values.bhv
+#include  plug_hsd.bhv
+
+//----------------------------------------------
+Behavior = BHV_Identify
+{ 
+  name      = ripoint
+  pwt       = 100
+  condition = (MODE==SURVEYING)
+  endflag   = RETURN = true
+  updates   = ID_UPDATES
+  perpetual = true
+
+  // Note: handling specs on a per-point basis currently unimplemented
+  //     id_points = x=100,y=-40,id=01,Spec="blockwid=20, blocklen=40"
+
+  ripatt_rotatable = true  // default is true
+    var_wpt_status = SURVEY_STATUS
+     var_wpt_index = SURVEY_INDEX
+       block_width = 20
+      block_length = 110
+       swath_width = 5
+         id_angles = 3  
+             speed = 2.0   // meters per second
+            radius = 2.0
+         nm_radius = 10.0
+              lead = 8
+       lead_damper = 2
+         id_stream = ID_EVENT
+      visual_hints = nextpt_color=yellow, nextpt_lcolor=yellow
+      visual_hints = trackpt_color=brown, trackpt_lcolor=invisible
+      visual_hints = idpt_color=red, idpt_lcolor=darkred
+
+// Note for poking new points from the command line try:
+// uPokeDB ribasic.moos ID_UPDATES="id_points=x=50,y=-155,id=30#id_points=x=50,y=-185,id=40"
+
+}
+
+#include plug_returning.bhv
+#include plug_hsline.bhv

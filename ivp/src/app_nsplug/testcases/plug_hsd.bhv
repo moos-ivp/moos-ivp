@@ -1,0 +1,35 @@
+//------------------------------------------------------
+// Hierarchical State Declarations (Created from PLUGIN)
+//
+// Summary:
+//
+//      MODES               Behaviors
+//   ------------------     -------------------
+//   o INACTIVE             NULL
+//   * ACTIVE               HSLine
+//      o SURVEYING         Identify,ConstantDepth
+//      o STATION-KEEPING   StationKeep,ConstantDepth
+//      o AWAITING-PTS      ConstantDepth
+//      * RETURNING         Waypoint
+
+set MODE = INACTIVE {
+  DEPLOY != true
+} ACTIVE
+
+set MODE = SURVEYING {
+  MODE = ACTIVE
+  RETURN  != true
+  STATION != true
+  AWAITING_RIPOINTS != true
+} 
+
+set MODE = STATION-KEEPING {
+  MODE = ACTIVE
+  STATION = true
+}    
+
+set MODE = AWAITING-PTS {
+  MODE = ACTIVE
+  AWAITING_RIPOINTS = true
+} RETURNING        
+

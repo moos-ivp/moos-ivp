@@ -1,0 +1,12 @@
+initialize   DEPLOY = false
+initialize   RETURN = false
+initialize   AWAITING_RIPOINTS = true
+initialize   HSLINE = off
+initialize   STATION = false
+
+#define FOOKJ
+
+#ifdef FOOKJ
+this is written
+#endif
+

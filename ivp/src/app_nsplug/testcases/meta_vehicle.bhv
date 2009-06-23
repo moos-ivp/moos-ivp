@@ -1,0 +1,29 @@
+//--------    FILE: meta_charlie.bhv   -------------
+
+#include  "plug_initial_values.bhv"
+//#include  plug_hsd.bhv
+
+//#include  plug_bhv_identify.bhv
+//#include  plug_bhv_returning.bhv
+#include  plug_bhv_hsline.bhv
+
+
+
+#ifdef FOO 124
+gotcha
+#endif
+
+#ifndef sdfFOOsdfsdf
+woops
+#endif
+
+$(FOO)
+#define $(BAR) World
+$(BAR)
+
+#ifdef FOOKJ
+Time for dessert!!!!
+#endif
+
+
+
