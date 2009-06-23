@@ -110,43 +110,43 @@ string XYCircle::get_spec(string param) const
   
   if(param == "") {
     if((m_active == false) || !valid())
-      spec += "active,false:";
+      spec += "active=false,";
   }
   else if(param == "active=true") 
-    spec += "active,true:";
+    spec += "active=true,";
   else if(param == "active=false") 
-    spec += "active,false:";
+    spec += "active=false,";
     
-  spec += "x,";
-  spec += dstringCompact(doubleToString(m_x, m_sdigits)) + ":"; 
-  spec += "y,";
-  spec += dstringCompact(doubleToString(m_y, m_sdigits)) + ":"; 
-  spec += "radius,";
-  spec += dstringCompact(doubleToString(m_rad, m_sdigits)) + ":"; 
-  
   if(m_label != "")
-    spec += "label," + m_label + ":"; 
+    spec += "label=" + m_label + ","; 
   if(m_label_color.set())
-    spec += "label_color," + m_label_color.str() + ":"; 
+    spec += "label_color=" + m_label_color.str() + ","; 
   if(m_type != "")
-    spec += "type," + m_type + ":"; 
+    spec += "type=" + m_type + ","; 
   if(m_time_set)
-    spec += "time," + doubleToString(m_time,2) + ":"; 
+    spec += "time=" + doubleToString(m_time,2) + ","; 
   if(m_source != "")
-    spec += "source," + m_source + ":"; 
+    spec += "source=" + m_source + ","; 
   if(m_vertex_color.set())
-    spec += "vertex_color," + m_vertex_color.str() + ":"; 
+    spec += "vertex_color=" + m_vertex_color.str() + ","; 
   if(vertex_size_set()) {
-    spec += "vertex_size,";
-    spec += dstringCompact(doubleToString(m_vertex_size,3)) + ":"; 
+    spec += "vertex_size=";
+    spec += dstringCompact(doubleToString(m_vertex_size,3)) + ","; 
   }
   if(edge_color_set())
-    spec += "edge_color," + m_edge_color.str() + ":"; 
+    spec += "edge_color=" + m_edge_color.str() + ","; 
   if(edge_size_set()) {
-    spec += "edge_size,";
-    spec += dstringCompact(doubleToString(m_edge_size,3)) + ":"; 
+    spec += "edge_size=";
+    spec += dstringCompact(doubleToString(m_edge_size,3)) + ","; 
   }
 
+  spec += "x=";
+  spec += dstringCompact(doubleToString(m_x, m_sdigits)) + ","; 
+  spec += "y=";
+  spec += dstringCompact(doubleToString(m_y, m_sdigits)) + ","; 
+  spec += "radius=";
+  spec += dstringCompact(doubleToString(m_rad, m_sdigits)); 
+  
   return(spec);
 }
 

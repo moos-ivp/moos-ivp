@@ -33,7 +33,7 @@ killall pSensorSim pArtifactMapper pNoiseSim uNafconSplitter    \
         
 killall pCBF pBTracker pTrackMonitor uTimerScript pNotDTSP      \
         pTallyomatic pNodeReporter iCommStack pMissionCtl iDSP  \
-        pNotDTSP 
+        pNotDTSP pBoundingCircle
 
 killall pFleetControl
 

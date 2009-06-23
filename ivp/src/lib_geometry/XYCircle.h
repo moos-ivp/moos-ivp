@@ -49,7 +49,7 @@ public:
   void   alterRad(double v)      {m_rad+=v; if(m_rad<0) m_rad=0;};
   void   alterRadPct(double v)   {m_rad*=v; if(m_rad<0) m_rad=0;};
 
-  std::string get_spec(std::string) const;
+  std::string get_spec(std::string s="") const;
   
   
   // True if on or inside circle, need not intersect perimeter
