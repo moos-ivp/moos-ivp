@@ -123,6 +123,7 @@ vector<string> Expander::expandFile(string filename,
       if(rest != "")
 	ifndef = true;
 	
+      // Now go thru each clause, ensure that each is not defined
       bool done = false;
       while(ifndef && !done) {
 	string clause = stripBlankEnds(biteString(rest, ' '));
