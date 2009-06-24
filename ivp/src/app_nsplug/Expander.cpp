@@ -116,8 +116,25 @@ vector<string> Expander::expandFile(string filename,
 	result = false;
 	return(empty_vector);
       }
-      string clause = rest;
-      if(macros[clause] != "")
+
+      // If "rest" is empty then declare this ifndef to be false
+      // If it is non-empty make sure each component is found.
+      bool ifndef = false;
+      if(rest != "")
+	ifndef = true;
+	
+      bool done = false;
+      while(ifndef && !done) {
+	string clause = stripBlankEnds(biteString(rest, ' '));
+	if(clause == "")
+	  done = true;
+	else {
+	  if(macros[clause] != "")
+	    ifndef = false;
+	}
+      }
+
+      if(!ifndef)
 	skip_lines = true;
       mode = "ifndef";
     }
