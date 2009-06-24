@@ -54,8 +54,8 @@ class Expander
   std::string m_infile;
   std::string m_outfile;
 
-
   bool m_force;
+  int  m_max_subs_per_line;
 };
 
 #endif 

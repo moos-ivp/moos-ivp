@@ -45,14 +45,13 @@ int main(int argc, char *argv[])
       expander.setForce(true);
     else if(((arg=="-p") || (arg=="--path")) && (i<(argc-1)))
       expander.addPath(argv[i+1]);
-    else {
-      vector<string> svector = parseString(arg, '=');
-      if(svector.size() == 2) {
-	string left  = stripBlankEnds(svector[0]);
-	string right = stripBlankEnds(svector[1]);
-	expander.addMacro(left, right);
-      }
+    else if(strContains(arg, '=')) {
+      string left  = stripBlankEnds(biteString(arg, '='));
+      string right = stripBlankEnds(arg);
+      expander.addMacro(left, right);
     }
+    else
+      expander.addMacro(arg, "<defined>");
   }
 
   if(expander.verifyInfile()) {

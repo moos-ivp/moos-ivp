@@ -4,6 +4,8 @@ initialize   AWAITING_RIPOINTS = true
 initialize   HSLINE = off
 initialize   STATION = false
 
+$(FOO)
+
 #define FOOKJ
 
 #ifdef FOOKJ

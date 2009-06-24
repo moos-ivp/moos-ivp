@@ -28,6 +28,7 @@ Expander::Expander(string given_infile, string given_outfile)
   m_outfile = given_outfile;
   m_force = false;  
 
+  m_max_subs_per_line = 100;
   m_initial_filenames.push_back(given_infile);
   m_path.push_back(".");
 }
@@ -134,6 +135,7 @@ vector<string> Expander::expandFile(string filename,
 
     //--------------------------------------------------------------
     else if(!skip_lines && (left == "#include")) {
+      applyMacrosToLine(rest, macros);
       string file_str = stripBlankEnds(rest);
       if(isQuoted(file_str))
 	file_str = stripQuotes(file_str);
@@ -318,21 +320,34 @@ bool Expander::applyMacrosToLine(string& line,
 {
   map<string, string>::iterator p;
 
+  int    subs = 0;
+  bool   done = false;
   string newline = line;
-  for(p = macros.begin(); p != macros.end(); p++) {
-    string key = "$(" + p->first + ")";
-    string val = p->second;
-
-    // Assuming key is of the form "$(FOOBAR)"
-    string pkey = key;
-    if((pkey.length() > 0) && (pkey.at(0) == '$'))
-      pkey.at(0) = '%';
-
-    if(strContains(line, pkey))
-      newline = findReplace(line, pkey, toupper(val));
-
-    if(strContains(line, key))
-      newline = findReplace(line, key, val);
+  while(!done) {
+    bool substitution_made = false;
+    for(p = macros.begin(); p != macros.end(); p++) {
+      string key = "$(" + p->first + ")";
+      string val = p->second;
+      
+      // Assuming key is of the form "$(FOOBAR)"
+      string pkey = key;
+      if((pkey.length() > 0) && (pkey.at(0) == '$'))
+	pkey.at(0) = '%';
+      
+      if(strContains(newline, pkey)) {
+	newline = findReplace(newline, pkey, toupper(val));
+	substitution_made = true;
+	subs++;
+      }
+      
+      if(strContains(newline, key)) {
+	newline = findReplace(newline, key, val);
+	substitution_made = true;
+	subs++;
+      }
+    }
+    if(!substitution_made || (subs > m_max_subs_per_line))
+      done = true;
   }
 
   string res = containsMacro(newline);
