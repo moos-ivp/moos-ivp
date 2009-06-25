@@ -1,10 +1,6 @@
 //--------    FILE: meta_charlie.bhv   -------------
 
 #include  "plug_initial_values.bhv"
-//#include  plug_hsd.bhv
-
-//#include  plug_bhv_identify.bhv
-//#include  plug_bhv_returning.bhv
 #include  plug_bhv_hsline.bhv
 
 
