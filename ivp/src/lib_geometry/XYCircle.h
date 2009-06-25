@@ -25,6 +25,7 @@
 
 #include <string>
 #include "XYObject.h"
+#include "XYPoint.h"
 
 class XYCircle : public XYObject {
 public:
@@ -54,6 +55,7 @@ public:
   
   // True if on or inside circle, need not intersect perimeter
   bool   containsPoint(double, double) const;
+  bool   containsPoint(const XYPoint&) const;
 
   // Distance to circle perim, distances inside are non-zero.
   double ptDistToCircle(double, double) const;

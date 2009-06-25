@@ -156,11 +156,20 @@ string XYCircle::get_spec(string param) const
 bool XYCircle::containsPoint(double g_x, double g_y) const
 {
   double dist_to_center = hypot((g_x - m_x), (g_y - m_y));
-  
   if(dist_to_center > m_rad)
     return(false);
-  else
-    return(true);
+  return(true);
+}
+
+//-------------------------------------------------------------
+// Procedure: containsPoint
+
+bool XYCircle::containsPoint(const XYPoint& pt) const
+{
+  double dist_to_center = hypot((pt.x() - m_x), (pt.y() - m_y));
+  if(dist_to_center > m_rad)
+    return(false);
+  return(true);
 }
 
 //-------------------------------------------------------------
