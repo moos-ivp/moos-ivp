@@ -3,10 +3,14 @@
 #include  "plug_initial_values.bhv"
 #include  plug_hsd.bhv
 
-
+FOO is $(FOO)
 
 #ifdef FOO 124
-gotcha
+gotcha now
+#elseifdef FOO 123
+gotcha later
+#else
+gotcha sooner
 #endif
 
 #ifndef sdfFOOsdfsdf
@@ -17,7 +21,7 @@ $(FOO)
 #define $(BAR) World
 $(BAR)
 
-#ifdef FOOKJ
+#ifdef BAR
 Time for dessert!!!!
 #endif
 

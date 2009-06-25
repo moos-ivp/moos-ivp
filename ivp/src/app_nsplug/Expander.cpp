@@ -86,59 +86,76 @@ vector<string> Expander::expandFile(string filename,
     string rest = stripBlankEnds(line);
     //------------------------------------------------------------
     if(!skip_lines && (left == "#ifdef")) {
-      if((mode=="ifdef") || (mode=="ifndef")) {
+      if(mode!="top") {
 	cout << "#  Error in file " << filename << " line:" << i+1 << endl;
 	cout << "#  Nested #ifdef or #ifndef not permitted" << endl;
 	result = false;
 	return(empty_vector);
       }
 
-      // Support #ifdef FOO VALUE
-
-      string macro_name  = stripBlankEnds(biteString(rest, ' '));
-      string macro_value = stripBlankEnds(rest);
-      
-      if(macro_value == "") {
-	if(macros[macro_name] == "")
-	  skip_lines = true;
+      bool ifdef = checkIfDef(rest, macros);
+      mode = "ifdefyes";
+      if(!ifdef) {
+	skip_lines = true;
+	mode = "ifdefno";
       }
-      else {
-	if(macros[macro_name] != macro_value)
-	  skip_lines = true;
-      }
-      mode = "ifdef";
     }
+
     //------------------------------------------------------------
-    else if(!skip_lines && (left == "#ifndef")) {
-      if((mode=="ifdef") || (mode=="ifndef")) {
+    else if(left == "#elseifdef") {
+      if((mode!="ifdefyes") && (mode != "ifdefno")) {
 	cout << "#  Error in file " << filename << " line:" << i+1 << endl;
-	cout << "#  Nested #ifdef or #ifndef not permitted" << endl;
+	cout << "#  Dangling #elseifdef" << endl;
 	result = false;
 	return(empty_vector);
       }
-
-      // If "rest" is empty then declare this ifndef to be false
-      // If it is non-empty make sure each component is found.
-      bool ifndef = false;
-      if(rest != "")
-	ifndef = true;
-	
-      // Now go thru each clause, ensure that each is not defined
-      bool done = false;
-      while(ifndef && !done) {
-	string clause = stripBlankEnds(biteString(rest, ' '));
-	if(clause == "")
-	  done = true;
-	else {
-	  if(macros[clause] != "")
-	    ifndef = false;
+      
+      // Being in the ifdefyes mode means one of the "above" ifdef cases
+      // matched and the current #elseifdef is moot.
+      if(mode != "ifdefyes") {
+	skip_lines = false;
+	bool ifdef = checkIfDef(rest, macros);
+	mode = "ifdefyes";
+	if(!ifdef) {
+	  skip_lines = true;
+	  mode = "ifdefno";
 	}
       }
+    }
 
+    //------------------------------------------------------------
+    else if(left == "#else") {
+      if((mode!="ifdefyes") && (mode != "ifdefno")) {
+	cout << "#  Error in file " << filename << " line:" << i+1 << endl;
+	cout << "#  Dangling #else" << endl;
+	result = false;
+	return(empty_vector);
+      }
+
+      // Being in the ifdefyes mode means one of the "above" ifdef cases
+      // matched and the current #else is moot.
+      if(mode == "ifdefyes")
+	skip_lines = true;
+      else
+	skip_lines = false;
+      mode = "ifdefelse";
+    }
+
+    //------------------------------------------------------------
+    else if(!skip_lines && (left == "#ifndef")) {
+      if(mode!="top") {
+	cout << "#  Error in file " << filename << " line:" << i+1 << endl;
+	cout << "#  Nested #ifdef or #ifndef not permitted" << endl;
+	result = false;
+	return(empty_vector);
+      }
+
+      bool ifndef = checkIfDef(rest, macros);
       if(!ifndef)
 	skip_lines = true;
       mode = "ifndef";
     }
+
     //-------------------------------------------------------------
     else if(left == "#endif") {
       if(mode=="top") {
@@ -421,5 +438,57 @@ string Expander::findFileInPath(string filename)
     }
   }
   return("");
+}
+
+//--------------------------------------------------------
+// Procedure: checkIfDef
+
+bool Expander::checkIfDef(string entry, map<string, string> macros)
+{
+  // Assume this ifdef does not hold unless one of the ifdef 
+  // macro-value pairs holds. The #ifdef construct supports the
+  // disjunction of macro-value pairs.
+  bool ifdef = false;
+  
+  vector<string> kvector = parseString(entry, "||"); 
+  unsigned int k, ksize = kvector.size();
+  for(k=0; ((k<ksize) && !ifdef); k++) {
+    kvector[k] = stripBlankEnds(kvector[k]);
+    string macro_name  = stripBlankEnds(biteString(kvector[k], ' '));
+    string macro_value = stripBlankEnds(kvector[k]);
+    if(macro_value == "") {
+      if(macros[macro_name] != "")
+	ifdef = true;
+    }
+    else if(macros[macro_name] == macro_value)
+      ifdef = true;
+  }
+  
+  return(ifdef);
+}
+
+//--------------------------------------------------------
+// Procedure: checkIfNDef
+
+bool Expander::checkIfNDef(string entry, map<string, string> macros)
+{
+  // If "entry" is empty then declare this ifndef to be false
+  // If it is non-empty make sure each component is found.
+  bool ifndef = false;
+  if(entry != "")
+    ifndef = true;
+  
+  // Now go thru each clause, ensure that each is not defined
+  bool done = false;
+  while(ifndef && !done) {
+    string clause = stripBlankEnds(biteString(entry, ' '));
+    if(clause == "")
+      done = true;
+    else {
+      if(macros[clause] != "")
+	ifndef = false;
+    }
+  }
+  return(ifndef);
 }
 

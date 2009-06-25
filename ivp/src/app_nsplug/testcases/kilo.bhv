@@ -6,12 +6,6 @@ initialize   AWAITING_RIPOINTS = true
 initialize   HSLINE = off
 initialize   STATION = false
 
-123
-
-
-#ifdef FOOKJ
-this is written
-
 
 //------------------------------------------------------
 // Hierarchical State Declarations (Created from PLUGIN)
@@ -50,13 +44,15 @@ set MODE = AWAITING-PTS {
 
 
 
+FOO is 123
 
-
+gotcha later
 
 
 123
 World
 
+Time for dessert!!!!
 
 
 

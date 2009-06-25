@@ -43,6 +43,9 @@ class Expander
   std::string containsMacro(std::string);
   std::string findFileInPath(std::string);
 
+  bool checkIfDef(std::string, std::map<std::string, std::string>);
+  bool checkIfNDef(std::string, std::map<std::string, std::string>);
+
  private:
   std::vector<std::string> m_path;
   std::vector<std::string> m_newlines;
