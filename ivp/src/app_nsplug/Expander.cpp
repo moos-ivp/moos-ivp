@@ -150,7 +150,7 @@ vector<string> Expander::expandFile(string filename,
 	return(empty_vector);
       }
 
-      bool ifndef = checkIfDef(rest, macros);
+      bool ifndef = checkIfNDef(rest, macros);
       if(!ifndef)
 	skip_lines = true;
       mode = "ifndef";
