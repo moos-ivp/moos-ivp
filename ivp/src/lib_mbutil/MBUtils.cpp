@@ -156,8 +156,10 @@ vector<string> parseQuotedString(const string& string_str, char separator)
     if(string_str.at(i) == '"')
       quote_counter++;
   
-  if((quote_counter % 2) != 0)
+  if((quote_counter % 2) != 0) {
+    delete [] buff;
     return(rvector);
+  }
 
   bool even_quote = true;
   while(str[0] != '\0') {    
