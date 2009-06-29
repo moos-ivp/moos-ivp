@@ -79,6 +79,7 @@ BHV_Waypoint::BHV_Waypoint(IvPDomain gdomain) :
   m_osv   = -1;
 
   addInfoVars("NAV_X, NAV_Y, NAV_SPEED");
+  m_markpt.set_active(false);
 }
 
 //-----------------------------------------------------------
@@ -226,19 +227,6 @@ void BHV_Waypoint::onRunToIdleState()
 }
 
 //-----------------------------------------------------------
-// Procedure: onIdleToRunState
-//      Note: Invoked automatically by the helm when the behavior 
-//            is in the running state, *and* in the idle state on 
-//            the previous iteration.
-
-void BHV_Waypoint::onIdleToRunState() 
-{
-  // Note where the vehicle is when transitioned to the Runstate. 
-  // May use this as an anchor point for trackline following.
-  m_markpt.set_vertex(m_osx, m_osy);
-}
-
-//-----------------------------------------------------------
 // Procedure: onRunState
 
 IvPFunction *BHV_Waypoint::onRunState() 
@@ -372,7 +360,11 @@ bool BHV_Waypoint::setNextWaypoint()
       ty = m_waypoint_engine.getPointY(pt_count-1);
       track_anchor = true;
     }
-    else if(m_markpt.active()) {
+    else {
+      if(!m_markpt.active()) {
+	m_markpt.set_vertex(m_osx, m_osy);
+	m_markpt.set_active(true);
+      }	
       tx = m_markpt.x();
       ty = m_markpt.y();
       track_anchor = true;

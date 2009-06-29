@@ -37,7 +37,6 @@ public:
   bool         setParam(std::string, std::string);
   void         onIdleState() {};
   void         onRunToIdleState();
-  void         onIdleToRunState();
   void         onSetParamComplete();
 
 protected:
