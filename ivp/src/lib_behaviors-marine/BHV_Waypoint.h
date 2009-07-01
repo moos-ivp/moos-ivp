@@ -55,6 +55,7 @@ protected:
 
 protected: // configuration parameters
   double      m_cruise_speed;
+  bool        m_lead_to_start;
   double      m_lead_distance;
   double      m_lead_damper;
   std::string m_ipf_type;
@@ -84,13 +85,4 @@ protected: // intermediate or object global variables.
   XYPoint   m_markpt;
 };
 #endif
-
-
-
-
-
-
-
-
-
 

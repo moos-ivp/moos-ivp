@@ -64,15 +64,16 @@ BHV_Waypoint::BHV_Waypoint(IvPDomain gdomain) :
   m_var_cyindex     = "CYCLE_INDEX";
   m_var_suffix      = "";
 
-  m_hint_vertex_color  = "";
-  m_hint_edge_color    = "";
-  m_hint_vertex_size   = -1;
-  m_hint_edge_size     = -1;
+  m_hint_vertex_color = "";
+  m_hint_edge_color   = "";
+  m_hint_vertex_size  = -1;
+  m_hint_edge_size    = -1;
+  m_lead_to_start     = false;
 
   // The completed and perpetual vars are initialized in superclass
   // but we initialize here just to be safe and clear.
-  m_completed     = false; 
-  m_perpetual     = false;
+  m_completed  = false; 
+  m_perpetual  = false;
 
   m_osx   = -1;
   m_osy   = -1;
@@ -115,6 +116,7 @@ bool BHV_Waypoint::setParam(string param, string val)
     if(new_seglist.size() == 0)
       return(false);
     m_waypoint_engine.setSegList(new_seglist);
+    m_markpt.set_active(false);
     return(true);
   }
   else if((param == "speed") && (dval > 0)) {
@@ -172,6 +174,8 @@ bool BHV_Waypoint::setParam(string param, string val)
     m_lead_distance = dval;
     return(true);
   }
+  else if(param == "lead_to_start")
+    return(setBooleanOnString(m_lead_to_start, val));
   else if((param == "lead_damper") && (dval > 0)) {
     m_lead_damper = dval;
     return(true);
@@ -303,6 +307,8 @@ bool BHV_Waypoint::updateInfoIn()
 
   // If NAV_SPEED info is not found in the info_buffer, its
   // not a show-stopper. A warning will be posted.
+  if(!ok3)
+    postWMessage("No ownship speed info in info_buffer");
 
   return(true);
 }
@@ -360,7 +366,7 @@ bool BHV_Waypoint::setNextWaypoint()
       ty = m_waypoint_engine.getPointY(pt_count-1);
       track_anchor = true;
     }
-    else {
+    else if(m_lead_to_start) {
       if(!m_markpt.active()) {
 	m_markpt.set_vertex(m_osx, m_osy);
 	m_markpt.set_active(true);
