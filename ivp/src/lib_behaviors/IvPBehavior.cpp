@@ -320,6 +320,9 @@ void IvPBehavior::setInfoBuffer(const InfoBuffer *ib)
 
 //-----------------------------------------------------------
 // Procedure: postMessage
+//     Notes: If the key is set to be "repeatable" then in effect 
+//            there is no key is associated with this variable-value 
+//            pair and it will NOT be filtered.
 
 void IvPBehavior::postMessage(string var, string sdata, string key)
 {
@@ -335,6 +338,9 @@ void IvPBehavior::postMessage(string var, string sdata, string key)
 
 //-----------------------------------------------------------
 // Procedure: postMessage
+//     Notes: If the key is set to be "repeatable" then in effect 
+//            there is no key is associated with this variable-value 
+//            pair and it will NOT be filtered.
 
 void IvPBehavior::postMessage(string var, double ddata, string key)
 {
@@ -353,17 +359,10 @@ void IvPBehavior::postMessage(string var, double ddata, string key)
 
 void IvPBehavior::postBoolMessage(string var, bool bdata, string key)
 {
-  string bool_str = "true";
-  if(!bdata)
-    bool_str = "false";
-  VarDataPair pair(var, bool_str);
-  
-  if(key != "repeatable") {
-    key = (m_descriptor + var + key);
-    pair.set_key(key);
-  }
-
-  m_messages.push_back(pair);
+  if(bdata)
+    postMessage(var, "true", key);
+  else
+    postMessage(var, "false", key);
 }
 
 //-----------------------------------------------------------
@@ -377,14 +376,7 @@ void IvPBehavior::postBoolMessage(string var, bool bdata, string key)
 void IvPBehavior::postIntMessage(string var, double ddata, string key)
 {
   int idata = (int)(ddata + 0.5);
-  VarDataPair pair(var, idata);
-  
-  if(key != "repeatable") {
-    key = (m_descriptor + var + key);
-    pair.set_key(key);
-  }
-  
-  m_messages.push_back(pair);
+  postMessage(var, (double)(idata), key);
 }
 
 //-----------------------------------------------------------
@@ -392,7 +384,7 @@ void IvPBehavior::postIntMessage(string var, double ddata, string key)
 
 void IvPBehavior::postRepeatableMessage(string var, string sdata)
 {
-  m_messages.push_back(VarDataPair(var, sdata));
+  postMessage(var, sdata, "repeatable");
 }
 
 //-----------------------------------------------------------
@@ -400,7 +392,7 @@ void IvPBehavior::postRepeatableMessage(string var, string sdata)
 
 void IvPBehavior::postRepeatableMessage(string var, double ddata)
 {
-  m_messages.push_back(VarDataPair(var, ddata));
+  postMessage(var, ddata, "repeatable");
 }
 
 //-----------------------------------------------------------
@@ -420,14 +412,10 @@ void IvPBehavior::setComplete()
 
 void IvPBehavior::postEMessage(string g_emsg)
 {
-  string emsg = "";
   if(m_descriptor != "")
-    emsg += m_descriptor + ": ";
-  emsg += g_emsg;
+    g_emsg = (m_descriptor + ": " + g_emsg);
 
-  VarDataPair msg("BHV_ERROR", emsg);
-  m_messages.push_back(msg);
-
+  postMessage("BHV_ERROR", g_emsg, "repeatable");
   m_state_ok = false;
 }
 
@@ -435,15 +423,12 @@ void IvPBehavior::postEMessage(string g_emsg)
 //-----------------------------------------------------------
 // Procedure: postWMessage
 
-void IvPBehavior::postWMessage(string g_wmsg)
+void IvPBehavior::postWMessage(string g_msg)
 {
-  string wmsg = "";
   if(m_descriptor != "")
-    wmsg += m_descriptor + ": ";
-  wmsg += g_wmsg;
-
-  VarDataPair msg("BHV_WARNING", wmsg);
-  m_messages.push_back(msg);
+    g_msg = (m_descriptor + ": " + g_msg);
+  
+  postMessage("BHV_WARNING", g_msg, "repeatable");
 }
 
 //-----------------------------------------------------------
@@ -451,8 +436,7 @@ void IvPBehavior::postWMessage(string g_wmsg)
 
 void IvPBehavior::postVMessage(string g_msg)
 {
-  VarDataPair msg("PRIVATE_INFO", g_msg);
-  m_messages.push_back(msg);
+  postMessage("PRIVATE_INFO", g_msg);
 }
 
 
@@ -462,15 +446,9 @@ void IvPBehavior::postVMessage(string g_msg)
 void IvPBehavior::postPCMessage(string g_msg)
 {
   string mvar = "PC_" + m_descriptor;
-  
-  //double curr_time = m_info_buffer->getCurrTime();
-  //string str_time = "(" + doubleToString(curr_time, 1) + ")";
-  //string mval = str_time + g_msg;
   string mval = g_msg;
   
   postMessage(mvar, mval);
-  //VarDataPair msg(mvar, mval);
-  //m_messages.push_back(msg);
 }
 
 
