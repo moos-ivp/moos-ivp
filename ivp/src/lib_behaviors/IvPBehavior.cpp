@@ -142,7 +142,7 @@ bool IvPBehavior::setParam(string g_param, string g_val)
     bool ok = setBooleanOnString(m_duration_idle_decay, g_val);
     return(ok);
   }
-  else if(g_param == "remap") {
+  else if(g_param == "post_mapping") {
     string left  = stripBlankEnds(biteString(g_val, ','));
     string right = stripBlankEnds(g_val);
     if(!strContainsWhite(left) && !strContainsWhite(right)) {
