@@ -127,7 +127,8 @@ protected:
   std::vector<VarDataPair>       m_end_flags;
   std::vector<VarDataPair>       m_idle_flags;
   std::map<std::string, double>  m_starve_vars;
-  
+  std::map<std::string, std::string> m_remap_vars;
+ 
   IvPDomain  m_domain;        
   double     m_priority_wt; 
 

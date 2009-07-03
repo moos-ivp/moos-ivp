@@ -142,6 +142,14 @@ bool IvPBehavior::setParam(string g_param, string g_val)
     bool ok = setBooleanOnString(m_duration_idle_decay, g_val);
     return(ok);
   }
+  else if(g_param == "remap") {
+    string left  = stripBlankEnds(biteString(g_val, ','));
+    string right = stripBlankEnds(g_val);
+    if(!strContainsWhite(left) && !strContainsWhite(right)) {
+      m_remap_vars[left] = right;
+      return(true);
+    }
+  }
   else if(g_param == "runflag") {
     vector<string> svector = parseString(g_val, '=');
     if(svector.size() != 2)
@@ -326,6 +334,12 @@ void IvPBehavior::setInfoBuffer(const InfoBuffer *ib)
 
 void IvPBehavior::postMessage(string var, string sdata, string key)
 {
+  // First check if posted var has been remapped to another variable.
+  map<string,string>::iterator p;
+  p = m_remap_vars.find(var);
+  if(p != m_remap_vars.end())
+    var = p->second;
+
   VarDataPair pair(var, sdata);
 
   if(key != "repeatable") {
@@ -344,6 +358,12 @@ void IvPBehavior::postMessage(string var, string sdata, string key)
 
 void IvPBehavior::postMessage(string var, double ddata, string key)
 {
+  // First check if posted var has been remapped to another variable.
+  map<string,string>::iterator p;
+  p = m_remap_vars.find(var);
+  if(p != m_remap_vars.end())
+    var = p->second;
+
   VarDataPair pair(var, ddata);
 
   if(key != "repeatable") {
