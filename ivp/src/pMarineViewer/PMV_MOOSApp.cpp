@@ -241,9 +241,9 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
     string sval  = msg.m_sVal;
     
     bool scope_handled = false;
-    unsigned int i, vsize = m_scope_vars.size();
-    for(i=0; i<vsize; i++) {
-      if(key == m_scope_vars[i]) {
+    unsigned int j, vsize = m_scope_vars.size();
+    for(j=0; j<vsize; j++) {
+      if(key == m_scope_vars[j]) {
 	string mtime = doubleToString((msg.m_dfTime-m_start_time),2);
 	string source = msg.m_sSrc;
 	if(msg.IsDouble())
