@@ -14,21 +14,19 @@
 #include "MBUtils.h"
 #include "LogUtils.h"
 
+#define MAX_LINE_LENGTH 50000
+
 using namespace std;
 
 //--------------------------------------------------------
 // Procedure: getVarName
 //     Notes: Syntax:  "TIMESTAMP  VAR  SOURCE  DATA"
 
-
 string getVarName(const string& line)
 {
   int  len   = line.length();
   bool done  = false;
   int  state = 0;
-
-
-  const int MAX_LINE_LENGTH = 50000;
 
   int  buffix  = 0;
   char buff[MAX_LINE_LENGTH];
@@ -64,8 +62,6 @@ string getTimeStamp(const string& line)
   int  len   = line.length();
   bool done  = false;
 
-  const int MAX_LINE_LENGTH = 50000;
-
   int  buffix  = 0;
   char buff[MAX_LINE_LENGTH];
 
@@ -94,8 +90,6 @@ string getDataEntry(const string& line)
   bool done = false;
   
   int state = 0;
-
-  const int MAX_LINE_LENGTH = 50000;
 
   int  buffix  = 0;
   char buff[MAX_LINE_LENGTH];
@@ -195,8 +189,6 @@ double getLogStart(const string& line)
   bool done  = false;
   int  state = 0;
 
-  const int MAX_LINE_LENGTH = 5000;
-
   int  buffix  = 0;
   char buff[MAX_LINE_LENGTH];
 
@@ -271,8 +263,6 @@ string getNextRawLine(FILE *fileptr)
     return("err");
   }
   
-  const int MAX_LINE_LENGTH = 50000;
-
   bool EOL     = false;
   int  buffix  = 0;
   int  myint   = '\0';
