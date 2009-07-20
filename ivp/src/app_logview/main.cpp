@@ -31,8 +31,9 @@
 #include "IO_GeomUtils.h"
 #include "XYPolygon.h"
 #include "LogPlot.h"
+#include "HelmPlot.h"
+#include "Populator_HelmPlots.h"
 #include "Populator_LogPlots.h"
-#include "Populator_GridPlot.h"
 #include "LMV_Utils.h"
 
 using namespace std;
@@ -81,12 +82,14 @@ int main(int argc, char *argv[])
     string argi  = tolower(argv[i]);
     if((argi == "mit") || (argi=="charles"))
       tif_file = "AerialMIT-1024.tif";
-    if((argi == "wmit") || (argi=="wireframe") || (argi=="wf"))
+    else if((argi == "wmit") || (argi=="wireframe") || (argi=="wf"))
       tif_file = "WireFrameMIT-1024.tif";
-    if((argi == "mb") || (argi=="monterey"))
+    else if((argi == "mb") || (argi=="monterey"))
       tif_file = "Monterey-2048.tif";
-    if((argi == "mbd"))
+    else if((argi == "mbd"))
       tif_file = "Monterey-2048-30-30-100.tif";
+    else if((argi == "glint") || (argi == "-glint"))
+      tif_file = "glintA.tif";
   }
 
   for(i=1; i<argc; i++)
@@ -149,34 +152,11 @@ int main(int argc, char *argv[])
   for(j=0; j<alog_files_skew.size(); j++)
     alog_files_skew[j] -= min_skew;
   
-  // Build all the gridplots from the vector of alog files.
-  //---------------------------------------------------------------------
-  vector<GridPlot> gridplots;
-
-  MBTimer parse_timer;
-#if 0
-  parse_timer.start();
-  cout << "Parsing alog files to build GridPlots..." << endl;
-  
-  for(k=0; k<alog_files.size(); k++) {
-    Populator_GridPlot pop_gp;
-    pop_gp.populate(alog_files[k]);
-    unsigned int psize = pop_gp.size();
-    cout << "Built " << psize << " GridPlots from " << alog_files[k] << endl;
-    for(j=0; j<psize; j++) 
-      gridplots.push_back(pop_gp.getGridPlot(j));
-  }
-
-  parse_timer.stop();
-  cout << "Done: GridPlot parse time: " << parse_timer.get_float_cpu_time();
-  cout << endl << endl;
-
-#endif
   // Build all the logplots from the vector of alog files.
   //---------------------------------------------------------------------
   vector<vector<LogPlot> > logplots;
 
-  parse_timer.reset();
+  MBTimer parse_timer;
   parse_timer.start();
   cout << "Parsing alog files to build LogPlots..." << endl;
 
@@ -204,21 +184,48 @@ int main(int argc, char *argv[])
   cout << "Done: LogPlot parse time: " << parse_timer.get_float_cpu_time();
   cout << endl << endl;
 
+#if 0
+  // Build all the HelmPlots from the vector of alog files.
+  //---------------------------------------------------------------------
+  vector<HelmPlot> helm_plots;
+
+  MBTimer parse_timer_hp;
+  parse_timer_hp.reset();
+  parse_timer_hp.start();
+  cout << "Parsing alog files to build HelmPlots..." << endl;
+
+  for(j=0; j<alog_files.size(); j++) {
+    Populator_HelmPlots pop_hp;
+    bool ok = pop_hp.setFileALog(alog_files[j]);
+    if(!ok) {
+      cout << "Problem making HelmPlot from file " << alog_files[j] 
+	   << ". Exiting" << endl;
+      exit(0);
+    }
+    
+    pop_hp.populateFromALog();
+
+    HelmPlot hplot = pop_hp.getHelmPlot();
+    hplot.print();
+    
+    helm_plots.push_back(pop_hp.getHelmPlot());
+  }
+
+  parse_timer_hp.stop();
+  cout << "Done: HelmPlot parse time: " << parse_timer_hp.get_float_cpu_time();
+  cout << endl << endl;
+
+#endif
 
   // Build all the Polygons and Grids from the vector of non-alog files.
   //---------------------------------------------------------------------
   vector<string>  polygons;
-  vector<string>  searchgrids;
 
   for(j=0; j<non_log_files.size(); j++) {
     vector<string> svector;
     svector = readEntriesFromFile(non_log_files[j], "poly:polygon");
     for(k=0; k<svector.size(); k++)
       polygons.push_back(svector[k]);
-
-    svector = readEntriesFromFile(non_log_files[j], "grid:xygrid");
-    for(k=0; k<svector.size(); k++)
-      searchgrids.push_back(svector[k]);
   }
   
   // If we've gotten this far without errors, go ahead and create the GUI
@@ -235,10 +242,6 @@ int main(int argc, char *argv[])
   if(gui_size=="xsmall")
     gui = new REPLAY_GUI(770, 605, "logview");
 
-  // Populate the GUI with the GridPlots built above
-  for(j=0; j<gridplots.size(); j++)
-    gui->addGridPlot(gridplots[j]);
-  
   // Populate the GUI with the LogPlots built above
   for(k=0; k<logplots.size(); k++) {
     for(j=0; j<logplots[k].size(); j++) {
@@ -255,10 +258,6 @@ int main(int argc, char *argv[])
   // Populate the GUI with the polygons built above
   for(j=0; j<polygons.size(); j++)
     gui->np_viewer->setParam("poly", polygons[j]);
-
-  // Populate the GUI with the search grids build above
-  for(j=0; j<searchgrids.size(); j++)
-    gui->np_viewer->setParam("grid", searchgrids[j]);
 
   gui->updateXY();
   gui->np_viewer->setParam("tiff_file", tif_file);

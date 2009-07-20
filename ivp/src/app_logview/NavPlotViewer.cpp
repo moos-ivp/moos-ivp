@@ -38,30 +38,14 @@ NavPlotViewer::NavPlotViewer(int x, int y, int w, int h, const char *l)
   : MarineViewer(x,y,w,h,l)
 {
   m_global_ix    = 0;
-  m_gridplot_ix  = 0;
   m_local_ix     = 0;
   m_trail_gap    = 1;
   m_trail_size   = 0.5;
   m_alltrail     = true;
-  m_vehibody     = "kayak";  // "auv" or "kayak"
-  m_gridplots_draw = true;
+  m_vehibody     = "auv";  // "auv" or "kayak"
   m_shape_scale  = 0.12;
   m_trails       = true;
   m_draw_vname   = false;
-}
-
-//-------------------------------------------------------------
-// Procedure: addLogPlot
-
-void NavPlotViewer::addLogPlot(const LogPlot& lp, string vid, string type)
-{
-  type = tolower(type);
-  if((type == "nav_x") || (type == "navx"))
-    m_plotmap_navx[vid] = lp;
-  else if((type == "nav_y") || (type == "navy"))
-    m_plotmap_navy[vid] = lp;
-  else if((type == "nav_heading") || (type == "navheading"))
-    m_plotmap_hdg[vid] = lp;
 }
 
 //-------------------------------------------------------------
@@ -69,13 +53,38 @@ void NavPlotViewer::addLogPlot(const LogPlot& lp, string vid, string type)
 
 bool NavPlotViewer::setParam(string param, string value)
 {
+  if(param == "trails_point_size") {
+    if(value == "bigger")
+      m_trail_size *= 1.25;
+    else if(value == "smaller")
+      m_trail_size *= 0.80;
+    else if(value == "reset")
+      m_trail_size = 1.0;
+    m_trail_size = vclip(m_trail_size, 1, 25);
+    return(true);
+  }
+
+  if(param == "center_view") {
+    if(value == "average")
+      setCenterView("ctr_of_bounding");
+    return(true);
+  }
+
   if(MarineViewer::setParam(param, value))
     return(true);
   
-  if(param == "trail_view")
+  if(param == "trails_viewable")
     return(setBooleanOnString(m_trails, value));
   else if(param=="display_vname")
     return(setBooleanOnString(m_draw_vname, value));
+  else if(param == "vehicle_shape_scale") {
+    if(value == "bigger")
+      m_shape_scale *= 1.25;
+    else if(value == "smaller")
+      m_shape_scale *= 0.80;
+    else if(value == "reset")
+      m_shape_scale = 1.0;
+  }
   else
     return(false);
   
@@ -90,18 +99,9 @@ bool NavPlotViewer::setParam(string param, double value)
   if(MarineViewer::setParam(param, value))
     return(true);
   
-  if(param == "shape_scale") {
-    if(m_shape_scale * value > 0.01)      
-      m_shape_scale *= value;
-  }
   else if(param == "trail_gap") {
     if(m_trail_gap + value >= 1)      
       m_trail_gap += (int)value;
-  }
-  else if(param == "trail_size") {
-    m_trail_size += value;
-    if(m_trail_size <= 0)
-      m_trail_size = 0.05;
   }
   else
     return(false);
@@ -118,10 +118,6 @@ void NavPlotViewer::draw()
   MarineViewer::draw();
 
   drawPolygons();
-
-  if(m_gridplots_draw)
-    drawGridPlots();
-
   drawNavPlots();
   drawFrame();
 }
@@ -133,22 +129,11 @@ void NavPlotViewer::draw()
 
 double NavPlotViewer::getMetersX()
 {
-  if(m_cross_offon) {
-    int iwidth = m_back_img.get_img_width();
-    double x_pos = ((double)(iwidth) / 2.0) - (double)(m_vshift_x);
-    double x_pct = m_back_img.pixToPctX(x_pos);
-    double x_pct_cent = m_back_img.get_img_centx();
-    double x_pct_mtrs = m_back_img.get_img_meters();
-    double meters = (x_pct - x_pct_cent) / (x_pct_mtrs / 100.0);
-    return(meters);
+  if(m_global_ix < m_navx_plot.size()) {
+    return(m_navx_plot[m_global_ix].get_value_by_index(m_local_ix));
   }
-  else {
-    if(m_global_ix < m_navx_plot.size()) {
-      return(m_navx_plot[m_global_ix].get_value_by_index(m_local_ix));
-    }
-    else
-      return(0);
-  }
+  else
+    return(0);
 }
 
 // ----------------------------------------------------------
@@ -158,22 +143,11 @@ double NavPlotViewer::getMetersX()
 
 double NavPlotViewer::getMetersY()
 {
-  if(m_cross_offon) {
-    int iheight = m_back_img.get_img_height();
-    double y_pos = ((double)(iheight) / 2.0) - (double)(m_vshift_y);
-    double y_pct = m_back_img.pixToPctY(y_pos);
-    double y_pct_cent = m_back_img.get_img_centy();
-    double y_pct_mtrs = m_back_img.get_img_meters();
-    double meters = (y_pct - y_pct_cent) / (y_pct_mtrs / 100.0);
-    return(meters);
+  if(m_global_ix < m_navx_plot.size()) {
+    return(m_navy_plot[m_global_ix].get_value_by_index(m_local_ix));
   }
-  else {
-    if(m_global_ix < m_navx_plot.size()) {
-      return(m_navy_plot[m_global_ix].get_value_by_index(m_local_ix));
-    }
-    else
-      return(0);
-  }
+  else
+    return(0);
 }
 
 //-------------------------------------------------------------
@@ -212,7 +186,31 @@ bool NavPlotViewer::setCurrIndex(int v)
 
 bool NavPlotViewer::incCurrIndex(int v)
 {
+  if(m_navx_plot.size() == 0)
+    return(false);
+
+  unsigned int max_index = m_navx_plot[m_global_ix].size();
+  
+  int new_index = m_local_ix + v;
+  new_index = (int)(vclip(new_index, 0, max_index));
+    
   return(setCurrIndex(m_local_ix + v));
+}
+
+//-------------------------------------------------------------
+// Procedure: setCurrIndexByTime
+//      Note: returns true if the value changes
+
+bool NavPlotViewer::setCurrIndexByTime(double gtime)
+{
+  if(m_navx_plot.size() == 0)
+    return(false);
+
+  cout << "m_navx_plot.size(): " << m_navx_plot.size() << endl;
+  unsigned int ix = m_navx_plot[m_global_ix].get_index_by_time(gtime);
+  redraw();
+
+  return(setCurrIndex(ix));
 }
 
 
@@ -240,19 +238,6 @@ bool NavPlotViewer::jumpCurrIndex(unsigned int v)
   }
 }
 
-
-//-------------------------------------------------------------
-// Procedure: setGridPlotIndex
-
-void NavPlotViewer::setGridPlotIndex(unsigned int ix)
-{
-  if((ix < 0) || (ix >= m_gridplots.size()))
-    return;
-  else
-    m_gridplot_ix = ix;
-}
-
-
 //-------------------------------------------------------------
 // Procedure: vehicle
 
@@ -267,18 +252,6 @@ void NavPlotViewer::setGlobalIndex(unsigned int new_ix)
     new_ix = m_navx_plot.size()-1;
   m_global_ix = new_ix;
 }
-
-//-------------------------------------------------------------
-// Procedure: addGridPlot
-//      Note: A local copy of the given Gridplot is created here.
-
-int NavPlotViewer::addGridPlot(const GridPlot &given_gridplot)
-{
-  GridPlot new_gridplot(given_gridplot);
-  m_gridplots.push_back(new_gridplot); 
-  return(m_gridplots.size());
-}
-
 
 //-------------------------------------------------------------
 // Procedure: getCurrTime
@@ -374,7 +347,8 @@ void NavPlotViewer::drawNavPlot(unsigned int index)
   
   // Draw all the non_current points
   if(m_trails) {
-    double pt_size = m_trail_size * m_zoom;
+    //double pt_size = m_trail_size * m_zoom;
+    double pt_size = m_trail_size;
     vector<double> cvect = colorParse("red");
 
     if(index == 0) 
@@ -431,34 +405,6 @@ void NavPlotViewer::drawNavPlot(unsigned int index)
 		    shape_length, m_draw_vname);
 }
 
-
-//-------------------------------------------------------------
-// Procedure: drawGridPlots
-
-void NavPlotViewer::drawGridPlots()
-{
-  if(m_gridplots.size() == 0)
-    return;
-
-  drawGridPlot(m_gridplot_ix);
-}
-
-
-//-------------------------------------------------------------
-// Procedure: drawGridPlot
-
-void NavPlotViewer::drawGridPlot(unsigned int index)
-{
-  int npsize = m_gridplots[index].size();
-  if(npsize == 0)
-    return;
-
-  double ctime = getCurrTime();
-
-  XYGrid grid = m_gridplots[index].getGridByTime(ctime);
-  drawGrid(grid);
-}
-
 //-------------------------------------------------------------
 // Procedure: drawFrame
 //      Note: Frame string format: "640x480+0+0"
@@ -500,8 +446,55 @@ void NavPlotViewer::drawFrame()
 }
 
 
+//-------------------------------------------------------------
+// Procedure: setCenterview
+//      Note: 
 
+void NavPlotViewer::setCenterView(string centering_style)
+{
+  if((m_navx_plot.size()==0) || (m_navy_plot.size() == 0))
+    return;
 
+  double pos_x = 0;
+  double pos_y = 0;
+  if(centering_style == "ctr_of_bounding") {
+    // Median values of logplots are used.
+    double min_x, min_y, max_x, max_y;
+    unsigned int i, x_size = m_navx_plot.size();
+    for(i=0; i<x_size; i++) {
+      double this_value = m_navx_plot[i].get_median();
+      if((i==0) || (this_value < min_x))
+	min_x = this_value;
+      if((i==0) || (this_value > max_x))
+	max_x = this_value;
+    }    
+    unsigned int j, y_size = m_navy_plot.size();
+    for(j=0; j<y_size; j++) {
+      double this_value = m_navy_plot[j].get_median();
+      if((j==0) || (this_value < min_y))
+	min_y = this_value;
+      if((j==0) || (this_value > max_y))
+	max_y = this_value;
+    }    
+    pos_x = ((max_x - min_x) / 2) + min_x;
+    pos_y = ((max_y - min_y) / 2) + min_y;
+  }
+  else
+    return;
+
+  // First determine how much we're off in terms of meters
+  double delta_x = pos_x - m_back_img.get_x_at_img_ctr();
+  double delta_y = pos_y - m_back_img.get_y_at_img_ctr();
+  
+  // Next determine how much in terms of pixels
+  double pix_per_mtr = m_back_img.get_pix_per_mtr();
+
+  double x_pixels = pix_per_mtr * delta_x;
+  double y_pixels = pix_per_mtr * delta_y;
+  
+  m_vshift_x = -x_pixels;
+  m_vshift_y = -y_pixels;
+}
 
 
 

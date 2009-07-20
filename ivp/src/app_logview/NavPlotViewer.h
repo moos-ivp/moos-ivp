@@ -29,9 +29,7 @@
 #include "FL/gl.h"
 #include "FL/fl_draw.H"
 #include "BackImg.h"
-#include "XYGrid.h"
 #include "LogPlot.h"
-#include "GridPlot.h"
 #include "MarineViewer.h"
 
 class NavPlotViewer : public MarineViewer
@@ -56,13 +54,13 @@ class NavPlotViewer : public MarineViewer
   double getMetersX();
   double getMetersY();
 
+  void   setCenterView(std::string centering="ctr_of_bounding");
+  bool   setCurrIndexByTime(double);
   bool   setCurrIndex(int);
   bool   incCurrIndex(int);
   bool   jumpCurrIndex(unsigned int);
-  void   setGridPlotIndex(unsigned int);
   void   setGlobalIndex(unsigned int);
   bool   vehicle(unsigned int);
-  int    addGridPlot(const GridPlot&);
   double getCurrTime();
   double getAvgStepTime();
 
@@ -74,26 +72,18 @@ class NavPlotViewer : public MarineViewer
 protected:
   void  drawNavPlots();
   void  drawNavPlot(unsigned int ix);
-  void  drawGridPlots();
-  void  drawGridPlot(unsigned int ix);
   void  drawFrame();
   
 private:
   unsigned int          m_local_ix;
-  unsigned int          m_gridplot_ix;
   std::string           m_vehibody;
   std::string           m_frame;
-  std::vector<GridPlot> m_gridplots;
-  bool                  m_gridplots_draw;
   bool                  m_alltrail;
 
+  // vector is one for each vehicle
   std::vector<LogPlot>  m_navx_plot;
   std::vector<LogPlot>  m_navy_plot;
   std::vector<LogPlot>  m_hdg_plot;
-
-  std::map<std::string, LogPlot> m_plotmap_navx;
-  std::map<std::string, LogPlot> m_plotmap_navy;
-  std::map<std::string, LogPlot> m_plotmap_hdg;
 
   int    m_global_ix;
 

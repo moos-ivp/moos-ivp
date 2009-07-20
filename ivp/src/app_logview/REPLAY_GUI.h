@@ -30,15 +30,16 @@
 #include "LogPlotViewer.h"
 #include <FL/Fl_Hold_Browser.H>
 #include "MY_Output.h"
+#include "MY_Button.h"
+#include "MY_Repeat_Button.h"
 #include "MBTimer.h"
 #include "MarineVehiGUI.h"
 
 class REPLAY_GUI : public MarineVehiGUI {
 public:
   REPLAY_GUI(int w, int h, const char *l=0);
-  ~REPLAY_GUI() {};
+  ~REPLAY_GUI();
   
-  void addGridPlot(const GridPlot &v);
   void addLogPlot(const LogPlot&);
   void setLogFile(std::string str)  {log_file = str;};
   void conditional_step();
@@ -48,7 +49,7 @@ public:
 protected:
   void augmentMenu();
   int  handle(int);
-
+ 
 private:
   inline bool cb_Step_i(int);
   static void cb_Step(Fl_Widget*, int);
@@ -59,14 +60,8 @@ private:
   inline void cb_PolyView_i();
   static void cb_PolyView(Fl_Widget*);
 
-  inline void cb_GridView_i();
-  static void cb_GridView(Fl_Widget*);
-
   inline void cb_CrossView_i();
   static void cb_CrossView(Fl_Widget*);
-
-  inline void cb_SelectGridPlot_i(int);
-  static void cb_SelectGridPlot(Fl_Widget*, int);
 
   inline void cb_LeftLogPlot_i(int);
   static void cb_LeftLogPlot(Fl_Widget*, int);
@@ -89,6 +84,9 @@ private:
   inline void cb_AllTrail_i();
   static void cb_AllTrail(Fl_Widget*);
 
+  inline void cb_TimeZoom_i(int);
+  static void cb_TimeZoom(Fl_Widget*, int);
+
   inline void cb_Delete_i();
   static void cb_Delete(Fl_Widget*);
 
@@ -97,8 +95,6 @@ public:
   LogPlotViewer *lp_viewer;
 
 protected:
-  MY_Output   *x_mtr;
-  MY_Output   *y_mtr;
   MY_Output   *disp_time;
   MY_Output   *play_rate;
   MY_Output   *collect_state;
@@ -109,11 +105,18 @@ protected:
   MY_Output   *high1;
   MY_Output   *curr1;
 
+  MY_Output   *time_low;
+  MY_Output   *time_high;
+
   MY_Output   *vname2;
   MY_Output   *label2;
   MY_Output   *low2;
   MY_Output   *high2;
   MY_Output   *curr2;
+
+  MY_Repeat_Button *m_but_zoom_in_time;
+  MY_Repeat_Button *m_but_zoom_out_time;
+  MY_Button        *m_but_zoom_reset_time;
 
   std::string log_file;
   std::string collect;

@@ -31,13 +31,17 @@ using namespace std;
 LogPlotViewer::LogPlotViewer(int gx, int gy, int gw, int gh, const char *gl)
   : Fl_Gl_Window(gx,gy,gw,gh,gl)
 {
-  valid_cache = false;
+  m_valid_cache = false;
   view_index1 = 0;
   view_index2 = 0;
   margin      = 10.0;
   w_step      = 0.0;
-  min_time    = 0.0;
   curr_time   = 0.0;
+
+  m_extreme_min_time = 0;
+  m_extreme_max_time = 0;
+  m_display_min_time = 0;
+  m_display_max_time = 0;
 }
 
 //-------------------------------------------------------------
@@ -48,6 +52,7 @@ int LogPlotViewer::handle(int event)
   int vx, vy;
   switch(event) {
   case FL_PUSH:
+    cout << "LogPlotViewer::handle-PUSH" << endl;
     vx = Fl::event_x();
     vy = h() - Fl::event_y();
     if(Fl_Window::handle(event) != 1) {
@@ -56,7 +61,8 @@ int LogPlotViewer::handle(int event)
       if(Fl::event_button() == FL_RIGHT_MOUSE)
 	handle_right_mouse(vx, vy);
     }
-    return(1);
+  case FL_RELEASE:
+    return(0);
     break;
   default:
     return(Fl_Gl_Window::handle(event));
@@ -83,7 +89,7 @@ void LogPlotViewer::draw()
 
 void LogPlotViewer::resize(int gx, int gy, int gw, int gh)
 {
-  valid_cache = false;
+  m_valid_cache = false;
   Fl_Gl_Window::resize(gx, gy, gw, gh);
 }
 
@@ -92,8 +98,26 @@ void LogPlotViewer::resize(int gx, int gy, int gw, int gh)
 
 unsigned int LogPlotViewer::add_logplot(const LogPlot& given_logplot)
 {
+  // Ensure that the extreme_min_time and extreme_max_time values are
+  // the extremes over all added logplots.
+
+  double this_min_time = given_logplot.get_min_time();
+  double this_max_time = given_logplot.get_max_time();
+  if((logplot.size() == 0) || (this_min_time < m_extreme_min_time))
+    m_extreme_min_time = this_min_time;
+  if((logplot.size() == 0) || (this_max_time > m_extreme_max_time))
+    m_extreme_max_time = this_max_time;
+
+  // Every time a new plot is added, sync the display_max/min times
+  // to the extreme_max/min times.
+
+  m_display_min_time = m_extreme_min_time;
+  m_display_max_time = m_extreme_max_time;
+
+
   LogPlot new_logplot(given_logplot);
   logplot.push_back(new_logplot);
+
   return(logplot.size());
 }
 
@@ -106,7 +130,7 @@ void LogPlotViewer::set_left_plot(unsigned int index)
     return;
   if((index >= 0) && (index < logplot.size()))
     view_index1 = index;
-  valid_cache = false;
+  m_valid_cache = false;
 }
 
 //-------------------------------------------------------------
@@ -118,7 +142,7 @@ void LogPlotViewer::set_right_plot(unsigned int index)
     return;
   if((index >= 0) && (index < logplot.size()))
     view_index2 = index;
-  valid_cache = false;
+  m_valid_cache = false;
 }
 
 //-------------------------------------------------------------
@@ -235,6 +259,15 @@ string LogPlotViewer::get_max_val2()
 
 int LogPlotViewer::handle_left_mouse(int vx, int vy)
 {
+  cout << "x:" << vx << " y:" << vy << endl;
+  cout << "pct:" << ((double)(vx)/w()) << endl;
+  cout << "w():" << w() << endl;
+
+  double pct = (double)(vx)/w();
+  curr_time = pct * (m_display_max_time - m_display_min_time);
+  curr_time += m_display_min_time;
+
+  redraw();
   return(0);
 }
 
@@ -247,13 +280,87 @@ int LogPlotViewer::handle_right_mouse(int vx, int vy)
 }
 
 //-------------------------------------------------------------
+// Procedure: set_curr_time
+
+void LogPlotViewer::set_curr_time(double new_time)
+{
+  if(new_time < m_extreme_min_time)
+    new_time = m_extreme_min_time;
+  if(new_time > m_extreme_max_time)
+    new_time = m_extreme_max_time;
+
+  if(new_time < m_display_min_time) {
+    m_display_max_time -= (m_display_min_time - new_time);
+    m_display_min_time = new_time;
+    m_valid_cache = false;
+  }
+
+  if(new_time > m_display_max_time) {
+    m_display_min_time += (new_time - m_display_max_time);
+    m_display_max_time = new_time;
+    m_valid_cache = false;
+  }
+
+  curr_time = new_time;
+}
+
+//-------------------------------------------------------------
+// Procedure: adjust_zoom
+
+void LogPlotViewer::adjust_zoom(string ztype)
+{
+  // Ensure there is never a zero denominator time_band
+  if(m_display_max_time <= m_display_min_time)
+    return;
+
+  // Ensure curr_time marker is always in the viewable range.
+  if(curr_time < m_display_min_time)
+    curr_time = m_display_min_time;
+  if(curr_time > m_display_max_time)
+    curr_time = m_display_max_time;
+
+  double time_band = (m_display_max_time - m_display_min_time);
+  double pct_band  = (curr_time - (m_display_min_time)) / time_band;
+  
+  if(ztype == "in") {
+    double crop_amount = time_band * 0.20;
+    double lower_crop_time = crop_amount * pct_band;
+    double upper_crop_time = crop_amount * (1-pct_band);
+    if((m_display_max_time - m_display_min_time) > 5) {
+      m_display_min_time += lower_crop_time;
+      m_display_max_time -= upper_crop_time;
+      m_valid_cache = false;
+    }
+  }
+  else if(ztype == "out") {
+    double pad_amount = time_band * 0.25;
+    double lower_pad_time = pad_amount * pct_band;
+    double upper_pad_time = pad_amount * (1-pct_band);
+    m_display_min_time -= lower_pad_time;
+    m_display_max_time += upper_pad_time;
+    if(m_display_min_time < m_extreme_min_time)
+      m_display_min_time = m_extreme_min_time;
+    if(m_display_max_time > m_extreme_max_time)
+      m_display_max_time = m_extreme_max_time;
+    m_valid_cache = false;
+  }
+  else if(ztype == "reset") {
+    m_display_min_time = m_extreme_min_time;
+    m_display_max_time = m_extreme_max_time;
+    m_valid_cache = false;
+  }
+
+  redraw();
+}
+
+//-------------------------------------------------------------
 // Procedure: fill_cache
 
 bool LogPlotViewer::fill_cache()
 {
   //cout << "In fill_cache" << view_index1 << "  " << view_index2 << endl;
 
-  valid_cache = false;
+  m_valid_cache = false;
   if((view_index1 < 0) || (view_index1 >= logplot.size()))
     return(false);
   if((view_index2 < 0) || (view_index2 >= logplot.size()))
@@ -267,15 +374,8 @@ bool LogPlotViewer::fill_cache()
   cache_x2.clear();
   cache_y2.clear();
 
-  min_time = vplot1.get_min_time();
-  max_time = vplot1.get_max_time();
-
-  if(vplot2.get_min_time() < min_time)
-    min_time = vplot2.get_min_time();
-  if(vplot2.get_max_time() > max_time)
-    max_time = vplot2.get_max_time();
-
-  w_step = (w()-margin) / (max_time - min_time);
+  //w_step = (w()-margin) / (m_extreme_max_time - m_extreme_min_time);
+  w_step = (w()-margin) / (m_display_max_time - m_display_min_time);
 
   int    vpsize1  = vplot1.size();
   double min_val1 = vplot1.get_min_val();
@@ -285,7 +385,8 @@ bool LogPlotViewer::fill_cache()
   for(int i=0; i<vpsize1; i++) {
     double rawt = vplot1.get_time_by_index(i);
     double rawv = vplot1.get_value_by_index(i);
-    double scalet = ((rawt - min_time)  * w_step) + (margin/2.0); 
+    //double scalet = ((rawt - m_extreme_min_time)  * w_step) + (margin/2.0); 
+    double scalet = ((rawt - m_display_min_time)  * w_step) + (margin/2.0); 
     double scalev = ((rawv - min_val1 ) * h_step1) + (margin/2.0);
     cache_x1.push_back(scalet);
     cache_y1.push_back(scalev);
@@ -300,14 +401,15 @@ bool LogPlotViewer::fill_cache()
     for(int j=0; j<vpsize2; j++) {
       double rawt = vplot2.get_time_by_index(j);
       double rawv = vplot2.get_value_by_index(j);
-      double scalet = ((rawt - min_time)  * w_step) + (margin/2.0); 
+      //double scalet = ((rawt - m_extreme_min_time)  * w_step) + (margin/2.0); 
+      double scalet = ((rawt - m_display_min_time)  * w_step) + (margin/2.0); 
       double scalev = ((rawv - min_val2 ) * h_step2) + (margin/2.0);
       cache_x2.push_back(scalet);
       cache_y2.push_back(scalev);
     }
   }
 
-  valid_cache = true;
+  m_valid_cache = true;
   return(true);
 }
 
@@ -325,9 +427,9 @@ bool LogPlotViewer::fill_cache()
 
 void LogPlotViewer::draw_logplot()
 {
-  if(!valid_cache)
+  if(!m_valid_cache)
     fill_cache();
-  if(!valid_cache)
+  if(!m_valid_cache)
     return;
     
   float r, g, b;
@@ -392,7 +494,7 @@ void LogPlotViewer::draw_logplot()
   }
 
   // Draw the "current time" vertical bar
-  double scalet = ((curr_time - min_time) * w_step) + (margin/2.0); 
+  double scalet = ((curr_time - m_display_min_time) * w_step) + (margin/2.0); 
   glColor4f(1.0, 0.0, 0.0, 0.1);
   glBegin(GL_LINE_STRIP);
   glVertex2f(scalet, 0);

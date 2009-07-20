@@ -29,8 +29,6 @@
 
 using namespace std;
 
-// slight diff
-
 //-------------------------------------------------------------------
 // Constructor
 
@@ -52,35 +50,46 @@ REPLAY_GUI::REPLAY_GUI(int g_w, int g_h, const char *g_l)
 
   int info_size=10;
 
-#if 0
-  np_viewer = new NavPlotViewer(0, 30, w(), h()-350);
-  cmviewer = np_viewer;
-
-  int lp_height = 290;
-  int margin = 2;
-#endif
-#if 1
   np_viewer = new NavPlotViewer(0, 30, w(), h()-200);
   cmviewer = np_viewer;
 
   int lp_height = 140;
   int margin = 2;
-#endif
   
+  lp_viewer = new LogPlotViewer(55, (h()-(lp_height-margin)), 
+  				w()-110, (lp_height-(2*margin)));
+
+  double time_pos = (w()/2)-140;
+  disp_time = new MY_Output(time_pos, h()-(lp_height+26), 70, 22, "Time:"); 
+  disp_time->color(FL_RED); 
+  disp_time->textcolor(FL_WHITE); 
+  disp_time->textsize(12); 
+  disp_time->labelsize(12);
+
+  m_but_zoom_in_time = new MY_Repeat_Button(time_pos+80, h()-(lp_height+26), 
+					    30, 21, "IN");
+  m_but_zoom_out_time = new MY_Repeat_Button(time_pos+120, h()-(lp_height+26), 
+					     35, 21, "OUT");
+  m_but_zoom_reset_time = new MY_Button(time_pos+160, h()-(lp_height+26), 
+					45, 21, "RESET");
+
+  m_but_zoom_in_time->callback((Fl_Callback*)REPLAY_GUI::cb_TimeZoom,(void*)1);
+  m_but_zoom_out_time->callback((Fl_Callback*)REPLAY_GUI::cb_TimeZoom,(void*)-1);
+  m_but_zoom_reset_time->callback((Fl_Callback*)REPLAY_GUI::cb_TimeZoom,(void*)0);
+  
+  m_but_zoom_in_time->color(FL_DARK_RED);
+  m_but_zoom_out_time->color(FL_DARK_RED);
+  m_but_zoom_reset_time->color(FL_DARK_RED);
+  m_but_zoom_in_time->labelcolor(FL_WHITE);
+  m_but_zoom_out_time->labelcolor(FL_WHITE);
+  m_but_zoom_reset_time->labelcolor(FL_WHITE);
+
+  m_but_zoom_in_time->labelsize(10);
+  m_but_zoom_out_time->labelsize(10);
+  m_but_zoom_reset_time->labelsize(10);
+
+
 #if 0
-  lp_viewer = new LogPlotViewer(55, (h()-(lp_height-margin)), 
-  				w()-110, (lp_height-(2*margin)));
-#endif
-#if 1
-  lp_viewer = new LogPlotViewer(55, (h()-(lp_height-margin)), 
-  				w()-110, (lp_height-(2*margin)));
-#endif
-
-
-  disp_time = new MY_Output((w()/2)-140, h()-(lp_height+25), 50, 20, "time:"); 
-  disp_time->textsize(info_size); 
-  disp_time->labelsize(info_size);
-
   x_mtr = new MY_Output((w()/2)-55, h()-(lp_height+25), 50, 20, "x:"); 
   x_mtr->textsize(info_size); 
   x_mtr->labelsize(info_size);
@@ -88,7 +97,7 @@ REPLAY_GUI::REPLAY_GUI(int g_w, int g_h, const char *g_l)
   y_mtr = new MY_Output((w()/2)+20, h()-(lp_height+25), 50, 20, "y:"); 
   y_mtr->textsize(info_size); 
   y_mtr->labelsize(info_size);
-
+#endif
   play_rate = new MY_Output((w()/2)+140, h()-(lp_height+25), 70, 20, "play-rate:"); 
   play_rate->textsize(info_size); 
   play_rate->labelsize(info_size);
@@ -98,42 +107,98 @@ REPLAY_GUI::REPLAY_GUI(int g_w, int g_h, const char *g_l)
   collect_state->labelsize(info_size);
 
   // Handle LogPlot 1 -------------
-  label1 = new MY_Output(60, h()-(lp_height+25), 120, 20, "Data:"); 
+  label1 = new MY_Output(40, h()-(lp_height+25), 120, 20, "Data:"); 
   label1->textsize(info_size); 
+  label1->color(FL_DARK_GREEN); 
+  label1->textcolor(FL_WHITE); 
   label1->labelsize(info_size);
 
-  curr1 = new MY_Output(240, h()-(lp_height+25), 60, 20, "CurrVal:"); 
+  curr1 = new MY_Output(220, h()-(lp_height+25), 70, 20, "CurrVal:"); 
   curr1->textsize(info_size); 
+  curr1->color(FL_DARK_GREEN); 
+  curr1->textcolor(FL_WHITE); 
   curr1->labelsize(info_size);
 
   low1 = new MY_Output(2, h()-20, 51, 20, ""); 
   low1->textsize(info_size); 
+  low1->color(FL_DARK_GREEN); 
+  low1->textcolor(FL_WHITE); 
   low1->labelsize(info_size);
 
   high1 = new MY_Output(2, h()-(lp_height-2), 51, 20, ""); 
   high1->textsize(info_size); 
+  high1->color(FL_DARK_GREEN); 
+  high1->textcolor(FL_WHITE); 
   high1->labelsize(info_size);
+
+  // Handle Time Min/Max -------------
+  time_low = new MY_Output(2, h()-(lp_height/2)-10, 51, 20, ""); 
+  time_low->textsize(info_size); 
+  time_low->color(FL_YELLOW); 
+  time_low->textcolor(FL_BLUE); 
+  time_low->labelsize(info_size);
+  
+  time_high = new MY_Output(w()-110+57, h()-(lp_height/2)-10, 51, 20, ""); 
+  time_high->textsize(info_size); 
+  time_high->color(FL_YELLOW); 
+  time_high->textcolor(FL_BLUE); 
+  time_high->labelsize(info_size);
 
   // Handle LogPlot 2 -------------
   label2 = new MY_Output(w()-120, h()-(lp_height+25), 120, 20, "Data:"); 
   label2->textsize(info_size); 
   label2->labelsize(info_size);
+  label2->textcolor(FL_WHITE); 
+  label2->color(FL_DARK_BLUE); 
 
-  curr2 = new MY_Output(w()-265, h()-(lp_height+25), 60, 20, "CurrVal:"); 
+  curr2 = new MY_Output(w()-255, h()-(lp_height+25), 70, 20, "CurrVal:"); 
   curr2->textsize(info_size); 
   curr2->labelsize(info_size);
+  curr2->textcolor(FL_WHITE); 
+  curr2->color(FL_DARK_BLUE); 
 
   low2 = new MY_Output(w()-110+57, h()-20, 51, 20, ""); 
   low2->textsize(info_size); 
+  low2->color(FL_DARK_BLUE); 
+  low2->textcolor(FL_WHITE); 
   low2->labelsize(info_size);
 
   high2 = new MY_Output(w()-110+57, h()-(lp_height-2), 51, 20, ""); 
   high2->textsize(info_size); 
+  high2->color(FL_DARK_BLUE); 
+  high2->textcolor(FL_WHITE); 
   high2->labelsize(info_size);
 
   this->end();
   this->resizable(this);
   this->show();
+}
+
+//-------------------------------------------------------------------
+// Destructor
+
+REPLAY_GUI::~REPLAY_GUI()
+{
+  delete(lp_viewer);
+  delete(np_viewer);
+  delete(disp_time);
+  delete(play_rate);
+  delete(collect_state);
+  delete(vname1);
+  delete(label1);
+  delete(low1);
+  delete(high1);
+  delete(curr1);
+  delete(time_low);
+  delete(time_high);
+  delete(vname2);
+  delete(label2);
+  delete(low2);
+  delete(high2);
+  delete(curr2);
+  delete(m_but_zoom_in_time);
+  delete(m_but_zoom_out_time);
+  delete(m_but_zoom_reset_time);
 }
 
 //-------------------------------------------------------------------
@@ -161,6 +226,8 @@ void REPLAY_GUI::augmentMenu()
   mbar->add("Replay/Step Back  10", FL_ALT+'{', (Fl_Callback*)REPLAY_GUI::cb_Step, (void*)-10, 0);
   mbar->add("Replay/Step Ahead 50", '>', (Fl_Callback*)REPLAY_GUI::cb_Step, (void*)50, 0);
   mbar->add("Replay/Step Back  50", '<', (Fl_Callback*)REPLAY_GUI::cb_Step, (void*)-50, FL_MENU_DIVIDER);
+  mbar->add("Replay/Time Zoom In", ')', (Fl_Callback*)REPLAY_GUI::cb_TimeZoom, (void*)1, 0);
+  mbar->add("Replay/Time Zoom Out", '(', (Fl_Callback*)REPLAY_GUI::cb_TimeZoom, (void*)-1, FL_MENU_DIVIDER);
 };
 
 //----------------------------------------------------------
@@ -178,7 +245,15 @@ int REPLAY_GUI::handle(int event)
 {
   switch(event) {
   case FL_PUSH:
+    cout << "REPLAY_GUI::handle-PUSH" << endl;
     Fl_Window::handle(event);
+    double lpv_curr_time = lp_viewer->get_curr_time();
+    np_viewer->setCurrIndexByTime(lpv_curr_time);
+    return(1);
+    break;
+  case FL_RELEASE:
+    cout << "REPLAY_GUI::handle-RELEASE" << endl;
+    cout << "In REPLAY_GUI::handle()-->updateXY()" << endl;
     updateXY();
     return(1);
     break;
@@ -231,17 +306,6 @@ void REPLAY_GUI::cb_LeftLogPlot(Fl_Widget* o, int v) {
   ((REPLAY_GUI*)(o->parent()->user_data()))->cb_LeftLogPlot_i(val);
 }
 
-//----------------------------------------- SelectGridPlot
-inline void REPLAY_GUI::cb_SelectGridPlot_i(int index) {
-  np_viewer->setGridPlotIndex(index);
-  np_viewer->redraw();
-  updateXY();
-}
-void REPLAY_GUI::cb_SelectGridPlot(Fl_Widget* o, int v) {
-  int val = (int)(v);
-  ((REPLAY_GUI*)(o->parent()->user_data()))->cb_SelectGridPlot_i(val);
-}
-
 //----------------------------------------- RightLogPlot
 inline void REPLAY_GUI::cb_RightLogPlot_i(int index) {
   lp_viewer->set_right_plot(index);
@@ -276,6 +340,22 @@ inline void REPLAY_GUI::cb_CollectToggle_i() {
 }
 void REPLAY_GUI::cb_CollectToggle(Fl_Widget* o) {
   ((REPLAY_GUI*)(o->parent()->user_data()))->cb_CollectToggle_i();
+}
+
+//----------------------------------------- TimeZoom
+inline void REPLAY_GUI::cb_TimeZoom_i(int val) {
+  if(val > 0)
+    lp_viewer->adjust_zoom("in");
+  else if(val < 0)
+    lp_viewer->adjust_zoom("out");
+  else
+    lp_viewer->adjust_zoom("reset");
+  updateXY();
+}
+
+void REPLAY_GUI::cb_TimeZoom(Fl_Widget* o, int v) {
+  int val = (int)(v);
+  ((REPLAY_GUI*)(o->parent()->user_data()))->cb_TimeZoom_i(val);
 }
 
 //----------------------------------------- StreamToggle
@@ -362,13 +442,14 @@ void REPLAY_GUI::cb_Delete(Fl_Widget* o) {
 }
 
 //----------------------------------------- UpdateXY
-void REPLAY_GUI::updateXY() {
-  
+void REPLAY_GUI::updateXY() 
+{
   // DISPLAY TIME
   double ctime = np_viewer->getCurrTime();
   string dtime = doubleToString(ctime, 1);
   disp_time->value(dtime.c_str());
   
+#if 0
   // Meters X
   double dxmeters = np_viewer->getMetersX();
   string sxmeters = doubleToString(dxmeters, 2);
@@ -378,7 +459,7 @@ void REPLAY_GUI::updateXY() {
   double dymeters = np_viewer->getMetersY();
   string symeters = doubleToString(dymeters, 2);
   y_mtr->value(symeters.c_str());
-
+#endif
   // Play Rate
   if(stream) {
     if(step_time_ix == 0) play_rate->value("FAP");
@@ -392,6 +473,15 @@ void REPLAY_GUI::updateXY() {
 
   collect_state->value(collect.c_str());
   
+  // Time_Low/High
+  double tlow     = lp_viewer->get_time_low();
+  string tlow_str = doubleToString(tlow, 3);
+  time_low->value(tlow_str.c_str());
+
+  double thigh     = lp_viewer->get_time_high();
+  string thigh_str = doubleToString(thigh, 3);
+  time_high->value(thigh_str.c_str());
+
   //------------------------------
   // Label1
   string label_str1 = lp_viewer->get_variable1();
@@ -462,25 +552,6 @@ void REPLAY_GUI::addLogPlot(const LogPlot& logplot)
 	    (Fl_Callback*)REPLAY_GUI::cb_LeftLogPlot,  (void*)ix);
   mbar->add(labelB.c_str(), 0, 
 	    (Fl_Callback*)REPLAY_GUI::cb_RightLogPlot, (void*)ix);
-}
-
-//----------------------------------------------------------
-// Procedure: addGridPlot
-
-void REPLAY_GUI::addGridPlot(const GridPlot& gridplot)
-{
-  if(!np_viewer)
-    return;
-  
-  string label = gridplot.getGridLabel();
-  
-  cout << "Add GridPlot label: " << label << endl;
-
-  int ix = np_viewer->addGridPlot(gridplot)-1;
-  
-  string menu_tag = "GridPlots/" + label;
-  mbar->add(menu_tag.c_str(), 0, 
-	    (Fl_Callback*)REPLAY_GUI::cb_SelectGridPlot,  (void*)ix);
 }
 
 //----------------------------------------------------------
