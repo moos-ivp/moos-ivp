@@ -40,6 +40,7 @@ protected:
   double   m_desired_depth;
   double   m_peakwidth;
   double   m_basewidth;
+  double   m_summitdelta;
 
   std::vector<ConditionalParam> condi_params;
 };

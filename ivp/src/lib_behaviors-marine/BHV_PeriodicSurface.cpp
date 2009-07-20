@@ -41,33 +41,36 @@ using namespace std;
 BHV_PeriodicSurface::BHV_PeriodicSurface(IvPDomain gdomain) : 
   IvPBehavior(gdomain)
 {
-  this->setParam("descriptor", "(d)bhv_periodic_surface");
+  this->setParam("descriptor", "periodic_surface");
 
   m_domain = subDomain(m_domain, "speed,depth");
 
   // Behavior Parameter Default Values:
-  m_period              = 300; // Seconds
-  m_mark_variable       = "GPS_UPDATE_RECEIVED";
-  m_pending_status_var  = "PENDING_SURFACE";
+  m_period               = 300; // Seconds
+  m_mark_variable        = "GPS_UPDATE_RECEIVED";
+  m_acomms_mark_variable = "";
+  m_pending_status_var   = "PENDING_SURFACE";
   m_atsurface_status_var = "TIME_AT_SURFACE";
-  m_max_time_at_surface = 300;
-  m_ascent_speed        = -1; 
-  m_zero_speed_depth    = 0;
-  m_ascent_grade        = "linear";
+  m_max_time_at_surface  = 300;
+  m_ascent_speed         = -1; 
+  m_zero_speed_depth     = 0;
+  m_ascent_grade         = "linear";
 
   // Behavior State Variable Initial Values:
-  m_first_iteration       = true;
-  m_first_marking_string  = true;
-  m_first_marking_double  = true;
+  m_first_iteration        = true;
+  m_first_marking_string   = true;
+  m_first_marking_double   = true;
+  m_amark_extension_time   = 0;
+  m_curr_amark_string_val  = "";
 
-  m_depth_at_ascent_begin = 0;
-  m_speed_at_ascent_begin = 0;
+  m_depth_at_ascent_begin  = 0;
+  m_speed_at_ascent_begin  = 0;
 
-  m_curr_mark_string_val  = "";
-  m_curr_mark_double_val  = 0;
+  m_curr_mark_string_val   = "";
+  m_curr_mark_double_val   = 0;
 
-  m_surface_mark_time     = 0;
-  m_at_surface            = false;
+  m_surface_mark_time      = 0;
+  m_at_surface             = false;
 
   m_curr_depth = 0;
 
@@ -76,7 +79,7 @@ BHV_PeriodicSurface::BHV_PeriodicSurface(IvPDomain gdomain) :
   m_ascending_flag = "PERIODIC_ASCEND";
 
   // Declare information needed by this behavior
-  addInfoVars("NAV_DEPTH, NAV_SPEED");
+  addInfoVars("NAV_DEPTH, NAV_SPEED, GPS_UPDATE_RECEIVED");
 }
 
 //-----------------------------------------------------------
@@ -99,6 +102,34 @@ bool BHV_PeriodicSurface::setParam(string g_param, string g_val)
     if(g_val == "")
       return(false);
     m_mark_variable = g_val;
+  }
+  else if(g_param == "acomms_mark_variable") {
+    string variable = stripBlankEnds(biteString(g_val, ','));
+    string interval = stripBlankEnds(biteString(g_val, ','));
+    string max_time = stripBlankEnds(g_val);
+    cout << "variable:[" << variable << "]" << endl;
+    cout << "interval:[" << interval << "]" << endl;
+    cout << "max_time:[" << max_time << "]" << endl;
+    if((variable == "") || strContainsWhite(variable))
+      return(false);
+    if((interval == "") || !isNumber(interval))
+      return(false);
+    if((max_time == "") || !isNumber(max_time))
+      return(false);
+    
+    double d_interval = atof(interval.c_str());
+    double d_max_time = atof(max_time.c_str());
+    if((d_interval <= 0) || (d_max_time < d_interval))
+      return(false);
+
+    m_acomms_mark_variable = variable;
+    m_acomms_mark_interval = d_interval;
+    m_acomms_mark_max_time = d_max_time;
+    
+    addInfoVars(m_acomms_mark_variable);
+    
+    // initialize acomms mark remaining extension time
+    m_amark_extension_time = 0;
   }
   else if((g_param == "pending_status_variable") ||
 	  (g_param == "pending_status_var")) {
@@ -175,7 +206,10 @@ void BHV_PeriodicSurface::onIdleState()
   
   double time_since_mark       = m_curr_time - m_mark_time;
   double period_wait_remaining = m_period - time_since_mark;
-  
+
+  // Now consider any extension via acomms marking.
+  period_wait_remaining += m_amark_extension_time;
+
   //  if(period_wait_remaining < 0)
   //  period_wait_remaining = 0;
   
@@ -198,6 +232,9 @@ IvPFunction *BHV_PeriodicSurface::onRunState()
   double time_since_mark       = m_curr_time - m_mark_time;
   double period_wait_remaining = m_period - time_since_mark;
 
+  // Now consider any extension via acomms marking.
+  period_wait_remaining += m_amark_extension_time;
+
   //  if(period_wait_remaining < 0)
   //  period_wait_remaining = 0;
   
@@ -206,6 +243,8 @@ IvPFunction *BHV_PeriodicSurface::onRunState()
 
   if(checkForMarking())
     return(0);
+
+  checkForAcommsMarking();
   
   if(period_wait_remaining > 0) {
     m_state = "waiting";
@@ -230,7 +269,6 @@ IvPFunction *BHV_PeriodicSurface::onRunState()
       m_surface_mark_time = m_curr_time;
     }
   }
-
 
   if(m_state == "at_surface") {
     double time_at_surface = m_curr_time - m_surface_mark_time;
@@ -311,45 +349,74 @@ bool BHV_PeriodicSurface::updateInfoIn()
 
 bool BHV_PeriodicSurface::checkForMarking()
 {
-  bool   mark_noted = false;
+  bool mark_noted = false;
 
-  if(m_first_iteration) 
-    {
-      m_first_iteration = false;
-      mark_noted = true;
-      m_mark_time = m_curr_time;
-    }  
-  else
-    {
-      bool   ok1, ok2;
-      double double_mark_val = getBufferDoubleVal(m_mark_variable, ok1);
-      string string_mark_val = getBufferStringVal(m_mark_variable, ok2);
-      
-      if(ok1) 
-	{
-	  if(m_first_marking_double || (double_mark_val != m_curr_mark_double_val)) 
-	    {
-	      mark_noted = true;
-	      m_curr_mark_double_val = double_mark_val;
-	      m_first_marking_double = false;
-	    }
-	}
-      
-      if(ok2) 
-	{
-	  if(m_first_marking_string || (string_mark_val != m_curr_mark_string_val)) 
-	    {
-	      mark_noted = true;
-	      m_curr_mark_string_val = string_mark_val;
-	      m_first_marking_string = false;
-	    }
-	}
+  if(m_first_iteration) {
+    m_first_iteration = false;
+    mark_noted = true;
+    m_mark_time = m_curr_time;
+  }  
+  else {
+    bool   ok1, ok2;
+    double double_mark_val = getBufferDoubleVal(m_mark_variable, ok1);
+    string string_mark_val = getBufferStringVal(m_mark_variable, ok2);
+    
+    if(ok1) {
+      if(m_first_marking_double || 
+	 (double_mark_val != m_curr_mark_double_val)) {
+	mark_noted = true;
+	m_curr_mark_double_val = double_mark_val;
+	m_first_marking_double = false;
+      }
     }
       
-  if(mark_noted)
+    if(ok2) {
+      if(m_first_marking_string || 
+	 (string_mark_val != m_curr_mark_string_val)) {
+	mark_noted = true;
+	m_curr_mark_string_val = string_mark_val;
+	m_first_marking_string = false;
+      }
+    }
+  }
+      
+  if(mark_noted) {
     m_mark_time = m_curr_time;
+    m_amark_extension_time = 0;
+  }
 
   return(mark_noted);
+}
+
+//-----------------------------------------------------------
+// Procedure: checkForAcommsMarking
+
+void BHV_PeriodicSurface::checkForAcommsMarking()
+{
+  // If no acomms mark variable specified, don't bother with this.
+  if(m_acomms_mark_variable == "")
+    return;
+  // If no extension time remaining, don't bother with this.
+  if(m_amark_extension_time >= m_acomms_mark_max_time)
+    return;
+
+  bool ok, amark_noted = false;
+
+  string string_amark_val;
+  string_amark_val = getBufferStringVal(m_acomms_mark_variable, ok);
+    
+  if(ok) {
+    if(string_amark_val != m_curr_amark_string_val) {
+      m_curr_amark_string_val = string_amark_val;
+      amark_noted = true;
+    }
+  }
+  
+  if(amark_noted) {
+    m_amark_extension_time += m_acomms_mark_interval;
+    if(m_amark_extension_time > m_acomms_mark_max_time)
+      m_amark_extension_time = m_acomms_mark_max_time;
+  }
 }
 
 

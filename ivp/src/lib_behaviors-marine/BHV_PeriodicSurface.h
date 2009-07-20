@@ -39,13 +39,17 @@ public:
 protected:
   bool         updateInfoIn();  
   void         noteTimeAtSurface();
-  bool         checkForMarking();
   double       setDesiredSpeed();
+  bool         checkForMarking();
+  void         checkForAcommsMarking();
 
 private: // Behavior Parameters
-  std::string m_mark_variable;
   std::string m_pending_status_var;
   std::string m_atsurface_status_var;
+  std::string m_mark_variable;
+  std::string m_acomms_mark_variable;
+  double      m_acomms_mark_interval;
+  double      m_acomms_mark_max_time;
   double      m_period;
   double      m_zero_speed_depth;
   double      m_max_time_at_surface;
@@ -76,10 +80,13 @@ private: // Behavior State Variables
   double      m_mark_time;
 
   // The value of the last mark message. Stored to detect that an
-  // incoming mark message is new. Store string and double sine we
-  // don't know a priori the mark message type.
+  // incoming mark message is new. Store string and double since
+  // we don't know a priori the mark message type.
   std::string m_curr_mark_string_val;
   double      m_curr_mark_double_val;
+
+  std::string m_curr_amark_string_val;
+  double      m_amark_extension_time;
 
   // The variable name posted (var==true) when first entering 
   // the ascending state
