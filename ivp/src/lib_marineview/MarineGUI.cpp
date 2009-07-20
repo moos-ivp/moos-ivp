@@ -460,7 +460,7 @@ void MarineGUI::cb_HashDelta(Fl_Widget* o, int v) {
 
 //----------------------------------------- BackShade
 inline void MarineGUI::cb_BackShade_i(int amt) {
-  cmviewer->setParam("back_shade", (double)(amt)/20.0);
+  cmviewer->setParam("back_shade_delta", (double)(amt)/20.0);
   cmviewer->redraw();
 }
 void MarineGUI::cb_BackShade(Fl_Widget* o, int v) {

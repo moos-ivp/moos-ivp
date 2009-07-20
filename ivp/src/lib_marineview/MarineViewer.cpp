@@ -156,11 +156,15 @@ bool MarineViewer::setParam(string param, double v)
     if(((v >= 10) && (v <= 1000)) || (v==-1))
       m_hash_delta = (int)v;
   }
-  else if(param == "back_shade") {
+  else if(param == "back_shade_delta") {
     if(!m_tiff_offon) {
       if((m_fill_shade+v > 0) && (m_fill_shade+v <= 1.0))
 	m_fill_shade += v;
     }
+  }
+  else if(param == "back_shade") {
+    if((v >= 0) && (v <= 1.0))
+      m_fill_shade = v;
   }
   else if(param == "zoom") {
     m_zoom *= v;

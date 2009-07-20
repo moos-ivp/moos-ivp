@@ -686,7 +686,8 @@ bool VehicleSet::updateVehiclePosition(const string& ais_report)
   m_vlen_map[vname]  = vlen; 
   m_pos_map[vname]   = opose;
   m_ais_map[vname]   = utime;
-  m_vmode_map[vname] = vmode;
+  if(b_vmode)
+    m_vmode_map[vname] = vmode;
 
   ColoredPoint point(pos_x, pos_y);
   map<string,CPList>::iterator p2;

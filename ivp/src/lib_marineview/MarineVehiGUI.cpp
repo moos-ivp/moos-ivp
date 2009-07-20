@@ -152,6 +152,18 @@ void MarineVehiGUI::cb_ToggleVNameColor(Fl_Widget* o) {
   ((MarineVehiGUI*)(o->parent()->user_data()))->cb_ToggleVNameColor_i();
 }
 
+//----------------------------------------- Alt Trail Size
+inline void MarineVehiGUI::cb_AltTrailSize_i(int delta) {
+  if(delta > 0)
+    cmviewer->setParam("trails_point_size", "bigger");
+  else
+    cmviewer->setParam("trails_point_size", "smaller");
+  cmviewer->redraw();
+}
+void MarineVehiGUI::cb_AltTrailSize(Fl_Widget* o, int v) {
+  ((MarineVehiGUI*)(o->parent()->user_data()))->cb_AltTrailSize_i(v);
+}
+
 //----------------------------------------- ToggleTrailColor
 inline void MarineVehiGUI::cb_ToggleTrailColor_i() {
   m_trail_color_ix = (m_trail_color_ix+1) % 3;
@@ -202,18 +214,6 @@ inline void MarineVehiGUI::cb_MVG_SetGeoAttr_i(int v) {
 }
 void MarineVehiGUI::cb_MVG_SetGeoAttr(Fl_Widget* o, int v) {
   ((MarineVehiGUI*)(o->parent()->user_data()))->cb_MVG_SetGeoAttr_i(v);
-}
-
-//----------------------------------------- Alt Trail Size
-inline void MarineVehiGUI::cb_AltTrailSize_i(int delta) {
-  if(delta > 0)
-    cmviewer->setParam("trails_point_size", "bigger");
-  else
-    cmviewer->setParam("trails_point_size", "smaller");
-  cmviewer->redraw();
-}
-void MarineVehiGUI::cb_AltTrailSize(Fl_Widget* o, int v) {
-  ((MarineVehiGUI*)(o->parent()->user_data()))->cb_AltTrailSize_i(v);
 }
 
 //----------------------------------------- Alt Shape Scale
