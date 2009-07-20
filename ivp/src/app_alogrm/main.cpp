@@ -33,10 +33,18 @@ int main(int argc, char *argv[])
   // Look for a request for usage information
   if(scanArgs(argc, argv, "-h", "--help", "-help")) {
     cout << "Usage: " << endl;
-    cout << "  alogfilt input.alog VAR [VAR] [VAR] [output.alog]" << endl;
-    cout << "  (#2 alog is output - otherwise order is irrelevent)" << endl;
-    cout << "  (Must provide input file and at least one variable)" << endl;
-    cout << "  (VAR* will pattern-match on VAR)" << endl << endl;
+    cout << "  alogrm input.alog [SWITCHES] [VAR] [VAR] [output.alog]" << endl;
+    cout << "  Notes: The second alog is the output file. Otherwise  " << endl;
+    cout << "         argument ordering is irrelevent.               " << endl;
+    cout << "         An input file is mandatory.                    " << endl;
+    cout << "         VAR* will pattern-match on VAR                 " << endl;
+    cout << "  Switches:                                             " << endl;
+    cout << "    -nostr will remove lines with string data values    " << endl;
+    cout << "    -nonum will remove lines with double data values    " << endl;
+    cout << "    -clean will remove lines that have a timestamp that " << endl;
+    cout << "           is non-numerical or lines w/ no 4th column   " << endl;
+    cout << "    -times will rewrite all timestamps to be time since " << endl;
+    cout << "           logger started and LOGSTART is set to zero.  " << endl;
     return(0);
   }
 
@@ -44,10 +52,12 @@ int main(int argc, char *argv[])
 
   string alogfile_in;
   string alogfile_out;
+  string bad_switch;
 
   bool nostrings = false;
   bool nonumbers = false;
   bool timeshift = false;
+  bool rm_bad_lines = false;
 
   for(int i=1; i<argc; i++) {
     string sarg = argv[i];
@@ -61,14 +71,23 @@ int main(int argc, char *argv[])
       nonumbers = true;
     else if(strContains(sarg, "-nostr"))
       nostrings = true;
+    else if(strContains(sarg, "-clean"))
+      rm_bad_lines = true;
     else if(strContains(sarg, "-times"))
       timeshift = true;
+    else if(sarg.at(0) == '-')
+      bad_switch = sarg;
     else
       keys.push_back(sarg);
   }
  
   if(alogfile_in == "") {
     cout << "No alog file given - exiting" << endl;
+    exit(0);
+  }
+
+  if(bad_switch != "") {
+    cout << "Bad switch [" << bad_switch << "] - exiting" << endl;
     exit(0);
   }
 
@@ -80,6 +99,9 @@ int main(int argc, char *argv[])
   
   if(nonumbers)
     handler.setParam("nonumbers", "true");
+  
+  if(rm_bad_lines)
+    handler.setParam("clean", "true");
 
   if(nostrings)
     handler.setParam("nostrings", "true");

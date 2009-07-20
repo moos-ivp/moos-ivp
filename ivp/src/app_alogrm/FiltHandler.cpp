@@ -31,6 +31,7 @@ FiltHandler::FiltHandler()
   m_chuck_numbers = false;
   m_logstart      = -1;
   m_timeshift     = false;
+  m_clean         = false;
 }
 
 //--------------------------------------------------------
@@ -41,6 +42,8 @@ bool FiltHandler::setParam(const string& param, const string& value)
 {
   if(param == "nostrings")
     return(setBooleanOnString(m_chuck_strings, value));
+  else if(param == "clean")
+    return(setBooleanOnString(m_clean, value));
   else if(param == "nonumbers")
     return(setBooleanOnString(m_chuck_numbers, value));
   else if(param == "timeshift")
@@ -81,10 +84,13 @@ void FiltHandler::handle(const string& alogfile, const string& new_alogfile)
   bool done  = false;
   while(!done) {
     count++;
+    bool skip_line = false;
+
     string line_raw = getNextRawLine(m_file_in);
 
-    if(count == 4) 
+    if(count == 4) { 
       m_logstart = getLogStart(line_raw);      
+    }
 
     if((line_raw == "eof") || (line_raw == "err"))
       done = true;
@@ -99,17 +105,34 @@ void FiltHandler::handle(const string& alogfile, const string& new_alogfile)
 	else if(m_pmatch[i] && strContains(varname, m_keys[i]))
 	  match = true;
       }
-
+      
+      if(m_clean && (count >= 6)) {
+	string time_stamp = getTimeStamp(line_raw);
+	if(!isNumber(time_stamp))
+	  match = true;
+	string data_field = getDataEntry(line_raw);
+	if(data_field == "") 
+	  match = true;
+      }
+      
+      
       if((!match || (count < 6)) && (line_raw != "")) {
 	string data_field = getDataEntry(line_raw);
-	if(m_chuck_strings && (varname != "") && !isNumber(data_field))
+
+	if(m_chuck_strings && (count > 5)  && 
+	   (varname != "") && !isNumber(data_field))
 	  addVectorKey(m_keys, m_pmatch, varname);
-	else if(m_chuck_numbers && (varname != "") && isNumber(data_field))
+	else if(m_chuck_numbers && (count > 5) &&
+		(varname != "") && isNumber(data_field))
 	  addVectorKey(m_keys, m_pmatch, varname);
 	else {
 	  stripInsigDigits(line_raw);
-	  if(m_timeshift)
+	  if(m_timeshift) {
+	    //cout << "old: " << line_raw << endl;
 	    shiftTimeStamp(line_raw, m_logstart);
+	    //cout << "new: " << line_raw << endl;
+	    //cout << "logstart: " << m_logstart << endl << endl;
+	  }
 	  if(m_file_out)
 	    fprintf(m_file_out, "%s\n", line_raw.c_str());
 	  else

@@ -30,6 +30,7 @@ class FiltHandler
   bool  m_chuck_strings;
   bool  m_chuck_numbers;
   bool  m_timeshift;
+  bool  m_clean;
 
   FILE *m_file_in;
   FILE *m_file_out;
