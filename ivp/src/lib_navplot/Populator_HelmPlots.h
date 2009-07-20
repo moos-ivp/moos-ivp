@@ -1,8 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin and John Leonard                    */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
-/*    FILE: LogPlot.h                                            */
-/*    DATE: May 31st, 2005                                       */
+/*    FILE: Populator_HelmPlots.h                                */
+/*    DATE: July 15th, 2009 (at GLINT'09)                        */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
 /* modify it under the terms of the GNU General Public License   */
@@ -20,49 +20,31 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
-#ifndef LOG_PLOT_HEADER
-#define LOG_PLOT_HEADER
+#ifndef POPULATOR_HELMPLOTS_HEADER
+#define POPULATOR_HELMPLOTS_HEADER
 
 #include <string>
 #include <vector>
-#include <list>
+#include "HelmPlot.h"
 
-class LogPlot
+class Populator_HelmPlots 
 {
 public:
-  LogPlot();
-  ~LogPlot() {};
+  Populator_HelmPlots() {};
+  ~Populator_HelmPlots() {};
 
-  void   set_varname(std::string s) {varname = s;};
-  void   set_vehicle(std::string s) {vehicle = s;};
-  bool   set_value(double gtime, double gvalue);
-  double get_time_by_index(unsigned int index) const;
-  double get_value_by_index(unsigned int index) const;
-  double get_value_by_time(double gtime) const;
-  double get_median();
-  double get_min_time() const;
-  double get_max_time() const;
-  double get_min_val() const      {return(min_val);};
-  double get_max_val() const      {return(max_val);};
-  std::string get_varname() const {return(varname);};
-  std::string get_vehicle() const {return(vehicle);};
-  unsigned int  size() const      {return(time.size());};
-  void   print() const;
-  
-  int get_index_by_time(double) const;
+  bool     setFileALog(std::string);
+  bool     populateFromALog();
+  HelmPlot getHelmPlot() {return(m_helm_plot);};
 
 protected:
-  std::string vehicle;         // Name of the platform
-  std::string varname;         // Variable name to be plotted
-  std::vector<double> time;
-  std::vector<double> value;
+  std::string  m_file;
+  HelmPlot     m_helm_plot;
 
-  double utc_start_time;
-  double min_val;
-  double max_val;
-
-  bool   m_median_set;
-  double m_median;
+  std::vector<std::string>  m_lines;
+  std::vector<std::string>  m_node_reports;
+  std::vector<std::string>  m_helm_summaries;
+  std::vector<double>       m_helm_summary_times;
 };
 #endif 
 

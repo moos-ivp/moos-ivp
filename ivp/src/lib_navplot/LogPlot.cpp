@@ -30,6 +30,19 @@
 using namespace std;
 
 //---------------------------------------------------------------
+// Constructor
+
+LogPlot::LogPlot()
+{
+  min_val  = 0; 
+  max_val  = 0; 
+  m_median = 0;
+  m_median_set = false;
+  utc_start_time = 0; 
+}
+
+
+//---------------------------------------------------------------
 // Procedure: set_value
 //      Note: Time must be in ascending order. If new pair doesn't
 //            obey, no action is taken, and false is returned.
@@ -46,12 +59,48 @@ bool LogPlot::set_value(double gtime, double gval)
       max_val = gval;
     if((tsize == 0) || (gval < min_val))
       min_val = gval;
+    m_median_set = false;
     return(true);
   }
   else
     return(false);
 }
 
+//---------------------------------------------------------------
+// Procedure: get_median
+//   Purpose: Calculate the median value of all points added so far.
+
+double LogPlot::get_median()
+{
+  // The median value is stored locally - only calculated it if it
+  // has not been calculated already. Subsequent additions to the 
+  // log will clear the median value;
+  if(m_median_set)
+    return(m_median);
+
+  list<double> vlist;
+
+  // First put all the log values in the list.
+  unsigned int i, vsize = value.size();
+  for(i=0; i<vsize; i++)
+    vlist.push_back(value[i]);
+
+  // Then sort them - ascending or descending does not matter.
+  vlist.sort();
+
+  // Increment an interator half way through the list and get
+  // the value at that point as the median.
+  unsigned int lsize = vlist.size();
+  list<double>::iterator p = vlist.begin();
+  for(i=0; i<(lsize/2); i++)
+    p++;
+
+  m_median = *p;
+  m_median_set = true;
+
+  return(m_median);
+}
+     
 //---------------------------------------------------------------
 // Procedure: get_value_by_index
 

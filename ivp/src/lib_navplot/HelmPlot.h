@@ -1,8 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin and John Leonard                    */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
-/*    FILE: LogPlot.h                                            */
-/*    DATE: May 31st, 2005                                       */
+/*    FILE: HelmPlot.h                                           */
+/*    DATE: July 15th, 2009                                      */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
 /* modify it under the terms of the GNU General Public License   */
@@ -20,56 +20,53 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
-#ifndef LOG_PLOT_HEADER
-#define LOG_PLOT_HEADER
+#ifndef HELM_PLOT_HEADER
+#define HELM_PLOT_HEADER
 
 #include <string>
 #include <vector>
-#include <list>
 
-class LogPlot
+class HelmPlot
 {
 public:
-  LogPlot();
-  ~LogPlot() {};
+  HelmPlot() {m_utc_start_time=0;};
+  ~HelmPlot() {};
 
-  void   set_varname(std::string s) {varname = s;};
-  void   set_vehicle(std::string s) {vehicle = s;};
-  bool   set_value(double gtime, double gvalue);
+  void   set_vehi_name(std::string s) {m_vehicle_name = s;};
+  void   set_vehi_type(std::string s) {m_vehicle_type = s;};
+  void   set_vehi_length(double len)  {m_vehicle_length = len;};
+  
+  bool   add_entry(double time, std::string helm_summary);
+  
   double get_time_by_index(unsigned int index) const;
-  double get_value_by_index(unsigned int index) const;
-  double get_value_by_time(double gtime) const;
-  double get_median();
+  
+  std::string  get_value_by_index(std::string value_type, 
+				  unsigned int index) const;
+  std::string  get_value_by_time(std::string value_type,
+				 double gtime) const;
+
   double get_min_time() const;
   double get_max_time() const;
-  double get_min_val() const      {return(min_val);};
-  double get_max_val() const      {return(max_val);};
-  std::string get_varname() const {return(varname);};
-  std::string get_vehicle() const {return(vehicle);};
-  unsigned int  size() const      {return(time.size());};
+  unsigned int  size() const  {return(m_time.size());};
   void   print() const;
   
+protected:
   int get_index_by_time(double) const;
 
 protected:
-  std::string vehicle;         // Name of the platform
-  std::string varname;         // Variable name to be plotted
-  std::vector<double> time;
-  std::vector<double> value;
+  std::string m_vehicle_name;
+  std::string m_vehicle_type;
+  double      m_vehicle_length;
 
-  double utc_start_time;
-  double min_val;
-  double max_val;
+  std::vector<double>      m_time;
+  std::vector<std::string> m_helm_iter;
+  std::vector<std::string> m_helm_mode;
+  std::vector<std::string> m_helm_utc;
+  std::vector<std::string> m_helm_idle_bhvs;
+  std::vector<std::string> m_helm_running_bhvs;
+  std::vector<std::string> m_helm_active_bhvs;
+  std::vector<std::string> m_helm_completed_bhvs;
 
-  bool   m_median_set;
-  double m_median;
+  double m_utc_start_time;
 };
 #endif 
-
-
-
-
-
-
-
-
