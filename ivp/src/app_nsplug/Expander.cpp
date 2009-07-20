@@ -180,7 +180,7 @@ vector<string> Expander::expandFile(string filename,
 
       if(!verifyInfile(full_file_str)) {
 	cout << "#  Error in file " << filename << " line:" << i+1 << endl;
-	cout << "#  The #include file " << full_file_str << " not found." << endl;
+	cout << "#  The #include file \"" << file_str << "\" not found." << endl;
 	result = false;
 	return(empty_vector);
       }
@@ -188,7 +188,7 @@ vector<string> Expander::expandFile(string filename,
       if(vectorContains(filenames, full_file_str)) {
 	cout << "#  Error in file " << filename << " line:" << i+1 << endl;
 	cout << "#  A #include LOOP was detected - " << endl;
-	cout << "#  trying to #include file " << full_file_str << endl;
+	cout << "#  trying to #include file " << file_str << endl;
 	result = false;
 	return(empty_vector);
       }
