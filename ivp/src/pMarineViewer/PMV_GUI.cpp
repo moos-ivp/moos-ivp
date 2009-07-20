@@ -278,7 +278,8 @@ void PMV_GUI::addAction(string svalue, bool separator)
   for(i=0; i<psize; i++) {
     unsigned int index = pindex + i;
     string left  = truncString(vars[i], 25, "middle");
-    string right = truncString(vals[i], 25, "middle");
+    string right = vals[i];
+    //string right = truncString(vals[i], 25, "middle");
     string label = ("Action/" + left + "=" + right);
     label = padString(label, 25, false);
     if(key != "")
