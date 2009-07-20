@@ -33,10 +33,11 @@ int main(int argc, char *argv[])
   // Look for a request for usage information
   if(scanArgs(argc, argv, "-h", "--help", "-help")) {
     cout << "Usage: " << endl;
-    cout << "  aloggrab input.alog VAR [VAR] [VAR] [output.alog]" << endl;
-    cout << "  (#2 alog is output - otherwise order is irrelevent)" << endl;
-    cout << "  (Must provide input file and at least one variable)" << endl;
-    cout << "  (VAR* will pattern-match on VAR)" << endl << endl;
+    cout << "  aloggrep input.alog [VAR] [VAR] [output.alog]" << endl;
+    cout << "  Notes: The second alog is the output file. Otherwise  " << endl;
+    cout << "         argument ordering is irrelevent.               " << endl;
+    cout << "         An input file is mandatory.                    " << endl;
+    cout << "         VAR* will pattern-match on VAR         " << endl << endl;
     return(0);
   }
 
