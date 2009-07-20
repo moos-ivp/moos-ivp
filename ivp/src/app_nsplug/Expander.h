@@ -33,7 +33,7 @@ class Expander
  protected:
   std::vector<std::string> 
     expandFile(std::string filename,
-	       std::map<std::string, std::string> macros,
+	       std::map<std::string, std::string>& macros,
 	       std::vector<std::string> filenames, 
 	       bool& result);
   

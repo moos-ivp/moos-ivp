@@ -61,7 +61,7 @@ bool Expander::expand()
 //            are from MBUtils.h
 
 vector<string> Expander::expandFile(string filename, 
-				    map<string, string> macros, 
+				    map<string, string>& macros, 
 				    vector<string> filenames, 
 				    bool& result)
 {
@@ -81,9 +81,10 @@ vector<string> Expander::expandFile(string filename,
   string  mode = "top";
   
   for(int i=0; i<vsize; i++) {
-    string line = findReplace(fvector[i], '\t', ' ');
+    string line = stripBlankEnds(findReplace(fvector[i], '\t', ' '));
     string left = stripBlankEnds(biteString(line, ' '));
     string rest = stripBlankEnds(line);
+
     //------------------------------------------------------------
     if(!skip_lines && (left == "#ifdef")) {
       if(mode!="top") {
