@@ -243,17 +243,15 @@ void REPLAY_GUI::augmentMenu()
 
 int REPLAY_GUI::handle(int event) 
 {
+  double lpv_curr_time = 0;
   switch(event) {
   case FL_PUSH:
-    cout << "REPLAY_GUI::handle-PUSH" << endl;
     Fl_Window::handle(event);
-    double lpv_curr_time = lp_viewer->get_curr_time();
+    lpv_curr_time = lp_viewer->get_curr_time();
     np_viewer->setCurrIndexByTime(lpv_curr_time);
     return(1);
     break;
   case FL_RELEASE:
-    cout << "REPLAY_GUI::handle-RELEASE" << endl;
-    cout << "In REPLAY_GUI::handle()-->updateXY()" << endl;
     updateXY();
     return(1);
     break;
