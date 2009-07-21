@@ -378,7 +378,7 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
 	m_node_report_vars.push_back(value);
       }
     }
-    if(param == "scope") {
+    else if(param == "scope") {
       vector<string> svector = parseString(value, ',');
       unsigned int i, vsize = svector.size();
       for(i=0; i<vsize; i++) {
