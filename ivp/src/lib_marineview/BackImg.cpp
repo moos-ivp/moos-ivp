@@ -26,20 +26,13 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-#ifdef WIN32
-#include "tiffio.h"
-#else
 #include <tiffio.h>
-#endif
+
+//#include <GL/gl.h>
 
 
 // See http://www.cmake.org/pipermail/cmake/2003-March/003482.html
-#ifdef WIN32
-	#include <windows.h>
-	#include <GL/gl.h>
-	#include "glext.h" // http://www.opengl.org/registry/api/glext.h
-	typedef UINT32 uint32;
-#elif OPSYS_IS_LINUX
+#if OPSYS_IS_LINUX
    #include <GL/gl.h>
 #elif OPSYS_IS_OS_X
    #include <OpenGL/gl.h>
@@ -80,7 +73,8 @@ BackImg::BackImg()
 
 BackImg::~BackImg()
 {
-  if(img_data) _TIFFfree( img_data );
+  if(img_data) _TIFFfree(img_data);
+  //if(img_data) delete [] img_data;
 }
 
 // ----------------------------------------------------------
@@ -130,7 +124,8 @@ bool BackImg::readTiff(string filename)
 
 bool BackImg::readTiffData(string filename)
 {
-  if(img_data) _TIFFfree( img_data );
+  //if(img_data) delete [] img_data;
+  if(img_data) _TIFFfree(img_data);
   img_height = 0;
   img_width  = 0;
 
