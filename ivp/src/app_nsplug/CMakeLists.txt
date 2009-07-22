@@ -3,6 +3,15 @@
 # Author(s):                                Mike Benjamin
 #--------------------------------------------------------
 
+# Set System Specific Libraries
+if (${WIN32})
+  SET(SYSTEM_LIBS
+    )
+else (${WIN32})
+  SET(SYSTEM_LIBS
+    m)
+endif (${WIN32})
+
 SET(SRC
    Expander.cpp
    main.cpp
@@ -12,4 +21,4 @@ ADD_EXECUTABLE(nsplug ${SRC})
      
 TARGET_LINK_LIBRARIES(nsplug
   mbutil
-  m)
+  ${SYSTEM_LIBS})

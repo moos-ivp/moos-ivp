@@ -3,6 +3,16 @@
 # Author(s):                                Mike Benjamin
 #--------------------------------------------------------
 
+# Set System Specific Libraries
+if (${WIN32})
+  SET(SYSTEM_LIBS
+    wsock32)
+else (${WIN32})
+  SET(SYSTEM_LIBS
+    m
+    pthread)
+endif (${WIN32})
+
 SET(SRC
    NodeReporter.cpp
    main.cpp
@@ -15,5 +25,4 @@ TARGET_LINK_LIBRARIES(pNodeReporter
    MOOSGen
    MOOSUtility
    mbutil
-   m
-   pthread)
+   ${SYSTEM_LIBS})

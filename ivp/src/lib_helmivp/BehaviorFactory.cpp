@@ -2,10 +2,15 @@
 #include "MBUtils.h"
 #include "fileutil.h"
 #include "stringutil.h"
-#include <dlfcn.h>
 #include <iostream>
 #include <stdlib.h>
-#include <unistd.h>
+
+#if defined (WIN32)
+   #include <windows.h>
+#else
+   #include <unistd.h>
+   #include <dlfcn.h>
+#endif
 
 using namespace std;
 
@@ -76,17 +81,23 @@ void BehaviorFactory::load_directory(string dirname) {
      string bhv_name = fname.substr(3, fname.length() - (3 + suffix_len));
 
      cerr << "        About to load behavior library: " << bhv_name << " ... ";
-     
      // Load the library file, then go after the symbols we need...
+#ifdef WIN32
+	 void* handle = LoadLibrary(fpath.c_str());
+     
+	 if (handle == NULL) {
+       cerr << "Error calling LoadLibrary() on file " << fname << endl;
+	   cerr << "GetLastError() returns: " << GetLastError() << endl;
+#else
      void* handle = dlopen(fpath.c_str(), RTLD_LAZY);
+
      if (handle == NULL) {
        cerr << endl;
        cerr << "Error calling dlopen() on file " << fname << endl;
        cerr << "dlerror() returns: " << dlerror() << endl;
-       exit(1);
+#endif
+	   exit(1);
      }
-
-     const char *dlsym_error;
 
      // Apparently ISO C++ doesn't permit you to cast a (pointer to an object) 
      // to (a pointer to a function).  And (at least) gcc 3.3 treads "void *" 
@@ -98,16 +109,28 @@ void BehaviorFactory::load_directory(string dirname) {
 
      // TFuncPtrCreateBehavior createFn = 
      //   reinterpret_cast<TFuncPtrCreateBehavior>(dlsym(handle, "createBehavior"));
+#ifdef WIN32
+	TFuncPtrCreateBehavior createFn = 
+		(TFuncPtrCreateBehavior)(GetProcAddress((HMODULE)handle,"createBehavior"));
+
+	const DWORD dlsym_error = GetLastError();
+
+	if (dlsym_error) {
+         cerr << "Cannot load symbol 'createBehavior' from file " << fname << endl;
+         cerr << "dlerror() returns: " << dlsym_error << endl;
+#else
      TFuncPtrCreateBehavior createFn = 
        (TFuncPtrCreateBehavior)(dlsym(handle, "createBehavior"));
 
-     dlsym_error = dlerror();
+     const char *dlsym_error = dlerror();
      if (dlsym_error) {
          cerr << endl;
          cerr << "Cannot load symbol 'createBehavior' from file " << fname << endl;
          cerr << "dlerror() returns: " << dlsym_error << endl;
+#endif
          exit(1);
-     }
+      }
+     
 
      cerr << "SUCCESS" << endl;
 

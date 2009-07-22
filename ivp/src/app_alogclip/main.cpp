@@ -171,7 +171,7 @@ int main(int argc, char *argv[])
   string lpct = doubleToString(clipped_lines_pct, 2);
   string cpct = doubleToString(clipped_chars_pct, 2);
 
-  string digits = intToString((int)(log10(clipped_chars_total)));
+  string digits = intToString((int)(log10((double)clipped_chars_total)));
 
   printf("\n\n");
 

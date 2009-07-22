@@ -3,7 +3,11 @@
 
 #include <queue>
 #include <cassert>
-#include <pthread.h>
+#ifdef WIN32
+   #include "MOOSLock.h"
+#else
+   #include <pthread.h>
+#endif
 
 /// This implements a thread-safe pipe.  To keep the implementation simple, this
 /// class makes no promises regarding first-come, first-serve access to the
@@ -42,7 +46,12 @@ class Threadsafe_pipe {
   private:
     std::queue<T> data;
     bool closed;
+
+#ifdef WIN32
+	CMOOSLock* m_lock;
+#else
     pthread_mutex_t mtx;
+#endif
 };
 
 //==============================================================================
@@ -52,8 +61,13 @@ Threadsafe_pipe<T>::Threadsafe_pipe()
   : closed(false)
 {
   int rc;
+
+#ifdef WIN32
+  m_lock = new CMOOSLock();
+#else
   rc = pthread_mutex_init(& mtx, NULL);
   assert(!rc);
+#endif
 }
 
 //==============================================================================
@@ -62,8 +76,12 @@ template <typename T>
 Threadsafe_pipe<T>::~Threadsafe_pipe() 
 {
   int rc;
+#ifdef WIN32
+  delete m_lock;
+#else
   rc = pthread_mutex_destroy(& mtx);
   assert(!rc);
+#endif 
 }
 
 //==============================================================================
@@ -72,20 +90,33 @@ template <typename T>
 bool Threadsafe_pipe<T>::enqueue(const T & value)
 {
   int rc;
+
+#ifdef WIN32
+	m_lock->Lock();
+#else
   rc = pthread_mutex_lock(& mtx);
   assert(!rc);
+#endif
   
   if (closed) {
+#ifdef WIN32
+    m_lock->UnLock();
+#else
     rc = pthread_mutex_unlock(& mtx);
     assert(!rc);
+#endif
 
     return false;
   }
   
   data.push(value);
 
+#ifdef WIN32
+  m_lock->UnLock();
+#else
   rc = pthread_mutex_unlock(& mtx);
   assert(!rc);
+#endif
 
   return true;
 }
@@ -96,13 +127,21 @@ template <typename T>
 void Threadsafe_pipe<T>::close()
 {
   int rc;
+#ifdef WIN32
+  m_lock->Lock();
+#else
   rc = pthread_mutex_lock(& mtx);
   assert(!rc);
+#endif
 
   closed = true;
 
+#ifdef WIN32
+  m_lock->UnLock();
+#else
   rc = pthread_mutex_unlock(& mtx);
   assert(!rc);
+#endif
 }
 
 //==============================================================================
@@ -111,16 +150,24 @@ template <typename T>
 bool Threadsafe_pipe<T>::dequeue(T & value)
 {
   int rc;
+#ifdef WIN32
+  m_lock->Lock();
+#else
   rc = pthread_mutex_lock(& mtx);
   assert(!rc);
+#endif
 
   // Is there data to get? ...
   if (! data.empty()) {
     value = data.front();
     data.pop();
 
+#ifdef WIN32
+	m_lock->UnLock();
+#else
     rc = pthread_mutex_unlock(& mtx);
     assert(!rc);
+#endif
     
     return true;
   }
@@ -128,8 +175,12 @@ bool Threadsafe_pipe<T>::dequeue(T & value)
     // If we got here, then the pipe must have be empty and closed...
     assert(closed);
 
+#ifdef WIN32
+	m_lock->UnLock();
+#else
     rc = pthread_mutex_unlock(& mtx);
     assert(!rc);
+#endif
 
     return false;
   }
@@ -141,13 +192,21 @@ template <typename T>
 bool Threadsafe_pipe<T>::empty()
 {
   int rc;
+#ifdef WIN32
+  m_lock->Lock();
+#else
   rc = pthread_mutex_lock(& mtx);
   assert(!rc);
+#endif
   
   bool is_empty = data.empty();
   
-  rc = pthread_mutex_unlock(& mtx);
-  assert(!rc);
+#ifdef WIN32
+	m_lock->UnLock();
+#else
+    rc = pthread_mutex_unlock(& mtx);
+    assert(!rc);
+#endif
   
   return is_empty;
 }

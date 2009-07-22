@@ -23,11 +23,15 @@ using namespace std;
 
 void pause(int nMS)
 {
+#ifdef WIN32
+	Sleep(nMS);
+#else
   timespec TimeSpec;
   TimeSpec.tv_sec 	= nMS / 1000;
   TimeSpec.tv_nsec 	= (nMS%1000) *1000000;
   
   nanosleep(&TimeSpec,NULL);
+#endif
 }
 
 

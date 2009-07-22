@@ -3,6 +3,16 @@
 # Author(s):                                Mike Benjamin
 #--------------------------------------------------------
 
+# Set System Specific Libraries
+if (${WIN32})
+  SET(SYSTEM_LIBS
+    wsock32)
+else (${WIN32})
+  SET(SYSTEM_LIBS
+    m
+    pthread)
+endif (${WIN32})
+
 SET(SRC
    MarinePID.cpp
    PIDEngine.cpp
@@ -17,5 +27,4 @@ TARGET_LINK_LIBRARIES(pMarinePID
   MOOSGen
   mbutil
   geometry 
-  m
-  pthread)
+  ${SYSTEM_LIBS})

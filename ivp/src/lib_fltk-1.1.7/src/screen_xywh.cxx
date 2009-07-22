@@ -55,8 +55,14 @@ static BOOL CALLBACK screen_cb(HMONITOR mon, HDC, LPRECT, LPARAM) {
   MONITORINFO mi;
   mi.cbSize = sizeof(mi);
 
-//  GetMonitorInfo(mon, &mi);
-  fl_gmi(mon, &mi);
+  // During the Windows Port, it was determined that the fl_gmi
+  // function below cause the application to crash. Reverting to use
+  // GetMonitorInfo - CWG
+#ifdef WIN32
+  GetMonitorInfo(mon, &mi);
+#else
+  fl_gmi(mon, &mi); 
+#endif
 
   screens[num_screens] = mi.rcWork;
   num_screens ++;
@@ -83,8 +89,15 @@ static void screen_init() {
         if (fl_gmi) {
           // We have GetMonitorInfoA, enumerate all the screens...
           num_screens = 0;
-//        EnumDisplayMonitors(0,0,screen_cb,0);
-          fl_edm(0, 0, screen_cb, 0);
+		  
+		  // During the Windows Port, it was determined that the fl_edm
+		  // function below cause the application to crash. Reverting to use
+		  // EnumDisplayMonitors - CWG
+#ifdef WIN32
+          EnumDisplayMonitors(0,0,screen_cb,0); 
+#else
+          fl_edm(0, 0, screen_cb, 0); 
+#endif
           return;
         }
       }

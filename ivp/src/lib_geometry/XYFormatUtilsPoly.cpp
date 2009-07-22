@@ -19,7 +19,9 @@
 /* Software Foundation, Inc., 59 Temple Place - Suite 330,       */
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
- 
+#ifdef WIN32
+   #define _USE_MATH_DEFINES
+#endif
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
@@ -29,6 +31,10 @@
 #include "MBUtils.h"
 #include "AngleUtils.h"
 #include "GeomUtils.h"
+
+#ifdef WIN32
+  #define strncasecmp strnicmp
+#endif
 
 using namespace std;
 
@@ -266,7 +272,7 @@ XYPolygon stringRadial2Poly(string str)
   bool radius_set = false;
   bool pts_set    = false;
 
-  double xpos, ypos, zval, radius, snap=0;
+  double xpos = 0, ypos = 0, zval = 0, radius = 0, snap=0;
   int    pts;
   
   str = stripBlankEnds(str);

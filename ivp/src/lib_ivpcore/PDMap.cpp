@@ -45,6 +45,11 @@
 #include "BoxSet.h"
 #include "IvPGrid.h"
 
+#ifdef WIN32
+#   include <float.h>
+#   define isnan _isnan
+#endif
+
 using namespace std;
 
 //-------------------------------------------------------------

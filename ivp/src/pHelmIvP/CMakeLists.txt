@@ -3,6 +3,17 @@
 # Author(s):                                Mike Benjamin
 #--------------------------------------------------------
 
+# Set System Specific Libraries
+if (${WIN32})
+  SET(SYSTEM_LIBS
+    wsock32)
+else (${WIN32})
+  SET(SYSTEM_LIBS
+    dl
+    m
+    pthread)
+endif (${WIN32})
+
 SET(SRC
   HelmIvP.cpp
   pHelmIvPMain.cpp
@@ -22,8 +33,6 @@ TARGET_LINK_LIBRARIES(pHelmIvP
   geometry
   mbutil 
   logic 
-  m
-  dl
   genutil
-  pthread)
+  ${SYSTEM_LIBS})
 

@@ -20,9 +20,13 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
-#include <math.h>
 #include "MBUtils.h"
 #include "AOF_MGaussian.h"
+
+#ifdef WIN32
+#   define _USE_MATH_DEFINES
+#endif
+#include <math.h>
 
 using namespace std;
 

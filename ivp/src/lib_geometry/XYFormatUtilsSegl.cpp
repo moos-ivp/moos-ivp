@@ -31,6 +31,10 @@
 #include "AngleUtils.h"
 #include "GeomUtils.h"
 
+#ifdef WIN32
+  #define strncasecmp strnicmp
+#endif
+
 using namespace std;
 
 //---------------------------------------------------------------

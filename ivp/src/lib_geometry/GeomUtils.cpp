@@ -24,6 +24,9 @@
 #include <math.h>
 #include "GeomUtils.h"
 #include "AngleUtils.h"
+#ifdef _WIN32
+#   include <cstdlib>
+#endif
 
 using namespace std;
 

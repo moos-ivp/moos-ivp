@@ -1,10 +1,16 @@
 #include "AOFFactory.h"
 #include "fileutil.h"
 #include "stringutil.h"
-#include <dlfcn.h>
 #include <iostream>
 #include <stdlib.h>
-#include <unistd.h>
+
+#if defined (WIN32)
+   #include <windows.h>
+#else
+   #include <unistd.h>
+   #include <dlfcn.h>
+#endif
+
 
 using namespace std;
 
@@ -77,15 +83,22 @@ void AOFFactory::load_directory(string dirname) {
      cerr << "        About to load AOF library: " << aof_name << " ... ";
      
      // Load the library file, then go after the symbols we need...
+#ifdef WIN32
+	 void* handle = LoadLibrary(fpath.c_str());
+     
+	 if (handle == NULL) {
+       cerr << "Error calling LoadLibrary() on file " << fname << endl;
+	   cerr << "GetLastError() returns: " << GetLastError() << endl;
+#else
      void* handle = dlopen(fpath.c_str(), RTLD_LAZY);
+
      if (handle == NULL) {
        cerr << endl;
        cerr << "Error calling dlopen() on file " << fname << endl;
        cerr << "dlerror() returns: " << dlerror() << endl;
-       exit(1);
+#endif
+	   exit(1);
      }
-
-     const char *dlsym_error;
 
      // Apparently ISO C++ doesn't permit you to cast a (pointer to an object) 
      // to (a pointer to a function).  And (at least) gcc 3.3 treads "void *" 
@@ -95,16 +108,28 @@ void AOFFactory::load_directory(string dirname) {
      // to be able to build IvP, so we're going to use an old-style C cast to 
      // side-step the compiler error. -CJC
 
-     TFuncPtrCreateAOF createFn = 
+
+#ifdef WIN32
+	TFuncPtrCreateAOF createFn = 
+		(TFuncPtrCreateAOF)(GetProcAddress((HMODULE)handle,"createAOF"));
+
+	const DWORD dlsym_error = GetLastError();
+
+	if (dlsym_error) {
+         cerr << "Cannot load symbol 'createAOF' from file " << fname << endl;
+         cerr << "dlerror() returns: " << dlsym_error << endl;
+#else
+	 TFuncPtrCreateAOF createFn = 
        (TFuncPtrCreateAOF)(dlsym(handle, "createAOF"));
 
-     dlsym_error = dlerror();
+     const char *dlsym_error = dlerror();
      if (dlsym_error) {
          cerr << endl;
          cerr << "Cannot load symbol 'createAOF' from file " << fname << endl;
          cerr << "dlerror() returns: " << dlsym_error << endl;
+#endif
          exit(1);
-     }
+      }
 
      cerr << "SUCCESS" << endl;
 

@@ -5,6 +5,10 @@
 /*    DATE: April 30th 2009                                      */
 /*****************************************************************/
 
+#ifdef WIN32
+   #include <string>
+#endif
+
 using namespace std;
 
 #include <algorithm>
@@ -103,8 +107,12 @@ int XYPatternBlock::setLanePoints()
   double alter_ang2 = angle360(m_angle + 90);
   
   double lane_pts_count_d = (m_blockwid / m_swathwid) + 1; 
+#ifdef WIN32
+  int i, lane_pts_count = (int)(floor(lane_pts_count_d + 0.99999));
+#else
   int i, lane_pts_count = (int)(trunc(lane_pts_count_d + 0.99999));
-
+#endif
+  
   double cptx, cpty;
   idPointCenter(cptx, cpty);
 

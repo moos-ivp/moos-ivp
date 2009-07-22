@@ -251,7 +251,7 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
 	m_gui->mviewer->updateScopeVariable(key, sval, mtime, source);
 	scope_handled = true;
       }
-    }
+	}
 
     bool handled = m_gui->mviewer->setParam(key, sval);
     if(!handled && (key == "PK_SOL")) {

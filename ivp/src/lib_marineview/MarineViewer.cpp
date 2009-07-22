@@ -24,7 +24,14 @@
 #include <cstring>
 #include <cstdlib>
 #include <math.h>
-#include <tiffio.h>
+#ifdef WIN32
+	#include <windows.h>
+	#include <GL/gl.h>
+	#include "glext.h" // http://www.opengl.org/registry/api/glext.h
+	//#include "tiffio.h" // CWG - TIFFIO Not needed
+#else
+	#include <tiffio.h>
+#endif
 #include "MarineViewer.h"
 #include "MBUtils.h"
 #include "FColorMap.h"

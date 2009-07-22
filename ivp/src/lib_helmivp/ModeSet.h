@@ -34,7 +34,7 @@ public:
   ModeSet() {m_info_buffer=0;};
   ~ModeSet() {};
 
-  bool addEntry(ModeEntry entry) {m_entries.push_back(entry);};
+  void addEntry(ModeEntry entry) {m_entries.push_back(entry);};
 
   void setInfoBuffer(InfoBuffer *b) {m_info_buffer = b;};
   

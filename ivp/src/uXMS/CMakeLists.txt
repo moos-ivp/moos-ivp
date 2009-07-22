@@ -3,6 +3,16 @@
 # Author(s):                                Mike Benjamin
 #--------------------------------------------------------
 
+# Set System Specific Libraries
+if (${WIN32})
+  SET(SYSTEM_LIBS
+    wsock32)
+else (${WIN32})
+  SET(SYSTEM_LIBS
+    m
+    pthread)
+endif (${WIN32})
+
 SET(SRC 
   XMS.cpp
   main_uXMS.cpp
@@ -15,6 +25,5 @@ TARGET_LINK_LIBRARIES(uXMS
   MOOSGen
   genutil
   mbutil 
-  m
-  pthread)
+  ${SYSTEM_LIBS})
 

@@ -3,6 +3,16 @@
 # Author(s):                                Mike Benjamin
 #--------------------------------------------------------
 
+# Set System Specific Libraries
+if (${WIN32})
+  SET(SYSTEM_LIBS
+    wsock32)
+else (${WIN32})
+  SET(SYSTEM_LIBS
+    m
+    pthread)
+endif (${WIN32})
+
 SET(SRC
    FV_GUI.cpp
    FV_MOOSApp.cpp
@@ -21,16 +31,15 @@ ENDIF (${APPLE})
 TARGET_LINK_LIBRARIES(uFunctionVis
    MOOS
    MOOSGen
-   pthread
    ipfview
    geometry
    ivpbuild
    mbutil
    ivpcore
    genutil
-   m
    fltk 
-   fltk_gl)
+   fltk_gl
+   ${SYSTEM_LIBS})
 
 # http://developer.apple.com/qa/qa2007/qa1567.html
 IF (${APPLE})

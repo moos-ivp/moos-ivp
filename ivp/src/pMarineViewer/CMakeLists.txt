@@ -2,6 +2,16 @@
 # The CMakeLists.txt for:                   pMarineViewer
 # Author(s):                                Mike Benjamin
 #--------------------------------------------------------
+
+# Set System Specific Libraries
+if (${WIN32})
+  SET(SYSTEM_LIBS
+    wsock32)
+else (${WIN32})
+  SET(SYSTEM_LIBS
+    m)
+endif (${WIN32})
+
 SET(SRC
    PMV_GUI.cpp
    PMV_MOOSApp.cpp
@@ -23,7 +33,6 @@ TARGET_LINK_LIBRARIES(pMarineViewer
    genutil
    geometry
    mbutil
-   m
    
    # Standard libraries used by this project's FLTK apps...
    fltk 

@@ -28,13 +28,23 @@
 #include "TermUtils.h"
 #include "MBUtils.h"
 
+#ifdef WIN32
+#include <process.h>
+#include "MOOSAppRunnerThread.h"
+#endif
+
 using namespace std;
 
 // ----------------------------------------------------------
 // global variables here
 
 const char*  g_sMissionFile = "uXMS.moos";
-pthread_t    g_threadID;
+
+#ifdef WIN32
+	MOOSAppRunnerThread* g_threadID;
+#else
+	pthread_t    g_threadID;
+#endif 
 
 struct ThreadParams {
     CMOOSApp *app;
@@ -59,7 +69,7 @@ void* RunProc(void *lpParameter)
 
 //--------------------------------------------------------
 // Procedure: spawn_thread
-
+#ifndef WIN32
 pthread_t spawn_thread(ThreadParams *pParams)
 {
   pthread_t tid;
@@ -72,6 +82,7 @@ pthread_t spawn_thread(ThreadParams *pParams)
   
   return(tid);
 }
+#endif
 
 //--------------------------------------------------------
 // Procedure: main
@@ -190,7 +201,19 @@ int main(int argc ,char * argv[])
   if(seed) {
     // Add 1 to each in case one returns a zero in an error case
     unsigned long tseed = time(NULL) + 1;
-    unsigned long hostid = gethostid() + 1;
+#ifdef WIN32
+	unsigned long hostid = 0; 
+	char hostname[256];
+	if( gethostname(hostname, 256) == 0 ){
+		hostent *host = gethostbyname(hostname);
+		if(host != NULL){
+			hostid = *(u_long *)host->h_addr_list[0];
+		}
+	}
+	hostid += 1;
+#else
+    unsigned long hostid = gethostid() + 1; 
+#endif
     unsigned long pid = (long)getpid() + 1;
     unsigned long seed = (tseed%999999);
     seed = ((rand()) * seed * hostid) % 999999;
@@ -202,8 +225,12 @@ int main(int argc ,char * argv[])
   }
 
   // start the XMS in its own thread
+#ifdef WIN32
+  g_threadID = new MOOSAppRunnerThread(&g_theXMS, (char*)(process_name.c_str()), (char*)g_sMissionFile);
+#else
   ThreadParams params = {&g_theXMS, (char*)(process_name.c_str())};
   g_threadID = spawn_thread(&params);	
+#endif
 
   for(int i=1; i<argc; i++) {
     string str = argv[i];

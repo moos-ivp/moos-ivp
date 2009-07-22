@@ -15,12 +15,16 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -g")
 
 # *** REPLACE "../../MOOS" WITH WHATEVER VALUE IS REQUIRED.  THE DIRECTORY 
 # *** SHOULD HAVE CHILD DIRECTORIES SUCH AS "Core", "Essentials", ETC.
-SET(MOOS_BASE_DIR ../../MOOS)
+IF (${WIN32})
+  SET(MOOS_BASE_DIR ../../MOOS-2232-May1209)
+ELSE (${WIN32})
+  SET(MOOS_BASE_DIR ../../MOOS)
+ENDIF (${WIN32})
 
 # Using absolute pathnames seems to work better then relative, because you're 
 # never sure from which directory a relative path will be employed in commands
 # such as LINK_DIRECTORIES() ...
-GET_FILENAME_COMPONENT(MOOS_BASE_DIR_ABSOLUTE ../../MOOS ABSOLUTE)
+GET_FILENAME_COMPONENT(MOOS_BASE_DIR_ABSOLUTE ${MOOS_BASE_DIR} ABSOLUTE)
 
 # Confirm that MOOS_BASE_DIR seems to be set to a valid value...
 IF(NOT EXISTS ${MOOS_BASE_DIR_ABSOLUTE}/Core)
@@ -88,27 +92,38 @@ INCLUDE_DIRECTORIES(${IVP_LIBRARY_DIRS})
 #---------------------------------------------------------------------
 
 SET(IVP_NON_GUI_LIBS
-  lib_behaviors
-  lib_behaviors-marine
-  lib_bhvutil
-  lib_genutil
-  lib_geometry
-  lib_helmivp
-  lib_ivpbuild
-  lib_ivpcore
-  lib_logic
-  lib_logutils
-  lib_mbutil
-  lib_navplot
-  lib_anrp_util
-  lib_newmat10D
-  )
+   lib_behaviors
+   lib_behaviors-marine
+   lib_bhvutil
+   lib_genutil
+   lib_geometry
+   lib_helmivp
+   lib_ivpbuild
+   lib_ivpcore
+   lib_logic
+   lib_logutils
+   lib_mbutil
+   lib_navplot
+   lib_newmat10D
+   )
 
-SET(IVP_GUI_LIBS
-    lib_ipfview
-    lib_marineview
-    lib_fltk-1.1.7
-    )
+
+IF (${WIN32})
+   # Set the Non-IVP GUI libraries for Windows
+   SET(IVP_GUI_LIBS
+      lib_ipfview
+      lib_marineview
+      lib_fltk-1.1.7
+      lib_tiff
+      )
+ELSE (${WIN32})
+   # Linux, Mac
+   SET(IVP_GUI_LIBS
+      lib_ipfview
+      lib_marineview
+      lib_fltk-1.1.7
+      )
+ENDIF (${WIN32})
 
 SET(IVP_LIBS_TO_BUILD ${IVP_NON_GUI_LIBS})
 IF("${IVP_BUILD_GUI_CODE}" STREQUAL "ON")

@@ -25,7 +25,11 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <tiffio.h>
+#ifdef WIN32
+	#include "tiffio.h"
+#else
+	#include <tiffio.h>
+#endif
 #include "NavPlotViewer.h"
 #include "MBUtils.h"
 #include "ColorParse.h"

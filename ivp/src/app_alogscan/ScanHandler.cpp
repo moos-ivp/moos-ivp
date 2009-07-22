@@ -49,8 +49,8 @@ void ScanHandler::handle(const string& alogfile)
 
   m_report.sort(m_sort_style);
 
-  int line_digits  = (int)(log10(m_report.getMaxLines())) + 2;
-  int char_digits  = (int)(log10(m_report.getMaxChars())) + 2;
+  int line_digits  = (int)(log10((double) m_report.getMaxLines())) + 2;
+  int char_digits  = (int)(log10((double) m_report.getMaxChars())) + 2;
   int start_digits = (int)(log10(m_report.getMaxStartTime())) + 4;
   int stop_digits  = (int)(log10(m_report.getMaxStopTime())) + 4;
 

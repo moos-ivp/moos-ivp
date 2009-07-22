@@ -12,6 +12,10 @@
 #include "MBUtils.h"
 #include "TermCommand.h"
 
+#ifdef WIN32
+	#include "MOOSAppRunnerThread.h"
+#endif
+
 using namespace std;
 
 // ----------------------------------------------------------
@@ -19,7 +23,12 @@ using namespace std;
 
 char*        g_sMissionFile = 0;
 TermCommand  g_theTermCommand;
-pthread_t    g_threadID;
+
+#ifdef WIN32
+	MOOSAppRunnerThread* g_threadID;
+#else
+	pthread_t    g_threadID;
+#endif
 
 struct ThreadParams {
     CMOOSApp *app;
@@ -44,7 +53,7 @@ void* RunProc(void *lpParameter)
 
 //--------------------------------------------------------
 // Procedure: spawn_thread
-
+#ifndef WIN32
 pthread_t spawn_thread(ThreadParams *pParams)
 {
   pthread_t tid;
@@ -57,6 +66,7 @@ pthread_t spawn_thread(ThreadParams *pParams)
   
   return(tid);
 }
+#endif
 
 //--------------------------------------------------------
 // Procedure: main
@@ -90,8 +100,12 @@ int main(int argc ,char * argv[])
   }
  
   // start the TermCommand in its own thread
+#ifdef WIN32
+  g_threadID = new MOOSAppRunnerThread(&g_theTermCommand, argv[0], g_sMissionFile);
+#else
   ThreadParams params = {&g_theTermCommand, argv[0]};
   g_threadID = spawn_thread(&params);	
+#endif
 
   bool quit = false;
   while(!quit) {
