@@ -22,9 +22,23 @@ ProcessConfig = ANTLER
   Run = pNodeReporter	@ NewConsole = false
   Run = pMarinePID	@ NewConsole = true
   Run = pMarineViewer	@ NewConsole = true
-  //Run = pLogger         @ NewConsole = false
+  Run = pLogger         @ NewConsole = false
   Run = pHelmIvP	@ NewConsole = false
 }
+
+//------------------------------------------
+// pLogger config block
+
+ProcessConfig = pLogger
+{
+  AppTick   = 4
+  CommsTick = 4
+
+  SyncLog = false
+  AsyncLog = true
+  WildCardLogging = true
+}
+
 
 //------------------------------------------
 // iMarineSim config block
