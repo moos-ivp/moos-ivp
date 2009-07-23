@@ -85,6 +85,30 @@ MarineViewer::~MarineViewer()
 }
 
 //-------------------------------------------------------------
+// Procedure: handle()
+
+int MarineViewer::handle(int event)
+{
+  int result;
+ 
+  if (event == FL_MOUSEWHEEL) {
+    if (Fl::event_dy () < 0) {
+      // Not great, value copied from MarineGUI::cb_Zoom_i (int).
+      setParam ("zoom", 1.05);
+    }
+    else if (Fl::event_dy () > 0) {
+      // Not great, value copied from MarineGUI::cb_Zoom_i (int).
+      setParam ("zoom", 0.80);
+    }
+    result = 1;
+  }
+  else {
+    result = Fl_Gl_Window::handle (event);
+  }
+  return(result);
+}
+
+//-------------------------------------------------------------
 // Procedure: setParam
 
 bool MarineViewer::setParam(string param, string value)

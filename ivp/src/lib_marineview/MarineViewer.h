@@ -52,7 +52,7 @@ class MarineViewer : public Fl_Gl_Window
   
   // Pure virtuals that need to be defined
   virtual void  draw();
-  virtual int   handle(int event) {return(Fl_Gl_Window::handle(event));};
+  virtual int   handle(int event);
 
   virtual bool setParam(std::string p, std::string v="");
   virtual bool setParam(std::string p, double v);
