@@ -126,7 +126,7 @@ int PMV_Viewer::handle(int event)
     return(1);
     break;
   default:
-    return(Fl_Gl_Window::handle(event));
+    return(MarineViewer::handle(event));
   }
 }
 
