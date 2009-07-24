@@ -51,21 +51,23 @@ int main(int argc, char *argv[])
 
   string alogfile = "";
   for(int i=1; i<argc; i++) {
-    string sarg = argv[i];
+    string sarg = tolower(argv[i]);
     if(strContains(sarg, ".alog"))
       alogfile = sarg;
     else if(strContains(sarg, "-chars"))
-      sort_style = "bychars_descending";
+      sort_style = "bychars_ascending";
     else if(strContains(sarg, "-lines"))
-      sort_style = "bylines_descending";
+      sort_style = "bylines_ascending";
     else if(strContains(sarg, "-sortlines"))
       sort_style = "bylines_ascending";
     else if(strContains(sarg, "-start"))
-      sort_style = "bystarttime_descending";
+      sort_style = "bystarttime_ascending";
     else if(strContains(sarg, "-stop"))
-      sort_style = "bystoptime_descending";
-    else if(strContains(sarg, "-appstat"))
+      sort_style = "bystoptime_ascending";
+    else if(sarg == "-appstat")
       app_stat_requested = true;
+    else if(sarg == "-r")
+      reverse_requested = true;
   }
  
   if(reverse_requested) {

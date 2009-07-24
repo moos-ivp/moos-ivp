@@ -17,7 +17,6 @@
 
 using namespace std;
 
-
 //--------------------------------------------------------
 // Procedure: setParam
 //     Notes: 
@@ -49,15 +48,15 @@ void ScanHandler::handle(const string& alogfile)
 
   m_report.sort(m_sort_style);
 
-  int line_digits  = (int)(log10((double) m_report.getMaxLines())) + 2;
-  int char_digits  = (int)(log10((double) m_report.getMaxChars())) + 2;
+  int line_digits  = (int)(log10(m_report.getMaxLines())) + 2;
+  int char_digits  = (int)(log10(m_report.getMaxChars())) + 2;
   int start_digits = (int)(log10(m_report.getMaxStartTime())) + 4;
   int stop_digits  = (int)(log10(m_report.getMaxStopTime())) + 4;
 
-  cout << "line_digits:  " << line_digits  << endl;
-  cout << "char_digits:  " << char_digits  << endl;
-  cout << "start_digits: " << start_digits << endl;
-  cout << "stop_digits:  " << stop_digits  << endl;
+  //cout << "line_digits:  " << line_digits  << endl;
+  //cout << "char_digits:  " << char_digits  << endl;
+  //cout << "start_digits: " << start_digits << endl;
+  //cout << "stop_digits:  " << stop_digits  << endl;
 
   if(line_digits  < 5)  line_digits  = 5;
   if(char_digits  < 5)  char_digits  = 5;
@@ -180,7 +179,5 @@ void ScanHandler::appStatReport()
     printf("%s           %s   %s       %s       %s\n", 
 	   source.c_str(), s_lines.c_str(), 
 	   s_chars.c_str(), s_lines_pct.c_str(), s_chars_pct.c_str());
-  }
-  
+  }  
 }
-
