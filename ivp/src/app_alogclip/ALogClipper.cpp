@@ -18,7 +18,6 @@ using namespace std;
 
 //--------------------------------------------------------
 // Procedure: Constructor
-//     Notes: 
 
 ALogClipper::ALogClipper()
 {
