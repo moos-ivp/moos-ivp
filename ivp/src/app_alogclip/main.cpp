@@ -25,14 +25,24 @@ using namespace std;
 void display_usage()
 {
   cout << "Usage: " << endl;
-  cout << "  alogclip in.alog out.alog mintime maxtime" << endl;
-  cout << "                                           " << endl;
-  cout << "  Order of arguments may vary. The first alog file is   " << endl;
-  cout << "  treated as the input file, and the 2nd is the output. " << endl;
-  cout << "  The first numerical argument is treated as the mintime" << endl;
-  cout << "  and the 2nd is treated as the maxtime. If more than   " << endl;
-  cout << "  two alog files, or more than two numerical arguments  " << endl;
-  cout << "  are provided, this usage message will be displayed.   " << endl;
+  cout << "  alogclip in.alog out.alog mintime maxtime [-h] [-v] [-f]" << endl;
+  cout << "                                                       " << endl;
+  cout << "  in.alog  - The input logfile.                        " << endl;
+  cout << "  out.alog - The newly generated output logfile.       " << endl;
+  cout << "  mintime  - Log entries with timestamps below mintime " << endl;
+  cout << "             will be excluded from the output file.    " << endl;
+  cout << "  maxtime  - Log entries with timestamps above mintime " << endl;
+  cout << "             will be excluded from the output file.    " << endl;
+  cout << "                                                       " << endl;
+  cout << "  -h,--help    - Display this usage/help message.      " << endl;
+  cout << "  -v,--version - Display version information.          " << endl;
+  cout << "  -f,--force   - Overwrite an existing output file.    " << endl;
+  cout << "                                                       " << endl;
+  cout << " Notes: The order of arguments may vary. The first alog" << endl;
+  cout << " file is treated as the input file, and the first      " << endl;
+  cout << " numericial value is treated as the mintime. Exactly   " << endl;
+  cout << " two alog files and two numerical values must be given." << endl;
+  cout << " (see also: alogscan, alogrm, aloggrep)    " << endl << endl;
 }
 
 //--------------------------------------------------------
@@ -54,8 +64,13 @@ int main(int argc, char *argv[])
     return(0);
   }
 
+  bool force_overwrite = false;
+  // Look for the option to force an overwrite of an existing output
+  // file without prompting the user.
+  if(scanArgs(argc, argv, "-f", "--force", "-force"))
+    force_overwrite = true;
+
   bool   okargs = true;
-  
   double min_time = 0; 
   double max_time = 0;
   bool   min_time_set = false;
@@ -113,9 +128,9 @@ int main(int argc, char *argv[])
       " does not exist - exiting." << endl;
     exit(0);
   }
-    
+  
   ok = clipper.openALogFileRead(alog_outfile);
-  if(ok) {
+  if(ok && !force_overwrite) {
     bool done = false;
     while(!done) {
       cout << "File " << alog_outfile << " exists. Replace?(y/n)" << endl;
@@ -171,7 +186,7 @@ int main(int argc, char *argv[])
   string lpct = doubleToString(clipped_lines_pct, 2);
   string cpct = doubleToString(clipped_chars_pct, 2);
 
-  string digits = intToString((int)(log10((double)clipped_chars_total)));
+  string digits = intToString((int)(log10(clipped_chars_total)));
 
   printf("\n\n");
 
@@ -193,9 +208,3 @@ int main(int argc, char *argv[])
   printf(format.c_str(), clipped_chars_back);
   
 }
-
-
-
-
-
-
