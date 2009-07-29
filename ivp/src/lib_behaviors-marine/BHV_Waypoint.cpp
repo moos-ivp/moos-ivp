@@ -409,7 +409,7 @@ bool BHV_Waypoint::setNextWaypoint()
 IvPFunction *BHV_Waypoint::buildOF(string method) 
 {
   IvPFunction *ipf = 0;
-
+ 
   if((method == "roc") || (method == "rate_of_closure")) {
     bool ok = true;
     AOF_Waypoint aof_wpt(m_domain);

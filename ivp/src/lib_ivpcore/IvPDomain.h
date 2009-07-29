@@ -57,24 +57,20 @@ public:
   bool   hasDomain(const std::string&) const;
   void   clear();
   void   print() const;
-
   int    getIndex(const std::string&) const;
 
-  unsigned int  size() const                 {return(m_dname.size());};
-  unsigned int  getVarPoints(unsigned int i) const    
-    {return(m_dpoints[i]);};
-
+  unsigned int size() const                 {return(m_dname.size());};
   double getVarLow(unsigned int i) const    {return(m_dlow[i]);};
   double getVarHigh(unsigned int i) const   {return(m_dhigh[i]);};
   double getVarDelta(unsigned int i) const  {return(m_ddelta[i]);};
+  double getVarLow(const std::string& s) const;    
+  double getVarHigh(const std::string& s) const;    
+  double getVarDelta(const std::string& s) const;    
 
   // Return number of points in the domain for a given variable name.
   // If the variable name is unknown, just return zero.
-  int getVarPoints(const std::string& str) const
-    {
-      unsigned int ix = getIndex(str);
-      return(((ix>=0)&&(ix<m_dpoints.size())) ? m_dpoints[ix] : 0);
-    }
+  unsigned int getVarPoints(const std::string& str) const;
+  unsigned int getVarPoints(unsigned int i) const;    
 
   // For the ith domain index, and j steps into the domain, return
   // the corresponding floating point value.
@@ -127,13 +123,4 @@ private:
 };
 
 #endif
-
-
-
-
-
-
-
-
-
 

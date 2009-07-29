@@ -158,9 +158,10 @@ void IvPDomain::print() const
 
 int IvPDomain::getIndex(const string &g_name) const
 {
-  for(unsigned int i=0; (i < m_dname.size()); i++)
+  for(unsigned int i=0; (i < m_dname.size()); i++) {
     if(m_dname[i] == g_name)
       return(i);
+  }
   return(-1);
 }
 
@@ -171,7 +172,66 @@ int IvPDomain::getIndex(const string &g_name) const
 
 
 
+//-------------------------------------------------------------
+// Procedure: getVarPoints()
 
+unsigned int IvPDomain::getVarPoints(unsigned int index) const
+{
+  unsigned int vsize = m_dname.size();
+  if(index < vsize)
+    return(m_dpoints[index]);
+  else
+    return(0);
+}
+
+//-------------------------------------------------------------
+// Procedure: getVarPoints()
+
+unsigned int IvPDomain::getVarPoints(const string& str) const
+{
+  int index = getIndex(str);
+  if((index >= 0) && (index < m_dpoints.size()))
+    return(m_dpoints[index]);
+  else
+    return(0);
+}
+
+
+//-------------------------------------------------------------
+// Procedure: getVarLow
+
+double IvPDomain::getVarLow(const string& str) const
+{
+  int index = getIndex(str);
+  if((index >= 0) && (index < m_dlow.size()))
+    return(m_dlow[index]);
+  else
+    return(0);
+}
+
+//-------------------------------------------------------------
+// Procedure: getVarHigh
+
+double IvPDomain::getVarHigh(const string& str) const
+{
+  int index = getIndex(str);
+  if((index >= 0) && (index < m_dhigh.size()))
+    return(m_dhigh[index]);
+  else
+    return(0);
+}
+
+//-------------------------------------------------------------
+// Procedure: getVarDelta
+
+double IvPDomain::getVarDelta(const string& str) const
+{
+  int index = getIndex(str);
+  if((index >= 0) && (index < m_ddelta.size()))
+    return(m_ddelta[index]);
+  else
+    return(0);
+}
 
 //-------------------------------------------------------------
 // Procedure: getDiscreteVal

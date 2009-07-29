@@ -27,10 +27,6 @@
 #include "Threadsafe_pipe.h"
 #include "MOOS_event.h"
 
-#ifdef WIN32
-#include "MOOSAppRunnerThread.h"
-#endif
-
 using namespace std;
 
 // ----------------------------------------------------------
@@ -39,12 +35,7 @@ using namespace std;
 
 char*                       g_sMissionFile = 0;
 PMV_MOOSApp                 g_thePort;
-
-#ifdef WIN32
-	MOOSAppRunnerThread* g_portThreadID;
-#else
-	pthread_t    g_portThreadID;
-#endif
+pthread_t                   g_portThreadID;
 Threadsafe_pipe<MOOS_event> g_pending_moos_events;
 
 struct ThreadParams {
@@ -58,11 +49,7 @@ struct ThreadParams {
 void exit_with_usage()
 {
   cout << "Usage: pMarineViewer file.moos [file.tif] [-noimg]" << endl;
-#ifdef WIN32
-  exit(0);
-#else
   exit(-1);
-#endif
 }
 
 //--------------------------------------------------------
@@ -143,7 +130,6 @@ void* RunProc(void *lpParameter)
 //--------------------------------------------------------
 // Procedure: spawn_thread
 
-#ifndef WIN32
 pthread_t spawn_thread(ThreadParams *pParams)
 {
   pthread_t tid;
@@ -156,7 +142,6 @@ pthread_t spawn_thread(ThreadParams *pParams)
   
   return tid;
 }
-#endif
 
 //--------------------------------------------------------
 // Procedure: idleProc
@@ -203,9 +188,9 @@ int main(int argc, char *argv[])
   if(g_sMissionFile == 0)
     exit_with_usage();
   
-  PMV_GUI* gui = new PMV_GUI(1100,850, "pMarineViewer");
+  //PMV_GUI* gui = new PMV_GUI(1100,850, "pMarineViewer");
   //PMV_GUI* gui = new PMV_GUI(1100,700, "pMarineViewer");
-  //PMV_GUI* gui = new PMV_GUI(1100,585, "pMarineViewer");
+  PMV_GUI* gui = new PMV_GUI(1100,525, "pMarineViewer");
   if(!gui) {
     cout << "Unable to instantiate the GUI - exiting." << endl;
     return(-1);
@@ -228,12 +213,8 @@ int main(int argc, char *argv[])
 
   cout << "appFilename:" << appFilename << endl;
   
-#ifdef WIN32
-  g_portThreadID = new MOOSAppRunnerThread(&g_thePort, argv[0], g_sMissionFile);
-#else  
   ThreadParams params = {&g_thePort, appFilename};
-  g_portThreadID = spawn_thread(&params);
-#endif	
+  g_portThreadID = spawn_thread(&params);	
 
   Fl::lock();
   
@@ -266,5 +247,3 @@ int main(int argc, char *argv[])
   delete gui;
   return 0;
 }
-
-

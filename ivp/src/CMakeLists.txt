@@ -100,7 +100,6 @@ ENDIF()
 #---------------------------------------------------------------------
 
 SET(IVP_NON_GUI_LIBS
-   lib_anrp_util
    lib_behaviors
    lib_behaviors-marine
    lib_bhvutil

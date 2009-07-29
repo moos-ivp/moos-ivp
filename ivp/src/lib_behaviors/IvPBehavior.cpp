@@ -76,6 +76,7 @@ IvPBehavior::IvPBehavior(IvPDomain g_domain)
   m_duration_prev_state      = "";
   m_duration_idle_decay      = true;
   m_duration_reset_on_transition = false;
+  cout << "In IvPBehavior Constructor" << endl;
 }
   
 //-----------------------------------------------------------
@@ -261,7 +262,7 @@ bool IvPBehavior::setParam(string g_param, string g_val)
   
   else if(g_param == "precision") {
     string precision_info = "precision=" + tolower(g_val);
-    return(setParamCommon("build_info", precision_info)); 
+    return(setParam("build_info", precision_info)); 
   }
 
   return(false);
