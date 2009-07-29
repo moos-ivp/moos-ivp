@@ -56,7 +56,7 @@ esac
 
 echo ""
 echo "Environment variable 'MOOS_BUILD_GRAPHICAL_TOOLS' = '"${MOOS_BUILD_GRAPHICAL_TOOLS}"'"
-echo "   So will invoke cmake with -DBUILD_GRAPHICAL_TOOLS="${CLEANED_MOOS_BUILD_GRAPHICAL_TOOLS}" argument."
+echo "   So will invoke cmake with -DBUILD_GRAPHICAL_TOOLS=${CLEANED_MOOS_BUILD_GRAPHICAL_TOOLS}"
 
 ################################################################################
 
