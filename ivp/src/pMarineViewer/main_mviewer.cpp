@@ -26,6 +26,7 @@
 #include "MBUtils.h"
 #include "Threadsafe_pipe.h"
 #include "MOOS_event.h"
+#include "MOOSAppRunnerThread.h"
 
 using namespace std;
 
@@ -35,7 +36,9 @@ using namespace std;
 
 char*                       g_sMissionFile = 0;
 PMV_MOOSApp                 g_thePort;
-pthread_t                   g_portThreadID;
+// pthread_t                   g_portAppRunnerThread;
+MOOSAppRunnerThread       * g_portAppRunnerThread;
+
 Threadsafe_pipe<MOOS_event> g_pending_moos_events;
 
 struct ThreadParams {
@@ -49,7 +52,11 @@ struct ThreadParams {
 void exit_with_usage()
 {
   cout << "Usage: pMarineViewer file.moos [file.tif] [-noimg]" << endl;
+#ifdef WIN32
+  exit(0);
+#else
   exit(-1);
+#endif
 }
 
 //--------------------------------------------------------
@@ -130,18 +137,18 @@ void* RunProc(void *lpParameter)
 //--------------------------------------------------------
 // Procedure: spawn_thread
 
-pthread_t spawn_thread(ThreadParams *pParams)
-{
-  pthread_t tid;
-  if (pthread_create(&tid,NULL, RunProc, pParams) != 0) {
-    MOOSTrace("failed to start %s thread\n", pParams->name);
-    tid = (pthread_t) -1;
-  }
-  else 
-    MOOSTrace("%s thread spawned\n", pParams->name);
-  
-  return tid;
-}
+// pthread_t spawn_thread(ThreadParams *pParams)
+// {
+//   pthread_t tid;
+//   if (pthread_create(&tid,NULL, RunProc, pParams) != 0) {
+//     MOOSTrace("failed to start %s thread\n", pParams->name);
+//     tid = (pthread_t) -1;
+//   }
+//   else 
+//     MOOSTrace("%s thread spawned\n", pParams->name);
+//   
+//   return tid;
+// }
 
 //--------------------------------------------------------
 // Procedure: idleProc
@@ -213,8 +220,9 @@ int main(int argc, char *argv[])
 
   cout << "appFilename:" << appFilename << endl;
   
-  ThreadParams params = {&g_thePort, appFilename};
-  g_portThreadID = spawn_thread(&params);	
+  g_portAppRunnerThread = new MOOSAppRunnerThread(&g_thePort, argv[0], g_sMissionFile);
+//   ThreadParams params = {&g_thePort, appFilename};
+//   g_portAppRunnerThread = spawn_thread(&params);
 
   Fl::lock();
   
