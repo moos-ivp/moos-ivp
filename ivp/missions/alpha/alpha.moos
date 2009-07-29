@@ -6,7 +6,7 @@ Simulator  = true
 
 Community  = alpha
 
-MOOSTimeWarp = 30
+MOOSTimeWarp = 1
 
 LatOrigin  = 43.825300 
 LongOrigin = -70.330400 
@@ -24,7 +24,6 @@ ProcessConfig = ANTLER
   Run = pMarineViewer	@ NewConsole = true
   Run = pLogger         @ NewConsole = false
   Run = pHelmIvP	@ NewConsole = false
-  Run = uFunctionVis    @ NewConsole = false
 }
 
 //------------------------------------------
