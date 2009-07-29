@@ -43,7 +43,6 @@
 #endif
 
 #include <vector>
-#include <iostream>
 #include <stdlib.h>
 #include "IvPBehavior.h"
 #include "MBUtils.h"
@@ -76,7 +75,6 @@ IvPBehavior::IvPBehavior(IvPDomain g_domain)
   m_duration_prev_state      = "";
   m_duration_idle_decay      = true;
   m_duration_reset_on_transition = false;
-  cout << "In IvPBehavior Constructor" << endl;
 }
   
 //-----------------------------------------------------------
