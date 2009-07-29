@@ -6,6 +6,7 @@
 SET(SRC
    BehaviorFactory.cpp
    HelmEngine.cpp
+   HelmEngineBeta.cpp
    HelmReport.cpp
    ModeSet.cpp
    ModeEntry.cpp

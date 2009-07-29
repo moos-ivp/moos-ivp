@@ -29,6 +29,7 @@
 
 class HelmReport {
   friend class HelmEngine;
+  friend class HelmEngineBeta;
 public:
   HelmReport();
 

@@ -31,6 +31,7 @@
 #include "IvPDomain.h"
 #include "BehaviorSet.h"
 #include "HelmEngine.h"
+#include "HelmEngineBeta.h"
 
 class HelmIvP : public CMOOSApp
 {
@@ -95,7 +96,9 @@ protected:
   int           m_warning_count;
   double        m_curr_time;
 
+  bool          m_use_beta_engine;
   HelmEngine*   m_hengine;
+  HelmEngineBeta* m_hengine_beta;
   std::string   m_ownship;
   std::vector<std::string> m_node_report_vars;
 

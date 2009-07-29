@@ -61,6 +61,7 @@ HelmIvP::HelmIvP()
   m_allstop_posted = false;
   m_bhv_set        = 0;
   m_hengine        = 0;
+  m_hengine_beta   = 0;
   m_info_buffer    = new InfoBuffer;
   m_verbose        = "terse";
   m_iteration      = 0;
@@ -68,6 +69,8 @@ HelmIvP::HelmIvP()
   m_skews_matter   = true;
   m_warning_count  = 0;
   m_last_heartbeat = 0;
+
+  m_use_beta_engine = false;
 
   // The refresh vars handle the occasional clearing of the m_outgoing
   // maps. These maps will be cleared when MOOS mail is received for the
@@ -106,20 +109,19 @@ HelmIvP::~HelmIvP()
 
 void HelmIvP::cleanup()
 {
-  if(m_info_buffer) {
-    delete(m_info_buffer);
-    m_info_buffer = 0;
-  }
-  if(m_bhv_set) {
-    delete(m_bhv_set);
-    m_bhv_set = 0;
-  }
-  if(m_hengine) {
-    delete(m_hengine);
-    m_hengine = 0;
-  }
-  IvPDomain new_domain;
-  m_ivp_domain = new_domain;
+  delete(m_info_buffer);
+  m_info_buffer = 0;
+
+  delete(m_bhv_set);
+  m_bhv_set = 0;
+
+  delete(m_hengine);
+  m_hengine = 0;
+
+  delete(m_hengine_beta);
+  m_hengine_beta = 0;
+
+  m_ivp_domain = IvPDomain();
 }
 
 //--------------------------------------------------------------------
@@ -225,7 +227,10 @@ bool HelmIvP::Iterate()
   m_info_buffer->setCurrTime(m_curr_time);
 
   HelmReport helm_report;
-  helm_report = m_hengine->determineNextDecision(m_bhv_set, m_curr_time);
+  if(m_use_beta_engine)
+    helm_report = m_hengine_beta->determineNextDecision(m_bhv_set, m_curr_time);
+  else
+    helm_report = m_hengine->determineNextDecision(m_bhv_set, m_curr_time);
 
   m_iteration = helm_report.getIteration();
   if(m_verbose == "verbose") {
@@ -703,63 +708,58 @@ bool HelmIvP::OnStartUp()
     
   STRING_LIST::iterator p;
   for(p = sParams.begin();p!=sParams.end();p++) {
-    string sLine     = *p;
-    string sVarName  = MOOSChomp(sLine, "=");
-    sVarName = toupper(sVarName);
-    sLine    = stripBlankEnds(sLine);
-    
-    if(MOOSStrCmp(sVarName, "BEHAVIORS"))
-      addBehaviorFile(sLine);
-    
-    if(MOOSStrCmp(sVarName, "OK_SKEW")) {
-      string str = toupper(sLine);
-      if(str == "ANY") {
+    string line  = *p;
+    string param = stripBlankEnds(toupper(biteString(line, '=')));
+    string value = stripBlankEnds(line);
+
+    if(param == "BEHAVIORS")
+      addBehaviorFile(value);
+    else if(param == "OK_SKEW") {
+      if(toupper(value) == "ANY") {
 	m_skews_matter = false;
 	m_ok_skew = -1;
       }
       else {
-	double dval = atof(str.c_str());
-	if(isNumber(str) && (dval >= 0)) {
+	double dval = atof(value.c_str());
+	if(isNumber(value) && (dval >= 0)) {
 	  m_skews_matter = true;
 	  m_ok_skew = dval;
 	}
 	else {
-	  MOOSTrace("Improper OK_SKEW value: %s\n", sLine.c_str());
+	  MOOSTrace("Improper OK_SKEW value: %s\n", line.c_str());
 	  return(false);
 	}
       }
     }
-    
-    else if(MOOSStrCmp(sVarName, "VERBOSE")) {
-      sLine = tolower(sLine);
-      if(sLine == "true")  sLine = "verbose";
-      if(sLine == "false") sLine = "terse";
-      m_verbose = sLine;
-      if((m_verbose!="verbose")&&(m_verbose!="terse")&&(m_verbose!="quiet")) {
-	MOOSTrace("Improper VERBOSE value: %s\n", sLine.c_str());
+    else if(param == "VERBOSE") {
+      value = tolower(value);
+      if(value == "true")  value = "verbose";
+      if(value == "false") value = "terse";
+      if((value!="verbose") && (value!="terse") && (value!="quiet")) {
+	MOOSTrace("Improper VERBOSE value: %s\n", value.c_str());
 	return(false);
       }
+      m_verbose = value;
     }
-    
-    else if((MOOSStrCmp(sVarName, "ACTIVE_START")) ||
-	    (MOOSStrCmp(sVarName, "START_ENGAGED"))) {
-      sLine = tolower(sLine);
-      if(sLine == "true") {
+    else if(param == "BETA_ENGINE")
+      setBooleanOnString(m_use_beta_engine, value);
+    else if((param == "ACTIVE_START") || (param == "START_ENGAGED")) {
+      if(tolower(value) == "true") {
 	m_has_control = true;
 	m_allow_overide = false;
       }
     }
-
-    else if(MOOSStrCmp(sVarName, "DOMAIN")) {
-      bool ok = handleDomainEntry(sLine);
+    else if(param == "DOMAIN") {
+      bool ok = handleDomainEntry(value);
       if(!ok) {
-	MOOSTrace("Improper Domain Spec: %s\n", sLine.c_str());
+	MOOSTrace("Improper Domain Spec: %s\n", value.c_str());
 	return(false);
       }
     }
   }
     
   m_hengine = new HelmEngine(m_ivp_domain);
+  m_hengine_beta = new HelmEngineBeta(m_ivp_domain);
 
 #ifdef USE_NEW_POPULATOR
   Populator_BehaviorSet2 p_bset(m_ivp_domain, m_info_buffer);
