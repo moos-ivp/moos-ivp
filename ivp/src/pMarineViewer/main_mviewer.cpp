@@ -244,6 +244,10 @@ int main(int argc, char *argv[])
     }
   }
 
-  delete gui;
+// If the moos application thread is still running, I could imagine it operating
+// on this object even at this point in the program's execution.  Until we're
+// sure, just avoid deleting it. -CJC
+//   delete gui;
+
   return 0;
 }

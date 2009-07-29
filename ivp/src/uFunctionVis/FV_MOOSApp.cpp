@@ -35,15 +35,29 @@ FV_MOOSApp::FV_MOOSApp()
 
 bool FV_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 {
-  MOOSMSG_LIST::iterator p;  
-  for(p=NewMail.begin(); p!=NewMail.end(); p++) {
-    CMOOSMsg &msg = *p;
+  try {
+     demuxer_lock.Lock();
 
-    if(msg.m_sKey == ipf_name) {
-      string ipf_str = msg.m_sVal;
-      demuxer.addMuxPacket(ipf_str, MOOSTime());
-    }
+     // The main thread will may be blocking on a call to 'Fl::wait()'.
+     // This will wake up the main thread if that's the case.
+     Fl::awake();
+
+     MOOSMSG_LIST::iterator p;
+     for(p=NewMail.begin(); p!=NewMail.end(); p++) {
+        CMOOSMsg &msg = *p;
+
+        if(msg.m_sKey == ipf_name) {
+           string ipf_str = msg.m_sVal;
+           demuxer.addMuxPacket(ipf_str, MOOSTime());
+        }
+     }
   }
+  catch (...) {
+     demuxer_lock.UnLock();
+     throw;
+  }
+
+  demuxer_lock.UnLock();
   return(true);
 }
 
@@ -72,35 +86,53 @@ bool FV_MOOSApp::OnConnectToServer()
 
 bool FV_MOOSApp::Iterate()
 {
-  iteration++;
-  
-  if((iteration %10)==0) {
-    double hz = (double)(iteration) / ((MOOSTime() - start_time));
-    cout << "Iteration: (" << iteration << ")";
-    cout << "(" << hz << "/sec)" << endl;
+   // This processing has all been moved to the process_demuxer_content()
+   // method, so that it can happen in the same thread as other FLTK operations.
+}
+
+//----------------------------------------------------------
+// Procedure: process_demuxer_content()
+
+
+void FV_MOOSApp::process_demuxer_content()
+{
+  try {
+    demuxer_lock.Lock();
+
+    iteration++;
+
+    if((iteration %10)==0) {
+      double hz = (double)(iteration) / ((MOOSTime() - start_time));
+      cout << "Iteration: (" << iteration << ")";
+      cout << "(" << hz << "/sec)" << endl;
+    }
+
+    cout << "[" << iteration << "]";
+    string str = demuxer.getDemuxString();
+    bool redraw_needed = false;
+    while(str != "") {
+      redraw_needed = true;
+      cout << "+";
+      if(model) {
+          cout << "Add Demux TO Model" << endl;
+          model->addIPF(str);
+      }
+      str = demuxer.getDemuxString();
+    }
+    cout << endl;
+    if(redraw_needed) {
+      viewer->resetQuadSet();
+      viewer->redraw();
+    }
+    if(gui)
+      gui->updateFields();
+  }
+  catch (...) {
+    demuxer_lock.UnLock();
+    throw;
   }
 
-  cout << "[" << iteration << "]";
-  string str = demuxer.getDemuxString();
-  bool redraw_needed = false;
-  while(str != "") {
-    redraw_needed = true;
-    cout << "+";
-    if(model) {
-      cout << "Add Demux TO Model" << endl;
-      model->addIPF(str);
-    }
-    str = demuxer.getDemuxString();
-  }
-  cout << endl;
-  if(redraw_needed) {
-    viewer->resetQuadSet();
-    viewer->redraw();
-  }
-  if(gui)
-    gui->updateFields();
-  
-  return(true);
+  demuxer_lock.UnLock();
 }
 
 //----------------------------------------------------------

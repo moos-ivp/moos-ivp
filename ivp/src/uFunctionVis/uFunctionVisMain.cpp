@@ -45,11 +45,11 @@ void exit_with_version()
 //--------------------------------------------------------
 // Procedure: idleProc
 
-void idleProc(void *)
-{
-  Fl::flush();
-  MOOSPause(10);
-}
+// void idleProc(void *)
+// {
+//   Fl::flush();
+//   MOOSPause(10);
+// }
 
 //--------------------------------------------------------
 // Procedure: main
@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
   // start the MOOSPort in its own thread
   MOOSAppRunnerThread runner(&g_thePort, "uFunctionViewer", g_sMissionFile);
   
-  Fl::add_idle(idleProc);
+//   Fl::add_idle(idleProc);
   
   FV_GUI* gui = new FV_GUI(900,750, "IvPFunction-Viewer");
   if(gui)
@@ -84,6 +84,18 @@ int main(int argc, char *argv[])
   gui->setModel(model);
   g_thePort.setModel(model);
   g_thePort.setGUI(gui);
- 
-  return Fl::run();
+
+  Fl::lock();
+  while (Fl::wait() > 0) {
+    // We use the posting of a thread message (Fl::awake()) entirely
+    // to cause Fl::wait() to return.
+    g_thePort.process_demuxer_content();
+  }
+
+// If the moos application thread is still running, I could imagine it operating
+// on this object even at this point in the program's execution.  Until we're
+// sure, just avoid deleting it. -CJC
+//   delete gui;
+
+  return 0;
 }
