@@ -1,8 +1,8 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
+/*    NAME: Michael Benjamin and Henrik Schmidt                  */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
-/*    FILE: BHV_Hystereis.cpp                                    */
-/*    DATE: August 4th 2008 (aboard the Alliance)                */
+/*    FILE: BHV_HeadingHystereis.cpp                             */
+/*    DATE: July 30th 2009                                       */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
 /* modify it under the terms of the GNU General Public License   */
@@ -24,10 +24,10 @@
 #pragma warning(disable : 4786)
 #pragma warning(disable : 4503)
 #endif
-
+#include <iostream>
 #include <math.h> 
 #include <stdlib.h>
-#include "BHV_Hysteresis.h"
+#include "BHV_HeadingHysteresis.h"
 #include "ZAIC_PEAK.h"
 #include "MBUtils.h"
 #include "AngleUtils.h"
@@ -43,29 +43,29 @@ using namespace std;
 //-----------------------------------------------------------
 // Procedure: Constructor
 
-BHV_Hysteresis::BHV_Hysteresis(IvPDomain gdomain) : 
+BHV_HeadingHysteresis::BHV_HeadingHysteresis(IvPDomain gdomain) : 
   IvPBehavior(gdomain)
 {
-  this->setParam("descriptor", "bhv_hysteresis");
+  this->setParam("descriptor", "heading_hysteresis");
 
   m_domain = subDomain(m_domain, "course");
 
-  m_memory_time        = -1;
-  m_min_heading_window = 10.0;
-  m_max_heading_window = 280;
-  m_max_window_utility = 90.0;
+  m_memory_time   = -1;
+  m_filter_level  = 1;
+  m_variable_name = "DESIRED_HEADING_UNFILTERED";
 
-  addInfoVars("NAV_HEADING, NAV_SPEED");
+  addInfoVars(m_variable_name);
 }
 
 //-----------------------------------------------------------
 // Procedure: setParam
+//     Notes: We expect the "waypoint" entries will be of the form
+//            "xposition,yposition".
+//            The "radius" parameter indicates what it means to have
+//            arrived at the waypoint.
 
-bool BHV_Hysteresis::setParam(string param, string val) 
+bool BHV_HeadingHysteresis::setParam(string param, string val) 
 {
-  if(IvPBehavior::setParam(param, val))
-    return(true);
-
   if(param == "memory_time") {
     double dval = atof(val.c_str());
     if((dval < 0) || (!isNumber(val)))
@@ -73,31 +73,15 @@ bool BHV_Hysteresis::setParam(string param, string val)
     m_memory_time = dval;
     return(true);
   }
-  else if(param == "min_heading_window") {
-    double dval = atof(val.c_str());
-    if((dval < 0) || (dval > 360) || (!isNumber(val)))
+  else if(param == "filter_var") {
+    val = stripBlankEnds(val);
+    if(strContainsWhite(val))
       return(false);
-    m_min_heading_window = dval;
-    if(m_min_heading_window > m_max_heading_window)
-      m_max_heading_window = m_min_heading_window;
+    m_variable_name = toupper(val);
+    addInfoVars(m_variable_name);
     return(true);
   }
-  else if(param == "max_heading_window") {
-    double dval = atof(val.c_str());
-    if((dval < 0) || (dval > 360) || (!isNumber(val)))
-      return(false);
-    m_max_heading_window = dval;
-    if(m_max_heading_window < m_min_heading_window)
-      m_min_heading_window = m_max_heading_window;
-    return(true);
-  }
-  else if(param == "max_window_utility") {
-    double dval = atof(val.c_str());
-    if((dval < 0) || (dval > 100) || (!isNumber(val)))
-      return(false);
-    m_max_window_utility = dval;
-    return(true);
-  }
+
   return(false);
 }
 
@@ -105,9 +89,9 @@ bool BHV_Hysteresis::setParam(string param, string val)
 //-----------------------------------------------------------
 // Procedure: onIdleState
 
-void BHV_Hysteresis::onIdleState() 
+void BHV_HeadingHysteresis::onIdleState() 
 {
-  string check_result = updateHeadingAvg();
+  string check_result = updateHeadingHistory();
   if(check_result != "ok") 
     postWMessage(check_result);
 }
@@ -115,24 +99,27 @@ void BHV_Hysteresis::onIdleState()
 //-----------------------------------------------------------
 // Procedure: onRunState
 
-IvPFunction *BHV_Hysteresis::onRunState() 
+IvPFunction *BHV_HeadingHysteresis::onRunState() 
 {
-  string check_result = updateHeadingAvg();
+  string check_result = updateHeadingHistory();
   if(check_result != "ok") {
     postWMessage(check_result);
     return(0);
   }
-
-  double heading_average  = getHeadingAverage();
-  double heading_variance = getHeadingVariance(heading_average);
-
+  
+  double hdg_average  = getHeadingAverage();
+  double hdg_variance = getHeadingVariance(hdg_average);
+  
   // round to integer to reduce distinct posts to the db
-  postMessage("HYSTER_HDG_AVG", (int)(heading_average+0.5));
-  postMessage("HYSTER_HDG_VAR", (int)(heading_variance+0.5));
+  postMessage("HIST_HEADING_AVERAGE", hdg_average);
+  postMessage("HIST_HEADING_VARIANCE", hdg_variance);
 
   double peak_width;
   double max_variance = 30;
 
+  IvPFunction *ipf = 0;
+
+#if 0
   if(m_min_heading_window == m_max_heading_window)
     peak_width = m_min_heading_window;
   else {
@@ -154,7 +141,8 @@ IvPFunction *BHV_Hysteresis::onRunState()
   crs_zaic.setBaseWidth(180-peak_width);  
   crs_zaic.setSummitDelta(100-window_utility);
 
-  IvPFunction *ipf = crs_zaic.extractOF();
+  ipf = crs_zaic.extractOF();
+#endif
 
   if(ipf)
     ipf->setPWT(m_priority_wt);
@@ -164,38 +152,30 @@ IvPFunction *BHV_Hysteresis::onRunState()
 
 
 //-----------------------------------------------------------
-// Procedure: updateHeadingAvg
+// Procedure: updateHeadingHistory
 
-string BHV_Hysteresis::updateHeadingAvg()
+string BHV_HeadingHysteresis::updateHeadingHistory()
 {
   if(m_memory_time < 0)
     return("Variable memory_time not specified");
-  if(m_turn_range < 0)
-    return("Variable turn_range not specified");
 
-  bool ok, ok2;
-  m_current_heading = getBufferDoubleVal("NAV_HEADING", ok);
-  m_current_speed   = getBufferDoubleVal("NAV_SPEED", ok2); 
+  bool ok;
+  m_current_heading = getBufferDoubleVal(m_variable_name, ok);
   
-  m_current_heading = angle360(m_current_heading);
-
   if(!ok) 
-    return("No Ownship NAV_HEADING in info_buffer");
-  
-  if(!ok2) 
-    return("No Ownship NAV_SPEED in info_buffer"); 
+    return("HeadingHysteresis filter variable not found in info_buffer");
   
   double currtime = getBufferCurrTime();
-  addHeading(m_current_heading, currtime);
+  addHeadingEntry(m_current_heading, currtime);
   return("ok");
 }
 
 //-----------------------------------------------------------
-// Procedure: addHeading(double, double)
+// Procedure: addHeadingEntry(double, double)
 
-void BHV_Hysteresis::addHeading(double heading, double currtime)
+void BHV_HeadingHysteresis::addHeadingEntry(double value, double currtime)
 {
-  m_heading_val.push_back(heading);
+  m_heading_val.push_back(value);
   m_heading_time.push_back(currtime);
   
   int counter = 0;
@@ -218,43 +198,39 @@ void BHV_Hysteresis::addHeading(double heading, double currtime)
 //-----------------------------------------------------------
 // Procedure: getHeadingAverage
 
-double BHV_Hysteresis::getHeadingAverage()
+double BHV_HeadingHysteresis::getHeadingAverage()
 {
   double ssum = 0.0;
   double csum = 0.0;
-
   list<double>::iterator p;
   for(p = m_heading_val.begin(); p!=m_heading_val.end(); p++) {
-    double iheading = *p;
-  
+    double iheading = *p;      
     double s = sin(iheading*M_PI/180.0);
     double c = cos(iheading*M_PI/180.0);
-
     ssum += s;
     csum += c;    
   }
-
   double avg = atan2(ssum,csum)*180.0/M_PI;
-
-  return(angle360(avg));
+  avg = angle360(avg);
+  return(avg);
 }
 
 //-----------------------------------------------------------
 // Procedure: getHeadingVariance
 
-double BHV_Hysteresis::getHeadingVariance(double current_average)
+double BHV_HeadingHysteresis::getHeadingVariance(double current_average)
 {
   double total = 0;
+  unsigned int entry_count = m_heading_val.size();
+  
   list<double>::iterator p;
-  int counter = 0;
   for(p = m_heading_val.begin(); p!=m_heading_val.end(); p++) {
-    double iheading = *p;
-    double delta    = angle180(iheading - current_average);
-   
+    double value = *p;
+    double delta = angle180(value - current_average);
     total += (delta * delta);
-    counter++;
   }
-  return(sqrt(total)/(double)(counter));
+
+  return(sqrt(total)/(double)(entry_count));
 }
 
 

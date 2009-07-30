@@ -17,6 +17,7 @@ SET(SRC
   BHV_CutRange.cpp
   BHV_GoToDepth.cpp
   BHV_Hysteresis.cpp
+  BHV_HeadingHysteresis.cpp
   BHV_Loiter.cpp
   BHV_MemoryTurnLimit.cpp
   BHV_OpRegion.cpp
@@ -35,6 +36,7 @@ SET(SRC
   BHV_HSLine.cpp
   BHV_HeadingChange.cpp
   BHV_HeadingBias.cpp
+  BHV_Filteresis.cpp
 )
 
 ADD_LIBRARY(behaviors-marine ${SRC})
