@@ -93,7 +93,7 @@ INCLUDE_DIRECTORIES(${IVP_LIBRARY_DIRS})
 IF (${APPLE})
    INCLUDE_DIRECTORIES(/sw/include)
    LINK_DIRECTORIES(/sw/lib)
-ENDIF()
+ENDIF(${APPLE})
 
 #---------------------------------------------------------------------
 #  Build the Libraries
