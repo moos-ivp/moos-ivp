@@ -1,0 +1,24 @@
+
+//tell all processes where the DB is (default is localhost:9000)
+ServerPort = 9000
+Serverhost = localhost
+
+
+ProcessConfig = Simulator
+{
+	//how fast should iterate be called? (used by CMOOSApp)
+	AppTick= 10
+	
+	//how responsive should comms be? (used by CommsClient)
+	CommsTick = 10
+
+	//name of the vehicle
+	VehicleName = TheGoodShipMOOS
+
+	//initial location
+	InitialLocation = [3x1]{0,1,2}
+
+	//a more complex compound config string
+	InitialConditions = Bilge=off, BatteryVoltage=101, Heading  = 0.57
+
+}
