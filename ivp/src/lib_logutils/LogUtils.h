@@ -12,6 +12,7 @@
 #ifndef LOG_UTILS_HEADER
 #define LOG_UTILS_HEADER
 
+#include <vector>
 #include <string>
 
 std::string getVarName(const std::string& line);
@@ -25,5 +26,10 @@ void   shiftTimeStamp(std::string& line, double logstart);
 double getLogStart(const std::string& line);
 void   addVectorKey(std::vector<std::string>&, 
 		    std::vector<bool>&, std::string);
+
+double getEpochSecsFromTimeOfDay(std::string, int format=0);
+double getEpochSecsFromTimeOfDay(double hour, double min, double sec);
+double getEpochSecsFromDayOfYear(std::string, int format=0);
+double getEpochSecsFromDayOfYear(double day, double month, double year);
 
 #endif 

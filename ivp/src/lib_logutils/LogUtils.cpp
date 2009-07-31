@@ -289,3 +289,151 @@ string getNextRawLine(FILE *fileptr)
   return(str);
 }
 
+
+//--------------------------------------------------------
+// Procedure: getSecsfromTimeOfDay
+//     Notes: Date String of form "11:50:04 AM"
+
+double getSecsFromTimeOfDay(string date_str)
+{
+  string time  = stripBlankEnds(biteString(date_str, ' '));
+  string am_pm = tolower(stripBlankEnds(date_str));
+
+  string hstr = biteString(time, ':');
+  string mstr = biteString(time, ':');
+  string sstr = time;
+
+  double hours = atof(hstr.c_str());
+  double minutes = atof(mstr.c_str());
+  double seconds = atof(sstr.c_str());
+
+  if(am_pm == "pm")
+    hours += 12;
+
+  double total_seconds = seconds + (60*minutes) + (3600*hours);
+
+  return(total_seconds);
+}
+
+
+//--------------------------------------------------------
+// Procedure: getSecsfromTimeOfDay
+
+double getSecsFromTimeOfDay(double hours, double minutes, double seconds)
+{
+  double total_seconds = seconds + (60*minutes) + (3600*hours);
+  return(total_seconds);
+}
+
+
+//--------------------------------------------------------
+// Procedure: getEpochSecsfromDayOfYear
+//     Notes: Date String of form "7/15/2009"
+//            Returns the number of seconds before the start of the
+//              given date - since January 01 1972.
+
+double getEpochSecsFromDayOfYear(string date_str, int format)
+{
+  date_str = stripBlankEnds(date_str);
+  
+  double d_month, d_day, d_year;
+  if(format == 0) {
+    string s_month = biteString(date_str, '/');
+    string s_day   = biteString(date_str, '/');
+    string s_year  = date_str;
+
+    d_month = atof(s_month.c_str());
+    d_day   = atof(s_day.c_str());
+    s_year  = atof(s_year.c_str());
+  }
+
+  double total_seconds = getEpochSecsFromDayOfYear(d_day, d_month, d_year);
+  return(total_seconds);
+}
+
+//--------------------------------------------------------
+// Procedure: getEpochSecsfromDayOfYear
+//            Returns the number of seconds before the start of the
+//              given date - since January 01 1970.
+
+double getEpochSecsFromDayOfYear(double d_day, double d_month, 
+				 double d_year)
+{
+  double years_elapsed = d_year - 1970;
+  if(years_elapsed < 0)
+    return(0);
+
+  double total_seconds = years_elapsed * 365 * (3600 * 24);
+
+  double days_elapsed = d_day-1;
+  if(d_month >  1) days_elapsed += 31;
+  if(d_month >  2) days_elapsed += 28;
+  if(d_month >  3) days_elapsed += 31;
+  if(d_month >  4) days_elapsed += 30;
+  if(d_month >  5) days_elapsed += 31;
+  if(d_month >  6) days_elapsed += 30;
+  if(d_month >  7) days_elapsed += 31;
+  if(d_month >  8) days_elapsed += 31;
+  if(d_month >  9) days_elapsed += 30;
+  if(d_month > 10) days_elapsed += 31;
+  if(d_month > 11) days_elapsed += 30;
+
+  total_seconds += 86400 * days_elapsed;
+
+  // handle leap days
+  if((d_year >= 1972) && (d_month >= 3)) total_seconds += 86400;
+  if((d_year >= 1976) && (d_month >= 3)) total_seconds += 86400;
+  if((d_year >= 1980) && (d_month >= 3)) total_seconds += 86400;
+  if((d_year >= 1984) && (d_month >= 3)) total_seconds += 86400;
+  if((d_year >= 1988) && (d_month >= 3)) total_seconds += 86400;
+  if((d_year >= 1992) && (d_month >= 3)) total_seconds += 86400;
+  if((d_year >= 1996) && (d_month >= 3)) total_seconds += 86400;
+  if((d_year >= 2000) && (d_month >= 3)) total_seconds += 86400;
+  if((d_year >= 2004) && (d_month >= 3)) total_seconds += 86400;
+  if((d_year >= 2008) && (d_month >= 3)) total_seconds += 86400;
+  if((d_year >= 2012) && (d_month >= 3)) total_seconds += 86400;
+  if((d_year >= 2016) && (d_month >= 3)) total_seconds += 86400;
+  if((d_year >= 2020) && (d_month >= 3)) total_seconds += 86400;
+  if((d_year >= 2024) && (d_month >= 3)) total_seconds += 86400;
+  if((d_year >= 2028) && (d_month >= 3)) total_seconds += 86400;
+  if((d_year >= 2032) && (d_month >= 3)) total_seconds += 86400;
+  if((d_year >= 2036) && (d_month >= 3)) total_seconds += 86400;
+  if((d_year >= 2040) && (d_month >= 3)) total_seconds += 86400;
+  if((d_year >= 2044) && (d_month >= 3)) total_seconds += 86400;
+  if((d_year >= 2048) && (d_month >= 3)) total_seconds += 86400;
+  if((d_year >= 2052) && (d_month >= 3)) total_seconds += 86400;
+  if((d_year >= 2056) && (d_month >= 3)) total_seconds += 86400;
+  if((d_year >= 2060) && (d_month >= 3)) total_seconds += 86400;
+  if((d_year >= 2064) && (d_month >= 3)) total_seconds += 86400;
+  if((d_year >= 2068) && (d_month >= 3)) total_seconds += 86400;
+
+  return(total_seconds);
+
+  // handle leap seconds  NOT COUNTED IN UNIX EPOCH TIME
+  if((d_year >= 1972) && (d_month >= 7)) total_seconds++;
+  if(d_year >= 1973) total_seconds++;
+  if(d_year >= 1974) total_seconds++;
+  if(d_year >= 1975) total_seconds++;
+  if(d_year >= 1976) total_seconds++;
+  if(d_year >= 1977) total_seconds++;
+  if(d_year >= 1978) total_seconds++;
+  if(d_year >= 1979) total_seconds++;
+  if(d_year >= 1980) total_seconds++;
+  if((d_year >= 1981) && (d_month >= 7)) total_seconds++;
+  if((d_year >= 1982) && (d_month >= 7)) total_seconds++;
+  if((d_year >= 1983) && (d_month >= 7)) total_seconds++;
+  if((d_year >= 1985) && (d_month >= 7)) total_seconds++;
+  if(d_year >= 1988) total_seconds++;
+  if(d_year >= 1990) total_seconds++;
+  if(d_year >= 1991) total_seconds++;
+  if((d_year >= 1992) && (d_month >= 7)) total_seconds++;
+  if((d_year >= 1993) && (d_month >= 7)) total_seconds++;
+  if((d_year >= 1994) && (d_month >= 7)) total_seconds++;
+  if(d_year >= 1996) total_seconds++;
+  if((d_year >= 1997) && (d_month >= 7)) total_seconds++;
+  if(d_year >= 1999) total_seconds++;
+  if(d_year >= 2006) total_seconds++;
+  if(d_year >= 2009) total_seconds++;
+
+  return(total_seconds);
+}
