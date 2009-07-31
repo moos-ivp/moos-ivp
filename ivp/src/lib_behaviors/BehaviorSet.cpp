@@ -64,9 +64,9 @@ BehaviorSet::BehaviorSet()
 
 BehaviorSet::~BehaviorSet()
 {
-  int bsize = behaviors.size();
+  int bsize = m_behaviors.size();
   for(int i=0; i<bsize; i++) {
-    delete(behaviors[i]);
+    delete(m_behaviors[i]);
   }
 }
 
@@ -75,10 +75,10 @@ BehaviorSet::~BehaviorSet()
 
 void BehaviorSet::addBehavior(IvPBehavior *bhv)
 {
-  behaviors.push_back(bhv);
-  behavior_states.push_back("");
-  behavior_state_time_entered.push_back(-1);
-  behavior_state_time_elapsed.push_back(-1);
+  m_behaviors.push_back(bhv);
+  m_behavior_states.push_back("");
+  m_behavior_state_time_entered.push_back(-1);
+  m_behavior_state_time_elapsed.push_back(-1);
 }
 
 
@@ -93,19 +93,19 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
   double pwt = 0;
   int    pcs = 0;
 
-  if((ix >= 0) && (ix < behaviors.size())) {
+  if((ix >= 0) && (ix < m_behaviors.size())) {
     // Look for possible dynamic updates to the behavior parameters
-    bool update_made = behaviors[ix]->checkUpdates();
+    bool update_made = m_behaviors[ix]->checkUpdates();
     if(update_made)
-      behaviors[ix]->onSetParamComplete();
+      m_behaviors[ix]->onSetParamComplete();
 
     // Check if the behavior duration is to be reset
-    behaviors[ix]->checkForDurationReset();
+    m_behaviors[ix]->checkForDurationReset();
 
-    if(behaviors[ix]->isCompleted())
+    if(m_behaviors[ix]->isCompleted())
       new_activity_state = "completed";
     else {
-      if(!behaviors[ix]->isRunnable())
+      if(!m_behaviors[ix]->isRunnable())
 	new_activity_state = "idle";
       else
 	new_activity_state = "running";
@@ -115,23 +115,23 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
     // each behavior.
 
     if(new_activity_state == "idle") {
-      behaviors[ix]->postFlags("idleflags");
-      behaviors[ix]->postFlags("inactiveflags");
-      if((behavior_states[ix] == "running") ||
-	 (behavior_states[ix] == "active"))
-	behaviors[ix]->onRunToIdleState();
-      behaviors[ix]->onIdleState();
-      behaviors[ix]->updateStateDurations("idle");
+      m_behaviors[ix]->postFlags("idleflags");
+      m_behaviors[ix]->postFlags("inactiveflags");
+      if((m_behavior_states[ix] == "running") ||
+	 (m_behavior_states[ix] == "active"))
+	m_behaviors[ix]->onRunToIdleState();
+      m_behaviors[ix]->onIdleState();
+      m_behaviors[ix]->updateStateDurations("idle");
     }
     
     if(new_activity_state == "running") {
-      behaviors[ix]->postDurationStatus();
-      behaviors[ix]->postFlags("runflags");
-      if(behavior_states[ix] == "idle") 
-	behaviors[ix]->onIdleToRunState();
-      ipf = behaviors[ix]->onRunState();
+      m_behaviors[ix]->postDurationStatus();
+      m_behaviors[ix]->postFlags("runflags");
+      if(m_behavior_states[ix] == "idle") 
+	m_behaviors[ix]->onIdleToRunState();
+      ipf = m_behaviors[ix]->onRunState();
       if(ipf && !ipf->freeOfNan()) {
-	behaviors[ix]->postEMessage("NaN detected in IvP Function");
+	m_behaviors[ix]->postEMessage("NaN detected in IvP Function");
 	delete(ipf);
 	ipf = 0;
       }
@@ -145,46 +145,46 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
 	}
       }
       if(ipf && m_report_ipf) {
-	string desc_str = behaviors[ix]->getDescriptor();
+	string desc_str = m_behaviors[ix]->getDescriptor();
 	string iter_str = intToString(iteration);
 	string ctxt_str = iter_str + ":" + desc_str;
 	ipf->setContextStr(ctxt_str);
 	string ipf_str = IvPFunctionToString(ipf);
-	behaviors[ix]->postMessage("BHV_IPF", ipf_str);
+	m_behaviors[ix]->postMessage("BHV_IPF", ipf_str);
       }
       if(ipf) {
 	new_activity_state = "active";
-	behaviors[ix]->postFlags("activeflags");
+	m_behaviors[ix]->postFlags("activeflags");
       }
       else
-	behaviors[ix]->postFlags("inactiveflags");
-      behaviors[ix]->updateStateDurations("running");
+	m_behaviors[ix]->postFlags("inactiveflags");
+      m_behaviors[ix]->updateStateDurations("running");
     }
 
-    string bhv_tag = toupper(behaviors[ix]->getDescriptor());
+    string bhv_tag = toupper(m_behaviors[ix]->getDescriptor());
     bhv_tag = findReplace(bhv_tag, "BHV_", "");
     bhv_tag = findReplace(bhv_tag, "(D)", "");
 
 #if 1
-    behaviors[ix]->postMessage("PWT_BHV_"+bhv_tag, pwt);
+    m_behaviors[ix]->postMessage("PWT_BHV_"+bhv_tag, pwt);
     if(new_activity_state == "idle")
-      behaviors[ix]->postMessage("STATE_BHV_"+bhv_tag, 0);
+      m_behaviors[ix]->postMessage("STATE_BHV_"+bhv_tag, 0);
     else if(new_activity_state == "running")
-      behaviors[ix]->postMessage("STATE_BHV_"+bhv_tag, 1);
+      m_behaviors[ix]->postMessage("STATE_BHV_"+bhv_tag, 1);
     else if(new_activity_state == "active") 
-      behaviors[ix]->postMessage("STATE_BHV_"+bhv_tag, 2);
+      m_behaviors[ix]->postMessage("STATE_BHV_"+bhv_tag, 2);
     else if(new_activity_state == "completed") 
-      behaviors[ix]->postMessage("STATE_BHV_"+bhv_tag, 3);
+      m_behaviors[ix]->postMessage("STATE_BHV_"+bhv_tag, 3);
 #endif
 
     // If this represents a change in states from the previous
     // iteration, note the time at which the state changed.
-    if(behavior_states[ix] != new_activity_state)
-      behavior_state_time_entered[ix] = m_curr_time;
+    if(m_behavior_states[ix] != new_activity_state)
+      m_behavior_state_time_entered[ix] = m_curr_time;
     
-    behavior_states[ix] = new_activity_state;
-    double elapsed = m_curr_time - behavior_state_time_entered[ix];
-    behavior_state_time_elapsed[ix] = elapsed;
+    m_behavior_states[ix] = new_activity_state;
+    double elapsed = m_curr_time - m_behavior_state_time_entered[ix];
+    m_behavior_state_time_elapsed[ix] = elapsed;
   }
   return(ipf);
 }
@@ -194,8 +194,8 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
 
 bool BehaviorSet::stateOK(unsigned int ix)
 {
-  if((ix >= 0) && (ix < behaviors.size()))
-    return(behaviors[ix]->stateOK());
+  if((ix >= 0) && (ix < m_behaviors.size()))
+    return(m_behaviors[ix]->stateOK());
   else
     return(false);
 }
@@ -205,8 +205,8 @@ bool BehaviorSet::stateOK(unsigned int ix)
 
 void BehaviorSet::resetStateOK()
 {
-  for(unsigned int i=0; i<behaviors.size(); i++) 
-    behaviors[i]->resetStateOK();
+  for(unsigned int i=0; i<m_behaviors.size(); i++) 
+    m_behaviors[i]->resetStateOK();
 }
 
 //------------------------------------------------------------
@@ -214,8 +214,8 @@ void BehaviorSet::resetStateOK()
 
 IvPBehavior* BehaviorSet::getBehavior(unsigned int ix)
 {
-  if((ix >= 0) && (ix < behaviors.size()))
-    return(behaviors[ix]);
+  if((ix >= 0) && (ix < m_behaviors.size()))
+    return(m_behaviors[ix]);
   return(0);
 }
 
@@ -224,8 +224,8 @@ IvPBehavior* BehaviorSet::getBehavior(unsigned int ix)
 
 string BehaviorSet::getDescriptor(unsigned int ix)
 {
-  if((ix >= 0) && (ix < behaviors.size()))
-    return(behaviors[ix]->getDescriptor());
+  if((ix >= 0) && (ix < m_behaviors.size()))
+    return(m_behaviors[ix]->getDescriptor());
   return("");
 }
 
@@ -234,8 +234,8 @@ string BehaviorSet::getDescriptor(unsigned int ix)
 
 double BehaviorSet::getStateElapsed(unsigned int ix)
 {
-  if((ix >= 0) && (ix < behaviors.size()))
-    return(behavior_state_time_elapsed[ix]);
+  if((ix >= 0) && (ix < m_behaviors.size()))
+    return(m_behavior_state_time_elapsed[ix]);
   else
     return(-1);
 }
@@ -245,10 +245,33 @@ double BehaviorSet::getStateElapsed(unsigned int ix)
 
 string BehaviorSet::getUpdateSummary(unsigned int ix)
 {
-  if((ix >= 0) && (ix < behaviors.size()))
-    return(behaviors[ix]->getUpdateSummary());
+  if((ix >= 0) && (ix < m_behaviors.size()))
+    return(m_behaviors[ix]->getUpdateSummary());
   else
     return("err");
+}
+
+//------------------------------------------------------------
+// Procedure: getFilterLevel
+
+int BehaviorSet::getFilterLevel(unsigned int ix)
+{
+  if((ix >= 0) && (ix < m_behaviors.size()))
+    return(m_behaviors[ix]->getFilterLevel());
+  else
+    return(0);
+}
+
+//------------------------------------------------------------
+// Procedure: filterBehaviorsPresent
+
+bool BehaviorSet::filterBehaviorsPresent()
+{
+  unsigned int ix, vsize = m_behaviors.size();
+  for(ix=0; ix<vsize; ix++) 
+    if(m_behaviors[ix]->getFilterLevel() != 0)
+      return(true);
+  return(false);
 }
 
 //------------------------------------------------------------
@@ -257,9 +280,9 @@ string BehaviorSet::getUpdateSummary(unsigned int ix)
 vector<VarDataPair> BehaviorSet::getMessages(unsigned int ix)
 {
   vector<VarDataPair> mvector;
-  if((ix >= 0) && (ix < behaviors.size())) {
-    mvector = behaviors[ix]->getMessages();
-    behaviors[ix]->clearMessages();
+  if((ix >= 0) && (ix < m_behaviors.size())) {
+    mvector = m_behaviors[ix]->getMessages();
+    m_behaviors[ix]->clearMessages();
   }
   return(mvector);
 }
@@ -270,8 +293,8 @@ vector<VarDataPair> BehaviorSet::getMessages(unsigned int ix)
 vector<string> BehaviorSet::getInfoVars()
 {
   vector<string> rvector;
-  for(unsigned int i=0; i<behaviors.size(); i++) {
-    vector<string> bvector = behaviors[i]->getInfoVars();
+  for(unsigned int i=0; i<m_behaviors.size(); i++) {
+    vector<string> bvector = m_behaviors[i]->getInfoVars();
     for(unsigned int j=0; j<bvector.size(); j++)
       rvector.push_back(bvector[j]);
   }
@@ -295,11 +318,11 @@ vector<string> BehaviorSet::getNewInfoVars()
 
   vector<string> rvector;
   for(int i=0; i<csize; i++) {
-    if(!vectorContains(prev_info_vars, cvector[i]))
+    if(!vectorContains(m_prev_info_vars, cvector[i]))
       rvector.push_back(cvector[i]);
   }
 
-  prev_info_vars = cvector;
+  m_prev_info_vars = cvector;
 
   return(rvector);
 }
@@ -316,14 +339,14 @@ bool BehaviorSet::updateStateSpaceVars()
 {
   bool new_var = false;
   
-  int vsize = behaviors.size();
+  int vsize = m_behaviors.size();
   for(int i=0; i<vsize; i++) {
-    if(behaviors[i] != 0) {
-      vector<string> ivars = behaviors[i]->getStateSpaceVars();
+    if(m_behaviors[i] != 0) {
+      vector<string> ivars = m_behaviors[i]->getStateSpaceVars();
       int isize = ivars.size();
       for(int k=0; k<isize; k++) {
-	if(!vectorContains(state_space_vars, ivars[k])) {
-	  state_space_vars.push_back(ivars[k]);
+	if(!vectorContains(m_state_space_vars, ivars[k])) {
+	  m_state_space_vars.push_back(ivars[k]);
 	  new_var = true;
 	}
       }
@@ -338,11 +361,11 @@ bool BehaviorSet::updateStateSpaceVars()
 string BehaviorSet::getStateSpaceVars()
 {
   string rstr;
-  int vsize = state_space_vars.size();
+  int vsize = m_state_space_vars.size();
   for(int i=0; i<vsize; i++) {
     if(rstr != "")
       rstr += ",";
-    rstr += state_space_vars[i];
+    rstr += m_state_space_vars[i];
   }
   return(rstr);
 }
@@ -355,14 +378,14 @@ void BehaviorSet::print()
   unsigned int i;
 
   cout << "BehaviorSet::print() " << endl;
-  for(i=0; i<behaviors.size(); i++) {
+  for(i=0; i<m_behaviors.size(); i++) {
     cout << "Behavior[" << i << "]: " << endl;
     
 
-    cout << "Behavior descriptor: " << behaviors[i]->m_descriptor << endl;
-    cout << " priority weight: " << behaviors[i]->m_priority_wt << endl;
+    cout << "Behavior descriptor: " << m_behaviors[i]->m_descriptor << endl;
+    cout << " priority weight: " << m_behaviors[i]->m_priority_wt << endl;
     cout << " BuildInfo: " << endl;
-    behaviors[i]->m_build_info;
+    m_behaviors[i]->m_build_info;
     cout << "-------" << endl;
   }
 }

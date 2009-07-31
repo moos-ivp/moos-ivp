@@ -39,9 +39,11 @@ using namespace std;
 //-----------------------------------------------------------
 // Procedure: Constructor
 
-HelmEngineBeta::HelmEngineBeta(IvPDomain g_ivp_domain)
+HelmEngineBeta::HelmEngineBeta(IvPDomain g_ivp_domain, 
+			       InfoBuffer *g_info_buffer)
 {
   m_ivp_domain  = g_ivp_domain;
+  m_info_buffer = g_info_buffer;
   m_iteration   = 0;
   m_bhv_set     = 0;
   m_curr_time   = 0;
@@ -68,24 +70,23 @@ HelmReport HelmEngineBeta::determineNextDecision(BehaviorSet *bhv_set,
   m_curr_time   = curr_time;
   m_helm_report = HelmReport();
 
-  bool handled = part1_PreliminaryBehaviorSetHandling();
-  if(!handled)
-    return(m_helm_report);
+  bool filter_behaviors_present = bhv_set->filterBehaviorsPresent();
 
-  handled = part2_GetFunctionsFromBehaviorSet();
-  if(!handled)
-    return(m_helm_report);
-  
-  handled = part3_VerifyFunctionDomains();
-  if(!handled)
-    return(m_helm_report);
+  bool handled = true;
+  handled = handled && part1_PreliminaryBehaviorSetHandling();
+  handled = handled && part2_GetFunctionsFromBehaviorSet(0);
+  handled = handled && part3_VerifyFunctionDomains();
+  handled = handled && part4_BuildAndSolveIvPProblem();
 
-  handled = part4_BuildAndSolveIvPProblem();
-  if(!handled)
-    return(m_helm_report);
+  if(filter_behaviors_present) {
+    handled = handled && part5_GetResultsFromIvPProblem(0);
+    handled = handled && part2_GetFunctionsFromBehaviorSet(1);
+    handled = handled && part3_VerifyFunctionDomains();
+    handled = handled && part4_BuildAndSolveIvPProblem();
+  }
 
-  part5_GetResultsFromIvPProblem();
-
+  handled = handled && part5_GetResultsFromIvPProblem(0);
+  handled = handled && part6_FinishHelmReport();
   return(m_helm_report);
 }
 
@@ -120,61 +121,62 @@ bool HelmEngineBeta::part1_PreliminaryBehaviorSetHandling()
 //------------------------------------------------------------------
 // Procedure: part2_GetFunctionsFromBehaviorSet()
 
-bool HelmEngineBeta::part2_GetFunctionsFromBehaviorSet()
+bool HelmEngineBeta::part2_GetFunctionsFromBehaviorSet(int filter_level)
 {
   m_ivp_functions.clear();
 
-  int bhv_ix;
-  int bhv_cnt = m_bhv_set->getCount();
+  int bhv_ix, bhv_cnt = m_bhv_set->getCount();
 
   // get all the objective functions and add time info to helm report
   m_create_timer.start();
   for(bhv_ix=0; bhv_ix<bhv_cnt; bhv_ix++) {
-    m_ipf_timer.start();
-    string astate;
-    IvPFunction *newof = m_bhv_set->produceOF(bhv_ix, m_iteration, astate);
-    m_ipf_timer.stop();
-    
-    // Determine the amt of time the bhv has been in this state
-    double state_elapsed = m_bhv_set->getStateElapsed(bhv_ix);
+    if(m_bhv_set->getFilterLevel(bhv_ix) == filter_level) {
+      string bhv_state;
+      m_ipf_timer.start();
+      IvPFunction *newof = m_bhv_set->produceOF(bhv_ix, m_iteration, bhv_state);
+      m_ipf_timer.stop();
+  
+      // Determine the amt of time the bhv has been in this state
+      double state_elapsed = m_bhv_set->getStateElapsed(bhv_ix);
 
-    if(!m_bhv_set->stateOK(bhv_ix)) {
-      m_helm_report.m_halted = true;
-      m_helm_report.addMsg("HELM HALTING: Safety Emergency!!!");
-      m_create_timer.stop();
-      return(false);
+      if(!m_bhv_set->stateOK(bhv_ix)) {
+	m_helm_report.m_halted = true;
+	m_helm_report.addMsg("HELM HALTING: Safety Emergency!!!");
+	m_create_timer.stop();
+	return(false);
+      }
+      
+      string upd_summary = m_bhv_set->getUpdateSummary(bhv_ix);
+      string descriptor  = m_bhv_set->getDescriptor(bhv_ix);
+      string report_line = descriptor;
+      if(newof) {
+	double of_time  = m_ipf_timer.get_float_cpu_time();
+	int    pieces   = newof->size();
+	string timestr  = doubleToString(of_time,2);
+	report_line += " produces obj-function - time:" + timestr;
+	report_line += " pcs: " + doubleToString(pieces);
+	report_line += " pwt: " + doubleToString(newof->getPWT());
+      }
+      else
+	report_line += " did NOT produce an obj-function";
+      
+      if(newof) {
+	double of_time  = m_ipf_timer.get_float_cpu_time();
+	double pwt = newof->getPWT();
+	int pcs = newof->size();
+	m_helm_report.addActiveBHV(descriptor, state_elapsed, pwt, pcs, 
+				   of_time, upd_summary);
+      }
+      if(bhv_state=="running")
+	m_helm_report.addRunningBHV(descriptor, state_elapsed, upd_summary);
+      if(bhv_state=="idle")
+	m_helm_report.addIdleBHV(descriptor, state_elapsed, upd_summary);
+      if(bhv_state=="completed")
+	m_helm_report.addCompletedBHV(descriptor, state_elapsed, upd_summary);
+      
+      m_helm_report.addMsg(report_line);
+      m_ivp_functions.push_back(newof);
     }
-    
-    string upd_summary = m_bhv_set->getUpdateSummary(bhv_ix);
-    string descriptor  = m_bhv_set->getDescriptor(bhv_ix);
-    string report_line = descriptor;
-    if(newof) {
-      double of_time  = m_ipf_timer.get_float_cpu_time();
-      int    pieces   = newof->size();
-      string timestr  = doubleToString(of_time,2);
-      report_line += " produces obj-function - time:" + timestr;
-      report_line += " pcs: " + doubleToString(pieces);
-      report_line += " pwt: " + doubleToString(newof->getPWT());
-    }
-    else
-      report_line += " did NOT produce an obj-function";
-    
-    if(newof) {
-      double of_time  = m_ipf_timer.get_float_cpu_time();
-      double pwt = newof->getPWT();
-      int pcs = newof->size();
-      m_helm_report.addActiveBHV(descriptor, state_elapsed, pwt, pcs, 
-			       of_time, upd_summary);
-    }
-    if(astate=="running")
-      m_helm_report.addRunningBHV(descriptor, state_elapsed, upd_summary);
-    if(astate=="idle")
-      m_helm_report.addIdleBHV(descriptor, state_elapsed, upd_summary);
-    if(astate=="completed")
-      m_helm_report.addCompletedBHV(descriptor, state_elapsed, upd_summary);
-	
-    m_helm_report.addMsg(report_line);
-    m_ivp_functions.push_back(newof);
   }
   m_create_timer.stop();
   
@@ -191,6 +193,11 @@ bool HelmEngineBeta::part2_GetFunctionsFromBehaviorSet()
 //              those domain names found in one or more OF's.
 //            If the modified ivp_domain has *no* domains, 
 //              indicate result=false.
+//  
+//    Inputs: m_ivp_functions
+//   Outputs: m_sub_domain, m_helm_report
+
+
 
 bool HelmEngineBeta::part3_VerifyFunctionDomains()
 {
@@ -307,14 +314,8 @@ bool HelmEngineBeta::part4_BuildAndSolveIvPProblem()
 //------------------------------------------------------------------
 // Procedure: part5_GetResultsFromIvPProblem()
 
-void HelmEngineBeta::part5_GetResultsFromIvPProblem()
+bool HelmEngineBeta::part5_GetResultsFromIvPProblem(int filter_level)
 {
-  double create_time = m_create_timer.get_float_cpu_time();
-  double solve_time  = m_solve_timer.get_float_cpu_time();
-  m_helm_report.m_create_time = create_time;
-  m_helm_report.m_solve_time  = solve_time;
-  m_helm_report.m_loop_time   = create_time + solve_time;
-  
   unsigned int i, dsize = m_sub_domain.size();
   for(i=0; i<dsize; i++) {
     string dom_name = m_sub_domain.getVarName(i);
@@ -326,7 +327,7 @@ void HelmEngineBeta::part5_GetResultsFromIvPProblem()
     m_helm_report.addMsg("DESIRED_" + toupper(dom_name) + ":  " +
 		       doubleToString(decision, 2));
 
-    // If the IvPSolver didnt produce a decision in the subdomain
+    // If the IvPSolver did not produce a decision in the subdomain
     // this is a problem worthy of halting the helm (never shd hapn)
     if(!dec_made) {
       m_helm_report.m_halted = true;
@@ -336,5 +337,19 @@ void HelmEngineBeta::part5_GetResultsFromIvPProblem()
   }
   delete(m_ivp_problem);
   m_ivp_problem = 0;
+  return(true);
+}
+
+//------------------------------------------------------------------
+// Procedure: part6_FinishHelmReport()
+
+bool HelmEngineBeta::part6_FinishHelmReport()
+{
+  double create_time = m_create_timer.get_float_cpu_time();
+  double solve_time  = m_solve_timer.get_float_cpu_time();
+  m_helm_report.m_create_time = create_time;
+  m_helm_report.m_solve_time  = solve_time;
+  m_helm_report.m_loop_time   = create_time + solve_time;
+  return(true);
 }
 

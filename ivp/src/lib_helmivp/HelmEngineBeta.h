@@ -29,12 +29,13 @@
 #include "HelmReport.h"
 #include "MBTimer.h"
 
+class InfoBuffer;
 class IvPFunction;
 class IvPProblem;
 class BehaviorSet;
 class HelmEngineBeta {
 public:
-  HelmEngineBeta(IvPDomain);
+  HelmEngineBeta(IvPDomain, InfoBuffer*);
   ~HelmEngineBeta();
 
   HelmReport determineNextDecision(BehaviorSet *bset, double curr_time);
@@ -43,10 +44,11 @@ protected:
   bool   checkOFDomains(std::vector<IvPFunction*>);
 
   bool   part1_PreliminaryBehaviorSetHandling();
-  bool   part2_GetFunctionsFromBehaviorSet();
+  bool   part2_GetFunctionsFromBehaviorSet(int filter_level);
   bool   part3_VerifyFunctionDomains();
   bool   part4_BuildAndSolveIvPProblem();
-  void   part5_GetResultsFromIvPProblem();
+  bool   part5_GetResultsFromIvPProblem(int filter_level);
+  bool   part6_FinishHelmReport();
 
 protected:
   IvPDomain  m_ivp_domain;
@@ -58,13 +60,13 @@ protected:
   BehaviorSet *m_bhv_set;
   double       m_curr_time;
   IvPProblem  *m_ivp_problem;
+  InfoBuffer  *m_info_buffer;
 
   std::vector<IvPFunction*> m_ivp_functions;
 
   MBTimer  m_create_timer;
   MBTimer  m_ipf_timer;
   MBTimer  m_solve_timer;
-
 };
 
 #endif

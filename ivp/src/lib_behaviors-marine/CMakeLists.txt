@@ -30,13 +30,11 @@ SET(SRC
   BHV_TimeOut.cpp
   BHV_Timer.cpp
   BHV_Trail.cpp
-#   BHV_Trail_V1.cpp
   BHV_Waypoint.cpp
   BHV_HPeriodicSurface.cpp
   BHV_HSLine.cpp
   BHV_HeadingChange.cpp
   BHV_HeadingBias.cpp
-  BHV_Filteresis.cpp
 )
 
 ADD_LIBRARY(behaviors-marine ${SRC})

@@ -759,7 +759,7 @@ bool HelmIvP::OnStartUp()
   }
     
   m_hengine = new HelmEngine(m_ivp_domain);
-  m_hengine_beta = new HelmEngineBeta(m_ivp_domain);
+  m_hengine_beta = new HelmEngineBeta(m_ivp_domain, m_info_buffer);
 
 #ifdef USE_NEW_POPULATOR
   Populator_BehaviorSet2 p_bset(m_ivp_domain, m_info_buffer);

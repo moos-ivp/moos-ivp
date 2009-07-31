@@ -75,8 +75,9 @@ public:
   std::string getUpdateSummary();
   std::string getDescriptor()            {return(m_descriptor);};
   std::vector<VarDataPair> getMessages() {return(m_messages);};
-  void   clearMessages()                 {m_messages.clear();};
+  int    getFilterLevel()                {return(m_filter_level);};
   bool   stateOK()                       {return(m_state_ok);};
+  void   clearMessages()                 {m_messages.clear();};
   void   resetStateOK()                  {m_state_ok=true;};
 
 protected:
@@ -155,6 +156,7 @@ protected:
 
   bool        m_completed;
   bool        m_perpetual; 
+  int         m_filter_level;
 
   // The state_ok flag shouldn't be set to true once it has been 
   // set to false. So prevent subclasses from setting this directly.

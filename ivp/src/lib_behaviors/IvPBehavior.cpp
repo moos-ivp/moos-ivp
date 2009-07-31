@@ -64,6 +64,7 @@ IvPBehavior::IvPBehavior(IvPDomain g_domain)
   m_good_updates = 0;
   m_bad_updates  = 0;
   m_perpetual    = false;
+  m_filter_level = 0;
 
   m_duration     = -1;
   m_duration_started         =  false;

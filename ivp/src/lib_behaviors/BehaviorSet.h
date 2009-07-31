@@ -54,9 +54,9 @@ public:
   virtual ~BehaviorSet();
   
   void addBehavior(IvPBehavior *b);
-  void addInitialVar(VarDataPair msg) {initial_vars.push_back(msg);};
-  void addDefaultVar(VarDataPair msg) {default_vars.push_back(msg);};
-  int  getCount()                     {return(behaviors.size());};
+  void addInitialVar(VarDataPair msg) {m_initial_vars.push_back(msg);};
+  void addDefaultVar(VarDataPair msg) {m_default_vars.push_back(msg);};
+  int  getCount()                     {return(m_behaviors.size());};
   void setCurrTime(double v)          {m_curr_time = v;};
   void setModeSet(ModeSet v)          {m_mode_set = v;};
   
@@ -68,12 +68,14 @@ public:
 
   IvPBehavior*   getBehavior(unsigned int);
   std::string    getDescriptor(unsigned int);
-  double         getStateElapsed(unsigned int);
   std::string    getUpdateSummary(unsigned int);
+  double         getStateElapsed(unsigned int);
+  int            getFilterLevel(unsigned int);
+  bool           filterBehaviorsPresent();
 
   std::vector<VarDataPair> getMessages(unsigned int);
-  std::vector<VarDataPair> getInitialVariables() {return(initial_vars);};
-  std::vector<VarDataPair> getDefaultVariables() {return(default_vars);};
+  std::vector<VarDataPair> getInitialVariables() {return(m_initial_vars);};
+  std::vector<VarDataPair> getDefaultVariables() {return(m_default_vars);};
   std::vector<std::string> getInfoVars();
   std::vector<std::string> getNewInfoVars();
 
@@ -92,19 +94,19 @@ public:
   void print();
 
 protected:
-  std::vector<IvPBehavior*>   behaviors;
-  std::vector<std::string>    behavior_states;
-  std::vector<double>         behavior_state_time_entered;
-  std::vector<double>         behavior_state_time_elapsed;
+  std::vector<IvPBehavior*>   m_behaviors;
+  std::vector<std::string>    m_behavior_states;
+  std::vector<double>         m_behavior_state_time_entered;
+  std::vector<double>         m_behavior_state_time_elapsed;
 
-  std::vector<VarDataPair>    initial_vars;
-  std::vector<VarDataPair>    default_vars;
+  std::vector<VarDataPair>    m_initial_vars;
+  std::vector<VarDataPair>    m_default_vars;
 
-  std::vector<std::string>    prev_info_vars;
-  std::vector<std::string>    state_space_vars;
+  std::vector<std::string>    m_prev_info_vars;
+  std::vector<std::string>    m_state_space_vars;
 
-  bool   m_report_ipf;
-  double m_curr_time;
+  bool    m_report_ipf;
+  double  m_curr_time;
 
   ModeSet m_mode_set;
 };
