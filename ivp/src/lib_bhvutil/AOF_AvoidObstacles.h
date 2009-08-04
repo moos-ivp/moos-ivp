@@ -39,14 +39,15 @@ public: // virtual functions
   void   addObstacle(const XYPolygon&);
   bool   initialize();
   
-  unsigned int  obstaclesInRange();
+  unsigned int obstaclesInRange();
+  unsigned int pertObstacleCount();
+  unsigned int size() {return(m_obstacles_orig.size());};
   
-  bool  objectInObstacle(double, double, bool=false);
-  int   objectInWhichObstacle(double, double, bool=false);
-  void  applyBuffer();
+  bool   objectInObstacle(double, double, bool=false);
+  int    objectInWhichObstacle(double, double, bool=false);
+  void   applyBuffer();
+  double rangeToObstacle(unsigned int);
   
-  int   size() {return(m_obstacles_orig.size());};
-
   std::string getObstacleSpec(int, bool=false);
 
  protected:
@@ -74,6 +75,7 @@ private:
 
   std::vector<XYPolygon> m_obstacles_orig;
   std::vector<XYPolygon> m_obstacles_buff;
+  std::vector<bool>      m_obstacles_pert;
 
   std::vector<double>    cache_distance;
 };

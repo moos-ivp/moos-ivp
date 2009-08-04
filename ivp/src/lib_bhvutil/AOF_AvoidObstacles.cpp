@@ -20,6 +20,7 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
+#include <iostream>
 #include <string>
 #include "AOF_AvoidObstacles.h"
 #include "AngleUtils.h"
@@ -128,8 +129,12 @@ bool AOF_AvoidObstacles::initialize()
   if(!activation_dist_set)
     return(false);
   
-  if(m_obstacles_buff.size() == 0)
+  unsigned int  i, j;
+  unsigned int  osize = m_obstacles_buff.size();
+  if(osize == 0)
     return(false);
+  for(i=0; i<osize; i++)
+    m_obstacles_pert[i] = true;
 
   bufferBackOff(os_x, os_y);
 
@@ -137,9 +142,7 @@ bool AOF_AvoidObstacles::initialize()
   // the minimum/closest distance to any of the obstacle polygons.
   // A distance of -1 indicates infinite distance.
 
-  unsigned int  i, j;
-  unsigned int  osize = m_obstacles_buff.size();
-  unsigned int  hsize = m_domain.getVarPoints(crs_ix);
+  unsigned int hsize = m_domain.getVarPoints(crs_ix);
   for(i=0; i<hsize; i++)
     cache_distance.push_back(-1);
 
@@ -151,12 +154,14 @@ bool AOF_AvoidObstacles::initialize()
     double min_dist = -1; 
     bool   min_dist_set = false;
     for(j=0; j<osize; j++) {
-      double position_dist_to_poly = m_obstacles_buff[j].dist_to_poly(os_x, os_y);
-      if(position_dist_to_poly < activation_dist) {
-	dist_to_poly = m_obstacles_buff[j].dist_to_poly(os_x, os_y, heading);
-	if(dist_to_poly != -1) {
-	  if(!min_dist_set || (dist_to_poly < min_dist))
-	    min_dist = dist_to_poly;
+      if(m_obstacles_pert[j]) {
+	double position_dist_to_poly = m_obstacles_buff[j].dist_to_poly(os_x, os_y);
+	if(position_dist_to_poly < activation_dist) {
+	  dist_to_poly = m_obstacles_buff[j].dist_to_poly(os_x, os_y, heading);
+	  if(dist_to_poly != -1) {
+	    if(!min_dist_set || (dist_to_poly < min_dist))
+	      min_dist = dist_to_poly;
+	  }
 	}
       }
     }
@@ -198,6 +203,7 @@ void AOF_AvoidObstacles::addObstacle(const XYPolygon& new_poly)
   
   m_obstacles_orig.push_back(new_poly);
   m_obstacles_buff.push_back(new_buff_poly);
+  m_obstacles_pert.push_back(true);
 }
 
 
@@ -237,8 +243,21 @@ int AOF_AvoidObstacles::objectInWhichObstacle(double dx, double dy,
 	return(i);
     }
   }
-
   return(-1);
+}
+
+//----------------------------------------------------------------
+// Procedure: pertObstacleCount
+//      Note: 
+
+unsigned int AOF_AvoidObstacles::pertObstacleCount()
+{
+  unsigned int i, count = 0;
+  unsigned int vsize = m_obstacles_pert.size();
+  for(i=0; i<vsize; i++)
+    if(m_obstacles_pert[i])
+      count++;
+  return(count);
 }
 
 
@@ -251,6 +270,7 @@ void AOF_AvoidObstacles::applyBuffer()
   for(int i=0; i<vsize; i++) {
     m_obstacles_buff[i] = m_obstacles_orig[i];
     m_obstacles_buff[i].grow_by_amt(m_buffer_dist);
+    m_obstacles_buff[i].set_label(m_obstacles_orig[i].get_label()+"_buff");
   }    
 }
 
@@ -269,6 +289,18 @@ string AOF_AvoidObstacles::getObstacleSpec(int ix, bool use_buffered)
 }
 
 //----------------------------------------------------------------
+// Procedure: rangeToObstacle
+
+double AOF_AvoidObstacles::rangeToObstacle(unsigned int ix)
+{
+  if(ix >= m_obstacles_buff.size())
+    return(-1);
+
+  double dist = m_obstacles_buff[ix].dist_to_poly(os_x, os_y);
+  return(dist);
+}
+
+//----------------------------------------------------------------
 // Procedure: bufferBackOff
 //            For each of the buffered obstacles, if the ownship 
 //            position is within the obstacle boundary, it will 
@@ -276,27 +308,48 @@ string AOF_AvoidObstacles::getObstacleSpec(int ix, bool use_buffered)
 
 void AOF_AvoidObstacles::bufferBackOff(double osx, double osy)
 {
-  int vsize = m_obstacles_buff.size();
-  for(int i=0; i<vsize; i++) {
-    bool contained = m_obstacles_buff[i].contains(osx, osy);
+  if(m_buffer_dist <= 0)
+    return;
+
+  unsigned int i, j, vsize = m_obstacles_orig.size();
+  for(i=0; i<vsize; i++) {
+    XYPolygon orig_plus_buffer = m_obstacles_orig[i];
+    orig_plus_buffer.grow_by_amt(m_buffer_dist);
     
-    double shrink_pct = 0.02;
-    while((contained) && (shrink_pct < 100.0)) {
-      XYPolygon new_poly = m_obstacles_buff[i];
-      new_poly.grow_by_pct(-1*shrink_pct);
-      contained = new_poly.contains(osx, osy);
-      if(!contained) 
-	m_obstacles_buff[i] = new_poly;
-      else
-	shrink_pct += 0.02;
+    string buff_label = m_obstacles_orig[i].get_label() + "_buff";
+    bool   os_in_orig = m_obstacles_orig[i].contains(osx, osy);
+    bool   os_in_buff = orig_plus_buffer.contains(osx, osy);
+
+    if(os_in_buff && !os_in_orig) {
+      bool os_in_newb = false;
+      for(j=1; ((j<=100) && (!os_in_newb)); j++) {
+	XYPolygon new_poly = m_obstacles_orig[i];
+	double grow_amt = ((double)(j) / 100.0) * m_buffer_dist;
+	new_poly.grow_by_amt(grow_amt);
+	os_in_newb = new_poly.contains(osx, osy);
+	if(!os_in_newb) {
+	  m_obstacles_buff[i] = new_poly;
+	  m_obstacles_buff[i].set_label(buff_label);
+	}
+      }
+    }
+
+    if(!os_in_buff) {
+      orig_plus_buffer.set_label(buff_label);
+      m_obstacles_buff[i] = orig_plus_buffer;
+    }
+
+    if(os_in_orig) {
+      m_obstacles_buff[i] = m_obstacles_orig[i];
+      m_obstacles_buff[i].set_label(buff_label);
     }
 
     // In the exceptionally rare possibility that the polygon was shrunk
     // down to as far as possible and it *still* contains the ownship
     // position, we concede and drop this obstacle from the list by 
     // clearing the buffered obstacle - detectable by size() == 0
-    if(contained) 
-      m_obstacles_buff[i].clear();
+    if(os_in_orig) 
+      m_obstacles_pert[i] = false;
   }
 }
 
