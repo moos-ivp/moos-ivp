@@ -23,6 +23,7 @@
 #ifndef HELM_REPORT_HEADER
 #define HELM_REPORT_HEADER
 
+#include <map>
 #include <vector>
 #include <string>
 #include "IvPDomain.h"
@@ -60,8 +61,10 @@ public:
   std::string getActiveBehaviors();
 
   void   addDecision(const std::string &var, double val);
+  void   setDecision(const std::string &var, double val);
   double getDecision(const std::string &var);
   bool   hasDecision(const std::string &var);
+  void   delDecision(const std::string &var);
 
   int    getIteration() const      {return(m_iteration);};
   int    getOFNUM() const          {return(m_ofnum);};
@@ -89,8 +92,10 @@ protected:
   double                    m_solve_time;
   double                    m_loop_time;
   bool                      m_halted;
-  std::vector<std::string>  m_decision_var;
-  std::vector<double>       m_decision_val;
+  //std::vector<std::string>  m_decision_var;
+  //std::vector<double>       m_decision_val;
+
+  std::map<std::string, double> m_decisions;
 
   IvPDomain                 m_domain;
 };

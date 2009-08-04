@@ -46,8 +46,7 @@ protected:
   bool   part1_PreliminaryBehaviorSetHandling();
   bool   part2_GetFunctionsFromBehaviorSet(int filter_level);
   bool   part3_VerifyFunctionDomains();
-  bool   part4_BuildAndSolveIvPProblem();
-  bool   part5_GetResultsFromIvPProblem(int filter_level);
+  bool   part4_BuildAndSolveIvPProblem(std::string phase="direct");
   bool   part6_FinishHelmReport();
 
 protected:

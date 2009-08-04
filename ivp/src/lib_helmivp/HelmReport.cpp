@@ -45,8 +45,15 @@ HelmReport::HelmReport()
 
 void HelmReport::addDecision(const string& var, double val) 
 {
-  m_decision_var.push_back(var);
-  m_decision_val.push_back(val);
+  m_decisions[var] = val;
+}
+
+//-----------------------------------------------------------
+// Procedure: setDecision()
+
+void HelmReport::setDecision(const string& var, double val) 
+{
+  m_decisions[var] = val;
 }
 
 //-----------------------------------------------------------
@@ -54,12 +61,12 @@ void HelmReport::addDecision(const string& var, double val)
 
 double HelmReport::getDecision(const string& var) 
 {
-  int vsize = m_decision_var.size();
-  for(int i=vsize-1; i>=0; i--)
-    if(m_decision_var[i] == var)
-      return(m_decision_val[i]);
-  
-  return(0);
+  map<string, double>::iterator p;
+  p = m_decisions.find(var);
+  double result = 0;
+  if(p != m_decisions.end())
+    result = p->second;
+  return(result);
 }
 
 //-----------------------------------------------------------
@@ -67,12 +74,19 @@ double HelmReport::getDecision(const string& var)
 
 bool HelmReport::hasDecision(const string& var) 
 {
-  int vsize = m_decision_var.size();
-  for(int i=vsize-1; i>=0; i--)
-    if(m_decision_var[i] == var)
-      return(true);
-  
-  return(false);
+  map<string, double>::iterator p = m_decisions.find(var);
+  if(p != m_decisions.end())
+    return(true);
+  else
+    return(false);
+}
+
+//-----------------------------------------------------------
+// Procedure: delDecision()
+
+void HelmReport::delDecision(const string& var) 
+{
+  m_decisions.erase(var);
 }
 
 
@@ -175,25 +189,20 @@ string HelmReport::getReportAsString()
   report += (",create_time=" + doubleToString(m_create_time, 2));
   report += (",loop_time=" + doubleToString(m_loop_time, 2));
   
-  vsize = m_decision_var.size();
-  for(i=0; i<vsize; i++) {
-    report += ",var=";
-    report += m_decision_var[i];
-    report += ":";
-    report += doubleToString(m_decision_val[i], 1);
+  map<string, double>::iterator p;
+  for(p=m_decisions.begin(); p!=m_decisions.end(); p++) {
+    string var = p->first;
+    double val = p->second;
+    report += ",var=" + var + ":";
+    report += doubleToString(val, 1);
   }
 
   // Now check to see if the helm did not produce a decision for one
   // of the variables in the originally declared domain for the helm
   int dsize = m_domain.size();
   for(i=0; i<dsize; i++) {
-    bool found = false;
     string varname = m_domain.getVarName(i);
-    for(j=0; j<vsize; j++) { 
-      if(varname == m_decision_var[j])
-	found = true;
-    }
-    if(!found)
+    if(!hasDecision(varname))
       report += (",var=" + varname + ":varbalk");
   }
 

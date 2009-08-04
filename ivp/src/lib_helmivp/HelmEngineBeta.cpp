@@ -69,6 +69,7 @@ HelmReport HelmEngineBeta::determineNextDecision(BehaviorSet *bhv_set,
   m_bhv_set     = bhv_set;
   m_curr_time   = curr_time;
   m_helm_report = HelmReport();
+  m_ivp_functions.clear();
 
   bool filter_behaviors_present = bhv_set->filterBehaviorsPresent();
 
@@ -76,16 +77,14 @@ HelmReport HelmEngineBeta::determineNextDecision(BehaviorSet *bhv_set,
   handled = handled && part1_PreliminaryBehaviorSetHandling();
   handled = handled && part2_GetFunctionsFromBehaviorSet(0);
   handled = handled && part3_VerifyFunctionDomains();
-  handled = handled && part4_BuildAndSolveIvPProblem();
 
   if(filter_behaviors_present) {
-    handled = handled && part5_GetResultsFromIvPProblem(0);
+    handled = handled && part4_BuildAndSolveIvPProblem("prefilter");
     handled = handled && part2_GetFunctionsFromBehaviorSet(1);
     handled = handled && part3_VerifyFunctionDomains();
-    handled = handled && part4_BuildAndSolveIvPProblem();
   }
 
-  handled = handled && part5_GetResultsFromIvPProblem(0);
+  handled = handled && part4_BuildAndSolveIvPProblem();
   handled = handled && part6_FinishHelmReport();
   return(m_helm_report);
 }
@@ -120,11 +119,14 @@ bool HelmEngineBeta::part1_PreliminaryBehaviorSetHandling()
 
 //------------------------------------------------------------------
 // Procedure: part2_GetFunctionsFromBehaviorSet()
+//     Notes: Gets the IvP functions from behaviors and adds them 
+//            to the m_ivp_functions
+//
+//    Inputs: m_bhv_set, filter_level
+//   Outputs: m_ivp_functions, m_helm_report, timers
 
 bool HelmEngineBeta::part2_GetFunctionsFromBehaviorSet(int filter_level)
 {
-  m_ivp_functions.clear();
-
   int bhv_ix, bhv_cnt = m_bhv_set->getCount();
 
   // get all the objective functions and add time info to helm report
@@ -159,23 +161,23 @@ bool HelmEngineBeta::part2_GetFunctionsFromBehaviorSet(int filter_level)
       }
       else
 	report_line += " did NOT produce an obj-function";
+      m_helm_report.addMsg(report_line);
       
       if(newof) {
 	double of_time  = m_ipf_timer.get_float_cpu_time();
 	double pwt = newof->getPWT();
-	int pcs = newof->size();
+	int    pcs = newof->size();
 	m_helm_report.addActiveBHV(descriptor, state_elapsed, pwt, pcs, 
 				   of_time, upd_summary);
+	m_ivp_functions.push_back(newof);
       }
+
       if(bhv_state=="running")
 	m_helm_report.addRunningBHV(descriptor, state_elapsed, upd_summary);
       if(bhv_state=="idle")
 	m_helm_report.addIdleBHV(descriptor, state_elapsed, upd_summary);
       if(bhv_state=="completed")
 	m_helm_report.addCompletedBHV(descriptor, state_elapsed, upd_summary);
-      
-      m_helm_report.addMsg(report_line);
-      m_ivp_functions.push_back(newof);
     }
   }
   m_create_timer.stop();
@@ -186,13 +188,12 @@ bool HelmEngineBeta::part2_GetFunctionsFromBehaviorSet(int filter_level)
 
 //-----------------------------------------------------------
 // Procedure: part3_VerifyFunctionDomains()
-//      Note: 
-//            Ensure all OF domain names are contained in the 
-//              m_ivp_domain. Indicate result=false if not.
-//            Build a modified ivp_domain that contains only 
-//              those domain names found in one or more OF's.
-//            If the modified ivp_domain has *no* domains, 
-//              indicate result=false.
+//      Note: (1) Ensure all OF domain names are contained in the 
+//                m_ivp_domain. Indicate result=false if not.
+//            (2) Build a modified ivp_domain that contains only 
+//                those domain names found in one or more OF's.
+//            (3) If the modified ivp_domain has *no* domains, 
+//                indicate result=false.
 //  
 //    Inputs: m_ivp_functions
 //   Outputs: m_sub_domain, m_helm_report
@@ -269,74 +270,50 @@ bool HelmEngineBeta::part3_VerifyFunctionDomains()
   }
 }
 
-
-
 //------------------------------------------------------------------
 // Procedure: part4_BuildAndSolveIvPProblem()
 
-bool HelmEngineBeta::part4_BuildAndSolveIvPProblem()
+bool HelmEngineBeta::part4_BuildAndSolveIvPProblem(string phase)
 {
-  // Create an new instance of an IvPProblem
-  delete(m_ivp_problem);
-  m_ivp_problem = new IvPProblem;
-
-  // Populate the problem with the IvP functions from behaviors
-  unsigned int i, bhv_count = m_ivp_functions.size(); 
-  for(i=0; i<bhv_count; i++) {
-    if(m_ivp_functions[i])
-      m_ivp_problem->addOF(m_ivp_functions[i]);
-  }
-
-  // Note the number of IvP functions for the helm report
-  int ofnum = m_ivp_problem->getOFNUM();
-  m_helm_report.addMsg("Number of Objective Functions: " + intToString(ofnum)); 
-  m_helm_report.m_ofnum = ofnum;
-  
-  if(ofnum == 0) {
-    m_helm_report.addMsg("No Decision due to zero (behavior) OF's");
-    if(m_ivp_problem) {
-      delete(m_ivp_problem);
-      m_ivp_problem = 0;
-    }
+  unsigned int i, ipfs = m_ivp_functions.size(); 
+  m_helm_report.addMsg("Number of IvP Functions: " + intToString(ipfs)); 
+  m_helm_report.m_ofnum = ipfs;
+  if(ipfs == 0) {
+    m_helm_report.addMsg("No Decision due to zero IvP functions");
     return(false);
   }
 
+  // Create, Prepare, and Solve the IvP problem
+  m_ivp_problem = new IvPProblem;
+  m_solve_timer.start();
+  for(i=0; i<ipfs; i++)
+      m_ivp_problem->addOF(m_ivp_functions[i]);
   m_ivp_problem->setDomain(m_sub_domain);
   m_ivp_problem->alignOFs();
-
-  m_solve_timer.start();
   m_ivp_problem->solve();
   m_solve_timer.stop();
 
-  return(true);
-}
-
-//------------------------------------------------------------------
-// Procedure: part5_GetResultsFromIvPProblem()
-
-bool HelmEngineBeta::part5_GetResultsFromIvPProblem(int filter_level)
-{
-  unsigned int i, dsize = m_sub_domain.size();
+  unsigned int dsize = m_sub_domain.size();
   for(i=0; i<dsize; i++) {
     string dom_name = m_sub_domain.getVarName(i);
-    bool   dec_made;
-    double decision = m_ivp_problem->getResult(dom_name, &dec_made);
-    
-    // Add the decision to the report and a message for output
-    m_helm_report.addDecision(dom_name, decision);
-    m_helm_report.addMsg("DESIRED_" + toupper(dom_name) + ":  " +
-		       doubleToString(decision, 2));
+    double decision = m_ivp_problem->getResult(dom_name);
+    string post_str = "DESIRED_" + toupper(dom_name);
 
-    // If the IvPSolver did not produce a decision in the subdomain
-    // this is a problem worthy of halting the helm (never shd hapn)
-    if(!dec_made) {
-      m_helm_report.m_halted = true;
-      m_helm_report.addMsg("HELM HALTING CONDITION: No decision for " +
-			 dom_name);
+    // Add the decision to the report and a message for output  
+    if(phase == "prefilter")
+      m_info_buffer->setValue((post_str + "_UNFILTERED"), decision);
+    else {
+      m_helm_report.addDecision(dom_name, decision);
+      m_helm_report.addMsg(post_str+": " + doubleToString(decision,2));
     }
-  }
+  }    
+  
+  if(phase == "prefilter")
+    m_ivp_problem->setOwnerIPFs(false);
+
   delete(m_ivp_problem);
   m_ivp_problem = 0;
+  
   return(true);
 }
 
