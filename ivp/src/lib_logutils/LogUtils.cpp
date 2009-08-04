@@ -294,7 +294,7 @@ string getNextRawLine(FILE *fileptr)
 // Procedure: getSecsfromTimeOfDay
 //     Notes: Date String of form "11:50:04 AM"
 
-double getSecsFromTimeOfDay(string date_str)
+double getEpochSecsFromTimeOfDay(string date_str)
 {
   string time  = stripBlankEnds(biteString(date_str, ' '));
   string am_pm = tolower(stripBlankEnds(date_str));
@@ -319,9 +319,9 @@ double getSecsFromTimeOfDay(string date_str)
 //--------------------------------------------------------
 // Procedure: getSecsfromTimeOfDay
 
-double getSecsFromTimeOfDay(double hours, double minutes, double seconds)
+double getEpochSecsFromTimeOfDay(double hrs, double mins, double secs)
 {
-  double total_seconds = seconds + (60*minutes) + (3600*hours);
+  double total_seconds = secs + (60*mins) + (3600*hrs);
   return(total_seconds);
 }
 
@@ -407,8 +407,7 @@ double getEpochSecsFromDayOfYear(double d_day, double d_month,
   if((d_year >= 2064) && (d_month >= 3)) total_seconds += 86400;
   if((d_year >= 2068) && (d_month >= 3)) total_seconds += 86400;
 
-  return(total_seconds);
-
+#if 0
   // handle leap seconds  NOT COUNTED IN UNIX EPOCH TIME
   if((d_year >= 1972) && (d_month >= 7)) total_seconds++;
   if(d_year >= 1973) total_seconds++;
@@ -434,6 +433,7 @@ double getEpochSecsFromDayOfYear(double d_day, double d_month,
   if(d_year >= 1999) total_seconds++;
   if(d_year >= 2006) total_seconds++;
   if(d_year >= 2009) total_seconds++;
+#endif
 
   return(total_seconds);
 }
