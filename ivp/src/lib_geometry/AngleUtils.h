@@ -39,12 +39,3 @@ double  headingToRadians(double degrees);
 bool    containsAngle(double deg1, double deg2, double deg3);
 
 #endif
-
-
-
-
-
-
-
-
-

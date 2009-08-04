@@ -335,20 +335,88 @@ double XYSegList::get_center_y() const
 }
 
 //---------------------------------------------------------------
+// Procedure: get_min_x
+//   Purpose: Return the min of the x values
+
+double XYSegList::get_min_x() const
+{
+  unsigned int i, vsize = vertex_x.size();
+  if(vsize == 0) 
+    return(0.0);
+
+  double x_min = vertex_x[0];
+  for(i=1; i<vsize; i++)
+    if(vertex_x[i] < x_min)
+      x_min = vertex_x[i];
+  return(x_min);
+}
+
+//---------------------------------------------------------------
+// Procedure: get_max_x
+//   Purpose: Return the min of the x values
+
+double XYSegList::get_max_x() const
+{
+  unsigned int i, vsize = vertex_x.size();
+  if(vsize == 0) 
+    return(0.0);
+
+  double x_max = vertex_x[0];
+  for(i=1; i<vsize; i++)
+    if(vertex_x[i] > x_max)
+      x_max = vertex_x[i];
+  return(x_max);
+}
+
+//---------------------------------------------------------------
+// Procedure: get_min_y
+//   Purpose: Return the min of the x values
+
+double XYSegList::get_min_y() const
+{
+  unsigned int i, vsize = vertex_y.size();
+  if(vsize == 0) 
+    return(0.0);
+
+  double y_min = vertex_y[0];
+  for(i=1; i<vsize; i++)
+    if(vertex_y[i] < y_min)
+      y_min = vertex_y[i];
+  return(y_min);
+}
+
+//---------------------------------------------------------------
+// Procedure: get_max_y
+//   Purpose: Return the min of the x values
+
+double XYSegList::get_max_y() const
+{
+  unsigned int i, vsize = vertex_y.size();
+  if(vsize == 0) 
+    return(0.0);
+
+  double y_max = vertex_y[0];
+  for(i=1; i<vsize; i++)
+    if(vertex_y[i] > y_max)
+      y_max = vertex_y[i];
+  return(y_max);
+}
+
+//---------------------------------------------------------------
 // Procedure: get_avg_x
 //   Purpose: Return the avg of the x values
 
 double XYSegList::get_avg_x() const
 {
-  int vsize = vertex_x.size();
-  
-  if(vsize == 0) return(0.0);
+  unsigned int i, vsize = vertex_x.size();
+  if(vsize == 0) 
+    return(0.0);
 
   double x_total = 0.0;
-  for(int i=0; i<vsize; i++)
+  for(i=0; i<vsize; i++)
     x_total += vertex_x[i];
 
-  return(x_total / vsize);
+  return(x_total / (double)(vsize));
 }
 
 //---------------------------------------------------------------
@@ -357,16 +425,29 @@ double XYSegList::get_avg_x() const
 
 double XYSegList::get_avg_y() const
 {
-  int vsize = vertex_y.size();
-  
-  if(vsize == 0) return(0.0);
+  unsigned int i, vsize = vertex_y.size();
+  if(vsize == 0) 
+    return(0.0);
 
   double y_total = 0.0;
-  for(int i=0; i<vsize; i++)
+  for(i=0; i<vsize; i++)
     y_total += vertex_y[i];
 
-  return(y_total / vsize);
+  return(y_total / (double)(vsize));
 }
+
+//---------------------------------------------------------------
+// Procedure: dist_to_ctr
+//   Purpose: 
+
+double XYSegList::dist_to_ctr(double x, double y) const
+{
+  double ctr_x = get_center_x();
+  double ctr_y = get_center_y();
+  double dist  = hypot((ctr_x-x), (ctr_y-y));
+  return(dist);
+}
+
 
 
 //---------------------------------------------------------------

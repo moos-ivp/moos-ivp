@@ -58,8 +58,13 @@ public:
   double get_vz(unsigned int) const;
   double get_center_x() const;
   double get_center_y() const;
+  double get_min_x() const;
+  double get_max_x() const;
+  double get_min_y() const;
+  double get_max_y() const;
   double get_avg_x() const;
   double get_avg_y() const;
+  double dist_to_ctr(double x, double y) const;
   bool   segs_cross(bool loop=true) const;
   double length();
 
