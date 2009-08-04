@@ -344,7 +344,7 @@ double getEpochSecsFromDayOfYear(string date_str, int format)
 
     d_month = atof(s_month.c_str());
     d_day   = atof(s_day.c_str());
-    s_year  = atof(s_year.c_str());
+    d_year  = atof(s_year.c_str());
   }
 
   double total_seconds = getEpochSecsFromDayOfYear(d_day, d_month, d_year);
