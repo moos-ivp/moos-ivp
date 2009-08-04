@@ -57,6 +57,7 @@ Problem::Problem()
   m_ofs       = 0;
   m_epsilon   = 0.0;
   m_silent    = true;
+  m_owner_ofs = true;
 }
 
 //---------------------------------------------------------------
@@ -66,7 +67,7 @@ Problem::~Problem()
 {
   if(m_maxbox)
     delete(m_maxbox);
-  if(m_ofs) {
+  if(m_ofs && m_owner_ofs) {
     for(int i=0; (i < m_ofnum); i++)
       delete(m_ofs[i]);
     delete[] m_ofs;
@@ -80,6 +81,23 @@ Problem::~Problem()
 void Problem::setDomain(IvPDomain g_domain)
 {
   m_domain = g_domain;
+}
+
+//---------------------------------------------------------------
+// Procedure: clearIPFs
+//   Purpose: A way to explicitly release the memory used by the 
+//            IvP functions. This may also be done by the destructor,
+//            but not necessarily, depending on how m_owner_ofs is
+//            set.
+
+void Problem::clearIPFs()
+{
+  if(m_ofs) {
+    for(int i=0; (i < m_ofnum); i++)
+      delete(m_ofs[i]);
+    delete[] m_ofs;
+  }
+  m_ofs = 0;
 }
 
 

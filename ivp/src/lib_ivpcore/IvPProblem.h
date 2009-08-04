@@ -49,7 +49,6 @@ public:
   ~IvPProblem();
 
   void   preCompact();
-
   bool   solve(const IvPBox *isolbox=0);
 
 protected:
