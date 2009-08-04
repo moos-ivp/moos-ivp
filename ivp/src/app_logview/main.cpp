@@ -88,6 +88,8 @@ int main(int argc, char *argv[])
       tif_file = "Monterey-2048.tif";
     else if((argi == "mbd"))
       tif_file = "Monterey-2048-30-30-100.tif";
+    else if((argi == "-fl") || (argi == "-forrest"))
+      tif_file = "forrest19.tif";
     else if((argi == "glint") || (argi == "-glint"))
       tif_file = "glintA.tif";
   }
