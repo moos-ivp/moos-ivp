@@ -54,18 +54,12 @@ BHV_AvoidObstacles::BHV_AvoidObstacles(IvPDomain gdomain) :
   m_allowable_ttc      = 20;
   m_pheading_influence = 10;
 
+  m_hint_buff_edge_color = "yellow";
+  m_hint_obst_edge_color = "red";
+
   m_aof_avoid = new AOF_AvoidObstacles(m_domain);
 
   addInfoVars("NAV_X, NAV_Y, NAV_HEADING");
-}
-
-//-----------------------------------------------------------
-// Procedure: Destructor
-
-BHV_AvoidObstacles::~BHV_AvoidObstacles()
-{
-  if(m_aof_avoid)
-    delete(m_aof_avoid);
 }
 
 //-----------------------------------------------------------
@@ -115,6 +109,13 @@ bool BHV_AvoidObstacles::setParam(string param, string val)
     m_buffer_dist = dval;
     return(true);
   }
+  else if(param == "visual_hints")  {
+    vector<string> svector = parseStringQ(val, ',');
+    unsigned int i, vsize = svector.size();
+    for(i=0; i<vsize; i++) 
+      handleVisualHint(svector[i]);
+    return(true);
+  }
   return(false);
 }
 
@@ -144,13 +145,6 @@ IvPFunction *BHV_AvoidObstacles::onRunState()
     return(false);
   }
   
-  for(int i=0; i<m_aof_avoid->size(); i++) {
-    string spec_orig = m_aof_avoid->getObstacleSpec(i,false);
-    string spec_buff = m_aof_avoid->getObstacleSpec(i,true);
-    postMessage("VIEW_POLYGON", spec_orig, "orig");
-    postMessage("VIEW_POLYGON", spec_buff, "buff");
-  }
-  
   if(m_aof_avoid->objectInObstacle(os_x, os_y, false))
     postWMessage("Ownship position within stated space of obstacle");
   
@@ -165,17 +159,24 @@ IvPFunction *BHV_AvoidObstacles::onRunState()
   m_aof_avoid->setParam("activation_dist", m_activation_dist);
   m_aof_avoid->setParam("allowable_ttc", m_allowable_ttc);
 
-  if(m_aof_avoid->obstaclesInRange() == 0)
-    return(0);
-
   bool ok_init = m_aof_avoid->initialize();
   if(!ok_init) {
     postWMessage("BHV_AvoidObstacles: AOF-Init Error");
     return(0);
   }
 
-  IvPFunction *ipf = 0;
+  postViewablePolygons();
+  
+  int pertinent_obstacles = m_aof_avoid->pertObstacleCount();
+  if(pertinent_obstacles == 0) {
+    postWMessage("BHV_AvoidObstacles: No pertinent obstacles");
+    return(0);
+  }
 
+  if(m_aof_avoid->obstaclesInRange() == 0)
+    return(0);
+  
+  IvPFunction *ipf = 0;
   OF_Reflector reflector(m_aof_avoid, 1);
 
   if(m_build_info != "")
@@ -196,4 +197,49 @@ IvPFunction *BHV_AvoidObstacles::onRunState()
   
   return(ipf);
 }
+
+//-----------------------------------------------------------
+// Procedure: handleVisualHint()
+
+void BHV_AvoidObstacles::handleVisualHint(string hint)
+{
+  string param = tolower(stripBlankEnds(biteString(hint, '=')));
+  string value = stripBlankEnds(hint);
+  double dval  = atof(value.c_str());
+
+  if((param == "obstacle_edge_color") && isColor(value))
+    m_hint_obst_edge_color = value;
+  else if((param == "buffer_edge_color") && isColor(value))
+    m_hint_obst_edge_color = value;
+}
+
+//-----------------------------------------------------------
+// Procedure: postViewablePolygons
+
+void BHV_AvoidObstacles::postViewablePolygons()
+{
+  if(!m_aof_avoid)
+    return;
+  
+  unsigned int i;
+  for(i=0; i<m_aof_avoid->size(); i++) {
+    string spec_orig = m_aof_avoid->getObstacleSpec(i,false);
+    string spec_buff = m_aof_avoid->getObstacleSpec(i,true);
+
+    double range = m_aof_avoid->rangeToObstacle(i);
+    if(range > m_activation_dist) {
+      spec_orig += ":edge_color,white:edge_color,white";
+      postMessage("VIEW_POLYGON", spec_orig, "orig");
+    }
+    else {
+      spec_orig += ":edge_color," + m_hint_obst_edge_color;
+      spec_orig += ":vertex_color," + m_hint_obst_edge_color;
+      spec_buff += ":edge_color," + m_hint_buff_edge_color;
+      spec_buff += ":vertex_color," + m_hint_buff_edge_color;
+      postMessage("VIEW_POLYGON", spec_orig, "orig");
+      postMessage("VIEW_POLYGON", spec_buff, "buff");
+    }
+  }
+}
+
 

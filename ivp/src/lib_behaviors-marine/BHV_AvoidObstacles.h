@@ -30,18 +30,25 @@
 class BHV_AvoidObstacles : public IvPBehavior {
 public:
   BHV_AvoidObstacles(IvPDomain);
-  ~BHV_AvoidObstacles();
+  ~BHV_AvoidObstacles() {delete(m_aof_avoid);};
   
   IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
 
+ protected:
+  void    handleVisualHint(std::string);
+  void    postViewablePolygons();
+
 protected:
-  AOF_AvoidObstacles    *m_aof_avoid;
+  AOF_AvoidObstacles *m_aof_avoid;
 
   double  m_allowable_ttc;      // Allowable time to collision
   double  m_activation_dist;    // Outside of which no IPF created
   double  m_buffer_dist;        // Between OS and obstacle(s)
   double  m_pheading_influence;
+ 
+  std:: string m_hint_buff_edge_color;
+  std:: string m_hint_obst_edge_color;
 };
 #endif
 
