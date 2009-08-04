@@ -131,23 +131,9 @@ int main(int argc ,char * argv[])
   bool seed = true;
   if(seed) {
     unsigned long tseed = time(NULL)+1;
-#ifdef WIN32
-	unsigned long hostid = 0; 
-	char hostname[256];
-	if( gethostname(hostname, 256) == 0 ){
-		hostent *host = gethostbyname(hostname);
-		if(host != NULL){
-			hostid = *(u_long *)host->h_addr_list[0];
-		}
-	}
-	hostid += 1;
-    
-#else
-    unsigned long hostid = gethostid()+1;
-#endif
     unsigned long pid = (long)getpid()+1;
     unsigned long seed = (tseed%999999);
-    seed = ((rand())*seed*hostid)%999999;
+    seed = ((rand())*seed)%999999;
     seed = (seed*pid)%999999;
     srand(seed);
   }
@@ -194,7 +180,6 @@ int main(int argc ,char * argv[])
     else
       g_theHelmScope.handleCommand(c);
   }
- 
   return(0);
 }
 
