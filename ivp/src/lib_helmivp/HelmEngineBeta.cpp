@@ -324,6 +324,8 @@ bool HelmEngineBeta::part6_FinishHelmReport()
 {
   double create_time = m_create_timer.get_float_cpu_time();
   double solve_time  = m_solve_timer.get_float_cpu_time();
+  m_create_timer.reset();
+  m_solve_timer.reset();
   m_helm_report.m_create_time = create_time;
   m_helm_report.m_solve_time  = solve_time;
   m_helm_report.m_loop_time   = create_time + solve_time;
