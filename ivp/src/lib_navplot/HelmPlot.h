@@ -32,9 +32,9 @@ public:
   HelmPlot() {m_utc_start_time=0;};
   ~HelmPlot() {};
 
-  void   set_vehi_name(std::string s) {m_vehicle_name = s;};
-  void   set_vehi_type(std::string s) {m_vehicle_type = s;};
-  void   set_vehi_length(double len)  {m_vehicle_length = len;};
+  void   set_vehi_name(std::string s) {m_vehi_name = s;};
+  void   set_vehi_length(double len)  {m_vehi_length = len;};
+  void   set_vehi_type(std::string);
   
   bool   add_entry(double time, std::string helm_summary);
   
@@ -44,19 +44,22 @@ public:
 				  unsigned int index) const;
   std::string  get_value_by_time(std::string value_type,
 				 double gtime) const;
-
-  double get_min_time() const;
-  double get_max_time() const;
-  unsigned int  size() const  {return(m_time.size());};
-  void   print() const;
+  
+  std::string  get_vehi_name()    const {return(m_vehi_name);};
+  std::string  get_vehi_type()    const {return(m_vehi_type);};
+  double       get_vehi_length()  const {return(m_vehi_length);};
+  unsigned int size()         const {return(m_time.size());};
+  double       get_min_time() const;
+  double       get_max_time() const;
+  void         print()        const;
   
 protected:
   int get_index_by_time(double) const;
 
 protected:
-  std::string m_vehicle_name;
-  std::string m_vehicle_type;
-  double      m_vehicle_length;
+  std::string m_vehi_name;
+  std::string m_vehi_type;
+  double      m_vehi_length;
 
   std::vector<double>      m_time;
   std::vector<std::string> m_helm_iter;

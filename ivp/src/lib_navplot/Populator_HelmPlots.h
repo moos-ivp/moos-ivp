@@ -38,6 +38,10 @@ public:
   HelmPlot getHelmPlot() {return(m_helm_plot);};
 
 protected:
+  bool     handleNodeReports();
+  bool     handleHelmSummaries();
+
+protected:
   std::string  m_file;
   HelmPlot     m_helm_plot;
 

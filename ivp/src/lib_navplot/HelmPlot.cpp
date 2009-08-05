@@ -30,6 +30,14 @@
 using namespace std;
 
 //---------------------------------------------------------------
+// Procedure: set_vehi_type
+
+void HelmPlot::set_vehi_type(string str)
+{
+  m_vehi_type = tolower(str);
+}
+
+//---------------------------------------------------------------
 // Procedure: add_helm_entry
 //      Note: Time must be in ascending order. If new pair doesn't
 //            obey, no action is taken, and false is returned.
@@ -183,9 +191,9 @@ void HelmPlot::print() const
 {
   unsigned int i;
   cout << "HelmPlot::print()" << endl;
-  cout << " VehicleName: " << m_vehicle_name << endl;
-  cout << " VehicleType: " << m_vehicle_type << endl;
-  cout << " VehicleLength: " << m_vehicle_length << endl;
+  cout << " VehicleName: " << m_vehi_name << endl;
+  cout << " VehicleType: " << m_vehi_type << endl;
+  cout << " VehicleLength: " << m_vehi_length << endl;
   for(i=0; i<m_time.size(); i++) {
     cout << "time: " << m_time[i] << endl;
     cout << "  iter:   " << m_helm_iter[i] << endl;

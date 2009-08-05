@@ -36,14 +36,16 @@ bool Populator_HelmPlots::populateFromALog()
 {
   int i, vsize = m_helm_summaries.size();
   
+  m_helm_plot.set_vehi_name("unknown");
+  m_helm_plot.set_vehi_type("unknown");
+  m_helm_plot.set_vehi_length(10);
+  handleNodeReports();
+
   for(i=0; i<vsize; i++) {
     m_helm_plot.add_entry(m_helm_summary_times[i], 
 			  m_helm_summaries[i]);
   }
 
-  m_helm_plot.set_vehi_name("leonardo");
-  m_helm_plot.set_vehi_type("Iver");
-  m_helm_plot.set_vehi_length(23.2);
 
   return(true);
 }
@@ -86,5 +88,63 @@ bool Populator_HelmPlots::setFileALog(string filestr)
     }
   }
 
+  return(true);
+}
+
+//---------------------------------------------------------------
+// Procedure: handleNodeReports
+
+bool Populator_HelmPlots::handleNodeReports()
+{
+  string vtype, vname, vlen;
+
+  unsigned int i, vsize = m_node_reports.size();
+  for(i=0; i<vsize; i++) {
+    vector<string> kvector = parseString(m_node_reports[i], ',');
+    unsigned int k, ksize = kvector.size();
+    for(k=0; k<ksize; k++) {
+      string left  = stripBlankEnds(tolower(biteString(kvector[k], '=')));
+      string right = stripBlankEnds(kvector[k]);
+      
+      if(left == "name") {
+	if((vname == "") || (vname == right))
+	  vname = right;
+	else {
+	  cout << "Inconsistent vehicle name from NODE_REPORT_LOCAL entries" << endl;
+	  return(false);
+	}
+      }
+      else if(left == "type") {
+	if((vtype == "") || (vtype == right))
+	  vtype = right;
+	else {
+	  cout << "Inconsistent vehicle type from NODE_REPORT_LOCAL entries" << endl;
+	  return(false);
+	}
+      }
+      else if(left == "length") {
+	if((vlen == "") || (vlen == right))
+	  vlen = right;
+	else {
+	  cout << "Inconsistent vehicle length from NODE_REPORT_LOCAL entries" << endl;
+	  return(false);
+	}
+      }
+    }
+  }
+
+  m_helm_plot.set_vehi_name(vname);
+  m_helm_plot.set_vehi_type(vtype);
+  m_helm_plot.set_vehi_length(atof(vlen.c_str()));
+
+  return(true);
+}
+
+
+//---------------------------------------------------------------
+// Procedure: handleHelmSummaries
+
+bool Populator_HelmPlots::handleHelmSummaries()
+{
   return(true);
 }
