@@ -41,13 +41,12 @@ using namespace std;
 NavPlotViewer::NavPlotViewer(int x, int y, int w, int h, const char *l)
   : MarineViewer(x,y,w,h,l)
 {
-  m_global_ix    = 0;
-  m_local_ix     = 0;
+  m_vehicle_ix   = 0;
+  m_data_ix      = 0;
   m_trail_gap    = 1;
   m_trail_size   = 0.5;
   m_alltrail     = true;
-  m_vehibody     = "auv";  // "auv" or "kayak"
-  m_shape_scale  = 0.12;
+  m_shape_scale  = 1;
   m_trails       = true;
   m_draw_vname   = false;
 }
@@ -126,34 +125,6 @@ void NavPlotViewer::draw()
   drawFrame();
 }
 
-// ----------------------------------------------------------
-// Procedure: getMetersX
-//   Purpose: For a given x position, return its position, in 
-//            terms of delta meters from the zero position.
-
-double NavPlotViewer::getMetersX()
-{
-  if(m_global_ix < m_navx_plot.size()) {
-    return(m_navx_plot[m_global_ix].get_value_by_index(m_local_ix));
-  }
-  else
-    return(0);
-}
-
-// ----------------------------------------------------------
-// Procedure: getMetersY
-//   Purpose: For a given y position, return its position, in 
-//            terms of delta meters from the zero position.
-
-double NavPlotViewer::getMetersY()
-{
-  if(m_global_ix < m_navx_plot.size()) {
-    return(m_navy_plot[m_global_ix].get_value_by_index(m_local_ix));
-  }
-  else
-    return(0);
-}
-
 //-------------------------------------------------------------
 // Procedure: setCurrIndex
 //      Note: returns true if the value changes
@@ -168,7 +139,7 @@ bool NavPlotViewer::setCurrIndex(int v)
   if(v >= 0)
     new_index = (unsigned int)(v);
   
-  unsigned int plotsize = m_navx_plot[m_global_ix].size();
+  unsigned int plotsize = m_navx_plot[m_vehicle_ix].size();
 
   if(plotsize == 0)
     return(false);
@@ -176,8 +147,8 @@ bool NavPlotViewer::setCurrIndex(int v)
   if(new_index >= plotsize) 
     new_index = plotsize - 1;
 
-  if(m_local_ix != new_index) {
-    m_local_ix = new_index;
+  if(m_data_ix != new_index) {
+    m_data_ix = new_index;
     return(true);
   }
   else
@@ -193,12 +164,12 @@ bool NavPlotViewer::incCurrIndex(int v)
   if(m_navx_plot.size() == 0)
     return(false);
 
-  unsigned int max_index = m_navx_plot[m_global_ix].size();
+  unsigned int max_index = m_navx_plot[m_vehicle_ix].size();
   
-  int new_index = m_local_ix + v;
+  int new_index = m_data_ix + v;
   new_index = (int)(vclip(new_index, 0, max_index));
     
-  return(setCurrIndex(m_local_ix + v));
+  return(setCurrIndex(m_data_ix + v));
 }
 
 //-------------------------------------------------------------
@@ -211,7 +182,7 @@ bool NavPlotViewer::setCurrIndexByTime(double gtime)
     return(false);
 
   cout << "m_navx_plot.size(): " << m_navx_plot.size() << endl;
-  unsigned int ix = m_navx_plot[m_global_ix].get_index_by_time(gtime);
+  unsigned int ix = m_navx_plot[m_vehicle_ix].get_index_by_time(gtime);
   redraw();
 
   return(setCurrIndex(ix));
@@ -233,11 +204,11 @@ bool NavPlotViewer::jumpCurrIndex(unsigned int v)
   if(v==0)
     return(setCurrIndex(0));
   else if(v==1) {
-    int end_ix = m_navx_plot[m_global_ix].size() - 1;
+    int end_ix = m_navx_plot[m_vehicle_ix].size() - 1;
     return(setCurrIndex(end_ix));
   }
   else {
-    int end_ix = m_navx_plot[m_global_ix].size() / 2;
+    int end_ix = m_navx_plot[m_vehicle_ix].size() / 2;
     return(setCurrIndex(end_ix));
   }
 }
@@ -254,7 +225,7 @@ void NavPlotViewer::setGlobalIndex(unsigned int new_ix)
     new_ix = 0;
   if(new_ix >= m_navx_plot.size())
     new_ix = m_navx_plot.size()-1;
-  m_global_ix = new_ix;
+  m_vehicle_ix = new_ix;
 }
 
 //-------------------------------------------------------------
@@ -263,7 +234,7 @@ void NavPlotViewer::setGlobalIndex(unsigned int new_ix)
 double NavPlotViewer::getCurrTime()
 {
   if(m_navx_plot.size() > 0)
-    return(m_navx_plot[m_global_ix].get_time_by_index(m_local_ix));
+    return(m_navx_plot[m_vehicle_ix].get_time_by_index(m_data_ix));
   else
     return(0);
 }
@@ -279,11 +250,19 @@ double NavPlotViewer::getAvgStepTime()
   if(m_navx_plot.size() == 0)
     return(0);
   
-  double max_time = m_navx_plot[m_global_ix].get_max_time();
-  double min_time = m_navx_plot[m_global_ix].get_min_time();
-  double plt_size = m_navx_plot[m_global_ix].size();
+  double max_time = m_navx_plot[m_vehicle_ix].get_max_time();
+  double min_time = m_navx_plot[m_vehicle_ix].get_min_time();
+  double plt_size = m_navx_plot[m_vehicle_ix].size();
   
   return((max_time - min_time) / (plt_size - 1));
+}
+
+//-------------------------------------------------------------
+// Procedure: getHPlotVName
+
+string NavPlotViewer::getHPlotVName()
+{
+  return(m_helm_plot[m_vehicle_ix].get_vehi_name());
 }
 
 #if 0
@@ -403,9 +382,11 @@ void NavPlotViewer::drawNavPlot(unsigned int index)
   vector<double> vname_color(3,1); // Vehicle name will be drawn "white"
 
   // Not sure how we handle vehicle lengths - hard code 3 meters for now.
-  double shape_length = 3 * m_shape_scale;
+  string vehi_body = m_helm_plot[index].get_vehi_type();
+  double shape_length = m_helm_plot[index].get_vehi_length() * m_shape_scale;
 
-  drawCommonVehicle("", opose, cvect, vname_color, m_vehibody, 
+
+  drawCommonVehicle("", opose, cvect, vname_color, vehi_body, 
 		    shape_length, m_draw_vname);
 }
 

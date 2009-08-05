@@ -105,10 +105,10 @@ int main(int argc, char *argv[])
   //---------------------------------------------------------------------
   for(i=1; i<argc; i++) {
     string arg = argv[i];
-    if(arg=="large")  gui_size = "large";
-    if(arg=="medium") gui_size = "medium";
-    if(arg=="small")  gui_size = "small";
-    if(arg=="xsmall") gui_size = "xsmall";
+    if(arg=="--large")  gui_size = "large";
+    if(arg=="--medium") gui_size = "medium";
+    if(arg=="--small")  gui_size = "small";
+    if(arg=="--xsmall") gui_size = "xsmall";
   }
 
   // Find all the alog files provided on the command line
@@ -186,7 +186,6 @@ int main(int argc, char *argv[])
   cout << "Done: LogPlot parse time: " << parse_timer.get_float_cpu_time();
   cout << endl << endl;
 
-#if 0
   // Build all the HelmPlots from the vector of alog files.
   //---------------------------------------------------------------------
   vector<HelmPlot> helm_plots;
@@ -208,16 +207,15 @@ int main(int argc, char *argv[])
     pop_hp.populateFromALog();
 
     HelmPlot hplot = pop_hp.getHelmPlot();
-    hplot.print();
+    //hplot.print();
     
-    helm_plots.push_back(pop_hp.getHelmPlot());
+    helm_plots.push_back(hplot);
   }
 
   parse_timer_hp.stop();
   cout << "Done: HelmPlot parse time: " << parse_timer_hp.get_float_cpu_time();
   cout << endl << endl;
 
-#endif
 
   // Build all the Polygons and Grids from the vector of non-alog files.
   //---------------------------------------------------------------------
@@ -256,6 +254,10 @@ int main(int argc, char *argv[])
 	gui->np_viewer->addLogPlotHDG(logplots[k][j]);
     }
   }
+
+  // Populate the GUI with the HelmPlots built above
+  for(k=0; k<helm_plots.size(); k++) 
+    gui->np_viewer->addHelmPlot(helm_plots[k]);
 
   // Populate the GUI with the polygons built above
   for(j=0; j<polygons.size(); j++)

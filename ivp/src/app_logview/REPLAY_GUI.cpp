@@ -50,7 +50,9 @@ REPLAY_GUI::REPLAY_GUI(int g_w, int g_h, const char *g_l)
 
   int info_size=10;
 
-  np_viewer = new NavPlotViewer(0, 30, w(), h()-200);
+  m_np_viewer_hgt = h()-340;
+
+  np_viewer = new NavPlotViewer(0, 30, w(), m_np_viewer_hgt);
   cmviewer = np_viewer;
 
   int lp_height = 140;
@@ -88,7 +90,6 @@ REPLAY_GUI::REPLAY_GUI(int g_w, int g_h, const char *g_l)
   m_but_zoom_out_time->labelsize(10);
   m_but_zoom_reset_time->labelsize(10);
 
-
 #if 0
   x_mtr = new MY_Output((w()/2)-55, h()-(lp_height+25), 50, 20, "x:"); 
   x_mtr->textsize(info_size); 
@@ -98,6 +99,7 @@ REPLAY_GUI::REPLAY_GUI(int g_w, int g_h, const char *g_l)
   y_mtr->textsize(info_size); 
   y_mtr->labelsize(info_size);
 #endif
+
   play_rate = new MY_Output((w()/2)+140, h()-(lp_height+25), 70, 20, "play-rate:"); 
   play_rate->textsize(info_size); 
   play_rate->labelsize(info_size);
@@ -107,13 +109,13 @@ REPLAY_GUI::REPLAY_GUI(int g_w, int g_h, const char *g_l)
   collect_state->labelsize(info_size);
 
   // Handle LogPlot 1 -------------
-  label1 = new MY_Output(40, h()-(lp_height+25), 120, 20, "Data:"); 
-  label1->textsize(info_size); 
+  label1 = new MY_Output(35, h()-(lp_height+25), 150, 20, "Var:"); 
+  label1->textsize(info_size-1); 
   label1->color(FL_DARK_GREEN); 
   label1->textcolor(FL_WHITE); 
   label1->labelsize(info_size);
 
-  curr1 = new MY_Output(220, h()-(lp_height+25), 70, 20, "CurrVal:"); 
+  curr1 = new MY_Output(255, h()-(lp_height+25), 70, 20, "CurrVal:"); 
   curr1->textsize(info_size); 
   curr1->color(FL_DARK_GREEN); 
   curr1->textcolor(FL_WHITE); 
@@ -145,8 +147,8 @@ REPLAY_GUI::REPLAY_GUI(int g_w, int g_h, const char *g_l)
   time_high->labelsize(info_size);
 
   // Handle LogPlot 2 -------------
-  label2 = new MY_Output(w()-120, h()-(lp_height+25), 120, 20, "Data:"); 
-  label2->textsize(info_size); 
+  label2 = new MY_Output(w()-154, h()-(lp_height+25), 150, 20, "Var:"); 
+  label2->textsize(info_size-1); 
   label2->labelsize(info_size);
   label2->textcolor(FL_WHITE); 
   label2->color(FL_DARK_BLUE); 
@@ -168,6 +170,82 @@ REPLAY_GUI::REPLAY_GUI(int g_w, int g_h, const char *g_l)
   high2->color(FL_DARK_BLUE); 
   high2->textcolor(FL_WHITE); 
   high2->labelsize(info_size);
+
+  // Handle Helm1 -------------
+  int fld_wid = (w()/2) - 55 - 4;
+  Fl_Color fcolor1 = fl_rgb_color(200, 255, 200);
+  Fl_Color fcolor2 = fl_rgb_color(200, 200, 255);
+  m_fld_bhvs_vname_1 = new MY_Output(55, m_np_viewer_hgt+35, 60, 20, "Vehicle:"); 
+  m_fld_bhvs_vname_1->textsize(info_size); 
+  m_fld_bhvs_vname_1->color(fcolor1); 
+  m_fld_bhvs_vname_1->labelsize(info_size);
+
+  m_fld_bhvs_mode_1 = new MY_Output(165, m_np_viewer_hgt+35, 80, 20, "Mode:"); 
+  m_fld_bhvs_mode_1->textsize(info_size); 
+  m_fld_bhvs_mode_1->color(fcolor1); 
+  m_fld_bhvs_mode_1->labelsize(info_size);
+
+  m_fld_bhvs_dec_1 = new MY_Output(300, m_np_viewer_hgt+35, (w()/2)-304, 20, "Decision:"); 
+  m_fld_bhvs_dec_1->textsize(info_size); 
+  m_fld_bhvs_dec_1->color(fcolor1); 
+  m_fld_bhvs_dec_1->labelsize(info_size);
+
+  m_fld_bhvs_act_1 = new MY_Output(55, m_np_viewer_hgt+60, fld_wid, 20, "Active:"); 
+  m_fld_bhvs_act_1->textsize(info_size); 
+  m_fld_bhvs_act_1->color(fcolor1); 
+  m_fld_bhvs_act_1->labelsize(info_size);
+
+  m_fld_bhvs_run_1 = new MY_Output(55, m_np_viewer_hgt+85, fld_wid, 20, "Running:"); 
+  m_fld_bhvs_run_1->textsize(info_size); 
+  m_fld_bhvs_run_1->color(fcolor1); 
+  m_fld_bhvs_run_1->labelsize(info_size);
+
+  m_fld_bhvs_idle_1 = new MY_Output(55, m_np_viewer_hgt+110, fld_wid, 20, "Idle:"); 
+  m_fld_bhvs_idle_1->textsize(info_size); 
+  m_fld_bhvs_idle_1->color(fcolor1); 
+  m_fld_bhvs_idle_1->labelsize(info_size);
+
+  m_fld_bhvs_cplt_1 = new MY_Output(55, m_np_viewer_hgt+135, fld_wid, 20, "Complete:"); 
+  m_fld_bhvs_cplt_1->textsize(info_size); 
+  m_fld_bhvs_cplt_1->color(fcolor1); 
+  m_fld_bhvs_cplt_1->labelsize(info_size);
+
+  // Handle Helm2 -------------
+  int lc = (w()/2);
+  m_fld_bhvs_vname_2 = new MY_Output(lc+55, m_np_viewer_hgt+35, 60, 20, "Vehicle:"); 
+  m_fld_bhvs_vname_2->textsize(info_size); 
+  m_fld_bhvs_vname_2->color(fcolor2); 
+  m_fld_bhvs_vname_2->labelsize(info_size);
+
+  m_fld_bhvs_mode_2 = new MY_Output(lc+165, m_np_viewer_hgt+35, 80, 20, "Mode:"); 
+  m_fld_bhvs_mode_2->textsize(info_size); 
+  m_fld_bhvs_mode_2->color(fcolor2); 
+  m_fld_bhvs_mode_2->labelsize(info_size);
+
+  m_fld_bhvs_dec_2 = new MY_Output(lc+300, m_np_viewer_hgt+35, (w()/2)-304, 20, "Decision:"); 
+  m_fld_bhvs_dec_2->textsize(info_size); 
+  m_fld_bhvs_dec_2->color(fcolor2); 
+  m_fld_bhvs_dec_2->labelsize(info_size);
+
+  m_fld_bhvs_act_2 = new MY_Output(lc+55, m_np_viewer_hgt+60, fld_wid, 20, "Active:"); 
+  m_fld_bhvs_act_2->textsize(info_size); 
+  m_fld_bhvs_act_2->color(fcolor2); 
+  m_fld_bhvs_act_2->labelsize(info_size);
+
+  m_fld_bhvs_run_2 = new MY_Output(lc+55, m_np_viewer_hgt+85, fld_wid, 20, "Running:"); 
+  m_fld_bhvs_run_2->textsize(info_size); 
+  m_fld_bhvs_run_2->color(fcolor2); 
+  m_fld_bhvs_run_2->labelsize(info_size);
+
+  m_fld_bhvs_idle_2 = new MY_Output(lc+55, m_np_viewer_hgt+110, fld_wid, 20, "Idle:"); 
+  m_fld_bhvs_idle_2->textsize(info_size); 
+  m_fld_bhvs_idle_2->color(fcolor2); 
+  m_fld_bhvs_idle_2->labelsize(info_size);
+
+  m_fld_bhvs_cplt_2 = new MY_Output(lc+55, m_np_viewer_hgt+135, fld_wid, 20, "Complete:"); 
+  m_fld_bhvs_cplt_2->textsize(info_size); 
+  m_fld_bhvs_cplt_2->color(fcolor2); 
+  m_fld_bhvs_cplt_2->labelsize(info_size);
 
   this->end();
   this->resizable(this);
@@ -447,17 +525,12 @@ void REPLAY_GUI::updateXY()
   string dtime = doubleToString(ctime, 1);
   disp_time->value(dtime.c_str());
   
-#if 0
-  // Meters X
-  double dxmeters = np_viewer->getMetersX();
-  string sxmeters = doubleToString(dxmeters, 2);
-  x_mtr->value(sxmeters.c_str());
+  //fl_color(FL_DARK_BLUE);
+  //fl_line(0, h()-172, w(), h()-172);
+  //fl_line(0, h()-285, w(), h()-285);
+  //fl_line(w()/2, h()-285, w()/2, h()-172);
+  //fl_color(FL_BLACK);
 
-  // Meters X
-  double dymeters = np_viewer->getMetersY();
-  string symeters = doubleToString(dymeters, 2);
-  y_mtr->value(symeters.c_str());
-#endif
   // Play Rate
   if(stream) {
     if(step_time_ix == 0) play_rate->value("FAP");
@@ -471,6 +544,11 @@ void REPLAY_GUI::updateXY()
 
   collect_state->value(collect.c_str());
   
+  // Helm1
+  string v1name = np_viewer->getHPlotVName();
+  m_fld_bhvs_vname_1->value(v1name.c_str());
+
+
   // Time_Low/High
   double tlow     = lp_viewer->get_time_low();
   string tlow_str = doubleToString(tlow, 3);

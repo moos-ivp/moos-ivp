@@ -30,6 +30,7 @@
 #include "FL/fl_draw.H"
 #include "BackImg.h"
 #include "LogPlot.h"
+#include "HelmPlot.h"
 #include "MarineViewer.h"
 
 class NavPlotViewer : public MarineViewer
@@ -47,12 +48,12 @@ class NavPlotViewer : public MarineViewer
     {m_navy_plot.push_back(lp);};
   void addLogPlotHDG(const LogPlot& lp) 
     {m_hdg_plot.push_back(lp);};
+  void addHelmPlot(const HelmPlot& hp) 
+    {m_helm_plot.push_back(hp);};
 
   void addLogPlot(const LogPlot& lp, std::string vid, std::string type);
 
   void   draw();
-  double getMetersX();
-  double getMetersY();
 
   void   setCenterView(std::string centering="ctr_of_bounding");
   bool   setCurrIndexByTime(double);
@@ -64,8 +65,9 @@ class NavPlotViewer : public MarineViewer
   double getCurrTime();
   double getAvgStepTime();
 
+  std::string getHPlotVName();
+
  public: // Configuration parameters
-  void   setVehiBody(std::string s)  {m_vehibody = s;};
   void   setFrame(std::string s)     {m_frame = s;};
   void   toggleAllTrail()            {m_alltrail = !m_alltrail;};
 
@@ -75,8 +77,8 @@ protected:
   void  drawFrame();
   
 private:
-  unsigned int          m_local_ix;
-  std::string           m_vehibody;
+  unsigned int          m_vehicle_ix;
+  unsigned int          m_data_ix;
   std::string           m_frame;
   bool                  m_alltrail;
 
@@ -84,8 +86,8 @@ private:
   std::vector<LogPlot>  m_navx_plot;
   std::vector<LogPlot>  m_navy_plot;
   std::vector<LogPlot>  m_hdg_plot;
+  std::vector<HelmPlot> m_helm_plot;
 
-  int    m_global_ix;
 
   double m_shape_scale;
   bool   m_trails;

@@ -95,6 +95,8 @@ public:
   LogPlotViewer *lp_viewer;
 
 protected:
+  double      m_np_viewer_hgt;
+
   MY_Output   *disp_time;
   MY_Output   *play_rate;
   MY_Output   *collect_state;
@@ -113,6 +115,24 @@ protected:
   MY_Output   *low2;
   MY_Output   *high2;
   MY_Output   *curr2;
+
+  MY_Output   *m_fld_bhvs_act_1;
+  MY_Output   *m_fld_bhvs_run_1;
+  MY_Output   *m_fld_bhvs_idle_1;
+  MY_Output   *m_fld_bhvs_cplt_1;
+  MY_Output   *m_fld_bhvs_vname_1;
+  MY_Output   *m_fld_bhvs_mode_1;
+  MY_Output   *m_fld_bhvs_iter_1;
+  MY_Output   *m_fld_bhvs_dec_1;
+
+  MY_Output   *m_fld_bhvs_act_2;
+  MY_Output   *m_fld_bhvs_run_2;
+  MY_Output   *m_fld_bhvs_idle_2;
+  MY_Output   *m_fld_bhvs_cplt_2;
+  MY_Output   *m_fld_bhvs_vname_2;
+  MY_Output   *m_fld_bhvs_mode_2;
+  MY_Output   *m_fld_bhvs_iter_2;
+  MY_Output   *m_fld_bhvs_dec_2;
 
   MY_Repeat_Button *m_but_zoom_in_time;
   MY_Repeat_Button *m_but_zoom_out_time;
