@@ -40,8 +40,8 @@ WaypointEngine::WaypointEngine()
   m_prev_ix         = -1;
   m_reverse         = false;
   m_perpetual       = false;
-  m_capture_radius  = 0;
-  m_nm_radius       = 0;
+  m_capture_radius  = 3;
+  m_nm_radius       = 15;
   m_complete        = true;
   m_current_cpa     = -1;
   m_capture_hits    = 0;
