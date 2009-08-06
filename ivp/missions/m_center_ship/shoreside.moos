@@ -27,12 +27,15 @@ ProcessConfig = pMOOSBridge
   AppTick   = 3
   CommsTick = 3
 
+  UDPListen = 9200
+
   SHARE = [DEPLOY_ALL]  -> vehicle1 @ localhost:9201 [DEPLOY]
   SHARE = [DEPLOY_ALL]  -> vehicle2 @ localhost:9202 [DEPLOY]
   SHARE = [RETURN_ALL]  -> vehicle1 @ localhost:9201 [RETURN]
   SHARE = [RETURN_ALL]  -> vehicle2 @ localhost:9202 [RETURN]
   SHARE = [DEPLOY_VH1]  -> vehicle1 @ localhost:9201 [DEPLOY]
   SHARE = [DEPLOY_VH2]  -> vehicle2 @ localhost:9202 [DEPLOY]
+  SHARE = [TRAIL_VH2]   -> vehicle2 @ localhost:9202 [TRAIL]
 }
 
 //--------------------------------------------------------
@@ -82,6 +85,8 @@ ProcessConfig = pMarineViewer
 
   BUTTON_ONE   = DEPLOY # DEPLOY_ALL=true # RETURN_ALL=false
   BUTTON_TWO   = RETURN # RETURN_ALL=true
+  BUTTON_THREE = TRAIL-ON  # TRAIL_VH2=true
+  BUTTON_FOUR  = TRAIL-OFF # TRAIL_VH2=false
 
   //ACTION  = DEPLOY_ALL=true 
   //ACTION  = DEPLOY_ALL=false

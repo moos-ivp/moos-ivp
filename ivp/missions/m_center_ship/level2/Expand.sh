@@ -1,13 +1,13 @@
 #!/bin/sh
 
-splug meta_vehicle.moos ../charlie.moos \
-    VID=1 VNAME=charlie VEHI_TYPE=KAYAK  \
+nsplug meta_vehicle.moos ../charlie.moos \
+    VID=1 VNAME=charlie VNAME_OTHER=unicorn VEHI_TYPE=KAYAK  \
     SIM_START_POS=10,0,180,0
 
-splug meta_vehicle.moos ../unicorn.moos \
-    VID=2 VNAME=unicorn VEHI_TYPE=AUV    \
+nsplug meta_vehicle.moos ../unicorn.moos \
+    VID=2 VNAME=unicorn VNAME_OTHER=charlie VEHI_TYPE=AUV    \
     SIM_START_POS=-10,0,180,0
 
-splug meta_shoreside.moos ../shoreside.moos
+nsplug meta_shoreside.moos ../shoreside.moos
 
 
