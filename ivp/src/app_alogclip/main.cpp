@@ -185,8 +185,11 @@ int main(int argc, char *argv[])
 
   string lpct = doubleToString(clipped_lines_pct, 2);
   string cpct = doubleToString(clipped_chars_pct, 2);
-
+#ifdef WIN32
+  string digits = intToString((int)(log10( (double)clipped_chars_total)));
+#else
   string digits = intToString((int)(log10(clipped_chars_total)));
+#endif
 
   printf("\n\n");
 

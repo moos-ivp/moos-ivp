@@ -28,11 +28,14 @@
 #include <stdlib.h>
 #include <tiffio.h>
 
-//#include <GL/gl.h>
-
 
 // See http://www.cmake.org/pipermail/cmake/2003-March/003482.html
-#if OPSYS_IS_LINUX
+#ifdef WIN32
+	#include <windows.h>
+	#include <GL/gl.h>
+	#include "glext.h" // http://www.opengl.org/registry/api/glext.h
+	typedef UINT32 uint32;
+#elif OPSYS_IS_LINUX
    #include <GL/gl.h>
 #elif OPSYS_IS_OS_X
    #include <OpenGL/gl.h>

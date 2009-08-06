@@ -22,4 +22,4 @@ then
     exit 1
 fi
 
-find ${IVP_DIR} -name "*.cpp" -or -name "*.h" -or -name CMakeLists.txt | grep -v "lib_fltk-1.1.7/" | xargs dos2unix
+find ${IVP_DIR} -name "*.cpp" -or -name "*.c" -or -name "*.h" -or -name CMakeLists.txt | grep -v "lib_fltk-1.1.7/" | xargs dos2unix

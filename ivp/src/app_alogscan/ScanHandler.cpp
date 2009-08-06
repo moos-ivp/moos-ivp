@@ -48,10 +48,17 @@ void ScanHandler::handle(const string& alogfile)
 
   m_report.sort(m_sort_style);
 
+#ifdef WIN32
+  int line_digits  = (int)(log10( (double)m_report.getMaxLines())) + 2;
+  int char_digits  = (int)(log10( (double)m_report.getMaxChars())) + 2;
+  int start_digits = (int)(log10( m_report.getMaxStartTime())) + 4;
+  int stop_digits  = (int)(log10( m_report.getMaxStopTime())) + 4;
+#else 
   int line_digits  = (int)(log10(m_report.getMaxLines())) + 2;
   int char_digits  = (int)(log10(m_report.getMaxChars())) + 2;
   int start_digits = (int)(log10(m_report.getMaxStartTime())) + 4;
   int stop_digits  = (int)(log10(m_report.getMaxStopTime())) + 4;
+#endif 
 
   //cout << "line_digits:  " << line_digits  << endl;
   //cout << "char_digits:  " << char_digits  << endl;
@@ -136,7 +143,7 @@ void ScanHandler::appStatReport()
 
   if(vsize == 0)
     return;
-
+  
   int max_source_name_length = 0;
   for(i=0; i<vsize; i++) {
     string source = all_sources[i];

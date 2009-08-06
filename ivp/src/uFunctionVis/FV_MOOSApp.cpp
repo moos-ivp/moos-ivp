@@ -88,6 +88,7 @@ bool FV_MOOSApp::Iterate()
 {
    // This processing has all been moved to the process_demuxer_content()
    // method, so that it can happen in the same thread as other FLTK operations.
+	return false;
 }
 
 //----------------------------------------------------------

@@ -52,11 +52,7 @@ struct ThreadParams {
 void exit_with_usage()
 {
   cout << "Usage: pMarineViewer file.moos [file.tif] [-noimg]" << endl;
-#ifdef WIN32
-  exit(0);
-#else
   exit(-1);
-#endif
 }
 
 //--------------------------------------------------------
