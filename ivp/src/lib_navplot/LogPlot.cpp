@@ -34,11 +34,11 @@ using namespace std;
 
 LogPlot::LogPlot()
 {
-  min_val  = 0; 
-  max_val  = 0; 
-  m_median = 0;
+  m_min_val  = 0; 
+  m_max_val  = 0; 
+  m_median   = 0;
   m_median_set = false;
-  utc_start_time = 0; 
+  m_utc_start_time = 0; 
 }
 
 
@@ -50,15 +50,15 @@ LogPlot::LogPlot()
 
 bool LogPlot::set_value(double gtime, double gval)
 {
-  int tsize = time.size();
+  unsigned int tsize = m_time.size();
 
-  if((tsize == 0) || (time[tsize-1] <= gtime)) {
-    time.push_back(gtime);
-    value.push_back(gval);
-    if((tsize == 0) || (gval > max_val))
-      max_val = gval;
-    if((tsize == 0) || (gval < min_val))
-      min_val = gval;
+  if((tsize == 0) || (m_time[tsize-1] <= gtime)) {
+    m_time.push_back(gtime);
+    m_value.push_back(gval);
+    if((tsize == 0) || (gval > m_max_val))
+      m_max_val = gval;
+    if((tsize == 0) || (gval < m_min_val))
+      m_min_val = gval;
     m_median_set = false;
     return(true);
   }
@@ -81,9 +81,9 @@ double LogPlot::get_median()
   list<double> vlist;
 
   // First put all the log values in the list.
-  unsigned int i, vsize = value.size();
-  for(i=0; i<vsize; i++)
-    vlist.push_back(value[i]);
+  unsigned int k, ksize = m_value.size();
+  for(k=0; k<ksize; k++)
+    vlist.push_back(m_value[k]);
 
   // Then sort them - ascending or descending does not matter.
   vlist.sort();
@@ -92,10 +92,10 @@ double LogPlot::get_median()
   // the value at that point as the median.
   unsigned int lsize = vlist.size();
   list<double>::iterator p = vlist.begin();
-  for(i=0; i<(lsize/2); i++)
+  for(k=0; k<(lsize/2); k++)
     p++;
 
-  m_median = *p;
+  m_median     = *p;
   m_median_set = true;
 
   return(m_median);
@@ -106,8 +106,8 @@ double LogPlot::get_median()
 
 double LogPlot::get_value_by_index(unsigned int index) const
 {
-  if((index >= 0) && (index < time.size()))
-    return(value[index]);
+  if(index < m_time.size())
+    return(m_value[index]);
   else
     return(0);
 }
@@ -117,8 +117,8 @@ double LogPlot::get_value_by_index(unsigned int index) const
 
 double LogPlot::get_time_by_index(unsigned int index) const
 {
-  if((index >= 0) && (index < time.size()))
-    return(time[index]);
+  if(index < m_time.size())
+    return(m_time[index]);
   else
     return(0);
 }
@@ -128,31 +128,31 @@ double LogPlot::get_time_by_index(unsigned int index) const
 
 double LogPlot::get_value_by_time(double gtime) const
 {
-  int vsize = time.size();
+  unsigned int vsize = m_time.size();
 
   if(vsize == 0)
     return(0);
 
-  if(gtime >=  time[vsize-1])
-    return(value[vsize-1]);
+  if(gtime >= m_time[vsize-1])
+    return(m_value[vsize-1]);
 
-  if(gtime <= time[0])
-    return(value[0]);
+  if(gtime <= m_time[0])
+    return(m_value[0]);
 
-  int index = get_index_by_time(gtime);
+  unsigned int index = get_index_by_time(gtime);
   
-  if(gtime == time[index])
-    return(value[index]);
+  if(gtime == m_time[index])
+    return(m_value[index]);
 
-  double val1 = value[index];
-  double val2 = value[index+1];
+  double val1 = m_value[index];
+  double val2 = m_value[index+1];
   
   double val_range  = val2 - val1;
-  double time_range = time[index+1] - time[index];
+  double time_range = m_time[index+1] - m_time[index];
 
   assert(time_range >= 0);
 
-  double pct_time = (gtime - time[index]) / time_range;
+  double pct_time = (gtime - m_time[index]) / time_range;
 
   double rval = (pct_time * val_range) + val1;
 
@@ -164,8 +164,8 @@ double LogPlot::get_value_by_time(double gtime) const
 
 double LogPlot::get_min_time() const
 {
-  if(time.size() > 0)
-    return(time[0]);
+  if(m_time.size() > 0)
+    return(m_time[0]);
   else
     return(0.0);
 }
@@ -175,8 +175,8 @@ double LogPlot::get_min_time() const
 
 double LogPlot::get_max_time() const
 {
-  if(time.size() > 0)
-    return(time[time.size()-1]);
+  if(m_time.size() > 0)
+    return(m_time[m_time.size()-1]);
   else
     return(0.0);
 }
@@ -189,10 +189,10 @@ void LogPlot::print() const
 {
   unsigned int i;
   cout << "LogPlot::print()" << endl;
-  cout << " Varname: " << varname << endl;
-  cout << " Vehicle: " << vehicle << endl;
-  for(i=0; i<time.size(); i++) {
-    cout << "time:" << time[i] << "  val:" << value[i] << endl;
+  cout << " Variable Name: " << m_varname << endl;
+  cout << " Vehicle  Name: " << m_vehi_name << endl;
+  for(i=0; i<m_time.size(); i++) {
+    cout << "time:" << m_time[i] << "  val:" << m_value[i] << endl;
   }
 }
 
@@ -206,14 +206,14 @@ void LogPlot::print() const
 //             ^                 ^
 //            25                 56
 
-int LogPlot::get_index_by_time(double gtime) const
+unsigned int LogPlot::get_index_by_time(double gtime) const
 {
-  int vsize = time.size();
+  unsigned int vsize = m_time.size();
 
   // Handle special cases
-  if(gtime <= time[0])
+  if(gtime <= m_time[0])
     return(0);
-  if(gtime >= time[vsize-1])
+  if(gtime >= m_time[vsize-1])
     return(vsize-1);
 
   int jump  = vsize / 2;
@@ -223,8 +223,8 @@ int LogPlot::get_index_by_time(double gtime) const
     //cout << "[" << index << "," << jump << "]" << flush;
     if(jump > 1)
       jump = jump / 2;
-    if(time[index] <= gtime) {
-      if(time[index+1] > gtime)
+    if(m_time[index] <= gtime) {
+      if(m_time[index+1] > gtime)
 	done = true;
       else
 	index += jump;

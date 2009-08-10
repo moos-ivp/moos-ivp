@@ -1,8 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin and John Leonard                    */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
-/*    FILE: Populator_LogPlots.h                                 */
-/*    DATE: June 5th, 2005 (Sun in Kenmorre)                     */
+/*    FILE: GeoPlot.h                                            */
+/*    DATE: Aug 9th, 2009                                        */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
 /* modify it under the terms of the GNU General Public License   */
@@ -20,48 +20,38 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
-#ifndef POPULATOR_LOGPLOTS_HEADER
-#define POPULATOR_LOGPLOTS_HEADER
+#ifndef GEO_PLOT_HEADER
+#define GEO_PLOT_HEADER
 
 #include <string>
-#include <map>
 #include <vector>
-#include "LogPlot.h"
+#include <list>
+#include "VPlug_GeoShapes.h"
 
-class Populator_LogPlots 
+class GeoPlot
 {
 public:
-  Populator_LogPlots() {};
-  ~Populator_LogPlots() {};
+  GeoPlot() {};
+  ~GeoPlot() {};
 
-  bool    setFileALog(std::string);
-  bool    populateFromALog();
+  bool            addEvent(std::string var, std::string val, double time);
+  void            setVehiName(std::string s) {m_vehi_name = s;};
+  double          getTimeByIndex(unsigned int index) const;
+  VPlug_GeoShapes getVPlugByIndex(unsigned int index) const;
+  VPlug_GeoShapes getVPlugByTime(double gtime) const;
+  std::string     getVehiName() const   {return(m_vehi_name);};
+  unsigned int    size() const          {return(m_time.size());};
+  void            print() const;
+  double          getMinTime() const;
+  double          getMaxTime() const;
 
-  LogPlot getLogPlot(unsigned int);
-  LogPlot getLogPlot(std::string);
-  int     size()         {return(m_logplots.size());};
-
-  // The vehicle name should be determined from the alog file
-  // but if not, a default name may be given.
-  void    setDefaultVName(std::string s) {m_vname=s;};
-  std::string getVName() {return(m_vname);};
-
- protected:
-  bool     handleNodeReports();
+ protected:  
+  unsigned int getIndexByTime(double) const;
 
 protected:
-  std::string               m_vname;
-  std::vector<LogPlot>      m_logplots;
-
-  std::vector<std::string>  m_node_reports;
-
-  // Mapping from logplot variable to index in m_loplots vector
-  std::map<std::string, int> m_logplot_var_map;
-  
-  std::vector<std::string> m_alog_entry_time;
-  std::vector<std::string> m_alog_entry_var;
-  std::vector<std::string> m_alog_entry_src;
-  std::vector<std::string> m_alog_entry_val;
+  std::string                  m_vehi_name;  // Name of the platform
+  std::vector<double>          m_time;
+  std::vector<VPlug_GeoShapes> m_vplugs;
 };
 #endif 
 

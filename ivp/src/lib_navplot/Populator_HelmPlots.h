@@ -39,14 +39,16 @@ public:
 
 protected:
   bool     handleNodeReports();
-  bool     handleHelmSummaries();
 
 protected:
   std::string  m_file;
   HelmPlot     m_helm_plot;
 
-  std::vector<std::string>  m_lines;
+  // Dont need timestamps with node reports - we just want to get
+  // the vehicle name, type and length from the node reports
   std::vector<std::string>  m_node_reports;
+
+  // Need timestamps with each helm summary
   std::vector<std::string>  m_helm_summaries;
   std::vector<double>       m_helm_summary_times;
 };

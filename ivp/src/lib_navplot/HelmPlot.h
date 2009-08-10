@@ -29,7 +29,7 @@
 class HelmPlot
 {
 public:
-  HelmPlot() {m_utc_start_time=0;};
+  HelmPlot();
   ~HelmPlot() {};
 
   void   set_vehi_name(std::string s) {m_vehi_name = s;};
@@ -64,6 +64,7 @@ protected:
   std::vector<double>      m_time;
   std::vector<std::string> m_helm_iter;
   std::vector<std::string> m_helm_mode;
+  std::vector<std::string> m_helm_mode_short;
   std::vector<std::string> m_helm_utc;
   std::vector<std::string> m_helm_idle_bhvs;
   std::vector<std::string> m_helm_running_bhvs;

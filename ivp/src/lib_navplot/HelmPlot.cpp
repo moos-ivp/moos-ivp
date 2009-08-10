@@ -30,6 +30,17 @@
 using namespace std;
 
 //---------------------------------------------------------------
+// Constructor
+
+HelmPlot::HelmPlot()
+{
+  m_utc_start_time = 0;
+  m_vehi_name = "unknown";
+  m_vehi_type = "unknown";
+  m_vehi_length = 0;
+}
+
+//---------------------------------------------------------------
 // Procedure: set_vehi_type
 
 void HelmPlot::set_vehi_type(string str)
@@ -62,11 +73,11 @@ bool HelmPlot::add_entry(double gtime, string gval)
     else if(left == "idle_bhvs")
       idle = right;
     else if(left == "running_bhvs")
-      active = right;
-    else if(left == "completed_bhvs")
       running = right;
-    else if(left == "active_bhvs")
+    else if(left == "completed_bhvs")
       completed = right;
+    else if(left == "active_bhvs")
+      active = right;
     else if(left == "iter")
       iter = right;
     else if(left == "utc_time")
@@ -76,10 +87,14 @@ bool HelmPlot::add_entry(double gtime, string gval)
      (active == "") || (running=="") || (completed == ""))
     return(false);
   
+  // Make an abbreviated mode string
+  string mode_short = modeShorten(mode);
+      
   m_time.push_back(gtime);
   m_helm_iter.push_back(iter);
   m_helm_utc.push_back(utc);
   m_helm_mode.push_back(mode);
+  m_helm_mode_short.push_back(mode_short);
   m_helm_idle_bhvs.push_back(idle);
   m_helm_running_bhvs.push_back(running);
   m_helm_active_bhvs.push_back(active);
@@ -172,6 +187,8 @@ string HelmPlot::get_value_by_time(string qtype, double gtime) const
     return(m_helm_iter[index]);
   else if(qtype == "mode")
     return(m_helm_mode[index]);
+  else if(qtype == "mode_short")
+    return(m_helm_mode_short[index]);
   else if(qtype == "utc")
     return(m_helm_utc[index]);
   else if(qtype == "idle")

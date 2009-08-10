@@ -9,9 +9,11 @@ SET(SRC
    # Populator_IPF_Plot.cpp
    # Populator_GridPlot.cpp
    LogPlot.cpp
+   GeoPlot.cpp
    HelmPlot.cpp
    Populator_LogPlots.cpp
    Populator_HelmPlots.cpp
+   Populator_GeoPlots.cpp
 )
 
 ADD_LIBRARY(navplot ${SRC})

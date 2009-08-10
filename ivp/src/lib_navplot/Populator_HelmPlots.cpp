@@ -30,27 +30,6 @@
 using namespace std;
 
 //---------------------------------------------------------------
-// Procedure: populate
-
-bool Populator_HelmPlots::populateFromALog()
-{
-  int i, vsize = m_helm_summaries.size();
-  
-  m_helm_plot.set_vehi_name("unknown");
-  m_helm_plot.set_vehi_type("unknown");
-  m_helm_plot.set_vehi_length(10);
-  handleNodeReports();
-
-  for(i=0; i<vsize; i++) {
-    m_helm_plot.add_entry(m_helm_summary_times[i], 
-			  m_helm_summaries[i]);
-  }
-
-
-  return(true);
-}
-
-//---------------------------------------------------------------
 // Procedure: setFileALog
 
 bool Populator_HelmPlots::setFileALog(string filestr)
@@ -62,31 +41,53 @@ bool Populator_HelmPlots::setFileALog(string filestr)
 
   fclose(f);
   m_file = filestr;
-  m_lines = fileBuffer(filestr);
+  vector<string> lines = fileBuffer(filestr);
 
   unsigned int i;
-  for(i=0; i<m_lines.size(); i++) {
-    m_lines[i] = findReplace(m_lines[i], '\t', ' ');
-    m_lines[i] = compactConsecutive(m_lines[i], ' ');
-    m_lines[i] = stripBlankEnds(m_lines[i]);
+  for(i=0; i<lines.size(); i++) {
+    lines[i] = findReplace(lines[i], '\t', ' ');
+    lines[i] = compactConsecutive(lines[i], ' ');
+    lines[i] = stripBlankEnds(lines[i]);
     
-    string time = stripBlankEnds(biteString(m_lines[i],' '));
-    string var  = stripBlankEnds(biteString(m_lines[i],' '));
+    string time = stripBlankEnds(biteString(lines[i],' '));
+    string var  = stripBlankEnds(biteString(lines[i],' '));
     if(var == "IVPHELM_SUMMARY") {
-      string source = stripBlankEnds(biteString(m_lines[i],' '));
-      string value  = stripBlankEnds(m_lines[i]);
+      string source = stripBlankEnds(biteString(lines[i],' '));
+      string value  = stripBlankEnds(lines[i]);
       if((time!="")&&(var!="")&&(source!="")&&(value!="")) {
 	m_helm_summary_times.push_back(atof(time.c_str()));
 	m_helm_summaries.push_back(value);
       }
     }
     else if(var == "NODE_REPORT_LOCAL") {
-      string source = stripBlankEnds(biteString(m_lines[i],' '));
-      string value  = stripBlankEnds(m_lines[i]);
+      string source = stripBlankEnds(biteString(lines[i],' '));
+      string value  = stripBlankEnds(lines[i]);
       if((time!="")&&(var!="")&&(source!="")&&(value!="")) 
 	m_node_reports.push_back(value);
     }
   }
+
+  return(true);
+}
+
+//---------------------------------------------------------------
+// Procedure: populateFromAlog
+
+bool Populator_HelmPlots::populateFromALog()
+{
+  int i, vsize = m_helm_summaries.size();
+  if(vsize == 0)
+    return(false);
+
+  // Read throught the node reports and get vehicle name, type, length
+  // Results stored in m_helm_plot instance. A "false" value is returned
+  // if either (a) that info is not found, or (b) it is inconsistent.
+  bool handled = handleNodeReports();
+  if(!handled)
+    return(false);
+
+  for(i=0; i<vsize; i++)
+    m_helm_plot.add_entry(m_helm_summary_times[i], m_helm_summaries[i]);
 
   return(true);
 }
@@ -140,11 +141,3 @@ bool Populator_HelmPlots::handleNodeReports()
   return(true);
 }
 
-
-//---------------------------------------------------------------
-// Procedure: handleHelmSummaries
-
-bool Populator_HelmPlots::handleHelmSummaries()
-{
-  return(true);
-}

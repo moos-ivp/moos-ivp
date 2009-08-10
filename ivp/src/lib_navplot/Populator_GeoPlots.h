@@ -1,8 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin and John Leonard                    */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
-/*    FILE: Populator_LogPlots.h                                 */
-/*    DATE: June 5th, 2005 (Sun in Kenmorre)                     */
+/*    FILE: Populator_GeoPlots.h                                 */
+/*    DATE: August 9th, 2009                                     */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
 /* modify it under the terms of the GNU General Public License   */
@@ -20,48 +20,31 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
-#ifndef POPULATOR_LOGPLOTS_HEADER
-#define POPULATOR_LOGPLOTS_HEADER
+#ifndef POPULATOR_GEOPLOTS_HEADER
+#define POPULATOR_GEOPLOTS_HEADER
 
 #include <string>
-#include <map>
 #include <vector>
-#include "LogPlot.h"
+#include "GeoPlot.h"
 
-class Populator_LogPlots 
+class Populator_GeoPlots 
 {
 public:
-  Populator_LogPlots() {};
-  ~Populator_LogPlots() {};
+  Populator_GeoPlots() {};
+  ~Populator_GeoPlots() {};
 
-  bool    setFileALog(std::string);
-  bool    populateFromALog();
+  bool     populateRawInfoFromALog(std::string);
+  bool     populateGeoPlotFromRawInfo();
 
-  LogPlot getLogPlot(unsigned int);
-  LogPlot getLogPlot(std::string);
-  int     size()         {return(m_logplots.size());};
-
-  // The vehicle name should be determined from the alog file
-  // but if not, a default name may be given.
-  void    setDefaultVName(std::string s) {m_vname=s;};
-  std::string getVName() {return(m_vname);};
-
- protected:
-  bool     handleNodeReports();
+  GeoPlot  getGeoPlot() {return(m_geo_plot);};
 
 protected:
-  std::string               m_vname;
-  std::vector<LogPlot>      m_logplots;
+  GeoPlot  m_geo_plot;
 
-  std::vector<std::string>  m_node_reports;
-
-  // Mapping from logplot variable to index in m_loplots vector
-  std::map<std::string, int> m_logplot_var_map;
-  
-  std::vector<std::string> m_alog_entry_time;
-  std::vector<std::string> m_alog_entry_var;
-  std::vector<std::string> m_alog_entry_src;
-  std::vector<std::string> m_alog_entry_val;
+  // Need timestamps with each geo event
+  std::vector<std::string>  m_geo_event_var;
+  std::vector<std::string>  m_geo_event_val;
+  std::vector<double>       m_geo_event_time;
 };
 #endif 
 
