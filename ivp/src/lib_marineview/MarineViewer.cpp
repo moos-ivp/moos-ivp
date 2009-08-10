@@ -20,18 +20,19 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
+#ifdef WIN32
+#include <windows.h>
+#include <GL/gl.h>
+#include "glext.h" // http://www.opengl.org/registry/api/glext.h
+//#include "tiffio.h" // CWG - TIFFIO Not needed
+#else
+#include <tiffio.h>
+#endif
+
 #include <iostream>
 #include <cstring>
 #include <cstdlib>
 #include <math.h>
-#ifdef WIN32
-	#include <windows.h>
-	#include <GL/gl.h>
-	#include "glext.h" // http://www.opengl.org/registry/api/glext.h
-	//#include "tiffio.h" // CWG - TIFFIO Not needed
-#else
-	#include <tiffio.h>
-#endif
 #include "MarineViewer.h"
 #include "MBUtils.h"
 #include "FColorMap.h"
@@ -164,11 +165,10 @@ bool MarineViewer::setParam(string param, string value)
     handled = handled || m_drop_points.setParam(p,v);
     handled = handled || m_op_area.setParam(p,v);
     handled = handled || m_vmarkers.setParam(p,v);
-    handled = handled || m_geoshapes.setParam(p,v);
+    handled = handled || m_geo_settings.setParam(p,v);
+    //    handled = handled || m_geoshapes.setParam(p,v);
   }
-
   return(handled);
-
 }
 
 //-------------------------------------------------------------
@@ -936,9 +936,9 @@ void MarineViewer::drawOpArea()
       labels.push_back(label);
     }
     
-    int vsize = xpos.size();
+    unsigned int i, vsize = xpos.size();
     double pix_per_mtr = m_back_img.get_pix_per_mtr();
-    for(int i=0; i<vsize; i++) {
+    for(i=0; i<vsize; i++) {
       xpos[i] *= pix_per_mtr;
       ypos[i] *= pix_per_mtr;
     }
@@ -952,20 +952,20 @@ void MarineViewer::drawOpArea()
       glBegin(GL_LINE_LOOP);
     else
       glBegin(GL_LINE_STRIP);
-    for(int j=0; j<vsize; j++) {
-      glVertex2f(xpos[j],  ypos[j]);
+    for(i=0; i<vsize; i++) {
+      glVertex2f(xpos[i],  ypos[i]);
     }
     glEnd();
 
     if(m_op_area.viewable("labels")) {
       glColor3f(lcolor.red(), lcolor.grn(), lcolor.blu());
       gl_font(1, 10);
-      for(int k=0; k<vsize; k++) {
-	int slen = labels[k].length();
+      for(i=0; i<vsize; i++) {
+	int slen = labels[i].length();
 	char *buff = new char[slen+1];
 	double offset = 3.0 * (1/m_zoom);
-	glRasterPos3f(xpos[k]+offset, ypos[k]+offset, 0);
-	strncpy(buff, labels[k].c_str(), slen);
+	glRasterPos3f(xpos[i]+offset, ypos[i]+offset, 0);
+	strncpy(buff, labels[i].c_str(), slen);
 	buff[slen] = '\0';
 	gl_draw(buff, slen);
 	delete(buff);
@@ -1028,23 +1028,23 @@ void MarineViewer::drawPolygons()
   // If the viewable parameter is set to false just return. In 
   // querying the parameter the option "true" argument means return
   // true if nothing is known about the parameter.
-  if(m_geoshapes.viewable("polygon_viewable_all", true) == false)
+  if(m_geo_settings.viewable("polygon_viewable_all", true) == false)
     return;
 
-  int vsize = m_geoshapes.sizePolygons();
+  unsigned int i, vsize = m_geoshapes.sizePolygons();
   if(vsize == 0)
     return;
 
   ColorPack edge_c, fill_c, vert_c, labl_c;
-  edge_c = m_geoshapes.geocolor("polygon_edge_color", "aqua");
-  fill_c = m_geoshapes.geocolor("polygon_fill_color", "dark_green");
-  vert_c = m_geoshapes.geocolor("polygon_vertex_color", "red");
-  labl_c = m_geoshapes.geocolor("polygon_label_color", "white");
+  edge_c = m_geo_settings.geocolor("polygon_edge_color", "aqua");
+  fill_c = m_geo_settings.geocolor("polygon_fill_color", "dark_green");
+  vert_c = m_geo_settings.geocolor("polygon_vertex_color", "red");
+  labl_c = m_geo_settings.geocolor("polygon_label_color", "white");
 
-  double line_width  = m_geoshapes.geosize("polygon_line_size");
-  double vertex_size = m_geoshapes.geosize("polygon_vertex_size");
+  double line_width  = m_geo_settings.geosize("polygon_line_size");
+  double vertex_size = m_geo_settings.geosize("polygon_vertex_size");
   
-  for(int i=0; i<vsize; i++) {
+  for(i=0; i<vsize; i++) {
     XYPolygon poly = m_geoshapes.getPolygon(i);
     if(poly.active()) {
       if(poly.label_color_set())            // label_color
@@ -1173,10 +1173,11 @@ void MarineViewer::drawPolygon(const XYPolygon& poly,
 
 
   //-------------------------------- perhaps draw poly label
-  if(m_geoshapes.viewable("polygon_viewable_labels")) {
+  if(m_geo_settings.viewable("polygon_viewable_labels")) {
     double cx = poly.get_avg_x() * m_back_img.get_pix_per_mtr();
     double cy = poly.get_avg_y() * m_back_img.get_pix_per_mtr();
-    glTranslatef(cx, cy, 0);
+    double my = poly.get_max_y() * m_back_img.get_pix_per_mtr();
+    glTranslatef(cx, my, 0);
     
     glColor3f(labl_c.red(), labl_c.grn(), labl_c.blu());
     gl_font(1, 10);
@@ -1194,7 +1195,7 @@ void MarineViewer::drawPolygon(const XYPolygon& poly,
 
 #if 0
   //-------------------------------- perhaps draw poly vertex labels
-  if(m_geoshapes.viewable("polygon_viewable_vertex_labels") {
+  if(m_geo_settings.viewable("polygon_viewable_vertex_labels") {
     glTranslatef(0, 0, 0);
     char *buff = new char[100];
     for(j=0; j<vsize; j++) {
@@ -1270,22 +1271,22 @@ void MarineViewer::drawSegLists()
   // If the viewable parameter is set to false just return. In 
   // querying the parameter the option "true" argument means return
   // true if nothing is known about the parameter.
-  if(!m_geoshapes.viewable("seglist_viewable_all"))
+  if(!m_geo_settings.viewable("seglist_viewable_all"))
     return;
 
-  int vsize = m_geoshapes.sizeSegLists();
+  unsigned int i, vsize = m_geoshapes.sizeSegLists();
   if(vsize == 0)
     return;
  
   ColorPack edge_c, vert_c, labl_c;
-  edge_c = m_geoshapes.geocolor("seglist_edge_color", "yellow");
-  vert_c = m_geoshapes.geocolor("seglist_vertex_color", "white");
-  labl_c = m_geoshapes.geocolor("seglist_label_color", "white");
+  edge_c = m_geo_settings.geocolor("seglist_edge_color", "yellow");
+  vert_c = m_geo_settings.geocolor("seglist_vertex_color", "white");
+  labl_c = m_geo_settings.geocolor("seglist_label_color", "white");
   
-  double lwid = m_geoshapes.geosize("seglist_edge_width", 1);
-  double vert = m_geoshapes.geosize("seglist_vertex_size", 2);
+  double lwid = m_geo_settings.geosize("seglist_edge_width", 1);
+  double vert = m_geo_settings.geosize("seglist_vertex_size", 2);
   
-  for(int i=0; i<vsize; i++) {
+  for(i=0; i<vsize; i++) {
     XYSegList segl = m_geoshapes.getSegList(i);
     if(segl.active()) {
       if(segl.label_color_set())          // label_color
@@ -1456,18 +1457,18 @@ void MarineViewer::drawPointList(const vector<double>& xvect,
 
 void MarineViewer::drawHexagons()
 {
-  int hsize = m_geoshapes.sizeHexagons();
+  unsigned int i, hsize = m_geoshapes.sizeHexagons();
 
   ColorPack edge_c, fill_c, vert_c, labl_c;
-  edge_c = m_geoshapes.geocolor("polygon_edge_color", "yellow");
-  fill_c = m_geoshapes.geocolor("polygon_vertex_color", "white");
-  vert_c = m_geoshapes.geocolor("polygon_vertex_color", "white");
-  labl_c = m_geoshapes.geocolor("polygon_label_color", "white");
+  edge_c = m_geo_settings.geocolor("polygon_edge_color", "yellow");
+  fill_c = m_geo_settings.geocolor("polygon_vertex_color", "white");
+  vert_c = m_geo_settings.geocolor("polygon_vertex_color", "white");
+  labl_c = m_geo_settings.geocolor("polygon_label_color", "white");
 
-  double line_width  = m_geoshapes.geosize("polygon_line_size");
-  double vertex_size = m_geoshapes.geosize("polygon_vertex_size");
+  double line_width  = m_geo_settings.geosize("polygon_line_size");
+  double vertex_size = m_geo_settings.geosize("polygon_vertex_size");
   
-  for(int i=0; i<hsize; i++)
+  for(i=0; i<hsize; i++)
     drawPolygon(m_geoshapes.getHexagon(i), false, false, line_width, 
 	     vertex_size, edge_c, fill_c, vert_c, labl_c);
 }
@@ -1477,14 +1478,14 @@ void MarineViewer::drawHexagons()
 
 void MarineViewer::drawGrids()
 {
-  if(m_geoshapes.viewable("grid_viewable_all", true) == false)
+  if(m_geo_settings.viewable("grid_viewable_all", true) == false)
     return;
 
-  int vsize = m_geoshapes.sizeGrids();
+  unsigned int i, vsize = m_geoshapes.sizeGrids();
   if(vsize == 0)
     return;
 
-  for(int i=0; i<vsize; i++)
+  for(i=0; i<vsize; i++)
     drawGrid(m_geoshapes.grid(i));
 }
 
@@ -1569,10 +1570,10 @@ void MarineViewer::drawCircles()
   // If the viewable parameter is set to false just return. In 
   // querying the parameter the option "true" argument means return
   // true if nothing is known about the parameter.
-  if(m_geoshapes.viewable("circle_viewable_all", true) == false)
+  if(m_geo_settings.viewable("circle_viewable_all", true) == false)
     return;
 
-  int vsize = m_geoshapes.sizeCircles();
+  unsigned int i, vsize = m_geoshapes.sizeCircles();
   if(vsize == 0)
     return;
 
@@ -1581,7 +1582,7 @@ void MarineViewer::drawCircles()
   ColorPack vert_c("blue");
   ColorPack labl_c("white");
   
-  for(int i=0; i<vsize; i++) {
+  for(i=0; i<vsize; i++) {
     XYCircle circ = m_geoshapes.circ(i);
     if(circ.active()) {
       if(circ.label_color_set())          // label_color
@@ -1688,25 +1689,25 @@ void MarineViewer::drawPoints()
   // If the viewable parameter is set to false just return. In 
   // querying the parameter the option "true" argument means return
   // true if nothing is known about the parameter.
-  if(m_geoshapes.viewable("point_viewable_all", true) == false)
+  if(m_geo_settings.viewable("point_viewable_all", true) == false)
     return;
 
   // If no points are present just return.
-  int vsize = m_geoshapes.sizePoints();
+  unsigned int i, vsize = m_geoshapes.sizePoints();
   if(vsize == 0)
     return;
 
   // The second argument to geocolor is what is returned if no color
   // mapping is present in the geoshapes data structure.
   ColorPack vert_c, labl_c;
-  vert_c = m_geoshapes.geocolor("point_vertex_color", "red");
-  labl_c = m_geoshapes.geocolor("point_label_color", "aqua_marine");
+  vert_c = m_geo_settings.geocolor("point_vertex_color", "red");
+  labl_c = m_geo_settings.geocolor("point_label_color", "aqua_marine");
 
   // The second argument to geosize is what is returned if no size
-  // mapping is present in the geoshapes data structure.
-  double vertex_size = m_geoshapes.geosize("point_vertex_size", 3);
+  // mapping is present in the geo_settings data structure.
+  double vertex_size = m_geo_settings.geosize("point_vertex_size", 3);
   
-  for(int i=0; i<vsize; i++) {
+  for(i=0; i<vsize; i++) {
     XYPoint point = m_geoshapes.point(i);
     if((point.get_size() > 0) && (point.active())) {
       if(point.label_color_set())
@@ -1757,7 +1758,7 @@ void MarineViewer::drawPoint(const XYPoint& point, double vertex_size,
   }
 
   // Now draw the point labels if turned on
-  if((m_geoshapes.viewable("point_viewable_labels")) &&
+  if((m_geo_settings.viewable("point_viewable_labels")) &&
      labl_c.visible()) {
     glColor3f(labl_c.red(), labl_c.grn(), labl_c.blu());
     gl_font(1, 12);

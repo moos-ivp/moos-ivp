@@ -23,7 +23,6 @@
 #ifndef COMMON_MARINE_VIEWER_HEADER
 #define COMMON_MARINE_VIEWER_HEADER
 
-#include <iostream>
 #include <string>
 #include <vector>
 #include "FL/Fl.H"
@@ -41,6 +40,7 @@
 #include "OpAreaSpec.h"
 #include "MOOSGeodesy.h"
 #include "VPlug_GeoShapes.h"
+#include "VPlug_GeoSettings.h"
 #include "VPlug_DropPoints.h"
 #include "ColorPack.h"
 
@@ -138,7 +138,6 @@ protected:
 
   void  drawHexagons();
 
-
 protected:
   BackImg   m_back_img;
   BackImg   m_back_img_b;
@@ -162,11 +161,12 @@ protected:
   bool      m_cross_offon;
   bool      m_hash_offon;
 
-  VMarkerSet       m_vmarkers;
-  OpAreaSpec       m_op_area;
-  VPlug_GeoShapes  m_geoshapes;
-  VPlug_DropPoints m_drop_points;
-  CMOOSGeodesy     m_geodesy;
+  VMarkerSet        m_vmarkers;
+  OpAreaSpec        m_op_area;
+  VPlug_GeoShapes   m_geoshapes;
+  VPlug_GeoSettings m_geo_settings;
+  VPlug_DropPoints  m_drop_points;
+  CMOOSGeodesy      m_geodesy;
 
   std::string m_param_warning;
 };

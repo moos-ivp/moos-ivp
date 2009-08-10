@@ -21,7 +21,7 @@
 
 class VPlug_GeoShapes {
 public:
-  VPlug_GeoShapes();
+  VPlug_GeoShapes() {};
   virtual ~VPlug_GeoShapes() {};
 
   bool setParam(const std::string& param, std::string value);
@@ -40,41 +40,26 @@ public:
   bool addGrid(const std::string&);
   bool updateGrid(const std::string&);
 
-  int sizePolygons() {return(m_polygons.size());};
-  int sizeSegLists() {return(m_seglists.size());};
-  int sizeGrids()    {return(m_grids.size());};
-  int sizeCircles()  {return(m_circles.size());};
-  int sizeHexagons() {return(m_hexagons.size());};
-  int sizePoints()   {return(m_points.size());};
+  unsigned int sizePolygons() {return(m_polygons.size());};
+  unsigned int sizeSegLists() {return(m_seglists.size());};
+  unsigned int sizeGrids()    {return(m_grids.size());};
+  unsigned int sizeCircles()  {return(m_circles.size());};
+  unsigned int sizeHexagons() {return(m_hexagons.size());};
+  unsigned int sizePoints()   {return(m_points.size());};
 
-  void remove(const std::string& gtype, int index);
+  XYPolygon& poly(unsigned int i)  {return(m_polygons[i]);};
+  XYSegList& segl(unsigned int i)  {return(m_seglists[i]);};
+  XYHexagon& hexa(unsigned int i)  {return(m_hexagons[i]);};
+  XYGrid&    grid(unsigned int i)  {return(m_grids[i]);};
+  XYCircle&  circ(unsigned int i)  {return(m_circles[i]);};
+  XYPoint&   point(unsigned int i) {return(m_points[i]);};
 
-  XYPolygon& poly(int i)  {return(m_polygons[i]);};
-  XYSegList& segl(int i)  {return(m_seglists[i]);};
-  XYHexagon& hexa(int i)  {return(m_hexagons[i]);};
-  XYGrid&    grid(int i)  {return(m_grids[i]);};
-  XYCircle&  circ(int i)  {return(m_circles[i]);};
-  XYPoint&   point(int i) {return(m_points[i]);};
-
-  XYPolygon getPolygon(int);
-  XYSegList getSegList(int);
-  XYGrid    getGrid(int);
-  XYCircle  getCircle(int);
-  XYHexagon getHexagon(int);
-  XYPoint   getPoint(int);
-
-  bool   setColorMapping(std::string);
-  bool   setColorMapping(std::string, std::string);
-  ColorPack geocolor(const std::string&, 
-		     std::string color_default="");
-
-  bool   setViewableMapping(std::string, std::string);
-  bool   viewable(const std::string&, bool view_default=true);
-  
-  bool   setGSizeMapping(std::string, std::string, double max=0);
-  double geosize(const std::string&, double size_default=0);
-
-  std::vector<std::string> getParamReport() const;
+  XYPolygon getPolygon(unsigned int);
+  XYSegList getSegList(unsigned int);
+  XYGrid    getGrid(unsigned int);
+  XYCircle  getCircle(unsigned int);
+  XYHexagon getHexagon(unsigned int);
+  XYPoint   getPoint(unsigned int);
 
 protected:
   std::vector<XYPolygon>  m_polygons;
@@ -83,15 +68,6 @@ protected:
   std::vector<XYGrid>     m_grids;
   std::vector<XYCircle>   m_circles;
   std::vector<XYPoint>    m_points;
-  
-  std::map<std::string, ColorPack>  m_color_map;
-  std::map<std::string, bool>       m_viewable_map;
-  std::map<std::string, double>     m_gsize_map;
-
-  // The below is strictly for parameter reporting and not used
-  // in drawing. Should be identical to the m_color_map except
-  // in form (string vs. vector<double>) only.
-  std::map<std::string, std::string>           m_color_string_map;
 };
 
 #endif
