@@ -1185,6 +1185,38 @@ void millipause(int milliseconds)
 }
 
 //----------------------------------------------------------------
+// Procedure: modeShorten
+//   Purpose: Make an abbreviated mode string
+//
+//    "MODE_A@Alpha:Bravo$MODE_B@Charlie:Delta" --> "Bravo, Delta" 
+
+string modeShorten(string mode_str, bool really_short)
+{
+  string return_value;
+
+  vector<string> kvector = parseString(mode_str, '$');
+  unsigned int k, ksize = kvector.size();
+  for(k=0; k<ksize; k++) {
+    string mode_var = biteString(kvector[k], '@');
+    string mode_val = kvector[k];
+    string entry;
+    if(return_value != "")
+      entry += ", ";
+    if(really_short) {
+      vector<string> jvector = parseString(mode_val, ':');
+      unsigned int jsize = jvector.size();
+      if(jsize > 0)
+	entry += jvector[jsize-1];
+    }
+    else
+      entry += mode_val;
+    return_value += entry;
+  }
+	
+  return(return_value);
+}
+
+//----------------------------------------------------------------
 // Procedure: getReleaseInfo
 // 
 

@@ -96,6 +96,8 @@ bool  okFileToWrite(std::string);
 
 void  millipause(int milliseconds);
 
+std::string modeShorten(std::string, bool really_short=true);
+
 std::vector<std::string>  getReleaseInfo(const std::string&);
 
 #endif
