@@ -165,7 +165,7 @@ int main(int argc, char *argv[])
   for(j=0; j<alog_files.size(); j++) {
     Populator_LogPlots pop_lp;
     //pop_lp.setSkew(alog_files_skew[j]);
-    pop_lp.setVName("V_" + intToString(j)); 
+    pop_lp.setDefaultVName("V_" + intToString(j)); 
     bool ok = pop_lp.setFileALog(alog_files[j]);
     if(!ok) {
       cout << "Problem with file " << alog_files[j] << ". Exiting" << endl;

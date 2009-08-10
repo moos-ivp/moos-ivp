@@ -175,7 +175,7 @@ string LogPlotViewer::get_variable1()
   if((view_index1 < 0) || (view_index1 >= logplot.size()))
     return("none");
   else {
-    string vehicle = logplot[view_index1].get_vehicle();
+    string vehicle = logplot[view_index1].get_vehi_name();
     string varname = logplot[view_index1].get_varname();
     if(vehicle != "")
       return(vehicle + "/" + varname);
@@ -195,7 +195,7 @@ string LogPlotViewer::get_variable2()
   if((view_index2 < 0) || (view_index2 >= logplot.size()))
     return("none");
   else {
-    string vehicle = logplot[view_index2].get_vehicle();
+    string vehicle = logplot[view_index2].get_vehi_name();
     string varname = logplot[view_index2].get_varname();
     if(vehicle != "")
       return(vehicle + "/" + varname);

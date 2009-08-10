@@ -3,6 +3,7 @@
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
 /*    FILE: NavPlotViewer.h                                      */
 /*    DATE: May 31st, 2005                                       */
+/*          August 2009 - HelmPlots and GeoPlots added.          */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
 /* modify it under the terms of the GNU General Public License   */
@@ -31,6 +32,7 @@
 #include "BackImg.h"
 #include "LogPlot.h"
 #include "HelmPlot.h"
+#include "GeoPlot.h"
 #include "MarineViewer.h"
 
 class NavPlotViewer : public MarineViewer
@@ -39,61 +41,61 @@ class NavPlotViewer : public MarineViewer
   NavPlotViewer(int x,int y,int w,int h,const char *l=0);
   virtual ~NavPlotViewer() {};
   
-  bool  setParam(std::string p, std::string v);
-  bool  setParam(std::string p, double v);
-  
-  void addLogPlotNAVX(const LogPlot& lp) 
-    {m_navx_plot.push_back(lp);};
-  void addLogPlotNAVY(const LogPlot& lp) 
-    {m_navy_plot.push_back(lp);};
-  void addLogPlotHDG(const LogPlot& lp) 
-    {m_hdg_plot.push_back(lp);};
-  void addHelmPlot(const HelmPlot& hp) 
-    {m_helm_plot.push_back(hp);};
-
-  void addLogPlot(const LogPlot& lp, std::string vid, std::string type);
-
+  bool   setParam(std::string p, std::string v);
+  bool   setParam(std::string p, double v);  
+  void   addLogPlotNAVX(const LogPlot& lp);
+  void   addLogPlotNAVY(const LogPlot& lp); 
+  void   addLogPlotHDG(const LogPlot& lp); 
+  void   addHelmPlot(const HelmPlot& hp); 
+  void   addGeoPlot(const GeoPlot& hp); 
   void   draw();
 
   void   setCenterView(std::string centering="ctr_of_bounding");
-  bool   setCurrIndexByTime(double);
-  bool   setCurrIndex(int);
-  bool   incCurrIndex(int);
-  bool   jumpCurrIndex(unsigned int);
-  void   setGlobalIndex(unsigned int);
-  bool   vehicle(unsigned int);
+  void   setCurrTime(double);
+  void   incCurrTime(double);
+  void   setVehicleIndex(unsigned int);
   double getCurrTime();
   double getAvgStepTime();
 
   std::string getHPlotVName();
+  std::string getHPlotMode();
+  std::string getHPlotDecision();
+  std::string getHPlotBehaviors(std::string);
 
  public: // Configuration parameters
-  void   setFrame(std::string s)     {m_frame = s;};
-  void   toggleAllTrail()            {m_alltrail = !m_alltrail;};
+  void   setFrame(std::string s)   {m_frame = s;};
+  void   toggleAllTrail()          {m_alltrail = !m_alltrail;};
 
 protected:
   void  drawNavPlots();
   void  drawNavPlot(unsigned int ix);
+  void  drawGeoPlots();
+  void  drawGeoPlot(unsigned int ix);
   void  drawFrame();
-  
+
+  std::string shortenBehaviors(std::string);
+
 private:
   unsigned int          m_vehicle_ix;
-  unsigned int          m_data_ix;
-  std::string           m_frame;
+  double                m_curr_time;
+  double                m_min_time;
+  double                m_max_time;
   bool                  m_alltrail;
+  std::string           m_frame;
 
-  // vector is one for each vehicle
+  // vectors - each index corresponds to one vehicle
   std::vector<LogPlot>  m_navx_plot;
   std::vector<LogPlot>  m_navy_plot;
   std::vector<LogPlot>  m_hdg_plot;
   std::vector<HelmPlot> m_helm_plot;
-
+  std::vector<GeoPlot>  m_geo_plot;
 
   double m_shape_scale;
   bool   m_trails;
   int    m_trail_gap;
   double m_trail_size;
   bool   m_draw_vname;
+  bool   m_behaviors_verbose;
 };
 
 #endif 

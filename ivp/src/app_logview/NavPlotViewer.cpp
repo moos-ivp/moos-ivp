@@ -26,9 +26,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #ifdef WIN32
-	#include "tiffio.h"
+#include "tiffio.h"
 #else
-	#include <tiffio.h>
+#include <tiffio.h>
 #endif
 #include "NavPlotViewer.h"
 #include "MBUtils.h"
@@ -42,13 +42,15 @@ NavPlotViewer::NavPlotViewer(int x, int y, int w, int h, const char *l)
   : MarineViewer(x,y,w,h,l)
 {
   m_vehicle_ix   = 0;
-  m_data_ix      = 0;
   m_trail_gap    = 1;
   m_trail_size   = 0.5;
   m_alltrail     = true;
-  m_shape_scale  = 1;
+  m_shape_scale  = 3;
   m_trails       = true;
-  m_draw_vname   = false;
+  m_draw_vname   = true;
+  m_curr_time    = -1;
+  m_min_time     = -1;
+  m_max_time     = -1;
 }
 
 //-------------------------------------------------------------
@@ -56,6 +58,8 @@ NavPlotViewer::NavPlotViewer(int x, int y, int w, int h, const char *l)
 
 bool NavPlotViewer::setParam(string param, string value)
 {
+  if(param == "vehicles_name_viewable")
+    return(setBooleanOnString(m_draw_vname, value));
   if(param == "trails_point_size") {
     if(value == "bigger")
       m_trail_size *= 1.25;
@@ -78,8 +82,6 @@ bool NavPlotViewer::setParam(string param, string value)
   
   if(param == "trails_viewable")
     return(setBooleanOnString(m_trails, value));
-  else if(param=="display_vname")
-    return(setBooleanOnString(m_draw_vname, value));
   else if(param == "vehicle_shape_scale") {
     if(value == "bigger")
       m_shape_scale *= 1.25;
@@ -112,6 +114,76 @@ bool NavPlotViewer::setParam(string param, double value)
   return(true);
 }
 
+//-------------------------------------------------------------
+// Procedure: addLogPlotNAVX
+
+void NavPlotViewer::addLogPlotNAVX(const LogPlot& lp)
+{
+  m_navx_plot.push_back(lp);
+  double lp_min_time = lp.get_min_time();
+  double lp_max_time = lp.get_max_time();
+  if((m_min_time == -1) || (lp_min_time < m_min_time))
+    m_min_time = lp_min_time;
+  if((m_max_time == -1) || (lp_max_time > m_max_time))
+    m_max_time = lp_max_time;
+}
+
+//-------------------------------------------------------------
+// Procedure: addLogPlotNAVY
+
+void NavPlotViewer::addLogPlotNAVY(const LogPlot& lp)
+{
+  m_navy_plot.push_back(lp);
+  double lp_min_time = lp.get_min_time();
+  double lp_max_time = lp.get_max_time();
+  if((m_min_time == -1) || (lp_min_time < m_min_time))
+    m_min_time = lp_min_time;
+  if((m_max_time == -1) || (lp_max_time > m_max_time))
+    m_max_time = lp_max_time;
+}
+
+//-------------------------------------------------------------
+// Procedure: addLogPlotHDG
+
+void NavPlotViewer::addLogPlotHDG(const LogPlot& lp)
+{
+  m_hdg_plot.push_back(lp);
+  double lp_min_time = lp.get_min_time();
+  double lp_max_time = lp.get_max_time();
+  if((m_min_time == -1) || (lp_min_time < m_min_time))
+    m_min_time = lp_min_time;
+  if((m_max_time == -1) || (lp_max_time > m_max_time))
+    m_max_time = lp_max_time;
+}
+
+//-------------------------------------------------------------
+// Procedure: addHelmPlot
+
+void NavPlotViewer::addHelmPlot(const HelmPlot& hp)
+{
+  m_helm_plot.push_back(hp);
+  double hp_min_time = hp.get_min_time();
+  double hp_max_time = hp.get_max_time();
+  if((m_min_time == -1) || (hp_min_time < m_min_time))
+    m_min_time = hp_min_time;
+  if((m_max_time == -1) || (hp_max_time > m_max_time))
+    m_max_time = hp_max_time;
+}
+
+//-------------------------------------------------------------
+// Procedure: addGeoPlot
+
+void NavPlotViewer::addGeoPlot(const GeoPlot& gp)
+{
+  m_geo_plot.push_back(gp);
+  double gp_min_time = gp.getMinTime();
+  double gp_max_time = gp.getMaxTime();
+  if((m_min_time == -1) || (gp_min_time < m_min_time))
+    m_min_time = gp_min_time;
+  if((m_max_time == -1) || (gp_max_time > m_max_time))
+    m_max_time = gp_max_time;
+}
+
 
 //-------------------------------------------------------------
 // Procedure: draw()
@@ -119,104 +191,43 @@ bool NavPlotViewer::setParam(string param, double value)
 void NavPlotViewer::draw()
 {
   MarineViewer::draw();
-
   drawPolygons();
   drawNavPlots();
+  drawGeoPlots();
   drawFrame();
 }
 
 //-------------------------------------------------------------
-// Procedure: setCurrIndex
-//      Note: returns true if the value changes
-//      Note: uint-check
+// Procedure: setCurrTime
 
-bool NavPlotViewer::setCurrIndex(int v)
+void NavPlotViewer::setCurrTime(double gtime)
 {
-  if(m_navx_plot.size() == 0)
-    return(false);
-
-  unsigned int new_index = 0;
-  if(v >= 0)
-    new_index = (unsigned int)(v);
-  
-  unsigned int plotsize = m_navx_plot[m_vehicle_ix].size();
-
-  if(plotsize == 0)
-    return(false);
-
-  if(new_index >= plotsize) 
-    new_index = plotsize - 1;
-
-  if(m_data_ix != new_index) {
-    m_data_ix = new_index;
-    return(true);
-  }
+  // If min/max times are not set, just take the given time directly.
+  // Otherwise clip the given time to be within the min/max range.
+  if((m_min_time == -1) || (m_max_time == -1))
+    m_curr_time = gtime;
   else
-    return(false);
-}
-
-//-------------------------------------------------------------
-// Procedure: incCurrIndex
-//      Note: returns true if the value changes
-
-bool NavPlotViewer::incCurrIndex(int v)
-{
-  if(m_navx_plot.size() == 0)
-    return(false);
-
-  unsigned int max_index = m_navx_plot[m_vehicle_ix].size();
-  
-  int new_index = m_data_ix + v;
-  new_index = (int)(vclip(new_index, 0, max_index));
-    
-  return(setCurrIndex(m_data_ix + v));
-}
-
-//-------------------------------------------------------------
-// Procedure: setCurrIndexByTime
-//      Note: returns true if the value changes
-
-bool NavPlotViewer::setCurrIndexByTime(double gtime)
-{
-  if(m_navx_plot.size() == 0)
-    return(false);
-
-  cout << "m_navx_plot.size(): " << m_navx_plot.size() << endl;
-  unsigned int ix = m_navx_plot[m_vehicle_ix].get_index_by_time(gtime);
+    m_curr_time = vclip(gtime, m_min_time, m_max_time);
   redraw();
-
-  return(setCurrIndex(ix));
 }
 
-
 //-------------------------------------------------------------
-// Procedure: jumpCurrIndex
-//      Note: returns true if the value changes
-//            0 sets index at the beginning
-//            1 sets index at the end
-//            2 sets index at the middle
+// Procedure: incCurrTime
 
-bool NavPlotViewer::jumpCurrIndex(unsigned int v)
+void NavPlotViewer::incCurrTime(double gtime)
 {
-  if(m_navx_plot.size() == 0)
-    return(false);
-
-  if(v==0)
-    return(setCurrIndex(0));
-  else if(v==1) {
-    int end_ix = m_navx_plot[m_vehicle_ix].size() - 1;
-    return(setCurrIndex(end_ix));
-  }
-  else {
-    int end_ix = m_navx_plot[m_vehicle_ix].size() / 2;
-    return(setCurrIndex(end_ix));
-  }
+  // If min/max times are not set, just take the given time directly.
+  // Otherwise clip the given time to be within the min/max range.
+  if((m_min_time == -1) || (m_max_time == -1))
+    m_curr_time += gtime;
+  else
+    m_curr_time = vclip(m_curr_time + gtime, m_min_time, m_max_time);
 }
 
 //-------------------------------------------------------------
-// Procedure: vehicle
+// Procedure: setVehicleIndex
 
-void NavPlotViewer::setGlobalIndex(unsigned int new_ix)
+void NavPlotViewer::setVehicleIndex(unsigned int new_ix)
 {
   if(m_navx_plot.size() == 0)
     return;
@@ -233,10 +244,7 @@ void NavPlotViewer::setGlobalIndex(unsigned int new_ix)
 
 double NavPlotViewer::getCurrTime()
 {
-  if(m_navx_plot.size() > 0)
-    return(m_navx_plot[m_vehicle_ix].get_time_by_index(m_data_ix));
-  else
-    return(0);
+  return(m_curr_time);
 }
 
 //-------------------------------------------------------------
@@ -262,48 +270,29 @@ double NavPlotViewer::getAvgStepTime()
 
 string NavPlotViewer::getHPlotVName()
 {
-  return(m_helm_plot[m_vehicle_ix].get_vehi_name());
+  string vname = m_helm_plot[m_vehicle_ix].get_vehi_name();
+  string iter  = m_helm_plot[m_vehicle_ix].get_value_by_time("iter", m_curr_time);
+  return(iter + "-" + vname);
 }
 
-#if 0
 //-------------------------------------------------------------
-// Procedure: drawPoints
+// Procedure: getHPlotMode
 
-void NavPlotViewer::drawPoints(const vector<double>& vx, 
-			       const vector<double>& vy,
-			       double cr, double cg, double cb, double sz)
+string NavPlotViewer::getHPlotMode()
 {
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  glOrtho(0, w(), 0, h(), -1 ,1);
-
-  glMatrixMode(GL_MODELVIEW);
-  glPushMatrix();
-  glLoadIdentity();
-
-  // Determine position in terms of image percentage
-  double pt_ix = meters2img('x', px);
-  double pt_iy = meters2img('y', py);
-
-  // Determine position in terms of view percentage
-  double pt_vx = img2view('x', pt_ix);
-  double pt_vy = img2view('y', pt_iy);
-
-  glTranslatef(pt_vx, pt_vy, 0); // theses are in pixel units
-
-  glEnable(GL_POINT_SMOOTH);
-  glPointSize(sz);
-  glColor3f(cr, cg, cb);
-  
-  glBegin(GL_POINTS);
-  glVertex2f(0, 0);
-  glEnd();
-  glDisable(GL_POINT_SMOOTH);
-
-  glFlush();
-  glPopMatrix();
+  return(m_helm_plot[m_vehicle_ix].get_value_by_time("mode_short", m_curr_time));
 }
-#endif
+
+//-------------------------------------------------------------
+// Procedure: getHPlotBehaviors
+
+string NavPlotViewer::getHPlotBehaviors(string btype)
+{
+  string bhvs = m_helm_plot[m_vehicle_ix].get_value_by_time(btype, m_curr_time);
+  if(!m_behaviors_verbose)
+    bhvs = shortenBehaviors(bhvs);
+  return(bhvs);
+}
 
 //-------------------------------------------------------------
 // Procedure: drawNavPlots
@@ -382,13 +371,36 @@ void NavPlotViewer::drawNavPlot(unsigned int index)
   vector<double> vname_color(3,1); // Vehicle name will be drawn "white"
 
   // Not sure how we handle vehicle lengths - hard code 3 meters for now.
-  string vehi_body = m_helm_plot[index].get_vehi_type();
-  double shape_length = m_helm_plot[index].get_vehi_length() * m_shape_scale;
+  string vehi_type   = m_helm_plot[index].get_vehi_type();
+  double vehi_length = m_helm_plot[index].get_vehi_length() * m_shape_scale;
+  string vehi_name   = m_helm_plot[index].get_vehi_name();
 
-
-  drawCommonVehicle("", opose, cvect, vname_color, vehi_body, 
-		    shape_length, m_draw_vname);
+  drawCommonVehicle(vehi_name, opose, cvect, vname_color, vehi_type, 
+		    vehi_length, m_draw_vname);
 }
+
+//-------------------------------------------------------------
+// Procedure: drawGeoPlots
+
+void NavPlotViewer::drawGeoPlots()
+{
+  for(unsigned int i=0; i<m_geo_plot.size(); i++)
+    drawGeoPlot(i);
+}
+
+//-------------------------------------------------------------
+// Procedure: drawNavPlot
+
+void NavPlotViewer::drawGeoPlot(unsigned int index)
+{
+  if(index >= m_geo_plot.size())
+    return;
+  
+  int gpsize = m_geo_plot[index].size();
+  if(gpsize == 0)
+    return;
+}
+
 
 //-------------------------------------------------------------
 // Procedure: drawFrame
@@ -430,6 +442,26 @@ void NavPlotViewer::drawFrame()
   glEnd();
 }
 
+
+//-------------------------------------------------------------
+// Procedure: shortenBehaviors
+//   Purpose: Produce a shortened version of a behavior list
+//   
+//  "waypt_survey$0.5$0/0:waypt_return$0.5$0/0" --> 
+//                                  "waypt_survey, waypt_return"
+
+string NavPlotViewer::shortenBehaviors(string bhvs)
+{
+  string rstr;
+  vector<string> kvector = parseString(bhvs, ':');
+  unsigned int k, ksize  = kvector.size();
+  for(k=0; k<ksize; k++) {
+    if(rstr != "")
+      rstr += ", ";
+    rstr += biteString(kvector[k], '$');
+  }
+  return(rstr);
+}
 
 //-------------------------------------------------------------
 // Procedure: setCenterview
@@ -480,7 +512,3 @@ void NavPlotViewer::setCenterView(string centering_style)
   m_vshift_x = -x_pixels;
   m_vshift_y = -y_pixels;
 }
-
-
-
-

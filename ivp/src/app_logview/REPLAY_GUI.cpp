@@ -90,16 +90,6 @@ REPLAY_GUI::REPLAY_GUI(int g_w, int g_h, const char *g_l)
   m_but_zoom_out_time->labelsize(10);
   m_but_zoom_reset_time->labelsize(10);
 
-#if 0
-  x_mtr = new MY_Output((w()/2)-55, h()-(lp_height+25), 50, 20, "x:"); 
-  x_mtr->textsize(info_size); 
-  x_mtr->labelsize(info_size);
-
-  y_mtr = new MY_Output((w()/2)+20, h()-(lp_height+25), 50, 20, "y:"); 
-  y_mtr->textsize(info_size); 
-  y_mtr->labelsize(info_size);
-#endif
-
   play_rate = new MY_Output((w()/2)+140, h()-(lp_height+25), 70, 20, "play-rate:"); 
   play_rate->textsize(info_size); 
   play_rate->labelsize(info_size);
@@ -175,17 +165,17 @@ REPLAY_GUI::REPLAY_GUI(int g_w, int g_h, const char *g_l)
   int fld_wid = (w()/2) - 55 - 4;
   Fl_Color fcolor1 = fl_rgb_color(200, 255, 200);
   Fl_Color fcolor2 = fl_rgb_color(200, 200, 255);
-  m_fld_bhvs_vname_1 = new MY_Output(55, m_np_viewer_hgt+35, 60, 20, "Vehicle:"); 
+  m_fld_bhvs_vname_1 = new MY_Output(55, m_np_viewer_hgt+35, 65, 20, "Vehicle:"); 
   m_fld_bhvs_vname_1->textsize(info_size); 
   m_fld_bhvs_vname_1->color(fcolor1); 
   m_fld_bhvs_vname_1->labelsize(info_size);
 
-  m_fld_bhvs_mode_1 = new MY_Output(165, m_np_viewer_hgt+35, 80, 20, "Mode:"); 
-  m_fld_bhvs_mode_1->textsize(info_size); 
+  m_fld_bhvs_mode_1 = new MY_Output(165, m_np_viewer_hgt+35, 120, 20, "Mode:"); 
+  m_fld_bhvs_mode_1->textsize(info_size-1); 
   m_fld_bhvs_mode_1->color(fcolor1); 
   m_fld_bhvs_mode_1->labelsize(info_size);
 
-  m_fld_bhvs_dec_1 = new MY_Output(300, m_np_viewer_hgt+35, (w()/2)-304, 20, "Decision:"); 
+  m_fld_bhvs_dec_1 = new MY_Output(340, m_np_viewer_hgt+35, (w()/2)-344, 20, "Decision:"); 
   m_fld_bhvs_dec_1->textsize(info_size); 
   m_fld_bhvs_dec_1->color(fcolor1); 
   m_fld_bhvs_dec_1->labelsize(info_size);
@@ -212,17 +202,17 @@ REPLAY_GUI::REPLAY_GUI(int g_w, int g_h, const char *g_l)
 
   // Handle Helm2 -------------
   int lc = (w()/2);
-  m_fld_bhvs_vname_2 = new MY_Output(lc+55, m_np_viewer_hgt+35, 60, 20, "Vehicle:"); 
+  m_fld_bhvs_vname_2 = new MY_Output(lc+55, m_np_viewer_hgt+35, 65, 20, "Vehicle:"); 
   m_fld_bhvs_vname_2->textsize(info_size); 
   m_fld_bhvs_vname_2->color(fcolor2); 
   m_fld_bhvs_vname_2->labelsize(info_size);
 
-  m_fld_bhvs_mode_2 = new MY_Output(lc+165, m_np_viewer_hgt+35, 80, 20, "Mode:"); 
-  m_fld_bhvs_mode_2->textsize(info_size); 
+  m_fld_bhvs_mode_2 = new MY_Output(lc+165, m_np_viewer_hgt+35, 120, 20, "Mode:"); 
+  m_fld_bhvs_mode_2->textsize(info_size-1); 
   m_fld_bhvs_mode_2->color(fcolor2); 
   m_fld_bhvs_mode_2->labelsize(info_size);
 
-  m_fld_bhvs_dec_2 = new MY_Output(lc+300, m_np_viewer_hgt+35, (w()/2)-304, 20, "Decision:"); 
+  m_fld_bhvs_dec_2 = new MY_Output(lc+340, m_np_viewer_hgt+35, (w()/2)-344, 20, "Decision:"); 
   m_fld_bhvs_dec_2->textsize(info_size); 
   m_fld_bhvs_dec_2->color(fcolor2); 
   m_fld_bhvs_dec_2->labelsize(info_size);
@@ -262,6 +252,7 @@ REPLAY_GUI::~REPLAY_GUI()
   delete(disp_time);
   delete(play_rate);
   delete(collect_state);
+
   delete(vname1);
   delete(label1);
   delete(low1);
@@ -269,6 +260,7 @@ REPLAY_GUI::~REPLAY_GUI()
   delete(curr1);
   delete(time_low);
   delete(time_high);
+
   delete(vname2);
   delete(label2);
   delete(low2);
@@ -295,9 +287,6 @@ void REPLAY_GUI::augmentMenu()
   mbar->add("Replay/Streaming Step 5",  0, (Fl_Callback*)REPLAY_GUI::cb_StreamStep, (void*)5, FL_MENU_RADIO|FL_MENU_VALUE);
   mbar->add("Replay/Streaming Step 10", 0, (Fl_Callback*)REPLAY_GUI::cb_StreamStep, (void*)10, FL_MENU_RADIO|FL_MENU_DIVIDER);
   mbar->add("Replay/Toggle Show All Trail", FL_ALT+'t', (Fl_Callback*)REPLAY_GUI::cb_AllTrail, (void*)0, 134);
-  mbar->add("Replay/To Start" ,     's', (Fl_Callback*)REPLAY_GUI::cb_Jump,(void*)0, 0);
-  mbar->add("Replay/To End" ,       'e', (Fl_Callback*)REPLAY_GUI::cb_Jump,(void*)1, 0);
-  mbar->add("Replay/To Middle" ,    'm', (Fl_Callback*)REPLAY_GUI::cb_Jump,(void*)2, FL_MENU_DIVIDER);
   mbar->add("Replay/Step Ahead 1",  FL_ALT+']', (Fl_Callback*)REPLAY_GUI::cb_Step, (void*)1, 0);
   mbar->add("Replay/Step Back  1",  FL_ALT+'[', (Fl_Callback*)REPLAY_GUI::cb_Step, (void*)-1, 0);
   mbar->add("Replay/Step Ahead 10", FL_ALT+'}', (Fl_Callback*)REPLAY_GUI::cb_Step, (void*)10, 0);
@@ -326,7 +315,7 @@ int REPLAY_GUI::handle(int event)
   case FL_PUSH:
     Fl_Window::handle(event);
     lpv_curr_time = lp_viewer->get_curr_time();
-    np_viewer->setCurrIndexByTime(lpv_curr_time);
+    np_viewer->setCurrTime(lpv_curr_time);
     return(1);
     break;
   case FL_RELEASE:
@@ -340,35 +329,17 @@ int REPLAY_GUI::handle(int event)
 
 //----------------------------------------- Step
 inline bool REPLAY_GUI::cb_Step_i(int val) {
-  bool changed = np_viewer->incCurrIndex(val);
-  if(changed) { 
-    updateXY();
-    double curr_time = np_viewer->getCurrTime();
-    np_viewer->redraw();
-    lp_viewer->set_curr_time(curr_time);
-    lp_viewer->redraw();
-  }
-  return(changed);
+  np_viewer->incCurrTime(val);
+  updateXY();
+  double curr_time = np_viewer->getCurrTime();
+  lp_viewer->set_curr_time(curr_time);
+  np_viewer->redraw();
+  lp_viewer->redraw();
+  return(true);
 }
 void REPLAY_GUI::cb_Step(Fl_Widget* o, int v) {
   int val = (int)(v);
   ((REPLAY_GUI*)(o->parent()->user_data()))->cb_Step_i(val);
-}
-
-//----------------------------------------- Jump
-inline void REPLAY_GUI::cb_Jump_i(int val) {
-  bool changed = np_viewer->jumpCurrIndex(val);
-  if(changed) { 
-    updateXY();
-    double curr_time = np_viewer->getCurrTime();
-    np_viewer->redraw();
-    lp_viewer->set_curr_time(curr_time);
-    lp_viewer->redraw();
-  }
-}
-void REPLAY_GUI::cb_Jump(Fl_Widget* o, int v) {
-  int val = (int)(v);
-  ((REPLAY_GUI*)(o->parent()->user_data()))->cb_Jump_i(val);
 }
 
 //----------------------------------------- LeftLogPlot
@@ -547,6 +518,30 @@ void REPLAY_GUI::updateXY()
   // Helm1
   string v1name = np_viewer->getHPlotVName();
   m_fld_bhvs_vname_1->value(v1name.c_str());
+  string v1mode = np_viewer->getHPlotMode();
+  m_fld_bhvs_mode_1->value(v1mode.c_str());
+  string v1active = np_viewer->getHPlotBehaviors("active");
+  m_fld_bhvs_act_1->value(v1active.c_str());
+  string v1running = np_viewer->getHPlotBehaviors("running");
+  m_fld_bhvs_run_1->value(v1running.c_str());
+  string v1idle = np_viewer->getHPlotBehaviors("idle");
+  m_fld_bhvs_idle_1->value(v1idle.c_str());
+  string v1completed = np_viewer->getHPlotBehaviors("completed");
+  m_fld_bhvs_cplt_1->value(v1completed.c_str());
+
+  // Helm2
+  string v2name = np_viewer->getHPlotVName();
+  m_fld_bhvs_vname_2->value(v2name.c_str());
+  string v2mode = np_viewer->getHPlotMode();
+  m_fld_bhvs_mode_2->value(v2mode.c_str());
+  string v2active = np_viewer->getHPlotBehaviors("active");
+  m_fld_bhvs_act_2->value(v2active.c_str());
+  string v2running = np_viewer->getHPlotBehaviors("running");
+  m_fld_bhvs_run_2->value(v2running.c_str());
+  string v2idle = np_viewer->getHPlotBehaviors("idle");
+  m_fld_bhvs_idle_2->value(v2idle.c_str());
+  string v2completed = np_viewer->getHPlotBehaviors("completed");
+  m_fld_bhvs_cplt_2->value(v2completed.c_str());
 
 
   // Time_Low/High
@@ -610,7 +605,7 @@ void REPLAY_GUI::addLogPlot(const LogPlot& logplot)
   if(!lp_viewer)
     return;
 
-  string vname = logplot.get_vehicle();
+  string vname = logplot.get_vehi_name();
 
   int ix = lp_viewer->add_logplot(logplot) - 1;
 
