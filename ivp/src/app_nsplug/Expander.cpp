@@ -31,6 +31,7 @@ Expander::Expander(string given_infile, string given_outfile)
   m_max_subs_per_line = 100;
   m_initial_filenames.push_back(given_infile);
   m_path.push_back(".");
+  m_pmode.push_back("top");
 }
 
 //--------------------------------------------------------
@@ -68,8 +69,6 @@ vector<string> Expander::expandFile(string filename,
   vector<string> return_vector;
   vector<string> empty_vector;
 
-  bool skip_lines = false;
-
   vector<string> fvector = fileBuffer(filename);
   int vsize = fvector.size();
   if(vsize == 0) {
@@ -78,33 +77,33 @@ vector<string> Expander::expandFile(string filename,
     return(empty_vector);
   }
 
-  string  mode = "top";
+  currMode("top");
   
   for(int i=0; i<vsize; i++) {
     string line = stripBlankEnds(findReplace(fvector[i], '\t', ' '));
+    string line_orig = line;
     string left = stripBlankEnds(biteString(line, ' '));
     string rest = stripBlankEnds(line);
 
     //------------------------------------------------------------
-    if(!skip_lines && (left == "#ifdef")) {
-      if(mode!="top") {
-	cout << "#  Error in file " << filename << " line:" << i+1 << endl;
-	cout << "#  Nested #ifdef or #ifndef not permitted" << endl;
-	result = false;
-	return(empty_vector);
+    if(left == "#ifdef") {
+      if(!skipLines()) {
+	bool ifdef = checkIfDef(rest, macros);
+	if(!ifdef)
+	  pushMode("ifdefno");
+	else
+	  pushMode("ifdefyes");
       }
-
-      bool ifdef = checkIfDef(rest, macros);
-      mode = "ifdefyes";
-      if(!ifdef) {
-	skip_lines = true;
-	mode = "ifdefno";
+      else {
+	string curr_mode = currMode();
+	pushMode(curr_mode);
       }
     }
-
+    
     //------------------------------------------------------------
     else if(left == "#elseifdef") {
-      if((mode!="ifdefyes") && (mode != "ifdefno")) {
+      if((currMode() != "ifdefyes") && (currMode() != "ifdefno") &&
+	 (currMode() != "ifdefnomore")) {
 	cout << "#  Error in file " << filename << " line:" << i+1 << endl;
 	cout << "#  Dangling #elseifdef" << endl;
 	result = false;
@@ -113,20 +112,18 @@ vector<string> Expander::expandFile(string filename,
       
       // Being in the ifdefyes mode means one of the "above" ifdef cases
       // matched and the current #elseifdef is moot.
-      if(mode != "ifdefyes") {
-	skip_lines = false;
+      if(currMode() == "ifdefyes")
+	currMode("ifdefnomore");
+      else if(currMode() == "ifdefno") {
 	bool ifdef = checkIfDef(rest, macros);
-	mode = "ifdefyes";
-	if(!ifdef) {
-	  skip_lines = true;
-	  mode = "ifdefno";
-	}
+	if(ifdef)
+	  currMode("ifdefyes");
       }
     }
 
     //------------------------------------------------------------
     else if(left == "#else") {
-      if((mode!="ifdefyes") && (mode != "ifdefno")) {
+      if(currMode() == "top") {
 	cout << "#  Error in file " << filename << " line:" << i+1 << endl;
 	cout << "#  Dangling #else" << endl;
 	result = false;
@@ -135,48 +132,45 @@ vector<string> Expander::expandFile(string filename,
 
       // Being in the ifdefyes mode means one of the "above" ifdef cases
       // matched and the current #else is moot.
-      if(mode == "ifdefyes")
-	skip_lines = true;
-      else
-	skip_lines = false;
-      mode = "ifdefelse";
+      if((currMode() == "ifdefyes") || (currMode() == "ifndefyes"))
+	currMode("elseno");
+      else if((currMode() == "ifdefno") || (currMode() == "ifndefno"))
+	currMode("elseyes");
     }
 
     //------------------------------------------------------------
-    else if(!skip_lines && (left == "#ifndef")) {
-      if(mode!="top") {
-	cout << "#  Error in file " << filename << " line:" << i+1 << endl;
-	cout << "#  Nested #ifdef or #ifndef not permitted" << endl;
-	result = false;
-	return(empty_vector);
+    else if(left == "#ifndef") {
+      if(!skipLines()) {
+	bool ifndef = checkIfNDef(rest, macros);
+	if(!ifndef)
+	  pushMode("ifndefno");
+	else
+	  pushMode("ifndefyes");
       }
-
-      bool ifndef = checkIfNDef(rest, macros);
-      if(!ifndef)
-	skip_lines = true;
-      mode = "ifndef";
+      else {
+	string curr_mode = currMode();
+	pushMode(curr_mode);
+      }
     }
 
     //-------------------------------------------------------------
     else if(left == "#endif") {
-      if(mode=="top") {
+      if(currMode() == "top") {
 	cout << "#  Error in file " << filename << " line:" << i+1 << endl;
 	cout << "#  #endif detected with no open #ifdef or #ifndef" << endl;
 	result = false;
 	return(empty_vector);
       }
-      skip_lines = false;
-      mode = "top";
+      popMode();
     }
 
     //--------------------------------------------------------------
-    else if(!skip_lines && (left == "#include")) {
+    else if(!skipLines() && (left == "#include")) {
       applyMacrosToLine(rest, macros);
       string file_str = stripBlankEnds(rest);
       if(isQuoted(file_str))
 	file_str = stripQuotes(file_str);
       string full_file_str = findFileInPath(file_str);
-
 
       if(!verifyInfile(full_file_str)) {
 	cout << "#  Error in file " << filename << " line:" << i+1 << endl;
@@ -203,7 +197,7 @@ vector<string> Expander::expandFile(string filename,
     }
 
     //----------------------------------------------------------------
-    else if(!skip_lines && (left == "#define")) {
+    else if(!skipLines() && (left == "#define")) {
       rest = compactConsecutive(rest, ' ');
       string macro = stripBlankEnds(biteString(rest, ' '));
       string value = stripBlankEnds(rest);
@@ -226,10 +220,13 @@ vector<string> Expander::expandFile(string filename,
 	macros[macro] = value;
       }
     }
-    else if(!skip_lines) {
+    else if(!skipLines()) {
       applyMacrosToLine(fvector[i], macros);
       return_vector.push_back(fvector[i]);
     }   
+    
+    cout << "Line[" << i+1 << "]: " << line_orig << endl;
+    cout << "  Mode: " << currMode() << endl;
   }   
   
 
@@ -491,5 +488,74 @@ bool Expander::checkIfNDef(string entry, map<string, string> macros)
     }
   }
   return(ifndef);
+}
+
+//--------------------------------------------------------
+// Procedure: currMode(string)
+
+void Expander::currMode(string new_mode)
+{
+  unsigned int vsize = m_pmode.size();
+  if(vsize > 1)
+    m_pmode[vsize-1] = new_mode;
+}
+
+//--------------------------------------------------------
+// Procedure: pushMode(string)
+
+void Expander::pushMode(string new_mode)
+{
+  m_pmode.push_back(new_mode);
+}
+
+//--------------------------------------------------------
+// Procedure: currMode()
+
+string Expander::currMode()
+{
+  unsigned int vsize = m_pmode.size();
+  if(vsize > 0)
+    return(m_pmode[vsize-1]);
+  else
+    return("error - stack underflow");
+}
+
+//--------------------------------------------------------
+// Procedure: popMode()
+
+bool Expander::popMode()
+{
+  unsigned int vsize = m_pmode.size();
+  if(vsize > 1) {
+    m_pmode.pop_back();
+    return(true);
+  }
+  else
+    return(false);
+}
+
+//--------------------------------------------------------
+// Procedure: skipLines
+
+bool Expander::skipLines()
+{
+  string curr_mode = currMode();
+  if(curr_mode == "top")
+    return(false);
+  if(curr_mode == "ifdefyes")
+    return(false);
+  if(curr_mode == "ifdefno")
+    return(true);
+  if(curr_mode == "ifdefnomore")
+    return(true);
+  if(curr_mode == "elseyes")
+    return(false);
+  if(curr_mode == "elseno")
+    return(true);
+  if(curr_mode == "ifndefyes")
+    return(false);
+  if(curr_mode == "ifndefno")
+    return(true);
+  return(true);
 }
 

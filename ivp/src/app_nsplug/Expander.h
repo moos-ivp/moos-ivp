@@ -46,6 +46,12 @@ class Expander
   bool checkIfDef(std::string, std::map<std::string, std::string>);
   bool checkIfNDef(std::string, std::map<std::string, std::string>);
 
+  void currMode(std::string);
+  void pushMode(std::string);
+  bool popMode();
+  std::string currMode();
+  bool skipLines();
+    
  private:
   std::vector<std::string> m_path;
   std::vector<std::string> m_newlines;
@@ -59,6 +65,9 @@ class Expander
 
   bool m_force;
   int  m_max_subs_per_line;
+
+  std::vector<std::string> m_pmode;
+
 };
 
 #endif 
