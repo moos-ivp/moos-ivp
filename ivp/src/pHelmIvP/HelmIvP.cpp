@@ -70,7 +70,7 @@ HelmIvP::HelmIvP()
   m_warning_count  = 0;
   m_last_heartbeat = 0;
 
-  m_use_beta_engine = true;
+  m_use_beta_engine = false;
 
   // The refresh vars handle the occasional clearing of the m_outgoing
   // maps. These maps will be cleared when MOOS mail is received for the
