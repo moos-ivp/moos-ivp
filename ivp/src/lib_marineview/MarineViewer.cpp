@@ -68,7 +68,6 @@ MarineViewer::MarineViewer(int x, int y, int w, int h, const char *l)
   m_texture_init = false;
   m_textures    = new GLuint[1];
 
-  m_cross_offon = false;
   m_tiff_offon  = true;
   m_hash_offon  = false;
 
@@ -121,9 +120,7 @@ bool MarineViewer::setParam(string param, string value)
   string v = tolower(value);
   
   bool handled = false;
-  if(p=="cross_view")
-    handled = setBooleanOnString(m_cross_offon, v);
-  else if(p=="tiff_type") {
+  if(p=="tiff_type") {
     m_back_img_mod = true;
     handled = setBooleanOnString(m_back_img_b_on, v);
   }
@@ -360,35 +357,6 @@ double MarineViewer::img2meters(char xy, double img_val)
 }
 
 // ----------------------------------------------------------
-// Procedure: getCrossHairMeters
-//      Note: 
-
-double MarineViewer::getCrossHairMeters(char xy)
-{
-  if(xy == 'x') {
-    int iwidth = m_back_img.get_img_width();
-    double x_pos = ((double)(iwidth) / 2.0) - (double)(m_vshift_x);
-    double x_pct = m_back_img.pixToPctX(x_pos);
-    double x_pct_cent = m_back_img.get_img_centx();
-    double x_pct_mtrs = m_back_img.get_img_meters();
-    double meters = (x_pct - x_pct_cent) / (x_pct_mtrs / 100.0);
-    return(meters);   
-  }
-  else if (xy == 'y') {
-    int iheight = m_back_img.get_img_height();
-    double y_pos = ((double)(iheight) / 2.0) - (double)(m_vshift_y);
-    double y_pct = m_back_img.pixToPctY(y_pos);
-    double y_pct_cent = m_back_img.get_img_centy();
-    double y_pct_mtrs = m_back_img.get_img_meters();
-    double meters = (y_pct - y_pct_cent) / (y_pct_mtrs / 100.0);
-    return(meters);
-  }
-  else
-    return(0);
-}
-
-
-// ----------------------------------------------------------
 // Procedure: draw
 //   Purpose: This is the "root" drawing routine - it is typically
 //            invoked in the draw routines of subclasses. 
@@ -425,10 +393,6 @@ void MarineViewer::draw()
   // Draw the hash mark grid if the hash flag is set
   if(m_hash_offon)
     drawHash();
-
-  // Draw the crosshairs if the tiff flag is set
-  if(m_cross_offon)
-    drawCrossHairs();
 
   if(m_op_area.viewable("datum")) {
     XYPoint point00;
@@ -549,33 +513,6 @@ void MarineViewer::drawGLPoly(double *points, int numPoints,
     glVertex2f(points[i]*scale, points[i+1]*scale);
 
   glEnd();
-}
-
-//-------------------------------------------------------------
-// Procedure: drawCrossHairs
-
-void MarineViewer::drawCrossHairs()
-{
-  glMatrixMode(GL_MODELVIEW);
-  glPushMatrix();
-  glLoadIdentity();
-  glLineWidth(1.0);
-  glColor3f(0.757,0.757,0.757);
-
-  // draw a grid
-  glBegin(GL_LINES);
-  
-  // draw horizontal line
-  glVertex2f(0, h()/2);
-  glVertex2f(w(), h()/2);
-  
-  // draw vertical line
-  glVertex2f(w()/2, 0);
-  glVertex2f(w()/2, h());
-  
-  glEnd();
-  glPopMatrix();
-  glFlush();
 }
 
 //-------------------------------------------------------------
@@ -1023,7 +960,7 @@ bool MarineViewer::initGeodesy(const string& str)
 //-------------------------------------------------------------
 // Procedure: drawPolygons
 
-void MarineViewer::drawPolygons()
+void MarineViewer::drawPolygons(const vector<XYPolygon>& polys)
 {
   // If the viewable parameter is set to false just return. In 
   // querying the parameter the option "true" argument means return
@@ -1031,7 +968,7 @@ void MarineViewer::drawPolygons()
   if(m_geo_settings.viewable("polygon_viewable_all", true) == false)
     return;
 
-  unsigned int i, vsize = m_geoshapes.sizePolygons();
+  unsigned int i, vsize = polys.size();
   if(vsize == 0)
     return;
 
@@ -1045,7 +982,7 @@ void MarineViewer::drawPolygons()
   double vertex_size = m_geo_settings.geosize("polygon_vertex_size");
   
   for(i=0; i<vsize; i++) {
-    XYPolygon poly = m_geoshapes.getPolygon(i);
+    XYPolygon poly = polys[i];
     if(poly.active()) {
       if(poly.label_color_set())            // label_color
 	labl_c = poly.get_label_color();
@@ -1077,7 +1014,7 @@ void MarineViewer::drawPolygon(const XYPolygon& poly,
   unsigned int vsize = poly.size();
   if(vsize < 1)
     return;
-
+  
   unsigned int i, j;
   double *points = new double[2*vsize];
   
@@ -1092,19 +1029,19 @@ void MarineViewer::drawPolygon(const XYPolygon& poly,
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   glOrtho(0, w(), 0, h(), -1 ,1);
-
+  
   double tx = meters2img('x', 0);
   double ty = meters2img('y', 0);
   double qx = img2view('x', tx);
   double qy = img2view('y', ty);
-
+  
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
   glLoadIdentity();
 
   glTranslatef(qx, qy, 0);
   glScalef(m_zoom, m_zoom, m_zoom);
-
+  
   // Fill in the interior of polygon if it is a valid polygon
   // with greater than two vertices. (Two vertex polygons are
   // "valid" too, but we decide here not to draw the interior
@@ -1132,7 +1069,7 @@ void MarineViewer::drawPolygon(const XYPolygon& poly,
     }
 
     glColor3f(edge_c.red(), edge_c.grn(), edge_c.blu());
-
+    
     if(poly.is_convex())
       glBegin(GL_LINE_LOOP);
     else
@@ -1195,7 +1132,7 @@ void MarineViewer::drawPolygon(const XYPolygon& poly,
 
 #if 0
   //-------------------------------- perhaps draw poly vertex labels
-  if(m_geo_settings.viewable("polygon_viewable_vertex_labels") {
+  if(m_geo_settings.viewable("polygon_viewable_vertex_labels")) {
     glTranslatef(0, 0, 0);
     char *buff = new char[100];
     for(j=0; j<vsize; j++) {
@@ -1233,7 +1170,7 @@ void MarineViewer::drawSegment(double x1, double y1, double x2, double y2,
 
   x1 *= pix_per_mtr;
   y1 *= pix_per_mtr;
-
+  
   x2 *= pix_per_mtr;
   y2 *= pix_per_mtr;
 
@@ -1266,15 +1203,15 @@ void MarineViewer::drawSegment(double x1, double y1, double x2, double y2,
 //-------------------------------------------------------------
 // Procedure: drawSegLists()
 
-void MarineViewer::drawSegLists()
+void MarineViewer::drawSegLists(const vector<XYSegList>& segls)
 {
   // If the viewable parameter is set to false just return. In 
   // querying the parameter the option "true" argument means return
   // true if nothing is known about the parameter.
   if(!m_geo_settings.viewable("seglist_viewable_all"))
     return;
-
-  unsigned int i, vsize = m_geoshapes.sizeSegLists();
+  
+  unsigned int i, vsize = segls.size();
   if(vsize == 0)
     return;
  
@@ -1287,7 +1224,7 @@ void MarineViewer::drawSegLists()
   double vert = m_geo_settings.geosize("seglist_vertex_size", 2);
   
   for(i=0; i<vsize; i++) {
-    XYSegList segl = m_geoshapes.getSegList(i);
+    XYSegList segl = segls[i];
     if(segl.active()) {
       if(segl.label_color_set())          // label_color
 	labl_c = segl.get_label_color();
@@ -1476,12 +1413,12 @@ void MarineViewer::drawHexagons()
 //-------------------------------------------------------------
 // Procedure: drawGrids
 
-void MarineViewer::drawGrids()
+void MarineViewer::drawGrids(const vector<XYGrid>& grids)
 {
   if(m_geo_settings.viewable("grid_viewable_all", true) == false)
     return;
 
-  unsigned int i, vsize = m_geoshapes.sizeGrids();
+  unsigned int i, vsize = grids.size();
   if(vsize == 0)
     return;
 
@@ -1565,7 +1502,7 @@ void MarineViewer::drawGrid(const XYGrid& grid)
 //-------------------------------------------------------------
 // Procedure: drawCircles
 
-void MarineViewer::drawCircles()
+void MarineViewer::drawCircles(const vector<XYCircle>& circles)
 {
   // If the viewable parameter is set to false just return. In 
   // querying the parameter the option "true" argument means return
@@ -1573,17 +1510,17 @@ void MarineViewer::drawCircles()
   if(m_geo_settings.viewable("circle_viewable_all", true) == false)
     return;
 
-  unsigned int i, vsize = m_geoshapes.sizeCircles();
+  unsigned int i, vsize = circles.size();
   if(vsize == 0)
     return;
-
+  
   ColorPack edge_c("blue");
   ColorPack fill_c("dark_blue");
   ColorPack vert_c("blue");
   ColorPack labl_c("white");
   
   for(i=0; i<vsize; i++) {
-    XYCircle circ = m_geoshapes.circ(i);
+    XYCircle circ = circles[i];
     if(circ.active()) {
       if(circ.label_color_set())          // label_color
 	labl_c = circ.get_label_color();
@@ -1684,7 +1621,7 @@ void MarineViewer::drawCircle(const XYCircle& circle, int pts, bool filled,
 //-------------------------------------------------------------
 // Procedure: drawPoints
 
-void MarineViewer::drawPoints()
+void MarineViewer::drawPoints(const vector<XYPoint>& points)
 {
   // If the viewable parameter is set to false just return. In 
   // querying the parameter the option "true" argument means return
@@ -1693,7 +1630,7 @@ void MarineViewer::drawPoints()
     return;
 
   // If no points are present just return.
-  unsigned int i, vsize = m_geoshapes.sizePoints();
+  unsigned int i, vsize = points.size();
   if(vsize == 0)
     return;
 
@@ -1708,7 +1645,7 @@ void MarineViewer::drawPoints()
   double vertex_size = m_geo_settings.geosize("point_vertex_size", 3);
   
   for(i=0; i<vsize; i++) {
-    XYPoint point = m_geoshapes.point(i);
+    XYPoint point = points[i];
     if((point.get_size() > 0) && (point.active())) {
       if(point.label_color_set())
 	labl_c = point.get_label_color();

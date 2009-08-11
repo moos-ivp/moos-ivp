@@ -36,12 +36,12 @@
 #include "XYCircle.h"
 #include "XYHexagon.h"
 #include "ObjectPose.h"
-#include "VMarkerSet.h"
 #include "OpAreaSpec.h"
 #include "MOOSGeodesy.h"
 #include "VPlug_GeoShapes.h"
 #include "VPlug_GeoSettings.h"
 #include "VPlug_DropPoints.h"
+#include "VPlug_Markers.h"
 #include "ColorPack.h"
 
 class MarineViewer : public Fl_Gl_Window
@@ -51,19 +51,15 @@ class MarineViewer : public Fl_Gl_Window
   ~MarineViewer();
   
   // Pure virtuals that need to be defined
-  virtual void  draw();
-  virtual int   handle(int event);
-
+  virtual void draw();
+  virtual int  handle(int event);
   virtual bool setParam(std::string p, std::string v="");
   virtual bool setParam(std::string p, double v);
 
   bool   initGeodesy(double, double);
   bool   initGeodesy(const std::string&);
-
   bool   setTexture();
-
   double getHashDelta();
-  double getCrossHairMeters(char);
 
 protected:
   bool   readTiff(std::string);
@@ -76,7 +72,6 @@ protected:
   double img2meters(char, double);
 
   void   drawHash();
-  void   drawCrossHairs();
   void   drawSegment(double, double, double, double, double, double, double);
 
   void   drawMarkers();
@@ -98,7 +93,7 @@ protected:
 			  const std::vector<ColorPack>& color_packs);
 
 
-  void  drawPolygons();
+  void  drawPolygons(const std::vector<XYPolygon>&);
   void  drawPolygon(const XYPolygon&, bool filled, bool dashed,
 		    double line_width, double vertex_size,
 		    const ColorPack& edge_color, 
@@ -106,23 +101,23 @@ protected:
 		    const ColorPack& vert_color,
 		    const ColorPack& labl_color);
   
-  void  drawSegLists();
+  void  drawSegLists(const std::vector<XYSegList>&);
   void  drawSegList(const XYSegList&, double lwid, double vsize, bool zdash,
 		    const ColorPack& edge_color,
 		    const ColorPack& vert_color,
 		    const ColorPack& labl_color);
 
-  void  drawGrids();
+  void  drawGrids(const std::vector<XYGrid>&);
   void  drawGrid(const XYGrid&);
 
-  void  drawCircles();
+  void  drawCircles(const std::vector<XYCircle>&);
   void  drawCircle(const XYCircle&, int pts, bool filled, 
 		   const ColorPack& edge_color,
 		   const ColorPack& fill_color,
 		   const ColorPack& vert_color,
 		   const ColorPack& labl_color);
 
-  void  drawPoints();
+  void  drawPoints(const std::vector<XYPoint>&);
   void  drawPoint(const XYPoint&, double vertex_size,
 		  const ColorPack& vert_color,
 		  const ColorPack& labl_color);
@@ -158,11 +153,10 @@ protected:
   double    m_hash_shade;
   double    m_hash_delta;
   double    m_fill_shade;
-  bool      m_cross_offon;
   bool      m_hash_offon;
 
-  VMarkerSet        m_vmarkers;
   OpAreaSpec        m_op_area;
+  VPlug_Markers     m_vmarkers;
   VPlug_GeoShapes   m_geoshapes;
   VPlug_GeoSettings m_geo_settings;
   VPlug_DropPoints  m_drop_points;

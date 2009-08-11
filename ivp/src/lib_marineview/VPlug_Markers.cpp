@@ -1,13 +1,13 @@
-/****************************************************/
+/*****************************************************************/
 /*    NAME: Michael Benjamin and John Leonard                    */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
-/*    FILE: VMarkerSet.cpp                                       */
+/*    FILE: VPlug_Markers.cpp                                    */
 /*    DATE: July 5th, 2008                                       */
 /*****************************************************************/
 
 #include <iostream>
 #include <cstdlib>
-#include "VMarkerSet.h"
+#include "VPlug_Markers.h"
 #include "MBUtils.h"
 #include "ColorParse.h"
 #include "MOOSGeodesy.h"
@@ -17,7 +17,7 @@ using namespace std;
 //-----------------------------------------------------------
 // Constructor
 
-VMarkerSet::VMarkerSet()
+VPlug_Markers::VPlug_Markers()
 {
   m_marker_scale_global    = 1.0;
   m_markers_viewable       = true;
@@ -33,7 +33,7 @@ VMarkerSet::VMarkerSet()
 //      Note: return(true) if the given vmarker results in a new entry
 //            return(false) if the given marker replaces an old entry
 
-bool VMarkerSet::addVMarker(const string& mline,
+bool VPlug_Markers::addVMarker(const string& mline,
 			    CMOOSGeodesy& geodesy)
 {
   string newline = mline;
@@ -45,8 +45,6 @@ bool VMarkerSet::addVMarker(const string& mline,
   vector<string> svector = parseString(newline, ',');
   unsigned int vsize = svector.size();
 
-  //cout << "Handling marker line: " << mline << endl;
-
   string mtype, xpos, ypos, lat, lon, label, colors;
   string width = "1";
   for(unsigned int i=0; i<vsize; i++) {
@@ -56,7 +54,6 @@ bool VMarkerSet::addVMarker(const string& mline,
       return(false);
     string left  = tolower(stripBlankEnds(ivector[0]));
     string right = stripBlankEnds(ivector[1]);
-    //cout << "left:[" << left << "]  right:[" << right << "]" << endl;
     if(left == "type")        mtype = right;
     else if(left == "xpos")   xpos = right;
     else if(left == "ypos")   ypos = right;
@@ -71,7 +68,6 @@ bool VMarkerSet::addVMarker(const string& mline,
     else if(left == "color")  colors = right;
   }
 
-  cout << "mtype:[" << mtype << "]" << endl;
   if(mtype=="") {
     cout << "Marker Rejected - improper type" << endl;
     return(false);
@@ -84,8 +80,6 @@ bool VMarkerSet::addVMarker(const string& mline,
       cout << "Marker Rejected - improper position" << endl;
       return(false);
     }
-
-  cout << "Accepted Marker" << endl;
 
   double xpos_d, ypos_d;
   if((lat=="")||(lon=="")||(!isNumber(lat))||(!isNumber(lon))) {
@@ -110,7 +104,7 @@ bool VMarkerSet::addVMarker(const string& mline,
 //-----------------------------------------------------------
 // Procedure: addVMarker()
 
-void VMarkerSet::addVMarker(string mtype, double xpos, double ypos,
+void VPlug_Markers::addVMarker(string mtype, double xpos, double ypos,
 			    double mwid, string label, string colors)
 {
   // First check to see if the given VMarker matches the type and label
@@ -155,7 +149,7 @@ void VMarkerSet::addVMarker(string mtype, double xpos, double ypos,
 //-----------------------------------------------------------
 // Procedure: setParam()
 
-bool VMarkerSet::setParam(const string& param, string value)
+bool VPlug_Markers::setParam(const string& param, string value)
 {
   if(param == "markers_viewable")
     return(setBooleanOnString(m_markers_viewable, value));
@@ -224,7 +218,7 @@ bool VMarkerSet::setParam(const string& param, string value)
 //-----------------------------------------------------------
 // Procedure: viewable
 
-bool VMarkerSet::viewable(const string& str)
+bool VPlug_Markers::viewable(const string& str)
 {
   if((str == "all") || (tolower(str) == "all"))
     return(m_markers_viewable);
@@ -236,7 +230,7 @@ bool VMarkerSet::viewable(const string& str)
 //-----------------------------------------------------------
 // Procedure: getMarkerType()
 
-string VMarkerSet::getMarkerType(int ix)
+string VPlug_Markers::getMarkerType(int ix)
 {
   if((ix >= 0) && (ix < m_marker_type.size()))
     return(m_marker_type[ix]);
@@ -247,7 +241,7 @@ string VMarkerSet::getMarkerType(int ix)
 //-----------------------------------------------------------
 // Procedure: getMarkerXPos()
 
-double VMarkerSet::getMarkerXPos(int ix)
+double VPlug_Markers::getMarkerXPos(int ix)
 {
   if((ix >= 0) && (ix < m_marker_xpos.size()))
     return(m_marker_xpos[ix]);
@@ -258,7 +252,7 @@ double VMarkerSet::getMarkerXPos(int ix)
 //-----------------------------------------------------------
 // Procedure: getMarkerYPos()
 
-double VMarkerSet::getMarkerYPos(int ix)
+double VPlug_Markers::getMarkerYPos(int ix)
 {
   if((ix >= 0) && (ix < m_marker_ypos.size()))
     return(m_marker_ypos[ix]);
@@ -269,7 +263,7 @@ double VMarkerSet::getMarkerYPos(int ix)
 //-----------------------------------------------------------
 // Procedure: getMarkerWidth()
 
-double VMarkerSet::getMarkerWidth(int ix)
+double VPlug_Markers::getMarkerWidth(int ix)
 {
   if((ix >= 0) && (ix < m_marker_width.size()))
     return(m_marker_width[ix]);
@@ -280,7 +274,7 @@ double VMarkerSet::getMarkerWidth(int ix)
 //-----------------------------------------------------------
 // Procedure: getMarkerLabel()
 
-string VMarkerSet::getMarkerLabel(int ix)
+string VPlug_Markers::getMarkerLabel(int ix)
 {
   if((ix >= 0) && (ix < m_marker_label.size()))
     return(m_marker_label[ix]);
@@ -291,7 +285,7 @@ string VMarkerSet::getMarkerLabel(int ix)
 //-----------------------------------------------------------
 // Procedure: getMarkerColorString
 
-string VMarkerSet::getMarkerColorString(int mix, int cix)
+string VPlug_Markers::getMarkerColorString(int mix, int cix)
 {
   if((mix < 0) && (mix >= m_marker_colors.size()))
     return("");
@@ -306,7 +300,7 @@ string VMarkerSet::getMarkerColorString(int mix, int cix)
 //-----------------------------------------------------------
 // Procedure: getMarkerColorVector
 
-vector<ColorPack> VMarkerSet::getMarkerColorVectors(int mix)
+vector<ColorPack> VPlug_Markers::getMarkerColorVectors(int mix)
 {
   vector<ColorPack> fail_vector;
 
@@ -328,7 +322,7 @@ vector<ColorPack> VMarkerSet::getMarkerColorVectors(int mix)
 //            to "save his/her preferences" in a file or some
 //            other configuration block.
 
-vector<string> VMarkerSet::getParamReport() const
+vector<string> VPlug_Markers::getParamReport() const
 {
   vector<string> svect;
 

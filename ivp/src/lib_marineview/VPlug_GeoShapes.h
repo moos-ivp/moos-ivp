@@ -54,6 +54,13 @@ public:
   XYCircle&  circ(unsigned int i)  {return(m_circles[i]);};
   XYPoint&   point(unsigned int i) {return(m_points[i]);};
 
+  std::vector<XYPolygon> getPolygons() {return(m_polygons);};
+  std::vector<XYSegList> getSegLists() {return(m_seglists);};
+  std::vector<XYHexagon> getHexagons() {return(m_hexagons);};
+  std::vector<XYGrid>    getGrids()    {return(m_grids);};
+  std::vector<XYCircle>  getCircles()  {return(m_circles);};
+  std::vector<XYPoint>   getPoints()   {return(m_points);};
+
   XYPolygon getPolygon(unsigned int);
   XYSegList getSegList(unsigned int);
   XYGrid    getGrid(unsigned int);

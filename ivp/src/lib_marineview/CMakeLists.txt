@@ -8,9 +8,9 @@ SET(SRC
   MarineGUI.cpp
   MarineVehiGUI.cpp
   MarineViewer.cpp
-  VMarkerSet.cpp
   OpAreaSpec.cpp
   LMV_Utils.cpp
+  VPlug_Markers.cpp
   VPlug_GeoShapes.cpp
   VPlug_GeoSettings.cpp
   VPlug_DropPoints.cpp

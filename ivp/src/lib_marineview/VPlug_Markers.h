@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin and John Leonard                    */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
-/*    FILE: VMarkerSet.h                                         */
+/*    FILE: VPlug_Markers.h                                      */
 /*    DATE: July 5th, 2008                                       */
 /*****************************************************************/
 
@@ -13,10 +13,10 @@
 #include "ColorPack.h"
 
 class CMOOSGeodesy;
-class VMarkerSet {
+class VPlug_Markers {
 public:
-  VMarkerSet();
-  virtual ~VMarkerSet() {};
+  VPlug_Markers();
+  virtual ~VPlug_Markers() {};
 
   bool addVMarker(const std::string& description, 
 		  CMOOSGeodesy& geodesy);
