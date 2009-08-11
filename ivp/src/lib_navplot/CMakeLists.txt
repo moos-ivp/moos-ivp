@@ -4,16 +4,12 @@
 #--------------------------------------------------------
 
 SET(SRC
-   # IPF_Plot.cpp
-   # GridPlot.cpp
-   # Populator_IPF_Plot.cpp
-   # Populator_GridPlot.cpp
    LogPlot.cpp
-   GeoPlot.cpp
+   VPlugPlot.cpp
    HelmPlot.cpp
    Populator_LogPlots.cpp
    Populator_HelmPlots.cpp
-   Populator_GeoPlots.cpp
+   Populator_VPlugPlots.cpp
 )
 
 ADD_LIBRARY(navplot ${SRC})

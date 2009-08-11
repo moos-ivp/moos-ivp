@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin and John Leonard                    */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
-/*    FILE: GeoPlot.cpp                                          */
+/*    FILE: VPlugPlot.cpp                                        */
 /*    DATE: Aug 9th, 2009                                        */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
@@ -24,7 +24,7 @@
 #include <stdlib.h>
 #include <iostream>
 #include <assert.h>
-#include "GeoPlot.h"
+#include "VPlugPlot.h"
 #include "MBUtils.h"
 
 using namespace std;
@@ -32,7 +32,7 @@ using namespace std;
 //---------------------------------------------------------------
 // Procedure: addEvent
 
-bool GeoPlot::addEvent(string var, string val, double time)
+bool VPlugPlot::addEvent(string var, string val, double time)
 {
   double latest_vplug_time = -1;
   unsigned int vsize = m_time.size();
@@ -40,7 +40,9 @@ bool GeoPlot::addEvent(string var, string val, double time)
     latest_vplug_time = m_time[vsize-1];
     
   if((latest_vplug_time == -1) || (time > latest_vplug_time)) {
-    VPlug_GeoShapes new_vplug = m_vplugs[vsize-1];
+    VPlug_GeoShapes new_vplug;
+    if(latest_vplug_time != -1) 
+      new_vplug = m_vplugs[vsize-1];
     m_vplugs.push_back(new_vplug);
     m_time.push_back(time);
     vsize++;
@@ -63,7 +65,7 @@ bool GeoPlot::addEvent(string var, string val, double time)
 //---------------------------------------------------------------
 // Procedure: getVPlugByIndex
 
-VPlug_GeoShapes GeoPlot::getVPlugByIndex(unsigned int index) const
+VPlug_GeoShapes VPlugPlot::getVPlugByIndex(unsigned int index) const
 {
   if(index < m_time.size())
     return(m_vplugs[index]);
@@ -72,22 +74,11 @@ VPlug_GeoShapes GeoPlot::getVPlugByIndex(unsigned int index) const
     return(null_plug);
   }
 }
-     
-//---------------------------------------------------------------
-// Procedure: getTimeByIndex
 
-double GeoPlot::getTimeByIndex(unsigned int index) const
-{
-  if(index < m_time.size())
-    return(m_time[index]);
-  else
-    return(0);
-}
-     
 //---------------------------------------------------------------
 // Procedure: getVPlugByTime
 
-VPlug_GeoShapes GeoPlot::getVPlugByTime(double gtime) const
+VPlug_GeoShapes VPlugPlot::getVPlugByTime(double gtime) const
 {
   unsigned int vsize = m_time.size();
   if(vsize == 0) {
@@ -110,7 +101,7 @@ VPlug_GeoShapes GeoPlot::getVPlugByTime(double gtime) const
 //---------------------------------------------------------------
 // Procedure: getMinTime
 
-double GeoPlot::getMinTime() const
+double VPlugPlot::getMinTime() const
 {
   if(m_time.size() > 0)
     return(m_time[0]);
@@ -121,7 +112,7 @@ double GeoPlot::getMinTime() const
 //---------------------------------------------------------------
 // Procedure: getMaxTime
 
-double GeoPlot::getMaxTime() const
+double VPlugPlot::getMaxTime() const
 {
   if(m_time.size() > 0)
     return(m_time[m_time.size()-1]);
@@ -133,10 +124,10 @@ double GeoPlot::getMaxTime() const
 //---------------------------------------------------------------
 // Procedure: print
 
-void GeoPlot::print() const
+void VPlugPlot::print() const
 {
   unsigned int i;
-  cout << "GeoPlot::print()" << endl;
+  cout << "VPlugPlot::print()" << endl;
   cout << " Vehicle Name: " << m_vehi_name << endl;
   for(i=0; i<m_time.size(); i++)
     cout << "time:" << m_time[i] << endl;
@@ -152,7 +143,7 @@ void GeoPlot::print() const
 //             ^                 ^
 //            25                 56
 
-unsigned int GeoPlot::getIndexByTime(double gtime) const
+unsigned int VPlugPlot::getIndexByTime(double gtime) const
 {
   unsigned int vsize = m_time.size();
 

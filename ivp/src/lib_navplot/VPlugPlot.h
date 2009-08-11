@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin and John Leonard                    */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
-/*    FILE: GeoPlot.h                                            */
+/*    FILE: VPlugPlot.h                                            */
 /*    DATE: Aug 9th, 2009                                        */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
@@ -28,22 +28,22 @@
 #include <list>
 #include "VPlug_GeoShapes.h"
 
-class GeoPlot
+class VPlugPlot
 {
 public:
-  GeoPlot() {};
-  ~GeoPlot() {};
+  VPlugPlot() {};
+  ~VPlugPlot() {};
 
   bool            addEvent(std::string var, std::string val, double time);
   void            setVehiName(std::string s) {m_vehi_name = s;};
-  double          getTimeByIndex(unsigned int index) const;
+
   VPlug_GeoShapes getVPlugByIndex(unsigned int index) const;
   VPlug_GeoShapes getVPlugByTime(double gtime) const;
   std::string     getVehiName() const   {return(m_vehi_name);};
   unsigned int    size() const          {return(m_time.size());};
-  void            print() const;
   double          getMinTime() const;
   double          getMaxTime() const;
+  void            print() const;
 
  protected:  
   unsigned int getIndexByTime(double) const;

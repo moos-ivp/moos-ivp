@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin and John Leonard                    */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
-/*    FILE: Populator_GeoPlots.h                                 */
+/*    FILE: Populator_VPlugPlots.h                               */
 /*    DATE: August 9th, 2009                                     */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
@@ -20,31 +20,31 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
-#ifndef POPULATOR_GEOPLOTS_HEADER
-#define POPULATOR_GEOPLOTS_HEADER
+#ifndef POPULATOR_VPLUG_PLOTS_HEADER
+#define POPULATOR_VPLUG_PLOTS_HEADER
 
 #include <string>
 #include <vector>
-#include "GeoPlot.h"
+#include "VPlugPlot.h"
 
-class Populator_GeoPlots 
+class Populator_VPlugPlots 
 {
 public:
-  Populator_GeoPlots() {};
-  ~Populator_GeoPlots() {};
+  Populator_VPlugPlots() {};
+  ~Populator_VPlugPlots() {};
 
-  bool     populateRawInfoFromALog(std::string);
-  bool     populateGeoPlotFromRawInfo();
+  bool      populateRawInfoFromALog(std::string);
+  bool      populateVPlugPlotFromRawInfo();
 
-  GeoPlot  getGeoPlot() {return(m_geo_plot);};
+  VPlugPlot getVPlugPlot() {return(m_vplug_plot);};
 
 protected:
-  GeoPlot  m_geo_plot;
+  VPlugPlot m_vplug_plot;
 
-  // Need timestamps with each geo event
-  std::vector<std::string>  m_geo_event_var;
-  std::vector<std::string>  m_geo_event_val;
-  std::vector<double>       m_geo_event_time;
+  // Need timestamps with each visual event
+  std::vector<std::string>  m_visual_event_var;
+  std::vector<std::string>  m_visual_event_val;
+  std::vector<double>       m_visual_event_time;
 };
 #endif 
 

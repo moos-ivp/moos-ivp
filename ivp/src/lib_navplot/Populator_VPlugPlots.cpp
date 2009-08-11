@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin and John Leonard                    */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
-/*    FILE: Populator_GeoPlots.cpp                               */
+/*    FILE: Populator_VPlugPlots.cpp                             */
 /*    DATE: August 9th, 2009                                     */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <iostream>
-#include "Populator_GeoPlots.h"
+#include "Populator_VPlugPlots.h"
 #include "MBUtils.h"
 #include "FileBuffer.h"
 
@@ -32,7 +32,7 @@ using namespace std;
 //---------------------------------------------------------------
 // Procedure: populateRawInfoFromALog()
 
-bool Populator_GeoPlots::populateRawInfoFromALog(string alog_file)
+bool Populator_VPlugPlots::populateRawInfoFromALog(string alog_file)
 {
   FILE *f = fopen(alog_file.c_str(), "r");
   if(!f)
@@ -55,25 +55,25 @@ bool Populator_GeoPlots::populateRawInfoFromALog(string alog_file)
       string source = stripBlankEnds(biteString(lines[i],' '));
       string value  = stripBlankEnds(lines[i]);
       if((time!="")&&(var!="")&&(source!="")&&(value!="")) {
-	m_geo_event_var.push_back(var);
-	m_geo_event_val.push_back(value);
-	m_geo_event_time.push_back(atof(time.c_str()));
+	m_visual_event_var.push_back(var);
+	m_visual_event_val.push_back(value);
+	m_visual_event_time.push_back(atof(time.c_str()));
       }
     }
   }
-
   return(true);
 }
 
 //---------------------------------------------------------------
-// Procedure: populateGeoPlotFromRawInfo()
+// Procedure: populateVPlugPlotFromRawInfo()
 
-bool Populator_GeoPlots::populateGeoPlotFromRawInfo()
+bool Populator_VPlugPlots::populateVPlugPlotFromRawInfo()
 {
-  int i, vsize = m_geo_event_time.size();
+  int i, vsize = m_visual_event_time.size();
   for(i=0; i<vsize; i++)
-    m_geo_plot.addEvent(m_geo_event_var[i], m_geo_event_val[i], 
-			m_geo_event_time[i]);
+    m_vplug_plot.addEvent(m_visual_event_var[i], 
+			  m_visual_event_val[i], 
+			  m_visual_event_time[i]);
   return(true);
 }
 
