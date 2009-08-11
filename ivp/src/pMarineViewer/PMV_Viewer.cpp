@@ -51,11 +51,19 @@ void PMV_Viewer::draw()
 {
   MarineViewer::draw();
 
-  drawPolygons();
-  drawGrids();
-  drawSegLists();
-  drawCircles();
+  vector<XYPolygon> polys   = m_geoshapes.getPolygons();
+  vector<XYGrid>    grids   = m_geoshapes.getGrids();
+  vector<XYPoint>   points  = m_geoshapes.getPoints();
+  vector<XYSegList> segls   = m_geoshapes.getSegLists();
+  vector<XYCircle>  circles = m_geoshapes.getCircles();
+
+  drawPolygons(polys);
+  drawGrids(grids);
+  drawSegLists(segls);
+  drawCircles(circles);
+  drawPoints(points);
   drawDropPoints();
+
 
   // Draw Mouse position
   if(Fl::event_state(FL_SHIFT)) {
@@ -72,8 +80,6 @@ void PMV_Viewer::draw()
   }
   // End Draw Mouse position
 
-  MarineViewer::drawPoints();
-
   if(m_vehiset.isViewable("vehicles")) {
     vector<string> svector = m_vehiset.getVehiNames();
     int vsize = svector.size();
@@ -86,7 +92,7 @@ void PMV_Viewer::draw()
       if(m_vehiset.isViewable("trails")) {
 	CPList point_list = m_vehiset.getVehiHist(vehiname);
 	int trails_length = (int)(m_vehiset.getDoubleInfo("trails_length"));
-	drawPoints(point_list, trails_length);
+	drawTrailPoints(point_list, trails_length);
       }
 
       // Next draw the vehicle shapes. If the vehicle index is the 
@@ -255,9 +261,9 @@ void PMV_Viewer::drawVehicle(string vname, bool active, string vehibody)
 }
 
 //-------------------------------------------------------------
-// Procedure: drawPoints
+// Procedure: drawTrailPoints
 
-void PMV_Viewer::drawPoints(CPList &cps, int trail_length)
+void PMV_Viewer::drawTrailPoints(CPList &cps, int trail_length)
 {
   if(!m_vehiset.isViewable("trails"))
     return;

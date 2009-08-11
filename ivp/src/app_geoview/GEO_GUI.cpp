@@ -266,13 +266,14 @@ void GEO_GUI::updateXY() {
   //int index = -1;
   char buff[64];
 
+  string x_str, y_str;
   // Meters X
-  string x_str = doubleToString(pviewer->getCrossHairMeters('x'), 2);
+  //string x_str = doubleToString(pviewer->getCrossHairMeters('x'), 2);
   //string x_str = doubleToString(pviewer->getImgPctX(index), 6);
   x_mtr->value(x_str.c_str());
 
   // Meters Y
-  string y_str = doubleToString(pviewer->getCrossHairMeters('y'), 2);
+  //string y_str = doubleToString(pviewer->getCrossHairMeters('y'), 2);
   //string y_str = doubleToString(pviewer->getImgPctY(index), 6);
   y_mtr->value(y_str.c_str());
 

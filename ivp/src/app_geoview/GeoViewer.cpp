@@ -81,9 +81,13 @@ void GeoViewer::draw()
       }
     }
   }
-      
-  drawSegLists();
-  drawGrids();
+   
+  vector<XYGrid>    grids   = m_geoshapes.getGrids();
+  vector<XYSegList> segls   = m_geoshapes.getSegLists();
+  vector<XYCircle>  circles = m_geoshapes.getCircles();
+
+  drawSegLists(segls);
+  drawGrids(grids);
   drawHexagons();
 }
 

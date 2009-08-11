@@ -50,7 +50,7 @@ class PMV_Viewer : public MarineViewer
 
  private:
   void   drawVehicle(std::string, bool, std::string);
-  void   drawPoints(CPList&, int=0);
+  void   drawTrailPoints(CPList&, int=0);
   void   handleLeftMouse(int, int);
   void   handleRightMouse(int, int);
   void   handleMoveMouse(int, int);
