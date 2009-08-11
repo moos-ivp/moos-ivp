@@ -34,6 +34,7 @@
 #include "HelmPlot.h"
 #include "Populator_HelmPlots.h"
 #include "Populator_LogPlots.h"
+#include "Populator_VPlugPlots.h"
 #include "LMV_Utils.h"
 
 using namespace std;
@@ -201,20 +202,43 @@ int main(int argc, char *argv[])
     if(!ok) {
       cout << "Problem making HelmPlot from file " << alog_files[j] 
 	   << ". Exiting" << endl;
-      exit(0);
-    }
-    
+      return(0);
+    }    
     pop_hp.populateFromALog();
-
     HelmPlot hplot = pop_hp.getHelmPlot();
-    //hplot.print();
-    
     helm_plots.push_back(hplot);
   }
 
   parse_timer_hp.stop();
-  cout << "Done: HelmPlot parse time: " << parse_timer_hp.get_float_cpu_time();
-  cout << endl << endl;
+  cout << "Done: HelmPlot parse time: ";
+  cout << parse_timer_hp.get_float_cpu_time() << endl << endl;
+
+
+  // Build all the VPlugPlots from the vector of alog files.
+  //---------------------------------------------------------------------
+  vector<VPlugPlot> vplug_plots;
+
+  MBTimer parse_timer_vp;
+  parse_timer_vp.reset();
+  parse_timer_vp.start();
+  cout << "Parsing alog files to build VPlugPlots..." << endl;
+
+  for(j=0; j<alog_files.size(); j++) {
+    Populator_VPlugPlots pop_vp;
+    bool ok = pop_vp.populateRawInfoFromALog(alog_files[j]);
+    if(!ok) {
+      cout << "Problem making VPlugPlot from file " << alog_files[j] 
+	   << ". Exiting" << endl;
+      return(0);
+    }    
+    pop_vp.populateVPlugPlotFromRawInfo();
+    VPlugPlot vplot = pop_vp.getVPlugPlot();
+    vplug_plots.push_back(vplot);
+  }
+
+  parse_timer_vp.stop();
+  cout << "Done: VPlugPlot parse time: ";
+  cout << parse_timer_vp.get_float_cpu_time() << endl << endl;
 
 
   // Build all the Polygons and Grids from the vector of non-alog files.
@@ -258,6 +282,10 @@ int main(int argc, char *argv[])
   // Populate the GUI with the HelmPlots built above
   for(k=0; k<helm_plots.size(); k++) 
     gui->np_viewer->addHelmPlot(helm_plots[k]);
+
+  // Populate the GUI with the VPlugPlots built above
+  for(k=0; k<vplug_plots.size(); k++) 
+    gui->np_viewer->addVPlugPlot(vplug_plots[k]);
 
   // Populate the GUI with the polygons built above
   for(j=0; j<polygons.size(); j++)

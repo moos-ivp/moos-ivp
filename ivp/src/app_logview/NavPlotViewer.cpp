@@ -38,6 +38,9 @@
 
 using namespace std;
 
+//---------------------------------------------------------------
+// Constructor
+
 NavPlotViewer::NavPlotViewer(int x, int y, int w, int h, const char *l)
   : MarineViewer(x,y,w,h,l)
 {
@@ -171,11 +174,11 @@ void NavPlotViewer::addHelmPlot(const HelmPlot& hp)
 }
 
 //-------------------------------------------------------------
-// Procedure: addGeoPlot
+// Procedure: addVPlugPlot
 
-void NavPlotViewer::addGeoPlot(const GeoPlot& gp)
+void NavPlotViewer::addVPlugPlot(const VPlugPlot& gp)
 {
-  m_geo_plot.push_back(gp);
+  m_vplug_plot.push_back(gp);
   double gp_min_time = gp.getMinTime();
   double gp_max_time = gp.getMaxTime();
   if((m_min_time == -1) || (gp_min_time < m_min_time))
@@ -191,9 +194,8 @@ void NavPlotViewer::addGeoPlot(const GeoPlot& gp)
 void NavPlotViewer::draw()
 {
   MarineViewer::draw();
-  drawPolygons();
   drawNavPlots();
-  drawGeoPlots();
+  drawVPlugPlots();
   drawFrame();
 }
 
@@ -380,27 +382,37 @@ void NavPlotViewer::drawNavPlot(unsigned int index)
 }
 
 //-------------------------------------------------------------
-// Procedure: drawGeoPlots
+// Procedure: drawVPlugPlots
 
-void NavPlotViewer::drawGeoPlots()
+void NavPlotViewer::drawVPlugPlots()
 {
-  for(unsigned int i=0; i<m_geo_plot.size(); i++)
-    drawGeoPlot(i);
+  for(unsigned int i=0; i<m_vplug_plot.size(); i++)
+    drawVPlugPlot(i);
 }
 
 //-------------------------------------------------------------
-// Procedure: drawNavPlot
+// Procedure: drawVPlugPlot
 
-void NavPlotViewer::drawGeoPlot(unsigned int index)
+void NavPlotViewer::drawVPlugPlot(unsigned int index)
 {
-  if(index >= m_geo_plot.size())
+  if(index >= m_vplug_plot.size())
     return;
   
-  int gpsize = m_geo_plot[index].size();
-  if(gpsize == 0)
-    return;
-}
+  VPlug_GeoShapes geo_shapes;
+  geo_shapes = m_vplug_plot[index].getVPlugByTime(m_curr_time);
 
+  vector<XYPolygon> polys   = geo_shapes.getPolygons();
+  vector<XYGrid>    grids   = geo_shapes.getGrids();
+  vector<XYPoint>   points  = geo_shapes.getPoints();
+  vector<XYSegList> segls   = geo_shapes.getSegLists();
+  vector<XYCircle>  circles = geo_shapes.getCircles();
+
+  drawPolygons(polys);
+  drawGrids(grids);
+  drawSegLists(segls);
+  drawCircles(circles);
+  drawPoints(points);
+}
 
 //-------------------------------------------------------------
 // Procedure: drawFrame

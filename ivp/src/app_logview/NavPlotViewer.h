@@ -3,7 +3,7 @@
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
 /*    FILE: NavPlotViewer.h                                      */
 /*    DATE: May 31st, 2005                                       */
-/*          August 2009 - HelmPlots and GeoPlots added.          */
+/*          August 2009 - HelmPlots and VPlugPlots added.        */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
 /* modify it under the terms of the GNU General Public License   */
@@ -32,7 +32,7 @@
 #include "BackImg.h"
 #include "LogPlot.h"
 #include "HelmPlot.h"
-#include "GeoPlot.h"
+#include "VPlugPlot.h"
 #include "MarineViewer.h"
 
 class NavPlotViewer : public MarineViewer
@@ -47,7 +47,7 @@ class NavPlotViewer : public MarineViewer
   void   addLogPlotNAVY(const LogPlot& lp); 
   void   addLogPlotHDG(const LogPlot& lp); 
   void   addHelmPlot(const HelmPlot& hp); 
-  void   addGeoPlot(const GeoPlot& hp); 
+  void   addVPlugPlot(const VPlugPlot& vp); 
   void   draw();
 
   void   setCenterView(std::string centering="ctr_of_bounding");
@@ -69,8 +69,8 @@ class NavPlotViewer : public MarineViewer
 protected:
   void  drawNavPlots();
   void  drawNavPlot(unsigned int ix);
-  void  drawGeoPlots();
-  void  drawGeoPlot(unsigned int ix);
+  void  drawVPlugPlots();
+  void  drawVPlugPlot(unsigned int ix);
   void  drawFrame();
 
   std::string shortenBehaviors(std::string);
@@ -84,11 +84,11 @@ private:
   std::string           m_frame;
 
   // vectors - each index corresponds to one vehicle
-  std::vector<LogPlot>  m_navx_plot;
-  std::vector<LogPlot>  m_navy_plot;
-  std::vector<LogPlot>  m_hdg_plot;
-  std::vector<HelmPlot> m_helm_plot;
-  std::vector<GeoPlot>  m_geo_plot;
+  std::vector<LogPlot>   m_navx_plot;
+  std::vector<LogPlot>   m_navy_plot;
+  std::vector<LogPlot>   m_hdg_plot;
+  std::vector<HelmPlot>  m_helm_plot;
+  std::vector<VPlugPlot> m_vplug_plot;
 
   double m_shape_scale;
   bool   m_trails;
