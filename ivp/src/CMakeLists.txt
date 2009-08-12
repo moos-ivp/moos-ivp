@@ -146,7 +146,7 @@ FOREACH(L ${IVP_LIBS_TO_BUILD} )
   ADD_SUBDIRECTORY(${L})
   # We're actually fighting the lib_fltk-1.1.7 CMake files for control over this
   # detail, so we have to reset it after adding the FLTK subdirectory.
-  SET( LIBRARY_OUTPUT_PATH "" CACHE PATH "" FORCE )
+  SET( LIBRARY_OUTPUT_PATH "${IVP_LIB_DIRECTORY}" CACHE PATH "" FORCE )
 ENDFOREACH(L)
 
 #---------------------------------------------------------------------
@@ -193,6 +193,6 @@ ENDIF("${IVP_BUILD_GUI_CODE}" STREQUAL "ON")
 
 FOREACH(A ${IVP_APPS_TO_BUILD})
   # Programs get placed in ivp/src/bin/
-  SET( EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin CACHE PATH "" FORCE )
+  SET( EXECUTABLE_OUTPUT_PATH "${IVP_BIN_DIRECTORY}" CACHE PATH "" FORCE )
   ADD_SUBDIRECTORY(${A})
 ENDFOREACH(A)

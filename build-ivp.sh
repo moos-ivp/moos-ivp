@@ -1,8 +1,5 @@
 #!/bin/sh
 
-# Note by mikerb (Nov 20th 2008)
-#
-
 INVOCATION_ABS_DIR="`pwd`"
 
 # We want absolute pathnames, which require a little extra work to get...
@@ -11,7 +8,6 @@ cd "${SCRIPT_DIR}"
 SCRIPT_ABS_DIR=`pwd`
 
 SRC_ABS_DIR="${SCRIPT_ABS_DIR}/ivp/src"
-TARGET_ABS_DIR="${INVOCATION_ABS_DIR}/ivp/src"
 
 ################################################################################
 
@@ -30,11 +26,26 @@ if [ "${INVOCATION_ABS_DIR}" != "${SCRIPT_ABS_DIR}" ]; then
    fi
 fi
 
-mkdir -p "${TARGET_ABS_DIR}"
-cd "${TARGET_ABS_DIR}"
-
 ################################################################################
 
+INTERMEDIATE_FILES_ABS_DIR="${INVOCATION_ABS_DIR}/build"
+LIBRARIES_ABS_DIR="${INVOCATION_ABS_DIR}/lib"
+PROGRAMS_ABS_DIR="${INVOCATION_ABS_DIR}/bin"
+
+echo ""
+echo "Built files will be placed into these directories:"
+echo "  Intermediate build files: ${INTERMEDIATE_FILES_ABS_DIR}"
+echo "  Libraries:                ${LIBRARIES_ABS_DIR}"
+echo "  Programs:                 ${PROGRAMS_ABS_DIR}"
+echo ""
+
+mkdir -p "${INTERMEDIATE_FILES_ABS_DIR}"
+mkdir -p "${LIBRARIES_ABS_DIR}"
+mkdir -p "${PROGRAMS_ABS_DIR}"
+
+cd "${INTERMEDIATE_FILES_ABS_DIR}"
+
+################################################################################
 
 echo "IVP_BUILD_GUI_CODE='"${IVP_BUILD_GUI_CODE}"'"
 
@@ -70,9 +81,11 @@ echo ""
 echo "Invoking cmake..."
 echo ""
 
-cmake \
-   -DIVP_BUILD_GUI_CODE=${CLEANED_IVP_BUILD_GUI_CODE} \
-   ${IVP_CMAKE_FLAGS} ${SRC_ABS_DIR}
+cmake -DIVP_BUILD_GUI_CODE=${CLEANED_IVP_BUILD_GUI_CODE} \
+      -DIVP_LIB_DIRECTORY="${LIBRARIES_ABS_DIR}"         \
+      -DIVP_BIN_DIRECTORY="${PROGRAMS_ABS_DIR}"          \
+      ${IVP_CMAKE_FLAGS}                                 \
+      "${SRC_ABS_DIR}"
 
 echo ""
 echo "Invoking make..."
