@@ -14,6 +14,7 @@ SET(SRC
   VPlug_GeoShapes.cpp
   VPlug_GeoSettings.cpp
   VPlug_DropPoints.cpp
+  VPlug_VehiSettings.cpp
   VehicleSet.cpp
 )
 

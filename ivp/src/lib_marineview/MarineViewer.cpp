@@ -162,8 +162,8 @@ bool MarineViewer::setParam(string param, string value)
     handled = handled || m_drop_points.setParam(p,v);
     handled = handled || m_op_area.setParam(p,v);
     handled = handled || m_vmarkers.setParam(p,v);
+    handled = handled || m_vehi_settings.setParam(p,v);
     handled = handled || m_geo_settings.setParam(p,v);
-    //    handled = handled || m_geoshapes.setParam(p,v);
   }
   return(handled);
 }

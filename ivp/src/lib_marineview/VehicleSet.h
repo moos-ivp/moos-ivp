@@ -44,10 +44,7 @@ class VehicleSet
   std::string getStringInfo(const std::string& info_type) const;
   double      getDoubleInfo(const std::string& info_type) const;
 
-
-  ColorPack getColor(const std::string& key) const;
   std::vector<std::string> getVehiNames() const;
-  std::vector<std::string> getParamReport() const;
 
   std::string getActiveVehicle() const  {return(m_vehicles_active_name);};
   std::string getCenterVehicle() const  {return(m_vehicles_center_name);};
@@ -56,10 +53,7 @@ class VehicleSet
   ObjectPose getObjectPose(const std::string& s="active") const;
 
   bool  hasVehiName(const std::string&) const;
-  bool  isViewable(const std::string&) const;
-
   bool  getWeightedCenter(double& x, double&y) const;
-
 
  private:
   bool  updateVehiclePosition(const std::string& ais_report); 
@@ -77,10 +71,6 @@ class VehicleSet
   std::map<std::string, std::string>  m_vmode_map;
   // Mapping from Vehicle Name to Time of last AIS report
   std::map<std::string, double>       m_ais_map;
-  // Mapping from Vehicle Name to Vehicle Color
-  std::map<std::string, ColorPack>    m_vehi_color;
-
-  std::map<std::string, std::string> m_param_report;
 
   std::string m_vehicles_active_name;
   std::string m_vehicles_center_name;
@@ -88,23 +78,7 @@ class VehicleSet
   int    m_history_size;
   double m_curr_time;
 
-  // Rendering characteristics (colors, sizes etc)
-  double m_vehicles_shape_scale;  
-  double m_trails_length;         
-  double m_trails_point_size;           
-  bool   m_trails_viewable;      
-  bool   m_trails_connect_viewable;
-  bool   m_vehicles_viewable; 
-
-  std::string   m_vehicles_name_mode; // off; names; names_mode; names_depth
-  
-  ColorPack m_trails_color; 
-  ColorPack m_vehicles_active_color;
-  ColorPack m_vehicles_inactive_color; 
-  ColorPack m_vehicles_name_color;
-
   std::vector<std::string> m_node_report_vars;
-
 };
 
 #endif 

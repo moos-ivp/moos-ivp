@@ -40,6 +40,7 @@
 #include "MOOSGeodesy.h"
 #include "VPlug_GeoShapes.h"
 #include "VPlug_GeoSettings.h"
+#include "VPlug_VehiSettings.h"
 #include "VPlug_DropPoints.h"
 #include "VPlug_Markers.h"
 #include "ColorPack.h"
@@ -155,12 +156,13 @@ protected:
   double    m_fill_shade;
   bool      m_hash_offon;
 
-  OpAreaSpec        m_op_area;
-  VPlug_Markers     m_vmarkers;
-  VPlug_GeoShapes   m_geoshapes;
-  VPlug_GeoSettings m_geo_settings;
-  VPlug_DropPoints  m_drop_points;
-  CMOOSGeodesy      m_geodesy;
+  OpAreaSpec         m_op_area;
+  VPlug_Markers      m_vmarkers;
+  VPlug_GeoShapes    m_geoshapes;
+  VPlug_GeoSettings  m_geo_settings;
+  VPlug_VehiSettings m_vehi_settings;
+  VPlug_DropPoints   m_drop_points;
+  CMOOSGeodesy       m_geodesy;
 
   std::string m_param_warning;
 };

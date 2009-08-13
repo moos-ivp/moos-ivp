@@ -6,7 +6,6 @@
 /*          (Broken out from the Viewer class(es)                */
 /*****************************************************************/
 
-#include <iostream>
 #include "VehicleSet.h"
 #include "MBUtils.h"
 #include "ColorParse.h"
@@ -23,20 +22,7 @@ using namespace std;
 VehicleSet::VehicleSet()
 {
   m_curr_time    = 0;
-
-  setParam("trails_history_size", 1000);
-  setParam("trails_point_size", 1);
-  setParam("trails_length", 100);
-  setParam("trails_color", "white");
-  setParam("trails_viewable", "true");
-  setParam("trails_connect_viewable", "false");
-
-  setParam("vehicles_active_color", "red");
-  setParam("vehicles_inactive_color", "yellow");
-  setParam("vehicles_name_color", "white");
-  setParam("vehicles_name_viewable", "names+mode");
-  setParam("vehicles_shape_scale", 1.0);
-  setParam("vehicles_viewable", "true");
+  m_history_size = 1000;
 
   m_node_report_vars.push_back("AIS_REPORT");
   m_node_report_vars.push_back("AIS_REPORT_LOCAL");
@@ -61,102 +47,25 @@ VehicleSet::VehicleSet()
 bool VehicleSet::setParam(string param, string value)
 {
   bool handled  = false;
-  bool makenote = true;
   param = tolower(param);
   value = stripBlankEnds(value);
 
   bool vehicle_report = false;
   unsigned int i, vsize = m_node_report_vars.size();
-  for(i=0; i<vsize; i++)
+  for(i=0; i<vsize; i++) {
     if(param == tolower(m_node_report_vars[i]))
       vehicle_report = true;
-
-  if(vehicle_report) {
-    handled  = updateVehiclePosition(value);
-    makenote = false;
   }
+
+  if(vehicle_report)
+    handled  = updateVehiclePosition(value);
   else if(param == "node_report_variable") {
     if(!strContainsWhite(value))
       m_node_report_vars.push_back(value);
   }
-  else if(((param == "active_vehicle_color") ||
-	   (param == "vehicles_active_color")) && isColor(value)) {
-    m_vehicles_active_color = colorParse(value);
-    handled = true;
-  }
-  else if(((param == "inactive_vehicle_color") ||
-	   (param == "vehicles_inactive_color")) && isColor(value)) {
-    m_vehicles_inactive_color = colorParse(value);
-    handled = true;
-  }
-  else if(((param == "vehicle_names_color") ||
-	   (param == "vehicles_name_color")) && isColor(value)) {
-    m_vehicles_name_color = colorParse(value);
-    handled = true;
-  }
-  else if((param=="trails_color") && isColor(value)) {
-    m_trails_color = colorParse(value);
-    handled = true;
-  }
   else if(param == "clear_vehicle_trails") {
     m_hist_map.clear();
     handled  = true;
-    makenote = false;
-  }
-  else if(param == "vehicles_viewable")
-    handled = setBooleanOnString(m_vehicles_viewable, value);
-  else if((param == "vehicle_name_viewable") ||
-	  (param == "vehicles_name_viewable")) {
-    handled = true;
-    value = tolower(stripBlankEnds(value));
-    if((value == "true") || (value == "names"))
-      m_vehicles_name_mode = "names";
-    else if((value == "false") || (value == "off"))
-      m_vehicles_name_mode = "off";
-    else if(value == "names+mode")
-      m_vehicles_name_mode = value;
-    else if(value == "names+depth")
-      m_vehicles_name_mode = value;
-    else if(value == "toggle") {
-      if(m_vehicles_name_mode == "off")
-	m_vehicles_name_mode = "names";
-      else if(m_vehicles_name_mode == "names")
-	m_vehicles_name_mode = "names+mode";
-      else if(m_vehicles_name_mode == "names+mode")
-	m_vehicles_name_mode = "names+depth";
-      else if(m_vehicles_name_mode == "names+depth")
-	m_vehicles_name_mode = "off";
-    }
-    else
-      handled = false;
-  }
-  else if(param == "trails_viewable")
-    handled = setBooleanOnString(m_trails_viewable, value);
-  else if(param == "trails_connect_viewable")
-    handled = setBooleanOnString(m_trails_connect_viewable, value);
-  else if(param == "trails_point_size") {
-    makenote = false;
-    if(value == "bigger")
-      handled = setParam("trails_point_size", m_trails_point_size*1.25);
-    else if(value == "smaller")
-      handled = setParam("trails_point_size", m_trails_point_size*0.80);
-  }
-  else if(param == "trails_length") {
-    makenote = false;
-    if(value == "longer")
-      handled = setParam("trails_length", m_trails_length*1.25);
-    else if(value == "shorter")
-      handled = setParam("trails_length", m_trails_length*0.80);
-  }
-  else if((param == "vehicle_shape_scale") ||
-	  (param == "vehicles_shape_scale")) {
-    makenote = false;
-    if(value == "bigger")
-      handled = setParam(param, m_vehicles_shape_scale*1.25);
-    else if(value == "smaller")
-      handled = setParam(param, m_vehicles_shape_scale*0.80);
-    else if(value == "reset")
-      handled = setParam(param, 1.0);
   }
   else if((param == "active_vehicle_name") || (param == "vehicles_active_name")) {
     handled = true;
@@ -171,7 +80,6 @@ bool VehicleSet::setParam(string param, string value)
   }
   else if(param == "cycle_active") {
     handled = true;
-    makenote = false;
     map<string, ObjectPose>::iterator p;
     for(p=m_pos_map.begin(); p!=m_pos_map.end(); p++) {
       string vname = p->first;
@@ -183,17 +91,6 @@ bool VehicleSet::setParam(string param, string value)
       }
     }
   }
-  else if(param == "vehicolor") {
-    string vname  = stripBlankEnds(biteString(value, ','));
-    string vcolor = stripBlankEnds(value);
-    if(isColor(vcolor)) {
-      m_vehi_color[vname] = colorParse(vcolor);
-      handled = true;
-    }
-  }
-
-  if(handled && makenote)
-    m_param_report[param] = value;
 
   return(handled);
 }
@@ -214,48 +111,14 @@ bool VehicleSet::setParam(string param, string value)
 
 bool VehicleSet::setParam(string param, double value)
 {
-  bool handled  = false;
-  bool makenote = true;
-  if((param == "history_size") || (param == "trails_history_size")) {
-    if(value > 0) {
-      m_history_size = (int)(value);
-      handled = true;
-    }
-    m_history_size = vclip(m_history_size, 0, 10000);
-  }
-  else if(param == "curr_time") {
-    makenote = false;
+  bool handled = false;
+  if(param == "curr_time") {
     if(value >= m_curr_time) {
       m_curr_time = value;
       handled = true;
     }
   }
-  else if(param == "trails_point_size") {
-    if(value >= 0) {
-      m_trails_point_size = value;
-      handled = true;
-    }
-    m_trails_point_size = vclip(m_trails_point_size, 0, 100);
-  }
-  else if(param == "trails_length") {
-    if(value >= 0) {
-      m_trails_length = value;
-      handled = true;
-    }
-    m_trails_length = vclip(m_trails_length, 0, 10000);
-  }
-  else if((param == "vehicle_shape_scale") ||
-	  (param == "vehicles_shape_scale")) {
-    if(value >= 0) {
-      m_vehicles_shape_scale = value;
-      handled = true;
-    }
-    m_vehicles_shape_scale = vclip(m_vehicles_shape_scale, 0.1, 100);
-  }
-
-  if(handled && makenote)
-    m_param_report[param] = dstringCompact(doubleToString(value));
-
+  
   return(handled);
 }
 
@@ -314,12 +177,6 @@ bool VehicleSet::getDoubleInfo(const string& g_vname,
     result = opose.getDepth();
   else if(info_type == "curr_time")
     result = m_curr_time;
-  else if(info_type == "trails_point_size")
-    result = m_trails_point_size;
-  else if(info_type == "trails_length")
-    result = m_trails_length;
-  else if(info_type == "vehicle_shape_scale")
-    result = m_vehicles_shape_scale;
   else
     return(false);
   return(true);
@@ -343,8 +200,6 @@ bool VehicleSet::getStringInfo(const string& g_vname,
 
   if(info_type == "active_vehicle_name")
     result = m_vehicles_active_name; 
-  else if(info_type == "vehicles_name_mode")
-    result = m_vehicles_name_mode; 
   else if((info_type == "body") || (info_type == "type")) {
     map<string,string>::const_iterator p;
     p = m_vbody_map.find(vname);
@@ -438,36 +293,6 @@ double VehicleSet::getDoubleInfo(const string& info_type) const
 }
 
 // ----------------------------------------------------------
-// Procedure: getColor
-//   Purpose: Return the color of certain attributes given by key.
-//            If the key is not matched, it is assumed to be referring
-//            to color of a particular vehicle, with the key being
-//            the name of the vehicle. In this case the color of the
-//            vehicle is returned (if it is in the m_vehi_color map)
-//            or else the "inactive_vehicle_color" is returned.
-
-ColorPack VehicleSet::getColor(const string& key) const
-{
-  ColorPack cpack = m_vehicles_inactive_color;
-  if(key == "trails_color")
-    return(m_trails_color);
-  else if(key == "active_vehicle_color")
-    return(m_vehicles_active_color);
-  else if(key == "inactive_vehicle_color")
-    return(m_vehicles_inactive_color);
-  else if(key == "vehicle_name_color")
-    return(m_vehicles_name_color);
-  else {
-    map<string, ColorPack>::const_iterator p;
-    p = m_vehi_color.find(key);
-    if(p == m_vehi_color.end())
-      return(cpack);
-    else
-      return(p->second);
-  }
-}
-    
-// ----------------------------------------------------------
 // Procedure: hasVehiName
 //   Purpose: 
 
@@ -482,24 +307,6 @@ bool VehicleSet::hasVehiName(const string& vname) const
   return(false);
 }
 
-// ----------------------------------------------------------
-// Procedure: isViewable
-//   Purpose: 
-
-bool VehicleSet::isViewable(const string& feature) const
-{  
-  if(feature == "vehicles")
-    return(m_vehicles_viewable);
-  else if(feature == "vehicle_names")
-    return(m_vehicles_name_mode != "off");
-  else if(feature == "trails")
-    return(m_trails_viewable);
-  else if(feature == "trails_connect")
-    return(m_trails_connect_viewable);
-  else
-    return(false);
-}
-
 //-------------------------------------------------------------
 // Procedure: getVehiNames()
 
@@ -512,33 +319,6 @@ vector<string> VehicleSet::getVehiNames() const
     rvect.push_back(p->first);
 
   return(rvect);
-}
-
-//-------------------------------------------------------------
-// Procedure: getParamReport
-//   Purpose: Return a set of strings where each is of the type:
-//            "parameter = value".
-//            The set returned should be enough to bring future
-//            instantiations back to the same current state 
-//            should the vector param-value pairs be re-applied 
-//            using the setParam interface. This allows a user
-//            to "save his/her preferences" in a file or some
-//            other configuration block.
-
-vector<string> VehicleSet::getParamReport() const
-{
-  vector<string> svect;
-
-  svect.push_back("// Parameters for Vehicle Attributes");
-
-  map<string, string>::const_iterator p;
-  for(p=m_param_report.begin(); p!= m_param_report.end(); p++) {
-    string param = p->first;
-    string value = p->second;
-    svect.push_back(param + " = " + value);
-  }
-
-  return(svect);
 }
 
 //-------------------------------------------------------------
@@ -612,7 +392,7 @@ bool VehicleSet::getWeightedCenter(double& x, double& y) const
 //      Note: NAME, TYPE, MOOSDB_TIME, UTC_TIME, X, Y, 
 //            LAT, LON, SPD, HDG, DEPTH
 
-bool VehicleSet::updateVehiclePosition(const string& ais_report) 
+bool VehicleSet::updateVehiclePosition(const string& node_report) 
 {
   double pos_x = 0;
   double pos_y = 0; 
@@ -626,19 +406,19 @@ bool VehicleSet::updateVehiclePosition(const string& ais_report)
   string vname = "";
   string vtype = "";
   string vmode = "";
-  bool b_vname = tokParse(ais_report, "NAME",  ',', '=', vname);
-  bool b_vtype = tokParse(ais_report, "TYPE",  ',', '=', vtype);
-  bool b_pos_x = tokParse(ais_report, "X",     ',', '=', pos_x);
-  bool b_pos_y = tokParse(ais_report, "Y",     ',', '=', pos_y);
-  bool b_speed = tokParse(ais_report, "SPD",   ',', '=', speed);
-  bool b_hding = tokParse(ais_report, "HDG",   ',', '=', hding);
-  bool b_depth = tokParse(ais_report, "DEPTH", ',', '=', depth);
-  bool b_utime = tokParse(ais_report, "UTC_TIME", ',', '=', utime);
-  bool b_mtime = tokParse(ais_report, "MOOS_TIME", ',', '=', utime);
-  bool b_lat   = tokParse(ais_report, "LAT", ',', '=', lat);
-  bool b_lon   = tokParse(ais_report, "LON", ',', '=', lon);
-  bool b_vlen  = tokParse(ais_report, "LENGTH", ',', '=', vlen);
-  bool b_vmode = tokParse(ais_report, "MODE", ',', '=', vmode);
+  bool b_vname = tokParse(node_report, "NAME",  ',', '=', vname);
+  bool b_vtype = tokParse(node_report, "TYPE",  ',', '=', vtype);
+  bool b_pos_x = tokParse(node_report, "X",     ',', '=', pos_x);
+  bool b_pos_y = tokParse(node_report, "Y",     ',', '=', pos_y);
+  bool b_speed = tokParse(node_report, "SPD",   ',', '=', speed);
+  bool b_hding = tokParse(node_report, "HDG",   ',', '=', hding);
+  bool b_depth = tokParse(node_report, "DEPTH", ',', '=', depth);
+  bool b_utime = tokParse(node_report, "UTC_TIME", ',', '=', utime);
+  bool b_mtime = tokParse(node_report, "MOOS_TIME", ',', '=', utime);
+  bool b_lat   = tokParse(node_report, "LAT", ',', '=', lat);
+  bool b_lon   = tokParse(node_report, "LON", ',', '=', lon);
+  bool b_vlen  = tokParse(node_report, "LENGTH", ',', '=', vlen);
+  bool b_vmode = tokParse(node_report, "MODE", ',', '=', vmode);
 
   vtype = tolower(vtype);
 
