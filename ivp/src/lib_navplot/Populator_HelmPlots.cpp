@@ -58,11 +58,13 @@ bool Populator_HelmPlots::setFileALog(string filestr)
 	m_helm_summaries.push_back(value);
       }
     }
-    else if(var == "NODE_REPORT_LOCAL") {
+    else if((var == "NODE_REPORT_LOCAL") || (var == "AIS_REPORT_LOCAL")) {
       string source = stripBlankEnds(biteString(lines[i],' '));
-      string value  = stripBlankEnds(lines[i]);
-      if((time!="")&&(var!="")&&(source!="")&&(value!="")) 
-	m_node_reports.push_back(value);
+      if((source == "pNodeReporter") || (source == "pTransponderAIS")) {
+	string value  = stripBlankEnds(lines[i]);
+	if((time!="")&&(var!="")&&(source!="")&&(value!="")) 
+	  m_node_reports.push_back(value);
+      }
     }
   }
 
@@ -101,11 +103,16 @@ bool Populator_HelmPlots::populateFromEntries(const vector<ALogEntry>& entries)
     return(false);
   
   for(i=0; i<vsize; i++) {
-    if(entries[i].getVarName() == "IVPHELM_SUMMARY")
+    string var = entries[i].getVarName();
+    if(var == "IVPHELM_SUMMARY")
       m_helm_plot.add_entry(entries[i].getTimeStamp(), 
 			    entries[i].getStringVal());
-    else if(entries[i].getVarName() == "NODE_REPORT_LOCAL")
-      m_node_reports.push_back(entries[i].getStringVal());
+    else if((var == "NODE_REPORT_LOCAL") || (var == "AIS_REPORT_LOCAL")) {
+      string source = entries[i].getSource();
+      if((source == "pNodeReporter") || (source == "pTransponderAIS")) {
+	m_node_reports.push_back(entries[i].getStringVal());
+      }
+    }
   }
 
   // Read throught the node reports and get vehicle name, type, length
@@ -137,7 +144,7 @@ bool Populator_HelmPlots::handleNodeReports()
 	if((vname == "") || (vname == right))
 	  vname = right;
 	else {
-	  cout << "Inconsistent vehicle name from NODE_REPORT_LOCAL entries" << endl;
+	  cout << "Inconsistent vehicle name from AIS/NODE_REPORT_LOCAL entries" << endl;
 	  return(false);
 	}
       }
@@ -145,7 +152,7 @@ bool Populator_HelmPlots::handleNodeReports()
 	if((vtype == "") || (vtype == right))
 	  vtype = right;
 	else {
-	  cout << "Inconsistent vehicle type from NODE_REPORT_LOCAL entries" << endl;
+	  cout << "Inconsistent vehicle type from AIS/NODE_REPORT_LOCAL entries" << endl;
 	  return(false);
 	}
       }
@@ -153,7 +160,7 @@ bool Populator_HelmPlots::handleNodeReports()
 	if((vlen == "") || (vlen == right))
 	  vlen = right;
 	else {
-	  cout << "Inconsistent vehicle length from NODE_REPORT_LOCAL entries" << endl;
+	  cout << "Inconsistent vehicle length from AIS/NODE_REPORT_LOCAL entries" << endl;
 	  return(false);
 	}
       }

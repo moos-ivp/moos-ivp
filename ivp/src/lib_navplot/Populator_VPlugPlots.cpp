@@ -78,9 +78,9 @@ bool Populator_VPlugPlots::populateVPlugPlotFromRawInfo()
 }
 
 //---------------------------------------------------------------
-// Procedure: populateVPlugPlotFromRawInfo()
+// Procedure: populateFromEntries
 
-bool Populator_VPlugPlots::populateVPlugPlotFromRawInfo(const vector<ALogEntry>& entries)
+bool Populator_VPlugPlots::populateFromEntries(const vector<ALogEntry>& entries)
 {
   int i, vsize = entries.size();
   for(i=0; i<vsize; i++)

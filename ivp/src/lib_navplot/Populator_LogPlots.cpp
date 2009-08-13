@@ -107,7 +107,7 @@ bool Populator_LogPlots::populateFromALog()
       m_logplots[found_index].set_value(itime, dvalue);
     }
 
-    if(var_name == "NODE_REPORT_LOCAL") 
+    if((var_name == "NODE_REPORT_LOCAL") || (var_name == "AIS_REPORT_LOCAL"))
       m_node_reports.push_back(var_value);
   }
 
@@ -156,12 +156,12 @@ bool Populator_LogPlots::populateFromEntries(const vector<ALogEntry>& entries)
       m_logplots[found_index].set_value(itime, dvalue);
     }
 
-    if(var_name == "NODE_REPORT_LOCAL") {
+    if((var_name=="NODE_REPORT_LOCAL") || (var_name=="AIS_REPORT_LOCAL")) {
       string svalue = entries[i].getStringVal();
       m_node_reports.push_back(svalue);
     }
   }
-
+  
   // Handle node reports just to get the alog file vehicle name
   handleNodeReports();
 
@@ -224,7 +224,7 @@ bool Populator_LogPlots::handleNodeReports()
 	if((vname == "") || (vname == right))
 	  vname = right;
 	else {
-	  cout << "Inconsistent vehicle name from NODE_REPORT_LOCAL entries" << endl;
+	  cout << "Inconsistent vehi_name from AIS/NODE_REPORT_LOCAL entries" << endl;
 	  return(false);
 	}
       }

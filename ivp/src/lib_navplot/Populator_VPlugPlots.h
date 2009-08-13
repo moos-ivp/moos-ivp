@@ -36,7 +36,7 @@ public:
 
   bool      populateRawInfoFromALog(std::string);
   bool      populateVPlugPlotFromRawInfo();
-  bool      populateVPlugPlotFromRawInfo(const std::vector<ALogEntry>&);
+  bool      populateFromEntries(const std::vector<ALogEntry>&);
 
   VPlugPlot getVPlugPlot() {return(m_vplug_plot);};
 
@@ -49,11 +49,4 @@ protected:
   std::vector<double>       m_visual_event_time;
 };
 #endif 
-
-
-
-
-
-
-
 
