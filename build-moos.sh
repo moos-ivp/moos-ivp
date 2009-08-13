@@ -115,6 +115,6 @@ echo ""
 echo "Invoking make..."
 echo ""
 
-make
+make $@
 
 cd ${INVOCATION_ABS_DIR}
