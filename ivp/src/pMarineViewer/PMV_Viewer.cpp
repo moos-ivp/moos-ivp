@@ -80,7 +80,7 @@ void PMV_Viewer::draw()
   }
   // End Draw Mouse position
 
-  if(m_vehiset.isViewable("vehicles")) {
+  if(m_vehi_settings.isViewableVehicles()) {
     vector<string> svector = m_vehiset.getVehiNames();
     int vsize = svector.size();
     for(int i=0; i<vsize; i++) {
@@ -89,11 +89,16 @@ void PMV_Viewer::draw()
       string vehibody = m_vehiset.getStringInfo(vehiname, "body");
       
       // Perhaps draw the history points for each vehicle.
-      if(m_vehiset.isViewable("trails")) {
+      if(m_vehi_settings.isViewableTrails()) {
 	CPList point_list = m_vehiset.getVehiHist(vehiname);
-	int trails_length = (int)(m_vehiset.getDoubleInfo("trails_length"));
+	double trails_length = m_vehi_settings.getTrailsLength();
+	cout << "vehiname:" << vehiname << endl;
+	cout << "trails_length:" << trails_length << endl;
+	cout << "list_length:" << point_list.size() << endl;
 	drawTrailPoints(point_list, trails_length);
       }
+      else
+	cout << "NOT drawing trails" << endl;
 
       // Next draw the vehicle shapes. If the vehicle index is the 
       // one "active", draw it in a different color.
@@ -181,9 +186,11 @@ bool PMV_Viewer::setParam(string param, string value)
       center_needs_adjusting = true;
     }
   }
-  else
-    handled = m_vehiset.setParam(param, value);
-  
+  else {
+    handled = handled || m_vehi_settings.setParam(param, value);
+    handled = handled || m_vehiset.setParam(param, value);
+  }
+
   if(center_needs_adjusting)
     setWeightedCenterView();
 
@@ -203,9 +210,8 @@ bool PMV_Viewer::setParam(string param, double value)
 
   bool handled = MarineViewer::setParam(param, value);
 
-  if(!handled) {
-    handled = m_vehiset.setParam(param, value);
-  }
+  handled = handled || m_vehi_settings.setParam(param, value);
+  handled = handled || m_vehiset.setParam(param, value);
 
   return(handled);
 }
@@ -223,15 +229,14 @@ void PMV_Viewer::drawVehicle(string vname, bool active, string vehibody)
   // name then the "inactive_vehicle_color" will be returned below.
   ColorPack vehi_color;
   if(active)
-    vehi_color = m_vehiset.getColor("active_vehicle_color");
+    vehi_color = m_vehi_settings.getColorActiveVehicle();
   else
-    vehi_color = m_vehiset.getColor(vname);
+    vehi_color = m_vehi_settings.getColorInactiveVehicle();
 
-  ColorPack vname_color = m_vehiset.getColor("vehicle_name_color");
+  ColorPack vname_color = m_vehi_settings.getColorVehicleName();  
+  string vnames_mode = m_vehi_settings.getVehiclesNameMode();
   
-  string vnames_mode = m_vehiset.getStringInfo("vehicles_name_mode");
-  
-  double shape_scale  = m_vehiset.getDoubleInfo("vehicle_shape_scale");
+  double shape_scale  = m_vehi_settings.getVehiclesShapeScale();
   double shape_length = m_vehiset.getDoubleInfo(vname, "vlength") * shape_scale;
   double age_report   = m_vehiset.getDoubleInfo(vname, "age_ais");
 
@@ -265,7 +270,7 @@ void PMV_Viewer::drawVehicle(string vname, bool active, string vehibody)
 
 void PMV_Viewer::drawTrailPoints(CPList &cps, int trail_length)
 {
-  if(!m_vehiset.isViewable("trails"))
+  if(!m_vehi_settings.isViewableTrails())
     return;
 
   vector<double> xvect;
@@ -281,10 +286,11 @@ void PMV_Viewer::drawTrailPoints(CPList &cps, int trail_length)
     i++;
   }
 
-  ColorPack   cpack = m_vehiset.getColor("trails_color");
-  double    pt_size = m_vehiset.getDoubleInfo("trails_point_size");
-  bool    connected = m_vehiset.isViewable("trails_connect");
-
+  ColorPack   cpack = m_vehi_settings.getColorTrails();
+  double    pt_size = m_vehi_settings.getTrailsPointSize();
+  bool    connected = m_vehi_settings.isViewableTrailsConnect();
+  
+  cout << "calling drawpointlist" << xvect.size() << endl;
   drawPointList(xvect, yvect, pt_size, cpack, connected);
 }
 
