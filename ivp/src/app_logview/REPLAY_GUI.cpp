@@ -655,12 +655,14 @@ void REPLAY_GUI::addLogPlot(const LogPlot& logplot)
 
 void REPLAY_GUI::addHelmPlot(const HelmPlot& helm_plot)
 {
-  if(!np_viewer)
+  if(!np_viewer) {
+    cout << "NULL npviewer" << endl;
     return;
+  }
 
   string vname = helm_plot.get_vehi_name();
-  if(vname == "")
-    return;
+  if(vname == "") 
+    vname = "uknown";
 
   unsigned int count = np_viewer->addHelmPlot(helm_plot);
   if(count < 1)
@@ -668,11 +670,13 @@ void REPLAY_GUI::addHelmPlot(const HelmPlot& helm_plot)
   
   string label_a = "HelmPlots/LeftPane/" + toupper(vname);
   string label_b = "HelmPlots/RightPane/" + toupper(vname);
-
+  
   mbar->add(label_a.c_str(), 0, 
 	    (Fl_Callback*)REPLAY_GUI::cb_LeftHelmPlot,  (void*)(count-1));
   mbar->add(label_b.c_str(), 0, 
 	    (Fl_Callback*)REPLAY_GUI::cb_RightHelmPlot, (void*)(count-1));
+
+  
 }
 
 //----------------------------------------------------------

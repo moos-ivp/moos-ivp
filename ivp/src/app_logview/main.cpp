@@ -36,6 +36,7 @@
 #include "Populator_LogPlots.h"
 #include "Populator_VPlugPlots.h"
 #include "LMV_Utils.h"
+#include "LogViewLauncher.h"
 
 using namespace std;
 
@@ -59,6 +60,21 @@ void idleProc(void *)
 
 int main(int argc, char *argv[])
 {
+  bool try_new_launch = false;
+  if(try_new_launch) {
+    LogViewLauncher launcher;
+    gui = launcher.launch(argc, argv);
+    if(gui) {
+      Fl::add_idle(idleProc);
+      return(Fl::run());
+    }
+    else
+      return(0);
+  }
+
+  MBTimer total_timer;
+  total_timer.start();
+
   int i, res = 0;
   unsigned int j, k;
 
@@ -294,7 +310,13 @@ int main(int argc, char *argv[])
   gui->updateXY();
   gui->np_viewer->setParam("tiff_file", tif_file);
 
-  // Enter the GUI event loop.
+  total_timer.stop();
+  cout << "Done logview launch time (cpu): ";
+  cout << total_timer.get_float_cpu_time() << endl;
+  cout << "Done logview launch time (wall): ";
+  cout << total_timer.get_float_wall_time() << endl;
+
+  // Enter the GUI event loop
   return Fl::run();
 }
 

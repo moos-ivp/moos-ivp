@@ -29,6 +29,7 @@
 #include "Populator_VPlugPlots.h"
 #include "Populator_HelmPlots.h"
 #include "ALogEntry.h"
+#include "REPLAY_GUI.h"
 
 class LogViewLauncher
 {
@@ -36,7 +37,7 @@ class LogViewLauncher
   LogViewLauncher();
   virtual ~LogViewLauncher() {};
   
-  int launch(int argc, char **argv);
+  REPLAY_GUI *launch(int argc, char **argv);
 
 protected:
   void setBackground(int argc, char **argv);
@@ -45,21 +46,37 @@ protected:
   void parseALogFiles();
   void parseALogFile(unsigned int);
 
+  bool buildLogPlots();
+  bool buildHelmPlots();
+  bool buildVPlugPlots();
+  
+  bool buildGraphical();
 
 private:
+  // The .alog files provided at launch time
+  std::vector<std::string> m_alog_files;
+  std::vector<double>      m_alog_files_skew;
+
+  // geometry specifications for the viewer
+  double  m_gui_height;
+  double  m_gui_width;
+
+  // Background image specification
+  std::string  m_tif_file;
+
+  // Intermediate semi-raw data from the alog files
   std::vector<std::vector<ALogEntry> > m_entries_log_plot;
   std::vector<std::vector<ALogEntry> > m_entries_bhv_ipf;
   std::vector<std::vector<ALogEntry> > m_entries_vplug_plot;
   std::vector<std::vector<ALogEntry> > m_entries_helm_plot;
 
-  std::vector<std::string> m_alog_files;
-  std::vector<double>      m_alog_files_skew;
+  // The various plots created from the alog data before passing
+  // to the logview gui or viewerws
+  std::vector<std::vector<LogPlot> > m_log_plots;
+  std::vector<HelmPlot>  m_helm_plots;
+  std::vector<VPlugPlot> m_vplug_plots;
 
-  std::string  m_tif_file;
-  double       m_gui_height;
-  double       m_gui_width;
+  REPLAY_GUI *m_gui;
 };
 
 #endif 
-
-

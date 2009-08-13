@@ -21,9 +21,11 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
+#include <iostream>
 #include <stdlib.h>
 #include <string.h>
 #include "MBUtils.h"
+#include "MBTimer.h"
 #include "LogViewLauncher.h"
 #include "FileBuffer.h"
 
@@ -37,20 +39,39 @@ LogViewLauncher::LogViewLauncher()
   m_tif_file   = "";
   m_gui_width  = 1400;
   m_gui_height = 1100;
+  m_gui        = 0;
 }
 
 //-------------------------------------------------------------
 // Procedure: setLaunch
 
-int LogViewLauncher::launch(int argc, char **argv)
+REPLAY_GUI *LogViewLauncher::launch(int argc, char **argv)
 {
+  MBTimer total_timer;
+  total_timer.start();
+
   setBackground(argc, argv);
   setSizeOfGUI(argc, argv);
   setALogFiles(argc, argv);
 
   parseALogFiles();
+  
+  bool ok = true;
+  ok = ok && buildLogPlots();
+  ok = ok && buildHelmPlots();
+  ok = ok && buildVPlugPlots();
+  ok = ok && buildGraphical();
 
-  return(0);
+  total_timer.stop();
+  cout << "Done logview launch time (cpu): ";
+  cout << total_timer.get_float_cpu_time() << endl;
+  cout << "Done logview launch time (wall): ";
+  cout << total_timer.get_float_wall_time() << endl;
+
+  if(ok)
+    return(m_gui);
+  else
+    return(0);
 }
 
 //-------------------------------------------------------------
@@ -162,9 +183,21 @@ void LogViewLauncher::setALogFiles(int argc, char **argv)
 
 void LogViewLauncher::parseALogFiles()
 {
+  MBTimer parse_timer;
+  parse_timer.start();
+  cout << "Parsing alog files..." << endl;
+
   unsigned int i, vsize = m_alog_files.size();
-  for(i=0; i<vsize; i++)
+  for(i=0; i<vsize; i++) {
+    cout << "  Handling " << m_alog_files[i] << "...";
+    cout << flush;
     parseALogFile(i);
+    cout << "DONE" << endl;
+  } 
+
+  parse_timer.stop();
+  cout << "Done parsing .alog files - total parse time: ";
+  cout << parse_timer.get_float_cpu_time() << endl << endl;
 }
   
 //-------------------------------------------------------------
@@ -194,33 +227,48 @@ void LogViewLauncher::parseALogFile(unsigned int index)
   for(i=0; i<lsize; i++) {
     lines[i] = findReplace(lines[i], '\t', ' ');
     lines[i] = compactConsecutive(lines[i], ' ');
-    lines[i] = stripBlankEnds(lines[i]);
-    
-    string time = stripBlankEnds(biteString(lines[i],' '));
-    string var  = stripBlankEnds(biteString(lines[i],' '));
-    string source = stripBlankEnds(biteString(lines[i],' '));
-    string value  = stripBlankEnds(lines[i]);
 
-    double dtime = atof(time.c_str());
+    string time   = biteString(lines[i], ' ');
+    string var    = biteString(lines[i], ' ');
+    string source = biteString(lines[i], ' ');
+    string value  = lines[i];
+    bool   isnum  = isNumber(value);
 
     ALogEntry entry;
-    if(isNumber(value)) {
-      entry.set(dtime, var, source, atof(value.c_str()));
+    if(isnum) {
+      double dvalue = atof(value.c_str());
+      double dtime  = atof(time.c_str());
+      entry.set(dtime, var, source, dvalue);
       entries_log_plot.push_back(entry);
     }
-    else
+    else {
+      if((var == "AIS_REPORT_LOCAL") || (var == "NODE_REPORT_LOCAL")) {
+	double dtime  = atof(time.c_str());
+	entry.set(dtime, var, source, value);
+	entries_log_plot.push_back(entry);
+	entries_helm_plot.push_back(entry);
+      }
+      else if((var == "VIEW_POINT")   || (var == "VIEW_POLYGON") ||
+	      (var == "VIEW_SEGLIST") || (var == "VIEW_CIRCLE")  ||
+	      (var == "GRID_INIT")    || (var == "VIEW_MARKER")  ||
+	      (var == "GRID_DELTA")) {
+	double dtime  = atof(time.c_str());
       entry.set(dtime, var, source, value);
-    
-    if((var == "VIEW_POINT")   || (var == "VIEW_POLYGON") ||
-       (var == "VIEW_SEGLIST") || (var == "VIEW_CIRCLE")  ||
-       (var == "GRID_INIT")    || (var == "GRID_DELTA") ||
-       (var == "VIEW_MARKER")  || (var == "NODE_REPORT_LOCAL")) 
       entries_vplug_plot.push_back(entry);
-    if((var == "IVPHELM_SUMMARY") || (var == "NODE_REPORT_LOCAL"))
-      entries_helm_plot.push_back(entry);
-    if((var == "BHV_IPF") || (var == "NODE_REPORT_LOCAL"))
-      entries_bhv_ipf.push_back(entry);
+      }
+      else if(var == "IVPHELM_SUMMARY") {
+	double dtime  = atof(time.c_str());
+	entry.set(dtime, var, source, value);
+	entries_helm_plot.push_back(entry);
+      }
+      else if(var == "BHV_IPF") {
+	double dtime  = atof(time.c_str());
+	entry.set(dtime, var, source, value);
+	entries_bhv_ipf.push_back(entry);
+      }
+    }
   }
+
 
   m_entries_log_plot.push_back(entries_log_plot);
   m_entries_bhv_ipf.push_back(entries_bhv_ipf);
@@ -228,3 +276,140 @@ void LogViewLauncher::parseALogFile(unsigned int index)
   m_entries_helm_plot.push_back(entries_helm_plot);
 }
   
+//-------------------------------------------------------------
+// Procedure: buildLogPlots
+//            
+
+bool LogViewLauncher::buildLogPlots()
+{
+  MBTimer parse_timer;
+  parse_timer.start();
+  cout << "Refining alog data to build LogPlots..." << endl;
+
+  unsigned int i, vsize = m_alog_files.size();
+
+  for(i=0; i<vsize; i++) {
+    Populator_LogPlots pop_lp;
+    pop_lp.setDefaultVName("V_" + intToString(i)); 
+    bool ok = pop_lp.populateFromEntries(m_entries_log_plot[i]);
+    if(!ok) {
+      cout << "Problem with file " << m_alog_files[i] << ". Exiting" << endl;
+      return(false);
+    }
+    
+    vector<LogPlot> lp_vector;
+    unsigned int k, lp_size = pop_lp.size();
+    for(k=0; k<lp_size; k++)
+      lp_vector.push_back(pop_lp.getLogPlot(k));
+
+    m_log_plots.push_back(lp_vector);
+  }
+
+  parse_timer.stop();
+  cout << "Done: LogPlot parse time: " << parse_timer.get_float_cpu_time();
+  cout << endl;
+  return(true);
+}
+
+//-------------------------------------------------------------
+// Procedure: buildHelmPlots
+//            
+
+bool LogViewLauncher::buildHelmPlots()
+{
+  MBTimer parse_timer;
+  parse_timer.start();
+  cout << "Refining alog data to build HelmPlots..." << endl;
+
+  unsigned int i, vsize = m_alog_files.size();
+  for(i=0; i<vsize; i++) {
+    Populator_HelmPlots pop_hp;
+    bool ok = pop_hp.populateFromEntries(m_entries_helm_plot[i]);
+    if(!ok) {
+      cout << "Problem with file " << m_alog_files[i] << ". Exiting" << endl;
+      return(false);
+    }
+    m_helm_plots.push_back(pop_hp.getHelmPlot());
+  }
+
+  parse_timer.stop();
+  cout << "Total HelmPlots: " << m_helm_plots.size() << endl;
+
+  cout << "Done: HelmPlot parse time: " << parse_timer.get_float_cpu_time();
+  cout << endl;
+  return(true);
+}
+
+//-------------------------------------------------------------
+// Procedure: buildVPlugPlots
+
+bool LogViewLauncher::buildVPlugPlots()
+{
+  MBTimer parse_timer;
+  parse_timer.start();
+  cout << "Refining alog data to build VPlugPlots..." << endl;
+
+  unsigned int i, vsize = m_alog_files.size();
+  for(i=0; i<vsize; i++) {
+    Populator_VPlugPlots pop_vp;
+    bool ok = pop_vp.populateFromEntries(m_entries_vplug_plot[i]);
+    if(!ok) {
+      cout << "Problem with file " << m_alog_files[i] << ". Exiting" << endl;
+      return(false);
+    }
+    m_vplug_plots.push_back(pop_vp.getVPlugPlot());
+  }
+
+  parse_timer.stop();
+  cout << "Done: VPlugPlot parse time: " << parse_timer.get_float_cpu_time();
+  cout << endl;
+  return(true);
+}
+
+
+//-------------------------------------------------------------
+// Procedure: buildGraphical
+
+bool LogViewLauncher::buildGraphical()
+{
+  m_gui = new REPLAY_GUI(m_gui_width, m_gui_height, "logview");
+  if(!m_gui)
+    return(false);
+
+  unsigned int j, k;
+
+  // Populate the GUI with the LogPlots built above
+  for(k=0; k<m_log_plots.size(); k++) {
+    for(j=0; j<m_log_plots[k].size(); j++) {
+      m_gui->addLogPlot(m_log_plots[k][j]);
+      if(m_log_plots[k][j].get_varname() == "NAV_X")
+	m_gui->np_viewer->addLogPlotNAVX(m_log_plots[k][j]);
+      else if(m_log_plots[k][j].get_varname() == "NAV_Y")
+	m_gui->np_viewer->addLogPlotNAVY(m_log_plots[k][j]);
+      else if(m_log_plots[k][j].get_varname() == "NAV_HEADING")
+	m_gui->np_viewer->addLogPlotHDG(m_log_plots[k][j]);
+    }
+  }
+  
+  cout << "LogViewLauncher: adding HelmPlots (";
+  cout << m_helm_plots.size() << ")" << endl;
+  // Populate the GUI with the HelmPlots built above
+  for(k=0; k<m_helm_plots.size(); k++) 
+    m_gui->addHelmPlot(m_helm_plots[k]);
+  cout << "LogViewLauncher: adding HelmPlots - DONE" << endl;
+
+  // Populate the GUI with the VPlugPlots built above
+  for(k=0; k<m_vplug_plots.size(); k++) 
+    m_gui->np_viewer->addVPlugPlot(m_vplug_plots[k]);
+
+#if 0
+  // Populate the GUI with the polygons built above
+  for(j=0; j<polygons.size(); j++)
+    m_gui->np_viewer->setParam("poly", polygons[j]);
+#endif
+
+  m_gui->updateXY();
+  m_gui->np_viewer->setParam("tiff_file", m_tif_file);
+
+  return(true);
+}

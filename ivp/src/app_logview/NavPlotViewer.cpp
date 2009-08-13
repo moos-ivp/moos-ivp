@@ -374,17 +374,18 @@ void NavPlotViewer::drawNavPlot(unsigned int index)
   vector<double> cvect = colorParse("1.0, 0.906, 0.243");
   if(index==1) 
     cvect = colorParse("red");    
-  if(index==2)
-    cvect = colorParse("green");
-  if(index==2) 
-    cvect = colorParse("blue");
 
   vector<double> vname_color(3,1); // Vehicle name will be drawn "white"
 
-  // Not sure how we handle vehicle lengths - hard code 3 meters for now.
-  string vehi_type   = m_helm_plot[index].get_vehi_type();
-  double vehi_length = m_helm_plot[index].get_vehi_length() * m_shape_scale;
-  string vehi_name   = m_helm_plot[index].get_vehi_name();
+  unsigned int hp_size = m_helm_plot.size();
+  string vehi_type   = "unknown";
+  double vehi_length = 20;
+  string vehi_name   = "unknown";
+  if(index < hp_size) {
+    vehi_type   = m_helm_plot[index].get_vehi_type();
+    vehi_length = m_helm_plot[index].get_vehi_length() * m_shape_scale;
+    vehi_name   = m_helm_plot[index].get_vehi_name();
+  }
 
   drawCommonVehicle(vehi_name, opose, cvect, vname_color, vehi_type, 
 		    vehi_length, m_draw_vname);
