@@ -26,6 +26,7 @@
 #include <string>
 #include <vector>
 #include "HelmPlot.h"
+#include "ALogEntry.h"
 
 class Populator_HelmPlots 
 {
@@ -35,6 +36,7 @@ public:
 
   bool     setFileALog(std::string);
   bool     populateFromALog();
+  bool     populateFromEntries(const std::vector<ALogEntry>&);
   HelmPlot getHelmPlot() {return(m_helm_plot);};
 
 protected:

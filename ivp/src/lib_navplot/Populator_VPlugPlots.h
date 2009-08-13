@@ -26,6 +26,7 @@
 #include <string>
 #include <vector>
 #include "VPlugPlot.h"
+#include "ALogEntry.h"
 
 class Populator_VPlugPlots 
 {
@@ -35,6 +36,7 @@ public:
 
   bool      populateRawInfoFromALog(std::string);
   bool      populateVPlugPlotFromRawInfo();
+  bool      populateVPlugPlotFromRawInfo(const std::vector<ALogEntry>&);
 
   VPlugPlot getVPlugPlot() {return(m_vplug_plot);};
 

@@ -77,3 +77,16 @@ bool Populator_VPlugPlots::populateVPlugPlotFromRawInfo()
   return(true);
 }
 
+//---------------------------------------------------------------
+// Procedure: populateVPlugPlotFromRawInfo()
+
+bool Populator_VPlugPlots::populateVPlugPlotFromRawInfo(const vector<ALogEntry>& entries)
+{
+  int i, vsize = entries.size();
+  for(i=0; i<vsize; i++)
+    m_vplug_plot.addEvent(entries[i].getVarName(), 
+			  entries[i].getStringVal(), 
+			  entries[i].getTimeStamp());
+  return(true);
+}
+

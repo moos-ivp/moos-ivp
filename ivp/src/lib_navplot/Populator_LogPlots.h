@@ -27,6 +27,7 @@
 #include <map>
 #include <vector>
 #include "LogPlot.h"
+#include "ALogEntry.h"
 
 class Populator_LogPlots 
 {
@@ -36,6 +37,7 @@ public:
 
   bool    setFileALog(std::string);
   bool    populateFromALog();
+  bool    populateFromEntries(const std::vector<ALogEntry>&);
 
   LogPlot getLogPlot(unsigned int);
   LogPlot getLogPlot(std::string);
@@ -56,7 +58,7 @@ protected:
   std::vector<std::string>  m_node_reports;
 
   // Mapping from logplot variable to index in m_loplots vector
-  std::map<std::string, int> m_logplot_var_map;
+  std::map<std::string, unsigned int> m_logplot_var_map;
   
   std::vector<std::string> m_alog_entry_time;
   std::vector<std::string> m_alog_entry_var;

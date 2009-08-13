@@ -87,7 +87,7 @@ bool Populator_LogPlots::populateFromALog()
     string var_value = m_alog_entry_val[i];
     double itime     = atof(m_alog_entry_time[i].c_str());
     // First determine if a LogPlot already exists for the variable
-    map<string, int>::iterator p;
+    map<string, unsigned int>::iterator p;
     p = m_logplot_var_map.find(var_name);
     if(p == m_logplot_var_map.end()) {
       if(isNumber(var_value)) { 
@@ -109,6 +109,57 @@ bool Populator_LogPlots::populateFromALog()
 
     if(var_name == "NODE_REPORT_LOCAL") 
       m_node_reports.push_back(var_value);
+  }
+
+  // Handle node reports just to get the alog file vehicle name
+  handleNodeReports();
+
+  // Once the vehicle name has been determined, associate the 
+  // vehicle name with each log plot.
+  vsize = m_logplots.size();
+  for(i=0; i<vsize; i++)
+    m_logplots[i].set_vehi_name(m_vname);
+
+  cout << "Total LogPlots: " << m_logplots.size() << endl;
+
+  return(true);
+}
+
+//---------------------------------------------------------------
+// Procedure: populateFromEntries
+
+bool Populator_LogPlots::populateFromEntries(const vector<ALogEntry>& entries)
+{
+  unsigned int i, vsize = entries.size();
+  
+  for(i=0; i<vsize; i++) {
+    string var_name  = entries[i].getVarName();
+    double itime     = entries[i].getTimeStamp();
+    double dvalue = entries[i].getDoubleVal();
+
+    // First determine if a LogPlot already exists for the variable
+    map<string, unsigned int>::iterator p;
+    p = m_logplot_var_map.find(var_name);
+    if(p == m_logplot_var_map.end()) {
+      if(entries[i].isNumerical()) {
+	LogPlot new_logplot;
+	new_logplot.set_varname(var_name);
+	new_logplot.set_vehi_name(m_vname);
+	new_logplot.set_value(itime, dvalue);
+	m_logplots.push_back(new_logplot);
+	int new_index = m_logplots.size()-1;
+	m_logplot_var_map[var_name] = new_index; 
+      }
+    }
+    else {
+      unsigned int found_index = p->second;
+      m_logplots[found_index].set_value(itime, dvalue);
+    }
+
+    if(var_name == "NODE_REPORT_LOCAL") {
+      string svalue = entries[i].getStringVal();
+      m_node_reports.push_back(svalue);
+    }
   }
 
   // Handle node reports just to get the alog file vehicle name

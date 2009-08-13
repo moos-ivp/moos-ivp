@@ -35,11 +35,10 @@ using namespace std;
 bool Populator_HelmPlots::setFileALog(string filestr)
 {
   FILE *f = fopen(filestr.c_str(), "r");
-
   if(!f)
     return(false);
-
   fclose(f);
+
   m_file = filestr;
   vector<string> lines = fileBuffer(filestr);
 
@@ -88,6 +87,33 @@ bool Populator_HelmPlots::populateFromALog()
 
   for(i=0; i<vsize; i++)
     m_helm_plot.add_entry(m_helm_summary_times[i], m_helm_summaries[i]);
+
+  return(true);
+}
+
+//---------------------------------------------------------------
+// Procedure: populateFromEntries
+
+bool Populator_HelmPlots::populateFromEntries(const vector<ALogEntry>& entries)
+{
+  int i, vsize = entries.size();
+  if(vsize == 0)
+    return(false);
+  
+  for(i=0; i<vsize; i++) {
+    if(entries[i].getVarName() == "IVPHELM_SUMMARY")
+      m_helm_plot.add_entry(entries[i].getTimeStamp(), 
+			    entries[i].getStringVal());
+    else if(entries[i].getVarName() == "NODE_REPORT_LOCAL")
+      m_node_reports.push_back(entries[i].getStringVal());
+  }
+
+  // Read throught the node reports and get vehicle name, type, length
+  // Results stored in m_helm_plot instance. A "false" value is returned
+  // if either (a) that info is not found, or (b) it is inconsistent.
+  bool handled = handleNodeReports();
+  if(!handled)
+    return(false);
 
   return(true);
 }

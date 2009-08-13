@@ -53,12 +53,12 @@ public:
     m_isnum     = true;
   };
     
-  double      getTimeStamp() {return(m_timestamp);};
-  std::string getVarName()   {return(m_varname);};
-  std::string getSource()    {return(m_source);};
-  std::string getStringVal() {return(m_sval);};
-  double      getDoubleVal() {return(m_dval);};
-  bool        isNumerical()  {return(m_isnum);};
+  double      getTimeStamp() const {return(m_timestamp);};
+  std::string getVarName() const   {return(m_varname);};
+  std::string getSource() const    {return(m_source);};
+  std::string getStringVal() const {return(m_sval);};
+  double      getDoubleVal() const {return(m_dval);};
+  bool        isNumerical() const  {return(m_isnum);};
 
 protected:
   double      m_timestamp;
