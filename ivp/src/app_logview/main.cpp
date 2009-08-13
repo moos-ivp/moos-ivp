@@ -281,7 +281,7 @@ int main(int argc, char *argv[])
 
   // Populate the GUI with the HelmPlots built above
   for(k=0; k<helm_plots.size(); k++) 
-    gui->np_viewer->addHelmPlot(helm_plots[k]);
+    gui->addHelmPlot(helm_plots[k]);
 
   // Populate the GUI with the VPlugPlots built above
   for(k=0; k<vplug_plots.size(); k++) 

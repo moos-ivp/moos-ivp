@@ -41,6 +41,7 @@ public:
   ~REPLAY_GUI();
   
   void addLogPlot(const LogPlot&);
+  void addHelmPlot(const HelmPlot&);
   void setLogFile(std::string str)  {log_file = str;};
   void conditional_step();
   void capture_to_file();
@@ -65,6 +66,12 @@ private:
 
   inline void cb_RightLogPlot_i(int);
   static void cb_RightLogPlot(Fl_Widget*, int);
+
+  inline void cb_LeftHelmPlot_i(int);
+  static void cb_LeftHelmPlot(Fl_Widget*, int);
+
+  inline void cb_RightHelmPlot_i(int);
+  static void cb_RightHelmPlot(Fl_Widget*, int);
 
   inline void cb_CollectToggle_i();
   static void cb_CollectToggle(Fl_Widget*);
@@ -140,7 +147,7 @@ protected:
 
   bool    stream;
   MBTimer timer;
-  float   step_time;
+  double  step_time;
   int     step_amt;
   int     step_time_ix;
   int     save_file_ix;

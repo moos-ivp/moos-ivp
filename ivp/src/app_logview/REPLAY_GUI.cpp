@@ -364,6 +364,28 @@ void REPLAY_GUI::cb_RightLogPlot(Fl_Widget* o, int v) {
   ((REPLAY_GUI*)(o->parent()->user_data()))->cb_RightLogPlot_i(val);
 }
 
+//----------------------------------------- LeftHelmPlot
+inline void REPLAY_GUI::cb_LeftHelmPlot_i(int index) {
+  np_viewer->setHPlotLeftIndex(index);
+  np_viewer->redraw();
+  updateXY();
+}
+void REPLAY_GUI::cb_LeftHelmPlot(Fl_Widget* o, int v) {
+  int val = (int)(v);
+  ((REPLAY_GUI*)(o->parent()->user_data()))->cb_LeftHelmPlot_i(val);
+}
+
+//----------------------------------------- RightHelmPlot
+inline void REPLAY_GUI::cb_RightHelmPlot_i(int index) {
+  np_viewer->setHPlotRightIndex(index);
+  np_viewer->redraw();
+  updateXY();
+}
+void REPLAY_GUI::cb_RightHelmPlot(Fl_Widget* o, int v) {
+  int val = (int)(v);
+  ((REPLAY_GUI*)(o->parent()->user_data()))->cb_RightHelmPlot_i(val);
+}
+
 //----------------------------------------- CollectToggle
 inline void REPLAY_GUI::cb_CollectToggle_i() {
   if(collect == "Off")
@@ -440,6 +462,7 @@ inline void REPLAY_GUI::cb_StreamSpeed_i(bool faster) {
   if(step_time_ix < 0)
     step_time_ix = 0;
 
+#if 0
   if(step_time_ix == 0)
     step_time = 0;
   else if(step_time_ix == 1)
@@ -450,6 +473,8 @@ inline void REPLAY_GUI::cb_StreamSpeed_i(bool faster) {
     step_time = np_viewer->getAvgStepTime() / 1.0;
   else
     step_time = np_viewer->getAvgStepTime() / 0.5;
+#endif
+
   updateXY();
 }
 
@@ -516,31 +541,31 @@ void REPLAY_GUI::updateXY()
   collect_state->value(collect.c_str());
   
   // Helm1
-  string v1name = np_viewer->getHPlotVName();
+  string v1name = np_viewer->getHPlotVName("left");
   m_fld_bhvs_vname_1->value(v1name.c_str());
-  string v1mode = np_viewer->getHPlotMode();
+  string v1mode = np_viewer->getHPlotMode("left");
   m_fld_bhvs_mode_1->value(v1mode.c_str());
-  string v1active = np_viewer->getHPlotBehaviors("active");
+  string v1active = np_viewer->getHPlotBehaviors("left", "active");
   m_fld_bhvs_act_1->value(v1active.c_str());
-  string v1running = np_viewer->getHPlotBehaviors("running");
+  string v1running = np_viewer->getHPlotBehaviors("left", "running");
   m_fld_bhvs_run_1->value(v1running.c_str());
-  string v1idle = np_viewer->getHPlotBehaviors("idle");
+  string v1idle = np_viewer->getHPlotBehaviors("left", "idle");
   m_fld_bhvs_idle_1->value(v1idle.c_str());
-  string v1completed = np_viewer->getHPlotBehaviors("completed");
+  string v1completed = np_viewer->getHPlotBehaviors("left", "completed");
   m_fld_bhvs_cplt_1->value(v1completed.c_str());
 
   // Helm2
-  string v2name = np_viewer->getHPlotVName();
+  string v2name = np_viewer->getHPlotVName("right");
   m_fld_bhvs_vname_2->value(v2name.c_str());
-  string v2mode = np_viewer->getHPlotMode();
+  string v2mode = np_viewer->getHPlotMode("right");
   m_fld_bhvs_mode_2->value(v2mode.c_str());
-  string v2active = np_viewer->getHPlotBehaviors("active");
+  string v2active = np_viewer->getHPlotBehaviors("right", "active");
   m_fld_bhvs_act_2->value(v2active.c_str());
-  string v2running = np_viewer->getHPlotBehaviors("running");
+  string v2running = np_viewer->getHPlotBehaviors("right", "running");
   m_fld_bhvs_run_2->value(v2running.c_str());
-  string v2idle = np_viewer->getHPlotBehaviors("idle");
+  string v2idle = np_viewer->getHPlotBehaviors("right", "idle");
   m_fld_bhvs_idle_2->value(v2idle.c_str());
-  string v2completed = np_viewer->getHPlotBehaviors("completed");
+  string v2completed = np_viewer->getHPlotBehaviors("right", "completed");
   m_fld_bhvs_cplt_2->value(v2completed.c_str());
 
 
@@ -623,6 +648,31 @@ void REPLAY_GUI::addLogPlot(const LogPlot& logplot)
 	    (Fl_Callback*)REPLAY_GUI::cb_LeftLogPlot,  (void*)ix);
   mbar->add(labelB.c_str(), 0, 
 	    (Fl_Callback*)REPLAY_GUI::cb_RightLogPlot, (void*)ix);
+}
+
+//----------------------------------------------------------
+// Procedure: addHelmPlot
+
+void REPLAY_GUI::addHelmPlot(const HelmPlot& helm_plot)
+{
+  if(!np_viewer)
+    return;
+
+  string vname = helm_plot.get_vehi_name();
+  if(vname == "")
+    return;
+
+  unsigned int count = np_viewer->addHelmPlot(helm_plot);
+  if(count < 1)
+    return;
+  
+  string label_a = "HelmPlots/LeftPane/" + toupper(vname);
+  string label_b = "HelmPlots/RightPane/" + toupper(vname);
+
+  mbar->add(label_a.c_str(), 0, 
+	    (Fl_Callback*)REPLAY_GUI::cb_LeftHelmPlot,  (void*)(count-1));
+  mbar->add(label_b.c_str(), 0, 
+	    (Fl_Callback*)REPLAY_GUI::cb_RightHelmPlot, (void*)(count-1));
 }
 
 //----------------------------------------------------------

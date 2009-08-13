@@ -41,26 +41,27 @@ class NavPlotViewer : public MarineViewer
   NavPlotViewer(int x,int y,int w,int h,const char *l=0);
   virtual ~NavPlotViewer() {};
   
+  void   draw();
   bool   setParam(std::string p, std::string v);
   bool   setParam(std::string p, double v);  
   void   addLogPlotNAVX(const LogPlot& lp);
   void   addLogPlotNAVY(const LogPlot& lp); 
   void   addLogPlotHDG(const LogPlot& lp); 
-  void   addHelmPlot(const HelmPlot& hp); 
   void   addVPlugPlot(const VPlugPlot& vp); 
-  void   draw();
+  unsigned int addHelmPlot(const HelmPlot& hp); 
 
   void   setCenterView(std::string centering="ctr_of_bounding");
   void   setCurrTime(double);
   void   incCurrTime(double);
-  void   setVehicleIndex(unsigned int);
+  void   setHPlotLeftIndex(unsigned int);
+  void   setHPlotRightIndex(unsigned int);
+  void   setIndex(unsigned int, unsigned int);
   double getCurrTime();
-  double getAvgStepTime();
 
-  std::string getHPlotVName();
-  std::string getHPlotMode();
-  std::string getHPlotDecision();
-  std::string getHPlotBehaviors(std::string);
+  std::string getHPlotVName(const std::string&);
+  std::string getHPlotMode(const std::string&);
+  std::string getHPlotDecision(const std::string&);
+  std::string getHPlotBehaviors(const std::string&, const std::string&);
 
  public: // Configuration parameters
   void   setFrame(std::string s)   {m_frame = s;};
@@ -76,12 +77,13 @@ protected:
   std::string shortenBehaviors(std::string);
 
 private:
-  unsigned int          m_vehicle_ix;
-  double                m_curr_time;
-  double                m_min_time;
-  double                m_max_time;
-  bool                  m_alltrail;
-  std::string           m_frame;
+  unsigned int  m_hplot_left_ix;
+  unsigned int  m_hplot_right_ix;
+  double        m_curr_time;
+  double        m_min_time;
+  double        m_max_time;
+  bool          m_alltrail;
+  std::string   m_frame;
 
   // vectors - each index corresponds to one vehicle
   std::vector<LogPlot>   m_navx_plot;

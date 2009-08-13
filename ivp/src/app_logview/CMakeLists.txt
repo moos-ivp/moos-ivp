@@ -16,6 +16,7 @@ SET(SRC
    LogPlotViewer.cpp
    NavPlotViewer.cpp
    REPLAY_GUI.cpp
+   LogViewLauncher.cpp
    main.cpp
 )
    

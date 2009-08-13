@@ -44,16 +44,17 @@ using namespace std;
 NavPlotViewer::NavPlotViewer(int x, int y, int w, int h, const char *l)
   : MarineViewer(x,y,w,h,l)
 {
-  m_vehicle_ix   = 0;
-  m_trail_gap    = 1;
-  m_trail_size   = 0.5;
-  m_alltrail     = true;
-  m_shape_scale  = 3;
-  m_trails       = true;
-  m_draw_vname   = true;
-  m_curr_time    = -1;
-  m_min_time     = -1;
-  m_max_time     = -1;
+  m_hplot_left_ix  = 0;
+  m_hplot_right_ix = 0;
+  m_trail_gap      = 1;
+  m_trail_size     = 0.5;
+  m_alltrail       = true;
+  m_shape_scale    = 3;
+  m_trails         = true;
+  m_draw_vname     = true;
+  m_curr_time      = -1;
+  m_min_time       = -1;
+  m_max_time       = -1;
 }
 
 //-------------------------------------------------------------
@@ -162,7 +163,7 @@ void NavPlotViewer::addLogPlotHDG(const LogPlot& lp)
 //-------------------------------------------------------------
 // Procedure: addHelmPlot
 
-void NavPlotViewer::addHelmPlot(const HelmPlot& hp)
+unsigned int NavPlotViewer::addHelmPlot(const HelmPlot& hp)
 {
   m_helm_plot.push_back(hp);
   double hp_min_time = hp.get_min_time();
@@ -171,6 +172,8 @@ void NavPlotViewer::addHelmPlot(const HelmPlot& hp)
     m_min_time = hp_min_time;
   if((m_max_time == -1) || (hp_max_time > m_max_time))
     m_max_time = hp_max_time;
+
+  return(m_helm_plot.size());
 }
 
 //-------------------------------------------------------------
@@ -227,18 +230,23 @@ void NavPlotViewer::incCurrTime(double gtime)
 }
 
 //-------------------------------------------------------------
-// Procedure: setVehicleIndex
+// Procedure: setHPlotLeftIndex
 
-void NavPlotViewer::setVehicleIndex(unsigned int new_ix)
+void NavPlotViewer::setHPlotLeftIndex(unsigned int new_ix)
 {
-  if(m_navx_plot.size() == 0)
+  if(new_ix >= m_helm_plot.size())
     return;
+  m_hplot_left_ix = new_ix;
+}
 
-  if(new_ix < 0)
-    new_ix = 0;
-  if(new_ix >= m_navx_plot.size())
-    new_ix = m_navx_plot.size()-1;
-  m_vehicle_ix = new_ix;
+//-------------------------------------------------------------
+// Procedure: setHPlotRightIndex
+
+void NavPlotViewer::setHPlotRightIndex(unsigned int new_ix)
+{
+  if(new_ix >= m_helm_plot.size())
+    return;
+  m_hplot_right_ix = new_ix;
 }
 
 //-------------------------------------------------------------
@@ -250,47 +258,48 @@ double NavPlotViewer::getCurrTime()
 }
 
 //-------------------------------------------------------------
-// Procedure: getAvgStepTime
-//      Note: Returns the avg delta time between indices in the 
-//            NavPlot. Useful for determining a delay in between
-//            index increments to simulate "real-time" stepping.
-
-double NavPlotViewer::getAvgStepTime()
-{
-  if(m_navx_plot.size() == 0)
-    return(0);
-  
-  double max_time = m_navx_plot[m_vehicle_ix].get_max_time();
-  double min_time = m_navx_plot[m_vehicle_ix].get_min_time();
-  double plt_size = m_navx_plot[m_vehicle_ix].size();
-  
-  return((max_time - min_time) / (plt_size - 1));
-}
-
-//-------------------------------------------------------------
 // Procedure: getHPlotVName
 
-string NavPlotViewer::getHPlotVName()
+string NavPlotViewer::getHPlotVName(const string& side)
 {
-  string vname = m_helm_plot[m_vehicle_ix].get_vehi_name();
-  string iter  = m_helm_plot[m_vehicle_ix].get_value_by_time("iter", m_curr_time);
+  unsigned int ix = m_hplot_left_ix;
+  if(side == "right") 
+    ix = m_hplot_right_ix;
+  if(ix >= m_helm_plot.size())
+    return("");
+
+  string vname = m_helm_plot[ix].get_vehi_name();
+  string iter  = m_helm_plot[ix].get_value_by_time("iter", m_curr_time);
   return(iter + "-" + vname);
 }
 
 //-------------------------------------------------------------
 // Procedure: getHPlotMode
 
-string NavPlotViewer::getHPlotMode()
+string NavPlotViewer::getHPlotMode(const string& side)
 {
-  return(m_helm_plot[m_vehicle_ix].get_value_by_time("mode_short", m_curr_time));
+  unsigned int ix = m_hplot_left_ix;
+  if(side == "right") 
+    ix = m_hplot_right_ix;
+  if(ix >= m_helm_plot.size())
+    return("");
+
+  return(m_helm_plot[ix].get_value_by_time("mode_short", m_curr_time));
 }
 
 //-------------------------------------------------------------
 // Procedure: getHPlotBehaviors
 
-string NavPlotViewer::getHPlotBehaviors(string btype)
+string NavPlotViewer::getHPlotBehaviors(const string& side, 
+					const string& bhv_type)
 {
-  string bhvs = m_helm_plot[m_vehicle_ix].get_value_by_time(btype, m_curr_time);
+  unsigned int ix = m_hplot_left_ix;
+  if(side == "right") 
+    ix = m_hplot_right_ix;
+  if(ix >= m_helm_plot.size())
+    return("");
+
+  string bhvs = m_helm_plot[ix].get_value_by_time(bhv_type, m_curr_time);
   if(!m_behaviors_verbose)
     bhvs = shortenBehaviors(bhvs);
   return(bhvs);

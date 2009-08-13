@@ -34,24 +34,28 @@ class LogViewLauncher
 {
  public:
   LogViewLauncher();
-  virtual ~LogViewLauncher();
+  virtual ~LogViewLauncher() {};
   
   int launch(int argc, char **argv);
 
 protected:
   void setBackground(int argc, char **argv);
   void setSizeOfGUI(int argc, char **argv);
+  void setALogFiles(int argc, char **argv);
+  void parseALogFiles();
+  void parseALogFile(unsigned int);
 
 
 private:
-  std::vector<ALogEntry> m_entries_log_plot;
-  std::vector<ALogEntry> m_entries_string;
-  std::vector<ALogEntry> m_entries_bhv_ipf;
-  std::vector<ALogEntry> m_entries_vplug_plot;
-  std::vector<ALogEntry> m_entries_helm_plot;
+  std::vector<std::vector<ALogEntry> > m_entries_log_plot;
+  std::vector<std::vector<ALogEntry> > m_entries_bhv_ipf;
+  std::vector<std::vector<ALogEntry> > m_entries_vplug_plot;
+  std::vector<std::vector<ALogEntry> > m_entries_helm_plot;
+
+  std::vector<std::string> m_alog_files;
+  std::vector<double>      m_alog_files_skew;
 
   std::string  m_tif_file;
-  std::string  m_gui_size;
   double       m_gui_height;
   double       m_gui_width;
 };

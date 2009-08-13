@@ -21,13 +21,22 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
+#include <stdlib.h>
 #include "MBUtils.h"
 #include "LogViewLauncher.h"
+#include "FileBuffer.h"
 
 using namespace std;
 
 //---------------------------------------------------------------
 // Constructor
+
+LogViewLauncher::LogViewLauncher()
+{
+  m_tif_file   = "";
+  m_gui_width  = 1400;
+  m_gui_height = 1100;
+}
 
 //-------------------------------------------------------------
 // Procedure: setLaunch
@@ -36,7 +45,10 @@ int LogViewLauncher::launch(int argc, char **argv)
 {
   setBackground(argc, argv);
   setSizeOfGUI(argc, argv);
-    
+  setALogFiles(argc, argv);
+
+  parseALogFiles();
+
   return(0);
 }
 
@@ -77,10 +89,11 @@ void LogViewLauncher::setBackground(int argc, char **argv)
 //-------------------------------------------------------------
 // Procedure: setSizeOfGUI
 //            Determine the GUI size
-//  Switches: --large
-//            --medium
-//            --small
-//            --xsmall
+//  Switches: --geometry=large
+//            --geometry=medium
+//            --geometry=small
+//            --geometry=xsmall
+//            --geometry=950x600
 
 void LogViewLauncher::setSizeOfGUI(int argc, char **argv)
 {
@@ -127,3 +140,90 @@ void LogViewLauncher::setSizeOfGUI(int argc, char **argv)
   }
 }
 
+//-------------------------------------------------------------
+// Procedure: setALogFiles
+//            Find all .alog files on the commmand line
+
+void LogViewLauncher::setALogFiles(int argc, char **argv)
+{
+  for(int i=1; i<argc; i++) {
+    if(strContains(argv[i], ".alog")) {
+      m_alog_files.push_back(argv[i]);
+      m_alog_files_skew.push_back(0);
+    }
+  }
+}
+
+
+//-------------------------------------------------------------
+// Procedure: parseALogFiles
+//            Parse all .alog files on the commmand line
+
+void LogViewLauncher::parseALogFiles()
+{
+  unsigned int i, vsize = m_alog_files.size();
+  for(i=0; i<vsize; i++)
+    parseALogFile(i);
+}
+  
+//-------------------------------------------------------------
+// Procedure: parseALogFile
+//            Parse the .alog file given by the index
+
+void LogViewLauncher::parseALogFile(unsigned int index)
+{
+  unsigned int i, vsize = m_alog_files.size();
+  if(index >= vsize)
+    return;
+
+  string filestr = m_alog_files[index];
+  FILE *f = fopen(filestr.c_str(), "r");
+  if(!f)
+    return;
+  fclose(f);
+
+  vector<string> lines = fileBuffer(filestr);
+  unsigned int lsize = lines.size();
+
+  vector<ALogEntry> entries_log_plot;
+  vector<ALogEntry> entries_bhv_ipf;
+  vector<ALogEntry> entries_vplug_plot;
+  vector<ALogEntry> entries_helm_plot;
+
+  for(i=0; i<lsize; i++) {
+    lines[i] = findReplace(lines[i], '\t', ' ');
+    lines[i] = compactConsecutive(lines[i], ' ');
+    lines[i] = stripBlankEnds(lines[i]);
+    
+    string time = stripBlankEnds(biteString(lines[i],' '));
+    string var  = stripBlankEnds(biteString(lines[i],' '));
+    string source = stripBlankEnds(biteString(lines[i],' '));
+    string value  = stripBlankEnds(lines[i]);
+
+    double dtime = atof(time.c_str());
+
+    ALogEntry entry;
+    if(isNumber(value)) {
+      entry.set(dtime, var, source, atof(value.c_str()));
+      entries_log_plot.push_back(entry);
+    }
+    else
+      entry.set(dtime, var, source, value);
+    
+    if((var == "VIEW_POINT")   || (var == "VIEW_POLYGON") ||
+       (var == "VIEW_SEGLIST") || (var == "VIEW_CIRCLE")  ||
+       (var == "GRID_INIT")    || (var == "GRID_DELTA") ||
+       (var == "VIEW_MARKER")  || (var == "NODE_REPORT_LOCAL")) 
+      entries_vplug_plot.push_back(entry);
+    if((var == "IVPHELM_SUMMARY") || (var == "NODE_REPORT_LOCAL"))
+      entries_helm_plot.push_back(entry);
+    if((var == "BHV_IPF") || (var == "NODE_REPORT_LOCAL"))
+      entries_bhv_ipf.push_back(entry);
+  }
+
+  m_entries_log_plot.push_back(entries_log_plot);
+  m_entries_bhv_ipf.push_back(entries_bhv_ipf);
+  m_entries_vplug_plot.push_back(entries_vplug_plot);
+  m_entries_helm_plot.push_back(entries_helm_plot);
+}
+  
