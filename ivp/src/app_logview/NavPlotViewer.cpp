@@ -46,12 +46,10 @@ NavPlotViewer::NavPlotViewer(int x, int y, int w, int h, const char *l)
 {
   m_hplot_left_ix  = 0;
   m_hplot_right_ix = 0;
+
   m_trail_gap      = 1;
-  m_trail_size     = 0.5;
   m_alltrail       = true;
-  m_shape_scale    = 3;
-  m_trails         = true;
-  m_draw_vname     = true;
+
   m_curr_time      = -1;
   m_min_time       = -1;
   m_max_time       = -1;
@@ -62,19 +60,6 @@ NavPlotViewer::NavPlotViewer(int x, int y, int w, int h, const char *l)
 
 bool NavPlotViewer::setParam(string param, string value)
 {
-  if(param == "vehicles_name_viewable")
-    return(setBooleanOnString(m_draw_vname, value));
-  if(param == "trails_point_size") {
-    if(value == "bigger")
-      m_trail_size *= 1.25;
-    else if(value == "smaller")
-      m_trail_size *= 0.80;
-    else if(value == "reset")
-      m_trail_size = 1.0;
-    m_trail_size = vclip(m_trail_size, 1, 25);
-    return(true);
-  }
-
   if(param == "center_view") {
     if(value == "average")
       setCenterView("ctr_of_bounding");
@@ -83,19 +68,6 @@ bool NavPlotViewer::setParam(string param, string value)
 
   if(MarineViewer::setParam(param, value))
     return(true);
-  
-  if(param == "trails_viewable")
-    return(setBooleanOnString(m_trails, value));
-  else if(param == "vehicle_shape_scale") {
-    if(value == "bigger")
-      m_shape_scale *= 1.25;
-    else if(value == "smaller")
-      m_shape_scale *= 0.80;
-    else if(value == "reset")
-      m_shape_scale = 1.0;
-  }
-  else
-    return(false);
   
   return(true);
 }
@@ -165,6 +137,11 @@ void NavPlotViewer::addLogPlotHDG(const LogPlot& lp)
 
 unsigned int NavPlotViewer::addHelmPlot(const HelmPlot& hp)
 {
+  // Specia case: If this is the 2nd plot added, then it is 
+  // convenient to set this plot to be displayed in the right pane.
+  if(m_helm_plot.size() == 1)
+    m_hplot_right_ix = 1;
+
   m_helm_plot.push_back(hp);
   double hp_min_time = hp.get_min_time();
   double hp_max_time = hp.get_max_time();
@@ -328,10 +305,10 @@ void NavPlotViewer::drawNavPlot(unsigned int index)
 
   double ctime = getCurrTime();
   
-  // Draw all the non_current points
-  if(m_trails) {
-    //double pt_size = m_trail_size * m_zoom;
-    double pt_size = m_trail_size;
+  // Perhaps draw all the non_current points
+  bool trails_viewable = m_vehi_settings.isViewableTrails();
+  if(trails_viewable) {
+    double pt_size = m_vehi_settings.getTrailsPointSize();
     vector<double> cvect = colorParse("red");
 
     if(index == 0) 
@@ -343,10 +320,12 @@ void NavPlotViewer::drawNavPlot(unsigned int index)
     else if(index == 3) 
       cvect = colorParse("white");
     
+    bool alltrail = m_vehi_settings.isViewableTrailsFuture();
+    
     vector<double> xvect, yvect;
     for(int i=0; i<npsize; i++) {
       double itime = m_navx_plot[index].get_time_by_index(i);
-      if(m_alltrail || (itime < ctime)) {
+      if(alltrail || (itime < ctime)) {
 	if((i % m_trail_gap) == 0) {
 	  xvect.push_back(m_navx_plot[index].get_value_by_index(i));
 	  yvect.push_back(m_navy_plot[index].get_value_by_index(i));
@@ -375,7 +354,19 @@ void NavPlotViewer::drawNavPlot(unsigned int index)
   if(index==1) 
     cvect = colorParse("red");    
 
-  vector<double> vname_color(3,1); // Vehicle name will be drawn "white"
+  ColorPack vname_color = m_vehi_settings.getColorVehicleName();  
+  string    vnames_mode = m_vehi_settings.getVehiclesNameMode();
+  double   shape_scale  = m_vehi_settings.getVehiclesShapeScale();
+
+
+  string vname_aug;
+  bool  vname_draw = true;
+  if(vnames_mode == "off")
+    vname_draw = false;
+  else if(vnames_mode == "names+depth") {
+    string str_depth = "0";
+    vname_aug = " (depth=" + str_depth + ")";
+  }
 
   unsigned int hp_size = m_helm_plot.size();
   string vehi_type   = "unknown";
@@ -383,12 +374,12 @@ void NavPlotViewer::drawNavPlot(unsigned int index)
   string vehi_name   = "unknown";
   if(index < hp_size) {
     vehi_type   = m_helm_plot[index].get_vehi_type();
-    vehi_length = m_helm_plot[index].get_vehi_length() * m_shape_scale;
+    vehi_length = m_helm_plot[index].get_vehi_length() * shape_scale;
     vehi_name   = m_helm_plot[index].get_vehi_name();
   }
 
-  drawCommonVehicle(vehi_name, opose, cvect, vname_color, vehi_type, 
-		    vehi_length, m_draw_vname);
+  drawCommonVehicle(vehi_name+vname_aug, opose, cvect, vname_color, vehi_type, 
+		    vehi_length, vname_draw);
 }
 
 //-------------------------------------------------------------

@@ -60,7 +60,7 @@ void idleProc(void *)
 
 int main(int argc, char *argv[])
 {
-  bool try_new_launch = false;
+  bool try_new_launch = true;
   if(try_new_launch) {
     LogViewLauncher launcher;
     gui = launcher.launch(argc, argv);
