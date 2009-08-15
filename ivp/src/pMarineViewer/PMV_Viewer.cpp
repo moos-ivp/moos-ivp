@@ -92,9 +92,6 @@ void PMV_Viewer::draw()
       if(m_vehi_settings.isViewableTrails()) {
 	CPList point_list = m_vehiset.getVehiHist(vehiname);
 	double trails_length = m_vehi_settings.getTrailsLength();
-	cout << "vehiname:" << vehiname << endl;
-	cout << "trails_length:" << trails_length << endl;
-	cout << "list_length:" << point_list.size() << endl;
 	drawTrailPoints(point_list, trails_length);
       }
       else
