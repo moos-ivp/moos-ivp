@@ -55,8 +55,8 @@ MarineVehiGUI::MarineVehiGUI(int g_w, int g_h, const char *g_l)
   mbar->add("Vehicles/Trails/trails_connect_viewable = false", 0, (Fl_Callback*)MarineVehiGUI::cb_AltTrailConnect, (void*)0, 0);
   mbar->add("Vehicles/Trails/trails_connect_viewable = toggle", 'y', (Fl_Callback*)MarineVehiGUI::cb_AltTrailConnect, (void*)2, FL_MENU_DIVIDER);
   mbar->add("Vehicles/Trails/trails_color = toggle", FL_CTRL+'t', (Fl_Callback*)MarineVehiGUI::cb_ToggleTrailColor, 0, FL_MENU_DIVIDER);
-  mbar->add("Vehicles/Trails/trails_point_size = larger", ']', (Fl_Callback*)MarineVehiGUI::cb_AltTrailSize, (void*)+1, 0);
-  mbar->add("Vehicles/Trails/trails_point_size = smaller", '[', (Fl_Callback*)MarineVehiGUI::cb_AltTrailSize, (void*)-1, 0);
+  mbar->add("Vehicles/Trails/trails_point_size = larger", FL_ALT+']', (Fl_Callback*)MarineVehiGUI::cb_AltTrailSize, (void*)+1, 0);
+  mbar->add("Vehicles/Trails/trails_point_size = smaller", FL_ALT+'[', (Fl_Callback*)MarineVehiGUI::cb_AltTrailSize, (void*)-1, 0);
   mbar->add("Vehicles/Trails/trails_length = longer", ')', (Fl_Callback*)MarineVehiGUI::cb_AltTrailLength, (void*)+1, 0);
   mbar->add("Vehicles/Trails/trails_length = shorter", '(', (Fl_Callback*)MarineVehiGUI::cb_AltTrailLength, (void*)-1, 0);
 
@@ -94,6 +94,7 @@ inline void MarineVehiGUI::cb_CycleFocus_i() {
 void MarineVehiGUI::cb_CycleFocus(Fl_Widget* o) {
   ((MarineVehiGUI*)(o->parent()->user_data()))->cb_CycleFocus_i();
 }
+
 //----------------------------------------- AltTrails
 inline void MarineVehiGUI::cb_AltTrails_i(int v) {
   if(v==1)

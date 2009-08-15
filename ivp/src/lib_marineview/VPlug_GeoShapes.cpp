@@ -61,12 +61,10 @@ void VPlug_GeoShapes::addPolygon(const XYPolygon& new_poly)
     return;
   }
 
-  string new_type   = new_poly.get_type();
-  string new_source = new_poly.get_source();
   for(unsigned int i=0; i<m_polygons.size(); i++) {
     if((m_polygons[i].get_label()  == new_label) &&
-       (m_polygons[i].get_type()   == new_type)   &&
-       (m_polygons[i].get_source() == new_source)) {
+       (m_polygons[i].get_type()   == new_poly.get_type())   &&
+       (m_polygons[i].get_source() == new_poly.get_source())) {
       m_polygons[i] = new_poly;
       return;
     }
