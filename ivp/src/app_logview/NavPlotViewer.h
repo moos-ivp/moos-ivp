@@ -51,8 +51,9 @@ class NavPlotViewer : public MarineViewer
   unsigned int addHelmPlot(const HelmPlot& hp); 
 
   void   setCenterView(std::string centering="ctr_of_bounding");
+  void   setStepType(const std::string&);
+  void   stepTime(double);
   void   setCurrTime(double);
-  void   incCurrTime(double);
   void   setHPlotLeftIndex(unsigned int);
   void   setHPlotRightIndex(unsigned int);
   void   setIndex(unsigned int, unsigned int);
@@ -65,11 +66,12 @@ class NavPlotViewer : public MarineViewer
 
  public: // Configuration parameters
   void   setFrame(std::string s)   {m_frame = s;};
-  void   toggleAllTrail()          {m_alltrail = !m_alltrail;};
 
 protected:
   void  drawNavPlots();
   void  drawNavPlot(unsigned int ix);
+  void  drawTrails();
+  void  drawTrail(unsigned int ix);
   void  drawVPlugPlots();
   void  drawVPlugPlot(unsigned int ix);
   void  drawFrame();
@@ -82,7 +84,6 @@ private:
   double        m_curr_time;
   double        m_min_time;
   double        m_max_time;
-  bool          m_alltrail;
   std::string   m_frame;
 
   // vectors - each index corresponds to one vehicle
@@ -92,12 +93,10 @@ private:
   std::vector<HelmPlot>  m_helm_plot;
   std::vector<VPlugPlot> m_vplug_plot;
 
-  double m_shape_scale;
-  bool   m_trails;
-  int    m_trail_gap;
-  double m_trail_size;
-  bool   m_draw_vname;
-  bool   m_behaviors_verbose;
+  std::string m_trails;
+  int         m_trail_gap;
+  bool        m_behaviors_verbose;
+  bool        m_step_by_secs;
 };
 
 #endif 

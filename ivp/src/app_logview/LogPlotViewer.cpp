@@ -52,7 +52,6 @@ int LogPlotViewer::handle(int event)
   int vx, vy;
   switch(event) {
   case FL_PUSH:
-    cout << "LogPlotViewer::handle-PUSH" << endl;
     vx = Fl::event_x();
     vy = h() - Fl::event_y();
     if(Fl_Window::handle(event) != 1) {
@@ -259,10 +258,6 @@ string LogPlotViewer::get_max_val2()
 
 int LogPlotViewer::handle_left_mouse(int vx, int vy)
 {
-  cout << "x:" << vx << " y:" << vy << endl;
-  cout << "pct:" << ((double)(vx)/w()) << endl;
-  cout << "w():" << w() << endl;
-
   double pct = (double)(vx)/w();
   curr_time = pct * (m_display_max_time - m_display_min_time);
   curr_time += m_display_min_time;

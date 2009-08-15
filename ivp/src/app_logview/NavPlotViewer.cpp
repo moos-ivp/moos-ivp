@@ -47,12 +47,13 @@ NavPlotViewer::NavPlotViewer(int x, int y, int w, int h, const char *l)
   m_hplot_left_ix  = 0;
   m_hplot_right_ix = 0;
 
+  m_trails         = "to-present"; // "none, to-present, window, all"
   m_trail_gap      = 1;
-  m_alltrail       = true;
 
   m_curr_time      = -1;
   m_min_time       = -1;
   m_max_time       = -1;
+  m_step_by_secs   = true;
 }
 
 //-------------------------------------------------------------
@@ -60,16 +61,41 @@ NavPlotViewer::NavPlotViewer(int x, int y, int w, int h, const char *l)
 
 bool NavPlotViewer::setParam(string param, string value)
 {
-  if(param == "center_view") {
+  bool handled = false;
+
+  // Intercept this parameter - before handled by MarineViewer
+  if(param == "trails_viewable") {
+    handled = true;
+    value = tolower(value);
+    if(value == "true")
+      m_trails = "all";
+    else if(value == "false")
+      m_trails = "none";
+    else if(value == "toggle") {
+      if(m_trails == "none")
+	m_trails = "to-present";
+      else if(m_trails == "to-present")
+	m_trails = "window";
+      else if(m_trails == "window")
+	m_trails = "all";
+      else if(m_trails == "all")
+	m_trails = "none";
+    }
+    else
+      handled = false;
+  }
+      
+
+  else if(param == "center_view") {
     if(value == "average")
       setCenterView("ctr_of_bounding");
-    return(true);
+    handled = true;
   }
 
-  if(MarineViewer::setParam(param, value))
-    return(true);
+  if(!handled)
+    handled = MarineViewer::setParam(param, value);
   
-  return(true);
+  return(handled);
 }
 
 //-------------------------------------------------------------
@@ -174,6 +200,7 @@ void NavPlotViewer::addVPlugPlot(const VPlugPlot& gp)
 void NavPlotViewer::draw()
 {
   MarineViewer::draw();
+  drawTrails();
   drawNavPlots();
   drawVPlugPlots();
   drawFrame();
@@ -194,16 +221,30 @@ void NavPlotViewer::setCurrTime(double gtime)
 }
 
 //-------------------------------------------------------------
-// Procedure: incCurrTime
+// Procedure: stepTime
 
-void NavPlotViewer::incCurrTime(double gtime)
+void NavPlotViewer::stepTime(double amt)
 {
+  double newtime = m_curr_time;
+  if(m_step_by_secs)
+    newtime = m_curr_time + amt;
+  else {
+    if(amt < 0) {
+      unsigned int iter_steps = (unsigned int)(amt * -1);
+      newtime = m_helm_plot[m_hplot_left_ix].get_time_by_iter_sub(m_curr_time, iter_steps);
+    }
+    else {
+      unsigned int iter_steps = (unsigned int)(amt);
+      newtime = m_helm_plot[m_hplot_left_ix].get_time_by_iter_add(m_curr_time, iter_steps);
+    }
+  }
+
   // If min/max times are not set, just take the given time directly.
   // Otherwise clip the given time to be within the min/max range.
-  if((m_min_time == -1) || (m_max_time == -1))
-    m_curr_time += gtime;
-  else
-    m_curr_time = vclip(m_curr_time + gtime, m_min_time, m_max_time);
+  if((m_min_time != -1) || (m_max_time != -1))
+    m_curr_time = vclip(newtime, m_min_time, m_max_time);
+  
+
 }
 
 //-------------------------------------------------------------
@@ -293,49 +334,18 @@ void NavPlotViewer::drawNavPlots()
 
 //-------------------------------------------------------------
 // Procedure: drawNavPlot
+//      Note: The [index] argument refers to the vehicle index.
 
 void NavPlotViewer::drawNavPlot(unsigned int index)
 {
-  if((index < 0) || (index >= m_navx_plot.size()))
+  if(index >= m_navx_plot.size())
     return;
-
-  int npsize = m_navx_plot[index].size();
+  
+  unsigned int i, npsize = m_navx_plot[index].size();
   if(npsize == 0)
     return;
 
   double ctime = getCurrTime();
-  
-  // Perhaps draw all the non_current points
-  bool trails_viewable = m_vehi_settings.isViewableTrails();
-  if(trails_viewable) {
-    double pt_size = m_vehi_settings.getTrailsPointSize();
-    vector<double> cvect = colorParse("red");
-
-    if(index == 0) 
-      cvect = colorParse("green");
-    else if(index == 1) 
-      cvect = colorParse("red");
-    else if(index == 2)
-      cvect = colorParse("yellow");
-    else if(index == 3) 
-      cvect = colorParse("white");
-    
-    bool alltrail = m_vehi_settings.isViewableTrailsFuture();
-    
-    vector<double> xvect, yvect;
-    for(int i=0; i<npsize; i++) {
-      double itime = m_navx_plot[index].get_time_by_index(i);
-      if(alltrail || (itime < ctime)) {
-	if((i % m_trail_gap) == 0) {
-	  xvect.push_back(m_navx_plot[index].get_value_by_index(i));
-	  yvect.push_back(m_navy_plot[index].get_value_by_index(i));
-	}
-      }
-    }
-    drawPointList(xvect, yvect, pt_size, cvect);
-  }
-
-  // [index] refers to the vehicle index.
 
   // The size of the navx, navy, hdg vectors *should* all be the 
   // same, one added for each vehicle. Do some checking here anyway.
@@ -350,37 +360,106 @@ void NavPlotViewer::drawNavPlot(unsigned int index)
     theta = m_hdg_plot[index].get_value_by_time(ctime);
 
   ObjectPose opose(x,y,theta,0,0);
-  vector<double> cvect = colorParse("1.0, 0.906, 0.243");
+  ColorPack  vehi_color("1.0, 0.906, 0.243");
   if(index==1) 
-    cvect = colorParse("red");    
+    vehi_color.setColor("red");    
 
   ColorPack vname_color = m_vehi_settings.getColorVehicleName();  
   string    vnames_mode = m_vehi_settings.getVehiclesNameMode();
-  double   shape_scale  = m_vehi_settings.getVehiclesShapeScale();
+  double    shape_scale = m_vehi_settings.getVehiclesShapeScale();
 
-
-  string vname_aug;
-  bool  vname_draw = true;
-  if(vnames_mode == "off")
-    vname_draw = false;
-  else if(vnames_mode == "names+depth") {
-    string str_depth = "0";
-    vname_aug = " (depth=" + str_depth + ")";
-  }
+  string    vehi_type   = "unknown";
+  double    vehi_length = 20;
+  string    vehi_name   = "unknown";
 
   unsigned int hp_size = m_helm_plot.size();
-  string vehi_type   = "unknown";
-  double vehi_length = 20;
-  string vehi_name   = "unknown";
   if(index < hp_size) {
     vehi_type   = m_helm_plot[index].get_vehi_type();
     vehi_length = m_helm_plot[index].get_vehi_length() * shape_scale;
     vehi_name   = m_helm_plot[index].get_vehi_name();
   }
 
-  drawCommonVehicle(vehi_name+vname_aug, opose, cvect, vname_color, vehi_type, 
-		    vehi_length, vname_draw);
+  bool vname_draw = true;
+  if(vnames_mode == "off")
+    vname_draw = false;
+  
+  if(vnames_mode == "names+depth") {
+    string str_depth = "0";
+    vehi_name += " (depth=" + str_depth + ")";
+  }
+
+  drawCommonVehicle(vehi_name, opose, vehi_color, vname_color, 
+		    vehi_type, vehi_length, vname_draw);
 }
+
+
+//-------------------------------------------------------------
+// Procedure: drawTrails()
+
+void NavPlotViewer::drawTrails()
+{
+  if(m_trails == "none")
+    return;
+  for(unsigned int i=0; i<m_navx_plot.size(); i++)
+    drawTrail(i);
+}
+
+//-------------------------------------------------------------
+// Procedure: drawTrail()
+
+void NavPlotViewer::drawTrail(unsigned int index)
+{
+  if(m_trails == "none")
+    return;
+
+  double ctime = getCurrTime();
+  
+  double pt_size = m_vehi_settings.getTrailsPointSize();
+  vector<double> cvect = colorParse("yellow");
+  
+  if(index == 0) 
+    cvect = colorParse("white");
+  else if(index == 1) 
+    cvect = colorParse("khaki");
+  else if(index == 2)
+    cvect = colorParse("blue");
+  else if(index == 3) 
+    cvect = colorParse("green");
+  
+  bool alltrail = false;
+  if(m_trails == "all")
+    alltrail = true;
+
+  unsigned int i, npsize = m_navx_plot[index].size();
+  vector<double> xvect, yvect;
+  for(i=0; i<npsize; i++) {
+    double itime = m_navx_plot[index].get_time_by_index(i);
+    if(alltrail || (itime < ctime)) {
+      if((i % m_trail_gap) == 0) {
+	xvect.push_back(m_navx_plot[index].get_value_by_index(i));
+	yvect.push_back(m_navy_plot[index].get_value_by_index(i));
+      }
+    }
+  }
+  
+  if(m_trails == "window") {
+    double trails_length = m_vehi_settings.getTrailsLength();
+    unsigned int points = xvect.size();
+    if(trails_length < points) {
+      vector<double> new_xvect, new_yvect;
+      unsigned int cutpoints = points - (unsigned int)(trails_length);
+      for(i=cutpoints; i<points; i++) {
+	new_xvect.push_back(xvect[i]);
+	new_yvect.push_back(yvect[i]);
+      }
+      xvect = new_xvect;
+      yvect = new_yvect;
+    }
+  }
+  
+  drawPointList(xvect, yvect, pt_size, cvect);
+}
+
 
 //-------------------------------------------------------------
 // Procedure: drawVPlugPlots
@@ -525,3 +604,17 @@ void NavPlotViewer::setCenterView(string centering_style)
   m_vshift_x = -x_pixels;
   m_vshift_y = -y_pixels;
 }
+
+
+//-------------------------------------------------------------
+// Procedure: setStepType
+//      Note: 
+
+void NavPlotViewer::setStepType(const string& step_type)
+{
+  if(step_type == "seconds")
+    m_step_by_secs = true;
+  else if(step_type == "helm_iterations")
+    m_step_by_secs = false;
+}
+

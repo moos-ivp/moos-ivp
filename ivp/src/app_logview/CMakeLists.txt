@@ -31,6 +31,7 @@ TARGET_LINK_LIBRARIES(logview
    marineview
    MOOSUtility
    navplot
+   logutils
    geometry
    mbutil
    ${SYSTEM_LIBS}

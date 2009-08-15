@@ -286,15 +286,16 @@ void REPLAY_GUI::augmentMenu()
   mbar->add("Replay/Streaming Step 3",  0, (Fl_Callback*)REPLAY_GUI::cb_StreamStep, (void*)3, FL_MENU_RADIO);
   mbar->add("Replay/Streaming Step 5",  0, (Fl_Callback*)REPLAY_GUI::cb_StreamStep, (void*)5, FL_MENU_RADIO|FL_MENU_VALUE);
   mbar->add("Replay/Streaming Step 10", 0, (Fl_Callback*)REPLAY_GUI::cb_StreamStep, (void*)10, FL_MENU_RADIO|FL_MENU_DIVIDER);
-  mbar->add("Replay/Toggle Show All Trail", FL_ALT+'t', (Fl_Callback*)REPLAY_GUI::cb_AllTrail, (void*)0, 134);
-  mbar->add("Replay/Step Ahead 1",  FL_ALT+']', (Fl_Callback*)REPLAY_GUI::cb_Step, (void*)1, 0);
-  mbar->add("Replay/Step Back  1",  FL_ALT+'[', (Fl_Callback*)REPLAY_GUI::cb_Step, (void*)-1, 0);
-  mbar->add("Replay/Step Ahead 10", FL_ALT+'}', (Fl_Callback*)REPLAY_GUI::cb_Step, (void*)10, 0);
-  mbar->add("Replay/Step Back  10", FL_ALT+'{', (Fl_Callback*)REPLAY_GUI::cb_Step, (void*)-10, 0);
-  mbar->add("Replay/Step Ahead 50", '>', (Fl_Callback*)REPLAY_GUI::cb_Step, (void*)50, 0);
-  mbar->add("Replay/Step Back  50", '<', (Fl_Callback*)REPLAY_GUI::cb_Step, (void*)-50, FL_MENU_DIVIDER);
-  mbar->add("Replay/Time Zoom In", ')', (Fl_Callback*)REPLAY_GUI::cb_TimeZoom, (void*)1, 0);
-  mbar->add("Replay/Time Zoom Out", '(', (Fl_Callback*)REPLAY_GUI::cb_TimeZoom, (void*)-1, FL_MENU_DIVIDER);
+
+  mbar->add("Replay/Step by Seconds",  0, (Fl_Callback*)REPLAY_GUI::cb_StepType, (void*)0, FL_MENU_RADIO|FL_MENU_VALUE);
+  mbar->add("Replay/Step by HelmIter",  0, (Fl_Callback*)REPLAY_GUI::cb_StepType, (void*)1, FL_MENU_RADIO|FL_MENU_DIVIDER);
+
+  mbar->add("Replay/Step Ahead 1",  ']', (Fl_Callback*)REPLAY_GUI::cb_Step, (void*)1, 0);
+  mbar->add("Replay/Step Back  1",  '[', (Fl_Callback*)REPLAY_GUI::cb_Step, (void*)-1, 0);
+  mbar->add("Replay/Step Ahead 10", '>', (Fl_Callback*)REPLAY_GUI::cb_Step, (void*)10, 0);
+  mbar->add("Replay/Step Back  10", '<', (Fl_Callback*)REPLAY_GUI::cb_Step, (void*)-10, FL_MENU_DIVIDER);
+  mbar->add("Replay/Time Zoom In", 0, (Fl_Callback*)REPLAY_GUI::cb_TimeZoom, (void*)1, 0);
+  mbar->add("Replay/Time Zoom Out", 0, (Fl_Callback*)REPLAY_GUI::cb_TimeZoom, (void*)-1, FL_MENU_DIVIDER);
 };
 
 //----------------------------------------------------------
@@ -329,7 +330,7 @@ int REPLAY_GUI::handle(int event)
 
 //----------------------------------------- Step
 inline bool REPLAY_GUI::cb_Step_i(int val) {
-  np_viewer->incCurrTime(val);
+  np_viewer->stepTime(val);
   updateXY();
   double curr_time = np_viewer->getCurrTime();
   lp_viewer->set_curr_time(curr_time);
@@ -340,6 +341,19 @@ inline bool REPLAY_GUI::cb_Step_i(int val) {
 void REPLAY_GUI::cb_Step(Fl_Widget* o, int v) {
   int val = (int)(v);
   ((REPLAY_GUI*)(o->parent()->user_data()))->cb_Step_i(val);
+}
+
+//----------------------------------------- StepType
+inline bool REPLAY_GUI::cb_StepType_i(int val) {
+  if(val == 0)
+    np_viewer->setStepType("seconds");
+  if(val == 1)
+    np_viewer->setStepType("helm_iterations");
+  return(true);
+}
+void REPLAY_GUI::cb_StepType(Fl_Widget* o, int v) {
+  int val = (int)(v);
+  ((REPLAY_GUI*)(o->parent()->user_data()))->cb_StepType_i(val);
 }
 
 //----------------------------------------- LeftLogPlot
@@ -482,16 +496,6 @@ inline void REPLAY_GUI::cb_StreamSpeed_i(bool faster) {
 void REPLAY_GUI::cb_StreamSpeed(Fl_Widget* o, bool v) {
   bool val = (bool)(v);
   ((REPLAY_GUI*)(o->parent()->user_data()))->cb_StreamSpeed_i(val);
-}
-
-//----------------------------------------- AllTrail
-inline void REPLAY_GUI::cb_AllTrail_i() {
-  np_viewer->toggleAllTrail();
-  np_viewer->redraw();
-}
-
-void REPLAY_GUI::cb_AllTrail(Fl_Widget* o) {
-  ((REPLAY_GUI*)(o->parent()->user_data()))->cb_AllTrail_i();
 }
 
 //----------------------------------------- Delete

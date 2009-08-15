@@ -24,6 +24,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include <string.h>
+#include "LogUtils.h"
 #include "MBUtils.h"
 #include "MBTimer.h"
 #include "LogViewLauncher.h"
@@ -54,9 +55,9 @@ REPLAY_GUI *LogViewLauncher::launch(int argc, char **argv)
   setSizeOfGUI(argc, argv);
   setALogFiles(argc, argv);
 
+  bool ok = setALogFileSkews();
   parseALogFiles();
   
-  bool ok = true;
   ok = ok && buildLogPlots();
   ok = ok && buildHelmPlots();
   ok = ok && buildVPlugPlots();
@@ -168,15 +169,57 @@ void LogViewLauncher::setSizeOfGUI(int argc, char **argv)
 
 void LogViewLauncher::setALogFiles(int argc, char **argv)
 {
-  for(int i=1; i<argc; i++) {
-    if(strContains(argv[i], ".alog")) {
+  for(int i=1; i<argc; i++)
+    if(strContains(argv[i], ".alog"))
       m_alog_files.push_back(argv[i]);
-      m_alog_files_skew.push_back(0);
-    }
-  }
 }
 
 
+//-------------------------------------------------------------
+// Procedure: setALogFileSkews
+
+bool LogViewLauncher::setALogFileSkews()
+{
+  MBTimer parse_timer;
+  parse_timer.start();
+  cout << "Detecting alog file skews..." << endl;
+
+  unsigned int i, j, vsize = m_alog_files.size();
+  vector<double> logstarts(vsize,0);
+
+  double min_logstart = 0;
+  for(i=0; i<vsize; i++) {
+    string filestr = m_alog_files[i];
+    FILE *f = fopen(filestr.c_str(), "r");
+    if(!f) {
+      cout << "Unable to open: " << filestr << endl;
+      return(false);
+    }
+    for(j=0; j<5; j++) {
+      string line = getNextRawLine(f);
+      if(strContains(line, "LOGSTART")) {
+	logstarts[i] = getLogStart(line);
+      }
+    }
+    fclose(f);
+    if(logstarts[i] == 0) {
+      cout << "Unable to detect LOGSTART in file: " << filestr << endl;
+      return(false);
+    }
+    if((i==0) || (logstarts[i] < min_logstart))
+      min_logstart = logstarts[i];
+  }
+
+  // Apply min_logstart to all so the earliest has skew of zero
+  for(i=0; i<m_alog_files.size(); i++)
+    m_alog_files_skew.push_back(logstarts[i] - min_logstart);
+
+  parse_timer.stop();
+  cout << "Done detecting .alog file SKEWS - total detect time: ";
+  cout << parse_timer.get_float_cpu_time() << endl << endl;
+  return(true);
+}
+  
 //-------------------------------------------------------------
 // Procedure: parseALogFiles
 //            Parse all .alog files on the commmand line
@@ -214,62 +257,47 @@ void LogViewLauncher::parseALogFile(unsigned int index)
   FILE *f = fopen(filestr.c_str(), "r");
   if(!f)
     return;
-  fclose(f);
-
-  vector<string> lines = fileBuffer(filestr);
-  unsigned int lsize = lines.size();
 
   vector<ALogEntry> entries_log_plot;
   vector<ALogEntry> entries_bhv_ipf;
   vector<ALogEntry> entries_vplug_plot;
   vector<ALogEntry> entries_helm_plot;
 
-  for(i=0; i<lsize; i++) {
-    lines[i] = findReplace(lines[i], '\t', ' ');
-    lines[i] = compactConsecutive(lines[i], ' ');
+  double skew = m_alog_files_skew[index];
 
-    string time   = biteString(lines[i], ' ');
-    string var    = biteString(lines[i], ' ');
-    string source = biteString(lines[i], ' ');
-    string value  = lines[i];
-    bool   isnum  = isNumber(value);
-
-    ALogEntry entry;
-    if(isnum) {
-      double dvalue = atof(value.c_str());
-      double dtime  = atof(time.c_str());
-      entry.set(dtime, var, source, dvalue);
-      entries_log_plot.push_back(entry);
-    }
+  bool done = false;
+  int count = 0;
+  while(!done) {
+    ALogEntry entry = getNextRawALogEntry(f);
+    if(entry.getStatus() == "eof")
+      done = true;
     else {
-      if((var == "AIS_REPORT_LOCAL") || (var == "NODE_REPORT_LOCAL")) {
-	double dtime  = atof(time.c_str());
-	entry.set(dtime, var, source, value);
+      string var = entry.getVarName();
+      bool   isnum = entry.isNumerical();
+
+      entry.skewBackward(skew);
+      if(isnum)
 	entries_log_plot.push_back(entry);
-	entries_helm_plot.push_back(entry);
-      }
-      else if((var == "VIEW_POINT")   || (var == "VIEW_POLYGON") ||
-	      (var == "VIEW_SEGLIST") || (var == "VIEW_CIRCLE")  ||
-	      (var == "GRID_INIT")    || (var == "VIEW_MARKER")  ||
-	      (var == "GRID_DELTA")) {
-	double dtime  = atof(time.c_str());
-      entry.set(dtime, var, source, value);
-      entries_vplug_plot.push_back(entry);
-      }
-      else if(var == "IVPHELM_SUMMARY") {
-	double dtime  = atof(time.c_str());
-	entry.set(dtime, var, source, value);
-	entries_helm_plot.push_back(entry);
-      }
-      else if(var == "BHV_IPF") {
-	double dtime  = atof(time.c_str());
-	entry.set(dtime, var, source, value);
-	entries_bhv_ipf.push_back(entry);
+      else {
+	if((var == "AIS_REPORT_LOCAL") || (var == "NODE_REPORT_LOCAL")) {
+	  entries_log_plot.push_back(entry);
+	  entries_helm_plot.push_back(entry);
+	}
+	else if((var == "VIEW_POINT")   || (var == "VIEW_POLYGON") ||
+		(var == "VIEW_SEGLIST") || (var == "VIEW_CIRCLE")  ||
+		(var == "GRID_INIT")    || (var == "VIEW_MARKER")  ||
+		(var == "GRID_DELTA")) {
+	  entries_vplug_plot.push_back(entry);
+	}
+	else if(var == "IVPHELM_SUMMARY")
+	  entries_helm_plot.push_back(entry);
+	else if(var == "BHV_IPF")
+	  entries_bhv_ipf.push_back(entry);
       }
     }
   }
-
-
+  fclose(f);
+  
   m_entries_log_plot.push_back(entries_log_plot);
   m_entries_bhv_ipf.push_back(entries_bhv_ipf);
   m_entries_vplug_plot.push_back(entries_vplug_plot);
@@ -306,8 +334,8 @@ bool LogViewLauncher::buildLogPlots()
   }
 
   parse_timer.stop();
-  cout << "Done: LogPlot parse time: " << parse_timer.get_float_cpu_time();
-  cout << endl;
+  cout << "Done build LogPlots - total build time: ";
+  cout << parse_timer.get_float_cpu_time() << endl << endl;
   return(true);
 }
 
@@ -333,10 +361,10 @@ bool LogViewLauncher::buildHelmPlots()
   }
 
   parse_timer.stop();
-  cout << "Total HelmPlots: " << m_helm_plots.size() << endl;
+  cout << "  Total HelmPlots: " << m_helm_plots.size() << endl;
 
-  cout << "Done: HelmPlot parse time: " << parse_timer.get_float_cpu_time();
-  cout << endl;
+  cout << "Done building HelmPlots - total build time: ";
+  cout << parse_timer.get_float_cpu_time() << endl << endl;
   return(true);
 }
 
@@ -361,8 +389,8 @@ bool LogViewLauncher::buildVPlugPlots()
   }
 
   parse_timer.stop();
-  cout << "Done: VPlugPlot parse time: " << parse_timer.get_float_cpu_time();
-  cout << endl;
+  cout << "Done: VPlugPlot parse time: ";
+  cout << parse_timer.get_float_cpu_time() << endl << endl;
   return(true);
 }
 
@@ -391,12 +419,9 @@ bool LogViewLauncher::buildGraphical()
     }
   }
   
-  cout << "LogViewLauncher: adding HelmPlots (";
-  cout << m_helm_plots.size() << ")" << endl;
   // Populate the GUI with the HelmPlots built above
   for(k=0; k<m_helm_plots.size(); k++) 
     m_gui->addHelmPlot(m_helm_plots[k]);
-  cout << "LogViewLauncher: adding HelmPlots - DONE" << endl;
 
   // Populate the GUI with the VPlugPlots built above
   for(k=0; k<m_vplug_plots.size(); k++) 

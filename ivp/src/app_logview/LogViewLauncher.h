@@ -43,6 +43,7 @@ protected:
   void setBackground(int argc, char **argv);
   void setSizeOfGUI(int argc, char **argv);
   void setALogFiles(int argc, char **argv);
+  bool setALogFileSkews();
   void parseALogFiles();
   void parseALogFile(unsigned int);
 

@@ -55,6 +55,9 @@ private:
   inline bool cb_Step_i(int);
   static void cb_Step(Fl_Widget*, int);
 
+  inline bool cb_StepType_i(int);
+  static void cb_StepType(Fl_Widget*, int);
+
   inline void cb_PolyView_i();
   static void cb_PolyView(Fl_Widget*);
 
