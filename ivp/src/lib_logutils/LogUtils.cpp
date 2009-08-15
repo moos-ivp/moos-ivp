@@ -291,6 +291,103 @@ string getNextRawLine(FILE *fileptr)
 
 
 //--------------------------------------------------------
+// Procedure: getNextRawALogLine
+//     Notes: 
+
+ALogEntry getNextRawALogEntry(FILE *fileptr)
+{
+  ALogEntry entry;
+  if(!fileptr) {
+    cout << "failed getNextRawALogEntry() - null file pointer" << endl;
+    entry.setStatus("invalid");
+    return(entry);
+  }
+  
+  bool EOLine  = false;
+  bool EOFile  = false;
+  int  buffix  = 0;
+  int  lineix  = 0;
+  int  myint   = '\0';
+  char buff[MAX_LINE_LENGTH];
+
+  string time, var, src, val;
+
+  // Simple state machine: 
+  //   0: time
+  //   1: between time and variable
+  //   2: variable
+  //   3: between variable and source
+  //   4: source
+  //   5: between source and value
+  //   6: value
+  int  state = 0;
+
+  while((!EOLine) && (!EOFile) && (lineix < MAX_LINE_LENGTH)) {
+    myint = fgetc(fileptr);
+    unsigned char mychar = myint;
+    switch(myint) {
+    case EOF:
+      EOFile = true;
+      break;
+    case ' ':
+    case '\t':
+      if(state==0) {
+	buff[buffix] = '\0';
+	time = buff;
+	buffix = 0;
+	state=1;
+      }
+      else if(state==2) {
+	buff[buffix] = '\0';
+	var = buff;
+	buffix = 0;
+	state=3;
+      }
+      else if(state==4) {
+	buff[buffix] = '\0';
+	src = buff;
+	buffix = 0;
+	state=5;
+      }
+      break;	  
+    case '\n':
+      buff[buffix] = '\0';  // attach terminating NULL
+      val = buff;
+      EOLine = true;
+      break;
+    default:
+      if(state==1) 
+	state=2;
+      else if(state==3)
+	state=4;
+      else if(state==5)
+	state=6;
+      buff[buffix] = mychar;
+      buffix++;
+    }
+    lineix++;
+  }
+  
+  //cout << "t:" << time << " v:" << var << " s:" << src << " v:" << val << endl;
+
+  if((time!="")&&(var!="")&&(src!="")&&(val!="") && isNumber(time)) {
+    if(isNumber(val))
+      entry.set(atof(time.c_str()), var, src, atof(val.c_str()));
+    else
+      entry.set(atof(time.c_str()), var, src, val);
+  }
+  else {
+    if(EOFile)
+      entry.setStatus("eof");
+    else
+      entry.setStatus("invalid");
+  }
+  
+  return(entry);
+}
+
+
+//--------------------------------------------------------
 // Procedure: getSecsfromTimeOfDay
 //     Notes: Date String of form "11:50:04 AM"
 

@@ -14,12 +14,14 @@
 
 #include <vector>
 #include <string>
+#include "ALogEntry.h"
 
 std::string getVarName(const std::string& line);
 std::string getTimeStamp(const std::string& line);
 std::string getDataEntry(const std::string& line);
 
 std::string getNextRawLine(FILE*);
+ALogEntry   getNextRawALogEntry(FILE*);
 
 void   stripInsigDigits(std::string& line);
 void   shiftTimeStamp(std::string& line, double logstart);
