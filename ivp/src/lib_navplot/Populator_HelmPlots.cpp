@@ -25,73 +25,8 @@
 #include <iostream>
 #include "Populator_HelmPlots.h"
 #include "MBUtils.h"
-#include "FileBuffer.h"
 
 using namespace std;
-
-//---------------------------------------------------------------
-// Procedure: setFileALog
-
-bool Populator_HelmPlots::setFileALog(string filestr)
-{
-  FILE *f = fopen(filestr.c_str(), "r");
-  if(!f)
-    return(false);
-  fclose(f);
-
-  m_file = filestr;
-  vector<string> lines = fileBuffer(filestr);
-
-  unsigned int i;
-  for(i=0; i<lines.size(); i++) {
-    lines[i] = findReplace(lines[i], '\t', ' ');
-    lines[i] = compactConsecutive(lines[i], ' ');
-    lines[i] = stripBlankEnds(lines[i]);
-    
-    string time = stripBlankEnds(biteString(lines[i],' '));
-    string var  = stripBlankEnds(biteString(lines[i],' '));
-    if(var == "IVPHELM_SUMMARY") {
-      string source = stripBlankEnds(biteString(lines[i],' '));
-      string value  = stripBlankEnds(lines[i]);
-      if((time!="")&&(var!="")&&(source!="")&&(value!="")) {
-	m_helm_summary_times.push_back(atof(time.c_str()));
-	m_helm_summaries.push_back(value);
-      }
-    }
-    else if((var == "NODE_REPORT_LOCAL") || (var == "AIS_REPORT_LOCAL")) {
-      string source = stripBlankEnds(biteString(lines[i],' '));
-      if((source == "pNodeReporter") || (source == "pTransponderAIS")) {
-	string value  = stripBlankEnds(lines[i]);
-	if((time!="")&&(var!="")&&(source!="")&&(value!="")) 
-	  m_node_reports.push_back(value);
-      }
-    }
-  }
-
-  return(true);
-}
-
-//---------------------------------------------------------------
-// Procedure: populateFromAlog
-
-bool Populator_HelmPlots::populateFromALog()
-{
-  int i, vsize = m_helm_summaries.size();
-  if(vsize == 0)
-    return(false);
-
-  // Read throught the node reports and get vehicle name, type, length
-  // Results stored in m_helm_plot instance. A "false" value is returned
-  // if either (a) that info is not found, or (b) it is inconsistent.
-  bool handled = handleNodeReports();
-  if(!handled)
-    return(false);
-
-  for(i=0; i<vsize; i++)
-    m_helm_plot.add_entry(m_helm_summary_times[i], m_helm_summaries[i]);
-
-  return(true);
-}
 
 //---------------------------------------------------------------
 // Procedure: populateFromEntries

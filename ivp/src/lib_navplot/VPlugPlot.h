@@ -34,7 +34,8 @@ public:
   VPlugPlot() {};
   ~VPlugPlot() {};
 
-  bool            addEvent(std::string var, std::string val, double time);
+  bool            addEvent(const std::string& var, 
+			   const std::string& val, double time);
   void            setVehiName(std::string s) {m_vehi_name = s;};
 
   VPlug_GeoShapes getVPlugByIndex(unsigned int index) const;

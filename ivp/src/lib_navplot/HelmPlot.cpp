@@ -49,7 +49,7 @@ void HelmPlot::set_vehi_type(string str)
 }
 
 //---------------------------------------------------------------
-// Procedure: add_helm_entry
+// Procedure: add_entry
 //      Note: Time must be in ascending order. If new pair doesn't
 //            obey, no action is taken, and false is returned.
 
@@ -89,9 +89,14 @@ bool HelmPlot::add_entry(double gtime, string gval)
   
   // Make an abbreviated mode string
   string mode_short = modeShorten(mode);
-      
+   
+  int iter_v = atoi(iter.c_str());
+  if(iter_v < 0)
+    iter_v = 0;
+   
   m_time.push_back(gtime);
-  m_helm_iter.push_back(iter);
+  m_helm_iter_s.push_back(iter);
+  m_helm_iter_v.push_back((unsigned int)(iter_v));
   m_helm_utc.push_back(utc);
   m_helm_mode.push_back(mode);
   m_helm_mode_short.push_back(mode_short);
@@ -107,11 +112,11 @@ bool HelmPlot::add_entry(double gtime, string gval)
 
 string HelmPlot::get_value_by_index(string qtype, unsigned int index) const
 {  
-  if((index < 0) || (index >= m_time.size()))
+  if(index >= m_time.size())
     return("index-out-of-range");
   
   if(qtype == "iter")
-    return(m_helm_iter[index]);
+    return(m_helm_iter_s[index]);
   else if(qtype == "mode")
     return(m_helm_mode[index]);
   else if(qtype == "utc")
@@ -131,10 +136,64 @@ string HelmPlot::get_value_by_index(string qtype, unsigned int index) const
 
 double HelmPlot::get_time_by_index(unsigned int index) const
 {
-  if((index >= 0) && (index < m_time.size()))
+  if(index < m_time.size())
     return(m_time[index]);
   else
     return(0);
+}
+     
+//---------------------------------------------------------------
+// Procedure: get_time_by_iter_add
+
+double HelmPlot::get_time_by_iter_add(double ctime, 
+				      unsigned int iter_offset) const
+{
+  unsigned int curr_index = get_index_by_time(ctime);
+  unsigned int curr_iter  = m_helm_iter_v[curr_index]; 
+  unsigned int targ_iter  = curr_iter + iter_offset;
+
+  unsigned int targ_index = curr_index; // for now.
+
+  bool done = false;
+  while(!done) {
+    if((targ_index+1) < m_time.size()) {
+      targ_index++;
+      unsigned int new_iter = m_helm_iter_v[targ_index];
+      if(new_iter >= targ_iter)
+	done = true;
+    }
+    else
+      done = true;
+  }
+  return(m_time[targ_index]);
+}
+     
+//---------------------------------------------------------------
+// Procedure: get_time_by_iter_sub
+
+double HelmPlot::get_time_by_iter_sub(double ctime, 
+				      unsigned int iter_offset) const
+{
+  unsigned int curr_index = get_index_by_time(ctime);
+  unsigned int curr_iter  = m_helm_iter_v[curr_index]; 
+  unsigned int targ_iter  = 0;
+  if(curr_iter >= iter_offset)
+    targ_iter = (curr_iter - iter_offset);
+
+  unsigned int targ_index = curr_index; // for now.
+
+  bool done = false;
+  while(!done) {
+    if(targ_index > 0) {
+      targ_index--;
+      unsigned int new_iter = m_helm_iter_v[targ_index];
+      if(new_iter <= targ_iter)
+	done = true;
+    }
+    else
+      done = true;
+  }
+  return(m_time[targ_index]);
 }
      
 //---------------------------------------------------------------
@@ -184,7 +243,7 @@ string HelmPlot::get_value_by_time(string qtype, double gtime) const
   int index = get_index_by_time(gtime);
 
   if(qtype == "iter")
-    return(m_helm_iter[index]);
+    return(m_helm_iter_s[index]);
   else if(qtype == "mode")
     return(m_helm_mode[index]);
   else if(qtype == "mode_short")
@@ -213,7 +272,7 @@ void HelmPlot::print() const
   cout << " VehicleLength: " << m_vehi_length << endl;
   for(i=0; i<m_time.size(); i++) {
     cout << "time: " << m_time[i] << endl;
-    cout << "  iter:   " << m_helm_iter[i] << endl;
+    cout << "  iter:   " << m_helm_iter_s[i] << endl;
     cout << "  mode:   " << m_helm_mode[i] << endl;
     cout << "  utc:    " << m_helm_utc[i] << endl;
     cout << "  active: " << m_helm_active_bhvs[i] << endl;

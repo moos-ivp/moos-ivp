@@ -35,8 +35,6 @@ public:
   Populator_LogPlots() {};
   ~Populator_LogPlots() {};
 
-  bool    setFileALog(std::string);
-  bool    populateFromALog();
   bool    populateFromEntries(const std::vector<ALogEntry>&);
 
   LogPlot getLogPlot(unsigned int);
@@ -54,23 +52,9 @@ public:
 protected:
   std::string               m_vname;
   std::vector<LogPlot>      m_logplots;
-
   std::vector<std::string>  m_node_reports;
 
   // Mapping from logplot variable to index in m_loplots vector
   std::map<std::string, unsigned int> m_logplot_var_map;
-  
-  std::vector<std::string> m_alog_entry_time;
-  std::vector<std::string> m_alog_entry_var;
-  std::vector<std::string> m_alog_entry_src;
-  std::vector<std::string> m_alog_entry_val;
 };
 #endif 
-
-
-
-
-
-
-
-

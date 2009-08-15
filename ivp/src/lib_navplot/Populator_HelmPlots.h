@@ -34,8 +34,6 @@ public:
   Populator_HelmPlots() {};
   ~Populator_HelmPlots() {};
 
-  bool     setFileALog(std::string);
-  bool     populateFromALog();
   bool     populateFromEntries(const std::vector<ALogEntry>&);
   HelmPlot getHelmPlot() {return(m_helm_plot);};
 
@@ -43,16 +41,11 @@ protected:
   bool     handleNodeReports();
 
 protected:
-  std::string  m_file;
   HelmPlot     m_helm_plot;
 
   // Dont need timestamps with node reports - we just want to get
   // the vehicle name, type and length from the node reports
   std::vector<std::string>  m_node_reports;
-
-  // Need timestamps with each helm summary
-  std::vector<std::string>  m_helm_summaries;
-  std::vector<double>       m_helm_summary_times;
 };
 #endif 
 

@@ -39,6 +39,10 @@ public:
   bool   add_entry(double time, std::string helm_summary);
   
   double get_time_by_index(unsigned int index) const;
+  double get_time_by_iter_add(double curr_time, 
+			      unsigned int iter_offset) const;
+  double get_time_by_iter_sub(double curr_time, 
+			      unsigned int iter_offset) const;
   
   std::string  get_value_by_index(std::string value_type, 
 				  unsigned int index) const;
@@ -52,7 +56,7 @@ public:
   double       get_min_time() const;
   double       get_max_time() const;
   void         print()        const;
-  
+
 protected:
   int get_index_by_time(double) const;
 
@@ -62,7 +66,8 @@ protected:
   double      m_vehi_length;
 
   std::vector<double>      m_time;
-  std::vector<std::string> m_helm_iter;
+  std::vector<unsigned int> m_helm_iter_v;
+  std::vector<std::string> m_helm_iter_s;
   std::vector<std::string> m_helm_mode;
   std::vector<std::string> m_helm_mode_short;
   std::vector<std::string> m_helm_utc;

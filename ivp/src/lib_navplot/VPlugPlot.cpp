@@ -32,7 +32,7 @@ using namespace std;
 //---------------------------------------------------------------
 // Procedure: addEvent
 
-bool VPlugPlot::addEvent(string var, string val, double time)
+bool VPlugPlot::addEvent(const string& var, const string& val, double time)
 {
   double latest_vplug_time = -1;
   unsigned int vsize = m_time.size();
@@ -50,10 +50,10 @@ bool VPlugPlot::addEvent(string var, string val, double time)
 
   if(var == "VIEW_POINT")
     m_vplugs[vsize-1].addPoint(val);
-  else if(var == "VIEW_SEGLIST")
-    m_vplugs[vsize-1].addSegList(val);
   else if(var == "VIEW_POLYGON")
     m_vplugs[vsize-1].addPolygon(val);
+  else if(var == "VIEW_SEGLIST")
+    m_vplugs[vsize-1].addSegList(val);
   else if(var == "VIEW_CIRCLE")
     m_vplugs[vsize-1].addCircle(val);
   else if(var == "GRID_CONFIG")

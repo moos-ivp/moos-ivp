@@ -23,7 +23,6 @@
 #ifndef POPULATOR_VPLUG_PLOTS_HEADER
 #define POPULATOR_VPLUG_PLOTS_HEADER
 
-#include <string>
 #include <vector>
 #include "VPlugPlot.h"
 #include "ALogEntry.h"
@@ -34,19 +33,12 @@ public:
   Populator_VPlugPlots() {};
   ~Populator_VPlugPlots() {};
 
-  bool      populateRawInfoFromALog(std::string);
-  bool      populateVPlugPlotFromRawInfo();
   bool      populateFromEntries(const std::vector<ALogEntry>&);
 
   VPlugPlot getVPlugPlot() {return(m_vplug_plot);};
 
 protected:
   VPlugPlot m_vplug_plot;
-
-  // Need timestamps with each visual event
-  std::vector<std::string>  m_visual_event_var;
-  std::vector<std::string>  m_visual_event_val;
-  std::vector<double>       m_visual_event_time;
 };
 #endif 
 

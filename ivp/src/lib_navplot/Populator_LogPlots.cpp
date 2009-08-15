@@ -25,105 +25,8 @@
 #include <cstdlib>
 #include "Populator_LogPlots.h"
 #include "MBUtils.h"
-#include "FileBuffer.h"
 
 using namespace std;
-
-//---------------------------------------------------------------
-// Procedure: setFileALog
-//   Purpose: Just grab the raw data from the alog files and build
-//            four vectors - one for each alog column. No further
-//            processing.
-
-bool Populator_LogPlots::setFileALog(string filestr)
-{
-  FILE *f = fopen(filestr.c_str(), "r");
-  if(!f)
-    return(false);
-  fclose(f);
-
-  vector<string> lines = fileBuffer(filestr);
-  unsigned int i, line_count = lines.size();
-  for(i=0; i<line_count; i++) {
-    lines[i] = findReplace(lines[i], '\t', ' ');
-    lines[i] = compactConsecutive(lines[i], ' ');
-    lines[i] = stripBlankEnds(lines[i]);
-    
-    string time, variable, source, value;
-    
-    vector<string> vector_a = chompString(lines[i], ' ');
-    time = vector_a[0];
-    if(vector_a.size() == 2) {
-      vector<string> vector_b = chompString(vector_a[1], ' ');
-      variable = vector_b[0];
-      if(vector_b.size() == 2) {
-	vector<string> vector_c = chompString(vector_b[1], ' ');
-	source = vector_c[0];
-	if(vector_c.size() == 2)
-	  value = vector_c[1];
-      }
-    }
-    
-    if((time!="")&&(variable!="")&&(source!="")&&(value!="")) {
-      m_alog_entry_time.push_back(time);
-      m_alog_entry_var.push_back(variable);
-      m_alog_entry_src.push_back(source);
-      m_alog_entry_val.push_back(value);
-    }
-  }
-  return(true);
-}
-
-
-//---------------------------------------------------------------
-// Procedure: populateFromALog
-
-bool Populator_LogPlots::populateFromALog()
-{
-  unsigned int i, vsize = m_alog_entry_time.size();
-  
-  for(i=0; i<vsize; i++) {
-    string var_name  = m_alog_entry_var[i];
-    string var_value = m_alog_entry_val[i];
-    double itime     = atof(m_alog_entry_time[i].c_str());
-    // First determine if a LogPlot already exists for the variable
-    map<string, unsigned int>::iterator p;
-    p = m_logplot_var_map.find(var_name);
-    if(p == m_logplot_var_map.end()) {
-      if(isNumber(var_value)) { 
-	double dvalue = atof(var_value.c_str());
-	LogPlot new_logplot;
-	new_logplot.set_varname(var_name);
-	new_logplot.set_vehi_name(m_vname);
-	new_logplot.set_value(itime, dvalue);
-	m_logplots.push_back(new_logplot);
-	int new_index = m_logplots.size()-1;
-	m_logplot_var_map[var_name] = new_index; 
-      }
-    }
-    else {
-      double dvalue = atof(var_value.c_str());
-      int found_index = p->second;
-      m_logplots[found_index].set_value(itime, dvalue);
-    }
-
-    if((var_name == "NODE_REPORT_LOCAL") || (var_name == "AIS_REPORT_LOCAL"))
-      m_node_reports.push_back(var_value);
-  }
-
-  // Handle node reports just to get the alog file vehicle name
-  handleNodeReports();
-
-  // Once the vehicle name has been determined, associate the 
-  // vehicle name with each log plot.
-  vsize = m_logplots.size();
-  for(i=0; i<vsize; i++)
-    m_logplots[i].set_vehi_name(m_vname);
-
-  cout << "Total LogPlots: " << m_logplots.size() << endl;
-
-  return(true);
-}
 
 //---------------------------------------------------------------
 // Procedure: populateFromEntries
@@ -171,7 +74,8 @@ bool Populator_LogPlots::populateFromEntries(const vector<ALogEntry>& entries)
   for(i=0; i<vsize; i++)
     m_logplots[i].set_vehi_name(m_vname);
 
-  cout << "Total LogPlots: " << m_logplots.size() << endl;
+  cout << "  Total LogPlots (" << m_vname << "): ";
+  cout << m_logplots.size() << endl;
 
   return(true);
 }
