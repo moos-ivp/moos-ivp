@@ -48,11 +48,11 @@ REPLAY_GUI::REPLAY_GUI(int g_w, int g_h, const char *g_l)
 
   augmentMenu();
 
-  int info_size=10;
+  int    info_size = 10;
+  double ipf_pct   = 0.3;
 
   m_np_viewer_hgt = h()-340;
-
-  np_viewer = new NavPlotViewer(0, 30, w(), m_np_viewer_hgt);
+  np_viewer = new NavPlotViewer(0, 30, w()*(1-ipf_pct), m_np_viewer_hgt);
   cmviewer = np_viewer;
 
   int lp_height = 140;
@@ -60,6 +60,11 @@ REPLAY_GUI::REPLAY_GUI(int g_w, int g_h, const char *g_l)
   
   lp_viewer = new LogPlotViewer(55, (h()-(lp_height-margin)), 
   				w()-110, (lp_height-(2*margin)));
+
+
+  ipf_viewer_a = new IvPFuncViewer(w()*(1-ipf_pct), 30, 
+				   w()*(ipf_pct), h()-700);
+  ipf_viewer_b = 0;
 
   double time_pos = (w()/2)-140;
   disp_time = new MY_Output(time_pos, h()-(lp_height+26), 70, 22, "Time:"); 
@@ -288,7 +293,7 @@ void REPLAY_GUI::augmentMenu()
   mbar->add("Replay/Streaming Step 10", 0, (Fl_Callback*)REPLAY_GUI::cb_StreamStep, (void*)10, FL_MENU_RADIO|FL_MENU_DIVIDER);
 
   mbar->add("Replay/Step by Seconds",  0, (Fl_Callback*)REPLAY_GUI::cb_StepType, (void*)0, FL_MENU_RADIO|FL_MENU_VALUE);
-  mbar->add("Replay/Step by HelmIter",  0, (Fl_Callback*)REPLAY_GUI::cb_StepType, (void*)1, FL_MENU_RADIO|FL_MENU_DIVIDER);
+  mbar->add("Replay/Step by Helm Iterations",  0, (Fl_Callback*)REPLAY_GUI::cb_StepType, (void*)1, FL_MENU_RADIO|FL_MENU_DIVIDER);
 
   mbar->add("Replay/Step Ahead 1",  ']', (Fl_Callback*)REPLAY_GUI::cb_Step, (void*)1, 0);
   mbar->add("Replay/Step Back  1",  '[', (Fl_Callback*)REPLAY_GUI::cb_Step, (void*)-1, 0);
@@ -317,6 +322,14 @@ int REPLAY_GUI::handle(int event)
     Fl_Window::handle(event);
     lpv_curr_time = lp_viewer->get_curr_time();
     np_viewer->setCurrTime(lpv_curr_time);
+    if(ipf_viewer_a) {
+      ipf_viewer_a->setCurrTime(lpv_curr_time);
+      ipf_viewer_a->redraw();
+    }
+    if(ipf_viewer_b) {
+      ipf_viewer_b->setCurrTime(lpv_curr_time);
+      ipf_viewer_b->redraw();
+    }
     return(1);
     break;
   case FL_RELEASE:
@@ -334,8 +347,12 @@ inline bool REPLAY_GUI::cb_Step_i(int val) {
   updateXY();
   double curr_time = np_viewer->getCurrTime();
   lp_viewer->set_curr_time(curr_time);
+  ipf_viewer_a->setCurrTime(curr_time);
+
   np_viewer->redraw();
   lp_viewer->redraw();
+  if(ipf_viewer_a) ipf_viewer_a->redraw();
+  if(ipf_viewer_b) ipf_viewer_b->redraw();
   return(true);
 }
 void REPLAY_GUI::cb_Step(Fl_Widget* o, int v) {
@@ -376,6 +393,32 @@ inline void REPLAY_GUI::cb_RightLogPlot_i(int index) {
 void REPLAY_GUI::cb_RightLogPlot(Fl_Widget* o, int v) {
   int val = (int)(v);
   ((REPLAY_GUI*)(o->parent()->user_data()))->cb_RightLogPlot_i(val);
+}
+
+//----------------------------------------- TopPlotIPF
+inline void REPLAY_GUI::cb_TopPlotIPF_i(int index) {
+  if(!ipf_viewer_a)
+    return;
+  ipf_viewer_a->setPlotIndex(index);
+  ipf_viewer_a->redraw();
+  updateXY();
+}
+void REPLAY_GUI::cb_TopPlotIPF(Fl_Widget* o, int v) {
+  int val = (int)(v);
+  ((REPLAY_GUI*)(o->parent()->user_data()))->cb_TopPlotIPF_i(val);
+}
+
+//----------------------------------------- BotPlotIPF
+inline void REPLAY_GUI::cb_BotPlotIPF_i(int index) {
+  if(!ipf_viewer_b)
+    return;
+  ipf_viewer_b->setPlotIndex(index);
+  ipf_viewer_b->redraw();
+  updateXY();
+}
+void REPLAY_GUI::cb_BotPlotIPF(Fl_Widget* o, int v) {
+  int val = (int)(v);
+  ((REPLAY_GUI*)(o->parent()->user_data()))->cb_BotPlotIPF_i(val);
 }
 
 //----------------------------------------- LeftHelmPlot
@@ -640,12 +683,12 @@ void REPLAY_GUI::addLogPlot(const LogPlot& logplot)
 
   string labelA, labelB;
   if(vname != "") {
-    labelA = "LogPlots/"      + vname + "/" + logplot.get_varname();
-    labelB = "(2nd)LogPlots/" + vname + "/" + logplot.get_varname();
+    labelA = "LogPlots(L)/" + vname + "/" + logplot.get_varname();
+    labelB = "LogPlots(R)/" + vname + "/" + logplot.get_varname();
   }
   else {
-    labelA = "LogPlots/"      + logplot.get_varname();
-    labelB = "(2nd)LogPlots/" + logplot.get_varname();
+    labelA = "LogPlots(L)/" + logplot.get_varname();
+    labelB = "LogPlots(R)/" + logplot.get_varname();
   }
 
   mbar->add(labelA.c_str(), 0, 
@@ -678,9 +721,34 @@ void REPLAY_GUI::addHelmPlot(const HelmPlot& helm_plot)
   mbar->add(label_a.c_str(), 0, 
 	    (Fl_Callback*)REPLAY_GUI::cb_LeftHelmPlot,  (void*)(count-1));
   mbar->add(label_b.c_str(), 0, 
-	    (Fl_Callback*)REPLAY_GUI::cb_RightHelmPlot, (void*)(count-1));
+	    (Fl_Callback*)REPLAY_GUI::cb_RightHelmPlot, (void*)(count-1));  
+}
 
-  
+//----------------------------------------------------------
+// Procedure: addIPF_Plot
+
+void REPLAY_GUI::addIPF_Plot(const IPF_Plot& ipf_plot)
+{
+  string vname  = toupper(ipf_plot.getVName());
+  string source = toupper(ipf_plot.getSource());
+
+  if(ipf_viewer_a) {
+    unsigned int count = ipf_viewer_a->addIPF_Plot(ipf_plot);
+    if(count > 0) {
+      string label = "IPFPlots(1)/" + vname + "/" + source;
+      mbar->add(label.c_str(), 0, 
+		(Fl_Callback*)REPLAY_GUI::cb_TopPlotIPF, (void*)(count-1));
+    }    
+  }
+
+  if(ipf_viewer_b) {
+    unsigned int count = ipf_viewer_b->addIPF_Plot(ipf_plot);
+    if(count > 0) {
+      string label = "IPFPlots(2)/" + vname + "/" + source;
+      mbar->add(label.c_str(), 0, 
+		(Fl_Callback*)REPLAY_GUI::cb_BotPlotIPF, (void*)(count-1));
+    }    
+  }
 }
 
 //----------------------------------------------------------

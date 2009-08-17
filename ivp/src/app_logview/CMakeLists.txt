@@ -15,6 +15,7 @@ endif (${WIN32})
 SET(SRC
    LogPlotViewer.cpp
    NavPlotViewer.cpp
+   IvPFuncViewer.cpp
    REPLAY_GUI.cpp
    LogViewLauncher.cpp
    main.cpp
@@ -31,6 +32,7 @@ TARGET_LINK_LIBRARIES(logview
    marineview
    MOOSUtility
    navplot
+   ipfview
    logutils
    geometry
    mbutil

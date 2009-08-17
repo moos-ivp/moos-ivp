@@ -28,6 +28,7 @@
 #include "Populator_LogPlots.h"
 #include "Populator_VPlugPlots.h"
 #include "Populator_HelmPlots.h"
+#include "Populator_IPF_Plot.h"
 #include "ALogEntry.h"
 #include "REPLAY_GUI.h"
 
@@ -46,10 +47,12 @@ protected:
   bool setALogFileSkews();
   void parseALogFiles();
   void parseALogFile(unsigned int);
+  void determineVehicleNames();
 
   bool buildLogPlots();
   bool buildHelmPlots();
   bool buildVPlugPlots();
+  bool buildIPFPlots();
   
   bool buildGraphical();
 
@@ -66,16 +69,24 @@ private:
   std::string  m_tif_file;
 
   // Intermediate semi-raw data from the alog files
+  // Outer vector index - one per vehicle, i.e., alog file.
   std::vector<std::vector<ALogEntry> > m_entries_log_plot;
-  std::vector<std::vector<ALogEntry> > m_entries_bhv_ipf;
   std::vector<std::vector<ALogEntry> > m_entries_vplug_plot;
   std::vector<std::vector<ALogEntry> > m_entries_helm_plot;
+  std::vector<std::vector<ALogEntry> > m_entries_ipf_plot;
+
+  std::vector<std::vector<std::string> > m_node_reports;
+  std::vector<std::string> m_vehicle_name;
+  std::vector<std::string> m_vehicle_type;
+  std::vector<double>      m_vehicle_length;
 
   // The various plots created from the alog data before passing
-  // to the logview gui or viewerws
+  // to the logview gui or viewerws.
+  // Outer vector index - one per vehicle, i.e., alog file.
   std::vector<std::vector<LogPlot> > m_log_plots;
   std::vector<HelmPlot>  m_helm_plots;
   std::vector<VPlugPlot> m_vplug_plots;
+  std::vector<IPF_Plot>  m_ipf_plots;
 
   REPLAY_GUI *m_gui;
 };

@@ -50,7 +50,7 @@ NavPlotViewer::NavPlotViewer(int x, int y, int w, int h, const char *l)
   m_trails         = "to-present"; // "none, to-present, window, all"
   m_trail_gap      = 1;
 
-  m_curr_time      = -1;
+  m_curr_time      = 0;
   m_min_time       = -1;
   m_max_time       = -1;
   m_step_by_secs   = true;

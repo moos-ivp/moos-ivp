@@ -28,6 +28,7 @@
 #include <FL/Fl_Menu_Bar.H>
 #include "NavPlotViewer.h"
 #include "LogPlotViewer.h"
+#include "IvPFuncViewer.h"
 #include <FL/Fl_Hold_Browser.H>
 #include "MY_Output.h"
 #include "MY_Button.h"
@@ -42,6 +43,7 @@ public:
   
   void addLogPlot(const LogPlot&);
   void addHelmPlot(const HelmPlot&);
+  void addIPF_Plot(const IPF_Plot &v); 
   void setLogFile(std::string str)  {log_file = str;};
   void conditional_step();
   void capture_to_file();
@@ -69,6 +71,14 @@ private:
 
   inline void cb_RightLogPlot_i(int);
   static void cb_RightLogPlot(Fl_Widget*, int);
+
+
+  inline void cb_TopPlotIPF_i(int);
+  static void cb_TopPlotIPF(Fl_Widget*, int);
+
+  inline void cb_BotPlotIPF_i(int);
+  static void cb_BotPlotIPF(Fl_Widget*, int);
+
 
   inline void cb_LeftHelmPlot_i(int);
   static void cb_LeftHelmPlot(Fl_Widget*, int);
@@ -100,7 +110,9 @@ private:
 public:
   NavPlotViewer *np_viewer;
   LogPlotViewer *lp_viewer;
-
+  IvPFuncViewer *ipf_viewer_a;
+  IvPFuncViewer *ipf_viewer_b;
+  
 protected:
   double      m_np_viewer_hgt;
 

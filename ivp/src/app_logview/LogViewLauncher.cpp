@@ -57,10 +57,13 @@ REPLAY_GUI *LogViewLauncher::launch(int argc, char **argv)
 
   bool ok = setALogFileSkews();
   parseALogFiles();
+  determineVehicleNames();
   
   ok = ok && buildLogPlots();
   ok = ok && buildHelmPlots();
   ok = ok && buildVPlugPlots();
+  ok = ok && buildIPFPlots();
+
   ok = ok && buildGraphical();
 
   total_timer.stop();
@@ -258,8 +261,9 @@ void LogViewLauncher::parseALogFile(unsigned int index)
   if(!f)
     return;
 
+  vector<string>    node_reports;
   vector<ALogEntry> entries_log_plot;
-  vector<ALogEntry> entries_bhv_ipf;
+  vector<ALogEntry> entries_ipf_plot;
   vector<ALogEntry> entries_vplug_plot;
   vector<ALogEntry> entries_helm_plot;
 
@@ -273,16 +277,17 @@ void LogViewLauncher::parseALogFile(unsigned int index)
       done = true;
     else {
       string var = entry.getVarName();
+      string src = entry.getSource();
       bool   isnum = entry.isNumerical();
 
       entry.skewBackward(skew);
       if(isnum)
 	entries_log_plot.push_back(entry);
       else {
-	if((var == "AIS_REPORT_LOCAL") || (var == "NODE_REPORT_LOCAL")) {
-	  entries_log_plot.push_back(entry);
-	  entries_helm_plot.push_back(entry);
-	}
+	if((var=="AIS_REPORT_LOCAL") && (src=="pTransponderAIS"))
+	  node_reports.push_back(entry.getStringVal());
+	else if((var=="NODE_REPORT_LOCAL") && (src=="pNodeReporter"))
+	  node_reports.push_back(entry.getStringVal());
 	else if((var == "VIEW_POINT")   || (var == "VIEW_POLYGON") ||
 		(var == "VIEW_SEGLIST") || (var == "VIEW_CIRCLE")  ||
 		(var == "GRID_INIT")    || (var == "VIEW_MARKER")  ||
@@ -292,18 +297,112 @@ void LogViewLauncher::parseALogFile(unsigned int index)
 	else if(var == "IVPHELM_SUMMARY")
 	  entries_helm_plot.push_back(entry);
 	else if(var == "BHV_IPF")
-	  entries_bhv_ipf.push_back(entry);
+	  entries_ipf_plot.push_back(entry);
       }
     }
   }
   fclose(f);
-  
+
+  m_node_reports.push_back(node_reports);
   m_entries_log_plot.push_back(entries_log_plot);
-  m_entries_bhv_ipf.push_back(entries_bhv_ipf);
+  m_entries_ipf_plot.push_back(entries_ipf_plot);
   m_entries_vplug_plot.push_back(entries_vplug_plot);
   m_entries_helm_plot.push_back(entries_helm_plot);
+
+  unsigned int nr_size = m_node_reports[index].size();
 }
   
+//-------------------------------------------------------------
+// Procedure: determineVehicleNames
+//   Purpose: To determine, for each alog file, i.e., vehicle, the
+//            vehicle name, type and length from contents of either
+//            the "NODE_REPORT_LOCAL" or older "AIS_REPORT_LOCAL"
+//            variable entries. 
+//            The member variables m_vehicle_name, _type, _length
+//            will be filled in. 
+
+void LogViewLauncher::determineVehicleNames()
+{
+  MBTimer parse_timer;
+  parse_timer.start();
+  cout << "Determining vehicle names from ALog Files..." << endl;
+
+  unsigned int j, jsize = m_alog_files.size();
+  for(j=0; j<jsize; j++) {
+    string vname = "V" + intToString(j) + "_";
+    string vtype = "ship";
+    string vlength = "10";
+    bool   vname_set = false;
+    bool   vtype_set = false;
+    bool   vlength_set = false;
+    bool   vname_inconsistent = false;
+    bool   vtype_inconsistent = false;
+    bool   vlength_inconsistent = false;
+
+    if(j < (m_node_reports.size())) {
+      unsigned int k, ksize = m_node_reports[j].size();
+      for(k=0; k<ksize; k++) {
+	vector<string> svector = parseString(m_node_reports[j][k],',');
+	unsigned int i, vsize = svector.size();
+	for(i=0; i<vsize; i++) {
+	  string left  = stripBlankEnds(tolower(biteString(svector[i],'=')));
+	  string right = stripBlankEnds(svector[i]);
+
+	  if(left == "name") {
+	    if(!vname_set || (vname == right)) {
+	      vname = right;
+	      vname_set = true;
+	    }
+	    else
+	      vname_inconsistent = true;
+	  }
+	  else if(left == "type") {
+	    if(!vtype_set || (vtype == right)) {
+	      vtype = right;
+	      vtype_set = true;
+	    }
+	    else
+	      vtype_inconsistent = true;
+	  }
+	  else if(left == "length") {
+	    if(!vlength_set || (vlength == right)) {
+	      vlength = right;
+	      vlength_set = true;
+	    }
+	    else
+	      vlength_inconsistent = true;
+	  }
+	}
+      }
+    }
+    m_vehicle_name.push_back(vname);
+    m_vehicle_type.push_back(vtype);
+    m_vehicle_length.push_back(atof(vlength.c_str()));
+    
+    if(vname_inconsistent) {
+      cout << "Warning: Vehicle name for file " << m_alog_files[j];
+      cout << " was inconsistent across node reports." << endl;
+    }
+    if(vtype_inconsistent) {
+      cout << "Warning: Vehicle type for file " << m_alog_files[j];
+      cout << " was inconsistent across node reports." << endl;
+    }
+    if(vlength_inconsistent) {
+      cout << "Warning: Vehicle length for file " << m_alog_files[j];
+      cout << " was inconsistent across node reports." << endl;
+    }
+
+    cout << "  File " << m_alog_files[j] << " name=" << vname << endl;
+    cout << "  File " << m_alog_files[j] << " type=" << vtype << endl;
+    cout << "  File " << m_alog_files[j] << " len=" << vlength << endl;
+  }
+
+  parse_timer.stop();
+  cout << "Done setting vehicle names - total parse time: ";
+  cout << parse_timer.get_float_cpu_time() << endl << endl;
+
+}
+
 //-------------------------------------------------------------
 // Procedure: buildLogPlots
 //            
@@ -318,7 +417,7 @@ bool LogViewLauncher::buildLogPlots()
 
   for(i=0; i<vsize; i++) {
     Populator_LogPlots pop_lp;
-    pop_lp.setDefaultVName("V_" + intToString(i)); 
+    pop_lp.setVName(m_vehicle_name[i]); 
     bool ok = pop_lp.populateFromEntries(m_entries_log_plot[i]);
     if(!ok) {
       cout << "Problem with file " << m_alog_files[i] << ". Exiting" << endl;
@@ -360,6 +459,12 @@ bool LogViewLauncher::buildHelmPlots()
     m_helm_plots.push_back(pop_hp.getHelmPlot());
   }
 
+  for(i=0; i<vsize; i++) {
+    m_helm_plots[i].set_vehi_name(m_vehicle_name[i]);
+    m_helm_plots[i].set_vehi_type(m_vehicle_type[i]);
+    m_helm_plots[i].set_vehi_length(m_vehicle_length[i]);
+  }
+
   parse_timer.stop();
   cout << "  Total HelmPlots: " << m_helm_plots.size() << endl;
 
@@ -396,6 +501,38 @@ bool LogViewLauncher::buildVPlugPlots()
 
 
 //-------------------------------------------------------------
+// Procedure: buildIPFPlots
+
+bool LogViewLauncher::buildIPFPlots()
+{
+  MBTimer parse_timer;
+  parse_timer.start();
+  cout << "Refining alog data to build IPF_Plots..." << endl;
+
+  unsigned int i, vsize = m_alog_files.size();
+  for(i=0; i<vsize; i++) {
+    Populator_IPF_Plot pop_ipf;
+    cout << "  size of m_entries_ipf_plot: " << m_entries_ipf_plot.size() << endl;
+    bool ok = pop_ipf.populateFromEntries(m_entries_ipf_plot[i]);
+    if(!ok) {
+      cout << "  Problem with file " << m_alog_files[i] << endl;
+      return(false);
+    }
+    m_ipf_plots.push_back(pop_ipf.getPlotIPF());
+  }
+
+  for(i=0; i<vsize; i++) {
+    m_ipf_plots[i].setVName(m_vehicle_name[i]);
+  }
+
+  parse_timer.stop();
+  cout << "Done: IPF_Plot parse time: ";
+  cout << parse_timer.get_float_cpu_time() << endl << endl;
+  return(true);
+}
+
+
+//-------------------------------------------------------------
 // Procedure: buildGraphical
 
 bool LogViewLauncher::buildGraphical()
@@ -419,13 +556,17 @@ bool LogViewLauncher::buildGraphical()
     }
   }
   
-  // Populate the GUI with the HelmPlots built above
+  // Populate the GUI with the priot-built HelmPlots
   for(k=0; k<m_helm_plots.size(); k++) 
     m_gui->addHelmPlot(m_helm_plots[k]);
 
-  // Populate the GUI with the VPlugPlots built above
+  // Populate the GUI with the prior-built VPlugPlots
   for(k=0; k<m_vplug_plots.size(); k++) 
     m_gui->np_viewer->addVPlugPlot(m_vplug_plots[k]);
+
+  // Populate the GUI with the prior-built IPF_Plots
+  for(k=0; k<m_ipf_plots.size(); k++) 
+    m_gui->addIPF_Plot(m_ipf_plots[k]);
 
 #if 0
   // Populate the GUI with the polygons built above

@@ -46,7 +46,7 @@ class LogPlotViewer : public Fl_Gl_Window
  public:
   unsigned int add_logplot(const LogPlot&);
   void   set_curr_time(double v);
-  double get_curr_time() {return(curr_time);};
+  double get_curr_time() {return(m_curr_time);};
   void   adjust_zoom(std::string);
 
   void   set_left_plot(unsigned int);
@@ -68,14 +68,13 @@ class LogPlotViewer : public Fl_Gl_Window
   std::string get_max_val2();
 
  protected:
-  int   handle_left_mouse(int, int);
-  int   handle_right_mouse(int, int);
-  void  draw_logplot();
-  bool  fill_cache();
+  int   handleLeftMouse(int, int);
+  void  drawLogPlot();
+  bool  fillCache();
 
  protected:
-  std::vector<LogPlot>     logplot;
-  double curr_time;
+  std::vector<LogPlot> m_logplots;
+  double m_curr_time;
 
   std::vector<double>  cache_x1;
   std::vector<double>  cache_y1;
@@ -86,14 +85,12 @@ class LogPlotViewer : public Fl_Gl_Window
   unsigned int  view_index1;  // Index in logplot vector being viewed
   unsigned int  view_index2;  // Index in logplot vector being viewed
 
-  double margin;
-
+  double m_margin;
   double m_extreme_min_time;
   double m_extreme_max_time;
   double m_display_min_time;
   double m_display_max_time;
-
-  double w_step;
+  double m_step;
 };
 
 #endif 
