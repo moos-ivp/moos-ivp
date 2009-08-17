@@ -49,11 +49,20 @@ public:
   void capture_to_file();
   void updateXY();
 
+  bool inNavPlotViewer();
+  bool inLogPlotViewer();
+  bool inIPFViewerA();
+  bool inIPFViewerB();
+
 protected:
   void augmentMenu();
   int  handle(int);
  
 private:
+  void cb_HandleUpDown_i(int);
+  void cb_HandleLeftRight_i(int);
+  void cb_Zoom_i(int);
+
   inline bool cb_Step_i(int);
   static void cb_Step(Fl_Widget*, int);
 

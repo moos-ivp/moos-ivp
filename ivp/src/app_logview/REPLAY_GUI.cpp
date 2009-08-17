@@ -61,10 +61,14 @@ REPLAY_GUI::REPLAY_GUI(int g_w, int g_h, const char *g_l)
   lp_viewer = new LogPlotViewer(55, (h()-(lp_height-margin)), 
   				w()-110, (lp_height-(2*margin)));
 
+  int ipf_hgt = (m_np_viewer_hgt / 2);
+
 
   ipf_viewer_a = new IvPFuncViewer(w()*(1-ipf_pct), 30, 
-				   w()*(ipf_pct), h()-700);
-  ipf_viewer_b = 0;
+				   w()*(ipf_pct), ipf_hgt);
+  ipf_viewer_b = new IvPFuncViewer(w()*(1-ipf_pct), ipf_hgt+30, 
+				   w()*(ipf_pct), ipf_hgt);
+  ipf_viewer_b->setClearColor("macbeige");
 
   double time_pos = (w()/2)-140;
   disp_time = new MY_Output(time_pos, h()-(lp_height+26), 70, 22, "Time:"); 
@@ -341,6 +345,157 @@ int REPLAY_GUI::handle(int event)
   }
 }
 
+//----------------------------------------- HandleUpDown
+inline void REPLAY_GUI::cb_HandleUpDown_i(int amt) 
+{
+  if(inNavPlotViewer()) {
+    np_viewer->setParam("pan_y", ((double)(amt)/10)); 
+    np_viewer->redraw();
+    updateXY();
+  }
+  else if(inIPFViewerA()) {
+    ipf_viewer_a->setParam("mod_x_rotation", ((double)(-amt)/100)); 
+    ipf_viewer_a->redraw();
+    updateXY();
+  }
+  else if(inIPFViewerB()) {
+    ipf_viewer_b->setParam("mod_x_rotation", ((double)(-amt)/100)); 
+    ipf_viewer_b->redraw();
+    updateXY();
+  }
+  else if(inLogPlotViewer()) {
+    if(amt < 0)
+      lp_viewer->adjust_zoom("out");
+    else if(amt > 0)
+      lp_viewer->adjust_zoom("in");
+    lp_viewer->redraw();
+    updateXY();
+  }
+}
+
+//----------------------------------------- HandleLeftRight
+inline void REPLAY_GUI::cb_HandleLeftRight_i(int amt) 
+{
+  if(inNavPlotViewer()) {
+    np_viewer->setParam("pan_x", ((double)(amt)/10)); 
+    np_viewer->redraw();
+    updateXY();
+  }
+  else if(inIPFViewerA()) {
+    ipf_viewer_a->setParam("mod_z_rotation", ((double)(amt)/100)); 
+    ipf_viewer_a->redraw();
+    updateXY();
+  }
+  else if(inIPFViewerB()) {
+    ipf_viewer_b->setParam("mod_z_rotation", ((double)(amt)/100)); 
+    ipf_viewer_b->redraw();
+    updateXY();
+  }
+  else if(inLogPlotViewer()) {
+    if(amt < 0)
+      cb_Step_i(1);
+    else if(amt > 0)
+      cb_Step_i(-1);
+  }
+}
+
+//----------------------------------------- Zoom In
+inline void REPLAY_GUI::cb_Zoom_i(int val) {
+  if(inNavPlotViewer()) {
+    if(val < 0)
+      np_viewer->setParam("zoom", 1.05);
+    else if(val > 0)
+      np_viewer->setParam("zoom", 0.8);
+    else
+      np_viewer->setParam("zoom", "reset");
+    np_viewer->redraw();
+  }
+  else if(inIPFViewerA()) {
+    if(val < 0)
+      ipf_viewer_a->setParam("mod_zoom", 1.05); 
+    else if(val > 0)
+      ipf_viewer_a->setParam("mod_zoom", 0.95); 
+    else
+      ipf_viewer_a->setParam("set_zoom", 1.0); 
+    ipf_viewer_a->redraw();
+  }
+  else if(inIPFViewerB()) {
+    if(val < 0)
+      ipf_viewer_b->setParam("mod_zoom", 1.05); 
+    else if(val > 0)
+      ipf_viewer_b->setParam("mod_zoom", 0.95); 
+    else
+      ipf_viewer_b->setParam("set_zoom", 1.0); 
+    ipf_viewer_b->redraw();
+  }
+  else if(inLogPlotViewer()) {
+    if(val < 0)
+      lp_viewer->adjust_zoom("in");
+    else if(val > 0)
+      lp_viewer->adjust_zoom("out");
+    else
+      lp_viewer->adjust_zoom("reset");
+    lp_viewer->redraw();
+    updateXY();
+  }
+}
+
+//----------------------------------------- inNavPlotViewer
+bool REPLAY_GUI::inNavPlotViewer()
+{
+  if(!np_viewer)
+    return(false);
+  int vx = Fl::event_x();
+  int vy = Fl::event_y();
+  int x  = np_viewer->x();
+  int y  = np_viewer->y();
+  int w  = np_viewer->w();
+  int h  = np_viewer->h();
+  return((vx>=x)&&(vx<=x+w)&&(vy>=y)&&(vy<=(y+h)));
+}
+
+//----------------------------------------- inLogPlotViewer
+bool REPLAY_GUI::inLogPlotViewer()
+{
+  if(!lp_viewer)
+    return(false);
+  int vx = Fl::event_x();
+  int vy = Fl::event_y();
+  int x  = lp_viewer->x();
+  int y  = lp_viewer->y();
+  int w  = lp_viewer->w();
+  int h  = lp_viewer->h();
+  return((vx>=x)&&(vx<=x+w)&&(vy>=y)&&(vy<=(y+h)));
+}
+
+//----------------------------------------- inIPFViewerA
+bool REPLAY_GUI::inIPFViewerA()
+{
+  if(!ipf_viewer_a)
+    return(false);
+  int vx = Fl::event_x();
+  int vy = Fl::event_y();
+  int x  = ipf_viewer_a->x();
+  int y  = ipf_viewer_a->y();
+  int w  = ipf_viewer_a->w();
+  int h  = ipf_viewer_a->h();
+  return((vx>=x)&&(vx<=x+w)&&(vy>=y)&&(vy<=(y+h)));
+}
+
+//----------------------------------------- inIPFViewerB
+bool REPLAY_GUI::inIPFViewerB()
+{
+  if(!ipf_viewer_b)
+    return(false);
+  int vx = Fl::event_x();
+  int vy = Fl::event_y();
+  int x  = ipf_viewer_b->x();
+  int y  = ipf_viewer_b->y();
+  int w  = ipf_viewer_b->w();
+  int h  = ipf_viewer_b->h();
+  return((vx>=x)&&(vx<=x+w)&&(vy>=y)&&(vy<=(y+h)));
+}
+
 //----------------------------------------- Step
 inline bool REPLAY_GUI::cb_Step_i(int val) {
   np_viewer->stepTime(val);
@@ -348,6 +503,7 @@ inline bool REPLAY_GUI::cb_Step_i(int val) {
   double curr_time = np_viewer->getCurrTime();
   lp_viewer->set_curr_time(curr_time);
   ipf_viewer_a->setCurrTime(curr_time);
+  ipf_viewer_b->setCurrTime(curr_time);
 
   np_viewer->redraw();
   lp_viewer->redraw();

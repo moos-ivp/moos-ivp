@@ -34,19 +34,13 @@ IvPFuncViewer::IvPFuncViewer(int x, int y, int w, int h, const char *l)
   : Common_IPFViewer(x,y,w,h,l)
 {
   m_plot_ix    = 0;
-
-  m_rad_extra = 20;
+  m_rad_extra  = 20;
+  m_draw_frame = false;
+  m_zoom       = 2.0;
 
   setParam("reset_view", "2");
-  m_clear_red   =  73.0 / 256.0;
-  m_clear_green =  62.0 / 256.0;
-  m_clear_blue  = 120.0 / 256.0;
 
-  m_clear_red   = 0.6;
-  m_clear_green = 0.8;
-  m_clear_blue  = 0.4;
-
-  m_draw_frame = false;
+  m_clear_color.setColor("0.6,0.8,0.4");
   m_label_color.setColor("brown");
 }
 
@@ -58,10 +52,6 @@ void IvPFuncViewer::draw()
   Common_IPFViewer::draw();
   if(m_draw_frame)
     drawFrame();
-
-  unsigned int i, vsize = m_ipf_source.size();
-  for(i=0; i<vsize; i++)
-    cout << "src[" << i << "]: " << m_ipf_source[i] << endl;
 }
 
 //-------------------------------------------------------------
