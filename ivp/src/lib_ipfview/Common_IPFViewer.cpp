@@ -335,7 +335,6 @@ void Common_IPFViewer::applyIPF(IvPFunction *g_ivp_function,
 
 }
 
-
 //-------------------------------------------------------------
 // Procedure: drawIvPFunction
 
@@ -346,6 +345,17 @@ void Common_IPFViewer::drawIvPFunction()
     Quad3D quad = m_quadset.getQuad(i);
     drawQuad(quad);
   }
+  
+  double hpos1 = h()-15;
+  double hpos2 = h()-33;
+
+  cout << "hpos1:" << hpos1 << endl;
+  cout << "hpos2:" << hpos2 << endl;
+  
+  if(m_ipf_vname != "")
+    drawText(4, hpos1, " vname = "+m_ipf_vname, m_label_color, 12);
+  if(m_ipf_source != "")
+    drawText(4, hpos2, "source = "+m_ipf_source, m_label_color, 12);
 }
 
 //-------------------------------------------------------------
@@ -522,3 +532,47 @@ void Common_IPFViewer::drawOwnPoint()
   glFlush();
 }
 
+//-------------------------------------------------------------
+// Procedure: drawText
+
+void Common_IPFViewer::drawText(double px, double py, const string& text,
+				const ColorPack& font_c, double font_size) 
+{
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glOrtho(0, w(), 0, h(), -1 ,1);
+  
+  //double tx = meters2img('x', 0);
+  //double ty = meters2img('y', 0);
+  //double qx = img2view('x', tx);
+  //double qy = img2view('y', ty);
+
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
+  glLoadIdentity();
+  
+  if(font_c.visible()) {
+    glColor3f(font_c.red(), font_c.grn(), font_c.blu());
+    gl_font(1, font_size);
+    int slen = text.length();
+    char *buff = new char[slen+1];
+    glRasterPos3f(px, py, 0);
+    strncpy(buff, text.c_str(), slen);
+    buff[slen] = '\0';
+    gl_draw(buff, slen);
+    delete [] buff;
+  }
+  glFlush();
+  glPopMatrix();
+}
+
+
+
+//-------------------------------------------------------------
+// Procedure: setLabelColor
+
+void Common_IPFViewer::setLabelColor(string new_color)
+{
+  m_label_color.setColor(new_color);
+}
+  

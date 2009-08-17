@@ -19,6 +19,7 @@
 #include "FL/fl_draw.H"
 #include "QuadSet.h"
 #include "IvPFunction.h"
+#include "ColorPack.h"
 
 class Common_IPFViewer : public Fl_Gl_Window
 {
@@ -35,7 +36,10 @@ public:
   bool   setParam(std::string, std::string);
   bool   setParam(std::string, double);
   void   printParams();
-  
+  void   setVNameIPF(std::string s)   {m_ipf_vname = s;};
+  void   setSourceIPF(std::string s)  {m_ipf_source = s;};
+  void   setLabelColor(std::string s);
+ 
 protected:
   void   drawFrame();
   void   drawOwnPoint();
@@ -43,6 +47,11 @@ protected:
   void   drawQuad(Quad3D&);
   void   handleLeftMouse(int, int) {};
   void   handleRightMouse(int, int) {};
+
+  void   drawText(double px, double py, const std::string&, 
+		  const ColorPack&, double font_size);
+
+
 
 protected:
   std::string  m_clear_color;
@@ -68,6 +77,10 @@ protected:
   double       m_frame_height;
   QuadSet      m_quadset;
   IvPFunction* m_ivp_function;
+
+  std::string  m_ipf_vname;
+  std::string  m_ipf_source;
+  ColorPack    m_label_color;
 };
 
 #endif 
