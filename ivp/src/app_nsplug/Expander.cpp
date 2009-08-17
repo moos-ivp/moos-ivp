@@ -77,8 +77,6 @@ vector<string> Expander::expandFile(string filename,
     return(empty_vector);
   }
 
-  currMode("top");
-  
   for(int i=0; i<vsize; i++) {
     string line = stripBlankEnds(findReplace(fvector[i], '\t', ' '));
     string line_orig = line;
@@ -224,9 +222,10 @@ vector<string> Expander::expandFile(string filename,
       applyMacrosToLine(fvector[i], macros);
       return_vector.push_back(fvector[i]);
     }   
-    
-    cout << "Line[" << i+1 << "]: " << line_orig << endl;
-    cout << "  Mode: " << currMode() << endl;
+
+// commented out as this is debugging output - tes 8.17.09    
+//    cout << filename << ": Line[" << i+1 << "]: " << line_orig << endl;
+//    cout << "  Mode: " << currMode() << endl;
   }   
   
 
@@ -505,7 +504,7 @@ void Expander::currMode(string new_mode)
 
 void Expander::pushMode(string new_mode)
 {
-  m_pmode.push_back(new_mode);
+    m_pmode.push_back(new_mode);
 }
 
 //--------------------------------------------------------
@@ -525,11 +524,11 @@ string Expander::currMode()
 
 bool Expander::popMode()
 {
-  unsigned int vsize = m_pmode.size();
-  if(vsize > 1) {
-    m_pmode.pop_back();
-    return(true);
-  }
+    unsigned int vsize = m_pmode.size();
+    if(vsize > 1) {
+        m_pmode.pop_back();
+        return(true);
+    }
   else
     return(false);
 }
