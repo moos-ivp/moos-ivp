@@ -10,6 +10,7 @@
 /*****************************************************************/
 
 #include <iostream>
+#include <string.h>
 #include "Common_IPFViewer.h"
 #include "GeomUtils.h"
 #include "ZAIC_PEAK.h"
