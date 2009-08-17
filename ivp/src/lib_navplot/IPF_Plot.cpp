@@ -31,11 +31,11 @@
 using namespace std;
 
 //---------------------------------------------------------------
-// Procedure: add_entry
+// Procedure: addEntry
 //      Note: Time must be in ascending order. If new pair doesn't
 //            obey, no action is taken, and false is returned.
 
-bool IPF_Plot::add_entry(double gtime, const string& gstr)
+bool IPF_Plot::addEntry(double gtime, const string& gstr)
 {
   int tsize = m_time_stamps.size();
 
@@ -49,9 +49,9 @@ bool IPF_Plot::add_entry(double gtime, const string& gstr)
 }
 
 //---------------------------------------------------------------
-// Procedure: get_time_by_index
+// Procedure: getTimeByIndex
 
-double IPF_Plot::get_time_by_index(unsigned int index) const
+double IPF_Plot::getTimeByIndex(unsigned int index) const
 {
   if(m_time_stamps.size() == 0)
     return(0);
@@ -67,9 +67,9 @@ double IPF_Plot::get_time_by_index(unsigned int index) const
 }
      
 //---------------------------------------------------------------
-// Procedure: get_ipf_by_index
+// Procedure: getIPFByIndex
 
-string IPF_Plot::get_ipf_by_index(unsigned int index) const
+string IPF_Plot::getIPFByIndex(unsigned int index) const
 {
   if(m_ipf_strings.size() == 0)
     return("");
@@ -83,12 +83,12 @@ string IPF_Plot::get_ipf_by_index(unsigned int index) const
 }
      
 //---------------------------------------------------------------
-// Procedure: get_ipf_by_time
+// Procedure: getIPFByTime
 //   Purpose: Find the ipf for a given point in time.
 //            If the point in time happens between two elements
 //            in the time array, choose the lower indexed.
 
-string IPF_Plot::get_ipf_by_time(double qtime) const
+string IPF_Plot::getIPFByTime(double qtime) const
 {
   // Special case: if the IPF_Plot instance is "empty"
   int vsize = m_time_stamps.size();
@@ -107,7 +107,7 @@ string IPF_Plot::get_ipf_by_time(double qtime) const
     //return(m_ipf_strings[0]);
   }
   // Determine highest index w/ time <= qtime
-  int index = get_index_by_time(qtime);
+  int index = getIndexByTime(qtime);
 
   return(m_ipf_strings[index]);
 
@@ -124,12 +124,12 @@ string IPF_Plot::nullHeadingSpeedIPF() const
 }
     
 //---------------------------------------------------------------
-// Procedure: get_index_by_time
+// Procedure: getIndexByTime
 //   Purpose: Given a query time, determine the highest index that 
 //            has a time less than or equal to the query time.
 //            Search is log(n)
 
-int IPF_Plot::get_index_by_time(double qtime) const
+int IPF_Plot::getIndexByTime(double qtime) const
 {
   int vsize = m_time_stamps.size();
 
@@ -160,9 +160,9 @@ int IPF_Plot::get_index_by_time(double qtime) const
 }
      
 //---------------------------------------------------------------
-// Procedure: get_min_time
+// Procedure: getMinTime
 
-double IPF_Plot::get_min_time() const
+double IPF_Plot::getMinTime() const
 {
   if(m_time_stamps.size() > 0)
     return(m_time_stamps[0]);
@@ -171,9 +171,9 @@ double IPF_Plot::get_min_time() const
 }
 
 //---------------------------------------------------------------
-// Procedure: get_max_time
+// Procedure: getMaxTime
 
-double IPF_Plot::get_max_time() const
+double IPF_Plot::getMaxTime() const
 {
   if(m_time_stamps.size() > 0)
     return(m_time_stamps[m_time_stamps.size()-1]);

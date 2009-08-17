@@ -33,33 +33,17 @@ using namespace std;
 //---------------------------------------------------------------
 // Procedure: populate
 
-void Populator_IPF_Plot::populate(string filestr)
+bool Populator_IPF_Plot::populateFromEntries(const vector<ALogEntry>& entries)
 {
-  vector<string> lines = fileBuffer(filestr);
-
-  vector<vector<string> > plines; // parsed lines
-  
-  unsigned int i;
-  for(i=0; i<lines.size(); i++) {
-    if(lines[i][0] != '%') {
-      lines[i] = findReplace(lines[i], '\t', ' ');
-      lines[i] = compactConsecutive(lines[i], ' ');
-      lines[i] = stripBlankEnds(lines[i]);
-      vector<string> svector = parseString(lines[i], ' ');
-      plines.push_back(svector);
-    }
-  }
-
-  IPF_Plot ipf_plot;
-  
-  unsigned int vsize = plines.size();  
+  unsigned int i, vsize = entries.size();  
   for(i=0; i<vsize; i++) {
-    if(plines[i][1] == "BHV_IPF") {
-      double dval = atof(plines[i][0].c_str());
-      m_demuxer.addMuxPacket(plines[i][3], dval);
+    if(entries[i].getVarName() == "BHV_IPF") {
+      double time_stamp = entries[i].getTimeStamp();
+      string var_value  = entries[i].getStringVal();
+      m_demuxer.addMuxPacket(var_value, time_stamp);
     }
   }
-
+  
   bool done = false;
   while(!done) {
     double time_stamp = 0;
@@ -69,7 +53,9 @@ void Populator_IPF_Plot::populate(string filestr)
     else
       done = true;
   }
+  return(true);
 }
+
 
 //---------------------------------------------------------------
 // Procedure: handleEntry
@@ -99,45 +85,37 @@ void Populator_IPF_Plot::handleEntry(double g_time,
 
   if(index == -1) {
     IPF_Plot new_plot;
-    string ipf_source = m_vname + "_" + context;
-    new_plot.set_ipf_source(ipf_source);
+    //string ipf_source = m_vname + "_" + context;
+    string ipf_source = context;
+    new_plot.setSource(ipf_source);
     m_ipf_tags.push_back(context);
     m_ipf_plots.push_back(new_plot);
     index = vsize;
   }
   
-  m_ipf_plots[index].add_entry(g_time, g_ipf_str);
+  m_ipf_plots[index].addEntry(g_time, g_ipf_str);
 }
-
-
-
 
 //---------------------------------------------------------------
 // Procedure: getPlotIPF
 
-IPF_Plot Populator_IPF_Plot::getPlotIPF(int ix)
+IPF_Plot Populator_IPF_Plot::getPlotIPF(unsigned int ix)
 {
-  int vsize = m_ipf_plots.size();
-  
-  if((ix < 0) || (ix >= vsize)) {
+  if(ix >= m_ipf_plots.size()) {
     IPF_Plot null_plot;
     return(null_plot);
   }
   else
     return(m_ipf_plots[ix]);
-
 }
 
 //---------------------------------------------------------------
 // Procedure: getTagIPF
 
-string Populator_IPF_Plot::getTagIPF(int ix)
+string Populator_IPF_Plot::getTagIPF(unsigned int ix)
 {
-  int vsize = m_ipf_tags.size();
-  
-  if((ix < 0) || (ix >= vsize)) {
+  if(ix >= m_ipf_tags.size())
     return("");
-  }
   else
     return(m_ipf_tags[ix]);
   
@@ -164,11 +142,11 @@ void Populator_IPF_Plot::print()
     cout << "  Tag: " << m_ipf_tags[i] << endl;
     cout << "  Plot[" << i << "]: " << endl;
     cout << "    Entries: " << m_ipf_plots[i].size() << endl;
-    cout << "    LowStamp: " << m_ipf_plots[i].get_min_time() << endl;
-    cout << "    HighStamp: " << m_ipf_plots[i].get_max_time() << endl;
-    cout << "    IPF_Source: " << m_ipf_plots[i].get_ipf_source() << endl;
+    cout << "    LowStamp: " << m_ipf_plots[i].getMinTime() << endl;
+    cout << "    HighStamp: " << m_ipf_plots[i].getMaxTime() << endl;
+    cout << "    IPF_Source: " << m_ipf_plots[i].getSource() << endl;
+    cout << "    IPF_VName: "  << m_ipf_plots[i].getVName() << endl;
   }
-
 }
 
 

@@ -7,7 +7,9 @@ SET(SRC
    LogPlot.cpp
    VPlugPlot.cpp
    HelmPlot.cpp
+   IPF_Plot.cpp
    Populator_LogPlots.cpp
+   Populator_IPF_Plot.cpp
    Populator_HelmPlots.cpp
    Populator_VPlugPlots.cpp
 )

@@ -38,14 +38,7 @@ public:
   HelmPlot getHelmPlot() {return(m_helm_plot);};
 
 protected:
-  bool     handleNodeReports();
-
-protected:
-  HelmPlot     m_helm_plot;
-
-  // Dont need timestamps with node reports - we just want to get
-  // the vehicle name, type and length from the node reports
-  std::vector<std::string>  m_node_reports;
+  HelmPlot m_helm_plot;
 };
 #endif 
 

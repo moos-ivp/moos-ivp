@@ -26,6 +26,7 @@
 #include <string>
 #include "IPF_Plot.h"
 #include "Demuxer.h"
+#include "ALogEntry.h"
 
 class Populator_IPF_Plot 
 {
@@ -33,12 +34,12 @@ public:
   Populator_IPF_Plot() {};
   ~Populator_IPF_Plot() {};
 
-  void  populate(std::string);
-  void  set_vname(std::string s)  {m_vname = s;};
+  bool  populateFromEntries(const std::vector<ALogEntry>&);
+  void  setVName(std::string s)   {m_vname = s;};
   int   size()                    {return(m_ipf_plots.size());};
 
-  IPF_Plot    getPlotIPF(int ix=0);
-  std::string getTagIPF(int ix=0);
+  IPF_Plot    getPlotIPF(unsigned int ix=0);
+  std::string getTagIPF(unsigned int ix=0);
   
   void  print();
 
@@ -49,7 +50,6 @@ protected:
   std::string              m_vname;
   std::vector<std::string> m_ipf_tags;
   std::vector<IPF_Plot>    m_ipf_plots;
-
   Demuxer                  m_demuxer;
 };
 #endif 

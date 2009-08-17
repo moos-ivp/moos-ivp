@@ -29,31 +29,39 @@
 class IPF_Plot
 {
 public:
-  IPF_Plot() {};
+  IPF_Plot() {m_vname="name-unknown"; m_source="src-unknown";};
   ~IPF_Plot() {};
 
-  void   set_ipf_source(std::string s) {m_ipf_source = s;};
-  bool   add_entry(double, const std::string& str);
-  double get_time_by_index(unsigned int) const;
+  void   setVName(std::string s)   {m_vname  = s;};
+  void   setSource(std::string s)  {m_source = s;};
+  bool   addEntry(double, const std::string& str);
 
-  std::string get_ipf_by_index(unsigned int) const;
-  std::string get_ipf_by_time(double) const;
-  std::string get_ipf_source() const {return(m_ipf_source);};
+  double getTimeByIndex(unsigned int) const;
 
-  double get_min_time() const;
-  double get_max_time() const;
+  std::string getIPFByIndex(unsigned int) const;
+  std::string getIPFByTime(double) const;
+
+  std::string getSource() const {return(m_source);};
+  std::string getVName()  const {return(m_vname);};
+
+  double getMinTime() const;
+  double getMaxTime() const;
   int    size() const          {return(m_time_stamps.size());};
   void   print() const;
 
   std::string  nullHeadingSpeedIPF() const;
 
 protected:
-  int get_index_by_time(double) const;
+  int getIndexByTime(double) const;
 
 protected:
-  std::string              m_ipf_source;  // Vehicle_Behavior
-  std::vector<double>      m_time_stamps;
-  std::vector<std::string> m_ipf_strings; 
+  std::string              m_vname;       // Vehicle Name
+  std::string              m_source;      // Vehicle Behavior
+
+  // One entry for each BHV_IPF string. All entries should be from
+  // the same vehicle and same behavior.
+  std::vector<double>      m_time_stamps; 
+  std::vector<std::string> m_ipf_strings;  
 };
 #endif 
 

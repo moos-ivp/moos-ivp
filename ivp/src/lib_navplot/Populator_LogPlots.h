@@ -37,22 +37,16 @@ public:
 
   bool    populateFromEntries(const std::vector<ALogEntry>&);
 
-  LogPlot getLogPlot(unsigned int);
-  LogPlot getLogPlot(std::string);
-  int     size()         {return(m_logplots.size());};
+  LogPlot getLogPlot(unsigned int index) const;
+  LogPlot getLogPlot(const std::string& varname) const;
+  int     size() const  {return(m_logplots.size());};
 
-  // The vehicle name should be determined from the alog file
-  // but if not, a default name may be given.
-  void    setDefaultVName(std::string s) {m_vname=s;};
-  std::string getVName() {return(m_vname);};
-
- protected:
-  bool     handleNodeReports();
+  void        setVName(const std::string& s) {m_vname=s;};
+  std::string getVName() const               {return(m_vname);};
 
 protected:
   std::string               m_vname;
   std::vector<LogPlot>      m_logplots;
-  std::vector<std::string>  m_node_reports;
 
   // Mapping from logplot variable to index in m_loplots vector
   std::map<std::string, unsigned int> m_logplot_var_map;

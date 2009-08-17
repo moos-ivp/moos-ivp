@@ -58,16 +58,8 @@ bool Populator_LogPlots::populateFromEntries(const vector<ALogEntry>& entries)
       unsigned int found_index = p->second;
       m_logplots[found_index].set_value(itime, dvalue);
     }
-
-    if((var_name=="NODE_REPORT_LOCAL") || (var_name=="AIS_REPORT_LOCAL")) {
-      string svalue = entries[i].getStringVal();
-      m_node_reports.push_back(svalue);
-    }
   }
   
-  // Handle node reports just to get the alog file vehicle name
-  handleNodeReports();
-
   // Once the vehicle name has been determined, associate the 
   // vehicle name with each log plot.
   vsize = m_logplots.size();
@@ -83,7 +75,7 @@ bool Populator_LogPlots::populateFromEntries(const vector<ALogEntry>& entries)
 //---------------------------------------------------------------
 // Procedure: getLogPlot(int index)
 
-LogPlot Populator_LogPlots::getLogPlot(unsigned int ix)
+LogPlot Populator_LogPlots::getLogPlot(unsigned int ix) const
 {
   if((ix >= 0) && (ix < m_logplots.size()))
     return(m_logplots[ix]);
@@ -96,7 +88,7 @@ LogPlot Populator_LogPlots::getLogPlot(unsigned int ix)
 //---------------------------------------------------------------
 // Procedure: getLogPlot(string var_name)
 
-LogPlot Populator_LogPlots::getLogPlot(string varname)
+LogPlot Populator_LogPlots::getLogPlot(const string& varname) const
 {
   int vsize = m_logplots.size();
   for(int i=0; i<vsize; i++) {
@@ -108,36 +100,3 @@ LogPlot Populator_LogPlots::getLogPlot(string varname)
   LogPlot empty_logplot;
   return(empty_logplot);
 }
-
-//---------------------------------------------------------------
-// Procedure: handleNodeReports
-
-bool Populator_LogPlots::handleNodeReports()
-{
-  string vname;
-
-  unsigned int i, vsize = m_node_reports.size();
-  for(i=0; i<vsize; i++) {
-    vector<string> kvector = parseString(m_node_reports[i], ',');
-    unsigned int k, ksize = kvector.size();
-    for(k=0; k<ksize; k++) {
-      string left  = stripBlankEnds(tolower(biteString(kvector[k], '=')));
-      string right = stripBlankEnds(kvector[k]);
-      
-      if(left == "name") {
-	if((vname == "") || (vname == right))
-	  vname = right;
-	else {
-	  cout << "Inconsistent vehi_name from AIS/NODE_REPORT_LOCAL entries" << endl;
-	  return(false);
-	}
-      }
-    }
-  }
-
-  if(vname != "")
-    m_vname = vname;
-
-  return(true);
-}
-
