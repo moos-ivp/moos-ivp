@@ -34,25 +34,27 @@ public:
 
   void   setVName(std::string s)   {m_vname  = s;};
   void   setSource(std::string s)  {m_source = s;};
-  bool   addEntry(double, const std::string& str);
+  bool   addEntry(double, const std::string& str, unsigned int iter=0);
 
   double getTimeByIndex(unsigned int) const;
 
   std::string getIPFByIndex(unsigned int) const;
   std::string getIPFByTime(double) const;
+  std::string getIPFByHelmIteration(unsigned int) const;
 
   std::string getSource() const {return(m_source);};
   std::string getVName()  const {return(m_vname);};
 
   double getMinTime() const;
   double getMaxTime() const;
-  int    size() const          {return(m_time_stamps.size());};
+  int    size() const          {return(m_time_stamp.size());};
   void   print() const;
 
   std::string  nullHeadingSpeedIPF() const;
 
 protected:
   int getIndexByTime(double) const;
+  int getIndexByHelmIter(unsigned int) const;
 
 protected:
   std::string              m_vname;       // Vehicle Name
@@ -60,8 +62,9 @@ protected:
 
   // One entry for each BHV_IPF string. All entries should be from
   // the same vehicle and same behavior.
-  std::vector<double>      m_time_stamps; 
-  std::vector<std::string> m_ipf_strings;  
+  std::vector<std::string>  m_ipf_string;  
+  std::vector<double>       m_time_stamp; 
+  std::vector<unsigned int> m_helm_iteration;
 };
 #endif 
 

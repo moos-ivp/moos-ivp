@@ -35,17 +35,20 @@ using namespace std;
 //      Note: Time must be in ascending order. If new pair doesn't
 //            obey, no action is taken, and false is returned.
 
-bool IPF_Plot::addEntry(double gtime, const string& gstr)
+bool IPF_Plot::addEntry(double gtime, const string& gstr, unsigned int iter)
 {
-  int tsize = m_time_stamps.size();
-
-  if((tsize == 0) || (m_time_stamps[tsize-1] <= gtime)) {
-    m_time_stamps.push_back(gtime);
-    m_ipf_strings.push_back(gstr);
-    return(true);
-  }
-  else
+  unsigned int tsize = m_time_stamp.size();
+  if((tsize != 0) && (m_time_stamp[tsize-1] > gtime))
     return(false);
+
+  unsigned int isize = m_helm_iteration.size();
+  if((isize != 0) && (iter != 0) && (m_helm_iteration[isize-1] > iter))
+    return(false);
+
+  m_time_stamp.push_back(gtime);
+  m_ipf_string.push_back(gstr);
+  m_helm_iteration.push_back(iter);
+  return(true);
 }
 
 //---------------------------------------------------------------
@@ -53,17 +56,17 @@ bool IPF_Plot::addEntry(double gtime, const string& gstr)
 
 double IPF_Plot::getTimeByIndex(unsigned int index) const
 {
-  if(m_time_stamps.size() == 0)
+  if(m_time_stamp.size() == 0)
     return(0);
 
   if(index < 0)
-    return(m_time_stamps[0]);
-  else if(index >= m_time_stamps.size()) {
-    cout << "time.size():" << m_time_stamps.size() << endl;
-    return(m_time_stamps[m_time_stamps.size()-1]);
+    return(m_time_stamp[0]);
+  else if(index >= m_time_stamp.size()) {
+    cout << "time.size():" << m_time_stamp.size() << endl;
+    return(m_time_stamp[m_time_stamp.size()-1]);
   }
   else
-    return(m_time_stamps[index]);
+    return(m_time_stamp[index]);
 }
      
 //---------------------------------------------------------------
@@ -71,15 +74,15 @@ double IPF_Plot::getTimeByIndex(unsigned int index) const
 
 string IPF_Plot::getIPFByIndex(unsigned int index) const
 {
-  if(m_ipf_strings.size() == 0)
+  if(m_ipf_string.size() == 0)
     return("");
 
   if(index < 0)
-    return(m_ipf_strings[0]);
-  else if(index >= m_ipf_strings.size())
-    return(m_ipf_strings[m_ipf_strings.size()-1]);
+    return(m_ipf_string[0]);
+  else if(index >= m_ipf_string.size())
+    return(m_ipf_string[m_ipf_string.size()-1]);
   else
-    return(m_ipf_strings[index]);
+    return(m_ipf_string[index]);
 }
      
 //---------------------------------------------------------------
@@ -91,26 +94,48 @@ string IPF_Plot::getIPFByIndex(unsigned int index) const
 string IPF_Plot::getIPFByTime(double qtime) const
 {
   // Special case: if the IPF_Plot instance is "empty"
-  int vsize = m_time_stamps.size();
+  int vsize = m_time_stamp.size();
   if(vsize == 0) {
     return("");
   }
 
   // Special case: if the query time is outside the IPF_Plot 
   // time range, return the extreme value.
-  if(qtime >=  m_time_stamps[vsize-1]) {
+  if(qtime >=  m_time_stamp[vsize-1]) {
     return(nullHeadingSpeedIPF());
-    //return(m_ipf_strings[vsize-1]);
+    //return(m_ipf_string[vsize-1]);
   }
-  if(qtime <= m_time_stamps[0]) {
+  if(qtime <= m_time_stamp[0]) {
     return(nullHeadingSpeedIPF());
-    //return(m_ipf_strings[0]);
+    //return(m_ipf_string[0]);
   }
   // Determine highest index w/ time <= qtime
   int index = getIndexByTime(qtime);
 
-  return(m_ipf_strings[index]);
+  return(m_ipf_string[index]);
+}
+ 
+//---------------------------------------------------------------
+// Procedure: getIPFByHelmIteration
+//   Purpose: Find the ipf for a given point in time.
+//            If the point in time happens between two elements
+//            in the time array, choose the lower indexed.
 
+string IPF_Plot::getIPFByHelmIteration(unsigned int iter) const
+{
+  // Special case: if the IPF_Plot instance is "empty"
+  int vsize = m_helm_iteration.size();
+  if(vsize == 0) {
+    return("");
+  }
+
+  // Determine the index for the given helm iteration
+  int index = getIndexByHelmIter(iter);
+  
+  if(index == -1)
+    return("");
+  else
+    return(m_ipf_string[index]);
 }
  
 //---------------------------------------------------------------
@@ -131,13 +156,13 @@ string IPF_Plot::nullHeadingSpeedIPF() const
 
 int IPF_Plot::getIndexByTime(double qtime) const
 {
-  int vsize = m_time_stamps.size();
+  int vsize = m_time_stamp.size();
 
   // Special case: if the query time is outside the IPF_Plot 
   // time range, return the extreme value.
-  if(qtime <= m_time_stamps[0])
+  if(qtime <= m_time_stamp[0])
     return(0);
-  if(qtime >= m_time_stamps[vsize-1])
+  if(qtime >= m_time_stamp[vsize-1])
     return(vsize-1);
   
   // Handle general case
@@ -147,8 +172,8 @@ int IPF_Plot::getIndexByTime(double qtime) const
   while(!done) {
     if(jump > 1)
       jump = jump / 2;
-    if(m_time_stamps[index] <= qtime) {
-      if(m_time_stamps[index+1] > qtime)
+    if(m_time_stamp[index] <= qtime) {
+      if(m_time_stamp[index+1] > qtime)
 	done = true;
       else
 	index += jump;
@@ -160,12 +185,54 @@ int IPF_Plot::getIndexByTime(double qtime) const
 }
      
 //---------------------------------------------------------------
+// Procedure: getIndexByHelmIter
+//   Purpose: Given a query iteration#, determine the index that 
+//            contains the ipf_string associated with that iteration
+//            Returns -1 if the given helm iteration doesn't exist
+
+int IPF_Plot::getIndexByHelmIter(unsigned int iter) const
+{
+  int vsize = m_helm_iteration.size();
+
+  // Special case: if the query iter is outside the IPF_Plot 
+  // iter range, then return -1;
+  if(iter < m_helm_iteration[0])
+    return(-1);
+  if(iter > m_helm_iteration[vsize-1])
+    return(-1);
+  
+  // Handle general case
+  int jump  = vsize / 2;
+  int index = vsize / 2;
+  bool done = false;
+  while(!done) {
+    if(jump > 1)
+      jump = jump / 2;
+    if(m_helm_iteration[index] == iter)
+      done = true;
+    else if(m_helm_iteration[index] < iter) {
+      if((index == vsize-1) || (m_time_stamp[index+1] > iter))
+	done = true;
+      else
+	index += jump;
+    }
+    else if(m_helm_iteration[index] > iter) {
+      if((index==0) || (m_time_stamp[index-1] < iter))
+	done = true;
+      else
+	index -= jump;
+    }
+  }
+  return(index);
+}
+     
+//---------------------------------------------------------------
 // Procedure: getMinTime
 
 double IPF_Plot::getMinTime() const
 {
-  if(m_time_stamps.size() > 0)
-    return(m_time_stamps[0]);
+  if(m_time_stamp.size() > 0)
+    return(m_time_stamp[0]);
   else
     return(0);
 }
@@ -175,8 +242,8 @@ double IPF_Plot::getMinTime() const
 
 double IPF_Plot::getMaxTime() const
 {
-  if(m_time_stamps.size() > 0)
-    return(m_time_stamps[m_time_stamps.size()-1]);
+  if(m_time_stamp.size() > 0)
+    return(m_time_stamp[m_time_stamp.size()-1]);
   else
     return(0);
 }
@@ -189,9 +256,9 @@ void IPF_Plot::print() const
 {
   unsigned int i;
   cout << "IPF_Plot::print()" << endl;
-  for(i=0; i<m_time_stamps.size(); i++)
-    cout << "time:" << m_time_stamps[i] << 
-      "  ipf:" << m_ipf_strings[i] << endl;
+  for(i=0; i<m_time_stamp.size(); i++)
+    cout << "time:" << m_time_stamp[i] << 
+      "  ipf:" << m_ipf_string[i] << endl;
 }
 
 
