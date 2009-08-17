@@ -113,34 +113,10 @@ bool Common_IPFViewer::setParam(string param, string value)
     else if(value=="4")
       {m_xRot=-72; m_zRot=122;}
   }
-  else if(param == "frame_color") {
-    if(value == "black")
-      m_frame_red = m_frame_green = m_frame_blue = 0;
-    else {
-      vector<double> dv = colorParse(value);
-      // If all zeros (black), interpret as bad color string.
-      if((dv[0]==0) && (dv[1]==0) && (dv[2]==0))
-	return(false);
-      m_frame_red   = dv[0];
-      m_frame_green = dv[1];
-      m_frame_blue  = dv[2];
-    }
-    m_frame_color = value;
-  }    
-  else if((param == "clear_color") || (param == "back_color")) {
-    if(value == "black")
-      m_clear_red = m_clear_green = m_clear_blue = 0;
-    else {
-      vector<double> dv = colorParse(value);
-      // If all zeros (black), interpret as bad color string.
-      if((dv[0]==0) && (dv[1]==0) && (dv[2]==0))
-	return(false);
-      m_clear_red   = dv[0];
-      m_clear_green = dv[1];
-      m_clear_blue  = dv[2];
-    }
-    m_clear_color = value;
-  }    
+  else if(param == "frame_color")
+    m_frame_color.setColor(value);
+  else if((param == "clear_color") || (param == "back_color"))
+    m_clear_color.setColor(value);
   else
     return(false);
 
@@ -191,8 +167,6 @@ void Common_IPFViewer::printParams()
   cout << "set_radius="       << m_rad_extra    << endl;
   cout << "set_x_rotation="   << m_xRot         << endl;
   cout << "set_z_rotation="   << m_zRot         << endl;
-  cout << "clear_color="      << m_clear_color  << endl;
-  cout << "frame_color="      << m_frame_color  << endl;
   if(m_draw_frame)
     cout << "draw_frame=true"  << endl;
   else
@@ -209,7 +183,11 @@ void Common_IPFViewer::printParams()
 void Common_IPFViewer::draw()
 {
   // Clear the window and the depth buffer
-  glClearColor(m_clear_red, m_clear_green, m_clear_blue, 0.0);
+  
+  double clear_red = m_clear_color.red();
+  double clear_grn = m_clear_color.grn();
+  double clear_blu = m_clear_color.blu();
+  glClearColor(clear_red, clear_grn, clear_blu, 0.0);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   glViewport(0,0,w(),h());
@@ -350,9 +328,6 @@ void Common_IPFViewer::drawIvPFunction()
   double hpos1 = h()-15;
   double hpos2 = h()-33;
 
-  cout << "hpos1:" << hpos1 << endl;
-  cout << "hpos2:" << hpos2 << endl;
-  
   if(m_ipf_vname != "")
     drawText(4, hpos1, " vname = "+m_ipf_vname, m_label_color, 12);
   if(m_ipf_source != "")
@@ -450,7 +425,11 @@ void Common_IPFViewer::drawFrame()
   double b = -250;
   double t = -250 + (m_frame_height);
 
-  glColor3f(m_frame_red/2, m_frame_green/2, m_frame_blue/2);
+  double frame_red = m_frame_color.red();
+  double frame_grn = m_frame_color.grn();
+  double frame_blu = m_frame_color.blu();
+
+  glColor3f(frame_red/2, frame_grn/2, frame_blu/2);
   //Color3f(0.6f, 0.4f, 0.6f);
   //glColor3f(cvect[0]/2, cvect[1]/2, cvect[2]/2);
   glShadeModel(GL_FLAT);
@@ -467,7 +446,7 @@ void Common_IPFViewer::drawFrame()
     glEnd();
   }
   
-  glColor3f(m_frame_red, m_frame_green, m_frame_blue);
+  glColor3f(frame_red, frame_grn, frame_blu);
 
   if(!m_draw_base) {
     glBegin(GL_LINE_STRIP);
@@ -567,13 +546,27 @@ void Common_IPFViewer::drawText(double px, double py, const string& text,
   glPopMatrix();
 }
 
-
-
 //-------------------------------------------------------------
 // Procedure: setLabelColor
 
 void Common_IPFViewer::setLabelColor(string new_color)
 {
   m_label_color.setColor(new_color);
+}
+  
+//-------------------------------------------------------------
+// Procedure: setClearColor
+
+void Common_IPFViewer::setClearColor(string new_color)
+{
+  m_clear_color.setColor(new_color);
+}
+  
+//-------------------------------------------------------------
+// Procedure: setFrameColor
+
+void Common_IPFViewer::setFrameColor(string new_color)
+{
+  m_frame_color.setColor(new_color);
 }
   

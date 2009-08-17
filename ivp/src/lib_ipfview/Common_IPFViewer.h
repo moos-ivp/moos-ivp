@@ -38,7 +38,9 @@ public:
   void   printParams();
   void   setVNameIPF(std::string s)   {m_ipf_vname = s;};
   void   setSourceIPF(std::string s)  {m_ipf_source = s;};
-  void   setLabelColor(std::string s);
+  void   setLabelColor(std::string);
+  void   setClearColor(std::string);
+  void   setFrameColor(std::string);
  
 protected:
   void   drawFrame();
@@ -54,15 +56,9 @@ protected:
 
 
 protected:
-  std::string  m_clear_color;
-  double       m_clear_red;
-  double       m_clear_green;
-  double       m_clear_blue;
-  
-  std::string  m_frame_color;
-  double       m_frame_red;
-  double       m_frame_green;
-  double       m_frame_blue;
+  ColorPack    m_clear_color;
+  ColorPack    m_frame_color;
+  ColorPack    m_label_color;
 
   double       m_xRot;
   double       m_zRot;
@@ -80,7 +76,6 @@ protected:
 
   std::string  m_ipf_vname;
   std::string  m_ipf_source;
-  ColorPack    m_label_color;
 };
 
 #endif 
