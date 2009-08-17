@@ -296,8 +296,6 @@ void Common_IPFViewer::applyIPF(IvPFunction *g_ivp_function,
     }
   }
 
-
-
   if(m_ivp_function != 0) {
     FColorMap cmap;
     //if(colormap_type != "")

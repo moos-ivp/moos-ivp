@@ -53,8 +53,6 @@ protected:
   void   drawText(double px, double py, const std::string&, 
 		  const ColorPack&, double font_size);
 
-
-
 protected:
   ColorPack    m_clear_color;
   ColorPack    m_frame_color;
