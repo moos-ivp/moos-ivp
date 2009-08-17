@@ -50,18 +50,18 @@ Fl_Menu_Item MarineGUI::menu_[] = {
  {"Zoom In",          'i', (Fl_Callback*)MarineGUI::cb_Zoom, (void*)-1, 0},
  {"Zoom Out",         'o', (Fl_Callback*)MarineGUI::cb_Zoom, (void*)1, 0},
  {"Zoom Reset",       FL_CTRL+'z', (Fl_Callback*)MarineGUI::cb_Zoom, (void*)0, FL_MENU_DIVIDER},
- {"Pan Up ",          FL_Up,  (Fl_Callback*)MarineGUI::cb_PanY, (void*)-200, 0},
- {"Pan Down ",        FL_Down,  (Fl_Callback*)MarineGUI::cb_PanY, (void*)200, 0},
- {"Pan Left ",        FL_Left,  (Fl_Callback*)MarineGUI::cb_PanX, (void*)200, 0},
- {"Pan Right ",       FL_Right,  (Fl_Callback*)MarineGUI::cb_PanX, (void*)-200, FL_MENU_DIVIDER},
- {"Pan Up (slow) ",   FL_ALT + FL_Up, (Fl_Callback*)MarineGUI::cb_PanY, (void*)-10, 0},
- {"Pan Down (slow) ", FL_ALT + FL_Down, (Fl_Callback*)MarineGUI::cb_PanY, (void*)10, 0},
- {"Pan Left (slow) ", FL_ALT + FL_Left, (Fl_Callback*)MarineGUI::cb_PanX, (void*)10, 0},
- {"Pan Right (slow)", FL_ALT + FL_Right, (Fl_Callback*)MarineGUI::cb_PanX, (void*)-10, FL_MENU_DIVIDER},
- {"Pan Up (v. slow) ",   FL_CTRL + FL_Up, (Fl_Callback*)MarineGUI::cb_PanY, (void*)-1, 0},
- {"Pan Down (v. slow) ", FL_CTRL + FL_Down, (Fl_Callback*)MarineGUI::cb_PanY, (void*)1, 0},
- {"Pan Left (v. slow) ", FL_CTRL + FL_Left, (Fl_Callback*)MarineGUI::cb_PanX, (void*)1, 0},
- {"Pan Right (v. slow)", FL_CTRL + FL_Right, (Fl_Callback*)MarineGUI::cb_PanX, (void*)-1, FL_MENU_DIVIDER},
+ {"Pan Up ",          FL_Up,  (Fl_Callback*)MarineGUI::cb_HandleUpDown, (void*)-200, 0},
+ {"Pan Down ",        FL_Down,  (Fl_Callback*)MarineGUI::cb_HandleUpDown, (void*)200, 0},
+ {"Pan Left ",        FL_Left,  (Fl_Callback*)MarineGUI::cb_HandleLeftRight, (void*)200, 0},
+ {"Pan Right ",       FL_Right,  (Fl_Callback*)MarineGUI::cb_HandleLeftRight, (void*)-200, FL_MENU_DIVIDER},
+ {"Pan Up (slow) ",   FL_ALT + FL_Up, (Fl_Callback*)MarineGUI::cb_HandleUpDown, (void*)-10, 0},
+ {"Pan Down (slow) ", FL_ALT + FL_Down, (Fl_Callback*)MarineGUI::cb_HandleUpDown, (void*)10, 0},
+ {"Pan Left (slow) ", FL_ALT + FL_Left, (Fl_Callback*)MarineGUI::cb_HandleLeftRight, (void*)10, 0},
+ {"Pan Right (slow)", FL_ALT + FL_Right, (Fl_Callback*)MarineGUI::cb_HandleLeftRight, (void*)-10, FL_MENU_DIVIDER},
+ {"Pan Up (v. slow) ",   FL_CTRL + FL_Up, (Fl_Callback*)MarineGUI::cb_HandleUpDown, (void*)-1, 0},
+ {"Pan Down (v. slow) ", FL_CTRL + FL_Down, (Fl_Callback*)MarineGUI::cb_HandleUpDown, (void*)1, 0},
+ {"Pan Left (v. slow) ", FL_CTRL + FL_Left, (Fl_Callback*)MarineGUI::cb_HandleLeftRight, (void*)1, 0},
+ {"Pan Right (v. slow)", FL_CTRL + FL_Right, (Fl_Callback*)MarineGUI::cb_HandleLeftRight, (void*)-1, FL_MENU_DIVIDER},
  {"tiff_view toggle",  'b', (Fl_Callback*)MarineGUI::cb_ToggleTiff, (void*)-1, 0},
  {"tiff_type toggle",  '`', (Fl_Callback*)MarineGUI::cb_ToggleTiffType, (void*)-1, 0},
  {"back_shade lighter", FL_CTRL+'b', (Fl_Callback*)MarineGUI::cb_BackShade,  (void*)+1, 0},
@@ -83,8 +83,6 @@ Fl_Menu_Item MarineGUI::menu_[] = {
 
  {0}
 };
-
-
 
 //-------------------------------------------------------------------
 // Procedure: augmentMenu
@@ -245,29 +243,25 @@ void MarineGUI::cb_Zoom(Fl_Widget* o, int v) {
   ((MarineGUI*)(o->parent()->user_data()))->cb_Zoom_i(v);
 }
 
-//----------------------------------------- Pan Y
-inline void MarineGUI::cb_PanY_i(int amt) {
+//----------------------------------------- HandleUpDown
+inline void MarineGUI::cb_HandleUpDown_i(int amt) {
   cmviewer->setParam("pan_y", ((double)(amt))/10);
   this->updateXY();
   cmviewer->redraw();
 }
-void MarineGUI::cb_PanY(Fl_Widget* o, int v) {
-  ((MarineGUI*)(o->parent()->user_data()))->cb_PanY_i(v);
+void MarineGUI::cb_HandleUpDown(Fl_Widget* o, int v) {
+  ((MarineGUI*)(o->parent()->user_data()))->cb_HandleUpDown_i(v);
 }
 
 
 //----------------------------------------- Pan X
-inline void MarineGUI::cb_PanX_i(int amt) {
-  if(Fl::event_state(FL_SHIFT))
-    cout << "SHIFT-X" << endl;
-  if(Fl::event_state(FL_CTRL))
-    cout << "CTRL-X" << endl;
+inline void MarineGUI::cb_HandleLeftRight_i(int amt) {
   cmviewer->setParam("pan_x", ((double)(amt))/10);
   this->updateXY();
   cmviewer->redraw();
 }
-void MarineGUI::cb_PanX(Fl_Widget* o, int v) {
-  ((MarineGUI*)(o->parent()->user_data()))->cb_PanX_i(v);
+void MarineGUI::cb_HandleLeftRight(Fl_Widget* o, int v) {
+  ((MarineGUI*)(o->parent()->user_data()))->cb_HandleLeftRight_i(v);
 }
 
 //----------------------------------------- ToggleTiff

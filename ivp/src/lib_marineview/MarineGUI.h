@@ -49,14 +49,14 @@ protected:
   std::vector<std::string> m_pending_vars;
   std::vector<std::string> m_pending_vals;
 
-  inline void cb_Zoom_i(int);
+  virtual void cb_Zoom_i(int);
   static void cb_Zoom(Fl_Widget*, int);
 
-  inline void cb_PanY_i(int);
-  static void cb_PanY(Fl_Widget*, int);
+  virtual void cb_HandleUpDown_i(int);
+  static void cb_HandleUpDown(Fl_Widget*, int);
 
-  inline void cb_PanX_i(int);
-  static void cb_PanX(Fl_Widget*, int);
+  virtual void cb_HandleLeftRight_i(int);
+  static void cb_HandleLeftRight(Fl_Widget*, int);
 
   inline void cb_ToggleTiff_i();
   static void cb_ToggleTiff(Fl_Widget*);
