@@ -887,11 +887,12 @@ void REPLAY_GUI::addIPF_Plot(const IPF_Plot& ipf_plot)
 {
   string vname  = toupper(ipf_plot.getVName());
   string source = toupper(ipf_plot.getSource());
+  string tag    = vname + " : " + source;
 
   if(ipf_viewer_a) {
     unsigned int count = ipf_viewer_a->addIPF_Plot(ipf_plot);
     if(count > 0) {
-      string label = "IPFPlots(1)/" + vname + "/" + source;
+      string label = "IPFPlots/Top-Pane/" + tag;
       mbar->add(label.c_str(), 0, 
 		(Fl_Callback*)REPLAY_GUI::cb_TopPlotIPF, (void*)(count-1));
     }    
@@ -900,7 +901,7 @@ void REPLAY_GUI::addIPF_Plot(const IPF_Plot& ipf_plot)
   if(ipf_viewer_b) {
     unsigned int count = ipf_viewer_b->addIPF_Plot(ipf_plot);
     if(count > 0) {
-      string label = "IPFPlots(2)/" + vname + "/" + source;
+      string label = "IPFPlots/Bottom-Pane/" + tag;
       mbar->add(label.c_str(), 0, 
 		(Fl_Callback*)REPLAY_GUI::cb_BotPlotIPF, (void*)(count-1));
     }    
