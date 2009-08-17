@@ -9,7 +9,8 @@
 /* except by the author(s).                                      */
 /*****************************************************************/
 
-#include <stdio.h>
+#include <cstdio>
+#include <cstdlib>
 #include <string>
 #include <iostream>
 #include "TermUtils.h"
@@ -27,7 +28,8 @@ Expander::Expander(string given_infile, string given_outfile)
   m_infile  = given_infile;
   m_outfile = given_outfile;
   m_force = false;  
-
+  m_strict = false;
+  
   m_max_subs_per_line = 100;
   m_initial_filenames.push_back(given_infile);
   m_path.push_back(".");
@@ -386,9 +388,13 @@ bool Expander::applyMacrosToLine(string& line,
 
   if(res != "") {
     cout << "Warning: The following line of " << m_infile << endl;
-    cout << "  creating" << m_outfile << endl;
-    cout << "  may contain an undefined macro::" << endl;
+    cout << "  creating " << m_outfile << endl;
+    cout << "  may contain an undefined macro:" << endl;
     cout << "> " << res << endl;
+
+    if(m_strict)
+        exit(EXIT_FAILURE);
+    
     return(false);
   }
   else {

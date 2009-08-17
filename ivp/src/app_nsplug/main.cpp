@@ -9,7 +9,8 @@
 /* except by the author(s).                                      */
 /*****************************************************************/
 
-#include <stdio.h>
+#include <cstdio>
+#include <cstdlib>
 #include <cstring>
 #include <string>
 #include <iostream>
@@ -45,6 +46,8 @@ int main(int argc, char *argv[])
       expander.setForce(true);
     else if(((arg=="-p") || (arg=="--path")) && (i<(argc-1)))
       expander.addPath(argv[i+1]);
+    else if(((arg=="-s") || (arg=="--strict")))
+      expander.setStrict(true);
     else if(strContains(arg, '=')) {
       string left  = stripBlankEnds(biteString(arg, '='));
       string right = stripBlankEnds(arg);
@@ -56,11 +59,16 @@ int main(int argc, char *argv[])
 
   if(expander.verifyInfile()) {
     if(expander.expand())
-      expander.writeOutput();
+        expander.writeOutput();
+    else
+        exit(EXIT_FAILURE);
+    
   }
   else
-    cout << "Aborted: " << argv[1] << " cannot be opened. " << endl;
-  
+  {
+      cout << "Aborted: " << argv[1] << " cannot be opened. " << endl;
+      exit(EXIT_FAILURE);
+  }
   
   return(0);
 }

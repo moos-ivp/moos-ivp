@@ -28,6 +28,7 @@ class Expander
   bool writeOutput();
   void addMacro(std::string, std::string, bool=false);
   void setForce(bool v) {m_force=v;};
+  void setStrict(bool v) {m_strict=v;};
   void addPath(std::string);
 
  protected:
@@ -64,6 +65,11 @@ class Expander
   std::string m_outfile;
 
   bool m_force;
+
+  // if m_strict, quit if undefined macros are found
+  bool m_strict;
+  
+  
   int  m_max_subs_per_line;
 
   std::vector<std::string> m_pmode;
