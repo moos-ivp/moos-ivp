@@ -11,7 +11,7 @@
 
 #ifdef WIN32
    #include <process.h>
-   #include "MOOSAppRunnerThread.h"
+//    #include "MOOSAppRunnerThread.h"
    #define getpid _getpid
 #endif
 

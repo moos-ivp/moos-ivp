@@ -138,7 +138,7 @@ IF("${IVP_BUILD_GUI_CODE}" STREQUAL "ON")
 ENDIF("${IVP_BUILD_GUI_CODE}" STREQUAL "ON")
 
 
-message("A: IVP_LIB_DIRECTORY = ${IVP_LIB_DIRECTORY}")
+# message("A: IVP_LIB_DIRECTORY = ${IVP_LIB_DIRECTORY}")
 
 # If the environment hasn't explicitly set 'IVP_LIB_DIRECTORY', give it a good
 # default value...
@@ -148,13 +148,22 @@ IF("${IVP_LIB_DIRECTORY}" STREQUAL "")
    GET_FILENAME_COMPONENT(IVP_LIB_DIRECTORY "${IVP_SOURCE_DIR}/../../lib" ABSOLUTE)
 ENDIF("${IVP_LIB_DIRECTORY}" STREQUAL "")
 
-message("B: IVP_SOURCE_DIR = ${IVP_SOURCE_DIR}")
-message("C: IVP_LIB_DIRECTORY = ${IVP_LIB_DIRECTORY}")
+# message("B: IVP_SOURCE_DIR = ${IVP_SOURCE_DIR}")
+# message("C: IVP_LIB_DIRECTORY = ${IVP_LIB_DIRECTORY}")
 
 FOREACH(L ${IVP_LIBS_TO_BUILD} )
+# message("D: ${L} : IVP_LIB_DIRECTORY = ${IVP_LIB_DIRECTORY}")
   # We're actually fighting the lib_fltk-1.1.7 CMake files for control over this
   # detail, so we have to reset it after adding the FLTK subdirectory.
-  SET( LIBRARY_OUTPUT_PATH "${IVP_LIB_DIRECTORY}" CACHE PATH "" FORCE )
+  
+  SET( LIBRARY_OUTPUT_PATH "${IVP_LIB_DIRECTORY}" CACHE PATH "" FORCE )  # For CMake 2.4
+
+  # Just setting the variables without the 'CMAKE_' prefix doesn't seem to work.
+  # This whole mess should go away if/when we stop building FLTK as a subproject.
+  SET( CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${IVP_LIB_DIRECTORY}" CACHE PATH "" FORCE ) # For CMake 2.6
+  SET( CMAKE_LIBRARY_OUTPUT_DIRECTORY "${IVP_LIB_DIRECTORY}" CACHE PATH "" FORCE ) # For CMake 2.6
+  SET( ARCHIVE_OUTPUT_DIRECTORY "${IVP_LIB_DIRECTORY}" CACHE PATH "" FORCE ) # For CMake 2.6
+  SET( LIBRARY_OUTPUT_DIRECTORY "${IVP_LIB_DIRECTORY}" CACHE PATH "" FORCE ) # For CMake 2.6
 
   ADD_SUBDIRECTORY(${L})
 ENDFOREACH(L)

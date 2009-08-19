@@ -29,9 +29,10 @@
 #include "MBUtils.h"
 
 #ifdef WIN32
-#include <process.h>
-#include "MOOSAppRunnerThread.h"
+   #include <process.h>
 #endif
+
+#include "MOOSAppRunnerThread.h"
 
 using namespace std;
 
@@ -40,49 +41,12 @@ using namespace std;
 
 const char*  g_sMissionFile = "uXMS.moos";
 
-#ifdef WIN32
-	MOOSAppRunnerThread* g_threadID;
-#else
-	pthread_t    g_threadID;
-#endif 
+MOOSAppRunnerThread* g_moosAppRunner;
 
 struct ThreadParams {
     CMOOSApp *app;
     char *name;
 };
-
-//--------------------------------------------------------
-// Procedure: RunProc
-
-void* RunProc(void *lpParameter)
-{
-  void **params = (void **)lpParameter;
-  
-  CMOOSApp *app = (CMOOSApp *)params[0];
-  char *name = (char *) params[1];
-  
-  MOOSTrace("starting %s thread\n", name);
-  app->Run(name, g_sMissionFile);	
-  
-  return(NULL);
-}
-
-//--------------------------------------------------------
-// Procedure: spawn_thread
-#ifndef WIN32
-pthread_t spawn_thread(ThreadParams *pParams)
-{
-  pthread_t tid;
-  if(pthread_create(&tid,NULL, RunProc, pParams) != 0) {
-    MOOSTrace("failed to start %s thread\n", pParams->name);
-    tid = (pthread_t) -1;
-  }
-  else 
-    MOOSTrace("%s thread spawned\n", pParams->name);
-  
-  return(tid);
-}
-#endif
 
 //--------------------------------------------------------
 // Procedure: main
@@ -225,12 +189,7 @@ int main(int argc ,char * argv[])
   }
 
   // start the XMS in its own thread
-#ifdef WIN32
-  g_threadID = new MOOSAppRunnerThread(&g_theXMS, (char*)(process_name.c_str()), (char*)g_sMissionFile);
-#else
-  ThreadParams params = {&g_theXMS, (char*)(process_name.c_str())};
-  g_threadID = spawn_thread(&params);	
-#endif
+  g_moosAppRunner = new MOOSAppRunnerThread(&g_theXMS, (char*)(process_name.c_str()), (char*)g_sMissionFile);
 
   for(int i=1; i<argc; i++) {
     string str = argv[i];
