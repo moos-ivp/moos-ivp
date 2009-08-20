@@ -263,20 +263,24 @@ void Common_IPFViewer::drawIvPFunction()
     drawQuad(quad);
   }
 
-  if(quad_cnt == 0)
-    drawText(((w()/2)-10), ((h()/2)-5), "<null>", m_label_color, 12);
+  string null_txt = "No Function on Helm Iteration #" + m_active_ipf_iter;
 
-  
+  if(quad_cnt == 0)
+    drawText(((w()/5)), ((h()/2)-5), null_txt, m_label_color, 12);
+
   double hpos1 = h()-15;
   double hpos2 = h()-33;
   double hpos3 = h()-51;
 
-  if(m_ipf_vname != "")
-    drawText(4, hpos1, " vname = "+m_ipf_vname, m_label_color, 12);
-  if(m_ipf_source != "")
-    drawText(4, hpos2, "source = "+m_ipf_source, m_label_color, 12);
-  if(m_ipf_pieces != "")
-    drawText(4, hpos2, " pcs = "+m_ipf_pieces, m_label_color, 12);
+  string vname_info = " vname = " + m_active_ipf_vname;
+  vname_info += " (" + m_active_ipf_iter + ")";
+  
+  if(m_active_ipf_vname != "")
+    drawText(4, hpos1, vname_info, m_label_color, 12);
+  if(m_active_ipf_source != "")
+    drawText(4, hpos2, "source = "+m_active_ipf_source, m_label_color, 12);
+  if(m_active_ipf_pieces != "")
+    drawText(4, hpos2, " pcs = "+m_active_ipf_pieces, m_label_color, 12);
 }
 
 //-------------------------------------------------------------

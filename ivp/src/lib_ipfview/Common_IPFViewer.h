@@ -37,9 +37,10 @@ public:
   bool   setParam(std::string, std::string);
   bool   setParam(std::string, double);
   void   printParams();
-  void   setVNameIPF(std::string s)   {m_ipf_vname = s;};
-  void   setSourceIPF(std::string s)  {m_ipf_source = s;};
-  void   setPiecesIPF(std::string s)  {m_ipf_pieces = s;};
+  void   setVNameIPF(std::string s)   {m_active_ipf_vname = s;};
+  void   setSourceIPF(std::string s)  {m_active_ipf_source = s;};
+  void   setPiecesIPF(std::string s)  {m_active_ipf_pieces = s;};
+  void   setIterIPF(std::string s)    {m_active_ipf_iter = s;};
   void   setLabelColor(std::string);
   void   setClearColor(std::string);
   void   setFrameColor(std::string);
@@ -75,9 +76,10 @@ protected:
   double       m_frame_height;
   QuadSet      m_quadset;
 
-  std::string  m_ipf_vname;
-  std::string  m_ipf_source;
-  std::string  m_ipf_pieces;
+  std::string  m_active_ipf_vname;
+  std::string  m_active_ipf_source;
+  std::string  m_active_ipf_pieces;
+  std::string  m_active_ipf_iter;
 };
 
 #endif 
