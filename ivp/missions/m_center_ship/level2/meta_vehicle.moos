@@ -18,6 +18,7 @@ ProcessConfig = ANTLER
   Run = pEchoVar        @ NewConsole = false
   Run = pNodeReporter   @ NewConsole = false
   Run = pMarinePID      @ NewConsole = false
+  Run = pLogger         @ NewConsole = false
   Run = pHelmIvP        @ NewConsole = false
 }
   
@@ -27,3 +28,4 @@ ProcessConfig = ANTLER
 #include plug_pMarinePID.moos
 #include plug_pEchoVar.moos
 #include plug_pNodeReporter.moos
+#include plug_pLogger.moos
