@@ -311,7 +311,7 @@ void LogPlotViewer::adjust_zoom(string ztype)
     double crop_amount = time_band * 0.20;
     double lower_crop_time = crop_amount * pct_band;
     double upper_crop_time = crop_amount * (1-pct_band);
-    if((m_display_max_time - m_display_min_time) > 5) {
+    if((m_display_max_time - m_display_min_time) >2.5) {
       m_display_min_time += lower_crop_time;
       m_display_max_time -= upper_crop_time;
       m_valid_cache = false;
@@ -334,7 +334,6 @@ void LogPlotViewer::adjust_zoom(string ztype)
     m_display_max_time = m_extreme_max_time;
     m_valid_cache = false;
   }
-
   redraw();
 }
 
@@ -343,14 +342,13 @@ void LogPlotViewer::adjust_zoom(string ztype)
 
 bool LogPlotViewer::fillCache()
 {
-  //cout << "In fillCache" << view_index1 << "  " << view_index2 << endl;
-
   m_valid_cache = false;
   if((view_index1 < 0) || (view_index1 >= m_logplots.size()))
     return(false);
   if((view_index2 < 0) || (view_index2 >= m_logplots.size()))
     return(false);
-
+  m_valid_cache = true;
+  
   LogPlot vplot1 = m_logplots[view_index1];
   LogPlot vplot2 = m_logplots[view_index2];
 
@@ -359,7 +357,6 @@ bool LogPlotViewer::fillCache()
   cache_x2.clear();
   cache_y2.clear();
 
-  //m_step = (w()-margin) / (m_extreme_max_time - m_extreme_min_time);
   m_step = (w()-m_margin) / (m_display_max_time - m_display_min_time);
 
   int    vpsize1  = vplot1.size();
@@ -367,34 +364,65 @@ bool LogPlotViewer::fillCache()
   double max_val1 = vplot1.get_max_val();
   double h_step1 = (h()-m_margin) / (max_val1  - min_val1);
 
+  bool excepted_right = false;
   for(int i=0; i<vpsize1; i++) {
     double rawt = vplot1.get_time_by_index(i);
-    double rawv = vplot1.get_value_by_index(i);
-    //double scalet = ((rawt - m_extreme_min_time)  * m_step) + (m_margin/2.0); 
-    double scalet = ((rawt - m_display_min_time)  * m_step) + (m_margin/2.0); 
-    double scalev = ((rawv - min_val1 ) * h_step1) + (m_margin/2.0);
-    cache_x1.push_back(scalet);
-    cache_y1.push_back(scalev);
+    bool add_to_cache = false;
+    if((rawt >= m_display_min_time) && (rawt <= m_display_max_time))
+      add_to_cache = true;
+    else if(rawt <= m_display_min_time) {
+      cache_x1.clear();
+      cache_y1.clear();
+      add_to_cache = true;
+    }
+    else if(!excepted_right) {
+      add_to_cache = true;
+      excepted_right = true;
+    }
+
+    if(add_to_cache) {
+      double rawv = vplot1.get_value_by_index(i);
+      double scalet = ((rawt - m_display_min_time)  * m_step) + (m_margin/2.0); 
+      double scalev = ((rawv - min_val1 ) * h_step1) + (m_margin/2.0);
+      cache_x1.push_back(scalet);
+      cache_y1.push_back(scalev);
+    }
   }
 
-  if(view_index1 != view_index2) {
-    int    vpsize2  = vplot2.size();
-    double min_val2 = vplot2.get_min_val();
-    double max_val2 = vplot2.get_max_val();
-    double h_step2 = (h()-m_margin) / (max_val2  - min_val2);
+  // If the two plots are the same index, we're done.
+  if(view_index1 == view_index2) 
+    return(true);
+
+  // Otherwise, fill in the cache for the second index
+  int    vpsize2  = vplot2.size();
+  double min_val2 = vplot2.get_min_val();
+  double max_val2 = vplot2.get_max_val();
+  double h_step2 = (h()-m_margin) / (max_val2  - min_val2);
+  
+  excepted_right = false;
+  for(int j=0; j<vpsize2; j++) {      
+    double rawt = vplot2.get_time_by_index(j);
+    bool add_to_cache = false;
+    if((rawt >= m_display_min_time) && (rawt <= m_display_max_time))
+      add_to_cache = true;
+    else if(rawt <= m_display_min_time) {
+      cache_x2.clear();
+      cache_y2.clear();
+      add_to_cache = true;
+    }
+    else if(!excepted_right) {
+      add_to_cache = true;
+      excepted_right = true;
+    }
     
-    for(int j=0; j<vpsize2; j++) {
-      double rawt = vplot2.get_time_by_index(j);
+    if(add_to_cache) {
       double rawv = vplot2.get_value_by_index(j);
-      //double scalet = ((rawt - m_extreme_min_time)  * m_step) + (m_margin/2.0); 
       double scalet = ((rawt - m_display_min_time)  * m_step) + (m_margin/2.0); 
       double scalev = ((rawv - min_val2 ) * h_step2) + (m_margin/2.0);
       cache_x2.push_back(scalet);
       cache_y2.push_back(scalev);
     }
   }
-
-  m_valid_cache = true;
   return(true);
 }
 
@@ -431,6 +459,7 @@ void LogPlotViewer::drawLogPlot()
   int color_scheme = 2;
 
   glLineWidth(1.0);
+  unsigned int i, cache_size = cache_x1.size();
 
   // ----- Handle the FIRST Plot ----------
   // Draw the LINES of the plot
@@ -438,23 +467,35 @@ void LogPlotViewer::drawLogPlot()
     glColor4f(0.282,  0.239,  0.545,  0.1);  // DarkSlateBlue
   else
     glColor4f(0.433,  0.520,  0.284,  0.1);  // DarkOliveGreen-ish
-  glBegin(GL_LINE_STRIP);
-  for(unsigned int i=0; i<cache_x1.size(); i++)
-    glVertex2f(cache_x1[i], cache_y1[i]);
-  glEnd();
+  for(i=0; i<cache_size; i++) {
+    if(i>0) {
+      glBegin(GL_LINE_STRIP);
+      glVertex2f(cache_x1[i-1], cache_y1[i-1]);
+      glVertex2f(cache_x1[i], cache_y1[i-1]);
+      glVertex2f(cache_x1[i], cache_y1[i]);
+      glEnd();
+    }
+  }
 
   // Draw the POINTS of the plot
-  glPointSize(2.0);
+  if(cache_size > 75)  glPointSize(2.0);
+  else if(cache_size > 55) glPointSize(3.0);
+  else if(cache_size > 40) glPointSize(4.0);
+  else if(cache_size > 35) glPointSize(5.0);
+  else if(cache_size > 30) glPointSize(6.0);
+  else if(cache_size > 25) glPointSize(7.0);
+  else  glPointSize(8.0);
   if(color_scheme == 1)
     glColor4f(0.561,  0.737,  0.561,  0.1);  // DarkSeaGreen
   else
     glColor4f(0.433,  0.520,  0.284,  0.1);  // DarkOliveGreen-ish
   glBegin(GL_POINTS);
-  for(unsigned int i=0; i<cache_x1.size(); i++)
+  for(i=0; i<cache_size; i++)
     glVertex2f(cache_x1[i], cache_y1[i]);
   glEnd();
 
   if(view_index1 != view_index2) {
+    unsigned int i, cache_size = cache_x2.size();
     // ----- Handle the SECOND Plot ----------
     // Draw the LINES of the plot
     if(color_scheme == 1)
@@ -462,12 +503,24 @@ void LogPlotViewer::drawLogPlot()
     else
       glColor4f(0.282,  0.239,  0.545,  0.1);  // DarkSlateBlue
     glBegin(GL_LINE_STRIP);
-    for(unsigned int i=0; i<cache_x2.size(); i++)
-      glVertex2f(cache_x2[i], cache_y2[i]);
-    glEnd();
+    for(i=0; i<cache_size; i++) {
+      if(i>0) {
+	glBegin(GL_LINE_STRIP);
+	glVertex2f(cache_x2[i-1], cache_y2[i-1]);
+	glVertex2f(cache_x2[i], cache_y2[i-1]);
+	glVertex2f(cache_x2[i], cache_y2[i]);
+	glEnd();
+      }
+    }
 
     // Draw the POINTS of the plot
-    glPointSize(2.0);
+    if(cache_size > 75)  glPointSize(2.0);
+    else if(cache_size > 55) glPointSize(3.0);
+    else if(cache_size > 40) glPointSize(4.0);
+    else if(cache_size > 35) glPointSize(5.0);
+    else if(cache_size > 30) glPointSize(6.0);
+    else if(cache_size > 25) glPointSize(7.0);
+    else  glPointSize(8.0);
     if(color_scheme == 1)
       glColor4f(0.99,  0.99,  0.99,  0.1);  // WHite
     else

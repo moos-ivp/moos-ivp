@@ -160,4 +160,7 @@ void IvPFuncViewer::buildCollective(double curr_time)
     QuadSet quadset = setQuadSetFromIPF(ipfs[i]);
     bool ok = m_quadset.addQuadSet(&quadset);
   }
+
+  m_quadset.applyColorMap(m_color_map);
+  m_quadset.normalize(0, 200);
 }
