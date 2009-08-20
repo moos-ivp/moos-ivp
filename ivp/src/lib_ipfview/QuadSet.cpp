@@ -236,6 +236,11 @@ bool QuadSet::addQuadSet(const QuadSet* g_quads)
   int gsize       = g_quads->size();
   double g_weight = g_quads->getWeight();
 
+
+  cout << "adding a quadset. self size: " << msize << endl;
+  cout << "                 given size: " << gsize << endl;
+  cout << "               given weight: " << g_weight << endl;
+
 #if 0
   // If this is an empty quadset, just set to the given quadset
   if(msize == 0) {
@@ -259,6 +264,7 @@ bool QuadSet::addQuadSet(const QuadSet* g_quads)
     }
     m_low_val  = g_quads->m_low_val * g_weight;
     m_high_val = g_quads->m_high_val * g_weight;
+    cout << "    new selfsize: " << m_quads.size() << endl;
     return(true);
   }
 
