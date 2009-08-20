@@ -324,6 +324,22 @@ string NavPlotViewer::getHPlotBehaviors(const string& side,
 }
 
 //-------------------------------------------------------------
+// Procedure: getVIterMap
+
+map<string, unsigned int> NavPlotViewer::getVIterMap()
+{
+  map<string, unsigned int> viter_map;
+  unsigned int i, vsize = m_helm_plot.size();
+  for(i=0; i<vsize; i++) {
+    string vname = m_helm_plot[i].get_vehi_name();
+    unsigned int iter = m_helm_plot[i].get_iter_by_time(m_curr_time);
+    viter_map[vname] = iter;
+  }
+
+  return(viter_map);
+}
+
+//-------------------------------------------------------------
 // Procedure: drawNavPlots
 
 void NavPlotViewer::drawNavPlots()

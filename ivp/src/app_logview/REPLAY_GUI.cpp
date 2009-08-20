@@ -328,10 +328,14 @@ int REPLAY_GUI::handle(int event)
     lpv_curr_time = lp_viewer->get_curr_time();
     np_viewer->setCurrTime(lpv_curr_time);
     if(ipf_viewer_a) {
+      map<string, unsigned int> viter_map = np_viewer->getVIterMap();
+      ipf_viewer_a->setVIterMap(viter_map);
       ipf_viewer_a->setCurrTime(lpv_curr_time);
       ipf_viewer_a->redraw();
     }
     if(ipf_viewer_b) {
+      map<string, unsigned int> viter_map = np_viewer->getVIterMap();
+      ipf_viewer_b->setVIterMap(viter_map);
       ipf_viewer_b->setCurrTime(lpv_curr_time);
       ipf_viewer_b->redraw();
     }
@@ -500,16 +504,26 @@ bool REPLAY_GUI::inIPFViewerB()
 //----------------------------------------- Step
 inline bool REPLAY_GUI::cb_Step_i(int val) {
   np_viewer->stepTime(val);
-  updateXY();
+  np_viewer->redraw();
+
   double curr_time = np_viewer->getCurrTime();
   lp_viewer->set_curr_time(curr_time);
-  ipf_viewer_a->setCurrTime(curr_time);
-  ipf_viewer_b->setCurrTime(curr_time);
-
-  np_viewer->redraw();
   lp_viewer->redraw();
-  if(ipf_viewer_a) ipf_viewer_a->redraw();
-  if(ipf_viewer_b) ipf_viewer_b->redraw();
+
+
+  map<string, unsigned int> viter_map = np_viewer->getVIterMap();
+  if(ipf_viewer_a) {
+    ipf_viewer_a->setVIterMap(viter_map);
+    ipf_viewer_a->setCurrTime(curr_time);
+    ipf_viewer_a->redraw();
+  }
+  if(ipf_viewer_b) {
+    ipf_viewer_b->setVIterMap(viter_map);
+    ipf_viewer_b->setCurrTime(curr_time);
+    ipf_viewer_b->redraw();
+  }
+
+  updateXY();
   return(true);
 }
 void REPLAY_GUI::cb_Step(Fl_Widget* o, int v) {
@@ -900,14 +914,14 @@ void REPLAY_GUI::addIPF_Plot(const IPF_Plot& ipf_plot)
   string tag    = vname + " : " + source;
 
   if(ipf_viewer_a) {
+    bool active = (m_num_ipfplots == 0);
+    unsigned int count = ipf_viewer_a->addIPF_Plot(ipf_plot, active);
     if(m_num_ipfplots == 0) {
       string label = "IPFPlots/Top-Pane/Collective";
       mbar->add(label.c_str(), 0, 
 		(Fl_Callback*)REPLAY_GUI::cb_TopPlotIPF, (void*)-1);
       ipf_viewer_a->setCurrTime(0);
     }
-    bool active = (m_num_ipfplots == 0);
-    unsigned int count = ipf_viewer_a->addIPF_Plot(ipf_plot, active);
     if(count > 0) {
       string label = "IPFPlots/Top-Pane/" + tag;
       mbar->add(label.c_str(), 0, 
@@ -916,14 +930,14 @@ void REPLAY_GUI::addIPF_Plot(const IPF_Plot& ipf_plot)
   }
   
   if(ipf_viewer_b) {
+    bool active = (m_num_ipfplots == 1);
+    unsigned int count = ipf_viewer_b->addIPF_Plot(ipf_plot, active);
     if(m_num_ipfplots == 0) {
       string label = "IPFPlots/Top-Pane/Collective";
       mbar->add(label.c_str(), 0, 
 		(Fl_Callback*)REPLAY_GUI::cb_TopPlotIPF, (void*)-1);
       ipf_viewer_b->setCurrTime(0);
     }
-    bool active = (m_num_ipfplots == 1);
-    unsigned int count = ipf_viewer_b->addIPF_Plot(ipf_plot, active);
     if(count > 0) {
       string label = "IPFPlots/Bottom-Pane/" + tag;
       mbar->add(label.c_str(), 0, 

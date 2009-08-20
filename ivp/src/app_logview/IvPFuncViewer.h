@@ -23,6 +23,7 @@
 #ifndef IVPFUNC_VIEWER_HEADER
 #define IVPFUNC_VIEWER_HEADER
 
+#include <map>
 #include <vector>
 #include <string>
 #include "Common_IPFViewer.h"
@@ -40,6 +41,9 @@ class IvPFuncViewer : public Common_IPFViewer
   void   altPlotIndex(int v);
   void   setPlotIndex(unsigned int index);
   void   setCurrTime(double time);
+  void   setVIterMap(const std::map<std::string, unsigned int>& vmap) 
+  {m_viter_map=vmap;};
+
   void   setCollective(bool v) {m_collective=v;};
 
   void   buildCollective(double time);
@@ -48,8 +52,10 @@ private:
   unsigned int m_plot_ix;
   bool         m_collective;
 
-  // The IvPFuncViewer holds all IPF_Plots for all vehicles and all
-  // behaviors. Each index is a IPF_Plot for a given vehicle/behavior.
+  // A mapping from vehicle name to current helm iteration
+  std::map<std::string, unsigned int> m_viter_map;
+
+  // Index keys on unique vehicle/behavior pair
   std::vector<std::string>  m_ipf_vname;
   std::vector<std::string>  m_ipf_source;
   std::vector<IPF_Plot>     m_ipf_plot;

@@ -64,6 +64,8 @@ class NavPlotViewer : public MarineViewer
   std::string getHPlotDecision(const std::string&);
   std::string getHPlotBehaviors(const std::string&, const std::string&);
 
+  std::map<std::string, unsigned int> getVIterMap();
+
  public: // Configuration parameters
   void   setFrame(std::string s)   {m_frame = s;};
 

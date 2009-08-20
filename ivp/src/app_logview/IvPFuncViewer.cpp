@@ -124,9 +124,11 @@ void IvPFuncViewer::setCurrTime(double curr_time)
   if(m_collective)
     buildCollective(curr_time);
   else {
-    string ipf_string = m_ipf_plot[m_plot_ix].getIPFByTime(curr_time);
+    unsigned int iter = m_viter_map[m_ipf_vname[m_plot_ix]];
+    string ipf_string = m_ipf_plot[m_plot_ix].getIPFByHelmIteration(iter);
     setVNameIPF(m_ipf_vname[m_plot_ix]);
     setSourceIPF(m_ipf_source[m_plot_ix]);
+    setIterIPF(intToString(iter));
     applyIPF(ipf_string);
   }
 }
