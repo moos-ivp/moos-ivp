@@ -288,7 +288,6 @@ bool QuadSet::addQuadSet(const QuadSet* g_quads)
     if(m_quads[i].hhval < m_low_val)   m_low_val  = m_quads[i].hhval;
     if(m_quads[i].hhval > m_high_val)  m_high_val = m_quads[i].hhval;
   }
-
   return(true);
 }
 

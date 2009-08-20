@@ -20,24 +20,26 @@
 #include "QuadSet.h"
 #include "IvPFunction.h"
 #include "ColorPack.h"
+#include "FColorMap.h"
 
 class Common_IPFViewer : public Fl_Gl_Window
 {
  public:
   Common_IPFViewer(int x,int y,int w,int h,const char *l=0);
-  virtual ~Common_IPFViewer();
+  virtual ~Common_IPFViewer() {};
 
   // Pure virtuals that need to be defined
   void   draw();
   int    handle(int);
 
 public:
-  void   applyIPF(IvPFunction*, bool=false);
+  void   applyIPF(const std::string& ipf_str);
   bool   setParam(std::string, std::string);
   bool   setParam(std::string, double);
   void   printParams();
   void   setVNameIPF(std::string s)   {m_ipf_vname = s;};
   void   setSourceIPF(std::string s)  {m_ipf_source = s;};
+  void   setPiecesIPF(std::string s)  {m_ipf_pieces = s;};
   void   setLabelColor(std::string);
   void   setClearColor(std::string);
   void   setFrameColor(std::string);
@@ -49,6 +51,8 @@ protected:
   void   drawQuad(Quad3D&);
   void   handleLeftMouse(int, int) {};
   void   handleRightMouse(int, int) {};
+  
+  QuadSet setQuadSetFromIPF(const std::string&);
 
   void   drawText(double px, double py, const std::string&, 
 		  const ColorPack&, double font_size);
@@ -57,6 +61,7 @@ protected:
   ColorPack    m_clear_color;
   ColorPack    m_frame_color;
   ColorPack    m_label_color;
+  FColorMap    m_color_map;
 
   double       m_xRot;
   double       m_zRot;
@@ -65,15 +70,14 @@ protected:
   double       m_rad_extra;
   int          m_polar;
   
-  bool         m_ipf_owner;
   bool         m_draw_frame;
   bool         m_draw_base;
   double       m_frame_height;
   QuadSet      m_quadset;
-  IvPFunction* m_ivp_function;
 
   std::string  m_ipf_vname;
   std::string  m_ipf_source;
+  std::string  m_ipf_pieces;
 };
 
 #endif 

@@ -17,6 +17,7 @@
 #include "OF_Coupler.h"
 #include "MBUtils.h"
 #include "ColorParse.h"
+#include "FunctionEncoder.h"
 
 using namespace std;
 
@@ -33,8 +34,6 @@ Common_IPFViewer::Common_IPFViewer(int g_x, int g_y, int g_width,
   m_rad_extra    = 15;
   m_draw_frame   = true;
   m_draw_base    = true;
-  m_ipf_owner    = false;
-  m_ivp_function = 0;
   m_polar        = 1; 
 
   setParam("clear_color", "white");
@@ -42,16 +41,6 @@ Common_IPFViewer::Common_IPFViewer(int g_x, int g_y, int g_width,
 
   m_frame_height = 250;
 }
-
-//-------------------------------------------------------------
-// Destructor
-
-Common_IPFViewer::~Common_IPFViewer()
-{
-  if(m_ipf_owner && m_ivp_function)
-    delete(m_ivp_function);
-}
-
 
 //-------------------------------------------------------------
 // Procedure: handle()
@@ -256,60 +245,11 @@ void Common_IPFViewer::draw()
 // Procedure: applyIPF
 //   Purpose: 
 
-void Common_IPFViewer::applyIPF(IvPFunction *g_ivp_function,
-				bool g_ipf_owner)
+void Common_IPFViewer::applyIPF(const std::string& ipf_str)
 {
-  if(m_ipf_owner && m_ivp_function)
-    delete(m_ivp_function);
-  m_ivp_function = g_ivp_function;
-  m_ipf_owner = g_ipf_owner;
-  
   m_quadset.clear();
-  
-  if(m_ivp_function) {
-    
-    IvPDomain domain = m_ivp_function->getPDMap()->getDomain();
-  
-    // Case where ipf defined only over COURSE
-    if((domain.hasDomain("course")) && (!domain.hasDomain("speed"))) {
-      IvPDomain spd_domain;
-      spd_domain.addDomain("speed", 0, 5, 41);
-      ZAIC_PEAK spd_zaic(spd_domain, "speed");
-      spd_zaic.setSummit(2.5);
-      spd_zaic.setPeakWidth(20);
-      IvPFunction *spd_of = spd_zaic.extractOF();
-      OF_Coupler coupler;
-      IvPFunction *new_ipf = coupler.couple(m_ivp_function, spd_of);
-      //delete(m_ivp_function);
-      m_ivp_function = new_ipf;
-    }
-    // Case where ipf defined only over SPEED
-    if((!domain.hasDomain("course")) && (domain.hasDomain("speed"))) {
-      IvPDomain crs_domain;
-      crs_domain.addDomain("course", 0, 359, 360);
-      ZAIC_PEAK crs_zaic(crs_domain, "course");
-      crs_zaic.setSummit(180);
-      crs_zaic.setPeakWidth(360);
-      IvPFunction *crs_of = crs_zaic.extractOF();
-      OF_Coupler coupler;
-      m_ivp_function = coupler.couple(m_ivp_function, crs_of);
-    }
-  }
-
-  if(m_ivp_function != 0) {
-    FColorMap cmap;
-    //if(colormap_type != "")
-    //  cmap.setType(colormap_type);
-    
-    m_quadset.applyIPF(m_ivp_function, "course", "speed");
-
-    //m_quadset->setAdjust(low_adjust, high_adjust);
-
-    double lowval = m_ivp_function->getPDMap()->getMinWT();
-    double hghval = m_ivp_function->getPDMap()->getMaxWT();
-    m_quadset.applyColorMap(cmap, lowval, hghval);
-  }
-
+  if(ipf_str != "")
+    m_quadset = setQuadSetFromIPF(ipf_str);
 }
 
 //-------------------------------------------------------------
@@ -322,14 +262,21 @@ void Common_IPFViewer::drawIvPFunction()
     Quad3D quad = m_quadset.getQuad(i);
     drawQuad(quad);
   }
+
+  if(quad_cnt == 0)
+    drawText(((w()/2)-10), ((h()/2)-5), "<null>", m_label_color, 12);
+
   
   double hpos1 = h()-15;
   double hpos2 = h()-33;
+  double hpos3 = h()-51;
 
   if(m_ipf_vname != "")
     drawText(4, hpos1, " vname = "+m_ipf_vname, m_label_color, 12);
   if(m_ipf_source != "")
     drawText(4, hpos2, "source = "+m_ipf_source, m_label_color, 12);
+  if(m_ipf_pieces != "")
+    drawText(4, hpos2, " pcs = "+m_ipf_pieces, m_label_color, 12);
 }
 
 //-------------------------------------------------------------
@@ -495,6 +442,8 @@ void Common_IPFViewer::drawOwnPoint()
 {
   if((m_xRot != 0) || (m_zRot != 0))
     return;
+  if(m_quadset.size() == 0)
+    return;
 
   double w = 250;
 
@@ -566,5 +515,58 @@ void Common_IPFViewer::setClearColor(string new_color)
 void Common_IPFViewer::setFrameColor(string new_color)
 {
   m_frame_color.setColor(new_color);
+}
+  
+
+//-------------------------------------------------------------
+// Procedure: setQuadSetFromIPF
+//      Note: This will destroy the incoming IvPFunction
+
+QuadSet Common_IPFViewer::setQuadSetFromIPF(const string& ipf_str)
+{
+  QuadSet null_quadset;
+ 
+  IvPFunction *ivp_function = StringToIvPFunction(ipf_str);
+  if(!ivp_function)
+    return(null_quadset);
+    
+  IvPDomain domain = ivp_function->getPDMap()->getDomain();
+  
+  // Case where ipf defined only over COURSE
+  if((domain.hasDomain("course")) && (!domain.hasDomain("speed"))) {
+    IvPDomain spd_domain;
+    spd_domain.addDomain("speed", 0, 5, 41);
+    ZAIC_PEAK spd_zaic(spd_domain, "speed");
+    spd_zaic.setSummit(2.5);
+    spd_zaic.setPeakWidth(20);
+    IvPFunction *spd_of = spd_zaic.extractOF();
+    OF_Coupler coupler;
+    IvPFunction *new_ipf = coupler.couple(ivp_function, spd_of);
+    ivp_function = new_ipf;
+  }
+  // Case where ipf defined only over SPEED
+  if((!domain.hasDomain("course")) && (domain.hasDomain("speed"))) {
+    IvPDomain crs_domain;
+    crs_domain.addDomain("course", 0, 359, 360);
+    ZAIC_PEAK crs_zaic(crs_domain, "course");
+    crs_zaic.setSummit(180);
+    crs_zaic.setPeakWidth(360);
+    IvPFunction *crs_of = crs_zaic.extractOF();
+    OF_Coupler coupler;
+    ivp_function = coupler.couple(ivp_function, crs_of);
+  }
+
+  if(!ivp_function)
+    return(null_quadset);
+  
+  QuadSet ret_quadset;
+  ret_quadset.applyIPF(ivp_function, "course", "speed");
+  
+  double lowval = ivp_function->getPDMap()->getMinWT();
+  double hghval = ivp_function->getPDMap()->getMaxWT();
+  ret_quadset.applyColorMap(m_color_map, lowval, hghval);  
+  
+  delete(ivp_function);
+  return(ret_quadset);
 }
   

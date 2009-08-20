@@ -42,7 +42,6 @@ protected:
   double              m_low_val_adjust;;
   double              m_high_val_adjust;
   double              m_snap_val;
-
 };
     
 
