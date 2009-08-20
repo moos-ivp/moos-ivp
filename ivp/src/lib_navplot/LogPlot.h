@@ -38,7 +38,7 @@ public:
   bool   set_value(double gtime, double gvalue);
   double get_time_by_index(unsigned int index) const;
   double get_value_by_index(unsigned int index) const;
-  double get_value_by_time(double gtime) const;
+  double get_value_by_time(double gtime, bool interp=false) const;
   double get_median();
   double get_min_time() const;
   double get_max_time() const;

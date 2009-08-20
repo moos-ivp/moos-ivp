@@ -23,7 +23,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
-#include <assert.h>
 #include "LogPlot.h"
 #include "MBUtils.h"
 
@@ -125,8 +124,11 @@ double LogPlot::get_time_by_index(unsigned int index) const
      
 //---------------------------------------------------------------
 // Procedure: get_value_by_time
+//      Note: If the argument, interp, is true, the function will
+//            return an interpolated value if the given value falls
+//            between two data points. The default is interp=false.
 
-double LogPlot::get_value_by_time(double gtime) const
+double LogPlot::get_value_by_time(double gtime, bool interp) const
 {
   unsigned int vsize = m_time.size();
 
@@ -140,17 +142,17 @@ double LogPlot::get_value_by_time(double gtime) const
     return(m_value[0]);
 
   unsigned int index = get_index_by_time(gtime);
-  
-  if(gtime == m_time[index])
+  if((gtime == m_time[index]) || !interp)
     return(m_value[index]);
-
+  
   double val1 = m_value[index];
   double val2 = m_value[index+1];
   
   double val_range  = val2 - val1;
   double time_range = m_time[index+1] - m_time[index];
 
-  assert(time_range >= 0);
+  if(time_range <= 0)
+    return(m_value[index]);
 
   double pct_time = (gtime - m_time[index]) / time_range;
 
