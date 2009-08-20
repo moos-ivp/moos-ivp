@@ -169,6 +169,7 @@ protected:
   std::string log_file;
   std::string collect;
 
+  int     m_num_ipfplots;
   bool    stream;
   MBTimer timer;
   double  step_time;
@@ -177,10 +178,3 @@ protected:
   int     save_file_ix;
 };
 #endif
-
-
-
-
-
-
-

@@ -512,19 +512,17 @@ bool LogViewLauncher::buildIPFPlots()
   unsigned int i, vsize = m_alog_files.size();
   for(i=0; i<vsize; i++) {
     Populator_IPF_Plot pop_ipf;
-    cout << "  size of m_entries_ipf_plot: " << m_entries_ipf_plot.size() << endl;
+    pop_ipf.setVName(m_vehicle_name[i]);
     bool ok = pop_ipf.populateFromEntries(m_entries_ipf_plot[i]);
     if(!ok) {
       cout << "  Problem with file " << m_alog_files[i] << endl;
       return(false);
     }
-    m_ipf_plots.push_back(pop_ipf.getPlotIPF());
+    unsigned int k, ksize = pop_ipf.size();
+    for(k=0; k<ksize; k++)
+      m_ipf_plots.push_back(pop_ipf.getPlotIPF(k));
   }
-
-  for(i=0; i<vsize; i++) {
-    m_ipf_plots[i].setVName(m_vehicle_name[i]);
-  }
-
+  
   parse_timer.stop();
   cout << "Done: IPF_Plot parse time: ";
   cout << parse_timer.get_float_cpu_time() << endl << endl;
@@ -565,7 +563,7 @@ bool LogViewLauncher::buildGraphical()
     m_gui->np_viewer->addVPlugPlot(m_vplug_plots[k]);
 
   // Populate the GUI with the prior-built IPF_Plots
-  for(k=0; k<m_ipf_plots.size(); k++) 
+  for(k=0; k<m_ipf_plots.size(); k++)
     m_gui->addIPF_Plot(m_ipf_plots[k]);
 
 #if 0

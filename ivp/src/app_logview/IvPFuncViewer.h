@@ -33,22 +33,26 @@ class IvPFuncViewer : public Common_IPFViewer
  public:
   IvPFuncViewer(int x,int y,int w,int h,const char *l=0);
   virtual ~IvPFuncViewer() {};
+
+  unsigned int addIPF_Plot(const IPF_Plot&, bool active=false);
   
   void   draw();
-  void   setCurrTime(double v);
-  void   setIndexByNameSource(const std::string& vname, 
-			      const std::string& source);
   void   altPlotIndex(int v);
-  void   setPlotIndex(unsigned int v);
+  void   setPlotIndex(unsigned int index);
+  void   setCurrTime(double time);
+  void   setCollective(bool v) {m_collective=v;};
 
-  unsigned int addIPF_Plot(const IPF_Plot&);
+  void   buildCollective(double time);
 
 private:
   unsigned int m_plot_ix;
+  bool         m_collective;
 
+  // The IvPFuncViewer holds all IPF_Plots for all vehicles and all
+  // behaviors. Each index is a IPF_Plot for a given vehicle/behavior.
   std::vector<std::string>  m_ipf_vname;
   std::vector<std::string>  m_ipf_source;
   std::vector<IPF_Plot>     m_ipf_plot;
 };
 
-#endif 
+#endif

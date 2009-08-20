@@ -37,6 +37,7 @@ IvPFuncViewer::IvPFuncViewer(int x, int y, int w, int h, const char *l)
   m_rad_extra  = 20;
   m_draw_frame = false;
   m_zoom       = 2.0;
+  m_collective = false;
 
   setParam("reset_view", "2");
 
@@ -58,7 +59,8 @@ void IvPFuncViewer::draw()
 // Procedure: addIPF_Plot
 //      Note: A local copy of the given IPF_Plot is created here.
 
-unsigned int IvPFuncViewer::addIPF_Plot(const IPF_Plot& g_ipf_plot)
+unsigned int IvPFuncViewer::addIPF_Plot(const IPF_Plot& g_ipf_plot, 
+					bool make_this_active)
 {
   string ipf_source = g_ipf_plot.getSource();
   string ipf_vname  = g_ipf_plot.getVName();
@@ -67,29 +69,16 @@ unsigned int IvPFuncViewer::addIPF_Plot(const IPF_Plot& g_ipf_plot)
   m_ipf_source.push_back(ipf_source);
   m_ipf_plot.push_back(g_ipf_plot);
 
+  if(make_this_active)
+    m_plot_ix = m_ipf_plot.size()-1;
+
   return(m_ipf_plot.size());
-}
-
-
-//-------------------------------------------------------------
-// Procedure: setCurrTime
-
-void IvPFuncViewer::setCurrTime(double g_time)
-{
-  if(m_plot_ix >= m_ipf_plot.size())
-    return;
-
-  string ipf_string = m_ipf_plot[m_plot_ix].getIPFByTime(g_time);
-
-  IvPFunction *ipf = StringToIvPFunction(ipf_string);
-
-  setVNameIPF(m_ipf_vname[m_plot_ix]);
-  setSourceIPF(m_ipf_source[m_plot_ix]);
-  applyIPF(ipf, true);
 }
 
 //-------------------------------------------------------------
 // Procedure: altPlotIndex
+//            Ensure that the new index (m_plot_ix) is >= 0 since
+//            it is an unsigned int.
 
 void IvPFuncViewer::altPlotIndex(int val)
 {
@@ -107,13 +96,66 @@ void IvPFuncViewer::altPlotIndex(int val)
 //-------------------------------------------------------------
 // Procedure: setPlotIndex
 
-void IvPFuncViewer::setPlotIndex(unsigned int val)
+void IvPFuncViewer::setPlotIndex(unsigned int new_index)
 {
-  if(val < m_ipf_plot.size())
-    m_plot_ix = val;
+  if(new_index < m_ipf_plot.size())
+    m_plot_ix = new_index;
   else
     return;
+  m_collective = false;
 
   setVNameIPF(m_ipf_vname[m_plot_ix]);
   setSourceIPF(m_ipf_source[m_plot_ix]);
+}
+
+//-------------------------------------------------------------
+// Procedure: setCurrTime
+
+void IvPFuncViewer::setCurrTime(double curr_time)
+{
+  if(m_plot_ix >= m_ipf_plot.size())
+    return;
+  
+  if(curr_time > m_ipf_plot[m_plot_ix].getMaxTime())
+    curr_time = m_ipf_plot[m_plot_ix].getMaxTime();
+  if(curr_time < m_ipf_plot[m_plot_ix].getMinTime())
+    curr_time = m_ipf_plot[m_plot_ix].getMinTime();  
+
+  if(m_collective)
+    buildCollective(curr_time);
+  else {
+    string ipf_string = m_ipf_plot[m_plot_ix].getIPFByTime(curr_time);
+    setVNameIPF(m_ipf_vname[m_plot_ix]);
+    setSourceIPF(m_ipf_source[m_plot_ix]);
+    applyIPF(ipf_string);
+  }
+}
+
+//-------------------------------------------------------------
+// Procedure: buildCollective
+
+void IvPFuncViewer::buildCollective(double curr_time)
+{
+  // Phase 1: Determine the current helm iteration
+  unsigned int curr_iter = m_ipf_plot[m_plot_ix].getHelmIterByTime(curr_time);
+
+  // Phase 2: Get all the IvPFunction strings for the current iteration
+  // for the current vehicle.
+  string curr_vname = m_ipf_vname[m_plot_ix];
+
+  vector<string> ipfs;
+  unsigned int i, vsize = m_ipf_plot.size();
+  for(i=0; i<vsize; i++) {
+    if(m_ipf_vname[i] == curr_vname) {
+      string ipf_str = m_ipf_plot[i].getIPFByHelmIteration(curr_iter);
+      if(ipf_str != "")
+	ipfs.push_back(ipf_str);
+    }
+  }
+  // Phase 3: Build the collective of the given functions.
+  m_quadset.clear();
+  for(i=0; i<ipfs.size(); i++) {
+    QuadSet quadset = setQuadSetFromIPF(ipfs[i]);
+    bool ok = m_quadset.addQuadSet(&quadset);
+  }
 }

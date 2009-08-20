@@ -41,6 +41,7 @@ REPLAY_GUI::REPLAY_GUI(int g_w, int g_h, const char *g_l)
   step_time    = 1.0;
   step_time_ix = 3;
   save_file_ix = 0;
+  m_num_ipfplots = 0;
 
   this->user_data((void*)(this));
   this->when(FL_WHEN_CHANGED);
@@ -555,7 +556,12 @@ void REPLAY_GUI::cb_RightLogPlot(Fl_Widget* o, int v) {
 inline void REPLAY_GUI::cb_TopPlotIPF_i(int index) {
   if(!ipf_viewer_a)
     return;
-  ipf_viewer_a->setPlotIndex(index);
+  
+  if(index == -1)
+    ipf_viewer_a->setCollective(true);
+  else
+    ipf_viewer_a->setPlotIndex(index);
+  
   ipf_viewer_a->redraw();
   updateXY();
 }
@@ -568,7 +574,12 @@ void REPLAY_GUI::cb_TopPlotIPF(Fl_Widget* o, int v) {
 inline void REPLAY_GUI::cb_BotPlotIPF_i(int index) {
   if(!ipf_viewer_b)
     return;
-  ipf_viewer_b->setPlotIndex(index);
+
+  if(index == -1)
+    ipf_viewer_b->setCollective(true);
+  else
+    ipf_viewer_b->setPlotIndex(index);
+  
   ipf_viewer_b->redraw();
   updateXY();
 }
@@ -834,7 +845,6 @@ void REPLAY_GUI::addLogPlot(const LogPlot& logplot)
     return;
 
   string vname = logplot.get_vehi_name();
-
   int ix = lp_viewer->add_logplot(logplot) - 1;
 
   string labelA, labelB;
@@ -890,22 +900,39 @@ void REPLAY_GUI::addIPF_Plot(const IPF_Plot& ipf_plot)
   string tag    = vname + " : " + source;
 
   if(ipf_viewer_a) {
-    unsigned int count = ipf_viewer_a->addIPF_Plot(ipf_plot);
+    if(m_num_ipfplots == 0) {
+      string label = "IPFPlots/Top-Pane/Collective";
+      mbar->add(label.c_str(), 0, 
+		(Fl_Callback*)REPLAY_GUI::cb_TopPlotIPF, (void*)-1);
+      ipf_viewer_a->setCurrTime(0);
+    }
+    bool active = (m_num_ipfplots == 0);
+    unsigned int count = ipf_viewer_a->addIPF_Plot(ipf_plot, active);
     if(count > 0) {
       string label = "IPFPlots/Top-Pane/" + tag;
       mbar->add(label.c_str(), 0, 
 		(Fl_Callback*)REPLAY_GUI::cb_TopPlotIPF, (void*)(count-1));
     }    
   }
-
+  
   if(ipf_viewer_b) {
-    unsigned int count = ipf_viewer_b->addIPF_Plot(ipf_plot);
+    if(m_num_ipfplots == 0) {
+      string label = "IPFPlots/Top-Pane/Collective";
+      mbar->add(label.c_str(), 0, 
+		(Fl_Callback*)REPLAY_GUI::cb_TopPlotIPF, (void*)-1);
+      ipf_viewer_b->setCurrTime(0);
+    }
+    bool active = (m_num_ipfplots == 1);
+    unsigned int count = ipf_viewer_b->addIPF_Plot(ipf_plot, active);
     if(count > 0) {
       string label = "IPFPlots/Bottom-Pane/" + tag;
       mbar->add(label.c_str(), 0, 
 		(Fl_Callback*)REPLAY_GUI::cb_BotPlotIPF, (void*)(count-1));
     }    
   }
+  
+  if(ipf_viewer_a || ipf_viewer_b)
+    m_num_ipfplots++;
 }
 
 //----------------------------------------------------------
