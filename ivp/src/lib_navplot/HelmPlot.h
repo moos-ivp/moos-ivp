@@ -43,7 +43,8 @@ public:
 			      unsigned int iter_offset) const;
   double get_time_by_iter_sub(double curr_time, 
 			      unsigned int iter_offset) const;
-  
+  unsigned int get_iter_by_time(double) const;
+
   std::string  get_value_by_index(std::string value_type, 
 				  unsigned int index) const;
   std::string  get_value_by_time(std::string value_type,

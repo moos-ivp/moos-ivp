@@ -64,9 +64,13 @@ void Populator_IPF_Plot::handleEntry(double g_time,
 				     const string& g_ipf_str)
 {
   IvPFunction *ipf = StringToIvPFunction(g_ipf_str);
+  if(!ipf) {
+    cout << "Unable to create IvPFunction from string" << endl;
+    return;
+  }
 
   string context = ipf->getContextStr();
-
+  int    ipf_pieces = ipf->size();
   string ipf_source;
   int    ipf_iteration;
 
@@ -76,13 +80,12 @@ void Populator_IPF_Plot::handleEntry(double g_time,
     ipf_iteration = atoi(svector[0].c_str());
     ipf_source    = svector[1];
   }
+  string tag = (m_vname + "_" + ipf_source);
 
   delete(ipf);
 
-  string tag = (m_vname + "_" + ipf_source);
-
-  int index = -1;
   
+  int index = -1;
   int vsize = m_ipf_tags.size();
   for(int i=0; i<vsize; i++) {
     if(m_ipf_tags[i] == tag)
@@ -98,7 +101,7 @@ void Populator_IPF_Plot::handleEntry(double g_time,
     index = vsize;
   }
   
-  m_ipf_plots[index].addEntry(g_time, g_ipf_str, ipf_iteration);
+  m_ipf_plots[index].addEntry(g_time, g_ipf_str, ipf_iteration, ipf_pieces);
 }
 
 //---------------------------------------------------------------

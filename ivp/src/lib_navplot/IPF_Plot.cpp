@@ -35,19 +35,24 @@ using namespace std;
 //      Note: Time must be in ascending order. If new pair doesn't
 //            obey, no action is taken, and false is returned.
 
-bool IPF_Plot::addEntry(double gtime, const string& gstr, unsigned int iter)
+bool IPF_Plot::addEntry(double timestamp, 
+			const string& ipf_str, 
+			unsigned int helm_iteration, 
+			unsigned int piece_count)
 {
   unsigned int tsize = m_time_stamp.size();
-  if((tsize != 0) && (m_time_stamp[tsize-1] > gtime))
+  if((tsize != 0) && (m_time_stamp[tsize-1] > timestamp))
     return(false);
-
+  
   unsigned int isize = m_helm_iteration.size();
-   if((isize != 0) && (iter != 0) && (m_helm_iteration[isize-1] > iter))
+  if((isize != 0) && (helm_iteration != 0) && 
+     (m_helm_iteration[isize-1] > helm_iteration))
     return(false);
-
-  m_time_stamp.push_back(gtime);
-  m_ipf_string.push_back(gstr);
-  m_helm_iteration.push_back(iter);
+  
+  m_time_stamp.push_back(timestamp);
+  m_ipf_string.push_back(ipf_str);
+  m_helm_iteration.push_back(helm_iteration);
+  m_piece_count.push_back(piece_count);
 
   return(true);
 }
@@ -216,14 +221,18 @@ int IPF_Plot::getIndexByHelmIter(unsigned int iter) const
     if(m_helm_iteration[index] == iter)
       done = true;
     else if(m_helm_iteration[index] < iter) {
-      if((index == vsize-1) || (m_time_stamp[index+1] > iter))
-	done = true;
+      if((index == vsize-1) || (m_helm_iteration[index+1] > iter)) {
+	index = -1;
+	done  = true;
+      }
       else
 	index += jump;
     }
     else if(m_helm_iteration[index] > iter) {
-      if((index==0) || (m_time_stamp[index-1] < iter))
+      if((index==0) || (m_helm_iteration[index-1] < iter)) {
+	index = -1;
 	done = true;
+      }
       else
 	index -= jump;
     }

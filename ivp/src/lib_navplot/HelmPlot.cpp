@@ -236,6 +236,15 @@ int HelmPlot::get_index_by_time(double gtime) const
 
 
 //---------------------------------------------------------------
+// Procedure: get_iter_by_time
+
+unsigned int HelmPlot::get_iter_by_time(double gtime) const
+{
+  int index = get_index_by_time(gtime);
+  return(m_helm_iter_v[index]);
+}
+     
+//---------------------------------------------------------------
 // Procedure: get_value_by_time
 
 string HelmPlot::get_value_by_time(string qtype, double gtime) const

@@ -34,7 +34,10 @@ public:
 
   void   setVName(std::string s)   {m_vname  = s;};
   void   setSource(std::string s)  {m_source = s;};
-  bool   addEntry(double, const std::string& str, unsigned int iter=0);
+  bool   addEntry(double timestamp, 
+		  const std::string& ipf_str, 
+		  unsigned int iteration, 
+		  unsigned int piece_count);
 
   double getTimeByIndex(unsigned int) const;
 
@@ -66,5 +69,6 @@ protected:
   std::vector<std::string>  m_ipf_string;  
   std::vector<double>       m_time_stamp; 
   std::vector<unsigned int> m_helm_iteration;
+  std::vector<unsigned int> m_piece_count;
 };
 #endif 
