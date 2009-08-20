@@ -42,12 +42,13 @@ bool IPF_Plot::addEntry(double gtime, const string& gstr, unsigned int iter)
     return(false);
 
   unsigned int isize = m_helm_iteration.size();
-  if((isize != 0) && (iter != 0) && (m_helm_iteration[isize-1] > iter))
+   if((isize != 0) && (iter != 0) && (m_helm_iteration[isize-1] > iter))
     return(false);
 
   m_time_stamp.push_back(gtime);
   m_ipf_string.push_back(gstr);
   m_helm_iteration.push_back(iter);
+
   return(true);
 }
 
@@ -59,12 +60,8 @@ double IPF_Plot::getTimeByIndex(unsigned int index) const
   if(m_time_stamp.size() == 0)
     return(0);
 
-  if(index < 0)
-    return(m_time_stamp[0]);
-  else if(index >= m_time_stamp.size()) {
-    cout << "time.size():" << m_time_stamp.size() << endl;
+  if(index >= m_time_stamp.size())
     return(m_time_stamp[m_time_stamp.size()-1]);
-  }
   else
     return(m_time_stamp[index]);
 }
@@ -91,26 +88,24 @@ string IPF_Plot::getIPFByIndex(unsigned int index) const
 //            If the point in time happens between two elements
 //            in the time array, choose the lower indexed.
 
-string IPF_Plot::getIPFByTime(double qtime) const
+string IPF_Plot::getIPFByTime(double timestamp) const
 {
   // Special case: if the IPF_Plot instance is "empty"
-  int vsize = m_time_stamp.size();
-  if(vsize == 0) {
+  unsigned int i, vsize = m_time_stamp.size();
+  if(vsize == 0)
     return("");
-  }
 
   // Special case: if the query time is outside the IPF_Plot 
   // time range, return the extreme value.
-  if(qtime >=  m_time_stamp[vsize-1]) {
-    return(nullHeadingSpeedIPF());
-    //return(m_ipf_string[vsize-1]);
-  }
-  if(qtime <= m_time_stamp[0]) {
-    return(nullHeadingSpeedIPF());
-    //return(m_ipf_string[0]);
-  }
-  // Determine highest index w/ time <= qtime
-  int index = getIndexByTime(qtime);
+  if(timestamp >=  m_time_stamp[vsize-1])
+    //return(nullHeadingSpeedIPF());
+    return("");
+  if(timestamp <= m_time_stamp[0])
+    //return(nullHeadingSpeedIPF());
+    return("");
+
+  // Determine highest index w/ time <= timestamp
+  int index = getIndexByTime(timestamp);
 
   return(m_ipf_string[index]);
 }
@@ -139,6 +134,16 @@ string IPF_Plot::getIPFByHelmIteration(unsigned int iter) const
 }
  
 //---------------------------------------------------------------
+// Procedure: getHelmIterByTime
+//   Purpose:
+
+unsigned int IPF_Plot::getHelmIterByTime(double timestamp)
+{
+  unsigned int index = getIndexByTime(timestamp);
+  return(m_helm_iteration[index]);
+}
+ 
+//---------------------------------------------------------------
 // Procedure: nullHeadingSpeedIPF
 //   Purpose:
 
@@ -154,15 +159,15 @@ string IPF_Plot::nullHeadingSpeedIPF() const
 //            has a time less than or equal to the query time.
 //            Search is log(n)
 
-int IPF_Plot::getIndexByTime(double qtime) const
+int IPF_Plot::getIndexByTime(double timestamp) const
 {
   int vsize = m_time_stamp.size();
 
   // Special case: if the query time is outside the IPF_Plot 
   // time range, return the extreme value.
-  if(qtime <= m_time_stamp[0])
+  if(timestamp <= m_time_stamp[0])
     return(0);
-  if(qtime >= m_time_stamp[vsize-1])
+  if(timestamp >= m_time_stamp[vsize-1])
     return(vsize-1);
   
   // Handle general case
@@ -172,8 +177,8 @@ int IPF_Plot::getIndexByTime(double qtime) const
   while(!done) {
     if(jump > 1)
       jump = jump / 2;
-    if(m_time_stamp[index] <= qtime) {
-      if(m_time_stamp[index+1] > qtime)
+    if(m_time_stamp[index] <= timestamp) {
+      if(m_time_stamp[index+1] > timestamp)
 	done = true;
       else
 	index += jump;

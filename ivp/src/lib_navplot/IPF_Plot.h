@@ -41,6 +41,7 @@ public:
   std::string getIPFByIndex(unsigned int) const;
   std::string getIPFByTime(double) const;
   std::string getIPFByHelmIteration(unsigned int) const;
+  unsigned int getHelmIterByTime(double);
 
   std::string getSource() const {return(m_source);};
   std::string getVName()  const {return(m_vname);};
@@ -67,11 +68,3 @@ protected:
   std::vector<unsigned int> m_helm_iteration;
 };
 #endif 
-
-
-
-
-
-
-
-

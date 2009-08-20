@@ -67,33 +67,38 @@ void Populator_IPF_Plot::handleEntry(double g_time,
 
   string context = ipf->getContextStr();
 
+  string ipf_source;
+  int    ipf_iteration;
 
   // The Context string might come in the form of NUM:CONTEXT"
   vector<string> svector = parseString(context, ':');
-  if(svector.size() == 2)
-    context = svector[1];
+  if(svector.size() == 2) {
+    ipf_iteration = atoi(svector[0].c_str());
+    ipf_source    = svector[1];
+  }
 
   delete(ipf);
 
-  int index = -1;
+  string tag = (m_vname + "_" + ipf_source);
 
+  int index = -1;
+  
   int vsize = m_ipf_tags.size();
   for(int i=0; i<vsize; i++) {
-    if(m_ipf_tags[i] == context)
+    if(m_ipf_tags[i] == tag)
       index = i;
   }
 
   if(index == -1) {
     IPF_Plot new_plot;
-    //string ipf_source = m_vname + "_" + context;
-    string ipf_source = context;
     new_plot.setSource(ipf_source);
-    m_ipf_tags.push_back(context);
+    new_plot.setVName(m_vname);
+    m_ipf_tags.push_back(tag);
     m_ipf_plots.push_back(new_plot);
     index = vsize;
   }
   
-  m_ipf_plots[index].addEntry(g_time, g_ipf_str);
+  m_ipf_plots[index].addEntry(g_time, g_ipf_str, ipf_iteration);
 }
 
 //---------------------------------------------------------------
