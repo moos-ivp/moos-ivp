@@ -126,9 +126,11 @@ void IvPFuncViewer::setCurrTime(double curr_time)
   else {
     unsigned int iter = m_viter_map[m_ipf_vname[m_plot_ix]];
     string ipf_string = m_ipf_plot[m_plot_ix].getIPFByHelmIteration(iter);
+    unsigned int pcs = m_ipf_plot[m_plot_ix].getPcsByHelmIteration(iter);
     setVNameIPF(m_ipf_vname[m_plot_ix]);
     setSourceIPF(m_ipf_source[m_plot_ix]);
     setIterIPF(intToString(iter));
+    setPiecesIPF(intToString(pcs));
     applyIPF(ipf_string);
   }
 }
@@ -159,7 +161,12 @@ void IvPFuncViewer::buildCollective(double curr_time)
   for(i=0; i<ipfs.size(); i++) {
     QuadSet quadset = setQuadSetFromIPF(ipfs[i]);
     bool ok = m_quadset.addQuadSet(&quadset);
-  }
+    if(!ok) {
+      m_quadset.clear();
+      cout << "Error creating collective quadset" << endl;
+      return;
+    }
+ }
 
   m_quadset.applyColorMap(m_color_map);
   m_quadset.normalize(0, 200);
