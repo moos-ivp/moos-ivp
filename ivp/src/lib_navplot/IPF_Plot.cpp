@@ -139,6 +139,25 @@ string IPF_Plot::getIPFByHelmIteration(unsigned int iter) const
 }
  
 //---------------------------------------------------------------
+// Procedure: getPcsByHelmIteration
+
+unsigned int IPF_Plot::getPcsByHelmIteration(unsigned int iter) const
+{
+  // Special case: if the IPF_Plot instance is "empty"
+  int vsize = m_helm_iteration.size();
+  if(vsize == 0)
+    return(0);
+
+  // Determine the index for the given helm iteration
+  int index = getIndexByHelmIter(iter);
+  
+  if(index == -1)
+    return(0);
+  else
+    return(m_piece_count[index]);
+}
+ 
+//---------------------------------------------------------------
 // Procedure: getHelmIterByTime
 //   Purpose:
 
