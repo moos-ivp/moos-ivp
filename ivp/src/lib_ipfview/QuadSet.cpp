@@ -16,12 +16,11 @@ using namespace std;
 
 QuadSet::QuadSet()
 {
-  m_weight          = 0;
   m_low_val         = 0;
   m_high_val        = 0;
   m_low_val_adjust  = 0;
   m_high_val_adjust = 0;
-  m_snap_val        = 2.0;
+  m_snap_val        = 0;
 }
 
 //-------------------------------------------------------------
@@ -30,7 +29,6 @@ QuadSet::QuadSet()
 void QuadSet::clear()
 {
   m_quads.clear();
-  m_weight          = 0;
   m_low_val         = 0;
   m_high_val        = 0;
   m_low_val_adjust  = 0;
@@ -46,8 +44,6 @@ void QuadSet::applyIPF(IvPFunction *ipf, string var_a, string var_b)
   if(!ipf) 
     return;
   
-  m_weight = ipf->getPWT();
-
   IvPDomain domain = ipf->getPDMap()->getDomain();
   int       dsize  = domain.size();
   int       i,j;
@@ -234,14 +230,7 @@ bool QuadSet::addQuadSet(const QuadSet* g_quads)
 
   int msize       = m_quads.size();
   int gsize       = g_quads->size();
-  double g_weight = g_quads->getWeight();
 
-
-  cout << "adding a quadset. self size: " << msize << endl;
-  cout << "                 given size: " << gsize << endl;
-  cout << "               given weight: " << g_weight << endl;
-
-#if 0
   // If this is an empty quadset, just set to the given quadset
   if(msize == 0) {
     for(int i=0; i<gsize; i++)
@@ -250,32 +239,15 @@ bool QuadSet::addQuadSet(const QuadSet* g_quads)
     m_high_val = g_quads->m_high_val;
     return(true);
   }
-#endif
-
-  // If this is an empty quadset, just set to the given quadset
-  if(msize == 0) {
-    for(int i=0; i<gsize; i++) {
-      Quad3D new_quad = g_quads->getQuad(i);
-      new_quad.llval *= g_weight;
-      new_quad.hlval *= g_weight;
-      new_quad.lhval *= g_weight;
-      new_quad.hhval *= g_weight;
-      m_quads.push_back(new_quad);
-    }
-    m_low_val  = g_quads->m_low_val * g_weight;
-    m_high_val = g_quads->m_high_val * g_weight;
-    cout << "    new selfsize: " << m_quads.size() << endl;
-    return(true);
-  }
 
   if(msize != gsize)
     return(false);
 
   for(int i=0; i<msize; i++) {
-    m_quads[i].llval += (g_quads->getQuad(i).llval * g_weight);
-    m_quads[i].lhval += (g_quads->getQuad(i).lhval * g_weight);
-    m_quads[i].hlval += (g_quads->getQuad(i).hlval * g_weight);
-    m_quads[i].hhval += (g_quads->getQuad(i).hhval * g_weight);
+    m_quads[i].llval += (g_quads->getQuad(i).llval);
+    m_quads[i].lhval += (g_quads->getQuad(i).lhval);
+    m_quads[i].hlval += (g_quads->getQuad(i).hlval);
+    m_quads[i].hhval += (g_quads->getQuad(i).hhval);
   }
 
   // Recalculate the new global low and high values.
@@ -343,26 +315,6 @@ void QuadSet::setAdjust(double low_adjust, double high_adjust)
   m_low_val_adjust = low_adjust;
   m_high_val_adjust = high_adjust;
 }
-
-
-
-//-------------------------------------------------------------
-// Procedure: applyWeight()
-
-void QuadSet::applyWeight()
-{
-  int msize = m_quads.size();
-  for(int i=0; i<msize; i++) {
-    m_quads[i].llval *= m_weight;
-    m_quads[i].hlval *= m_weight;
-    m_quads[i].lhval *= m_weight;
-    m_quads[i].hhval *= m_weight;
-  }
-
-  m_low_val *= m_weight;
-  m_high_val *= m_weight;
-}
-
 
 //-------------------------------------------------------------
 // Procedure: print()

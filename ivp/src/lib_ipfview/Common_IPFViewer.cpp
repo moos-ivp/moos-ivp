@@ -280,7 +280,7 @@ void Common_IPFViewer::drawIvPFunction()
   if(m_active_ipf_source != "")
     drawText(4, hpos2, "source = "+m_active_ipf_source, m_label_color, 12);
   if(m_active_ipf_pieces != "")
-    drawText(4, hpos2, " pcs = "+m_active_ipf_pieces, m_label_color, 12);
+    drawText(4, hpos3, " pcs = "+m_active_ipf_pieces, m_label_color, 12);
 }
 
 //-------------------------------------------------------------

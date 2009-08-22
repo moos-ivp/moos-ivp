@@ -24,25 +24,25 @@ public:
   bool   addQuadSet(const QuadSet*);
   void   normalize(double, double);
   void   setAdjust(double, double);
-  void   applyWeight();
   void   print() const;
   void   clear();
 
-  double getWeight() const    {return(m_weight);};
   int    size() const         {return(m_quads.size());};
   Quad3D getQuad(int i) const {return(m_quads[i]);};
 
 protected:
   std::vector<Quad3D> m_quads;
 
-  double              m_weight;
   double              m_low_val;
   double              m_high_val;
 
+  // Adjusting the range of values - purely for altering the 
+  // the way the color map is applied.
   double              m_low_val_adjust;;
   double              m_high_val_adjust;
+
+  // Values of the objecive function can be made to snap to 
+  // intervals. Can be used to alter the rendering.
   double              m_snap_val;
 };
-    
-
 #endif
