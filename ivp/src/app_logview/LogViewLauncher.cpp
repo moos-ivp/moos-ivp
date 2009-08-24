@@ -44,12 +44,17 @@ LogViewLauncher::LogViewLauncher()
 }
 
 //-------------------------------------------------------------
-// Procedure: setLaunch
+// Procedure: launch
 
 REPLAY_GUI *LogViewLauncher::launch(int argc, char **argv)
 {
   MBTimer total_timer;
   total_timer.start();
+
+  
+  bool help_requested = checkForHelp(argc, argv);
+  if(help_requested)
+    return(0);
 
   setBackground(argc, argv);
   setSizeOfGUI(argc, argv);
@@ -76,6 +81,27 @@ REPLAY_GUI *LogViewLauncher::launch(int argc, char **argv)
     return(m_gui);
   else
     return(0);
+}
+
+//-------------------------------------------------------------
+// Procedure: checkForHelp
+
+bool LogViewLauncher::checkForHelp(int argc, char **argv)
+{
+  // Look for a request for usage information      
+  if(scanArgs(argc, argv, "-h", "--help", "-help")) {
+    cout << "Usage: logview [file1.alog] ... [fileN.alog] " << endl;
+    cout << "       [--version|-v] [--help|-h] [--timemin]     " << endl;
+    cout << "       [--timemax] [--image] [--ipfs]             " << endl;
+    cout << "                                                  " << endl;
+    cout << "[file.alog]   Filename of log file data             " << endl;
+    cout << "[--help]      Display this help message.            " << endl;
+    cout << "[--version]   Display software version number.      " << endl;
+    cout << "[--timemin=v] Analyze data only with timestamps > v." << endl;
+    cout << endl;
+    return(true);
+  }
+  return(false);
 }
 
 //-------------------------------------------------------------

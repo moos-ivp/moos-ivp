@@ -25,24 +25,33 @@ using namespace std;
 void display_usage()
 {
   cout << "Usage: " << endl;
-  cout << "  alogclip in.alog out.alog mintime maxtime [-h] [-v] [-f]" << endl;
+  cout << "  alogclip in.alog mintime maxtime [out.alog] [OPTIONS]" << endl;
   cout << "                                                       " << endl;
+  cout << "Synopsis:                                              " << endl;
+  cout << "  Create a new MOOS .alog file from a given .alog file " << endl;
+  cout << "  by removing entries outside a given time window.     " << endl;
+  cout << "                                                       " << endl;
+  cout << "Standard Arguments:                                    " << endl;
   cout << "  in.alog  - The input logfile.                        " << endl;
-  cout << "  out.alog - The newly generated output logfile.       " << endl;
   cout << "  mintime  - Log entries with timestamps below mintime " << endl;
   cout << "             will be excluded from the output file.    " << endl;
   cout << "  maxtime  - Log entries with timestamps above mintime " << endl;
   cout << "             will be excluded from the output file.    " << endl;
+  cout << "  out.alog - The newly generated output logfile. If no " << endl;
+  cout << "             file provided, output goes to stdout.     " << endl;
   cout << "                                                       " << endl;
+  cout << "Options:                                               " << endl;
   cout << "  -h,--help    - Display this usage/help message.      " << endl;
   cout << "  -v,--version - Display version information.          " << endl;
   cout << "  -f,--force   - Overwrite an existing output file.    " << endl;
   cout << "                                                       " << endl;
-  cout << " Notes: The order of arguments may vary. The first alog" << endl;
-  cout << " file is treated as the input file, and the first      " << endl;
-  cout << " numericial value is treated as the mintime. Exactly   " << endl;
-  cout << " two alog files and two numerical values must be given." << endl;
-  cout << " (see also: alogscan, alogrm, aloggrep)    " << endl << endl;
+  cout << "Further Notes:                                         " << endl;
+  cout << "  (1) The order of arguments may vary. The first alog  " << endl;
+  cout << "      file is treated as the input file, and the first " << endl;
+  cout << "      numerical value is treated as the mintime.       " << endl;
+  cout << "  (2) Two numerical values, in order, must be given.   " << endl;
+  cout << "  (3) See also: alogscan, alogrm, aloggrep, alogview   " << endl;
+  cout << endl;
 }
 
 //--------------------------------------------------------

@@ -41,6 +41,7 @@ class LogViewLauncher
   REPLAY_GUI *launch(int argc, char **argv);
 
 protected:
+  bool checkForHelp(int argc, char **argv);
   void setBackground(int argc, char **argv);
   void setSizeOfGUI(int argc, char **argv);
   void setALogFiles(int argc, char **argv);

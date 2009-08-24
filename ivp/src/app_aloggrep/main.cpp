@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
 {
   // Look for a request for version information
   if(scanArgs(argc, argv, "-v", "--version", "-version")) {
-    vector<string> svector = getReleaseInfo("aloggrab");
+    vector<string> svector = getReleaseInfo("aloggrep");
     for(unsigned int j=0; j<svector.size(); j++)
       cout << svector[j] << endl;    
     return(0);
@@ -33,11 +33,28 @@ int main(int argc, char *argv[])
   // Look for a request for usage information
   if(scanArgs(argc, argv, "-h", "--help", "-help")) {
     cout << "Usage: " << endl;
-    cout << "  aloggrep input.alog [VAR] [VAR] [output.alog]" << endl;
-    cout << "  Notes: The second alog is the output file. Otherwise  " << endl;
-    cout << "         argument ordering is irrelevent.               " << endl;
-    cout << "         An input file is mandatory.                    " << endl;
-    cout << "         VAR* will pattern-match on VAR         " << endl << endl;
+    cout << "  aloggrep in.alog [VAR] [VAR] [out.alog] [OPTIONS]     " << endl;
+    cout << "                                                        " << endl;
+    cout << "Synopsis:                                               " << endl;
+    cout << "  Create a new MOOS .alog file by retaining only the    " << endl;
+    cout << "  provided MOOS variables from the given .alog file.    " << endl;
+    cout << "                                                        " << endl;
+    cout << "Standard Arguments:                                     " << endl;
+    cout << "  in.alog  - The input logfile.                         " << endl;
+    cout << "  out.alog - The newly generated output logfile. If no  " << endl;
+    cout << "             file provided, output goes to stdout.      " << endl;
+    cout << "  VAR      - The name of a MOOS variable                " << endl;
+    cout << "                                                        " << endl;
+    cout << "Options:                                                " << endl;
+    cout << "  -h,--help     Displays this help message              " << endl;
+    cout << "  -v,--version  Displays the current release version    " << endl;
+    cout << "                                                        " << endl;
+    cout << "Further Notes:                                          " << endl;
+    cout << "  (1) The second alog is the output file. Otherwise the " << endl;
+    cout << "      order of arguments is irrelevent.                 " << endl;
+    cout << "  (2) VAR* matches any MOOS variable starting with VAR  " << endl;
+    cout << "  (3) See also: alogscan, alogrm, alogclip, alogview    " << endl;
+    cout << endl;
     return(0);
   }
 

@@ -32,16 +32,22 @@ int main(int argc, char *argv[])
   
   // Look for a request for usage information
   if(scanArgs(argc, argv, "-h", "--help", "-help")) {
-    cout << "Usage: alogscan [OPTIONS] alog-file           " << endl;
-    cout << "                                              " << endl;
-    cout << "Options:                                      " << endl;
-    cout << "  -chars   Sort by total characters (default) " << endl;
-    cout << "  -lines   Sort by total lines (descending)   " << endl;
-    cout << "  -start   Sort by starting time (descending) " << endl;
-    cout << "  -stop    Sort by stop time (descending)     " << endl;
-    cout << "  -appstat Output application statistics      " << endl;
-    cout << "  -r       Reverse the sorting output         " << endl;
-    cout << "  -h       Output this message                " << endl;
+    cout << "Usage:                                             " << endl;
+    cout << "  alogscan file.alog [OPTIONS]                     " << endl;
+    cout << "                                                   " << endl;
+    cout << "Synopsis:                                          " << endl;
+    cout << "  Generate a report on the contents of a given     " << endl;
+    cout << "  MOOS .alog file.                                 " << endl;
+    cout << "                                                   " << endl;
+    cout << "Options:                                           " << endl;
+    cout << "  -c,--chars    Sort by total characters (default) " << endl;
+    cout << "  -l,--lines    Sort by total lines (descending)   " << endl;
+    cout << "  --start       Sort by start time (descending)    " << endl;
+    cout << "  --stop        Sort by stop time (descending)     " << endl;
+    cout << "  --appstat     Output application statistics      " << endl;
+    cout << "  -r,--reverse  Reverse the sorting output         " << endl;
+    cout << "  -h,--help     Displays this help message         " << endl;
+    cout << "  -v,--version  Displays the current release version" << endl;
     return(0);
   }
 
@@ -54,19 +60,17 @@ int main(int argc, char *argv[])
     string sarg = tolower(argv[i]);
     if(strContains(sarg, ".alog"))
       alogfile = sarg;
-    else if(strContains(sarg, "-chars"))
+    else if((sarg == "-c") || (sarg == "--chars"))
       sort_style = "bychars_ascending";
-    else if(strContains(sarg, "-lines"))
+    else if((sarg == "-l") || (sarg == "--lines"))
       sort_style = "bylines_ascending";
-    else if(strContains(sarg, "-sortlines"))
-      sort_style = "bylines_ascending";
-    else if(strContains(sarg, "-start"))
+    else if(sarg == "--start")
       sort_style = "bystarttime_ascending";
-    else if(strContains(sarg, "-stop"))
+    else if(sarg, "--stop")
       sort_style = "bystoptime_ascending";
-    else if(sarg == "-appstat")
+    else if(sarg == "--appstat")
       app_stat_requested = true;
-    else if(sarg == "-r")
+    else if((sarg == "-r") || (sarg == "--reversed"))
       reverse_requested = true;
   }
  

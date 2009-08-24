@@ -33,18 +33,34 @@ int main(int argc, char *argv[])
   // Look for a request for usage information
   if(scanArgs(argc, argv, "-h", "--help", "-help")) {
     cout << "Usage: " << endl;
-    cout << "  alogrm input.alog [SWITCHES] [VAR] [VAR] [output.alog]" << endl;
-    cout << "  Notes: The second alog is the output file. Otherwise  " << endl;
-    cout << "         argument ordering is irrelevent.               " << endl;
-    cout << "         An input file is mandatory.                    " << endl;
-    cout << "         VAR* will pattern-match on VAR                 " << endl;
-    cout << "  Switches:                                             " << endl;
-    cout << "    -nostr will remove lines with string data values    " << endl;
-    cout << "    -nonum will remove lines with double data values    " << endl;
-    cout << "    -clean will remove lines that have a timestamp that " << endl;
-    cout << "           is non-numerical or lines w/ no 4th column   " << endl;
-    cout << "    -times will rewrite all timestamps to be time since " << endl;
-    cout << "           logger started and LOGSTART is set to zero.  " << endl;
+    cout << "  alogrm in.alog [VAR] [VAR] [out.alog] [OPTIONS]         " << endl;
+    cout << "                                                          " << endl;
+    cout << "Synopsis:                                                 " << endl;
+    cout << "  Remove the given variable entries from the given .alog  " << endl;
+    cout << "  file and generate a new .alog file.                     " << endl;
+    cout << "                                                          " << endl;
+    cout << "Standard Arguments:                                       " << endl;
+    cout << "  in.alog  - The input logfile.                           " << endl;
+    cout << "  out.alog - The newly generated output logfile. If no    " << endl;
+    cout << "             file provided, output goes to stdout.        " << endl;
+    cout << "  VAR      - The name of a MOOS variable                  " << endl;
+    cout << "                                                          " << endl;
+    cout << "Options:                                                  " << endl;
+    cout << "  -h,--help     Displays this help message                " << endl;
+    cout << "  -v,--version  Displays the current release version      " << endl;
+    cout << "  --nostr       Remove lines with string data values      " << endl;
+    cout << "  --nonum       Remove lines with double data values      " << endl;
+    cout << "  --clean       Remove lines that have a timestamp that is" << endl;
+    cout << "                non-numerical or lines w/ no 4th column   " << endl;
+    cout << "  --times       Rewrite all timestamps to be time since   " << endl;
+    cout << "                logger started and LOGSTART is set to zero" << endl;
+    cout << "                                                          " << endl;
+    cout << "Further Notes:                                            " << endl;
+    cout << "  (1) The second alog is the output file. Otherwise the   " << endl;
+    cout << "      order of arguments is irrelevent.                   " << endl;
+    cout << "  (2) VAR* matches any MOOS variable starting with VAR    " << endl;
+    cout << "  (3) See also: alogscan, aloggrep, alogclip, alogview    " << endl;
+    cout << endl;
     return(0);
   }
 
