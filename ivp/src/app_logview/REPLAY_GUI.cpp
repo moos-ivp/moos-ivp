@@ -977,7 +977,7 @@ void REPLAY_GUI::conditional_step()
 void REPLAY_GUI::capture_to_file() 
 {
   string command;
-  command += "import -quality 90 -window OpRegion-Viewer ";
+  command += "import -quality 90 -window logview ";
   command += "-crop " + collect + "+10+40 save_file_";
   if(save_file_ix < 10)   command += "0";
   if(save_file_ix < 100)  command += "0";
