@@ -37,6 +37,12 @@ void MOOSAppRunnerThread::join()
 
 //==============================================================================
 
+void MOOSAppRunnerThread::cancel()
+{
+}
+
+//==============================================================================
+
 bool MOOSAppRunnerThread::thread_func(void *pThreadData)
 {
   MOOSAppRunnerThread *params = 

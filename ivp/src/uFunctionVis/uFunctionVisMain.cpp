@@ -14,13 +14,6 @@
 
 using namespace std;
 
-// -------------------------------------------------------
-// global variables here
-//
-
-char*           g_sMissionFile = 0;
-FV_MOOSApp      g_thePort;
-
 //--------------------------------------------------------
 // Procedure: exit_with_usage
 
@@ -41,26 +34,18 @@ void exit_with_version()
   exit(0);
 }
 
-
-//--------------------------------------------------------
-// Procedure: idleProc
-
-// void idleProc(void *)
-// {
-//   Fl::flush();
-//   MOOSPause(10);
-// }
-
 //--------------------------------------------------------
 // Procedure: main
 
 int main(int argc, char *argv[])
 {
+  char* sMissionFile = 0;
+  
   bool version_requested = false;
   for(int i=1; i<argc; i++) {
     string str  = argv[i];
     if(strContains(str, ".moos"))
-      g_sMissionFile = argv[i];
+      sMissionFile = argv[i];
     if((str=="-v") || (str=="--version") || (str=="-version"))
       version_requested = true;
   }
@@ -68,34 +53,30 @@ int main(int argc, char *argv[])
   if(version_requested)
     exit_with_version();
   
-  if(g_sMissionFile == 0)
+  if(sMissionFile == 0)
     exit_with_usage();
 
-  // start the MOOSPort in its own thread
-  MOOSAppRunnerThread runner(&g_thePort, "uFunctionViewer", g_sMissionFile);
-  
-//   Fl::add_idle(idleProc);
+  FV_MOOSApp thePort;
+  MOOSAppRunnerThread runner(&thePort, "uFunctionViewer", sMissionFile);
   
   FV_GUI* gui = new FV_GUI(900,750, "IvPFunction-Viewer");
   if(gui)
-    g_thePort.setViewer(gui->getViewer());
+    thePort.setViewer(gui->getViewer());
 
   FV_Model* model = new FV_Model();
   gui->setModel(model);
-  g_thePort.setModel(model);
-  g_thePort.setGUI(gui);
+  thePort.setModel(model);
+  thePort.setGUI(gui);
 
   Fl::lock();
   while (Fl::wait() > 0) {
     // We use the posting of a thread message (Fl::awake()) entirely
     // to cause Fl::wait() to return.
-    g_thePort.process_demuxer_content();
+    thePort.process_demuxer_content();
   }
 
-// If the moos application thread is still running, I could imagine it operating
-// on this object even at this point in the program's execution.  Until we're
-// sure, just avoid deleting it. -CJC
-//   delete gui;
+  thePort.return_from_Run();
+  runner.join();
 
   return 0;
 }

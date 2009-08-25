@@ -31,7 +31,11 @@ class MOOSAppRunnerThread {
     Blocks until the thread function has returned.
     */
     void join();
-  
+
+    /// Terminates the thread owned by this object.  Doesn't return until the
+    /// thread has definitely ceased execution.
+    void cancel();
+    
   private:
     CMOOSApp * m_pApp;
     const std::string m_name;

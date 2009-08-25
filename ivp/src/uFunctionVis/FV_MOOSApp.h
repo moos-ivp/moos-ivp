@@ -29,11 +29,17 @@ class FV_MOOSApp : public CMOOSApp
   bool OnConnectToServer();
   bool OnStartUp();
 
+  /// Call this when you want the object's CMOOSApp::Run(...) method to return
+  /// soon.
+  void return_from_Run();
+
   /// This interacts with FLTK, and therefore should execute on the main thread,
   /// which is where all the other FLTK operations are occurring.
   void process_demuxer_content();
   
 protected:
+  bool    iterate_should_return_false;
+  
   int     loc_x;
   int     loc_y;
 
