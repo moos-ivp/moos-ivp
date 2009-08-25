@@ -63,9 +63,9 @@ int main(int argc, char *argv[])
     cout << endl;
     return(0);
   }
-
+  
   vector<string> keys;
-
+  
   string alogfile_in;
   string alogfile_out;
   string bad_switch;

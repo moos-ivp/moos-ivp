@@ -50,6 +50,16 @@ void idleProc(void *)
 
 int main(int argc, char *argv[])
 {
+  if(scanArgs(argc, argv, "-v", "--version", "-version")) {
+    version_message();
+    return(0);
+  }
+  
+  if(scanArgs(argc, argv, "-h", "--help", "-help")) {
+    help_message();
+    return(0);
+  }
+ 
   LogViewLauncher launcher;
   gui = launcher.launch(argc, argv);
   
@@ -66,10 +76,26 @@ int main(int argc, char *argv[])
 
 void help_message()
 {
-  cout << endl;
-  cout << "Usage: logview file1.alog [file2.alog] [-h] [--help] " << endl;
-  cout << "   At least one .alog file must be provided " << endl;
-  cout << "   Non alog files will be scanned for polygons " << endl;
+  cout << "Usage:                                                    " << endl;
+  cout << "  alogview file.alog [another_file.alog] [OPTIONS]        " << endl;
+  cout << "                                                          " << endl;
+  cout << "Synopsis:                                                 " << endl;
+  cout << "  Renders vehicle paths from multiple MOOS .alog files.   " << endl;
+  cout << "  Renders time-series plots for any logged numerical data." << endl;
+  cout << "  Renders IvP Helm mode information vs. vehicle position. " << endl;
+  cout << "  Renders IvP Helm behavior objective functions.          " << endl;
+  cout << "                                                          " << endl;
+  cout << "Standard Arguments:                                       " << endl;
+  cout << "  file.alog - The input logfile.                          " << endl;
+  cout << "                                                          " << endl;
+  cout << "Options:                                                  " << endl;
+  cout << "  -h,--help     Displays this help message                " << endl;
+  cout << "  -v,--version  Displays the current release version      " << endl;
+  cout << "                                                          " << endl;
+  cout << "Further Notes:                                            " << endl;
+  cout << "  (1) Multiple .alog files ok - typically one per vehicle " << endl;
+  cout << "  (2) Non alog files will be scanned for polygons         " << endl;
+  cout << "  (3) See also: alogscan, alogrm, alogclip, aloggrep      " << endl;
   cout << endl;
 }
 

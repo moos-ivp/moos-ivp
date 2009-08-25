@@ -44,7 +44,7 @@ public:
   void addLogPlot(const LogPlot&);
   void addHelmPlot(const HelmPlot&);
   void addIPF_Plot(const IPF_Plot &v); 
-  void setLogFile(std::string str)  {log_file = str;};
+  void setLogFile(std::string str)  {m_log_file = str;};
   void conditional_step();
   void capture_to_file();
   void updateXY();
@@ -135,8 +135,8 @@ protected:
   MY_Output   *high1;
   MY_Output   *curr1;
 
-  MY_Output   *time_low;
-  MY_Output   *time_high;
+  MY_Output   *m_fld_time_low;
+  MY_Output   *m_fld_time_high;
 
   MY_Output   *vname2;
   MY_Output   *label2;
@@ -166,15 +166,16 @@ protected:
   MY_Repeat_Button *m_but_zoom_out_time;
   MY_Button        *m_but_zoom_reset_time;
 
-  std::string log_file;
-  std::string collect;
+  std::string m_log_file;
+  std::string m_collect;
 
   int     m_num_ipfplots;
-  bool    stream;
-  MBTimer timer;
-  double  step_time;
-  int     step_amt;
-  int     step_time_ix;
-  int     save_file_ix;
+  bool    m_view_ipfs;
+  bool    m_stream;
+  MBTimer m_timer;
+  double  m_step_time;
+  int     m_step_amt;
+  int     m_step_time_ix;
+  int     m_save_file_ix;
 };
 #endif

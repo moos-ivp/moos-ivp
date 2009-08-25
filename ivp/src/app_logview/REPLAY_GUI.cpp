@@ -35,12 +35,12 @@ using namespace std;
 REPLAY_GUI::REPLAY_GUI(int g_w, int g_h, const char *g_l)
   : MarineVehiGUI(g_w, g_h, g_l) 
 {
-  stream       = false;
-  collect      = "Off";
-  step_amt     = 5;
-  step_time    = 1.0;
-  step_time_ix = 3;
-  save_file_ix = 0;
+  m_stream       = false;
+  m_collect      = "Off";
+  m_step_amt     = 5;
+  m_step_time    = 1.0;
+  m_step_time_ix = 3;
+  m_save_file_ix   = 0;
   m_num_ipfplots = 0;
 
   this->user_data((void*)(this));
@@ -57,7 +57,7 @@ REPLAY_GUI::REPLAY_GUI(int g_w, int g_h, const char *g_l)
   cmviewer = np_viewer;
 
   int lp_height = 140;
-  int margin = 2;
+  int margin    = 2;
   
   lp_viewer = new LogPlotViewer(55, (h()-(lp_height-margin)), 
   				w()-110, (lp_height-(2*margin)));
@@ -134,17 +134,17 @@ REPLAY_GUI::REPLAY_GUI(int g_w, int g_h, const char *g_l)
   high1->labelsize(info_size);
 
   // Handle Time Min/Max -------------
-  time_low = new MY_Output(2, h()-(lp_height/2)-10, 51, 20, ""); 
-  time_low->textsize(info_size); 
-  time_low->color(FL_YELLOW); 
-  time_low->textcolor(FL_BLUE); 
-  time_low->labelsize(info_size);
+  m_fld_time_low = new MY_Output(2, h()-(lp_height/2)-10, 51, 20, ""); 
+  m_fld_time_low->textsize(info_size); 
+  m_fld_time_low->color(FL_YELLOW); 
+  m_fld_time_low->textcolor(FL_BLUE); 
+  m_fld_time_low->labelsize(info_size);
   
-  time_high = new MY_Output(w()-110+57, h()-(lp_height/2)-10, 51, 20, ""); 
-  time_high->textsize(info_size); 
-  time_high->color(FL_YELLOW); 
-  time_high->textcolor(FL_BLUE); 
-  time_high->labelsize(info_size);
+  m_fld_time_high = new MY_Output(w()-110+57, h()-(lp_height/2)-10, 51, 20, ""); 
+  m_fld_time_high->textsize(info_size); 
+  m_fld_time_high->color(FL_YELLOW); 
+  m_fld_time_high->textcolor(FL_BLUE); 
+  m_fld_time_high->labelsize(info_size);
 
   // Handle LogPlot 2 -------------
   label2 = new MY_Output(w()-154, h()-(lp_height+25), 150, 20, "Var:"); 
@@ -268,8 +268,8 @@ REPLAY_GUI::~REPLAY_GUI()
   delete(low1);
   delete(high1);
   delete(curr1);
-  delete(time_low);
-  delete(time_high);
+  delete(m_fld_time_low);
+  delete(m_fld_time_high);
 
   delete(vname2);
   delete(label2);
@@ -626,19 +626,19 @@ void REPLAY_GUI::cb_RightHelmPlot(Fl_Widget* o, int v) {
 
 //----------------------------------------- CollectToggle
 inline void REPLAY_GUI::cb_CollectToggle_i() {
-  if(collect == "Off")
-    collect = "1024x768";
-  else if(collect == "1024x768")
-    collect = "800x600";
-  else if(collect == "800x600")
-    collect = "640x480";
-  else if(collect == "640x480")
-    collect = "480x360";
-  else if(collect == "480x360")
-    collect = "Off";
+  if(m_collect == "Off")
+    m_collect = "1024x768";
+  else if(m_collect == "1024x768")
+    m_collect = "800x600";
+  else if(m_collect == "800x600")
+    m_collect = "640x480";
+  else if(m_collect == "640x480")
+    m_collect = "480x360";
+  else if(m_collect == "480x360")
+    m_collect = "Off";
 
-  if(collect != "Off")
-    np_viewer->setFrame(collect + "+10+10");
+  if(m_collect != "Off")
+    np_viewer->setFrame(m_collect + "+10+10");
   else
     np_viewer->setFrame("");
 
@@ -667,11 +667,11 @@ void REPLAY_GUI::cb_TimeZoom(Fl_Widget* o, int v) {
 
 //----------------------------------------- StreamToggle
 inline void REPLAY_GUI::cb_StreamToggle_i() {
-  stream = !stream;
-  if(stream)
-    timer.start();
+  m_stream = !m_stream;
+  if(m_stream)
+    m_timer.start();
   else
-    timer.stop();
+    m_timer.stop();
   updateXY();
 }
 void REPLAY_GUI::cb_StreamToggle(Fl_Widget* o) {
@@ -680,7 +680,7 @@ void REPLAY_GUI::cb_StreamToggle(Fl_Widget* o) {
 
 //----------------------------------------- StreamStep
 inline void REPLAY_GUI::cb_StreamStep_i(int val) {
-  step_amt = val;
+  m_step_amt = val;
 }
 
 void REPLAY_GUI::cb_StreamStep(Fl_Widget* o, int v) {
@@ -691,26 +691,26 @@ void REPLAY_GUI::cb_StreamStep(Fl_Widget* o, int v) {
 //----------------------------------------- StreamSpeed
 inline void REPLAY_GUI::cb_StreamSpeed_i(bool faster) {
   if(faster)
-    step_time_ix++;
+    m_step_time_ix++;
   else
-    step_time_ix--;
+    m_step_time_ix--;
 
-  if(step_time_ix > 4)
-    step_time_ix = 4;
-  if(step_time_ix < 0)
-    step_time_ix = 0;
+  if(m_step_time_ix > 4)
+    m_step_time_ix = 4;
+  if(m_step_time_ix < 0)
+    m_step_time_ix = 0;
 
 #if 0
-  if(step_time_ix == 0)
-    step_time = 0;
-  else if(step_time_ix == 1)
-    step_time = np_viewer->getAvgStepTime() / 4.0;
+  if(m_step_time_ix == 0)
+    m_step_time = 0;
+  else if(m_step_time_ix == 1)
+    m_step_time = np_viewer->getAvgStepTime() / 4.0;
   else if(step_time_ix == 2)
-    step_time = np_viewer->getAvgStepTime() / 2.0;
+    m_step_time = np_viewer->getAvgStepTime() / 2.0;
   else if(step_time_ix == 3)
-    step_time = np_viewer->getAvgStepTime() / 1.0;
+    m_step_time = np_viewer->getAvgStepTime() / 1.0;
   else
-    step_time = np_viewer->getAvgStepTime() / 0.5;
+    m_step_time = np_viewer->getAvgStepTime() / 0.5;
 #endif
 
   updateXY();
@@ -724,15 +724,15 @@ void REPLAY_GUI::cb_StreamSpeed(Fl_Widget* o, bool v) {
 
 //----------------------------------------- Delete
 inline void REPLAY_GUI::cb_Delete_i() {
-  string alog_file = findReplace(log_file, ".slog", ".alog");
-  string ylog_file = findReplace(log_file, ".slog", ".ylog");
-  string moos_file = findReplace(log_file, ".slog", "._moos");
-  string question = "Delete " + log_file + "  and  " + alog_file + "? ";
+  string alog_file = findReplace(m_log_file, ".slog", ".alog");
+  string ylog_file = findReplace(m_log_file, ".slog", ".ylog");
+  string moos_file = findReplace(m_log_file, ".slog", "._moos");
+  string question = "Delete " + m_log_file + "  and  " + alog_file + "? ";
   int res = fl_choice(question.c_str(), "Yes", "No", 0);
   if(res==1) 
     return;
   
-  string command = "rm -f " + log_file + " " + alog_file + " " +
+  string command = "rm -f " + m_log_file + " " + alog_file + " " +
     ylog_file + " " + moos_file; 
   system(command.c_str());
   exit(0);
@@ -756,17 +756,17 @@ void REPLAY_GUI::updateXY()
   //fl_color(FL_BLACK);
 
   // Play Rate
-  if(stream) {
-    if(step_time_ix == 0) play_rate->value("FAP");
-    if(step_time_ix == 1) play_rate->value("4xReal");
-    if(step_time_ix == 2) play_rate->value("2xReal");
-    if(step_time_ix == 3) play_rate->value("Real");
-    if(step_time_ix == 4) play_rate->value("Real/2");
+  if(m_stream) {
+    if(m_step_time_ix == 0) play_rate->value("FAP");
+    if(m_step_time_ix == 1) play_rate->value("4xReal");
+    if(m_step_time_ix == 2) play_rate->value("2xReal");
+    if(m_step_time_ix == 3) play_rate->value("Real");
+    if(m_step_time_ix == 4) play_rate->value("Real/2");
   }
   else
     play_rate->value("Paused");
 
-  collect_state->value(collect.c_str());
+  collect_state->value(m_collect.c_str());
   
   // Helm1
   string v1name = np_viewer->getHPlotVName("left");
@@ -800,11 +800,11 @@ void REPLAY_GUI::updateXY()
   // Time_Low/High
   double tlow     = lp_viewer->get_time_low();
   string tlow_str = doubleToString(tlow, 3);
-  time_low->value(tlow_str.c_str());
+  m_fld_time_low->value(tlow_str.c_str());
 
   double thigh     = lp_viewer->get_time_high();
   string thigh_str = doubleToString(thigh, 3);
-  time_high->value(thigh_str.c_str());
+  m_fld_time_high->value(thigh_str.c_str());
 
   //------------------------------
   // Label1
@@ -954,18 +954,18 @@ void REPLAY_GUI::addIPF_Plot(const IPF_Plot& ipf_plot)
 
 void REPLAY_GUI::conditional_step() 
 {
-  if(stream) {
+  if(m_stream) {
     bool reached_the_end = false;
-    timer.stop();
-    if(timer.get_float_wall_time() > step_time) {
-      bool incremented = this->cb_Step_i(step_amt);
+    m_timer.stop();
+    if(m_timer.get_float_wall_time() > m_step_time) {
+      bool incremented = this->cb_Step_i(m_step_amt);
       if(!incremented)
 	reached_the_end = true;
-      timer.reset();
-      if(collect != "Off")
+      m_timer.reset();
+      if(m_collect != "Off")
 	capture_to_file();
     }
-    timer.start();
+    m_timer.start();
     if(reached_the_end)
       cb_StreamToggle_i();
   }
@@ -978,14 +978,14 @@ void REPLAY_GUI::capture_to_file()
 {
   string command;
   command += "import -quality 90 -window logview ";
-  command += "-crop " + collect + "+10+40 save_file_";
-  if(save_file_ix < 10)   command += "0";
-  if(save_file_ix < 100)  command += "0";
-  if(save_file_ix < 1000) command += "0";
-  command += intToString(save_file_ix) + ".png";
+  command += "-crop " + m_collect + "+10+40 save_file_";
+  if(m_save_file_ix < 10)   command += "0";
+  if(m_save_file_ix < 100)  command += "0";
+  if(m_save_file_ix < 1000) command += "0";
+  command += intToString(m_save_file_ix) + ".png";
   system(command.c_str());
   cout << "command: " << command << endl;
-  save_file_ix++;
+  m_save_file_ix++;
 }
 
 

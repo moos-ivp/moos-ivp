@@ -12,7 +12,7 @@ else (${WIN32})
     m)
 endif (${WIN32})
 
-FILE(GLOB SRC *.cpp)
+SET(SRC main.cpp ScanHandler.cpp)
 
 ADD_EXECUTABLE(alogscan ${SRC})
    
