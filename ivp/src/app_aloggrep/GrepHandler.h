@@ -40,7 +40,6 @@ class GrepHandler
   double m_lines_retained;
   double m_chars_removed;
   double m_chars_retained;
-    
   bool   m_file_overwrite;
 
   std::set<std::string> m_vars_retained;

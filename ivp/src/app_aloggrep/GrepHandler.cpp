@@ -13,7 +13,6 @@
 #include <cstdlib>
 #include <math.h>
 #include "MBUtils.h"
-#include "ALogScanner.h"
 #include "GrepHandler.h"
 #include "LogUtils.h"
 
@@ -42,7 +41,11 @@ GrepHandler::GrepHandler()
 
 bool GrepHandler::handle(const string& alogfile, const string& new_alogfile)
 {
-  ALogScanner scanner;
+  if(alogfile == new_alogfile) {
+    cout << "Input and output .alog files cannot be the same. " << endl;
+    cout << "Exiting now." << endl;
+    return(false);
+  }
 
   m_file_in = fopen(alogfile.c_str(), "r");
   if(!m_file_in) {

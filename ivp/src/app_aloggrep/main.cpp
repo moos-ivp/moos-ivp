@@ -55,8 +55,8 @@ int main(int argc, char *argv[])
     cout << "                                                        " << endl;
     cout << "Options:                                                " << endl;
     cout << "  -h,--help     Displays this help message              " << endl;
-    cout << "  -f,--force    Force overwrite of existing file        " << endl;
     cout << "  -v,--version  Displays the current release version    " << endl;
+    cout << "  -f,--force    Force overwrite of existing file        " << endl;
     cout << "  --verbose     Verbose report generated at conclusion  " << endl;
     cout << "                                                        " << endl;
     cout << "Further Notes:                                          " << endl;

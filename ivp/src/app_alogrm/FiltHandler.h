@@ -12,6 +12,9 @@
 #ifndef FILT_HANDLER_HEADER
 #define FILT_HANDLER_HEADER
 
+#include <set>
+#include <vector>
+#include <string>
 
 class FiltHandler
 {
@@ -19,8 +22,9 @@ class FiltHandler
   FiltHandler();
   ~FiltHandler() {};
 
-  void handle(const std::string&, const std::string& str="");
+  bool handle(const std::string&, const std::string& str="");
   bool setParam(const std::string& param, const std::string& value);
+  void printReport();
 
  protected:
 
@@ -31,6 +35,15 @@ class FiltHandler
   bool  m_chuck_numbers;
   bool  m_timeshift;
   bool  m_clean;
+
+  double m_lines_removed;
+  double m_lines_retained;
+  double m_chars_removed;
+  double m_chars_retained;
+  bool   m_file_overwrite;
+
+  std::set<std::string> m_vars_retained;
+  std::set<std::string> m_vars_removed;
 
   FILE *m_file_in;
   FILE *m_file_out;
