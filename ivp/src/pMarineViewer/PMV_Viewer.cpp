@@ -287,7 +287,6 @@ void PMV_Viewer::drawTrailPoints(CPList &cps, int trail_length)
   double    pt_size = m_vehi_settings.getTrailsPointSize();
   bool    connected = m_vehi_settings.isViewableTrailsConnect();
   
-  cout << "calling drawpointlist" << xvect.size() << endl;
   drawPointList(xvect, yvect, pt_size, cpack, connected);
 }
 
