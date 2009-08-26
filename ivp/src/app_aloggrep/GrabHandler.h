@@ -12,21 +12,40 @@
 #ifndef GRAB_HANDLER_HEADER
 #define GRAB_HANDLER_HEADER
 
+#include <vector>
+#include <string>
+#include <set>
 
 class GrabHandler
 {
  public:
-  GrabHandler() {m_file_in=0; m_file_out=0;};
-  ~GrabHandler() {}
+  GrabHandler();
+  ~GrabHandler() {};
 
-  void handle(const std::string&, const std::string& str="");
+  bool handle(const std::string&, const std::string& str="");
   void addKey(std::string str);
+  void printReport();
+  void setFileOverWrite(bool v) {m_file_overwrite=v;};
+  
+ protected:
+  std::vector<std::string> getMatchedKeys();
+  std::vector<std::string> getUnMatchedKeys();
   
  protected:
 
   std::vector<std::string> m_keys;
   std::vector<bool>        m_pmatch;
 
+  double m_lines_removed;
+  double m_lines_retained;
+  double m_chars_removed;
+  double m_chars_retained;
+    
+  bool   m_file_overwrite;
+
+  std::set<std::string> m_vars_retained;
+  std::set<std::string> m_vars_removed;
+  
   FILE *m_file_in;
   FILE *m_file_out;
 };

@@ -30,6 +30,14 @@ int main(int argc, char *argv[])
     return(0);
   }
   
+  bool verbose = false;
+  if(scanArgs(argc, argv, "--verbose", "-verbose"))
+    verbose = true;
+  
+  bool file_overwrite = false;
+  if(scanArgs(argc, argv, "-f", "--force", "-force"))
+    file_overwrite = true;
+  
   // Look for a request for usage information
   if(scanArgs(argc, argv, "-h", "--help", "-help")) {
     cout << "Usage: " << endl;
@@ -47,7 +55,9 @@ int main(int argc, char *argv[])
     cout << "                                                        " << endl;
     cout << "Options:                                                " << endl;
     cout << "  -h,--help     Displays this help message              " << endl;
+    cout << "  -f,--force    Force overwrite of existing file        " << endl;
     cout << "  -v,--version  Displays the current release version    " << endl;
+    cout << "  --verbose     Verbose report generated at conclusion  " << endl;
     cout << "                                                        " << endl;
     cout << "Further Notes:                                          " << endl;
     cout << "  (1) The second alog is the output file. Otherwise the " << endl;
@@ -59,7 +69,6 @@ int main(int argc, char *argv[])
   }
 
   vector<string> keys;
-
   string alogfile_in;
   string alogfile_out;
 
@@ -79,18 +88,20 @@ int main(int argc, char *argv[])
     cout << "No alog file given - exiting" << endl;
     exit(0);
   }
-  else  
+  else if(verbose)
     cout << "Processing on file : " << alogfile_in << endl;
-
+  
   GrabHandler handler;
+  handler.setFileOverWrite(file_overwrite);
 
   int ksize = keys.size();
-  for(int i=0; i<ksize; i++) {
-    cout << "Grabbing key: " << keys[i] << endl;
+  for(int i=0; i<ksize; i++)
     handler.addKey(keys[i]);
-  }
 
-  handler.handle(alogfile_in, alogfile_out);
+  bool handled = handler.handle(alogfile_in, alogfile_out);
+  
+  if(handled && verbose)
+    handler.printReport();
 }
 
 

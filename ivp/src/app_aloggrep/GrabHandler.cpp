@@ -21,34 +21,52 @@ using namespace std;
 
 
 //--------------------------------------------------------
+// Constructor
+
+GrabHandler::GrabHandler()
+{
+  m_file_in  = 0;
+  m_file_out = 0;
+
+  m_lines_removed  = 0;
+  m_lines_retained = 0;
+  m_chars_removed  = 0;
+  m_chars_retained = 0;
+
+  m_file_overwrite = false;
+}
+
+//--------------------------------------------------------
 // Procedure: handle
 //     Notes: 
 
-void GrabHandler::handle(const string& alogfile, const string& new_alogfile)
+bool GrabHandler::handle(const string& alogfile, const string& new_alogfile)
 {
   ALogScanner scanner;
 
   m_file_in = fopen(alogfile.c_str(), "r");
   if(!m_file_in) {
     cout << "input not found or unable to open - exiting" << endl;
-    exit(0);
+    return(false);
   }
   
   if(new_alogfile != "") {
     m_file_out = fopen(new_alogfile.c_str(), "r");
-    if(m_file_out) {
-      cout << new_alogfile << " already exists - exiting now." << endl;
+    if(m_file_out && !m_file_overwrite) {
+      cout << new_alogfile << " already exists." << endl;
+      cout << "Use --force to overwrite. Exiting now." << endl;
       fclose(m_file_out);
-      exit(0);
+      return(false);
     }
     m_file_out = fopen(new_alogfile.c_str(), "w");
   }
   
-  int count = 0;
   bool done = false;
   while(!done) {
-    count++;
     string line_raw = getNextRawLine(m_file_in);
+    bool   line_is_comment = false;
+    if((line_raw.length() > 0) && (line_raw.at(0) == '%'))
+      line_is_comment = true;
 
     if(line_raw == "eof") 
       done = true;
@@ -64,17 +82,32 @@ void GrabHandler::handle(const string& alogfile, const string& new_alogfile)
 	  match = true;
       }
 
-      if((match || (count < 6) && (line_raw != ""))) {
+      if(match || line_is_comment) {
 	if(m_file_out)
 	  fprintf(m_file_out, "%s\n", line_raw.c_str());
 	else
 	  cout << line_raw << endl;
       }
+      
+      if(match && !line_is_comment) {
+	m_lines_retained++;
+	m_chars_retained += line_raw.length();
+	m_vars_retained.insert(varname);
+      }
+
+      if(!match && !line_is_comment) {
+	m_lines_removed++;
+	m_chars_removed += line_raw.length();
+	m_vars_removed.insert(varname);
+      }
     }
   }
+
   if(m_file_out)
     fclose(m_file_out);
   m_file_out = 0;
+
+  return(true);
 }
 
 //--------------------------------------------------------
@@ -109,4 +142,75 @@ void GrabHandler::addKey(string key)
     m_pmatch[prior_ix] = true;
 }
 
+
+//--------------------------------------------------------
+// Procedure: getMatchedKeys()
+//     Notes: 
+
+vector<string> GrabHandler::getMatchedKeys()
+{
+  vector<string> rvector;
+
+  unsigned int i, vsize = m_keys.size();
+  for(i=0; i<vsize; i++) {
+    if(m_pmatch[i])
+      rvector.push_back(m_keys[i]);
+  }
+  return(rvector);
+}
+
+
+//--------------------------------------------------------
+// Procedure: getUnMatchedKeys()
+//     Notes: 
+
+vector<string> GrabHandler::getUnMatchedKeys()
+{
+  vector<string> rvector;
+
+  unsigned int i, vsize = m_keys.size();
+  for(i=0; i<vsize; i++) {
+    if(!m_pmatch[i])
+      rvector.push_back(m_keys[i]);
+  }
+  return(rvector);
+}
+
+
+//--------------------------------------------------------
+// Procedure: printReport
+//     Notes: 
+
+void GrabHandler::printReport()
+{
+  double total_lines = m_lines_retained + m_lines_removed;
+  double total_chars = m_chars_retained + m_chars_removed;
+
+  double pct_lines_retained = (m_lines_retained / total_lines);
+  double pct_lines_removed  = (m_lines_removed  / total_lines);
+  double pct_chars_retained = (m_chars_retained / total_chars);
+  double pct_chars_removed  = (m_chars_removed  / total_chars);
+
+  cout << "  Total lines retained: " << doubleToString(m_lines_retained,0);
+  cout << " (" << doubleToString((100*pct_lines_retained),2) << "%)" << endl;
+  
+  cout << "   Total lines deleted: " << doubleToString(m_lines_removed,0);
+  cout << " (" << doubleToString((100*pct_lines_removed),2) << "%)" << endl;
+
+  cout << "  Total chars retained: " << doubleToString(m_chars_retained,0);
+  cout << " (" << doubleToString((100*pct_chars_retained),2) << "%)" << endl;
+
+  cout << "   Total chars deleted: " << doubleToString(m_chars_removed,0);
+  cout << " (" << doubleToString((100*pct_chars_removed),2) << "%)" << endl;
+
+  cout << "    Variables retained: (" << m_vars_retained.size() << ") "; 
+  set<string>::iterator p;
+  for(p=m_vars_retained.begin(); p!=m_vars_retained.end(); p++) {
+    string varname = *p;
+    if(p!=m_vars_retained.begin())
+      cout << ", ";
+    cout << varname;
+  }
+  cout << endl;
+}
 
