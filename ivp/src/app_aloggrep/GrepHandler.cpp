@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
-/*    FILE: GrabHandler.cpp                                      */
+/*    FILE: GrepHandler.cpp                                      */
 /*    DATE: August 6th, 2008                                     */
 /*                                                               */
 /* This is unreleased BETA code. No permission is granted or     */
@@ -14,7 +14,7 @@
 #include <math.h>
 #include "MBUtils.h"
 #include "ALogScanner.h"
-#include "GrabHandler.h"
+#include "GrepHandler.h"
 #include "LogUtils.h"
 
 using namespace std;
@@ -23,7 +23,7 @@ using namespace std;
 //--------------------------------------------------------
 // Constructor
 
-GrabHandler::GrabHandler()
+GrepHandler::GrepHandler()
 {
   m_file_in  = 0;
   m_file_out = 0;
@@ -40,7 +40,7 @@ GrabHandler::GrabHandler()
 // Procedure: handle
 //     Notes: 
 
-bool GrabHandler::handle(const string& alogfile, const string& new_alogfile)
+bool GrepHandler::handle(const string& alogfile, const string& new_alogfile)
 {
   ALogScanner scanner;
 
@@ -114,7 +114,7 @@ bool GrabHandler::handle(const string& alogfile, const string& new_alogfile)
 // Procedure: addKey
 //     Notes: 
 
-void GrabHandler::addKey(string key)
+void GrepHandler::addKey(string key)
 {
   bool pmatch = false;
   int len = key.length();
@@ -147,7 +147,7 @@ void GrabHandler::addKey(string key)
 // Procedure: getMatchedKeys()
 //     Notes: 
 
-vector<string> GrabHandler::getMatchedKeys()
+vector<string> GrepHandler::getMatchedKeys()
 {
   vector<string> rvector;
 
@@ -164,7 +164,7 @@ vector<string> GrabHandler::getMatchedKeys()
 // Procedure: getUnMatchedKeys()
 //     Notes: 
 
-vector<string> GrabHandler::getUnMatchedKeys()
+vector<string> GrepHandler::getUnMatchedKeys()
 {
   vector<string> rvector;
 
@@ -181,7 +181,7 @@ vector<string> GrabHandler::getUnMatchedKeys()
 // Procedure: printReport
 //     Notes: 
 
-void GrabHandler::printReport()
+void GrepHandler::printReport()
 {
   double total_lines = m_lines_retained + m_lines_removed;
   double total_chars = m_chars_retained + m_chars_removed;

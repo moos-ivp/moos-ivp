@@ -13,7 +13,7 @@
 #include <cstdlib>
 #include <iostream>
 #include "MBUtils.h"
-#include "GrabHandler.h"
+#include "GrepHandler.h"
 
 using namespace std;
 
@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
   else if(verbose)
     cout << "Processing on file : " << alogfile_in << endl;
   
-  GrabHandler handler;
+  GrepHandler handler;
   handler.setFileOverWrite(file_overwrite);
 
   int ksize = keys.size();

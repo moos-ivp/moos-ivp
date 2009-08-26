@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
-/*    FILE: GrabHandler.h                                        */
+/*    FILE: GrepHandler.h                                        */
 /*    DATE: August 6th, 2008                                     */
 /*                                                               */
 /* This is unreleased BETA code. No permission is granted or     */
@@ -9,18 +9,18 @@
 /* except by the author(s).                                      */
 /*****************************************************************/
 
-#ifndef GRAB_HANDLER_HEADER
-#define GRAB_HANDLER_HEADER
+#ifndef ALOG_GREP_HANDLER_HEADER
+#define ALOG_GREP_HANDLER_HEADER
 
 #include <vector>
 #include <string>
 #include <set>
 
-class GrabHandler
+class GrepHandler
 {
  public:
-  GrabHandler();
-  ~GrabHandler() {};
+  GrepHandler();
+  ~GrepHandler() {};
 
   bool handle(const std::string&, const std::string& str="");
   void addKey(std::string str);

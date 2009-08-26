@@ -12,7 +12,7 @@ else (${WIN32})
     m)
 endif (${WIN32})
 
-SET(SRC main.cpp GrabHandler.cpp)
+SET(SRC main.cpp GrepHandler.cpp)
 
 ADD_EXECUTABLE(aloggrep ${SRC})
    
