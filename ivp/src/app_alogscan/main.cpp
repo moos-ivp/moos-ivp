@@ -41,13 +41,15 @@ int main(int argc, char *argv[])
     cout << "                                                   " << endl;
     cout << "Options:                                           " << endl;
     cout << "  -c,--chars    Sort by total characters (default) " << endl;
-    cout << "  -l,--lines    Sort by total lines (descending)   " << endl;
-    cout << "  --start       Sort by start time (descending)    " << endl;
-    cout << "  --stop        Sort by stop time (descending)     " << endl;
+    cout << "  -l,--lines    Sort by total lines descending     " << endl;
+    cout << "  --start       Sort by start time descending      " << endl;
+    cout << "  --stop        Sort by stop time descending       " << endl;
     cout << "  --appstat     Output application statistics      " << endl;
     cout << "  -r,--reverse  Reverse the sorting output         " << endl;
     cout << "  -h,--help     Displays this help message         " << endl;
     cout << "  -v,--version  Displays the current release version" << endl;
+    cout << "                                                    " << endl;
+    cout << "See also: aloggrp, alogrm, alogclip, alogview       " << endl;
     return(0);
   }
 
