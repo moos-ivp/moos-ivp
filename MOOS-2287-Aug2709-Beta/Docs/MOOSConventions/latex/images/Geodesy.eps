@@ -1,0 +1,3629 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%Creator: ImageMark Software Labs
+%%For: () ()
+%%Title: C:\users\pnewman\docs\papers\MOOSPaper\Geodesy.eps
+%%CreationDate: () ()
+%%BoundingBox: 0.0000 0.0000 447.0000 365.2500
+
+%%DocumentProcessColors: Black
+%%DocumentFonts: Helvetica
+%%+Helvetica-Bold
+
+%%DocumentSuppliedResources: procset Adobe_packedarray 2.0 0
+%%+ procset Adobe_cmykcolor 1.1 0
+%%+ procset Adobe_cshow 1.1 0
+%%+ procset Adobe_customcolor 1.0 0
+%%+ procset Adobe_typography_AI3 1.0 0
+%%+ procset Adobe_Illustrator_AI3 1.0 0
+%AI3_ColorUsage: Black&White
+%AI3_TemplateBox: 0.0000 0.0000 447.0000 365.2500
+
+%AI3_TileBox: 0.0000 0.0000 447.0000 365.2500
+
+%AI3_DocumentPreview: None
+%%Template:
+%%PageOrigin:0.0000 0.0000
+
+%%EndComments
+%%BeginProlog
+%%BeginResource: procset Adobe_packedarray 2.0 0
+%%Title: (Packed Array Operators)
+%%Version: 2.0
+%%CreationDate: (8/2/90) ()
+%%Copyright: ((C) 1987-1990 Adobe Systems Incorporated All Rights Reserved)
+userdict /Adobe_packedarray 5 dict dup begin put
+/initialize
+{
+/packedarray where
+{
+pop
+}
+{
+Adobe_packedarray begin
+Adobe_packedarray
+{
+dup xcheck
+{
+bind
+} if
+userdict 3 1 roll put
+} forall
+end
+} ifelse
+} def
+/terminate
+{
+} def
+/packedarray
+{
+array astore readonly
+} def
+/setpacking
+{
+pop
+} def
+/currentpacking
+{
+false
+} def
+currentdict readonly pop end
+%%EndResource
+
+Adobe_packedarray /initialize get exec
+
+%%Title: (CMYK Color Operators)
+%%Version: 1.1 
+%%CreationDate: (1/23/89) ()
+%%Copyright: ((C) 1987-1990 Adobe Systems Incorporated All Rights Reserved)
+currentpacking true setpacking
+userdict /Adobe_cmykcolor 4 dict dup begin put
+/initialize
+{
+/setcmykcolor where
+{
+pop
+}
+{
+userdict /Adobe_cmykcolor_vars 2 dict dup begin put
+/_setrgbcolor
+/setrgbcolor load def
+/_currentrgbcolor
+/currentrgbcolor load def
+Adobe_cmykcolor begin
+Adobe_cmykcolor
+{
+dup xcheck
+{
+bind
+} if
+pop pop
+} forall
+end
+end
+Adobe_cmykcolor begin
+} ifelse
+} def
+/terminate
+{
+currentdict Adobe_cmykcolor eq
+{
+end
+} if
+} def
+/setcmykcolor
+{
+1 sub 4 1 roll
+3
+{
+3 index add neg dup 0 lt
+{
+pop 0
+} if
+3 1 roll
+} repeat
+Adobe_cmykcolor_vars /_setrgbcolor get exec
+pop
+} def 
+/currentcmykcolor
+{
+Adobe_cmykcolor_vars /_currentrgbcolor get exec
+3
+{
+1 sub neg 3 1 roll
+} repeat
+0
+} def
+currentdict readonly pop end
+setpacking
+
+%%EndResource
+
+%%BeginResource: procset Adobe_cshow 1.1 0
+%%Title: (cshow Operator)
+%%Version: 1.1 
+%%CreationDate: (1/23/89) ()
+%%Copyright: ((C) 1987-1990 Adobe Systems Incorporated All Rights Reserved)
+currentpacking true setpacking
+userdict /Adobe_cshow 3 dict dup begin put
+/initialize
+{
+/cshow where
+{
+pop
+}
+{
+userdict /Adobe_cshow_vars 1 dict dup begin put
+/_cshow 
+{} def
+Adobe_cshow begin
+Adobe_cshow
+{
+dup xcheck
+{
+bind
+} if
+userdict 3 1 roll put
+} forall
+end
+end
+} ifelse
+} def
+/terminate
+{
+} def
+/cshow
+{
+exch
+Adobe_cshow_vars
+exch /_cshow
+exch put
+{
+0 0 Adobe_cshow_vars /_cshow get exec
+} forall
+} def
+currentdict readonly pop end
+setpacking
+
+%%EndResource
+
+%%BeginResource: procset Adobe_customcolor 1.0 0
+%%Title: (Custom Color Operators)
+%%Version: 1.0 
+%%CreationDate: (5/9/88) ()
+%%Copyright: ((C) 1987-1990 Adobe Systems Incorporated All Rights Reserved)
+currentpacking true setpacking
+userdict /Adobe_customcolor 5 dict dup begin put
+/initialize
+{
+/setcustomcolor where
+{
+pop
+}
+{
+Adobe_customcolor begin
+Adobe_customcolor
+{
+dup xcheck
+{
+bind
+} if
+pop pop
+} forall
+end
+Adobe_customcolor begin
+} ifelse
+} def
+/terminate
+{
+currentdict Adobe_customcolor eq
+{
+end
+} if
+} def
+/findcmykcustomcolor
+{
+5 packedarray
+}  def
+/setcustomcolor
+{
+exch
+aload pop pop
+4
+{
+4 index mul 4 1 roll
+} repeat
+5 -1 roll pop
+setcmykcolor
+} def
+/setoverprint
+{
+pop
+} def
+currentdict readonly pop end
+setpacking
+%%EndResource 
+
+
+%%BeginResource: procset Adobe_typography_AI3 1.0 0
+%%Title: (Typography Operators)%%Version: 1.0
+%%CreationDate:(5/31/90) ()
+%%Copyright: ((C) 1987-1990 Adobe Systems Incorporated All Rights Reserved)
+currentpacking true setpacking
+userdict /Adobe_typography_AI3 46 dict dup begin put
+/initialize
+{
+/TZ
+where
+{
+pop
+}
+{
+Adobe_typography_AI3 begin
+Adobe_typography_AI3
+{
+dup xcheck
+{
+bind
+} if
+pop pop
+} forall
+end
+Adobe_typography_AI3 begin
+} ifelse
+} def
+/terminate
+{
+currentdict Adobe_typography_AI3 eq
+{
+end
+} if
+} def
+/modifyEncoding
+{
+/_tempEncode exch ddef
+/_pntr 0 ddef
+{
+counttomark -1 roll
+dup type dup /marktype eq   
+{
+pop pop exit
+}
+{
+/nametype eq
+{
+_tempEncode /_pntr dup load dup 3 1 roll 1 add ddef 3 -1 roll
+put
+}
+{
+/_pntr exch ddef
+}
+ifelse
+}
+ifelse
+}
+loop 
+_tempEncode
+}
+def
+/TE 
+{
+StandardEncoding 256 array copy modifyEncoding 
+/_nativeEncoding exch def
+} def
+/TZ  
+{
+/_useNativeEncoding exch def
+pop pop
+findfont dup length 2 add dict
+begin
+mark exch
+{
+1 index /FID ne { def } if cleartomark mark
+}
+forall
+pop
+/FontName exch def
+counttomark 0 eq
+{
+Encoding StandardEncoding eq 1 _useNativeEncoding eq and
+{
+/Encoding _nativeEncoding def
+}
+if
+cleartomark
+}
+{ 
+/Encoding load 256 array copy 
+modifyEncoding /Encoding exch def
+}
+ifelse  
+FontName currentdict
+end
+definefont pop
+}
+def
+/tr
+{
+_ax _ay 3 2 roll
+} def
+/trj 
+{
+_cx _cy _sp _ax _ay 6 5 roll
+} def
+
+/a0
+{
+/Tx 
+{
+dup 
+currentpoint 3 2 roll
+tr _psf
+newpath moveto
+tr _ctm _pss
+} ddef
+/Tj 
+{
+dup
+currentpoint 3 2 roll
+trj _pjsf
+newpath moveto
+trj _ctm _pjss
+} ddef
+} def
+/a1
+{
+W B
+} def
+/e0
+{
+/Tx 
+{
+tr _psf
+} ddef
+/Tj 
+{
+trj _pjsf
+} ddef
+} def
+/e1
+{
+W F 
+} def
+/i0
+{
+/Tx
+{
+tr sp
+} ddef
+/Tj
+{
+trj jsp
+} ddef
+} def
+/o0
+{
+/Tx
+{
+tr sw rmoveto
+} ddef
+/Tj
+{
+trj swj rmoveto
+} ddef
+} def
+/r0
+{
+/Tx
+{
+tr _ctm _pss
+} ddef
+/Tj
+{
+trj _ctm _pjss
+} ddef
+} def
+/r1
+{
+W S
+} def
+/To
+{
+pop _ctm currentmatrix pop
+} def
+/TO
+{
+Te _ctm setmatrix newpath
+} def
+/Tp
+{
+pop _tm astore pop _ctm setmatrix 
+2 dict begin /W {} def /h {} def
+} def
+/TP
+{
+end
+iTm 0 0 moveto
+} def
+/Tr
+{
+Te currentpoint newpath moveto
+dup 8 eq {pop 0} {dup 9 eq {pop 1} if} ifelse
+dup /_render exch ddef
+_renderStart exch get load exec
+} def
+/iTm 
+{
+_ctm setmatrix _tm concat 0 _rise translate _hs 1 scale
+} def
+/Te
+{
+_render -1 eq {} {_renderEnd _render get dup null ne {load exec} {pop} ifelse} ifelse
+/_render -1 ddef
+} def
+/Tf
+{
+dup 1000 div /_fScl exch ddef
+exch findfont exch scalefont setfont
+} def
+/Tl
+{
+pop
+0 exch _leading astore pop
+} def
+/Tt 
+{
+pop
+} def
+/TW
+{
+3 npop
+} def
+/Tw
+{
+/_cx exch ddef
+} def
+/Tc
+{
+/_ax exch ddef
+} def
+/Ts
+{
+/_rise exch ddef
+currentpoint
+iTm
+moveto
+} def
+/Ti
+{
+3 npop
+} def
+/Tz
+{
+100 div /_hs exch ddef
+iTm
+} def
+/Tq 
+{
+pop
+} def
+/TX {pop} def
+/Tk
+{
+exch pop _fScl mul neg 0 rmoveto
+} def
+/T- 
+{
+_hyphen Tx
+} def
+/TS
+{
+0 eq {Tx} {Tj} ifelse
+} def
+currentdict readonly pop end
+setpacking
+%%EndResource
+
+%%BeginResource: procset Adobe_Illustrator_AI3 1.0 0
+%%Title: (Adobe Illustrator (R) Version 3.0 Full Prolog)
+%%Version: 1.0 
+%%CreationDate: (7/22/89) ()
+%%Copyright: ((C) 1987-1990 Adobe Systems Incorporated All Rights Reserved)
+currentpacking true setpacking
+userdict /Adobe_Illustrator_AI3 71 dict dup begin put
+/initialize
+{
+userdict /Adobe_Illustrator_AI3_vars 55 dict dup begin put
+/_lp /none def
+/_pf {} def
+/_ps {} def
+/_psf {} def
+/_pss {} def
+/_pjsf {} def
+/_pjss {} def
+/_pola 0 def
+/_doClip 0 def
+/cf currentflat def
+/_tm matrix def
+/_renderStart [/e0 /r0 /a0 /o0 /i0 /i0 /i0 /i0] def 
+/_renderEnd [null null null null /e1 /r1 /a1 /clip] def
+/_render -1 def
+/_rise 0 def
+/_ax 0 def
+/_ay 0 def
+/_cx 0 def
+/_cy 0 def
+/_leading [0 0] def
+/_ctm matrix def
+/_mtx matrix def
+/_sp 16#020 def
+/_hyphen (-) def
+/_fScl 0 def
+/_cnt 0 def
+/_hs 1 def
+/_nativeEncoding 0 def
+/_useNativeEncoding 0 def
+/_tempEncode 0 def
+/_pntr 0 def
+/Tx {} def
+/Tj {} def
+/CRender {} def
+/_AI3_savepage {} def
+/_gf null def
+/_cf 4 array def
+/_if null def
+/_of false def
+/_fc {} def
+/_gs null def
+/_cs 4 array def
+/_is null def
+/_os false def
+/_sc {} def
+/_pd 1 dict def
+/_ed 15 dict def
+/_pm matrix def
+/_fm null def
+/_fd null def
+/_fdd null def
+/_sm null def
+/_sd null def
+/_sdd null def
+/_i null def
+Adobe_Illustrator_AI3 begin
+Adobe_Illustrator_AI3 dup /nc get begin
+{
+dup xcheck
+{
+bind
+} if
+pop pop
+} forall
+end
+end
+end
+Adobe_Illustrator_AI3 begin
+Adobe_Illustrator_AI3_vars begin
+newpath
+} def
+/terminate
+{
+end
+end
+} def
+
+/_
+null def
+/ddef
+{
+Adobe_Illustrator_AI3_vars 3 1 roll put
+} def
+/xput
+{
+dup load dup length exch maxlength eq
+{
+dup dup load dup
+length 2 mul dict copy def
+} if
+load begin def end
+} def
+/npop
+{
+{
+pop
+} repeat
+} def
+
+/sw
+{
+dup length exch stringwidth
+exch 5 -1 roll 3 index 1 sub mul add
+4 1 roll 3 1 roll 1 sub mul add
+} def
+/swj
+{
+dup 4 1 roll
+dup length exch stringwidth 
+exch 5 -1 roll 3 index 1 sub mul add
+4 1 roll 3 1 roll 1 sub mul add 
+6 2 roll /_cnt 0 ddef
+{1 index eq {/_cnt _cnt 1 add ddef} if} forall pop
+exch _cnt mul exch _cnt mul 2 index add 4 1 roll 2 index add 4 1 roll pop pop
+} def
+/ss
+{
+4 1 roll
+{
+2 npop 
+(0) exch 2 copy 0 exch put pop
+gsave
+false charpath currentpoint
+4 index setmatrix
+stroke
+grestore
+moveto
+2 copy rmoveto
+} exch cshow
+3 npop
+} def
+/jss
+{
+4 1 roll
+{
+2 npop 
+(0) exch 2 copy 0 exch put 
+gsave
+_sp eq 
+{
+exch 6 index 6 index 6 index 5 -1 roll widthshow  
+currentpoint
+}
+{
+false charpath currentpoint
+4 index setmatrix stroke
+}ifelse
+grestore
+moveto
+2 copy rmoveto
+} exch cshow
+6 npop
+} def
+/sp
+{
+{
+2 npop (0) exch
+2 copy 0 exch put pop
+false charpath
+2 copy rmoveto
+} exch cshow
+2 npop
+} def
+/jsp
+{
+{
+2 npop 
+(0) exch 2 copy 0 exch put 
+_sp eq 
+{
+exch 5 index 5 index 5 index 5 -1 roll widthshow  
+}
+{
+false charpath
+}ifelse
+2 copy rmoveto
+} exch cshow
+5 npop
+} def
+/pl
+{
+transform
+0.25 sub round 0.25 add exch
+0.25 sub round 0.25 add exch
+itransform
+} def
+/setstrokeadjust where
+{pop true setstrokeadjust
+/c
+{
+curveto
+} def
+/C
+/c load def
+/v
+{
+currentpoint 6 2 roll curveto
+} def
+/V
+/v load def
+/y
+{
+2 copy curveto
+} def
+/Y
+/y load def
+/l
+{
+lineto
+} def
+/L
+/l load def
+/m
+{
+moveto
+} def
+}
+{
+/c
+{
+pl curveto
+} def
+/C
+/c load def
+/v
+{
+currentpoint 6 2 roll pl curveto
+} def
+/V
+/v load def
+/y
+{
+pl 2 copy curveto
+} def
+/Y
+/y load def
+/l
+{
+pl lineto
+} def
+/L
+/l load def
+/m
+{
+pl moveto
+} def
+} ifelse
+/d
+{
+setdash
+} def
+/cf {} def
+/i
+{
+dup 0 eq
+{
+pop cf
+} if
+setflat
+} def
+/j
+{
+setlinejoin
+} def
+/J
+{
+setlinecap
+} def
+/M
+{
+setmiterlimit
+} def
+/w
+{
+setlinewidth
+} def
+/H {} def /h { closepath } def /N { _pola 0 eq {
+
+_doClip 1 eq {clip /_doClip 0 ddef} if newpath } {
+
+/CRender {N} ddef }ifelse } def /n {N} def
+
+/F
+{
+_pola 0 eq 
+{
+_doClip 1 eq 
+{
+gsave _pf grestore clip newpath /_lp /none ddef _fc 
+/_doClip 0 ddef
+}
+{
+_pf
+}ifelse
+} 
+{
+/CRender {F} ddef
+}ifelse
+} def
+/f
+{
+closepath
+F
+} def
+/S
+{
+_pola 0 eq 
+{
+_doClip 1 eq 
+{
+gsave _ps grestore clip newpath /_lp /none ddef _sc 
+/_doClip 0 ddef
+}
+{
+_ps
+}ifelse
+} 
+{
+/CRender {S} ddef
+}ifelse
+} def
+/s
+{
+closepath
+S
+} def
+/B
+{
+_pola 0 eq 
+{
+_doClip 1 eq
+gsave F grestore 
+{
+gsave S grestore clip newpath /_lp /none ddef _sc
+/_doClip 0 ddef
+} 
+{
+S
+}ifelse
+}
+{
+/CRender {B} ddef
+}ifelse
+} def
+/b
+{
+closepath
+B
+} def
+/W
+{
+/_doClip 1 ddef
+} def
+/*
+{
+count 0 ne 
+{
+dup type (stringtype) eq {pop} if
+} if 
+_pola 0 eq {newpath} if
+} def
+/u
+{} def
+/U
+{} def
+/q
+{_pola 0 eq {gsave} if
+} def
+/Q
+{
+_pola 0 eq {grestore} if
+} def
+/*u
+{
+_pola 1 add /_pola exch ddef
+} def
+/*U
+{
+_pola 1 sub /_pola exch ddef 
+_pola 0 eq {CRender} if
+} def
+/D
+{pop} def
+/*w
+{} def
+/*W
+{} def
+/`
+{
+/_i save ddef
+6 1 roll 4 npop
+concat
+userdict begin
+/showpage {} def
+false setoverprint
+pop
+} def
+/~ { end _i restore } def
+/@
+{} def
+/&
+{} def
+/O
+{
+0 ne
+/_of exch ddef
+/_lp /none ddef
+} def
+/R
+{
+0 ne
+/_os exch ddef
+/_lp /none ddef
+} def
+/g
+{
+/_gf exch ddef
+/_fc
+{
+_lp /fill ne
+{
+_of setoverprint
+_gf setgray
+/_lp /fill ddef
+} if
+} ddef
+/_pf
+{
+_fc
+fill
+} ddef
+/_psf
+{
+_fc
+ashow
+} ddef
+/_pjsf
+{
+_fc
+awidthshow
+} ddef
+/_lp /none ddef
+} def
+/G
+{
+/_gs exch ddef
+/_sc
+{
+_lp /stroke ne
+{
+_os setoverprint
+_gs setgray
+/_lp /stroke ddef
+} if
+} ddef
+/_ps
+{
+_sc
+stroke
+} ddef
+/_pss
+{
+_sc
+ss
+} ddef
+/_pjss
+{
+_sc
+jss
+} ddef
+/_lp /none ddef
+} def
+/k
+{
+_cf astore pop
+/_fc
+{
+_lp /fill ne
+{
+_of setoverprint
+_cf aload pop setcmykcolor
+/_lp /fill ddef
+} if
+} ddef
+/_pf
+{
+_fc
+fill
+} ddef
+/_psf
+{
+_fc
+ashow
+} ddef
+/_pjsf
+{
+_fc
+awidthshow
+} ddef
+/_lp /none ddef
+} def
+/K
+{
+_cs astore pop
+/_sc
+{
+_lp /stroke ne
+{
+_os setoverprint
+_cs aload pop setcmykcolor
+/_lp /stroke ddef
+} if
+} ddef
+/_ps
+{
+_sc
+stroke
+} ddef
+/_pss
+{
+_sc
+ss
+} ddef
+/_pjss
+{
+_sc
+jss
+} ddef
+/_lp /none ddef
+} def
+/x
+{
+/_gf exch ddef
+findcmykcustomcolor
+/_if exch ddef
+/_fc
+{
+_lp /fill ne
+{
+_of setoverprint
+_if _gf 1 exch sub setcustomcolor
+/_lp /fill ddef
+} if
+} ddef
+/_pf
+{
+_fc
+fill
+} ddef
+/_psf
+{
+_fc
+ashow
+} ddef
+/_pjsf
+{
+_fc
+awidthshow
+} ddef
+/_lp /none ddef
+} def
+/X
+{
+/_gs exch ddef
+findcmykcustomcolor
+/_is exch ddef
+/_sc
+{
+_lp /stroke ne
+{
+_os setoverprint
+_is _gs 1 exch sub setcustomcolor
+/_lp /stroke ddef
+} if
+} ddef
+/_ps
+{
+_sc
+stroke
+} ddef
+/_pss
+{
+_sc
+ss
+} ddef
+/_pjss
+{
+_sc
+jss
+} ddef
+/_lp /none ddef
+} def
+/dp
+{
+dup null eq
+{
+pop
+_dp 0 ne
+{
+0 1 _dp 1 sub _dl mod
+{
+_da exch get 3 get
+} for
+_dp 1 sub _dl mod 1 add packedarray
+_da 0 get aload pop 8 -1 roll 5 -1 roll pop 4 1 roll
+definepattern pop
+} if
+}
+{
+_dp 0 ne _dp _dl mod 0 eq and
+{
+null dp
+} if
+7 packedarray _da exch _dp _dl mod exch put
+_dp _dl mod _da 0 get 4 get 2 packedarray
+/_dp _dp 1 add def
+} ifelse
+} def
+/E
+{
+_ed begin
+dup 0 get type /arraytype ne
+{
+0
+{
+dup 1 add index type /arraytype eq
+{
+1 add
+}
+{
+exit
+} ifelse
+} loop
+array astore
+} if
+/_dd exch def
+/_ury exch def
+/_urx exch def
+/_lly exch def
+/_llx exch def
+/_n exch def
+/_y 0 def
+/_dl 4 def
+/_dp 0 def
+/_da _dl array def
+0 1 _dd length 1 sub
+{
+/_d exch _dd exch get def
+0 2 _d length 2 sub
+{
+/_x exch def
+/_c _d _x get _ ne def
+/_r _d _x 1 add get cvlit def
+_r _ ne
+{
+_urx _llx sub _ury _lly sub [1 0 0 1 0 0] 
+[
+/save cvx
+_llx neg _lly neg /translate cvx
+_c
+{
+nc /begin cvx
+} if
+_r dup type /stringtype eq
+{
+cvx
+}
+{
+{exec} /forall cvx
+} ifelse
+_c
+{
+/end cvx
+} if
+/restore cvx
+] cvx
+/_fn 12 _n length add string def
+_y _fn cvs pop
+/_y _y 1 add def
+_fn 12 _n putinterval
+_fn _c false dp
+_d exch _x 1 add exch put
+} if
+} for
+} for
+null dp
+_n _dd /_pd
+end xput
+} def
+/fc
+{
+_fm dup concatmatrix pop
+} def
+/p
+{
+/_fm exch ddef
+9 -2 roll _pm translate fc
+7 -2 roll _pm scale fc
+5 -1 roll _pm rotate fc
+4 -2 roll exch 0 ne
+{
+dup _pm rotate fc
+1 -1 _pm scale fc
+neg _pm rotate fc
+}
+{
+pop
+} ifelse
+dup _pm rotate fc
+exch dup sin exch cos div 1 0 0 1 0 6 2 roll
+_pm astore fc
+neg _pm rotate fc
+_pd exch get /_fdd exch ddef
+/_pf
+{
+save
+0 1 _fdd length 1 sub
+{
+/_fd exch _fdd exch get ddef
+_fd
+0 2 _fd length 2 sub
+{
+gsave
+2 copy get dup _ ne
+{
+cvx exec _fc
+}
+{
+pop
+} ifelse
+2 copy 1 add get dup _ ne
+{
+aload pop findfont _fm
+patternfill
+}
+{
+pop
+fill
+} ifelse
+grestore
+pop
+} for
+pop
+} for
+restore
+newpath
+} ddef
+/_psf
+{
+save
+0 1 _fdd length 1 sub
+{
+/_fd exch _fdd exch get ddef
+_fd
+0 2 _fd length 2 sub
+{
+gsave
+2 copy get dup _ ne
+{
+cvx exec _fc
+}
+{
+pop
+} ifelse
+2 copy 1 add get dup _ ne
+{
+aload pop findfont _fm
+9 copy 6 npop patternashow
+}
+{
+pop
+6 copy 3 npop ashow
+} ifelse
+grestore
+pop
+} for
+pop
+} for
+restore
+
+sw rmoveto
+} ddef
+/_pjsf
+{
+save
+0 1 _fdd length 1 sub
+{
+/_fd exch _fdd exch get ddef
+_fd
+0 2 _fd length 2 sub
+{
+gsave
+2 copy get dup _ ne
+{
+cvx exec _fc
+}
+{
+pop
+} ifelse
+2 copy 1 add get dup _ ne
+{
+aload pop findfont _fm
+12 copy 6 npop patternawidthshow
+}
+{
+pop 9 copy 3 npop awidthshow
+} ifelse
+grestore
+pop
+} for
+pop
+} for
+restore
+swj rmoveto
+} ddef
+/_lp /none ddef
+} def
+/sc
+{
+_sm dup concatmatrix pop
+} def
+/P
+{
+/_sm exch ddef
+9 -2 roll _pm translate sc
+7 -2 roll _pm scale sc
+5 -1 roll _pm rotate sc
+4 -2 roll exch 0 ne
+{
+dup _pm rotate sc
+1 -1 _pm scale sc
+neg _pm rotate sc
+}
+{
+pop
+} ifelse
+dup _pm rotate sc
+exch dup sin exch cos div 1 0 0 1 0 6 2 roll
+_pm astore sc
+neg _pm rotate sc
+_pd exch get /_sdd exch ddef
+/_ps
+{
+save
+0 1 _sdd length 1 sub
+{
+/_sd exch _sdd exch get ddef
+_sd
+0 2 _sd length 2 sub
+{
+gsave
+2 copy get dup _ ne
+{
+cvx exec _sc
+}
+{
+pop
+} ifelse
+2 copy 1 add get dup _ ne
+{
+aload pop findfont _sm
+patternstroke
+}
+{
+pop stroke
+} ifelse
+grestore
+pop
+} for
+pop
+} for
+restore
+newpath
+} ddef
+/_pss
+{
+save
+0 1 _sdd length 1 sub
+{
+/_sd exch _sdd exch get ddef
+_sd
+0 2 _sd length 2 sub
+{
+gsave
+2 copy get dup _ ne
+{
+cvx exec _sc
+}
+{
+pop
+} ifelse
+2 copy 1 add get dup _ ne
+{
+aload pop findfont _sm
+10 copy 6 npop patternashowstroke
+}
+{
+pop 7 copy 3 npop ss
+} ifelse
+grestore
+pop
+} for
+pop
+} for
+restore
+pop sw rmoveto
+} ddef
+/_pjss
+{
+save
+0 1 _sdd length 1 sub
+{
+/_sd exch _sdd exch get ddef
+_sd
+0 2 _sd length 2 sub
+{
+gsave
+2 copy get dup _ ne
+{
+cvx exec _sc
+}
+{
+pop
+} ifelse
+2 copy 1 add get dup _ ne
+{
+aload pop findfont _sm
+13 copy 6 npop patternawidthshowstroke
+}
+{
+pop 10 copy 3 npop jss
+} ifelse
+grestore
+pop
+} for
+pop
+} for
+restore
+pop swj rmoveto
+} ddef
+/_lp /none ddef
+} def
+
+/A
+{
+pop
+} def
+
+/nc 3 dict def
+nc begin
+/setgray
+{
+pop
+} bind def
+/setcmykcolor
+{
+4 npop
+} bind def
+/setcustomcolor
+{
+2 npop
+} bind def
+currentdict readonly pop end
+/Z {findfont begin currentdict dup length dict begin
+{1 index /FID ne {def} {pop pop} ifelse} forall /FontName exch def dup length 0 ne
+{/Encoding Encoding 256 array copy def 0 exch {dup type /nametype eq
+{Encoding 2 index 2 index put pop 1 add} {exch pop} ifelse} forall} if pop
+currentdict dup end end /FontName get exch definefont pop} bind def
+currentdict readonly pop end
+setpacking
+/annotatepage
+{
+} def
+
+%%EndResource
+%AI3-Grid.0 0 0 0 0 0 0 2
+%%EndProlog
+%%BeginSetup
+Adobe_cshow /initialize get exec
+Adobe_customcolor /initialize get exec
+Adobe_typography_AI3 /initialize get exec
+Adobe_Illustrator_AI3 /initialize get exec
+%%BeginEncoding:_Helvetica Helvetica
+[
+39/quotesingle 96/grave 130/quotesinglbase 131/florin 132/quotedblbase
+133/ellipsis 134/dagger 135/daggerdbl 136/circumflex 137/perthousand 
+138/Scaron 139/guilsinglleft 140/OE 145/quoteleft 146/quoteright 
+147/quotedblleft 148/quotedblright 149/bullet 150/endash 151/emdash 
+152/tilde 153/trademark 154/scaron 155/guilsinglright 156/oe 157/dotlessi 
+159/Ydieresis 164/currency 166/brokenbar 168/dieresis 169/copyright 
+170/ordfeminine 172/logicalnot 174/registered 175/macron 176/ring 
+177/plusminus 178/twosuperior 179/threesuperior 180/acute 181/mu 
+183/periodcentered 184/cedilla 185/onesuperior 186/ordmasculine 
+188/onequarter 189/onehalf 190/threequarters 192/Agrave 193/Aacute 
+194/Acircumflex 195/Atilde 196/Adieresis 197/Aring 198/AE 199/Ccedilla 
+200/Egrave 201/Eacute 202/Ecircumflex 203/Edieresis 204/Igrave 205/Iacute 
+206/Icircumflex 207/Idieresis 208/Eth 209/Ntilde 210/Ograve 211/Oacute 
+212/Ocircumflex 213/Otilde 214/Odieresis 215/multiply 216/Oslash 
+217/Ugrave 218/Uacute 219/Ucircumflex 220/Udieresis 221/Yacute 222/Thorn 
+223/germandbls 224/agrave 225/aacute 226/acircumflex 227/atilde 228/adieresis 
+229/aring 230/ae 231/ccedilla 232/egrave 233/eacute 234/ecircumflex 
+235/edieresis 236/igrave 237/iacute 238/icircumflex 239/idieresis 
+240/eth 241/ntilde 242/ograve 243/oacute 244/ocircumflex 245/otilde 
+246/odieresis 247/divide 248/oslash 249/ugrave 250/uacute 251/ucircumflex 
+252/udieresis 253/yacute 254/thorn 255/ydieresis
+]  /_Helvetica/Helvetica Z
+%%EndEncoding
+%%BeginEncoding:_Helvetica-Bold Helvetica-Bold
+[
+39/quotesingle 96/grave 130/quotesinglbase 131/florin 132/quotedblbase
+133/ellipsis 134/dagger 135/daggerdbl 136/circumflex 137/perthousand 
+138/Scaron 139/guilsinglleft 140/OE 145/quoteleft 146/quoteright 
+147/quotedblleft 148/quotedblright 149/bullet 150/endash 151/emdash 
+152/tilde 153/trademark 154/scaron 155/guilsinglright 156/oe 157/dotlessi 
+159/Ydieresis 164/currency 166/brokenbar 168/dieresis 169/copyright 
+170/ordfeminine 172/logicalnot 174/registered 175/macron 176/ring 
+177/plusminus 178/twosuperior 179/threesuperior 180/acute 181/mu 
+183/periodcentered 184/cedilla 185/onesuperior 186/ordmasculine 
+188/onequarter 189/onehalf 190/threequarters 192/Agrave 193/Aacute 
+194/Acircumflex 195/Atilde 196/Adieresis 197/Aring 198/AE 199/Ccedilla 
+200/Egrave 201/Eacute 202/Ecircumflex 203/Edieresis 204/Igrave 205/Iacute 
+206/Icircumflex 207/Idieresis 208/Eth 209/Ntilde 210/Ograve 211/Oacute 
+212/Ocircumflex 213/Otilde 214/Odieresis 215/multiply 216/Oslash 
+217/Ugrave 218/Uacute 219/Ucircumflex 220/Udieresis 221/Yacute 222/Thorn 
+223/germandbls 224/agrave 225/aacute 226/acircumflex 227/atilde 228/adieresis 
+229/aring 230/ae 231/ccedilla 232/egrave 233/eacute 234/ecircumflex 
+235/edieresis 236/igrave 237/iacute 238/icircumflex 239/idieresis 
+240/eth 241/ntilde 242/ograve 243/oacute 244/ocircumflex 245/otilde 
+246/odieresis 247/divide 248/oslash 249/ugrave 250/uacute 251/ucircumflex 
+252/udieresis 253/yacute 254/thorn 255/ydieresis
+]  /_Helvetica-Bold/Helvetica-Bold Z
+%%EndEncoding
+%%EndSetup
+u
+ [] 0 d
+0.7500 w
+1 J
+1 j
+  110.2500 50.7500 m
+  116.0000 51.5000 L
+S
+U
+u
+  119.5000 52.0000 m
+  125.2500 52.7500 L
+S
+U
+u
+  129.0000 53.2500 m
+  134.7500 54.0000 L
+S
+U
+u
+  138.2500 54.5000 m
+  144.0000 55.2500 L
+S
+U
+u
+  147.7500 55.7500 m
+  153.2500 56.5000 L
+S
+U
+u
+  157.0000 57.0000 m
+  162.7500 57.7500 L
+S
+U
+u
+  166.2500 58.5000 m
+  172.0000 59.0000 L
+S
+U
+u
+  175.7500 59.5000 m
+  181.5000 60.5000 L
+S
+U
+u
+  185.0000 61.0000 m
+  190.7500 61.5000 L
+S
+U
+u
+  194.2500 62.0000 m
+  200.0000 63.0000 L
+S
+U
+u
+  203.5000 63.5000 m
+  209.2500 64.2500 L
+S
+U
+u
+  213.0000 64.7500 m
+  218.7500 65.5000 L
+S
+U
+u
+  222.2500 66.0000 m
+  228.0000 66.7500 L
+S
+U
+u
+  231.7500 67.2500 m
+  237.5000 68.0000 L
+S
+U
+u
+  241.0000 68.5000 m
+  246.7500 69.2500 L
+S
+U
+u
+  250.2500 69.7500 m
+  256.0000 70.5000 L
+S
+U
+u
+  259.5000 71.0000 m
+  265.2500 71.7500 L
+S
+U
+u
+  269.0000 72.2500 m
+  274.7500 73.0000 L
+S
+U
+u
+  278.2500 73.5000 m
+  284.0000 74.2500 L
+S
+U
+u
+  287.7500 74.7500 m
+  293.2500 75.7500 L
+S
+U
+u
+  297.0000 76.0000 m
+  302.7500 76.7500 L
+S
+U
+u
+  306.2500 77.5000 m
+  312.0000 78.2500 L
+S
+U
+u
+  315.7500 78.7500 m
+  321.5000 79.5000 L
+S
+U
+u
+  325.0000 80.0000 m
+  330.7500 80.7500 L
+S
+U
+u
+  334.2500 81.2500 m
+  340.0000 82.0000 L
+S
+U
+u
+  343.5000 82.5000 m
+  349.2500 83.2500 L
+S
+U
+u
+  353.0000 83.7500 m
+  358.7500 84.5000 L
+S
+U
+u
+  362.2500 85.0000 m
+  368.0000 85.7500 L
+S
+U
+u
+  371.7500 86.2500 m
+  377.5000 87.0000 L
+S
+U
+u
+  381.0000 87.5000 m
+  386.7500 88.2500 L
+S
+U
+u
+  390.2500 88.7500 m
+  396.0000 89.7500 L
+S
+U
+u
+  399.5000 90.2500 m
+  405.5000 90.7500 L
+S
+U
+u
+  409.0000 91.2500 m
+  414.7500 92.2500 L
+S
+U
+u
+  418.2500 92.7500 m
+  422.0000 93.2500 L
+S
+U
+u
+  0.000 0.000 0.000 1.000 K
+  189.5000 227.7500 m
+  246.2500 86.0000 L
+  388.0000 157.0000 L
+  331.2500 298.5000 L
+  189.5000 227.7500 L
+S
+U
+u
+  0.000 0.000 0.000 1.000 K
+  11.0000 2.7500 m
+  16.7500 2.7500 L
+S
+U
+u
+  20.5000 3.0000 m
+  26.2500 3.0000 L
+S
+U
+u
+  29.7500 3.0000 m
+  35.5000 3.2500 L
+S
+U
+u
+  39.0000 3.5000 m
+  44.7500 3.5000 L
+S
+U
+u
+  48.5000 3.7500 m
+  54.2500 3.7500 L
+S
+U
+u
+  57.7500 4.0000 m
+  63.5000 4.0000 L
+S
+U
+u
+  67.2500 4.2500 m
+  73.0000 4.5000 L
+S
+U
+u
+  76.5000 4.5000 m
+  82.2500 4.7500 L
+S
+U
+u
+  86.0000 4.7500 m
+  91.7500 5.0000 L
+S
+U
+u
+  95.2500 5.0000 m
+  101.0000 5.2500 L
+S
+U
+u
+  104.5000 5.2500 m
+  110.2500 5.5000 L
+S
+U
+u
+  114.0000 5.5000 m
+  119.7500 5.7500 L
+S
+U
+u
+  123.2500 5.7500 m
+  129.0000 6.0000 L
+S
+U
+u
+  132.7500 6.0000 m
+  138.5000 6.2500 L
+S
+U
+u
+  142.0000 6.2500 m
+  147.7500 6.5000 L
+S
+U
+u
+  151.5000 6.5000 m
+  157.2500 6.7500 L
+S
+U
+u
+  160.7500 6.7500 m
+  166.5000 7.0000 L
+S
+U
+u
+  170.0000 7.2500 m
+  176.0000 7.2500 L
+S
+U
+u
+  179.5000 7.5000 m
+  185.2500 7.5000 L
+S
+U
+u
+  188.7500 7.7500 m
+  194.5000 7.7500 L
+S
+U
+u
+  198.2500 8.0000 m
+  204.0000 8.2500 L
+S
+U
+u
+  207.5000 8.2500 m
+  209.5000 8.2500 L
+S
+U
+u
+  0.000 0.000 0.000 1.000 K
+  2.5000 164.0000 m
+  7.0000 167.5000 L
+S
+U
+u
+  9.7500 169.7500 m
+  14.2500 173.5000 L
+S
+U
+u
+  17.0000 175.7500 m
+  21.2500 179.2500 L
+S
+U
+u
+  24.0000 181.5000 m
+  28.5000 185.2500 L
+S
+U
+u
+  31.2500 187.5000 m
+  35.7500 191.0000 L
+S
+U
+u
+  38.7500 193.2500 m
+  43.0000 197.0000 L
+S
+U
+u
+  45.7500 199.2500 m
+  50.2500 202.7500 L
+S
+U
+u
+  53.0000 205.0000 m
+  57.5000 208.7500 L
+S
+U
+u
+  60.2500 211.0000 m
+  64.7500 214.5000 L
+S
+U
+u
+  67.5000 216.7500 m
+  72.0000 220.5000 L
+S
+U
+u
+  74.7500 222.7500 m
+  79.2500 226.2500 L
+S
+U
+u
+  82.0000 228.5000 m
+  86.5000 232.2500 L
+S
+U
+u
+  89.2500 234.5000 m
+  93.5000 238.0000 L
+S
+U
+u
+  96.2500 240.2500 m
+  100.7500 244.0000 L
+S
+U
+u
+  103.5000 246.2500 m
+  108.0000 249.7500 L
+S
+U
+u
+  110.7500 252.0000 m
+  115.2500 255.7500 L
+S
+U
+u
+  118.0000 258.0000 m
+  122.5000 261.5000 L
+S
+U
+u
+  0.000 0.000 0.000 1.000 K
+  53.7500 164.0000 m
+  58.5000 167.0000 L
+S
+U
+u
+  61.5000 169.0000 m
+  66.2500 172.2500 L
+S
+U
+u
+  69.2500 174.2500 m
+  74.0000 177.2500 L
+S
+U
+u
+  77.0000 179.2500 m
+  81.7500 182.2500 L
+S
+U
+u
+  84.7500 184.2500 m
+  89.5000 187.2500 L
+S
+U
+u
+  92.5000 189.2500 m
+  97.5000 192.5000 L
+S
+U
+u
+  100.5000 194.2500 m
+  105.2500 197.5000 L
+S
+U
+u
+  108.2500 199.5000 m
+  113.0000 202.5000 L
+S
+U
+u
+  116.0000 204.5000 m
+  120.7500 207.5000 L
+S
+U
+u
+  123.7500 209.5000 m
+  128.5000 212.7500 L
+S
+U
+u
+  131.5000 214.5000 m
+  136.5000 217.7500 L
+S
+U
+u
+  139.5000 219.7500 m
+  144.2500 222.7500 L
+S
+U
+u
+  147.2500 224.7500 m
+  152.0000 228.0000 L
+S
+U
+u
+  155.0000 229.7500 m
+  159.7500 233.0000 L
+S
+U
+u
+  162.7500 234.7500 m
+  167.5000 238.0000 L
+S
+U
+u
+  170.5000 240.0000 m
+  175.5000 243.0000 L
+S
+U
+u
+  178.5000 245.0000 m
+  183.2500 248.2500 L
+S
+U
+u
+  186.2500 250.0000 m
+  191.0000 253.2500 L
+S
+U
+u
+  194.0000 255.0000 m
+  198.7500 258.2500 L
+S
+U
+u
+  201.7500 260.2500 m
+  206.5000 263.2500 L
+S
+U
+u
+  209.5000 265.2500 m
+  214.5000 268.5000 L
+S
+U
+u
+  217.5000 270.2500 m
+  222.2500 273.5000 L
+S
+U
+u
+  225.2500 275.2500 m
+  230.0000 278.5000 L
+S
+U
+u
+  233.0000 280.5000 m
+  237.7500 283.5000 L
+S
+U
+u
+  240.7500 285.5000 m
+  245.5000 288.7500 L
+S
+U
+u
+  248.5000 290.5000 m
+  253.5000 293.7500 L
+S
+U
+u
+  256.2500 295.5000 m
+  261.2500 298.7500 L
+S
+U
+u
+  264.2500 300.7500 m
+  269.0000 304.0000 L
+S
+U
+u
+  272.0000 305.7500 m
+  276.7500 309.0000 L
+S
+U
+u
+  279.7500 310.7500 m
+  284.5000 314.0000 L
+S
+U
+u
+  287.5000 315.7500 m
+  292.2500 319.0000 L
+S
+U
+u
+  295.2500 321.0000 m
+  300.2500 324.2500 L
+S
+U
+u
+  303.2500 326.0000 m
+  308.0000 329.2500 L
+S
+U
+u
+  311.0000 331.0000 m
+  315.7500 334.2500 L
+S
+U
+u
+  318.7500 336.2500 m
+  323.5000 339.2500 L
+S
+U
+u
+  326.5000 341.2500 m
+  331.2500 344.2500 L
+S
+U
+u
+  334.2500 346.2500 m
+  337.0000 348.0000 L
+S
+U
+u
+  0.000 0.000 0.000 1.000 K
+  209.5000 8.2500 m
+  209.5000 13.2500 L
+  209.2500 18.5000 L
+  209.2500 24.2500 L
+  208.7500 30.2500 L
+  208.5000 36.2500 L
+  207.7500 42.7500 L
+  207.0000 49.5000 L
+  206.0000 56.2500 L
+  205.2500 63.2500 L
+  204.0000 70.5000 L
+  202.7500 78.0000 L
+  201.2500 85.2500 L
+  199.7500 93.0000 L
+  198.0000 100.7500 L
+  196.2500 108.5000 L
+  194.2500 116.2500 L
+  192.0000 124.2500 L
+  189.7500 132.0000 L
+  187.5000 140.0000 L
+  184.7500 147.7500 L
+  182.0000 155.7500 L
+  179.0000 163.5000 L
+  176.0000 171.2500 L
+  173.0000 179.0000 L
+  169.7500 186.5000 L
+  166.0000 194.0000 L
+  164.7500 196.5000 L
+  163.7500 199.0000 L
+  162.2500 201.5000 L
+  161.0000 204.0000 L
+  159.7500 206.5000 L
+  158.2500 209.0000 L
+  157.0000 211.5000 L
+  155.5000 214.0000 L
+  154.0000 216.7500 L
+  152.5000 219.2500 L
+  151.0000 222.0000 L
+  149.2500 224.5000 L
+  147.7500 227.2500 L
+  146.0000 229.7500 L
+  144.5000 232.5000 L
+  142.7500 235.2500 L
+  140.7500 238.2500 L
+  139.0000 241.0000 L
+  137.2500 244.0000 L
+  135.0000 247.0000 L
+  133.2500 250.0000 L
+  131.0000 253.2500 L
+  128.7500 256.5000 L
+  126.7500 259.7500 L
+  124.5000 263.2500 L
+S
+U
+u
+  0.000 0.000 0.000 1.000 K
+  209.5000 8.2500 m
+  217.0000 12.2500 L
+  224.2500 16.0000 L
+  231.5000 19.7500 L
+  238.5000 23.5000 L
+  245.7500 27.0000 L
+  253.0000 30.7500 L
+  260.2500 34.2500 L
+  267.5000 37.7500 L
+  274.7500 41.0000 L
+  282.0000 44.5000 L
+  289.5000 48.0000 L
+  297.2500 51.5000 L
+  305.0000 54.7500 L
+  313.0000 58.2500 L
+  321.0000 61.5000 L
+  329.5000 65.0000 L
+  338.0000 68.5000 L
+  347.0000 72.0000 L
+  349.2500 73.0000 L
+  351.7500 74.0000 L
+  354.5000 75.0000 L
+  357.0000 76.0000 L
+  359.7500 77.0000 L
+  362.5000 78.0000 L
+  365.2500 79.0000 L
+  368.0000 79.7500 L
+  371.0000 80.7500 L
+  374.2500 81.7500 L
+  377.5000 82.7500 L
+  381.0000 83.7500 L
+  384.5000 84.7500 L
+  388.0000 85.7500 L
+  392.0000 86.7500 L
+  396.2500 87.7500 L
+  400.2500 88.5000 L
+  404.7500 89.5000 L
+  409.5000 90.5000 L
+  414.2500 91.2500 L
+  419.5000 92.2500 L
+  424.7500 93.2500 L
+S
+U
+u
+  424.7500 93.2500 m
+  424.7500 98.2500 L
+  424.7500 103.5000 L
+  424.2500 109.2500 L
+  424.0000 115.2500 L
+  423.5000 121.5000 L
+  422.7500 127.7500 L
+  422.0000 134.5000 L
+  421.0000 141.2500 L
+  420.0000 148.5000 L
+  418.7500 155.5000 L
+  417.2500 163.0000 L
+  415.7500 170.5000 L
+  414.2500 178.0000 L
+  412.5000 185.7500 L
+  410.5000 193.5000 L
+  408.5000 201.5000 L
+  406.2500 209.2500 L
+  403.7500 217.2500 L
+  401.2500 225.0000 L
+  398.7500 233.0000 L
+  395.7500 240.7500 L
+  392.7500 248.7500 L
+  389.7500 256.5000 L
+  386.5000 264.0000 L
+  383.0000 271.7500 L
+  379.5000 279.0000 L
+  378.2500 281.5000 L
+  376.7500 284.0000 L
+  375.5000 286.5000 L
+  374.2500 289.2500 L
+  372.7500 291.7500 L
+  371.5000 294.2500 L
+  370.0000 296.7500 L
+  368.5000 299.2500 L
+  367.0000 301.7500 L
+  365.5000 304.2500 L
+  364.0000 307.0000 L
+  362.5000 309.5000 L
+  360.7500 312.2500 L
+  359.0000 315.0000 L
+  357.2500 317.5000 L
+  355.5000 320.5000 L
+  353.7500 323.2500 L
+  351.7500 326.0000 L
+  349.7500 329.0000 L
+  348.0000 332.0000 L
+  345.7500 335.0000 L
+  343.7500 338.2500 L
+  341.5000 341.5000 L
+  339.2500 344.7500 L
+  337.0000 348.0000 L
+S
+U
+u
+  0.000 0.000 0.000 1.000 K
+  124.5000 263.2500 m
+  131.5000 267.7500 L
+  138.5000 272.0000 L
+  145.5000 276.5000 L
+  152.2500 280.7500 L
+  159.0000 285.0000 L
+  166.0000 289.0000 L
+  173.0000 293.0000 L
+  179.7500 296.7500 L
+  187.0000 300.7500 L
+  194.0000 304.5000 L
+  201.2500 308.2500 L
+  208.7500 311.7500 L
+  216.2500 315.5000 L
+  224.0000 319.0000 L
+  232.0000 322.5000 L
+  240.2500 326.2500 L
+  248.7500 329.7500 L
+  257.5000 333.2500 L
+  259.7500 334.2500 L
+  262.2500 335.2500 L
+  265.0000 336.2500 L
+  267.5000 337.0000 L
+  270.0000 338.0000 L
+  272.7500 339.0000 L
+  275.5000 339.7500 L
+  278.5000 340.7500 L
+  281.5000 341.5000 L
+  284.7500 342.2500 L
+  288.0000 343.0000 L
+  291.5000 343.7500 L
+  295.2500 344.5000 L
+  298.7500 345.0000 L
+  303.0000 345.5000 L
+  307.0000 346.2500 L
+  311.5000 346.7500 L
+  316.0000 347.0000 L
+  321.0000 347.5000 L
+  326.0000 347.7500 L
+  331.2500 348.0000 L
+  337.0000 348.0000 L
+S
+U
+u
+  0.000 0.000 0.000 1.000 K
+  303.7500 161.2500 m
+  266.0000 141.2500 L
+  248.2500 187.0000 L
+S
+U
+  0.000 0.000 0.000 1.000 k
+0.0000 w
+  0.000 0.000 0.000 1.000 K
+*u
+  301.2500 163.7500 m
+  308.7500 164.0000 L
+  304.5000 158.0000 L
+  301.2500 163.7500 L
+  301.2500 163.7500 L
+F
+u
+  245.5000 185.0000 m
+  246.2500 192.2500 L
+  251.7500 187.5000 L
+  245.5000 185.0000 L
+  245.5000 185.0000 L
+F
+U
+*U
+u
+0.7500 w
+  0.000 0.000 0.000 1.000 K
+  266.0000 141.2500 m
+  311.5000 151.5000 L
+S
+U
+u
+  0.000 0.000 0.000 1.000 k
+0.0000 w
+  0.000 0.000 0.000 1.000 K
+  310.0000 154.5000 m
+  317.0000 152.7500 L
+  311.5000 148.0000 L
+  310.0000 154.5000 L
+F
+U
+0 To
+1 0 0 1 314.25 167.5 0 Tp
+TP
+/_Helvetica 11.0000 Tf
+0.0000 Tc
+ 0 Tr
+0.0000 w
+  0.000 0.000 0.000 1.000 K
+0 j
+  0.000 0.000 0.000 1.000 k
+(x\r) Tx
+TO
+0 To
+1 0 0 1 248 196 0 Tp
+TP
+/_Helvetica 11.0000 Tf
+0.0000 Tc
+ 0 Tr
+  0.000 0.000 0.000 1.000 k
+(y\r) Tx
+TO
+u
+0.7500 w
+1 j
+  263.2500 148.5000 m
+  270.5000 152.7500 L
+  273.2500 145.5000 L
+S
+U
+u
+  0.000 0.000 0.000 1.000 K
+  283.7500 145.5000 m
+  293.2500 151.2500 L
+  277.5000 147.2500 L
+S
+U
+u
+  308.7500 207.7500 m
+  299.5000 228.2500 L
+S
+U
+u
+  0.000 0.000 0.000 1.000 k
+0.0000 w
+  0.000 0.000 0.000 1.000 K
+  297.0000 226.0000 m
+  297.2500 233.5000 L
+  303.0000 228.7500 L
+  297.0000 226.0000 L
+F
+U
+0 To
+1 0 0 1 287 225.5 0 Tp
+TP
+/_Helvetica 11.0000 Tf
+0.0000 Tc
+ 0 Tr
+0.0000 w
+  0.000 0.000 0.000 1.000 K
+0 j
+  0.000 0.000 0.000 1.000 k
+(N\r) Tx
+TO
+u
+0.7500 w
+1 j
+  225.0000 246.0000 m
+  225.2500 245.5000 L
+S
+U
+u
+  226.5000 242.0000 m
+  226.7500 241.2500 L
+S
+U
+u
+  228.2500 238.0000 m
+  228.5000 237.2500 L
+S
+U
+u
+  229.7500 234.0000 m
+  230.0000 233.2500 L
+S
+U
+u
+  231.2500 230.0000 m
+  231.5000 229.2500 L
+S
+U
+u
+  232.7500 225.7500 m
+  233.0000 225.0000 L
+S
+U
+u
+  234.5000 221.7500 m
+  234.7500 221.0000 L
+S
+U
+u
+  236.0000 217.7500 m
+  236.2500 217.0000 L
+S
+U
+u
+  237.5000 213.7500 m
+  237.7500 213.0000 L
+S
+U
+u
+  239.0000 209.7500 m
+  239.2500 209.0000 L
+S
+U
+u
+  240.7500 205.5000 m
+  241.0000 205.0000 L
+S
+U
+u
+  242.2500 201.7500 m
+  242.5000 201.0000 L
+S
+U
+u
+  243.7500 197.5000 m
+  244.0000 196.7500 L
+S
+U
+u
+  245.2500 193.5000 m
+  245.5000 192.7500 L
+S
+U
+u
+  247.0000 189.5000 m
+  247.2500 188.7500 L
+S
+U
+u
+  248.5000 185.5000 m
+  248.7500 184.7500 L
+S
+U
+u
+  250.0000 181.2500 m
+  250.2500 180.7500 L
+S
+U
+u
+  251.5000 177.2500 m
+  251.7500 176.7500 L
+S
+U
+u
+  253.2500 173.2500 m
+  253.5000 172.5000 L
+S
+U
+u
+  254.7500 169.2500 m
+  255.0000 168.5000 L
+S
+U
+u
+  256.2500 165.2500 m
+  256.5000 164.5000 L
+S
+U
+u
+  257.7500 161.0000 m
+  258.0000 160.5000 L
+S
+U
+u
+  259.2500 157.2500 m
+  259.5000 156.5000 L
+S
+U
+u
+  261.0000 153.0000 m
+  261.2500 152.2500 L
+S
+U
+u
+  262.5000 149.0000 m
+  262.7500 148.5000 L
+S
+U
+u
+  264.0000 145.0000 m
+  264.2500 144.2500 L
+S
+U
+u
+  265.5000 141.0000 m
+  265.7500 140.2500 L
+S
+U
+u
+  267.2500 137.0000 m
+  267.5000 136.2500 L
+S
+U
+u
+  268.7500 132.7500 m
+  269.0000 132.2500 L
+S
+U
+u
+  270.2500 128.7500 m
+  270.5000 128.2500 L
+S
+U
+u
+  271.7500 124.7500 m
+  272.0000 124.0000 L
+S
+U
+u
+  273.5000 120.7500 m
+  273.7500 120.0000 L
+S
+U
+u
+  275.0000 116.7500 m
+  275.2500 116.0000 L
+S
+U
+u
+  276.5000 112.7500 m
+  276.7500 112.0000 L
+S
+U
+u
+  278.0000 108.5000 m
+  278.2500 108.0000 L
+S
+U
+u
+  279.7500 104.5000 m
+  280.0000 104.0000 L
+S
+U
+u
+  0.000 0.000 0.000 1.000 K
+  260.5000 263.2500 m
+  260.7500 262.5000 L
+S
+U
+u
+  262.0000 259.0000 m
+  262.2500 258.5000 L
+S
+U
+u
+  263.7500 255.0000 m
+  264.0000 254.2500 L
+S
+U
+u
+  265.2500 251.0000 m
+  265.5000 250.5000 L
+S
+U
+u
+  267.0000 247.0000 m
+  267.2500 246.2500 L
+S
+U
+u
+  268.5000 243.0000 m
+  268.7500 242.2500 L
+S
+U
+u
+  270.2500 239.0000 m
+  270.5000 238.2500 L
+S
+U
+u
+  271.7500 234.7500 m
+  272.0000 234.2500 L
+S
+U
+u
+  273.5000 231.0000 m
+  273.7500 230.2500 L
+S
+U
+u
+  275.0000 226.7500 m
+  275.2500 226.0000 L
+S
+U
+u
+  276.7500 222.7500 m
+  277.0000 222.0000 L
+S
+U
+u
+  278.2500 218.7500 m
+  278.5000 218.0000 L
+S
+U
+u
+  279.7500 214.7500 m
+  280.2500 214.0000 L
+S
+U
+u
+  281.5000 210.7500 m
+  281.7500 210.0000 L
+S
+U
+u
+  283.0000 206.7500 m
+  283.2500 206.0000 L
+S
+U
+u
+  284.5000 202.7500 m
+  285.0000 202.0000 L
+S
+U
+u
+  286.2500 198.7500 m
+  286.5000 198.0000 L
+S
+U
+u
+  287.7500 194.7500 m
+  288.0000 194.0000 L
+S
+U
+u
+  289.5000 190.5000 m
+  289.7500 190.0000 L
+S
+U
+u
+  291.0000 186.5000 m
+  291.5000 186.0000 L
+S
+U
+u
+  292.7500 182.5000 m
+  293.0000 181.7500 L
+S
+U
+u
+  294.2500 178.5000 m
+  294.5000 177.7500 L
+S
+U
+u
+  296.0000 174.5000 m
+  296.2500 173.7500 L
+S
+U
+u
+  297.5000 170.2500 m
+  298.0000 169.7500 L
+S
+U
+u
+  299.2500 166.5000 m
+  299.5000 165.7500 L
+S
+U
+u
+  300.7500 162.2500 m
+  301.0000 161.5000 L
+S
+U
+u
+  302.5000 158.2500 m
+  302.7500 157.5000 L
+S
+U
+u
+  304.0000 154.2500 m
+  304.2500 153.5000 L
+S
+U
+u
+  305.5000 150.2500 m
+  306.0000 149.5000 L
+S
+U
+u
+  307.2500 146.2500 m
+  307.5000 145.5000 L
+S
+U
+u
+  308.7500 142.2500 m
+  309.0000 141.5000 L
+S
+U
+u
+  310.2500 138.2500 m
+  310.7500 137.5000 L
+S
+U
+u
+  312.0000 134.2500 m
+  312.2500 133.5000 L
+S
+U
+u
+  313.5000 130.2500 m
+  313.7500 129.5000 L
+S
+U
+u
+  315.2500 126.2500 m
+  315.5000 125.7500 L
+S
+U
+u
+  316.7500 122.2500 m
+  317.0000 121.5000 L
+S
+U
+u
+  316.7500 122.2500 m
+  317.0000 121.5000 L
+S
+U
+u
+  0.000 0.000 0.000 1.000 K
+  294.5000 280.2500 m
+  294.7500 279.5000 L
+S
+U
+u
+  296.0000 276.2500 m
+  296.2500 275.5000 L
+S
+U
+u
+  297.7500 272.2500 m
+  298.0000 271.5000 L
+S
+U
+u
+  299.5000 268.2500 m
+  299.7500 267.5000 L
+S
+U
+u
+  301.0000 264.2500 m
+  301.2500 263.7500 L
+S
+U
+u
+  302.7500 260.2500 m
+  303.0000 259.7500 L
+S
+U
+u
+  304.5000 256.5000 m
+  304.7500 255.7500 L
+S
+U
+u
+  306.2500 252.5000 m
+  306.5000 251.7500 L
+S
+U
+u
+  307.7500 248.5000 m
+  308.0000 248.0000 L
+S
+U
+u
+  309.5000 244.5000 m
+  309.7500 244.0000 L
+S
+U
+u
+  311.2500 240.5000 m
+  311.5000 240.0000 L
+S
+U
+u
+  313.0000 236.7500 m
+  313.2500 236.0000 L
+S
+U
+u
+  314.5000 232.7500 m
+  315.0000 232.0000 L
+S
+U
+u
+  316.2500 228.7500 m
+  316.5000 228.0000 L
+S
+U
+u
+  318.0000 224.7500 m
+  318.2500 224.2500 L
+S
+U
+u
+  319.5000 220.7500 m
+  320.0000 220.2500 L
+S
+U
+u
+  321.2500 216.7500 m
+  321.7500 216.2500 L
+S
+U
+u
+  323.0000 213.0000 m
+  323.2500 212.2500 L
+S
+U
+u
+  324.7500 209.0000 m
+  325.0000 208.2500 L
+S
+U
+u
+  326.2500 205.0000 m
+  326.7500 204.5000 L
+S
+U
+u
+  328.0000 201.0000 m
+  328.2500 200.5000 L
+S
+U
+u
+  329.7500 197.0000 m
+  330.0000 196.5000 L
+S
+U
+u
+  331.2500 193.0000 m
+  331.7500 192.5000 L
+S
+U
+u
+  333.0000 189.2500 m
+  333.5000 188.5000 L
+S
+U
+u
+  334.7500 185.2500 m
+  335.0000 184.5000 L
+S
+U
+u
+  336.5000 181.2500 m
+  336.7500 180.7500 L
+S
+U
+u
+  338.0000 177.2500 m
+  338.5000 176.7500 L
+S
+U
+u
+  339.7500 173.2500 m
+  340.0000 172.7500 L
+S
+U
+u
+  341.5000 169.5000 m
+  341.7500 168.7500 L
+S
+U
+u
+  343.0000 165.5000 m
+  343.5000 164.7500 L
+S
+U
+u
+  344.7500 161.5000 m
+  345.2500 160.7500 L
+S
+U
+u
+  346.5000 157.5000 m
+  346.7500 157.0000 L
+S
+U
+u
+  348.2500 153.5000 m
+  348.5000 153.0000 L
+S
+U
+u
+  349.7500 149.5000 m
+  350.2500 149.0000 L
+S
+U
+u
+  351.5000 145.7500 m
+  351.7500 145.0000 L
+S
+U
+u
+  353.2500 141.7500 m
+  353.5000 141.0000 L
+S
+U
+u
+  201.0000 198.0000 m
+  201.5000 198.2500 L
+S
+U
+u
+  204.7500 199.7500 m
+  205.5000 200.0000 L
+S
+U
+u
+  208.7500 201.7500 m
+  209.2500 201.7500 L
+S
+U
+u
+  212.5000 203.5000 m
+  213.2500 203.7500 L
+S
+U
+u
+  216.5000 205.2500 m
+  217.0000 205.7500 L
+S
+U
+u
+  220.2500 207.2500 m
+  220.7500 207.5000 L
+S
+U
+u
+  224.0000 209.0000 m
+  224.7500 209.2500 L
+S
+U
+u
+  228.0000 210.7500 m
+  228.7500 211.2500 L
+S
+U
+u
+  232.0000 212.7500 m
+  232.5000 213.0000 L
+S
+U
+u
+  235.7500 214.5000 m
+  236.2500 215.0000 L
+S
+U
+u
+  239.5000 216.5000 m
+  240.2500 216.7500 L
+S
+U
+u
+  243.5000 218.2500 m
+  244.2500 218.7500 L
+S
+U
+u
+  247.5000 220.2500 m
+  248.0000 220.5000 L
+S
+U
+u
+  251.2500 222.0000 m
+  251.7500 222.2500 L
+S
+U
+u
+  255.0000 224.0000 m
+  255.7500 224.2500 L
+S
+U
+u
+  259.0000 225.7500 m
+  259.5000 226.0000 L
+S
+U
+u
+  262.7500 227.7500 m
+  263.5000 228.0000 L
+S
+U
+u
+  266.7500 229.5000 m
+  267.5000 229.7500 L
+S
+U
+u
+  270.7500 231.2500 m
+  271.2500 231.7500 L
+S
+U
+u
+  274.5000 233.2500 m
+  275.0000 233.5000 L
+S
+U
+u
+  278.2500 235.0000 m
+  279.0000 235.2500 L
+S
+U
+u
+  282.2500 236.7500 m
+  283.0000 237.2500 L
+S
+U
+u
+  286.2500 238.7500 m
+  286.7500 239.0000 L
+S
+U
+u
+  290.0000 240.5000 m
+  290.5000 241.0000 L
+S
+U
+u
+  293.7500 242.5000 m
+  294.5000 242.7500 L
+S
+U
+u
+  297.7500 244.2500 m
+  298.2500 244.7500 L
+S
+U
+u
+  301.5000 246.2500 m
+  302.2500 246.5000 L
+S
+U
+u
+  305.5000 248.0000 m
+  306.0000 248.5000 L
+S
+U
+u
+  309.2500 250.0000 m
+  310.0000 250.2500 L
+S
+U
+u
+  313.2500 251.7500 m
+  313.7500 252.0000 L
+S
+U
+u
+  317.0000 253.7500 m
+  317.7500 254.0000 L
+S
+U
+u
+  321.0000 255.5000 m
+  321.7500 255.7500 L
+S
+U
+u
+  325.0000 257.2500 m
+  325.5000 257.7500 L
+S
+U
+u
+  328.7500 259.2500 m
+  329.2500 259.5000 L
+S
+U
+u
+  332.5000 261.0000 m
+  333.2500 261.2500 L
+S
+U
+u
+  336.5000 263.0000 m
+  337.0000 263.2500 L
+S
+U
+u
+  340.2500 264.7500 m
+  341.0000 265.0000 L
+S
+U
+u
+  0.000 0.000 0.000 1.000 K
+  218.0000 161.0000 m
+  218.5000 161.5000 L
+S
+U
+u
+  221.7500 163.0000 m
+  222.5000 163.2500 L
+S
+U
+u
+  225.7500 165.0000 m
+  226.5000 165.2500 L
+S
+U
+u
+  229.5000 166.7500 m
+  230.2500 167.0000 L
+S
+U
+u
+  233.5000 168.7500 m
+  234.2500 169.0000 L
+S
+U
+u
+  237.5000 170.7500 m
+  238.2500 171.0000 L
+S
+U
+u
+  241.5000 172.5000 m
+  242.0000 172.7500 L
+S
+U
+u
+  245.2500 174.5000 m
+  246.0000 174.7500 L
+S
+U
+u
+  249.2500 176.2500 m
+  249.7500 176.7500 L
+S
+U
+u
+  253.0000 178.2500 m
+  253.5000 178.5000 L
+S
+U
+u
+  256.7500 180.2500 m
+  257.5000 180.5000 L
+S
+U
+u
+  260.7500 182.0000 m
+  261.2500 182.2500 L
+S
+U
+u
+  264.5000 184.0000 m
+  265.2500 184.2500 L
+S
+U
+u
+  268.2500 185.7500 m
+  269.0000 186.0000 L
+S
+U
+u
+  272.2500 187.5000 m
+  272.7500 188.0000 L
+S
+U
+u
+  276.0000 189.5000 m
+  276.7500 190.0000 L
+S
+U
+u
+  280.0000 191.5000 m
+  280.5000 191.7500 L
+S
+U
+u
+  283.7500 193.2500 m
+  284.5000 193.5000 L
+S
+U
+u
+  287.7500 195.2500 m
+  288.2500 195.5000 L
+S
+U
+u
+  291.5000 197.0000 m
+  292.2500 197.5000 L
+S
+U
+u
+  295.2500 199.0000 m
+  296.0000 199.2500 L
+S
+U
+u
+  299.2500 201.0000 m
+  299.7500 201.2500 L
+S
+U
+u
+  303.0000 202.7500 m
+  303.7500 203.0000 L
+S
+U
+u
+  307.0000 204.7500 m
+  307.5000 205.0000 L
+S
+U
+u
+  310.7500 206.5000 m
+  311.2500 206.7500 L
+S
+U
+u
+  314.5000 208.2500 m
+  315.2500 208.7500 L
+S
+U
+u
+  318.5000 210.2500 m
+  319.0000 210.5000 L
+S
+U
+u
+  322.2500 212.2500 m
+  322.7500 212.5000 L
+S
+U
+u
+  326.0000 214.0000 m
+  326.7500 214.2500 L
+S
+U
+u
+  330.0000 216.0000 m
+  330.7500 216.2500 L
+S
+U
+u
+  334.0000 217.7500 m
+  334.5000 218.2500 L
+S
+U
+u
+  337.7500 219.7500 m
+  338.2500 220.0000 L
+S
+U
+u
+  341.5000 221.7500 m
+  342.2500 222.0000 L
+S
+U
+u
+  345.5000 223.5000 m
+  346.0000 223.7500 L
+S
+U
+u
+  349.2500 225.2500 m
+  349.7500 225.7500 L
+S
+U
+u
+  353.0000 227.2500 m
+  353.7500 227.5000 L
+S
+U
+u
+  0.000 0.000 0.000 1.000 K
+  232.2500 124.2500 m
+  232.7500 124.7500 L
+S
+U
+u
+  236.0000 126.2500 m
+  236.5000 126.5000 L
+S
+U
+u
+  239.7500 128.2500 m
+  240.5000 128.5000 L
+S
+U
+u
+  243.7500 130.2500 m
+  244.2500 130.5000 L
+S
+U
+u
+  247.5000 132.0000 m
+  248.0000 132.5000 L
+S
+U
+u
+  251.2500 134.2500 m
+  252.0000 134.5000 L
+S
+U
+u
+  255.2500 136.0000 m
+  255.7500 136.5000 L
+S
+U
+u
+  259.0000 138.0000 m
+  259.5000 138.2500 L
+S
+U
+u
+  262.7500 140.0000 m
+  263.5000 140.2500 L
+S
+U
+u
+  266.7500 142.0000 m
+  267.2500 142.2500 L
+S
+U
+u
+  270.5000 143.7500 m
+  271.2500 144.2500 L
+S
+U
+u
+  274.2500 146.0000 m
+  275.0000 146.2500 L
+S
+U
+u
+  278.2500 147.7500 m
+  278.7500 148.2500 L
+S
+U
+u
+  282.0000 149.7500 m
+  282.7500 150.0000 L
+S
+U
+u
+  286.0000 151.7500 m
+  286.5000 152.0000 L
+S
+U
+u
+  289.7500 153.7500 m
+  290.2500 154.0000 L
+S
+U
+u
+  293.5000 155.5000 m
+  294.2500 156.0000 L
+S
+U
+u
+  297.5000 157.7500 m
+  298.0000 158.0000 L
+S
+U
+u
+  301.2500 159.5000 m
+  301.7500 160.0000 L
+S
+U
+u
+  305.0000 161.5000 m
+  305.7500 161.7500 L
+S
+U
+u
+  309.0000 163.5000 m
+  309.5000 163.7500 L
+S
+U
+u
+  312.7500 165.5000 m
+  313.2500 165.7500 L
+S
+U
+u
+  316.5000 167.2500 m
+  317.2500 167.7500 L
+S
+U
+u
+  320.5000 169.5000 m
+  321.0000 169.7500 L
+S
+U
+u
+  324.2500 171.2500 m
+  325.0000 171.7500 L
+S
+U
+u
+  328.0000 173.2500 m
+  328.7500 173.5000 L
+S
+U
+u
+  332.0000 175.2500 m
+  332.5000 175.5000 L
+S
+U
+u
+  335.7500 177.2500 m
+  336.5000 177.5000 L
+S
+U
+u
+  339.7500 179.2500 m
+  340.2500 179.5000 L
+S
+U
+u
+  343.5000 181.2500 m
+  344.0000 181.5000 L
+S
+U
+u
+  347.2500 183.0000 m
+  348.0000 183.5000 L
+S
+U
+u
+  351.2500 185.0000 m
+  351.7500 185.5000 L
+S
+U
+u
+  355.0000 187.0000 m
+  355.5000 187.2500 L
+S
+U
+u
+  358.7500 189.0000 m
+  359.5000 189.2500 L
+S
+U
+u
+  362.7500 191.0000 m
+  363.2500 191.2500 L
+S
+U
+u
+  366.5000 193.0000 m
+  367.0000 193.2500 L
+S
+U
+u
+  370.2500 194.7500 m
+  371.0000 195.2500 L
+S
+U
+u
+0.2500 w
+  0.000 0.000 0.000 1.000 K
+  25.2500 79.0000 m
+  261.5000 140.2500 L
+S
+U
+u
+  0.000 0.000 0.000 1.000 k
+0.0000 w
+  0.000 0.000 0.000 1.000 K
+  260.0000 142.7500 m
+  266.0000 141.2500 L
+  261.5000 137.2500 L
+  260.0000 142.7500 L
+F
+U
+u
+  0.000 0.000 0.000 0.000 k
+  0.000 0.000 0.000 1.000 K
+  99.2500 106.2500 m
+  103.2500 91.0000 L
+  192.0000 114.0000 L
+  188.0000 129.2500 L
+  99.2500 106.2500 L
+F
+U
+0 To
+0.967773 0.251823 -0.251823 0.967773 101 95.5 0 Tp
+TP
+/_Helvetica 11.0000 Tf
+0.0000 Tc
+ 0 Tr
+0.0000 w
+0 j
+  0.000 0.000 0.000 1.000 k
+(\(Lat/Long Origin\)\r) Tx
+TO
+u
+  0.000 0.000 0.000 0.000 k
+0.0000 w
+1 j
+  317.0000 327.5000 m
+  317.0000 311.7500 L
+  413.5000 311.7500 L
+  413.5000 327.5000 L
+  317.0000 327.5000 L
+F
+U
+0 To
+1 0 0 1 317.75 316 0 Tp
+TP
+/_Helvetica 11.0000 Tf
+0.0000 Tc
+ 0 Tr
+0.0000 w
+0 j
+  0.000 0.000 0.000 1.000 k
+(Spherical Surface\r) Tx
+TO
+0 To
+1 0 0 1 326.5 113.75 0 Tp
+TP
+/_Helvetica 11.0000 Tf
+0.0000 Tc
+ 0 Tr
+  0.000 0.000 0.000 1.000 k
+(MOOSGrid\r) Tx
+TO
+0 To
+1 0 0 1 319.75 146.25 0 Tp
+TP
+/_Helvetica 11.0000 Tf
+0.0000 Tc
+ 0 Tr
+  0.000 0.000 0.000 1.000 k
+(z\r) Tx
+TO
+%%PageTrailer
+gsave annotatepage grestore showpage
+%%Trailer
+Adobe_Illustrator_AI3 /terminate get exec
+Adobe_typography_AI3 /terminate get exec
+Adobe_customcolor /terminate get exec
+Adobe_cshow /terminate get exec
+Adobe_packedarray /terminate get exec
+%%EOF

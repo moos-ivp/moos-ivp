@@ -1,0 +1,5 @@
+#!/bin/sh
+
+echo  'Slaying all MOOS processes using mission file : ' $@
+
+/sbin/fuser -sk9 $@

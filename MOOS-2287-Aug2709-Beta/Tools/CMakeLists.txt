@@ -1,0 +1,27 @@
+
+
+#Build Graphical Tools?
+SET(BUILD_GRAPHICAL_TOOLS OFF CACHE BOOL "Build Graphical Tools (scope and playback)?")
+IF(BUILD_GRAPHICAL_TOOLS)
+    SET(TOOLS_DIRS ${TOOLS_DIRS}  Graphical)
+ENDIF(BUILD_GRAPHICAL_TOOLS)
+
+
+#Build Simulation Tools?
+SET(BUILD_SIM_TOOLS OFF CACHE BOOL "Build Simulation Tools (e.g MultiVehicle Marine)?")
+IF(BUILD_SIM_TOOLS)
+    SET(TOOLS_DIRS ${TOOLS_DIRS}  Simulation)
+ENDIF(BUILD_SIM_TOOLS)
+
+
+#Build Matlab Interface?
+SET(BUILD_MATLAB_TOOLS OFF CACHE BOOL "Build Matlab Interface?")
+IF(BUILD_MATLAB_TOOLS)
+    SET(TOOLS_DIRS ${TOOLS_DIRS}  Matlab)
+ENDIF(BUILD_MATLAB_TOOLS)
+
+
+IF (TOOLS_DIRS)
+    SUBDIRS(${TOOLS_DIRS})
+ENDIF (TOOLS_DIRS)
+
