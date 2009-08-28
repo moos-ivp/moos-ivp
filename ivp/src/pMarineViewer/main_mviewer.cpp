@@ -34,17 +34,7 @@ using namespace std;
 // global variables here
 //
 
-char*                       g_sMissionFile = 0;
-PMV_MOOSApp                 g_thePort;
-// pthread_t                   g_portAppRunnerThread;
-MOOSAppRunnerThread       * g_portAppRunnerThread;
-
 Threadsafe_pipe<MOOS_event> g_pending_moos_events;
-
-struct ThreadParams {
-    CMOOSApp *app;
-    char *name;
-};
 
 //--------------------------------------------------------
 // Procedure: exit_with_usage
@@ -115,49 +105,6 @@ void exit_with_switches()
 
 
 //--------------------------------------------------------
-// Procedure: RunProc
-
-void* RunProc(void *lpParameter)
-{
-  void **params = (void **)lpParameter;
-  
-  CMOOSApp *app = (CMOOSApp *)params[0];
-  char *name = (char *) params[1];
-  
-  MOOSTrace("starting %s thread\n", name);
-  app->Run(name, g_sMissionFile);	
-  
-  return(NULL);
-}
-
-//--------------------------------------------------------
-// Procedure: spawn_thread
-
-// pthread_t spawn_thread(ThreadParams *pParams)
-// {
-//   pthread_t tid;
-//   if (pthread_create(&tid,NULL, RunProc, pParams) != 0) {
-//     MOOSTrace("failed to start %s thread\n", pParams->name);
-//     tid = (pthread_t) -1;
-//   }
-//   else 
-//     MOOSTrace("%s thread spawned\n", pParams->name);
-//   
-//   return tid;
-// }
-
-//--------------------------------------------------------
-// Procedure: idleProc
-
-// void idleProc(void *)
-// {
-//   Fl::lock();
-//   Fl::flush();
-//   Fl::unlock();
-//   MOOSPause(10);
-// }
-
-//--------------------------------------------------------
 // Procedure: main
 
 int main(int argc, char *argv[])
@@ -169,16 +116,18 @@ int main(int argc, char *argv[])
       cout << svector[j] << endl;    
     return(0);
   }
-  
+
+  const char* sMissionFile = 0;
+
   // Look for a request for usage information
   if(scanArgs(argc, argv, "-h", "--help", "-help"))
     exit_with_usage();
-
+  
   bool switches = false;
   for(int i=1; i<argc; i++) {
     string argi  = argv[i];
     if(strContains(argi, ".moos") || strContains(argi, "._moos"))
-      g_sMissionFile = argv[i];
+      sMissionFile = argv[i];
     else if(strContains(argi, "-sw"))
       switches = true;
     else if(!strContains(argi, "pMarineViewer"))
@@ -188,7 +137,7 @@ int main(int argc, char *argv[])
   if(switches)
     exit_with_switches();
 
-  if(g_sMissionFile == 0)
+  if(sMissionFile == 0)
     exit_with_usage();
   
   PMV_GUI* gui = new PMV_GUI(1100,850, "pMarineViewer");
@@ -199,8 +148,10 @@ int main(int argc, char *argv[])
     return(-1);
   }
 
-  g_thePort.setGUI(gui);
-  g_thePort.setPendingEventsPipe(& g_pending_moos_events);
+  PMV_MOOSApp thePort;
+
+  thePort.setGUI(gui);
+  thePort.setPendingEventsPipe(& g_pending_moos_events);
   
   // start the MOOSPort in its own thread
   
@@ -215,10 +166,8 @@ int main(int argc, char *argv[])
   char * appFilename = const_cast<char*>(pathnameParts.back().c_str());
 
   cout << "appFilename:" << appFilename << endl;
-  
-  g_portAppRunnerThread = new MOOSAppRunnerThread(&g_thePort, argv[0], g_sMissionFile);
-//   ThreadParams params = {&g_thePort, appFilename};
-//   g_portAppRunnerThread = spawn_thread(&params);
+
+  MOOSAppRunnerThread portAppRunnerThread(&thePort, argv[0], sMissionFile);
 
   Fl::lock();
   
@@ -237,21 +186,18 @@ int main(int argc, char *argv[])
       assert(success);
       
       if (e.type == "OnNewMail") {
-        g_thePort.handleNewMail(e);
+        thePort.handleNewMail(e);
       }
       else if (e.type == "Iterate") {
-        g_thePort.handleIterate(e);
+        thePort.handleIterate(e);
       }
       else if (e.type == "OnStartUp") {
-        g_thePort.handleStartUp(e);
+        thePort.handleStartUp(e);
       }
     }
   }
 
-// If the moos application thread is still running, I could imagine it operating
-// on this object even at this point in the program's execution.  Until we're
-// sure, just avoid deleting it. -CJC
-//   delete gui;
-
+  portAppRunnerThread.quit();
+  delete gui;
   return 0;
 }
