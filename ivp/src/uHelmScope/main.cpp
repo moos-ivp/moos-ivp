@@ -13,64 +13,15 @@
 #include "MBUtils.h"
 
 #ifdef WIN32
-#include <process.h>
-#include "MOOSAppRunnerThread.h"
+  #include <process.h>
+  #define getpid _getpid
 #endif
+
+#include "MOOSAppRunnerThread.h"
 
 using namespace std;
 
 string getUserLine();
-
-// ----------------------------------------------------------
-// global variables here
-
-char*       g_sMissionFile = 0;
-HelmScope   g_theHelmScope;
-
-#ifdef WIN32
-	#define getpid _getpid
-	MOOSAppRunnerThread* g_threadID;
-#else
-	pthread_t   g_threadID;
-#endif
-
-struct ThreadParams {
-    CMOOSApp *app;
-    char *name;
-};
-
-//--------------------------------------------------------
-// Procedure: RunProc
-
-void* RunProc(void *lpParameter)
-{
-  void **params = (void **)lpParameter;
-  
-  CMOOSApp *app = (CMOOSApp *)params[0];
-  char *name = (char *) params[1];
-  
-  MOOSTrace("starting %s thread\n", name);
-  app->Run(name, g_sMissionFile);	
-  
-  return(NULL);
-}
-
-//--------------------------------------------------------
-// Procedure: spawn_thread
-#ifndef WIN32
-pthread_t spawn_thread(ThreadParams *pParams)
-{
-  pthread_t tid;
-  if(pthread_create(&tid,NULL, RunProc, pParams) != 0) {
-    MOOSTrace("failed to start %s thread\n", pParams->name);
-    tid = (pthread_t) -1;
-  }
-  else 
-    MOOSTrace("%s thread spawned\n", pParams->name);
-  
-  return(tid);
-}
-#endif
 
 //--------------------------------------------------------
 // Procedure: main
@@ -98,12 +49,14 @@ int main(int argc ,char * argv[])
     return(0);
   }
 
-  g_sMissionFile = 0;
+  const char * g_sMissionFile = 0;
   for(int i=1; i<argc; i++) {
     string str = argv[i];
     if(strContains(str, ".moos"))
       g_sMissionFile = argv[i];
   }
+
+  HelmScope theHelmScope;
   
   if(!g_sMissionFile) {
     MOOSTrace("Failed to provide a MOOS (.moos) file... Exiting now.\n");
@@ -123,8 +76,8 @@ int main(int argc ,char * argv[])
     cout << "  Server Port:    " << server_port << endl;
     cout << "  AppTick:        " << app_tick << endl;
   
-    g_theHelmScope.setAppTick(app_tick);
-    g_theHelmScope.setServer(server_address.c_str(), server_port);    
+    theHelmScope.setAppTick(app_tick);
+    theHelmScope.setServer(server_address.c_str(), server_port);
 #endif
   }
     
@@ -142,33 +95,28 @@ int main(int argc ,char * argv[])
   string rand_str = intToString(rand_int);
   
   string process_name = "uHelmScope_" + rand_str;
-  
-  // start the HelmScope in its own thread
-#ifdef WIN32
-  g_threadID = new MOOSAppRunnerThread(&g_theHelmScope, (char*)(process_name.c_str()), g_sMissionFile);
-#else
-  ThreadParams params = {&g_theHelmScope, (char*)(process_name.c_str())};
-  g_threadID = spawn_thread(&params);	
-#endif
+
+  MOOSAppRunnerThread appThread(
+    &theHelmScope, (char*)(process_name.c_str()), g_sMissionFile);
 
   for(int i=1; i<argc; i++) {
     string str = argv[i];
     
     if((str == "-r") || (str == "--resume"))
-      g_theHelmScope.setPaused(false);
+      theHelmScope.setPaused(false);
     else if(str == "-x")
-      g_theHelmScope.setDisplayXMS(false);
+      theHelmScope.setDisplayXMS(false);
     else if(str == "-p")
-      g_theHelmScope.setDisplayPosts(false);
+      theHelmScope.setDisplayPosts(false);
     else if((str == "-c") || (str == "--clean") || (str == "-clean"))
-      g_theHelmScope.setIgnoreFileVars(true);
+      theHelmScope.setIgnoreFileVars(true);
     else if((str == "-t") || (str == "--trunc") || (str == "-trunc"))
-      g_theHelmScope.setDisplayTrunc(true);
+      theHelmScope.setDisplayTrunc(true);
     else if((str == "-v") || (str == "--virgins") || (str == "-virgins"))
-      g_theHelmScope.setDisplayVirgins(false);
+      theHelmScope.setDisplayVirgins(false);
 
     else if(!strContains(argv[i], ".moos"))
-      g_theHelmScope.addVariable(argv[i], "user");
+      theHelmScope.addVariable(argv[i], "user");
     
   }
 
@@ -178,8 +126,10 @@ int main(int argc ,char * argv[])
     if(c=='q')
       quit = true;
     else
-      g_theHelmScope.handleCommand(c);
+      theHelmScope.handleCommand(c);
   }
+
+  appThread.quit();
   return(0);
 }
 
