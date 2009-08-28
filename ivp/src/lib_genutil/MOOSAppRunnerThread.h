@@ -27,17 +27,21 @@ class MOOSAppRunnerThread {
     */
     virtual ~MOOSAppRunnerThread();
 
+    /// Gracefully terminates the app's Run() method invocation.  This method
+    /// doesn't return until after Run() has returned.
+    void quit();
+    
     /**
     Blocks until the thread function has returned.
     */
-    void join();
+//     void join();
 
     /// Terminates the thread owned by this object.  Doesn't return until the
     /// thread has definitely ceased execution.
-    void cancel();
+//     void cancel();
     
   private:
-    CMOOSApp * m_pApp;
+    CMOOSApp * m_app;
     const std::string m_name;
     const std::string m_mission_file;
     CMOOSThread * m_thread;

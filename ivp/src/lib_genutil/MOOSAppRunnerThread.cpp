@@ -9,7 +9,7 @@ MOOSAppRunnerThread::MOOSAppRunnerThread(CMOOSApp *app, const char *name, const 
 {
    
    
-  this->m_pApp = app;
+  this->m_app = app;
   
   void * pMoosThreadParams = static_cast<void*>(this);
 
@@ -30,15 +30,10 @@ MOOSAppRunnerThread::~MOOSAppRunnerThread()
 
 //==============================================================================
 
-void MOOSAppRunnerThread::join() 
+void MOOSAppRunnerThread::quit()
 {
-  this->m_thread->Stop();
-}
-
-//==============================================================================
-
-void MOOSAppRunnerThread::cancel()
-{
+  m_app->RequestQuit();
+  m_thread->Stop(); // This is a blocking call.
 }
 
 //==============================================================================
@@ -48,7 +43,7 @@ bool MOOSAppRunnerThread::thread_func(void *pThreadData)
   MOOSAppRunnerThread *params = 
     reinterpret_cast<MOOSAppRunnerThread*>(pThreadData);
 
-  CMOOSApp *app      = params->m_pApp;
+  CMOOSApp *app      = params->m_app;
   const char *name         = params->m_name.c_str();
   const char *mission_file = params->m_mission_file.c_str();
   

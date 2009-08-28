@@ -75,8 +75,9 @@ int main(int argc, char *argv[])
     thePort.process_demuxer_content();
   }
 
-  thePort.return_from_Run();
-  runner.join();
+//   thePort.return_from_Run();
+  runner.quit();
+//   runner.join();
 
   return 0;
 }

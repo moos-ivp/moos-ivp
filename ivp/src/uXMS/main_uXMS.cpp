@@ -39,14 +39,14 @@ using namespace std;
 // ----------------------------------------------------------
 // global variables here
 
-const char*  g_sMissionFile = "uXMS.moos";
+// const char*  g_sMissionFile = "uXMS.moos";
 
-MOOSAppRunnerThread* g_moosAppRunner;
+// MOOSAppRunnerThread* g_moosAppRunner;
 
-struct ThreadParams {
-    CMOOSApp *app;
-    char *name;
-};
+// struct ThreadParams {
+//     CMOOSApp *app;
+//     char *name;
+// };
 
 //--------------------------------------------------------
 // Procedure: main
@@ -89,6 +89,9 @@ int main(int argc ,char * argv[])
     cout << endl;
     return(0);
   }
+
+  const char*  g_sMissionFile = "uXMS.moos";
+
 
   string server_host     = "localhost";
   bool   server_host_set = false;
@@ -189,7 +192,9 @@ int main(int argc ,char * argv[])
   }
 
   // start the XMS in its own thread
-  g_moosAppRunner = new MOOSAppRunnerThread(&g_theXMS, (char*)(process_name.c_str()), (char*)g_sMissionFile);
+  MOOSAppRunnerThread appRunner(&g_theXMS, (char*)(process_name.c_str()), (char*)g_sMissionFile);
+
+// g_moosAppRunner = new MOOSAppRunnerThread/*(&g_theXMS, (char*)(process_name.c_str()), (char*)g_sMissionFile);*/
 
   for(int i=1; i<argc; i++) {
     string str = argv[i];
@@ -266,7 +271,9 @@ int main(int argc ,char * argv[])
     else
       g_theXMS.handleCommand(c);
   }
- 
+
+  appRunner.quit();
+
   return(0);
 }
 

@@ -28,7 +28,7 @@ FV_MOOSApp::FV_MOOSApp()
   viewer     = 0;
   gui        = 0;
   ipf_name   = "BHV_IPF";
-  iterate_should_return_false = false;
+//   iterate_should_return_false = false;
 }
 
 //----------------------------------------------------------
@@ -87,7 +87,8 @@ bool FV_MOOSApp::OnConnectToServer()
 
 bool FV_MOOSApp::Iterate()
 {
-  return (! iterate_should_return_false);
+//   return (! iterate_should_return_false);
+  return true;
   
   // This processing has all been moved to the process_demuxer_content()
   // method, so that it can happen in the same thread as other FLTK operations.
@@ -154,8 +155,8 @@ bool FV_MOOSApp::OnStartUp()
 //      Note: Call this to cause this object's CMOOSApp::Run(...) method to 
 //      return.
 
-void FV_MOOSApp::return_from_Run()
-{
-  iterate_should_return_false = true;
-  SetQuitOnFailedIterate(true);
-}
+// void FV_MOOSApp::return_from_Run()
+// {
+// // //   iterate_should_return_false = true;
+//   SetQuitOnFailedIterate(true);
+// }
