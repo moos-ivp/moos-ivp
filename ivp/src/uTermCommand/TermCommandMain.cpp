@@ -12,61 +12,16 @@
 #include "MBUtils.h"
 #include "TermCommand.h"
 
-#ifdef WIN32
-	#include "MOOSAppRunnerThread.h"
-#endif
+  #include "MOOSAppRunnerThread.h"
 
 using namespace std;
 
 // ----------------------------------------------------------
 // global variables here
 
-char*        g_sMissionFile = 0;
-TermCommand  g_theTermCommand;
-
-#ifdef WIN32
-	MOOSAppRunnerThread* g_threadID;
-#else
-	pthread_t    g_threadID;
-#endif
-
-struct ThreadParams {
-    CMOOSApp *app;
-    char *name;
-};
-
-//--------------------------------------------------------
-// Procedure: RunProc
-
-void* RunProc(void *lpParameter)
-{
-  void **params = (void **)lpParameter;
-  
-  CMOOSApp *app = (CMOOSApp *)params[0];
-  char *name = (char *) params[1];
-  
-  MOOSTrace("starting %s thread\n", name);
-  app->Run(name, g_sMissionFile);	
-  
-  return(NULL);
-}
-
-//--------------------------------------------------------
-// Procedure: spawn_thread
-#ifndef WIN32
-pthread_t spawn_thread(ThreadParams *pParams)
-{
-  pthread_t tid;
-  if(pthread_create(&tid,NULL, RunProc, pParams) != 0) {
-    MOOSTrace("failed to start %s thread\n", pParams->name);
-    tid = (pthread_t) -1;
-  }
-  else 
-    MOOSTrace("%s thread spawned\n", pParams->name);
-  
-  return(tid);
-}
-#endif
+// char*        sMissionFile = 0;
+// TermCommand  g_theTermCommand;
+// MOOSAppRunnerThread* g_threadID;
 
 //--------------------------------------------------------
 // Procedure: main
@@ -87,25 +42,20 @@ int main(int argc ,char * argv[])
     return(0);
   }
 
-  g_sMissionFile = 0;
+  const char * sMissionFile = 0;
   for(int i=1; i<argc; i++) {
     string str = argv[i];
     if(strContains(str, ".moos"))
-      g_sMissionFile = argv[i];
+      sMissionFile = argv[i];
   }
 
-  if(!g_sMissionFile) {
+  if(!sMissionFile) {
     MOOSTrace("Failed to provide a MOOS (.moos) file... Exiting now.\n\n");
     return(0);
   }
- 
-  // start the TermCommand in its own thread
-#ifdef WIN32
-  g_threadID = new MOOSAppRunnerThread(&g_theTermCommand, argv[0], g_sMissionFile);
-#else
-  ThreadParams params = {&g_theTermCommand, argv[0]};
-  g_threadID = spawn_thread(&params);	
-#endif
+
+  TermCommand  theTermCommand;
+  MOOSAppRunnerThread appThread(& theTermCommand, argv[0], sMissionFile);
 
   bool quit = false;
   while(!quit) {
@@ -113,12 +63,13 @@ int main(int argc ,char * argv[])
     if(c=='q')
       quit = true;
     else {
-      g_theTermCommand.m_tc_mutex.Lock();
-      g_theTermCommand.handleCharInput(c);
-      g_theTermCommand.m_tc_mutex.UnLock();
+      theTermCommand.m_tc_mutex.Lock();
+      theTermCommand.handleCharInput(c);
+      theTermCommand.m_tc_mutex.UnLock();
     }
   }
 
+  appThread.quit();
   return(0);
 }
 
