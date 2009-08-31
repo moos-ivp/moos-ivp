@@ -3,46 +3,91 @@
 # Author(s):                                Chris Gagner
 #--------------------------------------------------------
 
+CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+
+SET(TIFF_DIR ./tiff-3.8.2)
+
+SET(SRC_DIR ${TIFF_DIR}/libtiff)
+
+IF(${WIN32})
+   # For Windows use the preconfigure headers provided by libtiff
+      	CONFIGURE_FILE(${SRC_DIR}/tif_config.h.vc ${SRC_DIR}/tif_config.h COPYONLY)
+   	CONFIGURE_FILE(${SRC_DIR}/tiffconf.h.vc ${SRC_DIR}/tiffconf.h COPYONLY)
+	MESSAGE("You are running windows!!!")
+ELSE(${WIN32})
+   # For Apple and Unix/Linux use the autoconf provided by libtiff to 
+   # generate the configuration headers.
+	EXECUTE_PROCESS(
+		WORKING_DIRECTORY ${TIFF_DIR}
+		COMMAND ./configure
+		)
+ENDIF(${WIN32})
+
+
+IF(${WIN32})
+	SET(SYS_FILES ${SRC_DIR}/tif_win32.c)
+ELSEIF(${UNIX})
+	SET(SYS_FILES ${SRC_DIR}/tif_unix.c)
+ELSEIF(${APPLE})
+	SET(SYS_FILES ${SRC_DIR}/tif_apple.c)
+ENDIF(${WIN32})
+
 SET(SRC
-	tif_win32.c
-        tif_aux.c
-        tif_close.c
-        tif_codec.c
-        tif_color.c
-        tif_compress.c
-        tif_dir.c
-        tif_dirinfo.c
-        tif_dirread.c
-        tif_dirwrite.c
-        tif_dumpmode.c
-        tif_error.c
-        tif_extension.c
-        tif_fax3.c
-        tif_fax3sm.c
-        tif_getimage.c
-        tif_jpeg.c
-        tif_ojpeg.c
-        tif_flush.c
-        tif_luv.c
-        tif_lzw.c
-        tif_next.c
-        tif_open.c
-        tif_packbits.c
-        tif_pixarlog.c
-        tif_predict.c
-        tif_print.c
-        tif_read.c
-        tif_stream.cxx
-        tif_swab.c
-        tif_strip.c
-        tif_thunder.c
-        tif_tile.c
-        tif_version.c
-        tif_warning.c
-        tif_write.c
-        tif_zip.c	
+	${SYS_FILES}
+        ${SRC_DIR}/tif_aux.c
+        ${SRC_DIR}/tif_close.c
+        ${SRC_DIR}/tif_codec.c
+        ${SRC_DIR}/tif_color.c
+        ${SRC_DIR}/tif_compress.c
+        ${SRC_DIR}/tif_dir.c
+        ${SRC_DIR}/tif_dirinfo.c
+        ${SRC_DIR}/tif_dirread.c
+        ${SRC_DIR}/tif_dirwrite.c
+        ${SRC_DIR}/tif_dumpmode.c
+        ${SRC_DIR}/tif_error.c
+        ${SRC_DIR}/tif_extension.c
+        ${SRC_DIR}/tif_fax3.c
+        ${SRC_DIR}/tif_fax3sm.c
+        ${SRC_DIR}/tif_getimage.c
+        ${SRC_DIR}/tif_jpeg.c
+        ${SRC_DIR}/tif_ojpeg.c
+        ${SRC_DIR}/tif_flush.c
+        ${SRC_DIR}/tif_luv.c
+        ${SRC_DIR}/tif_lzw.c
+        ${SRC_DIR}/tif_next.c
+        ${SRC_DIR}/tif_open.c
+        ${SRC_DIR}/tif_packbits.c
+        ${SRC_DIR}/tif_pixarlog.c
+        ${SRC_DIR}/tif_predict.c
+        ${SRC_DIR}/tif_print.c
+        ${SRC_DIR}/tif_read.c
+        ${SRC_DIR}/tif_stream.cxx
+        ${SRC_DIR}/tif_swab.c
+        ${SRC_DIR}/tif_strip.c
+        ${SRC_DIR}/tif_thunder.c
+        ${SRC_DIR}/tif_tile.c
+        ${SRC_DIR}/tif_version.c
+        ${SRC_DIR}/tif_warning.c
+        ${SRC_DIR}/tif_write.c
+        ${SRC_DIR}/tif_zip.c	
 )
 
-ADD_LIBRARY(tiff STATIC tif_config.h tiffconf.h ${SRC})
+ADD_LIBRARY(tiff STATIC ${SRC_DIR}/tif_config.h ${SRC_DIR}/tiffconf.h ${SRC})
 
-ADD_LIBRARY(libtiff SHARED tif_config.h tiffconf.h libtiff.def ${SRC})
+ADD_LIBRARY(libtiff SHARED 
+	${SRC_DIR}/tif_config.h 
+	${SRC_DIR}/tiffconf.h 
+	${SRC_DIR}/libtiff.def 
+	${SRC}
+	)
+
+IF(${UNIX})
+        # Find JPEG Library and ZLIB Libraries and link them to the
+        # TIFF libraries
+        FIND_LIBRARY(JPEG jpeg)
+        FIND_LIBRARY(ZLIB z zlib)
+        SET(LIBS ${JPEG} ${ZLIB})
+        TARGET_LINK_LIBRARIES(tiff ${LIBS})
+        TARGET_LINK_LIBRARIES(libtiff ${LIBS})
+ENDIF(${UNIX})
+
