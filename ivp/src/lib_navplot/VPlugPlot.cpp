@@ -60,6 +60,7 @@ bool VPlugPlot::addEvent(const string& var, const string& val, double time)
     m_vplugs[vsize-1].addGrid(val);
   else if(var == "GRID_DELTA")
     m_vplugs[vsize-1].updateGrid(val);
+  return true;
 }
      
 //---------------------------------------------------------------
