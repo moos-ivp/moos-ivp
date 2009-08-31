@@ -24,6 +24,11 @@ else
   echo
   
   cd ${MOOS_IVP_DIR}
+  
+  # If they didn't build IvP, there's a good chance they didn't build MOOS 
+  # either.
+  ./build-moos.sh
+  
   ./build-ivp.sh
   echo
 fi
