@@ -13,7 +13,6 @@ IF(${WIN32})
    # For Windows use the preconfigure headers provided by libtiff
       	CONFIGURE_FILE(${SRC_DIR}/tif_config.h.vc ${SRC_DIR}/tif_config.h COPYONLY)
    	CONFIGURE_FILE(${SRC_DIR}/tiffconf.h.vc ${SRC_DIR}/tiffconf.h COPYONLY)
-	MESSAGE("You are running windows!!!")
 ELSE(${WIN32})
    # For Apple and Unix/Linux use the autoconf provided by libtiff to 
    # generate the configuration headers.
