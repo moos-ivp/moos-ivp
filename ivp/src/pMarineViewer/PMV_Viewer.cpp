@@ -1,4 +1,4 @@
-/*****************************************************************/
+/****************************************************************/
 /*    NAME: Michael Benjamin and John Leonard                    */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
 /*    FILE: PMV_Viewer.cpp                                       */
@@ -245,6 +245,13 @@ void PMV_Viewer::drawVehicle(string vname, bool active, string vehibody)
     string helm_mode = m_vehiset.getStringInfo(vname, "helm_mode");
     if((helm_mode != "none") && (helm_mode != "unknown-mode"))
       vname_aug += " (" + helm_mode + ")";
+  }
+  else if(vnames_mode == "names+shortmode") {
+    string helm_mode = m_vehiset.getStringInfo(vname, "helm_mode");
+    if((helm_mode != "none") && (helm_mode != "unknown-mode")) {
+      helm_mode = modeShorten(helm_mode);
+      vname_aug += " (" + helm_mode + ")";
+    }
   }
   else if(vnames_mode == "names+depth") {
     string str_depth = dstringCompact(doubleToString(opose.getDepth(),1));

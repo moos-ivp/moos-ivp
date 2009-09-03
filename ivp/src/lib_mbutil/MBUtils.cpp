@@ -744,9 +744,9 @@ bool tokParse(const string& str, const string& left,
 //----------------------------------------------------------------
 // Procedure: tokStringParse
 //   Example: info  = "fruit=apple, drink=water, temp=98.6";
-//     Input  result = str_tok(info, "drink", ',', '=');
+//     Input  result = tokStringParse(info, "drink", ',', '=');
 //    Result: result = "water"
-//     Input  result = str_tok(info, "foobar", ',', '=');
+//     Input  result = tokStringParse(info, "foobar", ',', '=');
 //    Result: result = ""
 
 string tokStringParse(const string& str, const string& left, 
@@ -1199,6 +1199,10 @@ string modeShorten(string mode_str, bool really_short)
   for(k=0; k<ksize; k++) {
     string mode_var = biteString(kvector[k], '@');
     string mode_val = kvector[k];
+    if(mode_val == "") {
+      mode_val = mode_var;
+      mode_var = "";
+    }
     string entry;
     if(return_value != "")
       entry += ", ";

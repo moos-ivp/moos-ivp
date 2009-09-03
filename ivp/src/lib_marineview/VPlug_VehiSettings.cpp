@@ -31,7 +31,7 @@ VPlug_VehiSettings::VPlug_VehiSettings()
   setParam("vehicles_active_color", "red");
   setParam("vehicles_inactive_color", "yellow");
   setParam("vehicles_name_color", "white");
-  setParam("vehicles_name_viewable", "names+mode");
+  setParam("vehicles_name_viewable", "names+shortmode");
   setParam("vehicles_shape_scale", 1.0);
   setParam("vehicles_viewable", "true");
 }
@@ -83,6 +83,8 @@ bool VPlug_VehiSettings::setParam(string param, string value)
       m_vehicles_name_mode = "off";
     else if(value == "names+mode")
       m_vehicles_name_mode = value;
+    else if(value == "names+shortmode")
+      m_vehicles_name_mode = value;
     else if(value == "names+depth")
       m_vehicles_name_mode = value;
     else if(value == "toggle") {
@@ -91,6 +93,8 @@ bool VPlug_VehiSettings::setParam(string param, string value)
       else if(m_vehicles_name_mode == "names")
 	m_vehicles_name_mode = "names+mode";
       else if(m_vehicles_name_mode == "names+mode")
+	m_vehicles_name_mode = "names+shortmode";
+      else if(m_vehicles_name_mode == "names+shortmode")
 	m_vehicles_name_mode = "names+depth";
       else if(m_vehicles_name_mode == "names+depth")
 	m_vehicles_name_mode = "off";
