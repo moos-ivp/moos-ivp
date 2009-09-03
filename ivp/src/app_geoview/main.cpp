@@ -86,31 +86,31 @@ int main(int argc, char *argv[])
       tif_file = "";
     else {
       vector<string> svector;
-      svector = readEntriesFromFile(argv[i], "poly:polygon");
+      svector = readEntriesFromFile(argi, "poly:polygon");
       for(j=0; j<svector.size(); j++)
 	all_poly_strings.push_back(svector[j]);
 
-      svector = readEntriesFromFile(argv[i], "segl:seglist:points");
+      svector = readEntriesFromFile(argi, "segl:seglist:points");
       for(j=0; j<svector.size(); j++)
 	all_segl_strings.push_back(svector[j]);
 
-      svector = readEntriesFromFile(argv[i], "grid:xygrid");
+      svector = readEntriesFromFile(argi, "grid:xygrid");
       for(j=0; j<svector.size(); j++)
 	all_grid_strings.push_back(svector[j]);
 
-      vector<XYCircle> cvector = readCirclesFromFile(argv[i]);
+      vector<XYCircle> cvector = readCirclesFromFile(argi);
       for(j=0; j<cvector.size(); j++) 
 	all_circles.push_back(cvector[j]);
-      vector<XYHexagon> hvector = readHexagonsFromFile(argv[i]);
+      vector<XYHexagon> hvector = readHexagonsFromFile(argi);
       for(j=0; j<hvector.size(); j++)
 	all_hexagons.push_back(hvector[j]);
-      vector<string> mvector = readEntriesFromFile(argv[i], "marker");
+      vector<string> mvector = readEntriesFromFile(argi, "marker");
       for(j=0; j<mvector.size(); j++)
 	all_markers.push_back(mvector[j]);
-      vector<string> ovector = readEntriesFromFile(argv[i], "op_vertex");
+      vector<string> ovector = readEntriesFromFile(argi, "op_vertex");
       for(j=0; j<ovector.size(); j++)
 	all_opvertices.push_back(ovector[j]);
-      vector<string> dvector = readEntriesFromFile(argv[i], "geodesy");
+      vector<string> dvector = readEntriesFromFile(argi, "geodesy");
       for(j=0; j<dvector.size(); j++)
 	all_geodesy.push_back(dvector[j]);
     }

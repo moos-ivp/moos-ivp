@@ -379,8 +379,10 @@ double BHV_AvoidCollision::getRelevance()
   double d_relevance = (mod_dpct * rng_dist_relevance) + min_dist_relevance;
 
 
-  return(d_relevance);  // *********** DISABLED BELOW ******
+  return(d_relevance);  
 
+#if 0
+  // *********** DISABLED BELOW ******
   //  default:            0.0                         1.0            
   //                       o---------------------------o
   //
@@ -415,6 +417,7 @@ double BHV_AvoidCollision::getRelevance()
   postInfo(dpct, spct);
 
   return(combined_relevance);
+#endif
 }
 
 

@@ -39,7 +39,8 @@ PIDEngine::PIDEngine()
 {
   // If spid_active is zero speed is controlled via PID. 
   // If not, thrust is set to multiple of desired speed.
-  speed_factor = 20.0;
+  m_speed_factor = 20.0;
+  m_current_time = 0;
 }
 
 //------------------------------------------------------------
@@ -54,7 +55,7 @@ double PIDEngine::getDesiredRudder(double desired_heading,
   double heading_error = current_heading - desired_heading;
   heading_error = angle180(heading_error);
   double desired_rudder = 0;
-  heading_pid.Run(heading_error, current_time, desired_rudder);
+  m_heading_pid.Run(heading_error, m_current_time, desired_rudder);
   desired_rudder *= -1.0;
     
   // Enforce limit on desired rudder
@@ -65,7 +66,7 @@ double PIDEngine::getDesiredRudder(double desired_heading,
   rpt += " (Curr):" + doubleToString(current_heading);
   rpt += " (Diff):" + doubleToString(heading_error);
   rpt += " RUDDER:" + doubleToString(desired_rudder);
-  pid_report.push_back(rpt);
+  m_pid_report.push_back(rpt);
   return(desired_rudder);
 }
 
@@ -82,26 +83,26 @@ double PIDEngine::getDesiredThrust(double desired_speed,
   double desired_thrust = current_thrust;
 
   // If NOT using PID control, just apply multiple to des_speed
-  if(speed_factor != 0) {
-    desired_thrust = desired_speed * speed_factor;
+  if(m_speed_factor != 0) {
+    desired_thrust = desired_speed * m_speed_factor;
   }
   // ELSE apply the PID contoller to the problem.
   else {
-    speed_pid.Run(speed_error, current_time, delta_thrust);
+    m_speed_pid.Run(speed_error,  m_current_time, delta_thrust);
     desired_thrust += delta_thrust;
   }
   
   if(desired_thrust < 0)
     desired_thrust = 0;
 
-  if(speed_factor != 0) {
+  if(m_speed_factor != 0) {
     string rpt = "PID_SPEED: ";
     rpt += " (Want):" + doubleToString(desired_speed);
     rpt += " (Curr):" + doubleToString(current_speed);
     rpt += " (Diff):" + doubleToString(speed_error);
-    rpt += " (Fctr):" + doubleToString(speed_factor);
+    rpt += " (Fctr):" + doubleToString(m_speed_factor);
     rpt += " THRUST:" + doubleToString(desired_thrust);
-    pid_report.push_back(rpt);
+    m_pid_report.push_back(rpt);
   }    
   else {
     string rpt = "PID_SPEED: ";
@@ -110,7 +111,7 @@ double PIDEngine::getDesiredThrust(double desired_speed,
     rpt += " (Diff):" + doubleToString(speed_error);
     rpt += " (Delt):" + doubleToString(delta_thrust);
     rpt += " THRUST:" + doubleToString(desired_thrust);
-    pid_report.push_back(rpt);
+    m_pid_report.push_back(rpt);
   }
 
   // Enforce limit on desired thrust
@@ -132,13 +133,13 @@ double PIDEngine::getDesiredElevator(double desired_depth,
   double desired_elevator = 0;
   double desired_pitch = 0;
   double depth_error = current_depth - desired_depth;
-  z_to_pitch_pid.Run(depth_error, current_time, desired_pitch);
+  m_z_to_pitch_pid.Run(depth_error, m_current_time, desired_pitch);
 
   // Enforce limits on desired pitch
   MOOSAbsLimit(desired_pitch,max_pitch);
 
   double pitch_error = current_pitch - desired_pitch;
-  pitch_pid.Run(pitch_error, current_time, desired_elevator);
+  m_pitch_pid.Run(pitch_error, m_current_time, desired_elevator);
 
   // Convert desired elevator to degrees
   desired_elevator=MOOSRad2Deg(desired_elevator);
@@ -151,7 +152,7 @@ double PIDEngine::getDesiredElevator(double desired_depth,
   rpt += " (Curr):" + doubleToString(current_depth);
   rpt += " (Diff):" + doubleToString(depth_error);
   rpt += " ELEVATOR:" + doubleToString(desired_elevator);
-  pid_report.push_back(rpt);
+  m_pid_report.push_back(rpt);
 
   return(desired_elevator);
 }
@@ -161,10 +162,14 @@ double PIDEngine::getDesiredElevator(double desired_depth,
 
 void PIDEngine::setPID(int ix, ScalarPID g_pid)
 {
-  if(ix==0) heading_pid     = g_pid;
-  if(ix==1) speed_pid       = g_pid;
-  if(ix==2) z_to_pitch_pid  = g_pid;
-  if(ix==3) pitch_pid       = g_pid;
+  if(ix==0) 
+    m_heading_pid = g_pid;
+  else if(ix==1) 
+    m_speed_pid = g_pid;
+  else if(ix==2) 
+    m_z_to_pitch_pid = g_pid;
+  else if(ix==3) 
+    m_pitch_pid = g_pid;
 }
 
 

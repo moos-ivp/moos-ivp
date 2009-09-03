@@ -506,11 +506,10 @@ void PMV_GUI::cb_Reference(Fl_Widget* o, int v) {
 
 string PMV_GUI::getPendingVar(unsigned int ix)
 {
-  string return_value;
-  if((ix >=0) && (ix < m_pending_vars.size()))
-    return_value = m_pending_vars[ix];
-
-  return(return_value);
+  if(ix < m_pending_vars.size())
+    return(m_pending_vars[ix]);
+  else
+    return("");
 }
 
 //-------------------------------------------------------------------
@@ -518,11 +517,10 @@ string PMV_GUI::getPendingVar(unsigned int ix)
 
 string PMV_GUI::getPendingVal(unsigned int ix)
 {
-  string return_value;
-  if((ix >=0) && (ix < m_pending_vals.size()))
-    return_value = m_pending_vals[ix];
-
-  return(return_value);
+  if(ix < m_pending_vals.size())
+    return(m_pending_vals[ix]);
+  else
+    return("");
 }
 
 //-------------------------------------------------------------------

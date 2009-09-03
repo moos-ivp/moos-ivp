@@ -259,8 +259,8 @@ int main(int argc ,char * argv[])
     else if(!strncmp( (tolower(str).c_str()), "history=", 8))
       g_theXMS.addVariable(str.substr(8), true);
 
-    else if((!strContains(argv[i], ".moos")) && (str != "-noseed"))
-      g_theXMS.addVariable(argv[i]);
+    else if((!strContains(str, ".moos")) && (str != "-noseed"))
+      g_theXMS.addVariable(str);
   }
 
   bool quit = false;

@@ -112,8 +112,10 @@ bool HelmScope::OnNewMail(MOOSMSG_LIST &NewMail)
     else if(msg.m_sKey == "IVPHELM_STATEVARS") 
       handleNewStateVars(msg.m_sVal); 
     else if(msg.m_sKey == "IVPHELM_ENGAGED") { 
-      m_helm_engaged = (msg.m_sVal == "ENGAGED"); 
-      m_update_pending = true; 
+      bool new_helm_engaged = (msg.m_sVal == "ENGAGED"); 
+      if(new_helm_engaged != m_helm_engaged)
+	m_update_pending = true; 
+      m_helm_engaged = new_helm_engaged;
     } 
   }
 
@@ -143,8 +145,6 @@ bool HelmScope::Iterate()
   else
     printReport();
 
-  // History pruning is done after report printing, and after new
-  // helm info is received. Therefore no mutex should be needed
   pruneHistory();
 
   return(true);
@@ -512,7 +512,7 @@ void HelmScope::handleNewHelmPostings(const string& str)
 }
 
 //------------------------------------------------------------
-// Procedure: handleNewHelmPostings
+// Procedure: handleNewHelmModeSet
 //    
 //    Note: This msg is generated in HelmIvP.cpp::OnStartUp()
 //    IVPHELM_MODESET=
@@ -520,8 +520,8 @@ void HelmScope::handleNewHelmPostings(const string& str)
 
 void HelmScope::handleNewHelmModeSet(const string& str)
 {
-  cout << "Handling New Helm MODESET: " << endl;
-  cout << "  " << str << endl;
+  //cout << "Handling New Helm MODESET: " << endl;
+  //cout << "  " << str << endl;
   vector<string> svector = parseString(str, '#');
   unsigned int i, vsize = svector.size();
   for(i=0; i<vsize; i++) {
@@ -534,11 +534,12 @@ void HelmScope::handleNewHelmModeSet(const string& str)
     }
     else {
       int index = m_mode_trees.size()-1;
-      cout << "[" << i << "] parent:" << parent << "  child:" << child << endl;
+      //cout << "[" << i << "] parent:" << parent << "  child:" << child << endl;
       m_mode_trees[index].addParChild(parent, child);
     }
   }
 
+#if 0
   cout << "Full Tree: " << endl;
   vsize = m_mode_trees.size();
   for(i=0; i<vsize; i++) {
@@ -547,6 +548,7 @@ void HelmScope::handleNewHelmModeSet(const string& str)
     for(j=0; j<jsize; j++) 
       cout << jvector[j] << endl;
   }
+#endif
 }
 
 //------------------------------------------------------------
@@ -896,8 +898,6 @@ void HelmScope::printReport()
   if(!m_helm_engaged)
     engaged_status = " DIS-ENGAGED!!! ";
   
-  cout << "DISENGAGED!!!" << endl;
-
   printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
   printf("==============   uHelmScope Report  ==============%s (%d)\n",
 	 engaged_status.c_str(), m_moosapp_iter); 

@@ -93,7 +93,7 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
   double pwt = 0;
   int    pcs = 0;
 
-  if((ix >= 0) && (ix < m_behaviors.size())) {
+  if(ix < m_behaviors.size()) {
     // Look for possible dynamic updates to the behavior parameters
     bool update_made = m_behaviors[ix]->checkUpdates();
     if(update_made)
@@ -194,7 +194,7 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
 
 bool BehaviorSet::stateOK(unsigned int ix)
 {
-  if((ix >= 0) && (ix < m_behaviors.size()))
+  if(ix < m_behaviors.size())
     return(m_behaviors[ix]->stateOK());
   else
     return(false);
@@ -214,7 +214,7 @@ void BehaviorSet::resetStateOK()
 
 IvPBehavior* BehaviorSet::getBehavior(unsigned int ix)
 {
-  if((ix >= 0) && (ix < m_behaviors.size()))
+  if(ix < m_behaviors.size())
     return(m_behaviors[ix]);
   return(0);
 }
@@ -224,7 +224,7 @@ IvPBehavior* BehaviorSet::getBehavior(unsigned int ix)
 
 string BehaviorSet::getDescriptor(unsigned int ix)
 {
-  if((ix >= 0) && (ix < m_behaviors.size()))
+  if(ix < m_behaviors.size())
     return(m_behaviors[ix]->getDescriptor());
   return("");
 }
@@ -234,7 +234,7 @@ string BehaviorSet::getDescriptor(unsigned int ix)
 
 double BehaviorSet::getStateElapsed(unsigned int ix)
 {
-  if((ix >= 0) && (ix < m_behaviors.size()))
+  if(ix < m_behaviors.size())
     return(m_behavior_state_time_elapsed[ix]);
   else
     return(-1);
@@ -245,7 +245,7 @@ double BehaviorSet::getStateElapsed(unsigned int ix)
 
 string BehaviorSet::getUpdateSummary(unsigned int ix)
 {
-  if((ix >= 0) && (ix < m_behaviors.size()))
+  if(ix < m_behaviors.size())
     return(m_behaviors[ix]->getUpdateSummary());
   else
     return("err");
@@ -256,7 +256,7 @@ string BehaviorSet::getUpdateSummary(unsigned int ix)
 
 int BehaviorSet::getFilterLevel(unsigned int ix)
 {
-  if((ix >= 0) && (ix < m_behaviors.size()))
+  if(ix < m_behaviors.size())
     return(m_behaviors[ix]->getFilterLevel());
   else
     return(0);
@@ -280,7 +280,7 @@ bool BehaviorSet::filterBehaviorsPresent()
 vector<VarDataPair> BehaviorSet::getMessages(unsigned int ix)
 {
   vector<VarDataPair> mvector;
-  if((ix >= 0) && (ix < m_behaviors.size())) {
+  if(ix < m_behaviors.size()) {
     mvector = m_behaviors[ix]->getMessages();
     m_behaviors[ix]->clearMessages();
   }

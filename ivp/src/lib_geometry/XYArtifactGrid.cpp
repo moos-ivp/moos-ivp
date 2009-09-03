@@ -44,7 +44,7 @@ XYSquare XYArtifactGrid::getElement(unsigned int ix) const
 {
   XYSquare retElement;
   
-  if((ix >= 0) && (ix < elements.size()))
+  if(ix < elements.size())
     return(elements[ix]);
   else
     return(retElement);
@@ -56,7 +56,7 @@ XYSquare XYArtifactGrid::getElement(unsigned int ix) const
 /// Set the clearance in \param index to \param val
 void XYArtifactGrid::setClearance(unsigned int index, double val)
 {
-  if((index >= 0) && (index < clearances.size())){
+  if(index < clearances.size()) { 
     if(val > 1){
       clearances.at(index) = 1;
       return;
@@ -77,7 +77,7 @@ void XYArtifactGrid::setClearance(unsigned int index, double val)
 /// Get the clearance in \param index
 double XYArtifactGrid::getClearance(unsigned int index) const
 {
-  if((index >= 0) && (index < clearances.size())){
+  if(index < clearances.size()) {
     return clearances.at(index);
   }
   else return -1;
@@ -99,7 +99,7 @@ double XYArtifactGrid::getAvgClearance() const
 /// Set the artifact vector in \param index to \param artvec
 void XYArtifactGrid::setArtVec(unsigned int index, const ArtVec & artvec)
 {
-  if((index >= 0) && (index < artifacts.size())){
+  if(index < artifacts.size()) {
     artifacts.at(index) = artvec;
   }
 }
@@ -108,7 +108,7 @@ void XYArtifactGrid::setArtVec(unsigned int index, const ArtVec & artvec)
 ArtVec XYArtifactGrid::getArtVec(unsigned int index) const
 {
   ArtVec nullvec;
-  if((index >= 0) && (index < artifacts.size())) 
+  if(index < artifacts.size())
     return(artifacts.at(index));
   else
     return(nullvec);

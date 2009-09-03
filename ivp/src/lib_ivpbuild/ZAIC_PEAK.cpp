@@ -107,7 +107,7 @@ bool ZAIC_PEAK::setParams(double summit, double pwidth,
 
 bool ZAIC_PEAK::setSummit(double val, unsigned int index)
 {
-  if((index < 0) || (index >= v_summit.size())) {
+  if(index >= v_summit.size()) {
     m_state_ok = false;
     m_warning += "setSummit:index out of range:";
     return(false);
@@ -119,7 +119,7 @@ bool ZAIC_PEAK::setSummit(double val, unsigned int index)
 //------------------------------------------------
 bool ZAIC_PEAK::setBaseWidth(double val, unsigned int index)
 {
-  if((index < 0) || (index >= v_basewidth.size())) {
+  if(index >= v_basewidth.size()) {
     m_state_ok = false;
     m_warning += "setBaseWidth:index out of range:";
     return(false);
@@ -137,7 +137,7 @@ bool ZAIC_PEAK::setBaseWidth(double val, unsigned int index)
 //------------------------------------------------
 bool ZAIC_PEAK::setPeakWidth(double val, unsigned int index)
 {
-  if((index < 0) || (index >= v_peakwidth.size())) {
+  if(index >= v_peakwidth.size()) {
     m_state_ok = false;
     m_warning += "setPeakWidth:index out of range:";
     return(false);
@@ -155,7 +155,7 @@ bool ZAIC_PEAK::setPeakWidth(double val, unsigned int index)
 //------------------------------------------------
 bool ZAIC_PEAK::setSummitDelta(double val, unsigned int index)
 {
-  if((index < 0) || (index >= v_summitdelta.size())) {
+  if(index >= v_summitdelta.size()) {
     m_warning += "setSummitDelta:index out of range:";
     m_state_ok = false;
     return(false);
@@ -180,7 +180,7 @@ bool ZAIC_PEAK::setSummitDelta(double val, unsigned int index)
 bool ZAIC_PEAK::setMinMaxUtil(double minval, double maxval, 
 			      unsigned int index)
 {
-  if((index < 0) || (index >= v_minutil.size())) {
+  if(index >= v_minutil.size()) {
     m_state_ok = false;
     m_warning += "setMinMaxUtil:index out of range:";
     return(false);
@@ -208,7 +208,7 @@ bool ZAIC_PEAK::setMinMaxUtil(double minval, double maxval,
 
 double ZAIC_PEAK::getParam(string param, unsigned int index)
 {
-  if((index < 0) || (index >= v_summit.size()))
+  if(index >= v_summit.size())
     return(0);
 
   if(param == "summit")
@@ -298,10 +298,10 @@ double ZAIC_PEAK::evalPoint(unsigned int sx, unsigned int ix)
   double summit_delta = v_summitdelta[sx];
   double min_util     = v_minutil[sx];
   double max_util     = v_maxutil[sx];
-
-  if((ix < 0) || (ix >= m_domain_pts))
+  
+  if(ix >= m_domain_pts)
     return(min_util);
-
+  
   double loc_summit_delta = summit_delta;
   if(peak_width <= 0)
     loc_summit_delta = 0;

@@ -13,7 +13,7 @@
 class QueueEntry
 {
 public:
-  QueueEntry(std::string);
+  QueueEntry(const std::string&);
   ~QueueEntry() {if(m_quadset) delete(m_quadset);};
   
   const QuadSet* getQuadSet(std::string s="", double l=0, double h=0);

@@ -49,7 +49,7 @@ XYSquare XYGrid::getElement(unsigned int ix) const
 {
   XYSquare retElement;
 
-  if((ix >= 0) && (ix < elements.size()))
+  if(ix < elements.size())
     return(elements[ix]);
   else
     return(retElement);
@@ -61,9 +61,9 @@ XYSquare XYGrid::getElement(unsigned int ix) const
 
 void XYGrid::setVal(unsigned int ix, double val)
 {
-  if((ix >= 0) && (ix < elements.size()))
+  if(ix < elements.size())
     values[ix] = val;
-
+  
   if(val < min_val)
     min_val = val;
   if(val > max_val)
@@ -75,7 +75,7 @@ void XYGrid::setVal(unsigned int ix, double val)
 
 double XYGrid::getVal(unsigned int ix) const
 {
-  if((ix >= 0) && (ix < values.size()))
+  if(ix < values.size())
     return(values[ix]);
   else
     return(0);
@@ -91,7 +91,7 @@ void XYGrid::setUtil(unsigned int ix, double val)
   if(val < min_util_possible)
     val = min_util_possible;
   
-  if((ix >= 0) && (ix < elements.size()))
+  if(ix < elements.size())
     utilities[ix] = val;
   else
     return;
@@ -130,7 +130,7 @@ void XYGrid::setUtilRange(double lval, double hval)
 
 double XYGrid::getUtil(unsigned int ix) const
 {
-  if((ix >= 0) && (ix < utilities.size()))
+  if(ix < utilities.size())
     return(utilities[ix]);
   else
     return(min_util_possible);

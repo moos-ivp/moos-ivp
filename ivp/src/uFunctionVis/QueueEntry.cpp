@@ -17,9 +17,10 @@ using namespace std;
 //-------------------------------------------------------------
 // Constructor
 
-QueueEntry::QueueEntry(string ipf_str)
+QueueEntry::QueueEntry(const string& ipf_str)
 {
   m_iteration = -1;
+  m_quadset    = 0;
 
   string remainder = ipf_str;
   vector<string> svector = chompString(remainder, ',');
@@ -38,13 +39,13 @@ QueueEntry::QueueEntry(string ipf_str)
   svector = chompString(context_string, ':');
   if(svector.size() != 2)
     return;
+
   int    iteration = atoi(svector[0].c_str());
   string descriptor = svector[1];
   
   m_ipf_str    = ipf_str;
   m_descriptor = descriptor;
   m_iteration  = iteration;
-  m_quadset    = 0;
 }
 
 
@@ -99,6 +100,8 @@ const QuadSet* QueueEntry::getQuadSet(string colormap_type,
   m_quadset->setAdjust(low_adjust, high_adjust);
   m_quadset->applyColorMap(cmap);
   m_quadset->normalize(0, 200);
+
+  delete(new_ipf);
   return(m_quadset);
 }
 

@@ -33,8 +33,8 @@ public:
   ~PIDEngine() {};
 
   void setPID(int, ScalarPID);
-  void setSpeedFactor(double v)     {speed_factor = v;};
-  void updateTime(double ctime)     {current_time = ctime;};
+  void setSpeedFactor(double v)     {m_speed_factor = v;};
+  void updateTime(double ctime)     {m_current_time = ctime;};
 
   double getDesiredRudder(double desired_heading, 
 			  double current_heading,
@@ -49,19 +49,19 @@ public:
 			    double max_pitch,
 			    double max_elevator);
 
-  void clearReport() {pid_report.clear();};
-  std::vector<std::string> getPIDReport() {return(pid_report);};
+  void clearReport() {m_pid_report.clear();};
+  std::vector<std::string> getPIDReport() {return(m_pid_report);};
 
 protected:
-  ScalarPID heading_pid;
-  ScalarPID speed_pid;
-  ScalarPID z_to_pitch_pid;
-  ScalarPID pitch_pid;
+  ScalarPID m_heading_pid;
+  ScalarPID m_speed_pid;
+  ScalarPID m_z_to_pitch_pid;
+  ScalarPID m_pitch_pid;
 
-  double  current_time;
-  double  speed_factor;
+  double  m_current_time;
+  double  m_speed_factor;
 
-  std::vector<std::string> pid_report;
+  std::vector<std::string> m_pid_report;
 };
 #endif
 

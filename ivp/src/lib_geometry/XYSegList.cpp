@@ -264,7 +264,7 @@ void XYSegList::print() const
 
 double XYSegList::get_vx(unsigned int i) const
 {
-  if((i>=0) && (i<vertex_x.size()))
+  if(i<vertex_x.size())
      return(vertex_x[i]);
   else
     return(0);
@@ -275,7 +275,7 @@ double XYSegList::get_vx(unsigned int i) const
 
 double XYSegList::get_vy(unsigned int i) const
 {
-  if((i>=0) && (i<vertex_y.size()))
+  if(i<vertex_y.size())
     return(vertex_y[i]);
   else
     return(0);
@@ -286,7 +286,7 @@ double XYSegList::get_vy(unsigned int i) const
 
 double XYSegList::get_vz(unsigned int i) const
 {
-  if((i>=0) && (i<vertex_z.size()))
+  if(i<vertex_z.size())
     return(vertex_z[i]);
   else
     return(0);

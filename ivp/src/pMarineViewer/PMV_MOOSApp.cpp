@@ -37,6 +37,7 @@ PMV_MOOSApp::PMV_MOOSApp()
   m_pending_moos_events = 0;
   m_verbose         = false;
   m_gui             = 0; 
+  m_start_time      = 0;
   m_lastredraw_time = 0;
   m_node_report_vars.push_back("AIS_REPORT");
   m_node_report_vars.push_back("AIS_REPORT_LOCAL");
@@ -118,7 +119,7 @@ bool PMV_MOOSApp::OnStartUp()
     return(MOOSFail("Lat or Lon Origin not set in *.moos file.\n"));
 
   // If both lat and lon origin ok - then initialize the Geodesy.
-  if(!m_gui->mviewer->initGeodesy(lat_origin, lon_origin))
+  if(m_gui && !m_gui->mviewer->initGeodesy(lat_origin, lon_origin))
     return(MOOSFail("Geodesy Init in pMarineViewer failed - FAIL\n"));
 
   if((!m_gui) || (!m_pending_moos_events))

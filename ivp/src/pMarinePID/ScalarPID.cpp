@@ -84,7 +84,9 @@ ScalarPID::ScalarPID(double dfKp, double dfKd, double dfKi,
   
   m_dfIntegralLimit = dfIntegralLimit;
   m_dfOutputLimit   = dfOutputLimit;
-  m_nIterations     =  0;
+  m_nIterations     = 0;
+  m_nHistorySize    = 10;
+  m_bLog            = false;
 }
 
 //-------------------------------------------------------------------
