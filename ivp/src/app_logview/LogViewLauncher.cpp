@@ -41,6 +41,10 @@ LogViewLauncher::LogViewLauncher()
   m_gui_width  = 1400;
   m_gui_height = 1100;
   m_gui        = 0;
+  m_min_time   = 0; 
+  m_max_time   = 0;
+  m_min_time_set = false;
+  m_max_time_set = false;
 }
 
 //-------------------------------------------------------------
@@ -51,11 +55,7 @@ REPLAY_GUI *LogViewLauncher::launch(int argc, char **argv)
   MBTimer total_timer;
   total_timer.start();
 
-  
-  bool help_requested = checkForHelp(argc, argv);
-  if(help_requested)
-    return(0);
-
+  checkForMinMaxTime(argc, argv);
   setBackground(argc, argv);
   setSizeOfGUI(argc, argv);
   setALogFiles(argc, argv);
@@ -84,25 +84,38 @@ REPLAY_GUI *LogViewLauncher::launch(int argc, char **argv)
 }
 
 //-------------------------------------------------------------
-// Procedure: checkForHelp
+// Procedure: checkForMinMaxTime
+//   Purpose: Handle the command line args --mintime and --maxtime
+//            If one has been set prior to the other, then the 2nd
+//            provided argument must respect the first or else it
+//            will simply be ignored. That is, if maxtime has been
+//            set, --mintime must provide a time < maxtime. 
 
-bool LogViewLauncher::checkForHelp(int argc, char **argv)
+void LogViewLauncher::checkForMinMaxTime(int argc, char **argv)
 {
-  // Look for a request for usage information      
-  if(scanArgs(argc, argv, "-h", "--help", "-help")) {
-    cout << "Usage: logview [file1.alog] ... [fileN.alog] " << endl;
-    cout << "       [--version|-v] [--help|-h] [--timemin]     " << endl;
-    cout << "       [--timemax] [--image] [--ipfs]             " << endl;
-    cout << "                                                  " << endl;
-    cout << "[file.alog]   Filename of log file data             " << endl;
-    cout << "[--help]      Display this help message.            " << endl;
-    cout << "[--version]   Display software version number.      " << endl;
-    cout << "[--timemin=v] Analyze data only with timestamps > v." << endl;
-    cout << endl;
-    return(true);
+  int i;
+  for(i=1; i<argc; i++) {
+    string argi = argv[i];
+    unsigned int len = argi.length();
+    if((len>10) && !strncmp(argi.c_str(), "--mintime=", 10)) {
+      string value = argv[i]+10;
+      double dval  = atof(value.c_str());
+      if(isNumber(value) && (!m_max_time_set || (dval < m_max_time))) {
+	m_min_time = dval; 
+	m_min_time_set = true;
+      }
+    }
+    else if((len>10) && !strncmp(argi.c_str(), "--maxtime=", 10)) {
+      string value = argv[i]+10;
+      double dval  = atof(value.c_str());
+      if(isNumber(value) && (!m_min_time_set || (dval > m_min_time))) {
+	m_max_time = dval; 
+	m_max_time_set = true;
+      }
+    }
   }
-  return(false);
 }
+
 
 //-------------------------------------------------------------
 // Procedure: setBackground
@@ -307,23 +320,27 @@ void LogViewLauncher::parseALogFile(unsigned int index)
       bool   isnum = entry.isNumerical();
 
       entry.skewBackward(skew);
-      if(isnum)
-	entries_log_plot.push_back(entry);
-      else {
-	if((var=="AIS_REPORT_LOCAL") && (src=="pTransponderAIS"))
-	  node_reports.push_back(entry.getStringVal());
-	else if((var=="NODE_REPORT_LOCAL") && (src=="pNodeReporter"))
-	  node_reports.push_back(entry.getStringVal());
-	else if((var == "VIEW_POINT")   || (var == "VIEW_POLYGON") ||
-		(var == "VIEW_SEGLIST") || (var == "VIEW_CIRCLE")  ||
-		(var == "GRID_INIT")    || (var == "VIEW_MARKER")  ||
-		(var == "GRID_DELTA")) {
-	  entries_vplug_plot.push_back(entry);
+      double tstamp = entry.getTimeStamp();
+      if((!m_min_time_set || (tstamp >= m_min_time)) &&
+	 (!m_max_time_set || (tstamp <= m_max_time))) {
+	if(isnum)
+	  entries_log_plot.push_back(entry);
+	else {
+	  if((var=="AIS_REPORT_LOCAL") && (src=="pTransponderAIS"))
+	    node_reports.push_back(entry.getStringVal());
+	  else if((var=="NODE_REPORT_LOCAL") && (src=="pNodeReporter"))
+	    node_reports.push_back(entry.getStringVal());
+	  else if((var == "VIEW_POINT")   || (var == "VIEW_POLYGON") ||
+		  (var == "VIEW_SEGLIST") || (var == "VIEW_CIRCLE")  ||
+		  (var == "GRID_INIT")    || (var == "VIEW_MARKER")  ||
+		  (var == "GRID_DELTA")) {
+	    entries_vplug_plot.push_back(entry);
+	  }
+	  else if(var == "IVPHELM_SUMMARY")
+	    entries_helm_plot.push_back(entry);
+	  else if(var == "BHV_IPF")
+	    entries_ipf_plot.push_back(entry);
 	}
-	else if(var == "IVPHELM_SUMMARY")
-	  entries_helm_plot.push_back(entry);
-	else if(var == "BHV_IPF")
-	  entries_ipf_plot.push_back(entry);
       }
     }
   }

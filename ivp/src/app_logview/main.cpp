@@ -91,6 +91,10 @@ void help_message()
   cout << "Options:                                                  " << endl;
   cout << "  -h,--help     Displays this help message                " << endl;
   cout << "  -v,--version  Displays the current release version      " << endl;
+  cout << "  --mintime=val Clip data with timestamps < val           " << endl;
+  cout << "  --maxtime=val Clip data with timestamps > val           " << endl;
+  //cout << "  --image                                                 " << endl;
+  //cout << "  --ipfs                                                  " << endl;
   cout << "                                                          " << endl;
   cout << "Further Notes:                                            " << endl;
   cout << "  (1) Multiple .alog files ok - typically one per vehicle " << endl;

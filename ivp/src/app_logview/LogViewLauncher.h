@@ -41,7 +41,7 @@ class LogViewLauncher
   REPLAY_GUI *launch(int argc, char **argv);
 
 protected:
-  bool checkForHelp(int argc, char **argv);
+  void checkForMinMaxTime(int argc, char **argv);
   void setBackground(int argc, char **argv);
   void setSizeOfGUI(int argc, char **argv);
   void setALogFiles(int argc, char **argv);
@@ -88,6 +88,13 @@ private:
   std::vector<HelmPlot>  m_helm_plots;
   std::vector<VPlugPlot> m_vplug_plots;
   std::vector<IPF_Plot>  m_ipf_plots;
+
+
+  // Optional time clipping
+  double m_min_time;
+  double m_max_time;
+  bool   m_min_time_set;
+  bool   m_max_time_set;
 
   REPLAY_GUI *m_gui;
 };
