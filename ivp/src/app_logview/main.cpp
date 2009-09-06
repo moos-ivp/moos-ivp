@@ -89,10 +89,13 @@ void help_message()
   cout << "  file.alog - The input logfile.                          " << endl;
   cout << "                                                          " << endl;
   cout << "Options:                                                  " << endl;
-  cout << "  -h,--help     Displays this help message                " << endl;
-  cout << "  -v,--version  Displays the current release version      " << endl;
-  cout << "  --mintime=val Clip data with timestamps < val           " << endl;
-  cout << "  --maxtime=val Clip data with timestamps > val           " << endl;
+  cout << "  -h,--help      Displays this help message               " << endl;
+  cout << "  -v,--version   Displays the current release version     " << endl;
+  cout << "  --mintime=val  Clip data with timestamps < val          " << endl;
+  cout << "  --maxtime=val  Clip data with timestamps > val          " << endl;
+  cout << "  --geometry=val Viewer window pixel size in HEIGHTxWIDTH " << endl;
+  cout << "                 or large, medium, small, xsmall          " << endl;
+  cout << "                 Default size is 1400x1100 (large)        " << endl;
   //cout << "  --image                                                 " << endl;
   //cout << "  --ipfs                                                  " << endl;
   cout << "                                                          " << endl;
