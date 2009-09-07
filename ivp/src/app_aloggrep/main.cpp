@@ -30,9 +30,11 @@ int main(int argc, char *argv[])
     return(0);
   }
   
-  bool verbose = false;
+  bool verbose = true;
   if(scanArgs(argc, argv, "--verbose", "-verbose"))
     verbose = true;
+  if(scanArgs(argc, argv, "--quiet", "-quiet", "-q"))
+    verbose = false;
   
   bool file_overwrite = false;
   if(scanArgs(argc, argv, "-f", "--force", "-force"))
@@ -57,7 +59,7 @@ int main(int argc, char *argv[])
     cout << "  -h,--help     Displays this help message              " << endl;
     cout << "  -v,--version  Displays the current release version    " << endl;
     cout << "  -f,--force    Force overwrite of existing file        " << endl;
-    cout << "  --verbose     Verbose report generated at conclusion  " << endl;
+    cout << "  -q,--quiet    Verbose report suppressed at conclusion " << endl;
     cout << "                                                        " << endl;
     cout << "Further Notes:                                          " << endl;
     cout << "  (1) The second alog is the output file. Otherwise the " << endl;

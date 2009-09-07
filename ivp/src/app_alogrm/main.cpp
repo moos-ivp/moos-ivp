@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
     return(0);
   }
 
-  bool verbose = false;
+  bool verbose = true;
   FiltHandler handler;  
   if(scanArgs(argc, argv, "-nostr", "--nostr"))
     handler.setParam("nostrings", "true");
@@ -52,8 +52,8 @@ int main(int argc, char *argv[])
     handler.setParam("timeshift", "true");
   if(scanArgs(argc, argv, "-f", "-force", "--force"))
     handler.setParam("file_overwrite", "true");
-  if(scanArgs(argc, argv, "-verbose", "--verbose"))
-    verbose = true;
+  if(scanArgs(argc, argv, "-q", "--quiet", "-quiet"))
+    verbose = false;
   
   string alogfile_in;
   string alogfile_out;
@@ -109,13 +109,13 @@ void help_message()
   cout << "  -h,--help     Displays this help message                " << endl;
   cout << "  -v,--version  Displays the current release version      " << endl;
   cout << "  -f,--force    Force overwrite of existing file          " << endl;
+  cout << "  -q,--quiet    Verbose report suppressed at conclusion   " << endl;
   cout << "  --nostr       Remove lines with string data values      " << endl;
   cout << "  --nonum       Remove lines with double data values      " << endl;
   cout << "  --clean       Remove lines that have a timestamp that is" << endl;
   cout << "                non-numerical or lines w/ no 4th column   " << endl;
   //cout << "  --times       Rewrite all timestamps to be time since   " << endl;
   //cout << "                logger started and LOGSTART is set to zero" << endl;
-  cout << "  --verbose     Verbose report generated at conclusion    " << endl;
   cout << "                                                          " << endl;
   cout << "Further Notes:                                            " << endl;
   cout << "  (1) The second alog is the output file. Otherwise the   " << endl;

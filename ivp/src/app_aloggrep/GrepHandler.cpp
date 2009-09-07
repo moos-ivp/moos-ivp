@@ -197,13 +197,13 @@ void GrepHandler::printReport()
   cout << "  Total lines retained: " << doubleToString(m_lines_retained,0);
   cout << " (" << doubleToString((100*pct_lines_retained),2) << "%)" << endl;
   
-  cout << "   Total lines deleted: " << doubleToString(m_lines_removed,0);
+  cout << "  Total lines excluded: " << doubleToString(m_lines_removed,0);
   cout << " (" << doubleToString((100*pct_lines_removed),2) << "%)" << endl;
 
   cout << "  Total chars retained: " << doubleToString(m_chars_retained,0);
   cout << " (" << doubleToString((100*pct_chars_retained),2) << "%)" << endl;
 
-  cout << "   Total chars deleted: " << doubleToString(m_chars_removed,0);
+  cout << "  Total chars excluded: " << doubleToString(m_chars_removed,0);
   cout << " (" << doubleToString((100*pct_chars_removed),2) << "%)" << endl;
 
   cout << "    Variables retained: (" << m_vars_retained.size() << ") "; 

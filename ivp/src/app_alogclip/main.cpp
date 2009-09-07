@@ -25,32 +25,33 @@ using namespace std;
 void display_usage()
 {
   cout << "Usage: " << endl;
-  cout << "  alogclip in.alog mintime maxtime [out.alog] [OPTIONS]" << endl;
-  cout << "                                                       " << endl;
-  cout << "Synopsis:                                              " << endl;
-  cout << "  Create a new MOOS .alog file from a given .alog file " << endl;
-  cout << "  by removing entries outside a given time window.     " << endl;
-  cout << "                                                       " << endl;
-  cout << "Standard Arguments:                                    " << endl;
-  cout << "  in.alog  - The input logfile.                        " << endl;
-  cout << "  mintime  - Log entries with timestamps below mintime " << endl;
-  cout << "             will be excluded from the output file.    " << endl;
-  cout << "  maxtime  - Log entries with timestamps above mintime " << endl;
-  cout << "             will be excluded from the output file.    " << endl;
-  cout << "  out.alog - The newly generated output logfile. If no " << endl;
-  cout << "             file provided, output goes to stdout.     " << endl;
-  cout << "                                                       " << endl;
-  cout << "Options:                                               " << endl;
-  cout << "  -h,--help    - Display this usage/help message.      " << endl;
-  cout << "  -v,--version - Display version information.          " << endl;
-  cout << "  -f,--force   - Overwrite an existing output file.    " << endl;
-  cout << "                                                       " << endl;
-  cout << "Further Notes:                                         " << endl;
-  cout << "  (1) The order of arguments may vary. The first alog  " << endl;
-  cout << "      file is treated as the input file, and the first " << endl;
-  cout << "      numerical value is treated as the mintime.       " << endl;
-  cout << "  (2) Two numerical values, in order, must be given.   " << endl;
-  cout << "  (3) See also: alogscan, alogrm, aloggrep, alogview   " << endl;
+  cout << "  alogclip in.alog mintime maxtime [out.alog] [OPTIONS]  " << endl;
+  cout << "                                                         " << endl;
+  cout << "Synopsis:                                                " << endl;
+  cout << "  Create a new MOOS .alog file from a given .alog file   " << endl;
+  cout << "  by removing entries outside a given time window.       " << endl;
+  cout << "                                                         " << endl;
+  cout << "Standard Arguments:                                      " << endl;
+  cout << "  in.alog  - The input logfile.                          " << endl;
+  cout << "  mintime  - Log entries with timestamps below mintime   " << endl;
+  cout << "             will be excluded from the output file.      " << endl;
+  cout << "  maxtime  - Log entries with timestamps above mintime   " << endl;
+  cout << "             will be excluded from the output file.      " << endl;
+  cout << "  out.alog - The newly generated output logfile. If no   " << endl;
+  cout << "             file provided, output goes to stdout.       " << endl;
+  cout << "                                                         " << endl;
+  cout << "Options:                                                 " << endl;
+  cout << "  -h,--help     Display this usage/help message.         " << endl;
+  cout << "  -v,--version  Display version information.             " << endl;
+  cout << "  -f,--force    Overwrite an existing output file.       " << endl;
+  cout << "  -q,--quiet    Verbose report suppressed at conclusion. " << endl;
+  cout << "                                                         " << endl;
+  cout << "Further Notes:                                           " << endl;
+  cout << "  (1) The order of arguments may vary. The first alog    " << endl;
+  cout << "      file is treated as the input file, and the first   " << endl;
+  cout << "      numerical value is treated as the mintime.         " << endl;
+  cout << "  (2) Two numerical values, in order, must be given.     " << endl;
+  cout << "  (3) See also: alogscan, alogrm, aloggrep, alogview     " << endl;
   cout << endl;
 }
 
@@ -66,6 +67,11 @@ int main(int argc, char *argv[])
       cout << svector[j] << endl;    
     return(0);
   }
+
+  // Look to see if user wants a quiet operation
+  bool verbose = true;
+  if(scanArgs(argc, argv, "-q", "--quiet", "-quiet"))
+    verbose = false;
   
   // Look for a request for usage information
   if(scanArgs(argc, argv, "-h", "--help", "-help")) {
@@ -173,6 +179,8 @@ int main(int argc, char *argv[])
 
   //--------------------------------------------------------------
   // Display the stats for the clip process
+  if(!verbose)
+    return(0);
 
   unsigned int clipped_lines_front, clipped_lines_back, kept_lines;
   unsigned int clipped_chars_front, clipped_chars_back, kept_chars;
@@ -187,6 +195,7 @@ int main(int argc, char *argv[])
 
   unsigned int clipped_lines_total = clipped_lines_front+clipped_lines_back;
   unsigned int clipped_chars_total = clipped_chars_front+clipped_chars_back;
+
   
   double clipped_lines_pct = 100.0 * (double)(clipped_lines_total) /
     (double)(clipped_lines_total + kept_lines);
@@ -196,29 +205,42 @@ int main(int argc, char *argv[])
 
   string lpct = doubleToString(clipped_lines_pct, 2);
   string cpct = doubleToString(clipped_chars_pct, 2);
-#ifdef WIN32
-  string digits = intToString((int)(log10( (double)clipped_chars_total)));
-#else
-  string digits = intToString((int)(log10(clipped_chars_total)));
-#endif
+
+
+  string clipped_lines_total_s = intToCommaString(clipped_lines_total);
+  string clipped_lines_front_s = intToCommaString(clipped_lines_front);
+  string clipped_lines_back_s  = intToCommaString(clipped_lines_back);
+
+  string clipped_chars_total_s = intToCommaString(clipped_chars_total);
+  string clipped_chars_front_s = intToCommaString(clipped_chars_front);
+  string clipped_chars_back_s  = intToCommaString(clipped_chars_back);
+
+  string digits = intToString(clipped_chars_total_s.length());
+
+  //#ifdef WIN32
+  //string digits = intToString((int)(log10( (double)clipped_chars_total)));
+  //#else
+  //string digits = intToString((int)(log10(clipped_chars_total)));
+  //#endif
 
   printf("\n\n");
 
-  string format = "Total lines clipped:   %" + digits + "d  (%s pct)\n";
-  printf(format.c_str(), clipped_lines_total, lpct.c_str());
+  string format = "Total lines clipped:   %" + digits + "s  (%s pct)\n";
+  printf(format.c_str(), clipped_lines_total_s.c_str(), lpct.c_str());
 
-  format = "  Front lines clipped: %" + digits + "d \n";
-  printf(format.c_str(), clipped_lines_front);
-  format = "  Back  lines clipped: %" + digits + "d \n";
-  printf(format.c_str(), clipped_lines_back);
+  format = "  Front lines clipped: %" + digits + "s \n";
+  printf(format.c_str(), clipped_lines_front_s.c_str());
+  format = "  Back  lines clipped: %" + digits + "s \n";
+  printf(format.c_str(), clipped_lines_back_s.c_str());
 	 
-  format = "Total chars clipped  : %" + digits + "d  (%s pct)\n";
-  printf(format.c_str(), clipped_chars_total, cpct.c_str());
 
-  format = "  Front chars clipped: %" + digits + "d \n";
-  printf(format.c_str(), clipped_chars_front);
+  format = "Total chars clipped:   %" + digits + "s  (%s pct)\n";
+  printf(format.c_str(), clipped_chars_total_s.c_str(), cpct.c_str());
 
-  format = "  Back  chars clipped: %" + digits + "d \n";
-  printf(format.c_str(), clipped_chars_back);
+  format = "  Front chars clipped: %" + digits + "s \n";
+  printf(format.c_str(), clipped_chars_front_s.c_str());
+
+  format = "  Back  chars clipped: %" + digits + "s \n";
+  printf(format.c_str(), clipped_chars_back_s.c_str());
   
 }
