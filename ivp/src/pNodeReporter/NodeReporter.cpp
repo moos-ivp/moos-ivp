@@ -45,6 +45,7 @@ NodeReporter::NodeReporter()
   m_helm_mode    = "none";
   m_helm_engaged = false;
   m_helm_lastmsg = -1;
+  m_nohelm_thresh = 3;
 
   m_blackout_interval = 0;
   m_blackout_baseval  = 0;
@@ -216,6 +217,10 @@ bool NodeReporter::OnStartUp()
 	if(!strContainsWhite(value))
 	  m_report_var = value;
       }      
+      else if(param == "NOHELM_THRESHOLD") {
+	if(isNumber(value) && (dval > 0))
+	  m_nohelm_thresh = dval;
+      }      
     }
   }
   return(true);
@@ -272,12 +277,9 @@ string NodeReporter::assembleReport()
   summary += ",YAW=" + doubleToString(m_nav_yaw,5);
   summary += ",DEPTH=" + doubleToString(m_nav_depth,2);
   summary += ",LENGTH=" + m_vessel_len;
-
-  // We choose a duration of 3 seconds because the helm is 
-  // configured to provide a heartbeat once per second.
-  double timeout_duration = 3.0; // seconds
+  
   string  mode_str = ",MODE=";
-  if((m_db_uptime-m_helm_lastmsg) > timeout_duration) {
+  if((m_db_uptime-m_helm_lastmsg) > m_nohelm_thresh) {
     string awol_time = doubleToString((m_db_uptime-m_helm_lastmsg), 0);
     mode_str += "NOHELM-" + awol_time;
   }

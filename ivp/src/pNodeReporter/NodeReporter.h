@@ -76,6 +76,7 @@ protected:
   double  m_blackout_baseval;
   double  m_blackout_variance;
   double  m_last_post_time;
+  double  m_nohelm_thresh;
 
   std::string interval_history;
 };
