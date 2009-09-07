@@ -104,17 +104,17 @@ XPCTcpSocket *XPCTcpSocket::Accept(char *_sHost)
         char *sAddress = inet_ntoa((struct in_addr)clientAddress.sin_addr);
         
         // Get the host name given the address
-        try
-        {
-            XPCGetHostInfo getHostInfo(sAddress, ADDRESS);
-            // Store the host name
-            strcpy(_sHost, getHostInfo.sGetHostName());
-        }
-        catch(XPCException e)
-        {
+//         try
+//         {
+//             XPCGetHostInfo getHostInfo(sAddress, ADDRESS);
+//             // Store the host name
+//             strcpy(_sHost, getHostInfo.sGetHostName());
+//         }
+//         catch(XPCException e)
+//         {
             strcpy(_sHost, sAddress);
-            printf("INFO: %s using numeric address %s\n",e.sGetException(),_sHost);
-        }
+//            printf("INFO: %s using numeric address %s\n",e.sGetException(),_sHost);
+//        }
         
     }
     
