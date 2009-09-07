@@ -135,7 +135,7 @@ int main(int argc, char *argv[])
   if(!ok) {
     cout << "Input file: " << alog_infile << 
       " does not exist - exiting." << endl;
-    exit(0);
+    return(0);
   }
   
   ok = clipper.openALogFileRead(alog_outfile);
@@ -156,11 +156,13 @@ int main(int argc, char *argv[])
   
   clipper.openALogFileRead(alog_infile);
 
-  ok = clipper.openALogFileWrite(alog_outfile);
-  if(!ok) {
-    cout << "Unable to create output file: " << alog_outfile << 
-      " - exiting. " << endl;
-    exit(0);
+  if(alog_outfile != "") {
+    ok = clipper.openALogFileWrite(alog_outfile);
+    if(!ok) {
+      cout << "Unable to create output file: " << alog_outfile << 
+	" - exiting. " << endl;
+      return(0);
+    }
   }
 
   //--------------------------------------------------------------

@@ -61,8 +61,9 @@ unsigned int ALogClipper::clip(double min_time, double max_time)
       writeNextLine(line);
     }
   }
-  
-  fclose(m_outfile);
+
+  if(m_outfile)
+    fclose(m_outfile);
   return(m_clipped_lines_front + m_clipped_lines_back);
 }
 
@@ -109,9 +110,9 @@ string ALogClipper::getNextLine()
 bool ALogClipper::writeNextLine(const string& line)
 {
   if(!m_outfile)
-    return(false);
-  
-  fprintf(m_outfile, "%s\n", line.c_str());
+    printf("%s\n", line.c_str());
+  else
+    fprintf(m_outfile, "%s\n", line.c_str());
 
   return(true);
 }

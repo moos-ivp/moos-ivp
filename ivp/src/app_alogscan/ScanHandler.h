@@ -30,7 +30,6 @@ class ScanHandler
   std::string m_sort_style;
 
   ScanReport  m_report;
-
 };
 
 #endif

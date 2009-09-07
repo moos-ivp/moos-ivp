@@ -106,7 +106,7 @@ void ScanReport::fillAppStats()
 
 string ScanReport::getVarName(unsigned int index)
 {
-  if((index >= 0) && (index < m_var_names.size()))
+  if(index < m_var_names.size())
     return(m_var_names[index]);
   else
     return("");
@@ -118,7 +118,7 @@ string ScanReport::getVarName(unsigned int index)
 
 string ScanReport::getVarSources(unsigned int index)
 {
-  if((index >= 0) && (index < m_var_sources.size()))
+  if(index < m_var_sources.size())
     return(m_var_sources[index]);
   else
     return("");
@@ -130,7 +130,7 @@ string ScanReport::getVarSources(unsigned int index)
 
 double ScanReport::getVarFirstTime(unsigned int index)
 {
-  if((index >= 0) && (index < m_var_first.size()))
+  if(index < m_var_first.size())
     return(m_var_first[index]);
   else
     return(0);
@@ -142,7 +142,7 @@ double ScanReport::getVarFirstTime(unsigned int index)
 
 double ScanReport::getVarLastTime(unsigned int index)
 {
-  if((index >= 0) && (index < m_var_last.size()))
+  if(index < m_var_last.size())
     return(m_var_last[index]);
   else
     return(0);
@@ -154,7 +154,7 @@ double ScanReport::getVarLastTime(unsigned int index)
 
 unsigned int ScanReport::getVarCount(unsigned int index)
 {
-  if((index >= 0) && (index < m_var_lines.size()))
+  if(index < m_var_lines.size())
     return(m_var_lines[index]);
   else
     return(0);
@@ -165,7 +165,7 @@ unsigned int ScanReport::getVarCount(unsigned int index)
 
 unsigned int ScanReport::getVarChars(unsigned int index)
 {
-  if((index >= 0) && (index < m_var_chars.size()))
+  if(index < m_var_chars.size())
     return(m_var_chars[index]);
   else
     return(0);
@@ -256,15 +256,14 @@ unsigned int ScanReport::getVarNameMaxLength()
 
 double ScanReport::getMinStartTime()
 {
-  unsigned int vsize = m_var_first.size();
+  unsigned int i, vsize = m_var_first.size();
   if(vsize == 0)
     return(0);
   
   double result = m_var_first[0];
-  for(unsigned int i=1; i<vsize; i++) {
+  for(i=1; i<vsize; i++) {
     if(m_var_first[i] < result)
-      if(m_var_first[i] >= 0)
-	result = m_var_first[i];
+      result = m_var_first[i];
   }
   return(result);
 }
@@ -275,10 +274,12 @@ double ScanReport::getMinStartTime()
 
 double ScanReport::getMaxStartTime()
 {
-  unsigned int vsize = m_var_first.size();
+  unsigned int i, vsize = m_var_first.size();
+  if(vsize == 0)
+    return(0);
   
-  double result = 0;
-  for(unsigned int i=0; i<vsize; i++) {
+  double result = m_var_first[0];
+  for(i=1; i<vsize; i++) {
     if(m_var_first[i] > result)
       result = m_var_first[i];
   }
@@ -292,9 +293,12 @@ double ScanReport::getMaxStartTime()
 
 double ScanReport::getMaxStopTime()
 {
-  unsigned int vsize = m_var_first.size();
-  double result = 0;
-  for(unsigned int i=0; i<vsize; i++) {
+  unsigned int i, vsize = m_var_last.size();
+  if(vsize == 0)
+    return(0);
+  
+  double result = m_var_last[0];  
+  for(i=1; i<vsize; i++) {
     if(m_var_last[i] > result)
       result = m_var_last[i];
   }
