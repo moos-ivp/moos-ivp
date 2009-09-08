@@ -16,6 +16,10 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -g")
 # *** REPLACE "../../MOOS" WITH WHATEVER VALUE IS REQUIRED.  THE DIRECTORY 
 # *** SHOULD HAVE CHILD DIRECTORIES SUCH AS "Core", "Essentials", ETC.
 IF (${WIN32})
+  # Windows does not have symbolic links. To handle this, subversion creates 
+  # a text file that represents the symbolic link with the destination of the 
+  # link inside the file. Here we extract the destination of the MOOS directory 
+  # link and use it set a variable.
   FILE(READ ../../MOOS MOOS_DIR OFFSET 5)
   SET(MOOS_BASE_DIR ../../${MOOS_DIR})
 ELSE (${WIN32})
@@ -117,8 +121,16 @@ SET(IVP_NON_GUI_LIBS
    )
 
 IF (${WIN32})
+   SET(TIFF_SRC_DIR lib_tiff/tiff-3.8.2/libtiff)
+   # For Windows use the preconfigure headers provided by libtiff
+   # Use CONFIGURE_FILE to copy the supplied files to their approtiate
+   # locations.
+   CONFIGURE_FILE(${TIFF_SRC_DIR}/tif_config.h.vc 
+	   ${TIFF_SRC_DIR}/tif_config.h COPYONLY)
+   CONFIGURE_FILE(${TIFF_SRC_DIR}/tiffconf.h.vc 
+	   ${TIFF_SRC_DIR}/tiffconf.h COPYONLY)
    # Add the libtiff headers directory
-   INCLUDE_DIRECTORIES( AFTER lib_tiff/tiff-3.8.2/libtiff )
+   INCLUDE_DIRECTORIES( AFTER ${TIFF_SRC_DIR} )
    # Set the IVP GUI libraries for Windows
    SET(IVP_GUI_LIBS
       lib_ipfview
