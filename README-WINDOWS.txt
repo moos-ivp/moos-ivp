@@ -2,10 +2,11 @@ README-WINDOWS.txt
 Last updated: 8 September 2009
 Maintainer: Christopher Gagner ( Christopher.Gagner@navy.mil )
 
-************************************************************
-***   THIS FILE IS A WORK IN PROGRESS.  CORRECTIONS OR   ***
-***   ADDITIONS ARE GREATLY APPRECIATED                  ***
-************************************************************
+******************************************************************************
+*** THIS FILE IS A WORK IN PROGRESS. CORRECTIONS OR ADDITIONS ARE GREATLY  ***
+*** APPRECIATED. PLEASE CONTACT THE MAINTAINER FOR CLARIFICATIONS OR       ***
+*** SUGGESTIONS.                                                           ***
+******************************************************************************
 
 OVERVIEW
 ========
@@ -15,9 +16,9 @@ MOOS-IvP software.
 
 PROGRAMS
 ========
-The following software programs must be installed on the 
-Windows computer in order to build MOOS-IvP.  For each program 
-we've listed some information on how it can be obtained.
+The following software programs must be installed on the Windows computer 
+in order to build MOOS-IvP.  For each program we've listed some information 
+on how it can be obtained.
 
 ********************
 * Windows programs *
@@ -29,11 +30,28 @@ Website: cmake.org
 *********************
 * Windows Compilers *
 *********************
-The following are the compilers that are known to successfully
-build MOOS-IvP. 
+The following are the compilers that are known to successfully build MOOS-IvP. 
 
 (1) Microsoft Visual Studio 9 2008
 Website: http://msdn.microsoft.com/en-us/vstudio/default.aspx
+
+DIRECTORY OVERVIEW
+==================
+The following is an overview of some of the important directories used by
+the MOOS-IvP project. Please note that there are other important directories,
+but these directories should get you started:
+
+bin--------------------- Location of IvP generated binary files
+ivp--------------------- Location of IvP files
+ivp\src----------------- Location of IvP source files and IvP CMakeLists.txt 
+                         file
+lib--------------------- Location of IvP generated library files
+MOOS-####-DATE---------- Location of MOOS files where #### is the revision 
+                         number and DATE is the date that it was added to 
+                         MOOS-IvP. Also the location of the MOOS 
+                         CMakeLists.txt file.
+MOOS-####-DATE\MOOSBin-- Location of MOOS generated library files and binary
+                         files.
 
 
 BUILDING MOOS-IvP
@@ -44,7 +62,7 @@ BUILDING MOOS-IvP
 **************
 Use CMake to generate the project files for the MOOS project:
 (1) Launch CMake.
-(2) Set the directory of the source code for MOOS.
+(2) Set the directory of the source code for MOOS ( MOOS-####-DATE ).
 (3) Set the binaries to be placed in the same directory as the 
     source code.
 (4) Select "Configure".
