@@ -44,6 +44,7 @@ protected:
   void checkForMinMaxTime(int argc, char **argv);
   void setBackground(int argc, char **argv);
   void setSizeOfGUI(int argc, char **argv);
+  void setWindowLayout(int argc, char **argv);
   void setALogFiles(int argc, char **argv);
   bool setALogFileSkews();
   void parseALogFiles();
@@ -97,6 +98,7 @@ private:
   bool   m_max_time_set;
 
   REPLAY_GUI *m_gui;
+  std::string m_window_layout;
 };
 
 #endif 

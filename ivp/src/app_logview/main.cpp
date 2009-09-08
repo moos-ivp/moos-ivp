@@ -96,6 +96,7 @@ void help_message()
   cout << "  --geometry=val Viewer window pixel size in HEIGHTxWIDTH " << endl;
   cout << "                 or large, medium, small, xsmall          " << endl;
   cout << "                 Default size is 1400x1100 (large)        " << endl;
+  cout << "  --layout=val   Window layout=normal,noipfs, or fullview " << endl;
   //cout << "  --image                                                 " << endl;
   //cout << "  --ipfs                                                  " << endl;
   cout << "                                                          " << endl;

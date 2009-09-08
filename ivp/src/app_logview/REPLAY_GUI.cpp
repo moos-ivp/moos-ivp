@@ -50,39 +50,34 @@ REPLAY_GUI::REPLAY_GUI(int g_w, int g_h, const char *g_l)
   augmentMenu();
 
   int    info_size = 10;
-  double ipf_pct   = 0.3;
 
-  m_np_viewer_hgt = h()-340;
-  np_viewer = new NavPlotViewer(0, 30, w()*(1-ipf_pct), m_np_viewer_hgt);
-  cmviewer = np_viewer;
+  // Initialize viewer window with bogus extents. Actual extents
+  // are set in the setWindowLayout() call below.
+  np_viewer    = new NavPlotViewer(1, 1, 1, 1);
+  lp_viewer    = new LogPlotViewer(1, 1, 1, 1);
+  ipf_viewer_a = new IvPFuncViewer(1, 1, 1, 1);
+  ipf_viewer_b = new IvPFuncViewer(1, 1, 1, 1);
+  setWindowLayout("normal");
 
-  int lp_height = 140;
-  int margin    = 2;
-  
-  lp_viewer = new LogPlotViewer(55, (h()-(lp_height-margin)), 
-  				w()-110, (lp_height-(2*margin)));
+  cmviewer     = np_viewer;
+  ipf_viewer_a->setClearColor("0.6,0.7,0.5");
+  ipf_viewer_b->setClearColor("0.7,0.6,0.5");
+  //ipf_viewer_b->setClearColor("macbeige");
 
-  int ipf_hgt = (m_np_viewer_hgt / 2);
-
-
-  ipf_viewer_a = new IvPFuncViewer(w()*(1-ipf_pct), 30, 
-				   w()*(ipf_pct), ipf_hgt);
-  ipf_viewer_b = new IvPFuncViewer(w()*(1-ipf_pct), ipf_hgt+30, 
-				   w()*(ipf_pct), ipf_hgt);
-  ipf_viewer_b->setClearColor("macbeige");
-
+  // Initialize Time fields ------------------------------------------
   double time_pos = (w()/2)-140;
-  disp_time = new MY_Output(time_pos, h()-(lp_height+26), 70, 22, "Time:"); 
+  disp_time = new MY_Output(time_pos, h()-(m_lp_viewer_hgt+26), 
+			    70, 22, "Time:"); 
   disp_time->color(FL_RED); 
   disp_time->textcolor(FL_WHITE); 
   disp_time->textsize(12); 
   disp_time->labelsize(12);
 
-  m_but_zoom_in_time = new MY_Repeat_Button(time_pos+80, h()-(lp_height+26), 
+  m_but_zoom_in_time = new MY_Repeat_Button(time_pos+80, h()-(m_lp_viewer_hgt+26), 
 					    30, 21, "IN");
-  m_but_zoom_out_time = new MY_Repeat_Button(time_pos+120, h()-(lp_height+26), 
+  m_but_zoom_out_time = new MY_Repeat_Button(time_pos+120, h()-(m_lp_viewer_hgt+26), 
 					     35, 21, "OUT");
-  m_but_zoom_reset_time = new MY_Button(time_pos+160, h()-(lp_height+26), 
+  m_but_zoom_reset_time = new MY_Button(time_pos+160, h()-(m_lp_viewer_hgt+26), 
 					45, 21, "RESET");
 
   m_but_zoom_in_time->callback((Fl_Callback*)REPLAY_GUI::cb_TimeZoom,(void*)1);
@@ -100,22 +95,22 @@ REPLAY_GUI::REPLAY_GUI(int g_w, int g_h, const char *g_l)
   m_but_zoom_out_time->labelsize(10);
   m_but_zoom_reset_time->labelsize(10);
 
-  play_rate = new MY_Output((w()/2)+140, h()-(lp_height+25), 70, 20, "play-rate:"); 
+  play_rate = new MY_Output((w()/2)+140, h()-(m_lp_viewer_hgt+25), 70, 20, "play-rate:"); 
   play_rate->textsize(info_size); 
   play_rate->labelsize(info_size);
 
-  collect_state = new MY_Output((w()/2)+260, h()-(lp_height+25), 70, 20, "collect:"); 
+  collect_state = new MY_Output((w()/2)+260, h()-(m_lp_viewer_hgt+25), 70, 20, "collect:"); 
   collect_state->textsize(info_size); 
   collect_state->labelsize(info_size);
 
   // Handle LogPlot 1 -------------
-  label1 = new MY_Output(35, h()-(lp_height+25), 150, 20, "Var:"); 
+  label1 = new MY_Output(35, h()-(m_lp_viewer_hgt+25), 150, 20, "Var:"); 
   label1->textsize(info_size-1); 
   label1->color(FL_DARK_GREEN); 
   label1->textcolor(FL_WHITE); 
   label1->labelsize(info_size);
 
-  curr1 = new MY_Output(255, h()-(lp_height+25), 70, 20, "CurrVal:"); 
+  curr1 = new MY_Output(255, h()-(m_lp_viewer_hgt+25), 70, 20, "CurrVal:"); 
   curr1->textsize(info_size); 
   curr1->color(FL_DARK_GREEN); 
   curr1->textcolor(FL_WHITE); 
@@ -127,33 +122,33 @@ REPLAY_GUI::REPLAY_GUI(int g_w, int g_h, const char *g_l)
   low1->textcolor(FL_WHITE); 
   low1->labelsize(info_size);
 
-  high1 = new MY_Output(2, h()-(lp_height-2), 51, 20, ""); 
+  high1 = new MY_Output(2, h()-(m_lp_viewer_hgt-2), 51, 20, ""); 
   high1->textsize(info_size); 
   high1->color(FL_DARK_GREEN); 
   high1->textcolor(FL_WHITE); 
   high1->labelsize(info_size);
 
   // Handle Time Min/Max -------------
-  m_fld_time_low = new MY_Output(2, h()-(lp_height/2)-10, 51, 20, ""); 
+  m_fld_time_low = new MY_Output(2, h()-(m_lp_viewer_hgt/2)-10, 51, 20, ""); 
   m_fld_time_low->textsize(info_size); 
   m_fld_time_low->color(FL_YELLOW); 
   m_fld_time_low->textcolor(FL_BLUE); 
   m_fld_time_low->labelsize(info_size);
   
-  m_fld_time_high = new MY_Output(w()-110+57, h()-(lp_height/2)-10, 51, 20, ""); 
+  m_fld_time_high = new MY_Output(w()-110+57, h()-(m_lp_viewer_hgt/2)-10, 51, 20, ""); 
   m_fld_time_high->textsize(info_size); 
   m_fld_time_high->color(FL_YELLOW); 
   m_fld_time_high->textcolor(FL_BLUE); 
   m_fld_time_high->labelsize(info_size);
 
   // Handle LogPlot 2 -------------
-  label2 = new MY_Output(w()-154, h()-(lp_height+25), 150, 20, "Var:"); 
+  label2 = new MY_Output(w()-154, h()-(m_lp_viewer_hgt+25), 150, 20, "Var:"); 
   label2->textsize(info_size-1); 
   label2->labelsize(info_size);
   label2->textcolor(FL_WHITE); 
   label2->color(FL_DARK_BLUE); 
 
-  curr2 = new MY_Output(w()-255, h()-(lp_height+25), 70, 20, "CurrVal:"); 
+  curr2 = new MY_Output(w()-255, h()-(m_lp_viewer_hgt+25), 70, 20, "CurrVal:"); 
   curr2->textsize(info_size); 
   curr2->labelsize(info_size);
   curr2->textcolor(FL_WHITE); 
@@ -165,7 +160,7 @@ REPLAY_GUI::REPLAY_GUI(int g_w, int g_h, const char *g_l)
   low2->textcolor(FL_WHITE); 
   low2->labelsize(info_size);
 
-  high2 = new MY_Output(w()-110+57, h()-(lp_height-2), 51, 20, ""); 
+  high2 = new MY_Output(w()-110+57, h()-(m_lp_viewer_hgt-2), 51, 20, ""); 
   high2->textsize(info_size); 
   high2->color(FL_DARK_BLUE); 
   high2->textcolor(FL_WHITE); 
@@ -280,6 +275,74 @@ REPLAY_GUI::~REPLAY_GUI()
   delete(m_but_zoom_out_time);
   delete(m_but_zoom_reset_time);
 }
+
+//-------------------------------------------------------------------
+// Procedure: setWindowLayout()
+
+void REPLAY_GUI::setWindowLayout(string layout)
+{
+  int npw, nph, npx, npy;
+  int lpw, lph, lpx, lpy;
+  int ipaw, ipah, ipax, ipay;
+  int ipbw, ipbh, ipbx, ipby;
+
+  m_lp_viewer_hgt = 140;
+  m_np_viewer_hgt = h()-340;
+
+  double ipf_pct = 0.3;
+  if(layout == "normal") {
+    ipf_pct = 0.3;
+    m_np_viewer_hgt = h()-340;
+  }
+  else if(layout == "noipfs") {
+    ipf_pct = 0.0;
+    m_np_viewer_hgt = h()-340;
+  }
+  else if(layout == "fullview") {
+    ipf_pct = 0.0;
+    m_np_viewer_hgt = h()-200;
+  }
+
+  // Set the extents of the NavPlotViewer
+  npx = 0;
+  npy = 30;
+  nph = m_np_viewer_hgt;
+  npw = w() * (1-ipf_pct);
+  
+  // Set the extents of the LogPlotViewer
+  int margin = 2;
+  lpx = 55;
+  lph = m_lp_viewer_hgt;
+  lpy = h() - (lph - margin);
+  lpw = w() - (2 * lpx);
+  lph = lph - (2 * margin);
+  
+  // Set the extents of the IvPFuncViewers
+  int ipf_hgt = (nph / 2);
+  ipax = w() * (1-ipf_pct);
+  ipay = 30;
+  ipaw = w() * (ipf_pct);
+  ipah = ipf_hgt;
+  
+  ipbx = w() * (1-ipf_pct);
+  ipby = ipf_hgt + 30;
+  ipbw = w() * (ipf_pct);
+  ipbh = ipf_hgt;
+  
+  if(np_viewer)
+    np_viewer->resize(npx, npy, npw, nph);
+  if(lp_viewer)
+    lp_viewer->resize(lpx, lpy, lpw, lph);
+  
+  if(ipf_viewer_a)
+    ipf_viewer_a->resize(ipax, ipay, ipaw, ipah);
+  if(ipf_viewer_b)
+    ipf_viewer_b->resize(ipbx, ipby, ipbw, ipbh);
+
+  m_np_viewer_hgt = nph;
+  m_lp_viewer_hgt = lph;
+}
+
 
 //-------------------------------------------------------------------
 // Procedure: augmentMenu()
@@ -781,6 +844,8 @@ void REPLAY_GUI::updateXY()
   m_fld_bhvs_idle_1->value(v1idle.c_str());
   string v1completed = np_viewer->getHPlotBehaviors("left", "completed");
   m_fld_bhvs_cplt_1->value(v1completed.c_str());
+  string v1decision = np_viewer->getHPlotDecision("left");
+  m_fld_bhvs_dec_1->value(v1decision.c_str());
 
   // Helm2
   string v2name = np_viewer->getHPlotVName("right");
@@ -795,6 +860,8 @@ void REPLAY_GUI::updateXY()
   m_fld_bhvs_idle_2->value(v2idle.c_str());
   string v2completed = np_viewer->getHPlotBehaviors("right", "completed");
   m_fld_bhvs_cplt_2->value(v2completed.c_str());
+  string v2decision = np_viewer->getHPlotDecision("right");
+  m_fld_bhvs_dec_2->value(v2decision.c_str());
 
 
   // Time_Low/High

@@ -54,6 +54,9 @@ public:
   bool inIPFViewerA();
   bool inIPFViewerB();
 
+  void setWindowLayout(std::string layout="normal");
+
+
 protected:
   void augmentMenu();
   int  handle(int);
@@ -80,7 +83,6 @@ private:
 
   inline void cb_RightLogPlot_i(int);
   static void cb_RightLogPlot(Fl_Widget*, int);
-
 
   inline void cb_TopPlotIPF_i(int);
   static void cb_TopPlotIPF(Fl_Widget*, int);
@@ -124,6 +126,9 @@ public:
   
 protected:
   double      m_np_viewer_hgt;
+  double      m_lp_viewer_hgt;
+  std::string m_window_layout;
+
 
   MY_Output   *disp_time;
   MY_Output   *play_rate;

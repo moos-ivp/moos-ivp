@@ -60,7 +60,7 @@ bool HelmPlot::add_entry(double gtime, string gval)
   if((tsize > 0) && (m_time[tsize-1] > gtime))
     return(false);
 
-  string mode, utc, iter, idle, active, running, completed;
+  string mode, utc, iter, idle, active, running, completed, decision;
   
 
   vector<string> kvector = parseString(gval, ',');
@@ -82,6 +82,13 @@ bool HelmPlot::add_entry(double gtime, string gval)
       iter = right;
     else if(left == "utc_time")
       utc = right;
+    else if(left == "var") {
+      if(decision != "")
+	decision += ", ";
+      string var = biteString(right, ':');
+      string val = right;
+      decision += var + "=" + val;
+    }
   }
   if((mode == "") || (iter == "") || (idle == "") || (utc == "") ||
      (active == "") || (running=="") || (completed == ""))
@@ -104,6 +111,7 @@ bool HelmPlot::add_entry(double gtime, string gval)
   m_helm_running_bhvs.push_back(running);
   m_helm_active_bhvs.push_back(active);
   m_helm_completed_bhvs.push_back(completed);
+  m_helm_decision.push_back(decision);
   return(true);
 }
 
@@ -129,6 +137,8 @@ string HelmPlot::get_value_by_index(string qtype, unsigned int index) const
     return(m_helm_completed_bhvs[index]);
   else if(qtype == "active")
     return(m_helm_active_bhvs[index]);
+  else if(qtype == "decision")
+    return(m_helm_decision[index]);
 }
      
 //---------------------------------------------------------------
@@ -267,6 +277,8 @@ string HelmPlot::get_value_by_time(string qtype, double gtime) const
     return(m_helm_completed_bhvs[index]);
   else if(qtype == "active")
     return(m_helm_active_bhvs[index]);
+  else if(qtype == "decision")
+    return(m_helm_decision[index]);
 }
      
 //---------------------------------------------------------------

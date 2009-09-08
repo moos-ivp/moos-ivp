@@ -58,7 +58,8 @@ REPLAY_GUI *LogViewLauncher::launch(int argc, char **argv)
   checkForMinMaxTime(argc, argv);
   setBackground(argc, argv);
   setSizeOfGUI(argc, argv);
-  setALogFiles(argc, argv);
+  setWindowLayout(argc, argv);
+  setALogFiles(argc, argv);  
 
   bool ok = setALogFileSkews();
   parseALogFiles();
@@ -201,6 +202,34 @@ void LogViewLauncher::setSizeOfGUI(int argc, char **argv)
 	  }
 	}
       }
+    }
+  }
+}
+
+//-------------------------------------------------------------
+// Procedure: setWindowLayout
+//            Determine the layouts of windows within the gui
+//  Switches: --layout=normal
+//            --layout=noipfs
+//            --layout=fullview
+
+
+void LogViewLauncher::setWindowLayout(int argc, char **argv)
+{
+  m_window_layout = "normal";
+  
+  for(int i=1; i<argc; i++) {
+    if(!strncmp(argv[i], "--layout=", 9)) {
+      string argi  = tolower(argv[i]);
+      string front = biteString(argi, '=');
+      string value = tolower(argi);
+      
+      if(value == "noipfs") 
+	m_window_layout = "noipfs";
+      else if(value == "fullview") 
+	m_window_layout = "fullview";
+      else
+	cout << "Unrecognized layout (" << value << ") ignored." << endl;
     }
   }
 }
@@ -581,6 +610,8 @@ bool LogViewLauncher::buildGraphical()
   m_gui = new REPLAY_GUI(m_gui_width, m_gui_height, "logview");
   if(!m_gui)
     return(false);
+
+  m_gui->setWindowLayout(m_window_layout);
 
   unsigned int j, k;
 

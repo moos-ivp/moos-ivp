@@ -292,6 +292,20 @@ string NavPlotViewer::getHPlotVName(const string& side)
 }
 
 //-------------------------------------------------------------
+// Procedure: getHPlotDecision
+
+string NavPlotViewer::getHPlotDecision(const string& side)
+{
+  unsigned int ix = m_hplot_left_ix;
+  if(side == "right") 
+    ix = m_hplot_right_ix;
+  if(ix >= m_helm_plot.size())
+    return("");
+
+  return(m_helm_plot[ix].get_value_by_time("decision", m_curr_time));
+}
+
+//-------------------------------------------------------------
 // Procedure: getHPlotMode
 
 string NavPlotViewer::getHPlotMode(const string& side)

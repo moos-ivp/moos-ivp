@@ -41,7 +41,7 @@ IvPFuncViewer::IvPFuncViewer(int x, int y, int w, int h, const char *l)
 
   setParam("reset_view", "2");
 
-  m_clear_color.setColor("0.6,0.8,0.4");
+  m_clear_color.setColor("0.6,0.7,0.5");
   m_label_color.setColor("brown");
 }
 

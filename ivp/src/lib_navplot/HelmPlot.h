@@ -66,16 +66,17 @@ protected:
   std::string m_vehi_type;
   double      m_vehi_length;
 
-  std::vector<double>      m_time;
+  std::vector<double>       m_time;
   std::vector<unsigned int> m_helm_iter_v;
-  std::vector<std::string> m_helm_iter_s;
-  std::vector<std::string> m_helm_mode;
-  std::vector<std::string> m_helm_mode_short;
-  std::vector<std::string> m_helm_utc;
-  std::vector<std::string> m_helm_idle_bhvs;
-  std::vector<std::string> m_helm_running_bhvs;
-  std::vector<std::string> m_helm_active_bhvs;
-  std::vector<std::string> m_helm_completed_bhvs;
+  std::vector<std::string>  m_helm_iter_s;
+  std::vector<std::string>  m_helm_mode;
+  std::vector<std::string>  m_helm_mode_short;
+  std::vector<std::string>  m_helm_utc;
+  std::vector<std::string>  m_helm_idle_bhvs;
+  std::vector<std::string>  m_helm_running_bhvs;
+  std::vector<std::string>  m_helm_active_bhvs;
+  std::vector<std::string>  m_helm_completed_bhvs;
+  std::vector<std::string>  m_helm_decision;
 
   double m_utc_start_time;
 };
