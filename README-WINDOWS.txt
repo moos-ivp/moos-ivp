@@ -1,5 +1,5 @@
 README-WINDOWS.txt
-Last updated: 5 August 2008
+Last updated: 8 September 2009
 Maintainer: Christopher Gagner ( Christopher.Gagner@navy.mil )
 
 ************************************************************
@@ -23,7 +23,7 @@ we've listed some information on how it can be obtained.
 * Windows programs *
 ********************
 
-(1) CMake (at least version 2.4)
+(1) CMake (at least version 2.6)
 Website: cmake.org
 
 *********************
@@ -61,7 +61,7 @@ Select the "Build" Menu and select "Build Solution".
 *************
 Use CMake to generate the project files for the IvP project:
 (1) Launch CMake.
-(2) Set the directory of the source code for IvP.
+(2) Set the directory of the source code for IvP ( ivp\src ).
 (3) Set the binaries to be placed in the same directory as the 
     source code.
 (4) Select "Configure".
@@ -85,20 +85,14 @@ the executable programs may also be placed in a configuration directory such
 as Debug. In these cases the path will be "MOOS/MOOSBin/Debug".
 
 When you build the IvP software, the IvP executable programs get placed in
-the "ivp/src/bin" subdirectory of the source code tree. Under some compilers
+the "bin" subdirectory of the source code tree. Under some compilers
 the executable programs may also be place in a configuration director such
-as Debug. In these cases the path will be "ivp/src/bin/Debug".
+as Debug. In these cases the path will be "bin/Debug".
 
 We recommend that you put the absolute path to both of those directories into
 your PATH environment variable.  This is especially important because the 
 "pAntler" program, which can launch other MOOS/IvP programs, relies on the
 PATH variable to find those programs. 
-
-When running "pHelmIvp.exe" under Windows, the "IVP_BEHAVIOR_DIRS" environment
-variable must be set in order for the program to execute correctly. This 
-environment variable is a semicolon separated string that contains the path to 
-IvP Behaviors. At the minimum set "IVP_BEHAVIOR_DIRS" to "." (the current 
-directory).
 
 To view or change environment variables:
 (1) Right-click "My Computer", and then click "Properties".

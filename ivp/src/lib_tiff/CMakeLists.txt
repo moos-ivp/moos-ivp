@@ -9,27 +9,27 @@ SET(TIFF_DIR ./tiff-3.8.2)
 
 SET(SRC_DIR ${TIFF_DIR}/libtiff)
 
-IF(${WIN32})
-   # For Windows use the preconfigure headers provided by libtiff
-      	CONFIGURE_FILE(${SRC_DIR}/tif_config.h.vc ${SRC_DIR}/tif_config.h COPYONLY)
-   	CONFIGURE_FILE(${SRC_DIR}/tiffconf.h.vc ${SRC_DIR}/tiffconf.h COPYONLY)
-ELSE(${WIN32})
-   # For Apple and Unix/Linux use the autoconf provided by libtiff to 
-   # generate the configuration headers.
-	EXECUTE_PROCESS(
-		WORKING_DIRECTORY ${TIFF_DIR}
-		COMMAND ./configure
-		)
-ENDIF(${WIN32})
+INCLUDE_DIRECTORIES( AFTER ${SRC_DIR} )
 
+# For Windows use the preconfigure headers provided by libtiff
+CONFIGURE_FILE(${SRC_DIR}/tif_config.h.vc ${SRC_DIR}/tif_config.h COPYONLY)
+CONFIGURE_FILE(${SRC_DIR}/tiffconf.h.vc ${SRC_DIR}/tiffconf.h COPYONLY)
 
-IF(${WIN32})
-	SET(SYS_FILES ${SRC_DIR}/tif_win32.c)
-ELSEIF(${UNIX})
-	SET(SYS_FILES ${SRC_DIR}/tif_unix.c)
-ELSEIF(${APPLE})
-	SET(SYS_FILES ${SRC_DIR}/tif_apple.c)
-ENDIF(${WIN32})
+SET(SYS_FILES ${SRC_DIR}/tif_win32.c)
+
+SET(HDR
+        ${SRC_DIR}/t4.h
+        ${SRC_DIR}/tiff.h
+        ${SRC_DIR}/tiffconf.h
+        ${SRC_DIR}/tiffio.h
+        ${SRC_DIR}/tiffiop.h
+        ${SRC_DIR}/tiffvers.h
+        ${SRC_DIR}/tif_config.h
+        ${SRC_DIR}/tif_dir.h
+        ${SRC_DIR}/tif_fax3.h
+        ${SRC_DIR}/tif_predict.h
+        ${SRC_DIR}/uvcode.h
+	)
 
 SET(SRC
 	${SYS_FILES}
@@ -71,22 +71,5 @@ SET(SRC
         ${SRC_DIR}/tif_zip.c	
 )
 
-ADD_LIBRARY(tiff STATIC ${SRC_DIR}/tif_config.h ${SRC_DIR}/tiffconf.h ${SRC})
-
-ADD_LIBRARY(libtiff SHARED 
-	${SRC_DIR}/tif_config.h 
-	${SRC_DIR}/tiffconf.h 
-	${SRC_DIR}/libtiff.def 
-	${SRC}
-	)
-
-IF(${UNIX})
-        # Find JPEG Library and ZLIB Libraries and link them to the
-        # TIFF libraries
-        FIND_LIBRARY(JPEG jpeg)
-        FIND_LIBRARY(ZLIB z zlib)
-        SET(LIBS ${JPEG} ${ZLIB})
-        TARGET_LINK_LIBRARIES(tiff ${LIBS})
-        TARGET_LINK_LIBRARIES(libtiff ${LIBS})
-ENDIF(${UNIX})
+ADD_LIBRARY(tiff STATIC ${HDR} ${SRC})
 

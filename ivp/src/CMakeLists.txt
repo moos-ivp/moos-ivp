@@ -117,7 +117,9 @@ SET(IVP_NON_GUI_LIBS
    )
 
 IF (${WIN32})
-   # Set the Non-IVP GUI libraries for Windows
+   # Add the libtiff headers directory
+   INCLUDE_DIRECTORIES( AFTER lib_tiff/tiff-3.8.2/libtiff )
+   # Set the IVP GUI libraries for Windows
    SET(IVP_GUI_LIBS
       lib_ipfview
       lib_marineview
@@ -216,7 +218,7 @@ ENDIF("${IVP_BUILD_GUI_CODE}" STREQUAL "ON")
 IF("${IVP_BIN_DIRECTORY}" STREQUAL "")
    # IVP_SOURCE_DIRECTORY is defined by CMake, because this project's name is
    # IVP.
-   GET_FILENAME_COMPONENT(IVP_LIB_DIRECTORY "${IVP_SOURCE_DIR}/../../bin" ABSOLUTE)
+   GET_FILENAME_COMPONENT(IVP_BIN_DIRECTORY "${IVP_SOURCE_DIR}/../../bin" ABSOLUTE)
 ENDIF("${IVP_BIN_DIRECTORY}" STREQUAL "")
 
 FOREACH(A ${IVP_APPS_TO_BUILD})
