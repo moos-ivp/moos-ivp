@@ -42,6 +42,21 @@ int main(int argc ,char * argv[])
     return(0);
   }
 
+  // Application name connected to MOOSDB is by default argv[0]
+  string app_name = argv[0];
+
+  // Look for a request for help or usage information
+  for(int i=1; i<argc; i++) {
+    if(!strncmp(argv[i], "--alias=", 8)) {
+      string argi  = argv[i];
+      string front = biteString(argi, '=');
+      string value = argi;
+      
+      if(value != "") 
+	app_name = value;
+    }
+  }
+    
   const char * sMissionFile = 0;
   for(int i=1; i<argc; i++) {
     string str = argv[i];
@@ -55,7 +70,7 @@ int main(int argc ,char * argv[])
   }
 
   TermCommand  theTermCommand;
-  MOOSAppRunnerThread appThread(& theTermCommand, argv[0], sMissionFile);
+  MOOSAppRunnerThread appThread(& theTermCommand, app_name.c_str(), sMissionFile);
 
   bool quit = false;
   while(!quit) {
