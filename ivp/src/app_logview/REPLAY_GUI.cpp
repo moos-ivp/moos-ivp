@@ -634,11 +634,7 @@ inline void REPLAY_GUI::cb_TopPlotIPF_i(int index) {
   if(!ipf_viewer_a)
     return;
   
-  if(index == -1)
-    ipf_viewer_a->setCollective(true);
-  else
-    ipf_viewer_a->setPlotIndex(index);
-  
+  ipf_viewer_a->setPlotIndex(index);  
   ipf_viewer_a->redraw();
   updateXY();
 }
@@ -652,17 +648,41 @@ inline void REPLAY_GUI::cb_BotPlotIPF_i(int index) {
   if(!ipf_viewer_b)
     return;
 
-  if(index == -1)
-    ipf_viewer_b->setCollective(true);
-  else
-    ipf_viewer_b->setPlotIndex(index);
-  
+  ipf_viewer_b->setPlotIndex(index);
   ipf_viewer_b->redraw();
   updateXY();
 }
 void REPLAY_GUI::cb_BotPlotIPF(Fl_Widget* o, int v) {
   int val = (int)(v);
   ((REPLAY_GUI*)(o->parent()->user_data()))->cb_BotPlotIPF_i(val);
+}
+
+//----------------------------------------- TopPlotColl
+inline void REPLAY_GUI::cb_TopPlotColl_i(int index) {
+  if(!ipf_viewer_a)
+    return;
+  
+  ipf_viewer_a->setCollectiveIndex(index);  
+  ipf_viewer_a->redraw();
+  updateXY();
+}
+void REPLAY_GUI::cb_TopPlotColl(Fl_Widget* o, int v) {
+  int val = (int)(v);
+  ((REPLAY_GUI*)(o->parent()->user_data()))->cb_TopPlotColl_i(val);
+}
+
+//----------------------------------------- BotPlotColl
+inline void REPLAY_GUI::cb_BotPlotColl_i(int index) {
+  if(!ipf_viewer_b)
+    return;
+
+  ipf_viewer_b->setCollectiveIndex(index);
+  ipf_viewer_b->redraw();
+  updateXY();
+}
+void REPLAY_GUI::cb_BotPlotColl(Fl_Widget* o, int v) {
+  int val = (int)(v);
+  ((REPLAY_GUI*)(o->parent()->user_data()))->cb_BotPlotColl_i(val);
 }
 
 //----------------------------------------- LeftHelmPlot
@@ -976,21 +996,24 @@ void REPLAY_GUI::addHelmPlot(const HelmPlot& helm_plot)
 
 void REPLAY_GUI::addIPF_Plot(const IPF_Plot& ipf_plot)
 {
-  string vname  = toupper(ipf_plot.getVName());
+  string vname  = ipf_plot.getVName();
   string source = toupper(ipf_plot.getSource());
-  string tag    = vname + " : " + source;
+  string tag    = toupper(vname) + " : " + source;
 
   if(ipf_viewer_a) {
     bool active = (m_num_ipfplots == 0);
+    int  vname_ix = ipf_viewer_a->getVNameIndex(vname);
     unsigned int count = ipf_viewer_a->addIPF_Plot(ipf_plot, active);
-    if(m_num_ipfplots == 0) {
-      string label = "IPFPlots/Top-Pane/Collective";
+    if(vname_ix == -1) {
+      vname_ix = ipf_viewer_a->getVNameIndex(vname);
+      string label = "IPFPlots(Top)/" + toupper(vname) + " : *COLLECTIVE*" +
+	intToString(vname_ix);
       mbar->add(label.c_str(), 0, 
-		(Fl_Callback*)REPLAY_GUI::cb_TopPlotIPF, (void*)-1);
+		(Fl_Callback*)REPLAY_GUI::cb_TopPlotColl, (void*)vname_ix);
       ipf_viewer_a->setCurrTime(0);
     }
     if(count > 0) {
-      string label = "IPFPlots/Top-Pane/" + tag;
+      string label = "IPFPlots(Top)/" + tag;
       mbar->add(label.c_str(), 0, 
 		(Fl_Callback*)REPLAY_GUI::cb_TopPlotIPF, (void*)(count-1));
     }    
@@ -998,15 +1021,18 @@ void REPLAY_GUI::addIPF_Plot(const IPF_Plot& ipf_plot)
   
   if(ipf_viewer_b) {
     bool active = (m_num_ipfplots == 1);
+    int  vname_ix = ipf_viewer_b->getVNameIndex(vname);
     unsigned int count = ipf_viewer_b->addIPF_Plot(ipf_plot, active);
-    if(m_num_ipfplots == 0) {
-      string label = "IPFPlots/Top-Pane/Collective";
+    if(vname_ix == -1) {
+      vname_ix = ipf_viewer_b->getVNameIndex(vname);
+      string label = "IPFPlots(Bot)/" + toupper(vname) + " : *COLLECTIVE*" +
+	intToString(vname_ix);
       mbar->add(label.c_str(), 0, 
-		(Fl_Callback*)REPLAY_GUI::cb_TopPlotIPF, (void*)-1);
+		(Fl_Callback*)REPLAY_GUI::cb_BotPlotColl, (void*)vname_ix);
       ipf_viewer_b->setCurrTime(0);
     }
     if(count > 0) {
-      string label = "IPFPlots/Bottom-Pane/" + tag;
+      string label = "IPFPlots(Bot)/" + tag;
       mbar->add(label.c_str(), 0, 
 		(Fl_Callback*)REPLAY_GUI::cb_BotPlotIPF, (void*)(count-1));
     }    

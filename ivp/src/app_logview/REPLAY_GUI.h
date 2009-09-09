@@ -90,6 +90,12 @@ private:
   inline void cb_BotPlotIPF_i(int);
   static void cb_BotPlotIPF(Fl_Widget*, int);
 
+  inline void cb_TopPlotColl_i(int);
+  static void cb_TopPlotColl(Fl_Widget*, int);
+
+  inline void cb_BotPlotColl_i(int);
+  static void cb_BotPlotColl(Fl_Widget*, int);
+
 
   inline void cb_LeftHelmPlot_i(int);
   static void cb_LeftHelmPlot(Fl_Widget*, int);

@@ -131,7 +131,7 @@ void LogViewLauncher::setBackground(int argc, char **argv)
     if(!strncmp(argv[i], "--background=", 13)) {
       string argi  = tolower(argv[i]);
       string front = biteString(argi, '=');
-      string value = tolower(argi);
+      string value = argi;
       
       if((value == "mit") || (value=="charles"))
 	m_tif_file = "AerialMIT-1024.tif";
@@ -171,7 +171,7 @@ void LogViewLauncher::setSizeOfGUI(int argc, char **argv)
     if(!strncmp(argv[i], "--geometry=", 10)) {
       string argi  = tolower(argv[i]);
       string front = biteString(argi, '=');
-      string value = tolower(argi);
+      string value = argi;
       
       if(value == "large")  {
 	m_gui_width  = 1400;
@@ -222,7 +222,7 @@ void LogViewLauncher::setWindowLayout(int argc, char **argv)
     if(!strncmp(argv[i], "--layout=", 9)) {
       string argi  = tolower(argv[i]);
       string front = biteString(argi, '=');
-      string value = tolower(argi);
+      string value = argi;
       
       if(value == "noipfs") 
 	m_window_layout = "noipfs";

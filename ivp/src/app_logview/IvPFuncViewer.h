@@ -36,6 +36,7 @@ class IvPFuncViewer : public Common_IPFViewer
   virtual ~IvPFuncViewer() {};
 
   unsigned int addIPF_Plot(const IPF_Plot&, bool active=false);
+
   
   void   draw();
   void   altPlotIndex(int v);
@@ -44,13 +45,14 @@ class IvPFuncViewer : public Common_IPFViewer
   void   setVIterMap(const std::map<std::string, unsigned int>& vmap) 
   {m_viter_map=vmap;};
 
-  void   setCollective(bool v) {m_collective=v;};
+  void   setCollectiveIndex(int index);
 
   void   buildCollective(double time);
+  int    getVNameIndex(std::string);
 
 private:
   unsigned int m_plot_ix;
-  bool         m_collective;
+  int          m_collective_ix;
 
   // A mapping from vehicle name to current helm iteration
   std::map<std::string, unsigned int> m_viter_map;
@@ -59,6 +61,10 @@ private:
   std::vector<std::string>  m_ipf_vname;
   std::vector<std::string>  m_ipf_source;
   std::vector<IPF_Plot>     m_ipf_plot;
+
+  // Index keys - one per unique vehicle name
+  std::vector<std::string>  m_all_vnames;
+
 };
 
 #endif

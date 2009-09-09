@@ -33,11 +33,11 @@ using namespace std;
 IvPFuncViewer::IvPFuncViewer(int x, int y, int w, int h, const char *l)
   : Common_IPFViewer(x,y,w,h,l)
 {
-  m_plot_ix    = 0;
-  m_rad_extra  = 20;
-  m_draw_frame = false;
-  m_zoom       = 2.0;
-  m_collective = false;
+  m_plot_ix       = 0;
+  m_rad_extra     = 20;
+  m_draw_frame    = false;
+  m_zoom          = 2.0;
+  m_collective_ix = -1;
 
   setParam("reset_view", "2");
 
@@ -72,6 +72,12 @@ unsigned int IvPFuncViewer::addIPF_Plot(const IPF_Plot& g_ipf_plot,
   if(make_this_active)
     m_plot_ix = m_ipf_plot.size()-1;
 
+  // Add the vehicle name to the vector of all vehicle names if
+  // does not already exist in the vector.
+  int ix = getVNameIndex(ipf_vname);
+  if(ix == -1)
+    m_all_vnames.push_back(ipf_vname);
+
   return(m_ipf_plot.size());
 }
 
@@ -102,7 +108,8 @@ void IvPFuncViewer::setPlotIndex(unsigned int new_index)
     m_plot_ix = new_index;
   else
     return;
-  m_collective = false;
+
+  m_collective_ix = -1;
 
   setVNameIPF(m_ipf_vname[m_plot_ix]);
   setSourceIPF(m_ipf_source[m_plot_ix]);
@@ -121,7 +128,7 @@ void IvPFuncViewer::setCurrTime(double curr_time)
   if(curr_time < m_ipf_plot[m_plot_ix].getMinTime())
     curr_time = m_ipf_plot[m_plot_ix].getMinTime();  
 
-  if(m_collective)
+  if(m_collective_ix != -1)
     buildCollective(curr_time);
   else {
     unsigned int iter = m_viter_map[m_ipf_vname[m_plot_ix]];
@@ -136,16 +143,33 @@ void IvPFuncViewer::setCurrTime(double curr_time)
 }
 
 //-------------------------------------------------------------
+// Procedure: setCollectiveIndex(index)
+//      Note: An index of -1 indicates that the collective function
+//            is not to be drawn. 
+
+void IvPFuncViewer::setCollectiveIndex(int index)
+{
+  if((index >= 0) && (index < m_all_vnames.size()))
+    m_collective_ix = index;
+  else
+    m_collective_ix = -1;
+}
+
+
+//-------------------------------------------------------------
 // Procedure: buildCollective
 
 void IvPFuncViewer::buildCollective(double curr_time)
 {
+  if((m_collective_ix < 0) || (m_collective_ix >= m_all_vnames.size()))
+    return;
+
   // Phase 1: Determine the current helm iteration
   unsigned int curr_iter = m_ipf_plot[m_plot_ix].getHelmIterByTime(curr_time);
 
   // Phase 2: Get all the IvPFunction strings for the current iteration
   // for the current vehicle.
-  string curr_vname = m_ipf_vname[m_plot_ix];
+  string curr_vname = m_all_vnames[m_collective_ix];
 
   vector<string> ipfs;
   unsigned int i, vsize = m_ipf_plot.size();
@@ -166,8 +190,29 @@ void IvPFuncViewer::buildCollective(double curr_time)
       cout << "Error creating collective quadset" << endl;
       return;
     }
- }
+  }
+
+  setVNameIPF(curr_vname);
+  setIterIPF(intToString(curr_iter));
+  setSourceIPF("collective");
+  setPiecesIPF("");
 
   m_quadset.applyColorMap(m_color_map);
   m_quadset.normalize(0, 200);
 }
+
+
+//-------------------------------------------------------------
+// Procedure: getVNameIndex
+//      Note: Returns -1 if vehicle name is not found
+
+int IvPFuncViewer::getVNameIndex(string vname)
+{
+  unsigned int i, vsize = m_all_vnames.size();
+  for(i=0; i<vsize; i++) {
+    if(m_all_vnames[i] == vname)
+      return((int)(i));
+  }  
+  return(-1);
+}
+  
