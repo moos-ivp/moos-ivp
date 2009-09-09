@@ -5,6 +5,7 @@
 /*    DATE: June 26th 2007                                       */
 /*****************************************************************/
 
+#include <cstring>
 #include <string>
 #include "MOOSLib.h"
 #include "MOOSGenLib.h"
