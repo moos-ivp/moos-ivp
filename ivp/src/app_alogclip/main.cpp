@@ -152,7 +152,7 @@ int main(int argc, char *argv[])
       char answer = getCharNoWait();
       if(answer == 'n') {
 	cout << "Aborted: The file " << alog_outfile;
-	cout << " will not be created" << endl;
+	cout << " will not be overwritten" << endl;
 	exit(0);
       }
       if(answer == 'y')
@@ -173,8 +173,9 @@ int main(int argc, char *argv[])
 
   //--------------------------------------------------------------
   // Everything is fine - so start doing the job.
-    
-  cout << "\nProcessing input file " << alog_infile << "..." << endl;
+
+  if(verbose)
+    cout << "\nProcessing input file " << alog_infile << " ..." << endl;
   clipper.clip(min_time, max_time);
 
   //--------------------------------------------------------------

@@ -15,6 +15,7 @@
 #include "MBUtils.h"
 #include "GrepHandler.h"
 #include "LogUtils.h"
+#include "TermUtils.h"
 
 using namespace std;
 
@@ -56,10 +57,18 @@ bool GrepHandler::handle(const string& alogfile, const string& new_alogfile)
   if(new_alogfile != "") {
     m_file_out = fopen(new_alogfile.c_str(), "r");
     if(m_file_out && !m_file_overwrite) {
-      cout << new_alogfile << " already exists." << endl;
-      cout << "Use --force to overwrite. Exiting now." << endl;
-      fclose(m_file_out);
-      return(false);
+      bool done = false;
+      while(!done) {
+	cout << new_alogfile << " already exists. Replace? (y/n [n])" << endl;
+	char answer = getCharNoWait();
+	if((answer != 'y') && (answer != 'Y')){
+	  cout << "Aborted: The file " << new_alogfile;
+	  cout << " will not be overwritten." << endl;
+	  return(false);
+	}
+	if(answer == 'y')
+	  done = true;
+      }
     }
     m_file_out = fopen(new_alogfile.c_str(), "w");
   }
