@@ -43,8 +43,10 @@ LogViewLauncher::LogViewLauncher()
   m_gui        = 0;
   m_min_time   = 0; 
   m_max_time   = 0;
+  m_now_time   = 0;
   m_min_time_set = false;
   m_max_time_set = false;
+  m_now_time_set = false;
 }
 
 //-------------------------------------------------------------
@@ -112,6 +114,14 @@ void LogViewLauncher::checkForMinMaxTime(int argc, char **argv)
       if(isNumber(value) && (!m_min_time_set || (dval > m_min_time))) {
 	m_max_time = dval; 
 	m_max_time_set = true;
+      }
+    }
+    else if((len>10) && !strncmp(argi.c_str(), "--nowtime=", 10)) {
+      string value = argv[i]+10;
+      double dval  = atof(value.c_str());
+      if(isNumber(value)) {
+	m_now_time = dval; 
+	m_now_time_set = true;
       }
     }
   }
@@ -648,6 +658,10 @@ bool LogViewLauncher::buildGraphical()
 
   m_gui->updateXY();
   m_gui->np_viewer->setParam("tiff_file", m_tif_file);
+
+  if(m_now_time_set)
+    m_gui->setCurrTime(m_now_time);
+
 
   return(true);
 }

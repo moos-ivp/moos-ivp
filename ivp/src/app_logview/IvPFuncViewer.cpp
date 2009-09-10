@@ -164,13 +164,14 @@ void IvPFuncViewer::buildCollective(double curr_time)
   if((m_collective_ix < 0) || (m_collective_ix >= m_all_vnames.size()))
     return;
 
-  // Phase 1: Determine the current helm iteration
-  unsigned int curr_iter = m_ipf_plot[m_plot_ix].getHelmIterByTime(curr_time);
-
-  // Phase 2: Get all the IvPFunction strings for the current iteration
-  // for the current vehicle.
+  // Phase 1: Determine the vehicle name for the collective function
   string curr_vname = m_all_vnames[m_collective_ix];
 
+  // Phase 2: Determine the current helm iteration
+  unsigned int curr_iter = m_viter_map[curr_vname];
+
+  // Phase 3: Get all the IvPFunction strings for the current iteration
+  // for the current vehicle.
   vector<string> ipfs;
   unsigned int i, vsize = m_ipf_plot.size();
   for(i=0; i<vsize; i++) {
@@ -180,7 +181,8 @@ void IvPFuncViewer::buildCollective(double curr_time)
 	ipfs.push_back(ipf_str);
     }
   }
-  // Phase 3: Build the collective of the given functions.
+
+  // Phase 4: Build the collective of the given functions.
   m_quadset.clear();
   for(i=0; i<ipfs.size(); i++) {
     QuadSet quadset = setQuadSetFromIPF(ipfs[i]);
@@ -192,6 +194,7 @@ void IvPFuncViewer::buildCollective(double curr_time)
     }
   }
 
+  // Phase 5: Set the text information for display
   setVNameIPF(curr_vname);
   setIterIPF(intToString(curr_iter));
   setSourceIPF("collective");

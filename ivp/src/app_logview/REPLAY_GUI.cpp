@@ -388,7 +388,7 @@ int REPLAY_GUI::handle(int event)
   switch(event) {
   case FL_PUSH:
     Fl_Window::handle(event);
-    lpv_curr_time = lp_viewer->get_curr_time();
+    lpv_curr_time = lp_viewer->getCurrTime();
     np_viewer->setCurrTime(lpv_curr_time);
     if(ipf_viewer_a) {
       map<string, unsigned int> viter_map = np_viewer->getVIterMap();
@@ -413,6 +413,28 @@ int REPLAY_GUI::handle(int event)
   }
 }
 
+//----------------------------------------------------------
+// Procedure: setCurrTime
+
+void REPLAY_GUI::setCurrTime(double curr_time)
+{
+  lp_viewer->setCurrTime(curr_time);
+  np_viewer->setCurrTime(curr_time);
+  if(ipf_viewer_a) {
+    map<string, unsigned int> viter_map = np_viewer->getVIterMap();
+    ipf_viewer_a->setVIterMap(viter_map);
+    ipf_viewer_a->setCurrTime(curr_time);
+    ipf_viewer_a->redraw();
+  }
+  if(ipf_viewer_b) {
+    map<string, unsigned int> viter_map = np_viewer->getVIterMap();
+    ipf_viewer_b->setVIterMap(viter_map);
+    ipf_viewer_b->setCurrTime(curr_time);
+    ipf_viewer_b->redraw();
+  }
+  updateXY();
+}
+
 //----------------------------------------- HandleUpDown
 inline void REPLAY_GUI::cb_HandleUpDown_i(int amt) 
 {
@@ -433,9 +455,9 @@ inline void REPLAY_GUI::cb_HandleUpDown_i(int amt)
   }
   else if(inLogPlotViewer()) {
     if(amt < 0)
-      lp_viewer->adjust_zoom("out");
+      lp_viewer->adjustZoom("out");
     else if(amt > 0)
-      lp_viewer->adjust_zoom("in");
+      lp_viewer->adjustZoom("in");
     lp_viewer->redraw();
     updateXY();
   }
@@ -498,11 +520,11 @@ inline void REPLAY_GUI::cb_Zoom_i(int val) {
   }
   else if(inLogPlotViewer()) {
     if(val < 0)
-      lp_viewer->adjust_zoom("in");
+      lp_viewer->adjustZoom("in");
     else if(val > 0)
-      lp_viewer->adjust_zoom("out");
+      lp_viewer->adjustZoom("out");
     else
-      lp_viewer->adjust_zoom("reset");
+      lp_viewer->adjustZoom("reset");
     lp_viewer->redraw();
     updateXY();
   }
@@ -570,7 +592,7 @@ inline bool REPLAY_GUI::cb_Step_i(int val) {
   np_viewer->redraw();
 
   double curr_time = np_viewer->getCurrTime();
-  lp_viewer->set_curr_time(curr_time);
+  lp_viewer->setCurrTime(curr_time);
   lp_viewer->redraw();
 
 
@@ -609,7 +631,7 @@ void REPLAY_GUI::cb_StepType(Fl_Widget* o, int v) {
 
 //----------------------------------------- LeftLogPlot
 inline void REPLAY_GUI::cb_LeftLogPlot_i(int index) {
-  lp_viewer->set_left_plot(index);
+  lp_viewer->setLeftPlot(index);
   lp_viewer->redraw();
   updateXY();
 }
@@ -620,7 +642,7 @@ void REPLAY_GUI::cb_LeftLogPlot(Fl_Widget* o, int v) {
 
 //----------------------------------------- RightLogPlot
 inline void REPLAY_GUI::cb_RightLogPlot_i(int index) {
-  lp_viewer->set_right_plot(index);
+  lp_viewer->setRightPlot(index);
   lp_viewer->redraw();
   updateXY();
 }
@@ -735,11 +757,11 @@ void REPLAY_GUI::cb_CollectToggle(Fl_Widget* o) {
 //----------------------------------------- TimeZoom
 inline void REPLAY_GUI::cb_TimeZoom_i(int val) {
   if(val > 0)
-    lp_viewer->adjust_zoom("in");
+    lp_viewer->adjustZoom("in");
   else if(val < 0)
-    lp_viewer->adjust_zoom("out");
+    lp_viewer->adjustZoom("out");
   else
-    lp_viewer->adjust_zoom("reset");
+    lp_viewer->adjustZoom("reset");
   updateXY();
 }
 
@@ -885,26 +907,26 @@ void REPLAY_GUI::updateXY()
 
 
   // Time_Low/High
-  double tlow     = lp_viewer->get_time_low();
+  double tlow     = lp_viewer->getTimeLow();
   string tlow_str = doubleToString(tlow, 3);
   m_fld_time_low->value(tlow_str.c_str());
 
-  double thigh     = lp_viewer->get_time_high();
+  double thigh     = lp_viewer->getTimeHigh();
   string thigh_str = doubleToString(thigh, 3);
   m_fld_time_high->value(thigh_str.c_str());
 
   //------------------------------
   // Label1
-  string label_str1 = lp_viewer->get_variable1();
+  string label_str1 = lp_viewer->getVariable1();
   label1->value(label_str1.c_str());
 
   // Low1
-  string min_str1 = lp_viewer->get_min_val1();
+  string min_str1 = lp_viewer->getMinVal1();
   min_str1 = dstringCompact(min_str1);
   low1->value(min_str1.c_str());
 
   // High1
-  string max_str1 = lp_viewer->get_max_val1();
+  string max_str1 = lp_viewer->getMaxVal1();
   max_str1 = dstringCompact(max_str1);
   high1->value(max_str1.c_str());
 
@@ -917,16 +939,16 @@ void REPLAY_GUI::updateXY()
 
   //------------------------------
   // Label2
-  string label_str2 = lp_viewer->get_variable2();
+  string label_str2 = lp_viewer->getVariable2();
   label2->value(label_str2.c_str());
 
   // Low2
-  string min_str2 = lp_viewer->get_min_val2();
+  string min_str2 = lp_viewer->getMinVal2();
   min_str2 = dstringCompact(min_str2);
   low2->value(min_str2.c_str());
 
   // High2
-  string max_str2 = lp_viewer->get_max_val2();
+  string max_str2 = lp_viewer->getMaxVal2();
   max_str2 = dstringCompact(max_str2);
   high2->value(max_str2.c_str());
 
@@ -946,7 +968,7 @@ void REPLAY_GUI::addLogPlot(const LogPlot& logplot)
     return;
 
   string vname = logplot.get_vehi_name();
-  int ix = lp_viewer->add_logplot(logplot) - 1;
+  int ix = lp_viewer->addLogPlot(logplot) - 1;
 
   string labelA, labelB;
   if(vname != "") {
@@ -1006,10 +1028,20 @@ void REPLAY_GUI::addIPF_Plot(const IPF_Plot& ipf_plot)
     unsigned int count = ipf_viewer_a->addIPF_Plot(ipf_plot, active);
     if(vname_ix == -1) {
       vname_ix = ipf_viewer_a->getVNameIndex(vname);
-      string label = "IPFPlots(Top)/" + toupper(vname) + " : *COLLECTIVE*" +
-	intToString(vname_ix);
-      mbar->add(label.c_str(), 0, 
-		(Fl_Callback*)REPLAY_GUI::cb_TopPlotColl, (void*)vname_ix);
+      string label = "IPFPlots(Top)/" + toupper(vname) + " : *COLLECTIVE*";
+      mbar->add(label.c_str(), 0, (Fl_Callback*)REPLAY_GUI::cb_TopPlotColl,
+		(void*)vname_ix);
+      const Fl_Menu_Item *items = mbar->menu();
+
+#if 0
+      Fl_Menu_Item item;
+      item.label(label.c_str());
+      item.callback((Fl_Callback*)REPLAY_GUI::cb_TopPlotColl);
+      item.user_data((void*)vname_ix);
+      item.labelcolor(FL_RED);
+      mbar->add(item);
+#endif
+
       ipf_viewer_a->setCurrTime(0);
     }
     if(count > 0) {
@@ -1025,8 +1057,7 @@ void REPLAY_GUI::addIPF_Plot(const IPF_Plot& ipf_plot)
     unsigned int count = ipf_viewer_b->addIPF_Plot(ipf_plot, active);
     if(vname_ix == -1) {
       vname_ix = ipf_viewer_b->getVNameIndex(vname);
-      string label = "IPFPlots(Bot)/" + toupper(vname) + " : *COLLECTIVE*" +
-	intToString(vname_ix);
+      string label = "IPFPlots(Bot)/" + toupper(vname) + " : *COLLECTIVE*";
       mbar->add(label.c_str(), 0, 
 		(Fl_Callback*)REPLAY_GUI::cb_BotPlotColl, (void*)vname_ix);
       ipf_viewer_b->setCurrTime(0);

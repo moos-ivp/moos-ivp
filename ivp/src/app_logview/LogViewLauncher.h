@@ -94,8 +94,10 @@ private:
   // Optional time clipping
   double m_min_time;
   double m_max_time;
+  double m_now_time;
   bool   m_min_time_set;
   bool   m_max_time_set;
+  bool   m_now_time_set;
 
   REPLAY_GUI *m_gui;
   std::string m_window_layout;

@@ -44,28 +44,28 @@ class LogPlotViewer : public Fl_Gl_Window
   void  resize(int, int, int, int);
 
  public:
-  unsigned int add_logplot(const LogPlot&);
-  void   set_curr_time(double v);
-  double get_curr_time() {return(m_curr_time);};
-  void   adjust_zoom(std::string);
+  unsigned int addLogPlot(const LogPlot&);
+  void   setCurrTime(double v);
+  double getCurrTime() {return(m_curr_time);};
+  void   adjustZoom(std::string);
 
-  void   set_left_plot(unsigned int);
-  void   set_right_plot(unsigned int);
+  void   setLeftPlot(unsigned int);
+  void   setRightPlot(unsigned int);
 
-  double get_time_low() {return(m_display_min_time);};
-  double get_time_high() {return(m_display_max_time);};
+  double getTimeLow() {return(m_display_min_time);};
+  double getTimeHigh() {return(m_display_max_time);};
 
   double get_curr_val1(double time);
   double get_curr_val2(double time);
 
-  std::string get_variable1();
-  std::string get_variable2();
+  std::string getVariable1();
+  std::string getVariable2();
   
-  std::string get_min_val1();
-  std::string get_min_val2();
+  std::string getMinVal1();
+  std::string getMinVal2();
 
-  std::string get_max_val1();
-  std::string get_max_val2();
+  std::string getMaxVal1();
+  std::string getMaxVal2();
 
  protected:
   int   handleLeftMouse(int, int);

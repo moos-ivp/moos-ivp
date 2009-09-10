@@ -91,9 +91,9 @@ void LogPlotViewer::resize(int gx, int gy, int gw, int gh)
 }
 
 //-------------------------------------------------------------
-// Procedure: add_logplot
+// Procedure: addLogPlot
 
-unsigned int LogPlotViewer::add_logplot(const LogPlot& given_logplot)
+unsigned int LogPlotViewer::addLogPlot(const LogPlot& given_logplot)
 {
   // Ensure that the extreme_min_time and extreme_max_time values are
   // the extremes over all added logplots.
@@ -119,9 +119,9 @@ unsigned int LogPlotViewer::add_logplot(const LogPlot& given_logplot)
 }
 
 //-------------------------------------------------------------
-// Procedure: set_left_plot()
+// Procedure: setLeftPlot()
 
-void LogPlotViewer::set_left_plot(unsigned int index)
+void LogPlotViewer::setLeftPlot(unsigned int index)
 {
   if(index == view_index1)
     return;
@@ -131,9 +131,9 @@ void LogPlotViewer::set_left_plot(unsigned int index)
 }
 
 //-------------------------------------------------------------
-// Procedure: set_right_plot()
+// Procedure: setRightPlot()
 
-void LogPlotViewer::set_right_plot(unsigned int index)
+void LogPlotViewer::setRightPlot(unsigned int index)
 {
   if(index == view_index2)
     return;
@@ -165,9 +165,9 @@ double LogPlotViewer::get_curr_val2(double gtime)
 }
 
 //-------------------------------------------------------------
-// Procedure: get_label1
+// Procedure: getVariable1
 
-string LogPlotViewer::get_variable1()
+string LogPlotViewer::getVariable1()
 {
   if((view_index1 < 0) || (view_index1 >= m_logplots.size()))
     return("none");
@@ -182,9 +182,9 @@ string LogPlotViewer::get_variable1()
 }
 
 //-------------------------------------------------------------
-// Procedure: get_label2
+// Procedure: getVariable2
 
-string LogPlotViewer::get_variable2()
+string LogPlotViewer::getVariable2()
 {
   if(view_index1 == view_index2)
     return("none");
@@ -202,9 +202,9 @@ string LogPlotViewer::get_variable2()
 }
 
 //-------------------------------------------------------------
-// Procedure: get_min_val1()
+// Procedure: getMinVal1()
 
-string LogPlotViewer::get_min_val1()
+string LogPlotViewer::getMinVal1()
 {
   if((view_index1 < 0) || (view_index1 >= m_logplots.size()))
     return("n/a");
@@ -213,9 +213,9 @@ string LogPlotViewer::get_min_val1()
 }
 
 //-------------------------------------------------------------
-// Procedure: get_max_val1()
+// Procedure: getMaxVal1()
 
-string LogPlotViewer::get_max_val1()
+string LogPlotViewer::getMaxVal1()
 {
   if((view_index1 < 0) || (view_index1 >= m_logplots.size()))
     return("n/a");
@@ -224,9 +224,9 @@ string LogPlotViewer::get_max_val1()
 }
 
 //-------------------------------------------------------------
-// Procedure: get_min_val2()
+// Procedure: getMinVal2()
 
-string LogPlotViewer::get_min_val2()
+string LogPlotViewer::getMinVal2()
 {
   if(view_index1 == view_index2)
     return("n/a");
@@ -238,9 +238,9 @@ string LogPlotViewer::get_min_val2()
 }
 
 //-------------------------------------------------------------
-// Procedure: get_max_val2()
+// Procedure: getMaxVal2()
 
-string LogPlotViewer::get_max_val2()
+string LogPlotViewer::getMaxVal2()
 {
   if(view_index1 == view_index2)
     return("n/a");
@@ -265,9 +265,9 @@ int LogPlotViewer::handleLeftMouse(int vx, int vy)
 }
 
 //-------------------------------------------------------------
-// Procedure: set_curr_time
+// Procedure: setCurrTime
 
-void LogPlotViewer::set_curr_time(double new_time)
+void LogPlotViewer::setCurrTime(double new_time)
 {
   if(new_time < m_extreme_min_time)
     new_time = m_extreme_min_time;
@@ -290,9 +290,9 @@ void LogPlotViewer::set_curr_time(double new_time)
 }
 
 //-------------------------------------------------------------
-// Procedure: adjust_zoom
+// Procedure: adjustZoom
 
-void LogPlotViewer::adjust_zoom(string ztype)
+void LogPlotViewer::adjustZoom(string ztype)
 {
   // Ensure there is never a zero denominator time_band
   if(m_display_max_time <= m_display_min_time)

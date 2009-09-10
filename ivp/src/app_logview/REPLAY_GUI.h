@@ -55,7 +55,7 @@ public:
   bool inIPFViewerB();
 
   void setWindowLayout(std::string layout="normal");
-
+  void setCurrTime(double);
 
 protected:
   void augmentMenu();
