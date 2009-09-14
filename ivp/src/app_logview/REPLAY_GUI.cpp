@@ -37,7 +37,7 @@ REPLAY_GUI::REPLAY_GUI(int g_w, int g_h, const char *g_l)
 {
   m_stream       = false;
   m_collect      = "Off";
-  m_step_amt     = 5;
+  m_step_amt     = 1;
   m_step_time    = 1.0;
   m_step_time_ix = 3;
   m_save_file_ix   = 0;
@@ -353,11 +353,11 @@ void REPLAY_GUI::augmentMenu()
 
   mbar->add("Replay/Collecting Toggle",  'w', (Fl_Callback*)REPLAY_GUI::cb_CollectToggle,(void*)0, FL_MENU_DIVIDER);
   mbar->add("Replay/Streaming Toggle",  ' ', (Fl_Callback*)REPLAY_GUI::cb_StreamToggle,(void*)0, 0);
-  mbar->add("Replay/Streaming Faster", 'a', (Fl_Callback*)REPLAY_GUI::cb_StreamSpeed, (void*)0, 0);
-  mbar->add("Replay/Streaming Slower", 'z', (Fl_Callback*)REPLAY_GUI::cb_StreamSpeed, (void*)1, 0);
-  mbar->add("Replay/Streaming Step 1",  0, (Fl_Callback*)REPLAY_GUI::cb_StreamStep, (void*)1, FL_MENU_RADIO);
+  mbar->add("Replay/Streaming Faster", 'a', (Fl_Callback*)REPLAY_GUI::cb_StreamSpeed, (void*)1, 0);
+  mbar->add("Replay/Streaming Slower", 'z', (Fl_Callback*)REPLAY_GUI::cb_StreamSpeed, (void*)0, FL_MENU_DIVIDER);
+  mbar->add("Replay/Streaming Step 1",  0, (Fl_Callback*)REPLAY_GUI::cb_StreamStep, (void*)1, FL_MENU_RADIO|FL_MENU_VALUE);
   mbar->add("Replay/Streaming Step 3",  0, (Fl_Callback*)REPLAY_GUI::cb_StreamStep, (void*)3, FL_MENU_RADIO);
-  mbar->add("Replay/Streaming Step 5",  0, (Fl_Callback*)REPLAY_GUI::cb_StreamStep, (void*)5, FL_MENU_RADIO|FL_MENU_VALUE);
+  mbar->add("Replay/Streaming Step 5",  0, (Fl_Callback*)REPLAY_GUI::cb_StreamStep, (void*)5, FL_MENU_RADIO);
   mbar->add("Replay/Streaming Step 10", 0, (Fl_Callback*)REPLAY_GUI::cb_StreamStep, (void*)10, FL_MENU_RADIO|FL_MENU_DIVIDER);
 
   mbar->add("Replay/Step by Seconds",  0, (Fl_Callback*)REPLAY_GUI::cb_StepType, (void*)0, FL_MENU_RADIO|FL_MENU_VALUE);
@@ -367,8 +367,6 @@ void REPLAY_GUI::augmentMenu()
   mbar->add("Replay/Step Back  1",  '[', (Fl_Callback*)REPLAY_GUI::cb_Step, (void*)-1, 0);
   mbar->add("Replay/Step Ahead 10", '>', (Fl_Callback*)REPLAY_GUI::cb_Step, (void*)10, 0);
   mbar->add("Replay/Step Back  10", '<', (Fl_Callback*)REPLAY_GUI::cb_Step, (void*)-10, FL_MENU_DIVIDER);
-  mbar->add("Replay/Time Zoom In", 0, (Fl_Callback*)REPLAY_GUI::cb_TimeZoom, (void*)1, 0);
-  mbar->add("Replay/Time Zoom Out", 0, (Fl_Callback*)REPLAY_GUI::cb_TimeZoom, (void*)-1, FL_MENU_DIVIDER);
 };
 
 //----------------------------------------------------------
@@ -772,6 +770,7 @@ void REPLAY_GUI::cb_TimeZoom(Fl_Widget* o, int v) {
 
 //----------------------------------------- StreamToggle
 inline void REPLAY_GUI::cb_StreamToggle_i() {
+  cout << "Toggling the Stream" << endl;
   m_stream = !m_stream;
   if(m_stream)
     m_timer.start();
@@ -800,23 +799,29 @@ inline void REPLAY_GUI::cb_StreamSpeed_i(bool faster) {
   else
     m_step_time_ix--;
 
-  if(m_step_time_ix > 4)
-    m_step_time_ix = 4;
+  if(m_step_time_ix > 8)
+    m_step_time_ix = 8;
   if(m_step_time_ix < 0)
     m_step_time_ix = 0;
 
-#if 0
-  if(m_step_time_ix == 0)
-    m_step_time = 0;
+  else if(m_step_time_ix == 0)
+    m_step_time = 8.0;
   else if(m_step_time_ix == 1)
-    m_step_time = np_viewer->getAvgStepTime() / 4.0;
-  else if(step_time_ix == 2)
-    m_step_time = np_viewer->getAvgStepTime() / 2.0;
-  else if(step_time_ix == 3)
-    m_step_time = np_viewer->getAvgStepTime() / 1.0;
-  else
-    m_step_time = np_viewer->getAvgStepTime() / 0.5;
-#endif
+    m_step_time = 4.0;
+  else if(m_step_time_ix == 2)
+    m_step_time = 2.0;
+  else if(m_step_time_ix == 3)
+    m_step_time = 1.0;
+  else if(m_step_time_ix == 4)
+    m_step_time = 1/2;
+  else if(m_step_time_ix == 5)
+    m_step_time = 1/4;
+  else if(m_step_time_ix == 6)
+    m_step_time = 1/8;
+  else if(m_step_time_ix == 7)
+    m_step_time = 1/16;
+  else if(m_step_time_ix == 8)
+    m_step_time = 1/32;
 
   updateXY();
 }
@@ -862,11 +867,15 @@ void REPLAY_GUI::updateXY()
 
   // Play Rate
   if(m_stream) {
-    if(m_step_time_ix == 0) play_rate->value("FAP");
-    if(m_step_time_ix == 1) play_rate->value("4xReal");
-    if(m_step_time_ix == 2) play_rate->value("2xReal");
-    if(m_step_time_ix == 3) play_rate->value("Real");
-    if(m_step_time_ix == 4) play_rate->value("Real/2");
+    if(m_step_time_ix == 0) play_rate->value("0.125Hz");
+    else if(m_step_time_ix == 1) play_rate->value("0.25Hz");
+    else if(m_step_time_ix == 2) play_rate->value("0.5Hz");
+    else if(m_step_time_ix == 3) play_rate->value("1Hz");
+    else if(m_step_time_ix == 4) play_rate->value("2Hz");
+    else if(m_step_time_ix == 5) play_rate->value("4Hz");
+    else if(m_step_time_ix == 6) play_rate->value("8Hz");
+    else if(m_step_time_ix == 7) play_rate->value("16Hz");
+    else if(m_step_time_ix == 8) play_rate->value("32Hz");
   }
   else
     play_rate->value("Paused");

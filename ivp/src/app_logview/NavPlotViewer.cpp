@@ -85,11 +85,17 @@ bool NavPlotViewer::setParam(string param, string value)
       handled = false;
   }
       
-
   else if(param == "center_view") {
     if(value == "average")
       setCenterView("ctr_of_bounding");
     handled = true;
+  }
+
+  else if(param == "cycle_active") {
+    if(m_hplot_left_ix < (m_navx_plot.size() - 1))
+      m_hplot_left_ix++;
+    else
+      m_hplot_left_ix = 0;
   }
 
   if(!handled)
@@ -390,9 +396,15 @@ void NavPlotViewer::drawNavPlot(unsigned int index)
     theta = m_hdg_plot[index].get_value_by_time(ctime);
 
   ObjectPose opose(x,y,theta,0,0);
+  ColorPack  vehi_color = m_vehi_settings.getColorInactiveVehicle();
+  if(index == m_hplot_left_ix) 
+    vehi_color = m_vehi_settings.getColorActiveVehicle();
+
+#if 0
   ColorPack  vehi_color("1.0, 0.906, 0.243");
   if(index==1) 
     vehi_color.setColor("red");    
+#endif
 
   ColorPack vname_color = m_vehi_settings.getColorVehicleName();  
   string    vnames_mode = m_vehi_settings.getVehiclesNameMode();

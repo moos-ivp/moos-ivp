@@ -195,18 +195,18 @@ void MarineVehiGUI::cb_AltTrailLength(Fl_Widget* o, int v) {
 //----------------------------------------- MVG_SetGeoAttr
 inline void MarineVehiGUI::cb_MVG_SetGeoAttr_i(int v) {
   if(v==700) cmviewer->setParam("active_vcolor", "red");
-  else if(v==701) cmviewer->setParam("active_vcolor", "crimson");
-  else if(v==702) cmviewer->setParam("active_vcolor", "white");
-  else if(v==703) cmviewer->setParam("active_vcolor", "blue_violet");
-  else if(v==704) cmviewer->setParam("active_vcolor", "dark_olive_green");
-  else if(v==705) cmviewer->setParam("active_vcolor", "orange_red");
+  else if(v==701) cmviewer->setParam("vehicles_active_color", "crimson");
+  else if(v==702) cmviewer->setParam("vehicles_active_color", "white");
+  else if(v==703) cmviewer->setParam("vehicles_active_color", "blue_violet");
+  else if(v==704) cmviewer->setParam("vehicles_active_color", "dark_olive_green");
+  else if(v==705) cmviewer->setParam("vehicles_active_color", "orange_red");
 
-  else if(v==800) cmviewer->setParam("inactive_vcolor", "1.0,0.9,0.243");
-  else if(v==801) cmviewer->setParam("inactive_vcolor", "dark_sea_green");
-  else if(v==802) cmviewer->setParam("inactive_vcolor", "khaki");
-  else if(v==803) cmviewer->setParam("inactive_vcolor", "gold");
-  else if(v==804) cmviewer->setParam("inactive_vcolor", "goldenrod");
-  else if(v==805) cmviewer->setParam("inactive_vcolor", "green_yellow");
+  else if(v==800) cmviewer->setParam("vehicles_inactive_color", "1.0,0.9,0.243");
+  else if(v==801) cmviewer->setParam("vehicles_inactive_color", "dark_sea_green");
+  else if(v==802) cmviewer->setParam("vehicles_inactive_color", "khaki");
+  else if(v==803) cmviewer->setParam("vehicles_inactive_color", "gold");
+  else if(v==804) cmviewer->setParam("vehicles_inactive_color", "goldenrod");
+  else if(v==805) cmviewer->setParam("vehicles_inactive_color", "green_yellow");
 
   else 
     return;
