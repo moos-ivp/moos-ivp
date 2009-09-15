@@ -187,12 +187,21 @@ bool BHV_Waypoint::setParam(string param, string val)
     m_waypoint_engine.setReverse(reverse);
     return(true);
   }
-  else if(param == "repeat") {
+  else if((param == "repeat") && (tolower(val) == "forever")) {
     IvPBehavior::setParam("perpetual", "true");
+    m_waypoint_engine.setRepeatsEndless(true);
+    return(true);
+  }
+  else if(param == "repeat") {
     int ival = atoi(val.c_str());
     if((ival < 0) || (!isNumber(val)))
       return(false);
+    if(ival > 0)
+      IvPBehavior::setParam("perpetual", "true");
+    else
+      IvPBehavior::setParam("perpetual", "false");
     m_waypoint_engine.setRepeat(ival);
+    m_waypoint_engine.setRepeatsEndless(false);
     return(true);
   }
   else if((param == "radius") || (param == "capture_radius")) {
