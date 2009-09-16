@@ -1,5 +1,5 @@
 README.txt
-Last update: 31 August 2009
+Last update: 16 September 2009
 Maintainer: Christopher Gagner ( Christopher.Gagner@navy.mil )
 
 ************************************************************
@@ -9,7 +9,7 @@ Maintainer: Christopher Gagner ( Christopher.Gagner@navy.mil )
 
 OVERVIEW
 ========
-This file gives information for building libtiff under all platforms.
+This file gives information for building libtiff under Windows.
 
 
 RESOURCES
@@ -38,23 +38,20 @@ to be compiled:
 NOTE: For version 3.8.2 these changes have already been made and checked in
       on the MOOS-IvP repository.
 
-*********
-* Linux *
-*********
+*******************
+* Linux and Apple *
+*******************
+It is the case where libtiff can be build on all three platforms. However, on 
+Mac and Linux, autoconf must be used to generate the following configuration 
+headers:
 
-Under Linux, autoconf should be used to generate the configuration headers.
-Libtiff should also be linked against the following libraries:
+lib_tiff/tiff-3.8.2/libtiff/tif_config.h 
+lib_tiff/tiff-3.8.2/libtiff/tiffconf.h
 
-(1) jpeg
-(2) zip
-(3) z
-
-NOTE: Under Linux, the changes are handled by CMake.
-
-*********
-* Apple *
-*********
-
-Under Apple, the changes need are to be determined.
+After looking into converting the autoconf build files to a CMake build file, 
+it was determined the level of effort seemed higher than the benefits, at 
+least for building libtiff on Mac and Linux. Under Mac and Linux, MOOS-IvP 
+should still require users to have the libtiff libraries installed on their 
+system. 
 
 
