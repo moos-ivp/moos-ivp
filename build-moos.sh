@@ -109,6 +109,7 @@ cmake                                           \
    -DBUILD_OCEAN_INSTRUMENTS=OFF                \
    -DBUILD_UMVS=ON                              \
    -DBUILD_UPB=ON                               \
+   -DCMAKE_CXX_FLAGS=-fPIC
    "${SRC_ABS_DIR}"
 
 echo ""
