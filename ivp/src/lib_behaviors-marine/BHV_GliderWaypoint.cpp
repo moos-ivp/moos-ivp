@@ -435,7 +435,7 @@ bool BHV_GliderWaypoint::setNextWaypoint()
       double dx = dt * m_current_x;
       double dy = dt * m_current_y;
 
-      angle = relAng(nx, ny, m_trackpt.x() + dx, m_trackpt.y() + dy);
+      angle = relAng(nx, ny, m_trackpt.x() - dx, m_trackpt.y() - dy);
       m_trackpt.projectPt(perp_pt, angle, dist);
 
       double hdg_ang = relAng(m_osx, m_osy, m_trackpt.x() + dx, m_trackpt.y() + dy);
