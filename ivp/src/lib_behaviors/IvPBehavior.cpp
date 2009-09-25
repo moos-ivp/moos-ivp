@@ -691,6 +691,8 @@ bool IvPBehavior::checkUpdates()
 	  string param = stripBlankEnds(pvector[0]);
 	  string value = stripBlankEnds(pvector[1]);
 	  bool  result = setParam(param, value);
+	  if(!result)
+	    result = IvPBehavior::setParam(param, value);
 	  if(!result) {
 	    ok = false;
 	    if(bad_params != "")
