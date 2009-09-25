@@ -35,6 +35,7 @@ SET(SRC
   BHV_HSLine.cpp
   BHV_HeadingChange.cpp
   BHV_HeadingBias.cpp
+  BHV_GliderWaypoint.cpp
 )
 
 ADD_LIBRARY(behaviors-marine ${SRC})
