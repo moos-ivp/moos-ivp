@@ -476,7 +476,7 @@ IvPFunction *BHV_GliderWaypoint::buildOF(string method)
   }    
   else { // if (method == "zaic")
     ZAIC_PEAK spd_zaic(m_domain, "speed");
-    spd_zaic.setParams(m_cruise_speed, 0, 2.6, 0, 0, 100);
+    spd_zaic.setParams(m_water_speed, 0, 2.6, 0, 0, 100);
     IvPFunction *spd_of = spd_zaic.extractIvPFunction();
     if(!spd_of)
       postWMessage("Failure on the SPD ZAIC");
