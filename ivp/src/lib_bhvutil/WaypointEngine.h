@@ -53,7 +53,8 @@ class WaypointEngine {
   int    getTotalHits()   {return(m_capture_hits + m_nonmono_hits);};
   bool   currPtChanged();
   void   resetCPA()       {m_current_cpa = -1;};
-  int    size()           {return(m_seglist_raw.size());};
+
+  unsigned int size()     {return(m_seglist_raw.size());};
 
   XYSegList getSegList()  {return(m_seglist);};
 
