@@ -137,10 +137,6 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
   m_curr_time = MOOSTime();
   m_info_buffer->setCurrTime(m_curr_time);
 
-  // Clear the delta vectors in the info_buffer here, before any
-  // new MOOS Mail is applied to the info buffer.
-  m_info_buffer->clearDeltaVectors();
-
   MOOSMSG_LIST::iterator p;
   
   for(p=NewMail.begin(); p!=NewMail.end(); p++) {
@@ -325,6 +321,10 @@ bool HelmIvP::Iterate()
 
   if(!m_allow_overide)
     m_has_control = true;
+
+  // Clear the delta vectors now that all behavior have had the 
+  // chance to consume delta info.
+  m_info_buffer->clearDeltaVectors();
 
   return(true);
 }
