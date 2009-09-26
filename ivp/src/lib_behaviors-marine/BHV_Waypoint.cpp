@@ -328,6 +328,9 @@ bool BHV_Waypoint::updateInfoIn()
 
 bool BHV_Waypoint::setNextWaypoint()
 {
+  if(m_waypoint_engine.size() == 0)
+    return(false);
+
   string feedback_msg = m_waypoint_engine.setNextWaypoint(m_osx, m_osy);
   
   if((feedback_msg=="completed") || (feedback_msg=="cycled")) {
@@ -470,16 +473,22 @@ void BHV_Waypoint::postStatusReport()
 {
   int    current_waypt = m_waypoint_engine.getCurrIndex();
   int    waypt_cycles  = m_waypoint_engine.getCycleCount();
+  int    total_hits    = m_waypoint_engine.getTotalHits();
+  int    capture_hits  = m_waypoint_engine.getCaptureHits();
   double dist_meters   = hypot((m_osx - m_nextpt.x()), 
 			       (m_osy - m_nextpt.y()));
   double eta_seconds   = dist_meters / m_osv;
   
+  string hits_str = intToString(capture_hits);
+  hits_str += "/" + intToString(total_hits);
+
   string stat = "vname=" + m_us_name + ",";
   stat += "behavior-name=" + m_descriptor + ",";
-  stat += "index=" + intToString(current_waypt)   + ",";
+  stat += "index="  + intToString(current_waypt)   + ",";
+  stat += "hits="   + hits_str + ",";
   stat += "cycles=" + intToString(waypt_cycles)   + ",";
-  stat += "dist="  + doubleToString(dist_meters, 0)  + ",";
-  stat += "eta="   + doubleToString(eta_seconds, 0);
+  stat += "dist="   + doubleToString(dist_meters, 0)  + ",";
+  stat += "eta="    + doubleToString(eta_seconds, 0);
 
   if(m_var_report != "silent")
     postMessage((m_var_report + m_var_suffix), stat);
