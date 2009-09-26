@@ -372,7 +372,7 @@ bool BHV_GliderWaypoint::setNextWaypoint()
 
   // By default, the steering point is the next waypoint.
   m_trackpt.set_vertex(next_ptx, next_pty);
-
+  m_water_speed = m_cruise_speed;
   // If m_lead_distance is non-neg, and we've already hit the
   // first waypoint, then steer to an intermediate point that
   // is m_lead_distance away from the perpendicular intersection
