@@ -337,8 +337,13 @@ void IvPBehavior::postMessage(string var, string sdata, string key)
   // First check if posted var has been remapped to another variable.
   map<string,string>::iterator p;
   p = m_remap_vars.find(var);
-  if(p != m_remap_vars.end())
+  if(p != m_remap_vars.end()) {
     var = p->second;
+    // If the variable has been mapped to "silent", this indicates
+    // the posting is not to be made at all.
+    if(tolower(var) == "silent")
+      return;
+  }
 
   VarDataPair pair(var, sdata);
 
@@ -361,11 +366,16 @@ void IvPBehavior::postMessage(string var, double ddata, string key)
   // First check if posted var has been remapped to another variable.
   map<string,string>::iterator p;
   p = m_remap_vars.find(var);
-  if(p != m_remap_vars.end())
+  if(p != m_remap_vars.end())  {
     var = p->second;
-
+    // If the variable has been mapped to "silent", this indicates
+    // the posting is not to be made at all.
+    if(tolower(var) == "silent")
+      return;
+  }
+  
   VarDataPair pair(var, ddata);
-
+  
   if(key != "repeatable") {
     key = (m_descriptor + var + key);
     pair.set_key(key);
