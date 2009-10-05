@@ -25,6 +25,10 @@
 #pragma warning(disable : 4503)
 #endif
 
+#ifdef _WIN32
+#define _USE_MATH_DEFINES
+#endif
+
 #include <math.h> 
 #include <stdlib.h>
 #include "BHV_GliderWaypoint.h"
