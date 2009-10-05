@@ -23,7 +23,7 @@
 #include "MBUtils.h"
 #include "AOF_MGaussian.h"
 
-#ifdef WIN32
+#ifdef _WIN32
 #   define _USE_MATH_DEFINES
 #endif
 #include <math.h>

@@ -9,7 +9,7 @@
 #include "TS_MOOSApp.h"
 #include "MBUtils.h"
 
-#ifdef WIN32
+#ifdef _WIN32
    #include <process.h>
 //    #include "MOOSAppRunnerThread.h"
    #define getpid _getpid
@@ -484,7 +484,7 @@ void TS_MOOSApp::postStatus()
 void TS_MOOSApp::seedRandom()
 {
   unsigned long tseed = time(NULL)+1;
-#ifdef WIN32
+#ifdef _WIN32
   unsigned long hostid = 0; 
 	char hostname[256];
 	if( gethostname(hostname, 256) == 0 ){

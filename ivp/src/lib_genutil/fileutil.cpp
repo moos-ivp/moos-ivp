@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <iostream>
 
-#ifdef WIN32
+#ifdef _WIN32
    // include Windows Files 
 #   include <io.h>
 #   include <sys/stat.h>
@@ -28,7 +28,7 @@
 using namespace std;
 
 //==============================================================================
-#ifdef WIN32
+#ifdef _WIN32
 int listdir (std::string dir, std::vector<std::string> &files) {
    intptr_t dp;
    struct _finddata_t fileinfo;

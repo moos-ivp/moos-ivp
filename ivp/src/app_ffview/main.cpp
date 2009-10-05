@@ -23,7 +23,7 @@ using namespace std;
 
 void pause(int nMS)
 {
-#ifdef WIN32
+#ifdef _WIN32
 	Sleep(nMS);
 #else
   timespec TimeSpec;

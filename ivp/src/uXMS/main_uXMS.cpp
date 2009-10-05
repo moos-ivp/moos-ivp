@@ -28,7 +28,7 @@
 #include "TermUtils.h"
 #include "MBUtils.h"
 
-#ifdef WIN32
+#ifdef _WIN32
    #include <process.h>
 #endif
 
@@ -168,7 +168,7 @@ int main(int argc ,char * argv[])
   if(seed) {
     // Add 1 to each in case one returns a zero in an error case
     unsigned long tseed = time(NULL) + 1;
-#ifdef WIN32
+#ifdef _WIN32
 	unsigned long hostid = 0; 
 	char hostname[256];
 	if( gethostname(hostname, 256) == 0 ){

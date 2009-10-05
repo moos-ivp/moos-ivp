@@ -25,7 +25,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-#ifdef WIN32
+#ifdef _WIN32
 #include "tiffio.h"
 #else
 #include <tiffio.h>

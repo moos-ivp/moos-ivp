@@ -30,7 +30,7 @@
 
 
 // See http://www.cmake.org/pipermail/cmake/2003-March/003482.html
-#ifdef WIN32
+#ifdef _WIN32
 	#include <windows.h>
 	#include <GL/gl.h>
 	#include "glext.h" // http://www.opengl.org/registry/api/glext.h

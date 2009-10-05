@@ -5,7 +5,7 @@
 #include <iostream>
 #include <stdlib.h>
 
-#if defined (WIN32)
+#ifdef _WIN32
    #include <windows.h>
 #else
    #include <unistd.h>
@@ -50,7 +50,7 @@ void BehaviorFactory::load_directory(string dirname) {
      const string fpath = dirname + '/' + fname;
     
      // Make sure it looks like a behavior's .so file...
-#ifdef WIN32
+#ifdef _WIN32
 	 if(fname.substr(0, 4) != "BHV_")
 #else
      if(fname.substr(0, 7) != "libBHV_")
@@ -62,7 +62,7 @@ void BehaviorFactory::load_directory(string dirname) {
 
      #ifdef __APPLE__
        const string library_suffix = ".dylib";
-     #elif WIN32
+     #elif _WIN32
 	   const string library_suffix = ".dll";
      #else
        const string library_suffix = ".so";
@@ -84,7 +84,7 @@ void BehaviorFactory::load_directory(string dirname) {
      // Strip off the leading 'lib' and trailing '.so'  / '.dylib' from the 
      // filename, because people using the behaviors want to call them just 
      // "BHV_...".
-#ifdef WIN32
+#ifdef _WIN32
 	 string bhv_name = fname.substr(0, fname.length() - (suffix_len));
 #else
      string bhv_name = fname.substr(3, fname.length() - (3 + suffix_len));
@@ -92,7 +92,7 @@ void BehaviorFactory::load_directory(string dirname) {
 
      cerr << "        About to load behavior library: " << bhv_name << " ... ";
      // Load the library file, then go after the symbols we need...
-#ifdef WIN32
+#ifdef _WIN32
 	 void* handle = LoadLibrary(fpath.c_str());
      
 	 if (handle == NULL) {
@@ -119,7 +119,7 @@ void BehaviorFactory::load_directory(string dirname) {
 
      // TFuncPtrCreateBehavior createFn = 
      //   reinterpret_cast<TFuncPtrCreateBehavior>(dlsym(handle, "createBehavior"));
-#ifdef WIN32
+#ifdef _WIN32
 	TFuncPtrCreateBehavior createFn = 
 		(TFuncPtrCreateBehavior)(GetProcAddress((HMODULE)handle,"createBehavior"));
 
@@ -167,7 +167,7 @@ void BehaviorFactory::loadEnvVarDirectories(std::string envVar, bool verbose) {
     return;
   }
   
-#ifdef WIN32
+#ifdef _WIN32
   vector<string> v = tokenize(dirs, ";");
 #else
   vector<string> v = tokenize(dirs, ":");

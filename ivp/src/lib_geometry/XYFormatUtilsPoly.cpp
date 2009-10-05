@@ -19,7 +19,7 @@
 /* Software Foundation, Inc., 59 Temple Place - Suite 330,       */
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
-#ifdef WIN32
+#ifdef _WIN32
    #define _USE_MATH_DEFINES
 #endif
 #include <math.h>
@@ -32,7 +32,7 @@
 #include "AngleUtils.h"
 #include "GeomUtils.h"
 
-#ifdef WIN32
+#ifdef _WIN32
   #define strncasecmp strnicmp
 #endif
 

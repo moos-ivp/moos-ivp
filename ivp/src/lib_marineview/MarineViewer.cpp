@@ -20,7 +20,7 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
-#ifdef WIN32
+#ifdef _WIN32
 #include <windows.h>
 #include <GL/gl.h>
 #include "glext.h" // http://www.opengl.org/registry/api/glext.h

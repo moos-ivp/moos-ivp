@@ -48,7 +48,7 @@ void ScanHandler::handle(const string& alogfile)
 
   m_report.sort(m_sort_style);
 
-#ifdef WIN32
+#ifdef _WIN32
   int line_digits  = (int)(log10( (double)m_report.getMaxLines())) + 2;
   int char_digits  = (int)(log10( (double)m_report.getMaxChars())) + 2;
   int start_digits = (int)(log10( m_report.getMaxStartTime())) + 4;

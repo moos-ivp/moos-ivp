@@ -12,7 +12,7 @@
 #include "TermUtils.h"
 #include "MBUtils.h"
 
-#ifdef WIN32
+#ifdef _WIN32
   #include <process.h>
   #define getpid _getpid
 #endif

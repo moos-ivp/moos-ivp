@@ -4,7 +4,7 @@
 #include <iostream>
 #include <stdlib.h>
 
-#if defined (WIN32)
+#ifdef _WIN32
    #include <windows.h>
 #else
    #include <unistd.h>
@@ -83,7 +83,7 @@ void AOFFactory::load_directory(string dirname) {
      cerr << "        About to load AOF library: " << aof_name << " ... ";
      
      // Load the library file, then go after the symbols we need...
-#ifdef WIN32
+#ifdef _WIN32
 	 void* handle = LoadLibrary(fpath.c_str());
      
 	 if (handle == NULL) {
@@ -109,7 +109,7 @@ void AOFFactory::load_directory(string dirname) {
      // side-step the compiler error. -CJC
 
 
-#ifdef WIN32
+#ifdef _WIN32
 	TFuncPtrCreateAOF createFn = 
 		(TFuncPtrCreateAOF)(GetProcAddress((HMODULE)handle,"createAOF"));
 
