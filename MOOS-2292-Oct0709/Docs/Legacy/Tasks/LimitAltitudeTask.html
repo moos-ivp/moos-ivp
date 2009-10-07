@@ -1,0 +1,65 @@
+<HTML>
+<HEAD>
+<TITLE>Limit Altitude  Task</TITLE>
+</HEAD>
+<BODY>
+
+<H1><img src="moose6.gif"> <center>Limit Altitude Task</center></H1>
+
+<H2>Description</H2>
+This task prevents the vehicle from dropping below a script specified minimum altitude. The Event flags are published
+when this depth is exceeded.
+
+
+<H2>Publishes</H2>
+<ul>
+	<li>EndFlags
+	<li>EventFlags
+</ul>
+<p>
+
+
+<H2>Subscribes</H2>
+<ul>
+	<li><b>StartFlags</b>
+	<li><b>NAV_ALTITUDE</b>
+</ul>
+<p>
+
+<H2>Configuration Block</H2>
+<ul>
+
+
+
+	<li><a href="CommonMOOSTask.html"> Common Task Parameters</a>
+	<p>
+
+	<li><H3>MinimumAltitude</H3>
+	<ul>
+		<li><b>Syntax:	</b> MinimumAltitude = MinAltitude
+		<li><b>Meaning:	</b> Set the minimum permissble altitude
+		<li><b>Example:	</b> <i>MinimumAltitude = 5</i> set min altitude to 5m
+	</ul>
+	<p>
+	
+
+</ul>
+
+
+<H2>Example Block</H2>
+<pre>
+Task = LimitAltitude
+{
+	Name = LimitAltitude
+	Priority = 1
+	InitialState = ON
+	TimeOut = NEVER
+
+	MinimumAltitude = 5
+}
+</pre>
+
+<hr>
+<H4>The MOOS &#169;  P. Newman 2001-2002 <img src="moose2.gif"></H4>
+</BODY>
+</HTML>
