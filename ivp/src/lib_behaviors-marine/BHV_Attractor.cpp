@@ -27,6 +27,7 @@
 #include <iostream>
 #include <math.h>
 #include <stdlib.h>
+#include "AngleUtils.h"
 #include "AOF_AttractorCPA.h"
 #include "BHV_Attractor.h"
 #include "OF_Reflector.h"
@@ -242,7 +243,42 @@ IvPFunction *BHV_Attractor::onRunState()
   double dist = hypot((m_osx - m_cnx), (m_osy - m_cny));
 
   IvPFunction *ipf = 0;
-  if (dist > m_min_priority_range)
+
+  // first make sure we point in the right direction
+
+  double angle = headingToRadians(m_osh);
+  double vx = cos(angle);
+  double vy = sin(angle);
+
+  double cos_ang = vx * (m_cnx - m_osx) + vx * (m_cny - m_osy);
+
+  if ( cos_ang < 0 )
+    {
+
+      double hdg_ang = relAng(m_osx, m_osy, m_cnx, m_cny);
+
+      ZAIC_PEAK hdg_zaic(m_domain, "course");
+      hdg_zaic.setSummit(hdg_ang);
+      hdg_zaic.setValueWrap(true);
+      hdg_zaic.setPeakWidth(120);
+      hdg_zaic.setBaseWidth(60);
+      hdg_zaic.setSummitDelta(10.0);
+      hdg_zaic.setMinMaxUtil(0,100);
+      IvPFunction *hdg_ipf = hdg_zaic.extractIvPFunction();
+      
+      ZAIC_PEAK spd_zaic(m_domain, "speed");
+      
+      spd_zaic.setSummit(m_cnv);
+      spd_zaic.setPeakWidth(0.1);
+      spd_zaic.setBaseWidth(2.0);
+      spd_zaic.setSummitDelta(50.0); 
+      
+      IvPFunction *spd_ipf = spd_zaic.extractIvPFunction();
+      
+      OF_Coupler coupler;
+      ipf = coupler.couple(hdg_ipf, spd_ipf);
+    }
+  else if (dist > m_min_priority_range)
     {  AOF_AttractorCPA aof(m_domain);
       aof.setParam("cnlat", m_cny);
       aof.setParam("cnlon", m_cnx);

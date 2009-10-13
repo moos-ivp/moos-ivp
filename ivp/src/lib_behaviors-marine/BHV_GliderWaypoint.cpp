@@ -137,12 +137,16 @@ bool BHV_GliderWaypoint::setParam(string param, string val)
     m_current = dval;
     m_current_x = m_current * sin(m_current_direction * M_PI/180.0);
     m_current_y = m_current * cos(m_current_direction * M_PI/180.0);
+    postMessage("CURRENT_X", m_current_x);
+    postMessage("CURRENT_Y", m_current_y);
     return(true);
   }
-  else if((param == "current_direction") && (dval > 0)) {
+  else if((param == "current_direction") && (dval >= 0)) {
     m_current_direction = dval;
     m_current_x = m_current * sin(m_current_direction * M_PI/180.0);
     m_current_y = m_current * cos(m_current_direction * M_PI/180.0);
+    postMessage("CURRENT_X", m_current_x);
+    postMessage("CURRENT_Y", m_current_y);
     return(true);
   }
   else if((param == "wpt_status") || (param == "wpt_status_var")) {
@@ -298,7 +302,9 @@ IvPFunction *BHV_GliderWaypoint::onRunState()
       postMessage("VIEW_POINT", m_trackpt.get_spec("active=true"));
     else
       postMessage("VIEW_POINT", m_trackpt.get_spec("active=false"));
-  }
+
+    postMessage("VIEW_SPEED", m_water_speed); 
+}
   // Otherwise "erase" the next waypoint marker
   else {
     postMessage("VIEW_POINT", m_nextpt.get_spec("active=false"));
