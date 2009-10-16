@@ -6,7 +6,7 @@
 SET(SRC
   BHV_AbortToPoint.cpp
   BHV_Attractor.cpp
-  BHV_HAttractor.cpp
+#  BHV_HAttractor.cpp
   BHV_AvoidCollision.cpp
   BHV_AvoidCollisionDepth.cpp
   BHV_AvoidObstacles.cpp
@@ -31,11 +31,10 @@ SET(SRC
   BHV_Timer.cpp
   BHV_Trail.cpp
   BHV_Waypoint.cpp
-  BHV_HPeriodicSurface.cpp
+#  BHV_HPeriodicSurface.cpp
   BHV_HSLine.cpp
   BHV_HeadingChange.cpp
   BHV_HeadingBias.cpp
-  BHV_GliderWaypoint.cpp
 )
 
 ADD_LIBRARY(behaviors-marine ${SRC})

@@ -37,7 +37,6 @@
 
 // CORE Behaviors
 #include "BHV_Waypoint.h"
-#include "BHV_GliderWaypoint.h"
 #include "BHV_Loiter.h"
 #include "BHV_OpRegion.h"
 #include "BHV_ConstantDepth.h"
@@ -345,8 +344,6 @@ IvPBehavior* Populator_BehaviorSet::initializeBehavior(string bhv_name)
     bhv = new BHV_OpRegion(m_domain);
   else if(bhv_name == "BHV_Waypoint")   
     bhv = new BHV_Waypoint(m_domain);
-  else if(bhv_name == "BHV_GliderWaypoint")   
-    bhv = new BHV_GliderWaypoint(m_domain);
   else if(bhv_name == "BHV_ConstantSpeed")     
     bhv = new BHV_ConstantSpeed(m_domain);
   else if(bhv_name == "BHV_Trail")      

@@ -31,7 +31,7 @@
 #include "AngleUtils.h"
 #include "GeomUtils.h"
 
-#ifdef _WIN32
+#ifdef WIN32
   #define strncasecmp strnicmp
 #endif
 
@@ -65,8 +65,10 @@ XYSegList string2SegList(string str)
   }
   format=tolower(format);
   
+
   if(!strncasecmp("zigzag:", str.c_str(), 7))
     format = "zigzag";
+
 
   if((format == "default") || (format == "points"))
     return(stringPoints2SegList(str));
