@@ -96,7 +96,7 @@ BHV_GliderWaypoint::BHV_GliderWaypoint(IvPDomain gdomain) :
 //-----------------------------------------------------------
 // Procedure: onSetParamComplete()
 
-void BHV_GliderWaypoint::onSetParamComplete()
+string BHV_GliderWaypoint::onSetParamComplete()
 {
   m_trackpt.set_source(m_us_name + tolower(getDescriptor()));
   m_trackpt.set_label(m_us_name + "'s track-point");
@@ -105,6 +105,8 @@ void BHV_GliderWaypoint::onSetParamComplete()
   m_nextpt.set_source(m_us_name + tolower(getDescriptor()));
   m_nextpt.set_label(m_us_name + "'s next waypoint");
   m_nextpt.set_type("waypoint");
+
+  return("");
 }
 
 //-----------------------------------------------------------

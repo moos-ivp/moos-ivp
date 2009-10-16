@@ -179,7 +179,7 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
       else if(vectorContains(m_node_report_vars, msg.m_sKey)) {
 	bool ok = processAISReport(msg.m_sVal);
 	if(!ok) {
-	  m_Comms.Notify("BHV_WARNING", "Unhandled AIS REPORT");
+	  m_Comms.Notify("BHV_WARNING", "Unhandled NODE REPORT");
 	  m_warning_count++;
 	}
       }
@@ -400,21 +400,21 @@ void HelmIvP::postBehaviorMessages()
 	string id = bhv_descriptor + intToString(m_iteration);
 	vector<string> svector = IvPFunctionToVector(sdata, id, 2000);
 	for(unsigned int k=0; k<svector.size(); k++)
-	  m_Comms.Notify("BHV_IPF", svector[k]);
+	  m_Comms.Notify("BHV_IPF", svector[k], bhv_descriptor);
       }
       // Otherwise just post to the DB directly.
       else {
 	if(msg_is_string) {
 	  m_info_buffer->setValue(var, sdata);
 	  if(key_change || key_repeat) {
-	    m_Comms.Notify(var, sdata);
+	    m_Comms.Notify(var, sdata, bhv_descriptor);
 	    m_outgoing_timestamp[var] = m_curr_time;
 	  }
 	}
 	else {
 	  m_info_buffer->setValue(var, ddata);
 	  if(key_change) {
-	    m_Comms.Notify(var, ddata);
+	    m_Comms.Notify(var, ddata, bhv_descriptor);
 	    m_outgoing_timestamp[var] = m_curr_time;
 	  }
 	}
@@ -422,7 +422,7 @@ void HelmIvP::postBehaviorMessages()
     }
 
     if(bhv_postings_summary != "")
-      m_Comms.Notify("IVPHELM_POSTINGS", bhv_postings_summary);
+      m_Comms.Notify("IVPHELM_POSTINGS", bhv_postings_summary, bhv_descriptor);
   }
 
   // Determine if the list of state-space related variables for

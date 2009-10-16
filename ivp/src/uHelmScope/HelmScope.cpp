@@ -155,8 +155,8 @@ bool HelmScope::Iterate()
 
 bool HelmScope::OnConnectToServer()
 {
-    registerVariables();
-    return(true);
+  registerVariables();
+  return(true);
 }
 
 //------------------------------------------------------------
@@ -1183,7 +1183,8 @@ void HelmScope::printPostingReport(int index)
       ok_post = false;
     else if(!m_display_msgs_pc &&  (!strncmp("PC_", pcstr, 3)))
       ok_post = false;
-    
+
+    ok_post = true;
     if(ok_post) {
       if(behaviors[i] != prev_behavior)
 	printf("@  -------------     -------  (BEHAVIOR=%s)\n", 

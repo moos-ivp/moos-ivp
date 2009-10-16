@@ -1,6 +1,5 @@
 
-Attempting to open tif file: /Users/mikerb/Research/moos-ivp/trunk/ivp/data/Default.tif
-/Users/mikerb/Research/moos-ivp/trunk/ivp/data/Default.tif: Sorry, requested compression method is not configured.
+Sep1409 - Added repeat=forever capability to BHV_Waypoint.
 
 
 

@@ -144,7 +144,7 @@ void LogViewLauncher::setBackground(int argc, char **argv)
       string value = argi;
       
       if((value == "mit") || (value=="charles"))
-	m_tif_file = "AerialMIT-1024.tif";
+	m_tif_file = "AerialMIT.tif";
       else if((value == "wmit") || (value=="wireframe") || (value=="wf"))
 	m_tif_file = "WireFrameMIT-1024.tif";
       else if((value == "mb") || (value=="monterey"))
@@ -157,8 +157,11 @@ void LogViewLauncher::setBackground(int argc, char **argv)
 	m_tif_file = "glintA.tif";
       else if(value == "none")
 	m_tif_file = "";
+      else
+	m_tif_file = value;
     }
   }
+  cout << "Tiff File: " << m_tif_file << endl;
 }
 
 

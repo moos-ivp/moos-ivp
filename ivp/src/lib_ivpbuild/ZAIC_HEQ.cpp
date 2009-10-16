@@ -117,7 +117,7 @@ PDMap *ZAIC_HEQ::setPDMap()
   if(m_ipt_two < m_ipt_high) {
     piece[0] = new IvPBox(1,1);
     piece[0]->setPTS(0, m_ipt_two, m_ipt_high);
-    piece[0]->wt(0) = 0.0;
+    piece[0]->wt(0) = m_break_ties;
     piece[0]->wt(1) = m_maxutil;
     piece_count++;
   }
@@ -154,7 +154,7 @@ PDMap *ZAIC_HEQ::setPDMap()
   if(m_ipt_one > 0) {
     piece[3] = new IvPBox(1,1);
     piece[3]->setPTS(0, 0, m_ipt_one-1);
-    piece[3]->wt(0) = 0.0;
+    piece[3]->wt(0) = -m_break_ties;
     piece[3]->wt(1) = m_minutil;
     piece_count++;
   }

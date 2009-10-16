@@ -803,8 +803,18 @@ void XMS::updateVariable(CMOOSMsg &msg)
   
   string vtime_str = doubleToString(vtime, 2);
   vtime_str = dstringCompact(vtime_str);
-  
+
+#if 0  
   updateVarSource(varname, msg.m_sSrc);
+#endif
+#if 1
+  string varsrc = msg.GetSource();
+  string varaux = msg.GetSourceAux();
+  if(varaux != "")
+    varsrc += ":" + varaux;
+  updateVarSource(varname, varsrc);
+#endif
+
   updateVarTime(varname, vtime_str);
   updateVarCommunity(varname, msg.m_sOriginatingCommunity);
   

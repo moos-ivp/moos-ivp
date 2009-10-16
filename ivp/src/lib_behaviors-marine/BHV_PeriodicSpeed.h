@@ -33,30 +33,37 @@ public:
   ~BHV_PeriodicSpeed() {};
   
   IvPFunction* onRunState();
+  void         onIdleState();
+  void         onIdleToRunState();
   bool         setParam(std::string, std::string);
+  std::string  onSetParamComplete();
 
+ protected:
+  void         updateInfoIn();
+  void         postStatusReport();
 
 private: // Configuration Parameters
 
-  double  m_period_gap;
-  double  m_period_length;
+  double  m_period_lazy;
+  double  m_period_busy;
   double  m_period_speed;
-  double  m_period_basewidth;
-  double  m_period_peakwidth;
+  double  m_zaic_basewidth;
+  double  m_zaic_peakwidth;
+  double  m_zaic_summit_delta;
+  bool    m_reset_upon_running;
 
-  std::string m_period_start_flag;
-
-  std::string m_var_pending_active;
-  std::string m_var_pending_inactive;
-
+  std::string m_var_busy_count;
+  std::string m_var_pending_busy;
+  std::string m_var_pending_lazy;
 
 private: // State Variables
-  bool    m_state_active;
-  bool    m_first_iteration;
+  bool    m_mode_busy;
+  bool    m_mark_needed;
   double  m_mark_time;
+  int     m_busy_count;
 
-  std::string m_period_start_value;
-
+  double  m_time_to_busy;
+  double  m_time_to_lazy;
 };
 #endif
 

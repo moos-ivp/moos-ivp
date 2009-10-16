@@ -48,82 +48,79 @@ BHV_PeriodicSpeed::BHV_PeriodicSpeed(IvPDomain gdomain) :
   IvPBehavior::setParam("inactiveflag", "PERIODIC_SPEED=0");
 
   // Initialize Configuration Parameters
-  m_period_gap       = 0;
-  m_period_length    = 0;
-  m_period_speed     = 0;
-  m_period_basewidth = 0;
-  m_period_peakwidth = 0;
-
+  m_period_busy       = 0;
+  m_period_lazy       = 0;
+  m_period_speed      = 0;
+  m_zaic_basewidth    = 0;
+  m_zaic_peakwidth    = 0;
+  m_zaic_summit_delta = 25;
+  
+  m_var_pending_busy  = "PS_PENDING_ACTIVE";
+  m_var_pending_lazy  = "PS_PENDING_INACTIVE";
+  m_var_busy_count    = "PS_BUSY_COUNT";
+  
   // Initialize State Variables
-  m_state_active    = false;
-  m_first_iteration = true;
-  m_mark_time       = 0;
+  m_mode_busy     = false;
+  m_mark_needed   = true;
+  m_mark_time     = 0;
+  m_busy_count    = 0;
+
+  m_reset_upon_running = true;
 }
 
 //-----------------------------------------------------------
 // Procedure: setParam
 
-bool BHV_PeriodicSpeed::setParam(string g_param, string g_val) 
+bool BHV_PeriodicSpeed::setParam(string param, string value) 
 {
-  if(IvPBehavior::setParam(g_param, g_val))
-    return(true);
+  double dval = atof(value.c_str());
 
-  if(g_param == "period_gap") {
-    double dval = atof(g_val.c_str());
-    if((dval <= 0) || (!isNumber(g_val)))
+  if(param == "period_busy") {
+    if(!isNumber(value) || (dval <= 0))
       return(false);
-    m_period_gap = dval;
+    m_period_busy = dval;
     return(true);
   }  
-  else if(g_param == "period_length") {
-    double dval = atof(g_val.c_str());
-    if((dval <= 0) || (!isNumber(g_val)))
+  else if(param == "period_lazy") {
+    if(!isNumber(value) || (dval <= 0))
       return(false);
-    m_period_length = dval;
+    m_period_lazy = dval;
     return(true);
   }  
-  else if(g_param == "period_speed") {
-    double dval = atof(g_val.c_str());
-    if((dval < 0) || (!isNumber(g_val)))
+  else if(param == "period_speed") {
+    if(!isNumber(value) || (dval < 0))
       return(false);
     m_period_speed = dval;
     return(true);
   }  
-  else if(g_param == "period_basewidth") {
-    double dval = atof(g_val.c_str());
-    if((dval < 0) || (!isNumber(g_val)))
+  else if((param == "period_basewidth") || (param == "zaic_basewidth")) {
+    if(!isNumber(value) || (dval < 0))
       return(false);
-    m_period_basewidth = dval;
+    m_zaic_basewidth = dval;
     return(true);
   }  
-  else if(g_param == "period_peakwidth") {
-    double dval = atof(g_val.c_str());
-    if((dval < 0) || (!isNumber(g_val)))
+  else if((param == "period_peakwidth") || (param == "zaic_peakwidth")) {
+    if(!isNumber(value) || (dval < 0))
       return(false);
-    m_period_peakwidth = dval;
+    m_zaic_peakwidth = dval;
     return(true);
-  }  
-  else if(g_param == "stat_pending_active") {
-    m_var_pending_active = g_val;
-    return(true);
-  }  
-  else if(g_param == "stat_pending_inactive") {
-    m_var_pending_inactive = g_val;
-    return(true);
-  }  
-  else if(g_param == "period_flag") {
-    g_val = findReplace(g_val, ',', '=');
-    vector<string> svector = parseString(g_val, '=');
-    if(svector.size() != 2)
+  } 
+  else if(param == "zaic_summit_delta") {
+    if(!isNumber(value) || (dval < 0))
       return(false);
-    else {
-      string var = stripBlankEnds(svector[0]);
-      string val = stripBlankEnds(svector[1]);
-      if((var=="") || (val==""))
-	return(false);
-      m_period_start_flag  = var;
-      m_period_start_value = val;
-    }
+    m_zaic_summit_delta = dval;
+    return(true);
+  } 
+  else if(param == "reset_upon_running")
+    return(setBooleanOnString(m_reset_upon_running, value));
+  else if(param == "initially_busy") {
+    if(tolower(value) == "true")
+      m_mode_busy  = true;
+    else if(tolower(value) == "false")
+      m_mode_busy  = false;
+    else
+      return(false);
+    m_mark_needed   = true;
     return(true);
   }
 
@@ -131,62 +128,59 @@ bool BHV_PeriodicSpeed::setParam(string g_param, string g_val)
 }
 
 //-----------------------------------------------------------
+// Procedure: onSetParamComplete
+
+string BHV_PeriodicSpeed::onSetParamComplete()
+{
+  postMessage(m_var_busy_count, 0);
+  return("");
+}
+
+//-----------------------------------------------------------
+// Procedure: onIdleState
+
+void BHV_PeriodicSpeed::onIdleState() 
+{
+  if(m_reset_upon_running) {
+    m_time_to_busy = m_period_lazy;
+    m_time_to_lazy = 0;
+  }
+  else
+    updateInfoIn();
+
+  postStatusReport();
+}
+
+//-----------------------------------------------------------
+// Procedure: onIdleToRunState
+
+void BHV_PeriodicSpeed::onIdleToRunState() 
+{
+  if(m_reset_upon_running) {
+    m_mark_time = getBufferCurrTime();
+    m_mode_busy = false;
+  }
+}
+
+//-----------------------------------------------------------
 // Procedure: onRunState
 
 IvPFunction *BHV_PeriodicSpeed::onRunState() 
 {
-  double curr_time = getBufferCurrTime();
-
-  if(m_first_iteration) {
-    m_first_iteration = false;
-    m_mark_time = curr_time;
-    return(0);
-  }
-
-  double time_since_mark = curr_time - m_mark_time;
-
-  double time_to_active   = 0;
-  double time_to_inactive = 0;
-
-  if(m_state_active) {
-    if(time_since_mark > m_period_length) {
-      m_state_active = false;
-      m_mark_time = curr_time;
-      time_since_mark = 0;
-    }
-    time_to_inactive = m_period_length - time_since_mark;
-  }
-  else {
-    if(time_since_mark > m_period_gap) {
-      m_state_active = true;
-      m_mark_time = curr_time;
-      time_since_mark = 0;
-    }
-    else
-      time_to_active = m_period_gap - time_since_mark;
-  }
-
-  // For double-value postings of time, we post at integer precision 
-  // when not close to zero to reduce the number of postings to the DB. 
-
-  if(time_to_inactive <= 1)
-    postMessage(m_var_pending_inactive,  time_to_inactive);
-  else
-    postIntMessage(m_var_pending_inactive,  time_to_inactive);
-
-  if(time_to_active <= 1)
-    postMessage(m_var_pending_active, time_to_active);
-  else
-    postIntMessage(m_var_pending_active, time_to_active);
-
-
-  if(!m_state_active)
+  // Update m_mode_busy, m_time_to_busy, m_time_to_lazy, 
+  // m_mark_time, m_busy_count
+  updateInfoIn();
+  
+  postStatusReport();
+  
+  if(!m_mode_busy)
     return(0);
 
   ZAIC_PEAK zaic(m_domain, "speed");
   zaic.setSummit(m_period_speed);
-  zaic.setBaseWidth(m_period_basewidth);
-  zaic.setPeakWidth(m_period_peakwidth);
+  zaic.setBaseWidth(m_zaic_basewidth);
+  zaic.setPeakWidth(m_zaic_peakwidth);
+  zaic.setSummitDelta(m_zaic_summit_delta);
 
   IvPFunction *new_of = zaic.extractIvPFunction();
   new_of->getPDMap()->normalize(0,100);
@@ -195,10 +189,58 @@ IvPFunction *BHV_PeriodicSpeed::onRunState()
   return(new_of);
 }
 
+//-----------------------------------------------------------
+// Procedure: updateInfoIn()
 
+void BHV_PeriodicSpeed::updateInfoIn() 
+{
+  double curr_time = getBufferCurrTime();
+  
+  if(m_mark_needed) {
+    m_mark_needed = false;
+    m_mark_time = curr_time;
+  }
 
+  double time_since_mark = curr_time - m_mark_time;
 
+  if(m_mode_busy) {
+    m_time_to_lazy = m_period_busy - time_since_mark;
+    if(m_time_to_lazy <= 0) {
+      m_mode_busy     = false;
+      m_mark_time     = curr_time;
+      time_since_mark = 0;
+      m_time_to_lazy  = 0;
+    }
+  }
+  else {
+    m_time_to_busy = m_period_lazy - time_since_mark;
+    if(m_time_to_busy <= 0) {
+      m_mode_busy      = true;
+      m_mark_time      = curr_time;
+      time_since_mark  = 0;
+      m_time_to_busy   = 0;
+      m_busy_count++;
+      postMessage(m_var_busy_count, m_busy_count);
+    }
+  }
+}
 
+//-----------------------------------------------------------
+// Procedure: postStatusReport()
 
+void BHV_PeriodicSpeed::postStatusReport() 
+{
+  // For double-value postings of time, we post at integer precision 
+  // when not close to zero to reduce the number of postings to the DB. 
+  if(m_time_to_lazy <= 1)
+    postMessage(m_var_pending_lazy,  m_time_to_lazy);
+  else
+    postIntMessage(m_var_pending_lazy,  m_time_to_lazy);
+
+  if(m_time_to_busy <= 1)
+    postMessage(m_var_pending_busy, m_time_to_busy);
+  else
+    postIntMessage(m_var_pending_busy, m_time_to_busy);
+}
 
 

@@ -148,8 +148,17 @@ bool BackImg::readTiffData(string filename)
   // images have newfangled tags that confuse libtiff
   TIFFErrorHandler warn = TIFFSetWarningHandler(0);
   
+  cout << "Trying to open: " << file << endl;
   TIFF* tiff = TIFFOpen(file.c_str(), "r");
-  
+  if(!tiff) {
+    file = findReplace(file, "data", "data-local");
+    cout << "Failed: Trying now to open: " << file << endl;
+    tiff = TIFFOpen(file.c_str(), "r");
+  }
+  if(tiff)
+    cout << "Success: " << file << endl;
+
+
   // turn warnings back on, just in case
   TIFFSetWarningHandler(warn);
 

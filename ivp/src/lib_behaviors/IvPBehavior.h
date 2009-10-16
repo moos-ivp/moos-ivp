@@ -60,8 +60,8 @@ public:
 
   virtual IvPFunction* onRunState() {return(0);};
   virtual bool setParam(std::string, std::string);
+  virtual std::string onSetParamComplete() {return("");};
   virtual void onIdleState() {};
-  virtual void onSetParamComplete() {};
   virtual void onIdleToRunState() {};
   virtual void onRunToIdleState() {};
 

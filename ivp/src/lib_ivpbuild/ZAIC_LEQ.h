@@ -34,7 +34,8 @@ class PDMap;
 class ZAIC_LEQ: public ZAIC_HLEQ {
 public:
   ZAIC_LEQ(IvPDomain domain, const std::string& varname) :
-    ZAIC_HLEQ(domain, varname) {};
+  ZAIC_HLEQ(domain, varname) {m_break_ties=0.00001;};
+
   virtual ~ZAIC_LEQ() {};
 
   // The older way of expressing this function, still supported.
@@ -46,6 +47,8 @@ public:
 protected:
   void   setPointLocations();
   PDMap* setPDMap();
+
+  double m_break_ties;
 };
 #endif
 
