@@ -42,6 +42,16 @@ inline void XYSegList::add_vertex(double x, double y, double z)
 }
 
 //---------------------------------------------------------------
+// Procedure: add_vertex
+
+inline void XYSegList::add_vertex(const XYPoint &pt)
+{
+  vertex_x.push_back(pt.x());
+  vertex_y.push_back(pt.y());
+  vertex_z.push_back(pt.z());
+}
+
+//---------------------------------------------------------------
 // Procedure: alter_vertex
 //   Purpose: Given a new vertex, find the existing vertex that is
 //            closest, and replace it with the new one.

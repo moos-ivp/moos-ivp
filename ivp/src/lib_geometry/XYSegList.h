@@ -26,6 +26,7 @@
 #include <vector>
 #include <string>
 #include "XYObject.h"
+#include "XYPoint.h"
 
 class XYSegList : public XYObject {
 public:
@@ -33,12 +34,14 @@ public:
   virtual ~XYSegList() {};
 
   // XYSegList create and edit functions
+  void   add_vertex(const XYPoint&);
   void   add_vertex(double, double, double=0);       
   void   alter_vertex(double, double, double=0);
   void   delete_vertex(double, double);
   void   insert_vertex(double, double, double=0);
   void   clear();
 
+  
 public:
   void   shift_horz(double val);
   void   shift_vert(double val);

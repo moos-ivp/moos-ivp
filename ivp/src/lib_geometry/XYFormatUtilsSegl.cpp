@@ -65,6 +65,9 @@ XYSegList string2SegList(string str)
   }
   format=tolower(format);
   
+  if(!strncasecmp("zigzag:", str.c_str(), 7))
+    format = "zigzag";
+
   if((format == "default") || (format == "points"))
     return(stringPoints2SegList(str));
   else if(format == "zigzag")
