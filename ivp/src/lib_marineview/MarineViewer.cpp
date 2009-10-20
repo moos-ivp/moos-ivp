@@ -579,7 +579,7 @@ void MarineViewer::drawCommonVehicle(const string& vname,
     drawGLPoly(g_kayakMidOpen, g_kayakMidOpenSize, gray, 0, factor);
     glTranslatef(cx, cy, 0);
   }
-  else if(vehibody == "auv") {
+  else if((vehibody == "auv") || (vehibody == "uuv")) {
     if(shape_length > 0)
       factor *= (shape_length / g_auvLength);
     ColorPack blue = colorParse("blue");
@@ -620,9 +620,10 @@ void MarineViewer::drawCommonVehicle(const string& vname,
     double cx = g_shipCtrX * factor;
     double cy = g_shipCtrY * factor;
     glTranslatef(-cx, -cy, 0);
-    drawGLPoly(g_shipBody, g_shipBodySize, body_color, 0, factor);
+    drawGLPoly(g_auvBody, g_auvBodySize, body_color, 0, factor);
     if(outer_line > 0)
-      drawGLPoly(g_shipBody, g_shipBodySize, blue, outer_line, factor);
+      drawGLPoly(g_auvBody, g_auvBodySize, blue, outer_line, factor);
+    drawGLPoly(g_propUnit, g_propUnitSize, blue, 0, factor);
     glTranslatef(cx, cy, 0);
   }
 

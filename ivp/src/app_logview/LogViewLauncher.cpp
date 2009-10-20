@@ -68,9 +68,16 @@ REPLAY_GUI *LogViewLauncher::launch(int argc, char **argv)
   determineVehicleNames();
   
   ok = ok && buildLogPlots();
+  buildHelmPlots();
+  buildVPlugPlots();
+  buildIPFPlots();
+
+#if 0
+  ok = ok && buildLogPlots();
   ok = ok && buildHelmPlots();
   ok = ok && buildVPlugPlots();
   ok = ok && buildIPFPlots();
+#endif
 
   ok = ok && buildGraphical();
 
@@ -415,7 +422,7 @@ void LogViewLauncher::determineVehicleNames()
   unsigned int j, jsize = m_alog_files.size();
   for(j=0; j<jsize; j++) {
     string vname = "V" + intToString(j) + "_";
-    string vtype = "ship";
+    string vtype = "auv";
     string vlength = "10";
     bool   vname_set = false;
     bool   vtype_set = false;
