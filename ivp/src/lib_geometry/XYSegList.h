@@ -68,6 +68,7 @@ public:
   double get_avg_x() const;
   double get_avg_y() const;
   double dist_to_ctr(double x, double y) const;
+  double max_dist_to_ctr() const;
   bool   segs_cross(bool loop=true) const;
   double length();
 

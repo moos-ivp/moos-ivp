@@ -182,6 +182,26 @@ double angle360(double degval)
 }
 
 //---------------------------------------------------------------
+// Procedure: angleDiff
+//   Purpose: Determine the difference in angle degrees between 
+//            two given angles, ensuring the range [0, 180).
+
+double angleDiff(double ang1, double ang2)
+{
+  ang1 = angle360(ang1);
+  ang2 = angle360(ang2);
+  double diff;
+  if(ang2 > ang1)
+    diff = ang2 - ang1;
+  else
+    diff = ang1 - ang2;
+
+  if(diff >= 180)
+    diff = 360 - diff;
+  return(diff);
+}
+
+//---------------------------------------------------------------
 // Procedure: containsAngle
 //   Purpose: Given a range of angle, in the domain [0, 360),
 //            determine if the query angle lies within.

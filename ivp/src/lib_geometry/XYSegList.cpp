@@ -459,6 +459,30 @@ double XYSegList::dist_to_ctr(double x, double y) const
 }
 
 
+//---------------------------------------------------------------
+// Procedure: max_dist_to_ctr
+//   Purpose: Return the maximum distance between the center and
+//            any one of the vertices in the SegList.
+
+double XYSegList::max_dist_to_ctr() const
+{
+  double ctr_x = get_center_x();
+  double ctr_y = get_center_y();
+  
+  double max_dist = 0;
+
+  unsigned int i, vsize = vertex_x.size();
+  for(i=0; i<vsize; i++) {
+    double dist  = hypot((ctr_x - vertex_x[i]), 
+			 (ctr_y - vertex_y[i]));
+    if(dist > max_dist)
+      max_dist = dist;
+  }  
+
+  return(max_dist);
+}
+
+
 
 //---------------------------------------------------------------
 // Procedure: segs_cross
