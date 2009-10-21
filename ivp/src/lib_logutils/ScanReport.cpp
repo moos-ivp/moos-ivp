@@ -328,25 +328,70 @@ void ScanReport::sort(const string& style)
     sortByStopTime(true);
   else if(style == "bystoptime_descending")
     sortByStopTime(false);
+  else if(style == "byvars_ascending")
+    sortByVarName(true);
+  else if(style == "byvars_descending")
+    sortByVarName(false);
+  else if(style == "bysrc_ascending")
+    sortBySourceName(true);
+  else if(style == "bysrc_descending")
+    sortBySourceName(false);
 }
-
-
 
 //--------------------------------------------------------
 // Procedure: sortByVarName
 //     Notes: 
 
-#if 0
-void ScanReport::sortByVarName()
+void ScanReport::sortByVarName(bool ascending)
 {
   bool done = false;
   while(!done) {
+    done = true;
     unsigned int i, vsize = m_var_names.size();
-    for(i=0; i<vsize; i++) {
+    for(i=0; i<vsize-1; i++) {
+      bool order_switch = false;
+      if(ascending  && (m_var_names[i] > m_var_names[i+1]))
+	order_switch = true;
+      if(!ascending && (m_var_names[i] < m_var_names[i+1]))
+	order_switch = true;
+      if(order_switch) {
+	done = false;
+	switchItems(i, i+1);
+      }
     }
   }
 }
-#endif
+
+//--------------------------------------------------------
+// Procedure: sortBySourceName
+//     Notes: 
+
+void ScanReport::sortBySourceName(bool ascending)
+{
+  bool done = false;
+  while(!done) {
+    done = true;
+    unsigned int i, vsize = m_var_names.size();
+    for(i=0; i<vsize-1; i++) {
+      bool order_switch = false;
+      string src_i = m_var_sources[i];
+      string src_j = m_var_sources[i+1];
+      src_i = biteString(src_i, ',');
+      src_j = biteString(src_j, ',');
+      
+      string str_i = src_i + m_var_names[i];
+      string str_j = src_j + m_var_names[i+1];
+      if(ascending  && (str_i > str_j))
+	order_switch = true;
+      if(!ascending && (str_i < str_j))
+	order_switch = true;
+      if(order_switch) {
+	done = false;
+	switchItems(i, i+1);
+      }
+    }
+  }
+}
 
 
 //--------------------------------------------------------

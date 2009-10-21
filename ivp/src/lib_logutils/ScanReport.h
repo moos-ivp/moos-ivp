@@ -61,6 +61,7 @@ class ScanReport
   // Sorting routines for better user output options
   void         sort(const std::string& style);
   void         sortByVarName(bool ascending=true);
+  void         sortBySourceName(bool ascending=true);
   void         sortByChars(bool ascending=true);
   void         sortByLines(bool ascending=true);
   void         sortByStartTime(bool ascending=true);

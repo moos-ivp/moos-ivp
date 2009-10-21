@@ -14,8 +14,30 @@
 #include "MBUtils.h"
 #include "ALogScanner.h"
 #include "ScanHandler.h"
+#include "ColorParse.h"
 
 using namespace std;
+
+//--------------------------------------------------------
+// Constructor
+
+ScanHandler::ScanHandler()
+{
+  m_pcolor_map["pHelmIvP"]       = "blue";
+  m_pcolor_map["pNodeReporter"]  = "green";
+  
+  m_pcolors.push_back("blue");
+  m_pcolors.push_back("green");
+  m_pcolors.push_back("red");
+  m_pcolors.push_back("magenta");
+  m_pcolors.push_back("cyan");
+  m_pcolors.push_back("yellow");
+  m_pcolors.push_back("nocolor");
+
+  m_next_color_ix = 2;
+
+  m_use_colors = true;
+}
 
 //--------------------------------------------------------
 // Procedure: setParam
@@ -25,6 +47,37 @@ void ScanHandler::setParam(const string& param, const string& value)
 {
   if(param == "sort_style")
     m_sort_style = value;
+  else if(param == "proc_colors")
+    setBooleanOnString(m_use_colors, value);
+}
+
+//--------------------------------------------------------
+// Procedure: procColor
+//     Notes: 
+
+string ScanHandler::procColor(string proc_name)
+{
+  string pcolor = m_pcolor_map[proc_name];
+  if(pcolor != "") {
+    return(pcolor);
+  }
+
+  unsigned int total_colors = m_pcolors.size(); 
+  if(total_colors == 0)
+    return("nocolor");
+  
+  if(m_next_color_ix >= total_colors-1) {
+    string last_color = m_pcolors[total_colors-1];
+    m_pcolor_map[proc_name] = last_color;
+    return(last_color);
+  }
+  else {
+    string next_color = m_pcolors[m_next_color_ix];
+    m_pcolor_map[proc_name] = next_color;
+    m_next_color_ix++;
+    return(next_color);
+  }
+
 }
 
 //--------------------------------------------------------
@@ -105,9 +158,19 @@ void ScanHandler::handle(const string& alogfile)
 
     string sfirst = doubleToString(first, 2);
     string slast  = doubleToString(last,  2);
-    
+
+    if(m_use_colors) {
+      string varsources_copy = varsources;
+      string first_source = biteString(varsources_copy, ',');
+      string color = termColor(procColor(first_source));
+      printf("%s", color.c_str());
+    }
+
     printf(bformat_string.c_str(),  varname.c_str(), lcnt, 
 	   chars, sfirst.c_str(), slast.c_str(), varsources.c_str());
+
+    if(m_use_colors)
+      printf("%s", termColor().c_str());
   }
 
   string start_time = doubleToString(m_report.getMinStartTime(),2);

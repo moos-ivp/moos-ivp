@@ -17,7 +17,7 @@
 class ScanHandler
 {
  public:
-  ScanHandler() {};
+  ScanHandler();
   ~ScanHandler() {}
 
   void setParam(const std::string&, const std::string&);
@@ -25,11 +25,18 @@ class ScanHandler
 
   void appStatReport();
 
+  std::string procColor(std::string proc_name);
+
  protected:
 
   std::string m_sort_style;
 
   ScanReport  m_report;
+  bool        m_use_colors;
+
+  std::map<std::string, std::string> m_pcolor_map;
+  std::vector<std::string>           m_pcolors;
+  unsigned int                       m_next_color_ix;
 };
 
 #endif

@@ -365,24 +365,24 @@ string termColor(const string& raw_color_in)
     return("\33[91m");
   else if(raw_color == "red") 
     return("\33[31m");
-  else if(raw_color == "light_green") 
+  else if(raw_color == "lightgreen") 
     return("\33[92m");
   else if(raw_color == "green") 
     return("\33[32m");
-  else if(raw_color == "light_yellow") 
+  else if(raw_color == "lightyellow") 
     return("\33[93m");
   else if(raw_color == "yellow") 
     return("\33[33m");
-  else if(raw_color == "light_blue") 
+  else if(raw_color == "lightblue") 
     return("\33[94m");
   else if(raw_color == "blue") 
     return("\33[34m");
-  else if(raw_color == "light_magenta") 
+  else if(raw_color == "lightmagenta") 
     return("\33[95m");
   else if(raw_color == "magenta") 
     return("\33[35m");
 
-  else if(raw_color == "light_cyan") 
+  else if(raw_color == "lightcyan") 
     return("\33[96m");
   else if(raw_color == "cyan") 
     return("\33[36m");
@@ -390,6 +390,12 @@ string termColor(const string& raw_color_in)
     return("\33[97m");
   else if(raw_color == "white") 
     return("\33[37m");
+  else if(raw_color == "reversered") 
+    return("\33[7;31m");
+  else if(raw_color == "reverseblue") 
+    return("\33[7;34m");
+  else if(raw_color == "reversegreen") 
+    return("\33[7;32m");
   else
     return("\33[0m");
 }
