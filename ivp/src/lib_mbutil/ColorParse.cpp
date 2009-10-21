@@ -348,3 +348,49 @@ string colorVectorToString(const vector<double>& cvect)
 
   return(rval);
 }
+
+
+//-------------------------------------------------------------
+// Procedure: termColor
+
+string termColor(const string& raw_color_in)
+{
+  string raw_color = tolower(raw_color_in);
+  raw_color = findReplace(raw_color, "_", "");
+  if(raw_color == "nocolor") 
+    return("\33[0m");
+  else if(raw_color == "") 
+    return("\33[0m");
+  else if(raw_color == "lightred") 
+    return("\33[91m");
+  else if(raw_color == "red") 
+    return("\33[31m");
+  else if(raw_color == "light_green") 
+    return("\33[92m");
+  else if(raw_color == "green") 
+    return("\33[32m");
+  else if(raw_color == "light_yellow") 
+    return("\33[93m");
+  else if(raw_color == "yellow") 
+    return("\33[33m");
+  else if(raw_color == "light_blue") 
+    return("\33[94m");
+  else if(raw_color == "blue") 
+    return("\33[34m");
+  else if(raw_color == "light_magenta") 
+    return("\33[95m");
+  else if(raw_color == "magenta") 
+    return("\33[35m");
+
+  else if(raw_color == "light_cyan") 
+    return("\33[96m");
+  else if(raw_color == "cyan") 
+    return("\33[36m");
+  else if(raw_color == "lightwhite") 
+    return("\33[97m");
+  else if(raw_color == "white") 
+    return("\33[37m");
+  else
+    return("\33[0m");
+}
+  
