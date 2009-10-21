@@ -22,6 +22,7 @@
 /*****************************************************************/
 
 #include <iostream>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "LogUtils.h"
@@ -64,28 +65,25 @@ REPLAY_GUI *LogViewLauncher::launch(int argc, char **argv)
   setALogFiles(argc, argv);  
 
   bool ok = setALogFileSkews();
+  if(!ok)
+    return(0);
   parseALogFiles();
   determineVehicleNames();
   
-  ok = ok && buildLogPlots();
+  buildLogPlots();
   buildHelmPlots();
   buildVPlugPlots();
   buildIPFPlots();
 
-#if 0
-  ok = ok && buildLogPlots();
-  ok = ok && buildHelmPlots();
-  ok = ok && buildVPlugPlots();
-  ok = ok && buildIPFPlots();
-#endif
-
   ok = ok && buildGraphical();
 
   total_timer.stop();
-  cout << "Done logview launch time (cpu): ";
+  cout << termColor("blue") << "Done logview launch time (cpu): ";
   cout << total_timer.get_float_cpu_time() << endl;
   cout << "Done logview launch time (wall): ";
-  cout << total_timer.get_float_wall_time() << endl;
+  cout << total_timer.get_float_wall_time() << termColor() << endl;
+
+
 
   if(ok)
     return(m_gui);
@@ -283,7 +281,8 @@ bool LogViewLauncher::setALogFileSkews()
     string filestr = m_alog_files[i];
     FILE *f = fopen(filestr.c_str(), "r");
     if(!f) {
-      cout << "Unable to open: " << filestr << endl;
+      cout << termColor("red");
+      cout << "Unable to open: " << filestr << termColor() << endl;
       return(false);
     }
     for(j=0; j<5; j++) {
@@ -294,7 +293,9 @@ bool LogViewLauncher::setALogFileSkews()
     }
     fclose(f);
     if(logstarts[i] == 0) {
+      cout << termColor("red");
       cout << "Unable to detect LOGSTART in file: " << filestr << endl;
+      cout << termColor();
       return(false);
     }
     if((i==0) || (logstarts[i] < min_logstart))
@@ -306,8 +307,10 @@ bool LogViewLauncher::setALogFileSkews()
     m_alog_files_skew.push_back(logstarts[i] - min_logstart);
 
   parse_timer.stop();
+  cout << termColor("green");
   cout << "Done detecting .alog file SKEWS - total detect time: ";
   cout << parse_timer.get_float_cpu_time() << endl << endl;
+  cout << termColor();
   return(true);
 }
   
@@ -330,8 +333,10 @@ void LogViewLauncher::parseALogFiles()
   } 
 
   parse_timer.stop();
+  cout << termColor("green");
   cout << "Done parsing .alog files - total parse time: ";
   cout << parse_timer.get_float_cpu_time() << endl << endl;
+  cout << termColor();
 }
   
 //-------------------------------------------------------------
@@ -421,7 +426,7 @@ void LogViewLauncher::determineVehicleNames()
 
   unsigned int j, jsize = m_alog_files.size();
   for(j=0; j<jsize; j++) {
-    string vname = "V" + intToString(j) + "_";
+    string vname = "V" + intToString(j);
     string vtype = "auv";
     string vlength = "10";
     bool   vname_set = false;
@@ -433,6 +438,13 @@ void LogViewLauncher::determineVehicleNames()
 
     if(j < (m_node_reports.size())) {
       unsigned int k, ksize = m_node_reports[j].size();
+      
+      if(ksize == 0) {
+	cout << termColor("red");
+	cout << "Warning: No NODE_REPORTS in " << m_alog_files[j] << "!!!";
+	cout << termColor() << endl;
+      }
+
       for(k=0; k<ksize; k++) {
 	vector<string> svector = parseString(m_node_reports[j][k],',');
 	unsigned int i, vsize = svector.size();
@@ -471,6 +483,7 @@ void LogViewLauncher::determineVehicleNames()
     m_vehicle_type.push_back(vtype);
     m_vehicle_length.push_back(atof(vlength.c_str()));
     
+    cout << termColor("red");
     if(vname_inconsistent) {
       cout << "Warning: Vehicle name for file " << m_alog_files[j];
       cout << " was inconsistent across node reports." << endl;
@@ -483,6 +496,7 @@ void LogViewLauncher::determineVehicleNames()
       cout << "Warning: Vehicle length for file " << m_alog_files[j];
       cout << " was inconsistent across node reports." << endl;
     }
+    cout << termColor();
 
     cout << "  File " << m_alog_files[j] << " name=" << vname << endl;
     cout << "  File " << m_alog_files[j] << " type=" << vtype << endl;
@@ -490,8 +504,10 @@ void LogViewLauncher::determineVehicleNames()
   }
 
   parse_timer.stop();
+  cout << termColor("green");
   cout << "Done setting vehicle names - total parse time: ";
   cout << parse_timer.get_float_cpu_time() << endl << endl;
+  cout << termColor();
 
 }
 
@@ -511,22 +527,27 @@ bool LogViewLauncher::buildLogPlots()
     Populator_LogPlots pop_lp;
     pop_lp.setVName(m_vehicle_name[i]); 
     bool ok = pop_lp.populateFromEntries(m_entries_log_plot[i]);
-    if(!ok) {
-      cout << "Problem with file " << m_alog_files[i] << ". Exiting" << endl;
-      return(false);
-    }
     
     vector<LogPlot> lp_vector;
     unsigned int k, lp_size = pop_lp.size();
     for(k=0; k<lp_size; k++)
       lp_vector.push_back(pop_lp.getLogPlot(k));
 
+    if(lp_size == 0) {
+      cout << termColor("red");
+      cout << "Warning: No Numerical Entries (LogPlots) in ";
+      cout << m_alog_files[i] << "!!!";
+      cout << termColor() << endl;
+    }
+
     m_log_plots.push_back(lp_vector);
   }
 
   parse_timer.stop();
+  cout << termColor("green");
   cout << "Done build LogPlots - total build time: ";
   cout << parse_timer.get_float_cpu_time() << endl << endl;
+  cout << termColor();
   return(true);
 }
 
@@ -545,7 +566,9 @@ bool LogViewLauncher::buildHelmPlots()
     Populator_HelmPlots pop_hp;
     bool ok = pop_hp.populateFromEntries(m_entries_helm_plot[i]);
     if(!ok) {
-      cout << "Problem with file " << m_alog_files[i] << ". Exiting" << endl;
+      cout << termColor("red") << "Unable to build Helm Plots!!!" << endl;
+      cout << "(Likely due to lack of IVPHELM_* entries in .alog files)";
+      cout << termColor() << endl << endl;
       return(false);
     }
     m_helm_plots.push_back(pop_hp.getHelmPlot());
@@ -560,8 +583,10 @@ bool LogViewLauncher::buildHelmPlots()
   parse_timer.stop();
   cout << "  Total HelmPlots: " << m_helm_plots.size() << endl;
 
+  cout << termColor("green");
   cout << "Done building HelmPlots - total build time: ";
   cout << parse_timer.get_float_cpu_time() << endl << endl;
+  cout << termColor();
   return(true);
 }
 
@@ -586,8 +611,10 @@ bool LogViewLauncher::buildVPlugPlots()
   }
 
   parse_timer.stop();
+  cout << termColor("green");
   cout << "Done: VPlugPlot parse time: ";
   cout << parse_timer.get_float_cpu_time() << endl << endl;
+  cout << termColor();
   return(true);
 }
 
@@ -614,10 +641,20 @@ bool LogViewLauncher::buildIPFPlots()
     for(k=0; k<ksize; k++)
       m_ipf_plots.push_back(pop_ipf.getPlotIPF(k));
   }
-  
   parse_timer.stop();
+
+  
+  if(m_ipf_plots.size() == 0) {
+    cout << termColor("red") << "Unable to build IPF Plots!!!" << endl;
+    cout << "(Likely due to lack of BHV_IPF entries in .alog files)";
+    cout << endl << termColor() << endl;
+    return(false);
+  }
+
+  cout << termColor("green");
   cout << "Done: IPF_Plot parse time: ";
   cout << parse_timer.get_float_cpu_time() << endl << endl;
+  cout << termColor();
   return(true);
 }
 
