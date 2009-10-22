@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
   bool   reverse_requested  = false;
   bool   app_stat_requested = false;
   string proc_colors        = "true";
-  string sort_style         = "byvar_ascending";
+  string sort_style         = "bysrc_ascending";
 
   string alogfile = "";
   for(int i=1; i<argc; i++) {
