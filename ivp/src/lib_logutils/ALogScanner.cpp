@@ -13,6 +13,7 @@
 #include "MBUtils.h"
 #include "ALogScanner.h"
 #include <cstdlib>
+#include <cstdio>
 
 using namespace std;
 
