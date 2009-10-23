@@ -6,6 +6,7 @@
 /*****************************************************************/
 
 #include <iostream>
+#include <cstdio>
 #include "GEO_GUI.h"
 #include "MBUtils.h"
 
