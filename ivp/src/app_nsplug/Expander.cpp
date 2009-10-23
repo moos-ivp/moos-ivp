@@ -17,6 +17,7 @@
 #include "MBUtils.h"
 #include "FileBuffer.h"
 #include "Expander.h"
+#include "ColorParse.h" // For debugging
 
 using namespace std;
 
@@ -225,9 +226,23 @@ vector<string> Expander::expandFile(string filename,
       return_vector.push_back(fvector[i]);
     }   
 
-// commented out as this is debugging output - tes 8.17.09    
-//    cout << filename << ": Line[" << i+1 << "]: " << line_orig << endl;
-//    cout << "  Mode: " << currMode() << endl;
+#if 0 // BEGIN DEBUGGING OUTPUT BLOCK
+    string pline = fvector[i];
+    if(pline.length() > 0)
+      pline.at(pline.length()-1) = '\0';
+
+    cout << "Line[" << i+1 << "]: " << pline << flush;
+    cout << termColor("blue");
+    cout << "   (" << currMode() << ")   ";
+
+    if(skipLines())
+      cout << termColor("red") << "skip" << termColor();
+    else
+      cout << termColor("green") << "ok" << termColor();
+    cout << endl;
+#endif // END DEBUGGING OUTPUT BLOCK
+
+
   }   
   
 
@@ -541,26 +556,44 @@ bool Expander::popMode()
 
 //--------------------------------------------------------
 // Procedure: skipLines
+//      Notr: Determines if, given the current stack of modes,
+//            whether a currently considered line should be
+//            skipped.
 
 bool Expander::skipLines()
 {
   string curr_mode = currMode();
+  if(modeStackContains("ifdefno"))
+    return(true);
+  if(modeStackContains("ifdefnomore"))
+    return(true);
+  if(modeStackContains("elseno"))
+    return(true);
+  if(modeStackContains("ifndefno"))
+    return(true);
+
   if(curr_mode == "top")
     return(false);
   if(curr_mode == "ifdefyes")
     return(false);
-  if(curr_mode == "ifdefno")
-    return(true);
-  if(curr_mode == "ifdefnomore")
-    return(true);
   if(curr_mode == "elseyes")
     return(false);
-  if(curr_mode == "elseno")
-    return(true);
   if(curr_mode == "ifndefyes")
     return(false);
-  if(curr_mode == "ifndefno")
-    return(true);
   return(true);
 }
 
+//--------------------------------------------------------
+// Procedure: modeStackContains
+//      Note: Returns true if the given string is anywhere
+//            in the stack of saved modes.
+
+bool Expander::modeStackContains(string str)
+{
+  unsigned int i, vsize = m_pmode.size();
+  for(i=0; i<vsize; i++) {
+    if(m_pmode[i] == str)
+      return(true);
+  }
+  return(false);
+}

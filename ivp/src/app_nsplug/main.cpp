@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
   
   // Look for a request for usage information
   if(scanArgs(argc, argv, "-h", "--help", "-help")) {
-    cout << "Usage: splug filename newfilename [-f, --force][MACRO=VAL]" << endl;
+    cout << "Usage: nsplug filename newfilename [-f, --force][MACRO=VAL]" << endl;
     return(0);
   }
 
