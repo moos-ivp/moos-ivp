@@ -63,6 +63,12 @@ int main(int argc, char *argv[])
   LogViewLauncher launcher;
   gui = launcher.launch(argc, argv);
   
+  // It's only polite to center the view on the center of the 
+  // bounding box of the total vehicle trails.
+
+  if(gui)
+    gui->cmviewer->setParam("center_view", "average");
+
   if(gui) {
     Fl::add_idle(idleProc);
     return(Fl::run());
