@@ -53,13 +53,16 @@ public:
   BehaviorSet();
   virtual ~BehaviorSet();
   
-  void addBehavior(IvPBehavior *b);
-  void addInitialVar(VarDataPair msg) {m_initial_vars.push_back(msg);};
-  void addDefaultVar(VarDataPair msg) {m_default_vars.push_back(msg);};
-  int  getCount()                     {return(m_behaviors.size());};
-  void setCurrTime(double v)          {m_curr_time = v;};
-  void setModeSet(ModeSet v)          {m_mode_set = v;};
-  
+  void   addBehavior(IvPBehavior *b);
+  void   addInitialVar(VarDataPair msg) {m_initial_vars.push_back(msg);};
+  void   addDefaultVar(VarDataPair msg) {m_default_vars.push_back(msg);};
+  void   setCurrTime(double v)          {m_curr_time = v;};
+  double getCurrTime()                  {return(m_curr_time);};
+  void   setModeSet(ModeSet v)          {m_mode_set = v;};
+  int    getCount()                     {return(m_behaviors.size());};
+
+  unsigned int size()                   {return(m_behaviors.size());};
+
   void         setReportIPF(bool v)   {m_report_ipf=v;};
   bool         stateOK(unsigned int);
   void         resetStateOK();
