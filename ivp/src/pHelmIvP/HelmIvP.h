@@ -66,8 +66,8 @@ protected:
   bool detectRepeatOnKey(const std::string& key);
 
   void postAllStop();  
-  bool processAISReport(const std::string &);
-  
+  bool processNodeReport(const std::string &);
+
 protected:
   InfoBuffer*   m_info_buffer;
   bool          m_has_control;
@@ -119,6 +119,11 @@ protected:
   // a particular variable, and whether or not repeat posts are wanted.
   std::map<std::string, double>      m_outgoing_timestamp;
   std::map<std::string, double>      m_outgoing_repinterval;
+  
+  // Keep track of whether a logger is present. If not then duplicates
+  // filters are cleared on each iteration.
+  bool m_logger_present;
+
 };
 
 #endif 

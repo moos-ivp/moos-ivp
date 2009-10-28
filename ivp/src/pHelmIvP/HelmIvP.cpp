@@ -69,6 +69,7 @@ HelmIvP::HelmIvP()
   m_skews_matter   = true;
   m_warning_count  = 0;
   m_last_heartbeat = 0;
+  m_logger_present = false;
 
   m_use_beta_engine = false;
 
@@ -175,9 +176,10 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
 	MOOSTrace("\n");
 	MOOSDebugWrite("pHelmIvP Has Been Re-Started");
       }
-      
+      else if(msg.m_sKey == "DB_CLIENTS") 
+	m_logger_present = strContains(msg.m_sVal, "pLogger");
       else if(vectorContains(m_node_report_vars, msg.m_sKey)) {
-	bool ok = processAISReport(msg.m_sVal);
+	bool ok = processNodeReport(msg.m_sVal);
 	if(!ok) {
 	  m_Comms.Notify("BHV_WARNING", "Unhandled NODE REPORT");
 	  m_warning_count++;
@@ -209,6 +211,11 @@ bool HelmIvP::Iterate()
   postEngagedStatus();
   postCharStatus();
   
+  if(!m_logger_present) {
+    m_outgoing_strings.clear();
+    m_outgoing_doubles.clear();
+  }
+      
   if(!m_has_control) {
     postAllStop();
     return(false);
@@ -349,8 +356,8 @@ void HelmIvP::postBehaviorMessages()
     MOOSTrace("Behavior Report ---------------------------------\n");
   }
 
-  int bhv_cnt = m_bhv_set->getCount();
-  for(int i=0; i < bhv_cnt; i++) {
+  unsigned int i, bhv_cnt = m_bhv_set->size();
+  for(i=0; i < bhv_cnt; i++) {
     string bhv_descriptor = m_bhv_set->getDescriptor(i);
     vector<VarDataPair> mvector = m_bhv_set->getMessages(i);
     int msize = mvector.size();
@@ -376,8 +383,7 @@ void HelmIvP::postBehaviorMessages()
       // Keep track of warnings count for inclusion in IVPHELM_SUMMARY
       if(var == "BHV_WARNING")
 	m_warning_count++;
-
-
+     
       // Possibly augment the postings_summary
       if(key_change) {
 	// If first var-data tuple then tack header info on front
@@ -627,6 +633,7 @@ bool HelmIvP::OnConnectToServer()
 
 void HelmIvP::registerVariables()
 {
+  m_Comms.Register("DB_CLIENTS", 0);
   m_Comms.Register("MOOS_MANUAL_OVERIDE", 0);
   m_Comms.Register("MOOS_MANUAL_OVERRIDE", 0);
   m_Comms.Register("RESTART_HELM", 0);
@@ -962,10 +969,10 @@ void HelmIvP::postAllStop()
 }
 
 //--------------------------------------------------------------------
-// Procedure: processAISReport
+// Procedure: processNodeReport
 //   Purpose: 
 
-bool HelmIvP::processAISReport(const string& report)
+bool HelmIvP::processNodeReport(const string& report)
 {
   string x_val, dep_val, spd_val, hdg_val, vname;
   string y_val, utc_val, lat_val, long_val;
@@ -1014,3 +1021,4 @@ bool HelmIvP::processAISReport(const string& report)
   
   return(true);
 }
+
