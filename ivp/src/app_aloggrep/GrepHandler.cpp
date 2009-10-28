@@ -11,6 +11,7 @@
 
 #include <iostream>
 #include <cstdlib>
+#include <cstdio>
 #include <math.h>
 #include "MBUtils.h"
 #include "GrepHandler.h"

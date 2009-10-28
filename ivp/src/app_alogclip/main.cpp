@@ -16,6 +16,7 @@
 #include "TermUtils.h"
 #include "ALogClipper.h"
 #include <cstdlib>
+#include <cstdio>
 
 using namespace std;
 
