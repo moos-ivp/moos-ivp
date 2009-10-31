@@ -19,40 +19,6 @@
 
 using namespace std;
 
-//--------------------------------------------------------
-// Procedure: getVarName
-//     Notes: Syntax:  "TIMESTAMP  VAR  SOURCE  DATA"
-
-string getVarName(const string& line)
-{
-  int  len   = line.length();
-  bool done  = false;
-  int  state = 0;
-
-  int  buffix  = 0;
-  char buff[MAX_LINE_LENGTH];
-
-  for(int i=0; ((i<len) && !done); i++) {
-    if((line[i] == ' ') || (line[i] == '\t')) {
-      if(state == 0)
-	state = 1;
-      else if(state == 2) {
-	buff[buffix] = '\0';
-	done = true;
-      }
-    }
-    else {
-      if(state == 1)
-	state = 2;
-      if(state == 2) {
-	buff[buffix] = line[i];
-	buffix++;
-      }
-    }
-  }
-  string str = buff;
-  return(str);
-}
 
 //--------------------------------------------------------
 // Procedure: getTimeStamp
@@ -60,42 +26,103 @@ string getVarName(const string& line)
 
 string getTimeStamp(const string& line)
 {
-  int  len   = line.length();
-  bool done  = false;
+  unsigned int i, len = line.length();
 
-  int  buffix  = 0;
-  char buff[MAX_LINE_LENGTH];
+  bool   done = false;
+  string str;
 
-  for(int i=0; ((i<len) && !done); i++) {
-    if((line[i] == ' ') || (line[i] == '\t')) {
-      buff[buffix] = '\0';
+  for(i=0; ((i<len) && !done); i++) {
+    if((line[i] == ' ') || (line[i] == '\t'))
       done = true;
+    else
+      str.push_back(line[i]);
+  }
+  return(str);
+}
+
+//--------------------------------------------------------
+// Procedure: getVarName
+//     Notes: Syntax:  "TIMESTAMP   VAR   SOURCE   DATA"
+//            States:      0      1  2  3   4    5
+
+string getVarName(const string& line)
+{
+  unsigned int i, len = line.length();
+
+  bool   done  = false;
+  int    state = 0;
+  string str;
+
+  for(i=0; ((i<len) && !done); i++) {
+    if((line[i] == ' ') || (line[i] == '\t')) {
+      if(state == 0)
+	state = 1;
+      else if(state == 2)
+	done = true;
     }
     else {
-      buff[buffix] = line[i];
-      buffix++;
+      if(state == 1) {
+	str.push_back(line[i]);
+	state = 2;
+      }
+      else if(state == 2)
+	str.push_back(line[i]);
     }
   }
-  string str = buff;
+  return(str);
+}
+
+//--------------------------------------------------------
+// Procedure: getSourceName
+//     Notes: Syntax:  "TIMESTAMP   VAR   SOURCE   DATA"
+//            States:      0      1  2  3   4    5
+
+string getSourceName(const string& line)
+{
+  unsigned int i, len = line.length();
+
+  bool   done  = false;
+  int    state = 0;
+  string str;
+
+
+  for(i=0; ((i<len) && !done); i++) {
+    if((line[i] == ' ') || (line[i] == '\t')) {
+      if(state == 0)
+	state = 1;
+      else if(state == 2)
+	state = 3;
+      else if(state == 4)
+	done = true;
+    }
+    else {
+      if(state == 1)
+	state = 2;
+      else if(state == 3) {
+	str.push_back(line[i]);
+	state = 4;
+      }
+      else if(state == 4)
+	str.push_back(line[i]);
+    }
+  }
   return(str);
 }
 
 //--------------------------------------------------------
 // Procedure: getDataEntry
-//     Notes: Syntax:  "TIMESTAMP  VAR  SOURCE  DATA"
+//     Notes: Syntax:  "TIMESTAMP   VAR   SOURCE   DATA"
+//            States:      0      1  2  3   4    5   6
 
 string getDataEntry(const string& line)
 {
-  int len = line.length();
-  
-  bool done = false;
-  
-  int state = 0;
+  unsigned int i, len = line.length();
 
-  int  buffix  = 0;
-  char buff[MAX_LINE_LENGTH];
+  bool   done = false;
+  int    state = 0;
+  string str;
 
-  for(int i=0; (i<len); i++) {
+  for(i=0; (i<len); i++) {
     if((line[i] == ' ') || (line[i] == '\t')) {
       if(state == 0)
 	state = 1;
@@ -103,26 +130,22 @@ string getDataEntry(const string& line)
 	state = 3;
       else if(state == 4)
 	state = 5;
-      if(state == 6) {
-	buff[buffix] = line[i];
-	buffix++;
-      }
+      else if(state == 6) 
+	str.push_back(line[i]);
     }
     else {
       if(state == 1)
 	state = 2;
       else if(state == 3)
 	state = 4;
-      else if(state == 5)
+      else if(state == 5) {
+	str.push_back(line[i]);
 	state = 6;
-      if(state == 6) {
-	buff[buffix] = line[i];
-	buffix++;
       }
+      else if(state == 6)
+	str.push_back(line[i]);
     }
   }
-  buff[buffix] = '\0';
-  string str = buff;
   return(str);
 }
 
@@ -264,10 +287,10 @@ string getNextRawLine(FILE *fileptr)
     return("err");
   }
   
-  bool EOL     = false;
-  int  buffix  = 0;
-  int  myint   = '\0';
-  char buff[MAX_LINE_LENGTH];
+  bool   EOL     = false;
+  int    buffix  = 0;
+  int    myint   = '\0';
+  char   buff[MAX_LINE_LENGTH];
 
   while((!EOL) && (buffix < MAX_LINE_LENGTH)) {
     myint = fgetc(fileptr);
