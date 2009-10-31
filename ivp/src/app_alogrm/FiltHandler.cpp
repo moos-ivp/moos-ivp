@@ -111,13 +111,15 @@ bool FiltHandler::handle(const string& alogfile, const string& new_alogfile)
       done = true;
     else {
       string varname = getVarName(line_raw);
-
+      string srcname = getSourceName(line_raw);
+      
       int ksize = m_keys.size();
       bool match = false;
       for(int i=0; ((i<ksize) && !match); i++) {
-	if(varname == m_keys[i])
+	if((varname == m_keys[i]) || (srcname == m_keys[i]))
 	  match = true;
-	else if(m_pmatch[i] && strContains(varname, m_keys[i]))
+	else if(m_pmatch[i] && (strContains(varname, m_keys[i]) ||
+				strContains(varname, m_keys[i])))
 	  match = true;
       }
       
