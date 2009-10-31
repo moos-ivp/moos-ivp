@@ -77,6 +77,7 @@ bool GrepHandler::handle(const string& alogfile, const string& new_alogfile)
   bool done = false;
   while(!done) {
     string line_raw = getNextRawLine(m_file_in);
+    
     bool   line_is_comment = false;
     if((line_raw.length() > 0) && (line_raw.at(0) == '%'))
       line_is_comment = true;
@@ -85,13 +86,18 @@ bool GrepHandler::handle(const string& alogfile, const string& new_alogfile)
       done = true;
     else {
       string varname = getVarName(line_raw);
+      string srcname = getSourceName(line_raw);
+
+      //string data = getDataEntry(line_raw);
+      //cout << "data: [" << data << "]" << endl;
 
       int ksize = m_keys.size();
       bool match = false;
       for(int i=0; ((i<ksize) && !match); i++) {
-	if(varname == m_keys[i])
+	if((varname == m_keys[i]) || (srcname == m_keys[i]))
 	  match = true;
-	else if(m_pmatch[i] && strContains(varname, m_keys[i]))
+	else if(m_pmatch[i] && (strContains(varname, m_keys[i]) ||
+				strContains(srcname, m_keys[i])))
 	  match = true;
       }
 
