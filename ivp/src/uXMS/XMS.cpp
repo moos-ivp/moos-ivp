@@ -23,6 +23,7 @@
 #include <iostream>
 #include "XMS.h"
 #include "MBUtils.h"
+#include "ColorParse.h"
 
 #define BACKSPACE_ASCII 127
 // number of seconds before checking for new moos vars (in all mode)
@@ -50,7 +51,8 @@ XMS::XMS(string server_host, long int server_port)
   m_history_event     = true;
   m_refresh_mode      = "events";
   m_iteration         = 0;
-  
+
+  m_trunc_data        = false;
   m_display_virgins   = true;
   m_display_null_strings = true;
   m_db_start_time     = 0;
@@ -126,8 +128,16 @@ bool XMS::OnNewMail(MOOSMSG_LIST &NewMail)
   // type locally, just so we can put quotes around string values.
   for(p = NewMail.begin(); p!=NewMail.end(); p++) {
     CMOOSMsg &msg = *p;
+    string key = msg.m_sKey;
+    if((key.length() >= 7) && (key.substr(key.length()-7,7) == "_STATUS")) {
+      if(m_src_map[key] != "") {
+	m_src_map[key] = msg.m_sVal;
+      }
+    }
+
     updateVariable(msg);
-    if(msg.m_sKey != "DB_UPTIME")
+    if((key != "DB_UPTIME") && (key.length() > 7) &&
+       (key.substr(key.length()-7, 7) != "_STATUS"))
       m_scope_event = true;
   }
   return(true);
@@ -143,9 +153,12 @@ bool XMS::Iterate()
   double moostime = MOOSTime();
   if(m_display_all && ((m_last_all_refresh + ALL_BLACKOUT) < moostime)) {
     refreshAllVarsList();
+    cacheColorMap();
     m_last_all_refresh = moostime;
   }
   
+  refreshProcVarsList();
+
   if(m_display_help)
     printHelp();
   else if(m_history_mode)
@@ -183,48 +196,56 @@ bool XMS::OnStartUp()
   
   STRING_LIST::iterator p;
   for(p = sParams.begin();p!=sParams.end();p++) {
-    string sLine     = *p;
-    string sVarName  = MOOSChomp(sLine, "=");
-    sVarName = stripBlankEnds(toupper(sVarName));
-    sLine    = stripBlankEnds(sLine);
+    string line  = *p;
+    string param = biteString(line, '=');
+    string value = stripBlankEnds(line);
+    param = stripBlankEnds(toupper(param));
     
-    if(sVarName == "REFRESH_MODE") {
-      string str = tolower(sLine);
+    cout << "param:" << param << "  val:" << value << endl;
+
+    if(param == "REFRESH_MODE") {
+      string str = tolower(value);
       if((str=="paused") || (str=="events") || (str=="streaming"))
 	m_refresh_mode = str;
     }
 
     // Depricated PAUSED
-    else if(sVarName == "PAUSED") {
-      if((tolower(sLine) == "true"))
+    else if(param == "PAUSED") {
+      if((tolower(value) == "true"))
 	m_refresh_mode = "paused";
       else
 	m_refresh_mode = "events";
     }
 
-    else if(sVarName == "HISTORY_VAR") 
-      setHistoryVar(sLine);
+    else if(param == "HISTORY_VAR") 
+      setHistoryVar(value);
 
-    else if(sVarName == "DISPLAY_VIRGINS")
-      m_display_virgins = (tolower(sLine) == "true");
+    else if(param == "DISPLAY_VIRGINS")
+      m_display_virgins = (tolower(value) == "true");
     
-    else if(sVarName == "DISPLAY_EMPTY_STRINGS")
-      m_display_null_strings = (tolower(sLine) == "true");
+    else if(param == "DISPLAY_EMPTY_STRINGS")
+      m_display_null_strings = (tolower(value) == "true");
     
-    else if(sVarName == "DISPLAY_SOURCE")
-      m_display_source = (tolower(sLine) == "true");
+    else if(param == "DISPLAY_SOURCE")
+      m_display_source = (tolower(value) == "true");
     
-    else if(sVarName == "DISPLAY_TIME")
-      m_display_time = (tolower(sLine) == "true");
+    else if(param == "DISPLAY_TIME")
+      m_display_time = (tolower(value) == "true");
     
-    else if(sVarName == "DISPLAY_COMMUNITY")
-      m_display_community = (tolower(sLine) == "true");
+    else if(param == "DISPLAY_COMMUNITY")
+      m_display_community = (tolower(value) == "true");
     
-    else if(sVarName == "DISPLAY_ALL")
-      m_display_all = (tolower(sLine) == "true");
+    else if(param == "DISPLAY_ALL")
+      m_display_all = (tolower(value) == "true");
     
-    else if(!(m_ignore_vars || m_display_all) && MOOSStrCmp(sVarName, "VAR"))
-      addVariables(sLine);
+    else if(param == "COLORMAP") {
+      string left  = stripBlankEnds(biteString(value, ','));
+      string right = stripBlankEnds(value); 
+      setColorMapping(left, right);
+    }
+    
+    else if(!(m_ignore_vars || m_display_all) && (param == "VAR"))
+      addVariables(value);
   }
   
   // setup for display all
@@ -233,6 +254,7 @@ bool XMS::OnStartUp()
   else
     registerVariables();
   
+  cacheColorMap();
   return(true);
 }
 
@@ -364,13 +386,14 @@ void XMS::handleCommand(char c)
     
     // save the original startup variable configuration
     // there may a more elegant way to do this
-    orig_var_names = var_names;
-    orig_var_vals = var_vals;
-    orig_var_type = var_type;
-    orig_var_source = var_source;
-    orig_var_time = var_time;
-    orig_var_community = var_community;
-    
+    m_orig_var_names  = m_var_names;
+    m_orig_var_vals   = m_var_vals;
+    m_orig_var_type   = m_var_type;
+    m_orig_var_source = m_var_source;
+    m_orig_var_time   = m_var_time;
+    m_orig_var_community = m_var_community;
+    m_orig_var_community = m_var_color;
+
     break;
     
     // turn show all variables mode off
@@ -380,12 +403,13 @@ void XMS::handleCommand(char c)
       m_update_requested = true;
       
       // restore the variable list at startup
-      var_names = orig_var_names;
-      var_vals = orig_var_vals;
-      var_type = orig_var_type;
-      var_source = orig_var_source;
-      var_time = orig_var_time;
-      var_community = orig_var_community;
+      m_var_names  = m_orig_var_names;
+      m_var_vals   = m_orig_var_vals;
+      m_var_type   = m_orig_var_type;
+      m_var_source = m_orig_var_source;
+      m_var_time   = m_orig_var_time;
+      m_var_community = m_orig_var_community;
+      m_var_color  = m_orig_var_color;
     }
     
   default:
@@ -411,6 +435,8 @@ void XMS::addVariables(string line)
 
 //------------------------------------------------------------
 // Procedure: addVariable
+//      Note: Returns TRUE if this invocation results in a new 
+//            variable added to the scope list.
 
 bool XMS::addVariable(string varname, bool histvar)
 {
@@ -422,30 +448,42 @@ bool XMS::addVariable(string varname, bool histvar)
     return(false);
   
   // Handle if this var is a "history" variable
-  if(histvar || (var_names.size() == 0)) {
+  if(histvar || (m_var_names.size() == 0)) {
     m_history_var = varname;
     // If currently no variables scoped, hist_mode=true
-    if(var_names.size() == 0)
+    if(m_var_names.size() == 0)
       m_history_mode = true;
   }    
 
   // Simply return true if the variable has already been added.
-  int vsize = var_names.size();
-  for(int i=0; i<vsize; i++)
-    if(var_names[i] == varname)
-      return(true);
+  unsigned int i, vsize = m_var_names.size();
+  for(i=0; i<vsize; i++)
+    if(m_var_names[i] == varname)
+      return(false);
   
-  var_names.push_back(varname);
-  var_vals.push_back("n/a");
-  var_type.push_back("string");
-  var_source.push_back(" n/a");
-  var_time.push_back(" n/a");
-  var_community.push_back(" n/a");
-
+  m_var_names.push_back(varname);
+  m_var_vals.push_back("n/a");
+  m_var_type.push_back("string");
+  m_var_source.push_back(" n/a");
+  m_var_time.push_back(" n/a");
+  m_var_community.push_back(" n/a");
+  m_var_color.push_back("");
+  
   // If not a history variable, then go back to being in scope
   // mode by default.
   if(!histvar)
     m_history_mode = false;
+
+  return(true);
+}
+
+//------------------------------------------------------------
+// Procedure: addSource
+
+bool XMS::addSource(string source)
+{
+  source = toupper(source) + "_STATUS";
+  m_src_map[source] = "empty";
 
   return(true);
 }
@@ -460,10 +498,68 @@ void XMS::setHistoryVar(string varname)
 
   // If there are currently no variables being scoped, put
   // into the history mode
-  if(var_names.size() == 0)
+  if(m_var_names.size() == 0)
     m_history_mode = true;
 
   m_history_var = varname;
+}
+
+//------------------------------------------------------------
+// Procedure: setColorMapping
+
+void XMS::setColorMapping(string str, string color)
+{
+  if((color!="red") && (color!="green") && (color!="blue") &&
+     (color!="cyan") && (color!="magenta") && (color!="any"))
+    return;
+
+  if(color == "any") {
+    if(!colorTaken("blue"))
+      color = "blue";
+    else if(!colorTaken("green"))
+      color = "green";
+    else if(!colorTaken("magenta"))
+      color = "magenta";
+    else if(!colorTaken("cyan"))
+      color = "cyan";
+    else if(!colorTaken("red"))
+      color = "red";
+    else
+      return;
+  }
+  
+  m_color_map[str] = color;
+}
+
+//------------------------------------------------------------
+// Procedure: getColorMapping
+//      Note: Returns a color mapping (if it exists) for the given
+//            string. Typically the string is a MOOS variable name,
+//            but it could also be a substring of a MOOS variable.
+
+string XMS::getColorMapping(string substr)
+{
+  map<string, string>::iterator p;
+  for(p=m_color_map.begin(); p!=m_color_map.end(); p++) {
+    string str = p->first;
+    if(strContains(substr, str))
+      return(p->second);
+  }
+  return("");
+}
+
+//------------------------------------------------------------
+// Procedure: colorTaken
+
+bool XMS::colorTaken(std::string color)
+{
+  color = tolower(color);
+  map<string, string>::iterator p;
+  for(p=m_color_map.begin(); p!=m_color_map.end(); p++) {
+    if(color == p->second)
+      return(true);
+  }
+  return(false);
 }
 
 //------------------------------------------------------------
@@ -471,13 +567,19 @@ void XMS::setHistoryVar(string varname)
 
 void XMS::registerVariables()
 {
-  int vsize = var_names.size();
-  for(int i=0; i<vsize; i++)
-    m_Comms.Register(var_names[i], 0);
+  unsigned int i, vsize = m_var_names.size();
+  for(i=0; i<vsize; i++)
+    m_Comms.Register(m_var_names[i], 0);
+  
+  map<string, string>::iterator p;
+  for(p=m_src_map.begin(); p!=m_src_map.end(); p++) {
+    string reg_str = p->first;
+    m_Comms.Register(reg_str, 2.0);
+  }
 
   if(m_history_var != "")
     m_Comms.Register(m_history_var, 0);
-
+  
   m_Comms.Register("DB_UPTIME", 0);
 }
 
@@ -488,37 +590,43 @@ void XMS::updateVarVal(string varname, string val)
 {
   if(isNumber(val))
     val = dstringCompact(val);
-  for(unsigned int i=0; i<var_names.size(); i++)
-    if(var_names[i] == varname)
-      var_vals[i] = val;
+
+  unsigned int i, vsize = m_var_names.size();
+  for(i=0; i<vsize; i++)
+    if(m_var_names[i] == varname)
+      m_var_vals[i] = val;
 }
 
 void XMS::updateVarType(string varname, string vtype)
 {
-  for(unsigned int i=0; i<var_names.size(); i++)
-    if(var_names[i] == varname)
-      var_type[i] = vtype;
+  unsigned int i, vsize = m_var_names.size();
+  for(i=0; i<vsize; i++)
+    if(m_var_names[i] == varname)
+      m_var_type[i] = vtype;
 }
 
 void XMS::updateVarSource(string varname, string vsource)
 {
-  for(unsigned int i=0; i<var_names.size(); i++)
-    if(var_names[i] == varname)
-      var_source[i] = vsource;
+  unsigned int i, vsize = m_var_names.size();
+  for(i=0; i<vsize; i++)
+    if(m_var_names[i] == varname)
+      m_var_source[i] = vsource;
 }
 
 void XMS::updateVarTime(string varname, string vtime)
 {
-  for(unsigned int i=0; i<var_names.size(); i++)
-    if(var_names[i] == varname)
-      var_time[i] = vtime;
+  unsigned int i, vsize = m_var_names.size();
+  for(i=0; i<vsize; i++)
+    if(m_var_names[i] == varname)
+      m_var_time[i] = vtime;
 }
 
 void XMS::updateVarCommunity(string varname, string vcommunity)
 {
-  for(unsigned int i=0; i<var_names.size(); i++)
-    if(var_names[i] == varname)
-      var_community[i] = vcommunity;
+  unsigned int i, vsize = m_var_names.size();
+  for(i=0; i<vsize; i++)
+    if(m_var_names[i] == varname)
+      m_var_community[i] = vcommunity;
 }
 
 void XMS::updateHistory(string entry, string source, double htime)
@@ -643,39 +751,51 @@ void XMS::printReport()
     printf(" --- ");
   printf(" ----------- (%d)\n", m_iteration);
   
-  int vsize = var_names.size();
-  for(int i=0; i<vsize; i++) {
+  unsigned int i, vsize = m_var_names.size();
+  for(i=0; i<vsize; i++) {
     
-    if(((m_display_virgins) || (var_vals[i] != "n/a")) &&
-       ((m_display_null_strings) || (var_vals[i] != "")) &&
-       MOOSStrCmp(m_filter, var_names[i].substr(0, m_filter.length()))) {
+    if(((m_display_virgins) || (m_var_vals[i] != "n/a")) &&
+       ((m_display_null_strings) || (m_var_vals[i] != "")) &&
+       MOOSStrCmp(m_filter, m_var_names[i].substr(0, m_filter.length()))) {
       
-      printf("  %-22s ", var_names[i].c_str());
+      string vcolor = m_var_color[i];
+      if(vcolor != "")
+	printf("%s", termColor(vcolor).c_str());
       
+      printf("  %-22s ", m_var_names[i].c_str());
+
       if(m_display_source)
-	printf("%-12s", var_source[i].c_str());
+	printf("%-12s", m_var_source[i].c_str());
       else
 	printf("     ");
       
       if(m_display_time)
-	printf("%-12s", var_time[i].c_str());
+	printf("%-12s", m_var_time[i].c_str());
       else
 	printf("     ");
       
       if(m_display_community)
-	printf("%-14s", var_community[i].c_str());
+	printf("%-14s", m_var_community[i].c_str());
       else
 	printf("     ");
       
-      if(var_type[i] == "string") {
-	if(var_vals[i] != "n/a") {
-	  printf("\"%s\"", var_vals[i].c_str());
+      if(m_var_type[i] == "string") {
+	if(m_var_vals[i] != "n/a") {
+	  if(m_trunc_data) {
+	    string tstr = truncString(m_var_vals[i], 30, "middle");	    
+	    printf("\"%s\"", tstr.c_str());
+	  }
+	  else
+	    printf("\"%s\"", m_var_vals[i].c_str());	    
 	}
 	else
-	  printf("n/a");
+	  printf("n/a");	
       }
-      else if(var_type[i] == "double")
-	printf("%s", var_vals[i].c_str());
+      else if(m_var_type[i] == "double")
+	printf("%s", m_var_vals[i].c_str());
+      
+      if(vcolor != "")
+	printf("%s", termColor().c_str());
       printf("\n");		
     }
   }
@@ -690,7 +810,7 @@ void XMS::printReport()
     printf("  -- displaying all variables --");
     newline = true;
   }
-  if (newline)
+  if(newline)
     printf("\n");
 }
 
@@ -848,13 +968,14 @@ void XMS::updateVariable(CMOOSMsg &msg)
 }
 
 //------------------------------------------------------------
-// Procedure: updateVariable
+// Procedure: refreshAllVarsList
 // tes 2.23.08
 //
-// finds all variables in the MOOS database and adds the ones
-// we do not yet know about
-// the mechanism and code for fetching all moos vars is
-// closely related to that used for wildcard logging in pLogger
+// finds all variables in the MOOS database and adds the ones we do
+// not yet know about the mechanism and code for fetching all moos
+// vars is closely related to that used for wildcard logging in
+// pLogger
+
 void XMS::refreshAllVarsList()
 {
   MOOSMSG_LIST mail;
@@ -868,8 +989,8 @@ void XMS::refreshAllVarsList()
       // we assert here that we do not want _STATUS variables
       // displayed as part of all
       // perhaps we should make this a configuration option
-      if (sVar.length() > 7) {
-	if (MOOSStrCmp(sVar.substr(sVar.length()-7, 7), "_STATUS"))
+      if(sVar.length() > 7) {
+	if(MOOSStrCmp(sVar.substr(sVar.length()-7, 7), "_STATUS"))
 	  discard = true;
       }
       
@@ -878,5 +999,61 @@ void XMS::refreshAllVarsList()
 	  m_Comms.Register(sVar, 0);
       }   
     }
+  }
+}
+
+//------------------------------------------------------------
+// Procedure: refreshProcVarsList
+//      Note: Examines the list of sources-to-scope, and for a given
+//            source pFooBar, it looks for PFOOBAR_STATUS and parses
+//            it to know which variables pFooBar is publishing. Each
+//            of those variables is then added onto the scope list.
+
+void XMS::refreshProcVarsList()
+{
+  bool new_vars_added = false;
+  map<string, string>::iterator p;
+  for(p=m_src_map.begin(); p!=m_src_map.end(); p++) {
+    string status_var = p->first;
+    string status_str = p->second;
+    status_str = findReplace(status_str, "Subscribing", ",Subscribing");
+    vector<string> svector = parseStringQ(status_str, ',');
+    unsigned int i, vsize = svector.size();
+    for(i=0; i<vsize; i++) {
+      string left  = stripBlankEnds(biteString(svector[i], '='));
+      string right = stripBlankEnds(svector[i]);
+      if(left == "Publishing") {
+	right = stripQuotes(right);
+	vector<string> jvector = parseString(right, ',');
+	unsigned int j, jsize = jvector.size();
+	for(j=0; j<jsize; j++) {
+	  string varname = jvector[j];
+	  if((varname != status_var) && addVariable(varname)) {
+	    new_vars_added = true;
+	    m_Comms.Register(varname, 0);
+	  }
+	}
+      }
+    }
+  }
+  cacheColorMap();
+}
+
+//------------------------------------------------------------
+// Procedure: cacheColorMap
+
+void XMS::cacheColorMap()
+{
+  unsigned int i, vsize = m_var_names.size();
+  for(i=0; i<vsize; i++) {
+    string v1 = getColorMapping(m_var_names[i]);
+    string v2 = getColorMapping(m_var_source[i]);
+    string v3 = getColorMapping(m_var_community[i]);
+    if(v1 != "")
+      m_var_color[i] = v1;
+    else if(v2 != "")
+      m_var_color[i] = v2;
+    else if(v3 != "")
+      m_var_color[i] = v3;
   }
 }

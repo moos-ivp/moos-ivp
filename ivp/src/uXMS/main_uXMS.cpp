@@ -36,18 +36,6 @@
 
 using namespace std;
 
-// ----------------------------------------------------------
-// global variables here
-
-// const char*  g_sMissionFile = "uXMS.moos";
-
-// MOOSAppRunnerThread* g_moosAppRunner;
-
-// struct ThreadParams {
-//     CMOOSApp *app;
-//     char *name;
-// };
-
 //--------------------------------------------------------
 // Procedure: main
 
@@ -61,37 +49,52 @@ int main(int argc ,char * argv[])
     return(0);
   }
 
-  // Look for a request for usage information
   if(scanArgs(argc, argv, "-h", "--help", "-help")) {
-    cout << "Usage: uXMS [file.moos] [-nav] [-helm] [-pid] [-proc] " << endl;
-    cout << "       [--clean|-c] [--resumed|-r] [--virgins|-v]     " << endl;
-    cout << "       [--source|-s] [--time|-t] [--all|-a]           " << endl;
-    cout << "       [server_host=value] [server_port=value]        " << endl;
-    cout << "       [history=variable] [--paused|-p] [--events|-e] " << endl;
-    cout << "       [MOOS_VARIABLES]                               " << endl;
-    cout << "                                                      " << endl;
-    cout << "[file.moos] Filename to get configuration parameters  " << endl;
-    cout << "[-nav]      Auto-subscribe for NAV_* variables        " << endl;
-    cout << "[-helm]     Auto-subscribe for IvPHelm variables      " << endl;
-    cout << "[-pid]      Auto-subscribe for PID (DESIRED_*) vars   " << endl;
-    cout << "[-proc]     Auto-subscribe for uProcessWatch vars     " << endl;
-    cout << "[-c]        Ignore scope variables in file.moos       " << endl;
-    cout << "[-r]        Start refresh mode in streaming mode      " << endl;
-    cout << "[-p]        Start refresh mode in paused mode         " << endl;
-    cout << "[-p]        Start refresh mode in events mode         " << endl;
-    cout << "[-v]        Don't display virgin variables            " << endl;
-    cout << "[-s]        Show the Source field in the data report  " << endl;
-    cout << "[-t]        Show the Time field in the data report    " << endl;
-    cout << "[-a]        Show ALL MOOS variables in the MOOSDB     " << endl;
-    cout << "[server_host=value]  Connect to MOOSDB at IP=value    " << endl;
-    cout << "[server_port=value]  Connect to MOOSDB at port=value  " << endl;
-    cout << "[history=variable] Allow history-scoping on variable  " << endl;
+    cout << "Usage: uXMS [file.moos] [OPTIONS]                            " << endl;
+    cout << "                                                             " << endl;
+    cout << "Options:                                                     " << endl;
+    cout << "  --all,-a    Show ALL MOOS variables in the MOOSDB          " << endl;
+    cout << "  --clean,-c  Ignore scope variables in file.moos            " << endl;
+    cout << "  --colormap=VAR,color                                       " << endl;
+    cout << "              Display all entries where the variable, source," << endl;
+    cout << "              or community contains VAR as substring. Color  " << endl;
+    cout << "              may be blue, red, magenta, cyan, or green.     " << endl;
+    cout << "  --colorany=VAR,VAR,...,VAR                                 " << endl;
+    cout << "              Display all entries where the variable, source," << endl;
+    cout << "              or community contains VAR as substring. Color  " << endl;
+    cout << "              chosen automatically from unused colors.       " << endl;
+    cout << "  --filter=[virgin,empty]                                    " << endl;
+    cout << "              virgin: Don't display virgin variables         " << endl;
+    cout << "              empty:  Don't display empty strings            " << endl;
+    cout << "  --group=[helm,pid,proc,nav]                                " << endl;
+    cout << "              helm: Auto-subscribe for IvPHelm variables     " << endl;
+    cout << "              pid:  Auto-subscribe for PID (DESIRED_*) vars  " << endl;
+    cout << "              proc: Auto-subscribe for uProcessWatch vars    " << endl;
+    cout << "              nav:  Auto-subscribe for NAV_* variables       " << endl;
+    cout << "  --history=variable                                         " << endl;
+    cout << "              Allow history-scoping on variable              " << endl;
+    cout << "  --mode=[paused,events,STREAMING]                           " << endl;
+    cout << "              Determine display mode. Paused: scope updated  " << endl;
+    cout << "              only on user request. Events: data updated only" << endl; 
+    cout << "              on change to a scoped variable. Streaming: data" << endl;
+    cout << "              updated continuously on each app-tick.         " << endl;
+    cout << "  --server_host=value                                        " << endl;
+    cout << "              Connect to MOOSDB at IP=value rather than      " << endl;
+    cout << "              getting the info from file.moos.               " << endl;
+    cout << "  --server_port=value                                        " << endl; 
+    cout << "              Connect to MOOSDB at port=value rather than    " << endl;
+    cout << "              getting the info from file.moos.               " << endl;
+    cout << "  --show=[source,time,community]                             " << endl;
+    cout << "              Turn on data display in the named column,      " << endl;
+    cout << "              source, time, or community. All off by default " << endl;
+    cout << "  --src=pSrc,pSrc,...,pSrc                                   " << endl;
+    cout << "              Scope only on vars posted by the given list of " << endl;
+    cout << "              MOOS processes, i.e., sources                  " << endl;
     cout << endl;
     return(0);
   }
 
   const char*  g_sMissionFile = "uXMS.moos";
-
 
   string server_host     = "localhost";
   bool   server_host_set = false;
@@ -108,11 +111,13 @@ int main(int argc ,char * argv[])
       string left  = stripBlankEnds(biteString(str, '='));
       string right = stripBlankEnds(str);
       string lleft = tolower(left);
-      if((lleft == "server_host") || (lleft == "serverhost")) {
+      if((lleft == "server_host") || (lleft == "serverhost") ||
+	 (lleft == "--server_host") || (lleft == "--serverhost")) {
 	server_host     = right;
 	server_host_set = true;
       }
-      else if((lleft == "server_port") || (lleft=="serverport")) {
+      else if((lleft == "server_port") || (lleft=="serverport") ||
+	      (lleft == "--server_port") || (lleft=="--serverport")) {
 	if(isNumber(right)) {
 	  server_port     = atoi(right.c_str());
 	  server_port_set = true;
@@ -169,15 +174,15 @@ int main(int argc ,char * argv[])
     // Add 1 to each in case one returns a zero in an error case
     unsigned long tseed = time(NULL) + 1;
 #ifdef _WIN32
-	unsigned long hostid = 0; 
-	char hostname[256];
-	if( gethostname(hostname, 256) == 0 ){
-		hostent *host = gethostbyname(hostname);
-		if(host != NULL){
-			hostid = *(u_long *)host->h_addr_list[0];
-		}
-	}
-	hostid += 1;
+    unsigned long hostid = 0; 
+    char hostname[256];
+    if(gethostname(hostname, 256) == 0 ){
+      hostent *host = gethostbyname(hostname);
+      if(host != NULL){
+	hostid = *(u_long *)host->h_addr_list[0];
+      }
+    }
+    hostid += 1;
 #else
     unsigned long hostid = gethostid() + 1; 
 #endif
@@ -194,68 +199,112 @@ int main(int argc ,char * argv[])
   // start the XMS in its own thread
   MOOSAppRunnerThread appRunner(&g_theXMS, (char*)(process_name.c_str()), (char*)g_sMissionFile);
 
-// g_moosAppRunner = new MOOSAppRunnerThread/*(&g_theXMS, (char*)(process_name.c_str()), (char*)g_sMissionFile);*/
-
   for(int i=1; i<argc; i++) {
     string str = argv[i];
-    if(str == "-nav") {
-      g_theXMS.addVariable("NAV_X");
-      g_theXMS.addVariable("NAV_Y");
-      g_theXMS.addVariable("NAV_HEADING");
-      g_theXMS.addVariable("NAV_SPEED");
-      g_theXMS.addVariable("NAV_DEPTH");
-    }
-    else if(str ==  "-helm") {
-      g_theXMS.addVariable("DESIRED_HEADING");
-      g_theXMS.addVariable("DESIRED_SPEED");
-      g_theXMS.addVariable("DESIRED_DEPTH");
-      g_theXMS.addVariable("BHV_WARNING");
-      g_theXMS.addVariable("BHV_ERROR");
-      g_theXMS.addVariable("HELM_IPF_COUNT");
-      g_theXMS.addVariable("HELM_ACTIVE_BHV");
-      g_theXMS.addVariable("HELM_NONIDLE_BHV");
-      g_theXMS.addVariable("MOOS_MANUAL_OVERIDE");
-      g_theXMS.addVariable("DEPLOY");
-      g_theXMS.addVariable("RETURN");
-      g_theXMS.addVariable("STATION_KEEP");
-    }
-    else if(str == "-pid") {
-      g_theXMS.addVariable("DESIRED_RUDDER");
-      g_theXMS.addVariable("DESIRED_THRUST");
-      g_theXMS.addVariable("DESIRED_ELEVATOR");
-    }
-    else if(str == "-proc") {
-      g_theXMS.addVariable("PROC_WATCH_SUMMARY");
-      g_theXMS.addVariable("PROC_WATCH_EVENT");
+    if(!strncmp( (tolower(str).c_str()), "--group=", 8)) {
+      biteString(str, '=');
+      str = tolower(str);
+      if(str=="nav") {
+	g_theXMS.addVariable("NAV_X");
+	g_theXMS.addVariable("NAV_Y");
+	g_theXMS.addVariable("NAV_HEADING");
+	g_theXMS.addVariable("NAV_SPEED");
+	g_theXMS.addVariable("NAV_DEPTH");
+      }
+      else if(str == "helm") {
+	g_theXMS.addVariable("DESIRED_HEADING");
+	g_theXMS.addVariable("DESIRED_SPEED");
+	g_theXMS.addVariable("DESIRED_DEPTH");
+	g_theXMS.addVariable("BHV_WARNING");
+	g_theXMS.addVariable("BHV_ERROR");
+	g_theXMS.addVariable("MOOS_MANUAL_OVERIDE");
+	g_theXMS.addVariable("DEPLOY");
+	g_theXMS.addVariable("RETURN");
+	g_theXMS.addVariable("STATION_KEEP");
+      }
+      else if(str == "pid") {
+	g_theXMS.addVariable("DESIRED_RUDDER");
+	g_theXMS.addVariable("DESIRED_THRUST");
+	g_theXMS.addVariable("DESIRED_ELEVATOR");
+      }
+      else if(str == "proc") {
+	g_theXMS.addVariable("PROC_WATCH_SUMMARY");
+	g_theXMS.addVariable("PROC_WATCH_EVENT");
+      }
     }
 
     else if((str == "-c") || (str == "--clean") || (str == "-clean"))
       g_theXMS.ignoreVars(true);
     
-    else if((str == "-p") || (str == "--paused"))
-      g_theXMS.setRefreshMode("paused");
+    else if(!strncmp( (tolower(str).c_str()), "--mode=", 7)) {
+      biteString(str, '=');
+      str = tolower(str);
+      if(str=="events")
+	g_theXMS.setRefreshMode("events");
+      else if(str=="paused")
+	g_theXMS.setRefreshMode("paused");
+      else if(str=="streaming")
+	g_theXMS.setRefreshMode("streaming");
+    }
 
-    else if((str == "-r") || (str == "--resumed"))
-      g_theXMS.setRefreshMode("streaming");
+    else if(!strncmp( (tolower(str).c_str()), "--filter=", 9)) {
+      biteString(str, '=');
+      str = tolower(str);
+      if((str=="virgin") || (str == "virgins"))
+	g_theXMS.setDispVirgins(false);
+      else if(str=="empty")
+	g_theXMS.setDispEmptyStrings(false);
+    }
 
-    else if((str == "-e") || (str == "--events"))
-      g_theXMS.setRefreshMode("events");
-
-    else if((str == "-v") || (str == "--virgins"))
-      g_theXMS.setDispVirgins(false);
-
-    else if(str == "-n") 
-      g_theXMS.setDispEmptyStrings(false);
-
-    else if((str == "-s") || (str == "--source"))
-      g_theXMS.setDispSource(true);
-
-    else if((str == "-t") || (str == "--time"))
-      g_theXMS.setDispTime(true);
+    else if(!strncmp( (tolower(str).c_str()), "--show=", 7)) {
+      biteString(str, '=');
+      str = tolower(str);
+      vector<string> svector = parseString(str, ',');
+      unsigned int i, vsize = svector.size();
+      for(i=0; i<vsize; i++) {
+	if(svector[i]=="source")
+	  g_theXMS.setDispSource(true);
+	else if(svector[i]=="time")
+	  g_theXMS.setDispTime(true);
+	else if(svector[i]=="community")
+	  g_theXMS.setDispCommunity(true);
+      }
+    }
 
     else if((str == "-a") || (str == "--all"))
       g_theXMS.setDispAll(true);
 
+    else if(!strncmp( (tolower(str).c_str()), "--colormap=", 11)) {
+      biteString(str, '=');
+      string varname = biteString(str, ',');
+      string colname = tolower(stripBlankEnds(str));
+      g_theXMS.setColorMapping(varname, colname);
+    }
+
+    else if(!strncmp( (tolower(str).c_str()), "--colorany=", 11)) {
+      biteString(str, '=');
+      vector<string> svector = parseString(str, ',');
+      unsigned int i, vsize = svector.size();
+      for(i=0; i<vsize; i++) {
+	string varname = stripBlankEnds(svector[i]);
+	g_theXMS.setColorMapping(varname, "any");
+      }
+    }
+
+    else if(!strncmp( (tolower(str).c_str()), "--src=", 6)) {
+      biteString(str, '=');
+      vector<string> svector = parseString(str, ',');
+      unsigned int i, vsize = svector.size();
+      for(i=0; i<vsize; i++) {
+	string srcname = stripBlankEnds(svector[i]);
+	g_theXMS.addSource(srcname);
+      }
+    }
+
+    else if(!strncmp( (tolower(str).c_str()), "--history=", 10))
+      g_theXMS.addVariable(str.substr(8), true);
+
+    // "history" without the double dashes is depricated
     else if(!strncmp( (tolower(str).c_str()), "history=", 8))
       g_theXMS.addVariable(str.substr(8), true);
 
