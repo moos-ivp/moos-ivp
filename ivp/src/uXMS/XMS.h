@@ -44,14 +44,17 @@ class XMS : public CMOOSApp
   bool addVariable(std::string, bool histvar=false);
   bool addSource(std::string);
   void setHistoryVar(std::string);
-  void ignoreVars(bool v)            {m_ignore_vars = v;};
+  void setFilter(std::string);
+  void ignoreFileVars(bool v)        {m_ignore_file_vars = v;};
   void setRefreshMode(std::string s) {m_refresh_mode = s;};
   void setDispVirgins(bool v)        {m_display_virgins = v;};
   void setDispTime(bool v)           {m_display_time = v;};
   void setDispSource(bool v)         {m_display_source = v;};
+  void setDispAuxSource(bool v)      {m_display_aux_source = v;};
   void setDispCommunity(bool v)      {m_display_community = v;};
   void setDispEmptyStrings(bool v)   {m_display_null_strings = v;};
   void setDispAll(bool v)            {m_display_all = v;};
+  void setTruncData(double v);
  
   void setConfigureCommsLocally(bool v) {m_configure_comms_locally=v;};
   void setColorMapping(std::string var, std::string color="any");
@@ -105,18 +108,20 @@ class XMS : public CMOOSApp
   bool   m_history_event;
   bool   m_display_help;
   bool   m_display_source;
+  bool   m_display_aux_source;
   bool   m_display_time;
   bool   m_display_community;
   bool   m_help_requested;
   int    m_iteration;
   std::string m_refresh_mode;
 
-  bool   m_trunc_data;
+  double m_trunc_data;
+  double m_trunc_data_start;
   bool   m_display_virgins;
   bool   m_display_null_strings;
   bool   m_configure_comms_locally;
   
-  bool   m_ignore_vars;
+  bool   m_ignore_file_vars;
   double m_db_start_time;
   
   std::string m_filter;

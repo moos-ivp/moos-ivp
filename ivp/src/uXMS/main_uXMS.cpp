@@ -63,9 +63,6 @@ int main(int argc ,char * argv[])
     cout << "              Display all entries where the variable, source," << endl;
     cout << "              or community contains VAR as substring. Color  " << endl;
     cout << "              chosen automatically from unused colors.       " << endl;
-    cout << "  --filter=[virgin,empty]                                    " << endl;
-    cout << "              virgin: Don't display virgin variables         " << endl;
-    cout << "              empty:  Don't display empty strings            " << endl;
     cout << "  --group=[helm,pid,proc,nav]                                " << endl;
     cout << "              helm: Auto-subscribe for IvPHelm variables     " << endl;
     cout << "              pid:  Auto-subscribe for PID (DESIRED_*) vars  " << endl;
@@ -73,6 +70,9 @@ int main(int argc ,char * argv[])
     cout << "              nav:  Auto-subscribe for NAV_* variables       " << endl;
     cout << "  --history=variable                                         " << endl;
     cout << "              Allow history-scoping on variable              " << endl;
+    cout << "  --mask=[virgin,empty]                                      " << endl;
+    cout << "              virgin: Don't display virgin variables         " << endl;
+    cout << "              empty:  Don't display empty strings            " << endl;
     cout << "  --mode=[paused,events,STREAMING]                           " << endl;
     cout << "              Determine display mode. Paused: scope updated  " << endl;
     cout << "              only on user request. Events: data updated only" << endl; 
@@ -84,12 +84,16 @@ int main(int argc ,char * argv[])
     cout << "  --server_port=value                                        " << endl; 
     cout << "              Connect to MOOSDB at port=value rather than    " << endl;
     cout << "              getting the info from file.moos.               " << endl;
-    cout << "  --show=[source,time,community]                             " << endl;
+    cout << "  --show=[source,time,community,aux]                         " << endl;
     cout << "              Turn on data display in the named column,      " << endl;
     cout << "              source, time, or community. All off by default " << endl;
+    cout << "              Enabling aux shows the auxilliary source in    " << endl;
+    cout << "              the source column.                             " << endl;
     cout << "  --src=pSrc,pSrc,...,pSrc                                   " << endl;
     cout << "              Scope only on vars posted by the given list of " << endl;
     cout << "              MOOS processes, i.e., sources                  " << endl;
+    cout << "  --trunc=value [10,1000]                                    " << endl;
+    cout << "              Truncate the output in the data column.        " << endl;
     cout << endl;
     return(0);
   }
@@ -201,7 +205,7 @@ int main(int argc ,char * argv[])
 
   for(int i=1; i<argc; i++) {
     string str = argv[i];
-    if(!strncmp( (tolower(str).c_str()), "--group=", 8)) {
+    if(strBegins(str, "--group=")) {
       biteString(str, '=');
       str = tolower(str);
       if(str=="nav") {
@@ -234,9 +238,9 @@ int main(int argc ,char * argv[])
     }
 
     else if((str == "-c") || (str == "--clean") || (str == "-clean"))
-      g_theXMS.ignoreVars(true);
+      g_theXMS.ignoreFileVars(true);
     
-    else if(!strncmp( (tolower(str).c_str()), "--mode=", 7)) {
+    else if(strBegins(str, "--mode=")) {
       biteString(str, '=');
       str = tolower(str);
       if(str=="events")
@@ -247,7 +251,7 @@ int main(int argc ,char * argv[])
 	g_theXMS.setRefreshMode("streaming");
     }
 
-    else if(!strncmp( (tolower(str).c_str()), "--filter=", 9)) {
+    else if(strBegins(str, "--mask=")) {
       biteString(str, '=');
       str = tolower(str);
       if((str=="virgin") || (str == "virgins"))
@@ -256,7 +260,7 @@ int main(int argc ,char * argv[])
 	g_theXMS.setDispEmptyStrings(false);
     }
 
-    else if(!strncmp( (tolower(str).c_str()), "--show=", 7)) {
+    else if(strBegins(str, "--show=")) {
       biteString(str, '=');
       str = tolower(str);
       vector<string> svector = parseString(str, ',');
@@ -268,20 +272,28 @@ int main(int argc ,char * argv[])
 	  g_theXMS.setDispTime(true);
 	else if(svector[i]=="community")
 	  g_theXMS.setDispCommunity(true);
+	else if(svector[i]=="aux")
+	  g_theXMS.setDispAuxSource(true);
       }
     }
 
     else if((str == "-a") || (str == "--all"))
       g_theXMS.setDispAll(true);
 
-    else if(!strncmp( (tolower(str).c_str()), "--colormap=", 11)) {
+    else if(strBegins(str, "--colormap=")) {
       biteString(str, '=');
       string varname = biteString(str, ',');
       string colname = tolower(stripBlankEnds(str));
       g_theXMS.setColorMapping(varname, colname);
     }
-
-    else if(!strncmp( (tolower(str).c_str()), "--colorany=", 11)) {
+    
+    else if(strBegins(str, "--trunc=")) {
+      biteString(str, '=');
+      if(isNumber(str)) 
+	g_theXMS.setTruncData(atof(str.c_str()));
+    }
+    
+    else if(strBegins(str, "--colorany=")) {
       biteString(str, '=');
       vector<string> svector = parseString(str, ',');
       unsigned int i, vsize = svector.size();
@@ -291,7 +303,7 @@ int main(int argc ,char * argv[])
       }
     }
 
-    else if(!strncmp( (tolower(str).c_str()), "--src=", 6)) {
+    else if(strBegins(str, "--src=")) {
       biteString(str, '=');
       vector<string> svector = parseString(str, ',');
       unsigned int i, vsize = svector.size();
@@ -301,13 +313,18 @@ int main(int argc ,char * argv[])
       }
     }
 
-    else if(!strncmp( (tolower(str).c_str()), "--history=", 10))
-      g_theXMS.addVariable(str.substr(8), true);
+    else if(strBegins(str, "--filter=")) {
+      biteString(str, '=');
+      g_theXMS.setFilter(str);
+    }
+
+    else if(strBegins(str, "--history="))
+      g_theXMS.addVariable(str.substr(10), true);
 
     // "history" without the double dashes is depricated
-    else if(!strncmp( (tolower(str).c_str()), "history=", 8))
+    else if(strBegins(str, "history="))
       g_theXMS.addVariable(str.substr(8), true);
-
+    
     else if((!strContains(str, ".moos")) && (str != "-noseed"))
       g_theXMS.addVariable(str);
   }

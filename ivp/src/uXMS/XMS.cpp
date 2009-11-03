@@ -39,12 +39,13 @@ extern bool MOOSAPP_OnDisconnect(void*);
 
 XMS::XMS(string server_host, long int server_port)
 {    
-  m_display_source    = false;
-  m_display_time      = false;
-  m_display_community = false;
-  m_display_help      = false;
+  m_display_source     = false;
+  m_display_aux_source = false;
+  m_display_time       = false;
+  m_display_community  = false;
+  m_display_help       = false;
   
-  m_ignore_vars       = false;
+  m_ignore_file_vars   = false;
   
   m_update_requested  = true;
   m_scope_event       = true;
@@ -52,7 +53,8 @@ XMS::XMS(string server_host, long int server_port)
   m_refresh_mode      = "events";
   m_iteration         = 0;
 
-  m_trunc_data        = false;
+  m_trunc_data        = 0;
+  m_trunc_data_start  = 50;
   m_display_virgins   = true;
   m_display_null_strings = true;
   m_db_start_time     = 0;
@@ -244,7 +246,7 @@ bool XMS::OnStartUp()
       setColorMapping(left, right);
     }
     
-    else if(!(m_ignore_vars || m_display_all) && (param == "VAR"))
+    else if(!(m_ignore_file_vars || m_display_all) && (param == "VAR"))
       addVariables(value);
   }
   
@@ -270,6 +272,14 @@ void XMS::handleCommand(char c)
     break;
   case 'S':
     m_display_source = true;
+    m_update_requested = true;
+    break;
+  case 'x':
+    m_display_aux_source = false;
+    m_update_requested = true;
+    break;
+  case 'X':
+    m_display_aux_source = true;
     m_update_requested = true;
     break;
   case 't':
@@ -361,6 +371,15 @@ void XMS::handleCommand(char c)
   case 'h':
   case 'H':
     m_display_help = true;
+    break;
+  case '`':
+    if(m_trunc_data == 0)
+      m_trunc_data = m_trunc_data_start;
+    else if(m_trunc_data == m_trunc_data_start)
+      m_trunc_data = m_trunc_data * 0.8;
+    else 
+      m_trunc_data = 0;
+    m_update_requested = true;
     break;
     
     // turn filtering on
@@ -502,6 +521,35 @@ void XMS::setHistoryVar(string varname)
     m_history_mode = true;
 
   m_history_var = varname;
+}
+
+//------------------------------------------------------------
+// Procedure: setFilter
+
+void XMS::setFilter(string str)
+{
+  if(strContainsWhite(str))
+    return;
+
+  if(m_filter != str)
+    m_update_requested = true;
+  
+  if(str != "") {
+    m_filter = str;
+    m_display_all = true;
+  }
+  else {
+    m_filter = "";
+    m_display_all = false;
+  }
+}
+
+//------------------------------------------------------------
+// Procedure: setTruncData
+
+void XMS::setTruncData(double v)
+{
+  m_trunc_data = vclip(v, 0, 1000);
 }
 
 //------------------------------------------------------------
@@ -673,11 +721,14 @@ void XMS::printHelp()
   printf("    N        Display null/empty strings           \n");
   printf("    w        Show Variable History if enabled     \n");
   printf("    W        Hide Variable History                \n");
-  printf("    z        Toggle the Variable History mode     \n");
+  printf("    x        Show Auxilliary Source if non-empty  \n");
+  printf("    X        Hide Auxilliary Source               \n");
+  printf("   z/Z       Toggle the Variable History mode     \n");
   printf("    j        Truncate Hist Variable in Hist Report\n");
   printf("    J        Show Hist Variable in Hist Report    \n");
   printf("  > or <     Show More or Less Variable History   \n");
   printf("    /        Begin entering a filter string       \n");
+  printf("    `        Toggle Data Field truncation         \n");
   printf("    ?        Clear current filter                 \n");    
   printf("    a        Revert to variables shown at startup \n");
   printf("    A        Display all variables in the database\n");
@@ -781,8 +832,8 @@ void XMS::printReport()
       
       if(m_var_type[i] == "string") {
 	if(m_var_vals[i] != "n/a") {
-	  if(m_trunc_data) {
-	    string tstr = truncString(m_var_vals[i], 30, "middle");	    
+	  if(m_trunc_data > 0) {
+	    string tstr = truncString(m_var_vals[i], m_trunc_data, "middle");	    
 	    printf("\"%s\"", tstr.c_str());
 	  }
 	  else
@@ -917,23 +968,18 @@ void XMS::updateVariable(CMOOSMsg &msg)
   string varname = msg.m_sKey;  
   double vtime   = msg.GetTime() - m_db_start_time;
 
-  //double vtime = msg.GetTime() - GetAppStartTime();
-  //vtime = MOOSTime() - GetAppStartTime();;
-  //vtime = MOOSTime();
-  
   string vtime_str = doubleToString(vtime, 2);
   vtime_str = dstringCompact(vtime_str);
 
-#if 0  
-  updateVarSource(varname, msg.m_sSrc);
-#endif
-#if 1
-  string varsrc = msg.GetSource();
-  string varaux = msg.GetSourceAux();
-  if(varaux != "")
-    varsrc += ":" + varaux;
-  updateVarSource(varname, varsrc);
-#endif
+  if(!m_display_aux_source)
+    updateVarSource(varname, msg.m_sSrc);
+  else {
+    string varsrc = msg.GetSource();
+    string varaux = msg.GetSourceAux();
+    if(varaux != "")
+      varsrc = varaux;
+    updateVarSource(varname, varsrc);
+  }
 
   updateVarTime(varname, vtime_str);
   updateVarCommunity(varname, msg.m_sOriginatingCommunity);
