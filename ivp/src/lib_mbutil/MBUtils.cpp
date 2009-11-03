@@ -688,6 +688,57 @@ bool strContains(const string& str, const char c)
 }
     
 //----------------------------------------------------------------
+// Procedure: strBegins
+//      Note: Added Nov 2nd 09 (on the flight to DC)
+
+bool strBegins(const string& str, const string& qstr, bool case_matters)
+{
+  string::size_type i, qlen = qstr.length();
+  if((str.length() < qlen) || (qlen == 0))
+    return(false);
+  
+  if(case_matters) {
+    for(i=0; i<qlen; i++)
+      if(str[i] != qstr[i])
+	return(false);
+  }
+  else {
+    for(i=0; i<qlen; i++)
+      if(tolower(str[i]) != tolower(qstr[i]))
+	return(false);
+  }
+  
+  return(true);
+}
+    
+//----------------------------------------------------------------
+// Procedure: strBegins
+//      Note: Added Nov 2nd 09 (on the flight to DC)
+
+bool strEnds(const string& str, const string& qstr, bool case_matters)
+{
+  string::size_type qlen = qstr.length();
+  string::size_type slen = str.length();
+  if((slen < qlen) || (qlen == 0))
+    return(false);
+  
+  string::size_type i, start_ix = slen-qlen;
+
+  if(case_matters) {
+    for(i=0; i<qlen; i++)
+      if(str[i+start_ix] != qstr[i])
+	return(false);
+  }
+  else {
+    for(i=0; i<qlen; i++)
+      if(tolower(str[i+start_ix]) != tolower(qstr[i]))
+	return(false);
+  }
+  
+  return(true);
+}
+    
+//----------------------------------------------------------------
 // Procedure: strContainsWhite
 //      Note: Returns true if the given string contains either a 
 //            blank or tab character.

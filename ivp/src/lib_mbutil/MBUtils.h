@@ -66,6 +66,8 @@ std::string packageToString(const std::vector<std::string>&);
 bool strContains(const std::string&, const std::string&);
 bool strContains(const std::string&, const char);
 bool strContainsWhite(const std::string&);
+bool strBegins(const std::string&, const std::string&, bool=true);
+bool strEnds(const std::string&, const std::string&, bool=true);
 
 bool  tokParse(const std::string&, const std::string&, 
 		char, char, std::string&);
