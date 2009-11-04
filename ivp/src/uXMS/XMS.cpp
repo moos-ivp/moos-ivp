@@ -747,7 +747,12 @@ void XMS::printHelp()
 
 void XMS::printReport()
 {
-  string mode_str = "(MODE = SCOPE:" + toupper(m_refresh_mode) + ")";   
+  string refstr = toupper(m_refresh_mode) + termColor();
+  if(m_refresh_mode == "paused") 
+    refstr = termColor("reversered") + refstr;
+  else
+    refstr = termColor("reversegreen") + refstr;
+  string mode_str = "(MODE = SCOPE:" + refstr + ")";   
 
   bool do_the_report = false;
   if((m_refresh_mode == "paused") && m_update_requested)
@@ -871,7 +876,13 @@ void XMS::printReport()
 
 void XMS::printHistoryReport()
 {
-  string mode_str = "(MODE = HISTORY:" + toupper(m_refresh_mode) + ")";   
+  string refstr = toupper(m_refresh_mode) + termColor();
+  if(m_refresh_mode == "paused") 
+    refstr = termColor("reversered") + refstr;
+  else
+    refstr = termColor("reversegreen") + refstr;
+  string mode_str = "(MODE = HISTORY:" + refstr + ")";   
+
 
   bool do_the_report = false;
   if((m_refresh_mode == "paused") && m_update_requested)
