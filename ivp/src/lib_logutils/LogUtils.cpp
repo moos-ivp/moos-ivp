@@ -14,6 +14,7 @@
 #include <cstdio>
 #include "MBUtils.h"
 #include "LogUtils.h"
+#include <cstdio>
 
 #define MAX_LINE_LENGTH 50000
 
