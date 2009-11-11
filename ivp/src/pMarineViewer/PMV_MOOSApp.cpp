@@ -369,10 +369,14 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
       m_gui->addContext("left", value);
     else if(param == "right_context")
       m_gui->addContext("right", value);
-    else if(param == "tiff_file")
-      tiff_a_set = m_gui->mviewer->setParam(param, value);
-    else if(param == "tiff_file_b")
-      tiff_b_set = m_gui->mviewer->setParam(param, value);
+    else if(param == "tiff_file") {
+      if(!tiff_a_set)
+	tiff_a_set = m_gui->mviewer->setParam(param, value);
+    }
+    else if(param == "tiff_file_b") {
+      if(!tiff_b_set) 
+	tiff_b_set = m_gui->mviewer->setParam(param, value);
+    }
     else if(param == "node_report_variable") {
       if(!strContainsWhite(value)) {
 	m_gui->mviewer->setParam(param, value);
