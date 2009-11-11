@@ -44,6 +44,7 @@ XMS::XMS(string server_host, long int server_port)
   m_display_time       = false;
   m_display_community  = false;
   m_display_help       = false;
+  m_displayed_help     = false;
   
   m_ignore_file_vars   = false;
   
@@ -203,8 +204,6 @@ bool XMS::OnStartUp()
     string value = stripBlankEnds(line);
     param = stripBlankEnds(toupper(param));
     
-    cout << "param:" << param << "  val:" << value << endl;
-
     if(param == "REFRESH_MODE") {
       string str = tolower(value);
       if((str=="paused") || (str=="events") || (str=="streaming"))
@@ -356,21 +355,28 @@ void XMS::handleCommand(char c)
     m_history_length -= 5;
     if(m_history_length < 5)
       m_history_length = 5;
+    m_update_requested = true;
     break;
   case '>':
     m_history_length += 5;
     if(m_history_length > 100)
       m_history_length = 100;
+    m_update_requested = true;
     break;
   case ' ':
     m_refresh_mode = "paused";
+    m_update_requested = true;
+    break;
   case 'u':
   case 'U':
     m_update_requested = true;
     break;
   case 'h':
   case 'H':
-    m_display_help = true;
+    if(!m_displayed_help)
+      m_display_help = true;
+    else
+      m_update_requested = true;
     break;
   case '`':
     if(m_trunc_data == 0)
@@ -704,10 +710,14 @@ void XMS::updateHistory(string entry, string source, double htime)
 
 void XMS::printHelp()
 {
+  string refstr = termColor("reversered") + "HELP" + termColor();
+  string mode_str = "(MODE = " + refstr + ")";   
+
+  m_displayed_help = true;
   for(int j=0; j<2; j++)
     printf("\n");
   
-  printf("KeyStroke    Function                             \n");
+  printf("KeyStroke    Function         %s      \n", mode_str.c_str());
   printf("---------    ---------------------------          \n");
   printf("    s        Suppress Source of variables         \n");
   printf("    S        Display Source of variables          \n");
@@ -765,6 +775,8 @@ void XMS::printReport()
 
   if(!do_the_report)
     return;
+
+  m_displayed_help = false;
 
   m_scope_event = false;
   m_update_requested = false;
@@ -895,6 +907,8 @@ void XMS::printHistoryReport()
 
   if(!do_the_report)
     return;
+
+  m_displayed_help = false;
 
   m_history_event = false;
   m_update_requested = false;

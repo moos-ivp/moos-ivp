@@ -107,6 +107,7 @@ class XMS : public CMOOSApp
   bool   m_scope_event;
   bool   m_history_event;
   bool   m_display_help;
+  bool   m_displayed_help;
   bool   m_display_source;
   bool   m_display_aux_source;
   bool   m_display_time;
