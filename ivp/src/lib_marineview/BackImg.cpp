@@ -134,7 +134,11 @@ bool BackImg::readTiffData(string filename)
 
   string file = filename;
 
+  cout << "trying to open:[" << filename << "]" << endl;
+  
   FILE *f = fopen(file.c_str(), "r");
+  cout << "Result:" << f << endl;
+
   if(f) {
     fclose(f);
   }
