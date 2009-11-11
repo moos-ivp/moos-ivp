@@ -193,8 +193,8 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
     }
     else {
       // Add the variable name inthe out put?
-      MOOSTrace("\n pHelmIvP ignores MOOS msg due to skew");
-      MOOSDebugWrite("\n pHelmIvP ignores MOOS msg due to skew");
+      MOOSTrace("pHelmIvP ignores MOOS msg due to skew");
+      MOOSDebugWrite("pHelmIvP ignores MOOS msg due to skew");
     }
   }
 
@@ -413,14 +413,16 @@ void HelmIvP::postBehaviorMessages()
 	if(msg_is_string) {
 	  m_info_buffer->setValue(var, sdata);
 	  if(key_change || key_repeat) {
-	    m_Comms.Notify(var, sdata, bhv_descriptor);
+	    string aux = intToString(m_iteration) + ":" + bhv_descriptor;
+	    m_Comms.Notify(var, sdata, aux);
 	    m_outgoing_timestamp[var] = m_curr_time;
 	  }
 	}
 	else {
 	  m_info_buffer->setValue(var, ddata);
-	  if(key_change) {
-	    m_Comms.Notify(var, ddata, bhv_descriptor);
+	  if(key_change || key_repeat) {
+	    string aux = intToString(m_iteration) + ":" + bhv_descriptor;
+	    m_Comms.Notify(var, ddata, aux);
 	    m_outgoing_timestamp[var] = m_curr_time;
 	  }
 	}

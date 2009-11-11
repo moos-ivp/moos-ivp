@@ -198,6 +198,9 @@ IvPFunction *BHV_OpRegion::onRunState()
 
 void BHV_OpRegion::polygonVerify()
 {
+  if(m_polygons.size() == 0)
+    return;
+
   bool ok1, ok2;
   double osX = getBufferDoubleVal("NAV_X", ok1);
   double osY = getBufferDoubleVal("NAV_Y", ok2);
@@ -493,6 +496,8 @@ void BHV_OpRegion::setTimeStamps()
 
 void BHV_OpRegion::postViewablePolygon()
 {
+  if(m_polygon.size() == 0)
+    return;
   XYPolygon poly_duplicate = m_polygon;
   if(m_hint_vertex_color != "")
     poly_duplicate.set_vertex_color(m_hint_vertex_color);
@@ -514,6 +519,8 @@ void BHV_OpRegion::postViewablePolygon()
 
 void BHV_OpRegion::postErasablePolygon()
 {
+  if(m_polygon.size() == 0)
+    return;
   XYPolygon poly_duplicate = m_polygon;
   poly_duplicate.set_active(false);
   string poly_spec = poly_duplicate.get_spec();

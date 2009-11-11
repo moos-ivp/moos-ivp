@@ -13,19 +13,18 @@ Behavior = BHV_Waypoint
   condition = DEPLOY = true
   endflag   = RETURN = true
   perpetual = true
+  updates   = NEWPTS
 
           lead = 8
    lead_damper = 1
-    wpt_status = SURVEY_STATUS
-     wpt_index = SURVEY_INDEX
          speed = 2.0   // meters per second
         radius = 8.0
+//        points = zigzag:35,45,90,1000,200,50
         points = 60,-40:60,-160:150,-160:180,-100:150,-40
         repeat = 1
   visual_hints = nextpt_color=red, nextpt_lcolor=green
   visual_hints = vertex_color=yellow, line_color=white
   visual_hints = vertex_size=2, edge_size=1
-
 }
 
 //----------------------------------------------

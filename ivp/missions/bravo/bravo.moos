@@ -23,7 +23,7 @@ ProcessConfig = ANTLER
   Run = pMarinePID      @ NewConsole = false
   Run = pMarineViewer   @ NewConsole = false
   Run = pHelmIvP        @ NewConsole = true
-  //Run = pLogger       @ NewConsole = true
+  Run = pLogger       @ NewConsole = true
   Run = pEchoVar        @ NewConsole = true
 }
 
