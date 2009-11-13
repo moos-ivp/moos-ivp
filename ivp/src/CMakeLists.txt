@@ -123,7 +123,7 @@ SET(IVP_NON_GUI_LIBS
    lib_logutils
    lib_mbutil
    lib_navplot
-   lib_newmat10D
+#   lib_newmat10D
    )
 
 IF (${WIN32})
