@@ -162,12 +162,12 @@ int main(int argc, char *argv[])
 
   cout << "argv[0]:" << argv[0] << endl;
 
-  vector<string> pathnameParts = parseString(argv[0], '/');
-  char * appFilename = const_cast<char*>(pathnameParts.back().c_str());
+  string name = parseAppName(argv[0]);
+  char * appFilename = const_cast<char*>(name.c_str());
 
   cout << "appFilename:" << appFilename << endl;
 
-  MOOSAppRunnerThread portAppRunnerThread(&thePort, argv[0], sMissionFile);
+  MOOSAppRunnerThread portAppRunnerThread(&thePort, appFilename, sMissionFile);
 
   Fl::lock();
   

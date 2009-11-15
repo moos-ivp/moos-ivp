@@ -102,6 +102,9 @@ std::string modeShorten(std::string, bool really_short=true);
 
 std::vector<std::string>  getReleaseInfo(const std::string&);
 
+std::vector<std::string> tokenizePath(const std::string&);
+std::string parseAppName(const std::string&);
+
 #endif
 
 
