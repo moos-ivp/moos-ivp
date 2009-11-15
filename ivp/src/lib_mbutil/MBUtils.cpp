@@ -1358,7 +1358,8 @@ string parseAppName(const string& name){
     const string suffix = ".exe";
 
     // Check if the current appFilename contains the suffix
-    if( appFilename.find(suffix, 0) ){
+    if( appFilename.substr(appFilename.size() - suffix.size(), 
+			    suffix.size()) == suffix ){
         // Remove the suffix
         appFilename = appFilename.substr(0, appFilename.size() - suffix.size());
     }
