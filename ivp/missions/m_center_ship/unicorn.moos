@@ -1,0 +1,135 @@
+ServerHost = localhost
+ServerPort = 9202
+Simulator  = true
+
+// Community name IS the vehicle name
+Community  = unicorn
+  
+
+MOOSTimeWarp = 10
+LatOrigin    = 42.3584
+LongOrigin   = -71.08745
+
+   
+//------------------------------------------------------------
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+   
+  Run = MOOSDB          @ NewConsole = false
+  Run = iMarineSim      @ NewConsole = false
+  Run = pMOOSBridge     @ NewConsole = false ~ pMOOSBridge_2
+  Run = pEchoVar        @ NewConsole = false
+  Run = pNodeReporter   @ NewConsole = false
+  Run = pMarinePID      @ NewConsole = false
+  Run = pLogger         @ NewConsole = false
+  Run = pHelmIvP        @ NewConsole = false
+}
+  
+//---------------------------------------
+ProcessConfig = pMOOSBridge_2
+{
+  AppTick    = 4
+  CommsTick  = 4
+  
+  SHARE = [NODE_REPORT_LOCAL]  -> shoreside @ localhost:9123 [NODE_REPORT]
+  SHARE = [VIEW_POLYGON]       -> shoreside @ localhost:9123 [VIEW_POLYGON]
+  SHARE = [VIEW_POINT]         -> shoreside @ localhost:9123 [VIEW_POINT]
+  SHARE = [PROC_WATCH_SUMMARY] -> shoreside @ localhost:9123 [PROC_WATCH_SUMMARY_VH2]
+  
+  SHARE = [NODE_REPORT_LOCAL]  -> charlie @ localhost:9201 [NODE_REPORT]
+  SHARE = [NODE_REPORT_LOCAL]  -> unicorn @ localhost:9202 [NODE_REPORT]
+}
+
+//------------------------------------------
+ProcessConfig = iMarineSim
+{
+  AppTick   = 2
+  CommsTic  = 2
+
+  START_POS = -10,0,180,0
+}
+
+//---------------------------------------
+ProcessConfig = pHelmIvP
+{
+  AppTick    = 4
+  CommsTick  = 4
+  
+  Behaviors    = unicorn.bhv  
+  Verbose      = false
+  Domain       = course:0:359:360
+  Domain       = speed:0:5:26
+  ACTIVE_START = true
+}
+
+//---------------------------------------
+ProcessConfig = pMarinePID
+{
+  AppTick    = 10
+  CommsTick  = 10
+  
+  VERBOSE       = true
+  DEPTH_CONTROL = false
+  ACTIVE_START  = true
+  
+  // Yaw PID controller
+  YAW_PID_KP             = 0.4
+  YAW_PID_KD             = 0.1
+  YAW_PID_KI             = 0.0
+  YAW_PID_INTEGRAL_LIMIT = 0.07
+  
+  // Speed PID controller
+  SPEED_PID_KP           = 1.0
+  SPEED_PID_KD           = 0.0
+  SPEED_PID_KI           = 0.0
+  SPEED_PID_INTEGRAL_LIMIT = 0.07
+  
+  // Maximums
+  MAXRUDDER  = 100
+  MAXTHRUST  = 100
+  
+  // A non-zero SPEED_FACTOR overrides use of SPEED_PID
+  // Will set DESIRED_THRUST = DESIRED_SPEED * SPEED_FACTOR
+  SPEED_FACTOR = 20
+}
+
+//---------------------------------------
+ProcessConfig = pEchoVar
+{
+  AppTick   = 40
+  CommsTick = 40
+  
+  Echo = MARINESIM_X       ->  NAV_X
+  Echo = MARINESIM_Y       ->  NAV_Y
+  Echo = MARINESIM_HEADING ->  NAV_HEADING
+  Echo = MARINESIM_SPEED   ->  NAV_SPEED
+}
+
+
+//---------------------------------------
+ProcessConfig = pNodeReporter
+{
+  AppTick     = 5
+  CommsTick   = 5
+  
+  VESSEL_TYPE = AUV
+}
+
+/------------------------------------------
+// pLogger config block
+
+ProcessConfig = pLogger
+{
+  AppTick   = 4
+  CommsTick = 4
+
+  File            = UNICORN
+  PATH            = ./
+  SyncLog         = false
+  AsyncLog        = true
+  FileTimeStamp   = true
+  WildCardLogging = true
+}
+
+

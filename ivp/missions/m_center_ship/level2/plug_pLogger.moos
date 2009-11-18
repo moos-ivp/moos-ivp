@@ -1,0 +1,15 @@
+/------------------------------------------
+// pLogger config block
+
+ProcessConfig = pLogger
+{
+  AppTick   = 4
+  CommsTick = 4
+
+  File            = %(VNAME)
+  PATH            = ./
+  SyncLog         = false
+  AsyncLog        = true
+  FileTimeStamp   = true
+  WildCardLogging = true
+}

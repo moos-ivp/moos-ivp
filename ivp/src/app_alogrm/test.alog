@@ -1,0 +1,128 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% LOG FILE:       ../data_from_runs/HW_2_6_2008_____01_38_39/HW_2_6_2008_____01_38_39.alog
+%% FILE OPENED ON  Mon Jun  2 01:38:39 2008
+%% LOGSTART                1212385118.5
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+0.625           NAV_Y                pEchoVar   0            
+0.625           NAV_X                pEchoVar   0            
+0.829           NAV_X                pEchoVar   0            
+0.829           NAV_Y                pEchoVar   0            
+1.067           MOOS_DEBUG           pMarinePID ** NEW CONTROLLER GAINS ARE ** 
+1.067           MOOS_DEBUG           pMarinePID YAW_PID_KP             = 0.500 
+1.067           MOOS_DEBUG           pMarinePID YAW_PID_KD             = 0.000 
+1.067           MOOS_DEBUG           pMarinePID YAW_PID_KI             = 0.000 
+1.067           MOOS_DEBUG           pMarinePID YAW_PID_INTEGRAL_LIMIT = 0.070 
+1.067           MOOS_DEBUG           pMarinePID MAXRUDDER              = 100.000 
+1.071           MOOS_DEBUG           pMarinePID SPEED_PID_KP           = 1.000 
+1.071           MOOS_DEBUG           pMarinePID SPEED_PID_KD           = 0.000 
+1.071           MOOS_DEBUG           pMarinePID SPEED_PID_KI           = 0.000 
+1.071           MOOS_DEBUG           pMarinePID SPEED_PID_KI_LIMIT     = 0.070 
+1.071           MOOS_DEBUG           pMarinePID MAXTHRUST              = 100.000 
+1.033           NAV_X                pEchoVar   0            
+1.033           NAV_Y                pEchoVar   0            
+1.237           NAV_X                pEchoVar   0            
+1.237           NAV_Y                pEchoVar   0            
+1.645           NAV_X                pEchoVar   0            
+1.645           NAV_Y                pEchoVar   0            
+1.226           DESIRED_RUDDER       iRemote    0            
+1.226           DESIRED_THRUST       iRemote    0            
+2.277           NAV_X                pEchoVar   0            
+2.277           NAV_Y                pEchoVar   0            
+2.381           MOOS_DEBUG           pMarinePID pMarinePID Control Is Off 
+2.481           NAV_X                pEchoVar   0            
+2.481           NAV_Y                pEchoVar   0            
+2.686           NAV_X                pEchoVar   0            
+2.686           NAV_Y                pEchoVar   0            
+3.107           NAV_X                pEchoVar   0            
+3.107           NAV_Y                pEchoVar   0            
+3.314           NAV_X                pEchoVar   0            
+3.314           NAV_Y                pEchoVar   0            
+3.518           NAV_X                pEchoVar   0            
+3.518           NAV_Y                pEchoVar   0            
+3.722           NAV_X                pEchoVar   0            
+3.722           NAV_Y                pEchoVar   0            
+4.116           NAV_X                pEchoVar   0            
+4.116           NAV_Y                pEchoVar   0            
+4.322           NAV_X                pEchoVar   0            
+4.322           NAV_Y                pEchoVar   0            
+4.526           NAV_X                pEchoVar   0            
+4.526           NAV_Y                pEchoVar   0            
+4.526           THIS_IS_A_REALLY_LONG_VARIABLE_OK   pEchoVar   0
+4.762           NAV_X                pEchoVar   0            
+4.762           NAV_Y                pEchoVar   0            
+4.965           NAV_X                pEchoVar   0            
+4.965           NAV_Y                pEchoVar   0            
+5.169           NAV_X                pEchoVar   0            
+5.169           NAV_Y                pEchoVar   0            
+5.373           NAV_X                pEchoVar   0            
+5.373           NAV_Y                pEchoVar   0            
+5.578           NAV_X                pEchoVar   0            
+5.578           NAV_Y                pEchoVar   0            
+5.781           NAV_X                pEchoVar   0            
+5.781           NAV_Y                pEchoVar   0            
+5.985           NAV_X                pEchoVar   0            
+5.985           NAV_Y                pEchoVar   0            
+6.037           DESIRED_RUDDER       iRemote    0            
+6.037           DESIRED_THRUST       iRemote    0            
+6.189           NAV_X                pEchoVar   0            
+6.189           NAV_Y                pEchoVar   0            
+6.393           NAV_X                pEchoVar   0            
+6.393           NAV_Y                pEchoVar   0            
+6.597           NAV_X                pEchoVar   0            
+6.597           NAV_Y                pEchoVar   0            
+6.801           NAV_X                pEchoVar   0            
+6.801           NAV_Y                pEchoVar   0            
+7.005           NAV_X                pEchoVar   0            
+7.005           NAV_Y                pEchoVar   0            
+7.209           NAV_X                pEchoVar   0            
+7.209           NAV_Y                pEchoVar   0            
+7.414           NAV_X                pEchoVar   0            
+7.414           NAV_Y                pEchoVar   0            
+7.617           NAV_X                pEchoVar   0            
+7.617           NAV_Y                pEchoVar   0            
+7.821           NAV_X                pEchoVar   0            
+7.821           NAV_Y                pEchoVar   0            
+8.025           NAV_X                pEchoVar   0            
+8.025           NAV_Y                pEchoVar   0            
+8.229           NAV_X                pEchoVar   0            
+8.229           NAV_Y                pEchoVar   0            
+8.433           NAV_X                pEchoVar   0            
+8.433           NAV_Y                pEchoVar   0            
+8.637           NAV_X                pEchoVar   0            
+8.637           NAV_Y                pEchoVar   0            
+8.841           NAV_X                pEchoVar   0            
+8.841           NAV_Y                pEchoVar   0            
+9.045           NAV_X                pEchoVar   0            
+9.045           NAV_Y                pEchoVar   0            
+9.249           NAV_X                pEchoVar   0            
+9.249           NAV_Y                pEchoVar   0            
+9.453           NAV_X                pEchoVar   0            
+9.453           NAV_Y                pEchoVar   0            
+9.657           NAV_X                pEchoVar   0            
+9.657           NAV_Y                pEchoVar   0            
+10.442          NAV_X                pEchoVar   0            
+10.442          NAV_Y                pEchoVar   0            
+10.842          DESIRED_RUDDER       iRemote    0            
+10.842          DESIRED_THRUST       iRemote    0            
+10.851          NAV_X                pEchoVar   0            
+10.851          NAV_Y                pEchoVar   0            
+11.055          NAV_X                pEchoVar   0            
+11.055          NAV_Y                pEchoVar   0            
+11.444          NAV_X                pEchoVar   0            
+11.444          NAV_Y                pEchoVar   0            
+11.651          NAV_X                pEchoVar   0            
+11.651          NAV_Y                pEchoVar   0            
+11.855          NAV_X                pEchoVar   0            
+11.855          NAV_Y                pEchoVar   0            
+12.059          NAV_X                pEchoVar   0            
+12.059          NAV_Y                pEchoVar   0            
+12.439          NAV_X                pEchoVar   0            
+12.439          NAV_Y                pEchoVar   0            
+12.643          NAV_X                pEchoVar   0            
+12.643          NAV_Y                pEchoVar   0            
+12.847          NAV_X                pEchoVar   0            
+12.847          NAV_Y                pEchoVar   0            
+13.051          NAV_X                pEchoVar   0            
+13.051          NAV_Y                pEchoVar   0            
+13.451          NAV_X                pEchoVar   0            
+13.451          NAV_Y                pEchoVar   0            

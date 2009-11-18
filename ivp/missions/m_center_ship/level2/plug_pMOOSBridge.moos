@@ -1,0 +1,14 @@
+//---------------------------------------
+ProcessConfig = pMOOSBridge_$(VID)
+{
+  AppTick    = 4
+  CommsTick  = 4
+  
+  SHARE = [NODE_REPORT_LOCAL]  -> shoreside @ localhost:9123 [NODE_REPORT]
+  SHARE = [VIEW_POLYGON]       -> shoreside @ localhost:9123 [VIEW_POLYGON]
+  SHARE = [VIEW_POINT]         -> shoreside @ localhost:9123 [VIEW_POINT]
+  SHARE = [PROC_WATCH_SUMMARY] -> shoreside @ localhost:9123 [PROC_WATCH_SUMMARY_VH$(VID)]
+  
+  SHARE = [NODE_REPORT_LOCAL]  -> charlie @ localhost:9201 [NODE_REPORT]
+  SHARE = [NODE_REPORT_LOCAL]  -> unicorn @ localhost:9202 [NODE_REPORT]
+}

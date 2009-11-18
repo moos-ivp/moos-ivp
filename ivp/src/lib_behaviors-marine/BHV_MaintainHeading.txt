@@ -1,0 +1,14 @@
+//----------------------------------------------
+Behavior = BHV_MaintainHeading
+{
+  name       = maintain_heading
+  pwt        = 400
+  condition  = PERIODIC_ASCEND = true
+  nostarve   = PERIODIC_ASCEND, 20
+  duration   = 600
+
+         heading = on_active
+       peakwidth = 20
+       basewidth = 160
+     summitdelta = 95
+}

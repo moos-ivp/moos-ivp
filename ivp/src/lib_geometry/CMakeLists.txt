@@ -1,0 +1,22 @@
+#--------------------------------------------------------
+# The CMakeLists.txt for:                    lib_geometry
+# Author(s):                                Mike Benjamin
+#--------------------------------------------------------
+
+SET(SRC  
+   AngleUtils.cpp        ArtifactUtils.cpp      
+   CPAEngine.cpp         CPA_Utils.cpp          
+   CircularUtils.cpp     GeomUtils.cpp          
+   IO_GeomUtils.cpp      LinearExtrapolator.cpp 
+   XYArc.cpp             XYFormatUtilsPoint.cpp
+   XYCircle.cpp          XYEncoders.cpp         
+   XYGrid.cpp            XYHexGrid.cpp          
+   XYHexagon.cpp         XYPolygon.cpp          
+   XYSegList.cpp         XYSquare.cpp         
+   XYArtifactGrid.cpp    XYPoint.cpp
+   XYFormatUtilsSegl.cpp XYFormatUtilsPoly.cpp
+   XYSegment.cpp         XYPatternBlock.cpp
+   XYObject.cpp          XYFormatUtilsCircle.cpp
+)
+
+ADD_LIBRARY(geometry ${SRC})

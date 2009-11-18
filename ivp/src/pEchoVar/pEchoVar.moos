@@ -1,0 +1,29 @@
+//------------------------------------------
+// pEchoVar configuration block
+
+ProcessConfig = pEchoVar
+{
+  AppTick     = 5
+  CommsTick   = 5
+
+  Echo    = MARINESIM_X       ->  NAV_X
+  Echo    = MARINESIM_Y       ->  NAV_Y
+  Echo    = MARINESIM_YAW     ->  NAV_YAW
+  Echo    = MARINESIM_HEADING ->  NAV_HEADING
+  Echo    = MARINESIM_SPEED   ->  NAV_SPEED
+
+  FLIP:1    = source_variable  = MVIEWER_LCLICK
+  FLIP:1    = dest_variable    = UP_LOITERA
+  FLIP:1    = source_separator = ,
+  FLIP:1    = dest_separator   = #
+  FLIP:1    = type == redeploy
+  FLIP:1    = x -> xcenter_assign
+  FLIP:1    = y -> xcenter_assign
+
+
+  // MVIEWER_LCLICK = "x=56.0,y=-105,vname=alpha"
+
+  // UPDATES_LOITER_A = "xcenter_assign=56.0"
+  // UPDATES_LOITER_A = "ycenter_assign=-105"
+}
+

@@ -1,0 +1,19 @@
+
+
+CommonMarineViewer
+   MarineViewer      --> pMarineViewer
+   NavPlotViewer     --> logview / glogview
+   CPAViewer         --> app_cpaview
+   HexaViewer        --> app_hexaview
+   PolyViewer        --> app_polyview
+
+
+CommonMarineGUI (has-a CommonMarineViewer)
+  CPA_GUI            --> app_cpaview
+  HEXA_GUI           --> app_hexaview
+  POLY_GUI           --> app_polyview
+
+  CommonMarineSimGUI
+     PMV_GUI         --> pMarineViewer
+     REPLAY_GUI      --> logview / glogview
+     

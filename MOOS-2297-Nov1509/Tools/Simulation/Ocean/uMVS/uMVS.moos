@@ -1,0 +1,54 @@
+//////////////////////////////////////////////////////////
+// this is an entry level mission script for
+// learning about a simulated environment
+////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////
+//  global variables anyone can use them
+
+ServerHost = localhost
+ServerPort = 9000
+
+//Vehicle Type
+VehicleType = BLUEFIN
+
+LatOrigin = 44.19722
+LongOrigin = 9.541667
+MagneticOffset = 0
+
+
+Simulator = true
+
+////////////////////////////////////////////////
+// simulator block
+ProcessConfig = uMVS
+{
+    ADD_AUV=  pose=[4x1]{7,3,4,0},name = AUV1,InputPrefix=AUV1_,OutputPrefix=AUV1_
+    ADD_AUV=  pose=[4x1]{7,3,4,0},name = AUV2,InputPrefix=AUV2_,OutputPrefix=AUV2_
+    
+    TideHeight = 60
+
+    //a few variables for the simulator..
+    LogFile = SimLog.txt
+    InstantLogAcoustics = true
+
+    //what is standard deviation of noise on
+    //TOF measurements? 1ms = 1.5 meters
+    TOFNoise = 0.00066
+}
+
+
+ProcessConfig = uMVSMatlab
+{
+    AppTick     = 10
+    CommsTick   = 10
+    Port        = COM6
+    BaudRate    = 4800
+    Verbose     = false
+    Streaming   = false
+    MOOSComms = true
+    SerialComms = false
+    SERIAL_TIMEOUT = 10.0
+    SUBSCRIBE = DB_TIME @ 0.0
+}
