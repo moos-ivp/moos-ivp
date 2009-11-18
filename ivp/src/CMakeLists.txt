@@ -200,7 +200,6 @@ SET(IVP_NON_GUI_APPS
   app_alogrm
   app_alogclip
   app_nsplug
-  app_domquery
   iMarineSim
   pEchoVar
   pXRelay
@@ -216,11 +215,8 @@ SET(IVP_NON_GUI_APPS
   )
 
 SET(IVP_GUI_APPS
-  app_ffview
-  app_geoview
   app_logview
   pMarineViewer
-  uFunctionVis
   )
   
 SET(IVP_APPS_TO_BUILD ${IVP_NON_GUI_APPS})
