@@ -193,15 +193,14 @@ bool XMS::OnStartUp()
   //m_MissionReader.GetConfiguration(GetAppName(), sParams);
   m_MissionReader.GetConfiguration("uXMS", sParams);
 
-  // tes 2.21.08 - variables will be shown in the 
-  //    order they appear in the config file
+  // Variables shown in the order they appear in the config file
   sParams.reverse();
   
   STRING_LIST::iterator p;
   for(p = sParams.begin();p!=sParams.end();p++) {
     string line  = *p;
     string param = biteString(line, '=');
-    string value = stripBlankEnds(line);
+    string value = stripQuotes(stripBlankEnds(line));
     param = stripBlankEnds(toupper(param));
     
     if(param == "REFRESH_MODE") {
@@ -210,14 +209,23 @@ bool XMS::OnStartUp()
 	m_refresh_mode = str;
     }
 
-    // Depricated PAUSED
-    else if(param == "PAUSED") {
-      if((tolower(value) == "true"))
-	m_refresh_mode = "paused";
-      else
-	m_refresh_mode = "events";
+    else if(param == "CONTENT_MODE") {
+      string str = tolower(value);
+      if(str=="scoping")
+	m_history_mode = false;
+      else if(str=="history")
+	m_history_mode = true;
     }
 
+    // Depricated PAUSED
+    else if(param == "PAUSED") {
+      string str = tolower(value);
+      if(str == "true")
+	m_refresh_mode = "paused";
+	else
+	m_refresh_mode = "events";
+  }
+  
     else if(param == "HISTORY_VAR") 
       setHistoryVar(value);
 
