@@ -39,7 +39,7 @@ using namespace std;
 
 BHV_Shadow::BHV_Shadow(IvPDomain gdomain) : IvPBehavior(gdomain)
 {
-  this->setParam("descriptor", "(d)bhv_shadow");
+  this->setParam("descriptor", "bhv_shadow");
 
   m_domain = subDomain(m_domain, "course,speed");
 
@@ -60,6 +60,8 @@ bool BHV_Shadow::setParam(string g_param, string g_val)
   if(IvPBehavior::setParam(g_param, g_val))
     return(true);
 
+  double dval = atof(g_val.c_str());
+
   if((g_param == "them") || (g_param == "contact")) {
     m_them_name = toupper(g_val);
     addInfoVars(m_them_name+"_NAV_X");
@@ -69,33 +71,30 @@ bool BHV_Shadow::setParam(string g_param, string g_val)
     return(true);
   }  
   else if(g_param == "max_range") {
-    m_max_range = atof(g_val.c_str());
+    if((dval < 0) || (!isNumber(g_val)))
+      return(false);    
+    m_max_range = dval;
     return(true);
   }  
-  if((g_param == "hdg_peakwidth") || (g_param == "heading_peakwidth")) {
-    double dval = atof(g_val.c_str());
+  else if((g_param == "hdg_peakwidth") || (g_param == "heading_peakwidth")) {
     if((dval < 0) || (!isNumber(g_val)))
       return(false);
     m_hdg_peakwidth = dval;
     return(true);
   }
-  if((g_param == "hdg_basewidth") || (g_param == "heading_basewidth")) {
-    double dval = atof(g_val.c_str());
+  else if((g_param == "hdg_basewidth") || (g_param == "heading_basewidth")) {
     if((dval < 0) || (!isNumber(g_val)))
       return(false);
     m_hdg_basewidth = dval;
     return(true);
   }
-
-  if((g_param == "spd_peakwidth") || (g_param == "speed_peakwidth")) {
-    double dval = atof(g_val.c_str());
+  else if((g_param == "spd_peakwidth") || (g_param == "speed_peakwidth")) {
     if((dval < 0) || (!isNumber(g_val)))
       return(false);
     m_spd_peakwidth = dval;
     return(true);
   }
-  if((g_param == "spd_basewidth") || (g_param == "speed_basewidth")) {
-    double dval = atof(g_val.c_str());
+  else if((g_param == "spd_basewidth") || (g_param == "speed_basewidth")) {
     if((dval < 0) || (!isNumber(g_val)))
       return(false);
     m_spd_basewidth = dval;
@@ -139,49 +138,45 @@ IvPFunction *BHV_Shadow::onRunState()
   postIntMessage("SHADOW_CONTACT_HEADING", m_cnh);
   postIntMessage("SHADOW_RELEVANCE", relevance);
   
-
   if(relevance <= 0)
     return(0);
-
-      ZAIC_PEAK hdg_zaic(m_domain, "course");
-      hdg_zaic.setSummit(m_cnh);
-      hdg_zaic.setValueWrap(true);
-      hdg_zaic.setPeakWidth(m_hdg_peakwidth);
-      hdg_zaic.setBaseWidth(m_hdg_basewidth);
-      hdg_zaic.setSummitDelta(50.0);
-      hdg_zaic.setMinMaxUtil(0,100);
-      //  hdg_zaic.addSummit(m_cnh, m_hdg_peakwidth, m_hdg_basewidth, 50, 0, 100);
-      // hdg_zaic.setValueWrap(true);
-      IvPFunction *hdg_ipf = hdg_zaic.extractIvPFunction();
   
-      ZAIC_PEAK spd_zaic(m_domain, "speed");
-      spd_zaic.setSummit(m_cnv);
-      spd_zaic.setPeakWidth(m_spd_peakwidth);
-      spd_zaic.setBaseWidth(m_spd_basewidth);
-      spd_zaic.setSummitDelta(10.0); 
-      hdg_zaic.setMinMaxUtil(0,25);
-      
-      //  spd_zaic.addSummit(m_cnv, m_spd_peakwidth, m_spd_basewidth, 10, 0, 25);
-      // spd_zaic.setValueWrap(true);
-      IvPFunction *spd_ipf = spd_zaic.extractIvPFunction();
+  ZAIC_PEAK hdg_zaic(m_domain, "course");
+  hdg_zaic.setSummit(m_cnh);
+  hdg_zaic.setValueWrap(true);
+  hdg_zaic.setPeakWidth(m_hdg_peakwidth);
+  hdg_zaic.setBaseWidth(m_hdg_basewidth);
+  hdg_zaic.setSummitDelta(50.0);
+  hdg_zaic.setMinMaxUtil(0,100);
+  IvPFunction *hdg_ipf = hdg_zaic.extractIvPFunction();
+  if(!hdg_ipf) { 
+    postEMessage("Unable to generate hdg component of IvP function");
+    postWMessage(hdg_zaic.getWarnings());
+    return(0);
+  }
   
-      OF_Coupler coupler;
-      IvPFunction *ipf = coupler.couple(hdg_ipf, spd_ipf);
-      //      if(ipf)
-	//	ipf->setPWT(relevance * m_priority_wt);
-      
-	//     ipf->getPDMap()->normalize(0.0, 100.0);
-      
-  if(ipf) 
-    {
-      ipf->getPDMap()->normalize(0.0, 100.0);
-      ipf->setPWT(relevance * m_priority_wt);
-    }
+  ZAIC_PEAK spd_zaic(m_domain, "speed");
+  spd_zaic.setSummit(m_cnv);
+  spd_zaic.setPeakWidth(m_spd_peakwidth);
+  spd_zaic.setBaseWidth(m_spd_basewidth);
+  spd_zaic.setSummitDelta(10.0); 
+  hdg_zaic.setMinMaxUtil(0,25);  
+  IvPFunction *spd_ipf = spd_zaic.extractIvPFunction();
+  if(!spd_ipf) { 
+    postEMessage("Unable to generate spd component of IvP function");
+    postWMessage(spd_zaic.getWarnings());
+    return(0);
+  }
   
-#if 0
-    postIntMessage("SHADOW_MIN_WT", ipf->getPDMap()->getMinWT());
-    postIntMessage("SHADOW_MAX_WT", ipf->getPDMap()->getMaxWT());
-#endif
+  OF_Coupler coupler;
+  IvPFunction *ipf = coupler.couple(hdg_ipf, spd_ipf);
+      
+  if(ipf) {
+    ipf->getPDMap()->normalize(0.0, 100.0);
+    ipf->setPWT(relevance * m_priority_wt);
+  }
+  else
+    postEMessage("Unable to generate coupled IvP function");
 
   return(ipf);
 }

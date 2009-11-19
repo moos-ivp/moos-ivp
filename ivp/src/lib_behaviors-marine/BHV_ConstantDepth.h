@@ -34,24 +34,10 @@ public:
   IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
 
-  bool         handleConditionalParam(std::string, std::string);
-
 protected:
   double   m_desired_depth;
   double   m_peakwidth;
   double   m_basewidth;
   double   m_summitdelta;
-
-  std::vector<ConditionalParam> condi_params;
 };
 #endif
-
-
-
-
-
-
-
-
-
-

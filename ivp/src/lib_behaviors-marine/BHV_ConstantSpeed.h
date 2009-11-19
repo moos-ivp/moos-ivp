@@ -37,6 +37,7 @@ protected:
   double  m_desired_speed;
   double  m_peakwidth;
   double  m_basewidth;
+  double  m_summitdelta;
 };
 #endif
 

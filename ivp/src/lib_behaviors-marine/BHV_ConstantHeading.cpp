@@ -47,6 +47,7 @@ BHV_ConstantHeading::BHV_ConstantHeading(IvPDomain gdomain) :
   m_desired_heading = 0;
   m_peakwidth       = 10;
   m_basewidth       = 170;
+  m_summitdelta     = 25;
 
   // The default duration at the IvPBehavior level is "-1", which
   // indicates no duration applied to the behavior by default. By
@@ -69,18 +70,25 @@ bool BHV_ConstantHeading::setParam(string param, string val)
     m_desired_heading = atof(val.c_str());
     return(true);
   }
-  if(param == "peakwidth") {
+  else if(param == "peakwidth") {
     double dval = atof(val.c_str());
     if((dval < 0) || (!isNumber(val)))
       return(false);
     m_peakwidth = dval;
     return(true);
   }
-  if(param == "basewidth") {
+  else if(param == "basewidth") {
     double dval = atof(val.c_str());
     if((dval < 0) || (!isNumber(val)))
       return(false);
     m_basewidth = dval;
+    return(true);
+  }
+  else if(param == "summitdelta") {
+    double dval = atof(val.c_str());
+    if((dval < 0) || (!isNumber(val)))
+      return(false);
+    m_summitdelta = dval;
     return(true);
   }
 
@@ -102,12 +110,18 @@ IvPFunction *BHV_ConstantHeading::onRunState()
   zaic.setSummit(m_desired_heading);
   zaic.setBaseWidth(m_basewidth);
   zaic.setPeakWidth(m_peakwidth);
-  zaic.setSummitDelta(25);
+  zaic.setSummitDelta(m_summitdelta);
   zaic.setValueWrap(true);
   
   IvPFunction *ipf = zaic.extractIvPFunction();
   if(ipf)
     ipf->setPWT(m_priority_wt);
+  else 
+    postEMessage("Unable to generate constant-heading IvP function");
+
+  string zaic_warnings = zaic.getWarnings();
+  if(zaic_warnings != "")
+    postWMessage(zaic_warnings);
 
   return(ipf);
 }

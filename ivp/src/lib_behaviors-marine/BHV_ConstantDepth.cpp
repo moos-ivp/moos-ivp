@@ -62,9 +62,6 @@ BHV_ConstantDepth::BHV_ConstantDepth(IvPDomain gdomain) :
 
 bool BHV_ConstantDepth::setParam(string param, string val) 
 {
-  if(isConditionalParamString(val))
-    return(handleConditionalParam(param, val));
-
   if(IvPBehavior::setParam(param, val))
     return(true);
 
@@ -104,41 +101,6 @@ bool BHV_ConstantDepth::setParam(string param, string val)
 }
 
 //-----------------------------------------------------------
-// Procedure: handleConditionalParams
-
-bool BHV_ConstantDepth::handleConditionalParam(string param, string val)
-{
-#if 0
-  ConditionalParam condi_param;
-  condi_param.setFromString(param, val);
-
-  if(condi_param.ok()) {
-    cout << "param: " << condi_param.getParam() << endl;
-    cout << "val:   " << condi_param.getParamVal() << endl;
-    cout << "condi: " << endl;
-
-    LogicCondition condi = condi_param.getCondition();
-    condi.print();
-  }
-
-  if(!condi_param.ok())
-    return(false);
-
-  string param_val = condi_param.getParamVal();
-  param_lock = true;
-  bool ok = setParam(param, param_val);
-  param_lock = false;
-
-  if(!ok)
-    return(false);
-
-  condi_params.push_back(condi_param);
-#endif
-  return(true);
-}
-
-
-//-----------------------------------------------------------
 // Procedure: onRunState
 
 IvPFunction *BHV_ConstantDepth::onRunState() 
@@ -157,6 +119,12 @@ IvPFunction *BHV_ConstantDepth::onRunState()
   IvPFunction *ipf = zaic.extractIvPFunction();
   if(ipf)
     ipf->setPWT(m_priority_wt);
+  else 
+    postEMessage("Unable to generate constant-depth IvP function");
+
+  string zaic_warnings = zaic.getWarnings();
+  if(zaic_warnings != "")
+    postWMessage(zaic_warnings);
 
   return(ipf);
 }

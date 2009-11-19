@@ -37,6 +37,7 @@ protected:
   double  m_desired_heading;
   double  m_basewidth;
   double  m_peakwidth;
+  double  m_summitdelta;
 
 };
 #endif

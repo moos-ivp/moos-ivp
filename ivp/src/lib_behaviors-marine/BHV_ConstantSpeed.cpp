@@ -47,6 +47,7 @@ BHV_ConstantSpeed::BHV_ConstantSpeed(IvPDomain gdomain) :
   m_desired_speed = 0;
   m_peakwidth     = 0;
   m_basewidth     = 0.2;
+  m_summitdelta   = 0;
 
   // The default duration at the IvPBehavior level is "-1", which
   // indicates no duration applied to the behavior by default. By
@@ -63,27 +64,30 @@ bool BHV_ConstantSpeed::setParam(string param, string val)
   if(IvPBehavior::setParam(param, val))
     return(true);
   
+  double dval = atof(val.c_str());
+
   if(param == "speed") {
-    double dval = atof(val.c_str());
     if((dval < 0) || (!isNumber(val)))
       return(false);
     m_desired_speed = dval;
     return(true);
   }
-
-  if(param == "peakwidth") {
-    double dval = atof(val.c_str());
+  else if(param == "peakwidth") {
     if((dval < 0) || (!isNumber(val)))
       return(false);
     m_peakwidth = dval;
     return(true);
   }
-  
-  if(param == "basewidth") {
-    double dval = atof(val.c_str());
+  else if(param == "basewidth") {
     if((dval < 0) || (!isNumber(val)))
       return(false);
     m_basewidth = dval;
+    return(true);
+  }
+  else if(param == "summitdelta") {
+    if((dval < 0) || (!isNumber(val)))
+      return(false);
+    m_summitdelta = dval;
     return(true);
   }
   return(false);
@@ -104,10 +108,17 @@ IvPFunction *BHV_ConstantSpeed::onRunState()
   zaic.setSummit(m_desired_speed);
   zaic.setBaseWidth(m_basewidth);
   zaic.setPeakWidth(m_peakwidth);
+  zaic.setSummitDelta(m_summitdelta);
 
   IvPFunction *ipf = zaic.extractIvPFunction();
   if(ipf)
     ipf->setPWT(m_priority_wt);
+  else 
+    postEMessage("Unable to generate constant-speed IvP function");
+
+  string zaic_warnings = zaic.getWarnings();
+  if(zaic_warnings != "")
+    postWMessage(zaic_warnings);
 
   return(ipf);
 }
