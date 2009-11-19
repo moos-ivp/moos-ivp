@@ -124,10 +124,10 @@ bool ZAIC_PEAK::setBaseWidth(double val, unsigned int index)
     m_warning += "setBaseWidth:index out of range:";
     return(false);
   }
+  
   if(val < 0) {
-    m_state_ok = false;
+    val = 0;
     m_warning += "setBaseWidth:value less than zero";
-    return(false);
   }
 
   v_basewidth[index] = val;
@@ -142,10 +142,10 @@ bool ZAIC_PEAK::setPeakWidth(double val, unsigned int index)
     m_warning += "setPeakWidth:index out of range:";
     return(false);
   }
+
   if(val < 0) {
-    m_state_ok = false;
+    val = 0;
     m_warning += "setPeakWidth:value less than zero";
-    return(false);
   }
 
   v_peakwidth[index] = val;
@@ -161,15 +161,14 @@ bool ZAIC_PEAK::setSummitDelta(double val, unsigned int index)
     return(false);
   }
   if(val < 0) {
-    m_state_ok = false;
+    val = 0;
     m_warning += "setSummitDelta:value less than zero";
-    return(false);
   }
+
   double util_range = (v_maxutil[index] - v_minutil[index]);
   if(val > util_range) {
-    m_state_ok = false;
+    val = util_range;
     m_warning += "setSummitDelta:delta greater than util range";
-    return(false);
   }
 
   v_summitdelta[index] = val;
