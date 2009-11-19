@@ -455,6 +455,9 @@ void IvPBehavior::postEMessage(string g_emsg)
 
 void IvPBehavior::postWMessage(string g_msg)
 {
+  if(g_msg == "")
+    return;
+
   if(m_descriptor != "")
     g_msg = (m_descriptor + ": " + g_msg);
   
