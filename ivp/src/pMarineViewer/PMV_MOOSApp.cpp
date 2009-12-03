@@ -342,6 +342,7 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
   bool tiff_b_set = false;
 
   STRING_LIST sParams;
+  m_MissionReader.EnableVerbatimQuoting(false);
   m_MissionReader.GetConfiguration(GetAppName(), sParams);
   STRING_LIST::reverse_iterator p;
   for(p=sParams.rbegin(); p!=sParams.rend(); p++) {

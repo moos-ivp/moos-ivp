@@ -169,6 +169,7 @@ bool HelmScope::OnStartUp()
   CMOOSApp::OnStartUp();
   
   STRING_LIST sParams;
+  m_MissionReader.EnableVerbatimQuoting(false);
   m_MissionReader.GetConfiguration("uHelmScope", sParams);
   
   STRING_LIST::iterator p;

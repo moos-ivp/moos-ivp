@@ -153,13 +153,15 @@ bool TS_MOOSApp::OnConnectToServer()
 bool TS_MOOSApp::OnStartUp()
 {
   CMOOSApp::OnStartUp();
-  MOOSTrace("pTimerScript starting....\n");
+  MOOSTrace("uTimerScript starting....\n");
 
   list<string> sParams;
+  m_MissionReader.EnableVerbatimQuoting(false);
   if(m_MissionReader.GetConfiguration(GetAppName(), sParams)) {
     list<string>::reverse_iterator p;
     for(p=sParams.rbegin(); p!=sParams.rend(); p++) {
       string line  = stripBlankEnds(*p);
+      cout << "line:[" << line << "]" << endl;
       string param = tolower(stripBlankEnds(biteString(line, '=')));
       string value = stripBlankEnds(line);
 
@@ -239,6 +241,7 @@ bool TS_MOOSApp::addNewEvent(string event_str)
   string new_val;
   double new_time_of_event = -1;
 
+  cout << "event_str:[" << event_str << "]" << endl;
   vector<string> svector = parseStringQ(event_str, ',');
   unsigned int i, vsize = svector.size();
   for(i=0; i<vsize; i++) {
@@ -247,7 +250,8 @@ bool TS_MOOSApp::addNewEvent(string event_str)
     if(param == "var")
       new_var = value;
     else if(param == "val") {
-      if(strContains(value, "$$IDsdfsdfX")) {
+      cout << "***Val=[" << value << "]" << endl; 
+      if(strContains(value, "$$IDX")) {
 	string idx_string = intToString(m_pairs.size());
 	idx_string = padString(idx_string, 3);
 	idx_string = findReplace(idx_string, ' ', '0');

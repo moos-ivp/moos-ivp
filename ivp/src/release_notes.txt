@@ -1,5 +1,24 @@
 
-Post 4.0 Nov 17th 2009 ------------------------------------------
+=====================================================================
+Post 4.0   Nov 17th 2009 
+Pre  4.0.1 Dec 3rd  2009 
+=====================================================================
+o Dec 2nd: Pulled in a new version of MOOS (r.2300) that contains an
+  additional function, MissionReader::EnableVerbatimQuoting(bool). 
+  Calling this prior to MissionReader::GetConfiguration() allows the
+  double-quotes to be retained in the incoming string, as was done
+  by default in MOOS r.2292, but changed in MOOS r.2295 
+
+o Dec 2nd: Changed all MOOS-IvP applications to invoke 
+  MissionReader::EnableVerbatimQuoting(false) prior to reading 
+  MOOS file configuration lines, to retain the double-quotes. 
+  In Release 4.0 the applications uTimerScript and pMarineViewer, at
+  least, would not operate as advertised due to the dropping of 
+  double-quotes in mission configuration lines.
+
+o Dec 2nd: Changed many of the MOOS-IvP main.cpp implementations to
+  check for .moos++ files as well as .moos files. The .moos++ files
+  are generated when using MOOSTimeWarp.
 
 o Nov1709: IvPBehavior::postWMessage() modified to NOT post a warning
   when passed an empty string.

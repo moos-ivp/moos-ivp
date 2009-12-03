@@ -27,11 +27,14 @@ int main(int argc, char *argv[])
   int    i;
   string mission_file = "";
   bool   help_requested = false;
+
   for(i=1; i<argc; i++) {
     string argi = argv[i];
     if(strEnds(argi, ".moos"))
       mission_file = argv[i];
-    if((argi == "--help")||(argi=="-h"))
+    else if(strEnds(argi, ".moos++"))
+      mission_file = argv[i];
+    else if((argi == "--help")||(argi=="-h"))
       help_requested = true;
   }
 

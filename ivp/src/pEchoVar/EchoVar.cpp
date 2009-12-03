@@ -98,6 +98,7 @@ bool EchoVar::OnStartUp()
   MOOSTrace("pEchoVar starting....\n");
 
   list<string> sParams;
+  m_MissionReader.EnableVerbatimQuoting(false);
   if(m_MissionReader.GetConfiguration(GetAppName(), sParams)) {
     
     list<string>::reverse_iterator p;

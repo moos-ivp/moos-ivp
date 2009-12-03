@@ -55,7 +55,7 @@ int main(int argc ,char * argv[])
 
   for(int i=0; i<argc; i++) {
     string sarg = argv[i];
-    if(strContains(sarg, ".moos"))
+    if(strEnds(sarg, ".moos") || strEnds(sarg, ".moos++"))
       sMissionFile = argv[i];
     else if(strContains(sarg, ":=")) {
       vector<string> svector = parseString(sarg, ":=");

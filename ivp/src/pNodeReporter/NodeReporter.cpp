@@ -190,6 +190,7 @@ bool NodeReporter::OnStartUp()
     return(MOOSFail("Geodesy init failed.\n"));
 
   list<string> sParams;
+  m_MissionReader.EnableVerbatimQuoting(false);
   if(m_MissionReader.GetConfiguration(GetAppName(), sParams)) {
     list<string>::iterator p;
     for(p=sParams.begin(); p!=sParams.end(); p++) {

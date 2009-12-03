@@ -98,22 +98,23 @@ int main(int argc ,char * argv[])
     return(0);
   }
 
-  const char*  g_sMissionFile = "uXMS.moos";
+  int   i;
+  string mission_file = "";
 
   string server_host     = "localhost";
   bool   server_host_set = false;
   int    server_port     = 9000;
   bool   server_port_set = false;
   bool   seed = true;
-  for(int i=1; i<argc; i++) {
-    string str = tolower(argv[i]);
-    if(strContains(str, ".moos"))
-      g_sMissionFile = argv[i];
-    else if(str == "-noseed")
+  for(i=1; i<argc; i++) {
+    string argi = tolower(argv[i]);
+    if(strEnds(argi, ".moos") || strEnds(argi, ".moos++"))
+      mission_file = argv[i];
+    else if(argi == "-noseed")
       seed = false;
-    else if(strContains(str, "=")) {
-      string left  = stripBlankEnds(biteString(str, '='));
-      string right = stripBlankEnds(str);
+    else if(strContains(argi, "=")) {
+      string left  = stripBlankEnds(biteString(argi, '='));
+      string right = stripBlankEnds(argi);
       string lleft = tolower(left);
       if((lleft == "server_host") || (lleft == "serverhost") ||
 	 (lleft == "--server_host") || (lleft == "--serverhost")) {
@@ -130,13 +131,9 @@ int main(int argc ,char * argv[])
     }
   }
 
-  bool mission_file_provided = false;
-  if(strcmp(g_sMissionFile, "uXMS.moos"))
-    mission_file_provided = true;
-
   // If the mission file is not provided, we prompt the user if the 
   // server_host or server_port information is not on command line.
-  if(!mission_file_provided) {
+  if(mission_file == "") {
     char buff[1000];
     // If server_host info was not on the command line, prompt here.
     if(!server_host_set) {
@@ -160,14 +157,14 @@ int main(int argc ,char * argv[])
   
   XMS g_theXMS(server_host, server_port);
 
-  if(mission_file_provided == false) {
+  if(mission_file == "") {
     cout << "Mission File not provided. " << endl;
     cout << "  server_host  = " << server_host << endl;
     cout << "  server_port  = " << server_port << endl;
     g_theXMS.setConfigureCommsLocally(true);
   }
   else {
-    cout << "Mission File was provided: " << g_sMissionFile << endl;
+    cout << "Mission File was provided: " << mission_file << endl;
   }
 
 
@@ -201,7 +198,9 @@ int main(int argc ,char * argv[])
   }
 
   // start the XMS in its own thread
-  MOOSAppRunnerThread appRunner(&g_theXMS, (char*)(process_name.c_str()), (char*)g_sMissionFile);
+  MOOSAppRunnerThread appRunner(&g_theXMS, 
+				(char*)(process_name.c_str()), 
+				mission_file.c_str());
 
   for(int i=1; i<argc; i++) {
     string str = argv[i];

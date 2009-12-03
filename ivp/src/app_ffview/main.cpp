@@ -74,8 +74,12 @@ int main(int argc, char *argv[])
   if(aof_file != "") {
     PopulatorAOF populator;
     AOF *aof = populator.populate(aof_file);
-    if(aof)
+    if(aof) {
+      cout << "AOF built." << endl;
       gui->setAOF(aof);
+    }
+    else
+      cout << "AOF not built." << endl;
   }
   
   if(info_file != "") {

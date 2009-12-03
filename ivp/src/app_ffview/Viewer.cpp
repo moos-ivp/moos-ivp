@@ -620,7 +620,7 @@ void Viewer::drawAOF()
   int dim = domain.size();
   if((dim != 2) && (dim != 3))
     return;
-  
+
   int xmin = 0;
   int xmax = domain.getVarPoints(0)-1;
   int ymin = 0;

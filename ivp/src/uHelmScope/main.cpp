@@ -49,16 +49,18 @@ int main(int argc ,char * argv[])
     return(0);
   }
 
-  const char * g_sMissionFile = 0;
-  for(int i=1; i<argc; i++) {
-    string str = argv[i];
-    if(strContains(str, ".moos"))
-      g_sMissionFile = argv[i];
+  int    i;
+  string mission_file = "";
+  
+  for(i=1; i<argc; i++) {
+    string argi = argv[i];
+    if(strEnds(argi, ".moos") || strEnds(argi, ".moos++"))
+      mission_file = argv[i];
   }
 
   HelmScope theHelmScope;
   
-  if(!g_sMissionFile) {
+  if(mission_file == "") {
     MOOSTrace("Failed to provide a MOOS (.moos) file... Exiting now.\n");
     return(0);
 #if 0
@@ -96,8 +98,9 @@ int main(int argc ,char * argv[])
   
   string process_name = "uHelmScope_" + rand_str;
 
-  MOOSAppRunnerThread appThread(
-    &theHelmScope, (char*)(process_name.c_str()), g_sMissionFile);
+  MOOSAppRunnerThread appThread(&theHelmScope, 
+				(char*)(process_name.c_str()), 
+				mission_file.c_str());
 
   for(int i=1; i<argc; i++) {
     string str = argv[i];

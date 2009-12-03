@@ -224,21 +224,6 @@ void Common_IPFViewer::draw()
     glEnable(GL_DEPTH_TEST);
   else
     glDisable(GL_DEPTH_TEST);
-
-
-  // Save matrix state and do the rotation
-  glPushMatrix();
-  glRotatef(m_xRot, 1.0f, 0.0f, 0.0f);
-  glRotatef(m_zRot, 0.0f, 0.0f, 1.0f);
-
-  //glPopMatrix(); // added mikerb
-
-  if(m_draw_frame)
-    drawFrame();
-
-  drawOwnPoint();
-  Common_IPFViewer::drawIvPFunction();
-  glPopMatrix();
 }
 
 // ----------------------------------------------------------

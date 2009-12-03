@@ -76,6 +76,7 @@ bool TermCommand::OnStartUp()
   CMOOSApp::OnStartUp();
   
   STRING_LIST sParams;
+  m_MissionReader.EnableVerbatimQuoting(false);
   m_MissionReader.GetConfiguration(GetAppName(), sParams);
     
   STRING_LIST::iterator p;

@@ -15,49 +15,34 @@
 using namespace std;
 
 //--------------------------------------------------------
-// Procedure: exit_with_usage
-
-void exit_with_usage()
-{
-  cout << "Usage: uFunctionViewer file.moos" << endl;
-  exit(0);
-}
-
-//--------------------------------------------------------
-// Procedure: exit_with_version
-
-void exit_with_version()
-{
-  vector<string> svector = getReleaseInfo("uFunctionVis");
-  for(int i=0; i<svector.size(); i++)
-    cout << svector[i] << endl;
-  exit(0);
-}
-
-//--------------------------------------------------------
 // Procedure: main
 
 int main(int argc, char *argv[])
 {
-  char* sMissionFile = 0;
-  
-  bool version_requested = false;
-  for(int i=1; i<argc; i++) {
-    string str  = argv[i];
-    if(strContains(str, ".moos"))
-      sMissionFile = argv[i];
-    if((str=="-v") || (str=="--version") || (str=="-version"))
-      version_requested = true;
+  // Look for a request for version information
+  if(scanArgs(argc, argv, "-v", "--version", "-version")) {
+    vector<string> svector = getReleaseInfo("uFunctionVis");
+    for(unsigned int j=0; j<svector.size(); j++)
+      cout << svector[j] << endl;    
+    return(0);
   }
   
-  if(version_requested)
-    exit_with_version();
+  string mission_file = "";
+  for(int i=1; i<argc; i++) {
+    string argi  = argv[i];
+    if(strEnds(argi, ".moos"))
+      mission_file = argi;
+    else if(strEnds(argi, ".moos++"))
+      mission_file = argi;
+  }
   
-  if(sMissionFile == 0)
-    exit_with_usage();
+  if(mission_file == "") {
+    cout << "Usage: uFunctionViewer file.moos" << endl;
+    return(0);
+  }
 
   FV_MOOSApp thePort;
-  MOOSAppRunnerThread runner(&thePort, "uFunctionViewer", sMissionFile);
+  MOOSAppRunnerThread runner(&thePort, "uFunctionViewer", mission_file.c_str());
   
   FV_GUI* gui = new FV_GUI(900,750, "IvPFunction-Viewer");
   if(gui)

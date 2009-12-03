@@ -51,8 +51,21 @@ IvPFuncViewer::IvPFuncViewer(int x, int y, int w, int h, const char *l)
 void IvPFuncViewer::draw()
 {
   Common_IPFViewer::draw();
+  glPushMatrix();
+  glRotatef(m_xRot, 1.0f, 0.0f, 0.0f);
+  glRotatef(m_zRot, 0.0f, 0.0f, 1.0f);
+
+  Common_IPFViewer::drawIvPFunction();
   if(m_draw_frame)
     drawFrame();
+  drawOwnPoint();
+  glPopMatrix();
+  
+  glFlush();
+
+  //GLenum err = glGetError();
+  //if(err != GL_NO_ERROR)
+  //  cout << "WARNING!!!!! GL ERROR DETECTED!!!!" << endl;
 }
 
 //-------------------------------------------------------------

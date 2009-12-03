@@ -117,7 +117,7 @@ int main(int argc, char *argv[])
     return(0);
   }
 
-  const char* sMissionFile = 0;
+  string mission_file = "";
 
   // Look for a request for usage information
   if(scanArgs(argc, argv, "-h", "--help", "-help"))
@@ -126,8 +126,12 @@ int main(int argc, char *argv[])
   bool switches = false;
   for(int i=1; i<argc; i++) {
     string argi  = argv[i];
-    if(strContains(argi, ".moos") || strContains(argi, "._moos"))
-      sMissionFile = argv[i];
+    if(strEnds(argi, ".moos"))
+      mission_file = argv[i];
+    else if(strEnds(argi, "._moos"))
+      mission_file = argv[i];
+    else if(strEnds(argi, ".moos++"))
+      mission_file = argv[i];
     else if(strContains(argi, "-sw"))
       switches = true;
     else if(!strContains(argi, "pMarineViewer"))
@@ -137,7 +141,7 @@ int main(int argc, char *argv[])
   if(switches)
     exit_with_switches();
 
-  if(sMissionFile == 0)
+  if(mission_file == "")
     exit_with_usage();
   
   PMV_GUI* gui = new PMV_GUI(1100,850, "pMarineViewer");
@@ -160,14 +164,10 @@ int main(int argc, char *argv[])
   // sections are looked up in the .moos file based on the simple
   // filename, we need to strip off other pathname components.
 
-  cout << "argv[0]:" << argv[0] << endl;
-
   string name = parseAppName(argv[0]);
   char * appFilename = const_cast<char*>(name.c_str());
 
-  cout << "appFilename:" << appFilename << endl;
-
-  MOOSAppRunnerThread portAppRunnerThread(&thePort, appFilename, sMissionFile);
+  MOOSAppRunnerThread portAppRunnerThread(&thePort, appFilename, mission_file.c_str());
 
   Fl::lock();
   

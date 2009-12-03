@@ -40,11 +40,26 @@ int main(int argc, char *argv[])
 
   MarinePID marinePID;
   
-  std::string sMissionFile = "pMarinePID.moos";
-  if(argc > 1)
-    sMissionFile = argv[1];
+  int    i;
+  string mission_file = "";
+  bool   help_requested = false;
 
-  marinePID.Run("pMarinePID", sMissionFile.c_str());
+  for(i=1; i<argc; i++) {
+    string argi = argv[i];
+    if(strEnds(argi, ".moos"))
+      mission_file = argv[i];
+    else if(strEnds(argi, ".moos++"))
+      mission_file = argv[i];
+    else if((argi == "--help")||(argi=="-h"))
+      help_requested = true;
+  }
+
+  if((mission_file == "") || help_requested) {
+    MOOSTrace("Usage: pMarinePID moosfile.moos \n");
+    return(0);
+  }
+
+  marinePID.Run("pMarinePID", mission_file.c_str());
   
   return(0);
 }
