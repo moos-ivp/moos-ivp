@@ -1,7 +1,7 @@
 
 =====================================================================
 Post 4.0   Nov 17th 2009 
-Pre  4.0.1 Dec 3rd  2009 
+Pre  4.0.1 Dec 3rd  2009 MOOS r.2300, MOOS-IvP r.2406
 =====================================================================
 o Dec 2nd: Pulled in a new version of MOOS (r.2300) that contains an
   additional function, MissionReader::EnableVerbatimQuoting(bool). 

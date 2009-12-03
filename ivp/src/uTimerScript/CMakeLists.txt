@@ -13,7 +13,7 @@ else (${WIN32})
     pthread)
 endif (${WIN32})
 
-FILE(GLOB SRC *.cpp)
+SET(SRC TS_MOOSApp.cpp main.cpp VarDataPair.cpp)
 
 ADD_EXECUTABLE(uTimerScript ${SRC})
 
