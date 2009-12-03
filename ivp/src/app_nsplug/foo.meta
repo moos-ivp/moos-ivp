@@ -1,0 +1,18 @@
+#define A true
+#define B false
+
+#ifdef A true
+   #ifdef B true
+      A is true, B is true
+   #else
+      A is true, B is false
+   #endif
+#endif          
+       
+#ifdef A false
+   #ifdef B true
+       A is false, B is true
+   #else
+        A is false, B is false
+   #endif
+#endif

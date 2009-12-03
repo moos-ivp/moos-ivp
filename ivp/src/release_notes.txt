@@ -1,0 +1,48 @@
+
+Post 4.0 Nov 17th 2009 ------------------------------------------
+
+o Nov1709: IvPBehavior::postWMessage() modified to NOT post a warning
+  when passed an empty string.
+
+o Nov1709: Modified uTimerScript to support --help, and report a Usage
+  message when no .moos file is provided (standard practice across
+  apps). MINOR FIX
+
+o Nov1709: Modified BHV_ConstantSpeed to accept a summit_delta 
+  parameter specification. MINOR IMPROVEMENT
+
+o Nov1709: Modified BHV_ConstantSpeed to return BHV_ERROR in the 
+  case where an IvP function generation fails, and post warnings
+  in the case where the ZAIC produces warnings. MINOR FIX
+
+o Nov1709: Modified BHV_ConstantDepth to return BHV_ERROR in the 
+  case where an IvP function generation fails, and post warnings
+  in the case where the ZAIC produces warnings. MINOR FIX
+
+o Nov1709: Modified BHV_ConstantHeading to accept a summit_delta 
+  parameter specification. MINOR IMPROVEMENT
+
+o Nov1709: Modified BHV_ConstantHeading to return BHV_ERROR in the 
+  case where an IvP function generation fails, and post warnings
+  in the case where the ZAIC produces warnings. MINOR FIX
+
+o Nov1709: Modified ZAIC_PEAK to be more gracious in accepting 
+  parameters. For example, basewidth, peakwidth < 0 is clipped
+  to zero and a warning is generated, rather than declaring the 
+  ZAIC to be in a broken state and unable to produce an function.
+  This issue was biting folks in the field where a basewidth was
+  inadvertantly set to <zero due to being tied to vehicle altitude.
+  Although this should be caught in the behavior, it seems the 
+  ZAIC was unnecessarily harsh in dealing with this.
+
+o Nov1709: Removed BHV_ConstantDepth::handleConditionalParam() as
+  it was never fully implemented or used.
+
+o Nov1709: Modified BHV_Shadow to check for ZAIC failures and 
+  post warnings and a BHV_ERROR in case of errors. Also enforced
+  that max_range parameter must be a non-negative numerical val.
+
+
+
+
+

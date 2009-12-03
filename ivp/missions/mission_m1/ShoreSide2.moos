@@ -1,0 +1,79 @@
+//*******************************************************
+// ShoreSide Configuration File
+//
+
+ServerHost = 192.168.0.100
+ServerPort = 9123
+Community  = shoreside
+
+LatOrigin  = 42.3584
+LongOrigin = -71.08745
+
+//--------------------------------------------------------
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+
+  Run = MOOSDB          @ NewConsole = false
+  //Run = pMOOSBridge     @ NewConsole = false
+  Run = pMarineViewer   @ NewConsole = true
+  //Run = pShipsideViewer @ NewConsole = true
+  Run = uTermCommand    @ NewConsole = true
+}
+
+//--------------------------------------------------------
+ProcessConfig = pMOOSBridge
+{
+  AppTick   = 3
+  CommsTick = 3
+
+  SHARE = [DEPLOY_ALL] -> vehicle1 @ localhost:9201 [DEPLOY]
+  SHARE = [DEPLOY_ALL] -> vehicle2 @ localhost:9202 [DEPLOY]
+  SHARE = [DEPLOY_VH1] -> vehicle1 @ localhost:9201 [DEPLOY]
+  SHARE = [DEPLOY_VH2] -> vehicle2 @ localhost:9202 [DEPLOY]
+  SHARE = [TRAIL_VH2]  -> vehicle2 @ localhost:9202 [TRAIL]
+}
+
+//--------------------------------------------------------
+ProcessConfig = pMarineViewer
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  vehicolor  = vehicle1, blue
+  vehicolor  = vehicle2, green
+}
+
+//--------------------------------------------------------
+ProcessConfig = uXMS
+{
+  AppTick    = 5
+  CommsTick  = 5
+
+  VAR  = PROC_WATCH_SUMMARY_VH1
+  VAR  = PROC_WATCH_SUMMARY_VH2
+  VAR  = AIS_REPORT
+  VAR  = VIEW_POLYGON
+  VAR  = VIEW_POINT
+
+  VAR  = DEPLOY_ALL, DEPLOY_VH1, DEPLOY_VH2
+}   
+  
+//--------------------------------------------------------
+ProcessConfig = uTermCommand
+{
+  AppTick    = 2
+  CommsTick  = 2
+
+  CMD  = all_deploy_true  -->  DEPLOY_ALL --> true
+  CMD  = all_deploy_false -->  DEPLOY_ALL --> false
+  //-----------------------------------------------
+  CMD  = 1_deploy_true    -->  DEPLOY_VH1 --> true
+  CMD  = 1_deploy_false   -->  DEPLOY_VH1 --> false
+  //-----------------------------------------------
+  CMD  = 2_deploy_true    -->  DEPLOY_VH2 --> true
+  CMD  = 2_deploy_false   -->  DEPLOY_VH2 --> false
+  CMD  = 2_trail_true     -->  TRAIL_VH2  --> true
+  CMD  = 2_trail_false    -->  TRAIL_VH2  --> false
+}
+

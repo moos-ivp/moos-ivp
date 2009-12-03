@@ -1,0 +1,63 @@
+<HTML>
+<HEAD>
+<TITLE>Seabed Track Task</TITLE>
+</HEAD>
+<BODY>
+
+<H1><img src="moose6.gif"> <center>Seabed Track Task</center></H1>
+
+<H2>Description</H2>
+This task controls the Z axis of the vehicle in an attemt to keep a script definable altitude above the seabed. 
+Note only the Z axis is controlled and so it can operate in conjunction with other tasks such as <a href="WayPointTask.html"> WayPoint</a>.
+
+<H2>Publishes</H2>
+<ul>
+	<li>EndFlags
+	<li>EventFlags
+</ul>
+<p>
+
+
+<H2>Subscribes</H2>
+<ul>
+	<li><b>StartFlags</b>
+	<li><b>NAV_ALTITUDE</b>
+</ul>
+<p>
+
+<H2>Configuration Block</H2>
+<ul>
+
+
+
+	<li><a href="CommonMOOSTask.html"> Common Task Parameters</a>
+	<p>
+
+	<li><H3>Altitude</H3>
+	<ul>
+		<li><b>Syntax:	</b> Altitude = TrackAltitude
+		<li><b>Meaning:	</b> Set the Altitude to TrackAltitude
+		<li><b>Example:	</b> <i>TrackAltitude = 8</i> vehicle will try to fly 8m above seabed
+	</ul>
+	<p>
+	
+
+</ul>
+
+<H2>Example Block</H2>
+<pre>
+Task = LimitAltitude
+{
+	Name = LimitAltitude
+	Priority = 1
+	InitialState = ON
+	TimeOut = NEVER
+
+	MinimumAltitude = 5
+}
+<pre>
+
+<hr>
+<H4>The MOOS &#169;  P. Newman 2001-2002 <img src="moose2.gif"></H4>
+</BODY>
+</HTML>
