@@ -6,9 +6,12 @@ ServerHost = localhost
 ServerPort = 9200
 Community  = shoreside
 
-LatOrigin  = 42.3584
-LongOrigin = -71.08745
+MOOSTimeWarp = 1
+LatOrigin    = 42.3584
+LongOrigin   = -71.08745
 
+
+  
 //--------------------------------------------------------
 ProcessConfig = ANTLER
 {

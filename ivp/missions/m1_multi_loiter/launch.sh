@@ -69,9 +69,13 @@ nsplug meta_shoreside.moos shoreside.moos -f WARP=$WARP         \
 #  Part 3: Launch the processes
 #-------------------------------------------------------
 
+printf "Launching $VNAME1 MOOS Community (WARP=$WARP) \n"
 pAntler vehicle1.moos  >& /dev/null &
 sleep 1
-pAntler vehicle1.moos  >& /dev/null &
+printf "Launching $VNAME2 MOOS Community (WARP=$WARP) \n"
+pAntler vehicle2.moos  >& /dev/null &
 sleep 1
+printf "Launching $SNAME MOOS Community (WARP=$WARP) \n"
 pAntler shoreside.moos >& /dev/null &
+printf "Done \n"
 

@@ -6,9 +6,8 @@ ServerHost = localhost
 ServerPort = $(SPORT)
 Community  = $(SNAME)
 
-LatOrigin  = 42.3584
-LongOrigin = -71.08745
-
+#include plug_origin_warp.moos
+  
 //--------------------------------------------------------
 ProcessConfig = ANTLER
 {
