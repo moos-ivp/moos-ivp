@@ -1,0 +1,28 @@
+initialize   DEPLOY        = false
+initialize   RETURN        = false
+
+//----------------------------------------------
+Behavior = BHV_Loiter
+{
+  name      = bhv_loiter
+  pwt       = 100
+  condition = (DEPLOY = true) and (RETURN != true)
+
+         speed = 2.5
+     clockwise = true
+        radius = 8 
+     nm_radius = 20 
+  acquire_dist = 12
+       polygon = label,A : -34,-70:-15,-116:124,-60:105,-14
+}
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name      = bhv_waypoint
+  pwt       = 100	
+  condition = (DEPLOY = true) and (RETURN = true)
+
+     points = 25,5
+}
+

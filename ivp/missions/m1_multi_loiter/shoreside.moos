@@ -1,0 +1,55 @@
+//*******************************************************
+// ShoreSide Configuration File
+//
+
+ServerHost = localhost
+ServerPort = 9200
+Community  = shoreside
+
+LatOrigin  = 42.3584
+LongOrigin = -71.08745
+
+//--------------------------------------------------------
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+
+  Run = MOOSDB          @ NewConsole = false
+  Run = pMOOSBridge     @ NewConsole = false
+  Run = pMarineViewer   @ NewConsole = true
+}
+
+//--------------------------------------------------------
+ProcessConfig = pMOOSBridge
+{
+  AppTick   = 3
+  CommsTick = 3
+
+  SHARE = [DEPLOY_ALL]  -> vehicle1 @ localhost:9201 [DEPLOY]
+  SHARE = [DEPLOY_ALL]  -> vehicle2 @ localhost:9202 [DEPLOY]
+  SHARE = [DEPLOY_VH1]  -> vehicle1 @ localhost:9201 [DEPLOY]
+  SHARE = [DEPLOY_VH2]  -> vehicle2 @ localhost:9202 [DEPLOY]
+  SHARE = [UPDATES_VH2] -> vehicle2 @ localhost:9202 [TRAIL_UPDATES]
+  SHARE = [TRAIL_VH2]   -> vehicle2 @ localhost:9202 [TRAIL]
+
+  SHARE = [MOOS_MANUAL_OVERIDE_ALL] -> vehicle1 @ localhost:9201 [MOOS_MANUAL_OVERIDE]
+  SHARE = [MOOS_MANUAL_OVERIDE_ALL] -> vehicle2 @ localhost:9202 [MOOS_MANUAL_OVERIDE]
+
+}
+
+//--------------------------------------------------------
+ProcessConfig = pMarineViewer
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  vehicolor  = vehicle1, blue
+  vehicolor  = vehicle2, green
+
+  BUTTON_ONE   = DEPLOY    # DEPLOY_ALL=true # MOOS_MANUAL_OVERIDE_ALL=false 
+  BUTTON_TWO   = TRAIL-YES # TRAIL_VH2=true
+  BUTTON_THREE = TRAIL-REL # UPDATES_VH2=trail_angle_type=relative
+  BUTTON_FOUR  = TRAIL-ABS # UPDATES_VH2=trail_angle_type=absolute
+}
+
+
