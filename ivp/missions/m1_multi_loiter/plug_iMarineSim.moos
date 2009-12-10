@@ -6,6 +6,6 @@ ProcessConfig = iMarineSim
   AppTick   = 10
   CommsTic  = 10
 
-  START_POS = 10,-15,180,0
+  START_POS = $(START_POS), 180, 0
 }
 

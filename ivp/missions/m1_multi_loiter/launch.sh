@@ -2,8 +2,12 @@
 
 WARP=1
 HELP="no"
+JUST_BUILD="no"
 BAD_ARGS=""
 
+#-------------------------------------------------------
+#  Part 1: Check for and handle command-line arguments
+#-------------------------------------------------------
 for ARGI; do
     UNDEFINED_ARG=$ARGI
     if [ "${ARGI:0:6}" = "--warp" ] ; then
@@ -16,6 +20,10 @@ for ARGI; do
     fi
     if [ "${ARGI}" = "-h" ] ; then
 	HELP="yes"
+	UNDEFINED_ARG=""
+    fi
+    if [ "${ARGI}" = "--just_build" ] ; then
+	JUST_BUILD="yes"
 	UNDEFINED_ARG=""
     fi
     if [ "${UNDEFINED_ARG}" != "" ] ; then
@@ -32,11 +40,12 @@ if [ "${HELP}" = "yes" ]; then
     printf "%s [SWITCHES]         \n" $0
     printf "Switches:             \n" 
     printf "  --warp=WARP_VALUE   \n" 
+    printf "  --just_build        \n" 
     printf "  --help, -h          \n" 
     exit 127;
 fi
 
-# Second check that the one argument is numerical
+# Second check that the warp argument is numerical
 if [ "${WARP//[^0-9]/}" != "$WARP" ]; then 
     printf "Warp values must be numerical. Exiting now."
     exit 127
@@ -52,30 +61,48 @@ VNAME2="vehicle2"  # Vehicle 2 Community
 VPORT2="9202"
 SNAME="shoreside"  # Shoreside Community
 SPORT="9200"
+START_POS1="0,0"         # Vehicle 1 Behavior configurations
+LOITER_POS1="x=-40,y=-100"
+START_POS2="20,0"        # Vehicle 2 Behavior configurations
+LOITER_POS2="x=30,y=-120"
 
-nsplug meta_vehicle.moos vehicle1.moos -f WARP=$WARP VNAME=$VNAME1 \
-   VNAME1=$VNAME1 VNAME2=$VNAME2 VPORT1=$VPORT1 VPORT2=$VPORT2     \
-   VPORT=$VPORT1 SPORT=$SPORT SNAME=$SNAME
 
-nsplug meta_vehicle.moos vehicle2.moos -f WARP=$WARP VNAME=$VNAME2 \
-   VNAME1=$VNAME1 VNAME2=$VNAME2 VPORT1=$VPORT1 VPORT2=$VPORT2     \
-   VPORT=$VPORT2 SPORT=$SPORT SNAME=$SNAME
+nsplug meta_vehicle.moos targ_vehicle1.moos -f WARP=$WARP       \
+   VNAME1=$VNAME1 VNAME2=$VNAME2 VPORT1=$VPORT1 VPORT2=$VPORT2  \
+   VNAME=$VNAME1 VPORT=$VPORT1 SPORT=$SPORT SNAME=$SNAME        \
+   START_POS=$START_POS1
 
-nsplug meta_shoreside.moos shoreside.moos -f WARP=$WARP         \
+nsplug meta_vehicle.moos targ_vehicle2.moos -f WARP=$WARP       \
+   VNAME1=$VNAME1 VNAME2=$VNAME2 VPORT1=$VPORT1 VPORT2=$VPORT2  \
+   VNAME=$VNAME2 VPORT=$VPORT2 SPORT=$SPORT SNAME=$SNAME        \
+   START_POS=$START_POS2
+
+nsplug meta_shoreside.moos targ_shoreside.moos -f WARP=$WARP    \
    VNAME1=$VNAME1 VNAME2=$VNAME2 VPORT1=$VPORT1 VPORT2=$VPORT2  \
    SPORT=$SPORT SNAME=$SNAME
+
+nsplug meta_vehicle.bhv targ_vehicle1.bhv -f VNAME=$VNAME1      \
+    START_POS=$START_POS1 LOITER_POS=$LOITER_POS1       
+
+nsplug meta_vehicle.bhv targ_vehicle2.bhv -f VNAME=$VNAME2      \
+    START_POS=$START_POS1 LOITER_POS=$LOITER_POS2       
+
+
+if [ ${JUST_BUILD} = "yes" ] ; then
+    exit 0
+fi
 
 #-------------------------------------------------------
 #  Part 3: Launch the processes
 #-------------------------------------------------------
 
-printf "Launching $VNAME1 MOOS Community (WARP=$WARP) \n"
-pAntler vehicle1.moos  >& /dev/null &
+printf "Launching $VNAME1 MOOS Community \n"
+pAntler targ_vehicle1.moos >& /dev/null &
 sleep 1
-printf "Launching $VNAME2 MOOS Community (WARP=$WARP) \n"
-pAntler vehicle2.moos  >& /dev/null &
+printf "Launching $VNAME2 MOOS Community \n"
+pAntler targ_vehicle2.moos >& /dev/null &
 sleep 1
-printf "Launching $SNAME MOOS Community (WARP=$WARP) \n"
-pAntler shoreside.moos >& /dev/null &
+printf "Launching $SNAME MOOS Community \n"
+pAntler targ_shoreside.moos >& /dev/null &
 printf "Done \n"
 

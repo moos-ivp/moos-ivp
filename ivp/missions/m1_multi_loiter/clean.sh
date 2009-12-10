@@ -1,6 +1,6 @@
 #!/bin/sh 
 
-rm -f vehicle1.moos
-rm -f vehicle2.moos
-rm -f *~
+rm -f    targ_*
+rm -rf   M1_*
+rm -f    *~
 

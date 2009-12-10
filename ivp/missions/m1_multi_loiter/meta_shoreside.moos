@@ -42,8 +42,12 @@ ProcessConfig = pMarineViewer
   AppTick    = 4
   CommsTick  = 4
 
-  vehicolor  = $(VNAME1), blue
-  vehicolor  = $(VNAME2), green
+  TIFF_FILE            = forrest19.tif
+  set_pan_x            = -90
+  set_pan_y            = -280
+  zoom                 = 0.65
+  vehicle_shape_scale  = 1.5
+
 
   BUTTON_ONE   = DEPLOY    # DEPLOY_ALL=true # MOOS_MANUAL_OVERIDE_ALL=false 
   BUTTON_TWO   = TRAIL-YES # TRAIL_VH2=true

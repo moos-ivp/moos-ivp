@@ -1,9 +1,0 @@
-//------------------------------------------------
-ProcessConfig = iMarineSim  (Created from plugin)
-{
-  AppTick   = 10
-  CommsTic  = 10
-
-  START_POS = 10,-15,180,0
-}
-
