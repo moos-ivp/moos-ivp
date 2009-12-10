@@ -4,7 +4,9 @@
 ProcessConfig = pMOOSBridge_%(VNAME)
 {
   AppTick    = 4
-  CommsTick  = 4
+  CommsTick  = 4 
+  
+  BridgeFrequency = 0
   
   SHARE = [NODE_REPORT_LOCAL]   -> $(SNAME) @ localhost:$(SPORT) [NODE_REPORT]
   SHARE = [VIEW_POLYGON]        -> $(SNAME) @ localhost:$(SPORT) [VIEW_POLYGON]
