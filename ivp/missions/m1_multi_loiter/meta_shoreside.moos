@@ -26,10 +26,10 @@ ProcessConfig = pMOOSBridge
 
   SHARE = [DEPLOY_ALL]  -> $(VNAME1) @ localhost:$(VPORT1) [DEPLOY]
   SHARE = [DEPLOY_ALL]  -> $(VNAME2) @ localhost:$(VPORT2) [DEPLOY]
-  SHARE = [DEPLOY_VH1]  -> $(VNAME1) @ localhost:$(VPORT1) [DEPLOY]
-  SHARE = [DEPLOY_VH2]  -> $(VNAME2) @ localhost:$(VPORT2) [DEPLOY]
-  SHARE = [UPDATES_VH2] -> $(VNAME2) @ localhost:$(VPORT2) [TRAIL_UPDATES]
-  SHARE = [TRAIL_VH2]   -> $(VNAME2) @ localhost:$(VPORT2) [TRAIL]
+  SHARE = [RETURN_ALL]  -> $(VNAME1) @ localhost:$(VPORT1) [RETURN]
+  SHARE = [RETURN_ALL]  -> $(VNAME2) @ localhost:$(VPORT2) [RETURN]
+  SHARE = [STATION_ALL] -> $(VNAME1) @ localhost:$(VPORT1) [STATION_KEEP]
+  SHARE = [STATION_ALL] -> $(VNAME2) @ localhost:$(VPORT2) [STATION_KEEP]
 
   SHARE = [MOOS_MANUAL_OVERIDE_ALL] -> $(VNAME1) @ localhost:$(VPORT1) [MOOS_MANUAL_OVERIDE]
   SHARE = [MOOS_MANUAL_OVERIDE_ALL] -> $(VNAME2) @ localhost:$(VPORT2) [MOOS_MANUAL_OVERIDE]
@@ -49,9 +49,11 @@ ProcessConfig = pMarineViewer
   vehicle_shape_scale  = 1.5
 
 
-  BUTTON_ONE   = DEPLOY    # DEPLOY_ALL=true # MOOS_MANUAL_OVERIDE_ALL=false 
-  BUTTON_TWO   = TRAIL-YES # TRAIL_VH2=true
-  BUTTON_THREE = TRAIL-REL # UPDATES_VH2=trail_angle_type=relative
-  BUTTON_FOUR  = TRAIL-ABS # UPDATES_VH2=trail_angle_type=absolute
+  BUTTON_ONE   = DEPLOY  # DEPLOY_ALL=true 
+  BUTTON_ONE   = MOOS_MANUAL_OVERIDE_ALL=false 
+  BUTTON_ONE   = RETURN_ALL=false
+  BUTTON_TWO   = RETURN  # RETURN_ALL=true
+  BUTTON_THREE = STATION-ON   # STATION_ALL=true
+  BUTTON_FOUR  = STATION-OFF  # STATION_ALL=false
 }
 
