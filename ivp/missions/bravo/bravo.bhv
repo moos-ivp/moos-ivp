@@ -1,5 +1,5 @@
 //---------------------------------------------------
-// Helm Behavior file (created from meta_vehicle.bhv)
+// Helm Behavior file 
 
 initialize   DEPLOY  =  true
 initialize   RETURN  = false
@@ -25,47 +25,24 @@ set MODE = LOITERING {
   LOITER = true
 } 
 
-
 //----------------------------------------------
 Behavior = BHV_Loiter
 {
-  name      = loiter_demus
+  name      = loiter
   pwt       = 100
   condition = MODE==LOITERING
   updates   = UP_LOITER
+  runflag   = VEHICLE_UNDERWAY = TRUE
+  endflag   = VEHICLE_UNDERWAY = FALSE
 
-   post_suffix = A
          speed = 1.3
      clockwise = false
         radius = 8.0
      nm_radius = 15.0
-       polygon = radial:: x=0, y=-75, radius=50, pts=6, snap=1, label=a 
+       polygon = radial:: x=0, y=-75, radius=40, pts=6, snap=1,
   visual_hints = nextpt_color=white, nextpt_lcolor=khaki
-  visual_hints = edge_color=blue, vertex_color=blue
+  visual_hints = edge_color=blue, vertex_color=yellow
   visual_hints = edge_size=1, vertex_size=2
-  runflag = VEHICLE_UNDERWAY = TRUE
-  endflag = VEHICLE_UNDERWAY = FALSE
-}
-
-
-//----------------------------------------------
-Behavior = BHV_Waypoint
-{
-  name      = waypt_transit
-  pwt       = 100
-  updates   = UPDATE_SURVEY
-  condition = MODE==SURVEYING
-  endflag   = STATION_KEEP = true
-
-  // Smaller: 
-     points = -6,-32 : 9,-65 : 46,-48 : 31,-15
-  // Larger:
-  // points = -24,-33: 7,-102 :84,-67 : 53,2
-      speed = 1.3
-     radius = 5.0
-  nm_radius = 15.0
-     repeat = 10
-       lead = 8
 }
 
 //----------------------------------------------
@@ -80,7 +57,7 @@ Behavior = BHV_Waypoint
       speed = 1.3
      radius = 3.0
   nm_radius = 15.0
-     points = 1500, 2850
+      point = x=15, y=28
      repeat = 10
        lead = 8
 }
@@ -92,71 +69,9 @@ Behavior = BHV_StationKeep
   pwt       = 100
   condition = MODE==STATION-KEEPING
 
-     center_activate = true
-        inner_radius = 5
-        outer_radius = 10 
+     center_activate = true 
+        inner_radius = 5 
+        outer_radius = 10  
          outer_speed = 1.0
-       transit_speed = 1.3
-          swing_time = 7
-  hibernation_radius = 25
-        visual_hints = vertex_size=0, edge_color=blue
 }
-
-//----------------------------------------------
-Behavior = BHV_OpRegion
-{
-  name  = op-region
-  
-  // Smaller:
-  //         polygon = label,OpBox:-76,-40:60,20:100,-70:-34,-130
-  // Larger:
-  //         polygon = label,OpBox:-76,-40:86,30:139,-93:-21,-165
-  trigger_entry_time = 1
-  trigger_exit_time  = 1
-           max_time  = 1200
-        visual_hints = edge_color=red, edge_size=1
-        visual_hints = vertex_size=1, vertex_color=white
-}
-
-//----------------------------------------------
-Behavior = BHV_ConstantDepth
-{
-  name      = const_depth
-  pwt       = 100
-  duration  = no-time-limit
-  depth     = 1.25
-  condition = (MODE==LOITERING) or (MODE==RETURNING)
-  updates   = CDEPTH_TR_UPDATES
-}
-
-//----------------------------------------------
-Behavior = BHV_ConstantDepth
-{
-  name      = const_depth_sk
-  pwt       = 100
-  duration  = no-time-limit
-  depth     = 1.25
-  condition = MODE == STATION-KEEPING
-  condition = PSKEEP_MODE = SEEKING_STATION
-  updates   = CDEPTH_SK_UPDATES
-}
-
-
-//----------------------------------------------
-//Behavior = BHV_PeriodicSurface
-//{
-//  name      = periodic_surface
-//  condition = (MODE == ACTIVE)
-//  pwt       = 400
-//  
-//                period = 240  // Seconds
-//         mark_variable = GPS_UPDATE_RECEIVED
-//    pending_status_var = PENDING_SURFACE
-//  atsurface_status_var = TIME_AT_SURFACE
-//          ascent_grade = linear
-//      zero_speed_depth = 1.25
-//   max_time_at_surface = 655000 // in liew of no-max
-//  acomms_mark_variable = ACOMMS_LAST_CARXD_FOR_ME,30,350 
-//}
-
 

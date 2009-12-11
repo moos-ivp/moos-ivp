@@ -51,4 +51,22 @@ Behavior = BHV_PeriodicSurface
 }
 
 
+//----------------------------------------------
+Behavior = BHV_StationKeep
+{
+  name      = station-keep
+  pwt       = 100
+  condition = MODE==STATION-KEEPING
+
+     center_activate = true
+        inner_radius = 5
+        outer_radius = 10 
+         outer_speed = 1.0
+
+       transit_speed = 1.3
+          swing_time = 7
+  hibernation_radius = 25
+        visual_hints = vertex_size=0, edge_color=blue
+
+}
 

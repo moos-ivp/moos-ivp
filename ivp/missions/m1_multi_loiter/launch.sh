@@ -8,19 +8,22 @@ BAD_ARGS=""
 #-------------------------------------------------------
 #  Part 1: Check for and handle command-line arguments
 #-------------------------------------------------------
+let COUNT=0
 for ARGI; do
     UNDEFINED_ARG=$ARGI
     if [ "${ARGI:0:6}" = "--warp" ] ; then
 	WARP="${ARGI#--warp=*}"
 	UNDEFINED_ARG=""
     fi
-    if [ "${ARGI}" = "--help" ] ; then
+    if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
 	HELP="yes"
 	UNDEFINED_ARG=""
     fi
-    if [ "${ARGI}" = "-h" ] ; then
-	HELP="yes"
-	UNDEFINED_ARG=""
+    # Handle Warp shortcut
+    if [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$COUNT" = 0 ]; then 
+        WARP=$ARGI
+        let "COUNT=$COUNT+1"
+        UNDEFINED_ARG=""
     fi
     if [ "${ARGI}" = "--just_build" ] ; then
 	JUST_BUILD="yes"
@@ -42,7 +45,7 @@ if [ "${HELP}" = "yes" ]; then
     printf "  --warp=WARP_VALUE   \n" 
     printf "  --just_build        \n" 
     printf "  --help, -h          \n" 
-    exit 127;
+    exit 0;
 fi
 
 # Second check that the warp argument is numerical
@@ -95,13 +98,33 @@ fi
 #  Part 3: Launch the processes
 #-------------------------------------------------------
 
-printf "Launching $VNAME1 MOOS Community \n"
+printf "Launching $VNAME1 MOOS Community (WARP=%s) \n" $WARP
 pAntler targ_vehicle1.moos >& /dev/null &
 sleep 1
-printf "Launching $VNAME2 MOOS Community \n"
+printf "Launching $VNAME2 MOOS Community (WARP=%s) \n" $WARP
 pAntler targ_vehicle2.moos >& /dev/null &
 sleep 1
-printf "Launching $SNAME MOOS Community \n"
+printf "Launching $SNAME MOOS Community (WARP=%s) \n"  $WARP
 pAntler targ_shoreside.moos >& /dev/null &
 printf "Done \n"
+
+#-------------------------------------------------------
+#  Part 4: Exiting and/or killing the simulation
+#-------------------------------------------------------
+
+ANSWER="0"
+while [ "${ANSWER}" != "1" -a "${ANSWER}" != "2" ]; do
+    printf "Now what? (1) Exit script (2) Exit and Kill Simulation \n"
+    printf "> "
+    read ANSWER
+done
+
+# %1, %2, %3 matches the PID of the first three jobs in the active
+# jobs list, namely the three pAntler jobs launched in Part 3.
+if [ "${ANSWER}" = "2" ]; then
+    printf "Killing all processes ... \n"
+    kill %1 %2 %3 
+    printf "Done killing processes.   \n"
+fi
+
 

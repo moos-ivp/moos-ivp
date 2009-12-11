@@ -26,17 +26,13 @@ ProcessConfig = pMOOSBridge
 
   SHARE = [DEPLOY_ALL]  -> $(VNAME1) @ localhost:$(VPORT1) [DEPLOY]
   SHARE = [DEPLOY_ALL]  -> $(VNAME2) @ localhost:$(VPORT2) [DEPLOY]
-  SHARE = [DEPLOY_ALL]  -> $(VNAME3) @ localhost:$(VPORT3) [DEPLOY]
   SHARE = [RETURN_ALL]  -> $(VNAME1) @ localhost:$(VPORT1) [RETURN]
   SHARE = [RETURN_ALL]  -> $(VNAME2) @ localhost:$(VPORT2) [RETURN]
-  SHARE = [RETURN_ALL]  -> $(VNAME3) @ localhost:$(VPORT3) [RETURN]
   SHARE = [STATION_ALL] -> $(VNAME1) @ localhost:$(VPORT1) [STATION_KEEP]
   SHARE = [STATION_ALL] -> $(VNAME2) @ localhost:$(VPORT2) [STATION_KEEP]
-  SHARE = [STATION_ALL] -> $(VNAME3) @ localhost:$(VPORT3) [STATION_KEEP]
 
   SHARE = [MOOS_MANUAL_OVERIDE_ALL] -> $(VNAME1) @ localhost:$(VPORT1) [MOOS_MANUAL_OVERIDE]
   SHARE = [MOOS_MANUAL_OVERIDE_ALL] -> $(VNAME2) @ localhost:$(VPORT2) [MOOS_MANUAL_OVERIDE]
-  SHARE = [MOOS_MANUAL_OVERIDE_ALL] -> $(VNAME3) @ localhost:$(VPORT3) [MOOS_MANUAL_OVERIDE]
 }
 
 //--------------------------------------------------------

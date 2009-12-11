@@ -17,16 +17,15 @@ ProcessConfig = ANTLER
 {
   MSBetweenLaunches = 200
 
-  Run = MOOSDB          @ NewConsole = false
-  Run = iMarineSim      @ NewConsole = false
-  Run = pNodeReporter   @ NewConsole = false
-  Run = pMarinePID      @ NewConsole = false
-  Run = pMarineViewer   @ NewConsole = false
+  Run = MOOSDB          @ NewConsole = true
+  Run = iMarineSim      @ NewConsole = true
+  Run = pNodeReporter   @ NewConsole = true
+  Run = pMarinePID      @ NewConsole = true
+  Run = pMarineViewer   @ NewConsole = true
   Run = pHelmIvP        @ NewConsole = true
-  Run = pLogger       @ NewConsole = true
+  Run = pLogger         @ NewConsole = true
   Run = pEchoVar        @ NewConsole = true
 }
-
 
 //------------------------------------------
 // pLogger config block
@@ -140,13 +139,20 @@ ProcessConfig = pMarineViewer
   hash_shade           = 0.4
   hash_view            = true
 
-  BUTTON_ONE   = DEPLOY # DEPLOY=true
-  BUTTON_ONE   = MOOS_MANUAL_OVERIDE=false # RETURN=false
+  SCOPE        = DB_CLIENTS
+
+  ACTION       = UP_LOITER = center_assign = 40,-40
+  ACTION       = UP_LOITER = center_assign = x=100, y=-80
+
+  ACTION       = UP_LOITER = polygon = radial::x=0, y=-75, radius=40, pts=6
+  ACTION       = UP_LOITER = polygon = format=ellipse, label=BB, x=150, y=-5, degs=150, pts=14, major=80, minor=20
+
+
+  BUTTON_ONE   = DEPLOY # DEPLOY=true # RETURN=false
+  BUTTON_ONE   = MOOS_MANUAL_OVERIDE=false
   BUTTON_TWO   = RETURN # RETURN=true
-  BUTTON_THREE = CWISE # UP_LOITERA=clockwise=true
-  BUTTON_THREE = UP_LOITERB=clockwise=true
-  BUTTON_FOUR  = CCWISE # UP_LOITERA=clockwise=false
-  BUTTON_FOUR  = UP_LOITERB=clockwise=false
+  BUTTON_THREE = CWISE  # UP_LOITER=clockwise=true
+  BUTTON_FOUR  = CCWISE # UP_LOITER=clockwise=false
 }
 
 //------------------------------------------

@@ -1,7 +1,6 @@
 #!/bin/sh 
 
-rm -f    targ_*
-rm -rf   M1_*
+rm -rf   MOOSLog_*
 rm -f    *~
+rm -f    *.moos++
 rm -f    .LastOpenedMOOSLogDirectory
-

@@ -9,29 +9,13 @@ Behavior = BHV_Trail
   pwt        = 100
   condition  = (DEPLOY = true) and (TRAIL == true)
   condition  = (RETURN != true)
+  updates    = TRAIL_UPDATES
 
-          updates = TRAIL_UPDATES
          contact  = vehicle1
+ trail_angle_type = absolute
      trail_range  = 30
      trail_angle  = 190
           radius  = 8
- trail_angle_type = absolute
-}
-
-
-//----------------------------------------------
-//Behavior = BHV_Attractor
-{
-  name       = attract_vehi1
-  pwt        = 100
-  condition  = (DEPLOY = true) and (TRAIL == true)
-  condition  = (RETURN != true)
-
-         contact = vehicle1
-     dist_priority_interval = 30,50
-     strength = 1.0
-     decay = 5,10
-     patience = 50
 }
 
 //----------------------------------------------
