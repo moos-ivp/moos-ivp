@@ -5,7 +5,6 @@
 
 SET(SRC
   BehaviorSet.cpp
-  InfoBuffer.cpp
   IvPBehavior.cpp
   VarDataPair.cpp
 )

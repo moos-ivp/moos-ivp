@@ -8,6 +8,7 @@ SET(SRC
   LogicCondition.cpp
   LogicUtils.cpp
   ParseNode.cpp
+  InfoBuffer.cpp
 )
 
 ADD_LIBRARY(logic ${SRC})
