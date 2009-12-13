@@ -1,0 +1,59 @@
+//--------    FILE: charlie.bhv   -------------
+
+initialize   DEPLOY = false
+initialize   RETURN = false
+
+set MODE = Alpha {
+  DEPLOY = true
+}
+set MODE = Bravo {
+  DEPLOY = truedf
+} Charlie
+
+set MODE = Delta {
+  MODE = Alpha
+  RETURN != true
+} Echo
+set MODE = Foxtrot {
+  MODE = Charlie
+  RETURN != true
+} Golf
+
+Set MODE = Sierra {
+  MODE = Echo
+  Foo = sdf
+}
+Set MODE = Tango {
+  MODE = Echo
+  Foo = sdfsdf
+}
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{ 
+  name      = waypt_survey
+  pwt       = 100
+  condition = MODE == SURVEYING
+  endflag   = RETURN = true
+
+  speed     = 2.0   // meters per second
+  radius    = 8.0
+  points    = 60,-40:60,-160:150,-160:180,-100:150,-40
+}
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name       = waypt_return
+  pwt        = 100
+  condition  = MODE == RETURNING
+  updates    = UPDATES_RETURN
+
+  speed      = 2.0
+  radius     = 8.0
+  points     = 0,0
+}
+
+
+// Things to do
+// o Do we need a !== relation definition?
