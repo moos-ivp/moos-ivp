@@ -136,8 +136,8 @@ ProcessConfig = pMarineViewer
   BUTTON_ONE   = DEPLOY # DEPLOY=true
   BUTTON_ONE   = MOOS_MANUAL_OVERIDE=false # RETURN=false
   BUTTON_TWO   = RETURN # RETURN=true
-  BUTTON_THREE = STATION # STATION=true
-  BUTTON_FOUR  = NO-STATION # STATION=false
+  BUTTON_THREE = SURVEY-true # SURVEY=true
+  BUTTON_FOUR  = SURVEY-false # SURVEY=false
 }
 
 //------------------------------------------
@@ -163,5 +163,5 @@ ProcessConfig = uTimerScript
    RESET_TIME = end
    CONDITION  = TIME_AT_SURFACE > 3   
 
-   EVENT      = var=GPS_UPDATE_RECEIVED, val="RCVD_$$DBTIME", time=0:10
+   EVENT      = var=GPS_UPDATE_RECEIVED, val="RCVD_$$COUNT", time=10:30
 }

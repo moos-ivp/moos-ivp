@@ -2,16 +2,17 @@
 
 initialize   DEPLOY   = false
 initialize   RETURN   = false
-initialize   PSURFACE = false
+initialize   SURVEY   = false
+initialize   PSURFACE = true
 
 //========================================================
 // Hierarchical Mode Declarations
-//  o ROOT
-//  |--o INACTIVE
-//  |--o ACTIVE
+//  o ROOT                     o ROOT
+//  |--o INACTIVE              |--o PSURFACING
+//  |--o ACTIVE                |--o NOT_PSURFACING
 //     |--o RETURNING
 //     |--o LOITERING
-//        |-- PSURFACING
+//     |--o SURVEYING
 //========================================================
 
 
@@ -22,12 +23,13 @@ set MODE = ACTIVE {
 set MODE = LOITERING {
   MODE = ACTIVE
   RETURN != true
-} RETURNING
+  SURVEY != true
+} 
 
-set MODE = PSURFACING {
-  MODE = LOITERING
-  PSURFACE = true
-}                  
+set MODE = RETURNING {
+  MODE = ACTIVE
+  SURVEY != true
+} SURVEYING
 
 
 //----------------------------------------------
@@ -35,7 +37,7 @@ Behavior = BHV_Loiter
 {
   name      = loiter
   pwt       = 100
-  condition = MODE==LOITERING
+  condition = MODE == LOITERING
   updates   = UP_LOITER
 
    post_suffix = A
@@ -67,15 +69,15 @@ Behavior = BHV_Waypoint
        point = 0,0
 }
 
-
 //----------------------------------------------
 Behavior = BHV_PeriodicSurface
 {
   name             = bhv_periodic_surface
   pwt              = 1000
-  condition        = DEPLOY = true
+  condition        = (MODE == LOITERING) or (MODE == RETURNING)
+  condition        = PSURFACE = true
 
-               period = 35
+               period = 120
      zero_speed_depth = 2
   max_time_at_surface = 60
          ascent_speed = 1.0
@@ -91,5 +93,28 @@ Behavior = BHV_ConstantDepth
   condition = DEPLOY = true
 
       depth = 15
+}
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name      = waypt_survey
+  pwt       = 100
+  condition = MODE==SURVEYING
+  perpetual = true
+  updates   = NEW_SURVEY_PTS
+  endflag   = SURVEY = false
+
+     cycleflag = SURVEY = false
+          lead = 8
+   lead_damper = 1
+         speed = 2.0   // meters per second
+        radius = 8.0
+        points = format=lawnmower, label=charlie_survey, x=80, y=-80, width=70, height=30, lane_width=8, rows=north-south, degs=30
+//        points = 60,-40:60,-160:150,-160:180,-100:150,-40
+        repeat = 1
+  visual_hints = nextpt_color=red, nextpt_lcolor=green
+  visual_hints = vertex_color=yellow, line_color=white
+  visual_hints = vertex_size=2, edge_size=1
 }
 
