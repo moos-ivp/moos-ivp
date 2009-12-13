@@ -102,7 +102,7 @@ Behavior = BHV_Waypoint
   pwt       = 100
   condition = MODE==SURVEYING
   perpetual = true
-  updates   = NEW_SURVEY_PTS
+  updates   = MVIEWER_LCLICK
   endflag   = SURVEY = false
 
      cycleflag = SURVEY = false

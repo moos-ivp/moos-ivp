@@ -28,7 +28,26 @@ ProcessConfig = ANTLER
   Run = pMarinePID      @ NewConsole = false
   Run = pMarineViewer   @ NewConsole = true
   Run = pHelmIvP        @ NewConsole = true
+  Run = pLogger         @ NewConsole = true
   Run = uTimerScript    @ NewConsole = true
+}
+
+//------------------------------------------
+// pLogger config block
+
+ProcessConfig = pLogger
+{
+  AppTick	= 5
+  CommsTick	= 5
+
+  File		= CHARLIE
+  PATH		= ./
+  SyncLog 	= true @ 0.2
+  AsyncLog 	= true
+  FileTimeStamp = true
+
+  WildCardLogging = true
+  LoggingDirectorySummaryFile = ~/.pLogger
 }
 
 //------------------------------------------
@@ -130,6 +149,12 @@ ProcessConfig = pMarineViewer
   hash_shade           = 0.4
   hash_view            = true
 
+  left_context = points = x=$(XPOS), y=$(YPOS), format=lawnmower, label=charlie, width=70, height=30, lane_width=8, rows=north-south, degs=80
+
+  //left_context(a) = SURVEY_UPDATES = points = x=$(XPOS), y=$(YPOS), format=lawnmower, label=charlie, width=70, height=30, lane_width=8, rows=north-south, degs=80
+  //left_context(a) = SURVEY = true
+
+  SCOPE = MVIEWER_LCLICK
   SCOPE = GPS_UPDATE_RECEIVED
   SCOPE = TIME_AT_SURFACE
 
