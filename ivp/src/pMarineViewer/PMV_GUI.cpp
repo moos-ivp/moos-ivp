@@ -464,10 +464,10 @@ void PMV_GUI::cb_Scope(Fl_Widget* o, int v) {
 
 //----------------------------------------- LeftContext
 inline void PMV_GUI::cb_LeftContext_i(int i) {  
-  if((i<0) || (i>=m_left_context.size()))
+  if((i<0) || (i>=m_left_mouse_keys.size()))
     return;
-  string context_str = m_left_context[i];
-  mviewer->setLeftMouseContext(context_str);
+  string key_str = m_left_mouse_keys[i];
+  mviewer->setLeftMouseKey(key_str);
 }
 
 void PMV_GUI::cb_LeftContext(Fl_Widget* o, int v) {
@@ -477,10 +477,10 @@ void PMV_GUI::cb_LeftContext(Fl_Widget* o, int v) {
 
 //----------------------------------------- RightContext
 inline void PMV_GUI::cb_RightContext_i(int i) {  
-  if((i<0) || (i>=m_left_context.size()))
+  if((i<0) || (i>=m_right_mouse_keys.size()))
     return;
-  string context_str = m_left_context[i];
-  mviewer->setRightMouseContext(context_str);
+  string key_str = m_right_mouse_keys[i];
+  mviewer->setRightMouseKey(key_str);
 }
 
 void PMV_GUI::cb_RightContext(Fl_Widget* o, int v) {
@@ -586,40 +586,53 @@ bool PMV_GUI::addScopeVariable(string varname)
 }
 
 //-------------------------------------------------------------------
-// Procedure: addContext
+// Procedure: addMousePoke
 
-void PMV_GUI::addContext(string side, string context)
+void PMV_GUI::addMousePoke(string side, string key, string vardata_pair)
 {
+  if(!mviewer)
+    return;
 
   if(side == "left") {
-    unsigned int i, vsize = m_left_context.size();
-    for(i=0; i<vsize; i++) {
-      if(context == m_left_context[i])
-	return;
+    mviewer->addMousePoke(key, vardata_pair);
+    if(!vectorContains(m_left_mouse_keys, key)) {
+      if(m_left_mouse_keys.size() == 0) {
+	m_left_mouse_keys.push_back("no-action");
+	mbar->add("Mouse-Context/Left/no-action", 0, 
+		  (Fl_Callback*)PMV_GUI::cb_LeftContext, (void*)0, 
+		  FL_MENU_RADIO);
+      }
+      m_left_mouse_keys.push_back(key);
+      unsigned int index = m_left_mouse_keys.size()-1;
+      string label = "Mouse-Context/Left/";
+      label += (truncString(key, 40, "middle"));
+      mbar->add(label.c_str(), 0, 
+		(Fl_Callback*)PMV_GUI::cb_LeftContext, 
+		(void*)index, FL_MENU_RADIO|FL_MENU_VALUE);
+      mbar->redraw();
     }
-    m_left_context.push_back(context);
-    int index = m_left_context.size()-1;
-    
-    string label = "Mouse-Context/Left/";
-    label += (truncString(context, 25, "middle"));
-    mbar->add(label.c_str(), 0, 
-	      (Fl_Callback*)PMV_GUI::cb_LeftContext, (void*)index, 0);
-    mbar->redraw();
+
+    // If this was the first left context mode, make it the active
+    if(m_left_mouse_keys.size() == 1)
+      mviewer->setLeftMouseKey(key);
+
   }
   else if(side == "right") {
-    unsigned int i, vsize = m_right_context.size();
-    for(i=0; i<vsize; i++) {
-      if(context == m_right_context[i])
-	return;
+    mviewer->addMousePoke(key, vardata_pair);
+    if(!vectorContains(m_right_mouse_keys, key)) {
+      m_right_mouse_keys.push_back(key);
+      unsigned int index = m_right_mouse_keys.size()-1;
+      string label = "Mouse-Context/Right/";
+      label += (truncString(key, 40, "middle"));
+      mbar->add(label.c_str(), 0, 
+		(Fl_Callback*)PMV_GUI::cb_RightContext, (void*)index, 0);
+      mbar->redraw();
     }
-    m_right_context.push_back(context);
-    int index = m_right_context.size()-1;
-    
-    string label = "Mouse-Context/Right/";
-    label += (truncString(context, 25, "middle"));
-    mbar->add(label.c_str(), 0, 
-	      (Fl_Callback*)PMV_GUI::cb_RightContext, (void*)index, 0);
-    mbar->redraw();
+
+    // If this was the first right context mode, make it the active
+    if(m_right_mouse_keys.size() == 1)
+      mviewer->setRightMouseKey(key);
+
   }
 }
 

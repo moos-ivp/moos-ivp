@@ -215,7 +215,6 @@ void PMV_MOOSApp::handlePendingGUI()
 	dval = atof(val.c_str());
       }
       
-      //cout << "Notifying - var: " << var << "  val:" << val << endl;
       if(val_type == "string")
 	m_Comms.Notify(var, val);
       else
@@ -302,32 +301,39 @@ void PMV_MOOSApp::handleIterate(const MOOS_event & e) {
   m_gui->mviewer->setParam("curr_time", e.moos_time);
   m_gui->setCurrTime(curr_time);
 
-  string left_click_str = m_gui->mviewer->getStringInfo("left_click_info");
-  if(left_click_str != m_left_click_str) {
-    m_left_click_str = left_click_str;
-    
-    if(m_left_click_str != "") {
-      string vname   = m_gui->mviewer->getStringInfo("active_vehicle_name");
-      string postval = left_click_str;
-      if(vname != "")
-        postval += (",vname=" + vname);
-      m_Comms.Notify("MVIEWER_LCLICK", postval);
+  string vname = m_gui->mviewer->getStringInfo("active_vehicle_name");
+
+  vector<VarDataPair> left_pairs = m_gui->mviewer->getLeftMousePairs();
+  unsigned int i, vsize = left_pairs.size();
+
+  for(i=0; i<vsize; i++) {
+    VarDataPair pair = left_pairs[i];
+    string var = pair.get_var();
+    if(!pair.is_string())
+      m_Comms.Notify(var, pair.get_ddata());
+    else {
+      string val = pair.get_sdata();
+      if(strContains(val, "$(VNAME)"))
+	val = findReplace(val, "$(VNAME)", vname);
+      m_Comms.Notify(var, val);
     }
   }
 
-  string right_click_str = m_gui->mviewer->getStringInfo("right_click_info");
-  if(m_right_click_str != m_right_click_str) {
-    m_right_click_str = right_click_str;
-    
-    if(m_right_click_str != "") {
-      string vname   = m_gui->mviewer->getStringInfo("active_vehicle_name");
-      string postval = right_click_str;
-      if(vname != "")
-        postval += (",vname=" + vname);
-      m_Comms.Notify("MVIEWER_RCLICK", postval);
+  vector<VarDataPair> right_pairs = m_gui->mviewer->getRightMousePairs();
+  vsize = right_pairs.size();
+  for(i=0; i<vsize; i++) {
+    VarDataPair pair = right_pairs[i];
+    string var = pair.get_var();
+    if(!pair.is_string())
+      m_Comms.Notify(var, pair.get_ddata());
+    else {
+      string val = pair.get_sdata();
+      if(strContains(val, "$(VNAME)"))
+	val = findReplace(val, "$(VNAME)", vname);
+      m_Comms.Notify(var, val);
     }
   }
-
+  
   handlePendingGUI();
 }
 
@@ -366,10 +372,14 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
       m_gui->addAction(value, true);
     else if((param == "center_vehicle") || (param == "reference_vehicle"))
       m_gui->addReferenceVehicle(value);
-    else if(param == "left_context")
-      m_gui->addContext("left", value);
-    else if(param == "right_context")
-      m_gui->addContext("right", value);
+    else if(strBegins(param, "left_context", false)) {
+      string key = getContextKey(param);
+      m_gui->addMousePoke("left", key, value);
+    }
+    else if(strBegins(param, "right_context", false)) {
+      string key = getContextKey(param);
+      m_gui->addMousePoke("right", key, value);
+    }
     else if(param == "tiff_file") {
       if(!tiff_a_set)
 	tiff_a_set = m_gui->mviewer->setParam(param, value);
@@ -413,4 +423,33 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
   m_gui->mviewer->redraw();
   
   registerVariables();
+}
+
+
+//----------------------------------------------------------------------
+// Procedure: getContextKey
+//   Purpose: To determine the "key" in strings of the following form:
+//            "left_context[mode]" or "right_context[mode]". 
+
+string PMV_MOOSApp::getContextKey(string str)
+{
+  string remainder;
+  if(strBegins(str, "left_context", false))  // false means case insens.
+    remainder = str.c_str()+12;
+  else if(strBegins(str, "right_context", false))
+    remainder = str.c_str()+13;
+  else
+    return("");
+
+  unsigned int rsize = remainder.size();
+  if(rsize <= 2)
+    return("");
+
+  if(remainder.at(0) != '[')
+    return("");
+  if(remainder.at(remainder.size()-1) != ']')
+    return("");
+  
+  string key = remainder.substr(1, remainder.size()-2);
+  return(key);
 }

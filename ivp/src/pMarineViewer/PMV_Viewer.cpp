@@ -42,6 +42,13 @@ PMV_Viewer::PMV_Viewer(int x, int y, int w, int h, const char *l)
   m_mouse_y   = 0;
   m_mouse_lat = 0;
   m_mouse_lon = 0;
+
+  VarDataPair lft_pair("MVIEWER_LCLICK", "x=$(XPOS),y=$(YPOS),vname=$(VNAME)");
+  lft_pair.set_key("any_left");
+  VarDataPair rgt_pair("MVIEWER_RCLICK", "x=$(XPOS),y=$(YPOS),vname=$(VNAME)");
+  rgt_pair.set_key("any_right");
+  m_var_data_pairs_all.push_back(lft_pair);
+  m_var_data_pairs_all.push_back(rgt_pair);
 }
 
 //-------------------------------------------------------------
@@ -329,6 +336,8 @@ void PMV_Viewer::handleLeftMouse(int vx, int vy)
   string slat = doubleToString(dlat, 8);
   string slon = doubleToString(dlon, 8);
 
+  // If the mouse is clicked while holding down either the SHIFT or
+  // CONTROL keys, this is interpreted as a request for a drop-point.
   if((Fl::event_state(FL_SHIFT)) || (Fl::event_state(FL_CTRL))) {
     XYPoint dpt(mx, my);
     string latlon, localg, native;
@@ -341,13 +350,33 @@ void PMV_Viewer::handleLeftMouse(int vx, int vy)
     dpt.set_label(native);
     m_drop_points.addPoint(dpt, latlon, localg, native);
   }
+  // Otherwise (no SHIFT/CONTROL key), the left click will be 
+  // interpreted as a "mouse-poke". 
   else {
-    m_left_click =  "x=" + doubleToString(sx,1) + ",";
-    m_left_click += "y=" + doubleToString(sy,1);
-    m_left_click += ",lat=" + dstringCompact(doubleToString(dlat, 8));
-    m_left_click += ",lon=" + dstringCompact(doubleToString(dlon, 8));
-    if(m_left_click_context != "")
-      m_left_click += (",context=" + m_left_click_context);
+    // The aim is to build a vector of VarDataPairs from the "raw" set
+    // residing in m_var_data_pairs_all, by replacing all $(KEY) 
+    // occurances with the values found under the mouse location. 
+    m_var_data_pairs_lft.clear();
+    unsigned int i, vsize = m_var_data_pairs_all.size();
+    for(i=0; i<vsize; i++) {
+      string ikey = m_var_data_pairs_all[i].get_key();
+      if((ikey == "any_left") || (ikey == m_left_mouse_key)) {
+	VarDataPair pair = m_var_data_pairs_all[i];
+	if(pair.is_string()) {
+	  string str = m_var_data_pairs_all[i].get_sdata();
+	  if(strContains(str, "$(XPOS)")) 
+	    str = findReplace(str, "$(XPOS)", doubleToString(sx,1));
+	  if(strContains(str, "$(YPOS)")) 
+	    str = findReplace(str, "$(YPOS)", doubleToString(sy,1));
+	  if(strContains(str, "$(LAT)")) 
+	    str = findReplace(str, "$(LAT)", doubleToString(dlat,8));
+	  if(strContains(str, "$(LON)")) 
+	    str = findReplace(str, "$(LON)", doubleToString(dlon,8));
+	  pair.set_sdata(str);
+	}
+	m_var_data_pairs_lft.push_back(pair);
+      }
+    }
   }
 }
 
@@ -363,18 +392,33 @@ void PMV_Viewer::handleRightMouse(int vx, int vy)
   double sx = snapToStep(mx, 1.0);
   double sy = snapToStep(my, 1.0);
   
-  m_right_click =  "x=" + doubleToString(sx,1) + ",";
-  m_right_click += "y=" + doubleToString(sy,1);
-
   double dlat, dlon;
   m_geodesy.LocalGrid2LatLong(sx, sy, dlat, dlon);
-  m_right_click += ",lat=" + dstringCompact(doubleToString(dlat, 8));
-  m_right_click += ",lon=" + dstringCompact(doubleToString(dlon, 8));
 
-  if(m_right_click_context != "")
-    m_right_click += (",context=" + m_right_click_context);
-
-  //cout << "Right Mouse click at [" << m_right_click << "] meters." << endl;
+  // The aim is to build a vector of VarDataPairs from the "raw" set
+  // residing in m_var_data_pairs_all, by replacing all $(KEY) 
+  // occurances with the values found under the mouse location. 
+  m_var_data_pairs_rgt.clear();
+  unsigned int i, vsize = m_var_data_pairs_all.size();
+  for(i=0; i<vsize; i++) {
+    string ikey = m_var_data_pairs_all[i].get_key();
+    if((ikey == "any_right") || (ikey == m_right_mouse_key)) {
+      VarDataPair pair = m_var_data_pairs_all[i];
+      if(pair.is_string()) {
+	string str = m_var_data_pairs_all[i].get_sdata();
+	if(strContains(str, "$(XPOS)")) 
+	  str = findReplace(str, "$(XPOS)", doubleToString(sx,1));
+	if(strContains(str, "$(YPOS)")) 
+	  str = findReplace(str, "$(YPOS)", doubleToString(sy,1));
+	if(strContains(str, "$(LAT)")) 
+	  str = findReplace(str, "$(LAT)", doubleToString(dlat,8));
+	if(strContains(str, "$(LON)")) 
+	  str = findReplace(str, "$(LON)", doubleToString(dlon,8));
+	pair.set_sdata(str);
+      }
+      m_var_data_pairs_rgt.push_back(pair);
+    }
+  }
 }
 
 //-------------------------------------------------------------
@@ -502,6 +546,20 @@ void PMV_Viewer::setActiveScope(string varname)
   }
 }
 
+//-------------------------------------------------------------
+// Procedure: addMousePoke
+//      Note: 
+
+void PMV_Viewer::addMousePoke(string key, string vardata_pair)
+{
+  string var  = stripBlankEnds(biteString(vardata_pair, '='));
+  string data = stripBlankEnds(vardata_pair);
+  VarDataPair new_pair(var, data, "auto");
+  new_pair.set_key(key);
+  
+  m_var_data_pairs_all.push_back(new_pair);
+}
+
 
 // ----------------------------------------------------------
 // Procedure: getStringInfo
@@ -534,10 +592,6 @@ string PMV_Viewer::getStringInfo(const string& info_type, int precision)
     else
       return("n/a");
   }
-  else if(info_type == "left_click_info")
-    result = m_left_click;
-  else if(info_type == "right_click_info")
-    result = m_right_click;
   else if(info_type == "range") {
     double xpos, ypos;
     bool   dhandled1 = m_vehiset.getDoubleInfo("active", "xpos", xpos);
@@ -605,4 +659,24 @@ string PMV_Viewer::getStringInfo(const string& info_type, int precision)
   return(result);
 }
   
+
+// ----------------------------------------------------------
+// Procedure: getLeftMousePairs
+// Procedure: getRightMousePairs
+
+vector<VarDataPair> PMV_Viewer::getLeftMousePairs(bool clear)
+{
+  vector<VarDataPair> rvector = m_var_data_pairs_lft;
+  if(clear)
+    m_var_data_pairs_lft.clear();
+  return(rvector);
+}
+
+vector<VarDataPair> PMV_Viewer::getRightMousePairs(bool clear)
+{
+  vector<VarDataPair> rvector = m_var_data_pairs_rgt;
+  if(clear)
+    m_var_data_pairs_rgt.clear();
+  return(rvector);
+}
 

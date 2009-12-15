@@ -64,6 +64,8 @@ class PMV_MOOSApp : public CMOOSApp
   void receiveVehicleState(CMOOSMsg &Msg);
   bool receivePK_SOL(std::string sval);
   void registerVariables();
+  
+  std::string getContextKey(std::string);
 
  protected:
   PMV_GUI* m_gui;
