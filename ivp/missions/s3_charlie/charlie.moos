@@ -149,12 +149,11 @@ ProcessConfig = pMarineViewer
   hash_shade           = 0.4
   hash_view            = true
 
-  left_context = points = x=$(XPOS), y=$(YPOS), format=lawnmower, label=charlie, width=70, height=30, lane_width=8, rows=north-south, degs=80
-
-  //left_context(a) = SURVEY_UPDATES = points = x=$(XPOS), y=$(YPOS), format=lawnmower, label=charlie, width=70, height=30, lane_width=8, rows=north-south, degs=80
-  //left_context(a) = SURVEY = true
+  left_context[survey-point] = SURVEY_UPDATES = points = x=$(XPOS), y=$(YPOS), format=lawnmower, label=charlie, width=70, height=30, lane_width=8, rows=north-south, degs=80
+  left_context[survey-point] = SURVEY = true
 
   SCOPE = MVIEWER_LCLICK
+  SCOPE = SURVEY_UPDATES
   SCOPE = GPS_UPDATE_RECEIVED
   SCOPE = TIME_AT_SURFACE
 
