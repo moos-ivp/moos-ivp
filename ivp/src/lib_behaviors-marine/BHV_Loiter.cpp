@@ -447,14 +447,18 @@ void BHV_Loiter::postStatusReports()
 void BHV_Loiter::postViewablePolygon()
 {
   XYSegList seglist = m_waypoint_engine.getSegList();
-  string bhv_tag = toupper(getDescriptor());
-  bhv_tag = findReplace(bhv_tag, "(d)", "");
-  bhv_tag = m_us_name + "-" + bhv_tag;
-  seglist.set_label(bhv_tag);
   seglist.set_vertex_color(m_hint_vertex_color);
   seglist.set_edge_color(m_hint_edge_color);
   seglist.set_edge_size(m_hint_edge_size);
   seglist.set_vertex_size(m_hint_vertex_size);
+  // Handle the label setting
+  string bhv_tag = toupper(getDescriptor());
+  bhv_tag = m_us_name + "-" + bhv_tag;
+  seglist.set_label(bhv_tag);
+  if(m_hint_poly_label == "")
+    seglist.set_label(bhv_tag);
+  else
+    seglist.set_label(m_hint_poly_label);
 
   string poly_spec = seglist.get_spec();
   postMessage("VIEW_POLYGON", poly_spec);
@@ -531,4 +535,6 @@ void BHV_Loiter::handleVisualHint(string hint)
     m_hint_edge_size = atof(value.c_str());
   else if((param == "vertex_size") && isNumber(value))
     m_hint_vertex_size = atof(value.c_str());
+  else if(param == "label")
+    m_hint_poly_label = value;
 }

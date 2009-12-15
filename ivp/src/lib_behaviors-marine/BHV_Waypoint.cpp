@@ -38,6 +38,7 @@
 #include "ZAIC_PEAK.h"
 #include "OF_Coupler.h"
 #include "XYFormatUtilsPoly.h"
+#include "XYFormatUtilsPoint.h"
 #include "XYFormatUtilsSegl.h"
 #include "ColorParse.h"
 
@@ -114,6 +115,16 @@ bool BHV_Waypoint::setParam(string param, string val)
       XYPolygon new_poly = string2Poly(val);
       new_seglist = new_poly.exportSegList(0,0);
     }
+    if(new_seglist.size() == 0)
+      return(false);
+    m_waypoint_engine.setSegList(new_seglist);
+    m_markpt.set_active(false);
+    return(true);
+  }
+  else if(param == "point") {
+    XYPoint point = string2Point(val);
+    XYSegList new_seglist;
+    new_seglist.add_vertex(point);
     if(new_seglist.size() == 0)
       return(false);
     m_waypoint_engine.setSegList(new_seglist);
