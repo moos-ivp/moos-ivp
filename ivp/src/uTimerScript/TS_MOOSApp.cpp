@@ -28,8 +28,12 @@ TS_MOOSApp::TS_MOOSApp()
   m_start_time    = 0;
   m_skip_time     = 0;
   m_pause_time    = 0;
+  m_db_uptime     = 0;
+  m_utc_time      = 0;
   m_paused        = false;
+  m_conditions_ok = true;
   m_posted_count  = 0;
+  m_posted_tcount = 0;
   m_reset_count   = 0;
   m_iteration     = 0; 
 
@@ -41,6 +45,8 @@ TS_MOOSApp::TS_MOOSApp()
   m_var_pause      = "TIMER_SCRIPT_PAUSE";
   m_var_status     = "TIMER_SCRIPT_STATUS";
   m_var_reset      = "TIMER_SCRIPT_RESET";
+
+  m_info_buffer    = new InfoBuffer;
 
   seedRandom();
 }
@@ -72,6 +78,8 @@ bool TS_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
       if((str == "reset") || (str == "true"))
 	handleReset();
     }
+    else if(key == "DB_UPTIME")
+      m_db_uptime = dval;
     else if(key == m_var_pause) {
       string pause_val = tolower(sval);
       if(pause_val == "true")
@@ -81,6 +89,8 @@ bool TS_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
       else if(pause_val == "toggle")
 	m_paused = !m_paused;
     }
+    else
+      updateInfoBuffer(msg);
   }
 
   return(true);
@@ -91,18 +101,20 @@ bool TS_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 
 bool TS_MOOSApp::Iterate()
 {
-
   if(m_iteration == 0) {
     sortEvents();
     expandIndexPairs();
     printScript();
   }
+  m_conditions_ok = checkConditions();
+
+  m_utc_time = MOOSTime();
 
   double curr_time = MOOSTime();
   if(m_start_time == 0)
     m_start_time = curr_time;  
 
-  if(m_paused) {
+  if(m_paused || !m_conditions_ok) {
     double delta_time = 0;
     if(m_previous_time != -1)
       delta_time = curr_time - m_previous_time;
@@ -161,7 +173,6 @@ bool TS_MOOSApp::OnStartUp()
     list<string>::reverse_iterator p;
     for(p=sParams.rbegin(); p!=sParams.rend(); p++) {
       string line  = stripBlankEnds(*p);
-      cout << "line:[" << line << "]" << endl;
       string param = tolower(stripBlankEnds(biteString(line, '=')));
       string value = stripBlankEnds(line);
 
@@ -186,32 +197,31 @@ bool TS_MOOSApp::OnStartUp()
 	  m_reset_time = atof(value.c_str());
       }
       else if((param == "jump_var") || (param == "jump_variable")) {
-	if(!strContainsWhite(value)) {
+	if(!strContainsWhite(value))
 	  m_var_next_event = value;
-	  m_Comms.Register(m_var_next_event, 0);
-	}
       }
       else if((param == "forward_var") || (param == "forward_variable")) {
-	if(!strContainsWhite(value)) {
+	if(!strContainsWhite(value))
 	  m_var_forward = value;
-	  m_Comms.Register(m_var_forward, 0);
-	}
       }
       else if((param == "reset_var") || (param == "reset_variable")) {
-	if(!strContainsWhite(value)) {
+	if(!strContainsWhite(value))
 	  m_var_reset = value;
-	  m_Comms.Register(m_var_reset, 0);
-	}
       }
       else if((param == "pause_var") || (param == "pause_variable")) {
-	if(!strContainsWhite(value)) {
+	if(!strContainsWhite(value))
 	  m_var_pause = value;
-	  m_Comms.Register(m_var_pause, 0);
-	}
       }
       else if(param == "status_var") {
 	if(!strContainsWhite(value))
 	  m_var_status = value;
+      }
+      else if(param == "condition") {
+	LogicCondition new_condition;
+	bool ok = new_condition.setCondition(value);
+	if(ok)
+	  m_logic_conditions.push_back(new_condition);
+	m_conditions_ok = true;
       }
     }
   }
@@ -229,6 +239,22 @@ void TS_MOOSApp::RegisterVariables()
   m_Comms.Register(m_var_forward, 0);
   m_Comms.Register(m_var_pause, 0);
   m_Comms.Register(m_var_reset, 0);
+  m_Comms.Register("DB_UPTIME", 0);
+
+  // Get all the variable names from all present conditions.
+  vector<string> all_vars;
+  unsigned int i, vsize = m_logic_conditions.size();
+  for(i=0; i<vsize; i++) {
+    vector<string> svector = m_logic_conditions[i].getVarNames();
+    all_vars = mergeVectors(all_vars, svector);
+  }
+  all_vars = removeDuplicates(all_vars);
+
+  // Register for all variables found in all conditions.
+  unsigned int all_size = all_vars.size();
+  for(i=0; i<all_size; i++)
+    m_Comms.Register(all_vars[i], 0);
+ 
 }
 
 //------------------------------------------------------------
@@ -241,7 +267,6 @@ bool TS_MOOSApp::addNewEvent(string event_str)
   string new_val;
   double new_time_of_event = -1;
 
-  cout << "event_str:[" << event_str << "]" << endl;
   vector<string> svector = parseStringQ(event_str, ',');
   unsigned int i, vsize = svector.size();
   for(i=0; i<vsize; i++) {
@@ -250,7 +275,6 @@ bool TS_MOOSApp::addNewEvent(string event_str)
     if(param == "var")
       new_var = value;
     else if(param == "val") {
-      cout << "***Val=[" << value << "]" << endl; 
       if(strContains(value, "$$IDX")) {
 	string idx_string = intToString(m_pairs.size());
 	idx_string = padString(idx_string, 3);
@@ -296,7 +320,7 @@ bool TS_MOOSApp::addNewEvent(string event_str)
 }
 
 //------------------------------------------------------------
-// Procedure: expandIndexInPairs
+// Procedure: expandIndexPairs
 // 
 
 void TS_MOOSApp::expandIndexPairs()
@@ -314,8 +338,6 @@ void TS_MOOSApp::expandIndexPairs()
   }
 }
     
-
-
 //------------------------------------------------------------
 // Procedure: sortEvents
 // 
@@ -393,12 +415,40 @@ bool TS_MOOSApp::checkForReadyPostings()
     if((m_elapsed_time >= m_ptime[i]) && !m_poked[i] && 
        ((m_reset_time <= 0) || (m_ptime[i] <= m_reset_time))) {
       string variable = m_pairs[i].get_var();
-      if(m_pairs[i].is_string()) 
-	m_Comms.Notify(variable, m_pairs[i].get_sdata());
+      if(m_pairs[i].is_string()) {
+	string sval = m_pairs[i].get_sdata();
+	// Handle special case where MOOSDB_UPTIME *is* the post
+	if(sval == "$$DBTIME")
+	  m_Comms.Notify(variable, m_db_uptime);
+	// Handle special case where MOOSDB_UPTIME is embedded in the post
+	else if(strContains(sval, "$$DBTIME")) {
+	  sval = findReplace(sval, "$$DBTIME", doubleToString(m_db_uptime, 2));
+	  m_Comms.Notify(variable, sval);
+	}
+	// Handle special case where UTC_TIME *is* the post
+	else if(sval == "$$UTCTIME")
+	  m_Comms.Notify(variable, m_db_uptime);
+	// Handle special case where UTC TIME is embedded in the post
+	else if(strContains(sval, "$$UTCTIME")) {
+	  sval = findReplace(sval, "$$UTCTIME", doubleToString(m_utc_time, 2));
+	  m_Comms.Notify(variable, sval);
+	}
+	// Handle special case where COUNT *is* the post
+	else if(sval == "$$COUNT")
+	  m_Comms.Notify(variable, m_posted_tcount);
+	// Handle special case where COUNT is embedded in the post
+	else if(strContains(sval, "$$COUNT")) {
+	  sval = findReplace(sval, "$$COUNT", intToString(m_posted_tcount));
+	  m_Comms.Notify(variable, sval);
+	}
+	else
+	  m_Comms.Notify(variable, sval);
+      }
       else
 	m_Comms.Notify(variable, m_pairs[i].get_ddata());
       // If just now poked, note it, so it won't be poked again
       m_posted_count++;
+      m_posted_tcount++;
       m_poked[i] = true;
     }
     all_poked = all_poked && m_poked[i];
@@ -472,6 +522,7 @@ void TS_MOOSApp::postStatus()
   status += ", pending=" + intToString(pending);
 
   status += ", paused=" + boolToString(m_paused);
+  status += ", conditions_ok=" + boolToString(m_conditions_ok);
   
   string maxresets = "/any";
   if(m_reset_max != -1)
@@ -507,3 +558,72 @@ void TS_MOOSApp::seedRandom()
   seed = (seed*pid)%999999;
   srand(seed);
 }
+
+
+//------------------------------------------------------------
+// Procedure: updateInfoBuffer()
+
+bool TS_MOOSApp::updateInfoBuffer(CMOOSMsg &msg)
+{
+  string key = msg.m_sKey;
+  string community = msg.m_sOriginatingCommunity;
+  string sdata = msg.m_sVal;
+  double ddata = msg.m_dfVal;
+  char   mtype = msg.m_cDataType;
+
+   if(mtype == MOOS_DOUBLE) {
+    return(m_info_buffer->setValue(key, ddata));
+  }
+  else if(mtype == MOOS_STRING) {
+    return(m_info_buffer->setValue(key, sdata));
+  }
+  return(false);
+}
+
+//-----------------------------------------------------------
+// Procedure: checkConditions()
+//   Purpose: Determine if all the logic conditions in the vector
+//            of conditions is met, given the snapshot of variable
+//            values in the info_buffer.
+
+bool TS_MOOSApp::checkConditions()
+{
+  if(!m_info_buffer) 
+    return(false);
+
+  unsigned int i, j, vsize, csize;
+
+  // Phase 1: get all the variable names from all present conditions.
+  vector<string> all_vars;
+  csize = m_logic_conditions.size();
+  for(i=0; i<csize; i++) {
+    vector<string> svector = m_logic_conditions[i].getVarNames();
+    all_vars = mergeVectors(all_vars, svector);
+  }
+  all_vars = removeDuplicates(all_vars);
+
+  // Phase 2: get values of all variables from the info_buffer and 
+  // propogate these values down to all the logic conditions.
+  vsize = all_vars.size();
+  for(i=0; i<vsize; i++) {
+    string varname = all_vars[i];
+    bool   ok_s, ok_d;
+    string s_result = m_info_buffer->sQuery(varname, ok_s);
+    double d_result = m_info_buffer->dQuery(varname, ok_d);
+
+    for(j=0; (j<csize)&&(ok_s); j++)
+      m_logic_conditions[j].setVarVal(varname, s_result);
+    for(j=0; (j<csize)&&(ok_d); j++)
+      m_logic_conditions[j].setVarVal(varname, d_result);
+  }
+
+  // Phase 3: evaluate all logic conditions. Return true only if all
+  // conditions evaluate to be true.
+  for(i=0; i<csize; i++) {
+    bool satisfied = m_logic_conditions[i].eval();
+    if(!satisfied)
+      return(false);
+  }
+  return(true);
+}
+

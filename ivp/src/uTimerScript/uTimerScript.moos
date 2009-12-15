@@ -15,21 +15,8 @@ ProcessConfig = ANTLER
   Run = MOOSDB		@ NewConsole = false
   Run = uXMS		@ NewConsole = true
   Run = uTimerScript    @ NewConsole = true
-  Run = pTallyomatic    @ NewConsole = true
 }
 
-
-//------------------------------------------
-// pTallyomatic configuration block
-
-ProcessConfig = pTallyomatic
-{
-   AppTick   = 4
-   CommsTick = 4
-
-   varname = BISCUIT
-
-}
 
 //------------------------------------------
 // uTimerScript configuration  block
@@ -42,26 +29,18 @@ ProcessConfig = uTimerScript
    PAUSED     = false
    RESET_MAX  = 4
    RESET_TIME = end
+   CONDITION  = (FOO <= 34) and (BAR != "false")
+   CONDITION  = alpha = apples
+   CONDITION  = TIMER_SCRIPT_PAUSE != "true"   
 
-   //EVENT = time=0:20, var=charlie$$IDX, val="99", 
-   //EVENT = time=0:20, var=alpha$$IDX, val="true", 
-   //EVENT = time=0:20, var=delta$$IDX, val=43
-   //EVENT = time=0:20, var=bravo$$IDX, val=false
-   //EVENT = time=0:20, var=echo$$IDX, val=false
 
-   EVENT  = var=FINDING, val="none", time=0
+
+   EVENT  = var=FINDING, val="first", time=5
+   EVENT  = var=FINDING, val="none", time=10
    EVENT  = var=FINDING, val="object-$$IDX", time=30:60
    EVENT  = var=FINDING, val="object-$$IDX", time=30:60
    EVENT  = var=FINDING, val="object-$$IDX", time=30:60
    EVENT  = var=FINDING, val="object-$$IDX", time=30:60
-
-   //EVENT = time=0:20, var=charlie, val="$$IDX"
-   //EVENT = time=0:20, var=alpha,   val="$$IDX" 
-   //EVENT = time=0:20, var=delta,   val="$$IDX"
-   //EVENT = time=0:20, var=bravo,   val="$$IDX"
-   //EVENT = time=0:20, var=echo,    val="$$IDX"
-
-   //EVENT = time=0:100, var=TIMER_SCRIPT_RESET, val="reset"
 }
 
 //------------------------------------------
@@ -72,15 +51,9 @@ ProcessConfig = uXMS
    AppTick   = 4
    CommsTick = 4
 
-   VAR = alpha
-   VAR = bravo
-   VAR = charlie
-   VAR = delta
-   VAR = echo
-   VAR = FINDING
-
-   HISTORY_VAR=FINDING   
+   HISTORY_VAR=FINDING 
 
    VAR = TIMER_SCRIPT_STATUS
    VAR = TIMER_SCRIPT_RESET
+   VAR = TIMER_SCRIPT_PAUSE
 }

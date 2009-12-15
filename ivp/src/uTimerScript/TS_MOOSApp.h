@@ -12,6 +12,8 @@
 #include <string>
 #include "MOOSLib.h"
 #include "VarDataPair.h"
+#include "LogicCondition.h"
+#include "InfoBuffer.h"
 
 class TS_MOOSApp : public CMOOSApp
 {
@@ -37,11 +39,17 @@ class TS_MOOSApp : public CMOOSApp
   void seedRandom();
   void expandIndexPairs();
 
+ protected: // Functions in support of logic conditions
+  bool updateInfoBuffer(CMOOSMsg&);
+  bool checkConditions();
 
  protected: // Configuration parameters
-  std::vector<VarDataPair> m_pairs;
-  std::vector<double>      m_ptime;
-  std::vector<bool>        m_poked;
+  std::vector<VarDataPair>    m_pairs;
+  std::vector<double>         m_ptime;
+  std::vector<bool>           m_poked;
+
+  // Set of logic conditions pertaining to entire script
+  std::vector<LogicCondition> m_logic_conditions;
   
   std::string m_var_next_event;
   std::string m_var_forward;
@@ -58,10 +66,16 @@ class TS_MOOSApp : public CMOOSApp
   double   m_start_time;
   double   m_skip_time;
   double   m_pause_time;
+  double   m_db_uptime;
+  double   m_utc_time;
   bool     m_paused;
+  bool     m_conditions_ok;
   int      m_posted_count;
+  int      m_posted_tcount;
   int      m_reset_count;
   int      m_iteration;
+
+  InfoBuffer *m_info_buffer;
 };
 
 #endif 

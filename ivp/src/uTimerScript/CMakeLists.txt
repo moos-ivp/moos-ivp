@@ -13,7 +13,7 @@ else (${WIN32})
     pthread)
 endif (${WIN32})
 
-SET(SRC TS_MOOSApp.cpp main.cpp VarDataPair.cpp)
+SET(SRC TS_MOOSApp.cpp main.cpp)
 
 ADD_EXECUTABLE(uTimerScript ${SRC})
 
@@ -21,5 +21,6 @@ TARGET_LINK_LIBRARIES(uTimerScript
    MOOS
    MOOSGen
    mbutil
+   logic
    ${SYSTEM_LIBS})
 
