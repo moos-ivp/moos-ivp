@@ -155,10 +155,15 @@ void IMS_Model::setPaused(bool g_paused)
 
 //------------------------------------------------------------------------
 // Procedure: setPosition
-//      Note: 
+//     Notes: Handle strings such as:  "23, 900, 180, 1.2, 10"
+//            Assumes field (1) x-postion, (2) y-position, (3) heading
+//            (4) speed, (5) depth 
 
 void IMS_Model::setPosition(string str)
 {
+  if(strContains(str, "="))
+    return(setPositionPairs(str));
+
   str = stripBlankEnds(str);
   vector<string> svector = parseString(str, ',');
   int vsize = svector.size();
@@ -176,6 +181,38 @@ void IMS_Model::setPosition(string str)
     setSpeed(atof(svector[3].c_str()));
   if(vsize > 4)
     setDepth(atof(svector[4].c_str()));
+}
+
+
+//------------------------------------------------------------------------
+// Procedure: setPositionPairs
+//      Note: Handle strings such as:
+//            "x=23, y=-900, hdg=180, spd=1.2, dep=10"
+
+void IMS_Model::setPositionPairs(string str)
+{
+  if(!strContains(str, "="))
+    return(setPosition(str));
+
+  str = stripBlankEnds(str);
+  vector<string> svector = parseString(str, ',');
+  int vsize = svector.size();
+
+  for(int i=0; i<vsize; i++) {
+    svector[i] = stripBlankEnds(svector[i]);
+    string left  = tolower(stripBlankEnds(biteString(svector[i],'=')));
+    string right = tolower(stripBlankEnds(svector[i]));
+    if(left == "x")
+      setPositionX(atof(right.c_str()));
+    else if(left == "y")
+      setPositionY(atof(right.c_str()));
+    else if((left == "hdg") || (left == "heading") || (left == "deg"))
+      setHeadingDEG(atof(right.c_str()));
+    else if((left == "spd") || (left == "speed"))
+      setSpeed(atof(right.c_str()));
+    else if((left == "dep") || (left == "depth"))
+      setDepth(atof(right.c_str()));
+  }
 }
 
 

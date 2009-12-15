@@ -64,6 +64,7 @@ public:
   void   setSpeed(double v)        {m_vstate.m_dfSpeed = v;};
   void   setDepth(double v)        {m_vstate.m_dfDepth = v;};
   void   setPosition(std::string);
+  void   setPositionPairs(std::string);
 
 protected:
   bool      m_paused;
