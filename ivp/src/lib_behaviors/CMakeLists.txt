@@ -6,7 +6,6 @@
 SET(SRC
   BehaviorSet.cpp
   IvPBehavior.cpp
-  VarDataPair.cpp
 )
 
 ADD_LIBRARY(behaviors ${SRC})

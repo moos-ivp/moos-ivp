@@ -12,6 +12,7 @@ SET(SRC
   TermUtils.cpp
   StringTree.cpp
   StringNode.cpp
+  VarDataPair.cpp
 )
 
 # SET_SOURCE_FILES_PROPERTIES(
