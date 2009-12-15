@@ -44,7 +44,7 @@ inline void XYSegList::add_vertex(double x, double y, double z)
 //---------------------------------------------------------------
 // Procedure: add_vertex
 
-inline void XYSegList::add_vertex(const XYPoint &pt)
+void XYSegList::add_vertex(const XYPoint &pt)
 {
   vertex_x.push_back(pt.x());
   vertex_y.push_back(pt.y());
