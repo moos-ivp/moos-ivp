@@ -66,6 +66,11 @@ void WaypointEngine::setSegList(const XYSegList& g_seglist)
   m_curr_ix  = 0;
   m_complete = false;
 
+  // The cycle count should also be set to zero since counting
+  // cycles pertains to a given pattern, and once the pattern 
+  // changes, the previous cycle count is irrelevant.
+  m_cycle_count = 0;
+
   // Also ensure that a call to currPtChanged() will be true.
   m_prev_ix  = -1;
 
