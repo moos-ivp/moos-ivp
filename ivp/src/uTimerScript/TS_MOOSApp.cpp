@@ -5,14 +5,15 @@
 /*    DATE: May 21st 2009                                   */
 /************************************************************/
 
+#include <cstdlib>
 #include <iterator>
 #include "TS_MOOSApp.h"
 #include "MBUtils.h"
 
 #ifdef _WIN32
-   #include <process.h>
+#include <process.h>
 //    #include "MOOSAppRunnerThread.h"
-   #define getpid _getpid
+#define getpid _getpid
 #endif
 
 using namespace std;
@@ -627,3 +628,66 @@ bool TS_MOOSApp::checkConditions()
   return(true);
 }
 
+
+//-----------------------------------------------------------
+// Procedure: addRandomVariable
+//   Purpose: 
+
+string TS_MOOSApp::addRandomVariable(string spec)
+{
+  string varname;
+  string keyname;
+  double minval=0;
+  double maxval=1;
+  bool   minval_set = false;
+  bool   maxval_set = false;
+
+  vector<string> svector = parseString(spec, ',');
+  unsigned int i, vsize = svector.size();
+  for(i=0; i<vsize; i++) {
+    string left  = stripBlankEnds(biteString(svector[i], '='));
+    string right = stripBlankEnds(svector[i]);
+    if(left == "varname")
+      varname = right;
+    else if(left == "key")
+      keyname = right;
+    else if((left == "min") && isNumber(right)) {
+      minval = atof(right.c_str());
+      minval_set = true;
+    }
+    else if((left == "min") && isNumber(right)) {
+      maxval = atof(right.c_str());
+      maxval_set = true;
+    }
+    else 
+      return("Bad parameter=value: " + left + "=" + right);
+  }
+  
+  if(varname == "")
+    return("Unset variable name");
+
+  if(!minval_set)
+    return("Lower value of the range not set");
+
+  if(!maxval_set)
+    return("Upper value of the range not set");
+  
+  if(minval > maxval)
+    return("Minimum value greater than maximum value");
+
+  unsigned int j, jsize = m_rand_vars.size();
+  for(j=0; j<jsize; j++) {
+    if(m_rand_vars[j].getVarName() == varname)
+      return("Duplicate random variable");
+  }
+  
+  RandomVariable rand_var;
+  rand_var.setVarName(varname);
+  if(keyname != "")
+    rand_var.setKeyName(keyname);
+  rand_var.setRange(minval, maxval);
+  
+  m_rand_vars.push_back(rand_var);
+  return("");
+}
+  

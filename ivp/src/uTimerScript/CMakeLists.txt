@@ -13,7 +13,7 @@ else (${WIN32})
     pthread)
 endif (${WIN32})
 
-SET(SRC TS_MOOSApp.cpp main.cpp)
+SET(SRC TS_MOOSApp.cpp RandomVariable main.cpp)
 
 ADD_EXECUTABLE(uTimerScript ${SRC})
 

@@ -14,6 +14,7 @@
 #include "VarDataPair.h"
 #include "LogicCondition.h"
 #include "InfoBuffer.h"
+#include "RandomVariable.h"
 
 class TS_MOOSApp : public CMOOSApp
 {
@@ -42,6 +43,10 @@ class TS_MOOSApp : public CMOOSApp
  protected: // Functions in support of logic conditions
   bool updateInfoBuffer(CMOOSMsg&);
   bool checkConditions();
+
+ protected: // Functions in support of random variables
+  std::string addRandomVariable(std::string spec);
+  void resetVariables(std::string key, double time);
 
  protected: // Configuration parameters
   std::vector<VarDataPair>    m_pairs;
@@ -76,6 +81,8 @@ class TS_MOOSApp : public CMOOSApp
   int      m_iteration;
 
   InfoBuffer *m_info_buffer;
+
+  std::vector<RandomVariable> m_rand_vars;
 };
 
 #endif 

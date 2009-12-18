@@ -33,7 +33,9 @@ ProcessConfig = uTimerScript
    CONDITION  = alpha = apples
    CONDITION  = TIMER_SCRIPT_PAUSE != "true"   
 
+   RANDVAR = varname=FOOBAR, min=0, max=100, key=global
 
+   EVENT  = var=FOOBAR,  val="one=1, two=$(GRAND:0:100)
 
    EVENT  = var=FINDING, val="first", time=5
    EVENT  = var=FINDING, val="none", time=10
