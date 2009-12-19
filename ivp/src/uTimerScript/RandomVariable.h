@@ -23,9 +23,10 @@ class RandomVariable
   double reset(double timestamp=-1);
   double getAge(double timestamp);
 
-  std::string getVarName() {return(m_varname);};
-  std::string getKeyName() {return(m_keyname);};
-  double  getValue() {return(m_value);};
+  std::string getVarName() const {return(m_varname);};
+  std::string getKeyName() const {return(m_keyname);};
+  std::string getStringValue() const;
+  double  getValue() const {return(m_value);};
 
   std::string getStringSummary();
 

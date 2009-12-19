@@ -5,7 +5,7 @@
 /*    DATE: Dec 18th 2009                                   */
 /************************************************************/
 
-#include "cstdlib"
+#include <cstdlib>
 #include "RandomVariable.h"
 #include "MBUtils.h"
 
@@ -79,6 +79,15 @@ double RandomVariable::getAge(double timestamp)
     return(0);
   else
     return(timestamp - m_timestamp);
+}
+  
+  
+//---------------------------------------------------------
+// Procedure: getStringValue
+
+string RandomVariable::getStringValue() const
+{
+  return(dstringCompact(doubleToString(m_value)));
 }
   
   

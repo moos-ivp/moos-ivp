@@ -34,6 +34,7 @@ class TS_MOOSApp : public CMOOSApp
   void sortEvents();
   void printScript();
   bool checkForReadyPostings();
+  void executePosting(VarDataPair);
   void jumpToNextPostingTime();
   void handleReset();
   void postStatus();

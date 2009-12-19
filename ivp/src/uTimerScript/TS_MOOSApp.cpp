@@ -9,6 +9,7 @@
 #include <iterator>
 #include "TS_MOOSApp.h"
 #include "MBUtils.h"
+#include "ColorParse.h"
 
 #ifdef _WIN32
 #include <process.h>
@@ -217,6 +218,16 @@ bool TS_MOOSApp::OnStartUp()
 	if(!strContainsWhite(value))
 	  m_var_status = value;
       }
+      else if(param == "randvar") {
+	string result = addRandomVariable(value);
+	if(result != "") {
+	  cout << termColor("red");
+	  cout << "Problem configuring random variable: " << endl;
+	  cout << "  " << value << endl;
+	  cout << "  " << result << endl;
+	  cout << termColor() << endl;
+	}
+      }
       else if(param == "condition") {
 	LogicCondition new_condition;
 	bool ok = new_condition.setCondition(value);
@@ -226,6 +237,10 @@ bool TS_MOOSApp::OnStartUp()
       }
     }
   }
+
+  unsigned int i, vsize = m_rand_vars.size();
+  for(i=0; i<vsize; i++)
+    cout << "[" << i << "]: " << m_rand_vars[i].getStringSummary() << endl;
 
   RegisterVariables();
   return(true);
@@ -415,38 +430,8 @@ bool TS_MOOSApp::checkForReadyPostings()
     // poked, (3) poke time is not after reset-time if reset-time set.
     if((m_elapsed_time >= m_ptime[i]) && !m_poked[i] && 
        ((m_reset_time <= 0) || (m_ptime[i] <= m_reset_time))) {
-      string variable = m_pairs[i].get_var();
-      if(m_pairs[i].is_string()) {
-	string sval = m_pairs[i].get_sdata();
-	// Handle special case where MOOSDB_UPTIME *is* the post
-	if(sval == "$$DBTIME")
-	  m_Comms.Notify(variable, m_db_uptime);
-	// Handle special case where MOOSDB_UPTIME is embedded in the post
-	else if(strContains(sval, "$$DBTIME")) {
-	  sval = findReplace(sval, "$$DBTIME", doubleToString(m_db_uptime, 2));
-	  m_Comms.Notify(variable, sval);
-	}
-	// Handle special case where UTC_TIME *is* the post
-	else if(sval == "$$UTCTIME")
-	  m_Comms.Notify(variable, m_db_uptime);
-	// Handle special case where UTC TIME is embedded in the post
-	else if(strContains(sval, "$$UTCTIME")) {
-	  sval = findReplace(sval, "$$UTCTIME", doubleToString(m_utc_time, 2));
-	  m_Comms.Notify(variable, sval);
-	}
-	// Handle special case where COUNT *is* the post
-	else if(sval == "$$COUNT")
-	  m_Comms.Notify(variable, m_posted_tcount);
-	// Handle special case where COUNT is embedded in the post
-	else if(strContains(sval, "$$COUNT")) {
-	  sval = findReplace(sval, "$$COUNT", intToString(m_posted_tcount));
-	  m_Comms.Notify(variable, sval);
-	}
-	else
-	  m_Comms.Notify(variable, sval);
-      }
-      else
-	m_Comms.Notify(variable, m_pairs[i].get_ddata());
+      executePosting(m_pairs[i]);
+
       // If just now poked, note it, so it won't be poked again
       m_posted_count++;
       m_posted_tcount++;
@@ -456,6 +441,49 @@ bool TS_MOOSApp::checkForReadyPostings()
   }
 
   return(all_poked);
+}
+
+//----------------------------------------------------------------
+// Procedure: executePosting()
+
+void TS_MOOSApp::executePosting(VarDataPair pair)
+{
+  string variable = pair.get_var();
+  if(!pair.is_string()) {
+    m_Comms.Notify(variable, pair.get_ddata());
+    return;
+  }
+    
+  string sval = pair.get_sdata();
+  // Handle special case where MOOSDB_UPTIME *is* the post
+  if(sval == "$$DBTIME") {
+    m_Comms.Notify(variable, m_db_uptime);
+    return;
+  }
+
+  // Handle special case where UTC_TIME *is* the post
+  if(sval == "$$UTCTIME") {
+    m_Comms.Notify(variable, m_db_uptime);
+    return;
+  }
+
+  // Handle special case where COUNT *is* the post
+  else if(sval == "$$COUNT") {
+    m_Comms.Notify(variable, m_posted_tcount);
+    return;
+  }
+
+  sval = findReplace(sval, "$$DBTIME", doubleToString(m_db_uptime, 2));
+  sval = findReplace(sval, "$$UTCTIME", doubleToString(m_utc_time, 2));
+  sval = findReplace(sval, "$$COUNT", intToString(m_posted_tcount));
+
+  unsigned int i, vsize = m_rand_vars.size();
+  for(i=0; i<vsize; i++) {
+    string macro = "$$" + m_rand_vars[i].getVarName();
+    sval = findReplace(sval, macro, m_rand_vars[i].getStringValue());
+  }
+
+  m_Comms.Notify(variable, sval);
 }
 
 
@@ -655,7 +683,7 @@ string TS_MOOSApp::addRandomVariable(string spec)
       minval = atof(right.c_str());
       minval_set = true;
     }
-    else if((left == "min") && isNumber(right)) {
+    else if((left == "max") && isNumber(right)) {
       maxval = atof(right.c_str());
       maxval_set = true;
     }
