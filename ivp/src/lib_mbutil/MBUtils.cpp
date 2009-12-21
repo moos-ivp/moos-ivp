@@ -882,9 +882,12 @@ bool isNumber(const string& str, bool blanks_allowed)
   if(blanks_allowed)
     newstr = stripBlankEnds(str);
 
+  if(newstr.at(0) == '+')
+    newstr = newstr.substr(1, newstr.length()-1);
+
   const char *buff = newstr.c_str();
 
-  string::size_type  len      = newstr.length();
+  string::size_type  len = newstr.length();
   int  digi_cnt = 0;
   int  deci_cnt = 0;
   bool ok       = true;
