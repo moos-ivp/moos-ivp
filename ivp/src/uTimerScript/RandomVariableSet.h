@@ -15,7 +15,7 @@
 class RandomVariableSet 
 {
  public:
-  RandomVariableSet();
+  RandomVariableSet() {};
   virtual ~RandomVariableSet() {};
 
  public:
@@ -23,10 +23,11 @@ class RandomVariableSet
   bool         contains(const std::string& varname);
   void         addRandomVar(const RandomVariable&);
   std::string  addRandomVar(const std::string& spec);
-  void         reset(const std::string& key, double timestamp);
+  void         reset(const std::string& key, double timestamp=0);
 
   std::string  getVarName(unsigned int index);
   std::string  getStringValue(unsigned int index);
+  std::string  getStringSummary(unsigned int index);
   double       getValue(unsigned int index);
 
  protected: // Configuration Parameters

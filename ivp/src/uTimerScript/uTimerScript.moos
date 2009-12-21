@@ -14,7 +14,10 @@ ProcessConfig = ANTLER
 
   Run = MOOSDB		@ NewConsole = false
   Run = uXMS		@ NewConsole = true
-  Run = uTimerScript    @ NewConsole = true
+  //Run = uTimerScript    @ NewConsole = true
+  Run = uTimerScript    @ NewConsole = true, ExtraProcessParams=uts_b
+
+  uts_b = --alias=uTimerScript_B
 }
 
 
@@ -26,7 +29,7 @@ ProcessConfig = uTimerScript
    AppTick   = 4
    CommsTick = 4
 
-   PAUSED     = false
+   PAUSED     = true
    RESET_MAX  = 4
    RESET_TIME = end
    CONDITION  = (FOO <= 34) and (BAR != "false")
@@ -35,7 +38,7 @@ ProcessConfig = uTimerScript
 
    RANDVAR = varname=FOOBAR, min=0, max=100, key=global
 
-   EVENT  = var=FOOBAR,  val="one=1, two=$(GRAND:0:100)
+   EVENT  = var=FOOBAR,  val="one=1, two=$(GRAND:0:100)   
 
    EVENT  = var=FINDING, val="first", time=5
    EVENT  = var=FINDING, val="none", time=10
@@ -46,6 +49,52 @@ ProcessConfig = uTimerScript
 }
 
 //------------------------------------------
+// uTimerScript configuration  block
+
+ProcessConfig = uTimerScript_B
+{
+   AppTick   = 10
+   CommsTick = 10
+
+   PAUSED      = false
+   RESET_MAX   = 4
+   RESET_TIME  = end
+   SHUFFLE     = false
+
+   SCRIPT_NAME = RND_TEST
+   RANDVAR     = varname=BAR, min=100, max=100, key=at_post
+
+   //EVENT  = var=FOO,  val="a_zero=$(IDX), one=$(CNT), two=$(BAR)", time=0:10
+   //EVENT  = var=FOO,  val="b_zero=$(IDX), one=$(CNT), two=$(BAR)", time=0:10
+   //EVENT  = var=FOO,  val="c_zero=$(IDX), one=$(CNT), two=$(BAR)", time=0:10
+   //EVENT  = var=FOO,  val="d_zero=$(IDX), one=$(CNT), two=$(BAR)", time=0:10
+   //EVENT  = var=FOO,  val="e_zero=$(IDX), one=$(CNT), two=$(BAR)", time=0:10
+   
+   EVENT =  var=FOO,  val="aamt=$(BAR), expr={{34+{$(BAR)* 0.7}} * 10}", time=0:10
+   EVENT =  var=FOO,  val="bamt=$(BAR), expr={{23/{$(BAR)*-0.7}} + 1000}", time=0:10
+   EVENT =  var=FOO,  val="camt=$(BAR), expr={$(BAR) / 4 }", time=0:10
+   EVENT =  var=FOO,  val="damt=$(BAR), expr={-$(BAR) + 21 }", time=0:10
+   EVENT =  var=FOO,  val="eamt=$(BAR), expr={ +$(BAR)-450}", time=0:10
+
+   //EVENT  = var=FOO,  val="a_zero=$(IDX), one=$(CNT), two=$(BAR), three=$(DBTIME)", time=0:10
+   //EVENT  = var=FOO,  val="b_zero=$(IDX), one=$(CNT), two=$(BAR), three=$(DBTIME)", time=0:10
+   //EVENT  = var=FOO,  val="c_zero=$(IDX), one=$(CNT), two=$(BAR), three=$(DBTIME)", time=0:10
+   //EVENT  = var=FOO,  val="d_zero=$(IDX), one=$(CNT), two=$(BAR), three=$(DBTIME)", time=0:10
+   //EVENT  = var=FOO,  val="e_zero=$(IDX), one=$(CNT), two=$(BAR), three=$(DBTIME)", time=0:10
+
+   //EVENT = var=MARINESIM_FORCE_MAGNITUDE, val="{$(RVAR)*0.33}", time=3.33
+   //EVENT = var=MARINESIM_FORCE_MAGNITUDE, val="{$(RVAR)*0.66}", time=6.66
+   //EVENT = var=MARINESIM_FORCE_MAGNITUDE, val="{$(RVAR)*1.00}", time=10.00
+   //EVENT = var=MARINESIM_FORCE_MAGNITUDE, val="{$(RVAR)*0.66}", time=13.33
+   //EVENT = var=MARINESIM_FORCE_MAGNITUDE, val="{$(RVAR)*0.33}", time=16.66
+
+   // START_DELAY = 4:10
+   // SCRIPT_STRETCH = 0.5:2.5
+   // RECALC_TIMES_AT_RESET = true 
+
+}
+
+//------------------------------------------
 // uXMS configuration  block
 
 ProcessConfig = uXMS
@@ -53,9 +102,11 @@ ProcessConfig = uXMS
    AppTick   = 4
    CommsTick = 4
 
-   HISTORY_VAR=FINDING 
-
    VAR = TIMER_SCRIPT_STATUS
    VAR = TIMER_SCRIPT_RESET
    VAR = TIMER_SCRIPT_PAUSE
+
+   DISPLAY_TIME = TRUE
+   CONTENT_MODE = HISTORY
+   HISTORY_VAR=FOO 
 }

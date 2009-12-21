@@ -38,6 +38,9 @@ TS_MOOSApp::TS_MOOSApp()
   m_posted_tcount = 0;
   m_reset_count   = 0;
   m_iteration     = 0; 
+  m_iter_char     = 'a';
+  m_verbose       = false;
+  m_shuffle       = true;
 
   // Default values for configuration parameters.
   m_reset_max      = -1;
@@ -49,6 +52,8 @@ TS_MOOSApp::TS_MOOSApp()
   m_var_reset      = "TIMER_SCRIPT_RESET";
 
   m_info_buffer    = new InfoBuffer;
+
+  m_stretch.setRange(1.0, 1.0);
 
   seedRandom();
 }
@@ -103,28 +108,22 @@ bool TS_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 
 bool TS_MOOSApp::Iterate()
 {
-  if(m_iteration == 0) {
-    sortEvents();
-    expandIndexPairs();
-    printScript();
-  }
   m_conditions_ok = checkConditions();
 
   m_utc_time = MOOSTime();
-
-  double curr_time = MOOSTime();
   if(m_start_time == 0)
-    m_start_time = curr_time;  
+    m_start_time = m_utc_time;
 
   if(m_paused || !m_conditions_ok) {
     double delta_time = 0;
     if(m_previous_time != -1)
-      delta_time = curr_time - m_previous_time;
+      delta_time = m_utc_time - m_previous_time;
     m_pause_time += delta_time;
   }
+
   // Make sure these three steps are done *before* any resets.
-  m_previous_time = curr_time;
-  m_elapsed_time = (curr_time - m_start_time) + m_skip_time - m_pause_time;
+  m_previous_time = m_utc_time;
+  m_elapsed_time = (m_utc_time - m_start_time) + m_skip_time - m_pause_time;
   postStatus();
   
   bool all_posted = checkForReadyPostings();
@@ -143,6 +142,9 @@ bool TS_MOOSApp::Iterate()
     handleReset();
 
   m_iteration++;
+  m_iter_char++;
+  if(m_iter_char > 122)
+    m_iter_char -= 26;
   return(true);
 }
 
@@ -182,6 +184,10 @@ bool TS_MOOSApp::OnStartUp()
 	addNewEvent(value);
       else if(param == "paused")
 	setBooleanOnString(m_paused, value);
+      else if(param == "shuffle")
+	setBooleanOnString(m_shuffle, value);
+      else if(param == "verbose")
+	setBooleanOnString(m_verbose, value);
       else if(param == "reset_max") {
 	string str = tolower(value);
 	if((str == "any") || (str == "unlimited"))
@@ -198,6 +204,8 @@ bool TS_MOOSApp::OnStartUp()
 	else if(isNumber(value) && (atof(value.c_str()) > 0))
 	  m_reset_time = atof(value.c_str());
       }
+      else if(param == "script_name")
+	m_script_name = value;
       else if((param == "jump_var") || (param == "jump_variable")) {
 	if(!strContainsWhite(value))
 	  m_var_next_event = value;
@@ -219,7 +227,7 @@ bool TS_MOOSApp::OnStartUp()
 	  m_var_status = value;
       }
       else if(param == "randvar") {
-	string result = addRandomVariable(value);
+	string result = m_rand_vars.addRandomVar(value);
 	if(result != "") {
 	  cout << termColor("red");
 	  cout << "Problem configuring random variable: " << endl;
@@ -237,12 +245,27 @@ bool TS_MOOSApp::OnStartUp()
       }
     }
   }
+  
+  if(m_verbose) {
+    cout << termColor("blue") << "Random Variable configurations: " << endl;
+    unsigned int i, vsize = m_rand_vars.size();
+    for(i=0; i<vsize; i++)
+      cout << "  [" << i << "]: " << m_rand_vars.getStringSummary(i) << endl;
+    cout << termColor() << endl;
+  }
 
-  unsigned int i, vsize = m_rand_vars.size();
-  for(i=0; i<vsize; i++)
-    cout << "[" << i << "]: " << m_rand_vars[i].getStringSummary() << endl;
+  // Reset (Determine new values for) random variables of all three types:
+  // Those that are reset once at the beginning of uTimerScript startup, 
+  // those that are reset once each time the script is re-set, and those
+  // that are reset after each posting.
+  m_rand_vars.reset("at_start");
+  m_rand_vars.reset("at_reset");
+  m_rand_vars.reset("at_post");
 
   RegisterVariables();
+  if(m_verbose)
+    printScript();
+
   return(true);
 }
 
@@ -281,7 +304,8 @@ bool TS_MOOSApp::addNewEvent(string event_str)
 {
   string new_var;
   string new_val;
-  double new_time_of_event = -1;
+  double new_ptime_min = -1;
+  double new_ptime_max = -1;
 
   vector<string> svector = parseStringQ(event_str, ',');
   unsigned int i, vsize = svector.size();
@@ -291,19 +315,22 @@ bool TS_MOOSApp::addNewEvent(string event_str)
     if(param == "var")
       new_var = value;
     else if(param == "val") {
-      if(strContains(value, "$$IDX")) {
-	string idx_string = intToString(m_pairs.size());
-	idx_string = padString(idx_string, 3);
-	idx_string = findReplace(idx_string, ' ', '0');
+      string idx_string = intToString(m_pairs.size());
+      idx_string = padString(idx_string, 3);
+      idx_string = findReplace(idx_string, ' ', '0');
+      while(strContains(value, "$$IDX"))
 	value = findReplace(value, "$$IDX", idx_string);
-      }
+      while(strContains(value, "$(IDX)"))
+	value = findReplace(value, "$(IDX)", idx_string);
       new_val = value;
     }
     else if(param == "time") {
       if(isNumber(value)) {
 	double dval = atof(value.c_str());
-	if(dval >= 0)
-	  new_time_of_event = dval;
+	if(dval >= 0) {
+	  new_ptime_min = dval;
+	  new_ptime_max = dval;
+	}
       }
       else if(strContains(value, ':')) {
 	string left   = stripBlankEnds(biteString(value, ':'));
@@ -311,57 +338,53 @@ bool TS_MOOSApp::addNewEvent(string event_str)
 	double dleft  = atof(left.c_str());
 	double dright = atof(right.c_str());
 	if(isNumber(left) && isNumber(right) && (dleft <= dright)) {
-	  double delta = (100 * (dright - dleft));
-	  if(delta < 2) 
-	    new_time_of_event = dleft;
-	  else {
-	    int rand_int = rand() % ((int)(delta));
-	    new_time_of_event = dleft + ((double)(rand_int)/100);
-	  }
+	  new_ptime_min = dleft;
+	  new_ptime_max = dright;
 	}
       }
     }
   }
   
-  if((new_var=="") || (new_val=="") || (new_time_of_event <0))
+  if((new_var=="") || (new_val=="") || (new_ptime_min == -1))
     return(false);
 
   VarDataPair new_pair(new_var, new_val, "auto");
   m_pairs.push_back(new_pair);
-  m_ptime.push_back(new_time_of_event);
+  m_ptime.push_back(-1);
+  m_ptime_min.push_back(new_ptime_min);
+  m_ptime_max.push_back(new_ptime_max);
   m_poked.push_back(false);
 
-  sortEvents();
+  scheduleEvents(true);
   return(true);
 }
 
 //------------------------------------------------------------
-// Procedure: expandIndexPairs
+// Procedure: scheduleEvents
 // 
 
-void TS_MOOSApp::expandIndexPairs()
+void TS_MOOSApp::scheduleEvents(bool shuffle_requested)
 {
+  // As a failsafe check, determine if there are any unscheduled events
+  // and to the shuffling if any remain, regardless of whether shuffling
+  // was requested.
+  bool unscheduled_events = false;
   unsigned int i, vsize = m_pairs.size();
-  for(i=0; i<vsize; i++) {
-    string value = m_pairs[i].get_sdata();
-    if(strContains(value, "$$IDX")) {
-      string idx_string = intToString(i);
-      idx_string = padString(idx_string, 3);
-      idx_string = findReplace(idx_string, ' ', '0');
-      value = findReplace(value, "$$IDX", idx_string);
-      m_pairs[i].set_sdata(value);
+  for(i=0; i<vsize; i++)
+    if(m_ptime[i] == -1)
+      unscheduled_events = true;
+
+  // Part 1: Shuffle the events (determine their timestamps)
+  if(shuffle_requested || unscheduled_events) {
+    for(i=0; i<vsize; i++) {
+      int    rand_int = rand() % 10000;
+      double rand_pct = (double)(rand_int) / 10000;
+      m_ptime[i] = m_ptime_min[i] + (rand_pct * (m_ptime_max[i] - m_ptime_min[i]));
     }
   }
-}
-    
-//------------------------------------------------------------
-// Procedure: sortEvents
-// 
 
-void TS_MOOSApp::sortEvents()
-{
+  // Part 2: Put the events into the correct order
   unsigned int count = 0;
-  unsigned int i, vsize = m_pairs.size();
   vector<bool> sorted(vsize,false);
   
   vector<VarDataPair> new_pairs;
@@ -400,6 +423,7 @@ void TS_MOOSApp::printScript()
 {
   unsigned int i, vsize = m_pairs.size();
   
+  cout << termColor("magenta") << endl;
   cout << "The Script: ========================================" << endl;
   cout << "Total Elements: " << vsize << endl;
   for(i=0; i<vsize; i++) {
@@ -411,6 +435,7 @@ void TS_MOOSApp::printScript()
     cout << ", POSTED=" << boolToString(poked) << endl;
   }
   cout << "====================================================" << endl;
+  cout << termColor() << endl;
 }
     
 //----------------------------------------------------------------
@@ -448,6 +473,7 @@ bool TS_MOOSApp::checkForReadyPostings()
 
 void TS_MOOSApp::executePosting(VarDataPair pair)
 {
+  m_rand_vars.reset("at_post");
   string variable = pair.get_var();
   if(!pair.is_string()) {
     m_Comms.Notify(variable, pair.get_ddata());
@@ -456,33 +482,53 @@ void TS_MOOSApp::executePosting(VarDataPair pair)
     
   string sval = pair.get_sdata();
   // Handle special case where MOOSDB_UPTIME *is* the post
-  if(sval == "$$DBTIME") {
+  if(sval == "$(DBTIME)") {
     m_Comms.Notify(variable, m_db_uptime);
     return;
   }
 
   // Handle special case where UTC_TIME *is* the post
-  if(sval == "$$UTCTIME") {
+  if(sval == "$(UTCTIME)") {
     m_Comms.Notify(variable, m_db_uptime);
     return;
   }
 
   // Handle special case where COUNT *is* the post
-  else if(sval == "$$COUNT") {
+  else if(sval == "$(COUNT)") {
     m_Comms.Notify(variable, m_posted_tcount);
     return;
   }
-
-  sval = findReplace(sval, "$$DBTIME", doubleToString(m_db_uptime, 2));
-  sval = findReplace(sval, "$$UTCTIME", doubleToString(m_utc_time, 2));
-  sval = findReplace(sval, "$$COUNT", intToString(m_posted_tcount));
-
+  
+  while(strContains(sval, "$(DBTIME)"))
+    sval = findReplace(sval, "$(DBTIME)", doubleToString(m_db_uptime, 2));
+  while(strContains(sval, "$(UTCTIME)"))
+    sval = findReplace(sval, "$(UTCTIME)", doubleToString(m_utc_time, 2));
+  while(strContains(sval, "$(TCNT)"))
+    sval = findReplace(sval, "$(TCNT)", intToString(m_posted_tcount));
+  while(strContains(sval, "$(CNT)"))
+    sval = findReplace(sval, "$(CNT)", intToString(m_posted_count));
+  
   unsigned int i, vsize = m_rand_vars.size();
   for(i=0; i<vsize; i++) {
-    string macro = "$$" + m_rand_vars[i].getVarName();
-    sval = findReplace(sval, macro, m_rand_vars[i].getStringValue());
+    string macro = "$(" + m_rand_vars.getVarName(i) + ")";
+    sval = findReplace(sval, macro, m_rand_vars.getStringValue(i));
   }
 
+  unsigned int replace_max = 10;
+  unsigned int replace_amt = 0;
+  bool maybe_more = true;
+  while(maybe_more && (replace_amt <= replace_max)) {
+    maybe_more = handleMathExpr(sval);
+    replace_amt++;
+  }
+
+  if(m_verbose) {
+    cout << termColor("blue");
+    cout << "[" << m_iter_char << "/" << m_db_uptime << "]: ";
+    cout << variable << " = " << sval << endl;
+    cout << termColor();
+  }
+    
   m_Comms.Notify(variable, sval);
 }
 
@@ -520,6 +566,11 @@ void TS_MOOSApp::handleReset()
   if((m_reset_max != -1) && (m_reset_count >= m_reset_max))
     return;
 
+  scheduleEvents(m_shuffle);
+
+  m_rand_vars.reset("at_reset");
+  m_rand_vars.reset("at_post");
+  
   m_reset_count++;
 
   m_elapsed_time  = 0;
@@ -533,6 +584,11 @@ void TS_MOOSApp::handleReset()
   unsigned int i, vsize=m_poked.size();
   for(i=0; i<vsize; i++)
     m_poked[i] = false;
+
+  if(m_verbose) {
+    cout << termColor("magenta");
+    cout << "Resetting the Script now." << termColor() << endl;
+  }
 }
   
   
@@ -544,7 +600,8 @@ void TS_MOOSApp::postStatus()
   if((m_var_status == "") || (tolower(m_var_status) == "silent"))
     return;
 
-  string status = "elapsed_time=" + doubleToString(m_elapsed_time,2);
+  string status = "name=" + m_script_name;
+  status += ", elapsed_time=" + doubleToString(m_elapsed_time,2);
   status += ", posted=" + intToString(m_posted_count);
   
   int pending = (m_pairs.size() - m_posted_count);
@@ -656,66 +713,130 @@ bool TS_MOOSApp::checkConditions()
   return(true);
 }
 
-
 //-----------------------------------------------------------
-// Procedure: addRandomVariable
-//   Purpose: 
+// Procedure: handleMathExpr()
+//   Purpose: Handle expressions such as: 
+//            "magnitude={$(MAXMAG)*0.7}, type=alpha" 
+//            "farenheit={{$(CELCIUS)*1.8}+32}"
+//      Note: By the time this function is called, the macros will
+//            have been expanded to their numerical values.
 
-string TS_MOOSApp::addRandomVariable(string spec)
+bool TS_MOOSApp::handleMathExpr(string& str)
 {
-  string varname;
-  string keyname;
-  double minval=0;
-  double maxval=1;
-  bool   minval_set = false;
-  bool   maxval_set = false;
+  unsigned int len = str.length();
 
-  vector<string> svector = parseString(spec, ',');
-  unsigned int i, vsize = svector.size();
-  for(i=0; i<vsize; i++) {
-    string left  = stripBlankEnds(biteString(svector[i], '='));
-    string right = stripBlankEnds(svector[i]);
-    if(left == "varname")
-      varname = right;
-    else if(left == "key")
-      keyname = right;
-    else if((left == "min") && isNumber(right)) {
-      minval = atof(right.c_str());
-      minval_set = true;
-    }
-    else if((left == "max") && isNumber(right)) {
-      maxval = atof(right.c_str());
-      maxval_set = true;
-    }
-    else 
-      return("Bad parameter=value: " + left + "=" + right);
+  // Part 1: Ensure that all the left/right braces are well matched
+  unsigned int i, depth=0;
+  bool braces_detected = false;
+  for(i=0; i<len; i++) {
+    char c = str.at(i);
+    if(c == '{')
+      depth++;
+    else if(c == '}')
+      depth--;
+    if(depth < 0)
+      return(false);
+    if(depth > 0)
+      braces_detected = true;
   }
-  
-  if(varname == "")
-    return("Unset variable name");
+  if(depth != 0)
+    return(false);
+  if(!braces_detected)
+    return(false);
 
-  if(!minval_set)
-    return("Lower value of the range not set");
-
-  if(!maxval_set)
-    return("Upper value of the range not set");
-  
-  if(minval > maxval)
-    return("Minimum value greater than maximum value");
-
-  unsigned int j, jsize = m_rand_vars.size();
-  for(j=0; j<jsize; j++) {
-    if(m_rand_vars[j].getVarName() == varname)
-      return("Duplicate random variable");
+  // Part 2: find the deepest '{' and matching '}' occurance
+  unsigned int max_lix = 0;
+  unsigned int max_rix = 0;
+  unsigned int max_depth = 0;
+  depth = 0;
+  for(i=0; i<len; i++) {
+    char c = str.at(i);
+    if(c == '{') {
+      depth++;
+      if(depth > max_depth) {
+	max_lix = i;
+	max_depth = depth;
+      }
+    }
+    else if(c == '}') {
+      if(depth == max_depth)
+	max_rix = i;
+      depth--;
+    }
   }
+  if(max_lix >= max_rix)  // should never be the case but check anyway.
+    return(false);
+
+  // Part 3: Find the substring, confirm it, and strip the braces.
+  string expression = str.substr(max_lix, ((max_rix-max_lix)+1));
+  unsigned int xlen = expression.length();
+  if((expression.at(0) != '{') || (expression.at(xlen-1) != '}'))
+    return(false);
+  expression = stripBlankEnds(expression.substr(1, xlen-2));
+  xlen = expression.length();
   
-  RandomVariable rand_var;
-  rand_var.setVarName(varname);
-  if(keyname != "")
-    rand_var.setKeyName(keyname);
-  rand_var.setRange(minval, maxval);
+  // Part 4: Handle special cases where left component begins with '+' or '-'
+  bool neg_left = false;
+  if(expression.at(0) == '+')
+    expression = expression.substr(1, xlen-1);
+  else if(expression.at(0) == '-') {
+    expression = expression.substr(1, xlen-1);
+    neg_left = true;
+  }
+
+  // Part 5: Determine if multiplication, division, addition, subtraction
+  char xtype = ' ';
+  if(strContains(expression, '*'))
+    xtype = '*';
+  else if(strContains(expression, '/'))
+    xtype = '/';
+  else if(strContains(expression, '+'))
+    xtype = '+';
+  else if(strContains(expression, '-'))
+    xtype = '-';
+  if(xtype == ' ')
+    return(false);
+
+  // Part 6: Get the left and right components
+  string left, right;
+  if(xtype == '*') {
+    left = stripBlankEnds(biteString(expression, '*'));
+    right = stripBlankEnds(expression);
+  }
+  else if(xtype == '/') {
+    left = stripBlankEnds(biteString(expression, '/'));
+    right = stripBlankEnds(expression);
+  }
+  else if(xtype == '+') {
+    left = stripBlankEnds(biteString(expression, '+'));
+    right = stripBlankEnds(expression);
+  }
+  else if(xtype == '-') {
+    left = stripBlankEnds(biteString(expression, '-'));
+    right = stripBlankEnds(expression);
+  }
+  if(!isNumber(left) || !isNumber(right))
+    return(false);
+
+  // Part 7: Determine the mathematical result and replace
+  double result = 0;
+  double ldval = atof(left.c_str());
+  if(neg_left)
+    ldval *= -1;
+  double rdval = atof(right.c_str());
+  if(xtype == '*')
+    result = ldval * rdval;
+  else if(xtype == '/')
+    result = ldval / rdval;
+  else if(xtype == '+')
+    result = ldval + rdval;
+  else if(xtype == '-')
+    result = ldval - rdval;
+  string replacement = dstringCompact(doubleToString(result, 6));
   
-  m_rand_vars.push_back(rand_var);
-  return("");
+  string target = str.substr(max_lix, (max_rix-max_lix)+1);
+  str = findReplace(str, target, replacement);
+
+  return(true);
 }
-  
+

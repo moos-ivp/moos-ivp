@@ -5,6 +5,7 @@
 /*    DATE: Dec 18th 2009                                   */
 /************************************************************/
 
+#include <iostream>
 #include <cstdlib>
 #include "RandomVariable.h"
 #include "MBUtils.h"
@@ -64,9 +65,10 @@ double RandomVariable::reset(double timestamp)
   srand(seed);
   int    rand_int = rand() % 10000;
 
-  double rand_pct = (double)(rand_int / 10000);
+  double rand_pct = (double)(rand_int) / 10000;
   
   m_value = m_min_val + ((m_max_val-m_min_val) * rand_pct);
+
   return(m_value);
 }
   

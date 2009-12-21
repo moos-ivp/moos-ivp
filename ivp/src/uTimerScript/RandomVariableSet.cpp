@@ -5,6 +5,7 @@
 /*    DATE: Dec 18th 2009                                   */
 /************************************************************/
 
+#include <iostream>
 #include <cstdlib>
 #include "RandomVariableSet.h"
 #include "MBUtils.h"
@@ -113,6 +114,17 @@ string RandomVariableSet::getVarName(unsigned int ix)
 {
   if(ix < m_rvar_vector.size())
     return(m_rvar_vector[ix].getVarName());
+  else
+    return("");
+}
+
+//---------------------------------------------------------
+// Procedure: getStringSummary(index)
+
+string RandomVariableSet::getStringSummary(unsigned int ix)
+{
+  if(ix < m_rvar_vector.size())
+    return(m_rvar_vector[ix].getStringSummary());
   else
     return("");
 }
