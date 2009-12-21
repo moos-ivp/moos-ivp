@@ -40,6 +40,7 @@ bool RandomVariable::setRange(double min, double max)
   m_min_val = min;
   m_max_val = max;
   
+  reset();
   return(true);
 }
 

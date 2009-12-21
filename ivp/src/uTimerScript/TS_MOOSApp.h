@@ -36,7 +36,7 @@ class TS_MOOSApp : public CMOOSApp
   void   RegisterVariables();
   bool   addNewEvent(std::string);
   void   scheduleEvents(bool shuffle=true);
-  void   printScript();
+  void   printRawScript();
   bool   checkForReadyPostings();
   void   executePosting(VarDataPair);
   void   jumpToNextPostingTime();
@@ -54,14 +54,18 @@ class TS_MOOSApp : public CMOOSApp
   void resetVariables(std::string key, double time);
 
  protected: // Configuration parameters
-  std::vector<VarDataPair>    m_pairs;
-  std::vector<double>         m_ptime;
-  std::vector<double>         m_ptime_min;
-  std::vector<double>         m_ptime_max;
-  std::vector<bool>           m_poked;
-  std::string                 m_script_name;
-  bool                        m_verbose;
-  bool                        m_shuffle;
+  std::vector<VarDataPair>  m_pairs;
+  std::vector<double>       m_ptime;
+  std::vector<double>       m_ptime_min;
+  std::vector<double>       m_ptime_max;
+  std::vector<bool>         m_poked;
+  std::string               m_script_name;
+  bool                      m_verbose;
+  bool                      m_shuffle;
+  bool                      m_awake_reset;
+  RandomVariable            m_time_warp;
+  RandomVariable            m_start_delay;
+  RandomVariableSet         m_rand_vars;
 
   // Set of logic conditions pertaining to entire script
   std::vector<LogicCondition> m_logic_conditions;
@@ -75,14 +79,15 @@ class TS_MOOSApp : public CMOOSApp
 
   int      m_reset_max;
   double   m_reset_time;  // -1:none, 0:after-last, NUM:atNUM
+  
 
  protected: // State variables
   double   m_previous_time;
   double   m_elapsed_time;
   double   m_start_time;
+  double   m_connect_tstamp;
   double   m_skip_time;
   double   m_pause_time;
-  double   m_db_uptime;
   double   m_utc_time;
   bool     m_paused;
   bool     m_conditions_ok;
@@ -93,9 +98,6 @@ class TS_MOOSApp : public CMOOSApp
   char     m_iter_char;
 
   InfoBuffer *m_info_buffer;
-
-  RandomVariable    m_stretch;
-  RandomVariableSet m_rand_vars;
 };
 
 #endif 

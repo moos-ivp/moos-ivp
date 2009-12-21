@@ -53,13 +53,18 @@ ProcessConfig = uTimerScript
 
 ProcessConfig = uTimerScript_B
 {
-   AppTick   = 10
-   CommsTick = 10
+   AppTick   = 50
+   CommsTick = 50
 
    PAUSED      = false
    RESET_MAX   = 4
    RESET_TIME  = end
    SHUFFLE     = false
+   TIME_WARP   = 3
+   START_DELAY = 0
+   AWAKE_RESET = false
+   CONDITION   = MODE = true
+
 
    SCRIPT_NAME = RND_TEST
    RANDVAR     = varname=BAR, min=100, max=100, key=at_post
@@ -70,11 +75,11 @@ ProcessConfig = uTimerScript_B
    //EVENT  = var=FOO,  val="d_zero=$(IDX), one=$(CNT), two=$(BAR)", time=0:10
    //EVENT  = var=FOO,  val="e_zero=$(IDX), one=$(CNT), two=$(BAR)", time=0:10
    
-   EVENT =  var=FOO,  val="aamt=$(BAR), expr={{34+{$(BAR)* 0.7}} * 10}", time=0:10
-   EVENT =  var=FOO,  val="bamt=$(BAR), expr={{23/{$(BAR)*-0.7}} + 1000}", time=0:10
-   EVENT =  var=FOO,  val="camt=$(BAR), expr={$(BAR) / 4 }", time=0:10
-   EVENT =  var=FOO,  val="damt=$(BAR), expr={-$(BAR) + 21 }", time=0:10
-   EVENT =  var=FOO,  val="eamt=$(BAR), expr={ +$(BAR)-450}", time=0:10
+   EVENT =  var=FOO,  val="aamt=$(BAR), expr={{34+{$(BAR)* 0.7}} * 10}", time=2
+   EVENT =  var=FOO,  val="bamt=$(BAR), expr={{23/{$(BAR)*-0.7}} + 1000}", time=7.4
+   EVENT =  var=FOO,  val="camt=$(BAR), expr={$(BAR) / 4 }", time=10
+   EVENT =  var=FOO,  val="damt=$(BAR), expr={-$(BAR) + 21 }", time=20
+   EVENT =  var=FOO,  val="eamt=$(BAR), expr={ +$(BAR)-450}", time=30
 
    //EVENT  = var=FOO,  val="a_zero=$(IDX), one=$(CNT), two=$(BAR), three=$(DBTIME)", time=0:10
    //EVENT  = var=FOO,  val="b_zero=$(IDX), one=$(CNT), two=$(BAR), three=$(DBTIME)", time=0:10
@@ -87,10 +92,6 @@ ProcessConfig = uTimerScript_B
    //EVENT = var=MARINESIM_FORCE_MAGNITUDE, val="{$(RVAR)*1.00}", time=10.00
    //EVENT = var=MARINESIM_FORCE_MAGNITUDE, val="{$(RVAR)*0.66}", time=13.33
    //EVENT = var=MARINESIM_FORCE_MAGNITUDE, val="{$(RVAR)*0.33}", time=16.66
-
-   // START_DELAY = 4:10
-   // SCRIPT_STRETCH = 0.5:2.5
-   // RECALC_TIMES_AT_RESET = true 
 
 }
 

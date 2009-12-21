@@ -25,22 +25,23 @@ using namespace std;
 TS_MOOSApp::TS_MOOSApp()
 {
   // Initial values for state variables.
-  m_elapsed_time  = 0;
-  m_previous_time = -1;
-  m_start_time    = 0;
-  m_skip_time     = 0;
-  m_pause_time    = 0;
-  m_db_uptime     = 0;
-  m_utc_time      = 0;
-  m_paused        = false;
-  m_conditions_ok = true;
-  m_posted_count  = 0;
-  m_posted_tcount = 0;
-  m_reset_count   = 0;
-  m_iteration     = 0; 
-  m_iter_char     = 'a';
-  m_verbose       = false;
-  m_shuffle       = true;
+  m_elapsed_time   = 0;
+  m_previous_time  = -1;
+  m_start_time     = 0;
+  m_connect_tstamp = 0;
+  m_skip_time      = 0;
+  m_pause_time     = 0;
+  m_utc_time       = 0;
+  m_paused         = false;
+  m_conditions_ok  = true;
+  m_posted_count   = 0;
+  m_posted_tcount  = 0;
+  m_reset_count    = 0;
+  m_iteration      = 0; 
+  m_iter_char      = 'a';
+  m_verbose        = false;
+  m_shuffle        = true;
+  m_awake_reset    = false;
 
   // Default values for configuration parameters.
   m_reset_max      = -1;
@@ -53,7 +54,8 @@ TS_MOOSApp::TS_MOOSApp()
 
   m_info_buffer    = new InfoBuffer;
 
-  m_stretch.setRange(1.0, 1.0);
+  m_time_warp.setRange(1.0, 1.0);
+  m_start_delay.setRange(0, 0);
 
   seedRandom();
 }
@@ -85,8 +87,10 @@ bool TS_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
       if((str == "reset") || (str == "true"))
 	handleReset();
     }
-    else if(key == "DB_UPTIME")
-      m_db_uptime = dval;
+    else if(key == "DB_UPTIME") {
+      if(m_connect_tstamp == 0) 
+	m_connect_tstamp = (MOOSTime() - dval);
+    }
     else if(key == m_var_pause) {
       string pause_val = tolower(sval);
       if(pause_val == "true")
@@ -108,11 +112,22 @@ bool TS_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 
 bool TS_MOOSApp::Iterate()
 {
-  m_conditions_ok = checkConditions();
+  // If we are transitioning from a state when the conditions were not
+  // met, to one where they are, and there has been some script progress
+  // defined by (m_elapsed_time > 0), then reset the script if the 
+  // awake_reset parameter is set to true.
+  bool new_conditions_ok = checkConditions();
+  if(new_conditions_ok && !m_conditions_ok && 
+     (m_elapsed_time > 0) && m_awake_reset)
+    handleReset();
+  
+  m_conditions_ok = new_conditions_ok;
 
   m_utc_time = MOOSTime();
-  if(m_start_time == 0)
+  if(m_start_time == 0) {
     m_start_time = m_utc_time;
+    scheduleEvents();
+  }
 
   if(m_paused || !m_conditions_ok) {
     double delta_time = 0;
@@ -121,9 +136,13 @@ bool TS_MOOSApp::Iterate()
     m_pause_time += delta_time;
   }
 
-  // Make sure these three steps are done *before* any resets.
+  // Make sure these four steps are done *before* any resets.
   m_previous_time = m_utc_time;
   m_elapsed_time = (m_utc_time - m_start_time) + m_skip_time - m_pause_time;
+  //m_elapsed_time -= m_start_delay.getValue();
+  //if(m_elapsed_time < 0)
+  //  m_elapsed_time = 0;
+  m_elapsed_time *= m_time_warp.getValue();
   postStatus();
   
   bool all_posted = checkForReadyPostings();
@@ -188,6 +207,8 @@ bool TS_MOOSApp::OnStartUp()
 	setBooleanOnString(m_shuffle, value);
       else if(param == "verbose")
 	setBooleanOnString(m_verbose, value);
+      else if(param == "awake_reset")
+	setBooleanOnString(m_awake_reset, value);
       else if(param == "reset_max") {
 	string str = tolower(value);
 	if((str == "any") || (str == "unlimited"))
@@ -226,6 +247,26 @@ bool TS_MOOSApp::OnStartUp()
 	if(!strContainsWhite(value))
 	  m_var_status = value;
       }
+      else if(param == "time_warp") {
+	string left  = stripBlankEnds(biteString(value, ':'));
+	string right = stripBlankEnds(value);
+	double lval  = atof(left.c_str());
+	double rval  = atof(right.c_str());
+	if(right == "")
+	  rval = lval;
+	if((lval > 0) && (lval <= rval))
+	  m_time_warp.setRange(lval, rval);
+      }
+      else if(param == "start_delay") {
+	string left  = stripBlankEnds(biteString(value, ':'));
+	string right = stripBlankEnds(value);
+	if(right == "")
+	  right = left;
+	double lval  = atof(left.c_str());
+	double rval  = atof(right.c_str());
+	if(isNumber(left) && isNumber(right) && (lval >= 0) && (lval <= rval))
+	  m_start_delay.setRange(lval, rval);
+      }
       else if(param == "randvar") {
 	string result = m_rand_vars.addRandomVar(value);
 	if(result != "") {
@@ -241,7 +282,13 @@ bool TS_MOOSApp::OnStartUp()
 	bool ok = new_condition.setCondition(value);
 	if(ok)
 	  m_logic_conditions.push_back(new_condition);
-	m_conditions_ok = true;
+	m_conditions_ok = false; // Assume false until shown otherwise
+      }
+      else {
+	if((param != "apptick") && (param != "commstick")) {
+	  cout << termColor("red") << "Unrecognized Parameter: ";
+	  cout << param << termColor() << endl;
+	}
       }
     }
   }
@@ -264,7 +311,7 @@ bool TS_MOOSApp::OnStartUp()
 
   RegisterVariables();
   if(m_verbose)
-    printScript();
+    printRawScript();
 
   return(true);
 }
@@ -355,26 +402,38 @@ bool TS_MOOSApp::addNewEvent(string event_str)
   m_ptime_max.push_back(new_ptime_max);
   m_poked.push_back(false);
 
-  scheduleEvents(true);
   return(true);
 }
 
 //------------------------------------------------------------
 // Procedure: scheduleEvents
-// 
+//   Purpose: (1) Post an updated header if in verbose mode. 
+//            (2) Determine if there are events that do not yet have
+//                timestamps.
+//            (3) Shuffle (assign timestamps) if shuffle requested or
+//                if one or more events do not have a timestamp.
+//            (4) Re-order the events to match the (new) timestamps.
+//            (5) Re-set all state variables to initial values. 
 
 void TS_MOOSApp::scheduleEvents(bool shuffle_requested)
 {
-  // As a failsafe check, determine if there are any unscheduled events
-  // and to the shuffling if any remain, regardless of whether shuffling
-  // was requested.
+  // Part (1): Post an updated header if in verbose mode.
+  if(m_verbose) {
+    cout << termColor("magenta");
+    cout << "Script (Re)Initialized. Time Warp=" << m_time_warp.getValue();
+    cout << "  StartDelay=" << m_start_delay.getValue();
+    cout << termColor() << endl;
+  }
+  
+  // Part (2): Determine if there are events that do not yet have timestamps.
   bool unscheduled_events = false;
   unsigned int i, vsize = m_pairs.size();
   for(i=0; i<vsize; i++)
     if(m_ptime[i] == -1)
       unscheduled_events = true;
 
-  // Part 1: Shuffle the events (determine their timestamps)
+  // Part (3): Shuffle (assign timestamps) if shuffle requested or if one or
+  // more events do not have a timestamp.
   if(shuffle_requested || unscheduled_events) {
     for(i=0; i<vsize; i++) {
       int    rand_int = rand() % 10000;
@@ -383,12 +442,14 @@ void TS_MOOSApp::scheduleEvents(bool shuffle_requested)
     }
   }
 
-  // Part 2: Put the events into the correct order
+  // Part (4): Re-order the events to match the (new) timestamps.
   unsigned int count = 0;
   vector<bool> sorted(vsize,false);
   
   vector<VarDataPair> new_pairs;
   vector<double>      new_ptime;
+  vector<double>      new_ptime_min;
+  vector<double>      new_ptime_max;
   vector<bool>        new_poked;
 
   while(count < vsize) {
@@ -402,29 +463,51 @@ void TS_MOOSApp::scheduleEvents(bool shuffle_requested)
     }
     sorted[oldest_index] = true;
     new_pairs.push_back(m_pairs[oldest_index]);
-    new_ptime.push_back(m_ptime[oldest_index]);
     new_poked.push_back(m_poked[oldest_index]);
+    new_ptime.push_back(m_ptime[oldest_index]);
+    new_ptime_min.push_back(m_ptime_min[oldest_index]);
+    new_ptime_max.push_back(m_ptime_max[oldest_index]);
     count++;
   }
 
   m_pairs = new_pairs;
-  m_ptime = new_ptime;
   m_poked = new_poked;
+  m_ptime = new_ptime;
+  m_ptime_min = new_ptime_min;
+  m_ptime_max = new_ptime_max;
   std::reverse(m_pairs.begin(), m_pairs.end());
-  std::reverse(m_ptime.begin(), m_ptime.end());
   std::reverse(m_poked.begin(), m_poked.end());
+  std::reverse(m_ptime.begin(), m_ptime.end());
+  std::reverse(m_ptime_min.begin(), m_ptime_min.end());
+  std::reverse(m_ptime_max.begin(), m_ptime_max.end());
+
+
+  // Part (5): Re-set all state variables to initial values. 
+  m_time_warp.reset();
+  m_rand_vars.reset("at_reset");
+  m_rand_vars.reset("at_post");
+  m_elapsed_time  = 0;
+  m_previous_time = -1;
+  m_skip_time     = 0;
+  m_pause_time    = 0;
+  m_posted_count  = 0;
+
+  // Mark all the posts as being unposted
+  unsigned int j, psize=m_poked.size();
+  for(j=0; j<psize; j++)
+    m_poked[j] = false;
 }
     
 //------------------------------------------------------------
-// Procedure: printScript
+// Procedure: printRawScript
 // 
 
-void TS_MOOSApp::printScript()
+void TS_MOOSApp::printRawScript()
 {
   unsigned int i, vsize = m_pairs.size();
   
   cout << termColor("magenta") << endl;
-  cout << "The Script: ========================================" << endl;
+  cout << "The Raw Script: ========================================" << endl;
   cout << "Total Elements: " << vsize << endl;
   for(i=0; i<vsize; i++) {
     string vdpair_str = m_pairs[i].getPrintable();
@@ -432,6 +515,7 @@ void TS_MOOSApp::printScript()
     bool   poked  = m_poked[i];
 
     cout << "[" << i << "] " << vdpair_str << ", TIME:" << ptime;
+    cout << ", RANGE=[" << m_ptime_min[i] << "," << m_ptime_max[i] << "]";
     cout << ", POSTED=" << boolToString(poked) << endl;
   }
   cout << "====================================================" << endl;
@@ -451,9 +535,11 @@ bool TS_MOOSApp::checkForReadyPostings()
   unsigned int i, vsize = m_pairs.size();
   bool all_poked = true;
   for(i=0; i<vsize; i++) {
+    double delay = m_start_delay.getValue();
+    //delay = 0;
     // Condtions for posting: (1) enough elapsed time, (2) not already
     // poked, (3) poke time is not after reset-time if reset-time set.
-    if((m_elapsed_time >= m_ptime[i]) && !m_poked[i] && 
+    if(((m_elapsed_time - delay) >= m_ptime[i]) && !m_poked[i] && 
        ((m_reset_time <= 0) || (m_ptime[i] <= m_reset_time))) {
       executePosting(m_pairs[i]);
 
@@ -480,16 +566,17 @@ void TS_MOOSApp::executePosting(VarDataPair pair)
     return;
   }
     
+  double db_uptime = MOOSTime() - m_connect_tstamp;
   string sval = pair.get_sdata();
   // Handle special case where MOOSDB_UPTIME *is* the post
   if(sval == "$(DBTIME)") {
-    m_Comms.Notify(variable, m_db_uptime);
+    m_Comms.Notify(variable, db_uptime);
     return;
   }
 
   // Handle special case where UTC_TIME *is* the post
   if(sval == "$(UTCTIME)") {
-    m_Comms.Notify(variable, m_db_uptime);
+    m_Comms.Notify(variable, db_uptime);
     return;
   }
 
@@ -500,7 +587,7 @@ void TS_MOOSApp::executePosting(VarDataPair pair)
   }
   
   while(strContains(sval, "$(DBTIME)"))
-    sval = findReplace(sval, "$(DBTIME)", doubleToString(m_db_uptime, 2));
+    sval = findReplace(sval, "$(DBTIME)", doubleToString(db_uptime, 2));
   while(strContains(sval, "$(UTCTIME)"))
     sval = findReplace(sval, "$(UTCTIME)", doubleToString(m_utc_time, 2));
   while(strContains(sval, "$(TCNT)"))
@@ -523,8 +610,10 @@ void TS_MOOSApp::executePosting(VarDataPair pair)
   }
 
   if(m_verbose) {
+    cout << termColor("green");
+    cout << "[" << m_iter_char << "/" << db_uptime << "]";
     cout << termColor("blue");
-    cout << "[" << m_iter_char << "/" << m_db_uptime << "]: ";
+    cout << "[" << m_elapsed_time << "]: ";
     cout << variable << " = " << sval << endl;
     cout << termColor();
   }
@@ -565,30 +654,11 @@ void TS_MOOSApp::handleReset()
   // resets are indicated by (m_reset_max == -1).
   if((m_reset_max != -1) && (m_reset_count >= m_reset_max))
     return;
-
-  scheduleEvents(m_shuffle);
-
-  m_rand_vars.reset("at_reset");
-  m_rand_vars.reset("at_post");
-  
   m_reset_count++;
 
-  m_elapsed_time  = 0;
-  m_previous_time = -1;
-  m_start_time    = 0;
-  m_skip_time     = 0;
-  m_pause_time    = 0;
-  m_posted_count  = 0;
-
-  // Mark all the posts as being unposted
-  unsigned int i, vsize=m_poked.size();
-  for(i=0; i<vsize; i++)
-    m_poked[i] = false;
-
-  if(m_verbose) {
-    cout << termColor("magenta");
-    cout << "Resetting the Script now." << termColor() << endl;
-  }
+  // The key indicator for a script-reset is setting m_start_time to
+  // zero. The real work or resetting is done elsewhere.
+  m_start_time = 0;
 }
   
   
