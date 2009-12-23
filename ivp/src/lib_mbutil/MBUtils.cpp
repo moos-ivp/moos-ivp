@@ -882,7 +882,7 @@ bool isNumber(const string& str, bool blanks_allowed)
   if(blanks_allowed)
     newstr = stripBlankEnds(str);
 
-  if((newstr.at(0) == '+') && (newstr.length() > 1))
+  if((newstr.length() > 1) && (newstr.at(0) == '+'))
     newstr = newstr.substr(1, newstr.length()-1);
 
   const char *buff = newstr.c_str();
