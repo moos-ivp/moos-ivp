@@ -882,6 +882,9 @@ bool isNumber(const string& str, bool blanks_allowed)
   if(blanks_allowed)
     newstr = stripBlankEnds(str);
 
+  if(newstr.length() == 0)
+    return(false);
+
   if((newstr.length() > 1) && (newstr.at(0) == '+'))
     newstr = newstr.substr(1, newstr.length()-1);
 
