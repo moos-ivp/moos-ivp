@@ -57,16 +57,8 @@ double RandomVariable::reset(double timestamp)
     return(m_value);
   }
 
-  unsigned long tseed = time(NULL) + 1;
-  unsigned long pid = (long)getpid() + 1;
-  unsigned long seed = (tseed%999999);
-  seed = ((rand()) * seed) % 999999;
-  seed = (seed * pid) % 999999;
-  srand(seed);
   int    rand_int = rand() % 10000;
-
   double rand_pct = (double)(rand_int) / 10000;
-  
   m_value = m_min_val + ((m_max_val-m_min_val) * rand_pct);
 
   return(m_value);

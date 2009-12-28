@@ -30,9 +30,6 @@ class EnumVariable
 
   std::string getStringSummary();
 
- protected: 
-  void setRandomSeed();
-
  protected: // Configuration Parameters
   std::string m_varname;
   std::string m_keyname;

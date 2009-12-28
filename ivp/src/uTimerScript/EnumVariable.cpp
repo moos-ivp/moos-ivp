@@ -24,8 +24,6 @@ EnumVariable::EnumVariable()
   // Initial values for configuration parameters
   m_varname = "random_var";
   m_keyname = "";
-
-  setRandomSeed();
 }
 
 //---------------------------------------------------------
@@ -108,19 +106,5 @@ string EnumVariable::getStringSummary()
     str += "[" + dstringCompact(doubleToString(m_weights[i])) + "]";
   }
   return(str);
-}
-  
-  
-//---------------------------------------------------------
-// Procedure: setRandomSeed
-
-void EnumVariable::setRandomSeed()
-{
-  unsigned long tseed = time(NULL) + 1;
-  unsigned long pid = (long)getpid() + 1;
-  unsigned long seed = (tseed%999999);
-  seed = ((rand()) * seed) % 999999;
-  seed = (seed * pid) % 999999;
-  srand(seed);
 }
   
