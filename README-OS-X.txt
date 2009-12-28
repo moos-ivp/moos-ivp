@@ -58,8 +58,6 @@ your PATH environment variable.  This is especially important because the
 "pAntler" program, which can launch other MOOS/IvP programs, relies on the
 PATH variable to find those programs.
 
-<<< TODO: Say where the .dylib files for behaviors are placed, and the relevant environmental vars. -CJC >>>
-
 We normally just at lines to our ~/.bash_profile files to always append
 these two directories to the PATH environment variable.
 *** NOTE: On OS X, ~/.bashrc isn't automatically executed, as it is on Linux.
