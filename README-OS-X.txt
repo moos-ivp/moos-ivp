@@ -1,5 +1,5 @@
 README-OS-X.txt
-Last updated: 20 June 2008
+Last updated: 28 December 2009
 Maintainer: Christian Convey ( christian.convey@navy.mil )
 
 ************************************************************
@@ -17,6 +17,8 @@ XCODE
 You need to install the XCode development package for OS-X available 
 at http://developer.apple.com/technology/xcode.html
 
+Alternatively, XCode can be found on the 2nd installation disk that ships with all Macs.
+
 PACKAGES
 ========
 The following software packages must must installed on the 
@@ -29,7 +31,7 @@ Website: http://libtiff.org
 (a) The page that has the actual tarfile to download is:
     http://dl.maptools.org/dl/libtiff/
 (b) Look at the README, but it amounts to:
-    ./configure; make; sudo make install
+    ./configure && make && sudo make install
 
 (2) CMake (at least version 2.4)
 Website: cmake.org
@@ -49,12 +51,14 @@ When you build the MOOS software, the MOOS executable programs get placed in
 the "MOOS/MOOSBin" subdirectory of the source code tree.
 
 When you build the IvP software, the IvP executable programs get placed in
-the "ivp/src/bin" subdirectory of the source code tree.
+the "bin" subdirectory of the source code tree.
 
 We recommend that you put the absolute path to both of those directories into
 your PATH environment variable.  This is especially important because the 
 "pAntler" program, which can launch other MOOS/IvP programs, relies on the
 PATH variable to find those programs.
+
+<<< TODO: Say where the .dylib files for behaviors are placed, and the relevant environmental vars. -CJC >>>
 
 We normally just at lines to our ~/.bash_profile files to always append
 these two directories to the PATH environment variable.
