@@ -29,6 +29,8 @@ TS_MOOSApp::TS_MOOSApp()
   m_previous_time  = -1;
   m_start_time     = 0;
   m_connect_tstamp = 0;
+  m_status_tstamp  = 0;
+  m_status_needed  = false;
   m_skip_time      = 0;
   m_pause_time     = 0;
   m_utc_time       = 0;
@@ -39,14 +41,14 @@ TS_MOOSApp::TS_MOOSApp()
   m_reset_count    = 0;
   m_iteration      = 0; 
   m_iter_char      = 'a';
-  m_verbose        = false;
+  m_verbose        = true;
   m_shuffle        = true;
-  m_awake_reset    = false;
+  m_upon_awake     = "n/a";
+  m_script_name    = "unnamed";
 
   // Default values for configuration parameters.
   m_reset_max      = -1;
   m_reset_time     = -1; // -1:none, 0:after-last, NUM:atNUM
-  m_var_next_event = "TIMER_SCRIPT_NEXT";
   m_var_forward    = "TIMER_SCRIPT_FORWARD";
   m_var_pause      = "TIMER_SCRIPT_PAUSE";
   m_var_status     = "TIMER_SCRIPT_STATUS";
@@ -55,7 +57,8 @@ TS_MOOSApp::TS_MOOSApp()
   m_info_buffer    = new InfoBuffer;
 
   m_time_warp.setRange(1.0, 1.0);
-  m_start_delay.setRange(0, 0);
+  m_delay_start.setRange(0, 0);
+  m_delay_reset.setRange(0, 0);
 
   seedRandom();
 }
@@ -78,10 +81,12 @@ bool TS_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
     bool   mstr  = msg.IsString();
     string msrc  = msg.GetSource();
 
-    if((key == m_var_next_event) && (tolower(sval) == "next"))
-      jumpToNextPostingTime();
-    else if((key == m_var_forward) && !mstr && (dval>0))
-      m_skip_time += dval;
+    if((key == m_var_forward) && !mstr) {
+      if(dval <= 0)
+	jumpToNextPostingTime();
+      else
+	m_skip_time += dval;
+    }
     else if(key == m_var_reset) {
       string str = tolower(sval);
       if((str == "reset") || (str == "true"))
@@ -93,6 +98,7 @@ bool TS_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
     }
     else if(key == m_var_pause) {
       string pause_val = tolower(sval);
+      m_status_needed = true;
       if(pause_val == "true")
 	m_paused = true;
       else if(pause_val == "false")
@@ -112,15 +118,28 @@ bool TS_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 
 bool TS_MOOSApp::Iterate()
 {
+  // By default we declare that a posting of the status message is not
+  // needed - until either an event occurs, elapsed time or state chng.
+  m_status_needed = false;
+
   // If we are transitioning from a state when the conditions were not
-  // met, to one where they are, and there has been some script progress
-  // defined by (m_elapsed_time > 0), then reset the script if the 
-  // awake_reset parameter is set to true.
+  // met, to one where they are, this constitutes an "awakening".
+  // (a) If upon_awake==reset, then a further check is made to see if 
+  // there has been script progress defined by (m_elapsed_time > 0),
+  // otherwise the reset is not perform.
+  // (b) if upon_awake==restart, then the script is simply restarted.
   bool new_conditions_ok = checkConditions();
-  if(new_conditions_ok && !m_conditions_ok && 
-     (m_elapsed_time > 0) && m_awake_reset)
-    handleReset();
-  
+  if(new_conditions_ok && !m_conditions_ok) { // Possible awakening
+    if((m_upon_awake == "reset") && (m_elapsed_time > 0))
+      handleReset();
+    else if(m_upon_awake == "restart")
+      handleRestart();
+  }
+
+  // If the status of conditions changes, worth posting a status msg.
+  if(new_conditions_ok != m_conditions_ok)
+    m_status_needed = true;
+  // Now apply the results of the new conditions state
   m_conditions_ok = new_conditions_ok;
 
   m_utc_time = MOOSTime();
@@ -139,11 +158,9 @@ bool TS_MOOSApp::Iterate()
   // Make sure these four steps are done *before* any resets.
   m_previous_time = m_utc_time;
   m_elapsed_time = (m_utc_time - m_start_time) + m_skip_time - m_pause_time;
-  //m_elapsed_time -= m_start_delay.getValue();
-  //if(m_elapsed_time < 0)
-  //  m_elapsed_time = 0;
   m_elapsed_time *= m_time_warp.getValue();
-  postStatus();
+  if((m_status_tstamp == 0) || ((m_utc_time - m_status_tstamp) > 5))
+    m_status_needed = true;
   
   bool all_posted = checkForReadyPostings();
 
@@ -164,6 +181,9 @@ bool TS_MOOSApp::Iterate()
   m_iter_char++;
   if(m_iter_char > 122)
     m_iter_char -= 26;
+
+  if(m_status_needed) 
+    postStatus();
   return(true);
 }
 
@@ -207,8 +227,11 @@ bool TS_MOOSApp::OnStartUp()
 	setBooleanOnString(m_shuffle, value);
       else if(param == "verbose")
 	setBooleanOnString(m_verbose, value);
-      else if(param == "awake_reset")
-	setBooleanOnString(m_awake_reset, value);
+      else if(param == "upon_awake") {
+	string lvalue = tolower(value);
+	if((lvalue=="reset") || (lvalue=="restart") || (lvalue =="n/a"))
+	  m_upon_awake = lvalue;
+      }
       else if(param == "reset_max") {
 	string str = tolower(value);
 	if((str == "any") || (str == "unlimited"))
@@ -227,10 +250,6 @@ bool TS_MOOSApp::OnStartUp()
       }
       else if(param == "script_name")
 	m_script_name = value;
-      else if((param == "jump_var") || (param == "jump_variable")) {
-	if(!strContainsWhite(value))
-	  m_var_next_event = value;
-      }
       else if((param == "forward_var") || (param == "forward_variable")) {
 	if(!strContainsWhite(value))
 	  m_var_forward = value;
@@ -257,7 +276,7 @@ bool TS_MOOSApp::OnStartUp()
 	if((lval > 0) && (lval <= rval))
 	  m_time_warp.setRange(lval, rval);
       }
-      else if(param == "start_delay") {
+      else if(param == "delay_start") {
 	string left  = stripBlankEnds(biteString(value, ':'));
 	string right = stripBlankEnds(value);
 	if(right == "")
@@ -265,9 +284,19 @@ bool TS_MOOSApp::OnStartUp()
 	double lval  = atof(left.c_str());
 	double rval  = atof(right.c_str());
 	if(isNumber(left) && isNumber(right) && (lval >= 0) && (lval <= rval))
-	  m_start_delay.setRange(lval, rval);
+	  m_delay_start.setRange(lval, rval);
       }
-      else if(param == "randvar") {
+      else if(param == "delay_reset") {
+	string left  = stripBlankEnds(biteString(value, ':'));
+	string right = stripBlankEnds(value);
+	if(right == "")
+	  right = left;
+	double lval  = atof(left.c_str());
+	double rval  = atof(right.c_str());
+	if(isNumber(left) && isNumber(right) && (lval >= 0) && (lval <= rval))
+	  m_delay_reset.setRange(lval, rval);
+      }
+      else if((param == "rand_var") || (param == "randvar")) {
 	string result = m_rand_vars.addRandomVar(value);
 	if(result != "") {
 	  cout << termColor("red");
@@ -321,7 +350,6 @@ bool TS_MOOSApp::OnStartUp()
 
 void TS_MOOSApp::RegisterVariables()
 {
-  m_Comms.Register(m_var_next_event, 0);
   m_Comms.Register(m_var_forward, 0);
   m_Comms.Register(m_var_pause, 0);
   m_Comms.Register(m_var_reset, 0);
@@ -412,8 +440,7 @@ bool TS_MOOSApp::addNewEvent(string event_str)
 //                timestamps.
 //            (3) Shuffle (assign timestamps) if shuffle requested or
 //                if one or more events do not have a timestamp.
-//            (4) Re-order the events to match the (new) timestamps.
-//            (5) Re-set all state variables to initial values. 
+//            (4) Re-set all state variables to initial values. 
 
 void TS_MOOSApp::scheduleEvents(bool shuffle_requested)
 {
@@ -421,7 +448,8 @@ void TS_MOOSApp::scheduleEvents(bool shuffle_requested)
   if(m_verbose) {
     cout << termColor("magenta");
     cout << "Script (Re)Initialized. Time Warp=" << m_time_warp.getValue();
-    cout << "  StartDelay=" << m_start_delay.getValue();
+    cout << "  DelayStart=" << m_delay_start.getValue();
+    cout << "  DelayReset=" << m_delay_reset.getValue();
     cout << termColor() << endl;
   }
   
@@ -442,47 +470,7 @@ void TS_MOOSApp::scheduleEvents(bool shuffle_requested)
     }
   }
 
-  // Part (4): Re-order the events to match the (new) timestamps.
-  unsigned int count = 0;
-  vector<bool> sorted(vsize,false);
-  
-  vector<VarDataPair> new_pairs;
-  vector<double>      new_ptime;
-  vector<double>      new_ptime_min;
-  vector<double>      new_ptime_max;
-  vector<bool>        new_poked;
-
-  while(count < vsize) {
-    unsigned int oldest_index = 0;
-    double       oldest_ptime = -1;
-    for(i=0; i<vsize; i++) {
-      if((m_ptime[i] > oldest_ptime) && !sorted[i]) {
-	oldest_ptime = m_ptime[i];
-	oldest_index = i;
-      }
-    }
-    sorted[oldest_index] = true;
-    new_pairs.push_back(m_pairs[oldest_index]);
-    new_poked.push_back(m_poked[oldest_index]);
-    new_ptime.push_back(m_ptime[oldest_index]);
-    new_ptime_min.push_back(m_ptime_min[oldest_index]);
-    new_ptime_max.push_back(m_ptime_max[oldest_index]);
-    count++;
-  }
-
-  m_pairs = new_pairs;
-  m_poked = new_poked;
-  m_ptime = new_ptime;
-  m_ptime_min = new_ptime_min;
-  m_ptime_max = new_ptime_max;
-  std::reverse(m_pairs.begin(), m_pairs.end());
-  std::reverse(m_poked.begin(), m_poked.end());
-  std::reverse(m_ptime.begin(), m_ptime.end());
-  std::reverse(m_ptime_min.begin(), m_ptime_min.end());
-  std::reverse(m_ptime_max.begin(), m_ptime_max.end());
-
-
-  // Part (5): Re-set all state variables to initial values. 
+  // Part (4): Re-set all state variables to initial values. 
   m_time_warp.reset();
   m_rand_vars.reset("at_reset");
   m_rand_vars.reset("at_post");
@@ -535,14 +523,18 @@ bool TS_MOOSApp::checkForReadyPostings()
   unsigned int i, vsize = m_pairs.size();
   bool all_poked = true;
   for(i=0; i<vsize; i++) {
-    double delay = m_start_delay.getValue();
-    //delay = 0;
+    double delay = 0;
+    if(m_reset_count == 0)
+      delay += m_delay_start.getValue();
+    else
+      delay += m_delay_reset.getValue();
     // Condtions for posting: (1) enough elapsed time, (2) not already
     // poked, (3) poke time is not after reset-time if reset-time set.
     if(((m_elapsed_time - delay) >= m_ptime[i]) && !m_poked[i] && 
        ((m_reset_time <= 0) || (m_ptime[i] <= m_reset_time))) {
       executePosting(m_pairs[i]);
-
+      m_status_needed = true;
+      
       // If just now poked, note it, so it won't be poked again
       m_posted_count++;
       m_posted_tcount++;
@@ -582,6 +574,12 @@ void TS_MOOSApp::executePosting(VarDataPair pair)
 
   // Handle special case where COUNT *is* the post
   else if(sval == "$(COUNT)") {
+    m_Comms.Notify(variable, m_posted_count);
+    return;
+  }
+  
+  // Handle special case where COUNT *is* the post
+  else if(sval == "$(TCOUNT)") {
     m_Comms.Notify(variable, m_posted_tcount);
     return;
   }
@@ -590,10 +588,10 @@ void TS_MOOSApp::executePosting(VarDataPair pair)
     sval = findReplace(sval, "$(DBTIME)", doubleToString(db_uptime, 2));
   while(strContains(sval, "$(UTCTIME)"))
     sval = findReplace(sval, "$(UTCTIME)", doubleToString(m_utc_time, 2));
-  while(strContains(sval, "$(TCNT)"))
-    sval = findReplace(sval, "$(TCNT)", intToString(m_posted_tcount));
-  while(strContains(sval, "$(CNT)"))
-    sval = findReplace(sval, "$(CNT)", intToString(m_posted_count));
+  while(strContains(sval, "$(TCOUNT)"))
+    sval = findReplace(sval, "$(TCOUNT)", intToString(m_posted_tcount));
+  while(strContains(sval, "$(COUNT)"))
+    sval = findReplace(sval, "$(COUNT)", intToString(m_posted_count));
   
   unsigned int i, vsize = m_rand_vars.size();
   for(i=0; i<vsize; i++) {
@@ -601,6 +599,8 @@ void TS_MOOSApp::executePosting(VarDataPair pair)
     sval = findReplace(sval, macro, m_rand_vars.getStringValue(i));
   }
 
+  // Handle all the math expansions. For safety, the while loop may
+  // execute only 20 times.
   unsigned int replace_max = 10;
   unsigned int replace_amt = 0;
   bool maybe_more = true;
@@ -618,7 +618,15 @@ void TS_MOOSApp::executePosting(VarDataPair pair)
     cout << termColor();
   }
     
-  m_Comms.Notify(variable, sval);
+  if(isNumber(sval)) {
+    double dval = atof(sval.c_str());
+    m_Comms.Notify(variable, dval);
+  }
+  else {
+    if(isQuoted(sval))
+      sval = stripQuotes(sval);
+    m_Comms.Notify(variable, sval);
+  }
 }
 
 
@@ -632,14 +640,19 @@ void TS_MOOSApp::executePosting(VarDataPair pair)
 
 void TS_MOOSApp::jumpToNextPostingTime()
 {
-  double skip_amt = 0;
+  // Find the smallest hypothetical skip time
+  double skip_amt = -1;
   unsigned int i, vsize = m_pairs.size();
-  for(i=0; ((i<vsize)&&(skip_amt==0)); i++) {
-    if(!m_poked[i])
-      skip_amt = m_ptime[i] - m_elapsed_time;
+  for(i=0; i<vsize; i++) {
+    if(!m_poked[i]) {
+      double new_skip_amt = m_ptime[i] - m_elapsed_time;
+      if((skip_amt == -1) || (new_skip_amt < skip_amt))
+	skip_amt = new_skip_amt;
+    }
   }
-   
-  m_skip_time += skip_amt;
+  
+  if(skip_amt != -1)
+    m_skip_time += skip_amt;
 }
 
 
@@ -655,6 +668,25 @@ void TS_MOOSApp::handleReset()
   if((m_reset_max != -1) && (m_reset_count >= m_reset_max))
     return;
   m_reset_count++;
+  
+  // A reset should trigger an immediate status message publication
+  m_status_needed = true;
+
+  // The key indicator for a script-reset is setting m_start_time to
+  // zero. The real work or resetting is done elsewhere.
+  m_start_time = 0;
+}
+  
+//----------------------------------------------------------------
+// Procedure: handleRestart()
+//   Purpose: Reset the script to how it was at the initial launch.
+
+void TS_MOOSApp::handleRestart()
+{
+  m_reset_count = 0;
+  
+  // A reset should trigger an immediate status message publication
+  m_status_needed = true;
 
   // The key indicator for a script-reset is setting m_start_time to
   // zero. The real work or resetting is done elsewhere.
@@ -679,6 +711,14 @@ void TS_MOOSApp::postStatus()
 
   status += ", paused=" + boolToString(m_paused);
   status += ", conditions_ok=" + boolToString(m_conditions_ok);
+  status += ", time_warp=";
+  status += dstringCompact(doubleToString(m_time_warp.getValue()));
+  status += ", delay_start=";
+  status += dstringCompact(doubleToString(m_delay_start.getValue()));
+  status += ", delay_reset=";
+  status += dstringCompact(doubleToString(m_delay_reset.getValue()));
+  status += ", shuffle="     + boolToString(m_shuffle);
+  status += ", upon_awake=" + m_upon_awake;
   
   string maxresets = "/any";
   if(m_reset_max != -1)
@@ -686,6 +726,7 @@ void TS_MOOSApp::postStatus()
   status += ", resets=" + intToString(m_reset_count) + maxresets;
   
   m_Comms.Notify(m_var_status, status);
+  m_status_tstamp = m_utc_time;
 }
   
   

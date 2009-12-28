@@ -14,10 +14,10 @@ ProcessConfig = ANTLER
 
   Run = MOOSDB		@ NewConsole = false
   Run = uXMS		@ NewConsole = true
-  //Run = uTimerScript    @ NewConsole = true
-  Run = uTimerScript    @ NewConsole = true, ExtraProcessParams=uts_b
+  Run = iMarineSim      @ NewConsole = true
+  //Run = uTimerScript    @ NewConsole = true, ExtraProcessParams=uts_b
 
-  uts_b = --alias=uTimerScript_B
+  uts_b = --alias=uTimerScript_B  
 }
 
 
@@ -48,10 +48,46 @@ ProcessConfig = uTimerScript
    EVENT  = var=FINDING, val="object-$$IDX", time=30:60
 }
 
+
 //------------------------------------------
 // uTimerScript configuration  block
 
 ProcessConfig = uTimerScript_B
+{
+   AppTick   = 5
+   CommsTick = 5
+
+   PAUSED      = false
+   RESET_MAX   = 4
+   RESET_TIME  = end
+   SHUFFLE     = false
+   TIME_WARP   = 5.0
+   START_DELAY = 0
+   AWAKE_RESET = false
+
+   SCRIPT_NAME = RND_TEST
+
+   RANDVAR = varname=ANGLE, min=10, max=350,  key=at_reset
+   RANDVAR = varname=MAGN,  min=0.5, max=1.5, key=at_reset
+
+   EVENT  = var=MARINESIM_FORCE_ANGLE, val=$(ANGLE), time=0
+   EVENT  = var=MARINESIM_FORCE_MAGNITUDE_D, val={$(MAGN)*0.2}, time=2
+   EVENT  = var=MARINESIM_FORCE_MAGNITUDE_D, val={$(MAGN)*0.2}, time=4
+   EVENT  = var=MARINESIM_FORCE_MAGNITUDE_D, val={$(MAGN)*0.2}, time=6
+   EVENT  = var=MARINESIM_FORCE_MAGNITUDE_D, val={$(MAGN)*0.2}, time=8
+   EVENT  = var=MARINESIM_FORCE_MAGNITUDE_D, val={$(MAGN)*0.2}, time=10
+
+   EVENT  = var=MARINESIM_FORCE_MAGNITUDE_D, val={$(MAGN)*-0.2}, time=12
+   EVENT  = var=MARINESIM_FORCE_MAGNITUDE_D, val={$(MAGN)*-0.2}, time=14
+   EVENT  = var=MARINESIM_FORCE_MAGNITUDE_D, val={$(MAGN)*-0.2}, time=16
+   EVENT  = var=MARINESIM_FORCE_MAGNITUDE_D, val={$(MAGN)*-0.2}, time=18
+   EVENT  = var=MARINESIM_FORCE_MAGNITUDE_D, val={$(MAGN)*-0.2}, 
+}
+
+//------------------------------------------
+// uTimerScript configuration  block
+
+ProcessConfig = uTimerScript_C
 {
    AppTick   = 50
    CommsTick = 50
@@ -67,9 +103,9 @@ ProcessConfig = uTimerScript_B
 
 
    SCRIPT_NAME = RND_TEST
-   RANDVAR     = varname=BAR, min=100, max=100, key=at_post
+   RAND_VAR    = varname=BAR, min=100, max=100, key=at_post
 
-   //EVENT  = var=FOO,  val="a_zero=$(IDX), one=$(CNT), two=$(BAR)", time=0:10
+   //Event  = var=FOO,  val="a_zero=$(IDX), one=$(CNT), two=$(BAR)", time=0:10
    //EVENT  = var=FOO,  val="b_zero=$(IDX), one=$(CNT), two=$(BAR)", time=0:10
    //EVENT  = var=FOO,  val="c_zero=$(IDX), one=$(CNT), two=$(BAR)", time=0:10
    //EVENT  = var=FOO,  val="d_zero=$(IDX), one=$(CNT), two=$(BAR)", time=0:10
@@ -109,5 +145,5 @@ ProcessConfig = uXMS
 
    DISPLAY_TIME = TRUE
    CONTENT_MODE = HISTORY
-   HISTORY_VAR=FOO 
+   HISTORY_VAR=TIMER_SCRIPT_STATUS
 }

@@ -36,7 +36,7 @@ class RandomVariable
   double      m_min_val;
   double      m_max_val;
 
- protected: // Configuration Parameters
+ protected: // State Variables
   double      m_value;
   double      m_timestamp;
 };

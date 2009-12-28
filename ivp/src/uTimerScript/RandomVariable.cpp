@@ -5,7 +5,6 @@
 /*    DATE: Dec 18th 2009                                   */
 /************************************************************/
 
-#include <iostream>
 #include <cstdlib>
 #include "RandomVariable.h"
 #include "MBUtils.h"

@@ -41,6 +41,7 @@ class TS_MOOSApp : public CMOOSApp
   void   executePosting(VarDataPair);
   void   jumpToNextPostingTime();
   void   handleReset();
+  void   handleRestart();
   void   postStatus();
   void   seedRandom();
   bool   handleMathExpr(std::string&);
@@ -62,16 +63,16 @@ class TS_MOOSApp : public CMOOSApp
   std::string               m_script_name;
   bool                      m_verbose;
   bool                      m_shuffle;
-  bool                      m_awake_reset;
+  std::string               m_upon_awake;
   RandomVariable            m_time_warp;
-  RandomVariable            m_start_delay;
+  RandomVariable            m_delay_start;
+  RandomVariable            m_delay_reset;
   RandomVariableSet         m_rand_vars;
 
   // Set of logic conditions pertaining to entire script
   std::vector<LogicCondition> m_logic_conditions;
   
   // MOOS variables configurable by the user
-  std::string m_var_next_event;
   std::string m_var_forward;
   std::string m_var_pause;
   std::string m_var_status;
@@ -86,6 +87,8 @@ class TS_MOOSApp : public CMOOSApp
   double   m_elapsed_time;
   double   m_start_time;
   double   m_connect_tstamp;
+  double   m_status_tstamp;
+  bool     m_status_needed;
   double   m_skip_time;
   double   m_pause_time;
   double   m_utc_time;
