@@ -7,18 +7,17 @@ initialize   LOITER=true,   STATION_KEEP = false
 set MODE = ACTIVE {
   DEPLOY = true
 } INACTIVE
-set MODE = STATION-KEEPING {
+set MODE = LOITERING {
   MODE = ACTIVE
-  STATION_KEEP = true
+  (LOITER = true) and (RETURN != true)
+  STATION_KEEP != true
 }
 set MODE = RETURNING {
   MODE = ACTIVE
-  RETURN = true
-} 
-set MODE = LOITERING {
-  MODE = ACTIVE
-  LOITER = true
-} 
+  (RETURN = true)
+  STATION_KEEP != true
+} STATION-KEEPING
+
 
 //----------------------------------------------
 Behavior = BHV_Loiter
@@ -52,7 +51,7 @@ Behavior = BHV_Waypoint
       speed = 1.3
      radius = 3.0
   nm_radius = 15.0
-      point = x=15, y=28
+      point = x=15, y=0
      repeat = 10
        lead = 8
 }

@@ -174,9 +174,9 @@ ProcessConfig = pMarineViewer
   ACTION   = STATION_KEEP = true
   ACTION   = STATION_KEEP = false
 
-  BUTTON_ONE   = DEPLOY # MOOS_MANUAL_OVERIDE=false 
-  BUTTON_ONE   = DEPLOY=true # LOITER=true # RETURN=false
-  BUTTON_TWO   = RETURN # RETURN=true
+  BUTTON_ONE   = DEPLOY # MOOS_MANUAL_OVERIDE=false # DEPLOY=true
+  BUTTON_ONE   = STATION_KEEP=false # LOITER=true # RETURN=false
+  BUTTON_TWO   = RETURN # RETURN=true # STATION_KEEP=false
   BUTTON_THREE = CWISE  # UP_LOITER=clockwise=true
   BUTTON_FOUR  = CCWISE # UP_LOITER=clockwise=false
 }
