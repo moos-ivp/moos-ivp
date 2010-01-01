@@ -1,77 +1,53 @@
-//---------------------------------------------------
-// Helm Behavior file 
+//------------------------------------------------
+// File: bravo.bhv
+// Name: M. Benjamin
+// Date: Jan 1, 2010
+//------------------------------------------------
 
-initialize   DEPLOY  =  true
-initialize   RETURN  = false
-initialize   STATION_KEEP = false
-initialize   LOITER  =  true
+initialize   DEPLOY = false
+initialize   RETURN = false
 
+//------------------- Declaration of Hierarchical Modes
 set MODE = ACTIVE {
   DEPLOY = true
 } INACTIVE
 
-set MODE = STATION-KEEPING {
+set MODE = SURVEYING {
   MODE = ACTIVE
-  STATION_KEEP = true
-}                       
-
-set MODE = RETURNING {
-  MODE = ACTIVE
-  RETURN = true
-} 
-
-set MODE = LOITERING {
-  MODE = ACTIVE
-  LOITER = true
-} 
+  RETURN != true
+} RETURNING
 
 //----------------------------------------------
-Behavior = BHV_Loiter
-{
-  name      = loiter
+Behavior = BHV_Waypoint
+{ 
+  name      = waypt_survey
   pwt       = 100
-  condition = MODE==LOITERING
-  updates   = UP_LOITER
-  runflag   = VEHICLE_UNDERWAY = TRUE
-  endflag   = VEHICLE_UNDERWAY = FALSE
+  condition = MODE == SURVEYING
+  endflag   = RETURN = true
+  perpetual = true
 
-         speed = 1.3
-     clockwise = false
+          lead = 8
+   lead_damper = 1
+         speed = 2.0   // meters per second
         radius = 4.0
-     nm_radius = 15.0
-       polygon = radial:: x=0, y=-75, radius=40, pts=6, snap=1,
-  visual_hints = nextpt_color=white, nextpt_lcolor=khaki
-  visual_hints = edge_color=blue, vertex_color=yellow
-  visual_hints = edge_size=1, vertex_size=2, label=LOITER_POLYGON
+     nm_radius = 10.0
+        points = 60,-40:60,-160:150,-160:180,-100:150,-40
+        repeat = 1
 }
 
 //----------------------------------------------
 Behavior = BHV_Waypoint
 {
-  name      = waypt_return
-  pwt       = 100
-  updates   = RETURN_UPDATES
-  condition = MODE==RETURNING
-  endflag   = STATION_KEEP = true
+  name       = waypt_return
+  pwt        = 100
+  condition  = MODE == RETURNING
+  perpetual  = true
+  endflag    = RETURN = false
+  endflag    = DEPLOY = false
 
-      speed = 1.3
-     radius = 3.0
-  nm_radius = 15.0
-      point = x=15, y=28
-     repeat = 10
-       lead = 8
-}
-
-//----------------------------------------------
-Behavior = BHV_StationKeep
-{
-  name      = station-keep
-  pwt       = 100
-  condition = MODE==STATION-KEEPING
-
-     center_activate = true 
-        inner_radius = 5 
-        outer_radius = 10  
-         outer_speed = 1.0
+       speed = 2.0
+      radius = 2.0
+   nm_radius = 8.0
+       point = 0,0
 }
 

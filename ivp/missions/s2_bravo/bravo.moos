@@ -1,15 +1,17 @@
-// Level 2 Configuration file: M. Benjamin
+//------------------------------------------------
+// File: bravo.bhv
+// Name: M. Benjamin
+// Date: Jan 1, 2010
+//------------------------------------------------
 
 ServerHost = localhost
 ServerPort = 9000
 Simulator  = true
 
-Community  = henry
-
-MOOSTimeWarp = 10
-
-LatOrigin  = 43.825300 
-LongOrigin = -70.330400 
+Community    = bravo
+MOOSTimeWarp = 1
+LatOrigin    = 43.825300 
+LongOrigin   = -70.330400 
 
 //------------------------------------------
 // Antler configuration  block
@@ -23,35 +25,6 @@ ProcessConfig = ANTLER
   Run = pMarinePID      @ NewConsole = true
   Run = pMarineViewer   @ NewConsole = true
   Run = pHelmIvP        @ NewConsole = true
-  Run = pLogger         @ NewConsole = true
-  Run = pEchoVar        @ NewConsole = true
-}
-
-//------------------------------------------
-// pLogger config block
-
-ProcessConfig = pLogger
-{
-  AppTick	= 4
-  CommsTick	= 4
-
-  WildCardLogging = true
-}
-
-
-//------------------------------------------
-// pEchoVar config block
-
-ProcessConfig = pEchoVar
-{
-  AppTick   = 10
-  CommsTick = 10
-
-  FLIP:1    = source_variable = MVIEWER_LCLICK
-  FLIP:1    = dest_variable   = UP_LOITERA
-  FLIP:1    = dest_separator  = #
-  FLIP:1    = y -> ycenter_assign
-  FLIP:1    = x -> xcenter_assign
 }
 
 //------------------------------------------
@@ -66,7 +39,6 @@ ProcessConfig = iMarineSim
   START_Y       = 0
   START_SPEED   = 0
   START_HEADING = 180
-
   PREFIX        = NAV
 }
 
@@ -82,8 +54,6 @@ ProcessConfig = pHelmIvP
   Verbose    = true
   Domain     = course:0:359:360
   Domain     = speed:0:4:21
-
-  ACTIVE_START = true
 }
 
 //------------------------------------------
@@ -113,8 +83,8 @@ ProcessConfig = pMarinePID
   MAXRUDDER    = 100
   MAXTHRUST    = 100
 
-  // A non-zero SPEED_FACTOR overrides use of SPEED_PID
-  // Will set DESIRED_THRUST = DESIRED_SPEED * SPEED_FACTOR
+  // Non-zero SPEED_FACTOR overrides SPEED_PID
+  // DESIRED_THRUST = DESIRED_SPEED * SPEED_FACTOR
   SPEED_FACTOR = 20
 }
 
@@ -130,7 +100,7 @@ ProcessConfig = pMarineViewer
   set_pan_x            = -90
   set_pan_y            = -280
   zoom                 = 0.65
-  vehicle_shape_scale  = 2.0
+  vehicle_shape_scale  = 1.5
   seglist_edge_width   = 2.0
   seglist_vertex_size  = 4
   seglist_vertex_color = red
@@ -139,20 +109,21 @@ ProcessConfig = pMarineViewer
   hash_shade           = 0.4
   hash_view            = true
 
-  SCOPE        = DB_CLIENTS
+  scope  = VIEW_POINT
+  scope  = VIEW_POLYGON
+  scope  = NAV_X
+  scope  = NAV_Y
+  scope  = MVIEWER_LCLICK
+  scope  = MVIEWER_RCLICK
 
-  ACTION       = UP_LOITER = center_assign = 40,-40
-  ACTION       = UP_LOITER = center_assign = x=100, y=-80
+  BUTTON_ONE = DEPLOY # DEPLOY=true
+  BUTTON_ONE = MOOS_MANUAL_OVERIDE=false # RETURN=false
+  BUTTON_TWO = RETURN # RETURN=true
 
-  ACTION       = UP_LOITER = polygon = radial::x=0, y=-75, radius=40, pts=6
-  ACTION       = UP_LOITER = polygon = format=ellipse, label=BB, x=150, y=-5, degs=150, pts=14, major=80, minor=20
-
-
-  BUTTON_ONE   = DEPLOY # DEPLOY=true # RETURN=false
-  BUTTON_ONE   = MOOS_MANUAL_OVERIDE=false
-  BUTTON_TWO   = RETURN # RETURN=true
-  BUTTON_THREE = CWISE  # UP_LOITER=clockwise=true
-  BUTTON_FOUR  = CCWISE # UP_LOITER=clockwise=false
+  ACTION  = MENU_KEY=deploy # DEPLOY = true # RETURN = false
+  ACTION+ = MENU_KEY=deploy # MOOS_MANUAL_OVERIDE=false
+  ACTION  = RETURN=true
+  ACTION  = UPDATES_RETURN=speed=1.4
 }
 
 //------------------------------------------
@@ -160,11 +131,9 @@ ProcessConfig = pMarineViewer
 
 ProcessConfig = pNodeReporter
 {
-  AppTick	= 2
-  CommsTick	= 2
+  AppTick	= 4
+  CommsTick	= 4
+
   VESSEL_TYPE   = kayak
   VESSEL_LENGTH = 3
 }
-
-
-
