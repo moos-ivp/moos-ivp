@@ -122,7 +122,7 @@ ProcessConfig = uTimerScript
    TIME_WARP   = 0.25:2.0
 
    RANDVAR = varname=ANG, min=0,   max=359, key=at_reset
-   RANDVAR = varname=MAG, min=0.5, max=1.5, key=at_reset
+   RANDVAR = varname=MAG, min=1.5, max=3.5, key=at_reset
 
    EVENT = var=IMS_FORCE_VECTOR_ADD, val="$(ANG),{$(MAG)*0.2}", time=0
    EVENT = var=IMS_FORCE_VECTOR_ADD, val="$(ANG),{$(MAG)*0.2}", time=2
@@ -158,6 +158,8 @@ ProcessConfig = pMarineViewer
   hash_shade           = 0.4
   hash_view            = true
 
+  SCOPE    = LOITER_REPORT
+  SCOPE    = LOITER_DIST_TO_POLY
   SCOPE    = IMS_FSUMMARY
   SCOPE    = IMS_FORCE_VECTOR_ADD
   SCOPE    = DB_CLIENTS
@@ -165,19 +167,22 @@ ProcessConfig = pMarineViewer
   ACTION   = UP_LOITER = center_assign = 40,-40
   ACTION+  = UP_LOITER = center_assign = x=100, y=-80
 
-  ACTION   = UP_LOITER = polygon = radial::x=0, y=-75, radius=40, pts=6
-  ACTION+  = UP_LOITER = polygon = format=ellipse, label=BB, x=110, y=-75, degs=150, pts=14, major=80, minor=20
+  ACTION   = UP_LOITER = polygon = format=radial, x=0, y=-75, radius=40, pts=6
+  ACTION+  = UP_LOITER = polygon = format=ellipse, x=110, y=-75, degs=150, pts=14, major=80, minor=20
+
+  ACTION   = UP_LOITER = center_activate = true
+  ACTION+  = UP_LOITER = center_activate = false
 
   ACTION   = WIND_GUSTS = true
   ACTION+  = WIND_GUSTS = false
 
-  ACTION   = STATION_KEEP = true
-  ACTION   = STATION_KEEP = false
+  ACTION = UP_LOITER=clockwise=true
+  ACTION = UP_LOITER=clockwise=false
 
   BUTTON_ONE   = DEPLOY # MOOS_MANUAL_OVERIDE=false # DEPLOY=true
   BUTTON_ONE   = STATION_KEEP=false # LOITER=true # RETURN=false
   BUTTON_TWO   = RETURN # RETURN=true # STATION_KEEP=false
-  BUTTON_THREE = CWISE  # UP_LOITER=clockwise=true
-  BUTTON_FOUR  = CCWISE # UP_LOITER=clockwise=false
+  BUTTON_THREE = SKEEP:true  # STATION_KEEP=true
+  BUTTON_FOUR  = SKEEP:false # STATION_KEEP=false
 }
 

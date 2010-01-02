@@ -1,5 +1,8 @@
-//---------------------------------------------------
-// Helm Behavior file 
+//------------------------------------------------
+// File: charlie.bhv
+// Name: M. Benjamin
+// Date: Jan 2nd, 2010
+//------------------------------------------------
 
 initialize   DEPLOY=false,  RETURN  = false
 initialize   LOITER=true,   STATION_KEEP = false
@@ -7,14 +10,16 @@ initialize   LOITER=true,   STATION_KEEP = false
 set MODE = ACTIVE {
   DEPLOY = true
 } INACTIVE
+
 set MODE = LOITERING {
   MODE = ACTIVE
   (LOITER = true) and (RETURN != true)
   STATION_KEEP != true
 }
+
 set MODE = RETURNING {
   MODE = ACTIVE
-  (RETURN = true)
+  RETURN = true
   STATION_KEEP != true
 } STATION-KEEPING
 
@@ -23,17 +28,15 @@ set MODE = RETURNING {
 Behavior = BHV_Loiter
 {
   name      = loiter
-  pwt       = 100
+  priority  = 100
   condition = MODE==LOITERING
   updates   = UP_LOITER
-  runflag   = VEHICLE_UNDERWAY = TRUE
-  endflag   = VEHICLE_UNDERWAY = FALSE
 
          speed = 1.3
      clockwise = false
         radius = 4.0
      nm_radius = 25.0
-       polygon = radial:: x=0, y=-75, radius=40, pts=6, snap=1,
+       polygon = format=radial, x=0, y=-75, radius=40, pts=6, snap=1,
   visual_hints = nextpt_color=white, nextpt_lcolor=khaki
   visual_hints = edge_color=blue, vertex_color=yellow
   visual_hints = edge_size=1, vertex_size=2, label=LOITER_POLYGON
@@ -43,7 +46,8 @@ Behavior = BHV_Loiter
 Behavior = BHV_Waypoint
 {
   name      = waypt_return
-  pwt       = 100
+  priority  = 100
+  perpetual = true
   updates   = RETURN_UPDATES
   condition = MODE==RETURNING
   endflag   = STATION_KEEP = true
@@ -52,20 +56,17 @@ Behavior = BHV_Waypoint
      radius = 3.0
   nm_radius = 15.0
       point = x=15, y=0
-     repeat = 10
-       lead = 8
 }
 
 //----------------------------------------------
 Behavior = BHV_StationKeep
 {
   name      = station-keep
-  pwt       = 100
+  priority  = 100
   condition = MODE==STATION-KEEPING
 
-     center_activate = true 
-        inner_radius = 5 
-        outer_radius = 10  
-         outer_speed = 1.0
+  center_activate = true 
+     inner_radius = 5 
+     outer_radius = 10  
+      outer_speed = 1.0
 }
-
