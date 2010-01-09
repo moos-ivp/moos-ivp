@@ -262,12 +262,17 @@ bool Populator_BehaviorSet::handleLine(string line)
       m_parse_mode = "top";
       string init_str = biteString(line, ' ');
       string init_val = stripBlankEnds(line);
-      vector<string> dvector = parseString(init_val, '=');
-      if(dvector.size() != 2) {
-	return(false);
+      vector<string> init_vector = parseStringQ(line, ',');
+      unsigned int iv, ivsize = init_vector.size();
+      for(iv=0; iv<ivsize; iv++) {
+	string pair = stripBlankEnds(init_vector[iv]);
+	string left = stripBlankEnds(biteString(pair, '='));
+	string right = stripBlankEnds(pair);
+	if((left=="") || strContainsWhite(left) || (right==""))
+	  return(false);
+	VarDataPair msg(left, right, "auto");
+	initial_vars.push_back(msg);
       }
-      VarDataPair msg(dvector[0], dvector[1], "auto");
-      initial_vars.push_back(msg);
       return(true);
     }
     else if(!strncasecmp("behavior ", line.c_str(), 9)) {
