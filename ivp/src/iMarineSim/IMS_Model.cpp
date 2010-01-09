@@ -39,15 +39,16 @@ using namespace std;
 
 IMS_Model::IMS_Model() 
 {
-  m_rudder        = 0;
-  m_thrust        = 0;
-  m_elevator      = 0;
-  m_push_x        = 0;
-  m_push_y        = 0; 
-  m_push_theta    = 0;
-  m_float_rate    = 0;
-  m_paused        = false;
-  m_thrust_factor = 20;
+  m_rudder         = 0;
+  m_thrust         = 0;
+  m_elevator       = 0;
+  m_force_x        = 0;
+  m_force_y        = 0; 
+  m_torque_theta   = 0;
+  m_float_rate     = 0;
+  m_deceleration   = 0.5;
+  m_paused         = false;
+  m_thrust_factor  = 20;
 }
 
 //------------------------------------------------------------------------
@@ -79,12 +80,11 @@ bool IMS_Model::propagate(double g_curr_time)
     m_rudder_angle =  (min(fabs(m_rudder), m_max_rotat_vel));
 #endif
   
-  m_sim_engine.setParam("push_x", m_push_x);
-  m_sim_engine.setParam("push_y", m_push_y);
-  m_sim_engine.setParam("push_theta", m_push_theta);
+  m_sim_engine.setParam("force_x", m_force_x);
+  m_sim_engine.setParam("force_y", m_force_y);
+  m_sim_engine.setParam("torque_theta", m_torque_theta);
   m_sim_engine.setParam("float_rate", m_float_rate);
-  //  m_sim_engine.propagate(m_vstate, m_vstate.m_dfSpeed, radian_rudder_angle, 
-  //			 delta_time, m_elevator);
+  m_sim_engine.setParam("deceleration", m_deceleration);
   m_sim_engine.propagate(m_vstate, next_speed, radian_rudder_angle, 
 			 delta_time, m_elevator);
    
@@ -112,6 +112,63 @@ double IMS_Model::getHeading()
   return(heading);
 }
 
+//--------------------------------------------------------------------
+// Procedure: getForceMagnitude
+
+double IMS_Model::getForceMagnitude()
+{
+  // Revert to c^2 = a^2 + b^2 
+  double c_squared = (m_force_x * m_force_x) + (m_force_y * m_force_y);
+  double c = sqrt(c_squared);
+  return(c);
+}
+
+//--------------------------------------------------------------------
+// Procedure: getForceAngle
+
+double IMS_Model::getForceAngle()
+{
+  if(m_force_x == 0) {
+    if(m_force_y >= 0)
+      return(0);
+    else
+      return(180);
+  }
+
+  double radians = atan(m_force_y / m_force_x);
+  double degrees = radToHeading(radians);
+    
+  return(degrees);
+}
+
+//--------------------------------------------------------------------
+// Procedure: setForceVector(string, bool)
+
+void IMS_Model::setForceVector(string str, bool add_new_force)
+{
+  string left  = stripBlankEnds(biteString(str, ','));
+  string right = stripBlankEnds(str);
+
+  if(!isNumber(left) || !isNumber(right))
+    return;
+  
+  double ang  = angle360(atof(left.c_str()));
+  double mag  = atof(right.c_str());
+  double rads = headingToRadians(ang);
+
+  double xmps = cos(rads) * mag;
+  double ymps = sin(rads) * mag;
+
+  if(add_new_force) {
+    m_force_x += xmps;
+    m_force_y += ymps;
+  }
+  else {
+    m_force_x = xmps;
+    m_force_y = ymps;
+  }
+}
+
 //------------------------------------------------------------------------
 // Procedure: reset()
 
@@ -125,12 +182,12 @@ void IMS_Model::reset(double g_curr_time)
   m_vstate.m_dfSpeed   = 0.0;
   m_vstate.m_dfHeading = 0.0;
 
-  m_paused   = false;
-  m_push_x   = 0;
-  m_push_y   = 0;
-  m_rudder   = 0;
-  m_thrust   = 0;
-  m_elevator = 0;
+  m_paused         = false;
+  m_force_x         = 0;
+  m_force_y         = 0;
+  m_rudder         = 0;
+  m_thrust         = 0;
+  m_elevator       = 0;
 }
 
 
@@ -215,42 +272,13 @@ void IMS_Model::setPositionPairs(string str)
   }
 }
 
-
 //------------------------------------------------------------------------
-// Procedure: handleCommand
-//      Note: 
+// Procedure: printSummary()
 
-void IMS_Model::handleCommand(char key)
+void IMS_Model::printSummary()
 {
-  switch (key) {
-  case 'a':
-    m_push_y += 0.1;
-    break;
-  case 'z':
-    m_push_y -= 0.1;
-    break;
-  case 'n':
-    m_push_x -= 0.1;
-    break;
-  case 'm':
-    m_push_x += 0.1;
-    break;
-  case 'p':
-    setPaused(!m_paused);
-    break;
-  case ' ':
-    m_push_x = m_push_x / 1.5;
-    m_push_y = m_push_y / 1.5;
-
-    if(fabs(m_push_x) < 0.05)
-      m_push_x = 0;
-    if(fabs(m_push_y) < 0.05)
-      m_push_y = 0;
-    break;
-  default:
-    break;
-  }
-  cout << "force_x: " << m_push_x << " force_y: " << m_push_y << endl;
+  cout << "  F(X):" << m_force_x; 
+  cout << ", F(Y):" << m_force_y; 
+  cout << ", F(Ang):" << getForceAngle(); 
+  cout << ", F(Mag):" << getForceMagnitude() << endl; 
 }
-
-

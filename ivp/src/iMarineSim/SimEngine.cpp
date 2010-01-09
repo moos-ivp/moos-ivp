@@ -30,13 +30,13 @@ using namespace std;
 //--------------------------------------------------------------------
 // Constructor
 
-SimEngine::SimEngine(double g_push_x, double g_push_y, 
+SimEngine::SimEngine(double g_force_x, double g_force_y, 
 			  double g_float_rate)
 {
-  m_push_x  = g_push_x;
-  m_push_y  = g_push_y;
+  m_force_x  = g_force_x;
+  m_force_y  = g_force_y;
 
-  m_push_theta     = 0;
+  m_torque_theta   = 0;
   m_float_rate     = 0;
   m_top_turn_speed = 3.0; // meters per second
   m_deceleration   = 0.5; // meters per second^2
@@ -48,30 +48,24 @@ SimEngine::SimEngine(double g_push_x, double g_push_y,
 
 bool SimEngine::setParam(const string& g_param, double g_value)
 {
-  if(g_param == "top_turn_speed") {
-    if(m_top_turn_speed > 0) {
-      m_top_turn_speed = g_value;
-      return(true);
-    }
-  }
-  if(g_param == "float_rate") {
+  if((g_param == "top_turn_speed") && (m_top_turn_speed > 0)) 
+    m_top_turn_speed = g_value;
+  else if(g_param == "float_rate")
     m_float_rate = g_value;
-    return(true);
+  else if(g_param == "force_x")
+    m_force_x = g_value;
+  else if(g_param == "force_y")
+    m_force_y = g_value;
+  else if(g_param == "torque_theta")
+    m_torque_theta = g_value;
+  else if(g_param == "deceleration") {
+    if(g_value >= 0)
+      m_deceleration = g_value;
   }
-  if(g_param == "push_x") {
-    m_push_x = g_value;
-    return(true);
-  }
-  if(g_param == "push_y") {
-    m_push_y = g_value;
-    return(true);
-  }
-  if(g_param == "push_theta") {
-    m_push_theta = g_value;
-    return(true);
-  }
+  else
+    return(false);
 
-  return(false);
+  return(true);
 }
 
 
@@ -95,12 +89,10 @@ void SimEngine::propagate(VState &vstate, double velocity,
     elevator_angle = 0;
   }
 
-#if 1
-  
   double prev_velocity = vstate.m_dfSpeed; 
   //cout << "vel:" << velocity;
   //cout << "  pv:" << prev_velocity;
-  if(prev_velocity > velocity) {
+  if((prev_velocity > velocity) && (m_deceleration > 0)) {
     double mtr_sec_slower = (m_deceleration * delta_time);
     //cout << "  mss:" << mtr_sec_slower;
     //cout << "  rnv:" << velocity;
@@ -110,12 +102,10 @@ void SimEngine::propagate(VState &vstate, double velocity,
     //cout << "  anv:" << velocity;
   }
   //cout << endl;
-#endif
-
 
   double delta_theta_deg = rudder_angle * 40 * delta_time;
 
-  delta_theta_deg += (delta_time * m_push_theta);
+  delta_theta_deg += (delta_time * m_torque_theta);
 
   double pct = velocity / m_top_turn_speed;
   if(pct > 1.0)
@@ -141,8 +131,8 @@ void SimEngine::propagate(VState &vstate, double velocity,
   double ydot  = (sin_ang * vx_body) + (cos_ang * vy_body);
 
   vstate.m_dfSpeed    = hypot(xdot, ydot);
-  vstate.m_dfX       += (xdot * delta_time) + (m_push_x * delta_time);
-  vstate.m_dfY       += (ydot * delta_time) + (m_push_y * delta_time);
+  vstate.m_dfX       += (xdot * delta_time) + (m_force_x * delta_time);
+  vstate.m_dfY       += (ydot * delta_time) + (m_force_y * delta_time);
   vstate.m_dfHeading += delta_theta_rad;
   vstate.m_dfHeading  = radAngleWrap(vstate.m_dfHeading);
   vstate.m_dfTime    += delta_time;
@@ -155,11 +145,3 @@ void SimEngine::propagate(VState &vstate, double velocity,
   if(vstate.m_dfDepth < 0)
     vstate.m_dfDepth = 0;
 }
-
-
-
-
-
-
-
-

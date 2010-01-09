@@ -37,14 +37,13 @@ public:
   bool   setParam(const std::string& param, double value);
 
 protected:
-  double m_push_x;        // An external translational force
-  double m_push_y;        // An external translational force
-  double m_push_theta;    // An external rotational force
+  double m_force_x;        // An external translational force
+  double m_force_y;        // An external translational force
+
+  double m_torque_theta;   // An external rotational force
   double m_top_turn_speed;
-  double m_deceleration;  // meters/sec^2
+  double m_deceleration;   // meters/sec^2
   double m_float_rate;
 };
 
 #endif
-
-
