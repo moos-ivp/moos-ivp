@@ -63,6 +63,7 @@ class TS_MOOSApp : public CMOOSApp
   std::string               m_script_name;
   bool                      m_verbose;
   bool                      m_shuffle;
+  bool                      m_atomic;
   std::string               m_upon_awake;
   RandomVariable            m_time_warp;
   RandomVariable            m_delay_start;
@@ -80,7 +81,6 @@ class TS_MOOSApp : public CMOOSApp
 
   int      m_reset_max;
   double   m_reset_time;  // -1:none, 0:after-last, NUM:atNUM
-  
 
  protected: // State variables
   double   m_previous_time;

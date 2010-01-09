@@ -43,16 +43,17 @@ TS_MOOSApp::TS_MOOSApp()
   m_iter_char      = 'a';
   m_verbose        = true;
   m_shuffle        = true;
+  m_atomic         = false;
   m_upon_awake     = "n/a";
   m_script_name    = "unnamed";
 
   // Default values for configuration parameters.
   m_reset_max      = -1;
   m_reset_time     = -1; // -1:none, 0:after-last, NUM:atNUM
-  m_var_forward    = "TIMER_SCRIPT_FORWARD";
-  m_var_pause      = "TIMER_SCRIPT_PAUSE";
-  m_var_status     = "TIMER_SCRIPT_STATUS";
-  m_var_reset      = "TIMER_SCRIPT_RESET";
+  m_var_forward    = "UTS_FORWARD";
+  m_var_pause      = "UTS_PAUSE";
+  m_var_status     = "UTS_STATUS";
+  m_var_reset      = "UTS_RESET";
 
   m_info_buffer    = new InfoBuffer;
 
@@ -128,7 +129,11 @@ bool TS_MOOSApp::Iterate()
   // there has been script progress defined by (m_elapsed_time > 0),
   // otherwise the reset is not perform.
   // (b) if upon_awake==restart, then the script is simply restarted.
-  bool new_conditions_ok = checkConditions();
+  bool new_conditions_ok = m_conditions_ok;
+  if(!m_atomic || (m_posted_count == 0) || 
+     (m_pairs.size() == m_posted_count))
+    new_conditions_ok = checkConditions();
+
   if(new_conditions_ok && !m_conditions_ok) { // Possible awakening
     if((m_upon_awake == "reset") && (m_elapsed_time > 0))
       handleReset();
@@ -223,8 +228,8 @@ bool TS_MOOSApp::OnStartUp()
 	addNewEvent(value);
       else if(param == "paused")
 	setBooleanOnString(m_paused, value);
-      else if(param == "shuffle")
-	setBooleanOnString(m_shuffle, value);
+      else if(param == "script_atomic")
+	setBooleanOnString(m_atomic, value);
       else if(param == "verbose")
 	setBooleanOnString(m_verbose, value);
       else if(param == "upon_awake") {
