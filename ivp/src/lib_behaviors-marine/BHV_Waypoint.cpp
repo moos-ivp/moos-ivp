@@ -223,7 +223,9 @@ bool BHV_Waypoint::setParam(string param, string val)
     m_waypoint_engine.setCaptureRadius(dval);
     return(true);
   }
-  else if((param == "nm_radius") && (dval > 0)) {
+  else if((param=="nm_radius") || (param=="slip_radius")) {
+    if(dval < 0)
+      return(false);
     m_waypoint_engine.setNonmonotonicRadius(dval);
     return(true);
   }

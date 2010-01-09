@@ -85,10 +85,10 @@ BHV_Loiter::BHV_Loiter(IvPDomain gdomain) :
 //-----------------------------------------------------------
 // Procedure: setParam
 
-bool BHV_Loiter::setParam(string g_param, string g_val) 
+bool BHV_Loiter::setParam(string param, string value) 
 {
-  if(g_param == "polygon") {
-    XYPolygon new_poly = string2Poly(g_val);
+  if(param == "polygon") {
+    XYPolygon new_poly = string2Poly(value);
     if(!new_poly.is_convex())  // Should be convex - false otherwise
       return(false);
     if(new_poly.is_clockwise() != m_clockwise)
@@ -99,105 +99,104 @@ bool BHV_Loiter::setParam(string g_param, string g_val)
     m_acquire_mode  = true;
     return(true);
   }  
-  else if(g_param == "center_assign") {
-    m_center_assign  = g_val;
+  else if(param == "center_assign") {
+    m_center_assign  = value;
     m_center_pending = true;
     return(true);
   }  
-  else if(g_param == "xcenter_assign") {
-    m_center_assign  += (",x=" + g_val);
+  else if(param == "xcenter_assign") {
+    m_center_assign  += (",x=" + value);
     m_center_pending = true;
     return(true);
   }  
-  else if(g_param == "ycenter_assign") {
-    m_center_assign  += (",y=" + g_val);
+  else if(param == "ycenter_assign") {
+    m_center_assign  += (",y=" + value);
     m_center_pending = true;
     return(true);
   }  
-  else if(g_param == "center_activate") {
-    g_val = tolower(g_val);
-    if((g_val!="true")&&(g_val!="false"))
+  else if(param == "center_activate") {
+    value = tolower(value);
+    if((value!="true")&&(value!="false"))
       return(false);
-    m_center_activate = (g_val == "true");
+    m_center_activate = (value == "true");
     return(true);
   }  
-  else if(g_param == "clockwise") {
-    g_val = tolower(g_val);
-    if((g_val!="true")&&(g_val!="false"))
+  else if(param == "clockwise") {
+    bool ok = setBooleanOnString(m_clockwise, value);
+    if(!ok)
       return(false);
-    m_clockwise = (g_val == "true");
     m_loiter_engine.setClockwise(m_clockwise);
     m_waypoint_engine.setSegList(m_loiter_engine.getPolygon());
     return(true);
   }  
-  else if(g_param == "speed") {
-    double dval = atof(g_val.c_str());
-    if((dval < 0) || (!isNumber(g_val)))
+  else if(param == "speed") {
+    double dval = atof(value.c_str());
+    if((dval < 0) || (!isNumber(value)))
       return(false);
     m_desired_speed = dval;
     return(true);
   }
-  else if(g_param == "radius") {
-    double dval = atof(g_val.c_str());
-    if((dval < 0) || (!isNumber(g_val)))
+  else if((param == "radius") || (param == "capture_radius")) {
+    double dval = atof(value.c_str());
+    if((dval < 0) || (!isNumber(value)))
       return(false);
     m_waypoint_engine.setCaptureRadius(dval);
     return(true);
   }
-  else if(g_param == "acquire_dist") {
-    double dval = atof(g_val.c_str());
-    if((dval < 0) || (!isNumber(g_val)))
+  else if((param == "acquire_dist") || (param == "acquire_distance")) {
+    double dval = atof(value.c_str());
+    if((dval < 0) || (!isNumber(value)))
       return(false);
     m_acquire_dist = dval;
     return(true);
   }
-  else if(g_param == "nm_radius")  {
-    double dval = atof(g_val.c_str());
+  else if((param == "nm_radius") || (param == "slip_radius")) {
+    double dval = atof(value.c_str());
     // val=0 is ok, interpreted as inactive
-    if((dval < 0) || (!isNumber(g_val)))
+    if((dval < 0) || (!isNumber(value)))
       return(false);
     m_waypoint_engine.setNonmonotonicRadius(dval);
     return(true);
   }
-  else if(g_param == "post_suffix")  {
-    if(strContainsWhite(g_val) || (g_val == ""))
+  else if(param == "post_suffix")  {
+    if(strContainsWhite(value) || (value == ""))
       return(false);
-    m_var_suffix = "_" + toupper(g_val);
+    m_var_suffix = "_" + toupper(value);
     return(true);
   }
-  else if(g_param == "var_report")  {
-    if(strContainsWhite(g_val) || (g_val == ""))
+  else if(param == "var_report")  {
+    if(strContainsWhite(value) || (value == ""))
       return(false);
-    m_var_report = g_val;
+    m_var_report = value;
     return(true);
   }
-  else if(g_param == "var_acquire")  {
-    if(strContainsWhite(g_val) || (g_val == ""))
+  else if(param == "var_acquire")  {
+    if(strContainsWhite(value) || (value == ""))
       return(false);
-    m_var_acquire = g_val;
+    m_var_acquire = value;
     return(true);
   }
-  else if(g_param == "var_dist2poly")  {
-    if(strContainsWhite(g_val) || (g_val == ""))
+  else if(param == "var_dist2poly")  {
+    if(strContainsWhite(value) || (value == ""))
       return(false);
-    m_var_dist2poly = g_val;
+    m_var_dist2poly = value;
     return(true);
   }
-  else if(g_param == "var_index")  {
-    if(strContainsWhite(g_val) || (g_val == ""))
+  else if(param == "var_index")  {
+    if(strContainsWhite(value) || (value == ""))
       return(false);
-    m_var_index = g_val;
+    m_var_index = value;
     return(true);
   }
-  else if(g_param == "visual_hints")  {
-    vector<string> svector = parseStringQ(g_val, ',');
+  else if(param == "visual_hints")  {
+    vector<string> svector = parseStringQ(value, ',');
     unsigned int i, vsize = svector.size();
     for(i=0; i<vsize; i++) 
       handleVisualHint(svector[i]);
     return(true);
   }
-  else if(g_param == "spiral_factor")  {
-    m_loiter_engine.setSpiralFactor(atof(g_val.c_str()));
+  else if(param == "spiral_factor")  {
+    m_loiter_engine.setSpiralFactor(atof(value.c_str()));
     return(true);
   }
   return(false);
