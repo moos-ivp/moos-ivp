@@ -305,18 +305,14 @@ void PMV_MOOSApp::handleIterate(const MOOS_event & e) {
 
   vector<VarDataPair> left_pairs = m_gui->mviewer->getLeftMousePairs();
   unsigned int i, vsize = left_pairs.size();
-
+  
   for(i=0; i<vsize; i++) {
     VarDataPair pair = left_pairs[i];
     string var = pair.get_var();
     if(!pair.is_string())
       m_Comms.Notify(var, pair.get_ddata());
-    else {
-      string val = pair.get_sdata();
-      if(strContains(val, "$(VNAME)"))
-	val = findReplace(val, "$(VNAME)", vname);
-      m_Comms.Notify(var, val);
-    }
+    else
+      m_Comms.Notify(var, pair.get_sdata());
   }
 
   vector<VarDataPair> right_pairs = m_gui->mviewer->getRightMousePairs();
@@ -326,12 +322,8 @@ void PMV_MOOSApp::handleIterate(const MOOS_event & e) {
     string var = pair.get_var();
     if(!pair.is_string())
       m_Comms.Notify(var, pair.get_ddata());
-    else {
-      string val = pair.get_sdata();
-      if(strContains(val, "$(VNAME)"))
-	val = findReplace(val, "$(VNAME)", vname);
-      m_Comms.Notify(var, val);
-    }
+    else
+      m_Comms.Notify(var, pair.get_sdata());
   }
   
   handlePendingGUI();
@@ -374,11 +366,13 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
       m_gui->addReferenceVehicle(value);
     else if(strBegins(param, "left_context", false)) {
       string key = getContextKey(param);
-      m_gui->addMousePoke("left", key, value);
+      if(key != "error")
+	m_gui->addMousePoke("left", key, value);
     }
     else if(strBegins(param, "right_context", false)) {
       string key = getContextKey(param);
-      m_gui->addMousePoke("right", key, value);
+      if(key != "error")
+	m_gui->addMousePoke("right", key, value);
     }
     else if(param == "tiff_file") {
       if(!tiff_a_set)
@@ -434,22 +428,29 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
 string PMV_MOOSApp::getContextKey(string str)
 {
   string remainder;
-  if(strBegins(str, "left_context", false))  // false means case insens.
+  string null_key = "any_left";
+  if(strBegins(str, "left_context", false)) // false means case insens.
     remainder = str.c_str()+12;
-  else if(strBegins(str, "right_context", false))
+  else if(strBegins(str, "right_context", false)) {
     remainder = str.c_str()+13;
+    null_key = "any_right";
+  }
   else
-    return("");
+    return("error");
 
   unsigned int rsize = remainder.size();
-  if(rsize <= 2)
-    return("");
+  if(rsize == 0)
+    return(null_key);
 
-  if(remainder.at(0) != '[')
-    return("");
-  if(remainder.at(remainder.size()-1) != ']')
-    return("");
+  if(rsize == 1)
+    return("error");
   
-  string key = remainder.substr(1, remainder.size()-2);
-  return(key);
+  if((remainder.at(0) != '[') || (remainder.at(rsize-1) != ']'))
+    return("error");
+
+  string key = remainder.substr(1, rsize-2);
+  if(key == "")
+    return(null_key);
+  else
+    return(key);
 }

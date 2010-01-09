@@ -606,33 +606,49 @@ void PMV_GUI::addMousePoke(string side, string key, string vardata_pair)
       unsigned int index = m_left_mouse_keys.size()-1;
       string label = "Mouse-Context/Left/";
       label += (truncString(key, 40, "middle"));
-      mbar->add(label.c_str(), 0, 
-		(Fl_Callback*)PMV_GUI::cb_LeftContext, 
-		(void*)index, FL_MENU_RADIO|FL_MENU_VALUE);
+
+      // If this was the first left context mode, make it the active
+      if(m_left_mouse_keys.size() == 2) {
+	mviewer->setLeftMouseKey(key);
+	mbar->add(label.c_str(), 0, 
+		  (Fl_Callback*)PMV_GUI::cb_LeftContext, 
+		  (void*)index, FL_MENU_RADIO|FL_MENU_VALUE);
+      }
+      else {
+	mbar->add(label.c_str(), 0, 
+		  (Fl_Callback*)PMV_GUI::cb_LeftContext, 
+		  (void*)index, FL_MENU_RADIO);
+      }
       mbar->redraw();
     }
-
-    // If this was the first left context mode, make it the active
-    if(m_left_mouse_keys.size() == 1)
-      mviewer->setLeftMouseKey(key);
-
   }
   else if(side == "right") {
     mviewer->addMousePoke(key, vardata_pair);
     if(!vectorContains(m_right_mouse_keys, key)) {
+      if(m_right_mouse_keys.size() == 0) {
+	m_right_mouse_keys.push_back("no-action");
+	mbar->add("Mouse-Context/Right/no-action", 0, 
+		  (Fl_Callback*)PMV_GUI::cb_RightContext, (void*)0, 
+		  FL_MENU_RADIO);
+      }
       m_right_mouse_keys.push_back(key);
       unsigned int index = m_right_mouse_keys.size()-1;
       string label = "Mouse-Context/Right/";
       label += (truncString(key, 40, "middle"));
-      mbar->add(label.c_str(), 0, 
-		(Fl_Callback*)PMV_GUI::cb_RightContext, (void*)index, 0);
+      // If this was the first right context mode, make it the active
+      if(m_right_mouse_keys.size() == 2) {
+	mviewer->setRightMouseKey(key);
+	mbar->add(label.c_str(), 0, 
+		  (Fl_Callback*)PMV_GUI::cb_RightContext, 
+		  (void*)index, FL_MENU_RADIO|FL_MENU_VALUE);
+      }
+      else {
+	mbar->add(label.c_str(), 0, 
+		  (Fl_Callback*)PMV_GUI::cb_RightContext, 
+		  (void*)index, FL_MENU_RADIO);
+      }
       mbar->redraw();
     }
-
-    // If this was the first right context mode, make it the active
-    if(m_right_mouse_keys.size() == 1)
-      mviewer->setRightMouseKey(key);
-
   }
 }
 

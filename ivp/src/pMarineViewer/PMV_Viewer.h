@@ -67,6 +67,7 @@ class PMV_Viewer : public MarineViewer
 
   std::string m_reference_point;
   std::string m_reference_bearing;
+  double      m_stale_report_thresh;
 
   // Member variables for holding scoped info
   std::vector<std::string> m_var_names;

@@ -32,20 +32,22 @@ using namespace std;
 PMV_Viewer::PMV_Viewer(int x, int y, int w, int h, const char *l)
   : MarineViewer(x,y,w,h,l)
 {
-  m_var_index = -1;
+  m_var_index      = -1;
   m_var_index_prev = -1;
-  m_centric_view = "";
+  m_centric_view   = "";
   m_centric_view_sticky = true;
-  m_reference_point   = "datum";
-  m_reference_bearing = "relative";
+  m_reference_point     = "datum";
+  m_reference_bearing   = "relative";
+  m_stale_report_thresh = 5;
   m_mouse_x   = 0;
   m_mouse_y   = 0;
   m_mouse_lat = 0;
   m_mouse_lon = 0;
-
-  VarDataPair lft_pair("MVIEWER_LCLICK", "x=$(XPOS),y=$(YPOS),vname=$(VNAME)");
+  
+  string str = "x=$(XPOS),y=$(YPOS),lat=$(LAT),lon=$(LON),vname=$(VNAME)";
+  VarDataPair lft_pair("MVIEWER_LCLICK", str); 
+  VarDataPair rgt_pair("MVIEWER_RCLICK", str);
   lft_pair.set_key("any_left");
-  VarDataPair rgt_pair("MVIEWER_RCLICK", "x=$(XPOS),y=$(YPOS),vname=$(VNAME)");
   rgt_pair.set_key("any_right");
   m_var_data_pairs_all.push_back(lft_pair);
   m_var_data_pairs_all.push_back(rgt_pair);
@@ -181,6 +183,11 @@ bool PMV_Viewer::setParam(string param, string value)
   else if(param == "new_report_variable") {
     handled = m_vehiset.setParam(param, value);
   }
+  else if(param == "stale_report_thresh") {
+    double dval = atof(value.c_str());
+    if(isNumber(value) && (dval > 0))
+      m_stale_report_thresh = dval;
+  }
   else if(param == "view_marker") {
     handled = m_vmarkers.addVMarker(value, m_geodesy);
   }
@@ -265,9 +272,9 @@ void PMV_Viewer::drawVehicle(string vname, bool active, string vehibody)
     vname_aug += " (depth=" + str_depth + ")";
   }
 
-  // If the NODE_REPORT is old, disregard the vname_mode and indicated
-  // staleness
-  if(age_report > 3) {
+  // If the NODE_REPORT is old, disregard the vname_mode and instead 
+  // indicate the staleness
+  if(age_report > m_stale_report_thresh) {
     string age_str = doubleToString(age_report,0);
     vname_aug = vname + "(Stale Report - " + age_str + ")";
   } 
@@ -372,6 +379,10 @@ void PMV_Viewer::handleLeftMouse(int vx, int vy)
 	    str = findReplace(str, "$(LAT)", doubleToString(dlat,8));
 	  if(strContains(str, "$(LON)")) 
 	    str = findReplace(str, "$(LON)", doubleToString(dlon,8));
+	  if(strContains(str, "$(VNAME)")) {
+	    string vname = getStringInfo("active_vehicle_name");
+	    str = findReplace(str, "$(VNAME)", vname);
+	  }
 	  pair.set_sdata(str);
 	}
 	m_var_data_pairs_lft.push_back(pair);
