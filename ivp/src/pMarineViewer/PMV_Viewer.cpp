@@ -26,6 +26,7 @@
 #include "MBUtils.h"
 #include "AngleUtils.h"
 #include "ColorParse.h"
+#include <cstdlib>
 
 using namespace std;
 
