@@ -51,16 +51,12 @@ bool IMS_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
     CMOOSMsg &Msg = *p;
     string key = Msg.m_sKey;
     
-    double dfTimeDiff = curr_moos_time - Msg.m_dfTime;
-
     if(m_model) {
-      if((key == "DESIRED_THRUST") && (dfTimeDiff <= 1.0)) {
-	//cout << "Desired_thrust: " << Msg.m_dfVal << endl;
+      if(key == "DESIRED_THRUST")
 	m_model->setThrust(Msg.m_dfVal);
-      }
-      else if((key == "DESIRED_RUDDER")  && (dfTimeDiff <= 1.0))
+      else if(key == "DESIRED_RUDDER")
 	m_model->setRudder(Msg.m_dfVal);
-      else if((key == "DESIRED_ELEVATOR")  && (dfTimeDiff <= 1.0))
+      else if(key == "DESIRED_ELEVATOR")
 	m_model->setElevator(Msg.m_dfVal);
       else if((key == "SIM_PAUSED") || (key == "IMS_SIM_PAUSED"))
 	m_model->setPaused(toupper(Msg.m_sVal) == "TRUE");
