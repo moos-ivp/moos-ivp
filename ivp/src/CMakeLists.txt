@@ -141,7 +141,7 @@ IF (${WIN32})
    SET(IVP_GUI_LIBS
       lib_ipfview
       lib_marineview
-      lib_fltk-1.1.7
+      lib_fltk-1.1.10
       lib_tiff
       )
 ELSE (${WIN32})
@@ -149,7 +149,7 @@ ELSE (${WIN32})
    SET(IVP_GUI_LIBS
       lib_ipfview
       lib_marineview
-      lib_fltk-1.1.7
+      lib_fltk-1.1.10
       )
 ENDIF (${WIN32})
 
@@ -174,7 +174,7 @@ ENDIF("${IVP_LIB_DIRECTORY}" STREQUAL "")
 
 FOREACH(L ${IVP_LIBS_TO_BUILD} )
 # message("D: ${L} : IVP_LIB_DIRECTORY = ${IVP_LIB_DIRECTORY}")
-  # We're actually fighting the lib_fltk-1.1.7 CMake files for control over this
+  # We're actually fighting the lib_fltk-1.1.10 CMake files for control over this
   # detail, so we have to reset it after adding the FLTK subdirectory.
   
   SET( LIBRARY_OUTPUT_PATH "${IVP_LIB_DIRECTORY}" CACHE PATH "" FORCE )  # For CMake 2.4
