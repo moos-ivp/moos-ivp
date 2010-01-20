@@ -251,7 +251,7 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
 	m_gui->mviewer->updateScopeVariable(key, sval, mtime, source);
 	scope_handled = true;
       }
-	}
+    }
 
     bool handled = m_gui->mviewer->setParam(key, sval);
     if(!handled && (key == "PK_SOL")) {
@@ -265,6 +265,7 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
       MOOSTrace("?");
     }
     
+#if 0
     if(key == "VIEW_POLYGON")           MOOSTrace("P");
     else if(key == "VIEW_SEGLIST")      MOOSTrace("S");
     else if(key == "VIEW_POINT")        MOOSTrace(".");
@@ -274,7 +275,18 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
     else if(key == "GRID_CONFIG")       MOOSTrace("X");
     else if(key == "GRID_DELTA")        MOOSTrace("G");
     else if(key == "VIEW_MARKER")       MOOSTrace("M");
-
+#endif
+#if 1
+    if(key == "VIEW_POLYGON")           cout << "P";
+    else if(key == "VIEW_SEGLIST")      cout << "S";
+    else if(key == "VIEW_POINT")        cout << ".";
+    else if(key == "GRID_CONFIG")       cout << "X";
+    else if(key == "NODE_REPORT")       cout << "*";
+    else if(key == "NODE_REPORT_LOCAL") cout << "*";
+    else if(key == "GRID_CONFIG")       cout << "X";
+    else if(key == "GRID_DELTA")        cout << "G";
+    else if(key == "VIEW_MARKER")       cout << "M";
+#endif
     if(handled)
       handled_msgs++;
   }
