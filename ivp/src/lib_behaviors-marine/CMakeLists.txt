@@ -38,3 +38,9 @@ SET(SRC
 )
 
 ADD_LIBRARY(behaviors-marine ${SRC})
+
+TARGET_LINK_LIBRARIES(behaviors-marine
+   mbutil
+   behaviors
+   geometry
+   )
