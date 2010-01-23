@@ -51,7 +51,7 @@
 
 class InfoBuffer {
 public:
-  InfoBuffer() {};
+  InfoBuffer()  {m_curr_time_utc=0;};
   ~InfoBuffer() {};
 
 public: // virtuals defined
