@@ -70,6 +70,7 @@ HelmIvP::HelmIvP()
   m_warning_count  = 0;
   m_last_heartbeat = 0;
   m_logger_present = false;
+  m_on_new_mail    = false;
 
   m_use_beta_engine = false;
 
@@ -130,6 +131,8 @@ void HelmIvP::cleanup()
 
 bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
 {
+  m_on_new_mail = true;
+
   // The curr_time is set in *both* the OnNewMail and Iterate functions.
   // In the OnNewMail function so the most up-to-date time is available
   // when processing mail.
@@ -153,7 +156,6 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
 	  m_has_control = true;
 	  MOOSTrace("\n");
 	  MOOSDebugWrite("pHelmIvP Control Is On");
-	  m_info_buffer->setCurrTime(m_curr_time);
 	}
 	else if(MOOSStrCmp(msg.m_sVal, "TRUE")) {
 	  if(m_allow_overide) {
@@ -211,6 +213,14 @@ bool HelmIvP::Iterate()
   postEngagedStatus();
   postCharStatus();
   
+  // If the curr_time is not set in the OnNewMail function (possibly 
+  // because there was no mail in the queue), set the current time now.
+  if(!m_on_new_mail) {
+    m_curr_time = MOOSTime();
+    m_info_buffer->setCurrTime(m_curr_time);
+  }
+  m_on_new_mail = false;
+
   if(!m_logger_present) {
     m_outgoing_strings.clear();
     m_outgoing_doubles.clear();
@@ -220,14 +230,6 @@ bool HelmIvP::Iterate()
     postAllStop();
     return(false);
   }
-
-  // The curr_time is set in *both* the OnNewMail and Iterate functions.
-  // In the OnNewMail function so the most up-to-date time is available
-  // when processing mail.
-  // In the Iterate method to ensure behaviors are not iterated with an
-  // un-initialized timestamp on startup, and in case there is no Mail 
-  m_curr_time = MOOSTime();
-  m_info_buffer->setCurrTime(m_curr_time);
 
   HelmReport helm_report;
   if(m_use_beta_engine)

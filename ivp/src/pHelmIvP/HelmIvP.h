@@ -124,6 +124,7 @@ protected:
   // filters are cleared on each iteration.
   bool m_logger_present;
 
+  bool m_on_new_mail;
 };
 
 #endif 
