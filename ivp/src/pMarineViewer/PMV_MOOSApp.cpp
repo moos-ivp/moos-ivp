@@ -35,7 +35,7 @@ PMV_MOOSApp::PMV_MOOSApp()
   m_right_click_str = "null"; 
 
   m_pending_moos_events = 0;
-  m_verbose         = false;
+  m_verbose         = true;
   m_gui             = 0; 
   m_start_time      = 0;
   m_lastredraw_time = 0;
@@ -60,7 +60,7 @@ bool PMV_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
   e.moos_time = MOOSTime();
 
   MOOSMSG_LIST::iterator p;
-  for(p = NewMail.begin();p!=NewMail.end();p++) {
+  for(p=NewMail.begin(); p!=NewMail.end(); p++) {
     CMOOSMsg &Msg = *p;
     e.mail.push_back(MOOS_event::Mail_message(Msg));
   }
@@ -169,14 +169,15 @@ bool PMV_MOOSApp::receivePK_SOL(string sval)
 void PMV_MOOSApp::registerVariables()
 {
   m_Comms.Register("PK_SOL", 0);
-  m_Comms.Register("GRID_CONFIG",      0);
-  m_Comms.Register("GRID_DELTA",       0);
-  m_Comms.Register("VIEW_POLYGON",     0);
-  m_Comms.Register("VIEW_POINT",       0);
-  m_Comms.Register("VIEW_CIRCLE",      0);
-  m_Comms.Register("VIEW_SEGLIST",     0);
-  m_Comms.Register("TRAIL_RESET",      0);
-  m_Comms.Register("VIEW_MARKER",      0);
+  m_Comms.Register("GRID_CONFIG",  0);
+  m_Comms.Register("GRID_DELTA",   0);
+  m_Comms.Register("VIEW_POLYGON", 0);
+  m_Comms.Register("VIEW_POINT",   0);
+  m_Comms.Register("VIEW_CIRCLE",  0);
+  m_Comms.Register("VIEW_SEGLIST", 0);
+  m_Comms.Register("TRAIL_RESET",  0);
+  m_Comms.Register("VIEW_MARKER",  0);
+  m_Comms.Register("BEARING_LINE", 0);
 
   unsigned int i, vsize = m_scope_vars.size();
   for(i=0; i<vsize; i++)
@@ -286,6 +287,7 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
     else if(key == "GRID_CONFIG")       cout << "X";
     else if(key == "GRID_DELTA")        cout << "G";
     else if(key == "VIEW_MARKER")       cout << "M";
+    cout << flush;
 #endif
     if(handled)
       handled_msgs++;

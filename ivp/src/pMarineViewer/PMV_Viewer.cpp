@@ -26,6 +26,7 @@
 #include "MBUtils.h"
 #include "AngleUtils.h"
 #include "ColorParse.h"
+#include "BearingLine.h"
 #include <cstdlib>
 
 using namespace std;
@@ -237,6 +238,8 @@ void PMV_Viewer::drawVehicle(string vname, bool active, string vehibody)
   if(!opose.isValid())
     return;
 
+  BearingLine bng_line = m_vehiset.getBearingLine(vname);
+
   // If there has been no explicit mapping of color to the given vehicle
   // name then the "inactive_vehicle_color" will be returned below.
   ColorPack vehi_color;
@@ -277,11 +280,11 @@ void PMV_Viewer::drawVehicle(string vname, bool active, string vehibody)
   // indicate the staleness
   if(age_report > m_stale_report_thresh) {
     string age_str = doubleToString(age_report,0);
-    vname_aug = vname + "(Stale Report - " + age_str + ")";
+    vname_aug = vname + "(Stale Report: " + age_str + ")";
   } 
 
-  drawCommonVehicle(vname_aug, opose, vehi_color, vname_color, vehibody, 
-		    shape_length, vname_draw, 1);
+  drawCommonVehicle(vname_aug, opose, bng_line, vehi_color, vname_color, 
+		    vehibody, shape_length, vname_draw, 1);
 }
 
 //-------------------------------------------------------------
