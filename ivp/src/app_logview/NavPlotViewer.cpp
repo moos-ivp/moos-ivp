@@ -430,7 +430,10 @@ void NavPlotViewer::drawNavPlot(unsigned int index)
     vehi_name += " (depth=" + str_depth + ")";
   }
 
-  drawCommonVehicle(vehi_name, opose, vehi_color, vname_color, 
+  // We do not handle bearing reports - yet.
+  BearingLine bng_line;
+
+  drawCommonVehicle(vehi_name, opose, bng_line, vehi_color, vname_color, 
 		    vehi_type, vehi_length, vname_draw);
 }
 
