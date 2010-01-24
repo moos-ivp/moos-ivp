@@ -1,5 +1,86 @@
 
 =====================================================================
+Post 4.0.1   Nov 17th 2009 
+Pre  ???
+=====================================================================
+
+o Jan 23rd: Minor enhancement: pMarineViewer now accepts BEARING_LINE
+  artifacts to render a bearing line for a given vehicle, presumably 
+  to render directional sensor information.
+
+o Jan 22nd: Minor bug fix: Modified HelmIvP to update the info_buffer
+  timestamp only once on each iteration. This fixes a bug where calls
+  to getBufferTimeValue(varname) were returning nonzero time durations
+  even if a variable was updated on the current iteration. 
+
+o Jan 9th: Minor enhancement: uTimerScript scripts may be designated
+  as atomic (script_atomic = true).
+
+o Jan 9th: Minor enhancement: iMarinesim accepts a IMS_DECELERATION
+  parameter for adjusting how the vehicle decelerates through the
+  water.
+
+o Jan 9th: Interface change iMarineSim: The default prefix to
+  variables published changed from MARINESIM_ to IMS_. For example
+  MARINESIM_X would now be published as IMS_X. When iMarineSim is used
+  as a proxy for navigation generating NAV_* data, it is still
+  recommended to explicitly set the iMarineSim prefix to NAV_ in the
+  config block.
+
+o Jan 9th: Signficant enhancement: iMarineSim accepts IMS_FORCE_VECTOR
+  and IMS_FORCE_VECTOR_ADD for accepting outside influence in
+  generating simulated force vectors simulating for example wind
+  gusts. See documentation for uTimerScript.
+
+o Jan 9th: Minor enhancement: Added slip_radius as an alternative
+  parameter designation in place of nm_radius in the BHV_Waypoint
+  behavior.
+
+o Jan 9th: Significant enhancement: Augmented pMarineViewer to allow
+  for configuration of left and right mouse clicks with macro
+  expansion. See the helm documentation looking for the MOOS variable
+  MVIEWER_LCLICK in the index. Also see for example the s4_delta
+  example mission:
+
+  left_context[survey-point] = SURVEY_UPDATES = points = vname=$(VNAME), \
+    x=$(XPOS), y=$(YPOS), format=lawnmower, label=delta, width=70,       \
+    height=30, lane_width=8, rows=north-south, degs=80
+  left_context[survey-point] = SURVEY = true
+
+o Jan 9th: Minor Enhancement: Added "stale_report_thresh" parameter to
+  pMarineViewer to allow for configuration greater than the default 5
+  seconds before "STALE-REPORT" message is displayed.
+
+o Dec 31st: Minor enhancement: Augmented .bhv file syntax to accept
+  multiple initializations on a single line, e.g. "initialize
+  FOO=true, BAR=false". The file lib_helmivp/PopulatorBehaviorSet.cpp
+  was edited.
+
+o Dec 17th: Minor bug fix: The WaypointEngine, used by BHV_Waypoint, 
+  should have been resetting its cycle_count member variable to zero
+  on each resetting of the waypoint pattern. The count is really only
+  relevant to a given pattern.
+
+o Dec 13th: Minor enhancement: Altered pMarineViewer handling of left
+  and right mouse click context handling. Much more flexible in the
+  way MOOS variables are poked on the event of a left/right click. See
+  example mission s3_charlie.
+
+o Dec 12th: Moved the InfoBuffer class to lib_logic from lib_behaviors
+  so other applications using logic utilities will have access to the 
+  InfoBuffer class (which facilitates the use of the logic utilities
+  in an application that uses logic utilities).
+
+o Dec 11th: Minor Enhancement: Allowed BHV_Loiter to accept a visual
+  hint defining what polygon label displayed. If no label, it defaults
+  to the vehicle_name+_+behavior_name.
+
+o Dec 10th: Minor Enhancement: augmented iMarineSim to accept startpos
+  configuration strings in the form of "x=val, y=val, hdg=val,
+  spd=val, dep=val" in addition to the prior allowed formats.
+
+
+=====================================================================
 Post 4.0   Nov 17th 2009 
 Pre  4.0.1 Dec 3rd  2009 MOOS r.2300, MOOS-IvP r.2406
 =====================================================================
