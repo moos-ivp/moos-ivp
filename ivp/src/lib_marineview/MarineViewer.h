@@ -44,6 +44,7 @@
 #include "VPlug_DropPoints.h"
 #include "VPlug_Markers.h"
 #include "ColorPack.h"
+#include "BearingLine.h"
 
 class MarineViewer : public Fl_Gl_Window
 {
@@ -83,6 +84,7 @@ protected:
 		    double thickness=0, double scale=1);
   void   drawCommonVehicle(const std::string& vname, 
 			   const ObjectPose&, 
+			   const BearingLine&, 
 			   const ColorPack& body_color,
 			   const ColorPack& vname_color,
 			   const std::string& body, double shape_length,

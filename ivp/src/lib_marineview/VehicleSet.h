@@ -15,6 +15,7 @@
 #include "ObjectPose.h"
 #include "ColoredPoint.h"
 #include "ColorPack.h"
+#include "BearingLine.h"
 
 class VehicleSet
 {
@@ -49,14 +50,16 @@ class VehicleSet
   std::string getActiveVehicle() const  {return(m_vehicles_active_name);};
   std::string getCenterVehicle() const  {return(m_vehicles_center_name);};
 
-  CPList     getVehiHist(const std::string&   s="active") const;   
-  ObjectPose getObjectPose(const std::string& s="active") const;
+  CPList      getVehiHist(const std::string&   s="active") const;   
+  ObjectPose  getObjectPose(const std::string& s="active") const;
+  BearingLine getBearingLine(const std::string& s="active") const;
 
   bool  hasVehiName(const std::string&) const;
   bool  getWeightedCenter(double& x, double&y) const;
 
  private:
-  bool  updateVehiclePosition(const std::string& ais_report); 
+  bool  updateVehiclePosition(const std::string& node_report); 
+  bool  updateVehicleBearingLine(const std::string& bearing_line); 
 
  private:
   // Mapping from Vehicle Name to Vehicle Position
@@ -67,10 +70,13 @@ class VehicleSet
   std::map<std::string, CPList>       m_hist_map;
   // Mapping from Vehicle Name to Vehicle Body Type
   std::map<std::string, std::string>  m_vbody_map;
-  // Mapping from Vehicle Name to Vehicle Helm Mode (in AIS_REPORT)
+  // Mapping from Vehicle Name to Vehicle Helm Mode (in NODE_REPORT)
   std::map<std::string, std::string>  m_vmode_map;
-  // Mapping from Vehicle Name to Time of last AIS report
+  // Mapping from Vehicle Name to Time of last node report
   std::map<std::string, double>       m_ais_map;
+
+  // Mapping from Vehicle Name to Bearing Lines
+  std::map<std::string, BearingLine> m_bearing_map;
 
   std::string m_vehicles_active_name;
   std::string m_vehicles_center_name;

@@ -35,6 +35,7 @@
 #include <math.h>
 #include "MarineViewer.h"
 #include "MBUtils.h"
+#include "GeomUtils.h"
 #include "FColorMap.h"
 #include "ColorParse.h"
 #include "Shape_Ship.h"
@@ -49,6 +50,7 @@
 #include "Shape_Square.h"
 #include "Shape_Kelp.h"
 #include "XYFormatUtilsPoly.h"
+#include "BearingLine.h"
 
 using namespace std;
 
@@ -520,6 +522,7 @@ void MarineViewer::drawGLPoly(double *points, int numPoints,
 
 void MarineViewer::drawCommonVehicle(const string& vname, 
 				     const ObjectPose& opose, 
+				     const BearingLine& bng_line, 
 				     const ColorPack& body_color,
 				     const ColorPack& vname_color,
 				     const string& vehibody, 
@@ -566,7 +569,7 @@ void MarineViewer::drawCommonVehicle(const string& vname,
   // Then when we know what kind of vehicle we're drawing, adjust the 
   // factor accordingly.
   double factor = m_back_img.get_pix_per_mtr();
-
+  
   if(vehibody == "kayak") {
     if(shape_length > 0)
       factor *= (shape_length / g_kayakLength);
@@ -641,6 +644,30 @@ void MarineViewer::drawCommonVehicle(const string& vname,
     buff[slen] = '\0';
     gl_draw(buff, slen);
     delete [] buff;
+  }
+
+  if(bng_line.isValid()) {
+    double pix_per_mtr = m_back_img.get_pix_per_mtr();
+    double bearing = bng_line.getBearing();
+    double range   = bng_line.getRange() * pix_per_mtr;
+    double lwidth  = bng_line.getVectorWidth();
+    bool absolute  = bng_line.isBearingAbsolute();
+    string bcolor  = bng_line.getVectorColor();
+    ColorPack vpack(bcolor);
+
+    double bx, by;
+    projectPoint(bearing, range, 0, 0, bx, by);
+
+    if(absolute)
+      glRotatef(opose.getTheta(),0,0,1);  
+
+    glLineWidth(lwidth);
+    glBegin(GL_LINE_STRIP);
+    glColor3f(vpack.red(), vpack.grn(), vpack.blu());
+    glVertex2f(0, 0);
+    glVertex2f(bx, by);
+    glEnd();
+    glLineWidth(1);
   }
 
   glPopMatrix();

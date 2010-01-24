@@ -29,12 +29,13 @@ class ObjectPose
   ObjectPose() 
     {m_valid=false; m_ll_set=false;};
   ObjectPose(double x, double y, double theta, 
-	     double spd, double depth=0) {
-    m_x=x; 
-    m_y=y; 
-    m_theta=theta; 
-    m_speed=spd; 
-    m_depth=depth; 
+	     double speed, double depth=0) {
+    m_x = x; 
+    m_y = y; 
+    m_theta  = theta; 
+    m_speed  = speed; 
+    m_depth  = depth; 
+    m_ll_set = false;
     if(m_depth >= 0)
       m_valid=true;
   };

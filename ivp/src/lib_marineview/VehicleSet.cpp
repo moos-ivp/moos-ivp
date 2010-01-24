@@ -58,7 +58,9 @@ bool VehicleSet::setParam(string param, string value)
   }
 
   if(vehicle_report)
-    handled  = updateVehiclePosition(value);
+    handled = updateVehiclePosition(value);
+  else if(param == "bearing_line")
+    handled = updateVehicleBearingLine(value);
   else if(param == "node_report_variable") {
     if(!strContainsWhite(value))
       m_node_report_vars.push_back(value);
@@ -341,6 +343,36 @@ ObjectPose VehicleSet::getObjectPose(const string& given_vname) const
 }
 
 //-------------------------------------------------------------
+// Procedure: getBearingLine
+
+BearingLine VehicleSet::getBearingLine(const string& given_vname) const
+{
+  string vname = given_vname;
+  if(vname == "active")
+    vname = m_vehicles_active_name;
+
+  BearingLine bearing_line;
+  BearingLine invalid_line;
+  map<string, BearingLine>::const_iterator p;
+  p = m_bearing_map.find(vname);
+  if(p != m_bearing_map.end())
+    bearing_line = p->second;
+
+  if(!bearing_line.isValid())
+    return(invalid_line);
+
+  double time_limit = bearing_line.getTimeLimit();
+  if(time_limit == -1)
+    return(bearing_line);
+
+  double time_stamp = bearing_line.getTimeStamp();
+  if((m_curr_time - time_stamp) > time_limit)
+    return(invalid_line);
+  else
+    return(bearing_line);
+}
+
+//-------------------------------------------------------------
 // Procedure: getVehiHist
 
 CPList VehicleSet::getVehiHist(const string& given_vname) const
@@ -400,12 +432,13 @@ bool VehicleSet::updateVehiclePosition(const string& node_report)
   double hding = 0;
   double depth = 0;
   double utime = 0;
+  double mtime = 0;
   double lat   = 0;
   double lon   = 0;
   double vlen  = 0;
-  string vname = "";
-  string vtype = "";
-  string vmode = "";
+  string vname   = "";
+  string vtype   = "";
+  string vmode   = "";
   bool b_vname = tokParse(node_report, "NAME",  ',', '=', vname);
   bool b_vtype = tokParse(node_report, "TYPE",  ',', '=', vtype);
   bool b_pos_x = tokParse(node_report, "X",     ',', '=', pos_x);
@@ -414,7 +447,7 @@ bool VehicleSet::updateVehiclePosition(const string& node_report)
   bool b_hding = tokParse(node_report, "HDG",   ',', '=', hding);
   bool b_depth = tokParse(node_report, "DEPTH", ',', '=', depth);
   bool b_utime = tokParse(node_report, "UTC_TIME", ',', '=', utime);
-  bool b_mtime = tokParse(node_report, "MOOS_TIME", ',', '=', utime);
+  bool b_mtime = tokParse(node_report, "MOOSDB_TIME", ',', '=', mtime);
   bool b_lat   = tokParse(node_report, "LAT", ',', '=', lat);
   bool b_lon   = tokParse(node_report, "LON", ',', '=', lon);
   bool b_vlen  = tokParse(node_report, "LENGTH", ',', '=', vlen);
@@ -466,6 +499,7 @@ bool VehicleSet::updateVehiclePosition(const string& node_report)
   m_vlen_map[vname]  = vlen; 
   m_pos_map[vname]   = opose;
   m_ais_map[vname]   = utime;
+
   if(b_vmode)
     m_vmode_map[vname] = vmode;
 
@@ -484,6 +518,59 @@ bool VehicleSet::updateVehiclePosition(const string& node_report)
   }
 
   m_vbody_map[vname] = tolower(stripBlankEnds(vtype));
+  return(true);
+}
+
+//-------------------------------------------------------------
+// Procedure: updateVehicleBearingLine
+//
+//     BEARING_LINE = "vname=alpha, bearing=124, vector_length=40, 
+//         vector_color=red, vector_time=nolimit" 
+
+
+bool VehicleSet::updateVehicleBearingLine(const string& str) 
+{
+  BearingLine bearing_line;
+  bearing_line.setTimeStamp(m_curr_time);
+
+  string vname;
+
+  vector<string> svector = parseString(str, ',');
+  unsigned int i, vsize = svector.size();
+  for(i=0; i<vsize; i++) {
+    string left  = tolower(stripBlankEnds(biteString(svector[i], '=')));
+    string right = stripBlankEnds(svector[i]);
+    if(left == "vname")
+      vname = right;
+    else if((left == "bearing") && isNumber(right))
+      bearing_line.setBearing(atof(right.c_str()));
+    else if((left == "range") && isNumber(right))
+      bearing_line.setRange(atof(right.c_str()));
+    else if((left == "vector_width") && isNumber(right))
+      bearing_line.setVectorWidth(atof(right.c_str()));
+    else if((left == "time_stamp") && isNumber(right))
+      bearing_line.setTimeStamp(atof(right.c_str()));
+    else if((left == "time_limit") && isNumber(right))
+      bearing_line.setTimeLimit(atof(right.c_str()));
+    else if((left == "vector_color") && isColor(right))
+      bearing_line.setVectorColor(right);
+    else if(left == "label")
+      bearing_line.setLabel(right);
+    else if(left == "bearing_absolute") {
+      if(tolower(right) == "true")
+	bearing_line.setBearingAbsolute(true);
+      else if(tolower(right) == "false")
+	bearing_line.setBearingAbsolute(false);
+    }
+  }
+
+  if(vname == "")
+    return(false);
+
+  if(!bearing_line.isValid())
+    return(false);
+    
+  m_bearing_map[vname] = bearing_line; 
   return(true);
 }
 
