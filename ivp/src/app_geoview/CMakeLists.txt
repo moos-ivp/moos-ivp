@@ -43,3 +43,9 @@ endif (${WIN32})
 		  )
 	  ENDIF (${APPLE})
 
+#Install Targets
+INSTALL(TARGETS geoview
+  RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
+)
+
+

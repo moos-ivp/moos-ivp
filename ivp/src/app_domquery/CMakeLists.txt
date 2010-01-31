@@ -24,3 +24,9 @@ TARGET_LINK_LIBRARIES(domquery
   ivpbuild
   ivpcore
   ${SYSTEM_LIBS})
+
+#Install Targets
+INSTALL(TARGETS domquery
+  RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
+)
+

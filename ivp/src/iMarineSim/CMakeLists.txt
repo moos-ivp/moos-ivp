@@ -30,3 +30,9 @@ TARGET_LINK_LIBRARIES(iMarineSim
   mbutil
   geometry 
   ${SYSTEM_LIBS})
+
+# Install Targets
+INSTALL(TARGETS iMarineSim
+  RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
+)
+

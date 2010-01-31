@@ -28,3 +28,8 @@ TARGET_LINK_LIBRARIES(pMarinePID
   mbutil
   geometry 
   ${SYSTEM_LIBS})
+
+# Install Targets
+INSTALL(TARGETS pMarinePID
+  RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
+)

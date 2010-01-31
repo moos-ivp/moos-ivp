@@ -29,3 +29,8 @@ TARGET_LINK_LIBRARIES(uTimerScript
    logic
    ${SYSTEM_LIBS})
 
+# Install Targets
+INSTALL(TARGETS uTimerScript
+  RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
+)
+

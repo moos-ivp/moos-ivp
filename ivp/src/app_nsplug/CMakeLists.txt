@@ -22,3 +22,9 @@ ADD_EXECUTABLE(nsplug ${SRC})
 TARGET_LINK_LIBRARIES(nsplug
   mbutil
   ${SYSTEM_LIBS})
+
+#Install Targets
+INSTALL(TARGETS nsplug
+  RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
+)
+

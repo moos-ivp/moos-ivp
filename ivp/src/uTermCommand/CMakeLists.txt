@@ -26,3 +26,8 @@ TARGET_LINK_LIBRARIES(uTermCommand
   genutil
   ${SYSTEM_LIBS})
 
+# Install Targets
+INSTALL(TARGETS uTermCommand
+  RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
+)
+

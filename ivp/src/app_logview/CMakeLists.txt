@@ -48,3 +48,10 @@ TARGET_LINK_LIBRARIES(logview
                LINK_FLAGS "-Wl,-dylib_file,/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib:/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib"
          )
    ENDIF (${APPLE})
+
+#Install Targets
+INSTALL(TARGETS logview
+  RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
+)
+
+

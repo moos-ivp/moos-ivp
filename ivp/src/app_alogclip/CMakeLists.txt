@@ -19,3 +19,9 @@ ADD_EXECUTABLE(alogclip ${SRC})
 TARGET_LINK_LIBRARIES(alogclip
   mbutil
   ${SYSTEM_LIBS})
+
+# Install Targets
+INSTALL(TARGETS alogclip
+  RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
+)
+

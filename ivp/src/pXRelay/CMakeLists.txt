@@ -25,3 +25,9 @@ TARGET_LINK_LIBRARIES(pXRelay
    MOOSGen
    mbutil
    ${SYSTEM_LIBS})
+
+# Install Targets
+INSTALL(TARGETS pXRelay
+  RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
+)
+

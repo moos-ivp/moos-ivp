@@ -20,3 +20,9 @@ TARGET_LINK_LIBRARIES(alogrm
   mbutil
   logutils
   ${SYSTEM_LIBS})
+
+#Install Targets
+INSTALL(TARGETS alogrm
+  RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
+)
+

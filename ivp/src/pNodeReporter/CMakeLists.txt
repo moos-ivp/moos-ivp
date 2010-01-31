@@ -26,3 +26,8 @@ TARGET_LINK_LIBRARIES(pNodeReporter
    MOOSUtility
    mbutil
    ${SYSTEM_LIBS})
+
+# Install Targets
+INSTALL(TARGETS pNodeReporter
+  RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
+)

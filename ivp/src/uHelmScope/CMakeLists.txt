@@ -30,3 +30,8 @@ TARGET_LINK_LIBRARIES(uHelmScope
   mbutil 
   ${SYSTEM_LIBS})
 
+# Install Targets
+INSTALL(TARGETS uHelmScope
+  RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
+)
+

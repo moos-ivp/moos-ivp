@@ -32,6 +32,49 @@ SET(SRC
    ZAIC_MANUAL.cpp
 )
 
+SET(HEADERS
+  AOF_Gaussian.h
+  AOF.h
+  AOF_Linear.h
+  AOF_MGaussian.h
+  AOF_Quadratic.h
+  AOF_Ring.h
+  AOF_Rings.h
+  AOF_SCALAR.h
+  BuildUtils.h
+  Demuxer.h
+  DemuxUnit.h
+  FunctionEncoder.h
+  FunctionEncoderMK.h
+  IO_Utilities.h
+  OF_Coupler.h
+  OF_Rater.h
+  OF_Reflector.h
+  PQueue.h
+  Regressor.h
+  RT_AutoPeak.h
+  RT_Directed.h
+  RT_Smart.h
+  RT_Uniform.h
+  ZAIC_HEQ.h
+  ZAIC_HLEQ.h
+  ZAIC_LEQ.h
+  ZAIC_MANUAL.h
+  ZAIC_PEAK.h
+)
+
+# Build Library
 ADD_LIBRARY(ivpbuild ${SRC})
 TARGET_LINK_LIBRARIES(ivpbuild ivpcore)
+
+# Install Headers
+INSTALL( FILES ${HEADERS} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/lib_ivpbuild)
+
+# Install Libararies
+INSTALL( TARGETS ivpbuild
+   RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+   LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+   ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+)
+
 

@@ -20,3 +20,9 @@ TARGET_LINK_LIBRARIES(alogscan
   mbutil
   logutils
   ${SYSTEM_LIBS})
+
+#Install Targets
+INSTALL(TARGETS alogscan
+  RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
+)
+

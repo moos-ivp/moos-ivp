@@ -19,4 +19,45 @@ SET(SRC
    XYObject.cpp          XYFormatUtilsCircle.cpp
 )
 
+SET(HEADERS
+  AngleUtils.h
+  ArtifactUtils.h
+  CircularUtils.h
+  CPAEngine.h
+  CPA_Utils.h
+  GeomUtils.h
+  IO_GeomUtils.h
+  LinearExtrapolator.h
+  XYArc.h
+  XYArtifactGrid.h
+  XYBuildUtils.h
+  XYCircle.h
+  XYEncoders.h
+  XYFormatUtilsCircle.h
+  XYFormatUtilsPoint.h
+  XYFormatUtilsPoly.h
+  XYFormatUtilsSegl.h
+  XYGrid.h
+  XYHexagon.h
+  XYHexGrid.h
+  XYObject.h
+  XYPatternBlock.h
+  XYPoint.h
+  XYPolygon.h
+  XYSegList.h
+  XYSegment.h
+  XYSquare.h
+)
+
+# Build Library
 ADD_LIBRARY(geometry ${SRC})
+
+# Install Headers
+INSTALL( FILES ${HEADERS} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/lib_geometry)
+
+# Install Libararies
+INSTALL( TARGETS geometry
+   RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+   LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+   ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+)
