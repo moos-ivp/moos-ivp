@@ -24,8 +24,16 @@ SET(SRC
 
 IF (${APPLE})
       ADD_EXECUTABLE(logview MACOSX_BUNDLE ${SRC})
+      #Install Targets
+      INSTALL(TARGETS logview
+        BUNDLE DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
+      )
 ELSE (${APPLE})
       ADD_EXECUTABLE(logview ${SRC})
+      #Install Targets
+      INSTALL(TARGETS logview
+         RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
+      )
 ENDIF (${APPLE})
       
 TARGET_LINK_LIBRARIES(logview
@@ -49,9 +57,5 @@ TARGET_LINK_LIBRARIES(logview
          )
    ENDIF (${APPLE})
 
-#Install Targets
-INSTALL(TARGETS logview
-  RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
-)
 
 

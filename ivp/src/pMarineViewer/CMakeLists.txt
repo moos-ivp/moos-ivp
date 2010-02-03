@@ -21,8 +21,16 @@ SET(SRC
 
 IF (${APPLE})
       ADD_EXECUTABLE(pMarineViewer MACOSX_BUNDLE ${SRC})
+      # Install Targets
+      INSTALL(TARGETS pMarineViewer
+        BUNDLE DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
+      )
 ELSE (${APPLE})
       ADD_EXECUTABLE(pMarineViewer ${SRC})
+      # Install Targets
+      INSTALL(TARGETS pMarineViewer
+         RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
+      )
 ENDIF (${APPLE})
       
 TARGET_LINK_LIBRARIES(pMarineViewer         
@@ -46,8 +54,4 @@ IF (${APPLE})
       )
 ENDIF (${APPLE})
 
-# Install Targets
-INSTALL(TARGETS pMarineViewer
-  RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
-)
 

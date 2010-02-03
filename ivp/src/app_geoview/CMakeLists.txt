@@ -20,8 +20,16 @@ endif (${WIN32})
 
 	  IF (${APPLE})
 		 ADD_EXECUTABLE(geoview MACOSX_BUNDLE ${SRC})
+                 #Install Targets
+                 INSTALL(TARGETS geoview
+                   BUNDLE DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
+                 )
 	  ELSE (${APPLE})
 		 ADD_EXECUTABLE(geoview ${SRC})
+                 #Install Targets
+                 INSTALL(TARGETS geoview
+                   RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
+                 )
 	  ENDIF (${APPLE})
          
    TARGET_LINK_LIBRARIES(geoview
@@ -43,9 +51,5 @@ endif (${WIN32})
 		  )
 	  ENDIF (${APPLE})
 
-#Install Targets
-INSTALL(TARGETS geoview
-  RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
-)
 
 

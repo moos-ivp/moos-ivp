@@ -32,8 +32,19 @@ endif (${WIN32})
 #          COMMAND ln ARGS -s ${EXECUTABLE_OUTPUT_PATH}/ffview.app/Contents/MacOS/ffview ${EXECUTABLE_OUTPUT_PATH}/ffview
 #          COMMENT "Creating symbolic link to program ffview"
 #       )
+
+     #Install Targets
+     INSTALL(TARGETS ffview
+       BUNDLE DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
+     )
+
    ELSE (${APPLE})
      ADD_EXECUTABLE(ffview ${SRC})
+     
+     #Install Targets
+     INSTALL(TARGETS ffview
+        RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
+     )
    ENDIF (${APPLE})
 	     
    TARGET_LINK_LIBRARIES(ffview
@@ -56,9 +67,5 @@ endif (${WIN32})
 		  )
     ENDIF (${APPLE})
 
-#Install Targets
-INSTALL(TARGETS ffview
-  RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
-)
 
 	  

@@ -24,8 +24,16 @@ SET(SRC
 
 IF (${APPLE})
       ADD_EXECUTABLE(uFunctionVis MACOSX_BUNDLE ${SRC})
+      # Install Targets
+      INSTALL(TARGETS uFunctionVis
+        BUNDLE DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
+      )
 ELSE (${APPLE})
       ADD_EXECUTABLE(uFunctionVis ${SRC})
+      # Install Targets
+      INSTALL(TARGETS uFunctionVis
+        RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
+      )
 ENDIF (${APPLE})
 
 TARGET_LINK_LIBRARIES(uFunctionVis
@@ -48,7 +56,3 @@ IF (${APPLE})
       )
 ENDIF (${APPLE})
 
-# Install Targets
-INSTALL(TARGETS uFunctionVis
-  RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
-)
