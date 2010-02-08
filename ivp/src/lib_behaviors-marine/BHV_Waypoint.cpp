@@ -211,8 +211,8 @@ bool BHV_Waypoint::setParam(string param, string val)
       return(false);
     if(ival > 0)
       IvPBehavior::setParam("perpetual", "true");
-    else
-      IvPBehavior::setParam("perpetual", "false");
+    //    else
+    //      IvPBehavior::setParam("perpetual", "false");
     m_waypoint_engine.setRepeat(ival);
     m_waypoint_engine.setRepeatsEndless(false);
     return(true);
