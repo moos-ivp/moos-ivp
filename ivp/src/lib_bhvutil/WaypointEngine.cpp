@@ -166,7 +166,7 @@ void WaypointEngine::setCenter(double g_x, double g_y)
 //-----------------------------------------------------------
 // Procedure: getPointX
 
-double WaypointEngine::getPointX(unsigned int i)
+double WaypointEngine::getPointX(unsigned int i) const
 {
   if((i >= 0) && (i < m_seglist.size()))
     return(m_seglist.get_vx(i));
@@ -190,7 +190,7 @@ bool WaypointEngine::currPtChanged()
 //-----------------------------------------------------------
 // Procedure: getPointY
 
-double WaypointEngine::getPointY(unsigned int i)
+double WaypointEngine::getPointY(unsigned int i) const
 {
   if((i >= 0) && (i < m_seglist.size()))
     return(m_seglist.get_vy(i));
@@ -208,6 +208,18 @@ void WaypointEngine::resetForNewTraversal()
   m_curr_ix       = 0;
   m_prev_ix       = -1;
   m_complete      = false;
+}
+
+//-----------------------------------------------------------
+// Procedure: resetsRemaining()
+//   Returns: 
+
+unsigned int WaypointEngine::resetsRemaining() const
+{
+  if(m_repeats_sofar > m_repeats_allowed)
+    return(0);
+  else
+    return(m_repeats_allowed - m_repeats_sofar);
 }
 
 //-----------------------------------------------------------
