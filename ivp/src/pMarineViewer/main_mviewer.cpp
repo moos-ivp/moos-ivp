@@ -144,10 +144,10 @@ int main(int argc, char *argv[])
   if(mission_file == "")
     exit_with_usage();
   
-  //PMV_GUI* gui = new PMV_GUI(1100,850, "pMarineViewer");
-  //PMV_GUI* gui = new PMV_GUI(1100,700, "pMarineViewer");
-  PMV_GUI* gui = new PMV_GUI(1100,640, "pMarineViewer");
-  //PMV_GUI* gui = new PMV_GUI(1100,525, "pMarineViewer");
+  // For document screen shots:
+  // PMV_GUI* gui = new PMV_GUI(1100,640, "pMarineViewer");
+
+  PMV_GUI* gui = new PMV_GUI(1100,850, "pMarineViewer");
   if(!gui) {
     cout << "Unable to instantiate the GUI - exiting." << endl;
     return(-1);

@@ -20,7 +20,6 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
-#include <iostream>
 #include <math.h>
 #include "PMV_Viewer.h"
 #include "MBUtils.h"
@@ -105,9 +104,6 @@ void PMV_Viewer::draw()
 	double trails_length = m_vehi_settings.getTrailsLength();
 	drawTrailPoints(point_list, trails_length);
       }
-      else
-	cout << "NOT drawing trails" << endl;
-
       // Next draw the vehicle shapes. If the vehicle index is the 
       // one "active", draw it in a different color.
       drawVehicle(vehiname, isactive, vehibody);
@@ -670,7 +666,6 @@ string PMV_Viewer::getStringInfo(const string& info_type, int precision)
     }
   }
   
-  //cout << "GSI type:" << info_type << " result:[" << result << "]" << endl;
   return(result);
 }
   
