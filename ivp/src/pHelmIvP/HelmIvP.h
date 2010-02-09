@@ -120,10 +120,8 @@ protected:
   std::map<std::string, double>      m_outgoing_timestamp;
   std::map<std::string, double>      m_outgoing_repinterval;
   
-  // Keep track of whether a logger is present. If not then duplicates
-  // filters are cleared on each iteration.
-  bool m_logger_present;
-
+  // A flag maintained on each iteration indicating whether mail was
+  // available and the OnNewMail() function was invoked.
   bool m_on_new_mail;
 };
 

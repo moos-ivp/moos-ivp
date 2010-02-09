@@ -69,7 +69,6 @@ HelmIvP::HelmIvP()
   m_skews_matter   = true;
   m_warning_count  = 0;
   m_last_heartbeat = 0;
-  m_logger_present = false;
   m_on_new_mail    = false;
 
   m_use_beta_engine = false;
@@ -178,8 +177,6 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
 	MOOSTrace("\n");
 	MOOSDebugWrite("pHelmIvP Has Been Re-Started");
       }
-      else if(msg.m_sKey == "DB_CLIENTS") 
-	m_logger_present = strContains(msg.m_sVal, "pLogger");
       else if(vectorContains(m_node_report_vars, msg.m_sKey)) {
 	bool ok = processNodeReport(msg.m_sVal);
 	if(!ok) {
@@ -221,11 +218,6 @@ bool HelmIvP::Iterate()
   }
   m_on_new_mail = false;
 
-  if(!m_logger_present) {
-    m_outgoing_strings.clear();
-    m_outgoing_doubles.clear();
-  }
-      
   if(!m_has_control) {
     postAllStop();
     return(false);
