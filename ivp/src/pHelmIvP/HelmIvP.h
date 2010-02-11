@@ -120,9 +120,9 @@ protected:
   std::map<std::string, double>      m_outgoing_timestamp;
   std::map<std::string, double>      m_outgoing_repinterval;
   
-  // A flag maintained on each iteration indicating whether mail was
-  // available and the OnNewMail() function was invoked.
-  bool m_on_new_mail;
+  // A flag maintained on each iteration indicating whether curr_time
+  // has yet to be updated.
+  bool m_curr_time_updated;
 };
 
 #endif 
