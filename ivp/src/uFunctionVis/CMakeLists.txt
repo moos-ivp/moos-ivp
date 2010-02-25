@@ -23,10 +23,11 @@ SET(SRC
    uFunctionVisMain.cpp)
 
 IF (${APPLE})
-      ADD_EXECUTABLE(uFunctionVis MACOSX_BUNDLE ${SRC})
+      # If you want to create an Apple BUNDLE, do it here
+      ADD_EXECUTABLE(uFunctionVis ${SRC})
       # Install Targets
       INSTALL(TARGETS uFunctionVis
-        BUNDLE DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
+        RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
       )
 ELSE (${APPLE})
       ADD_EXECUTABLE(uFunctionVis ${SRC})

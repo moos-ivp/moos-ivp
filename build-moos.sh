@@ -90,6 +90,18 @@ echo ""
 echo "Invoking cmake..."
 echo ""
 
+# Setup C and C++ Compiler flags for Mac and Linux. 
+if [ "`uname`" == "Darwin" ] ; then
+  echo "Building MOOS for Apple"
+  # On Mac OS X, we need to force MOOS to compile in 32-bit due to FLTK.
+  MOOS_C_FLAGS="-m32"
+  MOOS_CXX_FLAGS="-fPIC -m32"
+else
+  echo "Building MOOS for Linux"
+  MOOS_CXX_FLAGS="-fPIC"
+fi
+
+
 cmake                                           \
    -DFLTK_DIR=/usr/lib                          \
    -DFLTK_INCLUDE_DIR=/usr/include              \
@@ -109,7 +121,8 @@ cmake                                           \
    -DBUILD_OCEAN_INSTRUMENTS=OFF                \
    -DBUILD_UMVS=ON                              \
    -DBUILD_UPB=ON                               \
-   -DCMAKE_CXX_FLAGS=-fPIC
+   -DCMAKE_CXX_FLAGS="${MOOS_CXX_FLAGS}" \
+   -DCMAKE_C_FLAGS="${MOOS_C_FLAGS}"
    "${SRC_ABS_DIR}"
 
 echo ""

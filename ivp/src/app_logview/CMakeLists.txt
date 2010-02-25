@@ -23,10 +23,11 @@ SET(SRC
    
 
 IF (${APPLE})
-      ADD_EXECUTABLE(logview MACOSX_BUNDLE ${SRC})
+      # If you want to create an Apple BUNDLE, do it here
+      ADD_EXECUTABLE(logview ${SRC})
       #Install Targets
       INSTALL(TARGETS logview
-        BUNDLE DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
+        RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
       )
 ELSE (${APPLE})
       ADD_EXECUTABLE(logview ${SRC})

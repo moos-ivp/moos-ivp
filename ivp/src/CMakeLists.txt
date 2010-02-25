@@ -13,6 +13,14 @@ ELSE (${WIN32})
   # Note sure why: -fPIC should only be needed for shared objects, and
   # AFAIK, CMake gets that right when building shared objects. -CJC
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -g")
+  IF( ${APPLE} )
+    # FLTK is not supported in 64-bit for Mac OS X. Until it is supported
+    # we will force all applications to build in 32-bit. Libtiff must also
+    # be compiled in 32-bit. 
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32")
+    SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m32")
+  ENDIF( ${APPLE} )
+
 ENDIF (${WIN32})
 
 #===============================================================================

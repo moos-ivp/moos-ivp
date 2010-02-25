@@ -23,7 +23,8 @@ endif (${WIN32})
 
    
    IF (${APPLE})
-     ADD_EXECUTABLE(ffview MACOSX_BUNDLE ${SRC})
+     # If you want to create an Apple BUNDLE, do it here
+     ADD_EXECUTABLE(ffview ${SRC})
 # 
 # message("@@@!!@@@   	ln -s ${EXECUTABLE_OUTPUT_PATH}/ffview.app/Contents/MacOS/ffview ${EXECUTABLE_OUTPUT_PATH}/ffview")
 #      ADD_CUSTOM_COMMAND(
@@ -35,7 +36,7 @@ endif (${WIN32})
 
      #Install Targets
      INSTALL(TARGETS ffview
-       BUNDLE DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
+       RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
      )
 
    ELSE (${APPLE})
