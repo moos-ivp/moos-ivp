@@ -251,6 +251,7 @@ IvPFunction *BHV_Attractor::onRunState()
   double vy = sin(angle);
 
   double cos_ang = vx * (m_cnx - m_osx) + vy * (m_cny - m_osy);
+  double current_relevance = relevance;
 
   if ( cos_ang < 0 )
     {
@@ -260,9 +261,9 @@ IvPFunction *BHV_Attractor::onRunState()
       ZAIC_PEAK hdg_zaic(m_domain, "course");
       hdg_zaic.setSummit(hdg_ang);
       hdg_zaic.setValueWrap(true);
-      hdg_zaic.setPeakWidth(120);
-      hdg_zaic.setBaseWidth(60);
-      hdg_zaic.setSummitDelta(10.0);
+      hdg_zaic.setPeakWidth(60);
+      hdg_zaic.setBaseWidth(120);
+      hdg_zaic.setSummitDelta(50.0);
       hdg_zaic.setMinMaxUtil(0,100);
       IvPFunction *hdg_ipf = hdg_zaic.extractIvPFunction();
       
@@ -277,6 +278,8 @@ IvPFunction *BHV_Attractor::onRunState()
       
       OF_Coupler coupler;
       ipf = coupler.couple(hdg_ipf, spd_ipf);
+
+      current_relevance = 2*relevance;
     }
   else if (dist > m_min_priority_range)
     {  AOF_AttractorCPA aof(m_domain);
@@ -331,7 +334,7 @@ IvPFunction *BHV_Attractor::onRunState()
   // Check for properly created IvPFunction before operating on it.
   if(ipf) {
     ipf->getPDMap()->normalize(0.0, 100.0);
-    ipf->setPWT(relevance * m_priority_wt);
+    ipf->setPWT(current_relevance * m_priority_wt);
   }
 
   return(ipf);
