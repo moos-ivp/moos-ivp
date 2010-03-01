@@ -261,9 +261,9 @@ IvPFunction *BHV_Attractor::onRunState()
       ZAIC_PEAK hdg_zaic(m_domain, "course");
       hdg_zaic.setSummit(hdg_ang);
       hdg_zaic.setValueWrap(true);
-      hdg_zaic.setPeakWidth(60);
-      hdg_zaic.setBaseWidth(120);
-      hdg_zaic.setSummitDelta(50.0);
+      hdg_zaic.setPeakWidth(120);
+      hdg_zaic.setBaseWidth(60);
+      hdg_zaic.setSummitDelta(80.0);
       hdg_zaic.setMinMaxUtil(0,100);
       IvPFunction *hdg_ipf = hdg_zaic.extractIvPFunction();
       
