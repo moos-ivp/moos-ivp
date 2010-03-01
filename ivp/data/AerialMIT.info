@@ -1,3 +1,6 @@
-img_centx   = 0.495850  
-img_centy   = 0.509000
-img_meters  = 0.048828
+lat_north = 33.1
+lat_south = 32.85
+lon_east  = -118.504
+lon_west  = -118.80
+datum_lat = 32.90
+datum_lon = -118.70

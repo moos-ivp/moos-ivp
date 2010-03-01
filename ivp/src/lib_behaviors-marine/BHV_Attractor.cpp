@@ -250,7 +250,7 @@ IvPFunction *BHV_Attractor::onRunState()
   double vx = cos(angle);
   double vy = sin(angle);
 
-  double cos_ang = vx * (m_cnx - m_osx) + vx * (m_cny - m_osy);
+  double cos_ang = vx * (m_cnx - m_osx) + vy * (m_cny - m_osy);
 
   if ( cos_ang < 0 )
     {
