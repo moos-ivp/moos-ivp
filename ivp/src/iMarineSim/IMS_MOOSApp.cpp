@@ -276,7 +276,8 @@ bool IMS_MOOSApp::Iterate()
   // tes 12-2-07 try to give a simulated lat / long
   if(m_geo_ok) {
     double lat, lon;
-    m_geodesy.LocalGrid2LatLong(nav_x, nav_y, lat, lon);
+    //    m_geodesy.LocalGrid2LatLong(nav_x, nav_y, lat, lon);
+    m_geodesy.UTM2LatLong(nav_x, nav_y, lat, lon);
     m_Comms.Notify(m_sim_prefix+"_LAT", lat, ctime);
     m_Comms.Notify(m_sim_prefix+"_LONG", lon, ctime);
   }
