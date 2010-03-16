@@ -141,7 +141,8 @@ bool AOF_AvoidObstacles::initialize()
   // Fill in a cache of distances mapping a particular heading to
   // the minimum/closest distance to any of the obstacle polygons.
   // A distance of -1 indicates infinite distance.
-
+  
+  cache_distance.clear();
   unsigned int hsize = m_domain.getVarPoints(crs_ix);
   for(i=0; i<hsize; i++)
     cache_distance.push_back(-1);
