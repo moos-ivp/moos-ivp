@@ -142,10 +142,10 @@ bool AOF_AvoidObstacles::initialize()
   // the minimum/closest distance to any of the obstacle polygons.
   // A distance of -1 indicates infinite distance.
   
-  cache_distance.clear();
+  m_cache_distance.clear();
   unsigned int hsize = m_domain.getVarPoints(crs_ix);
   for(i=0; i<hsize; i++)
-    cache_distance.push_back(-1);
+    m_cache_distance.push_back(-1);
 
   double heading, dist_to_poly; 
   for(i=0; i<hsize; i++) {
@@ -166,7 +166,7 @@ bool AOF_AvoidObstacles::initialize()
 	}
       }
     }
-    cache_distance[i] = min_dist;
+    m_cache_distance[i] = min_dist;
   }
   
   return(true);
@@ -391,7 +391,7 @@ double AOF_AvoidObstacles::evalBox(const IvPBox *b) const
     double i_utility;
 
     int   heading_index = b->pt(crs_ix, 0);
-    double dist_to_poly = cache_distance[heading_index];
+    double dist_to_poly = m_cache_distance[heading_index];
 
     if(dist_to_poly == -1) 
       i_utility = max_utility;
