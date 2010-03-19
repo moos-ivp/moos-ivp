@@ -76,7 +76,7 @@ int main(int argc ,char * argv[])
   bool quit = false;
   while(!quit) {
     char c = getCharNoWait();
-    if(c=='q')
+    if((c=='q') || (c==(char)(3)))   // ASCII 03 is control-c
       quit = true;
     else {
       theTermCommand.m_tc_mutex.Lock();

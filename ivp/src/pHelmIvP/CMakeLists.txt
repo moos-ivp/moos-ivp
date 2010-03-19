@@ -25,9 +25,9 @@ TARGET_LINK_LIBRARIES(pHelmIvP
   MOOS
   MOOSGen
   helmivp
+  behaviors
   behaviors-marine
   bhvutil	
-  behaviors
   ivpbuild 
   ivpcore 
   geometry

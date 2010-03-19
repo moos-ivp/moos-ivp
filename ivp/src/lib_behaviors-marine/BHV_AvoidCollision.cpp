@@ -51,6 +51,7 @@ BHV_AvoidCollision::BHV_AvoidCollision(IvPDomain gdomain) :
   
   m_domain = subDomain(m_domain, "course,speed");
 
+  m_completed_dist    = 500;
   m_active_outer_dist = 200;
   m_active_inner_dist = 50;
   m_collision_dist    = 10; 
@@ -81,11 +82,6 @@ bool BHV_AvoidCollision::setParam(string g_param, string g_val)
 
   if((g_param == "them") || (g_param == "contact")) {
     m_contact = toupper(g_val);
-    addInfoVars(m_contact+"_NAV_UTC");
-    addInfoVars(m_contact+"_NAV_X");
-    addInfoVars(m_contact+"_NAV_Y");
-    addInfoVars(m_contact+"_NAV_SPEED");
-    addInfoVars(m_contact+"_NAV_HEADING");
     return(true);
   }  
   else if((g_param == "active_distance") ||
@@ -112,6 +108,13 @@ bool BHV_AvoidCollision::setParam(string g_param, string g_val)
     if((dval < 0) || (!isNumber(g_val)))
       return(false);
     m_collision_dist = dval;
+    return(true);
+  }  
+  else if(g_param == "completed_distance") {
+    double dval = atof(g_val.c_str());
+    if(dval <= 0)
+      return(false);
+    m_completed_dist = dval;
     return(true);
   }  
   else if(g_param == "all_clear_distance") {
@@ -155,12 +158,8 @@ bool BHV_AvoidCollision::setParam(string g_param, string g_val)
     m_on_no_contact_ok = ((g_val == "true") || (g_val == "yes"));
     return(true);
   }  
-  else if (g_param == "extrapolate") 
-    {
-      string extrap = toupper(g_val);
-      m_extrapolate = (extrap == "TRUE");
-      return(true);
-    }
+  else if (g_param == "extrapolate")
+    return(setBooleanOnString(m_extrapolate, g_val));
   else if(g_param == "decay") {
     vector<string> svector = parseString(g_val, ',');
     if(svector.size() == 2) {
@@ -181,11 +180,28 @@ bool BHV_AvoidCollision::setParam(string g_param, string g_val)
   else if(g_param == "decay_end") {
     if(isNumber(g_val)) {
       m_decay_end = atof(g_val.c_str());
-      
       return(true);
     }
   }  
-    return(false);
+  // bearing_lines = white:0, green:0.65, yellow:0.8, red:1.0
+  else if(g_param == "bearing_lines") {
+    vector<string> svector = parseString(g_val, ',');
+    unsigned int i, vsize = svector.size();
+    bool valid_components = true;
+    for(i=0; i<vsize; i++) {
+      string left  = tolower(stripBlankEnds(biteString(svector[i],':')));
+      string right = stripBlankEnds(svector[i]);
+      if(isColor(left) && isNumber(right) && valid_components) {
+	m_bearing_line_colors.push_back(left);
+	double dval = vclip(atof(right.c_str()), 0, 1);
+	m_bearing_line_thresh.push_back(dval);
+      }
+      else
+	valid_components = false;
+    }
+    return(true);
+  }  
+  return(false);
 }
 
 
@@ -201,6 +217,16 @@ void BHV_AvoidCollision::onIdleState()
     m_curr_distance = hypot((m_osx - m_cnx),(m_osy - m_cny));
     postRange(true);
   }
+  postErasableSegList();
+}
+
+//-----------------------------------------------------------
+// Procedure: onCompleteState()
+
+void BHV_AvoidCollision::onCompleteState() 
+{
+  postErasableSegList();
+  postRepeatableMessage("CONTACT_RESOLVED", m_contact);
 }
 
 //-----------------------------------------------------------
@@ -223,12 +249,17 @@ IvPFunction *BHV_AvoidCollision::onRunState()
   double relevance = getRelevance();
   postRange(true);
 
-  if(relevance <= 0)
+  if(m_curr_distance >= m_completed_dist) {
+    setComplete();
     return(0);
-
+  }
+  
+  if(relevance <= 0) {
+    postViewableSegList();
+    return(0);
+  }
 
   AOF_AvoidCollision aof(m_domain);
-
   ok = true;
   ok = ok && aof.setParam("osy", m_osy);
   ok = ok && aof.setParam("osx", m_osx);
@@ -243,18 +274,19 @@ IvPFunction *BHV_AvoidCollision::onRunState()
 
   if(!ok) {
     postEMessage("Unable to init AOF_AvoidCollision.");
+    postErasableSegList();
     return(0);
   }
 
   OF_Reflector reflector(&aof, 1);
   
-
   reflector.create(m_build_info);
   IvPFunction *ipf = reflector.extractIvPFunction();
 
   ipf->getPDMap()->normalize(0.0, 100.0);
-
   ipf->setPWT(relevance * m_priority_wt);
+
+  postViewableSegList(relevance);
 
   return(ipf);
 }
@@ -464,4 +496,34 @@ void BHV_AvoidCollision::postRange(bool ok)
 }
 
 
+//-----------------------------------------------------------
+// Procedure: postViewableSegList
 
+void BHV_AvoidCollision::postViewableSegList(double pct)
+{
+  string color = "";
+  unsigned int i, vsize = m_bearing_line_colors.size();
+  for(i=0; (i<vsize)&&(color==""); i++) {
+    if(pct <= m_bearing_line_thresh[i])
+      color = m_bearing_line_colors[i];
+  }
+
+  m_seglist.clear(); 
+  m_seglist.set_active(true);
+  m_seglist.add_vertex(m_osx, m_osy);
+  m_seglist.add_vertex(m_cnx, m_cny);
+  m_seglist.set_label(m_us_name + "_" + m_descriptor);
+  m_seglist.set_edge_color(color);
+
+  postMessage("VIEW_SEGLIST", m_seglist.get_spec());
+}
+
+
+//-----------------------------------------------------------
+// Procedure: postErasableSegList
+
+void BHV_AvoidCollision::postErasableSegList()
+{
+  m_seglist.set_active(false);
+  postMessage("VIEW_SEGLIST", m_seglist.get_spec());
+}

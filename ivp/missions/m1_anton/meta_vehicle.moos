@@ -15,7 +15,6 @@ Processconfig = ANTLER
   Run = MOOSDB          @ NewConsole = false
   Run = iMarineSim      @ NewConsole = false
   Run = pMOOSBridge     @ NewConsole = false ~ pMOOSBridge_%(VNAME)
-  Run = pEchoVar        @ NewConsole = false
   Run = pLogger         @ NewConsole = false
   Run = pNodeReporter   @ NewConsole = false
   Run = pMarinePID      @ NewConsole = false
@@ -28,6 +27,5 @@ Processconfig = ANTLER
 #include plug_pHelmIvP.moos
 #include plug_pMarinePID.moos
 #include plug_pLogger.moos
-#include plug_pEchoVar.moos
 #include plug_pNodeReporter.moos
 #include plug_uProcessWatch.moos

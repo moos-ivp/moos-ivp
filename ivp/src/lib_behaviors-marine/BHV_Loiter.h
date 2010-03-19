@@ -36,8 +36,9 @@ public:
   ~BHV_Loiter() {};
   
   bool         setParam(std::string, std::string);
-  void         onIdleState();
   IvPFunction* onRunState();
+  void         onIdleState();
+  void         onCompleteState();
 
 protected:
   bool         updateInfoIn();

@@ -4,6 +4,37 @@ Post 4.0.1   Nov 17th 2009
 Pre  ???
 =====================================================================
 
+Merge of dynamic behaviors branch
+----------------------
+
+o Dynamic behavior spawning has been implemented. Behaviors specified
+  in the .bhv files may be used as templates for spawning new behaviors
+  based on incoming messages through the UPDATES parameter.
+
+o The helm no longer publishes UH_*, PC_*, PWT_*, STATE_* MOOS variables
+  for each behavior. A single BHV_STATUS publication is made for each
+  behavior automatically, with the name of the behavior specified in
+  in one of the fields.
+
+o The s5_echo mission was added to ivp/missions/ to demonstrate the 
+  dynamic spawning of behaviors.
+
+o IvPBehavior::onComplete() is implemented as a virtual function to 
+  be overloaded by behavior authors. It is called once, only when 
+  the behavior enters the complete state, prior to being deleted from
+  the helm.
+
+o Bug fix: when behaviors complete due to a timeout, via the duration
+  parameter, they would enter the idle state for one last iteration,
+  and invoke the onIdleState() functions before completing. It now
+  goes directly into the complete state on the very iteration its
+  duration times-out.
+
+----------------------
+
+
+
+
 o Jan 23rd: Minor enhancement: pMarineViewer now accepts BEARING_LINE
   artifacts to render a bearing line for a given vehicle, presumably 
   to render directional sensor information.

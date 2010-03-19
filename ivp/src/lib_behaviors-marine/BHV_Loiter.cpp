@@ -203,6 +203,17 @@ bool BHV_Loiter::setParam(string param, string value)
 }
 
 //-----------------------------------------------------------
+// Procedure: onCompleteState
+//      Note: Invoked once by helm prior to behavior deletion.
+
+void BHV_Loiter::onCompleteState()
+{
+  postErasablePoint();
+  postErasablePolygon();
+}
+
+
+//-----------------------------------------------------------
 // Procedure: onIdleState
 //      Note: If m_center_pending is true, each time the behavior
 //            goes inactive (and thus this function is called), 
@@ -408,13 +419,13 @@ IvPFunction *BHV_Loiter::buildIPF(const string& method)
 
 void BHV_Loiter::postStatusReports()
 {
-  int nonmono_hits = m_waypoint_engine.getNonmonoHits();
-  int capture_hits = m_waypoint_engine.getCaptureHits();
+  unsigned int nonmono_hits = m_waypoint_engine.getNonmonoHits();
+  unsigned int capture_hits = m_waypoint_engine.getCaptureHits();
   int curr_index   = m_waypoint_engine.getCurrIndex();
 
   string loiter_report = "index=" + intToString(curr_index);
-  loiter_report += ",capture_hits=" + intToString(capture_hits);
-  loiter_report += ",nonmono_hits=" + intToString(nonmono_hits);
+  loiter_report += ",capture_hits=" + uintToString(capture_hits);
+  loiter_report += ",nonmono_hits=" + uintToString(nonmono_hits);
   loiter_report += ",acquire_mode=" + boolToString(m_acquire_mode);
 
   // Default for m_var_dist2poly = LOITER_REPORT

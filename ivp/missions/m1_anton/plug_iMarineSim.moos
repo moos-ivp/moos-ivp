@@ -7,5 +7,6 @@ ProcessConfig = iMarineSim
   CommsTic  = 10
 
   START_POS = $(START_POS), 180, 0
+  PREFIX    = NAV
 }
 

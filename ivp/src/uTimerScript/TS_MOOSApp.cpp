@@ -398,10 +398,9 @@ bool TS_MOOSApp::addNewEvent(string event_str)
       string idx_string = intToString(m_pairs.size());
       idx_string = padString(idx_string, 3);
       idx_string = findReplace(idx_string, ' ', '0');
-      while(strContains(value, "$$IDX"))
-	value = findReplace(value, "$$IDX", idx_string);
-      while(strContains(value, "$(IDX)"))
-	value = findReplace(value, "$(IDX)", idx_string);
+      value = findReplace(value, "$$IDX", idx_string);
+      value = findReplace(value, "$(IDX)", idx_string);
+      value = findReplace(value, "$[IDX]", idx_string);
       new_val = value;
     }
     else if(param == "time") {
@@ -566,42 +565,45 @@ void TS_MOOSApp::executePosting(VarDataPair pair)
   double db_uptime = MOOSTime() - m_connect_tstamp;
   string sval = pair.get_sdata();
   // Handle special case where MOOSDB_UPTIME *is* the post
-  if(sval == "$(DBTIME)") {
+  if((sval == "$(DBTIME)") || (sval == "$[DBTIME]")) {
     m_Comms.Notify(variable, db_uptime);
     return;
   }
 
   // Handle special case where UTC_TIME *is* the post
-  if(sval == "$(UTCTIME)") {
+  if((sval == "$(UTCTIME)") || (sval == "$[UTCTIME]")) {
     m_Comms.Notify(variable, db_uptime);
     return;
   }
 
   // Handle special case where COUNT *is* the post
-  else if(sval == "$(COUNT)") {
+  else if((sval == "$(COUNT)") || (sval == "$[COUNT]")) {
     m_Comms.Notify(variable, m_posted_count);
     return;
   }
   
   // Handle special case where COUNT *is* the post
-  else if(sval == "$(TCOUNT)") {
+  else if((sval == "$(TCOUNT)") || (sval == "$[TCOUNT]")) {
     m_Comms.Notify(variable, m_posted_tcount);
     return;
   }
   
-  while(strContains(sval, "$(DBTIME)"))
-    sval = findReplace(sval, "$(DBTIME)", doubleToString(db_uptime, 2));
-  while(strContains(sval, "$(UTCTIME)"))
-    sval = findReplace(sval, "$(UTCTIME)", doubleToString(m_utc_time, 2));
-  while(strContains(sval, "$(TCOUNT)"))
-    sval = findReplace(sval, "$(TCOUNT)", intToString(m_posted_tcount));
-  while(strContains(sval, "$(COUNT)"))
-    sval = findReplace(sval, "$(COUNT)", intToString(m_posted_count));
+  sval = findReplace(sval, "$(DBTIME)", doubleToString(db_uptime, 2));
+  sval = findReplace(sval, "$(UTCTIME)", doubleToString(m_utc_time, 2));
+  sval = findReplace(sval, "$(TCOUNT)", intToString(m_posted_tcount));
+  sval = findReplace(sval, "$(COUNT)", intToString(m_posted_count));
+  
+  sval = findReplace(sval, "$[DBTIME]", doubleToString(db_uptime, 2));
+  sval = findReplace(sval, "$[UTCTIME]", doubleToString(m_utc_time, 2));
+  sval = findReplace(sval, "$[TCOUNT]", intToString(m_posted_tcount));
+  sval = findReplace(sval, "$[COUNT]", intToString(m_posted_count));
   
   unsigned int i, vsize = m_rand_vars.size();
   for(i=0; i<vsize; i++) {
-    string macro = "$(" + m_rand_vars.getVarName(i) + ")";
-    sval = findReplace(sval, macro, m_rand_vars.getStringValue(i));
+    string macro1 = "$(" + m_rand_vars.getVarName(i) + ")";
+    string macro2 = "$[" + m_rand_vars.getVarName(i) + "]";
+    sval = findReplace(sval, macro1, m_rand_vars.getStringValue(i));
+    sval = findReplace(sval, macro2, m_rand_vars.getStringValue(i));
   }
 
   // Handle all the math expansions. For safety, the while loop may
@@ -819,8 +821,8 @@ bool TS_MOOSApp::checkConditions()
 //-----------------------------------------------------------
 // Procedure: handleMathExpr()
 //   Purpose: Handle expressions such as: 
-//            "magnitude={$(MAXMAG)*0.7}, type=alpha" 
-//            "farenheit={{$(CELCIUS)*1.8}+32}"
+//            "magnitude={$[MAXMAG]*0.7}, type=alpha" 
+//            "farenheit={{$[CELCIUS]*1.8}+32}"
 //      Note: By the time this function is called, the macros will
 //            have been expanded to their numerical values.
 

@@ -38,8 +38,8 @@ Behavior = BHV_Loiter
      nm_radius = 25.0
        polygon = format=radial, x=0, y=-75, radius=40, pts=6, snap=1,
   visual_hints = nextpt_color=white, nextpt_lcolor=khaki
-  visual_hints = edge_color=blue, vertex_color=yellow
-  visual_hints = edge_size=1, vertex_size=2, label=LOITER_POLYGON
+  visual_hints = edge_color=gray80, vertex_color=gray90
+  visual_hints = edge_size=1, vertex_size=0, label=LOITER_POLYGON
 }
 
 //----------------------------------------------

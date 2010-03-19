@@ -54,7 +54,7 @@ protected:
   IvPDomain  m_sub_domain;
 
   // Intermediate structures while determining next decision
-  int          m_iteration;
+  unsigned int m_iteration;
   HelmReport   m_helm_report;
   BehaviorSet *m_bhv_set;
   double       m_curr_time;

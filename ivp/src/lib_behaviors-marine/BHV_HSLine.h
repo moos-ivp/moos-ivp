@@ -24,18 +24,26 @@
 #define BHV_HSLINE_HEADER
 
 #include "IvPBehavior.h"
+#include "XYSegList.h"
 
 class BHV_HSLine : public IvPBehavior {
 public:
   BHV_HSLine(IvPDomain);
   ~BHV_HSLine() {};
   
-  IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
+  IvPFunction* onRunState();
+  void         onIdleState()      {postErasableSegList();};
+  void         onCompleteState()  {postErasableSegList();};
 
-protected:  // configuration parameters
+ protected: 
+  void      postErasableSegList();
+
+ protected:  // configuration parameters
   double    m_time_on_leg;               // seconds
   double    m_max_des_speed_observed;    // meters/second
+
+  XYSegList m_seglist;
 };
 #endif
 

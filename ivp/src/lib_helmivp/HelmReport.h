@@ -66,8 +66,9 @@ public:
   bool   hasDecision(const std::string &var);
   void   delDecision(const std::string &var);
 
-  int    getIteration() const      {return(m_iteration);};
-  int    getOFNUM() const          {return(m_ofnum);};
+  unsigned int getIteration() const {return(m_iteration);};
+  unsigned int getOFNUM() const     {return(m_ofnum);};
+
   double getCreateTime() const     {return(m_create_time);};
   double getSolveTime() const      {return(m_solve_time);};
   double getLoopTime() const       {return(m_loop_time);};
@@ -84,10 +85,10 @@ protected:
   std::string               m_idle_bhvs;
   std::string               m_modes;
 
-  int                       m_warning_count;
+  unsigned int              m_warning_count;
   double                    m_time_utc;
-  int                       m_iteration;
-  int                       m_ofnum;
+  unsigned int              m_iteration;
+  unsigned int              m_ofnum;
   double                    m_create_time;
   double                    m_solve_time;
   double                    m_loop_time;

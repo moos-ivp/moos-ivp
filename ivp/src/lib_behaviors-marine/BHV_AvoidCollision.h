@@ -25,6 +25,7 @@
 
 #include "IvPBehavior.h"
 #include "LinearExtrapolator.h"
+#include "XYSegList.h"
 
 class IvPDomain;
 class BHV_AvoidCollision : public IvPBehavior {
@@ -35,6 +36,7 @@ public:
   IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
   void         onIdleState();
+  void         onCompleteState();
 
 protected:
   bool   getBufferInfo();
@@ -42,11 +44,18 @@ protected:
   double getPriority();
   void   postInfo(double, double);
   void   postRange(bool ok=true);
+  void   postViewableSegList(double pct=0);
+  void   postErasableSegList();
   
 private: // Configuration Parameters
 
   std::string m_contact; // Name for them in InfoBuffer
   std::string m_active_grade;
+
+  std::vector<std::string> m_bearing_line_colors;
+  std::vector<double>      m_bearing_line_thresh;
+
+  double m_completed_dist;
 
   double m_active_outer_dist;
   double m_active_inner_dist;
@@ -75,13 +84,12 @@ private:  // State Variables
 
   bool   m_on_no_contact_ok;  // true if no trouble reported on no contact
 
-  bool    m_extrapolate;
-  double  m_decay_start;
-  double  m_decay_end;
+  bool   m_extrapolate;
+  double m_decay_start;
+  double m_decay_end;
 
   LinearExtrapolator m_extrapolator;
-
-
+  XYSegList m_seglist;
 };
 #endif
 

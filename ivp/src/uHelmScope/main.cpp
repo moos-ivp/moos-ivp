@@ -38,14 +38,34 @@ int main(int argc ,char * argv[])
 
   // Look for a request for help or usage information
   if(scanArgs(argc, argv, "-h", "--help", "-help")) {
-    MOOSTrace("Usage: uHelmScope moosfile.moos [switches] [MOOSVARS]    \n");
-    MOOSTrace("  -t:  Column truncation is on (off by default)          \n");
-    MOOSTrace("  -c:  Exclude MOOS Vars in MOOS file from MOOSDB-Scope  \n");
-    MOOSTrace("  -x:  Suppress MOOSDB-Scope output block                \n");
-    MOOSTrace("  -p:  Suppress Behavior-Posts output block              \n");
-    MOOSTrace("  -v:  Suppress display of virgins in MOOSDB-Scope block \n");
-    MOOSTrace("  -r:  Streaming (unpaused) output of helm iterations    \n");
-    MOOSTrace("  MOOSVAR_1 MOOSVAR_2 .... MOOSVAR_N\n\n");
+    cout << "Usage:                                                   " << endl;
+    cout << "  uHelmScope moosfile.moos [OPTIONS] [MOOSVARS]          " << endl;
+    cout << "                                                         " << endl;
+    cout << "Synopsis:                                                " << endl;
+    cout << "  A scope onto a running IvP Helm process, and key MOOS  " << endl;
+    cout << "  variables. Shows behavior summaries/activity states.   " << endl;
+    cout << "                                                         " << endl;
+    cout << "Options:                                                 " << endl;
+    cout << "  -h,--help      Displays this help message              " << endl;
+    cout << "  -v,--version   Displays the current release version    " << endl;
+    cout << "  -t,--trunc     Column output truncation is enabled     " << endl;
+    cout << "  -c,--clean     MOOS variables specified in given .moos " << endl;
+    cout << "                 file are excluded from  MOOSDB-Scope    " << endl;
+    cout << "  -x,--noscope   Suppress MOOSDB-Scope output block      " << endl;
+    cout << "  -p,--noposts   Suppress Behavior-Posts output block    " << endl;
+    cout << "  -g,--novirgins Suppress virgin vars in MOOSDB-Scope    " << endl;
+    cout << "  -s,--stream    Streaming (unpaused) output enabled     " << endl;
+    cout << "  -l,--life      Launch in Life Events History mode      " << endl;
+    cout << "                                                         " << endl;
+    cout << "MOOS Variables                                           " << endl;
+    cout << "  MOOSVAR_1 MOOSVAR_2 .... MOOSVAR_N                     "<< endl;
+    cout << "                                                         " << endl;
+    cout << "Further Notes:                                           " << endl;
+    cout << "  (1) The order of command line arguments is irrelevant. " << endl;
+    cout << "  (2) Any MOOS variable used in behavior run conditions, " << endl;
+    cout << "      or used in hiearchical mode declarations will be   " << endl;
+    cout << "      automatically subscribed for in the MOOSDB scope.  " << endl;
+    cout << "                                                         " << endl;
     return(0);
   }
 
@@ -102,31 +122,40 @@ int main(int argc ,char * argv[])
 				(char*)(process_name.c_str()), 
 				mission_file.c_str());
 
+  bool life_mode = false;
   for(int i=1; i<argc; i++) {
     string str = argv[i];
     
-    if((str == "-r") || (str == "--resume"))
+    cout << "arg[" << i << "]:  [" << str << "]"<< endl;
+
+    if((str == "-r") || (str == "-s") || (str == "--stream"))
       theHelmScope.setPaused(false);
-    else if(str == "-x")
+    else if((str == "-l") || (str == "--life"))
+      theHelmScope.handleCommand('L');
+    else if((str == "-x") || (str == "-noscope"))
       theHelmScope.setDisplayXMS(false);
-    else if(str == "-p")
+    else if((str == "-p") || (str == "-noposts"))
       theHelmScope.setDisplayPosts(false);
     else if((str == "-c") || (str == "--clean") || (str == "-clean"))
       theHelmScope.setIgnoreFileVars(true);
     else if((str == "-t") || (str == "--trunc") || (str == "-trunc"))
       theHelmScope.setDisplayTrunc(true);
-    else if((str == "-v") || (str == "--virgins") || (str == "-virgins"))
+    else if((str == "-g") || (str == "--novirgins") || (str == "--virgins"))
       theHelmScope.setDisplayVirgins(false);
-
-    else if(!strContains(argv[i], ".moos"))
-      theHelmScope.addVariable(argv[i], "user");
-    
+    // This check needs to be last:
+    else if(!strContains(str, ".moos"))
+      theHelmScope.addVariable(str, "user");
   }
+
+  cout << "LifeMode:" << boolToString(life_mode) << endl;
+
+  //if(life_mode)
+  //  theHelmScope.setDisplayLEHistory();
 
   bool quit = false;
   while(!quit) {
     char c = getCharNoWait();
-    if(c=='q')
+    if((c=='q') || (c==(char)(3)))  // ASCII 03 is control-c
       quit = true;
     else
       theHelmScope.handleCommand(c);

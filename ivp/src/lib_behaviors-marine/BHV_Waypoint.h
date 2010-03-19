@@ -33,11 +33,11 @@ public:
   BHV_Waypoint(IvPDomain);
   ~BHV_Waypoint() {};
   
-  IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
-  void         onIdleState() {};
+  IvPFunction* onRunState();
   void         onRunToIdleState();
   std::string  onSetParamComplete();
+  void         onCompleteState() {postErasables();};
 
 protected:
   bool         updateInfoIn();
@@ -47,6 +47,7 @@ protected:
   void         postStatusReport();
   void         postViewableSegList();
   void         postErasableSegList();
+  void         postErasables();
   void         postCycleFlags();
   void         handleVisualHint(std::string);
 

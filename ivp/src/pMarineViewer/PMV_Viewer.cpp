@@ -373,8 +373,20 @@ void PMV_Viewer::handleLeftMouse(int vx, int vy)
 	  string str = m_var_data_pairs_all[i].get_sdata();
 	  if(strContains(str, "$(XPOS)")) 
 	    str = findReplace(str, "$(XPOS)", doubleToString(sx,1));
+	  if(strContains(str, "$(X)")) 
+	    str = findReplace(str, "$(X)", doubleToString(sx,0));
+	  if(strContains(str, "$(X:1)")) 
+	    str = findReplace(str, "$(X)", doubleToString(sx,1));
+	  if(strContains(str, "$(X:2)")) 
+	    str = findReplace(str, "$(X)", doubleToString(sx,2));
 	  if(strContains(str, "$(YPOS)")) 
 	    str = findReplace(str, "$(YPOS)", doubleToString(sy,1));
+	  if(strContains(str, "$(Y)")) 
+	    str = findReplace(str, "$(Y)", doubleToString(sy,0));
+	  if(strContains(str, "$(Y)")) 
+	    str = findReplace(str, "$(Y:1)", doubleToString(sy,1));
+	  if(strContains(str, "$(Y)")) 
+	    str = findReplace(str, "$(Y:2)", doubleToString(sy,2));
 	  if(strContains(str, "$(LAT)")) 
 	    str = findReplace(str, "$(LAT)", doubleToString(dlat,8));
 	  if(strContains(str, "$(LON)")) 

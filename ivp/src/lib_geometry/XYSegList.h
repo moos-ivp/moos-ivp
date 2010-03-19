@@ -73,7 +73,9 @@ public:
   bool   segs_cross(bool loop=true) const;
   double length();
 
-  std::string get_spec(int vertex_precision=1) const;
+  std::string get_spec(int vertex_prec=1) const;
+  std::string get_spec(std::string param) const;
+  std::string get_spec(int vertex_prec, std::string param) const;
 
 protected:
   int    closest_vertex(double, double) const; 

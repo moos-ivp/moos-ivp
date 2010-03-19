@@ -161,14 +161,6 @@ bool BHV_OpRegion::setParam(string param, string val)
 }
 
 //-----------------------------------------------------------
-// Procedure: onIdleState
-
-void BHV_OpRegion::onIdleState() 
-{
-  postErasablePolygon();
-}
-
-//-----------------------------------------------------------
 // Procedure: onRunState
 //     Notes: Always returns NULL, never returns an IvPFunction*
 //     Notes: Sets state_ok = false and posts an error message if

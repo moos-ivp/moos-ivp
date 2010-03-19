@@ -153,7 +153,7 @@ void HelmReport::addActiveBHV(const string& descriptor,
 string HelmReport::getRunningBehaviors()
 {
   string result = "#";
-  result += intToString(m_iteration);
+  result += uintToString(m_iteration);
   result += ":";
   result += m_running_bhvs;
 
@@ -166,7 +166,7 @@ string HelmReport::getRunningBehaviors()
 string HelmReport::getActiveBehaviors()
 {
   string result = "#";
-  result += intToString(m_iteration);
+  result += uintToString(m_iteration);
   result += ":";
   result += m_active_bhvs;
   
@@ -181,9 +181,9 @@ string HelmReport::getReportAsString()
   int i, j, vsize;
   string report;
 
-  report += ("iter=" + intToString(m_iteration));
-  report += (",ofnum=" + intToString(m_ofnum));
-  report += (",warnings=" + intToString(m_warning_count));
+  report += ("iter=" + uintToString(m_iteration));
+  report += (",ofnum=" + uintToString(m_ofnum));
+  report += (",warnings=" + uintToString(m_warning_count));
   report += (",utc_time=" + doubleToString(m_time_utc, 2));
   report += (",solve_time=" + doubleToString(m_solve_time, 2));
   report += (",create_time=" + doubleToString(m_create_time, 2));

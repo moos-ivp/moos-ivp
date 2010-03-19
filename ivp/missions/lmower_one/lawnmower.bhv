@@ -1,6 +1,7 @@
 initialize   DEPLOY = false
 initialize   RETURN = false
- 
+initialize   HSLINE = true 
+
 //----------------------------------------------
 Behavior = BHV_Waypoint
 {
@@ -38,6 +39,11 @@ Behavior = BHV_Waypoint
 Behavior = BHV_HSLine
 {
   name        = hsline
+  condition   = HSLINE=true
+  duration    = 30
+  perpetual   = true
+  endflag     = HSLINE=false
+
   time_on_leg = 20
 }
 

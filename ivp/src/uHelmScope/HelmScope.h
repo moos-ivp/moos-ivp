@@ -34,6 +34,7 @@
 #include "IterBlockPosts.h"
 #include "IterBlockXMS.h"
 #include "StringTree.h"
+#include "LifeEventHistory.h"
 
 class HelmScope : public CMOOSApp  
 {
@@ -86,6 +87,7 @@ class HelmScope : public CMOOSApp
   void printModeSet();
   void printReport();
   void printHelmReport(int ix);
+  void printLifeEventHistory();
   void printDBReport(int);
   void printPostingReport(int ix);
   
@@ -94,6 +96,8 @@ class HelmScope : public CMOOSApp
   std::map<int, IterBlockPosts> m_blocks_posts;
   std::map<int, IterBlockXMS>   m_blocks_xms;
 
+  LifeEventHistory m_life_event_history;
+
   std::vector<StringTree>  m_mode_trees;
   std::string m_current_mode;
 
@@ -101,6 +105,7 @@ class HelmScope : public CMOOSApp
 
   bool   m_display_help;
   bool   m_display_modeset;
+  bool   m_display_lehistory;
   bool   m_paused;
   bool   m_display_truncate;
   bool   m_concise_bhv_list;
@@ -121,6 +126,7 @@ class HelmScope : public CMOOSApp
 
   bool   m_update_pending;
   bool   m_modeset_pending;
+  bool   m_lehistory_pending;
   bool   m_helpmsg_pending;
 
   int    m_moosapp_iter;

@@ -108,6 +108,10 @@ bool HelmEngineBeta::part1_PreliminaryBehaviorSetHandling()
 
   m_bhv_set->setCurrTime(m_curr_time);
 
+  bool new_behaviors = m_bhv_set->handlePossibleSpawnings();
+  if(new_behaviors)
+    m_bhv_set->connectInfoBuffer(m_info_buffer);
+
   // Update Modes and add mode_summary to the m_helm_report.
   m_bhv_set->consultModeSet();
   string mode_summary = m_bhv_set->getModeSummary();
@@ -176,12 +180,14 @@ bool HelmEngineBeta::part2_GetFunctionsFromBehaviorSet(int filter_level)
 	m_helm_report.addRunningBHV(descriptor, state_elapsed, upd_summary);
       if(bhv_state=="idle")
 	m_helm_report.addIdleBHV(descriptor, state_elapsed, upd_summary);
-      if(bhv_state=="completed")
+      if(bhv_state=="completed") {
 	m_helm_report.addCompletedBHV(descriptor, state_elapsed, upd_summary);
+	m_bhv_set->setCompletedPending(true);
+      }
     }
   }
   m_create_timer.stop();
-  
+
   return(true);
 }
 
@@ -322,8 +328,10 @@ bool HelmEngineBeta::part4_BuildAndSolveIvPProblem(string phase)
 
 bool HelmEngineBeta::part6_FinishHelmReport()
 {
-  double create_time = m_create_timer.get_float_cpu_time();
-  double solve_time  = m_solve_timer.get_float_cpu_time();
+  double create_time = m_create_timer.get_float_wall_time();
+  double solve_time  = m_solve_timer.get_float_wall_time();
+  //double create_time = m_create_timer.get_float_cpu_time();
+  //double solve_time  = m_solve_timer.get_float_cpu_time();
   m_create_timer.reset();
   m_solve_timer.reset();
   m_helm_report.m_create_time = create_time;

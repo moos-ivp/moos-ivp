@@ -41,6 +41,7 @@ HelmScope::HelmScope()
 
   m_display_help       = false;
   m_display_modeset    = false;
+  m_display_lehistory  = false;
   m_paused             = true;
   m_display_truncate   = false;
   m_concise_bhv_list   = true;
@@ -65,6 +66,7 @@ HelmScope::HelmScope()
   m_update_pending     = true; 
   m_modeset_pending    = false; 
   m_helpmsg_pending    = false; 
+  m_lehistory_pending  = false;
   m_moosapp_iter       = 0; 
   m_iteration_helm     = -1; 
   m_iter_last_post     = -1; 
@@ -111,6 +113,8 @@ bool HelmScope::OnNewMail(MOOSMSG_LIST &NewMail)
       handleNewHelmPostings(msg.m_sVal); 
     else if(msg.m_sKey == "IVPHELM_STATEVARS") 
       handleNewStateVars(msg.m_sVal); 
+    else if(msg.m_sKey == "IVPHELM_LIFE_EVENT") 
+      m_life_event_history.addLifeEvent(msg.m_sVal);
     else if(msg.m_sKey == "IVPHELM_ENGAGED") { 
       bool new_helm_engaged = (msg.m_sVal == "ENGAGED"); 
       if(new_helm_engaged != m_helm_engaged)
@@ -142,7 +146,9 @@ bool HelmScope::Iterate()
     printHelp();
   else if(m_display_modeset && m_modeset_pending)
     printModeSet();
-  else
+  else if(m_display_lehistory && m_lehistory_pending)
+    printLifeEventHistory();
+  else if(!m_display_help && !m_display_modeset && !m_display_lehistory)
     printReport();
 
   pruneHistory();
@@ -230,11 +236,21 @@ void HelmScope::handleCommand(char c)
   case 'R':
     m_paused = false;
     m_update_pending = true;
+    m_display_help = false;
+    m_display_lehistory = false;
+    m_display_modeset = false;
     break;
   case ' ':
     m_paused = true;
     m_iter_next_post = m_iteration_helm;
-    m_update_pending = true;
+    if(m_display_lehistory)
+      m_lehistory_pending = true;
+    else if(m_display_modeset)
+      m_modeset_pending = true;
+    else if(m_display_help)
+      m_helpmsg_pending = true;
+    else
+      m_update_pending = true;
     break;
   case 'h':
   case 'H':
@@ -244,6 +260,18 @@ void HelmScope::handleCommand(char c)
       m_update_pending = true;
     else
       m_helpmsg_pending = true;
+    m_display_modeset = false;
+    m_display_lehistory = false;
+    break;
+  case 'l':
+  case 'L':
+    m_paused = true;
+    m_display_lehistory = !m_display_lehistory;
+    if(!m_display_lehistory)
+      m_update_pending = true;
+    else
+      m_lehistory_pending = true;
+    m_display_help = false;
     m_display_modeset = false;
     break;
   case 'm':
@@ -255,6 +283,7 @@ void HelmScope::handleCommand(char c)
     else
       m_modeset_pending = true;
     m_display_help = false;
+    m_display_lehistory = false;
     break;
   case 'b':
   case 'B':
@@ -596,6 +625,7 @@ void HelmScope::registerVariables()
   m_Comms.Register("IVPHELM_DOMAIN", 0);
   m_Comms.Register("IVPHELM_MODESET", 0);
   m_Comms.Register("IVPHELM_ENGAGED", 0);
+  m_Comms.Register("IVPHELM_LIFE_EVENT", 0);
 }
 
 //------------------------------------------------------------
@@ -864,6 +894,28 @@ void HelmScope::printModeSet()
 
   m_paused = true;
   m_modeset_pending = false;
+  return;
+}
+
+//------------------------------------------------------------
+// Procedure: printLifeEventHistory
+
+void HelmScope::printLifeEventHistory()
+{
+  unsigned int j, lead_lines = 10;
+  for(j=0; j<lead_lines; j++)
+    printf("\n");
+
+  vector<string> history_lines = m_life_event_history.getReport();
+  unsigned int i, vsize = history_lines.size();
+  for(i=0; i<vsize; i++)
+    printf("%s\n", history_lines[i].c_str());
+
+  printf("                                                            \n");
+  printf("Hit 'r' to resume outputs, or SPACEBAR for a single update  \n");
+
+  m_paused = true;
+  m_lehistory_pending = false;
   return;
 }
 

@@ -7,7 +7,7 @@
 initialize   DEPLOY = false
 initialize   RETURN = false
 
-//------------------- Declaration of Hierarchical Modes
+
 set MODE = ACTIVE {
   DEPLOY = true
 } INACTIVE

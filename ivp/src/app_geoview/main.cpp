@@ -120,11 +120,11 @@ int main(int argc, char *argv[])
 
   cout << "# of file polys: " << all_poly_strings.size() << endl;
   for(j=0; j<all_poly_strings.size(); j++)
-    gui->pviewer->setParam("polygon", all_poly_strings[j]);
+    gui->pviewer->setParam("view_polygon", all_poly_strings[j]);
 
   cout << "# of file seglists: " << all_segl_strings.size() << endl;
   for(j=0; j<all_segl_strings.size(); j++)
-    gui->pviewer->setParam("seglist", all_segl_strings[j]);
+    gui->pviewer->setParam("view_seglist", all_segl_strings[j]);
   
   cout << "# of file grids: " << all_grid_strings.size() << endl;
   for(j=0; j<all_grid_strings.size(); j++)

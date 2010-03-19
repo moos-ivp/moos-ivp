@@ -26,12 +26,15 @@
 #include <string>
 #include <set>
 #include "BehaviorSet.h"
+#include "BehaviorSpec.h"
 #include "VarDataPair.h"
 #include "IvPDomain.h"
 #include "IvPBehavior.h"
 #include "InfoBuffer.h"
 #include "ModeSet.h"
 #include "ModeEntry.h"
+#include "BFactoryStatic.h"
+#include "BFactoryDynamic.h"
 
 class Populator_BehaviorSet {
 
@@ -42,43 +45,31 @@ public:
   BehaviorSet* populate(std::set<std::string>);
   BehaviorSet* populate(std::string filename);
 
+  void loadEnvVarDirectories(std::string envVar, bool verbose) {
+    m_bfactory_dynamic.loadEnvVarDirectories(envVar, verbose);
+  }
+
+  void printBehaviorSpecs();
+
 protected:
-  bool handleLine(std::string);
-  bool handleEntry(std::string, std::string, std::string);
-
-  virtual IvPBehavior *initializeBehavior(std::string);
-
+  bool handleLine(std::string, unsigned int line_num);
   void closeSetMode(); 
 
 protected:
-  std::vector<IvPBehavior*>  behaviors;
   std::vector<VarDataPair>   initial_vars;
   std::vector<VarDataPair>   default_vars;
+
+  std::vector<BehaviorSpec>  m_behavior_specs;
+  BehaviorSpec m_curr_bhv_spec;
 
   IvPDomain    m_domain;
   InfoBuffer*  m_info_buffer;
   ModeSet      m_mode_set;
   ModeEntry    m_mode_entry;
   std::string  m_parse_mode;
+
+  BFactoryStatic  m_bfactory_static;
+  BFactoryDynamic m_bfactory_dynamic;
 };
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

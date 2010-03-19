@@ -32,12 +32,15 @@ public:
   BHV_AvoidObstacles(IvPDomain);
   ~BHV_AvoidObstacles() {delete(m_aof_avoid);};
   
-  IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
+  IvPFunction* onRunState();
+  void         onIdleState()      {postErasablePolygons();};
+  void         onCompleteState()  {postErasablePolygons();};
 
  protected:
   void    handleVisualHint(std::string);
   void    postViewablePolygons();
+  void    postErasablePolygons();
 
 protected:
   AOF_AvoidObstacles *m_aof_avoid;

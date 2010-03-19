@@ -181,14 +181,14 @@ bool BHV_StationKeep::setParam(string param, string val)
 
 
 //-----------------------------------------------------------
-// Procedure: onIdleState
+// Procedure: onRunToIdleState
 //      Note: If m_center_pending is true, each time the behavior
 //            goes inactive (and thus this function is called), 
 //            a pending new center is declared, and set to the 
 //            special value of present_position, which will be 
 //            determined when the activation occurs.
 
-void BHV_StationKeep::onIdleState()
+void BHV_StationKeep::onRunToIdleState()
 {
   m_distance_history.clear();
   m_distance_thistory.clear();
@@ -388,13 +388,13 @@ void BHV_StationKeep::postStationMessage(bool post)
     poly_str_inner += ",active=false";
   }
 
-  postMessage("VIEW_POLYGON", poly_str_outer);
+  postMessage("VIEW_POLYGON", poly_str_outer, "outer");
 
   // No need to post both circles if the radii are collapsed, but if
   // we're trying to erase a circle, post anyway just ensure no 
   // dangling artifacts from the radii being altered dynaically.
   if((m_inner_radius < m_outer_radius) || (post==false))
-    postMessage("VIEW_POLYGON", poly_str_inner);
+    postMessage("VIEW_POLYGON", poly_str_inner, "inner");
 }
 
 
@@ -404,8 +404,7 @@ void BHV_StationKeep::postStationMessage(bool post)
 void BHV_StationKeep::updateHibernationState()
 {
   if(m_pskeep_state == "disabled")
-    return;
-  
+    return;  
   
   if(m_transit_state == "pending_progress_start") {
     if(historyShowsProgressStart())

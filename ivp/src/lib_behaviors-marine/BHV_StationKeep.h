@@ -35,8 +35,9 @@ public:
   ~BHV_StationKeep() {};
   
   bool         setParam(std::string, std::string);
-  void         onIdleState();
   IvPFunction* onRunState();
+  void         onRunToIdleState();
+  void         onCompleteState() {postStationMessage(false);};
 
 protected:
   bool         updateInfoIn();  

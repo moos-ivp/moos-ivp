@@ -8,7 +8,6 @@
 #ifndef POPULATOR_BEHAVIORSET2_HEADER
 #define POPULATOR_BEHAVIORSET2_HEADER
 
-#include "BehaviorFactory.h"
 #include "Populator_BehaviorSet.h"
 
 //  This class introduces dynamically loaded behaviors.  When a 
@@ -26,16 +25,7 @@ public:
   Populator_BehaviorSet2(IvPDomain, InfoBuffer*);
   ~Populator_BehaviorSet2() {};
 
-  void load_behavior_libs(std::string dirname);
-
-  void loadEnvVarDirectories(std::string envVar, bool verbose);
-
 protected:
   virtual IvPBehavior *initializeBehavior(std::string);
-
-//   void loadBehaviors(const std::string & lib_directory);
-
-protected:
-  BehaviorFactory bhv_factory;
 };
 #endif

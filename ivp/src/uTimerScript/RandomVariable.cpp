@@ -81,7 +81,7 @@ double RandomVariable::getAge(double timestamp)
 
 string RandomVariable::getStringValue() const
 {
-  return(dstringCompact(doubleToString(m_value)));
+  return(dstringCompact(doubleToString(m_value,0)));
 }
   
   

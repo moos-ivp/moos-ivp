@@ -65,7 +65,7 @@ IvPBehavior::IvPBehavior(IvPDomain g_domain)
   m_bad_updates  = 0;
   m_perpetual    = false;
   m_filter_level = 0;
-
+  
   m_duration     = -1;
   m_duration_started         =  false;
   m_duration_start_time      = -1;
@@ -105,6 +105,7 @@ bool IvPBehavior::setParam(string g_param, string g_val)
   }
   else if((g_param == "name") || (g_param == "descriptor")) {
     m_descriptor = g_val;
+    m_status_info = "name=" + m_descriptor;
     return(true);
   }
   else if((g_param == "pwt") || 
@@ -268,54 +269,39 @@ bool IvPBehavior::setParam(string g_param, string g_val)
 }
 
 //-----------------------------------------------------------
-// Procedure: isCompleted()
-
-bool IvPBehavior::isCompleted()
-{
-  // If completed indicat that the pre-check failed due to this
-  // reason and simply return false. End-flags are posted elsewhere
-  if(m_completed) {
-    postPCMessage(" -- completed -- ");
-    return(true);
-  }
-  return(false);
-}
-
-//-----------------------------------------------------------
 // Procedure: isRunnable()
 
-bool IvPBehavior::isRunnable()
+string IvPBehavior::isRunnable()
 {
+  if(m_completed)
+    return("completed");
+
   if(!checkConditions())
-    return(false);
+    return("idle");
 
   // Important that this be called after checkConditions so 
   // the duration clock doesn't start until the conditions
   // are met.
   if(durationExceeded()) {
-    postPCMessage(" -- completed (duration exceeded) -- ");
+    statusInfoAdd("pc", "completed-byduration");
     setComplete();
     if(m_perpetual)
       durationReset();
-    if(!m_perpetual)
-      return(false);
+    else
+      return("completed");
   }
   
   if(m_domain.size() == 0) {
     m_state_ok = false;
     postEMessage("Null IvPDomain given to Behavior");
-    postPCMessage("----- Null IvPDomain ----");
-    return(false);
+    statusInfoAdd("pc", "null-domain");
+    return("idle");
   }
   
-  if(!checkNoStarve()) {
-    //m_state_ok = false;
-    postPCMessage("----- STARVED VARIABLE ----");
-    return(false);
-  }
+  if(!checkNoStarve())
+    return("idle");
   
-  postPCMessage(" -- ok -- ");
-  return(true);
+  return("running");
 }
   
 //-----------------------------------------------------------
@@ -344,7 +330,6 @@ void IvPBehavior::postMessage(string var, string sdata, string key)
     if(tolower(var) == "silent")
       return;
   }
-
   VarDataPair pair(var, sdata);
 
   if(key != "repeatable") {
@@ -380,7 +365,6 @@ void IvPBehavior::postMessage(string var, double ddata, string key)
     key = (m_descriptor + var + key);
     pair.set_key(key);
   }
-
   m_messages.push_back(pair);
 }
 
@@ -465,24 +449,26 @@ void IvPBehavior::postWMessage(string g_msg)
 }
 
 //-----------------------------------------------------------
-// Procedure: postVMessage
+// Procedure: statusInfoAdd
 
-void IvPBehavior::postVMessage(string g_msg)
+void IvPBehavior::statusInfoAdd(string param, string value)
 {
-  postMessage("PRIVATE_INFO", g_msg);
+  m_status_info += ("," + param + "=" + value);
 }
-
 
 //-----------------------------------------------------------
-// Procedure: postPCMessage
+// Procedure: statusInfoPost()
 
-void IvPBehavior::postPCMessage(string g_msg)
+void IvPBehavior::statusInfoPost()
 {
-  string mvar = "PC_" + m_descriptor;
-  string mval = g_msg;
+  statusInfoAdd("updates", m_update_summary);
+  postMessage("BHV_STATUS", m_status_info, m_descriptor);
   
-  postMessage(mvar, mval);
+  // Reset the status_info contents after each post.
+  m_status_info = "name=" + m_descriptor;
 }
+
+
 
 
 //-----------------------------------------------------------
@@ -525,7 +511,7 @@ bool IvPBehavior::checkConditions()
     bool satisfied = m_logic_conditions[i].eval();
     if(!satisfied) {
       string failed_condition = m_logic_conditions[i].getRawCondition();
-      postPCMessage(failed_condition);
+      statusInfoAdd("pc", failed_condition);
       return(false);
     }
   }
@@ -620,22 +606,6 @@ vector<string> IvPBehavior::getInfoVars()
 }
 
 //-----------------------------------------------------------
-// Procedure: getUpdateSummary()
-
-string IvPBehavior::getUpdateSummary()
-{
-  string rval;
-  if(m_update_var == "")
-    rval = "n/a";
-  else {
-    rval = intToString(m_good_updates);
-    rval += "/";
-    rval += intToString(m_good_updates + m_bad_updates);
-  }
-  return(rval);
-}
-
-//-----------------------------------------------------------
 // Procedure: checkNoStarve()
 //     Notes: Check all "starve_vars" against the info_buffer
 //              to ensure no starve conditions.
@@ -655,12 +625,13 @@ bool IvPBehavior::checkNoStarve()
     if((itime == -1) || (itime > stime)) {
       string msg = "VarStarve: " + var + "(stime:" + doubleToString(stime);
       msg += ") (itime:" + doubleToString(itime) + ")";
-      postPCMessage(msg);
+      statusInfoAdd("pc", msg);
       return(false);
     }
   }
   return(true);
 }
+
 
 //-----------------------------------------------------------
 // Procedure: checkUpdates
@@ -679,8 +650,10 @@ bool IvPBehavior::checkNoStarve()
 
 bool IvPBehavior::checkUpdates()
 {
-  if(m_update_var == "")
+  if(m_update_var == "") {
+    m_update_summary = "n/a";
     return(false);
+  }
 
   bool ok;
   vector<string> new_update_strs = getBufferStringVector(m_update_var, ok);
@@ -693,50 +666,57 @@ bool IvPBehavior::checkUpdates()
     if((new_update_str != "") && (new_update_str != m_prev_update_str)) {
     
       vector<string> uvector = parseString(new_update_str, '#');
-      int usize = uvector.size();
-    
-      string bad_params;
-      ok = true;
-      for(int j=0; j<usize; j++) {
-	string an_update_str = uvector[j];
-	vector<string> pvector = chompString(an_update_str, '=');
-	if(pvector.size() == 2) {
-	  string param = stripBlankEnds(pvector[0]);
-	  string value = stripBlankEnds(pvector[1]);
+      unsigned int j, usize = uvector.size();
+      
+      // First make sure that, if there is a behavior name specified, 
+      // it must match the name of this behavior. Note that a name
+      // mismatch is not considered failed update nor is it considered
+      // a successful update. If no name parameter provided, this is
+      // not considered a mismatch.
+      bool name_mismatch = false;
+      for(j=0; j<usize; j++) {
+	string pair  = uvector[j];
+	string param = stripBlankEnds(biteString(pair, '='));
+	string value = stripBlankEnds(pair);
+	if((param=="name") && (value!=m_descriptor))
+	  name_mismatch = true;
+      }
+
+      if(!name_mismatch) {
+	string bad_params;
+	bool ok_params = true;
+	for(j=0; j<usize; j++) {
+	  string pair  = uvector[j];
+	  string param = stripBlankEnds(biteString(pair, '='));
+	  string value = stripBlankEnds(pair);
 	  bool  result = setParam(param, value);
 	  if(!result)
 	    result = IvPBehavior::setParam(param, value);
 	  if(!result) {
-	    ok = false;
+	    ok_params = false;
 	    if(bad_params != "")
 	      bad_params += ",";
 	    bad_params += param;
 	  }
 	}
-	else 
-	  ok = false;
-      }
-      
-      if(!ok) {
-	m_bad_updates++;
-	string wmsg = "Faulty update for behavior: " + m_descriptor;
-	wmsg += (". Bad parameter(s): " + bad_params);
-	postMessage("BHV_WARNING", wmsg);
-      }
-      else {
-	update_made = true;
-	m_good_updates++;
-	m_prev_update_str = new_update_str;
+	
+	if(!ok_params) {
+	  m_bad_updates++;
+	  string wmsg = "Faulty update for behavior: " + m_descriptor;
+	  wmsg += (". Bad parameter(s): " + bad_params);
+	  postMessage("BHV_WARNING", wmsg);
+	}
+	else {
+	  update_made = true;
+	  m_good_updates++;
+	  m_prev_update_str = new_update_str;
+	}
       }
     }
   }
 
-  if((m_good_updates + m_bad_updates) > 0) {
-    string varname = "UH_" + m_descriptor;
-    string gstr = intToString(m_good_updates) + " update(s), and ";
-    string bstr = intToString(m_bad_updates) + " failure(s)";
-    postMessage(varname, gstr+bstr);
-  }
+  m_update_summary  = uintToString(m_good_updates) + "/";
+  m_update_summary += uintToString(m_good_updates + m_bad_updates);
   return(update_made);
 }
 

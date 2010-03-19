@@ -17,7 +17,6 @@ ProcessConfig = ANTLER
   Run = MOOSDB          @ NewConsole = false
   Run = iMarineSim      @ NewConsole = false
   Run = pMOOSBridge     @ NewConsole = false ~ pMOOSBridge_2
-  Run = pEchoVar        @ NewConsole = false
   Run = pLogger         @ NewConsole = false
   Run = pNodeReporter   @ NewConsole = false
   Run = pMarinePID      @ NewConsole = false
@@ -47,6 +46,7 @@ ProcessConfig = iMarineSim
   CommsTic  = 10
 
   START_POS = -10,-25,180,0
+  PREFIX    = NAV
 }
 
 //---------------------------------------
@@ -133,19 +133,6 @@ ProcessConfig = pLogger
 }
 
 //---------------------------------------
-ProcessConfig = pEchoVar
-{
-  AppTick   = 20
-  CommsTick = 20
-  
-  Echo = MARINESIM_X       ->  NAV_X
-  Echo = MARINESIM_Y       ->  NAV_Y
-  Echo = MARINESIM_HEADING ->  NAV_HEADING
-  Echo = MARINESIM_SPEED   ->  NAV_SPEED
-}
-
-
-//---------------------------------------
 ProcessConfig = pNodeReporter
 {
   AppTick     = 5
@@ -164,7 +151,7 @@ ProcessConfig = uProcessWatch
   WATCH  = pMOOSBridge*
   WATCH  = pEchoVar
   WATCH  = pLogger
-  WATCH  = pTransponderAIS
+  WATCH  = pNodeReporter
   WATCH  = pMarinePID
   WATCH  = pHelmIvP
 }

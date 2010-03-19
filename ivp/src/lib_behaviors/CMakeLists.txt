@@ -6,6 +6,11 @@
 SET(SRC
   BehaviorSet.cpp
   IvPBehavior.cpp
+  BFactoryStatic.cpp
+  BFactoryDynamic.cpp
+  BehaviorSpec.cpp
+  SpecBuild.cpp
+  LifeEventHistory.cpp
 )
 
 SET(HEADERS

@@ -246,11 +246,8 @@ bool BHV_Waypoint::setParam(string param, string val)
 //            first transitions from the Running to Idle state.
 
 void BHV_Waypoint::onRunToIdleState() 
-//void BHV_Waypoint::onIdleState() 
 {
-  postMessage("VIEW_POINT", m_trackpt.get_spec("active=false"));
-  postMessage("VIEW_POINT", m_nextpt.get_spec("active=false"));
-  postErasableSegList();
+  postErasables();
   m_waypoint_engine.resetCPA();
 }
 
@@ -487,21 +484,22 @@ IvPFunction *BHV_Waypoint::buildOF(string method)
 void BHV_Waypoint::postStatusReport()
 {
   int    current_waypt = m_waypoint_engine.getCurrIndex();
-  int    waypt_cycles  = m_waypoint_engine.getCycleCount();
-  int    total_hits    = m_waypoint_engine.getTotalHits();
-  int    capture_hits  = m_waypoint_engine.getCaptureHits();
+  unsigned int waypt_cycles = m_waypoint_engine.getCycleCount();
+  unsigned int total_hits   = m_waypoint_engine.getTotalHits();
+  unsigned int capture_hits = m_waypoint_engine.getCaptureHits();
+
   double dist_meters   = hypot((m_osx - m_nextpt.x()), 
 			       (m_osy - m_nextpt.y()));
   double eta_seconds   = dist_meters / m_osv;
   
-  string hits_str = intToString(capture_hits);
-  hits_str += "/" + intToString(total_hits);
+  string hits_str = uintToString(capture_hits);
+  hits_str += "/" + uintToString(total_hits);
 
   string stat = "vname=" + m_us_name + ",";
   stat += "behavior-name=" + m_descriptor + ",";
   stat += "index="  + intToString(current_waypt)   + ",";
   stat += "hits="   + hits_str + ",";
-  stat += "cycles=" + intToString(waypt_cycles)   + ",";
+  stat += "cycles=" + uintToString(waypt_cycles)   + ",";
   stat += "dist="   + doubleToString(dist_meters, 0)  + ",";
   stat += "eta="    + doubleToString(eta_seconds, 0);
 
@@ -534,15 +532,17 @@ void BHV_Waypoint::postViewableSegList()
   postMessage("VIEW_SEGLIST", segmsg);
 }
 
-
 //-----------------------------------------------------------
-// Procedure: postErasableSegList()
+// Procedure: postErasables
 //      Note: Recall that for a seglist to be drawn and erased, 
 //            it must match in the label. For a seglist to be 
 //            "ignored" it must set active=false.
 
-void BHV_Waypoint::postErasableSegList()
+void BHV_Waypoint::postErasables()
 {
+  postMessage("VIEW_POINT", m_trackpt.get_spec("active=false"));
+  postMessage("VIEW_POINT", m_nextpt.get_spec("active=false"));
+
   XYSegList seglist = m_waypoint_engine.getSegList();
   seglist.set_label(m_us_name + "_" + m_descriptor);
   seglist.set_active(false);

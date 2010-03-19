@@ -122,6 +122,13 @@ bool PMV_MOOSApp::OnStartUp()
   if(m_gui && !m_gui->mviewer->initGeodesy(lat_origin, lon_origin))
     return(MOOSFail("Geodesy Init in pMarineViewer failed - FAIL\n"));
 
+  double time_warp;
+  bool okw = m_MissionReader.GetValue("MOOSTimeWarp", time_warp);
+  if(okw && (time_warp > 0)) {
+    if((m_dfFreq * time_warp) > 20) 
+      SetAppFreq((20/time_warp));
+  }
+
   if((!m_gui) || (!m_pending_moos_events))
     return(true);
   

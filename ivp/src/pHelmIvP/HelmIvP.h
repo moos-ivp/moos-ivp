@@ -52,6 +52,7 @@ protected:
   void postEngagedStatus();
   void postCharStatus();
   void postBehaviorMessages();
+  void postLifeEvents();
   void postModeMessages();
   void postInitialVariables();
   void postDefaultVariables();
@@ -95,6 +96,7 @@ protected:
   bool          m_skews_matter;
   int           m_warning_count;
   double        m_curr_time;
+  double        m_start_time;
 
   bool          m_use_beta_engine;
   HelmEngine*   m_hengine;

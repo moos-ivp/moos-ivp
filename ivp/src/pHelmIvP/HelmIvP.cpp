@@ -37,17 +37,8 @@
 #include "IvPProblem.h"
 #include "HelmReport.h"
 #include "stringutil.h"
-
-#if 1
-  #define USE_NEW_POPULATOR
-#endif
-
-#ifdef USE_NEW_POPULATOR
-   #include "Populator_BehaviorSet2.h"
-#else
-   #include "Populator_BehaviorSet.h"
-#endif
-
+#include "Populator_BehaviorSet.h"
+#include "LifeEvent.h"
 
 using namespace std;
 
@@ -69,9 +60,11 @@ HelmIvP::HelmIvP()
   m_skews_matter   = true;
   m_warning_count  = 0;
   m_last_heartbeat = 0;
+  m_curr_time      = 0;
+  m_start_time     = 0;
   m_curr_time_updated = false;
 
-  m_use_beta_engine = false;
+  m_use_beta_engine = true;
 
   // The refresh vars handle the occasional clearing of the m_outgoing
   // maps. These maps will be cleared when MOOS mail is received for the
@@ -216,6 +209,8 @@ bool HelmIvP::Iterate()
     m_curr_time = MOOSTime();
     m_info_buffer->setCurrTime(m_curr_time);
   }
+  if(m_start_time == 0)
+    m_start_time = m_curr_time;
 
   // Now we're done addressing whether the curr_time is updated on this
   // iteration. It was done either in this function or in onNewMail().
@@ -244,7 +239,7 @@ bool HelmIvP::Iterate()
     for(unsigned int i=0; i<svector.size(); i++)
       MOOSTrace("%s\n", svector[i].c_str());
   }
-  
+ 
   // Check if refresh conditions are met - perhaps clear outgoing maps.
   // This will result in all behavior postings being posted to the MOOSDB
   // on the current iteration.
@@ -257,6 +252,7 @@ bool HelmIvP::Iterate()
 
   registerNewVariables();
   postBehaviorMessages();
+  postLifeEvents();
   postModeMessages();
   postDefaultVariables();
 
@@ -319,11 +315,8 @@ bool HelmIvP::Iterate()
     }
   }
   
-  double create_cpu  = helm_report.getCreateTime();
-  m_Comms.Notify("CREATE_CPU", create_cpu);
-
-  double loop_cpu  = helm_report.getLoopTime();
-  m_Comms.Notify("LOOP_CPU", loop_cpu);
+  m_Comms.Notify("CREATE_CPU", helm_report.getCreateTime());
+  m_Comms.Notify("LOOP_CPU", helm_report.getLoopTime());
 
   if(!m_allow_overide)
     m_has_control = true;
@@ -349,17 +342,21 @@ bool HelmIvP::Iterate()
 
 void HelmIvP::postBehaviorMessages()
 {
-  if(!m_bhv_set) return;
+  if(!m_bhv_set) 
+    return;
   
   if(m_verbose == "verbose") {
     MOOSTrace("Behavior Report ---------------------------------\n");
   }
 
   unsigned int i, bhv_cnt = m_bhv_set->size();
+  m_Comms.Notify("BCOUNT", bhv_cnt);
+  m_Comms.Notify("TBCOUNT", m_bhv_set->getTCount());
+  m_Comms.Notify("HITER", m_iteration);
   for(i=0; i < bhv_cnt; i++) {
     string bhv_descriptor = m_bhv_set->getDescriptor(i);
     vector<VarDataPair> mvector = m_bhv_set->getMessages(i);
-    int msize = mvector.size();
+    unsigned int msize = mvector.size();
 
     string bhv_postings_summary;
   
@@ -378,11 +375,11 @@ void HelmIvP::postBehaviorMessages()
 	key_change = detectChangeOnKey(mkey, ddata);
       else
 	key_change = detectChangeOnKey(mkey, sdata);
-      
+ 
       // Keep track of warnings count for inclusion in IVPHELM_SUMMARY
       if(var == "BHV_WARNING")
 	m_warning_count++;
-     
+
       // Possibly augment the postings_summary
       if(key_change) {
 	// If first var-data tuple then tack header info on front
@@ -399,9 +396,8 @@ void HelmIvP::postBehaviorMessages()
 	}
       }
 
-
       // If posting an IvP Function, mux first and post the parts.
-      if(var == "BHV_IPF") {
+      if(var == "BHV_IPF") { // mikerb
 	string id = bhv_descriptor + intToString(m_iteration);
 	vector<string> svector = IvPFunctionToVector(sdata, id, 2000);
 	for(unsigned int k=0; k<svector.size(); k++)
@@ -427,11 +423,9 @@ void HelmIvP::postBehaviorMessages()
 	}
       }
     }
-
     if(bhv_postings_summary != "")
       m_Comms.Notify("IVPHELM_POSTINGS", bhv_postings_summary, bhv_descriptor);
   }
-
   // Determine if the list of state-space related variables for
   // the behavior-set has changed and post the new set if so.
 
@@ -440,7 +434,34 @@ void HelmIvP::postBehaviorMessages()
     string state_vars = m_bhv_set->getStateSpaceVars();
     m_Comms.Notify("IVPHELM_STATEVARS", state_vars);
   }
+  m_bhv_set->removeCompletedBehaviors();
 }
+
+//------------------------------------------------------------
+// Procedure: postLifeEvents()
+//      Note: Run once after every iteration of control loop.
+
+void HelmIvP::postLifeEvents()
+{
+  if(!m_bhv_set) 
+    return;
+  
+  vector<LifeEvent> events = m_bhv_set->getLifeEvents();
+  unsigned int i, vsize = events.size();
+  for(i=0; i<vsize; i++) {
+    double htime = m_curr_time - m_start_time;
+    string str = "time=" + doubleToString(htime, 2);
+    str += ", iter="  + intToString(m_iteration);
+    str += ", bname=" + events[i].getBehaviorName();
+    str += ", btype=" + events[i].getBehaviorType();
+    str += ", event=" + events[i].getEventType();
+    str += ", seed="  + events[i].getSpawnString();
+    m_Comms.Notify("IVPHELM_LIFE_EVENT", str);
+  }
+  if(vsize > 0)
+    m_bhv_set->clearLifeEvents();
+}
+
 
 //------------------------------------------------------------
 // Procedure: postModeMessages()
@@ -457,8 +478,6 @@ void HelmIvP::postModeMessages()
   for(int j=0; j<msize; j++) {
     VarDataPair msg = mvector[j];
     
-    string str = msg.getPrintable();
-
     string var   = msg.get_var();
     string sdata = msg.get_sdata();
     double ddata = msg.get_ddata();
@@ -654,10 +673,18 @@ void HelmIvP::registerVariables()
   
   if(m_bhv_set) {
     vector<string> info_vars = m_bhv_set->getInfoVars();
-    for(unsigned int j=0; j<info_vars.size(); j++) {
+    unsigned int j, jsize = info_vars.size();
+    for(j=0; j<jsize; j++) {
       if(m_verbose == "verbose")
 	MOOSTrace("Registering for: %s\n", info_vars[j].c_str());
       m_Comms.Register(info_vars[j], 0.0);
+    }
+    vector<string> update_vars = m_bhv_set->getSpecUpdateVars();
+    unsigned int i, isize = update_vars.size();
+    for(i=0; i<isize; i++) {
+      if(m_verbose == "verbose")
+	MOOSTrace("Registering for: %s\n", update_vars[i].c_str());
+      m_Comms.Register(update_vars[i], 0.0);
     }
   }
 }
@@ -770,16 +797,23 @@ bool HelmIvP::OnStartUp()
   m_hengine = new HelmEngine(m_ivp_domain);
   m_hengine_beta = new HelmEngineBeta(m_ivp_domain, m_info_buffer);
 
-#ifdef USE_NEW_POPULATOR
-  Populator_BehaviorSet2 p_bset(m_ivp_domain, m_info_buffer);
-  p_bset.loadEnvVarDirectories("IVP_BEHAVIOR_DIRS", true);
-
-#else
+#if 0
   Populator_BehaviorSet p_bset(m_ivp_domain, m_info_buffer);
-#endif
-
+  p_bset.loadEnvVarDirectories("IVP_BEHAVIOR_DIRS", true);
   m_bhv_set = p_bset.populate(m_bhv_files);
-  
+#endif  
+
+#if 1
+  Populator_BehaviorSet *p_bset;
+  p_bset = new Populator_BehaviorSet(m_ivp_domain, m_info_buffer);
+  p_bset->loadEnvVarDirectories("IVP_BEHAVIOR_DIRS", true);
+  m_bhv_set = p_bset->populate(m_bhv_files);
+#endif  
+  //cout << "=====================================================" << endl;
+  //p_bset->printBehaviorSpecs();
+  //cout << "=====================================================" << endl;
+
+
   if(m_bhv_set == 0) {
     MOOSTrace("NULL Behavior Set \n");
     return(false);

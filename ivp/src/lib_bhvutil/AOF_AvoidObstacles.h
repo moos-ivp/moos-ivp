@@ -48,7 +48,7 @@ public: // virtual functions
   void   applyBuffer();
   double rangeToObstacle(unsigned int);
   
-  std::string getObstacleSpec(int, bool=false);
+  std::string getObstacleSpec(int, bool, bool);
 
  protected:
   void   bufferBackOff(double osx, double osy);

@@ -37,40 +37,35 @@ Populator_BehaviorSet2::Populator_BehaviorSet2(IvPDomain g_domain,
 {
 }
 
+#if 0
 //----------------------------------------------------------
-
-void Populator_BehaviorSet2::load_behavior_libs(string dirname) 
-{
-  bhv_factory.load_directory(dirname);
-}
-
-//----------------------------------------------------------
-
 void Populator_BehaviorSet2::loadEnvVarDirectories(std::string envVar, 
 						   bool verbose) {
   bhv_factory.loadEnvVarDirectories(envVar, verbose);
 }
+#endif
 
 //----------------------------------------------------------
 // Procedure: initializeBehavior
 
 IvPBehavior* Populator_BehaviorSet2::initializeBehavior(string bhv_name)
 {
-  IvPBehavior* bhv = Populator_BehaviorSet::initializeBehavior(bhv_name);
+  //IvPBehavior* bhv = Populator_BehaviorSet::initializeBehavior(bhv_name);
+  IvPBehavior* bhv = m_bfactory_static.newBehavior(bhv_name);
   if(bhv != NULL) {
     cerr << "    InitializeBehavior: ";
     cerr << "found static behavior " << bhv_name << endl;
     return(bhv);
   }
   
-  if(bhv_factory.is_known_behavior(bhv_name)) {
+  if(m_bfactory_dynamic.isKnownBehavior(bhv_name)) {
     cerr << "    InitializeBehavior: ";
     cerr << "found dynamic behavior " << bhv_name << endl;
-    return(bhv_factory.new_behavior(bhv_name, m_domain));
+    return(m_bfactory_dynamic.newBehavior(bhv_name, m_domain));
   }
 
   cerr << "    InitializeBehavior: ";
   cerr << "couldn't find behavior " << bhv_name << endl;
 
-  return NULL;
+  return(0);
 }

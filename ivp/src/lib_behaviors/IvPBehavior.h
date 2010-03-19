@@ -44,6 +44,7 @@
 #ifndef IVP_BEHAVIOR_HEADER
 #define IVP_BEHAVIOR_HEADER
 
+#include <iostream>
 #include <map>
 #include <vector>
 #include <string>
@@ -62,18 +63,22 @@ public:
   virtual bool setParam(std::string, std::string);
   virtual std::string onSetParamComplete() {return("");};
   virtual void onIdleState() {};
+  virtual void onCompleteState() {std::cout << "in ocs" << std::endl;};
   virtual void onIdleToRunState() {};
   virtual void onRunToIdleState() {};
 
   bool   setParamCommon(std::string, std::string);
   void   setInfoBuffer(const InfoBuffer*);
   bool   checkUpdates();
-  bool   isCompleted();
-  bool   isRunnable();
+  std::string isRunnable();
+
+  void   statusInfoAdd(std::string param, std::string value);
+  void   statusInfoPost();
 
   std::vector<std::string> getInfoVars();
-  std::string getUpdateSummary();
   std::string getDescriptor()            {return(m_descriptor);};
+  std::string getBehaviorType()          {return(m_behavior_type);};
+  std::string getUpdateSummary()         {return(m_update_summary);};
   std::vector<VarDataPair> getMessages() {return(m_messages);};
   int    getFilterLevel()                {return(m_filter_level);};
   bool   stateOK()                       {return(m_state_ok);};
@@ -81,6 +86,7 @@ public:
   void   resetStateOK()                  {m_state_ok=true;};
 
 protected:
+  void    setBehaviorType(std::string str) {m_behavior_type = str;};
   void    addInfoVars(std::string);
   void    setComplete();
   void    postMessage(std::string, double, std::string key="");
@@ -91,8 +97,6 @@ protected:
   void    postRepeatableMessage(std::string, std::string);
   void    postEMessage(std::string);
   void    postWMessage(std::string);
-  void    postVMessage(std::string);
-  void    postPCMessage(std::string);
   void    postFlags(const std::string&);
 
   void    postDurationStatus();
@@ -115,9 +119,11 @@ protected:
   const InfoBuffer* m_info_buffer;
 
   std::string m_descriptor;    
+  std::string m_behavior_type;
   std::string m_us_name;       
   std::string m_duration_status;
   std::string m_build_info;
+  std::string m_status_info;
 
   std::vector<std::string>       m_info_vars;
   std::vector<VarDataPair>       m_messages;
@@ -134,10 +140,11 @@ protected:
   double     m_priority_wt; 
 
   // Variables for providing behaviors w/ "update" capability
-  std::string m_update_var;
-  std::string m_prev_update_str;
-  int         m_good_updates;
-  int         m_bad_updates;
+  std::string  m_update_var;
+  std::string  m_prev_update_str;
+  unsigned int m_good_updates;
+  unsigned int m_bad_updates;
+  std::string  m_update_summary;
 
   // variables for providing behaviors w/ "duration" capability
   double      m_duration;

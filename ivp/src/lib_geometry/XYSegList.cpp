@@ -590,12 +590,37 @@ double XYSegList::length()
 
 //---------------------------------------------------------------
 // Procedure: get_spec
-//   Purpose: Get a string specification of the seglist. We set 
-//            the vertex precision to be at the integer by default.
 
 string XYSegList::get_spec(int precision) const
 {
+  return(get_spec(precision, ""));
+}
+
+//---------------------------------------------------------------
+// Procedure: get_spec
+
+string XYSegList::get_spec(string param) const
+{
+  return(get_spec(1, param));
+}
+
+//---------------------------------------------------------------
+// Procedure: get_spec
+//   Purpose: Get a string specification of the seglist. We set 
+//            the vertex precision to be at the integer by default.
+
+string XYSegList::get_spec(int precision, string param) const
+{
   string spec;
+
+  if(param == "") {
+    if(m_active == false)
+      spec += "active,false:";
+  }
+  else if(param == "active=true") 
+    spec += "active,true:";
+  else if(param == "active=false") 
+    spec += "active,false:";
 
   // Clip the precision to be between 0 and 6
   if(precision < 0)
@@ -605,9 +630,6 @@ string XYSegList::get_spec(int precision) const
   
   if(m_label != "")
     spec += "label," + m_label + ":"; 
-
-  if(m_active == false)
-    spec += "active,false:";
 
   if(m_label_color.set())
     spec += "label_color," + m_label_color.str() + ":";

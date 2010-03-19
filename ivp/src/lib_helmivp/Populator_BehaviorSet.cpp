@@ -35,34 +35,6 @@
 #include "FileBuffer.h"
 #include "Populator_BehaviorSet.h"
 
-// CORE Behaviors
-#include "BHV_Waypoint.h"
-#include "BHV_Loiter.h"
-#include "BHV_OpRegion.h"
-#include "BHV_ConstantDepth.h"
-#include "BHV_ConstantHeading.h"
-#include "BHV_MaintainHeading.h"
-#include "BHV_ConstantSpeed.h"
-#include "BHV_PeriodicSpeed.h"
-#include "BHV_PeriodicSurface.h"
-#include "BHV_Trail.h"
-#include "BHV_Shadow.h"
-#include "BHV_Timer.h"
-#include "BHV_HSLine.h"
-#include "BHV_HeadingChange.h"
-#include "BHV_StationKeep.h"
-#include "BHV_RStationKeep.h"
-#include "BHV_CutRange.h"
-#include "BHV_AvoidCollision.h"
-#include "BHV_AvoidObstacles.h"
-#include "BHV_GoToDepth.h"
-#include "BHV_MemoryTurnLimit.h"
-#include "BHV_Hysteresis.h"
-#include "BHV_Attractor.h"
-#include "BHV_RubberBand.h"
-// Mikes new collision fix
-#include "BHV_HeadingBias.h"
-
 using namespace std;
 
 //-------------------------------------------------------------
@@ -71,13 +43,12 @@ using namespace std;
 Populator_BehaviorSet::Populator_BehaviorSet(IvPDomain g_domain,
 					     InfoBuffer *g_buffer)
 {
-  // cout << "Populator_BehaviorSet::Constructor()" << endl;
-  // g_domain.print();
-  // cout << endl << endl;
+  m_domain        = g_domain;
+  m_info_buffer   = g_buffer;
+  m_parse_mode    = "top";
 
-  m_domain             = g_domain;
-  m_info_buffer        = g_buffer;
-  m_parse_mode         = "top";
+  m_bfactory_static.setDomain(g_domain);
+  m_bfactory_dynamic.setDomain(g_domain);
 
   m_mode_set.setInfoBuffer(g_buffer);
 }
@@ -88,7 +59,7 @@ Populator_BehaviorSet::Populator_BehaviorSet(IvPDomain g_domain,
 BehaviorSet *Populator_BehaviorSet::populate(set<string> bhv_files)
 {
   cout << "Number of behavior files: " << bhv_files.size() << endl;
-  unsigned int i;
+  unsigned int i, line_ix;
   set<string>::const_iterator p;
   for(p=bhv_files.begin(); p!=bhv_files.end(); p++) {
 
@@ -107,8 +78,8 @@ BehaviorSet *Populator_BehaviorSet::populate(set<string> bhv_files)
       vector<string> file_vector = fileBufferSlash(filename);
       unsigned int lineCount = file_vector.size();
     
-      for(i=0; i<lineCount; i++) {
-	string line = stripBlankEnds(file_vector[i]);
+      for(line_ix=0; line_ix<lineCount; line_ix++) {
+	string line = stripBlankEnds(file_vector[line_ix]);
 
 	bool is_comment = false;
 	line = stripBlankEnds(line);
@@ -137,10 +108,10 @@ BehaviorSet *Populator_BehaviorSet::populate(set<string> bhv_files)
 	  
 	bool ok = true;
 	if(pre_line != "")
-	  ok = ok && handleLine(pre_line);
-	ok = ok && handleLine(line);
+	  ok = ok && handleLine(pre_line, line_ix);
+	ok = ok && handleLine(line, line_ix);
 	if(post_line != "")
-	  ok = ok && handleLine(post_line);
+	  ok = ok && handleLine(post_line, line_ix);
 	
 	//cout << "After line " << i+1 << " mode:[" << m_parse_mode
 	//<< "]" << endl; cout << "(" << line << ")" << endl;
@@ -157,27 +128,30 @@ BehaviorSet *Populator_BehaviorSet::populate(set<string> bhv_files)
     cout << "Processing Behavior File: " << filename << "  END" << endl;
   }
 
-
-  if(behaviors.size() == 0) 
+  // Build the behaviorset with specs and try to instantiate all the
+  // behaviors. If some fail instantiation, abort the behaviorset.
+  BehaviorSet *bset = new BehaviorSet;
+  bset->setDomain(m_domain);
+  for(i=0; i<m_behavior_specs.size(); i++)
+    bset->addBehaviorSpec(m_behavior_specs[i]);
+  bool ok = bset-> buildBehaviorsFromSpecs();
+  if(!ok) {
+    delete(bset);
     return(0);
-  else {
-    BehaviorSet *bset = new BehaviorSet;
-    for(i=0; i<behaviors.size(); i++) {
-      behaviors[i]->setInfoBuffer(m_info_buffer);
-      bset->addBehavior(behaviors[i]);
-    }
-    for(i=0; i<initial_vars.size(); i++)
-      bset->addInitialVar(initial_vars[i]);
-    for(i=0; i<default_vars.size(); i++)
-      bset->addDefaultVar(default_vars[i]);
-    bset->setModeSet(m_mode_set);
-#if 1
-    string sval = m_mode_set.getStringDescription();
-    cout << "mode description: " << sval << endl;
-#endif    
-    //m_mode_set.print();
-    return(bset);
-  }  
+  }    
+
+  // Given that all the behaviors were able to be instantiated from
+  // their specs, fill out the rest of the behaviorset and return it.
+  bset->connectInfoBuffer(m_info_buffer);
+  for(i=0; i<initial_vars.size(); i++)
+    bset->addInitialVar(initial_vars[i]);
+  for(i=0; i<default_vars.size(); i++)
+    bset->addDefaultVar(default_vars[i]);
+  bset->setModeSet(m_mode_set);
+  string sval = m_mode_set.getStringDescription();
+  cout << "mode description: " << sval << endl;
+
+  return(bset);
 }
 
 //-------------------------------------------------------------
@@ -193,11 +167,23 @@ BehaviorSet *Populator_BehaviorSet::populate(string filestr)
 }
 
 //----------------------------------------------------------
+// Procedure: printBehaviorSpecs()
+
+void Populator_BehaviorSet::printBehaviorSpecs()
+{
+  unsigned int i, vsize = m_behavior_specs.size();
+  for(i=0; i<vsize; i++) {
+    m_behavior_specs[i].print();
+  }
+}
+
+//----------------------------------------------------------
 // Procedure: handleLine
-//   Returns: 1 if all OK
-//            0 otherwise
+//   Returns: true  if all OK
+//            false otherwise
 //
-bool Populator_BehaviorSet::handleLine(string line)
+bool Populator_BehaviorSet::handleLine(string line, 
+				       unsigned int line_num)
 {
   // Comments are anything to the right of a "#" or "//"
   line = stripComment(line, "//");
@@ -235,8 +221,11 @@ bool Populator_BehaviorSet::handleLine(string line)
   if(line == "}") {
     if(m_parse_mode == "misc-defining")
       m_parse_mode = "misc-defined-ish";
-    else if(m_parse_mode == "bhv-defining")
+    else if(m_parse_mode == "bhv-defining") {
       m_parse_mode = "top";
+      m_behavior_specs.push_back(m_curr_bhv_spec);
+      m_curr_bhv_spec.clear();
+    }
     else if(m_parse_mode == "set-defining")
       m_parse_mode = "set-defined-ish";
     else { 
@@ -280,13 +269,9 @@ bool Populator_BehaviorSet::handleLine(string line)
 	closeSetMode();
       string bhv_str  = biteString(line, '=');
       string bhv_name = stripBlankEnds(line);
-      IvPBehavior *bhv = initializeBehavior(bhv_name); 
-      if(bhv) {
-	behaviors.push_back(bhv);
-	m_parse_mode = "bhv-declared";
-	return(true);
-      }
-      return(false);
+      m_curr_bhv_spec.setBehaviorKind(bhv_name, line_num);
+      m_parse_mode = "bhv-declared";
+      return(true);
     }    
     else if(!strncasecmp("set ", line.c_str(), 4)) {
       if(m_parse_mode == "set-defined-ish")
@@ -320,13 +305,8 @@ bool Populator_BehaviorSet::handleLine(string line)
   }
   
   if(m_parse_mode == "bhv-defining") {
-    string left  = stripBlankEnds(tolower(biteString(line, '=')));
-    string right = stripBlankEnds(line); 
-    IvPBehavior *bhv = behaviors[behaviors.size()-1];
-    bool result = bhv->IvPBehavior::setParam(left.c_str(), right.c_str());
-    if(!result)
-      result = bhv->setParam(left.c_str(), right.c_str());
-    return(result);
+    m_curr_bhv_spec.addBehaviorConfig(line, line_num);
+    return(true);
   }
 
   if(m_parse_mode == "set-defining")  {
@@ -336,69 +316,6 @@ bool Populator_BehaviorSet::handleLine(string line)
   }
   return(false);
 }
-
-
-//----------------------------------------------------------
-// Procedure: initializeBehavior
-
-IvPBehavior* Populator_BehaviorSet::initializeBehavior(string bhv_name)
-{
-  IvPBehavior *bhv = 0;      
-
-  if(bhv_name == "BHV_OpRegion")
-    bhv = new BHV_OpRegion(m_domain);
-  else if(bhv_name == "BHV_Waypoint")   
-    bhv = new BHV_Waypoint(m_domain);
-  else if(bhv_name == "BHV_ConstantSpeed")     
-    bhv = new BHV_ConstantSpeed(m_domain);
-  else if(bhv_name == "BHV_Trail")      
-    bhv = new BHV_Trail(m_domain);
-  else if(bhv_name == "BHV_ConstantDepth")      
-    bhv = new BHV_ConstantDepth(m_domain);
-  else if(bhv_name == "BHV_ConstantHeading")      
-    bhv = new BHV_ConstantHeading(m_domain);
-  else if(bhv_name == "BHV_MaintainHeading")      
-    bhv = new BHV_MaintainHeading(m_domain);
-  else if(bhv_name == "BHV_Loiter")     
-    bhv = new BHV_Loiter(m_domain);
-  else if(bhv_name == "BHV_StationKeep")     
-    bhv = new BHV_StationKeep(m_domain);
-  else if(bhv_name == "BHV_RStationKeep")     
-    bhv = new BHV_RStationKeep(m_domain);
-  else if(bhv_name == "BHV_Timer")     
-    bhv = new BHV_Timer(m_domain);
-  else if(bhv_name == "BHV_HSLine")     
-    bhv = new BHV_HSLine(m_domain);
-  else if(bhv_name == "BHV_HeadingChange")     
-    bhv = new BHV_HeadingChange(m_domain);
-  else if(bhv_name == "BHV_Shadow")     
-    bhv = new BHV_Shadow(m_domain);
-  else if(bhv_name == "BHV_CutRange")   
-    bhv = new BHV_CutRange(m_domain);
-  else if(bhv_name == "BHV_AvoidCollision") 
-    bhv = new BHV_AvoidCollision(m_domain);
-  else if(bhv_name == "BHV_AvoidObstacles") 
-    bhv = new BHV_AvoidObstacles(m_domain);
-  else if(bhv_name == "BHV_PeriodicSpeed") 
-    bhv = new BHV_PeriodicSpeed(m_domain);
-  else if(bhv_name == "BHV_PeriodicSurface") 
-    bhv = new BHV_PeriodicSurface(m_domain);
-  else if(bhv_name == "BHV_GoToDepth")      
-    bhv = new BHV_GoToDepth(m_domain);
-  else if(bhv_name == "BHV_MemoryTurnLimit")      
-    bhv = new BHV_MemoryTurnLimit(m_domain);
-  else if(bhv_name == "BHV_Hysteresis")      
-    bhv = new BHV_Hysteresis(m_domain);
-  else if(bhv_name == "BHV_Attractor")      
-    bhv = new BHV_Attractor(m_domain);
-  else if(bhv_name == "BHV_RubberBand")      
-    bhv = new BHV_RubberBand(m_domain);
-  else if(bhv_name == "BHV_HeadingBias")     
-    bhv = new BHV_HeadingBias(m_domain);
-
-  return(bhv);
-}
-
 
 //----------------------------------------------------------
 // Procedure: closeSetMode

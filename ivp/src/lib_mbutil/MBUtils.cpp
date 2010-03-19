@@ -20,6 +20,7 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
+#include <cmath>
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -440,7 +441,7 @@ string truncString(const string& str, std::string::size_type sz, string style)
 }
 
 //----------------------------------------------------------------
-// Procedure: xxxToString(int)
+// Procedure: xxxToString(value)
 
 string boolToString(bool val)
 {
@@ -458,28 +459,40 @@ string intToString(int val)
   return(str);
 }
 
+string uintToString(unsigned int val)
+{
+  char buff[500];
+  sprintf(buff, "%u", val);
+  string str = buff;
+  return(str);
+}
+
 string floatToString(float val, int digits)
 {
-  char buffAUX[10] = "%.5f\0";
-  if((digits>=0)&&(digits<9))
-    buffAUX[2] = digits+48;
+  char format[10] = "%.5f\0";
+  if((digits>=0)&&(digits<=9))
+    format[2] = digits+48;
+  
+  if(val > (float)(pow((float)(2),(float)(64))))
+    format[3] = 'e';
 
-  char buff[100];
-  sprintf(buff, buffAUX, val);
-
+  char buff[1000];
+  sprintf(buff, format, val);
   string str = buff;
   return(str);
 }
 
 string doubleToString(double val, int digits)
 {
-  char buffAUX[10] = "%.5f\0";
+  char format[10] = "%.5f\0";
   if((digits>=0)&&(digits<=9))
-    buffAUX[2] = digits+48;
+    format[2] = digits+48;
+  
+  if(val > (double)(pow((double)(2),(double)(128))))
+    format[3] = 'e';
 
-  char buff[100];
-  sprintf(buff, buffAUX, val);
-
+  char buff[1000];
+  sprintf(buff, format, val);
   string str = buff;
   return(str);
 }
@@ -491,14 +504,31 @@ string intToCommaString(int ival)
 {
   string str = intToString(ival);
   string new_str;
-  int len = str.length();
 
-  for(int i=0; i<len; i++) {
+  unsigned int i, len = str.length();
+  for(i=0; i<len; i++) {
     new_str += str.at(i);
     if((((len-(i+1))%3)==0) && (i!=len-1))
       new_str += ',';
   }
+  return(new_str);
+}
 
+
+//----------------------------------------------------------------
+// Procedure: uintToCommaString
+
+string uintToCommaString(unsigned int ival)
+{
+  string str = uintToString(ival);
+  string new_str;
+
+  unsigned int i, len = str.length();
+  for(i=0; i<len; i++) {
+    new_str += str.at(i);
+    if((((len-(i+1))%3)==0) && (i!=len-1))
+      new_str += ',';
+  }
   return(new_str);
 }
 
@@ -598,7 +628,8 @@ string findReplace(const string& str, char fchar, char rchar)
 //            length given by target_size. If front is true, pad on
 //            to the front of the string. To the end otherwise. 
 
-string padString(const string& str, std::string::size_type target_size, bool front)
+string padString(const string& str, 
+		 std::string::size_type target_size, bool front)
 {
   string rstr  = str;
   string::size_type str_size = str.size();
@@ -620,7 +651,8 @@ string padString(const string& str, std::string::size_type target_size, bool fro
 //      Note: Added Jun1405
 //            Replace all occurances of fstr with rstr in str
 
-string findReplace(const string& str, const string& fstr, const string& rstr)
+string findReplace(const string& str, const string& fstr, 
+		   const string& rstr)
 {
   string::size_type posn = 0;
 

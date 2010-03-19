@@ -62,6 +62,15 @@ bool BHV_HSLine::setParam(string param, string val)
 
 
 //-----------------------------------------------------------
+// Procedure: postErasableSegList()
+
+void BHV_HSLine::postErasableSegList()
+{
+  postMessage("VIEW_SEGLIST", m_seglist.get_spec("active=false"));
+}
+
+
+//-----------------------------------------------------------
 // Procedure: onRunState
 
 IvPFunction *BHV_HSLine::onRunState() 
@@ -103,12 +112,12 @@ IvPFunction *BHV_HSLine::onRunState()
   
   projectPoint(des_hdg, dist, x1, y1, x2, y2);
 
-  XYSegList segl; 
-  segl.add_vertex(x1, y1);
-  segl.add_vertex(x2, y2);
+  m_seglist.clear();
+  m_seglist.add_vertex(x1, y1);
+  m_seglist.add_vertex(x2, y2);
 
-  segl.set_label(m_us_name + "_" + m_descriptor);
-  string spec = segl.get_spec();
+  m_seglist.set_label(m_us_name + "_" + m_descriptor);
+  string spec = m_seglist.get_spec("active=true");
 
   postMessage("VIEW_SEGLIST", spec);
 

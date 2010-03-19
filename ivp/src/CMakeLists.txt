@@ -207,13 +207,16 @@ SET(IVP_NON_GUI_APPS
   app_aloggrep
   app_alogrm
   app_alogclip
+  app_aloghelm
   app_nsplug
   app_domquery
   iMarineSim
   pEchoVar
   pXRelay
+  pXBlaster
   pHelmIvP
   pMarinePID
+  pBasicContactMgr
   pNodeReporter
   uTimerScript
   uHelmScope

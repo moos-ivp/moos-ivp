@@ -35,6 +35,7 @@ SET(SRC
   BHV_HSLine.cpp
   BHV_HeadingChange.cpp
   BHV_HeadingBias.cpp
+  BHV_BearingLine.cpp
 )
 
 SET(HEADERS 
@@ -68,6 +69,7 @@ SET(HEADERS
   BHV_Timer.h
   BHV_Trail.h
   BHV_Waypoint.h
+  BHV_BearingLine.h
 ) 
 
 ADD_LIBRARY(behaviors-marine ${SRC})

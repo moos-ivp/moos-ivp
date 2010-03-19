@@ -40,8 +40,9 @@ LogicCondition::LogicCondition()
 
 LogicCondition::~LogicCondition()
 {
-  if(m_node)
-    m_node = 0;
+  if(m_node) 
+    delete(m_node);
+  m_node = 0;
 }
 
 //------------------------------------------------------ 
