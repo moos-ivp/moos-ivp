@@ -42,6 +42,8 @@ class VPlug_VehiSettings
   
   bool  isViewableVehicles()  const {return(m_vehicles_viewable);};
   bool  isViewableTrails()    const {return(m_trails_viewable);};
+  bool  isViewableBearingLines() const
+  {return(m_bearing_lines_viewable);};
   bool  isViewableTrailsFuture() const 
   {return(m_trails_future_viewable);};
   bool  isViewableTrailsConnect() const 
@@ -58,6 +60,7 @@ class VPlug_VehiSettings
   bool   m_trails_future_viewable;      
   bool   m_trails_connect_viewable;
   bool   m_vehicles_viewable; 
+  bool   m_bearing_lines_viewable;
 
   std::string m_vehicles_name_mode; // off; names; names_mode; names_depth
   

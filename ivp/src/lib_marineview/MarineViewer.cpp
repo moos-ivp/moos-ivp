@@ -646,7 +646,7 @@ void MarineViewer::drawCommonVehicle(const string& vname,
     delete [] buff;
   }
 
-  if(bng_line.isValid()) {
+  if(bng_line.isValid() && m_vehi_settings.isViewableBearingLines()) {
     double pix_per_mtr = m_back_img.get_pix_per_mtr();
     double bearing = bng_line.getBearing();
     double range   = bng_line.getRange() * pix_per_mtr;
@@ -1250,7 +1250,7 @@ void MarineViewer::drawSegLists(const vector<XYSegList>& segls)
   
   double lwid = m_geo_settings.geosize("seglist_edge_width", 1);
   double vert = m_geo_settings.geosize("seglist_vertex_size", 2);
-  
+ 
   for(i=0; i<vsize; i++) {
     XYSegList segl = segls[i];
     if(segl.active()) {

@@ -34,6 +34,7 @@ VPlug_VehiSettings::VPlug_VehiSettings()
   setParam("vehicles_name_viewable", "names+shortmode");
   setParam("vehicles_shape_scale", 1.0);
   setParam("vehicles_viewable", "true");
+  setParam("bearing_lines_viewable", "true");
 }
 
 
@@ -73,6 +74,8 @@ bool VPlug_VehiSettings::setParam(string param, string value)
   }
   else if(param == "vehicles_viewable")
     handled = setBooleanOnString(m_vehicles_viewable, value);
+  else if(param == "bearing_lines_viewable")
+    handled = setBooleanOnString(m_bearing_lines_viewable, value);
   else if((param == "vehicle_name_viewable") ||
 	  (param == "vehicles_name_viewable")) {
     handled = true;

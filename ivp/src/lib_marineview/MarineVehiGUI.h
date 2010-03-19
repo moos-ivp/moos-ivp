@@ -37,6 +37,9 @@ protected:
   inline void cb_CycleFocus_i();
   static void cb_CycleFocus(Fl_Widget*);
 
+  inline void cb_AltBearingLines_i(int);
+  static void cb_AltBearingLines(Fl_Widget*, int);
+
   inline void cb_AltTrails_i(int);
   static void cb_AltTrails(Fl_Widget*, int);
 
