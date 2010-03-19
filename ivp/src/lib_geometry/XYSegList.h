@@ -34,11 +34,11 @@ public:
   virtual ~XYSegList() {};
 
   // XYSegList create and edit functions
-  void   add_vertex(const XYPoint&);
-  void   add_vertex(double, double, double=0);       
-  void   alter_vertex(double, double, double=0);
+  void   add_vertex(const XYPoint&, bool mark=false);
+  void   add_vertex(double, double, double=0, bool mark=false);       
+  void   alter_vertex(double, double, double=0, bool mark=false);
   void   delete_vertex(double, double);
-  void   insert_vertex(double, double, double=0);
+  void   insert_vertex(double, double, double=0, bool mark=false);
   void   clear();
 
   
@@ -59,6 +59,7 @@ public:
   double get_vx(unsigned int) const;
   double get_vy(unsigned int) const;
   double get_vz(unsigned int) const;
+  bool   get_vmark(unsigned int) const;
   double get_center_x() const;
   double get_center_y() const;
   double get_min_x() const;
@@ -85,6 +86,7 @@ protected:
   std::vector<double> vertex_x;
   std::vector<double> vertex_y;
   std::vector<double> vertex_z;
+  std::vector<bool>   vertex_mark;
 };
 
 #endif

@@ -34,21 +34,23 @@ using namespace std;
 //---------------------------------------------------------------
 // Procedure: add_vertex
 
-inline void XYSegList::add_vertex(double x, double y, double z)
+inline void XYSegList::add_vertex(double x, double y, double z, bool mark)
 {
   vertex_x.push_back(x);
   vertex_y.push_back(y);
   vertex_z.push_back(z);
+  vertex_mark.push_back(mark);
 }
 
 //---------------------------------------------------------------
 // Procedure: add_vertex
 
-void XYSegList::add_vertex(const XYPoint &pt)
+void XYSegList::add_vertex(const XYPoint &pt, bool mark)
 {
   vertex_x.push_back(pt.x());
   vertex_y.push_back(pt.y());
   vertex_z.push_back(pt.z());
+  vertex_mark.push_back(mark);
 }
 
 //---------------------------------------------------------------
@@ -56,7 +58,7 @@ void XYSegList::add_vertex(const XYPoint &pt)
 //   Purpose: Given a new vertex, find the existing vertex that is
 //            closest, and replace it with the new one.
 
-void XYSegList::alter_vertex(double x, double y, double z)
+void XYSegList::alter_vertex(double x, double y, double z, bool mark)
 {
   int vsize = vertex_x.size();
 
@@ -64,9 +66,10 @@ void XYSegList::alter_vertex(double x, double y, double z)
     return;
 
   int ix   = closest_vertex(x, y); 
-  vertex_x[ix] = x;
-  vertex_y[ix] = y;
-  vertex_z[ix] = z;
+  vertex_x[ix]    = x;
+  vertex_y[ix]    = y;
+  vertex_z[ix]    = z;
+  vertex_mark[ix] = mark;
 }
 
 //---------------------------------------------------------------
@@ -108,7 +111,7 @@ void XYSegList::delete_vertex(double x, double y)
 //   Purpose: Given a new vertex, find the existing segment that is
 //            closest, and add the vertex between points
 
-void XYSegList::insert_vertex(double x, double y, double z)
+void XYSegList::insert_vertex(double x, double y, double z, bool mark)
 {
   int vsize = vertex_x.size();
 
@@ -120,26 +123,31 @@ void XYSegList::insert_vertex(double x, double y, double z)
   vector<double> new_x;
   vector<double> new_y;
   vector<double> new_z;
+  vector<bool> new_m;
   
   for(i=0; i<=ix; i++) {
     new_x.push_back(vertex_x[i]);
     new_y.push_back(vertex_y[i]);
     new_z.push_back(vertex_z[i]);
+    new_m.push_back(vertex_mark[i]);
   }
   
   new_x.push_back(x);
   new_y.push_back(y);
   new_z.push_back(z);
+  new_m.push_back(mark);
 
   for(i=ix+1; i<vsize; i++) {
     new_x.push_back(vertex_x[i]);
     new_y.push_back(vertex_y[i]);
     new_z.push_back(vertex_z[i]);
+    new_m.push_back(vertex_mark[i]);
   }
   
   vertex_x = new_x;
   vertex_y = new_y;
   vertex_z = new_z;
+  vertex_mark = new_m;
 }
 
 //---------------------------------------------------------------
@@ -150,6 +158,7 @@ void XYSegList::clear()
   vertex_x.clear();
   vertex_y.clear();
   vertex_z.clear();
+  vertex_mark.clear();
 }
 
 
@@ -232,16 +241,19 @@ void XYSegList::reverse()
   vector<double> new_x;
   vector<double> new_y;
   vector<double> new_z;
+  vector<bool> new_m;
 
   int vsize = vertex_y.size();
   for(int i=0; i<vsize; i++) {
     new_x.push_back(vertex_x[(vsize-1)-i]);
     new_y.push_back(vertex_y[(vsize-1)-i]);
     new_z.push_back(vertex_z[(vsize-1)-i]);
+    new_m.push_back(vertex_mark[(vsize-1)-i]);
   }
   vertex_x = new_x;
   vertex_y = new_y;
   vertex_z = new_z;
+  vertex_mark = new_m;
 }
 
 //---------------------------------------------------------------
@@ -266,7 +278,8 @@ void XYSegList::print() const
   for(int i=0; i<vsize; i++)
     cout << "  x=" << vertex_x[i] 
 	 << "  y=" << vertex_y[i]
-	 << "  z=" << vertex_z[i] << endl;
+	 << "  z=" << vertex_z[i]
+	 << "  mark=" << vertex_mark[i] << endl;
 }
 
 //---------------------------------------------------------------
@@ -300,6 +313,17 @@ double XYSegList::get_vz(unsigned int i) const
     return(vertex_z[i]);
   else
     return(0);
+}
+
+//---------------------------------------------------------------
+// Procedure: get_vmark
+
+bool XYSegList::get_vmark(unsigned int i) const
+{
+  if(i<vertex_mark.size())
+    return(vertex_mark[i]);
+  else
+    return(false);
 }
 
 //---------------------------------------------------------------
@@ -634,7 +658,6 @@ int XYSegList::closest_vertex(double x, double y) const
 }
 
 
-
 //---------------------------------------------------------------
 // Procedure: closest_segment
 //   Purpose: Find the existing segment that is closest to the 
@@ -689,9 +712,6 @@ int XYSegList::closest_segment(double x, double y) const
 void XYSegList::grow_pt_by_pct(double pct, double cx, double cy, 
 			       double &px, double &py)
 {
-  //if(pct <= 0)
-  //  return;
-
   px += ((px - cx) * pct);
   py += ((py - cy) * pct);
 }
