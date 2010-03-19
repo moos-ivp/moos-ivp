@@ -47,14 +47,14 @@ class WaypointEngine {
   double getPointY() const      {return(m_seglist.get_vy(m_curr_ix));};
   bool   isComplete() const     {return(m_complete);};
   int    getCurrIndex() const   {return(m_curr_ix);};
-  int    getCycleCount()  const {return(m_cycle_count);};
-  int    getCaptureHits() const {return(m_capture_hits);};
-  int    getNonmonoHits() const {return(m_nonmono_hits);};
-  int    getTotalHits() const   {return(m_capture_hits + m_nonmono_hits);};
   bool   currPtChanged();
   void   resetCPA()       {m_current_cpa = -1;};
 
-  unsigned int size() const  {return(m_seglist_raw.size());};
+  unsigned int size() const     {return(m_seglist_raw.size());};
+  unsigned int getCycleCount()  {return(m_cycle_count);};
+  unsigned int getTotalHits()   {return(m_capture_hits + m_nonmono_hits);};
+  unsigned int getCaptureHits() {return(m_capture_hits);};
+  unsigned int getNonmonoHits() {return(m_nonmono_hits);};
   unsigned int resetsRemaining() const;
 
   XYSegList getSegList()  {return(m_seglist);};
@@ -74,7 +74,7 @@ class WaypointEngine {
   bool      m_complete;
   int       m_prev_ix;
   int       m_curr_ix;
-  int       m_cycle_count;
+  unsigned int  m_cycle_count;
 
   bool          m_repeats_endless;
   unsigned int  m_repeats_allowed;
