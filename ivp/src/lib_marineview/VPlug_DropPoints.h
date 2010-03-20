@@ -24,9 +24,9 @@ public:
   void  deletePoint(const XYPoint&) {};
   bool  viewable()    {return(m_viewable_all);};
 
-  XYPoint&    point(int i) {return(m_points[i]);};
-  XYPoint     getPoint(int);
-  std::string getCoordinates(int i);
+  XYPoint&    point(unsigned int i) {return(m_points[i]);};
+  XYPoint     getPoint(unsigned int) const;
+  std::string getCoordinates(unsigned int i) const;
 
   unsigned int size() {return(m_points.size());};
 

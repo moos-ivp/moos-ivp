@@ -1040,9 +1040,8 @@ void REPLAY_GUI::addIPF_Plot(const IPF_Plot& ipf_plot)
       string label = "IPFPlots(Top)/" + toupper(vname) + " : *COLLECTIVE*";
       mbar->add(label.c_str(), 0, (Fl_Callback*)REPLAY_GUI::cb_TopPlotColl,
 		(void*)vname_ix);
-      const Fl_Menu_Item *items = mbar->menu();
-
 #if 0
+      const Fl_Menu_Item *items = mbar->menu();
       Fl_Menu_Item item;
       item.label(label.c_str());
       item.callback((Fl_Callback*)REPLAY_GUI::cb_TopPlotColl);

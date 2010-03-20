@@ -87,9 +87,10 @@ bool AOF_Ring::setParam(const string& param, double val)
     expHigh = (int)(val+0.5);
   else if(param == "plateau")
     plateau = val;
-  else if(param == "gradient_dist")
+  else if(param == "gradient_dist") {
     if(val > 0)
       gradient_dist = val;
+  }
   else
     return(false);
   return(true);

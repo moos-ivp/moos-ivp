@@ -139,6 +139,8 @@ string HelmPlot::get_value_by_index(string qtype, unsigned int index) const
     return(m_helm_active_bhvs[index]);
   else if(qtype == "decision")
     return(m_helm_decision[index]);
+
+  return("unknown");
 }
      
 //---------------------------------------------------------------
@@ -279,6 +281,8 @@ string HelmPlot::get_value_by_time(string qtype, double gtime) const
     return(m_helm_active_bhvs[index]);
   else if(qtype == "decision")
     return(m_helm_decision[index]);
+
+  return("unknown");
 }
      
 //---------------------------------------------------------------

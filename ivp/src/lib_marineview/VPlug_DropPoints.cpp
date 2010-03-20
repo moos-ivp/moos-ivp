@@ -129,9 +129,9 @@ void VPlug_DropPoints::addPoint(const XYPoint& new_point,
 //-------------------------------------------------------------
 // Procedure: getPoint(int)
 
-XYPoint VPlug_DropPoints::getPoint(int index)
+XYPoint VPlug_DropPoints::getPoint(unsigned int index) const
 {
-  if((index < 0) || (index >= m_points.size())) {
+  if(index >= m_points.size()) {
     XYPoint null_point;
     return(null_point);
   }
@@ -142,9 +142,9 @@ XYPoint VPlug_DropPoints::getPoint(int index)
 //-------------------------------------------------------------
 // Procedure: getCoordinates(int)
 
-string VPlug_DropPoints::getCoordinates(int index)
+string VPlug_DropPoints::getCoordinates(unsigned int index) const
 {
-  if((index < 0) || (index >= m_points.size()))
+  if(index >= m_points.size())
     return("index-out-of-range");
   
   if(m_coord_mode == "lat-lon")

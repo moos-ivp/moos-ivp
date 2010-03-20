@@ -199,16 +199,14 @@ void ScanHandler::appStatReport()
   if(m_report.size() == 0)
     return;
 
-  unsigned int i, vsize;
-
   m_report.fillAppStats();
   vector<string> all_sources = m_report.getAllSources();
-  vsize = all_sources.size();
 
+  unsigned int vsize = all_sources.size();
   if(vsize == 0)
     return;
   
-  int max_source_name_length = 0;
+  unsigned int i, max_source_name_length = 0;
   for(i=0; i<vsize; i++) {
     string source = all_sources[i];
     if(source.length() > max_source_name_length)

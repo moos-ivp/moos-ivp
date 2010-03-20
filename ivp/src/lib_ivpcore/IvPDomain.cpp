@@ -190,10 +190,13 @@ unsigned int IvPDomain::getVarPoints(unsigned int index) const
 unsigned int IvPDomain::getVarPoints(const string& str) const
 {
   int index = getIndex(str);
-  if((index >= 0) && (index < m_dpoints.size()))
-    return(m_dpoints[index]);
-  else
+
+  if(index < 0)
     return(0);
+  if((unsigned int)(index) >= m_dpoints.size())
+    return(0);
+
+  return(m_dpoints[index]);
 }
 
 
@@ -203,10 +206,12 @@ unsigned int IvPDomain::getVarPoints(const string& str) const
 double IvPDomain::getVarLow(const string& str) const
 {
   int index = getIndex(str);
-  if((index >= 0) && (index < m_dlow.size()))
-    return(m_dlow[index]);
-  else
+  if(index < 0)
     return(0);
+  if((unsigned int)(index) >= m_dlow.size())
+    return(0);
+
+  return(m_dlow[index]);
 }
 
 //-------------------------------------------------------------
@@ -215,10 +220,12 @@ double IvPDomain::getVarLow(const string& str) const
 double IvPDomain::getVarHigh(const string& str) const
 {
   int index = getIndex(str);
-  if((index >= 0) && (index < m_dhigh.size()))
-    return(m_dhigh[index]);
-  else
+  if(index < 0)
     return(0);
+  if((unsigned int)(index) >= m_dhigh.size())
+    return(0);
+
+  return(m_dhigh[index]);
 }
 
 //-------------------------------------------------------------
@@ -227,10 +234,12 @@ double IvPDomain::getVarHigh(const string& str) const
 double IvPDomain::getVarDelta(const string& str) const
 {
   int index = getIndex(str);
-  if((index >= 0) && (index < m_ddelta.size()))
-    return(m_ddelta[index]);
-  else
+  if(index < 0)
     return(0);
+  if((unsigned int)(index) >= m_ddelta.size())
+    return(0);
+  
+  return(m_ddelta[index]);
 }
 
 //-------------------------------------------------------------

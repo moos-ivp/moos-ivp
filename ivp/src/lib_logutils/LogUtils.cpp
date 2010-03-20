@@ -119,7 +119,6 @@ string getDataEntry(const string& line)
 {
   unsigned int i, len = line.length();
 
-  bool   done = false;
   int    state = 0;
   string str;
 

@@ -117,10 +117,12 @@ PDMap* RT_AutoPeak::create(PDMap *pdmap, int max_more_pcs)
 	newboxes.push_back(new_box);
       }
     }
-    if((max_more_pcs != -1) && (newboxes.size() >= max_more_pcs))
+    // if((max_more_pcs != -1) && (newboxes.size() >= max_more_pcs))
+    if((max_more_pcs >= 0) && 
+       (newboxes.size() >= (unsigned int)(max_more_pcs)))
       done = true;
   }
-
+  
   int amt = newboxes.size();
   pdmap->growBoxArray(amt);
   for(int k=0; k<amt; k++) {
