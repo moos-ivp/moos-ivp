@@ -81,8 +81,8 @@ class VehicleSet
   std::string m_vehicles_active_name;
   std::string m_vehicles_center_name;
 
-  int    m_history_size;
-  double m_curr_time;
+  unsigned int m_history_size;
+  double       m_curr_time;
 
   std::vector<std::string> m_node_report_vars;
 };

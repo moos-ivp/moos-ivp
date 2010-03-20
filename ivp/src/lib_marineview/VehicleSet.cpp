@@ -301,7 +301,6 @@ double VehicleSet::getDoubleInfo(const string& info_type) const
 
 bool VehicleSet::hasVehiName(const string& vname) const
 {  
-  int vsize = m_pos_map.size();
   map<string, ObjectPose>::const_iterator p;
   for(p=m_pos_map.begin(); p != m_pos_map.end(); p++)
     if(p->first == vname)

@@ -28,21 +28,23 @@ public:
   double getLineShade()   {return(m_line_shade);};
   double getLabelShade()  {return(m_label_shade);};
 
-  double getXPos(int ix);
-  double getYPos(int ix);
-  double getLWidth(int ix);
+  double getXPos(unsigned int ix) const;
+  double getYPos(unsigned int ix) const;
+  double getLWidth(unsigned int ix) const;
 
-  std::string getGroup(int ix);
-  std::string getLabel(int ix);
-  bool        getDashed(int ix);
-  bool        getLooped(int ix);
+  std::string getGroup(unsigned int ix) const;
+  std::string getLabel(unsigned int ix) const;
+  bool        getDashed(unsigned int ix) const;
+  bool        getLooped(unsigned int ix) const;
 
-  std::vector<double> getLColor(int ix);
-  std::vector<double> getVColor(int ix);
+  std::vector<double> getLColor(unsigned int ix) const;
+  std::vector<double> getVColor(unsigned int ix) const;
 
-  std::vector<double> getDatumColor() {return(m_datum_color);};
-  double getDatumSize() {return(m_datum_size);};
+  std::vector<double> getDatumColor() const
+    {return(m_datum_color);};
 
+  double getDatumSize() const {return(m_datum_size);};
+  
 protected:
   void addVertex(double xpos, double ypos, double lwidth,
 		 std::string group, std::string label, 

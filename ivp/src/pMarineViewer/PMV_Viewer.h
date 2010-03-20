@@ -70,12 +70,13 @@ class PMV_Viewer : public MarineViewer
   double      m_stale_report_thresh;
 
   // Member variables for holding scoped info
+  bool                     m_scoping;
   std::vector<std::string> m_var_names;
   std::vector<std::string> m_var_vals;
   std::vector<std::string> m_var_source;
   std::vector<std::string> m_var_time;
-  int                      m_var_index;
-  int                      m_var_index_prev;
+  unsigned int             m_var_index;
+  unsigned int             m_var_index_prev;
 
   // Member variables for holding/conveying mouse/button click info
   double   m_mouse_x;

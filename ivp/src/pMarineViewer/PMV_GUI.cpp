@@ -379,7 +379,7 @@ void PMV_GUI::updateXY() {
 }
 
 //----------------------------------------- MOOS_Button
-inline void PMV_GUI::cb_MOOS_Button_i(int val) {  
+inline void PMV_GUI::cb_MOOS_Button_i(unsigned int val) {  
   string skey = "";
   if(val == 1)
     skey = "button_one";
@@ -390,24 +390,21 @@ inline void PMV_GUI::cb_MOOS_Button_i(int val) {
   else if(val == 4)
     skey = "button_four";
   
-  int vsize = m_button_keys.size();
-  int varsize = m_button_vars.size();
-  int valsize = m_button_vals.size();
-  for(int i=0; i<vsize; i++) {
+  unsigned int i, vsize = m_button_keys.size();
+  for(i=0; i<vsize; i++) {
     if(m_button_keys[i] == skey)  {
       pushPending(m_button_vars[i], m_button_vals[i]);
     }
   }
 }
 
-void PMV_GUI::cb_MOOS_Button(Fl_Widget* o, int v) {
-  int val = (int)(v);
-  ((PMV_GUI*)(o->parent()->user_data()))->cb_MOOS_Button_i(val);
+void PMV_GUI::cb_MOOS_Button(Fl_Widget* o, unsigned int v) {
+  ((PMV_GUI*)(o->parent()->user_data()))->cb_MOOS_Button_i(v);
 }
 
 
 //----------------------------------------- DoAction
-inline void PMV_GUI::cb_DoAction_i(int i) {  
+inline void PMV_GUI::cb_DoAction_i(unsigned int i) {  
   string key = m_action_keys[i];
   if(key == "") {
     cout << m_action_vars[i] << " = " << m_action_vals[i] << endl;
@@ -424,14 +421,13 @@ inline void PMV_GUI::cb_DoAction_i(int i) {
   }
 }
 
-void PMV_GUI::cb_DoAction(Fl_Widget* o, int v) {
-  int val = (int)(v);
-  ((PMV_GUI*)(o->parent()->user_data()))->cb_DoAction_i(val);
+void PMV_GUI::cb_DoAction(Fl_Widget* o, unsigned int v) {
+  ((PMV_GUI*)(o->parent()->user_data()))->cb_DoAction_i(v);
 }
 
 
 //----------------------------------------- Scope
-inline void PMV_GUI::cb_Scope_i(int i) {  
+inline void PMV_GUI::cb_Scope_i(unsigned int i) {  
   if(i==0) {
     const char *str = fl_input("Enter a new MOOS variable for scoping:", 
 			       "DB_CLIENTS");
@@ -450,55 +446,51 @@ inline void PMV_GUI::cb_Scope_i(int i) {
     return;
   }
 
-  if((i<0) || (i>=m_scope_vars.size()))
+  if(i>=m_scope_vars.size())
     return;
- 
+  
   string varname = m_scope_vars[i];
   mviewer->setActiveScope(varname);
 }
 
-void PMV_GUI::cb_Scope(Fl_Widget* o, int v) {
-  int val = (int)(v);
-  ((PMV_GUI*)(o->parent()->user_data()))->cb_Scope_i(val);
+void PMV_GUI::cb_Scope(Fl_Widget* o, unsigned int v) {
+  ((PMV_GUI*)(o->parent()->user_data()))->cb_Scope_i(v);
 }
 
 //----------------------------------------- LeftContext
-inline void PMV_GUI::cb_LeftContext_i(int i) {  
-  if((i<0) || (i>=m_left_mouse_keys.size()))
+inline void PMV_GUI::cb_LeftContext_i(unsigned int i) {  
+  if(i>=m_left_mouse_keys.size())
     return;
   string key_str = m_left_mouse_keys[i];
   mviewer->setLeftMouseKey(key_str);
 }
 
-void PMV_GUI::cb_LeftContext(Fl_Widget* o, int v) {
-  int val = (int)(v);
-  ((PMV_GUI*)(o->parent()->user_data()))->cb_LeftContext_i(val);
+void PMV_GUI::cb_LeftContext(Fl_Widget* o, unsigned int v) {
+  ((PMV_GUI*)(o->parent()->user_data()))->cb_LeftContext_i(v);
 }
 
 //----------------------------------------- RightContext
-inline void PMV_GUI::cb_RightContext_i(int i) {  
-  if((i<0) || (i>=m_right_mouse_keys.size()))
+inline void PMV_GUI::cb_RightContext_i(unsigned int i) {  
+  if(i>=m_right_mouse_keys.size())
     return;
   string key_str = m_right_mouse_keys[i];
   mviewer->setRightMouseKey(key_str);
 }
 
-void PMV_GUI::cb_RightContext(Fl_Widget* o, int v) {
-  int val = (int)(v);
-  ((PMV_GUI*)(o->parent()->user_data()))->cb_RightContext_i(val);
+void PMV_GUI::cb_RightContext(Fl_Widget* o, unsigned int v) {
+  ((PMV_GUI*)(o->parent()->user_data()))->cb_RightContext_i(v);
 }
 
 //----------------------------------------- Reference
-inline void PMV_GUI::cb_Reference_i(int i) {  
-  if((i<0) || (i>=m_reference_tags.size()))
+inline void PMV_GUI::cb_Reference_i(unsigned int i) {  
+  if(i>=m_reference_tags.size())
     return;
   string str = m_reference_tags[i];
   mviewer->setParam("reference_tag", str);
 }
 
-void PMV_GUI::cb_Reference(Fl_Widget* o, int v) {
-  int val = (int)(v);
-  ((PMV_GUI*)(o->parent()->user_data()))->cb_Reference_i(val);
+void PMV_GUI::cb_Reference(Fl_Widget* o, unsigned int v) {
+  ((PMV_GUI*)(o->parent()->user_data()))->cb_Reference_i(v);
 }
 
 //-------------------------------------------------------------------
@@ -574,7 +566,7 @@ bool PMV_GUI::addScopeVariable(string varname)
   }
 
   m_scope_vars.push_back(varname);
-  int index = m_scope_vars.size()-1;
+  unsigned int index = m_scope_vars.size()-1;
   
   string label = "MOOS-Scope/";
   label += (truncString(varname, 25, "middle"));

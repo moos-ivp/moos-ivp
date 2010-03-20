@@ -27,15 +27,17 @@ public:
   double   getMarkerGScale()   {return(m_marker_scale_global);}
   bool     viewable(const std::string& s="all");
 
-  std::string getMarkerType(int ix);
-  double      getMarkerXPos(int ix);
-  double      getMarkerYPos(int ix);
-  double      getMarkerWidth(int ix);
-  std::string getMarkerLabel(int ix);
+  std::string getMarkerType(unsigned int ix) const;
+  double      getMarkerXPos(unsigned int ix) const;
+  double      getMarkerYPos(unsigned int ix) const;
+  double      getMarkerWidth(unsigned int ix) const;
+  std::string getMarkerLabel(unsigned int ix) const;
 
-  int            getMarkerColorCount(int ix);
-  std::string    getMarkerColorString(int mix, int cix);
-  std::vector<ColorPack> getMarkerColorVectors(int mix);
+  //int            getMarkerColorCount(int ix);
+  std::string    getMarkerColorString(unsigned int mix, 
+				      unsigned int cix) const;
+
+  std::vector<ColorPack> getMarkerColorVectors(unsigned int mix) const;
 
   ColorPack getLabelColor() {return(m_label_color);};
 

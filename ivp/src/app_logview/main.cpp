@@ -120,6 +120,7 @@ void help_message()
 void version_message()
 {
   vector<string> svector = getReleaseInfo("logview");
-  for(int j=0; j<svector.size(); j++)
-    cout << svector[j] << endl;
+  unsigned int i, vsize = svector.size();
+  for(i=0; i<vsize; i++)
+    cout << svector[i] << endl;
 }

@@ -360,8 +360,9 @@ void XMS::handleCommand(char c)
     m_update_requested = true;
     break;
   case '<':
-    m_history_length -= 5;
-    if(m_history_length < 5)
+    if(m_history_length >= 10)
+      m_history_length -= 5;
+    else
       m_history_length = 5;
     m_update_requested = true;
     break;

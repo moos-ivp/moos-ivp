@@ -356,11 +356,11 @@ void HelmIvP::postBehaviorMessages()
   for(i=0; i < bhv_cnt; i++) {
     string bhv_descriptor = m_bhv_set->getDescriptor(i);
     vector<VarDataPair> mvector = m_bhv_set->getMessages(i);
-    unsigned int msize = mvector.size();
+    unsigned int j, msize = mvector.size();
 
     string bhv_postings_summary;
   
-    for(int j=0; j<msize; j++) {
+    for(j=0; j<msize; j++) {
       VarDataPair msg = mvector[j];
 
       string var   = msg.get_var();

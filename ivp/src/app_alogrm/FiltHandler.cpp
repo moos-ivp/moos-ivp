@@ -98,7 +98,6 @@ bool FiltHandler::handle(const string& alogfile, const string& new_alogfile)
   bool done  = false;
   while(!done) {
     count++;
-    bool   skip_line = false;
     string line_raw = getNextRawLine(m_file_in);
     bool   line_is_comment = false;
     if((line_raw.length() > 0) && (line_raw.at(0) == '%'))

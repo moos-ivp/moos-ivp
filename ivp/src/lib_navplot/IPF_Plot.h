@@ -58,7 +58,7 @@ public:
   std::string  nullHeadingSpeedIPF() const;
 
 protected:
-  int getIndexByTime(double) const;
+  unsigned int getIndexByTime(double) const;
   int getIndexByHelmIter(unsigned int) const;
 
 protected:

@@ -29,7 +29,7 @@ using namespace std;
 //-------------------------------------------------------------
 // Procedure: print
 
-void StringNode::print(int indent)
+void StringNode::print(unsigned int indent)
 {
   unsigned int i, vsize = m_children.size();
   for(i=0; i<indent; i++)
@@ -44,7 +44,7 @@ void StringNode::print(int indent)
 //-------------------------------------------------------------
 // Procedure: getPrintableSet
 
-vector<string> StringNode::getPrintableSet(int indent)
+vector<string> StringNode::getPrintableSet(unsigned int indent)
 {
   vector<string> rvector;
   string this_nodes_str;

@@ -230,9 +230,9 @@ bool VPlug_Markers::viewable(const string& str)
 //-----------------------------------------------------------
 // Procedure: getMarkerType()
 
-string VPlug_Markers::getMarkerType(int ix)
+string VPlug_Markers::getMarkerType(unsigned int ix) const
 {
-  if((ix >= 0) && (ix < m_marker_type.size()))
+  if(ix < m_marker_type.size())
     return(m_marker_type[ix]);
   else
     return("");
@@ -241,9 +241,9 @@ string VPlug_Markers::getMarkerType(int ix)
 //-----------------------------------------------------------
 // Procedure: getMarkerXPos()
 
-double VPlug_Markers::getMarkerXPos(int ix)
+double VPlug_Markers::getMarkerXPos(unsigned int ix) const
 {
-  if((ix >= 0) && (ix < m_marker_xpos.size()))
+  if(ix < m_marker_xpos.size())
     return(m_marker_xpos[ix]);
   else
     return(0);
@@ -252,9 +252,9 @@ double VPlug_Markers::getMarkerXPos(int ix)
 //-----------------------------------------------------------
 // Procedure: getMarkerYPos()
 
-double VPlug_Markers::getMarkerYPos(int ix)
+double VPlug_Markers::getMarkerYPos(unsigned int ix) const
 {
-  if((ix >= 0) && (ix < m_marker_ypos.size()))
+  if(ix < m_marker_ypos.size())
     return(m_marker_ypos[ix]);
   else
     return(0);
@@ -263,9 +263,9 @@ double VPlug_Markers::getMarkerYPos(int ix)
 //-----------------------------------------------------------
 // Procedure: getMarkerWidth()
 
-double VPlug_Markers::getMarkerWidth(int ix)
+double VPlug_Markers::getMarkerWidth(unsigned int ix) const
 {
-  if((ix >= 0) && (ix < m_marker_width.size()))
+  if(ix < m_marker_width.size())
     return(m_marker_width[ix]);
   else
     return(0);
@@ -274,9 +274,9 @@ double VPlug_Markers::getMarkerWidth(int ix)
 //-----------------------------------------------------------
 // Procedure: getMarkerLabel()
 
-string VPlug_Markers::getMarkerLabel(int ix)
+string VPlug_Markers::getMarkerLabel(unsigned int ix) const
 {
-  if((ix >= 0) && (ix < m_marker_label.size()))
+  if(ix < m_marker_label.size())
     return(m_marker_label[ix]);
   else
     return("");
@@ -285,12 +285,13 @@ string VPlug_Markers::getMarkerLabel(int ix)
 //-----------------------------------------------------------
 // Procedure: getMarkerColorString
 
-string VPlug_Markers::getMarkerColorString(int mix, int cix)
+string VPlug_Markers::getMarkerColorString(unsigned int mix, 
+					   unsigned int cix) const
 {
-  if((mix < 0) && (mix >= m_marker_colors.size()))
+  if(mix >= m_marker_colors.size())
     return("");
   
-  if((cix < 0) && (cix >= m_marker_colors[mix].size()))
+  if(cix >= m_marker_colors[mix].size())
     return("");
   
   return(m_marker_colors[mix][cix]);
@@ -300,14 +301,13 @@ string VPlug_Markers::getMarkerColorString(int mix, int cix)
 //-----------------------------------------------------------
 // Procedure: getMarkerColorVector
 
-vector<ColorPack> VPlug_Markers::getMarkerColorVectors(int mix)
+vector<ColorPack> VPlug_Markers::getMarkerColorVectors(unsigned int mix) const
 {
-  vector<ColorPack> fail_vector;
-
-  if((mix < 0) && (mix >= m_marker_cpacks.size()))
-    return(fail_vector);
-  else
+  if(mix < m_marker_cpacks.size())
     return(m_marker_cpacks[mix]);
+  
+  vector<ColorPack> fail_vector;
+  return(fail_vector);
 }
 
 

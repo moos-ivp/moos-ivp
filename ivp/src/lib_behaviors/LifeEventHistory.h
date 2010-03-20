@@ -23,9 +23,9 @@ public:
 
   bool isStale() {return(m_stale_report);};
 
-  bool setBannerActive(bool v) {m_banner_active=v;};
-  bool setColorActive(bool v)  {m_color_active=v;};
-  bool setSeedActive(bool v)   {m_seed_active=v;};
+  void setBannerActive(bool v) {m_banner_active=v;};
+  void setColorActive(bool v)  {m_color_active=v;};
+  void setSeedActive(bool v)   {m_seed_active=v;};
 
   std::vector<std::string> getReport(std::string mode="normal");
 

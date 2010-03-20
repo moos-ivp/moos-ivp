@@ -205,7 +205,6 @@ void BHV_AvoidObstacles::handleVisualHint(string hint)
 {
   string param = tolower(stripBlankEnds(biteString(hint, '=')));
   string value = stripBlankEnds(hint);
-  double dval  = atof(value.c_str());
 
   if((param == "obstacle_edge_color") && isColor(value))
     m_hint_obst_edge_color = value;

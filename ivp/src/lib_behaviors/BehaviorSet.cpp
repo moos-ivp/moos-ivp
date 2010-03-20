@@ -651,7 +651,7 @@ void BehaviorSet::print()
     cout << "Behavior descriptor: " << bhv->getDescriptor() << endl;
     cout << " priority weight: " << bhv->m_priority_wt << endl;
     cout << " BuildInfo: " << endl;
-    bhv->m_build_info;
+    cout << bhv->m_build_info << endl;
     cout << "-------" << endl;
   }
 }

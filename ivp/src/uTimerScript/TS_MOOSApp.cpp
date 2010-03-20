@@ -48,7 +48,8 @@ TS_MOOSApp::TS_MOOSApp()
   m_script_name    = "unnamed";
 
   // Default values for configuration parameters.
-  m_reset_max      = -1;
+  m_reset_max      = 0;
+  m_reset_forever  = true;
   m_reset_time     = -1; // -1:none, 0:after-last, NUM:atNUM
   m_var_forward    = "UTS_FORWARD";
   m_var_pause      = "UTS_PAUSE";
@@ -77,8 +78,6 @@ bool TS_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
     string key   = msg.GetKey();
     double dval  = msg.GetDouble();
     string sval  = msg.GetString(); 
-    double mtime = msg.GetTime();
-    bool   mdbl  = msg.IsDouble();
     bool   mstr  = msg.IsString();
     string msrc  = msg.GetSource();
 
@@ -240,9 +239,11 @@ bool TS_MOOSApp::OnStartUp()
       else if(param == "reset_max") {
 	string str = tolower(value);
 	if((str == "any") || (str == "unlimited"))
-	  m_reset_max = -1;
-	else if(isNumber(value) && (atoi(value.c_str()) >= 0))
+	  m_reset_forever = true;
+	else if(isNumber(value) && (atoi(value.c_str()) >= 0)) {
 	  m_reset_max = atoi(value.c_str());
+	  m_reset_forever = false;
+	}
       }
       else if(param == "reset_time") {
 	string str = tolower(value);
@@ -395,7 +396,7 @@ bool TS_MOOSApp::addNewEvent(string event_str)
     if(param == "var")
       new_var = value;
     else if(param == "val") {
-      string idx_string = intToString(m_pairs.size());
+      string idx_string = uintToString(m_pairs.size());
       idx_string = padString(idx_string, 3);
       idx_string = findReplace(idx_string, ' ', '0');
       value = findReplace(value, "$$IDX", idx_string);
@@ -590,13 +591,13 @@ void TS_MOOSApp::executePosting(VarDataPair pair)
   
   sval = findReplace(sval, "$(DBTIME)", doubleToString(db_uptime, 2));
   sval = findReplace(sval, "$(UTCTIME)", doubleToString(m_utc_time, 2));
-  sval = findReplace(sval, "$(TCOUNT)", intToString(m_posted_tcount));
-  sval = findReplace(sval, "$(COUNT)", intToString(m_posted_count));
+  sval = findReplace(sval, "$(TCOUNT)", uintToString(m_posted_tcount));
+  sval = findReplace(sval, "$(COUNT)", uintToString(m_posted_count));
   
   sval = findReplace(sval, "$[DBTIME]", doubleToString(db_uptime, 2));
   sval = findReplace(sval, "$[UTCTIME]", doubleToString(m_utc_time, 2));
-  sval = findReplace(sval, "$[TCOUNT]", intToString(m_posted_tcount));
-  sval = findReplace(sval, "$[COUNT]", intToString(m_posted_count));
+  sval = findReplace(sval, "$[TCOUNT]", uintToString(m_posted_tcount));
+  sval = findReplace(sval, "$[COUNT]", uintToString(m_posted_count));
   
   unsigned int i, vsize = m_rand_vars.size();
   for(i=0; i<vsize; i++) {
@@ -671,8 +672,8 @@ void TS_MOOSApp::jumpToNextPostingTime()
 void TS_MOOSApp::handleReset()
 {
   // Check if the number of allowed resets has been reached. Unlimited
-  // resets are indicated by (m_reset_max == -1).
-  if((m_reset_max != -1) && (m_reset_count >= m_reset_max))
+  // resets are indicated by m_reset_forever=true.
+  if(!m_reset_forever && (m_reset_count >= m_reset_max))
     return;
   m_reset_count++;
   
@@ -711,10 +712,10 @@ void TS_MOOSApp::postStatus()
 
   string status = "name=" + m_script_name;
   status += ", elapsed_time=" + doubleToString(m_elapsed_time,2);
-  status += ", posted=" + intToString(m_posted_count);
+  status += ", posted=" + uintToString(m_posted_count);
   
   int pending = (m_pairs.size() - m_posted_count);
-  status += ", pending=" + intToString(pending);
+  status += ", pending=" + uintToString(pending);
 
   status += ", paused=" + boolToString(m_paused);
   status += ", conditions_ok=" + boolToString(m_conditions_ok);
@@ -728,9 +729,9 @@ void TS_MOOSApp::postStatus()
   status += ", upon_awake=" + m_upon_awake;
   
   string maxresets = "/any";
-  if(m_reset_max != -1)
-    maxresets = "/" + intToString(m_reset_max);
-  status += ", resets=" + intToString(m_reset_count) + maxresets;
+  if(!m_reset_forever)
+    maxresets = "/" + uintToString(m_reset_max);
+  status += ", resets=" + uintToString(m_reset_count) + maxresets;
   
   m_Comms.Notify(m_var_status, status);
   m_status_tstamp = m_utc_time;

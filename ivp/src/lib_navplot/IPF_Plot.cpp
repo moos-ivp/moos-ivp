@@ -96,7 +96,7 @@ string IPF_Plot::getIPFByIndex(unsigned int index) const
 string IPF_Plot::getIPFByTime(double timestamp) const
 {
   // Special case: if the IPF_Plot instance is "empty"
-  unsigned int i, vsize = m_time_stamp.size();
+  unsigned int vsize = m_time_stamp.size();
   if(vsize == 0)
     return("");
 
@@ -110,7 +110,7 @@ string IPF_Plot::getIPFByTime(double timestamp) const
     return("");
 
   // Determine highest index w/ time <= timestamp
-  int index = getIndexByTime(timestamp);
+  unsigned int index = getIndexByTime(timestamp);
 
   return(m_ipf_string[index]);
 }
@@ -183,9 +183,9 @@ string IPF_Plot::nullHeadingSpeedIPF() const
 //            has a time less than or equal to the query time.
 //            Search is log(n)
 
-int IPF_Plot::getIndexByTime(double timestamp) const
+unsigned int IPF_Plot::getIndexByTime(double timestamp) const
 {
-  int vsize = m_time_stamp.size();
+  unsigned int vsize = m_time_stamp.size();
 
   // Special case: if the query time is outside the IPF_Plot 
   // time range, return the extreme value.
@@ -195,8 +195,8 @@ int IPF_Plot::getIndexByTime(double timestamp) const
     return(vsize-1);
   
   // Handle general case
-  int jump  = vsize / 2;
-  int index = vsize / 2;
+  unsigned int jump  = vsize / 2;
+  unsigned int index = vsize / 2;
   bool done = false;
   while(!done) {
     if(jump > 1)

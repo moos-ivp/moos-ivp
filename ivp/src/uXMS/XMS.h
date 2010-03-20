@@ -132,7 +132,7 @@ class XMS : public CMOOSApp
   std::list<std::string>  m_history_sources;
   std::list<int>          m_history_counts;
   std::list<double>       m_history_times;
-  int                     m_history_length;
+  unsigned int            m_history_length;
   bool                    m_history_mode;
   bool                    m_report_histvar;
 

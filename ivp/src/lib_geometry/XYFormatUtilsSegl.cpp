@@ -286,6 +286,8 @@ XYSegList stringLawnmower2SegList(string str)
     }
     else if((param == "snap") && isNumber(value) && (dval >= 0))
       snapval = dval;
+    else if(param == "active") 
+      setBooleanOnString(active, value);
     else if(param == "rows")
       rows = tolower(value);
     else if(param == "label")
@@ -342,5 +344,6 @@ XYSegList stringLawnmower2SegList(string str)
 
   if(snapval > 0)
     new_seglist.apply_snap(snapval);
+  new_seglist.set_active(active);
   return(new_seglist);
 }

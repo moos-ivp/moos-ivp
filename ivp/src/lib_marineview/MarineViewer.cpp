@@ -533,12 +533,14 @@ void MarineViewer::drawCommonVehicle(const string& vname,
   glLoadIdentity();
   glOrtho(0, w(), 0, h(), -1 ,1);
 
+#if 0
   double xpos = 0;
   double ypos = 0;
   if(opose.isLatLonSet()) {
     double dlat = opose.getLat();
     double dlon = opose.getLon();
   }
+#endif
 
   // Determine position in terms of image percentage
   double vehicle_ix = meters2img('x', opose.getX());
@@ -873,12 +875,12 @@ void MarineViewer::drawOpArea()
   unsigned int asize = m_op_area.size();
 
   double line_shade  = m_op_area.getLineShade();
-  double label_shade = m_op_area.getLabelShade();
+  //double label_shade = m_op_area.getLabelShade();
 
   while(index < asize) {
     string group  = m_op_area.getGroup(index);
     double lwidth = m_op_area.getLWidth(index);
-    bool   dashed = m_op_area.getDashed(index);
+    //bool   dashed = m_op_area.getDashed(index);
     bool   looped = m_op_area.getLooped(index);
 
     ColorPack lcolor = m_op_area.getLColor(index);
@@ -1140,7 +1142,7 @@ void MarineViewer::drawPolygon(const XYPolygon& poly,
   //-------------------------------- perhaps draw poly label
   if(m_geo_settings.viewable("polygon_viewable_labels")) {
     double cx = poly.get_avg_x() * m_back_img.get_pix_per_mtr();
-    double cy = poly.get_avg_y() * m_back_img.get_pix_per_mtr();
+    //double cy = poly.get_avg_y() * m_back_img.get_pix_per_mtr();
     double my = poly.get_max_y() * m_back_img.get_pix_per_mtr();
     glTranslatef(cx, my, 0);
     

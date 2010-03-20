@@ -114,12 +114,11 @@ IvPFunction *BHV_HeadingHysteresis::onRunState()
   postMessage("HIST_HEADING_AVERAGE", hdg_average);
   postMessage("HIST_HEADING_VARIANCE", hdg_variance);
 
-  double peak_width;
-  double max_variance = 30;
-
   IvPFunction *ipf = 0;
 
 #if 0
+  double peak_width;
+  double max_variance = 30;
   if(m_min_heading_window == m_max_heading_window)
     peak_width = m_min_heading_window;
   else {

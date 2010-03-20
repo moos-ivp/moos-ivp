@@ -103,6 +103,8 @@ bool OpAreaSpec::addVertex(const std::string& str,
 
   addVertex(xpos_d, ypos_d, lwidth_d, group, label, lcolor,
 	    vcolor, looped_b, dashed_b);
+
+  return(true);
 }
 
 //-----------------------------------------------------------
@@ -208,9 +210,9 @@ bool OpAreaSpec::viewable(const string& str)
 //-----------------------------------------------------------
 // Procedure: getXPos
 
-double OpAreaSpec::getXPos(int ix)
+double OpAreaSpec::getXPos(unsigned int ix) const
 {
-  if((ix >= 0) && (ix < m_vertex_xpos.size()))
+  if(ix < m_vertex_xpos.size())
     return(m_vertex_xpos[ix]);
   return(0);
 }
@@ -218,9 +220,9 @@ double OpAreaSpec::getXPos(int ix)
 //-----------------------------------------------------------
 // Procedure: getYPos
 
-double OpAreaSpec::getYPos(int ix)
+double OpAreaSpec::getYPos(unsigned int ix) const
 {
-  if((ix >= 0) && (ix < m_vertex_ypos.size()))
+  if(ix < m_vertex_ypos.size())
     return(m_vertex_ypos[ix]);
   return(0);
 }
@@ -228,9 +230,9 @@ double OpAreaSpec::getYPos(int ix)
 //-----------------------------------------------------------
 // Procedure: getLWidth
 
-double OpAreaSpec::getLWidth(int ix)
+double OpAreaSpec::getLWidth(unsigned int ix) const
 {
-  if((ix >= 0) && (ix < m_vertex_lwidth.size()))
+  if(ix < m_vertex_lwidth.size())
     return(m_vertex_lwidth[ix]);
   return(0);
 }
@@ -238,9 +240,9 @@ double OpAreaSpec::getLWidth(int ix)
 //-----------------------------------------------------------
 // Procedure: getGroup
 
-string OpAreaSpec::getGroup(int ix)
+string OpAreaSpec::getGroup(unsigned int ix) const
 {
-  if((ix >= 0) && (ix < m_vertex_group.size()))
+  if(ix < m_vertex_group.size())
     return(m_vertex_group[ix]);
   return("");
 }
@@ -248,9 +250,9 @@ string OpAreaSpec::getGroup(int ix)
 //-----------------------------------------------------------
 // Procedure: getLabel
 
-string OpAreaSpec::getLabel(int ix)
+string OpAreaSpec::getLabel(unsigned int ix) const
 {
-  if((ix >= 0) && (ix < m_vertex_label.size()))
+  if(ix < m_vertex_label.size())
     return(m_vertex_label[ix]);
   return("");
 }
@@ -258,9 +260,9 @@ string OpAreaSpec::getLabel(int ix)
 //-----------------------------------------------------------
 // Procedure: getDashed
 
-bool OpAreaSpec::getDashed(int ix)
+bool OpAreaSpec::getDashed(unsigned int ix) const
 {
-  if((ix >= 0) && (ix < m_vertex_dashed.size()))
+  if(ix < m_vertex_dashed.size())
     return(m_vertex_dashed[ix]);
   return(false);
 }
@@ -268,9 +270,9 @@ bool OpAreaSpec::getDashed(int ix)
 //-----------------------------------------------------------
 // Procedure: getLooped
 
-bool OpAreaSpec::getLooped(int ix)
+bool OpAreaSpec::getLooped(unsigned int ix) const
 {
-  if((ix >= 0) && (ix < m_vertex_looped.size()))
+  if(ix < m_vertex_looped.size())
     return(m_vertex_looped[ix]);
   return(false);
 }
@@ -278,23 +280,23 @@ bool OpAreaSpec::getLooped(int ix)
 //-----------------------------------------------------------
 // Procedure: getLColor
 
-vector<double> OpAreaSpec::getLColor(int ix)
-{
-  vector<double> grey_vector(3, 0.5);
-  
-  if((ix >= 0) && (ix < m_vertex_lcolor.size()))
+vector<double> OpAreaSpec::getLColor(unsigned int ix) const
+{  
+  if(ix < m_vertex_lcolor.size())
     return(m_vertex_lcolor[ix]);
+
+  vector<double> grey_vector(3, 0.5);
   return(grey_vector);
 }
 
 //-----------------------------------------------------------
 // Procedure: getVColor
 
-vector<double> OpAreaSpec::getVColor(int ix)
+vector<double> OpAreaSpec::getVColor(unsigned int ix) const
 {
-  vector<double> grey_vector(3, 0.5);
-  
-  if((ix >= 0) && (ix < m_vertex_vcolor.size()))
+  if(ix < m_vertex_vcolor.size())
     return(m_vertex_vcolor[ix]);
+  
+  vector<double> grey_vector(3, 0.5);
   return(grey_vector);
 }

@@ -54,18 +54,18 @@ public:
   void         addReferenceVehicle(std::string vname);
 
  private:
-  inline void cb_MOOS_Button_i(int);
-  static void cb_MOOS_Button(Fl_Widget*, int);
-  inline void cb_DoAction_i(int);
-  static void cb_DoAction(Fl_Widget*, int);
-  inline void cb_Scope_i(int);
-  static void cb_Scope(Fl_Widget*, int);
-  inline void cb_LeftContext_i(int);
-  static void cb_LeftContext(Fl_Widget*, int);
-  inline void cb_RightContext_i(int);
-  static void cb_RightContext(Fl_Widget*, int);
-  inline void cb_Reference_i(int);
-  static void cb_Reference(Fl_Widget*, int);
+  inline void cb_MOOS_Button_i(unsigned int);
+  static void cb_MOOS_Button(Fl_Widget*, unsigned int);
+  inline void cb_DoAction_i(unsigned int);
+  static void cb_DoAction(Fl_Widget*, unsigned int);
+  inline void cb_Scope_i(unsigned int);
+  static void cb_Scope(Fl_Widget*, unsigned int);
+  inline void cb_LeftContext_i(unsigned int);
+  static void cb_LeftContext(Fl_Widget*, unsigned int);
+  inline void cb_RightContext_i(unsigned int);
+  static void cb_RightContext(Fl_Widget*, unsigned int);
+  inline void cb_Reference_i(unsigned int);
+  static void cb_Reference(Fl_Widget*, unsigned int);
 
 protected:
   Fl_Output  *v_nam;

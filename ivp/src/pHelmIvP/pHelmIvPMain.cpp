@@ -48,7 +48,8 @@ int main(int argc, char *argv[])
   // Look for a request for version information
   if(scanArgs(argc, argv, "-v", "--version", "-version")) {
     vector<string> svector = getReleaseInfo("pHelmIvP");
-    for(int i=0; i<svector.size(); i++)
+    unsigned int i, vsize = svector.size();
+    for(i=0; i<vsize; i++)
       if(!strContains(svector[i], "ree"))
 	cout << svector[i] << endl;
     return(0);

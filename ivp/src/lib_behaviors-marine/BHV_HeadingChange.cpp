@@ -134,9 +134,6 @@ IvPFunction *BHV_HeadingChange::onRunState()
     }
   }
   
-  double peak_width = 30;
-  double summit_delta = 50;
-
   ZAIC_PEAK spd_zaic(m_domain, "speed");
   spd_zaic.setSummit(m_turn_speed);
   spd_zaic.setValueWrap(false);

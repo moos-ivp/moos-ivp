@@ -527,7 +527,7 @@ double XYSegList::max_dist_to_ctr() const
 
 bool XYSegList::segs_cross(bool loop) const
 {
-  int i, j, k, vsize = vertex_x.size();
+  int i, vsize = vertex_x.size();
   if(vsize <= 3)
     return(false);
 

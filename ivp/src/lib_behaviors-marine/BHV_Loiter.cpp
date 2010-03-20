@@ -348,7 +348,7 @@ void BHV_Loiter::updateCenter()
     unsigned int i, vsize = svector.size();
     for(i=0; i<vsize; i++) {
       vector<string> ivector = parseString(svector[i], '=');
-      unsigned int j, isize = ivector.size();
+      unsigned int isize = ivector.size();
       if(isize == 2) {
 	string left  = stripBlankEnds(ivector[0]);
 	string right = stripBlankEnds(ivector[1]);

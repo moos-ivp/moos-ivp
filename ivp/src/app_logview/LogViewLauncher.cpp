@@ -345,7 +345,7 @@ void LogViewLauncher::parseALogFiles()
 
 void LogViewLauncher::parseALogFile(unsigned int index)
 {
-  unsigned int i, vsize = m_alog_files.size();
+  unsigned int vsize = m_alog_files.size();
   if(index >= vsize)
     return;
 
@@ -363,7 +363,6 @@ void LogViewLauncher::parseALogFile(unsigned int index)
   double skew = m_alog_files_skew[index];
 
   bool done = false;
-  int count = 0;
   while(!done) {
     ALogEntry entry = getNextRawALogEntry(f);
     if(entry.getStatus() == "eof")
@@ -405,8 +404,6 @@ void LogViewLauncher::parseALogFile(unsigned int index)
   m_entries_ipf_plot.push_back(entries_ipf_plot);
   m_entries_vplug_plot.push_back(entries_vplug_plot);
   m_entries_helm_plot.push_back(entries_helm_plot);
-
-  unsigned int nr_size = m_node_reports[index].size();
 }
   
 //-------------------------------------------------------------
@@ -526,7 +523,7 @@ bool LogViewLauncher::buildLogPlots()
   for(i=0; i<vsize; i++) {
     Populator_LogPlots pop_lp;
     pop_lp.setVName(m_vehicle_name[i]); 
-    bool ok = pop_lp.populateFromEntries(m_entries_log_plot[i]);
+    pop_lp.populateFromEntries(m_entries_log_plot[i]);
     
     vector<LogPlot> lp_vector;
     unsigned int k, lp_size = pop_lp.size();

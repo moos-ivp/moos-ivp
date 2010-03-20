@@ -46,9 +46,9 @@ public:
 
 
   double       getParam(std::string);
-  std::string  getParam(std::string, int index);
+  std::string  getParam(std::string, unsigned int index);
 
-  int          size()                {return(m_low_val.size());};
+  unsigned int size()                {return(m_low_val.size());};
   void         setValueWrap(bool v)  {m_value_wrap=v;};
   bool         getValueWrap()        {return(m_value_wrap);};
   bool         stateOK()             {return(m_state_ok);};
@@ -64,11 +64,10 @@ protected:
   bool   m_value_wrap;
 
 private:
-  int    m_domain_pts;
-  int    m_domain_ix;
-  double m_domain_high;
-  double m_domain_low;
-  double m_domain_delta;
+  unsigned int  m_domain_pts;
+  double        m_domain_high;
+  double        m_domain_low;
+  double        m_domain_delta;
 
   std::vector<double> m_low_val;
   std::vector<bool>   m_low_val_inc;

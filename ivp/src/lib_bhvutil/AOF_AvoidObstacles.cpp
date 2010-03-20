@@ -278,10 +278,11 @@ void AOF_AvoidObstacles::applyBuffer()
 //----------------------------------------------------------------
 // Procedure: getObstacleSpec
 
-string AOF_AvoidObstacles::getObstacleSpec(int ix, bool use_buffered, 
+string AOF_AvoidObstacles::getObstacleSpec(unsigned int ix, 
+					   bool use_buffered, 
 					   bool active)
 {
-  if((ix < 0) || (ix >= m_obstacles_buff.size()))
+  if(ix >= m_obstacles_buff.size())
     return("");
 
   string param = "active=true";

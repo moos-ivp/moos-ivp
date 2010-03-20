@@ -44,42 +44,42 @@ bool IMS_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 {
   CMOOSMsg Msg;
   
-  double curr_moos_time = MOOSTime();
-
   MOOSMSG_LIST::iterator p;
-  for(p = NewMail.begin(); p != NewMail.end(); p++) {
+  for(p=NewMail.begin(); p!=NewMail.end(); p++) {
     CMOOSMsg &Msg = *p;
     string key = Msg.m_sKey;
-    
+    double dval = Msg.m_dfVal;
+    string sval = Msg.m_sVal;
+
     if(m_model) {
       if(key == "DESIRED_THRUST")
-	m_model->setThrust(Msg.m_dfVal);
+	m_model->setThrust(dval);
       else if(key == "DESIRED_RUDDER")
-	m_model->setRudder(Msg.m_dfVal);
+	m_model->setRudder(dval);
       else if(key == "DESIRED_ELEVATOR")
-	m_model->setElevator(Msg.m_dfVal);
+	m_model->setElevator(dval);
       else if((key == "SIM_PAUSED") || (key == "IMS_SIM_PAUSED"))
-	m_model->setPaused(toupper(Msg.m_sVal) == "TRUE");
+	m_model->setPaused(toupper(sval) == "TRUE");
       else if(key == "IMS_DECELERATION")
-	m_model->setDeceleration(Msg.m_dfVal);
+	m_model->setDeceleration(dval);
       else if((key == "MARINESIM_FLOAT_RATE") || 
 	      (key == "IMS_FLOAT_RATE"))
-	m_model->setFloatRate(Msg.m_dfVal);
+	m_model->setFloatRate(dval);
       else if((key == "MARINESIM_FORCE_THETA") || 
 	      (key == "IMS_FORCE_THETA"))
-	m_model->setTorqueTheta(Msg.m_dfVal);
+	m_model->setTorqueTheta(dval);
       else if((key == "MARINESIM_FORCE_X") || (key == "IMS_FORCE_X"))
-	m_model->setForceX(Msg.m_dfVal);
+	m_model->setForceX(dval);
       else if((key == "MARINESIM_FORCE_Y") || (key == "IMS_FORCE_Y"))
-	m_model->setForceY(Msg.m_dfVal);
+	m_model->setForceY(dval);
       else if(key == "IMS_FORCE_VECTOR")
-	m_model->setForceVector(Msg.m_sVal, false);
+	m_model->setForceVector(sval, false);
       else if(key == "IMS_FORCE_VECTOR_ADD")
-	m_model->setForceVector(Msg.m_sVal, true);
+	m_model->setForceVector(sval, true);
       else if((key == "MARINESIM_RESET") || (key == "IMS_RESET")) {
 	m_reset_count++;
 	m_Comms.Notify("IMS_RESET_COUNT", m_reset_count);
-	string str = stripBlankEnds(Msg.m_sVal);
+	string str = stripBlankEnds(sval);
 	vector<string> svector = parseString(str, ',');
 	int vsize = svector.size();
 	for(int i=0; i<vsize; i++) {

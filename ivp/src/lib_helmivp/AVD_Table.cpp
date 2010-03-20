@@ -41,30 +41,27 @@ AVD_Table::AVD_Table()
 // Procedure: initialize()
 
 bool AVD_Table::initialize(double max_heading_delta, double max_speed, 
-			   int heading_points, int speed_points,
+			   unsigned int hdg_pts, unsigned int spd_pts,
 			   double default_radius)
 {
-  if((max_heading_delta <= 0)  ||
-     (max_speed <= 0)      ||
-     (heading_points <= 0) ||
-     (speed_points <= 0)   ||
-     (default_radius < 0)) 
+  if((max_heading_delta <= 0)  || (max_speed <= 0)      ||
+     (hdg_pts == 0) || (spd_pts == 0) || (default_radius < 0)) 
     return(false);
-
+  
   m_max_heading_delta  = max_heading_delta;
   m_max_speed          = max_speed;
-  m_heading_points     = heading_points;
-  m_speed_points       = speed_points;
+  m_heading_points     = hdg_pts;
+  m_speed_points       = spd_pts;
 
   m_table_value.clear();
   m_table_guess.clear();
 
-  m_table_value.reserve(heading_points);
-  m_table_guess.reserve(heading_points);
-  unsigned int i, j;
+  m_table_value.reserve(m_heading_points);
+  m_table_guess.reserve(m_heading_points);
+  unsigned int i;
   for(i=0; i<m_heading_points; i++) {
-    vector<double> ivector(speed_points, default_radius);
-    vector<bool>   bvector(speed_points, true);
+    vector<double> ivector(m_speed_points, default_radius);
+    vector<bool>   bvector(m_speed_points, true);
     m_table_value.push_back(ivector);
     m_table_guess.push_back(bvector);
   }
@@ -117,4 +114,6 @@ bool AVD_Table::addMeasurement(double hdelta, double speed, double radius)
 
   m_table_value[hd_ix][spd_ix] = radius;
   m_table_guess[hd_ix][spd_ix] = false;
+
+  return(true);
 }

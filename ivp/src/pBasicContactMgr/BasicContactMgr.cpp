@@ -57,8 +57,6 @@ bool BasicContactMgr::OnNewMail(MOOSMSG_LIST &NewMail)
     double dval  = msg.GetDouble();
     string sval  = msg.GetString(); 
     double mtime = msg.GetTime();
-    bool   mdbl  = msg.IsDouble();
-    bool   mstr  = msg.IsString();
     string msrc  = msg.GetSource();
 
     if(key == "NODE_REPORT") {
@@ -252,10 +250,10 @@ void BasicContactMgr::postErrorMsg(const string& msg)
 
 //---------------------------------------------------------
 // Procedure: handleNodeReport
-//   Example: NAME=alpha,TYPE=KAYAK,MOOSDB_TIME=30.07,   \
-//            UTC_TIME=1267294386.51,X=29.66,Y=-23.49,   \
-//            LAT=43.825089, LON=-70.330030, SPD=2.00,   \
-//            HDG=119.06,YAW=119.05677,DEPTH=0.00,       \
+//   Example: NAME=alpha,TYPE=KAYAK,MOOSDB_TIME=30.07, 
+//            UTC_TIME=1267294386.51,X=29.66,Y=-23.49, 
+//            LAT=43.825089, LON=-70.330030, SPD=2.00, 
+//            HDG=119.06,YAW=119.05677,DEPTH=0.00,     
 //            LENGTH=4.0,MODE=ENGAGED
 
 bool BasicContactMgr::handleNodeReport(const string& report)

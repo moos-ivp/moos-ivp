@@ -43,11 +43,20 @@ ZAIC_MANUAL::ZAIC_MANUAL(IvPDomain g_domain, const string& g_varname)
 
   m_value_wrap    = false;
 
-  m_domain_ix    = m_ivp_domain.getIndex(g_varname);
-  m_domain_high  = m_ivp_domain.getVarHigh(m_domain_ix);
-  m_domain_low   = m_ivp_domain.getVarLow(m_domain_ix);
-  m_domain_pts   = m_ivp_domain.getVarPoints(m_domain_ix);
-  m_domain_delta = m_ivp_domain.getVarDelta(m_domain_ix);
+  m_domain_high  = 0;
+  m_domain_low   = 0;
+  m_domain_pts   = 0;
+  m_domain_delta = 0;
+  
+  if(!m_ivp_domain.hasDomain(g_varname))
+    m_state_ok = false;
+  else {
+    int domain_ix  = m_ivp_domain.getIndex(g_varname);
+    m_domain_high  = m_ivp_domain.getVarHigh(domain_ix);
+    m_domain_low   = m_ivp_domain.getVarLow(domain_ix);
+    m_domain_pts   = m_ivp_domain.getVarPoints(domain_ix);
+    m_domain_delta = m_ivp_domain.getVarDelta(domain_ix);
+  }
 
   unsigned int i;
   for(i=0; i<m_domain_pts; i++)
@@ -180,9 +189,9 @@ double ZAIC_MANUAL::getParam(string param)
 //-------------------------------------------------------------
 // Procedure: getParam
 
-string ZAIC_MANUAL::getParam(string param, int index)
+string ZAIC_MANUAL::getParam(string param, unsigned int index)
 {
-  if((index < 0) || (index >= m_low_val.size()))
+  if(index >= m_low_val.size())
     return("err");
 
   double return_val = 0;
@@ -263,7 +272,7 @@ double ZAIC_MANUAL::evalPoint(unsigned int ix)
 
 IvPFunction *ZAIC_MANUAL::extractOF()
 {
-  if((m_domain_ix == -1) || (m_state_ok == false))
+  if(!m_state_ok)
     return(0);
   
   unsigned int i;

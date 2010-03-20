@@ -79,8 +79,9 @@ class TS_MOOSApp : public CMOOSApp
   std::string m_var_status;
   std::string m_var_reset;
 
-  int      m_reset_max;
-  double   m_reset_time;  // -1:none, 0:after-last, NUM:atNUM
+  bool          m_reset_forever;
+  unsigned int  m_reset_max;
+  double        m_reset_time;  // -1:none, 0:after-last, NUM:atNUM
 
  protected: // State variables
   double   m_previous_time;
@@ -94,11 +95,12 @@ class TS_MOOSApp : public CMOOSApp
   double   m_utc_time;
   bool     m_paused;
   bool     m_conditions_ok;
-  int      m_posted_count;
-  int      m_posted_tcount;
-  int      m_reset_count;
-  int      m_iteration;
-  char     m_iter_char;
+
+  unsigned int  m_posted_count;
+  unsigned int  m_posted_tcount;
+  unsigned int  m_reset_count;
+  unsigned int  m_iteration;
+  char          m_iter_char;
 
   InfoBuffer *m_info_buffer;
 };

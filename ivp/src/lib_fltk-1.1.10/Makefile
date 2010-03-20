@@ -30,24 +30,27 @@ cmake_force:
 SHELL = /bin/sh
 
 # The CMake executable.
-CMAKE_COMMAND = /usr/bin/cmake
+CMAKE_COMMAND = "/Applications/CMake 2.6-0.app/Contents/bin/cmake"
 
 # The command to remove a file.
-RM = /usr/bin/cmake -E remove -f
+RM = "/Applications/CMake 2.6-0.app/Contents/bin/cmake" -E remove -f
+
+# The program to use to edit the cache.
+CMAKE_EDIT_COMMAND = "/Applications/CMake 2.6-0.app/Contents/bin/ccmake"
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/henrik/moos-ivp/ivp/src
+CMAKE_SOURCE_DIR = /Users/mikerb/Research/moos-ivp/trunk/ivp/src
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/henrik/moos-ivp/ivp/src
+CMAKE_BINARY_DIR = /Users/mikerb/Research/moos-ivp/trunk/ivp/src
 
 #=============================================================================
 # Targets provided globally by CMake.
 
 # Special rule for the target edit_cache
 edit_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running interactive CMake command-line interface..."
-	/usr/bin/cmake -i .
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake cache editor..."
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src/lib_fltk-1.1.10 && "/Applications/CMake 2.6-0.app/Contents/bin/ccmake" -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : edit_cache
 
 # Special rule for the target edit_cache
@@ -57,19 +60,19 @@ edit_cache/fast: edit_cache
 # Special rule for the target install
 install: preinstall
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
-	/usr/bin/cmake -P cmake_install.cmake
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src/lib_fltk-1.1.10 && "/Applications/CMake 2.6-0.app/Contents/bin/cmake" -P cmake_install.cmake
 .PHONY : install
 
 # Special rule for the target install
 install/fast: preinstall/fast
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
-	/usr/bin/cmake -P cmake_install.cmake
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src/lib_fltk-1.1.10 && "/Applications/CMake 2.6-0.app/Contents/bin/cmake" -P cmake_install.cmake
 .PHONY : install/fast
 
 # Special rule for the target install/local
 install/local: preinstall
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing only the local directory..."
-	/usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src/lib_fltk-1.1.10 && "/Applications/CMake 2.6-0.app/Contents/bin/cmake" -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
 .PHONY : install/local
 
 # Special rule for the target install/local
@@ -79,7 +82,7 @@ install/local/fast: install/local
 # Special rule for the target install/strip
 install/strip: preinstall
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing the project stripped..."
-	/usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src/lib_fltk-1.1.10 && "/Applications/CMake 2.6-0.app/Contents/bin/cmake" -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
 .PHONY : install/strip
 
 # Special rule for the target install/strip
@@ -98,7 +101,7 @@ list_install_components/fast: list_install_components
 # Special rule for the target rebuild_cache
 rebuild_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
-	/usr/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src/lib_fltk-1.1.10 && "/Applications/CMake 2.6-0.app/Contents/bin/cmake" -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : rebuild_cache
 
 # Special rule for the target rebuild_cache
@@ -107,14 +110,14 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	cd /home/henrik/moos-ivp/ivp/src && $(CMAKE_COMMAND) -E cmake_progress_start /home/henrik/moos-ivp/ivp/src/CMakeFiles /home/henrik/moos-ivp/ivp/src/lib_fltk-1.1.10/CMakeFiles/progress.make
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/henrik/moos-ivp/ivp/src/CMakeFiles 0
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(CMAKE_COMMAND) -E cmake_progress_start /Users/mikerb/Research/moos-ivp/trunk/ivp/src/CMakeFiles /Users/mikerb/Research/moos-ivp/trunk/ivp/src/lib_fltk-1.1.10/CMakeFiles/progress.make
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/mikerb/Research/moos-ivp/trunk/ivp/src/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/clean
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/clean
 .PHONY : clean
 
 # The main clean target
@@ -123,22 +126,22 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/preinstall
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/preinstall
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /home/henrik/moos-ivp/ivp/src && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 # Convenience name for target.
 lib_fltk-1.1.10/CMakeFiles/Continuous.dir/rule:
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/CMakeFiles/Continuous.dir/rule
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/CMakeFiles/Continuous.dir/rule
 .PHONY : lib_fltk-1.1.10/CMakeFiles/Continuous.dir/rule
 
 # Convenience name for target.
@@ -147,12 +150,12 @@ Continuous: lib_fltk-1.1.10/CMakeFiles/Continuous.dir/rule
 
 # fast build rule for target.
 Continuous/fast:
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f lib_fltk-1.1.10/CMakeFiles/Continuous.dir/build.make lib_fltk-1.1.10/CMakeFiles/Continuous.dir/build
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.10/CMakeFiles/Continuous.dir/build.make lib_fltk-1.1.10/CMakeFiles/Continuous.dir/build
 .PHONY : Continuous/fast
 
 # Convenience name for target.
 lib_fltk-1.1.10/CMakeFiles/ContinuousBuild.dir/rule:
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/CMakeFiles/ContinuousBuild.dir/rule
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/CMakeFiles/ContinuousBuild.dir/rule
 .PHONY : lib_fltk-1.1.10/CMakeFiles/ContinuousBuild.dir/rule
 
 # Convenience name for target.
@@ -161,12 +164,12 @@ ContinuousBuild: lib_fltk-1.1.10/CMakeFiles/ContinuousBuild.dir/rule
 
 # fast build rule for target.
 ContinuousBuild/fast:
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f lib_fltk-1.1.10/CMakeFiles/ContinuousBuild.dir/build.make lib_fltk-1.1.10/CMakeFiles/ContinuousBuild.dir/build
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.10/CMakeFiles/ContinuousBuild.dir/build.make lib_fltk-1.1.10/CMakeFiles/ContinuousBuild.dir/build
 .PHONY : ContinuousBuild/fast
 
 # Convenience name for target.
 lib_fltk-1.1.10/CMakeFiles/ContinuousConfigure.dir/rule:
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/CMakeFiles/ContinuousConfigure.dir/rule
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/CMakeFiles/ContinuousConfigure.dir/rule
 .PHONY : lib_fltk-1.1.10/CMakeFiles/ContinuousConfigure.dir/rule
 
 # Convenience name for target.
@@ -175,12 +178,12 @@ ContinuousConfigure: lib_fltk-1.1.10/CMakeFiles/ContinuousConfigure.dir/rule
 
 # fast build rule for target.
 ContinuousConfigure/fast:
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f lib_fltk-1.1.10/CMakeFiles/ContinuousConfigure.dir/build.make lib_fltk-1.1.10/CMakeFiles/ContinuousConfigure.dir/build
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.10/CMakeFiles/ContinuousConfigure.dir/build.make lib_fltk-1.1.10/CMakeFiles/ContinuousConfigure.dir/build
 .PHONY : ContinuousConfigure/fast
 
 # Convenience name for target.
 lib_fltk-1.1.10/CMakeFiles/ContinuousCoverage.dir/rule:
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/CMakeFiles/ContinuousCoverage.dir/rule
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/CMakeFiles/ContinuousCoverage.dir/rule
 .PHONY : lib_fltk-1.1.10/CMakeFiles/ContinuousCoverage.dir/rule
 
 # Convenience name for target.
@@ -189,12 +192,12 @@ ContinuousCoverage: lib_fltk-1.1.10/CMakeFiles/ContinuousCoverage.dir/rule
 
 # fast build rule for target.
 ContinuousCoverage/fast:
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f lib_fltk-1.1.10/CMakeFiles/ContinuousCoverage.dir/build.make lib_fltk-1.1.10/CMakeFiles/ContinuousCoverage.dir/build
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.10/CMakeFiles/ContinuousCoverage.dir/build.make lib_fltk-1.1.10/CMakeFiles/ContinuousCoverage.dir/build
 .PHONY : ContinuousCoverage/fast
 
 # Convenience name for target.
 lib_fltk-1.1.10/CMakeFiles/ContinuousMemCheck.dir/rule:
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/CMakeFiles/ContinuousMemCheck.dir/rule
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/CMakeFiles/ContinuousMemCheck.dir/rule
 .PHONY : lib_fltk-1.1.10/CMakeFiles/ContinuousMemCheck.dir/rule
 
 # Convenience name for target.
@@ -203,12 +206,12 @@ ContinuousMemCheck: lib_fltk-1.1.10/CMakeFiles/ContinuousMemCheck.dir/rule
 
 # fast build rule for target.
 ContinuousMemCheck/fast:
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f lib_fltk-1.1.10/CMakeFiles/ContinuousMemCheck.dir/build.make lib_fltk-1.1.10/CMakeFiles/ContinuousMemCheck.dir/build
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.10/CMakeFiles/ContinuousMemCheck.dir/build.make lib_fltk-1.1.10/CMakeFiles/ContinuousMemCheck.dir/build
 .PHONY : ContinuousMemCheck/fast
 
 # Convenience name for target.
 lib_fltk-1.1.10/CMakeFiles/ContinuousStart.dir/rule:
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/CMakeFiles/ContinuousStart.dir/rule
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/CMakeFiles/ContinuousStart.dir/rule
 .PHONY : lib_fltk-1.1.10/CMakeFiles/ContinuousStart.dir/rule
 
 # Convenience name for target.
@@ -217,12 +220,12 @@ ContinuousStart: lib_fltk-1.1.10/CMakeFiles/ContinuousStart.dir/rule
 
 # fast build rule for target.
 ContinuousStart/fast:
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f lib_fltk-1.1.10/CMakeFiles/ContinuousStart.dir/build.make lib_fltk-1.1.10/CMakeFiles/ContinuousStart.dir/build
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.10/CMakeFiles/ContinuousStart.dir/build.make lib_fltk-1.1.10/CMakeFiles/ContinuousStart.dir/build
 .PHONY : ContinuousStart/fast
 
 # Convenience name for target.
 lib_fltk-1.1.10/CMakeFiles/ContinuousSubmit.dir/rule:
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/CMakeFiles/ContinuousSubmit.dir/rule
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/CMakeFiles/ContinuousSubmit.dir/rule
 .PHONY : lib_fltk-1.1.10/CMakeFiles/ContinuousSubmit.dir/rule
 
 # Convenience name for target.
@@ -231,12 +234,12 @@ ContinuousSubmit: lib_fltk-1.1.10/CMakeFiles/ContinuousSubmit.dir/rule
 
 # fast build rule for target.
 ContinuousSubmit/fast:
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f lib_fltk-1.1.10/CMakeFiles/ContinuousSubmit.dir/build.make lib_fltk-1.1.10/CMakeFiles/ContinuousSubmit.dir/build
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.10/CMakeFiles/ContinuousSubmit.dir/build.make lib_fltk-1.1.10/CMakeFiles/ContinuousSubmit.dir/build
 .PHONY : ContinuousSubmit/fast
 
 # Convenience name for target.
 lib_fltk-1.1.10/CMakeFiles/ContinuousTest.dir/rule:
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/CMakeFiles/ContinuousTest.dir/rule
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/CMakeFiles/ContinuousTest.dir/rule
 .PHONY : lib_fltk-1.1.10/CMakeFiles/ContinuousTest.dir/rule
 
 # Convenience name for target.
@@ -245,12 +248,12 @@ ContinuousTest: lib_fltk-1.1.10/CMakeFiles/ContinuousTest.dir/rule
 
 # fast build rule for target.
 ContinuousTest/fast:
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f lib_fltk-1.1.10/CMakeFiles/ContinuousTest.dir/build.make lib_fltk-1.1.10/CMakeFiles/ContinuousTest.dir/build
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.10/CMakeFiles/ContinuousTest.dir/build.make lib_fltk-1.1.10/CMakeFiles/ContinuousTest.dir/build
 .PHONY : ContinuousTest/fast
 
 # Convenience name for target.
 lib_fltk-1.1.10/CMakeFiles/ContinuousUpdate.dir/rule:
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/CMakeFiles/ContinuousUpdate.dir/rule
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/CMakeFiles/ContinuousUpdate.dir/rule
 .PHONY : lib_fltk-1.1.10/CMakeFiles/ContinuousUpdate.dir/rule
 
 # Convenience name for target.
@@ -259,12 +262,12 @@ ContinuousUpdate: lib_fltk-1.1.10/CMakeFiles/ContinuousUpdate.dir/rule
 
 # fast build rule for target.
 ContinuousUpdate/fast:
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f lib_fltk-1.1.10/CMakeFiles/ContinuousUpdate.dir/build.make lib_fltk-1.1.10/CMakeFiles/ContinuousUpdate.dir/build
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.10/CMakeFiles/ContinuousUpdate.dir/build.make lib_fltk-1.1.10/CMakeFiles/ContinuousUpdate.dir/build
 .PHONY : ContinuousUpdate/fast
 
 # Convenience name for target.
 lib_fltk-1.1.10/CMakeFiles/Experimental.dir/rule:
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/CMakeFiles/Experimental.dir/rule
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/CMakeFiles/Experimental.dir/rule
 .PHONY : lib_fltk-1.1.10/CMakeFiles/Experimental.dir/rule
 
 # Convenience name for target.
@@ -273,12 +276,12 @@ Experimental: lib_fltk-1.1.10/CMakeFiles/Experimental.dir/rule
 
 # fast build rule for target.
 Experimental/fast:
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f lib_fltk-1.1.10/CMakeFiles/Experimental.dir/build.make lib_fltk-1.1.10/CMakeFiles/Experimental.dir/build
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.10/CMakeFiles/Experimental.dir/build.make lib_fltk-1.1.10/CMakeFiles/Experimental.dir/build
 .PHONY : Experimental/fast
 
 # Convenience name for target.
 lib_fltk-1.1.10/CMakeFiles/ExperimentalBuild.dir/rule:
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/CMakeFiles/ExperimentalBuild.dir/rule
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/CMakeFiles/ExperimentalBuild.dir/rule
 .PHONY : lib_fltk-1.1.10/CMakeFiles/ExperimentalBuild.dir/rule
 
 # Convenience name for target.
@@ -287,12 +290,12 @@ ExperimentalBuild: lib_fltk-1.1.10/CMakeFiles/ExperimentalBuild.dir/rule
 
 # fast build rule for target.
 ExperimentalBuild/fast:
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f lib_fltk-1.1.10/CMakeFiles/ExperimentalBuild.dir/build.make lib_fltk-1.1.10/CMakeFiles/ExperimentalBuild.dir/build
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.10/CMakeFiles/ExperimentalBuild.dir/build.make lib_fltk-1.1.10/CMakeFiles/ExperimentalBuild.dir/build
 .PHONY : ExperimentalBuild/fast
 
 # Convenience name for target.
 lib_fltk-1.1.10/CMakeFiles/ExperimentalConfigure.dir/rule:
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/CMakeFiles/ExperimentalConfigure.dir/rule
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/CMakeFiles/ExperimentalConfigure.dir/rule
 .PHONY : lib_fltk-1.1.10/CMakeFiles/ExperimentalConfigure.dir/rule
 
 # Convenience name for target.
@@ -301,12 +304,12 @@ ExperimentalConfigure: lib_fltk-1.1.10/CMakeFiles/ExperimentalConfigure.dir/rule
 
 # fast build rule for target.
 ExperimentalConfigure/fast:
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f lib_fltk-1.1.10/CMakeFiles/ExperimentalConfigure.dir/build.make lib_fltk-1.1.10/CMakeFiles/ExperimentalConfigure.dir/build
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.10/CMakeFiles/ExperimentalConfigure.dir/build.make lib_fltk-1.1.10/CMakeFiles/ExperimentalConfigure.dir/build
 .PHONY : ExperimentalConfigure/fast
 
 # Convenience name for target.
 lib_fltk-1.1.10/CMakeFiles/ExperimentalCoverage.dir/rule:
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/CMakeFiles/ExperimentalCoverage.dir/rule
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/CMakeFiles/ExperimentalCoverage.dir/rule
 .PHONY : lib_fltk-1.1.10/CMakeFiles/ExperimentalCoverage.dir/rule
 
 # Convenience name for target.
@@ -315,12 +318,12 @@ ExperimentalCoverage: lib_fltk-1.1.10/CMakeFiles/ExperimentalCoverage.dir/rule
 
 # fast build rule for target.
 ExperimentalCoverage/fast:
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f lib_fltk-1.1.10/CMakeFiles/ExperimentalCoverage.dir/build.make lib_fltk-1.1.10/CMakeFiles/ExperimentalCoverage.dir/build
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.10/CMakeFiles/ExperimentalCoverage.dir/build.make lib_fltk-1.1.10/CMakeFiles/ExperimentalCoverage.dir/build
 .PHONY : ExperimentalCoverage/fast
 
 # Convenience name for target.
 lib_fltk-1.1.10/CMakeFiles/ExperimentalMemCheck.dir/rule:
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/CMakeFiles/ExperimentalMemCheck.dir/rule
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/CMakeFiles/ExperimentalMemCheck.dir/rule
 .PHONY : lib_fltk-1.1.10/CMakeFiles/ExperimentalMemCheck.dir/rule
 
 # Convenience name for target.
@@ -329,12 +332,12 @@ ExperimentalMemCheck: lib_fltk-1.1.10/CMakeFiles/ExperimentalMemCheck.dir/rule
 
 # fast build rule for target.
 ExperimentalMemCheck/fast:
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f lib_fltk-1.1.10/CMakeFiles/ExperimentalMemCheck.dir/build.make lib_fltk-1.1.10/CMakeFiles/ExperimentalMemCheck.dir/build
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.10/CMakeFiles/ExperimentalMemCheck.dir/build.make lib_fltk-1.1.10/CMakeFiles/ExperimentalMemCheck.dir/build
 .PHONY : ExperimentalMemCheck/fast
 
 # Convenience name for target.
 lib_fltk-1.1.10/CMakeFiles/ExperimentalStart.dir/rule:
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/CMakeFiles/ExperimentalStart.dir/rule
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/CMakeFiles/ExperimentalStart.dir/rule
 .PHONY : lib_fltk-1.1.10/CMakeFiles/ExperimentalStart.dir/rule
 
 # Convenience name for target.
@@ -343,12 +346,12 @@ ExperimentalStart: lib_fltk-1.1.10/CMakeFiles/ExperimentalStart.dir/rule
 
 # fast build rule for target.
 ExperimentalStart/fast:
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f lib_fltk-1.1.10/CMakeFiles/ExperimentalStart.dir/build.make lib_fltk-1.1.10/CMakeFiles/ExperimentalStart.dir/build
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.10/CMakeFiles/ExperimentalStart.dir/build.make lib_fltk-1.1.10/CMakeFiles/ExperimentalStart.dir/build
 .PHONY : ExperimentalStart/fast
 
 # Convenience name for target.
 lib_fltk-1.1.10/CMakeFiles/ExperimentalSubmit.dir/rule:
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/CMakeFiles/ExperimentalSubmit.dir/rule
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/CMakeFiles/ExperimentalSubmit.dir/rule
 .PHONY : lib_fltk-1.1.10/CMakeFiles/ExperimentalSubmit.dir/rule
 
 # Convenience name for target.
@@ -357,12 +360,12 @@ ExperimentalSubmit: lib_fltk-1.1.10/CMakeFiles/ExperimentalSubmit.dir/rule
 
 # fast build rule for target.
 ExperimentalSubmit/fast:
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f lib_fltk-1.1.10/CMakeFiles/ExperimentalSubmit.dir/build.make lib_fltk-1.1.10/CMakeFiles/ExperimentalSubmit.dir/build
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.10/CMakeFiles/ExperimentalSubmit.dir/build.make lib_fltk-1.1.10/CMakeFiles/ExperimentalSubmit.dir/build
 .PHONY : ExperimentalSubmit/fast
 
 # Convenience name for target.
 lib_fltk-1.1.10/CMakeFiles/ExperimentalTest.dir/rule:
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/CMakeFiles/ExperimentalTest.dir/rule
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/CMakeFiles/ExperimentalTest.dir/rule
 .PHONY : lib_fltk-1.1.10/CMakeFiles/ExperimentalTest.dir/rule
 
 # Convenience name for target.
@@ -371,12 +374,12 @@ ExperimentalTest: lib_fltk-1.1.10/CMakeFiles/ExperimentalTest.dir/rule
 
 # fast build rule for target.
 ExperimentalTest/fast:
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f lib_fltk-1.1.10/CMakeFiles/ExperimentalTest.dir/build.make lib_fltk-1.1.10/CMakeFiles/ExperimentalTest.dir/build
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.10/CMakeFiles/ExperimentalTest.dir/build.make lib_fltk-1.1.10/CMakeFiles/ExperimentalTest.dir/build
 .PHONY : ExperimentalTest/fast
 
 # Convenience name for target.
 lib_fltk-1.1.10/CMakeFiles/ExperimentalUpdate.dir/rule:
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/CMakeFiles/ExperimentalUpdate.dir/rule
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/CMakeFiles/ExperimentalUpdate.dir/rule
 .PHONY : lib_fltk-1.1.10/CMakeFiles/ExperimentalUpdate.dir/rule
 
 # Convenience name for target.
@@ -385,12 +388,12 @@ ExperimentalUpdate: lib_fltk-1.1.10/CMakeFiles/ExperimentalUpdate.dir/rule
 
 # fast build rule for target.
 ExperimentalUpdate/fast:
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f lib_fltk-1.1.10/CMakeFiles/ExperimentalUpdate.dir/build.make lib_fltk-1.1.10/CMakeFiles/ExperimentalUpdate.dir/build
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.10/CMakeFiles/ExperimentalUpdate.dir/build.make lib_fltk-1.1.10/CMakeFiles/ExperimentalUpdate.dir/build
 .PHONY : ExperimentalUpdate/fast
 
 # Convenience name for target.
 lib_fltk-1.1.10/CMakeFiles/Nightly.dir/rule:
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/CMakeFiles/Nightly.dir/rule
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/CMakeFiles/Nightly.dir/rule
 .PHONY : lib_fltk-1.1.10/CMakeFiles/Nightly.dir/rule
 
 # Convenience name for target.
@@ -399,12 +402,12 @@ Nightly: lib_fltk-1.1.10/CMakeFiles/Nightly.dir/rule
 
 # fast build rule for target.
 Nightly/fast:
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f lib_fltk-1.1.10/CMakeFiles/Nightly.dir/build.make lib_fltk-1.1.10/CMakeFiles/Nightly.dir/build
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.10/CMakeFiles/Nightly.dir/build.make lib_fltk-1.1.10/CMakeFiles/Nightly.dir/build
 .PHONY : Nightly/fast
 
 # Convenience name for target.
 lib_fltk-1.1.10/CMakeFiles/NightlyBuild.dir/rule:
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/CMakeFiles/NightlyBuild.dir/rule
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/CMakeFiles/NightlyBuild.dir/rule
 .PHONY : lib_fltk-1.1.10/CMakeFiles/NightlyBuild.dir/rule
 
 # Convenience name for target.
@@ -413,12 +416,12 @@ NightlyBuild: lib_fltk-1.1.10/CMakeFiles/NightlyBuild.dir/rule
 
 # fast build rule for target.
 NightlyBuild/fast:
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f lib_fltk-1.1.10/CMakeFiles/NightlyBuild.dir/build.make lib_fltk-1.1.10/CMakeFiles/NightlyBuild.dir/build
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.10/CMakeFiles/NightlyBuild.dir/build.make lib_fltk-1.1.10/CMakeFiles/NightlyBuild.dir/build
 .PHONY : NightlyBuild/fast
 
 # Convenience name for target.
 lib_fltk-1.1.10/CMakeFiles/NightlyConfigure.dir/rule:
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/CMakeFiles/NightlyConfigure.dir/rule
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/CMakeFiles/NightlyConfigure.dir/rule
 .PHONY : lib_fltk-1.1.10/CMakeFiles/NightlyConfigure.dir/rule
 
 # Convenience name for target.
@@ -427,12 +430,12 @@ NightlyConfigure: lib_fltk-1.1.10/CMakeFiles/NightlyConfigure.dir/rule
 
 # fast build rule for target.
 NightlyConfigure/fast:
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f lib_fltk-1.1.10/CMakeFiles/NightlyConfigure.dir/build.make lib_fltk-1.1.10/CMakeFiles/NightlyConfigure.dir/build
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.10/CMakeFiles/NightlyConfigure.dir/build.make lib_fltk-1.1.10/CMakeFiles/NightlyConfigure.dir/build
 .PHONY : NightlyConfigure/fast
 
 # Convenience name for target.
 lib_fltk-1.1.10/CMakeFiles/NightlyCoverage.dir/rule:
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/CMakeFiles/NightlyCoverage.dir/rule
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/CMakeFiles/NightlyCoverage.dir/rule
 .PHONY : lib_fltk-1.1.10/CMakeFiles/NightlyCoverage.dir/rule
 
 # Convenience name for target.
@@ -441,12 +444,12 @@ NightlyCoverage: lib_fltk-1.1.10/CMakeFiles/NightlyCoverage.dir/rule
 
 # fast build rule for target.
 NightlyCoverage/fast:
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f lib_fltk-1.1.10/CMakeFiles/NightlyCoverage.dir/build.make lib_fltk-1.1.10/CMakeFiles/NightlyCoverage.dir/build
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.10/CMakeFiles/NightlyCoverage.dir/build.make lib_fltk-1.1.10/CMakeFiles/NightlyCoverage.dir/build
 .PHONY : NightlyCoverage/fast
 
 # Convenience name for target.
 lib_fltk-1.1.10/CMakeFiles/NightlyMemCheck.dir/rule:
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/CMakeFiles/NightlyMemCheck.dir/rule
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/CMakeFiles/NightlyMemCheck.dir/rule
 .PHONY : lib_fltk-1.1.10/CMakeFiles/NightlyMemCheck.dir/rule
 
 # Convenience name for target.
@@ -455,12 +458,12 @@ NightlyMemCheck: lib_fltk-1.1.10/CMakeFiles/NightlyMemCheck.dir/rule
 
 # fast build rule for target.
 NightlyMemCheck/fast:
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f lib_fltk-1.1.10/CMakeFiles/NightlyMemCheck.dir/build.make lib_fltk-1.1.10/CMakeFiles/NightlyMemCheck.dir/build
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.10/CMakeFiles/NightlyMemCheck.dir/build.make lib_fltk-1.1.10/CMakeFiles/NightlyMemCheck.dir/build
 .PHONY : NightlyMemCheck/fast
 
 # Convenience name for target.
 lib_fltk-1.1.10/CMakeFiles/NightlyMemoryCheck.dir/rule:
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/CMakeFiles/NightlyMemoryCheck.dir/rule
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/CMakeFiles/NightlyMemoryCheck.dir/rule
 .PHONY : lib_fltk-1.1.10/CMakeFiles/NightlyMemoryCheck.dir/rule
 
 # Convenience name for target.
@@ -469,12 +472,12 @@ NightlyMemoryCheck: lib_fltk-1.1.10/CMakeFiles/NightlyMemoryCheck.dir/rule
 
 # fast build rule for target.
 NightlyMemoryCheck/fast:
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f lib_fltk-1.1.10/CMakeFiles/NightlyMemoryCheck.dir/build.make lib_fltk-1.1.10/CMakeFiles/NightlyMemoryCheck.dir/build
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.10/CMakeFiles/NightlyMemoryCheck.dir/build.make lib_fltk-1.1.10/CMakeFiles/NightlyMemoryCheck.dir/build
 .PHONY : NightlyMemoryCheck/fast
 
 # Convenience name for target.
 lib_fltk-1.1.10/CMakeFiles/NightlyStart.dir/rule:
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/CMakeFiles/NightlyStart.dir/rule
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/CMakeFiles/NightlyStart.dir/rule
 .PHONY : lib_fltk-1.1.10/CMakeFiles/NightlyStart.dir/rule
 
 # Convenience name for target.
@@ -483,12 +486,12 @@ NightlyStart: lib_fltk-1.1.10/CMakeFiles/NightlyStart.dir/rule
 
 # fast build rule for target.
 NightlyStart/fast:
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f lib_fltk-1.1.10/CMakeFiles/NightlyStart.dir/build.make lib_fltk-1.1.10/CMakeFiles/NightlyStart.dir/build
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.10/CMakeFiles/NightlyStart.dir/build.make lib_fltk-1.1.10/CMakeFiles/NightlyStart.dir/build
 .PHONY : NightlyStart/fast
 
 # Convenience name for target.
 lib_fltk-1.1.10/CMakeFiles/NightlySubmit.dir/rule:
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/CMakeFiles/NightlySubmit.dir/rule
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/CMakeFiles/NightlySubmit.dir/rule
 .PHONY : lib_fltk-1.1.10/CMakeFiles/NightlySubmit.dir/rule
 
 # Convenience name for target.
@@ -497,12 +500,12 @@ NightlySubmit: lib_fltk-1.1.10/CMakeFiles/NightlySubmit.dir/rule
 
 # fast build rule for target.
 NightlySubmit/fast:
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f lib_fltk-1.1.10/CMakeFiles/NightlySubmit.dir/build.make lib_fltk-1.1.10/CMakeFiles/NightlySubmit.dir/build
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.10/CMakeFiles/NightlySubmit.dir/build.make lib_fltk-1.1.10/CMakeFiles/NightlySubmit.dir/build
 .PHONY : NightlySubmit/fast
 
 # Convenience name for target.
 lib_fltk-1.1.10/CMakeFiles/NightlyTest.dir/rule:
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/CMakeFiles/NightlyTest.dir/rule
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/CMakeFiles/NightlyTest.dir/rule
 .PHONY : lib_fltk-1.1.10/CMakeFiles/NightlyTest.dir/rule
 
 # Convenience name for target.
@@ -511,12 +514,12 @@ NightlyTest: lib_fltk-1.1.10/CMakeFiles/NightlyTest.dir/rule
 
 # fast build rule for target.
 NightlyTest/fast:
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f lib_fltk-1.1.10/CMakeFiles/NightlyTest.dir/build.make lib_fltk-1.1.10/CMakeFiles/NightlyTest.dir/build
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.10/CMakeFiles/NightlyTest.dir/build.make lib_fltk-1.1.10/CMakeFiles/NightlyTest.dir/build
 .PHONY : NightlyTest/fast
 
 # Convenience name for target.
 lib_fltk-1.1.10/CMakeFiles/NightlyUpdate.dir/rule:
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/CMakeFiles/NightlyUpdate.dir/rule
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f CMakeFiles/Makefile2 lib_fltk-1.1.10/CMakeFiles/NightlyUpdate.dir/rule
 .PHONY : lib_fltk-1.1.10/CMakeFiles/NightlyUpdate.dir/rule
 
 # Convenience name for target.
@@ -525,7 +528,7 @@ NightlyUpdate: lib_fltk-1.1.10/CMakeFiles/NightlyUpdate.dir/rule
 
 # fast build rule for target.
 NightlyUpdate/fast:
-	cd /home/henrik/moos-ivp/ivp/src && $(MAKE) -f lib_fltk-1.1.10/CMakeFiles/NightlyUpdate.dir/build.make lib_fltk-1.1.10/CMakeFiles/NightlyUpdate.dir/build
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(MAKE) -f lib_fltk-1.1.10/CMakeFiles/NightlyUpdate.dir/build.make lib_fltk-1.1.10/CMakeFiles/NightlyUpdate.dir/build
 .PHONY : NightlyUpdate/fast
 
 # Help Target
@@ -579,6 +582,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /home/henrik/moos-ivp/ivp/src && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /Users/mikerb/Research/moos-ivp/trunk/ivp/src && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

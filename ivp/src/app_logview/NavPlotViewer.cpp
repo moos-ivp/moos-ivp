@@ -377,8 +377,7 @@ void NavPlotViewer::drawNavPlot(unsigned int index)
   if(index >= m_navx_plot.size())
     return;
   
-  unsigned int i, npsize = m_navx_plot[index].size();
-  if(npsize == 0)
+  if(m_navx_plot[index].size() == 0)
     return;
 
   double ctime = getCurrTime();

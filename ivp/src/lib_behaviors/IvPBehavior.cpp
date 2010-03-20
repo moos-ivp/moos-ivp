@@ -527,8 +527,6 @@ bool IvPBehavior::checkForDurationReset()
   if(!m_info_buffer) 
     return(false);
 
-  int i, j, vsize, csize;
-
   // Phase 1: get the value of the duration_reset_var from info_buffer
   string varname = m_duration_reset_var;
   bool   ok_s, ok_d;

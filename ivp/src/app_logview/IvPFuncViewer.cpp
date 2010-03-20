@@ -103,7 +103,7 @@ void IvPFuncViewer::altPlotIndex(int val)
 {
   if((val > 0) && ((m_plot_ix + val) < m_ipf_plot.size()))
     m_plot_ix += val;
-  else if((val < 0) && (m_plot_ix >= -val))
+  else if((val < 0) && ((m_plot_ix-val) >= 0))
     m_plot_ix -= val;
   else
     return;
@@ -162,8 +162,8 @@ void IvPFuncViewer::setCurrTime(double curr_time)
 
 void IvPFuncViewer::setCollectiveIndex(int index)
 {
-  if((index >= 0) && (index < m_all_vnames.size()))
-    m_collective_ix = index;
+  if((index >= 0) && ((unsigned int)(index) < m_all_vnames.size()))
+    m_collective_ix = (unsigned int)(index);
   else
     m_collective_ix = -1;
 }
@@ -174,7 +174,10 @@ void IvPFuncViewer::setCollectiveIndex(int index)
 
 void IvPFuncViewer::buildCollective(double curr_time)
 {
-  if((m_collective_ix < 0) || (m_collective_ix >= m_all_vnames.size()))
+  if(m_collective_ix < 0)
+    return;
+
+  if((unsigned int)(m_collective_ix) >= m_all_vnames.size())
     return;
 
   // Phase 1: Determine the vehicle name for the collective function

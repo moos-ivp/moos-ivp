@@ -33,8 +33,10 @@ using namespace std;
 PMV_Viewer::PMV_Viewer(int x, int y, int w, int h, const char *l)
   : MarineViewer(x,y,w,h,l)
 {
-  m_var_index      = -1;
-  m_var_index_prev = -1;
+  m_scoping        = false;
+  m_var_index      = 0;
+  m_var_index_prev = 0;
+
   m_centric_view   = "";
   m_centric_view_sticky = true;
   m_reference_point     = "datum";
@@ -509,10 +511,8 @@ bool PMV_Viewer::addScopeVariable(string varname)
   m_var_vals.push_back("");
   m_var_source.push_back("");
   m_var_time.push_back("");
-  if(m_var_index == -1) {
-    m_var_index = 0;
-    m_var_index_prev = 0;
-  }
+
+  m_scoping = true;
   return(true);    
 }
 
@@ -524,6 +524,9 @@ bool PMV_Viewer::addScopeVariable(string varname)
 bool PMV_Viewer::updateScopeVariable(string varname, string value, 
 				     string vtime, string vsource)
 {
+  if(!m_scoping)
+    return(false);
+
   unsigned int i, vsize = m_var_names.size();
   for(i=0; i<vsize; i++) {
     if(m_var_names[i] == varname) {
@@ -542,8 +545,11 @@ bool PMV_Viewer::updateScopeVariable(string varname, string value,
 
 void PMV_Viewer::setActiveScope(string varname)
 {
+  if(m_var_names.size() <= 1)
+    return;
+  
   if(varname == "_previous_scope_var_") {
-    int tmp = m_var_index;
+    unsigned int tmp = m_var_index;
     m_var_index = m_var_index_prev;
     m_var_index_prev = tmp;
     return;
@@ -592,25 +598,25 @@ string PMV_Viewer::getStringInfo(const string& info_type, int precision)
   string result = "error";
 
   if(info_type == "scope_var") {
-    if(m_var_index != -1)
+    if(m_scoping)
       return(m_var_names[m_var_index]);
     else
       return("n/a");
   }
   else if(info_type == "scope_val") {
-    if(m_var_index != -1)
+    if(m_scoping)
       return(m_var_vals[m_var_index]);
     else
       return("To add Scope Variables: SCOPE=VARNAME in the MOOS config block");
   }
   else if(info_type == "scope_time") {
-    if(m_var_index != -1)
+    if(m_scoping)
       return(m_var_time[m_var_index]);
     else
       return("n/a");
   }
   else if(info_type == "scope_source") {
-    if(m_var_index != -1)
+    if(m_scoping)
       return(m_var_source[m_var_index]);
     else
       return("n/a");
