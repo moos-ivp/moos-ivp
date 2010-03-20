@@ -46,8 +46,9 @@ int main(int argc ,char * argv[])
   
   if(version_requested) {
     vector<string> svector = getReleaseInfo("iMarineSim");
-    for(int i=0; i<svector.size(); i++)
-      cout << svector[i] << endl;
+    unsigned int j;
+    for(j=0; j<svector.size(); j++)
+      cout << svector[j] << endl;
     return(0);
   }
 

@@ -866,8 +866,7 @@ void HelmScope::printModeSet()
   IterBlockHelm hblock = m_blocks_helm[m_iter_next_post];
   string modes         = hblock.getModeStr();
 
-  int lead_lines = 10;
-  unsigned int j;
+  unsigned int j, lead_lines = 10;
   for(j=0; j<lead_lines; j++)
     printf("\n");
   printf("ModeSet Hierarchy: \n");
@@ -877,7 +876,7 @@ void HelmScope::printModeSet()
 
   for(t=0; t<tsize; t++) {
     vector<string> svector = m_mode_trees[t].getPrintableSet();
-    unsigned int i, j, vsize = svector.size();
+    unsigned int i, vsize = svector.size();
     if(vsize == 0)
       printf("Undefined ModeSet for this Helm Invocation   \n");
     for(i=0; i<vsize; i++) {
