@@ -209,6 +209,7 @@ SpecBuild BehaviorSet::buildBehaviorFromSpec(BehaviorSpec spec,
     if(bhv)
       sbuild.setKindResult("dynamic");
     else {
+      cout << "BehaviorSpec: failed to load dynamic behavior " << bhv_kind << endl;
       sbuild.setKindResult("failed");
       return(sbuild);
     }
