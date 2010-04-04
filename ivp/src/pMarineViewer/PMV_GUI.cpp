@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
+/*    NAME: M.Benjamin, H.Schmidt, J.Leonard                     */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
 /*    FILE: PMV_GUI.cpp                                          */
 /*    DATE: November, 2004                                       */

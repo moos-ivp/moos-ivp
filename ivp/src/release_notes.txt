@@ -1,15 +1,24 @@
 
 =====================================================================
-Post 4.0.1   Nov 17th 2009 
+Post 4.0.1  
 Pre  ???
 =====================================================================
 
 Merge of dynamic behaviors branch
 ----------------------
 
+o The IvP Helm now strictly enforces the rule that behaviors must have
+  unique names - due to the way that dynamic behavior spawning was 
+  implemented in this release.
+
 o Dynamic behavior spawning has been implemented. Behaviors specified
   in the .bhv files may be used as templates for spawning new behaviors
-  based on incoming messages through the UPDATES parameter.
+  based on incoming messages through the UPDATES parameter. Templating
+  is enabled via "templating=clone" or "templating=spawn" configurations
+  for the behavior.
+
+o As part of the dynamic behavior spawning implementation, the .bhv
+  file "populator" methods were nearly completely re-written. 
 
 o The helm no longer publishes UH_*, PC_*, PWT_*, STATE_* MOOS variables
   for each behavior. A single BHV_STATUS publication is made for each
@@ -18,6 +27,13 @@ o The helm no longer publishes UH_*, PC_*, PWT_*, STATE_* MOOS variables
 
 o The s5_echo mission was added to ivp/missions/ to demonstrate the 
   dynamic spawning of behaviors.
+
+o The m2_berta mission was added to ivp/missions/ to demonstrate the 
+  dynamic spawning of behaviors, collision avoidance behavior, and
+  the pBasicContactMgr application.
+
+o The pBasicContactMgr application was added to the repository. It works
+  with the new helm feature for dynamic behavior spawning.
 
 o IvPBehavior::onComplete() is implemented as a virtual function to 
   be overloaded by behavior authors. It is called once, only when 
@@ -29,6 +45,19 @@ o Bug fix: when behaviors complete due to a timeout, via the duration
   and invoke the onIdleState() functions before completing. It now
   goes directly into the complete state on the very iteration its
   duration times-out.
+
+o LifeEvents are defined in lib_behaviors, to mean the spawning, or 
+  death of a behavior. Or when a behavior spawning is aborted. The 
+  helm publishes a new variable IVPHELM_LIFE_EVENT whenever a life
+  event occurs. 
+
+o The uHelmScope application registers for IVPHELM_LIFE_EVENT posts
+  from pHelmIvP and may generate a "life event" report by toggling the
+  'L' key. 
+
+o The aloghelm utility was added to generate a life-event report for 
+  a given alog file, based on the IVPHELM_LIFE_EVENT posts logged.
+
 
 ----------------------
 
