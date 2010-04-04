@@ -6,7 +6,6 @@
 SET(SRC
   BehaviorSet.cpp
   IvPBehavior.cpp
-  IvPContactBehavior.cpp
   BFactoryStatic.cpp
   BFactoryDynamic.cpp
   BehaviorSpec.cpp

@@ -4,6 +4,7 @@
 #--------------------------------------------------------
 
 SET(SRC
+  IvPContactBehavior.cpp
   BHV_AbortToPoint.cpp
   BHV_Attractor.cpp
 #  BHV_HAttractor.cpp
