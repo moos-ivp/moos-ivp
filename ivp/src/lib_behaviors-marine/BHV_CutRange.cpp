@@ -39,7 +39,7 @@ using namespace std;
 // Procedure: Constructor
 
 BHV_CutRange::BHV_CutRange(IvPDomain gdomain) : 
-  IvPBehavior(gdomain)
+  IvPContactBehavior(gdomain)
 {
   this->setParam("descriptor", "(d)bhv_cutrange");
   this->setParam("build_info", "uniform_piece=discrete@course:2,speed:3");
@@ -47,136 +47,102 @@ BHV_CutRange::BHV_CutRange(IvPDomain gdomain) :
   
   m_domain = subDomain(m_domain, "course,speed");
 
-  // If equal: 100% priority above, 0% priority below
-  // If not equal: Linear scale between 0-100 in between
-
-  m_min_priority_range = 0;
-  m_max_priority_range = 0;
+  m_pwt_outer_dist = 0;
+  m_pwt_inner_dist = 0;
 
   m_patience     = 0;
   m_giveup_range = 0;   // meters - zero means never give up
   m_time_on_leg  = 15;  // seconds
-
+  
   addInfoVars("NAV_X, NAV_Y");
 }
 
 //-----------------------------------------------------------
 // Procedure: setParam
 
-bool BHV_CutRange::setParam(string g_param, string g_val) 
+bool BHV_CutRange::setParam(string param, string param_val) 
 {
-  if(IvPBehavior::setParam(g_param, g_val))
+  if(IvPBehavior::setParam(param, param_val))
+    return(true);
+  if(IvPContactBehavior::setParam(param, param_val))
     return(true);
 
-  if((g_param == "them") || (g_param == "contact")) {
-    m_them_name = toupper(g_val);
-    addInfoVars(m_them_name+"_NAV_X");
-    addInfoVars(m_them_name+"_NAV_Y");
-    addInfoVars(m_them_name+"_NAV_SPEED");
-    addInfoVars(m_them_name+"_NAV_HEADING");
+  double dval = atof(param_val.c_str());
+  bool non_neg_number = (isNumber(param_val) && (dval >= 0));
+
+  if(param == "pwt_outer_dist") { 
+    if(!non_neg_number)
+      return(false);
+    m_pwt_outer_dist = dval;
+    if(m_pwt_inner_dist > m_pwt_outer_dist)
+      m_pwt_inner_dist = m_pwt_outer_dist;
     return(true);
   }  
-  else if(g_param == "dist_priority_interval") {
-    g_val = stripBlankEnds(g_val);
-    vector<string> svector = parseString(g_val, ',');
-    if(svector.size() != 2)
+  else if(param == "pwt_inner_dist") {
+    if(!non_neg_number)
       return(false);
-    if(!isNumber(svector[0]) || !isNumber(svector[1]))
+    m_pwt_inner_dist = dval;
+    if(m_pwt_outer_dist < m_pwt_inner_dist)
+      m_pwt_outer_dist = m_pwt_inner_dist;
+    return(true);
+  }  
+  if(param == "dist_priority_interval") {     // Deprecated 4/2010
+    param_val = stripBlankEnds(param_val);
+    string left  = stripBlankEnds(biteString(param_val, ','));
+    string right = stripBlankEnds(param_val);
+    if(!isNumber(left) || !isNumber(right))
       return(false);
-    
-    double dval1 = atof(svector[0].c_str());
-    double dval2 = atof(svector[1].c_str());
+    double dval1 = atof(left.c_str());
+    double dval2 = atof(right.c_str());
     if((dval1 < 0) || (dval2 < 0) || (dval1 > dval2))
       return(false);
-    m_min_priority_range = dval1;
-    m_max_priority_range = dval2;
+    m_pwt_inner_dist = dval1;
+    m_pwt_outer_dist = dval2;
     return(true);
   }  
-  else if(g_param == "time_on_leg") {
-    double dval = atof(g_val.c_str());
-    if((dval < 0) || (!isNumber(g_val)))
-      return(false);
-    m_time_on_leg = dval;
-    return(true);
-  }  
-  else if(g_param == "giveup_range") {
-    double dval = atof(g_val.c_str());
-    if((dval < 0) || (!isNumber(g_val)))
+  else if((param == "giveup_dist") ||      // preferred
+	  (param == "giveup_range")) {     // supported alternative
+    if(!non_neg_number)
       return(false);
     m_giveup_range = dval;
     return(true);
   }  
-  else if(g_param == "patience") {
-    double dval = atof(g_val.c_str());
-    if((dval < 0) || (dval > 100) || (!isNumber(g_val)))
+  else if(param == "patience") {
+    if((dval < 0) || (dval > 100) || (!isNumber(param_val)))
       return(false);
     m_patience = dval;
     return(true);
   }  
+
   return(false);
 }
-
-//-----------------------------------------------------------
-// Procedure: onIdleState
-
-void BHV_CutRange::onIdleState()
-{
-  postMessage("CUT_RANGE_ACTIVE", 0);
-}
-
 
 //-----------------------------------------------------------
 // Procedure: onRunState
 
 IvPFunction *BHV_CutRange::onRunState() 
 {
-  postMessage("CUT_RANGE_ACTIVE", 1);
-
-  if(m_them_name == "") {
-    postEMessage("contact ID not set.");
+  if(!updatePlatformInfo())
     return(0);
-  }
-
-  bool ok1, ok2;
-
-  double cnCRS = getBufferDoubleVal(m_them_name+"_NAV_HEADING", ok1);
-  double cnSPD = getBufferDoubleVal(m_them_name+"_NAV_SPEED", ok2);
-  if(!ok1 || !ok2)
-    return(0);
-
-  if(cnCRS < 0) cnCRS += 360.0;
-
-  double cnX = getBufferDoubleVal(m_them_name+"_NAV_X", ok1);
-  double cnY = getBufferDoubleVal(m_them_name+"_NAV_Y", ok2);
-  if(!ok1 || !ok2)
-    return(0);
-
-  double osX = getBufferDoubleVal("NAV_X", ok1);
-  double osY = getBufferDoubleVal("NAV_Y", ok2);
-  if(!ok1 || !ok2) {
-    postEMessage("ownship x/y info not found.");
-    return(0);
-  }
-
 
   // Calculate the relevance first. If zero-relevance, we won't
   // bother to create the objective function.
-  double relevance = getRelevance(osX, osY, cnX, cnY);
+  double relevance = getRelevance();
 
   if(relevance <= 0)
     return(0);
 
   AOF_CutRangeCPA aof(m_domain);
-  aof.setParam("cnlat", cnY);
-  aof.setParam("cnlon", cnX);
-  aof.setParam("cncrs", cnCRS);
-  aof.setParam("cnspd", cnSPD);
-  aof.setParam("oslat", osY);
-  aof.setParam("oslon", osX);
+  aof.setParam("cnlat", m_cny);
+  aof.setParam("cnlon", m_cnx);
+  aof.setParam("cncrs", m_cnh);
+  aof.setParam("cnspd", m_cnv);
+  aof.setParam("oslat", m_osy);
+  aof.setParam("oslon", m_osx);
   aof.setParam("tol", m_time_on_leg);
   aof.setParam("patience", m_patience);
-  ok1 = aof.initialize();
-  if(!ok1) {
+  bool ok = aof.initialize();
+  if(!ok) {
     postWMessage("Error in initializing AOF_CutRangeCPA.");
     return(0);
   }
@@ -204,33 +170,27 @@ IvPFunction *BHV_CutRange::onRunState()
 //-----------------------------------------------------------
 // Procedure: getRelevance
 
-double BHV_CutRange::getRelevance(double osX, double osY,
-				  double cnX, double cnY)
+double BHV_CutRange::getRelevance()
 {
-  double range_max = m_max_priority_range;
-  double range_min = m_min_priority_range;
-
   // Should be caught when setting the parameters, but check again
-  if((range_max < 0) || (range_min < 0) || (range_min > range_max)) {
+  if((m_pwt_outer_dist < 0) || (m_pwt_inner_dist < 0) || 
+     (m_pwt_inner_dist > m_pwt_outer_dist)) {
     postWMessage("Priority Range Error");
     return(0);
   }
   
-  double dist = hypot((osX - cnX), (osY - cnY));
-
-  if((m_giveup_range > 0) && (dist > m_giveup_range))
+  if((m_giveup_range > 0) && (m_contact_range > m_giveup_range))
     return(0);
 
-  
-  double total_range = range_max - range_min;
+  double total_range = m_pwt_outer_dist - m_pwt_inner_dist;
   
   // if total_range==0 one of the two cases will result in a return
-  if(dist >= range_max)
+  if(m_contact_range >= m_pwt_outer_dist)
     return(100.0);
-  if(dist < range_min)
+  if(m_contact_range < m_pwt_inner_dist)
     return(0.0);
 
-  double pct = (dist - range_min) / total_range;
+  double pct = (m_contact_range - m_pwt_inner_dist) / total_range;
   return(pct);
 }
 

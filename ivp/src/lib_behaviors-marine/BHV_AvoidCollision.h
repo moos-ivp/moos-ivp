@@ -23,12 +23,11 @@
 #ifndef BHV_AVOID_COLLISION_HEADER
 #define BHV_AVOID_COLLISION_HEADER
 
-#include "IvPBehavior.h"
-#include "LinearExtrapolator.h"
+#include "IvPContactBehavior.h"
 #include "XYSegList.h"
 
 class IvPDomain;
-class BHV_AvoidCollision : public IvPBehavior {
+class BHV_AvoidCollision : public IvPContactBehavior {
 public:
   BHV_AvoidCollision(IvPDomain);
   ~BHV_AvoidCollision() {};
@@ -36,10 +35,10 @@ public:
   IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
   void         onIdleState();
+  void         onRunToIdleState();
   void         onCompleteState();
 
 protected:
-  bool   getBufferInfo();
   double getRelevance();
   double getPriority();
   void   postInfo(double, double);
@@ -49,55 +48,25 @@ protected:
   
 private: // Configuration Parameters
 
-  std::string m_contact; // Name for them in InfoBuffer
-  std::string m_active_grade;
+  std::string m_pwt_grade;
 
   std::vector<std::string> m_bearing_line_colors;
   std::vector<double>      m_bearing_line_thresh;
+  bool                     m_bearing_line_show;
 
   double m_completed_dist;
 
-  double m_active_outer_dist;
-  double m_active_inner_dist;
+  double m_pwt_outer_dist;
+  double m_pwt_inner_dist;
 
-  double m_collision_dist;
-  double m_all_clear_dist;
+  double m_min_util_cpa_dist;
+  double m_max_util_cpa_dist;
 
   double m_roc_max_heighten; // Rate of Closure w/ max relevance heightening
   double m_roc_max_dampen;   // Rate of Closure w/ max relevance dampening
 
 private:  // State Variables
-
-  double m_osx; // Current ownship x position (meters) 
-  double m_osy; // Current ownship y position (meters) 
-  double m_osh; // Current ownship heading (degrees 0-359)
-  double m_osv; // Current ownship speed (meters) 
-
-  double m_cnx; // Current contact x position (meters) 
-  double m_cny; // Current contact y position (meters) 
-  double m_cnh; // Current contact heading (degrees 0-359)
-  double m_cnv; // Current contact speed (meters) 
-  double m_cnutc; // UTC time of last contact report
-
-  double m_curr_distance;
-  double m_curr_closing_spd;
-
-  bool   m_on_no_contact_ok;  // true if no trouble reported on no contact
-
-  bool   m_extrapolate;
-  double m_decay_start;
-  double m_decay_end;
-
-  LinearExtrapolator m_extrapolator;
+  double    m_curr_closing_spd;
   XYSegList m_seglist;
 };
 #endif
-
-
-
-
-
-
-
-
-

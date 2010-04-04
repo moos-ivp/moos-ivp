@@ -41,7 +41,8 @@ using namespace std;
 //-----------------------------------------------------------
 // Procedure: Constructor
 
-BHV_Trail::BHV_Trail(IvPDomain gdomain) : IvPBehavior(gdomain)
+BHV_Trail::BHV_Trail(IvPDomain gdomain) : 
+  IvPContactBehavior(gdomain)
 {
   this->setParam("descriptor", "(d)trail");
   this->setParam("build_info", "uniform_piece=discrete@course:3,speed:2");
@@ -49,8 +50,8 @@ BHV_Trail::BHV_Trail(IvPDomain gdomain) : IvPBehavior(gdomain)
   
   // These parameters really should be set in the behavior file, but are
   // left here for now to smoothen the transition (Aug 10, 2008, mikerb)
-  this->setParam("activeflag",   "PURSUIT=1");
-  this->setParam("inactiveflag", "PURSUIT=0");
+  //this->setParam("activeflag",   "PURSUIT=1");
+  //this->setParam("inactiveflag", "PURSUIT=0");
   
   m_domain = subDomain(m_domain, "course,speed");
   
@@ -59,12 +60,8 @@ BHV_Trail::BHV_Trail(IvPDomain gdomain) : IvPBehavior(gdomain)
   m_radius         = 5;
   m_nm_radius      = 20;
   m_max_range      = 0;
-  m_extrapolate    = true;
   m_angle_relative = true; // as opposed to angle being absolute
-  m_decay_start = 5;
-  m_decay_end   = 10;
-  
-  m_extrapolator.setDecay(m_decay_start, m_decay_end);
+  m_time_on_leg    = 60;
   
   addInfoVars("NAV_X, NAV_Y, NAV_SPEED, NAV_HEADING");
 }
@@ -80,92 +77,58 @@ BHV_Trail::BHV_Trail(IvPDomain gdomain) : IvPBehavior(gdomain)
 //   "nm_radius": If within this and heading ahead of target slow down
 //   "max_range": contact range outside which priority is zero.
 
-bool BHV_Trail::setParam(string g_param, string g_val) 
+bool BHV_Trail::setParam(string param, string param_val) 
 {
-  g_val = stripBlankEnds(g_val);
-  if(IvPBehavior::setParam(g_param, g_val))
+  if(IvPBehavior::setParam(param, param_val))
+    return(true);
+  if(IvPContactBehavior::setParam(param, param_val))
     return(true);
   
-  if((g_param == "them") || (g_param == "contact")) {
-    m_contact = toupper(g_val);
-    addInfoVars(m_contact+"_NAV_UTC");
-    addInfoVars(m_contact+"_NAV_X");
-    addInfoVars(m_contact+"_NAV_Y");
-    addInfoVars(m_contact+"_NAV_SPEED");
-    addInfoVars(m_contact+"_NAV_HEADING");
-    return(true);
-  }  
-  else if (g_param == "extrapolate") 
-    {
-      string extrap = toupper(g_val);
-      m_extrapolate = (extrap == "TRUE");
-      return(true);
-    }  
-  else if(g_param == "trail_range") {
-    if(isNumber(g_val)) {
-      m_trail_range = atof(g_val.c_str());
+  double dval = atof(param_val.c_str());
+  bool non_neg_number = (isNumber(param_val) && (dval >= 0));
+
+  if(param == "trail_range") {
+    if(non_neg_number) {
+      m_trail_range = dval;
       return(true);
     }  
   }
-  else if(g_param == "trail_angle") {
-    if(isNumber(g_val)) {
-      m_trail_angle = angle180(atof(g_val.c_str()));
+  else if(param == "trail_angle") {
+    if(isNumber(param_val)) {
+      m_trail_angle = angle180(dval);
       return(true);
     }  
   }
-  else if(g_param == "trail_angle_type") {
-    g_val = tolower(g_val);
-    if(g_val == "absolute")
+  else if(param == "trail_angle_type") {
+    param_val = tolower(param_val);
+    if(param_val == "absolute")
       m_angle_relative = false;
-    else if(g_val == "relative")
+    else if(param_val == "relative")
       m_angle_relative = true;
     else
       return(false);
 
     return(true);
   }
-  else if(g_param == "radius") {
-    if(isNumber(g_val)) {
-      m_radius = atof(g_val.c_str());
+  else if(param == "radius") {
+    if(non_neg_number) {
+      m_radius = dval;
       return(true);
     }  
   }
-  else if(g_param == "nm_radius") {
-    if(isNumber(g_val)) {
-      m_nm_radius = atof(g_val.c_str());
+  else if(param == "nm_radius") {
+    if(non_neg_number) {
+      m_nm_radius = dval;
       return(true);
     }  
   }
-  else if(g_param == "max_range") {
-    if(isNumber(g_val)) {
-      m_max_range = atof(g_val.c_str());
+  else if((param == "pwt_outer_dist") ||   // preferred
+	  (param == "max_range")) {        // deprecated
+    if(non_neg_number) {
+      m_max_range = dval;
       return(true);
     }  
   }
-  else if(g_param == "decay") {
-    vector<string> svector = parseString(g_val, ',');
-    if(svector.size() == 2) {
-      svector[0] = stripBlankEnds(svector[0]);
-      svector[1] = stripBlankEnds(svector[1]);
-      if(isNumber(svector[0]) && isNumber(svector[1])) {
-	double start = atof(svector[0].c_str());
-	double end   = atof(svector[1].c_str());
-	if((start >= 0) && (start <= end)) {
-	  m_decay_start = start;
-	  m_decay_end   = end;
-	  m_extrapolator.setDecay(start,end);
-	  return(true);
-	}
-      }
-    }
-  }  
-  else if(g_param == "decay_end") {
-    if(isNumber(g_val)) {
-      m_decay_end = atof(g_val.c_str());
-      
-      return(true);
-    }
-  }  
   return(false);
 }
 
@@ -175,15 +138,9 @@ bool BHV_Trail::setParam(string g_param, string g_val)
 
 IvPFunction *BHV_Trail::onRunState() 
 {
-  if(m_contact == "") {
-    postWMessage("contact ID not set.");
+  if(!updatePlatformInfo())
     return(0);
-  }
-  
-  // Set m_osx, m_osy, m_osh, m_osv, m_cnx, m_cny, m_cnh, m_cnv
-  if(!updateInfoIn())
-    return(0);
-  
+    
   // Added Aug11,2008 on GLINT to handle sync AUV multistatic - mikerb
   if(m_extrapolate && m_extrapolator.isDecayMaxed())
     return(0);
@@ -243,7 +200,7 @@ IvPFunction *BHV_Trail::onRunState()
       aof.setParam("cnspd", m_cnv);
       aof.setParam("oslat", m_osy);
       aof.setParam("oslon", m_osx);
-      aof.setParam("tol",   60);
+      aof.setParam("tol",   m_time_on_leg);
       bool ok = aof.initialize();
       
       if(!ok) {
@@ -368,77 +325,6 @@ void BHV_Trail::onIdleState()
 }
 
 //-----------------------------------------------------------
-// Procedure: updateInfoIn()
-//   Purpose: Update info need by the behavior from the info_buffer.
-//            Error or warning messages can be posted.
-//   Returns: true if no vital info is missing from the info_buffer.
-//            false otherwise.
-//      Note: By posting an EMessage, this sets the state_ok member
-//            variable to false which will communicate the gravity
-//            of the situation to the helm.
-
-bool BHV_Trail::updateInfoIn()
-{
-  bool ok1, ok2, ok3, ok4, ok5, ok6, ok7, ok8, ok9;
-  
-  m_osx = getBufferDoubleVal("NAV_X", ok1);
-  m_osy = getBufferDoubleVal("NAV_Y", ok2);
-  m_osh = getBufferDoubleVal("NAV_HEADING", ok3);
-  m_osv = getBufferDoubleVal("NAV_SPEED", ok4);
-
-  // double old_cnx = m_cnx;
-  // double old_cny = m_cny;
-  // double old_cnutc =m_cnutc;
-
-  m_cnx = getBufferDoubleVal(m_contact+"_NAV_X", ok5);
-  m_cny = getBufferDoubleVal(m_contact+"_NAV_Y", ok6);
-
-  m_cnh = getBufferDoubleVal(m_contact+"_NAV_HEADING", ok7);
-  m_cnv = getBufferDoubleVal(m_contact+"_NAV_SPEED", ok8);
-  m_cnutc = getBufferDoubleVal(m_contact+"_NAV_UTC", ok9);
-
-  // hack hs
-  // m_cnv = (sqrt(pow(m_cnx-old_cnx,2))+ pow(m_cny-old_cny,2))/(m_cnutc-old_cnutc);
-  // m_cnh = radToHeading(atan2(m_cny-old_cny,m_cnx-old_cny));
-
-  if(!ok1 || !ok2 || !ok3 || !ok4 || !ok5 || 
-     !ok6 || !ok7 || !ok8 || !ok9)
-    return(false);
-  
-  double curr_time = getBufferCurrTime();
-  // double mark_time = getBufferTimeVal(m_contact+"_NAV_X");
-  
-  postIntMessage("TRAIL_CONTACT_TIME", m_cnutc);
-  postIntMessage("TRAIL_DELTA_TIME", curr_time-m_cnutc);
-  
-  if(!m_extrapolate)
-    return(true);
-  
-  // if(mark_time == 0)
-  m_extrapolator.setPosition(m_cnx, m_cny, m_cnv, m_cnh, m_cnutc);
-  
-  // Even if mark_time is zero and thus "fresh", still derive the 
-  // the contact position from the extrapolator since the UTC time
-  // of the position in this report may still be substantially 
-  // behind the current own-platform UTC time.
-  
-  double new_cnx, new_cny;
-  bool ok = m_extrapolator.getPosition(new_cnx, new_cny, curr_time);
-  
-  if(ok) {
-    m_cnx = new_cnx;
-    m_cny = new_cny;
-    return(true);
-  }
-  else {
-    postWMessage("Incomplete Linear Extrapolation");
-    return(false);
-  }
-}
-
-
-
-//-----------------------------------------------------------
 // Procedure: getRelevance
 
 double BHV_Trail::getRelevance()
@@ -450,10 +336,9 @@ double BHV_Trail::getRelevance()
   if(m_max_range == 0)
     return(1.0);
   
-  double contact_range = hypot((m_osx-m_cnx), (m_osy-m_cny));
-  postIntMessage("TRAIL_RANGE",contact_range );
+  postIntMessage("TRAIL_RANGE", m_contact_range );
   
-  if(contact_range < m_max_range)
+  if(m_contact_range < m_max_range)
     return(1.0);
   else
     return(0.0);

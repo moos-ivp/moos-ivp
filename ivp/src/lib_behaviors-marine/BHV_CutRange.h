@@ -24,35 +24,27 @@
 #define BHV_CUTRANGE_HEADER
 
 #include <string>
-#include "IvPBehavior.h"
+#include "IvPContactBehavior.h"
 
 class IvPDomain;
-class BHV_CutRange : public IvPBehavior {
+class BHV_CutRange : public IvPContactBehavior {
 public:
   BHV_CutRange(IvPDomain);
   ~BHV_CutRange() {};
   
   IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
-  void         onIdleState();
 
 protected:
-  double getRelevance(double, double, double, double);
+  double getRelevance();
   double getPriority();
   
 private:
-  std::string m_them_name; // Name for them in InfoBuffer
-
-  double  m_min_util_cpa_dist;
-  double  m_max_util_cpa_dist;
-
-  double  m_max_priority_range;
-  double  m_min_priority_range;
+  double  m_pwt_outer_dist;
+  double  m_pwt_inner_dist;
 
   double  m_giveup_range;
   double  m_patience;
-
-  double  m_time_on_leg;
 };
 #endif
 

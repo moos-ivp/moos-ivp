@@ -23,6 +23,7 @@
 #pragma warning(disable : 4786)
 #pragma warning(disable : 4503)
 #endif
+
 #include <math.h>
 #include <stdlib.h>
 #include "AngleUtils.h"
@@ -37,17 +38,18 @@ using namespace std;
 //-----------------------------------------------------------
 // Procedure: Constructor
 
-BHV_Shadow::BHV_Shadow(IvPDomain gdomain) : IvPBehavior(gdomain)
+BHV_Shadow::BHV_Shadow(IvPDomain gdomain) : 
+  IvPContactBehavior(gdomain)
 {
   this->setParam("descriptor", "bhv_shadow");
 
   m_domain = subDomain(m_domain, "course,speed");
 
-  m_max_range     = 0;
-  m_hdg_peakwidth = 20;
-  m_hdg_basewidth = 160;
-  m_spd_peakwidth = 0.1;
-  m_spd_basewidth = 2.0;
+  m_pwt_outer_dist = 0;
+  m_hdg_peakwidth  = 20;
+  m_hdg_basewidth  = 160;
+  m_spd_peakwidth  = 0.1;
+  m_spd_basewidth  = 2.0;
 
   addInfoVars("NAV_X, NAV_Y, NAV_SPEED, NAV_HEADING");
 }
@@ -55,47 +57,47 @@ BHV_Shadow::BHV_Shadow(IvPDomain gdomain) : IvPBehavior(gdomain)
 //-----------------------------------------------------------
 // Procedure: setParam
 
-bool BHV_Shadow::setParam(string g_param, string g_val) 
+bool BHV_Shadow::setParam(string param, string param_val) 
 {
-  if(IvPBehavior::setParam(g_param, g_val))
+  if(IvPBehavior::setParam(param, param_val))
+    return(true);
+  if(IvPContactBehavior::setParam(param, param_val))
     return(true);
 
-  double dval = atof(g_val.c_str());
+  double dval = atof(param_val.c_str());
+  bool non_neg_number = (isNumber(param_val) && (dval >= 0));
 
-  if((g_param == "them") || (g_param == "contact")) {
-    m_them_name = toupper(g_val);
-    addInfoVars(m_them_name+"_NAV_X");
-    addInfoVars(m_them_name+"_NAV_Y");
-    addInfoVars(m_them_name+"_NAV_SPEED");
-    addInfoVars(m_them_name+"_NAV_HEADING");
-    return(true);
-  }  
-  else if(g_param == "max_range") {
-    if((dval < 0) || (!isNumber(g_val)))
+  if((param == "pwt_outer_dist") ||         // preferred
+	  (param == "max_range")) {         // deprecated 4/2010
+    if(!non_neg_number)
       return(false);    
-    m_max_range = dval;
+    m_pwt_outer_dist = dval;
     return(true);
   }  
-  else if((g_param == "hdg_peakwidth") || (g_param == "heading_peakwidth")) {
-    if((dval < 0) || (!isNumber(g_val)))
+  else if((param == "heading_peakwidth") ||  // preferred
+	  (param == "hdg_peakwidth")) {      // supported alternative
+    if(!non_neg_number)
       return(false);
     m_hdg_peakwidth = dval;
     return(true);
   }
-  else if((g_param == "hdg_basewidth") || (g_param == "heading_basewidth")) {
-    if((dval < 0) || (!isNumber(g_val)))
+  else if((param == "heading_basewidth") ||  // preferred
+	  (param == "hdg_basewidth")) {      // supported alternative
+    if(!non_neg_number)
       return(false);
     m_hdg_basewidth = dval;
     return(true);
   }
-  else if((g_param == "spd_peakwidth") || (g_param == "speed_peakwidth")) {
-    if((dval < 0) || (!isNumber(g_val)))
+  else if((param == "speed_peakwidth") ||    // preferred
+	  (param == "spd_peakwidth")) {      // supported alternative
+    if(!non_neg_number)
       return(false);
     m_spd_peakwidth = dval;
     return(true);
   }
-  else if((g_param == "spd_basewidth") || (g_param == "speed_basewidth")) {
-    if((dval < 0) || (!isNumber(g_val)))
+  else if((param == "speed_basewidth") ||    // preferred
+	  (param == "spd_basewidth")) {      // supported alternative
+    if(!non_neg_number)
       return(false);
     m_spd_basewidth = dval;
     return(true);
@@ -104,28 +106,12 @@ bool BHV_Shadow::setParam(string g_param, string g_val)
   return(false);
 }
 
-
 //-----------------------------------------------------------
 // Procedure: onRunState
 
 IvPFunction *BHV_Shadow::onRunState() 
 {
-  if(m_them_name == "") {
-    postWMessage("contact ID not set.");
-    return(0);
-  }
-
-  //  if(!m_domain.hasDomain("course")) {
-  //   postWMessage("No 'heading/course' variable in the helm domain");
-  //  return(0);
-  //}
-  //if(!m_domain.hasDomain("speed")) {
-  //  postWMessage("No 'speed' variable in the helm domain");
-  //  return(0);
-  //}
-
-  // Set m_osx, m_osy, m_cnx, m_cny, m_cnv, m_cnh
-  if(!updateInfoIn())
+  if(!updatePlatformInfo())
     return(0);
   
   // Calculate the relevance first. If zero-relevance, we won't
@@ -182,56 +168,14 @@ IvPFunction *BHV_Shadow::onRunState()
 }
 
 //-----------------------------------------------------------
-// Procedure: updateInfoIn()
-//   Purpose: Update info need by the behavior from the info_buffer.
-//            Error or warning messages can be posted.
-//   Returns: true if no vital info is missing from the info_buffer.
-//            false otherwise.
-//      Note: By posting an EMessage, this sets the state_ok member
-//            variable to false which will communicate the gravity
-//            of the situation to the helm.
-
-bool BHV_Shadow::updateInfoIn()
-{
-  bool ok1, ok2;
-  
-  m_cnh = getBufferDoubleVal(m_them_name+"_NAV_HEADING", ok1);
-  m_cnv = getBufferDoubleVal(m_them_name+"_NAV_SPEED", ok2);
-  if(!ok1 || !ok2)
-    {
-    postEMessage("contact speed and heading info not found.");
-    return(false);
-    }
-  m_cnh = angle360(m_cnh);
-
-  m_cnx = getBufferDoubleVal(m_them_name+"_NAV_X", ok1);
-  m_cny = getBufferDoubleVal(m_them_name+"_NAV_Y", ok2);
-  if(!ok1 || !ok2)
-    {
-      postEMessage("contact x/y info not found.");
-      return(false);
-    }
-
-  m_osx = getBufferDoubleVal("NAV_X", ok1);
-  m_osy = getBufferDoubleVal("NAV_Y", ok2);
-  if(!ok1 || !ok2) {
-    postEMessage("ownship x/y info not found.");
-    return(false);
-  }
-  return(true);
-}
-
-
-//-----------------------------------------------------------
 // Procedure: getRelevance
 
 double BHV_Shadow::getRelevance()
 {
-  if(m_max_range == 0)
+  if(m_pwt_outer_dist == 0)
     return(1.0);
   
-  double contact_range = hypot((m_osx-m_cnx), (m_osy-m_cny));
-  if(contact_range < m_max_range)
+  if(m_contact_range < m_pwt_outer_dist)
     return(1.0);
   else
     return(0.0);

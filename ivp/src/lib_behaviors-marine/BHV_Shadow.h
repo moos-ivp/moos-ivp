@@ -27,10 +27,10 @@
 #define BHV_SHADOW_HEADER
 
 #include <string>
-#include "IvPBehavior.h"
+#include "IvPContactBehavior.h"
 
 class IvPDomain;
-class BHV_Shadow : public IvPBehavior {
+class BHV_Shadow : public IvPContactBehavior {
 public:
   BHV_Shadow(IvPDomain);
   ~BHV_Shadow() {};
@@ -45,21 +45,11 @@ protected:
   double getPriority();
   
 private: // Configuration Parameters
-  std::string m_them_name;   // Name for them in InfoBuffer
-  
-  double  m_max_range;     // if target not in range, 0 relevance
+  double  m_pwt_outer_dist;     // if target not in range, 0 relevance
   double  m_hdg_basewidth;
   double  m_hdg_peakwidth;
   double  m_spd_basewidth;
   double  m_spd_peakwidth;
-
-private: // State Variables
-  double  m_cnv; // contact velocity
-  double  m_cnh; // contact heading
-  double  m_cnx; // contact x-position
-  double  m_cny; // contact y-position
-  double  m_osx; // ownship x-position
-  double  m_osy; // ownship y-position
 };
 #endif
 

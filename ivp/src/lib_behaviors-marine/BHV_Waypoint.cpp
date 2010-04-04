@@ -107,13 +107,13 @@ string BHV_Waypoint::onSetParamComplete()
 //            The "radius" parameter indicates what it means to have
 //            arrived at the waypoint.
 
-bool BHV_Waypoint::setParam(string param, string val) 
+bool BHV_Waypoint::setParam(string param, string param_val) 
 {
-  double dval = atof(val.c_str());
+  double dval = atof(param_val.c_str());
   if((param == "polygon") || (param == "points")) {
-    XYSegList new_seglist = string2SegList(val);
+    XYSegList new_seglist = string2SegList(param_val);
     if(new_seglist.size() == 0) {
-      XYPolygon new_poly = string2Poly(val);
+      XYPolygon new_poly = string2Poly(param_val);
       new_seglist = new_poly.exportSegList(0,0);
     }
     if(new_seglist.size() == 0)
@@ -123,7 +123,7 @@ bool BHV_Waypoint::setParam(string param, string val)
     return(true);
   }
   else if(param == "point") {
-    XYPoint point = string2Point(val);
+    XYPoint point = string2Point(param_val);
     XYSegList new_seglist;
     new_seglist.add_vertex(point);
     if(new_seglist.size() == 0)
@@ -137,40 +137,40 @@ bool BHV_Waypoint::setParam(string param, string val)
     return(true);
   }
   else if((param == "wpt_status") || (param == "wpt_status_var")) {
-    if(strContainsWhite(val) || (val == ""))
+    if(strContainsWhite(param_val) || (param_val == ""))
       return(false);
-    m_var_report = val;
+    m_var_report = param_val;
     if(tolower(m_var_report)=="silent")
       m_var_report = "silent";
     return(true);
   }
   else if((param == "wpt_index") || (param == "wpt_index_var")) {
-    if(strContainsWhite(val) || (val == ""))
+    if(strContainsWhite(param_val) || (param_val == ""))
       return(false);
-    m_var_index = val;
+    m_var_index = param_val;
     if(tolower(m_var_index)=="silent")
       m_var_index = "silent";
     return(true);
   }
   else if(param == "cycle_index_var") {
-    if(strContainsWhite(val) || (val == ""))
+    if(strContainsWhite(param_val) || (param_val == ""))
       return(false);
-    m_var_cyindex = val;
+    m_var_cyindex = param_val;
     if(tolower(m_var_cyindex)=="silent")
       m_var_index = "silent";
     return(true);
   }
   else if(param == "post_suffix") {
-    if(strContainsWhite(val))
+    if(strContainsWhite(param_val))
       return(false);
-    if((val.length() > 0) && (val.at(0) != '_'))
-      val = '_' + val;
-    m_var_suffix = val;
+    if((param_val.length() > 0) && (param_val.at(0) != '_'))
+      param_val = '_' + param_val;
+    m_var_suffix = param_val;
     return(true);
   }
   else if(param == "cycleflag") {
-    string variable = stripBlankEnds(biteString(val, '='));
-    string value    = stripBlankEnds(val);
+    string variable = stripBlankEnds(biteString(param_val, '='));
+    string value    = stripBlankEnds(param_val);
     if((variable=="") || (value==""))
       return(false);
     VarDataPair pair(variable, value, "auto");
@@ -178,9 +178,10 @@ bool BHV_Waypoint::setParam(string param, string val)
     return(true);
   }
   else if(param == "ipf-type") {
-    val = tolower(val);
-    if((val=="zaic") || (val=="roc") || (val=="rate_of_closure"))
-      m_ipf_type = val;
+    param_val = tolower(param_val);
+    if((param_val=="zaic") || (param_val=="roc") || 
+       (param_val=="rate_of_closure"))
+      m_ipf_type = param_val;
     return(true);
   }
   else if((param == "lead") && (dval > 0)) {
@@ -188,26 +189,27 @@ bool BHV_Waypoint::setParam(string param, string val)
     return(true);
   }
   else if(param == "lead_to_start")
-    return(setBooleanOnString(m_lead_to_start, val));
+    return(setBooleanOnString(m_lead_to_start, param_val));
   else if((param == "lead_damper") && (dval > 0)) {
     m_lead_damper = dval;
     return(true);
   }
   else if(param == "order") {
-    if((val!="reverse") && (val!="reversed") && (val!="normal"))
+    if((param_val!="reverse") && (param_val!="reversed") && 
+       (param_val!="normal"))
       return(false);
-    bool reverse = ((val == "reverse") || (val == "reversed"));
+    bool reverse = ((param_val == "reverse") || (param_val == "reversed"));
     m_waypoint_engine.setReverse(reverse);
     return(true);
   }
-  else if((param == "repeat") && (tolower(val) == "forever")) {
+  else if((param == "repeat") && (tolower(param_val) == "forever")) {
     IvPBehavior::setParam("perpetual", "true");
     m_waypoint_engine.setRepeatsEndless(true);
     return(true);
   }
   else if(param == "repeat") {
-    int ival = atoi(val.c_str());
-    if((ival < 0) || (!isNumber(val)))
+    int ival = atoi(param_val.c_str());
+    if((ival < 0) || (!isNumber(param_val)))
       return(false);
     if(ival > 0)
       IvPBehavior::setParam("perpetual", "true");
@@ -230,7 +232,7 @@ bool BHV_Waypoint::setParam(string param, string val)
     return(true);
   }
   else if(param == "visual_hints")  {
-    vector<string> svector = parseStringQ(val, ',');
+    vector<string> svector = parseStringQ(param_val, ',');
     unsigned int i, vsize = svector.size();
     for(i=0; i<vsize; i++) 
       handleVisualHint(svector[i]);

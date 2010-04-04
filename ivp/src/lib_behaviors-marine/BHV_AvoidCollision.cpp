@@ -43,7 +43,7 @@ using namespace std;
 // Procedure: Constructor
 
 BHV_AvoidCollision::BHV_AvoidCollision(IvPDomain gdomain) : 
-  IvPBehavior(gdomain)
+  IvPContactBehavior(gdomain)
 {
   this->setParam("descriptor", "avoid_collision");
   this->setParam("build_info", "uniform_piece = discrete @ course:3,speed:3");
@@ -52,140 +52,102 @@ BHV_AvoidCollision::BHV_AvoidCollision(IvPDomain gdomain) :
   m_domain = subDomain(m_domain, "course,speed");
 
   m_completed_dist    = 500;
-  m_active_outer_dist = 200;
-  m_active_inner_dist = 50;
-  m_collision_dist    = 10; 
-  m_all_clear_dist    = 75; 
-  m_active_grade      = "quasi";
+  m_pwt_outer_dist    = 200;
+  m_pwt_inner_dist    = 50;
+  m_min_util_cpa_dist = 10; 
+  m_max_util_cpa_dist = 75; 
+  m_pwt_grade         = "quasi";
   m_roc_max_dampen    = -2.0; 
   m_roc_max_heighten  = 2.0; 
-
-  // Behavior will only post a warning - not error - if no contact info
-  m_on_no_contact_ok  = true;
-
-  m_extrapolate  = true;
-  m_decay_start = 60;
-  m_decay_end   = 120;
-  m_extrapolator.setDecay(m_decay_start, m_decay_end);
+  m_bearing_line_show = false;
+  m_time_on_leg       = 120;  // Overriding the superclass default=60
   
-
   addInfoVars("NAV_X, NAV_Y, NAV_SPEED, NAV_HEADING");
 }
 
 //-----------------------------------------------------------
 // Procedure: setParam
 
-bool BHV_AvoidCollision::setParam(string g_param, string g_val) 
+bool BHV_AvoidCollision::setParam(string param, string param_val) 
 {
-  if(IvPBehavior::setParam(g_param, g_val))
+  if(IvPBehavior::setParam(param, param_val))
+    return(true);
+  if(IvPContactBehavior::setParam(param, param_val))
     return(true);
 
-  if((g_param == "them") || (g_param == "contact")) {
-    m_contact = toupper(g_val);
-    return(true);
-  }  
-  else if((g_param == "active_distance") ||
-	  (g_param == "active_outer_distance")) {
-    double dval = atof(g_val.c_str());
-    if((dval < 0) || (!isNumber(g_val)))
+  double dval = atof(param_val.c_str());
+  bool non_neg_number = (isNumber(param_val) && (dval >= 0));
+
+  if((param == "pwt_outer_dist") ||          // preferred
+     (param == "active_distance") ||         // deprecated 4/10
+     (param == "active_outer_distance")) {   // deprecated 4/10
+    if(!non_neg_number)
       return(false);
-    m_active_outer_dist = dval;
-    if(m_active_inner_dist > m_active_outer_dist)
-      m_active_inner_dist = m_active_outer_dist;
+    m_pwt_outer_dist = dval;
+    if(m_pwt_inner_dist > m_pwt_outer_dist)
+      m_pwt_inner_dist = m_pwt_outer_dist;
     return(true);
   }  
-  else if(g_param == "active_inner_distance") {
-    double dval = atof(g_val.c_str());
-    if((dval < 0) || (!isNumber(g_val)))
+  else if((param == "pwt_inner_dist") ||          // preferred
+	  (param == "active_inner_distance")) {   // deprecated 4/10
+    if(!non_neg_number)
       return(false);
-    m_active_inner_dist = dval;
-    if(m_active_outer_dist < m_active_inner_dist)
-      m_active_outer_dist = m_active_inner_dist;
+    m_pwt_inner_dist = dval;
+    if(m_pwt_outer_dist < m_pwt_inner_dist)
+      m_pwt_outer_dist = m_pwt_inner_dist;
     return(true);
   }  
-  else if(g_param == "collision_distance") {
-    double dval = atof(g_val.c_str());
-    if((dval < 0) || (!isNumber(g_val)))
-      return(false);
-    m_collision_dist = dval;
-    return(true);
-  }  
-  else if(g_param == "completed_distance") {
-    double dval = atof(g_val.c_str());
+  else if((param == "completed_dist") ||         // preferred
+	  (param == "completed_distance")) {     // deprecated 4/10
     if(dval <= 0)
       return(false);
     m_completed_dist = dval;
     return(true);
   }  
-  else if(g_param == "all_clear_distance") {
-    double dval = atof(g_val.c_str());
-    if((dval < 0) || (!isNumber(g_val)))
+  else if((param == "max_util_cpa_dist") ||      // preferred
+	  (param == "all_clear_distance")) {     // deprecated 4/10
+    if(!non_neg_number)
       return(false);
-    m_all_clear_dist = dval;
+    m_max_util_cpa_dist = dval;
     return(true);
   }  
-  else if(g_param == "active_grade") {
-    g_val = tolower(g_val);
-    if((g_val!="linear") && (g_val!="quadratic") && 
-       (g_val!="quasi"))
+  else if((param == "min_util_cpa_dist")  ||     // preferred
+	  (param == "collision_distance")) {     // deprecated 4/10
+    if(!non_neg_number)
       return(false);
-    m_active_grade = g_val;
+    m_min_util_cpa_dist = dval;
     return(true);
   }  
-  else if(g_param == "roc_max_heighten") {
-    double dval = atof(g_val.c_str());
-    if((dval < 0) || (!isNumber(g_val)))
+
+  else if((param == "pwt_grade") ||              // preferred
+	  (param == "active_grade")) {           // deprecated 4/10
+    param_val = tolower(param_val);
+    if((param_val!="linear") && (param_val!="quadratic") && 
+       (param_val!="quasi"))
+      return(false);
+    m_pwt_grade = param_val;
+    return(true);
+  }  
+  else if(param == "roc_max_heighten") {
+    if(!non_neg_number)
       return(false);
     m_roc_max_heighten = dval;
     if(m_roc_max_dampen > m_roc_max_heighten)
       m_roc_max_dampen = m_roc_max_heighten;
     return(true);
   }  
-  else if(g_param == "roc_max_dampen") {
-    double dval = atof(g_val.c_str());
-    if((dval < 0) || (!isNumber(g_val)))
+  else if(param == "roc_max_dampen") {
+    if(!non_neg_number)
       return(false);
     m_roc_max_dampen = dval;
     if(m_roc_max_heighten < m_roc_max_heighten)
       m_roc_max_heighten = m_roc_max_dampen;
     return(true);
   }  
-  else if(g_param == "on_no_contact_ok") {
-    g_val = tolower(g_val);
-    if((g_val != "true") && (g_val != "false") && 
-       (g_val != "yes")  && (g_val != "no"))
-      return(false);
-    m_on_no_contact_ok = ((g_val == "true") || (g_val == "yes"));
-    return(true);
-  }  
-  else if (g_param == "extrapolate")
-    return(setBooleanOnString(m_extrapolate, g_val));
-  else if(g_param == "decay") {
-    vector<string> svector = parseString(g_val, ',');
-    if(svector.size() == 2) {
-      svector[0] = stripBlankEnds(svector[0]);
-      svector[1] = stripBlankEnds(svector[1]);
-      if(isNumber(svector[0]) && isNumber(svector[1])) {
-	double start = atof(svector[0].c_str());
-	double end   = atof(svector[1].c_str());
-	if((start >= 0) && (start <= end)) {
-	  m_decay_start = start;
-	  m_decay_end   = end;
-	  m_extrapolator.setDecay(start,end);
-	  return(true);
-	}
-      }
-    }
-  }  
-  else if(g_param == "decay_end") {
-    if(isNumber(g_val)) {
-      m_decay_end = atof(g_val.c_str());
-      return(true);
-    }
-  }  
   // bearing_lines = white:0, green:0.65, yellow:0.8, red:1.0
-  else if(g_param == "bearing_lines") {
-    vector<string> svector = parseString(g_val, ',');
+  else if(param == "bearing_line_config") {
+    m_bearing_line_show = false;
+    vector<string> svector = parseString(param_val, ',');
     unsigned int i, vsize = svector.size();
     bool valid_components = true;
     for(i=0; i<vsize; i++) {
@@ -195,6 +157,7 @@ bool BHV_AvoidCollision::setParam(string g_param, string g_val)
 	m_bearing_line_colors.push_back(left);
 	double dval = vclip(atof(right.c_str()), 0, 1);
 	m_bearing_line_thresh.push_back(dval);
+	m_bearing_line_show = true;
       }
       else
 	valid_components = false;
@@ -206,18 +169,23 @@ bool BHV_AvoidCollision::setParam(string g_param, string g_val)
 
 
 //-----------------------------------------------------------
+// Procedure: onRunToIdleState()
+
+void BHV_AvoidCollision::onRunToIdleState() 
+{
+  postErasableSegList();
+}
+
+//-----------------------------------------------------------
 // Procedure: onIdleState()
 
 void BHV_AvoidCollision::onIdleState() 
 {
-  bool ok = getBufferInfo();
+  bool ok = updatePlatformInfo();
   if(!ok)
     postRange(false);
-  else {
-    m_curr_distance = hypot((m_osx - m_cnx),(m_osy - m_cny));
+  else
     postRange(true);
-  }
-  postErasableSegList();
 }
 
 //-----------------------------------------------------------
@@ -234,14 +202,7 @@ void BHV_AvoidCollision::onCompleteState()
 
 IvPFunction *BHV_AvoidCollision::onRunState() 
 {
-  if(m_contact == "") {
-    postRange(false);
-    postEMessage("contact ID not set.");
-    return(0);
-  }
-
-  bool ok = getBufferInfo();
-  if(!ok) {
+  if(!updatePlatformInfo()) {
     postRange(false);
     return(0);
   }
@@ -249,7 +210,7 @@ IvPFunction *BHV_AvoidCollision::onRunState()
   double relevance = getRelevance();
   postRange(true);
 
-  if(m_curr_distance >= m_completed_dist) {
+  if(m_contact_range >= m_completed_dist) {
     setComplete();
     return(0);
   }
@@ -260,16 +221,16 @@ IvPFunction *BHV_AvoidCollision::onRunState()
   }
 
   AOF_AvoidCollision aof(m_domain);
-  ok = true;
+  bool ok = true;
   ok = ok && aof.setParam("osy", m_osy);
   ok = ok && aof.setParam("osx", m_osx);
   ok = ok && aof.setParam("cny", m_cny);
   ok = ok && aof.setParam("cnx", m_cnx);
   ok = ok && aof.setParam("cnh", m_cnh);
   ok = ok && aof.setParam("cnv", m_cnv);
-  ok = ok && aof.setParam("tol", 120);
-  ok = ok && aof.setParam("collision_distance", m_collision_dist);
-  ok = ok && aof.setParam("all_clear_distance", m_all_clear_dist);
+  ok = ok && aof.setParam("tol", m_time_on_leg);
+  ok = ok && aof.setParam("collision_distance", m_min_util_cpa_dist);
+  ok = ok && aof.setParam("all_clear_distance", m_max_util_cpa_dist);
   ok = ok && aof.initialize();
 
   if(!ok) {
@@ -292,86 +253,6 @@ IvPFunction *BHV_AvoidCollision::onRunState()
 }
 
 //-----------------------------------------------------------
-// Procedure: getBufferInfo
-
-bool BHV_AvoidCollision::getBufferInfo()
-{
-  bool ok = true;
-
-  if(ok) m_cnh = getBufferDoubleVal(m_contact+"_NAV_HEADING", ok);
-  if(ok) m_cnv = getBufferDoubleVal(m_contact+"_NAV_SPEED",   ok);
-  if(ok) m_cnutc = getBufferDoubleVal(m_contact+"_NAV_UTC", ok);
-  if(!ok) {    
-    if(!m_on_no_contact_ok) {
-      string msg = m_contact + " heading/speed info not found";
-      postEMessage(msg);
-    }
-    return(false);
-  }
-
-  if(ok) m_osh = getBufferDoubleVal("NAV_HEADING", ok);
-  if(ok) m_osv = getBufferDoubleVal("NAV_SPEED", ok);
-  if(!ok) {
-    postEMessage("ownship course/speed info not found.");
-    return(false);
-  }
-
-  m_osh = angle360(m_osh);
-  m_cnh = angle360(m_cnh);
-
-  if(ok) m_cnx = getBufferDoubleVal(m_contact+"_NAV_X", ok);
-  if(ok) m_cny = getBufferDoubleVal(m_contact+"_NAV_Y", ok);
-  if(!ok) {
-    if(!m_on_no_contact_ok) {
-      string msg = m_contact + " NAV_X/Y info not found";
-      postEMessage(msg);
-    }
-    return(false);
-  }
-  
-  if(ok) m_osx = getBufferDoubleVal("NAV_X", ok);
-  if(ok) m_osy = getBufferDoubleVal("NAV_Y", ok);
-  if(!ok) {
-    postEMessage("ownship x/y info not found.");
-    return(false);
-  }
-
-  // extrapolation added by H. Schmidt in GLINT08 for use underwater with spotty comms.
-
-  double curr_time = getBufferCurrTime();
-  double delta_time = curr_time - m_cnutc;
-  
-  postIntMessage(m_contact+"_CONTACT_TIME", m_cnutc);
-  postIntMessage(m_contact+"_DELTA_TIME", delta_time);
-  
-  if(!m_extrapolate)
-    return(true);
-  
-  m_extrapolator.setPosition(m_cnx, m_cny, m_cnv, m_cnh, m_cnutc);
-  
-  // Even if mark_time is zero and thus "fresh", still derive the 
-  // the contact position from the extrapolator since the UTC time
-  // of the position in this report may still be substantially 
-  // behind the current own-platform UTC time.
-  
-  double new_cnx, new_cny;
-  ok = m_extrapolator.getPosition(new_cnx, new_cny, curr_time);
-  
-  if(ok) {
-    m_cnx = new_cnx;
-    m_cny = new_cny;
-    return(true);
-  }
-  else {
-    postWMessage("Incomplete Linear Extrapolation");
-    return(false);
-  }
-
-  return(true);
-}
-
-
-//-----------------------------------------------------------
 // Procedure: getRelevance
 //            Calculate the relevance first. If zero-relevance, 
 //            we won't bother to create the objective function.
@@ -383,29 +264,29 @@ double BHV_AvoidCollision::getRelevance()
   double max_dist_relevance = 1.0;
   double rng_dist_relevance = max_dist_relevance - min_dist_relevance;
   
-  m_curr_distance = hypot((m_osx - m_cnx),(m_osy - m_cny));
+  m_contact_range = hypot((m_osx - m_cnx),(m_osy - m_cny));
   m_curr_closing_spd = closingSpeed(m_osx, m_osy, m_osv, m_osh,
 				    m_cnx, m_cny, m_cnv, m_cnh);
   
-  if(m_curr_distance >= m_active_outer_dist) {
+  if(m_contact_range >= m_pwt_outer_dist) {
     //postInfo(0,0);
     return(0);
   }
 
   double dpct, drange;
-  if(m_curr_distance <= m_active_inner_dist)
+  if(m_contact_range <= m_pwt_inner_dist)
     dpct = max_dist_relevance;
   
   // Note: drange should never be zero since either of the above
   // conditionals would be true and the function would have returned.
-  drange = (m_active_outer_dist - m_active_inner_dist);
-  dpct = (m_active_outer_dist - m_curr_distance) / drange;
+  drange = (m_pwt_outer_dist - m_pwt_inner_dist);
+  dpct = (m_pwt_outer_dist - m_contact_range) / drange;
   
   // Apply the grade scale to the raw distance
   double mod_dpct = dpct; // linear case
-  if(m_active_grade == "quadratic")
+  if(m_pwt_grade == "quadratic")
     mod_dpct = dpct * dpct;
-  else if(m_active_grade == "quasi")
+  else if(m_pwt_grade == "quasi")
     mod_dpct = pow(dpct, 1.5);
 
   double d_relevance = (mod_dpct * rng_dist_relevance) + min_dist_relevance;
@@ -452,8 +333,6 @@ double BHV_AvoidCollision::getRelevance()
 #endif
 }
 
-
-
 //-----------------------------------------------------------
 // Procedure: postInfo
 
@@ -478,20 +357,19 @@ void BHV_AvoidCollision::postRange(bool ok)
   bhv_tag = findReplace(bhv_tag, "(d)", "");
   if(!ok) {
     postMessage("RANGE_AVD_" + m_contact, -1);
-    postMessage("CLSG_SPD_AVD_"+ m_contact, 0);
+    postMessage("CLOSING_SPD_AVD_"+ m_contact, 0);
   }
   else {
     // round the speed a bit first so to reduce the number of 
     // posts to the db which are based on change detection.
     double cls_speed = snapToStep(m_curr_closing_spd, 0.1);
     postMessage(("CLSG_SPD_AVD_"+m_contact), cls_speed);
-    //postMessage(("CLSG_SPD_AVD_"+m_contact), m_curr_closing_spd);
     
     // Post to integer precision unless very close to contact
-    if(m_curr_distance <= 10)
-      postMessage(("RANGE_AVD_"+m_contact), m_curr_distance);
+    if(m_contact_range <= 10)
+      postMessage(("RANGE_AVD_"+m_contact), m_contact_range);
     else
-      postIntMessage(("RANGE_AVD_"+m_contact), m_curr_distance);
+      postIntMessage(("RANGE_AVD_"+m_contact), m_contact_range);
   }
 }
 
@@ -501,6 +379,9 @@ void BHV_AvoidCollision::postRange(bool ok)
 
 void BHV_AvoidCollision::postViewableSegList(double pct)
 {
+  if(!m_bearing_line_show)
+    return;
+
   string color = "";
   unsigned int i, vsize = m_bearing_line_colors.size();
   for(i=0; (i<vsize)&&(color==""); i++) {
