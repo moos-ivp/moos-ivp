@@ -34,7 +34,7 @@ using namespace std;
 //---------------------------------------------------------------
 // Procedure: add_vertex
 
-inline void XYSegList::add_vertex(double x, double y, double z, bool mark)
+void XYSegList::add_vertex(double x, double y, double z, bool mark)
 {
   vertex_x.push_back(x);
   vertex_y.push_back(y);
