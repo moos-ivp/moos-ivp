@@ -56,6 +56,11 @@ MarinePID::MarinePID()
   m_current_depth   = 0;
   m_current_pitch   = 0;
 
+  m_rudder_bias_duration  = 10;
+  m_rudder_bias_limit     = 0;
+  m_rudder_bias_side      = 1;
+  m_rudder_bias_timestamp = 0;
+
   m_max_thrust   = 100;
   m_max_rudder   = 100;
   m_max_pitch    = 15;
@@ -74,12 +79,14 @@ MarinePID::MarinePID()
 
 bool MarinePID::OnNewMail(MOOSMSG_LIST &NewMail)
 {
+  double curr_time = MOOSTime();
+
   MOOSMSG_LIST::iterator p;
   for(p=NewMail.begin(); p!=NewMail.end(); p++) {
     CMOOSMsg &msg = *p;
     double dfT;
 
-    msg.IsSkewed(MOOSTime(),&dfT);
+    msg.IsSkewed(curr_time, &dfT);
 
     string key = toupper(stripBlankEnds(msg.m_sKey));
     if(key == "SPEED_FACTOR") {
@@ -124,17 +131,17 @@ bool MarinePID::OnNewMail(MOOSMSG_LIST &NewMail)
 	m_current_pitch = msg.m_dfVal;
       
       if(!strncmp(key.c_str(), "NAV_", 4))
-	m_time_of_last_nav_msg = MOOSTime();
+	m_time_of_last_nav_msg = curr_time;
 
       else if(key == "DESIRED_THRUST")
 	m_current_thrust = msg.m_dfVal;
       else if(key == "DESIRED_HEADING") {
 	m_desired_heading = msg.m_dfVal;
-	m_time_of_last_helm_msg = MOOSTime();
+	m_time_of_last_helm_msg = curr_time;
       }
       else if(key == "DESIRED_SPEED") {
 	m_desired_speed = msg.m_dfVal;
-	m_time_of_last_helm_msg = MOOSTime();
+	m_time_of_last_helm_msg = curr_time;
       }
       else if(key == "DESIRED_DEPTH")
 	m_desired_depth = msg.m_dfVal;
@@ -158,7 +165,7 @@ bool MarinePID::Iterate()
     return(false);
   }
 
-  double m_current_time = MOOSTime();
+  double current_time = MOOSTime();
 
   if(m_verbose == "verbose") {
     double hz = m_iteration / (MOOSTime() - m_start_time);
@@ -168,7 +175,7 @@ bool MarinePID::Iterate()
   }
 
 
-  if((m_current_time - m_time_of_last_helm_msg) > 2) {
+  if((current_time - m_time_of_last_helm_msg) > 2) {
     if(!m_paused)
       MOOSDebugWrite("Paused Due To Tardy HELM Input: THRUST=0");
     cout << "Paused Due To Tardy HELM Input: THRUST=0" << endl;
@@ -177,7 +184,7 @@ bool MarinePID::Iterate()
     return(true);
   }
   
-  if((m_current_time - m_time_of_last_nav_msg) > 2) {
+  if((current_time - m_time_of_last_nav_msg) > 2) {
     if(!m_paused)
       MOOSDebugWrite("Paused Due To Tardy NAV Input: THRUST=0");
     cout << "Paused Due To Tardy NAV Input: THRUST=0" << endl;
@@ -190,10 +197,24 @@ bool MarinePID::Iterate()
   double thrust = 0;
   double elevator = 0;
 
-  m_pengine.updateTime(m_current_time);
+  m_pengine.updateTime(current_time);
 
   rudder = m_pengine.getDesiredRudder(m_desired_heading, m_current_heading, 
 				    m_max_rudder);
+  
+  //--------------------
+  double rbias_duration = current_time - m_rudder_bias_timestamp;
+  if(rbias_duration > m_rudder_bias_duration) {
+    rbias_duration = 0;
+    m_rudder_bias_timestamp = current_time;
+    m_rudder_bias_side *= -1;
+  }
+  double pct = rbias_duration / m_rudder_bias_duration;
+  double bias = m_rudder_bias_side * (pct * m_rudder_bias_limit);
+  rudder += bias;
+  //--------------------
+  
+
   thrust = m_pengine.getDesiredThrust(m_desired_speed, m_current_speed, 
 				    m_current_thrust, m_max_thrust);
   if(m_depth_control)
@@ -315,6 +336,9 @@ bool MarinePID::OnStartUp()
     
     if(MOOSStrCmp(sVarName, "SPEED_FACTOR"))
       m_speed_factor = atof(sLine.c_str());
+    
+    if(MOOSStrCmp(sVarName, "SIM_INSTABILITY"))
+      M_rudder_bias_limit = atof(sLine.c_str());
     
     if(MOOSStrCmp(sVarName, "ACTIVE_START")) {
       sLine = tolower(sLine);
