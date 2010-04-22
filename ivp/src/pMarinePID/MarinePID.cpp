@@ -338,7 +338,7 @@ bool MarinePID::OnStartUp()
       m_speed_factor = atof(sLine.c_str());
     
     if(MOOSStrCmp(sVarName, "SIM_INSTABILITY"))
-      M_rudder_bias_limit = atof(sLine.c_str());
+      m_rudder_bias_limit = atof(sLine.c_str());
     
     if(MOOSStrCmp(sVarName, "ACTIVE_START")) {
       sLine = tolower(sLine);
