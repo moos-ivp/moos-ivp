@@ -61,7 +61,7 @@ public:
 
   virtual IvPFunction* onRunState() {return(0);};
   virtual bool setParam(std::string, std::string);
-  virtual std::string onSetParamComplete() {return("");};
+  virtual void onSetParamComplete() {};
   virtual void onIdleState() {};
   virtual void onCompleteState() {std::cout << "in ocs" << std::endl;};
   virtual void onIdleToRunState() {};
@@ -118,9 +118,10 @@ protected:
 protected:
   const InfoBuffer* m_info_buffer;
 
-  std::string m_descriptor;    
-  std::string m_behavior_type;
   std::string m_us_name;       
+  std::string m_descriptor;    
+  std::string m_contact; // Name for contact in InfoBuffer
+  std::string m_behavior_type;
   std::string m_duration_status;
   std::string m_build_info;
   std::string m_status_info;
