@@ -152,60 +152,53 @@ bool IvPBehavior::setParam(string g_param, string g_val)
     }
   }
   else if(g_param == "runflag") {
-    vector<string> svector = parseString(g_val, '=');
-    if(svector.size() != 2)
+    string var = stripBlankEnds(biteString(g_val, '='));
+    string val = stripBlankEnds(g_val);
+    if(strContainsWhite(var) || (val == ""))
       return(false);
-    string var = stripBlankEnds(svector[0]);
-    string val = stripBlankEnds(svector[1]);
     VarDataPair pair(var, val, "auto");
     m_run_flags.push_back(pair);
     return(true);
   }
   else if(g_param == "activeflag") {
-    vector<string> svector = parseString(g_val, '=');
-    if(svector.size() != 2)
+    string var = stripBlankEnds(biteString(g_val, '='));
+    string val = stripBlankEnds(g_val);
+    if(strContainsWhite(var) || (val == ""))
       return(false);
-    string var = stripBlankEnds(svector[0]);
-    string val = stripBlankEnds(svector[1]);
     VarDataPair pair(var, val, "auto");
     m_active_flags.push_back(pair);
     return(true);
   }
   else if(g_param == "inactiveflag") {
-    vector<string> svector = parseString(g_val, '=');
-    if(svector.size() != 2)
+    string var = stripBlankEnds(biteString(g_val, '='));
+    string val = stripBlankEnds(g_val);
+    if(strContainsWhite(var) || (val == ""))
       return(false);
-    string var = stripBlankEnds(svector[0]);
-    string val = stripBlankEnds(svector[1]);
     VarDataPair pair(var, val, "auto");
     m_inactive_flags.push_back(pair);
     return(true);
   }
   else if(g_param == "idleflag") {
-    g_val = findReplace(g_val, ',', '=');
-    vector<string> svector = parseString(g_val, '=');
-    if(svector.size() != 2)
+    string var = stripBlankEnds(biteString(g_val, '='));
+    string val = stripBlankEnds(g_val);
+    if(strContainsWhite(var) || (val == ""))
       return(false);
-    string var = stripBlankEnds(svector[0]);
-    string val = stripBlankEnds(svector[1]);
     VarDataPair pair(var, val, "auto");
     m_idle_flags.push_back(pair);
     return(true);
   }
   else if(g_param == "endflag") {
-    g_val = findReplace(g_val, ',', '=');
-    vector<string> svector = parseString(g_val, '=');
-    if(svector.size() != 2)
+    string var = stripBlankEnds(biteString(g_val, '='));
+    string val = stripBlankEnds(g_val);
+    if(strContainsWhite(var) || (val == ""))
       return(false);
-    string var = stripBlankEnds(svector[0]);
-    string val = stripBlankEnds(svector[1]);
     VarDataPair pair(var, val, "auto");
     m_end_flags.push_back(pair);
     return(true);
   }
   else if((g_param == "no_starve") || (g_param == "nostarve")) {
     vector<string> svector = parseString(g_val, ',');
-    int vsize = svector.size();
+    unsigned int i, vsize = svector.size();
     // must have at least one var,time pair.
     if(vsize < 2)
       return(false);
@@ -213,7 +206,7 @@ bool IvPBehavior::setParam(string g_param, string g_val)
     if(stime <= 0)
       return(false);
 
-    for(int i=0; i<vsize-1; i++) {
+    for(i=0; i<vsize-1; i++) {
       string var = stripBlankEnds(svector[i]);
       m_starve_vars[var] = stime;
     }
@@ -479,7 +472,7 @@ bool IvPBehavior::checkConditions()
   if(!m_info_buffer) 
     return(false);
 
-  int i, j, vsize, csize;
+  unsigned int i, j, vsize, csize;
 
   // Phase 1: get all the variable names from all present conditions.
   vector<string> all_vars;
@@ -576,8 +569,8 @@ void IvPBehavior::durationReset()
 void IvPBehavior::addInfoVars(string var_string)
 {
   vector<string> svector = parseString(var_string, ',');
-  int vsize = svector.size();
-  for(int i=0; i<vsize; i++) {
+  unsigned int i, vsize = svector.size();
+  for(i=0; i<vsize; i++) {
     string varname = stripBlankEnds(svector[i]);
     if(!vectorContains(m_info_vars, varname))
       m_info_vars.push_back(varname);
@@ -657,8 +650,8 @@ bool IvPBehavior::checkUpdates()
   vector<string> new_update_strs = getBufferStringVector(m_update_var, ok);
   
   bool update_made = false;
-  int vsize = new_update_strs.size();
-  for(int i=0; i<vsize; i++) {
+  unsigned int i, vsize = new_update_strs.size();
+  for(i=0; i<vsize; i++) {
     string new_update_str = new_update_strs[i];
     
     if((new_update_str != "") && (new_update_str != m_prev_update_str)) {
@@ -850,19 +843,23 @@ void IvPBehavior::postFlags(const string& str)
   // as the previous posting to that MOOS variable. 
   bool endflags = (str == "endflags");
 
-  int vsize = flags.size();
-  for(int i=0; i<vsize; i++) {
-    string var   = flags[i].get_var();
-    string sdata = flags[i].get_sdata();
-    double ddata = flags[i].get_ddata();
-    //if(sdata != "") {
+  unsigned int i, vsize = flags.size();
+  for(i=0; i<vsize; i++) {
+    string var = flags[i].get_var();
+    
     if(flags[i].is_string()) {
+      string sdata = flags[i].get_sdata();
+      sdata = findReplace(sdata, "$[OWNSHIP]", m_us_name);
+      sdata = findReplace(sdata, "$[BHVNAME]", m_descriptor);
+      sdata = findReplace(sdata, "$[BHVTYPE]", m_behavior_type);
+      sdata = findReplace(sdata, "$[CONTACT]", m_contact);
       if(endflags) 
 	postRepeatableMessage(var, sdata);
       else
 	postMessage(var, sdata);
     }
     else {
+      double ddata = flags[i].get_ddata();
       if(endflags)
 	postRepeatableMessage(var, ddata);
       else
