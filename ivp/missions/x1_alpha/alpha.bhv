@@ -1,8 +1,8 @@
 //--------    FILE: alpha.bhv   -------------
 
 initialize   DEPLOY = false
+initialize   SURVEY = false
 initialize   RETURN = false
-initialize   HSLINE = off
 
 //----------------------------------------------
 Behavior = BHV_Waypoint
@@ -11,7 +11,8 @@ Behavior = BHV_Waypoint
   pwt       = 100
   condition = RETURN = false
   condition = DEPLOY = true
-  endflag   = RETURN = true
+  condition = SURVEY = true
+  endflag   = SURVEY = false
   perpetual = true
   updates   = NEWPTS
 
@@ -19,10 +20,9 @@ Behavior = BHV_Waypoint
    lead_damper = 1
          speed = 2.0   // meters per second
         radius = 8.0
-//        points = zigzag:35,45,90,1000,200,50
-        points = 60,-40:60,-160:150,-160:180,-100:150,-40
-        repeat = 1
-  visual_hints = nextpt_color=red, nextpt_lcolor=green
+        points = 100,-100
+        repeat = 0
+  visual_hints = nextpt_color=yellow, nextpt_lcolor=white
   visual_hints = vertex_color=yellow, line_color=white
   visual_hints = vertex_size=2, edge_size=1
 }
@@ -44,14 +44,4 @@ Behavior = BHV_Waypoint
      nm_radius = 8.0
         points = 0,0
 }
-
-//----------------------------------------------
-Behavior = BHV_HDGLine
-{
-  name      = hsline
-  //condition = HSLINE=on
-
-  time_on_leg = 10
-}
-
 

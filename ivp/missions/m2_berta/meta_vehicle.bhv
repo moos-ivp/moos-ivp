@@ -92,6 +92,7 @@ Behavior = BHV_AvoidCollision
   pwt        = 200
   condition  = AVOID=true
   updates    = CONTACT_INFO
+  endflag    = CONTACT_RESOLVED = $[CONTACT]
   templating = spawn
 
                 contact = to-be-set

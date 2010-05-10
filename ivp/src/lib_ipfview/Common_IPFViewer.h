@@ -28,7 +28,6 @@ class Common_IPFViewer : public Fl_Gl_Window
   Common_IPFViewer(int x,int y,int w,int h,const char *l=0);
   virtual ~Common_IPFViewer() {};
 
-  // Pure virtuals that need to be defined
   void   draw();
   int    handle(int);
 

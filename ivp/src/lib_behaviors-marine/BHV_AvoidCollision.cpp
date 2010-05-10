@@ -36,6 +36,7 @@
 #include "BuildUtils.h"
 #include "MBUtils.h"
 #include "CPA_Utils.h"
+#include "XYSegList.h"
 
 using namespace std;
 
@@ -144,26 +145,6 @@ bool BHV_AvoidCollision::setParam(string param, string param_val)
       m_roc_max_heighten = m_roc_max_dampen;
     return(true);
   }  
-  // bearing_lines = white:0, green:0.65, yellow:0.8, red:1.0
-  else if(param == "bearing_line_config") {
-    m_bearing_line_show = false;
-    vector<string> svector = parseString(param_val, ',');
-    unsigned int i, vsize = svector.size();
-    bool valid_components = true;
-    for(i=0; i<vsize; i++) {
-      string left  = tolower(stripBlankEnds(biteString(svector[i],':')));
-      string right = stripBlankEnds(svector[i]);
-      if(isColor(left) && isNumber(right) && valid_components) {
-	m_bearing_line_colors.push_back(left);
-	double dval = vclip(atof(right.c_str()), 0, 1);
-	m_bearing_line_thresh.push_back(dval);
-	m_bearing_line_show = true;
-      }
-      else
-	valid_components = false;
-    }
-    return(true);
-  }  
   return(false);
 }
 
@@ -173,7 +154,7 @@ bool BHV_AvoidCollision::setParam(string param, string param_val)
 
 void BHV_AvoidCollision::onRunToIdleState() 
 {
-  postErasableSegList();
+  postErasableBearingLine();
 }
 
 //-----------------------------------------------------------
@@ -193,8 +174,7 @@ void BHV_AvoidCollision::onIdleState()
 
 void BHV_AvoidCollision::onCompleteState() 
 {
-  postErasableSegList();
-  postRepeatableMessage("CONTACT_RESOLVED", m_contact);
+  postErasableBearingLine();
 }
 
 //-----------------------------------------------------------
@@ -207,7 +187,7 @@ IvPFunction *BHV_AvoidCollision::onRunState()
     return(0);
   }
 
-  double relevance = getRelevance();
+  m_relevance = getRelevance();
   postRange(true);
 
   if(m_contact_range >= m_completed_dist) {
@@ -215,8 +195,8 @@ IvPFunction *BHV_AvoidCollision::onRunState()
     return(0);
   }
   
-  if(relevance <= 0) {
-    postViewableSegList();
+  if(m_relevance <= 0) {
+    postViewableBearingLine();
     return(0);
   }
 
@@ -235,7 +215,7 @@ IvPFunction *BHV_AvoidCollision::onRunState()
 
   if(!ok) {
     postEMessage("Unable to init AOF_AvoidCollision.");
-    postErasableSegList();
+    postErasableBearingLine();
     return(0);
   }
 
@@ -245,9 +225,9 @@ IvPFunction *BHV_AvoidCollision::onRunState()
   IvPFunction *ipf = reflector.extractIvPFunction();
 
   ipf->getPDMap()->normalize(0.0, 100.0);
-  ipf->setPWT(relevance * m_priority_wt);
+  ipf->setPWT(m_relevance * m_priority_wt);
 
-  postViewableSegList(relevance);
+  postViewableBearingLine();
 
   return(ipf);
 }
@@ -374,37 +354,3 @@ void BHV_AvoidCollision::postRange(bool ok)
 }
 
 
-//-----------------------------------------------------------
-// Procedure: postViewableSegList
-
-void BHV_AvoidCollision::postViewableSegList(double pct)
-{
-  if(!m_bearing_line_show)
-    return;
-
-  string color = "";
-  unsigned int i, vsize = m_bearing_line_colors.size();
-  for(i=0; (i<vsize)&&(color==""); i++) {
-    if(pct <= m_bearing_line_thresh[i])
-      color = m_bearing_line_colors[i];
-  }
-
-  m_seglist.clear(); 
-  m_seglist.set_active(true);
-  m_seglist.add_vertex(m_osx, m_osy);
-  m_seglist.add_vertex(m_cnx, m_cny);
-  m_seglist.set_label(m_us_name + "_" + m_descriptor);
-  m_seglist.set_edge_color(color);
-
-  postMessage("VIEW_SEGLIST", m_seglist.get_spec());
-}
-
-
-//-----------------------------------------------------------
-// Procedure: postErasableSegList
-
-void BHV_AvoidCollision::postErasableSegList()
-{
-  m_seglist.set_active(false);
-  postMessage("VIEW_SEGLIST", m_seglist.get_spec());
-}

@@ -166,6 +166,9 @@ void QuadSet::applyColorMap(const FColorMap& cmap,
   }
 
   double range = (a_high_val - a_low_val);
+  // Check for the case where the range is zero
+  if(range <= 0) 
+    range = 1.0;
   for(int i=0; i<vsize; i++) {
     double llpct = (m_quads[i].llval - a_low_val) / range;
     double lhpct = (m_quads[i].lhval - a_low_val) / range;

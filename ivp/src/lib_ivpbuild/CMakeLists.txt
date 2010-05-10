@@ -29,7 +29,7 @@ SET(SRC
    ZAIC_HLEQ.cpp
    ZAIC_LEQ.cpp
    ZAIC_PEAK.cpp
-   ZAIC_MANUAL.cpp
+   ZAIC_Vector.cpp
 )
 
 SET(HEADERS
@@ -59,8 +59,8 @@ SET(HEADERS
   ZAIC_HEQ.h
   ZAIC_HLEQ.h
   ZAIC_LEQ.h
-  ZAIC_MANUAL.h
   ZAIC_PEAK.h
+  ZAIC_Vector.h
 )
 
 # Build Library

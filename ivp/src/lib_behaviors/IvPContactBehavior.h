@@ -24,8 +24,11 @@
 #ifndef IVP_CONTACT_BEHAVIOR_HEADER
 #define IVP_CONTACT_BEHAVIOR_HEADER
 
+#include <string>
+#include <vector>
 #include "IvPBehavior.h"
 #include "LinearExtrapolator.h"
+#include "XYSegList.h"
 
 class IvPDomain;
 class IvPContactBehavior : public IvPBehavior {
@@ -37,18 +40,23 @@ public:
 
  protected:
   bool  updatePlatformInfo();
+  void  postViewableBearingLine();
+  void  postErasableBearingLine();
   
  protected: // Configuration Parameters
   
-  std::string m_contact; // Name for contact in InfoBuffer
-
   bool   m_on_no_contact_ok;  // true if no trouble reported on no contact
-
   bool   m_extrapolate;
   double m_decay_start;
   double m_decay_end;
   double m_time_on_leg;
   
+  XYSegList                m_bearing_line;
+  std::vector<std::string> m_bearing_line_colors;
+  std::vector<double>      m_bearing_line_thresh;
+  std::string              m_bearing_line_info;
+  bool                     m_bearing_line_show;
+
  protected:  // State Variables
   
   double m_osx;   // Current ownship x position (meters) 
@@ -63,6 +71,7 @@ public:
   double m_cnutc; // UTC time of last contact report
 
   double m_contact_range; // Current range to contact (meters) 
+  double m_relevance;
 
   LinearExtrapolator m_extrapolator;
 };

@@ -230,8 +230,10 @@ SET(IVP_GUI_APPS
   app_ffview
   app_geoview
   app_logview
+  app_vzaicview
   pMarineViewer
   uFunctionVis
+  app_cpaview
   )
   
 SET(IVP_APPS_TO_BUILD ${IVP_NON_GUI_APPS})

@@ -64,7 +64,12 @@ IvPContactBehavior::IvPContactBehavior(IvPDomain gdomain) :
   m_cnh = 0;
   m_cnv = 0;
   m_cnutc = 0;
+
   m_contact_range = 0;
+  m_relevance     = 0;
+
+  m_bearing_line_show = false;
+  m_bearing_line_info = "relevance";
 }
 
 //-----------------------------------------------------------
@@ -109,6 +114,30 @@ bool IvPContactBehavior::setParam(string param, string param_val)
     if(!non_neg_number)
       return(false);
     m_time_on_leg = dval;
+    return(true);
+  }  
+  // bearing_lines = white:0, green:0.65, yellow:0.8, red:1.0
+  else if(param == "bearing_line_config") {
+    m_bearing_line_show = false;
+    vector<string> svector = parseString(param_val, ',');
+    unsigned int i, vsize = svector.size();
+    bool valid_components = true;
+    for(i=0; i<vsize; i++) {
+      string left  = tolower(stripBlankEnds(biteString(svector[i],':')));
+      string right = stripBlankEnds(svector[i]);
+      if((left == "info") && (right == "range")) 
+	m_bearing_line_info = "range";
+      else if((left == "info") && (right == "relevance")) 
+	m_bearing_line_info = "relevance";
+      else if(isColor(left) && isNumber(right) && valid_components) {
+	m_bearing_line_colors.push_back(left);
+	double thresh_value = atof(right.c_str());
+	m_bearing_line_thresh.push_back(thresh_value);
+	m_bearing_line_show = true;
+      }
+      else
+	valid_components = false;
+    }
     return(true);
   }  
   return(false);
@@ -191,3 +220,50 @@ bool IvPContactBehavior::updatePlatformInfo()
   return(ok);
 }
 
+//-----------------------------------------------------------
+// Procedure: postViewableBearingLine
+
+void IvPContactBehavior::postViewableBearingLine()
+{
+  if(!m_bearing_line_show)
+    return;
+
+  double index_value;
+  if(m_bearing_line_info == "range")
+    index_value = m_contact_range;
+  else if(m_bearing_line_info == "relevance")
+    index_value = m_relevance;
+  else
+    return;
+
+  string color = "";
+  unsigned int i, vsize = m_bearing_line_colors.size();
+  for(i=0; (i<vsize)&&(color==""); i++) {
+    if(index_value <= m_bearing_line_thresh[i])
+      color = m_bearing_line_colors[i];
+  }
+  if(color == "") 
+    color = "blank";
+  postMessage("COLOR_CHOICE", color);
+  postMessage("COLOR_RANGE", m_contact_range);
+  postMessage("COLOR_IVALUE", index_value);
+
+  m_bearing_line.clear(); 
+  m_bearing_line.set_active(true);
+  m_bearing_line.add_vertex(m_osx, m_osy);
+  m_bearing_line.add_vertex(m_cnx, m_cny);
+  m_bearing_line.set_label(m_us_name + "_" + m_descriptor);
+  m_bearing_line.set_edge_color(color);
+
+  postMessage("VIEW_SEGLIST", m_bearing_line.get_spec());
+}
+
+
+//-----------------------------------------------------------
+// Procedure: postErasableBearingLine
+
+void IvPContactBehavior::postErasableBearingLine()
+{
+  m_bearing_line.set_active(false);
+  postMessage("VIEW_SEGLIST", m_bearing_line.get_spec());
+}

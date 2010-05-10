@@ -36,7 +36,7 @@ public:
   void         onIdleState();
   void         onIdleToRunState();
   bool         setParam(std::string, std::string);
-  std::string  onSetParamComplete();
+  void         onSetParamComplete();
 
  protected:
   void         updateInfoIn();

@@ -36,7 +36,7 @@ public:
   bool         setParam(std::string, std::string);
   IvPFunction* onRunState();
   void         onRunToIdleState();
-  std::string  onSetParamComplete();
+  void         onSetParamComplete();
   void         onCompleteState() {postErasables();};
 
 protected:

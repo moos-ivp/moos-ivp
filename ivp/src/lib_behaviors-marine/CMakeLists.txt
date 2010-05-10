@@ -4,12 +4,10 @@
 #--------------------------------------------------------
 
 SET(SRC
-  IvPContactBehavior.cpp
   BHV_AbortToPoint.cpp
   BHV_Attractor.cpp
 #  BHV_HAttractor.cpp
   BHV_AvoidCollision.cpp
-  BHV_AvoidCollisionDepth.cpp
   BHV_AvoidObstacles.cpp
   BHV_ConstantDepth.cpp
   BHV_ConstantHeading.cpp
@@ -42,7 +40,6 @@ SET(SRC
 SET(HEADERS 
   BHV_AbortToPoint.h
   BHV_Attractor.h
-  BHV_AvoidCollisionDepth.h
   BHV_AvoidCollision.h
   BHV_AvoidObstacles.h
   BHV_ConstantDepth.h

@@ -130,10 +130,9 @@ bool BHV_PeriodicSpeed::setParam(string param, string value)
 //-----------------------------------------------------------
 // Procedure: onSetParamComplete
 
-string BHV_PeriodicSpeed::onSetParamComplete()
+void BHV_PeriodicSpeed::onSetParamComplete()
 {
   postMessage(m_var_busy_count, 0);
-  return("");
 }
 
 //-----------------------------------------------------------

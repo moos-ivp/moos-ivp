@@ -33,13 +33,21 @@ public:
   ~BHV_Trail() {};
   
   IvPFunction* onRunState();
-  void         onIdleState();
   bool         setParam(std::string, std::string);
+  void         onSetParamComplete();
+  void         onRunToIdleState();
 
 protected:
   double  getRelevance();
   double  getPriority();
+
+  void    postViewableTrailPoint();
+  void    postErasableTrailPoint();
   
+ protected: // State variables
+
+  XYPoint m_trail_point;
+
 private: // Configuration parameters
   double  m_trail_range;
   double  m_trail_angle;

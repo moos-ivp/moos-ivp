@@ -88,7 +88,7 @@ BHV_Waypoint::BHV_Waypoint(IvPDomain gdomain) :
 //-----------------------------------------------------------
 // Procedure: onSetParamComplete()
 
-string BHV_Waypoint::onSetParamComplete()
+void BHV_Waypoint::onSetParamComplete()
 {
   m_trackpt.set_source(m_us_name + tolower(getDescriptor()));
   m_trackpt.set_label(m_us_name + "'s track-point");
@@ -97,7 +97,6 @@ string BHV_Waypoint::onSetParamComplete()
   m_nextpt.set_source(m_us_name + tolower(getDescriptor()));
   m_nextpt.set_label(m_us_name + "'s next waypoint");
   m_nextpt.set_type("waypoint");
-  return("");
 }
 
 //-----------------------------------------------------------

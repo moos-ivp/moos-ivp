@@ -84,10 +84,10 @@ nsplug meta_shoreside.moos targ_shoreside.moos -f WARP=$WARP    \
    SPORT=$SPORT SNAME=$SNAME
 
 nsplug meta_vehicle.bhv targ_henry.bhv -f VNAME=$VNAME1      \
-    OVNAME=$VNAME2 START_POS=$START_POS1 LOITER_POS=$LOITER_POS1       
+    START_POS=$START_POS1 LOITER_POS=$LOITER_POS1       
 
 nsplug meta_vehicle.bhv targ_gilda.bhv -f VNAME=$VNAME2      \
-    OVNAME=$VNAME1 START_POS=$START_POS1 LOITER_POS=$LOITER_POS2       
+    START_POS=$START_POS1 LOITER_POS=$LOITER_POS2       
 
 if [ ${JUST_BUILD} = "yes" ] ; then
     exit 0

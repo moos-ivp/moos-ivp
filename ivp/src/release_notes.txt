@@ -1,7 +1,7 @@
 
 =====================================================================
 Post 4.0.1  
-Pre  ???
+Pre  4.1
 =====================================================================
 
 Merge of dynamic behaviors branch
@@ -24,6 +24,14 @@ o The helm no longer publishes UH_*, PC_*, PWT_*, STATE_* MOOS variables
   for each behavior. A single BHV_STATUS publication is made for each
   behavior automatically, with the name of the behavior specified in
   in one of the fields.
+
+o IvPBehavior *flags parameters: all flags posted by a helm behavior, 
+  activeflag, inactiveflag, idleflag, endflag, runflag, may now contain
+  one of four macros in postings of strings. $[OWNSHIP] will expand to
+  the name of ownship (the name of the MOOS community), $[BHVNAME] will
+  expand to the behavior name, $[BHVTYPE] will expand to the behavior
+  type, and $[CONTACT] will expand to the contact name for contact-related
+  behaviors. 
 
 o The s5_echo mission was added to ivp/missions/ to demonstrate the 
   dynamic spawning of behaviors.

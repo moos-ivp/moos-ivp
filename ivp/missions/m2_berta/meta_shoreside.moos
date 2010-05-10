@@ -9,7 +9,7 @@ Community  = $(SNAME)
 #include plug_origin_warp.moos
   
 //--------------------------------------------------------
-ProcessConfig = ANTLER
+Processconfig = ANTLER
 {
   MSBetweenLaunches = 200
 

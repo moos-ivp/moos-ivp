@@ -10,6 +10,11 @@ SET(SRC
    ModeSet.cpp
    ModeEntry.cpp
    Populator_BehaviorSet.cpp
+   BehaviorSet.cpp
+   BFactoryStatic.cpp
+   BFactoryDynamic.cpp
+   BehaviorSpec.cpp
+   SpecBuild.cpp
    AVD_Table.cpp
 )
 

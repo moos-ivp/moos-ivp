@@ -134,6 +134,17 @@ bool BHV_Trail::setParam(string param, string param_val)
 
 
 //-----------------------------------------------------------
+// Procedure: onSetParamComplete
+
+void BHV_Trail::onSetParamComplete() 
+{
+  m_trail_point.set_label("trailpoint_" + m_us_name);
+  m_trail_point.set_type("trailpoint");
+  m_trail_point.set_active("false");
+}
+
+
+//-----------------------------------------------------------
 // Procedure: onRunState
 
 IvPFunction *BHV_Trail::onRunState() 
@@ -157,15 +168,11 @@ IvPFunction *BHV_Trail::onRunState()
     projectPoint(m_trail_angle, m_trail_range, m_cnx, m_cny, posX, posY);
   
 
+  m_trail_point.set_vertex(posX, posY);
+  postViewableTrailPoint();
+
   // double adjusted_angle = angle180(m_cnh + m_trail_angle);
   // projectPoint(adjusted_angle, m_trail_range, m_cnx, m_cny, posX, posY);
-
-  string ptmsg;
-  ptmsg =  "x=" + dstringCompact(doubleToString(posX,0));
-  ptmsg += ",y=" + dstringCompact(doubleToString(posY,0));
-  ptmsg += ",label=trailpoint_" + m_us_name;
-  ptmsg += ",type=trailpoint";
-  postMessage("VIEW_POINT", ptmsg);
 
   // Calculate the relevance first. If zero-relevance, we won't
   // bother to create the objective function.
@@ -312,16 +319,12 @@ IvPFunction *BHV_Trail::onRunState()
 }
 
 //-----------------------------------------------------------
-// Procedure: onIdleState
-//      Note: This function overrides the onIdleState() virtual
-//            function defined for the IvPBehavior superclass
-//            This function will be executed by the helm each
-//            time the behavior FAILS to meet its run conditions.
+// Procedure: onRunToIdleState
 
-void BHV_Trail::onIdleState()
+void BHV_Trail::onRunToIdleState()
 {
-  // Do your thing here
   postMessage("PURSUIT", 0);
+  postErasableTrailPoint();
 }
 
 //-----------------------------------------------------------
@@ -344,11 +347,25 @@ double BHV_Trail::getRelevance()
     return(0.0);
 }
 
+//-----------------------------------------------------------
+// Procedure: postViewableTrailPoint
+
+void BHV_Trail::postViewableTrailPoint()
+{
+  m_trail_point.set_active(true);
+  string spec = m_trail_point.get_spec();
+  postMessage("VIEW_POINT", spec);
+}
 
 
+//-----------------------------------------------------------
+// Procedure: postErasableTrailPoint
 
-
-
-
+void BHV_Trail::postErasableTrailPoint()
+{
+  m_trail_point.set_active(false);
+  string spec = m_trail_point.get_spec();
+  postMessage("VIEW_POINT", spec);
+}
 
 

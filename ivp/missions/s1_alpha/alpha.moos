@@ -101,6 +101,8 @@ ProcessConfig = pMarinePID
   VERBOSE       = true
   DEPTH_CONTROL = false
 
+  // SIM_INSTABILITY = 20
+
   // Yaw PID controller
   YAW_PID_KP		 = 0.5
   YAW_PID_KD		 = 0.0

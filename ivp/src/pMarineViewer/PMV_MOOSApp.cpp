@@ -31,9 +31,6 @@ using namespace std;
 
 PMV_MOOSApp::PMV_MOOSApp() 
 {
-  m_left_click_str  = "null"; 
-  m_right_click_str = "null"; 
-
   m_pending_moos_events = 0;
   m_verbose         = true;
   m_gui             = 0; 

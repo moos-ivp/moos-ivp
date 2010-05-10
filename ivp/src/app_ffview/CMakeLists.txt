@@ -5,50 +5,30 @@
 
 # Set System Specific Libraries
 if (${WIN32})
-  SET(SYSTEM_LIBS
-    wsock32)
+  SET(SYSTEM_LIBS wsock32)
 else (${WIN32})
-  SET(SYSTEM_LIBS
-    m)
+  SET(SYSTEM_LIBS m)
 endif (${WIN32})
 
-   SET(SRC
-      AOF_Cache.cpp
-      GUI.cpp
-      PopulatorAOF.cpp
-      AOFFactory.cpp
-      Viewer.cpp
-      main.cpp
-   )	  
+FILE(GLOB SRC *.cpp)
 
-   
-   IF (${APPLE})
+IF (${APPLE})
      # If you want to create an Apple BUNDLE, do it here
      ADD_EXECUTABLE(ffview ${SRC})
-# 
-# message("@@@!!@@@   	ln -s ${EXECUTABLE_OUTPUT_PATH}/ffview.app/Contents/MacOS/ffview ${EXECUTABLE_OUTPUT_PATH}/ffview")
-#      ADD_CUSTOM_COMMAND(
-#          TARGET ffview
-#          POST_BUILD
-#          COMMAND ln ARGS -s ${EXECUTABLE_OUTPUT_PATH}/ffview.app/Contents/MacOS/ffview ${EXECUTABLE_OUTPUT_PATH}/ffview
-#          COMMENT "Creating symbolic link to program ffview"
-#       )
-
      #Install Targets
      INSTALL(TARGETS ffview
        RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
      )
 
-   ELSE (${APPLE})
+ELSE (${APPLE})
      ADD_EXECUTABLE(ffview ${SRC})
-     
      #Install Targets
      INSTALL(TARGETS ffview
         RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
      )
-   ENDIF (${APPLE})
+ENDIF (${APPLE})
 	     
-   TARGET_LINK_LIBRARIES(ffview
+TARGET_LINK_LIBRARIES(ffview
      ipfview
      geometry
      mbutil
@@ -56,17 +36,13 @@ endif (${WIN32})
      ivpbuild
      ivpcore
      ${SYSTEM_LIBS}
-	   
      # Standard libraries used by this project's FLTK apps...
      fltk 
      fltk_gl) 
 
-     # http://developer.apple.com/qa/qa2007/qa1567.html
-     IF (${APPLE})
-        SET_TARGET_PROPERTIES(ffview PROPERTIES	  
-        LINK_FLAGS "-Wl,-dylib_file,/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib:/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib"
+# http://developer.apple.com/qa/qa2007/qa1567.html
+IF (${APPLE})
+     SET_TARGET_PROPERTIES(ffview PROPERTIES	  
+     LINK_FLAGS "-Wl,-dylib_file,/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib:/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib"
 		  )
-    ENDIF (${APPLE})
-
-
-	  
+ENDIF (${APPLE})

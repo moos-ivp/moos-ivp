@@ -20,6 +20,7 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
+#include <iostream>
 #include "MarineVehiGUI.h"
 #include "MBUtils.h"
 
@@ -184,6 +185,7 @@ void MarineVehiGUI::cb_AltTrailSize(Fl_Widget* o, int v) {
 
 //----------------------------------------- ToggleTrailColor
 inline void MarineVehiGUI::cb_ToggleTrailColor_i() {
+  cout << "In ToggleTrailColor()" << endl;
   m_trail_color_ix = (m_trail_color_ix+1) % 3;
   if(m_trail_color_ix == 0)
     cmviewer->setParam("trails_color", "white");

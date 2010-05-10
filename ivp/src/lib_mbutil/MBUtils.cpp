@@ -842,7 +842,7 @@ string tokStringParse(const string& str, const string& left,
       return("");
     svector2[0] = stripBlankEnds(svector2[0]);
     if(svector2[0] == left)
-      return(svector2[1]);
+      return(stripBlankEnds(svector2[1]));
   }
   return("");
 }

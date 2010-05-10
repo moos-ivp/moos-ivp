@@ -24,7 +24,6 @@
 #define BHV_AVOID_COLLISION_HEADER
 
 #include "IvPContactBehavior.h"
-#include "XYSegList.h"
 
 class IvPDomain;
 class BHV_AvoidCollision : public IvPContactBehavior {
@@ -43,30 +42,20 @@ protected:
   double getPriority();
   void   postInfo(double, double);
   void   postRange(bool ok=true);
-  void   postViewableSegList(double pct=0);
-  void   postErasableSegList();
   
 private: // Configuration Parameters
 
   std::string m_pwt_grade;
 
-  std::vector<std::string> m_bearing_line_colors;
-  std::vector<double>      m_bearing_line_thresh;
-  bool                     m_bearing_line_show;
-
   double m_completed_dist;
-
   double m_pwt_outer_dist;
   double m_pwt_inner_dist;
-
   double m_min_util_cpa_dist;
   double m_max_util_cpa_dist;
-
   double m_roc_max_heighten; // Rate of Closure w/ max relevance heightening
   double m_roc_max_dampen;   // Rate of Closure w/ max relevance dampening
 
 private:  // State Variables
-  double    m_curr_closing_spd;
-  XYSegList m_seglist;
+  double m_curr_closing_spd;
 };
 #endif

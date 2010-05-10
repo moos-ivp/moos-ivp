@@ -43,15 +43,23 @@ public:
 
  protected:
   void handleLocalHelmSummary(const std::string&);
-  std::string assembleReport();
+  std::string assembleNodeReport();
+  std::string assemblePlatformReport();
   
+  void updatePlatformVar(std::string, std::string);
+  bool addPlatformVar(std::string);
+  void registerVariables();
+
 protected:
   std::string m_vessel_name;
   std::string m_vessel_type;
   std::string m_vessel_len;
+  std::string m_vessel_type_src;
+  std::string m_vessel_len_src;
   std::string m_helm_mode;
   double      m_db_uptime;
   double      m_moos_utc_time;
+  bool        m_time_updated;
   double      m_nav_x;
   double      m_nav_y;
   double      m_nav_lat;
@@ -64,10 +72,11 @@ protected:
   bool        m_helm_engaged;
   double      m_helm_lastmsg;
 
+  std::string m_position_source;
 
   // moos variable name for the contact report
   // default name is "NODE_REPORT"
-  std::string m_report_var;
+  std::string m_node_report_var;
   
   // for lat long conversion
   CMOOSGeodesy m_geodesy;
@@ -78,7 +87,16 @@ protected:
   double  m_last_post_time;
   double  m_nohelm_thresh;
 
-  std::string interval_history;
+  // moos variable name for the contact report
+  // default name is "PLATFORM_REPORT"
+  std::string m_plat_report_var;
+
+  std::vector<std::string> m_plat_vars;
+  std::vector<std::string> m_plat_vals;
+  std::vector<std::string> m_plat_alias;
+  std::vector<double>      m_plat_post_gap;
+  std::vector<double>      m_plat_post_tstamp;
+  std::vector<double>      m_plat_recv_tstamp;
 };
 
 #endif

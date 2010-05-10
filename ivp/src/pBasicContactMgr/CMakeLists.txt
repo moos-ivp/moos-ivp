@@ -3,7 +3,12 @@
 # Author(s):                                Mike Benjamin
 #--------------------------------------------------------
 
-FILE(GLOB SRC *.cpp)
+FILE(GLOB SRC
+     BasicContactMgr.cpp
+     ContactRecord.cpp
+     PlatformAlertRecord.cpp
+     BasicContactMgrMain.cpp
+)
 
 ADD_EXECUTABLE(pBasicContactMgr ${SRC})
 

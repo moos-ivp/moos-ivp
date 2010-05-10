@@ -144,23 +144,16 @@ ProcessConfig = pMarineViewer
   hash_shade           = 0.4
   hash_view            = true
 
-  scope  = VIEW_SEGLIST
+  scope  = SURVEY
   scope  = VIEW_POINT
-  scope  = VIEW_POLYGON
-  scope  = NAV_X
-  scope  = NAV_Y
-  scope  = MVIEWER_LCLICK
-  scope  = MVIEWER_RCLICK
+  
+  left_context[survey-point] = NEWPTS = points=$(XPOS),$(YPOS)
+  left_context[survey-point] = SURVEY = true
+  left_context[survey-point] = RETURN = false
+  left_context[survey-point] = DEPLOY = true
+  left_context[survey-point] = MOOS_MANUAL_OVERIDE=false
 
-  left_context   = surface_point
-  left_context   = station_point
-  left_context   = return_point
-
-  right_context  = loiter_point
-  right_context  = station_point
-  right_context  = surface_point
-
-  BUTTON_ONE = DEPLOY # DEPLOY=true
+  BUTTON_ONE = DEPLOY # DEPLOY=true # SURVEY=true
   BUTTON_ONE = MOOS_MANUAL_OVERIDE=false # RETURN=false
   BUTTON_TWO = RETURN # RETURN=true
 

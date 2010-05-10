@@ -258,7 +258,7 @@ void BasicContactMgr::postErrorMsg(const string& msg)
 
 bool BasicContactMgr::handleNodeReport(const string& report)
 {
-  string name, vtype, mode;
+  string vname, vtype, mode;
   double x, y, lat, lon, utime, mtime, depth, speed, heading;
   double yaw, length;
 
@@ -269,7 +269,7 @@ bool BasicContactMgr::handleNodeReport(const string& report)
     string value = stripBlankEnds(svector[i]);
     
     if(param == "NAME")
-      name = value;
+      vname = value;
     else if(param == "TYPE")
       vtype = value;
     else if(param == "MODE")
@@ -303,14 +303,14 @@ bool BasicContactMgr::handleNodeReport(const string& report)
   unsigned int j, jsize = m_records.size();
   unsigned int ix = jsize;
   for(j=0; j<jsize; j++)
-    if(name == m_records[j].getName())
+    if(vname == m_records[j].getName())
       ix = j;
 
   // If the record does not already exist, make one
   if(ix == jsize) {
-    ContactRecord new_record(name);
+    ContactRecord new_record(vname);
     m_records.push_back(new_record);
-    m_alerted.push_back(false);
+    m_par.addVehicle(vname);
     m_ranges.push_back(0);
   }
 
@@ -338,21 +338,25 @@ bool BasicContactMgr::handleNodeReport(const string& report)
 //            needs to post another alert when or if the alert
 //            criteria is met again.
 
-bool BasicContactMgr::handleResolved(const string& vname)
+bool BasicContactMgr::handleResolved(string resolution)
 {
-  unsigned int i, vsize = m_records.size();
-  for(i=0; i<vsize; i++) {
-    string rvname = m_records[i].getName();
-    if(tolower(rvname) == tolower(vname)) {
-      m_alerted[i] = false;
-      augmentAlertHistory("Resolved: " + rvname);
-      return(true);
-    }
-  }
+  cout << "In handleResolved()" << endl;
+  string vehicle = stripBlankEnds(biteString(resolution, ','));
+  string alertid = stripBlankEnds(resolution);
+
+  if(alertid == "")
+    alertid = "all_alerts";
+
+  augmentAlertHistory("TryResolve: (" + vehicle + "," + alertid + ")");
+
+  if(!m_par.containsVehicle(vehicle))
+    return(false);
+  if(!m_par.containsAlertID(alertid))
+    return(false);
   
-  // If we didn't find the vehicle name in any of the existing 
-  // records above then return false.
-  return(false);
+  m_par.setValue(vehicle, alertid, false);
+  augmentAlertHistory("Resolved: (" + vehicle + "," + alertid + ")");
+  return(true);
 }
 
 
@@ -363,6 +367,7 @@ bool BasicContactMgr::addNewAlert(const string& alert_str)
 {
   string varname;
   string value;
+  string alert_id = "no_id";
 
   vector<string> svector = parseStringQ(alert_str, ',');
   unsigned int i, vsize = svector.size();
@@ -377,6 +382,8 @@ bool BasicContactMgr::addNewAlert(const string& alert_str)
       varname = right;
     else if(left == "val")
       value = right;
+    else if(left == "id")
+      alert_id = right;
     else {
       cout << "pBasicContactMgr: Bad Alert component: " << left << endl;
       return(false);
@@ -391,7 +398,11 @@ bool BasicContactMgr::addNewAlert(const string& alert_str)
 
   m_alert_var.push_back(varname);
   m_alert_val.push_back(value);
+  m_alert_id.push_back(alert_id);
   
+  if(alert_id != "")
+    m_par.addAlertID(alert_id);
+
   return(true);
 }
 
@@ -421,17 +432,6 @@ void BasicContactMgr::postSummaries()
       contacts_retired += contact_name;
     }
 
-    if(m_alerted[i]) {
-      if(contacts_alerted != "")
-	contacts_alerted += ",";
-      contacts_alerted += contact_name;
-    }
-    if(!m_alerted[i]) {
-      if(contacts_unalerted != "")
-	contacts_unalerted += ",";
-      contacts_unalerted += contact_name;
-    }    
-
     double range = m_ranges[i];
 
     if(contacts_recap != "")
@@ -447,11 +447,13 @@ void BasicContactMgr::postSummaries()
   }
 
   if(m_prev_contacts_alerted != contacts_alerted) {
+    contacts_alerted = m_par.getAlertedGroup(true);
     m_Comms.Notify("CONTACTS_ALERTED", contacts_alerted);
     m_prev_contacts_alerted = contacts_alerted;
   }
 
   if(m_prev_contacts_unalerted != contacts_unalerted) {
+    contacts_unalerted = m_par.getAlertedGroup(false);
     m_Comms.Notify("CONTACTS_UNALERTED", contacts_unalerted);
     m_prev_contacts_unalerted = contacts_unalerted;
   }
@@ -473,37 +475,39 @@ void BasicContactMgr::postSummaries()
 
 bool BasicContactMgr::postAlerts()
 {
+#if 0
   // Quick check to see if there are any posts needed, otherwise
   // we can return immediately.
-  unsigned int i, isize = m_records.size();
-  bool alerts_needed = false;
-  for(i=0; i<isize; i++) 
-    if(!m_alerted[i]) 
-      alerts_needed = true;
-  if(!alerts_needed)
+  bool alerts_pending = m_par.alertsPending();
+  if(!alerts_pending)
     return(false);
-  
-  bool new_alerts = false;
-  for(i=0; i<isize; i++) {
-    if(!m_alerted[i]) {
-      double range = m_ranges[i];
-      double age = m_curr_time - m_records[i].getTimeStamp();
-      if((age <= m_contact_max_age) && (range <= m_alert_range)) {
-	string x_str   = m_records[i].getValue("x", m_curr_time);
-	string y_str   = m_records[i].getValue("y", m_curr_time);
-	string lat_str = m_records[i].getValue("lat", m_curr_time);
-	string lon_str = m_records[i].getValue("lon", m_curr_time);
-	string spd_str = m_records[i].getValue("speed");
-	string hdg_str = m_records[i].getValue("heading");
-	string dep_str = m_records[i].getValue("depth");
-	string time_str = m_records[i].getValue("time");
-	string name_str = m_records[i].getName();
-	string type_str = m_records[i].getType();
-	
-	new_alerts = true;
+#endif  
 
-	unsigned int j, jsize = m_alert_val.size();
-	for(j=0; j<jsize; j++) {
+  bool new_alerts = false;
+  unsigned int i, isize = m_records.size();
+  unsigned int j, jsize = m_alert_var.size();
+  for(i=0; i<isize; i++) {
+    for(j=0; j<jsize; j++) {
+      string ivname = m_records[i].getName();
+      string jalert = m_alert_id[j];;
+      bool alerted = m_par.getValue(ivname, jalert);
+      if(!alerted) {
+	double range = m_ranges[i];
+	double age = m_curr_time - m_records[i].getTimeStamp();
+	if((age <= m_contact_max_age) && (range <= m_alert_range)) {
+	  string x_str   = m_records[i].getValue("x", m_curr_time);
+	  string y_str   = m_records[i].getValue("y", m_curr_time);
+	  string lat_str = m_records[i].getValue("lat", m_curr_time);
+	  string lon_str = m_records[i].getValue("lon", m_curr_time);
+	  string spd_str = m_records[i].getValue("speed");
+	  string hdg_str = m_records[i].getValue("heading");
+	  string dep_str = m_records[i].getValue("depth");
+	  string time_str = m_records[i].getValue("time");
+	  string name_str = m_records[i].getName();
+	  string type_str = m_records[i].getType();
+	  
+	  new_alerts = true;
+
 	  string var = m_alert_var[j];
 	  string msg = m_alert_val[j];
 	  var = findReplace(var, "$[X]", x_str);
@@ -533,7 +537,7 @@ bool BasicContactMgr::postAlerts()
 	  msg = findReplace(msg, "%[VTYPE]", tolower(type_str));
 
 	  m_Comms.Notify(var, msg);
-	  m_alerted[i] = true;
+	  m_par.setValue(ivname, jalert, true);
 	  augmentAlertHistory(var + "=" + msg);
 	}
       }
@@ -617,12 +621,14 @@ void BasicContactMgr::postConsoleSummary()
   cout << "      Recap: " << m_prev_contacts_recap << endl;
   cout << endl;
 
-  cout << "Recent Alerts: " << endl;
+  cout << "Recent Alerts: (" << m_alert_history.size() << ")" << endl;
   list<string>::iterator p;
   for(p=m_alert_history.begin(); p!=m_alert_history.end(); p++) {
     string str = *p;
     cout << str << endl;
   }
+
+  m_par.print();
 
 }
 

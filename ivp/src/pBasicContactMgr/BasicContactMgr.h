@@ -11,6 +11,7 @@
 #include <vector>
 #include "MOOSLib.h"
 #include "ContactRecord.h"
+#include "PlatformAlertRecord.h"
 
 class BasicContactMgr : public CMOOSApp
 {
@@ -30,7 +31,7 @@ class BasicContactMgr : public CMOOSApp
  protected:
   bool addNewAlert(const std::string&);
   bool handleNodeReport(const std::string&);
-  bool handleResolved(const std::string&);
+  bool handleResolved(std::string);
   void postErrorMsg(const std::string&);
   void postSummaries();
   bool postAlerts();
@@ -41,10 +42,14 @@ class BasicContactMgr : public CMOOSApp
 
  protected: // Configuration parameters
 
+  // Main Record #1: The Alerts
   std::vector<std::string>   m_alert_var;
   std::vector<std::string>   m_alert_val;
-  std::string                m_ownship;
+  std::vector<std::string>   m_alert_id;
 
+  PlatformAlertRecord  m_par;
+
+  std::string  m_ownship;
   bool   m_verbose;
   bool   m_display_radii;
   double m_contact_max_age;
@@ -54,8 +59,8 @@ class BasicContactMgr : public CMOOSApp
 
  protected: // State variables
 
+  // Main Record #1: The Vehicles and position info
   std::vector<ContactRecord> m_records;
-  std::vector<bool>          m_alerted;
   std::vector<double>        m_ranges;
 
   // memory of previous status postings
