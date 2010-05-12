@@ -10,6 +10,7 @@
 /*****************************************************************/
 
 #include <string>
+#include <cstdlib>
 #include <iostream>
 #include <math.h>
 #include <string.h>
