@@ -9,6 +9,7 @@
 /* except by the author(s).                                      */
 /*****************************************************************/
 
+#include <cstdlib>
 #include <vector>
 #include <iostream>
 #include "CPA_GUI.h"
