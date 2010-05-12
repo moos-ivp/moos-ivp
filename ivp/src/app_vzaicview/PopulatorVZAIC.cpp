@@ -10,6 +10,7 @@
 /*****************************************************************/
 
 #include <iostream>
+#include <cstdlib>
 #include "PopulatorVZAIC.h"
 #include "MBUtils.h"
 #include "FileBuffer.h"
