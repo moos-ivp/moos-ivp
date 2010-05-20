@@ -33,14 +33,21 @@ public:
   BHV_RubberBand(IvPDomain);
   ~BHV_RubberBand() {};
   
+  IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
   void         onIdleState();
-  IvPFunction* onRunState();
+  void         onSetParamComplete();
+  void         onRunToIdleState();
+
 
 protected:
   bool         updateInfoIn();  
   bool         updateCenter();
   void         postStationMessage(bool);
+
+  void    postViewableTrailPoint();
+  void    postErasableTrailPoint();
+  XYPoint m_trail_point;
 
 private:  // Configuration Parameters
   double      m_station_x;

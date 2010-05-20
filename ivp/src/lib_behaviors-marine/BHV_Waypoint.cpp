@@ -91,11 +91,13 @@ BHV_Waypoint::BHV_Waypoint(IvPDomain gdomain) :
 void BHV_Waypoint::onSetParamComplete()
 {
   m_trackpt.set_source(m_us_name + tolower(getDescriptor()));
-  m_trackpt.set_label(m_us_name + "'s track-point");
+  //  m_trackpt.set_label(m_us_name + "'s track-point");
+  m_trackpt.set_label(m_us_name + "_track-point");
   m_trackpt.set_type("track_point");
 
   m_nextpt.set_source(m_us_name + tolower(getDescriptor()));
-  m_nextpt.set_label(m_us_name + "'s next waypoint");
+  //  m_nextpt.set_label(m_us_name + "'s next waypoint");
+  m_nextpt.set_label(m_us_name + "_waypoint");
   m_nextpt.set_type("waypoint");
 }
 

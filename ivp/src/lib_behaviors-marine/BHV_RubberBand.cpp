@@ -146,6 +146,24 @@ bool BHV_RubberBand::setParam(string param, string val)
 
 
 //-----------------------------------------------------------
+// Procedure: onSetParamComplete
+
+void BHV_RubberBand::onSetParamComplete() 
+{
+  m_trail_point.set_label("station_" + m_us_name);
+  m_trail_point.set_type("station");
+  m_trail_point.set_active("false");
+}
+
+//-----------------------------------------------------------
+// Procedure: onRunToIdleState
+
+void BHV_RubberBand::onRunToIdleState()
+{
+  postErasableTrailPoint();
+}
+
+//-----------------------------------------------------------
 // Procedure: onIdleState
 //      Note: If m_center_pending is true, each time the behavior
 //            goes inactive (and thus this function is called), 
@@ -192,6 +210,9 @@ IvPFunction *BHV_RubberBand::onRunState()
     postStationMessage(false);
     return(0);
   }
+
+  m_trail_point.set_vertex(m_station_x, m_station_y);
+  postViewableTrailPoint();
 
   double dist_to_station  = distPointToPoint(nav_x, nav_y, 
 					     m_station_x, m_station_y);
@@ -342,6 +363,27 @@ void BHV_RubberBand::postStationMessage(bool post)
   station += m_us_name;
   postMessage("STATION_CIRCLE", station);
 
+}
+
+//-----------------------------------------------------------
+// Procedure: postViewableTrailPoint
+
+void BHV_RubberBand::postViewableTrailPoint()
+{
+  m_trail_point.set_active(true);
+  string spec = m_trail_point.get_spec();
+  postMessage("VIEW_POINT", spec);
+}
+
+
+//-----------------------------------------------------------
+// Procedure: postErasableTrailPoint
+
+void BHV_RubberBand::postErasableTrailPoint()
+{
+  m_trail_point.set_active(false);
+  string spec = m_trail_point.get_spec();
+  postMessage("VIEW_POINT", spec);
 }
 
 

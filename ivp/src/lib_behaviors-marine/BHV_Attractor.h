@@ -36,13 +36,18 @@ public:
   IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
   void         onIdleState();
+  void         onSetParamComplete();
+  void         onRunToIdleState();
 
 protected:
   bool   updateInfoIn();  
   double getRelevance(double, double, double, double);
   double getPriority();
-  void updateContactList();
+  void   updateContactList();
 
+  void    postViewableTrailPoint();
+  void    postErasableTrailPoint();
+  XYPoint m_trail_point;
 
 private:
   std::string m_contact_name; // Name for them in InfoBuffer

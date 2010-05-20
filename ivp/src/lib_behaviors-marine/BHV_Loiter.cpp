@@ -5,7 +5,7 @@
 /*    DATE: July 26th 2005 In Elba w/ M.Grund, P.Newman          */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
-/* modify it under the terms of the GNU General Public License   */
+/* modify it under the termxs of the GNU General Public License   */
 /* as published by the Free Software Foundation; either version  */
 /* 2 of the License, or (at your option) any later version.      */
 /*                                                               */
@@ -462,8 +462,8 @@ void BHV_Loiter::postViewablePolygon()
   seglist.set_edge_size(m_hint_edge_size);
   seglist.set_vertex_size(m_hint_vertex_size);
   // Handle the label setting
-  string bhv_tag = toupper(getDescriptor());
-  bhv_tag = m_us_name + "-" + bhv_tag;
+  string bhv_tag = tolower(getDescriptor());
+  bhv_tag = m_us_name + "_" + bhv_tag;
   seglist.set_label(bhv_tag);
   if(m_hint_poly_label == "")
     seglist.set_label(bhv_tag);
@@ -482,9 +482,9 @@ void BHV_Loiter::postViewablePolygon()
 void BHV_Loiter::postErasablePolygon()
 {
   XYSegList seglist = m_waypoint_engine.getSegList();
-  string bhv_tag = toupper(getDescriptor());
+  string bhv_tag = tolower(getDescriptor());
   bhv_tag = findReplace(bhv_tag, "(d)", "");
-  bhv_tag = m_us_name + "-" + bhv_tag;
+  bhv_tag = m_us_name + "_" + bhv_tag;
   seglist.set_label(bhv_tag);
   seglist.set_active(false);
 
@@ -497,10 +497,11 @@ void BHV_Loiter::postErasablePolygon()
 
 void BHV_Loiter::postViewablePoint()
 {
-  string bhv_tag = toupper(getDescriptor());
+  string bhv_tag = tolower(getDescriptor());
 
   XYPoint view_point(m_ptx, m_pty);
-  view_point.set_label(m_us_name + "'s next waypoint");
+  //  view_point.set_label(m_us_name + "'s next_waypoint");
+  view_point.set_label(m_us_name + "_waypoint");
   view_point.set_type("waypoint");
   view_point.set_source(m_us_name + "_" + bhv_tag);
   view_point.set_label_color(m_hint_nextpt_lcolor);
@@ -514,10 +515,11 @@ void BHV_Loiter::postViewablePoint()
 
 void BHV_Loiter::postErasablePoint()
 {
-  string bhv_tag = toupper(getDescriptor());
+  string bhv_tag = tolower(getDescriptor());
 
   XYPoint view_point(m_ptx, m_pty);
-  view_point.set_label(m_us_name + "'s next waypoint");
+  //  view_point.set_label(m_us_name + "'s next waypoint");
+  view_point.set_label(m_us_name + "_waypoint");
   view_point.set_type("waypoint");
   view_point.set_source(m_us_name + "_" + bhv_tag);
   view_point.set_active(false);

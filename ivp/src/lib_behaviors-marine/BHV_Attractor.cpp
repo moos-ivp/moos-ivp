@@ -193,6 +193,16 @@ bool BHV_Attractor::setParam(string g_param, string g_val)
 }
 
 //-----------------------------------------------------------
+// Procedure: onSetParamComplete
+
+void BHV_Attractor::onSetParamComplete() 
+{
+  m_trail_point.set_label("attractor_" + m_us_name);
+  m_trail_point.set_type("attractor");
+  m_trail_point.set_active("false");
+}
+
+//-----------------------------------------------------------
 // Procedure: onIdleState
 
 void BHV_Attractor::onIdleState()
@@ -202,6 +212,14 @@ void BHV_Attractor::onIdleState()
 
   // postMessage("ATTRACTOR_ACTIVE", 0);
   // postMessage("ATTRACTED", 0);
+}
+
+//-----------------------------------------------------------
+// Procedure: onRunToIdleState
+
+void BHV_Attractor::onRunToIdleState()
+{
+  postErasableTrailPoint();
 }
 
 
@@ -239,6 +257,9 @@ IvPFunction *BHV_Attractor::onRunState()
 
   // Below handled now with active/inactive flags - mikerb, Aug10,08
   //postMessage("ATTRACTED", 1);
+
+  m_trail_point.set_vertex(m_cnx, m_cny);
+  postViewableTrailPoint();
 
   double dist = hypot((m_osx - m_cnx), (m_osy - m_cny));
 
@@ -470,6 +491,28 @@ void BHV_Attractor::updateContactList()
   addInfoVars(m_contact_name+"_NAV_UTC");
 
 }
+
+//-----------------------------------------------------------
+// Procedure: postViewableTrailPoint
+
+void BHV_Attractor::postViewableTrailPoint()
+{
+  m_trail_point.set_active(true);
+  string spec = m_trail_point.get_spec();
+  postMessage("VIEW_POINT", spec);
+}
+
+
+//-----------------------------------------------------------
+// Procedure: postErasableTrailPoint
+
+void BHV_Attractor::postErasableTrailPoint()
+{
+  m_trail_point.set_active(false);
+  string spec = m_trail_point.get_spec();
+  postMessage("VIEW_POINT", spec);
+}
+
 
 
 
