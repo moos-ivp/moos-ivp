@@ -150,7 +150,7 @@ bool BHV_RubberBand::setParam(string param, string val)
 
 void BHV_RubberBand::onSetParamComplete() 
 {
-  m_trail_point.set_label("station_" + m_us_name);
+  m_trail_point.set_label(m_us_name + "_station");
   m_trail_point.set_type("station");
   m_trail_point.set_active("false");
 }

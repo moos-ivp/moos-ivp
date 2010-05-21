@@ -197,7 +197,7 @@ bool BHV_Attractor::setParam(string g_param, string g_val)
 
 void BHV_Attractor::onSetParamComplete() 
 {
-  m_trail_point.set_label("attractor_" + m_us_name);
+  m_trail_point.set_label(m_us_name + "_attractor");
   m_trail_point.set_type("attractor");
   m_trail_point.set_active("false");
 }

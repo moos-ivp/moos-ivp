@@ -138,7 +138,7 @@ bool BHV_Trail::setParam(string param, string param_val)
 
 void BHV_Trail::onSetParamComplete() 
 {
-  m_trail_point.set_label("trailpoint_" + m_us_name);
+  m_trail_point.set_label(m_us_name + "_trailpoint");
   m_trail_point.set_type("trailpoint");
   m_trail_point.set_active("false");
 }
