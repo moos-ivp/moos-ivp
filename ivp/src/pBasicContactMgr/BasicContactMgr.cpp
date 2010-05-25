@@ -351,7 +351,7 @@ bool BasicContactMgr::handleResolved(string resolution)
 
   if(!m_par.containsVehicle(vehicle))
     return(false);
-  if(!m_par.containsAlertID(alertid))
+  if((alertid != "all_alerts") && !m_par.containsAlertID(alertid))
     return(false);
   
   m_par.setValue(vehicle, alertid, false);
