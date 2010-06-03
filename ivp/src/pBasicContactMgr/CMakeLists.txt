@@ -12,11 +12,18 @@ FILE(GLOB SRC
 
 ADD_EXECUTABLE(pBasicContactMgr ${SRC})
 
+# Set System Specific Libraries
+if (${WIN32})
+  SET(SYSTEM_LIBS wsock32)
+else (${WIN32})
+  SET(SYSTEM_LIBS m pthread)
+endif (${WIN32})
+
 TARGET_LINK_LIBRARIES(pBasicContactMgr
    MOOS
    MOOSGen
    mbutil
    geometry
-   m
-   pthread)
+   ${SYSTEM_LIBS}
+   )
 
