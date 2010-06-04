@@ -120,6 +120,7 @@ bool CPA_Model::initFromFile(std::string filename)
       }
     }
   }
+  return true;
 }
 
 
