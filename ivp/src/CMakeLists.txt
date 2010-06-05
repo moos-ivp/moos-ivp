@@ -106,12 +106,22 @@ SET(IVP_BUILD_GUI_CODE ON CACHE BOOL "Build IvP's GUI-related libraries and apps
 FILE(GLOB IVP_LIBRARY_DIRS lib_*)
 INCLUDE_DIRECTORIES(${IVP_LIBRARY_DIRS})
 
-# If Mac users installed libtiff.a using 'fink', it will likely appear under
-# '/sw', which current versions of CMake don't include in their default
-# search paths.
 IF (${APPLE})
-   INCLUDE_DIRECTORIES(/sw/include)
-   LINK_DIRECTORIES(/sw/lib)
+
+   # If Mac users installed libtiff using 'MacPorts', it will likely appear
+   # under the '/opt/local' directory, which is not in the CMake search path.
+   IF( EXISTS /opt/local/include AND EXISTS /opt/local/lib )
+      INCLUDE_DIRECTORIES(/opt/local/include)
+      LINK_DIRECTORIES(/opt/local/lib)
+   ENDIF( EXISTS /opt/local/include AND EXISTS /opt/local/lib )
+
+   # If Mac users installed libtiff using 'fink', it will likely appear
+   # under the '/sw' directory, which is not in the CMake search path.
+   IF( EXISTS /sw/include AND EXISTS /sw/lib )
+      INCLUDE_DIRECTORIES(/sw/include)
+      LINK_DIRECTORIES(/sw/lib)
+   ENDIF( EXISTS /sw/include AND EXISTS /sw/lib )
+
 ENDIF(${APPLE})
 
 #---------------------------------------------------------------------
