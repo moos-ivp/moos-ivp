@@ -9,7 +9,7 @@ ServerHost = localhost
 ServerPort = 9000
 Simulator  = true
 
-Community  = delta
+Community  = henry
 
 MOOSTimeWarp = 1
 
