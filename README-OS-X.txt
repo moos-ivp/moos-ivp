@@ -1,6 +1,6 @@
 README-OS-X.txt
 Last updated: 11 June 2010
-Maintainer: Chris Gagner ( issues@moos-ivp.org )
+Maintainer: issues@moos-ivp.org 
 
 ******************************************************************************
 ***            THIS FILE IS A WORK IN PROGRESS. CORRECTIONS OR             ***
