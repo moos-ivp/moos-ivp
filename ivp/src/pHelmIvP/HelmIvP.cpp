@@ -288,19 +288,28 @@ bool HelmIvP::Iterate()
   bool complete_decision = false;
   if(m_has_control && helm_report.getOFNUM() > 0) {
     complete_decision = true;
+    string missing_dec_vars;
     for(int i=0; i<dsize; i++) {
       string domain_var = m_ivp_domain.getVarName(i);
-      if(!helm_report.hasDecision(domain_var))
+      if(!helm_report.hasDecision(domain_var)) {
 	if(m_optional_var[domain_var] == false) {
 	  complete_decision = false;
 	  string s1 = "ERROR! No decision for mandatory var - " + domain_var;
 	  string s2 = "pHelmIvP Control is Off: All Dec-Vars set to ZERO";
 	  MOOSDebugWrite(s1);
 	  MOOSDebugWrite(s2);
+	  if(missing_dec_vars != "")
+	    missing_dec_vars += ",";
+	  missing_dec_vars += domain_var;
 	}
+      }
+    }
+    if(!complete_decision) {
+      string emsg = "Missing Mandatory DecVars:" + missing_dec_vars;
+      m_Comms.Notify("BHV_ERROR", emsg); 
     }
   }
-  
+
   if(!m_has_control || !complete_decision)
     postAllStop();
   else {  // Post all the Decision Variable Results
