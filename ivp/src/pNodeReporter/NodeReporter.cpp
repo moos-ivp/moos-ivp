@@ -136,6 +136,8 @@ void NodeReporter::registerVariables()
 {
   m_Comms.Register("NAV_X", 0);
   m_Comms.Register("NAV_Y", 0);
+  m_Comms.Register("NAV_LAT", 0);
+  m_Comms.Register("NAV_LONG", 0);
   m_Comms.Register("NAV_SPEED", 0);
   m_Comms.Register("NAV_HEADING", 0);
   m_Comms.Register("NAV_YAW", 0);
