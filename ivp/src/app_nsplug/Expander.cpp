@@ -73,14 +73,14 @@ vector<string> Expander::expandFile(string filename,
   vector<string> empty_vector;
 
   vector<string> fvector = fileBuffer(filename);
-  int vsize = fvector.size();
+  unsigned int i, vsize = fvector.size();
   if(vsize == 0) {
     cout << "#  Warning: The file " << filename << " was empty." << endl;    
     result = true;
     return(empty_vector);
   }
 
-  for(int i=0; i<vsize; i++) {
+  for(i=0; i<vsize; i++) {
     string line = stripBlankEnds(findReplace(fvector[i], '\t', ' '));
     string line_orig = line;
     string left = stripBlankEnds(biteString(line, ' '));
