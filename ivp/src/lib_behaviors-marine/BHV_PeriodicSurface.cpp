@@ -79,7 +79,8 @@ BHV_PeriodicSurface::BHV_PeriodicSurface(IvPDomain gdomain) :
   m_ascending_flag = "PERIODIC_ASCEND";
 
   // Declare information needed by this behavior
-  addInfoVars("NAV_DEPTH, NAV_SPEED, GPS_UPDATE_RECEIVED");
+  addInfoVars("NAV_DEPTH, NAV_SPEED");
+  addInfoVars(m_mark_variable, "no_warning");
 }
 
 //-----------------------------------------------------------
@@ -102,6 +103,7 @@ bool BHV_PeriodicSurface::setParam(string g_param, string g_val)
     if(g_val == "")
       return(false);
     m_mark_variable = g_val;
+    addInfoVars(m_mark_variable, "no_warning");
   }
   else if(g_param == "acomms_mark_variable") {
     string variable = stripBlankEnds(biteString(g_val, ','));
@@ -177,8 +179,6 @@ bool BHV_PeriodicSurface::setParam(string g_param, string g_val)
   }
   else  
     return(false);
-
-  addInfoVars(m_mark_variable);
 
   return(true);
 }

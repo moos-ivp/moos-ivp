@@ -153,7 +153,7 @@ bool BHV_Waypoint::setParam(string param, string param_val)
       m_var_index = "silent";
     return(true);
   }
-  else if(param == "cycle_index_var") {
+  else if(param == "cycle_index_var") {   // Depricated
     if(strContainsWhite(param_val) || (param_val == ""))
       return(false);
     m_var_cyindex = param_val;
