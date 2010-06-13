@@ -87,7 +87,7 @@ public:
 
 protected:
   void    setBehaviorType(std::string str) {m_behavior_type = str;};
-  void    addInfoVars(std::string);
+  void    addInfoVars(std::string, std::string="");
   void    setComplete();
   void    postMessage(std::string, double, std::string key="");
   void    postMessage(std::string, std::string, std::string key="");
@@ -127,6 +127,8 @@ protected:
   std::string m_status_info;
 
   std::vector<std::string>       m_info_vars;
+  std::vector<std::string>       m_info_vars_no_warning;
+
   std::vector<VarDataPair>       m_messages;
   std::vector<LogicCondition>    m_logic_conditions;
   std::vector<VarDataPair>       m_run_flags;

@@ -565,15 +565,24 @@ void IvPBehavior::durationReset()
 
 //-----------------------------------------------------------
 // Procedure: addInfoVars
+//      Note: If post_warning is false, then the 
 
-void IvPBehavior::addInfoVars(string var_string)
+
+void IvPBehavior::addInfoVars(string var_string, string warning)
 {
+  bool no_warning = false;
+  warning = tolower(warning);
+  if((warning == "nowarning") || (warning == "no_warning"))
+    no_warning = true;
+
   vector<string> svector = parseString(var_string, ',');
   unsigned int i, vsize = svector.size();
   for(i=0; i<vsize; i++) {
     string varname = stripBlankEnds(svector[i]);
     if(!vectorContains(m_info_vars, varname))
       m_info_vars.push_back(varname);
+    if(!vectorContains(m_info_vars_no_warning, varname) && no_warning)
+      m_info_vars_no_warning.push_back(varname);
   }
 }
 
@@ -909,7 +918,7 @@ double IvPBehavior::getBufferDoubleVal(string varname, bool& ok)
       ok = true;
     }
   }
-  if(!ok) 
+  if((!ok) && !vectorContains(m_info_vars_no_warning, varname)) 
     postWMessage(varname+" info not found in helm info_buffer");
   return(value);
 }
@@ -933,7 +942,7 @@ string IvPBehavior::getBufferStringVal(string varname, bool& ok)
       ok = true;
     }
   }
-  if(!ok) 
+  if((!ok) && !vectorContains(m_info_vars_no_warning, varname)) 
     postWMessage(varname+" info not found in helm info_buffer");
   return(value);
 }
