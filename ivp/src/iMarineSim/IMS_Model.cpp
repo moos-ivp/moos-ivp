@@ -109,6 +109,8 @@ double IMS_Model::getHeading()
 {
   double heading = radToDegrees(radAngleWrap(m_vstate.m_dfHeading));
 
+  heading = angle360(heading);  // added jun1410 mikerb
+
   return(heading);
 }
 
