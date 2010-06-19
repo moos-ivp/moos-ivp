@@ -4,6 +4,11 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
 PROJECT(IVP)
 
+ENABLE_TESTING()
+INCLUDE(CTest)
+
+# ADD_TEST(MyTest1 ${EXECUTABLE_OUTPUT_PATH}/pMarineViewer --version)
+
 IF (${WIN32})
   # Define Windows Compiler flags here
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")

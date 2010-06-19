@@ -47,4 +47,5 @@ IF (${APPLE})
       )
 ENDIF (${APPLE})
 
+ADD_TEST(MyTest1 ${EXECUTABLE_OUTPUT_PATH}/pMarineViewer --version)
 
