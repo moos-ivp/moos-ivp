@@ -6,6 +6,7 @@ PROJECT(IVP)
 
 ENABLE_TESTING()
 INCLUDE(CTest)
+SET(CTEST_BUILD_NAME "super foo")
 
 # ADD_TEST(MyTest1 ${EXECUTABLE_OUTPUT_PATH}/pMarineViewer --version)
 
