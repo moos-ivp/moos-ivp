@@ -69,6 +69,7 @@ MarinePID::MarinePID()
   m_start_time   = 0;
 
   m_paused       = false;
+  m_pause_thresh = 2.0;
 
   m_time_of_last_helm_msg = 0;
   m_time_of_last_nav_msg  = 0;
@@ -175,7 +176,7 @@ bool MarinePID::Iterate()
   }
 
 
-  if((current_time - m_time_of_last_helm_msg) > 2) {
+  if((current_time - m_time_of_last_helm_msg) > m_pause_thresh) {
     if(!m_paused)
       MOOSDebugWrite("Paused Due To Tardy HELM Input: THRUST=0");
     cout << "Paused Due To Tardy HELM Input: THRUST=0" << endl;
@@ -184,7 +185,7 @@ bool MarinePID::Iterate()
     return(true);
   }
   
-  if((current_time - m_time_of_last_nav_msg) > 2) {
+  if((current_time - m_time_of_last_nav_msg) > m_pause_thresh) {
     if(!m_paused)
       MOOSDebugWrite("Paused Due To Tardy NAV Input: THRUST=0");
     cout << "Paused Due To Tardy NAV Input: THRUST=0" << endl;
@@ -339,6 +340,12 @@ bool MarinePID::OnStartUp()
     
     if(MOOSStrCmp(sVarName, "SIM_INSTABILITY"))
       m_rudder_bias_limit = atof(sLine.c_str());
+
+    if(MOOSStrCmp(sVarName, "TARDY_THRESHOLD")) {
+      double dval = atof(sLine.c_str());
+      if(dval >= 0)
+	m_pause_thresh = dval;
+    }
     
     if(MOOSStrCmp(sVarName, "ACTIVE_START")) {
       sLine = tolower(sLine);

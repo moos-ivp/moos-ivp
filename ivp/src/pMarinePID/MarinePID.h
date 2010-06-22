@@ -80,5 +80,7 @@ protected:
 
   double  m_time_of_last_helm_msg;
   double  m_time_of_last_nav_msg;
+
+  double  m_pause_thresh;
 };
 #endif 
