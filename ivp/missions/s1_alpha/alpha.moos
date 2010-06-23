@@ -132,8 +132,7 @@ ProcessConfig = pMarineViewer
   AppTick    = 4
   CommsTick  = 4
 
-//  TIFF_FILE            = forrest19.tif
-  TIFF_FILE            = /Users/mikerb/Research/moos-ivp/trunk/ivp/data/forrest19.tif
+  TIFF_FILE            = forrest19.tif
   set_pan_x            = -90
   set_pan_y            = -280
   zoom                 = 0.65
