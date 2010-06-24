@@ -10,7 +10,7 @@
 /*****************************************************************/
 
 #include <iostream>
-#include <stdlib.h>
+#include <cstdlib>
 #include "VZAIC_GUI.h"
 #include "PopulatorVZAIC.h"
 #include "MBUtils.h"
