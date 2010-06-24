@@ -98,6 +98,25 @@ echo "   to our invocation of cmake."
 
 ################################################################################
 
+# Compute the build name.  This is only actually relevant to our CDash dashboard, but this is a
+# very opportune place to compute it, because we need to pass it to our invocation of CMake...
+
+if [ -x /usr/bin/lsb_release ]; then
+   os_name=`/usr/bin/lsb_release -ds`
+else
+   os_name=`uname`
+fi
+
+if [ -x /usr/bin/arch ]; then
+   os_arch=`/usr/bin/arch`
+else
+   os_arch="(Unknown architecture)"
+fi
+
+DASHBOARD_BUILDNAME="${os_name} - ${os_arch}"
+
+################################################################################
+
 echo ""
 echo "Invoking cmake..."
 echo ""
@@ -106,6 +125,7 @@ cmake -DIVP_BUILD_GUI_CODE=${CLEANED_IVP_BUILD_GUI_CODE} \
       -DIVP_LIB_DIRECTORY="${LIBRARIES_ABS_DIR}"         \
       -DIVP_BIN_DIRECTORY="${PROGRAMS_ABS_DIR}"          \
       -DCMAKE_CXX_FLAGS_RELEASE="-O3 -pedantic -Wall"    \
+      -DBUILDNAME="${DASHBOARD_BUILDNAME}"               \
       ${IVP_CMAKE_FLAGS}                                 \
       -DCMAKE_BUILD_TYPE=${BUILD_TYPE}                   \
       "${SRC_ABS_DIR}"
