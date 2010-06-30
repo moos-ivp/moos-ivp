@@ -115,7 +115,7 @@ fi
 
 # For the time being, just assume the compiler is '/usr/bin/gcc'.  Later on we can get more
 # robust if, we needed, to ensure we report the same compiler that CMake is planning to use.
-gcc_version = '/usr/bin/gcc --version | head -1' 
+gcc_version=`/usr/bin/gcc --version | head -1`
 
 DASHBOARD_BUILDNAME="${os_name} - ${os_arch} - ${gcc_version}"
 
