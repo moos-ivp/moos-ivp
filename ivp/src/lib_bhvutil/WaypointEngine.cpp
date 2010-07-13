@@ -66,6 +66,10 @@ void WaypointEngine::setSegList(const XYSegList& g_seglist)
   m_curr_ix  = 0;
   m_complete = false;
 
+  // Reset the "current" cpa distance, s.t. a non-mono hit is 
+  // impossible on the first iteration with a new seglist.
+  m_current_cpa = -1;
+
   // The cycle count should also be set to zero since counting
   // cycles pertains to a given pattern, and once the pattern 
   // changes, the previous cycle count is irrelevant.
