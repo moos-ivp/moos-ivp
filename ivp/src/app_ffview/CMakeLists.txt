@@ -7,7 +7,7 @@
 if (${WIN32})
   SET(SYSTEM_LIBS wsock32)
 else (${WIN32})
-  SET(SYSTEM_LIBS m)
+  SET(SYSTEM_LIBS m dl)
 endif (${WIN32})
 
 FILE(GLOB SRC *.cpp)
@@ -38,7 +38,8 @@ TARGET_LINK_LIBRARIES(ffview
      ${SYSTEM_LIBS}
      # Standard libraries used by this project's FLTK apps...
      fltk 
-     fltk_gl) 
+     fltk_gl
+) 
 
 # http://developer.apple.com/qa/qa2007/qa1567.html
 IF (${APPLE})
