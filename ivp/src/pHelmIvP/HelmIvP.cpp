@@ -143,7 +143,8 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
     
     if(!m_skews_matter || (fabs(dfT) < m_ok_skew)) {
       if((msg.m_sKey == "MOOS_MANUAL_OVERIDE") || 
-	 (msg.m_sKey == "MOOS_MANUAL_OVERRIDE")) {
+	 (msg.m_sKey == "MOOS_MANUAL_OVERRIDE") ||
+	 ((msg.m_sKey == m_additional_override) && (msg.m_sKey != ""))) {
 	if(MOOSStrCmp(msg.m_sVal, "FALSE")) {
 	  m_has_control = true;
 	  MOOSTrace("\n");
@@ -667,13 +668,16 @@ void HelmIvP::registerVariables()
   m_Comms.Register("MOOS_MANUAL_OVERRIDE", 0);
   m_Comms.Register("RESTART_HELM", 0);
   m_Comms.Register("HELM_VERBOSE", 0);
-
+  
   m_Comms.Register("NAV_YAW", 0);
   m_Comms.Register("NAV_SPEED", 0);
   m_Comms.Register("NAV_HEADING", 0);
   m_Comms.Register("NAV_PITCH", 0);
   m_Comms.Register("NAV_DEPTH", 0);
   m_Comms.Register(m_refresh_var, 0);
+
+  if(m_additional_override != "")
+    m_Comms.Register(m_additional_override, 0);
 
   // Register for node report variables, e.g., AIS_REPORT, NODE_REPORT
   unsigned int i, vsize = m_node_report_vars.size();
@@ -800,6 +804,11 @@ bool HelmIvP::OnStartUp()
 	MOOSTrace("Improper Domain Spec: %s\n", value.c_str());
 	return(false);
       }
+    }
+
+    else if(param == "OTHER_OVERRIDE_VAR") {
+      if(!strContainsWhite(value))
+	m_additional_override = value;
     }
   }
     

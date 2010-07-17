@@ -104,6 +104,10 @@ protected:
   std::string   m_ownship;
   std::vector<std::string> m_node_report_vars;
 
+  // An additional MOOS variable other than MOOS_MANUAL_OVERRIDE 
+  // that may be used for overriding the helm.
+  std::string   m_additional_override;
+
   // For each decision variable in decision space, note if it is 
   // optional. Optional means a decision need not be rendered on it.
   std::map<std::string, bool> m_optional_var;
