@@ -1,0 +1,75 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<HTML>
+<HEAD>
+   <TITLE>class  CDepthInstrument</TITLE>
+   <META NAME="GENERATOR" CONTENT="DOC++ 3.4.6">
+</HEAD>
+ <BODY>
+<H1><img src="Depth.gif"> <center>iDepth Class Documentation</center></H1>
+</BODY>
+
+In file DepthInstrument.h:<H2>class  <A HREF="#DOC.DOCU">CDepthInstrument</A></H2></H2><BLOCKQUOTE>The main depth instrument class.</BLOCKQUOTE>
+<HR>
+
+<H2>Inheritance:</H2>
+<APPLET CODE="ClassGraph.class" WIDTH=600 HEIGHT=65>
+<param name=classes value="MCMOOSApp,M,CCDepthInstrument,MCDepthInstrument.html">
+<param name=before value="M,M">
+<param name=after value="Md_,M">
+<param name=indent value="0,1">
+<param name=arrowdir value="up">
+</APPLET>
+<HR>
+
+<DL>
+<P><DL>
+<DT><H3>Protected Fields</H3><DD><DT>
+<IMG ALT="[more]" BORDER=0 SRC=icon1.gif>double <B><A HREF="#DOC.1.1">m_dfCurrentDepth</A></B>
+<DD><I>current depth reading (latest) </I>
+</DL></P>
+
+<P><DL>
+<DT><H3>Protected Methods</H3><DD><DT>
+<IMG ALT="[more]" BORDER=0 SRC=icon1.gif>bool <B><A HREF="#DOC.1.2">Iterate</A></B>()
+<DD><I>virtual overide of base class CMOOSApp member.</I>
+<DT>
+<IMG ALT="[more]" BORDER=0 SRC=icon1.gif>bool <B><A HREF="#DOC.1.3">OnConnectToServer</A></B>()
+<DD><I>virtual overide of base class CMOOSApp member.</I>
+</DL></P>
+
+</DL>
+
+<A NAME="DOC.DOCU"></A>
+<HR>
+<H2>Documentation</H2>
+<BLOCKQUOTE>The main depth instrument class. Derived from CMOOSApp it handles all data from
+the sensor interface and sends it to the server </BLOCKQUOTE>
+<DL>
+
+<A NAME="m_dfCurrentDepth"></A>
+<A NAME="DOC.1.1"></A>
+<DT><IMG ALT="o" BORDER=0 SRC=icon2.gif><TT><B>double m_dfCurrentDepth</B></TT>
+<DD>current depth reading (latest) 
+<DL><DT><DD></DL><P>
+<A NAME="Iterate"></A>
+<A NAME="DOC.1.2"></A>
+<DT><IMG ALT="o" BORDER=0 SRC=icon2.gif><TT><B>bool Iterate()</B></TT>
+<DD>virtual overide of base class CMOOSApp member. Here we do all the processing and IO
+<DL><DT><DD></DL><P>
+<A NAME="OnConnectToServer"></A>
+<A NAME="DOC.1.3"></A>
+<DT><IMG ALT="o" BORDER=0 SRC=icon2.gif><TT><B>bool OnConnectToServer()</B></TT>
+<DD>virtual overide of base class CMOOSApp member. Here we register for data we wish be
+informed about
+<DL><DT><DD></DL><P></DL>
+
+<HR><DL><DT><B>This class has no child classes.</B></DL>
+
+<DL><DT><DD></DL><P><P><I><A HREF="index.html">Alphabetic index</A></I> <I><A HREF="HIER.html">HTML hierarchy of classes</A> or <A HREF="HIERjava.html">Java</A></I></P><HR>
+<BODY>
+<H4>
+MOOSLib
+&#169;  P. Newman 2001 <img src="moose2.gif">
+</H4>
+</BODY>
