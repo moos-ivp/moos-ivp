@@ -1,0 +1,114 @@
+<HTML>
+<HEAD>
+<TITLE>ZPattern Task</TITLE>
+</HEAD>
+<BODY>
+
+<H1><img src="moose6.gif"> <center>ZPattern Task</center></H1>
+
+<H2>Description</H2>
+This task directs a vehicle through a vertical of set points defined by vehicle DEPTH. Different pattern types
+are available changing depth according to different rules.
+
+<H2>Publishes</H2>
+<ul>
+	<li>EndFlags
+	<li>EventFlags
+</ul>
+<p>
+
+
+<H2>Subscribes</H2>
+<ul>
+	<li><b>StartFlags</b>
+	<li><b>NAV_DEPTH</b>
+	<li><b>NAV_PITCH</b>
+</ul>
+<p>
+
+<H2>Configuration Block</H2>
+<ul>
+
+
+
+	<li><a href="CommonMOOSTask.html"> Common Task Parameters</a>
+	<p>
+
+	<li><H3>Thrust</H3>
+	<ul>
+		<li><b>Syntax:	</b> 	Thrust = Thrust[0-100]
+		<li><b>Meaning:	</b>	Set Thrust of pattern operation
+		<li><b>Example:	</b> <i>	Thrust = 10 </i> go at ten percent throttle.
+	</ul>
+	<p>
+
+
+
+	<li><H3>PATTERN</H3>
+	<ul>
+		<li><b>Syntax:	</b> Pattern = 	<ul>
+										<li><b>Square	</b>
+										<li><b>Yoyo	</b>
+										</ul>
+		<li><b>Meaning:	</b> Set type of pattern
+		<ul>
+		<li><b>Yoyo	</b> oscillate between bounding depths. As soon as one depth is reached head for the other
+		<li><b>Square</b> oscillate between bounding depths. Keep each depth for a specified period of time
+		</ul>
+
+		<li><b>Example:	</b> <i>Pattern = Yoyo</i> execute the yoyo pattern
+	</ul>
+	<p>
+	
+	<li><H3>TOLERANCE</H3>
+	<ul>
+		<li><b>Syntax:	</b> 	TOLERANCE = depth
+		<li><b>Meaning:	</b> Set tolerance on depth control
+		<li><b>Example:	</b> <i>	TOLERANCE = 2 </i> Depth change is succesful when within 2m of target depth.
+	</ul>
+	<p>
+
+	<li><H3>LEVELTIME</H3>
+	<ul>
+		<li><b>Syntax:	</b> 	LEVELTIME = Time (s)
+		<li><b>Meaning:	</b> set time to remain at depth if using <b>Square</b>. Ignored otherwise
+		<li><b>Example:	</b> <i>	LEVELTIME = 60 </i> stay at each depth for 60 seconds.
+	</ul>
+	<p>
+
+
+	<li><H3>MaxDepth and MinDepth</H3>
+	<ul>
+		<li><b>Syntax:	</b> 	MaxDepth/MinDepth = Depth (m)
+		<li><b>Meaning:	</b> set maximum and minimum bounding depths to oscillate between
+		<li><b>Example:	</b> <i>	MaxDepth = 60 </i> greates depth will be 60m.
+	</ul>
+	<p>
+
+
+	
+</ul>
+
+<H2>Example Block</H2>
+<pre>
+//do a vertical pattern
+Task = ZPattern
+{
+	Name 		= zigzag
+	Priority 	= 3
+	InitialState 	= OFF
+	TimeOut 	= NEVER
+	StartFlag 	= MissionStart
+	MaxDepth 	= 4
+	MinDepth 	= 3
+	Pattern		= Square
+	LevelTime	= 60
+}
+
+
+<pre>
+
+<hr>
+<H4>The MOOS &#169;  P. Newman 2001-2002 <img src="moose2.gif"></H4>
+</BODY>
+</HTML>

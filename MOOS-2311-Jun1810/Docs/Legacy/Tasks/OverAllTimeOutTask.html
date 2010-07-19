@@ -1,0 +1,48 @@
+<HTML>
+<HEAD>
+<TITLE>Overall TimeOut Task</TITLE>
+</HEAD>
+<BODY>
+
+<H1><img src="moose6.gif"> <center>The Overall Time Out Task</center></H1>
+
+<H2>Description</H2>
+Defines total time of Mission. Note the Helm requires this task to be specified and run for safety reasons.
+
+<H2>Publishes</H2>
+<ul>
+	<li>EndFlags
+	<li>EventFlags
+</ul>
+<p>
+
+
+<H2>Subscribes</H2>
+<ul>
+	<li>StartFlags
+</ul>
+<p>
+
+<H2>Configuration Block</H2>
+<ul>
+
+	<li><a href="CommonMOOSTask.html"> Common Task Parameters</a>
+	<p>
+
+</ul>
+
+<H2>Example Block</H2>
+<pre>
+Task = OverallTimeOut
+{
+	Name = OverAllTimeOut
+	InitialState = ON
+	TimeOut = 1000
+	Priority = 3
+	FinishFlag = EndMission
+}
+<pre>
+<hr>
+<H4>The MOOS &#169;  P. Newman 2001-2002 <img src="moose2.gif"></H4>
+</BODY>
+</HTML>
