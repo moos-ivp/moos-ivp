@@ -66,14 +66,15 @@ protected:
 			 double dval);
   bool detectRepeatOnKey(const std::string& key);
 
-  void postAllStop();  
+  void postAllStop(std::string msg="");  
   bool processNodeReport(const std::string &);
 
 protected:
   InfoBuffer*   m_info_buffer;
   bool          m_has_control;
-  bool          m_allow_overide;
-  bool          m_allstop_posted;
+  bool          m_allow_override;
+  bool          m_disengage_on_allstop;
+  std::string   m_allstop_msg;
   IvPDomain     m_ivp_domain;
   BehaviorSet*  m_bhv_set;
   std::string   m_verbose;

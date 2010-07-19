@@ -259,15 +259,21 @@ void PMV_Viewer::drawVehicle(string vname, bool active, string vehibody)
     vname_draw = false;
   else if(vnames_mode == "names+mode") {
     string helm_mode = m_vehiset.getStringInfo(vname, "helm_mode");
+    string helm_amode = m_vehiset.getStringInfo(vname, "helm_allstop_mode");
     if((helm_mode != "none") && (helm_mode != "unknown-mode"))
       vname_aug += " (" + helm_mode + ")";
+    if(helm_amode != "clear") 
+      vname_aug += " (" + helm_amode + ")";
   }
   else if(vnames_mode == "names+shortmode") {
-    string helm_mode = m_vehiset.getStringInfo(vname, "helm_mode");
+    string helm_mode  = m_vehiset.getStringInfo(vname, "helm_mode");
+    string helm_amode = m_vehiset.getStringInfo(vname, "helm_allstop_mode");
     if((helm_mode != "none") && (helm_mode != "unknown-mode")) {
       helm_mode = modeShorten(helm_mode);
       vname_aug += " (" + helm_mode + ")";
     }
+    if(helm_amode != "clear") 
+      vname_aug += " (" + helm_amode + ")";
   }
   else if(vnames_mode == "names+depth") {
     string str_depth = dstringCompact(doubleToString(opose.getDepth(),1));

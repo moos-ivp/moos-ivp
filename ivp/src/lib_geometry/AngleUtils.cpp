@@ -43,11 +43,11 @@
 
 double relAng(double xa, double ya, double xb, double yb)
 { 
-  //assert((xa!=xb)||(ya!=yb));
   if((xa==xb)&&(ya==yb))
     return(0);
 
-  double w, sop;
+  double w   = 0;
+  double sop = 0;
 
   if(xa < xb) {
     if(ya==yb)  

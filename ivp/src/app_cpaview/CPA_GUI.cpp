@@ -183,7 +183,6 @@ void CPA_GUI::augmentMenu()
 
 int CPA_GUI::handle(int event) 
 {
-  int step = 1;
   switch(event) {
   case FL_PUSH:
     Fl_Window::handle(event);

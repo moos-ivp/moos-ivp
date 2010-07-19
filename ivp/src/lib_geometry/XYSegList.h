@@ -78,8 +78,8 @@ public:
   std::string get_spec(int vertex_prec, std::string param) const;
 
 protected:
-  int    closest_vertex(double, double) const; 
-  int    closest_segment(double, double) const;
+  unsigned int closest_vertex(double, double) const; 
+  unsigned int closest_segment(double, double) const;
   void   grow_pt_by_pct(double, double, double, double&, double&);
   void   grow_pt_by_amt(double, double, double, double&, double&);
   void   rotate_pt(double, double, double, double&, double&);

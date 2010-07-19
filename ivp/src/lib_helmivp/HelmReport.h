@@ -37,6 +37,9 @@ public:
   void addMsg(const std::string& str) 
     {m_messages.push_back(str);};
   
+  void setHaltMsg(const std::string& str) 
+    {m_halt_message = str;};
+  
   void addActiveBHV(const std::string& descriptor, 
 		    double time, double pwt, int pcs, double cpu,
 		    const std::string& update_summary);
@@ -56,6 +59,8 @@ public:
   
   std::vector<std::string> getMsgs() const  
     {return(m_messages);};
+  
+  std::string getHaltMsg() const {return(m_halt_message);};
   
   std::string getRunningBehaviors();
   std::string getActiveBehaviors();
@@ -78,6 +83,7 @@ public:
 
 protected:
   std::vector<std::string>  m_messages;
+  std::string               m_halt_message;
   std::string               m_running_bhvs;
   std::string               m_active_bhvs;
   std::string               m_all_bhvs;

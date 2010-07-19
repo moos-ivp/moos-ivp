@@ -47,9 +47,7 @@ using namespace std;
 
 HelmIvP::HelmIvP()
 {
-  m_has_control    = false;
-  m_allow_overide  = true;
-  m_allstop_posted = false;
+  m_allstop_msg    = "clear";
   m_bhv_set        = 0;
   m_hengine        = 0;
   m_hengine_beta   = 0;
@@ -62,9 +60,15 @@ HelmIvP::HelmIvP()
   m_last_heartbeat = 0;
   m_curr_time      = 0;
   m_start_time     = 0;
-  m_curr_time_updated = false;
 
-  m_use_beta_engine = true;
+  // The m_has_control correlates to helm ENGAGEMENT mode
+  m_has_control    = false;
+
+  m_allow_override = true;
+  m_disengage_on_allstop = false;
+
+  m_curr_time_updated = false;
+  m_use_beta_engine   = true;
 
   // The refresh vars handle the occasional clearing of the m_outgoing
   // maps. These maps will be cleared when MOOS mail is received for the
@@ -147,14 +151,12 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
 	 ((msg.m_sKey == m_additional_override) && (msg.m_sKey != ""))) {
 	if(MOOSStrCmp(msg.m_sVal, "FALSE")) {
 	  m_has_control = true;
-	  MOOSTrace("\n");
-	  MOOSDebugWrite("pHelmIvP Control Is On");
+	  postAllStop("clear");
 	}
 	else if(MOOSStrCmp(msg.m_sVal, "TRUE")) {
-	  if(m_allow_overide) {
+	  if(m_allow_override) {
 	    m_has_control = false;
-	    MOOSTrace("\n");
-	    MOOSDebugWrite("pHelmIvP Control Is Off");
+	    postAllStop("ManualOverride");
 	  }
 	}
       }
@@ -220,7 +222,7 @@ bool HelmIvP::Iterate()
   m_curr_time_updated = false;
 
   if(!m_has_control) {
-    postAllStop();
+    postAllStop("ManualOverride");
     return(false);
   }
 
@@ -268,37 +270,25 @@ bool HelmIvP::Iterate()
     MOOSTrace("(End) Iteration: %d", m_iteration);
     MOOSTrace("  ******************************************\n");
   }
-
-  if(helm_report.getHalted()) {
-    m_has_control = false;
-    bool ok;
-    string bhv_error_str = m_info_buffer->sQuery("BHV_ERROR", ok);
-    if(!ok)
-      bhv_error_str = " - unknown - ";
-    MOOSDebugWrite("BHV_ERROR: " + bhv_error_str);
-    MOOSDebugWrite("pHelmIvP Control Is Off: All Dec-Vars set to ZERO");
-  }
   
-  int dsize = m_ivp_domain.size();
+  string allstop_msg = "clear";
 
+  if(helm_report.getHalted())
+    allstop_msg = "BehaviorError";
+  else if(helm_report.getOFNUM() == 0)
+    allstop_msg = "NoIvPFunctions";
+  
   // First make sure the HelmEngine has made a decision for all 
   // non-optional variables - otherwise declare an incomplete decision.
-  // If a complete decision is not generated, this does not mean the 
-  // helm relinquishes control, only that an all-stop is posted on 
-  // this iteration.
-  bool complete_decision = false;
-  if(m_has_control && helm_report.getOFNUM() > 0) {
-    complete_decision = true;
+  if(allstop_msg == "clear") {
+    bool   complete_decision = true;
     string missing_dec_vars;
-    for(int i=0; i<dsize; i++) {
+    unsigned int i, dsize = m_ivp_domain.size();
+    for(i=0; i<dsize; i++) {
       string domain_var = m_ivp_domain.getVarName(i);
       if(!helm_report.hasDecision(domain_var)) {
 	if(m_optional_var[domain_var] == false) {
 	  complete_decision = false;
-	  string s1 = "ERROR! No decision for mandatory var - " + domain_var;
-	  string s2 = "pHelmIvP Control is Off: All Dec-Vars set to ZERO";
-	  MOOSDebugWrite(s1);
-	  MOOSDebugWrite(s2);
 	  if(missing_dec_vars != "")
 	    missing_dec_vars += ",";
 	  missing_dec_vars += domain_var;
@@ -306,16 +296,17 @@ bool HelmIvP::Iterate()
       }
     }
     if(!complete_decision) {
-      string emsg = "Missing Mandatory DecVars:" + missing_dec_vars;
-      m_Comms.Notify("BHV_ERROR", emsg); 
+      allstop_msg = "MissingDecVars:" + missing_dec_vars;
+      m_Comms.Notify("BHV_ERROR", allstop_msg); 
     }
   }
 
-  if(!m_has_control || !complete_decision)
-    postAllStop();
+  if(allstop_msg != "clear")
+    postAllStop(allstop_msg);
   else {  // Post all the Decision Variable Results
-    m_allstop_posted = false;
-    for(int j=0; j<dsize; j++) {
+    postAllStop("clear");
+    unsigned int j, dsize = m_ivp_domain.size();
+    for(j=0; j<dsize; j++) {
       string domain_var = m_ivp_domain.getVarName(j);
       string post_alias = "DESIRED_"+ toupper(domain_var);
       if(post_alias == "DESIRED_COURSE")
@@ -328,8 +319,9 @@ bool HelmIvP::Iterate()
   m_Comms.Notify("CREATE_CPU", helm_report.getCreateTime());
   m_Comms.Notify("LOOP_CPU", helm_report.getLoopTime());
 
-  if(!m_allow_overide)
-    m_has_control = true;
+  if(allstop_msg != "clear")
+    if(m_allow_override && m_disengage_on_allstop)
+      m_has_control = false;
 
   // Clear the delta vectors now that all behavior have had the 
   // chance to consume delta info.
@@ -792,12 +784,12 @@ bool HelmIvP::OnStartUp()
     }
     else if(param == "BETA_ENGINE")
       setBooleanOnString(m_use_beta_engine, value);
-    else if((param == "ACTIVE_START") || (param == "START_ENGAGED")) {
-      if(tolower(value) == "true") {
-	m_has_control = true;
-	m_allow_overide = false;
-      }
-    }
+    else if((param == "ACTIVE_START") || (param == "START_ENGAGED"))
+      setBooleanOnString(m_has_control, value);
+    else if(param == "ALLOW_DISENGAGE") 
+      setBooleanOnString(m_allow_override, value);
+    else if(param == "DISENGAGE_ON_ALLSTOP")
+      setBooleanOnString(m_disengage_on_allstop, value);
     else if(param == "DOMAIN") {
       bool ok = handleDomainEntry(value);
       if(!ok) {
@@ -1004,9 +996,38 @@ bool HelmIvP::detectChangeOnKey(const string& key, double value)
 // Procedure: postAllStop
 //   Purpose: Post zero-values to all decision variables. 
 
-void HelmIvP::postAllStop()
+//   CLEAR
+//   ALLSTOP_MESSAGE
+//       MANUAL_OVERRIDE
+//       Some other allstop message triggered from a helm report
+//       Ditto
+
+void HelmIvP::postAllStop(string msg)
 {
-  if(m_allstop_posted)
+  if(msg == "")
+    msg = "ManualOverride";
+
+  // If nothing has changed, no need to do anything.
+  if(msg == m_allstop_msg)
+    return;
+
+  // If the incoming message is not "ManualOverride" make this the
+  // current allstop message no matter what.
+  if(msg != "ManualOverride")
+    m_allstop_msg = msg;
+  // If it is indeed a manual override message, we only overwrite 
+  // the current message if the current message was the "clear" message.
+  else {
+    if(tolower(m_allstop_msg == "clear"))
+      m_allstop_msg = msg;
+    else
+      return;
+  }
+
+  MOOSDebugWrite("pHelmIvP AllStop: " + m_allstop_msg);
+  m_Comms.Notify("IVPHELM_ALLSTOP", m_allstop_msg);
+
+  if(tolower(m_allstop_msg) == "clear")
     return;
 
   // Post all the Decision Variable Results
@@ -1018,8 +1039,6 @@ void HelmIvP::postAllStop()
       post_alias = "DESIRED_HEADING";    
     m_Comms.Notify(post_alias, 0.0);
   }
-
-  m_allstop_posted = true;
 }
 
 //--------------------------------------------------------------------

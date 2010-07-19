@@ -452,7 +452,9 @@ double XYArc::cutLengthXPlus(double g_val)
   // Langle always in the southern hemisphere, 
   // Rangle always in the northern hemisphere.
 
-  double langle_i, rangle_i;
+  double langle_i = 0;
+  double rangle_i = 0;
+
   if(g_val > m_x) {
     double trig_ang = acos((g_val - m_x) / m_rad);
     langle_i = 90 + trig_ang;
@@ -463,7 +465,7 @@ double XYArc::cutLengthXPlus(double g_val)
     langle_i = 270 - trig_ang;
     rangle_i = 270 + trig_ang;
   }
-  else if(g_val == m_x) {
+  else {
     langle_i = 180;
     rangle_i = 0;
   }

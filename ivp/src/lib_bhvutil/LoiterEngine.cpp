@@ -106,12 +106,12 @@ int LoiterEngine::acquireVertexOut(double os_x, double os_y)
   if(!m_polygon.is_convex())
     return(-1);
   
-  int vsize = m_polygon.size();
+  unsigned int i, vsize = m_polygon.size();
   
   int    index = -1;
   bool   fresh = true;
   double best_angle;
-  for(int i=0; i<vsize; i++) {
+  for(i=0; i<vsize; i++) {
     if(m_polygon.vertex_is_viewable(i, os_x, os_y)) {
       int j = i+1;
       if(i == vsize-1)

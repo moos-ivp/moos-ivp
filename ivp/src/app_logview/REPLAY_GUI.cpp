@@ -834,15 +834,14 @@ void REPLAY_GUI::cb_StreamSpeed(Fl_Widget* o, bool v) {
 
 //----------------------------------------- Delete
 inline void REPLAY_GUI::cb_Delete_i() {
-  string alog_file = findReplace(m_log_file, ".slog", ".alog");
-  string ylog_file = findReplace(m_log_file, ".slog", ".ylog");
-  string moos_file = findReplace(m_log_file, ".slog", "._moos");
-  string question = "Delete " + m_log_file + "  and  " + alog_file + "? ";
-  int res = fl_choice(question.c_str(), "Yes", "No", 0);
+  string slog_file = findReplace(m_log_file, ".alog", ".slog");
+  string ylog_file = findReplace(m_log_file, ".alog", ".ylog");
+  string moos_file = findReplace(m_log_file, ".alog", "._moos");
+  int res = fl_choice("Delete Log files?", "Yes", "No", 0);
   if(res==1) 
     return;
   
-  string command = "rm -f " + m_log_file + " " + alog_file + " " +
+  string command = "rm -f " + m_log_file + " " + slog_file + " " +
     ylog_file + " " + moos_file; 
   system(command.c_str());
   exit(0);

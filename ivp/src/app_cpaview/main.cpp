@@ -31,7 +31,7 @@ void idleProc(void *)
 
 int main(int argc, char *argv[])
 {
-  int i, j;
+  int i;
   Fl::add_idle(idleProc);
 
   CPA_GUI* gui = new CPA_GUI(1400, 800, "CPAViewer");

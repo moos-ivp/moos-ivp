@@ -42,10 +42,11 @@ NodeReporter::NodeReporter()
   m_vessel_name  = "unknown";
   m_vessel_type  = "unknown";
   m_vessel_len   = "0"; // Zero indicates unspecified length
-  m_helm_mode    = "none";
   m_helm_engaged = false;
   m_helm_lastmsg = -1;
   m_nohelm_thresh = 3;
+  m_helm_mode    = "none";
+  m_helm_allstop_mode = "unknown";
 
   m_blackout_interval = 0;
   m_blackout_baseval  = 0;
@@ -104,6 +105,10 @@ bool NodeReporter::OnNewMail(MOOSMSG_LIST &NewMail)
       m_helm_lastmsg = m_db_uptime;
       handleLocalHelmSummary(sdata);
     }
+    else if(key == "IVPHELM_ALLSTOP") {
+      m_helm_lastmsg = m_db_uptime;
+      m_helm_allstop_mode = sdata;
+    }
     else if(key == "IVPHELM_ENGAGED") {
       m_helm_lastmsg = m_db_uptime;
       string value = tolower(stripBlankEnds(sdata));
@@ -145,6 +150,7 @@ void NodeReporter::registerVariables()
   m_Comms.Register("DB_UPTIME", 0);
   m_Comms.Register("IVPHELM_SUMMARY", 0);
   m_Comms.Register("IVPHELM_ENGAGED", 0);
+  m_Comms.Register("IVPHELM_ALLSTOP", 0);
 }
 
 //-----------------------------------------------------------------
@@ -451,7 +457,8 @@ string NodeReporter::assembleNodeReport()
     else
       mode_str += "ENGAGED";
   }
-
   summary += mode_str;
+  summary += ",ALLSTOP=" + m_helm_allstop_mode;
+
   return(summary);
 }

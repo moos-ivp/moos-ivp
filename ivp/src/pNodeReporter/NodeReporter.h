@@ -57,6 +57,7 @@ protected:
   std::string m_vessel_type_src;
   std::string m_vessel_len_src;
   std::string m_helm_mode;
+  std::string m_helm_allstop_mode;
   double      m_db_uptime;
   double      m_moos_utc_time;
   bool        m_time_updated;

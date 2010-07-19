@@ -372,7 +372,7 @@ double CPA_Model::get_param(const string& param,
   else if(param == "cn_bearing") 
     return(relAng(m_os_x, m_os_y, m_cnx[index], m_cny[index]));
   
-
+  return(0);
 }
 
 // ----------------------------------------------------------
@@ -713,4 +713,5 @@ vector<double> CPA_Model::extrapolate(double g_spd, double g_time,
 
   return(ipf);
 #endif
+  return(rvector);
 }

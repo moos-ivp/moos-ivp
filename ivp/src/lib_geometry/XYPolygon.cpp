@@ -108,12 +108,11 @@ bool XYPolygon::alter_vertex(double x, double y, double z)
 
 bool XYPolygon::delete_vertex(double x, double y)
 {
-  int vsize = vertex_x.size();
-
+  unsigned int vsize = vertex_x.size();
   if(vsize == 0)
     return(false);
 
-  int i, ix = closest_vertex(x, y); 
+  unsigned int i, ix = closest_vertex(x, y); 
 
   vector<int>  new_xy;
   
@@ -139,12 +138,11 @@ bool XYPolygon::delete_vertex(double x, double y)
 
 bool XYPolygon::insert_vertex(double x, double y, double z)
 {
-  int vsize = vertex_x.size();
-
+  unsigned int vsize = vertex_x.size();
   if(vsize <= 1)
     return(add_vertex(x, y, z));
 
-  int i, ix = XYPolygon::closest_segment(x, y); 
+  unsigned int i, ix = XYPolygon::closest_segment(x, y); 
 
   vector<int> new_xy;
   
@@ -184,8 +182,7 @@ void XYPolygon::clear()
 
 bool XYPolygon::is_clockwise() const
 {
-  int vsize = vertex_x.size();
-
+  unsigned int i, vsize = vertex_x.size();
   if(vsize < 3)
     return(false);
 
@@ -195,8 +192,8 @@ bool XYPolygon::is_clockwise() const
   double cx = get_center_x();
   double cy = get_center_y();
 
-  for(int i=0; i<vsize; i++) {
-    int j = i+1; 
+  for(i=0; i<vsize; i++) {
+    unsigned int j = i+1; 
     if(j == vsize)
       j = 0;
     double relative_angle_1 = relAng(cx, cy, vertex_x[i], vertex_y[i]);
@@ -276,13 +273,12 @@ bool XYPolygon::contains(double x, double y) const
   if(!convex_state)
     return(false);
 
-  int vsize = vertex_x.size();
-  
+  unsigned int ix, vsize = vertex_x.size();
   if(vsize == 0)
     return(false);
 
-  double x1,y1,x2,y2;
-  for(int ix=0; ix<vsize; ix++) {
+  double x1, y1, x2, y2 = 0;
+  for(ix=0; ix<vsize; ix++) {
 
     x1 = vertex_x[ix];
     y1 = vertex_y[ix];
@@ -306,8 +302,8 @@ bool XYPolygon::contains(double x, double y) const
 
 bool XYPolygon::intersects(const XYPolygon &poly) const
 {
-  int this_size = vertex_x.size();
-  int poly_size = poly.size();
+  unsigned int this_size = vertex_x.size();
+  unsigned int poly_size = poly.size();
   
   if(this_size == 0)
     return(false);
@@ -316,7 +312,7 @@ bool XYPolygon::intersects(const XYPolygon &poly) const
 
   // First check that no vertices from "this" polygon are
   // contained in the given polygon
-  int i;
+  unsigned int i;
   for(i=0; i<this_size; i++) {
     double x = vertex_x[i];
     double y = vertex_y[i];
@@ -356,8 +352,7 @@ bool XYPolygon::intersects(const XYPolygon &poly) const
 
 double XYPolygon::dist_to_poly(double px, double py) const
 {
-  int vsize = vertex_x.size();
-  
+  unsigned int ix, vsize = vertex_x.size();
   if(vsize == 0)
     return(-1);
 
@@ -370,9 +365,9 @@ double XYPolygon::dist_to_poly(double px, double py) const
 	   
   // Distance to poly is given by the shortest distance to any
   // one of the edges.
-  double x1,y1,x2,y2;
-  double dist;
-  for(int ix=0; ix<vsize; ix++) {
+  double x1, y1, x2, y2;
+  double dist = 0;
+  for(ix=0; ix<vsize; ix++) {
 
     x1 = vertex_x[ix];
     y1 = vertex_y[ix];
@@ -403,7 +398,7 @@ double XYPolygon::dist_to_poly(double px, double py) const
 double XYPolygon::dist_to_poly(double x3, double y3, 
 			       double x4, double y4) const
 {
-  int vsize = vertex_x.size();
+  unsigned int ix, vsize = vertex_x.size();
   
   if(vsize == 0)
     return(-1);
@@ -417,9 +412,9 @@ double XYPolygon::dist_to_poly(double x3, double y3,
 	   
   // Distance to poly is given by the shortest distance to any
   // one of the edges.
-  double x1,y1,x2,y2;
-  double dist;
-  for(int ix=0; ix<vsize; ix++) {
+  double x1, y1, x2, y2;
+  double dist = 0;
+  for(ix=0; ix<vsize; ix++) {
 
     x1 = vertex_x[ix];
     y1 = vertex_y[ix];
@@ -450,8 +445,7 @@ double XYPolygon::dist_to_poly(double x3, double y3,
 
 double XYPolygon::dist_to_poly(double px, double py, double angle) const 
 {
-  int vsize = vertex_x.size();
-  
+  unsigned int ix, vsize = vertex_x.size();
   if(vsize == 0)
     return(-1);
   
@@ -468,7 +462,7 @@ double XYPolygon::dist_to_poly(double px, double py, double angle) const
   double dist = -1;
   bool   first_hit = true;
 
-  for(int ix=0; ix<vsize; ix++) {
+  for(ix=0; ix<vsize; ix++) {
 
     double x1 = vertex_x[ix];
     double y1 = vertex_y[ix];
@@ -501,7 +495,7 @@ double XYPolygon::dist_to_poly(double px, double py, double angle) const
 bool XYPolygon::seg_intercepts(double x1, double y1, 
 			       double x2, double y2) const
 {
-  int vsize = vertex_x.size();
+  unsigned int ix, vsize = vertex_x.size();
   if(vsize == 0)
     return(false);
 
@@ -531,8 +525,8 @@ bool XYPolygon::seg_intercepts(double x1, double y1,
     return(true);
 
   // Next check if the segment intersects any of the polgyon edges.
-  for(int ix=0; ix<vsize; ix++) {
-    int ixx = ix+1;
+  for(ix=0; ix<vsize; ix++) {
+    unsigned int ixx = ix+1;
     if(ix == vsize-1)
       ixx = 0;
     x3 = vertex_x[ix];
@@ -557,14 +551,14 @@ bool XYPolygon::seg_intercepts(double x1, double y1,
 //            the polygon
 
 
-bool XYPolygon::vertex_is_viewable(int ix, double x1, double y1) const
+bool XYPolygon::vertex_is_viewable(unsigned int ix, double x1, double y1) const
 {
-  int vsize = vertex_x.size();
+  unsigned int vsize = vertex_x.size();
   if(vsize == 0)
     return(false);
-
+  
   // Simple Range check
-  if((ix < 0) || (ix > vsize-1))
+  if(ix >= vsize)
     return(false);
 
   // Special case, poly has one vertex, viewable from any point.
@@ -608,10 +602,10 @@ bool XYPolygon::vertex_is_viewable(int ix, double x1, double y1) const
   // If the query segment intersects more, it must have passed thru
   // the polygon, so we declare false.
 
-  int count = 0;
-  double x3,y3,x4,y4;
-  for(int i=0; ((i<vsize) && (count <= 2)); i++) {
-    int j = i+1;
+  unsigned int i, count = 0;
+  double x3, y3, x4, y4;
+  for(i=0; ((i<vsize) && (count <= 2)); i++) {
+    unsigned int j = i+1;
     if(i == vsize-1)
       j = 0;
     x3 = vertex_x[i];

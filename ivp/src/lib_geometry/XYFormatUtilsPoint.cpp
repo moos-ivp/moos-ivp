@@ -50,15 +50,17 @@ XYPoint stringPairs2Point(string str)
 
   str = tolower(stripBlankEnds(str));
   vector<string> mvector = parseString(str, ',');
-  int vsize = mvector.size();
+  unsigned int i, vsize = mvector.size();
   
   // Below are the mandatory parameters - check they are set.
-  bool   x_set   = false;
-  bool   y_set   = false;
-  double x, y, z = 0;
-  double snap    = -1;
+  bool   x_set = false;
+  bool   y_set = false;
+  double x     = 0;
+  double y     = 0;
+  double z     = 0;
+  double snap  = -1;
 
-  for(int i=0; i<vsize; i++) {
+  for(i=0; i<vsize; i++) {
     vector<string> svector = parseString(mvector[i], '=');
     if(svector.size() != 2)
       return(null_point);

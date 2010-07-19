@@ -93,26 +93,24 @@ bool AOF_WaypointRateClosure::initialize()
 
 
 //----------------------------------------------------------------
-// Procedure: evalBox
-//                                                                
-//                (pt_x,pt_y)  o                          
-//                            / \                        
-//                           /   \  "dist2"                 
-//                          /     \                            
-//                         /       \                         
-//                        /         \                 
-//          "direct_dist"/           \                
-//                      /             o (new_x, new_y) 
-//                     /            /              
-//                    /          /                       
-//                   /        /                           
-//                  /      /                          
-//                 /    /    "dist1"                 
-//                /  /                                
-//  (os_x,os_y)  o                             
-//                                                
-//                                                                
-//                                                                
+// Procedure: evalBox                                            |
+//                                                               |
+//                (pt_x,pt_y)  o                                 |
+//                            / \                                |
+//                           /   \  "dist2"                      |
+//                          /     \                              |
+//                         /       \                             |
+//                        /         \                            |
+//          "direct_dist"/           \                           |
+//                      /             o (new_x, new_y)           |
+//                     /            /                            |
+//                    /          /                               |
+//                   /        /                                  |
+//                  /      /                                     |
+//                 /    /    "dist1"                             |
+//                /  /                                           |
+//  (os_x,os_y)  o                                               |
+//                                                               |
 
 double AOF_WaypointRateClosure::evalBox(const IvPBox *b) const
 {

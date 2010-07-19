@@ -143,9 +143,9 @@ double CPAEngine::minMaxROC(double speed, double heading_clicks,
 {
   double heading_delta = 360.0 / heading_clicks;
   
-  double max_heading;
+  double max_heading = 0;
   
-  double try_roc;
+  double try_roc = 0;
   double try_heading = 0;
   while(try_heading < 360) {
     evalCPA(try_heading, speed, 60, &try_roc);

@@ -115,10 +115,6 @@ double VZAIC_Viewer::getMaxUtil()
 
 void VZAIC_Viewer::drawAxes()
 {
-  int x_len = 600;
-  int y_len = 400;
-
-
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   glOrtho(0, w(), 0, h(), -1 ,1);
@@ -147,7 +143,8 @@ void VZAIC_Viewer::drawAxes()
   
   double hashc = 0.6 * m_grid_shade;
   // Draw Vertical Hashmarks
-  for(int i=0; i<m_domain.getVarPoints(0); i+=m_grid_block_size) {
+  unsigned int i;
+  for(i=0; i<m_domain.getVarPoints(0); i+=m_grid_block_size) {
     glColor4f(hashc,  hashc,  hashc,  0.1);
     glBegin(GL_LINE_STRIP);
     glVertex2f(i, 0);

@@ -84,7 +84,7 @@ INCLUDE_DIRECTORIES(${MOOS_INCLUDE_DIRS})
 #-------------------------------------------------------------------------------
 # This was added by Andrew Shafer...
 IF(CMAKE_COMPILER_IS_GNUCXX)
-   SET( WALL_ON OFF CACHE BOOL "tell me about all compiler warnings (-Wall) ")
+   SET( WALL_ON ON CACHE BOOL "tell me about all compiler warnings (-Wall) ")
    IF(WALL_ON)
             SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
    ENDIF( WALL_ON)

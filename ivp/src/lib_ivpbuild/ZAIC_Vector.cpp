@@ -223,7 +223,7 @@ void ZAIC_Vector::convertValues()
       done = true;
     while(!done) {
       unsigned int idom = tmp_idomain_vals.front();
-      double irng = tmp_irange_vals.front();
+      //double irng = tmp_irange_vals.front();
       if(idom != idomain)
 	done = true;
       else {
@@ -312,7 +312,7 @@ PDMap *ZAIC_Vector::setPDMap()
     return(0);
   }
 
-  unsigned int prev_idom = 0;
+  //unsigned int prev_idom = 0;
 
   bool all_pieces_built_ok = true; 
   unsigned int i, vsize = m_idomain_vals.size();
@@ -523,6 +523,7 @@ string ZAIC_Vector::getErrors()
       return_str += ":";
     return_str += m_errors[j];
   }
+  return(return_str);
 }
 
 bool ZAIC_Vector::hasErrors()

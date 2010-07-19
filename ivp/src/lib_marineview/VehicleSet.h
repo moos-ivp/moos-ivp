@@ -72,6 +72,8 @@ class VehicleSet
   std::map<std::string, std::string>  m_vbody_map;
   // Mapping from Vehicle Name to Vehicle Helm Mode (in NODE_REPORT)
   std::map<std::string, std::string>  m_vmode_map;
+  // Mapping from Vehicle Name to Vehicle Helm AllStop Mode (in NODE_REPORT)
+  std::map<std::string, std::string>  m_amode_map;
   // Mapping from Vehicle Name to Time of last node report
   std::map<std::string, double>       m_ais_map;
 

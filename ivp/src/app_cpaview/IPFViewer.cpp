@@ -94,8 +94,8 @@ void IPFViewer::resetIPF(int cn_index, int unif_units)
 
   string ipf_string = IvPFunctionToString(ipf);
 
-  double lowval = ipf->getPDMap()->getMinWT();
-  double hghval = ipf->getPDMap()->getMaxWT();
+  //double lowval = ipf->getPDMap()->getMinWT();
+  //double hghval = ipf->getPDMap()->getMaxWT();
 
   applyIPF(ipf_string);
   redraw();

@@ -1,4 +1,4 @@
-//--------    FILE: charlie.bhv   -------------
+//--------    FILE: delta.bhv   -------------
 
 initialize   DEPLOY   = false
 initialize   RETURN   = false
@@ -16,7 +16,7 @@ initialize   PSURFACE = true
 //========================================================
 
 
-set MODE = ACTIVE {
+Set MODE = ACTIVE {
   DEPLOY = true
 } INACTIVE
 
@@ -45,10 +45,10 @@ Behavior = BHV_Loiter
      clockwise = false
         radius = 4.0
      nm_radius = 15.0
-       polygon = radial:: x=20, y=-80, radius=20, pts=8, snap=1, label=CHARLIE_LOITER
-  visual_hints = nextpt_color=yellow, nextpt_lcolor=khaki
-  visual_hints = edge_color=blue, vertex_color=white
-  visual_hints = edge_size=1, vertex_size=2
+       polygon = radial:: x=20, y=-80, radius=20, pts=8, snap=1, label=DUDLEY_LOITER
+  visual_hints = nextpt_color=red, nextpt_lcolor=khaki
+  visual_hints = edge_color=khaki, vertex_color=white
+  visual_hints = edge_size=1, vertex_size=4
 }
 
 
@@ -74,7 +74,8 @@ Behavior = BHV_PeriodicSurface
 {
   name             = bhv_periodic_surface
   pwt              = 1000
-  condition        = (MODE == LOITERING) or (MODE == RETURNING)
+  condition        = (MODE == LOITERING)
+  //condition        = (MODE == LOITERING) or (MODE == RETURNING)
   condition        = PSURFACE = true
 
                period = 120
@@ -90,7 +91,9 @@ Behavior = BHV_ConstantDepth
   name      = bhv_const_depth
   pwt       = 100
   duration  = no-time-limit
-  condition = DEPLOY = true
+  condition = MODE==ACTIVE
+  condition = (MODE == LOITERING) or (MODE == SURVEYING)
+  // condition = MODE==ACTIVE
 
       depth = 15
 }
@@ -110,9 +113,9 @@ Behavior = BHV_Waypoint
    lead_damper = 1
          speed = 2.0   // meters per second
         radius = 8.0
-        points = format=lawnmower, label=charlie_survey, x=80, y=-80, width=70, height=30, lane_width=8, rows=north-south, degs=30
+        points = format=lawnmower, label=dudley_survey, x=80, y=-80, width=70, height=30, lane_width=8, rows=north-south, degs=30
         repeat = 1
-  visual_hints = nextpt_color=red, nextpt_lcolor=green
+  visual_hints = nextpt_color=red, nextpt_lcolor=khaki
   visual_hints = vertex_color=yellow, line_color=white
   visual_hints = vertex_size=2, edge_size=1
 }

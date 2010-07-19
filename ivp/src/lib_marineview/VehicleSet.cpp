@@ -219,6 +219,14 @@ bool VehicleSet::getStringInfo(const string& g_vname,
     else
       result = "unknown-mode";
   }
+  else if(info_type == "helm_allstop_mode") {
+    map<string,string>::const_iterator p;
+    p = m_amode_map.find(vname);
+    if(p != m_amode_map.end()) 
+      result = p->second;
+    else
+      result = "unknown-amode";
+  }
   else  
     return(false);
 
@@ -432,13 +440,15 @@ bool VehicleSet::updateVehiclePosition(const string& node_report)
   double hding = 0;
   double depth = 0;
   double utime = 0;
+  string sutime = "";
   double mtime = 0;
   double lat   = 0;
   double lon   = 0;
   double vlen  = 0;
-  string vname   = "";
-  string vtype   = "";
-  string vmode   = "";
+  string vname = "";
+  string vtype = "";
+  string vmode = "";
+  string amode = "";
   bool b_vname = tokParse(node_report, "NAME",  ',', '=', vname);
   bool b_vtype = tokParse(node_report, "TYPE",  ',', '=', vtype);
   bool b_pos_x = tokParse(node_report, "X",     ',', '=', pos_x);
@@ -446,12 +456,18 @@ bool VehicleSet::updateVehiclePosition(const string& node_report)
   bool b_speed = tokParse(node_report, "SPD",   ',', '=', speed);
   bool b_hding = tokParse(node_report, "HDG",   ',', '=', hding);
   bool b_depth = tokParse(node_report, "DEPTH", ',', '=', depth);
-  bool b_utime = tokParse(node_report, "UTC_TIME", ',', '=', utime);
+  bool b_utime = tokParse(node_report, "UTC_TIME", ',', '=', sutime);
   bool b_mtime = tokParse(node_report, "MOOSDB_TIME", ',', '=', mtime);
   bool b_lat   = tokParse(node_report, "LAT", ',', '=', lat);
   bool b_lon   = tokParse(node_report, "LON", ',', '=', lon);
   bool b_vlen  = tokParse(node_report, "LENGTH", ',', '=', vlen);
   bool b_vmode = tokParse(node_report, "MODE", ',', '=', vmode);
+  bool b_amode = tokParse(node_report, "ALLSTOP", ',', '=', amode);
+
+  if(tolower(sutime) == "now")
+    utime = m_curr_time;
+  else
+    utime = atof(sutime.c_str());
 
   vtype = tolower(vtype);
 
@@ -496,12 +512,17 @@ bool VehicleSet::updateVehiclePosition(const string& node_report)
   if(b_lat && b_lon)
     opose.setLatLon(lat, lon);
 
+  if(utime==-1)
+    utime = m_curr_time;
+
   m_vlen_map[vname]  = vlen; 
   m_pos_map[vname]   = opose;
   m_ais_map[vname]   = utime;
 
   if(b_vmode)
     m_vmode_map[vname] = vmode;
+  if(b_amode)
+    m_amode_map[vname] = amode;
 
   ColoredPoint point(pos_x, pos_y);
   map<string,CPList>::iterator p2;

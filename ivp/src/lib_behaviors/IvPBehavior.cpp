@@ -59,7 +59,7 @@ IvPBehavior::IvPBehavior(IvPDomain g_domain)
   m_info_buffer  = 0;
   m_priority_wt  = 100.0;  // Default Priority Weight
   m_descriptor   = "???";  // Default descriptor
-  m_state_ok     = true;
+  m_bhv_state_ok = true;
   m_completed    = false;
   m_good_updates = 0;
   m_bad_updates  = 0;
@@ -285,7 +285,6 @@ string IvPBehavior::isRunnable()
   }
   
   if(m_domain.size() == 0) {
-    m_state_ok = false;
     postEMessage("Null IvPDomain given to Behavior");
     statusInfoAdd("pc", "null-domain");
     return("idle");
@@ -423,7 +422,7 @@ void IvPBehavior::postEMessage(string g_emsg)
     g_emsg = (m_descriptor + ": " + g_emsg);
 
   postMessage("BHV_ERROR", g_emsg, "repeatable");
-  m_state_ok = false;
+  m_bhv_state_ok = false;
 }
 
 

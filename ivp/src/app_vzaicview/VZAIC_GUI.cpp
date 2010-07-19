@@ -36,7 +36,7 @@ VZAIC_GUI::VZAIC_GUI(int g_w, int g_h, const char *g_l)
   int bot_marg = 80;
   int sid_marg = 5;
   int q_height = h()-(top_marg+bot_marg);
-  int q_width  = w()-(sid_marg*2);
+  //int q_width  = w()-(sid_marg*2);
 
   m_zaic_viewer = new VZAIC_Viewer(sid_marg, top_marg, w()-(sid_marg*2), q_height);
 
@@ -92,7 +92,6 @@ Fl_Menu_Item VZAIC_GUI::menu_[] = {
 
 int VZAIC_GUI::handle(int event) 
 {
-  int step = 1;
   switch(event) {
   case FL_PUSH:
     Fl_Window::handle(event);

@@ -80,10 +80,10 @@ public:
   std::string getBehaviorType()          {return(m_behavior_type);};
   std::string getUpdateSummary()         {return(m_update_summary);};
   std::vector<VarDataPair> getMessages() {return(m_messages);};
-  int    getFilterLevel()                {return(m_filter_level);};
-  bool   stateOK()                       {return(m_state_ok);};
+  int    getFilterLevel() const          {return(m_filter_level);};
+  bool   stateOK() const                 {return(m_bhv_state_ok);};
   void   clearMessages()                 {m_messages.clear();};
-  void   resetStateOK()                  {m_state_ok=true;};
+  void   resetStateOK()                  {m_bhv_state_ok=true;};
 
 protected:
   void    setBehaviorType(std::string str) {m_behavior_type = str;};
@@ -170,18 +170,10 @@ protected:
 
   // The state_ok flag shouldn't be set to true once it has been 
   // set to false. So prevent subclasses from setting this directly.
+  // This variable should only be accessible via (1) postEMessage()
+  // and resetStateOK().
 private:
-  bool        m_state_ok;
+  bool        m_bhv_state_ok;
 };
 
 #endif
-
-
-
-
-
-
-
-
-
-

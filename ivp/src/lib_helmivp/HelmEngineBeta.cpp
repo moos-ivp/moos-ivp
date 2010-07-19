@@ -101,6 +101,7 @@ bool HelmEngineBeta::part1_PreliminaryBehaviorSetHandling()
   if(!m_bhv_set) {
     m_helm_report.m_halted = true;
     m_helm_report.addMsg("HELM HALTING CONDITION: NULL Behavior Set");
+    m_helm_report.setHaltMsg("Null BehaviorSet");
     return(false);
   }
   else
@@ -148,6 +149,11 @@ bool HelmEngineBeta::part2_GetFunctionsFromBehaviorSet(int filter_level)
       if(!m_bhv_set->stateOK(bhv_ix)) {
 	m_helm_report.m_halted = true;
 	m_helm_report.addMsg("HELM HALTING: Safety Emergency!!!");
+	bool ok;
+	string bhv_error_str = m_info_buffer->sQuery("BHV_ERROR", ok);
+	if(!ok)
+	  bhv_error_str = " - unknown - ";
+	m_helm_report.setHaltMsg("BHV_ERROR: " + bhv_error_str);
 	m_create_timer.stop();
 	return(false);
       }
@@ -241,8 +247,8 @@ bool HelmEngineBeta::part3_VerifyFunctionDomains()
 	ok_domain = true;
     }
     if(!ok_domain) {
-      cout << "DomainVar " << of_domains[i] << " is not recognized ";
-      cout << " by the IvPDomain configured to pHelmIvP" << endl;
+      string hmsg = "DomainVar "+ of_domains[i] + " not recognized ";
+      m_helm_report.setHaltMsg(hmsg);
       m_sub_domain = IvPDomain();
       m_helm_report.m_halted = true;
       m_helm_report.addMsg("HELM HALTING: Unrecognized domain var");

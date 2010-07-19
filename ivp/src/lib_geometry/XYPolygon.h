@@ -52,7 +52,7 @@ public:
   double dist_to_poly(double x1, double y1, double x2, double y2) const;
   double dist_to_poly(double px, double py, double angle) const;
   bool   seg_intercepts(double, double, double, double) const;
-  bool   vertex_is_viewable(int, double, double) const;
+  bool   vertex_is_viewable(unsigned int, double, double) const;
   bool   is_convex() const  {return(convex_state);};
   void   determine_convexity();
 
