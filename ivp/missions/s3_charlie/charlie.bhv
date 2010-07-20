@@ -38,7 +38,7 @@ Behavior = BHV_Loiter
      nm_radius = 25.0
        polygon = format=radial, x=0, y=-75, radius=40, pts=6, snap=1,
   visual_hints = nextpt_color=white, nextpt_lcolor=khaki
-  visual_hints = edge_color=gray80, vertex_color=gray90
+  visual_hints = edge_color=gray80, vertex_color=light_green
   visual_hints = edge_size=1, vertex_size=0, label=LOITER_POLYGON
 }
 
@@ -69,4 +69,5 @@ Behavior = BHV_StationKeep
      inner_radius = 5 
      outer_radius = 10  
       outer_speed = 1.0
+       swing_time = 4
 }

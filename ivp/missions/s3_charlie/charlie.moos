@@ -2,7 +2,7 @@ ServerHost = localhost
 ServerPort = 9000
 Simulator  = true
 
-Community    = henry
+Community    = charlie
 MOOSTimeWarp = 10
 LatOrigin    = 43.825300 
 LongOrigin   = -70.330400 
@@ -47,6 +47,7 @@ ProcessConfig = iMarineSim
   START_SPEED   = 0
   START_HEADING = 180
   PREFIX        = NAV
+  DECELERATION  = 0.1
 }
 
 //------------------------------------------
