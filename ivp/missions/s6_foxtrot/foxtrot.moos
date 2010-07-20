@@ -49,7 +49,7 @@ ProcessConfig = pHelmIvP
   AppTick    = 4
   CommsTick  = 4
 
-  Behaviors  = markers.bhv
+  Behaviors  = foxtrot.bhv
   Verbose    = quiet
   Domain     = course:0:359:360
   Domain     = speed:0:4:21
@@ -128,11 +128,16 @@ ProcessConfig = pMarineViewer
 
 
   marker = type=triangle,x=100,y=0,label=lobster_pot,color=orange,width=5
-  marker = type=square,x=-20,y=35,label=home,color=blue,width=5
+  marker = type=square,x=-20,y=35,label=home,color=blue,width=3
   marker = type=circle,x=-10,y=-130,label=rock1,color=brown,width=2
   marker = type=circle,x=-5,y=-125,label=rock2,color=brown,width=2
-  marker = type=circle,x=37,y=-110,label=rock3,color=brown,width=2
-  marker = type=diamond,x=100,y=-100,label=hazard,color=red,width=5
+  marker = type=circle,x=37,y=-140,label=rock3,color=brown,width=2
+  marker = type=circle,x=190,y=-20,label=rock4,color=brown,width=2
+  marker = type=circle,x=215,y=-45,label=rock5,color=brown,width=2
+  marker = type=circle,x=184,y=-115,label=rock6,color=brown,width=2
+  marker = type=diamond,x=100,y=-147,label=hazard,color=red,width=5
+  marker = type=efield,x=122,y=-162,label=efield,color=green,width=5
+  marker = type=gateway,x=32,y=-156,label=gateway,color=light_blue,width=5
 
   // SWAMSI OP-AREA
   op_vertex = x=-10, y=10,lwidth=2,lcolor=yellow,looped=true,group=soa

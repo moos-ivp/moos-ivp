@@ -3,14 +3,21 @@
 initialize   DEPLOY = false
 initialize   RETURN = false
 
+set MODE = ACTIVE {
+  DEPLOY = true
+} INACTIVE
+
+set MODE = SURVEYING {
+  MODE = ACTIVE
+  RETURN != true
+} RETURNING
+
 //----------------------------------------------
 Behavior = BHV_Waypoint
 { 
   name      = waypt_survey
   pwt       = 100
-  condition = RETURN = false
-  condition = DEPLOY = true
-  endflag   = RETURN = true
+  condition = MODE==SURVEYING
   perpetual = true
 
   wpt_status = SURVEY_STATUS
@@ -25,8 +32,7 @@ Behavior = BHV_Waypoint
 {
   name       = waypt_return
   pwt        = 100
-  condition  = RETURN = true
-  condition  = DEPLOY = true
+  condition  = MODE==RETURNING
   updates    = UPDATES_RETURN
   perpetual  = true
   endflag    = RETURN = false
@@ -41,7 +47,23 @@ Behavior = BHV_Waypoint
 //----------------------------------------------
 Behavior = BHV_HSLine
 {
-  name = hsline
+  name       = hsline
+  condition  = MODE == ACTIVE
+  condition  = HSLINE = true
+
   time_on_leg = 20
+}
+
+//----------------------------------------------
+Behavior = BHV_OpRegion
+{
+  name       = opregion
+  pwt        = 100
+  condition  = SAFETY = true
+ 
+             polygon = 0,-50:0,-150:150,-150:150,-50
+//             polygon = pts="0,-100:0,-200:150,-200:150,-100"
+  trigger_entry_time = 1
+  trigger_exit_time  = 1
 }
 
