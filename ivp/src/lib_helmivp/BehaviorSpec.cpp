@@ -132,6 +132,11 @@ bool BehaviorSpec::setTemplatingType(string str)
 void BehaviorSpec::clear()
 {
   m_behavior_kind = "";
+  m_templating = "disallowed";
+  m_templating_enabled = false;
+  m_updates_var   = "";
+  m_kind_line_num = 0;
+  m_config_line_num.clear();
   m_config_lines.clear();
 }
 
