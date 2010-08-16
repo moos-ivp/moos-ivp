@@ -72,7 +72,8 @@ bool HelmReporter::handle(const string& alogfile)
   cout << endl << uintToCommaString(line_count) << " lines total." << endl;
   cout << uintToString(life_events) << " life events." << endl;
 
-  fclose(file_ptr);
+  if(file_ptr)
+    fclose(file_ptr);
 
   return(true);
 }
