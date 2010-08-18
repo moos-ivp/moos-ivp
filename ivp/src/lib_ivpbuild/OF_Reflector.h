@@ -61,6 +61,7 @@ public:
   bool   setParam(std::string);
   bool   setParam(std::string, std::string);
   bool   setParam(std::string, double);
+  bool   setParam(std::string, IvPBox);
     
  protected:
   void   initializePDMap();

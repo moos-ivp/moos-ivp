@@ -362,6 +362,81 @@ bool OF_Reflector::setParam(string param, double value)
 }
 
 //-------------------------------------------------------------
+// Procedure: setParam
+// Note: Care must be taken to add a refine_region and refine_piece
+//       only in pairs. A refine_region must be added first, followed
+//       by a refine_piece. A refine_region can only be added when 
+//       the count of the two vectors are equal, and a refine_piece
+//       can be added only if there is currently one more 
+//       refine_region than the number of refine_pieces. If there is
+//       a syntax error on adding a refine_region, false is simply
+//       returned. If there is a syntax error on the refine-piece add, 
+//       a single refine-region is popped from its vector.
+//
+// Note: The above strategy assumes that if the creation process is
+//       commenced with one more refine_region than refine_piece, 
+//       then the extra refine_region is simply disregarded.
+
+bool OF_Reflector::setParam(string param, IvPBox gbox)
+{
+  param = tolower(stripBlankEnds(param));
+
+  if((param=="uniform_piece")||(param=="uniform_box")) {
+    m_uniform_piece = gbox;
+    if(m_uniform_piece.null()) {
+      addWarning(param + " box value is ill-defined");
+      return(false);
+    }
+  }
+  else if(param=="uniform_grid") {
+    m_uniform_grid = gbox;
+    if(m_uniform_grid.null()) {
+      addWarning(param + " box value is ill-defined");
+      return(false);
+    }
+  }
+  else if((param=="refine_region")||(param=="focus_region")) {
+    if(m_refine_regions.size() != m_refine_pieces.size()) {
+      addWarning(param + " and refine_piece must be added in pairs");
+      return(false);
+    }
+    if(gbox.null()) {
+      addWarning(param + " box value is ill-defined");
+      return(false);
+    }
+    else
+      m_refine_regions.push_back(gbox);
+  }
+  else if((param=="refine_piece")||(param=="focus_box")) {
+    if((m_refine_regions.size() - m_refine_pieces.size()) != 1) {
+      addWarning(param + " and refine_region must be added in pairs");
+      return(false);
+    }
+
+    if(gbox.null()) {
+      m_refine_regions.pop_back();
+      addWarning(param + " box value is ill-defined");
+      return(false);
+    }
+    m_refine_pieces.push_back(gbox);
+  }
+  else if(param == "refine_point") {
+    IvPBox refine_point = gbox;
+    if(refine_point.null() || !refine_point.isPtBox()) {
+      addWarning(param + " box value is ill-defined");
+      return(false);
+    }
+    m_refine_points.push_back(refine_point);
+  }
+  else {
+    addWarning(param + ": undefined parameter");
+    return(false);
+  }
+
+  return(true);
+}
+
+//-------------------------------------------------------------
 // Procedure: create
 
 int OF_Reflector::create(int unif_amt, int smart_amt, 
