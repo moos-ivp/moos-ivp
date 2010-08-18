@@ -797,7 +797,7 @@ void XMS::printReport()
   printf("  %-22s", "VarName");
   
   if(m_display_source)
-    printf("%-12s", "(S)ource");
+    printf("%-16s", "(S)ource");
   else
     printf(" (S) ");
   if(m_display_time)
@@ -813,7 +813,7 @@ void XMS::printReport()
   printf("  %-22s", "----------------");
   
   if(m_display_source)
-    printf("%-12s", "----------");
+    printf("%-16s", "----------");
   else
     printf(" --- ");
   
@@ -841,8 +841,10 @@ void XMS::printReport()
       
       printf("  %-22s ", m_var_names[i].c_str());
 
-      if(m_display_source)
-	printf("%-12s", m_var_source[i].c_str());
+      if(m_display_source) {
+	string sstr = truncString(m_var_source[i], 14, "middle");
+	printf("%-16s", sstr.c_str());
+      }
       else
 	printf("     ");
       
@@ -851,8 +853,10 @@ void XMS::printReport()
       else
 	printf("     ");
       
-      if(m_display_community)
-	printf("%-14s", m_var_community[i].c_str());
+      if(m_display_community) {
+	string comm_str = truncString(m_var_community[i], 14, "middle");
+	printf("%-14s", comm_str.c_str());
+      }
       else
 	printf("     ");
       
