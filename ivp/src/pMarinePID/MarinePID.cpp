@@ -312,6 +312,7 @@ void MarinePID::registerVariables()
   m_Comms.Register("PID_VERBOSE", 0);
   m_Comms.Register("SPEED_FACTOR", 0);
   m_Comms.Register("MOOS_MANUAL_OVERIDE", 0);
+  m_Comms.Register("MOOS_MANUAL_OVERRIDE", 0);
 }
 
 //--------------------------------------------------------
