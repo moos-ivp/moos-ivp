@@ -55,6 +55,8 @@ private: // Configuration Parameters
   double m_roc_max_heighten; // Rate of Closure w/ max relevance heightening
   double m_roc_max_dampen;   // Rate of Closure w/ max relevance dampening
 
+  double m_collision_depth;
+
 private:  // State Variables
   double m_curr_closing_spd;
 };

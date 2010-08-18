@@ -31,6 +31,7 @@
 #include "AngleUtils.h"
 #include "GeomUtils.h"
 #include "AOF_AvoidCollision.h"
+#include "AOF_AvoidCollisionDepth.h"
 #include "BHV_AvoidCollision.h"
 #include "OF_Reflector.h"
 #include "BuildUtils.h"
@@ -50,7 +51,12 @@ BHV_AvoidCollision::BHV_AvoidCollision(IvPDomain gdomain) :
   this->setParam("build_info", "uniform_piece = discrete @ course:3,speed:3");
   this->setParam("build_info", "uniform_grid  = discrete @ course:9,speed:6");
   
-  m_domain = subDomain(m_domain, "course,speed");
+  if(m_domain.hasDomain("depth"))
+    m_domain = subDomain(m_domain, "course,speed,depth");
+  else
+    m_domain = subDomain(m_domain, "course,speed");
+  
+  m_collision_depth   = 0;
 
   m_completed_dist    = 500;
   m_pwt_outer_dist    = 200;
@@ -103,6 +109,16 @@ bool BHV_AvoidCollision::setParam(string param, string param_val)
     if(dval <= 0)
       return(false);
     m_completed_dist = dval;
+    return(true);
+  }  
+  else if(param == "collision_depth") {
+    if(dval <= 0)
+      return(false);
+    if(!m_domain.hasDomain("depth"))
+      return(false);
+    if(dval >= m_domain.getVarHigh("depth"))
+      return(true);  // Should not be considered a config error
+    m_collision_depth = dval;
     return(true);
   }  
   else if((param == "max_util_cpa_dist") ||      // preferred
@@ -200,32 +216,86 @@ IvPFunction *BHV_AvoidCollision::onRunState()
     return(0);
   }
 
-  AOF_AvoidCollision aof(m_domain);
   bool ok = true;
-  ok = ok && aof.setParam("osy", m_osy);
-  ok = ok && aof.setParam("osx", m_osx);
-  ok = ok && aof.setParam("cny", m_cny);
-  ok = ok && aof.setParam("cnx", m_cnx);
-  ok = ok && aof.setParam("cnh", m_cnh);
-  ok = ok && aof.setParam("cnv", m_cnv);
-  ok = ok && aof.setParam("tol", m_time_on_leg);
-  ok = ok && aof.setParam("collision_distance", m_min_util_cpa_dist);
-  ok = ok && aof.setParam("all_clear_distance", m_max_util_cpa_dist);
-  ok = ok && aof.initialize();
+  IvPFunction *ipf = 0;
+  if(m_collision_depth == 0) {
+    AOF_AvoidCollision aof(m_domain);
+    ok = ok && aof.setParam("osy", m_osy);
+    ok = ok && aof.setParam("osx", m_osx);
+    ok = ok && aof.setParam("cny", m_cny);
+    ok = ok && aof.setParam("cnx", m_cnx);
+    ok = ok && aof.setParam("cnh", m_cnh);
+    ok = ok && aof.setParam("cnv", m_cnv);
+    ok = ok && aof.setParam("tol", m_time_on_leg);
+    ok = ok && aof.setParam("collision_distance", m_min_util_cpa_dist);
+    ok = ok && aof.setParam("all_clear_distance", m_max_util_cpa_dist);
+    ok = ok && aof.initialize();
+    
+    if(!ok) {
+      postEMessage("Unable to init AOF_AvoidCollision.");
+      postErasableBearingLine();
+      return(0);
+    }    
+    OF_Reflector reflector(&aof, 1);
+    m_domain = subDomain(m_domain, "course,speed");
+    reflector.create(m_build_info);
+    ipf = reflector.extractIvPFunction();
+    string warnings = reflector.getWarnings();
+    postMessage("AVD_STATUS", warnings);
+  }    
 
-  if(!ok) {
-    postEMessage("Unable to init AOF_AvoidCollision.");
-    postErasableBearingLine();
-    return(0);
+  else if(m_domain.hasDomain("depth")) {
+    AOF_AvoidCollisionDepth aof(m_domain);
+    ok = ok && aof.setParam("osy", m_osy);
+    ok = ok && aof.setParam("osx", m_osx);
+    ok = ok && aof.setParam("osh", m_osh);
+    ok = ok && aof.setParam("osv", m_osv);
+    ok = ok && aof.setParam("cny", m_cny);
+    ok = ok && aof.setParam("cnx", m_cnx);
+    ok = ok && aof.setParam("cnh", m_cnh);
+    ok = ok && aof.setParam("cnv", m_cnv);
+    ok = ok && aof.setParam("tol", m_time_on_leg);
+    ok = ok && aof.setParam("collision_distance", m_min_util_cpa_dist);
+    ok = ok && aof.setParam("all_clear_distance", m_max_util_cpa_dist);
+    ok = ok && aof.setParam("collision_depth", m_collision_depth);
+    ok = ok && aof.initialize();
+ 
+    double roc = aof.getROC();
+    postMessage("ROC", roc);
+
+    if(!ok) {
+      postEMessage("Unable to init AOF_AvoidCollision.");
+      postErasableBearingLine();
+      return(0);
+    }    
+    OF_Reflector reflector(&aof, 1);
+    
+    unsigned int index = (unsigned int)(m_domain.getIndex("depth"));
+    unsigned int disc_val = m_domain.getDiscreteVal(index, m_collision_depth, 1);
+
+    IvPBox region_bot = domainToBox(m_domain);
+    region_bot.pt(index,0) = disc_val;
+
+    IvPBox region_top = domainToBox(m_domain);
+    region_top.pt(index,1) = disc_val-1;
+
+    reflector.setParam("uniform_amount", "1");
+    reflector.setParam("refine_region", region_top);
+    reflector.setParam("refine_piece", "discrete @ course:3,speed:3,depth:100");
+
+    reflector.setParam("refine_region", region_bot);
+    reflector.setParam("refine_piece", region_bot);
+    reflector.create();
+    ipf = reflector.extractIvPFunction();
+    string warnings = reflector.getWarnings();
+    postMessage("AVD_STATUS", warnings);
   }
 
-  OF_Reflector reflector(&aof, 1);
-  
-  reflector.create(m_build_info);
-  IvPFunction *ipf = reflector.extractIvPFunction();
+  if(ipf) {
+    ipf->getPDMap()->normalize(0.0, 100.0);
+    ipf->setPWT(m_relevance * m_priority_wt);
+  }
 
-  ipf->getPDMap()->normalize(0.0, 100.0);
-  ipf->setPWT(m_relevance * m_priority_wt);
 
   postViewableBearingLine();
 

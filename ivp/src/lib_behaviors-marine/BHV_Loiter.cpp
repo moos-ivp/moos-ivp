@@ -500,7 +500,7 @@ void BHV_Loiter::postViewablePoint()
   string bhv_tag = tolower(getDescriptor());
 
   XYPoint view_point(m_ptx, m_pty);
-  //  view_point.set_label(m_us_name + "'s next_waypoint");
+  //view_point.set_label(m_us_name + "'s next_waypoint");
   view_point.set_label(m_us_name + "_waypoint");
   view_point.set_type("waypoint");
   view_point.set_source(m_us_name + "_" + bhv_tag);
@@ -518,7 +518,7 @@ void BHV_Loiter::postErasablePoint()
   string bhv_tag = tolower(getDescriptor());
 
   XYPoint view_point(m_ptx, m_pty);
-  //  view_point.set_label(m_us_name + "'s next waypoint");
+  //view_point.set_label(m_us_name + "'s next waypoint");
   view_point.set_label(m_us_name + "_waypoint");
   view_point.set_type("waypoint");
   view_point.set_source(m_us_name + "_" + bhv_tag);
