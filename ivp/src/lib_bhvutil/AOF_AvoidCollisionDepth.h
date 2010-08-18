@@ -38,17 +38,26 @@ public:
   bool   setParam(const std::string&, double);
   bool   initialize();
 
+  double getROC() {return(m_rate_of_closure);};
+
  protected:
-  double metric(double dist, double depth) const;
+  double metric(double dist) const;
+  double evalDiveDepth(double, double) const;
+
 
  protected:
   double m_tol;  // Ownship Time on Leg
   double m_osx;  // Ownship X position (meters)
   double m_osy;  // Ownship Y position (meters)
+  double m_osh;  // Ownship Heading (degrees)
+  double m_osv;  // Ownship Speed (m/s)
+
   double m_cnx;  // Contact X position (meters)
   double m_cny;  // Contact Y position (meters)
   double m_cnh;  // Contact heading
   double m_cnv;  // Contact speed
+
+  double m_rate_of_closure;
 
   double m_collision_distance;
   double m_all_clear_distance;
@@ -59,6 +68,9 @@ public:
   bool   m_tol_set;
   bool   m_osy_set;
   bool   m_osx_set;
+  bool   m_osh_set;
+  bool   m_osv_set;
+
   bool   m_cnx_set;
   bool   m_cny_set;
   bool   m_cnh_set;

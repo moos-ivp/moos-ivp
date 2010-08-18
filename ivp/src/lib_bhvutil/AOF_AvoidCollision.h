@@ -38,10 +38,16 @@ public: // virtuals defined
   bool   setParam(const std::string&, double);
   bool   initialize();
 
-protected:
-  double metric(double) const;
+  double evalROC(double osh, double osv) {
+    if(!cpa_engine) return(0);
+    return(cpa_engine->evalROC(osh, osv));
+  }
+      
 
-protected:
+ protected:
+  double metric(double) const;
+  
+ protected:
   double m_tol; // Ownship Time on Leg
   double m_osx;    // Ownship X position (meters)
   double m_osy;    // Ownship Y position (meters)

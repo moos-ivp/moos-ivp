@@ -50,6 +50,8 @@ AOF_AvoidCollisionDepth::AOF_AvoidCollisionDepth(IvPDomain gdomain)
   m_tol_set = false;
   m_osx_set = false;
   m_osy_set = false;
+  m_osh_set = false;
+  m_osv_set = false;
   m_cnx_set = false;
   m_cny_set = false;
   m_cnh_set = false;
@@ -74,6 +76,16 @@ bool AOF_AvoidCollisionDepth::setParam(const string& param, double param_val)
   else if(param == "osy") {
     m_osy = param_val;
     m_osy_set = true;
+    return(true);
+  }
+  else if(param == "osh") {
+    m_osh = param_val;
+    m_osh_set = true;
+    return(true);
+  }
+  else if(param == "osv") {
+    m_osv = param_val;
+    m_osv_set = true;
     return(true);
   }
   else if(param == "cnx") {
@@ -101,10 +113,17 @@ bool AOF_AvoidCollisionDepth::setParam(const string& param, double param_val)
     m_collision_distance_set = true;
     return(true);
   }
-  else if(param == "collision_depth") {
-    m_collision_depth = param_val;
-    m_collision_depth_set = true;
+  else if(param == "all_clear_distance") {
+    m_all_clear_distance = param_val;
+    m_all_clear_distance_set = true;
     return(true);
+  }
+  else if(param == "collision_depth") {
+    if(param_val >= 0) {
+      m_collision_depth = param_val;
+      return(true);
+    }
+    return(false);
   }
   else if(param == "tol") {
     m_tol = param_val;
@@ -140,6 +159,7 @@ bool AOF_AvoidCollisionDepth::initialize()
 			     m_cnv, m_osy, m_osx);
 
   m_max_decision_depth = m_domain.getVarHigh(m_dep_ix);
+  m_rate_of_closure = cpa_engine->evalROC(m_osh, m_osv);
   
   return(true);
 }
@@ -155,40 +175,81 @@ bool AOF_AvoidCollisionDepth::initialize()
 
 double AOF_AvoidCollisionDepth::evalBox(const IvPBox *b) const
 {
-  double eval_crs, eval_spd, eval_dep, cpa_dist, eval_dist;
-
   if(!cpa_engine)
     return(0);
 
+  double eval_crs, eval_spd, eval_dep;
+  m_domain.getVal(m_dep_ix, b->pt(m_dep_ix), eval_dep);
   m_domain.getVal(m_crs_ix, b->pt(m_crs_ix), eval_crs);
   m_domain.getVal(m_spd_ix, b->pt(m_spd_ix), eval_spd);
-  m_domain.getVal(m_dep_ix, b->pt(m_dep_ix), eval_dep);
 
-  cpa_dist  = cpa_engine->evalCPA(eval_crs, eval_spd, m_tol);
-
-  eval_dist = metric(cpa_dist, eval_dep);
-  return(eval_dist);
+  double return_value = 0;
+  if(eval_dep >= m_collision_depth)
+    return_value = 90 + evalDiveDepth(eval_dep, 10);
+  else{
+    double cpa_dist  = cpa_engine->evalCPA(eval_crs, eval_spd, m_tol);
+    double eval_dist = metric(cpa_dist);
+    return_value = eval_dist + evalDiveDepth(eval_dep, 10);
+  }
+  return(return_value);
 }
 
 //----------------------------------------------------------------
 // Procedure: metric
 
-double AOF_AvoidCollisionDepth::metric(double eval_dist, 
-				       double eval_depth) const
+double AOF_AvoidCollisionDepth::metric(double eval_dist) const
 {
   double min = m_collision_distance;
   double max = m_all_clear_distance;
 
-  if(eval_dist < min) return(0);
-  if(eval_dist > max) return(100);
+  // Rate of closer is negative, the two vehicles opening range, 
+  // the skew the metric a bit by effectively reducing the all_clear
+  // distance to be closer to the collision_distance. 
+  if(m_rate_of_closure < 0)
+    max += m_rate_of_closure;
 
-  //double tween = 100.0 * (gval-min) / (max-min);
-  double tween = 25.0 + 75.0 * (eval_dist - min) / (max-min);
-  return(tween);
+  // For the purposes of the metric, to avoid a zero denominator, 
+  // enforce that the range is at a minimum of 10 meters.
+  if((max-min) < 10)
+    max = min+10;
+
+  if(eval_dist < min) 
+    return(0);
+  if(eval_dist > max) 
+    return(100);
+
+  double pct = (eval_dist - min) / (max-min);
+
+  return(pct * 100);
 }
 
-// robert baine
-// Francois-Regis Martin-Lauzer
+
+//----------------------------------------------------------------
+// Procedure: evalDiveDepth
+//   Purpose: Add a bit more utility for being at depth closer to 
+//            the surface. Just a linear function.
+
+double AOF_AvoidCollisionDepth::evalDiveDepth(double eval_depth,
+					      double max_util) const
+{
+  // If max_decision_depth is not set - something's wrong
+  if(m_max_decision_depth <= 0)
+    return(0);
+
+  // If eval_depth is not in the below range, something's wrong but
+  // we move on by just clipping the eval_depth value.
+  if(eval_depth < 0)
+    eval_depth = 0;
+  if(eval_depth > m_max_decision_depth)
+    eval_depth = m_max_decision_depth;
+
+  double pct = (m_max_decision_depth - eval_depth) / m_max_decision_depth;
+  
+  double util = pct * max_util;
+
+  return(util);
+}
+
 
 
 
