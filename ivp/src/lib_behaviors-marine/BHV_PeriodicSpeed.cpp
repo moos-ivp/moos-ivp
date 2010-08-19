@@ -93,19 +93,24 @@ bool BHV_PeriodicSpeed::setParam(string param, string value)
     m_period_speed = dval;
     return(true);
   }  
-  else if((param == "period_basewidth") || (param == "zaic_basewidth")) {
+  else if((param == "basewidth")         ||     // preferred 
+	  (param == "zaic_basewidth")    ||     // depricated
+	  (param == "period_basewidth")) {      // depricated
     if(!isNumber(value) || (dval < 0))
       return(false);
     m_zaic_basewidth = dval;
     return(true);
   }  
-  else if((param == "period_peakwidth") || (param == "zaic_peakwidth")) {
+  else if((param == "peakwidth")         ||     // preferred
+	  (param == "period_peakwidth")  ||     // depricated
+	  (param == "zaic_peakwidth")) {        // depricated
     if(!isNumber(value) || (dval < 0))
       return(false);
     m_zaic_peakwidth = dval;
     return(true);
   } 
-  else if(param == "zaic_summit_delta") {
+  else if((param == "summit_delta")      ||     // preferred
+	  (param == "zaic_summit_delta")) {     // depricated
     if(!isNumber(value) || (dval < 0))
       return(false);
     m_zaic_summit_delta = dval;
