@@ -95,15 +95,16 @@ Behavior = BHV_AvoidCollision
   endflag    = CONTACT_RESOLVED = $[CONTACT]
   templating = spawn
 
-                contact = to-be-set
-  active_outer_distance = 50
-  active_inner_distance = 20
-     completed_distance = 75
-     collision_distance = 8
-     all_clear_distance = 25
-           active_grade = linear
-       on_no_contact_ok = true
-            extrapolate = true
-                  decay = 30,60
-    bearing_line_config = white:0, green:0.65, yellow:0.8, red:1.0
+             contact = to-be-set
+    on_no_contact_ok = true
+         extrapolate = true
+               decay = 30,60
+
+        pwt_outer_dist = 50
+        pwt_inner_dist = 20
+        completed_dist = 75
+     min_util_cpa_dist = 8
+     min_util_cpa_dist = 25
+             pwt_grade = linear
+   bearing_line_config = white:0, green:0.65, yellow:0.8, red:1.0
 }
