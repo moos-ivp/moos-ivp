@@ -462,8 +462,6 @@ void NavPlotViewer::drawTrail(unsigned int index)
   double pt_size = m_vehi_settings.getTrailsPointSize();
   vector<double> cvect = colorParse("yellow");
   
-  m_trail_gap = 8;
-
   if(index == 0) 
     cvect = colorParse("dark_red");
   else if(index == 1) 
