@@ -1,0 +1,40 @@
+#!/bin/sh
+
+# We no longer use the "-q" option because it is not supported on
+# the mac
+
+killall MOOSDB iRemote MOOSRemote iGPS iGPSMonitor pNav \
+        pHelm pHelmIvP pMarineViewer iMarineSim \
+        pLogger iPWMController MOOSDump pAntler MOOSDump \
+        iINS iDepth pScheduler pThermoTrack pNaFCon pSearch \
+        pHuxley pMessageSim pBeamform uTermCommand pBearingTrack
+
+killall pMOOSBridge  iVSA iCTD iCTDSBE49 pBearingsSim        \
+        iPNICompass iMetaCompass iHeadingMonitor  pAEL     \
+        iWifi p1BTracker p2BTracker pBearings uMS pTarget  \
+        pRedirect pLoiterControl pTransponderAIS uMVS      \
+        pMarinePID uTMS uMVS_Bluefin pEchoVar pDeployHandler \
+        pTrafficControl pShipsideViewer uRepeater uXMS   \
+        pViewerRelay uHelmScope pClusterPriority zLoggerNG
+
+killall iMicroModem pRouter pFramer pMessageSim  \
+        pCSVLogger pBearings_VSA pEchoVar pTrackQuality \
+        p1HTracker pGPSSim uBathy uCtdSim2 pTargetOpportunity \
+        pBearings_DURIP uProcessWatch uPlayBack pSubIndex \
+        pBearings_GENERIC pTargetSim pMBTracker zLoggerNG \
+	iModemSim pFunctionSender uFunctionViewer uFunctionVis
+
+killall pSensorSim pArtifactMapper pNoiseSim uNafconSplitter    \
+        pBlast pSweepLines pNSWCPC pXRelay pXRelayTest logview  \
+        pAcommsHandler pCTDCodec pBTRCodec iDAS iOEX pGateway   \
+        pAcommsPoller pArraySim pSimpleAcousticSim geoview      \
+        pMultiTargetSim pMultiAcousticSim iOS5000 pGeneralCodec
+        
+        
+killall pCBF pBTracker pTrackMonitor uTimerScript pDTSP         \
+        pTallyomatic pNodeReporter iCommStack pMissionCtl iDSP  \
+        pNotDTSP pBoundingCircle pRIDManager
+
+killall pFleetControl
+
+echo Done - Killed all MOOS-Related Processes.....

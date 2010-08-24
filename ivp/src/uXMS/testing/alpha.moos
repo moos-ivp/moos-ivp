@@ -1,0 +1,33 @@
+ServerHost = localhost
+ServerPort = 9006
+
+Community  = alpha
+
+LatOrigin  = 42.3584
+LongOrigin = -71.08745
+
+//------------------------------------------
+// Antler configuration  block
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+
+  Run = MOOSDB		@ NewConsole = true
+  Run = uXMS		@ NewConsole = true
+}
+
+//------------------------------------------
+// uXMS config block
+
+ProcessConfig = uXMS
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  VAR        = DEPLOY
+  VAR        = DB_CLIENTS
+  PAUSED     = false
+}
+
+
+

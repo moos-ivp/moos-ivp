@@ -1,0 +1,8 @@
+license ivpcore  limit nuwc    lib_ivpcore/*.h          lib_ivpcore/*.cpp;
+license ivpbuild limit nuwc    lib_ivpbuild/*.h         lib_ivpbuild/*.cpp;
+license ivphelm  limit nuwcmit lib_behaviors/*.h        lib_behaviors/*.cpp;
+license ivphelm  limit nuwcmit lib_behaviors-marine/*.h lib_behaviors-marine/*.cpp;
+license ivphelm  limit nuwcmit lib_helmivp/*.h          lib_helmivp/*.cpp;
+license ivphelm  limit nuwcmit lib_mbutil/*.h           lib_mbutil/*.cpp;
+license ivphelm  limit nuwcmit pHelmIvP/*.h             pHelmIvP/*.cpp;
+             

@@ -1,0 +1,249 @@
+#!/usr/bin/python
+
+import os
+import os.path
+import sys
+import shutil
+import time
+
+#===============================================================================
+
+whitelist_library_dirs = [
+   "lib_behaviors",
+   "lib_marineview",
+   "lib_helmivp",
+   "lib_behaviors-marine",
+   "lib_mbutil",
+   "lib_bhvutil",
+   "lib_navplot",
+   "lib_geometry",
+   "lib_ivpbuild",
+   "lib_ivpcore",
+   "lib_logic",
+   "lib_genutil"
+   ]
+
+whitelist_app_dirs = [
+   "app_logview",
+   "app_polyview",
+   "iMarineSim",
+   "pEchoVar",
+   "pHelmIvP",
+   "pLogger",
+   "pMarinePID",
+   "pMarineViewer",
+   "pTransponderAIS",
+   "uTMS"
+   ]
+
+whitelist_additional_modules = [
+   "uXMS",
+   "uTermCommand",
+   "uProcessWatch"
+   ]
+
+whitelist_modules =               \
+   whitelist_library_dirs       + \
+   whitelist_app_dirs           + \
+   whitelist_additional_modules
+
+#===============================================================================
+
+def print_usage_and_exit():
+   s =  "Usage: make-release-tarball  <src-dir>  <working-dir>  <tarball-dir>\n" \
+      + "\n" \
+      + "Example:  ./make-release-tarball  ~/src/trunk  /tmp/foo  ~/my-tarballs"
+   sys.exit(s)
+
+#===============================================================================
+
+def parse_cmd_line(argv):
+   if len(argv) != 4:
+      print_usage_and_exit()
+      
+   return {
+      "src-dir":argv[1],
+      "working-dir":argv[2],
+      "tarball-dir":argv[3]
+      }
+
+#===============================================================================
+
+def validate_parsed_cmd_line(args, tarball_filename):
+   if not os.path.isdir(args["src-dir"]):
+      sys.exit("<src-dir> doesn't exist, or isn't a directory")
+      
+   src_dir_members = os.listdir(args["src-dir"])
+   if not "build.sh" in src_dir_members:
+      sys.exit("<src-dir> doesn't look right.  It should at least have a file called 'build.sh'.")
+      
+      
+   if not os.path.isdir(args["working-dir"]):
+      sys.exit("<working-dir> doesn't exist, or isn't a directory")
+      
+   if len(os.listdir(args["working-dir"])) != 0:
+      sys.exit("<working-dir> must be an *empty* directory.")
+      
+      
+      
+   if not os.path.isdir(args["tarball-dir"]):
+      sys.exit("<tarball-dir> doesn't exist, or isn't a directory")
+      
+   tarball_pathname = os.path.join(args["tarball-dir"], tarball_filename)
+     
+   if os.path.exists(tarball_pathname):
+      sys.exit("This script was going to produce a file named " + tarball_pathname + \
+         ", but that file already exists.")
+      
+
+#===============================================================================
+
+def fixup_copied_tree(copied_tree_path, whitelist_ivp_modules):
+   #----------------------------------------------------------------------------
+   # 1) Eliminate any subdirectory of ivp/src/ that's not in the whitelist 
+   #    of release-worthy projects.
+   #----------------------------------------------------------------------------
+   
+   # IvP...
+   ivp_src_dir = os.path.join(copied_tree_path, 'ivp/src')
+   src_dir_members = set(os.listdir(ivp_src_dir))
+   needed_files = set(whitelist_ivp_modules + ['CMakeLists.txt', 'bin'])
+   
+   members_to_delete = src_dir_members.difference(needed_files)
+   for filename in members_to_delete:
+      pathname = os.path.join(ivp_src_dir, filename)
+      if os.path.isdir(pathname):
+         shutil.rmtree(pathname)
+      else:
+         os.remove(pathname)
+         
+         
+   # We need to reconstruct the CMakeLists.txt file, because pHelmIvP will 
+   # not be linking to the same set of behavior libraries as it does in our
+   # internal versions...
+   original_wd = os.getcwd()
+   
+   d = os.path.join(copied_tree_path, 'ivp/scripts/util/create-subdir-cmake-files/')
+   os.chdir(d)
+   
+   cmd = "./create-subdir-cmake-files-for-release.sh ../../../src/"
+   print "cwd = " + os.getcwd()
+   print "About to execute command:"
+   print cmd
+   if os.system(cmd) != 0:
+      sys.exit("Command seems to have failed.")
+   
+   os.chdir(original_wd)
+   
+
+   #----------------------------------------------------------------------------
+   # 2) Eliminate the scripts directories, which aren't currently relevant to
+   #    users.
+   #----------------------------------------------------------------------------
+   d = os.path.join(copied_tree_path, 'ivp/scripts')
+   if os.path.isdir(d):
+      shutil.rmtree(d)
+      
+   d = os.path.join(copied_tree_path, 'MOOS/BuildScripts')
+   if os.path.isdir(d):
+      shutil.rmtree(d)
+     
+      
+   #----------------------------------------------------------------------------
+   # 3) Eliminate the old-style makefiles.
+   #----------------------------------------------------------------------------
+   cmd = "find " + ivp_src_dir + " -name makefile | xargs rm"
+   print "About to execute:"
+   print cmd
+   os.system(cmd)
+   
+   
+   #----------------------------------------------------------------------------
+   # 4) Replace lib_helmivp/Populator_BehaviorSet.cpp with a clean copy that lacks
+   #   private behaviors.  Also make corresponding changes to CMakeLists.txt files...
+   #----------------------------------------------------------------------------
+   path1 = os.path.join(copied_tree_path, 
+      'ivp/src/lib_helmivp/Populator_BehaviorSet.cpp.for-release')
+   
+   path2 = os.path.join(copied_tree_path, 
+      'ivp/src/lib_helmivp/Populator_BehaviorSet.cpp')
+
+   shutil.copyfile(path1, path2)
+   os.remove(path1)
+
+   # We need CMakeLists.txt files that don't try to link against non-public 
+   # behaviors...
+   
+
+   #----------------------------------------------------------------------------
+   # 5) Remove the ".svn" subdirectories.
+   #----------------------------------------------------------------------------
+   cmd = "find " + copied_tree_path + " -name .svn -type d | xargs rm -rf"
+   print "About to execute:"
+   print cmd
+   os.system(cmd)
+      
+      
+   #----------------------------------------------------------------------------
+   # 6) Remove anything that ideally CMake will re-create the first time through...
+   #----------------------------------------------------------------------------
+   cmd = "find " + copied_tree_path + " -name CMakeCache.txt | xargs rm"
+   print "About to execute:"
+   print cmd
+   os.system(cmd)
+   
+   cmd = "find " + copied_tree_path + " -name Makefile | xargs rm"
+   print "About to execute:"
+   print cmd
+   os.system(cmd)
+   
+
+#===============================================================================
+
+def generate_tarball_filename():
+   (year, month, day, hour, minute) = time.localtime()[:5]
+   return "moos-ivp-%d-%02d-%02d-%02d%02d.tar.gz" % (year, month, day, hour, minute)
+
+#===============================================================================
+
+def create_tarball(copied_src_dir, tarball_dir, tarball_filename):
+   tarball_pathname = os.path.join(tarball_dir, tarball_filename)
+   cmd = "tar cfz " + tarball_pathname \
+      + " --directory=" + copied_src_dir \
+      + " moos-ivp"
+   
+   print "About to execute:"
+   print cmd
+   
+   if os.system(cmd) != 0:
+      sys.exit("Quitting.  The 'tar' command seems to have failed.")
+
+#===============================================================================
+
+def test_tarball(tarball_filename):
+   #TODO...
+   pass
+
+#===============================================================================
+
+def main(argv):
+   args = parse_cmd_line(argv)
+   tarball_filename = generate_tarball_filename()
+   validate_parsed_cmd_line(args, tarball_filename)
+   
+   src_dir     = args["src-dir"]
+   working_dir = args["working-dir"]
+   tarball_dir = args["tarball-dir"]
+   
+   copied_src_dir = os.path.join(working_dir, "moos-ivp")
+   shutil.copytree(src_dir, copied_src_dir)
+   
+   fixup_copied_tree(copied_src_dir, whitelist_modules)   
+   create_tarball(working_dir, tarball_dir, tarball_filename)
+   
+   print "Done!  Created file " + os.path.join(tarball_dir, tarball_filename)
+   
+#===============================================================================
+   
+if __name__ == '__main__':
+   main(sys.argv)

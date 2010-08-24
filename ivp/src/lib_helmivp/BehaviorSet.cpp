@@ -1,0 +1,660 @@
+/*****************************************************************/
+/*    NAME: Michael Benjamin                                     */
+/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    FILE: BehaviorSet.cpp                                      */
+/*    DATE: Oct 27th 2004 Sox up 3-0 in the Series               */
+/*****************************************************************/
+#ifdef _WIN32
+#pragma warning(disable : 4786)
+#pragma warning(disable : 4503)
+#endif
+
+#include <iostream>
+#include <set>
+#include "BehaviorSet.h"
+#include "MBUtils.h"
+#include "IvPFunction.h"
+#include "FunctionEncoder.h"
+
+using namespace std;
+
+//------------------------------------------------------------
+// Constructor
+
+BehaviorSet::BehaviorSet()
+{
+  m_report_ipf = true;
+  m_curr_time  = -1;
+  m_bfactory_dynamic.loadEnvVarDirectories("IVP_BEHAVIOR_DIRS");
+
+  m_total_behaviors_ever = 0;
+  m_bhv_entry.reserve(1000);
+  m_completed_pending = false;
+}
+
+//------------------------------------------------------------
+// Destructor
+
+BehaviorSet::~BehaviorSet()
+{
+  clearBehaviors();
+}
+
+//------------------------------------------------------------
+// Procedure: addBehavior
+
+void BehaviorSet::addBehavior(IvPBehavior *bhv)
+{
+  if(!bhv)
+    return;
+
+  BehaviorSetEntry bse(bhv);
+  string bhv_name = bhv->getDescriptor();
+  //bse.setName(bhv_name);
+
+  m_bhv_entry.push_back(bse);
+  m_bhv_names.insert(bhv_name);
+
+  m_total_behaviors_ever++;
+}
+
+//------------------------------------------------------------
+// Procedure: setDomain
+
+void BehaviorSet::setDomain(IvPDomain domain)
+{
+  m_bfactory_static.setDomain(domain);
+  m_bfactory_dynamic.setDomain(domain);
+}
+
+//------------------------------------------------------------
+// Procedure: clearBehaviors()
+
+void BehaviorSet::clearBehaviors()
+{
+  m_bhv_entry.clear();
+  m_bhv_names.clear();
+}
+
+
+//------------------------------------------------------------
+// Procedure: addBehaviorSpec
+
+void BehaviorSet::addBehaviorSpec(BehaviorSpec spec)
+{
+  m_behavior_specs.push_back(spec);
+}
+
+
+//------------------------------------------------------------
+// Procedure: connectInfoBuffer()
+//      Note: Connects info_buffer to all behaviors, behavior_specs
+//      Note: The info_buffer is not "owned" by behaviors or specs
+
+void BehaviorSet::connectInfoBuffer(InfoBuffer *info_buffer)
+{
+  unsigned int i, vsize = m_bhv_entry.size();
+  for(i=0; i<vsize; i++)
+    if(m_bhv_entry[i].getBehavior())
+      m_bhv_entry[i].getBehavior()->setInfoBuffer(info_buffer);
+
+  vsize = m_behavior_specs.size();
+  for(i=0; i<vsize; i++)
+    m_behavior_specs[i].setInfoBuffer(info_buffer);    
+}
+
+//------------------------------------------------------------
+// Procedure: buildBehaviorsFromSpecs()
+//      Note: Enforcement of unique behaviors names is made here.
+
+bool BehaviorSet::buildBehaviorsFromSpecs()
+{
+  vector<SpecBuild> spec_builds;
+  
+  // Set of new behavior names instantiated in this invocation
+  set<string> bhv_names;
+
+  // First try to build behaviors from all non-template specs
+  bool all_builds_ok = true;
+  unsigned int i, vsize = m_behavior_specs.size();
+  cout << "BehaviorSet: Total # of specs: " << vsize << endl;
+  for(i=0; i<vsize; i++) {
+    BehaviorSpec spec = m_behavior_specs[i];
+    SpecBuild sbuild  = buildBehaviorFromSpec(spec);
+    // All spec_builds should be put in the vector of spec_builds, even
+    // if they were not valid. The only ones not added were validly 
+    // created builds from a behavior with templating type = spawn. We
+    // need to create such behaviors to see if they are syntactically 
+    // correct, but delete them immediately by definition of type=spawn.
+    if(!sbuild.valid()) {
+      all_builds_ok = false;
+      spec_builds.push_back(sbuild);
+    }
+    else {
+      if(spec.getTemplatingType() == "spawn")
+	sbuild.deleteBehavior();
+      else {
+	spec_builds.push_back(sbuild);
+	string bhv_name   = sbuild.getBehaviorName();
+      	// If otherwise valid, check if the new bhv_name is unique
+	if(bhv_names.count(bhv_name) || m_bhv_names.count(bhv_name)) {
+	  cout << "Duplicate behavior name found: " << bhv_name << endl;
+	  all_builds_ok = false;
+	}
+	else
+	  bhv_names.insert(bhv_name);
+      }
+    }
+  }
+  
+  cout << "BehaviorSet: all_builds_ok: " << all_builds_ok << endl;
+
+  // If any of the builds failed, (1) output error messages for
+  // each failed build, and (2) delete the IvPBehavior instances
+  // for all successful builds, and (3) abort this attempt by
+  // returning false immediately.
+  if(!all_builds_ok) {
+    unsigned int k, ksize = spec_builds.size();
+    for(k=0; k<ksize; k++) {
+      if(spec_builds[k].valid()) 
+	spec_builds[k].deleteBehavior();
+      else {
+	unsigned int j, jsize = spec_builds[k].numBadConfigs();
+	for(j=0; j<jsize; j++) {
+	  string bad_config = spec_builds[k].getBadConfigLine(j);
+	  unsigned int lnum = spec_builds[k].getBadConfigLineNum(j);
+	  cout << "Fatal Behavior Configuration Line " << lnum << endl;
+	  cout << "  [" << lnum << "]: " << bad_config << endl;	  
+	}
+      }
+    }
+    return(false);
+  }
+
+  // If all the builds were successful, populate the behavior_set
+  // with all the new IvPBehaviors, and add LifeEvents.
+  unsigned int k, ksize = spec_builds.size();
+  for(k=0; k<ksize; k++) {
+    IvPBehavior *bhv = spec_builds[k].getIvPBehavior();
+    addBehavior(bhv);
+
+    LifeEvent life_event;
+    life_event.setBehaviorName(spec_builds[k].getBehaviorName());
+    life_event.setBehaviorType(spec_builds[k].getBehaviorKind());
+    life_event.setSpawnString("helm startup");
+    life_event.setEventType("spawn");
+    m_life_events.push_back(life_event);
+  }
+  return(true);
+}
+
+
+//------------------------------------------------------------
+// Procedure: buildBehaviorFromSpec()
+
+SpecBuild BehaviorSet::buildBehaviorFromSpec(BehaviorSpec spec, 
+					     string update_str)
+{
+  SpecBuild    sbuild;
+  string       bhv_kind = spec.getKind();
+  unsigned int lnum     = spec.getKindLine();
+  
+  sbuild.setBehaviorKind(bhv_kind, lnum);
+  
+  IvPBehavior *bhv = m_bfactory_static.newBehavior(bhv_kind);
+  if(bhv) 
+    sbuild.setKindResult("static");
+  else {
+    bhv = m_bfactory_dynamic.newBehavior(bhv_kind);
+    if(bhv)
+      sbuild.setKindResult("dynamic");
+    else {
+      cout << "BehaviorSpec: failed to load dynamic behavior " << bhv_kind << endl;
+      sbuild.setKindResult("failed");
+      return(sbuild);
+    }
+  }
+  bhv->setBehaviorType(bhv_kind);
+
+  // First apply all the behavior specs from the original specification
+  // given in the .bhv file. All bad specs are noted, not just the first.
+  bool specs_valid = true;
+  unsigned int i, count = spec.size();
+  for(i=0; i<count; i++) {
+    string cline = spec.getConfigLine(i);
+    string left  = stripBlankEnds(tolower(biteString(cline, '=')));
+    string right = stripBlankEnds(cline);
+    bool   valid = bhv->IvPBehavior::setParam(left.c_str(), right.c_str());
+    if(!valid)
+      valid = bhv->setParam(left.c_str(), right.c_str());
+    if(!valid)
+      sbuild.addBadConfig(cline, spec.getConfigLineNum(i));
+    specs_valid = specs_valid && valid;
+  }
+
+  // Then apply all the behavior specs from an UPDATES string which may
+  // possibly be empty. 
+  vector<string> jvector = parseStringQ(update_str, '#');
+  unsigned int j, jsize = jvector.size();
+  for(j=0; j<jsize; j++) {
+    string cline = jvector[j];
+    string left  = stripBlankEnds(tolower(biteString(cline, '=')));
+    string right = stripBlankEnds(cline);
+    bool   valid = bhv->IvPBehavior::setParam(left.c_str(), right.c_str());
+    if(!valid)
+      valid = bhv->setParam(left.c_str(), right.c_str());
+    if(!valid)
+      sbuild.addBadConfig(jvector[j], 0);
+    specs_valid = specs_valid && valid;
+  }
+  if(specs_valid) 
+    sbuild.setIvPBehavior(bhv);
+  else
+    delete(bhv);
+
+  return(sbuild);
+}
+
+
+//------------------------------------------------------------
+// Procedure: handlePossibleSpawnings
+//   Purpose: Called typically once on each iteration of the helm
+//            to check if any new spawnings were requested. 
+
+bool BehaviorSet::handlePossibleSpawnings()
+{
+  unsigned int i, isize = m_behavior_specs.size();
+  for(i=0; i<isize; i++) {
+    if(m_behavior_specs[i].templating()) {
+      vector<string> update_strs = m_behavior_specs[i].checkForSpawningStrings();     
+      unsigned int j, jsize = update_strs.size();
+      for(j=0; j<jsize; j++) {
+	//cout << "Possible Spawning for ";
+	//cout << "Spec: " << m_behavior_specs[i].getKind() << endl;
+	string update_str = update_strs[j];
+	//cout << "update_str:" << update_str << endl;
+
+	// Check for unique behavior name
+	string bname = tokStringParse(update_str, "name", '#', '=');
+	if(m_bhv_names.count(bname)==0) {
+	  SpecBuild sbuild = buildBehaviorFromSpec(m_behavior_specs[i], 
+						 update_str);
+	  //sbuild.print();
+
+	  LifeEvent life_event;
+	  life_event.setBehaviorName(sbuild.getBehaviorName());
+	  life_event.setBehaviorType(sbuild.getBehaviorKind());
+	  life_event.setSpawnString(update_str);
+	  
+	  if(sbuild.valid()) {
+	    IvPBehavior *bhv = sbuild.getIvPBehavior();
+	    addBehavior(bhv);
+	    life_event.setEventType("spawn");
+	  }
+	  else
+	    life_event.setEventType("abort");
+	  m_life_events.push_back(life_event);
+	}
+      }
+    }
+  }
+  return(true);
+}
+
+//------------------------------------------------------------
+// Procedure: produceOF
+
+IvPFunction* BehaviorSet::produceOF(unsigned int ix, 
+				    unsigned int iteration, 
+				    string& new_activity_state)
+{
+  IvPFunction *ipf = 0;
+  double pwt = 0;
+  int    pcs = 0;
+
+  if(ix < m_bhv_entry.size()) {
+    IvPBehavior *bhv = m_bhv_entry[ix].getBehavior();
+    string old_activity_state = m_bhv_entry[ix].getState();
+
+    // Look for possible dynamic updates to the behavior parameters
+    bool update_made = bhv->checkUpdates();
+    if(update_made)
+      bhv->onSetParamComplete();
+
+    // Check if the behavior duration is to be reset
+    bhv->checkForDurationReset();
+
+    new_activity_state = bhv->isRunnable();
+
+    // Now that the new_activity_state is set, act appropriately for
+    // each behavior.
+    if(new_activity_state == "completed")
+      bhv->onCompleteState();
+
+    if(new_activity_state == "idle") {
+      bhv->postFlags("idleflags");
+      bhv->postFlags("inactiveflags");
+      if((old_activity_state == "running") ||
+	 (old_activity_state == "active"))
+	bhv->onRunToIdleState();
+      bhv->onIdleState();
+      bhv->updateStateDurations("idle");
+    }
+    
+    if(new_activity_state == "running") {
+      bhv->postDurationStatus();
+      bhv->postFlags("runflags");
+      if(old_activity_state == "idle") 
+	bhv->onIdleToRunState();
+      ipf = bhv->onRunState();
+      if(ipf && !ipf->freeOfNan()) {
+	bhv->postEMessage("NaN detected in IvP Function");
+	delete(ipf);
+	ipf = 0;
+      }
+      if(ipf) {
+	pwt = ipf->getPWT();
+	pcs = ipf->getPDMap()->size();
+	if(pwt <= 0) {
+	  delete(ipf);
+	  ipf = 0;
+	  pcs = 0;
+	}
+      }
+      if(ipf && m_report_ipf) {
+	string desc_str = bhv->getDescriptor();
+	string iter_str = uintToString(iteration);
+	string ctxt_str = iter_str + ":" + desc_str;
+	ipf->setContextStr(ctxt_str);
+	string ipf_str = IvPFunctionToString(ipf);
+	bhv->postMessage("BHV_IPF", ipf_str);
+      }
+      if(ipf) {
+	new_activity_state = "active";
+	bhv->postFlags("activeflags");
+	bhv->statusInfoAdd("pwt", doubleToString(pwt));
+	bhv->statusInfoAdd("pcs", intToString(pcs));
+      }
+      else
+	bhv->postFlags("inactiveflags");
+      bhv->updateStateDurations("running");
+    }
+    bhv->statusInfoAdd("state", new_activity_state);
+    bhv->statusInfoPost();
+
+    // If this represents a change in states from the previous
+    // iteration, note the time at which the state changed.
+    if(old_activity_state != new_activity_state)
+      m_bhv_entry[ix].setStateTimeEntered(m_curr_time);
+    
+    m_bhv_entry[ix].setState(new_activity_state);
+    double state_time_entered = m_bhv_entry[ix].getStateTimeEntered();
+    double elapsed = (m_curr_time - state_time_entered);
+    m_bhv_entry[ix].setStateTimeElapsed(elapsed);
+  }
+  return(ipf);
+}
+
+//------------------------------------------------------------
+// Procedure: stateOK
+
+bool BehaviorSet::stateOK(unsigned int ix)
+{
+  if(ix < m_bhv_entry.size())
+    return(m_bhv_entry[ix].getBehavior()->stateOK());
+  else
+    return(false);
+}
+
+//------------------------------------------------------------
+// Procedure: resetStateOK
+
+void BehaviorSet::resetStateOK()
+{
+  unsigned int i, vsize = m_bhv_entry.size();
+  for(i=0; i<vsize; i++) 
+    m_bhv_entry[i].getBehavior()->resetStateOK();
+}
+
+
+//------------------------------------------------------------
+// Procedure: removeCompletedBehaviors
+
+unsigned int BehaviorSet::removeCompletedBehaviors()
+{
+  if(!m_completed_pending)
+    return(0);
+
+  unsigned int i, vsize = m_bhv_entry.size();
+  unsigned int completed_count = 0;
+
+  vector<BehaviorSetEntry> new_bhv_entry;
+  new_bhv_entry.reserve(vsize);
+
+  for(i=0; i<vsize; i++) {
+    if(m_bhv_entry[i].getState() != "completed")
+      new_bhv_entry.push_back(m_bhv_entry[i]);
+    else {
+      LifeEvent life_event;
+      life_event.setBehaviorName(m_bhv_entry[i].getBehaviorName());
+      life_event.setBehaviorType(m_bhv_entry[i].getBehaviorType());
+      life_event.setSpawnString("");
+      life_event.setEventType("death");
+      m_life_events.push_back(life_event);
+
+      m_bhv_names.erase(m_bhv_entry[i].getBehaviorName());
+      m_bhv_entry[i].deleteBehavior();   // Actual deletion of IvP behavior
+      completed_count++;
+    }
+  }
+  
+  m_bhv_entry.clear();
+  m_bhv_entry = new_bhv_entry;
+
+  m_completed_pending = false;
+  return(completed_count);
+}
+
+//------------------------------------------------------------
+// Procedure: getBehavior
+
+IvPBehavior* BehaviorSet::getBehavior(unsigned int ix)
+{
+  if(ix < m_bhv_entry.size())
+    return(m_bhv_entry[ix].getBehavior());
+  return(0);
+}
+
+//------------------------------------------------------------
+// Procedure: getDescriptor
+
+string BehaviorSet::getDescriptor(unsigned int ix)
+{
+  if(ix < m_bhv_entry.size())
+    return(m_bhv_entry[ix].getBehaviorName());
+  return("");
+}
+
+//------------------------------------------------------------
+// Procedure: getStateElapsed
+
+double BehaviorSet::getStateElapsed(unsigned int ix)
+{
+  if(ix < m_bhv_entry.size())
+    return(m_bhv_entry[ix].getStateTimeElapsed());
+  else
+    return(-1);
+}
+
+//------------------------------------------------------------
+// Procedure: getUpdateSummary()
+
+string BehaviorSet::getUpdateSummary(unsigned int ix)
+{
+  if(ix < m_bhv_entry.size())
+    return(m_bhv_entry[ix].getBehavior()->getUpdateSummary());
+  else
+    return("err");
+}
+
+//------------------------------------------------------------
+// Procedure: getFilterLevel
+
+int BehaviorSet::getFilterLevel(unsigned int ix)
+{
+  if(ix < m_bhv_entry.size())
+    return(m_bhv_entry[ix].getBehavior()->getFilterLevel());
+  else
+    return(0);
+}
+
+//------------------------------------------------------------
+// Procedure: filterBehaviorsPresent
+
+bool BehaviorSet::filterBehaviorsPresent()
+{
+  unsigned int ix, vsize = m_bhv_entry.size();
+  for(ix=0; ix<vsize; ix++) 
+    if(m_bhv_entry[ix].getBehavior()->getFilterLevel() != 0)
+      return(true);
+  return(false);
+}
+
+//------------------------------------------------------------
+// Procedure: getMessages
+
+vector<VarDataPair> BehaviorSet::getMessages(unsigned int ix)
+{
+  vector<VarDataPair> mvector;
+  if(ix < m_bhv_entry.size()) {
+    mvector = m_bhv_entry[ix].getBehavior()->getMessages();
+    m_bhv_entry[ix].getBehavior()->clearMessages();
+  }
+  return(mvector);
+}
+
+//------------------------------------------------------------
+// Procedure: getInfoVars
+
+vector<string> BehaviorSet::getInfoVars()
+{
+  vector<string> rvector;
+  unsigned int i, vsize = m_bhv_entry.size();
+  for(i=0; i<vsize; i++) {
+    vector<string> jvector = m_bhv_entry[i].getBehavior()->getInfoVars();
+    unsigned j, jsize = jvector.size();
+    for(j=0; j<jsize; j++)
+      rvector.push_back(jvector[j]);
+  }
+
+  vector<string> mvector = m_mode_set.getConditionVars();
+
+  rvector = mergeVectors(rvector, mvector);
+
+  rvector = removeDuplicates(rvector);
+  
+  return(rvector);
+}
+
+//------------------------------------------------------------
+// Procedure: getNewInfoVars
+
+vector<string> BehaviorSet::getNewInfoVars()
+{
+  vector<string> rvector;
+
+  vector<string> cvector = getInfoVars();
+  unsigned int i, csize = cvector.size();
+
+  for(i=0; i<csize; i++) {
+    if(!m_prev_info_vars.count(cvector[i])) {
+      rvector.push_back(cvector[i]);
+      m_prev_info_vars.insert(cvector[i]);
+    }
+  }
+
+  return(rvector);
+}
+
+//------------------------------------------------------------
+// Procedure: getSpecUpdateVars()
+
+vector<string> BehaviorSet::getSpecUpdateVars()
+{
+  vector<string> rvector;
+  unsigned int i, vsize = m_behavior_specs.size();
+  for(i=0; i<vsize; i++) {
+    string templating = m_behavior_specs[i].getTemplatingType();
+    string updates_var = m_behavior_specs[i].getUpdatesVar();
+    if((templating != "disallowed") && (updates_var != ""))
+      rvector.push_back(updates_var);
+  }
+  return(rvector);
+
+}
+
+
+
+//------------------------------------------------------------
+// Procedure: updateStateSpaceVars()
+//      Note: Since duplicates are checked for here, and this is
+//            the only place where the state_space_vars vector
+//            is updated, we know there are no duplicates here.
+//      Note: Returns true only if a new variable has been detected
+//            in any of the instantiated behaviors.
+
+bool BehaviorSet::updateStateSpaceVars()
+{
+  unsigned int old_size = m_state_space_vars.size();
+
+  unsigned int i, vsize = m_bhv_entry.size();
+  for(i=0; i<vsize; i++) {
+    if(m_bhv_entry[i].getBehavior() != 0) {
+      vector<string> ivars = m_bhv_entry[i].getBehavior()->getStateSpaceVars();
+      unsigned int k, isize = ivars.size();
+      for(k=0; k<isize; k++)
+	m_state_space_vars.insert(ivars[k]);
+    }
+  }
+
+  unsigned int new_size = m_state_space_vars.size();
+  return(new_size > old_size);
+}
+
+//------------------------------------------------------------
+// Procedure: getStateSpaceVars()
+
+string BehaviorSet::getStateSpaceVars()
+{
+  string return_str;
+
+  set<string>::iterator p;
+  for(p=m_state_space_vars.begin(); p!=m_state_space_vars.end(); p++) {
+    string str = *p;
+    if(return_str != "")
+      return_str += ",";
+    return_str += str;
+  }
+  return(return_str);
+}
+
+//------------------------------------------------------------
+// Procedure: print
+
+void BehaviorSet::print()
+{
+  unsigned int i, vsize = m_bhv_entry.size();
+
+  cout << "BehaviorSet::print() " << endl;
+  for(i=0; i<vsize; i++) {
+    cout << "Behavior[" << i << "]: " << endl;
+    
+    IvPBehavior *bhv = m_bhv_entry[i].getBehavior();
+
+    cout << "Behavior descriptor: " << bhv->getDescriptor() << endl;
+    cout << " priority weight: " << bhv->m_priority_wt << endl;
+    cout << " BuildInfo: " << endl;
+    cout << bhv->m_build_info << endl;
+    cout << "-------" << endl;
+  }
+}

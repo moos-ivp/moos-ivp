@@ -1,0 +1,29 @@
+// MOOS file
+
+ServerHost = localhost
+ServerPort = 9000
+
+ProcessConfig = TermCommand
+{
+  AppTick   = 4
+  CommsTick = 4
+
+
+  CMD  =  1,  DEPLOY,               false
+  CMD  =  2,  DEPLOY,               false
+  CMD  =  3,  MOOS_MANUAL_OVERIDE,  true
+  CMD  =  4,  MOOS_MANUAL_OVERIDE,  false
+  CMD  =  5,  STATION_KEEP,         true
+  CMD  =  6,  STATION_KEEP,         false
+  CMD  =  7,  RETURN,               true
+  CMD  =  8,  RETURN,               false
+
+  CMD  =  px, PERMUTATIONS,         false
+  CMD  =  pg, PERMUTATIONS,         true
+  CMD  =  pr, LOITER_REMAP,         true
+
+  CMD  =  hv, HELM_VERBOSE,         verbose
+  CMD  =  ht, HELM_VERBOSE,         terse
+  CMD  =  hq, HELM_VERBOSE,         quiet
+}
+
