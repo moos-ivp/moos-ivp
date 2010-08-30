@@ -28,7 +28,7 @@ set MODE = LOITERING {
 
 set MODE = RETURNING {
   MODE = ACTIVE
-  SURVEY != true
+  RETURN = true
 } SURVEYING
 
 
@@ -92,8 +92,7 @@ Behavior = BHV_ConstantDepth
   pwt       = 100
   duration  = no-time-limit
   condition = MODE==ACTIVE
-  condition = (MODE == LOITERING) or (MODE == SURVEYING)
-  // condition = MODE==ACTIVE
+  //condition = (MODE == LOITERING) or (MODE == SURVEYING)
 
       depth = 15
 }
