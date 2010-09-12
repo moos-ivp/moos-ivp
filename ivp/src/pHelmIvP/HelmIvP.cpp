@@ -199,7 +199,7 @@ bool HelmIvP::Iterate()
   postCharStatus();
   
   if(m_init_vars_ready && !m_init_vars_done)
-    postInitialVariables();
+    handleInitialVarsPhase2();
 
   // If the curr_time is not set in the OnNewMail function (possibly 
   // because there was no mail in the queue), set the current time now.
@@ -495,11 +495,53 @@ void HelmIvP::postModeMessages()
 }
 
 //------------------------------------------------------------
-// Procedure: postIntialVariables()
-//      Note: (a) posts the var-data pairs to the MOOSDB, and 
-//            (b) It does write to the helm's info_buffer. 
+// Procedure: handleInitialVarsPhase1()
 
-void HelmIvP::postInitialVariables()
+void HelmIvP::handleInitialVarsPhase1()
+{
+  if(!m_bhv_set) 
+    return;
+
+  vector<VarDataPair> mvector = m_bhv_set->getInitialVariables();
+  unsigned int j, msize = mvector.size();
+  for(j=0; j<msize; j++) {
+    VarDataPair msg = mvector[j];
+
+    string var   = stripBlankEnds(msg.get_var());
+    string sdata = stripBlankEnds(msg.get_sdata());
+    double ddata = msg.get_ddata();
+    string key   = tolower(msg.get_key());
+    // key should be set to either "post" or "defer"
+
+    if(!strContainsWhite(var)) {
+      // If this is an init with deferment, just register.
+      if(key == "defer")
+	registerSingleVariable(var);
+      // If this is an init with overwrite, post and update the 
+      // info_buffer now.
+      if(key == "post") {
+	if(sdata != "") {
+	  m_info_buffer->setValue(var, sdata);
+	  m_Comms.Notify(var, sdata, "HELM_VAR_INIT");
+	}
+	else {
+	  m_info_buffer->setValue(var, ddata);
+	  m_Comms.Notify(var, ddata, "HELM_VAR_INIT");
+	}
+      }
+    }
+
+  }
+  registerSingleVariable("IVPHELM_ENGAGED");
+}
+
+//------------------------------------------------------------
+// Procedure: handleInitialVarsPhase2()
+//     Notes: Handles only initial variables that use deferment.
+//            e.g. initialize_  FOO = "bar"
+//            All other initialize lines were handled in phase1.
+
+void HelmIvP::handleInitialVarsPhase2()
 {
   if(!m_bhv_set) 
     return;
@@ -517,7 +559,7 @@ void HelmIvP::postInitialVariables()
     string key   = tolower(msg.get_key());
     // key should be set to either "post" or "defer"
 
-    if(!m_info_buffer->isKnown(var) || (key == "post")) {
+    if((key == "defer") && !m_info_buffer->isKnown(var)) {
       if(sdata != "") {
 	m_info_buffer->setValue(var, sdata);
 	m_Comms.Notify(var, sdata, "HELM_VAR_INIT");
@@ -528,25 +570,6 @@ void HelmIvP::postInitialVariables()
       }
     }
   }
-}
-
-//------------------------------------------------------------
-// Procedure: registerIntialVariables()
-
-void HelmIvP::registerInitialVariables()
-{
-  if(!m_bhv_set) 
-    return;
-
-  vector<VarDataPair> mvector = m_bhv_set->getInitialVariables();
-  unsigned int j, msize = mvector.size();
-  for(j=0; j<msize; j++) {
-    VarDataPair msg = mvector[j];
-    string var   = stripBlankEnds(msg.get_var());
-    if(!strContainsWhite(var))
-      registerSingleVariable(var);
-  }
-  registerSingleVariable("IVPHELM_ENGAGED");
 }
 
 //------------------------------------------------------------
@@ -852,7 +875,7 @@ bool HelmIvP::OnStartUp()
   
   string mode_set_string_description = m_bhv_set->getModeSetDefinition();
 
-  registerInitialVariables();
+  handleInitialVarsPhase1();
   registerVariables();
   requestBehaviorLogging();
 

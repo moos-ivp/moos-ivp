@@ -54,8 +54,8 @@ protected:
   void postLifeEvents();
   void postModeMessages();
   void postDefaultVariables();
-  void postInitialVariables();
-  void registerInitialVariables();
+  void handleInitialVarsPhase1();
+  void handleInitialVarsPhase2();
   void registerVariables();
   void registerSingleVariable(std::string var, double freq=0.0);
   void registerNewVariables();
