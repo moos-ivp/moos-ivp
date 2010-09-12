@@ -5,7 +5,6 @@
 
 SET(SRC
    HelmEngine.cpp
-   HelmEngineBeta.cpp
    HelmReport.cpp
    ModeSet.cpp
    ModeEntry.cpp
@@ -21,7 +20,6 @@ SET(SRC
 SET(HEADERS
   AVD_Table.h
   BehaviorFactory.h
-  HelmEngineBeta.h
   HelmEngine.h
   HelmReport.h
   ModeEntry.h

@@ -54,7 +54,7 @@ public:
   InfoBuffer()  {m_curr_time_utc=0;};
   ~InfoBuffer() {};
 
-public: // virtuals defined
+public:
   std::string sQuery(std::string, bool&) const;
 
   double dQuery(std::string, bool&) const;
@@ -64,13 +64,13 @@ public: // virtuals defined
   
   std::vector<double> dQueryDeltas(std::string, bool&) const;
 
+  bool   isKnown(std::string);
   void   print() const;
 
 public:
-  bool  setValue(std::string, double);
-  bool  setValue(std::string, std::string);
-  void  clearDeltaVectors();
-
+  bool   setValue(std::string, double);
+  bool   setValue(std::string, std::string);
+  void   clearDeltaVectors();
   void   setCurrTime(double t)         {m_curr_time_utc = t;};
   double getCurrTime() const           {return(m_curr_time_utc);};
 

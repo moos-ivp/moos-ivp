@@ -31,7 +31,6 @@
 #include "IvPDomain.h"
 #include "BehaviorSet.h"
 #include "HelmEngine.h"
-#include "HelmEngineBeta.h"
 
 class HelmIvP : public CMOOSApp
 {
@@ -54,9 +53,11 @@ protected:
   void postBehaviorMessages();
   void postLifeEvents();
   void postModeMessages();
-  void postInitialVariables();
   void postDefaultVariables();
+  void postInitialVariables();
+  void registerInitialVariables();
   void registerVariables();
+  void registerSingleVariable(std::string var, double freq=0.0);
   void registerNewVariables();
   void requestBehaviorLogging();
 
@@ -80,6 +81,9 @@ protected:
   std::string   m_verbose;
   double        m_last_heartbeat;
 
+  bool          m_init_vars_ready;
+  bool          m_init_vars_done;
+
   // The refresh vars handle the occasional clearing of the m_outgoing
   // maps. These maps will be cleared when MOOS mail is received for the
   // variable given by m_refresh_var. The user can set minimum interval
@@ -92,16 +96,14 @@ protected:
   double        m_refresh_time;
   double        m_refresh_interval;
   
-  int           m_iteration;
+  unsigned int  m_helm_iteration;
+  unsigned int  m_warning_count;
   double        m_ok_skew;
-  bool          m_skews_matter;
-  int           m_warning_count;
   double        m_curr_time;
   double        m_start_time;
+  bool          m_skews_matter;
 
-  bool          m_use_beta_engine;
   HelmEngine*   m_hengine;
-  HelmEngineBeta* m_hengine_beta;
   std::string   m_ownship;
   std::vector<std::string> m_node_report_vars;
 

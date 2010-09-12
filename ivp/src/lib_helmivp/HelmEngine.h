@@ -1,8 +1,9 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin and John Leonard                    */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
-/*    FILE: HelmEngine.h                                         */
-/*    DATE: Mar 24th, 2005                                       */
+/*    FILE: HelmEngine.h     (formerly HelmEngineBeta)           */
+/*    DATE: July 29th, 2009                                      */
+/*    DATE: Mar 24th, 2005 (based on an older implementation)    */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
 /* modify it under the terms of the GNU General Public License   */
@@ -26,23 +27,45 @@
 #include <vector>
 #include "IvPDomain.h"
 #include "HelmReport.h"
+#include "MBTimer.h"
 
+class InfoBuffer;
 class IvPFunction;
+class IvPProblem;
 class BehaviorSet;
 class HelmEngine {
 public:
-  HelmEngine(IvPDomain);
-  ~HelmEngine() {};
+  HelmEngine(IvPDomain, InfoBuffer*);
+  ~HelmEngine();
 
   HelmReport determineNextDecision(BehaviorSet *bset, double curr_time);
 
 protected:
   bool   checkOFDomains(std::vector<IvPFunction*>);
 
+  bool   part1_PreliminaryBehaviorSetHandling();
+  bool   part2_GetFunctionsFromBehaviorSet(int filter_level);
+  bool   part3_VerifyFunctionDomains();
+  bool   part4_BuildAndSolveIvPProblem(std::string phase="direct");
+  bool   part6_FinishHelmReport();
+
 protected:
   IvPDomain  m_ivp_domain;
   IvPDomain  m_sub_domain;
-  int        m_iteration;
+
+  // Intermediate structures while determining next decision
+  unsigned int m_iteration;
+  HelmReport   m_helm_report;
+  BehaviorSet *m_bhv_set;
+  double       m_curr_time;
+  IvPProblem  *m_ivp_problem;
+  InfoBuffer  *m_info_buffer;
+
+  std::vector<IvPFunction*> m_ivp_functions;
+
+  MBTimer  m_create_timer;
+  MBTimer  m_ipf_timer;
+  MBTimer  m_solve_timer;
 };
 
 #endif

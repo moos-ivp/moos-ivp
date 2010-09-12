@@ -142,12 +142,19 @@ vector<double> InfoBuffer::dQueryDeltas(string var, bool& result) const
 }
 
 //-----------------------------------------------------------
-// Procedure: clearDeltaVectors
-
-void InfoBuffer::clearDeltaVectors()
+// Procedure: isKnown
+//   Purpose: Check whether the given variable was ever posted
+//            to the info buffer. Regardless of whether it was
+//            posted as a string or a double, it is registered
+//            in the mapping from varname to timestamp.
+              
+bool InfoBuffer::isKnown(string varname)
 {
-  vsmap.clear();
-  vdmap.clear();
+  map<string, double>::iterator p=tmap.find(varname);
+  if(p != tmap.end())
+    return(true);
+
+  return(false);
 }
 
 //-----------------------------------------------------------
@@ -176,6 +183,15 @@ bool InfoBuffer::setValue(string var, string val)
   vsmap[var].push_back(val);
 
   return(true);
+}
+
+//-----------------------------------------------------------
+// Procedure: clearDeltaVectors
+
+void InfoBuffer::clearDeltaVectors()
+{
+  vsmap.clear();
+  vdmap.clear();
 }
 
 //-----------------------------------------------------------

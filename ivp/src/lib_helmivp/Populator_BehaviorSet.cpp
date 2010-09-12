@@ -245,7 +245,8 @@ bool Populator_BehaviorSet::handleLine(string line,
   // symbol such as "set", if it were alone on a line, might actually
   // be something picked up by one of the ish_modes.
   if((m_parse_mode == "top") || (ish_mode == true)) {
-    if(!strncasecmp("initialize ", line.c_str(), 11)) {
+    if((!strncasecmp("initialize ", line.c_str(), 11)) ||
+       (!strncasecmp("initialize_ ", line.c_str(), 12))) {
       if(m_parse_mode == "set-defined-ish")
 	closeSetMode();
       m_parse_mode = "top";
@@ -260,6 +261,10 @@ bool Populator_BehaviorSet::handleLine(string line,
 	if((left=="") || strContainsWhite(left) || (right==""))
 	  return(false);
 	VarDataPair msg(left, right, "auto");
+	if(init_str == "initialize_")
+	  msg.set_key("defer");
+	else
+	  msg.set_key("post");
 	initial_vars.push_back(msg);
       }
       return(true);
