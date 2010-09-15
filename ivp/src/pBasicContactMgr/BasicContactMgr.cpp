@@ -302,6 +302,12 @@ bool BasicContactMgr::handleNodeReport(const string& report)
       length = atof(value.c_str());
   }
 
+  // If incoming node name matches ownship, just ignore the node report
+  // but don't return false which would indicate an error.
+  if(vname == m_ownship) {
+    return(true);
+  }
+
   // Find out if the node report corresponds to a contact already
   // in the records
   unsigned int j, jsize = m_records.size();
@@ -344,7 +350,6 @@ bool BasicContactMgr::handleNodeReport(const string& report)
 
 bool BasicContactMgr::handleResolved(string resolution)
 {
-  cout << "In handleResolved()" << endl;
   string vehicle = stripBlankEnds(biteString(resolution, ','));
   string alertid = stripBlankEnds(resolution);
 
