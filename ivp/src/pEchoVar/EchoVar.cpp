@@ -28,41 +28,52 @@
 using namespace std;
 
 //-----------------------------------------------------------------
+// Constructor
+
+EchoVar::EchoVar()
+{
+  m_iteration   = 0;
+  m_conditions_met = true;
+  m_hold_messages_during_pause = true;
+}
+
+//-----------------------------------------------------------------
 // Procedure: OnNewMail
 
 bool EchoVar::OnNewMail(MOOSMSG_LIST &NewMail)
 {
-  unsigned int i, vsize = m_var_source.size();
-  unsigned int j, fsize = m_eflippers.size();
+  // First go through the mail and determine if the current crop
+  // of mail affects the LogicBuffer.
+  if(m_logic_buffer.size() > 0) {
+    MOOSMSG_LIST::iterator p;
+    for(p=NewMail.begin(); p!=NewMail.end(); p++) {
+      CMOOSMsg &msg = *p;
+      
+      string key   = msg.m_sKey;
+      string sdata = msg.m_sVal;
+      double ddata = msg.m_dfVal;
+      char   mtype = msg.m_cDataType;
+      
+      if(mtype == MOOS_DOUBLE)
+	m_logic_buffer.updateInfoBuffer(key, ddata);
+      else if(mtype == MOOS_STRING)
+	m_logic_buffer.updateInfoBuffer(key, sdata);
+    }
+  }
+
+  // If the logic conditions are not satisfied, ignore the rest of 
+  // the mail.
+  m_conditions_met = m_logic_buffer.checkConditions();
+
+  if((!m_conditions_met)  && !m_hold_messages_during_pause)
+    return(true);
 
   MOOSMSG_LIST::iterator p;
   for(p=NewMail.begin(); p!=NewMail.end(); p++) {
     CMOOSMsg &msg = *p;
-
-    string key   = msg.m_sKey;
-    string sdata = msg.m_sVal;
-    double ddata = msg.m_dfVal;
-    char   mtype = msg.m_cDataType;
-
-    for(i=0; i<vsize; i++) {
-      if(key == m_var_source[i]) {
-	string new_key = m_var_target[i];
-	if(mtype == MOOS_DOUBLE)
-	  m_Comms.Notify(new_key, ddata);
-	else if(mtype == MOOS_STRING)
-	  m_Comms.Notify(new_key, sdata);
-      }
-    }
-
-    for(j=0; j<fsize; j++) {
-      if(key == m_eflippers[j].getSourceVar()) {
-	string flip_result = m_eflippers[j].flip(sdata);
-	if(flip_result != "")
-	  m_Comms.Notify(m_eflippers[j].getDestVar(), flip_result);
-      }
-    }
-
+    holdMessage(msg);
   }
+
   return(true);
 }
 
@@ -82,8 +93,11 @@ bool EchoVar::OnConnectToServer()
 
 bool EchoVar::Iterate()
 {
-  iteration++;
-  m_Comms.Notify("ECHO_ITER", iteration);
+  m_iteration++;
+  m_Comms.Notify("ECHO_ITER", m_iteration);
+
+  if(m_conditions_met)
+    releaseMessages();
   return(true);
 }
 
@@ -95,7 +109,7 @@ bool EchoVar::Iterate()
 bool EchoVar::OnStartUp()
 {
   CMOOSApp::OnStartUp();
-  MOOSTrace("pEchoVar starting....\n");
+  cout << "pEchoVar starting...." << endl;
 
   list<string> sParams;
   m_MissionReader.EnableVerbatimQuoting(false);
@@ -104,8 +118,9 @@ bool EchoVar::OnStartUp()
     list<string>::reverse_iterator p;
     for(p=sParams.rbegin(); p!=sParams.rend(); p++) {
       string original_line = *p;
-      string sLine  = stripBlankEnds(*p);
-      string sKey   = stripBlankEnds(MOOSChomp(sLine, "="));
+      string parse_line    = stripBlankEnds(*p);
+      string sKey  = tolower(stripBlankEnds(biteString(parse_line, '=')));
+      string sLine = stripBlankEnds(parse_line);
 
       cout << "sKey: [" << sKey << "]" << endl;
       cout << "  sLine: [" << sLine << "]" << endl;
@@ -114,7 +129,7 @@ bool EchoVar::OnStartUp()
       if(!strncmp(sKey.c_str(), "flip", 4)) {
 	bool ok = handleFlipEntry(sKey, sLine);
 	if(!ok) {
-	  cout << "Probem with " << original_line << endl;
+	  MOOSDebugWrite("Probem with " + original_line);
 	  return(false);
 	}
       }
@@ -127,13 +142,27 @@ bool EchoVar::OnStartUp()
 	string sRight = stripBlankEnds(svector[1]);
 	bool ok = addMapping(sLeft, sRight);
 	if(!ok) { 
-	  cout << "Probem with " << original_line << endl;
+	  MOOSDebugWrite("Probem with " + original_line);
+	  return(false);
+	}
+      }
+      else if(sKey == "condition") {
+	bool ok = m_logic_buffer.addNewCondition(sLine);
+	if(!ok) {
+	  MOOSDebugWrite("Bad pEchoVar Condition:[" + sLine + "]");
+	  return(false);
+	}
+      }
+      else if(sKey == "hold_messages") {
+	bool ok = setBooleanOnString(m_hold_messages_during_pause, sLine);
+	if(!ok) {
+	  MOOSDebugWrite("Bad Boolean expression:[" + sLine + "]");
 	  return(false);
 	}
       }
     }
   }
-
+  
   bool ok = noCycles();
   if(ok)
     MOOSTrace("No Cycles Detected - proceeding with startup.\n");
@@ -161,6 +190,13 @@ void EchoVar::registerVariables()
   
   for(unsigned int j=0; j<m_eflippers.size(); j++)
     m_Comms.Register(m_eflippers[j].getSourceVar(), 0);
+
+
+  // Register for all variables found in all conditions.
+  vector<string> all_vars = m_logic_buffer.getAllVars();
+  for(unsigned int i=0; i<all_vars.size(); i++)
+    m_Comms.Register(all_vars[i], 0);
+
 }
 
 //-----------------------------------------------------------------
@@ -171,12 +207,10 @@ bool EchoVar::addMapping(string src, string targ)
   if((src == "") || (targ == ""))
     return(false);
   
-  int  i;
-  
   bool new_pair = true;
   bool new_src  = true;
   
-  int vsize = m_var_source.size();
+  unsigned int i, vsize = m_var_source.size();
   for(i=0; i<vsize; i++) {
     if(m_var_source[i] == src) {
       new_src = false;
@@ -202,9 +236,8 @@ bool EchoVar::addMapping(string src, string targ)
 
 bool EchoVar::noCycles()
 {
-  int  i, j;
-  int  vsize    = m_unique_sources.size(); 
-  int  map_size = m_var_source.size();;
+  unsigned int  i, vsize    = m_unique_sources.size(); 
+  unsigned int  j, map_size = m_var_source.size();;
 
   vector<string> key_vector;
   vector<string> new_vector;
@@ -231,10 +264,8 @@ bool EchoVar::noCycles()
 
 vector<string> EchoVar::expand(vector<string> key_vector)
 {
-  unsigned int  i, j;
-  unsigned int  map_size = m_var_source.size();;
-
-  unsigned int vsize = key_vector.size();
+  unsigned int i, vsize = key_vector.size();
+  unsigned int j, map_size = m_var_source.size();;
   for(i=0; i<vsize; i++) {
     string key = key_vector[i];
     for(j=0; j<map_size; j++)
@@ -247,7 +278,6 @@ vector<string> EchoVar::expand(vector<string> key_vector)
     return(key_vector);
   else
     return(expand(key_vector));
-
 }
 
 //-----------------------------------------------------------------
@@ -261,13 +291,12 @@ bool EchoVar::handleFlipEntry(string sKey, string sLine)
     return(false);
   string tag = stripBlankEnds(svector[0]);
   string key = stripBlankEnds(svector[1]);
-  if(tolower(tag) != "flip") {
-    cout << "probhere" << endl;
+  if(tolower(tag) != "flip")
     return(false);
-  }
 
   // Determine the index of the given flipper reference
   int index = -1;
+
   unsigned int i, esize = m_eflippers.size();
   for(i=0; i<esize; i++) {
     if(key == m_eflippers[i].getKey())
@@ -330,4 +359,75 @@ bool EchoVar::handleFlipEntry(string sKey, string sLine)
   return(false);
 }
 
+
+//-----------------------------------------------------------------
+// Procedure: holdMessage
+//   Purpose: Hold a given message in a list ordered by time of
+//              receipt oldest to newest. 
+//            Prior to adding the new message to the end of the list,
+//              the list is scanned and if there is an older message
+//              matching the MOOS variable (key), then that message is
+//              removed from the list. 
+//            When the list is posted, only the most recent value of 
+//              each variable will be posted.
+//            This pruning of duplicate messages only applies when the
+//              logic conditions are not met.
+
+
+void EchoVar::holdMessage(CMOOSMsg msg)
+{
+  string key = msg.m_sKey;
+
+  if(!m_conditions_met) {
+    list<CMOOSMsg>::iterator p;
+    for(p=m_held_messages.begin(); p!=m_held_messages.end();) {
+      CMOOSMsg imsg = *p;
+      if(imsg.m_sKey == key)
+	p = m_held_messages.erase(p);
+      else
+	++p;
+    }
+  }
+  
+  m_held_messages.push_back(msg);
+
+}
+
+
+//-----------------------------------------------------------------
+// Procedure: releaseMessages
+
+void EchoVar::releaseMessages()
+{
+  list<CMOOSMsg>::iterator p;
+  for(p=m_held_messages.begin(); p!=m_held_messages.end(); p++) {
+    CMOOSMsg msg = *p;
+    
+    string key   = msg.m_sKey;
+    string sdata = msg.m_sVal;
+    double ddata = msg.m_dfVal;
+    char   mtype = msg.m_cDataType;
+    
+    unsigned int i, vsize = m_var_source.size();
+    for(i=0; i<vsize; i++) {
+      if(key == m_var_source[i]) {
+	string new_key = m_var_target[i];
+	if(mtype == MOOS_DOUBLE)
+	  m_Comms.Notify(new_key, ddata);
+	else if(mtype == MOOS_STRING)
+	  m_Comms.Notify(new_key, sdata);
+      }
+    }
+    
+    unsigned int j, fsize = m_eflippers.size();
+    for(j=0; j<fsize; j++) {
+      if(key == m_eflippers[j].getSourceVar()) {
+	string flip_result = m_eflippers[j].flip(sdata);
+	if(flip_result != "")
+	  m_Comms.Notify(m_eflippers[j].getDestVar(), flip_result);
+      }
+    }
+  }
+  m_held_messages.clear();
+}
 

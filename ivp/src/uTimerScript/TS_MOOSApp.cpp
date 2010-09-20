@@ -758,12 +758,11 @@ void TS_MOOSApp::seedRandom()
 bool TS_MOOSApp::updateInfoBuffer(CMOOSMsg &msg)
 {
   string key = msg.m_sKey;
-  string community = msg.m_sOriginatingCommunity;
   string sdata = msg.m_sVal;
   double ddata = msg.m_dfVal;
   char   mtype = msg.m_cDataType;
 
-   if(mtype == MOOS_DOUBLE) {
+  if(mtype == MOOS_DOUBLE) {
     return(m_info_buffer->setValue(key, ddata));
   }
   else if(mtype == MOOS_STRING) {

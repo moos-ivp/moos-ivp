@@ -32,7 +32,7 @@ using namespace std;
 //----------------------------------------------------------------
 // Constructor
 
-ParseNode::ParseNode(string raw_string)
+ParseNode::ParseNode(const string& raw_string)
 {
   m_raw_string = raw_string;
 
@@ -81,7 +81,7 @@ ParseNode* ParseNode::copy()
 //----------------------------------------------------------------
 // Procedure: recursiveGetVarNames()
 
-vector<string> ParseNode::recursiveGetVarNames()
+vector<string> ParseNode::recursiveGetVarNames() const
 {
   vector<string> rvector;
 
@@ -176,7 +176,7 @@ void ParseNode::recursiveClearVarVal()
 //----------------------------------------------------------------
 // Procedure: recursiveEvaluate()
 
-bool ParseNode::recursiveEvaluate()
+bool ParseNode::recursiveEvaluate() const
 {
   if(m_relation == "not") {
     if(!m_left_node)
@@ -368,7 +368,7 @@ bool ParseNode::recursiveParse(bool allow_double_equals)
 // Procedure: evaluate
 
 bool ParseNode::evaluate(const string& relation, 
-			 string left, string right)
+			 string left, string right) const
 {
   if(isQuoted(left))  left  = stripQuotes(left);
   if(isQuoted(right)) right = stripQuotes(right);
@@ -395,7 +395,7 @@ bool ParseNode::evaluate(const string& relation,
 // Procedure: evaluate
 
 bool ParseNode::evaluate(const string& relation, 
-			 double left, double right)
+			 double left, double right) const
 {
   if((relation == "=") || (relation == "=="))
     return(left == right);
@@ -417,7 +417,7 @@ bool ParseNode::evaluate(const string& relation,
 // Procedure: evaluate
 
 bool ParseNode::evaluate(const string& relation, 
-			 string left, double right)
+			 string left, double right) const
 {
   if(isQuoted(left))  
     left = stripQuotes(left);
@@ -433,7 +433,7 @@ bool ParseNode::evaluate(const string& relation,
 // Procedure: evaluate
 
 bool ParseNode::evaluate(const string& relation, 
-			 double left, string right)
+			 double left, string right) const
 {
   if(isQuoted(right))  
     right = stripQuotes(right);
@@ -448,7 +448,7 @@ bool ParseNode::evaluate(const string& relation,
 //----------------------------------------------------------------
 // Procedure: print()
 
-void ParseNode::print(string indent_str)
+void ParseNode::print(string indent_str) const
 {
   indent_str += "  ";
 

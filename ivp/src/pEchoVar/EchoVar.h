@@ -24,14 +24,16 @@
 #define TRANSLATOR_HEADER
 
 #include <vector>
+#include <list>
 #include <string>
 #include "MOOSLib.h"
 #include "EFlipper.h"
+#include "LogicBuffer.h"
 
 class EchoVar : public CMOOSApp
 {
 public:
-  EchoVar() {iteration=0;};
+  EchoVar();
   virtual ~EchoVar() {};
   
   bool OnNewMail(MOOSMSG_LIST &NewMail);
@@ -45,6 +47,9 @@ protected:
   bool noCycles();
   bool handleFlipEntry(std::string key, std::string line);
   
+  void holdMessage(CMOOSMsg);
+  void releaseMessages();
+
   std::vector<std::string> expand(std::vector<std::string> v);
 
 protected:
@@ -54,17 +59,13 @@ protected:
 
   std::vector<EFlipper>     m_eflippers;
 
-  int iteration;
+  unsigned int m_iteration;
+  LogicBuffer  m_logic_buffer;
+
+  std::list<CMOOSMsg> m_held_messages;
+
+  bool m_conditions_met;
+  bool m_hold_messages_during_pause;
 };
 
 #endif
-
-
-
-
-
-
-
-
-
-

@@ -25,6 +25,7 @@ TARGET_LINK_LIBRARIES(pEchoVar
   MOOS
   MOOSGen
   mbutil 
+  logic
   ${SYSTEM_LIBS})
 
 # Install Targets

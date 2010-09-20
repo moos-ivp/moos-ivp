@@ -1,3 +1,28 @@
+ServerHost = localhost
+ServerPort = 9000
+
+//------------------------------------------
+// Antler configuration  block
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+
+  Run = MOOSDB        @ NewConsole = false
+  Run = pEchoVar      @ NewConsole = true
+  Run = uXMS          @ NewConsole = true
+}
+
+
+//------------------------------------------
+// uXMS
+
+ProcessConfig = uXMS
+{
+  VAR = FOO
+  VAR = BAR
+  VAR = CHECK1, CHECK2
+}
+
 //------------------------------------------
 // pEchoVar configuration block
 
@@ -12,6 +37,8 @@ ProcessConfig = pEchoVar
   Echo    = MARINESIM_HEADING ->  NAV_HEADING
   Echo    = MARINESIM_SPEED   ->  NAV_SPEED
 
+  Echo    = FOO -> BAR
+
   FLIP:1    = source_variable  = MVIEWER_LCLICK
   FLIP:1    = dest_variable    = UP_LOITERA
   FLIP:1    = source_separator = ,
@@ -20,10 +47,8 @@ ProcessConfig = pEchoVar
   FLIP:1    = x -> xcenter_assign
   FLIP:1    = y -> xcenter_assign
 
+  condition = (CHECK1 = hello) or (CHECK2 < 10)
 
-  // MVIEWER_LCLICK = "x=56.0,y=-105,vname=alpha"
-
-  // UPDATES_LOITER_A = "xcenter_assign=56.0"
-  // UPDATES_LOITER_A = "ycenter_assign=-105"
+  hold_messages = false
 }
 

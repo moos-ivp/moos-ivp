@@ -73,7 +73,7 @@ const LogicCondition &LogicCondition::operator=(const LogicCondition &right)
 //----------------------------------------------------------------
 // Procedure: getVarNames()
 
-vector<string> LogicCondition::getVarNames()
+vector<string> LogicCondition::getVarNames() const
 {
   vector<string> rvector;
   
@@ -87,7 +87,7 @@ vector<string> LogicCondition::getVarNames()
 //----------------------------------------------------------------
 // Procedure: setCondition()
 
-bool LogicCondition::setCondition(string str)
+bool LogicCondition::setCondition(const string& str)
 {
   if(m_node)
     delete(m_node);
@@ -97,15 +97,18 @@ bool LogicCondition::setCondition(string str)
   bool ok_parse = m_node->recursiveParse(m_allow_dblequals);
   if(!ok_parse) {
     delete(m_node);
+    cout << "Bad Parse!!!" << endl;
     return(false);
   }
 
   bool ok_syntax = m_node->recursiveSyntaxCheck();
   if(!ok_syntax) {
     delete(m_node);
+    cout << "Bad Syntax!!!" << endl;
     return(false);
   }
 
+  cout << "Nice Condition!!" << endl;
   return(true);
 }
 
@@ -113,7 +116,7 @@ bool LogicCondition::setCondition(string str)
 //----------------------------------------------------------------
 // Procedure: eval
 
-bool LogicCondition::eval()
+bool LogicCondition::eval() const
 {
   if(m_node)
     return(m_node->recursiveEvaluate());

@@ -7,6 +7,7 @@ SET(SRC
   ConditionalParam.cpp
   LogicCondition.cpp
   LogicUtils.cpp
+  LogicBuffer.cpp
   ParseNode.cpp
   InfoBuffer.cpp
 )

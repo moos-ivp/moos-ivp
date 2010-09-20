@@ -28,35 +28,35 @@
 class ParseNode {
 
 public:
-  ParseNode(std::string raw_string);
+  ParseNode(const std::string& raw_string);
   virtual ~ParseNode();
 
   ParseNode* copy();
 
-  std::string getRawCondition() {return(m_raw_string);};
+  std::string getRawCondition() const {return(m_raw_string);};
 
-  std::vector<std::string> recursiveGetVarNames();
+  std::vector<std::string> recursiveGetVarNames() const;
 
   void recursiveSetVarVal(std::string, std::string);
   void recursiveSetVarVal(std::string, double);
   void recursiveClearVarVal();
   
-  bool recursiveEvaluate();
+  bool recursiveEvaluate() const;
 
   bool recursiveSyntaxCheck(int=0);
   bool recursiveParse(bool allow_dblequals=true);
 
-  void print(std::string s="");
+  void print(std::string s="") const;
 
 protected:
   bool evaluate(const std::string& relation, 
-		double left, double right);
+		double left, double right) const;
   bool evaluate(const std::string& relation, 
-		double left, std::string right);
+		double left, std::string right) const;
   bool evaluate(const std::string& relation, 
-		std::string left, double right);
+		std::string left, double right) const;
   bool evaluate(const std::string& relation, 
-		std::string left, std::string right);
+		std::string left, std::string right) const;
 
 protected:
   
@@ -72,12 +72,3 @@ protected:
   bool           m_double_set;  
 };
 #endif
-
-
-
-
-
-
-
-
-

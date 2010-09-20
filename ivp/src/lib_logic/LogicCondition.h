@@ -42,17 +42,17 @@ public:
   
   const LogicCondition &operator=(const LogicCondition&);
 
-  bool setCondition(std::string);
+  bool setCondition(const std::string&);
   void setAllowDoubleEquals(bool v) {m_allow_dblequals=v;};
 
-  std::string getRawCondition() {
+  std::string getRawCondition() const {
     if(m_node) 
       return(m_node->getRawCondition());
     else
       return("");
   };
   
-  std::vector<std::string> getVarNames();
+  std::vector<std::string> getVarNames() const;
   
   void clearVarVals()
     {if(m_node) m_node->recursiveClearVarVal();};
@@ -63,9 +63,9 @@ public:
   void setVarVal(std::string var, double val) 
     {if(m_node) m_node->recursiveSetVarVal(var,val);};
 
-  bool eval();
+  bool eval() const;
   
-  void print()
+  void print() const
     {if(m_node) m_node->print();};
 
 protected:
