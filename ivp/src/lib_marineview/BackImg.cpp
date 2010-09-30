@@ -23,7 +23,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
-#include <math.h>
+#include <cmath>
 #include <stdio.h>
 #include <stdlib.h>
 #include <tiffio.h>
@@ -56,19 +56,38 @@ using namespace std;
 BackImg::BackImg()
 {
   // Just initialize member vars. First is most important.
-  img_data     = 0;    
-  img_width    = 0;
-  img_height   = 0;    
-  img_theta    = 0;
-
-  // Below should be populated by an "info" file.
-  img_centx    = 0;
-  img_centy    = 0;
-  img_meters   = 0;
+  m_img_data       = 0;    
+  m_img_pix_width  = 0;
+  m_img_pix_height = 0;    
+  m_img_mtr_width  = 0;
+  m_img_mtr_height = 0;
   
+  // Boundary information from the .info file in the "old style"
+  m_img_centx    = 0;
+  m_img_centy    = 0;
+  m_img_meters_x = 0;
+  m_img_meters_y = 0;
+
+  // Boundary in formation from the .info file in the "new style"
+  m_lat_north = 0;
+  m_lat_south = 0;
+  m_lon_west  = 0;
+  m_lon_east  = 0;
+  m_boundary_set = false;
+
   // Below should be derived after info file is read in.
-  x_at_img_ctr = 0;
-  y_at_img_ctr = 0;
+  m_x_at_img_left  = 0;
+  m_x_at_img_right = 0;
+  m_y_at_img_top   = 0;
+  m_y_at_img_bottom = 0;
+  m_x_at_img_ctr = 0;
+  m_y_at_img_ctr = 0;
+
+  // datum information
+  m_datum_lat = 0;
+  m_datum_lon = 0;
+  m_datum_lat_set = false;
+  m_datum_lon_set = false;
 }
 
 // ----------------------------------------------------------
@@ -76,8 +95,8 @@ BackImg::BackImg()
 
 BackImg::~BackImg()
 {
-  if(img_data) _TIFFfree(img_data);
-  //if(img_data) delete [] img_data;
+  if(m_img_data)
+    _TIFFfree(m_img_data);
 }
 
 // ----------------------------------------------------------
@@ -86,12 +105,12 @@ BackImg::~BackImg()
 
 double BackImg::pixToPctX(double pix)
 {
-  return((double)(pix) / (double)(img_width));
+  return((double)(pix) / (double)(m_img_pix_width));
 }
 
 double BackImg::pixToPctY(double pix)
 {
-  return((double)(pix) / (double)(img_height));
+  return((double)(pix) / (double)(m_img_pix_height));
 }
 
 // ----------------------------------------------------------
@@ -101,22 +120,15 @@ double BackImg::pixToPctY(double pix)
 bool BackImg::readTiff(string filename)
 {
   filename = stripBlankEnds(filename);
-  if(filename == "") {
-    readBlankTiff();
+  if(filename == "")
     return(false);
-  }
 
   string info_file = findReplace(filename, ".tif", ".info");
 
   bool ok1 = readTiffData(filename);  
   bool ok2 = readTiffInfo(info_file);
 
-  if(ok1 && ok2)
-    return(true);
-  else {
-    readBlankTiff();
-    return(false);
-  }
+  return(ok1 && ok2);
 }
 
 
@@ -127,10 +139,11 @@ bool BackImg::readTiff(string filename)
 
 bool BackImg::readTiffData(string filename)
 {
-  //if(img_data) delete [] img_data;
-  if(img_data) _TIFFfree(img_data);
-  img_height = 0;
-  img_width  = 0;
+  if(m_img_data) 
+    _TIFFfree(m_img_data);
+
+  m_img_pix_height = 0;
+  m_img_pix_width  = 0;
 
   string file = filename;
 
@@ -176,14 +189,14 @@ bool BackImg::readTiffData(string filename)
     TIFFGetField(tiff, TIFFTAG_IMAGELENGTH, &h);
     
     // in case my data structures are different
-    img_width  = w;
-    img_height = h;
+    m_img_pix_width  = w;
+    m_img_pix_height = h;
     
     npixels = w * h;
     raster = (uint32*) _TIFFmalloc(npixels * sizeof (uint32));
     if (raster != NULL) {
       if (TIFFReadRGBAImage(tiff, w, h, raster, 0)) {
-	img_data = (unsigned char*) raster;
+	m_img_data = (unsigned char*) raster;
       } 
       else {
 	rval=false;
@@ -220,8 +233,7 @@ bool BackImg::readTiffInfo(string filename)
   //cout << "Attempting to open: " << file << endl;
 
   vector<string> buffer = fileBuffer(file);
-  //vector<string> buffer;
-  int vsize = buffer.size();
+  unsigned int i, vsize = buffer.size();
 
   if(vsize == 0) {
     //cout << file << " contains zero lines" << endl;
@@ -232,17 +244,12 @@ bool BackImg::readTiffInfo(string filename)
   bool img_centy_set = false;
   bool img_meters_set = false;
 
-  double lat_north, lat_south, lon_west, lon_east;
-  double datum_lat, datum_lon;
-
   bool   lat_north_set  = false;
   bool   lat_south_set  = false;
   bool   lon_west_set   = false;
   bool   lon_east_set   = false;
-  bool   datum_lat_set  = false;
-  bool   datum_lon_set  = false;
 
-  for(int i=0; i<vsize; i++) {
+  for(i=0; i<vsize; i++) {
     string line = stripComment(buffer[i], "//");
     line = stripBlankEnds(line);
 
@@ -254,125 +261,149 @@ bool BackImg::readTiffInfo(string filename)
       string right = stripBlankEnds(svector[1]);
       
       if((left == "img_centx") && (isNumber(right))) {
-	img_centx = atof(right.c_str());
+	m_img_centx = atof(right.c_str());
 	img_centx_set = true;
       }
       else if((left == "img_centy") && (isNumber(right))) {
-	img_centy = atof(right.c_str());
+	m_img_centy = atof(right.c_str());
 	img_centy_set = true;
       }
       else if((left == "img_meters") && (isNumber(right))) {
-	img_meters = atof(right.c_str());
+	m_img_meters_x = atof(right.c_str());
+	m_img_meters_y = atof(right.c_str());
 	img_meters_set = true;
       }
 
       //--------------------------------------------------
       else if((left == "lat_north") && (isNumber(right))) {
-	lat_north = atof(right.c_str());
+	m_lat_north = atof(right.c_str());
 	lat_north_set = true;
       }
       else if((left == "lat_south") && (isNumber(right))) {
-	lat_south = atof(right.c_str());
+	m_lat_south = atof(right.c_str());
 	lat_south_set = true;
       }
       else if((left == "lon_west") && (isNumber(right))) {
-	lon_west = atof(right.c_str());
+	m_lon_west = atof(right.c_str());
 	lon_west_set = true;
       }
       else if((left == "lon_east") && (isNumber(right))) {
-	lon_east = atof(right.c_str());
+	m_lon_east = atof(right.c_str());
 	lon_east_set = true;
       }
       else if((left == "datum_lat") && (isNumber(right))) {
-	datum_lat = atof(right.c_str());
-	datum_lat_set = true;
+	m_datum_lat = atof(right.c_str());
+	m_datum_lat_set = true;
       }
       else if((left == "datum_lon") && (isNumber(right))) {
-	datum_lon = atof(right.c_str());
-	datum_lon_set = true;
+	m_datum_lon = atof(right.c_str());
+	m_datum_lon_set = true;
       }
       else
 	return(false);
     }
   }
-  
+
   // Must provide the essential info in one of the two allowable
   // forms. Either with the six lat/lon/datum values or with the
   // three image values.
-  if((!img_centx_set || !img_centy_set || !img_meters_set) && 
-     (!lat_north_set || !lat_south_set || !lon_west_set ||
-      !lon_east_set  || !datum_lat_set || !datum_lon_set))
-    return(false);
 
-  // If info *not* in the image-values format, derive from the 
-  // lat/lon info.
-  if(!img_centx_set || !img_centy_set || !img_meters_set) {
-    if((lat_north <= lat_south) || (lon_east <= lon_west)) {
+  bool style_old = false;
+  bool style_new = false;
+
+  if(img_centx_set && img_centy_set && img_meters_set)
+    style_old = true;
+  if(lat_north_set && lat_south_set && lon_west_set && lon_east_set)
+    style_new = true;
+
+  if(!style_old && !style_new)
+    return(false);
+  
+  if(style_new) {
+    m_boundary_set = true;
+    if((m_lat_north <= m_lat_south) || (m_lon_east <= m_lon_west)) {
       cout << "Problem with BackImg Lat/Lon specs. " << endl;
-      cout << "lat_north: " << lat_north << endl;
-      cout << "lat_south: " << lat_south << endl;
-      cout << "lon_west:  " << lon_west  << endl;
-      cout << "lon_east:  " << lon_east  << endl;
+      cout << "lat_north: " << m_lat_north << endl;
+      cout << "lat_south: " << m_lat_south << endl;
+      cout << "lon_west:  " << m_lon_west  << endl;
+      cout << "lon_east:  " << m_lon_east  << endl;
       return(false);
     }
+  }
+
+  bool result = processConfiguration();
+  // print();
+  return(result);
+}
+
+// ----------------------------------------------------------
+// Procedure: processConfiguration
+//   Purpose: 
+
+bool BackImg::processConfiguration()
+{
+  if(m_boundary_set) {
+    // The "datum" used to initialize the Geodesy just needs to be
+    // in the "ballbark". So just use the center of the image. The
+    // Geodesy is just used to get the extents of the image in terms
+    // of meters.
+    
+    double pseudo_datum_lat = (m_lat_north + m_lat_south) / 2.0;
+    double pseudo_datum_lon = (m_lon_west + m_lon_east)   / 2.0;
     
     CMOOSGeodesy geodesy;
-    geodesy.Initialise(datum_lat, datum_lon);
+    geodesy.Initialise(pseudo_datum_lat, pseudo_datum_lon);
     double x1,x2,y1,y2;
-    bool ok1 = geodesy.LatLong2LocalGrid(lat_north, lon_west, y1, x1);
-    bool ok2 = geodesy.LatLong2LocalGrid(lat_south, lon_east, y2, x2);
+    bool ok1 = geodesy.LatLong2LocalGrid(m_lat_north, m_lon_west, y1, x1);
+    bool ok2 = geodesy.LatLong2LocalGrid(m_lat_south, m_lon_east, y2, x2);
     if(!ok1 || !ok2) {
       cout << "Problem with BackImg Geodesy conversion. " << endl;
       return(false);
     }
-    double length_meters = y1-y2;
+    double img_mtr_height = abs(y1-y2);
+    double img_mtr_width  = abs(x1-x2);
 
-    img_meters = (1 / (length_meters / 100.0));
-    img_centx = (datum_lon - lon_west) / (lon_east - lon_west);
-    img_centy = (datum_lat - lat_south) / (lat_north - lat_south);
+    if(!m_datum_lat_set)
+      m_datum_lat = pseudo_datum_lat;
+    if(!m_datum_lon_set)
+      m_datum_lon = pseudo_datum_lon;
 
-#if 0 // For debugging
-    cout << "*************************************************" << endl;
-    cout << "Length(m)  :" << length_meters << endl;
-    cout << "datum_lon  :" << datum_lon  << endl;
-    cout << "lon_west   :" << lon_west   << endl;
-    cout << "lon_east   :" << lon_east   << endl;
-
-    cout << "img_meters :" << img_meters << endl;
-    cout << "img_centx  :" << img_centx  << endl;
-    cout << "img_centy  :" << img_centy  << endl;
-    cout << "*************************************************" << endl;
-#endif
+    m_img_meters_x = (1 / (img_mtr_height / 100.0));
+    m_img_meters_y = (1 / (img_mtr_width  / 100.0));
+    m_img_centx = (m_datum_lon - m_lon_west) / 
+      (m_lon_east - m_lon_west);
+    m_img_centy = (m_datum_lat - m_lat_south) / 
+      (m_lat_north - m_lat_south);
   }
 
-  double x_img_diff = 0.50 - img_centx;
-  x_at_img_ctr = (x_img_diff * 100) / img_meters;
-    
-  double y_img_diff = 0.50 - img_centy;
-  y_at_img_ctr = (y_img_diff * 100) / img_meters;
-  
-  x_at_img_left   = (-img_centx * 100) / img_meters;
-  x_at_img_right  = ((1.0-img_centx) * 100) / img_meters;
-  y_at_img_bottom = (-img_centy * 100) / img_meters;
-  y_at_img_top    = ((1.0-img_centy) * 100) / img_meters;
+  double x_img_diff = 0.50 - m_img_centx;
+  double y_img_diff = 0.50 - m_img_centy;
+  m_x_at_img_ctr    = (x_img_diff * 100) / m_img_meters_x;
+  m_y_at_img_ctr    = (y_img_diff * 100) / m_img_meters_y;  
+  m_x_at_img_left   = (-m_img_centx * 100) / m_img_meters_x;
+  m_x_at_img_right  = ((1.0-m_img_centx) * 100) / m_img_meters_x;
+  m_y_at_img_bottom = (-m_img_centy * 100) / m_img_meters_y;
+  m_y_at_img_top    = ((1.0 - m_img_centy) * 100) / m_img_meters_y;
+  m_img_mtr_width   = abs(m_x_at_img_right - m_x_at_img_left);
+  m_img_mtr_height  = abs(m_y_at_img_top - m_y_at_img_bottom);
 
   return(true);
 }
 
-
 // ----------------------------------------------------------
-// Procedure: readBlankTiff
+// Procedure: setDatumLatLon
+//   Purpose: 
 
-void BackImg::readBlankTiff()
+void BackImg::setDatumLatLon(double datum_lat, double datum_lon)
 {
-  img_data    = 0;    
-  img_width   = 2048;
-  img_height  = 2048;    
-  img_centx   = 0.5; 
-  img_centy   = 0.5;
-  img_meters  = 0.048828; 
-}
+  m_datum_lat     = datum_lat;
+  m_datum_lon     = datum_lon;
+  m_datum_lat_set = true;
+  m_datum_lon_set = true;
 
+  if(m_boundary_set)
+    processConfiguration();
+}
 
 // ----------------------------------------------------------
 // Procedure: setTexture
@@ -381,9 +412,9 @@ void BackImg::readBlankTiff()
 void BackImg::setTexture()
 {
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 
-	       img_width, img_height, 0, 
+	       m_img_pix_width, m_img_pix_height, 0, 
 	       GL_RGBA, GL_UNSIGNED_INT_8_8_8_8_REV, 
-	       (unsigned char *)img_data);
+	       (unsigned char *)m_img_data);
   
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -394,3 +425,24 @@ void BackImg::setTexture()
 }
 
 
+// ----------------------------------------------------------
+// Procedure: print
+//   Purpose: 
+
+void BackImg::print()
+{
+  cout << "m_img_meters_x:" << m_img_meters_x << endl;
+  cout << "m_img_meters_y:" << m_img_meters_y << endl;
+  cout << "m_img_centx:   " << m_img_centx << endl;
+  cout << "m_img_centy:   " << m_img_centy << endl;
+
+  cout << "m_x_at_img_left:   " << m_x_at_img_left << endl;
+  cout << "m_x_at_img_right:  " << m_x_at_img_right << endl;
+  cout << "m_y_at_img_top:    " << m_y_at_img_top << endl;
+  cout << "m_y_at_img_bottom: " << m_y_at_img_bottom << endl;
+  cout << "m_x_at_img_ctr:    " << m_x_at_img_ctr << endl;
+  cout << "m_y_at_img_ctr:    " << m_y_at_img_ctr << endl;
+
+  cout << "m_img_mtr_width:   " << m_img_mtr_width << endl;
+  cout << "m_img_mtr_height:  " << m_img_mtr_width << endl;
+}

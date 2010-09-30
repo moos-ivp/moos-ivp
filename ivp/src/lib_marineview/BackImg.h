@@ -32,45 +32,77 @@ public:
   ~BackImg();
 
   bool readTiff(std::string filename);
-  bool readTiffData(std::string filename);
-  bool readTiffInfo(std::string filename);
-  void readBlankTiff();
   void setTexture();
 
-  unsigned char* get_img_data() {return(img_data);};
-  int    get_img_width()    {return(img_width);};
-  int    get_img_height()   {return(img_height);};
-  double get_img_centx()    {return(img_centx);};
-  double get_img_centy()    {return(img_centy);};
-  double get_img_meters()   {return(img_meters);};
+  unsigned char* get_img_data()       {return(m_img_data);};
+  unsigned int   get_img_pix_width()  {return(m_img_pix_width);};
+  unsigned int   get_img_pix_height() {return(m_img_pix_height);};
+  unsigned int   get_img_mtr_width()  {return(m_img_mtr_width);};
+  unsigned int   get_img_mtr_height() {return(m_img_mtr_height);};
 
-  double get_x_at_img_left()   {return(x_at_img_left);};
-  double get_x_at_img_right()  {return(x_at_img_right);};
-  double get_y_at_img_bottom() {return(y_at_img_bottom);};
-  double get_y_at_img_top()    {return(y_at_img_top);};
-  double get_x_at_img_ctr()    {return(x_at_img_ctr);};
-  double get_y_at_img_ctr()    {return(y_at_img_ctr);};
 
-  double get_pix_per_mtr()     {return(img_meters*img_width/100);};
+  double get_img_centx()        {return(m_img_centx);};
+  double get_img_centy()        {return(m_img_centy);};
+  double get_img_meters()       {return(m_img_meters_x);};
+
+  double get_x_at_img_left()    {return(m_x_at_img_left);};
+  double get_x_at_img_right()   {return(m_x_at_img_right);};
+  double get_y_at_img_bottom()  {return(m_y_at_img_bottom);};
+  double get_y_at_img_top()     {return(m_y_at_img_top);};
+  double get_x_at_img_ctr()     {return(m_x_at_img_ctr);};
+  double get_y_at_img_ctr()     {return(m_y_at_img_ctr);};
+
+  double get_pix_per_mtr_x()    
+  {return(m_img_meters_x*m_img_pix_width/100);};
+  double get_pix_per_mtr_y()    
+  {return(m_img_meters_y*m_img_pix_height/100);};
 
   double pixToPctX(double pix);
   double pixToPctY(double pix);
 
-private:
-  int            img_width;
-  int            img_height;
-  unsigned char* img_data;
-  double         img_theta;
-  double         img_centx;
-  double         img_centy;
-  double         img_meters;
+  void   setDatumLatLon(double lat, double lon);
 
-  double         x_at_img_ctr;
-  double         y_at_img_ctr;
-  double         x_at_img_left;
-  double         x_at_img_right;
-  double         y_at_img_top;
-  double         y_at_img_bottom;
+  void   print();
+
+protected:
+  bool readTiffData(std::string filename);
+  bool readTiffInfo(std::string filename);
+  bool processConfiguration();
+
+private:
+  // Info set from the tiff data file
+  unsigned char* m_img_data;
+  unsigned int m_img_pix_width;
+  unsigned int m_img_pix_height;
+
+  // Info set from the .info file boudaries
+  unsigned int m_img_mtr_width;
+  unsigned int m_img_mtr_height;
+
+  double   m_img_meters_x;  // Pct of image equivalent to 100 meters
+  double   m_img_meters_y;  // Pct of image equivalent to 100 meters
+  double   m_img_centx;
+  double   m_img_centy;
+
+  double   m_lon_west;
+  double   m_lon_east;
+  double   m_lat_north;
+  double   m_lat_south;
+  bool     m_boundary_set;
+
+  // Local xy-cache information
+  double   m_x_at_img_left;
+  double   m_x_at_img_right;
+  double   m_y_at_img_top;
+  double   m_y_at_img_bottom;
+  double   m_x_at_img_ctr;
+  double   m_y_at_img_ctr;
+
+  // Info on whether the datum has been set.
+  double   m_datum_lat;
+  double   m_datum_lon;
+  bool     m_datum_lat_set;
+  bool     m_datum_lon_set;
 };
 
 #endif 

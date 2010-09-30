@@ -108,15 +108,21 @@ bool PMV_MOOSApp::OnStartUp()
 {
   MOOSTrace("pMarineViewer starting....\n");
   
-  // look for latitude, longitude global variables
-  double lat_origin, lon_origin;
-  bool ok1 = m_MissionReader.GetValue("LatOrigin", lat_origin);
-  bool ok2 = m_MissionReader.GetValue("LongOrigin", lon_origin);
+  // look for datum latitude, longitude global variables
+  double lat, lon;
+  bool ok1 = m_MissionReader.GetValue("LatOrigin", lat);
+  bool ok2 = m_MissionReader.GetValue("LongOrigin", lon);
   if(!ok1 || !ok2)
     return(MOOSFail("Lat or Lon Origin not set in *.moos file.\n"));
 
+  if(m_gui) {
+    cout << "Setting PMV LatOrigin based on the MOOS file. " << endl;
+    string datum = doubleToString(lat) + "," + doubleToString(lon);
+    m_gui->mviewer->setParam("datum", datum);
+  }
+
   // If both lat and lon origin ok - then initialize the Geodesy.
-  if(m_gui && !m_gui->mviewer->initGeodesy(lat_origin, lon_origin))
+  if(m_gui && !m_gui->mviewer->initGeodesy(lat, lon))
     return(MOOSFail("Geodesy Init in pMarineViewer failed - FAIL\n"));
 
   double time_warp;
