@@ -80,7 +80,7 @@ When you build the MOOS software, the MOOS executable programs get placed in
 the "MOOS/MOOSBin" subdirectory of the source code tree.
 
 When you build the IvP software, the IvP executable programs get placed in
-the "ivp/src/bin" subdirectory of the source code tree.
+the "ivp/bin" subdirectory of the source code tree.
 
 We recommend that you put the absolute path to both of those directories into
 your PATH environment variable.  This is especially important because the 
