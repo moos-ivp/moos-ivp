@@ -520,6 +520,9 @@ QuadSet Common_IPFViewer::setQuadSetFromIPF(const string& ipf_str)
     return(null_quadset);
     
   IvPDomain domain = ivp_function->getPDMap()->getDomain();
+
+  if(!domain.hasDomain("course") && !domain.hasDomain("speed"))
+     return(null_quadset);
   
   // Case where ipf defined only over COURSE
   if((domain.hasDomain("course")) && (!domain.hasDomain("speed"))) {
