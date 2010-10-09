@@ -1,8 +1,0 @@
-//------------------------------------------------------------------
-// pDeployHandler config block
-
-ProcessConfig = pDeployHandler
-{
-  AppTick	= 5
-  CommsTick	= 5
-}
