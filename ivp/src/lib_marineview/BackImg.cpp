@@ -368,8 +368,8 @@ bool BackImg::processConfiguration()
     if(!m_datum_lon_set)
       m_datum_lon = pseudo_datum_lon;
 
-    m_img_meters_x = (1 / (img_mtr_height / 100.0));
-    m_img_meters_y = (1 / (img_mtr_width  / 100.0));
+    m_img_meters_x = (1 / (img_mtr_width / 100.0));
+    m_img_meters_y = (1 / (img_mtr_height  / 100.0));
     m_img_centx = (m_datum_lon - m_lon_west) / 
       (m_lon_east - m_lon_west);
     m_img_centy = (m_datum_lat - m_lat_south) / 
@@ -380,10 +380,13 @@ bool BackImg::processConfiguration()
   double y_img_diff = 0.50 - m_img_centy;
   m_x_at_img_ctr    = (x_img_diff * 100) / m_img_meters_x;
   m_y_at_img_ctr    = (y_img_diff * 100) / m_img_meters_y;  
+
   m_x_at_img_left   = (-m_img_centx * 100) / m_img_meters_x;
   m_x_at_img_right  = ((1.0-m_img_centx) * 100) / m_img_meters_x;
+
   m_y_at_img_bottom = (-m_img_centy * 100) / m_img_meters_y;
   m_y_at_img_top    = ((1.0 - m_img_centy) * 100) / m_img_meters_y;
+
   m_img_mtr_width   = abs(m_x_at_img_right - m_x_at_img_left);
   m_img_mtr_height  = abs(m_y_at_img_top - m_y_at_img_bottom);
 
@@ -431,6 +434,7 @@ void BackImg::setTexture()
 
 void BackImg::print()
 {
+  cout << "--------------------------------------- BackImg::print" << endl;
   cout << "m_img_meters_x:" << m_img_meters_x << endl;
   cout << "m_img_meters_y:" << m_img_meters_y << endl;
   cout << "m_img_centx:   " << m_img_centx << endl;
@@ -444,5 +448,14 @@ void BackImg::print()
   cout << "m_y_at_img_ctr:    " << m_y_at_img_ctr << endl;
 
   cout << "m_img_mtr_width:   " << m_img_mtr_width << endl;
-  cout << "m_img_mtr_height:  " << m_img_mtr_width << endl;
+  cout << "m_img_mtr_height:  " << m_img_mtr_height << endl;
+
+  cout << "m_img_pix_width:  " << m_img_pix_width << endl;
+  cout << "m_img_pix_height: " << m_img_pix_height << endl;
+  cout << "m_img_mtr_width:  " << m_img_mtr_width << endl;
+  cout << "m_img_mtr_height: " << m_img_mtr_height << endl;
+
+  cout << "pix_per_mtr_x: " << (m_img_pix_width / m_img_mtr_width) << endl;
+  cout << "pix_per_mtr_y: " <<(m_img_pix_height / m_img_mtr_height) << endl;
+
 }

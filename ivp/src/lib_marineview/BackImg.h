@@ -53,9 +53,9 @@ public:
   double get_y_at_img_ctr()     {return(m_y_at_img_ctr);};
 
   double get_pix_per_mtr_x()    
-  {return(m_img_meters_x*m_img_pix_width/100);};
+  {return((double)(m_img_pix_width) / (m_img_mtr_width));};
   double get_pix_per_mtr_y()    
-  {return(m_img_meters_y*m_img_pix_height/100);};
+  {return((double)(m_img_pix_height) / (m_img_mtr_height));};
 
   double pixToPctX(double pix);
   double pixToPctY(double pix);
@@ -76,8 +76,8 @@ private:
   unsigned int m_img_pix_height;
 
   // Info set from the .info file boudaries
-  unsigned int m_img_mtr_width;
-  unsigned int m_img_mtr_height;
+  double   m_img_mtr_width;
+  double   m_img_mtr_height;
 
   double   m_img_meters_x;  // Pct of image equivalent to 100 meters
   double   m_img_meters_y;  // Pct of image equivalent to 100 meters
