@@ -1,5 +1,7 @@
-img_centx   = 0.7373
-img_centy   = 0.722008
-img_meters  = 0.01405495
+// Newport_A15S
+lat_north = 41.547900
+lat_south = 41.483891 
+lon_west  = -71.389160
+lon_east  = -71.301269
 
 
