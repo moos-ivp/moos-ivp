@@ -52,7 +52,7 @@ protected:
   void   handleLeftMouse(int, int) {};
   void   handleRightMouse(int, int) {};
   
-  QuadSet setQuadSetFromIPF(const std::string&);
+  QuadSet setQuadSetFromIPF(const std::string&, IvPDomain);
 
   void   drawText(double px, double py, const std::string&, 
 		  const ColorPack&, double font_size);

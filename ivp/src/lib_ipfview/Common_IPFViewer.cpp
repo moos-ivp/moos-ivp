@@ -13,6 +13,7 @@
 #include <string.h>
 #include "Common_IPFViewer.h"
 #include "GeomUtils.h"
+#include "BuildUtils.h"
 #include "ZAIC_PEAK.h"
 #include "OF_Coupler.h"
 #include "MBUtils.h"
@@ -232,9 +233,10 @@ void Common_IPFViewer::draw()
 
 void Common_IPFViewer::applyIPF(const std::string& ipf_str)
 {
+  IvPDomain null_domain;
   m_quadset.clear();
   if(ipf_str != "")
-    m_quadset = setQuadSetFromIPF(ipf_str);
+    m_quadset = setQuadSetFromIPF(ipf_str, null_domain);
 }
 
 //-------------------------------------------------------------
@@ -509,9 +511,11 @@ void Common_IPFViewer::setFrameColor(string new_color)
 
 //-------------------------------------------------------------
 // Procedure: setQuadSetFromIPF
-//      Note: This will destroy the incoming IvPFunction
+//      Note: The ivp_function domain is used to help expand 
+//            incoming functions over course, speed.
 
-QuadSet Common_IPFViewer::setQuadSetFromIPF(const string& ipf_str)
+QuadSet Common_IPFViewer::setQuadSetFromIPF(const string& ipf_str,
+					    IvPDomain ivp_domain)
 {
   QuadSet null_quadset;
  
@@ -526,8 +530,11 @@ QuadSet Common_IPFViewer::setQuadSetFromIPF(const string& ipf_str)
   
   // Case where ipf defined only over COURSE
   if((domain.hasDomain("course")) && (!domain.hasDomain("speed"))) {
-    IvPDomain spd_domain;
-    spd_domain.addDomain("speed", 0, 5, 41);
+    // Try to expand this IPF into a 2D IPF
+    IvPDomain spd_domain = subDomain(ivp_domain, "speed");
+    if(spd_domain.size() == 0)
+      return(null_quadset);
+
     ZAIC_PEAK spd_zaic(spd_domain, "speed");
     spd_zaic.setSummit(2.5);
     spd_zaic.setPeakWidth(20);
@@ -538,8 +545,11 @@ QuadSet Common_IPFViewer::setQuadSetFromIPF(const string& ipf_str)
   }
   // Case where ipf defined only over SPEED
   if((!domain.hasDomain("course")) && (domain.hasDomain("speed"))) {
-    IvPDomain crs_domain;
-    crs_domain.addDomain("course", 0, 359, 360);
+    // Try to expand this IPF into a 2D IPF
+    IvPDomain crs_domain = subDomain(ivp_domain, "course");
+    if(crs_domain.size() == 0)
+      return(null_quadset);
+
     ZAIC_PEAK crs_zaic(crs_domain, "course");
     crs_zaic.setSummit(180);
     crs_zaic.setPeakWidth(360);

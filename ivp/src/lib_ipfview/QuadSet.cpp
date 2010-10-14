@@ -231,12 +231,13 @@ bool QuadSet::addQuadSet(const QuadSet* g_quads)
   if(!g_quads)
     return(false);
 
-  int msize       = m_quads.size();
-  int gsize       = g_quads->size();
+  unsigned int i;
+  unsigned int msize  = m_quads.size();
+  unsigned int gsize  = g_quads->size();
 
   // If this is an empty quadset, just set to the given quadset
   if(msize == 0) {
-    for(int i=0; i<gsize; i++)
+    for(i=0; i<gsize; i++)
       m_quads.push_back(g_quads->getQuad(i));
     m_low_val = g_quads->m_low_val;
     m_high_val = g_quads->m_high_val;
@@ -244,9 +245,9 @@ bool QuadSet::addQuadSet(const QuadSet* g_quads)
   }
 
   if(msize != gsize)
-    return(false);
+    return(true);
 
-  for(int i=0; i<msize; i++) {
+  for(i=0; i<msize; i++) {
     m_quads[i].llval += (g_quads->getQuad(i).llval);
     m_quads[i].lhval += (g_quads->getQuad(i).lhval);
     m_quads[i].hlval += (g_quads->getQuad(i).hlval);
@@ -256,7 +257,7 @@ bool QuadSet::addQuadSet(const QuadSet* g_quads)
   // Recalculate the new global low and high values.
   m_low_val  = m_quads[0].llval;
   m_high_val = m_quads[0].llval;
-  for(int i=0; i<msize; i++) {
+  for(i=0; i<msize; i++) {
     if(m_quads[i].llval < m_low_val)   m_low_val  = m_quads[i].llval;
     if(m_quads[i].llval > m_high_val)  m_high_val = m_quads[i].llval;
 
@@ -282,12 +283,12 @@ void QuadSet::normalize(double target_base, double target_range)
   if((existing_range <= 0) || (target_range <= 0))
     return;
 
-  int msize = m_quads.size();
+  unsigned int i, msize = m_quads.size();
   if(msize == 0)
     return;
 
   double pct;
-  for(int i=0; i<msize; i++) {
+  for(i=0; i<msize; i++) {
     pct = ((m_quads[i].llval - m_low_val) / existing_range);
     m_quads[i].llval = target_base + (pct * target_range);
     pct = ((m_quads[i].hlval - m_low_val) / existing_range);

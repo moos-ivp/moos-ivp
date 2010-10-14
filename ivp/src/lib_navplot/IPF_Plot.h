@@ -25,6 +25,7 @@
 
 #include <string>
 #include <vector>
+#include "IvPDomain.h"
 
 class IPF_Plot
 {
@@ -57,6 +58,9 @@ public:
 
   std::string  nullHeadingSpeedIPF() const;
 
+  void      setIvPDomain(IvPDomain dom) {m_ivp_domain = dom;};
+  IvPDomain getIvPDomain()   {return(m_ivp_domain);};
+
 protected:
   unsigned int getIndexByTime(double) const;
   int getIndexByHelmIter(unsigned int) const;
@@ -71,5 +75,7 @@ protected:
   std::vector<double>       m_time_stamp; 
   std::vector<unsigned int> m_helm_iteration;
   std::vector<unsigned int> m_piece_count;
+
+  IvPDomain                 m_ivp_domain;
 };
 #endif 

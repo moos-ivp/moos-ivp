@@ -31,6 +31,7 @@
 #include "Populator_IPF_Plot.h"
 #include "ALogEntry.h"
 #include "REPLAY_GUI.h"
+#include "IvPDomain.h"
 
 class LogViewLauncher
 {
@@ -76,6 +77,7 @@ private:
   std::vector<std::vector<ALogEntry> > m_entries_vplug_plot;
   std::vector<std::vector<ALogEntry> > m_entries_helm_plot;
   std::vector<std::vector<ALogEntry> > m_entries_ipf_plot;
+  std::vector<IvPDomain> m_entry_ivp_domain;
 
   std::vector<std::vector<std::string> > m_node_reports;
   std::vector<std::string> m_vehicle_name;

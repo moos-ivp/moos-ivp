@@ -104,7 +104,7 @@ public:
   // Return the variable name of ith element of the domain
   std::string getVarName(unsigned int i) const
     {
-      if((i<0) || (i>m_dname.size()))
+      if(i>=m_dname.size())
 	return("");
       return(m_dname[i]);
     }

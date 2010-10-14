@@ -11,6 +11,7 @@
 #include <string>
 #include "Quad3D.h"
 #include "IvPFunction.h"
+#include "IvPDomain.h"
 #include "FColorMap.h"
 
 class QuadSet 
@@ -27,22 +28,26 @@ public:
   void   print() const;
   void   clear();
 
-  int    size() const         {return(m_quads.size());};
-  Quad3D getQuad(int i) const {return(m_quads[i]);};
+  unsigned int size() const             {return(m_quads.size());};
+  Quad3D getQuad(unsigned int i) const  {return(m_quads[i]);};
+
+  //  void   setIvPDomain(IvPDomain domain) {m_ivp_domain = domain;};
 
 protected:
   std::vector<Quad3D> m_quads;
 
-  double              m_low_val;
-  double              m_high_val;
+  //IvPDomain   m_ivp_domain;
+
+  double      m_low_val;
+  double      m_high_val;
 
   // Adjusting the range of values - purely for altering the 
   // the way the color map is applied.
-  double              m_low_val_adjust;;
-  double              m_high_val_adjust;
+  double      m_low_val_adjust;;
+  double      m_high_val_adjust;
 
   // Values of the objecive function can be made to snap to 
   // intervals. Can be used to alter the rendering.
-  double              m_snap_val;
+  double      m_snap_val;
 };
 #endif

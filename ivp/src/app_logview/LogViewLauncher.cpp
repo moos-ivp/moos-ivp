@@ -27,6 +27,7 @@
 #include <string.h>
 #include "LogUtils.h"
 #include "MBUtils.h"
+#include "BuildUtils.h"
 #include "MBTimer.h"
 #include "LogViewLauncher.h"
 #include "FileBuffer.h"
@@ -359,7 +360,8 @@ void LogViewLauncher::parseALogFile(unsigned int index)
   vector<ALogEntry> entries_ipf_plot;
   vector<ALogEntry> entries_vplug_plot;
   vector<ALogEntry> entries_helm_plot;
-
+  IvPDomain         ivp_domain;
+  
   double skew = m_alog_files_skew[index];
 
   bool done = false;
@@ -371,6 +373,11 @@ void LogViewLauncher::parseALogFile(unsigned int index)
       string var = entry.getVarName();
       string src = entry.getSource();
       bool   isnum = entry.isNumerical();
+
+      if(var=="IVPHELM_DOMAIN") {
+	string domain_str = entry.getStringVal();
+	ivp_domain = stringToDomain(domain_str);
+      }
 
       entry.skewBackward(skew);
       double tstamp = entry.getTimeStamp();
@@ -404,6 +411,7 @@ void LogViewLauncher::parseALogFile(unsigned int index)
   m_entries_ipf_plot.push_back(entries_ipf_plot);
   m_entries_vplug_plot.push_back(entries_vplug_plot);
   m_entries_helm_plot.push_back(entries_helm_plot);
+  m_entry_ivp_domain.push_back(ivp_domain);
 }
   
 //-------------------------------------------------------------
@@ -625,6 +633,7 @@ bool LogViewLauncher::buildIPFPlots()
   parse_timer.start();
   cout << "Refining alog data to build IPF_Plots..." << endl;
 
+  // index i - one for each alog file
   unsigned int i, vsize = m_alog_files.size();
   for(i=0; i<vsize; i++) {
     Populator_IPF_Plot pop_ipf;
@@ -634,9 +643,18 @@ bool LogViewLauncher::buildIPFPlots()
       cout << "  Problem with file " << m_alog_files[i] << endl;
       return(false);
     }
+    // index k - one for each behavior producing an IPF in a 
+    // single alog file.
     unsigned int k, ksize = pop_ipf.size();
-    for(k=0; k<ksize; k++)
-      m_ipf_plots.push_back(pop_ipf.getPlotIPF(k));
+    for(k=0; k<ksize; k++) {
+      IPF_Plot ipf_plot_k = pop_ipf.getPlotIPF(k);
+      ipf_plot_k.setIvPDomain(m_entry_ivp_domain[i]);
+      m_ipf_plots.push_back(ipf_plot_k);
+    }
+
+    // Tag the domain somewhere herere
+
+
   }
   parse_timer.stop();
 

@@ -187,22 +187,33 @@ void IvPFuncViewer::buildCollective(double curr_time)
   unsigned int curr_iter = m_viter_map[curr_vname];
 
   // Phase 3: Get all the IvPFunction strings for the current iteration
-  // for the current vehicle.
+  // for the current vehicle, along with the IvPDomain for each ipf.
   vector<string> ipfs;
+  vector<IvPDomain> ivp_domains;
+
   unsigned int i, vsize = m_ipf_plot.size();
   for(i=0; i<vsize; i++) {
     if(m_ipf_vname[i] == curr_vname) {
       string ipf_str = m_ipf_plot[i].getIPFByHelmIteration(curr_iter);
-      if(ipf_str != "")
+      if(ipf_str != "") {
 	ipfs.push_back(ipf_str);
+	ivp_domains.push_back(m_ipf_plot[i].getIvPDomain());
+      }
     }
   }
 
   // Phase 4: Build the collective of the given functions.
   m_quadset.clear();
   for(i=0; i<ipfs.size(); i++) {
-    QuadSet quadset = setQuadSetFromIPF(ipfs[i]);
-    bool ok = m_quadset.addQuadSet(&quadset);
+    // We grab the IvPDomain associated with each IPF string and pass
+    // it along to the setQuadSetFromIPF function. This domain should
+    // be for the domain of the helm the produced this IPF, not 
+    // necessarily the domain of given IPF, which may be a subdomain.
+    IvPDomain ivp_domain = ivp_domains[i];
+    QuadSet quadset = setQuadSetFromIPF(ipfs[i], ivp_domain);
+    bool ok = true;
+    if(quadset.size() != 0)
+      ok = m_quadset.addQuadSet(&quadset);
     if(!ok) {
       m_quadset.clear();
       cout << "Error creating collective quadset" << endl;
