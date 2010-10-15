@@ -239,6 +239,18 @@ void Common_IPFViewer::applyIPF(const std::string& ipf_str)
     m_quadset = setQuadSetFromIPF(ipf_str, null_domain);
 }
 
+// ----------------------------------------------------------
+// Procedure: applyIPF
+//   Purpose: 
+
+void Common_IPFViewer::applyIPF(const std::string& ipf_str,
+				const IvPDomain& ivp_domain)
+{
+  m_quadset.clear();
+  if(ipf_str != "")
+    m_quadset = setQuadSetFromIPF(ipf_str, ivp_domain);
+}
+
 //-------------------------------------------------------------
 // Procedure: drawIvPFunction
 

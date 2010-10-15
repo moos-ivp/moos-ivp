@@ -151,7 +151,8 @@ void IvPFuncViewer::setCurrTime(double curr_time)
     setSourceIPF(m_ipf_source[m_plot_ix]);
     setIterIPF(intToString(iter));
     setPiecesIPF(intToString(pcs));
-    applyIPF(ipf_string);
+    IvPDomain ivp_domain = m_ipf_plot[m_plot_ix].getIvPDomain();
+    applyIPF(ipf_string, ivp_domain);
   }
 }
 
@@ -196,8 +197,9 @@ void IvPFuncViewer::buildCollective(double curr_time)
     if(m_ipf_vname[i] == curr_vname) {
       string ipf_str = m_ipf_plot[i].getIPFByHelmIteration(curr_iter);
       if(ipf_str != "") {
+	IvPDomain ivp_domain = m_ipf_plot[i].getIvPDomain();
 	ipfs.push_back(ipf_str);
-	ivp_domains.push_back(m_ipf_plot[i].getIvPDomain());
+	ivp_domains.push_back(ivp_domain);
       }
     }
   }

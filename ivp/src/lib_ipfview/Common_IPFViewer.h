@@ -32,6 +32,7 @@ class Common_IPFViewer : public Fl_Gl_Window
   int    handle(int);
 
 public:
+  void   applyIPF(const std::string& ipf_str, const IvPDomain&);
   void   applyIPF(const std::string& ipf_str);
   bool   setParam(std::string, std::string);
   bool   setParam(std::string, double);
