@@ -59,7 +59,7 @@ protected:
   std::string m_sim_prefix;
   IMS_Model*  m_model;
 
-  int         m_reset_count;
+  unsigned int m_reset_count;
 
   // tes 12-2-07 added to allow simulated lat/long
   CMOOSGeodesy m_geodesy;

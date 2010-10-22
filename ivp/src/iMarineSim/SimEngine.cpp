@@ -89,19 +89,16 @@ void SimEngine::propagate(VState &vstate, double velocity,
     elevator_angle = 0;
   }
 
+  double prev_x = vstate.m_dfX;
+  double prev_y = vstate.m_dfY;
+
   double prev_velocity = vstate.m_dfSpeed; 
-  //cout << "vel:" << velocity;
-  //cout << "  pv:" << prev_velocity;
   if((prev_velocity > velocity) && (m_deceleration > 0)) {
     double mtr_sec_slower = (m_deceleration * delta_time);
-    //cout << "  mss:" << mtr_sec_slower;
-    //cout << "  rnv:" << velocity;
-    //cout << "  dt:" << delta_time;
-    if((prev_velocity - mtr_sec_slower) > velocity)
+    if((prev_velocity - mtr_sec_slower) > velocity) {
       velocity = prev_velocity - mtr_sec_slower;
-    //cout << "  anv:" << velocity;
+    }
   }
-  //cout << endl;
 
   double delta_theta_deg = rudder_angle * 40 * delta_time;
 
@@ -118,7 +115,6 @@ void SimEngine::propagate(VState &vstate, double velocity,
   double vpct = (rudder_magnitude / 100) * 0.85;
   velocity = velocity * (1.0 - vpct);
   
-
   double delta_theta_rad = degToRadians(delta_theta_deg);
 
   double vy_body =  velocity * cos(delta_theta_rad);
@@ -136,6 +132,11 @@ void SimEngine::propagate(VState &vstate, double velocity,
   vstate.m_dfHeading += delta_theta_rad;
   vstate.m_dfHeading  = radAngleWrap(vstate.m_dfHeading);
   vstate.m_dfTime    += delta_time;
+
+  vstate.m_dfSpeedOverGround = hypot((xdot+m_force_x), (ydot+m_force_y));
+
+  vstate.m_dfHeadingOverGround = relAng(prev_x, prev_y, 
+					vstate.m_dfX, vstate.m_dfY);
 
   if(velocity > 0) 
     vstate.m_dfDepth   += (elevator_angle/10.0) * delta_time;

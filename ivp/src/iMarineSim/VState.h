@@ -35,14 +35,14 @@ public:
   std::string toString();
 
 public:
-  double m_dfX;          // X position
-  double m_dfY;          // Y position
-  double m_dfHeading;    // Heading position (radians)
-  double m_dfSpeed;      // Speed
-  double m_dfDepth;      // Depth
-  double m_dfTime;       // Time
+  double m_dfX;                  // X position
+  double m_dfY;                  // Y position
+  double m_dfHeading;            // Heading position (radians)
+  double m_dfHeadingOverGround;  // Heading over ground (degrees)
+  double m_dfSpeed;              // Speed
+  double m_dfSpeedOverGround;    // Speed over ground
+  double m_dfDepth;              // Depth
+  double m_dfTime;               // Time
 };
 
 #endif 
-
-

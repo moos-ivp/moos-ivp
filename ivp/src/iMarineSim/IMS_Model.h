@@ -43,8 +43,10 @@ public:
   double getForceX()    {return(m_force_x);};
   double getForceY()    {return(m_force_y);};
   double getSpeed()     {return(m_vstate.m_dfSpeed);};
+  double getSpeedOG()   {return(m_vstate.m_dfSpeedOverGround);};
   double getDepth()     {return(m_vstate.m_dfDepth);};
   double getHeading();
+  double getHeadingOG();
   double getYaw();
 
   // Get the total force factor in terms of direction and magnitude

@@ -291,6 +291,12 @@ bool IMS_MOOSApp::Iterate()
   m_Comms.Notify(m_sim_prefix+"_YAW", m_model->getYaw(), ctime);
   m_Comms.Notify(m_sim_prefix+"_STATE", "off",ctime);
 
+  double hog = m_model->getHeadingOG();
+  double sog = m_model->getSpeedOG();
+
+  m_Comms.Notify(m_sim_prefix+"_HEADING_OVER_GROUND", hog, ctime);
+  m_Comms.Notify(m_sim_prefix+"_SPEED_OVER_GROUND", sog, ctime);
+
   string val = "ang=";
   val += dstringCompact(doubleToString(m_model->getForceAngle()));
   val += ", mag=";

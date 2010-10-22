@@ -114,6 +114,16 @@ double IMS_Model::getHeading()
   return(heading);
 }
 
+//------------------------------------------------------------------------
+// Procedure: getHeadingOG()
+//      Note: Returns Heading Over Ground
+
+double IMS_Model::getHeadingOG()
+{
+  double deg_hog = angle360(m_vstate.m_dfHeadingOverGround);
+  return(deg_hog);
+}
+
 //--------------------------------------------------------------------
 // Procedure: getForceMagnitude
 
@@ -185,8 +195,8 @@ void IMS_Model::reset(double g_curr_time)
   m_vstate.m_dfHeading = 0.0;
 
   m_paused         = false;
-  m_force_x         = 0;
-  m_force_y         = 0;
+  m_force_x        = 0;
+  m_force_y        = 0;
   m_rudder         = 0;
   m_thrust         = 0;
   m_elevator       = 0;
