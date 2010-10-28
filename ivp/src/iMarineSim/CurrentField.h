@@ -32,11 +32,15 @@ public:
   CurrentField();
   ~CurrentField() {};
 
+  bool populate(std::string filename);
+
   void addVector(double x, double y, double force, double direction);
 
   void getForce(double x, double y, double& fx, double& fy);
 
   void setRadius(double radius);
+
+  void print();
 
   unsigned int size() {return(m_xpos.size());};
 
@@ -44,7 +48,6 @@ public:
   double getYPos(unsigned int);
   double getForce(unsigned int);
   double getDirection(unsigned int);
-
 
 protected:
   std::vector<double> m_xpos;

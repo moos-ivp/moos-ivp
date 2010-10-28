@@ -22,9 +22,11 @@
 
 #include <stdio.h>
 #include <math.h>
+#include <iostream>
 #include "CurrentField.h"
 #include "GeomUtils.h"
 #include "AngleUtils.h"
+#include "FileBuffer.h"
 
 using namespace std;
 
@@ -37,6 +39,52 @@ CurrentField::CurrentField()
   m_radius = 20;
 }
   
+//-------------------------------------------------------------------
+// Procedure: populate
+//   Purpose: 
+
+bool CurrentField::populate(string filename)
+{
+  cout << "Populating Current Field: " << filename << endl;
+
+  unsigned int lines_ok  = 0;
+  unsigned int lines_bad = 0;
+
+  vector<string> lines = fileBuffer(filename);
+  unsigned int i, vsize = lines.size();
+  if(vsize == 0)
+    return(false);
+
+  for(i=0; i<vsize; i++) {
+    string line = stripBlankEnds(lines[i]);
+    if((line != "") && (!strBegins(line, "//"))) {
+      string xstr = biteString(line, ',');
+      string ystr = biteString(line, ',');
+      string fstr = biteString(line, ',');
+      string dstr = stripBlankEnds(line);
+      
+      if((xstr=="")||(ystr=="")||(fstr=="")||(dstr=="")) {
+	lines_bad++;
+	cout << "Problem with line " << i << endl;
+	cout << "  [" << line << "]" << endl;
+      }
+      else {
+	lines_ok++;
+	double xval = atof(xstr.c_str());
+	double yval = atof(ystr.c_str());
+	double fval = atof(fstr.c_str());
+	double dval = atof(dstr.c_str());
+	addVector(xval, yval, fval, dval);
+      }
+    }
+  }
+  cout << "Done Populating Current Field." << endl;
+  cout << "  OK Entries: " << lines_ok << endl;
+  cout << "  Bad Entries: " << lines_bad << endl;
+
+  return(true);
+}
+
 //-------------------------------------------------------------------
 // Procedure: addVector
 //   Purpose: 
@@ -58,6 +106,25 @@ void CurrentField::setRadius(double radius)
   if(radius < 1)
     radius = 1;
   m_radius = radius;
+}
+
+//-------------------------------------------------------------------
+// Procedure: 
+//   Purpose: 
+
+void CurrentField::print()
+{
+  cout << "Current Field [" << m_field_name << "]:" << endl;
+  cout << "Total Entries: " << size() << endl;
+  cout << "Radius:" << m_radius << endl;
+
+  unsigned int i, vsize = m_xpos.size();
+  for(i=0; i<vsize; i++) {
+    cout << "[" << i << "]: ";
+    cout << m_xpos[i] << "," << m_ypos[i];
+    cout << " Force=" << m_force[i];
+    cout << ", Dir=" << m_direction[i] << endl;
+  }
 }
 
 //-------------------------------------------------------------------
