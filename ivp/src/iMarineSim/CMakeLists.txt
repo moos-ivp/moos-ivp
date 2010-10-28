@@ -17,6 +17,7 @@ SET(SRC
    IMS_MOOSApp.cpp
    IMS_Model.cpp
    SimEngine.cpp
+   CurrentField.cpp
    VState.cpp
    iMarineSimMain.cpp
 )
