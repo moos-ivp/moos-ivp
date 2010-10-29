@@ -32,22 +32,24 @@ public:
   CurrentField();
   ~CurrentField() {};
 
-  bool populate(std::string filename);
-
-  void addVector(double x, double y, double force, double direction);
-
-  void getForce(double x, double y, double& fx, double& fy);
-
-  void setRadius(double radius);
-
-  void print();
-
-  unsigned int size() {return(m_xpos.size());};
+  void   reset();
+  bool   populate(std::string filename);
+  void   addVector(double x, double y, double force, double direction);
+  void   getForce(double x, double y, double& fx, double& fy);
+  void   setRadius(double radius);
+  void   print();
 
   double getXPos(unsigned int);
   double getYPos(unsigned int);
   double getForce(unsigned int);
   double getDirection(unsigned int);
+
+  unsigned int size()     {return(m_xpos.size());};
+  std::string getName()   {return(m_field_name);};
+  double getRadius()      {return(m_radius);};
+
+ protected:
+  bool   handleLine(std::string);
 
 protected:
   std::vector<double> m_xpos;

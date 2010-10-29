@@ -28,6 +28,7 @@
 #include "MBTimer.h"
 #include "SimEngine.h"
 #include "AngleUtils.h"
+#include "CurrentField.h"
 
 class IMS_Model
 {
@@ -78,7 +79,11 @@ public:
   void   setPosition(std::string);
   void   setPositionPairs(std::string);
 
+  void   setCurrentField(std::string);
+
   void   printSummary();
+
+  CurrentField getCurrentField() {return(m_current_field);};
 
 protected:
   bool      m_paused;
@@ -94,5 +99,7 @@ protected:
   VState    m_vstate; // with no noise
   MBTimer   m_pause_timer;
   SimEngine m_sim_engine;
+
+  CurrentField m_current_field;
 };
 #endif

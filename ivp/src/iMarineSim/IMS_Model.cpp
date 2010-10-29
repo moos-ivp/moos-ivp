@@ -285,6 +285,17 @@ void IMS_Model::setPositionPairs(string str)
 }
 
 //------------------------------------------------------------------------
+// Procedure: setCurretField
+
+void IMS_Model::setCurrentField(string filename)
+{
+  m_current_field.reset();
+  m_current_field.populate(filename);
+  m_current_field.print();
+}
+
+
+//------------------------------------------------------------------------
 // Procedure: printSummary()
 
 void IMS_Model::printSummary()

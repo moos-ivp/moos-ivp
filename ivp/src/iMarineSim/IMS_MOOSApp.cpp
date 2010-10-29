@@ -23,6 +23,7 @@
 #include <iostream>
 #include "IMS_MOOSApp.h"
 #include "MBUtils.h"
+#include "CurrentField.h"
 
 using namespace std;
 
@@ -31,9 +32,10 @@ using namespace std;
 
 IMS_MOOSApp::IMS_MOOSApp() 
 {
-  m_sim_prefix  = "IMS";
-  m_model       = 0;
-  m_reset_count = 0;
+  m_sim_prefix   = "IMS";
+  m_model        = 0;
+  m_reset_count  = 0;
+  m_fresh_cfield = false;
 }
 
 //------------------------------------------------------------------------
@@ -173,6 +175,10 @@ bool IMS_MOOSApp::OnStartUp()
       m_model->setPaused(toupper(sVal) == "TRUE");
     else if(sVarName == "START_POS")
       m_model->setPosition(sVal);
+    else if(sVarName == "CURRENT_FIELD") {
+      m_model->setCurrentField(sVal);
+      m_fresh_cfield = true;
+    }
   }
 
   // tes 12-2-07
@@ -213,38 +219,6 @@ bool IMS_MOOSApp::OnConnectToServer()
 }
 
 //------------------------------------------------------------------------
-// Procedure: OnConnectToServer
-//      Note: 
-
-void IMS_MOOSApp::registerVariables()
-{
-  m_Comms.Register("DESIRED_RUDDER", 0);
-  m_Comms.Register("DESIRED_THRUST", 0);
-  m_Comms.Register("DESIRED_ELEVATOR", 0);
-
-  // The MARINESIM_ prefix is deprecated
-  m_Comms.Register("MARINESIM_FLOAT_RATE", 0);
-  m_Comms.Register("MARINESIM_FORCE_X", 0);
-  m_Comms.Register("MARINESIM_FORCE_Y", 0);
-  m_Comms.Register("MARINESIM_FORCE_VECTOR", 0);
-  m_Comms.Register("MARINESIM_FORCE_VECTOR_ADD", 0);
-  m_Comms.Register("MARINESIM_FORCE_THETA", 0);
-  m_Comms.Register("MARINESIM_PAUSE", 0);
-  m_Comms.Register("MARINESIM_RESET", 0);
-
-  // The IMS_ prefix is the desired (newer) prefix supported
-  m_Comms.Register("IMS_FLOAT_RATE", 0);
-  m_Comms.Register("IMS_FORCE_X", 0);
-  m_Comms.Register("IMS_FORCE_Y", 0);
-  m_Comms.Register("IMS_FORCE_VECTOR", 0);
-  m_Comms.Register("IMS_FORCE_VECTOR_ADD", 0);
-  m_Comms.Register("IMS_FORCE_THETA", 0);
-  m_Comms.Register("IMS_PAUSE", 0);
-  m_Comms.Register("IMS_RESET", 0);
-
-}
-
-//------------------------------------------------------------------------
 // Procedure: OnDisconnectFromServer
 //      Note: 
 
@@ -262,6 +236,9 @@ bool IMS_MOOSApp::Iterate()
 {
   if(!m_model)
     return(false);
+
+  if(m_fresh_cfield)
+    postCurrentField();
 
   double ctime = MOOSTime();
 
@@ -312,6 +289,57 @@ bool IMS_MOOSApp::Iterate()
 
 
 //------------------------------------------------------------------------
+// Procedure: postCurrentField
+//      Note: Publishes the following two variables:
+//            IMS_CFIELD_SUMMARY - one posting for the whole field.
+//            VIEW_VECTOR - one for each element in the field.
+//  Examples:
+//  IMS_CFIELD_SUMMARY = field_name=bert, radius=12, elements=19
+//         VIEW_VECTOR = x=12, y=-98, force=3.4, direction=78, label=02
+
+
+void IMS_MOOSApp::postCurrentField()
+{
+  m_fresh_cfield = false;
+  if(!m_model)
+    return;
+
+  CurrentField cfield = m_model->getCurrentField();
+  unsigned int i, fld_size = cfield.size();
+  if(fld_size == 0)
+    return;
+
+  string cfield_name   = cfield.getName();
+  string cfield_radius = doubleToString(cfield.getRadius());
+  cfield_radius = dstringCompact(cfield_radius);
+  string cfield_size = doubleToString(fld_size);
+  cfield_size = dstringCompact(cfield_size);
+
+  string summary = "field_name=" + cfield_name;
+  summary += ", radius=" + cfield_radius;
+  summary += ", elements=" + cfield_size;
+  m_Comms.Notify("IMS_CFIELD_SUMMARY", summary);
+
+  for(i=0; i<fld_size; i++) {
+    double xval = cfield.getXPos(i);
+    double yval = cfield.getYPos(i);
+    double fval = cfield.getForce(i);
+    double dval = cfield.getDirection(i);
+    
+    string xstr = dstringCompact(doubleToString(xval,2));
+    string ystr = dstringCompact(doubleToString(yval,2));
+    string fstr = dstringCompact(doubleToString(fval,2));
+    string dstr = dstringCompact(doubleToString(dval,2));
+    string id   = uintToString(i);
+    
+    string msg = "x=" + xstr + ",y=" + ystr + ",force=" + fstr;
+    msg += ",direction=" + dstr + ",label=" + cfield_name + "_" + id;
+    cout << "VIEW_VECTOR: " << msg << endl;
+    m_Comms.Notify("VIEW_VECTOR", msg);
+  }
+}
+
+//------------------------------------------------------------------------
 // Procedure: handleSimReset
 //
 //  "new_x=20, new_y=-35, new_speed=2.2, new_heading=180, new_depth=20"
@@ -350,4 +378,34 @@ void IMS_MOOSApp::handleSimReset(const string& str)
 }
 
 
+//------------------------------------------------------------------------
+// Procedure: registerVariables
+//      Note: 
 
+void IMS_MOOSApp::registerVariables()
+{
+  m_Comms.Register("DESIRED_RUDDER", 0);
+  m_Comms.Register("DESIRED_THRUST", 0);
+  m_Comms.Register("DESIRED_ELEVATOR", 0);
+
+  // The MARINESIM_ prefix is deprecated
+  m_Comms.Register("MARINESIM_FLOAT_RATE", 0);
+  m_Comms.Register("MARINESIM_FORCE_X", 0);
+  m_Comms.Register("MARINESIM_FORCE_Y", 0);
+  m_Comms.Register("MARINESIM_FORCE_VECTOR", 0);
+  m_Comms.Register("MARINESIM_FORCE_VECTOR_ADD", 0);
+  m_Comms.Register("MARINESIM_FORCE_THETA", 0);
+  m_Comms.Register("MARINESIM_PAUSE", 0);
+  m_Comms.Register("MARINESIM_RESET", 0);
+
+  // The IMS_ prefix is the desired (newer) prefix supported
+  m_Comms.Register("IMS_FLOAT_RATE", 0);
+  m_Comms.Register("IMS_FORCE_X", 0);
+  m_Comms.Register("IMS_FORCE_Y", 0);
+  m_Comms.Register("IMS_FORCE_VECTOR", 0);
+  m_Comms.Register("IMS_FORCE_VECTOR_ADD", 0);
+  m_Comms.Register("IMS_FORCE_THETA", 0);
+  m_Comms.Register("IMS_PAUSE", 0);
+  m_Comms.Register("IMS_RESET", 0);
+
+}

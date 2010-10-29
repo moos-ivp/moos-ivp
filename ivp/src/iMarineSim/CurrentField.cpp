@@ -35,10 +35,24 @@ using namespace std;
 
 CurrentField::CurrentField()
 {
-  m_field_name = "generic_cfield";
-  m_radius = 20;
+  reset();
 }
   
+//-------------------------------------------------------------------
+// Procedure: reset
+//   Purpose: 
+
+void CurrentField::reset()
+{
+  m_field_name = "generic_cfield";
+  m_radius = 20;
+
+  m_xpos.clear();
+  m_ypos.clear();
+  m_force.clear();
+  m_direction.clear();
+}
+
 //-------------------------------------------------------------------
 // Procedure: populate
 //   Purpose: 
@@ -57,31 +71,64 @@ bool CurrentField::populate(string filename)
 
   for(i=0; i<vsize; i++) {
     string line = stripBlankEnds(lines[i]);
-    if((line != "") && (!strBegins(line, "//"))) {
-      string xstr = biteString(line, ',');
-      string ystr = biteString(line, ',');
-      string fstr = biteString(line, ',');
-      string dstr = stripBlankEnds(line);
-      
-      if((xstr=="")||(ystr=="")||(fstr=="")||(dstr=="")) {
-	lines_bad++;
-	cout << "Problem with line " << i << endl;
-	cout << "  [" << line << "]" << endl;
-      }
-      else {
-	lines_ok++;
-	double xval = atof(xstr.c_str());
-	double yval = atof(ystr.c_str());
-	double fval = atof(fstr.c_str());
-	double dval = atof(dstr.c_str());
-	addVector(xval, yval, fval, dval);
-      }
+    bool ok = handleLine(line);
+    
+    if(!ok) {
+      lines_bad++;
+      cout << "Problem with line " << i << endl;
+      cout << "  [" << line << "]" << endl;
     }
+    else
+      lines_ok++;
   }
   cout << "Done Populating Current Field." << endl;
   cout << "  OK Entries: " << lines_ok << endl;
   cout << "  Bad Entries: " << lines_bad << endl;
 
+  return(true);
+}
+
+//-------------------------------------------------------------------
+// Procedure: handleLine
+//   Purpose: 
+
+bool CurrentField::handleLine(string line)
+{
+  if(line == "")
+    return(true);
+  if(strBegins(line, "//"))
+    return(true);
+
+  line = tolower(line);
+  if(strBegins(line, "fieldname: ")) {
+    string unused = biteString(line, ':');
+    m_field_name = stripBlankEnds(line);
+    return(true);
+  }
+
+  if(strBegins(line, "radius: ")) {
+    string unused = biteString(line, ':');
+    line = stripBlankEnds(line);
+    if(!isNumber(line))
+      return(false);
+    double val = atof(line.c_str());
+    m_radius = val;
+    return(true);
+  }
+    
+  string xstr = biteString(line, ',');
+  string ystr = biteString(line, ',');
+  string fstr = biteString(line, ',');
+  string dstr = stripBlankEnds(line);
+  
+  if((xstr=="")||(ystr=="")||(fstr=="")||(dstr==""))
+    return(false);
+
+  double xval = atof(xstr.c_str());
+  double yval = atof(ystr.c_str());
+  double fval = atof(fstr.c_str());
+  double dval = atof(dstr.c_str());
+  addVector(xval, yval, fval, dval);
   return(true);
 }
 
