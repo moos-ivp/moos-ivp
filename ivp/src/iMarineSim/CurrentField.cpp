@@ -228,7 +228,7 @@ void CurrentField::getLocalForce(double x, double y,
     if(dist < m_radius) {
       count++;
 
-      double pct = dist / m_radius;
+      double pct = (1 - (dist / m_radius));
       pct = pct * pct;
       
       double xdot = pct * m_vectors[i].xdot();
