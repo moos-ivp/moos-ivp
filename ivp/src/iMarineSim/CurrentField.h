@@ -25,6 +25,7 @@
 
 #include <string>
 #include <vector>
+#include "XYVector.h"
 
 class CurrentField
 {
@@ -32,19 +33,20 @@ public:
   CurrentField();
   ~CurrentField() {};
 
-  void   reset();
-  bool   populate(std::string filename);
-  void   addVector(double x, double y, double force, double direction);
-  void   getForce(double x, double y, double& fx, double& fy);
-  void   setRadius(double radius);
-  void   print();
+  void reset();
+  bool populate(std::string filename);
+  void addVector(const XYVector&);
+  void getLocalForce(double x, double y, double& fx, double& fy) const;
+  void setRadius(double radius);
+  void print();
 
-  double getXPos(unsigned int);
-  double getYPos(unsigned int);
-  double getForce(unsigned int);
-  double getDirection(unsigned int);
+  XYVector getVector(unsigned int) const;
+  double   getXPos(unsigned int) const;
+  double   getYPos(unsigned int) const;
+  double   getForce(unsigned int) const;
+  double   getDirection(unsigned int) const;
 
-  unsigned int size()     {return(m_xpos.size());};
+  unsigned int size()     {return(m_vectors.size());};
   std::string getName()   {return(m_field_name);};
   double getRadius()      {return(m_radius);};
 
@@ -52,13 +54,9 @@ public:
   bool   handleLine(std::string);
 
 protected:
-  std::vector<double> m_xpos;
-  std::vector<double> m_ypos;
-  std::vector<double> m_force;
-  std::vector<double> m_direction;
-
-  std::string m_field_name;
-  double      m_radius;
+  std::vector<XYVector> m_vectors;
+  std::string           m_field_name;
+  double                m_radius;
 };
 
 #endif 

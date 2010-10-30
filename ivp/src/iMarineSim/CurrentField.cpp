@@ -37,7 +37,7 @@ CurrentField::CurrentField()
 {
   reset();
 }
-  
+
 //-------------------------------------------------------------------
 // Procedure: reset
 //   Purpose: 
@@ -47,10 +47,7 @@ void CurrentField::reset()
   m_field_name = "generic_cfield";
   m_radius = 20;
 
-  m_xpos.clear();
-  m_ypos.clear();
-  m_force.clear();
-  m_direction.clear();
+  m_vectors.clear();
 }
 
 //-------------------------------------------------------------------
@@ -128,20 +125,20 @@ bool CurrentField::handleLine(string line)
   double yval = atof(ystr.c_str());
   double fval = atof(fstr.c_str());
   double dval = atof(dstr.c_str());
-  addVector(xval, yval, fval, dval);
+  XYVector new_vector(xval, yval, fval, dval);
+
+  addVector(new_vector);
   return(true);
 }
+
 
 //-------------------------------------------------------------------
 // Procedure: addVector
 //   Purpose: 
 
-void CurrentField::addVector(double x, double y, double f, double dir)
+void CurrentField::addVector(const XYVector& new_vector)
 {
-  m_xpos.push_back(x);
-  m_ypos.push_back(y);
-  m_force.push_back(f);
-  m_direction.push_back(angle360(dir));
+  m_vectors.push_back(new_vector);
 }
 
 //-------------------------------------------------------------------
@@ -165,12 +162,9 @@ void CurrentField::print()
   cout << "Total Entries: " << size() << endl;
   cout << "Radius:" << m_radius << endl;
 
-  unsigned int i, vsize = m_xpos.size();
+  unsigned int i, vsize = m_vectors.size();
   for(i=0; i<vsize; i++) {
-    cout << "[" << i << "]: ";
-    cout << m_xpos[i] << "," << m_ypos[i];
-    cout << " Force=" << m_force[i];
-    cout << ", Dir=" << m_direction[i] << endl;
+    m_vectors[i].print();
   }
 }
 
@@ -178,66 +172,78 @@ void CurrentField::print()
 // Procedure: getters
 //   Purpose: 
 
-double CurrentField::getXPos(unsigned int ix)
+XYVector CurrentField::getVector(unsigned int ix) const
 {
-  if(ix >= m_xpos.size())
-    return(0);
-  return(m_xpos[ix]);
+  XYVector null_vector;
+  if(ix >= m_vectors.size())
+    return(null_vector);
+  return(m_vectors[ix]);
 }
 
-double CurrentField::getYPos(unsigned int ix)
+double CurrentField::getXPos(unsigned int ix) const
 {
-  if(ix >= m_ypos.size())
+  if(ix >= m_vectors.size())
     return(0);
-  return(m_ypos[ix]);
+  return(m_vectors[ix].xpos());
 }
 
-double CurrentField::getForce(unsigned int ix)
+double CurrentField::getYPos(unsigned int ix) const
 {
-  if(ix >= m_force.size())
+  if(ix >= m_vectors.size())
     return(0);
-  return(m_force[ix]);
+  return(m_vectors[ix].ypos());
 }
 
-double CurrentField::getDirection(unsigned int ix)
+double CurrentField::getForce(unsigned int ix) const
 {
-  if(ix >= m_direction.size())
+  if(ix >= m_vectors.size())
     return(0);
-  return(m_direction[ix]);
+  return(m_vectors[ix].mag());
+}
+
+double CurrentField::getDirection(unsigned int ix) const
+{
+  if(ix >= m_vectors.size())
+    return(0);
+  return(m_vectors[ix].ang());
 }
 
 //-------------------------------------------------------------------
-// Procedure: getForce
+// Procedure: getLocalForce
 //   Purpose: 
 
-void CurrentField::getForce(double x, double y, 
-			    double& return_force_x, 
-			    double& return_force_y)
+void CurrentField::getLocalForce(double x, double y, 
+				 double& return_force_x, 
+				 double& return_force_y) const
 {
   double total_force_x = 0;
   double total_force_y = 0;
   unsigned int count = 0;
 
-  unsigned int i, vsize = m_xpos.size();
+  unsigned int i, vsize = m_vectors.size();
   for(i=0; i<vsize; i++) {
-    double dist = distPointToPoint(x, y, m_xpos[i], m_ypos[i]);
+    double xpos = m_vectors[i].xpos();
+    double ypos = m_vectors[i].ypos();
+    double dist = distPointToPoint(x, y, xpos, ypos);
     if(dist < m_radius) {
       count++;
 
       double pct = dist / m_radius;
       pct = pct * pct;
       
-      double ang = m_direction[i];
-      double mag = m_force[i];
-      double rads = headingToRadians(ang);
-      
-      double force_x = cos(rads) * mag;
-      double force_y = sin(rads) * mag;
-      
-      total_force_x += force_x;
-      total_force_y += force_y;
+      double xdot = pct * m_vectors[i].xdot();
+      double ydot = pct * m_vectors[i].ydot();
+
+      total_force_x += xdot;
+      total_force_y += ydot;
     }
   }
+  if(count == 0) {
+    return_force_x = 0;
+    return_force_y = 0;
+    return;
+  }
+  
   return_force_x = total_force_x / (double)(count); 
   return_force_y = total_force_y / (double)(count); 
 }

@@ -59,7 +59,7 @@ public:
 protected:
   std::string  m_sim_prefix;
   IMS_Model*   m_model;
-  bool         m_fresh_cfield;
+  bool         m_pending_cfield;
   unsigned int m_reset_count;
 
   // tes 12-2-07 added to allow simulated lat/long

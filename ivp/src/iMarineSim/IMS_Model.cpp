@@ -79,9 +79,18 @@ bool IMS_Model::propagate(double g_curr_time)
   else
     m_rudder_angle =  (min(fabs(m_rudder), m_max_rotat_vel));
 #endif
+
+  double cfield_x = 0;
+  double cfield_y = 0;
+
+  m_current_field.getLocalForce(m_vstate.m_dfX, m_vstate.m_dfY, 
+  				cfield_x, cfield_y);
   
-  m_sim_engine.setParam("force_x", m_force_x);
-  m_sim_engine.setParam("force_y", m_force_y);
+  double total_force_x = m_force_x + cfield_x;
+  double total_force_y = m_force_y + cfield_y;
+  
+  m_sim_engine.setParam("force_x", total_force_x);
+  m_sim_engine.setParam("force_y", total_force_y);
   m_sim_engine.setParam("torque_theta", m_torque_theta);
   m_sim_engine.setParam("float_rate", m_float_rate);
   m_sim_engine.setParam("deceleration", m_deceleration);
@@ -284,8 +293,9 @@ void IMS_Model::setPositionPairs(string str)
   }
 }
 
-//------------------------------------------------------------------------
-// Procedure: setCurretField
+
+//--------------------------------------------------------------------- 
+// Procedure: setCurretField                                      
 
 void IMS_Model::setCurrentField(string filename)
 {
@@ -294,8 +304,7 @@ void IMS_Model::setCurrentField(string filename)
   m_current_field.print();
 }
 
-
-//------------------------------------------------------------------------
+//---------------------------------------------------------------------
 // Procedure: printSummary()
 
 void IMS_Model::printSummary()

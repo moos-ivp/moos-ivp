@@ -32,10 +32,10 @@ using namespace std;
 
 IMS_MOOSApp::IMS_MOOSApp() 
 {
-  m_sim_prefix   = "IMS";
-  m_model        = 0;
-  m_reset_count  = 0;
-  m_fresh_cfield = false;
+  m_sim_prefix     = "IMS";
+  m_model          = 0;
+  m_reset_count    = 0;
+  m_pending_cfield = false;
 }
 
 //------------------------------------------------------------------------
@@ -78,6 +78,8 @@ bool IMS_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 	m_model->setForceVector(sval, false);
       else if(key == "IMS_FORCE_VECTOR_ADD")
 	m_model->setForceVector(sval, true);
+      else if(key == "IMS_REPOST")
+	m_pending_cfield = true;
       else if((key == "MARINESIM_RESET") || (key == "IMS_RESET")) {
 	m_reset_count++;
 	m_Comms.Notify("IMS_RESET_COUNT", m_reset_count);
@@ -177,7 +179,7 @@ bool IMS_MOOSApp::OnStartUp()
       m_model->setPosition(sVal);
     else if(sVarName == "CURRENT_FIELD") {
       m_model->setCurrentField(sVal);
-      m_fresh_cfield = true;
+      m_pending_cfield = true;
     }
   }
 
@@ -219,6 +221,38 @@ bool IMS_MOOSApp::OnConnectToServer()
 }
 
 //------------------------------------------------------------------------
+// Procedure: OnConnectToServer
+//      Note: 
+
+void IMS_MOOSApp::registerVariables()
+{
+  m_Comms.Register("DESIRED_RUDDER", 0);
+  m_Comms.Register("DESIRED_THRUST", 0);
+  m_Comms.Register("DESIRED_ELEVATOR", 0);
+
+  // The MARINESIM_ prefix is deprecated
+  m_Comms.Register("MARINESIM_FLOAT_RATE", 0);
+  m_Comms.Register("MARINESIM_FORCE_X", 0);
+  m_Comms.Register("MARINESIM_FORCE_Y", 0);
+  m_Comms.Register("MARINESIM_FORCE_VECTOR", 0);
+  m_Comms.Register("MARINESIM_FORCE_VECTOR_ADD", 0);
+  m_Comms.Register("MARINESIM_FORCE_THETA", 0);
+  m_Comms.Register("MARINESIM_PAUSE", 0);
+  m_Comms.Register("MARINESIM_RESET", 0);
+
+  // The IMS_ prefix is the desired (newer) prefix supported
+  m_Comms.Register("IMS_FLOAT_RATE", 0);
+  m_Comms.Register("IMS_FORCE_X", 0);
+  m_Comms.Register("IMS_FORCE_Y", 0);
+  m_Comms.Register("IMS_FORCE_VECTOR", 0);
+  m_Comms.Register("IMS_FORCE_VECTOR_ADD", 0);
+  m_Comms.Register("IMS_FORCE_THETA", 0);
+  m_Comms.Register("IMS_PAUSE", 0);
+  m_Comms.Register("IMS_RESET", 0);
+  m_Comms.Register("IMS_REPOST", 0);
+}
+
+//------------------------------------------------------------------------
 // Procedure: OnDisconnectFromServer
 //      Note: 
 
@@ -237,7 +271,7 @@ bool IMS_MOOSApp::Iterate()
   if(!m_model)
     return(false);
 
-  if(m_fresh_cfield)
+  if(m_pending_cfield)
     postCurrentField();
 
   double ctime = MOOSTime();
@@ -295,12 +329,12 @@ bool IMS_MOOSApp::Iterate()
 //            VIEW_VECTOR - one for each element in the field.
 //  Examples:
 //  IMS_CFIELD_SUMMARY = field_name=bert, radius=12, elements=19
-//         VIEW_VECTOR = x=12, y=-98, force=3.4, direction=78, label=02
+//         VIEW_VECTOR = x=12, y=-98, mag=3.4, ang=78, label=02
 
 
 void IMS_MOOSApp::postCurrentField()
 {
-  m_fresh_cfield = false;
+  m_pending_cfield = false;
   if(!m_model)
     return;
 
@@ -332,12 +366,12 @@ void IMS_MOOSApp::postCurrentField()
     string dstr = dstringCompact(doubleToString(dval,2));
     string id   = uintToString(i);
     
-    string msg = "x=" + xstr + ",y=" + ystr + ",force=" + fstr;
-    msg += ",direction=" + dstr + ",label=" + cfield_name + "_" + id;
-    cout << "VIEW_VECTOR: " << msg << endl;
+    string msg = "xpos=" + xstr + ",ypos=" + ystr + ",mag=" + fstr;
+    msg += ",ang=" + dstr + ",label=" + cfield_name + "_" + id;
     m_Comms.Notify("VIEW_VECTOR", msg);
   }
 }
+
 
 //------------------------------------------------------------------------
 // Procedure: handleSimReset
@@ -378,34 +412,4 @@ void IMS_MOOSApp::handleSimReset(const string& str)
 }
 
 
-//------------------------------------------------------------------------
-// Procedure: registerVariables
-//      Note: 
 
-void IMS_MOOSApp::registerVariables()
-{
-  m_Comms.Register("DESIRED_RUDDER", 0);
-  m_Comms.Register("DESIRED_THRUST", 0);
-  m_Comms.Register("DESIRED_ELEVATOR", 0);
-
-  // The MARINESIM_ prefix is deprecated
-  m_Comms.Register("MARINESIM_FLOAT_RATE", 0);
-  m_Comms.Register("MARINESIM_FORCE_X", 0);
-  m_Comms.Register("MARINESIM_FORCE_Y", 0);
-  m_Comms.Register("MARINESIM_FORCE_VECTOR", 0);
-  m_Comms.Register("MARINESIM_FORCE_VECTOR_ADD", 0);
-  m_Comms.Register("MARINESIM_FORCE_THETA", 0);
-  m_Comms.Register("MARINESIM_PAUSE", 0);
-  m_Comms.Register("MARINESIM_RESET", 0);
-
-  // The IMS_ prefix is the desired (newer) prefix supported
-  m_Comms.Register("IMS_FLOAT_RATE", 0);
-  m_Comms.Register("IMS_FORCE_X", 0);
-  m_Comms.Register("IMS_FORCE_Y", 0);
-  m_Comms.Register("IMS_FORCE_VECTOR", 0);
-  m_Comms.Register("IMS_FORCE_VECTOR_ADD", 0);
-  m_Comms.Register("IMS_FORCE_THETA", 0);
-  m_Comms.Register("IMS_PAUSE", 0);
-  m_Comms.Register("IMS_RESET", 0);
-
-}
