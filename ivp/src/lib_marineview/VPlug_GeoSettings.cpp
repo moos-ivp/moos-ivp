@@ -48,6 +48,7 @@ VPlug_GeoSettings::VPlug_GeoSettings()
   m_gsize_map["grid_edge_width"]     = 2.0;
   m_gsize_map["circle_edge_width"]   = 2.0;
   m_gsize_map["point_vertex_size"]   = 4.0;
+  m_gsize_map["vector_length_zoom"]  = 2.0;
 }
 
 //-----------------------------------------------------------
@@ -107,6 +108,8 @@ bool VPlug_GeoSettings::setParam(const string& param, string value)
     return(setColorMapping(param, value));
   else if(param == "point_vertex_color")
     return(setColorMapping(param, value));
+  else if(param == "vector_length_zoom")
+    return(setGSizeMapping(param, value), 4);
   else if(strContains(param, "_width"))
     return(setGSizeMapping(param, value), 10);
   else if(strContains(param, "_size"))

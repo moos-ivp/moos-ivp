@@ -40,6 +40,7 @@ ProcessConfig = iMarineSim
   START_SPEED   = 0
   START_HEADING = 180
   PREFIX        = NAV
+  CURRENT_FIELD = bravo.cfd
 }
 
 //------------------------------------------
@@ -108,13 +109,18 @@ ProcessConfig = pMarineViewer
   hash_delta           = 50
   hash_shade           = 0.4
   hash_view            = true
+  connection_posting   = IMS_REPOST=true
 
   scope  = VIEW_POINT
   scope  = VIEW_POLYGON
+  scope  = VIEW_SEGLIST
+
   scope  = NAV_X
   scope  = NAV_Y
   scope  = MVIEWER_LCLICK
   scope  = MVIEWER_RCLICK
+
+  left_context = return_point
 
   BUTTON_ONE = DEPLOY # DEPLOY=true
   BUTTON_ONE = MOOS_MANUAL_OVERIDE=false # RETURN=false
@@ -123,6 +129,8 @@ ProcessConfig = pMarineViewer
   ACTION  = MENU_KEY=deploy # DEPLOY = true # RETURN = false
   ACTION+ = MENU_KEY=deploy # MOOS_MANUAL_OVERIDE=false
   ACTION  = RETURN=true
+  ACTION  = HSLINE=off
+  ACTION  = HSLINE=on
   ACTION  = UPDATES_RETURN=speed=1.4
 }
 

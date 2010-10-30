@@ -233,6 +233,7 @@ SET(IVP_NON_GUI_APPS
   pMarinePID
   pBasicContactMgr
   pNodeReporter
+  pSafetyRetreat
   uTimerScript
   uHelmScope
   uProcessWatch

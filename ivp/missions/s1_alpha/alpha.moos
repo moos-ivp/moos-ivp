@@ -15,15 +15,15 @@ LongOrigin = -70.330400
 // Antler configuration  block
 ProcessConfig = ANTLER
 {
-  MSBetweenLaunches = 200
+  MSBetweenLaunches = 500
 
   Run = MOOSDB		@ NewConsole = false
+  Run = pLogger         @ NewConsole = false
   Run = iMarineSim	@ NewConsole = true
   Run = pNodeReporter	@ NewConsole = false
   Run = pMarinePID	@ NewConsole = true
-  Run = pMarineViewer	@ NewConsole = true
-  Run = pLogger         @ NewConsole = false
   Run = pHelmIvP	@ NewConsole = false
+  Run = pMarineViewer	@ NewConsole = true
 }
 
 //------------------------------------------
@@ -36,6 +36,9 @@ ProcessConfig = pLogger
 
   SyncLog = false
   AsyncLog = true
+
+  Log = VIEW_VECTOR @ 0
+
   WildCardLogging = true
 
   LoggingDirectorySummaryFile = /Users/mikerb/.plogger2
@@ -52,9 +55,6 @@ ProcessConfig = uXMS
   VAR = NAV_X
   VAR = NAV_Y
   VAR = NAV_SPEED
-
-  //COLORMAP = pHelmIvP,blue
-//  COLOR_MAP = NAV_Y,green
 }
 
 
@@ -70,7 +70,6 @@ ProcessConfig = iMarineSim
   START_Y       = 0
   START_SPEED   = 0
   START_HEADING = 180
-
   PREFIX        = NAV
 }
 
@@ -86,8 +85,6 @@ ProcessConfig = pHelmIvP
   Verbose    = quiet
   Domain     = course:0:359:360
   Domain     = speed:0:4:21
-
-  ACTIVE_START = false
 }
 
 //------------------------------------------
@@ -152,14 +149,6 @@ ProcessConfig = pMarineViewer
   scope  = NAV_Y
   scope  = MVIEWER_LCLICK
   scope  = MVIEWER_RCLICK
-
-  left_context   = surface_point
-  left_context   = station_point
-  left_context   = return_point
-
-  right_context  = loiter_point
-  right_context  = station_point
-  right_context  = surface_point
 
   BUTTON_ONE = DEPLOY # DEPLOY=true
   BUTTON_ONE = MOOS_MANUAL_OVERIDE=false # RETURN=false

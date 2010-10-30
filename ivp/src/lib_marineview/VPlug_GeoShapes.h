@@ -17,6 +17,7 @@
 #include "XYGrid.h"
 #include "XYCircle.h"
 #include "XYPoint.h"
+#include "XYVector.h"
 #include "ColorPack.h"
 
 class VPlug_GeoShapes {
@@ -32,10 +33,12 @@ public:
   void addCircle(const XYCircle&);
   void addHexagon(const XYHexagon&);
   void addPoint(const XYPoint&);
+  void addVector(const XYVector&);
 
   bool addPolygon(const std::string&);
   bool addSegList(const std::string&);
   bool addPoint(const std::string&);
+  bool addVector(const std::string&);
   bool addCircle(const std::string&);
   bool addGrid(const std::string&);
   bool updateGrid(const std::string&);
@@ -46,13 +49,15 @@ public:
   unsigned int sizeCircles()  {return(m_circles.size());};
   unsigned int sizeHexagons() {return(m_hexagons.size());};
   unsigned int sizePoints()   {return(m_points.size());};
+  unsigned int sizeVectors()  {return(m_vectors.size());};
 
-  XYPolygon& poly(unsigned int i)  {return(m_polygons[i]);};
-  XYSegList& segl(unsigned int i)  {return(m_seglists[i]);};
-  XYHexagon& hexa(unsigned int i)  {return(m_hexagons[i]);};
-  XYGrid&    grid(unsigned int i)  {return(m_grids[i]);};
-  XYCircle&  circ(unsigned int i)  {return(m_circles[i]);};
-  XYPoint&   point(unsigned int i) {return(m_points[i]);};
+  XYPolygon& poly(unsigned int i)   {return(m_polygons[i]);};
+  XYSegList& segl(unsigned int i)   {return(m_seglists[i]);};
+  XYHexagon& hexa(unsigned int i)   {return(m_hexagons[i]);};
+  XYGrid&    grid(unsigned int i)   {return(m_grids[i]);};
+  XYCircle&  circ(unsigned int i)   {return(m_circles[i]);};
+  XYPoint&   point(unsigned int i)  {return(m_points[i]);};
+  XYVector&  vector(unsigned int i) {return(m_vectors[i]);};
 
   std::vector<XYPolygon> getPolygons() {return(m_polygons);};
   std::vector<XYSegList> getSegLists() {return(m_seglists);};
@@ -60,6 +65,7 @@ public:
   std::vector<XYGrid>    getGrids()    {return(m_grids);};
   std::vector<XYCircle>  getCircles()  {return(m_circles);};
   std::vector<XYPoint>   getPoints()   {return(m_points);};
+  std::vector<XYVector>  getVectors()  {return(m_vectors);};
 
   XYPolygon getPolygon(unsigned int);
   XYSegList getSegList(unsigned int);
@@ -67,6 +73,7 @@ public:
   XYCircle  getCircle(unsigned int);
   XYHexagon getHexagon(unsigned int);
   XYPoint   getPoint(unsigned int);
+  XYVector  getVector(unsigned int);
 
 protected:
   std::vector<XYPolygon>  m_polygons;
@@ -75,6 +82,7 @@ protected:
   std::vector<XYGrid>     m_grids;
   std::vector<XYCircle>   m_circles;
   std::vector<XYPoint>    m_points;
+  std::vector<XYVector>   m_vectors;
 };
 
 #endif

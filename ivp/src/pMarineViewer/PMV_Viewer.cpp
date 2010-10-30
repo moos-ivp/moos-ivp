@@ -68,12 +68,14 @@ void PMV_Viewer::draw()
   vector<XYPoint>   points  = m_geoshapes.getPoints();
   vector<XYSegList> segls   = m_geoshapes.getSegLists();
   vector<XYCircle>  circles = m_geoshapes.getCircles();
+  vector<XYVector>  vectors = m_geoshapes.getVectors();
 
   drawPolygons(polys);
   drawGrids(grids);
   drawSegLists(segls);
   drawCircles(circles);
   drawPoints(points);
+  drawVectors(vectors);
   drawDropPoints();
 
 

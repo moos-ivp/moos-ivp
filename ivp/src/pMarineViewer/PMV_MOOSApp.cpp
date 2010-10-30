@@ -40,6 +40,10 @@ PMV_MOOSApp::PMV_MOOSApp()
   m_node_report_vars.push_back("AIS_REPORT_LOCAL");
   m_node_report_vars.push_back("NODE_REPORT");
   m_node_report_vars.push_back("NODE_REPORT_LOCAL");
+
+  VarDataPair pair("HELM_MAP_CLEAR", 0);
+  m_connection_pairs.push_back(pair);
+  m_pending_pairs   = true;
 }
 
 //----------------------------------------------------------------
@@ -76,8 +80,6 @@ bool PMV_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 bool PMV_MOOSApp::OnConnectToServer()
 {
   registerVariables();
-
-  m_Comms.Notify("HELM_MAP_CLEAR", 0);
   return(true);
 }
 
@@ -87,6 +89,9 @@ bool PMV_MOOSApp::OnConnectToServer()
 
 bool PMV_MOOSApp::Iterate()
 {
+  if(m_pending_pairs)
+    postConnectionPairs();
+
   if((!m_gui) || (!m_pending_moos_events))
     return(true);
   
@@ -100,6 +105,23 @@ bool PMV_MOOSApp::Iterate()
   return(true);
 }
 
+//-------------------------------------------------------------
+// Procedure: postConnectionPairs
+//      Note: 
+
+void PMV_MOOSApp::postConnectionPairs()
+{
+  m_pending_pairs = false;
+  unsigned int i, vsize = m_connection_pairs.size();
+  for(i=0; i<vsize; i++) {
+    VarDataPair pair = m_connection_pairs[i];
+    string var = pair.get_var();
+    if(pair.is_string())
+      m_Comms.Notify(var, pair.get_sdata());
+    else
+      m_Comms.Notify(var, pair.get_ddata());
+  }
+}
 
 //--------------------------------------------------------
 // Procedure: onStartUp()
@@ -183,6 +205,7 @@ void PMV_MOOSApp::registerVariables()
   m_Comms.Register("GRID_DELTA",   0);
   m_Comms.Register("VIEW_POLYGON", 0);
   m_Comms.Register("VIEW_POINT",   0);
+  m_Comms.Register("VIEW_VECTOR",  0);
   m_Comms.Register("VIEW_CIRCLE",  0);
   m_Comms.Register("VIEW_SEGLIST", 0);
   m_Comms.Register("TRAIL_RESET",  0);
@@ -279,6 +302,7 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
     if(key == "VIEW_POLYGON")           cout << "P";
     else if(key == "VIEW_SEGLIST")      cout << "S";
     else if(key == "VIEW_POINT")        cout << ".";
+    else if(key == "VIEW_VECTOR")       cout << "V";
     else if(key == "GRID_CONFIG")       cout << "X";
     else if(key == "NODE_REPORT")       cout << "*";
     else if(key == "NODE_REPORT_LOCAL") cout << "*";
@@ -399,6 +423,15 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
 	m_node_report_vars.push_back(value);
       }
     }
+    else if(param == "connection_posting") {
+      string var = stripBlankEnds(biteString(value, '='));
+      string val = stripBlankEnds(value);
+      if(!strContainsWhite(var)) {
+	m_pending_pairs = true;
+	VarDataPair pair(var, val, "auto");
+	m_connection_pairs.push_back(pair);
+      }      
+    }
     else if(param == "scope") {
       vector<string> svector = parseString(value, ',');
       unsigned int i, vsize = svector.size();
@@ -429,7 +462,6 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
   
   registerVariables();
 }
-
 
 //----------------------------------------------------------------------
 // Procedure: getContextKey

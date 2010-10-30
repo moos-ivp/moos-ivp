@@ -59,12 +59,12 @@ class PMV_MOOSApp : public CMOOSApp
   void handleStartUp(const MOOS_event & e);
 
  protected:
- 
   void handlePendingGUI();
   void receiveVehicleState(CMOOSMsg &Msg);
   bool receivePK_SOL(std::string sval);
   void registerVariables();
-  
+  void postConnectionPairs();
+
   std::string getContextKey(std::string);
 
  protected:
@@ -74,10 +74,12 @@ class PMV_MOOSApp : public CMOOSApp
   double m_start_time;
   double m_lastredraw_time;
   bool   m_verbose;
+  bool   m_pending_pairs;
   int    m_counter;
 
   std::vector<std::string> m_node_report_vars;
   std::vector<std::string> m_scope_vars;
+  std::vector<VarDataPair> m_connection_pairs; 
 };
 
 #endif 

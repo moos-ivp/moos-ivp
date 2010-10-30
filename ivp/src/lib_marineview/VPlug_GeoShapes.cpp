@@ -12,6 +12,7 @@
 #include "XYFormatUtilsPoly.h"
 #include "XYFormatUtilsPoint.h"
 #include "XYFormatUtilsCircle.h"
+#include "XYFormatUtilsVector.h"
 #include "ColorParse.h"
 
 using namespace std;
@@ -41,6 +42,8 @@ bool VPlug_GeoShapes::setParam(const string& param, string value)
       m_points.clear();
     else if(value == "hexagons")
       m_hexagons.clear();
+    else if(value == "vectors")
+      m_vectors.clear();
     else
       return(false);
   }
@@ -90,6 +93,26 @@ void VPlug_GeoShapes::addSegList(const XYSegList& new_segl)
     }
   }
   m_seglists.push_back(new_segl);  
+}
+
+//-----------------------------------------------------------
+// Procedure: addVector
+
+void VPlug_GeoShapes::addVector(const XYVector& new_vect)
+{
+  string new_label = new_vect.get_label();
+  if(new_label == "") {
+    m_vectors.push_back(new_vect);
+    return;
+  }
+  
+  for(unsigned int i=0; i<m_vectors.size(); i++) {
+    if(m_vectors[i].get_label() == new_label) {
+      m_vectors[i] = new_vect;
+      return;
+    }
+  }
+  m_vectors.push_back(new_vect);  
 }
 
 //-----------------------------------------------------------
@@ -176,6 +199,16 @@ bool VPlug_GeoShapes::addPolygon(const string& poly_str)
   if(new_poly.size() == 0)
     return(false);
   addPolygon(new_poly);
+  return(true);
+}
+
+//-----------------------------------------------------------
+// Procedure: addVector
+
+bool VPlug_GeoShapes::addVector(const string& vect_str)
+{
+  XYVector new_vect = string2Vector(vect_str);
+  addVector(new_vect);
   return(true);
 }
 
@@ -306,4 +339,17 @@ XYPoint VPlug_GeoShapes::getPoint(unsigned int index)
   }
   else
     return(m_points[index]);
+}
+
+//-------------------------------------------------------------
+// Procedure: getVector(int)
+
+XYVector VPlug_GeoShapes::getVector(unsigned int index)
+{
+  if(index >= m_vectors.size()) {
+    XYVector null_vector;
+    return(null_vector);
+  }
+  else
+    return(m_vectors[index]);
 }

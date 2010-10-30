@@ -110,6 +110,12 @@ protected:
 		    const ColorPack& vert_color,
 		    const ColorPack& labl_color);
 
+  void  drawVectors(const std::vector<XYVector>&);
+  void  drawVector(const XYVector&, double lwid, double vsize, bool zdash,
+		    const ColorPack& edge_color,
+		    const ColorPack& vert_color,
+		    const ColorPack& labl_color);
+
   void  drawGrids(const std::vector<XYGrid>&);
   void  drawGrid(const XYGrid&);
 

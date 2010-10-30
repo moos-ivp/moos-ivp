@@ -36,6 +36,7 @@
 #include "MarineViewer.h"
 #include "MBUtils.h"
 #include "GeomUtils.h"
+#include "AngleUtils.h"
 #include "FColorMap.h"
 #include "ColorParse.h"
 #include "Shape_Ship.h"
@@ -165,6 +166,8 @@ bool MarineViewer::setParam(string param, string value)
     handled = m_geoshapes.addSegList(value);
   else if(p=="view_point")
     handled = m_geoshapes.addPoint(value);
+  else if(p=="view_vector")
+    handled = m_geoshapes.addVector(value);
   else if(p=="view_circle")
     handled = m_geoshapes.addCircle(value);
   else if(p=="grid_config")
@@ -631,7 +634,11 @@ void MarineViewer::drawCommonVehicle(const string& vname,
     drawGLPoly(g_gliderBody, g_gliderBodySize, black, 1, factor_x);
     glTranslatef(cx, cy, 0);
   }
-  else if(vehibody == "track") {  
+  else if(vehibody == "ship") {  
+    if(shape_length > 0) {
+      factor_x *= (shape_length / g_shipLength);
+      factor_y *= (shape_length / g_shipLength);
+    }
     double cx = g_shipCtrX * factor_x;
     double cy = g_shipCtrY * factor_y;
     glTranslatef(-cx, -cy, 0);
@@ -640,14 +647,23 @@ void MarineViewer::drawCommonVehicle(const string& vname,
       drawGLPoly(g_shipBody, g_shipBodySize, black, outer_line, factor_x);
     glTranslatef(cx, cy, 0);
   }
-  else {  // vehibody == "ship" is the default
-    ColorPack blue("blue");
-    if(shape_length > 0) {
-      factor_x *= (shape_length / g_shipLength);
-      factor_y *= (shape_length / g_shipLength);
-    }
+  else if(vehibody == "track") {
     double cx = g_shipCtrX * factor_x;
     double cy = g_shipCtrY * factor_y;
+    glTranslatef(-cx, -cy, 0);
+    drawGLPoly(g_shipBody, g_shipBodySize, body_color, 0, factor_x);
+    if(outer_line > 0)
+      drawGLPoly(g_shipBody, g_shipBodySize, black, outer_line, factor_x);
+    glTranslatef(cx, cy, 0);
+  }
+  else {  // vehibody == "auv" is the default
+    ColorPack blue("blue");
+    if(shape_length > 0) {
+      factor_x *= (shape_length / g_auvLength);
+      factor_y *= (shape_length / g_auvLength);
+    }
+    double cx = g_auvCtrX * factor_x;
+    double cy = g_auvCtrY * factor_y;
     glTranslatef(-cx, -cy, 0);
     drawGLPoly(g_auvBody, g_auvBodySize, body_color, 0, factor_x);
     if(outer_line > 0)
@@ -1385,6 +1401,125 @@ void MarineViewer::drawSegList(const XYSegList& segl, double lwid,
       glDisable(GL_POINT_SMOOTH);
     }
   }
+
+  delete [] points;
+  glFlush();
+  glPopMatrix();
+}
+
+//-------------------------------------------------------------
+// Procedure: drawVectors()
+
+void MarineViewer::drawVectors(const vector<XYVector>& vects)
+{
+  // If the viewable parameter is set to false just return. In 
+  // querying the parameter the option "true" argument means return
+  // true if nothing is known about the parameter.
+  if(!m_geo_settings.viewable("vectors_viewable_all"))
+    return;
+  
+  unsigned int i, vsize = vects.size();
+  if(vsize == 0)
+    return;
+ 
+  ColorPack edge_c, vert_c, labl_c;
+  edge_c = m_geo_settings.geocolor("vector_edge_color", "yellow");
+  vert_c = m_geo_settings.geocolor("vector_vertex_color", "white");
+  labl_c = m_geo_settings.geocolor("vector_label_color", "white");
+  
+  double lwid = m_geo_settings.geosize("vector_edge_width", 1);
+  double vert = m_geo_settings.geosize("vector_vertex_size", 2);
+ 
+  for(i=0; i<vsize; i++) {
+    XYVector vect = vects[i];
+    if(vect.active()) {
+      if(vect.label_color_set())          // label_color
+	labl_c = vect.get_label_color();
+      if(vect.vertex_color_set())         // vertex_color
+	vert_c = vect.get_vertex_color();
+      if(vect.edge_color_set())           // edge_color
+	edge_c = vect.get_edge_color();
+      if(vect.get_edge_size() >= 0)       // edge_size
+	lwid = vect.get_edge_size();
+      if(vect.get_vertex_size() >= 0)     // vertex_color
+	vert = vect.get_vertex_size();
+      drawVector(vect, lwid, vert, false, edge_c, vert_c, labl_c); 
+    }
+  }
+}
+
+//-------------------------------------------------------------
+// Procedure: drawVector
+
+void MarineViewer::drawVector(const XYVector& vect, double lwid, 
+			      double vertex_size, bool z_dash,
+			      const ColorPack& edge_c,
+			      const ColorPack& vert_c,
+			      const ColorPack& labl_c)
+{
+  double *points = new double[8];
+
+  double pix_per_mtr_x = m_back_img.get_pix_per_mtr_x();
+  double pix_per_mtr_y = m_back_img.get_pix_per_mtr_y();
+
+  double vang  = vect.ang();
+  double ovang = angle360(vang-180);
+
+  double vzoom = m_geo_settings.geosize("vector_length_zoom", 2);
+  double vmag  = vect.mag() * vzoom;
+
+  // First determine the point on the end of the vector
+  double hx, hy;
+  projectPoint(vang, vmag, vect.xpos(), vect.ypos(), hx, hy);
+
+  // Then determine the head points
+  double hx1, hx2, hy1, hy2;
+  projectPoint(ovang+30, 2, hx, hy, hx1, hy1);
+  projectPoint(ovang-30, 2, hx, hy, hx2, hy2);
+
+  points[0]   = vect.xpos() * pix_per_mtr_x;
+  points[1]   = vect.ypos() * pix_per_mtr_y;
+  points[2]   = hx * pix_per_mtr_x;
+  points[3]   = hy * pix_per_mtr_y;
+
+  points[4]   = hx1 * pix_per_mtr_x;
+  points[5]   = hy1 * pix_per_mtr_y;
+  points[6]   = hx2 * pix_per_mtr_x;
+  points[7]   = hy2 * pix_per_mtr_y;
+
+
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glOrtho(0, w(), 0, h(), -1 ,1);
+
+  double tx = meters2img('x', 0);
+  double ty = meters2img('y', 0);
+  double qx = img2view('x', tx);
+  double qy = img2view('y', ty);
+
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
+  glLoadIdentity();
+
+  glTranslatef(qx, qy, 0);
+  glScalef(m_zoom, m_zoom, m_zoom);
+
+  // First draw the vector stem
+  glLineWidth(lwid);
+  glColor3f(edge_c.red(), edge_c.grn(), edge_c.blu());
+
+  glBegin(GL_LINE_STRIP);
+  glVertex2f(points[0], points[1]);
+  glVertex2f(points[2], points[3]);
+  glEnd();
+
+  // Then draw the vector head
+  glBegin(GL_POLYGON);
+  glVertex2f(points[4], points[5]);
+  glVertex2f(points[6], points[7]);
+  glVertex2f(points[2], points[3]);
+  glEnd();
+
 
   delete [] points;
   glFlush();
