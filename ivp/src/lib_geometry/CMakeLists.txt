@@ -55,6 +55,11 @@ SET(HEADERS
 # Build Library
 ADD_LIBRARY(geometry ${SRC})
 
+TARGET_LINK_LIBRARIES( geometry
+   mbutil
+   )
+
+
 # Install Headers
 INSTALL( FILES ${HEADERS} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/lib_geometry)
 
