@@ -30,6 +30,7 @@ class MOOSAppRunnerThread {
     /// Gracefully terminates the app's Run() method invocation.  This method
     /// doesn't return until after Run() has returned.
     void quit();
+    bool isRunning(){return m_thread->IsThreadRunning();};
     
     /**
     Blocks until the thread function has returned.

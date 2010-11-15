@@ -26,6 +26,7 @@ MOOSAppRunnerThread::MOOSAppRunnerThread(CMOOSApp *app, const char *name, const 
 
 MOOSAppRunnerThread::~MOOSAppRunnerThread()
 {
+    delete m_thread;
 }
 
 //==============================================================================

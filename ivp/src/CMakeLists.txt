@@ -218,6 +218,7 @@ ENDFOREACH(L)
 #---------------------------------------------------------------------
   
 SET(IVP_NON_GUI_APPS
+  app_alogcheck
   app_alogscan
   app_aloggrep
   app_alogrm
@@ -233,6 +234,7 @@ SET(IVP_NON_GUI_APPS
   pMarinePID
   pBasicContactMgr
   pNodeReporter
+  uMissionTester
   pSafetyRetreat
   uTimerScript
   uHelmScope
@@ -270,3 +272,34 @@ FOREACH(A ${IVP_APPS_TO_BUILD})
   SET( EXECUTABLE_OUTPUT_PATH "${IVP_BIN_DIRECTORY}" CACHE PATH "" FORCE )
   ADD_SUBDIRECTORY(${A})
 ENDFOREACH(A)
+
+#=============================================================================
+# Add Nightly Tests
+#=============================================================================
+
+# By default, turn nightly testing is on.
+SET( TEST_NIGHTLY TRUE CACHE BOOL "Enable/Disable nightly testing")
+
+IF( TEST_NIGHTLY )
+
+   # Set the directory where the nightly tests are located
+   GET_FILENAME_COMPONENT( NIGHTLY_TEST_DIR 
+      "${IVP_SOURCE_DIR}/../missions-test/nightly" ABSOLUTE )
+
+   FILE(GLOB NIGHTLY_TEST_DIRS ${NIGHTLY_TEST_DIR}/n* )
+
+   FOREACH(TEST_DIR ${NIGHTLY_TEST_DIRS} )
+      ADD_TEST( NAME ${TEST_DIR} 
+                COMMAND cmake -DIVP_BIN_DIR=${IVP_BIN_DIRECTORY} 
+                              -DMOOS_BIN_DIR=${MOOS_BASE_DIR_ABSOLUTE}/MOOSBin
+                              -DTEST_DIR=${TEST_DIR}
+                              -P ${TEST_DIR}/run_test.cmake )   
+   ENDFOREACH(TEST_DIR)
+
+ENDIF( TEST_NIGHTLY )
+
+
+
+
+
+
