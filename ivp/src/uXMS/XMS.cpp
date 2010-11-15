@@ -694,7 +694,8 @@ void XMS::updateVarCommunity(string varname, string vcommunity)
 
 void XMS::updateHistory(string entry, string source, double htime)
 {
-  if((entry  == m_history_list.front()) &&
+  if(!m_history_list.empty() && !m_history_sources.empty() &&
+     (entry  == m_history_list.front()) &&
      (source == m_history_sources.front())) {
     m_history_counts.front()++;
     m_history_times.front() = htime;
