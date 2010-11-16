@@ -288,18 +288,17 @@ IF( TEST_NIGHTLY )
 
    FILE(GLOB NIGHTLY_TEST_DIRS ${NIGHTLY_TEST_DIR}/n* )
 
+   FIND_PROGRAM(CMAKE_CMD "cmake")
+
    FOREACH(TEST_DIR ${NIGHTLY_TEST_DIRS} )
       ADD_TEST( NAME ${TEST_DIR} 
-                COMMAND cmake -DIVP_BIN_DIR=${IVP_BIN_DIRECTORY} 
+                COMMAND ${CMAKE_CMD} -DIVP_BIN_DIR=${IVP_BIN_DIRECTORY} 
                               -DMOOS_BIN_DIR=${MOOS_BASE_DIR_ABSOLUTE}/MOOSBin
                               -DTEST_DIR=${TEST_DIR}
                               -P ${TEST_DIR}/run_test.cmake )   
    ENDFOREACH(TEST_DIR)
 
 ENDIF( TEST_NIGHTLY )
-
-
-
 
 
 
