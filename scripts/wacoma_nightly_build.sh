@@ -13,6 +13,49 @@ LOGFILE=${WORKING_DIR}/wacoma_nightly_build.log
 LOGCMD="1>> ${LOGFILE} 2>> ${LOGFILE}"
 VMRUN="/Library/Application Support/VMware Fusion/vmrun"
 
+#============================================================================
+# FUNCTION:    virtual_machine_build
+# DESCRIPTION: Start a virtual machine, kicks of a build of MOOS-IvP, and
+#              shuts down the virtual machine after the build has been 
+#              completed. The name of the VMX file for the virtual machine
+#              should be passed in as an argument.
+# USAGE:
+#    virtual_machine_build /Users/tester/vms/Fedora/Fedora.vmx
+#============================================================================
+function virtual_machine_build {
+   if [ "$1" = "" ] ; then
+      echo "ERROR! You must specify a VMX file for 'virtual_machine_build' "
+      return -1
+   fi
+   VM=$1
+   if [ ! -e ${VM} ] ; then 
+      echo "ERROR! The virtual machine you specified does not exists!"
+      return -1
+   fi
+   # Start the Virtual Machine
+   # NOTE: We MUST wrap ${VMRUN} in quotes because there are spaces in the path
+   "${VMRUN}" start ${VM} nogui ${LOGCMD}
+
+   # Wait 3 minutes for the Virtual Machine to startup
+   sleep 180
+
+   # Invoke the CTest script on the Virtual Machine
+   # NOTE: We MUST wrap ${VMRUN} in quotes because there are spaces in the path
+   "${VMRUN}" -gu tester -gp moosivptester runScriptInGuest ${VM} \
+      /bin/bash "cd /home/tester/repos/moos-ivp-scripts && /usr/bin/ctest -S \
+      nightly.cmake -V"
+
+   # Wait 3 minutes before shutting down the Virtual Machine
+   sleep 180
+
+   # Stop the Virtual Machine
+   # NOTE: We MUST wrap ${VMRUN} in quotes because there are spaces in the path
+   "${VMRUN}" stop ${VM} ${LOGCMD}
+      
+
+} # END of virtual_machine_build
+
+
 #=============================================================================
 # Move the old log file and create a new log
 #=============================================================================
@@ -32,34 +75,16 @@ cd ${WORKING_DIR}
 
 
 #=============================================================================
-# Build MOOS-IvP on the Fedora Virtual Machine
+# Build MOOS-IvP on the Virtual Machines
 #=============================================================================
-# Start the Virtual Machine
-# NOTE: We MUST wrap ${VMRUN} in quotes because there are spaces in the path
-"${VMRUN}" start \
-   /Users/gagnercw/vms/Fedora-13-32bit.vmwarevm/Fedora-13-32bit.vmx \
-   nogui ${LOGCMD}
 
-# Wait 3 minutes for the Virtual Machine to startup
-sleep 180
+# Build on Ubuntu 10.10
+virtual_machine_build \
+   /Users/gagnercw/vms/Ubuntu_10.10_i386.vmwarevm/Ubuntu_10.10_i386.vmx
 
-# Invoke the CTest script on the Virtual Machine
-# NOTE: We MUST wrap ${VMRUN} in quotes because there are spaces in the path
-"${VMRUN}" -gu tester -gp moosivptester runScriptInGuest \
-   /Users/gagnercw/vms/Fedora-13-32bit.vmwarevm/Fedora-13-32bit.vmx \
-   /bin/bash "cd /home/tester/repos/moos-ivp-scripts && /usr/bin/ctest -S \
-   nightly.cmake -V"
-
-# Wait 3 minutes before shutting down the Virtual Machine
-sleep 180
-
-# Stop the Virtual Machine
-# NOTE: We MUST wrap ${VMRUN} in quotes because there are spaces in the path
-"${VMRUN}" stop \
-   /Users/gagnercw/vms/Fedora-13-32bit.vmwarevm/Fedora-13-32bit.vmx \
-   ${LOGCMD}
-
-
+# Build on Fedora 13
+virtual_machine_build \
+   /Users/gagnercw/vms/Fedora-13-32bit.vmwarevm/Fedora-13-32bit.vmx
 
 
 ##############################################################################
