@@ -53,7 +53,6 @@ protected:
   double   m_current_heading;
   double   m_current_speed;
   double   m_current_depth;
-  double   m_current_pitch;
 
   double   m_rudder_bias_duration;
   double   m_rudder_bias_limit;
@@ -64,11 +63,6 @@ protected:
   double   m_desired_speed;
   double   m_desired_depth;
   double   m_current_thrust;
-
-  double   m_max_pitch;
-  double   m_max_rudder;
-  double   m_max_thrust;
-  double   m_max_elevator;
 
   PIDEngine    m_pengine;
   std::string  m_verbose;

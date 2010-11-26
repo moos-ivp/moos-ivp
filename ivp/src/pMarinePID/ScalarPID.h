@@ -20,17 +20,10 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
-/******************************************************************/
-/* This file is a slightly augmented version of P.Newman's        */
-/* ScalarPID class found in MOOSGenLib.                           */
-/*                                                                */
-/* It is augmented w/ a copy constructor and assignment operator. */
-/*                                                                */
-/* All variable names remain the same, some comments are added.   */
-/*                                                                */
-/* Name of the class is changed from "CScalarPID" to "ScalarPID"  */
-/******************************************************************/
-
+/*****************************************************************/
+/* This file is a modified version of P.Newman's ScalarPID class */
+/* found in MOOSGenLib.                                          */
+/*****************************************************************/
 
 #ifndef MOD_SCALARPID_HEADER
 #define MOD_SCALARPID_HEADER
@@ -41,35 +34,30 @@
 
 #include <string>
 #include <list>
-#include <fstream>
 
 class ScalarPID  
 {
 public:
-  ScalarPID();
+  ScalarPID() {reset();};
   ScalarPID(double dfKp, double dfKd,
 	     double dfKi, double dfIntegralLimit,
-	     double dfOutputLimit);
-  ScalarPID(const ScalarPID&);    // **new **
-  virtual ~ScalarPID();
-
-  const ScalarPID &operator=(const ScalarPID&);  // **new**
+	     double output_limit);
+  virtual ~ScalarPID() {};
 
   void SetGains(double dfKp,double dfKd,double dfKi);
-  void SetLimits(double dfIntegralLimit, double dfOutputLimit);
+  void SetLimits(double dfIntegralLimit, double output_limit);
 
-  void SetGoal(double dfGoal);
-  void SetLogPath(std::string & sPath);
-  void SetLog(bool bLog);
-  void SetName(std::string sName);
   bool Run(double dfeIn, double dfErrorTime, double& dfOut);
+
+ protected:
+  void reset();
 
 protected:  // Core parameters
   double m_dfKi;
   double m_dfKd;
   double m_dfKp;
-  double m_dfIntegralLimit;
-  double m_dfOutputLimit;
+  double m_integral_limit;
+  double m_output_limit;
 
 protected: // Data persistent between runs
   double m_dfeOld;
@@ -83,18 +71,7 @@ protected: // Data persistent between runs
   double m_dfeDiff;
   double m_dfDT;
 
-  
-protected:
-  bool Log();
-  
-  //note this is just for logging purposes...
-  double  m_dfGoal;
-  int     m_nIterations;
-
-  bool          m_bLog;
-  std::string   m_sName;
-  std::string   m_sLogPath;
-  std::ofstream m_LogFile;
+  unsigned int  m_iterations;
 };
 
 #endif

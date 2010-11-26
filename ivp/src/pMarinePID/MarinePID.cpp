@@ -54,17 +54,12 @@ MarinePID::MarinePID()
   m_current_heading = 0;
   m_current_speed   = 0;
   m_current_depth   = 0;
-  m_current_pitch   = 0;
 
   m_rudder_bias_duration  = 10;
   m_rudder_bias_limit     = 0;
   m_rudder_bias_side      = 1;
   m_rudder_bias_timestamp = 0;
 
-  m_max_thrust   = 100;
-  m_max_rudder   = 100;
-  m_max_pitch    = 15;
-  m_max_elevator = 13;
   m_iteration    = 0;
   m_start_time   = 0;
 
@@ -130,8 +125,6 @@ bool MarinePID::OnNewMail(MOOSMSG_LIST &NewMail)
 	m_current_speed = msg.m_dfVal;
       else if(key == "NAV_DEPTH")
 	m_current_depth = msg.m_dfVal;
-      else if(key == "NAV_PITCH")
-	m_current_pitch = msg.m_dfVal;
       
       if(!strncmp(key.c_str(), "NAV_", 4))
 	m_time_of_last_nav_msg = curr_time;
@@ -202,8 +195,8 @@ bool MarinePID::Iterate()
 
   m_pengine.updateTime(current_time);
 
-  rudder = m_pengine.getDesiredRudder(m_desired_heading, m_current_heading, 
-				    m_max_rudder);
+  rudder = m_pengine.getDesiredRudder(m_desired_heading, 
+				      m_current_heading);
   
   //--------------------
   double rbias_duration = current_time - m_rudder_bias_timestamp;
@@ -218,12 +211,13 @@ bool MarinePID::Iterate()
   //--------------------
   
 
-  thrust = m_pengine.getDesiredThrust(m_desired_speed, m_current_speed, 
-				    m_current_thrust, m_max_thrust);
+  thrust = m_pengine.getDesiredThrust(m_desired_speed, 
+				      m_current_speed, 
+				      m_current_thrust);
+
   if(m_depth_control)
-    elevator = m_pengine.getDesiredElevator(m_desired_depth, m_current_depth,
-					  m_current_pitch, m_max_pitch, 
-					  m_max_elevator);
+    elevator = m_pengine.getDesiredElevator(m_desired_depth, 
+					    m_current_depth);
   
   if((m_desired_speed <= 0.001) && (m_desired_speed >= -0.001))
     thrust = 0;
@@ -304,7 +298,6 @@ void MarinePID::registerVariables()
   m_Comms.Register("NAV_YAW", 0);
   m_Comms.Register("NAV_SPEED", 0);
   m_Comms.Register("NAV_DEPTH", 0);
-  m_Comms.Register("NAV_PITCH", 0);
   m_Comms.Register("DESIRED_HEADING", 0);
   m_Comms.Register("DESIRED_SPEED", 0);
   m_Comms.Register("DESIRED_THRUST", 0);
@@ -420,10 +413,9 @@ bool MarinePID::handleYawSettings()
     MOOSDebugWrite("YAW_PID_INTEGRAL_LIMIT not found in Mission File");
     ok = false;
   }
-  if(!m_MissionReader.GetConfigurationParam("MAXRUDDER",m_max_rudder)) {
-    MOOSDebugWrite("MAXRUDDER not found in Mission File");
-    ok = false;
-  }
+  
+  double max_rudder = 100;
+  m_MissionReader.GetConfigurationParam("MAXRUDDER", max_rudder);
   
   ScalarPID crsPID;
   crsPID.SetGains(yaw_pid_Kp, yaw_pid_Kd, yaw_pid_Ki);
@@ -435,7 +427,7 @@ bool MarinePID::handleYawSettings()
   MOOSDebugWrite(MOOSFormat("YAW_PID_KD             = %.3f",yaw_pid_Kd));
   MOOSDebugWrite(MOOSFormat("YAW_PID_KI             = %.3f",yaw_pid_Ki));
   MOOSDebugWrite(MOOSFormat("YAW_PID_INTEGRAL_LIMIT = %.3f",yaw_pid_ilim));
-  MOOSDebugWrite(MOOSFormat("MAXRUDDER              = %.3f",m_max_rudder));
+  MOOSDebugWrite(MOOSFormat("MAXRUDDER              = %.3f",max_rudder));
   
   return(ok);
 }
@@ -466,22 +458,20 @@ bool MarinePID::handleSpeedSettings()
     MOOSDebugWrite("SPEED_PID_INTEGRAL_LIMIT not found in Mission File");
     ok = false;
   }
-  if(!m_MissionReader.GetConfigurationParam("MAXTHRUST",m_max_thrust))
-  {
-    MOOSDebugWrite("MAXTHRUST not found in Mission File");
-    ok = false;
-  }
-
+  
+  double max_thrust = 100;
+  m_MissionReader.GetConfigurationParam("MAXTHRUST", max_thrust);
+  
   ScalarPID spdPID;
   spdPID.SetGains(spd_pid_Kp, spd_pid_Kd, spd_pid_Ki);
-  spdPID.SetLimits(spd_pid_ilim, 100);
+  spdPID.SetLimits(spd_pid_ilim, max_thrust);
   m_pengine.setPID(1, spdPID);
 
-  MOOSDebugWrite(MOOSFormat("SPEED_PID_KP           = %.3f",spd_pid_Kp));
-  MOOSDebugWrite(MOOSFormat("SPEED_PID_KD           = %.3f",spd_pid_Kd));
-  MOOSDebugWrite(MOOSFormat("SPEED_PID_KI           = %.3f",spd_pid_Ki));
-  MOOSDebugWrite(MOOSFormat("SPEED_PID_KI_LIMIT     = %.3f",spd_pid_ilim));
-  MOOSDebugWrite(MOOSFormat("MAXTHRUST              = %.3f",m_max_thrust));
+  MOOSDebugWrite(MOOSFormat("SPEED_PID_KP       = %.3f", spd_pid_Kp));
+  MOOSDebugWrite(MOOSFormat("SPEED_PID_KD       = %.3f", spd_pid_Kd));
+  MOOSDebugWrite(MOOSFormat("SPEED_PID_KI       = %.3f", spd_pid_Ki));
+  MOOSDebugWrite(MOOSFormat("SPEED_PID_KI_LIMIT = %.3f", spd_pid_ilim));
+  MOOSDebugWrite(MOOSFormat("MAXTHRUST          = %.3f", max_thrust));
 
   return(ok);
 }
@@ -493,99 +483,48 @@ bool MarinePID::handleDepthSettings()
 {
   int ok = true;
 
-
-#if 1
   string depth_control_str = "false";
   m_MissionReader.GetConfigurationParam("DEPTH_CONTROL", depth_control_str);
   depth_control_str = tolower(depth_control_str);
   m_depth_control = ((depth_control_str == "true") ||
 		   (depth_control_str == "1") ||
 		   (depth_control_str == "yes"));
-#endif
-
-#if 0
-  m_MissionReader.GetConfigurationParam("DEPTH_CONTROL", m_depth_control);
-#endif
-#if 0
-  double dc;
-  m_MissionReader.GetConfigurationParam("DEPTH_CONTROL", dc);
-  m_depth_control = (int)dc;
-#endif
   
   if(!m_depth_control)
     return(true);
   
-
-  double z_top_pid_Kp, z_top_pid_Kd, z_top_pid_Ki, z_top_pid_ilim;
-  if(!m_MissionReader.GetConfigurationParam("Z_TO_PITCH_PID_KP", z_top_pid_Kp)) {
-    MOOSDebugWrite("Z_TO_PITCH_PID_KP not found in Mission File");
+  double dep_pid_Kp, dep_pid_Kd, dep_pid_Ki, dep_pid_ilim;
+  if(!m_MissionReader.GetConfigurationParam("DEPTH_PID_KP", dep_pid_Kp)) {
+    MOOSDebugWrite("DEPTH_PID_KP not found in Mission File");
     ok = false;
   }
-  if(!m_MissionReader.GetConfigurationParam("Z_TO_PITCH_PID_KD", z_top_pid_Kd)) {
-    MOOSDebugWrite("Z_TO_PITCH_PID_KD not found in Mission File");
+  if(!m_MissionReader.GetConfigurationParam("DEPTH_PID_KD", dep_pid_Kd)) {
+    MOOSDebugWrite("DEPTH_PID_KD not found in Mission File");
     ok = false;
   }
-  if(!m_MissionReader.GetConfigurationParam("Z_TO_PITCH_PID_KI", z_top_pid_Ki)) {
-    MOOSDebugWrite("Z_TO_PITCH_PID_KI not found in Mission File");
+  if(!m_MissionReader.GetConfigurationParam("DEPTH_PID_KI", dep_pid_Ki)) {
+    MOOSDebugWrite("DEPTH_PID_KI not found in Mission File");
     ok = false;
   }
-  if(!m_MissionReader.GetConfigurationParam("Z_TO_PITCH_PID_INTEGRAL_LIMIT", z_top_pid_ilim)) {
-    MOOSDebugWrite("Z_TO_PITCH_PID_INTEGRAL_LIMIT not found in Mission File");
+  if(!m_MissionReader.GetConfigurationParam("DEPTH_PID_INTEGRAL_LIMIT", dep_pid_ilim)) {
+    MOOSDebugWrite("DEPTH_PID_INTEGRAL_LIMIT not found in Mission File");
     ok = false;
   }
-  if(!m_MissionReader.GetConfigurationParam("MAXPITCH",m_max_pitch))
-  {
-    MOOSDebugWrite("MAXPITCH not found in Mission File");
-    ok = false;
-  }
-  // Convert pitch limit to radians
-  m_max_pitch=MOOSDeg2Rad(m_max_pitch);
-
-  ScalarPID ztopPID;
-  ztopPID.SetGains(z_top_pid_Kp, z_top_pid_Kd, z_top_pid_Ki);
-  ztopPID.SetLimits(z_top_pid_ilim, 100);
-  m_pengine.setPID(2, ztopPID);
-
-  MOOSDebugWrite(MOOSFormat("Z_TO_PITCH_PID_KP      = %.3f",z_top_pid_Kp));
-  MOOSDebugWrite(MOOSFormat("Z_TO_PITCH_PID_KD      = %.3f",z_top_pid_Kd));
-  MOOSDebugWrite(MOOSFormat("Z_TO_PITCH_PID_KI      = %.3f",z_top_pid_Ki));
-  MOOSDebugWrite(MOOSFormat("Z_TO_PITCH_PID_KI_LIMIT= %.3f",z_top_pid_ilim));
-  MOOSDebugWrite(MOOSFormat("MAXELEVATOR            = %.3f",m_max_elevator));
   
-  double pitch_pid_Kp, pitch_pid_Kd, pitch_pid_Ki, pitch_pid_ilim;
-  if(!m_MissionReader.GetConfigurationParam("PITCH_PID_KP", pitch_pid_Kp)) {
-    MOOSDebugWrite("PITCH_PID_KP not found in Mission File");
-    ok = false;
-  }
-  if(!m_MissionReader.GetConfigurationParam("PITCH_PID_KD", pitch_pid_Kd)) {
-    MOOSDebugWrite("PITCH_PID_KD not found in Mission File");
-    ok = false;
-  }
-  if(!m_MissionReader.GetConfigurationParam("PITCH_PID_KI", pitch_pid_Ki)) {
-    MOOSDebugWrite("PITCH_PID_KI not found in Mission File");
-    ok = false;
-  }
-  if(!m_MissionReader.GetConfigurationParam("PITCH_PID_INTEGRAL_LIMIT", pitch_pid_ilim)) {
-    MOOSDebugWrite("PITCH_PID_INTEGRAL_LIMIT not found in Mission File");
-    ok = false;
-  }
-  if(!m_MissionReader.GetConfigurationParam("MAXELEVATOR",m_max_elevator))
-  {
-    MOOSDebugWrite("MAXELEVATOR not found in Mission File");
-    ok = false;
-  }
+  double max_elevator = 100;
+  m_MissionReader.GetConfigurationParam("MAXELEVATOR", max_elevator);
 
-  ScalarPID pitchPID;
-  pitchPID.SetGains(pitch_pid_Kp, pitch_pid_Kd, pitch_pid_Ki);
-  pitchPID.SetLimits(pitch_pid_ilim, 100);
-  m_pengine.setPID(3, pitchPID);
 
-  MOOSDebugWrite(MOOSFormat("PITCH_PID_KP           = %.3f",pitch_pid_Kp));
-  MOOSDebugWrite(MOOSFormat("PITCH_PID_KD           = %.3f",pitch_pid_Kd));
-  MOOSDebugWrite(MOOSFormat("PITCH_PID_KI           = %.3f",pitch_pid_Ki));
-  MOOSDebugWrite(MOOSFormat("PITCH_PID_KI_LIMIT     = %.3f",pitch_pid_ilim));
-  MOOSDebugWrite(MOOSFormat("MAXPITCH               = %.3f",m_max_pitch));
+  ScalarPID depPID;
+  depPID.SetGains(dep_pid_Kp, dep_pid_Kd, dep_pid_Ki);
+  depPID.SetLimits(dep_pid_ilim, 100);
+  m_pengine.setPID(2, depPID);
 
+  MOOSDebugWrite(MOOSFormat("DEPTH_PID_KP       = %.3f",dep_pid_Kp));
+  MOOSDebugWrite(MOOSFormat("DEPTH_PID_KD       = %.3f",dep_pid_Kd));
+  MOOSDebugWrite(MOOSFormat("DEPTH_PID_KI       = %.3f",dep_pid_Ki));
+  MOOSDebugWrite(MOOSFormat("DEPTH_PID_KI_LIMIT = %.3f",dep_pid_ilim));
+  MOOSDebugWrite(MOOSFormat("MAXELEVATOR        = %.3f",max_elevator));
 
   return(ok);
 }
