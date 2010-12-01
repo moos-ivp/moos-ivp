@@ -30,10 +30,9 @@
 #include <string.h>
 #include "MarinePID.h"
 #include "MBUtils.h"
+#include "ColorParse.h"
 
 using namespace std;
-
-#define VERBOSE
 
 //--------------------------------------------------------------------
 // Procedure: Constructor
@@ -320,59 +319,52 @@ bool MarinePID::OnStartUp()
   m_speed_factor = 0;
   
   string pid_logpath  = "";
-  
+   
   STRING_LIST sParams;
   m_MissionReader.GetConfiguration(GetAppName(), sParams);
   
   STRING_LIST::iterator p;
   for(p = sParams.begin();p!=sParams.end();p++) {
-    string sLine    = *p;
-    string sVarName = MOOSChomp(sLine, "=");
-    sVarName = toupper(sVarName);
-    sLine    = stripBlankEnds(sLine);
+    string sLine = *p;
+    string param = toupper(biteString(sLine, '='));
+    string value = stripBlankEnds(sLine);
+    double dval  = atof(value.c_str());
     
-    if(MOOSStrCmp(sVarName, "SPEED_FACTOR"))
-      m_speed_factor = atof(sLine.c_str());
-    
-    if(MOOSStrCmp(sVarName, "SIM_INSTABILITY"))
-      m_rudder_bias_limit = atof(sLine.c_str());
+    if(param == "SPEED_FACTOR")
+      m_speed_factor = dval;
 
-    if(MOOSStrCmp(sVarName, "TARDY_HELM_THRESHOLD")) {
-      double dval = atof(sLine.c_str());
-      if(dval >= 0)
-	m_tardy_helm_thresh = dval;
-    }
-    if(MOOSStrCmp(sVarName, "TARDY_NAV_THRESHOLD")) {
-      double dval = atof(sLine.c_str());
-      if(dval >= 0)
-	m_tardy_nav_thresh = dval;
-    }
+    else if(param == "SIM_INSTABILITY")
+      m_rudder_bias_limit = dval;
     
-    if(MOOSStrCmp(sVarName, "ACTIVE_START")) {
-      sLine = tolower(sLine);
-      if(sLine == "true") {
+    else if((param == "TARDY_HELM_THRESHOLD") && (dval >= 0))
+      m_tardy_helm_thresh = dval;
+    
+    else if((param == "TARDY_NAV_THRESHOLD") && (dval >= 0))
+      m_tardy_nav_thresh = dval;
+    
+    else if(param == "ACTIVE_START") {
+      if(tolower(value) == "true")
 	m_has_control = true;
-	//m_allow_overide = false;
-      }
     }
     
-    if(MOOSStrCmp(sVarName, "VERBOSE")) {
-      if((sLine == "true") || (sLine == "verbose"))
+    else if(param == "VERBOSE") {
+      string lval = tolower(value);
+      if((lval == "true") || (lval == "verbose"))
 	m_verbose = "verbose";
-      if(sLine == "terse") 
+      if(lval == "terse") 
 	m_verbose = "terse";
-      if(sLine == "quiet")
+      if(lval == "quiet")
 	m_verbose = "quiet";
     }
     
-    if(MOOSStrCmp(sVarName, "LOGPATH"))
-      pid_logpath = sLine;
+    else if(param == "LOGPATH")
+      pid_logpath = value;
   }
 
   bool ok_yaw = handleYawSettings();
   bool ok_spd = handleSpeedSettings();
   bool ok_dep = handleDepthSettings();
-
+  
   if(!ok_yaw || !ok_spd || !ok_dep) {
     MOOSTrace("Improper PID Settings \n");
     return(false);
@@ -393,43 +385,84 @@ bool MarinePID::OnStartUp()
 
 bool MarinePID::handleYawSettings()
 {
-  int ok = true;
+  double yaw_pid_kp   = 0.5;
+  double yaw_pid_kd   = 0;
+  double yaw_pid_ki   = 0;
+  double yaw_pid_ilim = 1.0;
+  double max_rudder   = 100;
+  double step_rudder  = 0;
 
-  double yaw_pid_Kp, yaw_pid_Kd, yaw_pid_Ki, yaw_pid_ilim;
-  if(!m_MissionReader.GetConfigurationParam("YAW_PID_KP", yaw_pid_Kp)) {
-    MOOSDebugWrite("YAW_PID_KP not found in Mission File");
-    ok = false;
-  }
-  if(!m_MissionReader.GetConfigurationParam("YAW_PID_KD", yaw_pid_Kd)) {
-    MOOSDebugWrite("YAW_PID_KD not found in Mission File");
-    ok = false;
-  }
-  if(!m_MissionReader.GetConfigurationParam("YAW_PID_KI", yaw_pid_Ki)) {
-    MOOSDebugWrite("YAW_PID_KI not found in Mission File");
-    ok = false;
-  }
-  if((!m_MissionReader.GetConfigurationParam("YAW_PID_INTEGRAL_LIMIT", yaw_pid_ilim)) &&
-     (!m_MissionReader.GetConfigurationParam("YAW_PID_KI_LIMIT", yaw_pid_ilim))) {
-    MOOSDebugWrite("YAW_PID_INTEGRAL_LIMIT not found in Mission File");
-    ok = false;
-  }
+  bool   yaw_set_kp = false;
+  bool   yaw_set_kd = false;
+  bool   yaw_set_ki = false;
+  bool   yaw_set_ilim = false;
+
+  STRING_LIST sParams;
+  m_MissionReader.GetConfiguration(GetAppName(), sParams);
   
-  double max_rudder = 100;
-  m_MissionReader.GetConfigurationParam("MAXRUDDER", max_rudder);
-  
+  STRING_LIST::iterator p;
+  for(p = sParams.begin();p!=sParams.end();p++) {
+    string sLine = *p;
+    string param = toupper(biteString(sLine, '='));
+    string value = stripBlankEnds(sLine);
+    double dval  = atof(value.c_str());
+
+    if((param == "YAW_PID_KP") && (dval >= 0)) {
+      yaw_pid_kp = dval;
+      yaw_set_kp = true;
+    }
+    else if((param == "YAW_PID_KD")  && (dval >= 0)) {
+      yaw_pid_kd = dval;
+      yaw_set_kd = true;
+    }
+    else if((param == "YAW_PID_KI")  && (dval >= 0)) {
+      yaw_pid_ki = dval;
+      yaw_set_ki = true;
+    }
+    else if((param == "YAW_PID_KI_LIMIT")  && (dval >= 0)) {
+      yaw_pid_ilim = dval;
+      yaw_set_ilim = true;
+    }
+    else if((param == "YAW_PID_INTEGRAL_LIMIT")  && (dval >= 0)) {
+      yaw_pid_ilim = dval;
+      yaw_set_ilim = true;
+    }
+    else if(((param=="MAX_RUDDER")||(param=="MAXRUDDER")) && (dval >= 0))
+      max_rudder = dval;
+    else if((param == "STEP_RUDDER")  && (dval >= 0))
+      step_rudder = dval;
+  }
+
+  if(!yaw_set_kp || !yaw_set_kd || !yaw_set_ki || !yaw_set_ilim) {
+    cout << termColor("red");
+    if(!yaw_set_kp) 
+      cout << "YAW_PID_KP not found in Mission File" << endl;
+    if(!yaw_set_kd)
+      cout << "YAW_PID_KD not found in Mission File" << endl;
+    if(!yaw_set_ki) 
+      cout << "YAW_PID_KI not found in Mission File" << endl;
+    if(!yaw_set_ilim) 
+      cout << "YAW_PID_INTEGRAL_LIMIT not found in Mission File" << endl;
+    cout << termColor() << flush;
+    return(false);
+  }
+
   ScalarPID crsPID;
-  crsPID.SetGains(yaw_pid_Kp, yaw_pid_Kd, yaw_pid_Ki);
-  crsPID.SetLimits(yaw_pid_ilim, 100);
+  crsPID.SetGains(yaw_pid_kp, yaw_pid_kd, yaw_pid_ki);
+  crsPID.SetLimits(yaw_pid_ilim, max_rudder);
   m_pengine.setPID(0, crsPID);
+  m_pengine.setRudderStep(step_rudder);
 
-  MOOSDebugWrite(MOOSFormat("** NEW CONTROLLER GAINS ARE **"));
-  MOOSDebugWrite(MOOSFormat("YAW_PID_KP             = %.3f",yaw_pid_Kp));
-  MOOSDebugWrite(MOOSFormat("YAW_PID_KD             = %.3f",yaw_pid_Kd));
-  MOOSDebugWrite(MOOSFormat("YAW_PID_KI             = %.3f",yaw_pid_Ki));
-  MOOSDebugWrite(MOOSFormat("YAW_PID_INTEGRAL_LIMIT = %.3f",yaw_pid_ilim));
-  MOOSDebugWrite(MOOSFormat("MAXRUDDER              = %.3f",max_rudder));
-  
-  return(ok);
+  cout << termColor("blue") << flush;
+  cout << "** NEW YAW CONTROLLER VALUES **" << endl;
+  cout << "  YAW_PID_KP   = " << doubleToString(yaw_pid_kp, 3) << endl;
+  cout << "  YAW_PID_KD   = " << doubleToString(yaw_pid_kd, 3) << endl;
+  cout << "  YAW_PID_KI   = " << doubleToString(yaw_pid_ki, 3) << endl;
+  cout << "  YAW_PID_ILIM = " << doubleToString(yaw_pid_ilim, 3) << endl;
+  cout << "  MAX_RUDDER   = " << doubleToString(max_rudder,  2) << endl;
+  cout << "  STEP_RUDDER  = " << doubleToString(step_rudder, 5) << endl;
+  cout << termColor() << flush;
+  return(true);
 }
   
 
@@ -438,42 +471,86 @@ bool MarinePID::handleYawSettings()
 
 bool MarinePID::handleSpeedSettings()
 {
-  int ok = true;
-  m_pengine.setSpeedFactor(m_speed_factor);
+  double spd_pid_kp    = 0.5;
+  double spd_pid_kd    = 0;
+  double spd_pid_ki    = 0;
+  double spd_pid_ilim  = 1.0;
+  double max_thrust    = 100;
+  double step_thruster = 0;
 
-  double spd_pid_Kp, spd_pid_Kd, spd_pid_Ki, spd_pid_ilim;
-  if(!m_MissionReader.GetConfigurationParam("SPEED_PID_KP", spd_pid_Kp)) {
-    MOOSDebugWrite("SPEED_PID_KP not found in Mission File");
-    ok = false;
-  }
-  if(!m_MissionReader.GetConfigurationParam("SPEED_PID_KD", spd_pid_Kd)) {
-    MOOSDebugWrite("SPEED_PID_KD not found in Mission File");
-    ok = false;
-  }
-  if(!m_MissionReader.GetConfigurationParam("SPEED_PID_KI", spd_pid_Ki)) {
-    MOOSDebugWrite("SPEED_PID_KI not found in Mission File");
-    ok = false;
-  }
-  if(!m_MissionReader.GetConfigurationParam("SPEED_PID_INTEGRAL_LIMIT", spd_pid_ilim)) {
-    MOOSDebugWrite("SPEED_PID_INTEGRAL_LIMIT not found in Mission File");
-    ok = false;
-  }
+  bool   spd_set_kp = false;
+  bool   spd_set_kd = false;
+  bool   spd_set_ki = false;
+  bool   spd_set_ilim = false;
+
+  STRING_LIST sParams;
+  m_MissionReader.GetConfiguration(GetAppName(), sParams);
   
-  double max_thrust = 100;
-  m_MissionReader.GetConfigurationParam("MAXTHRUST", max_thrust);
-  
+  STRING_LIST::iterator p;
+  for(p = sParams.begin();p!=sParams.end();p++) {
+    string sLine = *p;
+    string param = toupper(biteString(sLine, '='));
+    string value = stripBlankEnds(sLine);
+    double dval  = atof(value.c_str());
+
+    if((param == "SPEED_PID_KP") && (dval >= 0)) {
+      spd_pid_kp = dval;
+      spd_set_kp = true;
+    }
+    else if((param == "SPEED_PID_KD")  && (dval >= 0)) {
+      spd_pid_kd = dval;
+      spd_set_kd = true;
+    }
+    else if((param == "SPEED_PID_KI")  && (dval >= 0)) {
+      spd_pid_ki = dval;
+      spd_set_ki = true;
+    }
+    else if((param == "SPEED_PID_KI_LIMIT")  && (dval >= 0)) {
+      spd_pid_ilim = dval;
+      spd_set_ilim = true;
+    }
+    else if((param == "SPEED_PID_INTEGRAL_LIMIT")  && (dval >= 0)) {
+      spd_pid_ilim = dval;
+      spd_set_ilim = true;
+    }
+    else if(((param=="MAX_THRUST")||(param=="MAXTHRUST")) && (dval >= 0))
+      max_thrust = dval;
+    else if((param == "STEP_THRUSTER")  && (dval >= 0))
+      step_thruster = dval;
+  }
+
+  if(!spd_set_kp || !spd_set_kd || !spd_set_ki || !spd_set_ilim) {
+    cout << termColor("red");
+    if(!spd_set_kp) 
+      cout << "SPEED_PID_KP not found in Mission File" << endl;
+    if(!spd_set_kd)
+      cout << "SPEED_PID_KD not found in Mission File" << endl;
+    if(!spd_set_ki) 
+      cout << "SPEED_PID_KI not found in Mission File" << endl;
+    if(!spd_set_ilim) 
+      cout << "SPEED_PID_INTEGRAL_LIMIT not found in Mission File" << endl;
+    cout << termColor() << flush;
+    return(false);
+  }
+
   ScalarPID spdPID;
-  spdPID.SetGains(spd_pid_Kp, spd_pid_Kd, spd_pid_Ki);
+  spdPID.SetGains(spd_pid_kp, spd_pid_kd, spd_pid_ki);
   spdPID.SetLimits(spd_pid_ilim, max_thrust);
   m_pengine.setPID(1, spdPID);
+  m_pengine.setThrusterStep(step_thruster);
+  m_pengine.setSpeedFactor(m_speed_factor);
 
-  MOOSDebugWrite(MOOSFormat("SPEED_PID_KP       = %.3f", spd_pid_Kp));
-  MOOSDebugWrite(MOOSFormat("SPEED_PID_KD       = %.3f", spd_pid_Kd));
-  MOOSDebugWrite(MOOSFormat("SPEED_PID_KI       = %.3f", spd_pid_Ki));
-  MOOSDebugWrite(MOOSFormat("SPEED_PID_KI_LIMIT = %.3f", spd_pid_ilim));
-  MOOSDebugWrite(MOOSFormat("MAXTHRUST          = %.3f", max_thrust));
+  cout << termColor("blue") << flush;
+  cout << "** NEW SPEED CONTROLLER VALUES **" << endl;
+  cout << "  SPEED_PID_KP    = " << doubleToString(spd_pid_kp, 3) << endl;
+  cout << "  SPEED_PID_KD    = " << doubleToString(spd_pid_kd, 3) << endl;
+  cout << "  SPEED_PID_KI    = " << doubleToString(spd_pid_ki, 3) << endl;
+  cout << "  SPEED_PID_ILIM  = " << doubleToString(spd_pid_ilim, 3) << endl;
+  cout << "  MAX_THRUST    = " << doubleToString(max_thrust,  2) << endl;
+  cout << "  STEP_THRUSTER = " << doubleToString(step_thruster, 5) << endl;
+  cout << termColor() << flush;
 
-  return(ok);
+  return(true);
 }
 
 //--------------------------------------------------------------------
@@ -481,52 +558,99 @@ bool MarinePID::handleSpeedSettings()
 
 bool MarinePID::handleDepthSettings()
 {
-  int ok = true;
-
-  string depth_control_str = "false";
-  m_MissionReader.GetConfigurationParam("DEPTH_CONTROL", depth_control_str);
-  depth_control_str = tolower(depth_control_str);
-  m_depth_control = ((depth_control_str == "true") ||
-		   (depth_control_str == "1") ||
-		   (depth_control_str == "yes"));
+  string depth_ctrl_str = "false";
+  m_MissionReader.GetConfigurationParam("DEPTH_CONTROL", depth_ctrl_str);
+  depth_ctrl_str  = tolower(depth_ctrl_str);
+  m_depth_control = ((depth_ctrl_str == "true") ||
+		   (depth_ctrl_str == "1") ||
+		   (depth_ctrl_str == "yes"));
   
   if(!m_depth_control)
     return(true);
-  
-  double dep_pid_Kp, dep_pid_Kd, dep_pid_Ki, dep_pid_ilim;
-  if(!m_MissionReader.GetConfigurationParam("DEPTH_PID_KP", dep_pid_Kp)) {
-    MOOSDebugWrite("DEPTH_PID_KP not found in Mission File");
-    ok = false;
-  }
-  if(!m_MissionReader.GetConfigurationParam("DEPTH_PID_KD", dep_pid_Kd)) {
-    MOOSDebugWrite("DEPTH_PID_KD not found in Mission File");
-    ok = false;
-  }
-  if(!m_MissionReader.GetConfigurationParam("DEPTH_PID_KI", dep_pid_Ki)) {
-    MOOSDebugWrite("DEPTH_PID_KI not found in Mission File");
-    ok = false;
-  }
-  if(!m_MissionReader.GetConfigurationParam("DEPTH_PID_INTEGRAL_LIMIT", dep_pid_ilim)) {
-    MOOSDebugWrite("DEPTH_PID_INTEGRAL_LIMIT not found in Mission File");
-    ok = false;
-  }
-  
-  double max_elevator = 100;
-  m_MissionReader.GetConfigurationParam("MAXELEVATOR", max_elevator);
 
+  double dep_pid_kp    = 0.5;
+  double dep_pid_kd    = 0;
+  double dep_pid_ki    = 0;
+  double dep_pid_ilim  = 1.0;
+  double max_elevator  = 100;
+  double step_elevator = 0;
+
+  bool   dep_set_kp = false;
+  bool   dep_set_kd = false;
+  bool   dep_set_ki = false;
+  bool   dep_set_ilim = false;
+
+  STRING_LIST sParams;
+  m_MissionReader.GetConfiguration(GetAppName(), sParams);
+  
+  STRING_LIST::iterator p;
+  for(p = sParams.begin();p!=sParams.end();p++) {
+    string sLine = *p;
+    string param = toupper(biteString(sLine, '='));
+    string value = stripBlankEnds(sLine);
+    double dval  = atof(value.c_str());
+
+    if((param == "DEPTH_PID_KP") && (dval >= 0)) {
+      dep_pid_kp = dval;
+      dep_set_kp = true;
+    }
+    else if((param == "DEPTH_PID_KD")  && (dval >= 0)) {
+      dep_pid_kd = dval;
+      dep_set_kd = true;
+    }
+    else if((param == "DEPTH_PID_KI")  && (dval >= 0)) {
+      dep_pid_ki = dval;
+      dep_set_ki = true;
+    }
+    else if((param == "DEPTH_PID_KI_LIMIT")  && (dval >= 0)) {
+      dep_pid_ilim = dval;
+      dep_set_ilim = true;
+    }
+    else if((param == "DEPTH_PID_INTEGRAL_LIMIT")  && (dval >= 0)) {
+      dep_pid_ilim = dval;
+      dep_set_ilim = true;
+    }
+    else if(((param == "MAX_ELEVATOR") || (param == "MAXELEVATOR")) 
+	    && (dval >= 0))
+      max_elevator = dval;
+    else if((param == "STEP_ELEVATOR")  && (dval >= 0))
+      step_elevator = dval;
+  }
+
+  if(!dep_set_kp || !dep_set_kd || !dep_set_ki || !dep_set_ilim) {
+    cout << termColor("red");
+    cout << "WARNING!!!!!" << endl;
+    if(!dep_set_kp) 
+      cout << "  DEPTH_PID_KP not found in Mission File" << endl;
+    if(!dep_set_kd)
+      cout << "  DEPTH_PID_KD not found in Mission File" << endl;
+    if(!dep_set_ki) 
+      cout << "  DEPTH_PID_KI not found in Mission File" << endl;
+    if(!dep_set_ilim) 
+      cout << "  DEPTH_PID_INTEGRAL_LIMIT not found in .moos File" << endl;
+    
+    cout << "Please consult the latest document on pMarinePID.  " << endl;
+    cout << "The method for depth PID configuration has changed." << endl;
+    cout << "Default values are are being used. " << endl;
+    cout << termColor() << flush;
+  }
 
   ScalarPID depPID;
-  depPID.SetGains(dep_pid_Kp, dep_pid_Kd, dep_pid_Ki);
-  depPID.SetLimits(dep_pid_ilim, 100);
+  depPID.SetGains(dep_pid_kp, dep_pid_kd, dep_pid_ki);
+  depPID.SetLimits(dep_pid_ilim, max_elevator);
   m_pengine.setPID(2, depPID);
 
-  MOOSDebugWrite(MOOSFormat("DEPTH_PID_KP       = %.3f",dep_pid_Kp));
-  MOOSDebugWrite(MOOSFormat("DEPTH_PID_KD       = %.3f",dep_pid_Kd));
-  MOOSDebugWrite(MOOSFormat("DEPTH_PID_KI       = %.3f",dep_pid_Ki));
-  MOOSDebugWrite(MOOSFormat("DEPTH_PID_KI_LIMIT = %.3f",dep_pid_ilim));
-  MOOSDebugWrite(MOOSFormat("MAXELEVATOR        = %.3f",max_elevator));
+  cout << termColor("blue") << flush;
+  cout << "** NEW DEPTH CONTROLLER VALUES **" << endl;
+  cout << "  DEPTH_PID_KP   = " << doubleToString(dep_pid_kp, 3) << endl;
+  cout << "  DEPTH_PID_KD   = " << doubleToString(dep_pid_kd, 3) << endl;
+  cout << "  DEPTH_PID_KI   = " << doubleToString(dep_pid_ki, 3) << endl;
+  cout << "  DEPTH_PID_ILIM = " << doubleToString(dep_pid_ilim, 3) << endl;
+  cout << "  MAX_ELEVATOR   = " << doubleToString(max_elevator, 2) << endl;
+  cout << "  STEP_ELEVATOR  = " << doubleToString(step_elevator,5) << endl;
+  cout << termColor() << flush;
 
-  return(ok);
+  return(true);
 }
 
 

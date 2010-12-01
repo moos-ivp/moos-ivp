@@ -36,6 +36,10 @@ public:
   void setSpeedFactor(double v)     {m_speed_factor = v;};
   void updateTime(double ctime)     {m_current_time = ctime;};
 
+  void setRudderStep(double);
+  void setThrusterStep(double);
+  void setElevatorStep(double);
+
   double getDesiredRudder(double desired_heading, 
 			  double current_heading);
   double getDesiredThrust(double desired_speed, 
@@ -51,6 +55,10 @@ protected:
   ScalarPID m_heading_pid;
   ScalarPID m_speed_pid;
   ScalarPID m_depth_pid;
+
+  double  m_rudder_step;
+  double  m_thruster_step;
+  double  m_elevator_step;
 
   double  m_current_time;
   double  m_speed_factor;

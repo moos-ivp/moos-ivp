@@ -38,7 +38,51 @@ PIDEngine::PIDEngine()
   // If not, thrust is set to multiple of desired speed.
   m_speed_factor = 20.0;
   m_current_time = 0;
+
+  m_elevator_step = 0;
+  m_rudder_step   = 0;
+  m_thruster_step = 0;
+
 }
+
+//-----------------------------------------------------------
+// Procedure: setPID
+
+void PIDEngine::setPID(int ix, ScalarPID g_pid)
+{
+  if(ix==0) 
+    m_heading_pid = g_pid;
+  else if(ix==1) 
+    m_speed_pid = g_pid;
+  else if(ix==2) 
+    m_depth_pid = g_pid;
+}
+
+
+//-----------------------------------------------------------
+// Procedure: setRudderStep
+
+void PIDEngine::setRudderStep(double step_value)
+{
+  m_rudder_step = vclip(step_value, 0, 10);
+}
+
+//-----------------------------------------------------------
+// Procedure: setThrusterStep
+
+void PIDEngine::setThrusterStep(double step_value)
+{
+  m_thruster_step = vclip(step_value, 0, 10);
+}
+
+//-----------------------------------------------------------
+// Procedure: setElevatorStep
+
+void PIDEngine::setElevatorStep(double step_value)
+{
+  m_elevator_step = vclip(step_value, 0, 10);
+}
+
 
 //------------------------------------------------------------
 // Procedure: getDesiredRudder
@@ -54,6 +98,9 @@ double PIDEngine::getDesiredRudder(double desired_heading,
   m_heading_pid.Run(heading_error, m_current_time, desired_rudder);
   desired_rudder *= -1.0;
     
+  if(m_rudder_step > 0)
+    desired_rudder = snapToStep(desired_rudder, m_rudder_step);
+
   string rpt = "PID_COURSE: ";
   rpt += " (Want):" + doubleToString(desired_heading);
   rpt += " (Curr):" + doubleToString(current_heading);
@@ -61,27 +108,6 @@ double PIDEngine::getDesiredRudder(double desired_heading,
   rpt += " RUDDER:" + doubleToString(desired_rudder);
   m_pid_report.push_back(rpt);
   return(desired_rudder);
-}
-
-//------------------------------------------------------------
-// Procedure: getDesiredElevator
-
-double PIDEngine::getDesiredElevator(double desired_depth,
-				     double current_depth)
-{
-  double depth_error      = (desired_depth - current_depth);
-  double desired_elevator = 0;
-
-  m_depth_pid.Run(depth_error, m_current_time, desired_elevator);
-  
-  string rpt = "PID_DEPTH: ";
-  rpt += " (Want):" + doubleToString(desired_depth);
-  rpt += " (Curr):" + doubleToString(current_depth);
-  rpt += " (Diff):" + doubleToString(depth_error);
-  rpt += " ELEVATOR:" + doubleToString(desired_elevator);
-  m_pid_report.push_back(rpt);
-
-  return(desired_elevator);
 }
 
 //------------------------------------------------------------
@@ -108,6 +134,9 @@ double PIDEngine::getDesiredThrust(double desired_speed,
   if(desired_thrust < 0)
     desired_thrust = 0;
 
+  if(m_thruster_step > 0)
+    desired_thrust = snapToStep(desired_thrust, m_thruster_step);
+
   if(m_speed_factor != 0) {
     string rpt = "PID_SPEED: ";
     rpt += " (Want):" + doubleToString(desired_speed);
@@ -130,15 +159,27 @@ double PIDEngine::getDesiredThrust(double desired_speed,
   return(desired_thrust);
 }
 
-//-----------------------------------------------------------
-// Procedure: setPID
+//------------------------------------------------------------
+// Procedure: getDesiredElevator
 
-void PIDEngine::setPID(int ix, ScalarPID g_pid)
+double PIDEngine::getDesiredElevator(double desired_depth,
+				     double current_depth)
 {
-  if(ix==0) 
-    m_heading_pid = g_pid;
-  else if(ix==1) 
-    m_speed_pid = g_pid;
-  else if(ix==2) 
-    m_depth_pid = g_pid;
+  double depth_error      = (desired_depth - current_depth);
+  double desired_elevator = 0;
+
+  m_depth_pid.Run(depth_error, m_current_time, desired_elevator);
+
+  if(m_elevator_step > 0)
+    desired_elevator = snapToStep(desired_elevator, m_elevator_step);
+
+  string rpt = "PID_DEPTH: ";
+  rpt += " (Want):" + doubleToString(desired_depth);
+  rpt += " (Curr):" + doubleToString(current_depth);
+  rpt += " (Diff):" + doubleToString(depth_error);
+  rpt += " ELEVATOR:" + doubleToString(desired_elevator);
+  m_pid_report.push_back(rpt);
+
+  return(desired_elevator);
 }
+
