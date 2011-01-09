@@ -111,7 +111,7 @@ cmake                                           \
    -DDB_HAS_HTTP=ON                             \
    -DBUILD_TOOLS=ON                             \
    -DBUILD_OCEAN_SIM=ON                         \
-   -DBUILD_NAVIGATION=OFF                       \
+   -DBUILD_NAVIGATION=ON                       \
    -DBUILD_HELM=OFF                             \
    -DBUILD_NEWMAT=OFF                           \
    -DBUILD_GRAPHICAL_TOOLS=${CLEANED_MOOS_BUILD_GRAPHICAL_TOOLS} \
