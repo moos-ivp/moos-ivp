@@ -833,6 +833,14 @@ bool HelmIvP::OnStartUp()
       setBooleanOnString(m_allow_override, value);
     else if(param == "DISENGAGE_ON_ALLSTOP")
       setBooleanOnString(m_disengage_on_allstop, value);
+
+    else if(param == "NODE_SKEW") {
+      string vname = stripBlankEnds(biteString(value, ','));
+      string skew  = stripBlankEnds(value);
+      double dskew = atof(skew.c_str());
+      if((vname != "") && (skew != "") && isNumber(skew))
+	m_node_skews[vname] = dskew;
+    }
     else if(param == "DOMAIN") {
       bool ok = handleDomainEntry(value);
       if(!ok) {
@@ -1082,7 +1090,7 @@ void HelmIvP::postAllStop(string msg)
 
 bool HelmIvP::processNodeReport(const string& report)
 {
-  string x_val, dep_val, spd_val, hdg_val, vname;
+  string x_val, dep_val, spd_val, hdg_val, vname, raw_vname;
   string y_val, utc_val, lat_val, long_val;
   
   vector<string> svector = parseString(report, ',');
@@ -1092,8 +1100,10 @@ bool HelmIvP::processNodeReport(const string& report)
     string right = stripBlankEnds(svector[i]);
     bool right_isnum = isNumber(right);
 
-    if(left=="NAME")
+    if(left=="NAME") {
+      raw_vname = right;
       vname = toupper(right);
+    }
     else if((left == "UTC_TIME") && right_isnum)
       utc_val = right;
     else if((left == "MOOS_TIME") && right_isnum) 
@@ -1118,7 +1128,6 @@ bool HelmIvP::processNodeReport(const string& report)
      (y_val=="") || (hdg_val=="") || (dep_val==""))
     return(false);
 
-  m_info_buffer->setValue(vname+"_NAV_UTC", atof(utc_val.c_str()));
   m_info_buffer->setValue(vname+"_NAV_X", atof(x_val.c_str()));
   m_info_buffer->setValue(vname+"_NAV_Y", atof(y_val.c_str()));
   m_info_buffer->setValue(vname+"_NAV_SPEED", atof(spd_val.c_str()));
@@ -1126,7 +1135,18 @@ bool HelmIvP::processNodeReport(const string& report)
   m_info_buffer->setValue(vname+"_NAV_DEPTH", atof(dep_val.c_str()));
   m_info_buffer->setValue(vname+"_NAV_LAT", atof(lat_val.c_str()));
   m_info_buffer->setValue(vname+"_NAV_LONG", atof(long_val.c_str()));
+
+  double timestamp = atof(utc_val.c_str());
   
+  // Apply a skew if one is declared for this vehicle
+  map<string, double>::iterator p = m_node_skews.find(vname);
+  if(p == m_node_skews.end())
+    p = m_node_skews.find(raw_vname);
+  if(p != m_node_skews.end()) 
+    timestamp += p->second;
+  // Done applying the skew
+
+  m_info_buffer->setValue(vname+"_NAV_UTC", timestamp);
+
   return(true);
 }
-

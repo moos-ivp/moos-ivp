@@ -132,6 +132,9 @@ protected:
   // A flag maintained on each iteration indicating whether curr_time
   // has yet to be updated.
   bool m_curr_time_updated;
+
+  // A mapping of vehicle node_report skews  VEHICLE_NAME --> SKEW
+  std::map<std::string, double>  m_node_skews;
 };
 
 #endif 
