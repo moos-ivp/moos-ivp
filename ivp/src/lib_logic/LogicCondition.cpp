@@ -89,26 +89,29 @@ vector<string> LogicCondition::getVarNames() const
 
 bool LogicCondition::setCondition(const string& str)
 {
-  if(m_node)
+  if(m_node) {
     delete(m_node);
+    m_node = 0;
+  }
 
   m_node = new ParseNode(str);
 
   bool ok_parse = m_node->recursiveParse(m_allow_dblequals);
   if(!ok_parse) {
     delete(m_node);
-    cout << "Bad Parse!!!" << endl;
+    m_node = 0;
+    cout << "Bad Condition: " << str << endl;
     return(false);
   }
 
   bool ok_syntax = m_node->recursiveSyntaxCheck();
   if(!ok_syntax) {
     delete(m_node);
-    cout << "Bad Syntax!!!" << endl;
+    m_node = 0;
+    cout << "Bad Condition Syntax: " << str << endl;
     return(false);
   }
 
-  cout << "Nice Condition!!" << endl;
   return(true);
 }
 
