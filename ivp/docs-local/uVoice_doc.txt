@@ -1,0 +1,232 @@
+Documentation for uVoice, a voice-control component for use with pHelmIvP
+by Mike Klein @ August 15, 2005
+
+Overview
+
+uVoice is a MOOS app intended for high-level voice control over one or several
+MOOS platforms.  It was specifically developed to work in concert with
+pHelmIvP, enabling and disabling behaviors on already-deployed kayaks with just
+a few words from the shore.
+
+Pragmatically, uVoice boils down to a novel way to set and retrieve variables
+in a MOOSDB.  Running on a laptop on the shore, it writes to a local MOOSDB,
+whose fields are mapped via pMOOSBridge to remote MOOSDB's.  And so, anything
+uVoice can do could conceivably be done with uMS.  However, uVoice's advantage
+is in convenient abstraction: it's much easier to say "all formation alpha"
+than to manually set the proper variables by typing it into a bunch of little
+windows.
+
+uVoice depends on pHelmIvP or other MOOSApps to be properly configured to
+activate and deactivate behaviors when uVoice sets its variables.  See the
+loiter.bhv file for a sample behavior set that includes voice control, and see
+the uVoice.moos file for the mapping from local to remote variable names.
+
+
+Dependencies
+
+(Running)
+python2.4
+festival
+sphinx2-bin
+
+(Building)
+python2.4-dev
+swig
+
+
+Usage
+
+The typical usage setup for running uVoice is a "base" laptop running uVoice,
+which talks to an arbitrary number of other MOOSDB's via pMOOSBridge.  And so,
+as a requirement to run, uVoice requires a local MOOSDB and pMOOSBridge to run.
+The easiest way to set this up is to simply run "pAntler uVoice.moos", which
+runs both the MOOSDB and pMOOSBridge; uVoice also reads this file, so the
+ServerHost and ServerPort fields may be changed safely.
+
+After MOOSDB and pMOOSBridge are running, start uVoice with "./uVoice.py" in
+the uVoice directory.  After a short loading period, uVoice go into its input
+loop, waiting for your command.  uVoice will prompt you with "ready" when it's
+idle and waiting for voice commands.  Once it figures out you're speaking,
+it'll prompt you with "listening", and finally repeat back what it heard, if
+anything.
+
+If all goes well and uVoice understands what you said, your speech command is
+parsed according to the following grammar, and executed appropriately.
+
+
+Grammar
+
+uVoice assumes that your voice commands will come in the simple form:
+
+  [object] method [arguments...]
+
+e.g. "all formation alpha", "zero return", "zero follow one", "formation beta"
+
+This structure is meant to be reminiscent of SVO linguistic word order.
+However, instead of dealing with the linguistic abstractions of subjects,
+verbs, and objects, this grammar works under the Python object-orientation
+system of objects with methods that may take other objects as arguments.
+
+Once a Python object has been registered properly with uVoice (details below),
+the user can call its methods by speaking its name and the method name.  In the
+examples above, "zero" and "one" are instances of the Kayak class, whose
+methods include "return", "formation", and "follow".  "all" is a Group, so you
+can issue commands to the full set of Kayaks.
+
+If the "object" is not specified, uVoice remembers the last object used and
+assumes this as the object.  This can be useful for issuing several commands to
+a kayak in a row, e.g. "zero follow one", "follow two", "follow seven", etc.
+
+Each argument is simply passed along in order as an argument of the method.  If
+you happen to give the wrong number of arguments to any method, uVoice will let
+you know.
+
+To see what objects are available to work with, you can look in the uVoice.py
+file towards the bottom.  To register an object with uVoice, just make sure it
+is in the list passed to app.register_speakables() before the app is Run().
+
+
+Internal Details
+
+uVoice's architecture is summarised here:
+
+ - uVoice.py is the main executable, containing the main uVoice MOOSApp
+ - Sphinx.py provides the interface to the Sphinx speech recognition engine
+ - Festival.py provides the interface to the Festival speech synthesis engine
+ - Language.py takes in the text of the voice commands and executes them, and
+     provides several functions to make Python object speakable
+ - MOOSSpoken contains a base class which Formation, Group, Kayak, and Misc
+     inherit from.  It handles communication with the local MOOSDB and provides
+     an interface compatible with Language.py
+ - Formation.py, Group.py, Kayak.py, and Misc.py contain classes representing
+     a kayak, a group of kayaks, a formation the kayaks might take, etc.
+
+Making an Object Speakable
+
+It'd be tempting to try to map Python names directly to their pronunciations.
+I.e. if we had a bit of code like this:
+
+    zero = Kayak(...)
+    charlie = Formation(...)
+
+we might like to be able to harness that maping by introspection and be able to
+say something like "zero return" or "zero formation charlie".  This approach,
+while ridiculously cool, has a couple problems and is currently intractible.
+
+It is not a simple task to take a spoken word and map that to a Python object.
+An object in Python can be referred to by several names (much like Scheme), and
+it is sometimes desireable to use reserved words as a name of an object or
+method; "return" is a reserved word in python, but it'd be nice to use that as
+the name of a method designed to call back a kayak.  And while functions,
+classes, and methods have canonical names in Python (under the __name__ field
+or similar), class instances do not.
+
+And so, in order to make this system as close as possible, I've developed the
+following logic for taking a Python object and spitting back a string
+representing how it ought to be said:
+    1)  Check to see if it has a "_pronunciation" field.  If so, that's the
+        pronunciation.  (This is set, for example, as the first parameter
+        of the Kayak, Formation, Group, and Misc constructors.  It might also
+        be set by using the @pronounced() decorator, as in the case of
+        Kayak.return_func being pronounced "return".)
+    2)  If there's no _pronunciation field, try to read a canonical name field.
+        Object's methods all have this by default, so they do not need to be
+        given a _pronunciation except in special cases like Kayak.return_func.
+    3)  If we still haven't figured out how to say this object, as a last
+        resort we'll use its string representation, i.e. return str(object).
+        Ideally we don't rely on this, but default to it in odd cases.
+
+It is important to note that uVoice assumes all of these are a single word;
+giving an object a pronunciation like "kayak one" will not function correctly.
+Yet.
+
+Creating New MOOSSpokens
+
+Creating a new type like Kayak or Formation should be pretty easy.  There're
+just a few things to keep in mind.
+
+First, make sure your constructor takes in a pronunciation parameter, so that
+it'll work with Language.py.  Second, make sure it takes a parameter for the
+uVoice object itself, so we can call Notify().  These are the parameters for
+the MOOSSpoken constructor, so you'll definitely need to at least pass them
+through.
+
+To notify the local MOOSDB, call _Notify(var, value).  It'll update the MOOSDB
+where the variable is pronunciation_var and the value is value.  E.g. when a
+Kayak named "zero" calls follow(alpha), it'll post "zero_follow, alpha" to the
+MOOSDB.  Value is currently assumed to be a string, out of pure laziness.
+
+Reading a variable from the local MOOSDB is currently not supported, but it's
+just barely not supported.  It'd only take a bit more effort to get that
+working; all the parts are there, waiting to be put together.  This is a
+feature that hasn't been used yet, so I haven't bothered to implement it.
+
+The best guide to extending this system is probably the code in Kayak.py.  It's
+pretty clear how things work by looking there.
+
+Ideas for Future Improvements ("Fixing Mike's Lazy-Programming Limitations")
+
+- Automatic generation of *.moos file for pMOOSBridge
+- Flag to toggle Festival speech generation on/off
+- Explore use of Sphinx3 and other speech recognition engines for better results
+- Hack Sphinx for more flexibility than hard-coded reading of /dev/dsp for audio
+  input
+- Work with Festival/Sphinx through libraries rather than through pipes
+- Automatic pronunciation of words via Festival? (no need to look up from 
+  sphinx dictionary)
+- Remove the single-word limitation for object names
+- There's always room for Language model improvements
+- Reading variables from the remote kayaks is simple to implement, but as of
+  yet has not been necessary.  It'd take some more pMOOSBridge maps and a little
+  more code in uVoice.
+- Double values in _Notify()
+
+
+
+Appendix A: SWIG
+
+It's tricky to get software written in different langauges to interoperate.
+The easiest way is probably to use some sort of TCP/IP socket communication.
+In fact, if I had thought of that before just now (4:21 PM August 15, 2005),
+uVoice would work that way.  But it uses another really cool alternative, SWIG.
+
+SWIG's philosophy is to generate wrapper code that will allow one langauge to
+interface seamlessly and idiomatically with another.  In uVoice, it lets us
+derive a Python class, uVoice, from a C++ base class, MOOSApp.  Hopefully, you
+should just install SWIG and the makefiles will take care of everything for
+you.  But if you're reading this, it probably means something has gone wrong.
+
+The main configuration file is called MOOS.i.  This is the configuration for
+wrapping up the libMOOS and libMOOSGen libraries into a Python module.  In
+particular, it wraps the classes CMOOSMsg and CMOOSApp.
+
+I'll summarize each part of the file here, to try to demystify it a bit:
+
+All references to "director" refer to the feature in SWIG that allows Python to
+inherit a class from a C++ base class.  The line
+%feature("director") CMOOSApp;
+enables this for CMOOSApp, so that the class uVoice can inherit from it.
+
+"dirprot" along with "#define protected public" allow us to wrap protected
+methods and members of CMOOSApp, a feature of directors not enabled by default.
+
+The bulk of the file defines the interfaces to CMOOSMsg and CMOOSApp; these are
+mostly subsets of the original interfaces.  I've abstracted away the m_comms
+object by adding new methods Notify and Register directly to CMOOSApp.
+
+Near the bottom there's a couple lines dealine with MOOSMSG_LIST.  These let us
+transparently translate a python list of objects ([foo, bar, etc]) to a
+MOOSMSG_LIST.  It's one of those "work in the idiom" features.
+
+All the parts that seem to deal with exceptions ensure that exceptions are
+passed correctly along the C++/Python chain.  A Python exception not caught in
+Python or C++ will be tracebacked correctly, and C++ exceptions passed to
+Python will also be dealt with nicely.  If you remove any of this, you'll
+probably end up seeing a lot of useless segfault messages rather than the
+tracebacks you'd expect.
+
+That's about all there is to it.  SWIG generates the MOOS.py and MOOS_wrap.*
+files, which are compile to _MOOS.so, so these files don't need to be version
+tracked, etc.  It'd not advisable to remove MOOS.i if you want to use uVoice.
+:)
+

@@ -1,0 +1,105 @@
+
+IvP Helm
+  o lib_ivpcore
+  o lib_ivpbuild
+  o lib_mbutil
+  o lib_geometry
+  o lib_behaviors
+  o lib_behaviors-marine
+  o lib_helmivp
+  o pHelmIvP
+
+polyview
+  o lib_mbutil
+  o lib_geometry
+  o lib_marineview
+  o app_polyview
+
+pMarineViewer
+  o MOOSLIB
+  o MOOSGenLib
+  o lib_mbutil
+  o lib_geometry
+  o lib_marineview
+  o pMarineViewer
+
+logview
+  o lib_mbutil
+  o lib_geometry
+  o lib_navplot
+  o lib_marineview
+  o app_logview
+
+pTransponderAIS
+  o MOOSLIB
+  o MOOSGenLib
+  o lib_mbutil
+  o pTransponderAIS
+
+iMarineSim
+  o lib_marinesim
+  o MOOSLIB
+  o MOOSGenLib
+  o iMarineSim
+
+pMarinePID
+  o MOOSLIB
+  o MOOSGenLib
+  o lib_mbutil
+  o lib_geometry
+  o pMarinePID
+
+
+ 1. lib_ivpcore             NUWC
+ 1. lib_helmivp             NUWC
+ 3. lib_behaviors           NUWC
+ 4. lib_ivpbuild            GPL
+ 5. lib_mbutil              GPL
+ 6. lib_geometry            GPL
+ 7. lib_behaviors-marine    GPL
+ 8. lib_marineview          GPL
+ 9. lib_navplot             GPL
+10. lib_marinesim           GPL
+11. pHelmIvP                GPL
+12. pMarineViewer           GPL 
+13. pTransponderAIS         GPL
+14. iMarineSim              GPL
+15. pMarinePID              GPL
+16. pEchoVar                GPL
+17. app_polyview            GPL
+18. app_logview             GPL
+
+
+ a. MOOSDB
+ b. MOOSLIB
+ c. MOOSGenLib
+ d. iRemote
+ e. pLogger
+ f. MOOSDump
+ g. lib_FLTK
+ h. uMS
+ i. pMOOSBridge
+
+
+
+
+                lib_ivpcore    lib_mbutil
+                     |       /
+                     |      /
+                lib_ivpbuild
+                     |      
+                     |      
+                lib_behaviors          
+                     |                 
+                     |                 
+                lib_behaviors-marine   
+                lib_behaviors-don   
+                     |                 
+    MOOSLIB          |                 
+   MOOSGenLib    lib_helmivp      
+            \        |            
+             \       |           
+              *pHelmIvP*        
+                            
+                            
+(*) Indicates that the module references the MOOS library. 

@@ -1,0 +1,93 @@
+//*******************************************************
+// ShoreSide Configuration File
+//
+
+ServerHost = localhost
+ServerPort = $(SPORT)
+Community  = $(SNAME)
+
+#include plug_origin_warp.moos
+  
+//--------------------------------------------------------
+Processconfig = ANTLER
+{
+  MSBetweenLaunches = 200
+
+  Run = MOOSDB          @ NewConsole = false
+  Run = pMOOSBridge     @ NewConsole = true
+  Run = pMarineViewer   @ NewConsole = false
+}
+
+//--------------------------------------------------------
+ProcessConfig = pMOOSBridge
+{
+  AppTick   = 3
+  CommsTick = 3
+
+  BridgeFrequency = 0
+
+  SHARE = [SURVEY_%(VNAME1)]  -> $(VNAME1) @ localhost:$(VPORT1) [SURVEY]
+
+  SHARE = [TRANSIT_%(VNAME2) -> $(VNAME2) @ localhost:$(VPORT2) [TRANSIT]  
+  SHARE = [RETREAT_%(VNAME2) -> $(VNAME2) @ localhost:$(VPORT2) [SAFETY_RETREAT]  
+
+
+  SHARE = [DEPLOY_ALL]  -> $(VNAME1) @ localhost:$(VPORT1) [DEPLOY]
+  SHARE = [DEPLOY_ALL]  -> $(VNAME2) @ localhost:$(VPORT2) [DEPLOY]
+
+  SHARE = [DEPLOY_%(VNAME1)]  -> $(VNAME1) @ localhost:$(VPORT1) [DEPLOY]
+  SHARE = [DEPLOY_%(VNAME2)]  -> $(VNAME2) @ localhost:$(VPORT2) [DEPLOY]
+
+
+  SHARE = [RETURN_ALL]  -> $(VNAME1) @ localhost:$(VPORT1) [RETURN]
+  SHARE = [RETURN_ALL]  -> $(VNAME2) @ localhost:$(VPORT2) [RETURN]
+
+  SHARE = [RETURN_%(VNAME1)]  -> $(VNAME1) @ localhost:$(VPORT1) [RETURN]
+  SHARE = [RETURN_%(VNAME2)]  -> $(VNAME2) @ localhost:$(VPORT2) [RETURN]
+
+
+  SHARE = [MOOS_MANUAL_OVERIDE_ALL] -> $(VNAME1) @ localhost:$(VPORT1) [MOOS_MANUAL_OVERIDE]
+  SHARE = [MOOS_MANUAL_OVERIDE_ALL] -> $(VNAME2) @ localhost:$(VPORT2) [MOOS_MANUAL_OVERIDE]
+}
+
+//--------------------------------------------------------
+ProcessConfig = pMarineViewer
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  TIFF_FILE            = forrest19.tif
+  set_pan_x            = -90
+  set_pan_y            = -280
+  zoom                 = 0.65
+  vehicles_shape_scale = 1.5
+  vehicles_name_viewable = names
+
+  reference_vehicle = $(VNAME1)
+  reference_vehicle = $(VNAME2)
+
+  SCOPE = CONTACT_INFO
+
+  ACTION  = DEPLOY_%(VNAME1) = true
+  ACTION  = DEPLOY_%(VNAME1) = false
+  ACTION  = RETURN_%(VNAME1) = true
+  ACTION  = SURVEY_%(VNAME1) = true
+  ACTION+ = RETURN_%(VNAME1) = false
+
+  ACTION  = DEPLOY_%(VNAME2) = true
+  ACTION  = DEPLOY_%(VNAME2) = false
+  ACTION  = TRANSIT_%(VNAME2) = true
+  ACTION  = TRANSIT_%(VNAME2) = false
+  ACTION  = RETURN_%(VNAME2) = true
+  ACTION+ = RETURN_%(VNAME2) = false
+
+
+  BUTTON_ONE   = DEPLOY  # DEPLOY_ALL=true 
+  BUTTON_ONE   = MOOS_MANUAL_OVERIDE_ALL=false 
+  BUTTON_ONE   = RETURN_ALL=false
+  BUTTON_ONE   = SURVEY_%(VNAME1) = true
+  BUTTON_TWO   = RETURN  # RETURN_ALL=true
+  BUTTON_THREE = TRANSIT  # TRANSIT_%(VNAME2)=true
+  BUTTON_FOUR  = RETREAT  # RETREAT_%(VNAME2)=true
+}
+

@@ -1,0 +1,58 @@
+
+src-thirdparty/
+
+  pnewman/
+    MOOSLIB
+    MOOSGenLib
+    MOOSDB
+    MOOSNavLib/
+    MOOSTaskLib/
+    
+    pAntler/
+    pHelm/
+    pLogger/
+    pMOOSBridge/
+    pNav/
+    uMS/
+    uPlayBack/    
+    iRemote/
+    lib_FLTKVW/
+
+  other/
+    newmat10a/
+    MOOSDump/
+    MOOSRemote/
+    iGPS/
+    iPNICompass/
+    iPWMController/
+    lib_anrp_util/
+
+
+
+
+lib_behaviors/
+lib_behaviors-attic/
+lib_behaviors-don/
+lib_behaviors-marine/
+lib_behaviors-peter/
+lib_helmivp/
+lib_ivpbuild/
+lib_ivpcore/
+lib_marinesim/
+lib_marineview/
+lib_mbutil/
+
+app_logparse/
+app_logview/
+app_mstart/
+app_polyview/
+app_quadview/
+app_splug/
+app_test/
+iHeadingMonitor/
+iMarineSim/
+iMetaCompass/
+pHelmIvP/
+pMarineViewer/
+pMarineViewerSim/
+

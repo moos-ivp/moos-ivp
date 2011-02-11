@@ -1,0 +1,57 @@
+
+
+rm -f ~/Research/project-plusnet/src/lib_ivpcore/*.h
+rm -f ~/Research/project-plusnet/src/lib_ivpcore/*.cpp
+
+rm -f ~/Research/project-plusnet/src/lib_ivpbuild/*.h
+rm -f ~/Research/project-plusnet/src/lib_ivpbuild/*.cpp
+
+rm -f ~/Research/project-plusnet/src/lib_mbutil/*.h
+rm -f ~/Research/project-plusnet/src/lib_mbutil/*.cpp
+
+rm -f ~/Research/project-plusnet/src/lib_geometry/*.h
+rm -f ~/Research/project-plusnet/src/lib_geometry/*.cpp
+
+rm -f ~/Research/project-plusnet/src/lib_behaviors/*.h
+rm -f ~/Research/project-plusnet/src/lib_behaviors/*.cpp
+
+rm -f ~/Research/project-plusnet/src/lib_helmivp/*.h
+rm -f ~/Research/project-plusnet/src/lib_helmivp/*.cpp
+
+rm -f ~/Research/project-plusnet/src/lib_logic/*.h
+rm -f ~/Research/project-plusnet/src/lib_logic/*.cpp
+
+rm -f ~/Research/project-plusnet/src/pHelmIvP/*.h
+rm -f ~/Research/project-plusnet/src/pHelmIvP/*.cpp
+
+rm -f ~/Research/project-plusnet/src/lib_behaviors-marine/*.h
+rm -f ~/Research/project-plusnet/src/lib_behaviors-marine/*.cpp
+
+
+cp ../lib_ivpcore/*.h      ~/Research/project-plusnet/src/lib_ivpcore/
+cp ../lib_ivpcore/*.cpp    ~/Research/project-plusnet/src/lib_ivpcore/
+
+cp ../lib_ivpbuild/*.h     ~/Research/project-plusnet/src/lib_ivpbuild/
+cp ../lib_ivpbuild/*.cpp   ~/Research/project-plusnet/src/lib_ivpbuild/
+
+cp ../lib_mbutil/*.h       ~/Research/project-plusnet/src/lib_mbutil/
+cp ../lib_mbutil/*.cpp     ~/Research/project-plusnet/src/lib_mbutil/
+
+cp ../lib_geometry/*.h     ~/Research/project-plusnet/src/lib_geometry/
+cp ../lib_geometry/*.cpp   ~/Research/project-plusnet/src/lib_geometry/
+
+cp ../lib_behaviors/*.h    ~/Research/project-plusnet/src/lib_behaviors/
+cp ../lib_behaviors/*.cpp  ~/Research/project-plusnet/src/lib_behaviors/
+
+cp ../lib_helmivp/*.h      ~/Research/project-plusnet/src/lib_helmivp/
+cp ../lib_helmivp/*.cpp    ~/Research/project-plusnet/src/lib_helmivp/
+
+cp ../lib_logic/*.h      ~/Research/project-plusnet/src/lib_logic/
+cp ../lib_logic/*.cpp    ~/Research/project-plusnet/src/lib_logic/
+
+cp ../pHelmIvP/*.h         ~/Research/project-plusnet/src/pHelmIvP/
+cp ../pHelmIvP/*.cpp       ~/Research/project-plusnet/src/pHelmIvP/
+
+cp ../lib_behaviors-marine/*.h    ~/Research/project-plusnet/src/lib_behaviors-marine/
+cp ../lib_behaviors-marine/*.cpp  ~/Research/project-plusnet/src/lib_behaviors-marine/
+

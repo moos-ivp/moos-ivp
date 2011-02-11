@@ -1,0 +1,18 @@
+\section{Introduction}
+\label{intro}
+
+This document describes the use and development of the artifact search system developed as a Master's of Engineering thesis by Andrew Shafer at MIT.  This document assumes that the reader has a familiarity with MOOS and IvP and understands how to use those tools (see \cite{new03}, \cite{ben02a}, \cite{ben03}, and \cite{ben04b}).
+
+First, a bit of terminology.  In this document, an ``artifact'' is an object of interest.  An artifact can be any detectable, identifiable object.  In a naval application this would commonly be some type of mine.  In naval terminology, ``mine-hunting'' (or mine-sweeping) usually refers to the process of detecting mines and deactivating or destroying them.  ``Mine-searching,'' on the other hand, refers to simply mapping out the locations of detected mines for later deactivation/destruction.  Therefore, this project is properly called an artifact searching system, rather than a mine-hunting system.
+
+A ``search area'' is the geographic region that the user desires to search (see Fig.~\ref{fig:searcharea}).  This area is broken up into uniform, discrete cells that together constitute the ``search grid'' (see Fig.~\ref{fig:searchgrid}).
+
+\img[width=\linewidth]{figures/searcharea}{A geographic area (a convex polygon) defined as a search area.}{fig:searcharea}
+
+\img[width=\linewidth]{figures/searchgrid}{A search grid defined over a search area.}{fig:searchgrid}
+
+To map the search area, several platforms are available.  A ``platform'' is the combination of vehicle type (e.g. autonomous kayak, AUV, human-navigated vessel, etc.) and sensor capabilities (e.g. side-scan sonar, FLIR, MAD, etc.).  With a single vehicle trying to cover a search area with a uniform, perfect-detection sensor, a lawn-mower pattern is optimal (see \cite{choset01} and \cite{choset03}).  With multiple, identical platforms, a straightforward approach is to divide the overall area into similarly-sized, smaller areas and assign a single vehicle to each area.  This approach, however, will fail if one of the vehicles breaks down during the operation.  It also is not clear that this solution is optimal when multiple, different platforms are used (e.g. A kayak with side-scan sonar and an AUV with FLIR).
+
+The goal of the artifact search system is to develop an algorithm to allow multiple platforms to efficiently search for artifacts in a given search area, respecting constraints on time, vehicle dynamics, and sensor performace.
+
+In the current instantiation of the search system, there are two main MOOS processes and one IvPHelm behavior.  pSensorSim simulates the output of an imaginary sensor in a simulated artifact field.  pArtifactMapper takes the output of pSensorSim, fuses it with output from other artifact search platforms in the area, and produces a likelihood map of artifacts in the search region.  The IvPHelm behavior, \bhvsg, provides desired heading and speed information to the helm to optimize the user's utility function (e.g. mapping an entire field with 95\% confidence in the least amount of time).

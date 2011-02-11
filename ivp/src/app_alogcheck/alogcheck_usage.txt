@@ -1,0 +1,54 @@
+
+Synopsis:
+   alogcheck is an application that checks if a specified condition has been
+   satisfied in an alog file.
+
+Usage:
+   alogcheck in.log [OPTIONS]
+
+Options:
+   -s, --start [COND]      - Delays checking other conditions until this
+                             condition has been satisfied. If this flag is used
+                             multiple times, the conditions will be conjoined.
+   -e, --end [COND]        - Stops checking other conditions until once
+                             condition has been satisfied. If this flag is used
+                             multiple times, the conditions will be conjoined.
+   -p, --pass [COND]       - A condition that if found will result in the check
+                             passing. If this flag is used multiple times, the
+                             conditions will be conjoined.
+   -f, --fail [COND]       - A condition that if found will result in the check
+                             failing. If this flag is used multiple times, the
+                             conditions will be conjoined.
+   -i, --input [file]      - Reads in arguments from the specified file. All
+                             arguments that take in conditions can be used
+                             in the input file.
+   -o, --output [file]     - Prints the output from the checker to a file
+   --verbose               - Sets the checker to be verbose
+
+Global options:
+   -h, --help              - Displays the help contents
+   -v, --version           - Displays the version information
+
+Additional Variables:
+   ALOG_TIMESTAMP          - The current timestamp in the alog file. This
+                             variable can be used in logic conditions.
+
+Helpful Hints:
+   1. The results of a check are based on if ALL pass conditions have been
+      satisfied and NONE of the fail conditions have been satisfied after
+      the start conditions have been satisfied and before the end conditions
+      have been satisfied. If start and end conditions are not specified, the
+      entire log will be checked.
+   2. Condition strings should be wrapped in quotes since some logic expressions
+      may be interpreted by the shell instead of being passed in as arguments.
+      For instance, on Linux if "NAV_X>100" is not wrapped in quotes, the
+      application output will be redirected to a file named '100'.
+   3. When using the logical-AND or logical-OR operators, expressions MUST use
+      parentheses: (NAV_X<0) OR (NAV_X>100)
+
+Example:
+   alogcheck --start "ALOG_TIMESTAMP > 20" --end "ALOG_TIMESTAMP > 500"
+     --pass "DEPLOY==false" --pass "MISSION_COMPLETE=true" 
+     --fail "((NAV_X > 100) OR (NAV_X < 0)) OR ((NAV_Y < 0) OR (NAV_Y > 100))"
+     alpha_mission.alog
+

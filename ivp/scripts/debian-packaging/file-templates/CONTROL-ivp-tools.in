@@ -1,0 +1,9 @@
+Package: ivp-tools
+Version: @PACKAGE_VERSION@-@PACKAGE_BUILD_NUM@
+Section: devel
+Priority: optional
+Architecture: i386
+Depends: moos-core (>= @REQUIRED_MOOS_VERSION@), mesa-common-dev, libfltk1.1, libglu1-mesa, libtiff4, libxft2
+Maintainer: Christian Convey <conveycj@npt.nuwc.navy.mil>
+Description: Provides numerous programs for IvP.
+ TODO: Write long description. -CJC

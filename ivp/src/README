@@ -1,0 +1,57 @@
+Prior to build the code in this directory you should have built
+the MOOS code by executing the build-moos.sh script in the 
+top-level moos-ivp directory. This should only need to be done
+once upon checkout or in the rarer case that the MOOS tree
+is updated. 
+
+The code in this directory is meant to be built with the following
+steps:
+
+> cmake ./
+> make
+
+On subsequent builds, needed as a result of your edits of exiting
+source code, just typing "make" should suffice. If however new source
+code has been added or deleted, or if any of the CMakeLists.txt files
+have been edited, then executing both steps may be necessary.
+
+The build process depends on some third party software being installed
+on your system. Some may have been installed during your linux install
+as a default selection. Others may need to be installed by you (or
+your system administrator) before proceeding.
+
+The dependencies are :
+
+App Name    Package name       Dependent Apps
+--------    ----------------   -----------------
+g++         g++                all
+cmake       cmake              all
+make        make               all
+libtiff     libtiff4-dev       (1,3,4,5,6)
+OpenGL      libgl1-mesa-dev    (1,2,3,4,5,6,7)
+
+(1) lib_marineview
+(2) lib_ipfview
+(3) pMarineViewer
+(4) pShipsideViewer
+(5) app_geoview
+(6) app_logview
+(7) app_ffview
+
+On Debian systems, these packages can be installed with the following
+four lines (as the root or superuser):
+
+> apt-get install cmake
+> apt-get install make
+> apt-get install libtiff4
+> apt-get install libgl1-mesa-dev
+
+If you are unable to install a requisite package, you can disable the
+build of the dependent app by editing src/CMakeLists.txt and simply
+commenting out the line for the dependent app.
+
+
+
+
+ 
+ 

@@ -1,0 +1,75 @@
+﻿AIS MOOS Message Report Types
+
+
+AIS_REPORT_RAW
+
+Encoded string typically starting with “!AIVD”
+(e.g. !AIVDM,1,1,,A,1P000Oh1IT1svTP2r:43grwb05q4,0*01)
+Produced by iRawAIS module
+Consumed by IParserAIS module
+
+
+AIS_REPORT
+
+NAME=_____, (this is the MMSI)
+TYPE=_____, (string such as “Ship”, “Tug”, etc.)
+MOOS_TIME=______,
+X=_____,
+Y=_____,
+LAT=_____,
+LON=_____,
+SPD=_____,
+HDG=_____,
+DEPTH=_____,
+AOU_SEMI_MAJOR=______, (units are yds)
+AOU_SEMI_MINOR=______, (units are yds)
+AOU_ORIENT=______
+Produced by iParserAIS module
+
+
+MarineSimToAIS (comma delimited no <CR> or <LF>)
+
+MMSI=______, 
+X=______,
+Y=______,
+HEADING=______,
+SPEED=______,
+DEPTH=______
+Produced by iMarineSim module
+Consumed by ????
+
+PK_SOL 
+(semicolon delimited between reports, comma delimited between data fields (no indentation, <CR> or <LF> in message)
+
+REPORT_TYPE = AIS_REPORT,
+NAME=_____, (this is the MMSI)
+TYPE=_____, (string such as “Ship”, “Tug”, etc.)
+MOOS_TIME=______,
+X=_____,
+Y=_____,
+LAT=_____,
+LON=_____,
+SPD=_____,
+HDG=_____,
+DEPTH=_____,
+AOU_SEMI_MAJOR=______, (units are yds)
+AOU_SEMI_MINOR=______, (units are yds)
+AOU_ORIENT=______;
+REPORT_TYPE = AIS_REPORT,
+NAME=_____, (this is the MMSI)
+TYPE=_____, (string such as “Ship”, “Tug”, etc.)
+MOOS_TIME=______,
+X=_____,
+Y=_____,
+LAT=_____,
+LON=_____,
+SPD=_____,
+HDG=_____,
+DEPTH=_____,
+AOU_SEMI_MAJOR=______, (units are yds)
+AOU_SEMI_MINOR=______, (units are yds)
+AOU_ORIENT=______;
+REPORT_TYPE= RADAR_REPORT
+…
+Produced by pASCM_PK module
+Consumed by ???

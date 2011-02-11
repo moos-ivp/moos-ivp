@@ -1,0 +1,104 @@
+ServerHost = localhost
+ServerPort = 9201
+Simulator  = true
+
+// Community name IS the vehicle name
+Community  = vehicle1
+  
+MOOSTimeWarp = 1
+LatOrigin    = 42.3584
+LongOrigin   = -71.08745
+
+   
+//------------------------------------------------------------
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+   
+  Run = MOOSDB          @ NewConsole = false
+  Run = iMarineSim      @ NewConsole = false
+  Run = pMOOSBridge     @ NewConsole = false ~ pMOOSBridge_1
+  Run = pNodeReporter   @ NewConsole = false
+  Run = pMarinePID      @ NewConsole = false
+  Run = pHelmIvP        @ NewConsole = false
+}
+  
+//---------------------------------------
+ProcessConfig = pMOOSBridge_1
+{
+  AppTick    = 4
+  CommsTick  = 4
+  
+  SHARE = [AIS_REPORT_LOCAL]   -> shoreside @ localhost:9123 [AIS_REPORT]
+  SHARE = [VIEW_POLYGON]       -> shoreside @ localhost:9123 [VIEW_POLYGON]
+  SHARE = [VIEW_POINT]         -> shoreside @ localhost:9123 [VIEW_POINT]
+  SHARE = [PROC_WATCH_SUMMARY] -> shoreside @ localhost:9123 [PROC_WATCH_SUMMARY_VH1]
+  
+  SHARE = [AIS_REPORT_LOCAL]   -> vehicle1  @ localhost:9201 [AIS_REPORT]
+  SHARE = [AIS_REPORT_LOCAL]   -> vehicle2  @ localhost:9202 [AIS_REPORT]
+}
+
+//------------------------------------------
+ProcessConfig = iMarineSim
+{
+  AppTick   = 10
+  CommsTic  = 10
+
+  START_POS = 10,-15,180,0
+  PREFIX    = NAV
+}
+
+//---------------------------------------
+ProcessConfig = pHelmIvP
+{
+  AppTick    = 4
+  CommsTick  = 4
+  
+  Behaviors    = vehicle1.bhv  
+  Verbose      = false
+  Domain       = course:0:359:360
+  Domain       = speed:0:5:26
+  ACTIVE_START = true
+}
+
+//---------------------------------------
+ProcessConfig = pMarinePID
+{
+  AppTick    = 10
+  CommsTick  = 10
+  
+  VERBOSE       = true
+  DEPTH_CONTROL = false
+  ACTIVE_START  = true
+  
+  // Yaw PID controller
+  YAW_PID_KP             = 0.4
+  YAW_PID_KD             = 0.1
+  YAW_PID_KI             = 0.0
+  YAW_PID_INTEGRAL_LIMIT = 0.07
+  
+  // Speed PID controller
+  SPEED_PID_KP           = 1.0
+  SPEED_PID_KD           = 0.0
+  SPEED_PID_KI           = 0.0
+  SPEED_PID_INTEGRAL_LIMIT = 0.07
+  
+  // Maximums
+  MAXRUDDER  = 100
+  MAXTHRUST  = 100
+  
+  // A non-zero SPEED_FACTOR overrides use of SPEED_PID
+  // Will set DESIRED_THRUST = DESIRED_SPEED * SPEED_FACTOR
+  SPEED_FACTOR = 20
+}
+
+//---------------------------------------
+ProcessConfig = pNodeReporter
+{
+  AppTick     = 5
+  CommsTick   = 5
+  
+  VESSEL_TYPE = KAYAK
+}
+
+

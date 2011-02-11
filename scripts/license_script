@@ -1,0 +1,48 @@
+
+license ivpcore nuwc nuwc    ../lib_ivpcore/*.h     ../lib_ivpcore/*.cpp;
+license ivphelm nuwc nuwc    ../lib_helmivp/*.h     ../lib_helmivp/*.cpp;
+license ivphelm nuwc nuwc    ../lib_behaviors/*.h   ../lib_behaviors/*.cpp;
+
+
+license  none  gpl  nuwcmit 	                                    \
+    ../lib_ivpbuild/*.h            ../lib_ivpbuild/*.cpp            \
+    ../lib_behaviors-marine/*.h    ../lib_behaviors-marine/*.cpp    \
+    ../lib_behaviors-sandbox/*.h   ../lib_behaviors-sandbox/*.cpp   \
+    ../lib_behaviors-colregs/*.h   ../lib_behaviors-colregs/*.cpp   \
+    ../lib_behaviors-attic/*.h     ../lib_behaviors-attic/*.cpp     \
+    ../lib_helmivp/*.h             ../lib_helmivp/*.cpp             \
+    ../lib_mbutil/*.h              ../lib_mbutil/*.cpp              \
+    ../lib_geometry/*.h            ../lib_geometry/*.cpp            \
+    ../lib_marineview/*.h          ../lib_marineview/*.cpp          \
+    ../lib_navplot/*.h             ../lib_navplot/*.cpp             \
+    ../lib_marinesime/*.h          ../lib_marinesim/*.cpp           \
+    ../pHelmIvP/*.h                ../pHelmIvP/*.cpp                \
+    ../pMarineViewer/*.h           ../pMarineViewer/*.cpp           \
+    ../pTransponderAIS/*.h         ../pTransponderAIS/*.cpp         \
+    ../iMarineSim/*.h              ../iMarineSim/*.cpp              \
+    ../pMarinePID/*.h              ../pMarinePID/*.cpp              \
+    ../pEchoVar/*.h                ../pEchoVar/*.cpp                \
+    ../app_polyview/*.h            ../app_polyview/*.cpp            \
+    ../app_logview/*.h             ../app_logview/*.cpp;             
+
+license none limit nuwc	                                           \
+    ../app_fview/*.h               ../app_fview/*.cpp              \
+    ../app_hexaview/*.h            ../app_hexaview/*.cpp           \
+    ../app_logclip/*.h             ../app_logclip/*.cpp            \
+    ../app_logparse/*.h            ../app_logparse/*.cpp           \
+    ../app_peval/*.h               ../app_peval/*.cpp              \
+    ../app_quadview/*.h            ../app_quadview/*.cpp           \
+    ../app_solveIPF/*.h            ../app_solveIPF/*.cpp           \
+    ../app_splug/*.h               ../app_splug/*.cpp              \
+    ../app_zaicview/*.h            ../app_zaicview/*.cpp           \
+    ../iHeadingMonitor/*.h         ../iHeadingMonitor/*.cpp        \
+    ../iMetaCompass/*.h            ../iMetaCompass/*.cpp           \
+    ../lib_xgui/*.h                ../lib_xgui/*.cpp               \
+    ../pDrone/*.h                  ../pDrone/*.cpp                 \
+    ../pLoiterControl/*.h          ../pLoiterControl/*.cpp         \
+    ../pMarineViewerSim/*.h        ../pMarineViewerSim/*.cpp       \
+    ../uFunctionViewer/*.h         ../uFunctionViewer/*.cpp        \
+    ../uFunctionSender/*.h         ../uFunctionSender/*.cpp        \
+    ../uTMS/*.h                    ../uTMS/*.cpp                  
+
+
