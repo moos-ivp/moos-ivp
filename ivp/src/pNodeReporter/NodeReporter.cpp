@@ -23,8 +23,11 @@
 
 #include <list>
 #include <iterator>
+#include <algorithm>
 #include "NodeReporter.h"
 #include "MBUtils.h"
+
+#define USE_UTM
 
 using namespace std;
 
@@ -55,7 +58,13 @@ NodeReporter::NodeReporter()
   m_db_uptime         = 0;
   m_time_updated      = false;
 
-  m_position_source  = "mirror";
+  m_crossfill_policy = "literal";
+
+  m_navx_recd = 0;
+  m_navy_recd = 0;
+  m_navlat_recd = 0;
+  m_navlon_recd = 0;
+
   m_node_report_var = "NODE_REPORT_LOCAL";
   m_plat_report_var = "PLATFORM_REPORT_LOCAL";
 }
@@ -80,14 +89,22 @@ bool NodeReporter::OnNewMail(MOOSMSG_LIST &NewMail)
 
     if(key == "DB_UPTIME")
       m_db_uptime = ddata;
-    else if(key == "NAV_X")
+    else if(key == "NAV_X") {
       m_nav_x = ddata;
-    else if(key == "NAV_Y")
+      m_navx_recd = m_moos_utc_time;
+    }
+    else if(key == "NAV_Y") {
       m_nav_y = ddata;
-    else if(key == "NAV_LAT")
+      m_navy_recd = m_moos_utc_time;
+    }
+    else if(key == "NAV_LAT") {
       m_nav_lat = ddata;
-    else if(key == "NAV_LONG")
+      m_navlat_recd = m_moos_utc_time;
+    }
+    else if(key == "NAV_LONG") {
       m_nav_lon = ddata;
+      m_navlon_recd = m_moos_utc_time;
+    }
     else if(key == "NAV_SPEED")
       m_nav_speed = ddata;
     else if(key == "NAV_HEADING") {
@@ -173,11 +190,9 @@ bool NodeReporter::Iterate()
   if((m_last_post_time == -1) || (m_blackout_interval <= 0) ||
      ((m_moos_utc_time - m_last_post_time) > m_blackout_interval)) {
 
-    if(m_position_source == "local")
-      m_geodesy.LocalGrid2LatLong(m_nav_x, m_nav_y, m_nav_lat, m_nav_lon);
-    if(m_position_source == "global")
-      m_geodesy.LatLong2LocalUTM(m_nav_lat, m_nav_lon, m_nav_y, m_nav_x);
-
+    if(m_crossfill_policy != "literal")
+      crossFillCoords();
+      
     string report = assembleNodeReport();
     m_Comms.Notify(m_node_report_var, report);
     
@@ -279,6 +294,8 @@ bool NodeReporter::OnStartUp()
 	if(isNumber(value) && (dval > 0))
 	  m_nohelm_thresh = dval;
       }      
+      else if(param =="CROSSFILL_POLICY")
+	setCrossFillPolicy(value);
     }
   }
 
@@ -432,10 +449,15 @@ string NodeReporter::assembleNodeReport()
   summary += ",TYPE=" + m_vessel_type;
   summary += ",MOOSDB_TIME=" + doubleToString(m_db_uptime,2);
   summary += ",UTC_TIME=" + doubleToString(m_moos_utc_time,2);
-  summary += ",X="   + doubleToString(m_nav_x,2);
-  summary += ",Y="   + doubleToString(m_nav_y,2);
-  summary += ",LAT=" + doubleToString(m_nav_lat,6);
-  summary += ",LON=" + doubleToString(m_nav_lon,6);
+
+  if((m_navx_recd > 0) && (m_navy_recd > 0)) {
+    summary += ",X="   + doubleToString(m_nav_x,2);
+    summary += ",Y="   + doubleToString(m_nav_y,2);
+  }
+  if((m_navlat_recd > 0) && (m_navlon_recd > 0)) {
+    summary += ",LAT=" + doubleToString(m_nav_lat,6);
+    summary += ",LON=" + doubleToString(m_nav_lon,6);
+  }
   summary += ",SPD=" + doubleToString(m_nav_speed,2);
   summary += ",HDG=" + doubleToString(m_nav_heading,2);
   summary += ",YAW=" + doubleToString(m_nav_yaw,5);
@@ -461,4 +483,99 @@ string NodeReporter::assembleNodeReport()
   summary += ",ALLSTOP=" + m_helm_allstop_mode;
 
   return(summary);
+}
+
+
+//------------------------------------------------------------------
+// Procedure: setCrossFillPolicy
+//      Note: Determines how or whether the local and global coords
+//            are updated from one another.
+
+void NodeReporter::setCrossFillPolicy(string policy)
+{
+  policy = tolower(policy);
+  policy = findReplace(policy, '_', '-');
+  if((policy=="literal")||(policy=="fill-empty")||(policy=="use-latest"))
+    m_crossfill_policy = policy;
+}
+
+
+//------------------------------------------------------------------
+// Procedure: crossFillCoords
+//   Purpose: Potentially update NAV_X/Y from NAV_LAT/LON or v.versa.
+
+void NodeReporter::crossFillCoords()
+{
+  // The "fill-empty" policy will fill the other coordinates only if 
+  // the other coordinates have NEVER been written to.
+  if(m_crossfill_policy == "fill-empty") {
+    if((m_navx_recd == 0) && (m_navy_recd == 0) &&
+       (m_navlat_recd > 0) && (m_navlon_recd > 0))
+      crossFillGlobalToLocal();
+    if((m_navx_recd > 0) && (m_navy_recd > 0) &&
+       (m_navlat_recd == 0) && (m_navlon_recd == 0)) {
+      crossFillLocalToGlobal();
+    }
+  }
+
+  // The "use-latest" policy will fill the other coordinates only if 
+  // the other coordinates are more stale than their counterpart
+  if(m_crossfill_policy == "use-latest") {
+    double t_local  = min(m_navx_recd, m_navy_recd);
+    double t_global = min(m_navlat_recd, m_navlon_recd);
+    if(t_local == t_global)
+      return;
+
+    if(t_local < t_global)       // Local coords older
+      crossFillGlobalToLocal();
+    else                         // Global coords older
+      crossFillLocalToGlobal();
+  }
+}
+
+
+//------------------------------------------------------------------
+// Procedure: crossFillLocalToGlobal
+//   Purpose: Update the Global coordinates based on the Local coords.
+
+void NodeReporter::crossFillLocalToGlobal()
+{
+#ifdef USE_UTM
+  m_geodesy.LocalGrid2LatLong(m_nav_x, m_nav_y, m_nav_lat, m_nav_lon);
+#else
+  m_geodesy.UTM2LatLong(m_nav_x, m_nav_y, m_nav_lat, m_nav_lon);
+#endif      
+  m_navlat_recd = m_navy_recd;
+  m_navlon_recd = m_navx_recd;
+}
+
+//------------------------------------------------------------------
+// Procedure: crossFillGlobalToLocal
+//   Purpose: Update the Local coordinates based on the Global coords.
+
+void NodeReporter::crossFillGlobalToLocal()
+{
+  cout << "In GlobalToLocal!!!!" << endl;
+  cout << "Before: " << endl;
+  cout << "  m_nav_lat: " << m_nav_lat << endl;
+  cout << "  m_nav_lon: " << m_nav_lon << endl;
+  cout << "  m_nav_x: " << m_nav_x << endl;
+  cout << "  m_nav_y: " << m_nav_y << endl;
+#ifdef USE_UTM
+  cout << "Using UTM" << endl;
+  m_geodesy.LatLong2LocalUTM(m_nav_lat, m_nav_lon, m_nav_y, m_nav_x);
+#else
+  cout << "Using LOCAL" << endl;
+  m_geodesy.LatLong2LocalGrid(m_nav_lat, m_nav_lon, m_nav_y, m_nav_x);
+#endif      
+
+
+  cout << "AFTER: " << endl;
+  cout << "  m_nav_lat: " << m_nav_lat << endl;
+  cout << "  m_nav_lon: " << m_nav_lon << endl;
+  cout << "  m_nav_x: " << m_nav_x << endl;
+  cout << "  m_nav_y: " << m_nav_y << endl;
+
+  m_navx_recd = m_navlon_recd;
+  m_navy_recd = m_navlat_recd;
 }

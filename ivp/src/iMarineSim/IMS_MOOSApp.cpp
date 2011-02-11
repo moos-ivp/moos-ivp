@@ -25,6 +25,8 @@
 #include "MBUtils.h"
 #include "CurrentField.h"
 
+#define USE_UTM
+
 using namespace std;
 
 //------------------------------------------------------------------------
@@ -284,11 +286,13 @@ bool IMS_MOOSApp::Iterate()
   m_Comms.Notify(m_sim_prefix+"_X", nav_x, ctime);
   m_Comms.Notify(m_sim_prefix+"_Y", nav_y, ctime);
 
-  // tes 12-2-07 try to give a simulated lat / long
   if(m_geo_ok) {
     double lat, lon;
-    //    m_geodesy.LocalGrid2LatLong(nav_x, nav_y, lat, lon);
+#ifdef USE_UTM
     m_geodesy.UTM2LatLong(nav_x, nav_y, lat, lon);
+#else
+    m_geodesy.LocalGrid2LatLong(nav_x, nav_y, lat, lon);
+#endif
     m_Comms.Notify(m_sim_prefix+"_LAT", lat, ctime);
     m_Comms.Notify(m_sim_prefix+"_LONG", lon, ctime);
   }
@@ -410,6 +414,3 @@ void IMS_MOOSApp::handleSimReset(const string& str)
     }
   }
 }
-
-
-

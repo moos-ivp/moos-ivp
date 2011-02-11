@@ -12,6 +12,8 @@
 #include "ColorParse.h"
 #include "MOOSGeodesy.h"
 
+#define USE_UTM
+
 using namespace std;
 
 //-----------------------------------------------------------
@@ -93,7 +95,11 @@ bool OpAreaSpec::addVertex(const std::string& str,
   else {
     double lat_d = atof(lat.c_str());
     double lon_d = atof(lon.c_str());
+#ifdef USE_UTM
+    geodesy.LatLong2LocalUTM(lat_d, lon_d, ypos_d, xpos_d);
+#else
     geodesy.LatLong2LocalGrid(lat_d, lon_d, ypos_d, xpos_d);
+#endif
   }
 
   bool dashed_b = (dashed == "true");

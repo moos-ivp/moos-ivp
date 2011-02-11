@@ -62,10 +62,8 @@ protected:
   bool         m_pending_cfield;
   unsigned int m_reset_count;
 
-  // tes 12-2-07 added to allow simulated lat/long
   CMOOSGeodesy m_geodesy;
   bool m_geo_ok;
-
 };
 #endif
 

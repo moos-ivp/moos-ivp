@@ -28,6 +28,8 @@
 #include "BearingLine.h"
 #include <cstdlib>
 
+#define USE_UTM
+
 using namespace std;
 
 PMV_Viewer::PMV_Viewer(int x, int y, int w, int h, const char *l)
@@ -332,8 +334,12 @@ void PMV_Viewer::handleMoveMouse(int vx, int vy)
   double my = img2meters('y', iy);
   m_mouse_x = snapToStep(mx, 0.1);
   m_mouse_y = snapToStep(my, 0.1);
-  m_geodesy.LocalGrid2LatLong(m_mouse_x, m_mouse_y, 
-			      m_mouse_lat, m_mouse_lon);
+
+#ifdef USE_UTM
+  m_geodesy.UTM2LatLong(mx, my, m_mouse_lat, m_mouse_lon);
+#else
+  m_geodesy.LocalGrid2LatLong(mx, my, m_mouse_lat, m_mouse_lon);
+#endif
 }
 
 //-------------------------------------------------------------
@@ -349,7 +355,13 @@ void PMV_Viewer::handleLeftMouse(int vx, int vy)
   double sy = snapToStep(my, 1.0);
 
   double dlat, dlon;
+
+#ifdef USE_UTM
+  m_geodesy.UTM2LatLong(sx, sy, dlat, dlon);
+#else
   m_geodesy.LocalGrid2LatLong(sx, sy, dlat, dlon);
+#endif
+
   string slat = doubleToString(dlat, 8);
   string slon = doubleToString(dlon, 8);
 
@@ -426,7 +438,12 @@ void PMV_Viewer::handleRightMouse(int vx, int vy)
   double sy = snapToStep(my, 1.0);
   
   double dlat, dlon;
+
+#ifdef USE_UTM
+  m_geodesy.UTM2LatLong(sx, sy, dlat, dlon);
+#else
   m_geodesy.LocalGrid2LatLong(sx, sy, dlat, dlon);
+#endif
 
   // The aim is to build a vector of VarDataPairs from the "raw" set
   // residing in m_var_data_pairs_all, by replacing all $(KEY) 

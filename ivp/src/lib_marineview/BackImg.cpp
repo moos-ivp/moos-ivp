@@ -28,6 +28,7 @@
 #include <stdlib.h>
 #include <tiffio.h>
 
+#define USE_UTM
 
 // See http://www.cmake.org/pipermail/cmake/2003-March/003482.html
 #ifdef _WIN32
@@ -354,8 +355,15 @@ bool BackImg::processConfiguration()
     CMOOSGeodesy geodesy;
     geodesy.Initialise(pseudo_datum_lat, pseudo_datum_lon);
     double x1,x2,y1,y2;
+
+#ifdef USE_UTM
+    bool ok1 = geodesy.LatLong2LocalUTM(m_lat_north, m_lon_west, y1, x1);
+    bool ok2 = geodesy.LatLong2LocalUTM(m_lat_south, m_lon_east, y2, x2);
+#else
     bool ok1 = geodesy.LatLong2LocalGrid(m_lat_north, m_lon_west, y1, x1);
     bool ok2 = geodesy.LatLong2LocalGrid(m_lat_south, m_lon_east, y2, x2);
+#endif
+
     if(!ok1 || !ok2) {
       cout << "Problem with BackImg Geodesy conversion. " << endl;
       return(false);

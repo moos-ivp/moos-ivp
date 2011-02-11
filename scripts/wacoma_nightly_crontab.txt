@@ -6,4 +6,3 @@
 #  |   |   |   |  |
 #  *   *   *   *  *  command to be executed
    30   6  *   *  *  /bin/bash /Users/gagnercw/repos/moos-ivp-scripts/wacoma_nightly_build.sh
-

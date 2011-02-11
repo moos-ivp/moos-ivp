@@ -49,6 +49,10 @@ public:
   void updatePlatformVar(std::string, std::string);
   bool addPlatformVar(std::string);
   void registerVariables();
+  void setCrossFillPolicy(std::string);
+  void crossFillCoords();
+  void crossFillLocalToGlobal();
+  void crossFillGlobalToLocal();
 
 protected:
   std::string m_vessel_name;
@@ -73,7 +77,12 @@ protected:
   bool        m_helm_engaged;
   double      m_helm_lastmsg;
 
-  std::string m_position_source;
+  double      m_navx_recd;
+  double      m_navy_recd;
+  double      m_navlat_recd;
+  double      m_navlon_recd;
+
+  std::string m_crossfill_policy;
 
   // moos variable name for the contact report
   // default name is "NODE_REPORT"
@@ -101,11 +110,3 @@ protected:
 };
 
 #endif
-
-
-
-
-
-
-
-
