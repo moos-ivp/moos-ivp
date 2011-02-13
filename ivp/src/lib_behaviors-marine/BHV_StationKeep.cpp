@@ -92,7 +92,7 @@ bool BHV_StationKeep::setParam(string param, string val)
   param = tolower(param);
   val   = stripBlankEnds(val);
 
-  if(param == "station_pt") {
+  if((param == "station_pt") || (param == "point")) {
     string left  = stripBlankEnds(biteString(val, ','));
     string right = stripBlankEnds(val);
     if(!isNumber(left) || !isNumber(right))
