@@ -1,7 +1,7 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
-/*    FILE: BHV_RubberBand.cpp                                  */
+/*    NAME: Henrik Schmidt                                       */
+/*    ORGN: MIT Cambridge MA                                     */
+/*    FILE: BHV_RubberBand.cpp                                   */
 /*    DATE: Aug 25 2006                                          */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
@@ -84,7 +84,7 @@ bool BHV_RubberBand::setParam(string param, string val)
   val = stripBlankEnds(val);
 
   //  if(param == "station_pt") {
-  if(param == "points") {
+  if(param == "points" || param == "point") {
     m_center_assign  = val;
     m_center_pending = true;
     return(updateCenter());
