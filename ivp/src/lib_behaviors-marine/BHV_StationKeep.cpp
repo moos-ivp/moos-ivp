@@ -365,7 +365,7 @@ void BHV_StationKeep::postStationMessage(bool post)
   string poly_str = "radial:: x=" + str_x;
   poly_str += ",y=" + str_y;
   poly_str += ",source=" + m_us_name+ ":" + m_descriptor;
-  poly_str += ",pts=16";
+  poly_str += ",pts=32";
   if(m_hint_edge_size >= 0)
     poly_str += ",edge_size=" + doubleToString(m_hint_edge_size);
   if(m_hint_vertex_size >= 0)
@@ -376,16 +376,19 @@ void BHV_StationKeep::postStationMessage(bool post)
     poly_str += ",vertex_color=" + m_hint_vertex_color;
 
   string poly_str_outer = poly_str;
-  string poly_str_inner  = poly_str;
+  string poly_str_inner = poly_str;
+  string poly_str_hiber = poly_str;
   poly_str_outer += ",label="  + m_us_name + ":station-keep-out";
   poly_str_outer += ",radius=" + doubleToString(m_outer_radius,1);
   poly_str_inner += ",label="  + m_us_name + ":station-keep-in";
   poly_str_inner += ",radius=" + doubleToString(m_inner_radius,1);
-
+  poly_str_hiber += ",label="  + m_us_name + ":station-keep-hiber";
+  poly_str_hiber += ",radius=" + doubleToString(m_pskeep_radius,1);
 
   if(post==false) {
     poly_str_outer += ",active=false";
     poly_str_inner += ",active=false";
+    poly_str_hiber += ",active=false";
   }
 
   postMessage("VIEW_POLYGON", poly_str_outer, "outer");
@@ -395,6 +398,12 @@ void BHV_StationKeep::postStationMessage(bool post)
   // dangling artifacts from the radii being altered dynaically.
   if((m_inner_radius < m_outer_radius) || (post==false))
     postMessage("VIEW_POLYGON", poly_str_inner, "inner");
+
+  // No need to post both circles if the radii are collapsed, but if
+  // we're trying to erase a circle, post anyway just ensure no 
+  // dangling artifacts from the radii being altered dynaically.
+  if((m_pskeep_radius > m_outer_radius) || (post==false))
+    postMessage("VIEW_POLYGON", poly_str_hiber, "hiber");
 }
 
 
