@@ -47,6 +47,7 @@ protected:
   bool         historyShowsProgressStart();
   bool         historyShowsProgressEnd();
   void         handleVisualHint(std::string);
+  void         historyClear();
 
 private:  // Configuration Parameters
   double      m_station_x;

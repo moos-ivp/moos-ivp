@@ -190,8 +190,7 @@ bool BHV_StationKeep::setParam(string param, string val)
 
 void BHV_StationKeep::onRunToIdleState()
 {
-  m_distance_history.clear();
-  m_distance_thistory.clear();
+  historyClear();
   postStationMessage(false);
 
   // If conigured for center_activation, declare the need for it
@@ -416,8 +415,10 @@ void BHV_StationKeep::updateHibernationState()
     return;  
   
   if(m_transit_state == "pending_progress_start") {
-    if(historyShowsProgressStart())
+    if(historyShowsProgressStart()) {
+      historyClear();
       m_transit_state = "noted_progress_start";
+    }
   }
   else if(m_transit_state == "noted_progress_start") {
     if(historyShowsProgressEnd())
@@ -427,8 +428,7 @@ void BHV_StationKeep::updateHibernationState()
   if(m_pskeep_state == "hibernating") {
     if(m_dist_to_station > m_pskeep_radius) {
       m_pskeep_state = "seeking_station";
-      m_distance_history.clear();
-      m_distance_thistory.clear();
+      historyClear();
       m_transit_state = "pending_progress_start";
     }
     return;
@@ -439,8 +439,7 @@ void BHV_StationKeep::updateHibernationState()
        (m_transit_state == "noted_progress_end")) {
       m_pskeep_state = "hibernating";
       m_transit_state = "hibernating";
-      m_distance_history.clear();
-      m_distance_thistory.clear();
+      historyClear();
     }
   }
   
@@ -510,7 +509,7 @@ bool BHV_StationKeep::historyShowsProgressEnd()
     return(false);
 
   double rate = (newest_dist - oldest_dist) / delta_time;
-  if(rate > -0.05)
+  if(rate > 0)
     return(true);
 
   return(false);
@@ -533,4 +532,13 @@ void BHV_StationKeep::handleVisualHint(string hint)
     m_hint_edge_size = atof(value.c_str());
   else if((param == "vertex_size") && isNumber(value))
     m_hint_vertex_size = atof(value.c_str());
+}
+
+//-----------------------------------------------------------
+// Procedure: historyClear()
+
+void BHV_StationKeep::historyClear()
+{
+  m_distance_history.clear();
+  m_distance_thistory.clear();
 }
