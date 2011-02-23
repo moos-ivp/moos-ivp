@@ -67,7 +67,6 @@ void XYVector::clear()
   m_ydot = 0;
 }
 
-
 //---------------------------------------------------------------
 // Procedure: setVectorXY
 

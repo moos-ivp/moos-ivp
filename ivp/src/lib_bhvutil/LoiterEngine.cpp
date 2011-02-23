@@ -25,6 +25,7 @@
 #pragma warning(disable : 4503)
 #endif
 
+#include <iostream>
 #include <vector>
 #include <math.h>
 #include "GeomUtils.h"
@@ -107,6 +108,8 @@ int LoiterEngine::acquireVertexOut(double os_x, double os_y)
     return(-1);
   
   unsigned int i, vsize = m_polygon.size();
+
+  cout << "--------------------------------" << endl;
   
   int    index = -1;
   bool   fresh = true;
@@ -120,6 +123,10 @@ int LoiterEngine::acquireVertexOut(double os_x, double os_y)
       double y2 = m_polygon.get_vy(i);
       double x3 = m_polygon.get_vx(j);
       double y3 = m_polygon.get_vy(j);
+
+      double dist = distPointToPoint(os_x, os_y, x2, y2);
+      cout << "   dist: [" << i << "]" << dist << endl;
+
       double angle = segmentAngle(os_x, os_y, x2,y2,x3,y3);
       if(m_clockwise) {
 	if(fresh || (angle > best_angle)) {
