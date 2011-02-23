@@ -42,7 +42,7 @@ Behavior = BHV_Loiter
 
    post_suffix = A
          speed = 1.3
-     clockwise = false
+     clockwise = true
         radius = 4.0
      nm_radius = 15.0
        polygon = radial:: x=20, y=-80, radius=20, pts=8, snap=1, label=DUDLEY_LOITER

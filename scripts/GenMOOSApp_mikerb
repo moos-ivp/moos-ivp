@@ -34,7 +34,7 @@ EOF
 cat >> ${1}.h <<EOF
 /************************************************************/
 /*    NAME: Michael Benjamin                                */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge             */
+/*    ORGN: MIT Dept. of Mechanical Engineering             */
 /*    FILE: ${1}.h                                          */
 /*    DATE: Dec 29th 1963                                   */
 /************************************************************/
