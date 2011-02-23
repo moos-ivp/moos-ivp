@@ -95,7 +95,7 @@ Website: http://libtiff.org
 The Tiff package installed the tiff development libraries that allow graphical
 applications to display tiff images. To install the package, use the following
 command:
-   # sudo apt-get install jpeg zlib tiff +universal
+   # sudo port install jpeg zlib tiff +universal
 NOTE: The jpeg and zlib packages are dependencies of the tiff package. 
       Normally, dependencies are automatically resolved by MacPorts. However,
       we specify them here to force the packages to be installed with
