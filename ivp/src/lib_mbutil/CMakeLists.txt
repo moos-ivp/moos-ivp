@@ -13,7 +13,7 @@ SET(SRC
   StringTree.cpp
   StringNode.cpp
   VarDataPair.cpp
-  FigLog.cpp
+  Figlog.cpp
 )
 
 SET(HEADERS
