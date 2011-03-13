@@ -36,7 +36,7 @@ Behavior = BHV_Loiter
      clockwise = false
         radius = 4.0
      nm_radius = 25.0
-       polygon = format=radial, x=0, y=-75, radius=40, pts=6, snap=1,
+       polygon = format=radial, x=0, y=-75, radius=40, pts=6, snap=1
   visual_hints = nextpt_color=white, nextpt_lcolor=khaki
   visual_hints = edge_color=gray80, vertex_color=light_green
   visual_hints = edge_size=1, vertex_size=0, label=LOITER_POLYGON

@@ -48,9 +48,10 @@ Behavior = BHV_Loiter
   updates   = UP_RETREAT
   perpetual = true
   endflag   = SAFETY_RETREAT = false
+  endflag   = CONTACT_RESOLVED = all_alerts
 
    post_suffix = A
-         speed = 1.3
+         speed = 1.5
      clockwise = false
         radius = 4.0
      nm_radius = 15.0
@@ -70,7 +71,7 @@ Behavior = BHV_Waypoint
   updates    = UPDATES_RETURN
   perpetual  = true
   endflag    = RETURN = false
-  //endflag    = DEPLOY = false
+  endflag    = DEPLOY = false
 
        speed = 2.0
       radius = 2.0
@@ -112,13 +113,14 @@ Behavior = BHV_Waypoint
   pwt       = 100
   condition = MODE==SURVEYING
   updates   = SURVEY_UPDATES
+  perpetual = true
   endflag   = SURVEY = false
   endflag   = RETURN = true
 
      cycleflag = SURVEY = false
           lead = 8
    lead_damper = 1
-         speed = 2.0   // meters per second
+         speed = 1.2   // meters per second
         radius = 8.0
         points = format=lawnmower, label=dudley_survey, x=80, y=-80, width=70, height=30, lane_width=8, rows=north-south, degs=30
   visual_hints = nextpt_color=red, nextpt_lcolor=khaki

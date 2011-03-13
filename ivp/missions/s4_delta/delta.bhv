@@ -40,9 +40,8 @@ Behavior = BHV_Loiter
   condition = MODE == LOITERING
   updates   = UP_LOITER
 
-   post_suffix = A
          speed = 1.3
-     clockwise = true
+     clockwise = best
         radius = 4.0
      nm_radius = 15.0
        polygon = radial:: x=20, y=-80, radius=20, pts=8, snap=1, label=DUDLEY_LOITER
@@ -79,7 +78,7 @@ Behavior = BHV_PeriodicSurface
   condition        = PSURFACE = true
 
                period = 120
-     zero_speed_depth = 2
+     zero_speed_depth = 0.5
   max_time_at_surface = 60
          ascent_speed = 1.0
          ascent_grade = fullspeed
@@ -92,6 +91,7 @@ Behavior = BHV_ConstantDepth
   pwt       = 100
   duration  = no-time-limit
   condition = MODE==ACTIVE
+  updates   = DEPTH_VALUE
 
       depth = 15
 }

@@ -59,11 +59,10 @@ Behavior = BHV_Waypoint
   endflag   = RETURN = true
 
      cycleflag = SURVEY = false
-          lead = 8
-   lead_damper = 1
-         speed = 1.2   // meters per second
+         speed = 1.1   // meters per second
         radius = 8.0
-        points = label,transit:140,40:120,-30:90,-70:70,-110:40,-190:20,-220:-10,-320:-30,-350
+        points = label,transit:190,25:155,-20:45,-85:-40,-100
+//        points = label,transit:140,40:120,-30:70,-110:40,-190:20,-220:-10,-260
         repeat = 99
   visual_hints = nextpt_color=red, nextpt_lcolor=khaki
   visual_hints = vertex_color=yellow, line_color=white

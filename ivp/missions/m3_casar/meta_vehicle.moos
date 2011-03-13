@@ -13,7 +13,7 @@ ProcessConfig = ANTLER
   MSBetweenLaunches = 200
    
   Run = MOOSDB            @ NewConsole = false
-  Run = iMarineSim        @ NewConsole = false
+  Run = uSimMarine        @ NewConsole = false
   Run = pMOOSBridge       @ NewConsole = false ~ pMOOSBridge_$(VNAME)
   Run = pLogger           @ NewConsole = false
   Run = pNodeReporter     @ NewConsole = false
@@ -24,7 +24,7 @@ ProcessConfig = ANTLER
 }
   
 #include plug_pMOOSBridgeV.moos
-#include plug_iMarineSim.moos
+#include plug_uSimMarine.moos
 #include plug_pHelmIvP.moos
 #include plug_pMarinePID.moos
 #include plug_pLogger.moos

@@ -1,7 +1,7 @@
 //------------------------------------------------------
-// iMarineSim Configuration Block  (Created from plugin)
+// uSimMarine Configuration Block  (Created from plugin)
 
-ProcessConfig = iMarineSim
+ProcessConfig = uSimMarine
 {
   AppTick   = 10
   CommsTic  = 10

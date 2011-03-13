@@ -65,7 +65,7 @@ VPORT2="9202"
 SNAME="shoreside"  # Shoreside Community
 SPORT="9200"
 START_POS1="0,0"         # Vehicle 1 Behavior configurations
-START_POS2="140,50"      # Vehicle 2 Behavior configurations
+START_POS2="200,40"      # Vehicle 2 Behavior configurations
 
 nsplug meta_vehicle.moos targ_henry.moos -f WARP=$WARP       \
    VNAME1=$VNAME1 VNAME2=$VNAME2 VPORT1=$VPORT1 VPORT2=$VPORT2  \

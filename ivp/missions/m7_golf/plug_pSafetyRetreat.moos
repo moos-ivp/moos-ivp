@@ -1,0 +1,19 @@
+//---------------------------------------------------
+// pSafetyRetreat config block  (Created from Plugin)
+
+ProcessConfig = pSafetyRetreat 
+{
+   AppTick   = 4
+   CommsTick = 4
+
+   polygon  = radial:: x=-25, y=-100, radius=12, pts=8, snap=1
+   polygon  = radial:: x=130, y=-130, radius=12, pts=8, snap=1
+   polygon  = radial:: x=180, y=-60,  radius=12, pts=8, snap=1
+   polygon  = radial:: x=60,  y=0,    radius=12, pts=8, snap=1
+   duration = 90
+
+   retreat_cue_var     = THREAT_DETECTED
+   retreat_message_var = UP_RETREAT
+   retreat_notify_var  = SAFETY_RETREAT
+   verbose     = true
+}

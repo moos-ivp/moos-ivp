@@ -1,44 +1,67 @@
-//------------------------------------------------
-// File: bravo.bhv
-// Name: M. Benjamin
-// Date: Jan 1, 2010
-//------------------------------------------------
+// Level 2 Configuration file: M. Benjamin
 
 ServerHost = localhost
 ServerPort = 9000
 Simulator  = true
 
-Community    = bravo
+Community  = indigo
+
 MOOSTimeWarp = 1
-LatOrigin    = 43.825300 
-LongOrigin   = -70.330400 
+
+LatOrigin  = 43.825300 
+LongOrigin = -70.330400 
 
 //------------------------------------------
 // Antler configuration  block
 ProcessConfig = ANTLER
 {
-  MSBetweenLaunches = 200
+  MSBetweenLaunches = 500
 
-  Run = MOOSDB          @ NewConsole = true
+  Run = MOOSDB		@ NewConsole = false
+  Run = pMarineViewer	@ NewConsole = true
   Run = pLogger         @ NewConsole = false
-  Run = uSimMarine      @ NewConsole = true
-  Run = pNodeReporter   @ NewConsole = true
-  Run = pMarinePID      @ NewConsole = true
-  Run = pMarineViewer   @ NewConsole = true
-  Run = uSimCurrent     @ NewConsole = true
-  Run = pHelmIvP        @ NewConsole = true
+  Run = uSimMarine	@ NewConsole = true
+  Run = pNodeReporter	@ NewConsole = false
+  Run = pMarinePID	@ NewConsole = false
+  Run = pHelmIvP	@ NewConsole = true
+  Run = uTimerScript    @ NewConsole = false
+  Run = uSimRangeSensor @ NewConsole = true
 }
 
 //------------------------------------------
-// uSimCurrent config block
+// uSimRangeSensor config block
 
-ProcessConfig = uSimCurrent
+ProcessConfig = uSimRangeSensor
 {
-  AppTick	= 10
-  CommsTick	= 10
+  AppTick   = 4
+  CommsTick = 4
 
-  CURRENT_FIELD = bravo.cfd
+  default_node_query_range    = nolimit
+  default_beacon_report_range = nolimit
+
+  beacon  = x=200, y=0,    label=01
+  beacon  = x=400, y=-200, label=02
+  beacon  = x=0,   y=-200, label=03
+
+  verbose = true
 }
+
+//------------------------------------------
+// uTimerScript config block
+
+ProcessConfig = uTimerScript
+{
+  AppTick	= 4
+  CommsTick	= 4
+
+  PAUSED     = false
+  RESET_MAX  = nolimit
+  RESET_TIME = end
+  CONDITION  = (NAV_SPEED > 0)
+
+  EVENT = var=RANGE_REQUEST, val="name=indigo", time=25:35
+}
+
 
 //------------------------------------------
 // pLogger config block
@@ -51,9 +74,28 @@ ProcessConfig = pLogger
   SyncLog = false
   AsyncLog = true
 
+  Log = RANGE_REPORT @ 0
+
   WildCardLogging = true
   WildCardOmitPattern = *_STATUS
+
+  LoggingDirectorySummaryFile = /Users/mikerb/.plogger2
 }
+
+//------------------------------------------
+// Uxms config block
+
+ProcessConfig = uXMS
+{
+  AppTick   = 0.5
+  CommsTick = 0.5
+
+  VAR = IMS_*
+  VAR = NAV_X
+  VAR = NAV_Y
+  VAR = NAV_SPEED
+}
+
 
 //------------------------------------------
 // uSimMarine config block
@@ -67,8 +109,12 @@ ProcessConfig = uSimMarine
   START_Y       = 0
   START_SPEED   = 0
   START_HEADING = 180
+
   PREFIX        = NAV
-  //CURRENT_FIELD = bravo.cfd
+
+  TURN_RATE     = 40
+  THRUST_MAP    = 0:0, 20:1, 40:2, 60:3, 80:4, 100:5
+
 }
 
 //------------------------------------------
@@ -79,8 +125,8 @@ ProcessConfig = pHelmIvP
   AppTick    = 4
   CommsTick  = 4
 
-  Behaviors  = bravo.bhv
-  Verbose    = true
+  Behaviors  = indigo.bhv
+  Verbose    = quiet
   Domain     = course:0:359:360
   Domain     = speed:0:4:21
 }
@@ -96,10 +142,12 @@ ProcessConfig = pMarinePID
   VERBOSE       = true
   DEPTH_CONTROL = false
 
+  // SIM_INSTABILITY = 20
+
   // Yaw PID controller
-  YAW_PID_KP		 = 0.5
+  YAW_PID_KP		 = 1.2
   YAW_PID_KD		 = 0.0
-  YAW_PID_KI		 = 0.0
+  YAW_PID_KI		 = 0.3
   YAW_PID_INTEGRAL_LIMIT = 0.07
 
   // Speed PID controller
@@ -112,8 +160,8 @@ ProcessConfig = pMarinePID
   MAXRUDDER    = 100
   MAXTHRUST    = 100
 
-  // Non-zero SPEED_FACTOR overrides SPEED_PID
-  // DESIRED_THRUST = DESIRED_SPEED * SPEED_FACTOR
+  // A non-zero SPEED_FACTOR overrides use of SPEED_PID
+  // Will set DESIRED_THRUST = DESIRED_SPEED * SPEED_FACTOR
   SPEED_FACTOR = 20
 }
 
@@ -125,29 +173,27 @@ ProcessConfig = pMarineViewer
   AppTick    = 4
   CommsTick  = 4
 
-  TIFF_FILE            = forrest19.tif
-  set_pan_x            = -90
-  set_pan_y            = -280
-  zoom                 = 0.65
+  TIFF_FILE            = AerialMIT.tif
+  set_pan_x            = -60
+  set_pan_y            = 160
+  zoom                 = 1.25
   vehicle_shape_scale  = 1.5
   seglist_edge_width   = 2.0
   seglist_vertex_size  = 4
   seglist_vertex_color = red
-  point_vertex_size    = 12
+  seglist_viewable_all = false
+  point_vertex_size    = 6
   hash_delta           = 50
-  hash_shade           = 0.4
+  hash_shade           = 0.25
   hash_view            = true
 
+  scope  = VIEW_SEGLIST
   scope  = VIEW_POINT
   scope  = VIEW_POLYGON
-  scope  = VIEW_SEGLIST
-
   scope  = NAV_X
   scope  = NAV_Y
   scope  = MVIEWER_LCLICK
   scope  = MVIEWER_RCLICK
-
-  left_context = return_point
 
   BUTTON_ONE = DEPLOY # DEPLOY=true
   BUTTON_ONE = MOOS_MANUAL_OVERIDE=false # RETURN=false
@@ -159,6 +205,13 @@ ProcessConfig = pMarineViewer
   ACTION  = HSLINE=off
   ACTION  = HSLINE=on
   ACTION  = UPDATES_RETURN=speed=1.4
+
+  // MIT OP-AREA
+  op_vertex = x=-220, y=-120,lwidth=1,lcolor=yellow,looped=true,group=moa
+  op_vertex = x=-100, y=-430,lwidth=1,lcolor=yellow,looped=true,group=moa
+  op_vertex = x=380, y=-240,lwidth=1,lcolor=yellow,looped=true,group=moa
+  op_vertex = x=254, y=46,lwidth=1,lcolor=yellow,looped=true,group=moa
+  op_vertex = x=112, y=21,lwidth=1,lcolor=yellow,looped=true,group=moa
 }
 
 //------------------------------------------
@@ -166,9 +219,8 @@ ProcessConfig = pMarineViewer
 
 ProcessConfig = pNodeReporter
 {
-  AppTick	= 4
-  CommsTick	= 4
-
-  VESSEL_TYPE   = kayak
-  VESSEL_LENGTH = 3
+  AppTick	= 2
+  CommsTick	= 2
+  VESSEL_TYPE   = KAYAK
 }
+

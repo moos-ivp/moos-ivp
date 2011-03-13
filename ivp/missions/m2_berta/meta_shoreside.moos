@@ -15,9 +15,29 @@ Processconfig = ANTLER
 
   Run = MOOSDB          @ NewConsole = false
   Run = pMOOSBridge     @ NewConsole = false
-  Run = uTimerScript    @ NewConsole = true
+  Run = uTimerScript    @ NewConsole = false
   Run = pMarineViewer   @ NewConsole = false
+  Run = pLogger         @ NewConsole = false
 }
+
+//--------------------------------------------------
+// pLogger Configuration Block
+
+ProcessConfig = pLogger
+{
+  AppTick       = 10
+  CommsTick     = 10
+  
+  File          = LOG_SHORESIDE
+  PATH          = ./
+  SyncLog       = true @ 0.2
+  AsyncLog      = true
+  FileTimeStamp = true
+
+  // Log it all!!!!!
+  WildCardLogging = true 
+}
+
 
 //--------------------------------------------------------
 ProcessConfig = pMOOSBridge

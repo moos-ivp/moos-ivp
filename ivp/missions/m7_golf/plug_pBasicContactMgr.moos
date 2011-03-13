@@ -13,7 +13,5 @@ ProcessConfig = pBasicContactMgr
   DISPLAY_RADII   = false
   VERBOSE         = true
 
-  Alert = var=CONTACT_INFO, val="name=avd_$[VNAME] # contact=$[VNAME]"
-  Alert = var=TRAIL_INFO, val="name=trail_$[VNAME] # contact=$[VNAME]"
-  Alert = var=CONTACT_$[VTYPE], val="name=avd_$[VNAME] # contact_type=$[VTYPE]"
+  Alert = var=THREAT_DETECTED, val="$[VNAME]"
 }

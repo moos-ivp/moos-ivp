@@ -14,7 +14,7 @@ ProcessConfig = ANTLER
   MSBetweenLaunches = 200
 
   Run = MOOSDB          @ NewConsole = true
-  Run = iMarineSim      @ NewConsole = true
+  Run = uSimMarine      @ NewConsole = true
   Run = pNodeReporter   @ NewConsole = true
   Run = pMarinePID      @ NewConsole = true
   Run = pMarineViewer   @ NewConsole = true
@@ -35,9 +35,9 @@ ProcessConfig = pLogger
 }
 
 //------------------------------------------
-// iMarineSim config block
+// uSimMarine config block
 
-ProcessConfig = iMarineSim
+ProcessConfig = uSimMarine
 {
   AppTick	= 10
   CommsTick	= 10
@@ -48,6 +48,8 @@ ProcessConfig = iMarineSim
   START_HEADING = 180
   PREFIX        = NAV
   DECELERATION  = 0.1
+
+  DUAL_STATE    = true
 }
 
 //------------------------------------------
@@ -73,6 +75,8 @@ ProcessConfig = pNodeReporter
   CommsTick	= 2
   VESSEL_TYPE   = kayak
   VESSEL_LENGTH = 3
+
+  ALT_NAV_PREFIX = NAV_GT
 }
 //------------------------------------------
 // pMarinePID config block
@@ -125,17 +129,17 @@ ProcessConfig = uTimerScript
    RANDVAR = varname=ANG, min=0,   max=359, key=at_reset
    RANDVAR = varname=MAG, min=1.5, max=3.5, key=at_reset
 
-   EVENT = var=IMS_FORCE_VECTOR_ADD, val="$(ANG),{$(MAG)*0.2}", time=0
-   EVENT = var=IMS_FORCE_VECTOR_ADD, val="$(ANG),{$(MAG)*0.2}", time=2
-   EVENT = var=IMS_FORCE_VECTOR_ADD, val="$(ANG),{$(MAG)*0.2}", time=4
-   EVENT = var=IMS_FORCE_VECTOR_ADD, val="$(ANG),{$(MAG)*0.2}", time=6
-   EVENT = var=IMS_FORCE_VECTOR_ADD, val="$(ANG),{$(MAG)*0.2}", time=8
+   EVENT = var=USM_FORCE_VECTOR_ADD, val="$(ANG),{$(MAG)*0.2}", time=0
+   EVENT = var=USM_FORCE_VECTOR_ADD, val="$(ANG),{$(MAG)*0.2}", time=2
+   EVENT = var=USM_FORCE_VECTOR_ADD, val="$(ANG),{$(MAG)*0.2}", time=4
+   EVENT = var=USM_FORCE_VECTOR_ADD, val="$(ANG),{$(MAG)*0.2}", time=6
+   EVENT = var=USM_FORCE_VECTOR_ADD, val="$(ANG),{$(MAG)*0.2}", time=8
 
-   EVENT = var=IMS_FORCE_VECTOR_ADD, val="$(ANG),{$(MAG)*-0.2}", time=10
-   EVENT = var=IMS_FORCE_VECTOR_ADD, val="$(ANG),{$(MAG)*-0.2}", time=12
-   EVENT = var=IMS_FORCE_VECTOR_ADD, val="$(ANG),{$(MAG)*-0.2}", time=14
-   EVENT = var=IMS_FORCE_VECTOR_ADD, val="$(ANG),{$(MAG)*-0.2}", time=16
-   EVENT = var=IMS_FORCE_VECTOR_ADD, val="$(ANG),{$(MAG)*-0.2}", Time=18
+   EVENT = var=USM_FORCE_VECTOR_ADD, val="$(ANG),{$(MAG)*-0.2}", time=10
+   EVENT = var=USM_FORCE_VECTOR_ADD, val="$(ANG),{$(MAG)*-0.2}", time=12
+   EVENT = var=USM_FORCE_VECTOR_ADD, val="$(ANG),{$(MAG)*-0.2}", time=14
+   EVENT = var=USM_FORCE_VECTOR_ADD, val="$(ANG),{$(MAG)*-0.2}", time=16
+   EVENT = var=USM_FORCE_VECTOR_ADD, val="$(ANG),{$(MAG)*-0.2}", Time=18
 }
 
 //------------------------------------------
@@ -161,8 +165,8 @@ ProcessConfig = pMarineViewer
 
   SCOPE    = LOITER_REPORT
   SCOPE    = LOITER_DIST_TO_POLY
-  SCOPE    = IMS_FSUMMARY
-  SCOPE    = IMS_FORCE_VECTOR_ADD
+  SCOPE    = USM_FSUMMARY
+  SCOPE    = USM_FORCE_VECTOR_ADD
   SCOPE    = DB_CLIENTS
 
   ACTION   = UP_LOITER = center_assign = 40,-40

@@ -7,7 +7,7 @@ ProcessConfig = pMarinePID
   CommsTick  = 10
   
   VERBOSE       = true
-  DEPTH_CONTROL = false
+  DEPTH_CONTROL = true
   ACTIVE_START  = true
   
   // Yaw PID controller
@@ -21,6 +21,12 @@ ProcessConfig = pMarinePID
   SPEED_PID_KD           = 0.0
   SPEED_PID_KI           = 0.0
   SPEED_PID_INTEGRAL_LIMIT = 0.07
+  
+  // Depth PID controller
+  DEPTH_PID_KP           = 1.0
+  DEPTH_PID_KD           = 0.0
+  DEPTH_PID_KI           = 0.0
+  DEPTH_PID_INTEGRAL_LIMIT = 0.07
   
   // Maximums
   MAXRUDDER  = 100

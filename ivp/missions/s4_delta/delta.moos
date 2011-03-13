@@ -23,13 +23,13 @@ ProcessConfig = ANTLER
   MSBetweenLaunches = 200
 
   Run = MOOSDB          @ NewConsole = false
-  Run = iMarineSim      @ NewConsole = false
+  Run = uSimMarine      @ NewConsole = true
   Run = pNodeReporter   @ NewConsole = false
-  Run = pMarinePID      @ NewConsole = false
-  Run = pMarineViewer   @ NewConsole = true
-  Run = pHelmIvP        @ NewConsole = true
-  Run = pLogger         @ NewConsole = true
-  Run = uTimerScript    @ NewConsole = true
+  Run = pMarinePID      @ NewConsole = true
+  Run = pMarineViewer   @ NewConsole = false
+  Run = pHelmIvP        @ NewConsole = false
+  Run = pLogger         @ NewConsole = false
+  Run = uTimerScript    @ NewConsole = false
 }
 
 //------------------------------------------
@@ -51,9 +51,9 @@ ProcessConfig = pLogger
 }
 
 //------------------------------------------
-// iMarineSim config block
+// uSimMarine config block
 
-ProcessConfig = iMarineSim
+ProcessConfig = uSimMarine
 {
   AppTick	= 10
   CommsTick	= 10
@@ -62,7 +62,9 @@ ProcessConfig = iMarineSim
   START_Y       = 0
   START_SPEED   = 0
   START_HEADING = 180
-  FLOAT_RATE    = 0.05
+  BUOYANCY_RATE    = 0.025
+  MAX_DEPTH_RATE = 0.5
+  MAX_DEPTH_RATE_SPEED = 2.0
 
   PREFIX        = NAV
 }
@@ -78,7 +80,7 @@ ProcessConfig = pHelmIvP
   Behaviors  = delta.bhv
   Verbose    = quiet
   Domain     = course:0:359:360
-  Domain     = speed:0:4:21
+  Domain     = speed:0:4:41
   Domain     = depth:0:500:501
 }
 
@@ -105,23 +107,16 @@ ProcessConfig = pMarinePID
   SPEED_PID_KI		 = 0.0
   SPEED_PID_INTEGRAL_LIMIT = 0.07
 
-  //Pitch PID controller
-  PITCH_PID_KP                   = 0.5
-  PITCH_PID_KD                   = 1.0
-  PITCH_PID_KI                   = 0
-  PITCH_PID_INTEGRAL_LIMIT       = 0
-
-  //ZPID controller
-  Z_TO_PITCH_PID_KP              = 0.12
-  Z_TO_PITCH_PID_KD              = 0
-  Z_TO_PITCH_PID_KI              = 0.004
-  Z_TO_PITCH_PID_INTEGRAL_LIMIT  = 0.05 
+  // Depth PID controller
+  DEPTH_PID_KP		 = 15
+  DEPTH_PID_KD		 = 10
+  DEPTH_PID_KI		 = 8.0
+  DEPTH_PID_INTEGRAL_LIMIT = 8.0
 
   //MAXIMUMS
   MAXRUDDER    = 100
   MAXTHRUST    = 100
-  MAXPITCH     = 15
-  MAXELEVATOR  = 13
+  MAXELEVATOR  = 100
 
   // A non-zero SPEED_FACTOR overrides use of SPEED_PID
   // Will set DESIRED_THRUST = DESIRED_SPEED * SPEED_FACTOR
@@ -156,6 +151,14 @@ ProcessConfig = pMarineViewer
   SCOPE = MVIEWER_LCLICK
   SCOPE = GPS_UPDATE_RECEIVED
   SCOPE = TIME_AT_SURFACE
+
+  ACTION = DEPTH_VALUE="depth=50"
+  ACTION = DEPTH_VALUE="depth=25"
+  ACTION = DEPTH_VALUE="depth=7"
+  ACTION = UP_LOITER="speed=0"
+  ACTION = UP_LOITER="speed=1.2"
+  ACTION = PSURFACE=true
+  ACTION = PSURFACE=false
 
   BUTTON_ONE   = DEPLOY # DEPLOY=true
   BUTTON_ONE   = MOOS_MANUAL_OVERIDE=false # RETURN=false

@@ -18,7 +18,7 @@ ProcessConfig = ANTLER
   MSBetweenLaunches = 200
 
   Run = MOOSDB          @ NewConsole = false
-  Run = iMarineSim      @ NewConsole = false
+  Run = uSimMarine      @ NewConsole = false
   Run = pNodeReporter   @ NewConsole = false
   Run = pMarinePID      @ NewConsole = false
   Run = pMarineViewer   @ NewConsole = true
@@ -66,9 +66,9 @@ ProcessConfig = pLogger
 }
 
 //------------------------------------------
-// iMarineSim config block
+// uSimMarine config block
 
-ProcessConfig = iMarineSim
+ProcessConfig = uSimMarine
 {
   AppTick	= 10
   CommsTick	= 10

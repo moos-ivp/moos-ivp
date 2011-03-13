@@ -4,7 +4,7 @@ ServerHost = localhost
 ServerPort = 9000
 Simulator  = true
 
-Community  = alpha
+Community  = hotel
 
 MOOSTimeWarp = 1
 
@@ -18,13 +18,84 @@ ProcessConfig = ANTLER
   MSBetweenLaunches = 500
 
   Run = MOOSDB		@ NewConsole = false
+  Run = pMarineViewer	@ NewConsole = true
   Run = pLogger         @ NewConsole = false
   Run = uSimMarine	@ NewConsole = true
   Run = pNodeReporter	@ NewConsole = false
   Run = pMarinePID	@ NewConsole = false
   Run = pHelmIvP	@ NewConsole = true
-  Run = pMarineViewer	@ NewConsole = false
+  Run = uTimerScript    @ NewConsole = false
+  Run = uSimRangeSensor @ NewConsole = true
 }
+
+//------------------------------------------
+// uSimRangeSensor config block
+
+ProcessConfig = uSimRangeSensor
+{
+  AppTick   = 4
+  CommsTick = 4
+
+  // System-wide Simulator configuration
+  query_payments = upon_accept
+  report_beacon_location = true
+  report_vars = long
+
+  // Configurations for all vehicles/nodes
+  default_node_query_range = nolimit
+  default_node_query_freq  = 1
+
+  // Configurations for all beacons
+  default_beacon_report_range  = nolimit
+  default_beacon_shape  = circle
+  default_beacon_color  = blue
+  default_beacon_width  = 5
+  default_beacon_freq   = never
+  //default_beacon_freq   = 30:50
+
+
+  // Configurations for individual vehicles  
+
+  // query_range = hotel,50
+  // query_freq  = charlie,43
+
+  // Configurations for individual beacons
+  // Example:
+  // beacon = x=1,y=2,label=foo,freq=17,shape=square,width=3,color=orange
+
+  beacon    = x=200, y=0, label=01
+  beacon    = x=400, y=-200, label=02
+  beacon    = x=0,   y=-200, label=03
+
+  //beacon    = x=160, y=-100, label=01
+  //beacon    = x=290, y=-190, label=02, freq=30:45
+  //beacon    = x=200, y=-260, label=03
+  //beacon    = x=-40, y=-150, label=04, qrange=200
+  //beacon    = x=-150,y=-130, label=05
+  //beacon    = x=-140,y=-270, label=06
+  //beacon    = x=-40, y=-370, label=07
+  //beacon    = x=110, y=-230, label=08
+  //beacon    = x=40,  y=-60,  label=09
+  //beacon    = x=210, y=0,    label=10
+  //beacon    = x=200, y=-20,  label=11
+}
+
+//------------------------------------------
+// uTimerScript config block
+
+ProcessConfig = uTimerScript
+{
+  AppTick	= 4
+  CommsTick	= 4
+
+  PAUSED     = false
+  RESET_MAX  = 5000
+  RESET_TIME = end
+  CONDITION  = (NAV_SPEED > 0)
+
+  EVENT = var=RANGE_REQUEST, val="name=hotel", time=15:20
+}
+
 
 //------------------------------------------
 // pLogger config block
@@ -37,12 +108,15 @@ ProcessConfig = pLogger
   SyncLog = false
   AsyncLog = true
 
+  Log = VIEW_VECTOR @ 0
+
   WildCardLogging = true
-  WildCardOmitPattern = *_STATUS
+
+  LoggingDirectorySummaryFile = /Users/mikerb/.plogger2
 }
 
 //------------------------------------------
-// uXMS config block
+// Uxms config block
 
 ProcessConfig = uXMS
 {
@@ -70,10 +144,10 @@ ProcessConfig = uSimMarine
   START_HEADING = 180
 
   PREFIX        = NAV
-  DUAL_STATE    = true
-  
+
   TURN_RATE     = 40
   THRUST_MAP    = 0:0, 20:1, 40:2, 60:3, 80:4, 100:5
+
 }
 
 //------------------------------------------
@@ -84,7 +158,7 @@ ProcessConfig = pHelmIvP
   AppTick    = 4
   CommsTick  = 4
 
-  Behaviors  = alpha.bhv
+  Behaviors  = hotel.bhv
   Verbose    = quiet
   Domain     = course:0:359:360
   Domain     = speed:0:4:21
@@ -132,17 +206,17 @@ ProcessConfig = pMarineViewer
   AppTick    = 4
   CommsTick  = 4
 
-  TIFF_FILE            = forrest19.tif
-  set_pan_x            = -90
-  set_pan_y            = -280
-  zoom                 = 0.65
+  TIFF_FILE            = AerialMIT.tif
+  set_pan_x            = -60
+  set_pan_y            = 160
+  zoom                 = 1.25
   vehicle_shape_scale  = 1.5
   seglist_edge_width   = 2.0
   seglist_vertex_size  = 4
   seglist_vertex_color = red
-  point_vertex_size    = 12
+  point_vertex_size    = 6
   hash_delta           = 50
-  hash_shade           = 0.4
+  hash_shade           = 0.25
   hash_view            = true
 
   scope  = VIEW_SEGLIST
@@ -163,6 +237,13 @@ ProcessConfig = pMarineViewer
   ACTION  = HSLINE=off
   ACTION  = HSLINE=on
   ACTION  = UPDATES_RETURN=speed=1.4
+
+  // MIT OP-AREA
+  op_vertex = x=-220, y=-120,lwidth=1,lcolor=yellow,looped=true,group=moa
+  op_vertex = x=-100, y=-430,lwidth=1,lcolor=yellow,looped=true,group=moa
+  op_vertex = x=380, y=-240,lwidth=1,lcolor=yellow,looped=true,group=moa
+  op_vertex = x=254, y=46,lwidth=1,lcolor=yellow,looped=true,group=moa
+  op_vertex = x=112, y=21,lwidth=1,lcolor=yellow,looped=true,group=moa
 }
 
 //------------------------------------------
@@ -174,3 +255,4 @@ ProcessConfig = pNodeReporter
   CommsTick	= 2
   VESSEL_TYPE   = KAYAK
 }
+
