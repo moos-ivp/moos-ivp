@@ -170,12 +170,28 @@ bool VehicleSet::getDoubleInfo(const string& g_vname,
     result = opose.getX();
   else if((info_type == "ypos") || (info_type == "meters_y"))
     result = opose.getY();
+  else if(info_type == "utmx") {
+    result = 1;
+    if(opose.isUTMSet())
+      result = opose.getUTMX();
+  }
+  else if(info_type == "utmy") {
+    result = 2;
+    if(opose.isUTMSet())
+      result = opose.getUTMY();
+  }
   else if(info_type == "speed")
     result = opose.getSpeed();
-  else if(info_type == "lat")
-    result = opose.getLat();
-  else if(info_type == "lon")
-    result = opose.getLon();
+  else if(info_type == "lat") {
+    result = 0;
+    if(opose.isLatLonSet())
+      result = opose.getLat();
+  }
+  else if(info_type == "lon") {
+    result = 0;
+    if(opose.isLatLonSet())
+      result = opose.getLon();
+  }
   else if(info_type == "depth")
     result = opose.getDepth();
   else if(info_type == "curr_time")
@@ -429,19 +445,20 @@ bool VehicleSet::getWeightedCenter(double& x, double& y) const
 
 //-------------------------------------------------------------
 // Procedure: updateVehiclePosition
-//      Note: NAME, TYPE, MOOSDB_TIME, UTC_TIME, X, Y, 
+//      Note: NAME, TYPE, UTC_TIME, X, Y, 
 //            LAT, LON, SPD, HDG, DEPTH
 
 bool VehicleSet::updateVehiclePosition(const string& node_report) 
 {
   double pos_x = 0;
   double pos_y = 0; 
+  double utm_x = 0;
+  double utm_y = 0; 
   double speed = 0;
   double hding = 0;
   double depth = 0;
   double utime = 0;
   string sutime = "";
-  double mtime = 0;
   double lat   = 0;
   double lon   = 0;
   double vlen  = 0;
@@ -453,11 +470,12 @@ bool VehicleSet::updateVehiclePosition(const string& node_report)
   bool b_vtype = tokParse(node_report, "TYPE",  ',', '=', vtype);
   bool b_pos_x = tokParse(node_report, "X",     ',', '=', pos_x);
   bool b_pos_y = tokParse(node_report, "Y",     ',', '=', pos_y);
+  bool b_utm_x = tokParse(node_report, "UTMX",  ',', '=', utm_x);
+  bool b_utm_y = tokParse(node_report, "UTMY",  ',', '=', utm_y);
   bool b_speed = tokParse(node_report, "SPD",   ',', '=', speed);
   bool b_hding = tokParse(node_report, "HDG",   ',', '=', hding);
   bool b_depth = tokParse(node_report, "DEPTH", ',', '=', depth);
   bool b_utime = tokParse(node_report, "UTC_TIME", ',', '=', sutime);
-  bool b_mtime = tokParse(node_report, "MOOSDB_TIME", ',', '=', mtime);
   bool b_lat   = tokParse(node_report, "LAT", ',', '=', lat);
   bool b_lon   = tokParse(node_report, "LON", ',', '=', lon);
   bool b_vlen  = tokParse(node_report, "LENGTH", ',', '=', vlen);
@@ -485,7 +503,7 @@ bool VehicleSet::updateVehiclePosition(const string& node_report)
   if(!b_vname || !b_vtype || !b_speed ||!b_hding)
     return(false);
 
-  if(!b_mtime && !b_utime)
+  if(!b_utime)
     return(false);
 
   if(((vtype == "auv") || (vtype == "glider")) && !b_depth)
@@ -507,6 +525,10 @@ bool VehicleSet::updateVehiclePosition(const string& node_report)
   
   // Handle updating the ObjectPose with the new information
   ObjectPose opose(pos_x, pos_y, hding, speed, depth);
+
+  // If the UTM x/y was included in the report, add to the object pose
+  if(b_utm_x && b_utm_y)
+    opose.setUTM_XY(utm_x, utm_y);
 
   // If the lat/lon was included in the report, add to the object pose
   if(b_lat && b_lon)

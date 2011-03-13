@@ -22,13 +22,13 @@
 
 #include "ArtifactUtils.h"
 
+#include <cmath>
+#include <cstdlib>
 #include <sstream>
 #include "XYSquare.h"
 #include "AngleUtils.h"
 #include "GeomUtils.h"
 #include "MBUtils.h"
-#include "math.h"
-#include <stdlib.h>
 
 using namespace std;
 
@@ -243,7 +243,7 @@ const vector<string> generateArtifacts(double min_x, double max_x,
     double rand_y = snapToStep(min_y + rand() * (max_y - min_y) / RAND_MAX, step);
     
     // This portion should be fixed to not use the << operator for doubles
-    // e.g., use Mike's dstringCompact(doubleToString(rand_x)) and get rid of
+    // e.g., use Mike's doubleToStringX(rand_x) and get rid of
     // the string stream.
     ostringstream osArtifact;
     osArtifact << "X=" << rand_x << "," << "Y=" << rand_y;

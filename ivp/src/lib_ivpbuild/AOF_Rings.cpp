@@ -21,7 +21,7 @@
 /*****************************************************************/
 
 #include <iostream>
-#include <stdio.h> 
+#include <cstdio> 
 #include "MBUtils.h"
 #include "AOF_Rings.h"
 

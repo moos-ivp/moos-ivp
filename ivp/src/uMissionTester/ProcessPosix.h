@@ -11,8 +11,8 @@
 #include "Process.h"
 
 #ifndef _WIN32
-    #include <stdlib.h>
-    #include <stdio.h>
+    #include <cstdlib>
+    #include <cstdio>
     #include <unistd.h>
     #include <signal.h>
 #endif

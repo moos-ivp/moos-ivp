@@ -32,10 +32,15 @@ class LogPlot
 public:
   LogPlot();
   ~LogPlot() {};
-
+  
+ public: // Initialization
   void   set_varname(std::string s)   {m_varname = s;};
   void   set_vehi_name(std::string s) {m_vehi_name = s;};
+
+ public: // Population
   bool   set_value(double gtime, double gvalue);
+
+ public: // Querying
   double get_time_by_index(unsigned int index) const;
   double get_value_by_index(unsigned int index) const;
   double get_value_by_time(double gtime, bool interp=false) const;
@@ -47,6 +52,7 @@ public:
   std::string get_varname() const   {return(m_varname);};
   std::string get_vehi_name() const {return(m_vehi_name);};
   unsigned int  size() const        {return(m_time.size());};
+
   void   print() const;
   
   unsigned int get_index_by_time(double) const;

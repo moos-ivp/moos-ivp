@@ -35,6 +35,7 @@
 #include "XYSegList.h"
 #include "XYCircle.h"
 #include "XYHexagon.h"
+#include "XYRangePulse.h"
 #include "ObjectPose.h"
 #include "OpAreaSpec.h"
 #include "MOOSGeodesy.h"
@@ -126,6 +127,11 @@ protected:
 		   const ColorPack& vert_color,
 		   const ColorPack& labl_color);
 
+  void  drawRangePulses(const std::vector<XYRangePulse>&, double timstamp);
+  void  drawRangePulse(const XYRangePulse&, double timestamp,
+		       const ColorPack& edge_color,
+		       const ColorPack& fill_color);
+  
   void  drawPoints(const std::vector<XYPoint>&);
   void  drawPoint(const XYPoint&, double vertex_size,
 		  const ColorPack& vert_color,

@@ -21,8 +21,8 @@
 /*****************************************************************/
 
 #include <iostream>
-#include <math.h>
-#include <stdlib.h>
+#include <cmath>
+#include <cstdlib>
 #include "XYGrid.h"
 #include "MBUtils.h"
 #include "XYFormatUtilsPoly.h"
@@ -181,7 +181,7 @@ bool XYGrid::initialize(string given_config_str)
   double yh = atof(svector[1].c_str());
   XYSquare unit_square(xl,xh,yl,yh);
   // Check for the validity of the square
-  if(!unit_square.isValid())
+  if(!unit_square.valid())
     return(false);
 
   bool ok = initialize(bounding_poly, unit_square, initial_val);

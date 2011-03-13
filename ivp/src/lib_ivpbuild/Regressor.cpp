@@ -21,10 +21,10 @@
 /*****************************************************************/
 
 #include <iostream>
-#include <stdlib.h>
-#include <assert.h>
-#include <stdio.h>
-#include <math.h>
+#include <cstdlib>
+#include <cassert>
+#include <cstdio>
+#include <cmath>
 #include "Regressor.h"
 #include "BuildUtils.h"
 

@@ -38,8 +38,8 @@
 /*****************************************************************/
 
 #include <iostream>
-#include <string.h> 
-#include <assert.h>
+#include <cstring> 
+#include <cassert>
 #include "Problem.h"
 #include "IvPBox.h"
 #include "IvPFunction.h"

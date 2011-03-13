@@ -38,8 +38,8 @@
 /*****************************************************************/
 
 #include <iostream>
-#include <assert.h>
-#include <math.h>
+#include <cassert>
+#include <cmath>
 #include "IvPGrid.h"
 #include "IvPDomain.h"
 

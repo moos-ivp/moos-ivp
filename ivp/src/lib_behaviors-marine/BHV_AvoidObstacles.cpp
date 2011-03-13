@@ -25,8 +25,8 @@
 #pragma warning(disable : 4503)
 #endif
 #include <iostream>
-#include <math.h> 
-#include <stdlib.h>
+#include <cmath> 
+#include <cstdlib>
 #include "BHV_AvoidObstacles.h"
 #include "OF_Reflector.h"
 #include "MBUtils.h"

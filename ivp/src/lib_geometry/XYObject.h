@@ -34,12 +34,12 @@ public:
   virtual void clear();
   virtual bool valid() const  {return(true);};
   
-  void   set_label(std::string str)     {m_label=str;};
-  void   set_type(std::string str)      {m_type=str;};
-  void   set_source(std::string str)    {m_source=str;};
-  void   set_string(std::string str)    {m_string=str;};
-  void   set_active(bool val)           {m_active=val;};
-  void   set_time(double val)           {m_time=val;m_time_set=true;};
+  void   set_label(const std::string& str)  {m_label=str;};
+  void   set_type(const std::string& str)   {m_type=str;};
+  void   set_source(const std::string& str) {m_source=str;};
+  void   set_msg(const std::string& str)    {m_msg=str;};
+  void   set_active(bool val)               {m_active=val;};
+  void   set_time(double val)               {m_time=val;m_time_set=true;};
   void   set_vertex_size(double val);
   void   set_edge_size(double val);
   void   set_vertex_color(const std::string&);
@@ -50,9 +50,9 @@ public:
   double      get_time()      const {return(m_time);};
   bool        time_set()      const {return(m_time_set);};
   std::string get_label()     const {return(m_label);};
+  std::string get_msg()       const {return(m_msg);};
   std::string get_type()      const {return(m_type);};
   std::string get_source()    const {return(m_source);};
-  std::string get_string()    const {return(m_string);};
 
   ColorPack get_label_color() const  {return(m_label_color);};
   bool      label_color_set() const  {return(m_label_color.set());};
@@ -66,11 +66,18 @@ public:
   double    get_edge_size() const   {return(m_edge_size);};
   bool      edge_size_set() const   {return(m_edge_size>=0);};
 
+  std::string get_spec(std::string s="") const;
+
+  bool set_param(const std::string&, const std::string&);
+
+ protected:
+  void aug_spec(std::string&, std::string) const;
+
 protected:
   std::string  m_label;
   std::string  m_type;
   std::string  m_source;
-  std::string  m_string;
+  std::string  m_msg;
   bool         m_active;
   double       m_time;
   bool         m_time_set;
@@ -83,12 +90,3 @@ protected:
 };
 
 #endif
-
-
-
-
-
-
-
-
-

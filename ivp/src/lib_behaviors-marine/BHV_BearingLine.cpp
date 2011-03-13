@@ -24,7 +24,7 @@
 
 #include <iostream>
 #include <cstdlib>
-#include "math.h"
+#include <cmath>
 #include "BHV_BearingLine.h"
 #include "MBUtils.h"
 #include "AngleUtils.h"

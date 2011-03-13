@@ -320,7 +320,7 @@ int main(int argc ,char * argv[])
     else if(strBegins(str, "--history="))
       g_theXMS.addVariable(str.substr(10), true);
 
-    // "history" without the double dashes is depricated
+    // "history" without the double dashes is deprecated
     else if(strBegins(str, "history="))
       g_theXMS.addVariable(str.substr(8), true);
     

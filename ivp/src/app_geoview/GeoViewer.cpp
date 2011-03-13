@@ -7,7 +7,7 @@
 
 #include <string>
 #include <iostream>
-#include <math.h>
+#include <cmath>
 #include "GeoViewer.h"
 #include "MBUtils.h"
 #include "GeomUtils.h"

@@ -90,21 +90,21 @@ string ContactRecord::getValue(string key, double tstamp)
 {
   key = tolower(key);
   if(key == "x")
-    return(dstringCompact(doubleToString(getX(tstamp), 2)));
+    return(doubleToStringX(getX(tstamp), 2));
   else if(key == "y")
-    return(dstringCompact(doubleToString(getY(tstamp), 2)));
+    return(doubleToStringX(getY(tstamp), 2));
   else if(key == "lat")
-    return(dstringCompact(doubleToString(getLat(tstamp), 8)));
+    return(doubleToStringX(getLat(tstamp), 8));
   else if(key == "lon")
-    return(dstringCompact(doubleToString(getLon(tstamp), 8)));
+    return(doubleToStringX(getLon(tstamp), 8));
   else if((key == "speed") || (key == "spd"))
-    return(dstringCompact(doubleToString(m_speed, 2)));
+    return(doubleToStringX(m_speed, 2));
   else if((key == "heading") || (key == "hdg"))
-    return(dstringCompact(doubleToString(m_lon, 2)));
+    return(doubleToStringX(m_lon, 2));
   else if((key == "depth") || (key == "dep"))
-    return(dstringCompact(doubleToString(m_depth, 2)));
+    return(doubleToStringX(m_depth, 2));
   else if((key == "timestamp") || (key == "time") || (key == "utime"))
-    return(dstringCompact(doubleToString(m_timestamp, 2)));
+    return(doubleToStringX(m_timestamp, 2));
   else
     return("");  
 }

@@ -24,7 +24,7 @@ class PokeDB : public CMOOSApp
 
   void setConfigureCommsLocally(bool v) {m_configure_comms_locally=v;};
 
-  void setPokeDouble(const std::string& varname, double val);
+  void setPokeDouble(const std::string& varname, const std::string& val);
   void setPokeString(const std::string& varname, const std::string& val);
 
  protected:
@@ -37,8 +37,7 @@ class PokeDB : public CMOOSApp
 protected:
   std::vector<std::string>  m_varname;
   std::vector<std::string>  m_valtype;
-  std::vector<std::string>  m_svalue_poke;
-  std::vector<double>       m_dvalue_poke;
+  std::vector<std::string>  m_varvalue;
 
   std::vector<std::string>  m_svalue_read;
   std::vector<std::string>  m_dvalue_read;

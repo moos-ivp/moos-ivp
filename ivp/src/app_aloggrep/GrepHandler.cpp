@@ -12,7 +12,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <cstdio>
-#include <math.h>
+#include <cmath>
 #include "MBUtils.h"
 #include "GrepHandler.h"
 #include "LogUtils.h"

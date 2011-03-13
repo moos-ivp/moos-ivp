@@ -36,8 +36,6 @@ PMV_MOOSApp::PMV_MOOSApp()
   m_gui             = 0; 
   m_start_time      = 0;
   m_lastredraw_time = 0;
-  m_node_report_vars.push_back("AIS_REPORT");
-  m_node_report_vars.push_back("AIS_REPORT_LOCAL");
   m_node_report_vars.push_back("NODE_REPORT");
   m_node_report_vars.push_back("NODE_REPORT_LOCAL");
 
@@ -210,6 +208,7 @@ void PMV_MOOSApp::registerVariables()
   m_Comms.Register("VIEW_SEGLIST", 0);
   m_Comms.Register("TRAIL_RESET",  0);
   m_Comms.Register("VIEW_MARKER",  0);
+  m_Comms.Register("VIEW_RANGE_PULSE", 0);
   m_Comms.Register("BEARING_LINE", 0);
 
   unsigned int i, vsize = m_scope_vars.size();
@@ -328,7 +327,7 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
 void PMV_MOOSApp::handleIterate(const MOOS_event & e) {
   double curr_time = e.moos_time - m_start_time;
   double time_diff = (e.moos_time - m_lastredraw_time);
-  if(time_diff > 1) {
+  if(time_diff > 0.2) {
     m_gui->mviewer->redraw();
     m_lastredraw_time = e.moos_time;
   }

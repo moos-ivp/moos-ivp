@@ -20,7 +20,7 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
-#include <math.h>
+#include <cmath>
 #include "XYPolygon.h"
 #include "MBUtils.h"
 #include "GeomUtils.h"
@@ -85,6 +85,28 @@ bool XYPolygon::add_vertex(double x, double y,
 }
 
 //---------------------------------------------------------------
+// Procedure: add_vertex
+//    o A call to "determine_convexity()" may be made since this
+//      operation may result in a change in the convexity.
+//    o The check_convexity option allows a bunch of vertices to be
+//      added and then just check for convexity at the end. 
+
+bool XYPolygon::add_vertex(double x, double y, double z, 
+			   string property, bool check_convexity)
+{
+  XYSegList::add_vertex(x, y, z, property);
+  side_xy.push_back(-1);
+  
+  // With new vertex, we don't know if the new polygon is valid
+  if(check_convexity) {
+    determine_convexity();
+    return(convex_state);
+  }
+  else
+    return(true);
+}
+
+//---------------------------------------------------------------
 // Procedure: alter_vertex
 //   Purpose: Given a new vertex, find the existing vertex that is
 //            closest, and replace it with the new one.
@@ -108,7 +130,7 @@ bool XYPolygon::alter_vertex(double x, double y, double z)
 
 bool XYPolygon::delete_vertex(double x, double y)
 {
-  unsigned int vsize = vertex_x.size();
+  unsigned int vsize = m_vx.size();
   if(vsize == 0)
     return(false);
 
@@ -138,7 +160,7 @@ bool XYPolygon::delete_vertex(double x, double y)
 
 bool XYPolygon::insert_vertex(double x, double y, double z)
 {
-  unsigned int vsize = vertex_x.size();
+  unsigned int vsize = m_vx.size();
   if(vsize <= 1)
     return(add_vertex(x, y, z));
 
@@ -182,7 +204,7 @@ void XYPolygon::clear()
 
 bool XYPolygon::is_clockwise() const
 {
-  unsigned int i, vsize = vertex_x.size();
+  unsigned int i, vsize = m_vx.size();
   if(vsize < 3)
     return(false);
 
@@ -196,8 +218,8 @@ bool XYPolygon::is_clockwise() const
     unsigned int j = i+1; 
     if(j == vsize)
       j = 0;
-    double relative_angle_1 = relAng(cx, cy, vertex_x[i], vertex_y[i]);
-    double relative_angle_2 = relAng(cx, cy, vertex_x[j], vertex_y[j]);
+    double relative_angle_1 = relAng(cx, cy, m_vx[i], m_vy[i]);
+    double relative_angle_2 = relAng(cx, cy, m_vx[j], m_vy[j]);
     if(relative_angle_2 > relative_angle_1)
       inc_count++;
     else
@@ -223,8 +245,8 @@ bool XYPolygon::is_clockwise() const
 
 bool XYPolygon::apply_snap(double snapval)
 {
-  vector<double> tmp_vertex_x = vertex_x;
-  vector<double> tmp_vertex_y = vertex_y;
+  vector<double> tmp_m_vx = m_vx;
+  vector<double> tmp_m_vy = m_vy;
 
   // Determine if it is convex prior to applying the snapval
   bool start_convex = is_convex();
@@ -234,8 +256,8 @@ bool XYPolygon::apply_snap(double snapval)
   if(is_convex() || !start_convex)
     return(true);
   else {
-    vertex_x = tmp_vertex_x;
-    vertex_y = tmp_vertex_y;
+    m_vx = tmp_m_vx;
+    m_vy = tmp_m_vy;
     determine_convexity();
     return(false);
   }
@@ -273,22 +295,22 @@ bool XYPolygon::contains(double x, double y) const
   if(!convex_state)
     return(false);
 
-  unsigned int ix, vsize = vertex_x.size();
+  unsigned int ix, vsize = m_vx.size();
   if(vsize == 0)
     return(false);
 
   double x1, y1, x2, y2 = 0;
   for(ix=0; ix<vsize; ix++) {
 
-    x1 = vertex_x[ix];
-    y1 = vertex_y[ix];
+    x1 = m_vx[ix];
+    y1 = m_vy[ix];
     
     int ixx = ix+1;
     if(ix == vsize-1)
       ixx = 0;
     
-    x2 = vertex_x[ixx];
-    y2 = vertex_y[ixx];
+    x2 = m_vx[ixx];
+    y2 = m_vy[ixx];
 
     int vside = side(x1, y1, x2, y2, x, y);
     if((vside != 2) && (vside != side_xy[ix]))
@@ -302,7 +324,7 @@ bool XYPolygon::contains(double x, double y) const
 
 bool XYPolygon::intersects(const XYPolygon &poly) const
 {
-  unsigned int this_size = vertex_x.size();
+  unsigned int this_size = m_vx.size();
   unsigned int poly_size = poly.size();
   
   if(this_size == 0)
@@ -314,8 +336,8 @@ bool XYPolygon::intersects(const XYPolygon &poly) const
   // contained in the given polygon
   unsigned int i;
   for(i=0; i<this_size; i++) {
-    double x = vertex_x[i];
-    double y = vertex_y[i];
+    double x = m_vx[i];
+    double y = m_vy[i];
     if(poly.contains(x, y))
       return(true);
   }
@@ -352,16 +374,16 @@ bool XYPolygon::intersects(const XYPolygon &poly) const
 
 double XYPolygon::dist_to_poly(double px, double py) const
 {
-  unsigned int ix, vsize = vertex_x.size();
+  unsigned int ix, vsize = m_vx.size();
   if(vsize == 0)
     return(-1);
 
   if(vsize == 1)
-    return(distPointToPoint(px, py, vertex_x[0], vertex_y[0]));
+    return(distPointToPoint(px, py, m_vx[0], m_vy[0]));
   
   if(vsize == 2)
-    return(distPointToSeg(vertex_x[0], vertex_y[0], 
-			  vertex_x[1], vertex_y[1], px, py)); 
+    return(distPointToSeg(m_vx[0], m_vy[0], 
+			  m_vx[1], m_vy[1], px, py)); 
 	   
   // Distance to poly is given by the shortest distance to any
   // one of the edges.
@@ -369,18 +391,18 @@ double XYPolygon::dist_to_poly(double px, double py) const
   double dist = 0;
   for(ix=0; ix<vsize; ix++) {
 
-    x1 = vertex_x[ix];
-    y1 = vertex_y[ix];
+    x1 = m_vx[ix];
+    y1 = m_vy[ix];
     
     int ixx = ix+1;
     if(ix == vsize-1)
       ixx = 0;
     
-    x2 = vertex_x[ixx];
-    y2 = vertex_y[ixx];
+    x2 = m_vx[ixx];
+    y2 = m_vy[ixx];
 
-    double idist = distPointToSeg(vertex_x[ix], vertex_y[ix], 
-				  vertex_x[ixx], vertex_y[ixx], 
+    double idist = distPointToSeg(m_vx[ix], m_vy[ix], 
+				  m_vx[ixx], m_vy[ixx], 
 				  px, py); 
     if((ix==0) || (idist < dist))
       dist = idist;
@@ -398,17 +420,17 @@ double XYPolygon::dist_to_poly(double px, double py) const
 double XYPolygon::dist_to_poly(double x3, double y3, 
 			       double x4, double y4) const
 {
-  unsigned int ix, vsize = vertex_x.size();
+  unsigned int ix, vsize = m_vx.size();
   
   if(vsize == 0)
     return(-1);
   
   if(vsize == 1)
-    return(distPointToSeg(x3,y3,x4,y4, vertex_x[0], vertex_y[0]));
+    return(distPointToSeg(x3,y3,x4,y4, m_vx[0], m_vy[0]));
   
   if(vsize == 2)
-    return(distSegToSeg(vertex_x[0], vertex_y[0], 
-			vertex_x[1], vertex_y[1], x3,y3,x4,y4)); 
+    return(distSegToSeg(m_vx[0], m_vy[0], 
+			m_vx[1], m_vy[1], x3,y3,x4,y4)); 
 	   
   // Distance to poly is given by the shortest distance to any
   // one of the edges.
@@ -416,18 +438,18 @@ double XYPolygon::dist_to_poly(double x3, double y3,
   double dist = 0;
   for(ix=0; ix<vsize; ix++) {
 
-    x1 = vertex_x[ix];
-    y1 = vertex_y[ix];
+    x1 = m_vx[ix];
+    y1 = m_vy[ix];
     
     int ixx = ix+1;
     if(ix == vsize-1)
       ixx = 0;
     
-    x2 = vertex_x[ixx];
-    y2 = vertex_y[ixx];
+    x2 = m_vx[ixx];
+    y2 = m_vy[ixx];
 
-    double idist = distSegToSeg(vertex_x[ix], vertex_y[ix], 
-				vertex_x[ixx], vertex_y[ixx], 
+    double idist = distSegToSeg(m_vx[ix], m_vy[ix], 
+				m_vx[ixx], m_vy[ixx], 
 				x3, y3, x4, y4); 
     if((ix==0) || (idist < dist))
       dist = idist;
@@ -445,17 +467,17 @@ double XYPolygon::dist_to_poly(double x3, double y3,
 
 double XYPolygon::dist_to_poly(double px, double py, double angle) const 
 {
-  unsigned int ix, vsize = vertex_x.size();
+  unsigned int ix, vsize = m_vx.size();
   if(vsize == 0)
     return(-1);
   
   if(vsize == 1)
-    return(distPointToSeg(vertex_x[0], vertex_y[0], 
-			  vertex_x[0], vertex_y[0], px,py,angle)); 
+    return(distPointToSeg(m_vx[0], m_vy[0], 
+			  m_vx[0], m_vy[0], px,py,angle)); 
   
   if(vsize == 2)
-    return(distPointToSeg(vertex_x[0], vertex_y[0], 
-			  vertex_x[1], vertex_y[1], px,py,angle)); 
+    return(distPointToSeg(m_vx[0], m_vy[0], 
+			  m_vx[1], m_vy[1], px,py,angle)); 
 	   
   // Distance to poly is given by the shortest distance to any
   // one of the edges.
@@ -464,15 +486,15 @@ double XYPolygon::dist_to_poly(double px, double py, double angle) const
 
   for(ix=0; ix<vsize; ix++) {
 
-    double x1 = vertex_x[ix];
-    double y1 = vertex_y[ix];
+    double x1 = m_vx[ix];
+    double y1 = m_vy[ix];
     
     int ixx = ix+1;
     if(ix == vsize-1)
       ixx = 0;
     
-    double x2 = vertex_x[ixx];
-    double y2 = vertex_y[ixx];
+    double x2 = m_vx[ixx];
+    double y2 = m_vy[ixx];
 
     double idist = distPointToSeg(x1,y1,x2,y2,px,py, angle); 
     if(idist != -1)
@@ -495,25 +517,25 @@ double XYPolygon::dist_to_poly(double px, double py, double angle) const
 bool XYPolygon::seg_intercepts(double x1, double y1, 
 			       double x2, double y2) const
 {
-  unsigned int ix, vsize = vertex_x.size();
+  unsigned int ix, vsize = m_vx.size();
   if(vsize == 0)
     return(false);
 
   double x3,y3,x4,y4;
 
   if(vsize == 1) {
-    x3 = x4 = vertex_x[0];
-    y3 = y4 = vertex_y[0];
+    x3 = x4 = m_vx[0];
+    y3 = y4 = m_vy[0];
     return(segmentsCross(x1,y1,x2,y2,x3,y3,x4,y4));
   }
 
   // Special case 2 vertices, otherwise the single edge will be checked
   // twice if handled by the general case.
   if(vsize == 2) {
-    x3 = vertex_x[0];
-    y3 = vertex_y[0];
-    x4 = vertex_x[1];
-    y4 = vertex_y[1];
+    x3 = m_vx[0];
+    y3 = m_vy[0];
+    x4 = m_vx[1];
+    y4 = m_vy[1];
     return(segmentsCross(x1,y1,x2,y2,x3,y3,x4,y4));
   }
 
@@ -529,10 +551,10 @@ bool XYPolygon::seg_intercepts(double x1, double y1,
     unsigned int ixx = ix+1;
     if(ix == vsize-1)
       ixx = 0;
-    x3 = vertex_x[ix];
-    y3 = vertex_y[ix];
-    x4 = vertex_x[ixx];
-    y4 = vertex_y[ixx];
+    x3 = m_vx[ix];
+    y3 = m_vy[ix];
+    x4 = m_vx[ixx];
+    y4 = m_vy[ixx];
 
     bool result = segmentsCross(x1,y1,x2,y2,x3,y3,x4,y4);
     if(result == true)
@@ -553,7 +575,7 @@ bool XYPolygon::seg_intercepts(double x1, double y1,
 
 bool XYPolygon::vertex_is_viewable(unsigned int ix, double x1, double y1) const
 {
-  unsigned int vsize = vertex_x.size();
+  unsigned int vsize = m_vx.size();
   if(vsize == 0)
     return(false);
   
@@ -566,8 +588,8 @@ bool XYPolygon::vertex_is_viewable(unsigned int ix, double x1, double y1) const
     return(true);
 
   double x2,y2;
-  x2 = vertex_x[ix];
-  y2 = vertex_y[ix];
+  x2 = m_vx[ix];
+  y2 = m_vy[ix];
 
   // Special case, the query point and query vertex are the same
   if((x1==x2) && (y1==y2))
@@ -587,8 +609,8 @@ bool XYPolygon::vertex_is_viewable(unsigned int ix, double x1, double y1) const
     if(ix == 0)   // set index of the "other" vertex.
       ixx = 1;
 
-    double x = vertex_x[ixx];
-    double y = vertex_y[ixx];
+    double x = m_vx[ixx];
+    double y = m_vy[ixx];
     // if the other vertex point is on the query line segment, false
     if(segmentsCross(x1,y1,x2,y2,x,y,x,y))
       return(false);
@@ -608,10 +630,10 @@ bool XYPolygon::vertex_is_viewable(unsigned int ix, double x1, double y1) const
     unsigned int j = i+1;
     if(i == vsize-1)
       j = 0;
-    x3 = vertex_x[i];
-    y3 = vertex_y[i];
-    x4 = vertex_x[j];
-    y4 = vertex_y[j];
+    x3 = m_vx[i];
+    y3 = m_vy[i];
+    x4 = m_vx[j];
+    y4 = m_vy[j];
 
     bool res = segmentsCross(x1,y1,x2,y2,x3,y3,x4,y4);
     if(res)
@@ -691,7 +713,7 @@ int XYPolygon::side(double x1, double y1, double x2, double y2,
 
 void XYPolygon::set_side(int ix)
 {
-  int vsize = vertex_x.size();
+  int vsize = m_vx.size();
   if((ix < 0) || (ix >= vsize))
     return;
 
@@ -703,23 +725,23 @@ void XYPolygon::set_side(int ix)
 
   double x1,y1,x2,y2,x3,y3;
 
-  x1 = vertex_x[ix];
-  y1 = vertex_y[ix];
+  x1 = m_vx[ix];
+  y1 = m_vy[ix];
 
   int ixx = ix+1;
   if(ix == vsize-1)
     ixx = 0;
 
-  x2 = vertex_x[ixx];
-  y2 = vertex_y[ixx];
+  x2 = m_vx[ixx];
+  y2 = m_vy[ixx];
 
   side_xy[ix] = -1;
 
   bool fresh = true;
   for(int j=0; j<vsize; j++) {
     if((j!=ix) && (j!=ixx)) {
-      x3 = vertex_x[j];
-      y3 = vertex_y[j];
+      x3 = m_vx[j];
+      y3 = m_vy[j];
       int iside = side(x1,y1,x2,y2,x3,y3);
 
       if(iside != 2) {
@@ -767,10 +789,10 @@ XYSegList XYPolygon::exportSegList(double x, double y)
   unsigned int start_index = 0;
   double shortest_dist = -1;
 
-  unsigned int i, vsize = vertex_x.size();
+  unsigned int i, vsize = m_vx.size();
   for(i=0; i<vsize; i++) {
-    double vx = vertex_x[i];
-    double vy = vertex_y[i];
+    double vx = m_vx[i];
+    double vy = m_vy[i];
     double dist = hypot((x-vx), (y-vy));
     if((i==0) || (dist < shortest_dist)) {
       shortest_dist = dist;
@@ -785,7 +807,7 @@ XYSegList XYPolygon::exportSegList(double x, double y)
     unsigned int index = start_index + count;
     if(index >= vsize) 
       index -= vsize;
-    new_segl.add_vertex(vertex_x[index], vertex_y[index]);
+    new_segl.add_vertex(m_vx[index], m_vy[index]);
     count++;
   }
 

@@ -10,7 +10,7 @@
 /*****************************************************************/
 
 #include <iostream>
-#include <math.h>
+#include <cmath>
 #include "CPAViewer.h"
 #include "MBUtils.h"
 #include "GeomUtils.h"

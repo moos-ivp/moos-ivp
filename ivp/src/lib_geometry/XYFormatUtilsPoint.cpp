@@ -1,7 +1,7 @@
- /*****************************************************************/
+/*****************************************************************/
 /*    NAME: Michael Benjamin and John Leonard                    */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
-/*    FILE: XYBuildUtils.cpp                                     */
+/*    FILE: XYFormatUtilsPoint.cpp                               */
 /*    DATE: Mar 16, 2008 Sunday Afternoon at Brugger's           */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
@@ -21,142 +21,112 @@
 /*****************************************************************/
 
 #include <vector>
-#include <stdlib.h>
+#include <cstdlib>
 #include "XYFormatUtilsPoint.h"
 #include "MBUtils.h"
 
 using namespace std;
 
 //---------------------------------------------------------------
-// Procedure: string2Point
-//
+// Procedure: string2Point (Method #0)
+//   Example: Create a point from a string representation. Will 
+//            call one of the string*2Point functions below. 
+//   ***NOTE: This is the only function that should be called by 
+//            the user. The other functions are subject to change 
+//            without regard to backward compatibility.
 
 XYPoint string2Point(string str)
 {
-  if(strContains(str, "x=") && strContains(str, "y="))
-    return(stringPairs2Point(str));
-  else
-    return(stringShort2Point(str));
+  str = stripBlankEnds(str);
+
+  XYPoint new_point = stringStandard2Point(str);
+  if(new_point.valid())
+    return(new_point);
+  
+  // Last chance....
+  return(stringAbbreviated2Point(str));
 }
 
 //---------------------------------------------------------------
-// Procedure: stringPairs2Point
-//
+// Procedure: stringStandard2Point  (Method #1)
+//      Note: This function is standard because it processes the 
+//            string format used when a string is created from an 
+//            existing XYPoint instance.
+//   Example: x=4,y=2,z=3,vertex_size=2,label_color=red,
+//            vertex_color=white,soure=foobar
+// 
 
-XYPoint stringPairs2Point(string str)
+XYPoint stringStandard2Point(string str)
 {
   XYPoint null_point;
   XYPoint new_point;
 
-  str = tolower(stripBlankEnds(str));
+  str = stripBlankEnds(str);
   vector<string> mvector = parseString(str, ',');
   unsigned int i, vsize = mvector.size();
   
-  // Below are the mandatory parameters - check they are set.
-  bool   x_set = false;
-  bool   y_set = false;
-  double x     = 0;
-  double y     = 0;
-  double z     = 0;
-  double snap  = -1;
-
+  string x,y,z;
   for(i=0; i<vsize; i++) {
-    vector<string> svector = parseString(mvector[i], '=');
-    if(svector.size() != 2)
-      return(null_point);
-    string param = stripBlankEnds(svector[0]);
-    string value = stripBlankEnds(svector[1]);
-    double dval  = atof(value.c_str());
-    if((param == "x") && isNumber(value)) {
-      x_set = true;
-      x = dval;
-    }
-    else if((param == "y") && isNumber(value)) {
-      y_set = true;
-      y = dval;
-    }
-    else if((param == "z") && isNumber(value))
-      z = dval;
-    else if((param == "vertex_size") && isNumber(value))
-      new_point.set_vertex_size(dval);
-    else if((param == "snap") && isNumber(value) && (dval >= 0))
-      snap = dval;
-    else if(param == "label")
-      new_point.set_label(value);
-    else if(param == "label_color")
-      new_point.set_label_color(value);
-    else if(param == "vertex_color")
-      new_point.set_vertex_color(value);
-    else if(param == "source")
-      new_point.set_source(value);
-    else if(param == "type")
-      new_point.set_type(value);
-    else if(param == "active")
-      new_point.set_active(tolower(value) == "true");
-  }
+    mvector[i] = stripBlankEnds(mvector[i]);
+    string param = tolower(stripBlankEnds(biteString(mvector[i], '=')));
+    string value = stripBlankEnds(mvector[i]);
 
-  if(!x_set || !y_set)
+    if((param == "x") && isNumber(value))
+      x = value;
+    else if((param == "y") && isNumber(value))
+      y = value;
+    else if((param == "z") && isNumber(value))
+      z = value;
+    else
+      new_point.set_param(param, value);
+  }
+  
+  if((x=="") || (y==""))
     return(null_point);
   
-  new_point.set_vertex(x,y,z);
-  if(snap>=0)
-    new_point.apply_snap(snap);
+  new_point.set_vertex(atof(x.c_str()), atof(y.c_str()), atof(z.c_str()));
   
   return(new_point);
 }
 
 //---------------------------------------------------------------
-// Procedure: stringShort2Point
-//
+// Procedure: stringAbbreviated2Point
+//   Example: 0,0
+//   Example: 4,5:label,foobar:source,bravo:msg,hello
 
-XYPoint stringShort2Point(string str)
+XYPoint stringAbbreviated2Point(string str)
 {
   XYPoint null_point;
   XYPoint new_point;
 
-  str = tolower(stripBlankEnds(str));
+  str = stripBlankEnds(str);
   vector<string> mvector = parseString(str, ':');
   unsigned int i, vsize = mvector.size();
   
   for(i=0; i<vsize; i++) {
-    mvector[i] = stripBlankEnds(mvector[i]);
-    string left = tolower(stripBlankEnds(biteString(mvector[i], ',')));
-    string rest = stripBlankEnds(mvector[i]);
-    double dval = atof(rest.c_str());
+    string param = stripBlankEnds(biteString(mvector[i], ','));
+    string value = stripBlankEnds(mvector[i]);
+    bool handled = new_point.set_param(param, value);
 
-    if(left == "label") 
-      new_point.set_label(rest);
-    else if(left == "label_color") 
-      new_point.set_label_color(rest);
-    else if(left == "type") 
-      new_point.set_type(rest);
-    else if(left == "source") 
-      new_point.set_source(rest);
-    else if(left == "time") 
-      new_point.set_time(dval);
-    else if(left == "vertex_color") 
-      new_point.set_vertex_color(rest);
-    else if(left == "active") 
-      new_point.set_active(tolower(rest)=="true");
-    else if((left == "vertex_size") && (dval >= 0))
-      new_point.set_vertex_size(dval);
-    else {
-      string xstr = left;
-      string ystr = stripBlankEnds(biteString(rest, ','));
-      string zstr = stripBlankEnds(rest);
-      if((zstr != "") && !isNumber(zstr))
-	return(null_point);
-      if(!isNumber(xstr) || !isNumber(ystr))
-	return(null_point);
-      double xval = atof(xstr.c_str());
-      double yval = atof(ystr.c_str());
-      if(zstr == "")
-	new_point.set_vertex(xval, yval);
-      else {
-	double zval = atof(zstr.c_str());
-	new_point.set_vertex(xval, yval, zval);	
+    if(!handled) { // This component might be the vertex  x,y or x,y,z
+      string xstr = param;
+      string ystr = value;
+      string zstr;
+      if(strContains(ystr, ',')) {
+	ystr = stripBlankEnds(biteString(value, ','));
+	zstr = stripBlankEnds(value);
+      }
+
+      if(isNumber(xstr) && isNumber(ystr) && (isNumber(zstr)||(zstr==""))) {
+	double xval = atof(xstr.c_str());
+	double yval = atof(ystr.c_str());
+	double zval = 0;
+	if(isNumber(zstr))
+	  zval = atof(zstr.c_str());
+	new_point.set_vertex(xval,yval,zval);
       }
     }
   }
+
   return(new_point);
 }

@@ -21,9 +21,9 @@
 /*****************************************************************/
 
 #include <cmath>
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstring>
+#include <cstdlib>
+#include <cstdio>
 #include <ctype.h>
 #include <iostream>
 #include "MBUtils.h"
@@ -219,6 +219,24 @@ vector<string> chompString(const string& string_str, char separator)
 }
 
 //----------------------------------------------------------------
+// Procedure: removeWhite(const string&)
+//   Example: input_str = "apples, pears, bananas "
+//            str = removeWhite(input_str)
+//            str = "apples,pears,bananas"
+
+string removeWhite(const string& str)
+{
+  string return_string;
+  unsigned int i, vsize = str.length();
+  for(i=0; i<vsize; i++) {
+    int c = (int)(str.at(i));
+    if((c != 9) && (c != 32))
+      return_string += str.at(i);
+  }
+  return(return_string);
+}
+
+//----------------------------------------------------------------
 // Procedure: biteString(const string&, char)
 //   Example: input_str = "apples, pears, bananas"
 //            str = biteString(input_str, ',')
@@ -229,6 +247,42 @@ string biteString(string& str, char separator)
 {
   string::size_type i=0;
   while((str[i]!=separator)&&(str[i]!='\0'))
+    i++;
+
+  string str_front(str.c_str(), i);
+
+  if(str[i] == '\0')
+    str = "";
+  else {  
+    string str_back(str.c_str()+i+1);
+    str = str_back;
+  }
+
+  return(str_front);
+}
+
+//----------------------------------------------------------------
+// Procedure: biteStringX(const string&, char)
+//      Note: Same as biteString except blank ends will be removed
+//            from both the returned and remaining value.
+
+string biteStringX(string& str, char separator)
+{
+  string front = stripBlankEnds(biteString(str, separator));
+  stripBlankEnds(str);
+  return(front);
+}
+
+//----------------------------------------------------------------
+// Procedure: biteString(const string&, char, char)
+//      Note: Same as biteString(string,char) except the bite will
+//            occur at the point where either of the two given
+//            characters occur.
+
+string biteString(string& str, char sep1, char sep2)
+{
+  string::size_type i=0;
+  while((str[i]!=sep1) && (str[i]!=sep2) && (str[i]!='\0'))
     i++;
 
   string str_front(str.c_str(), i);
@@ -497,6 +551,11 @@ string doubleToString(double val, int digits)
   return(str);
 }
 
+string doubleToStringX(double val, int digits)
+{
+  return(dstringCompact(doubleToString(val, digits)));
+}
+
 //----------------------------------------------------------------
 // Procedure: intToCommaString
 
@@ -541,7 +600,6 @@ string uintToCommaString(unsigned int ival)
 
 string dstringCompact(const string& str)
 {
-  //if(str=="0")     return("123456");
   if(str=="0") 
     return("0");
 
@@ -768,6 +826,28 @@ bool strEnds(const string& str, const string& qstr, bool case_matters)
   }
   
   return(true);
+}
+    
+//----------------------------------------------------------------
+// Procedure: isBoolean
+
+bool isBoolean(const string& str)
+{
+  string s = tolower(str);
+  if((s == "true") || (s == "false"))
+    return(true);
+  return(false);
+}
+    
+//----------------------------------------------------------------
+// Procedure: stringIsFalse
+
+bool stringIsFalse(const string& str)
+{
+  string s = tolower(str);
+  if((s == "false") || (s == "0") || (s == "no"))
+    return(true);
+  return(false);
 }
     
 //----------------------------------------------------------------
@@ -1161,7 +1241,8 @@ int validateArgs(int argc, char *argv[], string ms)
 
 float snapToStep(float gfloat, float step)
 { 
-  if(step <= 0) return(gfloat);
+  if(step <= 0) 
+    return(gfloat);
   float fval   = gfloat / step;    // Divide by step
   int   itemp;
   if(fval < 0.0)

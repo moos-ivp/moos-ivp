@@ -20,9 +20,8 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
-#include <iostream>
-#include <math.h> 
-#include <assert.h>
+#include <cmath> 
+#include <cassert>
 #include "CPAEngine.h"
 #include "GeomUtils.h"
 #include "AngleUtils.h"

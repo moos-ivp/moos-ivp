@@ -23,7 +23,7 @@
 #ifndef _WIN32
 #include <string>
 #include <termios.h>
-#include <stdio.h>
+#include <cstdio>
 #include "TermUtils.h"
 #endif
 
@@ -34,7 +34,7 @@
 #include <conio.h>
 #endif
 
-#include <string.h>
+#include <cstring>
 
 //--------------------------------------------------------
 // Procedure: getCharNoWait()

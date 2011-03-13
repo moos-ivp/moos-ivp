@@ -22,9 +22,9 @@
 #ifdef _WIN32
    #define _USE_MATH_DEFINES
 #endif
-#include <math.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cmath>
+#include <cstdlib>
+#include <cstring>
 #include <vector>
 #include <iostream>
 #include "XYFormatUtilsPoly.h"
@@ -32,85 +32,211 @@
 #include "AngleUtils.h"
 #include "GeomUtils.h"
 
-#ifdef _WIN32
-  #define strncasecmp strnicmp
-#endif
-
 using namespace std;
 
 //---------------------------------------------------------------
-// Procedure: #0 string2Poly
+// Procedure: string2Poly (Method #0)
 //
 // Formats: default, radial, wedge, ellipse, rangewedge
 // Fields common to all:
-//    label, source, active, snap(?)
+//    label, source, msg, active, snap(?)
 //
 // Fields defined for ellipse:
-//    x, y, z, major, minor, rads, degs, pts, snap
+//    x, y, z, major, minor, rads, degs, pts, snap, msg
 // 
 // Fields defined for radial:
-//    x, y, z, radius, pts, snap, label, active
+//    x, y, z, radius, pts, snap, label, active, msg
 //
 // Fields defined for wedge:
-//    x, y, lang, rang, range, pts, snap, label, active
+//    x, y, lang, rang, range, pts, snap, label, active, msg
 // 
 // Fields defined for rangewedge:
-//    x, y, lang, rang, range_min, range_max, pts, snap, label, active
+//    x, y, lang, rang, range_min, range_max, pts, snap, label, active, msg
 //
 // Fields defined for pylon poly
-//    x1, y1, x2, y2, z, axis_pad, snap, label, active
+//    x1, y1, x2, y2, z, axis_pad, snap, label, active, msg
 //
 // pts=x1,y1:x2,y2:x3,y3 # label=val # source=val # active=val
 // format=radial # pts=12 # radius=40 # label=val # source=val # active=val
 
 XYPolygon string2Poly(string str)
 {
+  str = stripBlankEnds(str);
+
+  // First try the most likely format since this is the one that is 
+  // created by the poly.get_spec() method and is likely to be the one
+  // passed around in the greatest volume. The others formats are more 
+  // likely to be found in initialization routines so it doesnt need to
+  // be terribly fast.
+  XYPolygon new_poly = stringStandard2Poly(str);
+  if(new_poly.valid())
+    return(new_poly);
+
+  // Perform some backward compatibility measures
+  if(strContains(str, "format")) {
+    string no_white_string = removeWhite(str);
+    if(strContains(no_white_string, "format=radial"))
+      new_poly = stringRadial2Poly(str);
+    else if(strContains(no_white_string, "format=ellipse"))
+      new_poly = stringEllipse2Poly(str);
+    else if(strContains(no_white_string, "format=wedge"))
+      new_poly = stringPieWedge2Poly(str);
+    else if(strContains(no_white_string, "format=piewedge"))
+      new_poly = stringPieWedge2Poly(str);
+    if(strContains(no_white_string, "format=rangewedge"))
+      new_poly = stringRangeWedge2Poly(str);
+    else if(strContains(no_white_string, "format=pylon"))
+      new_poly = stringPylon2Poly(str);
+
+    if(new_poly.valid())
+      return(new_poly);
+  }
+  
+  if(strBegins(str, "radial::"))
+    return(stringRadial2Poly(str.substr(8)));
+  if(strBegins(str, "radial:")) 
+    return(stringShortRadial2Poly(str.substr(7)));
+  if(strBegins(str, "ellipse::"))
+    return(stringEllipse2Poly(str.substr(9)));
+  if(strBegins(str, "ellipse:"))
+    return(stringEllipse2Poly(str.substr(8)));
+  if(strBegins(str, "wedge:"))
+    return(stringPieWedge2Poly(str.substr(6)));
+  if(strBegins(str, "piewedge:"))
+    return(stringPieWedge2Poly(str.substr(9)));
+  if(strBegins(str, "rangewedge:"))
+    return(stringRangeWedge2Poly(str.substr(11)));
+  if(strBegins(str, "pylon:"))
+    return(stringPylon2Poly(str.substr(6)));
+
+  // Last chance .....
+  return(stringAbbreviated2Poly(str));
+}
+
+//---------------------------------------------------------------
+// Procedure: stringStandard2Poly  (Method #1)
+//      Note: This function is key because it represents the format
+//            produced by default when an existing XYPolygon instance
+//            is converted into a string.
+// 
+// Examples: [pts="10,15:20,25:30,35", label=foobar]
+
+XYPolygon stringStandard2Poly(string str)
+{
   XYPolygon null_poly;
-  
-  str = stripBlankEnds(str);
-  
-  // Support for now a few depricated ways of specifying a poly
-  str = findReplace(str, "radial::", "format=radial,");
-  str = findReplace(str, "ellipse::", "format=ellipse,");
+  XYPolygon new_poly;
 
-  if(!strncasecmp("radial:", str.c_str(), 7)) {
-    str = str.c_str()+7;
-    return(stringShortRadial2Poly(str));
-  }
+  string rest = stripBlankEnds(str);
 
-  str = stripBlankEnds(str);
-  vector<string> svector = parseStringQ(str, ',');
-  unsigned int i, vsize = svector.size();
-  string format = "default";
-  for(i=0; i<vsize; i++) {
-    svector[i] = stripBlankEnds(svector[i]);
-    string left  = stripBlankEnds(biteString(svector[i], '='));
-    string right = stripBlankEnds(svector[i]);
-    if((left == "format") && (right != ""))
-      format = right;
-  }
-  format=tolower(format);
-  
-  if(format == "points")
-    return(stringPoints2Poly(str));
-  if(format == "default")
-    return(stringShortPoints2Poly(str));
-  else if(format == "radial")
-    return(stringRadial2Poly(str));
-  else if(format == "ellipse")
-    return(stringEllipse2Poly(str));
-  else if(format == "pylon")
-    return(stringPylon2Poly(str));
-  else if((format == "wedge") || (format=="piewedge"))
-    return(stringPieWedge2Poly(str));
-  else if(format == "rangewedge")
-    return(stringRangeWedge2Poly(str));
+  while(rest != "") {
+    string left = stripBlankEnds(biteString(rest, '='));
+    rest = stripBlankEnds(rest);
+    
+    if(left == "pts") {
+      string pstr = biteStringX(rest, '}');
+      
+      // Empty set of points is an error
+      if(pstr == "")
+	return(null_poly);
+
+      // Points should begin with an open brace (but discard now)
+      if(pstr[0] != '{') 
+	return(null_poly);
+      else
+	pstr = pstr.substr(1);
+
+      // If more components after pts={}, then it should begin w/ comma
+      if(rest != "") {
+	if(rest[0] != ',')
+	  return(null_poly);
+	else
+	  rest = rest.substr(1);
+      }
+
+      vector<string> svector = parseString(pstr, ':');
+      unsigned int i, vsize = svector.size();
+      for(i=0; i<vsize; i++) {
+	string vertex = stripBlankEnds(svector[i]);
+	string xstr = biteStringX(vertex, ',');
+	string ystr = biteStringX(vertex, ',');
+	string zstr = biteStringX(vertex, ',');
+	string pstr = biteStringX(vertex, ',');
+	  
+	string property;
+	  
+	if(!isNumber(xstr) || !isNumber(ystr))
+	  return(null_poly);
+	double xval = atof(xstr.c_str());
+	double yval = atof(ystr.c_str());
+	double zval = 0;
+	if(isNumber(zstr))
+	  zval = atof(zstr.c_str());
+	else if(zstr != "")
+	  property = zstr;
+	  
+	if(pstr != "") {
+	  if(property != "")
+	    property += ",";
+	  property += pstr;
+	}
+	new_poly.add_vertex(xval, yval, zval, property, false);
+      }
+      new_poly.determine_convexity();
+    }
+    else {
+      string right = stripBlankEnds(biteString(rest, ','));
+      rest = stripBlankEnds(rest);
+      new_poly.set_param(left, right);
+    }
+  }	  				  
+	
+  if(new_poly.is_convex())
+    return(new_poly);
   else
     return(null_poly);
 }
 
 //---------------------------------------------------------------
-//  Procedure: stringEllipse2Poly  (Method #1)
+// Procedure: stringAbbreviated2Poly  (Method #2)
+//  Examples: 2,3:-8,5:label,foobar:source,alpha:point_color=blue:
+//            vertex_size=4:type,waypoint
+
+XYPolygon stringAbbreviated2Poly(string str)
+{
+  XYPolygon null_poly;
+  XYPolygon new_poly;
+
+  vector<string> mvector = parseString(str, ':');
+  int vsize = mvector.size();
+  for(int i=0; i<vsize; i++) {
+    mvector[i] = stripBlankEnds(mvector[i]);
+    string left = tolower(stripBlankEnds(biteString(mvector[i], ',')));
+    string rest = stripBlankEnds(mvector[i]);
+
+    bool handled = new_poly.set_param(left, rest);
+    if(!handled) {
+      string xstr = left;
+      string ystr = stripBlankEnds(biteString(rest, ','));
+      string zstr = stripBlankEnds(rest);
+      if((zstr != "") && !isNumber(zstr))
+	return(null_poly);
+      if(!isNumber(xstr) || !isNumber(ystr))
+	return(null_poly);
+      double xval = atof(xstr.c_str());
+      double yval = atof(ystr.c_str());
+      if(zstr == "")
+	new_poly.add_vertex(xval, yval);
+      else {
+	double zval = atof(zstr.c_str());
+	new_poly.add_vertex(xval, yval, zval);	
+      }
+    }
+  }
+  return(new_poly);
+}
+
+//---------------------------------------------------------------
+//  Procedure: stringEllipse2Poly  (Method #3)
 //
 /// Initializes a polygon that approximates an ellipse
 /// The format of the string is "type=elipse, x=val, y=val, 
@@ -191,24 +317,11 @@ XYPolygon stringEllipse2Poly(string str)
     }
     else if((param == "snap") && isNumber(value) && (dval>0))
       snap = dval;
-    else if(param == "label")
-      new_poly.set_label(value);
-    else if(param == "type")
-      new_poly.set_type(value);
-    else if(param == "source")
-      new_poly.set_source(value);
-    else if(param == "vertex_color")
-      new_poly.set_vertex_color(value);
-    else if(param == "edge_color")
-      new_poly.set_edge_color(value);
-    else if((param == "vertex_size") && (dval >= 0))
-      new_poly.set_vertex_size(dval);
-    else if((param == "edge_size") && (dval >= 0))
-      new_poly.set_edge_size(dval);
-    else if(param == "active")
-      new_poly.set_active(tolower(value) == "true");
-    else
-      return(null_poly);
+    else {
+      bool handled = new_poly.set_param(param, value);
+      if(!handled)
+	return(null_poly);
+    }
   }
 
   if(!xpos_set || !ypos_set || !major_set || !minor_set || !pts_set)
@@ -254,7 +367,7 @@ XYPolygon stringEllipse2Poly(string str)
 
 
 //---------------------------------------------------------------
-//  Procedure: stringRadial2Poly  (Method #2)
+//  Procedure: stringRadial2Poly  (Method #4)
 //
 /// Initializes a polygon that approximates a circle.
 /// The format of the string is 
@@ -315,24 +428,11 @@ XYPolygon stringRadial2Poly(string str)
     }
     else if((param == "snap") && isNumber(value) && (dval>0))
       snap = dval;
-    else if(param == "label")
-      new_poly.set_label(value);
-    else if(param == "type")
-      new_poly.set_type(value);
-    else if(param == "source")
-      new_poly.set_source(value);
-    else if(param == "vertex_color")
-      new_poly.set_vertex_color(value);
-    else if(param == "edge_color")
-      new_poly.set_edge_color(value);
-    else if((param == "vertex_size") && (dval >= 0))
-      new_poly.set_vertex_size(dval);
-    else if((param == "edge_size") && (dval >= 0))
-      new_poly.set_edge_size(dval);
-    else if(param == "active")
-      new_poly.set_active(tolower(value) == "true");
-    else
-      return(null_poly);
+    else {
+      bool handled = new_poly.set_param(param, value);
+      if(!handled)
+	return(null_poly);
+    }
   }
 
   if(!xpos_set || !ypos_set || !radius_set || !pts_set)
@@ -368,7 +468,7 @@ XYPolygon stringRadial2Poly(string str)
 
 
 //---------------------------------------------------------------
-// Procedure: stringShortRadial2Poly  (Method #3)
+// Procedure: stringShortRadial2Poly  (Method #5)
 //
 // Examples: "radial: px, py, prad, ppts, snapval, label"
 //           "px, py, prad, ppts, snapval, label"
@@ -377,7 +477,7 @@ XYPolygon stringShortRadial2Poly(string str)
 {
   XYPolygon null_poly;
 
-  if(!strncasecmp("radial:", str.c_str(), 7))
+  if(strBegins(str, "radial:"))
     str = str.c_str()+7;
 
   vector<string> svector = parseString(str, ',');
@@ -427,161 +527,6 @@ XYPolygon stringShortRadial2Poly(string str)
     return(new_poly);
   else
     return(null_poly);
-}
-
-
-//---------------------------------------------------------------
-// Procedure: stringPoints2Poly  (Method #4)
-// 
-// Examples: [pts="10,15:20,25:30,35", label=foobar]
-//           [label=foobar, pts="10,15:20,25:30,35"]
-//           [label=foobar, "10,15 : 20,25 : 30,35"]
-
-XYPolygon stringPoints2Poly(string str)
-{
-  XYPolygon null_poly;
-  XYPolygon new_poly;
-
-  double snap_val = 0;
-  str = stripBlankEnds(str);
-  vector<string> mvector = parseStringQ(str, ',');
-  unsigned int i, vsize = mvector.size();
-
-  for(i=0; i<vsize; i++) {
-    string param = tolower(stripBlankEnds(biteString(mvector[i], '=')));
-    string value = stripBlankEnds(mvector[i]);
-    double dval  = atof(value.c_str());
-    if(param == "snap_value")
-      param = "snap";
-
-    if(param=="format") {
-      if(value!="default")
-	return(null_poly);
-    }
-    else if(param == "label")
-      new_poly.set_label(value);
-    else if(param == "active")
-      new_poly.set_active(tolower(value)=="true");
-    else if((param == "snap") && isNumber(value) && (dval >= 0))
-      snap_val = dval;
-    else if(param == "type")
-      new_poly.set_type(value);
-    else if(param == "source")
-      new_poly.set_source(value);
-    else if(param == "vertex_color")
-      new_poly.set_vertex_color(value);
-    else if(param == "edge_color")
-      new_poly.set_edge_color(value);
-    else if((param == "vertex_size") && (dval >= 0))
-      new_poly.set_vertex_size(dval);
-    else if((param == "edge_size") && (dval >= 0))
-      new_poly.set_edge_size(dval);
-    else if((param=="pts")||(param=="points")||(value=="")) {
-      string xypairs = value;
-      if(value == "")
-	xypairs = param;
-      vector<string> pairs_vector = parseString(xypairs, ':');
-      unsigned int j, psize = pairs_vector.size();
-      for(j=0; j<psize; j++) {
-	vector<string> svector = parseString(pairs_vector[i], ',');
-	if((svector.size() < 2) || (svector.size() > 3))
-	  return(null_poly);
-	string xstr = stripBlankEnds(svector[0]);
-	string ystr = stripBlankEnds(svector[1]);
-	string zstr = "";
-	if(svector.size()==3)
-	  zstr = stripBlankEnds(svector[2]);
-	if((zstr != "") && (!isNumber(zstr)))
-	  return(null_poly);
-    
-	if((!isNumber(xstr)) || (!isNumber(ystr))) {
-	  xstr = tolower(xstr);
-	  if(xstr == "label") 
-	    new_poly.set_label(ystr);
-	  else if(xstr == "active") 
-	    new_poly.set_active(tolower(ystr)=="true");
-	  else
-	    return(null_poly);
-	}
-	else {
-	  double xval = atof(xstr.c_str());
-	  double yval = atof(ystr.c_str());
-	  if(zstr == "")
-	    new_poly.add_vertex(xval, yval, false);
-	  else {
-	    double zval = atof(zstr.c_str());
-	    new_poly.add_vertex(xval, yval, zval, false);
-	  }	
-	}
-      }
-    }
-  }
-
-  // Make a call to determine_convexity here because convexity 
-  // determinations are not made when adding vertices above.
-  // The convexity determination needs to be done before applying
-  // the snap value since a snap is rejected if it creates a non-
-  // convex poly from a previously determined convex poly. 
-  new_poly.determine_convexity();
-  if(snap_val >= 0)
-    new_poly.apply_snap(snap_val);
-
-  if(new_poly.is_convex())
-    return(new_poly);
-  else
-    return(null_poly);
-}
-
-//---------------------------------------------------------------
-// Procedure: stringShortPoints2Poly  (Method #5)
-//  Examples: 2,3:-8,5:label,foobar:source,alpha:point_color=blue:
-//            vertex_size=4:type,waypoint
-
-XYPolygon stringShortPoints2Poly(string str)
-{
-  XYPolygon null_poly;
-  XYPolygon new_poly;
-
-  vector<string> mvector = parseString(str, ':');
-  int vsize = mvector.size();
-  for(int i=0; i<vsize; i++) {
-    mvector[i] = stripBlankEnds(mvector[i]);
-    string left = tolower(stripBlankEnds(biteString(mvector[i], ',')));
-    string rest = stripBlankEnds(mvector[i]);
-    
-    if(left == "label") 
-      new_poly.set_label(rest);
-    else if(left == "label_color") 
-      new_poly.set_label_color(rest);
-    else if(left == "vertex_color") 
-      new_poly.set_vertex_color(rest);
-    else if(left == "edge_color")
-      new_poly.set_edge_color(rest);
-    else if((left == "edge_size") && isNumber(rest))
-      new_poly.set_edge_size(atof(rest.c_str()));
-    else if((left == "vertex_size") && isNumber(rest))
-      new_poly.set_vertex_size(atof(rest.c_str()));
-    else if(left == "active") 
-      new_poly.set_active(tolower(rest)=="true");
-    else {
-      string xstr = left;
-      string ystr = stripBlankEnds(biteString(rest, ','));
-      string zstr = stripBlankEnds(rest);
-      if((zstr != "") && !isNumber(zstr))
-	return(null_poly);
-      if(!isNumber(xstr) || !isNumber(ystr))
-	return(null_poly);
-      double xval = atof(xstr.c_str());
-      double yval = atof(ystr.c_str());
-      if(zstr == "")
-	new_poly.add_vertex(xval, yval);
-      else {
-	double zval = atof(zstr.c_str());
-	new_poly.add_vertex(xval, yval, zval);	
-      }
-    }
-  }
-  return(new_poly);
 }
 
 //---------------------------------------------------------------
@@ -648,24 +593,11 @@ XYPolygon stringPieWedge2Poly(string str)
     }
     else if((param == "snap") && isNumber(value) && (dval > 0))
 	snap = dval;
-    else if(param == "label")
-      new_poly.set_label(value);
-    else if(param == "type")
-      new_poly.set_type(value);
-    else if(param == "source")
-      new_poly.set_source(value);
-    else if(param == "vertex_color")
-      new_poly.set_vertex_color(value);
-    else if(param == "edge_color")
-      new_poly.set_edge_color(value);
-    else if((param == "vertex_size") && (dval >= 0))
-      new_poly.set_vertex_size(dval);
-    else if((param == "edge_size") && (dval >= 0))
-      new_poly.set_edge_size(dval);
-    else if(param == "active")
-      new_poly.set_active(tolower(value) == "true");
-    else
-      return(null_poly);
+    else {
+      bool handled = new_poly.set_param(param, value);
+      if(!handled) 
+	return(null_poly);
+    }
   }
 
   if(!xpos_set || !ypos_set || !lang_set || !rang_set || !range_set)
@@ -784,24 +716,11 @@ XYPolygon stringRangeWedge2Poly(string str)
     }
     else if((param == "snap") && isNumber(value) && (dval>0))
       snap = dval;
-    else if(param == "label")
-      new_poly.set_label(value);
-    else if(param == "type")
-      new_poly.set_type(value);
-    else if(param == "source")
-      new_poly.set_source(value);
-    else if(param == "vertex_color")
-      new_poly.set_vertex_color(value);
-    else if(param == "edge_color")
-      new_poly.set_edge_color(value);
-    else if((param == "vertex_size") && (dval >= 0))
-      new_poly.set_vertex_size(dval);
-    else if((param == "edge_size") && (dval >= 0))
-      new_poly.set_edge_size(dval);
-    else if(param == "active")
-      new_poly.set_active(tolower(value) == "true");
-    else
-      return(null_poly);
+    else {
+      bool handled = new_poly.set_param(param, value);
+      if(!handled)
+	return(null_poly);
+    }
   }
 
   if(!xpos_set || !ypos_set || !lang_set || !rang_set || !range_set)
@@ -941,24 +860,11 @@ XYPolygon stringPylon2Poly(string str)
     }
     else if((param == "snap") && isNumber(value) && (dval>0))
       snap = dval;
-    else if(param == "label")
-      new_poly.set_label(value);
-    else if(param == "type")
-      new_poly.set_type(value);
-    else if(param == "source")
-      new_poly.set_source(value);
-    else if(param == "vertex_color")
-      new_poly.set_vertex_color(value);
-    else if(param == "edge_color")
-      new_poly.set_edge_color(value);
-    else if((param == "vertex_size") && (dval >= 0))
-      new_poly.set_vertex_size(dval);
-    else if((param == "edge_size") && (dval >= 0))
-      new_poly.set_edge_size(dval);
-    else if(param == "active")
-      new_poly.set_active(tolower(value) == "true");
-    else
-      return(null_poly);
+    else {
+      bool handled = new_poly.set_param(param, value);
+      if(!handled)
+	return(null_poly);
+    }
   }
 
   if(!x1_set || !y1_set || !x2_set || !y2_set)

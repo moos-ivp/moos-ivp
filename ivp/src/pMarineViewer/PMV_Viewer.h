@@ -44,6 +44,7 @@ class PMV_Viewer : public MarineViewer
   bool  updateScopeVariable(std::string varname, std::string value, 
 			    std::string vtime, std::string vsource);
   void  setActiveScope(std::string);
+  bool  isScopeVariable(std::string) const;
   void  addMousePoke(std::string key, std::string vardata_pair);
   void  setLeftMouseKey(std::string key)  {m_left_mouse_key = key;};
   void  setRightMouseKey(std::string key) {m_right_mouse_key = key;};
@@ -68,6 +69,7 @@ class PMV_Viewer : public MarineViewer
   std::string m_reference_point;
   std::string m_reference_bearing;
   double      m_stale_report_thresh;
+  double      m_curr_time;
 
   // Member variables for holding scoped info
   bool                     m_scoping;
@@ -83,6 +85,8 @@ class PMV_Viewer : public MarineViewer
   double   m_mouse_y;
   double   m_mouse_lat;
   double   m_mouse_lon;
+  int      m_lclick_ix;
+  int      m_rclick_ix;
 
   std::string m_button_one;
   std::string m_button_two;

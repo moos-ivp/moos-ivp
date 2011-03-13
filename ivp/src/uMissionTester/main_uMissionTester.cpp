@@ -6,9 +6,9 @@
  *              utility is used to start/stop a mission using pAntler.
  ****************************************************************************/
 
-#include <stdio.h>
+#include <cstdio>
 #include <iostream>
-#include <stdlib.h>
+#include <cstdlib>
 #include <vector>
 #include <string>
 #include "MBUtils.h"

@@ -24,7 +24,7 @@
 #pragma warning(disable : 4786)
 #pragma warning(disable : 4503)
 #endif
-#include <stdlib.h>
+#include <cstdlib>
 #include "BHV_PeriodicSpeed.h"
 #include "MBUtils.h"
 #include "BuildUtils.h"
@@ -94,23 +94,23 @@ bool BHV_PeriodicSpeed::setParam(string param, string value)
     return(true);
   }  
   else if((param == "basewidth")         ||     // preferred 
-	  (param == "zaic_basewidth")    ||     // depricated
-	  (param == "period_basewidth")) {      // depricated
+	  (param == "zaic_basewidth")    ||     // deprecated
+	  (param == "period_basewidth")) {      // deprecated
     if(!isNumber(value) || (dval < 0))
       return(false);
     m_zaic_basewidth = dval;
     return(true);
   }  
   else if((param == "peakwidth")         ||     // preferred
-	  (param == "period_peakwidth")  ||     // depricated
-	  (param == "zaic_peakwidth")) {        // depricated
+	  (param == "period_peakwidth")  ||     // deprecated
+	  (param == "zaic_peakwidth")) {        // deprecated
     if(!isNumber(value) || (dval < 0))
       return(false);
     m_zaic_peakwidth = dval;
     return(true);
   } 
   else if((param == "summit_delta")      ||     // preferred
-	  (param == "zaic_summit_delta")) {     // depricated
+	  (param == "zaic_summit_delta")) {     // deprecated
     if(!isNumber(value) || (dval < 0))
       return(false);
     m_zaic_summit_delta = dval;

@@ -21,20 +21,22 @@
 /*****************************************************************/
 
 #include <cmath>
-#include <stdlib.h>
+#include <cstdlib>
 #include "XYSquare.h"
 #include "GeomUtils.h"
+
+using namespace std;
 
 //-------------------------------------------------------------
 // Procedure: Constructor
 
 XYSquare::XYSquare()
 {
-  xlow  = 0;
-  xhigh = 0;
-  ylow  = 0;
-  yhigh = 0;
-  valid_state = false;
+  m_xlow  = 0;
+  m_xhigh = 0;
+  m_ylow  = 0;
+  m_yhigh = 0;
+  m_valid = false;
 }
 
 //-------------------------------------------------------------
@@ -50,8 +52,10 @@ XYSquare::XYSquare(double gxl, double gxh, double gyl, double gyh)
 
 bool XYSquare::operator==(const XYSquare &other) const
 {
-  return(xlow==other.xlow && xhigh == other.xhigh &&
-         ylow==other.ylow && yhigh == other.yhigh);
+  return((m_xlow  == other.m_xlow)  && 
+	 (m_xhigh == other.m_xhigh) &&
+         (m_ylow  == other.m_ylow)  && 
+	 (m_yhigh == other.m_yhigh));
 }
 
 //-------------------------------------------------------------
@@ -67,15 +71,15 @@ bool XYSquare::operator!=(const XYSquare &other) const
 
 void XYSquare::set(double gxl, double gxh, double gyl, double gyh)
 {
-  xlow  = gxl;
-  xhigh = gxh;
-  ylow  = gyl;
-  yhigh = gyh;
+  m_xlow  = gxl;
+  m_xhigh = gxh;
+  m_ylow  = gyl;
+  m_yhigh = gyh;
   
-  if((xlow <= xhigh) && (ylow <= yhigh))
-    valid_state = true;
+  if((m_xlow <= m_xhigh) && (m_ylow <= m_yhigh))
+    m_valid = true;
   else
-    valid_state = false;
+    m_valid = false;
 }
 
 //-------------------------------------------------------------
@@ -83,13 +87,13 @@ void XYSquare::set(double gxl, double gxh, double gyl, double gyh)
 
 bool XYSquare::containsPoint(double gx, double gy) const
 {
-  if(gx < xlow)
+  if(gx < m_xlow)
     return(false);
-  if(gx > xhigh)
+  if(gx > m_xhigh)
     return(false);
-  if(gy < ylow)
+  if(gy < m_ylow)
     return(false);
-  if(gy > yhigh)
+  if(gy > m_yhigh)
     return(false);
 
   return(true);
@@ -105,20 +109,20 @@ double XYSquare::segIntersectLength(double x1, double y1,
   // First a quick check for non-intersection - based on the 
   // assumption that most segments will not intersect and we
   // want a quick way to confirm non-intersection.
-  if((x1 < xlow)  && (x2 < xlow))    return(0);
-  if((x1 > xhigh) && (x2 > xhigh))   return(0);
-  if((y1 < ylow)  && (y2 < ylow))    return(0);
-  if((y1 > yhigh) && (y2 > yhigh))   return(0);
+  if((x1 < m_xlow)  && (x2 < m_xlow))    return(0);
+  if((x1 > m_xhigh) && (x2 > m_xhigh))   return(0);
+  if((y1 < m_ylow)  && (y2 < m_ylow))    return(0);
+  if((y1 > m_yhigh) && (y2 > m_yhigh))   return(0);
 
   // Handle special case where the segment is vertical
   if(x1==x2) {
-    if((x1 < xlow) || (x1 > xhigh))
+    if((x1 < m_xlow) || (x1 > m_xhigh))
       return(0);
     else {
-      if(y1 > yhigh) y1=yhigh;
-      if(y1 < ylow)  y1=ylow;
-      if(y2 > yhigh) y2=yhigh;
-      if(y2 < ylow)  y2=ylow;
+      if(y1 > m_yhigh) y1=m_yhigh;
+      if(y1 < m_ylow)  y1=m_ylow;
+      if(y2 > m_yhigh) y2=m_yhigh;
+      if(y2 < m_ylow)  y2=m_ylow;
       double diff = y2-y1;
       if(diff > 0)
 	return(diff);
@@ -128,13 +132,13 @@ double XYSquare::segIntersectLength(double x1, double y1,
   }
   // Handle special case where the segment is horizontal
   if(y1==y2) {
-    if((y1 < ylow) || (y1 > yhigh))
+    if((y1 < m_ylow) || (y1 > m_yhigh))
       return(0);
     else {
-      if(x1 > xhigh) x1=xhigh;
-      if(x1 < xlow)  x1=xlow;
-      if(x2 > xhigh) x2=xhigh;
-      if(x2 < xlow)  x2=xlow;
+      if(x1 > m_xhigh) x1=m_xhigh;
+      if(x1 < m_xlow)  x1=m_xlow;
+      if(x2 > m_xhigh) x2=m_xhigh;
+      if(x2 < m_xlow)  x2=m_xlow;
       double diff = x2-x1;
       if(diff > 0)
 	return(diff);
@@ -151,45 +155,45 @@ double XYSquare::segIntersectLength(double x1, double y1,
 
   // Adjust the x1 value if needed. If so, then adjust the y1 
   // value according to the parameters of the line.
-  if(x1 < xlow) {
-    x1 = xlow;
+  if(x1 < m_xlow) {
+    x1 = m_xlow;
     y1 = (m*x1) + b;
   }
-  else if(x1 > xhigh) {
-    x1 = xhigh;
+  else if(x1 > m_xhigh) {
+    x1 = m_xhigh;
     y1 = (m*x1) + b;
   }
 
   // Adjust the y1 value if needed. If so, then adjust the x1 
   // value according to the parameters of the line.
-  if(y1 < ylow) {
-    y1 = ylow;
+  if(y1 < m_ylow) {
+    y1 = m_ylow;
     x1 = (y1-b)/m;
   }
-  else if(y1 > yhigh) {
-    y1 = yhigh;
+  else if(y1 > m_yhigh) {
+    y1 = m_yhigh;
     x1 = (y1-b)/m;
   }
 
   // Adjust the x2 value if needed. If so, then adjust the y2 
   // value according to the parameters of the line.
-  if(x2 < xlow) {
-    x2 = xlow;
+  if(x2 < m_xlow) {
+    x2 = m_xlow;
     y2 = (m*x2) + b;
   }
-  else if(x2 > xhigh) {
-    x2 = xhigh;
+  else if(x2 > m_xhigh) {
+    x2 = m_xhigh;
     y2 = (m*x2) + b;
   }
 
   // Adjust the y2 value if needed. If so, then adjust the x2 
   // value according to the parameters of the line.
-  if(y2 < ylow) {
-    y2 = ylow;
+  if(y2 < m_ylow) {
+    y2 = m_ylow;
     x2 = (y2-b)/m;
   }
-  else if(y2 > yhigh) {
-    y2 = yhigh;
+  else if(y2 > m_yhigh) {
+    y2 = m_yhigh;
     x2 = (y2-b)/m;
   }
 
@@ -206,10 +210,10 @@ double XYSquare::segDistToSquare(double x1, double y1,
 				 double x2, double y2) const
 {
   double dist[4];
-  dist[0] = distSegToSeg(x1,y1,x2,y2, xlow,ylow,xhigh,ylow);
-  dist[1] = distSegToSeg(x1,y1,x2,y2, xhigh,ylow,xhigh,yhigh);
-  dist[2] = distSegToSeg(x1,y1,x2,y2, xhigh,yhigh,xlow,yhigh);
-  dist[3] = distSegToSeg(x1,y1,x2,y2, xlow,yhigh,xlow,ylow);
+  dist[0] = distSegToSeg(x1,y1,x2,y2, m_xlow,m_ylow,m_xhigh,m_ylow);
+  dist[1] = distSegToSeg(x1,y1,x2,y2, m_xhigh,m_ylow,m_xhigh,m_yhigh);
+  dist[2] = distSegToSeg(x1,y1,x2,y2, m_xhigh,m_yhigh,m_xlow,m_yhigh);
+  dist[3] = distSegToSeg(x1,y1,x2,y2, m_xlow,m_yhigh,m_xlow,m_ylow);
 
   double min_dist = dist[0];
   for(int i=1; i<4; i++)
@@ -225,8 +229,8 @@ double XYSquare::segDistToSquare(double x1, double y1,
 
 double XYSquare::ptDistToSquareCtr(double x1, double y1) const
 {
-  double x2 = xlow + ((xhigh-xlow)/2);
-  double y2 = ylow + ((yhigh-ylow)/2);
+  double x2 = m_xlow + ((m_xhigh-m_xlow)/2);
+  double y2 = m_ylow + ((m_yhigh-m_ylow)/2);
   return(hypot((x1-x2), (y1-y2)));
 }
 
@@ -237,21 +241,31 @@ double XYSquare::getVal(int xy, int lh) const
 {
   if(xy==0)
     if(lh==0)
-      return(xlow);
+      return(m_xlow);
     else
-      return(xhigh);
+      return(m_xhigh);
   else
     if(lh==0)
-      return(ylow);
+      return(m_ylow);
     else
-      return(yhigh);
+      return(m_yhigh);
 }
 
 
+//---------------------------------------------------------------
+// Procedure: get_spec
+//   Purpose: 
 
+string XYSquare::get_spec(string param) const
+{
+  string spec;
 
+  spec += "xlow="   + doubleToStringX(m_xlow,  3);
+  spec += ",xhigh=" + doubleToStringX(m_xhigh, 3);
+  spec += ",ylow="  + doubleToStringX(m_ylow,  3);
+  spec += ",yhigh=" + doubleToStringX(m_yhigh, 3);
+  
+  spec += "," + XYObject::get_spec(param);
 
-
-
-
-
+  return(spec);
+}

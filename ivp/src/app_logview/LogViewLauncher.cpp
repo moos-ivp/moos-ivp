@@ -22,9 +22,9 @@
 /*****************************************************************/
 
 #include <iostream>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include "LogUtils.h"
 #include "MBUtils.h"
 #include "BuildUtils.h"

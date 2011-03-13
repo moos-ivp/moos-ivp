@@ -26,7 +26,7 @@
 #endif
 
 #include <iostream>
-#include <math.h>
+#include <cmath>
 #include "WaypointEngine.h"
 
 using namespace std;

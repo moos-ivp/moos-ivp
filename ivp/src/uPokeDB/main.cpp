@@ -55,6 +55,7 @@ int main(int argc ,char * argv[])
 
   for(int i=0; i<argc; i++) {
     string sarg = argv[i];
+
     if(strEnds(sarg, ".moos") || strEnds(sarg, ".moos++"))
       sMissionFile = argv[i];
     else if(strContains(sarg, ":=")) {
@@ -66,7 +67,7 @@ int main(int argc ,char * argv[])
       else {
 	varname.push_back(stripBlankEnds(svector[0]));
 	varvalue.push_back(svector[1]);
-	vartype.push_back("string");
+	vartype.push_back("string!");
       }
     }
 
@@ -140,10 +141,11 @@ int main(int argc ,char * argv[])
 
   int vsize = varname.size();
   for(int j=0; j<vsize; j++) {
-    if(vartype[j] == "string")
-      Poker.setPokeString(varname[j], varvalue[j]);
+    if((vartype[j] == "double") || 
+       ((varvalue[j] == "@MOOSTIME") && (vartype[j] != "string!")))
+      Poker.setPokeDouble(varname[j], varvalue[j]);
     else
-      Poker.setPokeDouble(varname[j], atof(varvalue[j].c_str()));
+      Poker.setPokeString(varname[j], varvalue[j]);
   }
   
 

@@ -6,7 +6,7 @@
  *              stop watch. This implementation is accurate to the second.
  ****************************************************************************/
 
-#include <stdlib.h>
+#include <cstdlib>
 
 #include "StopWatch.h"
 

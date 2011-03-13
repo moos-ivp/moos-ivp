@@ -315,6 +315,8 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
   if(ix < m_bhv_entry.size()) {
     IvPBehavior *bhv = m_bhv_entry[ix].getBehavior();
     string old_activity_state = m_bhv_entry[ix].getState();
+    if(old_activity_state == "")
+      old_activity_state = "idle";
 
     // Look for possible dynamic updates to the behavior parameters
     bool update_made = bhv->checkUpdates();
@@ -344,7 +346,7 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
     if(new_activity_state == "running") {
       bhv->postDurationStatus();
       bhv->postFlags("runflags");
-      if(old_activity_state == "idle") 
+      if(old_activity_state == "idle")
 	bhv->onIdleToRunState();
       ipf = bhv->onRunState();
       if(ipf && !ipf->freeOfNan()) {

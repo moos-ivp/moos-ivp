@@ -26,8 +26,17 @@
 class ObjectPose
 {
  public:
-  ObjectPose() 
-    {m_valid=false; m_ll_set=false;};
+  ObjectPose() {
+    m_x       = 0;
+    m_y       = 0;
+    m_theta   = 0;
+    m_speed   = 0;
+    m_depth   = 0;
+    m_valid   = false; 
+    m_ll_set  = false; 
+    m_utm_set = false;
+  };
+
   ObjectPose(double x, double y, double theta, 
 	     double speed, double depth=0) {
     m_x = x; 
@@ -35,20 +44,24 @@ class ObjectPose
     m_theta  = theta; 
     m_speed  = speed; 
     m_depth  = depth; 
-    m_ll_set = false;
     if(m_depth >= 0)
       m_valid=true;
+    m_ll_set = false;
+    m_utm_set = false;
   };
 
   bool   isValid() const     {return(m_valid); };
   bool   isLatLonSet() const {return(m_ll_set);};
+  bool   isUTMSet() const    {return(m_utm_set);};
   double getX() const        {return(m_x);};
   double getY() const        {return(m_y);};
+  double getUTMX() const     {return(m_x);};
+  double getUTMY() const     {return(m_y);};
+  double getLat() const      {return(m_lat);};
+  double getLon() const      {return(m_lon);};
   double getTheta() const    {return(m_theta);};
   double getSpeed() const    {return(m_speed);};
   double getDepth() const    {return(m_depth);};
-  double getLat() const      {return(m_lat);};
-  double getLon() const      {return(m_lon);};
 
   void  setX(double val)     {m_x = val;};
   void  setY(double val)     {m_y = val;};
@@ -62,6 +75,12 @@ class ObjectPose
     m_ll_set = true;
   };
   
+  void  setUTM_XY(double utmx, double utmy) {
+    m_utmx = utmx;
+    m_utmy = utmy;
+    m_utm_set = true;
+  };
+  
  private:
   double m_x; 
   double m_y; 
@@ -72,6 +91,9 @@ class ObjectPose
   bool   m_ll_set;
   double m_lat;
   double m_lon;
+  bool   m_utm_set;
+  double m_utmx;
+  double m_utmy;
 };
 
 #endif

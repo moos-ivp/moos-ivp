@@ -38,8 +38,7 @@
 /*****************************************************************/
 
 #include <iostream> 
-#include <stdio.h>
-#include <assert.h>
+#include <cstdio>
 #include "IvPProblem.h"
 #include "IvPGrid.h"
 #include "PDMap.h"

@@ -24,8 +24,8 @@
 #include <vector>
 #include <iostream>
 #include <cmath>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <tiffio.h>
 
 #define USE_UTM

@@ -47,7 +47,7 @@ bool VPlug_Markers::addVMarker(const string& mline,
   vector<string> svector = parseString(newline, ',');
   unsigned int vsize = svector.size();
 
-  string mtype, xpos, ypos, lat, lon, label, colors;
+  string mtype, xpos, ypos, lat, lon, label, colors, active;
   string width = "1";
   for(unsigned int i=0; i<vsize; i++) {
     svector[i] = stripBlankEnds(svector[i]);
@@ -63,6 +63,7 @@ bool VPlug_Markers::addVMarker(const string& mline,
     else if(left == "y")      ypos = right;
     else if(left == "scale")  width = right;
     else if(left == "width")  width = right;
+    else if(left == "active") active = right;
     else if(left == "lat")    lat = right;
     else if(left == "lon")    lon = right;
     else if(left == "label")  label = right;
@@ -102,8 +103,12 @@ bool VPlug_Markers::addVMarker(const string& mline,
   double width_d = atof(width.c_str());
   if(width_d < 0)
     width_d = 0;
-  
-  addVMarker(mtype, xpos_d, ypos_d, width_d, label, colors);
+
+  bool active_b = true;
+  if(tolower(active) == "false")
+    active_b = false;
+
+  addVMarker(mtype, xpos_d, ypos_d, width_d, label, colors, active_b);
   return(true);
 }
 
@@ -112,7 +117,8 @@ bool VPlug_Markers::addVMarker(const string& mline,
 // Procedure: addVMarker()
 
 void VPlug_Markers::addVMarker(string mtype, double xpos, double ypos,
-			    double mwid, string label, string colors)
+			       double mwid, string label, string colors,
+			       bool active)
 {
   // First check to see if the given VMarker matches the type and label
   // of a VMarker already added. If the label is the empty string, it
@@ -141,6 +147,7 @@ void VPlug_Markers::addVMarker(string mtype, double xpos, double ypos,
     m_marker_ypos.push_back(ypos);
     m_marker_width.push_back(mwid);
     m_marker_label.push_back(label);
+    m_marker_active.push_back(active);
     m_marker_colors.push_back(svector);
     m_marker_cpacks.push_back(color_packs);
   }
@@ -148,6 +155,7 @@ void VPlug_Markers::addVMarker(string mtype, double xpos, double ypos,
     m_marker_xpos[found_ix] = xpos;
     m_marker_ypos[found_ix] = ypos;
     m_marker_width[found_ix] = mwid;
+    m_marker_active[found_ix] = active;
     m_marker_colors[found_ix] = svector;
     m_marker_cpacks[found_ix] = color_packs;
   }
@@ -287,6 +295,17 @@ string VPlug_Markers::getMarkerLabel(unsigned int ix) const
     return(m_marker_label[ix]);
   else
     return("");
+}
+
+//-----------------------------------------------------------
+// Procedure: active()
+
+bool VPlug_Markers::active(unsigned int ix) const
+{
+  if(ix < m_marker_active.size())
+    return(m_marker_active[ix]);
+  else
+    return(false);
 }
 
 //-----------------------------------------------------------

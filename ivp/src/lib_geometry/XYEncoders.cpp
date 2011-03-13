@@ -21,8 +21,8 @@
 /*****************************************************************/
 
 #include <iostream>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include "MBUtils.h"
 #include "XYEncoders.h"
 
@@ -35,10 +35,10 @@ string XYSquareToString(const XYSquare& g_square)
 {
   string str;
 
-  str += dstringCompact(doubleToString(g_square.getVal(0,0))) + ","; 
-  str += dstringCompact(doubleToString(g_square.getVal(0,1))) + ","; 
-  str += dstringCompact(doubleToString(g_square.getVal(1,0))) + ","; 
-  str += dstringCompact(doubleToString(g_square.getVal(1,1))); 
+  str += doubleToStringX(g_square.getVal(0,0)) + ","; 
+  str += doubleToStringX(g_square.getVal(0,1)) + ","; 
+  str += doubleToStringX(g_square.getVal(1,0)) + ","; 
+  str += doubleToStringX(g_square.getVal(1,1)); 
 
   return(str);
 }
@@ -53,9 +53,9 @@ string XYGridToString(const XYGrid& g_grid)
   int gsize = g_grid.size();
 
   str += "label="   + g_grid.getLabel()  + "#";
-  str += "size="    + dstringCompact(doubleToString(gsize)) + "#";
-  str += "min_val=" + dstringCompact(doubleToString(g_grid.getMinVal())) + "#";
-  str += "max_val=" + dstringCompact(doubleToString(g_grid.getMaxVal())) + "#";
+  str += "size="    + doubleToStringX(gsize) + "#";
+  str += "min_val=" + doubleToStringX(g_grid.getMinVal()) + "#";
+  str += "max_val=" + doubleToStringX(g_grid.getMaxVal()) + "#";
  
   if(gsize <= 0)
     return(str);
@@ -69,7 +69,7 @@ string XYGridToString(const XYGrid& g_grid)
   str += "squares=";
   for(int i=0; i<gsize; i++) {
     str += XYSquareToString(g_grid.getElement(i));
-    str += "," + dstringCompact(doubleToString(g_grid.getVal(i)));
+    str += "," + doubleToStringX(g_grid.getVal(i));
     if(i < gsize-1)
       str += "@";
   }
@@ -153,8 +153,8 @@ XYGrid StringToXYGrid(const string& str)
   //    bounding poly             unitsize   initvalue
 
   string grid_init_str = "label," + label + ":" + pbound + "@";
-  grid_init_str += dstringCompact(doubleToString(x_length)) + ",";
-  grid_init_str += dstringCompact(doubleToString(y_length));
+  grid_init_str += doubleToStringX(x_length) + ",";
+  grid_init_str += doubleToStringX(y_length);
 
   bool ok = new_grid.initialize(grid_init_str);
   if(!ok) {

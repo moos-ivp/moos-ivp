@@ -224,9 +224,9 @@ SET(IVP_NON_GUI_APPS
   app_alogrm
   app_alogclip
   app_aloghelm
+  app_alog2rng
   app_nsplug
   app_domquery
-  iMarineSim
   pEchoVar
   pXRelay
   pXBlaster
@@ -239,6 +239,9 @@ SET(IVP_NON_GUI_APPS
   uTimerScript
   uHelmScope
   uProcessWatch
+  uSimCurrent
+  uSimMarine
+  uSimRangeSensor
   uTermCommand
   uXMS
   uPokeDB
@@ -247,8 +250,11 @@ SET(IVP_NON_GUI_APPS
 SET(IVP_GUI_APPS
   app_ffview
   app_geoview
+  app_currview
   app_logview
+  app_arcview
   app_vzaicview
+  app_gzaicview
   pMarineViewer
   uFunctionVis
   app_cpaview

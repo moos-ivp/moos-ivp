@@ -21,7 +21,7 @@
 /*****************************************************************/
 
 #include <iostream>
-#include <stdio.h>
+#include <cstdio>
 #include "MBUtils.h"
 #include "BuildUtils.h"
 #include "FunctionEncoder.h"

@@ -12,8 +12,8 @@
 #include <string>
 #include <cstdlib>
 #include <iostream>
-#include <math.h>
-#include <string.h>
+#include <cmath>
+#include <cstring>
 #include "VZAIC_Viewer.h"
 #include "MBUtils.h"
 #include "GeomUtils.h"

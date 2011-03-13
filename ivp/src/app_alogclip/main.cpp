@@ -11,7 +11,7 @@
 
 #include <string>
 #include <iostream>
-#include "math.h"
+#include "cmath"
 #include "MBUtils.h"
 #include "TermUtils.h"
 #include "ALogClipper.h"

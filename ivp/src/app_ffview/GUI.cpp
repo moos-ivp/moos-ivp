@@ -10,7 +10,7 @@
 /*****************************************************************/
 
 #include <iostream>
-#include <stdlib.h>
+#include <cstdlib>
 #include "GUI.h"
 #include "MBUtils.h"
 

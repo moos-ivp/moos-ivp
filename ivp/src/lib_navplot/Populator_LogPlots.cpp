@@ -20,7 +20,7 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
-#include <stdio.h>
+#include <cstdio>
 #include <iostream>
 #include <cstdlib>
 #include "Populator_LogPlots.h"

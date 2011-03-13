@@ -12,10 +12,10 @@
 #ifndef _MISSIONTESTER_H
 #define _MISSIONTESTER_H
 
-#include <stdio.h>
+#include <cstdio>
 #include <string>
 #include <vector>
-#include <string.h>
+#include <cstring>
 
 #include "MOOSApp.h"
 #include "MBTimer.h"

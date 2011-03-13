@@ -37,10 +37,9 @@
 /* enhancements or modifications.                                */
 /*****************************************************************/
 
-#include <iostream>
-#include <assert.h>
-#include <stdio.h>
-#include <string.h>
+#include <cassert>
+#include <cstdio>
+#include <cstring>
 #include "IvPFunction.h"
 
 using namespace std;
@@ -121,33 +120,3 @@ string IvPFunction::getVarName(int i)
 {
   return(m_pdmap->getDomain().getVarName(i));
 }
-
-
-//-------------------------------------------------------------
-// Procedure: print
-
-#if 0
-void IvPFunction::print()
-{
-  cout << "pdmap is null? " << (pdmap == 0) << endl;
-  int dim = pdmap->getDim();
-  const IvPBox *univ = pdmap->getUniverse();
-  cout << "OF Priority: " << m_pwt << endl;
-  //pdmap->print();
-
-  for(int i=0; i<dim; i++) {
-    cout << "Domain[" << i << "]: " << dname[i] << "  ";
-    cout << univ->pt(i,0);
-    cout << ":" << univ->pt(i,1) << endl;
-  }
-}
-#endif
-
-
-
-
-
-
-
-
-

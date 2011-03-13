@@ -6,8 +6,8 @@
 #ifndef _PROCESSWIN_H
 #define _PROCESSWIN_H
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <string>
 
 #include <signal.h>

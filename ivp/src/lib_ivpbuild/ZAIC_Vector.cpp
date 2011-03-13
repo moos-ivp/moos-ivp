@@ -22,7 +22,7 @@
 
 #include <list>
 #include <iostream>
-#include <math.h>
+#include <cmath>
 #include "ZAIC_Vector.h"
 #include "MBUtils.h"
 #include "BuildUtils.h"

@@ -25,7 +25,7 @@
 
 #include <vector>
 #include <string>
-#include <stdio.h>
+#include <cstdio>
 #include "AOF_Ring.h"
 #include "IvPDomain.h"
 

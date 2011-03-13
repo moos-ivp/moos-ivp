@@ -25,6 +25,7 @@ TARGET_LINK_LIBRARIES(pNodeReporter
    MOOSGen
    MOOSUtility
    mbutil
+   geometry
    ${SYSTEM_LIBS})
 
 # Install Targets

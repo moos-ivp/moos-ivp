@@ -21,7 +21,7 @@
 /*****************************************************************/
 
 #include <iostream>
-#include <stdlib.h>
+#include <cstdlib>
 #include "Populator_IPF_Plot.h"
 #include "MBUtils.h"
 #include "IvPFunction.h"

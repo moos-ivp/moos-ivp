@@ -93,10 +93,18 @@ bool PokeDB::Iterate()
   if(m_iteration == 2) {
     int vsize = m_varname.size();
     for(int i=0; i<vsize; i++) {
-      if(m_valtype[i] == "double") 
-	m_Comms.Notify(m_varname[i], m_dvalue_poke[i], MOOSTime());
-      else 
-	m_Comms.Notify(m_varname[i], m_svalue_poke[i], MOOSTime());
+      string varval = m_varvalue[i];
+      if(strContains(varval, "@MOOSTIME")) {
+	double curr_time = MOOSTime();
+	string stime = doubleToStringX(curr_time, 2);
+	varval = findReplace(varval, "@MOOSTIME", stime);
+      }
+      if(m_valtype[i] == "double") {
+	double dval = atof(varval.c_str());
+	m_Comms.Notify(m_varname[i], dval, MOOSTime());
+      }
+      else
+	m_Comms.Notify(m_varname[i], varval, MOOSTime());
     }  
   }
 
@@ -163,12 +171,11 @@ bool PokeDB::OnConnectToServer()
 //------------------------------------------------------------
 // Procedure: setPokeDouble
 
-void PokeDB::setPokeDouble(const string& varname, double value)
+void PokeDB::setPokeDouble(const string& varname, const string& value)
 {
   m_varname.push_back(varname);
   m_valtype.push_back("double");
-  m_dvalue_poke.push_back(value);
-  m_svalue_poke.push_back("");
+  m_varvalue.push_back(value);
 
   m_dvalue_read.push_back("");
   m_svalue_read.push_back("");
@@ -185,8 +192,7 @@ void PokeDB::setPokeString(const string& varname, const string& value)
 {
   m_varname.push_back(varname);
   m_valtype.push_back("string");
-  m_dvalue_poke.push_back(0);
-  m_svalue_poke.push_back(value);
+  m_varvalue.push_back(value);
 
   m_dvalue_read.push_back("");
   m_svalue_read.push_back("");

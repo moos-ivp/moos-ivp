@@ -18,6 +18,7 @@
 #include "XYCircle.h"
 #include "XYPoint.h"
 #include "XYVector.h"
+#include "XYRangePulse.h"
 #include "ColorPack.h"
 
 class VPlug_GeoShapes {
@@ -34,13 +35,16 @@ public:
   void addHexagon(const XYHexagon&);
   void addPoint(const XYPoint&);
   void addVector(const XYVector&);
+  void addRangePulse(const XYRangePulse&);
 
   bool addPolygon(const std::string&);
   bool addSegList(const std::string&);
+  bool addGrid(const std::string&);
+  bool addCircle(const std::string&);
   bool addPoint(const std::string&);
   bool addVector(const std::string&);
-  bool addCircle(const std::string&);
-  bool addGrid(const std::string&);
+  bool addRangePulse(const std::string&);
+
   bool updateGrid(const std::string&);
 
   unsigned int sizePolygons() {return(m_polygons.size());};
@@ -50,6 +54,7 @@ public:
   unsigned int sizeHexagons() {return(m_hexagons.size());};
   unsigned int sizePoints()   {return(m_points.size());};
   unsigned int sizeVectors()  {return(m_vectors.size());};
+  unsigned int sizeRangePulses() {return(m_range_pulses.size());};
 
   XYPolygon& poly(unsigned int i)   {return(m_polygons[i]);};
   XYSegList& segl(unsigned int i)   {return(m_seglists[i]);};
@@ -58,31 +63,35 @@ public:
   XYCircle&  circ(unsigned int i)   {return(m_circles[i]);};
   XYPoint&   point(unsigned int i)  {return(m_points[i]);};
   XYVector&  vector(unsigned int i) {return(m_vectors[i]);};
+  XYRangePulse& range_pulse(unsigned int i) {return(m_range_pulses[i]);};
 
-  std::vector<XYPolygon> getPolygons() {return(m_polygons);};
-  std::vector<XYSegList> getSegLists() {return(m_seglists);};
-  std::vector<XYHexagon> getHexagons() {return(m_hexagons);};
-  std::vector<XYGrid>    getGrids()    {return(m_grids);};
-  std::vector<XYCircle>  getCircles()  {return(m_circles);};
-  std::vector<XYPoint>   getPoints()   {return(m_points);};
-  std::vector<XYVector>  getVectors()  {return(m_vectors);};
+  std::vector<XYPolygon> getPolygons()    {return(m_polygons);};
+  std::vector<XYSegList> getSegLists()    {return(m_seglists);};
+  std::vector<XYHexagon> getHexagons()    {return(m_hexagons);};
+  std::vector<XYGrid>    getGrids()       {return(m_grids);};
+  std::vector<XYCircle>  getCircles()     {return(m_circles);};
+  std::vector<XYPoint>   getPoints()      {return(m_points);};
+  std::vector<XYVector>  getVectors()     {return(m_vectors);};
+  std::vector<XYRangePulse> getRangePulses() {return(m_range_pulses);};
 
-  XYPolygon getPolygon(unsigned int);
-  XYSegList getSegList(unsigned int);
-  XYGrid    getGrid(unsigned int);
-  XYCircle  getCircle(unsigned int);
-  XYHexagon getHexagon(unsigned int);
-  XYPoint   getPoint(unsigned int);
-  XYVector  getVector(unsigned int);
+  XYPolygon    getPolygon(unsigned int);
+  XYSegList    getSegList(unsigned int);
+  XYGrid       getGrid(unsigned int);
+  XYCircle     getCircle(unsigned int);
+  XYHexagon    getHexagon(unsigned int);
+  XYPoint      getPoint(unsigned int);
+  XYVector     getVector(unsigned int);
+  XYRangePulse getRangePulse(unsigned int);
 
 protected:
-  std::vector<XYPolygon>  m_polygons;
-  std::vector<XYSegList>  m_seglists;
-  std::vector<XYHexagon>  m_hexagons;
-  std::vector<XYGrid>     m_grids;
-  std::vector<XYCircle>   m_circles;
-  std::vector<XYPoint>    m_points;
-  std::vector<XYVector>   m_vectors;
+  std::vector<XYPolygon>    m_polygons;
+  std::vector<XYSegList>    m_seglists;
+  std::vector<XYHexagon>    m_hexagons;
+  std::vector<XYGrid>       m_grids;
+  std::vector<XYCircle>     m_circles;
+  std::vector<XYPoint>      m_points;
+  std::vector<XYVector>     m_vectors;
+  std::vector<XYRangePulse> m_range_pulses;
 };
 
 #endif

@@ -21,7 +21,7 @@
 /*****************************************************************/
 
 #include <iostream>
-#include <stdlib.h>
+#include <cstdlib>
 #include "MarineGUI.h"
 
 using namespace std;
@@ -157,6 +157,12 @@ void MarineGUI::augmentMenu()
   mbar->add("GeoAttr/Points - Edit/point_vertex_size bigger", FL_ALT+'j', (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)531, 0);
 
   mbar->add("GeoAttr/Points - Toggle", 'j', (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)550, FL_MENU_DIVIDER);
+
+  // --------------------------------- Points
+  mbar->add("GeoAttr/Vectors - Edit/vector_point_labels=on", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)700, 0);
+  mbar->add("GeoAttr/Vectors - Edit/vector_point_labels=off", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)701, 0);
+
+  mbar->add("GeoAttr/Vectors - Toggle", FL_ALT+'v', (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)750, FL_MENU_DIVIDER);
 
   // -------------------------------- XYGrids
   mbar->add("GeoAttr/XYGrids - Edit/grid_edge_color=red", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)300, 0);
@@ -372,6 +378,12 @@ inline void MarineGUI::cb_MG_SetGeoAttr_i(int v) {
   else if(v==531) cmviewer->setParam("point_vertex_size", "+1");
 
   else if(v==550) cmviewer->setParam("point_viewable_all", "toggle");
+
+  //---------------------------------- Vectors
+  else if(v==700) cmviewer->setParam("vector_viewable_labels", "on");
+  else if(v==701) cmviewer->setParam("vector_viewable_labels", "off");
+
+  else if(v==750) cmviewer->setParam("vector_viewable_all", "toggle");
 
   //---------------------------------- Datum
 

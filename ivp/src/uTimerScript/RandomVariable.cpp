@@ -81,7 +81,7 @@ double RandomVariable::getAge(double timestamp)
 
 string RandomVariable::getStringValue() const
 {
-  return(dstringCompact(doubleToString(m_value,0)));
+  return(doubleToStringX(m_value,0));
 }
   
   
@@ -93,8 +93,8 @@ string RandomVariable::getStringSummary()
   string str = "varname=" + m_varname;
   if(m_keyname != "")
     str += ", keyname=" + m_keyname;
-  str += ", min=" + dstringCompact(doubleToString(m_min_val));
-  str += ", max=" + dstringCompact(doubleToString(m_max_val));
+  str += ", min=" + doubleToStringX(m_min_val);
+  str += ", max=" + doubleToStringX(m_max_val);
   return(str);
 }
   

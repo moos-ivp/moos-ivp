@@ -2,9 +2,9 @@
 
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <string.h>
-#include <errno.h>
-#include <stdlib.h>
+#include <cstring>
+#include <cerrno>
+#include <cstdlib>
 #include <iostream>
 
 #ifdef _WIN32
@@ -27,7 +27,7 @@
 
 using namespace std;
 
-//==============================================================================
+//-------------------------------------------------
 #ifdef _WIN32
 int listdir (std::string dir, std::vector<std::string> &files) {
    intptr_t dp;
@@ -63,32 +63,30 @@ int listdir (std::string dir, std::vector<std::string> &files) {
    return 0;
 }
 #endif
-//==============================================================================
 
-bool isdir(std::string filename) {
+//-----------------------------------------------
+// isDirectory
+
+bool isDirectory(std::string filename) {
    struct stat buf;
    int rc = stat(filename.c_str(), &buf);
    
-   if (rc != 0) {
-      cerr << "Error(" << errno << ") calling stat() on " << filename << endl;
-      exit(errno);
-   }
-   return (S_ISDIR(buf.st_mode) != 0);
+   if(rc != 0) 
+     return(false);
+   else
+     return(S_ISDIR(buf.st_mode) != 0);
 }
 
-//==============================================================================
+//-----------------------------------------------
+// isRegularFile()
 
-bool is_regular_file(std::string filename) {
+bool isRegularFile(std::string filename) {
    struct stat buf;
    int rc = stat(filename.c_str(), &buf);
    
-   if (rc != 0) {
-      cerr << "Error(" << errno << ") calling stat() on " << filename << endl;
-      cerr << "Error string: " << strerror(errno) << endl;
-      exit(errno);
-   }
-
-   return (S_ISREG(buf.st_mode) != 0);
+   if(rc != 0)
+     return(false);
+   else
+     return(S_ISREG(buf.st_mode) != 0);
 }
 
-//==============================================================================

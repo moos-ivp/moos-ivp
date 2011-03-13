@@ -9,7 +9,7 @@
 /* except by the author(s).                                      */
 /*****************************************************************/
 
-#include <math.h>
+#include <cmath>
 #include "MBUtils.h"
 #include "ALogClipper.h"
 #include <cstdlib>

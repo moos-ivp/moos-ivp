@@ -34,14 +34,13 @@ public:
   virtual ~XYSegList() {};
 
   // XYSegList create and edit functions
-  void   add_vertex(const XYPoint&, bool mark=false);
-  void   add_vertex(double, double, double=0, bool mark=false);       
-  void   alter_vertex(double, double, double=0, bool mark=false);
+  void   add_vertex(const XYPoint&, std::string s="");
+  void   add_vertex(double, double, double=0, std::string s="");       
+  void   alter_vertex(double, double, double=0, std::string s="");
   void   delete_vertex(double, double);
-  void   insert_vertex(double, double, double=0, bool mark=false);
+  void   insert_vertex(double, double, double=0, std::string s="");
   void   clear();
 
-  
 public:
   void   shift_horz(double val);
   void   shift_vert(double val);
@@ -51,15 +50,15 @@ public:
   void   rotate(double degrees);
   void   reverse();
   void   new_center(double x, double y);
-  void   print() const;
+  bool   valid() const;
 
 public:
-  unsigned int size() const     {return(vertex_x.size());};
+  unsigned int size() const     {return(m_vx.size());};
 
   double get_vx(unsigned int) const;
   double get_vy(unsigned int) const;
   double get_vz(unsigned int) const;
-  bool   get_vmark(unsigned int) const;
+  std::string get_vprop(unsigned int) const;
   double get_center_x() const;
   double get_center_y() const;
   double get_min_x() const;
@@ -73,9 +72,9 @@ public:
   bool   segs_cross(bool loop=true) const;
   double length();
 
-  std::string get_spec(int vertex_prec=1) const;
+  std::string get_spec(unsigned int vertex_prec=1) const;
   std::string get_spec(std::string param) const;
-  std::string get_spec(int vertex_prec, std::string param) const;
+  std::string get_spec(unsigned int vertex_prec, std::string param) const;
 
 protected:
   unsigned int closest_vertex(double, double) const; 
@@ -85,10 +84,11 @@ protected:
   void   rotate_pt(double, double, double, double&, double&);
 
 protected:
-  std::vector<double> vertex_x;
-  std::vector<double> vertex_y;
-  std::vector<double> vertex_z;
-  std::vector<bool>   vertex_mark;
+  std::vector<double> m_vx;
+  std::vector<double> m_vy;
+  std::vector<double> m_vz;
+  std::vector<std::string> m_vprop;
+
 };
 
 #endif

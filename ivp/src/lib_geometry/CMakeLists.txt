@@ -7,6 +7,7 @@ SET(SRC
    AngleUtils.cpp        ArtifactUtils.cpp      
    CPAEngine.cpp         CPA_Utils.cpp          
    CircularUtils.cpp     GeomUtils.cpp          
+   CurrentField.cpp      XYRangePulse.cpp
    IO_GeomUtils.cpp      LinearExtrapolator.cpp 
    XYArc.cpp             XYFormatUtilsPoint.cpp
    XYCircle.cpp          XYEncoders.cpp         
@@ -18,6 +19,7 @@ SET(SRC
    XYSegment.cpp         XYPatternBlock.cpp
    XYObject.cpp          XYFormatUtilsCircle.cpp
    XYVector.cpp          XYFormatUtilsVector.cpp
+   VState.cpp            XYFormatUtilsRangePulse.cpp
 )
 
 SET(HEADERS
@@ -27,6 +29,8 @@ SET(HEADERS
   CPAEngine.h
   CPA_Utils.h
   GeomUtils.h
+  CurrentField.h
+  XYRangePulse.h
   IO_GeomUtils.h
   LinearExtrapolator.h
   XYArc.h

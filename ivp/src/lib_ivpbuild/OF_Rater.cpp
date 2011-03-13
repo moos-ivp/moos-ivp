@@ -21,10 +21,10 @@
 /*****************************************************************/
 
 #include <iostream>
-#include <stdlib.h>
-#include <stdio.h>
-#include <math.h>
-#include <assert.h>
+#include <cstdlib>
+#include <cstdio>
+#include <cmath>
+#include <cassert>
 #include "OF_Rater.h"
 #include "BuildUtils.h"
 

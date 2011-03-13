@@ -21,7 +21,7 @@
 /*****************************************************************/
 
 #include <iostream>
-#include <math.h>
+#include <cmath>
 #include "ZAIC_HLEQ.h"
 #include "MBUtils.h"
 #include "BuildUtils.h"

@@ -9,8 +9,8 @@
 /* except by the author(s).                                      */
 /*****************************************************************/
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <iostream>
 #include "VZAIC_GUI.h"
 #include "MBUtils.h"

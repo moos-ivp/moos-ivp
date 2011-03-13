@@ -38,7 +38,7 @@
 /*****************************************************************/
 
 #include <iostream>
-#include <string.h>
+#include <cstring>
 #include "IvPDomain.h"
 
 using namespace std;

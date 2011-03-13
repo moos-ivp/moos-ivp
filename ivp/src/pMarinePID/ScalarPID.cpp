@@ -27,7 +27,7 @@
 
 #include "MOOSGenLibGlobalHelper.h"
 #include "ScalarPID.h"
-#include <math.h>
+#include <cmath>
 
 using namespace std;
 

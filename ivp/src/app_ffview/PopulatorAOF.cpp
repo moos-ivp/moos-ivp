@@ -10,8 +10,8 @@
 /*****************************************************************/
 
 #include <iostream>
-#include <math.h>
-#include <stdlib.h>
+#include <cmath>
+#include <cstdlib>
 #include "IvPDomain.h"
 #include "AOF_Rings.h"
 #include "AOF_Ring.h"

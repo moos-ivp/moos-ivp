@@ -27,7 +27,7 @@
 #include <iterator>
 #include <iostream>
 #include <cstdlib>
-#include <math.h>
+#include <cmath>
 #include "HelmIvP.h"
 #include "MBUtils.h"
 #include "BuildUtils.h"

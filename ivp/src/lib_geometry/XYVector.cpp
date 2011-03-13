@@ -20,7 +20,6 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
-#include <iostream>
 #include <cstdlib>
 #include <cstring>
 #include <cmath>
@@ -36,6 +35,7 @@ using namespace std;
 
 XYVector::XYVector()
 {
+  XYObject::clear();
   clear();
 }
 
@@ -44,6 +44,8 @@ XYVector::XYVector()
 
 XYVector::XYVector(double x, double y, double mag, double ang)
 {
+  clear();
+
   m_x    = x;
   m_y    = y;
   m_mag  = mag;
@@ -52,6 +54,8 @@ XYVector::XYVector(double x, double y, double mag, double ang)
   double rads = headingToRadians(ang);
   m_xdot = cos(rads) * mag;
   m_ydot = sin(rads) * mag;
+
+  m_valid = true;
 }
 
 //---------------------------------------------------------------
@@ -59,12 +63,69 @@ XYVector::XYVector(double x, double y, double mag, double ang)
 
 void XYVector::clear()
 {
-  m_x    = 0;
-  m_y    = 0;
-  m_mag  = 0;
-  m_ang  = 0;
-  m_xdot = 0;
-  m_ydot = 0;
+  m_x     = 0;
+  m_y     = 0;
+  m_mag   = 0;
+  m_ang   = 0;
+  m_xdot  = 0;
+  m_ydot  = 0;
+  m_valid = false;
+
+  // Drawing hint specific to vectors. A -1 value indicates that
+  //   the size of the head should defer to the settings of whatever
+  //   application is rendering it. A non-negative value usually is
+  //   interpreted as a request to override the app's default value.
+  // The size is typically interpreted as meters from the point of 
+  //   the vector tip back to the side points rendering the arrow.
+  m_head_size = -1;
+}
+
+//---------------------------------------------------------------
+// Procedure: applySnap
+
+void XYVector::applySnap(double snapval)
+{
+  m_x = snapToStep(m_x, snapval);
+  m_y = snapToStep(m_y, snapval);
+}
+
+//---------------------------------------------------------------
+// Procedure: augMagnitude
+
+void XYVector::augMagnitude(double amt)
+{
+  m_mag += amt;
+
+  // Re-sync the other representation scheme.
+  double rads = headingToRadians(m_ang);
+  m_xdot = cos(rads) * m_mag;
+  m_ydot = sin(rads) * m_mag;
+}
+
+//---------------------------------------------------------------
+// Procedure: augAngle
+
+void XYVector::augAngle(double amt)
+{
+  m_ang = angle360(m_ang + amt);
+
+  // Re-sync the other representation scheme.
+  double rads = headingToRadians(m_ang);
+  m_xdot = cos(rads) * m_mag;
+  m_ydot = sin(rads) * m_mag;
+}
+
+//---------------------------------------------------------------
+// Procedure: setPosition
+//      Note: The vector is considered valid once the x,y position
+//            is set.
+
+void XYVector::setPosition(double x, double y)
+{
+  m_x = x;
+  m_y = y;
+
+  m_valid = true;
 }
 
 //---------------------------------------------------------------
@@ -75,8 +136,11 @@ void XYVector::setVectorXY(double xdot, double ydot)
   m_xdot = xdot;
   m_ydot = ydot;
   
+  // Sync the other representation scheme.
   m_mag = hypot(xdot, ydot);
   m_ang = relAng(0, 0, xdot, ydot);
+
+  m_valid = true;
 }
 
 
@@ -88,21 +152,42 @@ void XYVector::setVectorMA(double mag, double ang)
   m_mag  = mag;
   m_ang  = ang;
 
+  // Sync the other representation scheme.
   double rads = headingToRadians(ang);
   m_xdot = cos(rads) * mag;
   m_ydot = sin(rads) * mag;
 }
 
+//---------------------------------------------------------------
+// Procedure: mergeVectorXY
+
+void XYVector::mergeVectorXY(double xdot, double ydot)
+{
+  m_xdot += xdot;
+  m_ydot += ydot;
+  
+  // Sync the other representation scheme.
+  m_mag = hypot(m_xdot, m_ydot);
+  m_ang = relAng(0, 0, m_xdot, m_ydot);
+}
 
 //---------------------------------------------------------------
-// Procedure: print
+// Procedure: mergeVectorMA
 
-void XYVector::print() const
+void XYVector::mergeVectorMA(double mag, double ang)
 {
-  cout << "label:" << m_label;
-  cout << " type: " << m_type;
-  cout << "  x=" << m_x << ", y=" << m_y;
-  cout << ", mag=" << m_mag << ", ang=" << m_ang << endl;
+  // Convert new components to the other representation scheme.
+  double rads = headingToRadians(ang);
+  double new_xdot = cos(rads) * mag;
+  double new_ydot = sin(rads) * mag;
+
+  // Augment the vector
+  m_xdot += new_xdot;
+  m_ydot += new_ydot;
+  
+  // Sync with the other representation scheme.
+  m_mag = hypot(m_xdot, m_ydot);
+  m_ang = relAng(0, 0, m_xdot, m_ydot);
 }
 
 
@@ -114,43 +199,19 @@ string XYVector::get_spec(string param) const
 {
   string spec;
   
-  if(param == "") {
-    if(m_active == false)
-      spec += "active,false:";
-  }
-  else if(param == "active=true") 
-    spec += "active,true:";
-  else if(param == "active=false") 
-    spec += "active,false:";
-    
+  spec += "x="   + doubleToStringX(m_x)   + ",";
+  spec += "y="   + doubleToStringX(m_y)   + ",";
+  spec += "ang=" + doubleToStringX(m_ang) + ",";
+  spec += "mag=" + doubleToStringX(m_mag);
 
-  if(m_label != "")
-    spec += "label," + m_label + ":"; 
-  if(m_label_color.set())
-    spec += "label_color," + m_label_color.str() + ":"; 
-  if(m_type != "")
-    spec += "type," + m_type + ":"; 
-  if(m_time_set)
-    spec += "time," + doubleToString(m_time,2) + ":"; 
-  if(m_source != "")
-    spec += "source," + m_source + ":"; 
-  if(m_vertex_color.set())
-    spec += "vertex_color," + m_vertex_color.str() + ":"; 
-  if(vertex_size_set()) {
-    spec += "vertex_size,";
-    spec += dstringCompact(doubleToString(m_vertex_size,3)) + ":"; 
+  if(m_head_size >= 0) {
+    spec += ",head_size=";
+    spec += doubleToStringX(m_head_size);
   }
-  if(edge_color_set())
-    spec += "edge_color," + m_edge_color.str() + ":"; 
-  if(edge_size_set()) {
-    spec += "edge_size,";
-    spec += dstringCompact(doubleToString(m_edge_size)) + ":"; 
-  }
+
+  string obj_spec = XYObject::get_spec(param);
+  if(obj_spec != "")
+    spec += ("," + obj_spec);
   
-  spec += "xpos," + dstringCompact(doubleToString(m_x))   + ":";
-  spec += "ypos," + dstringCompact(doubleToString(m_y))   + ":";
-  spec += "ang,"  + dstringCompact(doubleToString(m_ang)) + ":";
-  spec += "mag,"  + dstringCompact(doubleToString(m_mag));
-
   return(spec);
 }

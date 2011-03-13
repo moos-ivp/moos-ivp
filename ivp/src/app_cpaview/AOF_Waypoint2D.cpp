@@ -24,8 +24,8 @@
 #pragma warning(disable : 4786)
 #pragma warning(disable : 4503)
 #endif
-#include <math.h> 
-#include <assert.h> 
+#include <cmath> 
+#include <cassert> 
 #include "AOF_Waypoint2D.h"
 #include "MBUtils.h"
 

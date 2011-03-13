@@ -10,7 +10,7 @@
 /*****************************************************************/
 
 #include <iostream>
-#include <string.h>
+#include <cstring>
 #include "Common_IPFViewer.h"
 #include "GeomUtils.h"
 #include "BuildUtils.h"

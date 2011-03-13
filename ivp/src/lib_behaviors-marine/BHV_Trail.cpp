@@ -24,8 +24,8 @@
 #pragma warning(disable : 4503)
 #endif
 
-#include <math.h>
-#include <stdlib.h>
+#include <cmath>
+#include <cstdlib>
 #include "AngleUtils.h"
 #include "GeomUtils.h"
 #include "AOF_CutRangeCPA.h"

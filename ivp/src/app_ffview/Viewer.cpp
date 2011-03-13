@@ -10,8 +10,8 @@
 /*****************************************************************/
 
 #include <iostream>
-#include "math.h"
-#include <stdlib.h>
+#include <cmath>
+#include <cstdlib>
 #include "Viewer.h"
 #include "MBUtils.h"
 #include "OF_Reflector.h"

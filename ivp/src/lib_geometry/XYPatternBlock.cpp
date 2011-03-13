@@ -12,7 +12,7 @@
 using namespace std;
 
 #include <algorithm>
-#include <math.h>
+#include <cmath>
 #include "MBUtils.h"
 #include "AngleUtils.h"
 #include "GeomUtils.h"

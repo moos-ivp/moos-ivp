@@ -9,12 +9,7 @@
 // function.
 int listdir (std::string dir, std::vector<std::string> &files);
 
-// Calls exit() if it fails.  Sometime error handling might want to be
-// changed.
-bool isdir(std::string filename);
-
-// Calls exit() if it fails.  Sometime error handling might want to be
-// changed.  The file in question must exist.
-bool is_regular_file(std::string filename);
+bool isDirectory(std::string filename);
+bool isRegularFile(std::string filename);
 
 #endif

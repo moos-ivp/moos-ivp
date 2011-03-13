@@ -37,16 +37,17 @@ class LoiterEngine {
 
   double getCenterX() const      {return(m_polygon.get_center_x());}
   double getCenterY() const      {return(m_polygon.get_center_y());}
+  double getClockwise() const    {return(m_clockwise);};
   double getSpiralFactor() const {return(m_spiral_factor);};
 
   XYPolygon getPolygon() {return(m_polygon);};
   
- public:
-  int acquireVertex(double os_hdg, double os_x, double os_y);
-  
-  int acquireVertexOut(double os_x, double os_y);
-  
-  int acquireVertexIn(double os_hdg, double os_x, double os_y);
+  int  acquireVertex(double os_hdg, double os_x, double os_y);
+  void resetClockwiseBest(double os_hdg, double os_x, double os_y);
+
+ protected:
+  unsigned int acquireVertexOut(double os_x, double os_y, bool clockwise);
+  unsigned int acquireVertexIn(double os_hdg, double os_x, double os_y);
 
  protected:
   XYPolygon m_polygon;

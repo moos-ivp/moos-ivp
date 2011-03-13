@@ -20,9 +20,9 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
+#include <cstdlib>
+#include <cmath>
 #include "AngleUtils.h"
-#include <stdlib.h>
-#include <math.h>
 
 #ifndef M_PI
 #define M_PI 3.1415926

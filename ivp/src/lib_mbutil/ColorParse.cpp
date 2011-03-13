@@ -21,7 +21,7 @@
 /*****************************************************************/
 
 #include <iostream>
-#include <stdlib.h>
+#include <cstdlib>
 #include "ColorParse.h"
 #include "MBUtils.h"
 
@@ -32,8 +32,17 @@ using namespace std;
 //   Example: "DarkKhaki"
 //            "Dark_Khaki"
 //            "dark_khaki"
-//            "hex: bd, b7, 6b"
+//   
+//            "hex: bd, b7, 6b"          Commma delimited
 //            "0.741, 0.718, 0.420"
+//            "hex: bd % b7 % 6b"        % delimited also ok
+//            "0.741 % 0.718 % 0.420"
+//            "hex: bd $ b7 $ 6b"        $ delimited also ok
+//            "0.741 $ 0.718 $ 0.420"
+//            "hex: bd # b7 # 6b"        # delimited also ok
+//            "0.741 # 0.718 # 0.420"
+//            "hex: bd : b7 : 6b"        : delimited also ok
+//            "0.741 : 0.718 : 0.420"
 //
 //   Returns: <0.741, 0.718, 0.420>
 
@@ -44,7 +53,9 @@ vector<double> colorParse(const std::string &str)
   // e.g., "blue". Detected by lack of comma-separated fields
 
   string numerical_str;
-  if(!strContains(str, ","))
+  if(!strContains(str, ",")  && !strContains(str, "%") &&
+     !strContains(str, "$")  && !strContains(str, "#") &&
+     !strContains(str, ":"))
     numerical_str = colorNameToHex(str);
   else
     numerical_str = str;
@@ -117,7 +128,18 @@ vector<double> colorDecToVector(const std::string& str)
   vector<double> return_vector(3,0);
   int i;
 
-  vector<string> svector = parseString(str, ',');
+  vector<string> svector;
+  if(strContains(str, ","))
+    svector = parseString(str, ',');
+  else if(strContains(str, "%"))
+    svector = parseString(str, '%');
+  else if(strContains(str, "$"))
+    svector = parseString(str, '$');
+  else if(strContains(str, "#"))
+    svector = parseString(str, '#');
+  else if(strContains(str, ":"))
+    svector = parseString(str, ':');
+
   int vsize = svector.size();
   if(vsize != 3)
     return(return_vector);

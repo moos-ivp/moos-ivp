@@ -23,8 +23,8 @@
 #include "XYArtifactGrid.h"
 
 #include <iostream>
-#include <math.h>
-#include <stdlib.h>
+#include <cmath>
+#include <cstdlib>
 #include <numeric> // For accumulate
 #include "MBUtils.h"
 #include "XYFormatUtilsPoly.h"
@@ -170,7 +170,7 @@ bool XYArtifactGrid::initialize(string given_config_str)
   double yh = atof(svector.at(1).c_str());
   XYSquare unit_square(xl,xh,yl,yh);
   // Check for the validity of the square
-  if(!unit_square.isValid()){
+  if(!unit_square.valid()){
     cout << "Unit square failed initialization" << endl;
     return(false);
   }

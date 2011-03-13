@@ -26,7 +26,7 @@
 #include "fileutil.h"
 #include "stringutil.h"
 #include <iostream>
-#include <stdlib.h>
+#include <cstdlib>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -97,7 +97,7 @@ void BFactoryDynamic::loadDirectory(string dirname)
       continue;
     }
 
-    if(! is_regular_file(fpath)) {
+    if(! isRegularFile(fpath)) {
       cerr << "Warning: File " << fname << " isn't a regular file." << endl;
       continue;
     }
@@ -206,7 +206,7 @@ void BFactoryDynamic::loadEnvVarDirectories(string envVar,
   for(unsigned int i=0; i<v.size(); ++i) {
     string directory = stripBlankEnds(v.at(i));
 
-    if(isdir(directory)) {
+    if(isDirectory(directory)) {
       if(verbose)
         cerr << "    Loading directory: " << directory << endl;
       loadDirectory(directory);

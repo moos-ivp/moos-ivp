@@ -10,7 +10,7 @@
 #pragma warning(disable : 4503)
 #endif
 #include <iostream>
-#include <math.h> 
+#include <cmath> 
 #include "AOF_WaypointRateClosure.h"
 #include "AngleUtils.h"
 #include "GeomUtils.h"

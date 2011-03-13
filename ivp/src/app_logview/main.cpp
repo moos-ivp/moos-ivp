@@ -22,8 +22,8 @@
 
 #include <vector>
 #include <iostream>
-#include <stdlib.h>
-#include <string.h>
+#include <cstdlib>
+#include <cstring>
 #include "REPLAY_GUI.h"
 #include "MBUtils.h"
 #include "LogViewLauncher.h"

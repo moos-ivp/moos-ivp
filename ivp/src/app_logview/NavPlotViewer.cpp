@@ -22,9 +22,9 @@
 
 #include <string>
 #include <iostream>
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
 #ifdef _WIN32
 #include "tiffio.h"
 #else

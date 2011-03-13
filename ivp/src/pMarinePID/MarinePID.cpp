@@ -26,8 +26,8 @@
 #endif
 #include <iterator>
 #include <iostream>
-#include <math.h>
-#include <string.h>
+#include <cmath>
+#include <cstring>
 #include "MarinePID.h"
 #include "MBUtils.h"
 #include "ColorParse.h"

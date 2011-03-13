@@ -20,10 +20,9 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
-#include <iostream>
-#include <math.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cmath>
+#include <cstdlib>
+#include <cstring>
 #include "XYSegment.h"
 #include "MBUtils.h"
 #include "GeomUtils.h"
@@ -128,10 +127,10 @@ string XYSegment::get_spec(int precision) const
     spec += "source=" + m_label + "#"; 
 
   spec += "pts=";
-  spec += dstringCompact(doubleToString(m_x1, precision)) + ",";
-  spec += dstringCompact(doubleToString(m_y1, precision)) + ":";
-  spec += dstringCompact(doubleToString(m_x2, precision)) + ",";
-  spec += dstringCompact(doubleToString(m_y2, precision));
+  spec += doubleToStringX(m_x1, precision) + ",";
+  spec += doubleToStringX(m_y1, precision) + ":";
+  spec += doubleToStringX(m_x2, precision) + ",";
+  spec += doubleToStringX(m_y2, precision);
 
   return(spec);
 }

@@ -7,7 +7,7 @@
 
 #include <iostream>
 #include <iterator>
-#include <string.h>
+#include <cstring>
 #include "TermCommand.h"
 #include "MBUtils.h"
 

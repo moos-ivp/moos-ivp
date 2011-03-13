@@ -30,7 +30,6 @@ public:
 
   unsigned int size() {return(m_points.size());};
 
-
 protected:
   std::vector<XYPoint>     m_points;
   std::vector<std::string> m_points_latlon;

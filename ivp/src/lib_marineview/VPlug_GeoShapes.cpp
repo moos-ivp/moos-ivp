@@ -13,6 +13,7 @@
 #include "XYFormatUtilsPoint.h"
 #include "XYFormatUtilsCircle.h"
 #include "XYFormatUtilsVector.h"
+#include "XYFormatUtilsRangePulse.h"
 #include "ColorParse.h"
 
 using namespace std;
@@ -116,6 +117,26 @@ void VPlug_GeoShapes::addVector(const XYVector& new_vect)
 }
 
 //-----------------------------------------------------------
+// Procedure: addRangePulse
+
+void VPlug_GeoShapes::addRangePulse(const XYRangePulse& new_pulse)
+{
+  string new_label = new_pulse.get_label();
+  if(new_label == "") {
+    m_range_pulses.push_back(new_pulse);
+    return;
+  }
+  
+  for(unsigned int i=0; i<m_range_pulses.size(); i++) {
+    if(m_range_pulses[i].get_label() == new_label) {
+      m_range_pulses[i] = new_pulse;
+      return;
+    }
+  }
+  m_range_pulses.push_back(new_pulse);  
+}
+
+//-----------------------------------------------------------
 // Procedure: updateGrid
 
 bool VPlug_GeoShapes::updateGrid(const string& delta)
@@ -210,6 +231,19 @@ bool VPlug_GeoShapes::addVector(const string& vect_str)
   XYVector new_vect = string2Vector(vect_str);
   addVector(new_vect);
   return(true);
+}
+
+//-----------------------------------------------------------
+// Procedure: addRangePulse
+
+bool VPlug_GeoShapes::addRangePulse(const string& pulse_str)
+{
+  XYRangePulse new_pulse = string2RangePulse(pulse_str);
+  if(new_pulse.valid()) {
+    addRangePulse(new_pulse);
+    return(true);
+  }
+  return(false);
 }
 
 //-----------------------------------------------------------
@@ -352,4 +386,17 @@ XYVector VPlug_GeoShapes::getVector(unsigned int index)
   }
   else
     return(m_vectors[index]);
+}
+
+//-------------------------------------------------------------
+// Procedure: getVector(int)
+
+XYRangePulse VPlug_GeoShapes::getRangePulse(unsigned int index)
+{
+  if(index >= m_range_pulses.size()) {
+    XYRangePulse null_range_pulse;
+    return(null_range_pulse);
+  }
+  else
+    return(m_range_pulses[index]);
 }

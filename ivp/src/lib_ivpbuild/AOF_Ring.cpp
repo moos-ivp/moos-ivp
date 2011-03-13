@@ -21,8 +21,8 @@
 /*****************************************************************/
 
 #include <iostream> 
-#include <stdlib.h>
-#include <math.h>
+#include <cstdlib>
+#include <cmath>
 #include "AOF_Ring.h"
 #include "MBUtils.h"
 #include "BuildUtils.h"

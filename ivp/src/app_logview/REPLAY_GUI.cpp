@@ -20,8 +20,8 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <iostream>
 #include "REPLAY_GUI.h"
 #include "MBUtils.h"
@@ -65,19 +65,19 @@ REPLAY_GUI::REPLAY_GUI(int g_w, int g_h, const char *g_l)
   //ipf_viewer_b->setClearColor("macbeige");
 
   // Initialize Time fields ------------------------------------------
-  double time_pos = (w()/2)-140;
+  double time_pos = (w()/2)-250;
   disp_time = new MY_Output(time_pos, h()-(m_lp_viewer_hgt+26), 
-			    70, 22, "Time:"); 
+			    110, 22, "Timex:"); 
   disp_time->color(FL_RED); 
   disp_time->textcolor(FL_WHITE); 
   disp_time->textsize(12); 
   disp_time->labelsize(12);
 
-  m_but_zoom_in_time = new MY_Repeat_Button(time_pos+80, h()-(m_lp_viewer_hgt+26), 
+  m_but_zoom_in_time = new MY_Repeat_Button(time_pos+120, h()-(m_lp_viewer_hgt+26), 
 					    30, 21, "IN");
-  m_but_zoom_out_time = new MY_Repeat_Button(time_pos+120, h()-(m_lp_viewer_hgt+26), 
+  m_but_zoom_out_time = new MY_Repeat_Button(time_pos+160, h()-(m_lp_viewer_hgt+26), 
 					     35, 21, "OUT");
-  m_but_zoom_reset_time = new MY_Button(time_pos+160, h()-(m_lp_viewer_hgt+26), 
+  m_but_zoom_reset_time = new MY_Button(time_pos+200, h()-(m_lp_viewer_hgt+26), 
 					45, 21, "RESET");
 
   m_but_zoom_in_time->callback((Fl_Callback*)REPLAY_GUI::cb_TimeZoom,(void*)1);

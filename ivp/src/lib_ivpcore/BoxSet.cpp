@@ -38,7 +38,7 @@
 /*****************************************************************/
 
 #include <iostream>
-#include <assert.h>
+#include <cassert>
 #include "BoxSet.h"
 
 using namespace std;

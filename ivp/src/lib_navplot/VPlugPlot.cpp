@@ -20,10 +20,10 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <iostream>
-#include <assert.h>
+#include <cassert>
 #include "VPlugPlot.h"
 #include "MBUtils.h"
 

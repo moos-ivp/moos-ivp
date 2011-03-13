@@ -80,11 +80,3 @@ protected:
   std::string  m_status; 
 };
 #endif 
-
-
-
-
-
-
-
-

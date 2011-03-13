@@ -25,8 +25,8 @@
 #pragma warning(disable : 4503)
 #endif
 
-#include <math.h>
-#include <stdlib.h>
+#include <cmath>
+#include <cstdlib>
 #include "AngleUtils.h"
 #include "BHV_Loiter.h"
 #include "MBUtils.h"
@@ -50,7 +50,7 @@ BHV_Loiter::BHV_Loiter(IvPDomain gdomain) :
 
   // Initialize State Variable with meaningful initial vals
   m_acquire_mode    = true;
-  m_iterations      = 0;
+  m_loiter_mode     = "idle";
 
   // Initialize State Variables with initial vals of zero which
   // have no real meaning, but better than nondeterministic.
@@ -60,26 +60,20 @@ BHV_Loiter::BHV_Loiter(IvPDomain gdomain) :
   m_ptx             = 0;
   m_pty             = 0;
   m_dist_to_poly    = 0;
-
-  // Initialize postMessage state variables.
-  m_var_report    = "LOITER_REPORT";
-  m_var_index     = "LOITER_INDEX";
-  m_var_acquire   = "LOITER_ACQUIRE";
-  m_var_dist2poly = "LOITER_DIST_TO_POLY";
-  m_var_eta2poly  = "LOITER_ETA_TO_POLY";
-  m_var_suffix    = "";
+  m_eta_to_poly     = 0;
 
   // Initialize Configuration Parameters
-  m_desired_speed   = 0;      // m/s
-  m_clockwise       = true;
-  m_acquire_dist    = 10;
-  m_center_pending  = false;
-  m_center_activate = false;
+  m_desired_speed     = 0;      // meters per sec
+  m_clockwise         = true;
+  m_dynamic_clockwise = false;
+  m_acquire_dist      = 10;
+  m_center_pending    = false;
+  m_center_activate   = false;
 
   m_waypoint_engine.setPerpetual(true);
   m_waypoint_engine.setRepeatsEndless(true);
 
-  addInfoVars("NAV_X, NAV_Y, NAV_HEADING");
+  addInfoVars("NAV_X, NAV_Y, NAV_HEADING, NAV_SPEED");
 }
 
 //-----------------------------------------------------------
@@ -91,11 +85,10 @@ bool BHV_Loiter::setParam(string param, string value)
     XYPolygon new_poly = string2Poly(value);
     if(!new_poly.is_convex())  // Should be convex - false otherwise
       return(false);
-    if(new_poly.is_clockwise() != m_clockwise)
-      new_poly.reverse();
     new_poly.apply_snap(0.1); // snap to tenth of meter
     m_loiter_engine.setPoly(new_poly);
-    m_waypoint_engine.setSegList(new_poly);
+    m_loiter_engine.setClockwise(m_clockwise);
+    m_waypoint_engine.setSegList(m_loiter_engine.getPolygon());
     m_acquire_mode  = true;
     return(true);
   }  
@@ -122,9 +115,14 @@ bool BHV_Loiter::setParam(string param, string value)
     return(true);
   }  
   else if(param == "clockwise") {
+    if(tolower(value) == "best") {
+      m_dynamic_clockwise = true;
+      return(true);
+    }
     bool ok = setBooleanOnString(m_clockwise, value);
     if(!ok)
       return(false);
+    m_dynamic_clockwise = false;
     m_loiter_engine.setClockwise(m_clockwise);
     m_waypoint_engine.setSegList(m_loiter_engine.getPolygon());
     return(true);
@@ -164,30 +162,6 @@ bool BHV_Loiter::setParam(string param, string value)
     m_var_suffix = "_" + toupper(value);
     return(true);
   }
-  else if(param == "var_report")  {
-    if(strContainsWhite(value) || (value == ""))
-      return(false);
-    m_var_report = value;
-    return(true);
-  }
-  else if(param == "var_acquire")  {
-    if(strContainsWhite(value) || (value == ""))
-      return(false);
-    m_var_acquire = value;
-    return(true);
-  }
-  else if(param == "var_dist2poly")  {
-    if(strContainsWhite(value) || (value == ""))
-      return(false);
-    m_var_dist2poly = value;
-    return(true);
-  }
-  else if(param == "var_index")  {
-    if(strContainsWhite(value) || (value == ""))
-      return(false);
-    m_var_index = value;
-    return(true);
-  }
   else if(param == "visual_hints")  {
     vector<string> svector = parseStringQ(value, ',');
     unsigned int i, vsize = svector.size();
@@ -225,6 +199,10 @@ void BHV_Loiter::onIdleState()
 {
   postErasablePoint();
   postErasablePolygon();
+
+  m_loiter_mode = "idle";
+  postStatusReports();
+
   if(!m_center_activate)
     return;
   m_center_pending = true;
@@ -233,24 +211,41 @@ void BHV_Loiter::onIdleState()
 
 
 //-----------------------------------------------------------
+// Procedure: onIdleToRunState
+//      Note: 
+
+void BHV_Loiter::onIdleToRunState()
+{
+  cout << termColor("blue");
+  cout << "Clockwise before:" << m_clockwise << endl;
+  if(m_dynamic_clockwise) {
+    updateInfoIn();
+    m_loiter_engine.resetClockwiseBest(m_osh, m_osx, m_osy);
+    m_clockwise = m_loiter_engine.getClockwise();
+    m_waypoint_engine.setSegList(m_loiter_engine.getPolygon());
+  }
+  cout << "Clockwise after:" << m_clockwise << endl;
+  cout << termColor();
+}
+
+
+//-----------------------------------------------------------
 // Procedure: onRunState
 
 IvPFunction *BHV_Loiter::onRunState() 
 {
-  m_iterations++;
-
-  // Set m_osx, m_osy, m_osh
+  // Set m_osx, m_osy, m_osh, m_osv
   if(!updateInfoIn()) {
     postErasablePoint();
     return(0);
   }
 
+  updateLoiterMode();
   updateCenter();
 
+  m_acquire_mode = false;
   if(m_dist_to_poly > m_acquire_dist)
     m_acquire_mode = true;
-  else
-    m_acquire_mode = false;
 
   if(m_acquire_mode) {
     int curr_waypt = m_loiter_engine.acquireVertex(m_osh, m_osx, m_osy); 
@@ -295,25 +290,34 @@ bool BHV_Loiter::updateInfoIn()
     postWMessage("Empty/NULL Loiter Specification.");
     return(false);
   }
-  m_dist_to_poly = poly.dist_to_poly(m_osx, m_osy);
-
-  bool ok1, ok2, ok3;
+  
+  bool ok1, ok2, ok3, ok4;
   // ownship position in meters from some 0,0 reference point.
   m_osx = getBufferDoubleVal("NAV_X", ok1);
   m_osy = getBufferDoubleVal("NAV_Y", ok2);
   m_osh = getBufferDoubleVal("NAV_HEADING", ok3);
+  m_osv = getBufferDoubleVal("NAV_SPEED", ok4);
 
-  // Must get ownship position from InfoBuffer
-  if(!ok1 || !ok2) {
-    postEMessage("No ownship X/Y info in info_buffer.");
-    return(false);
-  }
-  
-  if(!ok3) {
+  // Must get ownship information from the InfoBuffer
+  if(!ok1 || !ok2)
+    postEMessage("No ownship X/Y info in info_buffer.");  
+  if(!ok3)
     postEMessage("No ownship HEADING info in info_buffer.");
+  if(!ok4)
+    postEMessage("No ownship SPEED info in info_buffer.");
+  if(!ok1 || !ok2 || !ok3 || !ok4)
     return(false);
-  }
   
+  // Calculate the distance to the polygon. A point internal to the
+  // polygon is regarded as having a negative distance, the distance
+  // back out to the closest polygon edge.
+  m_dist_to_poly = poly.dist_to_poly(m_osx, m_osy);
+  if(poly.contains(m_osx, m_osy))
+    m_dist_to_poly *= -1.0;
+
+  // Calculating ETA to poly - should we base it on progress history?
+  // Or simply distance and current speed?
+
   return(true);
 }
 
@@ -387,14 +391,47 @@ void BHV_Loiter::updateCenter()
 
 
 //-----------------------------------------------------------
+// Procedure: updateLoiterMode
+
+void BHV_Loiter::updateLoiterMode()
+{
+  string position = "onpoly";
+  if(m_dist_to_poly > m_acquire_dist)
+    position = "outer";
+  else if(m_dist_to_poly < (-1 * m_acquire_dist))
+    position = "inner";
+  
+  if(position == "onpoly")
+    m_loiter_mode = "stable";
+  else if(position == "outer") {
+    if(m_loiter_mode == "stable")
+      m_loiter_mode = "recovering_external";
+    else if(m_loiter_mode == "recovering_external")
+      m_loiter_mode = "recovering_external";
+    else
+      m_loiter_mode = "acquiring_external";
+  }
+  else if(position == "inner") {
+    if(m_loiter_mode == "stable")
+      m_loiter_mode = "recovering_internal";
+    else if(m_loiter_mode == "recovering_internal")
+      m_loiter_mode = "recovering_internal";
+    else 
+      m_loiter_mode = "acquiring_internal";
+  }
+  else 
+    postWMessage("Undefined LoiterMode");
+
+}
+
+//-----------------------------------------------------------
 // Procedure: buildIPF
 
 IvPFunction *BHV_Loiter::buildIPF(const string& method) 
 {
   IvPFunction *ipf = 0;
   
-  if(method == "zaic") {
-    
+  if(method == "zaic") {    
     ZAIC_PEAK spd_zaic(m_domain, "speed");
     spd_zaic.setSummit(m_desired_speed);
     spd_zaic.setBaseWidth(0.3);
@@ -428,25 +465,17 @@ void BHV_Loiter::postStatusReports()
   loiter_report += ",nonmono_hits=" + uintToString(nonmono_hits);
   loiter_report += ",acquire_mode=" + boolToString(m_acquire_mode);
 
-  // Default for m_var_dist2poly = LOITER_REPORT
-  if((m_var_report != "SILENT") && (m_var_report != "OFF"))
-    postMessage((m_var_report + m_var_suffix), loiter_report);
+  postMessage(("LOITER_REPORT" + m_var_suffix), loiter_report);
+  postMessage(("LOITER_INDEX" + m_var_suffix), curr_index);
+  postMessage(("LOITER_MODE" + m_var_suffix), m_loiter_mode);
 
-  // Default for m_var_dist2poly = LOITER_INDEX
-  if((m_var_index != "SILENT") && (m_var_index != "OFF"))
-    postMessage((m_var_index + m_var_suffix), curr_index);
-
-  // Default for m_var_dist2poly = LOITER_ACQUIRE
-  if((m_var_acquire != "SILENT") && (m_var_acquire != "OFF")) {
-    if(m_acquire_mode)
-      postMessage((m_var_acquire + m_var_suffix), 1);
-    else
-      postMessage((m_var_acquire + m_var_suffix), 0);
-  }
+  if(m_acquire_mode)
+    postMessage(("LOITER_ACQUIRE" + m_var_suffix), 1);
+  else
+    postMessage(("LOITER_ACQUIRE" + m_var_suffix), 0);
   
-  // Default for m_var_dist2poly = LOITER_DIST_TO_POLY
-  if((m_var_dist2poly != "SILENT") && (m_var_dist2poly != "OFF")) 
-    postIntMessage((m_var_dist2poly + m_var_suffix), m_dist_to_poly);
+  string var = ("LOITER_DIST_TO_POLY" + m_var_suffix);
+  postIntMessage(var, m_dist_to_poly);
 }
 
 //-----------------------------------------------------------

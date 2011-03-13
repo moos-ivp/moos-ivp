@@ -25,8 +25,8 @@
 #pragma warning(disable : 4503)
 #endif
 
-#include <math.h> 
-#include <stdlib.h>
+#include <cmath> 
+#include <cstdlib>
 #include <iostream>
 #include "BHV_Waypoint.h"
 #include "OF_Reflector.h"
@@ -263,7 +263,7 @@ IvPFunction *BHV_Waypoint::onRunState()
 
   // Set m_osx, m_osy, m_osv
   if(!updateInfoIn()) {
-    postMessage("VIEW_POINT", m_nextpt.get_spec("active=false"));
+    postMessage("VIEW_POINT", m_nextpt.get_spec("active=false"), "wpt");
     return(0);
   }
 
@@ -282,19 +282,19 @@ IvPFunction *BHV_Waypoint::onRunState()
   if(next_point) {
     postStatusReport();
     postViewableSegList();
-    postMessage("VIEW_POINT", m_nextpt.get_spec("active=true"));
+    postMessage("VIEW_POINT", m_nextpt.get_spec("active=true"), "wpt");
     double dist = hypot((m_nextpt.x() - m_trackpt.x()), 
 			(m_nextpt.y() - m_trackpt.y()));
     // If the trackpoint and next waypoint differ by more than five
     // meters then post a visual cue for the track point.
     if(dist > 5)
-      postMessage("VIEW_POINT", m_trackpt.get_spec("active=true"));
+      postMessage("VIEW_POINT", m_trackpt.get_spec("active=true"), "trk");
     else
-      postMessage("VIEW_POINT", m_trackpt.get_spec("active=false"));
+      postMessage("VIEW_POINT", m_trackpt.get_spec("active=false"), "trk");
   }
   // Otherwise "erase" the next waypoint marker
   else {
-    postMessage("VIEW_POINT", m_nextpt.get_spec("active=false"));
+    postMessage("VIEW_POINT", m_nextpt.get_spec("active=false"), "wpt");
     return(0);
   }
   
@@ -543,8 +543,8 @@ void BHV_Waypoint::postViewableSegList()
 
 void BHV_Waypoint::postErasables()
 {
-  postMessage("VIEW_POINT", m_trackpt.get_spec("active=false"));
-  postMessage("VIEW_POINT", m_nextpt.get_spec("active=false"));
+  postMessage("VIEW_POINT", m_trackpt.get_spec("active=false"), "trk");
+  postMessage("VIEW_POINT", m_nextpt.get_spec("active=false"), "wpt");
 
   XYSegList seglist = m_waypoint_engine.getSegList();
   seglist.set_label(m_us_name + "_" + m_descriptor);

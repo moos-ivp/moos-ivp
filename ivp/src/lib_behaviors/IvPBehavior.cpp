@@ -43,7 +43,7 @@
 #endif
 
 #include <vector>
-#include <stdlib.h>
+#include <cstdlib>
 #include "IvPBehavior.h"
 #include "MBUtils.h"
 #include "BuildUtils.h"

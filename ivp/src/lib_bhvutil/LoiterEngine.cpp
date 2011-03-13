@@ -25,10 +25,10 @@
 #pragma warning(disable : 4503)
 #endif
 
-#include <iostream>
 #include <vector>
-#include <math.h>
+#include <cmath>
 #include "GeomUtils.h"
+#include "ColorParse.h"
 #include "AngleUtils.h"
 #include "LoiterEngine.h"
 
@@ -43,7 +43,6 @@ LoiterEngine::LoiterEngine()
   m_spiral_factor  = -2;
 }
 
-
 //-----------------------------------------------------------
 // Procedure: setClockwise
 //   Purpose: Set the clockwise flag - adjust the polygon if needed
@@ -53,14 +52,13 @@ void LoiterEngine::setClockwise(bool g_clockwise)
   m_clockwise = g_clockwise;
   
   if(m_polygon.is_clockwise() != m_clockwise)
-	m_polygon.reverse();
+    m_polygon.reverse();
 }
 
 //-----------------------------------------------------------
 // Procedure: setSpiralFactor
 //      Note: 0 is little or no spiraling
 //            100 is lots of spiraling
-
 
 void LoiterEngine::setSpiralFactor(double val)
 {
@@ -92,7 +90,49 @@ int LoiterEngine::acquireVertex(double os_hdg, double os_x, double os_y)
   if(m_polygon.contains(os_x, os_y))
     return(acquireVertexIn(os_hdg, os_x, os_y));
   else
-    return(acquireVertexOut(os_x, os_y));
+    return(acquireVertexOut(os_x, os_y, m_clockwise));
+}
+
+//-----------------------------------------------------------
+// Procedure: resetClockwiseBest
+//   Purpose: Determine whether a clockwise or counterclockwise 
+//            entry angle would be best, minimizing the turn needed
+//            from the vehicle's current heading.
+
+void LoiterEngine::resetClockwiseBest(double os_hdg, double os_x, 
+				      double os_y)
+{
+  if(!m_polygon.is_convex())
+    return;
+
+  if(m_polygon.contains(os_x, os_y))
+    return;
+
+  unsigned int v_clockwise  = acquireVertexOut(os_x, os_y, true);
+  unsigned int v_cclockwise = acquireVertexOut(os_x, os_y, false);
+
+  double cvx  = m_polygon.get_vx(v_clockwise);
+  double cvy  = m_polygon.get_vy(v_clockwise);
+  double ccvx = m_polygon.get_vx(v_cclockwise);
+  double ccvy = m_polygon.get_vy(v_cclockwise);
+
+  double hdg_clockwise  = relAng(os_x, os_y, cvx, cvy);
+  double hdg_cclockwise = relAng(os_x, os_y, ccvx, ccvy);
+
+  // Get deltas in the range [-180, 180]
+  double delta_clockwise  = angle180(os_hdg - hdg_clockwise);
+  double delta_cclockwise = angle180(os_hdg - hdg_cclockwise);
+
+  // Get deltas abs value in the range [0, 180]
+  if(delta_clockwise < 0)
+    delta_clockwise *= -1;
+  if(delta_cclockwise < 0)
+    delta_cclockwise *= -1;
+
+  if(delta_clockwise < delta_cclockwise)
+    setClockwise(true);
+  else
+    setClockwise(false);
 }
 
 //-----------------------------------------------------------
@@ -102,21 +142,22 @@ int LoiterEngine::acquireVertex(double os_hdg, double os_x, double os_y)
 //            Determination is based on which direction the vehicle
 //            will be travelling around the polygon (clockwise or not).
 
-int LoiterEngine::acquireVertexOut(double os_x, double os_y)
+unsigned int LoiterEngine::acquireVertexOut(double os_x, double os_y, 
+					    bool clockwise)
 {
   if(!m_polygon.is_convex())
-    return(-1);
-  
+    return(0);
+  if(m_polygon.contains(os_x, os_y))
+    return(0);
+
   unsigned int i, vsize = m_polygon.size();
 
-  cout << "--------------------------------" << endl;
-  
-  int    index = -1;
+  unsigned int index = 0;
   bool   fresh = true;
   double best_angle;
   for(i=0; i<vsize; i++) {
     if(m_polygon.vertex_is_viewable(i, os_x, os_y)) {
-      int j = i+1;
+      unsigned int j = i+1;
       if(i == vsize-1)
 	j = 0;
       double x2 = m_polygon.get_vx(i);
@@ -124,11 +165,8 @@ int LoiterEngine::acquireVertexOut(double os_x, double os_y)
       double x3 = m_polygon.get_vx(j);
       double y3 = m_polygon.get_vy(j);
 
-      double dist = distPointToPoint(os_x, os_y, x2, y2);
-      cout << "   dist: [" << i << "]" << dist << endl;
-
-      double angle = segmentAngle(os_x, os_y, x2,y2,x3,y3);
-      if(m_clockwise) {
+      double angle = segmentAngle(os_x, os_y, x2, y2, x3, y3);
+      if(clockwise) {
 	if(fresh || (angle > best_angle)) {
 	  fresh = false;
 	  index = i;
@@ -151,19 +189,22 @@ int LoiterEngine::acquireVertexOut(double os_x, double os_y)
 //-----------------------------------------------------------
 // Procedure: acquireVertexIn
 
-int LoiterEngine::acquireVertexIn(double os_hdg, double os_x, double os_y)
+unsigned int LoiterEngine::acquireVertexIn(double os_hdg, double os_x, 
+					   double os_y)
 {
   if(!m_polygon.is_convex())
-    return(-1);
+    return(0);
+  if(!m_polygon.contains(os_x, os_y))
+    return(0);
   
   os_hdg = angle360(os_hdg);
   
-  int i, vsize = m_polygon.size();
+  unsigned int i, vsize = m_polygon.size();
   
   // Determine which vertex in the polygon is closest
   // to direction the vehicle is currently heading toward
   double smallest_delta = 360;
-  int    smallest_delta_ix;
+  unsigned int smallest_delta_ix = 0;
   for(i=0; i<vsize; i++) {
     double p_x = m_polygon.get_vx(i);
     double p_y = m_polygon.get_vy(i);
@@ -185,7 +226,7 @@ int LoiterEngine::acquireVertexIn(double os_hdg, double os_x, double os_y)
 		   
   vector<double> pt_segangle;
   for(i=0; i<vsize; i++) {
-    int ixx = i+1;
+    unsigned int ixx = i+1;
     if(ixx==vsize)
       ixx=0;
     
@@ -203,7 +244,7 @@ int LoiterEngine::acquireVertexIn(double os_hdg, double os_x, double os_y)
   
   // Find the highst ranking vertex (lowest angle value)
   double low_angle = pt_segangle[0];
-  int    low_ix    = 0;
+  unsigned int low_ix = 0;
   for(i=1; i<vsize; i++) {
     if(pt_segangle[i] < low_angle) {
       low_ix = i;
@@ -212,5 +253,3 @@ int LoiterEngine::acquireVertexIn(double os_hdg, double os_x, double os_y)
   }
   return(low_ix);
 }
-
-

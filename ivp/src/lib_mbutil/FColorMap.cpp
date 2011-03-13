@@ -21,7 +21,7 @@
 /*****************************************************************/
 
 #include <iostream>
-#include <math.h>
+#include <cmath>
 #include "FColorMap.h"
 
 using namespace std;

@@ -38,11 +38,13 @@ public:
   bool         setParam(std::string, std::string);
   IvPFunction* onRunState();
   void         onIdleState();
+  void         onIdleToRunState();
   void         onCompleteState();
 
 protected:
   bool         updateInfoIn();
   void         updateCenter();
+  void         updateLoiterMode();
   IvPFunction* buildIPF(const std::string&);
   void         postStatusReports();
   void         postViewablePolygon();
@@ -53,16 +55,12 @@ protected:
 
 private:  // Configuration Parameters
   bool         m_clockwise;
+  bool         m_dynamic_clockwise;
   double       m_desired_speed;
   double       m_acquire_dist;
   bool         m_center_activate;
 
   std::string  m_var_suffix;
-  std::string  m_var_report;
-  std::string  m_var_acquire;
-  std::string  m_var_dist2poly;
-  std::string  m_var_eta2poly;
-  std::string  m_var_index;
 
   std::string  m_hint_nextpt_color;
   std::string  m_hint_nextpt_lcolor;
@@ -71,21 +69,22 @@ private:  // Configuration Parameters
   std::string  m_hint_poly_label;
   double       m_hint_vertex_size;
   double       m_hint_edge_size;
-
+  std::string  m_loiter_mode;
 
 private:  // State Structures
   LoiterEngine   m_loiter_engine;
   WaypointEngine m_waypoint_engine;
   
 private:  // State Variables
-  bool         m_acquire_mode;   // true:acquiring, false:loitering
-  double       m_dist_to_poly;   // Curr ownship dist to poly (mtrs)
-  double       m_ptx;            // Curr waypt   x/lon (mtrs)
-  double       m_pty;            // Curr waypt   y/lat (mtrs)
-  double       m_osx;            // Curr owhship x/lon (mtrs)
-  double       m_osy;            // Curr ownship y/lat (mtrs)
-  double       m_osh;            // Curr ownship Heading (degs)
-  int          m_iterations;     // Number of calls to onRunState
+  bool         m_acquire_mode;     // true:acquiring, false:loitering
+  double       m_dist_to_poly;     // Curr ownship dist to poly (mtrs)
+  double       m_eta_to_poly;      // Curr ownship eta to poly (mtrs)
+  double       m_ptx;              // Curr waypt   x/lon (mtrs)
+  double       m_pty;              // Curr waypt   y/lat (mtrs)
+  double       m_osx;              // Curr owhship x/lon (mtrs)
+  double       m_osy;              // Curr ownship y/lat (mtrs)
+  double       m_osh;              // Curr ownship Heading (degs)
+  double       m_osv;              // Curr ownship Speed (m/s)
 
   bool         m_center_pending; 
   std::string  m_center_assign;

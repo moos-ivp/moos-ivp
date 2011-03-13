@@ -20,13 +20,13 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
-#include <math.h>
+#include <cstdlib>
+#include <cmath>
 #include "PMV_Viewer.h"
 #include "MBUtils.h"
 #include "AngleUtils.h"
 #include "ColorParse.h"
 #include "BearingLine.h"
-#include <cstdlib>
 
 #define USE_UTM
 
@@ -38,6 +38,7 @@ PMV_Viewer::PMV_Viewer(int x, int y, int w, int h, const char *l)
   m_scoping        = false;
   m_var_index      = 0;
   m_var_index_prev = 0;
+  m_curr_time      = 0;
 
   m_centric_view   = "";
   m_centric_view_sticky = true;
@@ -48,8 +49,11 @@ PMV_Viewer::PMV_Viewer(int x, int y, int w, int h, const char *l)
   m_mouse_y   = 0;
   m_mouse_lat = 0;
   m_mouse_lon = 0;
+  m_lclick_ix = 0;
+  m_rclick_ix = 0;
   
-  string str = "x=$(XPOS),y=$(YPOS),lat=$(LAT),lon=$(LON),vname=$(VNAME)";
+  string str = "x=$(XPOS),y=$(YPOS),lat=$(LAT),lon=$(LON)";
+  str += "vname=$(VNAME),counter=$(IX)";
   VarDataPair lft_pair("MVIEWER_LCLICK", str); 
   VarDataPair rgt_pair("MVIEWER_RCLICK", str);
   lft_pair.set_key("any_left");
@@ -71,6 +75,7 @@ void PMV_Viewer::draw()
   vector<XYSegList> segls   = m_geoshapes.getSegLists();
   vector<XYCircle>  circles = m_geoshapes.getCircles();
   vector<XYVector>  vectors = m_geoshapes.getVectors();
+  vector<XYRangePulse> pulses = m_geoshapes.getRangePulses();
 
   drawPolygons(polys);
   drawGrids(grids);
@@ -78,6 +83,7 @@ void PMV_Viewer::draw()
   drawCircles(circles);
   drawPoints(points);
   drawVectors(vectors);
+  drawRangePulses(pulses, m_curr_time);
   drawDropPoints();
 
 
@@ -192,6 +198,18 @@ bool PMV_Viewer::setParam(string param, string value)
     if(isNumber(value) && (dval > 0))
       m_stale_report_thresh = dval;
   }
+  else if(param == "lclick_ix_start") {
+    if(isNumber(value)) {
+      m_lclick_ix = atoi(value.c_str());
+      handled = true;
+    }
+  }
+  else if(param == "rclick_ix_start") {
+    if(isNumber(value)) {
+      m_rclick_ix = atoi(value.c_str());
+      handled = true;
+    }
+  }
   else if(param == "view_marker") {
     handled = m_vmarkers.addVMarker(value, m_geodesy);
   }
@@ -222,6 +240,8 @@ bool PMV_Viewer::setParam(string param, double value)
   if((param == "pan_x") || (param == "pan_y")) {
     m_centric_view = "";
   }
+  else if(param == "curr_time")
+    m_curr_time = value;
 
   bool handled = MarineViewer::setParam(param, value);
 
@@ -403,6 +423,8 @@ void PMV_Viewer::handleLeftMouse(int vx, int vy)
 	    str = findReplace(str, "$(X)", doubleToString(sx,2));
 	  if(strContains(str, "$(YPOS)")) 
 	    str = findReplace(str, "$(YPOS)", doubleToString(sy,1));
+	  if(strContains(str, "$(IX)"))
+	    str = findReplace(str, "$(IX)", intToString(m_lclick_ix));
 	  if(strContains(str, "$(Y)")) 
 	    str = findReplace(str, "$(Y)", doubleToString(sy,0));
 	  if(strContains(str, "$(Y)")) 
@@ -422,6 +444,7 @@ void PMV_Viewer::handleLeftMouse(int vx, int vy)
 	m_var_data_pairs_lft.push_back(pair);
       }
     }
+    m_lclick_ix++;
   }
 }
 
@@ -464,11 +487,14 @@ void PMV_Viewer::handleRightMouse(int vx, int vy)
 	  str = findReplace(str, "$(LAT)", doubleToString(dlat,8));
 	if(strContains(str, "$(LON)")) 
 	  str = findReplace(str, "$(LON)", doubleToString(dlon,8));
+	if(strContains(str, "$(IX)")) 
+	  str = findReplace(str, "$(IX)", intToString(m_rclick_ix));
 	pair.set_sdata(str);
       }
       m_var_data_pairs_rgt.push_back(pair);
     }
   }
+  m_rclick_ix++;
 }
 
 //-------------------------------------------------------------
@@ -599,6 +625,15 @@ void PMV_Viewer::setActiveScope(string varname)
       return;
     }
   }
+}
+
+//-------------------------------------------------------------
+// Procedure: isScopeVariable
+//      Note: 
+
+bool PMV_Viewer::isScopeVariable(string varname) const
+{
+  return(vectorContains(m_var_names, varname));
 }
 
 //-------------------------------------------------------------

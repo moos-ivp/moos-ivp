@@ -60,7 +60,6 @@ class PMV_MOOSApp : public CMOOSApp
 
  protected:
   void handlePendingGUI();
-  void receiveVehicleState(CMOOSMsg &Msg);
   bool receivePK_SOL(std::string sval);
   void registerVariables();
   void postConnectionPairs();

@@ -38,6 +38,8 @@ VPlug_GeoSettings::VPlug_GeoSettings()
   m_viewable_map["seglist_viewable_labels"] = true;
   m_viewable_map["point_viewable_all"]      = true;
   m_viewable_map["point_viewable_labels"]   = true;
+  m_viewable_map["vector_viewable_all"]      = true;
+  m_viewable_map["vector_viewable_labels"]   = true;
   m_viewable_map["grid_viewable_all"]      = true;
   m_viewable_map["grid_viewable_labels"]   = true;
 
@@ -83,9 +85,14 @@ bool VPlug_GeoSettings::setParam(const string& param, string value)
     return(setViewableMapping(param, value));
   else if(param == "circle_viewable_labels")
     return(setViewableMapping(param, value));
+
   else if(param == "point_viewable_all")
     return(setViewableMapping(param, value));
   else if(param == "point_viewable_labels")
+    return(setViewableMapping(param, value));
+  else if(param == "vector_viewable_all")
+    return(setViewableMapping(param, value));
+  else if(param == "vector_viewable_labels")
     return(setViewableMapping(param, value));
   else if(param == "grid_viewable_all")
     return(setViewableMapping(param, value));

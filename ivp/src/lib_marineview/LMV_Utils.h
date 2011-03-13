@@ -30,5 +30,3 @@ std::vector<std::string> readEntriesFromFile(const std::string&,
 					     const std::string&);
 
 #endif
-
-

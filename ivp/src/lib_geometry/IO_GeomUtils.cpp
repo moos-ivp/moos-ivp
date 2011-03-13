@@ -21,7 +21,7 @@
 /*****************************************************************/
 
 #include <iostream>
-#include <stdio.h>
+#include <cstdio>
 #include "IO_GeomUtils.h"
 #include "XYEncoders.h"
 #include "MBUtils.h"

@@ -25,7 +25,9 @@ class SafetyRetreat : public CMOOSApp
 
  protected: 
   bool handleNewPolygon(std::string);
-  bool handleSafetyRetreat();
+  bool handleContactDetection(std::string);
+  void handleContactsResolved();
+
 
   unsigned int closestPolygon();
 
@@ -37,14 +39,15 @@ class SafetyRetreat : public CMOOSApp
   // A MOOS variable that will trigger the retreat alert msg.
   std::string   m_retreat_cue;
 
-  // A MOOS variable that will contain the retreat alert msg.
+  // A MOOS variable containing the retreat alert message.
   std::string   m_retreat_message;
 
-  // A MOOS variable that will contain the retreat alert msg.
+  // A MOOS variable containing the retreat notification.
   std::string   m_retreat_notify;
 
   // Number of seconds recommended for the retreat
   double        m_retreat_duration;
+  double        m_mark_time;
   
   // True if more terminal I/O is desired for debugging.
   bool          m_verbose;
@@ -52,6 +55,9 @@ class SafetyRetreat : public CMOOSApp
   double        m_osx;
   double        m_osy;
 
+  unsigned int  m_iteration;
+
+  std::vector<std::string> m_unresolved_contacts;
 };
 
 #endif 

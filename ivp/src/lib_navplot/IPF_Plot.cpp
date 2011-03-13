@@ -21,9 +21,9 @@
 /*****************************************************************/
 
 #include <iostream>
-#include <assert.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cassert>
+#include <cstdio>
+#include <cstdlib>
 #include "IPF_Plot.h"
 #include "MBUtils.h"
 #include "AngleUtils.h"

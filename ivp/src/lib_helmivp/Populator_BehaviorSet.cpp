@@ -28,9 +28,9 @@
 #endif
 
 #include <iostream>
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstring>
+#include <cstdio>
 #include "MBUtils.h"
 #include "FileBuffer.h"
 #include "Populator_BehaviorSet.h"

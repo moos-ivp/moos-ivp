@@ -21,8 +21,8 @@
 /*****************************************************************/
 
 #include <iostream>
-#include <math.h> 
-#include <stdlib.h>
+#include <cmath> 
+#include <cstdlib>
 #include "BHV_MaintainHeading.h"
 #include "BuildUtils.h"
 #include "ZAIC_PEAK.h"

@@ -4,7 +4,7 @@
 /*    DATE: Sep 27th 2006                                       */
 /****************************************************************/
 
-#include <stdlib.h>
+#include <cstdlib>
 #include "QueueEntry.h"
 #include "MBUtils.h"
 #include "ZAIC_PEAK.h"

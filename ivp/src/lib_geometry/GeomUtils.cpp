@@ -2,7 +2,7 @@
 /*    NAME: Michael Benjamin and John Leonard                    */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
 /*    FILE: GeomUtils.cpp                                        */
-/*    DATE: May 8, 2005 Sunday Morning at Brugger's              */
+/*    DATE: May 8, 2005 Sunday Morning at Bruegger's             */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
 /* modify it under the terms of the GNU General Public License   */
@@ -20,13 +20,10 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
-#include <iostream> 
-#include <math.h>
+#include <cmath>
+#include <cstdlib>
 #include "GeomUtils.h"
 #include "AngleUtils.h"
-#ifdef _WIN32
-#   include <cstdlib>
-#endif
 
 using namespace std;
 

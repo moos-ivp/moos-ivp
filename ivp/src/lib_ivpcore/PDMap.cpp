@@ -38,9 +38,9 @@
 /*****************************************************************/
 
 #include <iostream>
-#include <stdio.h>
-#include <assert.h>
-#include <math.h>
+#include <cstdio>
+#include <cassert>
+#include <cmath>
 #include "PDMap.h"
 #include "BoxSet.h"
 #include "IvPGrid.h"

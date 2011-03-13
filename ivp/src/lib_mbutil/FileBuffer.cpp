@@ -21,7 +21,7 @@
 /*****************************************************************/
 
 #include "FileBuffer.h"
-#include <stdio.h>
+#include <cstdio>
 
 using namespace std;
 

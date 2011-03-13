@@ -25,8 +25,8 @@
 #pragma warning(disable : 4503)
 #endif
 
-#include <math.h> 
-#include <stdlib.h>
+#include <cmath> 
+#include <cstdlib>
 #include "BHV_AbortToPoint.h"
 #include "OF_Reflector.h"
 #include "AOF_Waypoint.h"

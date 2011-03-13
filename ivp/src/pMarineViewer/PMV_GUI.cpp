@@ -109,6 +109,7 @@ PMV_GUI::PMV_GUI(int g_w, int g_h, const char *g_l)
   warp->textsize(info_size); 
   warp->labelsize(info_size);
   
+#if 0
   v_range = new Fl_Output(785, h()-100, 60, 20, "Range:"); 
   v_range->set_output();
   v_range->textsize(info_size); 
@@ -118,7 +119,8 @@ PMV_GUI::PMV_GUI(int g_w, int g_h, const char *g_l)
   v_bearing->set_output();
   v_bearing->textsize(info_size); 
   v_bearing->labelsize(info_size);
-  
+#endif  
+
   m_scope_variable = new Fl_Output(60, h()-30, 100, 20, "Variable:"); 
   m_scope_variable->set_output();
   m_scope_variable->textsize(small_info_size); 
@@ -336,8 +338,8 @@ void PMV_GUI::updateXY() {
     v_lon->value(" n/a");
     v_dep->value(" n/a");
     v_ais->value(" n/a");
-    v_range->value(" n/a");
-    v_bearing->value(" n/a");
+    //v_range->value(" n/a");
+    //v_bearing->value(" n/a");
     return;
   }
 
@@ -367,8 +369,8 @@ void PMV_GUI::updateXY() {
   v_crs->value(crs.c_str());
   v_dep->value(dep.c_str());
   v_ais->value(age_ais.c_str());
-  v_range->value(range.c_str());
-  v_bearing->value(bearing.c_str());
+  //v_range->value(range.c_str());
+  //v_bearing->value(bearing.c_str());
 
   warp->redraw();
   v_nam->redraw();
@@ -438,9 +440,10 @@ inline void PMV_GUI::cb_Scope_i(unsigned int i) {
 	bool added = addScopeVariable(new_var);
 	if(added) {
 	  mviewer->addScopeVariable(new_var);
-	  mviewer->setActiveScope(new_var);
 	  pushPending("scope_register", new_var);
 	}
+	if(mviewer->isScopeVariable(new_var))
+	  mviewer->setActiveScope(new_var);
       }
     }
     return;

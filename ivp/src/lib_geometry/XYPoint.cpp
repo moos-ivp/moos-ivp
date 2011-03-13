@@ -20,9 +20,8 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
-#include <iostream>
-#include <stdlib.h>
-#include <string.h>
+#include <cstdlib>
+#include <cstring>
 #include "XYPoint.h"
 #include "MBUtils.h"
 #include "GeomUtils.h"
@@ -39,8 +38,20 @@ void XYPoint::clear()
   m_x     = 0; 
   m_y     = 0; 
   m_z     = 0; 
-  m_size  = 1;
   m_valid = false;
+}
+
+//---------------------------------------------------------------
+// Procedure: set_spec_digits
+//      Note: Determines the number of significant digits used when
+//            creating the string representation of the point. It
+//            affects only the x,y,z parameters.
+
+void XYPoint::set_spec_digits(unsigned int digits)
+{
+  m_sdigits = digits;
+  if(m_sdigits > 6)
+    m_sdigits = 6;
 }
 
 //---------------------------------------------------------------
@@ -51,19 +62,6 @@ void XYPoint::apply_snap(double snapval)
   m_x = snapToStep(m_x, snapval);
   m_y = snapToStep(m_y, snapval);
   m_z = snapToStep(m_z, snapval);
-}
-
-//---------------------------------------------------------------
-// Procedure: print
-
-void XYPoint::print() const
-{
-  cout << "label:" << m_label;
-  cout << " type: " << m_type;
-  cout << " size: " << m_size;
-  if(m_vertex_color.set())
-    cout << " vertex_color: " << m_vertex_color.str() << endl;
-  cout << "  x=" << m_x << "  y=" << m_y << "  z=" << m_z << endl;
 }
 
 //---------------------------------------------------------------
@@ -82,43 +80,18 @@ void XYPoint::projectPt(const XYPoint& pt, double ang, double dist)
 string XYPoint::get_spec(string param) const
 {
   string spec;
-  
-  if(param == "") {
-    if(m_active == false)
-      spec += "active,false:";
-  }
-  else if(param == "active=true") 
-    spec += "active,true:";
-  else if(param == "active=false") 
-    spec += "active,false:";
-    
 
-  if(m_label != "")
-    spec += "label," + m_label + ":"; 
-  if(m_label_color.set())
-    spec += "label_color," + m_label_color.str() + ":"; 
-  if(m_type != "")
-    spec += "type," + m_type + ":"; 
-  if(m_time_set)
-    spec += "time," + doubleToString(m_time,2) + ":"; 
-  if(m_source != "")
-    spec += "source," + m_source + ":"; 
-  if(m_vertex_color.set())
-    spec += "vertex_color," + m_vertex_color.str() + ":"; 
-  if(vertex_size_set()) {
-    spec += "vertex_size,";
-    spec += dstringCompact(doubleToString(m_vertex_size,3)) + ":"; 
-  }
-  if(edge_color_set())
-    spec += "edge_color," + m_edge_color.str() + ":"; 
-  if(edge_size_set()) {
-    spec += "edge_size,";
-    spec += dstringCompact(doubleToString(m_edge_size,3)) + ":"; 
-  }
-  
-  spec += dstringCompact(doubleToString(m_x, m_sdigits)) + ",";
-  spec += dstringCompact(doubleToString(m_y, m_sdigits)) + ",";
-  spec += dstringCompact(doubleToString(m_z, m_sdigits));
+  spec += "x="  + doubleToStringX(m_x, m_sdigits);
+  spec += ",y=" + doubleToStringX(m_y, m_sdigits);
+
+  // Since z=0 is inferred if left unspecified, don't add it to the 
+  // string representation unless nonzero.
+  if(m_z != 0)
+    spec += ",z=" + doubleToStringX(m_z, m_sdigits);
+
+  string remainder = XYObject::get_spec(param);
+  if(remainder != "")
+    spec += "," + remainder;
 
   return(spec);
 }

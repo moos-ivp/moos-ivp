@@ -238,7 +238,7 @@ bool TS_MOOSApp::OnStartUp()
       }
       else if(param == "reset_max") {
 	string str = tolower(value);
-	if((str == "any") || (str == "unlimited"))
+	if((str == "any") || (str == "unlimited") || (str == "nolimit"))
 	  m_reset_forever = true;
 	else if(isNumber(value) && (atoi(value.c_str()) >= 0)) {
 	  m_reset_max = atoi(value.c_str());
@@ -720,11 +720,11 @@ void TS_MOOSApp::postStatus()
   status += ", paused=" + boolToString(m_paused);
   status += ", conditions_ok=" + boolToString(m_conditions_ok);
   status += ", time_warp=";
-  status += dstringCompact(doubleToString(m_time_warp.getValue()));
+  status += doubleToStringX(m_time_warp.getValue());
   status += ", delay_start=";
-  status += dstringCompact(doubleToString(m_delay_start.getValue()));
+  status += doubleToStringX(m_delay_start.getValue());
   status += ", delay_reset=";
-  status += dstringCompact(doubleToString(m_delay_reset.getValue()));
+  status += doubleToStringX(m_delay_reset.getValue());
   status += ", shuffle="     + boolToString(m_shuffle);
   status += ", upon_awake=" + m_upon_awake;
   
@@ -937,7 +937,7 @@ bool TS_MOOSApp::handleMathExpr(string& str)
     result = ldval + rdval;
   else if(xtype == '-')
     result = ldval - rdval;
-  string replacement = dstringCompact(doubleToString(result, 6));
+  string replacement = doubleToStringX(result, 6);
   
   string target = str.substr(max_lix, (max_rix-max_lix)+1);
   str = findReplace(str, target, replacement);

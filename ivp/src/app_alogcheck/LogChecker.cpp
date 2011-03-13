@@ -6,7 +6,7 @@
  *              conditions have been satisfied.
  ****************************************************************************/
 
-#include <stdio.h>
+#include <cstdio>
 
 #include "LogChecker.h"
 #include "MBUtils.h"

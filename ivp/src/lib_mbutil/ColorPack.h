@@ -106,12 +106,13 @@ public:
   bool   set() const {return(m_set);};
   bool   visible() const {return(m_visible);};
 
-  std::string str() const {
+  std::string str(char sep=',') const {
     if(!m_visible)
       return("invisible");
-    std::string rstr = doubleToString(m_color_vector[0],3) + ",";
-    rstr += doubleToString(m_color_vector[1],3) + ",";
-    rstr += doubleToString(m_color_vector[2],3);
+    std::string rstr;
+    rstr += doubleToStringX(m_color_vector[0],3) + sep;
+    rstr += doubleToStringX(m_color_vector[1],3) + sep;
+    rstr += doubleToStringX(m_color_vector[2],3);
     return(rstr);
   }
 

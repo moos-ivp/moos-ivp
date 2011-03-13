@@ -2,7 +2,7 @@
 #include "fileutil.h"
 #include "stringutil.h"
 #include <iostream>
-#include <stdlib.h>
+#include <cstdlib>
 
 #ifdef _WIN32
    #include <windows.h>
@@ -70,7 +70,7 @@ void AOFFactory::load_directory(string dirname) {
        continue;
      }
 
-     if(! is_regular_file(fpath)) {
+     if(! isRegularFile(fpath)) {
        cerr << "Warning: File " << fname << " isn't a regular file." << endl;
        continue;
      }
@@ -160,7 +160,7 @@ void AOFFactory::loadEnvVarDirectories(std::string envVar, bool verbose) {
   for(unsigned int i=0; i<v.size(); ++i) {
     string directory = v.at(i);
 
-    if (isdir(directory)) {
+    if (isDirectory(directory)) {
       if (verbose) {
         cerr << "    Loading directory: " << directory << endl;
       }

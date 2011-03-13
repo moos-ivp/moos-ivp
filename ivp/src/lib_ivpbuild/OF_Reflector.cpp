@@ -21,7 +21,7 @@
 /*****************************************************************/
 
 #include <iostream>
-#include <stdlib.h>
+#include <cstdlib>
 #include "OF_Reflector.h"
 #include "BuildUtils.h"
 #include "IvPFunction.h"

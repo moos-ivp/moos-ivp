@@ -10,7 +10,7 @@
 /*****************************************************************/
 
 #include <iostream>
-#include <stdlib.h>
+#include <cstdlib>
 #include "CPA_Model.h"
 #include "AOF_CutRangeCPA.h"
 #include "AOF_Waypoint2D.h"

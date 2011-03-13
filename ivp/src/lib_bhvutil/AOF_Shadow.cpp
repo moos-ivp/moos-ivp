@@ -24,8 +24,8 @@
 #pragma warning(disable : 4503)
 #endif
 #include <iostream>
-#include <math.h> 
-#include <assert.h>
+#include <cmath> 
+#include <cassert>
 #include "AOF_Shadow.h"
 #include "AngleUtils.h"
 #include "IvPDomain.h"

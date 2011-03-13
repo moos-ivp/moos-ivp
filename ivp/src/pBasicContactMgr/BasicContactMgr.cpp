@@ -254,16 +254,15 @@ void BasicContactMgr::postErrorMsg(const string& msg)
 
 //---------------------------------------------------------
 // Procedure: handleNodeReport
-//   Example: NAME=alpha,TYPE=KAYAK,MOOSDB_TIME=30.07, 
-//            UTC_TIME=1267294386.51,X=29.66,Y=-23.49, 
-//            LAT=43.825089, LON=-70.330030, SPD=2.00, 
-//            HDG=119.06,YAW=119.05677,DEPTH=0.00,     
+//   Example: NAME=alpha,TYPE=KAYAK,UTC_TIME=1267294386.51,
+//            X=29.66,Y=-23.49, LAT=43.825089,LON=-70.330030, 
+//            SPD=2.00,HDG=119.06,YAW=119.05677,DEPTH=0.00,     
 //            LENGTH=4.0,MODE=ENGAGED
 
 bool BasicContactMgr::handleNodeReport(const string& report)
 {
   string vname, vtype, mode;
-  double x, y, lat, lon, utime, mtime, depth, speed, heading;
+  double x, y, lat, lon, utc_time, depth, speed, heading;
   double yaw, length;
 
   vector<string> svector = parseString(report, ',');
@@ -278,10 +277,8 @@ bool BasicContactMgr::handleNodeReport(const string& report)
       vtype = value;
     else if(param == "MODE")
       mode = value;
-    else if(param == "MOOSDB_TIME")
-      mtime = atof(value.c_str());
     else if(param == "UTC_TIME")
-      utime = atof(value.c_str());
+      utc_time = atof(value.c_str());
     else if(param == "X")
       x = atof(value.c_str());
     else if(param == "Y")
@@ -332,7 +329,7 @@ bool BasicContactMgr::handleNodeReport(const string& report)
   m_records[ix].setHeading(heading);
   m_records[ix].setSpeed(speed);
   m_records[ix].setDepth(depth);
-  m_records[ix].setTimeStamp(utime);
+  m_records[ix].setTimeStamp(utc_time);
   m_records[ix].setType(vtype);
 
   return(true);
@@ -455,14 +452,14 @@ void BasicContactMgr::postSummaries()
     m_prev_contacts_list = contacts_list;
   }
 
+  contacts_alerted = m_par.getAlertedGroup(true);
   if(m_prev_contacts_alerted != contacts_alerted) {
-    contacts_alerted = m_par.getAlertedGroup(true);
     m_Comms.Notify("CONTACTS_ALERTED", contacts_alerted);
     m_prev_contacts_alerted = contacts_alerted;
   }
 
+  contacts_unalerted = m_par.getAlertedGroup(false);
   if(m_prev_contacts_unalerted != contacts_unalerted) {
-    contacts_unalerted = m_par.getAlertedGroup(false);
     m_Comms.Notify("CONTACTS_UNALERTED", contacts_unalerted);
     m_prev_contacts_unalerted = contacts_unalerted;
   }

@@ -21,7 +21,7 @@
 /*****************************************************************/
 
 #include <iostream>
-#include <stdlib.h>
+#include <cstdlib>
 #include "PQueue.h"
 
 #define  MAX_PQUEUE_LEVELS 10
