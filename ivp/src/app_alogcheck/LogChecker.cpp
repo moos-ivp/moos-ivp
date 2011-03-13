@@ -7,10 +7,8 @@
  ****************************************************************************/
 
 #include <cstdio>
-
 #include "LogChecker.h"
 #include "MBUtils.h"
-#include "newmat.h"
 
 using namespace std;
 
