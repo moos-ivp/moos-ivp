@@ -5,6 +5,7 @@
 /*    DATE: Feb 1st, 2011                                   */
 /************************************************************/
 
+#include <cstdlib>
 #include "BeaconBuoy.h"
 #include "MBUtils.h"
 #include "ColorParse.h"

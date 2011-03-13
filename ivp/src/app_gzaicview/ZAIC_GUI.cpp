@@ -36,7 +36,7 @@ ZAIC_GUI::ZAIC_GUI(int g_w, int g_h, const char *g_l)
   int bot_marg = 80;
   int sid_marg = 5;
   int q_height = h()-(top_marg+bot_marg);
-  int q_width  = w()-(sid_marg*2);
+  //int q_width  = w()-(sid_marg*2);
 
   zaic_viewer = new ZAICViewer(sid_marg, top_marg, w()-(sid_marg*2), q_height);
 
@@ -130,7 +130,7 @@ Fl_Menu_Item ZAIC_GUI::menu_[] = {
 
 int ZAIC_GUI::handle(int event) 
 {
-  int step = 1;
+  //int step = 1;
   switch(event) {
   case FL_PUSH:
     Fl_Window::handle(event);

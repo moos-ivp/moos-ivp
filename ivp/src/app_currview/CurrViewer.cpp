@@ -9,6 +9,7 @@
 
 #include <string>
 #include <iostream>
+#include <cstdio>
 #include <cmath>
 #include "CurrViewer.h"
 #include "MBUtils.h"

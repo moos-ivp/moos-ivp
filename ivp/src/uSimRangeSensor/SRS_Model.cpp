@@ -5,6 +5,7 @@
 /*    DATE: Feb 2nd, 2011                                   */
 /************************************************************/
 
+#include <cstdlib>
 #include <iostream>
 #include <cmath>
 #include "SRS_Model.h"

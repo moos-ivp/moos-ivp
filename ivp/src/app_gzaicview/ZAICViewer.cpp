@@ -286,8 +286,8 @@ double ZAICViewer::getMinUtil() {
 
 void ZAICViewer::drawAxes()
 {
-  int x_len = 600;
-  int y_len = 400;
+  //int x_len = 600;
+  //int y_len = 400;
 
 
   glMatrixMode(GL_PROJECTION);
@@ -315,7 +315,7 @@ void ZAICViewer::drawAxes()
   
   double hashc = 0.6 * m_grid_shade;
   // Draw Vertical Hashmarks
-  for(int i=0; i<m_domain.getVarPoints(0); i+=m_grid_block_size) {
+  for(unsigned int i=0; i<m_domain.getVarPoints(0); i+=m_grid_block_size) {
     glColor4f(hashc,  hashc,  hashc,  0.1);
     glBegin(GL_LINE_STRIP);
     glVertex2f(i, 0);
