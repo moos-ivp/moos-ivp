@@ -4,7 +4,7 @@
 # the mac
 
 killall MOOSDB iRemote MOOSRemote iGPS iGPSMonitor pNav \
-        pHelm pHelmIvP pMarineViewer iMarineSim \
+        pHelm pHelmIvP pMarineViewer iMarineSim uSimMarine \
         pLogger iPWMController MOOSDump pAntler MOOSDump \
         iINS iDepth pScheduler pThermoTrack pNaFCon pSearch \
         pHuxley pMessageSim pBeamform uTermCommand pBearingTrack
@@ -22,7 +22,8 @@ killall iMicroModem pRouter pFramer pMessageSim  \
         p1HTracker pGPSSim uBathy uCtdSim2 pTargetOpportunity \
         pBearings_DURIP uProcessWatch uPlayBack pSubIndex \
         pBearings_GENERIC pTargetSim pMBTracker zLoggerNG \
-	iModemSim pFunctionSender uFunctionViewer uFunctionVis
+	iModemSim pFunctionSender uFunctionViewer uFunctionVis \
+        uSimRangeSensor uSimCurrent
 
 killall pSensorSim pArtifactMapper pNoiseSim uNafconSplitter    \
         pBlast pSweepLines pNSWCPC pXRelay pXRelayTest logview  \
