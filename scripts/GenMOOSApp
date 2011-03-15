@@ -1,5 +1,4 @@
 #!/bin/bash
-#Modified by ajshafer on Aug 15
 
 if [ -z "$1" ] ; then
     echo "GenMOOSApp: usage: $0 [app-name] [prefix]"
@@ -11,12 +10,35 @@ if [ -z "$2" ] ; then
     exit 0
 fi
 
+#if [ -z "$3" ] ; then
+#    $3="YOUR-NAME-HERE"
+#fi
+
 mkdir $2$1
 cd $2$1
 
+cat >> CMakeLists.txt <<EOF
+#--------------------------------------------------------
+# The CMakeLists.txt for:                       $2$1
+# Author(s):                              $3
+#--------------------------------------------------------
+
+FILE(GLOB SRC *.cpp)
+
+ADD_EXECUTABLE($2$1 \${SRC})
+
+TARGET_LINK_LIBRARIES($2$1
+   MOOS
+   MOOSGen
+   m
+   pthread)
+
+EOF
+
+
 cat >> ${1}.h <<EOF
 /************************************************************/
-/*    NAME:                                                 */
+/*    NAME: $3                                              */
 /*    ORGN: MIT                                             */
 /*    FILE: ${1}.h                                          */
 /*    DATE:                                                 */
@@ -47,23 +69,26 @@ EOF
 
 cat >> ${1}Main.cpp <<EOF
 /************************************************************/
-/*    NAME:                                                 */
+/*    NAME: $3                                              */
 /*    ORGN: MIT                                             */
 /*    FILE: ${1}Main.cpp                                    */
 /*    DATE:                                                 */
 /************************************************************/
 
+#include <string>
 #include "MOOSLib.h"
 #include "MOOSGenLib.h"
 #include "${1}.h"
 
+using namespace std;
+
 int main(int argc, char *argv[])
 {
   // default parameters file
-  char * sMissionFile = "${1}.moos";
+  string sMissionFile = "${1}.moos";
         
   //under what name shoud the application register with the MOOSDB?
-  char * sMOOSName = "${2}${1}";
+  string sMOOSName = "${2}${1}";
   
   switch(argc)
     {
@@ -79,10 +104,9 @@ int main(int argc, char *argv[])
   ${1} ${1}App;
 
   //run it
-  ${1}App.Run(sMOOSName,sMissionFile);
+  ${1}App.Run(sMOOSName.c_str(), sMissionFile.c_str());
   
-  return 0;
-
+  return(0);
 }
 
 EOF
@@ -103,7 +127,7 @@ EOF
 
 cat >> ${1}.cpp <<EOF
 /************************************************************/
-/*    NAME:                                                 */
+/*    NAME: $3                                              */
 /*    ORGN: MIT                                             */
 /*    FILE: ${1}.cpp                                        */
 /*    DATE:                                                 */
@@ -130,13 +154,13 @@ ${1}::~${1}()
 
 bool ${1}::OnNewMail(MOOSMSG_LIST &NewMail)
 {
-	MOOSMSG_LIST::iterator p;
+   MOOSMSG_LIST::iterator p;
+   
+   for(p=NewMail.begin(); p!=NewMail.end(); p++) {
+      CMOOSMsg &msg = *p;
+   }
 	
-	for(p=NewMail.begin(); p!=NewMail.end(); p++) {
-		CMOOSMsg &msg = *p;
-	}
-	
-	return true;
+   return(true);
 }
 
 //---------------------------------------------------------
@@ -144,12 +168,12 @@ bool ${1}::OnNewMail(MOOSMSG_LIST &NewMail)
 
 bool ${1}::OnConnectToServer()
 {
-	// register for variables here
-	// possibly look at the mission file?
-	// m_MissionReader.GetConfigurationParam("Name", <string>);
-	// m_Comms.Register("VARNAME", is_float(int));
+   // register for variables here
+   // possibly look at the mission file?
+   // m_MissionReader.GetConfigurationParam("Name", <string>);
+   // m_Comms.Register("VARNAME", is_float(int));
 	
-	return true;
+   return(true);
 }
 
 //---------------------------------------------------------
@@ -157,9 +181,9 @@ bool ${1}::OnConnectToServer()
 
 bool ${1}::Iterate()
 {
-	// happens AppTick times per second
+   // happens AppTick times per second
 	
-	return true;
+   return(true);
 }
 
 //---------------------------------------------------------
@@ -167,9 +191,9 @@ bool ${1}::Iterate()
 
 bool ${1}::OnStartUp()
 {
-	// happens before connection is open
+   // happens before connection is open
 	
-	return true;
+   return(true);
 }
 
 EOF
