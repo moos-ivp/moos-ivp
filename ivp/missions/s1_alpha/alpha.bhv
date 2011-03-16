@@ -46,22 +46,6 @@ Behavior = BHV_Waypoint
 }
 
 //----------------------------------------------
-//Behavior = BHV_AvoidObstacles
-{
-  name      = avoid_obs
-
-  priority        = 200
-  polygon         = format=radial, label=obs, x=60, y=-115, radius=5, pts=12
-  //polygon         = format=ellipse, label=obs, x=60, y=-130, minor=7, major=22, pts=18, degs=45, snap=0.01
-  allowable_ttc   = 20
-  activation_dist = 20   
-  buffer_dist     = 10
-  pheading_influence = 100
-
-}
-
-
-//----------------------------------------------
 Behavior = BHV_HSLine
 {
   name      = hsline
