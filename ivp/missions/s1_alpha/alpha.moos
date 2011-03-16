@@ -49,10 +49,18 @@ ProcessConfig = uXMS
   AppTick   = 0.5
   CommsTick = 0.5
 
-  VAR = IMS_*
   VAR = NAV_X
   VAR = NAV_Y
   VAR = NAV_SPEED
+  VAR = NAV_HEADING
+  VAR = DESIRED_HEADING
+  VAR = DESIRED_SPEED
+  VAR = DESIRED_RUDDER
+  VAR = DESIRED_THRUST
+  VAR = NODE_REPORT_LOCAL
+  VAR = DEPLOY
+  VAR = RETURN
+  VAR = IVPHELM_ENGAGED
 }
 
 
@@ -70,7 +78,6 @@ ProcessConfig = uSimMarine
   START_HEADING = 180
 
   PREFIX        = NAV
-  DUAL_STATE    = true
   
   TURN_RATE     = 40
   THRUST_MAP    = 0:0, 20:1, 40:2, 60:3, 80:4, 100:5
