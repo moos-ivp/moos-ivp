@@ -135,15 +135,15 @@ bool PMV_MOOSApp::OnStartUp()
   if(!ok1 || !ok2)
     return(MOOSFail("Lat or Lon Origin not set in *.moos file.\n"));
 
+  // If both lat and lon origin ok - then initialize the Geodesy.
+  if(m_gui && !m_gui->mviewer->initGeodesy(lat, lon))
+    return(MOOSFail("Geodesy Init in pMarineViewer failed - FAIL\n"));
+
   if(m_gui) {
     cout << "Setting PMV LatOrigin based on the MOOS file. " << endl;
     string datum = doubleToString(lat) + "," + doubleToString(lon);
     m_gui->mviewer->setParam("datum", datum);
   }
-
-  // If both lat and lon origin ok - then initialize the Geodesy.
-  if(m_gui && !m_gui->mviewer->initGeodesy(lat, lon))
-    return(MOOSFail("Geodesy Init in pMarineViewer failed - FAIL\n"));
 
   double time_warp;
   bool okw = m_MissionReader.GetValue("MOOSTimeWarp", time_warp);
