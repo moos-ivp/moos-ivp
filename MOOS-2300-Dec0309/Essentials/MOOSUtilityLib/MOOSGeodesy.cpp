@@ -197,7 +197,8 @@ bool CMOOSGeodesy::LLtoUTM(int ReferenceEllipsoid, const double Lat,
     LongOriginRad = LongOrigin * deg2rad;
 
     //compute the UTM Zone from the latitude and longitude
-    sprintf(UTMZone, "%d%c", ZoneNumber, UTMLetterDesignator(Lat));
+    if(UTMZone) // mikerb
+      sprintf(UTMZone, "%d%c", ZoneNumber, UTMLetterDesignator(Lat));
 
     eccPrimeSquared = (eccSquared)/(1-eccSquared);
 
@@ -330,9 +331,9 @@ bool CMOOSGeodesy::LatLong2LocalUTM(double lat,
     double dN = 0.0, dE = 0.0; 
     char tmpUTM[4];
 
-    
-
-    LLtoUTM(m_iRefEllipsoid,lat,lon,tmpNorth,tmpEast,tmpUTM);
+   
+    // LLtoUTM(m_iRefEllipsoid,lat,lon,tmpNorth,tmpEast,tmpUTM);
+    LLtoUTM(m_iRefEllipsoid,lat,lon,tmpNorth,tmpEast,0); // mikerb
 
     //could check for the UTMZone differing, and if so, return false
 
