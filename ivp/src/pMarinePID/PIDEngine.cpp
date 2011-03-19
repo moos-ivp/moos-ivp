@@ -24,8 +24,11 @@
 #pragma warning(disable : 4786)
 #endif
 
+#include <iostream>
 #include "PIDEngine.h"
+#include "MBUtils.h"
 #include "AngleUtils.h"
+#include "MOOSGenLib.h"
 
 using namespace std;
 
@@ -38,58 +41,15 @@ PIDEngine::PIDEngine()
   // If not, thrust is set to multiple of desired speed.
   m_speed_factor = 20.0;
   m_current_time = 0;
-
-  m_elevator_step = 0;
-  m_rudder_step   = 0;
-  m_thruster_step = 0;
-
 }
-
-//-----------------------------------------------------------
-// Procedure: setPID
-
-void PIDEngine::setPID(int ix, ScalarPID g_pid)
-{
-  if(ix==0) 
-    m_heading_pid = g_pid;
-  else if(ix==1) 
-    m_speed_pid = g_pid;
-  else if(ix==2) 
-    m_depth_pid = g_pid;
-}
-
-
-//-----------------------------------------------------------
-// Procedure: setRudderStep
-
-void PIDEngine::setRudderStep(double step_value)
-{
-  m_rudder_step = vclip(step_value, 0, 10);
-}
-
-//-----------------------------------------------------------
-// Procedure: setThrusterStep
-
-void PIDEngine::setThrusterStep(double step_value)
-{
-  m_thruster_step = vclip(step_value, 0, 10);
-}
-
-//-----------------------------------------------------------
-// Procedure: setElevatorStep
-
-void PIDEngine::setElevatorStep(double step_value)
-{
-  m_elevator_step = vclip(step_value, 0, 10);
-}
-
 
 //------------------------------------------------------------
 // Procedure: getDesiredRudder
 // Rudder angles are processed in degrees
 
 double PIDEngine::getDesiredRudder(double desired_heading,
-				   double current_heading)
+				   double current_heading,
+				   double max_rudder)
 {
   desired_heading = angle180(desired_heading);
   double heading_error = current_heading - desired_heading;
@@ -98,10 +58,10 @@ double PIDEngine::getDesiredRudder(double desired_heading,
   m_heading_pid.Run(heading_error, m_current_time, desired_rudder);
   desired_rudder *= -1.0;
     
-  if(m_rudder_step > 0)
-    desired_rudder = snapToStep(desired_rudder, m_rudder_step);
+  // Enforce limit on desired rudder
+  MOOSAbsLimit(desired_rudder,max_rudder);
 
-  string rpt = "PID_COURSE: ";
+  string rpt = "PID_COURS: ";
   rpt += " (Want):" + doubleToString(desired_heading);
   rpt += " (Curr):" + doubleToString(current_heading);
   rpt += " (Diff):" + doubleToString(heading_error);
@@ -115,7 +75,8 @@ double PIDEngine::getDesiredRudder(double desired_heading,
 
 double PIDEngine::getDesiredThrust(double desired_speed, 
 				   double current_speed,
-				   double current_thrust)
+				   double current_thrust,
+				   double max_thrust)
 {
   double speed_error  = desired_speed - current_speed;
   double delta_thrust = 0;
@@ -133,9 +94,6 @@ double PIDEngine::getDesiredThrust(double desired_speed,
   
   if(desired_thrust < 0)
     desired_thrust = 0;
-
-  if(m_thruster_step > 0)
-    desired_thrust = snapToStep(desired_thrust, m_thruster_step);
 
   if(m_speed_factor != 0) {
     string rpt = "PID_SPEED: ";
@@ -156,23 +114,39 @@ double PIDEngine::getDesiredThrust(double desired_speed,
     m_pid_report.push_back(rpt);
   }
 
+  // Enforce limit on desired thrust
+  MOOSAbsLimit(desired_thrust,max_thrust);
+
   return(desired_thrust);
 }
 
 //------------------------------------------------------------
 // Procedure: getDesiredElevator
+// Elevator angles and pitch are processed in radians
 
 double PIDEngine::getDesiredElevator(double desired_depth,
-				     double current_depth)
+				     double current_depth,
+				     double current_pitch,
+				     double max_pitch,
+				     double max_elevator)
 {
-  double depth_error      = (desired_depth - current_depth);
   double desired_elevator = 0;
+  double desired_pitch = 0;
+  double depth_error = current_depth - desired_depth;
+  m_z_to_pitch_pid.Run(depth_error, m_current_time, desired_pitch);
 
-  m_depth_pid.Run(depth_error, m_current_time, desired_elevator);
+  // Enforce limits on desired pitch
+  MOOSAbsLimit(desired_pitch,max_pitch);
 
-  if(m_elevator_step > 0)
-    desired_elevator = snapToStep(desired_elevator, m_elevator_step);
+  double pitch_error = current_pitch - desired_pitch;
+  m_pitch_pid.Run(pitch_error, m_current_time, desired_elevator);
 
+  // Convert desired elevator to degrees
+  desired_elevator=MOOSRad2Deg(desired_elevator);
+
+  // Enforce elevator limit
+  MOOSAbsLimit(desired_elevator,max_elevator);
+  
   string rpt = "PID_DEPTH: ";
   rpt += " (Want):" + doubleToString(desired_depth);
   rpt += " (Curr):" + doubleToString(current_depth);
@@ -182,4 +156,28 @@ double PIDEngine::getDesiredElevator(double desired_depth,
 
   return(desired_elevator);
 }
+
+//-----------------------------------------------------------
+// Procedure: setPID
+
+void PIDEngine::setPID(int ix, ScalarPID g_pid)
+{
+  if(ix==0) 
+    m_heading_pid = g_pid;
+  else if(ix==1) 
+    m_speed_pid = g_pid;
+  else if(ix==2) 
+    m_z_to_pitch_pid = g_pid;
+  else if(ix==3) 
+    m_pitch_pid = g_pid;
+}
+
+
+
+
+
+
+
+
+
 
