@@ -94,14 +94,22 @@ BehaviorSet *Populator_BehaviorSet::populate(set<string> bhv_files)
 	unsigned int len = line.length();	
 	string pre_line, post_line;
 	if(!is_comment) {
+	  unsigned left_braces = charCount(line, '{');
+	  unsigned right_braces = charCount(line, '{');
 	  if((len>1) && ((line.at(0) == '{') || (line.at(0) == '}'))) {
 	    pre_line += line.at(0);
 	    line.erase(0,1);
 	  }
 	  len = line.length();	
-	  if((len>1) && ((line.at(len-1) == '{') || (line.at(len-1) == '}'))) {
-	    post_line += line.at(len-1);
-	    line.erase(len-1,1);
+	  if(len > 1) {
+	    if(line.at(len-1) == '{') {
+	      post_line += line.at(len-1);
+	      line.erase(len-1,1);
+	    }
+	    if((right_braces > left_braces) && (line.at(len-1) == '}')) {
+	      post_line += line.at(len-1);
+	      line.erase(len-1,1);
+	    }
 	  }
 	}
 	// End Brace-Separate.
@@ -117,9 +125,12 @@ BehaviorSet *Populator_BehaviorSet::populate(set<string> bhv_files)
 	//<< "]" << endl; cout << "(" << line << ")" << endl;
 	
 	if(!ok) {
+	  cout << "    Problem with line " << line_ix+1;
 	  cout << "    Problem with line " << i+1;
 	  cout << "    in the BehaviorSet file: " << filename << endl;
-	  cout << line << endl;
+	  cout << "Pre_line: [" << pre_line << "]" << endl;
+	  cout << "Post_line: [" << post_line << "]" << endl;
+	  cout << "Line:     [" << line     << "]" << endl;
 	  return(0);
 	}
 
@@ -319,6 +330,7 @@ bool Populator_BehaviorSet::handleLine(string line,
     bool ok = m_mode_entry.addCondition(a_condition_string);
     return(ok);
   }
+
   return(false);
 }
 

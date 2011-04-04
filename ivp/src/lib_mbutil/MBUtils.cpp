@@ -1486,3 +1486,18 @@ string parseAppName(const string& name){
     
     return appFilename;
 }
+
+
+//----------------------------------------------------------------
+// Procedure: charCount()
+
+unsigned int charCount(const std::string& str, char mychar)
+{
+  unsigned int count = 0;
+  unsigned int k, ksize = str.length();
+  for(k=0; k<ksize; k++) {
+    if(str.at(k) == mychar)
+      count++;
+  }
+  return(count);
+}

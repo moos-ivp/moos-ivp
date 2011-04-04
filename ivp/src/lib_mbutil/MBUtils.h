@@ -112,6 +112,8 @@ std::vector<std::string>  getReleaseInfo(const std::string&);
 std::vector<std::string> tokenizePath(const std::string&);
 std::string parseAppName(const std::string&);
 
+unsigned int charCount(const std::string&, char);
+
 #endif
 
 
