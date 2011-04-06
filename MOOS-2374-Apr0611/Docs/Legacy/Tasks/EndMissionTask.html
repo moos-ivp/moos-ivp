@@ -1,0 +1,65 @@
+<HTML>
+<HEAD>
+<TITLE>End Mission Task</TITLE>
+</HEAD>
+<BODY>
+
+<H1><img src="moose6.gif"> <center>The End Mission Task</center></H1>
+
+<H2>Description</H2>
+This task has the highest allowable priority. It can be activated on safe completion of other tasks
+or on an error condition. Scripted configuration allows specifiaction of elevator rudder and thrust control
+at mission completion.
+
+
+<H2>Publishes</H2>
+<ul>
+	<li>EndFlags
+</ul>
+<p>
+
+
+<H2>Subscribes</H2>
+<ul>
+	<li>StartFlags
+</ul>
+<p>
+
+<H2>Configuration Block</H2>
+<ul>
+
+	<li><a href="CommonMOOSTask.html"> Common Task Parameters</a>
+	<p>
+
+	<li><H3>EndThrust</H3>
+	<ul>
+		<li><b>Syntax:	</b> EndThrust = Thrust [0-100]
+		<li><b>Meaning:	</b> Set Thrust to "Thrust" on going active
+		<li><b>Example:	</b> <i>EndThrust = 20</i> On going active set thrust to 20 pc
+	</ul>
+	<p>
+	
+	<li><H3>EndElevator</H3>
+	<ul>
+		<li><b>Syntax:	</b> EndElevator = Angle
+		<li><b>Meaning:	</b> Set Elevetator to Angle
+		<li><b>Example:	</b> <i>EndElevator = 10</i> Elevator will be set to 20 deg
+	</ul>
+	<p>
+
+	<li><H3>EndRudder</H3>
+	<ul>
+		<li><b>Syntax:	</b> EndRudder = Angle
+		<li><b>Meaning:	</b> Set Rudder to Angle
+		<li><b>Example:	</b> <i>EndRudder =5</i> Rudder will be set to 5 deg
+	</ul>
+	<p>
+
+
+</ul>
+
+
+<hr>
+<H4>The MOOS &#169;  P. Newman 2001-2002 <img src="moose2.gif"></H4>
+</BODY>
+</HTML>

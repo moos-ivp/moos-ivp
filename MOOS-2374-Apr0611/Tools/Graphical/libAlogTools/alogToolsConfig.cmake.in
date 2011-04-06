@@ -1,0 +1,8 @@
+# Configuration file for alogTools library.
+
+# Pick up the auto-generated file which knows how to add the library targets
+# This will mean that we don't have to supply full paths for the libraries
+include(@CMAKE_CURRENT_BINARY_DIR@/UsealogTools.cmake)
+
+set(alogTools_INCLUDE_DIRS @alogTools_INCLUDE_DIRS@)
+set(alogTools_LIBRARIES    @alogTools_LIBRARIES@)
