@@ -11,6 +11,7 @@
 #include "OF_Reflector.h"
 #include "AOF_Rings.h"
 #include "BuildUtils.h"
+#include "ColorParse.h"
 
 using namespace std; 
 
@@ -28,7 +29,6 @@ FV_MOOSApp::FV_MOOSApp()
   viewer     = 0;
   gui        = 0;
   ipf_name   = "BHV_IPF";
-//   iterate_should_return_false = false;
 }
 
 //----------------------------------------------------------
@@ -87,11 +87,11 @@ bool FV_MOOSApp::OnConnectToServer()
 
 bool FV_MOOSApp::Iterate()
 {
-//   return (! iterate_should_return_false);
   return true;
   
   // This processing has all been moved to the process_demuxer_content()
-  // method, so that it can happen in the same thread as other FLTK operations.
+  // method, so that it can happen in the same thread as other FLTK 
+  // operations.
 }
 
 //----------------------------------------------------------
@@ -100,6 +100,9 @@ bool FV_MOOSApp::Iterate()
 
 void FV_MOOSApp::process_demuxer_content()
 {
+  cout << termColor("red") << "In process_demuxer_content"
+       << termColor() << endl;
+
   try {
     demuxer_lock.Lock();
 

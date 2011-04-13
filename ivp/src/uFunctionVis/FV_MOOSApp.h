@@ -29,12 +29,14 @@ class FV_MOOSApp : public CMOOSApp
   bool OnConnectToServer();
   bool OnStartUp();
 
-  /// Call this when you want the object's CMOOSApp::Run(...) method to return
-  /// soon.
-//   void return_from_Run();
+  /// Call this when you want the object's CMOOSApp::Run(...) method 
+  /// to return soon.
 
-  /// This interacts with FLTK, and therefore should execute on the main thread,
-  /// which is where all the other FLTK operations are occurring.
+  //   void return_from_Run();
+
+  /// This interacts with FLTK, and therefore should execute on the 
+  /// main thread, which is where all the other FLTK operations are 
+  /// occurring.
   void process_demuxer_content();
   
 protected:
@@ -52,10 +54,10 @@ protected:
   FV_Model*   model;
   FV_Viewer*  viewer;
 
-  /// This is populated by OnNewMail, which is invoked by the MOOS application 
-  /// thread.  It's content is consumed by the main thread, so that all FLTK-
-  /// related operation can happen on the same thread, which is the safest way
-  /// to use FLTK.  
+  /// This is populated by OnNewMail, which is invoked by the MOOS 
+  /// application thread.  It's content is consumed by the main thread, 
+  /// so that all FLTK-related operation can happen on the same thread, 
+  /// which is the safest way to use FLTK.  
   Demuxer demuxer;
 
   /// Hold this lock whenever invoking a method on 'demuxer'.

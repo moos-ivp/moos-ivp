@@ -7,6 +7,8 @@
 #include <iostream>
 #include "MBUtils.h"
 #include "FV_Model.h"
+#include "ColorParse.h"
+
 
 #define GL_PI 3.1415926f
 

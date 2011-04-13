@@ -17,9 +17,7 @@ class FV_Viewer : public Common_IPFViewer
   ~FV_Viewer() {};
   
   // Pure virtuals that need to be defined
-  void draw() 
-    {return Common_IPFViewer::draw();};
-  
+  void draw();
   int  handle(int event)
     {return Common_IPFViewer::handle(event);};
 
