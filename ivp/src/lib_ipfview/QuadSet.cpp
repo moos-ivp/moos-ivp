@@ -48,6 +48,8 @@ void QuadSet::applyIPF(IvPFunction *ipf, string var_a, string var_b)
   int       dsize  = domain.size();
   int       i,j;
 
+  double pwt = ipf->getPWT();
+
   // Vector will be built focussing on TWO domain variables
   // Check which ones were requested and that they exists in 
   // the IvPDomain associated with the function.
@@ -81,7 +83,7 @@ void QuadSet::applyIPF(IvPFunction *ipf, string var_a, string var_b)
     sbox.setPTS(dom_a_ix, i, i);
     for(j=0; j<dom_b_pts; j++) {
       sbox.setPTS(dom_b_ix, j, j);
-      double pval = ipf->getPDMap()->evalPoint(&sbox);
+      double pval = pwt * ipf->getPDMap()->evalPoint(&sbox);
       pval = snapToStep(pval, m_snap_val);
       vals[i][j] = pval;
     }

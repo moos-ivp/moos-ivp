@@ -539,6 +539,8 @@ QuadSet Common_IPFViewer::setQuadSetFromIPF(const string& ipf_str,
 
   if(!domain.hasDomain("course") && !domain.hasDomain("speed"))
      return(null_quadset);
+
+  double original_pwt = ivp_function->getPWT();
   
   // Case where ipf defined only over COURSE
   if((domain.hasDomain("course")) && (!domain.hasDomain("speed"))) {
@@ -572,6 +574,8 @@ QuadSet Common_IPFViewer::setQuadSetFromIPF(const string& ipf_str,
 
   if(!ivp_function)
     return(null_quadset);
+
+  ivp_function-setPWT(original_pwt);
   
   QuadSet ret_quadset;
   ret_quadset.applyIPF(ivp_function, "course", "speed");
