@@ -575,7 +575,7 @@ QuadSet Common_IPFViewer::setQuadSetFromIPF(const string& ipf_str,
   if(!ivp_function)
     return(null_quadset);
 
-  ivp_function-setPWT(original_pwt);
+  ivp_function->setPWT(original_pwt);
   
   QuadSet ret_quadset;
   ret_quadset.applyIPF(ivp_function, "course", "speed");
