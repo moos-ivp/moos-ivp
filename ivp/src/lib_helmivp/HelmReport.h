@@ -30,7 +30,6 @@
 
 class HelmReport {
   friend class HelmEngine;
-  friend class HelmEngineBeta;
 public:
   HelmReport();
 
@@ -62,8 +61,13 @@ public:
   
   std::string getHaltMsg() const {return(m_halt_message);};
   
-  std::string getRunningBehaviors();
-  std::string getActiveBehaviors();
+  std::string getRunningBehaviors() const;
+  std::string getActiveBehaviors() const;
+  std::string getIdleBehaviors() const;
+  std::string getCompletedBehaviors() const;
+
+  std::string getDecisionSummary() const {return(m_decision_summary);};
+  std::string getModeSummary() const {return(m_modes);};
 
   void   addDecision(const std::string &var, double val);
   void   setDecision(const std::string &var, double val);
@@ -73,6 +77,7 @@ public:
 
   unsigned int getIteration() const {return(m_iteration);};
   unsigned int getOFNUM() const     {return(m_ofnum);};
+  unsigned int getWarnings() const  {return(m_warning_count);};
 
   double getCreateTime() const     {return(m_create_time);};
   double getSolveTime() const      {return(m_solve_time);};
@@ -80,6 +85,7 @@ public:
   bool   getHalted() const         {return(m_halted);};
 
   std::string getReportAsString();
+  std::string getReportAsString(const HelmReport&);
 
 protected:
   std::vector<std::string>  m_messages;
@@ -91,6 +97,8 @@ protected:
   std::string               m_idle_bhvs;
   std::string               m_modes;
 
+  std::string               m_decision_summary;
+
   unsigned int              m_warning_count;
   double                    m_time_utc;
   unsigned int              m_iteration;
@@ -99,8 +107,6 @@ protected:
   double                    m_solve_time;
   double                    m_loop_time;
   bool                      m_halted;
-  //std::vector<std::string>  m_decision_var;
-  //std::vector<double>       m_decision_val;
 
   std::map<std::string, double> m_decisions;
 

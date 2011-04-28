@@ -36,14 +36,10 @@ std::vector<std::string> IvPFunctionToVector(const std::string&,
 // Create an IvPFunction based on a string representation
 IvPFunction *StringToIvPFunction(const std::string&);
 
+// Create an IvPFunction Context String without building the function
+std::string StringToIvPContext(const std::string&);
+
+// Extract the IvPDomain without building the function
+IvPDomain IPFStringToIvPDomain(const std::string&);
+
 #endif
-
-
-
-
-
-
-
-
-
-

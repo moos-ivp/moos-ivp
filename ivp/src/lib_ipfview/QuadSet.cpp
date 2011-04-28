@@ -16,95 +16,62 @@ using namespace std;
 
 QuadSet::QuadSet()
 {
-  m_low_val         = 0;
-  m_high_val        = 0;
-  m_low_val_adjust  = 0;
-  m_high_val_adjust = 0;
-  m_snap_val        = 0;
-}
-
-//-------------------------------------------------------------
-// Procedure: clear()
-
-void QuadSet::clear()
-{
-  m_quads.clear();
-  m_low_val         = 0;
-  m_high_val        = 0;
-  m_low_val_adjust  = 0;
-  m_high_val_adjust = 0;
+  m_snap_val      = 0;
+  m_minpt_val     = 0;
+  m_maxpt_val     = 0;
+  m_maxpt_dvar_a  = 0;
+  m_maxpt_dvar_b  = 0;
 }
 
 //-------------------------------------------------------------
 // Procedure: applyIPF
+//      Note: For functions defined only over course or speed, we rely
+//            on the caller to "expand" the function before calling.
 
-void QuadSet::applyIPF(IvPFunction *ipf, string var_a, string var_b)
+void QuadSet::applyIPF(IvPFunction *ipf, bool wrap)
 {
-  m_quads.clear();
   if(!ipf) 
     return;
-  
-  IvPDomain domain = ipf->getPDMap()->getDomain();
-  int       dsize  = domain.size();
-  int       i,j;
 
-  double pwt = ipf->getPWT();
-
-  // Vector will be built focussing on TWO domain variables
-  // Check which ones were requested and that they exists in 
-  // the IvPDomain associated with the function.
-
-  if(!domain.hasDomain(var_a) || !domain.hasDomain(var_b))
+  IvPDomain ivp_domain = ipf->getPDMap()->getDomain();
+  if(ivp_domain.size() != 2)
+    return;
+  if(ivp_domain.getVarPoints(0) < 2)
+    return;
+  if(ivp_domain.getVarPoints(1) < 2)
     return;
 
-  int dom_a_ix  = domain.getIndex(var_a);
-  int dom_b_ix  = domain.getIndex(var_b);
-  int dom_a_pts = domain.getVarPoints(var_a);
-  int dom_b_pts = domain.getVarPoints(var_b);
-  
-  if((dom_a_pts < 2) || (dom_b_pts < 2))
-    return;
+  unsigned int dvar_a_pts = ivp_domain.getVarPoints(0);
+  unsigned int dvar_b_pts = ivp_domain.getVarPoints(1);
+
+  m_ivp_domain = ivp_domain;
+  m_quads.clear();
 
   // Create the "sample" box
-  IvPBox sbox = domainToBox(domain);
-  for(i=0; i<dsize; i++) {
-    int ipts = domain.getVarPoints(i);
-    sbox.setPTS(i, ipts/2, ipts/2);
-  }
+  IvPBox sbox = domainToBox(m_ivp_domain);
   
-  double **vals = new double*[dom_a_pts];
-  for(i=0; i<dom_a_pts; i++) {
-    vals[i] = new double[dom_b_pts];
-    for(j=0; j<dom_b_pts; j++)
+  unsigned int i,j;
+  double **vals = new double*[dvar_a_pts];
+  for(i=0; i<dvar_a_pts; i++) {
+    vals[i] = new double[dvar_b_pts];
+    for(j=0; j<dvar_b_pts; j++)
       vals[i][j] = 0;
   }
 
-  for(i=0; i<dom_a_pts; i++) {
-    sbox.setPTS(dom_a_ix, i, i);
-    for(j=0; j<dom_b_pts; j++) {
-      sbox.setPTS(dom_b_ix, j, j);
-      double pval = pwt * ipf->getPDMap()->evalPoint(&sbox);
+  double priority_wt = ipf->getPWT();
+  for(i=0; i<dvar_a_pts; i++) {
+    sbox.setPTS(0, i, i);
+    for(j=0; j<dvar_b_pts; j++) {
+      sbox.setPTS(1, j, j);
+      double pval = priority_wt * ipf->getPDMap()->evalPoint(&sbox);
       pval = snapToStep(pval, m_snap_val);
       vals[i][j] = pval;
     }
   }
 
-  m_low_val  = vals[0][0];
-  m_high_val = vals[0][0];
-  for(i=0; i<dom_a_pts; i++) {
-    for(j=0; j<dom_b_pts; j++) {
-      if(vals[i][j] > m_high_val)
-	m_high_val = vals[i][j];
-      if(vals[i][j] < m_low_val)
-	m_low_val = vals[i][j];
-    }
-  }
-  
-  //cout << "lowest_pval: "  << m_low_val << endl;
-  //cout << "highest_pval: " << m_high_val << endl;
-
-  for(i=0; i<(dom_a_pts-1); i++) {
-    for(j=0; j<(dom_b_pts-1); j++) {
+  // Build the primary quads
+  for(i=0; i<(dvar_a_pts-1); i++) {
+    for(j=0; j<(dvar_b_pts-1); j++) {
       Quad3D new_quad;
       new_quad.xl = i;
       new_quad.xh = i+1;
@@ -116,36 +83,46 @@ void QuadSet::applyIPF(IvPFunction *ipf, string var_a, string var_b)
       new_quad.hhval = vals[i+1][j+1];
 
       new_quad.lines = false;
-      new_quad.xpts = dom_a_pts;
-      new_quad.ypts = dom_b_pts;
+      new_quad.xpts = dvar_a_pts;
+      new_quad.ypts = dvar_b_pts;
 
       m_quads.push_back(new_quad);
     }
   }
-  
-  // Add  "bridge" quads to wrap around 359-0
-  int top_crs_ix = dom_a_pts-1;
-  for(j=0; j<(dom_b_pts-1); j++) {
-    Quad3D new_quad;
-    new_quad.xl = top_crs_ix-1;  // usually 359
-    new_quad.xh = 0;
-    new_quad.yl = j;
-    new_quad.yh = j+1;
-    new_quad.llval = vals[top_crs_ix][j];
-    new_quad.lhval = vals[top_crs_ix][j+1];
-    new_quad.hlval = vals[0][j];
-    new_quad.hhval = vals[0][j+1];
 
-    new_quad.lines = false;
-    new_quad.xpts = dom_a_pts;
-    new_quad.ypts = dom_b_pts;
-    
-    m_quads.push_back(new_quad);
+  if((ivp_domain.getVarName(0) == "course") && wrap) {
+  
+    // Add  "bridge" quads to wrap around 359-0
+    int top_crs_ix = dvar_a_pts-1;
+    for(j=0; j<(dvar_b_pts-1); j++) {
+      Quad3D new_quad;
+      new_quad.xl = top_crs_ix-1;  // usually 359
+      new_quad.xh = 0;
+      new_quad.yl = j;
+      new_quad.yh = j+1;
+      new_quad.llval = vals[top_crs_ix][j];
+      new_quad.lhval = vals[top_crs_ix][j+1];
+      new_quad.hlval = vals[0][j];
+      new_quad.hhval = vals[0][j+1];
+      
+      new_quad.lines = false;
+      new_quad.xpts = dvar_a_pts;
+      new_quad.ypts = dvar_b_pts;
+      
+      m_quads.push_back(new_quad);
+    }
   }
 
-  for(i=0; i<dom_a_pts; i++)
-    delete [] vals[i];
-  delete [] vals;
+  resetMinMaxVals();
+}
+
+
+//-------------------------------------------------------------
+// Procedure: applyColorMap
+
+void QuadSet::applyColorMap(const FColorMap& cmap)
+{
+  applyColorMap(cmap, m_minpt_val, m_maxpt_val);
 }
 
 
@@ -159,8 +136,8 @@ void QuadSet::applyColorMap(const FColorMap& cmap,
   if(vsize == 0)
     return;
   
-  double a_low_val   = m_low_val  + m_low_val_adjust;
-  double a_high_val  = m_high_val - m_high_val_adjust;
+  double a_low_val   = m_minpt_val;
+  double a_high_val  = m_maxpt_val;
 
   if(given_low != given_high) {
     a_low_val  = given_low;
@@ -228,60 +205,42 @@ void QuadSet::applyColorMap(const FColorMap& cmap,
 //-------------------------------------------------------------
 // Procedure: addQuadSet
 
-bool QuadSet::addQuadSet(const QuadSet* g_quads)
+bool QuadSet::addQuadSet(const QuadSet& g_quads)
 {
-  if(!g_quads)
+  if(g_quads.isEmpty())
     return(false);
 
   unsigned int i;
   unsigned int msize  = m_quads.size();
-  unsigned int gsize  = g_quads->size();
+  unsigned int gsize  = g_quads.size();
 
   // If this is an empty quadset, just set to the given quadset
   if(msize == 0) {
     for(i=0; i<gsize; i++)
-      m_quads.push_back(g_quads->getQuad(i));
-    m_low_val = g_quads->m_low_val;
-    m_high_val = g_quads->m_high_val;
+      m_quads.push_back(g_quads.getQuad(i));
     return(true);
   }
 
   if(msize != gsize)
-    return(true);
+    return(false);
 
   for(i=0; i<msize; i++) {
-    m_quads[i].llval += (g_quads->getQuad(i).llval);
-    m_quads[i].lhval += (g_quads->getQuad(i).lhval);
-    m_quads[i].hlval += (g_quads->getQuad(i).hlval);
-    m_quads[i].hhval += (g_quads->getQuad(i).hhval);
+    m_quads[i].llval += (g_quads.getQuad(i).llval);
+    m_quads[i].lhval += (g_quads.getQuad(i).lhval);
+    m_quads[i].hlval += (g_quads.getQuad(i).hlval);
+    m_quads[i].hhval += (g_quads.getQuad(i).hhval);
   }
 
-  // Recalculate the new global low and high values.
-  m_low_val  = m_quads[0].llval;
-  m_high_val = m_quads[0].llval;
-  for(i=0; i<msize; i++) {
-    if(m_quads[i].llval < m_low_val)   m_low_val  = m_quads[i].llval;
-    if(m_quads[i].llval > m_high_val)  m_high_val = m_quads[i].llval;
-
-    if(m_quads[i].lhval < m_low_val)   m_low_val  = m_quads[i].lhval;
-    if(m_quads[i].lhval > m_high_val)  m_high_val = m_quads[i].lhval;
-
-    if(m_quads[i].hlval < m_low_val)   m_low_val  = m_quads[i].hlval;
-    if(m_quads[i].hlval > m_high_val)  m_high_val = m_quads[i].hlval;
-
-    if(m_quads[i].hhval < m_low_val)   m_low_val  = m_quads[i].hhval;
-    if(m_quads[i].hhval > m_high_val)  m_high_val = m_quads[i].hhval;
-  }
+  resetMinMaxVals();
   return(true);
 }
-
 
 //-------------------------------------------------------------
 // Procedure: normalize()
 
 void QuadSet::normalize(double target_base, double target_range)
 {
-  double existing_range = m_high_val - m_low_val;
+  double existing_range = m_maxpt_val - m_minpt_val;
   if((existing_range <= 0) || (target_range <= 0))
     return;
 
@@ -291,35 +250,31 @@ void QuadSet::normalize(double target_base, double target_range)
 
   double pct;
   for(i=0; i<msize; i++) {
-    pct = ((m_quads[i].llval - m_low_val) / existing_range);
+    pct = ((m_quads[i].llval - m_minpt_val) / existing_range);
     m_quads[i].llval = target_base + (pct * target_range);
-    pct = ((m_quads[i].hlval - m_low_val) / existing_range);
+    pct = ((m_quads[i].hlval - m_minpt_val) / existing_range);
     m_quads[i].hlval = target_base + (pct * target_range);
-    pct = ((m_quads[i].lhval - m_low_val) / existing_range);
+    pct = ((m_quads[i].lhval - m_minpt_val) / existing_range);
     m_quads[i].lhval = target_base + (pct * target_range);
-    pct = ((m_quads[i].hhval - m_low_val) / existing_range);
+    pct = ((m_quads[i].hhval - m_minpt_val) / existing_range);
     m_quads[i].hhval = target_base + (pct * target_range);
   }
 
-  m_low_val = target_base;
-  m_high_val = target_base + target_range;
+  m_minpt_val = target_base;
+  m_maxpt_val = target_base + target_range;
 }
 
 //-------------------------------------------------------------
-// Procedure: setAdjust
+// Procedure: getMaxPoint
 
-void QuadSet::setAdjust(double low_adjust, double high_adjust)
+double QuadSet::getMaxPoint(string varname) const
 {
-  if(low_adjust < 0)
-    low_adjust = 0;
-  if(high_adjust < 0)
-    high_adjust = 0;
-
-  if((m_low_val + low_adjust) >= (m_high_val - high_adjust))
-    return;
-
-  m_low_val_adjust = low_adjust;
-  m_high_val_adjust = high_adjust;
+  if(m_ivp_domain.getVarName(0) == varname)
+    return(m_maxpt_dvar_a);
+  else if(m_ivp_domain.getVarName(1) == varname)
+    return(m_maxpt_dvar_b);
+  else
+    return(0);
 }
 
 //-------------------------------------------------------------
@@ -329,6 +284,62 @@ void QuadSet::print() const
 {
   cout << "QuadSet::print() " << endl;
   cout << "  size: " << m_quads.size() << endl;
-  cout << "  lowval: " << m_low_val << endl;
-  cout << "  highval: " << m_high_val << endl;
+  cout << "  minpt_val: " << m_minpt_val << endl;
+  cout << "  maxpt_val: " << m_maxpt_val << endl;
+  cout << "  maxpt_hdg: " << getMaxPoint("course") << endl;
+  cout << "  maxpt_spd: " << getMaxPoint("speed")  << endl;
+}
+
+
+//-------------------------------------------------------------
+// Procedure: resetMinMaxVals()
+
+void QuadSet::resetMinMaxVals()
+{
+  unsigned int i, msize  = m_quads.size();
+  if(msize == 0)
+    return;
+  
+  unsigned int max_dvar_a_ix_q = 0;
+  unsigned int max_dvar_b_ix_q = 0;
+
+  // Recalculate the new global low and high values.
+  m_minpt_val = m_quads[0].llval;
+  m_maxpt_val = m_quads[0].llval;
+  for(i=0; i<msize; i++) {    
+    if(m_quads[i].llval < m_minpt_val)  //------- (L,L)
+      m_minpt_val  = m_quads[i].llval;
+    if(m_quads[i].llval > m_maxpt_val) {
+      m_maxpt_val = m_quads[i].llval;
+      max_dvar_a_ix_q = m_quads[i].xl;
+      max_dvar_b_ix_q = m_quads[i].yl;
+    }
+
+    if(m_quads[i].lhval < m_minpt_val)  //------- (L,H)  
+      m_minpt_val  = m_quads[i].lhval;
+    if(m_quads[i].lhval > m_maxpt_val) {  
+      m_maxpt_val = m_quads[i].lhval;
+      max_dvar_a_ix_q = m_quads[i].xl;
+      max_dvar_b_ix_q = m_quads[i].yh;
+    }
+
+    if(m_quads[i].hlval < m_minpt_val)  //------- (H,L)  
+      m_minpt_val  = m_quads[i].hlval;
+    if(m_quads[i].hlval > m_maxpt_val) {
+      m_maxpt_val = m_quads[i].hlval;
+      max_dvar_a_ix_q = m_quads[i].xh;
+      max_dvar_b_ix_q = m_quads[i].yl;
+    }
+
+    if(m_quads[i].hhval < m_minpt_val) //------- (H,H)    
+      m_minpt_val  = m_quads[i].hhval;
+    if(m_quads[i].hhval > m_maxpt_val) {
+      m_maxpt_val = m_quads[i].hhval;
+      max_dvar_a_ix_q = m_quads[i].xh;
+      max_dvar_b_ix_q = m_quads[i].yh;
+    }
+  }
+
+  m_maxpt_dvar_a = m_ivp_domain.getVal(0, max_dvar_a_ix_q);
+  m_maxpt_dvar_b = m_ivp_domain.getVal(1, max_dvar_b_ix_q);
 }

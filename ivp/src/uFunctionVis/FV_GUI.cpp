@@ -276,9 +276,10 @@ void FV_GUI::updateFields()
     descriptor = " - no function - ";
   curr_function->value(descriptor.c_str());
 
-  string func_size;
+  string func_size = "oops";
   if(model)
     func_size = model->getCurrFuncSize();
+  curr_func_size->value(func_size.c_str());
 
   string iteration = intToString(model->getCurrIteration());
   if(model->isLocked())

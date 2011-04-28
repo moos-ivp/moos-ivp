@@ -150,27 +150,33 @@ void HelmReport::addActiveBHV(const string& descriptor,
 //-----------------------------------------------------------
 // Procedure: getRunningBehaviors()
 
-string HelmReport::getRunningBehaviors()
+string HelmReport::getRunningBehaviors() const
 {
-  string result = "#";
-  result += uintToString(m_iteration);
-  result += ":";
-  result += m_running_bhvs;
-
-  return(result);
+  return(m_running_bhvs);
 }
 
 //-----------------------------------------------------------
 // Procedure: getActiveBehaviors()
 
-string HelmReport::getActiveBehaviors()
+string HelmReport::getActiveBehaviors() const
 {
-  string result = "#";
-  result += uintToString(m_iteration);
-  result += ":";
-  result += m_active_bhvs;
-  
-  return(result);
+  return(m_active_bhvs);
+}
+
+//-----------------------------------------------------------
+// Procedure: getIdleBehaviors()
+
+string HelmReport::getIdleBehaviors() const
+{
+  return(m_idle_bhvs);
+}
+
+//-----------------------------------------------------------
+// Procedure: getCompletedBehaviors()
+
+string HelmReport::getCompletedBehaviors() const
+{
+  return(m_completed_bhvs);
 }
 
 //-----------------------------------------------------------
@@ -239,6 +245,93 @@ string HelmReport::getReportAsString()
     report += "none";
   else
     report += m_completed_bhvs;
+
+  return(report);
+}
+
+
+//-----------------------------------------------------------
+// Procedure: getReportAsString(const HelmReport&)
+
+string HelmReport::getReportAsString(const HelmReport& prep)
+{
+  string report = "iter=" + uintToString(m_iteration);
+  report += (",utc_time=" + doubleToString(m_time_utc, 2));
+
+  if(m_ofnum != prep.getOFNUM())
+    report += (",ofnum=" + uintToString(m_ofnum));
+  if(m_warning_count != prep.getWarnings())
+    report += (",warnings=" + uintToString(m_warning_count));
+  if(m_solve_time != prep.getSolveTime())
+    report += (",solve_time=" + doubleToString(m_solve_time, 2));
+  if(m_create_time != prep.getCreateTime())
+    report += (",create_time=" + doubleToString(m_create_time, 2));
+  if(m_loop_time != prep.getLoopTime())
+    report += (",loop_time=" + doubleToString(m_loop_time, 2));
+  
+  m_decision_summary = "";
+  map<string, double>::iterator p;
+  for(p=m_decisions.begin(); p!=m_decisions.end(); p++) {
+    string var = p->first;
+    double val = p->second;
+    m_decision_summary += ",var=" + var + ":";
+    m_decision_summary += doubleToString(val, 1);
+  }
+
+  // Now check to see if the helm did not produce a decision for one
+  // of the variables in the originally declared domain for the helm
+  unsigned int i, dsize = m_domain.size();
+  for(i=0; i<dsize; i++) {
+    string varname = m_domain.getVarName(i);
+    if(!hasDecision(varname))
+      m_decision_summary += (",var=" + varname + ":varbalk");
+  }
+
+  if(m_decision_summary != prep.getDecisionSummary())
+    report += m_decision_summary;
+
+  if(m_halted != prep.getHalted())
+    report += (",halted=" + boolToString(m_halted));
+
+  if(m_modes != prep.getModeSummary()) {
+    report += ",modes=";
+    if(m_modes == "")
+      report += "none";
+    else
+      report += m_modes;
+  }
+
+  if(m_running_bhvs != prep.getRunningBehaviors()) {
+    report += ",running_bhvs=";
+    if(m_running_bhvs == "")
+      report += "none";
+    else
+      report += m_running_bhvs;
+  }
+
+  if(m_active_bhvs != prep.getActiveBehaviors()) {
+    report += ",active_bhvs=";
+    if(m_active_bhvs == "")
+      report += "none";
+    else
+      report += m_active_bhvs;
+  }
+
+  if(m_idle_bhvs != prep.getIdleBehaviors()) {
+    report += ",idle_bhvs=";
+    if(m_idle_bhvs == "")
+      report += "none";
+    else
+      report += m_idle_bhvs;
+  }
+
+  if(m_completed_bhvs != prep.getCompletedBehaviors()) {
+    report += ",completed_bhvs=";
+    if(m_completed_bhvs == "")
+      report += "none";
+    else
+      report += m_completed_bhvs;
+  }
 
   return(report);
 }

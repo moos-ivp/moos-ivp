@@ -71,9 +71,8 @@ bool IvPDomain::operator==(const IvPDomain& right) const
 bool IvPDomain::addDomain(const string& g_name, double g_low, 
 			  double g_high, unsigned int g_points)
 {
-  if(hasDomain(g_name)) return(false);
-  if(g_low > g_high)    return(false);
-  if(g_points < 1)      return(false);
+  if(hasDomain(g_name) || (g_low > g_high) || (g_points < 1))
+    return(false);
 
   // The only way in which one domain point is allowed is if the
   // the high and low value of the domain are equivalent.

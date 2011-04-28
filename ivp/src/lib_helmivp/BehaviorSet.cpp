@@ -181,7 +181,7 @@ bool BehaviorSet::buildBehaviorsFromSpecs()
     LifeEvent life_event;
     life_event.setBehaviorName(spec_builds[k].getBehaviorName());
     life_event.setBehaviorType(spec_builds[k].getBehaviorKind());
-    life_event.setSpawnString("helm startup");
+    life_event.setSpawnString("helm_startup");
     life_event.setEventType("spawn");
     m_life_events.push_back(life_event);
   }
@@ -484,6 +484,17 @@ double BehaviorSet::getStateElapsed(unsigned int ix)
 {
   if(ix < m_bhv_entry.size())
     return(m_bhv_entry[ix].getStateTimeElapsed());
+  else
+    return(-1);
+}
+
+//------------------------------------------------------------
+// Procedure: getStateTimeEntered
+
+double BehaviorSet::getStateTimeEntered(unsigned int ix)
+{
+  if(ix < m_bhv_entry.size())
+    return(m_bhv_entry[ix].getStateTimeEntered());
   else
     return(-1);
 }

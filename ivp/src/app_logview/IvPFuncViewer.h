@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: M.Benjamin, H.Schmidt, J.Leonard                     */
+/*    ORGN: MIT Cambridge MA                                     */
 /*    FILE: IvPFuncViewer.h                                      */
 /*    DATE: Feb 24, 2007                                         */
 /*                                                               */

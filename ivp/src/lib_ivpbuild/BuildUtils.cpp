@@ -455,7 +455,7 @@ IvPDomain unionDomain(const IvPDomain& dom1, const IvPDomain& dom2)
 {
   IvPDomain new_domain = dom1;
 
-  int dsize = dom2.size();
+  unsigned int i, dsize = dom2.size();
   for(int i=0; i<dsize; i++) {
     string varname = dom2.getVarName(i);
     double varlow  = dom2.getVarLow(i);

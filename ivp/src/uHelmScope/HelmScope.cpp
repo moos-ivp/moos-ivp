@@ -36,7 +36,7 @@ using namespace std;
 // Procedure: Constructor
 
 HelmScope::HelmScope()
-{    
+{ 
   m_helm_engaged       = false;
 
   m_display_help       = false;
@@ -45,7 +45,7 @@ HelmScope::HelmScope()
   m_paused             = true;
   m_display_truncate   = false;
   m_concise_bhv_list   = true;
-  m_warning_count      = 0;
+  m_total_warning_cnt  = 0;
 
   // Default Settings for the Postings Report
   m_display_posts      = true;
@@ -102,7 +102,10 @@ bool HelmScope::OnNewMail(MOOSMSG_LIST &NewMail)
   }
   
   for(p = NewMail.begin(); p!=NewMail.end(); p++) { 
-    CMOOSMsg &msg = *p; 
+    CMOOSMsg &msg = *p;
+    //cout << "Key:" << msg.m_sKey << " Src:" << msg.GetSource() <<
+    //  " SrcAux:" << msg.GetSourceAux() << endl;
+ 
     if(msg.m_sKey == "IVPHELM_DOMAIN") 
       handleNewIvPDomain(msg.m_sVal); 
     if(msg.m_sKey == "IVPHELM_SUMMARY") 
@@ -221,7 +224,8 @@ bool HelmScope::OnStartUp()
   }
     
   registerVariables();
-    
+
+  m_Comms.Notify("IVPHELM_REJOURNAL", 1);
   return(true);
 }
 
@@ -396,6 +400,9 @@ void HelmScope::handleNewHelmSummary(const string& str)
   // index.
   IterBlockHelm hblock;
 
+  if(m_blocks_helm.size() > 0)
+    hblock.initialize(m_block_helm_prev);
+
   string summary = stripBlankEnds(str);
   vector<string> svector = parseString(summary, ',');
   int vsize = svector.size();
@@ -444,13 +451,13 @@ void HelmScope::handleNewHelmSummary(const string& str)
 	hblock.setHalted(v);
       }
       else if((left == "running_bhvs") && (right != "none")) 
-	hblock.addRunningBHVs(right);
+	hblock.setRunningBHVs(right);
       else if((left == "active_bhvs")  && (right != "none"))
-	hblock.addActiveBHVs(right);
+	hblock.setActiveBHVs(right);
       else if((left == "idle_bhvs")  && (right != "none"))
-	hblock.addIdleBHVs(right);
+	hblock.setIdleBHVs(right);
       else if((left == "completed_bhvs") && (right != "none"))
-	hblock.addCompletedBHVs(right);
+	hblock.setCompletedBHVs(right);
     }
   }
 
@@ -502,7 +509,11 @@ void HelmScope::handleNewHelmSummary(const string& str)
   // becomes the next iteration to post output.
   if(!m_paused)
     m_iter_next_post = helm_iter;
-  
+
+  // Keep a copy of this hblock around for the next iteration to 
+  // copy BehaviorRecord contents.
+  m_block_helm_prev = hblock;
+
   // Finally, store the info for this iteration.
   m_blocks_helm[helm_iter] = hblock;
 }
@@ -626,6 +637,8 @@ void HelmScope::registerVariables()
   m_Comms.Register("IVPHELM_MODESET", 0);
   m_Comms.Register("IVPHELM_ENGAGED", 0);
   m_Comms.Register("IVPHELM_LIFE_EVENT", 0);
+
+  m_Comms.Register("WPT_STAT", 0);
 }
 
 //------------------------------------------------------------
@@ -996,7 +1009,7 @@ void HelmScope::printHelmReport(int index)
   double solve_time  = hblock.getSolveTime();
   double create_time = hblock.getCreateTime();
   double loop_time   = hblock.getLoopTime();
-  //double utc_time    = hblock.getUTCTime();
+  double utc_time    = hblock.getUTCTime();
   bool   halted      = hblock.getHalted();
   string modes       = hblock.getModeStr();
 
@@ -1047,11 +1060,11 @@ void HelmScope::printHelmReport(int index)
     printf("  Halted:         true    ");
   else
     printf("  Halted:         false   ");
-  int wcnt = hblock.getWarnings();
+  unsigned int wcnt = hblock.getWarnings();
   if(wcnt == 1)
-    printf("(%d warning)\n", wcnt);
+    printf("(%d warning: %d total)\n", wcnt, m_total_warning_cnt);
   else
-    printf("(%d warnings)\n", wcnt);
+    printf("(%d warnings: %d total)\n", wcnt, m_total_warning_cnt);
 
 
   printf("Helm Decision: %s\n", m_ivpdomain.c_str());
@@ -1062,20 +1075,20 @@ void HelmScope::printHelmReport(int index)
     printf("  %s = %s \n", var.c_str(), val.c_str());
   }
 
-  svector = hblock.getActiveBHV();
+  svector = hblock.getActiveBHV(utc_time);
   vsize = svector.size();
   printf("Behaviors Active: ---------- (%d)\n", vsize);
   for(i=0; i<vsize; i++) {
     printf("  %s\n", svector[i].c_str());
   }
 
-  svector = hblock.getRunningBHV();
+  svector = hblock.getRunningBHV(utc_time);
   vsize = svector.size();
   printf("Behaviors Running: --------- (%d)\n", vsize);
   for(i=0; i<vsize; i++)
     printf("  %s\n", svector[i].c_str());
 
-  svector = hblock.getIdleBHV(m_concise_bhv_list);
+  svector = hblock.getIdleBHV(utc_time, m_concise_bhv_list);
   vsize = svector.size();
   printf("Behaviors Idle: ------------ (%d)\n", vsize);
   for(i=0; i<vsize; i++) {
@@ -1088,7 +1101,7 @@ void HelmScope::printHelmReport(int index)
       printf("\n");
   }
 
-  svector = hblock.getCompletedBHV(m_concise_bhv_list);
+  svector = hblock.getCompletedBHV(utc_time, m_concise_bhv_list);
   vsize = svector.size();
   printf("Behaviors Completed: ------- (%d)\n", vsize);
   for(i=0; i<vsize; i++) {

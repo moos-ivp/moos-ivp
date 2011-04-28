@@ -10,15 +10,9 @@
 /*****************************************************************/
 
 #include <iostream>
-#include <cstring>
 #include "Common_IPFViewer.h"
 #include "GeomUtils.h"
-#include "BuildUtils.h"
-#include "ZAIC_PEAK.h"
-#include "OF_Coupler.h"
 #include "MBUtils.h"
-#include "ColorParse.h"
-#include "FunctionEncoder.h"
 
 using namespace std;
 
@@ -227,29 +221,6 @@ void Common_IPFViewer::draw()
     glDisable(GL_DEPTH_TEST);
 }
 
-// ----------------------------------------------------------
-// Procedure: applyIPF
-//   Purpose: 
-
-void Common_IPFViewer::applyIPF(const std::string& ipf_str)
-{
-  IvPDomain null_domain;
-  m_quadset.clear();
-  if(ipf_str != "")
-    m_quadset = setQuadSetFromIPF(ipf_str, null_domain);
-}
-
-// ----------------------------------------------------------
-// Procedure: applyIPF
-//   Purpose: 
-
-void Common_IPFViewer::applyIPF(const std::string& ipf_str,
-				const IvPDomain& ivp_domain)
-{
-  m_quadset.clear();
-  if(ipf_str != "")
-    m_quadset = setQuadSetFromIPF(ipf_str, ivp_domain);
-}
 
 //-------------------------------------------------------------
 // Procedure: drawIvPFunction
@@ -496,95 +467,3 @@ void Common_IPFViewer::drawText(double px, double py, const string& text,
   glPopMatrix();
 }
 
-//-------------------------------------------------------------
-// Procedure: setLabelColor
-
-void Common_IPFViewer::setLabelColor(string new_color)
-{
-  m_label_color.setColor(new_color);
-}
-  
-//-------------------------------------------------------------
-// Procedure: setClearColor
-
-void Common_IPFViewer::setClearColor(string new_color)
-{
-  m_clear_color.setColor(new_color);
-}
-  
-//-------------------------------------------------------------
-// Procedure: setFrameColor
-
-void Common_IPFViewer::setFrameColor(string new_color)
-{
-  m_frame_color.setColor(new_color);
-}
-  
-
-//-------------------------------------------------------------
-// Procedure: setQuadSetFromIPF
-//      Note: The ivp_function domain is used to help expand 
-//            incoming functions over course, speed.
-
-QuadSet Common_IPFViewer::setQuadSetFromIPF(const string& ipf_str,
-					    IvPDomain ivp_domain)
-{
-  QuadSet null_quadset;
- 
-  IvPFunction *ivp_function = StringToIvPFunction(ipf_str);
-  if(!ivp_function)
-    return(null_quadset);
-    
-  IvPDomain domain = ivp_function->getPDMap()->getDomain();
-
-  if(!domain.hasDomain("course") && !domain.hasDomain("speed"))
-     return(null_quadset);
-
-  double original_pwt = ivp_function->getPWT();
-  
-  // Case where ipf defined only over COURSE
-  if((domain.hasDomain("course")) && (!domain.hasDomain("speed"))) {
-    // Try to expand this IPF into a 2D IPF
-    IvPDomain spd_domain = subDomain(ivp_domain, "speed");
-    if(spd_domain.size() == 0)
-      return(null_quadset);
-
-    ZAIC_PEAK spd_zaic(spd_domain, "speed");
-    spd_zaic.setSummit(2.5);
-    spd_zaic.setPeakWidth(20);
-    IvPFunction *spd_of = spd_zaic.extractOF();
-    OF_Coupler coupler;
-    IvPFunction *new_ipf = coupler.couple(ivp_function, spd_of);
-    ivp_function = new_ipf;
-  }
-  // Case where ipf defined only over SPEED
-  if((!domain.hasDomain("course")) && (domain.hasDomain("speed"))) {
-    // Try to expand this IPF into a 2D IPF
-    IvPDomain crs_domain = subDomain(ivp_domain, "course");
-    if(crs_domain.size() == 0)
-      return(null_quadset);
-
-    ZAIC_PEAK crs_zaic(crs_domain, "course");
-    crs_zaic.setSummit(180);
-    crs_zaic.setPeakWidth(360);
-    IvPFunction *crs_of = crs_zaic.extractOF();
-    OF_Coupler coupler;
-    ivp_function = coupler.couple(ivp_function, crs_of);
-  }
-
-  if(!ivp_function)
-    return(null_quadset);
-
-  ivp_function->setPWT(original_pwt);
-  
-  QuadSet ret_quadset;
-  ret_quadset.applyIPF(ivp_function, "course", "speed");
-  
-  double lowval = ivp_function->getPDMap()->getMinWT();
-  double hghval = ivp_function->getPDMap()->getMaxWT();
-  ret_quadset.applyColorMap(m_color_map, lowval, hghval);  
-  
-  delete(ivp_function);
-  return(ret_quadset);
-}
-  

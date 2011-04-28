@@ -14,17 +14,20 @@ class QueueEntry
 {
 public:
   QueueEntry(const std::string&);
-  ~QueueEntry() {if(m_quadset) delete(m_quadset);};
+  ~QueueEntry() {};
   
-  const QuadSet* getQuadSet(std::string s="", double l=0, double h=0);
-  std::string    getDescriptor() {return(m_descriptor);};
-  int            getIteration()  {return(m_iteration);};
+  QuadSet        getQuadSet(std::string s="", double l=0, double h=0);
+  std::string    getDescriptor() const {return(m_descriptor);};
+  unsigned int   getIteration() const  {return(m_iteration);};
+  unsigned int   size() const  {return(m_pieces);};
 
  protected:
   std::string    m_ipf_str;
   std::string    m_descriptor;
-  int            m_iteration;
-  QuadSet*       m_quadset;
+  unsigned int   m_iteration;
+
+  unsigned int   m_pieces;
+  QuadSet        m_quadset;
 };
 
 #endif

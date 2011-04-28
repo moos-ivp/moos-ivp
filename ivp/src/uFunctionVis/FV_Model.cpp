@@ -134,15 +134,17 @@ string FV_Model::getCurrFuncSize()
 //-------------------------------------------------------------
 // Procedure: getQuadSet()
 
-const QuadSet* FV_Model::getQuadSet()
+QuadSet FV_Model::getQuadSet()
 {
   m_ipf_mutex.Lock();
 
-  const QuadSet* quadset = 0;
+  QuadSet quadset;
   if(m_collective)
     quadset = m_fqueue.getCollectiveQuadSet();
   else
     quadset = m_fqueue.getQuadSet(m_curr_descriptor);
+
+  m_curr_func_size = uintToString(m_fqueue.getPieces());
 
   m_ipf_mutex.UnLock();
   return(quadset);

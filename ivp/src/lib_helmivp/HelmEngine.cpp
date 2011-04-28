@@ -144,7 +144,8 @@ bool HelmEngine::part2_GetFunctionsFromBehaviorSet(int filter_level)
       m_ipf_timer.stop();
   
       // Determine the amt of time the bhv has been in this state
-      double state_elapsed = m_bhv_set->getStateElapsed(bhv_ix);
+      // double state_elapsed = m_bhv_set->getStateElapsed(bhv_ix);
+      double state_time_entered = m_bhv_set->getStateTimeEntered(bhv_ix);
 
       if(!m_bhv_set->stateOK(bhv_ix)) {
 	m_helm_report.m_halted = true;
@@ -177,17 +178,20 @@ bool HelmEngine::part2_GetFunctionsFromBehaviorSet(int filter_level)
 	double of_time  = m_ipf_timer.get_float_cpu_time();
 	double pwt = newof->getPWT();
 	int    pcs = newof->size();
-	m_helm_report.addActiveBHV(descriptor, state_elapsed, pwt, pcs, 
-				   of_time, upd_summary);
+	m_helm_report.addActiveBHV(descriptor, state_time_entered, pwt, 
+				   pcs, of_time, upd_summary);
 	m_ivp_functions.push_back(newof);
       }
 
       if(bhv_state=="running")
-	m_helm_report.addRunningBHV(descriptor, state_elapsed, upd_summary);
+	m_helm_report.addRunningBHV(descriptor, state_time_entered, 
+				    upd_summary);
       if(bhv_state=="idle")
-	m_helm_report.addIdleBHV(descriptor, state_elapsed, upd_summary);
+	m_helm_report.addIdleBHV(descriptor, state_time_entered, 
+				 upd_summary);
       if(bhv_state=="completed") {
-	m_helm_report.addCompletedBHV(descriptor, state_elapsed, upd_summary);
+	m_helm_report.addCompletedBHV(descriptor, state_time_entered,
+				      upd_summary);
 	m_bhv_set->setCompletedPending(true);
       }
     }

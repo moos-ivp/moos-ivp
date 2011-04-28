@@ -66,6 +66,7 @@ class XMS : public CMOOSApp
   void updateVarVal(std::string, std::string);
   void updateVarType(std::string, std::string);
   void updateVarSource(std::string, std::string);
+  void updateVarSourceAux(std::string, std::string);
   void updateVarTime(std::string, std::string);
   void updateVarCommunity(std::string, std::string);
   void updateHistory(std::string, std::string, double);
@@ -89,6 +90,7 @@ class XMS : public CMOOSApp
   std::vector<std::string> m_var_vals;
   std::vector<std::string> m_var_type;
   std::vector<std::string> m_var_source;
+  std::vector<std::string> m_var_srcaux;
   std::vector<std::string> m_var_time;
   std::vector<std::string> m_var_community;
   std::vector<std::string> m_var_color;
@@ -97,6 +99,7 @@ class XMS : public CMOOSApp
   std::vector<std::string> m_orig_var_vals;
   std::vector<std::string> m_orig_var_type;
   std::vector<std::string> m_orig_var_source;
+  std::vector<std::string> m_orig_var_srcaux;
   std::vector<std::string> m_orig_var_time;
   std::vector<std::string> m_orig_var_community;
   std::vector<std::string> m_orig_var_color;

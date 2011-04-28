@@ -62,6 +62,7 @@ public:
   std::string    getDescriptor(unsigned int);
   std::string    getUpdateSummary(unsigned int);
   double         getStateElapsed(unsigned int);
+  double         getStateTimeEntered(unsigned int);
   int            getFilterLevel(unsigned int);
   bool           filterBehaviorsPresent();
 

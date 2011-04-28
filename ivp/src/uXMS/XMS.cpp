@@ -120,8 +120,8 @@ bool XMS::OnNewMail(MOOSMSG_LIST &NewMail)
   if(m_db_start_time == 0) {
     for(p = NewMail.begin(); p!=NewMail.end(); p++) {
       CMOOSMsg &msg = *p;
-      if(msg.m_sKey == "DB_UPTIME") 
-	m_db_start_time = MOOSTime() - msg.m_dfVal;
+      if(msg.GetKey() == "DB_UPTIME") 
+	m_db_start_time = MOOSTime() - msg.GetDouble();
     }
   }
   
@@ -131,10 +131,10 @@ bool XMS::OnNewMail(MOOSMSG_LIST &NewMail)
   // type locally, just so we can put quotes around string values.
   for(p = NewMail.begin(); p!=NewMail.end(); p++) {
     CMOOSMsg &msg = *p;
-    string key = msg.m_sKey;
+    string key = msg.GetKey();
     if((key.length() >= 7) && (key.substr(key.length()-7,7) == "_STATUS")) {
       if(m_src_map[key] != "") {
-	m_src_map[key] = msg.m_sVal;
+	m_src_map[key] = msg.GetString();
       }
     }
 
@@ -282,11 +282,8 @@ void XMS::handleCommand(char c)
     m_update_requested = true;
     break;
   case 'x':
-    m_display_aux_source = false;
-    m_update_requested = true;
-    break;
   case 'X':
-    m_display_aux_source = true;
+    m_display_aux_source = !m_display_aux_source;
     m_update_requested = true;
     break;
   case 't':
@@ -424,6 +421,7 @@ void XMS::handleCommand(char c)
     m_orig_var_vals   = m_var_vals;
     m_orig_var_type   = m_var_type;
     m_orig_var_source = m_var_source;
+    m_orig_var_srcaux = m_var_srcaux;
     m_orig_var_time   = m_var_time;
     m_orig_var_community = m_var_community;
     m_orig_var_community = m_var_color;
@@ -441,6 +439,7 @@ void XMS::handleCommand(char c)
       m_var_vals   = m_orig_var_vals;
       m_var_type   = m_orig_var_type;
       m_var_source = m_orig_var_source;
+      m_var_srcaux = m_orig_var_srcaux;
       m_var_time   = m_orig_var_time;
       m_var_community = m_orig_var_community;
       m_var_color  = m_orig_var_color;
@@ -499,6 +498,7 @@ bool XMS::addVariable(string varname, bool histvar)
   m_var_vals.push_back("n/a");
   m_var_type.push_back("string");
   m_var_source.push_back(" n/a");
+  m_var_srcaux.push_back(" n/a");
   m_var_time.push_back(" n/a");
   m_var_community.push_back(" n/a");
   m_var_color.push_back("");
@@ -676,6 +676,14 @@ void XMS::updateVarSource(string varname, string vsource)
       m_var_source[i] = vsource;
 }
 
+void XMS::updateVarSourceAux(string varname, string vsource_aux)
+{
+  unsigned int i, vsize = m_var_names.size();
+  for(i=0; i<vsize; i++)
+    if(m_var_names[i] == varname)
+      m_var_srcaux[i] = vsource_aux;
+}
+
 void XMS::updateVarTime(string varname, string vtime)
 {
   unsigned int i, vsize = m_var_names.size();
@@ -843,8 +851,15 @@ void XMS::printReport()
       printf("  %-22s ", m_var_names[i].c_str());
 
       if(m_display_source) {
-	string sstr = truncString(m_var_source[i], 14, "middle");
-	printf("%-16s", sstr.c_str());
+	if((!m_display_aux_source) || (m_var_srcaux[i]=="")) {
+	  string sstr = truncString(m_var_source[i], 14, "middle");
+	  printf("%-16s", sstr.c_str());
+	}
+	else {
+	  string sstr = truncString(m_var_srcaux[i], 14, "middle");
+	  sstr = "[" + sstr + "]";
+	  printf("%-16s", sstr.c_str());
+	}
       }
       else
 	printf("     ");
@@ -1004,46 +1019,39 @@ void XMS::printHistoryReport()
 
 void XMS::updateVariable(CMOOSMsg &msg)
 {
-  string varname = msg.m_sKey;  
+  string varname = msg.GetKey();  
   double vtime   = msg.GetTime() - m_db_start_time;
 
   string vtime_str = doubleToString(vtime, 2);
   vtime_str = dstringCompact(vtime_str);
 
-  if(!m_display_aux_source)
-    updateVarSource(varname, msg.m_sSrc);
-  else {
-    string varsrc = msg.GetSource();
-    string varaux = msg.GetSourceAux();
-    if(varaux != "")
-      varsrc = varaux;
-    updateVarSource(varname, varsrc);
-  }
+  updateVarSource(varname, msg.GetSource());
+  updateVarSourceAux(varname, msg.GetSourceAux());
 
   updateVarTime(varname, vtime_str);
-  updateVarCommunity(varname, msg.m_sOriginatingCommunity);
+  updateVarCommunity(varname, msg.GetCommunity());
   
   if(varname == m_history_var) {
     m_history_event = true;
-    if(msg.m_cDataType == MOOS_STRING) {
-      string entry = ("\"" + msg.m_sVal + "\""); 
-      updateHistory(entry, msg.m_sSrc, vtime);
+    if(msg.IsString()) {
+      string entry = ("\"" + msg.GetString() + "\""); 
+      updateHistory(entry, msg.GetSource(), vtime);
     }
-    else if(msg.m_cDataType == MOOS_DOUBLE) {
-      string entry = dstringCompact(doubleToString(msg.m_dfVal,6));
-      updateHistory(entry, msg.m_sSrc, vtime);
+    else if(msg.IsDouble()) {
+      string entry = dstringCompact(doubleToString(msg.GetDouble(),6));
+      updateHistory(entry, msg.GetSource(), vtime);
     }
   }
 
-  if(msg.m_cDataType == MOOS_STRING) {
-    updateVarVal(varname, msg.m_sVal);
+  if(msg.IsString()) {
+    updateVarVal(varname, msg.GetString());
     updateVarType(varname, "string");
   }      
-  else if(msg.m_cDataType == MOOS_DOUBLE) {
-    updateVarVal(varname, doubleToString(msg.m_dfVal));
+  else if(msg.IsDouble()) {
+    updateVarVal(varname, doubleToString(msg.GetDouble()));
     updateVarType(varname, "double");
   }
-  else if(msg.m_cDataType == MOOS_NOT_SET) {
+  else if(msg.IsDataType(MOOS_NOT_SET)) {
     updateVarVal(varname, "n/a");
     updateVarSource(varname, "n/a");
     updateVarTime(varname, "n/a");

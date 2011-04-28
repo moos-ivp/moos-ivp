@@ -6,9 +6,11 @@
 SET(SRC
   Common_IPFViewer.cpp
   QuadSet.cpp
+  IPFViewUtils.cpp  
 )
 
 SET(HEADERS
+  IPFViewUtils.h  
   Common_IPFViewer.h
   Quad3D.h
   QuadSet.h

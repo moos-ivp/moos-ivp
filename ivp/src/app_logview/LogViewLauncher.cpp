@@ -569,7 +569,9 @@ bool LogViewLauncher::buildHelmPlots()
   unsigned int i, vsize = m_alog_files.size();
   for(i=0; i<vsize; i++) {
     Populator_HelmPlots pop_hp;
+    cout << "**aaaaaaaaaaaaaaaaaaaaaaaa*" << endl;
     bool ok = pop_hp.populateFromEntries(m_entries_helm_plot[i]);
+    cout << "**uuuuuuuuuuuuuuuuuuuuuuu*" << endl;
     if(!ok) {
       cout << termColor("red") << "Unable to build Helm Plots!!!" << endl;
       cout << "(Likely due to lack of IVPHELM_* entries in .alog files)";
@@ -579,6 +581,7 @@ bool LogViewLauncher::buildHelmPlots()
     m_helm_plots.push_back(pop_hp.getHelmPlot());
   }
 
+  cout << "*****************" << endl;
   for(i=0; i<vsize; i++) {
     m_helm_plots[i].set_vehi_name(m_vehicle_name[i]);
     m_helm_plots[i].set_vehi_type(m_vehicle_type[i]);

@@ -25,6 +25,7 @@
 #include "MBUtils.h"
 #include "BuildUtils.h"
 #include "FunctionEncoder.h"
+#include "IvPDomain.h"
 
 using namespace std;
 
@@ -289,6 +290,9 @@ vector<string> IvPFunctionToVector(const string& whole_string,
 
 IvPFunction *StringToIvPFunction(const string& str)
 {
+  if(str == "")
+    return(0);
+
   int d, i;
 
   int cix = 2; // To account for the H, in the header
@@ -478,10 +482,69 @@ IvPFunction *StringToIvPFunction(const string& str)
 }
 
 
+//--------------------------------------------------------------
+// Procedure: StringToIvPContext
+//   Purpose: 
+
+string StringToIvPContext(const string& str)
+{
+  int cix = 2; // To account for the H, in the header
+
+  // Determine the length of the context string
+  int cstr_len = 0;
+  while(str[cix] != ',') {
+    cstr_len = cstr_len * 10;
+    cstr_len += (int)(str[cix]-48);
+    cix++;
+  }
+  cix++;
+
+  // Determine the context string, if any
+  char *cstr_buff = new char[cstr_len+10];
+  int  cbix = 0;
+  while(str[cix] != ',') {
+    cstr_buff[cbix] = str[cix];
+    cbix++;
+    cix++;
+  }
+  cstr_buff[cbix] = '\0';
+  cix++;
+
+  string rstring = cstr_buff;
+  return(rstring);
+}
 
 
+//--------------------------------------------------------------
+// Procedure: IPFStringToIvPDomain
+//   Purpose: 
 
+IvPDomain IPFStringToIvPDomain(const string& str)
+{
+  int cix = 2; // To account for the H, in the header
 
+  // Determine the length of the context string
+  int cstr_len = 0;
+  while(str[cix] != ',') {
+    cstr_len = cstr_len * 10;
+    cstr_len += (int)(str[cix]-48);
+    cix++;
+  }
+  cix++;
 
+  while(str[cix] != 'D')
+    cix++;
+  cix += 2;
+  
+  int cixx = cix;
+  while(str[cixx] != ',')
+    cixx++;
 
+  string domain_str = str.substr(cix, cixx-cix);
+  domain_str = findReplace(domain_str, ';', ',');
+  
+  IvPDomain ivp_domain = stringToDomain(domain_str);
+    
+  return(ivp_domain);
+}
 

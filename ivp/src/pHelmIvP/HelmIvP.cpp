@@ -66,6 +66,8 @@ HelmIvP::HelmIvP()
 
   m_curr_time_updated = false;
 
+  m_rejournal_requested = true;
+
   m_init_vars_ready  = false;
   m_init_vars_done   = false;
 
@@ -165,6 +167,8 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
 	MOOSTrace("\n");
 	MOOSDebugWrite("pHelmIvP Has Been Re-Started");
       }
+      else if(moosvar == "IVPHELM_REJOURNAL")
+	m_rejournal_requested = true;
       else if(vectorContains(m_node_report_vars, moosvar)) {
 	bool ok = processNodeReport(sval);
 	if(!ok) {
@@ -255,9 +259,19 @@ bool HelmIvP::Iterate()
   // Should be called after postBehaviorMessages() where warnings
   // are detected and the count is incremented.
   helm_report.setWarningCount(m_warning_count);
-
+  
+  string report;
+  if(m_rejournal_requested) {    
+    report = helm_report.getReportAsString();
+    m_rejournal_requested = false;
+  }
+  else
+    report = helm_report.getReportAsString(m_prev_helm_report); 
+  
+  m_Comms.Notify("IVPHELM_SUMMARY", report);
   m_Comms.Notify("HELM_IPF_COUNT", helm_report.getOFNUM());
-  m_Comms.Notify("IVPHELM_SUMMARY", helm_report.getReportAsString());
+  m_prev_helm_report = helm_report;
+
  
   if(m_verbose == "verbose") {
     MOOSTrace("(End) Iteration: %d", m_helm_iteration);
@@ -702,6 +716,7 @@ void HelmIvP::registerVariables()
   registerSingleVariable("MOOS_MANUAL_OVERRIDE");
   registerSingleVariable("RESTART_HELM");
   registerSingleVariable("HELM_VERBOSE");
+  registerSingleVariable("IVPHELM_REJOURNAL");
   
   registerSingleVariable("NAV_SPEED");
   registerSingleVariable("NAV_HEADING");

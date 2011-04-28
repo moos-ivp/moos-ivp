@@ -92,12 +92,13 @@ void IPFViewer::resetIPF(int cn_index, int unif_units)
   else if(m_view_type == 4)
     ipf = m_cpa_model->calc_r16_ipf(cn_index, unif_units);
 
-  string ipf_string = IvPFunctionToString(ipf);
-
-  //double lowval = ipf->getPDMap()->getMinWT();
-  //double hghval = ipf->getPDMap()->getMaxWT();
-
-  applyIPF(ipf_string);
+  if(ipf) {
+    m_quadset.applyIPF(ipf);
+    m_quadset.normalize(0, 100);
+    m_quadset.applyColorMap(m_color_map);
+    delete(ipf);
+  }
+    
   redraw();
 }
 

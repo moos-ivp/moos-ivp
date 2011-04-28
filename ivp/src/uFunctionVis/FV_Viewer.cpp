@@ -28,12 +28,7 @@ void FV_Viewer::resetQuadSet()
   if(!m_model)
     return;
   
-  const QuadSet *quadset = m_model->getQuadSet();
-  if(!quadset)
-    return;
-
-  m_quadset = *quadset;
-
+  m_quadset = m_model->getQuadSet();
 }
 
 
@@ -55,4 +50,3 @@ void FV_Viewer::draw()
   
   glFlush();  
 }
-

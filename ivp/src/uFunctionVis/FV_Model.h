@@ -34,7 +34,7 @@ public:
   std::string getCurrDescriptor();
   std::string getCurrFuncSize();
 
-  const QuadSet* getQuadSet();
+  QuadSet  getQuadSet();
 
 protected:
   FunctionQueue   m_fqueue;

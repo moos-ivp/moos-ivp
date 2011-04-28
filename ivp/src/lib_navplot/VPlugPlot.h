@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin and John Leonard                    */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
-/*    FILE: VPlugPlot.h                                            */
+/*    FILE: VPlugPlot.h                                          */
 /*    DATE: Aug 9th, 2009                                        */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */

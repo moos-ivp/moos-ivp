@@ -19,8 +19,8 @@ using namespace std;
 
 QueueEntry::QueueEntry(const string& ipf_str)
 {
-  m_iteration = -1;
-  m_quadset    = 0;
+  m_iteration  = 0;
+  m_pieces     = 0;
 
   string remainder = ipf_str;
   vector<string> svector = chompString(remainder, ',');
@@ -54,18 +54,22 @@ QueueEntry::QueueEntry(const string& ipf_str)
 //      Note: The quadset member variable will remain unpopulated
 //            until the first time it is queried for.
 
-const QuadSet* QueueEntry::getQuadSet(string colormap_type,
-				      double low_adjust,
-				      double high_adjust)
+QuadSet QueueEntry::getQuadSet(string colormap_type,
+			       double low_adjust,
+			       double high_adjust)
 {
-  if(m_quadset)
+  if(m_quadset.size() > 0)
     return(m_quadset);
-
+  
   IvPFunction *new_ipf = StringToIvPFunction(m_ipf_str);
   if(!new_ipf)
-    return(0);
+    return(m_quadset);
 
   IvPDomain domain = new_ipf->getPDMap()->getDomain();
+  
+  m_pieces = new_ipf->getPDMap()->size();
+
+  double original_pwt = new_ipf->getPWT();
 
   // Case where new_ipf defined only over COURSE
   if((domain.hasDomain("course")) && (!domain.hasDomain("speed"))) {
@@ -89,17 +93,18 @@ const QuadSet* QueueEntry::getQuadSet(string colormap_type,
     OF_Coupler coupler;
     new_ipf = coupler.couple(new_ipf, crs_of);
   }
-
-  m_quadset = new QuadSet;
+  
+  new_ipf->setPWT(original_pwt);
+  
+  m_quadset = QuadSet();
 
   FColorMap cmap;
   if(colormap_type != "")
     cmap.setType(colormap_type);
 
-  m_quadset->applyIPF(new_ipf, "course", "speed");
-  m_quadset->setAdjust(low_adjust, high_adjust);
-  m_quadset->applyColorMap(cmap);
-  m_quadset->normalize(0, 200);
+  m_quadset.applyIPF(new_ipf);
+  m_quadset.applyColorMap(cmap);
+  m_quadset.normalize(0, 200);
 
   delete(new_ipf);
   return(m_quadset);

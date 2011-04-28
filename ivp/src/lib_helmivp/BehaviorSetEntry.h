@@ -18,7 +18,7 @@ public:
   BehaviorSetEntry(IvPBehavior *b=0) {
     m_behavior = b;
     m_state = "";
-    m_state_time_entered = -1;
+    m_state_time_entered = 0;
     m_state_time_elapsed = -1;
   }
 

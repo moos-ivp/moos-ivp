@@ -26,6 +26,7 @@
 #include <cstdlib>
 #include "IvPFuncViewer.h"
 #include "FunctionEncoder.h"
+#include "IPFViewUtils.h"
 #include "MBUtils.h"
 
 using namespace std;
@@ -152,7 +153,17 @@ void IvPFuncViewer::setCurrTime(double curr_time)
     setIterIPF(intToString(iter));
     setPiecesIPF(intToString(pcs));
     IvPDomain ivp_domain = m_ipf_plot[m_plot_ix].getIvPDomain();
-    applyIPF(ipf_string, ivp_domain);
+    
+    if(ipf_string != "") {
+      IvPFunction *ipf = StringToIvPFunction(ipf_string);
+      if(ipf) {
+	ipf = expandHdgSpdIPF(ipf, ivp_domain);
+	m_quadset.applyIPF(ipf);
+	delete(ipf);
+	m_quadset.normalize(0, 100);
+	m_quadset.applyColorMap(m_color_map);	
+      }
+    }
   }
 }
 
@@ -205,23 +216,35 @@ void IvPFuncViewer::buildCollective(double curr_time)
   }
 
   // Phase 4: Build the collective of the given functions.
-  m_quadset.clear();
+  m_quadset = QuadSet();
+  
   for(i=0; i<ipfs.size(); i++) {
     // We grab the IvPDomain associated with each IPF string and pass
     // it along to the setQuadSetFromIPF function. This domain should
     // be for the domain of the helm the produced this IPF, not 
     // necessarily the domain of given IPF, which may be a subdomain.
     IvPDomain ivp_domain = ivp_domains[i];
-    QuadSet quadset = setQuadSetFromIPF(ipfs[i], ivp_domain);
-    bool ok = true;
+
+    QuadSet      quadset;
+    IvPFunction *ipf = StringToIvPFunction(ipfs[i]);
+    ipf = expandHdgSpdIPF(ipf, ivp_domain);
+    if(ipf) {
+      quadset.applyIPF(ipf);
+      delete(ipf);
+    }
+
+    bool ok = false;
     if(quadset.size() != 0)
-      ok = m_quadset.addQuadSet(&quadset);
+      ok = m_quadset.addQuadSet(quadset);
     if(!ok) {
-      m_quadset.clear();
+      m_quadset = QuadSet();
       cout << "Error creating collective quadset" << endl;
       return;
     }
+
   }
+  m_quadset.normalize(0, 100);
+  m_quadset.applyColorMap(m_color_map);
 
   // Phase 5: Set the text information for display
   setVNameIPF(curr_vname);
@@ -229,8 +252,6 @@ void IvPFuncViewer::buildCollective(double curr_time)
   setSourceIPF("collective");
   setPiecesIPF("");
 
-  m_quadset.applyColorMap(m_color_map);
-  m_quadset.normalize(0, 200);
 }
 
 

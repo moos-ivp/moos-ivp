@@ -19,6 +19,14 @@ public:
   }
   ~Quad3D() {};
 
+  bool contains(double x, double y) {
+    return((x>=xl)&&(x<=xh)&&(y>=yl)&&(y<=yh));
+  };
+
+  double getAvgVal() {
+    return((llval+hlval+hhval+lhval)/4);
+  };
+
 public:  
   double xl;
   double xh;

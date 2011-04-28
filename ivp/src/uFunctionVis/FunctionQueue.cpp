@@ -12,7 +12,7 @@ using namespace std;
 //-------------------------------------------------------------
 // Constructor
 
-FunctionQueue::FunctionQueue(int g_queue_limit)
+FunctionQueue::FunctionQueue(unsigned int g_queue_limit)
 {
   if(g_queue_limit >= 0)
     m_queue_limit = g_queue_limit;
@@ -21,21 +21,10 @@ FunctionQueue::FunctionQueue(int g_queue_limit)
     
   m_latest_iteration   = 0;
   m_latest_collective  = 0;
-  m_collective_quadset = 0;
 
   m_low_adjust         = 0;
   m_high_adjust        = 0;
 }
-
-//-------------------------------------------------------------
-// Destructor
-
-FunctionQueue::~FunctionQueue()
-{
-  if(m_collective_quadset)
-    delete(m_collective_quadset);
-}
-
 
 //-------------------------------------------------------------
 // Procedure: addFunction(string, string, string)
@@ -46,7 +35,7 @@ string FunctionQueue::addFunction(string ivpfunction)
   QueueEntry qentry(ivpfunction);
   m_entries.push_back(qentry);
 
-  int q_iteration = qentry.getIteration();
+  unsigned int q_iteration = qentry.getIteration();
   if(q_iteration > m_latest_iteration)
     m_latest_iteration = q_iteration;
 
@@ -73,31 +62,34 @@ void FunctionQueue::addHelmIter(int g_iter_index, int g_of_count)
 //-------------------------------------------------------------
 // Procedure: getQuadSet()
 
-const QuadSet* FunctionQueue::getQuadSet(string descriptor)
+QuadSet FunctionQueue::getQuadSet(string descriptor)
 {
   list<QueueEntry>::reverse_iterator p;
   for(p = m_entries.rbegin(); p != m_entries.rend(); p++) {
     QueueEntry &entry = *p;
-    if(entry.getDescriptor() == descriptor)
-      return(entry.getQuadSet(m_colormap_type, m_low_adjust, m_high_adjust));
+    if(entry.getDescriptor() == descriptor) {
+      m_pieces = entry.size();
+      return(entry.getQuadSet(m_colormap_type, m_low_adjust, 
+			      m_high_adjust));
+    }
   }
-  return(0);
+
+  QuadSet empty_quadset;
+  return(empty_quadset);
 }
 
 
 //-------------------------------------------------------------
 // Procedure: getCollectiveQuadSet()
 
-const QuadSet* FunctionQueue::getCollectiveQuadSet()
+QuadSet FunctionQueue::getCollectiveQuadSet()
 {
   // If the current iteration hasn't changed since the last time
   // a collective quadset was computed, just return the last one.
   if(m_latest_collective == m_latest_iteration)
     return(m_collective_quadset);
 
-  if(m_collective_quadset)
-    delete(m_collective_quadset);
-  m_collective_quadset = new QuadSet;
+  m_collective_quadset = QuadSet();
   m_latest_collective = m_latest_iteration;
 
   // Get all the QueueEntries of the previous iteration since 
@@ -109,17 +101,16 @@ const QuadSet* FunctionQueue::getCollectiveQuadSet()
   list<QueueEntry>::reverse_iterator p;
   for(p = m_entries.rbegin(); p != m_entries.rend(); p++) {
     QueueEntry &entry = *p;
-    if(entry.getIteration() == (m_latest_iteration-1)) {
-      const QuadSet *quad_set = entry.getQuadSet();
-      m_collective_quadset->addQuadSet(quad_set);
+    if((entry.getIteration()+1) == m_latest_iteration) {
+      QuadSet quad_set = entry.getQuadSet();
+      m_collective_quadset.addQuadSet(quad_set);
     }
   }
 
   FColorMap cmap;
   cmap.setType(m_colormap_type);
-  m_collective_quadset->setAdjust(m_low_adjust, m_high_adjust);
-  m_collective_quadset->applyColorMap(cmap);
-  m_collective_quadset->normalize(0, 200);
+  m_collective_quadset.applyColorMap(cmap);
+  m_collective_quadset.normalize(0, 200);
 
   return(m_collective_quadset);
 }

@@ -18,6 +18,7 @@ SET(SRC
   IterBlockHelm.cpp
   IterBlockBHV.cpp
   IterBlockPosts.cpp
+  BehaviorRecord.cpp
   main.cpp
 )
 

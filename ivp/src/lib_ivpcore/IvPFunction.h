@@ -67,13 +67,3 @@ protected:
   std::string m_context_string;
 };
 #endif
-
-
-
-
-
-
-
-
-
-

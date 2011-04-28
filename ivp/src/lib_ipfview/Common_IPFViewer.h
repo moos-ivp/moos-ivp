@@ -32,18 +32,16 @@ class Common_IPFViewer : public Fl_Gl_Window
   int    handle(int);
 
 public:
-  void   applyIPF(const std::string& ipf_str, const IvPDomain&);
-  void   applyIPF(const std::string& ipf_str);
   bool   setParam(std::string, std::string);
   bool   setParam(std::string, double);
   void   printParams();
-  void   setVNameIPF(std::string s)   {m_active_ipf_vname = s;};
-  void   setSourceIPF(std::string s)  {m_active_ipf_source = s;};
-  void   setPiecesIPF(std::string s)  {m_active_ipf_pieces = s;};
-  void   setIterIPF(std::string s)    {m_active_ipf_iter = s;};
-  void   setLabelColor(std::string);
-  void   setClearColor(std::string);
-  void   setFrameColor(std::string);
+  void   setVNameIPF(std::string s)    {m_active_ipf_vname = s;};
+  void   setSourceIPF(std::string s)   {m_active_ipf_source = s;};
+  void   setPiecesIPF(std::string s)   {m_active_ipf_pieces = s;};
+  void   setIterIPF(std::string s)     {m_active_ipf_iter = s;};
+  void   setLabelColor(std::string s)  {m_label_color.setColor(s);};
+  void   setClearColor(std::string s)  {m_clear_color.setColor(s);};
+  void   setFrameColor(std::string s)  {m_frame_color.setColor(s);};
  
 protected:
   void   drawFrame();
@@ -53,8 +51,6 @@ protected:
   void   handleLeftMouse(int, int) {};
   void   handleRightMouse(int, int) {};
   
-  QuadSet setQuadSetFromIPF(const std::string&, IvPDomain);
-
   void   drawText(double px, double py, const std::string&, 
 		  const ColorPack&, double font_size);
 

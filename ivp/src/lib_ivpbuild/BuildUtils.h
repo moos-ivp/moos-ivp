@@ -69,13 +69,3 @@ IvPBox  stringDiscreteToRegionBox(const std::string&, const IvPDomain&,
 				  const char gsep=',', const char lsep=':');
 
 #endif
-
-
-
-
-
-
-
-
-
-
