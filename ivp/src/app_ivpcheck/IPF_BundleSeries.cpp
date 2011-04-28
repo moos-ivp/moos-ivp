@@ -10,6 +10,7 @@
 /*****************************************************************/
 
 #include <iostream>
+#include <cstdlib>
 #include "IPF_BundleSeries.h"
 #include "FunctionEncoder.h"
 #include "MBUtils.h"
