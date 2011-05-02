@@ -10,6 +10,7 @@
 /*****************************************************************/
 
 #include <iostream>
+#include <cstdio>
 #include <cstdlib>
 #include "IvPProblem.h"
 #include "MBUtils.h"
