@@ -69,10 +69,12 @@ void Populator_IPF_Plot::handleEntry(double g_time,
     return;
   }
 
-  string context = ipf->getContextStr();
-  int    ipf_pieces = ipf->size();
-  string ipf_source;
-  int    ipf_iteration;
+  string    context    = ipf->getContextStr();
+  int       ipf_pieces = ipf->size();
+  string    ipf_source;
+  int       ipf_iteration;
+  double    ipf_pwt    = ipf->getPWT();
+  IvPDomain ivp_domain = ipf->getPDMap()->getDomain();
 
   // The Context string might come in the form of NUM:CONTEXT"
   vector<string> svector = parseString(context, ':');
@@ -101,7 +103,8 @@ void Populator_IPF_Plot::handleEntry(double g_time,
     index = vsize;
   }
   
-  m_ipf_plots[index].addEntry(g_time, g_ipf_str, ipf_iteration, ipf_pieces);
+  m_ipf_plots[index].addEntry(g_time, g_ipf_str, ipf_iteration, ipf_pieces,
+			      ipf_pwt, ivp_domain);
 }
 
 //---------------------------------------------------------------

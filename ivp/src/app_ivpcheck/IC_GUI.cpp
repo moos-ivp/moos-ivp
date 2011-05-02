@@ -40,9 +40,13 @@ IC_GUI::IC_GUI(int g_w, int g_h, const char *g_l)
   curr_func_size->textsize(info_size); 
   curr_func_size->labelsize(info_size);
 
-  curr_func_pwt = new MY_Output(570, h()-25, 50, 20, "Priority:"); 
+  curr_func_pwt = new MY_Output(560, h()-25, 50, 20, "Priority:"); 
   curr_func_pwt->textsize(info_size); 
   curr_func_pwt->labelsize(info_size);
+
+  ivp_domain = new MY_Output(680, h()-25, 250, 20, "IvPDomain:"); 
+  ivp_domain->textsize(info_size); 
+  ivp_domain->labelsize(info_size);
 
   this->end();
   this->resizable(this);
@@ -255,6 +259,9 @@ void IC_GUI::updateFields()
 
   string pwt = viewer->getCurrPriority();
   curr_func_pwt->value(pwt.c_str());
+
+  string domain = viewer->getCurrDomain();
+  ivp_domain->value(domain.c_str());
 
 
   viewer->redraw();

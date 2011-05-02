@@ -10,6 +10,8 @@
 
 #include <string>
 #include "QuadSet.h"
+#include "IvPDomain.h"
+#include "IvPFunction.h"
 
 class IPF_Entry
 {
@@ -23,11 +25,13 @@ public:
   std::string   getIPFString() const  {return(m_ipf_str);};
   unsigned int  getPieces() const     {return(m_pieces);};
   double        getPriority() const   {return(m_priority);};
+  IvPDomain     getDomain() const     {return(m_ivp_domain);};
 
  protected:
   std::string    m_ipf_str;
   unsigned int   m_pieces;
   double         m_priority;
+  IvPDomain      m_ivp_domain;
 
   QuadSet        m_quadset;
 };

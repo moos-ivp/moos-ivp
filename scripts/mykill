@@ -26,7 +26,7 @@ killall iMicroModem pRouter pFramer pMessageSim  \
         uSimRangeSensor uSimCurrent
 
 killall pSensorSim pArtifactMapper pNoiseSim uNafconSplitter    \
-        pBlast pSweepLines pNSWCPC pXRelay pXRelayTest logview  \
+        pBlast pSweepLines pNSWCPC pXRelay pXRelayTest alogview  \
         pAcommsHandler pCTDCodec pBTRCodec iDAS iOEX pGateway   \
         pAcommsPoller pArraySim pSimpleAcousticSim geoview      \
         pMultiTargetSim pMultiAcousticSim iOS5000 pGeneralCodec

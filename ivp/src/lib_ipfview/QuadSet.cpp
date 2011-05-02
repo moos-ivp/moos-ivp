@@ -16,11 +16,11 @@ using namespace std;
 
 QuadSet::QuadSet()
 {
-  m_snap_val      = 0;
-  m_minpt_val     = 0;
-  m_maxpt_val     = 0;
-  m_maxpt_dvar_a  = 0;
-  m_maxpt_dvar_b  = 0;
+  m_snap_val  = 0;
+  m_minpt_val = 0;
+  m_maxpt_val = 0;
+  m_max_crs   = 0;
+  m_max_spd   = 0;
 }
 
 //-------------------------------------------------------------
@@ -28,41 +28,41 @@ QuadSet::QuadSet()
 //      Note: For functions defined only over course or speed, we rely
 //            on the caller to "expand" the function before calling.
 
-void QuadSet::applyIPF(IvPFunction *ipf, bool wrap)
+bool QuadSet::applyIPF(IvPFunction *ipf, bool wrap)
 {
-  if(!ipf) 
-    return;
+  if(!ipf)
+    return(false);
 
   IvPDomain ivp_domain = ipf->getPDMap()->getDomain();
-  if(ivp_domain.size() != 2)
-    return;
-  if(ivp_domain.getVarPoints(0) < 2)
-    return;
-  if(ivp_domain.getVarPoints(1) < 2)
-    return;
 
-  unsigned int dvar_a_pts = ivp_domain.getVarPoints(0);
-  unsigned int dvar_b_pts = ivp_domain.getVarPoints(1);
+  unsigned int crs_pts = ivp_domain.getVarPoints("course");
+  unsigned int spd_pts = ivp_domain.getVarPoints("speed");
+  if((crs_pts < 2) || (spd_pts < 2))
+    return(false);
 
   m_ivp_domain = ivp_domain;
   m_quads.clear();
 
-  // Create the "sample" box
-  IvPBox sbox = domainToBox(m_ivp_domain);
-  
+  // Create memory to hold the sample results
   unsigned int i,j;
-  double **vals = new double*[dvar_a_pts];
-  for(i=0; i<dvar_a_pts; i++) {
-    vals[i] = new double[dvar_b_pts];
-    for(j=0; j<dvar_b_pts; j++)
+  double **vals = new double*[crs_pts];
+  for(i=0; i<crs_pts; i++) {
+    vals[i] = new double[spd_pts];
+    for(j=0; j<spd_pts; j++)
       vals[i][j] = 0;
   }
 
+  // Create the "sample" box 
+  IvPBox sbox(m_ivp_domain.size());
+  
+  int crs_ix = m_ivp_domain.getIndex("course");
+  int spd_ix = m_ivp_domain.getIndex("speed");
+
   double priority_wt = ipf->getPWT();
-  for(i=0; i<dvar_a_pts; i++) {
-    sbox.setPTS(0, i, i);
-    for(j=0; j<dvar_b_pts; j++) {
-      sbox.setPTS(1, j, j);
+  for(i=0; i<crs_pts; i++) {
+    sbox.setPTS(crs_ix, i, i);
+    for(j=0; j<spd_pts; j++) {
+      sbox.setPTS(spd_ix, j, j);
       double pval = priority_wt * ipf->getPDMap()->evalPoint(&sbox);
       pval = snapToStep(pval, m_snap_val);
       vals[i][j] = pval;
@@ -70,8 +70,8 @@ void QuadSet::applyIPF(IvPFunction *ipf, bool wrap)
   }
 
   // Build the primary quads
-  for(i=0; i<(dvar_a_pts-1); i++) {
-    for(j=0; j<(dvar_b_pts-1); j++) {
+  for(i=0; i<(crs_pts-1); i++) {
+    for(j=0; j<(spd_pts-1); j++) {
       Quad3D new_quad;
       new_quad.xl = i;
       new_quad.xh = i+1;
@@ -83,8 +83,8 @@ void QuadSet::applyIPF(IvPFunction *ipf, bool wrap)
       new_quad.hhval = vals[i+1][j+1];
 
       new_quad.lines = false;
-      new_quad.xpts = dvar_a_pts;
-      new_quad.ypts = dvar_b_pts;
+      new_quad.xpts = crs_pts;
+      new_quad.ypts = spd_pts;
 
       m_quads.push_back(new_quad);
     }
@@ -93,8 +93,8 @@ void QuadSet::applyIPF(IvPFunction *ipf, bool wrap)
   if((ivp_domain.getVarName(0) == "course") && wrap) {
   
     // Add  "bridge" quads to wrap around 359-0
-    int top_crs_ix = dvar_a_pts-1;
-    for(j=0; j<(dvar_b_pts-1); j++) {
+    int top_crs_ix = crs_pts-1;
+    for(j=0; j<(spd_pts-1); j++) {
       Quad3D new_quad;
       new_quad.xl = top_crs_ix-1;  // usually 359
       new_quad.xh = 0;
@@ -106,14 +106,15 @@ void QuadSet::applyIPF(IvPFunction *ipf, bool wrap)
       new_quad.hhval = vals[0][j+1];
       
       new_quad.lines = false;
-      new_quad.xpts = dvar_a_pts;
-      new_quad.ypts = dvar_b_pts;
+      new_quad.xpts = crs_pts;
+      new_quad.ypts = spd_pts;
       
       m_quads.push_back(new_quad);
     }
   }
 
   resetMinMaxVals();
+  return(true);
 }
 
 
@@ -205,10 +206,12 @@ void QuadSet::applyColorMap(const FColorMap& cmap,
 //-------------------------------------------------------------
 // Procedure: addQuadSet
 
-bool QuadSet::addQuadSet(const QuadSet& g_quads)
+void QuadSet::addQuadSet(const QuadSet& g_quads)
 {
+  // If given quadset is empty, it may be due to the given quadset
+  // having not been derived from a heading/speed ipf.
   if(g_quads.isEmpty())
-    return(false);
+    return;
 
   unsigned int i;
   unsigned int msize  = m_quads.size();
@@ -218,11 +221,14 @@ bool QuadSet::addQuadSet(const QuadSet& g_quads)
   if(msize == 0) {
     for(i=0; i<gsize; i++)
       m_quads.push_back(g_quads.getQuad(i));
-    return(true);
+    resetMinMaxVals();
+    return;
   }
 
+  // If the two quadsets are of different size, it may be due to the
+  // given quadset being defined not over heading/speed.
   if(msize != gsize)
-    return(false);
+    return;
 
   for(i=0; i<msize; i++) {
     m_quads[i].llval += (g_quads.getQuad(i).llval);
@@ -232,7 +238,6 @@ bool QuadSet::addQuadSet(const QuadSet& g_quads)
   }
 
   resetMinMaxVals();
-  return(true);
 }
 
 //-------------------------------------------------------------
@@ -269,10 +274,23 @@ void QuadSet::normalize(double target_base, double target_range)
 
 double QuadSet::getMaxPoint(string varname) const
 {
-  if(m_ivp_domain.getVarName(0) == varname)
-    return(m_maxpt_dvar_a);
-  else if(m_ivp_domain.getVarName(1) == varname)
-    return(m_maxpt_dvar_b);
+  if(varname == "course")
+    return(m_max_crs);
+  else if(varname == "speed")
+    return(m_max_spd);
+  else
+    return(0);
+}
+
+//-------------------------------------------------------------
+// Procedure: getMaxPointQIX
+
+unsigned int QuadSet::getMaxPointQIX(string varname) const
+{
+  if(varname == "course")
+    return(m_max_crs_qix);
+  else if(varname == "speed")
+    return(m_max_spd_qix);
   else
     return(0);
 }
@@ -300,8 +318,8 @@ void QuadSet::resetMinMaxVals()
   if(msize == 0)
     return;
   
-  unsigned int max_dvar_a_ix_q = 0;
-  unsigned int max_dvar_b_ix_q = 0;
+  m_max_crs_qix = 0;
+  m_max_spd_qix = 0;
 
   // Recalculate the new global low and high values.
   m_minpt_val = m_quads[0].llval;
@@ -311,35 +329,37 @@ void QuadSet::resetMinMaxVals()
       m_minpt_val  = m_quads[i].llval;
     if(m_quads[i].llval > m_maxpt_val) {
       m_maxpt_val = m_quads[i].llval;
-      max_dvar_a_ix_q = m_quads[i].xl;
-      max_dvar_b_ix_q = m_quads[i].yl;
+      m_max_crs_qix = m_quads[i].xl;
+      m_max_spd_qix = m_quads[i].yl;
     }
 
     if(m_quads[i].lhval < m_minpt_val)  //------- (L,H)  
       m_minpt_val  = m_quads[i].lhval;
     if(m_quads[i].lhval > m_maxpt_val) {  
       m_maxpt_val = m_quads[i].lhval;
-      max_dvar_a_ix_q = m_quads[i].xl;
-      max_dvar_b_ix_q = m_quads[i].yh;
+      m_max_crs_qix = m_quads[i].xl;
+      m_max_spd_qix = m_quads[i].yh;
     }
 
     if(m_quads[i].hlval < m_minpt_val)  //------- (H,L)  
       m_minpt_val  = m_quads[i].hlval;
     if(m_quads[i].hlval > m_maxpt_val) {
       m_maxpt_val = m_quads[i].hlval;
-      max_dvar_a_ix_q = m_quads[i].xh;
-      max_dvar_b_ix_q = m_quads[i].yl;
+      m_max_crs_qix = m_quads[i].xh;
+      m_max_spd_qix = m_quads[i].yl;
     }
 
     if(m_quads[i].hhval < m_minpt_val) //------- (H,H)    
       m_minpt_val  = m_quads[i].hhval;
     if(m_quads[i].hhval > m_maxpt_val) {
       m_maxpt_val = m_quads[i].hhval;
-      max_dvar_a_ix_q = m_quads[i].xh;
-      max_dvar_b_ix_q = m_quads[i].yh;
+      m_max_crs_qix = m_quads[i].xh;
+      m_max_spd_qix = m_quads[i].yh;
     }
   }
 
-  m_maxpt_dvar_a = m_ivp_domain.getVal(0, max_dvar_a_ix_q);
-  m_maxpt_dvar_b = m_ivp_domain.getVal(1, max_dvar_b_ix_q);
+  int crs_ix = m_ivp_domain.getIndex("course");
+  int spd_ix = m_ivp_domain.getIndex("speed");
+  m_max_crs = m_ivp_domain.getVal(crs_ix, m_max_crs_qix);
+  m_max_spd = m_ivp_domain.getVal(spd_ix, m_max_spd_qix);
 }

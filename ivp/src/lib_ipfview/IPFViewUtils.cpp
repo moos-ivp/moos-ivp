@@ -9,6 +9,7 @@
 /* except by the author(s).                                      */
 /*****************************************************************/
 
+#include <iostream>
 #include "IPFViewUtils.h"
 #include "ZAIC_PEAK.h"
 #include "OF_Coupler.h"

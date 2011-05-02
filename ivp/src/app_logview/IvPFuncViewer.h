@@ -50,6 +50,13 @@ class IvPFuncViewer : public Common_IPFViewer
   void   buildCollective(double time);
   int    getVNameIndex(std::string);
 
+  std::string getCurrVName() const;
+  std::string getCurrSource() const;
+  std::string getCurrPieces() const;
+  std::string getCurrPriority() const;
+  std::string getCurrDomain() const;
+  std::string getCurrIteration() const;
+
 private:
   unsigned int m_plot_ix;
   int          m_collective_ix;

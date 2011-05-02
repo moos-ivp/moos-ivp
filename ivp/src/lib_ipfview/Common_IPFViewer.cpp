@@ -28,6 +28,7 @@ Common_IPFViewer::Common_IPFViewer(int g_x, int g_y, int g_width,
   m_zRot         = 40;
   m_zoom         = 1;
   m_rad_extra    = 15;
+  m_draw_pin     = true;
   m_draw_frame   = true;
   m_draw_base    = true;
   m_polar        = 1; 
@@ -88,6 +89,8 @@ bool Common_IPFViewer::setParam(string param, string value)
     m_draw_base = true;
   else if((param == "draw_base") && (value == "false"))
     m_draw_base = false;
+  else if(param == "draw_pin")
+    setBooleanOnString(m_draw_pin, value);
   else if(param == "reset_view") {
     if(value=="1")
       {m_xRot=-78; m_zRot=40;}
@@ -226,32 +229,17 @@ void Common_IPFViewer::draw()
 //-------------------------------------------------------------
 // Procedure: drawIvPFunction
 
-void Common_IPFViewer::drawIvPFunction()
+bool Common_IPFViewer::drawIvPFunction()
 {
-  int quad_cnt = m_quadset.size();
-  for(int i=0; i<quad_cnt; i++) {
+  unsigned int i, quad_cnt = m_quadset.size();
+  if(quad_cnt == 0)
+    return(false);
+
+  for(i=0; i<quad_cnt; i++) {
     Quad3D quad = m_quadset.getQuad(i);
     drawQuad(quad);
   }
-
-  string null_txt = "No Function on Helm Iteration #" + m_active_ipf_iter;
-
-  if(quad_cnt == 0)
-    drawText(((w()/5)), ((h()/2)-5), null_txt, m_label_color, 12);
-
-  double hpos1 = h()-15;
-  double hpos2 = h()-33;
-  double hpos3 = h()-51;
-
-  string vname_info = " vname = " + m_active_ipf_vname;
-  vname_info += " (" + m_active_ipf_iter + ")";
-  
-  if(m_active_ipf_vname != "")
-    drawText(4, hpos1, vname_info, m_label_color, 12);
-  if(m_active_ipf_source != "")
-    drawText(4, hpos2, "source = "+m_active_ipf_source, m_label_color, 12);
-  if(m_active_ipf_pieces != "")
-    drawText(4, hpos3, " pcs = "+m_active_ipf_pieces, m_label_color, 12);
+  return(true);
 }
 
 //-------------------------------------------------------------
@@ -260,7 +248,7 @@ void Common_IPFViewer::drawIvPFunction()
 void Common_IPFViewer::drawQuad(Quad3D &q)
 
 {
-  double m_intensity   = 1.0;
+  double m_intensity = 1.0;
 
   if(m_polar == 2) {
     q.xl *= m_rad_extra;
@@ -422,49 +410,48 @@ void Common_IPFViewer::drawOwnPoint()
 
   double w = 250;
 
-  glPointSize(8.0 * m_zoom);
+  glPointSize(3.0 * m_zoom);
 
   glColor3f(1.0f, 1.0f, 1.0f);
   glShadeModel(GL_FLAT);
   
+  glEnable(GL_POINT_SMOOTH);
   glBegin(GL_POINTS);
   glVertex3f(0, 0, w); 
   glEnd();
+  glDisable(GL_POINT_SMOOTH);
 
   glFlush();
 }
 
 //-------------------------------------------------------------
-// Procedure: drawText
+// Procedure: drawMaxPoint
 
-void Common_IPFViewer::drawText(double px, double py, const string& text,
-				const ColorPack& font_c, double font_size) 
+void Common_IPFViewer::drawMaxPoint(double crs, double spd)
 {
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  glOrtho(0, w(), 0, h(), -1 ,1);
-  
-  //double tx = meters2img('x', 0);
-  //double ty = meters2img('y', 0);
-  //double qx = img2view('x', tx);
-  //double qy = img2view('y', ty);
+  if(m_quadset.size() == 0)
+    return;
 
-  glMatrixMode(GL_MODELVIEW);
-  glPushMatrix();
-  glLoadIdentity();
-  
-  if(font_c.visible()) {
-    glColor3f(font_c.red(), font_c.grn(), font_c.blu());
-    gl_font(1, font_size);
-    int slen = text.length();
-    char *buff = new char[slen+1];
-    glRasterPos3f(px, py, 0);
-    strncpy(buff, text.c_str(), slen);
-    buff[slen] = '\0';
-    gl_draw(buff, slen);
-    delete [] buff;
-  }
+  spd *= m_rad_extra;
+  double x,y,z=250;
+  projectPoint(crs, spd/2, 0, 0, x, y);
+    
+  glPointSize(3.0 * m_zoom);
+
+  glColor3f(1.0f, 0.5, 1.0f);
+  glShadeModel(GL_FLAT);
+
+  glEnable(GL_POINT_SMOOTH);
+  glBegin(GL_POINTS);
+  glVertex3f(x, y, z); 
+  glEnd();
+  glDisable(GL_POINT_SMOOTH);
+
+  glBegin(GL_LINE_STRIP);
+  glVertex3f(x, y, z); 
+  glVertex3f(x, y, -z); 
+  glEnd();
+
   glFlush();
-  glPopMatrix();
 }
 

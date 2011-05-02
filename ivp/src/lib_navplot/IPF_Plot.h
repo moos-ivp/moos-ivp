@@ -38,7 +38,9 @@ public:
   bool   addEntry(double timestamp, 
 		  const std::string& ipf_str, 
 		  unsigned int iteration, 
-		  unsigned int piece_count);
+		  unsigned int piece_count,
+		  double  priority,
+		  IvPDomain domain);
 
   double getTimeByIndex(unsigned int) const;
 
@@ -46,6 +48,8 @@ public:
   std::string getIPFByTime(double) const;
   std::string getIPFByHelmIteration(unsigned int) const;
   unsigned int getPcsByHelmIteration(unsigned int) const;
+  double       getPwtByHelmIteration(unsigned int) const;
+  IvPDomain    getDomainByHelmIteration(unsigned int) const;
   unsigned int getHelmIterByTime(double);
 
   std::string getSource() const {return(m_source);};
@@ -75,6 +79,8 @@ protected:
   std::vector<double>       m_time_stamp; 
   std::vector<unsigned int> m_helm_iteration;
   std::vector<unsigned int> m_piece_count;
+  std::vector<unsigned int> m_priority;
+  std::vector<IvPDomain>    m_ivp_domain_iter;
 
   IvPDomain                 m_ivp_domain;
 };

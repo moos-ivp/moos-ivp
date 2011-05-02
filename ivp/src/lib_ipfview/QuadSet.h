@@ -21,10 +21,10 @@ public:
   ~QuadSet() {};
 
   // Set/Apply Information
-  void   applyIPF(IvPFunction *ipf, bool wrap=true);
+  bool   applyIPF(IvPFunction *ipf, bool wrap=true);
   void   applyColorMap(const FColorMap&);
   void   applyColorMap(const FColorMap&, double low, double hgh);
-  bool   addQuadSet(const QuadSet&);
+  void   addQuadSet(const QuadSet&);
   void   normalize(double, double);
 
   // Get Information
@@ -34,8 +34,8 @@ public:
   double       getMaxVal() const             {return(m_maxpt_val);};
   double       getMinVal() const             {return(m_minpt_val);};
   double       getMaxPoint(std::string) const;
+  unsigned int getMaxPointQIX(std::string) const;
   void         print() const;
-
 
   void         resetMinMaxVals();
 
@@ -49,8 +49,13 @@ protected:
   double      m_minpt_val;
 
   // Cache the location of the high/low of the function
-  double      m_maxpt_dvar_a;
-  double      m_maxpt_dvar_b;
+  double      m_max_crs;
+  double      m_max_spd;
+
+  // Cache the location of the high/low of the function in units of
+  // the IvP domain, or quadset index.
+  double      m_max_crs_qix;
+  double      m_max_spd_qix;
 
   // Values of the objecive function can be made to snap to 
   // intervals. Can be used to alter the rendering.

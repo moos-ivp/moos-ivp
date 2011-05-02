@@ -38,7 +38,9 @@ using namespace std;
 bool IPF_Plot::addEntry(double timestamp, 
 			const string& ipf_str, 
 			unsigned int helm_iteration, 
-			unsigned int piece_count)
+			unsigned int piece_count,
+			double priority,
+			IvPDomain ivp_domain)
 {
   unsigned int tsize = m_time_stamp.size();
   if((tsize != 0) && (m_time_stamp[tsize-1] > timestamp))
@@ -53,6 +55,8 @@ bool IPF_Plot::addEntry(double timestamp,
   m_ipf_string.push_back(ipf_str);
   m_helm_iteration.push_back(helm_iteration);
   m_piece_count.push_back(piece_count);
+  m_priority.push_back(priority);
+  m_ivp_domain_iter.push_back(ivp_domain);
 
   return(true);
 }
@@ -155,6 +159,45 @@ unsigned int IPF_Plot::getPcsByHelmIteration(unsigned int iter) const
     return(0);
   else
     return(m_piece_count[index]);
+}
+ 
+//---------------------------------------------------------------
+// Procedure: getPwtByHelmIteration
+
+double IPF_Plot::getPwtByHelmIteration(unsigned int iter) const
+{
+  // Special case: if the IPF_Plot instance is "empty"
+  int vsize = m_helm_iteration.size();
+  if(vsize == 0)
+    return(0);
+
+  // Determine the index for the given helm iteration
+  int index = getIndexByHelmIter(iter);
+  
+  if(index == -1)
+    return(0);
+  else
+    return(m_priority[index]);
+}
+ 
+//---------------------------------------------------------------
+// Procedure: getDomainByHelmIteration
+
+IvPDomain IPF_Plot::getDomainByHelmIteration(unsigned int iter) const
+{
+  // Special case: if the IPF_Plot instance is "empty"
+  IvPDomain empty_domain;
+  unsigned int vsize = m_helm_iteration.size();
+  if(vsize == 0)
+    return(empty_domain);
+
+  // Determine the index for the given helm iteration
+  int index = getIndexByHelmIter(iter);
+  
+  if(index == -1)
+    return(empty_domain);
+  else
+    return(m_ivp_domain_iter[index]);
 }
  
 //---------------------------------------------------------------

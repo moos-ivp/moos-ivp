@@ -33,13 +33,13 @@ IvPBox  makeRand(const IvPDomain&);
 bool    containedWithinBox(const IvPBox&, const IvPBox&);
 bool    intersectDomain(const IvPDomain&, const IvPDomain&);
 
-IvPDomain   unionDomain(const IvPDomain&, const IvPDomain&);
+IvPDomain   unionDomain(const IvPDomain&, const IvPDomain&B);
 IvPDomain   subDomain(const IvPDomain&, std::string);
 IvPDomain   boxToDomain(const IvPBox&);
 IvPDomain   stringToDomain(const std::string&);
 IvPBox      domainToBox(const IvPDomain&);
 IvPBox      stringToBox(const std::string&);
-std::string domainToString(const IvPDomain&);
+std::string domainToString(const IvPDomain&, bool=true);
 
 std::string domainAndBoxToString(const IvPBox&, const IvPDomain&);
 

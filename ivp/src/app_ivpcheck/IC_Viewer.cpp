@@ -7,6 +7,7 @@
 #include <iostream>
 #include "IC_Viewer.h"
 #include "ColorParse.h"
+#include "BuildUtils.h"
 
 using namespace std;
 
@@ -19,6 +20,7 @@ IC_Viewer::IC_Viewer(int x, int y, int wid, int hgt, const char *l)
   m_clear_color.setColor("macbeige");
   m_collective  = false;
   m_curr_iter   = 0;
+  m_check_brute = true;
 }
 
 //-------------------------------------------------------------
@@ -35,8 +37,11 @@ void IC_Viewer::checkSolutions()
   cout << "For Iteration: " << m_curr_iter << endl;
   cout << "Total # of IPF strings: " << ipf_strings.size() << endl;
   
-  m_ivp_checker.checkBrute(ipf_strings);
+  if(m_check_brute)
+    m_ivp_checker.checkBrute(ipf_strings);
+
   cout << termColor("green");
+
   m_ivp_checker.checkIvP(ipf_strings);
   cout << termColor("magenta");
   
@@ -72,18 +77,16 @@ void IC_Viewer::setIPF_BundleSeries(IPF_BundleSeries bundle_series)
 void IC_Viewer::resetQuadSet()
 {
   if(m_collective) {
-    QuadSet quadset = m_bundle_series.getCollectiveQuadSet(m_curr_iter);
-    if(quadset.isEmpty())
+    m_quadset = m_bundle_series.getCollectiveQuadSet(m_curr_iter);
+    if(m_quadset.isEmpty())
       return;
-    m_quadset = quadset;
     m_quadset.normalize(0,200);
     m_quadset.applyColorMap(m_color_map);
   }
   else {
-    QuadSet qset = m_bundle_series.getQuadSet(m_curr_iter, m_curr_source);
-    if(qset.isEmpty())
+    m_quadset = m_bundle_series.getQuadSet(m_curr_iter, m_curr_source);
+    if(m_quadset.isEmpty())
       return;
-    m_quadset = qset;
     m_quadset.normalize(0,200);
     m_quadset.applyColorMap(m_color_map);
   }
@@ -100,10 +103,17 @@ void IC_Viewer::draw()
   glRotatef(m_xRot, 1.0f, 0.0f, 0.0f);
   glRotatef(m_zRot, 0.0f, 0.0f, 1.0f);
   
-  Common_IPFViewer::drawIvPFunction();
-  if(m_draw_frame)
-    drawFrame();
-  drawOwnPoint();
+  bool result = Common_IPFViewer::drawIvPFunction();
+  if(result) {
+    if(m_draw_frame)
+      drawFrame();
+    drawOwnPoint();
+
+    unsigned int max_crs_qix = m_quadset.getMaxPointQIX("course");
+    unsigned int max_spd_qix = m_quadset.getMaxPointQIX("speed");
+    drawMaxPoint(max_crs_qix, max_spd_qix);
+
+  }
   glPopMatrix();
   
   glFlush();  
@@ -176,13 +186,26 @@ string IC_Viewer::getCurrDescriptor()
 
 string IC_Viewer::getCurrPriority()
 {
-  cout << "IC_Viewer::getCurrPriority(): src: " << m_curr_source << endl;
   if(m_collective)
     return("0");
   else {
     double pwt = m_bundle_series.getPriority(m_curr_iter, m_curr_source);
     return(dstringCompact(doubleToString(pwt)));
   }
+}
+
+//-------------------------------------------------------------
+// Procedure: getCurrDomain()
+
+string IC_Viewer::getCurrDomain()
+{
+  IvPDomain ivp_domain;
+  if(m_collective)
+    ivp_domain = m_bundle_series.getDomain(m_curr_iter);
+  else
+    ivp_domain = m_bundle_series.getDomain(m_curr_iter, m_curr_source);
+
+  return(domainToString(ivp_domain));
 }
 
 //-------------------------------------------------------------
@@ -193,7 +216,6 @@ string IC_Viewer::getCurrPieces()
   if(m_collective)
     return("0");
   else {
-    cout << "Current Source: [" << m_curr_source << "]" << endl;
     unsigned int pcs;
     pcs = m_bundle_series.getPieces(m_curr_iter, m_curr_source);
     return(dstringCompact(uintToString(pcs)));

@@ -90,6 +90,7 @@ QuadSet IPF_Bundle::getQuadSet(string source)
     if(m_sources[i] == source)
       return(m_entries[i].getQuadSet(m_ivp_domain));
   
+  cout << "Unfound QuadSet by source" << endl;
   QuadSet empty_qset;
   return(empty_qset);
 }
@@ -99,21 +100,17 @@ QuadSet IPF_Bundle::getQuadSet(string source)
 
 unsigned int IPF_Bundle::getPieces(string source) const
 {
-  cout << "IPF_Bundle::getPieces: " << source << endl;
   unsigned int i, vsize = m_sources.size();
   for(i=0; i<vsize; i++) {
-    if(m_sources[i] == source) {
-      cout << "Returning: " << m_entries[i].getPieces() << endl;
+    if(m_sources[i] == source)
       return(m_entries[i].getPieces());
-    }
   }
 
-  cout << "didnt find the source !!!!!!!!!!!!!!!!!!" << endl;
   return(0);
 }
 
 //--------------------------------------------------------------
-// Procedure: getPriority(index)
+// Procedure: getPriority(source)
 
 double IPF_Bundle::getPriority(string source) const
 {
@@ -123,6 +120,20 @@ double IPF_Bundle::getPriority(string source) const
       return(m_entries[i].getPriority());
 
   return(0);
+}
+
+//--------------------------------------------------------------
+// Procedure: getDomain(source)
+
+IvPDomain IPF_Bundle::getDomain(string source) const
+{
+  unsigned int i, vsize = m_sources.size();
+  for(i=0; i<vsize; i++) 
+    if(m_sources[i] == source)
+      return(m_entries[i].getDomain());
+
+  IvPDomain empty_domain;
+  return(empty_domain);
 }
 
 //--------------------------------------------------------------

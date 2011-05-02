@@ -63,10 +63,13 @@ int main(int argc, char *argv[])
   unsigned int iteration = 0;
   string alogfile_in;
   string alogfile_out;
+  bool   check_brute = true;
 
   for(int i=1; i<argc; i++) {
     string sarg = argv[i];
-    if(strContains(sarg, ".alog")) {
+    if(sarg == "--nobrute")
+      check_brute = false;
+    else if(strContains(sarg, ".alog")) {
       if(alogfile_in == "")
 	alogfile_in = sarg;
       else 
@@ -75,7 +78,7 @@ int main(int argc, char *argv[])
     else
       iteration = atof(argv[i]);
   }
- 
+  
   if(alogfile_in == "") {
     cout << "No alog file given - exiting" << endl;
     exit(0);
@@ -98,10 +101,10 @@ int main(int argc, char *argv[])
     exit(0);
   }
 
-
   IC_GUI *gui  = new IC_GUI(1000, 700, "ivpcheck-viewer");
 
   gui->getViewer()->setIPF_BundleSeries(bundle_series);
+  gui->getViewer()->setCheckBrute(check_brute);
 
   gui->getViewer()->resetQuadSet();
   gui->getViewer()->redraw();

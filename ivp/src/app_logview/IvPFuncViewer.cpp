@@ -28,6 +28,7 @@
 #include "FunctionEncoder.h"
 #include "IPFViewUtils.h"
 #include "MBUtils.h"
+#include "BuildUtils.h"
 
 using namespace std;
 
@@ -35,8 +36,8 @@ IvPFuncViewer::IvPFuncViewer(int x, int y, int w, int h, const char *l)
   : Common_IPFViewer(x,y,w,h,l)
 {
   m_plot_ix       = 0;
-  m_rad_extra     = 20;
-  m_draw_frame    = false;
+  m_rad_extra     = 30;
+  m_draw_frame    = true;
   m_zoom          = 2.0;
   m_collective_ix = -1;
 
@@ -56,17 +57,21 @@ void IvPFuncViewer::draw()
   glRotatef(m_xRot, 1.0f, 0.0f, 0.0f);
   glRotatef(m_zRot, 0.0f, 0.0f, 1.0f);
 
-  Common_IPFViewer::drawIvPFunction();
-  if(m_draw_frame)
-    drawFrame();
-  drawOwnPoint();
-  glPopMatrix();
-  
-  glFlush();
+  bool result = Common_IPFViewer::drawIvPFunction();
+  if(result) {
+    //if(m_draw_frame)
+    //  drawFrame();
+    drawOwnPoint();
 
-  //GLenum err = glGetError();
-  //if(err != GL_NO_ERROR)
-  //  cout << "WARNING!!!!! GL ERROR DETECTED!!!!" << endl;
+    unsigned int max_crs_qix = m_quadset.getMaxPointQIX("course");
+    unsigned int max_spd_qix = m_quadset.getMaxPointQIX("speed");
+    
+    if(m_draw_pin)
+      Common_IPFViewer::drawMaxPoint(max_crs_qix, max_spd_qix);
+  }
+
+  glPopMatrix();
+  glFlush();
 }
 
 //-------------------------------------------------------------
@@ -148,17 +153,24 @@ void IvPFuncViewer::setCurrTime(double curr_time)
     unsigned int iter = m_viter_map[m_ipf_vname[m_plot_ix]];
     string ipf_string = m_ipf_plot[m_plot_ix].getIPFByHelmIteration(iter);
     unsigned int pcs = m_ipf_plot[m_plot_ix].getPcsByHelmIteration(iter);
+    double pwt = m_ipf_plot[m_plot_ix].getPwtByHelmIteration(iter);
     setVNameIPF(m_ipf_vname[m_plot_ix]);
     setSourceIPF(m_ipf_source[m_plot_ix]);
     setIterIPF(intToString(iter));
     setPiecesIPF(intToString(pcs));
+    setPriorityIPF(dstringCompact(doubleToString(pwt)));
     IvPDomain ivp_domain = m_ipf_plot[m_plot_ix].getIvPDomain();
-    
+    IvPDomain ivp_subdomain = m_ipf_plot[m_plot_ix].getDomainByHelmIteration(iter);
+    setDomainIPF(ivp_domain);
+    setSubDomainIPF(ivp_subdomain);
+
     if(ipf_string != "") {
       IvPFunction *ipf = StringToIvPFunction(ipf_string);
       if(ipf) {
 	ipf = expandHdgSpdIPF(ipf, ivp_domain);
-	m_quadset.applyIPF(ipf);
+	bool ok = m_quadset.applyIPF(ipf);
+	if(!ok)
+	  m_quadset = QuadSet();
 	delete(ipf);
 	m_quadset.normalize(0, 100);
 	m_quadset.applyColorMap(m_color_map);	
@@ -233,15 +245,8 @@ void IvPFuncViewer::buildCollective(double curr_time)
       delete(ipf);
     }
 
-    bool ok = false;
     if(quadset.size() != 0)
-      ok = m_quadset.addQuadSet(quadset);
-    if(!ok) {
-      m_quadset = QuadSet();
-      cout << "Error creating collective quadset" << endl;
-      return;
-    }
-
+      m_quadset.addQuadSet(quadset);
   }
   m_quadset.normalize(0, 100);
   m_quadset.applyColorMap(m_color_map);
@@ -251,7 +256,6 @@ void IvPFuncViewer::buildCollective(double curr_time)
   setIterIPF(intToString(curr_iter));
   setSourceIPF("collective");
   setPiecesIPF("");
-
 }
 
 
@@ -267,5 +271,69 @@ int IvPFuncViewer::getVNameIndex(string vname)
       return((int)(i));
   }  
   return(-1);
+}
+  
+
+//-------------------------------------------------------------
+// Procedure: getCurrVName()
+
+string IvPFuncViewer::getCurrVName() const
+{
+  if(m_collective_ix >= 0) {
+    if((unsigned int)(m_collective_ix) < m_all_vnames.size())
+      return(m_all_vnames[m_collective_ix]);
+    else
+      return("ERROR");
+  }
+
+  return(m_ipf_vname[m_plot_ix]);
+}
+  
+//-------------------------------------------------------------
+// Procedure: getCurrSource()
+
+string IvPFuncViewer::getCurrSource() const
+{
+  if(m_collective_ix >= 0) {
+    if((unsigned int)(m_collective_ix) < m_all_vnames.size())
+      return("Collective");
+    else
+      return("ERROR");
+  }
+
+  return(m_ipf_source[m_plot_ix]);
+}
+  
+//-------------------------------------------------------------
+// Procedure: getCurrPieces()
+
+string IvPFuncViewer::getCurrPieces() const
+{
+  return(m_active_ipf_pieces);
+}
+  
+//-------------------------------------------------------------
+// Procedure: getCurrPriority()
+
+string IvPFuncViewer::getCurrPriority() const
+{
+  return(m_active_ipf_priority);
+}
+  
+//-------------------------------------------------------------
+// Procedure: getCurrDomain()
+
+string IvPFuncViewer::getCurrDomain() const
+{
+  string domain_str = domainToString(m_active_ipf_subdomain, false);
+  return(domain_str);
+}
+  
+//-------------------------------------------------------------
+// Procedure: getCurrIteration()
+
+string IvPFuncViewer::getCurrIteration() const
+{
+  return(m_active_ipf_iter);
 }
   

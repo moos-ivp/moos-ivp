@@ -28,7 +28,8 @@ class IC_Viewer : public Common_IPFViewer
   {return Common_IPFViewer::handle(event);};
 
   void  setIPF_BundleSeries(IPF_BundleSeries bundle_series);
-  
+  void  setCheckBrute(bool v) {m_check_brute = v;};
+
   void  incCurrFunction();
   void  decCurrFunction();
   
@@ -38,6 +39,7 @@ class IC_Viewer : public Common_IPFViewer
   std::string  getCurrDescriptor();
   std::string  getCurrPieces();
   std::string  getCurrPriority();
+  std::string  getCurrDomain();
   
  public:
   void  resetQuadSet();
@@ -48,6 +50,8 @@ class IC_Viewer : public Common_IPFViewer
   std::string   m_curr_source;
   bool          m_collective;
   IvPChecker    m_ivp_checker;
+
+  bool          m_check_brute;
   
   IPF_BundleSeries m_bundle_series;
 };

@@ -456,7 +456,7 @@ IvPDomain unionDomain(const IvPDomain& dom1, const IvPDomain& dom2)
   IvPDomain new_domain = dom1;
 
   unsigned int i, dsize = dom2.size();
-  for(int i=0; i<dsize; i++) {
+  for(i=0; i<dsize; i++) {
     string varname = dom2.getVarName(i);
     double varlow  = dom2.getVarLow(i);
     double varhigh = dom2.getVarHigh(i);
@@ -476,11 +476,9 @@ IvPDomain unionDomain(const IvPDomain& dom1, const IvPDomain& dom2)
 IvPDomain subDomain(const IvPDomain& domain, string vars)
 {
   vector<string> svector = parseString(vars, ',');
-  int vsize = svector.size();
+  unsigned int i, vsize = svector.size();
 
   IvPDomain subdomain;
-
-  int i;
 
   // Check that given domain has all given domain variables.
   for(i=0; i<vsize; i++) {
@@ -504,10 +502,10 @@ IvPDomain stringToDomain(const string& domain_descriptor)
   IvPDomain good_domain; // build up this and return if all OK
 
   vector<string> svector = parseString(domain_descriptor, ':');
-  int vsize = svector.size();
+  unsigned int i, vsize  = svector.size();
   if(vsize == 0)
     return(null_domain);
-  for(int i=0; i<vsize; i++) {
+  for(i=0; i<vsize; i++) {
     string dstr = stripBlankEnds(svector[i]);
     vector<string> svector2 = parseString(dstr, ',');
     int vsize2 = svector2.size();
@@ -537,10 +535,10 @@ IvPDomain boxToDomain(const IvPBox& box)
   IvPDomain null_domain; // return this is something goes wrong
   IvPDomain good_domain; // build up this and return if all OK
 
-  int vsize = box.getDim();
+  int i, vsize = box.getDim();
   if(vsize == 0)
     return(null_domain);
-  for(int i=0; i<vsize; i++) {
+  for(i=0; i<vsize; i++) {
     string dname   = intToString(i);
     double f_dlow    = (double)(box.pt(i,0));
     double f_dhigh   = (double)(box.pt(i,1));
@@ -557,19 +555,21 @@ IvPDomain boxToDomain(const IvPBox& box)
 // Procedure: domainToString
 //   example: "x,0,200,201:y,0,10,11:z,20,25,6"
 
-string domainToString(const IvPDomain& domain)
+string domainToString(const IvPDomain& domain, bool full_version)
 {
   string return_string;
 
-  int dcount = domain.size();
-  for(int i=0; i<dcount; i++) {
+  unsigned int i, dcount = domain.size();
+  for(i=0; i<dcount; i++) {
     return_string += domain.getVarName(i);
-    return_string += ",";
-    return_string += dstringCompact(doubleToString(domain.getVarLow(i)));
-    return_string += ",";
-    return_string += dstringCompact(doubleToString(domain.getVarHigh(i)));
-    return_string += ",";
-    return_string += intToString(domain.getVarPoints(i));
+    if(full_version) {
+      return_string += ",";
+      return_string += dstringCompact(doubleToString(domain.getVarLow(i)));
+      return_string += ",";
+      return_string += dstringCompact(doubleToString(domain.getVarHigh(i)));
+      return_string += ",";
+      return_string += intToString(domain.getVarPoints(i));
+    }
     if(i < dcount-1)
       return_string += ":";
   }
@@ -585,10 +585,10 @@ string domainToString(const IvPDomain& domain)
 
 IvPBox domainToBox(const IvPDomain& domain)
 {
-  int dim = domain.size();
+  unsigned int i, dim = domain.size();
 
   IvPBox  newbox(dim);
-  for(int i=0; i<dim; i++)
+  for(i=0; i<dim; i++)
     newbox.setPTS(i, 0, domain.getVarPoints(i)-1);
 
   return(newbox);
@@ -693,7 +693,7 @@ IvPBox stringToPointBox(const string& given_str,
   IvPBox null_box;
 
   vector<string> svector = parseString(given_str, '@');
-  int vsize = svector.size();
+  unsigned int vsize = svector.size();
 
   // If string was empty or more then two separators found
   if((vsize == 0) || (vsize > 2))

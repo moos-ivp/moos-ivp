@@ -5,6 +5,7 @@
 /*    DATE: Apr 20th, 2011                                       */
 /*****************************************************************/
 
+#include <iostream>
 #include "IPF_Entry.h"
 #include "FunctionEncoder.h"
 #include "IPFViewUtils.h"
@@ -46,8 +47,9 @@ QuadSet IPF_Entry::getQuadSet(IvPDomain ivp_domain)
   if(m_quadset.size() == 0) {
     IvPFunction *new_ipf = StringToIvPFunction(m_ipf_str);
     if(new_ipf) {
-      m_pieces   = new_ipf->getPDMap()->size();
-      m_priority = new_ipf->getPWT();
+      m_ivp_domain = new_ipf->getPDMap()->getDomain();
+      m_pieces     = new_ipf->getPDMap()->size();
+      m_priority   = new_ipf->getPWT();
       new_ipf = expandHdgSpdIPF(new_ipf, ivp_domain);
       m_quadset.applyIPF(new_ipf);
       delete(new_ipf);

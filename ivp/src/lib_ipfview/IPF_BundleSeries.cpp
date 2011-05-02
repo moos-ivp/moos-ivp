@@ -82,6 +82,23 @@ QuadSet IPF_BundleSeries::getQuadSet(unsigned int iter, string src)
   return(m_bundles[iter].getQuadSet(src));
 }
 
+//--------------------------------------------------------------
+// Procedure: getDomain
+
+IvPDomain IPF_BundleSeries::getDomain(unsigned int iter)
+{
+  return(m_bundles[iter].getDomain());
+}
+
+
+//--------------------------------------------------------------
+// Procedure: getDomain
+
+IvPDomain IPF_BundleSeries::getDomain(unsigned int iter, string src)
+{
+  return(m_bundles[iter].getDomain(src));
+}
+
 
 //--------------------------------------------------------------
 // Procedure: getPriority

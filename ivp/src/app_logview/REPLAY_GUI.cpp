@@ -49,7 +49,7 @@ REPLAY_GUI::REPLAY_GUI(int g_w, int g_h, const char *g_l)
 
   augmentMenu();
 
-  int    info_size = 10;
+  int info_size = 10;
 
   // Initialize viewer window with bogus extents. Actual extents
   // are set in the setWindowLayout() call below.
@@ -57,6 +57,24 @@ REPLAY_GUI::REPLAY_GUI(int g_w, int g_h, const char *g_l)
   lp_viewer    = new LogPlotViewer(1, 1, 1, 1);
   ipf_viewer_a = new IvPFuncViewer(1, 1, 1, 1);
   ipf_viewer_b = new IvPFuncViewer(1, 1, 1, 1);
+
+  ipf_vname_a = 0;
+  ipf_vname_b = 0;
+  ipf_pcs_a = 0;
+  ipf_pcs_b = 0;
+  ipf_pwt_a = 0;
+  ipf_pwt_b = 0;
+  ipf_iter_a = 0;
+  ipf_iter_b = 0;
+  ipf_source_a = 0;
+  ipf_source_b = 0;
+  ipf_domain_a = 0;
+  ipf_domain_b = 0;
+  m_but_ipf_set_a = 0;
+  m_but_ipf_set_b = 0;
+  m_but_ipf_pin_a = 0;
+  m_but_ipf_pin_b = 0;
+
   setWindowLayout("normal");
 
   cmviewer     = np_viewer;
@@ -322,12 +340,12 @@ void REPLAY_GUI::setWindowLayout(string layout)
   ipax = w() * (1-ipf_pct);
   ipay = 30;
   ipaw = w() * (ipf_pct);
-  ipah = ipf_hgt;
+  ipah = ipf_hgt-65;
   
   ipbx = w() * (1-ipf_pct);
   ipby = ipf_hgt + 30;
   ipbw = w() * (ipf_pct);
-  ipbh = ipf_hgt;
+  ipbh = ipf_hgt-65;
   
   if(np_viewer)
     np_viewer->resize(npx, npy, npw, nph);
@@ -335,12 +353,111 @@ void REPLAY_GUI::setWindowLayout(string layout)
     lp_viewer->resize(lpx, lpy, lpw, lph);
   
   if(ipf_viewer_a)
-    ipf_viewer_a->resize(ipax, ipay, ipaw, ipah);
+    ipf_viewer_a->resize(ipax, ipay+65, ipaw, ipah);
   if(ipf_viewer_b)
-    ipf_viewer_b->resize(ipbx, ipby, ipbw, ipbh);
+    ipf_viewer_b->resize(ipbx, ipby+65, ipbw, ipbh);
 
+  
   m_np_viewer_hgt = nph;
   m_lp_viewer_hgt = lph;
+
+  int info_size = 10;
+
+  if(!ipf_vname_a) {
+    ipf_vname_a = new MY_Output(ipax+40, ipay+5, 75, 20, "Plat:"); 
+    ipf_vname_a->textsize(info_size); 
+    ipf_vname_a->labelsize(info_size);
+  }
+  if(!ipf_vname_b) {
+    ipf_vname_b = new MY_Output(ipbx+40, ipby+8, 75, 20, "Plat:"); 
+    ipf_vname_b->textsize(info_size); 
+    ipf_vname_b->labelsize(info_size);
+  }
+
+  Fl_Color fcolor1 = fl_rgb_color(200, 90, 90);
+  if(!ipf_iter_a) {
+    ipf_iter_a = new MY_Output(ipax+145, ipay+5, 50, 20, "Iter:"); 
+    ipf_iter_a->textsize(info_size); 
+    ipf_iter_a->color(fcolor1); 
+    ipf_iter_a->labelsize(info_size);
+  }
+  if(!ipf_iter_b) {
+    ipf_iter_b = new MY_Output(ipbx+145, ipby+8, 50, 20, "Iter:"); 
+    ipf_iter_b->textsize(info_size); 
+    ipf_iter_b->color(fcolor1); 
+    ipf_iter_b->labelsize(info_size);
+  }
+
+  if(!ipf_pcs_a) {
+    ipf_pcs_a = new MY_Output(ipax+230, ipay+5, 35, 20, "Pcs:"); 
+    ipf_pcs_a->textsize(info_size); 
+    ipf_pcs_a->labelsize(info_size);
+  }
+
+  if(!ipf_pcs_b) {
+    ipf_pcs_b = new MY_Output(ipbx+230, ipby+8, 35, 20, "Pcs:"); 
+    ipf_pcs_b->textsize(info_size); 
+    ipf_pcs_b->labelsize(info_size);
+  }
+
+  if(!ipf_pwt_a) {
+    ipf_pwt_a = new MY_Output(ipax+295, ipay+5, 35, 20, "Pwt:"); 
+    ipf_pwt_a->textsize(info_size); 
+    ipf_pwt_a->labelsize(info_size);
+  }
+
+  if(!ipf_pwt_b) {
+    ipf_pwt_b = new MY_Output(ipbx+295, ipby+8, 35, 20, "Pwt:"); 
+    ipf_pwt_b->textsize(info_size); 
+    ipf_pwt_b->labelsize(info_size);
+  }
+
+  if(!m_but_ipf_set_a) {
+    m_but_ipf_set_a = new MY_Button(ipbx+340, ipay+5, 34, 20, "set");
+    m_but_ipf_set_a->labelsize(12);
+    m_but_ipf_set_a->callback((Fl_Callback*)REPLAY_GUI::cb_ToggleSet,(void*)1);
+  }
+
+  if(!m_but_ipf_set_b) {
+    m_but_ipf_set_b = new MY_Button(ipbx+340, ipby+8, 34, 20, "set");
+    m_but_ipf_set_b->labelsize(12);
+    m_but_ipf_set_b->callback((Fl_Callback*)REPLAY_GUI::cb_ToggleSet,(void*)2);
+  }
+  
+  if(!m_but_ipf_pin_a) {
+    m_but_ipf_pin_a = new MY_Button(ipbx+380, ipay+5, 34, 20, "pin");
+    m_but_ipf_pin_a->labelsize(12);
+    m_but_ipf_pin_a->callback((Fl_Callback*)REPLAY_GUI::cb_TogglePin,(void*)1);
+  }
+
+  if(!m_but_ipf_pin_b) {
+    m_but_ipf_pin_b = new MY_Button(ipbx+380, ipby+8, 34, 20, "pin");
+    m_but_ipf_pin_b->labelsize(12);
+    m_but_ipf_pin_b->callback((Fl_Callback*)REPLAY_GUI::cb_TogglePin,(void*)2);
+  }
+
+  if(!ipf_source_a) {
+    ipf_source_a = new MY_Output(ipax+40, ipay+30, 225, 20, "BHV:"); 
+    ipf_source_a->textsize(info_size); 
+    ipf_source_a->labelsize(info_size);
+  }
+  if(!ipf_source_b) {
+    ipf_source_b = new MY_Output(ipbx+40, ipby+33, 225, 20, "BHV:"); 
+    ipf_source_b->textsize(info_size); 
+    ipf_source_b->labelsize(info_size);
+  }
+
+  if(!ipf_domain_a) {
+    ipf_domain_a = new MY_Output(ipax+295, ipay+30, 120, 20, "Dom:"); 
+    ipf_domain_a->textsize(info_size); 
+    ipf_domain_a->labelsize(info_size);
+  }
+  if(!ipf_domain_b) {
+    ipf_domain_b = new MY_Output(ipbx+295, ipby+33, 120, 20, "Dom:"); 
+    ipf_domain_b->textsize(info_size); 
+    ipf_domain_b->labelsize(info_size);
+  }
+
 }
 
 
@@ -782,6 +899,29 @@ void REPLAY_GUI::cb_StreamToggle(Fl_Widget* o) {
   ((REPLAY_GUI*)(o->parent()->user_data()))->cb_StreamToggle_i();
 }
 
+//----------------------------------------- ToggleSet
+inline void REPLAY_GUI::cb_ToggleSet_i(int val) {
+  if(val == 1)
+    ipf_viewer_a->setParam("reset_view", "2");
+  if(val == 2)
+    ipf_viewer_b->setParam("reset_view", "2");
+}
+void REPLAY_GUI::cb_ToggleSet(Fl_Widget* o, int v) {
+  ((REPLAY_GUI*)(o->parent()->user_data()))->cb_ToggleSet_i(v);
+}
+
+//----------------------------------------- TogglePin
+inline void REPLAY_GUI::cb_TogglePin_i(int val) {
+  if(val == 1)
+    ipf_viewer_a->setParam("draw_pin", "toggle");
+  if(val == 2)
+    ipf_viewer_b->setParam("draw_pin", "toggle");
+}
+
+void REPLAY_GUI::cb_TogglePin(Fl_Widget* o, int v) {
+  ((REPLAY_GUI*)(o->parent()->user_data()))->cb_TogglePin_i(v);
+}
+
 //----------------------------------------- StreamStep
 inline void REPLAY_GUI::cb_StreamStep_i(int val) {
   m_step_amt = val;
@@ -914,11 +1054,39 @@ void REPLAY_GUI::updateXY()
   m_fld_bhvs_dec_2->value(v2decision.c_str());
 
 
+  // IPF fields (A)
+  string ipf_vname_a_str = ipf_viewer_a->getCurrVName();
+  ipf_vname_a->value(ipf_vname_a_str.c_str());
+  string ipf_iter_a_str = ipf_viewer_a->getCurrIteration();
+  ipf_iter_a->value(ipf_iter_a_str.c_str());
+  string ipf_pcs_a_str = ipf_viewer_a->getCurrPieces();
+  ipf_pcs_a->value(ipf_pcs_a_str.c_str());
+  string ipf_pwt_a_str = ipf_viewer_a->getCurrPriority();
+  ipf_pwt_a->value(ipf_pwt_a_str.c_str());
+  string ipf_source_a_str = ipf_viewer_a->getCurrSource();
+  ipf_source_a->value(ipf_source_a_str.c_str());
+  string ipf_domain_a_str = ipf_viewer_a->getCurrDomain();
+  ipf_domain_a->value(ipf_domain_a_str.c_str());
+
+  // IPF fields (B)
+  string ipf_vname_b_str = ipf_viewer_b->getCurrVName();
+  ipf_vname_b->value(ipf_vname_b_str.c_str());
+  string ipf_iter_b_str = ipf_viewer_b->getCurrIteration();
+  ipf_iter_b->value(ipf_iter_b_str.c_str());
+  string ipf_pcs_b_str = ipf_viewer_b->getCurrPieces();
+  ipf_pcs_b->value(ipf_pcs_b_str.c_str());
+  string ipf_pwt_b_str = ipf_viewer_b->getCurrPriority();
+  ipf_pwt_b->value(ipf_pwt_b_str.c_str());
+  string ipf_source_b_str = ipf_viewer_b->getCurrSource();
+  ipf_source_b->value(ipf_source_b_str.c_str());
+  string ipf_domain_b_str = ipf_viewer_b->getCurrDomain();
+  ipf_domain_b->value(ipf_domain_b_str.c_str());
+
   // Time_Low/High
   double tlow     = lp_viewer->getTimeLow();
   string tlow_str = doubleToString(tlow, 3);
   m_fld_time_low->value(tlow_str.c_str());
-
+ 
   double thigh     = lp_viewer->getTimeHigh();
   string thigh_str = doubleToString(thigh, 3);
   m_fld_time_high->value(thigh_str.c_str());

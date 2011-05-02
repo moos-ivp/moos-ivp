@@ -38,6 +38,9 @@ public:
   void   setVNameIPF(std::string s)    {m_active_ipf_vname = s;};
   void   setSourceIPF(std::string s)   {m_active_ipf_source = s;};
   void   setPiecesIPF(std::string s)   {m_active_ipf_pieces = s;};
+  void   setPriorityIPF(std::string s) {m_active_ipf_priority = s;};
+  void   setDomainIPF(IvPDomain v)     {m_active_ipf_domain = v;};
+  void   setSubDomainIPF(IvPDomain v)  {m_active_ipf_subdomain = v;};
   void   setIterIPF(std::string s)     {m_active_ipf_iter = s;};
   void   setLabelColor(std::string s)  {m_label_color.setColor(s);};
   void   setClearColor(std::string s)  {m_clear_color.setColor(s);};
@@ -46,14 +49,12 @@ public:
 protected:
   void   drawFrame();
   void   drawOwnPoint();
-  void   drawIvPFunction();
+  void   drawMaxPoint(double, double);
+  bool   drawIvPFunction();
   void   drawQuad(Quad3D&);
   void   handleLeftMouse(int, int) {};
   void   handleRightMouse(int, int) {};
   
-  void   drawText(double px, double py, const std::string&, 
-		  const ColorPack&, double font_size);
-
 protected:
   ColorPack    m_clear_color;
   ColorPack    m_frame_color;
@@ -67,6 +68,7 @@ protected:
   double       m_rad_extra;
   int          m_polar;
   
+  bool         m_draw_pin;
   bool         m_draw_frame;
   bool         m_draw_base;
   double       m_frame_height;
@@ -75,7 +77,10 @@ protected:
   std::string  m_active_ipf_vname;
   std::string  m_active_ipf_source;
   std::string  m_active_ipf_pieces;
+  std::string  m_active_ipf_priority;
   std::string  m_active_ipf_iter;
+  IvPDomain    m_active_ipf_domain;
+  IvPDomain    m_active_ipf_subdomain;
 };
 
 #endif 

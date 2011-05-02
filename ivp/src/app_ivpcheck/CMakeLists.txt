@@ -17,10 +17,7 @@ SET(SRC main.cpp
 	DomainExpander.cpp
 	Populator_IPFBundleSeries.cpp
 	IC_GUI.cpp
-	IC_Viewer.cpp
-        IPF_Entry.cpp
-	IPF_Bundle.cpp
-	IPF_BundleSeries.cpp)
+	IC_Viewer.cpp)
 
 
 IF (${APPLE})

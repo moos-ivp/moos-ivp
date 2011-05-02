@@ -32,6 +32,7 @@ protected:
   MY_Output   *curr_func_size;
   MY_Output   *curr_func_pwt;
   MY_Output   *total_funcs;
+  MY_Output   *ivp_domain;
   IC_Viewer   *viewer;
 
 private:

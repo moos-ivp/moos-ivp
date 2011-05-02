@@ -257,7 +257,7 @@ SET(IVP_GUI_APPS
   app_vzaicview
   app_gzaicview
   pMarineViewer
-  uFunctionVis
+#  uFunctionVis
   app_cpaview
   )
   

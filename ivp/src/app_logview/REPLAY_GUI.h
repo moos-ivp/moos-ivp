@@ -121,6 +121,12 @@ private:
   inline void cb_TimeZoom_i(int);
   static void cb_TimeZoom(Fl_Widget*, int);
 
+  inline void cb_ToggleSet_i(int);
+  static void cb_ToggleSet(Fl_Widget*, int);
+
+  inline void cb_TogglePin_i(int);
+  static void cb_TogglePin(Fl_Widget*, int);
+
   inline void cb_Delete_i();
   static void cb_Delete(Fl_Widget*);
 
@@ -134,6 +140,24 @@ protected:
   double      m_np_viewer_hgt;
   double      m_lp_viewer_hgt;
   std::string m_window_layout;
+
+  MY_Output   *ipf_vname_a;
+  MY_Output   *ipf_vname_b;
+  MY_Output   *ipf_pcs_a;
+  MY_Output   *ipf_pcs_b;
+  MY_Output   *ipf_pwt_a;
+  MY_Output   *ipf_pwt_b;
+  MY_Output   *ipf_iter_a;
+  MY_Output   *ipf_iter_b;
+  MY_Button   *m_but_ipf_set_a;
+  MY_Button   *m_but_ipf_set_b;
+  MY_Button   *m_but_ipf_pin_a;
+  MY_Button   *m_but_ipf_pin_b;
+
+  MY_Output   *ipf_source_a;
+  MY_Output   *ipf_source_b;
+  MY_Output   *ipf_domain_a;
+  MY_Output   *ipf_domain_b;
 
 
   MY_Output   *disp_time;

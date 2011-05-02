@@ -25,18 +25,22 @@ public:
   IPF_BundleSeries();
   ~IPF_BundleSeries() {};
   
-  void    clear();
-  void    addIPF(const std::string&);
+  void      clear();
+  void      addIPF(const std::string&);
   
-  QuadSet getCollectiveQuadSet(unsigned int iter);
-  QuadSet getQuadSet(unsigned int iter, std::string source);
+  QuadSet   getCollectiveQuadSet(unsigned int iter);
+  QuadSet   getQuadSet(unsigned int iter, std::string source);
 
-  double  getPriority(unsigned int iter, std::string source);
+  IvPDomain getDomain(unsigned int iter);
+  IvPDomain getDomain(unsigned int iter, std::string source);
 
-  void    popFront(unsigned int=1);
-  void    popBack(unsigned int=1);
+
+  double    getPriority(unsigned int iter, std::string source);
+
+  void      popFront(unsigned int=1);
+  void      popBack(unsigned int=1);
   
-  void    print() const;
+  void      print() const;
   
   unsigned int getMinIteration() const {return(m_min_iteration);};
   unsigned int getMaxIteration() const {return(m_max_iteration);};

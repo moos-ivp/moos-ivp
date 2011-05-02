@@ -37,6 +37,9 @@ public:
   std::string getSource(unsigned int);
   std::string getIPFString(unsigned int);
 
+  IvPDomain   getDomain() const {return(m_ivp_domain);};
+  IvPDomain   getDomain(std::string source) const;
+
   std::vector<std::string> getIPFStrings();
   std::vector<std::string> getSources() const {return(m_sources);};
   
