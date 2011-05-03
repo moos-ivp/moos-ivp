@@ -90,7 +90,7 @@ bool QuadSet::applyIPF(IvPFunction *ipf, bool wrap)
     }
   }
 
-  if((ivp_domain.getVarName(0) == "course") && wrap) {
+  if(ivp_domain.hasDomain("course") && wrap) {
   
     // Add  "bridge" quads to wrap around 359-0
     int top_crs_ix = crs_pts-1;
