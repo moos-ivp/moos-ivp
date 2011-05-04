@@ -56,6 +56,7 @@ BHV_RubberBand::BHV_RubberBand(IvPDomain gdomain) :
   m_outer_speed  = 1.2;
   m_extra_speed  = 0;
   m_center_activate = false;
+  width = 90;
 
   // Default values for State  Variables
   m_center_pending  = false;
@@ -140,6 +141,10 @@ bool BHV_RubberBand::setParam(string param, string val)
     stiffness = dval;
     return(true);
   }
+  else if(param == "width") 
+   {
+     width = (int) atof(val.c_str());
+   }
 
   return(false);
 }
@@ -263,8 +268,8 @@ IvPFunction *BHV_RubberBand::onRunState()
   
   ZAIC_PEAK crs_zaic(m_domain, "course");
   crs_zaic.setSummit(angle_to_station);
-  crs_zaic.setPeakWidth(120);
-  crs_zaic.setBaseWidth(60.0);
+  crs_zaic.setPeakWidth(width);
+  crs_zaic.setBaseWidth(180-width);
   crs_zaic.setSummitDelta(10.0);
   crs_zaic.setMinMaxUtil(0, 100);
   crs_zaic.setValueWrap(true);

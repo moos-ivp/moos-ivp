@@ -71,7 +71,7 @@ private:  // Configuration Parameters
   // distance stiffness is the rate of increase in the priority with range
   double stiffness ;
   double relevance;
-
+  int width;
 private:  // State Variables
   bool         m_center_pending;
   std::string  m_center_assign;
