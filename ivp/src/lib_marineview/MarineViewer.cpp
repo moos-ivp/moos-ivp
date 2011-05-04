@@ -495,7 +495,7 @@ void MarineViewer::drawHash()
   double xhgh = snapToStep((xr+(xw/2)), hash_delta);
   double ylow = snapToStep((yb-(yw/2)), hash_delta);
   double yhgh = snapToStep((yt+(yw/2)), hash_delta);
-
+  
   for(double i=xlow; i<xhgh; i+=hash_delta)
     drawSegment(i, ylow, i, yhgh, r, g, b);
   for(double j=ylow; j<yhgh; j+=hash_delta)

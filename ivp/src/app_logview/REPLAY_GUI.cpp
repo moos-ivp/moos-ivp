@@ -482,8 +482,8 @@ void REPLAY_GUI::augmentMenu()
 
   mbar->add("Replay/Step Ahead 1",  ']', (Fl_Callback*)REPLAY_GUI::cb_Step, (void*)1, 0);
   mbar->add("Replay/Step Back  1",  '[', (Fl_Callback*)REPLAY_GUI::cb_Step, (void*)-1, 0);
-  mbar->add("Replay/Step Ahead 10", '>', (Fl_Callback*)REPLAY_GUI::cb_Step, (void*)10, 0);
-  mbar->add("Replay/Step Back  10", '<', (Fl_Callback*)REPLAY_GUI::cb_Step, (void*)-10, FL_MENU_DIVIDER);
+  mbar->add("Replay/Step Ahead 5", '>', (Fl_Callback*)REPLAY_GUI::cb_Step, (void*)5, 0);
+  mbar->add("Replay/Step Back  5", '<', (Fl_Callback*)REPLAY_GUI::cb_Step, (void*)-5, FL_MENU_DIVIDER);
 };
 
 //----------------------------------------------------------
@@ -559,13 +559,25 @@ inline void REPLAY_GUI::cb_HandleUpDown_i(int amt)
     updateXY();
   }
   else if(inIPFViewerA()) {
-    ipf_viewer_a->setParam("mod_x_rotation", ((double)(-amt)/100)); 
+    if(amt < 0) amt = -1;
+    if(amt > 0) amt = 1;
+    ipf_viewer_a->setParam("mod_x_rotation", ((double)(-amt)));
     ipf_viewer_a->redraw();
+    if(Fl::event_state() == FL_CTRL) {
+      ipf_viewer_b->setParam("mod_x_rotation", ((double)(-amt)));
+      ipf_viewer_b->redraw();
+    }
     updateXY();
   }
   else if(inIPFViewerB()) {
-    ipf_viewer_b->setParam("mod_x_rotation", ((double)(-amt)/100)); 
+    if(amt < 0) amt = -1;
+    if(amt > 0) amt = 1;
+    ipf_viewer_b->setParam("mod_x_rotation", ((double)(-amt))); 
     ipf_viewer_b->redraw();
+    if(Fl::event_state() == FL_CTRL) {
+      ipf_viewer_a->setParam("mod_x_rotation", ((double)(-amt)));
+      ipf_viewer_a->redraw();
+    }
     updateXY();
   }
   else if(inLogPlotViewer()) {
@@ -587,13 +599,25 @@ inline void REPLAY_GUI::cb_HandleLeftRight_i(int amt)
     updateXY();
   }
   else if(inIPFViewerA()) {
-    ipf_viewer_a->setParam("mod_z_rotation", ((double)(amt)/100)); 
+    if(amt < 0) amt = -1;
+    if(amt > 0) amt = 1;
+    ipf_viewer_a->setParam("mod_z_rotation", ((double)(amt)));
     ipf_viewer_a->redraw();
+    if(Fl::event_state() == FL_CTRL) {
+      ipf_viewer_b->setParam("mod_z_rotation", ((double)(amt)));
+      ipf_viewer_b->redraw();
+    }
     updateXY();
   }
   else if(inIPFViewerB()) {
-    ipf_viewer_b->setParam("mod_z_rotation", ((double)(amt)/100)); 
+    if(amt < 0) amt = -1;
+    if(amt > 0) amt = 1;
+    ipf_viewer_b->setParam("mod_z_rotation", ((double)(amt))); 
     ipf_viewer_b->redraw();
+    if(Fl::event_state() == FL_CTRL) {
+      ipf_viewer_a->setParam("mod_z_rotation", ((double)(amt)));
+      ipf_viewer_a->redraw();
+    }
     updateXY();
   }
   else if(inLogPlotViewer()) {
@@ -678,6 +702,7 @@ bool REPLAY_GUI::inIPFViewerA()
 {
   if(!ipf_viewer_a)
     return(false);
+
   int vx = Fl::event_x();
   int vy = Fl::event_y();
   int x  = ipf_viewer_a->x();

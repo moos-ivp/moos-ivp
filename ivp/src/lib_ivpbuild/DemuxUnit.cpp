@@ -28,15 +28,19 @@ using namespace std;
 //----------------------------------------------------------------
 // Constructor
 
-DemuxUnit::DemuxUnit(const string& g_unit_id, int g_total_packets, 
-		     double g_time_stamp)
+DemuxUnit::DemuxUnit(const string& g_unit_id, 
+		     unsigned int g_total_packets, 
+		     double g_time_stamp,
+		     const string& source)
 {
   m_unit_id = g_unit_id;
-  for(int i=0; i<g_total_packets; i++) {
+  unsigned int i;
+  for(i=0; i<g_total_packets; i++) {
     m_data.push_back("");
     m_flag.push_back(false);
   }
   m_time_stamp = g_time_stamp;
+  m_source = source;
 }
   
 //----------------------------------------------------------------

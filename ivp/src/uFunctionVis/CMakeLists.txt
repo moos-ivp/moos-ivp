@@ -18,8 +18,6 @@ SET(SRC
    FV_MOOSApp.cpp
    FV_Model.cpp
    FV_Viewer.cpp
-   FunctionQueue.cpp
-   QueueEntry.cpp
    uFunctionVisMain.cpp)
 
 IF (${APPLE})

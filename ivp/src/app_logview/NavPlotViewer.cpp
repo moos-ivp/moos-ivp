@@ -210,6 +210,7 @@ void NavPlotViewer::draw()
   drawNavPlots();
   drawVPlugPlots();
   drawFrame();
+  drawHash();
 }
 
 //-------------------------------------------------------------

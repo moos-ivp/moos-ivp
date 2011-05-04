@@ -35,9 +35,10 @@ class IvPFuncViewer : public Common_IPFViewer
   IvPFuncViewer(int x,int y,int w,int h,const char *l=0);
   virtual ~IvPFuncViewer() {};
 
+  int handle(int event);
+
   unsigned int addIPF_Plot(const IPF_Plot&, bool active=false);
 
-  
   void   draw();
   void   altPlotIndex(int v);
   void   setPlotIndex(unsigned int index);
@@ -60,6 +61,7 @@ class IvPFuncViewer : public Common_IPFViewer
 private:
   unsigned int m_plot_ix;
   int          m_collective_ix;
+  bool         m_mouse_infocus;
 
   // A mapping from vehicle name to current helm iteration
   std::map<std::string, unsigned int> m_viter_map;

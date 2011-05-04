@@ -78,10 +78,12 @@ bool Populator_IPFBundleSeries::readFile(string alogfile)
     else if(!line_is_comment) {
       string varname = getVarName(line_raw);
       string srcname = getSourceName(line_raw);
+      string tstamp  = getTimeStamp(line_raw);
+      double dtstamp = atof(tstamp.c_str());
 
       if(varname == "BHV_IPF") {
 	string data = getDataEntry(line_raw);
-	m_demuxer.addMuxPacket(data);
+	m_demuxer.addMuxPacket(data, dtstamp);
       }
     }
     

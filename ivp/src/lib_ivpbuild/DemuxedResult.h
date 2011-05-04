@@ -1,8 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin and John Leonard                    */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
-/*    FILE: Demuxer.h                                            */
-/*    DATE: May 20th 2006                                        */
+/*    FILE: DemuxedResult.h                                      */
+/*    DATE: May 2nd 2011                                         */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
 /* modify it under the terms of the GNU General Public License   */
@@ -20,43 +20,40 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
-#ifndef DEMUXER_HEADER
-#define DEMUXER_HEADER
+#ifndef DEMUXED_RESULT_HEADER
+#define DEMUXED_RESULT_HEADER
 
 #include <string>
-#include <list>
-#include "DemuxUnit.h"
-#include "DemuxedResult.h"
 
-class Demuxer {
+class DemuxedResult {
 public:
-  Demuxer() {m_demuxed=true;};
-  virtual ~Demuxer() {};
+  DemuxedResult(const std::string& demux_string,
+		const std::string& demux_source, 
+		double demux_tstamp) {
+    m_demux_string = demux_string;
+    m_demux_source = demux_source;
+    m_demux_tstamp = demux_tstamp;
+    m_empty = false;
+  };
+
+  DemuxedResult()  {m_demux_tstamp=0; m_empty=true;};
+  ~DemuxedResult() {};
 
 public:
-  bool addMuxPacket(const std::string& packet, 
-		    double timestamp, 
-		    const std::string& source="");
+  void  setString(const std::string& s) {m_demux_string = s;};
+  void  setSource(const std::string& s) {m_demux_source = s;};
+  void  setTStamp(double v)             {m_demux_tstamp = v;};
 
-  std::string   getDemuxString();
-  DemuxedResult getDemuxedResult();
-
-  void   removeStaleUnits(double, double);
-  void   print();
-  double size()     {return(m_demuxed_results.size());};
+  std::string getString() {return(m_demux_string);};
+  std::string getSource() {return(m_demux_source);};
+  double      getTStamp() {return(m_demux_tstamp);};
+  bool        isEmpty()   {return(m_empty);};
 
 protected:
-  void   demuxUnits();
-
-protected:
-  // Partially demuxed intermediate data
-  std::list<DemuxUnit*>     m_units;
-
-  // Ready to be retrieved demuxed information
-  std::list<DemuxedResult>  m_demuxed_results;
-  
-  // True if demuxed units are waiting for retieval
-  bool m_demuxed;
+  std::string  m_demux_string;
+  std::string  m_demux_source;
+  double       m_demux_tstamp;
+  bool         m_empty;
 };
 
 #endif

@@ -99,8 +99,8 @@ void FColorMap::applyMidWhite(double plateau, double basewidth)
   
   int vsize = rval.size();
 
-  cout << "plateau: "   << plateau   << endl;
-  cout << "basewidth: " << basewidth << endl;
+  //cout << "plateau: "   << plateau   << endl;
+  //cout << "basewidth: " << basewidth << endl;
 
   double whitener = 0;
   for(int i=0; i<vsize; i++) {
@@ -116,8 +116,8 @@ void FColorMap::applyMidWhite(double plateau, double basewidth)
       double pct = (delta-plateau) / basewidth;
       whitener = (1.0 - pct) * 100.0;
     }
-    cout << "delta[" << i << "]: " << delta << endl;
-    cout << "whitener[" << i << "]: " << whitener << endl;
+    //cout << "delta[" << i << "]: " << delta << endl;
+    //cout << "whitener[" << i << "]: " << whitener << endl;
 
 #if 0
     rval[i] += ((1.0 - rval[i]) * whitener);

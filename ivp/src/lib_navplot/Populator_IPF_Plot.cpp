@@ -27,6 +27,7 @@
 #include "IvPFunction.h"
 #include "FunctionEncoder.h"
 #include "FileBuffer.h"
+#include "DemuxedResult.h"
 
 using namespace std;
 
@@ -46,8 +47,10 @@ bool Populator_IPF_Plot::populateFromEntries(const vector<ALogEntry>& entries)
   
   bool done = false;
   while(!done) {
-    double time_stamp = 0;
-    string demux_string = m_demuxer.getDemuxString(time_stamp);
+    DemuxedResult result = m_demuxer.getDemuxedResult();
+    
+    double time_stamp   = result.getTStamp();
+    string demux_string = result.getString();
     if(demux_string != "")
       handleEntry(time_stamp, demux_string);
     else

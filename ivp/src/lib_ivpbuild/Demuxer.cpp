@@ -26,6 +26,30 @@
 using namespace std;
 
 //-------------------------------------------------------------
+// Procedure: getDemuxedResult()
+//      Note: May be several results in the pending list
+//            but we only return first one here. It is expected
+//            that the user would make repeated calls until an 
+//            empty string is returned.
+
+DemuxedResult Demuxer::getDemuxedResult()
+{
+  if(!m_demuxed)
+    demuxUnits();
+
+  if(m_demuxed_results.size() == 0) {
+    DemuxedResult empty_result;
+    return(empty_result);
+  }
+  
+  DemuxedResult demuxed_result = m_demuxed_results.front();
+
+  m_demuxed_results.pop_front();
+
+  return(demuxed_result);
+}
+
+//-------------------------------------------------------------
 // Procedure: getDemuxString()
 //      Note: May be several strings in the m_demuxed_strings list
 //            but we only return first one here. It is expected
@@ -37,40 +61,16 @@ string Demuxer::getDemuxString()
   if(!m_demuxed)
     demuxUnits();
 
-  if(m_demuxed_strings.size() == 0)
+  if(m_demuxed_results.size() == 0)
     return("");
   
-  string dstring = m_demuxed_strings.front();
 
-  m_demuxed_strings.pop_front();
-  m_demuxed_strings_timestamp.pop_front();
-
-  return(dstring);
-}
-
-//-------------------------------------------------------------
-// Procedure: getDemuxString(double&)
-//      Note: Same as the getDemuxString() function but will
-//            return the timestamp as well.
-
-string Demuxer::getDemuxString(double& timestamp)
-{
-  if(!m_demuxed)
-    demuxUnits();
-
-  if(m_demuxed_strings.size() == 0)
-    return("");
+  DemuxedResult result = m_demuxed_results.front();
   
-  string dstring = m_demuxed_strings.front();
-  double tstamp  = m_demuxed_strings_timestamp.front();
+  m_demuxed_results.pop_front();
 
-  m_demuxed_strings.pop_front();
-  m_demuxed_strings_timestamp.pop_front();
-
-  timestamp = tstamp;
-  return(dstring);
+  return(result.getString());
 }
-
 
 //-------------------------------------------------------------
 // Procedure: addMuxPacket()
@@ -82,9 +82,10 @@ string Demuxer::getDemuxString(double& timestamp)
 //            DemuxUnits to be checked for staleness, and avoid
 //            potential runaway memory growth if packets are dropped.
 
-bool Demuxer::addMuxPacket(const string& str, double time_stamp)
+bool Demuxer::addMuxPacket(const string& str, double time_stamp,
+			   const string& src)
 {
-  // With the addition of any new packet, m_demuxed_strings structure
+  // With the addition of any new packet, m_demuxed_results structure
   // is labeled not up-to-date by setting demuxed=false. 
   m_demuxed = false;
 
@@ -131,7 +132,7 @@ bool Demuxer::addMuxPacket(const string& str, double time_stamp)
   if(prior_unit)
     return(ok);
 
-  DemuxUnit *new_unit = new DemuxUnit(str_id, str_total, time_stamp);
+  DemuxUnit *new_unit = new DemuxUnit(str_id, str_total, time_stamp, src);
   m_units.push_back(new_unit);
 
   ok = new_unit->addString(str_body, str_ix);
@@ -159,32 +160,17 @@ void Demuxer::demuxUnits()
     p1++;
     if(unit->unitReady()) {
       string demux_string = unit->getDemuxString();
+      string demux_source = unit->getSource();
       double demux_tstamp = unit->getTimeStamp();
-      m_demuxed_strings.push_back(demux_string);
-      m_demuxed_strings_timestamp.push_back(demux_tstamp);
+
+      DemuxedResult result(demux_string, demux_source, demux_tstamp);
+      m_demuxed_results.push_back(result);
+
       delete(unit);
       m_units.erase(pd);
     }
   }
   m_demuxed = true;
-
-#if 0
-  if(m_demuxed)
-    return;
-  list<DemuxUnit*>::iterator p1;
-  for(p1 = m_units.begin(); p1!=m_units.end(); p1++) {
-    DemuxUnit *unit = *p1;
-    if(unit->unitReady()) {
-      string demux_string = unit->getDemuxString();
-      double demux_tstamp = unit->getTimeStamp();
-      m_demuxed_strings.push_back(demux_string);
-      m_demuxed_strings_timestamp.push_back(demux_tstamp);
-      //delete(unit);
-      m_units.erase(p1);
-    }
-  }
-  m_demuxed = true;
-#endif
 }
 
 //-------------------------------------------------------------
@@ -227,11 +213,13 @@ void Demuxer::print()
     unit->print();
   }
 
-  cout << "ReadyStrings: (" << m_demuxed_strings.size() << ")" << endl;
-  list<string>::iterator p2;
-  for(p2 = m_demuxed_strings.begin(); p2!=m_demuxed_strings.end(); p2++) {
-    string str = *p2;
-    cout << str << endl;
+  cout << "ReadyStrings: (" << m_demuxed_results.size() << ")" << endl;
+  list<DemuxedResult>::iterator p2;
+  for(p2 = m_demuxed_results.begin(); p2!=m_demuxed_results.end(); p2++) {
+    DemuxedResult result = *p2;
+    cout << result.getString() << ", ";
+    cout << result.getTStamp() << ", ";
+    cout << result.getSource() << endl;
   }
 
   cout << "End Demuxer::print()" << endl;

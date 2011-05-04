@@ -9,8 +9,8 @@
 
 #include "MOOSLock.h"
 #include "QuadSet.h"
-#include "FunctionQueue.h"
 #include "FColorMap.h"
+#include "IPF_BundleSeries.h"
 
 class FV_Model
 {
@@ -19,31 +19,37 @@ public:
   ~FV_Model() {};
 
 public:
-  void     addIPF(std::string ipf_str);
+  void     addIPF(const std::string& ipf_str, const std::string& platform);
   void     modColorMap(const std::string&);
-  void     modLowAdjust(double v)   {m_fqueue.modLowAdjust(v);};
-  void     modHighAdjust(double v)  {m_fqueue.modHighAdjust(v);};
-  void     resetAdjust()            {m_fqueue.resetAdjust();};
-  void     incDescriptor();
-  void     decDescriptor();
-  int      getCurrIteration() {return(m_fqueue.getIteration());};
+  void     modSource(bool increment=true);
+  int      getCurrIteration() {return(m_curr_iter);};
   void     toggleCollective() {m_collective = !m_collective;};
   void     toggleLockIPF()    {m_lock_ipf = !m_lock_ipf;};
   bool     isLocked()         {return(m_lock_ipf);};
 
-  std::string getCurrDescriptor();
-  std::string getCurrFuncSize();
+  std::string getCurrPlatform();
+  std::string getCurrSource();
+  std::string getCurrPieces();
+  std::string getCurrPriority();
+  std::string getCurrDomain();
 
   QuadSet  getQuadSet();
 
-protected:
-  FunctionQueue   m_fqueue;
-  CMOOSLock       m_ipf_mutex;
-  std::string     m_curr_descriptor;
-  std::string     m_curr_func_size;
-  bool            m_collective;
-  bool            m_lock_ipf;
+ protected: // State variables
+  CMOOSLock        m_ipf_mutex;
+  unsigned int     m_curr_iter;
+  IPF_BundleSeries m_bundle_series;
+  std::string      m_bundle_series_platform;
 
-  std::vector<std::string> m_descriptors;
+ protected: // Launch-time config variables
+  unsigned int     m_bundle_series_maxlen;
+  
+
+ protected: // Run-time user config variables
+  bool             m_lock_ipf;
+  bool             m_collective;
+  FColorMap        m_color_map;
+  std::string      m_curr_source;
+
 };
 #endif 

@@ -46,6 +46,13 @@ void FV_Viewer::draw()
   if(m_draw_frame)
     drawFrame();
   drawOwnPoint();
+
+  if(m_draw_pin) {
+    unsigned int max_crs_qix = m_quadset.getMaxPointQIX("course");
+    unsigned int max_spd_qix = m_quadset.getMaxPointQIX("speed");
+    drawMaxPoint(max_crs_qix, max_spd_qix);
+  }
+
   glPopMatrix();
   
   glFlush();  

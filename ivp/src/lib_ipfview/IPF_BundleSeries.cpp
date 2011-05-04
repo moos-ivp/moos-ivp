@@ -62,6 +62,7 @@ void IPF_BundleSeries::addIPF(const std::string& str)
   // Maintain the local list of all known behavior sources
   vector<string> sources = m_bundles[iteration].getSources();
   m_all_bhv_sources = mergeVectors(m_all_bhv_sources, sources);
+  m_all_bhv_sources = removeDuplicates(m_all_bhv_sources);
 }
 
 
@@ -131,6 +132,19 @@ unsigned int IPF_BundleSeries::getTotalFunctions(unsigned int iter)
 vector<string> IPF_BundleSeries::getIPFStrings(unsigned int iter)
 {
   return(m_bundles[iter].getIPFStrings());
+}
+
+//--------------------------------------------------------------
+// Procedure: getFirstSource
+//      Note: A convenience functions. Often users of this class
+//            just want a name of *any* source if there is one.
+
+string IPF_BundleSeries::getFirstSource() const
+{
+  if(m_all_bhv_sources.size() > 0)
+    return(m_all_bhv_sources[0]);
+  else
+    return("");
 }
 
 

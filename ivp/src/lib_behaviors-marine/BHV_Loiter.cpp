@@ -216,8 +216,6 @@ void BHV_Loiter::onIdleState()
 
 void BHV_Loiter::onIdleToRunState()
 {
-  cout << termColor("blue");
-  cout << "Clockwise before:" << m_clockwise << endl;
 // Fix made by HS, to avoid looping back to earlier approach vertex
   updateInfoIn();
   int curr_waypt = m_loiter_engine.acquireVertex(m_osh, m_osx, m_osy); 
@@ -228,8 +226,6 @@ void BHV_Loiter::onIdleToRunState()
     m_clockwise = m_loiter_engine.getClockwise();
     m_waypoint_engine.setSegList(m_loiter_engine.getPolygon());
   }
-  cout << "Clockwise after:" << m_clockwise << endl;
-  cout << termColor();
 }
 
 

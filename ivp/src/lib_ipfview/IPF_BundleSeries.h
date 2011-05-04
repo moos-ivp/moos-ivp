@@ -50,6 +50,7 @@ public:
   
   std::vector<std::string> getIPFStrings(unsigned int iteration);
   std::vector<std::string> getAllSources() {return(m_all_bhv_sources);};
+  std::string  getFirstSource() const;
   
  protected:
   std::map<unsigned int, IPF_Bundle>  m_bundles;

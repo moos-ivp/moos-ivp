@@ -40,12 +40,30 @@ IvPFuncViewer::IvPFuncViewer(int x, int y, int w, int h, const char *l)
   m_draw_frame    = true;
   m_zoom          = 2.0;
   m_collective_ix = -1;
+  m_mouse_infocus = false;
 
   setParam("reset_view", "2");
 
   m_clear_color.setColor("0.6,0.7,0.5");
   m_label_color.setColor("brown");
 }
+
+//-------------------------------------------------------------
+// Procedure: handle()
+
+int IvPFuncViewer::handle(int event)
+{
+  if(event == 4)
+    m_mouse_infocus = true;
+  else if(event == 3)
+    m_mouse_infocus = false;
+  else if((event == 12) && m_mouse_infocus)
+    return(0);
+  else
+    return(Fl_Gl_Window::handle(event));
+  return(0);
+}
+
 
 //-------------------------------------------------------------
 // Procedure: draw()
@@ -163,8 +181,10 @@ void IvPFuncViewer::setCurrTime(double curr_time)
     IvPDomain ivp_subdomain = m_ipf_plot[m_plot_ix].getDomainByHelmIteration(iter);
     setDomainIPF(ivp_domain);
     setSubDomainIPF(ivp_subdomain);
-
-    if(ipf_string != "") {
+    
+    if(ipf_string == "") 
+      m_quadset = QuadSet();
+    else {
       IvPFunction *ipf = StringToIvPFunction(ipf_string);
       if(ipf) {
 	ipf = expandHdgSpdIPF(ipf, ivp_domain);
@@ -283,10 +303,13 @@ string IvPFuncViewer::getCurrVName() const
     if((unsigned int)(m_collective_ix) < m_all_vnames.size())
       return(m_all_vnames[m_collective_ix]);
     else
-      return("ERROR");
+      return("n/a");
   }
 
-  return(m_ipf_vname[m_plot_ix]);
+  if(m_ipf_vname.size() > 0)
+    return(m_ipf_vname[m_plot_ix]);
+  else
+    return("n/a");
 }
   
 //-------------------------------------------------------------
@@ -298,10 +321,13 @@ string IvPFuncViewer::getCurrSource() const
     if((unsigned int)(m_collective_ix) < m_all_vnames.size())
       return("Collective");
     else
-      return("ERROR");
+      return("n/a");
   }
 
-  return(m_ipf_source[m_plot_ix]);
+  if(m_ipf_source.size() > 0)
+    return(m_ipf_source[m_plot_ix]);
+  else
+    return("n/a");
 }
   
 //-------------------------------------------------------------

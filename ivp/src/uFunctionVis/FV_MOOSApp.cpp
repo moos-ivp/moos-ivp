@@ -46,10 +46,13 @@ bool FV_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
      MOOSMSG_LIST::iterator p;
      for(p=NewMail.begin(); p!=NewMail.end(); p++) {
         CMOOSMsg &msg = *p;
+	string key = msg.GetKey();
 
-        if(msg.m_sKey == ipf_name) {
-           string ipf_str = msg.m_sVal;
-           demuxer.addMuxPacket(ipf_str, MOOSTime());
+	if(key == ipf_name) {
+	  string ipf_str = msg.GetString();
+	  double timestamp = msg.GetTime();
+	  string community = msg.GetCommunity();
+	  demuxer.addMuxPacket(ipf_str, timestamp, community);
         }
      }
   }
@@ -87,8 +90,7 @@ bool FV_MOOSApp::OnConnectToServer()
 
 bool FV_MOOSApp::Iterate()
 {
-  return true;
-  
+  return(true);
   // This processing has all been moved to the process_demuxer_content()
   // method, so that it can happen in the same thread as other FLTK 
   // operations.
@@ -100,33 +102,25 @@ bool FV_MOOSApp::Iterate()
 
 void FV_MOOSApp::process_demuxer_content()
 {
-  cout << termColor("red") << "In process_demuxer_content"
-       << termColor() << endl;
-
   try {
     demuxer_lock.Lock();
 
     iteration++;
 
-    if((iteration %10)==0) {
-      double hz = (double)(iteration) / ((MOOSTime() - start_time));
-      cout << "Iteration: (" << iteration << ")";
-      cout << "(" << hz << "/sec)" << endl;
-    }
-
-    cout << "[" << iteration << "]";
-    string str = demuxer.getDemuxString();
     bool redraw_needed = false;
-    while(str != "") {
+    DemuxedResult result = demuxer.getDemuxedResult();
+    while(!result.isEmpty()) {
       redraw_needed = true;
-      cout << "+";
-      if(model) {
-          cout << "Add Demux TO Model" << endl;
-          model->addIPF(str);
-      }
-      str = demuxer.getDemuxString();
+      string str = result.getString();
+      string src = result.getSource();
+
+      cout << "str:" << str << endl;
+      cout << "src:" << src << endl;
+
+      model->addIPF(str, src);
+      result = demuxer.getDemuxedResult();
     }
-    cout << endl;
+      
     if(redraw_needed) {
       viewer->resetQuadSet();
       viewer->redraw();
