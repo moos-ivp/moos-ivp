@@ -227,7 +227,6 @@ SET(IVP_NON_GUI_APPS
   app_alog2rng
   app_nsplug
   app_domquery
-  app_ivpcheck
   pEchoVar
   pXRelay
   pXBlaster
@@ -249,6 +248,7 @@ SET(IVP_NON_GUI_APPS
   )
 
 SET(IVP_GUI_APPS
+  app_ivpcheck
   app_ffview
   app_geoview
   app_currview

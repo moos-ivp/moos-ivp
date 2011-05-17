@@ -108,8 +108,8 @@ void ScanHandler::handle(const string& alogfile)
   int start_digits = (int)(log10( m_report.getMaxStartTime())) + 4;
   int stop_digits  = (int)(log10( m_report.getMaxStopTime())) + 4;
 #else 
-  int line_digits  = (int)(log10(m_report.getMaxLines())) + 2;
-  int char_digits  = (int)(log10(m_report.getMaxChars())) + 2;
+  int line_digits  = static_cast<int>(log10(static_cast<double>(m_report.getMaxLines()))) + 2;
+  int char_digits  = static_cast<int>(log10(static_cast<double>(m_report.getMaxChars()))) + 2;
   int start_digits = (int)(log10(m_report.getMaxStartTime())) + 4;
   int stop_digits  = (int)(log10(m_report.getMaxStopTime())) + 4;
 #endif 
