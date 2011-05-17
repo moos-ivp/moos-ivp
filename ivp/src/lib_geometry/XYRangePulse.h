@@ -38,7 +38,6 @@ public:
   void   set_rad(double);
   void   set_duration(double);
   void   set_fill(double);
-  void   set_fill_color(std::string);
 
   double get_x()    const         {return(m_x);};
   double get_y()    const         {return(m_y);};
@@ -47,10 +46,7 @@ public:
   double get_fill() const         {return(m_fill);};
   double get_fill(double timestamp) const;
 
-  bool   fill_color_set() const   {return(m_fillcolor.set());};
   bool   valid() const;
-
-  ColorPack get_fill_color()      {return(m_fillcolor);};
 
   std::string get_spec(std::string s="") const;
 
@@ -69,6 +65,5 @@ protected:
   bool      m_y_set;
 
   double    m_fill;
-  ColorPack m_fillcolor;
 };
 #endif

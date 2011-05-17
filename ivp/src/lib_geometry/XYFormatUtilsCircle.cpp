@@ -60,7 +60,7 @@ XYCircle string2Circle(string str)
     else if(left == "label") 
       new_circle.set_label(right);
     else if(left == "label_color") 
-      new_circle.set_label_color(right);
+      new_circle.set_color("label", right);
     else if(left == "source") 
       new_circle.set_source(right);
     else if(left == "type") 
@@ -68,11 +68,11 @@ XYCircle string2Circle(string str)
     else if(left == "msg") 
       new_circle.set_msg(right);
     else if(left == "vertex_color") 
-      new_circle.set_vertex_color(right);
+      new_circle.set_color("vertex", right);
     else if((left == "vertex_size") && isNumber(right))
       new_circle.set_vertex_size(dval);
     else if(left == "edge_color")
-      new_circle.set_edge_color(right);
+      new_circle.set_color("edge", right);
     else if((left == "edge_size") && isNumber(right))
       new_circle.set_edge_size(dval);
     else if(left == "active") 

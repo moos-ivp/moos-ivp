@@ -58,6 +58,8 @@ REPLAY_GUI::REPLAY_GUI(int g_w, int g_h, const char *g_l)
   ipf_viewer_a = new IvPFuncViewer(1, 1, 1, 1);
   ipf_viewer_b = new IvPFuncViewer(1, 1, 1, 1);
 
+  ipf_viewer_a->setCollectiveByDefault(true);
+
   ipf_vname_a = 0;
   ipf_vname_b = 0;
   ipf_pcs_a = 0;
@@ -533,6 +535,9 @@ int REPLAY_GUI::handle(int event)
 
 void REPLAY_GUI::setCurrTime(double curr_time)
 {
+  if(curr_time == -1)
+    curr_time = np_viewer->getStartTimeHint();
+
   lp_viewer->setCurrTime(curr_time);
   np_viewer->setCurrTime(curr_time);
   if(ipf_viewer_a) {

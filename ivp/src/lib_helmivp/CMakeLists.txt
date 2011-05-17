@@ -13,19 +13,24 @@ SET(SRC
    BFactoryStatic.cpp
    BFactoryDynamic.cpp
    BehaviorSpec.cpp
+   BehaviorReport.cpp
    SpecBuild.cpp
    AVD_Table.cpp
 )
 
 SET(HEADERS
-  AVD_Table.h
-  BehaviorFactory.h
   HelmEngine.h
   HelmReport.h
-  ModeEntry.h
   ModeSet.h
-  Populator_BehaviorSet2.h
+  ModeEntry.h
   Populator_BehaviorSet.h
+  BehaviorSet.h
+  BFactoryStatic.h
+  BFactoryDynamic.h
+  BehaviorSpec.h
+  BehaviorReport.h
+  SpecBuild.h
+  AVD_Table.h
 )
 
 # Build Library

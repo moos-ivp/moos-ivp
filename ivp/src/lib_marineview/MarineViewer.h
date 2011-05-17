@@ -43,7 +43,6 @@
 #include "VPlug_GeoSettings.h"
 #include "VPlug_VehiSettings.h"
 #include "VPlug_DropPoints.h"
-#include "VPlug_Markers.h"
 #include "ColorPack.h"
 #include "BearingLine.h"
 
@@ -74,15 +73,10 @@ protected:
   double meters2img(char, double);
   double img2meters(char, double);
 
-  void   drawHash();
+  void   drawHash(double xl=0, double xr=0, double yb=0, double yt=0);
   void   drawSegment(double, double, double, double, double, double, double);
-
-  void   drawMarkers();
   void   drawOpArea();
 
-  void   drawGLPoly(double *points, int numPoints, 
-		    ColorPack fill_color,
-		    double thickness=0, double scale=1);
   void   drawCommonVehicle(const std::string& vname, 
 			   const ObjectPose&, 
 			   const BearingLine&, 
@@ -90,63 +84,41 @@ protected:
 			   const ColorPack& vname_color,
 			   const std::string& body, double shape_length,
 			   bool vname_draw, int line=0);
-  void   drawCommonMarker(double x, double y, double shape_width, 
-			  const std::string& mtype, 
-			  const std::string& label, 
-			  const ColorPack& label_color, 
-			  const std::vector<ColorPack>& color_packs);
 
+  void  drawMarkers(const std::vector<XYMarker>&);
+  void  drawMarker(const XYMarker&);
 
   void  drawPolygons(const std::vector<XYPolygon>&);
-  void  drawPolygon(const XYPolygon&, bool filled, bool dashed,
-		    double line_width, double vertex_size,
-		    const ColorPack& edge_color, 
-		    const ColorPack& fill_color,
-		    const ColorPack& vert_color,
-		    const ColorPack& labl_color);
+  void  drawPolygon(const XYPolygon&, bool filled, bool dashed);
   
   void  drawSegLists(const std::vector<XYSegList>&);
-  void  drawSegList(const XYSegList&, double lwid, double vsize, bool zdash,
-		    const ColorPack& edge_color,
-		    const ColorPack& vert_color,
-		    const ColorPack& labl_color);
+  void  drawSegList(const XYSegList&);
 
   void  drawVectors(const std::vector<XYVector>&);
-  void  drawVector(const XYVector&, double lwid, double vsize, bool zdash,
-		    const ColorPack& edge_color,
-		    const ColorPack& vert_color,
-		    const ColorPack& labl_color);
+  void  drawVector(const XYVector&);
 
   void  drawGrids(const std::vector<XYGrid>&);
   void  drawGrid(const XYGrid&);
 
   void  drawCircles(const std::vector<XYCircle>&);
-  void  drawCircle(const XYCircle&, int pts, bool filled, 
-		   const ColorPack& edge_color,
-		   const ColorPack& fill_color,
-		   const ColorPack& vert_color,
-		   const ColorPack& labl_color);
+  void  drawCircle(const XYCircle&, unsigned int pts);
 
   void  drawRangePulses(const std::vector<XYRangePulse>&, double timstamp);
-  void  drawRangePulse(const XYRangePulse&, double timestamp,
-		       const ColorPack& edge_color,
-		       const ColorPack& fill_color);
+  void  drawRangePulse(const XYRangePulse&, double timestamp);
   
   void  drawPoints(const std::vector<XYPoint>&);
-  void  drawPoint(const XYPoint&, double vertex_size,
-		  const ColorPack& vert_color,
-		  const ColorPack& labl_color);
-
-  void  drawPointList(const std::vector<double>& xvect,
-		      const std::vector<double>& yvect, double vsize,
-		      const ColorPack& vert_color, 
-		      bool point_edges_viewable=false);
+  void  drawPoint(const XYPoint&);
 
   void  drawDropPoints();
   void  drawText(double px, double py, const std::string&, 
 		 const ColorPack&, double font_size);
 
   void  drawHexagons();
+
+  void   drawGLPoly(double *points, int numPoints, 
+		    ColorPack fill_color,
+		    double thickness=0, double scale=1);
+
 
 protected:
   BackImg   m_back_img;
@@ -171,7 +143,6 @@ protected:
   bool      m_hash_offon;
 
   OpAreaSpec         m_op_area;
-  VPlug_Markers      m_vmarkers;
   VPlug_GeoShapes    m_geoshapes;
   VPlug_GeoSettings  m_geo_settings;
   VPlug_VehiSettings m_vehi_settings;

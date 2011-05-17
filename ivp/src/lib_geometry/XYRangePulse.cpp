@@ -19,7 +19,7 @@
 /* Software Foundation, Inc., 59 Temple Place - Suite 330,       */
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
- 
+
 #include "XYRangePulse.h"
 #include "GeomUtils.h"
 #include "ColorPack.h"
@@ -50,7 +50,8 @@ void XYRangePulse::initialize()
 {
   // Superclass member variables
   set_edge_size(1);
-  set_edge_color("green");
+  set_color("edge", "green");
+  set_color("fill", "green");
   
   // Local member variables
   m_x    = 0;
@@ -62,7 +63,6 @@ void XYRangePulse::initialize()
 
   m_duration = 15;
   m_fill = 0.25;
-  m_fillcolor.setColor("green");
 }
 
 //-------------------------------------------------------------
@@ -133,18 +133,6 @@ void XYRangePulse::set_fill(double val)
 }
 
 //-------------------------------------------------------------
-// Procedure: set_fill_color()
-
-void XYRangePulse::set_fill_color(string color)
-{
-  if(!isColor(color))
-    return;
-
-  ColorPack new_color(color);
-  m_fillcolor = new_color;
-}
-
-//-------------------------------------------------------------
 // Procedure: get_fill()
 
 double XYRangePulse::get_fill(double timestamp) const
@@ -186,8 +174,6 @@ string XYRangePulse::get_spec(string param) const
   spec += ",duration=";
   spec += doubleToStringX(m_duration); 
   spec += ",fill=";
-  spec += doubleToStringX(m_fill); 
-  spec += ",fill_color=" + m_fillcolor.str(':');
 
   string obj_spec = XYObject::get_spec(param);
   if(obj_spec != "")

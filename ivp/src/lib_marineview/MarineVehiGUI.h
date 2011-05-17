@@ -73,7 +73,6 @@ protected:
   inline void cb_CenterView_i(int);
   static void cb_CenterView(Fl_Widget*, int);
 
-  int    m_trail_color_ix;
   int    m_vname_color_ix;
 };
 #endif

@@ -72,6 +72,27 @@ bool VPlug_VehiSettings::setParam(string param, string value)
     m_trails_color = colorParse(value);
     handled = true;
   }
+
+  else if((param=="trails_color") && (tolower(value) == "toggle")) {
+    if(m_trails_color.str() == "blue")
+      m_trails_color.setColor("green");
+    else if(m_trails_color.str() == "green")
+      m_trails_color.setColor("lightblue");
+    else if(m_trails_color.str() == "lightblue")
+      m_trails_color.setColor("red");
+    else if(m_trails_color.str() == "red")
+      m_trails_color.setColor("yellow");
+    else if(m_trails_color.str() == "yellow")
+      m_trails_color.setColor("khaki");
+    else if(m_trails_color.str() == "khaki")
+      m_trails_color.setColor("black");
+    else if(m_trails_color.str() == "black")
+      m_trails_color.setColor("white");
+    else
+      m_trails_color.setColor("blue");      
+    handled = true;
+  }
+
   else if(param == "vehicles_viewable")
     handled = setBooleanOnString(m_vehicles_viewable, value);
   else if(param == "bearing_lines_viewable")
@@ -148,15 +169,9 @@ bool VPlug_VehiSettings::setParam(string param, string value)
 
 bool VPlug_VehiSettings::setParam(string param, double value)
 {
+
   bool handled  = false;
-  if((param == "history_size") || (param == "trails_history_size")) {
-    if(value > 0) {
-      m_history_size = (int)(value);
-      handled = true;
-    }
-    m_history_size = vclip(m_history_size, 0, 10000);
-  }
-  else if(param == "trails_point_size") {
+  if(param == "trails_point_size") {
     if(value >= 0) {
       m_trails_point_size = value;
       handled = true;

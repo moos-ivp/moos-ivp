@@ -19,17 +19,23 @@ class IC_Viewer : public Common_IPFViewer
   ~IC_Viewer() {};
 
   void setIvPChecker(IvPChecker v);
-  
-  void checkSolutions();
+  void setCurrIteration(unsigned int);
 
   // Pure virtuals that need to be defined
   void  draw();
-  int   handle(int event)
-  {return Common_IPFViewer::handle(event);};
+  int   handle(int event);
+  //{return Common_IPFViewer::handle(event);};
+
+  void checkIvPSolve();
+  void checkBruteSolve();
+  void checkQuads();
+
 
   void  setIPF_BundleSeries(IPF_BundleSeries bundle_series);
-  void  setCheckBrute(bool v) {m_check_brute = v;};
 
+  void  handleLeftMouse(int vx, int vy);
+
+  void  evalFocusPoint();
   void  incCurrFunction();
   void  decCurrFunction();
   
@@ -42,8 +48,10 @@ class IC_Viewer : public Common_IPFViewer
   std::string  getCurrDomain();
   
  public:
-  void  resetQuadSet();
-  
+  void         resetQuadSet();
+  void         setFocusPoint(std::string var, double val);
+  std::string  getFocusPoint();
+
  private:
   FColorMap     m_color_map;
   unsigned int  m_curr_iter;
@@ -51,8 +59,10 @@ class IC_Viewer : public Common_IPFViewer
   bool          m_collective;
   IvPChecker    m_ivp_checker;
 
-  bool          m_check_brute;
-  
+  IvPBox        m_focus_point;
+  IvPDomain     m_ivp_domain;
+
+
   IPF_BundleSeries m_bundle_series;
 };
 

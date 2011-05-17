@@ -41,7 +41,6 @@ PMV_GUI::PMV_GUI(int g_w, int g_h, const char *g_l)
   int info_size = 12;
   int small_info_size = 11;
   
-  m_trail_color_ix = 0;
   m_curr_time      = 0;
   m_prev_out_time  = 0;
 

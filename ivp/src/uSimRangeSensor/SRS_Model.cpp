@@ -418,8 +418,8 @@ bool SRS_Model::handleRangeRequest(const string& request)
   pulse.set_rad(50);
   pulse.set_duration(6);
   pulse.set_fill(0.9);
-  pulse.set_fill_color("white");
-  pulse.set_edge_color("white");
+  pulse.set_color("fill", "white");
+  pulse.set_color("edge", "white");
   pulse.set_time(m_curr_time);
   pulse.set_label(vname+"_range_req");
   addMessage("VIEW_RANGE_PULSE", pulse.get_spec());
@@ -507,8 +507,8 @@ void SRS_Model::postBeaconRangePulse(unsigned int ix, string color)
   pulse.set_duration(15);
   pulse.set_time(m_curr_time);
   if(color != "") {
-    pulse.set_edge_color(color);
-    pulse.set_fill_color(color);
+    pulse.set_color("edge", color);
+    pulse.set_color("fill", color);
   }
   string spec = pulse.get_spec();
   addMessage("VIEW_RANGE_PULSE", spec);

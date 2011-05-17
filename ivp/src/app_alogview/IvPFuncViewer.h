@@ -47,6 +47,7 @@ class IvPFuncViewer : public Common_IPFViewer
   {m_viter_map=vmap;};
 
   void   setCollectiveIndex(int index);
+  void   setCollectiveByDefault(bool v) {m_collective_by_default=v;};
 
   void   buildCollective(double time);
   int    getVNameIndex(std::string);
@@ -62,6 +63,7 @@ private:
   unsigned int m_plot_ix;
   int          m_collective_ix;
   bool         m_mouse_infocus;
+  bool         m_collective_by_default;
 
   // A mapping from vehicle name to current helm iteration
   std::map<std::string, unsigned int> m_viter_map;

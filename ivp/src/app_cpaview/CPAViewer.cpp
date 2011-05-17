@@ -75,6 +75,8 @@ int CPAViewer::handle(int event)
 void CPAViewer::draw()
 {
   MarineViewer::draw();
+  if(m_hash_offon)
+    drawHash();
 
   vector<XYPolygon> polys   = m_geoshapes.getPolygons();
   vector<XYPoint>   points  = m_geoshapes.getPoints();
@@ -261,8 +263,8 @@ void CPAViewer::configureRadials(unsigned int radials, double dist)
     str += (", label="  + doubleToString((double)((i+1)*dist),0));
     XYPolygon poly = string2Poly(str);
     poly.set_vertex_size(0);
-    poly.set_edge_color("dark_blue");
-    poly.set_label_color("dark_blue");
+    poly.set_color("edge", "dark_blue");
+    poly.set_color("label", "dark_blue");
     string spec = poly.get_spec();
 
     bool handled = MarineViewer::setParam("view_polygon", spec);

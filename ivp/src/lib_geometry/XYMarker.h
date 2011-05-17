@@ -1,8 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin and John Leonard                    */
 /*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
-/*    FILE: VPlugPlot.h                                          */
-/*    DATE: Aug 9th, 2009                                        */
+/*    FILE: XYMarker.h                                           */
+/*    DATE: May 12th, 2011                                       */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
 /* modify it under the terms of the GNU General Public License   */
@@ -19,39 +19,35 @@
 /* Software Foundation, Inc., 59 Temple Place - Suite 330,       */
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
+ 
+#ifndef XY_MARKER_HEADER
+#define XY_MARKER_HEADER
 
-#ifndef GEO_PLOT_HEADER
-#define GEO_PLOT_HEADER
+#include "XYObject.h"
+#include "ColorPack.h"
 
-#include <string>
-#include <vector>
-#include <list>
-#include "VPlug_GeoShapes.h"
-
-class VPlugPlot
-{
+class XYMarker : public XYObject {
 public:
-  VPlugPlot() {};
-  ~VPlugPlot() {};
+  XYMarker();
+  virtual ~XYMarker() {};
 
-  bool            addEvent(const std::string& var, 
-			   const std::string& val, double time);
-  void            setVehiName(std::string s) {m_vehi_name = s;};
+  // Setters
+  bool    set_type(const std::string&);
+  void    set_vx(double v)    {m_x=v;};
+  void    set_vy(double v)    {m_y=v;};
+  void    set_width(double v) {m_width=v;};
+ 
+  // Getters
+  double    get_vx() const              {return(m_x);};
+  double    get_vy() const              {return(m_y);};
+  double    get_width() const           {return(m_width);};
 
-  VPlug_GeoShapes getVPlugByIndex(unsigned int index) const;
-  VPlug_GeoShapes getVPlugByTime(double gtime) const;
-  std::string     getVehiName() const   {return(m_vehi_name);};
-  unsigned int    size() const          {return(m_time.size());};
-  double          getMinTime() const;
-  double          getMaxTime() const;
-  void            print() const;
-
- protected:  
-  unsigned int    getIndexByTime(double) const;
+  std::string get_spec(std::string s="") const;
 
 protected:
-  std::string                  m_vehi_name;  // Name of the platform
-  std::vector<double>          m_time;
-  std::vector<VPlug_GeoShapes> m_vplugs;
+  double       m_x;
+  double       m_y;
+  double       m_width;
 };
-#endif 
+
+#endif

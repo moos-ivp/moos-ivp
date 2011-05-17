@@ -13,7 +13,6 @@
 #include <cstdlib>
 #include <iostream>
 #include "MBUtils.h"
-#include "IvPChecker.h"
 #include "IC_GUI.h"
 #include "Populator_IPFBundleSeries.h"
 
@@ -32,16 +31,10 @@ int main(int argc, char *argv[])
     return(0);
   }
 
-  bool verbose = true;
-  if(scanArgs(argc, argv, "--verbose", "-verbose"))
-    verbose = true;
-  if(scanArgs(argc, argv, "--quiet", "-quiet", "-q"))
-    verbose = false;
-  
   // Look for a request for usage information
   if(scanArgs(argc, argv, "-h", "--help", "-help")) {
     cout << "Usage: " << endl;
-    cout << "  ivpcheck in.alog iteration [out.alog] [OPTIONS]    " << endl;
+    cout << "  ivpcheck in.alog iteration [OPTIONS]               " << endl;
     cout << "                                                     " << endl;
     cout << "Synopsis:                                            " << endl;
     cout << "  Read in IvP functions from a given alog file for   " << endl;
@@ -50,8 +43,6 @@ int main(int argc, char *argv[])
     cout << "                                                     " << endl;
     cout << "Standard Arguments:                                  " << endl;
     cout << "  in.alog  - The input logfile.                      " << endl;
-    cout << "  out.alog - The newly generated logfile. If no      " << endl;
-    cout << "             file provided, output goes to stdout.   " << endl;
     cout << "                                                     " << endl;
     cout << "Options:                                             " << endl;
     cout << "  -h,--help     Displays this help message           " << endl;
@@ -62,20 +53,12 @@ int main(int argc, char *argv[])
 
   unsigned int iteration = 0;
   string alogfile_in;
-  string alogfile_out;
-  bool   check_brute = true;
 
   for(int i=1; i<argc; i++) {
     string sarg = argv[i];
-    if(sarg == "--nobrute")
-      check_brute = false;
-    else if(strContains(sarg, ".alog")) {
-      if(alogfile_in == "")
-	alogfile_in = sarg;
-      else 
-	alogfile_out = sarg;
-    }
-    else
+    if(strContains(sarg, ".alog"))
+      alogfile_in = sarg;
+    else if(isNumber(sarg))
       iteration = atof(argv[i]);
   }
   
@@ -83,8 +66,6 @@ int main(int argc, char *argv[])
     cout << "No alog file given - exiting" << endl;
     exit(0);
   }
-  else if(verbose)
-    cout << "Processing on file : " << alogfile_in << endl;
 
   Populator_IPFBundleSeries populator;
   populator.setIterationRange(iteration, iteration);
@@ -104,14 +85,11 @@ int main(int argc, char *argv[])
   IC_GUI *gui  = new IC_GUI(1000, 700, "ivpcheck-viewer");
 
   gui->getViewer()->setIPF_BundleSeries(bundle_series);
-  gui->getViewer()->setCheckBrute(check_brute);
 
   gui->getViewer()->resetQuadSet();
   gui->getViewer()->redraw();
   gui->updateFields();
   
-  gui->getViewer()->checkSolutions();
-
   return Fl::run();
 }
 

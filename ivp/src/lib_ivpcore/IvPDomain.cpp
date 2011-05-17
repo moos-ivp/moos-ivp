@@ -172,6 +172,18 @@ int IvPDomain::getIndex(const string &g_name) const
 
 
 //-------------------------------------------------------------
+// Procedure: getTotalPts
+
+double IvPDomain::getTotalPts() const
+{
+  double total_pts = 1;
+  unsigned int i, vsize = m_dname.size();
+  for(i=0; i<vsize; i++) 
+    total_pts *= (double)(m_dpoints[i]);
+  return(total_pts);
+}
+
+//-------------------------------------------------------------
 // Procedure: getVarPoints()
 
 unsigned int IvPDomain::getVarPoints(unsigned int index) const

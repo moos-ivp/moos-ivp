@@ -66,6 +66,7 @@ public:
   double getVarLow(const std::string& s) const;    
   double getVarHigh(const std::string& s) const;    
   double getVarDelta(const std::string& s) const;    
+  double getTotalPts() const;
 
   // Return number of points in the domain for a given variable name.
   // If the variable name is unknown, just return zero.

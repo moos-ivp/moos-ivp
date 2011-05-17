@@ -3,24 +3,7 @@
 # Author(s):                                Mike Benjamin
 #--------------------------------------------------------
 
-SET(SRC  
-   AngleUtils.cpp        ArtifactUtils.cpp      
-   CPAEngine.cpp         CPA_Utils.cpp          
-   CircularUtils.cpp     GeomUtils.cpp          
-   CurrentField.cpp      XYRangePulse.cpp
-   IO_GeomUtils.cpp      LinearExtrapolator.cpp 
-   XYArc.cpp             XYFormatUtilsPoint.cpp
-   XYCircle.cpp          XYEncoders.cpp         
-   XYGrid.cpp            XYHexGrid.cpp          
-   XYHexagon.cpp         XYPolygon.cpp          
-   XYSegList.cpp         XYSquare.cpp         
-   XYArtifactGrid.cpp    XYPoint.cpp
-   XYFormatUtilsSegl.cpp XYFormatUtilsPoly.cpp
-   XYSegment.cpp         XYPatternBlock.cpp
-   XYObject.cpp          XYFormatUtilsCircle.cpp
-   XYVector.cpp          XYFormatUtilsVector.cpp
-   VState.cpp            XYFormatUtilsRangePulse.cpp
-)
+FILE(GLOB SRC *.cpp)
 
 SET(HEADERS
   AngleUtils.h
@@ -43,6 +26,7 @@ SET(HEADERS
   XYFormatUtilsPoly.h
   XYFormatUtilsSegl.h
   XYFormatUtilsVector.h
+  XYFormatUtilsMarker.h
   XYGrid.h
   XYHexagon.h
   XYHexGrid.h

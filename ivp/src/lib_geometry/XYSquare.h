@@ -40,6 +40,12 @@ public:
   double segDistToSquare(double, double, double, double) const;
   double ptDistToSquareCtr(double, double) const;
 
+  double get_min_x() const {return(m_xlow);};
+  double get_max_x() const {return(m_xhigh);};
+  double get_min_y() const {return(m_ylow);};
+  double get_max_y() const {return(m_yhigh);};
+
+
   double getVal(int, int) const;
   void   shiftX(double v)     {m_xlow+=v; m_xhigh+=v;};
   void   shiftY(double v)     {m_ylow+=v; m_yhigh+=v;};

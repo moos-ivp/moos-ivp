@@ -1,23 +1,23 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
 /*    ORGN: MIT Cambridge MA                                     */
-/*    FILE: BehaviorReport.h                                     */
-/*    DATE: May 10th 2011                                        */
+/*    FILE: BehaviorRegistry.h                                   */
+/*    DATE: May 11th 2011                                        */
 /*****************************************************************/
 
-#ifndef BEHAVIOR_REPORT_HEADER
-#define BEHAVIOR_REPORT_HEADER
+#ifndef BEHAVIOR_REGISTRY_HEADER
+#define BEHAVIOR_REGISTRY_HEADER
 
 #include <string>
 #include <vector>
 #include "IvPFunction.h"
 
-class BehaviorReport {
+class BehaviorRegistry {
 public:
-  BehaviorReport();
-  virtual ~BehaviorReport() {};
+  BehaviorRegistry();
+  virtual ~BehaviorRegistry() {};
   
-  bool addIPF(IvPFunction*, std::string="");
+  bool addIPF(IvPFunction*, unsigned int, std::string="");
   
   unsigned int size() const    {return(m_keys.size());};
   bool         isEmpty() const {return(m_keys.empty());};
@@ -28,6 +28,7 @@ public:
  protected:
   std::vector<std::string>  m_keys;
   std::vector<IvPFunction*> m_ipfs;
+  std::vector<unsigned int> m_iter;
 
   bool  m_keys_unique;
 };

@@ -47,6 +47,7 @@ class NavPlotViewer : public MarineViewer
   void   addLogPlotNAVX(const LogPlot& lp);
   void   addLogPlotNAVY(const LogPlot& lp); 
   void   addLogPlotHDG(const LogPlot& lp); 
+  void   addLogPlotStartTime(double); 
   void   addVPlugPlot(const VPlugPlot& vp); 
   unsigned int addHelmPlot(const HelmPlot& hp); 
 
@@ -58,6 +59,7 @@ class NavPlotViewer : public MarineViewer
   void   setHPlotRightIndex(unsigned int);
   void   setIndex(unsigned int, unsigned int);
   double getCurrTime();
+  double getStartTimeHint();
 
   std::string getHPlotVName(const std::string&);
   std::string getHPlotMode(const std::string&);
@@ -84,9 +86,15 @@ private:
   unsigned int  m_hplot_left_ix;
   unsigned int  m_hplot_right_ix;
   double        m_curr_time;
+  std::string   m_frame;
+
+  // Bounding box of all vehicle positions and timestamps
   double        m_min_time;
   double        m_max_time;
-  std::string   m_frame;
+  double        m_min_xpos;
+  double        m_min_ypos;
+  double        m_max_xpos;
+  double        m_max_ypos;
 
   // vectors - each index corresponds to one vehicle
   std::vector<LogPlot>   m_navx_plot;
@@ -94,6 +102,7 @@ private:
   std::vector<LogPlot>   m_hdg_plot;
   std::vector<HelmPlot>  m_helm_plot;
   std::vector<VPlugPlot> m_vplug_plot;
+  std::vector<double>    m_start_time;
 
   std::string m_trails;
   int         m_trail_gap;

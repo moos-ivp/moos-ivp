@@ -91,6 +91,7 @@ private:
   std::vector<HelmPlot>  m_helm_plots;
   std::vector<VPlugPlot> m_vplug_plots;
   std::vector<IPF_Plot>  m_ipf_plots;
+  std::vector<double>    m_log_starts;
 
 
   // Optional time clipping

@@ -10,6 +10,7 @@
 
 #include <vector>
 #include <string>
+#include "ColorPack.h"
 
 class CMOOSGeodesy;
 class OpAreaSpec {
@@ -40,10 +41,8 @@ public:
   std::vector<double> getLColor(unsigned int ix) const;
   std::vector<double> getVColor(unsigned int ix) const;
 
-  std::vector<double> getDatumColor() const
-    {return(m_datum_color);};
-
-  double getDatumSize() const {return(m_datum_size);};
+  ColorPack getDatumColor() const {return(m_datum_color);};
+  double getDatumSize() const     {return(m_datum_size);};
   
 protected:
   void addVertex(double xpos, double ypos, double lwidth,
@@ -69,9 +68,9 @@ protected:
   double m_label_shade;
 
   // Datum member variables
-  bool   m_datum_viewable;
-  double m_datum_size;
-  std::vector<double> m_datum_color;
+  bool      m_datum_viewable;
+  double    m_datum_size;
+  ColorPack m_datum_color;
 };
 
 #endif

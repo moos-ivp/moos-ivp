@@ -616,12 +616,12 @@ void CurrentField::applyRenderHint(string param, string value)
   unsigned int i, vsize = m_vectors.size();
   for(i=0; i<vsize; i++) {
     if(param == "vector_edge_color") {
-      if(!m_vectors[i].edge_color_set() && isColor(value))
-	m_vectors[i].set_edge_color(value);
+      if(!m_vectors[i].color_set("edge") && isColor(value))
+	m_vectors[i].set_color("edge", value);
     }
     if(param == "vector_vertex_color") {
-      if(!m_vectors[i].vertex_color_set() && isColor(value))
-	m_vectors[i].set_vertex_color(value);
+      if(!m_vectors[i].color_set("vertex") && isColor(value))
+	m_vectors[i].set_color("vertex", value);
     }
     if(param == "vector_vertex_size") {
       if(!m_vectors[i].vertex_size_set() && (dval >= 0))
@@ -632,8 +632,8 @@ void CurrentField::applyRenderHint(string param, string value)
 	m_vectors[i].set_edge_size(dval);
     }
     if(param == "vector_label_color") {
-      if(!m_vectors[i].label_color_set() && isColor(value))
-	m_vectors[i].set_label_color(value);
+      if(!m_vectors[i].color_set("label") && isColor(value))
+	m_vectors[i].set_color("label", value);
     }
     if(param == "vector_head_size") {
       if(!m_vectors[i].head_size_set())

@@ -24,9 +24,9 @@ class VPlug_VehiSettings
   bool   setParam(std::string param, std::string value="");
   bool   setParam(std::string param, double value);
 
-  int    getHistorySize()        const {return(m_history_size);};
+  unsigned int getTrailsLength() const {return(m_trails_length);};
+
   double getVehiclesShapeScale() const {return(m_vehicles_shape_scale);};
-  double getTrailsLength()       const {return(m_trails_length);};
   double getTrailsPointSize()    const {return(m_trails_point_size);};
 
   ColorPack getColorTrails()  const {return(m_trails_color);};
@@ -51,9 +51,9 @@ class VPlug_VehiSettings
   
 
  private:
-  int    m_history_size;
+  unsigned int m_trails_length;         
+
   double m_vehicles_shape_scale;  
-  double m_trails_length;         
   double m_trails_point_size;           
 
   bool   m_trails_viewable;      

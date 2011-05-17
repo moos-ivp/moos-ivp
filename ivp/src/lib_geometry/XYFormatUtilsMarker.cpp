@@ -1,8 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
-/*    FILE: XYFormatUtilsRangePulse.cpp                          */
-/*    DATE: Feb 5th, 2011                                        */
+/*    ORGN: MIT Cambridge MA                                     */
+/*    FILE: XYFormatUtilsMarker.cpp                              */
+/*    DATE: Mar 13, 2011                                         */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
 /* modify it under the terms of the GNU General Public License   */
@@ -22,60 +22,72 @@
 
 #include <vector>
 #include <cstdlib>
-#include "XYFormatUtilsRangePulse.h"
+#include "XYFormatUtilsMarker.h"
 #include "MBUtils.h"
 
 using namespace std;
 
 //---------------------------------------------------------------
-// Procedure: string2RangePulse (Method #0)
-//   Example: Create a point from a string representation. 
+// Procedure: string2Marker (Method #0)
+//   Example: Create a marker from a string representation. Will 
+//            call one of the string*2Marker functions below. 
+//   ***NOTE: This is the only function that should be called by 
+//            the user. The other functions are subject to change 
+//            without regard to backward compatibility.
 
-XYRangePulse string2RangePulse(string str)
+XYMarker string2Marker(string str)
 {
-  return(stringStandard2RangePulse(str));
+  str = stripBlankEnds(str);
+
+  XYMarker new_marker = stringStandard2Marker(str);
+  return(new_marker);
 }
 
 //---------------------------------------------------------------
-// Procedure: stringStandard2RangePulse  (Method #1)
+// Procedure: stringStandard2Point  (Method #1)
 //      Note: This function is standard because it processes the 
 //            string format used when a string is created from an 
-//            existing XYRangePulse instance.
-//   Example: label=one,x=4,y=2,radius=50,duration=5,fill=0.3,
-//            fill_color=yellow,edge_color=green
+//            existing XYMarker instance.
+//   Example: x=4,y=2,type=square,label=base,primary_color=white
+//            secondary_color=blue
 // 
 
-XYRangePulse stringStandard2RangePulse(string str)
+XYMarker stringStandard2Marker(string str)
 {
-  XYRangePulse null_pulse;
-  XYRangePulse new_pulse;
+  XYMarker null_marker;
+  XYMarker new_marker;
 
   str = stripBlankEnds(str);
   vector<string> mvector = parseString(str, ',');
   unsigned int i, vsize = mvector.size();
-  
+
+  string x,y,width;
   for(i=0; i<vsize; i++) {
     mvector[i] = stripBlankEnds(mvector[i]);
     string param = tolower(stripBlankEnds(biteString(mvector[i], '=')));
     string value = stripBlankEnds(mvector[i]);
-    double dval  = atof(value.c_str());
-
+    
     if((param == "x") && isNumber(value))
-      new_pulse.set_x(dval);
+      x = value;
     else if((param == "y") && isNumber(value))
-      new_pulse.set_y(dval);
-    else if((param == "radius") && isNumber(value))
-      new_pulse.set_rad(dval);
-    else if((param == "duration") && isNumber(value))
-      new_pulse.set_duration(dval);
-    else if((param == "fill") && isNumber(value))
-      new_pulse.set_fill(dval);
+      y = value;
+    else if((param == "width") && isNumber(value))
+      width = value;
+    else if((param == "primary_color") || (param == "color"))
+      new_marker.set_color("primary_color", value);
+    else if(param == "secondary_color")
+      new_marker.set_color("secondary_color", value);
     else
-      new_pulse.set_param(param, value);
+      new_marker.set_param(param, value);
   }
+
+  if((x=="") || (y=="") || (width==""))
+    return(null_marker);
   
-  if(!new_pulse.valid())
-    return(null_pulse);
+  new_marker.set_vx(atof(x.c_str()));
+  new_marker.set_vy(atof(y.c_str()));
+  new_marker.set_width(atof(width.c_str()));
   
-  return(new_pulse);
+  return(new_marker);
 }
+

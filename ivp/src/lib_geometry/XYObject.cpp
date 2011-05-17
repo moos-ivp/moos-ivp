@@ -55,34 +55,64 @@ void XYObject::clear()
   m_vertex_size = -1;
   m_edge_size   = -1;
 
-  m_label_color.clear();
-  m_vertex_color.clear();
-  m_edge_color.clear();
+  m_color_map.clear();
+}
+
+//---------------------------------------------------------------
+// Procedure: set_type
+
+bool XYObject::set_type(const string& str)
+{
+  m_type = str;
+  return(true);
 }
 
 
 //---------------------------------------------------------------
-// Procedure: set_label_color()
-// Procedure: set_vertex_color()
-// Procedure: set_edge_color()
+// Procedure: set_color()
+
+void XYObject::set_color(const string& key, const string& color)
+{
+  if(isColor(color))
+    m_color_map[key] = ColorPack(color);
+}
+
+//---------------------------------------------------------------
+// Procedure: set_color()
+
+void XYObject::set_color(const string& key, const ColorPack& color)
+{
+  m_color_map[key] = color;
+}
+
+//---------------------------------------------------------------
+// Procedure: get_color()
+
+ColorPack XYObject::get_color(const string& key) const
+{
+  ColorPack return_cpack;
+
+  map<string, ColorPack>::const_iterator p;
+  p = m_color_map.find(key);
+  if(p != m_color_map.end())
+    return_cpack = p->second;
+
+  return(return_cpack);
+}
+
+//---------------------------------------------------------------
+// Procedure: color_set()
+
+bool XYObject::color_set(const string& key) const
+{
+  return(m_color_map.count(key) > 0);
+}
+
+
+//---------------------------------------------------------------
 // Procedure: set_vertex_size()
 // Procedure: set_edge_size()
 
-void XYObject::set_label_color(const string& str)
-{
-  if(isColor(str))
-    m_label_color.setColor(str);
-}
-void XYObject::set_vertex_color(const string& str)
-{
-  if(isColor(str))
-    m_vertex_color.setColor(str);
-}
-void XYObject::set_edge_color(const string& str)
-{
-  if(isColor(str))
-    m_edge_color.setColor(str);
-}
 void XYObject::set_vertex_size(double val)
 {
   if(val >= 0) 
@@ -118,18 +148,22 @@ std::string XYObject::get_spec(string param) const
    
   if(m_label != "")
     aug_spec(spec, "label=" + m_label); 
-  if(m_label_color.set())
-    aug_spec(spec, "label_color=" + m_label_color.str(':')); 
   if(m_msg != "")
     aug_spec(spec, "msg=" + m_msg); 
   if(m_type != "")
     aug_spec(spec, "type=" + m_type); 
   if(m_source != "")
     aug_spec(spec, "source=" + m_source); 
-  if(edge_color_set())
-    aug_spec(spec, "edge_color=" + m_edge_color.str(':')); 
-  if(m_vertex_color.set())
-    aug_spec(spec, "vertex_color=" + m_vertex_color.str(':')); 
+
+  if(color_set("label"))
+    aug_spec(spec, "label_color=" + get_color("label").str(':'));
+  if(color_set("edge"))
+    aug_spec(spec, "edge_color=" + get_color("edge").str(':')); 
+  if(color_set("vertex"))
+    aug_spec(spec, "vertex_color=" + get_color("vertex").str(':')); 
+  if(color_set("fill"))
+    aug_spec(spec, "fill_color=" + get_color("fill").str(':')); 
+
   if(m_time_set) {
     string time_str = doubleToStringX(m_time,2);
     aug_spec(spec, "time=" + time_str);
@@ -164,14 +198,18 @@ bool XYObject::set_param(const string& param, const string& value)
     set_time(atof(value.c_str()));
   else if(param == "vertex_size")
     set_vertex_size(atof(value.c_str()));
-  else if(param == "vertex_color")
-    set_vertex_color(value);
   else if(param == "edge_size")
     set_edge_size(atof(value.c_str()));
+
+  else if(param == "vertex_color")
+    set_color("vertex", value);
   else if(param == "edge_color")
-    set_edge_color(value);
+    set_color("edge", value);
   else if(param == "label_color")
-    set_label_color(value);
+    set_color("label", value);
+  else if(param == "fill_color")
+    set_color("fill", value);
+
   else if((param == "active") && isBoolean(value))
     set_active(tolower(value) == "true");
   else

@@ -409,11 +409,11 @@ XYSegList stringLawnmower2SegList(string str)
   if(msg != "")
     new_seglist.set_msg(msg);
   if(label_color != "")
-    new_seglist.set_label_color(label_color);
+    new_seglist.set_color("label", label_color);
   if(vertex_color != "")
-    new_seglist.set_vertex_color(vertex_color);
+    new_seglist.set_color("vertex", vertex_color);
   if(edge_color != "")
-    new_seglist.set_edge_color(edge_color);
+    new_seglist.set_color("edge", edge_color);
   if(type != "")
     new_seglist.set_type(type);
   if(source != "")

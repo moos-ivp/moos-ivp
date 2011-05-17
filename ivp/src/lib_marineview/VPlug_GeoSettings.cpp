@@ -28,6 +28,8 @@ VPlug_GeoSettings::VPlug_GeoSettings()
   setColorMapping("seglist_edge_color", "white");
   setColorMapping("seglist_vertex_color", "dark_blue");
   setColorMapping("seglist_label_color", "orange");
+  setColorMapping("marker_edge_color", "black");
+  setColorMapping("marker_label_color", "white");
   setColorMapping("circle_edge_color", "yellow");
   setColorMapping("grid_edge_color", "white");
   setColorMapping("point_vertex_color", "yellow");
@@ -36,17 +38,21 @@ VPlug_GeoSettings::VPlug_GeoSettings()
   m_viewable_map["polygon_viewable_labels"] = true;
   m_viewable_map["seglist_viewable_all"]    = true;
   m_viewable_map["seglist_viewable_labels"] = true;
+  m_viewable_map["marker_viewable_all"]     = true;
+  m_viewable_map["marker_viewable_labels"]  = true;
   m_viewable_map["point_viewable_all"]      = true;
   m_viewable_map["point_viewable_labels"]   = true;
-  m_viewable_map["vector_viewable_all"]      = true;
-  m_viewable_map["vector_viewable_labels"]   = true;
-  m_viewable_map["grid_viewable_all"]      = true;
-  m_viewable_map["grid_viewable_labels"]   = true;
+  m_viewable_map["vector_viewable_all"]     = true;
+  m_viewable_map["vector_viewable_labels"]  = true;
+  m_viewable_map["grid_viewable_all"]       = true;
+  m_viewable_map["grid_viewable_labels"]    = true;
 
   m_gsize_map["polygon_edge_width"]  = 1.0;
   m_gsize_map["polygon_vertex_size"] = 3.0;
   m_gsize_map["seglist_edge_width"]  = 1.0;
   m_gsize_map["seglist_vertex_size"] = 3.0;
+  m_gsize_map["marker_edge_width"]   = 1.0;
+  m_gsize_map["marker_scale"]        = 1.0;
   m_gsize_map["grid_edge_width"]     = 2.0;
   m_gsize_map["circle_edge_width"]   = 2.0;
   m_gsize_map["point_vertex_size"]   = 4.0;
@@ -77,6 +83,10 @@ bool VPlug_GeoSettings::setParam(const string& param, string value)
     return(setViewableMapping(param, value));
   else if(param == "seglist_viewable_labels")
     return(setViewableMapping(param, value));
+  else if(param == "marker_viewable_all")
+    return(setViewableMapping(param, value));
+  else if(param == "marker_viewable_labels")
+    return(setViewableMapping(param, value));
   else if(param == "grid_viewable_all")
     return(setViewableMapping(param, value));
   else if(param == "grid_viewable_labels")
@@ -85,7 +95,6 @@ bool VPlug_GeoSettings::setParam(const string& param, string value)
     return(setViewableMapping(param, value));
   else if(param == "circle_viewable_labels")
     return(setViewableMapping(param, value));
-
   else if(param == "point_viewable_all")
     return(setViewableMapping(param, value));
   else if(param == "point_viewable_labels")
@@ -99,11 +108,24 @@ bool VPlug_GeoSettings::setParam(const string& param, string value)
   else if(param == "grid_viewable_labels")
     return(setViewableMapping(param, value));
 
+  else if(param == "polygon_label_color")
+    return(setColorMapping(param, value));
+  else if(param == "seglist_label_color")
+    return(setColorMapping(param, value));
+  else if(param == "point_label_color")
+    return(setColorMapping(param, value));
+  else if(param == "marker_label_color")
+    return(setColorMapping(param, value));
+  else if(param == "vector_label_color")
+    return(setColorMapping(param, value));
+  else if(param == "circle_label_color")
+    return(setColorMapping(param, value));
+  else if(param == "grid_label_color")
+    return(setColorMapping(param, value));
+
   else if(param == "polygon_edge_color")
     return(setColorMapping(param, value));
   else if(param == "polygon_vertex_color")
-    return(setColorMapping(param, value));
-  else if(param == "polygon_label_color")
     return(setColorMapping(param, value));
   else if(param == "seglist_edge_color")
     return(setColorMapping(param, value));
@@ -115,12 +137,29 @@ bool VPlug_GeoSettings::setParam(const string& param, string value)
     return(setColorMapping(param, value));
   else if(param == "point_vertex_color")
     return(setColorMapping(param, value));
+
   else if(param == "vector_length_zoom")
-    return(setGSizeMapping(param, value), 4);
+    return(setGSizeMapping(param, value, 4));
+
+  else if(param == "polygon_edge_width")
+    return(setGSizeMapping(param, value, 10));
+  else if(param == "polygon_vertex_size")
+    return(setGSizeMapping(param, value, 20));
+  else if(param == "seglist_edge_width")
+    return(setGSizeMapping(param, value, 10));
+  else if(param == "seglist_vertex_size")
+    return(setGSizeMapping(param, value, 20));
+  else if(param == "point_vertex_size")
+    return(setGSizeMapping(param, value));
+  else if(param == "marker_edge_width")
+    return(setGSizeMapping(param, value));
+  else if(param == "marker_scale")
+    return(setGSizeMapping(param, value));
+
   else if(strContains(param, "_width"))
-    return(setGSizeMapping(param, value), 10);
+    return(setGSizeMapping(param, value, 10));
   else if(strContains(param, "_size"))
-    return(setGSizeMapping(param, value), 10);
+    return(setGSizeMapping(param, value, 10));
   else
     return(false);
   
@@ -142,10 +181,6 @@ bool VPlug_GeoSettings::setColorMapping(string attribute,
   attribute = tolower(stripBlankEnds(attribute));
   color_str = stripBlankEnds(color_str);
 
-  // Store the string value solely for purposes of reporting back
-  // state in the getParamReport queries.
-  m_color_string_map[attribute] = color_str;
-  
   ColorPack cpack(color_str);
   m_color_map[attribute] = cpack;
 
@@ -199,46 +234,49 @@ bool VPlug_GeoSettings::setViewableMapping(string param, string value)
 
 //-------------------------------------------------------------
 // Procedure: setGSizeMapping
-//      Note: Can accept string size args such as "+1", or "-10"
+//      Note: Can accept strings such as:
+//            "delta:12",  to change by a given amount
+//            "scale:0.9", to scale by a given amount
+//            "12",        to set exactly to the given value
 
 bool VPlug_GeoSettings::setGSizeMapping(string attribute, string gsize,
 					     double optional_max_limit)
 {
   attribute = tolower(stripBlankEnds(attribute));
-  gsize = stripBlankEnds(gsize);
+  gsize = tolower(stripBlankEnds(gsize));
 
-  bool add = false;
-  bool sub = false;
-  if(strContains(gsize, "+")) {
-    gsize = findReplace(gsize, "+", "");
-    add = true;
-  }
-  else if(strContains(gsize, "-")) {
-    gsize = findReplace(gsize, "-", "");
-    sub = true;
-  }
-
-  if(!isNumber(gsize))
-    return(false);
-
-  double dval = atof(gsize.c_str());
-  if(dval < 0)
-    return(false);
-  if((optional_max_limit != 0) && (dval > optional_max_limit))
-    dval = optional_max_limit;
-  
   double current_size = m_gsize_map[attribute];
+  double new_size     = 0;
 
-  if(add)
-    m_gsize_map[attribute] = current_size + dval;
-  else if(sub) {
-    if((current_size - dval) >= 0)
-      m_gsize_map[attribute] = current_size - dval;
+  if(strBegins(gsize, "delta:")) {
+    string delta_str = biteString(gsize, ':');
+    string delta_val = stripBlankEnds(gsize);
+    if(!isNumber(delta_val))
+      return(false);
+    double delta = atof(delta_val.c_str());
+    new_size = current_size + delta;
   }
-  else
-    m_gsize_map[attribute] = dval;
 
-    
+  else if(strBegins(gsize, "scale:")) {
+    string scale_str = biteString(gsize, ':');
+    string scale_val = stripBlankEnds(gsize);
+    if(!isNumber(scale_val))
+      return(false);
+    double scale = atof(scale_val.c_str());
+    new_size = current_size * scale;
+  }
+  else {
+    if(!isNumber(gsize))
+      return(false);
+    new_size = atof(gsize.c_str());
+  }
+
+  if(new_size < 0)
+    new_size = 0;
+  if((optional_max_limit > 0) && (new_size > optional_max_limit))
+    new_size = optional_max_limit;
+  
+  m_gsize_map[attribute] = new_size;
 
   return(true);    
 }
@@ -332,10 +370,10 @@ vector<string> VPlug_GeoSettings::getParamReport() const
 
   svect.push_back("// Parameters for Geometry Shapes");
 
-  map<string, string>::const_iterator p1;
-  for(p1=m_color_string_map.begin(); p1!= m_color_string_map.end(); p1++) {
+  map<string, ColorPack>::const_iterator p1;
+  for(p1=m_color_map.begin(); p1!= m_color_map.end(); p1++) {
     string param = p1->first;
-    string value = p1->second;
+    string value = p1->second.str();
     svect.push_back(param + " = " + value);
   }
   

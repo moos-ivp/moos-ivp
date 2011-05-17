@@ -19,11 +19,12 @@
 #include "XYPoint.h"
 #include "XYVector.h"
 #include "XYRangePulse.h"
+#include "XYMarker.h"
 #include "ColorPack.h"
 
 class VPlug_GeoShapes {
 public:
-  VPlug_GeoShapes() {};
+  VPlug_GeoShapes();
   virtual ~VPlug_GeoShapes() {};
 
   bool setParam(const std::string& param, std::string value);
@@ -36,6 +37,7 @@ public:
   void addPoint(const XYPoint&);
   void addVector(const XYVector&);
   void addRangePulse(const XYRangePulse&);
+  void addMarker(const XYMarker&);
 
   bool addPolygon(const std::string&);
   bool addSegList(const std::string&);
@@ -44,17 +46,19 @@ public:
   bool addPoint(const std::string&);
   bool addVector(const std::string&);
   bool addRangePulse(const std::string&);
+  bool addMarker(const std::string&);
 
   bool updateGrid(const std::string&);
 
-  unsigned int sizePolygons() {return(m_polygons.size());};
-  unsigned int sizeSegLists() {return(m_seglists.size());};
-  unsigned int sizeGrids()    {return(m_grids.size());};
-  unsigned int sizeCircles()  {return(m_circles.size());};
-  unsigned int sizeHexagons() {return(m_hexagons.size());};
-  unsigned int sizePoints()   {return(m_points.size());};
-  unsigned int sizeVectors()  {return(m_vectors.size());};
-  unsigned int sizeRangePulses() {return(m_range_pulses.size());};
+  unsigned int sizePolygons() const {return(m_polygons.size());};
+  unsigned int sizeSegLists() const {return(m_seglists.size());};
+  unsigned int sizeGrids() const    {return(m_grids.size());};
+  unsigned int sizeCircles() const  {return(m_circles.size());};
+  unsigned int sizeHexagons() const {return(m_hexagons.size());};
+  unsigned int sizePoints() const   {return(m_points.size());};
+  unsigned int sizeVectors() const  {return(m_vectors.size());};
+  unsigned int sizeRangePulses() const {return(m_range_pulses.size());};
+  unsigned int sizeMarkers() const {return(m_markers.size());};
 
   XYPolygon& poly(unsigned int i)   {return(m_polygons[i]);};
   XYSegList& segl(unsigned int i)   {return(m_seglists[i]);};
@@ -64,24 +68,35 @@ public:
   XYPoint&   point(unsigned int i)  {return(m_points[i]);};
   XYVector&  vector(unsigned int i) {return(m_vectors[i]);};
   XYRangePulse& range_pulse(unsigned int i) {return(m_range_pulses[i]);};
+  XYMarker&  marker(unsigned int i) {return(m_markers[i]);};
 
-  std::vector<XYPolygon> getPolygons()    {return(m_polygons);};
-  std::vector<XYSegList> getSegLists()    {return(m_seglists);};
-  std::vector<XYHexagon> getHexagons()    {return(m_hexagons);};
-  std::vector<XYGrid>    getGrids()       {return(m_grids);};
-  std::vector<XYCircle>  getCircles()     {return(m_circles);};
-  std::vector<XYPoint>   getPoints()      {return(m_points);};
-  std::vector<XYVector>  getVectors()     {return(m_vectors);};
-  std::vector<XYRangePulse> getRangePulses() {return(m_range_pulses);};
+  std::vector<XYPolygon> getPolygons() const {return(m_polygons);};
+  std::vector<XYSegList> getSegLists() const {return(m_seglists);};
+  std::vector<XYHexagon> getHexagons() const {return(m_hexagons);};
+  std::vector<XYGrid>    getGrids() const    {return(m_grids);};
+  std::vector<XYCircle>  getCircles() const  {return(m_circles);};
+  std::vector<XYPoint>   getPoints() const   {return(m_points);};
+  std::vector<XYVector>  getVectors() const  {return(m_vectors);};
+  std::vector<XYRangePulse> getRangePulses() const {return(m_range_pulses);};
+  std::vector<XYMarker>  getMarkers() const  {return(m_markers);};
 
-  XYPolygon    getPolygon(unsigned int);
-  XYSegList    getSegList(unsigned int);
-  XYGrid       getGrid(unsigned int);
-  XYCircle     getCircle(unsigned int);
-  XYHexagon    getHexagon(unsigned int);
-  XYPoint      getPoint(unsigned int);
-  XYVector     getVector(unsigned int);
-  XYRangePulse getRangePulse(unsigned int);
+  XYPolygon    getPolygon(unsigned int) const;
+  XYSegList    getSegList(unsigned int) const;
+  XYGrid       getGrid(unsigned int) const;
+  XYCircle     getCircle(unsigned int) const;
+  XYHexagon    getHexagon(unsigned int) const;
+  XYPoint      getPoint(unsigned int) const;
+  XYVector     getVector(unsigned int) const;
+  XYRangePulse getRangePulse(unsigned int) const;
+  XYMarker     getMarker(unsigned int) const;
+
+  double       getXMin() const {return(m_xmin);};
+  double       getXMax() const {return(m_xmax);};
+  double       getYMin() const {return(m_ymin);};
+  double       getYMax() const {return(m_ymax);};
+
+ protected:
+  void updateBounds(double xl, double xh, double yl, double yh);
 
 protected:
   std::vector<XYPolygon>    m_polygons;
@@ -92,6 +107,12 @@ protected:
   std::vector<XYPoint>      m_points;
   std::vector<XYVector>     m_vectors;
   std::vector<XYRangePulse> m_range_pulses;
+  std::vector<XYMarker>     m_markers;
+
+  double  m_xmin;
+  double  m_xmax;
+  double  m_ymin;
+  double  m_ymax;
 };
 
 #endif

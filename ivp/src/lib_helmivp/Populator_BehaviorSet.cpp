@@ -59,7 +59,7 @@ Populator_BehaviorSet::Populator_BehaviorSet(IvPDomain g_domain,
 BehaviorSet *Populator_BehaviorSet::populate(set<string> bhv_files)
 {
   cout << "Number of behavior files: " << bhv_files.size() << endl;
-  unsigned int i, line_ix;
+  unsigned int  line_ix;
   set<string>::const_iterator p;
   for(p=bhv_files.begin(); p!=bhv_files.end(); p++) {
 
@@ -126,7 +126,6 @@ BehaviorSet *Populator_BehaviorSet::populate(set<string> bhv_files)
 	
 	if(!ok) {
 	  cout << "    Problem with line " << line_ix+1;
-	  cout << "    Problem with line " << i+1;
 	  cout << "    in the BehaviorSet file: " << filename << endl;
 	  cout << "Pre_line: [" << pre_line << "]" << endl;
 	  cout << "Post_line: [" << post_line << "]" << endl;
@@ -143,6 +142,7 @@ BehaviorSet *Populator_BehaviorSet::populate(set<string> bhv_files)
   // behaviors. If some fail instantiation, abort the behaviorset.
   BehaviorSet *bset = new BehaviorSet;
   bset->setDomain(m_domain);
+  unsigned int i;
   for(i=0; i<m_behavior_specs.size(); i++)
     bset->addBehaviorSpec(m_behavior_specs[i]);
   bool ok = bset-> buildBehaviorsFromSpecs();

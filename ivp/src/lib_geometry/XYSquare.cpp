@@ -251,7 +251,6 @@ double XYSquare::getVal(int xy, int lh) const
       return(m_yhigh);
 }
 
-
 //---------------------------------------------------------------
 // Procedure: get_spec
 //   Purpose: 

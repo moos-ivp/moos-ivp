@@ -524,9 +524,9 @@ void BHV_Waypoint::postViewableSegList()
   XYSegList seglist = m_waypoint_engine.getSegList();
   seglist.set_label(m_us_name + "_" + m_descriptor);
   if(m_hint_vertex_color != "")
-    seglist.set_vertex_color(m_hint_vertex_color);
+    seglist.set_color("vertex", m_hint_vertex_color);
   if(m_hint_edge_color != "")
-    seglist.set_edge_color(m_hint_edge_color);
+    seglist.set_color("edge", m_hint_edge_color);
   if(m_hint_edge_size >= 0)
     seglist.set_edge_size(m_hint_edge_size);
   if(m_hint_vertex_size >= 0)
@@ -581,12 +581,12 @@ void BHV_Waypoint::handleVisualHint(string hint)
   double dval  = atof(value.c_str());
 
   if((param == "nextpt_color") && isColor(value)) {
-    m_trackpt.set_vertex_color(hint);
-    m_nextpt.set_vertex_color(hint);
+    m_trackpt.set_color("vertex", hint);
+    m_nextpt.set_color("vertex", hint);
   }
   else if((param == "nextpt_lcolor") && isColor(value)) {
-    m_trackpt.set_label_color(hint);
-    m_nextpt.set_label_color(hint);
+    m_trackpt.set_color("label", hint);
+    m_nextpt.set_color("label", hint);
   }
   else if((param == "vertex_color") && isColor(value))
     m_hint_vertex_color = value;

@@ -26,15 +26,19 @@ IC_GUI::IC_GUI(int g_w, int g_h, const char *g_l)
     
   int info_size=10;
 
-  viewer = new IC_Viewer(0, 30, w(), h()-60);
+  viewer = new IC_Viewer(0, 30, w(), h()-90);
 
-  total_funcs = new MY_Output(90, h()-25, 30, 20, "Total Functions:"); 
-  total_funcs->textsize(info_size); 
-  total_funcs->labelsize(info_size);
+  focus_point = new MY_Output(90, h()-55, 180, 20, "Focus Point:"); 
+  focus_point->textsize(info_size); 
+  focus_point->labelsize(info_size);
 
-  curr_function = new MY_Output(220, h()-25, 180, 20, "Current Function:"); 
+  curr_function = new MY_Output(90, h()-25, 180, 20, "Curr Function:"); 
   curr_function->textsize(info_size); 
   curr_function->labelsize(info_size);
+
+  total_funcs = new MY_Output(360, h()-25, 30, 20, "Total Functions:"); 
+  total_funcs->textsize(info_size); 
+  total_funcs->labelsize(info_size);
 
   curr_func_size = new MY_Output(450, h()-25, 50, 20, "Pieces:"); 
   curr_func_size->textsize(info_size); 
@@ -71,10 +75,6 @@ Fl_Menu_Item IC_GUI::menu_[] = {
  {"Toggle Frame ",   'f',  (Fl_Callback*)IC_GUI::cb_ToggleFrame, (void*)-1, FL_MENU_DIVIDER},
  {"Expand Radius ",  '}',  (Fl_Callback*)IC_GUI::cb_StretchRad, (void*)1, 0},
  {"Shrink Radius ",  '{',  (Fl_Callback*)IC_GUI::cb_StretchRad, (void*)-1, 0},
- {"Base Higher ",    'B',  (Fl_Callback*)IC_GUI::cb_ModBase, (void*)1, 0},
- {"Base Lower ",     'b',  (Fl_Callback*)IC_GUI::cb_ModBase, (void*)-1, 0},
- {"Scale Higher ",   'S',  (Fl_Callback*)IC_GUI::cb_ModScale, (void*)1, 0},
- {"Scale Lower ",    's',  (Fl_Callback*)IC_GUI::cb_ModScale, (void*)-1, 0},
  {"Zoom In",         'i', (Fl_Callback*)IC_GUI::cb_Zoom, (void*)-1, 0},
  {"Zoom Out",        'o', (Fl_Callback*)IC_GUI::cb_Zoom, (void*)1, 0},
  {"Zoom Reset", FL_ALT+'Z', (Fl_Callback*)IC_GUI::cb_Zoom, (void*)0, 0},
@@ -90,6 +90,13 @@ Fl_Menu_Item IC_GUI::menu_[] = {
  {"Increment",   ' ', (Fl_Callback*)IC_GUI::cb_IncCurrFunction, (void*)1, 0},
  {"Decrement",   FL_ALT+' ',  (Fl_Callback*)IC_GUI::cb_IncCurrFunction, (void*)-1, 0},
  {"Collective",  'c',  (Fl_Callback*)IC_GUI::cb_ToggleCollectiveView, (void*)0, 0},
+ {0},
+
+ {"Evaluate", 0,  0, 0, 64, 0, 0, 14, 0},
+ {"IvP Solve",    0, (Fl_Callback*)IC_GUI::cb_Solve, (void*)0, 0},
+ {"Brute Solve",  0,  (Fl_Callback*)IC_GUI::cb_Solve, (void*)1, 0},
+ {"Quad Report",  0,  (Fl_Callback*)IC_GUI::cb_Solve, (void*)2, 0},
+ {"Eval Point",   0,  (Fl_Callback*)IC_GUI::cb_EvalFocusPoint, (void*)0, 0},
  {0},
 
  {0}
@@ -178,30 +185,33 @@ void IC_GUI::cb_StretchRad(Fl_Widget* o, int v) {
   ((IC_GUI*)(o->parent()->user_data()))->cb_StretchRad_i(v);
 }
 
-//----------------------------------------- Mod Base
-inline void IC_GUI::cb_ModBase_i(int amt) {
-  if(amt > 0) viewer->setParam("mod_base",  10);
-  if(amt < 0) viewer->setParam("mod_base", -10);
-}
-void IC_GUI::cb_ModBase(Fl_Widget* o, int v) {
-  ((IC_GUI*)(o->parent()->user_data()))->cb_ModBase_i(v);
-}
-
-//----------------------------------------- Mod Scale
-inline void IC_GUI::cb_ModScale_i(int amt) {
-  if(amt > 0) viewer->setParam("mod_scale", 1.25);
-  if(amt < 0) viewer->setParam("mod_scale", 0.80);
-}
-void IC_GUI::cb_ModScale(Fl_Widget* o, int v) {
-  ((IC_GUI*)(o->parent()->user_data()))->cb_ModScale_i(v);
-}
-
 //----------------------------------------- Toggle Frame
 inline void IC_GUI::cb_ToggleFrame_i() {
   viewer->setParam("draw_frame", "toggle");
 }
 void IC_GUI::cb_ToggleFrame(Fl_Widget* o) {
   ((IC_GUI*)(o->parent()->user_data()))->cb_ToggleFrame_i();
+}
+
+//----------------------------------------- Solve
+inline void IC_GUI::cb_Solve_i(int val) {
+  if(val==0)
+    viewer->checkIvPSolve();
+  else if(val==1)
+    viewer->checkBruteSolve();
+  else if(val==2)
+    viewer->checkQuads();
+}
+void IC_GUI::cb_Solve(Fl_Widget* o, int val) {
+  ((IC_GUI*)(o->parent()->user_data()))->cb_Solve_i(val);
+}
+
+//----------------------------------------- EvalFocusPoint
+inline void IC_GUI::cb_EvalFocusPoint_i() {
+  viewer->evalFocusPoint();
+}
+void IC_GUI::cb_EvalFocusPoint(Fl_Widget* o) {
+  ((IC_GUI*)(o->parent()->user_data()))->cb_EvalFocusPoint_i();
 }
 
 //----------------------------------------- ColorMap
@@ -247,13 +257,16 @@ void IC_GUI::updateFields()
   if(!viewer)
     return;
   
-  string funcs = viewer->getTotalFunctions();
-  total_funcs->value(funcs.c_str());
+  string focus_pt = viewer->getFocusPoint();
+  focus_point->value(focus_pt.c_str());
 
   string descriptor = "null";
   descriptor = viewer->getCurrDescriptor();
   curr_function->value(descriptor.c_str());
   
+  string funcs = viewer->getTotalFunctions();
+  total_funcs->value(funcs.c_str());
+
   string pieces = viewer->getCurrPieces();
   curr_func_size->value(pieces.c_str());
 

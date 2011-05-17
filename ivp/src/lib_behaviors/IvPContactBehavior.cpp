@@ -253,8 +253,8 @@ void IvPContactBehavior::postViewableBearingLine()
   m_bearing_line.add_vertex(m_osx, m_osy);
   m_bearing_line.add_vertex(m_cnx, m_cny);
   m_bearing_line.set_label(m_us_name + "_" + m_descriptor);
-  m_bearing_line.set_label_color("invisible");
-  m_bearing_line.set_edge_color(color);
+  m_bearing_line.set_color("label", "invisible");
+  m_bearing_line.set_color("edge", color);
 
   postMessage("VIEW_SEGLIST", m_bearing_line.get_spec());
 }

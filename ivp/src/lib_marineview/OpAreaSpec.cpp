@@ -26,7 +26,7 @@ OpAreaSpec::OpAreaSpec()
   m_line_shade      = 1.0;
   m_label_shade     = 1.0;
 
-  m_datum_color     = colorParse("red");
+  m_datum_color     = ColorPack("red");
   m_datum_viewable  = false;
   m_datum_size      = 3;
 }
@@ -191,7 +191,7 @@ bool OpAreaSpec::setParam(const string& param, string value)
   else if(param == "datum_color") {
     if(!isColor(value))
       return(false);
-    m_datum_color = colorParse(value);
+    m_datum_color = ColorPack(value);
   }
   else
     return(false);

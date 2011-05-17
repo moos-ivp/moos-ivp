@@ -62,13 +62,15 @@ int CurrViewer::handle(int event)
 void CurrViewer::draw()
 {
   MarineViewer::draw();
+  if(m_hash_offon)
+    drawHash();
 
   vector<XYVector>  mvectors = m_current_field.getVectorsMarked();
   vector<XYVector>  uvectors = m_current_field.getVectorsUnMarked();
 
   unsigned int j, jsize = mvectors.size();
   for(j=0; j<jsize; j++)
-    mvectors[j].set_edge_color("light_blue");
+    mvectors[j].set_color("edge", "light_blue");
 
   drawVectors(mvectors);
   drawVectors(uvectors);

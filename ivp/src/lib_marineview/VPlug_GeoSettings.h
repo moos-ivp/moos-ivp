@@ -35,11 +35,6 @@ protected:
   std::map<std::string, ColorPack>  m_color_map;
   std::map<std::string, bool>       m_viewable_map;
   std::map<std::string, double>     m_gsize_map;
-
-  // The below is strictly for parameter reporting and not used
-  // in drawing. Should be identical to the m_color_map except
-  // in form (string vs. vector<double>) only.
-  std::map<std::string, std::string>  m_color_string_map;
 };
 
 #endif

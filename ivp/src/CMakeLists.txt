@@ -252,7 +252,7 @@ SET(IVP_GUI_APPS
   app_ffview
   app_geoview
   app_currview
-  app_logview
+  app_alogview
   app_arcview
   app_vzaicview
   app_gzaicview

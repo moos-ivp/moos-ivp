@@ -68,6 +68,13 @@ PMV_Viewer::PMV_Viewer(int x, int y, int w, int h, const char *l)
 void PMV_Viewer::draw()
 {
   MarineViewer::draw();
+  if(m_hash_offon) {
+    double xl = m_geoshapes.getXMin() - 1000;
+    double xh = m_geoshapes.getXMax() + 1000;
+    double yl = m_geoshapes.getYMin() - 1000;
+    double yh = m_geoshapes.getYMax() + 1000;
+    drawHash(xl, xh, yl, yh);
+  }
 
   vector<XYPolygon> polys   = m_geoshapes.getPolygons();
   vector<XYGrid>    grids   = m_geoshapes.getGrids();
@@ -76,6 +83,7 @@ void PMV_Viewer::draw()
   vector<XYCircle>  circles = m_geoshapes.getCircles();
   vector<XYVector>  vectors = m_geoshapes.getVectors();
   vector<XYRangePulse> pulses = m_geoshapes.getRangePulses();
+  vector<XYMarker>  markers = m_geoshapes.getMarkers();
 
   drawPolygons(polys);
   drawGrids(grids);
@@ -84,6 +92,7 @@ void PMV_Viewer::draw()
   drawPoints(points);
   drawVectors(vectors);
   drawRangePulses(pulses, m_curr_time);
+  drawMarkers(markers);
   drawDropPoints();
 
 
@@ -113,7 +122,7 @@ void PMV_Viewer::draw()
       // Perhaps draw the history points for each vehicle.
       if(m_vehi_settings.isViewableTrails()) {
 	CPList point_list = m_vehiset.getVehiHist(vehiname);
-	double trails_length = m_vehi_settings.getTrailsLength();
+	unsigned int trails_length = m_vehi_settings.getTrailsLength();
 	drawTrailPoints(point_list, trails_length);
       }
       // Next draw the vehicle shapes. If the vehicle index is the 
@@ -210,9 +219,9 @@ bool PMV_Viewer::setParam(string param, string value)
       handled = true;
     }
   }
-  else if(param == "view_marker") {
-    handled = m_vmarkers.addVMarker(value, m_geodesy);
-  }
+  //else if(param == "view_marker") {
+  //  handled = m_vmarkers.addVMarker(value, m_geodesy);
+  //}
   else if((param == "node_report") || (param == "node_report_local")){
     handled = m_vehiset.setParam(param, value);
     if(handled && (m_centric_view != "") && m_centric_view_sticky) {
@@ -318,29 +327,33 @@ void PMV_Viewer::drawVehicle(string vname, bool active, string vehibody)
 //-------------------------------------------------------------
 // Procedure: drawTrailPoints
 
-void PMV_Viewer::drawTrailPoints(CPList &cps, int trail_length)
+void PMV_Viewer::drawTrailPoints(CPList &cps, unsigned int trail_length)
 {
   if(!m_vehi_settings.isViewableTrails())
     return;
 
-  vector<double> xvect;
-  vector<double> yvect;
+  XYSegList segl;
 
   list<ColoredPoint>::reverse_iterator p;
-  int i=0;
+  unsigned int i=0;
   for(p=cps.rbegin(); (p!=cps.rend() && (i<trail_length)); p++) {
-    if(p->isValid()) {
-      xvect.push_back(p->m_x);
-      yvect.push_back(p->m_y);
-    }
+    if(p->isValid())
+      segl.add_vertex(p->m_x, p->m_y);
     i++;
   }
 
   ColorPack   cpack = m_vehi_settings.getColorTrails();
   double    pt_size = m_vehi_settings.getTrailsPointSize();
   bool    connected = m_vehi_settings.isViewableTrailsConnect();
-  
-  drawPointList(xvect, yvect, pt_size, cpack, connected);
+
+  segl.set_color("vertex", cpack.str());
+  segl.set_vertex_size(pt_size);
+  if(connected)
+    segl.set_color("edge", "white");
+  else
+    segl.set_color("edge", "invisible");
+
+  drawSegList(segl);
 }
 
 //-------------------------------------------------------------
@@ -397,6 +410,7 @@ void PMV_Viewer::handleLeftMouse(int vx, int vy)
     else 
       native = latlon;
     dpt.set_label(native);
+    dpt.set_vertex_size(3);
     m_drop_points.addPoint(dpt, latlon, localg, native);
   }
   // Otherwise (no SHIFT/CONTROL key), the left click will be 

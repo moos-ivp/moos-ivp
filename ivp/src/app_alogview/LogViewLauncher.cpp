@@ -275,7 +275,7 @@ bool LogViewLauncher::setALogFileSkews()
   cout << "Detecting alog file skews..." << endl;
 
   unsigned int i, j, vsize = m_alog_files.size();
-  vector<double> logstarts(vsize,0);
+  vector<double> logstarts(vsize, 0);
 
   double min_logstart = 0;
   for(i=0; i<vsize; i++) {
@@ -302,6 +302,7 @@ bool LogViewLauncher::setALogFileSkews()
     if((i==0) || (logstarts[i] < min_logstart))
       min_logstart = logstarts[i];
   }
+  m_log_starts = logstarts;
 
   // Apply min_logstart to all so the earliest has skew of zero
   for(i=0; i<m_alog_files.size(); i++)
@@ -393,7 +394,7 @@ void LogViewLauncher::parseALogFile(unsigned int index)
 	  else if((var == "VIEW_POINT")   || (var == "VIEW_POLYGON") ||
 		  (var == "VIEW_SEGLIST") || (var == "VIEW_CIRCLE")  ||
 		  (var == "GRID_INIT")    || (var == "VIEW_MARKER")  ||
-		  (var == "GRID_DELTA")) {
+		  (var == "GRID_DELTA")   || (var == "VIEW_RANGE_PULSE")) {
 	    entries_vplug_plot.push_back(entry);
 	  }
 	  else if(var == "IVPHELM_SUMMARY")
@@ -692,6 +693,7 @@ bool LogViewLauncher::buildGraphical()
   for(k=0; k<m_log_plots.size(); k++) {
     for(j=0; j<m_log_plots[k].size(); j++) {
       m_gui->addLogPlot(m_log_plots[k][j]);
+      m_gui->np_viewer->addLogPlotStartTime(m_log_starts[k]);
       if(m_log_plots[k][j].get_varname() == "NAV_X")
 	m_gui->np_viewer->addLogPlotNAVX(m_log_plots[k][j]);
       else if(m_log_plots[k][j].get_varname() == "NAV_Y")
@@ -701,6 +703,7 @@ bool LogViewLauncher::buildGraphical()
     }
   }
   
+
   // Populate the GUI with the priot-built HelmPlots
   for(k=0; k<m_helm_plots.size(); k++) 
     m_gui->addHelmPlot(m_helm_plots[k]);

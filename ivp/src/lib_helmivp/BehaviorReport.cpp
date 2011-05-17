@@ -1,34 +1,61 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    ORGN: MIT Cambridge MA                                     */
 /*    FILE: BehaviorReport.cpp                                   */
-/*    DATE: Apr 16th 2008                                        */
+/*    DATE: May 10th 2011                                        */
 /*****************************************************************/
 
 #include "BehaviorReport.h"
+#include "MBUtils.h"
 
 using namespace std;
 
 //-----------------------------------------------------------
-// Procedure: reset()
+// Constructor
 
-void BehaviorReport::reset()
+BehaviorReport::BehaviorReport()
 {
-  m_good_updates  = 0;
-  m_bad_updates   = 0;
-  m_update_age    = 0;
-  m_duration      = 0;
-  m_start_time    = 0;
-  m_pieces        = 0;
-  m_priority      = 0;
-  m_duration_left = 0;
-  m_create_time   = 0;
-  m_avg_error     = 0;
-  m_wst_error     = 0;
-  m_samples       = 0;
-  m_descriptor    = "";
-  m_update_var    = "";
-  m_state         = "";
-  m_unif_piece    = "";
-  m_messages.clear();
+  m_keys_unique = true;
 }
+
+//-----------------------------------------------------------
+// Procedure: addIPF
+//      Note: Returns true if the given key is unique
+
+bool BehaviorReport::addIPF(IvPFunction *ipf, string key)
+{
+  if(vectorContains(m_keys, key))
+    m_keys_unique = false;
+
+  m_keys.push_back(key);
+  m_ipfs.push_back(ipf);
+  
+  return(m_keys_unique);
+}
+
+//-----------------------------------------------------------
+// Procedure: getIPF(unsigned int index)
+
+IvPFunction *BehaviorReport::getIPF(unsigned int index) const
+{
+  if(index >= m_ipfs.size())
+    return(0);  
+  return(m_ipfs[index]);
+}
+
+//-----------------------------------------------------------
+// Procedure: getIPF(string key)
+
+IvPFunction *BehaviorReport::getIPF(string key) const
+{
+  unsigned int i, vsize = m_ipfs.size();
+  for(i=0; i<vsize; i++) 
+    if(m_keys[i] == key)
+      return(m_ipfs[i]);
+  return(0);
+}
+
+// Note - in the Behavior Registry - clear out any stored IPF's not
+// explicitly vouched for on any given iteration. This way we don't
+// have to worry that a key augmented here will result in a runaway
+// growing registry.

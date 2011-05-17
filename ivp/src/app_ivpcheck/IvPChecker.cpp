@@ -63,11 +63,15 @@ void IvPChecker::checkBrute(const vector<string>& ivp_strings)
   DomainExpander dex;
   dex.setIvPDomain(m_ivp_domain);
 
-  bool   no_point_evaluated = true;
+  double total_pts = m_ivp_domain.getTotalPts();
+  double report_pct = 0;
+  double report_pct_inc = 0.10;
+
   double max_so_far;
   double min_so_far;
   IvPBox max_pt;
 
+  double pts_evaluated = 0;
   while(dex.isFullyExpanded() == false) {
     IvPBox ptbox = dex.getCurrDomainPointBox();    
 
@@ -79,15 +83,21 @@ void IvPChecker::checkBrute(const vector<string>& ivp_strings)
       ptval += (pdmap->evalPoint(&ptbox) * pwt);
     }
 
-    if(no_point_evaluated || (ptval > max_so_far)) {
+    if((pts_evaluated==0) || (ptval > max_so_far)) {
       max_so_far = ptval;
       max_pt = ptbox;
     }
 
-    if(no_point_evaluated || (ptval < min_so_far))
+    if((pts_evaluated==0) || (ptval < min_so_far))
       min_so_far = ptval;
 
-    no_point_evaluated = false;
+    pts_evaluated++;
+    double pct_evaluated = (pts_evaluated / total_pts);
+    if(pct_evaluated > report_pct) {
+      double pct = (report_pct * 100);
+      cout << dstringCompact(doubleToString(pct, 0)) << "%" << endl;
+      report_pct += report_pct_inc;
+    }
   }
 
   cout << "Brute Force Search Results:" << endl;

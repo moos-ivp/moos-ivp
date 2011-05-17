@@ -5,6 +5,7 @@
 
 SET(SRC
   ColorParse.cpp
+  ColorPack.cpp
   FColorMap.cpp
   FileBuffer.cpp
   MBTimer.cpp

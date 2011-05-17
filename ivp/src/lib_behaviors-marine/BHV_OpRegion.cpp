@@ -492,9 +492,9 @@ void BHV_OpRegion::postViewablePolygon()
     return;
   XYPolygon poly_duplicate = m_polygon;
   if(m_hint_vertex_color != "")
-    poly_duplicate.set_vertex_color(m_hint_vertex_color);
+    poly_duplicate.set_color("vertex", m_hint_vertex_color);
   if(m_hint_edge_color != "")
-    poly_duplicate.set_edge_color(m_hint_edge_color);
+    poly_duplicate.set_color("edge", m_hint_edge_color);
   if(m_hint_edge_size >= 0)
     poly_duplicate.set_edge_size(m_hint_edge_size);
   if(m_hint_vertex_size >= 0)

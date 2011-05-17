@@ -27,7 +27,7 @@ Common_IPFViewer::Common_IPFViewer(int g_x, int g_y, int g_width,
   m_xRot         = -72;
   m_zRot         = 40;
   m_zoom         = 1;
-  m_rad_extra    = 15;
+  m_rad_extra    = 8;
   m_draw_pin     = true;
   m_draw_frame   = true;
   m_draw_base    = true;
@@ -275,17 +275,17 @@ void Common_IPFViewer::drawQuad(Quad3D &q)
   double x0,x1,x2,x3,y0,y1,y2,y3;
   if(m_polar == 1) {
     double delta = 360.0 / q.xpts;
-    projectPoint(q.xl*delta, q.yl/2, 0, 0, x0, y0);
-    projectPoint(q.xh*delta, q.yl/2, 0, 0, x1, y1);
-    projectPoint(q.xh*delta, q.yh/2, 0, 0, x2, y2);
-    projectPoint(q.xl*delta, q.yh/2, 0, 0, x3, y3);
+    projectPoint(q.xl*delta, q.yl, 0, 0, x0, y0);
+    projectPoint(q.xh*delta, q.yl, 0, 0, x1, y1);
+    projectPoint(q.xh*delta, q.yh, 0, 0, x2, y2);
+    projectPoint(q.xl*delta, q.yh, 0, 0, x3, y3);
   }
   else if(m_polar == 2) {
     double delta = 360.0 / q.ypts;
-    projectPoint(q.yl*delta, q.xl/2, 0, 0, y0, x0);
-    projectPoint(q.yh*delta, q.xl/2, 0, 0, y1, x1);
-    projectPoint(q.yh*delta, q.xh/2, 0, 0, y2, x2);
-    projectPoint(q.yl*delta, q.xh/2, 0, 0, y3, x3);
+    projectPoint(q.yl*delta, q.xl, 0, 0, y0, x0);
+    projectPoint(q.yh*delta, q.xl, 0, 0, y1, x1);
+    projectPoint(q.yh*delta, q.xh, 0, 0, y2, x2);
+    projectPoint(q.yl*delta, q.xh, 0, 0, y3, x3);
   }      
   else {
     q.xl -= 250;  q.xh -= 250; q.yl -= 250;  q.yh -= 250;
@@ -434,7 +434,7 @@ void Common_IPFViewer::drawMaxPoint(double crs, double spd)
 
   spd *= m_rad_extra;
   double x,y,z=250;
-  projectPoint(crs, spd/2, 0, 0, x, y);
+  projectPoint(crs, spd, 0, 0, x, y);
     
   glPointSize(3.0 * m_zoom);
 

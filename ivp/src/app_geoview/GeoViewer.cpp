@@ -57,27 +57,18 @@ int GeoViewer::handle(int event)
 void GeoViewer::draw()
 {
   MarineViewer::draw();
+  if(m_hash_offon)
+    drawHash();
 
   // Rather than call "drawPolygons()" in the superclass, we implement 
   // the routine here so we can draw the "active" poly differently.
   if(m_geo_settings.viewable("polygon_viewable_all", true) == true) {
     unsigned int i, vsize = m_geoshapes.sizePolygons();
     if(vsize > 0) {
-
-      ColorPack edge_c, fill_c, vert_c, labl_c;
-      edge_c = m_geo_settings.geocolor("polygon_edge_color", "khaki");
-      fill_c = m_geo_settings.geocolor("polygon_fill_color", "dark_green");
-      vert_c = m_geo_settings.geocolor("polygon_vertex_color", "red");
-      labl_c = m_geo_settings.geocolor("polygon_label_color", "white");
-
-      double line_width  = m_geo_settings.geosize("polygon_line_size");
-      double vertex_size = m_geo_settings.geosize("polygon_vertex_size");
-        
       for(i=0; i<vsize; i++) {
 	XYPolygon poly = m_geoshapes.getPolygon(i);
 	bool filled = (i == m_active_poly);
-	drawPolygon(poly, filled, false, line_width, vertex_size, 
-		    edge_c, fill_c, vert_c, labl_c);
+	drawPolygon(poly, filled, false);
       }
     }
   }
@@ -403,17 +394,9 @@ void GeoViewer::drawCircle(unsigned int ix)
   if(ix >= m_circle.size())
     return;
 
-  ColorPack edge_c, fill_c, vert_c, labl_c;
-  edge_c = m_geo_settings.geocolor("polygon_edge_color", "yellow");
-  fill_c = m_geo_settings.geocolor("polygon_vertex_color", "white");
-  vert_c = m_geo_settings.geocolor("polygon_vertex_color", "white");
-  labl_c = m_geo_settings.geocolor("polygon_label_color", "white");
-
-  double lwid = m_geo_settings.geosize("polygon_line_size");
-  double vert = m_geo_settings.geosize("polygon_vertex_size");
-    
   XYPolygon poly = m_circle_poly[ix];
-  drawPolygon(poly, false, false, lwid, vert, edge_c, fill_c, vert_c, labl_c);
+  if(poly.active())
+    drawPolygon(poly, false, false);
 }
 
 //-------------------------------------------------------------
