@@ -156,10 +156,12 @@ bool VPlug_GeoSettings::setParam(const string& param, string value)
   else if(param == "marker_scale")
     return(setGSizeMapping(param, value));
 
+#if 0
   else if(strContains(param, "_width"))
     return(setGSizeMapping(param, value, 10));
   else if(strContains(param, "_size"))
     return(setGSizeMapping(param, value, 10));
+#endif
   else
     return(false);
   
@@ -173,7 +175,7 @@ bool VPlug_GeoSettings::setParam(const string& param, string value)
 //            "label", "0.741, 0.718, 0.420"
 
 bool VPlug_GeoSettings::setColorMapping(string attribute, 
-					     string color_str)
+					string color_str)
 {
   if(!isColor(color_str))
     return(false);
@@ -187,18 +189,6 @@ bool VPlug_GeoSettings::setColorMapping(string attribute,
   return(true);    
 }
 
-
-//-------------------------------------------------------------
-// Procedure: setColorMapping
-//            "label, DarkKhaki"
-//            "label, hex, bd, b7, 6b"
-//            "label, 0.741, 0.718, 0.420"
-
-bool VPlug_GeoSettings::setColorMapping(string str)
-{
-  string attribute = biteString(str, ',');
-  return(setColorMapping(attribute, str));
-}
 
 //-------------------------------------------------------------
 // Procedure: setViewableMapping

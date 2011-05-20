@@ -49,14 +49,13 @@ bool EchoVar::OnNewMail(MOOSMSG_LIST &NewMail)
     for(p=NewMail.begin(); p!=NewMail.end(); p++) {
       CMOOSMsg &msg = *p;
       
-      string key   = msg.m_sKey;
-      string sdata = msg.m_sVal;
-      double ddata = msg.m_dfVal;
-      char   mtype = msg.m_cDataType;
+      string key   = msg.GetKey();
+      string sdata = msg.GetString();
+      double ddata = msg.GetDouble();
       
-      if(mtype == MOOS_DOUBLE)
+      if(msg.IsDataType(MOOS_DOUBLE))
 	m_logic_buffer.updateInfoBuffer(key, ddata);
-      else if(mtype == MOOS_STRING)
+      else if(msg.IsDataType(MOOS_STRING))
 	m_logic_buffer.updateInfoBuffer(key, sdata);
     }
   }
@@ -376,13 +375,13 @@ bool EchoVar::handleFlipEntry(string sKey, string sLine)
 
 void EchoVar::holdMessage(CMOOSMsg msg)
 {
-  string key = msg.m_sKey;
+  string key = msg.GetKey();
 
   if(!m_conditions_met) {
     list<CMOOSMsg>::iterator p;
     for(p=m_held_messages.begin(); p!=m_held_messages.end();) {
       CMOOSMsg imsg = *p;
-      if(imsg.m_sKey == key)
+      if(imsg.GetKey() == key)
 	p = m_held_messages.erase(p);
       else
 	++p;
@@ -403,18 +402,17 @@ void EchoVar::releaseMessages()
   for(p=m_held_messages.begin(); p!=m_held_messages.end(); p++) {
     CMOOSMsg msg = *p;
     
-    string key   = msg.m_sKey;
-    string sdata = msg.m_sVal;
-    double ddata = msg.m_dfVal;
-    char   mtype = msg.m_cDataType;
+    string key   = msg.GetKey();
+    string sdata = msg.GetString();
+    double ddata = msg.GetDouble();
     
     unsigned int i, vsize = m_var_source.size();
     for(i=0; i<vsize; i++) {
       if(key == m_var_source[i]) {
 	string new_key = m_var_target[i];
-	if(mtype == MOOS_DOUBLE)
+	if(msg.IsDataType(MOOS_DOUBLE))
 	  m_Comms.Notify(new_key, ddata);
-	else if(mtype == MOOS_STRING)
+	else if(msg.IsDataType(MOOS_STRING))
 	  m_Comms.Notify(new_key, sdata);
       }
     }

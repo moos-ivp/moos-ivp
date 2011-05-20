@@ -68,31 +68,39 @@ PMV_Viewer::PMV_Viewer(int x, int y, int w, int h, const char *l)
 void PMV_Viewer::draw()
 {
   MarineViewer::draw();
+
   if(m_hash_offon) {
-    double xl = m_geoshapes.getXMin() - 1000;
-    double xh = m_geoshapes.getXMax() + 1000;
-    double yl = m_geoshapes.getYMin() - 1000;
-    double yh = m_geoshapes.getYMax() + 1000;
+    double xl = m_geoshapes_map.getXMin() - 1000;
+    double xh = m_geoshapes_map.getXMax() + 1000;
+    double yl = m_geoshapes_map.getYMin() - 1000;
+    double yh = m_geoshapes_map.getYMax() + 1000;
     drawHash(xl, xh, yl, yh);
   }
 
-  vector<XYPolygon> polys   = m_geoshapes.getPolygons();
-  vector<XYGrid>    grids   = m_geoshapes.getGrids();
-  vector<XYPoint>   points  = m_geoshapes.getPoints();
-  vector<XYSegList> segls   = m_geoshapes.getSegLists();
-  vector<XYCircle>  circles = m_geoshapes.getCircles();
-  vector<XYVector>  vectors = m_geoshapes.getVectors();
-  vector<XYRangePulse> pulses = m_geoshapes.getRangePulses();
-  vector<XYMarker>  markers = m_geoshapes.getMarkers();
+  vector<string> vnames = m_geoshapes_map.getVehiNames();
+  unsigned int i, vsize = vnames.size();
+  for(i=0; i<vsize; i++) {
+    vector<XYPolygon> polys   = m_geoshapes_map.getPolygons(vnames[i]);
+    vector<XYGrid>    grids   = m_geoshapes_map.getGrids(vnames[i]);
+    vector<XYPoint>   points  = m_geoshapes_map.getPoints(vnames[i]);
+    vector<XYSegList> segls   = m_geoshapes_map.getSegLists(vnames[i]);
+    vector<XYCircle>  circles = m_geoshapes_map.getCircles(vnames[i]);
+    vector<XYVector>  vectors = m_geoshapes_map.getVectors(vnames[i]);
+    vector<XYRangePulse> pulses = m_geoshapes_map.getRangePulses(vnames[i]);
+    vector<XYMarker>  markers = m_geoshapes_map.getMarkers(vnames[i]);
+    
+    drawPolygons(polys);
+    drawGrids(grids);
+    drawSegLists(segls);
+    drawCircles(circles);
+    drawPoints(points);
+    drawVectors(vectors);
+    drawRangePulses(pulses, m_curr_time);
+    drawMarkers(markers);
+  }
 
-  drawPolygons(polys);
-  drawGrids(grids);
-  drawSegLists(segls);
-  drawCircles(circles);
-  drawPoints(points);
-  drawVectors(vectors);
-  drawRangePulses(pulses, m_curr_time);
-  drawMarkers(markers);
+  drawOpArea(m_op_area);
+  drawDatum(m_op_area);
   drawDropPoints();
 
 
@@ -113,8 +121,8 @@ void PMV_Viewer::draw()
 
   if(m_vehi_settings.isViewableVehicles()) {
     vector<string> svector = m_vehiset.getVehiNames();
-    int vsize = svector.size();
-    for(int i=0; i<vsize; i++) {
+    unsigned int i, vsize = svector.size();
+    for(i=0; i<vsize; i++) {
       string vehiname = svector[i];
       bool   isactive = (vehiname == m_vehiset.getActiveVehicle());
       string vehibody = m_vehiset.getStringInfo(vehiname, "body");
@@ -187,7 +195,18 @@ bool PMV_Viewer::setParam(string param, string value)
       handled = true;
     }
   }
+  else if(param == "op_vertex")
+    handled = m_op_area.addVertex(value, m_geodesy);
+
+  else if(param == "filter_out_tag") {
+    handled = true;
+    m_geoshapes_map.clear(value);
+    m_vehiset.clear(value);
+    VarDataPair new_pair("HELM_MAP_CLEAR", 0); 
+    m_var_data_pairs_non_mouse.push_back(new_pair);
+  }
   else if(param == "reference_tag") {
+    handled = true;
     if(value == "bearing-absolute")
       m_reference_bearing = "absolute";
     else if(value == "bearing-relative")
@@ -198,6 +217,8 @@ bool PMV_Viewer::setParam(string param, string value)
       m_vehiset.setParam("center_vehicle_name", value);
       m_reference_point = value;
     }
+    else
+      handled = false;
   }
   else if(param == "new_report_variable") {
     handled = m_vehiset.setParam(param, value);
@@ -231,12 +252,22 @@ bool PMV_Viewer::setParam(string param, string value)
   else {
     handled = handled || m_vehi_settings.setParam(param, value);
     handled = handled || m_vehiset.setParam(param, value);
+    handled = handled || m_op_area.setParam(param, value);
   }
 
   if(center_needs_adjusting)
     setWeightedCenterView();
 
   return(handled);
+}
+
+
+//-------------------------------------------------------------
+// Procedure: addGeoShape()
+
+bool PMV_Viewer::addGeoShape(string param, string value, string community)
+{
+  return(m_geoshapes_map.addGeoShape(param, value, community));
 }
 
 
@@ -664,7 +695,6 @@ void PMV_Viewer::addMousePoke(string key, string vardata_pair)
   m_var_data_pairs_all.push_back(new_pair);
 }
 
-
 // ----------------------------------------------------------
 // Procedure: getStringInfo
 
@@ -762,10 +792,10 @@ string PMV_Viewer::getStringInfo(const string& info_type, int precision)
   return(result);
 }
   
-
 // ----------------------------------------------------------
 // Procedure: getLeftMousePairs
 // Procedure: getRightMousePairs
+// Procedure: getNonMousePairs
 
 vector<VarDataPair> PMV_Viewer::getLeftMousePairs(bool clear)
 {
@@ -780,6 +810,14 @@ vector<VarDataPair> PMV_Viewer::getRightMousePairs(bool clear)
   vector<VarDataPair> rvector = m_var_data_pairs_rgt;
   if(clear)
     m_var_data_pairs_rgt.clear();
+  return(rvector);
+}
+
+vector<VarDataPair> PMV_Viewer::getNonMousePairs(bool clear)
+{
+  vector<VarDataPair> rvector = m_var_data_pairs_non_mouse;
+  if(clear)
+    m_var_data_pairs_non_mouse.clear();
   return(rvector);
 }
 

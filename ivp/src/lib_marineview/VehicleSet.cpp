@@ -40,10 +40,6 @@ VehicleSet::VehicleSet()
 //            pass a warning or error to the user, or perhaps
 //            allow the parameter and value to be processed in 
 //            some other way.
-//            The "makenote" parameter indicates that the param
-//            value pair should be noted in the m_param_report
-//            mapping for later reporting of all param-value 
-//            pairs used for reconstructing the current state.
 
 bool VehicleSet::setParam(string param, string value)
 {
@@ -107,10 +103,6 @@ bool VehicleSet::setParam(string param, string value)
 //            pass a warning or error to the user, or perhaps
 //            allow the parameter and value to be processed in 
 //            some other way.
-//            The "makenote" parameter indicates that the param
-//            value pair should be noted in the m_param_report
-//            mapping for later reporting of all param-value 
-//            pairs used for reconstructing the current state.
 
 bool VehicleSet::setParam(string param, double value)
 {
@@ -121,9 +113,32 @@ bool VehicleSet::setParam(string param, double value)
       handled = true;
     }
   }
-  
   return(handled);
 }
+
+//-------------------------------------------------------------
+// Procedure: clear()
+
+void VehicleSet::clear(const string& vname)
+{
+  if((vname == "all") || (vname == "")) {
+    m_pos_map.clear();
+    m_hist_map.clear();
+    m_vmode_map.clear();
+    m_amode_map.clear();
+    m_ais_map.clear();
+    m_bearing_map.clear();
+  }
+  else {
+    m_pos_map.erase(vname);
+    m_hist_map.erase(vname);
+    m_vmode_map.erase(vname);
+    m_amode_map.erase(vname);
+    m_ais_map.erase(vname);
+    m_bearing_map.erase(vname);
+  }
+}
+
 
 
 // ----------------------------------------------------------

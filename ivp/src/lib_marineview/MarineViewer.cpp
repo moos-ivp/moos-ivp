@@ -140,8 +140,6 @@ bool MarineViewer::setParam(string param, string value)
     handled = setBooleanOnString(m_hash_offon, v);
   else if(p=="geodesy_init")
     handled = initGeodesy(v);
-  else if(p=="op_vertex")
-    handled = m_op_area.addVertex(value, m_geodesy);
   else if(p=="zoom") {
     handled = (v=="reset");
     if(handled)
@@ -158,27 +156,8 @@ bool MarineViewer::setParam(string param, string value)
       handled = true;
     }
   }
-  else if(p=="view_polygon")
-    handled = m_geoshapes.addPolygon(value);
-  else if(p=="view_seglist")
-    handled = m_geoshapes.addSegList(value);
-  else if(p=="view_point")
-    handled = m_geoshapes.addPoint(value);
-  else if(p=="view_vector")
-    handled = m_geoshapes.addVector(value);
-  else if(p=="view_circle")
-    handled = m_geoshapes.addCircle(value);
-  else if(p=="view_range_pulse")
-    handled = m_geoshapes.addRangePulse(value);
-  else if((p=="view_marker") || (p=="marker"))
-    handled = m_geoshapes.addMarker(value);
-  else if(p=="grid_config")
-    handled = m_geoshapes.addGrid(value);
-  else if(p=="grid_delta")
-    handled = m_geoshapes.updateGrid(value);
   else {
     handled = handled || m_drop_points.setParam(p,v);
-    handled = handled || m_op_area.setParam(p,v);
     handled = handled || m_vehi_settings.setParam(p,v);
     handled = handled || m_geo_settings.setParam(p,v);
   }
@@ -413,15 +392,6 @@ void MarineViewer::draw()
   // Draw the background image if the tiff flag is set
   if(m_tiff_offon)
     drawTiff();
-
-  if(m_op_area.viewable("datum")) {
-    XYPoint datum_point;
-    datum_point.set_vertex_size(m_op_area.getDatumSize());
-    datum_point.set_color("vertex", m_op_area.getDatumColor().str());
-    drawPoint(datum_point);
-  }
-
-  drawOpArea();
 }
 
 // ----------------------------------------------------------
@@ -537,9 +507,9 @@ double MarineViewer::getHashDelta()
 //-------------------------------------------------------------
 // Procedure: drawGLPoly
 
-void MarineViewer::drawGLPoly(double *points, int numPoints, 
-			      ColorPack cpack,
-			      double thickness, double scale)
+void MarineViewer::drawGLPoly(double *points, unsigned int numPoints, 
+			      ColorPack cpack, double thickness, 
+			      double scale)
 {
   if(thickness<=0)
     glBegin(GL_POLYGON);
@@ -549,7 +519,8 @@ void MarineViewer::drawGLPoly(double *points, int numPoints,
   }
 
   glColor3f(cpack.red(), cpack.grn(), cpack.blu());
-  for(int i=0; i<numPoints*2; i=i+2)
+  unsigned int i;
+  for(i=0; i<numPoints*2; i=i+2)
     glVertex2f(points[i]*scale, points[i+1]*scale);
 
   glEnd();
@@ -565,7 +536,8 @@ void MarineViewer::drawCommonVehicle(const string& vname,
 				     const ColorPack& vname_color,
 				     const string& vehibody, 
 				     double shape_length, 
-				     bool  vname_draw, int outer_line)
+				     bool  vname_draw, 
+				     unsigned int outer_line)
 {
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
@@ -802,7 +774,7 @@ void MarineViewer::drawMarker(const XYMarker& marker)
   ColorPack cpack1 = marker.get_color("primary_color");
   ColorPack cpack2 = marker.get_color("secondary_color");
 
-  int bw = 1; // border width
+  unsigned int bw = 1; // border width
 
   ColorPack black(0,0,0);
   if(mtype == "gateway") {
@@ -916,11 +888,24 @@ void MarineViewer::drawMarker(const XYMarker& marker)
 
 
 //-------------------------------------------------------------
+// Procedure: drawDatum
+
+void MarineViewer::drawDatum(const OpAreaSpec& op_area)
+{
+  if(op_area.viewable("datum")) {
+    XYPoint datum_point;
+    datum_point.set_vertex_size(op_area.getDatumSize());
+    datum_point.set_color("vertex", op_area.getDatumColor().str());
+    drawPoint(datum_point);
+  }
+}
+
+//-------------------------------------------------------------
 // Procedure: drawOpArea
 
-void MarineViewer::drawOpArea()
+void MarineViewer::drawOpArea(const OpAreaSpec& op_area)
 {
-  if(m_op_area.viewable() == false)
+  if(op_area.viewable() == false)
     return;
 
   glMatrixMode(GL_PROJECTION);
@@ -941,31 +926,30 @@ void MarineViewer::drawOpArea()
 
 
   unsigned int index = 0;
-  unsigned int asize = m_op_area.size();
+  unsigned int asize = op_area.size();
 
-  double line_shade  = m_op_area.getLineShade();
-  //double label_shade = m_op_area.getLabelShade();
+  double line_shade  = op_area.getLineShade();
+  //double label_shade = op_area.getLabelShade();
 
   while(index < asize) {
-    string group  = m_op_area.getGroup(index);
-    double lwidth = m_op_area.getLWidth(index);
-    //bool   dashed = m_op_area.getDashed(index);
-    bool   looped = m_op_area.getLooped(index);
+    string group  = op_area.getGroup(index);
+    double lwidth = op_area.getLWidth(index);
+    bool   looped = op_area.getLooped(index);
 
-    ColorPack lcolor = m_op_area.getLColor(index);
-    ColorPack vcolor = m_op_area.getVColor(index);
+    ColorPack lcolor = op_area.getLColor(index);
+    ColorPack vcolor = op_area.getVColor(index);
 
     vector<double> xpos, ypos;
     vector<string> labels;
 
     bool done = false;
     while(!done) {
-      double x = m_op_area.getXPos(index);
-      double y = m_op_area.getYPos(index);
-      string label = m_op_area.getLabel(index);
+      double x = op_area.getXPos(index);
+      double y = op_area.getYPos(index);
+      string label = op_area.getLabel(index);
 
       index++;
-      if((index >= asize) || (group != m_op_area.getGroup(index)))
+      if((index >= asize) || (group != op_area.getGroup(index)))
 	done = true;
       xpos.push_back(x);
       ypos.push_back(y);
@@ -994,7 +978,7 @@ void MarineViewer::drawOpArea()
     }
     glEnd();
 
-    if(m_op_area.viewable("labels")) {
+    if(op_area.viewable("labels")) {
       glColor3f(lcolor.red(), lcolor.grn(), lcolor.blu());
       gl_font(1, 10);
       for(i=0; i<vsize; i++) {
@@ -1008,6 +992,7 @@ void MarineViewer::drawOpArea()
 	delete(buff);
       }
     }
+    glLineWidth(1);
   }
 
   glFlush();
@@ -1071,18 +1056,17 @@ void MarineViewer::drawPolygons(const vector<XYPolygon>& polys)
   unsigned int i, vsize = polys.size();
   for(i=0; i<vsize; i++) 
     if(polys[i].active()) 
-      drawPolygon(polys[i], false, false);
+      drawPolygon(polys[i]);
 }
 
 //-------------------------------------------------------------
 // Procedure: drawPolygon
 
-void MarineViewer::drawPolygon(const XYPolygon& poly, 
-			       bool filled, bool dashed)
+void MarineViewer::drawPolygon(const XYPolygon& poly)
 {
   ColorPack edge_c, fill_c, vert_c, labl_c;
   edge_c = m_geo_settings.geocolor("polygon_edge_color", "aqua");
-  fill_c = m_geo_settings.geocolor("polygon_fill_color", "dark_green");
+  fill_c = m_geo_settings.geocolor("polygon_fill_color", "invisible");
   vert_c = m_geo_settings.geocolor("polygon_vertex_color", "red");
   labl_c = m_geo_settings.geocolor("polygon_label_color", "white");
   if(poly.color_set("label"))            // label_color
@@ -1091,12 +1075,14 @@ void MarineViewer::drawPolygon(const XYPolygon& poly,
     vert_c = poly.get_color("vertex");
   if(poly.color_set("edge"))             // edge_color
     edge_c = poly.get_color("edge");
+  if(poly.color_set("fill"))             // edge_color
+    fill_c = poly.get_color("fill");
 
   double line_width  = m_geo_settings.geosize("polygon_line_size");
   double vertex_size = m_geo_settings.geosize("polygon_vertex_size");
-  if(poly.get_edge_size() >= 0)         // edge_size
+  if(poly.edge_size_set())         // edge_size
     line_width = poly.get_edge_size();
-  if(poly.get_vertex_size() >= 0)       // vertex_size
+  if(poly.vertex_size_set())       // vertex_size
     vertex_size = poly.get_vertex_size();
   
   unsigned int vsize = poly.size();
@@ -1134,7 +1120,7 @@ void MarineViewer::drawPolygon(const XYPolygon& poly,
   // Fill in the interior of polygon if it is a valid polygon
   // with greater than two vertices. (Two vertex polygons are
   // "valid" too, but we decide here not to draw the interior
-  if((vsize > 2) && poly.is_convex() && filled) {
+  if((vsize > 2) && poly.is_convex() && fill_c.visible()) {
     glEnable(GL_BLEND);
     glColor4f(fill_c.red(), fill_c.grn(), fill_c.blu(), 0.1);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -1150,13 +1136,6 @@ void MarineViewer::drawPolygon(const XYPolygon& poly,
   // the last edge.
   if(vsize > 1) {
     glLineWidth(line_width);
-    if(dashed) {
-      glEnable(GL_LINE_STIPPLE);
-      GLushort pattern = 0x5555;
-      GLint factor = 5;
-      glLineStipple(factor, pattern);
-    }
-
     glColor3f(edge_c.red(), edge_c.grn(), edge_c.blu());
     
     if(poly.is_convex())
@@ -1167,8 +1146,6 @@ void MarineViewer::drawPolygon(const XYPolygon& poly,
       glVertex2f(points[i], points[i+1]);
     }
     glEnd();
-    if(dashed)
-      glDisable(GL_LINE_STIPPLE);
     glLineWidth(1.0);
   }
 
@@ -1332,9 +1309,9 @@ void MarineViewer::drawSegList(const XYSegList& segl)
   
   double lwid = m_geo_settings.geosize("seglist_edge_width", 1);
   double vertex_size = m_geo_settings.geosize("seglist_vertex_size", 2);
-  if(segl.get_edge_size() >= 0)       // edge_size
+  if(segl.edge_size_set())       // edge_size
     lwid = segl.get_edge_size();
-  if(segl.get_vertex_size() >= 0)     // vertex_size
+  if(segl.vertex_size_set())     // vertex_size
     vertex_size = segl.get_vertex_size();
   
   unsigned int vsize = segl.size();
@@ -1478,9 +1455,9 @@ void MarineViewer::drawVector(const XYVector& vect)
   // Determine the size properties
   double lwid = m_geo_settings.geosize("vector_edge_width", 1);
   double vertex_size = m_geo_settings.geosize("vector_vertex_size", 2);
-  if(vect.get_edge_size() >= 0)   
+  if(vect.edge_size_set())   
     lwid = vect.get_edge_size();
-  if(vect.get_vertex_size() >= 0) 
+  if(vect.vertex_size_set()) 
     vertex_size = vect.get_vertex_size();
 
     // Do the drawing
@@ -1597,10 +1574,12 @@ void MarineViewer::drawVector(const XYVector& vect)
 
 void MarineViewer::drawHexagons()
 {
+#if 0
   unsigned int i, hsize = m_geoshapes.sizeHexagons();
   for(i=0; i<hsize; i++)
     if(m_geoshapes.getHexagon(i).active())
       drawPolygon(m_geoshapes.getHexagon(i), false, false);
+#endif
 }
 
 //-------------------------------------------------------------
@@ -1612,11 +1591,8 @@ void MarineViewer::drawGrids(const vector<XYGrid>& grids)
     return;
 
   unsigned int i, vsize = grids.size();
-  if(vsize == 0)
-    return;
-
   for(i=0; i<vsize; i++)
-    drawGrid(m_geoshapes.grid(i));
+    drawGrid(grids[i]);
 }
 
 //-------------------------------------------------------------
@@ -1626,7 +1602,7 @@ void MarineViewer::drawGrid(const XYGrid& grid)
 {
   FColorMap cmap;
 
-  int gsize = grid.size();
+  unsigned int gsize = grid.size();
   if(gsize == 0)
     return;
 
@@ -1647,7 +1623,7 @@ void MarineViewer::drawGrid(const XYGrid& grid)
   glTranslatef(qx, qy, 0);
   glScalef(m_zoom, m_zoom, m_zoom);
 
-  int   i;
+  unsigned int i;
   double px[4];
   double py[4];
 
@@ -1764,12 +1740,11 @@ void MarineViewer::drawCircle(const XYCircle& circle, unsigned int pts)
   if(actual_pts == 0)
     return;
 
-  unsigned int i;
   double *points = new double[2 * actual_pts];
 
   double pix_per_mtr_x = m_back_img.get_pix_per_mtr_x();
   double pix_per_mtr_y = m_back_img.get_pix_per_mtr_y();
-  unsigned int pindex = 0;
+  unsigned int i, pindex = 0;
   for(i=0; i<actual_pts; i++) {
     points[pindex]   = poly.get_vx(i) * pix_per_mtr_x;
     points[pindex+1] = poly.get_vy(i) * pix_per_mtr_y;
@@ -1911,7 +1886,7 @@ void MarineViewer::drawPoints(const vector<XYPoint>& points)
 void MarineViewer::drawPoint(const XYPoint& point)
 {
   // The second argument to geocolor is what is returned if no color
-  // mapping is present in the geoshapes data structure.
+  // mapping is present in the geo_settings data structure.
   ColorPack vert_c, labl_c;
   vert_c = m_geo_settings.geocolor("point_vertex_color", "red");
   labl_c = m_geo_settings.geocolor("point_label_color", "aqua_marine");  
@@ -1923,6 +1898,8 @@ void MarineViewer::drawPoint(const XYPoint& point)
   // The second argument to geosize is what is returned if no size
   // mapping is present in the geo_settings data structure.
   double vertex_size = m_geo_settings.geosize("point_vertex_size", 3);
+  if(point.vertex_size_set())
+    vertex_size = point.get_vertex_size();
 
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();

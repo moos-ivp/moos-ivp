@@ -52,6 +52,8 @@ public:
   void         addMousePoke(std::string side, std::string key, 
 			    std::string vardata_pair);
   void         addReferenceVehicle(std::string vname);
+  void         addFilterVehicle(std::string vname);
+  void         removeFilterVehicle(std::string vname);
 
  private:
   inline void cb_MOOS_Button_i(unsigned int);
@@ -66,6 +68,8 @@ public:
   static void cb_RightContext(Fl_Widget*, unsigned int);
   inline void cb_Reference_i(unsigned int);
   static void cb_Reference(Fl_Widget*, unsigned int);
+  inline void cb_FilterOut_i(int);
+  static void cb_FilterOut(Fl_Widget*, int);
 
 protected:
   Fl_Output  *v_nam;
@@ -109,6 +113,7 @@ protected:
   std::vector<std::string> m_right_mouse_keys;
 
   std::vector<std::string> m_reference_tags;
+  std::vector<std::string> m_filter_tags;
 
   double     m_curr_time;
   double     m_prev_out_time;

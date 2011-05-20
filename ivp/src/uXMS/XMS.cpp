@@ -458,9 +458,9 @@ void XMS::addVariables(string line)
 {
   line = stripBlankEnds(line);
   vector<string> svector = parseString(line, ',');
-  int vsize = svector.size();
+  unsigned int i, vsize = svector.size();
   
-  for(int i=0; i<vsize; i++) {
+  for(i=0; i<vsize; i++) {
     string var = stripBlankEnds(svector[i]);
     addVariable(var);
   }
@@ -732,8 +732,7 @@ void XMS::printHelp()
   string mode_str = "(MODE = " + refstr + ")";   
 
   m_displayed_help = true;
-  for(int j=0; j<2; j++)
-    printf("\n");
+  printf("\n\n");
   
   printf("KeyStroke    Function         %s      \n", mode_str.c_str());
   printf("---------    ---------------------------          \n");
@@ -800,8 +799,7 @@ void XMS::printReport()
   m_update_requested = false;
   m_iteration++;
   
-  for(int j=0; j<5; j++)
-    printf("\n");
+  printf("\n\n\n\n\n");
   
   printf("  %-22s", "VarName");
   
@@ -943,8 +941,7 @@ void XMS::printHistoryReport()
   m_update_requested = false;
   m_iteration++;
   
-  for(int j=0; j<5; j++)
-    printf("\n");
+  printf("\n\n\n\n\n");
   
   if(m_report_histvar)
     printf("  %-22s", "VarName");

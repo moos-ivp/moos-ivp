@@ -29,6 +29,12 @@ public:
 
   bool setParam(const std::string& param, std::string value);
   
+  void    clear();
+  double  getXMin() const {return(m_xmin);};
+  double  getXMax() const {return(m_xmax);};
+  double  getYMin() const {return(m_ymin);};
+  double  getYMax() const {return(m_ymax);};
+
   void addPolygon(const XYPolygon&);
   void addSegList(const XYSegList&);
   void addGrid(const XYGrid&);
@@ -89,11 +95,6 @@ public:
   XYVector     getVector(unsigned int) const;
   XYRangePulse getRangePulse(unsigned int) const;
   XYMarker     getMarker(unsigned int) const;
-
-  double       getXMin() const {return(m_xmin);};
-  double       getXMax() const {return(m_xmax);};
-  double       getYMin() const {return(m_ymin);};
-  double       getYMax() const {return(m_ymax);};
 
  protected:
   void updateBounds(double xl, double xh, double yl, double yh);

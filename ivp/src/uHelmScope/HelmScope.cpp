@@ -97,29 +97,30 @@ bool HelmScope::OnNewMail(MOOSMSG_LIST &NewMail)
   MOOSMSG_LIST::iterator p;
   for(p=NewMail.begin(); p!=NewMail.end(); p++) {
     CMOOSMsg &msg = *p;
-    if(msg.m_sKey == "DB_UPTIME")
-      m_db_uptime = msg.m_dfVal;
+    if(msg.GetKey() == "DB_UPTIME")
+      m_db_uptime = msg.GetDouble();
   }
   
   for(p = NewMail.begin(); p!=NewMail.end(); p++) { 
-    CMOOSMsg &msg = *p;
-    //cout << "Key:" << msg.m_sKey << " Src:" << msg.GetSource() <<
-    //  " SrcAux:" << msg.GetSourceAux() << endl;
+    CMOOSMsg &msg  = *p;
+    string    key  = msg.GetKey();
+    string    sval = msg.GetString();
+
  
-    if(msg.m_sKey == "IVPHELM_DOMAIN") 
-      handleNewIvPDomain(msg.m_sVal); 
-    if(msg.m_sKey == "IVPHELM_SUMMARY") 
-      handleNewHelmSummary(msg.m_sVal); 
-    if(msg.m_sKey == "IVPHELM_MODESET") 
-      handleNewHelmModeSet(msg.m_sVal); 
-    else if(msg.m_sKey == "IVPHELM_POSTINGS") 
-      handleNewHelmPostings(msg.m_sVal); 
-    else if(msg.m_sKey == "IVPHELM_STATEVARS") 
-      handleNewStateVars(msg.m_sVal); 
-    else if(msg.m_sKey == "IVPHELM_LIFE_EVENT") 
-      m_life_event_history.addLifeEvent(msg.m_sVal);
-    else if(msg.m_sKey == "IVPHELM_ENGAGED") { 
-      bool new_helm_engaged = (msg.m_sVal == "ENGAGED"); 
+    if(key == "IVPHELM_DOMAIN") 
+      handleNewIvPDomain(sval); 
+    else if(key == "IVPHELM_SUMMARY") 
+      handleNewHelmSummary(sval); 
+    else if(key == "IVPHELM_MODESET") 
+      handleNewHelmModeSet(sval); 
+    else if(key == "IVPHELM_POSTINGS") 
+      handleNewHelmPostings(sval); 
+    else if(key == "IVPHELM_STATEVARS") 
+      handleNewStateVars(sval); 
+    else if(key == "IVPHELM_LIFE_EVENT") 
+      m_life_event_history.addLifeEvent(sval);
+    else if(key == "IVPHELM_ENGAGED") { 
+      bool new_helm_engaged = (sval == "ENGAGED"); 
       if(new_helm_engaged != m_helm_engaged)
 	m_update_pending = true; 
       m_helm_engaged = new_helm_engaged;
@@ -380,8 +381,8 @@ void HelmScope::handleNewIvPDomain(const string& str)
   m_ivpdomain = "";
 
   vector<string> svector = parseString(str, ':');
-  int vsize = svector.size();
-  for(int i=0; i<vsize; i++) {
+  unsigned int i, vsize = svector.size();
+  for(i=0; i<vsize; i++) {
     svector[i] = stripBlankEnds(svector[i]);
     m_ivpdomain += "[" + svector[i] + "] ";
   }
@@ -405,7 +406,7 @@ void HelmScope::handleNewHelmSummary(const string& str)
 
   string summary = stripBlankEnds(str);
   vector<string> svector = parseString(summary, ',');
-  int vsize = svector.size();
+  unsigned int i, vsize = svector.size();
   
   double time_loop   = 0;
   double time_create = 0;
@@ -413,7 +414,7 @@ void HelmScope::handleNewHelmSummary(const string& str)
   double time_utc    = 0;
   int    helm_iter   = 0;
   
-  for(int i=0; i<vsize; i++) {
+  for(i=0; i<vsize; i++) {
     vector<string> ivector = parseString(svector[i], '=');
     int isize = ivector.size();
     if(isize == 2) {
@@ -625,8 +626,8 @@ void HelmScope::handleNewStateVars(const string& str)
 
 void HelmScope::registerVariables()
 {
-  int vsize = m_var_names.size();
-  for(int i=0; i<vsize; i++)
+  unsigned int i, vsize = m_var_names.size();
+  for(i=0; i<vsize; i++)
     m_Comms.Register(m_var_names[i], 0);
 
   m_Comms.Register("DB_UPTIME", 0);
@@ -699,9 +700,9 @@ void HelmScope::pruneHistory()
 void HelmScope::addVariables(const string& line, const string& category)
 {
   vector<string> svector = parseString(line, ',');
-  int vsize = svector.size();
+  unsigned int i, vsize = svector.size();
   
-  for(int i=0; i<vsize; i++) {
+  for(i=0; i<vsize; i++) {
     string var = stripBlankEnds(svector[i]);
     addVariable(var, category);
   }
@@ -722,8 +723,8 @@ void HelmScope::addVariable(const string& varname, const string& category)
   
   // Return if the variable has already been added, but apply
   // the category.
-  int vsize = m_var_names.size();
-  for(int i=0; i<vsize; i++) {
+  unsigned int i, vsize = m_var_names.size();
+  for(i=0; i<vsize; i++) {
     if(m_var_names[i] == varname) {
       if(category == "state") {
 	if(strContains(m_var_category[i], "user"))
@@ -763,25 +764,25 @@ void HelmScope::addVariable(const string& varname, const string& category)
 
 void HelmScope::updateVariable(CMOOSMsg &msg)
 {
-  string varname = msg.m_sKey;  
+  string varname = msg.GetKey();  
   double vtime   = m_db_uptime;
 
   string vtime_str = doubleToString(vtime, 2);
   vtime_str = dstringCompact(vtime_str);
   
-  updateVarSource(varname, msg.m_sSrc);
+  updateVarSource(varname, msg.GetSource());
   updateVarTime(varname, vtime_str);
-  updateVarCommunity(varname, msg.m_sOriginatingCommunity);
+  updateVarCommunity(varname, msg.GetCommunity());
   
-  if(msg.m_cDataType == MOOS_STRING) {
-    updateVarVal(varname, msg.m_sVal);
+  if(msg.IsString()) {
+    updateVarVal(varname, msg.GetString());
     updateVarType(varname, "string");
   }      
-  else if(msg.m_cDataType == MOOS_DOUBLE) {
-    updateVarVal(varname, doubleToString(msg.m_dfVal));
+  else if(msg.IsDouble()) {
+    updateVarVal(varname, doubleToString(msg.GetDouble()));
     updateVarType(varname, "double");
   }
-  else if(msg.m_cDataType == MOOS_NOT_SET) {
+  else if(msg.IsDataType(MOOS_NOT_SET)) {
     updateVarVal(varname, "n/a");
     updateVarSource(varname, "n/a");
     updateVarTime(varname, "n/a");
@@ -843,8 +844,7 @@ void HelmScope::updateVarCommunity(const string& varname,
 
 void HelmScope::printHelp()
 {
-  for(int j=0; j<2; j++)
-    printf("\n");
+  printf("\n\n");
   
   printf("KeyStroke  Function                                         \n");
   printf("---------  ---------------------------                      \n");
@@ -1068,8 +1068,8 @@ void HelmScope::printHelmReport(int index)
 
 
   printf("Helm Decision: %s\n", m_ivpdomain.c_str());
-  int vars = hblock.getDecVarCnt();
-  for(int j=0; j<vars; j++) {
+  unsigned int j, vars = hblock.getDecVarCnt();
+  for(j=0; j<vars; j++) {
     string var = hblock.getDecVar(j);
     string val = hblock.getDecVal(j);
     printf("  %s = %s \n", var.c_str(), val.c_str());

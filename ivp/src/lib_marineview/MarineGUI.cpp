@@ -393,12 +393,12 @@ inline void MarineGUI::cb_MG_SetGeoAttr_i(int v) {
   else if(v==403) cmviewer->setParam("datum_color", "dark_blue");
   else if(v==404) cmviewer->setParam("datum_color", "dark_green");
 
-  else if(v==440) cmviewer->setParam("datum_size", 1);
-  else if(v==441) cmviewer->setParam("datum_size", 3);
-  else if(v==442) cmviewer->setParam("datum_size", 5);
-  else if(v==443) cmviewer->setParam("datum_size", 10);
-  else if(v==444) cmviewer->setParam("datum_size", 15);
-  else if(v==445) cmviewer->setParam("datum_size", 20);
+  else if(v==440) cmviewer->setParam("datum_size", "1");
+  else if(v==441) cmviewer->setParam("datum_size", "3");
+  else if(v==442) cmviewer->setParam("datum_size", "5");
+  else if(v==443) cmviewer->setParam("datum_size", "10");
+  else if(v==444) cmviewer->setParam("datum_size", "15");
+  else if(v==445) cmviewer->setParam("datum_size", "20");
   else if(v==448) cmviewer->setParam("datum_size_add", "smaller");
   else if(v==449) cmviewer->setParam("datum_size_add", "bigger");
 

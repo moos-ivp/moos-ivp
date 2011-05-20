@@ -14,7 +14,7 @@
 #include "FL/gl.h"
 #include "FL/fl_draw.H"
 #include "MarineViewer.h"
-#include "XYCircle.h"
+#include "VPlug_GeoShapes.h"
 
 class GeoViewer : public MarineViewer
 {
@@ -26,9 +26,8 @@ class GeoViewer : public MarineViewer
   int   handle(int);
   void  handle_left_mouse(int, int);
   void  handle_right_mouse(int, int);
-  bool  setParam(std::string p, std::string v)
-    {return(MarineViewer::setParam(p,v));};
-  bool  setParam(std::string p, double v);
+  bool  setParam(std::string param, std::string value);
+  bool  setParam(std::string param, double value);
 
 public:
   std::string getPolySpec();
@@ -45,10 +44,6 @@ public:
   int    getMode()                 {return(m_drop_mode);};
   double getSnap()                 {return(m_snap_val);};
   void   reApplySnapToCurrent();   
-  void   addCircle(XYCircle);
-  void   drawCircles();
-  void   drawCircle(unsigned int ix);
-  void   drawVector(double, double, double);
 
  private:
   unsigned int  m_active_poly;
@@ -56,8 +51,7 @@ public:
   double  m_snap_val;
   int     m_drop_mode;
 
-  std::vector<XYCircle>   m_circle;
-  std::vector<XYPolygon>  m_circle_poly;
+  VPlug_GeoShapes  m_geoshapes;
 };
 
 #endif 

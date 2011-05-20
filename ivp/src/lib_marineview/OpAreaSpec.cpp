@@ -28,7 +28,7 @@ OpAreaSpec::OpAreaSpec()
 
   m_datum_color     = ColorPack("red");
   m_datum_viewable  = false;
-  m_datum_size      = 3;
+  m_datum_size      = 4;
 }
 
 //-----------------------------------------------------------
@@ -202,7 +202,7 @@ bool OpAreaSpec::setParam(const string& param, string value)
 //-----------------------------------------------------------
 // Procedure: viewable
 
-bool OpAreaSpec::viewable(const string& str)
+bool OpAreaSpec::viewable(const string& str) const
 {
   if((str == "all") || (tolower(str) == "all"))
     return(m_viewable_all);

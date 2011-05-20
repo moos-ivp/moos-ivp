@@ -258,8 +258,6 @@ void PMV_MOOSApp::handlePendingGUI()
   m_gui->clearPending();
 }
 
-
-
 //----------------------------------------------------------------------
 // Procedure: handleNewMail
 
@@ -270,17 +268,21 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
   int handled_msgs = 0;
   for (size_t i = 0; i < e.mail.size(); ++i) {
     CMOOSMsg msg = e.mail[i].msg;
-    string key   = msg.m_sKey;
-    string sval  = msg.m_sVal;
-    
+    string key   = msg.GetKey();
+    string sval  = msg.GetString();
+    string community = msg.GetCommunity();
+
+    m_gui->addFilterVehicle(community);
+
     bool scope_handled = false;
     unsigned int j, vsize = m_scope_vars.size();
     for(j=0; j<vsize; j++) {
       if(key == m_scope_vars[j]) {
-	string mtime = doubleToString((msg.m_dfTime-m_start_time),2);
-	string source = msg.m_sSrc;
+	double tstamp = msg.GetTime();
+	string mtime  = doubleToString((tstamp - m_start_time),2);
+	string source = msg.GetSource();
 	if(msg.IsDouble())
-	  sval = dstringCompact(doubleToString(msg.m_dfVal, 8));
+	  sval = doubleToStringX(msg.GetDouble(), 8);
 	m_gui->mviewer->updateScopeVariable(key, sval, mtime, source);
 	scope_handled = true;
       }
@@ -292,6 +294,8 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
       receivePK_SOL(sval);
       handled = true;
     }
+    if(!handled)
+      handled = m_gui->mviewer->addGeoShape(key, sval, community);
     if(!handled && !scope_handled) {
       MOOSTrace("pMarineViewer OnNewMail Unhandled msg: \n");
       MOOSTrace("  [key:%s val:%s]\n", key.c_str(), sval.c_str());
@@ -339,7 +343,6 @@ void PMV_MOOSApp::handleIterate(const MOOS_event & e) {
 
   vector<VarDataPair> left_pairs = m_gui->mviewer->getLeftMousePairs();
   unsigned int i, vsize = left_pairs.size();
-  
   for(i=0; i<vsize; i++) {
     VarDataPair pair = left_pairs[i];
     string var = pair.get_var();
@@ -353,6 +356,17 @@ void PMV_MOOSApp::handleIterate(const MOOS_event & e) {
   vsize = right_pairs.size();
   for(i=0; i<vsize; i++) {
     VarDataPair pair = right_pairs[i];
+    string var = pair.get_var();
+    if(!pair.is_string())
+      m_Comms.Notify(var, pair.get_ddata());
+    else
+      m_Comms.Notify(var, pair.get_sdata());
+  }
+
+  vector<VarDataPair> non_mouse_pairs = m_gui->mviewer->getNonMousePairs();
+  vsize = non_mouse_pairs.size();
+  for(i=0; i<vsize; i++) {
+    VarDataPair pair = non_mouse_pairs[i];
     string var = pair.get_var();
     if(!pair.is_string())
       m_Comms.Notify(var, pair.get_ddata());

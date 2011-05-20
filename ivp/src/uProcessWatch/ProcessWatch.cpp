@@ -37,8 +37,8 @@ bool ProcessWatch::OnNewMail(MOOSMSG_LIST &NewMail)
   for(p=NewMail.begin(); p!=NewMail.end(); p++) {
     CMOOSMsg &msg = *p;
 
-    if(msg.m_sKey == "DB_CLIENTS") {
-      m_db_clients = msg.m_sVal;
+    if(msg.GetKey() == "DB_CLIENTS") {
+      m_db_clients = msg.GetString();
     }
   }
 

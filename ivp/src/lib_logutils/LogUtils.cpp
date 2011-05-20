@@ -209,14 +209,14 @@ void shiftTimeStamp(string& line, double logstart)
 
 double getLogStart(const string& line)
 {
-  int  len   = line.length();
   bool done  = false;
   int  state = 0;
 
   int  buffix  = 0;
   char buff[MAX_LINE_LENGTH];
 
-  for(int i=0; ((i<len) && !done); i++) {
+  unsigned int i, len = line.length();
+  for(i=0; ((i<len) && !done); i++) {
     if((line[i] == ' ') || (line[i] == '\t')) {
       if(state == 0)
 	state = 1;
@@ -256,10 +256,9 @@ void addVectorKey(vector<string>& v_keys, vector<bool>& v_pmatch,
     key.erase(len-1, 1);
   }
   
-  int  ksize = v_keys.size();
+  unsigned int i, prior_ix, ksize = v_keys.size();
   bool prior = false;
-  int  prior_ix = -1;
-  for(int i=0; i<ksize; i++) {
+  for(i=0; i<ksize; i++) {
     if(key == v_keys[i]) {
       prior = true;
       prior_ix = i;

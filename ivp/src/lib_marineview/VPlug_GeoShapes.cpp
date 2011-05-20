@@ -31,6 +31,27 @@ VPlug_GeoShapes::VPlug_GeoShapes()
 }
 
 //-----------------------------------------------------------
+// Procedure: clear()
+
+void VPlug_GeoShapes::clear()
+{
+  m_polygons.clear();
+  m_seglists.clear();
+  m_hexagons.clear();
+  m_grids.clear();
+  m_circles.clear();
+  m_points.clear();
+  m_vectors.clear();
+  m_range_pulses.clear();
+  m_markers.clear();
+
+  m_xmin = 0;
+  m_xmax = 0;
+  m_ymin = 0;
+  m_ymax = 0;
+}
+
+//-----------------------------------------------------------
 // Procedure: setParam()
 
 bool VPlug_GeoShapes::setParam(const string& param, string value)

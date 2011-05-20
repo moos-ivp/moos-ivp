@@ -91,8 +91,8 @@ bool PokeDB::Iterate()
 
   // After the first iteration, poke the all the scheduled values.
   if(m_iteration == 2) {
-    int vsize = m_varname.size();
-    for(int i=0; i<vsize; i++) {
+    unsigned int i, vsize = m_varname.size();
+    for(i=0; i<vsize; i++) {
       string varval = m_varvalue[i];
       if(strContains(varval, "@MOOSTIME")) {
 	double curr_time = MOOSTime();
@@ -132,8 +132,8 @@ bool PokeDB::OnNewMail(MOOSMSG_LIST &NewMail)
   if(m_db_start_time == 0) {
     for(p=NewMail.begin(); p!=NewMail.end(); p++) {
       CMOOSMsg &msg = *p;
-      if(msg.m_sKey == "DB_UPTIME") 
-	m_db_start_time = MOOSTime() - msg.m_dfVal;
+      if(msg.GetKey() == "DB_UPTIME") 
+	m_db_start_time = MOOSTime() - msg.GetDouble();
     }
   }
   
@@ -207,8 +207,8 @@ void PokeDB::setPokeString(const string& varname, const string& value)
 
 void PokeDB::registerVariables()
 {
-  int vsize = m_varname.size();
-  for(int i=0; i<vsize; i++) 
+  unsigned int i, vsize = m_varname.size();
+  for(i=0; i<vsize; i++) 
     m_Comms.Register(m_varname[i], 0);
   
   m_Comms.Register("DB_UPTIME", 0);
@@ -222,11 +222,11 @@ void PokeDB::registerVariables()
 
 void PokeDB::updateVariable(CMOOSMsg &msg)
 {
-  string varname = msg.m_sKey;  
+  string varname = msg.GetKey();  
   
   int ix = -1;
-  int vsize = m_varname.size();
-  for(int index=0; index<vsize; index++)
+  unsigned int index, vsize = m_varname.size();
+  for(index=0; index<vsize; index++)
     if(m_varname[index] == varname)
       ix = index;
   if(ix == -1)
@@ -237,15 +237,15 @@ void PokeDB::updateVariable(CMOOSMsg &msg)
   string vtime_str = doubleToString(vtime, 2);
   vtime_str = dstringCompact(vtime_str);
   
-  m_source_read[ix] = msg.m_sSrc;
+  m_source_read[ix] = msg.GetSource();
   m_wrtime_read[ix] = vtime_str;
 
-  if(msg.m_cDataType == MOOS_STRING) {
-    m_svalue_read[ix]  = msg.m_sVal;
+  if(msg.IsDataType(MOOS_STRING)) {
+    m_svalue_read[ix]  = msg.GetString();
     m_valtype_read[ix] = "string";
   }      
-  else if(msg.m_cDataType == MOOS_DOUBLE) {
-    m_dvalue_read[ix]  = doubleToString(msg.m_dfVal);
+  else if(msg.IsDataType(MOOS_DOUBLE)) {
+    m_dvalue_read[ix]  = doubleToString(msg.GetDouble());
     m_valtype_read[ix] = "double";
   }
 }

@@ -28,6 +28,8 @@
 #include "MarineViewer.h"
 #include "VehicleSet.h"
 #include "VarDataPair.h"
+#include "VPlug_GeoShapes.h"
+#include "VPlug_GeoShapesMap.h"
 
 class PMV_Viewer : public MarineViewer
 {
@@ -40,6 +42,7 @@ class PMV_Viewer : public MarineViewer
 
   bool  setParam(std::string p, std::string v="");
   bool  setParam(std::string p, double v);
+  bool  addGeoShape(std::string p, std::string v, std::string c);
   bool  addScopeVariable(std::string);
   bool  updateScopeVariable(std::string varname, std::string value, 
 			    std::string vtime, std::string vsource);
@@ -53,6 +56,7 @@ class PMV_Viewer : public MarineViewer
 
   std::vector<VarDataPair> getLeftMousePairs(bool=true);
   std::vector<VarDataPair> getRightMousePairs(bool=true);
+  std::vector<VarDataPair> getNonMousePairs(bool=true);
 
 
  private:
@@ -96,9 +100,13 @@ class PMV_Viewer : public MarineViewer
   std::vector<VarDataPair> m_var_data_pairs_all;
   std::vector<VarDataPair> m_var_data_pairs_lft;
   std::vector<VarDataPair> m_var_data_pairs_rgt;
+  std::vector<VarDataPair> m_var_data_pairs_non_mouse;
   
   std::string m_centric_view; // average, active, or reference
   bool        m_centric_view_sticky;
+
+  VPlug_GeoShapesMap  m_geoshapes_map;
+  OpAreaSpec          m_op_area;
 };
 
 #endif 

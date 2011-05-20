@@ -19,7 +19,6 @@ public:
   virtual ~VPlug_GeoSettings() {};
 
   bool   setParam(const std::string& param, std::string value);
-  bool   setColorMapping(std::string);
   bool   setColorMapping(std::string, std::string);
   bool   setViewableMapping(std::string, std::string);
   bool   viewable(const std::string&, bool view_default=true);
@@ -38,3 +37,4 @@ protected:
 };
 
 #endif
+

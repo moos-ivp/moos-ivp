@@ -23,11 +23,11 @@ public:
 
   bool setParam(const std::string& param, std::string value);
 
-  unsigned int size() {return(m_vertex_xpos.size());}
+  unsigned int size() const {return(m_vertex_xpos.size());}
   
-  bool viewable(const std::string& s="all");
-  double getLineShade()   {return(m_line_shade);};
-  double getLabelShade()  {return(m_label_shade);};
+  bool viewable(const std::string& s="all") const;
+  double getLineShade() const       {return(m_line_shade);};
+  double getLabelShade() const      {return(m_label_shade);};
 
   double getXPos(unsigned int ix) const;
   double getYPos(unsigned int ix) const;

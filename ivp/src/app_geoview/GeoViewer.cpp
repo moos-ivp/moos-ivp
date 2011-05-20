@@ -6,20 +6,20 @@
 /*****************************************************************/
 
 #include <string>
-#include <iostream>
 #include <cmath>
 #include "GeoViewer.h"
 #include "MBUtils.h"
 #include "GeomUtils.h"
 #include "CircularUtils.h"
 #include "AngleUtils.h"
-#include "XYFormatUtilsPoly.h"
 
 using namespace std;
 
-GeoViewer::GeoViewer(int x, int y, 
-			 int width, int height, const char *l)
-  : MarineViewer(x,y,width,height,l)
+//------------------------------------------------------------
+// Constructor
+
+GeoViewer::GeoViewer(int x, int y, int w, int h, const char *l)
+  : MarineViewer(x,y,w,h,l)
 {
   m_snap_val    = 10.0;
   m_active_poly = 0;
@@ -57,8 +57,13 @@ int GeoViewer::handle(int event)
 void GeoViewer::draw()
 {
   MarineViewer::draw();
-  if(m_hash_offon)
-    drawHash();
+  if(m_hash_offon) {
+    double xl = m_geoshapes.getXMin() - 1000;
+    double xh = m_geoshapes.getXMax() + 1000;
+    double yl = m_geoshapes.getYMin() - 1000;
+    double yh = m_geoshapes.getYMax() + 1000;
+    drawHash(xl, xh, yl, yh);
+  }
 
   // Rather than call "drawPolygons()" in the superclass, we implement 
   // the routine here so we can draw the "active" poly differently.
@@ -68,7 +73,9 @@ void GeoViewer::draw()
       for(i=0; i<vsize; i++) {
 	XYPolygon poly = m_geoshapes.getPolygon(i);
 	bool filled = (i == m_active_poly);
-	drawPolygon(poly, filled, false);
+	if(filled)
+	  poly.set_color("fill", "dark_green");
+	drawPolygon(poly);
       }
     }
   }
@@ -166,6 +173,42 @@ void GeoViewer::handle_right_mouse(int vx, int vy)
 //-------------------------------------------------------------
 // Procedure: setParam
 
+bool GeoViewer::setParam(string param, string value)
+{
+  param = tolower(stripBlankEnds(param));
+  value = stripBlankEnds(value);
+  
+  if(MarineViewer::setParam(param, value))
+    return(true);
+
+  bool handled = false;
+  if(param == "view_polygon")
+    handled = m_geoshapes.addPolygon(value);
+  else if(param == "view_seglist")
+    handled = m_geoshapes.addSegList(value);
+  else if(param == "view_point")
+    handled = m_geoshapes.addPoint(value);
+  else if(param == "view_vector")
+    handled = m_geoshapes.addVector(value);
+  else if(param == "view_circle")
+    handled = m_geoshapes.addCircle(value);
+  else if(param == "view_range_pulse")
+    handled = m_geoshapes.addRangePulse(value);
+  else if((param == "view_marker") || (param == "marker"))
+    handled = m_geoshapes.addMarker(value);
+  else if(param == "grid_config")
+    handled = m_geoshapes.addGrid(value);
+  else if(param == "grid_delta")
+    handled = m_geoshapes.updateGrid(value);
+  else
+    handled = handled || m_vehi_settings.setParam(param, value);
+
+  return(handled);
+}
+
+//-------------------------------------------------------------
+// Procedure: setParam
+
 bool GeoViewer::setParam(string param, double pval)
 {
   if(MarineViewer::setParam(param, pval))
@@ -203,7 +246,6 @@ void GeoViewer::createNew()
     string new_label;
     int vvsize = vsize;
     while(vvsize >= 0) {
-      cout << "vvsize: " << vvsize << endl;
       int rem = vvsize % 26;
       char next_char = 65 + rem;
       new_label += next_char;
@@ -356,93 +398,4 @@ void GeoViewer::reApplySnapToCurrent()
   
   m_geoshapes.poly(m_active_poly).apply_snap(m_snap_val);
 }
-
-//-------------------------------------------------------------
-// Procedure: addCircle
-
-void GeoViewer::addCircle(XYCircle g_circle)
-{
-  double c_x = g_circle.getX();
-  double c_y = g_circle.getY();
-  double c_r = g_circle.getRad();
-  string str = "radial:" + doubleToString(c_x) + ",";
-  str += doubleToString(c_y) + "," + doubleToString(c_r) + ",36";
-  XYPolygon circle_poly = string2Poly(str);
-  if(circle_poly.size() == 0)
-    return;
-  
-  m_circle.push_back(g_circle);
-  m_circle_poly.push_back(circle_poly);
-
-}
-
-//-------------------------------------------------------------
-// Procedure: drawCircles
-
-void GeoViewer::drawCircles()
-{
-  unsigned int i, vsize = m_circle.size();
-  for(i=0; i<vsize; i++)
-    drawCircle(i);
-}
-
-//-------------------------------------------------------------
-// Procedure: drawCircle
-
-void GeoViewer::drawCircle(unsigned int ix)
-{
-  if(ix >= m_circle.size())
-    return;
-
-  XYPolygon poly = m_circle_poly[ix];
-  if(poly.active())
-    drawPolygon(poly, false, false);
-}
-
-//-------------------------------------------------------------
-// Procedure: drawVector
-
-void GeoViewer::drawVector(double g_x, double g_y, double g_angle)
-{
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  glOrtho(0, w(), 0, h(), -1 ,1);
-
-  double tx = meters2img('x', 0);
-  double ty = meters2img('y', 0);
-  double qx = img2view('x', tx);
-  double qy = img2view('y', ty);
-
-  glMatrixMode(GL_MODELVIEW);
-  glPushMatrix();
-  glLoadIdentity();
-
-  glTranslatef(qx, qy, 0);
-  glScalef(m_zoom, m_zoom, m_zoom);
-
-  double endx, endy;
-  projectPoint(g_angle, 100, g_x, g_y, endx, endy);
-
-  // First draw the points on the screen
-  glPointSize(4.0);
-  glColor3f(1.0,0.89,0.77);  // Bisque red ff e4 c4
-  glBegin(GL_POINTS);
-  glVertex2f(g_x, g_y);
-  glEnd();
-  glColor3f(0.5,1.0,0.5); 
-  glBegin(GL_POINTS);
-  glVertex2f(endx, endy);
-  glEnd();
-
-  glPointSize(1.0);
-  glColor3f(1.0,0.0,0.0);  // Bisque red ff e4 c4
-  glBegin(GL_LINE_STRIP);
-  glVertex2f(g_x, g_y);
-  glVertex2f(endx, endy);
-  glEnd();
-
-  glFlush();
-  glPopMatrix();
-}
-
 

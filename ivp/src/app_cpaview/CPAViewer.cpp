@@ -88,8 +88,8 @@ void CPAViewer::draw()
 
   draw_os_point(6, 0.2, 0.2, 1.0);
 
-  int contact_count = m_cpa_model->size();
-  for(int i=0; i<contact_count; i++)
+  unsigned int i, contact_count = m_cpa_model->size();
+  for(i=0; i<contact_count; i++)
     draw_cn_vector(i, 6, 1.0, 0.2, 0.2);
 }
 

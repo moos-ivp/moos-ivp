@@ -57,6 +57,7 @@ class CPAViewer : public MarineViewer
 
   std::vector<XYPolygon> m_radials;
 
+  VPlug_GeoShapes  m_geoshapes;
 };
 
 #endif 

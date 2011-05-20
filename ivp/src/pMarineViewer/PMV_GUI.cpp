@@ -164,6 +164,9 @@ PMV_GUI::PMV_GUI(int g_w, int g_h, const char *g_l)
   mbar->add("MOOS-Scope/Add Variable", 'a', 
 	    (Fl_Callback*)PMV_GUI::cb_Scope, (void*)0, FL_MENU_DIVIDER);
     
+  mbar->add("ClearHistory/All Vehicles", FL_CTRL+'9', 
+	    (Fl_Callback*)PMV_GUI::cb_FilterOut, (void*)-1, FL_MENU_DIVIDER);
+    
   this->end();
   this->resizable(this);
   this->show();
@@ -495,6 +498,23 @@ void PMV_GUI::cb_Reference(Fl_Widget* o, unsigned int v) {
   ((PMV_GUI*)(o->parent()->user_data()))->cb_Reference_i(v);
 }
 
+//----------------------------------------- FilterOut
+inline void PMV_GUI::cb_FilterOut_i(int i) {  
+  if(i >= (int)(m_filter_tags.size()))
+    return;
+  if(i < 0)
+    mviewer->setParam("filter_out_tag", "all");
+  else {
+    string str = m_filter_tags[i];
+    mviewer->setParam("filter_out_tag", str);
+  }
+}
+
+void PMV_GUI::cb_FilterOut(Fl_Widget* o, int v) {
+  ((PMV_GUI*)(o->parent()->user_data()))->cb_FilterOut_i(v);
+}
+
+
 //-------------------------------------------------------------------
 // Procedure: getPendingVar
 
@@ -688,6 +708,44 @@ void PMV_GUI::addReferenceVehicle(string vehicle_name)
   label += (truncString(vehicle_name, 25, "middle"));
   mbar->add(label.c_str(), 0, 
 	    (Fl_Callback*)PMV_GUI::cb_Reference, (void*)index, FL_MENU_RADIO);
+
+  mbar->redraw();
+}
+
+//-------------------------------------------------------------------
+// Procedure: addFilterVehicle
+
+void PMV_GUI::addFilterVehicle(string vehicle_name)
+{
+  // First check the current list of vehicles, ignore duplicates
+  unsigned int i, vsize = m_filter_tags.size();
+  for(i=0; i<vsize; i++) {
+    if(vehicle_name == m_filter_tags[i])
+      return;
+  }
+
+  // Add the new vehicle name as a menu choice
+  m_filter_tags.push_back(vehicle_name);
+  unsigned int index = m_filter_tags.size()-1;
+  string label = "ClearHistory/";
+  label += (truncString(vehicle_name, 25, "middle"));
+  mbar->add(label.c_str(), 0, 
+	    (Fl_Callback*)PMV_GUI::cb_FilterOut, (void*)index, 0);
+
+  mbar->redraw();
+}
+
+//-------------------------------------------------------------------
+// Procedure: removeFilterVehicle
+
+void PMV_GUI::removeFilterVehicle(string vehicle_name)
+{
+  // First check the current list of vehicles, ignore duplicates
+  unsigned int i, vsize = m_filter_tags.size();
+  for(i=0; i<vsize; i++) {
+    if(vehicle_name == m_filter_tags[i])
+      mbar->remove(i+1);
+  }
 
   mbar->redraw();
 }

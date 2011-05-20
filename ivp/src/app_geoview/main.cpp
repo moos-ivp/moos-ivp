@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
   vector<string>    all_poly_strings;
   vector<string>    all_segl_strings;
   vector<string>    all_grid_strings;
-  vector<XYCircle>  all_circles;
+  vector<string>    all_circle_strings;
   vector<XYHexagon> all_hexagons;
   vector<string>    all_markers;
   vector<string>    all_opvertices;
@@ -94,13 +94,14 @@ int main(int argc, char *argv[])
       for(j=0; j<svector.size(); j++)
 	all_segl_strings.push_back(svector[j]);
 
+      svector = readEntriesFromFile(argi, "circle");
+      for(j=0; j<svector.size(); j++)
+	all_circle_strings.push_back(svector[j]);
+
       svector = readEntriesFromFile(argi, "grid:xygrid");
       for(j=0; j<svector.size(); j++)
 	all_grid_strings.push_back(svector[j]);
 
-      vector<XYCircle> cvector = readCirclesFromFile(argi);
-      for(j=0; j<cvector.size(); j++) 
-	all_circles.push_back(cvector[j]);
       vector<XYHexagon> hvector = readHexagonsFromFile(argi);
       for(j=0; j<hvector.size(); j++)
 	all_hexagons.push_back(hvector[j]);
@@ -130,9 +131,9 @@ int main(int argc, char *argv[])
   for(j=0; j<all_grid_strings.size(); j++)
     gui->pviewer->setParam("grid", all_grid_strings[j]);
   
-  cout << "# of file circles: " << all_circles.size() << endl;
-  for(j=0; j<all_circles.size(); j++)
-    gui->pviewer->addCircle(all_circles[j]);
+  cout << "# of file circles: " << all_circle_strings.size() << endl;
+  for(j=0; j<all_circle_strings.size(); j++)
+    gui->pviewer->setParam("view_circle", all_circle_strings[j]);
   
 #if 0
   cout << "# of file hexagons: " << all_hexagons.size() << endl;

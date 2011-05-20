@@ -75,21 +75,25 @@ protected:
 
   void   drawHash(double xl=0, double xr=0, double yb=0, double yt=0);
   void   drawSegment(double, double, double, double, double, double, double);
-  void   drawOpArea();
+
+  void   drawOpArea(const OpAreaSpec&);
+  void   drawDatum(const OpAreaSpec&);
 
   void   drawCommonVehicle(const std::string& vname, 
 			   const ObjectPose&, 
 			   const BearingLine&, 
 			   const ColorPack& body_color,
 			   const ColorPack& vname_color,
-			   const std::string& body, double shape_length,
-			   bool vname_draw, int line=0);
+			   const std::string& body, 
+			   double shape_length,
+			   bool vname_draw, 
+			   unsigned int line=0);
 
   void  drawMarkers(const std::vector<XYMarker>&);
   void  drawMarker(const XYMarker&);
 
   void  drawPolygons(const std::vector<XYPolygon>&);
-  void  drawPolygon(const XYPolygon&, bool filled, bool dashed);
+  void  drawPolygon(const XYPolygon&);
   
   void  drawSegLists(const std::vector<XYSegList>&);
   void  drawSegList(const XYSegList&);
@@ -115,10 +119,9 @@ protected:
 
   void  drawHexagons();
 
-  void   drawGLPoly(double *points, int numPoints, 
-		    ColorPack fill_color,
-		    double thickness=0, double scale=1);
-
+  void  drawGLPoly(double *points, unsigned int numPoints, 
+		   ColorPack fill_color,
+		   double thickness=0, double scale=1);
 
 protected:
   BackImg   m_back_img;
@@ -142,8 +145,6 @@ protected:
   double    m_fill_shade;
   bool      m_hash_offon;
 
-  OpAreaSpec         m_op_area;
-  VPlug_GeoShapes    m_geoshapes;
   VPlug_GeoSettings  m_geo_settings;
   VPlug_VehiSettings m_vehi_settings;
   VPlug_DropPoints   m_drop_points;

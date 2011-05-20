@@ -26,6 +26,8 @@ class VehicleSet
   bool  setParam(std::string param, std::string value="");
   bool  setParam(std::string param, double value);
 
+  void  clear(const std::string& vname="");
+
   //------ General Purpose Information retrieval --------------
   bool  getDoubleInfo(const std::string& vname, 
 		      const std::string& info_type, 

@@ -757,15 +757,14 @@ void TS_MOOSApp::seedRandom()
 
 bool TS_MOOSApp::updateInfoBuffer(CMOOSMsg &msg)
 {
-  string key = msg.m_sKey;
-  string sdata = msg.m_sVal;
-  double ddata = msg.m_dfVal;
-  char   mtype = msg.m_cDataType;
+  string key = msg.GetKey();
+  string sdata = msg.GetString();
+  double ddata = msg.GetDouble();
 
-  if(mtype == MOOS_DOUBLE) {
+  if(msg.IsDataType(MOOS_DOUBLE)) {
     return(m_info_buffer->setValue(key, ddata));
   }
-  else if(mtype == MOOS_STRING) {
+  else if(msg.IsDataType(MOOS_STRING)) {
     return(m_info_buffer->setValue(key, sdata));
   }
   return(false);

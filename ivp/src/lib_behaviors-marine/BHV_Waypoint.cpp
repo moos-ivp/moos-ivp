@@ -77,12 +77,13 @@ BHV_Waypoint::BHV_Waypoint(IvPDomain gdomain) :
   m_completed  = false; 
   m_perpetual  = false;
 
-  m_osx   = -1;
-  m_osy   = -1;
-  m_osv   = -1;
+  m_osx   = 0;
+  m_osy   = 0;
+  m_osv   = 0;
 
   addInfoVars("NAV_X, NAV_Y, NAV_SPEED");
   m_markpt.set_active(false);
+  m_markpt.set_vertex_size(4);
 }
 
 //-----------------------------------------------------------
@@ -94,11 +95,13 @@ void BHV_Waypoint::onSetParamComplete()
   m_trackpt.set_label(m_us_name + "'s track-point");
   //m_trackpt.set_label(m_us_name + "_track-point");
   m_trackpt.set_type("track_point");
+  m_trackpt.set_vertex_size(4);
 
   m_nextpt.set_source(m_us_name + "_" + tolower(getDescriptor()));
   m_nextpt.set_label(m_us_name + "'s next waypoint");
   //m_nextpt.set_label(m_us_name + "_waypoint");
   m_nextpt.set_type("waypoint");
+  m_nextpt.set_vertex_size(4);
 }
 
 //-----------------------------------------------------------
@@ -115,7 +118,7 @@ bool BHV_Waypoint::setParam(string param, string param_val)
     XYSegList new_seglist = string2SegList(param_val);
     if(new_seglist.size() == 0) {
       XYPolygon new_poly = string2Poly(param_val);
-      new_seglist = new_poly.exportSegList(0,0);
+      new_seglist = new_poly.exportSegList(m_osx, m_osy);
     }
     if(new_seglist.size() == 0)
       return(false);
