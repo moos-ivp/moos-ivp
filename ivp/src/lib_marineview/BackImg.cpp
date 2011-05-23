@@ -293,12 +293,16 @@ bool BackImg::readTiffInfo(string filename)
 	lon_east_set = true;
       }
       else if((left == "datum_lat") && (isNumber(right))) {
-	m_datum_lat = atof(right.c_str());
-	m_datum_lat_set = true;
+	if(!m_datum_lat_set) {
+	  m_datum_lat = atof(right.c_str());
+	  m_datum_lat_set = true;
+	}
       }
       else if((left == "datum_lon") && (isNumber(right))) {
-	m_datum_lon = atof(right.c_str());
-	m_datum_lon_set = true;
+	if(!m_datum_lon_set) {
+	  m_datum_lon = atof(right.c_str());
+	  m_datum_lon_set = true;
+	}
       }
       else
 	return(false);

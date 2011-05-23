@@ -22,6 +22,7 @@
 
 #include <cstdlib>
 #include <cmath>
+#include <algorithm>
 #include "PMV_Viewer.h"
 #include "MBUtils.h"
 #include "AngleUtils.h"
@@ -69,13 +70,8 @@ void PMV_Viewer::draw()
 {
   MarineViewer::draw();
 
-  if(m_hash_offon) {
-    double xl = m_geoshapes_map.getXMin() - 1000;
-    double xh = m_geoshapes_map.getXMax() + 1000;
-    double yl = m_geoshapes_map.getYMin() - 1000;
-    double yh = m_geoshapes_map.getYMax() + 1000;
-    drawHash(xl, xh, yl, yh);
-  }
+  if(m_hash_offon)
+    calculateDrawHash();
 
   vector<string> vnames = m_geoshapes_map.getVehiNames();
   unsigned int i, vsize = vnames.size();
@@ -819,5 +815,29 @@ vector<VarDataPair> PMV_Viewer::getNonMousePairs(bool clear)
   if(clear)
     m_var_data_pairs_non_mouse.clear();
   return(rvector);
+}
+
+//-------------------------------------------------------------
+// Procedure: calculateDrawHash()
+
+void PMV_Viewer::calculateDrawHash()
+{
+  double xl = m_geoshapes_map.getXMin();
+  if(m_vehiset.getXMin() < xl)
+    xl = m_vehiset.getXMin();
+
+  double xh = m_geoshapes_map.getXMax();
+  if(m_vehiset.getXMax() > xh)
+    xh = m_vehiset.getXMax();
+
+  double yl = m_geoshapes_map.getYMin();
+  if(m_vehiset.getYMin() < yl)
+    yl = m_vehiset.getYMin();
+
+  double yh = m_geoshapes_map.getYMax();
+  if(m_vehiset.getYMax() > yh)
+    yh = m_vehiset.getYMax();
+
+  drawHash(xl, xh, yl, yh);
 }
 

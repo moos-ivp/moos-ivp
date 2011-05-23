@@ -37,6 +37,10 @@ SRS_Model::SRS_Model()
   m_curr_time  = 0;
   m_iterations = 0;
 
+  // If uniformly random noise used, (m_rn_algorithm = "uniform")
+  // this variable reflects the range of the uniform variable in 
+  // terms of percentage of the true (pre-noise) range.
+  m_rn_uniform_pct = 0;
 }
 
 //------------------------------------------------------------
@@ -95,6 +99,14 @@ bool SRS_Model::setParam(string param, string value, unsigned int pass)
     if((val == "both") || (val == "short") || (val == "long"))
       m_report_vars = val;
   }
+  else if(param == "rn_algorithm") {
+    string val = tolower(value);
+    if((val == "uniform") || (val == "uniform_rng") || 
+       (val == "uniform_pct") || (val == "gaussian"))
+      m_rn_algorithm = val;
+  }
+  else if((param == "rn_uniform_pct") && isNumber(value))
+    m_rn_uniform_pct = vclip(atof(value.c_str()), 0, 1);
   else
     return(false);
   return(true);
@@ -155,7 +167,7 @@ void SRS_Model::iterate()
       unsigned int vix, jsize = m_vnodes.size();
       for(vix=0; vix<jsize; vix++) {
 	if(m_vnodes[vix].valid()) {
-	  double actual_range = getBeaconNodeRange(bix, vix);
+	  double actual_range = getTrueBeaconNodeRange(bix, vix);
 	  double report_range = m_beacons[bix].getReportRange();
 	  if((report_range < 0) || (actual_range < report_range)) {
 	    if(total_reports == 0) {
@@ -428,7 +440,7 @@ bool SRS_Model::handleRangeRequest(const string& request)
   // requesting vehicle to have received the request.
   unsigned int bix, bsize = m_beacons.size();
   for(bix=0; bix<bsize; bix++) {
-    double actual_range_now = getBeaconNodeRange(bix, vix);
+    double actual_range_now = getTrueBeaconNodeRange(bix, vix);
     double query_range = m_vnodes[vix].getQueryRange();
     if((query_range < 0) || (actual_range_now <= query_range)) {
       // Then determine if the vehicle is within range of the beacon to
@@ -547,10 +559,10 @@ void SRS_Model::postRangeReport(unsigned int beacon_ix,
 
 
 //------------------------------------------------------------
-// Procedure: getBeaconNodeRange()
+// Procedure: getTrueBeaconNodeRange()
 
-double SRS_Model::getBeaconNodeRange(unsigned int beacon_ix, 
-				     unsigned int vnode_ix) const
+double SRS_Model::getTrueBeaconNodeRange(unsigned int beacon_ix, 
+					 unsigned int vnode_ix) const
 {
   if((beacon_ix >= m_beacons.size()) || (vnode_ix > m_vnodes.size()))
     return(-1);
@@ -560,7 +572,27 @@ double SRS_Model::getBeaconNodeRange(unsigned int beacon_ix,
   double vnode_x  = m_vnodes[vnode_ix].getX();
   double vnode_y  = m_vnodes[vnode_ix].getY();
   double range = hypot((beacon_x-vnode_x), (beacon_y-vnode_y));
+
   return(range);
+}
+
+
+//------------------------------------------------------------
+// Procedure: getNoisyBeaconNodeRange()
+
+double SRS_Model::getNoisyBeaconNodeRange(double true_range) const
+{
+  if(m_rn_algorithm == "uniform") {
+    // Generate a random double in the range [-1, 1]
+    int    rand_int = rand() % 10000;
+    double rand_pct = ((double)(rand_int) / 5000) - 1;
+    
+    double noise = ((rand_pct * m_rn_uniform_pct) * true_range);
+    double noisy_range = true_range + noise;
+    return(noisy_range);
+  }
+    
+  return(true_range);
 }
 
 

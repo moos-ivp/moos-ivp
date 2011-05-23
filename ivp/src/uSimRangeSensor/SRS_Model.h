@@ -27,6 +27,7 @@ class SRS_Model
 		  double mtime, bool isdouble, bool isstring, 
 		  std::string source);
   void  setCurrTime(double);
+  void  setRandomNoiseAlgorithm(const std::string&);
   void  iterate();
   void  print() const;
 
@@ -50,7 +51,8 @@ class SRS_Model
   void    postBeaconRangePulse(unsigned int bix, std::string color="");
 
  protected: // Utilities
-  double  getBeaconNodeRange(unsigned int bix, unsigned int vix) const;
+  double  getTrueBeaconNodeRange(unsigned int bix, unsigned int vix) const;
+  double  getNoisyBeaconNodeRange(double) const;
   void    report(std::string message="", std::string termcolor="");
 
  protected: // State variables
@@ -80,6 +82,10 @@ class SRS_Model
 
   std::string m_report_vars;
   bool        m_verbose;
+
+  std::string m_rn_algorithm;   // Empty string = no random noise
+  double      m_rn_uniform_pct;
+
 };
 
 #endif 

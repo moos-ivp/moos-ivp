@@ -23,10 +23,14 @@ class VehicleSet
   VehicleSet();
   ~VehicleSet() {};
     
-  bool  setParam(std::string param, std::string value="");
-  bool  setParam(std::string param, double value);
+  bool   setParam(std::string param, std::string value="");
+  bool   setParam(std::string param, double value);
 
-  void  clear(const std::string& vname="");
+  void   clear(const std::string& vname="");
+  double getXMin() const {return(m_xmin);};
+  double getXMax() const {return(m_xmax);};
+  double getYMin() const {return(m_ymin);};
+  double getYMax() const {return(m_ymax);};
 
   //------ General Purpose Information retrieval --------------
   bool  getDoubleInfo(const std::string& vname, 
@@ -88,6 +92,11 @@ class VehicleSet
   unsigned int m_history_size;
   double       m_curr_time;
 
+  double  m_xmin;
+  double  m_xmax;
+  double  m_ymin;
+  double  m_ymax;
+  
   std::vector<std::string> m_node_report_vars;
 };
 

@@ -29,6 +29,11 @@ VehicleSet::VehicleSet()
   m_node_report_vars.push_back("AIS_REPORT_LOCAL");
   m_node_report_vars.push_back("NODE_REPORT");
   m_node_report_vars.push_back("NODE_REPORT_LOCAL");
+
+  m_xmin = 0;
+  m_xmax = 0;
+  m_ymin = 0;
+  m_ymax = 0;
 }
 
 
@@ -66,7 +71,8 @@ bool VehicleSet::setParam(string param, string value)
     m_hist_map.clear();
     handled  = true;
   }
-  else if((param == "active_vehicle_name") || (param == "vehicles_active_name")) {
+  else if((param == "active_vehicle_name") || 
+	  (param == "vehicles_active_name")) {
     handled = true;
     map<string,ObjectPose>::iterator p = m_pos_map.find(value);
     if(p == m_pos_map.end())
@@ -74,7 +80,8 @@ bool VehicleSet::setParam(string param, string value)
     else
       m_vehicles_active_name = value;
   }
-  else if((param == "center_vehicle_name") || (param == "vehicles_center_name")) {
+  else if((param == "center_vehicle_name") || 
+	  (param == "vehicles_center_name")) {
     m_vehicles_center_name = value;
   }
   else if(param == "cycle_active") {
@@ -137,6 +144,10 @@ void VehicleSet::clear(const string& vname)
     m_ais_map.erase(vname);
     m_bearing_map.erase(vname);
   }
+  m_xmin = 0;
+  m_xmax = 0;
+  m_ymin = 0;
+  m_ymax = 0;
 }
 
 
@@ -551,6 +562,17 @@ bool VehicleSet::updateVehiclePosition(const string& node_report)
 
   if(utime==-1)
     utime = m_curr_time;
+
+
+  // Update the maximum boundaries
+  if(pos_x < m_xmin)
+    m_xmin = pos_x;
+  if(pos_x > m_xmax)
+    m_xmax = pos_x;
+  if(pos_y < m_ymin)
+    m_ymin = pos_y;
+  if(pos_y > m_ymax)
+    m_ymax = pos_y;
 
   m_vlen_map[vname]  = vlen; 
   m_pos_map[vname]   = opose;
