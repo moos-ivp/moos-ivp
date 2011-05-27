@@ -39,8 +39,9 @@ protected:
   bool         updateInfoIn();
   void         postStatusReport();
 
-private: // Behavior Parameters
+private: // Behavior Configuration Parameters
   double      m_min_altitude;
+  bool        m_missing_altitude_critical;
 
 private: // Behavior state
   double      m_curr_depth;

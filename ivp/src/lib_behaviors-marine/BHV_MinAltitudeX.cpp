@@ -26,7 +26,7 @@
 #include "BHV_MinAltitudeX.h"
 #include "MBUtils.h"
 #include "BuildUtils.h"
-#include "ZAIC_HEQ.h"
+#include "ZAIC_LEQ.h"
 
 using namespace std;
 
@@ -41,6 +41,7 @@ BHV_MinAltitudeX::BHV_MinAltitudeX(IvPDomain gdomain) :
 
   // Behavior Parameter Default Values:
   m_min_altitude  = 0;  // meters
+  m_missing_altitude_critical = true;
 
   // Behavior State Variable Initial Values:
   m_curr_depth    = 0;  // meters
@@ -86,7 +87,7 @@ IvPFunction *BHV_MinAltitudeX::onRunState()
     if(m_curr_max_depth < 0)
       m_curr_max_depth = 0;
 
-    ZAIC_HEQ zaic_depth(m_domain, "depth");
+    ZAIC_LEQ zaic_depth(m_domain, "depth");
     zaic_depth.setSummit(m_curr_max_depth);
     zaic_depth.setBaseWidth(0);
       
@@ -112,13 +113,18 @@ bool BHV_MinAltitudeX::updateInfoIn()
   
   if(!ok1) {
     postEMessage("No ownship NAV_DEPTH info in the helm info_buffer");
-    postMessage("MIN_ALT_STATUS", "ERROR - No NAV_DEPTH info");
+    postMessage("MIN_ALT_STATUS", "Missing NAV_DEPTH info");
     return(false);
   }
 
   if(!ok2) {
-    postEMessage("No ownship NAV_ALTITUDE info in the helm info_buffer");
-    postMessage("MIN_ALT_STATUS", "ERROR - No NAV_ALTITUDE info");
+    if(m_missing_altitude_critical)
+      postEMessage("No ownship NAV_ALTITUDE info in the helm info_buffer");
+    else {
+      postEMessage("No ownship NAV_ALTITUDE info in the helm info_buffer");
+      m_curr_altitude = 0;
+    }
+    postMessage("MIN_ALT_STATUS", "Missing NAV_ALTITUDE info");
     return(false);
   }
 
