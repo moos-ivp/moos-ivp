@@ -50,11 +50,6 @@ private: // Behavior state
 
 };
 
-extern "C" {
-  IvPBehavior * createBehavior(std::string name, IvPDomain domain)
-  {return new BHV_MinAltitudeX(domain);}
-}
-
 #endif
  
 
