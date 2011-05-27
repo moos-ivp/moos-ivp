@@ -6,7 +6,6 @@
 SET(SRC
   BHV_AbortToPoint.cpp
   BHV_Attractor.cpp
-#  BHV_HAttractor.cpp
   BHV_AvoidCollision.cpp
   BHV_AvoidObstacles.cpp
   BHV_ConstantDepth.cpp
@@ -18,6 +17,7 @@ SET(SRC
   BHV_Hysteresis.cpp
   BHV_HeadingHysteresis.cpp
   BHV_Loiter.cpp
+  BHV_MinAltitudeX.cpp
   BHV_MemoryTurnLimit.cpp
   BHV_OpRegion.cpp
   BHV_PeriodicSpeed.cpp
@@ -30,7 +30,6 @@ SET(SRC
   BHV_Timer.cpp
   BHV_Trail.cpp
   BHV_Waypoint.cpp
-#  BHV_HPeriodicSurface.cpp
   BHV_HSLine.cpp
   BHV_HeadingChange.cpp
   BHV_HeadingBias.cpp
@@ -47,7 +46,6 @@ SET(HEADERS
   BHV_ConstantSpeed.h
   BHV_CutRange.h
   BHV_GoToDepth.h
-#  BHV_HAttractor.h
   BHV_HeadingBias.h
   BHV_HeadingChange.h
   BHV_HeadingHysteresis.h
@@ -55,10 +53,10 @@ SET(HEADERS
   BHV_Hysteresis.h
   BHV_Loiter.h
   BHV_MaintainHeading.h
+  BHV_MinAltitudeX.h
   BHV_MemoryTurnLimit.h
   BHV_OpRegion.h
   BHV_PeriodicSpeed.h
-#  BHV_PeriodicSurface.h
   BHV_RStationKeep.h
   BHV_RubberBand.h
   BHV_Shadow.h
