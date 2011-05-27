@@ -60,6 +60,8 @@ bool BHV_MinAltitudeX::setParam(string param, string param_val)
   if(IvPBehavior::setParamCommon(param, param_val))
     return(true);
 
+  param = tolower(param);
+
   if(param == "min_altitude") {
     double dval = atof(param_val.c_str());
     if((dval < 0) || (!isNumber(param_val)))
@@ -67,6 +69,8 @@ bool BHV_MinAltitudeX::setParam(string param, string param_val)
     m_min_altitude = dval;
     return(true);
   }
+  else if(param == "missing_altitude_critical")
+    return(setBooleanOnString(m_missing_altitude_critical, param_val));
   return(false);
 }
 
