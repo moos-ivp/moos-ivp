@@ -47,7 +47,6 @@ private: // Behavior state
   double      m_curr_depth;
   double      m_curr_altitude;
   double      m_curr_max_depth;
-
 };
 
 #endif
