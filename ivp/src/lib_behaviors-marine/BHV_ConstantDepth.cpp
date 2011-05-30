@@ -46,9 +46,14 @@ BHV_ConstantDepth::BHV_ConstantDepth(IvPDomain gdomain) :
   m_domain = subDomain(m_domain, "depth");
 
   m_desired_depth = 0;
-  m_peakwidth     = 0;
-  m_basewidth     = 2;
-  m_summitdelta   = 0.1;
+
+  // Default values changed by HS 110530
+  m_peakwidth     = 1;
+  m_basewidth     = 100;
+  m_summitdelta   = 99;
+  //  m_peakwidth     = 0;
+  //  m_basewidth     = 2;
+  //  m_summitdelta   = 0.1;
 
   // The default duration at the IvPBehavior level is "-1", which
   // indicates no duration applied to the behavior by default. By
@@ -83,7 +88,8 @@ bool BHV_ConstantDepth::setParam(string param, string val)
   
   else if(param == "summitdelta") {
     double dval = atof(val.c_str());
-    if((dval < 0) || (dval > 1.0) || (!isNumber(val)))
+    // changed to % by HS 110530
+    if((dval < 0) || (dval > 100.0) || (!isNumber(val)))
       return(false);
     m_summitdelta = dval;
     return(true);
