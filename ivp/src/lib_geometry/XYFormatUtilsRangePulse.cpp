@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: XYFormatUtilsRangePulse.cpp                          */
 /*    DATE: Feb 5th, 2011                                        */
 /*                                                               */
@@ -79,3 +79,4 @@ XYRangePulse stringStandard2RangePulse(string str)
   
   return(new_pulse);
 }
+

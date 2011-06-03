@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: RT_AutoPeak.cpp                                      */
 /*    DATE: Jun 21st, 2008                                       */
 /*    NOTE: "RT_" stands for "Reflector Tool"                    */
@@ -133,3 +133,4 @@ PDMap* RT_AutoPeak::create(PDMap *pdmap, int max_more_pcs)
   pdmap->updateGrid();
   return(pdmap);
 }
+

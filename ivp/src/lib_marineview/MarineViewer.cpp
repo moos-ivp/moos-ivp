@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: MarineViewer.cpp                                     */
 /*    DATE: May 31st, 2005                                       */
 /*                                                               */
@@ -670,14 +670,8 @@ void MarineViewer::drawCommonVehicle(const string& vname,
     if(m_zoom > 4)
       gl_font(1, 12);
     double offset = 3.0 * (1/m_zoom);
-
-    int slen = vname.length();
-    char *buff = new char[slen+1];
-    glRasterPos3f(offset,offset,0);
-    strncpy(buff, vname.c_str(), slen);
-    buff[slen] = '\0';
-    gl_draw(buff, slen);
-    delete [] buff;
+    glRasterPos3f(offset, offset,0);
+    gl_draw(vname.c_str());
   }
 
   if(bng_line.isValid() && m_vehi_settings.isViewableBearingLines()) {
@@ -873,14 +867,8 @@ void MarineViewer::drawMarker(const XYMarker& marker)
     if(m_zoom > 4)
       gl_font(1, 12);
     double offset = 4.0 * (1/m_zoom);
-
-    int slen = label.length();
-    char *buff = new char[slen+1];
     glRasterPos3f(offset, offset, 0);
-    strncpy(buff, label.c_str(), slen);
-    buff[slen] = '\0';
-    gl_draw(buff, slen);
-    delete(buff);
+    gl_draw(label.c_str());
   }
 
   glPopMatrix();
@@ -982,14 +970,9 @@ void MarineViewer::drawOpArea(const OpAreaSpec& op_area)
       glColor3f(lcolor.red(), lcolor.grn(), lcolor.blu());
       gl_font(1, 10);
       for(i=0; i<vsize; i++) {
-	int slen = labels[i].length();
-	char *buff = new char[slen+1];
 	double offset = 3.0 * (1/m_zoom);
 	glRasterPos3f(xpos[i]+offset, ypos[i]+offset, 0);
-	strncpy(buff, labels[i].c_str(), slen);
-	buff[slen] = '\0';
-	gl_draw(buff, slen);
-	delete(buff);
+	gl_draw(labels[i].c_str());
       }
     }
     glLineWidth(1);
@@ -1191,13 +1174,8 @@ void MarineViewer::drawPolygon(const XYPolygon& poly)
     if(plabel == "")
       plabel = poly.get_label();
     if(plabel != "") {
-      int slen = plabel.length();
-      char *buff = new char[slen+1];
       glRasterPos3f(0, 0, 0);
-      strncpy(buff, plabel.c_str(), slen);
-      buff[slen] = '\0';
-      gl_draw(buff, slen);
-      delete(buff);
+      gl_draw(plabel.c_str());
     }
   }
   //-------------------------------- perhaps draw poly label
@@ -1207,7 +1185,6 @@ void MarineViewer::drawPolygon(const XYPolygon& poly)
   //-------------------------------- perhaps draw poly vertex labels
   if(m_geo_settings.viewable("polygon_viewable_vertex_labels")) {
     glTranslatef(0, 0, 0);
-    char *buff = new char[100];
     for(j=0; j<vsize; j++) {
       double cx = points[(j*2)];
       double cy = points[(j*2)+1];
@@ -1218,11 +1195,8 @@ void MarineViewer::drawPolygon(const XYPolygon& poly)
       string vlabel = intToString(j);
       int slen = vlabel.length();
       glRasterPos3f(cx, cy, 0);
-      strncpy(buff, vlabel.c_str(), slen);
-      buff[slen] = '\0';
-      gl_draw(buff, slen);
+      gl_draw(vlabel.c_str());
     }
-    delete(buff);
   }
   //-------------------------------- perhaps draw poly vertex_labels
 #endif
@@ -1402,13 +1376,8 @@ void MarineViewer::drawSegList(const XYSegList& segl)
     if(plabel == "")
       plabel = segl.get_label();
     if(plabel != "") {
-      int slen = plabel.length();
-      char *buff = new char[slen+1];
       glRasterPos3f(0, 0, 0);
-      strncpy(buff, plabel.c_str(), slen);
-      buff[slen] = '\0';
-      gl_draw(buff, slen);
-      delete(buff);
+      gl_draw(plabel.c_str());
     }
   }
   //-------------------------------- perhaps draw seglist label
@@ -1553,13 +1522,8 @@ void MarineViewer::drawVector(const XYVector& vect)
     if(plabel == "")
       plabel = vect.get_label();
     if(plabel != "") {
-      int slen = plabel.length();
-      char *buff = new char[slen+1];
       glRasterPos3f(0, 0, 0);
-      strncpy(buff, plabel.c_str(), slen);
-      buff[slen] = '\0';
-      gl_draw(buff, slen);
-      delete(buff);
+      gl_draw(plabel.c_str());
     }
   }
   //-----------------------------end perhaps draw vect label
@@ -1942,14 +1906,9 @@ void MarineViewer::drawPoint(const XYPoint& point)
     if(plabel == "")
       plabel = point.get_label();
     if(plabel != "") {    
-      int slen = plabel.length();
-      char *buff = new char[slen+1];
       double offset = 3.0 * (1/m_zoom);
       glRasterPos3f(px+offset, py+offset, 0);
-      strncpy(buff, plabel.c_str(), slen);
-      buff[slen] = '\0';
-      gl_draw(buff, slen);
-      delete [] buff;
+      gl_draw(plabel.c_str());
     }
   }
 
@@ -1998,15 +1957,11 @@ void MarineViewer::drawText(double px, double py, const string& text,
   if(font_c.visible()) {
     glColor3f(font_c.red(), font_c.grn(), font_c.blu());
     gl_font(1, font_size);
-    int slen = text.length();
-    char *buff = new char[slen+1];
     glRasterPos3f(px, py, 0);
-    strncpy(buff, text.c_str(), slen);
-    buff[slen] = '\0';
-    gl_draw(buff, slen);
-    delete [] buff;
+    gl_draw(text.c_str());
   }
   glFlush();
   glPopMatrix();
 }
+
 

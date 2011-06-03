@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: IvPFuncViewer.cpp                                    */
 /*    DATE: Feb 25th, 2007                                       */
 /*                                                               */
@@ -36,13 +36,10 @@ IvPFuncViewer::IvPFuncViewer(int x, int y, int w, int h, const char *l)
   : Common_IPFViewer(x,y,w,h,l)
 {
   m_plot_ix       = 0;
-  m_rad_extra     = 15;
+  m_rad_extra     = 8;
   m_draw_frame    = true;
   m_zoom          = 2.0;
-  m_collective_ix = -1;
   m_mouse_infocus = false;
-
-  m_collective_by_default = false;
 
   setParam("reset_view", "2");
 
@@ -78,7 +75,8 @@ void IvPFuncViewer::draw()
   glRotatef(m_zRot, 0.0f, 0.0f, 1.0f);
 
   bool result = Common_IPFViewer::drawIvPFunction();
-  if(result) {
+
+  if(result && (m_quadset.getQuadSetDim() == 2)) {
     //if(m_draw_frame)
     //  drawFrame();
     drawOwnPoint();
@@ -98,8 +96,7 @@ void IvPFuncViewer::draw()
 // Procedure: addIPF_Plot
 //      Note: A local copy of the given IPF_Plot is created here.
 
-unsigned int IvPFuncViewer::addIPF_Plot(const IPF_Plot& g_ipf_plot, 
-					bool make_this_active)
+void IvPFuncViewer::addIPF_Plot(const IPF_Plot& g_ipf_plot)
 {
   string ipf_source = g_ipf_plot.getSource();
   string ipf_vname  = g_ipf_plot.getVName();
@@ -107,152 +104,160 @@ unsigned int IvPFuncViewer::addIPF_Plot(const IPF_Plot& g_ipf_plot,
   m_ipf_vname.push_back(ipf_vname);
   m_ipf_source.push_back(ipf_source);
   m_ipf_plot.push_back(g_ipf_plot);
-
-  if(make_this_active)
-    m_plot_ix = m_ipf_plot.size()-1;
-
-  // Add the vehicle name to the vector of all vehicle names if
-  // does not already exist in the vector.
-  int ix = getVNameIndex(ipf_vname);
-  if(ix == -1)
-    m_all_vnames.push_back(ipf_vname);
-
-  // If collective_by_default set this viewer to display the 
-  // collective objective function as soon as it becomes non-empty.
-  if(m_collective_by_default)
-    m_collective_ix = 0;
-
-  return(m_ipf_plot.size());
 }
 
 //-------------------------------------------------------------
-// Procedure: altPlotIndex
-//            Ensure that the new index (m_plot_ix) is >= 0 since
-//            it is an unsigned int.
+// Procedure: resetPlotIndex
+//      Note: Called when the timestamp/iteration may have changed,
+//            but not the preference of ipf type.
 
-void IvPFuncViewer::altPlotIndex(int val)
+void IvPFuncViewer::resetPlotIndex()
 {
-  if((val > 0) && ((m_plot_ix + val) < m_ipf_plot.size()))
-    m_plot_ix += val;
-  else if((val < 0) && ((m_plot_ix-val) >= 0))
-    m_plot_ix -= val;
-  else
-    return;
-
-  setVNameIPF(m_ipf_vname[m_plot_ix]);
-  setSourceIPF(m_ipf_source[m_plot_ix]);
+  if(m_collective_vname != "") {
+    bool ok = buildCollectiveIPF(m_collective_vname, m_collective_type);
+    if(ok)
+      return;
+  }
+  buildIndividualIPF();
+  m_collective_vname = "";
+  m_collective_type  = "";
 }
+
 
 //-------------------------------------------------------------
 // Procedure: setPlotIndex
 
-void IvPFuncViewer::setPlotIndex(unsigned int new_index)
+void IvPFuncViewer::setPlotIndex(string vname, string source)
 {
-  if(new_index < m_ipf_plot.size())
-    m_plot_ix = new_index;
+  m_collective_vname = "";
+  m_collective_type  = "";
+
+  if(source == "reset")
+    source = m_vname_memory[vname];
+
+  bool built_collective = false;
+  if(strBegins(source,"collective"))
+    built_collective = buildCollectiveIPF(vname, source);
+  
+  if(built_collective) {
+    m_collective_vname = vname;
+    m_collective_type  = source;
+  }
   else
-    return;
+    buildIndividualIPF(vname, source);
 
-  m_collective_ix = -1;
-
-  setVNameIPF(m_ipf_vname[m_plot_ix]);
-  setSourceIPF(m_ipf_source[m_plot_ix]);
+  
+  // remember this for switching back/forth between vehicles
+  m_vname_memory[vname] = source;
 }
 
 //-------------------------------------------------------------
-// Procedure: setCurrTime
+// Procedure: buildIndividualIPF
 
-void IvPFuncViewer::setCurrTime(double curr_time)
+void IvPFuncViewer::buildIndividualIPF(string vname, string source)
 {
-  if(m_plot_ix >= m_ipf_plot.size())
-    return;
-  
-  if(curr_time > m_ipf_plot[m_plot_ix].getMaxTime())
-    curr_time = m_ipf_plot[m_plot_ix].getMaxTime();
-  if(curr_time < m_ipf_plot[m_plot_ix].getMinTime())
-    curr_time = m_ipf_plot[m_plot_ix].getMinTime();  
+  bool use_previous_index = false;
+  if((vname=="") && (source==""))
+    use_previous_index = true;
 
-  if(m_collective_ix != -1)
-    buildCollective(curr_time);
-  else {
-    unsigned int iter = m_viter_map[m_ipf_vname[m_plot_ix]];
-    string ipf_string = m_ipf_plot[m_plot_ix].getIPFByHelmIteration(iter);
-    unsigned int pcs = m_ipf_plot[m_plot_ix].getPcsByHelmIteration(iter);
-    double pwt = m_ipf_plot[m_plot_ix].getPwtByHelmIteration(iter);
-    setVNameIPF(m_ipf_vname[m_plot_ix]);
-    setSourceIPF(m_ipf_source[m_plot_ix]);
-    setIterIPF(intToString(iter));
-    setPiecesIPF(intToString(pcs));
-    setPriorityIPF(dstringCompact(doubleToString(pwt)));
-    IvPDomain ivp_domain = m_ipf_plot[m_plot_ix].getIvPDomain();
-    IvPDomain ivp_subdomain = m_ipf_plot[m_plot_ix].getDomainByHelmIteration(iter);
-    setDomainIPF(ivp_domain);
-    setSubDomainIPF(ivp_subdomain);
-    
-    if(ipf_string == "") 
-      m_quadset = QuadSet();
-    else {
-      IvPFunction *ipf = StringToIvPFunction(ipf_string);
-      if(ipf) {
-	ipf = expandHdgSpdIPF(ipf, ivp_domain);
-	bool ok = m_quadset.applyIPF(ipf);
-	if(!ok)
-	  m_quadset = QuadSet();
-	delete(ipf);
-	m_quadset.normalize(0, 100);
-	m_quadset.applyColorMap(m_color_map);	
+  if(!use_previous_index) {
+    bool found_vname_source = false;
+    unsigned int i, vsize = m_ipf_vname.size();
+    for(i=0; i<vsize; i++) {
+      
+      if((tolower(vname) == tolower(m_ipf_vname[i])) && 
+	 (tolower(source) == tolower(m_ipf_source[i]))) {
+	found_vname_source = true;
+	m_plot_ix = i;
       }
     }
+    if(!found_vname_source)
+      return;
+  }
+
+  // Begin update the ivp_subdomain
+  unsigned int iter = m_viter_map[m_ipf_vname[m_plot_ix]];
+  IvPDomain ivp_subdomain = m_ipf_plot[m_plot_ix].getDomainByHelmIter(iter);
+  setSubDomainIPF(ivp_subdomain);
+
+  string ipf_string = m_ipf_plot[m_plot_ix].getIPFByHelmIteration(iter);
+  unsigned int pcs = m_ipf_plot[m_plot_ix].getPcsByHelmIteration(iter);
+  double pwt = m_ipf_plot[m_plot_ix].getPwtByHelmIteration(iter);
+  setIterIPF(intToString(iter));
+  setPiecesIPF(intToString(pcs));
+  setPriorityIPF(dstringCompact(doubleToString(pwt)));
+
+  IvPDomain ivp_domain = m_ipf_plot[m_plot_ix].getIvPDomain();
+  
+  if(ipf_string == "") {
+    m_quadset = QuadSet();
+    return;
+  }
+
+  IvPFunction *ipf = StringToIvPFunction(ipf_string);
+  if(ipf) {
+    ipf = expandHdgSpdIPF(ipf, ivp_domain);
+    string ipf_source = m_ipf_source[m_plot_ix];
+    bool ok = m_quadset.applyIPF(ipf, ipf_source);
+    if(!ok)
+      m_quadset = QuadSet();
+    delete(ipf);
+    m_quadset.normalize(0, 100);
+    m_quadset.applyColorMap(m_color_map);	
   }
 }
 
 //-------------------------------------------------------------
-// Procedure: setCollectiveIndex(index)
-//      Note: An index of -1 indicates that the collective function
-//            is not to be drawn. 
+// Procedure: buildCollectiveIPF
 
-void IvPFuncViewer::setCollectiveIndex(int index)
+bool IvPFuncViewer::buildCollectiveIPF(string vname, string ctype)
 {
-  if((index >= 0) && ((unsigned int)(index) < m_all_vnames.size()))
-    m_collective_ix = (unsigned int)(index);
-  else
-    m_collective_ix = -1;
-}
-
-
-//-------------------------------------------------------------
-// Procedure: buildCollective
-
-void IvPFuncViewer::buildCollective(double curr_time)
-{
-  if(m_collective_ix < 0)
-    return;
-
-  if((unsigned int)(m_collective_ix) >= m_all_vnames.size())
-    return;
-
-  // Phase 1: Determine the vehicle name for the collective function
-  string curr_vname = m_all_vnames[m_collective_ix];
+  // Phase 1: confirm the vname is known in the vehicle->iter map
+  if(!m_viter_map.count(vname))
+    return(false);
 
   // Phase 2: Determine the current helm iteration
-  unsigned int curr_iter = m_viter_map[curr_vname];
+  unsigned int curr_iter = m_viter_map[vname];
 
   // Phase 3: Get all the IvPFunction strings for the current iteration
   // for the current vehicle, along with the IvPDomain for each ipf.
-  vector<string> ipfs;
+  vector<string>    ipfs;
   vector<IvPDomain> ivp_domains;
+  vector<string>    ipf_sources;
 
   unsigned int i, vsize = m_ipf_plot.size();
   for(i=0; i<vsize; i++) {
-    if(m_ipf_vname[i] == curr_vname) {
+    if(m_ipf_vname[i] == vname) {
       string ipf_str = m_ipf_plot[i].getIPFByHelmIteration(curr_iter);
       if(ipf_str != "") {
 	IvPDomain ivp_domain = m_ipf_plot[i].getIvPDomain();
-	ipfs.push_back(ipf_str);
-	ivp_domains.push_back(ivp_domain);
+	IvPDomain ivp_subdomain = m_ipf_plot[i].getDomainByHelmIter(curr_iter);
+	string    ipf_source = m_ipf_source[i];
+
+	bool grab = false;
+	if(ctype == "collective-depth") {
+	  if(ivp_subdomain.hasOnlyDomain("depth"))
+	    grab = true;
+	}
+	if(ctype == "collective-hdgspd") {
+	  if(ivp_subdomain.hasOnlyDomain("course") ||
+	     ivp_subdomain.hasOnlyDomain("speed")  ||
+	     ivp_subdomain.hasOnlyDomain("course", "speed"))
+	    grab = true;
+	}
+
+	if(grab) {
+	  ipfs.push_back(ipf_str);
+	  ivp_domains.push_back(ivp_domain);
+	  ipf_sources.push_back(ipf_source);
+	}
       }
     }
   }
+  
+  // If there are no IPFs associated with this vname return false
+  if(ipfs.size() == 0) 
+    return(false);
 
   // Phase 4: Build the collective of the given functions.
   m_quadset = QuadSet();
@@ -266,77 +271,32 @@ void IvPFuncViewer::buildCollective(double curr_time)
 
     QuadSet      quadset;
     IvPFunction *ipf = StringToIvPFunction(ipfs[i]);
-    ipf = expandHdgSpdIPF(ipf, ivp_domain);
+    string       src = ipf_sources[i];
+
+    if(ctype == "collective-hdgspd")
+      ipf = expandHdgSpdIPF(ipf, ivp_domain);
+
     if(ipf) {
-      quadset.applyIPF(ipf);
+      quadset.applyIPF(ipf, src);
       delete(ipf);
     }
 
-    if(quadset.size() != 0)
-      m_quadset.addQuadSet(quadset);
+    m_quadset.addQuadSet(quadset);
+
   }
-  m_quadset.normalize(0, 100);
-  m_quadset.applyColorMap(m_color_map);
+
+  if(ctype == "collective-hdgspd") {
+    m_quadset.normalize(0, 100);
+    m_quadset.applyColorMap(m_color_map);
+  }
 
   // Phase 5: Set the text information for display
-  setVNameIPF(curr_vname);
   setIterIPF(intToString(curr_iter));
-  setSourceIPF("collective");
-  setPiecesIPF("");
+  setPiecesIPF("n/a");
+  setPriorityIPF("n/a");
+  return(true);
 }
 
-
-//-------------------------------------------------------------
-// Procedure: getVNameIndex
-//      Note: Returns -1 if vehicle name is not found
-
-int IvPFuncViewer::getVNameIndex(string vname)
-{
-  unsigned int i, vsize = m_all_vnames.size();
-  for(i=0; i<vsize; i++) {
-    if(m_all_vnames[i] == vname)
-      return((int)(i));
-  }  
-  return(-1);
-}
-  
-
-//-------------------------------------------------------------
-// Procedure: getCurrVName()
-
-string IvPFuncViewer::getCurrVName() const
-{
-  if(m_collective_ix >= 0) {
-    if((unsigned int)(m_collective_ix) < m_all_vnames.size())
-      return(m_all_vnames[m_collective_ix]);
-    else
-      return("n/a");
-  }
-
-  if(m_ipf_vname.size() > 0)
-    return(m_ipf_vname[m_plot_ix]);
-  else
-    return("n/a");
-}
-  
-//-------------------------------------------------------------
-// Procedure: getCurrSource()
-
-string IvPFuncViewer::getCurrSource() const
-{
-  if(m_collective_ix >= 0) {
-    if((unsigned int)(m_collective_ix) < m_all_vnames.size())
-      return("Collective");
-    else
-      return("n/a");
-  }
-
-  if(m_ipf_source.size() > 0)
-    return(m_ipf_source[m_plot_ix]);
-  else
-    return("n/a");
-}
-  
 //-------------------------------------------------------------
 // Procedure: getCurrPieces()
 
@@ -370,3 +330,6 @@ string IvPFuncViewer::getCurrIteration() const
   return(m_active_ipf_iter);
 }
   
+
+  
+

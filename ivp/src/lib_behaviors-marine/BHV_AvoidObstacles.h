@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: BHV_AvoidObstacles.h                                 */
 /*    DATE: Aug 2nd 2006                                         */
 /*                                                               */
@@ -54,6 +54,7 @@ protected:
   std:: string m_hint_obst_edge_color;
 };
 #endif
+
 
 
 

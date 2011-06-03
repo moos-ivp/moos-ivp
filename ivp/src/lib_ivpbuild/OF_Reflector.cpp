@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: OF_Reflector.cpp                                     */
 /*    DATE: Aug 29th 2005 (derived from OFR_AOF built long ago)  */
 /*                                                               */
@@ -574,3 +574,4 @@ void OF_Reflector::addWarning(string new_warning)
     m_warnings += " # ";
   m_warnings += new_warning;
 }
+

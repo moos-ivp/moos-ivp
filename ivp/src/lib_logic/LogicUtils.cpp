@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: LogicUtils.cpp                                       */
 /*    DATE: October 12th 2006                                    */
 /*                                                               */
@@ -231,12 +231,12 @@ bool globalNotParens(string str)
 bool isValidVariable(string str)
 {
   str = stripBlankEnds(str);
-  int len = str.length();
+  unsigned int i, len = str.length();
 
   if(len==0)
     return(false);
 
-  for(int i=0; i<len; i++) {
+  for(i=0; i<len; i++) {
     char c = str.at(i);
     if((c=='"') || (c=='>') || (c=='<') || 
        (c=='=') || (c=='!') || (c==')') || (c=='('))
@@ -260,7 +260,7 @@ bool isValidVariable(string str)
 bool isValidLiteral(string str)
 {
   str = stripBlankEnds(str);
-  int len = str.length();
+  unsigned int len = str.length();
 
   if(len==0)
     return(false);
@@ -289,7 +289,8 @@ bool isValidLiteral(string str)
     len = str.length();
   }
 
-  for(int i=0; i<len; i++) {
+  unsigned int i;
+  for(i=0; i<len; i++) {
     char c = str.at(i);
     if((c=='"') || (c=='>') || (c=='<') || (c=='=') || 
        (c=='!') || (c==')') || (c=='('))
@@ -446,4 +447,5 @@ bool strFieldMatch(const string& str1,
   return(false);
 }
     
+
 

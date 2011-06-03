@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: XMS.h                                                */
 /*    DATE: Mar 23rd 2006                                        */
 /*                                                               */
@@ -147,6 +147,7 @@ class XMS : public CMOOSApp
 
 
 #endif 
+
 
 
 

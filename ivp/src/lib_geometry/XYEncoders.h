@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: XYEncoders.h                                         */
 /*    DATE: Nov 24th 2006 (Thanksgiving Waterloo)                */
 /*                                                               */
@@ -37,6 +37,7 @@ std::string XYGridToString(const XYGrid&);
 XYGrid StringToXYGrid(const std::string&);
 
 #endif
+
 
 
 

@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: Populator_LogPlots.cpp                               */
 /*    DATE: June 5th, 2005                                       */
 /*                                                               */
@@ -100,3 +100,4 @@ LogPlot Populator_LogPlots::getLogPlot(const string& varname) const
   LogPlot empty_logplot;
   return(empty_logplot);
 }
+

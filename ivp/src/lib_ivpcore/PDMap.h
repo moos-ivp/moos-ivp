@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: PDMap.h                                              */
 /*    DATE: June 1st 2004 (pulled from OF class)                 */
 /*                                                               */
@@ -96,6 +96,7 @@ protected:
   IvPGrid*  m_grid;
 };
 #endif
+
 
 
 

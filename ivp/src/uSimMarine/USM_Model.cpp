@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: USM_Model.cpp                                        */
 /*    DATE: Nov 19th 2006 (as separate class under MVC paradigm  */
 /*                                                               */
@@ -353,3 +353,4 @@ bool USM_Model::initPosition(const string& str)
   }
   return(true);
 }
+

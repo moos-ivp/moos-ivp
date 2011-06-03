@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: BHV_PeriodicSpeed.h                                  */
 /*    DATE: June 9th 2006                                        */
 /*                                                               */
@@ -66,6 +66,7 @@ private: // State Variables
   double  m_time_to_lazy;
 };
 #endif
+
 
 
 

@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: M.Benjamin, H.Schmidt, J.Leonard                     */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: PMV_GUI.cpp                                          */
 /*    DATE: November, 2004                                       */
 /*                                                               */
@@ -194,8 +194,8 @@ void PMV_GUI::addButton(string btype, string svalue)
 
   bool ok_line = true;
   vector<string> svector = parseString(svalue, '#');
-  int vsize = svector.size();
-  for(int i=0; i<vsize; i++) {
+  unsigned int i, vsize = svector.size();
+  for(i=0; i<vsize; i++) {
     string param = stripBlankEnds(biteString(svector[i], '='));
     string value = stripBlankEnds(svector[i]);
     if(param == "") 
@@ -231,17 +231,6 @@ void PMV_GUI::addButton(string btype, string svalue)
     user_button_4->show();
     user_button_4->redraw();
   }
-
-#if 0
-  cout << "Report --------------------------------" << endl;
-  vsize = m_button_keys.size();
-  for(int h=0; h<vsize; h++) {
-    cout << "[" << h << "] key: [" << m_button_keys[h] << "]" << endl;
-    cout << "[" << h << "] var: [" << m_button_vars[h] << "]" << endl;
-    cout << "[" << h << "] val: [" << m_button_vals[h] << "]" << endl;
-  }
-  cout << "End------------------------------------" << endl;
-#endif
 }
 
 //----------------------------------------------------------
@@ -749,4 +738,5 @@ void PMV_GUI::removeFilterVehicle(string vehicle_name)
 
   mbar->redraw();
 }
+
 

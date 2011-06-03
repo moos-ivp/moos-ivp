@@ -1,7 +1,7 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
-/*    FILE: BHV_RubberBand.h                                    */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    FILE: BHV_RubberBand.h                                     */
 /*    DATE: Aug 25 2006                                          */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
@@ -80,6 +80,7 @@ private:  // State Variables
 };
 
 #endif
+
 
 
 

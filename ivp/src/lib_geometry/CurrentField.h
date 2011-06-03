@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: M.Benjamin, H.Schmidt, J.Leonard                     */
-/*    ORGN: MIT Cambridge MA                                     */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: CurrentField.h                                       */
 /*    DATE: Oct 20th 2010                                        */
 /*                                                               */
@@ -95,3 +95,4 @@ protected:
 };
 
 #endif 
+

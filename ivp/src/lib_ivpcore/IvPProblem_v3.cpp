@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: IvPProblem_v3.cpp                                    */
 /*    DATE: Too long ago to remember (1999-2001)                 */
 /*                                                               */
@@ -93,6 +93,7 @@ void IvPProblem_v3::solveRecurse(int level)
   }
   delete(levelBoxes);
 }
+
 
 
 

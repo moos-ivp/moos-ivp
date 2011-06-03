@@ -81,7 +81,7 @@ ProcessConfig = pHelmIvP
   Verbose    = quiet
   Domain     = course:0:359:360
   Domain     = speed:0:4:41
-  Domain     = depth:0:500:501
+  Domain     = depth:0:490:491
 }
 
 //------------------------------------------

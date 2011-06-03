@@ -1,6 +1,6 @@
-/****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*****************************************************************/
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: PMV_Viewer.cpp                                       */
 /*    DATE: Nov 11th 2004                                        */
 /*                                                               */
@@ -838,6 +838,9 @@ void PMV_Viewer::calculateDrawHash()
   if(m_vehiset.getYMax() > yh)
     yh = m_vehiset.getYMax();
 
-  drawHash(xl, xh, yl, yh);
+  double buffer = 1000;
+
+  drawHash(xl-buffer, xh+buffer, yl-buffer, yh+buffer);
 }
+
 

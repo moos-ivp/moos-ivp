@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: ColorPack.h                                          */
 /*    DATE: May 28th 2009                                        */
 /*                                                               */
@@ -47,6 +47,9 @@ public:
     m_set = false;
   };
 
+  void shade(double pct);
+  void moregray(double pct);
+
   double red() const {return(m_color_vector[0]);};
   double grn() const {return(m_color_vector[1]);};
   double blu() const {return(m_color_vector[2]);};
@@ -62,5 +65,6 @@ protected:
   std::string         m_color_string;
 };
 #endif
+
 
 

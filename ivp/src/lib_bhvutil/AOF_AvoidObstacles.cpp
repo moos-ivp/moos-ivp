@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: AOF_AvoidObstacles.cpp                               */
 /*    DATE: Aug 2nd, 2006                                        */
 /*                                                               */
@@ -418,6 +418,7 @@ double AOF_AvoidObstacles::evalBox(const IvPBox *b) const
 
   return(utility);
 }
+
 
 
 

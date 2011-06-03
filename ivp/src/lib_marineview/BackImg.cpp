@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: BackImg.cpp                                          */
 /*    DATE: Nov 16th 2004                                        */
 /*                                                               */
@@ -471,3 +471,4 @@ void BackImg::print()
   cout << "pix_per_mtr_y: " <<(m_img_pix_height / m_img_mtr_height) << endl;
 
 }
+

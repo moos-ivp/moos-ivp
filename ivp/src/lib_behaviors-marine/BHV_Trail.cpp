@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: BHV_Trail.cpp                                        */
 /*    DATE: Jul 3rd 2005 Sunday morning at Brueggers             */
 /*                                                               */
@@ -369,5 +369,6 @@ void BHV_Trail::postErasableTrailPoint()
   string spec = m_trail_point.get_spec();
   postMessage("VIEW_POINT", spec);
 }
+
 
 

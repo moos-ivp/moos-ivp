@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: XYFormatUtilsCircle.cpp                              */
 /*    DATE: Jun 21st, 2009                                       */
 /*                                                               */
@@ -84,3 +84,4 @@ XYCircle string2Circle(string str)
   else
     return(null_circle);
 }
+

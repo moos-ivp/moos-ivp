@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and Henrik Schmidt                  */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: BHV_AbortToPoint.h                                   */
 /*    DATE: August 6th 2008                                      */
 /*                                                               */
@@ -63,6 +63,7 @@ protected: // intermediate or object global variables.
   
 };
 #endif
+
 
 
 

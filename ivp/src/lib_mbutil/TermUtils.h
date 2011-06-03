@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: TermUtils.h                                          */
 /*    DATE: March 25th 2005                                      */
 /*                                                               */
@@ -26,6 +26,7 @@
 char getCharNoWait();
 
 #endif
+
 
 
 

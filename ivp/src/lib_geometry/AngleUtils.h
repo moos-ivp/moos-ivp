@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: AngleUtils.h                                         */
 /*    DATE: Nov 26, 2000                                         */
 /*                                                               */
@@ -40,3 +40,4 @@ double  headingToRadians(double degrees);
 bool    containsAngle(double deg1, double deg2, double deg3);
 
 #endif
+

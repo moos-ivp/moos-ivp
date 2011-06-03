@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: BuildUtils.h                                         */
 /*    DATE: May 15th, 2003                                       */
 /*                                                               */
@@ -69,3 +69,4 @@ IvPBox  stringDiscreteToRegionBox(const std::string&, const IvPDomain&,
 				  const char gsep=',', const char lsep=':');
 
 #endif
+

@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: ColoredPoint.h                                       */
 /*    DATE: Nov 19th 2004 (In Bedford NH, Friday)                */
 /*                                                               */
@@ -46,5 +46,6 @@ class ColoredPoint
 typedef std::list<ColoredPoint> CPList;
 
 #endif 
+
 
 

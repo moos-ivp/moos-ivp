@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: ProcessWatch.cpp                                     */
 /*    DATE: May 27th 2007 (MINUS-07)                             */
 /*                                                               */
@@ -66,9 +66,9 @@ bool ProcessWatch::Iterate()
 {
   m_awol_procs = "All Present";
   
-  int vsize = m_watchlist.size();
+  unsigned int i, vsize = m_watchlist.size();
     
-  for(int i=0; i<vsize; i++) {
+  for(i=0; i<vsize; i++) {
     bool alive = isAlive(m_watchlist[i], m_prefix_match[i]);
     
     if(!alive) {
@@ -134,11 +134,11 @@ bool ProcessWatch::OnStartUp()
 bool ProcessWatch::isAlive(string g_procname, bool g_prefix_match)
 {
   vector<string> svector = parseString(m_db_clients, ',');
-  int vsize = svector.size();
+  unsigned int i, vsize = svector.size();
 
   g_procname = stripBlankEnds(g_procname);
 
-  for(int i=0; i<vsize; i++) {
+  for(i=0; i<vsize; i++) {
     string i_procname = stripBlankEnds(svector[i]);
     if(g_procname == i_procname)
       return(true);
@@ -165,8 +165,8 @@ void ProcessWatch::addToWatchList(string g_procname)
   }
   
   // Check to see if the process name is already present
-  int vsize = m_watchlist.size();
-  for(int i=0; i<vsize; i++)
+  unsigned int i, vsize = m_watchlist.size();
+  for(i=0; i<vsize; i++)
     if(m_watchlist[i] == proc)
       return;
 
@@ -175,3 +175,4 @@ void ProcessWatch::addToWatchList(string g_procname)
   m_prefix_match.push_back(prefix);
   m_isalive.push_back(false);
 }
+

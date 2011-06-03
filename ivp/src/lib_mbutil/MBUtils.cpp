@@ -963,6 +963,26 @@ double vclip(const double& var, const double& low, const double& high)
   return(var);
 }
 
+//----------------------------------------------------------------
+// Procedure: vclip_min
+
+double vclip_min(const double& var, const double& low)
+{
+  if(var < low)
+    return(low);
+  return(var);
+}
+
+//----------------------------------------------------------------
+// Procedure: vclip_max
+
+double vclip_max(const double& var, const double& high)
+{
+  if(var > high)
+    return(high);
+  return(var);
+}
+
 
 //----------------------------------------------------------------
 // Procedure: tokParse

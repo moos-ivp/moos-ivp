@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: VState.cpp                                           */
 /*    DATE: Oct 25th 2004                                        */
 /*                                                               */
@@ -122,5 +122,6 @@ double VState::lastUpdate() const
     last_update = m_yaw_ts;
   return(last_update);
 }
+
 
 

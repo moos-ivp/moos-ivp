@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: AngleUtils.cpp                                       */
 /*    DATE: Nov 26, 2000                                         */
 /*                                                               */
@@ -241,6 +241,7 @@ bool containsAngle(double aval, double bval, double qval)
   else
     return((qval >= aval) && (qval <= bval));
 }
+
 
 
 

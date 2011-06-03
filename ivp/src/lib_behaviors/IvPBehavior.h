@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: IvPBehavior.h                                        */
 /*    DATE: Oct 20, 2003 4 days after Grady's Gaffe              */
 /*                                                               */
@@ -177,3 +177,4 @@ private:
 };
 
 #endif
+

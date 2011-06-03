@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: GeomUtils.cpp                                        */
 /*    DATE: May 8, 2005 Sunday Morning at Bruegger's             */
 /*                                                               */
@@ -646,6 +646,7 @@ void addVectors(double deg1, double mag1, double deg2,
   rdeg = relAng(x0, y0, x2, y2);
   rmag = distPointToPoint(x0, y0, x2, y2);
 }
+
 
 
 

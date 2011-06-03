@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: Shape_Triangle.h                                     */
 /*    DATE: September 21st 2007                                  */
 /*                                                               */
@@ -32,5 +32,6 @@ double       g_triangleCtrX   =  0.0;
 double       g_triangleCtrY   =  8.0;
 double       g_triangleWidth  = 16.0;
 unsigned int g_triangleBodySize = 4;
+
 
 

@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: XYArc.h                                              */
 /*    DATE: Dec 27th 2006                                        */
 /*                                                               */
@@ -87,6 +87,7 @@ private:
   double m_yhigh;  // The highest y position of the arc  
 };
 #endif
+
 
 
 

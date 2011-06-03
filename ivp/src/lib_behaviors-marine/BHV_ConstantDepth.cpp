@@ -48,12 +48,9 @@ BHV_ConstantDepth::BHV_ConstantDepth(IvPDomain gdomain) :
   m_desired_depth = 0;
 
   // Default values changed by HS 110530
-  m_peakwidth     = 1;
+  m_peakwidth     = 3;
   m_basewidth     = 100;
-  m_summitdelta   = 99;
-  //  m_peakwidth     = 0;
-  //  m_basewidth     = 2;
-  //  m_summitdelta   = 0.1;
+  m_summitdelta   = 50;
 
   // The default duration at the IvPBehavior level is "-1", which
   // indicates no duration applied to the behavior by default. By
@@ -70,36 +67,25 @@ bool BHV_ConstantDepth::setParam(string param, string val)
   if(IvPBehavior::setParam(param, val))
     return(true);
 
-  if(param == "depth") {
-    double dval = atof(val.c_str());
-    if((dval < 0) || (!isNumber(val)))
-      return(false);
-    m_desired_depth = dval;
+  double dval = atof(val.c_str());
+
+  if((param == "depth") && isNumber(val)) {
+    m_desired_depth = vclip_min(dval, 0);
     return(true);
   }
 
-  else if(param == "peakwidth") {
-    double dval = atof(val.c_str());
-    if((dval < 0) || (!isNumber(val)))
-      return(false);
-    m_peakwidth = dval;
+  else if((param == "peakwidth") && isNumber(val)) {
+    m_peakwidth = vclip_min(dval, 0);
     return(true);
   }
   
-  else if(param == "summitdelta") {
-    double dval = atof(val.c_str());
-    // changed to % by HS 110530
-    if((dval < 0) || (dval > 100.0) || (!isNumber(val)))
-      return(false);
-    m_summitdelta = dval;
+  else if((param == "summitdelta") && isNumber(val)) {
+    m_summitdelta = vclip(dval, 0, 100);
     return(true);
   }
   
-  else if(param == "basewidth") {
-    double dval = atof(val.c_str());
-    if((dval < 0) || (!isNumber(val)))
-      return(false);
-    m_basewidth = dval;
+  else if((param == "basewidth") && isNumber(val)) {
+    m_basewidth = vclip_min(dval, 0);
     return(true);
   }
 

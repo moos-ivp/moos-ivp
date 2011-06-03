@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: MBTimer.h                                            */
 /*    DATE: Too long ago to remember (1996-1999)                 */
 /*                                                               */
@@ -86,6 +86,7 @@ private:
 };
 
 #endif
+
 
 
 

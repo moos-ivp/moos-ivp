@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: XYPolygon.cpp                                        */
 /*    DATE: Apr 20th, 2005                                       */
 /*                                                               */
@@ -813,3 +813,4 @@ XYSegList XYPolygon::exportSegList(double x, double y)
 
   return(new_segl);
 }
+

@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Andrew Shafer and Michael Benjamin                   */
-/*    ORGN: MIT Cambridge MA                                     */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: XYArtifactGrid.cpp                                   */
 /*    DATE: 3 JUL 2007                                           */
 /*                                                               */
@@ -370,5 +370,6 @@ void XYArtifactGrid::clear()
   XYPolygon poly;
   bounding_poly = poly;
 }
+
 
 

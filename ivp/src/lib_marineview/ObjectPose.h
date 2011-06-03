@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: ObjectPose.h                                         */
 /*    DATE: Nov 17th 2004                                        */
 /*                                                               */
@@ -97,6 +97,7 @@ class ObjectPose
 };
 
 #endif
+
 
 
 

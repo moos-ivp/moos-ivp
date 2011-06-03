@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: BHV_AvoidCollision.cpp                               */
 /*    DATE: Nov 18th 2006                                        */
 /*                                                               */
@@ -422,5 +422,6 @@ void BHV_AvoidCollision::postRange(bool ok)
       postIntMessage(("RANGE_AVD_"+m_contact), m_contact_range);
   }
 }
+
 
 

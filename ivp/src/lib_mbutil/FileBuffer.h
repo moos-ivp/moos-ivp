@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: FileBuffer.h                                         */
 /*    DATE: (1996-2005)                                          */
 /*                                                               */
@@ -32,5 +32,6 @@ std::vector<std::string> fileBufferSlash(const std::string&, int amt=0);
 
 
 #endif
+
 
 

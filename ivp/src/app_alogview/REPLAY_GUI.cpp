@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: REPLAY_GUI.cpp                                       */
 /*    DATE: May 31st, 2005                                       */
 /*                                                               */
@@ -38,8 +38,10 @@ REPLAY_GUI::REPLAY_GUI(int g_w, int g_h, const char *g_l)
   m_stream       = false;
   m_collect      = "Off";
   m_step_amt     = 1;
+
   m_step_time    = 1.0;
   m_step_time_ix = 3;
+
   m_save_file_ix   = 0;
   m_num_ipfplots = 0;
 
@@ -50,32 +52,33 @@ REPLAY_GUI::REPLAY_GUI(int g_w, int g_h, const char *g_l)
   augmentMenu();
 
   int info_size = 10;
-
-  // Initialize viewer window with bogus extents. Actual extents
+  // Init window with bogus extents. Actual extents
   // are set in the setWindowLayout() call below.
   np_viewer    = new NavPlotViewer(1, 1, 1, 1);
   lp_viewer    = new LogPlotViewer(1, 1, 1, 1);
   ipf_viewer_a = new IvPFuncViewer(1, 1, 1, 1);
   ipf_viewer_b = new IvPFuncViewer(1, 1, 1, 1);
 
-  ipf_viewer_a->setCollectiveByDefault(true);
+  ipf_viewer_a->m_tag="A";
+  ipf_viewer_b->m_tag="B";
 
-  ipf_vname_a = 0;
-  ipf_vname_b = 0;
   ipf_pcs_a = 0;
   ipf_pcs_b = 0;
   ipf_pwt_a = 0;
   ipf_pwt_b = 0;
   ipf_iter_a = 0;
   ipf_iter_b = 0;
-  ipf_source_a = 0;
-  ipf_source_b = 0;
   ipf_domain_a = 0;
   ipf_domain_b = 0;
   m_but_ipf_set_a = 0;
   m_but_ipf_set_b = 0;
   m_but_ipf_pin_a = 0;
   m_but_ipf_pin_b = 0;
+
+  m_but_ipf_vname_a = 0;
+  m_but_ipf_vname_b = 0;
+  m_but_ipf_source_a = 0;
+  m_but_ipf_source_b = 0;
 
   setWindowLayout("normal");
 
@@ -311,7 +314,7 @@ void REPLAY_GUI::setWindowLayout(string layout)
 
   double ipf_pct = 0.3;
   if(layout == "normal") {
-    ipf_pct = 0.3;
+    ipf_pct = 0.295;
     m_np_viewer_hgt = h()-340;
   }
   else if(layout == "noipfs") {
@@ -365,97 +368,102 @@ void REPLAY_GUI::setWindowLayout(string layout)
 
   int info_size = 10;
 
-  if(!ipf_vname_a) {
-    ipf_vname_a = new MY_Output(ipax+40, ipay+5, 75, 20, "Plat:"); 
-    ipf_vname_a->textsize(info_size); 
-    ipf_vname_a->labelsize(info_size);
+  Fl_Color fcolor1 = fl_rgb_color(200, 90, 90);
+  if(!m_but_ipf_vname_a) {
+    m_but_ipf_vname_a = new MY_Menu_Button(ipax+10, ipay+5, 150, 20, "Vehicle");
+    m_but_ipf_vname_a->labelsize(12);
+    m_but_ipf_vname_a->callback((Fl_Callback*)REPLAY_GUI::cb_TopSelectVName,(void*)-1);
   }
-  if(!ipf_vname_b) {
-    ipf_vname_b = new MY_Output(ipbx+40, ipby+8, 75, 20, "Plat:"); 
-    ipf_vname_b->textsize(info_size); 
-    ipf_vname_b->labelsize(info_size);
+  if(!m_but_ipf_source_a) {
+    m_but_ipf_source_a = new MY_Menu_Button(ipax+10, ipay+30, 150, 20, "Behavior");
+    m_but_ipf_source_a->labelsize(12);
+    m_but_ipf_source_a->callback((Fl_Callback*)REPLAY_GUI::cb_TopSelectSource,(void*)-1);
   }
 
-  Fl_Color fcolor1 = fl_rgb_color(200, 90, 90);
   if(!ipf_iter_a) {
-    ipf_iter_a = new MY_Output(ipax+145, ipay+5, 50, 20, "Iter:"); 
+    ipf_iter_a = new MY_Output(ipax+195, ipay+5, 50, 20, "Iter:"); 
     ipf_iter_a->textsize(info_size); 
     ipf_iter_a->color(fcolor1); 
     ipf_iter_a->labelsize(info_size);
   }
+
+  if(!ipf_pcs_a) {
+    ipf_pcs_a = new MY_Output(ipax+275, ipay+5, 45, 20, "Pcs:"); 
+    ipf_pcs_a->textsize(info_size); 
+    ipf_pcs_a->labelsize(info_size);
+  }
+
+  if(!ipf_pwt_a) {
+    ipf_pwt_a = new MY_Output(ipax+353, ipay+5, 50, 20, "Pwt:"); 
+    ipf_pwt_a->textsize(info_size); 
+    ipf_pwt_a->labelsize(info_size);
+  }
+
+  if(!m_but_ipf_set_a) {
+    m_but_ipf_set_a = new MY_Button(ipax+330, ipay+30, 33, 20, "set");
+    m_but_ipf_set_a->labelsize(12);
+    m_but_ipf_set_a->callback((Fl_Callback*)REPLAY_GUI::cb_ToggleSet,(void*)1);
+  }
+  
+
+  if(!m_but_ipf_pin_a) {
+    m_but_ipf_pin_a = new MY_Button(ipax+370, ipay+30, 33, 20, "pin");
+    m_but_ipf_pin_a->labelsize(12);
+    m_but_ipf_pin_a->callback((Fl_Callback*)REPLAY_GUI::cb_TogglePin,(void*)1);
+  }
+
+  if(!ipf_domain_a) {
+    ipf_domain_a = new MY_Output(ipax+195, ipay+30, 125, 20, "Dom:"); 
+    ipf_domain_a->textsize(info_size); 
+    ipf_domain_a->labelsize(info_size);
+  }
+
+  //----------------------------------------------------------------------------
+  if(!m_but_ipf_vname_b) {
+    m_but_ipf_vname_b = new MY_Menu_Button(ipbx+10, ipby+8, 150, 20, "Vehicle");
+    m_but_ipf_vname_b->labelsize(12);
+    m_but_ipf_vname_b->callback((Fl_Callback*)REPLAY_GUI::cb_BotSelectVName,(void*)-1);
+  }
+  if(!m_but_ipf_source_b) {
+    m_but_ipf_source_b = new MY_Menu_Button(ipbx+10, ipby+33, 150, 20, "Behavior");
+    m_but_ipf_source_b->labelsize(12);
+    m_but_ipf_source_b->callback((Fl_Callback*)REPLAY_GUI::cb_BotSelectSource,(void*)-1);
+  }
+
   if(!ipf_iter_b) {
-    ipf_iter_b = new MY_Output(ipbx+145, ipby+8, 50, 20, "Iter:"); 
+    ipf_iter_b = new MY_Output(ipbx+195, ipby+8, 50, 20, "Iter:"); 
     ipf_iter_b->textsize(info_size); 
     ipf_iter_b->color(fcolor1); 
     ipf_iter_b->labelsize(info_size);
   }
 
-  if(!ipf_pcs_a) {
-    ipf_pcs_a = new MY_Output(ipax+230, ipay+5, 35, 20, "Pcs:"); 
-    ipf_pcs_a->textsize(info_size); 
-    ipf_pcs_a->labelsize(info_size);
-  }
-
   if(!ipf_pcs_b) {
-    ipf_pcs_b = new MY_Output(ipbx+230, ipby+8, 35, 20, "Pcs:"); 
+    ipf_pcs_b = new MY_Output(ipbx+275, ipby+8, 45, 20, "Pcs:"); 
     ipf_pcs_b->textsize(info_size); 
     ipf_pcs_b->labelsize(info_size);
   }
 
-  if(!ipf_pwt_a) {
-    ipf_pwt_a = new MY_Output(ipax+295, ipay+5, 35, 20, "Pwt:"); 
-    ipf_pwt_a->textsize(info_size); 
-    ipf_pwt_a->labelsize(info_size);
-  }
-
   if(!ipf_pwt_b) {
-    ipf_pwt_b = new MY_Output(ipbx+295, ipby+8, 35, 20, "Pwt:"); 
+    ipf_pwt_b = new MY_Output(ipbx+353, ipby+8, 50, 20, "Pwt:"); 
     ipf_pwt_b->textsize(info_size); 
     ipf_pwt_b->labelsize(info_size);
   }
 
-  if(!m_but_ipf_set_a) {
-    m_but_ipf_set_a = new MY_Button(ipbx+340, ipay+5, 34, 20, "set");
-    m_but_ipf_set_a->labelsize(12);
-    m_but_ipf_set_a->callback((Fl_Callback*)REPLAY_GUI::cb_ToggleSet,(void*)1);
-  }
-
   if(!m_but_ipf_set_b) {
-    m_but_ipf_set_b = new MY_Button(ipbx+340, ipby+8, 34, 20, "set");
+    m_but_ipf_set_b = new MY_Button(ipbx+330, ipby+33, 33, 20, "set");
     m_but_ipf_set_b->labelsize(12);
     m_but_ipf_set_b->callback((Fl_Callback*)REPLAY_GUI::cb_ToggleSet,(void*)2);
   }
   
-  if(!m_but_ipf_pin_a) {
-    m_but_ipf_pin_a = new MY_Button(ipbx+380, ipay+5, 34, 20, "pin");
-    m_but_ipf_pin_a->labelsize(12);
-    m_but_ipf_pin_a->callback((Fl_Callback*)REPLAY_GUI::cb_TogglePin,(void*)1);
-  }
 
   if(!m_but_ipf_pin_b) {
-    m_but_ipf_pin_b = new MY_Button(ipbx+380, ipby+8, 34, 20, "pin");
+    m_but_ipf_pin_b = new MY_Button(ipbx+370, ipby+33, 33, 20, "pin");
     m_but_ipf_pin_b->labelsize(12);
     m_but_ipf_pin_b->callback((Fl_Callback*)REPLAY_GUI::cb_TogglePin,(void*)2);
   }
 
-  if(!ipf_source_a) {
-    ipf_source_a = new MY_Output(ipax+40, ipay+30, 225, 20, "BHV:"); 
-    ipf_source_a->textsize(info_size); 
-    ipf_source_a->labelsize(info_size);
-  }
-  if(!ipf_source_b) {
-    ipf_source_b = new MY_Output(ipbx+40, ipby+33, 225, 20, "BHV:"); 
-    ipf_source_b->textsize(info_size); 
-    ipf_source_b->labelsize(info_size);
-  }
-
-  if(!ipf_domain_a) {
-    ipf_domain_a = new MY_Output(ipax+295, ipay+30, 120, 20, "Dom:"); 
-    ipf_domain_a->textsize(info_size); 
-    ipf_domain_a->labelsize(info_size);
-  }
   if(!ipf_domain_b) {
-    ipf_domain_b = new MY_Output(ipbx+295, ipby+33, 120, 20, "Dom:"); 
+    ipf_domain_b = new MY_Output(ipbx+195, ipby+33, 125, 20, "Dom:"); 
     ipf_domain_b->textsize(info_size); 
     ipf_domain_b->labelsize(info_size);
   }
@@ -493,7 +501,7 @@ void REPLAY_GUI::augmentMenu()
 //     Notes: We want the various "Output" widgets to ignore keyboard
 //            events (as they should, right?!), so we wrote a MY_Output
 //            subclass to do just that. However the keyboard arrow keys
-//            still seem to be grabbed by Fl_Window to change focuse
+//            still seem to be grabbed by Fl_Window to change focus
 //            between sub-widgets. We over-ride that here to do the 
 //            panning on the image by invoking the pan callbacks. By
 //            then returning (1), we've indicated that the event has
@@ -510,13 +518,13 @@ int REPLAY_GUI::handle(int event)
     if(ipf_viewer_a) {
       map<string, unsigned int> viter_map = np_viewer->getVIterMap();
       ipf_viewer_a->setVIterMap(viter_map);
-      ipf_viewer_a->setCurrTime(lpv_curr_time);
+      ipf_viewer_a->resetPlotIndex();
       ipf_viewer_a->redraw();
     }
     if(ipf_viewer_b) {
       map<string, unsigned int> viter_map = np_viewer->getVIterMap();
       ipf_viewer_b->setVIterMap(viter_map);
-      ipf_viewer_b->setCurrTime(lpv_curr_time);
+      ipf_viewer_b->resetPlotIndex();
       ipf_viewer_b->redraw();
     }
     return(1);
@@ -543,16 +551,38 @@ void REPLAY_GUI::setCurrTime(double curr_time)
   if(ipf_viewer_a) {
     map<string, unsigned int> viter_map = np_viewer->getVIterMap();
     ipf_viewer_a->setVIterMap(viter_map);
-    ipf_viewer_a->setCurrTime(curr_time);
+    ipf_viewer_a->resetPlotIndex();
     ipf_viewer_a->redraw();
   }
   if(ipf_viewer_b) {
     map<string, unsigned int> viter_map = np_viewer->getVIterMap();
     ipf_viewer_b->setVIterMap(viter_map);
-    ipf_viewer_b->setCurrTime(curr_time);
+    ipf_viewer_b->resetPlotIndex();
     ipf_viewer_b->redraw();
   }
   updateXY();
+}
+
+
+//----------------------------------------------------------
+// Procedure: initChoicesIPF
+
+void REPLAY_GUI::initChoicesIPF()
+{
+  if(!ipf_viewer_a || !ipf_viewer_b || !np_viewer)
+    return;
+
+  if((m_vnames.size() == 0) || (m_sources.size() == 0))
+     return;
+
+  map<string, unsigned int> viter_map = np_viewer->getVIterMap();
+  ipf_viewer_a->setVIterMap(viter_map);
+  ipf_viewer_b->setVIterMap(viter_map);
+
+  cb_TopSelectVName_i(0);
+  cb_BotSelectVName_i(0);
+  cb_TopSelectSource_i(900);
+  cb_BotSelectSource_i(0);
 }
 
 //----------------------------------------- HandleUpDown
@@ -744,12 +774,12 @@ inline bool REPLAY_GUI::cb_Step_i(int val) {
   map<string, unsigned int> viter_map = np_viewer->getVIterMap();
   if(ipf_viewer_a) {
     ipf_viewer_a->setVIterMap(viter_map);
-    ipf_viewer_a->setCurrTime(curr_time);
+    ipf_viewer_a->resetPlotIndex();
     ipf_viewer_a->redraw();
   }
   if(ipf_viewer_b) {
     ipf_viewer_b->setVIterMap(viter_map);
-    ipf_viewer_b->setCurrTime(curr_time);
+    ipf_viewer_b->resetPlotIndex();
     ipf_viewer_b->redraw();
   }
 
@@ -796,60 +826,90 @@ void REPLAY_GUI::cb_RightLogPlot(Fl_Widget* o, int v) {
   ((REPLAY_GUI*)(o->parent()->user_data()))->cb_RightLogPlot_i(val);
 }
 
-//----------------------------------------- TopPlotIPF
-inline void REPLAY_GUI::cb_TopPlotIPF_i(int index) {
+//----------------------------------------- TopSelectVName
+inline void REPLAY_GUI::cb_TopSelectVName_i(int index) {
+  if((index < 0) || ((unsigned int)(index) >= m_vnames.size()))
+    return;
+  m_vname_a = m_vnames[index];
+  setVNameMenuButtonA(m_vname_a);
+
+  if(ipf_viewer_a)
+    ipf_viewer_a->setPlotIndex(m_vname_a, "reset");
+  updateXY();
+}
+void REPLAY_GUI::cb_TopSelectVName(Fl_Widget* o, int v) {
+  int val = (int)(v);
+  ((REPLAY_GUI*)(o->parent()->user_data()))->cb_TopSelectVName_i(val);
+}
+
+//----------------------------------------- TopSelectSource
+inline void REPLAY_GUI::cb_TopSelectSource_i(int index) {
   if(!ipf_viewer_a)
-    return;
-  
-  ipf_viewer_a->setPlotIndex(index);  
-  ipf_viewer_a->redraw();
+      return;
+  if(index == 900) {
+    ipf_viewer_a->setPlotIndex(m_vname_a, "collective-hdgspd");
+    m_but_ipf_source_a->label("collective");
+  }
+  else if(index == 901) {
+    ipf_viewer_a->setPlotIndex(m_vname_a, "collective-depth");
+    m_but_ipf_source_a->label("collective (dep)");
+  }
+
+  if((index >= 0) && ((unsigned int)(index) < m_sources.size())) {
+    m_source_a = m_sources[index];
+    m_but_ipf_source_a->label(m_source_a.c_str());
+    ipf_viewer_a->setPlotIndex(m_vname_a, m_source_a);
+  }
+
   updateXY();
+
 }
-void REPLAY_GUI::cb_TopPlotIPF(Fl_Widget* o, int v) {
+void REPLAY_GUI::cb_TopSelectSource(Fl_Widget* o, int v) {
   int val = (int)(v);
-  ((REPLAY_GUI*)(o->parent()->user_data()))->cb_TopPlotIPF_i(val);
+  ((REPLAY_GUI*)(o->parent()->user_data()))->cb_TopSelectSource_i(val);
 }
 
-//----------------------------------------- BotPlotIPF
-inline void REPLAY_GUI::cb_BotPlotIPF_i(int index) {
+//----------------------------------------- BotSelectVName
+inline void REPLAY_GUI::cb_BotSelectVName_i(int index) {
+  if((index < 0) || ((unsigned int)(index) >= m_vnames.size()))
+    return;
+  m_vname_b = m_vnames[index];
+  setVNameMenuButtonB(m_vname_b);
+
+  if(ipf_viewer_b) 
+    ipf_viewer_b->setPlotIndex(m_vname_b, "reset");
+
+  updateXY();
+}
+void REPLAY_GUI::cb_BotSelectVName(Fl_Widget* o, int v) {
+  int val = (int)(v);
+  ((REPLAY_GUI*)(o->parent()->user_data()))->cb_BotSelectVName_i(val);
+}
+
+//----------------------------------------- BotSelectSource
+inline void REPLAY_GUI::cb_BotSelectSource_i(int index) {
   if(!ipf_viewer_b)
-    return;
+      return;
 
-  ipf_viewer_b->setPlotIndex(index);
-  ipf_viewer_b->redraw();
+  if(index == 900) {
+    ipf_viewer_b->setPlotIndex(m_vname_b, "collective-hdgspd");
+    m_but_ipf_source_b->label("collective");
+  }
+  else if(index == 901) {
+    ipf_viewer_b->setPlotIndex(m_vname_b, "collective-depth");
+    m_but_ipf_source_b->label("collective (dep)");
+  }
+
+  if((index >= 0) && ((unsigned int)(index) < m_sources.size())) {
+    m_source_b = m_sources[index];
+    m_but_ipf_source_b->label(m_source_b.c_str());
+    ipf_viewer_b->setPlotIndex(m_vname_b, m_source_b);
+  }
   updateXY();
 }
-void REPLAY_GUI::cb_BotPlotIPF(Fl_Widget* o, int v) {
+void REPLAY_GUI::cb_BotSelectSource(Fl_Widget* o, int v) {
   int val = (int)(v);
-  ((REPLAY_GUI*)(o->parent()->user_data()))->cb_BotPlotIPF_i(val);
-}
-
-//----------------------------------------- TopPlotColl
-inline void REPLAY_GUI::cb_TopPlotColl_i(int index) {
-  if(!ipf_viewer_a)
-    return;
-  
-  ipf_viewer_a->setCollectiveIndex(index);  
-  ipf_viewer_a->redraw();
-  updateXY();
-}
-void REPLAY_GUI::cb_TopPlotColl(Fl_Widget* o, int v) {
-  int val = (int)(v);
-  ((REPLAY_GUI*)(o->parent()->user_data()))->cb_TopPlotColl_i(val);
-}
-
-//----------------------------------------- BotPlotColl
-inline void REPLAY_GUI::cb_BotPlotColl_i(int index) {
-  if(!ipf_viewer_b)
-    return;
-
-  ipf_viewer_b->setCollectiveIndex(index);
-  ipf_viewer_b->redraw();
-  updateXY();
-}
-void REPLAY_GUI::cb_BotPlotColl(Fl_Widget* o, int v) {
-  int val = (int)(v);
-  ((REPLAY_GUI*)(o->parent()->user_data()))->cb_BotPlotColl_i(val);
+  ((REPLAY_GUI*)(o->parent()->user_data()))->cb_BotSelectSource_i(val);
 }
 
 //----------------------------------------- LeftHelmPlot
@@ -952,7 +1012,20 @@ void REPLAY_GUI::cb_TogglePin(Fl_Widget* o, int v) {
   ((REPLAY_GUI*)(o->parent()->user_data()))->cb_TogglePin_i(v);
 }
 
+//----------------------------------------- ToggleCollective
+inline void REPLAY_GUI::cb_ToggleCollective_i(int val) {
+  if(val == 1)
+    ipf_viewer_a->setParam("collective", "toggle");
+  if(val == 2)
+    ipf_viewer_b->setParam("collective", "toggle");
+}
+
+void REPLAY_GUI::cb_ToggleCollective(Fl_Widget* o, int v) {
+  ((REPLAY_GUI*)(o->parent()->user_data()))->cb_ToggleCollective_i(v);
+}
+
 //----------------------------------------- StreamStep
+
 inline void REPLAY_GUI::cb_StreamStep_i(int val) {
   m_step_amt = val;
 }
@@ -983,15 +1056,15 @@ inline void REPLAY_GUI::cb_StreamSpeed_i(bool faster) {
   else if(m_step_time_ix == 3)
     m_step_time = 1.0;
   else if(m_step_time_ix == 4)
-    m_step_time = 1/2;
+    m_step_time = 0.5;
   else if(m_step_time_ix == 5)
-    m_step_time = 1/4;
+    m_step_time = 0.25;
   else if(m_step_time_ix == 6)
-    m_step_time = 1/8;
+    m_step_time = 0.125;
   else if(m_step_time_ix == 7)
-    m_step_time = 1/16;
+    m_step_time = 0.0625;
   else if(m_step_time_ix == 8)
-    m_step_time = 1/32;
+    m_step_time = 0.03125;
 
   updateXY();
 }
@@ -1085,30 +1158,22 @@ void REPLAY_GUI::updateXY()
 
 
   // IPF fields (A)
-  string ipf_vname_a_str = ipf_viewer_a->getCurrVName();
-  ipf_vname_a->value(ipf_vname_a_str.c_str());
   string ipf_iter_a_str = ipf_viewer_a->getCurrIteration();
   ipf_iter_a->value(ipf_iter_a_str.c_str());
   string ipf_pcs_a_str = ipf_viewer_a->getCurrPieces();
   ipf_pcs_a->value(ipf_pcs_a_str.c_str());
   string ipf_pwt_a_str = ipf_viewer_a->getCurrPriority();
   ipf_pwt_a->value(ipf_pwt_a_str.c_str());
-  string ipf_source_a_str = ipf_viewer_a->getCurrSource();
-  ipf_source_a->value(ipf_source_a_str.c_str());
   string ipf_domain_a_str = ipf_viewer_a->getCurrDomain();
   ipf_domain_a->value(ipf_domain_a_str.c_str());
 
   // IPF fields (B)
-  string ipf_vname_b_str = ipf_viewer_b->getCurrVName();
-  ipf_vname_b->value(ipf_vname_b_str.c_str());
   string ipf_iter_b_str = ipf_viewer_b->getCurrIteration();
   ipf_iter_b->value(ipf_iter_b_str.c_str());
   string ipf_pcs_b_str = ipf_viewer_b->getCurrPieces();
   ipf_pcs_b->value(ipf_pcs_b_str.c_str());
   string ipf_pwt_b_str = ipf_viewer_b->getCurrPriority();
   ipf_pwt_b->value(ipf_pwt_b_str.c_str());
-  string ipf_source_b_str = ipf_viewer_b->getCurrSource();
-  ipf_source_b->value(ipf_source_b_str.c_str());
   string ipf_domain_b_str = ipf_viewer_b->getCurrDomain();
   ipf_domain_b->value(ipf_domain_b_str.c_str());
 
@@ -1225,57 +1290,165 @@ void REPLAY_GUI::addHelmPlot(const HelmPlot& helm_plot)
 void REPLAY_GUI::addIPF_Plot(const IPF_Plot& ipf_plot)
 {
   string vname  = ipf_plot.getVName();
-  string source = toupper(ipf_plot.getSource());
-  string tag    = toupper(vname) + " : " + source;
+  string source = tolower(ipf_plot.getSource());
+  string tag    = tolower(vname) + " : " + source;
+
+  if(!vectorContains(m_vnames, vname))
+    m_vnames.push_back(vname);
+  if(!vectorContains(m_sources, source))
+    m_sources.push_back(source);
+
+  m_catalog[vname].insert(source);
+
 
   if(ipf_viewer_a) {
-    bool active = (m_num_ipfplots == 0);
-    int  vname_ix = ipf_viewer_a->getVNameIndex(vname);
-    unsigned int count = ipf_viewer_a->addIPF_Plot(ipf_plot, active);
-    if(vname_ix == -1) {
-      vname_ix = ipf_viewer_a->getVNameIndex(vname);
-      string label = "IPFPlots(Top)/" + toupper(vname) + " : *COLLECTIVE*";
-      mbar->add(label.c_str(), 0, (Fl_Callback*)REPLAY_GUI::cb_TopPlotColl,
-		(void*)vname_ix);
-#if 0
-      const Fl_Menu_Item *items = mbar->menu();
-      Fl_Menu_Item item;
-      item.label(label.c_str());
-      item.callback((Fl_Callback*)REPLAY_GUI::cb_TopPlotColl);
-      item.user_data((void*)vname_ix);
-      item.labelcolor(FL_RED);
-      mbar->add(item);
-#endif
+    ipf_viewer_a->addIPF_Plot(ipf_plot);
 
-      ipf_viewer_a->setCurrTime(0);
+    if((m_vname_a == "") && (m_source_a == "")) {
+      m_vname_a = vname;
+      m_source_a = source;
     }
-    if(count > 0) {
-      string label = "IPFPlots(Top)/" + tag;
-      mbar->add(label.c_str(), 0, 
-		(Fl_Callback*)REPLAY_GUI::cb_TopPlotIPF, (void*)(count-1));
-    }    
+    setVNameMenuButtonA(vname);
   }
   
   if(ipf_viewer_b) {
-    bool active = (m_num_ipfplots == 1);
-    int  vname_ix = ipf_viewer_b->getVNameIndex(vname);
-    unsigned int count = ipf_viewer_b->addIPF_Plot(ipf_plot, active);
-    if(vname_ix == -1) {
-      vname_ix = ipf_viewer_b->getVNameIndex(vname);
-      string label = "IPFPlots(Bot)/" + toupper(vname) + " : *COLLECTIVE*";
-      mbar->add(label.c_str(), 0, 
-		(Fl_Callback*)REPLAY_GUI::cb_BotPlotColl, (void*)vname_ix);
-      ipf_viewer_b->setCurrTime(0);
+    ipf_viewer_b->addIPF_Plot(ipf_plot);
+
+    if((m_vname_b == "") && (m_source_b == "")) {
+      m_vname_b = vname;
+      m_source_b = source;
     }
-    if(count > 0) {
-      string label = "IPFPlots(Bot)/" + tag;
-      mbar->add(label.c_str(), 0, 
-		(Fl_Callback*)REPLAY_GUI::cb_BotPlotIPF, (void*)(count-1));
-    }    
-  }
+    setVNameMenuButtonB(vname);
+ }
   
   if(ipf_viewer_a || ipf_viewer_b)
     m_num_ipfplots++;
+}
+
+//----------------------------------------------------------
+// Procedure: setVNameMenuButtonA
+
+void REPLAY_GUI::setVNameMenuButtonA(string vname) 
+{
+  m_vname_a = vname;
+  if(!vectorContains(m_vnames, vname))
+    return;
+
+  // First get the index in the list of known vehicle names. This index is 
+  // needed to configure the callback for the menu item.
+  unsigned int i, vindex, vsize = m_vnames.size();
+  for(i=0; i<vsize; i++)
+    if(m_vnames[i] == vname)
+      vindex = i;
+
+  m_but_ipf_vname_a->add(vname.c_str(), 0, 
+			 (Fl_Callback*)REPLAY_GUI::cb_TopSelectVName, (void*)vindex);
+  m_but_ipf_vname_a->label(vname.c_str());
+
+  updateSourceMenuButtonA();
+}
+
+//----------------------------------------------------------
+// Procedure: updateSourceMenuButtonA
+//   Purpose: Each time the vehicle is reset for the ipf viewer, the 
+//            list of available sources is recalculated and the source
+//            pull-down menu is reset with the new values.
+
+void REPLAY_GUI::updateSourceMenuButtonA() 
+{
+  m_but_ipf_source_a->clear();
+  m_but_ipf_source_a->label("<none>");
+
+  set<string> sources = m_catalog[m_vname_a];
+
+  if(sources.size() > 1) {
+    m_but_ipf_source_a->add("collective", 0, 
+			    (Fl_Callback*)REPLAY_GUI::cb_TopSelectSource, 
+			    (void*)900);
+    m_but_ipf_source_a->add("collective (dep)", 0, 
+			    (Fl_Callback*)REPLAY_GUI::cb_TopSelectSource, 
+			    (void*)901);
+  }
+
+  set<string>::const_iterator p;
+  for(p=sources.begin(); p!=sources.end(); p++) {
+    string source = *p;
+    if(p==sources.begin())
+      m_but_ipf_source_a->label(source.c_str());
+
+    // First get the index in the list of known sources. This index is 
+    // needed to configure the callback for the menu item.
+    unsigned int i, vindex, vsize = m_sources.size();
+    for(i=0; i<vsize; i++)
+      if(m_sources[i] == source)
+	vindex = i;
+    
+    m_but_ipf_source_a->add(source.c_str(), 0, 
+			    (Fl_Callback*)REPLAY_GUI::cb_TopSelectSource, (void*)vindex);
+  }
+}
+
+//----------------------------------------------------------
+// Procedure: setVNameMenuButtonB
+
+void REPLAY_GUI::setVNameMenuButtonB(string vname) 
+{
+  m_vname_b = vname;
+  if(!vectorContains(m_vnames, vname))
+    return;
+
+  // First get the index in the list of known vehicle names. This index is 
+  // needed to configure the callback for the menu item.
+  unsigned int i, vindex, vsize = m_vnames.size();
+  for(i=0; i<vsize; i++)
+    if(m_vnames[i] == vname)
+      vindex = i;
+
+  m_but_ipf_vname_b->add(vname.c_str(), 0, 
+			 (Fl_Callback*)REPLAY_GUI::cb_BotSelectVName, (void*)vindex);
+  m_but_ipf_vname_b->label(vname.c_str());
+
+  updateSourceMenuButtonB();
+}
+
+//----------------------------------------------------------
+// Procedure: updateSourceMenuButtonB
+//   Purpose: Each time the vehicle is reset for the ipf viewer, the 
+//            list of available sources is recalculated and the source
+//            pull-down menu is reset with the new values.
+
+void REPLAY_GUI::updateSourceMenuButtonB() 
+{
+  m_but_ipf_source_b->clear();
+  m_but_ipf_source_b->label("<none>");
+
+  set<string> sources = m_catalog[m_vname_b];
+
+  if(sources.size() > 1) {
+    m_but_ipf_source_b->add("collective", 0, 
+			    (Fl_Callback*)REPLAY_GUI::cb_BotSelectSource, 
+			    (void*)900);
+    m_but_ipf_source_b->add("collective (dep)", 0, 
+			    (Fl_Callback*)REPLAY_GUI::cb_BotSelectSource, 
+			    (void*)901);
+  }
+
+  set<string>::const_iterator p;
+  for(p=sources.begin(); p!=sources.end(); p++) {
+    string source = *p;
+    if(p==sources.begin())
+      m_but_ipf_source_b->label(source.c_str());
+
+    // First get the index in the list of known sources. This index is 
+    // needed to configure the callback for the menu item.
+    unsigned int i, vindex, vsize = m_sources.size();
+    for(i=0; i<vsize; i++)
+      if(m_sources[i] == source)
+	vindex = i;
+    
+    m_but_ipf_source_b->add(source.c_str(), 0, 
+			    (Fl_Callback*)REPLAY_GUI::cb_BotSelectSource, (void*)vindex);
+  }
 }
 
 //----------------------------------------------------------
@@ -1306,7 +1479,7 @@ void REPLAY_GUI::conditional_step()
 void REPLAY_GUI::capture_to_file() 
 {
   string command;
-  command += "import -quality 90 -window logview ";
+  command += "import -quality 90 -window alogview ";
   command += "-crop " + m_collect + "+10+40 save_file_";
   if(m_save_file_ix < 10)   command += "0";
   if(m_save_file_ix < 100)  command += "0";
@@ -1316,5 +1489,4 @@ void REPLAY_GUI::capture_to_file()
   cout << "command: " << command << endl;
   m_save_file_ix++;
 }
-
 

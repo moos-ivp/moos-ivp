@@ -1,8 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: USC_MOOSApp.h                                        */
-/*    DATE: Jan 4th, 2011                                        */
+/*    FILE: MY_Menu_Button.h                                     */
+/*    DATE: July 18th, 2009 (on the plane back from GLINT09)     */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
 /* modify it under the terms of the GNU General Public License   */
@@ -20,47 +20,36 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
-#ifndef USC_MOOSAPP_HEADER
-#define USC_MOOSAPP_HEADER
+#ifndef MY_FLTK_MENU_BUTTON_HEADER
+#define MY_FLTK_MENU_BUTTON_HEADER
 
-#include <string>
-#include "MOOSLib.h"
-#include "CurrentField.h"
+#include <iostream>
+#include <FL/Fl.H>
+#include <FL/Fl_Menu_Button.H>
 
 
-class USC_MOOSApp : public CMOOSApp  
-{
+class MY_Menu_Button : public Fl_Menu_Button {
 public:
-  USC_MOOSApp();
-  virtual ~USC_MOOSApp() {};
-
-  bool Iterate();
-  bool OnConnectToServer();
-  bool OnDisconnectFromServer();
-  bool OnStartUp();
-  bool OnNewMail(MOOSMSG_LIST &NewMail);
-
- protected:
-  bool setCurrentField(std::string);
-  void postCurrentField();
-  void registerVariables();
-
-
- protected: // Configuration variables
-  std::string  m_post_var;
-
- protected: // State variables
-  CurrentField m_current_field;
-  bool         m_pending_cfield;
-  bool         m_cfield_active;
-  double       m_posx;
-  double       m_posy;
-  bool         m_posx_init;
-  bool         m_posy_init;
-
-  std::string  m_prev_posting;
+  MY_Menu_Button(int x, int y, int w, int h, const char *l=0) :
+  Fl_Menu_Button(x, y, w, h, l) {};
+  
+  int  handle(int event) {
+    if((Fl::event_key()==FL_Up)   || 
+       (Fl::event_key()==FL_Down) || 
+       (Fl::event_key()==FL_Left) || 
+       (Fl::event_key()==FL_Right)) {
+      return(0);
+    }
+    return(Fl_Menu_Button::handle(event));
+  }
 };
 #endif
+
+
+
+
+
+
 
 
 

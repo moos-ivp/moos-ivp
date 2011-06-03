@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: XYSegList.cpp                                        */
 /*    DATE: Apr 20th, 2005                                       */
 /*                                                               */
@@ -764,6 +764,7 @@ void XYSegList::rotate_pt(double deg, double cx, double cy,
   px = nx; 
   py = ny;
 }
+
 
 
 

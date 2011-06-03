@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: PQueue.cpp                                           */
 /*    DATE: December 8th, 2000                                   */
 /*                                                               */
@@ -260,6 +260,7 @@ void PQueue::printLiteral()
     cout << "[" << m_keyval[i] << "] " << endl;
   }
 }
+
 
 
 

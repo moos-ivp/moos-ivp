@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: HelmScope.cpp                                        */
 /*    DATE: Apr 12th 2008                                        */
 /*                                                               */
@@ -1307,3 +1307,4 @@ bool HelmScope::configureComms(string host, string port,
   return(true);
 }
 #endif
+

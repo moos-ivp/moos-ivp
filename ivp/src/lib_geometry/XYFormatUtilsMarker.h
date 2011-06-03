@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: MIT Cambridge MA                                     */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: XYFormatUtilsMarker.h                                */
 /*    DATE: May 12, 2011                                         */
 /*                                                               */
@@ -48,3 +48,4 @@ XYMarker string2Marker(std::string);
 XYMarker stringStandard2Marker(std::string);
 
 #endif
+

@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: XYCircle.h                                           */
 /*    DATE: Dec 26th 2006                                        */
 /*                                                               */
@@ -90,6 +90,7 @@ protected:
   bool     m_rad_set;
 };
 #endif
+
 
 
 

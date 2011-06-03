@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: M.Benjamin, H.Schmidt, J.Leonard                     */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: PMV_MOOSApp.cpp                                      */
 /*    DATE:                                                      */
 /*                                                               */
@@ -228,9 +228,9 @@ void PMV_MOOSApp::handlePendingGUI()
   if(!m_gui)
     return;
   
-  int pendingSize = m_gui->getPendingSize();
+  unsigned int i, pendingSize = m_gui->getPendingSize();
 
-  for(int i=0; i<pendingSize; i++) {
+  for(i=0; i<pendingSize; i++) {
     string var  = m_gui->getPendingVar(i);
     string val  = m_gui->getPendingVal(i);
     double dval = 0;
@@ -510,3 +510,4 @@ string PMV_MOOSApp::getContextKey(string str)
   else
     return(key);
 }
+

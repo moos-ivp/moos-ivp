@@ -1,9 +1,8 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: LogViewLauncher.h                                    */
 /*    DATE: May 31st, 2005                                       */
-/*          August 2009 - Took over most of main.cpp's role      */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
 /* modify it under the terms of the GNU General Public License   */
@@ -107,3 +106,4 @@ private:
 };
 
 #endif 
+

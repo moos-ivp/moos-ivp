@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: XYFormatUtilsPoint.cpp                               */
 /*    DATE: Mar 16, 2008 Sunday Afternoon at Brugger's           */
 /*                                                               */
@@ -130,3 +130,4 @@ XYPoint stringAbbreviated2Point(string str)
 
   return(new_point);
 }
+

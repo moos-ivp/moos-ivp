@@ -1,9 +1,8 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: LogViewLauncher.cpp                                  */
 /*    DATE: May 31st, 2005                                       */
-/*          August 2009 - Took over most of main.cpp's role      */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
 /* modify it under the terms of the GNU General Public License   */
@@ -681,7 +680,7 @@ bool LogViewLauncher::buildIPFPlots()
 
 bool LogViewLauncher::buildGraphical()
 {
-  m_gui = new REPLAY_GUI(m_gui_width, m_gui_height, "logview");
+  m_gui = new REPLAY_GUI(m_gui_width, m_gui_height, "alogview");
   if(!m_gui)
     return(false);
 
@@ -716,18 +715,17 @@ bool LogViewLauncher::buildGraphical()
   for(k=0; k<m_ipf_plots.size(); k++)
     m_gui->addIPF_Plot(m_ipf_plots[k]);
 
-#if 0
-  // Populate the GUI with the polygons built above
-  for(j=0; j<polygons.size(); j++)
-    m_gui->np_viewer->setParam("poly", polygons[j]);
-#endif
-
   m_gui->updateXY();
   m_gui->np_viewer->setParam("tiff_file", m_tif_file);
 
   if(m_now_time_set)
     m_gui->setCurrTime(m_now_time);
+  else
+    m_gui->setCurrTime(-1); // GUI will seek a "start_time hint"
+    
 
+  m_gui->initChoicesIPF();
 
   return(true);
 }
+

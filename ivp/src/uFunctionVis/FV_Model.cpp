@@ -1,8 +1,24 @@
-/****************************************************************/
-/*    NAME: Mike Benjamin                                       */
-/*    FILE: FV_Model.cpp                                        */
-/*    DATE: Sep 24th 2006                                       */
-/****************************************************************/
+/*****************************************************************/
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    FILE: FV_Model.cpp                                         */
+/*    DATE: Sep 24th 2006                                        */
+/*                                                               */
+/* This program is free software; you can redistribute it and/or */
+/* modify it under the terms of the GNU General Public License   */
+/* as published by the Free Software Foundation; either version  */
+/* 2 of the License, or (at your option) any later version.      */
+/*                                                               */
+/* This program is distributed in the hope that it will be       */
+/* useful, but WITHOUT ANY WARRANTY; without even the implied    */
+/* warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR       */
+/* PURPOSE. See the GNU General Public License for more details. */
+/*                                                               */
+/* You should have received a copy of the GNU General Public     */
+/* License along with this program; if not, write to the Free    */
+/* Software Foundation, Inc., 59 Temple Place - Suite 330,       */
+/* Boston, MA 02111-1307, USA.                                   */
+/*****************************************************************/
 
 #include <iostream>
 #include "MBUtils.h"
@@ -24,6 +40,7 @@ FV_Model::FV_Model()
   m_curr_iter  = 0;
 
   m_bundle_series_maxlen = 50;
+  m_verbose    = true;
 }
 
 //-------------------------------------------------------------
@@ -76,7 +93,8 @@ void FV_Model::modSource(bool increment)
 
   m_ipf_mutex.Lock();
 
-  cout << "Old source: " << m_curr_source << endl;
+  if(m_verbose)
+    cout << "Old source: " << m_curr_source << endl;
 
   vector<string> sources = m_bundle_series.getAllSources();
   unsigned int i, vsize = sources.size();
@@ -85,7 +103,8 @@ void FV_Model::modSource(bool increment)
     return;
   }
 
-  cout << "Sources size: " << vsize << endl;
+  if(m_verbose)
+    cout << "Sources size: " << vsize << endl;
   string new_source = sources[0];
   for(i=0; i<vsize; i++) {
     if(m_curr_source == sources[i]) {
@@ -105,7 +124,8 @@ void FV_Model::modSource(bool increment)
   }
   m_curr_source = new_source;
 
-  cout << "New source: " << m_curr_source << endl;
+  if(m_verbose)
+    cout << "New source: " << m_curr_source << endl;
   m_ipf_mutex.UnLock();
 }
 
@@ -193,4 +213,5 @@ QuadSet FV_Model::getQuadSet()
   quadset.applyColorMap(m_color_map);
   return(quadset);
 }
+
 

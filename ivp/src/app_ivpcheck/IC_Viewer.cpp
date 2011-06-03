@@ -1,8 +1,24 @@
-/****************************************************************/
-/*    NAME: Mike Benjamin                                       */
-/*    FILE: IC_Viewer.cpp                                       */
-/*    DATE: Apr 19th 2011                                       */
-/****************************************************************/
+/*****************************************************************/
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    FILE: IC_Viewer.cpp                                        */
+/*    DATE: Apr 19th 2011                                        */
+/*                                                               */
+/* This program is free software; you can redistribute it and/or */
+/* modify it under the terms of the GNU General Public License   */
+/* as published by the Free Software Foundation; either version  */
+/* 2 of the License, or (at your option) any later version.      */
+/*                                                               */
+/* This program is distributed in the hope that it will be       */
+/* useful, but WITHOUT ANY WARRANTY; without even the implied    */
+/* warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR       */
+/* PURPOSE. See the GNU General Public License for more details. */
+/*                                                               */
+/* You should have received a copy of the GNU General Public     */
+/* License along with this program; if not, write to the Free    */
+/* Software Foundation, Inc., 59 Temple Place - Suite 330,       */
+/* Boston, MA 02111-1307, USA.                                   */
+/*****************************************************************/
 
 #include <iostream>
 #include <cmath>
@@ -224,14 +240,14 @@ void IC_Viewer::resetQuadSet()
 {
   if(m_collective) {
     m_quadset = m_bundle_series.getCollectiveQuadSet(m_curr_iter);
-    if(m_quadset.isEmpty())
+    if(m_quadset.isEmptyND())
       return;
     m_quadset.normalize(0,200);
     m_quadset.applyColorMap(m_color_map);
   }
   else {
     m_quadset = m_bundle_series.getQuadSet(m_curr_iter, m_curr_source);
-    if(m_quadset.isEmpty())
+    if(m_quadset.isEmptyND())
       return;
     m_quadset.normalize(0,200);
     m_quadset.applyColorMap(m_color_map);
@@ -431,4 +447,5 @@ void IC_Viewer::setCollective(const string& val)
     resetQuadSet();  
 
 }
+
 

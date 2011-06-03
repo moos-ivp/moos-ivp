@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: XYFormatUtilsPoint.h                                 */
 /*    DATE: May 16, 2008 Sunday afternoon at Brueggers           */
 /*                                                               */
@@ -55,3 +55,4 @@ XYPoint stringStandard2Point(std::string);
 XYPoint stringAbbreviated2Point(std::string);
 
 #endif
+

@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Henrik Schmidt and Michael Benjamin                  */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: BHV_Attractor.cpp                                    */
 /*    DATE: June 2008                                            */
 /*                                                               */
@@ -514,6 +514,7 @@ void BHV_Attractor::postErasableTrailPoint()
   string spec = m_trail_point.get_spec();
   postMessage("VIEW_POINT", spec);
 }
+
 
 
 

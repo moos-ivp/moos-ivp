@@ -93,7 +93,24 @@ Behavior = BHV_ConstantDepth
   condition = MODE==ACTIVE
   updates   = DEPTH_VALUE
 
-      depth = 15
+        depth = 250
+    peakwidth = 40
+    basewidth = 88
+  summitdelta = 10
+}
+
+//----------------------------------------------
+Behavior = BHV_ConstantDepth
+{
+  name      = bhv_const_depth_b
+  pwt       = 60
+  duration  = no-time-limit
+  condition = MODE==ACTIVE
+
+        depth = 75
+    peakwidth = 40
+    basewidth = 1080
+  summitdelta = 10
 }
 
 //----------------------------------------------

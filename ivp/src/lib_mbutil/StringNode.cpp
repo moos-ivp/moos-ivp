@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: StringNode.cpp                                       */
 /*    DATE: Jan 9th 2009                                         */
 /*                                                               */
@@ -88,4 +88,5 @@ bool StringNode::addParChild(const string& parent,
 
   return(false);
 }
+
 

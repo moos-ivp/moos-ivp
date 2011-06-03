@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Andrew Shafer                                        */
-/*    ORGN: MIT                                                  */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: ArtifactUtils.h                                      */
 /*    DATE: Oct 24 2007                                          */
 /*                                                               */
@@ -256,4 +256,5 @@ const vector<string> generateArtifacts(double min_x, double max_x,
   
   return(vArtifacts);
 }
+
 

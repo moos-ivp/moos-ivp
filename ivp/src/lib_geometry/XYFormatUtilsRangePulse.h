@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: XYFormatUtilsRangePulse.h                            */
 /*    DATE: Feb 5th, 2011                                        */
 /*                                                               */
@@ -47,3 +47,4 @@ XYRangePulse string2RangePulse(std::string);
 XYRangePulse stringStandard2RangePulse(std::string);
 
 #endif
+

@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: ScalarPID.cpp                                        */
 /*    DATE: Oct 1 2005                                           */
 /*                                                               */
@@ -330,6 +330,7 @@ void ScalarPID::SetGoal(double dfGoal)
 {
   m_dfGoal =dfGoal;
 }
+
 
 
 

@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: BoxSet.h                                             */
 /*    DATE: Too long ago to remember (1996-1999)                 */
 /*                                                               */
@@ -74,6 +74,7 @@ private:
   int         m_size;
 };
 #endif
+
 
 
 

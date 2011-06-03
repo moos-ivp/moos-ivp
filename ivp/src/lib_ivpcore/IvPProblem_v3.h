@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: IvPProblem_v3.h                                      */
 /*    DATE: Too long ago to remember (1999-2001)                 */
 /*                                                               */
@@ -52,6 +52,7 @@ public:
 };  
 
 #endif
+
 
 
 

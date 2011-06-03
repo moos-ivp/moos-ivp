@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: AOF_Rings.cpp                                        */
 /*    DATE: Very old - modernized Jan 21 2006                    */
 /*                                                               */
@@ -128,6 +128,7 @@ string AOF_Rings::latexSTR(int full) const
   if(full) retstr += " \\end{tabular}} \\normalsize";
   return(retstr);
 }
+
 
 
 

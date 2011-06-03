@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: CPA_Utils.h                                          */
 /*    DATE: Mar 11, 2007 Sat afternoon at Brugger's              */
 /*                                                               */
@@ -43,6 +43,7 @@ void   velocityVectorSum(double hdg1, double spd1, double hdg2,
 			 double spd2, double& hdg, double& spd);
 
 #endif
+
 
 
 

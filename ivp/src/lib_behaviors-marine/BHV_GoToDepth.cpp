@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: BHV_GoToDepth.cpp                                    */
 /*    DATE: Aug 1 2006                                           */
 /*                                                               */
@@ -252,5 +252,6 @@ bool BHV_GoToDepth::incrementLevelDepth()
   return(true);
 }
   
+
 
 

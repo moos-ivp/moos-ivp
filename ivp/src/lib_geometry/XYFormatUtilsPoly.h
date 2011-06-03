@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: XYFormatUtilsPoly.h                                  */
 /*    DATE: May 16, 2009 After bbq @ Hows                        */
 /*                                                               */
@@ -76,3 +76,4 @@ XYPolygon stringRangeWedge2Poly(std::string);
 //          perp_pad=val, snap_val=val, label=val"
 XYPolygon stringPylon2Poly(std::string);
 #endif
+

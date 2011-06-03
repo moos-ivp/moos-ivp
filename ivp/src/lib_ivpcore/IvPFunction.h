@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: IvPFunction.h                                        */
 /*    DATE:                                                      */
 /*                                                               */
@@ -67,3 +67,4 @@ protected:
   std::string m_context_string;
 };
 #endif
+

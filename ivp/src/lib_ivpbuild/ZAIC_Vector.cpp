@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: M.Benjamin, H.Schmidt, J. Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: ZAIC_Vector.cpp                                      */
 /*    DATE: Apr 30th, 2010                                       */
 /*                                                               */
@@ -569,3 +569,4 @@ void ZAIC_Vector::clearWarnings()
 {
   m_build_warnings.clear();
 }
+

@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: PMV_GUI.h                                            */
 /*    DATE: Nov 11th 2004                                        */
 /*                                                               */
@@ -119,5 +119,4 @@ protected:
   double     m_prev_out_time;
 };
 #endif
-
 

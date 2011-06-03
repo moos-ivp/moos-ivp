@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: LinearExtrapolator.cpp                               */
 /*    DATE: May 2nd, 2007                                        */
 /*                                                               */
@@ -104,6 +104,7 @@ bool LinearExtrapolator::getPosition(double& r_xpos, double& r_ypos,
   projectPoint(m_hdg, distance, m_xpos, m_ypos, r_xpos, r_ypos);
   return(true);
 }
+
 
 
 

@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: HelmPlot.h                                           */
 /*    DATE: July 15th, 2009                                      */
 /*                                                               */
@@ -81,3 +81,4 @@ protected:
   double m_utc_start_time;
 };
 #endif 
+

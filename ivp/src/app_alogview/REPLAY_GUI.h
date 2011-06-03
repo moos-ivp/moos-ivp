@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: REPLAY_GUI.h                                         */
 /*    DATE: May 31st, 2005                                       */
 /*                                                               */
@@ -23,15 +23,20 @@
 #ifndef REPLAY_GUI_HEADER
 #define REPLAY_GUI_HEADER
 
+#include <set>
+#include <map>
+#include <string>
 #include <FL/Fl.H>
 #include <FL/Fl_Window.H>
 #include <FL/Fl_Menu_Bar.H>
+#include <FL/Fl_Menu_Button.H>
 #include "NavPlotViewer.h"
 #include "LogPlotViewer.h"
 #include "IvPFuncViewer.h"
 #include <FL/Fl_Hold_Browser.H>
 #include "MY_Output.h"
 #include "MY_Button.h"
+#include "MY_Menu_Button.h"
 #include "MY_Repeat_Button.h"
 #include "MBTimer.h"
 #include "MarineVehiGUI.h"
@@ -57,6 +62,8 @@ public:
   void setWindowLayout(std::string layout="normal");
   void setCurrTime(double=-1);
 
+  void initChoicesIPF();
+
 protected:
   void augmentMenu();
   int  handle(int);
@@ -72,30 +79,11 @@ private:
   inline bool cb_StepType_i(int);
   static void cb_StepType(Fl_Widget*, int);
 
-  inline void cb_PolyView_i();
-  static void cb_PolyView(Fl_Widget*);
-
-  inline void cb_CrossView_i();
-  static void cb_CrossView(Fl_Widget*);
-
   inline void cb_LeftLogPlot_i(int);
   static void cb_LeftLogPlot(Fl_Widget*, int);
 
   inline void cb_RightLogPlot_i(int);
   static void cb_RightLogPlot(Fl_Widget*, int);
-
-  inline void cb_TopPlotIPF_i(int);
-  static void cb_TopPlotIPF(Fl_Widget*, int);
-
-  inline void cb_BotPlotIPF_i(int);
-  static void cb_BotPlotIPF(Fl_Widget*, int);
-
-  inline void cb_TopPlotColl_i(int);
-  static void cb_TopPlotColl(Fl_Widget*, int);
-
-  inline void cb_BotPlotColl_i(int);
-  static void cb_BotPlotColl(Fl_Widget*, int);
-
 
   inline void cb_LeftHelmPlot_i(int);
   static void cb_LeftHelmPlot(Fl_Widget*, int);
@@ -127,8 +115,23 @@ private:
   inline void cb_TogglePin_i(int);
   static void cb_TogglePin(Fl_Widget*, int);
 
+  inline void cb_ToggleCollective_i(int);
+  static void cb_ToggleCollective(Fl_Widget*, int);
+
   inline void cb_Delete_i();
   static void cb_Delete(Fl_Widget*);
+
+  inline void cb_TopSelectVName_i(int);
+  static void cb_TopSelectVName(Fl_Widget*, int);
+
+  inline void cb_TopSelectSource_i(int);
+  static void cb_TopSelectSource(Fl_Widget*, int);
+
+  inline void cb_BotSelectVName_i(int);
+  static void cb_BotSelectVName(Fl_Widget*, int);
+
+  inline void cb_BotSelectSource_i(int);
+  static void cb_BotSelectSource(Fl_Widget*, int);
 
 public:
   NavPlotViewer *np_viewer;
@@ -141,24 +144,23 @@ protected:
   double      m_lp_viewer_hgt;
   std::string m_window_layout;
 
-  MY_Output   *ipf_vname_a;
-  MY_Output   *ipf_vname_b;
   MY_Output   *ipf_pcs_a;
   MY_Output   *ipf_pcs_b;
   MY_Output   *ipf_pwt_a;
   MY_Output   *ipf_pwt_b;
   MY_Output   *ipf_iter_a;
   MY_Output   *ipf_iter_b;
+  MY_Output   *ipf_domain_a;
+  MY_Output   *ipf_domain_b;
   MY_Button   *m_but_ipf_set_a;
   MY_Button   *m_but_ipf_set_b;
   MY_Button   *m_but_ipf_pin_a;
   MY_Button   *m_but_ipf_pin_b;
 
-  MY_Output   *ipf_source_a;
-  MY_Output   *ipf_source_b;
-  MY_Output   *ipf_domain_a;
-  MY_Output   *ipf_domain_b;
-
+  MY_Menu_Button *m_but_ipf_vname_a;
+  MY_Menu_Button *m_but_ipf_vname_b;
+  MY_Menu_Button *m_but_ipf_source_a;
+  MY_Menu_Button *m_but_ipf_source_b;
 
   MY_Output   *disp_time;
   MY_Output   *play_rate;
@@ -201,6 +203,20 @@ protected:
   MY_Repeat_Button *m_but_zoom_out_time;
   MY_Button        *m_but_zoom_reset_time;
 
+  std::vector<std::string> m_vnames;
+  std::vector<std::string> m_sources;
+  std::map<std::string, std::set<std::string> > m_catalog;
+  void  setVNameMenuButtonA(std::string vname);
+  void  setVNameMenuButtonB(std::string vname);
+
+  void  updateSourceMenuButtonA();
+  void  updateSourceMenuButtonB();
+  std::string m_vname_a;
+  std::string m_vname_b;
+
+  std::string m_source_a;
+  std::string m_source_b;
+
   std::string m_log_file;
   std::string m_collect;
 
@@ -214,3 +230,4 @@ protected:
   int     m_save_file_ix;
 };
 #endif
+

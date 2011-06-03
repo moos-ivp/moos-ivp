@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: M.Benjamin, H.Schmidt, J.Leonard                     */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: CurrentField.cpp                                     */
 /*    DATE: Jan 4th, 2011                                        */
 /*                                                               */
@@ -563,4 +563,5 @@ bool CurrentField::handleLine(string line)
   addVector(new_vector);
   return(true);
 }
+
 

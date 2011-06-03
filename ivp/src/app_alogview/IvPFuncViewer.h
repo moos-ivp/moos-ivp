@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: M.Benjamin, H.Schmidt, J.Leonard                     */
-/*    ORGN: MIT Cambridge MA                                     */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: IvPFuncViewer.h                                      */
 /*    DATE: Feb 24, 2007                                         */
 /*                                                               */
@@ -35,47 +35,55 @@ class IvPFuncViewer : public Common_IPFViewer
   IvPFuncViewer(int x,int y,int w,int h,const char *l=0);
   virtual ~IvPFuncViewer() {};
 
-  int handle(int event);
-
-  unsigned int addIPF_Plot(const IPF_Plot&, bool active=false);
-
   void   draw();
-  void   altPlotIndex(int v);
-  void   setPlotIndex(unsigned int index);
-  void   setCurrTime(double time);
+  int    handle(int event);
+
+  void   addIPF_Plot(const IPF_Plot&);
+
+
+  void   resetPlotIndex();
+  void   setPlotIndex(std::string vname, std::string src);
+
   void   setVIterMap(const std::map<std::string, unsigned int>& vmap) 
   {m_viter_map=vmap;};
 
-  void   setCollectiveIndex(int index);
-  void   setCollectiveByDefault(bool v) {m_collective_by_default=v;};
+  bool   buildCollectiveIPF(std::string vname, std::string ctype);
+  void   buildIndividualIPF(std::string vname="", std::string source="");
 
-  void   buildCollective(double time);
-  int    getVNameIndex(std::string);
-
-  std::string getCurrVName() const;
-  std::string getCurrSource() const;
   std::string getCurrPieces() const;
   std::string getCurrPriority() const;
   std::string getCurrDomain() const;
   std::string getCurrIteration() const;
 
+ protected:
+  bool  domainDefinedBy(const IvPDomain&, std::string, std::string s="") const;
+
 private:
+  // m_collective_vname is a non-empty string naming the vehicle 
+  // whose collective function is to be drawn.
+  std::string  m_collective_vname;
+  // m_collective type is either "hdgspd" or "depth"
+  std::string  m_collective_type;
+
+  // A mapping from vehicle name to previous ipf/collective rendered
+  // Used when switching back to the vname from another vname
+  std::map<std::string, std::string> m_vname_memory;
+
+  // Index into the trio of m_ipf_* vectors below, distinguished by
+  // unique vehicle, source pairs.
   unsigned int m_plot_ix;
-  int          m_collective_ix;
-  bool         m_mouse_infocus;
-  bool         m_collective_by_default;
 
-  // A mapping from vehicle name to current helm iteration
-  std::map<std::string, unsigned int> m_viter_map;
-
-  // Index keys on unique vehicle/behavior pair
+  // Index keys on unique vehicle/behavior pair [m_plot_ix]
   std::vector<std::string>  m_ipf_vname;
   std::vector<std::string>  m_ipf_source;
   std::vector<IPF_Plot>     m_ipf_plot;
 
-  // Index keys - one per unique vehicle name
-  std::vector<std::string>  m_all_vnames;
+  // A mapping from vehicle name to current helm iteration
+  std::map<std::string, unsigned int> m_viter_map;
+
+  bool   m_mouse_infocus;
 
 };
 
 #endif
+

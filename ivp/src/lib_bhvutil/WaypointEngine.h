@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: WaypointEngine.h                                     */
 /*    DATE: May 6th, 2007                                        */
 /*                                                               */
@@ -86,6 +86,7 @@ class WaypointEngine {
 };
 
 #endif
+
 
 
 

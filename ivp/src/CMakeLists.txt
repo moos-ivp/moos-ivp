@@ -146,7 +146,6 @@ SET(IVP_NON_GUI_LIBS
    lib_logutils
    lib_mbutil
    lib_navplot
-#   lib_newmat10D
    )
 
 IF (${WIN32})
@@ -218,23 +217,18 @@ ENDFOREACH(L)
 #---------------------------------------------------------------------
   
 SET(IVP_NON_GUI_APPS
-  app_alogcheck
   app_alogscan
   app_aloggrep
   app_alogrm
   app_alogclip
   app_aloghelm
-  app_alog2rng
   app_nsplug
-  app_domquery
   pEchoVar
   pXRelay
-  pXBlaster
   pHelmIvP
   pMarinePID
   pBasicContactMgr
   pNodeReporter
-  uMissionTester
   pSafetyRetreat
   uTimerScript
   uHelmScope
@@ -253,7 +247,6 @@ SET(IVP_GUI_APPS
   app_geoview
   app_currview
   app_alogview
-  app_arcview
   app_vzaicview
   app_gzaicview
   pMarineViewer

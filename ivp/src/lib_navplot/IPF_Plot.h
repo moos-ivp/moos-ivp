@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: IPF_Plot.h                                           */
 /*    DATE: Feb 24th, 2007                                       */
 /*                                                               */
@@ -49,7 +49,7 @@ public:
   std::string getIPFByHelmIteration(unsigned int) const;
   unsigned int getPcsByHelmIteration(unsigned int) const;
   double       getPwtByHelmIteration(unsigned int) const;
-  IvPDomain    getDomainByHelmIteration(unsigned int) const;
+  IvPDomain    getDomainByHelmIter(unsigned int) const;
   unsigned int getHelmIterByTime(double);
 
   std::string getSource() const {return(m_source);};
@@ -60,10 +60,8 @@ public:
   int    size() const          {return(m_time_stamp.size());};
   void   print() const;
 
-  std::string  nullHeadingSpeedIPF() const;
-
   void      setIvPDomain(IvPDomain dom) {m_ivp_domain = dom;};
-  IvPDomain getIvPDomain()   {return(m_ivp_domain);};
+  IvPDomain getIvPDomain() const  {return(m_ivp_domain);};
 
 protected:
   unsigned int getIndexByTime(double) const;
@@ -85,3 +83,4 @@ protected:
   IvPDomain                 m_ivp_domain;
 };
 #endif 
+

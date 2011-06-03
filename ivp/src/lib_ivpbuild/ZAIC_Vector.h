@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: M.Benjamin, H.Schmidt, J. Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: ZAIC_Vector.h                                        */
 /*    DATE: Apr 30th, 2010                                       */
 /*                                                               */
@@ -101,3 +101,4 @@ protected: // State values
   IvPDomain    m_ivp_domain;
 };
 #endif
+

@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and Henrik Schmidt                  */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: BHV_MaintainHeading.h                                */
 /*    DATE: August 7th 2008                                      */
 /*                                                               */
@@ -50,6 +50,7 @@ protected:
   bool    m_heading_on_active;
 };
 #endif
+
 
 
 

@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: Shape_Diamond.h                                      */
 /*    DATE: July 6th 2008                                        */
 /*                                                               */
@@ -38,6 +38,7 @@ unsigned int g_diamondBodySize = 5;
 double       g_diamondWidth    = 16;
 
 #endif
+
 
 
 

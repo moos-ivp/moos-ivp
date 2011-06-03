@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: HelmIvP.cpp                                          */
 /*    DATE: Oct 12th 2004                                        */
 /*                                                               */
@@ -1165,3 +1165,4 @@ bool HelmIvP::processNodeReport(const string& report)
 
   return(true);
 }
+

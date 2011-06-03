@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: LogPlot.h                                            */
 /*    DATE: May 31st, 2005                                       */
 /*                                                               */
@@ -71,6 +71,7 @@ protected:
   double m_median;
 };
 #endif 
+
 
 
 

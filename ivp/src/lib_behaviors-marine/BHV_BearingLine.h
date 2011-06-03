@@ -1,10 +1,9 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: BHV_BearingLine.h                                    */
 /*    DATE: Feb 12th 2010                                        */
 /*    NOTE: A simple behavior for testing dynamic spawning of    */
-/*          behaviors in the helm.                               */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
 /* modify it under the terms of the GNU General Public License   */
@@ -49,6 +48,7 @@ protected:  // configuration parameters
   bool      m_show_pt;
 };
 #endif
+
 
 
 

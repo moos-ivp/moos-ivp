@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: IPF_Plot.cpp                                         */
 /*    DATE: Feb 24th, 2007                                       */
 /*                                                               */
@@ -107,10 +107,8 @@ string IPF_Plot::getIPFByTime(double timestamp) const
   // Special case: if the query time is outside the IPF_Plot 
   // time range, return the extreme value.
   if(timestamp >=  m_time_stamp[vsize-1])
-    //return(nullHeadingSpeedIPF());
     return("");
   if(timestamp <= m_time_stamp[0])
-    //return(nullHeadingSpeedIPF());
     return("");
 
   // Determine highest index w/ time <= timestamp
@@ -181,14 +179,13 @@ double IPF_Plot::getPwtByHelmIteration(unsigned int iter) const
 }
  
 //---------------------------------------------------------------
-// Procedure: getDomainByHelmIteration
+// Procedure: getDomainByHelmIter
 
-IvPDomain IPF_Plot::getDomainByHelmIteration(unsigned int iter) const
+IvPDomain IPF_Plot::getDomainByHelmIter(unsigned int iter) const
 {
   // Special case: if the IPF_Plot instance is "empty"
   IvPDomain empty_domain;
-  unsigned int vsize = m_helm_iteration.size();
-  if(vsize == 0)
+  if(m_helm_iteration.size() == 0)
     return(empty_domain);
 
   // Determine the index for the given helm iteration
@@ -210,16 +207,6 @@ unsigned int IPF_Plot::getHelmIterByTime(double timestamp)
   return(m_helm_iteration[index]);
 }
  
-//---------------------------------------------------------------
-// Procedure: nullHeadingSpeedIPF
-//   Purpose:
-
-string IPF_Plot::nullHeadingSpeedIPF() const
-{
-  string str = "H,14,46:bhv_waypt_b,2,1,1,100,D,course;0;359;360:speed;0;4;41,G,359,40,F,0,359,0,40,0,0,0";
-  return(str);
-}
-    
 //---------------------------------------------------------------
 // Procedure: getIndexByTime
 //   Purpose: Given a query time, determine the highest index that 
@@ -336,6 +323,7 @@ void IPF_Plot::print() const
     cout << "time:" << m_time_stamp[i] << 
       "  ipf:" << m_ipf_string[i] << endl;
 }
+
 
 
 

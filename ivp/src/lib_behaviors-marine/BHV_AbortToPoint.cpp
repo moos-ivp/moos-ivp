@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and Henrik Schmidt                  */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: BHV_AbortToPoint.cpp                                 */
 /*    DATE: August 6th 2008                                      */
 /*                                                               */
@@ -245,5 +245,6 @@ void BHV_AbortToPoint::updateInfoOut(bool post)
     postMessage(m_status_var, "ABANDONED");
   }
 }
+
 
 

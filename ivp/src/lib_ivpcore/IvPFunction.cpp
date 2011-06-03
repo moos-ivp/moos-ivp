@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: IvPFunction.cpp                                      */
 /*    DATE:                                                      */
 /*                                                               */
@@ -120,3 +120,4 @@ string IvPFunction::getVarName(int i)
 {
   return(m_pdmap->getDomain().getVarName(i));
 }
+

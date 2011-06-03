@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: XYObject.cpp                                         */
 /*    DATE: July 18th, 2008                                      */
 /*                                                               */
@@ -229,3 +229,4 @@ void XYObject::aug_spec(string& orig, string new_part) const
     orig += ",";
   orig += new_part;
 }
+

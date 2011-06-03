@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: RT_AutoPeak.h                                        */
 /*    DATE: June 21, 2008                                        */
 /*    NOTE: "RT_" stands for "Reflector Tool"                    */
@@ -45,6 +45,7 @@ protected:
 };
 
 #endif
+
 
 
 

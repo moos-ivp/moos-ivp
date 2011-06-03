@@ -1,8 +1,8 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: BHV_Waypoint.h                                       */
-/*    DATE: Nov 2004                                             */
+/*    DATE: Nov 2004 (original version - many changes since)     */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
 /* modify it under the terms of the GNU General Public License   */
@@ -86,4 +86,5 @@ protected: // intermediate or object global variables.
   XYPoint   m_markpt;
 };
 #endif
+
 

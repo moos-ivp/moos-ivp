@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: MIT Cambridge MA                                     */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: XYFormatUtilsMarker.cpp                              */
 /*    DATE: Mar 13, 2011                                         */
 /*                                                               */
@@ -90,4 +90,5 @@ XYMarker stringStandard2Marker(string str)
   
   return(new_marker);
 }
+
 

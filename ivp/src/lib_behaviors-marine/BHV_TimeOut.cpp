@@ -60,9 +60,9 @@ bool BHV_TimeOut::setParam(string param, string val)
   if(IvPBehavior::setParam(param, val))
     return(true);
 
-  else if(param == "max_time") {
+  else if((param == "max_time") && isNumber(val)) {
     double dval = atof(val.c_str());
-    if((dval < 0) || (!isNumber(val)))
+    if(dval < 0)
       return(false);
     m_max_time = dval;
     return(true);

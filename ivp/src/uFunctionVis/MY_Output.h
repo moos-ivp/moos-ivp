@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: MY_Output.h                                          */
 /*    DATE: December 2004                                        */
 /*                                                               */
@@ -36,6 +36,7 @@ public:
   int  handle(int event) {return(0);};
 };
 #endif
+
 
 
 

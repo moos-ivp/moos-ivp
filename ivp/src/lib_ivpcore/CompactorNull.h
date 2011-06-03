@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: CompactorNull.h                                      */
 /*    DATE: June 13, 2004                                        */
 /*                                                               */
@@ -54,6 +54,7 @@ public:
     {*ok=true; return(b->maxVal());};
 };
 #endif
+
 
 
 

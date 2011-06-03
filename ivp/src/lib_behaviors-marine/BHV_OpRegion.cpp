@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: BHV_OpRegion.cpp                                     */
 /*    DATE: May 1st, 2005 Sunday at Joe's in Maine               */
 /*                                                               */
@@ -537,3 +537,4 @@ void BHV_OpRegion::handleVisualHint(string hint)
   else if((param == "vertex_size") && isNumber(value) && (dval >= 0))
     m_hint_vertex_size = dval;
 }
+

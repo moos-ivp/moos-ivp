@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: BHV_MemoryTurnLimit.cpp                              */
 /*    DATE: Aug 7th 2006                                         */
 /*                                                               */
@@ -267,5 +267,6 @@ bool BHV_MemoryTurnLimit::getHeadingAvg2(double& heading_avg)
 
   return(true);
 }
+
 
 

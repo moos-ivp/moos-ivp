@@ -1,9 +1,8 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: MIT Cambridge MA                                     */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: ColorPack.cpp                                        */
 /*    DATE: May 28th 2009                                        */
-/*          May 15th 2011                                        */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
 /* modify it under the terms of the GNU General Public License   */
@@ -111,6 +110,43 @@ void ColorPack::setColor(string str)
 }
 
 //----------------------------------------------------------------
+// Procedure: shade
+//  Examples: 0.05 makes things a bit lighter
+//            -0.05 makes things a bit darker
+
+void ColorPack::shade(double pct)
+{
+  unsigned int i, vsize = m_color_vector.size();
+  for(i=0; i<vsize; i++) {
+    m_color_vector[i] *= (1+pct);
+    if(m_color_vector[i] > 1)
+      m_color_vector[i] = 1;
+    else if(m_color_vector[i] < 0)
+      m_color_vector[i] = 0;
+  }
+}
+
+//----------------------------------------------------------------
+// Procedure: moregray
+//      Note: Argument range: [0,1]
+//  Examples: 0 leaves things alone
+//            1 turns the color gray r=0.5, g=0.5, b=0.5
+
+void ColorPack::moregray(double pct)
+{
+  pct = vclip(pct, 0, 1);
+  unsigned int i, vsize = m_color_vector.size();
+  for(i=0; i<vsize; i++) {
+    double delta = (m_color_vector[i] - 0.5) * pct;
+    m_color_vector[i] -= delta;
+    if(m_color_vector[i] > 1)  
+      m_color_vector[i] = 1;
+    else if(m_color_vector[i] < 0)
+      m_color_vector[i] = 0;
+  }
+}
+
+//----------------------------------------------------------------
 // Procedure: str(char)
 
 string ColorPack::str(char separator) const
@@ -124,3 +160,4 @@ string ColorPack::str(char separator) const
   rstr += separator + doubleToStringX(m_color_vector[2],3);
   return(rstr);
 }
+

@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: ColorParse.h                                         */
 /*    DATE: Aug 19th 2006                                        */
 /*                                                               */
@@ -40,4 +40,5 @@ double gOfRGB(const std::string);
 double bOfRGB(const std::string);
 
 #endif
+
 

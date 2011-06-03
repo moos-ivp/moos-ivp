@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: USM_MOOSApp.cpp                                      */
 /*    DATE: Oct 25th 2004                                        */
 /*                                                               */
@@ -300,3 +300,4 @@ void USM_MOOSApp::handleThrustMapping(string mapping)
     m_model.addThrustMapping(dthrust, dspeed);
   }
 }
+

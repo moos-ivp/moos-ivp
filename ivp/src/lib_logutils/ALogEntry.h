@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: ALogEntry.h                                          */
 /*    DATE: Aug 12th, 2009                                       */
 /*                                                               */
@@ -80,3 +80,4 @@ protected:
   std::string  m_status; 
 };
 #endif 
+

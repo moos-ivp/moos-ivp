@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: NavPlotViewer.cpp                                    */
 /*    DATE: May 31st, 2005                                       */
 /*                                                               */
@@ -46,6 +46,7 @@ NavPlotViewer::NavPlotViewer(int x, int y, int w, int h, const char *l)
   m_hplot_left_ix  = 0;
   m_hplot_right_ix = 0;
   m_hash_offon     = true;
+  m_hash_shade     = 0.35;
 
   m_trails         = "to-present"; // "none, to-present, window, all"
   m_trail_gap      = 1;
@@ -730,4 +731,5 @@ void NavPlotViewer::setStepType(const string& step_type)
   else if(step_type == "helm_iterations")
     m_step_by_secs = false;
 }
+
 

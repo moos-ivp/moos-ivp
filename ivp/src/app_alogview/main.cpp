@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: main.cpp                                             */
 /*    DATE: May 1st, 2005                                        */
 /*                                                               */
@@ -129,3 +129,4 @@ void version_message()
   for(i=0; i<vsize; i++)
     cout << svector[i] << endl;
 }
+

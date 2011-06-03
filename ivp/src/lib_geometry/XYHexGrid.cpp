@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: XYHexGrid.cpp                                        */
 /*    DATE: Oct 30th 2005                                        */
 /*                                                               */
@@ -107,6 +107,7 @@ bool XYHexGrid::initialize(XYPolygon poly,
 {
   return(true);
 }
+
 
 
 

@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and Henrik Schmidt                  */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: BHV_HeadingHystereis.cpp                             */
 /*    DATE: July 30th 2009                                       */
 /*                                                               */
@@ -231,5 +231,6 @@ double BHV_HeadingHysteresis::getHeadingVariance(double current_average)
 
   return(sqrt(total)/(double)(entry_count));
 }
+
 
 

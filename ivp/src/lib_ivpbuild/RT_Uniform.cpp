@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: RT_Uniform.cpp                                       */
 /*    DATE:                                                      */
 /*    NOTE: "RT_" stands for "Reflector Tool"                    */
@@ -99,6 +99,7 @@ PDMap* RT_Uniform::create(const IvPBox* unifbox, const IvPBox* gelbox,
   
   return(pdmap);
 }
+
 
 
 

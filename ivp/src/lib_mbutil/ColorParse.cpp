@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: ColorParse.h                                         */
 /*    DATE: Aug 19th 2006                                        */
 /*                                                               */
@@ -237,7 +237,7 @@ string colorNameToHex(const std::string &str)
   if(cstr == "deepskyblue")    return("hex:00,bf,ff");
   if(cstr == "dimgray")        return("hex:69,69,69");
   if(cstr == "dodgerblue")     return("hex:1e,90,ff");
-  if(cstr == "firenrick")      return("hex:b2,22,22");
+  if(cstr == "firebrick")      return("hex:b2,22,22");
   if(cstr == "floralwhite")    return("hex:ff,fa,f0");
   if(cstr == "forestgreen")    return("hex:22,8b,22");
   if(cstr == "fuchsia")        return("hex:ff,00,ff");
@@ -422,3 +422,4 @@ string termColor(const string& raw_color_in)
     return("\33[0m");
 }
   
+

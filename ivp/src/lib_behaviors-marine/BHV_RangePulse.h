@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: BHV_RangePulse.h                                     */
 /*    DATE: Feb 7th 2011                                         */
 /*    NOTE: A simple behavior for testing range sensor sims.     */
@@ -43,6 +43,7 @@ protected:  // configuration parameters
   bool      m_show_pt;
 };
 #endif
+
 
 
 

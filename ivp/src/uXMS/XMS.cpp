@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: XMS.cpp                                              */
 /*    DATE: May 27th 2007                                        */
 /*                                                               */
@@ -1147,3 +1147,4 @@ void XMS::cacheColorMap()
       m_var_color[i] = v3;
   }
 }
+

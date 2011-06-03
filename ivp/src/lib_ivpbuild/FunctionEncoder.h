@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: FunctionEncoder.h                                    */
 /*    DATE: April 17th 2006 (Patriots Day)                       */
 /*                                                               */
@@ -43,3 +43,4 @@ std::string StringToIvPContext(const std::string&);
 IvPDomain IPFStringToIvPDomain(const std::string&);
 
 #endif
+

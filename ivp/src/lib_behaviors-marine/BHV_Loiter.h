@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: BHV_Loiter.h                                         */
 /*    DATE: July 26th 2005 In Elba w/ M.Grunde, P.Newman         */
 /*                                                               */
@@ -90,6 +90,7 @@ private:  // State Variables
   std::string  m_center_assign;
 };
 #endif
+
 
 
 

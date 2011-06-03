@@ -1,11 +1,25 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: TermCommand.cpp                                      */
 /*    DATE: June 26th 2007                                       */
+/*                                                               */
+/* This program is free software; you can redistribute it and/or */
+/* modify it under the terms of the GNU General Public License   */
+/* as published by the Free Software Foundation; either version  */
+/* 2 of the License, or (at your option) any later version.      */
+/*                                                               */
+/* This program is distributed in the hope that it will be       */
+/* useful, but WITHOUT ANY WARRANTY; without even the implied    */
+/* warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR       */
+/* PURPOSE. See the GNU General Public License for more details. */
+/*                                                               */
+/* You should have received a copy of the GNU General Public     */
+/* License along with this program; if not, write to the Free    */
+/* Software Foundation, Inc., 59 Temple Place - Suite 330,       */
+/* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
-#include <iostream>
 #include <iterator>
 #include <cstring>
 #include "TermCommand.h"
@@ -27,14 +41,6 @@ TermCommand::TermCommand()
 
 bool TermCommand::OnNewMail(MOOSMSG_LIST &NewMail)
 {
-
-#if 0
-  MOOSMSG_LIST::iterator p;
-  for(p=NewMail.begin(); p!=NewMail.end(); p++) {
-    CMOOSMsg &msg = *p;
-  }
-#endif
-
   return(true);
 }
 
@@ -43,11 +49,6 @@ bool TermCommand::OnNewMail(MOOSMSG_LIST &NewMail)
 
 bool TermCommand::OnConnectToServer()
 {
-  // register for variables here
-  // possibly look at the mission file?
-  // m_MissionReader.GetConfigurationParam("Name", <string>);
-  // m_Comms.Register("VARNAME", is_float(int));
-  
   return(true);
 }
 
@@ -93,7 +94,6 @@ bool TermCommand::OnStartUp()
 
   }
   
-  registerVariables();
   return(true);
 }
 
@@ -132,25 +132,10 @@ void TermCommand::addCommand(string cmd_str)
   if(!isNumber(var_val))
     var_type = "string";
       
-#if 0
-  if(var_type == "string")
-    cout << "Cue: " << var_key << " VAR: " << var_name << " VAL(S): [" << var_val << "]" << endl;
-  else
-    cout << "Cue: " << var_key << " VAR: " << var_name << " VAL(D): [" << var_val << "]" << endl;
-#endif
-
   m_var_key.push_back(var_key);
   m_var_name.push_back(var_name);
   m_var_type.push_back(var_type);
   m_var_val.push_back(var_val);
-}
-
-
-//------------------------------------------------------------
-// Procedure: registerVariables()
-
-void TermCommand::registerVariables()
-{
 }
 
 
@@ -165,8 +150,8 @@ vector<int> TermCommand::getPartialKeyMatches()
   
   int buff_len = m_cmd_buffer.length();
   
-  int vsize = m_var_key.size();
-  for(int i=0; i<vsize; i++) {
+  unsigned int i, vsize = m_var_key.size();
+  for(i=0; i<vsize; i++) {
       if(!strncmp(m_var_key[i].c_str(), m_cmd_buffer.c_str(), buff_len)) {
 	if(m_var_key[i] != m_cmd_buffer)
 	  rvector.push_back(i);
@@ -183,8 +168,8 @@ vector<int> TermCommand::getPartialKeyMatches()
 
 int TermCommand::getFullKeyMatch()
 {
-  int vsize = m_var_key.size();
-  for(int i=0; i<vsize; i++) {
+  unsigned int i, vsize = m_var_key.size();
+  for(i=0; i<vsize; i++) {
     if(m_var_key[i] == m_cmd_buffer)
       return(i);
   }
@@ -203,8 +188,7 @@ void TermCommand::printMapping()
 {
   m_iteration++;
 
-  for(int j=0; j<5; j++)
-    printf("\n");
+  printf("\n\n\n\n\n");
 
   printf("  %-12s", "Cue");
   printf("%-22s", "VarName");
@@ -214,8 +198,8 @@ void TermCommand::printMapping()
   printf("%-22s", "---------------");
   printf(" -------------- (%d)\n", m_iteration);
 
-  int vsize = m_var_name.size();
-  for(int i=vsize-1; i>=0; i--) {
+  unsigned int i, vsize = m_var_name.size();
+  for(i=vsize-1; i>=0; i--) {
     printf("  %-12s ", m_var_key[i].c_str());
     
     printf("%-22s", m_var_name[i].c_str());
@@ -390,10 +374,10 @@ void TermCommand::handleCharInput(char c)
   printf(" --------------\n");
 
   vector<int> completions = getPartialKeyMatches();
-  int vsize = completions.size();
+  unsigned int j, vsize = completions.size();
   
   if(vsize > 1) {
-    for(int j=vsize-1; j>=0; j--) {
+    for(j=vsize-1; j>=0; j--) {
       int i = completions[j];
       printf("  %-24s ", m_var_key[i].c_str());
       printf("%-32s", m_var_name[i].c_str());
@@ -430,6 +414,7 @@ void TermCommand::handleCharInput(char c)
   if((vsize==0) && (res==-1))
     printf("\n  NO MATCH\n\n");
 
-  cout << "> " << m_cmd_buffer << flush;
+  printf("> %s\n", m_cmd_buffer.c_str());
 }
+
 

@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: VPlugPlot.cpp                                        */
 /*    DATE: Aug 9th, 2009                                        */
 /*                                                               */
@@ -176,3 +176,4 @@ unsigned int VPlugPlot::getIndexByTime(double gtime) const
   }
   return(index);
 }
+

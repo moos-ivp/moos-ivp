@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: PIDEngine.h                                          */
 /*    DATE: Jul 31st, 2005 Sunday in Montreal                    */
 /*                                                               */
@@ -64,6 +64,7 @@ protected:
   std::vector<std::string> m_pid_report;
 };
 #endif
+
 
 
 

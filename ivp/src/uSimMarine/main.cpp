@@ -1,9 +1,8 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: main.cpp                                             */
 /*    DATE: Jun 23rd 2006                                        */
-/*          Feb 2011 Major overhaul and iMarineSim -> uSimMarine */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
 /* modify it under the terms of the GNU General Public License   */
@@ -66,6 +65,7 @@ int main(int argc ,char * argv[])
  
   return(0);
 }
+
 
 
 

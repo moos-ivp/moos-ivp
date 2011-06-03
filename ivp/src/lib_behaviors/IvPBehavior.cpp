@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: IvPBehavior.cpp                                      */
 /*    DATE: Oct 21, 2003 5 days after Grady's Gaffe              */
 /*                                                               */
@@ -1010,6 +1010,7 @@ vector<string> IvPBehavior::getStateSpaceVars()
   
   return(rvector);
 }
+
 
 
 

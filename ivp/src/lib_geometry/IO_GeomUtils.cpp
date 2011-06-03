@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: IO_GeomUtils.h                                       */
 /*    DATE: Sep 4th, 2005                                        */
 /*                                                               */
@@ -269,6 +269,7 @@ void printSquare(const XYSquare& square)
   cout << "yl:" << square.getVal(1,0) << " ";
   cout << "yh:" << square.getVal(1,1) << endl;
 }
+
 
 
 

@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: ConditionalParam.cpp                                 */
 /*    DATE: October 2006                                         */
 /*                                                               */
@@ -119,6 +119,7 @@ bool ConditionalParam::setFromString(const string& param_str,
   m_ok = true;
   return(true);
 }
+
 
 
 

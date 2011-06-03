@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: IvPDomain                                            */
 /*    DATE: May 29 2004 At Indigo cafe in Montreal               */
 /*                                                               */
@@ -119,6 +119,37 @@ bool IvPDomain::hasDomain(const string& g_name) const
     if(m_dname[i] == g_name)
       return(true);
   return(false);
+}
+
+//-------------------------------------------------------------
+// Procedure: hasOnlyDomain
+//   Purpose: Return true iff the domain has exactly the one or two
+//            domain variables provided as arguments.
+
+bool IvPDomain::hasOnlyDomain(const string& var1, const string& var2) const
+{
+  bool has_var1 = false;
+  bool has_var2 = false;
+  bool has_others = false;
+
+  unsigned int i;
+  for(i=0; (i < m_dname.size()); i++) {
+    if(m_dname[i] == var1)
+      has_var1 = true;
+    else if(m_dname[i] == var2)
+      has_var2 = true;
+    else
+      has_others = true;
+  }
+
+  if(!has_var1)
+    return(false);
+  if((var2 != "") && !has_var2)
+    return(false);
+  if(has_others)
+    return(false);
+
+  return(true);
 }
 
 //-------------------------------------------------------------
@@ -300,5 +331,6 @@ unsigned int IvPDomain::getDiscreteVal(unsigned int index,
     }
   }
 }
+
 
 

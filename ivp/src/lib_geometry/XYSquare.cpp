@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: XYSquare.cpp                                         */
 /*    DATE: Aug 27th 2005                                        */
 /*                                                               */
@@ -268,3 +268,4 @@ string XYSquare::get_spec(string param) const
 
   return(spec);
 }
+

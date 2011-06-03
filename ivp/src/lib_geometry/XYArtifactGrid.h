@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Andrew Shafer and Michael Benjamin                   */
-/*    ORGN: MIT Cambridge MA                                     */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: XYArtifactGrid.h                                     */
 /*    DATE: 3 JUL 2007                                           */
 /*                                                               */
@@ -79,3 +79,4 @@ public:
 };
 
 #endif
+

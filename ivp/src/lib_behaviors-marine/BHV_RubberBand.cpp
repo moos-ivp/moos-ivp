@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Henrik Schmidt                                       */
-/*    ORGN: MIT Cambridge MA                                     */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: BHV_RubberBand.cpp                                   */
 /*    DATE: Aug 25 2006                                          */
 /*                                                               */
@@ -392,5 +392,6 @@ void BHV_RubberBand::postErasableTrailPoint()
   string spec = m_trail_point.get_spec();
   postMessage("VIEW_POINT", spec);
 }
+
 
 

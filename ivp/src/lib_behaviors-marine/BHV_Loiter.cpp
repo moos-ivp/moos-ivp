@@ -1,11 +1,11 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: BHV_Loiter.cpp                                       */
 /*    DATE: July 26th 2005 In Elba w/ M.Grund, P.Newman          */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
-/* modify it under the termxs of the GNU General Public License   */
+/* modify it under the terms of the GNU General Public License   */
 /* as published by the Free Software Foundation; either version  */
 /* 2 of the License, or (at your option) any later version.      */
 /*                                                               */
@@ -579,3 +579,4 @@ void BHV_Loiter::handleVisualHint(string hint)
   else if(param == "label")
     m_hint_poly_label = value;
 }
+

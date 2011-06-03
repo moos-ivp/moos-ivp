@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: IO_GeomUtils.h                                       */
 /*    DATE: Sep 4th, 2005                                        */
 /*                                                               */
@@ -45,5 +45,6 @@ std::string  GridToString(const XYGrid&);
 void printSquare(const XYSquare&);
 
 #endif
+
 
 
