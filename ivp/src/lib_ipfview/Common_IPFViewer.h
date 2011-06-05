@@ -57,6 +57,8 @@ public:
 
   std::string m_tag;
  
+  double m_foo;
+
 protected:
   void   drawFrame();
   void   drawOwnPoint();
@@ -64,7 +66,7 @@ protected:
   bool   drawIvPFunction();
   bool   drawIvPFunction1D();
   bool   drawIvPFunction2D();
-  void   drawQuad(Quad3D&);
+  void   drawQuad(Quad3D quad, double=1);
   void   handleLeftMouse(int, int) {};
   void   handleRightMouse(int, int) {};
   

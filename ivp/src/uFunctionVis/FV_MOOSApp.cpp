@@ -127,16 +127,22 @@ void FV_MOOSApp::process_demuxer_content()
     DemuxedResult result = demuxer.getDemuxedResult();
     while(!result.isEmpty()) {
       redraw_needed = true;
-      string str = result.getString();
-      string src = result.getSource();
+      string ipf_str = result.getString();
+      string community_src = result.getSource();
 
-      cout << "FV_MOOSApp:process_demuxer_content():" << endl;
-      cout << "str:" << str << endl;
-      cout << "src:" << src << endl << endl;
+      //cout << "FV_MOOSApp:process_demuxer_content():" << endl;
+      //cout << "str:" << ipf_str << endl;
+      //cout << "src:" << community_src << endl << endl;
       
+      string context_str = StringToIvPContext(ipf_str);
+      string iter = biteString(context_str, ':');
+      string bhv  = context_str;
 
-      model->addIPF(str, src);
+      model->addIPF(ipf_str, community_src);
       result = demuxer.getDemuxedResult();
+
+      if(gui)
+	gui->addBehaviorSource(bhv);
     }
       
     if(redraw_needed) {

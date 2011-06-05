@@ -24,6 +24,7 @@
 #include "IPF_Entry.h"
 #include "FunctionEncoder.h"
 #include "IPFViewUtils.h"
+#include "MBUtils.h"
 
 using namespace std;
 
@@ -66,7 +67,12 @@ QuadSet IPF_Entry::getQuadSet(IvPDomain ivp_domain)
       m_pieces     = new_ipf->getPDMap()->size();
       m_priority   = new_ipf->getPWT();
       new_ipf = expandHdgSpdIPF(new_ipf, ivp_domain);
-      m_quadset.applyIPF(new_ipf);
+
+      string context_str = new_ipf->getContextStr();
+      string iter = biteString(context_str, ':');
+      string bhv_source  = context_str;
+
+      m_quadset.applyIPF(new_ipf, bhv_source);
       delete(new_ipf);
     }
   }

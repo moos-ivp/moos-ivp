@@ -35,7 +35,6 @@ using namespace std;
 
 FV_Model::FV_Model()
 {
-  m_collective = false;
   m_lock_ipf   = false;
   m_curr_iter  = 0;
 
@@ -86,47 +85,11 @@ void FV_Model::modColorMap(const string &str)
 //-------------------------------------------------------------
 // Procedure: modSource()
 
-void FV_Model::modSource(bool increment)
+void FV_Model::modSource(const std::string& bhv_source)
 {
-  if(m_collective)
-    return;
-
-  m_ipf_mutex.Lock();
-
-  if(m_verbose)
-    cout << "Old source: " << m_curr_source << endl;
-
   vector<string> sources = m_bundle_series.getAllSources();
-  unsigned int i, vsize = sources.size();
-  if(vsize == 0) {
-    m_curr_source = "";
-    return;
-  }
-
-  if(m_verbose)
-    cout << "Sources size: " << vsize << endl;
-  string new_source = sources[0];
-  for(i=0; i<vsize; i++) {
-    if(m_curr_source == sources[i]) {
-      if(increment) {
-	if(i == (vsize-1))
-	  new_source = sources[0];
-	else
-	  new_source = sources[i+1];
-      }
-      else {
-	if(i == 0)
-	  new_source = sources[(vsize-1)];
-	else
-	  new_source = sources[i-1];
-      }
-    }
-  }
-  m_curr_source = new_source;
-
-  if(m_verbose)
-    cout << "New source: " << m_curr_source << endl;
-  m_ipf_mutex.UnLock();
+  if(vectorContains(sources, bhv_source))
+    m_curr_source = bhv_source;
 }
 
 //-------------------------------------------------------------
@@ -134,7 +97,7 @@ void FV_Model::modSource(bool increment)
 
 string FV_Model::getCurrSource()
 {
-  if(m_collective)
+  if(m_collective != "")
     return("Collective Function");
   else {
     if(m_curr_source != "")
@@ -149,7 +112,7 @@ string FV_Model::getCurrSource()
 
 string FV_Model::getCurrPieces()
 {
-  if(m_collective)
+  if(m_collective != "")
     return("n/a");
   else {
     unsigned int pcs;
@@ -163,7 +126,7 @@ string FV_Model::getCurrPieces()
 
 string FV_Model::getCurrPriority()
 {
-  if(m_collective)
+  if(m_collective != "")
     return("n/a");
   else {
     double pwt;
@@ -177,7 +140,7 @@ string FV_Model::getCurrPriority()
 
 string FV_Model::getCurrDomain()
 {
-  if(m_collective)
+  if(m_collective != "")
     return("n/a");
   else {
     IvPDomain ivp_domain;
@@ -202,8 +165,8 @@ QuadSet FV_Model::getQuadSet()
   m_ipf_mutex.Lock();
 
   QuadSet quadset;
-  if(m_collective)
-    quadset = m_bundle_series.getCollectiveQuadSet(m_curr_iter);
+  if(m_collective != "")
+    quadset = m_bundle_series.getCollectiveQuadSet(m_curr_iter, m_collective);
   else
     quadset = m_bundle_series.getQuadSet(m_curr_iter, m_curr_source);
   

@@ -83,6 +83,15 @@ FV_GUI::FV_GUI(int g_w, int g_h, const char *g_l)
   this->resizable(this);
   this->show();
   this->updateFields();
+
+  string label = "Behaviors/Collective";
+  m_menu_bar->add(label.c_str(), 0, (Fl_Callback*)FV_GUI::cb_BehaviorSelect, 
+		  (void*)900);
+
+  label = "Behaviors/Collective (dep)";
+  m_menu_bar->add(label.c_str(), 0, (Fl_Callback*)FV_GUI::cb_BehaviorSelect, 
+		  (void*)901, FL_MENU_DIVIDER);
+
 }
 
 Fl_Menu_Item FV_GUI::menu_[] = {
@@ -101,6 +110,7 @@ Fl_Menu_Item FV_GUI::menu_[] = {
  {"Zoom In",         'i', (Fl_Callback*)FV_GUI::cb_Zoom, (void*)-1, 0},
  {"Zoom Out",        'o', (Fl_Callback*)FV_GUI::cb_Zoom, (void*)1, 0},
  {"Zoom Reset", FL_ALT+'Z', (Fl_Callback*)FV_GUI::cb_Zoom, (void*)0, 0},
+ {"Lock/UnLock", 'l', (Fl_Callback*)FV_GUI::cb_ToggleLockIPF, (void*)2, 0},
  {0},
 
  {"Color-Map", 0,  0, 0, 64, 0, 0, 14, 0},
@@ -109,15 +119,33 @@ Fl_Menu_Item FV_GUI::menu_[] = {
  {"Bone",      0, (Fl_Callback*)FV_GUI::cb_ColorMap, (void*)3, FL_MENU_RADIO|FL_MENU_DIVIDER},
  {0},
 
- {"Function-Select", 0,  0, 0, 64, 0, 0, 14, 0},
- {"Increment",   '+', (Fl_Callback*)FV_GUI::cb_IncCurrFunction, (void*)1, 0},
- {"Decrement",   '-',  (Fl_Callback*)FV_GUI::cb_IncCurrFunction, (void*)-1, 0},
- {"Collective",  'c',  (Fl_Callback*)FV_GUI::cb_ToggleCollectiveView, (void*)0, 0},
- {"Lock/UnLock", 'l', (Fl_Callback*)FV_GUI::cb_ToggleLockIPF, (void*)2, 0},
- {0},
-
  {0}
 };
+
+//----------------------------------------------------------
+// Procedure: addBehaviorSource
+
+void FV_GUI::addBehaviorSource(string bhv_source)
+{
+  bool found = false;
+  unsigned int index = 0;
+  unsigned int i, vsize = m_bhv_sources.size();
+  for(i=0; i<vsize; i++) {
+    if(m_bhv_sources[i] == bhv_source) {
+      found = true;
+      index = i;
+    }
+  }
+
+  if(!found) {
+    m_bhv_sources.push_back(bhv_source);
+    index = m_bhv_sources.size() - 1;
+  }
+  
+  string label = "Behaviors/" + bhv_source;
+  m_menu_bar->add(label.c_str(), 0, (Fl_Callback*)FV_GUI::cb_BehaviorSelect, (void*)index);
+}
+
 
 //----------------------------------------------------------
 // Procedure: handle
@@ -162,6 +190,30 @@ int FV_GUI::handle(int event)
   }
 }
 
+//----------------------------------------- BehaviorSelect
+inline void FV_GUI::cb_BehaviorSelect_i(int index) {
+  if((!m_model) || (index < 0))
+    return;
+
+  if((unsigned int)(index) < m_bhv_sources.size()) {
+    cout << "Chosen behavior:" << m_bhv_sources[index] << endl;
+    m_model->modSource(m_bhv_sources[index]);
+    m_model->setCollective();
+  }
+  else if(index == 900) {
+    cout << "Chosen behavior: collective" << endl;
+    m_model->setCollective("collective-hdgspd");
+  }
+  else if(index == 901) {
+    cout << "Chosen behavior: collective (dep)" << endl;
+    m_model->setCollective("collective-depth");
+  }
+  updateFields();
+}
+void FV_GUI::cb_BehaviorSelect(Fl_Widget* o, int v) {
+  ((FV_GUI*)(o->parent()->user_data()))->cb_BehaviorSelect_i(v);
+}
+
 //----------------------------------------- Zoom In
 inline void FV_GUI::cb_Zoom_i(int val) {
   if(val < 0) m_viewer->setParam("mod_zoom", 1.25);
@@ -189,8 +241,8 @@ void FV_GUI::cb_RotateZ(Fl_Widget* o, int v) {
 
 //----------------------------------------- Stretch Radius
 inline void FV_GUI::cb_StretchRad_i(int amt) {
-  if(amt > 0) m_viewer->setParam("mod_radius", 1.25);
-  if(amt < 0) m_viewer->setParam("mod_radius", 0.80);
+  if(amt > 0) m_viewer->setParam("mod_radius", 1.05);
+  if(amt < 0) m_viewer->setParam("mod_radius", 0.95);
 }
 void FV_GUI::cb_StretchRad(Fl_Widget* o, int v) {
   ((FV_GUI*)(o->parent()->user_data()))->cb_StretchRad_i(v);
@@ -232,32 +284,6 @@ inline void FV_GUI::cb_ColorMap_i(int index) {
 }
 void FV_GUI::cb_ColorMap(Fl_Widget* o, int v) {
   ((FV_GUI*)(o->parent()->user_data()))->cb_ColorMap_i(v);
-}
-
-//----------------------------------------- IncCurrFunction
-inline void FV_GUI::cb_IncCurrFunction_i(int amt) {
-  if(!m_model)
-    return;
-  if(amt > 0)
-    m_model->modSource(true);
-  else
-    m_model->modSource(false);
-  updateFields();
-}
-void FV_GUI::cb_IncCurrFunction(Fl_Widget* o, int v) {
-  ((FV_GUI*)(o->parent()->user_data()))->cb_IncCurrFunction_i(v);
-}
-
-//----------------------------------------- ToggleCollectiveView
-inline void FV_GUI::cb_ToggleCollectiveView_i() {
-  if(!m_model)
-    return;
-  
-  m_model->toggleCollective();
-  updateFields();
-}
-void FV_GUI::cb_ToggleCollectiveView(Fl_Widget* o) {
-  ((FV_GUI*)(o->parent()->user_data()))->cb_ToggleCollectiveView_i();
 }
 
 //----------------------------------------- ToggleSet

@@ -79,10 +79,13 @@ void IPF_BundleSeries::addIPF(const std::string& str)
 
 //--------------------------------------------------------------
 // Procedure: getCollectiveQuadSet
+//      Note: Typical values for ctype: "collective-depth", 
+//            "collective-hdgspd"
 
-QuadSet IPF_BundleSeries::getCollectiveQuadSet(unsigned int iter)
+QuadSet IPF_BundleSeries::getCollectiveQuadSet(unsigned int iter,
+					       string ctype)
 {
-  return(m_bundles[iter].getCollectiveQuadSet());
+  return(m_bundles[iter].getCollectiveQuadSet(ctype));
 }
 
 

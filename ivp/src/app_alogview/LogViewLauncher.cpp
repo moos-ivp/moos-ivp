@@ -236,6 +236,8 @@ void LogViewLauncher::setWindowLayout(int argc, char **argv)
 {
   m_window_layout = "normal";
   
+  return; // For now just allow normal mode until further debugging on the other modes
+
   for(int i=1; i<argc; i++) {
     if(!strncmp(argv[i], "--layout=", 9)) {
       string argi  = tolower(argv[i]);

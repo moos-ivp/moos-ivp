@@ -38,7 +38,7 @@ Common_IPFViewer::Common_IPFViewer(int g_x, int g_y, int g_width,
   m_xRot         = -72;
   m_zRot         = 40;
   m_zoom         = 1;
-  m_rad_extra    = 8;
+  m_rad_extra    = 1;
   m_draw_pin     = true;
   m_draw_frame   = true;
   m_draw_base    = true;
@@ -222,7 +222,7 @@ void Common_IPFViewer::draw()
   // Reset projection matrix stack
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
-  
+
   // Establish clipping volume (left, right, bottom, top, near, far)
   if(w() <= h()) 
     glOrtho (-nRange, nRange, -nRange*h()/w(), nRange*h()/w(), -nRange, nRange);
@@ -382,41 +382,43 @@ bool Common_IPFViewer::drawIvPFunction1D()
 bool Common_IPFViewer::drawIvPFunction2D()
 {
   IvPDomain domain = m_quadset.getDomain();
+  double calc_rad_extra = 1;
   if(domain.hasDomain("speed")) {
     unsigned int spd_pts = domain.getVarPoints("speed");
     double min_extent = w();
     if(h() < min_extent)
       min_extent = h();
-    m_rad_extra = min_extent / (double)(spd_pts);
+    if(spd_pts >= 1)
+      calc_rad_extra = min_extent / (double)(spd_pts);
   } 
-
-
+  
   unsigned int i, quad_cnt = m_quadset.size2D();
   if(quad_cnt == 0)
     return(false);
-    
-  for(i=0; i<quad_cnt; i++) {
-    Quad3D quad = m_quadset.getQuad(i);
-    drawQuad(quad);
-  }
+
+  for(i=0; i<quad_cnt; i++)
+    drawQuad(m_quadset.getQuad(i), calc_rad_extra);
+
   return(true);
 }
 
 //-------------------------------------------------------------
 // Procedure: drawQuad
 
-void Common_IPFViewer::drawQuad(Quad3D &q)
-
+void Common_IPFViewer::drawQuad(Quad3D q, double rad_extra_extra)
 {
+  
   double m_intensity = 1.0;
 
+  double rad_extra = m_rad_extra * rad_extra_extra;
+
   if(m_polar == 2) {
-    q.xl *= m_rad_extra;
-    q.xh *= m_rad_extra;
+    q.xl *= rad_extra;
+    q.xh *= rad_extra;
   }
   else if(m_polar == 1) {
-    q.yl *= m_rad_extra;
-    q.yh *= m_rad_extra;
+    q.yl *= rad_extra;
+    q.yh *= rad_extra;
   }
 
   q.llval_r *= m_intensity;   q.hlval_r *= m_intensity;

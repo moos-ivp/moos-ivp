@@ -35,13 +35,14 @@ public:
   ~FV_Model() {};
 
 public:
-  void     addIPF(const std::string& ipf_str, const std::string& platform);
+  void     addIPF(const std::string& ipf_str, const std::string& plat);
   void     modColorMap(const std::string&);
-  void     modSource(bool increment=true);
-  int      getCurrIteration() {return(m_curr_iter);};
-  void     toggleCollective() {m_collective = !m_collective;};
-  void     toggleLockIPF()    {m_lock_ipf = !m_lock_ipf;};
-  bool     isLocked()         {return(m_lock_ipf);};
+  void     modSource(const std::string& bhv_source);
+
+  int      getCurrIteration()               {return(m_curr_iter);};
+  void     setCollective(std::string s="")  {m_collective=s;}; 
+  void     toggleLockIPF()                  {m_lock_ipf = !m_lock_ipf;};
+  bool     isLocked()                       {return(m_lock_ipf);};
 
   std::string getCurrPlatform();
   std::string getCurrSource();
@@ -63,8 +64,8 @@ public:
 
  protected: // Run-time user config variables
   bool             m_lock_ipf;
-  bool             m_collective;
   FColorMap        m_color_map;
+  std::string      m_collective;
   std::string      m_curr_source;
 
 };

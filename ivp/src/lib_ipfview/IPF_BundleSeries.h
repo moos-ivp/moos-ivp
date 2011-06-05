@@ -39,7 +39,8 @@ public:
   void      clear();
   void      addIPF(const std::string&);
   
-  QuadSet   getCollectiveQuadSet(unsigned int iter);
+  QuadSet   getCollectiveQuadSet(unsigned int iter, 
+				 std::string ctype="");
   QuadSet   getQuadSet(unsigned int iter, std::string source);
 
   IvPDomain getDomain(unsigned int iter);

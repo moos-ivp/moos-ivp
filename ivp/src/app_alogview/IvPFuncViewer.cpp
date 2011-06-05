@@ -36,7 +36,7 @@ IvPFuncViewer::IvPFuncViewer(int x, int y, int w, int h, const char *l)
   : Common_IPFViewer(x,y,w,h,l)
 {
   m_plot_ix       = 0;
-  m_rad_extra     = 8;
+  m_rad_extra     = 1;
   m_draw_frame    = true;
   m_zoom          = 2.0;
   m_mouse_infocus = false;

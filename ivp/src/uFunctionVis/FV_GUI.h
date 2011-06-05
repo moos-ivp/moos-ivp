@@ -29,6 +29,7 @@
 #include "FV_Viewer.h"
 #include "FV_Model.h"
 #include "MY_Output.h"
+#include "MY_Menu_Button.h"
 #include "MY_Button.h"
 
 class FV_GUI : Fl_Window {
@@ -37,29 +38,20 @@ public:
 
   static Fl_Menu_Item menu_[];
 
+ public:
   int  handle(int);
   void setModel(FV_Model* g_model)
     {m_model = g_model; m_viewer->setModel(g_model);};
 
   void updateFields();
-  
+  void addBehaviorSource(std::string source);
+
   FV_Viewer* getViewer() {return(m_viewer);};
 
-protected:
-  Fl_Menu_Bar *m_menu_bar;
-  MY_Output   *m_curr_plat;
-  MY_Output   *m_curr_pcs;
-  MY_Output   *m_curr_pwt;
-  MY_Output   *m_curr_src;
-  MY_Output   *m_curr_domain;
-  MY_Output   *curr_iteration;
-  FV_Model    *m_model;
-  FV_Viewer   *m_viewer;
+ private:
+  inline void cb_BehaviorSelect_i(int);
+  static void cb_BehaviorSelect(Fl_Widget*, int);
 
-  MY_Button   *m_but_ipf_set;
-  MY_Button   *m_but_ipf_pin;
-
-private:
   inline void cb_Zoom_i(int);
   static void cb_Zoom(Fl_Widget*, int);
 
@@ -95,6 +87,21 @@ private:
 
   static void cb_Quit();
 
+protected:
+  Fl_Menu_Bar *m_menu_bar;
+  MY_Output   *m_curr_plat;
+  MY_Output   *m_curr_pcs;
+  MY_Output   *m_curr_pwt;
+  MY_Output   *m_curr_src;
+  MY_Output   *m_curr_domain;
+  MY_Output   *curr_iteration;
+  FV_Model    *m_model;
+  FV_Viewer   *m_viewer;
+
+  MY_Button   *m_but_ipf_set;
+  MY_Button   *m_but_ipf_pin;
+
+  std::vector<std::string> m_bhv_sources;
 };
 #endif
 
