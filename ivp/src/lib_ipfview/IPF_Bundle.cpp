@@ -72,11 +72,8 @@ QuadSet IPF_Bundle::getCollectiveQuadSet(string ctype)
   if(ksize == 0)
     return(empty_qset);
   
-  cout << "=============================== ksize:" << ksize << endl;
-
   QuadSet return_qset;
   if(ctype == "collective-depth") {
-    cout << "building-collective-depth" << endl;
     for(k=0; k<ksize; k++) {
       QuadSet quad_set_k = m_entries[k].getQuadSet(m_ivp_domain);
       IvPDomain domain = quad_set_k.getDomain();
@@ -92,13 +89,6 @@ QuadSet IPF_Bundle::getCollectiveQuadSet(string ctype)
 	return_qset.addQuadSet(quad_set_k);
     }
   }
-
-#if 0
-  QuadSet return_qset = m_entries[0].getQuadSet(m_ivp_domain);
-  for(k=1; k<ksize; k++)
-    return_qset.addQuadSet(m_entries[k].getQuadSet(m_ivp_domain));
-#endif
-
 
   return(return_qset);
 }
