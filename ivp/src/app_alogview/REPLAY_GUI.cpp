@@ -854,7 +854,8 @@ inline void REPLAY_GUI::cb_TopSelectSource_i(int index) {
 
   if((index >= 0) && ((unsigned int)(index) < m_sources.size())) {
     m_source_a = m_sources[index];
-    m_but_ipf_source_a->label(m_source_a.c_str());
+    m_but_ipf_source_a_str = truncString(m_source_a, 18, "middle");
+    m_but_ipf_source_a->label(m_but_ipf_source_a_str.c_str());
     ipf_viewer_a->setPlotIndex(m_vname_a, m_source_a);
   }
 
@@ -899,7 +900,8 @@ inline void REPLAY_GUI::cb_BotSelectSource_i(int index) {
 
   if((index >= 0) && ((unsigned int)(index) < m_sources.size())) {
     m_source_b = m_sources[index];
-    m_but_ipf_source_b->label(m_source_b.c_str());
+    m_but_ipf_source_b_str = truncString(m_source_b, 18, "middle");
+    m_but_ipf_source_b->label(m_but_ipf_source_b_str.c_str());
     ipf_viewer_b->setPlotIndex(m_vname_b, m_source_b);
   }
   updateXY();
@@ -1370,7 +1372,7 @@ void REPLAY_GUI::updateSourceMenuButtonA()
   set<string>::const_iterator p;
   for(p=sources.begin(); p!=sources.end(); p++) {
     string source = *p;
-    if(p==sources.begin())
+    if(p==sources.begin()) 
       m_but_ipf_source_a->label(source.c_str());
 
     // First get the index in the list of known sources. This index is 

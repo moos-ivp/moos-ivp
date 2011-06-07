@@ -161,7 +161,9 @@ protected:
   MY_Menu_Button *m_but_ipf_vname_b;
   MY_Menu_Button *m_but_ipf_source_a;
   MY_Menu_Button *m_but_ipf_source_b;
-
+  std::string     m_but_ipf_source_a_str;
+  std::string     m_but_ipf_source_b_str;
+  
   MY_Output   *disp_time;
   MY_Output   *play_rate;
   MY_Output   *collect_state;

@@ -458,40 +458,32 @@ string toupper(const string& str)
 //----------------------------------------------------------------
 // Procedure: truncString
 
-string truncString(const string& str, std::string::size_type sz, string style)
+string truncString(const string& str, unsigned int newlen, string style)
 {
-  if(sz < 0)
-    sz = 0;
-
-  string::size_type len  = str.length();
-  if(len <= sz)
+  unsigned int len = str.length();
+  if(newlen > len)
     return(str);
 
-  char *buff = new char[sz+1]; 
+  if((style == "") || (style == "basic") || (style == "front"))
+    return(str.substr(0, newlen));
 
-  if((style == "middle") && (sz >= 4)) {
-    string::size_type front_amt = sz/2;
-    string::size_type back_amt  = (sz-2) - front_amt;
-    for(string::size_type i=0; i<front_amt; i++)
-      buff[i] = str[i];
-    buff[front_amt]   = '.';
-    buff[front_amt+1] = '.';
-    
-    for(string::size_type i=0; i<back_amt; i++) {
-      string::size_type leftix  = (front_amt+2) + i;
-      string::size_type rightix = (len - back_amt) + i;
-      buff[leftix] = str[rightix];
-    }
-    buff[sz] = '\0';
-  }
-  else { // if style is basic truncation
-    for(string::size_type i=0; i<sz; i++)
-      buff[i] = str[i];
-    buff[sz] = '\0';
-  }
+  if(style == "back")
+    return(str.substr(len-newlen, newlen));
 
-  string rstr = buff;
-  return(rstr);
+  // Otherwise the style is request is assumed to be "middle"
+
+  // It doesnt' make sense to middle down to a string less than 4 since
+  // the two periods in the middle should have at least one character
+  // on each side. If this is requested, just return trunc-front.
+  if(newlen < 4)
+    return(str.substr(0, newlen));
+
+  unsigned int back = newlen / 2;
+  unsigned int front = newlen - back;
+  back--;
+  front--;
+  string new_str = str.substr(0,front) + ".." + str.substr(len-back,len);
+  return(new_str);
 }
 
 //----------------------------------------------------------------

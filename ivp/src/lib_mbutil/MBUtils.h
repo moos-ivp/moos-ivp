@@ -48,7 +48,8 @@ std::string biteString(std::string&, char, char);
 std::string stripBlankEnds(const std::string&);
 std::string tolower(const std::string&);
 std::string toupper(const std::string&);
-std::string truncString(const std::string&, std::string::size_type, std::string="");
+std::string truncString(const std::string&, unsigned int newlen, 
+			std::string="");
 std::string boolToString(bool);
 std::string uintToString(unsigned int);
 std::string intToString(int);
