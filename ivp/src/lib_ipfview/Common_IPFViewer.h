@@ -55,10 +55,6 @@ public:
   void   setClearColor(std::string s)  {m_clear_color.setColor(s);};
   void   setFrameColor(std::string s)  {m_frame_color.setColor(s);};
 
-  std::string m_tag;
- 
-  double m_foo;
-
 protected:
   void   drawFrame();
   void   drawOwnPoint();
@@ -73,7 +69,8 @@ protected:
   void   draw1DAxes(const IvPDomain&);
   void   draw1DLabels(const IvPDomain&);
   void   draw1DKeys(std::vector<std::string>, std::vector<ColorPack>);
-  void   draw1DMax();
+  void   draw1DLine(double val=0, std::string label="");
+  void   draw1DLineX(double, std::string, int, ColorPack);
   void   drawText(int x, int y, std::string s);
 
 protected:

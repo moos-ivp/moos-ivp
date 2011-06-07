@@ -81,11 +81,11 @@ bool QuadSet::applyIPF1D(IvPFunction *ipf, string source)
   m_domain_ix_max.clear();
   m_sources.clear();
 
-  vector<unsigned int> domain_pts;
-  vector<double>       range_vals;
-  vector<bool>         domain_ptsx;
-  double               range_val_max=0;
-  unsigned int         domain_ix_max=0;
+  vector<double>  domain_pts;
+  vector<double>  range_vals;
+  vector<bool>    domain_ptsx;
+  double          range_val_max=0;
+  unsigned int    domain_ix_max=0;
 
   double priority_wt = ipf->getPWT();
 
@@ -373,12 +373,12 @@ void QuadSet::addQuadSet(const QuadSet& g_quads)
     if((msize != 0) && (msize != gsize))
       return;
 
-    vector<unsigned int> domain_pts  = g_quads.getDomainPts();
-    vector<double>       range_vals  = g_quads.getRangeVals();
-    vector<bool>         domain_ptsx = g_quads.getDomainPtsX();
-    double             range_val_max = g_quads.getRangeValMax();
-    unsigned int       domain_ix_max = g_quads.getDomainIXMax();
-    string                    source = g_quads.getSource();
+    vector<double>  domain_pts    = g_quads.getDomainPts();
+    vector<double>  range_vals    = g_quads.getRangeVals();
+    vector<bool>    domain_ptsx   = g_quads.getDomainPtsX();
+    double          range_val_max = g_quads.getRangeValMax();
+    unsigned int    domain_ix_max = g_quads.getDomainIXMax();
+    string          source        = g_quads.getSource();
     
     // If this is an empty quadset, just set to the given quadset
     if(msize == 0) {
@@ -471,12 +471,12 @@ unsigned int QuadSet::size1D() const
 //-------------------------------------------------------------
 // Procedure: getDomainPts
 
-vector<unsigned int> QuadSet::getDomainPts(unsigned int index) const
+vector<double> QuadSet::getDomainPts(unsigned int index) const
 {
-  vector<unsigned int> rvector;
+  vector<double> rvector;
   if(index >= m_domain_pts.size())
     return(rvector);
-
+  
   return(m_domain_pts[index]);   
 }
 

@@ -67,12 +67,12 @@ public:
 
   void         resetMinMaxVals();
   
-  std::vector<unsigned int> getDomainPts(unsigned int=0)  const;
-  std::vector<double>       getRangeVals(unsigned int=0)  const;
-  std::vector<bool>         getDomainPtsX(unsigned int=0) const;
-  double                    getRangeValMax(unsigned int=0) const;
-  unsigned int              getDomainIXMax(unsigned int=0) const;
-  std::string               getSource(unsigned int=0) const;
+  std::vector<double>  getDomainPts(unsigned int=0)  const;
+  std::vector<double>  getRangeVals(unsigned int=0)  const;
+  std::vector<bool>    getDomainPtsX(unsigned int=0) const;
+  double               getRangeValMax(unsigned int=0) const;
+  unsigned int         getDomainIXMax(unsigned int=0) const;
+  std::string          getSource(unsigned int=0) const;
   
 protected:
   std::vector<Quad3D> m_quads;
@@ -102,12 +102,12 @@ protected:
   // Values for representing 1D IPFs
   // Each outer index below is for one source, typically:
   //   [0] Collective [1] Source#1 [2] Source#2 ...
-  std::vector<std::vector<unsigned int> > m_domain_pts;
-  std::vector<std::vector<bool> >         m_domain_ptsx; // true if pt piece edge
-  std::vector<std::vector<double> >       m_range_vals;
-  std::vector<double>                     m_range_val_max;
-  std::vector<unsigned int>               m_domain_ix_max;
-  std::vector<std::string>                m_sources;
+  std::vector<std::vector<double> >  m_domain_pts;
+  std::vector<std::vector<bool> >    m_domain_ptsx; // true if pt piece edge
+  std::vector<std::vector<double> >  m_range_vals;
+  std::vector<double>                m_range_val_max;
+  std::vector<unsigned int>          m_domain_ix_max;
+  std::vector<std::string>           m_sources;
 
 };
 #endif

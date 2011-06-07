@@ -59,9 +59,6 @@ REPLAY_GUI::REPLAY_GUI(int g_w, int g_h, const char *g_l)
   ipf_viewer_a = new IvPFuncViewer(1, 1, 1, 1);
   ipf_viewer_b = new IvPFuncViewer(1, 1, 1, 1);
 
-  ipf_viewer_a->m_tag="A";
-  ipf_viewer_b->m_tag="B";
-
   ipf_pcs_a = 0;
   ipf_pcs_b = 0;
   ipf_pwt_a = 0;

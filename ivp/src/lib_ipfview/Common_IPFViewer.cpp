@@ -301,11 +301,11 @@ bool Common_IPFViewer::drawIvPFunction1D()
   
   for(fix=0; fix<fsize; fix++) {
 
-    vector<unsigned int> domain_pts  = m_quadset.getDomainPts(fix);
-    vector<bool>         domain_ptsx = m_quadset.getDomainPtsX(fix);
-    vector<double>       range_vals  = m_quadset.getRangeVals(fix);
-    double            range_val_max  = m_quadset.getRangeValMax(0);
-    string                   source  = m_quadset.getSource(fix);
+    vector<double>  domain_pts     = m_quadset.getDomainPts(fix);
+    vector<bool>    domain_ptsx    = m_quadset.getDomainPtsX(fix);
+    vector<double>  range_vals     = m_quadset.getRangeVals(fix);
+    double          range_val_max  = m_quadset.getRangeValMax(0);
+    string          source         = m_quadset.getSource(fix);
 
     ColorPack linec("firebrick");
     if((fix==1) || (fsize == 1))
@@ -330,7 +330,7 @@ bool Common_IPFViewer::drawIvPFunction1D()
     double domain_val_max = m_quadset.getDomain().getVarHigh(0);
     double x_stretch = ((double)(m_grid_width)  / domain_val_max);
     
-    //double x_stretch = ((double)(m_grid_width)  / (double)(xsize));
+
     double y_stretch = ((double)(m_grid_height) / (double)(range_val_max));
     for(j=0; j<xsize; j++) {
       if((j==0) || (domain_ptsx[j])) {
@@ -358,6 +358,7 @@ bool Common_IPFViewer::drawIvPFunction1D()
       double x = domain_pts[i] * x_stretch;
       double y = range_vals[i] * y_stretch;
       glVertex2f(x,y);
+
     }
     
     glEnd();
@@ -371,7 +372,7 @@ bool Common_IPFViewer::drawIvPFunction1D()
   draw1DAxes(m_quadset.getDomain());
   draw1DLabels(m_quadset.getDomain());
   draw1DKeys(key_strings, key_colors);
-  draw1DMax();
+  draw1DLine();
 
   return(false);
 }
@@ -791,19 +792,20 @@ void Common_IPFViewer::draw1DKeys(vector<string> key_strings,
 
 
 //-------------------------------------------------------------
-// Procedure: draw1DMax
+// Procedure: draw1DLine
 
-void Common_IPFViewer::draw1DMax()
+void Common_IPFViewer::draw1DLine(double val, string label)
 {
   ColorPack cpack("purple");
   double kred = cpack.red();
   double kgrn = cpack.grn();
   double kblu = cpack.blu();
   
-  unsigned int dom_pts  = m_quadset.getDomainPts().size();
+  unsigned int dom_pts = m_quadset.getDomainPts().size();
+  double x_stretch     = ((double)(m_grid_width)  / (double)(dom_pts));
+
   unsigned int domain_ix = m_quadset.getDomainIXMax();
   double domain_val      = m_quadset.getDomain().getVal(0, domain_ix);
-  double x_stretch       = ((double)(m_grid_width)  / (double)(dom_pts));
 
   // Draw the label for the line
   string mstr = "preferred_depth = " + doubleToStringX(domain_val);
@@ -842,6 +844,72 @@ void Common_IPFViewer::draw1DMax()
   glFlush();
   glPopMatrix();
 
+}
+
+
+
+//-------------------------------------------------------------
+// Procedure: draw1DLine
+
+void Common_IPFViewer::draw1DLineX(double value, 
+				   string label,
+				   int offset,
+				   ColorPack cpack)
+{
+  IvPDomain domain = m_quadset.getDomain();
+  if(domain.size() != 1)
+    return;
+
+  double kred = cpack.red();
+  double kgrn = cpack.grn();
+  double kblu = cpack.blu();
+  
+  double dlow = domain.getVarLow(0);
+  double dhgh = domain.getVarHigh(0);
+  double range = dhgh - dlow;
+
+  value = vclip(value, dlow, dhgh);
+  
+  double pct = 0;
+  if(range > 0)
+    pct = (value - dlow) / range;
+
+  double xpos = pct * m_grid_width;
+  double ypos = m_yoffset + m_grid_height;
+
+  // Draw the label for the line
+  string mstr = label + doubleToStringX(value);
+ 
+  glColor3f(kred, kgrn, kblu);
+  gl_font(1,10);
+
+  double text_xpos = xpos - 50;
+  if(text_xpos < (m_xoffset/2))
+    text_xpos = m_xoffset/2;
+  drawText(text_xpos, ypos+offset, mstr);
+
+    // Draw the line
+  cpack.moregray(0.7);
+  kred = cpack.red();
+  kgrn = cpack.grn();
+  kblu = cpack.blu();
+  
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glOrtho(0, w(), 0, h(), -1 ,1);
+
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
+  glLoadIdentity();
+
+  glColor4f(kred, kgrn, kblu,  0.1);
+  glBegin(GL_LINE_STRIP);
+  glVertex2f(xpos, m_yoffset);
+  glVertex2f(xpos, ypos+35);
+  glEnd();
+
+  glFlush();
+  glPopMatrix();
 }
 
 
