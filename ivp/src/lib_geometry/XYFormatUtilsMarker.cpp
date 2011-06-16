@@ -61,18 +61,26 @@ XYMarker stringStandard2Marker(string str)
   vector<string> mvector = parseString(str, ',');
   unsigned int i, vsize = mvector.size();
 
-  string x,y,width;
+  string x,y,width="5";
   for(i=0; i<vsize; i++) {
     mvector[i] = stripBlankEnds(mvector[i]);
     string param = tolower(stripBlankEnds(biteString(mvector[i], '=')));
     string value = stripBlankEnds(mvector[i]);
     
-    if((param == "x") && isNumber(value))
+    if(((param == "x") || (param == "xpos")) && isNumber(value))
       x = value;
-    else if((param == "y") && isNumber(value))
+    else if(((param == "y") || (param == "ypos")) && isNumber(value))
       y = value;
-    else if((param == "width") && isNumber(value))
+    else if(((param == "width") || (param == "scale")) && isNumber(value))
       width = value;
+    else if(param == "colors") {
+      string primary_color = biteString(value, ':');
+      string secondary_color = value;
+      if(isColor(primary_color))
+	new_marker.set_color("primary_color", primary_color);
+      if(isColor(secondary_color))
+	new_marker.set_color("secondary_color", secondary_color);
+    }
     else if((param == "primary_color") || (param == "color"))
       new_marker.set_color("primary_color", value);
     else if(param == "secondary_color")
@@ -81,7 +89,7 @@ XYMarker stringStandard2Marker(string str)
       new_marker.set_param(param, value);
   }
 
-  if((x=="") || (y=="") || (width==""))
+  if((x=="") || (y==""))
     return(null_marker);
   
   new_marker.set_vx(atof(x.c_str()));

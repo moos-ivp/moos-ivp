@@ -51,6 +51,16 @@ bool XYMarker::set_type(const string& str)
 }
 
 //---------------------------------------------------------------
+// Procedure: set_width
+
+void XYMarker::set_width(double width)
+{
+  if(width < 0)
+    width = 0;
+  m_width = width;
+}
+
+//---------------------------------------------------------------
 // Procedure: get_spec
 
 string XYMarker::get_spec(string param) const

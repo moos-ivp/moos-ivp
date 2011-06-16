@@ -35,7 +35,7 @@ public:
   bool    set_type(const std::string&);
   void    set_vx(double v)    {m_x=v;};
   void    set_vy(double v)    {m_y=v;};
-  void    set_width(double v) {m_width=v;};
+  void    set_width(double v);
  
   // Getters
   double    get_vx() const              {return(m_x);};
