@@ -236,9 +236,8 @@ bool PMV_Viewer::setParam(string param, string value)
       handled = true;
     }
   }
-  //else if(param == "view_marker") {
-  //  handled = m_vmarkers.addVMarker(value, m_geodesy);
-  //}
+  else if((param == "view_marker") || (param == "marker"))
+    handled = m_geoshapes_map.addGeoShape(param, value, "shoreside");
   else if((param == "node_report") || (param == "node_report_local")){
     handled = m_vehiset.setParam(param, value);
     if(handled && (m_centric_view != "") && m_centric_view_sticky) {
