@@ -1411,7 +1411,7 @@ vector<string> getReleaseInfo(const string& app)
   string pad = padString("", (16-app.length()));
   vector<string> v;
   v.push_back("************************************************************************");
-  v.push_back("* " + app + " - MOOS-IvP Release Bundle - VERSION 4.1+HEAD" + pad + "        *");
+  v.push_back("* " + app + " - MOOS-IvP Release Bundle - VERSION 4.1+HEAD" + pad + "  r3431 *");
   v.push_back("* M.Benjamin (NUWC/MIT), P.Newman (Oxford), Schmidt and Leonard (MIT)  *");
   v.push_back("* Copyright (C) 2008 Free Software Foundation, Inc.                    *");
   v.push_back("* This is free software; see the source for copying conditions.        *");
