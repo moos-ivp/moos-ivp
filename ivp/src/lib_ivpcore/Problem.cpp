@@ -117,19 +117,10 @@ void Problem::addOF(IvPFunction *gof)
   // positive priority weight.
   if(gof->getPWT() <= 0) return;
 
-  //cout << endl;
-  //cout << "min weight: "  << gof->getPDMap()->getMinWT() << endl; 
-  // cout << "max weight: "  << gof->getPDMap()->getMaxWT() << endl; 
   gof->getPDMap()->normalize(0,100);
-  //cout << "min weight(2): "  << gof->getPDMap()->getMinWT() << endl; 
-  //cout << "max weight(2): "  << gof->getPDMap()->getMaxWT() << endl; 
-
 
   // Apply the priority weight to the OF
   gof->getPDMap()->applyWeight(gof->getPWT());
-
-  cout << "min weight(3): "  << gof->getPDMap()->getMinWT() << endl; 
-  cout << "max weight(3): "  << gof->getPDMap()->getMaxWT() << endl; 
 
 
   IvPFunction** newOFs = new IvPFunction*[m_ofnum+1];
