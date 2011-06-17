@@ -117,7 +117,9 @@ void Problem::addOF(IvPFunction *gof)
   // positive priority weight.
   if(gof->getPWT() <= 0) return;
 
-  gof->getPDMap()->normalize(0,100);
+  double range = gof->getPDMap()->getMaxWT() - gof->getPDMap()->getMinWT();
+  if(range > 100)
+    gof->getPDMap()->normalize(0,100);
 
   // Apply the priority weight to the OF
   gof->getPDMap()->applyWeight(gof->getPWT());
