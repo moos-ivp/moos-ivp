@@ -65,13 +65,11 @@ ProcessConfig = pMarineViewer
   set_pan_y            = -425
   zoom                 = 0.65
   vehicles_shape_scale = 1.5
-  vehicles_name_viewable = names
+  vehicles_name_viewable = names+shortmode
 
   vehicles_inactive_color = green
   reference_vehicle = $(VNAME1)
   reference_vehicle = $(VNAME2)
-
-
 
   SCOPE = THREAT_DETECTED
 
