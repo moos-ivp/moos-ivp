@@ -327,13 +327,22 @@ void LogViewLauncher::parseALogFiles()
   parse_timer.start();
   cout << "Parsing alog files..." << endl;
 
+  bool found_nonempty_alog = false;
   unsigned int i, vsize = m_alog_files.size();
   for(i=0; i<vsize; i++) {
     cout << "  Handling " << m_alog_files[i] << "...";
     cout << flush;
-    parseALogFile(i);
-    cout << "DONE" << endl;
-  } 
+    bool non_empty = parseALogFile(i);
+    if(non_empty) {
+      found_nonempty_alog = true;
+      cout << "DONE" << endl;
+    }
+    else {
+      cout << termColor("red");
+      cout << "EMPTY!!! (THIS MAY BE WORTH CHECKING)" << endl;
+      cout << termColor();
+    } 
+  }
 
   parse_timer.stop();
   cout << termColor("green");
@@ -346,16 +355,16 @@ void LogViewLauncher::parseALogFiles()
 // Procedure: parseALogFile
 //            Parse the .alog file given by the index
 
-void LogViewLauncher::parseALogFile(unsigned int index)
+bool LogViewLauncher::parseALogFile(unsigned int index)
 {
   unsigned int vsize = m_alog_files.size();
   if(index >= vsize)
-    return;
+    return(false);
 
   string filestr = m_alog_files[index];
   FILE *f = fopen(filestr.c_str(), "r");
   if(!f)
-    return;
+    return(false);
 
   vector<string>    node_reports;
   vector<ALogEntry> entries_log_plot;
@@ -366,12 +375,15 @@ void LogViewLauncher::parseALogFile(unsigned int index)
   
   double skew = m_alog_files_skew[index];
 
+  bool empty_file = true;
   bool done = false;
   while(!done) {
     ALogEntry entry = getNextRawALogEntry(f);
-    if(entry.getStatus() == "eof")
+    string status = entry.getStatus();
+    if(status == "eof")
       done = true;
-    else {
+    else if(status != "invalid") {
+      empty_file = false;
       string var = entry.getVarName();
       string src = entry.getSource();
       bool   isnum = entry.isNumerical();
@@ -407,13 +419,17 @@ void LogViewLauncher::parseALogFile(unsigned int index)
     }
   }
   fclose(f);
-
+  if(empty_file)
+    return(false);
+  
   m_node_reports.push_back(node_reports);
   m_entries_log_plot.push_back(entries_log_plot);
   m_entries_ipf_plot.push_back(entries_ipf_plot);
   m_entries_vplug_plot.push_back(entries_vplug_plot);
   m_entries_helm_plot.push_back(entries_helm_plot);
   m_entry_ivp_domain.push_back(ivp_domain);
+
+  return(true);
 }
   
 //-------------------------------------------------------------

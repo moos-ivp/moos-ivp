@@ -156,6 +156,10 @@ void IvPFuncViewer::setPlotIndex(string vname, string source)
 
 void IvPFuncViewer::buildIndividualIPF(string vname, string source)
 {
+  // Check extreme case - nothing know about any vehicle
+  if(m_ipf_vname.size() == 0)
+    return;
+
   bool use_previous_index = false;
   if((vname=="") && (source==""))
     use_previous_index = true;

@@ -48,7 +48,7 @@ protected:
   void setALogFiles(int argc, char **argv);
   bool setALogFileSkews();
   void parseALogFiles();
-  void parseALogFile(unsigned int);
+  bool parseALogFile(unsigned int);
   void determineVehicleNames();
 
   bool buildLogPlots();
@@ -84,7 +84,7 @@ private:
   std::vector<double>      m_vehicle_length;
 
   // The various plots created from the alog data before passing
-  // to the logview gui or viewerws.
+  // to the logview gui or viewers.
   // Outer vector index - one per vehicle, i.e., alog file.
   std::vector<std::vector<LogPlot> > m_log_plots;
   std::vector<HelmPlot>  m_helm_plots;

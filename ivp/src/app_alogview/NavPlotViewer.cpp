@@ -603,8 +603,10 @@ void NavPlotViewer::drawVPlugPlot(unsigned int index)
   drawPoints(points);
   drawMarkers(markers);
 
-  double utc_timestamp = m_start_time[index] + m_curr_time;
-  drawRangePulses(pulses, utc_timestamp);
+  if(index < m_start_time.size()) {
+    double utc_timestamp = m_start_time[index] + m_curr_time;
+    drawRangePulses(pulses, utc_timestamp);
+  }
 }
 
 //-------------------------------------------------------------
