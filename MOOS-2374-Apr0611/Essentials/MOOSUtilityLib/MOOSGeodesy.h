@@ -88,7 +88,7 @@ private:
     void SetOriginEasting(double East);
 
     void SetOriginNorthing(double North);
-    bool LLtoUTM(int ReferenceEllipsoid, const double Lat, const double Long, double &UTMNorthing, double &UTMEasting, char* UTMZone);
+    bool LLtoUTM(int ReferenceEllipsoid, const double Lat, const double Long, double &UTMNorthing, double &UTMEasting, char* UTMZone=0);
     void SetMetersEast(double East);
     void SetMetersNorth(double North);
     char UTMLetterDesignator(double Lat);
