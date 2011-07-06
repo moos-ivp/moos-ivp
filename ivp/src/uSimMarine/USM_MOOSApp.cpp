@@ -229,12 +229,12 @@ bool USM_MOOSApp::Iterate()
   double curr_time = MOOSTime();
   m_model.propagate(curr_time);
   
-  VState vstate = m_model.getVState();
-  postVStateUpdate(m_sim_prefix, vstate, curr_time);
+  NodeRecord record = m_model.getNodeRecord();
+  postNodeRecordUpdate(m_sim_prefix, record, curr_time);
 
   if(m_model.usingDualState()) {
-    VState vstate_gt = m_model.getVStateGT();
-    postVStateUpdate(m_sim_prefix+"_GT", vstate_gt, curr_time);
+    NodeRecord record_gt = m_model.getNodeRecordGT();
+    postNodeRecordUpdate(m_sim_prefix+"_GT", record_gt, curr_time);
   }
 
   if(m_model.isForceFresh()) {
@@ -246,13 +246,14 @@ bool USM_MOOSApp::Iterate()
 }
 
 //------------------------------------------------------------------------
-// Procedure: postVStateUpdate
+// Procedure: postNodeRecordUpdate
 
-void USM_MOOSApp::postVStateUpdate(string prefix, VState vstate, 
-				   double curr_time)
+void USM_MOOSApp::postNodeRecordUpdate(string prefix, 
+				       const NodeRecord &record, 
+				       double curr_time)
 {
-  double nav_x = vstate.getX();
-  double nav_y = vstate.getY();
+  double nav_x = record.getX();
+  double nav_y = record.getY();
 
   m_Comms.Notify(prefix+"_X", nav_x, curr_time);
   m_Comms.Notify(prefix+"_Y", nav_y, curr_time);
@@ -268,15 +269,15 @@ void USM_MOOSApp::postVStateUpdate(string prefix, VState vstate,
     m_Comms.Notify(prefix+"_LONG", lon, curr_time);
   }
 
-  double new_speed = vstate.getSpeed();
+  double new_speed = record.getSpeed();
   new_speed = snapToStep(new_speed, 0.01);
 
-  m_Comms.Notify(prefix+"_HEADING", vstate.getHeading(), curr_time);
+  m_Comms.Notify(prefix+"_HEADING", record.getHeading(), curr_time);
   m_Comms.Notify(prefix+"_SPEED", new_speed, curr_time);
-  m_Comms.Notify(prefix+"_DEPTH", vstate.getDepth(), curr_time);
+  m_Comms.Notify(prefix+"_DEPTH", record.getDepth(), curr_time);
 
-  double hog = angle360(vstate.getHeadingOG());
-  double sog = vstate.getSpeedOG();
+  double hog = angle360(record.getHeadingOG());
+  double sog = record.getSpeedOG();
 
   m_Comms.Notify(prefix+"_HEADING_OVER_GROUND", hog, curr_time);
   m_Comms.Notify(prefix+"_SPEED_OVER_GROUND", sog, curr_time);

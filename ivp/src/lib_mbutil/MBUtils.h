@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: MBUtils.h                                            */
 /*    DATE: (1996-2005)                                          */
 /*                                                               */
@@ -92,6 +92,7 @@ double vclip_max(const double& var, const double& high);
 
 bool  isBoolean(const std::string&);
 bool  isNumber(const std::string&, bool=true);
+bool  isAlphaNum(const std::string&, const std::string& s="");
 bool  isQuoted(const std::string&);
 
 int   getArg(int, char**, int, const char*, const char *s=0);
@@ -118,12 +119,3 @@ std::string parseAppName(const std::string&);
 unsigned int charCount(const std::string&, char);
 
 #endif
-
-
-
-
-
-
-
-
-

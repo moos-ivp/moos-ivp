@@ -3,38 +3,6 @@
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: BehaviorRegistry.cpp                                 */
 /*    DATE: May 10th 2011                                        */
-/*                                                               */
-/* (IvPHelm) The IvP autonomous control Helm is a set of         */
-/* classes and algorithms for a behavior-based autonomous        */
-/* control architecture with IvP action selection.               */
-/*                                                               */
-/* The algorithms embodied in this software are protected under  */
-/* U.S. Pat. App. Ser. Nos. 10/631,527 and 10/911,765 and are    */
-/* the property of the United States Navy.                       */
-/*                                                               */
-/* Permission to use, copy, modify and distribute this software  */
-/* and its documentation for any non-commercial purpose, without */
-/* fee, and without a written agreement is hereby granted        */
-/* provided that the above notice and this paragraph and the     */
-/* following three paragraphs appear in all copies.              */
-/*                                                               */
-/* Commercial licences for this software may be obtained by      */
-/* contacting Patent Counsel, Naval Undersea Warfare Center      */
-/* Division Newport at 401-832-4736 or 1176 Howell Street,       */
-/* Newport, RI 02841.                                            */
-/*                                                               */
-/* In no event shall the US Navy be liable to any party for      */
-/* direct, indirect, special, incidental, or consequential       */
-/* damages, including lost profits, arising out of the use       */
-/* of this software and its documentation, even if the US Navy   */
-/* has been advised of the possibility of such damage.           */
-/*                                                               */
-/* The US Navy specifically disclaims any warranties, including, */
-/* but not limited to, the implied warranties of merchantability */
-/* and fitness for a particular purpose. The software provided   */
-/* hereunder is on an 'as-is' basis, and the US Navy has no      */
-/* obligations to provide maintenance, support, updates,         */
-/* enhancements or modifications.                                */
 /*****************************************************************/
 
 #include "BehaviorRegistry.h"
@@ -47,7 +15,8 @@ using namespace std;
 
 BehaviorReport::BehaviorReport()
 {
-  m_keys_unique = true;
+  m_keys_unique      = true;
+  m_latest_iteration = 0;
 }
 
 //-----------------------------------------------------------
@@ -68,7 +37,32 @@ bool BehaviorRegistry::addIPF(IvPFunction *ipf,
 }
 
 
-#if 0
+/*
 
-Need to have a RegistrySummary class. This 
 
+
+
+[waypoint:course]    [45] [ipf*] [true]
+[waypoint:speed]     [45] [ipf*] [true]
+[const_depth:depth]  [45] [ipf*] [false]
+[const_depth:depth]  [45] [ipf*] [false]
+[coll_avd_berta]     [45] [ipf*] [true]
+
+The whole idea of the registry is to convey information back to 
+the behaviors: "by the way I know something about an IPF you sent
+on the previous iteration with the tag xyz, you know, just in case
+you want me to just re-use that one this time."
+
+
+Assumptions enforced by the helm:
+(1) All behaviors have a unique name or key (colons not allowed)
+(2) Behaviors can enforce all IPFs have a unique name by using
+    the behavior name + ":" + unique_key
+
+
+Another reason we want IPFs to have unique tags, (besides for the 
+registry), we want alogview and uFunctionVis to discern them.
+
+
+
+*/

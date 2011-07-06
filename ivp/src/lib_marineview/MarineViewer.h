@@ -36,7 +36,6 @@
 #include "XYCircle.h"
 #include "XYHexagon.h"
 #include "XYRangePulse.h"
-#include "ObjectPose.h"
 #include "OpAreaSpec.h"
 #include "MOOSGeodesy.h"
 #include "VPlug_GeoShapes.h"
@@ -45,6 +44,7 @@
 #include "VPlug_DropPoints.h"
 #include "ColorPack.h"
 #include "BearingLine.h"
+#include "NodeRecord.h"
 
 class MarineViewer : public Fl_Gl_Window
 {
@@ -79,13 +79,10 @@ protected:
   void   drawOpArea(const OpAreaSpec&);
   void   drawDatum(const OpAreaSpec&);
 
-  void   drawCommonVehicle(const std::string& vname, 
-			   const ObjectPose&, 
+  void   drawCommonVehicle(const NodeRecord&,
 			   const BearingLine&, 
 			   const ColorPack& body_color,
 			   const ColorPack& vname_color,
-			   const std::string& body, 
-			   double shape_length,
 			   bool vname_draw, 
 			   unsigned int line=0);
 

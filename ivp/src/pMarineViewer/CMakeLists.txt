@@ -34,6 +34,7 @@ Target_LINK_LIBRARIES(pMarineViewer
    MOOSUtility
    genutil
    geometry
+   contacts
    mbutil
       # Standard libraries used by this project's FLTK apps...
    fltk 

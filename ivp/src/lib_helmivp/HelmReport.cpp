@@ -147,20 +147,22 @@ void HelmReport::addCompletedBHV(const string& descriptor, double time,
 
 //   bhv_waypoint:100,bhv_avoid:200,bhv_opregion:100
 
-void HelmReport::addActiveBHV(const string& descriptor, 
-			      double time, double pwt, 
-			      int pcs, double cpu_time, 
-			      const string& update_summary)
+void HelmReport::addActiveBHV(const string& descriptor, double time, 
+			      double pwt, double pcs, double cpu_time, 
+			      const string& update_summary, 
+			      unsigned int ipfs, bool orig)
 {
   if(m_active_bhvs != "")
     m_active_bhvs += ":";
   
   m_active_bhvs += descriptor;
   m_active_bhvs += "$" + doubleToString(time, 1);
-  m_active_bhvs += "$" + doubleToString(pwt, 2);
-  m_active_bhvs += "$" + intToString(pcs);
+  m_active_bhvs += "$" + doubleToStringX(pwt, 2);
+  m_active_bhvs += "$" + doubleToStringX(pcs);
   m_active_bhvs += "$" + doubleToString(cpu_time,2);
   m_active_bhvs += "$" + update_summary;
+  m_active_bhvs += "$" + uintToString(ipfs);
+  m_active_bhvs += "$" + uintToString(orig);
 }
 
 

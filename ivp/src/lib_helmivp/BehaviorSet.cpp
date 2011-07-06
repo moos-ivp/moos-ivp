@@ -3,43 +3,7 @@
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: BehaviorSet.cpp                                      */
 /*    DATE: Oct 27th 2004 Sox up 3-0 in the Series               */
-/*                                                               */
-/* (IvPHelm) The IvP autonomous control Helm is a set of         */
-/* classes and algorithms for a behavior-based autonomous        */
-/* control architecture with IvP action selection.               */
-/*                                                               */
-/* The algorithms embodied in this software are protected under  */
-/* U.S. Pat. App. Ser. Nos. 10/631,527 and 10/911,765 and are    */
-/* the property of the United States Navy.                       */
-/*                                                               */
-/* Permission to use, copy, modify and distribute this software  */
-/* and its documentation for any non-commercial purpose, without */
-/* fee, and without a written agreement is hereby granted        */
-/* provided that the above notice and this paragraph and the     */
-/* following three paragraphs appear in all copies.              */
-/*                                                               */
-/* Commercial licences for this software may be obtained by      */
-/* contacting Patent Counsel, Naval Undersea Warfare Center      */
-/* Division Newport at 401-832-4736 or 1176 Howell Street,       */
-/* Newport, RI 02841.                                            */
-/*                                                               */
-/* In no event shall the US Navy be liable to any party for      */
-/* direct, indirect, special, incidental, or consequential       */
-/* damages, including lost profits, arising out of the use       */
-/* of this software and its documentation, even if the US Navy   */
-/* has been advised of the possibility of such damage.           */
-/*                                                               */
-/* The US Navy specifically disclaims any warranties, including, */
-/* but not limited to, the implied warranties of merchantability */
-/* and fitness for a particular purpose. The software provided   */
-/* hereunder is on an 'as-is' basis, and the US Navy has no      */
-/* obligations to provide maintenance, support, updates,         */
-/* enhancements or modifications.                                */
 /*****************************************************************/
-#ifdef _WIN32
-#pragma warning(disable : 4786)
-#pragma warning(disable : 4503)
-#endif
 
 #include <iostream>
 #include <set>
@@ -169,7 +133,9 @@ bool BehaviorSet::buildBehaviorsFromSpecs()
 	spec_builds.push_back(sbuild);
 	string bhv_name   = sbuild.getBehaviorName();
       	// If otherwise valid, check if the new bhv_name is unique
-	if(bhv_names.count(bhv_name) || m_bhv_names.count(bhv_name)) {
+	//if(bhv_names.count(bhv_name) || m_bhv_names.count(bhv_name)) {
+	if(!uniqueNameX(bhv_name, bhv_names) ||
+	   !uniqueNameX(bhv_name, m_bhv_names)) {
 	  cout << "Duplicate behavior name found: " << bhv_name << endl;
 	  all_builds_ok = false;
 	}
@@ -217,6 +183,7 @@ bool BehaviorSet::buildBehaviorsFromSpecs()
     life_event.setEventType("spawn");
     m_life_events.push_back(life_event);
   }
+
   return(true);
 }
 
@@ -256,9 +223,14 @@ SpecBuild BehaviorSet::buildBehaviorFromSpec(BehaviorSpec spec,
     string cline = spec.getConfigLine(i);
     string left  = stripBlankEnds(tolower(biteString(cline, '=')));
     string right = stripBlankEnds(cline);
-    bool   valid = bhv->IvPBehavior::setParam(left.c_str(), right.c_str());
+    bool valid = false;
+    if((left == "name") || (left == "descriptor"))
+      valid = bhv->IvPBehavior::setBehaviorName(right);
+    else
+      valid = bhv->IvPBehavior::setParam(left, right);
+
     if(!valid)
-      valid = bhv->setParam(left.c_str(), right.c_str());
+      valid = bhv->setParam(left, right);
     if(!valid)
       sbuild.addBadConfig(cline, spec.getConfigLineNum(i));
     specs_valid = specs_valid && valid;
@@ -272,7 +244,12 @@ SpecBuild BehaviorSet::buildBehaviorFromSpec(BehaviorSpec spec,
     string cline = jvector[j];
     string left  = stripBlankEnds(tolower(biteString(cline, '=')));
     string right = stripBlankEnds(cline);
-    bool   valid = bhv->IvPBehavior::setParam(left.c_str(), right.c_str());
+    bool   valid = false;
+    if((left == "name") || (left == "descriptor"))
+      valid = bhv->IvPBehavior::augBehaviorName(right);
+    else
+      valid = bhv->IvPBehavior::setParam(left.c_str(), right.c_str());
+
     if(!valid)
       valid = bhv->setParam(left.c_str(), right.c_str());
     if(!valid)
@@ -333,6 +310,7 @@ bool BehaviorSet::handlePossibleSpawnings()
   return(true);
 }
 
+#if 1
 //------------------------------------------------------------
 // Procedure: produceOF
 
@@ -428,6 +406,95 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
   }
   return(ipf);
 }
+#endif
+
+//------------------------------------------------------------
+// Procedure: produceOFX
+
+#if 1
+BehaviorReport BehaviorSet::produceOFX(unsigned int ix, 
+				       unsigned int iteration, 
+				       string& new_activity_state)
+{
+  //IvPFunction *ipf = 0;
+  BehaviorReport bhv_report_empty;
+  BehaviorReport bhv_report;
+
+  if(ix < m_bhv_entry.size()) {
+    IvPBehavior *bhv = m_bhv_entry[ix].getBehavior();
+    string old_activity_state = m_bhv_entry[ix].getState();
+    if(old_activity_state == "")
+      old_activity_state = "idle";
+
+    // Look for possible dynamic updates to the behavior parameters
+    bool update_made = bhv->checkUpdates();
+    if(update_made)
+      bhv->onSetParamComplete();
+
+    // Check if the behavior duration is to be reset
+    bhv->checkForDurationReset();
+
+    new_activity_state = bhv->isRunnable();
+
+    // Now that the new_activity_state is set, act appropriately for
+    // each behavior.
+    if(new_activity_state == "completed")
+      bhv->onCompleteState();
+
+    if(new_activity_state == "idle") {
+      bhv->postFlags("idleflags");
+      bhv->postFlags("inactiveflags");
+      if((old_activity_state == "running") ||
+	 (old_activity_state == "active"))
+	bhv->onRunToIdleState();
+      bhv->onIdleState();
+      bhv->updateStateDurations("idle");
+    }
+    
+    if(new_activity_state == "running") {
+      bhv->postDurationStatus();
+      bhv->postFlags("runflags");
+      if(old_activity_state == "idle")
+	bhv->onIdleToRunState();
+
+      bhv_report = bhv->onRunState("");
+      bool nans_detected = bhv_report.checkForNans();
+      if(nans_detected) {
+	bhv->postEMessage("NaN detected in IvP Function");
+	bhv_report = BehaviorReport();
+      }
+
+      unsigned int i, vsize = bhv_report.size();
+      for(i=0; i<vsize; i++) {
+	if(bhv_report.hasIPFString(i))
+	  bhv->postMessage("BHV_IPF", bhv_report.getIPFString(i));
+      }
+
+      if(bhv_report.size() > 0) {
+	new_activity_state = "active";
+	bhv->postFlags("activeflags");
+      }
+      else
+	bhv->postFlags("inactiveflags");
+      bhv->updateStateDurations("running");
+    }
+    bhv->statusInfoAdd("state", new_activity_state);
+    bhv->statusInfoPost();
+
+    // If this represents a change in states from the previous
+    // iteration, note the time at which the state changed.
+    if(old_activity_state != new_activity_state)
+      m_bhv_entry[ix].setStateTimeEntered(m_curr_time);
+    
+    m_bhv_entry[ix].setState(new_activity_state);
+    double state_time_entered = m_bhv_entry[ix].getStateTimeEntered();
+    double elapsed = (m_curr_time - state_time_entered);
+    m_bhv_entry[ix].setStateTimeElapsed(elapsed);
+  }
+  return(bhv_report);
+}
+#endif
+
 
 //------------------------------------------------------------
 // Procedure: stateOK
@@ -640,6 +707,29 @@ vector<string> BehaviorSet::getSpecUpdateVars()
 
 
 
+//------------------------------------------------------------
+// Procedure: uniqueNameX()
+//   Purpose: Determine if the given name matches any of the names
+//            in the given set of names.
+//      Note: A "match" is declared if either (a) the two names 
+//            are identical, or (b) one name of N characters 
+//            matches the first N characters of the other name.
+
+bool BehaviorSet::uniqueNameX(const string& given_name, 
+			      const set<string>& given_set)
+{
+  set<string>::const_iterator p;
+  for(p=given_set.begin(); p!=given_set.end(); p++) {
+    string this_name = *p;
+    if(strBegins(given_name, this_name))
+      return(false);
+    if(strBegins(this_name, given_name))
+      return(false);
+  }
+
+  return(true);
+}
+    
 //------------------------------------------------------------
 // Procedure: updateStateSpaceVars()
 //      Note: Since duplicates are checked for here, and this is

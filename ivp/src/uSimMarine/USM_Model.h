@@ -24,7 +24,7 @@
 #define USM_MODEL_HEADER
 
 #include <string>
-#include "VState.h"
+#include "NodeRecord.h"
 #include "MBTimer.h"
 #include "SimEngine.h"
 #include "ThrustMap.h"
@@ -57,44 +57,44 @@ public:
   bool   addThrustMapping(double, double);
 
   // Getters
-  double getForceX()      {return(m_force_x);};
-  double getForceY()      {return(m_force_y);};
-  bool   usingDualState() {return(m_dual_state);}
-  bool   isForceFresh()   {return(m_force_fresh);}; 
-  VState getVState()      {return(m_vstate);};
-  VState getVStateGT()    {return(m_vstate_gt);};
+  double     getForceX()       {return(m_force_x);};
+  double     getForceY()       {return(m_force_y);};
+  bool       usingDualState()  {return(m_dual_state);}
+  bool       isForceFresh()    {return(m_force_fresh);}; 
+  NodeRecord getNodeRecord()   {return(m_record);};
+  NodeRecord getNodeRecordGT() {return(m_record_gt);};
 
   std::string getForceSummary();
 
  protected:
-  void   propagateVState(VState&, double delta_time, bool);
+  void   propagateNodeRecord(NodeRecord&, double delta_time, bool);
 
  protected:
-  bool      m_paused;
-  double    m_rudder;
-  double    m_thrust;
-  double    m_elevator;
+  bool       m_paused;
+  double     m_rudder;
+  double     m_thrust;
+  double     m_elevator;
 
-  double    m_turn_rate;
-  double    m_torque_theta;
-  double    m_force_x;           // meters per sec
-  double    m_force_y;           // meters per sec
-  double    m_buoyancy_rate;
-  double    m_max_depth_rate;
-  double    m_max_depth_rate_speed;
-  double    m_max_deceleration;
-  double    m_max_acceleration;
+  double     m_turn_rate;
+  double     m_torque_theta;
+  double     m_force_x;           // meters per sec
+  double     m_force_y;           // meters per sec
+  double     m_buoyancy_rate;
+  double     m_max_depth_rate;
+  double     m_max_depth_rate_speed;
+  double     m_max_deceleration;
+  double     m_max_acceleration;
 
-  VState    m_vstate;       // NAV_X, NAV_Y           
-  VState    m_vstate_gt;    // NAV_GT_X, NAV_GT_Y   
+  NodeRecord m_record;       // NAV_X, NAV_Y           
+  NodeRecord m_record_gt;    // NAV_GT_X, NAV_GT_Y   
 
-  bool      m_dual_state;   
-  bool      m_force_fresh;
+  bool       m_dual_state;   
+  bool       m_force_fresh;
 
-  MBTimer   m_pause_timer;
-  SimEngine m_sim_engine;
+  MBTimer    m_pause_timer;
+  SimEngine  m_sim_engine;
 
-  ThrustMap m_thrust_map;
+  ThrustMap  m_thrust_map;
 };
 #endif
 

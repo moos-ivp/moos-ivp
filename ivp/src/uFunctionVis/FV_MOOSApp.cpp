@@ -36,15 +36,10 @@ using namespace std;
 
 FV_MOOSApp::FV_MOOSApp()
 {
-  loc_x      = 50;
-  loc_y      = 50;
-  iteration  = 0;
-  start_time = 0;
-  delta      = 10;
-  model      = 0;
-  viewer     = 0;
-  gui        = 0;
-  ipf_name   = "BHV_IPF";
+  m_model    = 0;
+  m_viewer   = 0;
+  m_gui      = 0;
+  m_ipf_name = "BHV_IPF";
 }
 
 //----------------------------------------------------------
@@ -53,7 +48,7 @@ FV_MOOSApp::FV_MOOSApp()
 bool FV_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 {
   try {
-     demuxer_lock.Lock();
+     m_demuxer_lock.Lock();
 
      // The main thread will may be blocking on a call to 'Fl::wait()'.
      // This will wake up the main thread if that's the case.
@@ -62,22 +57,28 @@ bool FV_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
      MOOSMSG_LIST::iterator p;
      for(p=NewMail.begin(); p!=NewMail.end(); p++) {
         CMOOSMsg &msg = *p;
-	string key = msg.GetKey();
+	string key  = msg.GetKey();
+	double dval = msg.GetDouble();
+	double timestamp = msg.GetTime();
 
-	if(key == ipf_name) {
+	if(key == m_ipf_name) {
 	  string ipf_str = msg.GetString();
-	  double timestamp = msg.GetTime();
 	  string community = msg.GetCommunity();
-	  demuxer.addMuxPacket(ipf_str, timestamp, community);
+	  m_demuxer.addMuxPacket(ipf_str, timestamp, community);
         }
-     }
+	else if(key == "NAV_DEPTH")
+	  m_model->setDepth(dval);
+	else if(key == "NAV_ALTITUDE")
+	  m_model->setAltitude(dval);
+
+    }
   }
   catch (...) {
-     demuxer_lock.UnLock();
+     m_demuxer_lock.UnLock();
      throw;
   }
 
-  demuxer_lock.UnLock();
+  m_demuxer_lock.UnLock();
   return(true);
 }
 
@@ -90,13 +91,16 @@ bool FV_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 
 bool FV_MOOSApp::OnConnectToServer()
 {
-  if(!m_MissionReader.GetValue("ipf_name", ipf_name)) {
+  if(!m_MissionReader.GetValue("ipf_name", m_ipf_name)) {
     MOOSTrace("Function to be monitored not provided\n");
     //return(false);
   }
 
-  if(ipf_name != "")
-    m_Comms.Register(ipf_name, 0);
+  if(m_ipf_name != "")
+    m_Comms.Register(m_ipf_name, 0);
+  
+  m_Comms.Register("NAV_DEPTH", 0);
+  m_Comms.Register("NAV_ALTITUDE", 0);
   return(true);
 }
 
@@ -119,12 +123,10 @@ bool FV_MOOSApp::Iterate()
 void FV_MOOSApp::process_demuxer_content()
 {
   try {
-    demuxer_lock.Lock();
-
-    iteration++;
+    m_demuxer_lock.Lock();
 
     bool redraw_needed = false;
-    DemuxedResult result = demuxer.getDemuxedResult();
+    DemuxedResult result = m_demuxer.getDemuxedResult();
     while(!result.isEmpty()) {
       redraw_needed = true;
       string ipf_str = result.getString();
@@ -138,26 +140,26 @@ void FV_MOOSApp::process_demuxer_content()
       string iter = biteString(context_str, ':');
       string bhv  = context_str;
 
-      model->addIPF(ipf_str, community_src);
-      result = demuxer.getDemuxedResult();
+      m_model->addIPF(ipf_str, community_src);
+      result = m_demuxer.getDemuxedResult();
 
-      if(gui)
-	gui->addBehaviorSource(bhv);
+      if(m_gui)
+	m_gui->addBehaviorSource(bhv);
     }
       
     if(redraw_needed) {
-      viewer->resetQuadSet();
-      viewer->redraw();
+      m_viewer->resetQuadSet();
+      m_viewer->redraw();
     }
-    if(gui)
-      gui->updateFields();
+    if(m_gui)
+      m_gui->updateFields();
   }
   catch (...) {
-    demuxer_lock.UnLock();
+    m_demuxer_lock.UnLock();
     throw;
   }
 
-  demuxer_lock.UnLock();
+  m_demuxer_lock.UnLock();
 }
 
 //----------------------------------------------------------
@@ -166,19 +168,6 @@ void FV_MOOSApp::process_demuxer_content()
 
 bool FV_MOOSApp::OnStartUp()
 {
-  start_time = MOOSTime();  
   return(true);
 }
-
-
-//----------------------------------------------------------
-// Procedure: return_from_Run()
-//      Note: Call this to cause this object's CMOOSApp::Run(...) method to 
-//      return.
-
-// void FV_MOOSApp::return_from_Run()
-// {
-// // //   iterate_should_return_false = true;
-//   SetQuitOnFailedIterate(true);
-// }
 

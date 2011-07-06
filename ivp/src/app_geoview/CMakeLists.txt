@@ -34,6 +34,7 @@ endif (${WIN32})
 	  ENDIF (${APPLE})
          
    TARGET_LINK_LIBRARIES(geoview
+   contacts
       marineview
       MOOSUtility
       mbutil

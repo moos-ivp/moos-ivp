@@ -39,6 +39,7 @@ ENDIF (${APPLE})
       
 TARGET_LINK_LIBRARIES(alogview
    marineview
+   contacts
    MOOSUtility
    navplot
    ipfview

@@ -25,7 +25,6 @@
 
 #include <string>
 #include "MOOSLib.h"
-#include "VState.h"
 #include "USM_Model.h"
 #include "MOOSGeodesy.h"
 
@@ -46,7 +45,7 @@ public:
   bool OnNewMail(MOOSMSG_LIST &NewMail);
 
  protected:
-  void postVStateUpdate(std::string, VState, double);
+  void postNodeRecordUpdate(std::string, const NodeRecord&, double);
   void registerVariables();
   void handleThrustMapping(std::string);
 

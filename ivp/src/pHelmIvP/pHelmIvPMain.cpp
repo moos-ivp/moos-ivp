@@ -25,6 +25,7 @@
 #include "MOOSGenLib.h"
 #include "HelmIvP.h"
 #include "MBUtils.h"
+#include "HELM_ExampleConfig.h"
 #include <vector>
 #include <string>
 
@@ -52,6 +53,12 @@ int main(int argc, char *argv[])
     for(i=0; i<vsize; i++)
       if(!strContains(svector[i], "ree"))
 	cout << svector[i] << endl;
+    return(0);
+  }
+
+  // Look for a request for example configuration
+  if(scanArgs(argc, argv, "-e", "--example", "-example")) {
+    showExampleConfig();
     return(0);
   }
 

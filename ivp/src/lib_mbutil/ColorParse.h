@@ -35,6 +35,12 @@ std::string         termColor(const std::string& color="");
 
 bool isColor(const std::string&);
 
+void blu(const std::string&, const std::string& s="");
+void blk(const std::string&, const std::string& s="");
+void red(const std::string&, const std::string& s="");
+void grn(const std::string&, const std::string& s="");
+void mag(const std::string&, const std::string& s="");
+
 double rOfRGB(const std::string);
 double gOfRGB(const std::string);
 double bOfRGB(const std::string);

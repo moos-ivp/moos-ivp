@@ -88,7 +88,7 @@ Behavior = BHV_StationKeep
 //----------------------------------------------
 Behavior = BHV_AvoidCollision
 {
-  name       = avd_collision
+  name       = avdcollision_
   pwt        = 200
   condition  = AVOID=true
   updates    = CONTACT_INFO

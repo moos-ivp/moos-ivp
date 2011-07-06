@@ -423,3 +423,30 @@ string termColor(const string& raw_color_in)
 }
   
 
+//-------------------------------------------------------------
+// Procedure: blu, blk, red, grn, mag
+
+void blu(const string& str, const string& xstr)
+{
+  cout << "\33[34m" << str << "\33[0m" << xstr << endl;
+}
+
+void blk(const string& str, const string& xstr)
+{
+  cout << "\33[0m" << str << xstr << endl;
+}
+
+void red(const string& str, const string& xstr)
+{
+  cout << "\33[31m" << str << "\33[0m" << xstr << endl;
+}
+
+void grn(const string& str, const string& xstr)
+{
+  cout << "\33[32m" << str << "\33[0m" << xstr << endl;
+}
+
+void mag(const string& str, const string& xstr)
+{
+  cout << "\33[35m" << str << "\33[0m" << xstr << endl;
+}

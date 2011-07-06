@@ -62,6 +62,7 @@ ProcessConfig = uSimMarine
   START_Y       = 0
   START_SPEED   = 0
   START_HEADING = 180
+
   BUOYANCY_RATE    = 0.025
   MAX_DEPTH_RATE = 0.5
   MAX_DEPTH_RATE_SPEED = 2.0

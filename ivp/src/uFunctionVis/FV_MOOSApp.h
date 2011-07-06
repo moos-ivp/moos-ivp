@@ -36,9 +36,9 @@ class FV_MOOSApp : public CMOOSApp
   FV_MOOSApp();
   virtual ~FV_MOOSApp() {};
 
-  void setViewer(FV_Viewer* g_viewer)  {viewer = g_viewer;};
-  void setModel(FV_Model* g_model)     {model = g_model;};
-  void setGUI(FV_GUI* g_gui)           {gui = g_gui;};
+  void setViewer(FV_Viewer* viewer)  {m_viewer = viewer;};
+  void setModel(FV_Model* model)     {m_model = model;};
+  void setGUI(FV_GUI* gui)           {m_gui = gui;};
 
   bool OnNewMail(MOOSMSG_LIST &NewMail);
   bool Iterate();
@@ -56,28 +56,20 @@ class FV_MOOSApp : public CMOOSApp
   void process_demuxer_content();
   
 protected:
-//   bool    iterate_should_return_false;
+  std::string m_ipf_name;
   
-  int     loc_x;
-  int     loc_y;
-
-  int     iteration;
-  double  start_time;
-  int     delta;
-  std::string ipf_name;
-  
-  FV_GUI*     gui;
-  FV_Model*   model;
-  FV_Viewer*  viewer;
+  FV_GUI*     m_gui;
+  FV_Model*   m_model;
+  FV_Viewer*  m_viewer;
 
   /// This is populated by OnNewMail, which is invoked by the MOOS 
   /// application thread.  It's content is consumed by the main thread, 
   /// so that all FLTK-related operation can happen on the same thread, 
   /// which is the safest way to use FLTK.  
-  Demuxer demuxer;
+  Demuxer m_demuxer;
 
   /// Hold this lock whenever invoking a method on 'demuxer'.
-  CMOOSLock demuxer_lock;
+  CMOOSLock m_demuxer_lock;
 };
 
 #endif

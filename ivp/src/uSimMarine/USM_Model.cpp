@@ -62,8 +62,8 @@ USM_Model::USM_Model()
 
 void USM_Model::resetTime(double g_curr_time)
 {
-  m_vstate.setTimeUTC(g_curr_time);
-  m_vstate_gt.setTimeUTC(g_curr_time);
+  m_record.setTimeStamp(g_curr_time);
+  m_record_gt.setTimeStamp(g_curr_time);
 }
 
 //------------------------------------------------------------------------
@@ -73,24 +73,24 @@ bool USM_Model::setParam(string param, double value)
 {
   param = stripBlankEnds(tolower(param));
   if(param == "start_x") {
-    m_vstate.setX(value);
-    m_vstate_gt.setX(value);
+    m_record.setX(value);
+    m_record_gt.setX(value);
   }
   else if(param == "start_y") {
-    m_vstate.setY(value);
-    m_vstate_gt.setY(value);
+    m_record.setY(value);
+    m_record_gt.setY(value);
   }
   else if(param == "start_heading") {
-    m_vstate.setHeading(value);
-    m_vstate_gt.setHeading(value);
+    m_record.setHeading(value);
+    m_record_gt.setHeading(value);
   }
   else if(param == "start_speed") {
-    m_vstate.setSpeed(value);
-    m_vstate_gt.setSpeed(value);
+    m_record.setSpeed(value);
+    m_record_gt.setSpeed(value);
   }
   else if(param == "start_depth") {
-    m_vstate.setDepth(value);
-    m_vstate_gt.setDepth(value);
+    m_record.setDepth(value);
+    m_record_gt.setDepth(value);
   }
   else if(param == "buoyancy_rate")
     m_buoyancy_rate = value;
@@ -136,37 +136,38 @@ bool USM_Model::propagate(double g_curr_time)
     
   // Calculate actual current time considering time spent paused.
   double a_curr_time = g_curr_time - m_pause_timer.get_wall_time();
-  double delta_time  = a_curr_time - m_vstate.getTimeUTC();
+  double delta_time  = a_curr_time - m_record.getTimeStamp();
 
   if(m_dual_state) {
-    propagateVState(m_vstate, delta_time, false);
-    propagateVState(m_vstate_gt, delta_time, true);
+    propagateNodeRecord(m_record, delta_time, false);
+    propagateNodeRecord(m_record_gt, delta_time, true);
   }
   else
-    propagateVState(m_vstate, delta_time, true);
+    propagateNodeRecord(m_record, delta_time, true);
     
 
   return(true);
 }
 
 //------------------------------------------------------------------------
-// Procedure: propagateVState
+// Procedure: propagateNodeRecord
 
-void USM_Model::propagateVState(VState& vstate, double delta_time, 
-				bool apply_external_forces)
+void USM_Model::propagateNodeRecord(NodeRecord& record, 
+				    double delta_time, 
+				    bool apply_external_forces)
 {
-  double prior_spd = vstate.getSpeed();
-  double prior_hdg = vstate.getHeading();
+  double prior_spd = record.getSpeed();
+  double prior_hdg = record.getHeading();
 
-  m_sim_engine.propagateSpeed(vstate, m_thrust_map, delta_time,
+  m_sim_engine.propagateSpeed(record, m_thrust_map, delta_time,
 			      m_thrust, m_rudder, m_max_acceleration,
 			      m_max_deceleration);
 
-  m_sim_engine.propagateHeading(vstate, delta_time, m_rudder, 
+  m_sim_engine.propagateHeading(record, delta_time, m_rudder, 
 				m_thrust, m_turn_rate, 
 				m_torque_theta);
 
-  m_sim_engine.propagateDepth(vstate, delta_time, 
+  m_sim_engine.propagateDepth(record, delta_time, 
 			      m_elevator, m_buoyancy_rate, 
 			      m_max_depth_rate,
 			      m_max_depth_rate_speed);
@@ -180,7 +181,7 @@ void USM_Model::propagateVState(VState& vstate, double delta_time,
     total_force_y = m_force_y;
   }
 
-  m_sim_engine.propagate(vstate, delta_time, prior_hdg, prior_spd,
+  m_sim_engine.propagate(record, delta_time, prior_hdg, prior_spd,
 			 total_force_x, total_force_y);
 }
 
@@ -329,24 +330,24 @@ bool USM_Model::initPosition(const string& str)
 
     double dval  = atof(value.c_str());
     if(param == "x") {
-      m_vstate.setX(dval);
-      m_vstate_gt.setX(dval);
+      m_record.setX(dval);
+      m_record_gt.setX(dval);
     }
     else if(param == "y") {
-      m_vstate.setY(dval);
-      m_vstate_gt.setY(dval);
+      m_record.setY(dval);
+      m_record_gt.setY(dval);
     }
     else if((param == "heading") || (param=="deg") || (param=="hdg")) {
-      m_vstate.setHeading(dval);
-      m_vstate_gt.setHeading(dval);
+      m_record.setHeading(dval);
+      m_record_gt.setHeading(dval);
     }
     else if((param == "speed") || (param == "spd")) {
-      m_vstate.setSpeed(dval);
-      m_vstate_gt.setSpeed(dval);
+      m_record.setSpeed(dval);
+      m_record_gt.setSpeed(dval);
     }
     else if((param == "depth") || (param == "dep")) {
-      m_vstate.setDepth(dval);
-      m_vstate_gt.setDepth(dval);
+      m_record.setDepth(dval);
+      m_record_gt.setDepth(dval);
     }
     else
       return(false);

@@ -23,7 +23,7 @@ killall iMicroModem pRouter pFramer pMessageSim  \
         pBearings_DURIP uProcessWatch uPlayBack pSubIndex \
         pBearings_GENERIC pTargetSim pMBTracker zLoggerNG \
 	iModemSim pFunctionSender uFunctionViewer uFunctionVis \
-        uSimRangeSensor uSimCurrent
+        uSimBeaconRange uSimCurrent pBasicContactMgr uSimActiveSonar
 
 killall pSensorSim pArtifactMapper pNoiseSim uNafconSplitter    \
         pBlast pSweepLines pNSWCPC pXRelay pXRelayTest alogview  \

@@ -25,7 +25,7 @@
 
 #include <vector>
 #include "MOOSLib.h"
-#include "ContactRecord.h"
+#include "NodeRecord.h"
 #include "PlatformAlertRecord.h"
 
 class BasicContactMgr : public CMOOSApp
@@ -75,8 +75,8 @@ class BasicContactMgr : public CMOOSApp
  protected: // State variables
 
   // Main Record #1: The Vehicles and position info
-  std::vector<ContactRecord> m_records;
-  std::vector<double>        m_ranges;
+  std::vector<NodeRecord> m_node_records;
+  std::vector<double>     m_ranges;
 
   // memory of previous status postings
   std::string m_prev_contacts_list;

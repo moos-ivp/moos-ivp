@@ -63,6 +63,8 @@ public:
   std::vector<unsigned int> m_iter;
 
   bool  m_keys_unique;
+  
+  unsigned int m_latest_iteration;
 };
 
 #endif 

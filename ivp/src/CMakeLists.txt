@@ -143,6 +143,7 @@ SET(IVP_NON_GUI_LIBS
    lib_ivpbuild
    lib_ivpcore
    lib_logic
+   lib_contacts
    lib_logutils
    lib_mbutil
    lib_navplot
@@ -233,9 +234,10 @@ SET(IVP_NON_GUI_APPS
   uTimerScript
   uHelmScope
   uProcessWatch
+  uSimActiveSonar
   uSimCurrent
   uSimMarine
-  uSimRangeSensor
+  uSimBeaconRange
   uTermCommand
   uXMS
   uPokeDB

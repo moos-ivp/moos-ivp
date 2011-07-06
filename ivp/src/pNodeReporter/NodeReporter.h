@@ -27,7 +27,7 @@
 #include <vector>
 #include "MOOSLib.h"
 #include "MOOSGeodesy.h"
-#include "VState.h"
+#include "NodeRecord.h"
 
 class NodeReporter : public CMOOSApp
 {
@@ -42,21 +42,19 @@ public:
 
  protected:
   void handleLocalHelmSummary(const std::string&);
-  std::string assembleNodeReport(const VState&);
+  std::string assembleNodeReport(NodeRecord);
   std::string assemblePlatformReport();
   
   void updatePlatformVar(std::string, std::string);
   bool addPlatformVar(std::string);
   void registerVariables();
   void setCrossFillPolicy(std::string);
-  void crossFillCoords(VState&);
-  void crossFillLocalToGlobal(VState&);
-  void crossFillGlobalToLocal(VState&);
+  void crossFillCoords(NodeRecord&, double, double);
+  void crossFillLocalToGlobal(NodeRecord&);
+  void crossFillGlobalToLocal(NodeRecord&);
 
  protected: // Configuration Variables (Node Reports)
   std::string  m_vessel_name;
-  std::string  m_vessel_type;
-  std::string  m_vessel_len;
   std::string  m_crossfill_policy;
   std::string  m_node_report_var;
   double       m_nohelm_thresh;
@@ -69,8 +67,15 @@ public:
   std::string  m_alt_nav_name;
   bool         m_helm_engaged;
   double       m_helm_lastmsg;
-  VState       m_vstate;
-  VState       m_vstate_gt;
+
+  NodeRecord   m_record;
+  NodeRecord   m_record_gt;
+  double       m_record_gt_updated;
+
+  double       m_nav_xy_updated;
+  double       m_nav_latlon_updated;
+  double       m_nav_xy_updated_gt;
+  double       m_nav_latlon_updated_gt;
 
  protected: // State Variables (General)
   bool         m_time_updated;

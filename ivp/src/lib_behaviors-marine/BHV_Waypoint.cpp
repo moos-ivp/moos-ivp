@@ -260,6 +260,20 @@ void BHV_Waypoint::onRunToIdleState()
 //-----------------------------------------------------------
 // Procedure: onRunState
 
+BehaviorReport BHV_Waypoint::onRunState(string input) 
+{
+  IvPFunction *ipf = onRunState();
+  BehaviorReport bhv_report(m_descriptor);
+  
+  bhv_report.addIPF(ipf);
+  bhv_report.setPriority(m_priority_wt);
+  return(bhv_report);
+}
+
+
+//-----------------------------------------------------------
+// Procedure: onRunState
+
 IvPFunction *BHV_Waypoint::onRunState() 
 {
   m_waypoint_engine.setPerpetual(m_perpetual);

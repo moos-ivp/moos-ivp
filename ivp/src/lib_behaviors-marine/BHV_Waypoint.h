@@ -33,11 +33,12 @@ public:
   BHV_Waypoint(IvPDomain);
   ~BHV_Waypoint() {};
   
-  bool         setParam(std::string, std::string);
-  IvPFunction* onRunState();
-  void         onRunToIdleState();
-  void         onSetParamComplete();
-  void         onCompleteState() {postErasables();};
+  bool           setParam(std::string, std::string);
+  IvPFunction*   onRunState();
+  BehaviorReport onRunState(std::string);
+  void           onRunToIdleState();
+  void           onSetParamComplete();
+  void           onCompleteState() {postErasables();};
 
 protected:
   bool         updateInfoIn();

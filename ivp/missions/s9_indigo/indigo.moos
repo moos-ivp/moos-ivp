@@ -21,29 +21,41 @@ ProcessConfig = ANTLER
   Run = pMarineViewer	@ NewConsole = true
   Run = pLogger         @ NewConsole = false
   Run = uSimMarine	@ NewConsole = true
-  Run = pNodeReporter	@ NewConsole = false
+  Run = pNodeReporter	@ NewConsole = true
   Run = pMarinePID	@ NewConsole = false
   Run = pHelmIvP	@ NewConsole = true
   Run = uTimerScript    @ NewConsole = false
-  Run = uSimRangeSensor @ NewConsole = true
+  Run = uSimBeaconRange @ NewConsole = true
 }
 
 //------------------------------------------
 // uSimRangeSensor config block
 
-ProcessConfig = uSimRangeSensor
+ProcessConfig = uSimBeaconRange
 {
   AppTick   = 4
   CommsTick = 4
 
-  default_node_query_range    = nolimit
-  default_beacon_report_range = nolimit
+  // Configuring aspects of the vehicles
+  reach_distance = default = nolimit
+  ping_wait      = default = 30
+  ping_payments  = upon_accept
 
-  beacon  = x=200, y=0,    label=01
+  //report_vars    = short
+
+  default_beacon_freq  = never       // Only on request (ping)
+  default_beacon_shape = circle
+  default_beacon_color = orange
+  default_beacon_width = 5
+  default_beacon_report_range = 100
+
+  beacon  = x=200, y=0,    label=01, report_range=1000
   beacon  = x=400, y=-200, label=02
   beacon  = x=0,   y=-200, label=03
 
   verbose = true
+  ground_truth = true
+  rn_algorithm = uniform,pct=0.15
 }
 
 //------------------------------------------
@@ -59,7 +71,7 @@ ProcessConfig = uTimerScript
   RESET_TIME = end
   CONDITION  = (NAV_SPEED > 0)
 
-  EVENT = var=RANGE_REQUEST, val="name=indigo", time=25:35
+  EVENT = var=SBR_RANGE_REQUEST, val="name=indigo", time=25:35
 }
 
 
@@ -74,7 +86,7 @@ ProcessConfig = pLogger
   SyncLog = false
   AsyncLog = true
 
-  Log = RANGE_REPORT @ 0
+  Log = SBR_RANGE_REPORT @ 0
 
   WildCardLogging = true
   WildCardOmitPattern = *_STATUS

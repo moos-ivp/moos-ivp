@@ -72,6 +72,13 @@ void FV_Viewer::draw()
     }
   }
 
+#if 0
+  if(m_quadset.getQuadSetDim() == 1) {
+    if(m_draw_depth)
+#endif
+
+
+
   glPopMatrix();
   
   glFlush();  

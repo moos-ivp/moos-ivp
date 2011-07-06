@@ -30,22 +30,22 @@ using namespace std;
 //--------------------------------------------------------------------
 // Procedure: propagate
 
-void SimEngine::propagate(VState &vstate, double delta_time,
+void SimEngine::propagate(NodeRecord &record, double delta_time,
 			  double prior_heading, double prior_speed,
 			  double force_x, double force_y)
 {
-  double speed   = (vstate.getSpeed() + prior_speed) / 2;
+  double speed   = (record.getSpeed() + prior_speed) / 2;
 
   double s = sin(degToRadians(prior_heading)) +
-    sin(degToRadians(vstate.getHeading()));
+    sin(degToRadians(record.getHeading()));
 
   double c = cos(degToRadians(prior_heading)) +
-    cos(degToRadians(vstate.getHeading()));
+    cos(degToRadians(record.getHeading()));
 
   double hdg_rad = atan2(s, c);
 
-  double prev_x = vstate.getX();
-  double prev_y = vstate.getY();
+  double prev_x = record.getX();
+  double prev_y = record.getY();
 
   double cos_ang = cos(hdg_rad);
   double sin_ang = sin(hdg_rad);
@@ -56,34 +56,34 @@ void SimEngine::propagate(VState &vstate, double delta_time,
   double new_speed = hypot(xdot, ydot);
   double new_x = prev_x + (xdot * delta_time) + (force_x * delta_time);
   double new_y = prev_y + (ydot * delta_time) + (force_y * delta_time);
-  double new_time = vstate.getTimeUTC() + delta_time;
+  double new_time = record.getTimeStamp() + delta_time;
   double new_sog = hypot((xdot + force_x), (ydot + force_y));
   double new_hog = relAng(prev_x, prev_y,  new_x, new_y);
   
-  vstate.setSpeed(new_speed);
-  vstate.setX(new_x);
-  vstate.setY(new_y);
-  vstate.setTimeUTC(new_time);
-  vstate.setSpeedOG(new_sog);
-  vstate.setHeadingOG(new_hog);
+  record.setSpeed(new_speed);
+  record.setX(new_x);
+  record.setY(new_y);
+  record.setTimeStamp(new_time);
+  record.setSpeedOG(new_sog);
+  record.setHeadingOG(new_hog);
 }
 
 //--------------------------------------------------------------------
 // Procedure: propagateDepth
 
-void SimEngine::propagateDepth(VState& vstate,
+void SimEngine::propagateDepth(NodeRecord& record,
 			       double delta_time,
 			       double elevator_angle, 
 			       double buoyancy_rate,
 			       double max_depth_rate, 
 			       double max_depth_rate_speed)
 {
-  double speed = vstate.getSpeed();
-  double prev_depth = vstate.getDepth();
+  double speed = record.getSpeed();
+  double prev_depth = record.getDepth();
   elevator_angle = vclip(elevator_angle, -100, 100);
   if(speed <= 0) {
     double new_depth = prev_depth + (-1 * buoyancy_rate * delta_time);
-    vstate.setDepth(new_depth);
+    record.setDepth(new_depth);
   }
   else {
     double pct = 1.0;
@@ -101,18 +101,18 @@ void SimEngine::propagateDepth(VState& vstate,
     double total_depth_rate = (-buoyancy_rate) +  actuator_depth_rate;
 
     double new_depth = prev_depth + (1 * total_depth_rate * delta_time);
-    vstate.setDepth(new_depth);
+    record.setDepth(new_depth);
   }
     
-  if(vstate.getDepth() < 0)
-    vstate.setDepth(0);
+  if(record.getDepth() < 0)
+    record.setDepth(0);
 }
 
 
 //--------------------------------------------------------------------
 // Procedure: propagateSpeed
 
-void SimEngine::propagateSpeed(VState& vstate, const ThrustMap& tmap,
+void SimEngine::propagateSpeed(NodeRecord& record, const ThrustMap& tmap,
 			       double delta_time, double thrust,
 			       double rudder, double max_accel, 
 			       double max_decel)
@@ -121,7 +121,7 @@ void SimEngine::propagateSpeed(VState& vstate, const ThrustMap& tmap,
     return;
 
   double next_speed  = tmap.getSpeedValue(thrust);
-  double prev_speed  = vstate.getSpeed();
+  double prev_speed  = record.getSpeed();
   
   // Apply a slowing penalty proportional to the rudder/turn
   rudder = vclip(rudder, -100, 100);
@@ -140,14 +140,14 @@ void SimEngine::propagateSpeed(VState& vstate, const ThrustMap& tmap,
     if((max_decel > 0) && (deceleration > max_decel))
       next_speed = (max_decel * delta_time * -1) + prev_speed;
   }
-  vstate.setSpeed(next_speed);
+  record.setSpeed(next_speed);
 }
 
 
 //--------------------------------------------------------------------
 // Procedure: propagateHeading
 
-void SimEngine::propagateHeading(VState& vstate,
+void SimEngine::propagateHeading(NodeRecord& record,
 				 double delta_time, 
 				 double rudder,
 				 double thrust,
@@ -158,7 +158,7 @@ void SimEngine::propagateHeading(VState& vstate,
   // actuator, e.g., like the kayaks, or typical UUVs. A rotated
   // thruster contributes nothing to a turn unless the prop is 
   // moving.
-  double speed = vstate.getSpeed();
+  double speed = record.getSpeed();
   if(speed == 0) 
     rudder = 0;
 
@@ -177,8 +177,8 @@ void SimEngine::propagateHeading(VState& vstate,
   delta_deg += (delta_time * torque_theta);
 
   // Step 4: Calculate final new heading in the range [0,359]
-  double prev_heading = vstate.getHeading();
+  double prev_heading = record.getHeading();
   double new_heading  = angle360(delta_deg + prev_heading);
-  vstate.setHeading(new_heading);
+  record.setHeading(new_heading);
 }
 

@@ -20,10 +20,13 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
+#include <iostream>
 #include <cstdlib>
 #include "VehicleSet.h"
 #include "MBUtils.h"
 #include "ColorParse.h"
+#include "NodeRecord.h"
+#include "NodeRecordUtils.h"
 
 using namespace std;
 
@@ -39,8 +42,6 @@ VehicleSet::VehicleSet()
   m_curr_time    = 0;
   m_history_size = 1000;
 
-  m_node_report_vars.push_back("AIS_REPORT");
-  m_node_report_vars.push_back("AIS_REPORT_LOCAL");
   m_node_report_vars.push_back("NODE_REPORT");
   m_node_report_vars.push_back("NODE_REPORT_LOCAL");
 
@@ -87,12 +88,10 @@ bool VehicleSet::setParam(string param, string value)
   }
   else if((param == "active_vehicle_name") || 
 	  (param == "vehicles_active_name")) {
-    handled = true;
-    map<string,ObjectPose>::iterator p = m_pos_map.find(value);
-    if(p == m_pos_map.end())
-      handled = false;
-    else
+    if(m_rec_map.count(value)) {
+      handled = true;
       m_vehicles_active_name = value;
+    }
   }
   else if((param == "center_vehicle_name") || 
 	  (param == "vehicles_center_name")) {
@@ -100,13 +99,13 @@ bool VehicleSet::setParam(string param, string value)
   }
   else if(param == "cycle_active") {
     handled = true;
-    map<string, ObjectPose>::iterator p;
-    for(p=m_pos_map.begin(); p!=m_pos_map.end(); p++) {
+    map<string, NodeRecord>::iterator p;
+    for(p=m_rec_map.begin(); p!=m_rec_map.end(); p++) {
       string vname = p->first;
       if(vname == m_vehicles_active_name) {
 	p++;
-	if(p == m_pos_map.end())
-	  p = m_pos_map.begin();
+	if(p == m_rec_map.end())
+	  p = m_rec_map.begin();
 	m_vehicles_active_name = p->first;
       }
     }
@@ -143,19 +142,13 @@ bool VehicleSet::setParam(string param, double value)
 void VehicleSet::clear(const string& vname)
 {
   if((vname == "all") || (vname == "")) {
-    m_pos_map.clear();
+    m_rec_map.clear();
     m_hist_map.clear();
-    m_vmode_map.clear();
-    m_amode_map.clear();
-    m_ais_map.clear();
     m_bearing_map.clear();
   }
   else {
-    m_pos_map.erase(vname);
+    m_rec_map.erase(vname);
     m_hist_map.erase(vname);
-    m_vmode_map.erase(vname);
-    m_amode_map.erase(vname);
-    m_ais_map.erase(vname);
     m_bearing_map.erase(vname);
   }
   m_xmin = 0;
@@ -164,7 +157,18 @@ void VehicleSet::clear(const string& vname)
   m_ymax = 0;
 }
 
+// ----------------------------------------------------------
+// Procedure: getNodeRecord
 
+NodeRecord VehicleSet::getNodeRecord(const string& vname) const
+{
+  map<string, NodeRecord>::const_iterator p;
+  p = m_rec_map.find(vname);
+  if(p != m_rec_map.end())
+    return(p->second);
+  
+  return(NodeRecord());
+}
 
 // ----------------------------------------------------------
 // Procedure: getDoubleInfo
@@ -184,56 +188,31 @@ bool VehicleSet::getDoubleInfo(const string& g_vname,
   else if(vname == "center_vehicle")
     vname = m_vehicles_center_name;
 
-  map<string,ObjectPose>::const_iterator p;
-  p = m_pos_map.find(vname);
-  if(p == m_pos_map.end())
+  NodeRecord record;
+  map<string, NodeRecord>::const_iterator p = m_rec_map.find(vname);
+  if(p != m_rec_map.end())
+    record = p->second;
+  else
     return(false);
-  ObjectPose opose = p->second;
 
-  if(info_type == "age_ais") {
-    map<string,double>::const_iterator p1;
-    p1 = m_ais_map.find(vname);
-    if(p1 == m_ais_map.end())
-      return(false);
-    result = m_curr_time - p1->second;
-  }
-  else if(info_type == "vlength") {
-    map<string,double>::const_iterator p1;
-    p1 = m_vlen_map.find(vname);
-    if(p1 == m_vlen_map.end())
-      return(false);
-    result = p1->second;
-  }
+  if(info_type == "age_ais")
+    result = m_curr_time - record.getTimeStamp();
+  else if(info_type == "vlength")
+    result = record.getLength();
   else if((info_type == "heading") || (info_type == "course"))
-    result = opose.getTheta();
+    result = record.getHeading();
   else if((info_type == "xpos") || (info_type == "meters_x"))
-    result = opose.getX();
+    result = record.getX();
   else if((info_type == "ypos") || (info_type == "meters_y"))
-    result = opose.getY();
-  else if(info_type == "utmx") {
-    result = 1;
-    if(opose.isUTMSet())
-      result = opose.getUTMX();
-  }
-  else if(info_type == "utmy") {
-    result = 2;
-    if(opose.isUTMSet())
-      result = opose.getUTMY();
-  }
+    result = record.getY();
   else if(info_type == "speed")
-    result = opose.getSpeed();
-  else if(info_type == "lat") {
-    result = 0;
-    if(opose.isLatLonSet())
-      result = opose.getLat();
-  }
-  else if(info_type == "lon") {
-    result = 0;
-    if(opose.isLatLonSet())
-      result = opose.getLon();
-  }
+    result = record.getSpeed();
+  else if(info_type == "lat") 
+    result = record.getLat();
+  else if(info_type == "lon")
+    result = record.getLon();
   else if(info_type == "depth")
-    result = opose.getDepth();
+    result = record.getDepth();
   else if(info_type == "curr_time")
     result = m_curr_time;
   else
@@ -257,32 +236,21 @@ bool VehicleSet::getStringInfo(const string& g_vname,
   if(g_vname == "active")
     vname = m_vehicles_active_name;
 
+  NodeRecord record;
+  map<string, NodeRecord>::const_iterator p = m_rec_map.find(vname);
+  if(p != m_rec_map.end())
+    record = p->second;
+  else
+    return(false);
+
   if(info_type == "active_vehicle_name")
     result = m_vehicles_active_name; 
-  else if((info_type == "body") || (info_type == "type")) {
-    map<string,string>::const_iterator p;
-    p = m_vbody_map.find(vname);
-    if(p != m_vbody_map.end()) 
-      result = p->second;
-    else
-      result = "unknown-type";
-  }
-  else if(info_type == "helm_mode") {
-    map<string,string>::const_iterator p;
-    p = m_vmode_map.find(vname);
-    if(p != m_vmode_map.end()) 
-      result = p->second;
-    else
-      result = "unknown-mode";
-  }
-  else if(info_type == "helm_allstop_mode") {
-    map<string,string>::const_iterator p;
-    p = m_amode_map.find(vname);
-    if(p != m_amode_map.end()) 
-      result = p->second;
-    else
-      result = "unknown-amode";
-  }
+  else if((info_type == "body") || (info_type == "type"))
+    result = record.getType("unknown-type");
+  else if(info_type == "helm_mode") 
+    result = record.getMode("unknown-mode");
+  else if(info_type == "helm_allstop_mode")
+    result = record.getAllStop("unknown-amode");
   else  
     return(false);
 
@@ -361,16 +329,10 @@ double VehicleSet::getDoubleInfo(const string& info_type) const
 
 // ----------------------------------------------------------
 // Procedure: hasVehiName
-//   Purpose: 
 
 bool VehicleSet::hasVehiName(const string& vname) const
 {  
-  map<string, ObjectPose>::const_iterator p;
-  for(p=m_pos_map.begin(); p != m_pos_map.end(); p++)
-    if(p->first == vname)
-      return(true);
-  
-  return(false);
+  return(m_rec_map.count(vname));
 }
 
 //-------------------------------------------------------------
@@ -380,29 +342,27 @@ vector<string> VehicleSet::getVehiNames() const
 {
   vector<string> rvect;
 
-  map<string,ObjectPose>::const_iterator p;
-  for(p=m_pos_map.begin(); p!=m_pos_map.end(); p++)
+  map<string, NodeRecord>::const_iterator p;
+  for(p=m_rec_map.begin(); p!=m_rec_map.end(); p++)
     rvect.push_back(p->first);
 
   return(rvect);
 }
 
 //-------------------------------------------------------------
-// Procedure: getObjectPose
+// Procedure: print()
 
-ObjectPose VehicleSet::getObjectPose(const string& given_vname) const
+void VehicleSet::print() const
 {
-  string vname = given_vname;
-  if(vname == "active")
-    vname = m_vehicles_active_name;
+  cout << "Vehicle Set Summary: =====================" << endl;
+  cout << "Total entries: " << m_rec_map.size() << endl;
+  
+  unsigned int index = 0;
 
-  map<string, ObjectPose>::const_iterator p;
-  p = m_pos_map.find(vname);
-  if(p != m_pos_map.end())
-    return(p->second);
-  else {
-    ObjectPose null_opose;
-    return(null_opose);
+  map<string, NodeRecord>::const_iterator p;
+  for(p=m_rec_map.begin(); p!=m_rec_map.end(); p++) {
+    cout << "[" << index << "]" << p->first << endl;
+    cout << "Spec:" << p->second.getSpec() << endl;
   }
 }
 
@@ -463,19 +423,17 @@ bool VehicleSet::getWeightedCenter(double& x, double& y) const
   double total_x = 0;
   double total_y = 0;
 
-  int msize = m_pos_map.size();
+  int msize = m_rec_map.size();
   if(msize == 0) {
     x =0; y=0;
     return(false);
   }
   
-  map<string,ObjectPose>::const_iterator p;
-  for(p=m_pos_map.begin(); p!=m_pos_map.end(); p++) {
-    ObjectPose opose = p->second;
-    total_x += opose.getX();
-    total_y += opose.getY();
+  map<string, NodeRecord>::const_iterator p;
+  for(p=m_rec_map.begin(); p!=m_rec_map.end(); p++) {
+    total_x += p->second.getX();
+    total_y += p->second.getY();
   }
-
 
   x = total_x / (double)(msize);
   y = total_y / (double)(msize);
@@ -488,68 +446,35 @@ bool VehicleSet::getWeightedCenter(double& x, double& y) const
 //      Note: NAME, TYPE, UTC_TIME, X, Y, 
 //            LAT, LON, SPD, HDG, DEPTH
 
-bool VehicleSet::updateVehiclePosition(const string& node_report) 
+bool VehicleSet::updateVehiclePosition(const string& node_report_str) 
 {
-  double pos_x = 0;
-  double pos_y = 0; 
-  double utm_x = 0;
-  double utm_y = 0; 
-  double speed = 0;
-  double hding = 0;
-  double depth = 0;
-  double utime = 0;
-  string sutime = "";
-  double lat   = 0;
-  double lon   = 0;
-  double vlen  = 0;
-  string vname = "";
-  string vtype = "";
-  string vmode = "";
-  string amode = "";
-  bool b_vname = tokParse(node_report, "NAME",  ',', '=', vname);
-  bool b_vtype = tokParse(node_report, "TYPE",  ',', '=', vtype);
-  bool b_pos_x = tokParse(node_report, "X",     ',', '=', pos_x);
-  bool b_pos_y = tokParse(node_report, "Y",     ',', '=', pos_y);
-  bool b_utm_x = tokParse(node_report, "UTMX",  ',', '=', utm_x);
-  bool b_utm_y = tokParse(node_report, "UTMY",  ',', '=', utm_y);
-  bool b_speed = tokParse(node_report, "SPD",   ',', '=', speed);
-  bool b_hding = tokParse(node_report, "HDG",   ',', '=', hding);
-  bool b_depth = tokParse(node_report, "DEPTH", ',', '=', depth);
-  bool b_utime = tokParse(node_report, "UTC_TIME", ',', '=', sutime);
-  bool b_lat   = tokParse(node_report, "LAT", ',', '=', lat);
-  bool b_lon   = tokParse(node_report, "LON", ',', '=', lon);
-  bool b_vlen  = tokParse(node_report, "LENGTH", ',', '=', vlen);
-  bool b_vmode = tokParse(node_report, "MODE", ',', '=', vmode);
-  bool b_amode = tokParse(node_report, "ALLSTOP", ',', '=', amode);
+  NodeRecord new_record = string2NodeRecord(node_report_str);
 
-  if(tolower(sutime) == "now")
-    utime = m_curr_time;
-  else
-    utime = atof(sutime.c_str());
-
-  vtype = tolower(vtype);
-
-  // Do some "Type-Fixing"
+  if(!new_record.valid("x,y") && !new_record.valid("lat,lon"))
+    return(false);
+  if(!new_record.valid("name,type,speed,heading,time"))
+    return(false);
+  
+  // Do some "Type-Fixing". Known types: kayak, auv, glider, ship
+  string vtype = tolower(new_record.getType());
   if(vtype == "uuv")
     vtype = "auv";
   if((vtype == "slocum") || (vtype == "seaglider") || (vtype == "ant"))
     vtype = "glider";
   if((vtype!="auv")&&(vtype!="ship")&&(vtype!="glider")&&(vtype!="kayak"))
     vtype = "ship";
-
-  if((!b_pos_x || !b_pos_y) && (!b_lat || !b_lon))
-    return(false);
-
-  if(!b_vname || !b_vtype || !b_speed ||!b_hding)
-    return(false);
-
-  if(!b_utime)
-    return(false);
-
-  if(((vtype == "auv") || (vtype == "glider")) && !b_depth)
-    return(false);
   
-  if(!b_vlen || (vlen==0)) {
+  if(((vtype == "auv") || (vtype == "glider")) && !new_record.valid("depth"))
+    return(false);
+
+  // If there is no active vehicle declared - make the active vehicle
+  // the first one that the VehicleSet knows about.
+  string vname = new_record.getName();
+  if(m_vehicles_active_name == "")
+    m_vehicles_active_name = vname;
+  
+  double vlen = new_record.getLength();
+  if(!new_record.valid("length") || (vlen == 0)) {
     if((vtype=="auv") || (vtype=="kayak"))
       vlen = 3.0; // meters
     if(vtype=="glider")
@@ -557,45 +482,14 @@ bool VehicleSet::updateVehiclePosition(const string& node_report)
     if(vtype=="ship")
       vlen = 10; // meters
   }
-
-  // If there is no active vehicle declared - make the active vehicle
-  // the first one that the VehicleSet knows about.
-  if(m_vehicles_active_name == "")
-    m_vehicles_active_name = vname;
   
-  // Handle updating the ObjectPose with the new information
-  ObjectPose opose(pos_x, pos_y, hding, speed, depth);
+  new_record.setType(vtype);
+  new_record.setLength(vlen);
+  m_rec_map[vname] = new_record;
 
-  // If the UTM x/y was included in the report, add to the object pose
-  if(b_utm_x && b_utm_y)
-    opose.setUTM_XY(utm_x, utm_y);
-
-  // If the lat/lon was included in the report, add to the object pose
-  if(b_lat && b_lon)
-    opose.setLatLon(lat, lon);
-
-  if(utime==-1)
-    utime = m_curr_time;
-
-
-  // Update the maximum boundaries
-  if(pos_x < m_xmin)
-    m_xmin = pos_x;
-  if(pos_x > m_xmax)
-    m_xmax = pos_x;
-  if(pos_y < m_ymin)
-    m_ymin = pos_y;
-  if(pos_y > m_ymax)
-    m_ymax = pos_y;
-
-  m_vlen_map[vname]  = vlen; 
-  m_pos_map[vname]   = opose;
-  m_ais_map[vname]   = utime;
-
-  if(b_vmode)
-    m_vmode_map[vname] = vmode;
-  if(b_amode)
-    m_amode_map[vname] = amode;
+  // Handle updating the NodeRecord with the new information
+  double pos_x = new_record.getX();
+  double pos_y = new_record.getY();
 
   ColoredPoint point(pos_x, pos_y);
   map<string,CPList>::iterator p2;
@@ -611,7 +505,16 @@ bool VehicleSet::updateVehiclePosition(const string& node_report)
     m_hist_map[vname] = newlist;
   }
 
-  m_vbody_map[vname] = tolower(stripBlankEnds(vtype));
+  // Update the maximum boundaries
+  if(pos_x < m_xmin)
+    m_xmin = pos_x;
+  if(pos_x > m_xmax)
+    m_xmax = pos_x;
+  if(pos_y < m_ymin)
+    m_ymin = pos_y;
+  if(pos_y > m_ymax)
+    m_ymax = pos_y;
+
   return(true);
 }
 

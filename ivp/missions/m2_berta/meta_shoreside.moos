@@ -45,6 +45,8 @@ ProcessConfig = pMOOSBridge
   AppTick   = 3
   CommsTick = 3
 
+  UDPListen = 9200
+
   SHARE = [DEPLOY_ALL]  -> $(VNAME1) @ localhost:$(VPORT1) [DEPLOY]
   SHARE = [DEPLOY_ALL]  -> $(VNAME2) @ localhost:$(VPORT2) [DEPLOY]
   SHARE = [RETURN_ALL]  -> $(VNAME1) @ localhost:$(VPORT1) [RETURN]

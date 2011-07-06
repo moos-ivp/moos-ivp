@@ -26,6 +26,7 @@
 #include "MOOSGenLib.h"
 #include "USM_MOOSApp.h"
 #include "MBUtils.h"
+#include "USM_ExampleConfig.h"
 
 using namespace std;
 
@@ -36,19 +37,17 @@ int main(int argc ,char * argv[])
 {
   string sMissionFile = "uSimMarine.moos";
   string sMOOSName    = "uSimMarine";
-  bool   version_requested = false;
-
-  for(int i=0; i<argc; i++) {
-    string str = argv[i];
-    if((str=="-v") || (str=="--version") || (str=="-version"))
-      version_requested = true;
-  }
   
-  if(version_requested) {
+  if(scanArgs(argc, argv, "-v", "--version", "-version")) {
     vector<string> svector = getReleaseInfo("uSimMarine");
     unsigned int j;
     for(j=0; j<svector.size(); j++)
       cout << svector[j] << endl;
+    return(0);
+  }
+
+  if(scanArgs(argc, argv, "-e", "--example", "-example")) {
+    showExampleConfig();
     return(0);
   }
 

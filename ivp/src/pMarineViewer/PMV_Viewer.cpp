@@ -99,7 +99,6 @@ void PMV_Viewer::draw()
   drawDatum(m_op_area);
   drawDropPoints();
 
-
   // Draw Mouse position
   if(Fl::event_state(FL_SHIFT)) {
     string str = "(" + intToString(m_mouse_x) + ", " +
@@ -291,8 +290,8 @@ bool PMV_Viewer::setParam(string param, double value)
 
 void PMV_Viewer::drawVehicle(string vname, bool active, string vehibody)
 {
-  ObjectPose opose = m_vehiset.getObjectPose(vname);
-  if(!opose.isValid())
+  NodeRecord record = m_vehiset.getNodeRecord(vname);
+  if(!record.valid())  // FIXME more rigorous test
     return;
 
   BearingLine bng_line = m_vehiset.getBearingLine(vname);
@@ -309,8 +308,10 @@ void PMV_Viewer::drawVehicle(string vname, bool active, string vehibody)
   string vnames_mode = m_vehi_settings.getVehiclesNameMode();
   
   double shape_scale  = m_vehi_settings.getVehiclesShapeScale();
-  double shape_length = m_vehiset.getDoubleInfo(vname, "vlength") * shape_scale;
   double age_report   = m_vehiset.getDoubleInfo(vname, "age_ais");
+
+  //  double shape_length = m_vehiset.getDoubleInfo(vname, "vlength") * shape_scale;
+  record.setLength(record.getLength() * shape_scale);
 
   string vname_aug = vname;
   bool  vname_draw = true;
@@ -335,7 +336,7 @@ void PMV_Viewer::drawVehicle(string vname, bool active, string vehibody)
       vname_aug += " (" + helm_amode + ")";
   }
   else if(vnames_mode == "names+depth") {
-    string str_depth = dstringCompact(doubleToString(opose.getDepth(),1));
+    string str_depth = doubleToStringX(record.getDepth(), 1);
     vname_aug += " (depth=" + str_depth + ")";
   }
 
@@ -346,8 +347,9 @@ void PMV_Viewer::drawVehicle(string vname, bool active, string vehibody)
     vname_aug = vname + "(Stale Report: " + age_str + ")";
   } 
 
-  drawCommonVehicle(vname_aug, opose, bng_line, vehi_color, vname_color, 
-		    vehibody, shape_length, vname_draw, 1);
+  record.setName(vname_aug);
+  drawCommonVehicle(record, bng_line, vehi_color, vname_color, 
+		    vname_draw, 1);
 }
 
 //-------------------------------------------------------------

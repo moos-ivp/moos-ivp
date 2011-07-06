@@ -35,6 +35,7 @@ endif (${WIN32})
          
    TARGET_LINK_LIBRARIES(currview
       marineview
+      contacts
       MOOSUtility
       mbutil
       geometry

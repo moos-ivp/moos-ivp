@@ -56,9 +56,10 @@ public:
   void setHaltMsg(const std::string& str) 
     {m_halt_message = str;};
   
-  void addActiveBHV(const std::string& descriptor, 
-		    double time, double pwt, int pcs, double cpu,
-		    const std::string& update_summary);
+  void addActiveBHV(const std::string& descriptor, double time,
+		    double pwt, double pcs, double cpu,
+		    const std::string& update_summary, 
+		    unsigned int ipfs, bool orig=true);
   void addRunningBHV(const std::string& descriptor, double time,
 		     const std::string& update_summary);
   void addIdleBHV(const std::string& descriptor, double time,
@@ -66,7 +67,6 @@ public:
   void addCompletedBHV(const std::string& descriptor, double time,
 		       const std::string& update_summary);
   void setModeSummary(const std::string& s) {m_modes=s;};
-
 
   void setIvPDomain(const IvPDomain &dom) {m_domain = dom;};
 

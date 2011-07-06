@@ -6,6 +6,7 @@ ProcessConfig = pMOOSBridge_%(VNAME)
   AppTick    = 4
   CommsTick  = 4 
   
+  UDPListen = $(VPORT)
   BridgeFrequency = 0
   
   SHARE = [NODE_REPORT_LOCAL]   -> $(SNAME) @ localhost:$(SPORT) [NODE_REPORT]
@@ -17,4 +18,8 @@ ProcessConfig = pMOOSBridge_%(VNAME)
   
   SHARE = [NODE_REPORT_LOCAL]   -> $(VNAME1) @ localhost:$(VPORT1) [NODE_REPORT]
   SHARE = [NODE_REPORT_LOCAL]   -> $(VNAME2) @ localhost:$(VPORT2) [NODE_REPORT]
+
+  UDPSHARE = [NAV_X] -> all @ broadcast: 9200 [NAV_XX]
+  UDPSHARE = [NAV_Y] -> all @ broadcast: 9201 [NAV_YY]
+
 }

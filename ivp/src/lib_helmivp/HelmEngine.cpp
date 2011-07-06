@@ -157,6 +157,8 @@ bool HelmEngine::part2_GetFunctionsFromBehaviorSet(int filter_level)
       string bhv_state;
       m_ipf_timer.start();
       IvPFunction *newof = m_bhv_set->produceOF(bhv_ix, m_iteration, bhv_state);
+      BehaviorReport bhv_report = m_bhv_set->produceOFX(bhv_ix, m_iteration, 
+							bhv_state);
       m_ipf_timer.stop();
   
       // Determine the amt of time the bhv has been in this state
@@ -178,6 +180,16 @@ bool HelmEngine::part2_GetFunctionsFromBehaviorSet(int filter_level)
       string upd_summary = m_bhv_set->getUpdateSummary(bhv_ix);
       string descriptor  = m_bhv_set->getDescriptor(bhv_ix);
       string report_line = descriptor;
+      if(!bhv_report.isEmpty()) {
+	double of_time  = m_ipf_timer.get_float_cpu_time();
+	double pieces   = bhv_report.getAvgPieces();
+	double pwt      = bhv_report.getPriority();
+	string timestr  = doubleToString(of_time,2);
+	report_line += " produces obj-function - time:" + timestr;
+	report_line += " pcs: " + doubleToString(pieces);
+	report_line += " pwt: " + doubleToString(pwt);
+      }
+
       if(newof) {
 	double of_time  = m_ipf_timer.get_float_cpu_time();
 	int    pieces   = newof->size();
@@ -194,8 +206,8 @@ bool HelmEngine::part2_GetFunctionsFromBehaviorSet(int filter_level)
 	double of_time  = m_ipf_timer.get_float_cpu_time();
 	double pwt = newof->getPWT();
 	int    pcs = newof->size();
-	m_helm_report.addActiveBHV(descriptor, state_time_entered, pwt, 
-				   pcs, of_time, upd_summary);
+	m_helm_report.addActiveBHV(descriptor, state_time_entered, pwt,
+				   pcs, of_time, upd_summary, 1, true);
 	m_ivp_functions.push_back(newof);
       }
 

@@ -55,7 +55,7 @@ Behavior = BHV_Waypoint
 //----------------------------------------------
 Behavior = BHV_BearingLine
 {
-  name       = bng-line
+  name       = bng-line-
   condition  = MODE == SURVEYING
   updates    = BEARING_POINT
   templating = clone

@@ -15,6 +15,7 @@ endif (${WIN32})
 
 SET(SRC
    NodeReporter.cpp
+   PNR_ExampleConfig.cpp
    main.cpp
 )
 
@@ -24,6 +25,7 @@ TARGET_LINK_LIBRARIES(pNodeReporter
    MOOS
    MOOSGen
    MOOSUtility
+   contacts
    mbutil
    geometry
    ${SYSTEM_LIBS})

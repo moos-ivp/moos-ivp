@@ -24,6 +24,7 @@
 #include <string>
 #include "NodeReporter.h"
 #include "MBUtils.h"
+#include "PNR_ExampleConfig.h"
 
 using namespace std;
 
@@ -34,6 +35,11 @@ int main(int argc, char *argv[])
     vector<string> svector = getReleaseInfo("pNodeReporter");
     for(unsigned int j=0; j<svector.size(); j++)
       cout << svector[j] << endl;    
+    return(0);
+  }
+  // Look for a request for example configuration information
+  if(scanArgs(argc, argv, "-e", "--example", "-example")) {
+    showExampleConfig();
     return(0);
   }
   

@@ -16,6 +16,7 @@ endif (${WIN32})
 SET(SRC
    USM_MOOSApp.cpp
    USM_Model.cpp
+   USM_ExampleConfig.cpp
    SimEngine.cpp
    ThrustMap.cpp
    main.cpp
@@ -27,6 +28,7 @@ TARGET_LINK_LIBRARIES(uSimMarine
   MOOS
   MOOSGen
   MOOSUtility
+  contacts
   geometry 
   mbutil
   ${SYSTEM_LIBS})

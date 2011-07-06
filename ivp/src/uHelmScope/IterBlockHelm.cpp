@@ -82,19 +82,26 @@ void IterBlockHelm::setActiveBHVs(const string& str)
     unsigned int j, isize = ivector.size();
     for(j=0; j<isize; j++)
       ivector[j] = stripBlankEnds(ivector[j]);
+
     record.setName(ivector[0]);
-    if(ivector.size() >= 2)
+    if(isize >= 2)
       record.setTimeStamp(atof(ivector[1].c_str()));
-    if(ivector.size() >= 3)
+    if(isize >= 3)
       record.setPriority(ivector[2]);
-    if(ivector.size() >= 4)
+    if(isize >= 4)
       record.setPieces(ivector[3]);
-    if(ivector.size() >= 5)
+    if(isize >= 5)
       record.setTimeCPU(ivector[4]);
-    if(ivector.size() >= 6)
+    if(isize >= 6)
       if(ivector[5] != "n/a")
 	record.setUpdates(ivector[5]);
-    m_active_bhv.push_back(record);
+    if(isize >= 7)
+      record.setIPFCount(ivector[6]);
+    if(isize >= 8)
+      record.setOriginal(ivector[7]);
+ 
+
+   m_active_bhv.push_back(record);
   }
 }
 

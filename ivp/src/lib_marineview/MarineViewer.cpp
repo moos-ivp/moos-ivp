@@ -529,32 +529,24 @@ void MarineViewer::drawGLPoly(double *points, unsigned int numPoints,
 //-------------------------------------------------------------
 // Procedure: drawCommonVehicle
 
-void MarineViewer::drawCommonVehicle(const string& vname, 
-				     const ObjectPose& opose, 
+void MarineViewer::drawCommonVehicle(const NodeRecord& record, 
 				     const BearingLine& bng_line, 
 				     const ColorPack& body_color,
 				     const ColorPack& vname_color,
-				     const string& vehibody, 
-				     double shape_length, 
 				     bool  vname_draw, 
 				     unsigned int outer_line)
 {
+  string vname    = record.getName();
+  string vehibody = record.getType();
+  double vlength  = record.getLength();
+
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   glOrtho(0, w(), 0, h(), -1 ,1);
 
-#if 0
-  double xpos = 0;
-  double ypos = 0;
-  if(opose.isLatLonSet()) {
-    double dlat = opose.getLat();
-    double dlon = opose.getLon();
-  }
-#endif
-
   // Determine position in terms of image percentage
-  double vehicle_ix = meters2img('x', opose.getX());
-  double vehicle_iy = meters2img('y', opose.getY());
+  double vehicle_ix = meters2img('x', record.getX());
+  double vehicle_iy = meters2img('y', record.getY());
 
   // Determine position in terms of view percentage
   double vehicle_vx = img2view('x', vehicle_ix);
@@ -567,7 +559,7 @@ void MarineViewer::drawCommonVehicle(const string& vname,
   glTranslatef(vehicle_vx, vehicle_vy, 0); // theses are in pixel units
 
   glScalef(m_zoom, m_zoom, m_zoom);
-  glRotatef(-opose.getTheta(),0,0,1);  
+  glRotatef(-record.getHeading(),0,0,1);  
 
   ColorPack black(0,0,0);
   ColorPack gray(0.5, 0.5, 0.5);
@@ -584,9 +576,9 @@ void MarineViewer::drawCommonVehicle(const string& vname,
   double factor_y = m_back_img.get_pix_per_mtr_y();
   
   if(vehibody == "kayak") {
-    if(shape_length > 0) {
-      factor_x *= (shape_length / g_kayakLength);
-      factor_y *= (shape_length / g_kayakLength);
+    if(vlength > 0) {
+      factor_x *= (vlength / g_kayakLength);
+      factor_y *= (vlength / g_kayakLength);
     }
     double cx = g_kayakCtrX * factor_x;
     double cy = g_kayakCtrY * factor_y;
@@ -598,9 +590,9 @@ void MarineViewer::drawCommonVehicle(const string& vname,
     glTranslatef(cx, cy, 0);
   }
   else if((vehibody == "auv") || (vehibody == "uuv")) {
-    if(shape_length > 0) {
-      factor_x *= (shape_length / g_auvLength);
-      factor_y *= (shape_length / g_auvLength);
+    if(vlength > 0) {
+      factor_x *= (vlength / g_auvLength);
+      factor_y *= (vlength / g_auvLength);
     }
     ColorPack blue = colorParse("blue");
     double cx = g_auvCtrX * factor_x;
@@ -613,9 +605,9 @@ void MarineViewer::drawCommonVehicle(const string& vname,
     glTranslatef(cx, cy, 0);
   }
   else if(vehibody == "glider") {
-    if(shape_length > 0) {
-      factor_x *= (shape_length / g_gliderLength);
-      factor_y *= (shape_length / g_gliderLength);
+    if(vlength > 0) {
+      factor_x *= (vlength / g_gliderLength);
+      factor_y *= (vlength / g_gliderLength);
     }
     double cx = g_gliderCtrX * factor_x;
     double cy = g_gliderCtrY * factor_y;
@@ -627,9 +619,9 @@ void MarineViewer::drawCommonVehicle(const string& vname,
     glTranslatef(cx, cy, 0);
   }
   else if(vehibody == "ship") {  
-    if(shape_length > 0) {
-      factor_x *= (shape_length / g_shipLength);
-      factor_y *= (shape_length / g_shipLength);
+    if(vlength > 0) {
+      factor_x *= (vlength / g_shipLength);
+      factor_y *= (vlength / g_shipLength);
     }
     double cx = g_shipCtrX * factor_x;
     double cy = g_shipCtrY * factor_y;
@@ -650,9 +642,9 @@ void MarineViewer::drawCommonVehicle(const string& vname,
   }
   else {  // vehibody == "auv" is the default
     ColorPack blue("blue");
-    if(shape_length > 0) {
-      factor_x *= (shape_length / g_auvLength);
-      factor_y *= (shape_length / g_auvLength);
+    if(vlength > 0) {
+      factor_x *= (vlength / g_auvLength);
+      factor_y *= (vlength / g_auvLength);
     }
     double cx = g_auvCtrX * factor_x;
     double cy = g_auvCtrY * factor_y;
@@ -689,7 +681,7 @@ void MarineViewer::drawCommonVehicle(const string& vname,
     projectPoint(bearing, range, 0, 0, bx, by);
 
     if(absolute)
-      glRotatef(opose.getTheta(),0,0,1);  
+      glRotatef(record.getHeading(),0,0,1);  
 
     glLineWidth(lwidth);
     glBegin(GL_LINE_STRIP);

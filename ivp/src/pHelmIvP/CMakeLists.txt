@@ -16,6 +16,7 @@ endif (${WIN32})
 
 SET(SRC
   HelmIvP.cpp
+  HELM_ExampleConfig.cpp
   pHelmIvPMain.cpp
 )
 
@@ -25,6 +26,7 @@ TARGET_LINK_LIBRARIES(pHelmIvP
   MOOS
   MOOSGen
   helmivp
+  contacts
   behaviors-marine
   behaviors
   bhvutil	

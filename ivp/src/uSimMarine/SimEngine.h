@@ -23,7 +23,7 @@
 #ifndef SIM_ENGINE_HEADER
 #define SIM_ENGINE_HEADER
 
-#include "VState.h"
+#include "NodeRecord.h"
 #include "ThrustMap.h"
 
 class SimEngine
@@ -33,19 +33,19 @@ public:
   ~SimEngine() {};
   
 public:
-  void propagate(VState&, double delta_time, double prior_heading,
+  void propagate(NodeRecord&, double delta_time, double prior_heading,
 		 double prior_speed, double force_x, double force_y);
   
-  void propagateDepth(VState&, double delta_time, 
+  void propagateDepth(NodeRecord&, double delta_time, 
 		      double elevator_angle, double buoyancy_rate, 
 		      double max_depth_rate, 
 		      double m_max_depth_rate_speed);
 
-  void propagateSpeed(VState&, const ThrustMap&, double delta_time, 
+  void propagateSpeed(NodeRecord&, const ThrustMap&, double delta_time, 
 		      double thrust, double rudder,
 		      double max_accel, double max_decel);
 
-  void propagateHeading(VState&, double delta_time, double rudder,
+  void propagateHeading(NodeRecord&, double delta_time, double rudder,
 			double thrust, double turn_rate, 
 			double torque_theta);
 };

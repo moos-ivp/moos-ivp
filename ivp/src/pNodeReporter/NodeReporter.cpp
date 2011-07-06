@@ -27,6 +27,7 @@
 #include "NodeReporter.h"
 #include "MBUtils.h"
 #include "AngleUtils.h"
+#include "NodeRecord.h"
 
 #define USE_UTM
 
@@ -38,8 +39,10 @@ using namespace std;
 NodeReporter::NodeReporter()
 {
   m_vessel_name  = "unknown";
-  m_vessel_type  = "unknown";
-  m_vessel_len   = "0"; // Zero indicates unspecified length
+
+  m_record.setType("unknown");
+  m_record.setLength(0);
+
   m_helm_engaged = false;
   m_helm_lastmsg = -1;
   m_nohelm_thresh = 5;
@@ -58,6 +61,14 @@ NodeReporter::NodeReporter()
   m_alt_nav_name      = "_GT";
 
   m_crossfill_policy = "literal";
+
+  // Timestamps used for executing the "use-latest" crossfill policy 
+  m_nav_xy_updated        = 0;
+  m_nav_latlon_updated    = 0;
+  m_nav_xy_updated_gt     = 0;
+  m_nav_latlon_updated_gt = 0;
+
+  m_record_gt_updated     = 0;
 
   m_node_report_var = "NODE_REPORT_LOCAL";
   m_plat_report_var = "PLATFORM_REPORT_LOCAL";
@@ -80,39 +91,61 @@ bool NodeReporter::OnNewMail(MOOSMSG_LIST &NewMail)
     string sdata = msg.m_sVal;
     double ddata = msg.m_dfVal;
 
-    if(key == "NAV_X")
-      m_vstate.setX(ddata, m_utc_time);
-    else if(key == "NAV_Y")
-      m_vstate.setY(ddata, m_utc_time);
-    else if(key == "NAV_LAT")
-      m_vstate.setLat(ddata, m_utc_time);
-    else if(key == "NAV_LONG")
-      m_vstate.setLon(ddata, m_utc_time);
+    if(key == "NAV_X") {
+      m_record.setX(ddata);
+      m_nav_xy_updated = m_utc_time;
+    }
+    else if(key == "NAV_Y") {
+      m_record.setY(ddata);
+      m_nav_xy_updated = m_utc_time;
+    }
+    else if(key == "NAV_LAT") {
+      m_record.setLat(ddata);
+      m_nav_latlon_updated = m_utc_time;
+    }
+    else if(key == "NAV_LONG") {
+      m_record.setLon(ddata);
+      m_nav_latlon_updated = m_utc_time;
+    }
     else if(key == "NAV_SPEED")
-      m_vstate.setSpeed(ddata, m_utc_time);
+      m_record.setSpeed(ddata);
     else if(key == "NAV_HEADING")
-      m_vstate.setHeading(angle360(ddata), m_utc_time);
+      m_record.setHeading(angle360(ddata));
     else if(key == "NAV_DEPTH")
-      m_vstate.setDepth(ddata, m_utc_time);
+      m_record.setDepth(ddata);
     else if(key == "NAV_YAW") 
-      m_vstate.setYaw(ddata, m_utc_time);
-
-    if(key == (m_alt_nav_prefix + "X"))
-      m_vstate_gt.setX(ddata, m_utc_time);
-    else if(key == (m_alt_nav_prefix + "Y"))
-      m_vstate_gt.setY(ddata, m_utc_time);
-    else if(key == (m_alt_nav_prefix + "LAT"))
-      m_vstate_gt.setLat(ddata, m_utc_time);
-    else if(key == (m_alt_nav_prefix + "LONG"))
-      m_vstate_gt.setLon(ddata, m_utc_time);
+      m_record.setYaw(ddata);
+    
+    bool record_gt_updated = true;
+    if(key == (m_alt_nav_prefix + "X")) {
+      m_record_gt.setX(ddata);
+      m_nav_xy_updated_gt = m_utc_time;
+    }
+    else if(key == (m_alt_nav_prefix + "Y")) {
+      m_record_gt.setY(ddata);
+      m_nav_xy_updated_gt = m_utc_time;
+    }
+    else if(key == (m_alt_nav_prefix + "LAT")) {
+      m_record_gt.setLat(ddata);
+      m_nav_latlon_updated_gt = m_utc_time;
+    }
+    else if(key == (m_alt_nav_prefix + "LONG")) {
+      m_record_gt.setLon(ddata);
+      m_nav_latlon_updated_gt = m_utc_time;
+    }
     else if(key == (m_alt_nav_prefix + "SPEED"))
-      m_vstate_gt.setSpeed(ddata, m_utc_time);
+      m_record_gt.setSpeed(ddata);
     else if(key == (m_alt_nav_prefix + "HEADING"))
-      m_vstate_gt.setHeading(angle360(ddata), m_utc_time);
+      m_record_gt.setHeading(angle360(ddata));
     else if(key == (m_alt_nav_prefix + "DEPTH"))
-      m_vstate_gt.setDepth(ddata, m_utc_time);
+      m_record_gt.setDepth(ddata);
     else if(key == (m_alt_nav_prefix + "YAW"))
-      m_vstate_gt.setYaw(ddata, m_utc_time);
+      m_record_gt.setYaw(ddata);
+    else 
+      record_gt_updated = false;
+    
+    if(record_gt_updated)
+      m_record_gt_updated = m_utc_time;
 
     else if(key == "IVPHELM_SUMMARY") {
       m_helm_lastmsg = m_utc_time;
@@ -189,6 +222,7 @@ void NodeReporter::registerVariables()
 
 bool NodeReporter::Iterate()
 {
+  // If the time was updated while handling mail, don't update it again
   if(!m_time_updated)
     m_utc_time = MOOSTime();
   m_time_updated = false;
@@ -200,17 +234,17 @@ bool NodeReporter::Iterate()
      ((m_utc_time - m_last_post_time) > m_blackout_interval)) {
 
     if(m_crossfill_policy != "literal")
-      crossFillCoords(m_vstate);
+      crossFillCoords(m_record, m_nav_xy_updated, m_nav_latlon_updated);
       
-    string report = assembleNodeReport(m_vstate);
+    string report = assembleNodeReport(m_record);
     m_Comms.Notify(m_node_report_var, report);
     
-    double elapsed_time = m_utc_time - m_vstate_gt.lastUpdate();
+    double elapsed_time = m_utc_time - m_record_gt_updated;
     if(elapsed_time < 5) {
       if(m_crossfill_policy != "literal")
-	crossFillCoords(m_vstate_gt);
+	crossFillCoords(m_record_gt, m_nav_xy_updated_gt, m_nav_latlon_updated_gt);
       
-      string report_gt = assembleNodeReport(m_vstate_gt);
+      string report_gt = assembleNodeReport(m_record_gt);
       m_Comms.Notify(m_node_report_var, report_gt);
     }
 
@@ -273,11 +307,11 @@ bool NodeReporter::OnStartUp()
 
       if((param == "PLATFORM_TYPE") ||           // Preferred
 	 (param == "VESSEL_TYPE"))               // Deprecated
-	m_vessel_type = value;
+	m_record.setType(value);
       else if((param =="PLATFORM_LENGTH") ||     // Preferred
 	      (param =="VESSEL_LENGTH")) {       // Deprecated
 	if(isNumber(value) && (dval >= 0))
-	  m_vessel_len = value;
+	  m_record.setLength(dval);
       }
       else if(param == "BLACKOUT_INTERVAL") {
 	if(isNumber(value) && (dval >= 0)) {
@@ -299,7 +333,7 @@ bool NodeReporter::OnStartUp()
 	if(!strContainsWhite(value))
 	  m_node_report_var = value;
       }      
-      else if(param == "PLATFORM_REPORT_SUMMARY") {
+      else if(param == "PLAT_REPORT_OUTPUT") {
 	if(!strContainsWhite(value))
 	  m_plat_report_var = value;
       }      
@@ -322,25 +356,27 @@ bool NodeReporter::OnStartUp()
     m_Comms.Register(m_plat_vars[k], 0);
 
   // If the length is unknown, put in some good guesses
-  if(m_vessel_len == "0") {
-    if(tolower(m_vessel_type) == "kayak")
-      m_vessel_len = "4.0"; // meters;
-    if(tolower(m_vessel_type) == "auv")
-      m_vessel_len = "4.0"; // meters;
-    if(tolower(m_vessel_type) == "uuv")
-      m_vessel_len = "4.0"; // meters;
-    if(tolower(m_vessel_type) == "ship")
-      m_vessel_len = "18.0"; // meters
-    if(tolower(m_vessel_type) == "glider")
-      m_vessel_len = "3.0"; // meters
+  if(m_record.getLength() == 0) {
+    if(tolower(m_record.getType()) == "kayak")
+      m_record.setLength(4); // meters;
+    if(tolower(m_record.getType()) == "auv")
+      m_record.setLength(4); // meters;
+    if(tolower(m_record.getType()) == "uuv")
+      m_record.setLength(4); // meters;
+    if(tolower(m_record.getType()) == "ship")
+      m_record.setLength(8); // meters
+    if(tolower(m_record.getType()) == "glider")
+      m_record.setLength(3); // meters
   }
   
-  m_vstate.setName(m_vessel_name);
+  m_record.setName(m_vessel_name);
+  // To start with m_record_gt is just a copy of m_record.
+  m_record_gt = m_record;       
 
   if(strBegins(m_alt_nav_name, "_"))
-    m_vstate_gt.setName(m_vessel_name + m_alt_nav_name);
+    m_record_gt.setName(m_vessel_name + m_alt_nav_name);
   else
-    m_vstate_gt.setName(m_alt_nav_name);
+    m_record_gt.setName(m_alt_nav_name);
   
   return(true);
 }
@@ -463,49 +499,32 @@ string NodeReporter::assemblePlatformReport()
 // Procedure: assembleNodeReport
 //   Purpose: Assemble the node report from member variables.
 
-string NodeReporter::assembleNodeReport(const VState& vstate)
+string NodeReporter::assembleNodeReport(NodeRecord record)
 {
-  string summary = "NAME=" + vstate.getName();
-  summary += ",TYPE=" + m_vessel_type;
-  summary += ",UTC_TIME=" + doubleToString(m_utc_time,2);
-  
-  if(vstate.isSet("x") && vstate.isSet("y")) {
-    summary += ",X="   + doubleToString(vstate.getX(),2);
-    summary += ",Y="   + doubleToString(vstate.getY(),2);
-  }
-  if(vstate.isSet("lat") && vstate.isSet("lon")) {
-    summary += ",LAT=" + doubleToString(vstate.getLat(),6);
-    summary += ",LON=" + doubleToString(vstate.getLon(),6);
-  }
-  summary += ",SPD=" + doubleToStringX(vstate.getSpeed(),2);
-  summary += ",HDG=" + doubleToStringX(vstate.getHeading(),2);
-  summary += ",DEPTH=" + doubleToStringX(vstate.getDepth(),2);
-  if(vstate.isSet("yaw"))
-    summary += ",YAW=" + doubleToStringX(vstate.getYaw(),5);
+  record.setTimeStamp(m_utc_time); 
 
-  summary += ",LENGTH=" + m_vessel_len;
-  
-  string  mode_str = ",MODE=";
+  string  mode;
   if((m_utc_time-m_helm_lastmsg) > m_nohelm_thresh) {
     string awol_time = "EVER";
     if(m_helm_lastmsg > 0)
       awol_time = doubleToString((m_utc_time-m_helm_lastmsg), 0);
-    mode_str += "NOHELM-" + awol_time;
+    mode = "NOHELM-" + awol_time;
   }
   else if(m_helm_engaged == false)
-    mode_str += "DISENGAGED";
+    mode = "DISENGAGED";
   else {
     if(m_helm_mode != "none")
-      mode_str += m_helm_mode;
+      mode = m_helm_mode;
     else
-      mode_str += "ENGAGED";
+      mode = "ENGAGED";
   }
-  summary += mode_str;
-  summary += ",ALLSTOP=" + m_helm_allstop_mode;
+  
+  record.setMode(mode);
+  record.setAllStop(m_helm_allstop_mode);
 
+  string summary = record.getSpec();
   return(summary);
 }
-
 
 //------------------------------------------------------------------
 // Procedure: setCrossFillPolicy
@@ -525,32 +544,32 @@ void NodeReporter::setCrossFillPolicy(string policy)
 // Procedure: crossFillCoords
 //   Purpose: Potentially update NAV_X/Y from NAV_LAT/LON or v.versa.
 
-void NodeReporter::crossFillCoords(VState& vstate)
+void NodeReporter::crossFillCoords(NodeRecord& record, 
+				   double nav_xy_updated,
+				   double nav_latlon_updated)
 {
   // The "fill-empty" policy will fill the other coordinates only if 
   // the other coordinates have NEVER been written to.
   if(m_crossfill_policy == "fill-empty") {
-    if(!vstate.isSet("x") && !vstate.isSet("y") &&
-       vstate.isSet("lat") && vstate.isSet("lon"))
-      crossFillGlobalToLocal(vstate);
-    if(vstate.isSet("x") && vstate.isSet("y") &&
-       !vstate.isSet("lat") && !vstate.isSet("lon")) {
-      crossFillLocalToGlobal(vstate);
+    if(!record.valid("x") && !record.valid("y") &&
+       record.valid("lat") && record.valid("lon"))
+      crossFillGlobalToLocal(record);
+    if(record.valid("x") && record.valid("y") &&
+       !record.valid("lat") && !record.valid("lon")) {
+      crossFillLocalToGlobal(record);
     }
   }
 
   // The "use-latest" policy will fill the other coordinates only if 
   // the other coordinates are more stale than their counterpart
   if(m_crossfill_policy == "use-latest") {
-    double t_local  = min(vstate.timeSet("x"), vstate.timeSet("y"));
-    double t_global = min(vstate.timeSet("lat"), vstate.timeSet("lon"));
-    if(t_local == t_global)
+    if(nav_xy_updated == nav_latlon_updated)
       return;
 
-    if(t_local < t_global)       // Local coords older
-      crossFillGlobalToLocal(vstate);
-    else                         // Global coords older
-      crossFillLocalToGlobal(vstate);
+    if(nav_xy_updated < nav_latlon_updated) // Local coords older
+      crossFillGlobalToLocal(record);
+    else                                    // Global coords older
+      crossFillLocalToGlobal(record);
   }
 }
 
@@ -559,10 +578,10 @@ void NodeReporter::crossFillCoords(VState& vstate)
 // Procedure: crossFillLocalToGlobal
 //   Purpose: Update the Global coordinates based on the Local coords.
 
-void NodeReporter::crossFillLocalToGlobal(VState& vstate)
+void NodeReporter::crossFillLocalToGlobal(NodeRecord& record)
 {
-  double nav_x = vstate.getX();
-  double nav_y = vstate.getY();
+  double nav_x = record.getX();
+  double nav_y = record.getY();
 
   double nav_lat, nav_lon;
 
@@ -572,29 +591,27 @@ void NodeReporter::crossFillLocalToGlobal(VState& vstate)
   m_geodesy.UTM2LatLong(nav_x, nav_y, nav_lat, nav_lon);
 #endif      
 
-  vstate.setLat(nav_lat, m_utc_time);
-  vstate.setLon(nav_lon, m_utc_time);
+  record.setLat(nav_lat);
+  record.setLon(nav_lon);  
 }
 
 //------------------------------------------------------------------
 // Procedure: crossFillGlobalToLocal
 //   Purpose: Update the Local coordinates based on the Global coords.
 
-void NodeReporter::crossFillGlobalToLocal(VState& vstate)
+void NodeReporter::crossFillGlobalToLocal(NodeRecord& record)
 {
-  double nav_lat = vstate.getLat();
-  double nav_lon = vstate.getLon();
+  double nav_lat = record.getLat();
+  double nav_lon = record.getLon();
 
   double nav_x, nav_y;
 
 #ifdef USE_UTM
-  cout << "Using UTM" << endl;
   m_geodesy.LatLong2LocalUTM(nav_lat, nav_lon, nav_y, nav_x);
 #else
-  cout << "Using LOCAL" << endl;
   m_geodesy.LatLong2LocalGrid(nav_lat, nav_lon, nav_y, nav_x);
 #endif      
 
-  vstate.setX(nav_x, m_utc_time);
-  vstate.setY(nav_y, m_utc_time);
+  record.setX(nav_x);
+  record.setY(nav_y);
 }

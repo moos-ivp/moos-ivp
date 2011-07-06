@@ -15,7 +15,7 @@ LongOrigin = -70.330400
 // Antler configuration  block
 ProcessConfig = ANTLER
 {
-  MSBetweenLaunches = 500
+  MSBetweenLaunches = 1000
 
   Run = MOOSDB		@ NewConsole = false
   Run = pLogger         @ NewConsole = false
@@ -23,7 +23,7 @@ ProcessConfig = ANTLER
   Run = pNodeReporter	@ NewConsole = false
   Run = pMarinePID	@ NewConsole = false
   Run = pHelmIvP	@ NewConsole = true
-  Run = pMarineViewer	@ NewConsole = false
+  Run = pMarineViewer	@ NewConsole = true
 }
 
 //------------------------------------------
@@ -35,7 +35,12 @@ ProcessConfig = pLogger
   CommsTick = 4
 
   SyncLog = false
-  AsyncLog = true
+  AsyncLog = true @ 0
+
+  // For variables that are published in a bundle on their first post,
+  // explicitly declare their logging request
+
+  Log = IVPHELM_LIFE_EVENT @ 0 NOSYNC
 
   WildCardLogging = true
   WildCardOmitPattern = *_STATUS
@@ -180,6 +185,6 @@ ProcessConfig = pNodeReporter
   AppTick	= 2
   CommsTick	= 2
 
-  PLATFORM_TYPE   = KAYAK
+  PLATFORM_TYPE   = GLIDER
   PLATFORM_LENGTH = 4
 }

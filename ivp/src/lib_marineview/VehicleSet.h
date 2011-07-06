@@ -26,7 +26,7 @@
 #include <vector>
 #include <string>
 #include <map>
-#include "ObjectPose.h"
+#include "NodeRecord.h"
 #include "ColoredPoint.h"
 #include "ColorPack.h"
 #include "BearingLine.h"
@@ -45,6 +45,8 @@ class VehicleSet
   double getXMax() const {return(m_xmax);};
   double getYMin() const {return(m_ymin);};
   double getYMax() const {return(m_ymax);};
+
+  NodeRecord getNodeRecord(const std::string& vname) const;
 
   //------ General Purpose Information retrieval --------------
   bool  getDoubleInfo(const std::string& vname, 
@@ -71,11 +73,12 @@ class VehicleSet
   std::string getCenterVehicle() const  {return(m_vehicles_center_name);};
 
   CPList      getVehiHist(const std::string&   s="active") const;   
-  ObjectPose  getObjectPose(const std::string& s="active") const;
   BearingLine getBearingLine(const std::string& s="active") const;
 
   bool  hasVehiName(const std::string&) const;
   bool  getWeightedCenter(double& x, double&y) const;
+
+  void  print() const;
 
  private:
   bool  updateVehiclePosition(const std::string& node_report); 
@@ -83,19 +86,9 @@ class VehicleSet
 
  private:
   // Mapping from Vehicle Name to Vehicle Position
-  std::map<std::string, ObjectPose>   m_pos_map;
-  // Mapping from Vehicle Name to Vehicle Length
-  std::map<std::string, double>       m_vlen_map;
+  std::map<std::string, NodeRecord>   m_rec_map;
   // Mapping from Vehicle Name to Vehicle Position History
   std::map<std::string, CPList>       m_hist_map;
-  // Mapping from Vehicle Name to Vehicle Body Type
-  std::map<std::string, std::string>  m_vbody_map;
-  // Mapping from Vehicle Name to Vehicle Helm Mode (in NODE_REPORT)
-  std::map<std::string, std::string>  m_vmode_map;
-  // Mapping from Vehicle Name to Vehicle Helm AllStop Mode (in NODE_REPORT)
-  std::map<std::string, std::string>  m_amode_map;
-  // Mapping from Vehicle Name to Time of last node report
-  std::map<std::string, double>       m_ais_map;
 
   // Mapping from Vehicle Name to Bearing Lines
   std::map<std::string, BearingLine> m_bearing_map;

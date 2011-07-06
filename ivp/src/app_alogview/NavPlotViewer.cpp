@@ -452,25 +452,18 @@ void NavPlotViewer::drawNavPlot(unsigned int index)
   // same, one added for each vehicle. Do some checking here anyway.
   double x = 0;
   double y = 0;
-  double theta = 0;
+  double heading = 0;
   if(index < m_navx_plot.size())
     x = m_navx_plot[index].get_value_by_time(ctime);
   if(index < m_navy_plot.size())
     y = m_navy_plot[index].get_value_by_time(ctime);
   if(index < m_hdg_plot.size())
-    theta = m_hdg_plot[index].get_value_by_time(ctime);
+    heading = m_hdg_plot[index].get_value_by_time(ctime);
 
-  ObjectPose opose(x,y,theta,0,0);
   ColorPack  vehi_color = m_vehi_settings.getColorInactiveVehicle();
   if(index == m_hplot_left_ix) 
     vehi_color = m_vehi_settings.getColorActiveVehicle();
-
-#if 0
-  ColorPack  vehi_color("1.0, 0.906, 0.243");
-  if(index==1) 
-    vehi_color.setColor("red");    
-#endif
-
+  
   ColorPack vname_color = m_vehi_settings.getColorVehicleName();  
   string    vnames_mode = m_vehi_settings.getVehiclesNameMode();
   double    shape_scale = m_vehi_settings.getVehiclesShapeScale();
@@ -486,6 +479,12 @@ void NavPlotViewer::drawNavPlot(unsigned int index)
     vehi_name   = m_helm_plot[index].get_vehi_name();
   }
 
+  NodeRecord record(vehi_name, vehi_type);
+  record.setX(x);
+  record.setY(y);
+  record.setHeading(heading);
+  record.setLength(vehi_length);
+
   bool vname_draw = true;
   if(vnames_mode == "off")
     vname_draw = false;
@@ -497,9 +496,8 @@ void NavPlotViewer::drawNavPlot(unsigned int index)
 
   // We do not handle bearing reports - yet.
   BearingLine bng_line;
-
-  drawCommonVehicle(vehi_name, opose, bng_line, vehi_color, vname_color, 
-		    vehi_type, vehi_length, vname_draw);
+  drawCommonVehicle(record, bng_line, vehi_color, vname_color, 
+		    vname_draw);
 }
 
 

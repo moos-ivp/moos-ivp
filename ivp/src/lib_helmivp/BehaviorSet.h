@@ -48,6 +48,7 @@
 #include "VarDataPair.h"
 #include "ModeSet.h"
 #include "BehaviorSpec.h"
+#include "BehaviorReport.h"
 #include "SpecBuild.h"
 #include "BFactoryStatic.h"
 #include "BFactoryDynamic.h"
@@ -89,6 +90,9 @@ public:
   IvPFunction* produceOF(unsigned int ix, unsigned int iter, 
 			 std::string& activity_state);
 
+  BehaviorReport produceOFX(unsigned int ix, unsigned int iter, 
+			    std::string& activity_state);
+  
   unsigned int   removeCompletedBehaviors();
   IvPBehavior*   getBehavior(unsigned int);
   std::string    getDescriptor(unsigned int);
@@ -108,6 +112,8 @@ public:
   std::vector<LifeEvent>   getLifeEvents()   {return(m_life_events);};
   void                     clearLifeEvents() {m_life_events.clear();};
 
+  bool        uniqueNameX(const std::string&, 
+			  const std::set<std::string>&);
   bool        updateStateSpaceVars();
   std::string getStateSpaceVars();
 

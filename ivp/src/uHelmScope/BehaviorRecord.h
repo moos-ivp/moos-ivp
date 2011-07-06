@@ -35,18 +35,22 @@ public:
   // Setters
   void   setTimeStamp(double v);
   void   setName(std::string s)      {m_bhv_name = s;};
+  void   setIPFCount(std::string s)  {m_ipf_count = s;};
   void   setPriority(std::string s)  {m_priority = s;};
   void   setTimeCPU(std::string s)   {m_time_cpu = s;};
   void   setPieces(std::string s)    {m_pieces = s;};
   void   setUpdates(std::string s)   {m_updates = s;};
+  void   setOriginal(std::string s)  {m_original = s;};
 
   // Getters
   double getTimeStamp() const       {return(m_time_stamp);};
   std::string getName() const       {return(m_bhv_name);};
+  std::string getIPFCount() const   {return(m_ipf_count);};
   std::string getTimeCPU() const    {return(m_time_cpu);};
   std::string getPriority() const   {return(m_priority);};
   std::string getPieces() const     {return(m_pieces);};
   std::string getUpdates() const    {return(m_updates);};
+  std::string getOriginal() const   {return(m_original);};
 
   std::string getSummary(double tstamp=0) const;
 
@@ -55,9 +59,11 @@ protected:
   bool        m_set_time_stamp;
 
   std::string m_bhv_name;
+  std::string m_ipf_count;
   std::string m_time_cpu;
   std::string m_priority;
   std::string m_pieces;
+  std::string m_original;
   std::string m_updates;
 
 };

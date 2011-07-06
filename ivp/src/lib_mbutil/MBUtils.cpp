@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: MBUtils.cpp                                          */
 /*    DATE: (1996-2005)                                          */
 /*                                                               */
@@ -485,6 +485,59 @@ string truncString(const string& str, unsigned int newlen, string style)
   string new_str = str.substr(0,front) + ".." + str.substr(len-back,len);
   return(new_str);
 }
+
+//----------------------------------------------------------------
+// Procedure: truncString
+
+#if 0
+string truncStringX(const string& str, unsigned int newlen, string style)
+{
+  unsigned int len = str.length();
+  if(newlen > len)
+    return(str);
+
+  if((style = "basic") || (style == "front"))
+    return(str.substr(0, newlen));
+
+  if(style == "back")
+    return(str.substr(len-newlen, newlen));
+
+  // Else style is middle
+
+
+
+
+  string::size_type len  = str.length();
+  if(len <= sz)
+    return(str);
+
+  char *buff = new char[sz+1]; 
+
+  if((style == "middle") && (sz >= 4)) {
+    string::size_type front_amt = sz/2;
+    string::size_type back_amt  = (sz-2) - front_amt;
+    for(string::size_type i=0; i<front_amt; i++)
+      buff[i] = str[i];
+    buff[front_amt]   = '.';
+    buff[front_amt+1] = '.';
+    
+    for(string::size_type i=0; i<back_amt; i++) {
+      string::size_type leftix  = (front_amt+2) + i;
+      string::size_type rightix = (len - back_amt) + i;
+      buff[leftix] = str[rightix];
+    }
+    buff[sz] = '\0';
+  }
+  else { // if style is basic truncation
+    for(string::size_type i=0; i<sz; i++)
+      buff[i] = str[i];
+    buff[sz] = '\0';
+  }
+
+  string rstr = buff;
+  return(rstr);
+}
+#endif
 
 //----------------------------------------------------------------
 // Procedure: xxxToString(value)
@@ -995,6 +1048,32 @@ bool tokParse(const string& str, const string& left,
 
   rval = atof(rstr.c_str());
   return(true);
+}
+
+//----------------------------------------------------------------
+// Procedure: isAlphaNum
+
+bool isAlphaNum(const string& str, const std::string& achars)
+{
+  unsigned int i, len = str.length();
+  bool ok = false;
+  for(i=0; i<len; i++) {
+    char c = str.at(i);
+    if((c >= 48) && (c <= 57))
+      ok = true;
+    else if((c >= 65) && (c <= 90))
+      ok = true;
+    else if((c >= 97) && (c <= 122))
+      ok = true;
+    else {
+      unsigned int j, alen = achars.length();
+      for(j=0; (j<alen)&&!ok; j++) {
+	if(c == achars.at(j))
+	  ok = true;
+      }
+    }
+  }
+  return(ok);
 }
 
 //----------------------------------------------------------------

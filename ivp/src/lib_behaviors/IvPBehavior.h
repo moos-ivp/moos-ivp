@@ -52,6 +52,7 @@
 #include "InfoBuffer.h"
 #include "VarDataPair.h"
 #include "LogicCondition.h"
+#include "BehaviorReport.h"
 
 class IvPBehavior {
 friend class BehaviorSet;
@@ -60,6 +61,7 @@ public:
   virtual ~IvPBehavior() {};
 
   virtual IvPFunction* onRunState() {return(0);};
+  virtual BehaviorReport onRunState(std::string);
   virtual bool setParam(std::string, std::string);
   virtual void onSetParamComplete() {};
   virtual void onIdleState() {};
@@ -86,7 +88,10 @@ public:
   void   resetStateOK()                  {m_bhv_state_ok=true;};
 
 protected:
+  bool    setBehaviorName(std::string str);
+  bool    augBehaviorName(std::string str);
   void    setBehaviorType(std::string str) {m_behavior_type = str;};
+
   void    addInfoVars(std::string, std::string="");
   void    setComplete();
   void    postMessage(std::string, double, std::string key="");

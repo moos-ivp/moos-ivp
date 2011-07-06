@@ -5,6 +5,7 @@
 
 FILE(GLOB SRC
      BasicContactMgr.cpp
+     BCM_ExampleConfig.cpp
      ContactRecord.cpp
      PlatformAlertRecord.cpp
      BasicContactMgrMain.cpp
@@ -24,6 +25,7 @@ TARGET_LINK_LIBRARIES(pBasicContactMgr
    MOOSGen
    mbutil
    geometry
+   contacts
    ${SYSTEM_LIBS}
    )
 

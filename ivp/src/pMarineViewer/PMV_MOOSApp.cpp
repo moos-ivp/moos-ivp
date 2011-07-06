@@ -457,7 +457,8 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
 	}
       }
     }
-    else { 
+    else {
+      cout << "param:" << param << " value:" << value << endl;
       bool handled = m_gui->mviewer->setParam(param, value);
       if(!handled)
         handled = m_gui->mviewer->setParam(param, atof(value.c_str()));
