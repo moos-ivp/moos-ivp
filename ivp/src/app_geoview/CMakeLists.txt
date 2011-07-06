@@ -37,6 +37,7 @@ endif (${WIN32})
    contacts
       marineview
       MOOSUtility
+      contacts
       mbutil
       geometry
       ${SYSTEM_LIBS}
