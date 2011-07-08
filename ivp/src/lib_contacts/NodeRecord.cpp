@@ -89,7 +89,7 @@ string NodeRecord::getStringValue(string key) const
   else if((key == "timestamp") || (key == "time") || (key == "utime"))
     return(doubleToStringX(m_timestamp, 2));
   else if(hasProperty(key))
-    return(doubleToStringX(getProperty(key), 2));
+    return(getProperty(key));
   else
     return("");  
 }
@@ -109,7 +109,7 @@ double NodeRecord::getElapsedTime(double curr_time) const
 //------------------------------------------------------------
 // Procedure: setProperty
 
-void NodeRecord::setProperty(string key, double value)
+void NodeRecord::setProperty(string key, string value)
 {
   m_properties[key] = value;
 }
@@ -117,13 +117,13 @@ void NodeRecord::setProperty(string key, double value)
 //------------------------------------------------------------
 // Procedure: getProperty
 
-double NodeRecord::getProperty(string key) const
+string NodeRecord::getProperty(string key) const
 {
-  map<string, double>::const_iterator p = m_properties.find(key);
+  map<string, string>::const_iterator p = m_properties.find(key);
   if(p != m_properties.end())
     return(p->second);
   
-  return(0);
+  return("");
 }
 
 //------------------------------------------------------------
@@ -176,10 +176,10 @@ string NodeRecord::getSpec() const
   if(m_length_set)
     str += ",LENGTH=" + doubleToStringX(m_length,2);
   
-  map<string, double>::const_iterator p;
+  map<string, string>::const_iterator p;
   for(p=m_properties.begin(); p!=m_properties.end(); p++) {
     str += "," + p->first;
-    str += "=" + doubleToStringX(p->second,6);
+    str += "=" + p->second;
   }
   
   return(str);

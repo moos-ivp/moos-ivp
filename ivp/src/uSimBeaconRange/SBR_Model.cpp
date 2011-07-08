@@ -334,7 +334,8 @@ bool SBR_Model::handleRangeRequest(const string& request)
   // Determine if this vehicle is allowed to make a range request
   double elapsed_time  = m_node_records[vix].getElapsedTime(m_curr_time);
   bool   query_allowed = false;
-  double query_freq    = m_node_records[vix].getProperty("query_freq");
+  string query_freq_s  = m_node_records[vix].getProperty("query_freq");
+  double query_freq    = atof(query_freq_s.c_str());
   if(elapsed_time > query_freq)
     query_allowed = true;
   report("   Elapsed time: " + doubleToString(elapsed_time) + "\n");

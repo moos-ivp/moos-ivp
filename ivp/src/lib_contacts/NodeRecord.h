@@ -51,7 +51,7 @@ class NodeRecord
   void setMode(std::string s)    {m_mode=s;};
   void setAllStop(std::string s) {m_allstop=s;};
 
-  void setProperty(std::string, double);
+  void setProperty(std::string, std::string);
 
   double getX() const         {return(m_x);};
   double getY() const         {return(m_y);};
@@ -67,9 +67,9 @@ class NodeRecord
   double getTimeStamp() const {return(m_timestamp);};
 
   double getElapsedTime(double) const;
-  double getProperty(std::string) const;
   bool   hasProperty(std::string) const;
   bool   valid(std::string check="") const;
+  std::string getProperty(std::string) const;
 
   std::string getName(std::string s="") const;
   std::string getType(std::string s="") const;
@@ -113,7 +113,7 @@ class NodeRecord
 
   // General provisions for using this record to store additional
   // information about this contact
-  std::map<std::string, double> m_properties;
+  std::map<std::string, std::string> m_properties;
 };
 
 #endif 

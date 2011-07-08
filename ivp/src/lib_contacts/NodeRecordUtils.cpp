@@ -20,7 +20,6 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
-#include <cstdlib>
 #include "NodeRecordUtils.h"
 #include "MBUtils.h"
 
@@ -64,21 +63,21 @@ NodeRecord string2NodeRecord(const string& node_rep_string)
       else if(param == "LON")
 	new_record.setLon(atof(value.c_str()));
 
-      else if(param == "SPD")
+      else if((param == "SPD") || (param == "SPEED"))
 	new_record.setSpeed(atof(value.c_str()));
       else if(param == "SPD_OG")
 	new_record.setSpeedOG(atof(value.c_str()));
 
-      else if(param == "HDG")
+      else if((param == "HDG") || (param == "HEADING"))
 	new_record.setHeading(atof(value.c_str()));
       else if(param == "HDG_OG")
 	new_record.setHeadingOG(atof(value.c_str()));
 
       else if(param == "YAW")
 	new_record.setYaw(atof(value.c_str()));
-      else if(param == "DEP")
+      else if((param == "DEP") || (param == "DEPTH"))
 	new_record.setDepth(atof(value.c_str()));
-      else if(param == "LENGTH")
+      else if((param == "LENGTH") || (param == "LEN"))
 	new_record.setLength(atof(value.c_str()));
     }
   }
