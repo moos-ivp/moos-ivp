@@ -157,8 +157,13 @@ bool HelmEngine::part2_GetFunctionsFromBehaviorSet(int filter_level)
       string bhv_state;
       m_ipf_timer.start();
       IvPFunction *newof = m_bhv_set->produceOF(bhv_ix, m_iteration, bhv_state);
+#if 1
+      BehaviorReport bhv_report;
+#endif     
+#if 0
       BehaviorReport bhv_report = m_bhv_set->produceOFX(bhv_ix, m_iteration, 
 							bhv_state);
+#endif
       m_ipf_timer.stop();
   
       // Determine the amt of time the bhv has been in this state
