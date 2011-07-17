@@ -1,0 +1,14 @@
+//---------------------------------------
+ProcessConfig = uProcessWatch
+{
+  AppTick   = 2
+  CommsTick = 2
+  
+  WATCH  = iMarineSim
+  WATCH  = pMOOSBridge*
+  WATCH  = pEchoVar
+  WATCH  = pLogger
+  WATCH  = pTransponderAIS
+  WATCH  = pMarinePID
+  WATCH  = pHelmIvP
+}

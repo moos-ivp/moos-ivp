@@ -1,0 +1,106 @@
+\section{pSensorSim}
+\label{pSensorSim}
+
+pSensorSim is composed of two C++ classes, ArtifactField and SensorModel.  Most users will not directly use these classes and will instead interact with them through the MOOSApp pSensorSim.
+
+\subsection{Class ArtifactField}
+\label{classArtifactField}
+ArtifactField simulates an artifact field.  Internally, it is a vector of strings, where each string represents one artifact.  An artifact string consists of a comma separated list of equal-sign delimited variable-value pairs.  For example, ``Var1=val1,Var2=val2,Var3=val3''.  This structure makes it easy to add new traits to artifacts without having to change much code in other segments.
+
+ArtifactField can return a list of artifacts within a 2D rectangle or circle when the artifact strings contain both ``X=xval'' and ``Y=yval'' (e.g ``X=10,Y=4.5,TYPE=magnetic'').
+
+\subsubsection*{Public Member Functions}
+\begin{itemize}
+\item void {\bf add\-Artifact} (std::string)
+\begin{list}\small\item\em Puts an artifact into the field. \item\end{list}\item void {\bf add\-Artifact} (double, double)
+\begin{list}\small\item\em Constructs the proper string from an {\em x\/}, {\em y\/} pair. \item\end{list}\item std::string {\bf get\-Artifact} (int) const 
+\begin{list}\small\item\em Returns the artifact at index {\em i\/}. \item\end{list}\item int {\bf size} () const
+\begin{list}\small\item\em Returns the number of artifacts in the field. \item\end{list}\item std::vector$<$ std::string $>$ {\bf get\-Artifactbox} (double, double, double, double) const
+\begin{list}\small\item\em Returns a vector of all artifacts within the 2D, X,Y box specified by the parameters. \item\end{list}\item std::vector$<$ std::string $>$ {\bf get\-Artifactcircle} (double, double, double) const
+\begin{list}\small\item\em Returns a vector of all artifacts within the 2D, X,Y circle specified by the parameters. \item\end{list}\end{itemize}
+
+\subsection{Class SensorModel}
+\label{classSensorModel}
+SensorModel models the output of a specified sensor on a given ArtifactField.  After creating a SensorModel object, the programmer initializes the sensor by calling {\bf set\-Sensor\-Model} with the name of the model to simulate (currently, only a fixed radius, guaranteed-detection sensor is modeled, ``fixedradius'') and setting the detection radius using {\bf set\-Sensor\-Radius}.  The programmer can query the sensor by calling {\bf query\-Sensor} with a query string that is determined by the sensor.  For the fixed-radius sensor, the query string should contain the current X and Y values, e.g. ``X=4.5,Y=1.3''.
+
+\subsubsection*{Public Member Functions}
+\begin{itemize}
+\item bool {\bf set\-Sensor\-Model} (std::string const)
+\begin{list}\small\item\em Currently accepted value is ``fixedradius''. \item\end{list}\item void {\bf set\-Sensor\-Radius} (double)
+\begin{list}\small\item\em The sensor radius must be a non-negative value. \item\end{list}\item double {\bf get\-Sensor\-Radius} () const
+\item std::vector$<$ std::string $>$ {\bf query\-Sensor} (std::string const, {\bf Artifact\-Field} const \&) const
+\begin{list}\small\item\em \begin{description}
+\item[Parameters:]
+\begin{description}
+\item[{\em Art\-Field}]is a reference to an artifact field \end{description}
+\end{description}
+\item\end{list}\end{itemize}
+
+\subsection*{Private Member Functions}
+\begin{itemize}
+\item std::vector$<$ std::string $>$ {\bf query\-FRSensor} (std::string const, {\bf Artifact\-Field} const \&) const
+\begin{list}\small\item\em A private method for querying a fixed-radius sensor. \item\end{list}\end{itemize}
+\subsection*{Private Attributes}
+\begin{itemize}
+\item double {\bf d\-Sensor\-Radius}
+\begin{list}\small\item\em The maxiumum effective sensor radius. \item\end{list}\item std::string {\bf s\-Sensor\-Type}
+\begin{list}\small\item\em A string holding the current sensor type. \item\end{list}\end{itemize}
+
+\subsection{MOOSApp pSensorSim}
+\label{apppSensorSim}
+Combining these two classes and creating a MOOSApp, we get Fig.~\ref{fig:sensorsim}.
+
+\img[width=.5\linewidth]{figures/sensorsim}{A class diagram for pSensorSim}{fig:sensorsim}
+
+\subsubsection{Configuration}
+The pAntler configuration block for pSensorSim looks like this:
+\scriptsize
+\begin{verbatim}
+//------------------------------------------
+// pSensorSim config block
+ProcessConfig = pSensorSim
+{
+   AppTick   = 4
+   CommsTick = 4
+   
+   ArtifactFile = mines.art
+   Artifact = X=10,Y=10
+   Sensor = FixedRadius
+   Sensor_Radius = 10   
+}
+\end{verbatim}
+\normalsize
+
+\begin{hangpar}{\pin}{\var{ArtifactFile: }}
+Optional. This is the path to a file that contains lines of the form ``Artifact = artifactstring''.  Blank lines are ignored.  Useful for adding randomly generated fields using artfieldgenerator.  See Appendix~\ref{app:artfieldgenerator}
+\end{hangpar}
+
+\begin{hangpar}{\pin}{\var{Artifact: }}
+Optional. An artifact string to add to the artifact field.
+\end{hangpar}
+
+\begin{hangpar}{\pin}{\var{Sensor: }}
+Mandatory. A string containing the sensor type to simulate.  Only FixedRadius is currently implemented.
+\end{hangpar}
+
+\begin{hangpar}{\pin}{\var{Sensor\_Radius: }}
+Optional. The effective radius of the FixedRadius sensor.  Defaults to 10m, must be non-negative.
+\end{hangpar}
+
+\subsubsection{MOOS Variables}
+\paragraph{Subscribes}
+\begin{hangpar}{\pin}{\var{NAV\_X} and \var{NAV\_Y: }}
+Used to determine the current location of the sensor.  Uses only the most recently received value.
+\end{hangpar}
+\paragraph{Publishes}
+\begin{hangpar}{\pin}{\var{DETECTED\_ARTIFACT: }}
+A string that contains the output of the sensor evaluated at the current position.  For the fixed radius sensor, the output is ``X=x\_val,Y=y\_val,Prob=probability''.  pArtifactMapper subscribes to this variable.
+\end{hangpar}
+
+\begin{hangpar}{\pin}{\var{VIEW\_POLYGON: }}
+On each iteration, plots a 12-point hexagon of radius 10-m around the kayak labelled with the community name.  An example string is ''radial:x,y,10,12,0.0,ArtifactHunter''.
+\end{hangpar}
+
+\begin{hangpar}{\pin}{\var{VIEW\_POINT: }}
+Published once on startup for each artifact loaded into the artifact field.
+\end{hangpar}

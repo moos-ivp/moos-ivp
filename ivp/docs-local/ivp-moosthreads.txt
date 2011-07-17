@@ -1,0 +1,72 @@
+Using MOOSThread in IvP applications
+====================================
+
+The class MOOSThread, which is provided by MOOS, is a cross-platform thread
+interface that works on Windows, Linux, and perhaps OS X as well.
+
+To facilitate cross-platform IvP programming, some IvP programs use MOOSThread
+rather than directly using pthreads.  This page describes some ways to use
+MOOSThread in IvP programs.
+
+
+APPROACH #1: DIRECTLY USING MOOSThread
+--------------------------------------
+To use the MOOSThread class, you'll need to do the following in your code:
+
+Be sure your code links in the library libMOOSUtility.a
+
+In your code:
+
+#include "MOOSThread.h"
+   This header is found in MOOS/Essentials/MOOSUtilityLib/MOOSThread.h
+
+Your thread function will need this signature:
+    typedef bool (*t_pfnWorkerFunc) (void *pThreadData);
+
+To start the thread, you have two options.
+
+Option 1 (default constructor)
+   MOOSThread* t = new MOOSThread();
+   ...
+   t->Initialise(...);   // supply thread function and thread data
+   ...
+   t->Start();
+
+
+Option 2 (non-default constructor)
+   // supply thread function and thread data to the constructor:
+   MOOSThread * t = new MOOSThread(...);
+   t->Start();
+
+   (See MOOSThread.h to see some of the other methods on MOOSThread and how 
+   they can be used for joining, etc.)
+
+
+APPROACH #2: USING MOOSAppRunnerThread
+--------------------------------------
+
+Programs that are using threading just for the sake of MOOS communications
+can use a helper class that's in the IvP source tree: MOOSAppRunnerThread
+(found in ivp/src/lib_genutil).
+
+This class is specialized to the way IvP's MOOS applications were structured at
+the time of the class's design.
+
+Here's an example of its use from uFunctionVisMain.cpp:
+
+  MOOSAppRunnerThread runner(&g_thePort, "uFunctionViewer", g_sMissionFile);
+
+g_thePort is a pointer to a CMOOSApp object.
+"uFunctionViewer" is the application's name.
+g_sMissionFile is a string that gives the name of the mission file to be used.
+
+Simply constructing the object as shown above will launch a new MOOSThread.  
+That thread will call the CMOOSApp's (in this case, g_thePort's) run(...) 
+method, supplying the application's name string and mission filename string to 
+the CMOOSApp's run(...) method.
+
+This class (as currently written) completely hides the underlying CMOOSThread, 
+and gives no direct way for the application to determine whether or not the
+thread has terminated.  Such functionality isn't needed for the class' current
+usage, because existing IvP MOOS apps simply let the worker threads terminate 
+as part of the overall application's termination.

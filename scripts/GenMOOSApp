@@ -1,0 +1,201 @@
+#!/bin/bash
+
+if [ -z "$1" ] ; then
+    echo "GenMOOSApp: usage: $0 [app-name] [prefix]"
+    exit 0
+fi
+
+if [ -z "$2" ] ; then
+    echo "GenMOOSApp: usage: $0 [app-name] [prefix]"
+    exit 0
+fi
+
+#if [ -z "$3" ] ; then
+#    $3="YOUR-NAME-HERE"
+#fi
+
+mkdir $2$1
+cd $2$1
+
+cat >> CMakeLists.txt <<EOF
+#--------------------------------------------------------
+# The CMakeLists.txt for:                       $2$1
+# Author(s):                              $3
+#--------------------------------------------------------
+
+FILE(GLOB SRC *.cpp)
+
+ADD_EXECUTABLE($2$1 \${SRC})
+
+TARGET_LINK_LIBRARIES($2$1
+   MOOS
+   MOOSGen
+   m
+   pthread)
+
+EOF
+
+
+cat >> ${1}.h <<EOF
+/************************************************************/
+/*    NAME: $3                                              */
+/*    ORGN: MIT                                             */
+/*    FILE: ${1}.h                                          */
+/*    DATE:                                                 */
+/************************************************************/
+
+#ifndef ${1}_HEADER
+#define ${1}_HEADER
+
+#include "MOOSLib.h"
+
+class ${1} : public CMOOSApp
+{
+public:
+	${1}();
+	virtual ~${1}();
+
+	bool OnNewMail(MOOSMSG_LIST &NewMail);
+	bool Iterate();
+	bool OnConnectToServer();
+	bool OnStartUp();
+
+protected:
+	// insert local vars here
+};
+
+#endif 
+EOF
+
+cat >> ${1}Main.cpp <<EOF
+/************************************************************/
+/*    NAME: $3                                              */
+/*    ORGN: MIT                                             */
+/*    FILE: ${1}Main.cpp                                    */
+/*    DATE:                                                 */
+/************************************************************/
+
+#include <string>
+#include "MOOSLib.h"
+#include "MOOSGenLib.h"
+#include "${1}.h"
+
+using namespace std;
+
+int main(int argc, char *argv[])
+{
+  // default parameters file
+  string sMissionFile = "${1}.moos";
+        
+  //under what name shoud the application register with the MOOSDB?
+  string sMOOSName = "${2}${1}";
+  
+  switch(argc)
+    {
+    case 3:
+      //command line says don't register with default name              
+      sMOOSName = argv[2];
+    case 2:
+      //command line says don't use default config file
+      sMissionFile = argv[1];
+    }
+  
+  //make an application
+  ${1} ${1}App;
+
+  //run it
+  ${1}App.Run(sMOOSName.c_str(), sMissionFile.c_str());
+  
+  return(0);
+}
+
+EOF
+
+cat >> $2${1}.moos <<EOF
+// MOOS file
+
+ServerHost = localhost
+ServerPort = 9000
+
+ProcessConfig = ${2}${1}
+{
+   AppTick   = 4
+   CommsTick = 4
+}
+
+EOF
+
+cat >> ${1}.cpp <<EOF
+/************************************************************/
+/*    NAME: $3                                              */
+/*    ORGN: MIT                                             */
+/*    FILE: ${1}.cpp                                        */
+/*    DATE:                                                 */
+/************************************************************/
+
+#include <iterator>
+#include "${1}.h"
+//---------------------------------------------------------
+// Constructor
+
+${1}::${1}()
+{
+}
+
+//---------------------------------------------------------
+// Destructor
+
+${1}::~${1}()
+{
+}
+
+//---------------------------------------------------------
+// Procedure: OnNewMail
+
+bool ${1}::OnNewMail(MOOSMSG_LIST &NewMail)
+{
+   MOOSMSG_LIST::iterator p;
+   
+   for(p=NewMail.begin(); p!=NewMail.end(); p++) {
+      CMOOSMsg &msg = *p;
+   }
+	
+   return(true);
+}
+
+//---------------------------------------------------------
+// Procedure: OnConnectToServer
+
+bool ${1}::OnConnectToServer()
+{
+   // register for variables here
+   // possibly look at the mission file?
+   // m_MissionReader.GetConfigurationParam("Name", <string>);
+   // m_Comms.Register("VARNAME", is_float(int));
+	
+   return(true);
+}
+
+//---------------------------------------------------------
+// Procedure: Iterate()
+
+bool ${1}::Iterate()
+{
+   // happens AppTick times per second
+	
+   return(true);
+}
+
+//---------------------------------------------------------
+// Procedure: OnStartUp()
+
+bool ${1}::OnStartUp()
+{
+   // happens before connection is open
+	
+   return(true);
+}
+
+EOF
+
+echo "$2${1} generated"

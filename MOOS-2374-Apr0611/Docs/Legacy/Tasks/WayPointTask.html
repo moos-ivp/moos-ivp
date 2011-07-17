@@ -1,0 +1,85 @@
+<HTML>
+<HEAD>
+<TITLE>WayPoint Task</TITLE>
+</HEAD>
+<BODY>
+
+<H1><img src="moose6.gif"> <center>The GoToWayPoint Task</center></H1>
+
+<H2>Description</H2>
+This task attempts to steer the vehicle towards an X Y waypoint.
+
+
+<H2>Publishes</H2>
+<ul>
+	<li>EndFlags
+</ul>
+<p>
+
+
+<H2>Subscribes</H2>
+<ul>
+	<li><b>StartFlags</b>
+	<li><b>NAV_X</b>
+	<li><b>NAV_Y</b>
+	<li><b>NAV_Z</b>
+	<li><b>NAV_YAW</b>
+</ul>
+<p>
+
+<H2>Configuration Block</H2>
+<ul>
+
+
+
+	<li><a href="CommonMOOSTask.html"> Common Task Parameters</a>
+	<p>
+
+	<li><H3>Thrust</H3>
+	<ul>
+		<li><b>Syntax:	</b> 	Thrust = Thrust[0-100]
+		<li><b>Meaning:	</b>	Set Thrust of Waypoint operation
+		<li><b>Example:	</b> <i>	Thrust = 10 </i> go at ten percent throttle.
+	</ul>
+	<p>
+
+
+
+	<li><H3>Location</H3>
+	<ul>
+		<li><b>Syntax:	</b> Location = X,Y,Z
+		<li><b>Meaning:	</b> Set location of waypoint to X,Y,Z
+		<li><b>Example:	</b> <i>Location = 15,-15,0</i> set way point goal at 15,-15,0
+	</ul>
+	<p>
+	
+	<li><H3>Radius</H3>
+	<ul>
+		<li><b>Syntax:	</b> 	Radius = Radius
+		<li><b>Meaning:	</b> Set radius of waypoint tolerance sphere to Radius meters
+		<li><b>Example:	</b> <i>	Radius = 10 </i> Tolerance will be set to 10m
+	</ul>
+	<p>
+
+</ul>
+
+<H2>Example Block</H2>
+<pre>
+Task = GotoWayPoint
+{
+	Name = WP7
+	Priority = 3
+	InitialState = OFF
+	TimeOut = 200
+	StartFlag = WP6Done
+	FinishFlag = WP7Done
+
+	Location = -70,-70,0
+	Radius = 6	
+}
+</pre>
+
+<hr>
+<H4>The MOOS &#169;  P. Newman 2001-2002 <img src="moose2.gif"></H4>
+</BODY>
+</HTML>

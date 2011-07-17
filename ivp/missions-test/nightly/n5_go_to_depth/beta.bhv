@@ -1,0 +1,71 @@
+//--------    FILE: beta.bhv   -------------
+
+initialize   DEPLOY = false
+initialize   RETURN = false
+initialize   HSLINE = off
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{ 
+  name      = waypt_survey
+  pwt       = 100
+  condition = RETURN = false
+  condition = DEPLOY = true
+  endflag   = RETURN = true
+  perpetual = true
+  updates   = NEWPTS
+
+          lead = 8
+   lead_damper = 1
+         speed = 2.0   // meters per second
+        radius = 8.0
+//        points = zigzag:35,45,90,1000,200,50
+        points = 60,-40:60,-160:150,-160:180,-100:150,-40
+        repeat = 1
+  visual_hints = nextpt_color=red, nextpt_lcolor=green
+  visual_hints = vertex_color=yellow, line_color=white
+  visual_hints = vertex_size=2, edge_size=1
+}
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name       = waypt_return
+  pwt        = 100
+  condition  = RETURN = true
+  condition  = DEPLOY = true
+  updates    = UPDATES_RETURN
+  perpetual  = true
+  endflag    = RETURN = false
+  endflag    = DEPLOY = false
+  endflag    = MISSION_COMPLETE = true
+
+         speed = 2.0
+        radius = 2.0
+     nm_radius = 8.0
+        points = 0,0
+}
+
+//----------------------------------------------
+Behavior = BHV_HSLine
+{
+  name      = hsline
+  condition = HSLINE=on
+
+  time_on_leg = 10
+}
+
+//----------------------------------------------
+Behavior = BHV_GoToDepth
+{
+   name      = bhv_go_to_depth
+   duration  = 3600
+   condition = DEPLOY = true
+   endflag   = GO_TO_DEPTH = DONE
+
+   depth = 15,30
+   capture_delta = 1
+   capture_flag = DEPTH_ACHIEVED
+   repeat = 0
+   
+}

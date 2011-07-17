@@ -1,0 +1,24 @@
+Community = charlie
+
+LatOrigin = 42
+LongOrigin = 9
+
+//------------------------------------------------------------------
+// pNodeReporter config block
+
+ProcessConfig = pNodeReporter
+{
+  AppTick       = 8
+  CommsTick     = 8
+
+  // do not publish own info for this number of seconds after last publish
+  BLACKOUT_INTERVAL = 0;
+
+  BLACKOUT_VARIANCE = 0;
+  
+  // type of vessel in this community, default is ship
+  VESSEL_TYPE = SHIP
+
+  // Below not required - "NODE_REPORT" is default
+  NODE_REPORT_VARIABLE = NODE_REPORT
+}

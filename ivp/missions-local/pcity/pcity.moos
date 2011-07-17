@@ -1,0 +1,222 @@
+// Level 2 Configuration file: M. Benjamin
+
+ServerHost = localhost
+ServerPort = 9000
+Simulator  = true
+
+Community  = alpha
+
+MOOSTimeWarp = 1
+
+LatOrigin  = 30.17508647
+LongOrigin = -85.74946797
+
+//------------------------------------------
+// Antler configuration  block
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+
+  Run = MOOSDB		@ NewConsole = false
+  Run = iMarineSim	@ NewConsole = true
+  Run = pTransponderAIS	@ NewConsole = false
+  Run = pMarinePID	@ NewConsole = true
+  Run = pMarineViewer	@ NewConsole = true
+  //Run = pLogger         @ NewConsole = false
+  Run = pHelmIvP	@ NewConsole = false
+}
+
+//------------------------------------------
+// iMarineSim config block
+
+ProcessConfig = iMarineSim
+{
+  AppTick	= 10
+  CommsTick	= 10
+
+  START_X       = 0
+  START_Y       = 0
+  START_SPEED   = 0
+  START_HEADING = 180
+
+  PREFIX        = NAV
+}
+
+//------------------------------------------
+// pHelmIvP config block
+
+ProcessConfig = pHelmIvP
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  Behaviors  = pcity.bhv
+  Verbose    = quiet
+  Domain     = course:0:359:360
+  Domain     = speed:0:4:21
+
+  ACTIVE_START = false
+}
+
+//------------------------------------------
+// pMarinePID config block
+
+ProcessConfig = pMarinePID
+{
+  AppTick    = 20
+  CommsTick  = 20
+
+  VERBOSE       = true
+  DEPTH_CONTROL = false
+
+  // Yaw PID controller
+  YAW_PID_KP		 = 0.5
+  YAW_PID_KD		 = 0.0
+  YAW_PID_KI		 = 0.0
+  YAW_PID_INTEGRAL_LIMIT = 0.07
+
+  // Speed PID controller
+  SPEED_PID_KP		 = 1.0
+  SPEED_PID_KD		 = 0.0
+  SPEED_PID_KI		 = 0.0
+  SPEED_PID_INTEGRAL_LIMIT = 0.07
+
+  //MAXIMUMS
+  MAXRUDDER    = 100
+  MAXTHRUST    = 100
+
+  // A non-zero SPEED_FACTOR overrides use of SPEED_PID
+  // Will set DESIRED_THRUST = DESIRED_SPEED * SPEED_FACTOR
+  SPEED_FACTOR = 20
+}
+
+//------------------------------------------
+// pMarineViewer config block
+
+ProcessConfig = pMarineViewer
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  TIFF_FILE            = pcity1.tif
+  TIFF_FILE_b          = pcity1b.tif
+  set_pan_x            = -90
+  set_pan_y            = -280
+  zoom                 = 0.65
+  vehicle_shape_scale  = 1.5
+  seglist_edge_width   = 2.0
+  seglist_vertex_size  = 4
+  seglist_vertex_color = red
+  point_vertex_size    = 12
+  hash_delta           = 200
+  hash_shade           = 0.4
+  hash_view            = true
+
+
+  view_polygon = label,minefield:100,1000:100,-300:1300,-800:1300,1000
+
+  marker = type=triangle,lat=30.17608445,lon=-85.73294225,label=marker1,color=orange,width=25
+  marker = type=triangle,lat=30.16232853,lon=-85.72337418,label=marker2,color=orange,width=25
+  marker = type=triangle,lat=30.1308877,lon=-85.72018135,label=marker3,color=orange,width=25
+
+  marker = type=square, x=372,y=218,  label=mlo-01, color=green, width=20
+  marker = type=square, x=708,y=998,  label=mlo-02, color=green, width=20
+  marker = type=square, x=1211,y=152, label=mlo-03, color=green, width=20
+  marker = type=square, x=802,y=245,  label=mlo-04, color=green, width=20
+  marker = type=square, x=474,y=916,  label=mlo-05, color=green, width=20
+  marker = type=square, x=326,y=645,  label=mlo-06, color=green, width=20
+  marker = type=square, x=1025,y=266, label=mlo-07, color=green, width=20
+  marker = type=square, x=1250,y=-609, label=mlo-08, color=green, width=20
+  marker = type=square, x=171,y=267,  label=mlo-09, color=green, width=20
+  marker = type=square, x=801,y=596,  label=mlo-10, color=green, width=20
+  marker = type=square, x=289,y=84,   label=mlo-11, color=green, width=20
+  marker = type=square, x=751,y=394,  label=mlo-12, color=green, width=20
+  marker = type=square, x=449,y=-403, label=mlo-13, color=green, width=20
+  marker = type=square, x=654,y=57,   label=mlo-14, color=green, width=20
+  marker = type=square, x=428,y=-312, label=mlo-15, color=green, width=20
+  marker = type=square, x=205,y=99,   label=mlo-16, color=green, width=20
+  marker = type=square, x=914,y=518,  label=mlo-17, color=green, width=20
+  marker = type=square, x=597,y=967,  label=mlo-18, color=green, width=20
+  marker = type=square, x=193,y=47,   label=mlo-19, color=green, width=20
+  marker = type=square, x=1066,y=615, label=mlo-20, color=green, width=20
+
+  scope  = DETECTED_ARTIFACT_LOCAL
+
+  scope  = SENSOR_A
+  scope  = SENSOR_B
+ 
+  scope  = VIEW_POINT
+  scope  = VIEW_SEGLIST
+  scope  = VIEW_POLYGON
+  scope  = NAV_X
+  scope  = NAV_Y
+  scope  = MVIEWER_LCLICK
+  scope  = MVIEWER_RCLICK
+
+  left_context   = surface_point
+  left_context   = station_point
+  left_context   = return_point
+
+  right_context  = loiter_point
+  right_context  = station_point
+  right_context  = surface_point
+
+  BUTTON_ONE = DEPLOY # DEPLOY=true
+  BUTTON_ONE = MOOS_MANUAL_OVERIDE=false # RETURN=false
+  BUTTON_TWO = RETURN # RETURN=true
+
+  ACTION  = MENU_KEY=deploy # DEPLOY = true # RETURN = false
+  ACTION+ = MENU_KEY=deploy # MOOS_MANUAL_OVERIDE=false
+  ACTION  = RETURN=true
+  ACTION  = HSLINE=off
+  ACTION  = HSLINE=on
+  ACTION  = UPDATES_RETURN=speed=1.4
+}
+
+//------------------------------------------
+// pTransponderAIS config block
+
+ProcessConfig = pTransponderAIS
+{
+  AppTick	= 2
+  CommsTick	= 2
+  VESSEL_TYPE   = KAYAK
+}
+
+//------------------------------------------
+// pSensorSim config block
+ProcessConfig = pSensorSim
+{
+   AppTick   = 4
+   CommsTick = 4
+   
+   // Add single artifacts
+   // Artifact = X=10,Y=5 
+   
+   // Read in an artifact file (looks like above lines)
+   ArtifactFile = mines.art
+   
+   // Configure the basic sensor parameters
+   Sensor_A      = 30 // meters
+   Sensor_B      = .5 // between [0, 1]
+   
+   // Configure the optional sensor parameters
+   // All must be set to enable dropout simulation
+   Drop_Period   = 30 // How often should it begin drop periods? seconds
+   Drop_Duration = 10 // How long should the dropout last? seconds
+   Drop_B        = .25 // B value during dropouts
+   
+   // Optional, beyond this slew rate (degrees/sec), the sensor
+   // does not detect anything
+   Max_Slew      = 10
+
+   //Messages posted: 
+   //SENSOR_A, Sensor A value
+   //SENSOR_B, Sensor B value
+   //DETECTED_ARTIFACT_LOCAL, detected artifact string
+   //VIEW_POLYGON, displays the sensor
+   //VIEW_POINT, simulated target points at load
+}
+
+
+

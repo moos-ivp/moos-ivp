@@ -1,0 +1,20 @@
+AOF = AOF_Rings = 0,0,500,501:1,0,500,501
+{
+  location = 200,200
+  radius   = 4
+  exp      = 30
+  base     = 0
+  range    = 200
+  peak     = true
+  plateau  = 0
+  gradient_type = sigmoid
+
+  location = 350,50
+  radius   = 4
+  exp      = 20
+  base     = 0
+  range    = 200
+  peak     = true
+  plateau  = 0
+  gradient_type = sigmoid
+}

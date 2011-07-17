@@ -1,0 +1,5 @@
+hit = 10
+miss = -1000
+falsealarm = -10
+corrrej = 10
+threshold = 1

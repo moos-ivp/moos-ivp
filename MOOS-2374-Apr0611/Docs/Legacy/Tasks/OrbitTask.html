@@ -1,0 +1,121 @@
+<HTML>
+<HEAD>
+<TITLE>Orbit Task</TITLE>
+</HEAD>
+<BODY>
+
+<H1><img src="moose6.gif"> <center>The Box Limit Task</center></H1>
+
+<H2>Description</H2>
+Cause vehicle to orbit (execute a regular polygon of waypoints) a specified XY location at a given radius. Can also specify number of sides of polygon which 
+makes up the orbit.
+
+<H2>Publishes</H2>
+<ul>
+	<li>EndFlags
+	<li>EventFlags
+</ul>
+<p>
+
+
+<H2>Subscribes</H2>
+<ul>
+	<li><b>StartFlags</b>
+	<li><b>NAV_X</b>
+	<li><b>NAV_Y</b>
+	<li><b>NAV_YAW</b>
+</ul>
+<p>
+
+<H2>Configuration Block</H2>
+<ul>
+
+
+
+	<li><a href="CommonMOOSTask.html"> Common Task Parameters</a>
+	<p>
+
+	<li><H3>Thrust</H3>
+	<ul>
+		<li><b>Syntax:	</b> 	Thrust = Thrust[0-100]
+		<li><b>Meaning:	</b>	Set Thrust of operation
+		<li><b>Example:	</b> <i>	Thrust = 10 </i> go at ten percent throttle.
+	</ul>
+	<p>
+
+
+	<li><H3>Location</H3>
+	<ul>
+		<li><b>Syntax:	</b> Location = X,Y (m)
+		<li><b>Meaning:	</b> Location about which to orbit
+		<li><b>Example:	</b> <i>Location = 50,100</i> orbit 50,100
+	</ul>
+	<p>
+	
+	<li><H3>Direction</H3>
+	<ul>
+		<li><b>Syntax:	</b> 	Direction = CW/CCW
+		<li><b>Meaning:	</b>	Set direction of operation
+		<li><b>Example:	</b> <i>	Thrust = CW </i> go clockwise
+	</ul>
+	<p>
+
+	<li><H3>Radius</H3>
+	<ul>
+		<li><b>Syntax:	</b> 	Radius = Radius (m)
+		<li><b>Meaning:	</b>	Set radius of orbit
+		<li><b>Example:	</b> <i>	Radius = 100 </i> orbit at 100m
+	</ul>
+	<p>
+
+	<li><H3>PosRadius</H3>
+	<ul>
+		<li><b>Syntax:	</b> 	PosRadius = PostionRadius (m)
+		<li><b>Meaning:	</b>	Set tolerance on individual waypoints make up orbit
+		<li><b>Example:	</b> <i>	PosRadius = 10 </i> get within 10m of each point
+	</ul>
+	<p>
+
+	<li><H3>TotalPos or Sides</H3>
+	<ul>
+		<li><b>Syntax:	</b> 	Sides = NumSides 
+		<li><b>Meaning:	</b>	Set number of sides to orbit path
+		<li><b>Example:	</b> <i>	Sides = 6 </i> execute six side/ waypoints per orbit
+	</ul>
+	<p>
+
+	<li><H3>Repeat</H3>
+	<ul>
+		<li><b>Syntax:	</b> 	Repeat = NumRepetitions
+		<li><b>Meaning:	</b>	Set number orbits
+		<li><b>Example:	</b> <i>	Repeat = 6 </i> Orbit 6 times
+	</ul>
+	<p>
+
+
+</ul>
+
+<H2>Example Block</H2>
+<pre>
+Task = Orbit
+{
+	Name = ORBIT1
+	Priority = 3
+	InitialState = OFF
+	TimeOut = 300
+	FinishFlag = EndMission
+	StartFlag = WP1Done
+	Thrust = 40
+	Location = 20,20,0
+	Direction = CCW
+	Radius = 40	
+	Repeat = 2
+	TotalPos = 6
+	PosRadius = 10
+}
+</pre>
+
+<hr>
+<H4>The MOOS &#169;  P. Newman 2001-2002 <img src="moose2.gif"></H4>
+</BODY>
+</HTML>
