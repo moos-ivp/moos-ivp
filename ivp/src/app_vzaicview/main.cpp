@@ -25,6 +25,7 @@
 #include "VZAIC_GUI.h"
 #include "PopulatorVZAIC.h"
 #include "MBUtils.h"
+#include "ReleaseInfo.h"
 #include "IvPFunction.h"
 
 using namespace std;
@@ -45,6 +46,12 @@ void idleProc(void *)
 
 int main(int argc, char *argv[])
 {
+  // Look for a request for version information
+  if(scanArgs(argc, argv, "-v", "--version", "-version")) {
+    showReleaseInfo("vzaicview", "gpl");
+    return(0);
+  }
+  
   ZAIC_Vector *zaic = 0;
   int domain = 0;
 

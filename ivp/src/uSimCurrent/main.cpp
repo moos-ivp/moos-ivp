@@ -26,6 +26,7 @@
 #include "MOOSGenLib.h"
 #include "USC_MOOSApp.h"
 #include "MBUtils.h"
+#include "ReleaseInfo.h"
 
 using namespace std;
 
@@ -36,19 +37,10 @@ int main(int argc ,char * argv[])
 {
   string sMissionFile = "pSimCurrent.moos";
   string sMOOSName    = "pSimCurrent";
-  bool   version_requested = false;
 
-  for(int i=0; i<argc; i++) {
-    string str = argv[i];
-    if((str=="-v") || (str=="--version") || (str=="-version"))
-      version_requested = true;
-  }
-  
-  if(version_requested) {
-    vector<string> svector = getReleaseInfo("iMarineSim");
-    unsigned int j;
-    for(j=0; j<svector.size(); j++)
-      cout << svector[j] << endl;
+  // Look for a request for version information
+  if(scanArgs(argc, argv, "-v", "--version", "-version")) {
+    showReleaseInfo("uSimCurrent", "gpl");
     return(0);
   }
 

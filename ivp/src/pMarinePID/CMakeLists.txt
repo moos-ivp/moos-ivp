@@ -17,6 +17,7 @@ SET(SRC
    MarinePID.cpp
    PIDEngine.cpp
    ScalarPID.cpp
+   PID_ExampleConfig.cpp
    main.cpp
 )
 

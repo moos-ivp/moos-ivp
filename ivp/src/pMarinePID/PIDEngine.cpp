@@ -61,7 +61,7 @@ double PIDEngine::getDesiredRudder(double desired_heading,
   // Enforce limit on desired rudder
   MOOSAbsLimit(desired_rudder,max_rudder);
 
-  string rpt = "PID_COURS: ";
+  string rpt = "PID_COURSE: ";
   rpt += " (Want):" + doubleToString(desired_heading);
   rpt += " (Curr):" + doubleToString(current_heading);
   rpt += " (Diff):" + doubleToString(heading_error);

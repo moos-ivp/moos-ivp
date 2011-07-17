@@ -26,12 +26,12 @@
 #include <cstring>
 #include "REPLAY_GUI.h"
 #include "MBUtils.h"
+#include "ReleaseInfo.h"
 #include "LogViewLauncher.h"
 
 using namespace std;
 
 void help_message();
-void version_message();
 
 REPLAY_GUI* gui = 0;
 
@@ -51,7 +51,7 @@ void idleProc(void *)
 int main(int argc, char *argv[])
 {
   if(scanArgs(argc, argv, "-v", "--version", "-version")) {
-    version_message();
+    showReleaseInfo("alogview", "gpl");
     return(0);
   }
   
@@ -118,14 +118,4 @@ void help_message()
   cout << endl;
 }
 
-//--------------------------------------------------------
-// Procedure: version_message()
-
-void version_message()
-{
-  vector<string> svector = getReleaseInfo("alogview");
-  unsigned int i, vsize = svector.size();
-  for(i=0; i<vsize; i++)
-    cout << svector[i] << endl;
-}
 

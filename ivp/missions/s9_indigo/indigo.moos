@@ -29,7 +29,7 @@ ProcessConfig = ANTLER
 }
 
 //------------------------------------------
-// uSimRangeSensor config block
+// uSimBeaconRange config block
 
 ProcessConfig = uSimBeaconRange
 {

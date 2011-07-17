@@ -1,8 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: SBR_MOOSApp.h                                        */
-/*    DATE: Feb 1st, 2011                                        */
+/*    FILE: ReleaseInfo.h                                        */
+/*    DATE: July 7th, 2011                                       */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
 /* modify it under the terms of the GNU General Public License   */
@@ -19,34 +19,12 @@
 /* Software Foundation, Inc., 59 Temple Place - Suite 330,       */
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
+ 
+#ifndef RELEASE_INFO_HEADER_EX
+#define RELEASE_INFO_HEADER_EX
 
-#ifndef SIM_BEACON_RANGE_HEADER
-#define SIM_BEACON_RANGE_HEADER
+#include <string>
 
-#include "MOOSLib.h"
-#include "SBR_Model.h"
-#include "VarDataPair.h"
+void showReleaseInfo(std::string app_name, std::string license_info);
 
-class SBR_MOOSApp : public CMOOSApp
-{
- public:
-  SBR_MOOSApp() {};
-  virtual ~SBR_MOOSApp() {};
-
-  bool OnNewMail(MOOSMSG_LIST &NewMail);
-  bool Iterate();
-  bool OnConnectToServer();
-  bool OnStartUp();
-  void RegisterVariables();
-
-  void setVerbose(std::string s) {m_model.setParam("verbose",s);}
-
- protected:
-  void postMessages(std::vector<VarDataPair>);
-
- protected:
-  SBR_Model  m_model;
-};
-
-#endif 
-
+#endif

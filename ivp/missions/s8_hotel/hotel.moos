@@ -25,25 +25,24 @@ ProcessConfig = ANTLER
   Run = pMarinePID	@ NewConsole = false
   Run = pHelmIvP	@ NewConsole = true
   Run = uTimerScript    @ NewConsole = false
-  Run = uSimRangeSensor @ NewConsole = true
+  Run = uSimBeaconRange @ NewConsole = true
 }
 
 //------------------------------------------
-// uSimRangeSensor config block
+// uSimBeaconRange config block
 
-ProcessConfig = uSimRangeSensor
+ProcessConfig = uSimBeaconRange
 {
   AppTick   = 4
   CommsTick = 4
 
   // System-wide Simulator configuration
-  query_payments = upon_accept
-  report_beacon_location = true
-  report_vars = long
+  ping_payments = upon_accept
+  report_vars   = long
 
   // Configurations for all vehicles/nodes
-  default_node_query_range = nolimit
-  default_node_query_freq  = 1
+  reach_distance = default = nolimit
+  ping_wait      = default = 20
 
   // Configurations for all beacons
   default_beacon_report_range  = nolimit
@@ -54,16 +53,11 @@ ProcessConfig = uSimRangeSensor
   //default_beacon_freq   = 30:50
 
 
-  // Configurations for individual vehicles  
-
-  // query_range = hotel,50
-  // query_freq  = charlie,43
-
   // Configurations for individual beacons
   // Example:
   // beacon = x=1,y=2,label=foo,freq=17,shape=square,width=3,color=orange
 
-  beacon    = x=200, y=0, label=01
+  beacon    = x=200, y=0,    label=01
   beacon    = x=400, y=-200, label=02
   beacon    = x=0,   y=-200, label=03
 

@@ -21,6 +21,8 @@
 /*****************************************************************/
 
 #include "MOOSLib.h"
+#include "MBUtils.h"
+#include "ReleaseInfo.h"
 #include "MOOSGenLib.h"
 #include "SafetyRetreat.h"
 
@@ -30,6 +32,18 @@ int main(int argc, char *argv[])
 {
   string mission_file = "SafetyRetreat.moos";
 	
+  // Look for a request for version information
+  if(scanArgs(argc, argv, "-v", "--version", "-version")) {
+    showReleaseInfo("pSafetyRetreat", "gpl");
+    return(0);
+  }
+  // Look for a request for example configuration information
+  //if(scanArgs(argc, argv, "-e", "--example", "-example")) {
+  //  showExampleConfig();
+  //  return(0);
+  // }
+
+
   if(argc > 1)
     mission_file = argv[1];
 	

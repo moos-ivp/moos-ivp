@@ -80,7 +80,7 @@ bool SBR_Model::setParam(string param, string value, unsigned int pass)
     else if(param == "default_beacon_report_range")
       return(m_default_beacon_buoy.setReportRange(value));
 
-    else if(param == "reach_distance")
+    else if((param == "reach_distance") || (param == "reach_dist"))
       return(setReachDistance(value));
     else if(param == "ping_wait")
       return(setPingWait(value));

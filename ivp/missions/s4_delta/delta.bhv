@@ -100,20 +100,6 @@ Behavior = BHV_ConstantDepth
 }
 
 //----------------------------------------------
-Behavior = BHV_ConstantDepth
-{
-  name      = bhv_const_depth_b
-  pwt       = 60
-  duration  = no-time-limit
-  condition = MODE==ACTIVE
-
-        depth = 75
-    peakwidth = 40
-    basewidth = 1080
-  summitdelta = 10
-}
-
-//----------------------------------------------
 Behavior = BHV_Waypoint
 {
   name      = waypt_survey

@@ -15,6 +15,7 @@ SET(SRC
   StringNode.cpp
   VarDataPair.cpp
   Figlog.cpp
+  ReleaseInfo.cpp
 )
 
 SET(HEADERS
@@ -28,6 +29,7 @@ SET(HEADERS
   StringTree.h
   TermUtils.h
   VarDataPair.h
+  ReleaseInfo.h
 )
 
 # SET_SOURCE_FILES_PROPERTIES(

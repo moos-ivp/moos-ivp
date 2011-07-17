@@ -166,24 +166,24 @@ bool USM_MOOSApp::OnStartUp()
   // look for latitude, longitude global variables
   double latOrigin, longOrigin;
   if(!m_MissionReader.GetValue("LatOrigin", latOrigin)) {
-    MOOSTrace("iMarineSim: LatOrigin not set in *.moos file.\n");
+    MOOSTrace("uSimMarine: LatOrigin not set in *.moos file.\n");
     m_geo_ok = false;
   } 
   else if(!m_MissionReader.GetValue("LongOrigin", longOrigin)) {
-    MOOSTrace("iMarineSim: LongOrigin not set in *.moos file\n");
+    MOOSTrace("uSimMarine: LongOrigin not set in *.moos file\n");
     m_geo_ok = false;      
   }
   else {
     m_geo_ok = true;
     // initialize m_geodesy
     if(!m_geodesy.Initialise(latOrigin, longOrigin)) {
-      MOOSTrace("iMarineSim: Geodesy init failed.\n");
+      MOOSTrace("uSimMarine: Geodesy init failed.\n");
       m_geo_ok = false;
     }
   }
   
   registerVariables();
-  MOOSTrace("Sim started \n");
+  MOOSTrace("uSimMarine started \n");
   return(true);
 }
 

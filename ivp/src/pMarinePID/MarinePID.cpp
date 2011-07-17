@@ -320,50 +320,33 @@ void MarinePID::registerVariables()
 
 bool MarinePID::OnStartUp()
 {
-  MOOSTrace("pMarinePID starting....\n");
+  cout << "pMarinePID starting...." << endl;
   
   m_start_time = MOOSTime();
   // m_speed_factor=0 means speed PID will be used.
   m_speed_factor = 0;
   
-  string pid_logpath  = "";
-  
   STRING_LIST sParams;
   m_MissionReader.GetConfiguration(GetAppName(), sParams);
   
   STRING_LIST::iterator p;
-  for(p = sParams.begin();p!=sParams.end();p++) {
-    string sLine    = *p;
-    string sVarName = MOOSChomp(sLine, "=");
-    sVarName = toupper(sVarName);
-    sLine    = stripBlankEnds(sLine);
+  for(p=sParams.begin(); p!=sParams.end(); p++) {
+    string sLine = *p;
+    string param = toupper(biteStringX(sLine, '='));
+    string value = sLine;
+    double dval  = atof(value.c_str());
     
-    if(MOOSStrCmp(sVarName, "SPEED_FACTOR"))
-      m_speed_factor = atof(sLine.c_str());
-    
-    if(MOOSStrCmp(sVarName, "SIM_INSTABILITY"))
-      m_rudder_bias_limit = atof(sLine.c_str());
-
-    if(MOOSStrCmp(sVarName, "TARDY_HELM_THRESHOLD")) {
-      double dval = atof(sLine.c_str());
-      if(dval >= 0)
-	m_tardy_helm_thresh = dval;
-    }
-    if(MOOSStrCmp(sVarName, "TARDY_NAV_THRESHOLD")) {
-      double dval = atof(sLine.c_str());
-      if(dval >= 0)
-	m_tardy_nav_thresh = dval;
-    }
-    
-    if(MOOSStrCmp(sVarName, "ACTIVE_START")) {
-      sLine = tolower(sLine);
-      if(sLine == "true") {
-	m_has_control = true;
-	//m_allow_overide = false;
-      }
-    }
-    
-    if(MOOSStrCmp(sVarName, "VERBOSE")) {
+    if(param == "SPEED_FACTOR")
+      m_speed_factor = vclip(dval, 0, 100);
+    else if(param == "SIM_INSTABILITY")
+      m_rudder_bias_limit = vclip(dval, 0, 100);
+    else if(param == "TARDY_HELM_THRESHOLD") 
+      m_tardy_helm_thresh = vclip_min(dval, 0);
+    else if(param == "TARDY_NAV_THRESHOLD")
+      m_tardy_nav_thresh = vclip_min(dval, 0);
+    else if(param == "ACTIVE_START") 
+      setBooleanOnString(m_has_control, value);
+    else if(param == "VERBOSE") {
       if((sLine == "true") || (sLine == "verbose"))
 	m_verbose = "verbose";
       if(sLine == "terse") 
@@ -371,9 +354,6 @@ bool MarinePID::OnStartUp()
       if(sLine == "quiet")
 	m_verbose = "quiet";
     }
-    
-    if(MOOSStrCmp(sVarName, "LOGPATH"))
-      pid_logpath = sLine;
   }
 
   bool ok_yaw = handleYawSettings();
@@ -381,7 +361,7 @@ bool MarinePID::OnStartUp()
   bool ok_dep = handleDepthSettings();
 
   if(!ok_yaw || !ok_spd || !ok_dep) {
-    MOOSTrace("Improper PID Settings \n");
+    cout << "Improper PID Settings" << endl;
     return(false);
   }
 

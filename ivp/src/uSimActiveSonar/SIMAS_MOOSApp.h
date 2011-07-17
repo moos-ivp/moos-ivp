@@ -30,7 +30,7 @@
 class SIMAS_MOOSApp : public CMOOSApp
 {
  public:
-  SIMAS_MOOSApp() {};
+  SIMAS_MOOSApp() {m_verbose=false;};
   virtual ~SIMAS_MOOSApp() {};
 
   bool OnNewMail(MOOSMSG_LIST &NewMail);
@@ -39,11 +39,14 @@ class SIMAS_MOOSApp : public CMOOSApp
   bool OnStartUp();
   void RegisterVariables();
 
+  void setVerbose(std::string s) {m_model.setParam("verbose",s);}
+
  protected:
   void postMessages(std::vector<VarDataPair>);
 
  protected:
   SIMAS_Model  m_model;
+  bool         m_verbose;
 };
 
 #endif 

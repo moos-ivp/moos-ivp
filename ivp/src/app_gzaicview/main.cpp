@@ -24,6 +24,7 @@
 #include <cstdlib>
 #include "ZAIC_GUI.h"
 #include "MBUtils.h"
+#include "ReleaseInfo.h"
 
 using namespace std;
 
@@ -45,23 +46,26 @@ int main(int argc, char *argv[])
 {
   int res = 0;
 
-  // Look for a request for help
-  res = getArg(argc, argv, 0, "-h", "--help");
-  if(res) {
+  // Look for a request for version information
+  if(scanArgs(argc, argv, "-v", "--version", "-version")) {
+    showReleaseInfo("geoview", "gpl");
+    return(0);
+  }
+  
+  // Look for a request for usage information
+  if(scanArgs(argc, argv, "-h", "--help", "-help")) {
     help_message();
     return(0);
   }
-
+  
   int summits = 1;
-  res = getArg(argc, argv, 0, "-2", "--two-summits");
-  if(res) {
+  if(scanArgs(argc, argv, "-2", "--two-summits")) {
     summits = 2;
     return(0);
   }
   
   int domain = 410;
-  res = getArg(argc, argv, 1, "-d", "--domain");
-  if(res) {
+  if(scanArgs(argc, argv, "-d", "--domain")) {
     domain = atoi(argv[res]) - 191;
     if(domain < 100)
       domain = 100;

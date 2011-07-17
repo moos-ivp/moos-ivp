@@ -40,10 +40,11 @@ SIMAS_Model::SIMAS_Model()
   m_default_reply_dist = 100;    // meters
   m_default_ping_wait  = 30;    // seconds
 
-  m_ping_color  = "white";
-  m_reply_color = "chartreuse";
-  m_report_vars = "short";
-  m_verbose     = false;
+  m_ping_color   = "white";
+  m_reply_color  = "chartreuse";
+  m_report_vars  = "short";
+  m_verbose      = false;
+  m_ground_truth = true;
 
 
   // State Variables
@@ -65,9 +66,9 @@ bool SIMAS_Model::setParam(string param, string value)
 
   if(param == "verbose")
     return(setBooleanOnString(m_verbose, value));
-  else if(param == "reach_dist") 
+  else if((param == "reach_dist") || (param == "reach_distance"))
     return(setReachDistance(value));
-  else if(param == "reply_dist") 
+  else if((param == "reply_dist") || (param == "reply_distance"))
     return(setReplyDistance(value));
   else if(param == "ping_wait")
     return(setPingWait(value));
@@ -79,6 +80,8 @@ bool SIMAS_Model::setParam(string param, string value)
     m_reply_color = value;
   else if(param == "rn_algorithm")
     return(setRandomNoiseAlgorithm(value));
+  else if(param == "ground_truth")
+    return(setBooleanOnString(m_ground_truth, value));
   else if((param == "rn_uniform_pct") && isNumber(value))
     m_rn_uniform_pct = vclip(atof(value.c_str()), 0, 1);
   else
@@ -138,37 +141,45 @@ vector<VarDataPair> SIMAS_Model::getMessages(bool clear)
 
 void SIMAS_Model::print() const
 {
+  cout << termColor("blue");
+  cout << "==========================================" << endl;
   cout << "Acoustic Sonar Simulator Model: " << endl;
+  cout << "==========================================" << endl;
 
-  cout << "Default Reach Distance: " << m_default_reach_dist << endl;
-  cout << "Default Reply Distance: " << m_default_reply_dist << endl;
-  cout << "Default Ping Wait:      " << m_default_ping_wait << endl;
-  cout << "Random Noise Algorithm: " << m_rn_algorithm << endl;
+  cout << "Default Reach Distance:   " << m_default_reach_dist << endl;
+  cout << "Default Reply Distance:   " << m_default_reply_dist << endl;
+  cout << "Default Ping Wait:        " << m_default_ping_wait << endl;
+  cout << "Random Noise Algorithm:   " << m_rn_algorithm << endl;
   cout << "Random Noise Uniform Pct: " << m_rn_uniform_pct << endl;
+  cout << "Ping Color:               " << m_ping_color << endl;
+  cout << "Reply Color:              " << m_reply_color << endl;
+  cout << "Ground Truth Reporting:   " << boolToString(m_ground_truth) << endl;
 
   cout << "ReachMap:" << endl;
   map<string, double>::const_iterator p;
   for(p=m_reach_map.begin(); p!=m_reach_map.end(); p++) {
-    cout << "  VName:" << p->first;
-    cout << "  Dist:"  << p->second << endl;
+    cout << "  VName: " << p->first;
+    cout << "  Dist: " << p->second << endl;
   }
 
   cout << "ReplyMap:" << endl;
   for(p=m_reply_map.begin(); p!=m_reply_map.end(); p++) {
-    cout << "  VName:" << p->first;
-    cout << "  Dist:"  << p->second << endl;
+    cout << "  VName: " << p->first;
+    cout << "  Dist: "  << p->second << endl;
   }
 
   cout << "PingWaitMap:" << endl;
   for(p=m_pingw_map.begin(); p!=m_pingw_map.end(); p++) {
-    cout << "  VName:" << p->first;
-    cout << "  PingWait:" << p->second << endl;
+    cout << "  VName: " << p->first;
+    cout << "  PingWait: " << p->second << endl;
   }
 
   unsigned int j, jsize = m_node_records.size();
-  cout << " Contact Records:: " << jsize << endl;
+  cout << "Contact Records: " << jsize << endl;
   for(j=0; j<jsize; j++)
     cout << m_node_records[j].getSpec() << endl;
+  cout << "==========================================" << endl;
+  cout << termColor();
 }
 
 //---------------------------------------------------------
@@ -214,11 +225,11 @@ bool SIMAS_Model::handleRangeRequest(const string& request)
       vname = value;
   }
   if(vname == "") {
-    addMessage("SIMAS_DEBUG", "Range request with null node name");
+    addMessage("SIMAS_DEBUG", "Range Request with null node name");
     return(false);
   }
   if(m_verbose) 
-    cout << endl << "Range request received from: " << vname << endl;
+    cout << endl << "Range Request received from: " << vname << endl;
   
   // Phase 2: Determine if we know anything about this vehicle. If 
   // we have received any prior node reports. We must know the position
@@ -249,13 +260,13 @@ bool SIMAS_Model::handleRangeRequest(const string& request)
   report("   Elapsed time: " + doubleToString(elapsed_time) + "\n");
 
   if(!ping_allowed) {
-    report("   Denied: Query exceeds maximum query frequency.\n", "red");
+    report("   Denied: Range Request exceeds maximum ping frequency.\n", "red");
     return(true);
   }
   else
-    report("   Query accepted by uSimActiveSonar.\n", "green");
+    report("   Range Request accepted by uSimActiveSonar.\n", "green");
 
-  report("   Query resets the clock for vehicle.\n");
+  report("   Range Request resets the clock for vehicle.\n");
   m_node_records[vix].setTimeStamp(m_curr_time);
 
   
@@ -289,7 +300,7 @@ bool SIMAS_Model::handleRangeRequest(const string& request)
 	sonar_hit = true;
 
       if(sonar_hit) {
-	postNodeRangeReport(tix, vix, actual_range_now);
+	postNodeRangeReport(vix, tix, actual_range_now);
 	string label = targ_name + "_ping_reply";
 	postRangePulse(tix, m_reply_color, label, 15, 40);
       }
@@ -349,7 +360,7 @@ void SIMAS_Model::postRangePulse(unsigned int ix, string color,
 
 void SIMAS_Model::postNodeRangeReport(unsigned int rec_ix, 
 				      unsigned int tar_ix, 
-				      double range)
+				      double actual_range)
 {
   unsigned num_records = m_node_records.size();
   if((rec_ix >= num_records) || (tar_ix >= num_records))
@@ -358,14 +369,19 @@ void SIMAS_Model::postNodeRangeReport(unsigned int rec_ix,
   string rec_name = m_node_records[rec_ix].getName();
   string tar_name = m_node_records[tar_ix].getName();
 
-  report("   Range report sent from targ vehicle[" + tar_name + "] to ");
+  report("   Range Report sent from targ vehicle[" + tar_name + "] to ");
   report("receiver vehicle[" + rec_name + "]\n");
 
-  string str = "range=" + doubleToStringX(range, 4);
+
+  double report_range = actual_range;
+  if(m_rn_algorithm != "")
+    report_range = getNoisyNodeNodeRange(actual_range);
+
+
+  // Phase 1: Post the "non-ground-truth" reports
+  string str = "range=" + doubleToStringX(report_range, 4);
   str += ",target=" + tar_name;
   str += ",time=" + doubleToStringX(m_curr_time,3);
-
-  cout << "Node Range Report:" << str << endl;
 
   if((m_report_vars == "short") || (m_report_vars == "both")) {
     string full_str = "vname=" + rec_name + "," + str;
@@ -374,6 +390,21 @@ void SIMAS_Model::postNodeRangeReport(unsigned int rec_ix,
 
   if((m_report_vars == "long") || (m_report_vars == "both"))
     addMessage("SIMAS_RANGE_REPORT_" + toupper(rec_name), str);
+
+  // Phase 2: Possibly Post the "ground-truth" reports
+  if((m_rn_algorithm != "") && m_ground_truth) {
+    string str = "range=" + doubleToStringX(actual_range, 4);
+    str += ",target=" + tar_name;
+    str += ",time=" + doubleToStringX(m_curr_time,3);
+    
+    if((m_report_vars == "short") || (m_report_vars == "both")) {
+      string full_str = "vname=" + rec_name + "," + str;
+      addMessage("SIMAS_RANGE_REPORT_GT", full_str);
+    }
+    
+    if((m_report_vars == "long") || (m_report_vars == "both"))
+      addMessage("SIMAS_RANGE_REPORT_GT_" + toupper(rec_name), str);
+  }
 
 }
 
@@ -394,6 +425,24 @@ double SIMAS_Model::getTrueNodeNodeRange(unsigned int src_ix,
   double range = hypot((rnode_x-tnode_x), (rnode_y-tnode_y));
 
   return(range);
+}
+
+//------------------------------------------------------------
+// Procedure: getNoisyNodeNodeRange()
+
+double SIMAS_Model::getNoisyNodeNodeRange(double true_range) const
+{
+  if(m_rn_algorithm == "uniform") {
+    // Generate a random double in the range [-1, 1]
+    int    rand_int = rand() % 10000;
+    double rand_pct = ((double)(rand_int) / 5000) - 1;
+    
+    double noise = ((rand_pct * m_rn_uniform_pct) * true_range);
+    double noisy_range = true_range + noise;
+    return(noisy_range);
+  }
+    
+  return(true_range);
 }
 
 //------------------------------------------------------------
@@ -500,7 +549,7 @@ bool SIMAS_Model::setReplyDistance(string str)
 bool SIMAS_Model::setPingWait(string str)
 {
   string left  = biteStringX(str, '=');
-  string right = tolower(str); 
+  string right = stripQuotes(tolower(str));
 
   double wait_time = 0;
   if((right == "nolimit") || (right == "unlimited"))
@@ -537,14 +586,22 @@ bool SIMAS_Model::setReportVars(string str)
 
 bool SIMAS_Model::setRandomNoiseAlgorithm(string str)
 {
-  string val = tolower(str);
-  if((val == "uniform") || 
-     (val == "uniform_rng") || 
-     (val == "uniform_pct") || 
-     (val == "gaussian")) {
-    m_rn_algorithm = val;
-    return(true);
+  string algorithm = biteStringX(str, ',');
+  string parameters = str;
+
+  if(algorithm == "uniform") {
+    vector<string> svector = parseString(parameters, ',');
+    unsigned int i, vsize = svector.size();
+    for(i=0; i<vsize; i++) {
+      string param = biteStringX(svector[i], '=');
+      string value = svector[i];
+      if(param == "pct") 
+	m_rn_uniform_pct = vclip(atof(value.c_str()), 0, 1);
+    }
   }
   else
     return(false);
+  
+  m_rn_algorithm = algorithm;
+  return(true);
 }

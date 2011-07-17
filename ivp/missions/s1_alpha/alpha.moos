@@ -21,7 +21,7 @@ ProcessConfig = ANTLER
   Run = pLogger         @ NewConsole = false
   Run = uSimMarine	@ NewConsole = true
   Run = pNodeReporter	@ NewConsole = false
-  Run = pMarinePID	@ NewConsole = false
+  Run = pMarinePID	@ NewConsole = true
   Run = pHelmIvP	@ NewConsole = true
   Run = pMarineViewer	@ NewConsole = true
 }
@@ -185,6 +185,6 @@ ProcessConfig = pNodeReporter
   AppTick	= 2
   CommsTick	= 2
 
-  PLATFORM_TYPE   = GLIDER
+  PLATFORM_TYPE   = KAYAK
   PLATFORM_LENGTH = 4
 }

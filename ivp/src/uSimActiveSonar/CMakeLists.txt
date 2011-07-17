@@ -16,6 +16,7 @@ endif (${WIN32})
 SET(SRC
    SIMAS_MOOSApp.cpp
    SIMAS_Model.cpp
+   SIMAS_ExampleConfig.cpp
    main.cpp
 )
 

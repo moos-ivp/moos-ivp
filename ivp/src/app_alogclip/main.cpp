@@ -24,6 +24,7 @@
 #include <iostream>
 #include "cmath"
 #include "MBUtils.h"
+#include "ReleaseInfo.h"
 #include "TermUtils.h"
 #include "ALogClipper.h"
 #include <cstdlib>
@@ -74,9 +75,7 @@ int main(int argc, char *argv[])
 {
  // Look for a request for version information
   if(scanArgs(argc, argv, "-v", "--version", "-version")) {
-    vector<string> svector = getReleaseInfo("alogclip");
-    for(unsigned int j=0; j<svector.size(); j++)
-      cout << svector[j] << endl;    
+    showReleaseInfo("alogclip", "gpl");
     return(0);
   }
 

@@ -44,7 +44,7 @@ Behavior = BHV_Loiter
      nm_radius = 15.0
        polygon = radial:: $(LOITER_POS), radius=20, pts=8, snap=1, label=$(VNAME)_LOITER
   visual_hints = nextpt_color=white, nextpt_lcolor=khaki
-  visual_hints = edge_color=blue, vertex_color=blue
+  visual_hints = edge_color=orange, vertex_color=white
   visual_hints = edge_size=1, vertex_size=2
 }
 

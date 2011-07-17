@@ -85,8 +85,8 @@ bool SIMAS_MOOSApp::Iterate()
 
 bool SIMAS_MOOSApp::OnStartUp()
 {
-  cout << termColor("blue");
-  MOOSTrace("\nSimulated Range Sensor starting...\n");
+  cout << termColor();
+  cout << endl << "Simulated Active Sonar starting..." << endl;
   m_model.setCurrTime(MOOSTime());
   
   STRING_LIST sParams;
@@ -103,8 +103,9 @@ bool SIMAS_MOOSApp::OnStartUp()
   RegisterVariables();
 
   m_model.print();
-  MOOSTrace("Simulated Range Sensor started. \n\n");
+
   cout << termColor() << flush;
+  cout << "Simulated Active Sonar started." << endl << endl;
   return(true);
 }
 
@@ -114,17 +115,22 @@ bool SIMAS_MOOSApp::OnStartUp()
 
 void SIMAS_MOOSApp::postMessages(vector<VarDataPair> msgs)
 {
+  bool verbose = m_model.verbose();
+
   unsigned int i, vsize = msgs.size();
   for(i=0; i<vsize; i++) {
     string varname = msgs[i].get_var();
-    cout << "+++ " << varname;
+    if(verbose)
+      cout << "DBPost: " << varname << "  ";
     if(msgs[i].is_string()) {
       m_Comms.Notify(varname, msgs[i].get_sdata());
-      cout << msgs[i].get_sdata() << endl;
+      if(verbose)
+	cout << msgs[i].get_sdata() << endl;
     }
     else {
       m_Comms.Notify(varname, msgs[i].get_ddata());
-      cout << msgs[i].get_ddata() << endl;
+      if(verbose)
+	cout << msgs[i].get_ddata() << endl;
     }
   }
 }

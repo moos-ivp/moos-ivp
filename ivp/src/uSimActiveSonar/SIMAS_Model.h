@@ -40,6 +40,7 @@ class SIMAS_Model
 		  double mtime, bool isdouble, bool isstring, 
 		  std::string source);
   void  setCurrTime(double);
+  bool  verbose() {return(m_verbose);};
   void  iterate();
   void  print() const;
 
@@ -58,6 +59,7 @@ class SIMAS_Model
 
  protected: // Utilities
   double  getTrueNodeNodeRange(unsigned int bix, unsigned int tix) const;
+  double  getNoisyNodeNodeRange(double true_range) const;
   void    report(std::string message="", std::string termcolor="");
   bool    updateNodeRecords(const NodeRecord&);
   bool    setReachDistance(std::string);
@@ -90,6 +92,7 @@ class SIMAS_Model
   std::string m_reply_color;
   std::string m_report_vars;
   bool        m_verbose;
+  bool        m_ground_truth;
 
   std::string m_rn_algorithm;   // Empty string = no random noise
   double      m_rn_uniform_pct;

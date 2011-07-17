@@ -27,6 +27,7 @@
 #include <iostream>
 #include "Expander.h"
 #include "MBUtils.h"
+#include "ReleaseInfo.h"
 
 using namespace std;
 
@@ -37,9 +38,7 @@ int main(int argc, char *argv[])
 {
   // Look for a request for version information
   if(scanArgs(argc, argv, "-v", "--version", "-version")) {
-    vector<string> svector = getReleaseInfo("splug");
-    for(unsigned int j=0; j<svector.size(); j++)
-      cout << svector[j] << endl;    
+    showReleaseInfo("nsplug", "gpl");
     return(0);
   }
   

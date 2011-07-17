@@ -24,6 +24,7 @@
 #include "PMV_MOOSApp.h"
 #include "PMV_GUI.h"
 #include "MBUtils.h"
+#include "ReleaseInfo.h"
 #include "Threadsafe_pipe.h"
 #include "MOOS_event.h"
 #include "MOOSAppRunnerThread.h"
@@ -111,9 +112,7 @@ int main(int argc, char *argv[])
 {
   // Look for a request for version information
   if(scanArgs(argc, argv, "-v", "--version", "-version")) {
-    vector<string> svector = getReleaseInfo("pMarineViewer");
-    for(unsigned int j=0; j<svector.size(); j++)
-      cout << svector[j] << endl;    
+    showReleaseInfo("pMarineViewer", "gpl");
     return(0);
   }
 

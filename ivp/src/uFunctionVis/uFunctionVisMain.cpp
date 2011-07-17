@@ -26,6 +26,7 @@
 #include "FV_MOOSApp.h"
 #include "FV_GUI.h"
 #include "MBUtils.h"
+#include "ReleaseInfo.h"
 #include "MOOSAppRunnerThread.h"
 
 using namespace std;
@@ -37,9 +38,7 @@ int main(int argc, char *argv[])
 {
   // Look for a request for version information
   if(scanArgs(argc, argv, "-v", "--version", "-version")) {
-    vector<string> svector = getReleaseInfo("uFunctionVis");
-    for(unsigned int j=0; j<svector.size(); j++)
-      cout << svector[j] << endl;    
+    showReleaseInfo("uFunctionVis", "gpl");
     return(0);
   }
   

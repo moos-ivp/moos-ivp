@@ -173,7 +173,6 @@ string XYRangePulse::get_spec(string param) const
   spec += doubleToStringX(m_rad); 
   spec += ",duration=";
   spec += doubleToStringX(m_duration); 
-  spec += ",fill=";
 
   string obj_spec = XYObject::get_spec(param);
   if(obj_spec != "")

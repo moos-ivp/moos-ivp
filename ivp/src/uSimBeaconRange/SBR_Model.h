@@ -42,6 +42,7 @@ class SBR_Model
 		  double mtime, bool isdouble, bool isstring, 
 		  std::string source);
   void  setCurrTime(double);
+  bool  verbose() {return(m_verbose);};
   void  iterate();
   void  print() const;
 

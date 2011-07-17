@@ -15,6 +15,7 @@ endif (${WIN32})
 
 SET(SRC 
    TS_MOOSApp.cpp 
+   TS_ExampleConfig.cpp
    EnumVariable.cpp
    RandomVariable.cpp
    RandomVariableSet.cpp 

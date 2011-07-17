@@ -145,6 +145,9 @@ string NodeRecord::getSpec() const
   string str = "NAME=" + m_name;
   str += ",X="    + doubleToStringX(m_x,2);
   str += ",Y="    + doubleToStringX(m_y,2);
+  str += ",SPD="  + doubleToStringX(m_speed,2);
+  str += ",HDG="  + doubleToStringX(m_heading,2);
+  str += ",DEP="  + doubleToStringX(m_depth,2);
 
   if(m_lat_set)
     str += ",LAT=" + doubleToStringX(m_lat, 8);
@@ -157,20 +160,14 @@ string NodeRecord::getSpec() const
   if(m_allstop != "")
     str += ",ALLSTOP=" + m_allstop;
 
-  if(m_speed_set)
-    str += ",SPD="  + doubleToStringX(m_speed,2);
   if(m_speed_og_set)
     str += ",SPD_OG=" + doubleToStringX(m_speed_og,2);
 
-  if(m_heading_set)
-    str += ",HDG="  + doubleToStringX(m_heading,2);
   if(m_heading_og_set)
     str += ",HDG_OG="  + doubleToStringX(m_heading_og,2);
 
   if(m_yaw_set)
     str += ",YAW="  + doubleToStringX(m_heading,2);
-  if(m_depth_set)
-    str += ",DEP="  + doubleToStringX(m_depth,2);
   if(m_timestamp_set)
     str += ",TIME=" + doubleToStringX(m_timestamp,2);
   if(m_length_set)

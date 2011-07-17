@@ -27,47 +27,73 @@
 #include "SBR_MOOSApp.h"
 #include "MBUtils.h"
 #include "SBR_ExampleConfig.h"
+#include "ColorParse.h"
+#include "ReleaseInfo.h"
 
 using namespace std;
 
 int main(int argc, char *argv[])
 {
-  string sMissionFile = "uSimRangeSensor.moos";
-  string sMOOSName    = "uSimRangeSensor";
-  bool   version_requested = false;
-  bool   example_requested = false;
-
-  for(int i=0; i<argc; i++) {
-    string str = argv[i];
-    if((str=="-v") || (str=="--version") || (str=="-version"))
-      version_requested = true;
-    if((str=="-e") || (str=="--example") || (str=="-example"))
-      example_requested = true;
-  }
-  
-  if(version_requested) {
-    vector<string> svector = getReleaseInfo("uSimRangeSensor");
-    unsigned int j;
-    for(j=0; j<svector.size(); j++)
-      cout << svector[j] << endl;
+  // Look for a request for version information
+  if(scanArgs(argc, argv, "-v", "--version", "-version")) {
+    showReleaseInfo("uSimBeaconRange", "gpl");
     return(0);
   }
 
-  if(example_requested) {
+  // Look for a request for example configuration information
+  if(scanArgs(argc, argv, "-e", "--example", "-example")) {
     showExampleConfig();
     return(0);
   }
 
-  switch(argc) {
-  case 3:
-    sMOOSName = argv[2];
-  case 2:
-    sMissionFile = argv[1];
+  int    i;
+  string mission_file = "";
+  string run_command  = argv[0];
+  bool   help_requested = false;
+  string verbose_setting;
+
+  for(i=1; i<argc; i++) {
+    string argi = argv[i];
+    if(strEnds(argi, ".moos"))
+      mission_file = argv[i];
+    else if(strEnds(argi, ".moos++"))
+      mission_file = argv[i];
+    else if((argi == "--help")||(argi=="-h"))
+      help_requested = true;
+    else if(strBegins(argi, "--alias="))
+      run_command = argi.substr(8);
+    else if(strBegins(argi, "--verbose="))
+      verbose_setting = tolower(argi.substr(10));
   }
   
+  if((mission_file == "") || help_requested) {
+    cout << "Usage: uSimBeaconRange file.moos [OPTIONS]             " << endl;
+    cout << "                                                       " << endl;
+    cout << "Options:                                               " << endl;
+    cout << "  --alias=<ProcessName>                                " << endl;
+    cout << "      Launch uSimActiveSonar with the given process    " << endl;
+    cout << "      name rather than uSimActiveSonar.                " << endl;
+    cout << "  --example, -e                                        " << endl;
+    cout << "      Display example MOOS configuration block         " << endl;
+    cout << "  --help, -h                                           " << endl;
+    cout << "      Display this help message.                       " << endl;
+    cout << "  --verbose=Boolean (true/false)                       " << endl;
+    cout << "      Display diagnostics messages. Default is true.   " << endl;
+    cout << "  --version,-v                                         " << endl;
+    cout << "      Display the release version of uSimBeaconRange.  " << endl;
+    return(0);
+  }
+
+  cout << termColor("green");
+  cout << "uSimBeaconRange running as: " << run_command << endl;
+  cout << termColor() << endl;
+
   SBR_MOOSApp sim_beacon_range;
 
-  sim_beacon_range.Run(sMOOSName.c_str(), sMissionFile.c_str());
+  //if(verbose_setting != "")
+  //  sim_active_sonar.setVerbose(verbose_setting);
+
+  sim_beacon_range.Run(run_command.c_str(), mission_file.c_str());
  
   return(0);
 }

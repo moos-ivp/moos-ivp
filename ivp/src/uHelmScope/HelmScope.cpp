@@ -24,7 +24,7 @@
 #include <cstring>
 #include "HelmScope.h"
 #include "MBUtils.h"
-//#include "ColorConsole.h"
+#include "ColorParse.h"
 
 #define BACKSPACE_ASCII 127
 // number of seconds before checking for new moos vars (in all mode)
@@ -1072,7 +1072,12 @@ void HelmScope::printHelmReport(int index)
   for(j=0; j<vars; j++) {
     string var = hblock.getDecVar(j);
     string val = hblock.getDecVal(j);
-    printf("  %s = %s \n", var.c_str(), val.c_str());
+    bool   chg = hblock.getDecChg(j);
+    if(chg)
+      cout << termColor("blue") << flush;
+    printf("  %s = %s\n", var.c_str(), val.c_str());
+    if(chg)
+      cout << termColor() << flush;
   }
 
   svector = hblock.getActiveBHV(utc_time);

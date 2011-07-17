@@ -164,7 +164,7 @@ bool TS_MOOSApp::Iterate()
   m_utc_time = MOOSTime();
   if(m_start_time == 0) {
     m_start_time = m_utc_time;
-    scheduleEvents();
+    scheduleEvents(m_shuffle);
   }
 
   if(m_paused || !m_conditions_ok) {
@@ -246,6 +246,8 @@ bool TS_MOOSApp::OnStartUp()
 	setBooleanOnString(m_atomic, value);
       else if(param == "verbose")
 	setBooleanOnString(m_verbose, value);
+      else if(param == "shuffle")
+	setBooleanOnString(m_shuffle, value);
       else if(param == "upon_awake") {
 	string lvalue = tolower(value);
 	if((lvalue=="reset") || (lvalue=="restart") || (lvalue =="n/a"))

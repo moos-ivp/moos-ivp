@@ -25,6 +25,7 @@
 #include "GUI.h"
 #include "AOF_Rings.h"
 #include "MBUtils.h"
+#include "ReleaseInfo.h"
 #include "IO_Utilities.h"
 #include "PopulatorAOF.h"
 #include "FileBuffer.h"
@@ -62,9 +63,7 @@ int main(int argc, char *argv[])
 {
   // Look for a request for version information
   if(scanArgs(argc, argv, "-v", "--version", "-version")) {
-    vector<string> svector = getReleaseInfo("ffview");
-    for(unsigned int j=0; j<svector.size(); j++)
-      cout << svector[j] << endl;    
+    showReleaseInfo("ffview", "gpl");
     return(0);
   }
 

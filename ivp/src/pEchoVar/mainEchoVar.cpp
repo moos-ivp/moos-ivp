@@ -23,6 +23,8 @@
 #include <string>
 #include "EchoVar.h"
 #include "MBUtils.h"
+#include "ReleaseInfo.h"
+#include "ColorParse.h"
 
 using namespace std;
 
@@ -30,25 +32,48 @@ int main(int argc, char *argv[])
 {
   // Look for a request for version information
   if(scanArgs(argc, argv, "-v", "--version", "-version")) {
-    vector<string> svector = getReleaseInfo("pEchoVar");
-    for(unsigned int j=0; j<svector.size(); j++)
-      cout << svector[j] << endl;    
+    showReleaseInfo("pEchoVar", "gpl");
     return(0);
   }
-  
-  string sMissionFile = "Mission.moos";
-  string sMOOSName    = "pEchoVar";
 
-  switch(argc) {
-  case 3:
-    sMOOSName = argv[2];
-  case 2:
-    sMissionFile = argv[1];
+  int    i;
+  string mission_file = "";
+  string run_command  = argv[0];
+  bool   help_requested  = false;
+
+  for(i=1; i<argc; i++) {
+    string argi = argv[i];
+    if(strEnds(argi, ".moos"))
+      mission_file = argv[i];
+    else if(strEnds(argi, ".moos++"))
+      mission_file = argv[i];
+    else if((argi == "--help")||(argi=="-h"))
+      help_requested = true;
+    else if(strBegins(argi, "--alias="))
+      run_command = argi.substr(8);
   }
   
+  if((mission_file == "") || help_requested) {
+    cout << "Usage: pEchoVar file.moos [OPTIONS]                       " << endl;
+    cout << "                                                          " << endl;
+    cout << "Options:                                                  " << endl;
+    cout << "  --alias=<ProcessName>                                   " << endl;
+    cout << "      Launch pEchoVar with the given process name         " << endl;
+    cout << "      rather than pEchoVar.                               " << endl;
+    cout << "  --help, -h                                              " << endl;
+    cout << "      Display this help message.                          " << endl;
+    cout << "  --version,-v                                            " << endl;
+    cout << "      Display the release version of pEchoVar.            " << endl;
+    return(0);
+  }
+
+  cout << termColor("green");
+  cout << "pEchoVar running as: " << run_command << endl;
+  cout << termColor() << endl;
+
   EchoVar transponder;
   
-  transponder.Run(sMOOSName.c_str(), sMissionFile.c_str());
+  transponder.Run(run_command.c_str(), mission_file.c_str());
 
   return(0);
 }

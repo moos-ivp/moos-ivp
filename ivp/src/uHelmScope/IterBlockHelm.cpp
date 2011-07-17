@@ -52,16 +52,32 @@ IterBlockHelm::IterBlockHelm()
 
 void IterBlockHelm::initialize(const IterBlockHelm& block)
 {
-  m_warning_cnt   = block.m_warning_cnt;
-  m_count_ipf     = block.m_count_ipf;
-  m_error_cnt     = block.m_error_cnt;
-  m_posting_cnt   = block.m_posting_cnt;
-  m_infomsg_cnt   = block.m_infomsg_cnt;
-
   m_active_bhv    = block.m_active_bhv;
   m_running_bhv   = block.m_running_bhv;
   m_idle_bhv      = block.m_idle_bhv;
   m_completed_bhv = block.m_completed_bhv;
+
+  m_decvar        = block.m_decvar;
+  m_decval        = block.m_decval;
+  m_decchg        = block.m_decchg;
+
+  // Mark all decision vars "unchanged" until proven otherwise
+  unsigned int i, vsize = m_decchg.size();
+  for(i=0; i<vsize; i++)
+    m_decchg[i] = false;
+
+  m_modes         = block.m_modes;
+
+  m_solve_time    = block.m_solve_time;
+  m_create_time   = block.m_create_time;
+  m_loop_time     = block.m_loop_time;
+  m_halted        = block.m_halted;
+
+  m_count_ipf     = block.m_count_ipf;
+  m_warning_cnt   = block.m_warning_cnt;
+  m_error_cnt     = block.m_error_cnt;
+  m_posting_cnt   = block.m_posting_cnt;
+  m_infomsg_cnt   = block.m_infomsg_cnt;
 }
 
 //------------------------------------------------------------
@@ -270,10 +286,20 @@ vector<string> IterBlockHelm::getCompletedBHV(double utc_time,
 
 void IterBlockHelm::addDecVarVal(const string& varname, const string& value)
 {
-  if(vectorContains(m_decvar, varname))
-    return;
+  unsigned int i, vsize = m_decvar.size();
+  for(i=0; i<vsize; i++) {
+    if(varname == m_decvar[i]) {
+      if(value != m_decval[i]) {
+	m_decchg[i] = true;
+	m_decval[i] = value;
+      }
+      return;
+    }
+  }
+
   m_decvar.push_back(varname);
   m_decval.push_back(value);
+  m_decchg.push_back(true);
 }
     
 
@@ -319,6 +345,17 @@ string IterBlockHelm::getDecVal(unsigned int ix) const
     return(m_decval[ix]);
   else
     return(0);
+}
+
+//------------------------------------------------------------
+// Procedure: getDecChg(int)
+
+bool IterBlockHelm::getDecChg(unsigned int ix) const
+{
+  if(ix < m_decchg.size())
+    return(m_decchg[ix]);
+  else
+    return(false);
 }
 
 //------------------------------------------------------------

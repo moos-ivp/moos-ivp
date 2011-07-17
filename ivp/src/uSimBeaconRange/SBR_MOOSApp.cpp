@@ -136,17 +136,22 @@ bool SBR_MOOSApp::OnStartUp()
 
 void SBR_MOOSApp::postMessages(vector<VarDataPair> msgs)
 {
+  bool verbose = m_model.verbose();
+
   unsigned int i, vsize = msgs.size();
   for(i=0; i<vsize; i++) {
     string varname = msgs[i].get_var();
-    cout << "+++ " << varname;
+    if(verbose)
+      cout << "DBPost: " << varname << "  ";;
     if(msgs[i].is_string()) {
       m_Comms.Notify(varname, msgs[i].get_sdata());
-      cout << msgs[i].get_sdata() << endl;
+      if(verbose)
+	cout << msgs[i].get_sdata() << endl;
     }
     else {
       m_Comms.Notify(varname, msgs[i].get_ddata());
-      cout << msgs[i].get_ddata() << endl;
+      if(verbose)
+	cout << msgs[i].get_ddata() << endl;
     }
   }
 }

@@ -36,35 +36,26 @@ ProcessConfig = pLogger
 
   // Log it all!!!!!
   WildCardLogging = true 
+  WildCardOmitPattern = *_STATUS
 }
 
 //------------------------------------------
-// uSimRangeSensor config block
+// uSimActiveSonar config block
 
 ProcessConfig = uSimActiveSonar
 {
   AppTick   = 4
   CommsTick = 4
 
-  verbose = true
-}
+  reply_distance = jackal = 50
+  reach_distance = archie = 190
+  ping_wait      = archie = 32  
 
-//------------------------------------------
-// uSimRangeSensor config block
-
-ProcessConfig = uSimRangeSensor
-{
-  AppTick   = 4
-  CommsTick = 4
-
-  default_node_query_range    = nolimit
-  default_beacon_report_range = nolimit
-
-  beacon  = x=200, y=0,    label=01
-  beacon  = x=400, y=-200, label=02
-  beacon  = x=0,   y=-200, label=03
+  ping_color = white
+  reply_color = chartreuse
 
   verbose = true
+  rn_algorithm = uniform,pct=0.04
 }
 
 //--------------------------------------------------------
@@ -109,9 +100,6 @@ ProcessConfig = pMarineViewer
 
   SCOPE = CONTACT_INFO
 
-  ACTION = PERMUTING = true
-  ACTION = PERMUTING = false
-
   ACTION = STATION_ALL = false
   ACTION = STATION_ALL = true
 
@@ -119,6 +107,5 @@ ProcessConfig = pMarineViewer
   BUTTON_ONE   = MOOS_MANUAL_OVERIDE_ALL=false 
   BUTTON_ONE   = RETURN_ALL=false
   BUTTON_TWO   = RETURN  # RETURN_ALL=true
-  BUTTON_THREE = PERMUTE-NOW   # UTS_FORWARD=0
 }
 

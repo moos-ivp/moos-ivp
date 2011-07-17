@@ -23,6 +23,7 @@
 #include <vector>
 #include "GEO_GUI.h"
 #include "MBUtils.h"
+#include "ReleaseInfo.h"
 #include "IO_GeomUtils.h"
 #include "XYPolygon.h"
 #include "XYSegList.h"
@@ -52,9 +53,7 @@ int main(int argc, char *argv[])
 
   // Look for a request for version information
   if(scanArgs(argc, argv, "-v", "--version", "-version")) {
-    vector<string> svector = getReleaseInfo("geoview");
-    for(unsigned int j=0; j<svector.size(); j++)
-      cout << svector[j] << endl;    
+    showReleaseInfo("geoview", "gpl");
     return(0);
   }
   

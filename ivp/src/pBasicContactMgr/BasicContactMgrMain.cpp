@@ -26,6 +26,7 @@
 #include "BasicContactMgr.h"
 #include "ColorParse.h"
 #include "MBUtils.h"
+#include "ReleaseInfo.h"
 #include "BCM_ExampleConfig.h"
 
 using namespace std;
@@ -34,9 +35,7 @@ int main(int argc, char *argv[])
 {
   // Look for a request for version information
   if(scanArgs(argc, argv, "-v", "--version", "-version")) {
-    vector<string> svector = getReleaseInfo("pBasicContactMgr");
-    for(unsigned int j=0; j<svector.size(); j++)
-      cout << svector[j] << endl;    
+    showReleaseInfo("pBasicContactMgr", "gpl");
     return(0);
   }
 
@@ -75,12 +74,14 @@ int main(int argc, char *argv[])
     cout << "  --alias=<ProcessName>                                   " << endl;
     cout << "      Launch pBasicContactMgr with the given process name " << endl;
     cout << "      rather than pBasicContactMgr.                       " << endl;
+    cout << "  --example, -e                                           " << endl;
+    cout << "      Display example MOOS configuration block.           " << endl;
     cout << "  --help, -h                                              " << endl;
     cout << "      Display this help message.                          " << endl;
     cout << "  --verbose=<Boolean>                                     " << endl;
     cout << "      Display status updates and diagnostics if true.     " << endl;
     cout << "      The default is true.                                " << endl;
-    cout << "  --version,-h                                            " << endl;
+    cout << "  --version,-v                                            " << endl;
     cout << "      Display the release version of pBasicContactMgr.    " << endl;
     return(0);
   }

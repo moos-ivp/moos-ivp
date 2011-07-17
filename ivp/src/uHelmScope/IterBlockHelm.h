@@ -25,7 +25,7 @@
 
 #include <vector>
 #include <string>
-#include "IterBlockBHV.h"
+#include <map>
 #include "BehaviorRecord.h"
 
 class IterBlockHelm
@@ -59,6 +59,7 @@ public:
 
   std::string  getDecVar(unsigned int) const;
   std::string  getDecVal(unsigned int) const;
+  bool         getDecChg(unsigned int) const;
   std::string  getModeStr() const    {return(m_modes);};
   double       getSolveTime() const  {return(m_solve_time);};
   double       getCreateTime() const {return(m_create_time);};
@@ -79,8 +80,10 @@ protected:
   std::vector<BehaviorRecord> m_idle_bhv;
   std::vector<BehaviorRecord> m_completed_bhv;
 
+  // Below three share common index - one for each dec variable
   std::vector<std::string> m_decvar;
   std::vector<std::string> m_decval;
+  std::vector<bool>        m_decchg;
 
   std::string  m_modes;
 
@@ -96,9 +99,6 @@ protected:
   unsigned int m_error_cnt;
   unsigned int m_posting_cnt;
   unsigned int m_infomsg_cnt;
-
-  std::vector<std::string>                m_behaviors;
-  std::vector<std::vector<IterBlockBHV> > m_blocks_bhv;
 };
 
 #endif 
