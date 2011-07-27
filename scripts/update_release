@@ -1,0 +1,186 @@
+
+echo "Handling lib_ivpcore"
+rm -f ~/Research/project-code-release/src/lib_ivpcore/*.h
+rm -f ~/Research/project-code-release/src/lib_ivpcore/*.cpp
+cp ../lib_ivpcore/*.h    ~/Research/project-code-release/src/lib_ivpcore/
+cp ../lib_ivpcore/*.cpp  ~/Research/project-code-release/src/lib_ivpcore/
+echo "...done"
+
+echo "Handling lib_ivpbuild"
+rm -f ~/Research/project-code-release/src/lib_ivpbuild/*.h
+rm -f ~/Research/project-code-release/src/lib_ivpbuild/*.cpp
+cp ../lib_ivpbuild/*.h    ~/Research/project-code-release/src/lib_ivpbuild/
+cp ../lib_ivpbuild/*.cpp  ~/Research/project-code-release/src/lib_ivpbuild/
+echo "...done"
+
+echo "Handling lib_mbutil"
+rm -f ~/Research/project-code-release/src/lib_mbutil/*.h
+rm -f ~/Research/project-code-release/src/lib_mbutil/*.cpp
+cp ../lib_mbutil/*.h     ~/Research/project-code-release/src/lib_mbutil/
+cp ../lib_mbutil/*.cpp   ~/Research/project-code-release/src/lib_mbutil/
+echo "...done"
+
+echo "Handling lib_geometry"
+rm -f ~/Research/project-code-release/src/lib_geometry/*.h
+rm -f ~/Research/project-code-release/src/lib_geometry/*.cpp
+cp ../lib_geometry/*.h    ~/Research/project-code-release/src/lib_geometry/
+cp ../lib_geometry/*.cpp  ~/Research/project-code-release/src/lib_geometry/
+echo "...done"
+
+echo "Handling lib_behaviors"
+rm -f ~/Research/project-code-release/src/lib_behaviors/*.h
+rm -f ~/Research/project-code-release/src/lib_behaviors/*.cpp
+cp ../lib_behaviors/*.h      ~/Research/project-code-release/src/lib_behaviors/
+cp ../lib_behaviors/*.cpp    ~/Research/project-code-release/src/lib_behaviors/
+echo "...done"
+
+echo "Handling lib_helmivp"
+rm -f ~/Research/project-code-release/src/lib_helmivp/*.h
+rm -f ~/Research/project-code-release/src/lib_helmivp/*.cpp
+cp ../lib_helmivp/*.h      ~/Research/project-code-release/src/lib_helmivp/
+cp ../lib_helmivp/*.cpp    ~/Research/project-code-release/src/lib_helmivp/
+echo "...done"
+
+echo "Handling lib_behaviors-marine"
+rm -f ~/Research/project-code-release/src/lib_behaviors-marine/*.h
+rm -f ~/Research/project-code-release/src/lib_behaviors-marine/*.cpp
+cp ../lib_behaviors-marine/*.h    ~/Research/project-code-release/src/lib_behaviors-marine/
+cp ../lib_behaviors-marine/*.cpp  ~/Research/project-code-release/src/lib_behaviors-marine/
+echo "...done"
+
+echo "Handling lib_marineview"
+rm -f ~/Research/project-code-release/src/lib_marineview/*.h
+rm -f ~/Research/project-code-release/src/lib_marineview/*.cpp
+cp ../lib_marineview/*.h    ~/Research/project-code-release/src/lib_marineview/
+cp ../lib_marineview/*.cpp  ~/Research/project-code-release/src/lib_marineview/
+echo "...done"
+
+echo "Handling lib_navplot"
+rm -f ~/Research/project-code-release/src/lib_navplot/*.h
+rm -f ~/Research/project-code-release/src/lib_navplot/*.cpp
+cp ../lib_navplot/*.h    ~/Research/project-code-release/src/lib_navplot/
+cp ../lib_navplot/*.cpp  ~/Research/project-code-release/src/lib_navplot/
+echo "...done"
+
+echo "Handling pHelmIvP"
+rm -f ~/Research/project-code-release/src/pHelmIvP/*.h
+rm -f ~/Research/project-code-release/src/pHelmIvP/*.cpp
+cp ../pHelmIvP/*.h     ~/Research/project-code-release/src/pHelmIvP/
+cp ../pHelmIvP/*.cpp   ~/Research/project-code-release/src/pHelmIvP/
+echo "...done"
+
+echo "Handling pMarineViewer"
+rm -f ~/Research/project-code-release/src/pMarineViewer/*.h
+rm -f ~/Research/project-code-release/src/pMarineViewer/*.cpp
+cp ../pMarineViewer/*.h     ~/Research/project-code-release/src/pMarineViewer/
+cp ../pMarineViewer/*.cpp   ~/Research/project-code-release/src/pMarineViewer/
+echo "...done"
+
+echo "Handling pTransponderAIS"
+rm -f ~/Research/project-code-release/src/pTransponderAIS/*.h
+rm -f ~/Research/project-code-release/src/pTransponderAIS/*.cpp
+cp ../pTransponderAIS/*.h     ~/Research/project-code-release/src/pTransponderAIS/
+cp ../pTransponderAIS/*.cpp   ~/Research/project-code-release/src/pTransponderAIS/
+echo "...done"
+
+echo "Handling iMarineSim"
+rm -f ~/Research/project-code-release/src/iMarineSim/*.h
+rm -f ~/Research/project-code-release/src/iMarineSim/*.cpp
+cp ../iMarineSim/*.h     ~/Research/project-code-release/src/iMarineSim/
+cp ../iMarineSim/*.cpp   ~/Research/project-code-release/src/iMarineSim/
+echo "...done"
+
+echo "Handling pMarinePID"
+rm -f ~/Research/project-code-release/src/pMarinePID/*.h
+rm -f ~/Research/project-code-release/src/pMarinePID/*.cpp
+cp ../pMarinePID/*.h     ~/Research/project-code-release/src/pMarinePID/
+cp ../pMarinePID/*.cpp   ~/Research/project-code-release/src/pMarinePID/
+echo "...done"
+
+echo "Handling pEchoVar"
+rm -f ~/Research/project-code-release/src/pEchoVar/*.h
+rm -f ~/Research/project-code-release/src/pEchoVar/*.cpp
+cp ../pEchoVar/*.h     ~/Research/project-code-release/src/pEchoVar/
+cp ../pEchoVar/*.cpp   ~/Research/project-code-release/src/pEchoVar/
+echo "...done"
+
+echo "Handling app_polyview"
+rm -f ~/Research/project-code-release/src/app_polyview/*.h
+rm -f ~/Research/project-code-release/src/app_polyview/*.cpp
+cp ../app_polyview/*.h     ~/Research/project-code-release/src/app_polyview/
+cp ../app_polyview/*.cpp   ~/Research/project-code-release/src/app_polyview/
+echo "...done"
+
+echo "Handling app_logview"
+rm -f ~/Research/project-code-release/src/app_logview/*.h
+rm -f ~/Research/project-code-release/src/app_logview/*.cpp
+cp ../app_logview/*.h     ~/Research/project-code-release/src/app_logview/
+cp ../app_logview/*.cpp   ~/Research/project-code-release/src/app_logview/
+echo "...done"
+
+echo "Handling MOOSDB"
+rm -f ~/Research/project-code-release/src/MOOSDB/*.h
+rm -f ~/Research/project-code-release/src/MOOSDB/*.cpp
+cp ../MOOSDB/*.h     ~/Research/project-code-release/src/MOOSDB/
+cp ../MOOSDB/*.cpp   ~/Research/project-code-release/src/MOOSDB/
+echo "...done"
+
+echo "Handling MOOSLIB"
+rm -f ~/Research/project-code-release/src/MOOSLIB/*.h
+rm -f ~/Research/project-code-release/src/MOOSLIB/*.cpp
+cp ../MOOSLIB/*.h     ~/Research/project-code-release/src/MOOSLIB/
+cp ../MOOSLIB/*.cpp   ~/Research/project-code-release/src/MOOSLIB/
+echo "...done"
+
+echo "Handling MOOSGenLib"
+rm -f ~/Research/project-code-release/src/MOOSGenLib/*.h
+rm -f ~/Research/project-code-release/src/MOOSGenLib/*.cpp
+cp ../MOOSGenLib/*.h     ~/Research/project-code-release/src/MOOSGenLib/
+cp ../MOOSGenLib/*.cpp   ~/Research/project-code-release/src/MOOSGenLib/
+echo "...done"
+
+echo "Handling iRemote"
+rm -f ~/Research/project-code-release/src/iRemote/*.h
+rm -f ~/Research/project-code-release/src/iRemote/*.cpp
+cp ../iRemote/*.h     ~/Research/project-code-release/src/iRemote/
+cp ../iRemote/*.cpp   ~/Research/project-code-release/src/iRemote/
+echo "...done"
+
+echo "Handling pLogger"
+rm -f ~/Research/project-code-release/src/pLogger/*.h
+rm -f ~/Research/project-code-release/src/pLogger/*.cpp
+cp ../pLogger/*.h     ~/Research/project-code-release/src/pLogger/
+cp ../pLogger/*.cpp   ~/Research/project-code-release/src/pLogger/
+echo "...done"
+
+echo "Handling MOOSDump"
+rm -f ~/Research/project-code-release/src/MOOSDump/*.h
+rm -f ~/Research/project-code-release/src/MOOSDump/*.cpp
+cp ../MOOSDump/*.h     ~/Research/project-code-release/src/MOOSDump/
+cp ../MOOSDump/*.cpp   ~/Research/project-code-release/src/MOOSDump/
+echo "...done"
+
+echo "Handling lib_FLTKVW"
+rm -f ~/Research/project-code-release/src/lib_FLTKVW/*.h
+rm -f ~/Research/project-code-release/src/lib_FLTKVW/*.cpp
+cp ../lib_FLTKVW/*.h     ~/Research/project-code-release/src/lib_FLTKVW/
+cp ../lib_FLTKVW/*.cpp   ~/Research/project-code-release/src/lib_FLTKVW/
+echo "...done"
+
+echo "Handling pMOOSBridge"
+rm -f ~/Research/project-code-release/src/pMOOSBridge/*.h
+rm -f ~/Research/project-code-release/src/pMOOSBridge/*.cpp
+cp ../pMOOSBridge/*.h     ~/Research/project-code-release/src/pMOOSBridge/
+cp ../pMOOSBridge/*.cpp   ~/Research/project-code-release/src/pMOOSBridge/
+echo "...done"
+
+
+
+
+
+
+
+
+
+
+

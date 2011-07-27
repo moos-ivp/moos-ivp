@@ -1,0 +1,104 @@
+initialize   DEPLOY = false
+initialize   RETURN = false
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name      = waypt_survey
+  pwt       = 100
+  condition = RETURN = false
+  condition = DEPLOY = true
+  endflag   = RETURN = true
+  runflag   = ONE = "hello"
+  runflag   = TWO = world
+//  ipf-type  = rate_of_closure
+
+  speed     = 2.0
+  radius    = 8.0
+  points    = 3570,9900:3570,9780:3660,9780:3690,9840:3660,9900
+}
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name       = waypt_return
+  pwt        = 100
+  condition  = RETURN = true
+  condition  = DEPLOY = true
+
+  speed      = 2.0
+  radius     = 8.0
+  points     = 3570,10000
+  //points     = 0,0
+}
+
+
+//----------------------------------------------
+Behavior = BHV_AvoidObstacles
+{
+  name       = obavoid
+  pwt        = 100
+  condition  = DEPLOY = true
+
+              poly = label,obstacle:3560,9850:3560,9820:3600,9820:3600,9850
+     allowable_ttc = 20
+   activation_dist = 50
+       buffer_dist = 25
+}
+
+//----------------------------------------------
+//Behavior = BHV_ConstantDepth
+{
+  name       = const_depth
+  pwt        = 100
+  condition  = DEPLOY = true
+
+       depth = 15
+    duration = 300
+}
+
+
+//----------------------------------------------
+Behavior = BHV_Hysteresis
+{
+  name       = hysteresis
+  pwt        = 30
+  condition  = DEPLOY = true
+
+  memory_time = 20
+}
+
+
+//----------------------------------------------
+Behavior = BHV_Timer
+{
+  name       = generic_timer
+  duration_status = FOOBAR
+  duration   = 10
+  perpetual  = true
+}
+
+
+//----------------------------------------------
+Behavior = BHV_MaintainHeading
+{
+  name       = maintain_heading
+  pwt        = 200
+  condition  = SURFACING = true
+  nostarve   = SURFACING, 20
+  duration   = 60
+  duration_status = MAINTAINING
+
+         heading = on_active
+       peakwidth = 20
+       basewidth = 160
+     summitdelta = 95
+}
+
+
+
+
+//--> info on bugs and deficiencies you've found in my code
+//--> new utility modules you've written released back to Open Source community
+//--> info on your project so I can assert that my work is having an impact
+//--> funding from your organization to mine.

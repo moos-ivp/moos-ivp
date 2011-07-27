@@ -1,0 +1,47 @@
+//--------    FILE: alpha.bhv   -------------
+
+initialize   DEPLOY = false
+initialize   SURVEY = false
+initialize   RETURN = false
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{ 
+  name      = waypt_survey
+  pwt       = 100
+  condition = RETURN = false
+  condition = DEPLOY = true
+  condition = SURVEY = true
+  endflag   = SURVEY = false
+  perpetual = true
+  updates   = NEWPTS
+
+          lead = 8
+   lead_damper = 1
+         speed = 2.0   // meters per second
+        radius = 8.0
+        points = 100,-100
+        repeat = 0
+  visual_hints = nextpt_color=yellow, nextpt_lcolor=white
+  visual_hints = vertex_color=yellow, line_color=white
+  visual_hints = vertex_size=2, edge_size=1
+}
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name       = waypt_return
+  pwt        = 100
+  condition  = RETURN = true
+  condition  = DEPLOY = true
+  updates    = UPDATES_RETURN
+  perpetual  = true
+  endflag    = RETURN = false
+  endflag    = DEPLOY = false
+
+         speed = 2.0
+        radius = 2.0
+     nm_radius = 8.0
+        points = 0,0
+}
+

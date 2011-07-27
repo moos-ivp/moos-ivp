@@ -1,0 +1,19 @@
+##############################################################################
+# AUTHOR:      Christopher Gagner
+# DATE:        2010/08/08
+# FILE:        beta.chk
+# DESCRIPTION: An input file for the alogcheck application to check for a
+#              successful run of the beta mission.
+##############################################################################
+
+START      "(NAV_SPEED > 2.8) AND (NAV_SPEED < 3.2)"
+END        "MISSION_COMPLETE == true"
+PASS       "(NAV_SPEED > 2.8) AND (NAV_SPEED < 3.2)"
+FAIL       "(NAV_SPEED < 2.8) OR (NAV_SPEED > 3.2)"
+
+
+
+##############################################################################
+#                              END of beta.chk
+##############################################################################
+

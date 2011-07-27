@@ -1,0 +1,26 @@
+uniform_piece  = discrete @ x:75,y:75
+refine_region  = native   @ x:-50:150, y:-250:-50
+refine_piece   = discrete @ x:5, y:5
+smart_percent  = 25
+
+
+# lib_ipfview Common_IPFViewer -----------------
+set_frame_height=250
+set_zoom=1.5625
+set_radius=15
+set_x_rotation=-78
+set_z_rotation=40
+#clear_color=khaki
+clear_color=papayawhip
+frame_color=gray
+draw_frame=true
+draw_base=false
+# app_ffview Viewer -----------------------
+set_base_ipf=-35
+set_base_aof=-232
+
+
+#uniform_piece = discrete @ x:50,y:50
+#refine_region = native   @ x:-100:150, y:-250:-50
+#refine_region = discrete   @ x:-50:150, y:-0:250
+#refine_piece  = discrete @ x:10, y:10

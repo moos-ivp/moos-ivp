@@ -1,0 +1,179 @@
+********************************************************************
+*                                                                  *
+*    iMatlab (an interface to MOOS Communications)                 *
+*                                                                  *
+*    Paul Newman 2005                                              *
+*                                                                  *
+********************************************************************
+
+Typical Usage:
+
+    1)  iMatlab                               This help message
+
+    2)  iMatlab('init',Param1,Val1,....)       Initialisation
+
+    3)  RetVal = iMatlab(CMD,Param1,Param2)   Do something useful
+
+Description:
+
+    iMatlab allows Matlab programmers to access some of the benefits
+of MOOS. It allows connection to the MOOSDB and access to local serial
+ports. Configuration for the most part is done via a *.moos file which is
+either the default iMatlab.moos found locally or at a location
+specified at initialisation.               
+
+
+                   CONFIGURATION USING A .moos FILE
+                 ************************************
+
+Here is a typical configuration file
+
+    //name of the machine hosting the MOOSDB 
+    //(can be an I.P address aswell as a FQDN)
+    ServerHost = localhost
+
+    //port DB listens on 
+    //(make sure you are not blocking the port you request)
+    ServerPort = 9000
+
+    //all connected process can be tagged as 
+    //belonging to a named community
+    Community = Community 1
+
+    ProcessConfig = iMatlab
+    {
+        AppTick     = 10
+        CommsTick   = 10
+        Port        = COM6
+        BaudRate    = 4800
+        Verbose     = false
+        Streaming   = false
+        MOOSComms = true
+        SerialComms = false
+        SERIAL_TIMEOUT = 10.0
+        SUBSCRIBE = DB_TIME @ 0.0
+    }
+
+Most of the fields are understandable by reading the MOOS documentation. The
+application specific fields are:
+    
+    MOOSComms: true or false - do you want to connect to a community?
+
+    SerialComms: true or false  - do you want to use serial ports ?
+    
+    SUBSCRIBE: VariableName @ Period - one entry for each variablem 
+               you want to subscribe to. You can have many SUBSCRIBE lines.
+
+
+
+                               USAGE
+                 ************************************
+
+Initialisation
+**************
+
+Always call iMatlab('init') first. By default iMatlab looks to read configuration
+data from iMatlab.moos. Alterntively you can use 
+iMatlab('init','CONFIG_FILE','XYZ.moos') to read from the file XYZ.moos
+
+MOOS COMMS
+*************
+
+If "MOOSComms = true"  in the configuration file (see above) then MOOS Comms
+functionality is enabled.
+
+
+To send data
+
+      iMatlab('MOOS_MAIL_TX',VARNAME,VARVAL)
+
+      e.g 
+          iMatlab('MOOS_MAIL_TX','A_DATA_VALUE',10)
+      or
+          iMatlab('MOOS_MAIL_TX','MY_NAME','Paul')
+
+
+To receive data
+
+      D = iMatlab('MOOS_MAIL_RX')
+
+      This will return a structure array describing the data that has arrived 
+      (because of a subscription) since the last call. Each element of D will be
+      structure with the following fields:
+
+         KEY                     string - the name of the variable
+         TYPE                    string - the type of the variable ('DBL'/'STR')
+         TIME                    double - the time the data was valid
+         STR                     string - the string value of the data if TYPE=='STR'
+         DBL                     double - the double value of the data if TYPE=='DBL'
+         SRC                     string - the name of the process that issued the data
+         ORIGINATING_COMMUNITY   string - the name of the community which SRC belongs to
+
+
+To Subscribe to data
+
+       This is done either throught the configuration file using SUBSCRIBE= or by :
+
+       iMatlab('MOOS_REGISTER',VarName,MinTime);
+
+       e.g
+
+          iMatlab('MOOS_REGISTER','DESIRED_RUDDER',0.0)
+                 will subscribe to every change in 'DESIRED_RUDDER'
+
+          iMatlab('MOOS_REGISTER','DESIRED_RUDDER',0.2)
+                 will subscribe in a way the means w'll only be told
+                 about changes in 'DESIRED_RUDDER' every 0.2 seconds
+
+To specify process name other than the default 'iMatlab'
+
+        You can do this by passing the paramters at initialisation: 
+        
+        e.g.
+
+        iMatlab('init','MOOSNAME','MyName',.......)
+
+    
+SERIAL PORTS
+*************
+
+If "SerialComms = true"  in the configuration file (see above) then serial
+port functionality is enabled.
+
+To send data 
+
+
+      iMatlab('SERIAL_TX',Data);
+
+      The data must be a string or a vector of type uint8
+
+
+To receive data
+
+
+      D = iMatlab('SERIAL_RX',Data);
+
+      If "Streaming=false" in config file then the function will block
+      until a timeout occurs or a telegram is received (ASCII, carriage
+      return terminated only in the release). If  "Streaming  = true" 
+      The function returns immediately with a structure array containing
+      all the telegrams Rxd since the last call. Each element of D is a
+      stucture with two fields :
+
+            STR   - the data Rx'd
+            TIME  - the time it was received
+
+
+OTHER FUNCTIONS
+*************
+
+
+Pausing
+
+      iMatlab('MOOS_PAUSE',T) 
+      
+      suspends the calling thread (matlab) for T seconds. Pretty useful for
+      a non busy wait.
+
+
+********************************************************************

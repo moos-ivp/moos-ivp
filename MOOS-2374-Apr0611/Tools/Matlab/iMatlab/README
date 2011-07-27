@@ -1,0 +1,8 @@
+NOTE TO MAC-OSX users. 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+I have witnessed a case where the mex libs are not where one would expect them to be and the MATLAB_LIBRARIES_DIR has to be edited by hand (under advanced options in CMake).
+
+I was expecting to find them in /Applications/MATLAB7.4/extern/libs but actually they were in /Applications/MATLAB7.4/bin/maci 
+
+caveat emptor!

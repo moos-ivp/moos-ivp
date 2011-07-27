@@ -1,0 +1,182 @@
+\section{artfieldgenerator}
+\label{app:artfieldgenerator}
+artfieldgenerator is a command-line tool for generating random artifact fields for testing various behaviors and algorithms.
+
+To use artfieldgenerator:
+
+\scriptsize
+{\tt artfieldgenerator poly\_string step\_size num\_artifacts}
+\normalsize
+
+\begin{hangpar}{\pin}{\var{poly\_string: }}
+A valid polygon initialization string (convex).  All of the artifacts will be contained within this polygon.  Some artifacts, however, may exist outside a search grid, depending on the size of the grid elements.
+\end{hangpar}
+
+\begin{hangpar}{\pin}{\var{step\_size: }}
+Where to step the X, Y values (e.g. .25 generates values in .25 increments)
+\end{hangpar}
+
+\begin{hangpar}{\pin}{\var{num\_artifacts: }}
+Number of unique artifacts to generate
+\end{hangpar}
+
+The output of artfield generator is written to standard out, so it is often redirected to a file for later use:
+
+\scriptsize
+{\tt artfieldgenerator label,A:-60,-40:50,10:80,-40:-40,-80 .25 25 > mines.art}
+\normalsize
+
+\section{generatelawnmower}
+\label{app:generatelawnmower}
+generatelawnmower is a command-line tool for generating lawnmower patterns for covering a polygon
+
+To use generatelawnmower:
+
+\scriptsize
+{\tt generatelawnmower x y angle radius clockwise input\_file [snap]}
+or {\tt generatelawnmower input\_file [snap value]}
+or {\tt generatelawnmower input\_file angle radius [snap value] (generates full patterns)}
+\normalsize
+
+\begin{hangpar}{\pin}{\var{x} and \var{y}}
+The x and y locations for the initial position to start from.
+\end{hangpar}
+
+\begin{hangpar}{\pin}{\var{angle}}
+The direction the paths should lie, with 0 being "north" and increasing to 360 clockwise.
+\end{hangpar}
+
+\begin{hangpar}{\pin}{\var{radius}}
+Half the distance between the rows.
+\end{hangpar}
+
+\begin{hangpar}{\pin}{\var{clockwise}}
+Determines the direction of the first turn, that is, to the right or the left.
+\end{hangpar}
+
+\begin{hangpar}{\pin}{\var{input\_file}}
+A list of polygons to generate patterns for.  Uses the MBUtil readPolysFromFile, so polygon lines should be prefixed with ``polygon = ''.  This value is also used as the header for the output files, \_polys \_seglists.  These two files have a 1-to-1 coorespondence.
+\end{hangpar}
+
+\begin{hangpar}{\pin}{\var{snap}}
+Value to ``snap'' the artifacts to.  E.g., .25 will allow artifacts to take on values x.00, x.25, x.50, x.75.  An empty snap or snap of 0.0 does not snap the value
+\end{hangpar}
+
+In the last usage example, this version will generate a full lawnmower pattern (hence no initial position or turn direction).  All other versions generate a pattern from a single interior point to the rest of the polygon.
+
+The output of generatelawnmower is written to two files and some diagnostic data to standard out.
+
+
+\section{pLawnmower}
+\label{app:pLawnmower}
+pLawnmower is a MOOSApp that can create lawnmower patterns on the fly.
+
+\subsection{MOOSApp pLawnmower}
+\label{apppLawnmower}
+
+\subsubsection{Configuration}
+pLawnmower does not read in any configuration parameters.
+
+\subsubsection{MOOS Variables}
+\paragraph{Subscribes}
+\begin{hangpar}{\pin}{\var{LAWNMOWER\_POLYGON: }}
+A \var{LAWNMOWER\_POLYGON} string looks like this, arguments in any order:
+poly=polystring\#x=blah\#y=blah\#ang=blah\#radius=blah [\#clockwise=truefalse][\#snap=val][\#full=truefalse];
+x, y, clockwise are not necessary when using full output
+x, y = initial position
+ang = [0,360], N = 0, clockwise positive
+radius = 1/2 distance between rows
+clockwise is first turn, defaults to true;
+snap is snap value, defaults to no snapping;
+\end{hangpar}
+
+\paragraph{Publishes}
+\begin{hangpar}{\pin}{\var{LAWNMOWER\_SEGLIST: }}
+This is seglist containins the points that were requested.  The label is the same as the one passed in by the polygon string (it is a good idea to check this to make sure the seglist matches the polygon).
+\end{hangpar}
+\begin{hangpar}{\pin}{\var{VIEW\_POLYGON: }}
+Plots the polygon that was just requested.
+\end{hangpar}
+\begin{hangpar}{\pin}{\var{VIEW\_SEGLIST: }}
+Plots the seglist that was just created.
+\end{hangpar}
+
+
+\section{scoreartfield}
+\label{app:scoreartfield}
+scoreartfield is a command-line tool for scoring the output of pArtifactMapper.
+
+To use scoreartfield:
+
+\scriptsize
+{\tt scoreartfield artmapper.file artifactlocs.file scoringmetric.file output.file}
+\normalsize
+
+\begin{hangpar}{\pin}{\var{artmapper.file: }}
+The file that contains the output from pArtifactMapper when it receives \var{ARTIFACTMAP\_EXPORT}.
+\end{hangpar}
+
+\begin{hangpar}{\pin}{\var{artifactlocs.file: }}
+The ground truth values of where the artifacts are located.  Usually generated from generateartifacts
+\end{hangpar}
+
+\begin{hangpar}{\pin}{\var{scoringmetric.file: }}
+Holds the scoring metrics to use.  In any order, the file must have these lines:
+\scriptsize
+\begin{verbatim}
+hit = 10
+miss = -1000
+falsealarm = -10
+corrrej = 10
+threshold = .75
+\end{verbatim}
+\normalsize
+
+The first four lines indicate the score for each of those situations (using standard signal detection terminology).  The threshold is the value that the cell's utility is compared against to determine whether the declaration is ``artifact present'' or ``artifact absent'' and is between 0 and 1.
+\end{hangpar}
+
+The output of artfield generator is written to standard out, so it is often redirected to a file for later use:
+
+\scriptsize
+{\tt artfieldgenerator label,A:-60,-40:50,10:80,-40:-40,-80 .25 25 > mines.art}
+\normalsize
+
+\section{Tutorial Missions}
+\label{app:tutorialmission}
+Line break in polygon string is provided for readability only.
+
+File: HUNTER1.moos
+\scriptsize
+\verbatiminput{missions/HUNTER1.moos}
+\normalsize
+
+File: HUNTER2.moos
+\scriptsize
+\verbatiminput{missions/HUNTER2.moos}
+\normalsize
+
+File: VIEWER.moos
+\scriptsize
+\verbatiminput{missions/VIEWER.moos}
+\normalsize
+
+\section{Tutorial Behavior}
+\label{app:tutorialbehavior}
+Line breaks in point list are provided for readability only.
+
+File: hunter1.bhv
+\scriptsize
+\verbatiminput{missions/hunter1.bhv}
+\normalsize
+
+File: hunter2.bhv
+\scriptsize
+\verbatiminput{missions/hunter2.bhv}
+\normalsize
+
+\section{Startup Script}
+\label{app:startall}
+File: startall.sh
+\scriptsize
+\verbatiminput{missions/startall.sh}
+\normalsize

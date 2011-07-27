@@ -1,0 +1,125 @@
+\section{Example Missions}
+\label{examples}
+
+\subsection{Tutorial}
+\label{ex:tutorial}
+This example gives a tutorial on how one might go about creating and executing a mission to search for artifacts using two vehicles.  One will use a pre-generated lawnmower pattern and the other will use the search artifact behavior.  HUNTER1 will follow the pregenerated lawnmower pattern while HUNTER2 will search the grid.
+
+\subsubsection{Setup}
+\label{ex:tutorial:setup}
+The first step is to define the search area.  Using polyview, click on a few points (maintaining a convex polygon) to create the search area and export the polygon string.  Save the string in a file, prefix the string with ``polygon = ''.
+
+\img[width=\linewidth]{figures/01polyview}{Defining the search area in polyview}{fig:01polyview}
+
+We now generate a random artifact field for searching.  In the directory you want to run your mission file from:
+
+\scriptsize
+{\tt artfieldgenerator label,ArtGrid:-100,-50:100,30:100,-100: -100,-100 .25 75 > mines.art}
+\normalsize
+
+This generates some random artifacts and stores them in mines.art:
+
+\scriptsize
+\begin{verbatim}
+head -4 mines.art 
+ARTIFACT = X=-60.75,Y=-70.5
+ARTIFACT = X=-71.75,Y=-82
+ARTIFACT = X=6,Y=-95.25
+ARTIFACT = X=-30.5,Y=-89.75
+\end{verbatim}
+\normalsize
+
+The next setup task is to create the MOOS mission file.  See Appendix~\ref{app:tutorialmission} for working examples for both vehicles and the viewer.  The relevant portions are printed below:
+\scriptsize
+\begin{verbatim}
+//------------------------------------------
+// pSensorSim config block
+ProcessConfig = pSensorSim
+{
+   AppTick   = 4
+   CommsTick = 4
+   
+   ArtifactFile = mines.art
+   Sensor = FixedRadius
+   Sensor_Radius = 10   
+}
+
+//------------------------------------------
+// pArtifactMapper config block
+ProcessConfig = pArtifactMapper
+{
+   AppTick   = 4
+   CommsTick = 4
+   
+   GridPoly = label,ArtGrid:-100,-50:100,30:
+   				100,-100:-100,-100
+   GridSize = 5.0
+   GridInit = .5
+}
+\end{verbatim}
+\normalsize
+
+We also need to configure the helm to search over the search area.  For the first vehicle (HUNTER1), we want it to run a lawnmower pattern on the area.  generatelawnmower can create this pattern for us (pLawnmower can be used during runtime for dynamic path creation).
+
+\scriptsize
+\begin{verbatim}
+generatelawnmower poly 45 10 .25
+
+cat poly_seglists
+label,ArtGrid : -99.75,-50:-100,-50.25:-100,-78.5:-52.5,-31:
+-5.5,-12.25:-93.25,-100:-65,-100:41.75,6.75:88.75,25.5:
+-36.75,-100:-8.5,-100:100,8.5:100,-19.75:19.75,-100:
+48.25,-100:100,-48.25:100,-76.5:76.5,-100
+\end{verbatim}
+\normalsize
+
+Now put this list of points in the behavior file for the point sequence (cut off the label,ArtGrid portion).  See Appendix~\ref{app:tutorialbehavior} for the full behavior.  
+
+We also put the original polygon in the behavior file for the ``searching'' vehicle (HUNTER2).  It's important to append this line with the same parameters used to configure pArtifactMapper.  From above, we would add ``@5.0,5.0@.5'' to the end of the polygon configuration string in HUNTER2's behavior file.
+
+
+\subsubsection{Launch}
+\label{ex:tutorial:launch}
+After getting setup for the mission, we invoke it with {\tt ./startall.sh} (see Appendix~\ref{app:startall}).  The display should look like Fig.~\ref{fig:02missionstart}.  The blue grid is the search grid, the light blue dots are artifacts, and the circle around the kayak is the detection radius.
+
+\img[width=\linewidth]{figures/02missionstart}{pMarineViewer at the beginning of an artifact search mission.  The blue grid is the search grid.  The bright-blue dots are artifacts.  The circle around the kayaks is the 10m detection radius.}{fig:02missionstart}
+
+HUNTER1 will now loop through the points defined in the lawn-mower pattern while HUNTER2 executes the grid searching behavior.  The grid will change to red when it detects an artifact in that cell.  See Fig.~\ref{fig:03missionmiddle}
+
+\img[width=\linewidth]{figures/03missionmiddle}{The various search components working together in the middle of a mission.}{fig:03missionmiddle}
+
+To analyze the results of the survey, we have to export the artifact grid to a file using pArtifactMapper.  Using any MOOS database poking tool (such as uMS), set ARTIFACTMAP\_EXPORT to ``./hunter1output'' or ``./hunter2output'' accordingly.
+
+Create a new file for the scoring metrics:
+
+\scriptsize
+\begin{verbatim}
+hit = 10
+miss = -1000
+falsealarm = -10
+corrrej = 10
+threshold = .75
+\end{verbatim}
+\normalsize
+
+To analyze the score for that log file, use scoreartfield.
+\scriptsize
+\begin{verbatim}
+user@machine$ scoreartfield hunter2output mines.art
+	score results1
+Loaded ArtGrid: 747 elements.
+Loaded ArtField: 50 artifacts.
+Loaded Metrics: 10 -1000 -10 10 0.75
+user@machine$ cat results1
+Score: 7230
+Hits: 41
+Misses: 0
+FalseAlarms: 12
+CorrRejs: 694
+HitPoint: 10
+MissPoint: -1000
+FalseAlarmPoint: -10
+CorrRejPoint: 10
+Threshold: 1
+\end{verbatim}
+\normalsize

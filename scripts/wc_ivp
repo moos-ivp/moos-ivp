@@ -1,0 +1,10 @@
+wc -l  lib_ivpcore/*.h             lib_ivpcore/*.cpp             \
+       lib_ivpbuild/*.h            lib_ivpbuild/*.cpp            \
+       lib_behaviors/*.h           lib_behaviors/*.cpp           \
+       lib_behaviors-marine/*.h    lib_behaviors-marine/*.cpp    \
+       lib_mbutil/*.h              lib_mbutil/*.cpp              \
+       lib_geometry/*.h            lib_geometry/*.cpp            \
+       lib_helmivp/*.h             lib_helmivp/*.cpp             \
+       lib_logic/*.h               lib_logic/*.cpp               \
+       pHelmIvP/*.h                pHelmIvP/*.cpp              
+ 

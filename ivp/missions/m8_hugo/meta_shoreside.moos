@@ -1,0 +1,111 @@
+//*******************************************************
+// ShoreSide Configuration File
+//
+
+ServerHost = localhost
+ServerPort = $(SPORT)
+Community  = $(SNAME)
+
+#include plug_origin_warp.moos
+  
+//--------------------------------------------------------
+Processconfig = ANTLER
+{
+  MSBetweenLaunches = 200
+
+  Run = MOOSDB           @ NewConsole = false
+  Run = pMOOSBridge      @ NewConsole = false
+  Run = pMarineViewer    @ NewConsole = true
+  Run = pLogger          @ NewConsole = false
+  Run = uSimContactRange @ NewConsole = true
+}
+
+//--------------------------------------------------
+// pLogger Configuration Block
+
+ProcessConfig = pLogger
+{
+  AppTick       = 10
+  CommsTick     = 10
+  
+  File          = LOG_SHORESIDE
+  PATH          = ./
+  SyncLog       = true @ 0.2
+  AsyncLog      = true
+  FileTimeStamp = true
+
+  // Log it all!!!!!
+  WildCardLogging = true 
+  WildCardOmitPattern = *_STATUS
+}
+
+//------------------------------------------
+// uSimContactRange config block
+
+ProcessConfig = uSimContactRange
+{
+  AppTick   = 4
+  CommsTick = 4
+
+  reply_distance = jackal = 50
+  reach_distance = archie = 190
+  ping_wait      = archie = 32  
+
+  ping_color = white
+  reply_color = chartreuse
+
+  verbose = true
+  rn_algorithm = uniform,pct=0.04
+}
+
+//--------------------------------------------------------
+ProcessConfig = pMOOSBridge
+{
+  AppTick   = 3
+  CommsTick = 3
+
+  SHARE = [DEPLOY_ALL]  -> $(VNAME1) @ localhost:$(VPORT1) [DEPLOY]
+  SHARE = [DEPLOY_ALL]  -> $(VNAME9) @ localhost:$(VPORT9) [DEPLOY]
+
+  SHARE = [SIMCOR_RANGE_REPORT]  -> $(VNAME1) @ localhost:$(VPORT1) [SIMCOR_RANGE_REPORT]
+  SHARE = [SIMCOR_RANGE_REPORT]  -> $(VNAME9) @ localhost:$(VPORT9) [SIMCOR_RANGE_REPORT]
+
+  SHARE = [RETURN_ALL]  -> $(VNAME1) @ localhost:$(VPORT1) [RETURN]
+  SHARE = [RETURN_ALL]  -> $(VNAME9) @ localhost:$(VPORT9) [RETURN]
+
+  SHARE = [STATION_ALL] -> $(VNAME1) @ localhost:$(VPORT1) [STATION_KEEP]
+
+  SHARE = [UP_LOITER_1] -> $(VNAME1) @ localhost:$(VPORT1) [UP_LOITER]
+
+  SHARE = [MOOS_MANUAL_OVERIDE_ALL] -> $(VNAME1) @ localhost:$(VPORT1) [MOOS_MANUAL_OVERIDE
+  SHARE = [MOOS_MANUAL_OVERIDE_ALL] -> $(VNAME9) @ localhost:$(VPORT9) [MOOS_MANUAL_OVERIDE]
+}
+
+//--------------------------------------------------------
+ProcessConfig = pMarineViewer
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  TIFF_FILE            = AerialMIT.tif
+  set_pan_x            = -32
+  set_pan_y            = 200
+  zoom                 = 1.3
+  vehicles_shape_scale = 1.5
+  vehicles_name_viewable = names
+
+  reference_vehicle = $(VNAME1)
+  reference_vehicle = $(VNAME9)
+
+
+  SCOPE = CONTACT_INFO
+
+  ACTION = STATION_ALL = false
+  ACTION = STATION_ALL = true
+
+  BUTTON_ONE   = DEPLOY  # DEPLOY_ALL=true 
+  BUTTON_ONE   = MOOS_MANUAL_OVERIDE_ALL=false 
+  BUTTON_ONE   = RETURN_ALL=false
+  BUTTON_TWO   = RETURN  # RETURN_ALL=true
+}
+

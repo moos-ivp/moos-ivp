@@ -1,0 +1,64 @@
+ServerHost = localhost
+ServerPort = 9000
+Simulator  = true
+Community  = xrelay
+
+//------------------------------------------
+// Antler configuration  block
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+
+  Run = MOOSDB	 @ NewConsole = true
+  Run = pXRelay	 @ NewConsole = true ~ pXRelay_PEARS
+  Run = pXRelay	 @ NewConsole = true ~ pXRelay_APPLES
+  Run = uXMS	 @ NewConsole = true
+}
+
+//------------------------------------------
+// pXRelay_APPLES config block
+
+ProcessConfig = pXRelay_APPLES
+{
+  AppTick	= 25
+  CommsTick	= 25
+
+  OUTGOING_VAR  = APPLES
+  INCOMING_VAR  = PEARS
+}
+
+//------------------------------------------
+// pXRelay_PEARS config block
+
+ProcessConfig = pXRelay_PEARS
+{
+  AppTick	= 25
+  CommsTick	= 25
+
+  INCOMING_VAR  = APPLES
+  OUTGOING_VAR  = PEARS
+}
+
+//------------------------------------------
+// uXMS config block
+
+ProcessConfig = uXMS
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  PAUSED            = false
+  DISPLAY_SOURCE    = true
+  DISPLAY_TIME      = true
+  DISPLAY_COMMUNITY = true
+
+  VAR  = APPLES
+  VAR  = PEARS
+  VAR  = APPLES_ITER_HZ
+  VAR  = PEARS_ITER_HZ
+  VAR  = APPLES_POST_HZ
+  VAR  = PEARS_POST_HZ
+}
+
+
+

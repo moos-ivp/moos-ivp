@@ -1,0 +1,20 @@
+##############################################################################
+# AUTHOR:      Christopher Gagner
+# DATE:        2010/08/08
+# FILE:        beta.chk
+# DESCRIPTION: An input file for the alogcheck application to check for a
+#              successful run of the beta mission.
+##############################################################################
+
+START      "(NAV_DEPTH < 14) OR (NAV_DEPTH > 16)"
+END        "GO_TO_DEPTH == DONE"
+PASS       "(NAV_DEPTH > 14) AND (NAV_DEPTH < 16)"
+PASS       "GTD_DEPTH_ACHIEVED == 1.0"
+FAIL       "(NAV_DEPTH < 14) OR (NAV_DEPTH > 16)"
+
+
+
+##############################################################################
+#                              END of beta.chk
+##############################################################################
+
