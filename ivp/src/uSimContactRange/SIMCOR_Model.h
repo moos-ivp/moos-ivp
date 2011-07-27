@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: SIMAS_Model.h                                        */
+/*    FILE: SIMCOR_Model.h                                       */
 /*    DATE: June 25th, 2011                                      */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
@@ -20,8 +20,8 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
-#ifndef SIMAS_MODEL_HEADER
-#define SIMAS_MODEL_HEADER
+#ifndef SIMCOR_MODEL_HEADER
+#define SIMCOR_MODEL_HEADER
 
 #include <vector>
 #include <string>
@@ -29,11 +29,11 @@
 #include "VarDataPair.h"
 #include "NodeRecord.h"
 
-class SIMAS_Model
+class SIMCOR_Model
 {
  public:
-  SIMAS_Model();
-  virtual ~SIMAS_Model() {};
+  SIMCOR_Model();
+  virtual ~SIMCOR_Model() {};
 
   bool  setParam(std::string param, std::string value);
   bool  handleMsg(std::string key, double dval, std::string sval, 

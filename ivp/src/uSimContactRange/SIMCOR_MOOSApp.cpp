@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: SIMAS_MOOSApp.cpp                                    */
+/*    FILE: SIMCOR_MOOSApp.cpp                                   */
 /*    DATE: June 25th 2011                                       */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
@@ -21,7 +21,7 @@
 /*****************************************************************/
 
 #include <iterator>
-#include "SIMAS_MOOSApp.h"
+#include "SIMCOR_MOOSApp.h"
 #include "ColorParse.h"
 #include "MBUtils.h"
 
@@ -30,7 +30,7 @@ using namespace std;
 //---------------------------------------------------------
 // Procedure: OnNewMail
 
-bool SIMAS_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
+bool SIMCOR_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 {
   m_model.setCurrTime(MOOSTime());
   MOOSMSG_LIST::iterator p;
@@ -53,7 +53,7 @@ bool SIMAS_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 //---------------------------------------------------------
 // Procedure: OnConnectToServer
 
-bool SIMAS_MOOSApp::OnConnectToServer()
+bool SIMCOR_MOOSApp::OnConnectToServer()
 {
   RegisterVariables();  
   return(true);
@@ -62,17 +62,17 @@ bool SIMAS_MOOSApp::OnConnectToServer()
 //------------------------------------------------------------
 // Procedure: RegisterVariables
 
-void SIMAS_MOOSApp::RegisterVariables()
+void SIMCOR_MOOSApp::RegisterVariables()
 {
   m_Comms.Register("NODE_REPORT", 0);
   m_Comms.Register("NODE_REPORT_LOCAL", 0);
-  m_Comms.Register("SIMAS_RANGE_REQUEST", 0);
+  m_Comms.Register("SIMCOR_RANGE_REQUEST", 0);
 }
 
 //---------------------------------------------------------
 // Procedure: Iterate()
 
-bool SIMAS_MOOSApp::Iterate()
+bool SIMCOR_MOOSApp::Iterate()
 {
   m_model.setCurrTime(MOOSTime());
   m_model.iterate();
@@ -83,7 +83,7 @@ bool SIMAS_MOOSApp::Iterate()
 //---------------------------------------------------------
 // Procedure: OnStartUp()
 
-bool SIMAS_MOOSApp::OnStartUp()
+bool SIMCOR_MOOSApp::OnStartUp()
 {
   cout << termColor();
   cout << endl << "Simulated Active Sonar starting..." << endl;
@@ -113,7 +113,7 @@ bool SIMAS_MOOSApp::OnStartUp()
 //---------------------------------------------------------
 // Procedure: postMessages()
 
-void SIMAS_MOOSApp::postMessages(vector<VarDataPair> msgs)
+void SIMCOR_MOOSApp::postMessages(vector<VarDataPair> msgs)
 {
   bool verbose = m_model.verbose();
 

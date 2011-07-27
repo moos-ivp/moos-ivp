@@ -13,11 +13,11 @@ Processconfig = ANTLER
 {
   MSBetweenLaunches = 200
 
-  Run = MOOSDB          @ NewConsole = false
-  Run = pMOOSBridge     @ NewConsole = false
-  Run = pMarineViewer   @ NewConsole = true
-  Run = pLogger         @ NewConsole = false
-  Run = uSimActiveSonar @ NewConsole = true
+  Run = MOOSDB           @ NewConsole = false
+  Run = pMOOSBridge      @ NewConsole = false
+  Run = pMarineViewer    @ NewConsole = true
+  Run = pLogger          @ NewConsole = false
+  Run = uSimContactRange @ NewConsole = true
 }
 
 //--------------------------------------------------
@@ -40,9 +40,9 @@ ProcessConfig = pLogger
 }
 
 //------------------------------------------
-// uSimActiveSonar config block
+// uSimContactRange config block
 
-ProcessConfig = uSimActiveSonar
+ProcessConfig = uSimContactRange
 {
   AppTick   = 4
   CommsTick = 4
@@ -67,8 +67,8 @@ ProcessConfig = pMOOSBridge
   SHARE = [DEPLOY_ALL]  -> $(VNAME1) @ localhost:$(VPORT1) [DEPLOY]
   SHARE = [DEPLOY_ALL]  -> $(VNAME9) @ localhost:$(VPORT9) [DEPLOY]
 
-  SHARE = [SIMAS_RANGE_REPORT]  -> $(VNAME1) @ localhost:$(VPORT1) [SIMAS_RANGE_REPORT]
-  SHARE = [SIMAS_RANGE_REPORT]  -> $(VNAME9) @ localhost:$(VPORT9) [SIMAS_RANGE_REPORT]
+  SHARE = [SIMCOR_RANGE_REPORT]  -> $(VNAME1) @ localhost:$(VPORT1) [SIMCOR_RANGE_REPORT]
+  SHARE = [SIMCOR_RANGE_REPORT]  -> $(VNAME9) @ localhost:$(VPORT9) [SIMCOR_RANGE_REPORT]
 
   SHARE = [RETURN_ALL]  -> $(VNAME1) @ localhost:$(VPORT1) [RETURN]
   SHARE = [RETURN_ALL]  -> $(VNAME9) @ localhost:$(VPORT9) [RETURN]

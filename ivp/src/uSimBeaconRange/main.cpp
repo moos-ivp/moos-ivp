@@ -71,8 +71,8 @@ int main(int argc, char *argv[])
     cout << "                                                       " << endl;
     cout << "Options:                                               " << endl;
     cout << "  --alias=<ProcessName>                                " << endl;
-    cout << "      Launch uSimActiveSonar with the given process    " << endl;
-    cout << "      name rather than uSimActiveSonar.                " << endl;
+    cout << "      Launch uSimBeaconRange with the given process    " << endl;
+    cout << "      name rather than uSimBeaconRange.                " << endl;
     cout << "  --example, -e                                        " << endl;
     cout << "      Display example MOOS configuration block         " << endl;
     cout << "  --help, -h                                           " << endl;

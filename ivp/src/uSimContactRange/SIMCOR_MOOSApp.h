@@ -1,8 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: SIMAS_ExampleConfig.h                                */
-/*    DATE: July 7th 2011                                        */
+/*    FILE: SIMCOR_MOOSApp.h                                     */
+/*    DATE: June 25th, 2011                                      */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
 /* modify it under the terms of the GNU General Public License   */
@@ -19,10 +19,35 @@
 /* Software Foundation, Inc., 59 Temple Place - Suite 330,       */
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
- 
-#ifndef USIM_ACTIVE_SONAR_EXAMPLE_CONFIG_HEADER
-#define USIM_ACTIVE_SONAR_EXAMPLE_CONFIG_HEADER
 
-void showExampleConfig();
+#ifndef USIM_CONTACT_RANGE_MOOS_APP_HEADER
+#define USIM_CONTACT_RANGE_MOOS_APP_HEADER
 
-#endif
+#include "MOOSLib.h"
+#include "SIMCOR_Model.h"
+#include "VarDataPair.h"
+
+class SIMCOR_MOOSApp : public CMOOSApp
+{
+ public:
+  SIMCOR_MOOSApp() {m_verbose=false;};
+  virtual ~SIMCOR_MOOSApp() {};
+
+  bool OnNewMail(MOOSMSG_LIST &NewMail);
+  bool Iterate();
+  bool OnConnectToServer();
+  bool OnStartUp();
+  void RegisterVariables();
+
+  void setVerbose(std::string s) {m_model.setParam("verbose",s);}
+
+ protected:
+  void postMessages(std::vector<VarDataPair>);
+
+ protected:
+  SIMCOR_Model m_model;
+  bool         m_verbose;
+};
+
+#endif 
+

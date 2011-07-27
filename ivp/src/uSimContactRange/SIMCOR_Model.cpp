@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: SIMAS_Model.cpp                                      */
+/*    FILE: SIMCOR_Model.cpp                                     */
 /*    DATE: Feb 2nd, 2011                                        */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
@@ -23,7 +23,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <cmath>
-#include "SIMAS_Model.h"
+#include "SIMCOR_Model.h"
 #include "MBUtils.h"
 #include "NodeRecordUtils.h"
 #include "XYRangePulse.h"
@@ -33,7 +33,7 @@ using namespace std;
 //------------------------------------------------------------
 // Constructor
 
-SIMAS_Model::SIMAS_Model()
+SIMCOR_Model::SIMCOR_Model()
 {
   // Configuration variables
   m_default_reach_dist = 100;    // meters
@@ -60,7 +60,7 @@ SIMAS_Model::SIMAS_Model()
 //------------------------------------------------------------
 // Procedure: setParam
 
-bool SIMAS_Model::setParam(string param, string value)
+bool SIMCOR_Model::setParam(string param, string value)
 {
   param = tolower(param);
 
@@ -93,14 +93,14 @@ bool SIMAS_Model::setParam(string param, string value)
 //------------------------------------------------------------
 // Procedure: handleMsg
 
-bool SIMAS_Model::handleMsg(string key, double dval, string sval,
+bool SIMCOR_Model::handleMsg(string key, double dval, string sval,
 			  double mtime, bool isdouble, bool isstring,
 			  string source)
 {
   if((key == "NODE_REPORT") || (key == "NODE_REPORT_LOCAL"))
     return(handleNodeReport(sval));
 
-  if(key == "SIMAS_RANGE_REQUEST")
+  if(key == "SIMCOR_RANGE_REQUEST")
     return(handleRangeRequest(sval));
   
   return(true);
@@ -109,7 +109,7 @@ bool SIMAS_Model::handleMsg(string key, double dval, string sval,
 //------------------------------------------------------------
 // Procedure: setCurrTime
 
-void SIMAS_Model::setCurrTime(double new_time)
+void SIMCOR_Model::setCurrTime(double new_time)
 {
   if(new_time > m_curr_time)
     m_curr_time = new_time;
@@ -118,7 +118,7 @@ void SIMAS_Model::setCurrTime(double new_time)
 //------------------------------------------------------------
 // Procedure: iterate()
 
-void SIMAS_Model::iterate()
+void SIMCOR_Model::iterate()
 {
   m_iterations++;
 }
@@ -126,7 +126,7 @@ void SIMAS_Model::iterate()
 //------------------------------------------------------------
 // Procedure: getMessages
 
-vector<VarDataPair> SIMAS_Model::getMessages(bool clear)
+vector<VarDataPair> SIMCOR_Model::getMessages(bool clear)
 {
   if(!clear)
     return(m_messages);
@@ -139,7 +139,7 @@ vector<VarDataPair> SIMAS_Model::getMessages(bool clear)
 //------------------------------------------------------------
 // Procedure: print()
 
-void SIMAS_Model::print() const
+void SIMCOR_Model::print() const
 {
   cout << termColor("blue");
   cout << "==========================================" << endl;
@@ -189,12 +189,12 @@ void SIMAS_Model::print() const
 //            SPD=2.00, HDG=119.06,YAW=119.05677,DEPTH=0.00,     
 //            LENGTH=4.0,MODE=ENGAGED
 
-bool SIMAS_Model::handleNodeReport(const string& node_report_str)
+bool SIMCOR_Model::handleNodeReport(const string& node_report_str)
 {
   NodeRecord new_node_record = string2NodeRecord(node_report_str);
 
   if(!new_node_record.valid()) {
-    addMessage("SIMAS_DEBUG", "Invalid incoming node report");
+    addMessage("SIMCOR_DEBUG", "Invalid incoming node report");
     return(false);
   }
 
@@ -211,7 +211,7 @@ bool SIMAS_Model::handleNodeReport(const string& node_report_str)
 // Procedure: handleRangeRequest
 //   Example: vname=alpha
 
-bool SIMAS_Model::handleRangeRequest(const string& request)
+bool SIMCOR_Model::handleRangeRequest(const string& request)
 {
   string vname;
   
@@ -225,7 +225,7 @@ bool SIMAS_Model::handleRangeRequest(const string& request)
       vname = value;
   }
   if(vname == "") {
-    addMessage("SIMAS_DEBUG", "Range Request with null node name");
+    addMessage("SIMCOR_DEBUG", "Range Request with null node name");
     return(false);
   }
   if(m_verbose) 
@@ -264,7 +264,7 @@ bool SIMAS_Model::handleRangeRequest(const string& request)
     return(true);
   }
   else
-    report("   Range Request accepted by uSimActiveSonar.\n", "green");
+    report("   Range Request accepted by uSimContactRange.\n", "green");
 
   report("   Range Request resets the clock for vehicle.\n");
   m_node_records[vix].setTimeStamp(m_curr_time);
@@ -313,7 +313,7 @@ bool SIMAS_Model::handleRangeRequest(const string& request)
 //---------------------------------------------------------
 // Procedure: addMessage()
 
-void SIMAS_Model::addMessage(const string& varname,
+void SIMCOR_Model::addMessage(const string& varname,
 			     const string& value)
 {
   VarDataPair pair(varname, value);
@@ -323,7 +323,7 @@ void SIMAS_Model::addMessage(const string& varname,
 //---------------------------------------------------------
 // Procedure: addMessage()
 
-void SIMAS_Model::addMessage(const string& varname, double value)
+void SIMCOR_Model::addMessage(const string& varname, double value)
 {
   VarDataPair pair(varname, value);
   m_messages.push_back(pair);
@@ -332,7 +332,7 @@ void SIMAS_Model::addMessage(const string& varname, double value)
 //------------------------------------------------------------
 // Procedure: postRangePulse
 
-void SIMAS_Model::postRangePulse(unsigned int ix, string color,
+void SIMCOR_Model::postRangePulse(unsigned int ix, string color,
 				 string label, double duration,
 				 double radius)
 {
@@ -358,7 +358,7 @@ void SIMAS_Model::postRangePulse(unsigned int ix, string color,
 //------------------------------------------------------------
 // Procedure: postNodeRangeReport()
 
-void SIMAS_Model::postNodeRangeReport(unsigned int rec_ix, 
+void SIMCOR_Model::postNodeRangeReport(unsigned int rec_ix, 
 				      unsigned int tar_ix, 
 				      double actual_range)
 {
@@ -385,11 +385,11 @@ void SIMAS_Model::postNodeRangeReport(unsigned int rec_ix,
 
   if((m_report_vars == "short") || (m_report_vars == "both")) {
     string full_str = "vname=" + rec_name + "," + str;
-    addMessage("SIMAS_RANGE_REPORT", full_str);
+    addMessage("SIMCOR_RANGE_REPORT", full_str);
   }
 
   if((m_report_vars == "long") || (m_report_vars == "both"))
-    addMessage("SIMAS_RANGE_REPORT_" + toupper(rec_name), str);
+    addMessage("SIMCOR_RANGE_REPORT_" + toupper(rec_name), str);
 
   // Phase 2: Possibly Post the "ground-truth" reports
   if((m_rn_algorithm != "") && m_ground_truth) {
@@ -399,11 +399,11 @@ void SIMAS_Model::postNodeRangeReport(unsigned int rec_ix,
     
     if((m_report_vars == "short") || (m_report_vars == "both")) {
       string full_str = "vname=" + rec_name + "," + str;
-      addMessage("SIMAS_RANGE_REPORT_GT", full_str);
+      addMessage("SIMCOR_RANGE_REPORT_GT", full_str);
     }
     
     if((m_report_vars == "long") || (m_report_vars == "both"))
-      addMessage("SIMAS_RANGE_REPORT_GT_" + toupper(rec_name), str);
+      addMessage("SIMCOR_RANGE_REPORT_GT_" + toupper(rec_name), str);
   }
 
 }
@@ -411,7 +411,7 @@ void SIMAS_Model::postNodeRangeReport(unsigned int rec_ix,
 //------------------------------------------------------------
 // Procedure: getTrueNodeNodeRange()
 
-double SIMAS_Model::getTrueNodeNodeRange(unsigned int src_ix, 
+double SIMCOR_Model::getTrueNodeNodeRange(unsigned int src_ix, 
 					 unsigned int tar_ix) const
 {
   if((src_ix >= m_node_records.size()) || 
@@ -430,7 +430,7 @@ double SIMAS_Model::getTrueNodeNodeRange(unsigned int src_ix,
 //------------------------------------------------------------
 // Procedure: getNoisyNodeNodeRange()
 
-double SIMAS_Model::getNoisyNodeNodeRange(double true_range) const
+double SIMCOR_Model::getNoisyNodeNodeRange(double true_range) const
 {
   if(m_rn_algorithm == "uniform") {
     // Generate a random double in the range [-1, 1]
@@ -448,7 +448,7 @@ double SIMAS_Model::getNoisyNodeNodeRange(double true_range) const
 //------------------------------------------------------------
 // Procedure: report()    
 
-void SIMAS_Model::report(string msg, string term_color)
+void SIMCOR_Model::report(string msg, string term_color)
 {
   if(m_verbose)
     cout << termColor(term_color) << msg << termColor() << flush;
@@ -457,7 +457,7 @@ void SIMAS_Model::report(string msg, string term_color)
 //------------------------------------------------------------
 // Procedure: printNodeRecords
 
-void SIMAS_Model::printNodeRecords()
+void SIMCOR_Model::printNodeRecords()
 {
   unsigned int i, vsize = m_node_records.size();
   for(i=0; i<vsize; i++) {
@@ -469,7 +469,7 @@ void SIMAS_Model::printNodeRecords()
 //------------------------------------------------------------
 // Procedure: updateNodeRecords
 
-bool SIMAS_Model::updateNodeRecords(const NodeRecord& new_record)
+bool SIMCOR_Model::updateNodeRecords(const NodeRecord& new_record)
 {
   bool add_new_record = true;
   unsigned int i, vsize = m_node_records.size();
@@ -494,7 +494,7 @@ bool SIMAS_Model::updateNodeRecords(const NodeRecord& new_record)
 // Procedure: setReachDistance
 //      Note: Negative values indicate infinity
 
-bool SIMAS_Model::setReachDistance(string str)
+bool SIMCOR_Model::setReachDistance(string str)
 {
   string left  = biteStringX(str, '=');
   string right = tolower(str); 
@@ -520,7 +520,7 @@ bool SIMAS_Model::setReachDistance(string str)
 // Procedure: setReplyDistance
 //      Note: Negative values indicate infinity
 
-bool SIMAS_Model::setReplyDistance(string str)
+bool SIMCOR_Model::setReplyDistance(string str)
 {
   string left  = biteStringX(str, '=');
   string right = tolower(str); 
@@ -546,7 +546,7 @@ bool SIMAS_Model::setReplyDistance(string str)
 // Procedure: setPingWait
 //      Note: Negative values no wait time mandated
 
-bool SIMAS_Model::setPingWait(string str)
+bool SIMCOR_Model::setPingWait(string str)
 {
   string left  = biteStringX(str, '=');
   string right = stripQuotes(tolower(str));
@@ -570,7 +570,7 @@ bool SIMAS_Model::setPingWait(string str)
 //------------------------------------------------------------
 // Procedure: setReportVars
 
-bool SIMAS_Model::setReportVars(string str)
+bool SIMCOR_Model::setReportVars(string str)
 {
   string val = tolower(str);
   if((val == "both") || (val == "short") || (val == "long")) {
@@ -584,7 +584,7 @@ bool SIMAS_Model::setReportVars(string str)
 //------------------------------------------------------------
 // Procedure: setRandomNoiseAlgorithm
 
-bool SIMAS_Model::setRandomNoiseAlgorithm(string str)
+bool SIMCOR_Model::setRandomNoiseAlgorithm(string str)
 {
   string algorithm = biteStringX(str, ',');
   string parameters = str;

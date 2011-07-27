@@ -1,5 +1,5 @@
 #--------------------------------------------------------
-# The CMakeLists.txt for:                 uSimActiveSonar
+# The CMakeLists.txt for:                uSimContactRange
 # Author(s):                                Mike Benjamin
 #--------------------------------------------------------
 
@@ -14,15 +14,15 @@ else (${WIN32})
 endif (${WIN32})
 
 SET(SRC
-   SIMAS_MOOSApp.cpp
-   SIMAS_Model.cpp
-   SIMAS_ExampleConfig.cpp
+   SIMCOR_MOOSApp.cpp
+   SIMCOR_Model.cpp
+   SIMCOR_ExampleConfig.cpp
    main.cpp
 )
 
-ADD_EXECUTABLE(uSimActiveSonar ${SRC})
+ADD_EXECUTABLE(uSimContactRange ${SRC})
 
-TARGET_LINK_LIBRARIES(uSimActiveSonar
+TARGET_LINK_LIBRARIES(uSimContactRange
   MOOS
   MOOSGen
   MOOSUtility
@@ -33,6 +33,6 @@ TARGET_LINK_LIBRARIES(uSimActiveSonar
 )
 
 # Install Targets
-INSTALL(TARGETS uSimActiveSonar
+INSTALL(TARGETS uSimContactRange
   RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
 )

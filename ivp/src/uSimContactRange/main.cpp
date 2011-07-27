@@ -24,8 +24,8 @@
 #include <string>
 #include "MOOSLib.h"
 #include "MOOSGenLib.h"
-#include "SIMAS_MOOSApp.h"
-#include "SIMAS_ExampleConfig.h"
+#include "SIMCOR_MOOSApp.h"
+#include "SIMCOR_ExampleConfig.h"
 #include "MBUtils.h"
 #include "ColorParse.h"
 #include "ReleaseInfo.h"
@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
 {
   // Look for a request for version information
   if(scanArgs(argc, argv, "-v", "--version", "-version")) {
-    showReleaseInfo("uSimActiveSonar", "gpl");
+    showReleaseInfo("uSimContactRange", "gpl");
     return(0);
   }
 
@@ -67,26 +67,26 @@ int main(int argc, char *argv[])
   }
   
   if((mission_file == "") || help_requested) {
-    cout << "Usage: uSimActiveSonar file.moos [OPTIONS]             " << endl;
+    cout << "Usage: uSimContactRange file.moos [OPTIONS]             " << endl;
     cout << "                                                       " << endl;
     cout << "Options:                                               " << endl;
     cout << "  --alias=<ProcessName>                                " << endl;
-    cout << "      Launch uSimActiveSonar with the given process    " << endl;
-    cout << "      name rather than uSimActiveSonar.                " << endl;
+    cout << "      Launch uSimContactRange with the given process    " << endl;
+    cout << "      name rather than uSimContactRange.                " << endl;
     cout << "  --example, -e                                        " << endl;
     cout << "      Display example MOOS configuration block         " << endl;
     cout << "  --help, -h                                           " << endl;
     cout << "      Display this help message.                       " << endl;
     cout << "  --version,-v                                         " << endl;
-    cout << "      Display the release version of uSimActiveSonar   " << endl;
+    cout << "      Display the release version of uSimContactRange   " << endl;
     return(0);
   }
 
   cout << termColor("green");
-  cout << "uSimActiveSonar running as: " << run_command << endl;
+  cout << "uSimContactRange running as: " << run_command << endl;
   cout << termColor() << endl;
 
-  SIMAS_MOOSApp sim_active_sonar;
+  SIMCOR_MOOSApp sim_active_sonar;
 
   if(verbose_setting != "")
     sim_active_sonar.setVerbose(verbose_setting);

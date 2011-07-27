@@ -234,7 +234,7 @@ SET(IVP_NON_GUI_APPS
   uTimerScript
   uHelmScope
   uProcessWatch
-  uSimActiveSonar
+  uSimContactRange
   uSimCurrent
   uSimMarine
   uSimBeaconRange

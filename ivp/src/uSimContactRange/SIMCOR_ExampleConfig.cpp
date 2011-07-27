@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: SIMAS_ExampleConfig.cpp                              */
+/*    FILE: SIMCOR_ExampleConfig.cpp                             */
 /*    DATE: July 7th 2011                                        */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
@@ -21,7 +21,7 @@
 /*****************************************************************/
  
 #include <iostream>
-#include "SIMAS_ExampleConfig.h"
+#include "SIMCOR_ExampleConfig.h"
 #include "ColorParse.h"
 
 using namespace std;
@@ -33,12 +33,12 @@ void showExampleConfig()
 {
   blk("                                                                ");
   blk("=============================================================== ");
-  blk("uSimActiveSonar Example MOOS Configuration                      ");
+  blk("uSimContactRange Example MOOS Configuration                     ");
   blk("=============================================================== ");
   blu("Blue lines:     ","Default configuration                        ");
   mag("Magenta lines:  ","Non-default configuration                    ");
   blk("                                                                ");
-  blk("ProcessConfig = uSimActiveSonar                                 ");
+  blk("ProcessConfig = uContactRange                                   ");
   blk("{                                                               ");
   blu("  AppTick   = 4                                                 ");
   blu("  CommsTick = 4                                                 ");
