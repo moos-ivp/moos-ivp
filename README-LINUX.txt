@@ -28,7 +28,7 @@ We're a little sketchy on which particular packages we need
 for OpenGL support.  The following is our best guess:
 
 (1A) Regardless of your graphics card, you need: 
-   libglut-dev
+   libglut3-dev
 
 (1B) Then you also need basic 3D support within X-Windows on 
    your system.  To get it, you may need to install one of
@@ -80,7 +80,7 @@ When you build the MOOS software, the MOOS executable programs get placed in
 the "MOOS/MOOSBin" subdirectory of the source code tree.
 
 When you build the IvP software, the IvP executable programs get placed in
-the "ivp/bin" subdirectory of the source code tree.
+the "bin/" subdirectory of the source code tree (moos-ivp/bin/).
 
 We recommend that you put the absolute path to both of those directories into
 your PATH environment variable.  This is especially important because the 
