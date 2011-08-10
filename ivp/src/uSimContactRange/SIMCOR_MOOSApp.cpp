@@ -95,7 +95,7 @@ bool SIMCOR_MOOSApp::OnStartUp()
   STRING_LIST::iterator p;
   for(p = sParams.begin(); p!=sParams.end(); p++) {
     string sLine  = *p;
-    string param  = stripBlankEnds(MOOSChomp(sLine, "="));
+    string param  = biteStringX(sLine, '=');
     string value  = stripBlankEnds(sLine);
     m_model.setParam(param, value);
   }

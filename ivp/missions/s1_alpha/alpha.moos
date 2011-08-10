@@ -24,7 +24,28 @@ ProcessConfig = ANTLER
   Run = pMarinePID	@ NewConsole = true
   Run = pHelmIvP	@ NewConsole = true
   Run = pMarineViewer	@ NewConsole = true
+  Run = uProcessWatch	@ NewConsole = true
 }
+
+//------------------------------------------
+// uProcessWatch config block
+
+ProcessConfig = uProcessWatch
+{
+  AppTick   = 4
+  CommsTick = 4
+  
+  //WATCH = uSimMarine
+  WATCH = pMarinePID:PID_OK
+  WATCH = pMarineViewer, pHelmIvP, uSimMarine:USM_OK
+
+  SUMMARY_WAIT = 5
+
+  POST_MAPPING = PROC_WATCH_EVENT, UPW_EVENT
+
+  WATCH_ALL = false
+}
+
 
 //------------------------------------------
 // pLogger config block
