@@ -1,0 +1,27 @@
+
+o max_pitch, max_rudder, max_thrust, max_elevator
+  Should we *require* that these be specified in the 
+  configuration block, and fail to launch otherwise? Or
+  are there reasonable defaults that can be used?
+
+o When depth and/or altitude limits are exceeded by 
+  "safe-ops" behaviors, what should the result be?
+  a) DESIRED_THRUST = 0
+  b) DESIRED_RUDDER = 0
+  c) DESIRED_ELEVATOR = 0
+  d) MOOS_MANUAL_OVERRIDE = TRUE
+
+o Behavior Configuration
+
+   Individual call to BHV_FOOBAR::setParam(string, string);
+
+  (a) Each parameter/value pair is checked for proper syntax
+      and semantics. 
+  (b) If invalid upon startup of Helm, Helm will abort.
+  (c) If invalid upon dynamic message, state_ok=false;
+
+  Sequence of calls to BHV_FOOBAR::setParam(string, string);
+  (1) Sequence is tested by a call to IvPBehavior::validParams()
+  (2) If invalid upon startup of Helm, Helm will abort.
+  (3) If invalid upon dynamic message, state_ok=false;
+

@@ -1,0 +1,12 @@
+
+1) What should be the roles of
+
+   max_pitch
+   max_rudder
+   max_elevator
+   max_thrust
+
+   Are they abolute values? 
+   If not provided in the pHelmIvP control block, should we
+   provide meaningful defaults? Or just fail to launch?
+

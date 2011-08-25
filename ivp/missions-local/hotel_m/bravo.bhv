@@ -1,0 +1,41 @@
+initialize   DEPLOY  = false
+initialize   RETURN  = false
+
+Set MODE = ACTIVE {
+  DEPLOY = true
+} INACTIVE
+
+Set MODE = LOITERING {
+  MODE   = ACTIVE
+  RETURN = false
+} RETURNING
+
+
+//----------------------------------------------
+Behavior = BHV_Loiter
+{
+  name      = loiter_a
+  pwt       = 100
+  condition = MODE == LOITERING
+  endflag   = RETURN = true
+  updates   = UP_LOITERA
+
+  speed     = 2.1
+  clockwise = false
+  radius    = 10.0
+  nm_radius = 20.0
+  polygon   = radial:: x=110, y=-100, radius=35, pts=12, snap=1, label=b
+}
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name       = waypt_return
+  pwt        = 100
+  condition  = MODE == RETURNING
+
+  speed      = 2.0
+  radius     = 8.0
+  points     = 0,0
+}
+

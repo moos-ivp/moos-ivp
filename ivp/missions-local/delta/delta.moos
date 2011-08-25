@@ -1,0 +1,187 @@
+// Level 2 Configuration file: M. Benjamin
+
+ServerHost = localhost
+ServerPort = 9000
+Simulator  = true
+
+Community  = delta
+
+MOOSTimeWarp = 2
+
+LatOrigin  = 43.825300 
+LongOrigin = -70.330400 
+
+//------------------------------------------
+// Antler configuration  block
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+
+  Run = MOOSDB          @ NewConsole = true
+  Run = iMarineSim      @ NewConsole = true
+  Run = pMarinePID      @ NewConsole = true
+  Run = pMarineViewer   @ NewConsole = true
+  Run = pNodeReporter   @ NewConsole = true
+  Run = uXMS            @ NewConsole = true
+  Run = pHelmIvP        @ NewConsole = true
+}
+
+//------------------------------------------
+// iMarineSim config block
+
+ProcessConfig = iMarineSim
+{
+  AppTick	= 4
+  CommsTick	= 4
+
+  MAX_TRANS_VEL = 5.0
+  MAX_ROT_VEL   = 0.6
+  START_X       = 0
+  START_Y       = 0
+  START_SPEED   = 0
+  START_HEADING = 180
+
+  PREFIX        = NAV
+  FLOAT_RATE    = 0.05 // Rises 0.1 m/s when speed=0
+}
+
+//------------------------------------------
+// pHelmIvP config block
+
+ProcessConfig = pHelmIvP
+{
+  AppTick    = 2
+  CommsTick  = 2
+
+  Behaviors  = delta.bhv
+  Verbose    = false
+  Domain     = depth:0:100:101
+  Domain     = course:0:359:360
+  Domain     = speed:0:5:101
+}
+
+//------------------------------------------
+// pMarinePID config block
+
+ProcessConfig = pMarinePID
+{
+  AppTick    = 10
+  CommsTick  = 10
+
+  Verbose    = true
+
+  DEPTH_CONTROL = true
+
+  // Yaw PID controller
+  YAW_PID_KP		 = 0.5
+  //YAW_PID_KP		 = 0.5
+  YAW_PID_KD		 = 0.0
+  YAW_PID_KI		 = 0.0
+  YAW_PID_INTEGRAL_LIMIT = 0.07
+
+  // Speed PID controller
+  SPEED_PID_KP		 = 1.0
+  SPEED_PID_KD		 = 0.0
+  SPEED_PID_KI		 = 0.0
+  SPEED_PID_INTEGRAL_LIMIT = 0.07
+
+  //Pitch PID controller
+  PITCH_PID_KP                   = 0.5
+  PITCH_PID_KD                   = 1.0
+  PITCH_PID_KI                   = 0
+  PITCH_PID_INTEGRAL_LIMIT       = 0
+
+  //ZPID controller
+  Z_TO_PITCH_PID_KP              = 0.12
+  Z_TO_PITCH_PID_KD              = 0
+  Z_TO_PITCH_PID_KI              = 0.004
+  Z_TO_PITCH_PID_INTEGRAL_LIMIT  = 0.05 
+
+  //MAXIMUMS
+  MAXRUDDER    = 100
+  MAXTHRUST    = 100
+  MAXPITCH     = 15
+  MAXELEVATOR  = 13
+
+  // A non-zero SPEED_FACTOR overrides use of SPEED_PID
+  // Will set DESIRED_THRUST = DESIRED_SPEED * SPEED_FACTOR
+  SPEED_FACTOR = 20
+}
+
+//------------------------------------------
+// pNodeReporter config block
+
+ProcessConfig = pNodeReporter
+{
+  AppTick	= 2
+  CommsTick	= 2
+  VESSEL_TYPE   = AUV
+}
+
+
+//------------------------------------------
+// uXMS config block
+
+ProcessConfig = uTMS
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  VAR        = PENDING_SURFACE
+  VAR        = TIME_AT_SURFACE
+  VAR        = GPS_UPDATE_RECEIVED
+
+  VAR        = BHV_IPF
+  VAR        = DESIRED_HEADING
+  VAR        = DESIRED_SPEED
+  VAR        = DESIRED_DEPTH
+
+  VAR        = DESIRED_RUDDER
+  VAR        = DESIRED_THRUST
+  VAR        = DESIRED_ELEVATOR
+
+  VAR        = NAV_X
+  VAR        = NAV_Y
+  VAR        = NAV_SPEED
+  VAR        = NAV_YAW
+
+  VAR        = MARINESIM_X
+  VAR        = MARINESIM_Y
+  VAR        = MARINESIM_HEADING
+  VAR        = MARINESIM_YAW
+  VAR        = MARINESIM_SPEED
+  VAR        = MARINESIM_DEPTH
+
+  VAR        = MOOS_MANUAL_OVERIDE
+  VAR        = DEPLOY
+  VAR        = RETURN
+  VAR        = HELM_RESTART
+  VAR        = UPDATE_HISTORY
+}
+
+//------------------------------------------
+// pMarineViewer config block
+
+ProcessConfig = pMarineViewer
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  TIFF_FILE            = forrest19.tif
+  set_pan_x            = -90
+  set_pan_y            = -280
+  zoom                 = 0.65
+  vehicle_shape_scale  = 0.40
+  seglist_edge_width   = 2.0
+  seglist_vertex_size  = 8
+  seglist_vertex_color = red
+  point_vertex_size    = 12
+  hash_delta           = 50
+  hash_shade           = 0.4
+  hash_view            = true
+
+  BUTTON_ONE = DEPLOY # DEPLOY=true
+  BUTTON_ONE = MOOS_MANUAL_OVERIDE=false # RETURN=false
+  BUTTON_TWO = RETURN # RETURN=true
+}
+

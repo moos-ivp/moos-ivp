@@ -1,0 +1,23 @@
+initialize   DEPLOY = true
+initialize   RETURN = false
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name      = bhv_waypt
+  pwt       = 100
+  condition = DEPLOY = true
+  condition = RETURN = false
+  repeat    = 10
+  order     = normal
+  lead      = 15.0
+
+  speed     = 3.0
+  radius    = 2.0
+  nm_radius = 10.0
+  points    = -100,-50:-100,-50:-100,-78:-53,-31:
+  -5,-12:-93,-100:-65,-100:42,7:89,26:-37,-100:
+  -8,-100:100,8:100,-20:20,-100:48,-100:100,-48:
+  100,-76:76,-100
+
+}

@@ -1,0 +1,67 @@
+<HTML>
+<HEAD>
+<TITLE>MOOS Helm Configuration</TITLE>
+</HEAD>
+<BODY>
+
+<H1><img src="moose6.gif"> <center>MOOS Helm Process Config</center></H1>
+
+<H2>Description</H2>
+The helm is a pretty important process in the MOOS suite. Of course it isn't 
+critical but it provides a single process in which navigational information
+is processed and decisions made on what physical motion should occur in the light of that 
+information. For example it might simply control elevator angle as a function
+of raw depth sensor reading or in a different script it would peruse output
+of a CML algorithm and steer a course to an "interesting location".
+<p>
+The helm itself acts under the influence of any number of prioritised 
+tasks that it runs in parralel. This fact directs the reader to the individual
+task documentation to get a thorough understanding of the macroscopic operation
+of teh helm process. However some parameters are generic to all tasks and can be
+set withing the helm configuration block.
+
+<H2>Publishes</H2>
+<ul>
+	<li>AUV_THRUST_DESIRED
+	<li>AUV_ELEVATOR_DESIRED
+	<li>AUV_RUDDER_DESIRED
+	<li>All end and event flags of the running tasks
+</ul>
+<p>
+
+<H2>Subscribes</H2>
+<ul>
+	<li>specified by individual task but always includes all task start flags
+</ul>
+<p>
+
+<H2>Configuration Block</H2>
+<ul>
+	<li><a href="CommonMOOScfg.html"> Common MOOS Configuration</a>
+	<p>
+
+
+	<li><H3>YAW_PID_KP,YAW_PID_KD,YAW_PID_KD,YAW_PID_INTEGRAL_LIMIT</H3>
+	<ul>
+		<li><b>Syntax:	</b> ControllerVar = Val
+		<li><b>Meaning:	</b> Set the value of the proportinal differential integral and integral limit terms of the yaw pid controller
+		<li><b>Example:	</b> <i>YAW_PID_KD = 0.1</i> Set the Yaw PID differential term to 0.1
+	</ul>
+	<p>
+
+	<li><H3>Z_PID_KP,Z_PID_KD,Z_PID_KD,Z_PID_INTEGRAL_LIMIT</H3>
+	<ul>
+		<li><b>Syntax:	</b> ControllerVar = Val
+		<li><b>Meaning:	</b> Set the value of the proportinal differential integral and integral limit terms of the Z pid controller
+		<li><b>Example:	</b> <i>Z_PID_KD = 0.1</i> Set the Z PID differential term to 0.1
+	</ul>
+	<p>
+
+
+</ul>
+
+
+<hr>
+<H4>The MOOS &#169;  P. Newman 2001-2002 <img src="moose2.gif"></H4>
+</BODY>
+</HTML>

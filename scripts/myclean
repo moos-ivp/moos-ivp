@@ -1,0 +1,11 @@
+#!/bin/sh
+
+rm -f MOOSDB iRemote MOOSRemote iGPS iGPSMonitor pNav \
+        pHelm pHelmIvP pMarineViewer iMarineSim \
+        pLogger iPWMController MOOSDump pAntler MOOSDump \
+    pMOOSBridge pMikerb ExpMOOSDB pMikerb2         \
+        iPNICompass iMetaCompass iHeadingMonitor pDrone   \
+        iWifi p1BTracker p2BTracker pBearings uMS pTarget  \
+        pRedirect pLoiterControl pTransponderAIS uMVS      \
+        pMarinePID uTMS app_* atest stest
+

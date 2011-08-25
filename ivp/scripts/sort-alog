@@ -1,0 +1,8 @@
+#!/bin/sh
+# 
+# This script takes the name of an .alog file as its command-line argument.
+# The script filters out blank lines and comment lines.  It outputs to stdout all of the other 
+# lines, sorted in order of ascending timestamp.  If two lines have the same timestamp in the .alog 
+# file, then their relative order will be preserved in this script's output.
+
+cat $1 | grep -v '%%' | grep -v '^$' | sort --stable --field-separator=" " -n

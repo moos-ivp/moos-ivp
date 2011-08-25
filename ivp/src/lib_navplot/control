@@ -1,0 +1,8 @@
+Package: libnavplot
+Version: 0.1-1
+Section: devel
+Priority: optional
+Architecture: i386
+Depends: 
+Maintainer: Christian Convey <conveycj@npt.nuwc.navy.mil>
+Description: (Some blurb about what libnavplot does)

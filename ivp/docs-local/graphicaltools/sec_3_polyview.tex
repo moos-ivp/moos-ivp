@@ -1,0 +1,46 @@
+\section{polyview}
+\label{polyview}
+
+\subsection{Configuration}
+polyview is launched by calling {\tt polyview image.tif file1 file2\ldots} with arguments in any order.  The image.tif file is the same as the one used by \pmv.  A list of shortcuts for common backgrounds is in Table~\ref{tab:polyviewargs}.  The user and also specify ``-noimg'' to force no background image to load.  All of the other arguments are scanned as text files for Polys, Grids, Arcs, Circles, and Hexagons.
+
+\begin{table}
+\renewcommand{\arraystretch}{1.3}
+\caption{A list of shortcuts to reference image files in polyview.}
+\label{tab:polyviewargs}
+\centering
+\begin{tabular}{l|l}
+\hline
+mit OR charles & AerialMIT-1024.tif \\
+\hline
+wmit OR wireframe OR wf & WireFrameMIT-1024.tif \\
+\hline
+mb OR monterey & Monterey-2048.tif \\
+\hline
+mbd & Monterey-2048-30-30-100.tif \\
+\hline
+\end{tabular}
+\end{table}
+
+All readable lines are non-blank and do not begin with `\#'.  Each line is in the format ``key = initialization\_string''.
+
+A Polygon is keyed with ``polygon'', ``points'', or ``radial''.  e.g. ``polygon = polygon:label,A: 0,0: 1,1: 1,0''
+
+A Grid is keyed with ``searchgrid'' (abbreviated ``sgrid'') or ``fullgrid'' (abbreviated ``fgrid'').  It is followed by `=' and then the XYGrid initialization string.  See XYEncoders.cpp, StringToXYGrid for information on the ``fullgrid'' implementation.
+
+An Arc is keyed with ``arc''.  i.e. ``arc = x, y, radius, left\_angle, right\_angle'' (both angles in degrees, 0 is straight up).
+
+A Circle is keyed with ``circle''. i.e. ``circle = x, y, radius[,label]''
+
+A Hexagon is keyed with ``hexagon''. i.e. ``hexagon = x, y, radius\_to\_points''
+
+All of the detected objects are loaded and displayed in the polyview window.
+
+\subsection{Menus and Interface}
+The interface for polyview is very similar to the \pmv\ interface.  In the EditMode menu, the various editing operations change the way that a left-click functions in the interface.  The EditMode operations only work on the currently selected object.  The current object is changed in the Polygons menu, or by using + and -.
+
+A new polygon can be created by right-clicking in the interface, or by clicking Polygons-\textgreater Create New.
+
+In the Polygons menu, DumpSpec will output the string that represents the current figure into the terminal window that called polyview.  This is useful for cutting and pasting into text files for other programs (such as moos and behavior files).
+
+NOTES:  Duplicate doesn't seem to work.  The test modes are also undocumented.

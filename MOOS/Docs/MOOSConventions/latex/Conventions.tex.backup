@@ -1,0 +1,181 @@
+
+
+\documentclass[a4paper,10pt]{article}
+\usepackage{listings,color,epsfig,amsmath,url,tabularx}
+\definecolor{codecolor}{rgb}{0.99,0.97,0.94} % color values Red, Green, Blue
+\definecolor{commentcolor}{rgb}{0.1,0.5,0.1} % color values Red, Green, Blue
+\definecolor{stringcolor}{rgb}{0.3,0.1,0.1} % color values Red, Green, Blue
+\newcommand{\Code}[1]{\texttt{#1} }
+\newcommand{\code}[1]{\Code{#1} }
+\newcommand{\DB}   {\code{{MOOSDB}}}
+\newcommand{\MA}   {\code{{MOOSApp}}}
+\newcommand{\Ignore}[1]   {}
+
+
+
+% Title Page
+\title{MOOS Conventions}
+\author{Paul Newman}
+
+
+\begin{document}
+\maketitle
+
+\begin{center}
+\epsfig{file=images/moose6.eps,width = 0.2\linewidth} 
+\end{center}
+\begin{abstract}
+This document states the conventions used by MOOS. This covers coordinate frames as well as process and variable naming policies.
+\end{abstract}
+
+
+\section{Coordinate Conventions}
+MOOS processes communicate using a defined coordinate system
+illustrated in figure \ref{fig:coordinates}. The salient points to
+note about this system are:
+\begin{itemize}
+\item The global (earth) frame is a conventional East-North-Up
+frame.
+\item The vehicle body frame  has been designed to align with the
+global frame when the vehicle has zero yaw.
+\item At zero heading the vehicle points north.
+\item Zero heading is equivalent to zero yaw.
+\item Yaw = -heading*$\pi/180$ (heading is in degrees).
+\item Depth is in the opposite sense to Z
+\end{itemize}
+The fact that a coordinate system is defined that must be used
+between processes {\it{does not mean}} this system is inflicted on
+the internals of an application. Within the boundaries of a
+process the developer is free to use whatever system he or she
+feels comfortable with. All that is needed is a little patch work
+to transform input and output data between coordinate frames.
+However life can be made easier by using one coordinate frame
+throughout.
+
+
+\begin{figure*}[ht]\label{fig:coordinates}
+\centering \epsfig{figure = images/coordinates.eps,width = 1.0\linewidth}
+\caption{The MOOS coordinate system. Note that $\dot{yaw} =
+-\dot{heading}$ and that the body and earth frames align at the
+origin with the vehicle pointing north at zero yaw. Also the body
+'y' axis is towards the front of the vehicle. (You may be used to
+having the body x axis point towards the nose of the vehicle).
+Note also that Z points up.}
+\end{figure*}
+
+
+\section{Geodesy} The geodetics with MOOS are refered to as
+\code{MOOSGrid}. The geodesy tools within MOOS assume operation in
+a local area - say a square with sides less than 20 km long. With
+this assumption it is reasonable to superimpose a local cartesian
+space over the work area and form a mapping from Lat/Long
+coordinates to local \code{MOOSGrid}.
+\begin{figure}
+\centering \epsfig{figure = images/Geodesy.eps,width = 0.7\linewidth}
+\caption{Defining a local cartesian \code{MOOSGrid} around a
+lat/long origin}
+\end{figure}
+The class \code{CMOOSGeodesy} in \code{MOOSGenLib} performs all
+the mapping required. It is primed  with the origin of the
+\code{MOOSGrid} (in decimal lat/long). It can then convert
+lat/long measurements to cartesian \code{MOOSGrid} coordinates
+using a geodetic radius that is a function of the origin location.
+
+
+\section{Units}
+MOOS was designed and built by a European and so uses easy SI
+units throughout. All distances are in meters and times in
+seconds. Angles are always in radians and wrapped to lie with $\pm
+\pi$. The only exception to this is ``heading'' variables, which
+are in degrees. However  heading variables are never used
+internally  - they are for human display alone. Instead their
+``Yaw'' counterparts are used, which are always in radians.
+
+
+
+\section{Naming Conventions}
+
+\subsection{Process Naming}
+MOOS developers are encouraged to adopt the naming convention for
+applications given in table \ref{tab:Naming}. The basic idea is
+that the prefix to the process gives some indication of its
+function. Processes beginning with ``i'' are typically derived off
+\code{CMOOSInstrument} and perform some kind of I/O via serial
+port (often to a hardware sensor) or non-MOOS communications.
+Processes beginning with ``p'' are pure and perform no I/O other
+than via the MOOSDB. Finally ``u'' processes are utilities -
+performing tasks not critical to vehicle operation but which are
+perhaps useful at other times - for example \code{uGeodesy}
+converts from ``Lat/Long'' to local-grid (\code{MOOSGrid})
+coordinates.
+\begin{table}[h!]
+\label{tab:Naming} \caption{The naming convention for MOOS
+applications} \centering
+\begin{tabular}{p{1.0in}|p{2.8in}|p{1.65in}}
+  % after \\ : \hline or \cline{col1-col2} \cline{col3-col4} ...
+  \textbf{Name} & \textbf{Description} & \textbf{Example} \\
+  \hline
+  i[{\it{Name}}] &  Interface applications. Interacts (has I/O) with  an external device, for example via a keyboard or serial port & \code{iGPS, iCompass, iRemote}
+  \\
+  p[{\it{Name}}] & Pure applications. Only interacts with other MOOS applications & \code{pHelm, pLogger, pNav}
+  \\
+  u[{\it{Name}}] & Utility applications. Not used at run time but a useful at other times & \code{uPlayBack, uGeodesy} \\
+\end{tabular}
+\end{table}
+
+
+
+\subsection{Variable Naming}
+Data can take any string name. A developer could use any
+combination of characters to name the data published by his or her
+application. In practice though sticking to a convention makes
+some things easier. A good example of this is the \code{pNav}
+process that expects some kinds of sensor data to be named in a
+standard format. Sensor data can be classified into at least the
+following categories:
+\begin{table}[h!]
+\centering
+\begin{tabularx}{\linewidth}{p{1.0in}|p{2.0in}|X}
+\textbf{Quantity} & \textbf{Description} & \textbf{Example} \\
+\hline
+\code{X,Y,Z}& sensor measures vehicle position & GPS\\
+ \code{DEPTH}& sensor gives depth & Pressure sensor  \\
+\code{YAW} & sensor measures rotation around Z axis& Gyro\\
+\code{BODY\_VEL} & sensor measures velocity in body frame & DVL,
+Odometry
+\end{tabularx}
+\label{tab:SensorTypes} \caption{Sensor categories} \normalsize
+\end{table}
+
+If a sensor, managed by a process called \code{iSensor}, measures
+one of these quantities then the name under which the data should
+be published has the format \code{SENSOR\_\it{CATEGORY}}. This is
+best highlighted with a few examples:
+\begin{itemize}
+\item iGPS measures X and Y position. It publishes \code{GPS\_X}
+and \code{GPS\_Y}.
+\item iDepth measures depth. It publishes \code{DEPTH\_DEPTH}.
+\item iLBL measures range and depth. It publishes \code{LBL\_DEPTH}
+and \code{LBL\_TOF} (time of flight).
+\end{itemize}
+This simple convention makes visual comprehension of the system
+(when using a tool like \code{MOOSScope} ) simple.
+Additionally it avoids naming conflicts as the \DB  requires
+unique process names and therefore basing data names on process
+names will also result in unique data names.
+
+
+\subsection{Actuator Naming } At the time of writing MOOS
+applications are aware of three actuator types: \code{THRUST},
+\code{ELEVATOR} and \code{RUDDER}. Clearly this illustrates the
+early history of MOOS as software for autonomous underwater
+vehicles (AUVs). On land the \code{ELEVATOR} actuator has no
+meaning. The \code{THRUST} and \code{RUDDER} axes however map well
+to throttle and steer angle.
+
+Note that perhaps counter intuitively, but consistent with the
+MOOS coordinate frame, a positive elevator angle will cause a
+vehicle to make its pitch more negative. Similarly positive rudder
+will make yaw decrease (but heading increase).
+
+\end{document}

@@ -1,0 +1,26 @@
+#!/bin/sh
+
+
+for pty in `/bin/ls /dev/ptyz*` 
+do
+
+#check if our pty is in use
+ptyusers=$(/sbin/fuser $pty)
+
+if test -n "$ptyusers"
+then
+#echo "$pty in use"
+#if it is, use a different one
+continue
+else
+#echo "$pty available"
+break
+fi
+done
+
+#now that I've picked a pty, go ahead and exec the arg list
+#with input redirected to that pty and output to /dev/null
+
+#arguments should be like "pAntler Mission.moos"
+
+exec $@ < $pty > /dev/null &

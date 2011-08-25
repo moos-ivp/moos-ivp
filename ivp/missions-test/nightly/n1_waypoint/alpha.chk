@@ -1,0 +1,19 @@
+##############################################################################
+# AUTHOR:      Christopher Gagner
+# DATE:        2010/08/08
+# FILE:        alpha.chk
+# DESCRIPTION: An input file for the alogcheck application to check for a
+#              successful run of the alpha mission.
+##############################################################################
+
+START      "((ALOG_TIMESTAMP>10) AND (NAV_X != 0)) AND (NAV_Y != 0)"
+END        "MISSION_COMPLETE == true"
+PASS       "(DEPLOY==false) AND (RETURN==false)"
+FAIL       "((NAV_X>180) OR (NAV_X<-10)) OR ((NAV_Y > 10) OR (NAV_Y<-180))" 
+
+
+
+##############################################################################
+#                              END of alpha.chk
+##############################################################################
+
