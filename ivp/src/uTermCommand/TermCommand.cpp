@@ -61,7 +61,6 @@ bool TermCommand::Iterate()
   if(m_iteration==0)
     handleCharInput('\n');
 
-  //printMapping();
   m_iteration++;
 
   m_tc_mutex.UnLock();
@@ -102,28 +101,19 @@ bool TermCommand::OnStartUp()
 
 void TermCommand::addCommand(string cmd_str)
 {
-  cmd_str = findReplace(cmd_str, "-->", " ");
-  cmd_str = stripBlankEnds(cmd_str);
+  cmd_str = findReplace(cmd_str, "-->", ",");
 
-  vector<string> vector_a = chompString(cmd_str, ' ');
+  string var_key  = tolower(biteStringX(cmd_str,','));
+  string var_name = biteStringX(cmd_str,',');
+  string var_val  = biteStringX(cmd_str,',');
 
-  if(vector_a.size() != 2)
+  if((var_key=="") || (var_name==""))
     return;
-  string var_key = tolower(stripBlankEnds(vector_a[0]));
-  
-  // Don't allow duplicate keys
+
   for(unsigned int i=0; i<m_var_key.size(); i++)
     if(var_key == m_var_key[i])
       return;
 
-  vector_a[1] = stripBlankEnds(vector_a[1]);
-  vector<string> vector_b = chompString(vector_a[1], ' ');
-  if(vector_b.size() != 2)
-    return;
-
-  string var_name = stripBlankEnds(vector_b[0]);
-  string var_val  = stripBlankEnds(vector_b[1]);
-  
   string var_type = "double";
   if(isQuoted(var_val)) {
     var_val  = stripQuotes(var_val);
@@ -186,34 +176,13 @@ int TermCommand::getFullKeyMatch()
 
 void TermCommand::printMapping()
 {
-  m_iteration++;
-
-  printf("\n\n\n\n\n");
-
-  printf("  %-12s", "Cue");
-  printf("%-22s", "VarName");
-  printf("VarValue\n");
-
-  printf("  %-12s", "-----------");
-  printf("%-22s", "---------------");
-  printf(" -------------- (%d)\n", m_iteration);
-
-  unsigned int i, vsize = m_var_name.size();
-  for(i=vsize-1; i>=0; i--) {
-    printf("  %-12s ", m_var_key[i].c_str());
-    
-    printf("%-22s", m_var_name[i].c_str());
-    
-    if(m_var_type[i] == "string") {
-      if(m_var_val[i] != "n/a") {
-	printf("\"[%s]\"", m_var_val[i].c_str());
-      }
-      else
-	printf("n/a");
-    }
-    else if(m_var_type[i] == "double")
-      printf("%s", m_var_val[i].c_str());
-    printf("\n");		
+  unsigned int i, vsize = m_var_key.size();
+  for(i=0; i<vsize; i++) {
+    cout << "[" << i << "]: ";
+    cout << m_var_key[i] << ",";
+    cout << m_var_name[i] << ",";
+    cout << m_var_type[i] << ",";
+    cout << m_var_val[i] << endl;
   }
 }
 
@@ -357,7 +326,6 @@ void TermCommand::handleCharInput(char c)
     }
   }
 
-  
   int res = getFullKeyMatch();
   if((res != -1) && (c==10)) {
     postCommand(res);
@@ -374,11 +342,12 @@ void TermCommand::handleCharInput(char c)
   printf(" --------------\n");
 
   vector<int> completions = getPartialKeyMatches();
-  unsigned int j, vsize = completions.size();
+  unsigned int vsize = completions.size();
   
   if(vsize > 1) {
-    for(j=vsize-1; j>=0; j--) {
+    for(int j=vsize-1; j>=0; j--) {
       int i = completions[j];
+
       printf("  %-24s ", m_var_key[i].c_str());
       printf("%-32s", m_var_name[i].c_str());
       if(m_var_type[i] == "string") {
