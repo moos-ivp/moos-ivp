@@ -1,8 +1,9 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: TermCommandMain.cpp                                  */
+/*    FILE: main.cpp                                             */
 /*    DATE: June 26th 2007                                       */
+/*          Aug  25th 2011 Mods                                  */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
 /* modify it under the terms of the GNU General Public License   */
@@ -28,17 +29,11 @@
 #include "MBUtils.h"
 #include "ReleaseInfo.h"
 #include "TermCommand.h"
-
-  #include "MOOSAppRunnerThread.h"
+#include "ColorParse.h"
+#include "UTC_ExampleConfig.h"
+#include "MOOSAppRunnerThread.h"
 
 using namespace std;
-
-// ----------------------------------------------------------
-// global variables here
-
-// char*        sMissionFile = 0;
-// TermCommand  g_theTermCommand;
-// MOOSAppRunnerThread* g_threadID;
 
 //--------------------------------------------------------
 // Procedure: main
@@ -51,41 +46,56 @@ int main(int argc ,char * argv[])
     return(0);
   }
 
-  // Look for a request for help or usage information
-  if(scanArgs(argc, argv, "-h", "--help", "-help")) {
-    MOOSTrace("Usage: uTermCommand moosfile.moos          \n");
+  // Look for a request for example configuration information
+  if(scanArgs(argc, argv, "-e", "--example", "-example")) {
+    showExampleConfig();
     return(0);
   }
 
-  // Application name connected to MOOSDB is by default argv[0]
-  string app_name = argv[0];
+  int    i;
+  string mission_file = "";
+  string run_command  = argv[0];
+  bool   help_requested = false;
+  string verbose_setting;
 
-  // Look for a request for help or usage information
-  for(int i=1; i<argc; i++) {
-    if(!strncmp(argv[i], "--alias=", 8)) {
-      string argi  = argv[i];
-      string front = biteString(argi, '=');
-      string value = argi;
-      
-      if(value != "") 
-	app_name = value;
-    }
+  for(i=1; i<argc; i++) {
+    string argi = argv[i];
+    if(strEnds(argi, ".moos"))
+      mission_file = argv[i];
+    else if(strEnds(argi, ".moos++"))
+      mission_file = argv[i];
+    else if((argi == "--help")||(argi=="-h"))
+      help_requested = true;
+    else if(strBegins(argi, "--alias="))
+      run_command = argi.substr(8);
+    else if(strBegins(argi, "--verbose="))
+      verbose_setting = tolower(argi.substr(10));
   }
-    
-  const char * sMissionFile = 0;
-  for(int i=1; i<argc; i++) {
-    string str = argv[i];
-    if(strContains(str, ".moos"))
-      sMissionFile = argv[i];
-  }
-
-  if(!sMissionFile) {
-    MOOSTrace("Failed to provide a MOOS (.moos) file... Exiting now.\n\n");
+  
+  if((mission_file == "") || help_requested) {
+    cout << "Usage: uTermCommand file.moos [OPTIONS]                " << endl;
+    cout << "                                                       " << endl;
+    cout << "Options:                                               " << endl;
+    cout << "  --alias=<ProcessName>                                " << endl;
+    cout << "      Launch uTermCommand with the given process name. " << endl;
+    cout << "  --example, -e                                        " << endl;
+    cout << "      Display example MOOS configuration block         " << endl;
+    cout << "  --help, -h                                           " << endl;
+    cout << "      Display this help message.                       " << endl;
+    cout << "  --verbose=Boolean (true/false)                       " << endl;
+    cout << "      Display diagnostics messages. Default is true.   " << endl;
+    cout << "  --version,-v                                         " << endl;
+    cout << "      Display the release version of uTermCommand.     " << endl;
     return(0);
   }
+
+  cout << termColor("green");
+  cout << "uTermCommand running as: " << run_command << endl;
+  cout << termColor() << endl;
 
   TermCommand  theTermCommand;
-  MOOSAppRunnerThread appThread(& theTermCommand, app_name.c_str(), sMissionFile);
+  MOOSAppRunnerThread appThread(& theTermCommand, run_command.c_str(), 
+				mission_file.c_str());
 
   bool quit = false;
   while(!quit) {
