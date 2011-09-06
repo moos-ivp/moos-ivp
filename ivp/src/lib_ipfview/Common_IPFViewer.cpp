@@ -595,10 +595,23 @@ void Common_IPFViewer::drawMaxPoint(double crs, double spd)
   if(m_quadset.size2D() == 0)
     return;
 
-  spd *= m_rad_extra;
+  // Calculated the radial extent
+  IvPDomain domain = m_quadset.getDomain();
+  double calc_rad_extra = 1;
+  if(domain.hasDomain("speed")) {
+    unsigned int spd_pts = domain.getVarPoints("speed");
+    double min_extent = w();
+    if(h() < min_extent)
+      min_extent = h();
+    if(spd_pts >= 1)
+      calc_rad_extra = min_extent / (double)(spd_pts);
+  } 
+  // Apply the radial extent
+  spd *= calc_rad_extra;
+
   double x,y,z=250;
   projectPoint(crs, spd, 0, 0, x, y);
-    
+  
   glPointSize(3.0 * m_zoom);
 
   glColor3f(1.0f, 0.5, 1.0f);

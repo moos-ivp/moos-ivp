@@ -34,7 +34,7 @@ public:
   
   bool         setParam(std::string, std::string);
   IvPFunction* onRunState();
-  void         onIdleState()      {postErasablePolygons();};
+  void         onIdleState();
   void         onCompleteState()  {postErasablePolygons();};
 
  protected:
@@ -54,8 +54,4 @@ protected:
   std:: string m_hint_obst_edge_color;
 };
 #endif
-
-
-
-
 

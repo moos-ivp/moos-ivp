@@ -122,6 +122,28 @@ bool XYPolygon::alter_vertex(double x, double y, double z)
 }
 
 //---------------------------------------------------------------
+// Procedure: grow_by_pct
+//      Note: A call to "determine_convexity()" is made since this
+//            operation may result in a change in the convexity.
+
+void XYPolygon::grow_by_pct(double pct)
+{
+  XYSegList::grow_by_pct(pct);
+  determine_convexity();
+}
+
+//---------------------------------------------------------------
+// Procedure: grow_by_amt
+//      Note: A call to "determine_convexity()" is made since this
+//            operation may result in a change in the convexity.
+
+void XYPolygon::grow_by_amt(double amt)
+{
+  XYSegList::grow_by_amt(amt);
+  determine_convexity();
+}
+
+//---------------------------------------------------------------
 // Procedure: delete_vertex
 //   Purpose: Given a new vertex, find the existing vertex that is
 //            closest, and delete it.

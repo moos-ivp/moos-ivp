@@ -121,6 +121,14 @@ bool BHV_AvoidObstacles::setParam(string param, string val)
 
 
 //-----------------------------------------------------------
+// Procedure: onIdleState
+
+void BHV_AvoidObstacles::onIdleState()
+{
+  postErasablePolygons();
+}
+
+//-----------------------------------------------------------
 // Procedure: onRunState
 
 IvPFunction *BHV_AvoidObstacles::onRunState() 
@@ -151,6 +159,7 @@ IvPFunction *BHV_AvoidObstacles::onRunState()
   if(m_aof_avoid->objectInObstacle(os_x, os_y, true))
     postWMessage("Ownship position within stated BUFFER space of obstacle");
   
+
   m_aof_avoid->setParam("os_x", os_x);
   m_aof_avoid->setParam("os_y", os_y);
   m_aof_avoid->setParam("present_heading", os_hdg);

@@ -38,6 +38,8 @@ public:
   bool   add_vertex(double, double, double, std::string, bool=true);
   bool   alter_vertex(double, double, double=0);
   bool   delete_vertex(double, double);
+  void   grow_by_pct(double pct);
+  void   grow_by_amt(double amt);
   bool   insert_vertex(double, double, double=0);
   bool   is_clockwise() const;
 
