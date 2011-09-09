@@ -46,6 +46,7 @@ PMV_Viewer::PMV_Viewer(int x, int y, int w, int h, const char *l)
   m_reference_point     = "datum";
   m_reference_bearing   = "relative";
   m_stale_report_thresh = 5;
+  m_stale_report_thresh_nodraw = 120;
   m_mouse_x   = 0;
   m_mouse_y   = 0;
   m_mouse_lat = 0;
@@ -223,6 +224,11 @@ bool PMV_Viewer::setParam(string param, string value)
     if(isNumber(value) && (dval > 0))
       m_stale_report_thresh = dval;
   }
+  else if(param == "stale_report_thresh_nodraw") {
+    double dval = atof(value.c_str());
+    if(isNumber(value) && (dval > 0))
+      m_stale_report_thresh_nodraw = dval;
+  }
   else if(param == "lclick_ix_start") {
     if(isNumber(value)) {
       m_lclick_ix = atoi(value.c_str());
@@ -294,6 +300,10 @@ void PMV_Viewer::drawVehicle(string vname, bool active, string vehibody)
   if(!record.valid())  // FIXME more rigorous test
     return;
 
+  double age_report = m_vehiset.getDoubleInfo(vname, "age_ais");
+  if(age_report > m_stale_report_thresh_nodraw)
+    return;
+
   BearingLine bng_line = m_vehiset.getBearingLine(vname);
 
   // If there has been no explicit mapping of color to the given vehicle
@@ -308,7 +318,6 @@ void PMV_Viewer::drawVehicle(string vname, bool active, string vehibody)
   string vnames_mode = m_vehi_settings.getVehiclesNameMode();
   
   double shape_scale  = m_vehi_settings.getVehiclesShapeScale();
-  double age_report   = m_vehiset.getDoubleInfo(vname, "age_ais");
 
   //  double shape_length = m_vehiset.getDoubleInfo(vname, "vlength") * shape_scale;
   record.setLength(record.getLength() * shape_scale);
@@ -348,6 +357,7 @@ void PMV_Viewer::drawVehicle(string vname, bool active, string vehibody)
   } 
 
   record.setName(vname_aug);
+
   drawCommonVehicle(record, bng_line, vehi_color, vname_color, 
 		    vname_draw, 1);
 }
