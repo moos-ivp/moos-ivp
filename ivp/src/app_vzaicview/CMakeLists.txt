@@ -40,9 +40,9 @@ Target_LINK_LIBRARIES(vzaicview
 
 # http://developer.apple.com/qa/qa2007/qa1567.html
 IF (${APPLE})
-      SET_TARGET_PROPERTIES(vzaicview PROPERTIES	  
-         LINK_FLAGS "-Wl,-dylib_file,/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib:/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib"
-      )
+  SET_TARGET_PROPERTIES(vzaicview PROPERTIES	  
+    LINK_FLAGS "-framework OpenGL -framework AGL -framework Cocoa"
+    )
 ENDIF (${APPLE})
 
 

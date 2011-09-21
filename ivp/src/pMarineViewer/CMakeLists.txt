@@ -43,9 +43,9 @@ Target_LINK_LIBRARIES(pMarineViewer
 
 # http://developer.apple.com/qa/qa2007/qa1567.html
 IF (${APPLE})
-      SET_TARGET_PROPERTIES(pMarineViewer PROPERTIES	  
-         LINK_FLAGS "-Wl,-dylib_file,/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib:/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib"
-      )
+  SET_TARGET_PROPERTIES(pMarineViewer PROPERTIES	  
+    LINK_FLAGS "-framework OpenGL -framework AGL -framework Cocoa"
+    )
 ENDIF (${APPLE})
 
 ADD_TEST(MyTest1 ${EXECUTABLE_OUTPUT_PATH}/pMarineViewer --version)
