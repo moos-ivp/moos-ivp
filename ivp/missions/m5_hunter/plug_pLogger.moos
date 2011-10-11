@@ -16,5 +16,6 @@ ProcessConfig = pLogger
 
   // Log it all!!!!!
   WildCardLogging = true 
+  LogAuxSrc = true
   LoggingDirectorySummaryFile = ~/.pLogger_%(VNAME)
 }

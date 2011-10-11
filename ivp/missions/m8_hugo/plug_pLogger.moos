@@ -17,5 +17,6 @@ ProcessConfig = pLogger
   // Log it all!!!!!
   WildCardLogging = true 
   WildCardOmitPattern = *_STATUS
+  LogAuxSrc = true
   LoggingDirectorySummaryFile = ~/.pLogger_%(VNAME)
 }

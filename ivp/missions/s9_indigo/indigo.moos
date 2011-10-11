@@ -88,6 +88,7 @@ ProcessConfig = pLogger
 
   Log = SBR_RANGE_REPORT @ 0
 
+  LogAuxSrc = true
   WildCardLogging = true
   WildCardOmitPattern = *_STATUS
 

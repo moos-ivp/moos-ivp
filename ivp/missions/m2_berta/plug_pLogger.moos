@@ -15,6 +15,7 @@ ProcessConfig = pLogger
   Log = IVPHELM_LIFE_EVENT @ 0 nosync
 
   // Log it all!!!!!
+  LogAuxSrc = true
   WildCardLogging = true 
   LoggingDirectorySummaryFile = ~/.pLogger_%(VNAME)
 }

@@ -31,6 +31,7 @@ ProcessConfig = pLogger
   AppTick    = 4
   CommsTick  = 4
 
+  LogAuxSrc = true
   WildCardLogging = true
 }
 

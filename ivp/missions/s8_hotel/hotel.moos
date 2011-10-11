@@ -104,6 +104,7 @@ ProcessConfig = pLogger
 
   Log = VIEW_VECTOR @ 0
 
+  LogAuxSrc = true
   WildCardLogging = true
 
   LoggingDirectorySummaryFile = /Users/mikerb/.plogger2

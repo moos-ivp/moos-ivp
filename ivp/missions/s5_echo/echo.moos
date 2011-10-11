@@ -62,6 +62,7 @@ ProcessConfig = pLogger
 
   //CompressAlogs = true
 
+  LogAuxSrc = true
   WildCarOmitPattern = *_STATUS
 }
 

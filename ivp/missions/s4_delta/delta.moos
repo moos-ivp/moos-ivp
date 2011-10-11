@@ -46,6 +46,7 @@ ProcessConfig = pLogger
   AsyncLog 	= true
   FileTimeStamp = true
 
+  LogAuxSrc = true
   WildCardLogging = true
   LoggingDirectorySummaryFile = ~/.pLogger
 }
