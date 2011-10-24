@@ -71,6 +71,16 @@ CMOOSGeodesy::CMOOSGeodesy()
     SetOriginLongitude(0.0);
     SetOriginLatitude(0.0);
     
+    // Initialize member variables (mikerb 3/17/11)
+    m_iRefEllipsoid    = 23;
+    m_dOriginEasting   = 0;
+    m_dOriginNorthing  = 0;
+    m_dEast            = 0;
+    m_dNorth           = 0;    
+    m_dOriginLongitude = 0;
+    m_dOriginLatitude  = 0;
+    m_dLocalGridX      = 0;
+    m_dLocalGridY      = 0;
 }
 
 CMOOSGeodesy::~CMOOSGeodesy()
@@ -197,7 +207,8 @@ bool CMOOSGeodesy::LLtoUTM(int ReferenceEllipsoid, const double Lat,
     LongOriginRad = LongOrigin * deg2rad;
 
     //compute the UTM Zone from the latitude and longitude
-    sprintf(UTMZone, "%d%c", ZoneNumber, UTMLetterDesignator(Lat));
+    if(UTMZone) // mikerb
+      sprintf(UTMZone, "%d%c", ZoneNumber, UTMLetterDesignator(Lat));
 
     eccPrimeSquared = (eccSquared)/(1-eccSquared);
 
@@ -330,9 +341,8 @@ bool CMOOSGeodesy::LatLong2LocalUTM(double lat,
     double dN = 0.0, dE = 0.0; 
     char tmpUTM[4];
 
-    
-
-    LLtoUTM(m_iRefEllipsoid,lat,lon,tmpNorth,tmpEast,tmpUTM);
+    // LLtoUTM(m_iRefEllipsoid,lat,lon,tmpNorth,tmpEast,tmpUTM);
+    LLtoUTM(m_iRefEllipsoid,lat,lon,tmpNorth,tmpEast,0); // mikerb
 
     //could check for the UTMZone differing, and if so, return false
 
