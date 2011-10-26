@@ -78,6 +78,8 @@ NodeRecord string2NodeRecord(const string& node_rep_string)
 	new_record.setYaw(atof(value.c_str()));
       else if((param == "DEP") || (param == "DEPTH"))
 	new_record.setDepth(atof(value.c_str()));
+      else if((param == "ALT") || (param == "ALTITUDE"))
+	new_record.setAltitude(atof(value.c_str()));
       else if((param == "LENGTH") || (param == "LEN"))
 	new_record.setLength(atof(value.c_str()));
     }

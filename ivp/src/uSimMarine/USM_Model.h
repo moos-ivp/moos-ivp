@@ -75,6 +75,8 @@ public:
   double     m_thrust;
   double     m_elevator;
 
+  double     m_water_depth;
+
   double     m_turn_rate;
   double     m_torque_theta;
   double     m_force_x;           // meters per sec

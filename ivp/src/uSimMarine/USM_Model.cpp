@@ -55,6 +55,8 @@ USM_Model::USM_Model()
   m_force_y      = 0; 
   m_torque_theta = 0;
   m_force_fresh  = true;
+  m_water_depth  = 0;    // zero means nothing known, no altitude reported
+
 }
 
 //------------------------------------------------------------------------
@@ -116,6 +118,10 @@ bool USM_Model::setParam(string param, double value)
     m_max_depth_rate = value;
   else if(param == "max_depth_rate_speed")
     m_max_depth_rate_speed = value;
+  else if(param == "water_depth") {
+    if(value >= 0)
+      m_water_depth = value;
+  }
   else
     return(false);
   return(true);
@@ -147,42 +153,6 @@ bool USM_Model::propagate(double g_curr_time)
     
 
   return(true);
-}
-
-//------------------------------------------------------------------------
-// Procedure: propagateNodeRecord
-
-void USM_Model::propagateNodeRecord(NodeRecord& record, 
-				    double delta_time, 
-				    bool apply_external_forces)
-{
-  double prior_spd = record.getSpeed();
-  double prior_hdg = record.getHeading();
-
-  m_sim_engine.propagateSpeed(record, m_thrust_map, delta_time,
-			      m_thrust, m_rudder, m_max_acceleration,
-			      m_max_deceleration);
-
-  m_sim_engine.propagateHeading(record, delta_time, m_rudder, 
-				m_thrust, m_turn_rate, 
-				m_torque_theta);
-
-  m_sim_engine.propagateDepth(record, delta_time, 
-			      m_elevator, m_buoyancy_rate, 
-			      m_max_depth_rate,
-			      m_max_depth_rate_speed);
-
-  // Calculate the total external forces on the vehicle first.
-  double total_force_x = 0;
-  double total_force_y = 0;
-  
-  if(apply_external_forces) {
-    total_force_x = m_force_x;
-    total_force_y = m_force_y;
-  }
-
-  m_sim_engine.propagate(record, delta_time, prior_hdg, prior_spd,
-			 total_force_x, total_force_y);
 }
 
 //--------------------------------------------------------------------
@@ -353,5 +323,52 @@ bool USM_Model::initPosition(const string& str)
       return(false);
   }
   return(true);
+}
+
+//------------------------------------------------------------------------
+// Procedure: propagateNodeRecord
+
+void USM_Model::propagateNodeRecord(NodeRecord& record, 
+				    double delta_time, 
+				    bool apply_external_forces)
+{
+  double prior_spd = record.getSpeed();
+  double prior_hdg = record.getHeading();
+
+  m_sim_engine.propagateSpeed(record, m_thrust_map, delta_time,
+			      m_thrust, m_rudder, m_max_acceleration,
+			      m_max_deceleration);
+
+  m_sim_engine.propagateHeading(record, delta_time, m_rudder, 
+				m_thrust, m_turn_rate, 
+				m_torque_theta);
+
+  m_sim_engine.propagateDepth(record, delta_time, 
+			      m_elevator, m_buoyancy_rate, 
+			      m_max_depth_rate,
+			      m_max_depth_rate_speed);
+
+  // Calculate the total external forces on the vehicle first.
+  double total_force_x = 0;
+  double total_force_y = 0;
+  
+  if(apply_external_forces) {
+    total_force_x = m_force_x;
+    total_force_y = m_force_y;
+  }
+
+  m_sim_engine.propagate(record, delta_time, prior_hdg, prior_spd,
+			 total_force_x, total_force_y);
+
+  // If m_water_depth > 0 then something is known about the present
+  // water depth and thus we update the vehicle altitude.
+  if(m_water_depth > 0) {
+    double depth = record.getDepth();
+    double altitude = m_water_depth - depth;
+    if(altitude < 0) 
+      altitude = 0;
+    record.setAltitude(altitude);
+  }
+
 }
 
