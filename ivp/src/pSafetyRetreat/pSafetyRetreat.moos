@@ -1,0 +1,20 @@
+// MOOS file
+
+ServerHost = localhost
+ServerPort = 9000
+
+ProcessConfig = pSafetyRetreat
+{
+   AppTick   = 4
+   CommsTick = 4
+
+   polygon  = radial:: x=20, y=-60, radius=20, pts=8, snap=1
+   polygon  = radial:: x=30, y=-100, radius=15, pts=12, snap=1
+   duration = 45
+
+   cue_var     = THREAT_DETECTED
+   message_var = UP_RETREAT
+   notify_var  = SAFETY_RETREAT
+   verbose     = true
+}
+

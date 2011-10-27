@@ -1,0 +1,31 @@
+
+polygon   = radial:: x=10, y=-100, radius=35, pts=12, snap=1, label=a
+
+geodesy = 42.3584, -71.08745
+
+gpoly = ellipse:: x=100, y=-200, major=200, minor=70, degs=30, pts=20, snap=1.0, label=foobar
+
+gpoly = circle:: x=400, y=-200, pts=20, snap=1.0, label=testcirc
+
+gpoly = label,foobar: 0,-70:-40,-170:160,-260:320,-100:210,-20
+seglist = label,testseg: 0,-270 : -40,-370 : 160,-460 : 320,-300 : 210,-220
+
+
+MARKER  = type=circle,  xpos=150,  ypos=-200, scale=1, label=tc
+MARKER  = type=diamond, xpos=100,  ypos=-200, scale=1, label=gateway-A21
+MARKER  = type=square,  xpos=200,  ypos=-200, scale=1, label=gateway-A21
+MARKER  = type=triangle, xpos=300, ypos=-200, scale=1, label=gateway-A20
+MARKER  = type=gateway, xpos=-100, ypos=-200, scale=1, label=gateway-A22, colors=darkcyan:black
+MARKER  = type=efield,  xpos=0,    ypos=-300, scale=1, label=gateway-A23
+MARKER  = type=kelp,    xpos=0,    ypos=-425, scale=1, label=gateway-A24, colors=darkblue:white
+
+OP_VERTEX = xpos=200, ypos=0, group=a, label=A, lcolor=yellow, lwidth=1, dashed=true, looped=true
+OP_VERTEX = xpos=200, ypos=-200, group=a, label=B
+OP_VERTEX = xpos=0, ypos=-200, group=a, label=C
+OP_VERTEX = xpos=0, ypos=0, group=a, label=D
+
+OP_VERTEX = xpos=-100, ypos=-160, group=b, label=A, lcolor=blue, lwidth=1, dashed=true, looped=true
+OP_VERTEX = xpos=-100, ypos=-200, group=b, label=B
+OP_VERTEX = xpos=-10, ypos=-200, group=b, label=C
+OP_VERTEX = xpos=-10, ypos=-160, group=b, label=D
+

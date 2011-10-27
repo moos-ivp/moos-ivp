@@ -1,0 +1,180 @@
+//*******************************************************
+// ShoreSide Configuration File
+//
+
+ServerHost = localhost
+ServerPort = $(SPORT)
+Community  = $(SNAME)
+
+#include plug_origin_warp.moos
+  
+//--------------------------------------------------------
+Processconfig = ANTLER
+{
+  MSBetweenLaunches = 200
+
+  Run = MOOSDB          @ NewConsole = false
+  Run = pMOOSBridge     @ NewConsole = false
+  Run = uTimerScript    @ NewConsole = false
+  Run = pMarineViewer   @ NewConsole = true
+  Run = pLogger         @ NewConsole = false
+}
+
+//--------------------------------------------------
+// pLogger Configuration Block
+
+ProcessConfig = pLogger
+{
+  AppTick       = 10
+  CommsTick     = 10
+  
+  File          = LOG_SHORESIDE
+  PATH          = ./
+  SyncLog       = true @ 0.2
+  AsyncLog      = true
+  FileTimeStamp = true
+
+  // Log it all!!!!!
+  WildCardLogging = true 
+}
+
+
+//--------------------------------------------------------
+ProcessConfig = pMOOSBridge
+{
+  AppTick   = 3
+  CommsTick = 3
+
+  SHARE = [DEPLOY_ALL]  -> $(VNAME1) @ localhost:$(VPORT1) [DEPLOY]
+  SHARE = [DEPLOY_ALL]  -> $(VNAME2) @ localhost:$(VPORT2) [DEPLOY]
+  SHARE = [DEPLOY_ALL]  -> $(VNAME3) @ localhost:$(VPORT3) [DEPLOY]
+  SHARE = [DEPLOY_ALL]  -> $(VNAME4) @ localhost:$(VPORT4) [DEPLOY]
+  SHARE = [DEPLOY_ALL]  -> $(VNAME5) @ localhost:$(VPORT5) [DEPLOY]
+  SHARE = [DEPLOY_ALL]  -> $(VNAME9) @ localhost:$(VPORT9) [DEPLOY]
+
+  SHARE = [RETURN_ALL]  -> $(VNAME1) @ localhost:$(VPORT1) [RETURN]
+  SHARE = [RETURN_ALL]  -> $(VNAME2) @ localhost:$(VPORT2) [RETURN]
+  SHARE = [RETURN_ALL]  -> $(VNAME3) @ localhost:$(VPORT3) [RETURN]
+  SHARE = [RETURN_ALL]  -> $(VNAME4) @ localhost:$(VPORT4) [RETURN]
+  SHARE = [RETURN_ALL]  -> $(VNAME5) @ localhost:$(VPORT5) [RETURN]
+  SHARE = [RETURN_ALL]  -> $(VNAME9) @ localhost:$(VPORT9) [RETURN]
+
+  SHARE = [STATION_ALL] -> $(VNAME1) @ localhost:$(VPORT1) [STATION_KEEP]
+  SHARE = [STATION_ALL] -> $(VNAME2) @ localhost:$(VPORT2) [STATION_KEEP]
+  SHARE = [STATION_ALL] -> $(VNAME3) @ localhost:$(VPORT3) [STATION_KEEP]
+  SHARE = [STATION_ALL] -> $(VNAME4) @ localhost:$(VPORT4) [STATION_KEEP]
+  SHARE = [STATION_ALL] -> $(VNAME5) @ localhost:$(VPORT5) [STATION_KEEP]
+
+  SHARE = [UP_LOITER_1] -> $(VNAME1) @ localhost:$(VPORT1) [UP_LOITER]
+  SHARE = [UP_LOITER_2] -> $(VNAME2) @ localhost:$(VPORT2) [UP_LOITER]
+  SHARE = [UP_LOITER_3] -> $(VNAME3) @ localhost:$(VPORT3) [UP_LOITER]
+  SHARE = [UP_LOITER_4] -> $(VNAME4) @ localhost:$(VPORT4) [UP_LOITER]
+  SHARE = [UP_LOITER_5] -> $(VNAME5) @ localhost:$(VPORT5) [UP_LOITER]
+
+  SHARE = [MOOS_MANUAL_OVERIDE_ALL] -> $(VNAME1) @ localhost:$(VPORT1) [MOOS_MANUAL_OVERIDE]
+  SHARE = [MOOS_MANUAL_OVERIDE_ALL] -> $(VNAME2) @ localhost:$(VPORT2) [MOOS_MANUAL_OVERIDE]
+  SHARE = [MOOS_MANUAL_OVERIDE_ALL] -> $(VNAME3) @ localhost:$(VPORT3) [MOOS_MANUAL_OVERIDE]
+  SHARE = [MOOS_MANUAL_OVERIDE_ALL] -> $(VNAME4) @ localhost:$(VPORT4) [MOOS_MANUAL_OVERIDE]
+  SHARE = [MOOS_MANUAL_OVERIDE_ALL] -> $(VNAME5) @ localhost:$(VPORT5) [MOOS_MANUAL_OVERIDE]
+  SHARE = [MOOS_MANUAL_OVERIDE_ALL] -> $(VNAME9) @ localhost:$(VPORT9) [MOOS_MANUAL_OVERIDE]
+}
+
+//--------------------------------------------------------
+ProcessConfig = pMarineViewer
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  TIFF_FILE            = AerialMIT.tif
+  set_pan_x            = -32
+  set_pan_y            = 28
+  zoom                 = 3.0
+  vehicles_shape_scale = 1.5
+  vehicles_name_viewable = names
+
+  reference_vehicle = $(VNAME1)
+  reference_vehicle = $(VNAME2)
+
+
+  SCOPE = CONTACT_INFO
+
+  ACTION = PERMUTING = true
+  ACTION = PERMUTING = false
+
+  ACTION = STATION_ALL = false
+  ACTION = STATION_ALL = true
+
+  BUTTON_ONE   = DEPLOY  # DEPLOY_ALL=true 
+  BUTTON_ONE   = MOOS_MANUAL_OVERIDE_ALL=false 
+  BUTTON_ONE   = RETURN_ALL=false
+  BUTTON_TWO   = RETURN  # RETURN_ALL=true
+  BUTTON_THREE = PERMUTE-NOW   # UTS_FORWARD=0
+}
+
+//--------------------------------------------------------
+// uTimerScript Configuration Block
+
+ProcessConfig = uTimerScript
+{
+  AppTick   = 4
+  CommsTick = 4
+  
+  PAUSED     = false
+  RESET_MAX  = unlimited
+  RESET_TIME = end
+
+  RANDVAR = varname=X1, min=-200, max=0,    key=at_post
+  RANDVAR = varname=Y1, min=-300, max=-100, key=at_post
+
+  RANDVAR = varname=X2, min=-100, max=100,  key=at_post
+  RANDVAR = varname=Y2, min=-450, max=-250, key=at_post
+
+  RANDVAR = varname=X3, min=100,  max=300,  key=at_post
+  RANDVAR = varname=Y3, min=-400, max=-200, key=at_post
+
+  RANDVAR = varname=X4, min=300,  max=500,  key=at_post
+  RANDVAR = varname=Y4, min=-300, max=-100, key=at_post
+
+  RANDVAR = varname=X5, min=150,  max=300,  key=at_post
+  RANDVAR = varname=Y5, min=-150,  max=0,   key=at_post
+
+
+  EVENT = var=UP_LOITER_1, val="center_assign=$[X1],$[Y1]", time=100
+  EVENT = var=UP_LOITER_2, val="center_assign=$[X2],$[Y2]", time=100
+  EVENT = var=UP_LOITER_3, val="center_assign=$[X3],$[Y3]", time=100
+  EVENT = var=UP_LOITER_4, val="center_assign=$[X4],$[Y4]", time=100
+  EVENT = var=UP_LOITER_5, val="center_assign=$[X5],$[Y5]", time=100
+
+  EVENT = var=UP_LOITER_1, val="center_assign=$[X2],$[Y2]", time=400
+  EVENT = var=UP_LOITER_2, val="center_assign=$[X4],$[Y4]", time=400
+  EVENT = var=UP_LOITER_3, val="center_assign=$[X5],$[Y5]", time=400
+  EVENT = var=UP_LOITER_4, val="center_assign=$[X3],$[Y3]", time=400
+  EVENT = var=UP_LOITER_5, val="center_assign=$[X1],$[Y1]", time=400
+
+  EVENT = var=UP_LOITER_1, val="center_assign=$[X3],$[Y3]", time=700
+  EVENT = var=UP_LOITER_2, val="center_assign=$[X5],$[Y5]", time=700
+  EVENT = var=UP_LOITER_3, val="center_assign=$[X1],$[Y1]", time=700
+  EVENT = var=UP_LOITER_4, val="center_assign=$[X2],$[Y2]", time=700
+  EVENT = var=UP_LOITER_5, val="center_assign=$[X4],$[Y4]", time=700
+
+  EVENT = var=UP_LOITER_1, val="center_assign=$[X5],$[Y5]", time=1000
+  EVENT = var=UP_LOITER_2, val="center_assign=$[X3],$[Y3]", time=1000
+  EVENT = var=UP_LOITER_3, val="center_assign=$[X2],$[Y2]", time=1000
+  EVENT = var=UP_LOITER_4, val="center_assign=$[X4],$[Y4]", time=1000
+  EVENT = var=UP_LOITER_5, val="center_assign=$[X1],$[Y1]", time=1000
+
+  EVENT = var=UP_LOITER_1, val="center_assign=$[X4],$[Y4]", time=1300
+  EVENT = var=UP_LOITER_2, val="center_assign=$[X1],$[Y1]", time=1300
+  EVENT = var=UP_LOITER_3, val="center_assign=$[X3],$[Y3]", time=1300
+  EVENT = var=UP_LOITER_4, val="center_assign=$[X5],$[Y5]", time=1300
+  EVENT = var=UP_LOITER_5, val="center_assign=$[X2],$[Y2]", time=1300
+
+  EVENT = var=UP_LOITER_1, val="center_assign=$[X5],$[Y5]", time=1600
+  EVENT = var=UP_LOITER_2, val="center_assign=$[X4],$[Y4]", time=1600
+  EVENT = var=UP_LOITER_3, val="center_assign=$[X2],$[Y2]", time=1600
+  EVENT = var=UP_LOITER_4, val="center_assign=$[X3],$[Y3]", time=1600
+  EVENT = var=UP_LOITER_5, val="center_assign=$[X1],$[Y1]", time=1600
+
+}
+
+

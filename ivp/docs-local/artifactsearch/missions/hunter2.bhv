@@ -1,0 +1,18 @@
+initialize   DEPLOY = true
+initialize   RETURN = false
+initialize   ONSTATION = true
+
+//----------------------------------------------
+Behavior = BHV_SearchGrid
+{
+  name         = bhv_search_grid
+  pwt          = 40
+  time_horizon = 60
+  precision    = high
+  //log_ipf    = false
+  searchgrid   = label,ArtGrid:-100,-50:100,30:
+  				100,-100:-100,-100@5.0,5.0@0.5
+  timutif      = normal, 2, 2, 2, 100
+  condition    = (DEPLOY=true) and (RETURN!=true)
+  condition    = (ONSTATION=true)
+}

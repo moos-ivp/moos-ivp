@@ -1,0 +1,14 @@
+//------------------------------------------------------------------
+// uXMS config block
+
+ProcessConfig = uXMS
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  VAR = NAV_X
+  VAR = NAV_Y
+  VAR = PROC_WATCH_SUMMARY
+  VAR = PROC_WATHC_EVENT
+}
+

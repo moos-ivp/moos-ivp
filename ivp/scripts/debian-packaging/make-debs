@@ -1,0 +1,266 @@
+#!/bin/sh
+
+# Fail whenever something goes wrong.
+set -e
+
+#===============================================================================
+
+print_usage() {
+   echo "Usage: make-debs <ivp-version> <ivp-build-num> <required-moos-version> <ivp-dir> <deb-package-dir> <working-dir>"
+   echo ""
+   echo "   <ivp-version> - for example, '0.1.0'"
+   echo ""
+   echo "   <ivp-build-num> - for example, '1'.  "
+   echo "        The Debian package version is <ivp-version>-<ivp-build-num>"
+   echo "        For example: 0.1.0-1"
+   echo ""
+   echo "   <required-moos-version> - For example, '7.0.1' or '7.0.1-3'"
+   echo "        The version number of the Debian packages upon which the IvP packages will depend."
+   echo ""
+   echo "   <ivp-dir> is the build directory in which CMake built IvP."
+   echo "        This needs to have a fully configured (using CCMake)"
+   echo "        version of IvP.  It's ok for it to be built or not built."
+   echo ""
+   echo "   <deb-package-dir> is the directory into which the .deb files"
+   echo "        produced by this script should be placed."
+   echo ""
+   echo "   <working-dir> is a pre-existing directory this script may use to"
+   echo "        do scratch-work."
+}
+
+#===============================================================================
+
+parse_and_validate_cmd_line() {
+   if [ "$#" -ne "6" ];
+   then
+      print_usage
+      exit 1
+   fi 
+
+   IVP_VERSION="$1"
+   IVP_BUILD_NUM="$2"
+   REQUIRED_MOOS_VERSION="$3"
+   IVP_DIR="$4"
+   DEB_PACKAGE_DIR="$5"
+   WORKING_DIR="$6"
+
+   if ! (test -d ${IVP_DIR}); then
+      echo "The specified <ivp-dir> ${IVP_DIR} isn't an existing directory"
+      exit 1
+   fi
+
+   if ! (test -d ${DEB_PACKAGE_DIR}); then
+      echo "The specified <deb-package-dir> ${DEB_PACKAGE_DIR} isn't an existing directory"
+      exit 1
+   fi
+
+   if ! (test -d ${WORKING_DIR}); then
+      echo "The specified <working-dir> ${WORKING_DIR} isn't an existing directory"
+      exit 1
+   fi
+}
+
+#===============================================================================
+
+# You must set the following variables for this function:
+# * CONTROL_FILE_TEMPLATE - The path to the control file to be customized.
+# * COPYRIGHT_FILE - The file that will become the package's copyright file, a
+#   feature required for all valid Debian packages.
+# * CHANGELOG_FILE - The file that will become the package's copyright file, a
+#   feature required for all valid Debian packages.
+# * PACKAGE_NAME - I.e., "moos-essentials-dev"
+# * PACKAGE_VERSION - I.e., "0.1.0"
+# * PACKAGE_BUILD_NUM - I.e., "1"
+# * INSTALL_COMPONENT_NAME - Name of the CMake install component that will produce
+#   this package's payload. I.e., "Moos_Essentials_Dev"
+# * REQUIRED_MOOS_VERSION - I.e., "7.0.1" or "7.0.1-3".
+#
+# The following variables are needed, but presumably have already been set by
+# the "parse_and_validate_cmd_line" function:
+# * IVP_DIR
+# * DEB_PACKAGE_DIR
+# * WORKING_DIR
+make_one_deb() {
+   #----------------------------------------------------------------------------
+   # Ensure the working directories exist and are empty...
+   #----------------------------------------------------------------------------
+   
+   PACKAGE_WORKING_DIR=${WORKING_DIR}/${INSTALL_COMPONENT_NAME}-package-working-dir
+   if test -d ${PACKAGE_WORKING_DIR}; then
+      rm -rf ${PACKAGE_WORKING_DIR}/*
+   else
+      mkdir ${PACKAGE_WORKING_DIR}
+   fi
+
+   #----------------------------------------------------------------------------
+   # Populate the directory with the package payload...
+   #----------------------------------------------------------------------------
+   THIS_DIRECTORY=${PWD}
+   cd ${IVP_DIR}
+   make preinstall
+   cd ${THIS_DIRECTORY}
+
+   DESTDIR=${PACKAGE_WORKING_DIR} cmake                   \
+      -DCMAKE_INSTALL_COMPONENT=${INSTALL_COMPONENT_NAME} \
+      -DCMAKE_INSTALL_PREFIX=/usr                         \
+      -P ${IVP_DIR}/cmake_install.cmake
+
+   #----------------------------------------------------------------------------
+   # Do a sanity check - the installation should have put at least one file
+   # there.  If not, the CMake install component we specified perhaps wasn't 
+   # built.  Note that this check is somewhat dependent on the particular path
+   # used to install this project's files; a different project may need a 
+   # different test...
+   #----------------------------------------------------------------------------
+   if [ ! -d ${PACKAGE_WORKING_DIR}/usr ]; then
+      echo "The directory '${PACKAGE_WORKING_DIR}/usr' doesn't exist."
+      echo "Did you maybe forget to do what it takes for "
+      echo "the project's '${INSTALL_COMPONENT_NAME}' CMake install component "
+      echo "to build properly?"
+      exit 1
+   fi
+
+   #----------------------------------------------------------------------------
+   # Create the Debian packaging files...
+   #----------------------------------------------------------------------------
+   mkdir -p ${PACKAGE_WORKING_DIR}/DEBIAN
+
+   cmake                                             \
+      -DPACKAGE_VERSION:STRING=${PACKAGE_VERSION:?}                \
+      -DPACKAGE_BUILD_NUM:STRING=${PACKAGE_BUILD_NUM:?}                \
+      -DREQUIRED_MOOS_VERSION:STRING=${REQUIRED_MOOS_VERSION:?} \
+      -DINPUT_FILE:STRING=${CONTROL_FILE_TEMPLATE:?}               \
+      -DOUTPUT_FILE:STRING=${PACKAGE_WORKING_DIR:?}/DEBIAN/control \
+      -DCMAKE_BACKWARDS_COMPATIBILITY:STRING=2.4            \
+      -P customise-control-file.cmake
+   
+   mkdir -p ${PACKAGE_WORKING_DIR}/usr/share/doc/${PACKAGE_NAME}
+
+   cp ${COPYRIGHT_FILE} ${PACKAGE_WORKING_DIR}/usr/share/doc/${PACKAGE_NAME}/copyright
+
+   DEB_CL=${PACKAGE_WORKING_DIR}/usr/share/doc/${PACKAGE_NAME}/changelog.Debian.gz
+   gzip -9 ${CHANGELOG_FILE} -c > ${DEB_CL}
+
+   #----------------------------------------------------------------------------
+   # Obey the Debian requirement of stripping executables and shared 
+   # libraries...
+   #----------------------------------------------------------------------------
+
+   # TODO: This is a somewhat crude test for finding programs to strip, and if
+   # we ever put shell scripts into this directory, we'll accidentall try to 
+   # strip them also.
+   # In the longer term we should modify our build system so that we can produce
+   # either stripped or unstripped versions of each program / library. -CJC
+
+   if test -d ${PACKAGE_WORKING_DIR}/usr/bin;
+   then
+      for f in ${PACKAGE_WORKING_DIR}/usr/bin/*/*
+      do
+         if file ${f} | grep executable | grep -q "not stripped"; 
+         then
+            echo "About to strip ${f}"
+            strip ${f}
+         else
+            echo "Not going to strip ${f}"
+         fi
+      done
+   fi
+
+
+   if test -d ${PACKAGE_WORKING_DIR}/usr/lib;
+   then
+      for f in ${PACKAGE_WORKING_DIR}/usr/lib/*/*
+      do
+         if file ${f} | grep "shared object" | grep -q "not stripped"; 
+         then
+            echo "About to strip ${f}"
+            strip ${f}
+         else
+            echo "Not going to strip ${f}"
+         fi
+      done
+   fi
+
+   #----------------------------------------------------------------------------
+   # Build and verify the package...
+   #----------------------------------------------------------------------------
+   fakeroot dpkg-deb --build ${PACKAGE_WORKING_DIR} ${WORKING_DIR}
+
+   # dpkg-deb uses the control file to decide how to name the .deb file it
+   # produces.  But lintian needs to be told the name of the file to analyze, so
+   # we need to calculate on our own the name of the .deb file so we can tell
+   # lintian about it...
+   PACKAGE_FILENAME=${PACKAGE_NAME}_${PACKAGE_VERSION}-${PACKAGE_BUILD_NUM}_i386.deb
+   PACKAGE_PATHNAME=${WORKING_DIR}/${PACKAGE_FILENAME}
+   lintian ${PACKAGE_PATHNAME}
+
+   #----------------------------------------------------------------------------
+   # Copy the package to the specified directory...
+   #----------------------------------------------------------------------------
+   cp ${PACKAGE_PATHNAME} ${DEB_PACKAGE_DIR}/
+}
+
+#===============================================================================
+
+parse_and_validate_cmd_line $*
+
+
+# You must set the following variables for this function:
+# * CONTROL_FILE_TEMPLATE - The path to the control file to be customized.
+# * COPYRIGHT_FILE - The file that will become the package's copyright file, a
+#   feature required for all valid Debian packages.
+# * CHANGELOG_FILE - The file that will become the package's copyright file, a
+#   feature required for all valid Debian packages.
+# * PACKAGE_NAME - I.e., "moos-essentials-dev"
+# * PACKAGE_VERSION - I.e., "0.1.0"
+# * PACKAGE_BUILD_NUM - I.e., "1"
+# * INSTALL_COMPONENT_NAME - Name of the CMake install component that will produce
+#   this package's payload. I.e., "Moos_Essentials_Dev"
+# * REQUIRED_MOOS_VERSION - I.e., "7.0.1" or "7.0.1-3".
+#
+# The following variables are needed, but presumably have already been set by
+# the "parse_and_validate_cmd_line" function:
+# * IVP_DIR
+# * DEB_PACKAGE_DIR
+# * WORKING_DIR
+
+# These will be common to all packages listed below, so just set them 
+# globally...
+PACKAGE_VERSION=${IVP_VERSION}
+PACKAGE_BUILD_NUM=${IVP_BUILD_NUM}
+REQUIRED_MOOS_VERSION=${REQUIRED_MOOS_VERSION}
+
+
+# ivp-core...
+CONTROL_FILE_TEMPLATE=file-templates/CONTROL-ivp-core.in \
+COPYRIGHT_FILE=file-templates/COPYRIGHT-mit-and-leonard-gpl \
+CHANGELOG_FILE=file-templates/CHANGELOG-ivp-core \
+PACKAGE_NAME=ivp-core \
+INSTALL_COMPONENT_NAME=ivp-core \
+make_one_deb
+
+# ivp-core-dev...
+CONTROL_FILE_TEMPLATE=file-templates/CONTROL-ivp-core-dev.in \
+COPYRIGHT_FILE=file-templates/COPYRIGHT-mit-and-leonard-gpl \
+CHANGELOG_FILE=file-templates/CHANGELOG-ivp-core-dev \
+PACKAGE_NAME=ivp-core-dev \
+INSTALL_COMPONENT_NAME=ivp-core-dev \
+make_one_deb
+
+# ivp-tools...
+CONTROL_FILE_TEMPLATE=file-templates/CONTROL-ivp-tools.in \
+COPYRIGHT_FILE=file-templates/COPYRIGHT-mit-and-leonard-gpl \
+CHANGELOG_FILE=file-templates/CHANGELOG-ivp-tools \
+PACKAGE_NAME=ivp-tools \
+INSTALL_COMPONENT_NAME=ivp-tools \
+make_one_deb
+
+# ivp-tools-dev...
+CONTROL_FILE_TEMPLATE=file-templates/CONTROL-ivp-tools-dev.in \
+COPYRIGHT_FILE=file-templates/COPYRIGHT-mit-and-leonard-gpl \
+CHANGELOG_FILE=file-templates/CHANGELOG-ivp-tools-dev \
+PACKAGE_NAME=ivp-tools-dev \
+INSTALL_COMPONENT_NAME=ivp-tools-dev \
+make_one_deb
+
+
