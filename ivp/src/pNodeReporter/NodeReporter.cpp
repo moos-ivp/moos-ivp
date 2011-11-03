@@ -157,7 +157,7 @@ bool NodeReporter::OnNewMail(MOOSMSG_LIST &NewMail)
       m_helm_lastmsg = m_utc_time;
       m_helm_allstop_mode = sdata;
     }
-    else if(key == "IVPHELM_STATUS") {
+    else if(key == "IVPHELM_STATE") {
       m_helm_lastmsg = m_utc_time;
       string helm_status = stripBlankEnds(sdata);
       if((helm_status == "DRIVE") ||
@@ -220,7 +220,7 @@ void NodeReporter::registerVariables()
   }  
 
   m_Comms.Register("IVPHELM_SUMMARY", 0);
-  m_Comms.Register("IVPHELM_STATUS", 0);
+  m_Comms.Register("IVPHELM_STATE", 0);
   m_Comms.Register("IVPHELM_ALLSTOP", 0);
 }
 

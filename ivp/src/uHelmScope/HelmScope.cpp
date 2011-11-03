@@ -117,7 +117,7 @@ bool HelmScope::OnNewMail(MOOSMSG_LIST &NewMail)
       handleNewStateVars(sval); 
     else if(key == "IVPHELM_LIFE_EVENT") 
       m_life_event_history.addLifeEvent(sval);
-    else if(key == "IVPHELM_STATUS") 
+    else if(key == "IVPHELM_STATE") 
       updateEngaged(sval);
   }
 
@@ -630,7 +630,7 @@ void HelmScope::registerVariables()
   m_Comms.Register("IVPHELM_STATEVARS", 0);
   m_Comms.Register("IVPHELM_DOMAIN", 0);
   m_Comms.Register("IVPHELM_MODESET", 0);
-  m_Comms.Register("IVPHELM_STATUS", 0);
+  m_Comms.Register("IVPHELM_STATE", 0);
   m_Comms.Register("IVPHELM_LIFE_EVENT", 0);
 
   m_Comms.Register("WPT_STAT", 0);

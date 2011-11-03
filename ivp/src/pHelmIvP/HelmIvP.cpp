@@ -171,7 +171,7 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
 	  }
 	}
       }
-      else if(moosvar == "IVPHELM_STATUS") {
+      else if(moosvar == "IVPHELM_STATE") {
 	m_init_vars_ready = true;
 	// Check if this heartbeat message is from another helm
 	if(msg.GetSource() != GetAppName()) {
@@ -594,7 +594,7 @@ void HelmIvP::handleInitialVarsPhase1()
     }
 
   }
-  registerSingleVariable("IVPHELM_STATUS");
+  registerSingleVariable("IVPHELM_STATE");
 }
 
 //------------------------------------------------------------
@@ -692,7 +692,6 @@ void HelmIvP::postDefaultVariables()
 //                                         DRIVE    (ENABLED)
 //                                         DISABLED
 
-
 void HelmIvP::postHelmStatus()
 {
   string helm_status = helmStatus();
@@ -704,11 +703,11 @@ void HelmIvP::postHelmStatus()
   // Post the helm status even if the value hasn't changed, 
   // unless the status is DISABLED and has been posted previously.
   if(helm_status != "DISABLED")
-    m_Comms.Notify("IVPHELM_STATUS", helm_status);
+    m_Comms.Notify("IVPHELM_STATE", helm_status);
   else {
-    bool changed = detectChangeOnKey("IVPHELM_STATUS", helm_status);
+    bool changed = detectChangeOnKey("IVPHELM_STATE", helm_status);
     if(changed)
-      m_Comms.Notify("IVPHELM_STATUS", helm_status);
+      m_Comms.Notify("IVPHELM_STATE", helm_status);
   }
 }
 
