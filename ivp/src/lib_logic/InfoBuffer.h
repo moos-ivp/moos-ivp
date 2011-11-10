@@ -20,10 +20,6 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
-#ifdef _WIN32 //MSVC pragma added by PMN in FAF '05
-#pragma warning(disable : 4786)
-#endif
-
 #ifndef INFO_BUFFER_IVP_HEADER
 #define INFO_BUFFER_IVP_HEADER
 

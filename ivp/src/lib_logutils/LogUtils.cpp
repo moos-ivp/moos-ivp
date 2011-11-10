@@ -328,7 +328,7 @@ string getNextRawLine(FILE *fileptr)
 // Procedure: getNextRawALogLine
 //     Notes: 
 
-ALogEntry getNextRawALogEntry(FILE *fileptr)
+ALogEntry getNextRawALogEntry(FILE *fileptr, bool allstrings)
 {
   ALogEntry entry;
   if(!fileptr) {
@@ -408,10 +408,10 @@ ALogEntry getNextRawALogEntry(FILE *fileptr)
   string srcaux = rawsrc;
 
   if((time!="")&&(var!="")&&(src!="")&&(val!="") && isNumber(time)) {
-    if(isNumber(val))
-      entry.set(atof(time.c_str()), var, src, srcaux, atof(val.c_str()));
-    else
+    if(allstrings || !isNumber(val))
       entry.set(atof(time.c_str()), var, src, srcaux, val);
+    else
+      entry.set(atof(time.c_str()), var, src, srcaux, atof(val.c_str()));
   }
   else {
     if(EOFile)

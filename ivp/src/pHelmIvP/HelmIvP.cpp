@@ -245,9 +245,11 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
 bool HelmIvP::Iterate()
 {
   postHelmStatus();
-  if(!helmStatusEnabled())
+  if(!helmStatusEnabled()) {
+    m_info_buffer->clearDeltaVectors();
     return(true);
-
+  }
+  
   postCharStatus();
   
   if(m_init_vars_ready && !m_init_vars_done)
@@ -1169,25 +1171,12 @@ void HelmIvP::postAllStop(string msg)
   if(!helmStatusEnabled())
     return;
 
-#if 1
   if(msg == m_allstop_msg)  
     return;
 
   // Interpret empty message as request to re-post the current status
   if(msg != "")
     m_allstop_msg = msg;
-
-#endif    
-#if 0
-  // Interpret empty message as request to re-post the current status
-  if(msg == "")
-    msg = m_allstop_msg;
-  // Otherwise if nothing has changed, no need to do anything.
-  else if(msg == m_allstop_msg)
-    return;
-  m_allstop_msg = msg;
-#endif
-
 
   MOOSDebugWrite("pHelmIvP AllStop: " + m_allstop_msg);
   m_Comms.Notify("IVPHELM_ALLSTOP", m_allstop_msg);

@@ -33,7 +33,7 @@ std::string getSourceName(const std::string& line);
 std::string getDataEntry(const std::string& line);
 
 std::string getNextRawLine(FILE*);
-ALogEntry   getNextRawALogEntry(FILE*);
+ALogEntry   getNextRawALogEntry(FILE*, bool allstrings=false);
 
 void   stripInsigDigits(std::string& line);
 void   shiftTimeStamp(std::string& line, double logstart);

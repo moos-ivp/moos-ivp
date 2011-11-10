@@ -156,7 +156,6 @@ bool InfoBuffer::setValue(string var, double val)
 
 //-----------------------------------------------------------
 // Procedure: setValue
-//
 
 bool InfoBuffer::setValue(string var, string val)
 {
