@@ -60,7 +60,7 @@ ProcessConfig = pLogger
 
   LogAuxSrc = true
   WildCardLogging = true
-  WildCardOmitPattern = *_STATUS
+  //WildCardOmitPattern = *_STATUS
 }
 
 //------------------------------------------

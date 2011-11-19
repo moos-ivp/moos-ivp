@@ -2,7 +2,6 @@
 /*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: BFactoryDynamic.h                                    */
-/*    DATE:                                                      */
 /*                                                               */
 /* (IvPHelm) The IvP autonomous control Helm is a set of         */
 /* classes and algorithms for a behavior-based autonomous        */
@@ -42,6 +41,7 @@
 
 #include <string>
 #include <map>
+#include <set>
 #include <vector>
 
 #include "IvPDomain.h"
@@ -54,7 +54,7 @@ class BFactoryDynamic {
   
   // Configuring the domain and loading directories for search.
   void   loadDirectory(std::string dirname);
-  void   loadEnvVarDirectories(std::string envVar, bool verbose=false);
+  void   loadEnvVarDirectories(std::string envVar);
   void   setDomain(IvPDomain domain) {m_domain = domain;};
 
   // Building Behaviors
@@ -70,6 +70,12 @@ class BFactoryDynamic {
   std::map<std::string, TFuncPtrCreateBehavior> m_creation_funcs_map;
   
   std::vector<void*> m_open_library_handles;
+
+  // A map from bhv_name to directory. Two behaviors of the same name
+  // should not be loaded dynamically. Dangerously ambiguous.
+  std::map<std::string, std::string> m_map_bhv_dir;
+
+  std::set<std::string> m_loaded_dirs;
 
   IvPDomain m_domain;
 };

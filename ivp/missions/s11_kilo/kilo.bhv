@@ -60,6 +60,7 @@ Behavior = BHV_TestFailure
   duration_idle_decay = false
 
   failure_type = burn,3
+  //failure_type = crash,3
 }
 
 

@@ -34,7 +34,7 @@ killall pSensorSim pArtifactMapper pNoiseSim uNafconSplitter    \
         
 killall pCBF pBTracker pTrackMonitor uTimerScript pDTSP         \
         pTallyomatic pNodeReporter iCommStack pMissionCtl iDSP  \
-        pNotDTSP pBoundingCircle pRIDManager
+        pNotDTSP pBoundingCircle pRIDManager iKayakControlBoard
 
 killall pFleetControl pRangingSim pBeaconFind
 

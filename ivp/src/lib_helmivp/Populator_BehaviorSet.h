@@ -59,22 +59,23 @@ public:
   Populator_BehaviorSet(IvPDomain, InfoBuffer*);
   virtual ~Populator_BehaviorSet() {};
 
+  void addBehaviorDir(std::string dir) {m_dir_names.push_back(dir);};
+
   BehaviorSet* populate(std::set<std::string>);
   BehaviorSet* populate(std::string filename);
-
-  void loadEnvVarDirectories(std::string envVar, bool verbose) {
-    m_bfactory_dynamic.loadEnvVarDirectories(envVar, verbose);
-  }
 
   void printBehaviorSpecs();
 
 protected:
-  bool handleLine(std::string, unsigned int line_num);
-  void closeSetMode(); 
+
+  bool   handleLine(std::string, unsigned int line_num);
+  void   closeSetMode(); 
 
 protected:
   std::vector<VarDataPair>   initial_vars;
   std::vector<VarDataPair>   default_vars;
+
+  std::vector<std::string>   m_dir_names;
 
   std::vector<BehaviorSpec>  m_behavior_specs;
   BehaviorSpec m_curr_bhv_spec;
@@ -84,9 +85,6 @@ protected:
   ModeSet      m_mode_set;
   ModeEntry    m_mode_entry;
   std::string  m_parse_mode;
-
-  BFactoryStatic  m_bfactory_static;
-  BFactoryDynamic m_bfactory_dynamic;
 };
 #endif
 

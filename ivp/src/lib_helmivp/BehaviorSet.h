@@ -62,12 +62,12 @@ public:
   BehaviorSet();
   virtual ~BehaviorSet();
   
+  void       addBehaviorDir(std::string);
   void       addBehaviorSpec(BehaviorSpec spec);  
   void       setDomain(IvPDomain domain);
   void       connectInfoBuffer(InfoBuffer*);
   bool       buildBehaviorsFromSpecs();
   SpecBuild  buildBehaviorFromSpec(BehaviorSpec spec, std::string s="");
-  
   bool       handlePossibleSpawnings();
 
   void   addBehavior(IvPBehavior *b);
@@ -79,7 +79,6 @@ public:
   double getCurrTime()                  {return(m_curr_time);};
   void   setModeSet(ModeSet v)          {m_mode_set = v;};
 
-  int    getCount()                     {return(m_bhv_entry.size());};
   int    getTCount()                    {return(m_total_behaviors_ever);};
 
   unsigned int size()                   {return(m_bhv_entry.size());};

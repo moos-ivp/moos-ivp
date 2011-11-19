@@ -64,9 +64,6 @@ Populator_BehaviorSet::Populator_BehaviorSet(IvPDomain g_domain,
   m_info_buffer   = g_buffer;
   m_parse_mode    = "top";
 
-  m_bfactory_static.setDomain(g_domain);
-  m_bfactory_dynamic.setDomain(g_domain);
-
   m_mode_set.setInfoBuffer(g_buffer);
 }
 
@@ -75,6 +72,9 @@ Populator_BehaviorSet::Populator_BehaviorSet(IvPDomain g_domain,
 
 BehaviorSet *Populator_BehaviorSet::populate(set<string> bhv_files)
 {
+  // Augment the BehaviorSet with 
+
+
   cout << "Number of behavior files: " << bhv_files.size() << endl;
   unsigned int  line_ix;
   set<string>::const_iterator p;
@@ -87,7 +87,7 @@ BehaviorSet *Populator_BehaviorSet::populate(set<string> bhv_files)
     cout << "Processing Behavior File: " << filename << "  START" << endl;
 
     if(!f) 
-      cout << "    Could not find File: " << filename << endl;
+      cerr << "    Could not find File: " << filename << endl;
     else {
       cout << "    Successfully found file: " << filename << endl;
       fclose(f);
@@ -142,11 +142,11 @@ BehaviorSet *Populator_BehaviorSet::populate(set<string> bhv_files)
 	//<< "]" << endl; cout << "(" << line << ")" << endl;
 	
 	if(!ok) {
-	  cout << "    Problem with line " << line_ix+1;
-	  cout << "    in the BehaviorSet file: " << filename << endl;
-	  cout << "Pre_line: [" << pre_line << "]" << endl;
-	  cout << "Post_line: [" << post_line << "]" << endl;
-	  cout << "Line:     [" << line     << "]" << endl;
+	  cerr << "    Problem with line " << line_ix+1;
+	  cerr << "    in the BehaviorSet file: " << filename << endl;
+	  cerr << "Pre_line: [" << pre_line << "]" << endl;
+	  cerr << "Post_line: [" << post_line << "]" << endl;
+	  cerr << "Line:     [" << line     << "]" << endl;
 	  return(0);
 	}
 
@@ -159,7 +159,14 @@ BehaviorSet *Populator_BehaviorSet::populate(set<string> bhv_files)
   // behaviors. If some fail instantiation, abort the behaviorset.
   BehaviorSet *bset = new BehaviorSet;
   bset->setDomain(m_domain);
+
+  // Inform the behavior set of the directories to look for dynamically
+  // loaded behaviors specified in the moos configuration block
+  
   unsigned int i;
+  for(i=0; i<m_dir_names.size(); i++)
+    bset->addBehaviorDir(m_dir_names[i]);
+  
   for(i=0; i<m_behavior_specs.size(); i++)
     bset->addBehaviorSpec(m_behavior_specs[i]);
   bool ok = bset-> buildBehaviorsFromSpecs();
@@ -193,6 +200,16 @@ BehaviorSet *Populator_BehaviorSet::populate(string filestr)
   bhv_files.insert(filestr);
   return(populate(bhv_files));
 }
+
+#if 0
+//----------------------------------------------------------
+// Procedure: loadBehaviorDirectory
+
+void Populator_BehaviorSet::loadBehaviorDirectory(string dirname)
+{
+  m_bfactory_dynamic.loadDirectory(dirname);
+}
+#endif
 
 //----------------------------------------------------------
 // Procedure: printBehaviorSpecs()
@@ -239,7 +256,7 @@ bool Populator_BehaviorSet::handleLine(string line,
     else if(m_parse_mode == "set-declared")
       m_parse_mode = "set-defining";
     else { 
-      cout << "Unexpected open brace '{'" << endl;
+      cerr << "Unexpected open brace '{'" << endl;
       return(false);
     }
     return(true);
@@ -257,7 +274,7 @@ bool Populator_BehaviorSet::handleLine(string line,
     else if(m_parse_mode == "set-defining")
       m_parse_mode = "set-defined-ish";
     else { 
-      cout << "Unexpected close brace '}'" << endl;
+      cerr << "Unexpected close brace '}'" << endl;
       return(false);
     }
     return(true);

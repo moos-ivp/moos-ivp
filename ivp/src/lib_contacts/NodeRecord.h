@@ -45,6 +45,7 @@ class NodeRecord
   void setDepth(double v)     {m_depth=v;      m_depth_set=true;};
   void setLength(double v)    {m_length=v;     m_length_set=true;};
   void setTimeStamp(double v) {m_timestamp=v;  m_timestamp_set=true;};
+  void setAltitude(double v)  {m_altitude=v;   m_altitude_set=true;};
 
   void setName(std::string s)    {m_name=s;};
   void setType(std::string s)    {m_type=s;};
@@ -53,18 +54,22 @@ class NodeRecord
 
   void setProperty(std::string, std::string);
 
-  double getX() const         {return(m_x);};
-  double getY() const         {return(m_y);};
-  double getLat() const       {return(m_lat);};
-  double getLon() const       {return(m_lon);};
-  double getSpeed() const     {return(m_speed);};
-  double getSpeedOG() const   {return(m_speed_og);};
-  double getHeading() const   {return(m_heading);};
-  double getHeadingOG() const {return(m_heading_og);};
-  double getYaw() const       {return(m_heading);};
-  double getDepth() const     {return(m_depth);};
-  double getLength() const    {return(m_length);};
-  double getTimeStamp() const {return(m_timestamp);};
+  double getX() const          {return(m_x);};
+  double getY() const          {return(m_y);};
+  double getLat() const        {return(m_lat);};
+  double getLon() const        {return(m_lon);};
+  double getSpeed() const      {return(m_speed);};
+  double getSpeedOG() const    {return(m_speed_og);};
+  double getHeading() const    {return(m_heading);};
+  double getHeadingOG() const  {return(m_heading_og);};
+  double getYaw() const        {return(m_heading);};
+  double getDepth() const      {return(m_depth);};
+  double getAltitude() const   {return(m_altitude);};
+  double getLength() const     {return(m_length);};
+  double getTimeStamp() const  {return(m_timestamp);};
+  
+  bool   isSetAltitude() const {return(m_altitude_set);};
+  
 
   double getElapsedTime(double) const;
   bool   hasProperty(std::string) const;
@@ -89,6 +94,7 @@ class NodeRecord
   double m_heading_og;  // Heading over ground
   double m_yaw;
   double m_depth;
+  double m_altitude;
   double m_lat;
   double m_lon;
   double m_length;
@@ -108,6 +114,7 @@ class NodeRecord
   bool m_heading_og_set;
   bool m_yaw_set;
   bool m_depth_set;
+  bool m_altitude_set;
   bool m_length_set;
   bool m_timestamp_set;
 

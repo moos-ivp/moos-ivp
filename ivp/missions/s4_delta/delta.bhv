@@ -93,9 +93,9 @@ Behavior = BHV_ConstantDepth
   condition = MODE==ACTIVE
   updates   = DEPTH_VALUE
 
-        depth = 250
-    peakwidth = 40
-    basewidth = 88
+        depth = 50
+    peakwidth = 8
+    basewidth = 12
   summitdelta = 10
 }
 
