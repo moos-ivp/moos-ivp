@@ -39,6 +39,7 @@
 
 #include "BFactoryDynamic.h"
 #include "MBUtils.h"
+#include "ColorParse.h"
 #include "fileutil.h"
 #include "stringutil.h"
 #include <iostream>
@@ -67,7 +68,8 @@ BFactoryDynamic::~BFactoryDynamic()
   // their class' object code may have been deleted and you'll 
   // probably get a SEGV (at best).
   
-  for(unsigned int i = 0; i<m_open_library_handles.size(); ++i) {
+  unsigned int i;
+  for(i = 0; i<m_open_library_handles.size(); ++i) {
     // dlclose(open_library_handles[i]);
   }
 }
@@ -80,14 +82,22 @@ BFactoryDynamic::~BFactoryDynamic()
 
 void BFactoryDynamic::loadDirectory(string dirname) 
 {
+  if(m_loaded_dirs.count(dirname)) {
+    cerr << "  Directory " << dirname << " already loaded. Skipped."<< endl;
+    return;
+  }
+  m_loaded_dirs.insert(dirname);
+
   vector<string> files;
-  int status = listdir (dirname, files);
-  if (status) {
-    cerr << "Unable to read contents of the directory: " << dirname << endl;
+  int status = listdir(dirname, files);
+  if(status) {
+    cerr << "Unable to read contents of directory: " << dirname << endl;
     exit(status);
   }
   
-  for(unsigned int i=0; i<files.size(); ++i) {
+
+  unsigned int i, fsize = files.size();
+  for(i=0; i<fsize; ++i) {
     const string & fname = files[i];
     const string fpath = dirname + '/' + fname;
     
@@ -113,21 +123,41 @@ void BFactoryDynamic::loadDirectory(string dirname)
       continue;
     }
 
-    if(! isRegularFile(fpath)) {
-      cerr << "Warning: File " << fname << " isn't a regular file." << endl;
+    if(!isRegularFile(fpath)) {
+      cerr << "Warning: File " << fname << " not a regular file." << endl;
       continue;
     }
 
-    // Strip off the leading 'lib' and trailing '.so'  / '.dylib' from the 
-    // filename, because people using the behaviors want to call them just 
-    // "BHV_...".
+    // Strip off the leading 'lib' and trailing '.so' / '.dylib' from
+    // the filename, because people using the behaviors want to call
+    // them just "BHV_...".
 #ifdef _WIN32
     string bhv_name = fname.substr(0, fname.length() - (suffix_len));
 #else
     string bhv_name = fname.substr(3, fname.length() - (3 + suffix_len));
 #endif
 
-    cerr << "        About to load behavior library: " << bhv_name << " ... ";
+    // Check the given behavior name and directory. If the behaviors has
+    // been loaded previously with the same directory name, this is ok.
+    // If a behavior has been loaded previously with the same name but
+    // different directory, this ambiguity should not be tolerated.
+
+    string prev_dir = m_map_bhv_dir[bhv_name];
+    if(prev_dir != "") {
+      if(prev_dir != dirname) {
+	cerr << "  Fatal Error: A behavior of name " << bhv_name << endl;
+	cerr << "  is being loaded now from directory " << dirname << endl;
+	cerr << "  Behavior of same name has been loaded" << endl;
+	cerr << "  previously from directory " << prev_dir << "." << endl;
+	cerr << "  This is dangerously ambiguous. Exiting. " << endl;
+	exit(-1);
+      }
+    }
+    m_map_bhv_dir[bhv_name] = dirname;
+    
+
+    cout << "    About to load behavior library: ";
+    cout << termColor("magenta") << bhv_name << termColor() << " ... ";
     // Load the library file, then go after the symbols we need...
 
 #ifdef _WIN32
@@ -163,7 +193,7 @@ void BFactoryDynamic::loadDirectory(string dirname)
     const DWORD dlsym_error = GetLastError();
     
     if(dlsym_error) {
-      cerr << "Cannot load symbol 'createBehavior' from file " << fname << endl;
+      cerr << "Cant load symbol 'createBehavior' from file " <<fname<<endl;
       cerr << "dlerror() returns: " << dlsym_error << endl;
       exit(1);
     }
@@ -180,7 +210,7 @@ void BFactoryDynamic::loadDirectory(string dirname)
     }
 #endif
 
-    cerr << "SUCCESS" << endl;
+    cout << "SUCCESS" << endl;
     
     m_creation_funcs_map[bhv_name] = createFn;
     m_open_library_handles.push_back(handle);
@@ -196,20 +226,17 @@ void BFactoryDynamic::loadDirectory(string dirname)
 //      Note: It also skips over apparently invalid directories.
 //      Note: If 'verbose' is true, will report progress to stderr.
 
-void BFactoryDynamic::loadEnvVarDirectories(string envVar, 
-					    bool verbose) 
+void BFactoryDynamic::loadEnvVarDirectories(string envVar) 
 {
-  if(verbose)
-    cerr << "Loading behavior dynamic libraries...." << endl;
-  
+  cout << termColor("green");
+  cout << "Loading behavior dynamic libraries specified in ";
+  cout << envVar << "..."  << endl << termColor();
+
   const char *dirs = getenv(envVar.c_str());
   if(!dirs) {
-    if(verbose) {
-      cerr << "    Can't load behavior libraries." << endl;
-      cerr << "    Environment variable " << envVar << " isn't set." << endl;
-    }
-    
-    cerr << "Loading behavior dynamic libraries - skipped." << endl;
+    cerr << "  Environment variable " << envVar << " not set." << endl;
+    cerr << "Loading behavior dynamic libraries specified in ";
+    cerr << envVar << " skipped."  << endl;
     return;
   }
   
@@ -223,19 +250,18 @@ void BFactoryDynamic::loadEnvVarDirectories(string envVar,
     string directory = stripBlankEnds(v.at(i));
 
     if(isDirectory(directory)) {
-      if(verbose)
-        cerr << "    Loading directory: " << directory << endl;
+      cout << "  Loading directory: " << directory << endl;
       loadDirectory(directory);
     }
     else {
-      if(verbose) {
-        cerr << "    Skipping: " << directory << endl;
-        cerr << "    (Seems not not be a directory.)" << endl;
-      }
+      cerr << "  Skipping: " << directory << endl;
+      cerr << "  (Seems not not be a directory.)" << endl;
     }
   }
 
-  cerr << "Loading behavior dynamic libraries - FINISHED." << endl;
+  cout << termColor("green");
+  cout << "Loading behavior dynamic libraries - FINISHED." << endl;
+  cout << termColor();
 }
 
 //--------------------------------------------------------------------

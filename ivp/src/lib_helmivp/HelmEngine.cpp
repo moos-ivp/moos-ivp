@@ -148,7 +148,7 @@ bool HelmEngine::part1_PreliminaryBehaviorSetHandling()
 
 bool HelmEngine::part2_GetFunctionsFromBehaviorSet(int filter_level)
 {
-  int bhv_ix, bhv_cnt = m_bhv_set->getCount();
+  int bhv_ix, bhv_cnt = m_bhv_set->size();
 
   // get all the objective functions and add time info to helm report
   m_create_timer.start();

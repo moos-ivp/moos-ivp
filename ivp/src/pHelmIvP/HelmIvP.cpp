@@ -606,8 +606,8 @@ void HelmIvP::postDefaultVariables()
   // Phase 1 - determine what variables were written to by the 
   // behaviors during the last iteration.
   vector<string> message_vars;
-  int bhv_cnt = m_bhv_set->getCount();
-  for(int i=0; i < bhv_cnt; i++) {
+  unsigned int i, bhv_cnt = m_bhv_set->size();
+  for(i=0; i < bhv_cnt; i++) {
     vector<VarDataPair> mvector = m_bhv_set->getMessages(i);
     unsigned int j, vsize = mvector.size();
     for(j=0; j<vsize; j++) {
@@ -809,6 +809,8 @@ bool HelmIvP::OnStartUp()
   m_MissionReader.EnableVerbatimQuoting(false);
   m_MissionReader.GetConfiguration(GetAppName(), sParams);
     
+  vector<string> behavior_dirs;
+
   STRING_LIST::iterator p;
   for(p = sParams.begin();p!=sParams.end();p++) {
     string line  = *p;
@@ -865,7 +867,8 @@ bool HelmIvP::OnStartUp()
 	return(false);
       }
     }
-
+    else if(param == "IVP_BEHAVIOR_DIR")
+      behavior_dirs.push_back(value);
     else if(param == "OTHER_OVERRIDE_VAR") {
       if(!strContainsWhite(value))
 	m_additional_override = value;
@@ -876,7 +879,10 @@ bool HelmIvP::OnStartUp()
 
   Populator_BehaviorSet *p_bset;
   p_bset = new Populator_BehaviorSet(m_ivp_domain, m_info_buffer);
-  p_bset->loadEnvVarDirectories("IVP_BEHAVIOR_DIRS", true);
+  unsigned int k, ksize = behavior_dirs.size();
+  for(k=0; k<ksize; k++)
+    p_bset->addBehaviorDir(behavior_dirs[k]);
+  
   m_bhv_set = p_bset->populate(m_bhv_files);
 
 #if 0
@@ -891,7 +897,8 @@ bool HelmIvP::OnStartUp()
   }
 
   // Set the "ownship" parameter for all behaviors
-  for(int i=0; i<m_bhv_set->getCount(); i++) {
+  unsigned int i, bsize = m_bhv_set->size();
+  for(i=0; i<bsize; i++) {
     m_bhv_set->getBehavior(i)->IvPBehavior::setParam("us", m_ownship);
     m_bhv_set->getBehavior(i)->onSetParamComplete();
   }

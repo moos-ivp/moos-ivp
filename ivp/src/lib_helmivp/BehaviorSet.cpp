@@ -11,6 +11,7 @@
 #include "MBUtils.h"
 #include "IvPFunction.h"
 #include "FunctionEncoder.h"
+#include "ColorParse.h"
 
 using namespace std;
 
@@ -34,6 +35,24 @@ BehaviorSet::BehaviorSet()
 BehaviorSet::~BehaviorSet()
 {
   clearBehaviors();
+}
+
+//------------------------------------------------------------
+// Procedure: addBehaviorDir
+
+void BehaviorSet::addBehaviorDir(string dirname)
+{
+  cout << termColor("blue");
+  cout << "Loading behavior dynamic library specified in .moos file: ";
+  cout << dirname << endl;
+  cout << termColor();
+
+  m_bfactory_dynamic.loadDirectory(dirname);
+
+  cout << termColor("blue");
+  cout << "Done Loading behavior dynamic library: " << dirname << endl;
+  cout << termColor();
+
 }
 
 //------------------------------------------------------------
@@ -136,7 +155,7 @@ bool BehaviorSet::buildBehaviorsFromSpecs()
 	//if(bhv_names.count(bhv_name) || m_bhv_names.count(bhv_name)) {
 	if(!uniqueNameX(bhv_name, bhv_names) ||
 	   !uniqueNameX(bhv_name, m_bhv_names)) {
-	  cout << "Duplicate behavior name found: " << bhv_name << endl;
+	  cerr << "Duplicate behavior name found: " << bhv_name << endl;
 	  all_builds_ok = false;
 	}
 	else
@@ -145,7 +164,10 @@ bool BehaviorSet::buildBehaviorsFromSpecs()
     }
   }
   
-  cout << "BehaviorSet: all_builds_ok: " << all_builds_ok << endl;
+  if(all_builds_ok)
+    cout << "BehaviorSet: all_builds_ok: true" << endl;
+  else
+    cerr << "BehaviorSet: all_builds_ok: false" << endl;
 
   // If any of the builds failed, (1) output error messages for
   // each failed build, and (2) delete the IvPBehavior instances
@@ -161,8 +183,8 @@ bool BehaviorSet::buildBehaviorsFromSpecs()
 	for(j=0; j<jsize; j++) {
 	  string bad_config = spec_builds[k].getBadConfigLine(j);
 	  unsigned int lnum = spec_builds[k].getBadConfigLineNum(j);
-	  cout << "Fatal Behavior Configuration Line " << lnum << endl;
-	  cout << "  [" << lnum << "]: " << bad_config << endl;	  
+	  cerr << "Fatal Behavior Configuration Line " << lnum << endl;
+	  cerr << "  [" << lnum << "]: " << bad_config << endl;	  
 	}
       }
     }
@@ -208,7 +230,8 @@ SpecBuild BehaviorSet::buildBehaviorFromSpec(BehaviorSpec spec,
     if(bhv)
       sbuild.setKindResult("dynamic");
     else {
-      cout << "BehaviorSpec: failed to load dynamic behavior " << bhv_kind << endl;
+      cerr << "BehaviorSpec: failed to load dynamic behavior "
+	   << bhv_kind << endl;
       sbuild.setKindResult("failed");
       return(sbuild);
     }
