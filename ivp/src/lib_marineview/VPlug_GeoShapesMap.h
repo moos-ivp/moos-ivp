@@ -47,21 +47,23 @@ public:
   unsigned int sizeVehicles() const {return(m_geoshapes_map.size());};
   unsigned int sizePolygons() const {return(size("polygons"));};
   unsigned int sizeSegLists() const {return(size("seglists"));};
-  unsigned int sizeGrids() const    {return(size("grids"));};
   unsigned int sizeCircles() const  {return(size("circles"));}
   unsigned int sizeHexagons() const {return(size("hexagons"));};
   unsigned int sizePoints() const   {return(size("points"));};
   unsigned int sizeVectors() const  {return(size("vectors"));};
+  unsigned int sizeGrids() const    {return(size("grids"));};
+  unsigned int sizeConvexGrids() const {return(size("convex_grids"));};
   unsigned int sizeRangePulses() const {return(size("range_pulses"));};
   unsigned int sizeMarkers() const  {return(size("markers"));};
 
   std::vector<XYPolygon> getPolygons(const std::string&);
   std::vector<XYSegList> getSegLists(const std::string&);
   std::vector<XYHexagon> getHexagons(const std::string&);
-  std::vector<XYGrid>    getGrids(const std::string&);
   std::vector<XYCircle>  getCircles(const std::string&);
   std::vector<XYPoint>   getPoints(const std::string&);
   std::vector<XYVector>  getVectors(const std::string&);
+  std::vector<XYGrid>    getGrids(const std::string&);
+  std::vector<XYConvexGrid> getConvexGrids(const std::string&);
   std::vector<XYRangePulse> getRangePulses(const std::string&);
   std::vector<XYMarker>  getMarkers(const std::string&);
 

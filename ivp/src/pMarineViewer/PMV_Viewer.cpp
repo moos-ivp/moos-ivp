@@ -79,15 +79,17 @@ void PMV_Viewer::draw()
   for(i=0; i<vsize; i++) {
     vector<XYPolygon> polys   = m_geoshapes_map.getPolygons(vnames[i]);
     vector<XYGrid>    grids   = m_geoshapes_map.getGrids(vnames[i]);
+    vector<XYConvexGrid> cgrids = m_geoshapes_map.getConvexGrids(vnames[i]);
     vector<XYPoint>   points  = m_geoshapes_map.getPoints(vnames[i]);
     vector<XYSegList> segls   = m_geoshapes_map.getSegLists(vnames[i]);
     vector<XYCircle>  circles = m_geoshapes_map.getCircles(vnames[i]);
     vector<XYVector>  vectors = m_geoshapes_map.getVectors(vnames[i]);
     vector<XYRangePulse> pulses = m_geoshapes_map.getRangePulses(vnames[i]);
     vector<XYMarker>  markers = m_geoshapes_map.getMarkers(vnames[i]);
-    
+
     drawPolygons(polys);
     drawGrids(grids);
+    drawConvexGrids(cgrids);
     drawSegLists(segls);
     drawCircles(circles);
     drawPoints(points);

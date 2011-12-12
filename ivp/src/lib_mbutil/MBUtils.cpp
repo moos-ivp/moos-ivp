@@ -245,18 +245,31 @@ string removeWhite(const string& str)
 
 string biteString(string& str, char separator)
 {
+  string::size_type len = str.length();
+  if(len == 0)
+    return("");
+
+  bool found = false;
+  string::size_type ix=0;
   string::size_type i=0;
-  while((str[i]!=separator)&&(str[i]!='\0'))
-    i++;
-
-  string str_front(str.c_str(), i);
-
-  if(str[i] == '\0')
-    str = "";
-  else {  
-    string str_back(str.c_str()+i+1);
-    str = str_back;
+  for(i=0; (!found && i<len); i++) {
+    if(str[i] == separator) {
+      found = true;
+      ix = i;
+    }
   }
+
+  if(!found) {
+    string str_front = str;
+    str = "";
+    return(str_front);
+  }
+
+  string str_front(str.c_str(), ix);
+  string str_back;
+  if((ix+1) < len)
+    str_back = str.substr(ix+1);
+  str = str_back;
 
   return(str_front);
 }
@@ -281,6 +294,9 @@ string biteStringX(string& str, char separator)
 
 string biteString(string& str, char sep1, char sep2)
 {
+  if(str.length() == 0)
+    return("");
+
   string::size_type i=0;
   while((str[i]!=sep1) && (str[i]!=sep2) && (str[i]!='\0'))
     i++;
@@ -365,6 +381,9 @@ bool vectorContains(const vector<string>& svector, const string& str)
 
 string stripBlankEnds(const string& str)
 {
+  if(str.length() == 0)
+    return("");
+
   const char *sPtr = str.c_str();
   int length = strlen(sPtr);
 
@@ -487,59 +506,6 @@ string truncString(const string& str, unsigned int newlen, string style)
 }
 
 //----------------------------------------------------------------
-// Procedure: truncString
-
-#if 0
-string truncStringX(const string& str, unsigned int newlen, string style)
-{
-  unsigned int len = str.length();
-  if(newlen > len)
-    return(str);
-
-  if((style = "basic") || (style == "front"))
-    return(str.substr(0, newlen));
-
-  if(style == "back")
-    return(str.substr(len-newlen, newlen));
-
-  // Else style is middle
-
-
-
-
-  string::size_type len  = str.length();
-  if(len <= sz)
-    return(str);
-
-  char *buff = new char[sz+1]; 
-
-  if((style == "middle") && (sz >= 4)) {
-    string::size_type front_amt = sz/2;
-    string::size_type back_amt  = (sz-2) - front_amt;
-    for(string::size_type i=0; i<front_amt; i++)
-      buff[i] = str[i];
-    buff[front_amt]   = '.';
-    buff[front_amt+1] = '.';
-    
-    for(string::size_type i=0; i<back_amt; i++) {
-      string::size_type leftix  = (front_amt+2) + i;
-      string::size_type rightix = (len - back_amt) + i;
-      buff[leftix] = str[rightix];
-    }
-    buff[sz] = '\0';
-  }
-  else { // if style is basic truncation
-    for(string::size_type i=0; i<sz; i++)
-      buff[i] = str[i];
-    buff[sz] = '\0';
-  }
-
-  string rstr = buff;
-  return(rstr);
-}
-#endif
-
-//----------------------------------------------------------------
 // Procedure: xxxToString(value)
 
 string boolToString(bool val)
@@ -648,9 +614,11 @@ string dstringCompact(const string& str)
   if(str=="0") 
     return("0");
 
-  bool has_decimal = false;
-
   string::size_type ssize = str.size();
+  if(ssize == 0)
+    return("");
+
+  bool has_decimal = false;
 
   for(string::size_type i=0; i<ssize; i++)
     if(str[i] == '.')

@@ -1,8 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: VPlug_GeoSettings.h                                  */
-/*    DATE: Aug 8th, 2009 (Split from GeoShapes.h)               */
+/*    FILE: XYFormatUtilsPoly.h                                  */
+/*    DATE: Dec 7th, 2011                                        */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
 /* modify it under the terms of the GNU General Public License   */
@@ -19,43 +19,17 @@
 /* Software Foundation, Inc., 59 Temple Place - Suite 330,       */
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
+ 
+#ifndef XY_FORMAT_UTILS_CONVEX_GRID_HEADER
+#define XY_FORMAT_UTILS_CONVEX_GRID_HEADER
 
-#ifndef VPLUG_GEO_SETTINGS_HEADER
-#define VPLUG_GEO_SETTINGS_HEADER
-
-#include <vector>
-#include <map>
 #include <string>
-#include "ColorPack.h"
+#include "XYConvexGrid.h"
 
-class VPlug_GeoSettings {
-public:
-  VPlug_GeoSettings();
-  virtual ~VPlug_GeoSettings() {};
+//---------------------------------------------------------------
+// Create a convex grid from a string specification. 
 
-  bool   setParam(const std::string& param, std::string value);
-  bool   setColorMapping(std::string, std::string);
-  bool   setTransparencyMapping(std::string, std::string);
-  bool   setViewableMapping(std::string, std::string);
-  bool   setGSizeMapping(std::string, std::string, double max=0);
-
-  bool   viewable(const std::string&, bool view_default=true);
-  double geosize(const std::string&, double size_default=0);
-  double transparency(const std::string&, double size_default=0.5);
-  
-  ColorPack geocolor(const std::string&, 
-		     std::string color_default="");
-
-  std::vector<std::string> getParamReport() const;
-
-protected:
-  std::map<std::string, ColorPack>  m_color_map;
-  std::map<std::string, bool>       m_viewable_map;
-  std::map<std::string, double>     m_gsize_map;
-  std::map<std::string, double>     m_trans_map;
-  
-};
+XYConvexGrid string2ConvexGrid(std::string);
 
 #endif
-
 

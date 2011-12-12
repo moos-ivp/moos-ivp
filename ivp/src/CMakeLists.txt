@@ -223,6 +223,7 @@ SET(IVP_NON_GUI_APPS
   pBasicContactMgr
   pNodeReporter
   pSafetyRetreat
+  pSearchGrid
   uTimerScript
   uHelmScope
   uProcessWatch

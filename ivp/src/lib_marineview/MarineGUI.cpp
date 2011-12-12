@@ -165,11 +165,8 @@ void MarineGUI::augmentMenu()
   mbar->add("GeoAttr/Vectors - Toggle", FL_ALT+'v', (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)750, FL_MENU_DIVIDER);
 
   // -------------------------------- XYGrids
-  mbar->add("GeoAttr/XYGrids - Edit/grid_edge_color=red", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)300, 0);
-  mbar->add("GeoAttr/XYGrids - Edit/grid_edge_color=white", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)301, 0);
-  mbar->add("GeoAttr/XYGrids - Edit/grid_edge_color=yellow", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)302, 0);
-  mbar->add("GeoAttr/XYGrids - Edit/grid_edge_color=dark_blue", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)303, 0);
-  mbar->add("GeoAttr/XYGrids - Edit/grid_edge_color=dark_green", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)304, FL_MENU_DIVIDER);
+  mbar->add("GeoAttr/XYGrids - Edit/More Transparent", FL_CTRL+'g', (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)300, 0);
+  mbar->add("GeoAttr/XYGrids - Edit/Less Transparent", FL_ALT+'g',  (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)301, 0);
 
   mbar->add("GeoAttr/XYGrids - Toggle", 'g', (Fl_Callback*)MarineGUI::cb_ToggleGrids, (void*)0, FL_MENU_DIVIDER);
 
@@ -355,6 +352,11 @@ inline void MarineGUI::cb_MG_SetGeoAttr_i(int v) {
   else if(v==245) cmviewer->setParam("seglist_vertex_size", "10");
 
   else if(v==250) cmviewer->setParam("seglist_viewable_all", "toggle");
+
+  //---------------------------------- Grids
+
+  else if(v==300) cmviewer->setParam("grid_transparency", "more");
+  else if(v==301) cmviewer->setParam("grid_transparency", "less");
 
   //---------------------------------- Points
   else if(v==500) cmviewer->setParam("point_viewable_labels", "on");

@@ -199,8 +199,6 @@ bool PMV_MOOSApp::receivePK_SOL(string sval)
 void PMV_MOOSApp::registerVariables()
 {
   m_Comms.Register("PK_SOL", 0);
-  m_Comms.Register("GRID_CONFIG",  0);
-  m_Comms.Register("GRID_DELTA",   0);
   m_Comms.Register("VIEW_POLYGON", 0);
   m_Comms.Register("VIEW_POINT",   0);
   m_Comms.Register("VIEW_VECTOR",  0);
@@ -208,8 +206,11 @@ void PMV_MOOSApp::registerVariables()
   m_Comms.Register("VIEW_SEGLIST", 0);
   m_Comms.Register("TRAIL_RESET",  0);
   m_Comms.Register("VIEW_MARKER",  0);
-  m_Comms.Register("VIEW_RANGE_PULSE", 0);
   m_Comms.Register("BEARING_LINE", 0);
+  m_Comms.Register("GRID_CONFIG",  0);
+  m_Comms.Register("GRID_DELTA",   0);
+  m_Comms.Register("VIEW_GRID", 0);
+  m_Comms.Register("VIEW_RANGE_PULSE",   0);
 
   unsigned int i, vsize = m_scope_vars.size();
   for(i=0; i<vsize; i++)

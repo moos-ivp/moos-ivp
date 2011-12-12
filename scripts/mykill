@@ -36,6 +36,6 @@ killall pCBF pBTracker pTrackMonitor uTimerScript pDTSP         \
         pTallyomatic pNodeReporter iCommStack pMissionCtl iDSP  \
         pNotDTSP pBoundingCircle pRIDManager iKayakControlBoard
 
-killall pFleetControl pRangingSim pBeaconFind
+killall pFleetControl pRangingSim pBeaconFind pSearchGrid
 
 echo Done - Killed all MOOS-Related Processes.....

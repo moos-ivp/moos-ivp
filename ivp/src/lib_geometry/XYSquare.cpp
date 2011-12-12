@@ -48,6 +48,22 @@ XYSquare::XYSquare(double gxl, double gxh, double gyl, double gyh)
 }
 
 //-------------------------------------------------------------
+// Procedure: Constructor
+
+XYSquare::XYSquare(double xlen, double ylen)
+{
+  set(0, xlen, 0, ylen);
+}
+
+//-------------------------------------------------------------
+// Procedure: Constructor
+
+XYSquare::XYSquare(double xylen)
+{
+  set(0, xylen, 0, xylen);
+}
+
+//-------------------------------------------------------------
 // Procedure: Operator==
 
 bool XYSquare::operator==(const XYSquare &other) const

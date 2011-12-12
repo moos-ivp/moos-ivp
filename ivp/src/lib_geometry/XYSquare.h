@@ -29,7 +29,9 @@
 class XYSquare : public XYObject {
 public:
   XYSquare();
-  XYSquare(double, double, double, double);
+  XYSquare(double xylen);
+  XYSquare(double xlen, double ylen);
+  XYSquare(double xl, double hx, double yl, double yh);
   bool operator==(const XYSquare&) const;
   bool operator!=(const XYSquare&) const;
   virtual ~XYSquare() {};

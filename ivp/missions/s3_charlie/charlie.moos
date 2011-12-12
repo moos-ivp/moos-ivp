@@ -3,7 +3,7 @@ ServerPort = 9000
 Simulator  = true
 
 Community    = charlie
-MOOSTimeWarp = 10
+MOOSTimeWarp = 18
 LatOrigin    = 43.825300 
 LongOrigin   = -70.330400 
 
@@ -20,7 +20,23 @@ ProcessConfig = ANTLER
   Run = pMarineViewer   @ NewConsole = true
   Run = pHelmIvP        @ NewConsole = true
   Run = pLogger         @ NewConsole = true
+  //Run = pSearchGrid	@ NewConsole = true
   Run = uTimerScript    @ NewConsole = true
+}
+
+//------------------------------------------
+// pSearchGrid config block
+
+ProcessConfig = pSearchGrid
+{
+  AppTick   = 0.1
+  CommsTick = 0.1
+  
+  GRID_CONFIG = pts={-50,-40: -10,0: 100,0: 100,-100: 50,-150: -50,-100}
+  GRID_CONFIG = cell_size=5
+  GRID_CONFIG = cell_vars=x:0:y:0:z:0
+  GRID_CONFIG = cell_min=x:0
+  GRID_CONFIG = cell_max=x:50
 }
 
 //------------------------------------------
@@ -33,6 +49,7 @@ ProcessConfig = pLogger
 
   LogAuxSrc = true
   WildCardLogging = true
+  WildCardOmitPattern = *_STATUS
 }
 
 //------------------------------------------
@@ -44,7 +61,7 @@ ProcessConfig = uSimMarine
   CommsTick	= 10
 
   START_X       = 0
-  START_Y       = 0
+  START_Y       = -10
   START_SPEED   = 0
   START_HEADING = 180
   PREFIX        = NAV
@@ -169,6 +186,7 @@ ProcessConfig = pMarineViewer
   SCOPE    = USM_FSUMMARY
   SCOPE    = USM_FORCE_VECTOR_ADD
   SCOPE    = DB_CLIENTS
+  SCOPE    = CONVEX_GRID_CONFIG
 
   ACTION   = UP_LOITER = center_assign = 40,-40
   ACTION+  = UP_LOITER = center_assign = x=100, y=-80
