@@ -28,6 +28,7 @@ SET(HEADERS
   XYFormatUtilsVector.h
   XYFormatUtilsMarker.h
   XYGrid.h
+  XYConvexGrid.h
   XYHexagon.h
   XYHexGrid.h
   XYObject.h

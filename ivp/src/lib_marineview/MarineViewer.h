@@ -31,6 +31,7 @@
 #include "FL/fl_draw.H"
 #include "BackImg.h"
 #include "XYGrid.h"
+#include "XYConvexGrid.h"
 #include "XYPolygon.h"
 #include "XYSegList.h"
 #include "XYCircle.h"
@@ -100,6 +101,9 @@ protected:
 
   void  drawGrids(const std::vector<XYGrid>&);
   void  drawGrid(const XYGrid&);
+
+  void  drawConvexGrids(const std::vector<XYConvexGrid>&);
+  void  drawConvexGrid(const XYConvexGrid&);
 
   void  drawCircles(const std::vector<XYCircle>&);
   void  drawCircle(const XYCircle&, unsigned int pts);

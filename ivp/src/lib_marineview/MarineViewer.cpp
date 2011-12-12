@@ -1626,6 +1626,118 @@ void MarineViewer::drawGrid(const XYGrid& grid)
 }
 
 //-------------------------------------------------------------
+// Procedure: drawConvexGrids
+
+void MarineViewer::drawConvexGrids(const vector<XYConvexGrid>& grids)
+{
+  if(m_geo_settings.viewable("grid_viewable_all", true) == false)
+    return;
+
+  unsigned int i, vsize = grids.size();
+  for(i=0; i<vsize; i++)
+    drawConvexGrid(grids[i]);
+}
+
+//-------------------------------------------------------------
+// Procedure: drawConvexGrid
+
+void MarineViewer::drawConvexGrid(const XYConvexGrid& grid)
+{
+  FColorMap cmap;
+
+  unsigned int gsize = grid.size();
+  if(gsize == 0)
+    return;
+
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glOrtho(0, w(), 0, h(), -1 ,1);
+
+  double tx = meters2img('x', 0);
+  double ty = meters2img('y', 0);
+  double qx = img2view('x', tx);
+  double qy = img2view('y', ty);
+
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
+  glLoadIdentity();
+
+  glLineWidth(0.5);  // added dec1306
+  glTranslatef(qx, qy, 0);
+  glScalef(m_zoom, m_zoom, m_zoom);
+
+  unsigned int i;
+  double px[4];
+  double py[4];
+
+  double min_eval, max_eval, range = 0;
+
+  //cout << "min_limited:" << grid.cellVarMinLimited() << endl;
+  //cout << "max_limited:" << grid.cellVarMaxLimited() << endl << endl;
+
+
+  if(grid.cellVarMaxLimited() && grid.cellVarMinLimited()) {
+    min_eval = grid.getMinLimit();
+    max_eval = grid.getMaxLimit();
+    range  = max_eval - min_eval;
+  }
+  else {
+    min_eval = grid.getMin();
+    max_eval = grid.getMax();
+    range  = max_eval - min_eval;
+  }
+  
+  double cell_transparency = m_geo_settings.transparency("grid_transparency", 0.3);
+  double edge_transparency = cell_transparency * 0.6;
+  
+  for(i=0; i<gsize; i++) {
+    XYSquare element = grid.getElement(i);
+
+    px[0] = element.getVal(0,0) * m_back_img.get_pix_per_mtr_x();
+    py[0] = element.getVal(1,0) * m_back_img.get_pix_per_mtr_y();
+    px[1] = element.getVal(0,1) * m_back_img.get_pix_per_mtr_x();
+    py[1] = element.getVal(1,0) * m_back_img.get_pix_per_mtr_y();
+    px[2] = element.getVal(0,1) * m_back_img.get_pix_per_mtr_x();
+    py[2] = element.getVal(1,1) * m_back_img.get_pix_per_mtr_y();
+    px[3] = element.getVal(0,0) * m_back_img.get_pix_per_mtr_x();
+    py[3] = element.getVal(1,1) * m_back_img.get_pix_per_mtr_y();
+
+    // Draw the internal parts of the cells if range is nonzero.
+    if(range > 0) {
+      double   eval = grid.getVal(i);
+      double   pct  = (eval-min_eval)/(range);
+      double   r    = cmap.getIRVal(pct);
+      double   g    = cmap.getIGVal(pct);
+      double   b    = cmap.getIBVal(pct);
+      
+      glEnable(GL_BLEND);
+      //glColor4f(r,g,b,0.3);
+      glColor4f(r,g,b,cell_transparency);
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      glBegin(GL_POLYGON);
+      for(int j=0; j<4; j++)
+	glVertex2f(px[j], py[j]);
+      glEnd();
+      glDisable(GL_BLEND);
+    }
+
+    // Begin Draw the cell edges
+    glEnable(GL_BLEND);
+    glColor4f(0.6,0.6,0.6,edge_transparency);
+    glBegin(GL_LINE_LOOP);
+    for(int k=0; k<4; k++)
+      glVertex2f(px[k], py[k]);
+    glEnd();
+    glDisable(GL_BLEND);
+    // End Draw the cell edges
+    
+  }
+
+  glFlush();
+  glPopMatrix();
+}
+
+//-------------------------------------------------------------
 // Procedure: drawCircles
 
 void MarineViewer::drawCircles(const vector<XYCircle>& circles)

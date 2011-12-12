@@ -1,33 +1,26 @@
-//--------    FILE: kilo.bhv   -------------
+//--------    FILE: alpha.bhv   -------------
 
 initialize   DEPLOY = false
 initialize   RETURN = false
-
-
-set MODE = ACTIVE {
-  DEPLOY = true
-} INACTIVE
-
-set MODE = SURVEYING {
-  MODE = ACTIVE
-  RETURN != true
-} RETURNING
+initialize   HSLINE = off
 
 //----------------------------------------------
 Behavior = BHV_Waypoint
 { 
   name      = waypt_survey
   pwt       = 100
-  condition = MODE == SURVEYING
+  condition = RETURN = false
+  condition = ((DEPLOY = true) or (alpha = one)) or (bravo = two)
   endflag   = RETURN = true
   perpetual = true
+  updates   = NEWPTS
 
           lead = 8
    lead_damper = 1
          speed = 2   // meters per second
         radius = 5.0
    slip_radius = 15.0
-        points = 60,-40 : 60,-120 : 150,-120 : 180,-80 : 150,-40
+        points = 60,-40 : 60,-160 : 150,-160 : 180,-100 : 150,-40
         repeat = 1
   visual_hints = nextpt_color=red, nextpt_lcolor=green
   visual_hints = vertex_color=yellow, line_color=white
@@ -39,7 +32,9 @@ Behavior = BHV_Waypoint
 {
   name       = waypt_return
   pwt        = 100
-  condition  = MODE == RETURNING
+  condition  = RETURN = true
+  condition  = DEPLOY = true
+  updates    = UPDATES_RETURN
   perpetual  = true
   endflag    = RETURN = false
   endflag    = DEPLOY = false
@@ -51,16 +46,12 @@ Behavior = BHV_Waypoint
 }
 
 //----------------------------------------------
-Behavior = BHV_TestFailure
+Behavior = BHV_HSLine
 {
-  name      = test_failure
-  condition = DEPLOY=true
+  name      = hsline
+  condition = HSLINE=on
 
-  duration  = 120
-  duration_idle_decay = false
-
-  failure_type = burn,3
-  //failure_type = crash
+  time_on_leg = 10
 }
 
 

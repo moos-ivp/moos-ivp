@@ -19,7 +19,7 @@
 /* Software Foundation, Inc., 59 Temple Place - Suite 330,       */
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
-
+#include <iostream>
 #include <cstdlib>
 #include "VPlug_GeoShapes.h"
 #include "MBUtils.h"
@@ -30,6 +30,7 @@
 #include "XYFormatUtilsVector.h"
 #include "XYFormatUtilsRangePulse.h"
 #include "XYFormatUtilsMarker.h"
+#include "XYFormatUtilsConvexGrid.h"
 #include "ColorParse.h"
 
 using namespace std;
@@ -78,13 +79,17 @@ bool VPlug_GeoShapes::setParam(const string& param, string value)
     return(addSegList(value));
   else if((param ==  "grid") || (param == "xygrid"))
     return(addGrid(value));
+  else if(param ==  "convex_grid")
+    return(addConvexGrid(value));
   else if(param == "clear") {
     if(value == "seglists")
       m_polygons.clear();
     else if(value == "polygons")
       m_seglists.clear();
-    else if(value == "grids")
+    else if(value == "grids") {
       m_grids.clear();
+      m_convex_grids.clear();
+    }
     else if(value == "circles")
       m_circles.clear();
     else if(value == "points")
@@ -237,6 +242,20 @@ bool VPlug_GeoShapes::updateGrid(const string& delta)
 }
 
 //-----------------------------------------------------------
+// Procedure: updateConvexGrid
+
+bool VPlug_GeoShapes::updateConvexGrid(const string& delta)
+{
+  bool ok = true;
+#if 0
+  unsigned int i, vsize = m_convex_grids.size();
+  for(i=0; i<vsize; i++)
+    ok = ok && m_convex_grids[i].processDelta(delta);
+#endif
+  return(ok);
+}
+
+//-----------------------------------------------------------
 // Procedure: addGrid
 
 void VPlug_GeoShapes::addGrid(const XYGrid& new_grid)
@@ -260,6 +279,32 @@ void VPlug_GeoShapes::addGrid(const XYGrid& new_grid)
   }
 
   m_grids.push_back(new_grid);
+}
+
+//-----------------------------------------------------------
+// Procedure: addConvexGrid
+
+void VPlug_GeoShapes::addConvexGrid(const XYConvexGrid& new_grid)
+{
+  XYSquare square = new_grid.getSBound();
+  updateBounds(square.get_min_x(), square.get_max_x(), 
+	       square.get_min_y(), square.get_max_y());
+
+  string new_label = new_grid.get_label();
+  if(new_label == "") {
+    m_convex_grids.push_back(new_grid);
+    return;
+  }
+  
+  unsigned int i, vsize = m_convex_grids.size();
+  for(i=0; i<vsize; i++) {
+    if(m_convex_grids[i].get_label() == new_label) {
+      m_convex_grids[i] = new_grid;
+      return;
+    }
+  }
+  
+  m_convex_grids.push_back(new_grid);
 }
 
 //-----------------------------------------------------------
@@ -413,6 +458,18 @@ bool VPlug_GeoShapes::addGrid(const string& grid_str)
   return(true);
 }
 
+//-----------------------------------------------------------
+// Procedure: addConvexGrid
+
+bool VPlug_GeoShapes::addConvexGrid(const string& grid_str)
+{
+  XYConvexGrid new_grid = string2ConvexGrid(grid_str);
+  if(!new_grid.valid())
+    return(false);
+  addConvexGrid(new_grid);
+  return(true);
+}
+
 
 //-------------------------------------------------------------
 // Procedure: getPolygon(int)
@@ -441,7 +498,7 @@ XYSegList VPlug_GeoShapes::getSegList(unsigned int index) const
 }
 
 //-------------------------------------------------------------
-// Procedure: getGrid(int)
+// Procedure: getGrid(uint)
 
 XYGrid VPlug_GeoShapes::getGrid(unsigned int index) const
 {
@@ -451,6 +508,19 @@ XYGrid VPlug_GeoShapes::getGrid(unsigned int index) const
   }
   else
     return(m_grids[index]);
+}
+
+//-------------------------------------------------------------
+// Procedure: getConvexGrid(uint)
+
+XYConvexGrid VPlug_GeoShapes::getConvexGrid(unsigned int index) const
+{
+  if(index >= m_convex_grids.size()) {
+    XYConvexGrid null_grid;
+    return(null_grid);
+  }
+  else
+    return(m_convex_grids[index]);
 }
 
 //-------------------------------------------------------------

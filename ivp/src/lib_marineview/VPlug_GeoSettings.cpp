@@ -72,6 +72,8 @@ VPlug_GeoSettings::VPlug_GeoSettings()
   m_gsize_map["circle_edge_width"]   = 2.0;
   m_gsize_map["point_vertex_size"]   = 4.0;
   m_gsize_map["vector_length_zoom"]  = 2.0;
+
+  m_trans_map["grid_transparency"]   = 0.3;
 }
 
 //-----------------------------------------------------------
@@ -153,6 +155,9 @@ bool VPlug_GeoSettings::setParam(const string& param, string value)
   else if(param == "point_vertex_color")
     return(setColorMapping(param, value));
 
+  else if(param == "grid_transparency")
+    return(setTransparencyMapping(param, value));
+
   else if(param == "vector_length_zoom")
     return(setGSizeMapping(param, value, 4));
 
@@ -233,6 +238,38 @@ bool VPlug_GeoSettings::setViewableMapping(string param, string value)
       m_viewable_map[param] = !curr_value;
     }
   }
+  return(true);
+}
+
+
+//-------------------------------------------------------------
+// Procedure: setTransparencyMapping
+
+bool VPlug_GeoSettings::setTransparencyMapping(string param, string value)
+{
+  // If nothing is known about the param, make a new assoc and return.
+  if(m_trans_map.count(param) == 0) {
+    m_trans_map[param] = 0.5;
+    return(true);
+  }
+
+  if(value == "less")
+    m_trans_map[param] += 0.05;
+  else if(value == "more")
+    m_trans_map[param] -= 0.05;
+  else if(isNumber(value)) {
+    double dval = atof(value.c_str());
+    m_trans_map[param] += dval;
+  }
+  else
+    return(false);
+
+  // OpenGL Transparency should be in the range [0,1]
+  if(m_trans_map[param] > 1.0)
+    m_trans_map[param] = 1;
+  else if(m_trans_map[param] < 0)
+    m_trans_map[param] = 0;
+
   return(true);
 }
 
@@ -345,7 +382,7 @@ bool VPlug_GeoSettings::viewable(const string& attribute,
 //            initially fails. 
 
 double VPlug_GeoSettings::geosize(const string& attribute, 
-				       double default_value)
+				  double default_value)
 {
   map<string, double>::iterator p;
   p = m_gsize_map.find(attribute);
@@ -356,6 +393,28 @@ double VPlug_GeoSettings::geosize(const string& attribute,
     return(p->second);
   else 
     return(default_value);
+}
+
+//-----------------------------------------------------------
+// Procedure: transparency
+//      Note: If the attribute is not found, the returned double
+//            can be determined by the optional default double value.
+//      Note: Attributes are case-insensitive by always converting
+//            to lower case when added to the structure. The queried
+//            attribute is converted to lower case only if the query
+//            initially fails. 
+
+double VPlug_GeoSettings::transparency(const string& attribute, 
+				       double default_value)
+{
+  if(m_trans_map.count(attribute))
+    return(m_trans_map[attribute]);
+  
+  string lower_attribute = tolower(attribute);
+  if(m_trans_map.count(lower_attribute))
+    return(m_trans_map[lower_attribute]);
+  
+  return(default_value);
 }
 
 //-----------------------------------------------------------

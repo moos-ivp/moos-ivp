@@ -18,6 +18,22 @@ Processconfig = ANTLER
   Run = uTimerScript    @ NewConsole = false
   Run = pMarineViewer   @ NewConsole = false
   Run = pLogger         @ NewConsole = false
+  //Run = pSearchGrid     @ NewConsole = false
+}
+
+//--------------------------------------------------
+// pSearchGrid Configuration Block
+
+ProcessConfig = pSearchGrid
+{
+  AppTick       = 1
+  CommsTick     = 1
+
+  GRID_CONFIG = pts={-50,-40: -10,0: 180,0: 180,-150: -50,-150}
+  GRID_CONFIG = cell_size=5
+  GRID_CONFIG = cell_vars=x:0:y:0:z:0
+  GRID_CONFIG = cell_min=x:0
+  GRID_CONFIG = cell_max=x:10
 }
 
 //--------------------------------------------------

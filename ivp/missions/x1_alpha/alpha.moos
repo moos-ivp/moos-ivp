@@ -15,19 +15,28 @@ LongOrigin = -70.330400
 // Antler configuration  block
 ProcessConfig = ANTLER
 {
-  MSBetweenLaunches = 200
+  MSBetweenLaunches = 100
 
   Run = MOOSDB		@ NewConsole = false
   Run = pLogger         @ NewConsole = false
-  Run = uSimMarine	@ NewConsole = false
+  Run = uSimMarine	@ NewConsole = true
   Run = pNodeReporter	@ NewConsole = false
-  Run = pMarinePID	@ NewConsole = false
-  Run = pHelmIvP	@ NewConsole = false
-  Run = pHelmIvP	@ NewConsole = false, ExtraProcessParams=HParams
-  Run = pMarineViewer	@ NewConsole = false
-  Run = uProcessWatch	@ NewConsole = false
+  Run = pMarinePID	@ NewConsole = true
+  Run = pHelmIvP	@ NewConsole = true
+  Run = pMarineViewer	@ NewConsole = true
+  Run = uProcessWatch	@ NewConsole = true
+  Run = pSearchGrid	@ NewConsole = true
+}
 
-  HParams=--alias=pHelmIvP_Standby
+//------------------------------------------
+// pSearchGrid config block
+
+ProcessConfig = pSearchGrid
+{
+  AppTick   = 1
+  CommsTick = 1
+  
+  GRID_CONFIG = pts={0,0: 100,0: 100,-100: 50,-150: 0,-100}, cell_size=5, init_val=0
 }
 
 //------------------------------------------
@@ -38,7 +47,15 @@ ProcessConfig = uProcessWatch
   AppTick   = 4
   CommsTick = 4
   
-  WATCH_ALL = true
+  //WATCH = uSimMarine
+  WATCH = pMarinePID:PID_OK
+  WATCH = pMarineViewer, pHelmIvP, uSimMarine:USM_OK
+
+  SUMMARY_WAIT = 5
+
+  POST_MAPPING = PROC_WATCH_EVENT, UPW_EVENT
+
+  WATCH_ALL = false
 }
 
 
@@ -60,8 +77,31 @@ ProcessConfig = pLogger
 
   LogAuxSrc = true
   WildCardLogging = true
-  //WildCardOmitPattern = *_STATUS
+  WildCardOmitPattern = *_STATUS
 }
+
+//------------------------------------------
+// uXMS config block
+
+ProcessConfig = uXMS
+{
+  AppTick   = 0.5
+  CommsTick = 0.5
+
+  VAR = NAV_X
+  VAR = NAV_Y
+  VAR = NAV_SPEED
+  VAR = NAV_HEADING
+  VAR = DESIRED_HEADING
+  VAR = DESIRED_SPEED
+  VAR = DESIRED_RUDDER
+  VAR = DESIRED_THRUST
+  VAR = NODE_REPORT_LOCAL
+  VAR = DEPLOY
+  VAR = RETURN
+  VAR = IVPHELM_ENGAGED
+}
+
 
 //------------------------------------------
 // uSimMarine config block
@@ -90,24 +130,10 @@ ProcessConfig = pHelmIvP
   AppTick    = 4
   CommsTick  = 4
 
-  Behaviors  = kilo.bhv
+  Behaviors  = alpha.bhv
+  Verbose    = quiet
   Domain     = course:0:359:360
   Domain     = speed:0:4:21
-}
-
-//------------------------------------------
-// pHelmIvP_Standby config block
-
-ProcessConfig = pHelmIvP_Standby
-{
-  AppTick    = 4
-  CommsTick  = 4
-
-  Behaviors  = kilo_standby.bhv
-  Domain     = course:0:359:360
-  Domain     = speed:0:4:21
-
-  STANDBY    = 2
 }
 
 //------------------------------------------
