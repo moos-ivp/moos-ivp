@@ -692,7 +692,7 @@ bool HelmIvP::updateInfoBuffer(CMOOSMsg &msg)
   if(msg.IsDataType(MOOS_DOUBLE)) {
     return(m_info_buffer->setValue(moosvar, msg.GetDouble()));
   }
-  else if(msg.IsDataType(MOOS_STRING)) {
+  else if(msg.IsString()) {
     return(m_info_buffer->setValue(moosvar, msg.GetString()));
   }
   return(false);
