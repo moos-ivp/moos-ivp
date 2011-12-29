@@ -54,6 +54,7 @@ public:
   unsigned int sizeGrids() const    {return(size("grids"));};
   unsigned int sizeConvexGrids() const {return(size("convex_grids"));};
   unsigned int sizeRangePulses() const {return(size("range_pulses"));};
+  unsigned int sizeCommsPulses() const {return(size("comms_pulses"));};
   unsigned int sizeMarkers() const  {return(size("markers"));};
 
   std::vector<XYPolygon> getPolygons(const std::string&);
@@ -65,6 +66,7 @@ public:
   std::vector<XYGrid>    getGrids(const std::string&);
   std::vector<XYConvexGrid> getConvexGrids(const std::string&);
   std::vector<XYRangePulse> getRangePulses(const std::string&);
+  std::vector<XYCommsPulse> getCommsPulses(const std::string&);
   std::vector<XYMarker>  getMarkers(const std::string&);
 
   std::vector<std::string> getVehiNames() const {return(m_vnames);};

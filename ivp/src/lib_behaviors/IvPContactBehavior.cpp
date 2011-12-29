@@ -105,8 +105,8 @@ bool IvPContactBehavior::setParam(string param, string param_val)
   else if (param == "extrapolate")
     return(setBooleanOnString(m_extrapolate, param_val));
   else if(param == "decay") {
-    string left  = stripBlankEnds(biteString(param_val, ','));
-    string right = stripBlankEnds(param_val);
+    string left  = biteStringX(param_val, ',');
+    string right = param_val;
     if(isNumber(left) && isNumber(right)) {
       double start = atof(left.c_str());
       double end   = atof(right.c_str());
@@ -270,7 +270,8 @@ void IvPContactBehavior::postViewableBearingLine()
   m_bearing_line.add_vertex(m_osx, m_osy);
   m_bearing_line.add_vertex(m_cnx, m_cny);
   m_bearing_line.set_label(m_us_name + "_" + m_descriptor);
-  m_bearing_line.set_color("label", "invisible");
+  //m_bearing_line.set_color("label", "invisible");
+  m_bearing_line.set_color("label", "white");
   m_bearing_line.set_color("edge", color);
 
   postMessage("VIEW_SEGLIST", m_bearing_line.get_spec());

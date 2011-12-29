@@ -19,7 +19,7 @@ SET(SRC
   IterBlockBHV.cpp
   IterBlockPosts.cpp
   BehaviorRecord.cpp
-  UHS_ExampleConfig.cpp
+  HelmScope_Info.cpp
   main.cpp
 )
 

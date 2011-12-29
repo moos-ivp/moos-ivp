@@ -76,6 +76,8 @@ bool VPlug_GeoShapesMap::addGeoShape(const string& param,
     handled = m_geoshapes_map[vname].addCircle(value);
   else if(lparam == "VIEW_RANGE_PULSE")
     handled = m_geoshapes_map[vname].addRangePulse(value);
+  else if(lparam == "VIEW_COMMS_PULSE")
+    handled = m_geoshapes_map[vname].addCommsPulse(value);
   else if((lparam == "VIEW_MARKER") || (lparam == "MARKER"))
     handled = m_geoshapes_map[vname].addMarker(value);
   else if(lparam == "grid_CONFIG")
@@ -105,6 +107,7 @@ bool VPlug_GeoShapesMap::addGeoShape(const string& param,
 // Procedure: getPoints
 // Procedure: getVectors
 // Procedure: getRangePulses
+// Procedure: getCommsPulses
 // Procedure: getMarkers
 
 vector<XYPolygon> VPlug_GeoShapesMap::getPolygons(const string& vname)
@@ -143,6 +146,10 @@ vector<XYRangePulse> VPlug_GeoShapesMap::getRangePulses(const string& vname)
 {
   return(m_geoshapes_map[vname].getRangePulses());
 }
+vector<XYCommsPulse> VPlug_GeoShapesMap::getCommsPulses(const string& vname)
+{
+  return(m_geoshapes_map[vname].getCommsPulses());
+}
 vector<XYMarker> VPlug_GeoShapesMap::getMarkers(const string& vname)
 {
   return(m_geoshapes_map[vname].getMarkers());
@@ -161,6 +168,8 @@ unsigned int VPlug_GeoShapesMap::size(const string& gtype) const
       return_size += p->second.sizeMarkers();
     else if(gtype == "range_pulses")
       return_size += p->second.sizeRangePulses();
+    else if(gtype == "comms_pulses")
+      return_size += p->second.sizeCommsPulses();
     else if(gtype == "points")
       return_size += p->second.sizePolygons();
     else if(gtype == "polygons")

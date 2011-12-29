@@ -1,0 +1,29 @@
+cdmis; cd pBasicContactMgr; example_config.sh pBasicContactMgr
+cdmis; cd pEchoVar;         example_config.sh pEchoVar
+cdmis; cd pHelmIvP;         example_config.sh pHelmIvP
+cdmis; cd pHostInfo;        example_config.sh pHostInfo
+cdmis; cd pMarinePID;       example_config.sh pMarinePID
+cdmis; cd pMarineViewer;    example_config.sh pMarineViewer    
+cdmis; cd pNodeReporter;    example_config.sh pNodeReporter    
+cdmis; cd pSafetyRetreat;   example_config.sh pSafetyRetreat
+cdmis; cd pSearchGrid;      example_config.sh pSearchGrid
+cdmis; cd pXRelay;          example_config.sh pXRelay
+cdmis; cd uFldNodeBroker;   example_config.sh uFldNodeBroker   
+cdmis; cd uFldNodeComms;    example_config.sh uFldNodeComms    
+cdmis; cd uFldPathCheck;    example_config.sh uFldPathCheck    
+cdmis; cd uFldScope;        example_config.sh uFldScope        
+cdmis; cd uFldShoreBroker;  example_config.sh uFldShoreBroker  
+cdmis; cd uFunctionVis;     example_config.sh uFunctionVis     
+cdmis; cd uHelmScope;       example_config.sh uHelmScope       
+cdmis; cd uMOOSClient;      example_config.sh uMOOSClient      
+cdmis; cd uPokeDB;          example_config.sh uPokeDB          
+cdmis; cd uProcessWatch;    example_config.sh uProcessWatch    
+cdmis; cd uSimBeaconRange;  example_config.sh uSimBeaconRange  
+cdmis; cd uSimContactRange; example_config.sh uSimContactRange 
+cdmis; cd uSimCurrent;      example_config.sh uSimCurrent  
+cdmis; cd uSimMarine;       example_config.sh uSimMarine
+cdmis; cd uTermCommand;     example_config.sh uTermCommand
+cdmis; cd uTimerScript;     example_config.sh uTimerScript
+cdmis; cd uXMS;             example_config.sh uXMS
+
+

@@ -1,0 +1,30 @@
+=============================================================== 
+pHelmIvP Example MOOS Configuration                             
+=============================================================== 
+                                                                
+ProcessConfig = pHelmIvP                                        
+{                                                               
+  AppTick   = 4                                                 
+  CommsTick = 4                                                 
+                                                                
+  // Configuring behavior file and decision domain              
+  behaviors   =  filename.bhv                                   
+  domain      =  course:0:359:360                               
+  domain      =  speed:0:2:21                                   
+  domain      =  depth:0:1000:1001                              
+                                                                
+  // Configure Helm Engagement policies                         
+  start_engaged        = false     // or {true}                 
+  allow_disengaged     = true      // or {false}                
+  disengage_on_allstop = false     // or {true}                 
+                                                                
+  // Provide alternative to MOOS_MANUAL_OVERRIDE directive      
+  other_override_var   = AUTONOMY_OVERRIDE                      
+                                                                
+  // Handle possible time skews from external communities       
+  node_skew            = charlie,45  // vehicle_name, secs   
+  ok_skew              = 60          // or {any}             
+                                                                
+  // Configure the verbosity of terminal output.                
+  verbose              = terse   // or {true,false,quiet}    
+}                                                               

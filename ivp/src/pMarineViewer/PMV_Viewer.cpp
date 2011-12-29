@@ -54,7 +54,7 @@ PMV_Viewer::PMV_Viewer(int x, int y, int w, int h, const char *l)
   m_lclick_ix = 0;
   m_rclick_ix = 0;
   
-  string str = "x=$(XPOS),y=$(YPOS),lat=$(LAT),lon=$(LON)";
+  string str = "x=$(XPOS),y=$(YPOS),lat=$(LAT),lon=$(LON),";
   str += "vname=$(VNAME),counter=$(IX)";
   VarDataPair lft_pair("MVIEWER_LCLICK", str); 
   VarDataPair rgt_pair("MVIEWER_RCLICK", str);
@@ -84,7 +84,8 @@ void PMV_Viewer::draw()
     vector<XYSegList> segls   = m_geoshapes_map.getSegLists(vnames[i]);
     vector<XYCircle>  circles = m_geoshapes_map.getCircles(vnames[i]);
     vector<XYVector>  vectors = m_geoshapes_map.getVectors(vnames[i]);
-    vector<XYRangePulse> pulses = m_geoshapes_map.getRangePulses(vnames[i]);
+    vector<XYRangePulse> rng_pulses = m_geoshapes_map.getRangePulses(vnames[i]);
+    vector<XYCommsPulse> cms_pulses = m_geoshapes_map.getCommsPulses(vnames[i]);
     vector<XYMarker>  markers = m_geoshapes_map.getMarkers(vnames[i]);
 
     drawPolygons(polys);
@@ -94,7 +95,8 @@ void PMV_Viewer::draw()
     drawCircles(circles);
     drawPoints(points);
     drawVectors(vectors);
-    drawRangePulses(pulses, m_curr_time);
+    drawRangePulses(rng_pulses, m_curr_time);
+    drawCommsPulses(cms_pulses, m_curr_time);
     drawMarkers(markers);
   }
 
@@ -177,8 +179,12 @@ int PMV_Viewer::handle(int event)
 
 bool PMV_Viewer::setParam(string param, string value)
 {
+  if(strContains(param, "comms"))
+    cout << "PMV_VIewer::setparam: " << param << " value:" << value << endl;
   if(MarineViewer::setParam(param, value))
     return(true);
+  if(strContains(param, "comms"))
+    cout << "PMV_VIewer::setparam(B): " << param << " value:" << value << endl;
 
   param = tolower(stripBlankEnds(param));
   value = stripBlankEnds(value);

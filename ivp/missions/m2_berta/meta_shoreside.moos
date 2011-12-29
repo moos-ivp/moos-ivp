@@ -14,11 +14,11 @@ Processconfig = ANTLER
   MSBetweenLaunches = 200
 
   Run = MOOSDB          @ NewConsole = false
-  Run = pMOOSBridge     @ NewConsole = false
+  Run = pMOOSBridge     @ NewConsole = true
   Run = uTimerScript    @ NewConsole = false
   Run = pMarineViewer   @ NewConsole = false
   Run = pLogger         @ NewConsole = false
-  //Run = pSearchGrid     @ NewConsole = false
+  Run = pSearchGrid     @ NewConsole = false
 }
 
 //--------------------------------------------------

@@ -70,6 +70,7 @@ std::string doubleToHex(double);
 
 std::string packageToString(const std::vector<std::string>&);
 
+bool isValidIPAddress(const std::string&);
 bool strContains(const std::string&, const std::string&);
 bool strContains(const std::string&, const char);
 bool strContainsWhite(const std::string&);

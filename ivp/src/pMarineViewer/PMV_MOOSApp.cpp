@@ -206,6 +206,7 @@ void PMV_MOOSApp::registerVariables()
   m_Comms.Register("VIEW_SEGLIST", 0);
   m_Comms.Register("TRAIL_RESET",  0);
   m_Comms.Register("VIEW_MARKER",  0);
+  m_Comms.Register("VIEW_COMMS_PULSE", 0);
   m_Comms.Register("BEARING_LINE", 0);
   m_Comms.Register("GRID_CONFIG",  0);
   m_Comms.Register("GRID_DELTA",   0);
@@ -306,13 +307,12 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
     if(key == "VIEW_POLYGON")           cout << "P";
     else if(key == "VIEW_SEGLIST")      cout << "S";
     else if(key == "VIEW_POINT")        cout << ".";
+    else if(key == "VIEW_MARKER")       cout << "M";
     else if(key == "VIEW_VECTOR")       cout << "V";
     else if(key == "GRID_CONFIG")       cout << "X";
     else if(key == "NODE_REPORT")       cout << "*";
     else if(key == "NODE_REPORT_LOCAL") cout << "*";
-    else if(key == "GRID_CONFIG")       cout << "X";
     else if(key == "GRID_DELTA")        cout << "G";
-    else if(key == "VIEW_MARKER")       cout << "M";
     cout << flush;
     if(handled)
       handled_msgs++;

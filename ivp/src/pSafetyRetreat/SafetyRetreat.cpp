@@ -32,10 +32,18 @@ using namespace std;
 
 SafetyRetreat::SafetyRetreat()
 {
-  m_retreat_duration = 1200;   // 20 minutes
+  // Initialize configuration variables
+  m_retreat_duration  = 1200;   // 20 minutes
+  m_retreat_message   = "UP_RETREAT";
+  m_retreat_cue       = "THREAT_DETECTED";
+  m_retreat_notify    = "SAFETY_RETREAT";
+  m_verbose           = true; 
+
+  // Initialize state variables
   m_mark_time = 0;
-  m_verbose   = false; 
   m_iteration = 0;
+  m_osx       = 0;
+  m_osy       = 0;
 }
 
 //---------------------------------------------------------

@@ -1932,6 +1932,92 @@ void MarineViewer::drawRangePulse(const XYRangePulse& pulse,
 }
 
 //-------------------------------------------------------------
+// Procedure: drawCommsPulses
+
+void MarineViewer::drawCommsPulses(const vector<XYCommsPulse>& pulses,
+				   double timestamp)
+{
+  // If the viewable parameter is set to false just return. In 
+  // querying the parameter the optional "true" argument means return
+  // true if nothing is known about the parameter.
+  if(!m_geo_settings.viewable("comms_pulses_viewable_all", true))
+    return;
+
+  unsigned int i, vsize = pulses.size();
+
+  for(i=0; i<vsize; i++)
+    if(pulses[i].active())
+      drawCommsPulse(pulses[i], timestamp);
+}
+
+//-------------------------------------------------------------
+// Procedure: drawCommsPulse
+
+void MarineViewer::drawCommsPulse(const XYCommsPulse& pulse,
+				  double timestamp)
+{
+  ColorPack fill_c("light_blue");
+  if(pulse.color_set("fill"))           // fill_color
+    fill_c = pulse.get_color("fill");
+  
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glOrtho(0, w(), 0, h(), -1 ,1);
+  
+  double tx = meters2img('x', 0);
+  double ty = meters2img('y', 0);
+  double qx = img2view('x', tx);
+  double qy = img2view('y', ty);
+
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
+  glLoadIdentity();
+  
+  glLineWidth(1.0); 
+  glTranslatef(qx, qy, 0);
+  glScalef(m_zoom, m_zoom, m_zoom);
+
+  vector<double> points = pulse.get_triangle(timestamp);
+  unsigned int vsize   = points.size();
+  unsigned int i, pcnt = vsize;
+
+  double pix_per_mtr_x = m_back_img.get_pix_per_mtr_x();
+  double pix_per_mtr_y = m_back_img.get_pix_per_mtr_y();
+  for(i=0; i<pcnt; i=i+2) {
+    points[i]   *= pix_per_mtr_x;
+    points[i+1] *= pix_per_mtr_y;
+  }
+
+#if 0
+  // Draw the triangle line
+  glColor3f(fill_c.red(), fill_c.grn(), fill_c.blu());
+  glBegin(GL_LINE_LOOP);
+  for(i=0; i<pcnt; i=i+2) 
+    glVertex2f(points[i], points[i+1]);
+  glEnd();
+#endif
+
+  // Determine the fill degree [0,1]. 1 is completely opaque
+  //double fill_degree = pulse.get_fill(timestamp);
+  double fill_degree = 0.5;
+
+  // If filled option is on, draw the interior of the triangle
+  if((fill_degree > 0) && fill_c.visible()) {
+    glEnable(GL_BLEND);
+    glColor4f(fill_c.red(), fill_c.grn(), fill_c.blu(), fill_degree);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBegin(GL_POLYGON);
+    for(i=0; i<pcnt; i=i+2)
+      glVertex2f(points[i], points[i+1]);
+    glEnd();
+    glDisable(GL_BLEND);
+  }
+
+  glFlush();
+  glPopMatrix();  
+}
+
+//-------------------------------------------------------------
 // Procedure: drawPoints
 
 void MarineViewer::drawPoints(const vector<XYPoint>& points)

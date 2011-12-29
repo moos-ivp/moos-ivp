@@ -61,7 +61,8 @@ VPlug_GeoSettings::VPlug_GeoSettings()
   m_viewable_map["vector_viewable_labels"]  = true;
   m_viewable_map["grid_viewable_all"]       = true;
   m_viewable_map["grid_viewable_labels"]    = true;
-
+  m_viewable_map["comms_pulses_viewable_all"] = true;
+  
   m_gsize_map["polygon_edge_width"]  = 1.0;
   m_gsize_map["polygon_vertex_size"] = 3.0;
   m_gsize_map["seglist_edge_width"]  = 1.0;
@@ -123,6 +124,8 @@ bool VPlug_GeoSettings::setParam(const string& param, string value)
   else if(param == "grid_viewable_all")
     return(setViewableMapping(param, value));
   else if(param == "grid_viewable_labels")
+    return(setViewableMapping(param, value));
+  else if(param == "comms_pulses_viewable_all")
     return(setViewableMapping(param, value));
 
   else if(param == "polygon_label_color")
@@ -218,6 +221,8 @@ bool VPlug_GeoSettings::setViewableMapping(string param, string value)
   param = tolower(param);
   value = tolower(value);
 
+  cout << "setViewableMapping - param: " << param << "  value:" << value << endl;
+
   if((value == "true") || (value == "on")) {
     m_viewable_map[param] = true;
     return(true);
@@ -238,6 +243,8 @@ bool VPlug_GeoSettings::setViewableMapping(string param, string value)
       m_viewable_map[param] = !curr_value;
     }
   }
+
+
   return(true);
 }
 

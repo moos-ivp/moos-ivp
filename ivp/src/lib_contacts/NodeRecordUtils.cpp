@@ -27,11 +27,11 @@
 using namespace std;
 
 //---------------------------------------------------------
-// Procedure: handleNodeReport
+// Procedure: string2NodeRecord
 //   Example: NAME=alpha,TYPE=KAYAK,UTC_TIME=1267294386.51,
 //            X=29.66,Y=-23.49,LAT=43.825089, LON=-70.330030, 
 //            SPD=2.00, HDG=119.06,YAW=119.05677,DEPTH=0.00,     
-//            LENGTH=4.0,MODE=DRIVE
+//            LENGTH=4.0,MODE=DRIVE,GROUP=A
 
 NodeRecord string2NodeRecord(const string& node_rep_string)
 {
@@ -48,6 +48,8 @@ NodeRecord string2NodeRecord(const string& node_rep_string)
       new_record.setName(value);
     else if(param == "TYPE")
       new_record.setType(value);
+    else if(param == "GROUP")
+      new_record.setGroup(value);
     else if(param == "MODE")
       new_record.setMode(value);
     else if(param == "ALLSTOP")

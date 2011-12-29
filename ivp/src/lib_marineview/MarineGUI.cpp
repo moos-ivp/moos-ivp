@@ -189,6 +189,7 @@ void MarineGUI::augmentMenu()
 
   mbar->add("GeoAttr/Datum - Toggle", 'd', (Fl_Callback*)MarineGUI::cb_ToggleDatum, (void*)0, FL_MENU_DIVIDER);
 
+  // --------------------------------- Markers
   mbar->add("GeoAttr/Markers - Edit/marker_scale reset", FL_CTRL+FL_ALT+'m', (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)2000, 0);
   mbar->add("GeoAttr/Markers - Edit/marker_scale *= 0.80", FL_CTRL+'m', (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)2001, 0);
   mbar->add("GeoAttr/Markers - Edit/marker_scale *= 1.25", FL_ALT+'m', (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)2002, FL_MENU_DIVIDER);
@@ -197,6 +198,7 @@ void MarineGUI::augmentMenu()
 
   mbar->add("GeoAttr/Markers - Toggle", 'm', (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)2050, FL_MENU_DIVIDER);
 
+  // --------------------------------- Op Area
   mbar->add("GeoAttr/OpArea - Edit/op_area reset", FL_CTRL+FL_ALT+'u', (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)2100, 0);
   mbar->add("GeoAttr/OpArea - Edit/op_area lighter *= 0.80", FL_CTRL+'u', (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)2101, 0);
   mbar->add("GeoAttr/OpArea - Edit/op_area darker *= 1.25", FL_ALT+'u', (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)2102, FL_MENU_DIVIDER);
@@ -204,6 +206,7 @@ void MarineGUI::augmentMenu()
 
   mbar->add("GeoAttr/OpArea - Toggle", 'u', (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)2150, FL_MENU_DIVIDER);
 
+  // --------------------------------- DropPoints
   mbar->add("GeoAttr/DropPoints - Edit/clear all", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)3100, 0);
   mbar->add("GeoAttr/DropPoints - Edit/clear last", FL_CTRL+'r', (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)3101, FL_MENU_DIVIDER);
   mbar->add("GeoAttr/DropPoints - Edit/drop_point_coords=as-dropped", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)3110, 0);
@@ -218,6 +221,9 @@ void MarineGUI::augmentMenu()
   mbar->add("GeoAttr/DropPoints - Edit/drop_point_vertex_size=10", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)3125, 0);
 
   mbar->add("GeoAttr/DropPoints - Toggle", 'r', (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)3150, FL_MENU_DIVIDER);
+
+  // --------------------------------- CommsPulses
+  mbar->add("GeoAttr/CommsPulses - Toggle", '@', (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)4150, FL_MENU_DIVIDER);
 }
 
 
@@ -429,6 +435,8 @@ inline void MarineGUI::cb_MG_SetGeoAttr_i(int v) {
   else if(v==3124) cmviewer->setParam("drop_point_vertex_size", "5");
   else if(v==3125) cmviewer->setParam("drop_point_vertex_size", "10");
   else if(v==3150) cmviewer->setParam("drop_point_viewable_all", "toggle");
+
+  else if(v==4150) cmviewer->setParam("comms_pulses_viewable_all", "toggle");
 
   else 
     return;

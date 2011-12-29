@@ -15,7 +15,7 @@ LongOrigin = -70.330400
 // Antler configuration  block
 ProcessConfig = ANTLER
 {
-  MSBetweenLaunches = 1000
+  MSBetweenLaunches = 200
 
   Run = MOOSDB		@ NewConsole = false
   Run = pLogger         @ NewConsole = false
@@ -25,8 +25,19 @@ ProcessConfig = ANTLER
   Run = pHelmIvP	@ NewConsole = true
   Run = pMarineViewer	@ NewConsole = true
   Run = uProcessWatch	@ NewConsole = true
+  Run = pHostInfo	@ NewConsole = true
 }
 
+//------------------------------------------
+// pHostInfo config block
+
+ProcessConfig = pHostInfo
+{
+  AppTick   = 1
+  CommsTick = 1
+}
+
+  
 //------------------------------------------
 // uProcessWatch config block
 
@@ -76,8 +87,7 @@ ProcessConfig = uXMS
   AppTick   = 0.5
   CommsTick = 0.5
 
-  VAR = NAV_X
-  VAR = NAV_Y
+  VAR = NAV_X, NAV_Y, DB_CLIENTS
   VAR = NAV_SPEED
   VAR = NAV_HEADING
   VAR = DESIRED_HEADING
@@ -88,6 +98,9 @@ ProcessConfig = uXMS
   VAR = DEPLOY
   VAR = RETURN
   VAR = IVPHELM_ENGAGED
+
+  COLORMAP = pHelmIvP, red
+  COLORMAP = DB_CLIENTS, blue
 }
 
 

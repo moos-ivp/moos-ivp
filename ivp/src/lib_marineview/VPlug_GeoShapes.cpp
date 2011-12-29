@@ -20,6 +20,7 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 #include <iostream>
+#include <iostream>
 #include <cstdlib>
 #include "VPlug_GeoShapes.h"
 #include "MBUtils.h"
@@ -29,6 +30,7 @@
 #include "XYFormatUtilsCircle.h"
 #include "XYFormatUtilsVector.h"
 #include "XYFormatUtilsRangePulse.h"
+#include "XYFormatUtilsCommsPulse.h"
 #include "XYFormatUtilsMarker.h"
 #include "XYFormatUtilsConvexGrid.h"
 #include "ColorParse.h"
@@ -203,6 +205,27 @@ void VPlug_GeoShapes::addRangePulse(const XYRangePulse& new_pulse)
     }
   }
   m_range_pulses.push_back(new_pulse);  
+}
+
+//-----------------------------------------------------------
+// Procedure: addCommsPulse
+
+void VPlug_GeoShapes::addCommsPulse(const XYCommsPulse& new_pulse)
+{
+  string new_label = new_pulse.get_label();
+  if(new_label == "") {
+    m_comms_pulses.push_back(new_pulse);
+    return;
+  }
+  
+  unsigned int i, vsize = m_comms_pulses.size();
+  for(i=0; i<vsize; i++) {
+    if(m_comms_pulses[i].get_label() == new_label) {
+      m_comms_pulses[i] = new_pulse;
+      return;
+    }
+  }
+  m_comms_pulses.push_back(new_pulse);  
 }
 
 //-----------------------------------------------------------
@@ -390,6 +413,19 @@ bool VPlug_GeoShapes::addRangePulse(const string& pulse_str)
   XYRangePulse new_pulse = string2RangePulse(pulse_str);
   if(new_pulse.valid()) {
     addRangePulse(new_pulse);
+    return(true);
+  }
+  return(false);
+}
+
+//-----------------------------------------------------------
+// Procedure: addCommsPulse
+
+bool VPlug_GeoShapes::addCommsPulse(const string& pulse_str)
+{
+  XYCommsPulse new_pulse = string2CommsPulse(pulse_str);
+  if(new_pulse.valid()) {
+    addCommsPulse(new_pulse);
     return(true);
   }
   return(false);

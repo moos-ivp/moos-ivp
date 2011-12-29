@@ -16,7 +16,7 @@ endif (${WIN32})
 SET(SRC
    USM_MOOSApp.cpp
    USM_Model.cpp
-   USM_ExampleConfig.cpp
+   USM_Info.cpp
    SimEngine.cpp
    ThrustMap.cpp
    main.cpp

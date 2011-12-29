@@ -37,6 +37,7 @@
 #include "XYCircle.h"
 #include "XYHexagon.h"
 #include "XYRangePulse.h"
+#include "XYCommsPulse.h"
 #include "OpAreaSpec.h"
 #include "MOOSGeodesy.h"
 #include "VPlug_GeoShapes.h"
@@ -110,6 +111,9 @@ protected:
 
   void  drawRangePulses(const std::vector<XYRangePulse>&, double timstamp);
   void  drawRangePulse(const XYRangePulse&, double timestamp);
+  
+  void  drawCommsPulses(const std::vector<XYCommsPulse>&, double timstamp);
+  void  drawCommsPulse(const XYCommsPulse&, double timestamp);
   
   void  drawPoints(const std::vector<XYPoint>&);
   void  drawPoint(const XYPoint&);

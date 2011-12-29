@@ -1,25 +1,23 @@
-//-------------------------------------------------------------
-// uHelmScope configuration block
-
-ProcessConfig = uHelmScope
-{
-  AppTick   = 1
-  CommsTick = 1
-
-  ProcessConfig = uHelmScope
-  {
-    AppTick    = 1
-    CommsTick  = 1
-  
-    PAUSED             = true     // All Parameters and Parameter-Values
-    HZ_MEMORY          = 5, 100   // are __NOT__ Case Sensitive
-    DISPLAY_MOOS_SCOPE = true
-    DISPLAY_BHV_POSTS  = true
-    DISPLAY_VIRGINS    = true
-    DISPLAY_STATEVARS  = true
-    TRUNCATED_OUTPUT   = false
-    BEHAVIORS_CONCISE  = false 
-
-    VAR = BHV_WARNING, AIS_REPORT_LOCAL   // MOOS Variable names 
-    VAR = PROC_WATCH_SUMMARY              // __ARE__ Case Sensitive
- }
+=============================================================== 
+uHelmScope Example MOOS Configuration                           
+=============================================================== 
+                                                                
+ProcessConfig = uHelmScope                                      
+{                                                               
+  AppTick   = 1    // MOOSApp default is 4                   
+  CommsTick = 1    // MOOSApp default is 4                   
+                                                                
+  paused    = false   // default                                
+                                                                
+  hz_memory = 5,100   // default                                
+                                                                
+  display_moos_scope = true     // default                   
+  display_bhv_posts  = true     // default                   
+  display_virgins    = true     // default                   
+  display_statevars  = true     // default                   
+  truncated_output   = false    // default                   
+  behaviors_concise  = true     // default                   
+                                                                
+  var  = NAV_X, NAV_Y, NAV_SPEED, NAV_DEPTH   // MOOS vars are  
+  var  = DESIRED_HEADING, DESIRED_SPEED       // case sensitive 
+}                                       

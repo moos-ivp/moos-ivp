@@ -254,7 +254,8 @@ bool NodeReporter::Iterate()
     double elapsed_time = m_utc_time - m_record_gt_updated;
     if(elapsed_time < 5) {
       if(m_crossfill_policy != "literal")
-	crossFillCoords(m_record_gt, m_nav_xy_updated_gt, m_nav_latlon_updated_gt);
+	crossFillCoords(m_record_gt, m_nav_xy_updated_gt, 
+			m_nav_latlon_updated_gt);
       
       string report_gt = assembleNodeReport(m_record_gt);
       m_Comms.Notify(m_node_report_var, report_gt);
@@ -349,6 +350,8 @@ bool NodeReporter::OnStartUp()
 	if(!strContainsWhite(value))
 	  m_plat_report_var = value;
       }      
+      else if(param == "GROUP")
+	m_group_name = value;
       else if(param == "NOHELM_THRESHOLD") {
 	if(isNumber(value) && (dval > 0))
 	  m_nohelm_thresh = dval;
@@ -382,6 +385,7 @@ bool NodeReporter::OnStartUp()
   }
   
   m_record.setName(m_vessel_name);
+  m_record.setGroup(m_group_name);
   // To start with m_record_gt is just a copy of m_record.
   m_record_gt = m_record;       
 

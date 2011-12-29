@@ -16,7 +16,7 @@ endif (${WIN32})
 SET(SRC
    SIMCOR_MOOSApp.cpp
    SIMCOR_Model.cpp
-   SIMCOR_ExampleConfig.cpp
+   SIMCOR_Info.cpp
    main.cpp
 )
 

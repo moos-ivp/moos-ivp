@@ -15,6 +15,7 @@ endif (${WIN32})
 
 SET(SRC
    USC_MOOSApp.cpp
+   USC_Info.cpp
    main.cpp
 )
 

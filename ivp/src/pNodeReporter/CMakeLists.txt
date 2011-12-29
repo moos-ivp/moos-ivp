@@ -15,7 +15,7 @@ endif (${WIN32})
 
 SET(SRC
    NodeReporter.cpp
-   PNR_ExampleConfig.cpp
+   NodeReporter_Info.cpp
    main.cpp
 )
 

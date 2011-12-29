@@ -14,9 +14,9 @@ else (${WIN32})
 endif (${WIN32})
 
 SET(SRC 
-  TermCommand.cpp
   main.cpp
-  UTC_ExampleConfig.cpp)
+  TermCommand.cpp
+  TermCommand_Info.cpp)
 
 ADD_EXECUTABLE(uTermCommand ${SRC})
 

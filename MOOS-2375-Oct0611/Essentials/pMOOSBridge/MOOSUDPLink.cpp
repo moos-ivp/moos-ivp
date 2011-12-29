@@ -136,7 +136,7 @@ bool CMOOSUDPLink::ListenLoop()
             {
             	if(P.Serialize(m_InBox,false))
                 {
-                	MOOSTrace("%d MOOSMsg's held\n",m_InBox.size());
+		  //MOOSTrace("%d MOOSMsg's held\n",m_InBox.size()); // turned off by mikerb
                 }
                 else
                 {

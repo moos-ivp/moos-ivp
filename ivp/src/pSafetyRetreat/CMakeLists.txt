@@ -15,7 +15,6 @@ else (${WIN32})
      )
 endif (${WIN32})
 
-
 FILE(GLOB SRC *.cpp)
 
 ADD_EXECUTABLE(pSafetyRetreat ${SRC})

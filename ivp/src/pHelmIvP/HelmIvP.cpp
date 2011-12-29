@@ -201,7 +201,7 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
 	  }
 	}
       }
-      else if(moosvar == "HELM_VERBOSE") {
+      else if(moosvar == "IVPHELM_VERBOSE") {
 	if((sval == "verbose") || (sval == "quiet") || (sval == "terse"))
 	  m_verbose = sval;
       }
@@ -752,7 +752,7 @@ bool HelmIvP::updateInfoBuffer(CMOOSMsg &msg)
   if(msg.IsDataType(MOOS_DOUBLE)) {
     return(m_info_buffer->setValue(moosvar, msg.GetDouble()));
   }
-  else if(msg.IsDataType(MOOS_STRING)) {
+  else if(msg.IsString()) {
     return(m_info_buffer->setValue(moosvar, msg.GetString()));
   }
   return(false);
@@ -777,7 +777,7 @@ void HelmIvP::registerVariables()
   registerSingleVariable("MOOS_MANUAL_OVERIDE");
   registerSingleVariable("MOOS_MANUAL_OVERRIDE");
   registerSingleVariable("RESTART_HELM");
-  registerSingleVariable("HELM_VERBOSE");
+  registerSingleVariable("IVPHELM_VERBOSE");
   registerSingleVariable("IVPHELM_REJOURNAL");
   
   registerSingleVariable("NAV_SPEED");

@@ -22,62 +22,41 @@
 /*****************************************************************/
 
 #include <string>
-#include "NodeReporter.h"
 #include "MBUtils.h"
-#include "ReleaseInfo.h"
-#include "PNR_ExampleConfig.h"
 #include "ColorParse.h"
+#include "NodeReporter.h"
+#include "NodeReporter_Info.h"
 
 using namespace std;
 
 int main(int argc, char *argv[])
 {
-  // Look for a request for version information
-  if(scanArgs(argc, argv, "-v", "--version", "-version")) {
-    showReleaseInfo("pNodeReporter", "gpl");
-    return(0);
-  }
-  // Look for a request for example configuration information
-  if(scanArgs(argc, argv, "-e", "--example", "-example")) {
-    showExampleConfig();
-    return(0);
-  }
+  string mission_file;
+  string run_command = argv[0];
 
-  int    i;
-  string mission_file = "";
-  string run_command  = argv[0];
-  bool   help_requested  = false;
-
-  for(i=1; i<argc; i++) {
+  for(int i=1; i<argc; i++) {
     string argi = argv[i];
-    if(strEnds(argi, ".moos"))
+    if((argi=="-v") || (argi=="--version") || (argi=="-version"))
+      showReleaseInfoAndExit();
+    else if((argi=="-e") || (argi=="--example") || (argi=="-example"))
+      showExampleConfigAndExit();
+    else if((argi == "-h") || (argi == "--help") || (argi=="-help"))
+      showHelpAndExit();
+    else if((argi == "-i") || (argi == "--interface"))
+      showInterfaceAndExit();
+    else if(strEnds(argi, ".moos") || strEnds(argi, ".moos++"))
       mission_file = argv[i];
-    else if(strEnds(argi, ".moos++"))
-      mission_file = argv[i];
-    else if((argi == "--help")||(argi=="-h"))
-      help_requested = true;
     else if(strBegins(argi, "--alias="))
       run_command = argi.substr(8);
+    else if(i==2)
+      run_command = argi;
   }
   
-  if((mission_file == "") || help_requested) {
-    cout << "Usage: pNodeReporter file.moos [OPTIONS]               " << endl;
-    cout << "                                                          " << endl;
-    cout << "Options:                                                  " << endl;
-    cout << "  --alias=<ProcessName>                                   " << endl;
-    cout << "      Launch pNodeReporter with the given process name    " << endl;
-    cout << "      rather than pNodeReporter.                          " << endl;
-    cout << "  --example, -e                                           " << endl;
-    cout << "      Display example MOOS configuration block.           " << endl;
-    cout << "  --help, -h                                              " << endl;
-    cout << "      Display this help message.                          " << endl;
-    cout << "  --version,-v                                            " << endl;
-    cout << "      Display the release version of pNodeReporter.       " << endl;
-    return(0);
-  }
+  if(mission_file == "")
+    showHelpAndExit();
 
   cout << termColor("green");
-  cout << "pNodeReporter running as: " << run_command << endl;
+  cout << "pNodeReporter launching as " << run_command << endl;
   cout << termColor() << endl;
 
   NodeReporter node_reporter;

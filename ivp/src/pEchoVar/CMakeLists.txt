@@ -15,8 +15,9 @@ endif (${WIN32})
 
 SET(SRC
    EchoVar.cpp  
+   EchoVar_Info.cpp  
    EFlipper.cpp
-   mainEchoVar.cpp
+   main.cpp
 )
 
 ADD_EXECUTABLE(pEchoVar ${SRC})
