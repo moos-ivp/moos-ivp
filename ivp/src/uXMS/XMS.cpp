@@ -61,7 +61,7 @@ XMS::XMS(string server_host, long int server_port)
   m_db_start_time     = 0;
   
   m_filter            = "";
-  m_history_length    = 20;
+  m_history_length    = 200;
   m_history_mode      = false;
   m_report_histvar    = true;
   
@@ -369,6 +369,18 @@ void XMS::handleCommand(char c)
       m_history_length = 100;
     m_update_requested = true;
     break;
+  case '}':
+    m_trunc_data       *= 1.2;
+    m_trunc_data_start = m_trunc_data;
+    m_update_requested = true;
+    break;
+  case '{':
+    m_trunc_data       *= 0.8;
+    if((m_trunc_data > 0) && (m_trunc_data < 15))
+      m_trunc_data = 15;
+    m_trunc_data_start = m_trunc_data;
+    m_update_requested = true;
+    break;
   case ' ':
     m_refresh_mode = "paused";
     m_update_requested = true;
@@ -387,10 +399,10 @@ void XMS::handleCommand(char c)
   case '`':
     if(m_trunc_data == 0)
       m_trunc_data = m_trunc_data_start;
-    else if(m_trunc_data == m_trunc_data_start)
-      m_trunc_data = m_trunc_data * 0.8;
-    else 
+    else {
+      m_trunc_data_start = m_trunc_data;
       m_trunc_data = 0;
+    }
     m_update_requested = true;
     break;
     
@@ -565,6 +577,7 @@ void XMS::setFilter(string str)
 void XMS::setTruncData(double v)
 {
   m_trunc_data = vclip(v, 0, 1000);
+  m_trunc_data_start = m_trunc_data;
 }
 
 //------------------------------------------------------------
@@ -877,8 +890,11 @@ void XMS::printReport()
       if(m_var_type[i] == "string") {
 	if(m_var_vals[i] != "n/a") {
 	  if(m_trunc_data > 0) {
-	    string tstr = truncString(m_var_vals[i], m_trunc_data, "middle");	    
-	    printf("\"%s\"", tstr.c_str());
+	    string tstr = truncString(m_var_vals[i], m_trunc_data);
+	    if(tstr.length() < m_var_vals[i].length())
+	      printf("\"%s...\"", tstr.c_str());
+	    else
+	      printf("\"%s\"", tstr.c_str());
 	  }
 	  else
 	    printf("\"%s\"", m_var_vals[i].c_str());	    

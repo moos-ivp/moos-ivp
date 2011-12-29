@@ -35,6 +35,7 @@
 #include "XYPoint.h"
 #include "XYVector.h"
 #include "XYRangePulse.h"
+#include "XYCommsPulse.h"
 #include "XYMarker.h"
 #include "ColorPack.h"
 
@@ -60,6 +61,7 @@ public:
   void addGrid(const XYGrid&);
   void addConvexGrid(const XYConvexGrid&);
   void addRangePulse(const XYRangePulse&);
+  void addCommsPulse(const XYCommsPulse&);
   void addMarker(const XYMarker&);
 
   bool addPolygon(const std::string&);
@@ -70,6 +72,7 @@ public:
   bool addGrid(const std::string&);
   bool addConvexGrid(const std::string&);
   bool addRangePulse(const std::string&);
+  bool addCommsPulse(const std::string&);
   bool addMarker(const std::string&);
 
   bool updateGrid(const std::string&);
@@ -84,6 +87,7 @@ public:
   unsigned int sizeGrids() const    {return(m_grids.size());};
   unsigned int sizeConvexGrids() const {return(m_convex_grids.size());};
   unsigned int sizeRangePulses() const {return(m_range_pulses.size());};
+  unsigned int sizeCommsPulses() const {return(m_comms_pulses.size());};
   unsigned int sizeMarkers() const {return(m_markers.size());};
 
   XYPolygon& poly(unsigned int i)   {return(m_polygons[i]);};
@@ -95,6 +99,7 @@ public:
   XYGrid&    grid(unsigned int i)   {return(m_grids[i]);};
   XYConvexGrid& convex_grid(unsigned int i) {return(m_convex_grids[i]);};
   XYRangePulse& range_pulse(unsigned int i) {return(m_range_pulses[i]);};
+  XYCommsPulse& comms_pulse(unsigned int i) {return(m_comms_pulses[i]);};
   XYMarker&  marker(unsigned int i) {return(m_markers[i]);};
 
   std::vector<XYPolygon> getPolygons() const {return(m_polygons);};
@@ -106,6 +111,7 @@ public:
   std::vector<XYGrid>    getGrids() const    {return(m_grids);};
   std::vector<XYConvexGrid> getConvexGrids() const {return(m_convex_grids);};
   std::vector<XYRangePulse> getRangePulses() const {return(m_range_pulses);};
+  std::vector<XYCommsPulse> getCommsPulses() const {return(m_comms_pulses);};
   std::vector<XYMarker>  getMarkers() const  {return(m_markers);};
 
   XYPolygon    getPolygon(unsigned int) const;
@@ -117,6 +123,7 @@ public:
   XYPoint      getPoint(unsigned int) const;
   XYVector     getVector(unsigned int) const;
   XYRangePulse getRangePulse(unsigned int) const;
+  XYCommsPulse getCommsPulse(unsigned int) const;
   XYMarker     getMarker(unsigned int) const;
 
  protected:
@@ -132,6 +139,7 @@ protected:
   std::vector<XYPoint>      m_points;
   std::vector<XYVector>     m_vectors;
   std::vector<XYRangePulse> m_range_pulses;
+  std::vector<XYCommsPulse> m_comms_pulses;
   std::vector<XYMarker>     m_markers;
 
   double  m_xmin;

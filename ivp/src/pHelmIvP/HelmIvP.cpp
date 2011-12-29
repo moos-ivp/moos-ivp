@@ -160,7 +160,7 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
       }
       else if(moosvar == "IVPHELM_ENGAGED")
 	m_init_vars_ready = true;
-      else if(moosvar == "HELM_VERBOSE") {
+      else if(moosvar == "IVPHELM_VERBOSE") {
 	if((sval == "verbose") || (sval == "quiet") || (sval == "terse"))
 	  m_verbose = sval;
       }
@@ -717,7 +717,7 @@ void HelmIvP::registerVariables()
   registerSingleVariable("MOOS_MANUAL_OVERIDE");
   registerSingleVariable("MOOS_MANUAL_OVERRIDE");
   registerSingleVariable("RESTART_HELM");
-  registerSingleVariable("HELM_VERBOSE");
+  registerSingleVariable("IVPHELM_VERBOSE");
   registerSingleVariable("IVPHELM_REJOURNAL");
   
   registerSingleVariable("NAV_SPEED");

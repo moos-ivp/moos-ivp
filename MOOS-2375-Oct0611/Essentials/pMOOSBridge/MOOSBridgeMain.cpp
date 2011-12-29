@@ -31,10 +31,6 @@
 #include <MOOSLIB/MOOSLib.h>
 #include "MOOSBridge.h"
 
-
-
-
-
 int main(int argc,char* argv[])
 {
     //Test();
@@ -54,7 +50,8 @@ int main(int argc,char* argv[])
 
     CMOOSBridge TheBridge;
 
-    TheBridge.Run(sMissionFile,sMOOSName);
+    //TheBridge.Run(sMissionFile,sMOOSName);
+    TheBridge.Run(sMOOSName, sMissionFile);
 
     return 0;
 }

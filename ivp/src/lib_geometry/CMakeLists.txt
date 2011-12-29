@@ -14,6 +14,7 @@ SET(HEADERS
   GeomUtils.h
   CurrentField.h
   XYRangePulse.h
+  XYCommsPulse.h
   IO_GeomUtils.h
   LinearExtrapolator.h
   XYArc.h
@@ -27,6 +28,8 @@ SET(HEADERS
   XYFormatUtilsSegl.h
   XYFormatUtilsVector.h
   XYFormatUtilsMarker.h
+  XYFormatUtilsRangePulse.h
+  XYFormatUtilsCommsPulse.h
   XYGrid.h
   XYConvexGrid.h
   XYHexagon.h

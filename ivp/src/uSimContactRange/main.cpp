@@ -21,75 +21,50 @@
 /*****************************************************************/
 
 #include <iostream>
-#include <string>
-#include "MOOSLib.h"
-#include "MOOSGenLib.h"
-#include "SIMCOR_MOOSApp.h"
-#include "SIMCOR_ExampleConfig.h"
 #include "MBUtils.h"
 #include "ColorParse.h"
-#include "ReleaseInfo.h"
+#include "SIMCOR_MOOSApp.h"
+#include "SIMCOR_Info.h"
 
 using namespace std;
 
 int main(int argc, char *argv[])
 {
-  // Look for a request for version information
-  if(scanArgs(argc, argv, "-v", "--version", "-version")) {
-    showReleaseInfo("uSimContactRange", "gpl");
-    return(0);
-  }
+  string mission_file;
+  string run_command = argv[0];
+  string verbose;
 
-  // Look for a request for example configuration information
-  if(scanArgs(argc, argv, "-e", "--example", "-example")) {
-    showExampleConfig();
-    return(0);
-  }
-
-  int    i;
-  string mission_file = "";
-  string run_command  = argv[0];
-  bool   help_requested = false;
-  string verbose_setting;
-
-  for(i=1; i<argc; i++) {
+  for(int i=1; i<argc; i++) {
     string argi = argv[i];
-    if(strEnds(argi, ".moos"))
+    if((argi=="-v") || (argi=="--version") || (argi=="-version"))
+      showReleaseInfoAndExit();
+    else if((argi=="-e") || (argi=="--example") || (argi=="-example"))
+      showExampleConfigAndExit();
+    else if((argi=="-h") || (argi == "--help") || (argi=="-help"))
+      showHelpAndExit();
+    else if((argi=="-i") || (argi == "--interface"))
+      showInterfaceAndExit();
+    else if(strEnds(argi, ".moos") || strEnds(argi, ".moos++"))
       mission_file = argv[i];
-    else if(strEnds(argi, ".moos++"))
-      mission_file = argv[i];
-    else if((argi == "--help")||(argi=="-h"))
-      help_requested = true;
     else if(strBegins(argi, "--alias="))
       run_command = argi.substr(8);
-    else if(strBegins(argi, "--verbose="))
-      verbose_setting = tolower(argi.substr(10));
+    else if(argi=="--verbose=")
+      verbose = argi.substr(10);
+    else if(i == 2)
+      run_command = argi;
   }
   
-  if((mission_file == "") || help_requested) {
-    cout << "Usage: uSimContactRange file.moos [OPTIONS]             " << endl;
-    cout << "                                                       " << endl;
-    cout << "Options:                                               " << endl;
-    cout << "  --alias=<ProcessName>                                " << endl;
-    cout << "      Launch uSimContactRange with the given process    " << endl;
-    cout << "      name rather than uSimContactRange.                " << endl;
-    cout << "  --example, -e                                        " << endl;
-    cout << "      Display example MOOS configuration block         " << endl;
-    cout << "  --help, -h                                           " << endl;
-    cout << "      Display this help message.                       " << endl;
-    cout << "  --version,-v                                         " << endl;
-    cout << "      Display the release version of uSimContactRange   " << endl;
-    return(0);
-  }
+  if(mission_file == "")
+    showHelpAndExit();
 
   cout << termColor("green");
-  cout << "uSimContactRange running as: " << run_command << endl;
+  cout << "uSimContactRange Launching as " << run_command << endl;
   cout << termColor() << endl;
 
   SIMCOR_MOOSApp sim_active_sonar;
 
-  if(verbose_setting != "")
-    sim_active_sonar.setVerbose(verbose_setting);
+  if(verbose != "")
+    sim_active_sonar.setVerbose(verbose);
 
   sim_active_sonar.Run(run_command.c_str(), mission_file.c_str());
  

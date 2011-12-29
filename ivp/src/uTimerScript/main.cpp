@@ -2,7 +2,7 @@
 /*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: main.cpp                                             */
-/*    DATE: May 21 2009                                          */
+/*    DATE: May 21, 2009                                         */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
 /* modify it under the terms of the GNU General Public License   */
@@ -20,47 +20,32 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
-#include <string>
-#include <vector>
-#include "MOOSLib.h"
-#include "MOOSGenLib.h"
-#include "TS_MOOSApp.h"
 #include "MBUtils.h"
-#include "ReleaseInfo.h"
 #include "ColorParse.h"
-#include "TS_ExampleConfig.h"
+#include "TS_MOOSApp.h"
+#include "TS_Info.h"
 
 using namespace std;
 
 int main(int argc, char *argv[])
 {
-  // Look for a request for version information
-  if(scanArgs(argc, argv, "-v", "--version", "-version")) {
-    showReleaseInfo("uTimerScript", "gpl");
-    return(0);
-  }
-
-  // Look for a request for example configuration information
-  if(scanArgs(argc, argv, "-e", "--example", "-example")) {
-    showExampleConfig();
-    return(0);
-  }
-
-  int    i;
-  string mission_file = "";
-  string run_command  = argv[0];
-  bool   help_requested  = false;
+  string mission_file;
+  string run_command = argv[0];
   bool   verbose_setting = true;
   bool   shuffle_setting = true;
 
-  for(i=1; i<argc; i++) {
+  for(int i=1; i<argc; i++) {
     string argi = argv[i];
-    if(strEnds(argi, ".moos"))
+    if((argi=="-v") || (argi=="--version") || (argi=="-version"))
+      showReleaseInfoAndExit();
+    else if((argi=="-e") || (argi=="--example") || (argi=="-example"))
+      showExampleConfigAndExit();
+    else if((argi=="-h") || (argi == "--help") || (argi=="-help"))
+      showHelpAndExit();
+    else if((argi=="-i") || (argi == "--interface"))
+      showInterfaceAndExit();
+    else if(strEnds(argi, ".moos") || strEnds(argi, ".moos++"))
       mission_file = argv[i];
-    else if(strEnds(argi, ".moos++"))
-      mission_file = argv[i];
-    else if((argi == "--help")||(argi=="-h"))
-      help_requested = true;
     else if(strBegins(argi, "--alias="))
       run_command = argi.substr(8);
     else if(strBegins(argi, "--verbose=")) {
@@ -71,34 +56,15 @@ int main(int argc, char *argv[])
       string val = tolower(argi.substr(10));
       setBooleanOnString(shuffle_setting, val);
     }
+    else if(i == 2)
+      run_command = argi;
   }
   
-  if((mission_file == "") || help_requested) {
-    cout << "Usage: uTimerScript file.moos [OPTIONS]                " << endl;
-    cout << "                                                       " << endl;
-    cout << "Options:                                               " << endl;
-    cout << "  --alias=<ProcessName>                                " << endl;
-    cout << "      Launch uTimerScript with the given process name  " << endl;
-    cout << "      rather than uTimerScript.                        " << endl;
-    cout << "  --example, -e                                        " << endl;
-    cout << "      Display example MOOS configuration block         " << endl;
-    cout << "  --help, -h                                           " << endl;
-    cout << "      Display this help message.                       " << endl;
-    cout << "  --shuffle=Boolean (true/false)                       " << endl;
-    cout << "      If true, script is recalculated on each reset.   " << endl;
-    cout << "      If event times configured with random range, the " << endl;
-    cout << "      ordering may change after a reset.               " << endl;
-    cout << "      The default is true.                             " << endl;
-    cout << "  --verbose=Boolean (true/false)                       " << endl;
-    cout << "      Display script progress and diagnostics if true. " << endl;
-    cout << "      The default is true.                             " << endl;
-    cout << "  --version,-v                                         " << endl;
-    cout << "      Display the release version of uTimerScript.     " << endl;
-    return(0);
-  }
+  if(mission_file == "")
+    showHelpAndExit();
 
   cout << termColor("green");
-  cout << "uTimerScript running as: " << run_command << endl;
+  cout << "uTimerScript launching as " << run_command << endl;
   cout << termColor() << endl;
 
   TS_MOOSApp timer_script;
@@ -108,5 +74,3 @@ int main(int argc, char *argv[])
 
   return(0);
 }
-
-

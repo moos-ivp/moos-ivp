@@ -93,7 +93,7 @@ bool EchoVar::OnConnectToServer()
 bool EchoVar::Iterate()
 {
   m_iteration++;
-  m_Comms.Notify("ECHO_ITER", m_iteration);
+  //m_Comms.Notify("ECHO_ITER", m_iteration);
 
   if(m_conditions_met)
     releaseMessages();

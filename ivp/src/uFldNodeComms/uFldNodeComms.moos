@@ -1,0 +1,16 @@
+=============================================================== 
+uFldNodeComms Example MOOS Configuration                        
+=============================================================== 
+                                                                
+ProcessConfig = uFldNodeComms                                   
+{                                                               
+  AppTick   = 4                                                 
+  CommsTick = 4                                                 
+                                                                
+  COMMS_RANGE = 100   // Meters                                 
+  STALE_TIME  = 5     // Seconds                                
+  VERBOSE     = true                                            
+                                                                
+  STEALTH  = alpha,0.8                                          
+  EARANGE  = alpha,4.5                                          
+}                                 

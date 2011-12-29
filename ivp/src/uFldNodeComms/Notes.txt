@@ -1,0 +1,24 @@
+
+Incoming: NODE_REPORT or NODE_REPORT_LOCAL
+
+Outgoing: NODE_REPORT_ALPHA, 
+          NODE_REPORT_BRAVO 
+
+Note: In the above, NODE_REPORT_ALPHA for example, these constitute
+node reports TO BE BRIDGED to Alpha, not the Alpha node reports
+
+
+o When a new vehicle has been noted, a new bridge entry is to 
+  be set up with a posting to pMOOSBridge
+
+  PMB_REGISTER = NODE_REPORT_ALPHA -> alpha @ IP, port -> NODE_REPORT
+
+o The uFldNodeComms when it receives a NODE_REPORT, it may make postings
+  to all NODE_REPORT_FOOBAR varialbes where FOOBAR is any vehicle that 
+  didn't originate the report.  
+
+  uFldNodeComms can decide which vehicles are to get the reports based
+  on the ranges between vehicles.
+
+  uFldNodeComms could even add noise to the node reports
+

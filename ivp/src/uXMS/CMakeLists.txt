@@ -15,7 +15,8 @@ endif (${WIN32})
 
 SET(SRC 
   XMS.cpp
-  main_uXMS.cpp
+  XMS_Info.cpp
+  main.cpp
 )
 
 ADD_EXECUTABLE(uXMS ${SRC})

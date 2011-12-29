@@ -26,8 +26,8 @@
 #endif
 #include <iterator>
 #include <iostream>
-#include <math.h>
-#include <string.h>
+#include <cmath>
+#include <cstring>
 #include "MarinePID.h"
 #include "MBUtils.h"
 
@@ -155,8 +155,6 @@ bool MarinePID::OnNewMail(MOOSMSG_LIST &NewMail)
 
 //--------------------------------------------------------------------
 // Procedure: Iterate()
-//      Note: happens AppTick times per second
-//            
 
 bool MarinePID::Iterate()
 {
@@ -176,7 +174,6 @@ bool MarinePID::Iterate()
     cout << "PID REPORT: (" << m_iteration << ")";
     cout << "(" << hz << "/sec)" << endl;
   }
-
 
   if((current_time - m_time_of_last_helm_msg) > m_tardy_helm_thresh) {
     if(!m_paused)
@@ -285,13 +282,7 @@ void MarinePID::postAllStop()
 
 bool MarinePID::OnConnectToServer()
 {
-  // register for variables here
-  // possibly look at the mission file?
-  // m_MissionReader.GetConfigurationParam("Name", <string>);
-  // m_Comms.Register("VARNAME", is_float(int));
-  
   registerVariables();
-
   return(true);
 }
 

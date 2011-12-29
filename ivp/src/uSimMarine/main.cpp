@@ -21,12 +21,9 @@
 /*****************************************************************/
 
 #include <iostream>
-#include <string>
-#include "MOOSLib.h"
-#include "MOOSGenLib.h"
 #include "USM_MOOSApp.h"
 #include "MBUtils.h"
-#include "USM_ExampleConfig.h"
+#include "USM_Info.h"
 #include "ReleaseInfo.h"
 #include "ColorParse.h"
 
@@ -37,55 +34,34 @@ using namespace std;
 
 int main(int argc ,char * argv[])
 {
-  if(scanArgs(argc, argv, "-v", "--version", "-version")) {
-    showReleaseInfo("uSimMarine", "gpl");
-    return(0);
-  }
-
-  if(scanArgs(argc, argv, "-e", "--example", "-example")) {
-    showExampleConfig();
-    return(0);
-  }
-
-  int    i;
-  string mission_file = "";
-  string run_command  = argv[0];
-  bool   help_requested  = false;
-
-  for(i=1; i<argc; i++) {
+  string mission_file;
+  string run_command = argv[0];
+  for(int i=1; i<argc; i++) {
     string argi = argv[i];
-    if(strEnds(argi, ".moos"))
+    if((argi=="-v") || (argi=="--version") || (argi=="-version"))
+      showReleaseInfoAndExit();
+    else if((argi=="-e") || (argi=="--example") || (argi=="-example"))
+      showExampleConfigAndExit();
+    else if((argi == "-h") || (argi == "--help") || (argi=="-help"))
+      showHelpAndExit();
+    else if((argi == "-i") || (argi == "--interface"))
+      showInterfaceAndExit();
+    else if(strEnds(argi, ".moos") || strEnds(argi, ".moos++"))
       mission_file = argv[i];
-    else if(strEnds(argi, ".moos++"))
-      mission_file = argv[i];
-    else if((argi == "--help")||(argi=="-h"))
-      help_requested = true;
     else if(strBegins(argi, "--alias="))
       run_command = argi.substr(8);
+    else if(i==2)
+      run_command = argi;
   }
   
-  if((mission_file == "") || help_requested) {
-    cout << "Usage: uSimMarine file.moos [OPTIONS]                     " << endl;
-    cout << "                                                          " << endl;
-    cout << "Options:                                                  " << endl;
-    cout << "  --alias=<ProcessName>                                   " << endl;
-    cout << "      Launch uSimMarine with the given process name       " << endl;
-    cout << "      rather than uSimMarine.                             " << endl;
-    cout << "  --example, -e                                           " << endl;
-    cout << "      Display example MOOS configuration block.           " << endl;
-    cout << "  --help, -h                                              " << endl;
-    cout << "      Display this help message.                          " << endl;
-    cout << "  --version,-v                                            " << endl;
-    cout << "      Display the release version of uSimMarine.          " << endl;
-    return(0);
-  }
+  if(mission_file == "")
+    showHelpAndExit();
 
   cout << termColor("green");
-  cout << "uSimMarine running as: " << run_command << endl;
+  cout << "uSimMarine launching as " << run_command << endl;
   cout << termColor() << endl;
 
   USM_MOOSApp marine_sim;
-
   marine_sim.Run(run_command.c_str(), mission_file.c_str());
  
   return(0);

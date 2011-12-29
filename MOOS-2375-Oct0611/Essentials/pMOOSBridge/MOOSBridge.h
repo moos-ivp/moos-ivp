@@ -33,27 +33,43 @@
 #include <MOOSLIB/MOOSLib.h>
 #include "MOOSCommunity.h"
 
-class CMOOSBridge
+class CMOOSBridge : public CMOOSApp
 {
 public:
-
-    bool Configure();
     CMOOSBridge();
-    virtual ~CMOOSBridge();
-    bool Run(const std::string & sMissionFile,const std::string & sMOOSName);
+    virtual ~CMOOSBridge() {};
+
+    bool OnNewMail(MOOSMSG_LIST &NewMail);    
+    bool Iterate();
+    bool OnStartUp();
+    bool OnConnectToServer();
 
 protected:
-    CMOOSCommunity * GetOrMakeCommunity(const std::string & sCommunity);
+    void RegisterVariables();
     bool MarshallLoop();
     bool IsUDPShare(CMOOSCommunity::SP & Index);
+    bool Configure();
+    bool ConfigureLine(std::string src_community,
+		       std::string src_community_host,
+		       std::string src_community_port,
+		       std::string src_vars,
+		       std::string dest_community,
+		       std::string dest_community_host,
+		       std::string dest_community_port,
+		       std::string dest_aliases,
+		       bool use_udp=true);
+    CMOOSCommunity * GetOrMakeCommunity(const std::string & sCommunity);
     
     typedef std::map<std::string,CMOOSCommunity*> COMMUNITY_MAP;
     COMMUNITY_MAP m_Communities;
 
-    CProcessConfigReader m_MissionReader;
+    // Don't need one now because we inherit from CMOOSApp
+    // CProcessConfigReader m_MissionReader;
 
     int m_nBridgeFrequency;
     std::string m_sLocalCommunity;
+
+    bool m_bAllowLoopBack;
 
     CMOOSUDPLink m_UDPLink;
     

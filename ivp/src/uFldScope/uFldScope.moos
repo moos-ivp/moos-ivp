@@ -1,0 +1,19 @@
+=============================================================== 
+uFldScope Example MOOS Configuration                            
+=============================================================== 
+                                                                
+ProcessConfig = uFldScope                                       
+{                                                               
+  AppTick   = 4                                                 
+  CommsTick = 4                                                 
+                                                                
+  SCOPE = var=NODE_REPORT,fld=TIME,alias=Time                   
+  SCOPE = var=NODE_REPORT,key=vname,fld=MODE                    
+  SCOPE = var=SPEED_REPORT,key=vname,fld=avg_speed,alias=speed  
+  SCOPE = var=ODOMETRY_REPORT,key=vname,fld=trip_dist           
+  SCOPE = var=ODOMETRY_REPORT,key=vname,fld=total_dist          
+                                                                
+  LAYOUT = trip_dist, total_dist                                
+  LAYOUT = MODE, speed, Time                                    
+}                                                               
+                           

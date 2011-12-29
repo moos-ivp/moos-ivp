@@ -5,10 +5,10 @@
 
 FILE(GLOB SRC
      BasicContactMgr.cpp
-     BCM_ExampleConfig.cpp
+     BasicContactMgr_Info.cpp
      ContactRecord.cpp
      PlatformAlertRecord.cpp
-     BasicContactMgrMain.cpp
+     main.cpp
 )
 
 ADD_EXECUTABLE(pBasicContactMgr ${SRC})

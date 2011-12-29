@@ -1,149 +1,46 @@
-// MOOS file
-
-ServerHost = localhost
-ServerPort = 9000
-
-MOOSTimeWarp = 1
-
-//------------------------------------------
-// Antler configuration  block
-
-ProcessConfig = ANTLER
-{
-  MSBetweenLaunches = 200
-
-  Run = MOOSDB		@ NewConsole = false
-  Run = uXMS		@ NewConsole = true
-  Run = iMarineSim      @ NewConsole = true
-  //Run = uTimerScript    @ NewConsole = true, ExtraProcessParams=uts_b
-
-  uts_b = --alias=uTimerScript_B  
-}
-
-
-//------------------------------------------
-// uTimerScript configuration  block
-
-ProcessConfig = uTimerScript
-{
-   AppTick   = 4
-   CommsTick = 4
-
-   PAUSED     = true
-   RESET_MAX  = 4
-   RESET_TIME = end
-   CONDITION  = (FOO <= 34) and (BAR != "false")
-   CONDITION  = alpha = apples
-   CONDITION  = TIMER_SCRIPT_PAUSE != "true"   
-
-   RANDVAR = varname=FOOBAR, min=0, max=100, key=global
-
-   EVENT  = var=FOOBAR,  val="one=1, two=$(GRAND:0:100)   
-
-   EVENT  = var=FINDING, val="first", time=5
-   EVENT  = var=FINDING, val="none", time=10
-   EVENT  = var=FINDING, val="object-$$IDX", time=30:60
-   EVENT  = var=FINDING, val="object-$$IDX", time=30:60
-   EVENT  = var=FINDING, val="object-$$IDX", time=30:60
-   EVENT  = var=FINDING, val="object-$$IDX", time=30:60
-}
-
-
-//------------------------------------------
-// uTimerScript configuration  block
-
-ProcessConfig = uTimerScript_B
-{
-   AppTick   = 5
-   CommsTick = 5
-
-   PAUSED      = false
-   RESET_MAX   = 4
-   RESET_TIME  = end
-   SHUFFLE     = false
-   TIME_WARP   = 5.0
-   START_DELAY = 0
-   AWAKE_RESET = false
-
-   SCRIPT_NAME = RND_TEST
-
-   RANDVAR = varname=ANGLE, min=10, max=350,  key=at_reset
-   RANDVAR = varname=MAGN,  min=0.5, max=1.5, key=at_reset
-
-   EVENT  = var=MARINESIM_FORCE_ANGLE, val=$(ANGLE), time=0
-   EVENT  = var=MARINESIM_FORCE_MAGNITUDE_D, val={$(MAGN)*0.2}, time=2
-   EVENT  = var=MARINESIM_FORCE_MAGNITUDE_D, val={$(MAGN)*0.2}, time=4
-   EVENT  = var=MARINESIM_FORCE_MAGNITUDE_D, val={$(MAGN)*0.2}, time=6
-   EVENT  = var=MARINESIM_FORCE_MAGNITUDE_D, val={$(MAGN)*0.2}, time=8
-   EVENT  = var=MARINESIM_FORCE_MAGNITUDE_D, val={$(MAGN)*0.2}, time=10
-
-   EVENT  = var=MARINESIM_FORCE_MAGNITUDE_D, val={$(MAGN)*-0.2}, time=12
-   EVENT  = var=MARINESIM_FORCE_MAGNITUDE_D, val={$(MAGN)*-0.2}, time=14
-   EVENT  = var=MARINESIM_FORCE_MAGNITUDE_D, val={$(MAGN)*-0.2}, time=16
-   EVENT  = var=MARINESIM_FORCE_MAGNITUDE_D, val={$(MAGN)*-0.2}, time=18
-   EVENT  = var=MARINESIM_FORCE_MAGNITUDE_D, val={$(MAGN)*-0.2}, 
-}
-
-//------------------------------------------
-// uTimerScript configuration  block
-
-ProcessConfig = uTimerScript_C
-{
-   AppTick   = 50
-   CommsTick = 50
-
-   PAUSED      = false
-   RESET_MAX   = 4
-   RESET_TIME  = end
-   SHUFFLE     = false
-   TIME_WARP   = 3
-   START_DELAY = 0
-   AWAKE_RESET = false
-   CONDITION   = MODE = true
-
-
-   SCRIPT_NAME = RND_TEST
-   RAND_VAR    = varname=BAR, min=100, max=100, key=at_post
-
-   //Event  = var=FOO,  val="a_zero=$(IDX), one=$(CNT), two=$(BAR)", time=0:10
-   //EVENT  = var=FOO,  val="b_zero=$(IDX), one=$(CNT), two=$(BAR)", time=0:10
-   //EVENT  = var=FOO,  val="c_zero=$(IDX), one=$(CNT), two=$(BAR)", time=0:10
-   //EVENT  = var=FOO,  val="d_zero=$(IDX), one=$(CNT), two=$(BAR)", time=0:10
-   //EVENT  = var=FOO,  val="e_zero=$(IDX), one=$(CNT), two=$(BAR)", time=0:10
-   
-   EVENT =  var=FOO,  val="aamt=$(BAR), expr={{34+{$(BAR)* 0.7}} * 10}", time=2
-   EVENT =  var=FOO,  val="bamt=$(BAR), expr={{23/{$(BAR)*-0.7}} + 1000}", time=7.4
-   EVENT =  var=FOO,  val="camt=$(BAR), expr={$(BAR) / 4 }", time=10
-   EVENT =  var=FOO,  val="damt=$(BAR), expr={-$(BAR) + 21 }", time=20
-   EVENT =  var=FOO,  val="eamt=$(BAR), expr={ +$(BAR)-450}", time=30
-
-   //EVENT  = var=FOO,  val="a_zero=$(IDX), one=$(CNT), two=$(BAR), three=$(DBTIME)", time=0:10
-   //EVENT  = var=FOO,  val="b_zero=$(IDX), one=$(CNT), two=$(BAR), three=$(DBTIME)", time=0:10
-   //EVENT  = var=FOO,  val="c_zero=$(IDX), one=$(CNT), two=$(BAR), three=$(DBTIME)", time=0:10
-   //EVENT  = var=FOO,  val="d_zero=$(IDX), one=$(CNT), two=$(BAR), three=$(DBTIME)", time=0:10
-   //EVENT  = var=FOO,  val="e_zero=$(IDX), one=$(CNT), two=$(BAR), three=$(DBTIME)", time=0:10
-
-   //EVENT = var=MARINESIM_FORCE_MAGNITUDE, val="{$(RVAR)*0.33}", time=3.33
-   //EVENT = var=MARINESIM_FORCE_MAGNITUDE, val="{$(RVAR)*0.66}", time=6.66
-   //EVENT = var=MARINESIM_FORCE_MAGNITUDE, val="{$(RVAR)*1.00}", time=10.00
-   //EVENT = var=MARINESIM_FORCE_MAGNITUDE, val="{$(RVAR)*0.66}", time=13.33
-   //EVENT = var=MARINESIM_FORCE_MAGNITUDE, val="{$(RVAR)*0.33}", time=16.66
-
-}
-
-//------------------------------------------
-// uXMS configuration  block
-
-ProcessConfig = uXMS
-{
-   AppTick   = 4
-   CommsTick = 4
-
-   VAR = TIMER_SCRIPT_STATUS
-   VAR = TIMER_SCRIPT_RESET
-   VAR = TIMER_SCRIPT_PAUSE
-
-   DISPLAY_TIME = TRUE
-   CONTENT_MODE = HISTORY
-   HISTORY_VAR=TIMER_SCRIPT_STATUS
-}
+=============================================================== 
+uTimerScript Example MOOS Configuration                         
+=============================================================== 
+                                                                
+ProcessConfig = uTimerScript                                    
+{                                                               
+  AppTick   = 4                                                 
+  CommsTick = 4                                                 
+                                                                
+  // Logic condition that must be met for script to be unpaused 
+  condition      = WIND_GUSTS = true                            
+  // Seconds added to each event time, on each script pass      
+  delay_reset    = 0                                            
+  // Seconds added to each event time, on first pass only       
+  delay_start    = 0                                            
+  // Event(s) are the key components of the script              
+  event          = var=SBR_RANGE_REQUEST, val="name=archie", time=25:35  
+  // A MOOS variable for taking cues to forward time            
+  forward_var    = UTS_FORWARD   // or other MOOS variable   
+  // If true script is paused upon launch                       
+  paused         = false    // or {true}                     
+  // A MOOS variable for receiving pause state cues             
+  pause_var      = UTS_PAUSE     // or other MOOS variable   
+  // Declaration of random var macro expanded in event values   
+  randvar        = varname=ANG, min=0, max=359, key=at_reset    
+  // Maximum number of resets allowed                           
+  reset_max      = nolimit  // or in range [0,inf)           
+  // A point when the script is reset                           
+  reset_time     = none     // or {all-posted} or range (0,inf) 
+  // A MOOS variable for receiving reset cues                   
+  reset_var      = UTS_RESET     // or other MOOS variable   
+  // If true script will complete if conditions suddenly fail   
+  script_atomic  = false    // or {true}                     
+  // A hopefully unique name given to the script                
+  script_name    = unnamed                                      
+  // If true timestamps are recalculated on each script reset   
+  shuffle        = true                                         
+  // If true progress is generated to the console               
+  verbose        = true     // or {false}                    
+  // Reset or restart script upon conditions being met after failure 
+  upon_awake     = n/a      // or {reset,resstart}           
+  // A MOOS variable for posting the status summary             
+  status_var     = UTS_STATUS    // or other MOOS variable   
+  // Rate at which time is accelerated in execuing the script   
+  time_warp      = 1                                            
+}                                                 

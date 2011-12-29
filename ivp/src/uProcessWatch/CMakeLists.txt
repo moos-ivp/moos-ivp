@@ -14,7 +14,7 @@ endif (${WIN32})
 
 SET(SRC 
   ProcessWatch.cpp 
-  UPW_ExampleConfig.cpp
+  ProcessWatch_Info.cpp
   main.cpp)
 
 ADD_EXECUTABLE(uProcessWatch ${SRC})

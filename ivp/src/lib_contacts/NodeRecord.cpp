@@ -159,6 +159,8 @@ string NodeRecord::getSpec() const
     str += ",LON=" + doubleToStringX(m_lon, 8);
   if(m_type != "")
     str += ",TYPE=" + m_type;
+  if(m_group != "")
+    str += ",GROUP=" + m_group;
   if(m_mode != "")
     str += ",MODE=" + m_mode;
   if(m_allstop != "")
@@ -197,6 +199,16 @@ string NodeRecord::getName(string default_name) const
   if(m_name == "")
     return(default_name);
   return(m_name);
+}
+
+//---------------------------------------------------------------
+// Procedure: getGroup
+
+string NodeRecord::getGroup(string default_group) const
+{
+  if(m_group == "")
+    return(default_group);
+  return(m_group);
 }
 
 //---------------------------------------------------------------

@@ -765,6 +765,32 @@ string stripComment(const string& str, const string& cstr)
 }
     
 
+//---------------------------------------------------------
+// Procedure: isValidIPAddress
+//   Purpose: Determine if the string is a valid IP address: 
+//            - has four numerical fields separated by a decimal point.
+//            - each field is in the range 0-255
+
+bool isValidIPAddress(const string& ipstring)
+{
+  if(ipstring == "localhost")
+    return(true);
+
+  vector<string> svector = parseString(ipstring, '.');
+  unsigned int i, vsize  = svector.size();
+  if(vsize != 4)
+    return(false);
+  for(i=0; i<vsize; i++) {
+    string part = stripBlankEnds(svector[i]);
+    if(!isNumber(part))
+      return(false);
+    double dval = atof(svector[i].c_str());
+    if((dval < 0) || (dval > 255))
+      return(false);
+  }
+  return(true);    
+}
+
 //----------------------------------------------------------------
 // Procedure: strContains
 //      Note: Added July 14 05 (on the flight to Oxford)

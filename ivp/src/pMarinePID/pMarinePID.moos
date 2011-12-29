@@ -1,0 +1,47 @@
+=============================================================== 
+pMarinePID Example MOOS Configuration                           
+=============================================================== 
+                                                                
+ProcessConfig = pMarinePID                                      
+{                                                               
+  AppTick   = 20          // Default MOOS AppTick=4          
+  CommsTick = 20          // Default MOOS CommsTick=4        
+                                                                
+  speed_factor    = 20    // Range [0,inf)                   
+  sim_instability = 0     // Range [0,inf)                   
+                                                                
+  tardy_helm_threshold = 2.0                                    
+  tardy_nav_threshold  = 2.0                                    
+  active_start         = false    // or {true}               
+  verbose              = terse    // or {verbose, quiet}     
+                                                                
+  // Yaw control configuration                                  
+  yaw_pid_kp  = 0.5                                             
+  yaw_pid_kd  = 0.1                                             
+  yaw_pid_ki  = 0.012                                           
+  yaw_pid_integral_limit = 0.07                                 
+  yaw_pid_ki_limit       = 0.2                                  
+  max_rudder  = 100                                             
+                                                                
+  // Speed control configuration                                
+  speed_pid_kp = 0.8                                            
+  speed_pid_kd = 0.1                                            
+  speed_pid_ki = 0.11                                           
+  speed_pid_ki_limit = 0.07                                     
+  max_thrust   = 100                                            
+                                                                
+  // Depth control configuration                                
+  depth_control      = true   // or {false}                  
+  z_to_pitch_pid_kp  = 0.12                                     
+  z_to_pitch_pid_kd  = 1.0                                      
+  z_to_pitch_pid_ki  = 0.004                                    
+  z_to_pitch_pid_integral_limit = 0.05                          
+  max_pitch          = 15                                       
+                                                                
+  // Depth control configuration                                
+  pitch_pid_kp       = 0.5                                      
+  pitch_pid_kd       = 1.0                                      
+  pitch_pid_ki       = 0                                        
+  pitchp_id_integral_limit = 0                                  
+  max_elevator       = 13                                       
+}       

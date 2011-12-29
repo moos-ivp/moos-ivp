@@ -44,9 +44,6 @@ public:
   void     toggleLockIPF()                  {m_lock_ipf = !m_lock_ipf;};
   bool     isLocked()                       {return(m_lock_ipf);};
 
-  void     setDepth(double v)     {m_curr_depth=v;};
-  void     setAltitude(double v)  {m_curr_altitude=v;};
-
   std::string getCurrPlatform();
   std::string getCurrSource();
   std::string getCurrPieces();
@@ -60,9 +57,6 @@ public:
   unsigned int     m_curr_iter;
   IPF_BundleSeries m_bundle_series;
   std::string      m_bundle_series_platform;
-  double           m_curr_depth;
-  double           m_curr_altitude;
-
 
  protected: // Launch-time config variables
   unsigned int     m_bundle_series_maxlen;

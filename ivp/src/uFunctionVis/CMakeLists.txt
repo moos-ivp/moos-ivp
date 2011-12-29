@@ -18,7 +18,8 @@ SET(SRC
    FV_MOOSApp.cpp
    FV_Model.cpp
    FV_Viewer.cpp
-   uFunctionVisMain.cpp)
+   FV_Info.cpp
+   main.cpp)
 
 IF (${APPLE})
       # If you want to create an Apple BUNDLE, do it here

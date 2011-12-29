@@ -39,7 +39,6 @@ FV_MOOSApp::FV_MOOSApp()
   m_model    = 0;
   m_viewer   = 0;
   m_gui      = 0;
-  m_ipf_name = "BHV_IPF";
 }
 
 //----------------------------------------------------------
@@ -58,19 +57,13 @@ bool FV_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
      for(p=NewMail.begin(); p!=NewMail.end(); p++) {
         CMOOSMsg &msg = *p;
 	string key  = msg.GetKey();
-	double dval = msg.GetDouble();
 	double timestamp = msg.GetTime();
 
-	if(key == m_ipf_name) {
+	if(key == "BHV_IPF") {
 	  string ipf_str = msg.GetString();
 	  string community = msg.GetCommunity();
 	  m_demuxer.addMuxPacket(ipf_str, timestamp, community);
         }
-	else if(key == "NAV_DEPTH")
-	  m_model->setDepth(dval);
-	else if(key == "NAV_ALTITUDE")
-	  m_model->setAltitude(dval);
-
     }
   }
   catch (...) {
@@ -84,23 +77,10 @@ bool FV_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 
 //----------------------------------------------------------
 // Procedure: OnConnectToServer()
-//      Note: Register for variables here. 
-//            Possibly read info from the mission file.
-//            m_MissionReader.GetConfigurationParam("Name", <string>);
-//            m_Comms.Register("VARNAME", is_float(int));
 
 bool FV_MOOSApp::OnConnectToServer()
 {
-  if(!m_MissionReader.GetValue("ipf_name", m_ipf_name)) {
-    MOOSTrace("Function to be monitored not provided\n");
-    //return(false);
-  }
-
-  if(m_ipf_name != "")
-    m_Comms.Register(m_ipf_name, 0);
-  
-  m_Comms.Register("NAV_DEPTH", 0);
-  m_Comms.Register("NAV_ALTITUDE", 0);
+  registerVariables();
   return(true);
 }
 
@@ -168,6 +148,16 @@ void FV_MOOSApp::process_demuxer_content()
 
 bool FV_MOOSApp::OnStartUp()
 {
+  registerVariables();
   return(true);
+}
+
+
+//------------------------------------------------------------------------
+// Procedure: registerVariables()
+
+void FV_MOOSApp::registerVariables()
+{
+  m_Comms.Register("BHV_IPF", 0);
 }
 

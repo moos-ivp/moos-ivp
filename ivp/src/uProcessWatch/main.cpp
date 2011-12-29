@@ -20,77 +20,46 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
-#include <string>
-#include "MOOSLib.h"
-#include "MOOSGenLib.h"
-#include "ProcessWatch.h"
+#include <iostream>
 #include "MBUtils.h"
-#include "UPW_ExampleConfig.h"
-#include "ReleaseInfo.h"
 #include "ColorParse.h"
+#include "ProcessWatch.h"
+#include "ProcessWatch_Info.h"
 
 using namespace std;
 
 int main(int argc, char *argv[])
 {
-  // Look for a request for version information
-  if(scanArgs(argc, argv, "-v", "--version", "-version")) {
-    showReleaseInfo("uProcessWatch", "gpl");
-    return(0);
-  }
+  string mission_file;
+  string run_command = argv[0];
 
-  // Look for a request for example configuration information
-  if(scanArgs(argc, argv, "-e", "--example", "-example")) {
-    showExampleConfig();
-    return(0);
-  }
-
-
-  int    i;
-  string mission_file = "";
-  string run_command  = argv[0];
-  bool   help_requested = false;
-  //string verbose_setting;
-
-  for(i=1; i<argc; i++) {
+  for(int i=1; i<argc; i++) {
     string argi = argv[i];
-    if(strEnds(argi, ".moos"))
+    if((argi=="-v") || (argi=="--version") || (argi=="-version"))
+      showReleaseInfoAndExit();
+    else if((argi=="-e") || (argi=="--example") || (argi=="-example"))
+      showExampleConfigAndExit();
+    else if((argi == "-h") || (argi == "--help") || (argi=="-help"))
+      showHelpAndExit();
+    else if((argi == "-i") || (argi == "--interface"))
+      showInterfaceAndExit();
+    else if(strEnds(argi, ".moos") || strEnds(argi, ".moos++"))
       mission_file = argv[i];
-    else if(strEnds(argi, ".moos++"))
-      mission_file = argv[i];
-    else if((argi == "--help")||(argi=="-h"))
-      help_requested = true;
     else if(strBegins(argi, "--alias="))
       run_command = argi.substr(8);
-    //    else if(strBegins(argi, "--verbose="))
-    //      verbose_setting = tolower(argi.substr(10));
+    else if(i==2)
+      run_command = argi;
   }
   
-  if((mission_file == "") || help_requested) {
-    cout << "Usage: uProcessWatch file.moos [OPTIONS]               " << endl;
-    cout << "                                                       " << endl;
-    cout << "Options:                                               " << endl;
-    cout << "  --alias=<ProcessName>                                " << endl;
-    cout << "      Launch uProcessWatch with the given process      " << endl;
-    cout << "      name rather than uProcessWatch.                  " << endl;
-    cout << "  --example, -e                                        " << endl;
-    cout << "      Display example MOOS configuration block         " << endl;
-    cout << "  --help, -h                                           " << endl;
-    cout << "      Display this help message.                       " << endl;
-    //cout << "  --verbose=Boolean (true/false)                       " << endl;
-    //cout << "      Display diagnostics messages. Default is true.   " << endl;
-    cout << "  --version,-v                                         " << endl;
-    cout << "      Display the release version of uProcessWatch.    " << endl;
-    return(0);
-  }
+  if(mission_file == "")
+    showHelpAndExit();
 
   cout << termColor("green");
-  cout << "uProcessWatch running as: " << run_command << endl;
+  cout << "uProcessWatch launching as " << run_command << endl;
   cout << termColor() << endl;
 
-  ProcessWatch ProcessWatch;
-  
-  ProcessWatch.Run(run_command.c_str(), mission_file.c_str());
+  ProcessWatch process_watch;
+  process_watch.Run(run_command.c_str(), mission_file.c_str());
   
   return(0);
 }

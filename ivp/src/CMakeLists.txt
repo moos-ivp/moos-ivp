@@ -141,6 +141,7 @@ SET(IVP_NON_GUI_LIBS
    lib_ivpcore
    lib_logic
    lib_contacts
+   lib_ufield
    lib_logutils
    lib_mbutil
    lib_navplot
@@ -217,12 +218,19 @@ SET(IVP_NON_GUI_APPS
   app_aloghelm
   app_nsplug
   pEchoVar
+  pHostInfo
   pXRelay
   pHelmIvP
   pMarinePID
   pBasicContactMgr
   pNodeReporter
   pSafetyRetreat
+  uFldPathCheck
+  uFldShoreBroker
+  uFldNodeBroker
+  uFldScope
+  uFldNodeComms
+  uMOOSClient
   pSearchGrid
   uTimerScript
   uHelmScope

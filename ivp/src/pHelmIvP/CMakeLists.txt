@@ -16,8 +16,8 @@ endif (${WIN32})
 
 SET(SRC
   HelmIvP.cpp
-  HELM_ExampleConfig.cpp
-  pHelmIvPMain.cpp
+  HelmIvP_Info.cpp
+  main.cpp
 )
 
 ADD_EXECUTABLE(pHelmIvP ${SRC})

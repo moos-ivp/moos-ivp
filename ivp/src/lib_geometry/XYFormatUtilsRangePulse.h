@@ -27,9 +27,9 @@
 #include "XYRangePulse.h"
 
 //---------------------------------------------------------------
-// Create an XYpoint from a string specification. This function will
-// call one of the string*2Point functions below. This is the only
-// function that should be called by the user. The other functions
+// Create an XYRangePulse from a string specification. This function
+// calls one of the string*2RangePulse functions below. Only this 
+// function should be called by the user. The other functions
 // are subject to change without regard to backward compatibility.
 XYRangePulse string2RangePulse(std::string);
 
@@ -40,10 +40,10 @@ XYRangePulse string2RangePulse(std::string);
 // future for backward compatibility, the below functions are not.
 
 //---------------------------------------------------------------
-// Create an XYPoint from a string specification. 
+// Create an XYRangePulse from a string specification. 
 // This function is standard because it processes the string format
-// used when a string is created from an existing XYPoint instance.
-// Example: x=val, y=val, z=val, label=bobby, type=destination
+// used when a string is created from an existing XYRangePulse instance.
+// Example: x=val, y=val, radius=val, duration=val, label=bobby
 XYRangePulse stringStandard2RangePulse(std::string);
 
 #endif

@@ -15,9 +15,9 @@ endif (${WIN32})
 
 SET(SRC
    MarinePID.cpp
+   MarinePID_Info.cpp
    PIDEngine.cpp
    ScalarPID.cpp
-   PID_ExampleConfig.cpp
    main.cpp
 )
 

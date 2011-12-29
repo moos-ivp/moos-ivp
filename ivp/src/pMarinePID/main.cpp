@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: pHelmIvP.cpp                                         */
+/*    FILE: main.cpp                                             */
 /*    DATE: Oct 12th 2004                                        */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
@@ -20,53 +20,47 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
-#include <string>
-#include "MOOSLib.h"
-#include "MOOSGenLib.h"
-#include "MarinePID.h"
+#include <iostream>
 #include "MBUtils.h"
-#include "ReleaseInfo.h"
-#include "PID_ExampleConfig.h"
+#include "ColorParse.h"
+#include "MarinePID.h"
+#include "MarinePID_Info.h"
 
 using namespace std;
 
 int main(int argc, char *argv[])
 {
-  // Look for a request for version information
-  if(scanArgs(argc, argv, "-v", "--version", "-version")) {
-    showReleaseInfo("pMarinePID", "gpl");
-    return(0);
-  }
+  string mission_file;
+  string run_command = argv[0];
 
-  // Look for a request for example configuration information
-  if(scanArgs(argc, argv, "-e", "--example", "-example")) {
-    showExampleConfig();
-    return(0);
+  for(int i=1; i<argc; i++) {
+    string argi = argv[i];
+    if((argi=="-v") || (argi=="--version") || (argi=="-version"))
+      showReleaseInfoAndExit();
+    else if((argi=="-e") || (argi=="--example") || (argi=="-example"))
+      showExampleConfigAndExit();
+    else if((argi=="-h") || (argi == "--help") || (argi=="-help"))
+      showHelpAndExit();
+    else if((argi=="-i") || (argi == "--interface"))
+      showInterfaceAndExit();
+    else if(strEnds(argi, ".moos") || strEnds(argi, ".moos++"))
+      mission_file = argv[i];
+    else if(strBegins(argi, "--alias="))
+      run_command = argi.substr(8);
+    else if(i == 2)
+      run_command = argi;
   }
+  
+  if(mission_file == "")
+      showHelpAndExit();
+
+  cout << termColor("green");
+  cout << "pMarinePID launching as " << run_command << endl;
+  cout << termColor() << endl;
 
   MarinePID marinePID;
-  
-  int    i;
-  string mission_file = "";
-  bool   help_requested = false;
+  marinePID.Run(run_command.c_str(), mission_file.c_str());
 
-  for(i=1; i<argc; i++) {
-    string argi = argv[i];
-    if(strEnds(argi, ".moos"))
-      mission_file = argv[i];
-    else if(strEnds(argi, ".moos++"))
-      mission_file = argv[i];
-    else if((argi == "--help")||(argi=="-h"))
-      help_requested = true;
-  }
-
-  if((mission_file == "") || help_requested) {
-    MOOSTrace("Usage: pMarinePID moosfile.moos \n");
-    return(0);
-  }
-
-  marinePID.Run("pMarinePID", mission_file.c_str());
-  
   return(0);
 }
 

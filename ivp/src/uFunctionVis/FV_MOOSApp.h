@@ -54,10 +54,11 @@ class FV_MOOSApp : public CMOOSApp
   /// main thread, which is where all the other FLTK operations are 
   /// occurring.
   void process_demuxer_content();
+
+ protected:
+  void registerVariables();
   
-protected:
-  std::string m_ipf_name;
-  
+ protected:
   FV_GUI*     m_gui;
   FV_Model*   m_model;
   FV_Viewer*  m_viewer;

@@ -58,6 +58,7 @@ public:
   std::string  m_crossfill_policy;
   std::string  m_node_report_var;
   double       m_nohelm_thresh;
+  std::string  m_group_name;
 
  protected: // State Variables (Node Reports)
   CMOOSGeodesy m_geodesy;

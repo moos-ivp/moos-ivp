@@ -16,7 +16,7 @@ endif (${WIN32})
 SET(SRC
    SBR_MOOSApp.cpp
    SBR_Model.cpp
-   SBR_ExampleConfig.cpp
+   SBR_Info.cpp
    BeaconBuoy.cpp
    main.cpp
 )

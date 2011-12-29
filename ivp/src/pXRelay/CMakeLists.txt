@@ -14,7 +14,8 @@ else (${WIN32})
 endif (${WIN32})
 
 SET(SRC
-   Relayer.cpp  
+   PXR_MOOSApp.cpp  
+   PXR_Info.cpp
    main.cpp
 )  
 

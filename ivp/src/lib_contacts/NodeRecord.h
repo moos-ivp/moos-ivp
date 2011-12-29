@@ -48,6 +48,7 @@ class NodeRecord
   void setAltitude(double v)  {m_altitude=v;   m_altitude_set=true;};
 
   void setName(std::string s)    {m_name=s;};
+  void setGroup(std::string s)   {m_group=s;};
   void setType(std::string s)    {m_type=s;};
   void setMode(std::string s)    {m_mode=s;};
   void setAllStop(std::string s) {m_allstop=s;};
@@ -77,6 +78,7 @@ class NodeRecord
   std::string getProperty(std::string) const;
 
   std::string getName(std::string s="") const;
+  std::string getGroup(std::string s="") const;
   std::string getType(std::string s="") const;
   std::string getMode(std::string s="") const;
   std::string getAllStop(std::string s="") const;
@@ -100,6 +102,7 @@ class NodeRecord
   double m_length;
   double m_timestamp;
   std::string  m_name;
+  std::string  m_group;
   std::string  m_type;
   std::string  m_mode;
   std::string  m_allstop;

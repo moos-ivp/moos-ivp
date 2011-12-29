@@ -20,42 +20,18 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
+#include <iostream>
 #include <cstring>
 #include <vector>
-#include "PokeDB.h"
 #include "MBUtils.h"
-#include "ReleaseInfo.h"
+#include "PokeDB.h"
+#include "PokeDB_Info.h"
 
 using namespace std;
 
-//-----------------------------------------------------------------
-// Procedure: display_usage
-
-void display_usage()
-{
-  cout << "uPokeDB: Usage: " << endl;
-  cout << "  PokeDB [foo.moos] [server=val] [port=val] <var=value> <var=value>" << endl;
-}
-
-//-----------------------------------------------------------------
-// Procedure: main
-
 int main(int argc ,char * argv[])
 {
-  // Look for a request for version information
-  if(scanArgs(argc, argv, "-v", "--version", "-version")) {
-    showReleaseInfo("uPokeDB", "gpl");
-    return(0);
-  }
-
-  // Look for a request for help or usage information
-  if(scanArgs(argc, argv, "-h", "--help", "-help")) {
-    display_usage();
-    return(0);
-  }
-
-  const char *sMissionFile = "Mission.moos";
-  const char *sMOOSName    = "uPokeDB";
+  string mission_file;
 
   vector<string> varname;
   vector<string> varvalue;
@@ -65,34 +41,40 @@ int main(int argc ,char * argv[])
   bool   server_host_set = false;
   int    server_port     = 9000;
   bool   server_port_set = false;
-
-  for(int i=0; i<argc; i++) {
-    string sarg = argv[i];
-
-    if(strEnds(sarg, ".moos") || strEnds(sarg, ".moos++"))
-      sMissionFile = argv[i];
-    else if(strContains(sarg, ":=")) {
-      vector<string> svector = parseString(sarg, ":=");
-      if(svector.size() != 2) {
-	display_usage();
-	return(0);
-      }
+  
+  for(int i=1; i<argc; i++) {
+    string argi = argv[i];
+    if((argi=="-v") || (argi=="--version") || (argi=="-version"))
+      showReleaseInfoAndExit();
+    else if((argi=="-e") || (argi=="--example") || (argi=="-example"))
+      showExampleConfigAndExit();
+    else if((argi == "-h") || (argi == "--help") || (argi=="-help"))
+      showHelpAndExit();
+    else if((argi == "-i") || (argi == "--interface"))
+      showInterfaceAndExit();
+    else if(strEnds(argi, ".moos") || strEnds(argi, ".moos++"))
+      mission_file = argv[i];
+    else if(strContains(argi, ":=")) {
+      vector<string> svector = parseString(argi, ":=");
+      if(svector.size() != 2)
+	showHelpAndExit();
       else {
 	varname.push_back(stripBlankEnds(svector[0]));
 	varvalue.push_back(svector[1]);
 	vartype.push_back("string!");
       }
     }
-
-    else if(strContains(sarg, "=")) {
-      string left  = stripBlankEnds(biteString(sarg, '='));
-      string right = stripBlankEnds(sarg);
+    else if(strContains(argi, "=")) {
+      string left  = biteStringX(argi, '=');
+      string right = argi;
       string lleft = tolower(left);
-      if((lleft == "server_host") || (lleft == "serverhost")) {
+      if((lleft == "server_host") || (lleft == "serverhost") ||
+	 (lleft == "host") || (left == "server")) {
 	server_host     = right;
 	server_host_set = true;
       }
-      else if((lleft == "server_port") || (lleft=="serverport")) {
+      else if((lleft == "server_port") || (lleft=="serverport") ||
+	      (left == "port")) {
 	if(isNumber(right)) {
 	  server_port     = atoi(right.c_str());
 	  server_port_set = true;
@@ -100,25 +82,21 @@ int main(int argc ,char * argv[])
       }
       else {
 	varname.push_back(left);
-	if(isNumber(stripBlankEnds(sarg))) {
-	  varvalue.push_back(stripBlankEnds(sarg));
+	if(isNumber(argi)) {
+	  varvalue.push_back(argi);
 	  vartype.push_back("double");
 	}
 	else {
-	  varvalue.push_back(sarg);
+	  varvalue.push_back(argi);
 	  vartype.push_back("string");
 	}
       }
     }
   }
 
-  bool mission_file_provided = false;
-  if(strcmp(sMissionFile, "Mission.moos"))
-    mission_file_provided = true;
-
   // If the mission file is not provided, we prompt the user if the 
   // server_host or server_port information is not on command line.
-  if(!mission_file_provided) {
+  if(mission_file == "") {
     char buff[1000];
     // If server_host info was not on the command line, prompt here.
     if(!server_host_set) {
@@ -141,19 +119,18 @@ int main(int argc ,char * argv[])
   }
   
   PokeDB Poker(server_host, server_port);
-
-  if(mission_file_provided == false) {
+  
+  if(mission_file == "") {
     cout << "Mission File not provided. " << endl;
     cout << "  server_host  = " << server_host << endl;
     cout << "  server_port  = " << server_port << endl;
     Poker.setConfigureCommsLocally(true);
   }
-  else {
-    cout << "Mission File was provided: " << sMissionFile << endl;
-  }
-
-  int vsize = varname.size();
-  for(int j=0; j<vsize; j++) {
+  else
+    cout << "Mission File was provided: " << mission_file << endl;
+  
+  unsigned int j, vsize = varname.size();
+  for(j=0; j<vsize; j++) {
     if((vartype[j] == "double") || 
        ((varvalue[j] == "@MOOSTIME") && (vartype[j] != "string!")))
       Poker.setPokeDouble(varname[j], varvalue[j]);
@@ -161,8 +138,7 @@ int main(int argc ,char * argv[])
       Poker.setPokeString(varname[j], varvalue[j]);
   }
   
-
-  Poker.Run(sMOOSName, sMissionFile);
+  Poker.Run("uPokeDB", mission_file.c_str());
 
   return(0);
 }
