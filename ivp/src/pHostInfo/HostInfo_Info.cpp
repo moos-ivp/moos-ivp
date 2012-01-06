@@ -5,6 +5,7 @@
 /*   DATE: Dec 9th 2011                                         */
 /****************************************************************/
 
+#include <cstdlib>
 #include <iostream>
 #include "ColorParse.h"
 #include "ReleaseInfo.h"

@@ -5,6 +5,7 @@
 /*   DATE: Dec 12th, 2011                                       */
 /****************************************************************/
 
+#include <cstdlib>
 #include <iostream>
 #include "PXR_Info.h"
 #include "ColorParse.h"
