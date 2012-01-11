@@ -52,6 +52,9 @@ void UFS_Config::init(const string& config)
     else if((left == "xthresh") && isNumber(right))
       m_xthresh = atof(right.c_str());
   }
+
+  if(m_alias=="")
+    m_alias = m_fld;
 }
 
 

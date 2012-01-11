@@ -5,6 +5,7 @@ HELP="no"
 JUST_BUILD="no"
 SHOREONLY="no"
 BAD_ARGS=""
+KEY="lemon"
 
 
 #-------------------------------------------------------
@@ -15,6 +16,10 @@ for ARGI; do
     UNDEFINED_ARG=$ARGI
     if [ "${ARGI:0:6}" = "--warp" ] ; then
 	WARP="${ARGI#--warp=*}"
+	UNDEFINED_ARG=""
+    fi
+    if [ "${ARGI:0:5}" = "--key" ] ; then
+	KEY="${ARGI#--key=*}"
 	UNDEFINED_ARG=""
     fi
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
@@ -98,19 +103,19 @@ LOITER_POS4="x=145,y=-150"
 if [ "${SHOREONLY}" != "yes" ]; then
     nsplug meta_vehicle.moos targ_gilda.moos -f WARP=$WARP      \
 	VNAME=$VNAME2  VPORT=$VPORT2  LPORT=$LPORT2             \
-        GROUP=$GROUP12  START_POS=$START_POS2
+        GROUP=$GROUP12  START_POS=$START_POS2  KEY=$KEY
 
     nsplug meta_vehicle.moos targ_henry.moos -f WARP=$WARP      \
 	VNAME=$VNAME1  VPORT=$VPORT1  LPORT=$LPORT1             \
-        GROUP=$GROUP12  START_POS=$START_POS1
+        GROUP=$GROUP12  START_POS=$START_POS1  KEY=$KEY
     
     nsplug meta_vehicle.moos targ_ike.moos -f WARP=$WARP        \
 	VNAME=$VNAME3  VPORT=$VPORT3  LPORT=$LPORT3             \
-        GROUP=$GROUP34 START_POS=$START_POS3
+        GROUP=$GROUP34 START_POS=$START_POS3   KEY=$KEY
     
     nsplug meta_vehicle.moos targ_james.moos -f WARP=$WARP      \
 	VNAME=$VNAME4   VPORT=$VPORT4  LPORT=$LPORT4            \
-        GROUP=$GROUP34  START_POS=$START_POS4
+        GROUP=$GROUP34  START_POS=$START_POS4   KEY=$KEY
 
     nsplug meta_vehicle.bhv targ_henry.bhv -f VNAME=$VNAME1     \
 	START_POS=$START_POS1 LOITER_POS=$LOITER_POS1       
@@ -140,17 +145,17 @@ fi
 if [ "${SHOREONLY}" != "yes" ]; then
     printf "Launching $VNAME1 MOOS Community (WARP=%s) \n" $WARP
     pAntler targ_henry.moos >& /dev/null &
-    sleep 0.4
+    sleep 0.1
     printf "Launching $VNAME2 MOOS Community (WARP=%s) \n" $WARP
     pAntler targ_gilda.moos >& /dev/null &
-    sleep 0.4
+    sleep 0.1
     
     printf "Launching $VNAME3 MOOS Community (WARP=%s) \n" $WARP
     pAntler targ_ike.moos >& /dev/null &
-    sleep 0.4
+    sleep 0.1
     printf "Launching $VNAME4 MOOS Community (WARP=%s) \n" $WARP
     pAntler targ_james.moos >& /dev/null &
-    sleep 0.4
+    sleep 0.1
 fi
 
 printf "Launching $SNAME MOOS Community (WARP=%s) \n"  $WARP

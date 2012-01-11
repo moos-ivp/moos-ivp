@@ -40,6 +40,6 @@ killall pCBF pBTracker pTrackMonitor uTimerScript pDTSP         \
 
 killall pFleetControl uFldScope                                \
         uFldPathCheck uFldNodeComms pSearchGrid pHostInfo      \
-        uFldCommsRegister uFldNodeBroker                 
+        uFldShoreBroker uFldNodeBroker                 
 
 echo Done - Killed all MOOS-Related Processes.....

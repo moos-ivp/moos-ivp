@@ -18,9 +18,6 @@ using namespace std;
 
 ShoreBroker::ShoreBroker()
 {
-  // Initialize configuration variables
-  m_all_localhost = false;
-
   // Initialize state variables
   m_iteration          = 0;
   m_iteration_last_ack = 0;
@@ -39,6 +36,7 @@ bool ShoreBroker::OnNewMail(MOOSMSG_LIST &NewMail)
   MOOSMSG_LIST::iterator p;
 	
   for(p=NewMail.begin(); p!=NewMail.end(); p++) {
+    p->Trace();
     CMOOSMsg &msg = *p;
 	
     string key   = msg.GetKey();
@@ -59,7 +57,7 @@ bool ShoreBroker::OnNewMail(MOOSMSG_LIST &NewMail)
     //                     port_db=9000,port_udp=9200,keyword=lemon"
     if((key == "NODE_BROKER_PING") && !msg_is_local) {
       m_pings_received++;
-      bool ok = handleNodePing(sval);
+      bool ok = handleMailNodePing(sval);
       if(!ok)
 	MOOSTrace("Unhandled Node Ping: %s\n", sval.c_str());
     }
@@ -88,7 +86,7 @@ bool ShoreBroker::Iterate()
   m_iteration++;
   m_curr_time = MOOSTime();
 
-  makeVariableBridges();
+  makeBridgeRequestAll();
   sendAcks();
   printReport();
 
@@ -100,7 +98,6 @@ bool ShoreBroker::Iterate()
 
 bool ShoreBroker::OnStartUp()
 {
-
   // We grab our community info right away because we use this to
   // further filter incoming mail.
   string node_community;
@@ -122,19 +119,22 @@ bool ShoreBroker::OnStartUp()
       // Example: BRIDGE = src=DEPLOY_ALL, alias=DEPLOY
       // Example: BRIDGE = src=DEPLOY_$V,  alias=DEPLOY
       if(param == "BRIDGE") {
-	bool ok = handleBridgeConfig(value);
+	bool ok = handleConfigBridge(value);
 	if(!ok)
 	  MOOSTrace("Invalid BRIDGE config: %s\n", value.c_str());
       }
       else if(param == "QBRIDGE") {
-	bool ok = handleQuickBridgeConfig(value);
-	if(!ok)
-	  MOOSTrace("Invalid QBRIDGE config: %s\n", value.c_str());
+	vector<string> svector = parseString(value, ',');
+	unsigned int i, vsize = svector.size();
+	for(i=0; i<vsize; i++) {
+	  string varname = stripBlankEnds(svector[i]);
+	  bool ok = handleConfigQBridge(varname);
+	  if(!ok)
+	    MOOSTrace("Invalid QBRIDGE config: %s\n", value.c_str());
+	}
       }
-      
-      else if(param == "ALL_LOCALHOST") {
-	if(!setBooleanOnString(m_all_localhost, value))
-	  MOOSTrace("Invalid ALL_LOCALHOST init: %s\n", value.c_str());
+      else if(param == "KEYWORD") {
+	m_keyword = value;
       }
     }
   }
@@ -179,11 +179,11 @@ void ShoreBroker::sendAcks()
 }
 
 //------------------------------------------------------------
-// Procedure: handleNodePing
+// Procedure: handleMailNodePing
 //   Example: NODE_BROKER_PING = "COMMUNITY=alpha,IP=128.2.3.4,
 //                       PORT=9000,PORT_UDP=9200,keyword=lemon"
 
-bool ShoreBroker::handleNodePing(string info)
+bool ShoreBroker::handleMailNodePing(string info)
 {
   // Part 1: Build the incoming Host Record
   HostRecord hrecord = string2HostRecord(info);
@@ -217,7 +217,7 @@ bool ShoreBroker::handleNodePing(string info)
   // Part 4: Handle the new Node.
   // Prepare to send this host and acknowldgement by posting a 
   // request to pMOOSBridge for a new variable bridging.
-  bridgeRegister("NODE_BROKER_ACK_$V", hrecord, "NODE_BROKER_ACK"); 
+  makeBridgeRequest("NODE_BROKER_ACK_$V", hrecord, "NODE_BROKER_ACK"); 
   
   // The incoming host record now becomes the host record of record, so 
   // store its status.
@@ -234,9 +234,9 @@ bool ShoreBroker::handleNodePing(string info)
 
 
 //------------------------------------------------------------
-// Procedure: makeVariableBridges()
+// Procedure: makeBridgeRequestAll()
 
-void ShoreBroker::makeVariableBridges()
+void ShoreBroker::makeBridgeRequestAll()
 {
   // For each known remote node
   unsigned int i, vsize = m_node_host_records.size();
@@ -247,27 +247,27 @@ void ShoreBroker::makeVariableBridges()
       unsigned int k, ksize = m_bridge_src_var.size();
       // For each Bridge variable configured by the user, bridge.
       for(k=0; k<ksize; k++)
-	bridgeRegister(m_bridge_src_var[k], hrecord, m_bridge_alias[k], i+1);
+	makeBridgeRequest(m_bridge_src_var[k], hrecord, m_bridge_alias[k], i+1);
       m_node_bridges_made[i] = true;
     }
   }
 }
 
 //------------------------------------------------------------
-// Procedure: bridgeRegister
+// Procedure: makeBridgeRequest
 //  
-// PMB_REGISTER="src_var=FOO,
-//               dest_community=henry,
-//               dest_host=192.168.1.1,
-//               dest_port=9201,
-//               dest_alias=BAR"
+// PMB_REGISTER="SrcVarName=FOO,
+//               DestCommunity=henry,
+//               DestCommunityHost=192.168.1.1,
+//               DestCommunityPort=9201,
+//               DestVarName=BAR"
 //
 // For Variable FOO, do two registrations:
 //  [FOO_ALL]    -->  henry @ 192.168.1.1:9201 [FOO]
 //  [FOO_HENRY]  -->  henry @ 192.168.1.1:9201 [FOO]
 
-void ShoreBroker::bridgeRegister(string src_var, HostRecord hrecord, 
-				 string alias, unsigned int node_index)
+void ShoreBroker::makeBridgeRequest(string src_var, HostRecord hrecord, 
+				    string alias, unsigned int node_index)
 {
   if(!hrecord.valid())
     return;
@@ -276,17 +276,17 @@ void ShoreBroker::bridgeRegister(string src_var, HostRecord hrecord,
   string hostip    = hrecord.getHostIP();
   string port_udp  = hrecord.getPortUDP();
 
-  cout << "bridgeRegister:"          << endl;
+  cout << "makeBridgeRequest:"       << endl;
   cout << "  src_var:" << src_var    << endl;
   cout << "community:" << community  << endl;
   cout << "   hostip:" << hostip     << endl;
   cout << "  portudp:" << port_udp   << endl;
   cout << "    alias:" << alias      << endl;
 
-  string suffix = ",dest_community=" + community;
-  suffix += ",dest_host=" + hostip;
-  suffix += ",dest_port=" + port_udp;
-  suffix += ",dest_alias=" + alias;
+  string suffix = ",DestCommunity=" + community;
+  suffix += ",DestCommunityHost=" + hostip;
+  suffix += ",DestCommunityPort=" + port_udp;
+  suffix += ",DestVarName=" + alias;
 
   if(strContains(src_var, "$V"))
     src_var = findReplace(src_var, "$V", toupper(community));
@@ -297,17 +297,17 @@ void ShoreBroker::bridgeRegister(string src_var, HostRecord hrecord,
     src_var = findReplace(src_var, "$N", nstr);
   }
 
-  string post = "src_var=" + src_var + suffix;
+  string post = "SrcVarName=" + src_var + suffix;
   m_Comms.Notify("PMB_REGISTER", post);
   m_pmbs_posted++;
 }
   
   
 //------------------------------------------------------------
-// Procedure: handleBridgeConfig
-//  
+// Procedure: handleConfigBridge
+//   Example: BRIDGE = src=FOO, alias=BAR
 
-bool ShoreBroker::handleBridgeConfig(string line)
+bool ShoreBroker::handleConfigBridge(string line)
 {
   string src, alias;
 
@@ -335,7 +335,7 @@ bool ShoreBroker::handleBridgeConfig(string line)
 
 
 //------------------------------------------------------------
-// Procedure: handleQuickBridgeConfig
+// Procedure: handleConfigQBridge
 //      Note: line is expected to be simply a MOOS variable.
 // 
 //  QBRIDGE = FOOBAR
@@ -344,7 +344,7 @@ bool ShoreBroker::handleBridgeConfig(string line)
 //  BRIDGE  = src=FOOBAR_ALL, alias=FOOBAR
 //  BRIDGE  = src=FOOBAR_$V,  alias=FOOBAR
 
-bool ShoreBroker::handleQuickBridgeConfig(string line)
+bool ShoreBroker::handleConfigQBridge(string line)
 {
   if(strContains(line, ','))
     return(false);

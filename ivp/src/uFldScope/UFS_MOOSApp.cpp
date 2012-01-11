@@ -37,14 +37,12 @@ bool UFS_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 	
     string moos_var   = msg.GetKey();
     //double dval  = msg.GetDouble();
-    //string sval  = msg.GetString(); 
     //double mtime = msg.GetTime();
     //bool   mdbl  = msg.IsDouble();
-    //bool   mstr  = msg.IsString();
     //string msrc  = msg.GetSource();
     
     if(m_map_varkeys.count(moos_var)) {
-      m_map_latest[moos_var] = msg.GetString();
+      addPosting(moos_var, msg.GetString());
     }
   }
 
@@ -69,8 +67,13 @@ bool UFS_MOOSApp::Iterate()
     printHelp();
   else if((m_refresh_mode == "streaming") || m_update_requested) {
     makeReportRaw();
-    //outputRawReport();
-    //outputRawColInfo();
+#if 0 // DEBUG
+    cout << "************************" << endl;
+    outputRawReport();
+    cout << "$$$$$$$$$$$$$$$$$$$$$$$$" << endl;
+    outputRawColInfo();
+    cout << "------------------------" << endl;
+#endif 
     printReport();
     m_total_reports++;
   }
@@ -147,6 +150,8 @@ void UFS_MOOSApp::handleCommand(char c)
   case 'R':
     m_refresh_mode = "streaming";
     break;
+  case 'p':
+  case 'P':
   case ' ':
     m_refresh_mode = "paused";
     m_update_requested = true;
@@ -239,6 +244,54 @@ bool UFS_MOOSApp::addLayout(string config_str)
   return(all_match);
 }
 
+//---------------------------------------------------------
+// Procedure: addPosting
+
+bool UFS_MOOSApp::addPosting(string moosvar, string msgval)
+{
+  if(msgval == "")
+    return(false);
+
+  string key = m_map_varkeys[moosvar];
+  if(key == "")
+    return(false);
+
+  string keyval = tokStringParse(msgval, key, ',', '=');
+  
+  bool found = false;
+  unsigned int i, vsize = m_postings_moosvar.size();
+  for(i=0; i<vsize; i++) {
+    if((moosvar == m_postings_moosvar[i]) && (keyval == m_postings_keyval[i])) {
+      found = true;
+      m_postings_msgval[i] = msgval;
+    }
+  }
+
+  if(!found) {
+    m_postings_moosvar.push_back(moosvar);
+    m_postings_keyval.push_back(keyval);
+    m_postings_msgval.push_back(msgval);
+  }
+
+  return(true);
+}
+
+//---------------------------------------------------------
+// Procedure: getPosting
+
+string UFS_MOOSApp::getPosting(string moosvar, string keyval)
+{
+  unsigned int i, vsize = m_postings_moosvar.size();
+  for(i=0; i<vsize; i++) {
+    if((moosvar == m_postings_moosvar[i]) && (keyval == m_postings_keyval[i])) {
+      return(m_postings_msgval[i]);
+    }
+  }
+  
+  // else if not found
+  return("");
+}
+
 
 //------------------------------------------------------------
 // Procedure: makeReportRaw
@@ -263,17 +316,10 @@ void UFS_MOOSApp::makeReportRaw()
 {
   // Part 1: Get a list of Vehicle Names
   set<string> vnames;
-  map<string, string>::iterator p=m_map_latest.begin();
-  while(p != m_map_latest.end()) {
-    string moos_var = p->first;
-    string contents = p->second;
-    string key = m_map_varkeys[moos_var];
-    string vname = tokStringParse(contents, key, ',', '=');
-    if(vname != "")
-      vnames.insert(vname);
-    p++;
+
+  for(unsigned int i=0; i<m_postings_keyval.size(); i++) {
+    vnames.insert(m_postings_keyval[i]);
   }
-  //cout << "Total # of VNames: " << vnames.size() << endl;
 
   // Part 2: Build a the first row of the table containing all the
   // headers.
@@ -308,8 +354,8 @@ void UFS_MOOSApp::makeReportRaw()
     for(i=0; i<vsize; i++) {
       if(configInLayout(m_config[i])) {
 	string moos_var  = m_config[i].getMOOSVar();
+	string latest    = getPosting(moos_var, vname);
 	string fld       = m_config[i].getField();
-	string latest    = m_map_latest[moos_var];
 	string value     = tokStringParse(latest, fld, ',', '=');
 	row.push_back(value);
       }
@@ -375,8 +421,12 @@ void UFS_MOOSApp::printReport() const
     cout << termColor("reversered") << "PAUSED";
   else if(m_refresh_mode == "streaming")
     cout << termColor("reversegreen") << "STREAMING";
+
+  cout << termColor("reverseblue");
   if(m_layout_applied)
-    cout << termColor("reverseblue") << uintToString(m_layout_index);
+    cout << "(" << uintToString(m_layout_index+1) << ")";
+  else
+    cout << "(A)";
   cout << termColor() << endl;
 
   // Part 3B: Output the Table Header Separators
@@ -450,18 +500,16 @@ void UFS_MOOSApp::outputRawColInfo() const
 //------------------------------------------------------------
 // Procedure: configInLayout
 //   Purpose: Determine if the given Scope Config is to be included
-//            a report based on: 
+//            in a report based on: 
 //            (a) Whether layouts generally are being applied presently.
 //            (b) If so, which layout is being applied
 //            (c) Whether the config is included in the current layout 
 
 bool UFS_MOOSApp::configInLayout(const UFS_Config& config) const
 {
-  cout << "configInLayout:" << config.getField() << endl;
   // Part 1: If layouts are not being applied, the ALL Scope Configs
   // are included in all reports. Just return true.
   if(!m_layout_applied) {
-    cout << "yes1" << endl;
     return(true);
   }
 
@@ -469,25 +517,19 @@ bool UFS_MOOSApp::configInLayout(const UFS_Config& config) const
   // true indicating that the current config passes. This will be true
   // when no layouts have been provided by the user.
   if(m_layout_index >= m_layouts.size()) {
-    cout << "yes2" << m_layout_index << ":" << m_layouts.size() << endl;
     return(true);
   }
   // Part 3: Check the config's "fld" against a layout
-  string fld = tolower(config.getField());
-  if(vectorContains(m_layouts[m_layout_index], fld)) {
-    cout << "yes3" << endl;
+  string fld_alias = tolower(config.getAlias());
+  if(vectorContains(m_layouts[m_layout_index], fld_alias)) {
     return(true);
   }
 
   // Part 4: Check the config's "alias" against a layout
   string alias = tolower(config.getAlias());
   if(vectorContains(m_layouts[m_layout_index], alias)) {
-    cout << "yes4" << endl;
     return(true);
   }
 
-  cout << "NO!!!" << endl;
   return(false);
 }
-
-

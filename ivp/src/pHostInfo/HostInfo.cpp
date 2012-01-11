@@ -90,7 +90,7 @@ bool HostInfo::Iterate()
   if(!m_ip_info_files_generated)
     generateIPInfoFiles();
 
-  if(!m_ip_info_gathered)
+  if(!m_ip_info_gathered || (m_host_ip==""))
     gatherIPInfoFromFiles();
 
   if((!m_ip_info_posted) || ((m_iterations % 10) == 0))
@@ -131,6 +131,12 @@ bool HostInfo::OnStartUp()
 
   m_timewarp = doubleToStringX(GetMOOSTimeWarp());
 
+  if(strContains(m_tmp_file_dir, "~")) {
+    string home_dir = getenv("HOME");
+    m_tmp_file_dir = findReplace(m_tmp_file_dir, "~", home_dir);
+  }
+  m_tmp_file_dir += "/.phostinfo/";
+
   registerVariables();
   return(true);
 }
@@ -157,41 +163,45 @@ void HostInfo::generateIPInfoFiles()
 {
   // First the various OS X system calls
   string sys_call;
+  string name = m_host_community;
+
+  sys_call = "mkdir " + m_tmp_file_dir;
+  system(sys_call.c_str());
 
   sys_call = "networksetup -getinfo Airport  > ";
-  sys_call += m_tmp_file_dir + ".ipinfo_osx_airport.txt"; 
+  sys_call += m_tmp_file_dir + "ipinfo_osx_airport_" + name + ".txt"; 
   system(sys_call.c_str());
 
   sys_call = "networksetup -getinfo Wi-Fi  > ";
-  sys_call += m_tmp_file_dir + ".ipinfo_osx_wifi.txt"; 
+  sys_call += m_tmp_file_dir + "ipinfo_osx_wifi_" + name + ".txt"; 
   system(sys_call.c_str());
 
   sys_call = "networksetup -getinfo Ethernet  > ";
-  sys_call += m_tmp_file_dir + ".ipinfo_osx_ethernet.txt"; 
+  sys_call += m_tmp_file_dir + "ipinfo_osx_ethernet_" + name + ".txt"; 
   system(sys_call.c_str());
 
   sys_call = "networksetup -getinfo \"Ethernet 1\"  > ";
-  sys_call += m_tmp_file_dir + ".ipinfo_osx_ethernet1.txt"; 
+  sys_call += m_tmp_file_dir + "ipinfo_osx_ethernet1_" + name + ".txt"; 
   system(sys_call.c_str());
 
   sys_call = "networksetup -getinfo \"Ethernet 2\"  > ";
-  sys_call += m_tmp_file_dir + ".ipinfo_osx_ethernet2.txt"; 
+  sys_call += m_tmp_file_dir + "ipinfo_osx_ethernet2_" + name + ".txt"; 
   system(sys_call.c_str());
 
   // Next the various GNU/Linux system calls
   sys_call  = "ifconfig eth0 | grep 'inet addr:'| grep -v '127.0.0.1' ";
   sys_call += "| cut -d: -f2 | awk '{ print $1}' > ";
-  sys_call += m_tmp_file_dir + ".ipinfo_linux_ethernet0.txt";
+  sys_call += m_tmp_file_dir + "ipinfo_linux_ethernet0_" + name + ".txt";
   system(sys_call.c_str());
 
   sys_call  = "ifconfig eth1 | grep 'inet addr:'| grep -v '127.0.0.1' ";
   sys_call += "| cut -d: -f2 | awk '{ print $1}' > ";
-  sys_call += m_tmp_file_dir + ".ipinfo_linux_ethernet1.txt";
+  sys_call += m_tmp_file_dir + "ipinfo_linux_ethernet1_" + name + ".txt";
   system(sys_call.c_str());
 
   sys_call  = "ifconfig wlan0 | grep 'inet addr:'| grep -v '127.0.0.1' ";
   sys_call += "| cut -d: -f2 | awk '{ print $1}' > ";
-  sys_call += m_tmp_file_dir + ".ipinfo_linux_wifi.txt";
+  sys_call += m_tmp_file_dir + "ipinfo_linux_wifi_" + name + ".txt";
   system(sys_call.c_str());
 
   m_ip_info_files_generated = true;
@@ -206,14 +216,15 @@ void HostInfo::generateIPInfoFiles()
 
 void HostInfo::gatherIPInfoFromFiles()
 {
-  m_ip_osx_wifi        = readOSXInfoIP(".ipinfo_osx_wifi.txt");
-  m_ip_osx_airport     = readOSXInfoIP(".ipinfo_osx_airport.txt");
-  m_ip_osx_ethernet    = readOSXInfoIP(".ipinfo_osx_ethernet.txt");
-  m_ip_osx_ethernet1   = readOSXInfoIP(".ipinfo_osx_ethernet1.txt");
-  m_ip_osx_ethernet2   = readOSXInfoIP(".ipinfo_osx_ethernet2.txt");
-  m_ip_linux_wifi      = readLinuxInfoIP(".ipinfo_linux_wifi.txt");
-  m_ip_linux_ethernet0 = readLinuxInfoIP(".ipinfo_linux_ethernet0.txt");
-  m_ip_linux_ethernet1 = readLinuxInfoIP(".ipinfo_linux_ethernet1.txt");
+  string name = m_host_community;
+  m_ip_osx_wifi        = readOSXInfoIP("ipinfo_osx_wifi_" + name + ".txt");
+  m_ip_osx_airport     = readOSXInfoIP("ipinfo_osx_airport_" + name + ".txt");
+  m_ip_osx_ethernet    = readOSXInfoIP("ipinfo_osx_ethernet_" + name + ".txt");
+  m_ip_osx_ethernet1   = readOSXInfoIP("ipinfo_osx_ethernet1_" + name + ".txt");
+  m_ip_osx_ethernet2   = readOSXInfoIP("ipinfo_osx_ethernet2_" + name + ".txt");
+  m_ip_linux_wifi      = readLinuxInfoIP("ipinfo_linux_wifi_" + name + ".txt");
+  m_ip_linux_ethernet0 = readLinuxInfoIP("ipinfo_linux_ethernet0_" + name + ".txt");
+  m_ip_linux_ethernet1 = readLinuxInfoIP("ipinfo_linux_ethernet1_" + name + ".txt");
 
   m_ip_info_gathered = true;
 }
@@ -228,6 +239,9 @@ void HostInfo::gatherIPInfoFromFiles()
 
 void HostInfo::postIPInfo()
 {
+  if(m_host_ip == "")
+    m_host_ip = "localhost";
+
   m_host_ip_all = "";
   m_host_ip_verbose = "";
 
@@ -270,6 +284,10 @@ void HostInfo::postIPInfo()
   cout << "PHI_HOST_INFO:       " << full_info << endl;
 
   m_ip_info_posted = true;
+
+  if(m_host_ip == "localhost")
+    m_host_ip = "";
+
 }
 
 
@@ -306,8 +324,7 @@ void HostInfo::addIPInfo(string ip, string ip_source)
 
 string HostInfo::readOSXInfoIP(string filename)
 {
-  string home_dir = getenv("HOME");
-  filename = home_dir + "/" + filename;
+  filename = m_tmp_file_dir + filename;
 
   string return_info;
 
@@ -331,8 +348,7 @@ string HostInfo::readOSXInfoIP(string filename)
 
 string HostInfo::readLinuxInfoIP(string filename)
 {
-  string home_dir = getenv("HOME");
-  filename = home_dir + "/" + filename;
+  filename = m_tmp_file_dir + filename;
 
   string return_info;
 

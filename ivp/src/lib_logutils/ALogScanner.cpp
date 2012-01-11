@@ -44,6 +44,8 @@ ScanReport ALogScanner::scan()
     
     double timestamp = atof(timestr.c_str());
     
+    wsource = biteString(wsource, ':');
+
     if((timestr != "") && (timestr[0] != '%')) 
       report.addLine(timestamp, variable, wsource, varvalue);
   }

@@ -46,8 +46,12 @@ void showHelpAndExit()
   blk("      Display example MOOS configuration block.                 ");
   mag("  --help, -h                                                    ");
   blk("      Display this help message.                                ");
+  mag("  --in","=<varname>                                             ");
+  blk("      Use <varname> as the Relay incoming variable              ");
   mag("  --interface, -i                                               ");
   blk("      Display MOOS publications and subscriptions.              ");
+  mag("  --out","=<varname>                                            ");
+  blk("      Use <varname> as the Relay outgoing variable              ");
   mag("  --version,-v                                                  ");
   blk("      Display the release version of pXRelay.                   ");
   blk("                                                                ");

@@ -242,6 +242,7 @@ SET(IVP_NON_GUI_APPS
   uTermCommand
   uXMS
   uPokeDB
+  pBinaryTest
   )
 
 SET(IVP_GUI_APPS

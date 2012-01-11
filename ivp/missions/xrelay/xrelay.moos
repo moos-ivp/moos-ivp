@@ -23,8 +23,8 @@ ProcessConfig = pXRelay_APPLES
   AppTick	= 25
   CommsTick	= 25
 
-  OUTGOING_VAR  = APPLES
-  INCOMING_VAR  = PEARS
+  INCOMING_VAR  = APPLES
+  OUTGOING_VAR  = PEARS
 }
 
 //------------------------------------------
@@ -35,8 +35,8 @@ ProcessConfig = pXRelay_PEARS
   AppTick	= 25
   CommsTick	= 25
 
-  INCOMING_VAR  = APPLES
-  OUTGOING_VAR  = PEARS
+  INCOMING_VAR  = PEARS
+  OUTGOING_VAR  = APPLES
 }
 
 //------------------------------------------

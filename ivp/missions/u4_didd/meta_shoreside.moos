@@ -18,12 +18,45 @@ Processconfig = ANTLER
   Run = uTimerScript    @ NewConsole = false
   Run = pMarineViewer   @ NewConsole = false
   Run = pLogger         @ NewConsole = false
-  Run = pHostInfo       @ NewConsole = false
-  Run = uFldNodeComms   @ NewConsole = false
+  Run = pHostInfo       @ NewConsole = true
   Run = uFldShoreBroker @ NewConsole = true
+  Run = uFldNodeComms   @ NewConsole = true
+  Run = uFldScope       @ NewConsole = true
+  Run = uFldPathCheck   @ NewConsole = false
 }
 
 #include plug_pHostInfo.moos
+
+//--------------------------------------------------
+// uFldPathCheck Configuration Block
+
+ProcessConfig = uFldPathCheck                                   
+{                                                               
+  AppTick   = 4                                                 
+  CommsTick = 4                                                 
+                                                                
+  HISTORY_LENGTH = 10   // The default                          
+}              
+
+
+//--------------------------------------------------
+// uFldScope Configuration Block
+
+ProcessConfig = uFldScope                                       
+{                                                               
+  AppTick   = 4                                                 
+  CommsTick = 4                                                 
+                                                                
+  SCOPE = var=NODE_REPORT,key=NAME,fld=TIME,alias=Time                   
+  SCOPE = var=NODE_REPORT,key=NAME,fld=MODE                    
+  SCOPE = var=UPC_SPEED_REPORT,key=vname,fld=avg_spd,alias=speed  
+  SCOPE = var=UPC_ODOMETRY_REPORT,key=vname,fld=trip_dist           
+  SCOPE = var=UPC_ODOMETRY_REPORT,key=vname,fld=total_dist          
+                                                                
+  LAYOUT = trip_dist, total_dist                                
+  LAYOUT = MODE, speed, Time                                    
+}                             
+
 
 //--------------------------------------------------
 // uFldShoreBroker Configuration Block
@@ -33,9 +66,8 @@ ProcessConfig = uFldShoreBroker
   AppTick       = 1
   CommsTick     = 1
 
-  QBRIDGE  = DEPLOY
+  QBRIDGE  = DEPLOY, NODE_REPORT
   QBRIDGE  = STATION_KEEP
-  QBRIDGE  = NODE_REPORT
   QBRIDGE  = MOOS_MANUAL_OVERIDE
 
   BRIDGE   = src=RETURN_ALL, alias=RETURN
@@ -86,8 +118,13 @@ ProcessConfig = uFldNodeComms
   AppTick       = 2
   CommsTick     = 2
 
-  COMMS_RANGE   = 150
-  GROUPS        = true
+  COMMS_RANGE      = 75
+  CRITICAL_RANGE   = 25
+
+  MIN_MSG_INTERVAL = 20
+  MAX_MSG_LENGTH   = 10
+
+  GROUPS           = true
 }
 
 //--------------------------------------------------
@@ -124,6 +161,9 @@ ProcessConfig = pMarineViewer
 
   SCOPE = PHI_HOST_INFO
 
+  ACTION  = NODE_MESSAGE=src_node=ike,dest_group=GROUP12,var_name=FOOBAR,string_val=hello
+  ACTION  = NODE_MESSAGE=src_node=ike,dest_group=GROUP12,var_name=FOOBAR,string_val=hello_verylongmessage
+
   ACTION = FOO_ALL = true
   ACTION = FOO_ALL = false
   ACTION = PERMUTING = true
@@ -139,6 +179,8 @@ ProcessConfig = pMarineViewer
   BUTTON_ONE   = RETURN_ALL=false
   BUTTON_TWO   = RETURN  # RETURN_ALL=true
   BUTTON_THREE = PERMUTE-NOW   # UTS_FORWARD=0
+  #BUTTON_FOUR  = MSG_TEST # NODE_MESSAGE=src_node=ike,dest_node=henry,var_name=FOOBAR,string_val=hello
+  BUTTON_FOUR  = MSG_TEST # NODE_MESSAGE=src_node=ike,dest_group=GROUP12,var_name=FOOBAR,string_val=hello
 }
 
 //--------------------------------------------------------

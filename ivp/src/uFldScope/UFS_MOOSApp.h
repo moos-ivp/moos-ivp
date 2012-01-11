@@ -13,6 +13,7 @@
 #include <map>
 #include "MOOSLib.h"
 #include "UFS_Config.h"
+#include "VarDataPair.h"
 
 class UFS_MOOSApp : public CMOOSApp
 {
@@ -31,6 +32,10 @@ class UFS_MOOSApp : public CMOOSApp
   void registerVariables();
   bool addScope(std::string);
   bool addLayout(std::string);
+
+  bool addPosting(std::string moosvar, std::string msgval);
+  std::string getPosting(std::string moosvar, std::string keyval);
+
   void makeReportRaw();
   void printReport() const;
   void printHelp() const;
@@ -50,10 +55,11 @@ class UFS_MOOSApp : public CMOOSApp
   std::vector<std::vector<std::string> > m_layouts;
 
  protected: // State Variables
-  // One latest-value for a MOOS variable may serve more than one
-  // configuration reports.
-  std::map<std::string, std::string> m_map_latest;
-    
+  std::vector<std::string> m_postings_moosvar;  // e.g. "NODE_REPORT"
+  std::vector<std::string> m_postings_keyval;   // e.g. "henry"
+  std::vector<std::string> m_postings_msgval;   // e.g. "X=2,y=44,TIME..."
+
+
   // A 2D report structure - one vehicle per row, one fld per column
   std::vector<std::vector<std::string> > m_raw_report;
   

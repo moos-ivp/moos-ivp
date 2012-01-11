@@ -17,15 +17,14 @@ ProcessConfig = ANTLER
 {
   MSBetweenLaunches = 200
 
-  Run = MOOSDB		@ NewConsole = false
-  Run = pLogger         @ NewConsole = false
+  Run = MOOSDB		@ NewConsole = true
+  Run = pLogger         @ NewConsole = true
   Run = uSimMarine	@ NewConsole = true
-  Run = pNodeReporter	@ NewConsole = false
+  Run = pNodeReporter	@ NewConsole = true
   Run = pMarinePID	@ NewConsole = true
   Run = pHelmIvP	@ NewConsole = true
   Run = pMarineViewer	@ NewConsole = true
   Run = uProcessWatch	@ NewConsole = true
-  Run = pHostInfo	@ NewConsole = true
 }
 
 //------------------------------------------

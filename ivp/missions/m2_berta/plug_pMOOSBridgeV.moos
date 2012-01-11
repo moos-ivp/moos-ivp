@@ -9,7 +9,6 @@ ProcessConfig = pMOOSBridge_%(VNAME)
   UDPListen = $(VPORT)
   BridgeFrequency = 0
   
-  SHARE = [VIEW_POLYGON]        -> $(SNAME) @ localhost:$(SPORT) [VIEW_POLYGON]
   SHARE = [VIEW_POINT]          -> $(SNAME) @ localhost:$(SPORT) [VIEW_POINT]
   SHARE = [VIEW_SEGLIST]        -> $(SNAME) @ localhost:$(SPORT) [VIEW_SEGLIST]
   SHARE = [CONTACT_INFO]        -> $(SNAME) @ localhost:$(SPORT) [CONTACT_INFO]
@@ -21,10 +20,15 @@ ProcessConfig = pMOOSBridge_%(VNAME)
  // UDPSHARE = [NODE_REPORT_LOCAL] -> $(SNAME) @ localhost:$(SPORT) [NODE_REPORT]
  // UDPSHARE = [NODE_REPORT_LOCAL] -> shoreside @ 128.30.24.246: 9200 [NODE_REPORT]
 
+  //UDPSHARE = [NODE_REPORT_LOCAL] -> $(SNAME) @ 18.38.2.158:$(SPORT) [NODE_REPORT]
   UDPSHARE = [NODE_REPORT_LOCAL] -> $(SNAME) @ localhost:$(SPORT) [NODE_REPORT]
-  UDPSHARE = [NODE_REPORT_LOCAL] -> all @ broadcast: 9200 [NODE_REPORT]
+  //UDPSHARE = [NODE_REPORT_LOCAL] -> all @ broadcast: 9200 [NODE_REPORT]
 
   UDPSHARE = [NAV_X] -> all @ broadcast: 9200 [NAV_XX]
   UDPSHARE = [NAV_Y] -> all @ broadcast: 9201 [NAV_YY]
+
+  UDPSHARE = [VIEW_POLYGON]        -> $(SNAME) @ 1.2.3.4:$(SPORT) [VIEW_POLYGON]
+  UDPSHARE = [VIEW_POLYGON]        -> $(SNAME) @ localhost:$(SPORT) [VIEW_POLYGON]
+
 
 }
