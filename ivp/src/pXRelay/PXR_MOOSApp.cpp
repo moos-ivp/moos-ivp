@@ -93,8 +93,10 @@ bool PXR_MOOSApp::Iterate()
   if(m_start_time_iterations == 0)
     m_start_time_iterations = MOOSTime();
   else {
-    double delta_time = (MOOSTime() - m_start_time_iterations) + 0.01;
-    double frequency  = (double)(m_iterations) / delta_time;
+    double delta_time = (MOOSTime() - m_start_time_iterations);
+    double frequency = 0;
+    if(delta_time > 0)
+      frequency  = (double)(m_iterations) / delta_time;
     m_Comms.Notify(m_outgoing_var+"_ITER_HZ", frequency);
   }
     
@@ -105,8 +107,10 @@ bool PXR_MOOSApp::Iterate()
     if(m_start_time_postings == 0)
       m_start_time_postings = MOOSTime();
     else {
-      double delta_time = (MOOSTime() - m_start_time_postings) + 0.01;
-      double frequency = (double)(m_tally_sent) / delta_time;
+      double delta_time = (MOOSTime() - m_start_time_postings);
+      double frequency  = 0;
+      if(delta_time > 0)
+	frequency = (double)(m_tally_sent) / delta_time;
       m_Comms.Notify(m_outgoing_var+"_POST_HZ", frequency);
     }
   }

@@ -17,8 +17,17 @@ using namespace std;
 // Constructor
 
 NodeBroker::NodeBroker()
-{
-  m_user_bridges_posted = false;
+{ 
+  m_iteration         = 0;
+  m_pmbs_posted       = 0;
+  m_pings_posted      = 0;
+  m_ok_phis_received  = 0;
+  m_bad_phis_received = 0;
+  m_ok_acks_received  = 0;
+  m_bad_acks_received = 0;
+  m_host_info_changes = 0;
+
+  m_hack_ix           = 0;
 }
 
 //---------------------------------------------------------
@@ -47,12 +56,12 @@ bool NodeBroker::OnNewMail(MOOSMSG_LIST &NewMail)
 #endif
     
     // Only accept HOST_INFO coming from our own community
-    if((key == "PHI_HOST_INFO") && msg_is_local)
-      m_node_host_record = string2HostRecord(sval);
+    if((key == "PHI_HOST_INFO") && msg_is_local) 
+      handleMailHostInfo(sval);
 
     // Only accept an ACK coming from a different community
     else if((key == "NODE_BROKER_ACK") && !msg_is_local)
-      m_shore_host_record = string2HostRecord(sval);
+      handleMailAck(sval);
   }
 
   return(true);
@@ -73,26 +82,16 @@ bool NodeBroker::OnConnectToServer()
 
 bool NodeBroker::Iterate()
 {
-  cout << "*" << flush;
-    
-  bool host_info_set  =  m_node_host_record.valid();
-  bool shore_info_set =  m_shore_host_record.valid();
+  m_iteration++;
 
-  cout << "host_info_set: " << host_info_set << endl;
-  cout << "shore_info_set:" << shore_info_set << endl;
-
-  //if(m_node_host_record.valid() && !m_shore_host_record.valid())
-  //  postOutgoingPing();
   if(m_node_host_record.valid())
     postOutgoingPing();
 
-  if(m_node_host_record.valid() && m_shore_host_record.valid()) {
-    if(!m_user_bridges_posted) {
-      registerUserBridges();
-      m_user_bridges_posted = true;
-    }
-  }
+  if(!m_shore_host_record.valid())
+    registerPingBridges(true);
 
+
+  printReport();
   return(true);
 }
 
@@ -123,32 +122,14 @@ bool NodeBroker::OnStartUp()
       if(param == "KEYWORD")
 	m_keyword = value;
       // Example: TRY_SHORE_HOST = 192.168.1.2, 9000
-      else if(param == "TRY_SHORE_HOST") {
-	string host = biteStringX(value, ',');
-	string port = value;
-	if(port == "")
-	  port = "9200";
-	if(isValidIPAddress(host) && isNumber(port)) {
-	  m_candidate_shore_host.push_back(host);
-	  m_candidate_shore_port.push_back(port);
-	}
-	else
-	  MOOSTrace("Invalid TRY_SHORE_HOST: %s\n", line.c_str());
-      }
+      else if(param == "TRY_SHORE_HOST") 
+	handleConfigTryShoreHost(value);
 
       // Example: PIGEON_VAR = LOITER_UP_1, LOITER_UP
-      else if(param == "PIGEON_VAR") {
-	string var   = biteStringX(value, ',');
-	string alias = value;
-	if(alias == "")
-	  alias = var;
-	
-	if(!strContainsWhite(var) && !strContainsWhite(alias)) {
-	  m_pigeon_vars.push_back(var);
-	  m_pigeon_aliases.push_back(alias);
-	}
-	else
-	  MOOSTrace("Invalid PIGEON_VAR init: %s\n", value.c_str());
+      else if(param == "BRIDGE") {
+	bool ok = handleConfigBridge(value);
+	if(!ok)
+	  MOOSTrace("Invalid BRIDGE init: %s\n", value.c_str());
       }
     }
   }	
@@ -170,15 +151,53 @@ void NodeBroker::registerVariables()
 //------------------------------------------------------------
 // Procedure: registerPingBridges
 
-void NodeBroker::registerPingBridges()
+void NodeBroker::registerPingBridges(bool random)
 {
   unsigned int i, vsize = m_candidate_shore_host.size();
+
+  m_hack_ix++;
+  if(m_hack_ix >= vsize)
+    m_hack_ix = 0;
+
   for(i=0; i<vsize; i++) {
-    string msg = "src_var=NODE_BROKER_PING,dest_community=shoreside";
-    msg += ",dest_host=" + m_candidate_shore_host[i];
-    msg += ",dest_port=" + m_candidate_shore_port[i];
-    msg += ",dest_alias=NODE_BROKER_PING";
-    m_Comms.Notify("PMB_REGISTER", msg);
+
+    if(!random || (m_hack_ix==i)) {
+      if(m_candidate_shore_host[i] != "localhost") {
+	string msg = "SrcVarName=NODE_BROKER_PING_" + uintToString(i);
+	msg += ",DestCommunity=" + m_candidate_shore_name[i];
+	msg += ",DestCommunityHost=" + m_candidate_shore_host[i];
+	msg += ",DestCommunityPort=" + m_candidate_shore_port[i];
+	msg += ",DestVarName=NODE_BROKER_PING";
+	m_Comms.Notify("PMB_REGISTER", msg);
+	m_pmbs_posted++;
+      }
+    }
+  }
+}
+
+//------------------------------------------------------------
+// Procedure: registerPingBridgesSubsLocal
+//      Note: If localhost_ip is a valid IP address, and one of 
+//            the candidate hosts is "localhost", the IP address
+//            will be substituted in.
+
+
+void NodeBroker::registerPingBridgesSubsLocal(string localhost_ip)
+{
+  if(!isValidIPAddress(localhost_ip))
+    return;
+
+  unsigned int i, vsize = m_candidate_shore_host.size();
+  for(i=0; i<vsize; i++) {
+    if(m_candidate_shore_host[i] == "localhost") {      
+      string msg = "SrcVarName=NODE_BROKER_PING_" + uintToString(i);
+      msg += ",DestCommunity=shoreside";
+      msg += ",DestCommunityHost=" + localhost_ip;
+      msg += ",DestCommunityPort=" + m_candidate_shore_port[i];
+      msg += ",DestVarName=NODE_BROKER_PING";
+      m_Comms.Notify("PMB_REGISTER", msg);
+      m_pmbs_posted++;
+    }
   }
 }
 
@@ -187,15 +206,16 @@ void NodeBroker::registerPingBridges()
 
 void NodeBroker::registerUserBridges()
 {
-  unsigned int i, vsize = m_pigeon_vars.size();
+  unsigned int i, vsize = m_bridge_src_var.size();
   cout << "In registerUserBridges()" << vsize << endl;
   for(i=0; i<vsize; i++) {
-    string msg = "src_var=" + m_pigeon_vars[i];
-    msg += ",dest_community=" + m_shore_host_record.getCommunity();
-    msg += ",dest_host=" + m_shore_host_record.getHostIP();
-    msg += ",dest_port=" + m_shore_host_record.getPortUDP();
-    msg += ",dest_alias=" + m_pigeon_aliases[i];
+    string msg = "SrcVarName=" + m_bridge_src_var[i];
+    msg += ",DestCommunity=" + m_shore_host_record.getCommunity();
+    msg += ",DestCommunityHost=" + m_shore_host_record.getHostIP();
+    msg += ",DestCommunityPort=" + m_shore_host_record.getPortUDP();
+    msg += ",DestVarName=" + m_bridge_alias[i];
     m_Comms.Notify("PMB_REGISTER", msg);
+    m_pmbs_posted++;
   }
 }
 
@@ -216,7 +236,213 @@ void NodeBroker::postOutgoingPing()
 
   string msg = hrecord.getSpec();
   
-  m_Comms.Notify("NODE_BROKER_PING", msg);
+  if(!m_shore_host_record.valid()) {
+    unsigned int i, vsize = m_candidate_shore_host.size();
+    for(i=0; i<vsize; i++) {
+      string moos_var = "NODE_BROKER_PING_" + uintToString(i);
+      m_Comms.Notify(moos_var, msg);
+      m_pings_posted++;
+    }
+  }
+  else {
+    m_Comms.Notify("NODE_BROKER_PING", msg);
+    m_pings_posted++;
+  }
+}
+
+
+//------------------------------------------------------------
+// Procedure: handleConfigBridge
+//   Example: BRIDGE = src=FOO, alias=BAR
+
+bool NodeBroker::handleConfigBridge(string line)
+{
+  string src, alias;
+
+  vector<string> svector = parseString(line, ',');
+  unsigned int i, vsize = svector.size();
+  for(i=0; i<vsize; i++) {
+    string left  = tolower(biteStringX(svector[i],'='));
+    string right = svector[i];
+    if(left == "src")
+      src = right;
+    else if(left == "alias")
+      alias = right;
+  }
+
+  if((src == "") || strContainsWhite(src))
+    return(false);
+
+  if((alias == "") || strContainsWhite(alias))
+    alias = src;
+  
+  m_bridge_src_var.push_back(src);
+  m_bridge_alias.push_back(alias);
+  return(true);
+}
+
+
+//------------------------------------------------------------
+// Procedure: handleConfigTryShoreHost
+
+void NodeBroker::handleConfigTryShoreHost(string str)
+{
+  string hostip;
+  string port_udp  = "9200";
+  string community = "shoreside";
+
+  string original_line = str;
+
+  string unknown_params;
+
+  vector<string> svector = parseString(str, ',');
+  unsigned int i, vsize = svector.size();
+  for(i=0; i<vsize; i++) {
+    string left  = biteStringX(svector[i], '=');
+    string right = svector[i];
+    if((left == "hostip") && isValidIPAddress(right))
+      hostip = right;
+    else if((left == "port_udp") && isNumber(right))
+      port_udp = right;
+    else if(left == "community")
+      community = right;
+    else {
+      if(unknown_params != "")
+	unknown_params += ",";
+      unknown_params += (left + "=" + right);
+    }
+  }
+
+  if(hostip == "") {
+    MOOSTrace("Invalid TRY_SHORE_HOST: %s\n", original_line.c_str());
+    m_invalid_tryhosts.push_back(original_line);
+    return;
+  }
+  
+  if(unknown_params != "")
+    original_line += ("  Unknown Params:" + unknown_params);
+
+  m_valid_tryhosts.push_back(original_line);
+  m_candidate_shore_host.push_back(hostip);
+  m_candidate_shore_port.push_back(port_udp);
+  m_candidate_shore_name.push_back(community);
+}
+
+//------------------------------------------------------------
+// Procedure: handleMailAck
+
+void NodeBroker::handleMailAck(string ack_msg)
+{
+  HostRecord hrecord = string2HostRecord(ack_msg);
+
+  if(hrecord.valid() == false) {
+    m_bad_acks_received++;
+    return;
+  }
+  
+  // If this is the first ack received....
+  if(m_shore_host_record.valid() == false) {
+    // (1) Store the shore host record information 
+    m_shore_host_record = hrecord;
+
+    // (2) Set up a new bridge for pinging just the known host
+    string msg = "SrcVarName=NODE_BROKER_PING";
+    msg += ",DestCommunity=" + hrecord.getCommunity();
+    msg += ",DestCommunityHost=" + hrecord.getHostIP();
+    msg += ",DestCommunityPort=" + hrecord.getPortUDP();
+    msg += ",DestVarName=NODE_BROKER_PING";
+    m_Comms.Notify("PMB_REGISTER", msg);
+    m_pmbs_posted++;
+
+    // (3) Set up the user-configured variable bridges.
+    registerUserBridges();
+    
+    m_ok_acks_received++;
+  }
+  
+  else {
+    if((hrecord.getCommunity() != m_shore_host_record.getCommunity()) ||
+       (hrecord.getHostIP() != m_shore_host_record.getHostIP()) ||
+       (hrecord.getPortUDP() != m_shore_host_record.getPortUDP())) {
+      m_bad_acks_received++;
+    }
+    else
+      m_ok_acks_received++;
+  }
+}
+
+
+//------------------------------------------------------------
+// Procedure: handleMailHostInfo
+
+void NodeBroker::handleMailHostInfo(string phi_msg)
+{
+  HostRecord hrecord = string2HostRecord(phi_msg);
+  if(hrecord.valid() == false) {
+    m_bad_phis_received++;
+    return;
+  }
+  m_ok_phis_received++;
+
+  // If we have received Host Info previously, check for consistency
+  if(m_node_host_record.valid()) {
+    if((m_node_host_record.getCommunity() != hrecord.getCommunity()) ||
+       (m_node_host_record.getHostIP() != hrecord.getHostIP()) ||
+       (m_node_host_record.getPortDB() != hrecord.getPortDB()) ||
+       (m_node_host_record.getPortUDP() != hrecord.getPortUDP())) {
+      m_host_info_changes++;
+    }
+  }
+  // If this is the first time received, set up the localhost bridges.
+  else {
+    m_node_host_record = hrecord;
+    string localhost_ip = m_node_host_record.getHostIP();
+    registerPingBridgesSubsLocal(localhost_ip);
+  }
+}
+
+
+//------------------------------------------------------------
+// Procedure: printReport
+//  
+
+void NodeBroker::printReport()
+{
+  cout << endl << endl << endl << endl << endl;
+  cout << "NodeBroker Status ----------- (" << m_iteration << ")" << endl;
+  //  cout << "  MOOS Time Warp:                  " << m_timewarp << endl;
+  cout << "  Total OK  PHI_HOST_INFO    received: " << m_ok_phis_received << endl;
+  cout << "  Total BAD PHI_HOST_INFO    received: " << m_bad_phis_received << endl;
+  cout << "  Total HOST_INFO changes    received: " << m_host_info_changes << endl;
+  cout << "  Total PMB_REGISTER           posted: " << m_pmbs_posted << endl;
+  cout << "  Total NODE_BROKER_PING       posted: " << m_pings_posted << endl;
+  cout << "  Total OK  NODE_BROKER_ACK  received: " << m_ok_acks_received << endl;
+  cout << "  Total BAD NODE_BROKER_ACK  received: " << m_bad_acks_received << endl;
+  cout << "                                   " << endl;
+  cout << "Configuration Info:            " << endl;
+  cout << "  Total Valid TryHosts:   " << m_valid_tryhosts.size() << endl;
+  unsigned int i, goodsize = m_valid_tryhosts.size();
+  for(i=0; i<goodsize; i++)
+    cout << "  [" << i+1 << "]: " << m_valid_tryhosts[i] << endl;
+  cout << "  Total InValid TryHosts: " << m_invalid_tryhosts.size() << endl;
+  unsigned int j, badsize = m_invalid_tryhosts.size();
+  for(j=0; j<badsize; j++)
+    cout << "  [" << j+1 << "]: " << m_invalid_tryhosts[j] << endl;
+  cout << "                                   " << endl;
+  cout << "Node Information: " << m_node_host_record.getCommunity() << endl; 
+  cout << "      HostIP:  " << m_node_host_record.getHostIP() << endl; 
+  cout << "   Port (DB):  " << m_node_host_record.getPortDB() << endl; 
+  cout << "  Port (UDP):  " << m_node_host_record.getPortUDP() << endl; 
+  cout << "   Time Warp:  " << m_node_host_record.getTimeWarp() << endl; 
+  cout << "                                   " << endl;
+  cout << "Shoreside Information: " << m_shore_host_record.getCommunity() << endl; 
+  cout << "      HostIP:  " << m_shore_host_record.getHostIP() << endl; 
+  cout << "   Port (DB):  " << m_shore_host_record.getPortDB() << endl; 
+  cout << "  Port (UDP):  " << m_shore_host_record.getPortUDP() << endl; 
+  cout << "   Time Warp:  " << m_shore_host_record.getTimeWarp() << endl; 
+
+
+
 }
 
 

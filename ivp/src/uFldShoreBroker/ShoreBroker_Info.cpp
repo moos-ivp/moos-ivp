@@ -5,6 +5,7 @@
 /*   DATE: Dec 16th 2011                                        */
 /****************************************************************/
 
+#include <cstdlib>
 #include <iostream>
 #include "ReleaseInfo.h"
 #include "ColorParse.h"
@@ -72,16 +73,16 @@ void showExampleConfigAndExit()
   blk("                                                                ");
   blk("ProcessConfig = uFldShoreBroker                                 ");
   blk("{                                                               ");
-  blk("  AppTick   = 4                                                 ");
-  blk("  CommsTick = 4                                                 ");
+  blk("  AppTick   = 2                                                 ");
+  blk("  CommsTick = 2                                                 ");
   blk("                                                                ");
-  blk("  BRIDGE_VAR = DEPLOY                                           ");
-  blk("  BRIDGE_VAR = RETURN                                           ");
-  blk("  BRIDGE_VAR = STATION_KEEP                                     ");
+  blk("  BRIDGE = src=DEPLOY_ALL, alias=DEPLOY                         ");
+  blk("  BRIDGE = src=DEPLOY_$V,  alias=DEPLOY                         ");
   blk("                                                                ");
-  blk("  PIGEON_VAR = FOOBAR                                           ");
+  blk("  QBRIDGE = RETURN                                              ");
+  blk("  QBRIDGE = NODE_REPORT, STATION_KEEP                           ");
   blk("                                                                ");
-  blk("  MACRO_VAR  = UP_LOITER_$N, UP_LOITER                          ");
+  blk("  BRIDGE = UP_LOITER_$N, UP_LOITER                              ");
   blk("}                                                               ");
   blk("                                                                ");
   exit(0);
@@ -101,15 +102,18 @@ void showInterfaceAndExit()
   blk("                                                                ");
   blk("SUBSCRIPTIONS:                                                  ");
   blk("------------------------------------                            ");
-  blk("  PHI_HOST_INFO    = COMMUNITY=alpha,IP=192.168.1.1,PORT=9000   ");
-  blk("                     PORT_UDP=9200                              ");
+  blk("  PHI_HOST_INFO    = community=alpha,hostip=123.1.1.0,          ");
+  blk("                     port_db=9000,port_udp=9200,                ");
+  blk("                     timewarp=8                                 ");
   blk("  NODE_BROKER_PING = community=henry,host=192.168.1.22,         ");
-  blk("                     port=9000,port_udp=9200,keyword=lemon      ");
+  blk("                     port=9000,port_udp=9200,keyword=lemon,     ");
+  blk("                     timewarp=8                                 ");
   blk("                                                                ");
   blk("PUBLICATIONS:                                                   ");
   blk("------------------------------------                            ");
   blk("  NODE_BROKER_ACK = community=shoreside,host=192.168.1.199,     ");
-  blk("                    port=9000,port_udp=9200                     ");
+  blk("                    port=9000,port_udp=9200,timewarp=8,         ");
+  blk("                    status=ok                                   ");
   blk("                                                                ");
   blk("  PMB_REGISTER    = src_var=DEPLOY_ALL,dest_community=henry,    ");
   blk("                    dest_port=9200,dest_host=192.168.1.22,      ");

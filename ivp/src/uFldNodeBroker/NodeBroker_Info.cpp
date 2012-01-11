@@ -5,6 +5,7 @@
 /*   DATE: Dec 19th 2011                                        */
 /****************************************************************/
 
+#include <cstdlib>
 #include <iostream>
 #include "ColorParse.h"
 #include "ReleaseInfo.h"
@@ -76,14 +77,15 @@ void showExampleConfigAndExit()
   blk("  CommsTick = 4                                                 ");
   blk("                                                                ");
   blk("  KEYWORD        = lemon                                        ");
-  blk("  TRY_SHORE_HOST = localhost, 9200                              ");
-  blk("  TRY_SHORE_HOST = 128.30.24.232, 9200                          ");
   blk("                                                                ");
-  blk("  PIGEON_VAR = VIEW_POLYGON                                     ");
-  blk("  PIGEON_VAR = VIEW_POINT                                       ");
-  blk("  PIGEON_VAR = VIEW_SEGLIST                                     ");
+  blk("  TRY_SHORE_HOST = host_ip=localhost, port_udp=9200, community=topside");
+  blk("  TRY_SHORE_HOST = host_ip=128.30.24.232, port_udp=9200         ");
   blk("                                                                ");
-  blk("  PIGEON_VAR = NODE_REPORT_LOCAL, NODE_REPORT                   ");
+  blk("  BRIDGE = src=VIEW_POLYGON                                     ");
+  blk("  BRIDGE = src=VIEW_POINT                                       ");
+  blk("  BRIDGE = src=VIEW_SEGLIST                                     ");
+  blk("                                                                ");
+  blk("  BRIDGE = src=NODE_REPORT_LOCAL, alias=NODE_REPORT             ");
   blk("}                                                               ");
   blk("                                                                ");
   exit(0);
@@ -103,10 +105,12 @@ void showInterfaceAndExit()
   blk("                                                                ");
   blk("SUBSCRIPTIONS:                                                  ");
   blk("------------------------------------                            ");
-  blk("  PHI_HOST_INFO   = COMMUNITY=alpha,IP=192.168.1.1,PORT=9000    ");
-  blk("                    PORT_UDP=9200                               ");
+  blk("  PHI_HOST_INFO   = community=alpha,hostip=123.1.1.0,           ");
+  blk("                    port_db=9000,port_udp=9200,                 ");
+  blk("                    timewarp=8                                  ");
   blk("  NODE_BROKER_ACK = community=shoreside,host=192.168.1.99,      ");
-  blk("                    port=9000,port_udp=9200                     ");
+  blk("                    port=9000,port_udp=9200,timewarp=8,         ");
+  blk("                    status=ok                                   ");
   blk("                                                                ");
   blk("PUBLICATIONS:                                                   ");
   blk("------------------------------------                            ");
@@ -115,7 +119,7 @@ void showInterfaceAndExit()
   blk("                     dest_host=192.168.0.1,                     ");
   blk("                     dest_alias=NODE_BROKER_PING                ");
   blk("  NODE_BROKER_PING = community=henry,host=192.168.1.1,port=9000 ");
-  blk("                     port_udp=9200,keyword=lemon                ");
+  blk("                     port_udp=9200,keyword=lemon,timewarp=8     ");
   blk("                                                                ");
   exit(0);
 }

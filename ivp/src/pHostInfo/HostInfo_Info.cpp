@@ -5,6 +5,7 @@
 /*   DATE: Dec 9th 2011                                         */
 /****************************************************************/
 
+#include <cstdlib>
 #include <iostream>
 #include "ColorParse.h"
 #include "ReleaseInfo.h"
@@ -97,8 +98,9 @@ void showInterfaceAndExit()
   blk("                        10.1.127.3                              ");
   blk("  PHI_HOST_PORT       = 9000                                    ");
   blk("  PHI_HOST_PORT_UDP   = 9200                                    ");
-  blk("  PHI_HOST_INFO       = COMMUNITY=alpha,IP=123.1.1.0,PORT=9000  ");
-  blk("                        PORT_UDP=9200                           ");
+  blk("  PHI_HOST_INFO       = community=alpha,hostip=123.1.1.0,       ");
+  blk("                        port_db=9000,port_udp=9200,             ");
+  blk("                        timewarp=8                              ");
   blk("                                                                ");
   blk("SUBSCRIPTIONS:                                                  ");
   blk("------------------------------------                            ");

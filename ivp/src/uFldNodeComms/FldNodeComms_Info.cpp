@@ -5,6 +5,7 @@
 /*   DATE: Dec 4th 2011                                         */
 /****************************************************************/
 
+#include <cstdlib>
 #include <iostream>
 #include "ColorParse.h"
 #include "ReleaseInfo.h"
@@ -70,12 +71,19 @@ void showExampleConfigAndExit()
   blk("  AppTick   = 4                                                 ");
   blk("  CommsTick = 4                                                 ");
   blk("                                                                ");
-  blk("  COMMS_RANGE = 100   // Meters                                 ");
-  blk("  STALE_TIME  = 5     // Seconds                                ");
-  blk("  VERBOSE     = true                                            ");
+  blk("  COMMS_RANGE    = 100      // default (in meters)              ");
+  blk("  CRITICAL_RANGE = 30       // default (in meters)              ");
+  blk("  STALE_TIME     = 5        // default (in seconds)             ");
   blk("                                                                ");
-  blk("  STEALTH  = alpha,0.8                                          ");
-  blk("  EARANGE  = alpha,4.5                                          ");
+  blk("  MIN_MSG_INTERVAL = 30     // default (in seconds)             ");
+  blk("  MAX_MSG_LENGTH   = 1000   // default (# of characters)        ");
+  blk("                                                                ");
+  blk("  VERBOSE  = true           // default                          ");
+  blk("                                                                ");
+  blk("  STEALTH  = vname=alpha, stealth=0.8                           ");
+  blk("  EARANGE  = vname=alpha, earange=4.5                           ");
+  blk("                                                                ");
+  blk("  GROUPS   = true                                               ");
   blk("}                                                               ");
   exit(0);
 }
@@ -94,6 +102,8 @@ void showInterfaceAndExit()
   blk("                                                                ");
   blk("SUBSCRIPTIONS:                                                  ");
   blk("------------------------------------                            ");
+  blk("  NODE_MESSAGE      = src_node=henry,dest_node=ike,var_name=FOO ");
+  blk("                      string_val=bar                            ");
   blk("  NODE_REPORT                                                   ");
   blk("  NODE_REPORT_LOCAL = NAME=alpha,TYPE=UUV,TIME=1252348077.59,   ");
   blk("                      X=51.71,Y=-35.50, LAT=43.824981,          ");
@@ -103,12 +113,16 @@ void showInterfaceAndExit()
   blk("                                                                ");
   blk("PUBLICATIONS:                                                   ");
   blk("------------------------------------                            ");
-  blk("  NODE_REPORT_<VNAME> = NAME=alpha,TYPE=UUV,TIME=1252348077.59, ");
-  blk("                        X=51.71,Y=-35.50, LAT=43.824981,        ");
-  blk("                        LON=-70.329755,SPD=2.0,HDG=118.8,       ");
-  blk("                        YAW=118.8,DEPTH=4.6,LENGTH=3.8,         ");
-  blk("                        MODE=MODE@ACTIVE:LOITERING              ");
-  blk("  VIEW_COMMS_PULSE    =                                         ");
+  blk("  NODE_MESSAGE_<VNAME> = src_node=henry,dest_node=ike,          ");
+  blk("                         var_name=FOO,string_val=bar            ");
+  blk("  NODE_REPORT_<VNAME>  = NAME=alpha,TYPE=UUV,TIME=1252348077.5, ");
+  blk("                         X=51.71,Y=-35.50, LAT=43.824981,       ");
+  blk("                         LON=-70.329755,SPD=2.0,HDG=118.8,      ");
+  blk("                         YAW=118.8,DEPTH=4.6,LENGTH=3.8,        ");
+  blk("                         MODE=MODE@ACTIVE:LOITERING             ");
+  blk("  VIEW_COMMS_PULSE     = label=one,sx=4,sy=2,tx=44,ty=55,       ");
+  blk("                         beam_width=10,duration=5,fill=0.3,     ");
+  blk("                         fill_color=yellow,edge_color=green     ");
   blk("                                                                ");
   exit(0);
 }

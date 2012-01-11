@@ -23,28 +23,28 @@ class ShoreBroker : public CMOOSApp
   bool OnStartUp();
 
  protected:
-  void registerVariables();
-  bool handleNodePing(std::string);
-  void  makeVariableBridges();
-  bool handleBridgeConfig(std::string);
-  bool handleQuickBridgeConfig(std::string);
+  bool handleConfigBridge(std::string);
+  bool handleConfigQBridge(std::string);
 
-  void bridgeRegister(std::string src, HostRecord, std::string alias,
-		      unsigned int node_index=0);
+  bool handleMailNodePing(std::string);
+
+  void makeBridgeRequestAll();
+  void makeBridgeRequest(std::string src, HostRecord, std::string alias,
+			 unsigned int node_index=0);
 
   void sendAcks();
-
+  void registerVariables();
   void printReport();
 
  protected: // Config Variables
   std::vector<std::string> m_bridge_src_var;
   std::vector<std::string> m_bridge_alias;
 
-  bool  m_all_localhost;
-  
   std::string m_keyword;
 
  protected: // State Variables
+
+  // Index of below vectors is unique on a connected node.
   std::vector<HostRecord>   m_node_host_records;
   std::vector<double>       m_node_total_skew;
   std::vector<double>       m_node_last_tstamp;

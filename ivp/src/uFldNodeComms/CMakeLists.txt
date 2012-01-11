@@ -12,6 +12,7 @@ TARGET_LINK_LIBRARIES(uFldNodeComms
    MOOSGen
    mbutil
    contacts
+   ufield
    geometry
    m
    pthread)

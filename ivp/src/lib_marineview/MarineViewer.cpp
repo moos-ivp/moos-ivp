@@ -726,10 +726,11 @@ void MarineViewer::drawMarker(const XYMarker& marker)
 
   vector<ColorPack> color_vector;
 
-  string mtype = marker.get_type();
-  string label = marker.get_label();
-  double x     = marker.get_vx();
-  double y     = marker.get_vy();
+  string mtype   = marker.get_type();
+  string label   = marker.get_label();
+  string message = marker.get_msg();
+  double x       = marker.get_vx();
+  double y       = marker.get_vy();
   double shape_width = marker.get_width() * gscale;
 
   if(shape_width <= 0)
@@ -853,14 +854,17 @@ void MarineViewer::drawMarker(const XYMarker& marker)
 
   bool draw_labels = m_geo_settings.viewable("marker_viewable_labels");
 
-  if(draw_labels &&(label != "")) {
+  if(draw_labels && ((label != "") || (message != ""))) {
     glColor3f(labelc.red(), labelc.grn(), labelc.blu());
     gl_font(1, 10);
     if(m_zoom > 4)
       gl_font(1, 12);
     double offset = 4.0 * (1/m_zoom);
     glRasterPos3f(offset, offset, 0);
-    gl_draw(label.c_str());
+    if(message != "")
+      gl_draw(message.c_str());
+    else
+      gl_draw(label.c_str());
   }
 
   glPopMatrix();

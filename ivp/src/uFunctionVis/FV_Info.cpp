@@ -5,6 +5,7 @@
 /*   DATE: Dec 14th, 2011                                       */
 /****************************************************************/
 
+#include <cstdlib>
 #include <iostream>
 #include "FV_Info.h"
 #include "ColorParse.h"

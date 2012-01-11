@@ -5,6 +5,7 @@
 /*   DATE: Dec 7th 2011                                         */
 /****************************************************************/
 
+#include <cstdlib>
 #include <iostream>
 #include "SearchGrid_Info.h"
 #include "ColorParse.h"

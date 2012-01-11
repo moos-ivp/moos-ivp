@@ -6,11 +6,14 @@
 SET(SRC
   HostRecord.cpp
   HostRecordUtils.cpp
+  NodeMessage.cpp
+  NodeMessageUtils.cpp
 )
 
 SET(HEADERS
   HostRecord.h
   HostRecordUtils.h
+  NodeMessageUtils.h
 )
 
 # Build Library

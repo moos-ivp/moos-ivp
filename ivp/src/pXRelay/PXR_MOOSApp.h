@@ -36,14 +36,18 @@ class PXR_MOOSApp : public CMOOSApp
   bool OnConnectToServer();
   bool OnStartUp();
 
+  void setIncomingVar(std::string s) {m_incoming_var=s;};
+  void setOutgoingVar(std::string s) {m_outgoing_var=s;};
+
  protected:
   void RegisterVariables();
 
- protected:
+ protected: // State variables
   unsigned long int m_tally_recd;
   unsigned long int m_tally_sent;
   unsigned long int m_iterations;
 
+ protected: // Configuration variables
   std::string       m_incoming_var;
   std::string       m_outgoing_var;
 

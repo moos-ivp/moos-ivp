@@ -40,8 +40,9 @@ public:
 
   virtual ~VarDataPair() {};
   
-  void        set_key(const std::string& s) {m_key=s;};
-  void        set_sdata(const std::string& s) {m_sdata=s;};
+  void        set_key(const std::string& s)   {m_key=s;};
+  void        set_sdata(const std::string& s) {m_sdata=s; m_is_string=true;};
+  void        set_ddata(double v)             {m_ddata=v; m_is_string=false;};
 
   std::string get_var()   const {return(m_var);};
   std::string get_sdata() const {return(m_sdata);};
