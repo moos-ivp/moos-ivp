@@ -286,6 +286,9 @@ void USM_MOOSApp::postNodeRecordUpdate(string prefix,
   m_Comms.Notify(prefix+"_Z", -record.getDepth(), curr_time);
   m_Comms.Notify(prefix+"_PITCH", record.getPitch(), curr_time);
   m_Comms.Notify(prefix+"_YAW", record.getYaw(), curr_time);
+  m_Comms.Notify("TRUE_X", nav_x, curr_time);
+  m_Comms.Notify("TRUE_Y", nav_y, curr_time);
+
 
   double hog = angle360(record.getHeadingOG());
   double sog = record.getSpeedOG();
