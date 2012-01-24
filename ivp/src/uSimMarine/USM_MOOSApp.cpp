@@ -281,6 +281,10 @@ void USM_MOOSApp::postNodeRecordUpdate(string prefix,
   m_Comms.Notify(prefix+"_SPEED", new_speed, curr_time);
   m_Comms.Notify(prefix+"_DEPTH", record.getDepth(), curr_time);
 
+  // Added by HS to make it work ok with iHuxley
+  m_Comms.Notify("SIMULATION_MODE","TRUE", curr_time);
+  m_Comms.Notify(prefix+"_Z", -record.getDepth(), curr_time);
+
   double hog = angle360(record.getHeadingOG());
   double sog = record.getSpeedOG();
 
