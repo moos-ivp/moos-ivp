@@ -42,6 +42,7 @@ class NodeRecord
   void setHeading(double v)   {m_heading=v;    m_heading_set=true;};
   void setHeadingOG(double v) {m_heading_og=v; m_heading_og_set=true;};
   void setYaw(double v)       {m_yaw=v;        m_yaw_set=true;};
+  void setPitch(double v)     {m_pitch=v;      m_pitch_set=true;};
   void setDepth(double v)     {m_depth=v;      m_depth_set=true;};
   void setLength(double v)    {m_length=v;     m_length_set=true;};
   void setTimeStamp(double v) {m_timestamp=v;  m_timestamp_set=true;};
@@ -63,7 +64,8 @@ class NodeRecord
   double getSpeedOG() const    {return(m_speed_og);};
   double getHeading() const    {return(m_heading);};
   double getHeadingOG() const  {return(m_heading_og);};
-  double getYaw() const        {return(m_heading);};
+  double getYaw() const        {return(m_yaw);};
+  double getPitch() const      {return(m_pitch);};
   double getDepth() const      {return(m_depth);};
   double getAltitude() const   {return(m_altitude);};
   double getLength() const     {return(m_length);};
@@ -95,6 +97,7 @@ class NodeRecord
   double m_heading;
   double m_heading_og;  // Heading over ground
   double m_yaw;
+  double m_pitch;
   double m_depth;
   double m_altitude;
   double m_lat;
@@ -116,6 +119,7 @@ class NodeRecord
   bool m_heading_set;
   bool m_heading_og_set;
   bool m_yaw_set;
+  bool m_pitch_set;
   bool m_depth_set;
   bool m_altitude_set;
   bool m_length_set;
