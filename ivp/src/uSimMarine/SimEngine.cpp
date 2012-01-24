@@ -185,5 +185,6 @@ void SimEngine::propagateHeading(NodeRecord& record,
   double prev_heading = record.getHeading();
   double new_heading  = angle360(delta_deg + prev_heading);
   record.setHeading(new_heading);
+  record.setYaw(-degToRadians(angle180(new_heading)));
 }
 
