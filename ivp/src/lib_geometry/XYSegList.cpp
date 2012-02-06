@@ -316,7 +316,7 @@ string XYSegList::get_vprop(unsigned int i) const
   if(i<m_vprop.size())
     return(m_vprop[i]);
   else
-    return(false);
+    return("");
 }
 
 //---------------------------------------------------------------
