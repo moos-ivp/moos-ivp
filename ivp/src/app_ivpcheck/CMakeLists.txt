@@ -45,6 +45,7 @@ TARGET_LINK_LIBRARIES(ivpcheck
   geometry
   mbutil
   logutils
+  dl
   fltk 
   fltk_gl
   ${SYSTEM_LIBS})

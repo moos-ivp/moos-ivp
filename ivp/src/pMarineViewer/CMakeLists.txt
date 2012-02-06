@@ -37,6 +37,7 @@ Target_LINK_LIBRARIES(pMarineViewer
    contacts
    mbutil
       # Standard libraries used by this project's FLTK apps...
+   dl
    fltk 
    fltk_gl 
    tiff)

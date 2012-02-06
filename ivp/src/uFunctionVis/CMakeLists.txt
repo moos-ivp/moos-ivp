@@ -45,6 +45,7 @@ TARGET_LINK_LIBRARIES(uFunctionVis
    mbutil
    ivpcore
    genutil
+   dl
    fltk 
    fltk_gl
    ${SYSTEM_LIBS})

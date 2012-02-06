@@ -42,6 +42,7 @@ TARGET_LINK_LIBRARIES(currview
   ${SYSTEM_LIBS}
   
   # Standard libraries used by this project's FLTK apps...
+  dl
   fltk 
   fltk_gl 
   tiff)

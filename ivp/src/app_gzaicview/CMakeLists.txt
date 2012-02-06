@@ -32,6 +32,7 @@ TARGET_LINK_LIBRARIES(gzaicview
   ivpbuild
   mbutil
   ivpcore
+  dl
   fltk 
   fltk_gl)
 
