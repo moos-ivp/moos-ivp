@@ -181,7 +181,7 @@ void showInterfaceAndExit()
 
 void showReleaseInfoAndExit()
 {
-  showReleaseInfo("pHelmIvP", "gpl");
+  showReleaseInfo("pHelmIvP", "navy");
   exit(0);
 }
 
