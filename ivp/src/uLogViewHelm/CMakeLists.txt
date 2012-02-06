@@ -45,6 +45,7 @@ Target_LINK_LIBRARIES(uLogViewHelm
    geometry
    mbutil
       # Standard libraries used by this project's FLTK apps...
+   dl
    fltk 
    fltk_gl 
    tiff)

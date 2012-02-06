@@ -46,6 +46,7 @@ Target_LINK_LIBRARIES(uLogViewIPF
    contacts
    mbutil
       # Standard libraries used by this project's FLTK apps...
+   dl
    fltk 
    fltk_gl 
    tiff)

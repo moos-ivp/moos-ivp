@@ -20,6 +20,7 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
+#include <cstdlib>
 #include <assert.h>
 #include <cstdlib>
 #include "MBUtils.h"
