@@ -122,6 +122,17 @@ string getSourceName(const string& line)
 }
 
 //--------------------------------------------------------
+// Procedure: getSourceNameNoAux
+
+string getSourceNameNoAux(const string& line)
+{
+  string src = getSourceName(line);
+  string src_no_aux = biteString(src, ':');
+
+  return(src_no_aux);
+}
+
+//--------------------------------------------------------
 // Procedure: getDataEntry
 //     Notes: Syntax:  "TIMESTAMP   VAR   SOURCE   DATA"
 //            States:      0      1  2  3   4    5   6
@@ -253,6 +264,28 @@ double getLogStart(const string& line)
 }
 
 
+//-------------------------------------------------------------
+// Procedure: getLogStartFromFile
+
+double getLogStartFromFile(const string& filestr)
+{
+  FILE *f = fopen(filestr.c_str(), "r");
+  if(!f)
+    return(0);
+  
+  for(int j=0; j<5; j++) {
+    string line = getNextRawLine(f);
+    if(strContains(line, "LOGSTART")) {
+      fclose(f);
+      return(getLogStart(line));
+    }
+  }
+
+  fclose(f);
+  return(0);
+}
+  
+
 //--------------------------------------------------------
 // Procedure: addVectorKey
 //     Notes: 
@@ -328,7 +361,7 @@ string getNextRawLine(FILE *fileptr)
 // Procedure: getNextRawALogLine
 //     Notes: 
 
-ALogEntry getNextRawALogEntry(FILE *fileptr)
+ALogEntry getNextRawALogEntry(FILE *fileptr, bool allstrings)
 {
   ALogEntry entry;
   if(!fileptr) {
@@ -344,7 +377,7 @@ ALogEntry getNextRawALogEntry(FILE *fileptr)
   int  myint   = '\0';
   char buff[MAX_LINE_LENGTH];
 
-  string time, var, src, val;
+  string time, var, rawsrc, val;
 
   // Simple state machine: 
   //   0: time
@@ -379,7 +412,7 @@ ALogEntry getNextRawALogEntry(FILE *fileptr)
       }
       else if(state==4) {
 	buff[buffix] = '\0';
-	src = buff;
+	rawsrc = buff;
 	buffix = 0;
 	state=5;
       }
@@ -404,11 +437,14 @@ ALogEntry getNextRawALogEntry(FILE *fileptr)
   
   //cout << "t:" << time << " v:" << var << " s:" << src << " v:" << val << endl;
 
+  string src    = biteString(rawsrc,':');
+  string srcaux = rawsrc;
+
   if((time!="")&&(var!="")&&(src!="")&&(val!="") && isNumber(time)) {
-    if(isNumber(val))
-      entry.set(atof(time.c_str()), var, src, atof(val.c_str()));
+    if(allstrings || !isNumber(val))
+      entry.set(atof(time.c_str()), var, src, srcaux, val);
     else
-      entry.set(atof(time.c_str()), var, src, val);
+      entry.set(atof(time.c_str()), var, src, srcaux, atof(val.c_str()));
   }
   else {
     if(EOFile)
@@ -419,6 +455,7 @@ ALogEntry getNextRawALogEntry(FILE *fileptr)
   
   return(entry);
 }
+
 
 
 //--------------------------------------------------------

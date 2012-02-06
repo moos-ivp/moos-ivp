@@ -97,7 +97,7 @@ bool GrepHandler::handle(const string& alogfile, const string& new_alogfile)
       done = true;
     else {
       string varname = getVarName(line_raw);
-      string srcname = getSourceName(line_raw);
+      string srcname = getSourceNameNoAux(line_raw);
 
       //string data = getDataEntry(line_raw);
       //cout << "data: [" << data << "]" << endl;

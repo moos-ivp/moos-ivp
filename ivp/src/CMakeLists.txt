@@ -217,6 +217,7 @@ SET(IVP_NON_GUI_APPS
   app_alogclip
   app_aloghelm
   app_nsplug
+  app_gen_hazards
   pEchoVar
   pHostInfo
   pXRelay
@@ -227,18 +228,20 @@ SET(IVP_NON_GUI_APPS
   pSafetyRetreat
   uFldPathCheck
   uFldShoreBroker
+  uFldMessageHandler
   uFldNodeBroker
   uFldScope
   uFldNodeComms
+  uFldBeaconRangeSensor
+  uFldContactRangeSensor
+  uFldHazardSensor
   uMOOSClient
   pSearchGrid
   uTimerScript
   uHelmScope
   uProcessWatch
-  uSimContactRange
   uSimCurrent
   uSimMarine
-  uSimBeaconRange
   uTermCommand
   uXMS
   uPokeDB

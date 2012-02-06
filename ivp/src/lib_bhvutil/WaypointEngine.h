@@ -39,6 +39,7 @@ class WaypointEngine {
   void   setPerpetual(bool v) {m_perpetual = v;};
   void   setCenter(double, double);
   void   resetForNewTraversal();
+  void   resetSegList(double, double y);
   void   setRepeatsEndless(bool v) {m_repeats_endless=v;};
 
   double getPointX(unsigned int) const;

@@ -89,6 +89,8 @@ protected:
   std::vector<double> m_vz;
   std::vector<std::string> m_vprop;
 
+  double   m_transparency;
+
 };
 
 #endif

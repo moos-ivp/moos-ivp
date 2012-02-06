@@ -1054,8 +1054,12 @@ void MarineViewer::drawPolygon(const XYPolygon& poly)
     vert_c = poly.get_color("vertex");
   if(poly.color_set("edge"))             // edge_color
     edge_c = poly.get_color("edge");
-  if(poly.color_set("fill"))             // edge_color
+  if(poly.color_set("fill"))             // fill_color
     fill_c = poly.get_color("fill");
+  
+  double transparency = 0.2;
+  if(poly.transparency_set())
+    transparency = poly.get_transparency();
 
   double line_width  = m_geo_settings.geosize("polygon_line_size");
   double vertex_size = m_geo_settings.geosize("polygon_vertex_size");
@@ -1101,7 +1105,7 @@ void MarineViewer::drawPolygon(const XYPolygon& poly)
   // "valid" too, but we decide here not to draw the interior
   if((vsize > 2) && poly.is_convex() && fill_c.visible()) {
     glEnable(GL_BLEND);
-    glColor4f(fill_c.red(), fill_c.grn(), fill_c.blu(), 0.1);
+    glColor4f(fill_c.red(), fill_c.grn(), fill_c.blu(), transparency);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glBegin(GL_POLYGON);
     for(i=0; i<vsize*2; i=i+2) {
@@ -1113,7 +1117,7 @@ void MarineViewer::drawPolygon(const XYPolygon& poly)
   
   // Now draw the edges - if the polygon is invalid, don't draw
   // the last edge.
-  if(vsize > 1) {
+  if((vsize > 1) && (line_width > 0)) {
     glLineWidth(line_width);
     glColor3f(edge_c.red(), edge_c.grn(), edge_c.blu());
     
@@ -1169,7 +1173,7 @@ void MarineViewer::drawPolygon(const XYPolygon& poly)
     string plabel = poly.get_msg();
     if(plabel == "")
       plabel = poly.get_label();
-    if(plabel != "") {
+    if((plabel != "") && (plabel != "_null_")) {
       glRasterPos3f(0, 0, 0);
       gl_draw(plabel.c_str());
     }
@@ -1776,6 +1780,12 @@ void MarineViewer::drawCircle(const XYCircle& circle, unsigned int pts)
     vert_c = circle.get_color("vertex");
   if(circle.color_set("edge"))           // edge_color
     edge_c = circle.get_color("edge");  
+  if(circle.color_set("fill"))             // fill_color
+    fill_c = circle.get_color("fill");
+
+  double transparency = 0.2;
+  if(circle.transparency_set())
+    transparency = circle.get_transparency();
 
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
@@ -1829,11 +1839,11 @@ void MarineViewer::drawCircle(const XYCircle& circle, unsigned int pts)
     glVertex2f(points[i], points[i+1]);
   }
   glEnd();
-  
+
   // If filled option is on, draw the interior of the circle
   if(fill_c.visible()) {
     glEnable(GL_BLEND);
-    glColor4f(fill_c.red(), fill_c.grn(), fill_c.blu(), 0.1);
+    glColor4f(fill_c.red(), fill_c.grn(), fill_c.blu(), transparency);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glBegin(GL_POLYGON);
     for(i=0; i<actual_pts*2; i=i+2) {

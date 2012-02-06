@@ -38,8 +38,9 @@ killall pCBF pBTracker pTrackMonitor uTimerScript pDTSP         \
         pTallyomatic pNodeReporter iCommStack pMissionCtl iDSP  \
         pNotDTSP pBoundingCircle pRIDManager iKayakControlBoard
 
-killall pFleetControl uFldScope                                \
+killall pFleetControl uFldScope uFldContactRangeSensor         \
         uFldPathCheck uFldNodeComms pSearchGrid pHostInfo      \
-        uFldShoreBroker uFldNodeBroker                 
+        uFldShoreBroker uFldNodeBroker uFldBeaconRangeSensor   \
+        uFldHazardSensor
 
 echo Done - Killed all MOOS-Related Processes.....

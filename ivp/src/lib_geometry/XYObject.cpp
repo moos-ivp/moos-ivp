@@ -38,6 +38,7 @@ XYObject::XYObject()
   m_time_set    = false;
   m_vertex_size = -1;
   m_edge_size   = -1;
+  m_transparency_set = false;
 }
 
 //---------------------------------------------------------------
@@ -124,6 +125,21 @@ void XYObject::set_edge_size(double val)
     m_edge_size = val;
 }
 
+//---------------------------------------------------------------
+// Procedure: set_transparency
+//   Purpose: Set a drawing hint for the transparency used in rendering
+//            the fill color of the polygon. 0 is invisible, 1 is opaque.
+
+void XYObject::set_transparency(double transparency)
+{
+  if(transparency < 0)
+    transparency = 0;
+  else if(transparency > 1)
+    transparency = 1;
+  
+  m_transparency = transparency;
+  m_transparency_set = true;
+}
 
 //---------------------------------------------------------------
 // Procedure: get_spec()
@@ -176,6 +192,10 @@ std::string XYObject::get_spec(string param) const
     string size_str = doubleToStringX(m_edge_size,1); 
     aug_spec(spec, "edge_size=" + size_str);
   }
+  if(m_transparency_set) {
+    string trans_str = doubleToStringX(m_transparency,2); 
+    aug_spec(spec, "fill_transparency=" + trans_str);
+  }
   
   return(spec);
 
@@ -209,6 +229,8 @@ bool XYObject::set_param(const string& param, const string& value)
     set_color("label", value);
   else if(param == "fill_color")
     set_color("fill", value);
+  else if(param == "fill_transparency")
+    set_transparency(atof(value.c_str()));
 
   else if((param == "active") && isBoolean(value))
     set_active(tolower(value) == "true");

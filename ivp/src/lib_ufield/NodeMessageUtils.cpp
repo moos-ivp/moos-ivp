@@ -20,6 +20,7 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
+#include <iostream>
 #include <cstdlib>
 #include "NodeMessageUtils.h"
 #include "MBUtils.h"
@@ -58,7 +59,7 @@ NodeMessage string2NodeMessage(const string& message_string)
     else if(param == "double_val")
       new_message.setDoubleVal(atof(value.c_str()));
   }
-  
+
   if(!new_message.valid())
     return(empty_message);
 

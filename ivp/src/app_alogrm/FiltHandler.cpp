@@ -121,8 +121,8 @@ bool FiltHandler::handle(const string& alogfile, const string& new_alogfile)
       done = true;
     else {
       string varname = getVarName(line_raw);
-      string srcname = getSourceName(line_raw);
-      
+      string srcname = getSourceNameNoAux(line_raw);
+
       int ksize = m_keys.size();
       bool match = false;
       for(int i=0; ((i<ksize) && !match); i++) {

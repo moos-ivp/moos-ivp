@@ -12,6 +12,7 @@ SET(HEADERS
   CPAEngine.h
   CPA_Utils.h
   GeomUtils.h
+  PathUtils.h
   CurrentField.h
   XYRangePulse.h
   XYCommsPulse.h
@@ -32,10 +33,12 @@ SET(HEADERS
   XYFormatUtilsCommsPulse.h
   XYGrid.h
   XYConvexGrid.h
+  XYHazard.h
   XYHexagon.h
   XYHexGrid.h
   XYObject.h
   XYPatternBlock.h
+  XYFieldGenerator.h
   XYPoint.h
   XYPolygon.h
   XYSegList.h

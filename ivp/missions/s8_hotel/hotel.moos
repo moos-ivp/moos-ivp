@@ -17,21 +17,21 @@ ProcessConfig = ANTLER
 {
   MSBetweenLaunches = 500
 
-  Run = MOOSDB		@ NewConsole = false
-  Run = pMarineViewer	@ NewConsole = true
-  Run = pLogger         @ NewConsole = false
-  Run = uSimMarine	@ NewConsole = true
-  Run = pNodeReporter	@ NewConsole = false
-  Run = pMarinePID	@ NewConsole = false
-  Run = pHelmIvP	@ NewConsole = true
-  Run = uTimerScript    @ NewConsole = false
-  Run = uSimBeaconRange @ NewConsole = true
+  Run = MOOSDB                @ NewConsole = false
+  Run = pMarineViewer         @ NewConsole = true
+  Run = pLogger               @ NewConsole = false
+  Run = uSimMarine            @ NewConsole = true
+  Run = pNodeReporter         @ NewConsole = false
+  Run = pMarinePID            @ NewConsole = false
+  Run = pHelmIvP              @ NewConsole = true
+  Run = uTimerScript          @ NewConsole = true
+  Run = uFldBeaconRangeSensor @ NewConsole = true
 }
 
 //------------------------------------------
-// uSimBeaconRange config block
+// uFldBeaconRangeSensor config block
 
-ProcessConfig = uSimBeaconRange
+ProcessConfig = uFldBeaconRangeSensor
 {
   AppTick   = 4
   CommsTick = 4
@@ -41,11 +41,11 @@ ProcessConfig = uSimBeaconRange
   report_vars   = long
 
   // Configurations for all vehicles/nodes
-  reach_distance = default = nolimit
+  reach_distance = default = 100000
   ping_wait      = default = 20
 
   // Configurations for all beacons
-  default_beacon_report_range  = nolimit
+  default_beacon_report_range  = 100000
   default_beacon_shape  = circle
   default_beacon_color  = blue
   default_beacon_width  = 5
@@ -87,7 +87,7 @@ ProcessConfig = uTimerScript
   RESET_TIME = end
   CONDITION  = (NAV_SPEED > 0)
 
-  EVENT = var=RANGE_REQUEST, val="name=hotel", time=15:20
+  EVENT = var=BRS_RANGE_REQUEST, val="name=hotel", time=15:20
 }
 
 

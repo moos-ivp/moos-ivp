@@ -35,6 +35,7 @@
 #include "AOF_Waypoint.h"
 #include "GeomUtils.h"
 #include "BuildUtils.h"
+#include "PathUtils.h"
 #include "FunctionEncoder.h"
 #include "ZAIC_PEAK.h"
 #include "OF_Coupler.h"
@@ -80,6 +81,8 @@ BHV_Waypoint::BHV_Waypoint(IvPDomain gdomain) :
   m_osx   = 0;
   m_osy   = 0;
   m_osv   = 0;
+
+  m_shortest_tour_pending = false;
 
   addInfoVars("NAV_X, NAV_Y, NAV_SPEED");
   m_markpt.set_active(false);
@@ -138,6 +141,10 @@ bool BHV_Waypoint::setParam(string param, string param_val)
   }
   else if((param == "speed") && (dval > 0)) {
     m_cruise_speed = dval;
+    return(true);
+  }
+  else if(param == "shortest_tour") {
+    setBooleanOnString(m_shortest_tour_pending, param_val);
     return(true);
   }
   else if((param == "wpt_status") || (param == "wpt_status_var")) {
@@ -344,6 +351,13 @@ bool BHV_Waypoint::updateInfoIn()
   if(!ok1 || !ok2) {
     postEMessage("No ownship X/Y info in info_buffer.");
     return(false);
+  }
+
+  if(m_shortest_tour_pending) {
+    m_shortest_tour_pending = false;
+    XYSegList original_segl = m_waypoint_engine.getSegList();
+    XYSegList shtour_segl = bruteShortestPath(original_segl, m_osx, m_osy);
+    m_waypoint_engine.setSegList(shtour_segl);
   }
 
   // If NAV_SPEED info is not found in the info_buffer, its

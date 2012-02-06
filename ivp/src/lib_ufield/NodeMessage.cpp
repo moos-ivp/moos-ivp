@@ -31,19 +31,36 @@ using namespace std;
 string NodeMessage::getSpec() const
 {
   string str;
-  if(m_src_node != "")
-    str = "src_node=" + m_src_node;
-  if(m_dest_node != "")
-    str = "dest_node=" + m_dest_node;
-  if(m_dest_group != "")
-    str = "dest_group=" + m_dest_group;
-  if(m_var_name != "")
-    str = "var_name=" + m_var_name;
-  if(m_string_val != "")
-    str = "string_val=" + m_string_val;
-  if(m_double_val_set)
-    str = "double_val=" + doubleToStringX(m_double_val,6);
-
+  if(m_src_node != "") {
+    if(str != "")
+      str += ",";
+    str += "src_node=" + m_src_node;
+  }
+  if(m_dest_node != "") {
+    if(str != "")
+      str += ",";
+    str += "dest_node=" + m_dest_node;
+  }
+  if(m_dest_group != "") {
+    if(str != "")
+      str += ",";
+    str += "dest_group=" + m_dest_group;
+  }
+  if(m_var_name != "") {
+    if(str != "")
+      str += ",";
+    str += "var_name=" + m_var_name;
+  }
+  if(m_string_val != "") {
+    if(str != "")
+      str += ",";
+    str += "string_val=" + m_string_val;
+  }
+  if(m_double_val_set) {
+    if(str != "")
+      str += ",";
+    str += "double_val=" + doubleToStringX(m_double_val,6);
+  }
   return(str);
 }
 

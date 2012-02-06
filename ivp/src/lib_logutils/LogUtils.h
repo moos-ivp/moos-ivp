@@ -30,14 +30,17 @@
 std::string getTimeStamp(const std::string& line);
 std::string getVarName(const std::string& line);
 std::string getSourceName(const std::string& line);
+std::string getSourceNameNoAux(const std::string& line);
 std::string getDataEntry(const std::string& line);
 
 std::string getNextRawLine(FILE*);
-ALogEntry   getNextRawALogEntry(FILE*);
+ALogEntry   getNextRawALogEntry(FILE*, bool allstrings=false);
+
 
 void   stripInsigDigits(std::string& line);
 void   shiftTimeStamp(std::string& line, double logstart);
 double getLogStart(const std::string& line);
+double getLogStartFromFile(const std::string& filename);
 void   addVectorKey(std::vector<std::string>&, 
 		    std::vector<bool>&, std::string);
 

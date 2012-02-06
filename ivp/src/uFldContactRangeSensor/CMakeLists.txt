@@ -1,0 +1,38 @@
+#--------------------------------------------------------
+# The CMakeLists.txt for:          uFldContactRangeSensor
+# Author(s):                                Mike Benjamin
+#--------------------------------------------------------
+
+# Set System Specific Libraries
+if (${WIN32})
+  SET(SYSTEM_LIBS
+    wsock32)
+else (${WIN32})
+  SET(SYSTEM_LIBS
+    m
+    pthread)
+endif (${WIN32})
+
+SET(SRC
+   CRS_MOOSApp.cpp
+   CRS_Model.cpp
+   CRS_Info.cpp
+   main.cpp
+)
+
+ADD_EXECUTABLE(uFldContactRangeSensor ${SRC})
+
+TARGET_LINK_LIBRARIES(uFldContactRangeSensor
+  MOOS
+  MOOSGen
+  MOOSUtility
+  mbutil
+  geometry 
+  contacts
+  ${SYSTEM_LIBS}
+)
+
+# Install Targets
+INSTALL(TARGETS uFldContactRangeSensor
+  RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
+)

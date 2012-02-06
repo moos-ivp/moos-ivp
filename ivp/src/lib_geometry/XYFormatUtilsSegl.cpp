@@ -434,4 +434,3 @@ XYSegList stringLawnmower2SegList(string str)
     new_seglist.apply_snap(snapval);
   return(new_seglist);
 }
-

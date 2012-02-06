@@ -30,9 +30,12 @@
 class Expander
 {
  public:
-  Expander(std::string, std::string);
+  Expander(std::string infile="", std::string outfile="");
   ~Expander() {};
   
+  void setInFile(std::string s)  {m_infile  = s;};
+  void setOutFile(std::string s) {m_outfile = s;};
+
   bool expand();
   bool verifyInfile();
   bool verifyInfile(const std::string& filename);

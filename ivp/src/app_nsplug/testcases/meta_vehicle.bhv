@@ -42,3 +42,31 @@ slowing down to take a look at me
 
 
 
+1) #include
+   - path 
+   - will work recursively - depth first traversal
+   - any #define will be applied
+
+2) #define VAR VALUE
+   
+3) MACRO expansion
+   
+   $(VAR) or %(VAR) anyware in the text
+
+4) Conditional expansion #ifdef
+
+   o #ifdef VAR VALUE
+   o #ifdef VAR
+   o #ifdef
+     #elseifdef
+     #elseifdef
+     #else
+     #endif
+
+5) Conditional expansion #ifndef
+   o #ifndef VAR
+
+   NOT supported:
+     #ifndef VAR VAL
+     #elseifndef
+

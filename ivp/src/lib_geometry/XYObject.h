@@ -43,6 +43,7 @@ public:
   void   set_time(double val)               {m_time=val;m_time_set=true;};
   void   set_vertex_size(double val);
   void   set_edge_size(double val);
+  void   set_transparency(double);
 
   void      set_color(const std::string& key, const std::string& color);
   void      set_color(const std::string& key, const ColorPack& color);
@@ -53,10 +54,12 @@ public:
   double    get_time()      const {return(m_time);};
   bool      time_set()      const {return(m_time_set);};
 
-  double    get_vertex_size() const {return(m_vertex_size);};
-  bool      vertex_size_set() const {return(m_vertex_size>=0);};
-  double    get_edge_size() const   {return(m_edge_size);};
-  bool      edge_size_set() const   {return(m_edge_size>=0);};
+  double    get_vertex_size() const  {return(m_vertex_size);};
+  bool      vertex_size_set() const  {return(m_vertex_size>=0);};
+  double    get_edge_size() const    {return(m_edge_size);};
+  bool      edge_size_set() const    {return(m_edge_size>=0);};
+  double    get_transparency() const {return(m_transparency);};
+  bool      transparency_set() const {return(m_transparency_set);};
 
   std::string get_label()     const {return(m_label);};
   std::string get_msg()       const {return(m_msg);};
@@ -77,11 +80,13 @@ protected:
   bool         m_active;
   double       m_time;
   bool         m_time_set;
+  bool         m_transparency_set;
 
   std::map<std::string, ColorPack> m_color_map;
 
   double       m_vertex_size;
   double       m_edge_size;
+  double       m_transparency;
 };
 
 #endif

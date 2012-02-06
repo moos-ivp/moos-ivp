@@ -65,8 +65,13 @@ ProcessConfig = pLogger
   AppTick   = 4
   CommsTick = 4
 
-  SyncLog = false
-  AsyncLog = true @ 0
+  SyncLog  = true @ 0.2
+  AsyncLog = true
+
+  Log = NAV_X @ 0.2
+  Log = NAV_Y @ 0.2
+  Log = NAV_SPEED @ 0.2
+  Log = NAV_HEADING @ 3.0
 
   // For variables that are published in a bundle on their first post,
   // explicitly declare their logging request
@@ -74,8 +79,10 @@ ProcessConfig = pLogger
   Log = IVPHELM_LIFE_EVENT @ 0 NOSYNC
 
   LogAuxSrc = true
+
   WildCardLogging = true
   WildCardOmitPattern = *_STATUS
+  WildCardExclusionLog = true
 }
 
 //------------------------------------------
@@ -108,8 +115,8 @@ ProcessConfig = uXMS
 
 ProcessConfig = uSimMarine
 {
-  AppTick	= 10
-  CommsTick	= 10
+  AppTick	= 4
+  CommsTick	= 4
 
   START_X       = 0
   START_Y       = 0

@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: mainEchoVar.cpp                                      */
+/*    FILE: main.cpp                                             */
 /*    DATE: July 22nd 2006                                       */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */

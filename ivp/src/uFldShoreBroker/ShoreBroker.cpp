@@ -37,7 +37,7 @@ bool ShoreBroker::OnNewMail(MOOSMSG_LIST &NewMail)
 	
   for(p=NewMail.begin(); p!=NewMail.end(); p++) {
     p->Trace();
-    CMOOSMsg &msg = *p;
+    CMOOSMsg msg = *p;
 	
     string key   = msg.GetKey();
     string sval  = msg.GetString(); 

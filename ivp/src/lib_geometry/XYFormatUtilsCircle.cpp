@@ -73,6 +73,10 @@ XYCircle string2Circle(string str)
       new_circle.set_vertex_size(dval);
     else if(left == "edge_color")
       new_circle.set_color("edge", right);
+    else if(left == "fill_color")
+      new_circle.set_color("fill", right);
+    else if(left == "fill_transparency")
+      new_circle.set_param("fill_transparency", right);
     else if((left == "edge_size") && isNumber(right))
       new_circle.set_edge_size(dval);
     else if(left == "active") 

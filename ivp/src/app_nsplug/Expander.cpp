@@ -39,8 +39,8 @@ Expander::Expander(string given_infile, string given_outfile)
 {
   m_infile  = given_infile;
   m_outfile = given_outfile;
-  m_force = false;  
-  m_strict = false;
+  m_force   = false;  
+  m_strict  = false;
   
   m_max_subs_per_line = 100;
   m_initial_filenames.push_back(given_infile);
@@ -94,8 +94,8 @@ vector<string> Expander::expandFile(string filename,
   for(i=0; i<vsize; i++) {
     string line = stripBlankEnds(findReplace(fvector[i], '\t', ' '));
     string line_orig = line;
-    string left = stripBlankEnds(biteString(line, ' '));
-    string rest = stripBlankEnds(line);
+    string left = biteStringX(line, ' ');
+    string rest = line;
 
     //------------------------------------------------------------
     if(left == "#ifdef") {
@@ -211,8 +211,8 @@ vector<string> Expander::expandFile(string filename,
     //----------------------------------------------------------------
     else if(!skipLines() && (left == "#define")) {
       rest = compactConsecutive(rest, ' ');
-      string macro = stripBlankEnds(biteString(rest, ' '));
-      string value = stripBlankEnds(rest);
+      string macro = biteStringX(rest, ' ');
+      string value = rest;
 
       // Support "#define $(FOO) BAR" as well as "#define FOO BAR"
       int mlen = macro.length();
@@ -388,7 +388,9 @@ bool Expander::applyMacrosToLine(string& line,
     for(p = macros.begin(); p != macros.end(); p++) {
       string key = "$(" + p->first + ")";
       string val = p->second;
-      
+      if(val == "<defined>")
+	val = "";
+
       // Assuming key is of the form "$(FOOBAR)"
       string pkey = key;
       if((pkey.length() > 0) && (pkey.at(0) == '$'))
@@ -419,7 +421,7 @@ bool Expander::applyMacrosToLine(string& line,
     cout << "> " << res << endl;
 
     if(m_strict)
-        exit(EXIT_FAILURE);
+      exit(EXIT_FAILURE);
     
     return(false);
   }
@@ -483,8 +485,8 @@ bool Expander::checkIfDef(string entry, map<string, string> macros)
   unsigned int k, ksize = kvector.size();
   for(k=0; ((k<ksize) && !ifdef); k++) {
     kvector[k] = stripBlankEnds(kvector[k]);
-    string macro_name  = stripBlankEnds(biteString(kvector[k], ' '));
-    string macro_value = stripBlankEnds(kvector[k]);
+    string macro_name  = biteStringX(kvector[k], ' ');
+    string macro_value = kvector[k];
     if(macro_value == "") {
       if(macros[macro_name] != "")
 	ifdef = true;
@@ -510,7 +512,7 @@ bool Expander::checkIfNDef(string entry, map<string, string> macros)
   // Now go thru each clause, ensure that each is not defined
   bool done = false;
   while(ifndef && !done) {
-    string clause = stripBlankEnds(biteString(entry, ' '));
+    string clause = biteStringX(entry, ' ');
     if(clause == "")
       done = true;
     else {

@@ -384,21 +384,22 @@ void NodeBroker::handleMailHostInfo(string phi_msg)
   }
   m_ok_phis_received++;
 
-  // If we have received Host Info previously, check for consistency
-  if(m_node_host_record.valid()) {
-    if((m_node_host_record.getCommunity() != hrecord.getCommunity()) ||
-       (m_node_host_record.getHostIP() != hrecord.getHostIP()) ||
-       (m_node_host_record.getPortDB() != hrecord.getPortDB()) ||
-       (m_node_host_record.getPortUDP() != hrecord.getPortUDP())) {
-      m_host_info_changes++;
-    }
+  // Set up the localhost bridges if the host info has changed.
+  bool change_detected = false;
+  if((m_node_host_record.getCommunity() != hrecord.getCommunity()) ||
+     (m_node_host_record.getHostIP()    != hrecord.getHostIP()) ||
+     (m_node_host_record.getPortDB()    != hrecord.getPortDB()) ||
+     (m_node_host_record.getPortUDP()   != hrecord.getPortUDP())) {
+    change_detected = true;
+    m_host_info_changes++;
   }
-  // If this is the first time received, set up the localhost bridges.
-  else {
+
+  if(change_detected && (hrecord.getPortUDP() != "")) {
     m_node_host_record = hrecord;
     string localhost_ip = m_node_host_record.getHostIP();
     registerPingBridgesSubsLocal(localhost_ip);
   }
+
 }
 
 

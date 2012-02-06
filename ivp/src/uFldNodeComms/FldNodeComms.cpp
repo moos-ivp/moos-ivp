@@ -285,6 +285,10 @@ bool FldNodeComms::handleMailNodeMessage(const string& msg)
 {
   NodeMessage new_message = string2NodeMessage(msg);
 
+  cout << "Handling new Node Message: " << new_message.getSpec() << endl;
+
+  // List of "last" messages store solely for user debug viewing at
+  // the console window.
   m_last_messages.push_back(msg);
   if(m_last_messages.size() > 5) 
     m_last_messages.pop_front();

@@ -14,6 +14,7 @@ endif (${WIN32})
 
 SET(SRC
    Expander.cpp
+   Expander_Info.cpp
    main.cpp
 )
  

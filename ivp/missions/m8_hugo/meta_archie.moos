@@ -37,7 +37,7 @@ ProcessConfig = uTimerScript
   RESET_TIME = end
   CONDITION  = (NAV_SPEED > 0)
 
-  EVENT = var=SIMCOR_RANGE_REQUEST, val="name=archie", time=25:35
+  EVENT = var=CRS_RANGE_REQUEST, val="name=archie", time=25:35
 }
 
 

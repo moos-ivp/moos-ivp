@@ -38,7 +38,8 @@ using namespace std;
 
 XYPolygon::XYPolygon()
 {
-  convex_state = false;
+  m_convex_state = false;
+  m_transparency = 0.5;
 }
 
 //---------------------------------------------------------------
@@ -51,12 +52,12 @@ XYPolygon::XYPolygon()
 bool XYPolygon::add_vertex(double x, double y, bool check_convexity)
 {
   XYSegList::add_vertex(x,y);
-  side_xy.push_back(-1);
+  m_side_xy.push_back(-1);
   
   // With new vertex, we don't know if the new polygon is valid
   if(check_convexity) {
     determine_convexity();
-    return(convex_state);
+    return(m_convex_state);
   }
   else
     return(true);
@@ -73,12 +74,12 @@ bool XYPolygon::add_vertex(double x, double y,
 			   double z, bool check_convexity)
 {
   XYSegList::add_vertex(x,y,z);
-  side_xy.push_back(-1);
+  m_side_xy.push_back(-1);
   
   // With new vertex, we don't know if the new polygon is valid
   if(check_convexity) {
     determine_convexity();
-    return(convex_state);
+    return(m_convex_state);
   }
   else
     return(true);
@@ -95,12 +96,12 @@ bool XYPolygon::add_vertex(double x, double y, double z,
 			   string property, bool check_convexity)
 {
   XYSegList::add_vertex(x, y, z, property);
-  side_xy.push_back(-1);
+  m_side_xy.push_back(-1);
   
   // With new vertex, we don't know if the new polygon is valid
   if(check_convexity) {
     determine_convexity();
-    return(convex_state);
+    return(m_convex_state);
   }
   else
     return(true);
@@ -118,7 +119,7 @@ bool XYPolygon::alter_vertex(double x, double y, double z)
   XYSegList::alter_vertex(x,y);
 
   determine_convexity();
-  return(convex_state);
+  return(m_convex_state);
 }
 
 //---------------------------------------------------------------
@@ -161,16 +162,16 @@ bool XYPolygon::delete_vertex(double x, double y)
   vector<int>  new_xy;
   
   for(i=0; i<ix; i++)
-    new_xy.push_back(side_xy[i]);
+    new_xy.push_back(m_side_xy[i]);
   for(i=ix+1; i<vsize; i++)
-    new_xy.push_back(side_xy[i]);
+    new_xy.push_back(m_side_xy[i]);
   
-  side_xy  = new_xy;
+  m_side_xy  = new_xy;
 
   XYSegList::delete_vertex(x,y);
 
   determine_convexity();
-  return(convex_state);
+  return(m_convex_state);
 }
 
 //---------------------------------------------------------------
@@ -191,17 +192,17 @@ bool XYPolygon::insert_vertex(double x, double y, double z)
   vector<int> new_xy;
   
   for(i=0; i<=ix; i++) 
-    new_xy.push_back(side_xy[i]);
+    new_xy.push_back(m_side_xy[i]);
   new_xy.push_back(2);
   for(i=ix+1; i<vsize; i++)
-    new_xy.push_back(side_xy[i]);
+    new_xy.push_back(m_side_xy[i]);
   
-  side_xy  = new_xy;
+  m_side_xy  = new_xy;
 
   XYSegList::insert_vertex(x,y,z);
 
   determine_convexity();
-  return(convex_state);
+  return(m_convex_state);
 }
 
 //---------------------------------------------------------------
@@ -210,8 +211,8 @@ bool XYPolygon::insert_vertex(double x, double y, double z)
 void XYPolygon::clear()
 {
   XYSegList::clear();
-  side_xy.clear();
-  convex_state = false;
+  m_side_xy.clear();
+  m_convex_state = false;
 }
 
 
@@ -288,7 +289,7 @@ bool XYPolygon::apply_snap(double snapval)
 //---------------------------------------------------------------
 // Procedure: reverse
 //      Note: A call to "determine_convexity()" is made since this
-//            operation needs to have side_xy[i] reset for each i.
+//            operation needs to have m_side_xy[i] reset for each i.
 
 void XYPolygon::reverse()
 {
@@ -299,7 +300,7 @@ void XYPolygon::reverse()
 //---------------------------------------------------------------
 // Procedure: rotate
 //      Note: A call to "determine_convexity()" is made since this
-//            operation needs to have side_xy[i] reset for each i.
+//            operation needs to have m_side_xy[i] reset for each i.
 
 
 void XYPolygon::rotate(double val)
@@ -314,7 +315,7 @@ void XYPolygon::rotate(double val)
 
 bool XYPolygon::contains(double x, double y) const
 {
-  if(!convex_state)
+  if(!m_convex_state)
     return(false);
 
   unsigned int ix, vsize = m_vx.size();
@@ -335,7 +336,7 @@ bool XYPolygon::contains(double x, double y) const
     y2 = m_vy[ixx];
 
     int vside = side(x1, y1, x2, y2, x, y);
-    if((vside != 2) && (vside != side_xy[ix]))
+    if((vside != 2) && (vside != m_side_xy[ix]))
       return(false);
   }
   return(true);
@@ -740,8 +741,8 @@ void XYPolygon::set_side(int ix)
     return;
 
   // Handle special cases
-  if(vsize == 1) side_xy[0] = -1;
-  if(vsize == 2) side_xy[1] = -1;
+  if(vsize == 1) m_side_xy[0] = -1;
+  if(vsize == 2) m_side_xy[1] = -1;
   if(vsize <= 2)
     return;
 
@@ -757,7 +758,7 @@ void XYPolygon::set_side(int ix)
   x2 = m_vx[ixx];
   y2 = m_vy[ixx];
 
-  side_xy[ix] = -1;
+  m_side_xy[ix] = -1;
 
   bool fresh = true;
   for(int j=0; j<vsize; j++) {
@@ -768,12 +769,12 @@ void XYPolygon::set_side(int ix)
 
       if(iside != 2) {
 	if(fresh) {
-	  side_xy[ix] = iside;
+	  m_side_xy[ix] = iside;
 	  fresh = false;
 	}
 	else
-	  if(iside != side_xy[ix]) {
-	    side_xy[ix] = -1;
+	  if(iside != m_side_xy[ix]) {
+	    m_side_xy[ix] = -1;
 	  }
       }
     }
@@ -794,9 +795,9 @@ void XYPolygon::determine_convexity()
   for(i=0; i<size(); i++)
     set_side(i);
 
-  convex_state = (size() >= 3);
+  m_convex_state = (size() >= 3);
   for(i=0; i<size(); i++)
-    convex_state = convex_state && (side_xy[i] != -1);
+    m_convex_state = m_convex_state && (m_side_xy[i] != -1);
 }
 
 

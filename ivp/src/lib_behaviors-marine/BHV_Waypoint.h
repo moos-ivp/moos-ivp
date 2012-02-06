@@ -85,6 +85,8 @@ protected: // intermediate or object global variables.
   XYPoint   m_nextpt;
   XYPoint   m_trackpt;
   XYPoint   m_markpt;
+
+  bool      m_shortest_tour_pending;
 };
 #endif
 

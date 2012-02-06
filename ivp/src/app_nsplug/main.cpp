@@ -25,42 +25,49 @@
 #include <cstring>
 #include <string>
 #include <iostream>
+#include "ColorParse.h"
 #include "Expander.h"
+#include "Expander_Info.h"
 #include "MBUtils.h"
 #include "ReleaseInfo.h"
 
 using namespace std;
+
+void showHelpAndExit();
 
 //--------------------------------------------------------
 // Procedure: main
 
 int main(int argc, char *argv[])
 {
-  // Look for a request for version information
-  if(scanArgs(argc, argv, "-v", "--version", "-version")) {
-    showReleaseInfo("nsplug", "gpl");
-    return(0);
-  }
-  
-  // Look for a request for usage information
-  if(scanArgs(argc, argv, "-h", "--help", "-help")) {
-    cout << "Usage: nsplug filename newfilename [-f, --force][MACRO=VAL]" << endl;
-    return(0);
-  }
+  Expander expander;
 
-  Expander expander(argv[1], argv[2]);
-
-  for(int i=3; i<argc; i++) {
+  for(int i=1; i<argc; i++) {
     string arg = argv[i];
-    if((arg == "-f") || (arg == "--force"))
+
+    if((arg=="-v") || (arg=="--version") || (arg=="-version"))
+      showReleaseInfoAndExit();
+    else if((arg == "-h") || (arg == "--help") || (arg=="-help"))
+      showHelpAndExit();
+    else if((arg == "-m") || (arg == "--manual"))
+      showManualAndExit();
+    else if((arg == "-f") || (arg == "--force"))
       expander.setForce(true);
-    else if(((arg=="-p") || (arg=="--path")) && (i<(argc-1)))
+    else if(strBegins(arg, "--path=")) 
+      expander.addPath(arg.substr(7));
+    else if(((arg=="-p") || (arg=="--path")) && (i<(argc-1))) 
       expander.addPath(argv[i+1]);
     else if(((arg=="-s") || (arg=="--strict")))
       expander.setStrict(true);
+
+    // If none of the above switch options explicitly match...
+    else if(i == 1)
+      expander.setInFile(argv[1]);
+    else if(i == 2)
+      expander.setOutFile(argv[2]);
     else if(strContains(arg, '=')) {
-      string left  = stripBlankEnds(biteString(arg, '='));
-      string right = stripBlankEnds(arg);
+      string left  = biteStringX(arg, '=');
+      string right = arg;
       expander.addMacro(left, right);
     }
     else
@@ -69,15 +76,13 @@ int main(int argc, char *argv[])
 
   if(expander.verifyInfile()) {
     if(expander.expand())
-        expander.writeOutput();
+      expander.writeOutput();
     else
-        exit(EXIT_FAILURE);
-    
-  }
-  else
-  {
-      cout << "Aborted: " << argv[1] << " cannot be opened. " << endl;
       exit(EXIT_FAILURE);
+  }
+  else {
+    cout << "Aborted: " << argv[1] << " cannot be opened. " << endl;
+    exit(EXIT_FAILURE);
   }
   
   return(0);
