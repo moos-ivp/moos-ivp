@@ -29,6 +29,17 @@ using namespace std;
 //------------------------------------------------------------------
 // Procedure: constructor
 
+VarDataPair::VarDataPair()
+{
+  m_var       = "";
+  m_sdata     = "";
+  m_ddata     = 0;
+  m_is_string = false;
+}
+
+//------------------------------------------------------------------
+// Procedure: constructor
+
 VarDataPair::VarDataPair(const string& var, double ddata)
 {
   m_var       = stripBlankEnds(var);

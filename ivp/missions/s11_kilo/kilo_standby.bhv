@@ -1,0 +1,24 @@
+//--------    FILE: kilo_standby.bhv   -------------
+
+set MODE = ACTIVE {
+  DEPLOY = true
+} INACTIVE
+
+set MODE = EMERGENCY_RETURN {
+  MODE = ACTIVE
+} 
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name       = waypt_return
+  pwt        = 100
+  condition  = MODE == EMERGENCY_RETURN
+  perpetual  = true
+  endflag    = DEPLOY = false
+
+         speed = 2.0
+        radius = 2.0
+     nm_radius = 8.0
+        points = 0,0
+}

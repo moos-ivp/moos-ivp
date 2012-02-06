@@ -208,6 +208,19 @@ unsigned int IPF_Plot::getHelmIterByTime(double timestamp)
 }
  
 //---------------------------------------------------------------
+// Procedure: getTimeByHelmIter
+//   Purpose:
+
+double IPF_Plot::getTimeByHelmIter(unsigned int iter) const
+{
+  int index = getIndexByHelmIter(iter);
+  if(index == -1)
+    return(0);
+
+  return(m_time_stamp[index]);
+}
+ 
+//---------------------------------------------------------------
 // Procedure: getIndexByTime
 //   Purpose: Given a query time, determine the highest index that 
 //            has a time less than or equal to the query time.

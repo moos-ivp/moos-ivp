@@ -650,7 +650,7 @@ void XMS::registerVariables()
   map<string, string>::iterator p;
   for(p=m_src_map.begin(); p!=m_src_map.end(); p++) {
     string reg_str = p->first;
-    m_Comms.Register(reg_str, 2.0);
+    m_Comms.Register(reg_str, 1.0);
   }
 
   if(m_history_var != "")
@@ -938,6 +938,19 @@ void XMS::printHistoryReport()
     refstr = termColor("reversegreen") + refstr;
   string mode_str = "(MODE = HISTORY:" + refstr + ")";   
 
+  unsigned int varlen = m_history_var.length();
+  if(varlen < 11)
+    varlen = 11;
+
+  unsigned int max_srclen = 12;
+  if(m_display_source) {
+    // Find length of longest source string
+    list<string>::iterator p;
+    for(p=m_history_sources.begin(); p != m_history_sources.end(); p++) {
+      if(p->length() > max_srclen)
+	max_srclen = p->length();
+    }
+  }
 
   bool do_the_report = false;
   if((m_refresh_mode == "paused") && m_update_requested)
@@ -959,31 +972,35 @@ void XMS::printHistoryReport()
   
   printf("\n\n\n\n\n");
   
+  string var_hdr = padString("VariableName", varlen, false);
   if(m_report_histvar)
-    printf("  %-22s", "VarName");
+    printf("  %s", var_hdr.c_str());
   
+  string src_hdr = padString("(S)ource", max_srclen, false);
   if(m_display_source)
-    printf("%-12s", "(S)ource");
+    printf("  %s", src_hdr.c_str());
   else
     printf(" (S) ");
 
   if(m_display_time)
-    printf("%-12s", "(T)ime");
+    printf("  %-12s", "(T)ime");
   else
     printf(" (T) ");
 
   printf(" VarValue %s\n", mode_str.c_str());
   
+  string var_bar = padString("------------", varlen, false);
   if(m_report_histvar)
-    printf("  %-22s", "----------------");
+    printf("  %s", var_bar.c_str());
   
+  string src_bar = padString("-------------", max_srclen, false);
   if(m_display_source)
-    printf("%-12s", "----------");
+    printf("  %s", src_bar.c_str());
   else
     printf(" --- ");
   
   if(m_display_time)
-    printf("%-12s", "----------");
+    printf("  %-12s", "----------");
   else
     printf(" --- ");
   
@@ -1000,20 +1017,24 @@ void XMS::printHistoryReport()
     int    count  = hist_counts.back();
     string htime  = doubleToString(hist_times.back(), 2);
     
-    if(m_report_histvar)
-      printf("  %-22s ", m_history_var.c_str());
-      
-    if(m_display_source)
-      printf("%-12s", source.c_str());
+    if(m_report_histvar) {
+      string var = padString(m_history_var, varlen, false);
+      printf("  %s", var.c_str());
+    }
+
+    if(m_display_source) {
+      source = padString(source, max_srclen, false);
+      printf("  %s", source.c_str());
+    }
     else
       printf("     ");
     
     if(m_display_time)
-      printf("%-12s", htime.c_str());
+      printf("  %-12s", htime.c_str());
     else
       printf("     ");
     
-    printf("(%d) %s", count, entry.c_str());
+    printf(" (%d) %s", count, entry.c_str());
     printf("\n");		
 
     hist_list.pop_back();

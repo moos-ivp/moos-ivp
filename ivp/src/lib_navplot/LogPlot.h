@@ -25,7 +25,6 @@
 
 #include <string>
 #include <vector>
-#include <list>
 
 class LogPlot
 {
@@ -39,14 +38,24 @@ public:
 
  public: // Population
   bool   set_value(double gtime, double gvalue);
+  void   set_logstart_utc(double v)   {m_logstart_utc=v;};
 
  public: // Querying
   double get_time_by_index(unsigned int index) const;
+  double get_utctime_by_index(unsigned int index) const;
+
   double get_value_by_index(unsigned int index) const;
-  double get_value_by_time(double gtime, bool interp=false) const;
   double get_median();
+
+  double get_value_by_time(double gtime, bool interp=false) const;
+  double get_value_by_utctime(double gtime, bool interp=false) const;
+
   double get_min_time() const;
+  double get_min_utctime() const;
+
   double get_max_time() const;
+  double get_max_utctime() const;
+
   double get_min_val() const        {return(m_min_val);};
   double get_max_val() const        {return(m_max_val);};
   std::string get_varname() const   {return(m_varname);};
@@ -56,6 +65,7 @@ public:
   void   print() const;
   
   unsigned int get_index_by_time(double) const;
+  unsigned int get_index_by_utctime(double) const;
 
 protected:
   std::string m_vehi_name;       // Name of the platform
@@ -63,7 +73,7 @@ protected:
   std::vector<double> m_time;
   std::vector<double> m_value;
 
-  double m_utc_start_time;
+  double m_logstart_utc;
   double m_min_val;
   double m_max_val;
 

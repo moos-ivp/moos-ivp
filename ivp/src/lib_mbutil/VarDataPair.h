@@ -28,6 +28,8 @@
 class VarDataPair
 {
 public:
+  VarDataPair();
+
   VarDataPair(const std::string& varname, 
 	      double varvalue);
 

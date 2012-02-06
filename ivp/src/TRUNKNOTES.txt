@@ -1,0 +1,12 @@
+
+1) Fixed logutils to support src/srcaux plogging
+
+2) Helm supports primary/standby
+
+3) pNodeReporter reflects possible primary/standby status.
+
+4) uHelmScope  reflects possible primary/standby status.
+
+5) s11_kilo mission
+
+

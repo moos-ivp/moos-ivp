@@ -27,10 +27,12 @@
 #include "IO_GeomUtils.h"
 #include "XYPolygon.h"
 #include "XYSegList.h"
+#include "XYPoint.h"
 #include "XYGrid.h"
 #include "XYCircle.h"
-#include "XYHexagon.h"
 #include "LMV_Utils.h"
+#include "XYFormatUtilsPoly.h"
+#include "XYFormatUtilsPoint.h"
 
 using namespace std;
 
@@ -85,8 +87,8 @@ int main(int argc, char *argv[])
   vector<string>    all_poly_strings;
   vector<string>    all_segl_strings;
   vector<string>    all_grid_strings;
+  vector<string>    all_point_strings;
   vector<string>    all_circle_strings;
-  vector<XYHexagon> all_hexagons;
   vector<string>    all_markers;
   vector<string>    all_opvertices;
   vector<string>    all_geodesy;
@@ -108,6 +110,10 @@ int main(int argc, char *argv[])
       for(j=0; j<svector.size(); j++)
 	all_segl_strings.push_back(svector[j]);
 
+      svector = readEntriesFromFile(argi, "point");
+      for(j=0; j<svector.size(); j++)
+	all_point_strings.push_back(svector[j]);
+
       svector = readEntriesFromFile(argi, "circle");
       for(j=0; j<svector.size(); j++)
 	all_circle_strings.push_back(svector[j]);
@@ -116,9 +122,6 @@ int main(int argc, char *argv[])
       for(j=0; j<svector.size(); j++)
 	all_grid_strings.push_back(svector[j]);
 
-      vector<XYHexagon> hvector = readHexagonsFromFile(argi);
-      for(j=0; j<hvector.size(); j++)
-	all_hexagons.push_back(hvector[j]);
       vector<string> mvector = readEntriesFromFile(argi, "marker");
       for(j=0; j<mvector.size(); j++)
 	all_markers.push_back(mvector[j]);
@@ -137,6 +140,10 @@ int main(int argc, char *argv[])
   for(j=0; j<all_poly_strings.size(); j++)
     gui->pviewer->setParam("view_polygon", all_poly_strings[j]);
 
+  cout << "# of file points: " << all_point_strings.size() << endl;
+  for(j=0; j<all_point_strings.size(); j++)
+    gui->pviewer->setParam("view_point", all_point_strings[j]);
+
   cout << "# of file seglists: " << all_segl_strings.size() << endl;
   for(j=0; j<all_segl_strings.size(); j++)
     gui->pviewer->setParam("view_seglist", all_segl_strings[j]);
@@ -149,12 +156,6 @@ int main(int argc, char *argv[])
   for(j=0; j<all_circle_strings.size(); j++)
     gui->pviewer->setParam("view_circle", all_circle_strings[j]);
   
-#if 0
-  cout << "# of file hexagons: " << all_hexagons.size() << endl;
-  for(j=0; j<all_hexagons.size(); j++)
-    gui->pviewer->addPoly(all_hexagons[j]);
-#endif  
-
   cout << "# of file marker entries: " << all_markers.size() << endl;
   for(j=0; j<all_markers.size(); j++)
     gui->pviewer->setParam("marker", all_markers[j]);
@@ -168,6 +169,29 @@ int main(int argc, char *argv[])
     gui->pviewer->setParam("geodesy_init", all_geodesy[j]);
 
   gui->updateXY();
+
+  
+  for(j=0; j<all_poly_strings.size(); j++) {
+    cout << "poly #" << j << endl;
+    cout << all_poly_strings[j] << endl;;
+    XYPolygon poly = string2Poly(all_poly_strings[j]);
+    cout << "spec:  " << poly.get_spec() << endl;
+
+    unsigned int k;
+    for(k=0; k<all_point_strings.size(); k++) {
+      cout << "point #" << k << endl;
+      cout << all_point_strings[k] << endl;;
+      XYPoint point = string2Point(all_point_strings[k]);
+      cout << "spec:  " << point.get_spec() << endl;
+
+      bool contains = poly.contains(point.x(), point.y());
+      cout << "contains:" << contains << endl;
+    }
+    cout << "=====================================" << endl;
+
+  }
+  
+
 
   return Fl::run();
 }

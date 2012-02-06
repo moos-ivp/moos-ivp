@@ -240,6 +240,7 @@ int MarineGUI::handle(int event)
 
 //----------------------------------------- Zoom In
 inline void MarineGUI::cb_Zoom_i(int val) {
+  cout << "MarineGUI::cb_Zoom: " << val << endl;
   if(val < 0) 
     cmviewer->setParam("zoom", 1.05);
   else if(val > 0) 

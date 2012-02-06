@@ -94,14 +94,14 @@ int MarineViewer::handle(int event)
 {
   int result;
  
-  if (event == FL_MOUSEWHEEL) {
-    if (Fl::event_dy () < 0) {
-      // Not great, value copied from MarineGUI::cb_Zoom_i (int).
+  if(event == FL_MOUSEWHEEL) {
+    if(Fl::event_dy () < 0) {
       setParam("zoom", 1.05);
+      redraw();
     }
-    else if (Fl::event_dy () > 0) {
-      // Not great, value copied from MarineGUI::cb_Zoom_i (int).
-      setParam("zoom", 0.80);
+    else if(Fl::event_dy () > 0) {
+      setParam("zoom", 0.95);
+      redraw();
     }
     result = 1;
   }
@@ -197,7 +197,6 @@ bool MarineViewer::setParam(string param, double v)
     m_zoom *= v;
     if(m_zoom < 0.00001)      
       m_zoom = 0.00001;
-    cout << "zoom:" << m_zoom << endl;
   }
   else if(param == "pan_x") {
     double pix_shift = v * m_back_img.get_pix_per_mtr_x();
@@ -537,7 +536,7 @@ void MarineViewer::drawCommonVehicle(const NodeRecord& record,
 				     unsigned int outer_line)
 {
   string vname    = record.getName();
-  string vehibody = record.getType();
+  string vehibody = tolower(record.getType());
   double vlength  = record.getLength();
 
   glMatrixMode(GL_PROJECTION);

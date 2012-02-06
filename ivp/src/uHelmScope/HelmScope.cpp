@@ -37,8 +37,6 @@ using namespace std;
 
 HelmScope::HelmScope()
 { 
-  m_helm_engaged       = false;
-
   m_display_help       = false;
   m_display_modeset    = false;
   m_display_lehistory  = false;
@@ -106,7 +104,6 @@ bool HelmScope::OnNewMail(MOOSMSG_LIST &NewMail)
     string    key  = msg.GetKey();
     string    sval = msg.GetString();
 
- 
     if(key == "IVPHELM_DOMAIN") 
       handleNewIvPDomain(sval); 
     else if(key == "IVPHELM_SUMMARY") 
@@ -119,12 +116,8 @@ bool HelmScope::OnNewMail(MOOSMSG_LIST &NewMail)
       handleNewStateVars(sval); 
     else if(key == "IVPHELM_LIFE_EVENT") 
       m_life_event_history.addLifeEvent(sval);
-    else if(key == "IVPHELM_ENGAGED") { 
-      bool new_helm_engaged = (sval == "ENGAGED"); 
-      if(new_helm_engaged != m_helm_engaged)
-	m_update_pending = true; 
-      m_helm_engaged = new_helm_engaged;
-    } 
+    else if(key == "IVPHELM_STATE") 
+      updateEngaged(sval);
   }
 
   // Update the values of all variables we have registered for.  
@@ -636,8 +629,10 @@ void HelmScope::registerVariables()
   m_Comms.Register("IVPHELM_STATEVARS", 0);
   m_Comms.Register("IVPHELM_DOMAIN", 0);
   m_Comms.Register("IVPHELM_MODESET", 0);
-  m_Comms.Register("IVPHELM_ENGAGED", 0);
+  m_Comms.Register("IVPHELM_STATE", 0);
   m_Comms.Register("IVPHELM_LIFE_EVENT", 0);
+
+  m_Comms.Register("PHELMIVP_STATUS", 0);
 
   m_Comms.Register("WPT_STAT", 0);
 }
@@ -692,6 +687,36 @@ void HelmScope::pruneHistory()
   m_history_last_cut = top_index;
 }
 
+
+//------------------------------------------------------------
+// Procedure: handleHelmStatusVar
+//   Purpose: Examine the MOOSDB generated variable PHELMIVP_STATUS
+//            for new publications by the Helm so we can register for
+//            everything the Helm is publishing
+
+void HelmScope::handleHelmStatusVar(const string& sval)
+{  
+  vector<string> svector = parseStringQ(sval, ',');
+  unsigned int i, vsize = svector.size();
+  for(i=0; i<vsize; i++) {
+    string left  = biteStringX(svector[i], '=');
+    string right = svector[i];
+    
+    if(left == "Publishing") {
+      string pub_vars = stripQuotes(right);
+      vector<string> kvector = parseString(pub_vars, ',');
+      unsigned int k, ksize = kvector.size();
+      for(k=0; k<ksize; k++) {
+	if(m_set_helmvars.count(kvector[k]) == 0) {
+	  m_Comms.Register(kvector[k], 0);
+	  m_set_helmvars.insert(kvector[k]);
+	  cout << "REGISTERING FOR :" << kvector[k] << endl;
+	}
+      }
+    }
+    
+  }
+}
 
 
 //------------------------------------------------------------
@@ -840,6 +865,28 @@ void HelmScope::updateVarCommunity(const string& varname,
 }
 
 //------------------------------------------------------------
+// Procedure: updateEngaged
+
+void HelmScope::updateEngaged(const string& val)
+{
+  string eng_status = stripBlankEnds(val);
+  if((eng_status == "DRIVE") || (eng_status == "PARK") ||
+     (eng_status == "DISABLED")) {
+    if(m_helm_engaged_primary != eng_status) {
+      m_update_pending = true; 
+      m_helm_engaged_primary = eng_status;
+    }
+  }
+  else if((eng_status == "DRIVE+") || (eng_status == "PARK+") ||
+	  (eng_status == "STANDBY")) {
+    if(m_helm_engaged_standby != eng_status) {
+      m_update_pending = true; 
+      m_helm_engaged_standby = eng_status;
+    }
+  }
+}
+
+//------------------------------------------------------------
 // Procedure: printHelp()
 
 void HelmScope::printHelp()
@@ -959,13 +1006,26 @@ void HelmScope::printReport()
   if(m_iter_next_post != -1)
     m_update_pending = false;
 
-  string engaged_status = " ENGAGED ";
-  if(!m_helm_engaged)
-    engaged_status = " DIS-ENGAGED!!! ";
-  
+
+  string engaged_status = m_helm_engaged_standby;
+  if(engaged_status != "")
+    engaged_status += "/";
+  engaged_status += m_helm_engaged_primary;
+ 
   printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-  printf("==============   uHelmScope Report  ==============%s (%d)\n",
-	 engaged_status.c_str(), m_moosapp_iter); 
+
+  printf("==============   uHelmScope Report  ============== ");
+  
+  if((m_helm_engaged_standby == "DRIVE+") ||
+     (m_helm_engaged_standby == "PARK+"))
+    printf("%s", termColor("red").c_str());
+  else
+    printf("%s", termColor("green").c_str());    
+
+  printf("%s ", engaged_status.c_str()); 
+  printf("%s", termColor().c_str());
+  printf("(%d)\n", m_moosapp_iter); 
+
   
   printHelmReport(m_iter_next_post);
   printf("\n\n");

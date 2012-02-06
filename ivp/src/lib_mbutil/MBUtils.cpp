@@ -991,6 +991,38 @@ double tokDoubleParse(const string& str, const string& left,
 }
 
 //----------------------------------------------------------------
+// Procedure: minElement
+
+double minElement(const vector<double>& myvector)
+{
+  if(myvector.size() == 0)
+    return(0);
+
+  double min_found = myvector[0];
+  unsigned int i, vsize = myvector.size();
+  for(i=1; i<vsize; i++)
+    if(myvector[i] < min_found)
+      min_found = myvector[i];
+  return(min_found);
+}
+
+//----------------------------------------------------------------
+// Procedure: maxElement
+
+double maxElement(const vector<double>& myvector)
+{
+  if(myvector.size() == 0)
+    return(0);
+
+  double max_found = myvector[0];
+  unsigned int i, vsize = myvector.size();
+  for(i=1; i<vsize; i++)
+    if(myvector[i] > max_found)
+      max_found = myvector[i];
+  return(max_found);
+}
+
+//----------------------------------------------------------------
 // Procedure: vclip
 
 double vclip(const double& var, const double& low, const double& high)

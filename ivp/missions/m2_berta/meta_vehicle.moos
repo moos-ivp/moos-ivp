@@ -22,6 +22,9 @@ Processconfig = ANTLER
   Run = pBasicContactMgr @ NewConsole = true
   Run = uProcessWatch    @ NewConsole = false
   Run = uXMS             @ NewConsole = true
+
+
+  
 }
   
 #include plug_pMOOSBridgeV.moos

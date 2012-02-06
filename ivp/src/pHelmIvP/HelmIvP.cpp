@@ -47,7 +47,7 @@ using namespace std;
 
 HelmIvP::HelmIvP()
 {
-  m_allstop_msg    = "clear";
+  m_allstop_msg    = "";
   m_bhv_set        = 0;
   m_hengine        = 0;
   m_info_buffer    = new InfoBuffer;
@@ -60,11 +60,18 @@ HelmIvP::HelmIvP()
   m_curr_time      = 0;
   m_start_time     = 0;
 
-  // The m_has_control correlates to helm ENGAGEMENT mode
-  m_has_control    = false;
+  // The m_has_control correlates to helm status
+  m_has_control     = false;
+  m_helm_status     = "PARK";
 
-  m_allow_override = true;
-  m_disengage_on_allstop = false;
+  // If a vehicle is configured to be a standby helm, having control
+  // also requires the standby_mode to be false.
+  m_standby_helm           = false;
+  m_standby_threshold      = 0;
+  m_standby_last_heartbeat = 0;
+
+  m_allow_override  = true;
+  m_park_on_allstop = false;
 
   m_curr_time_updated = false;
 
@@ -123,6 +130,10 @@ void HelmIvP::cleanup()
 
 bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
 {
+  // If this helm has been disabled, don't bother processing mail.
+  if(helmStatus() == "DISABLED")
+    return(true);
+
   // The curr_time is set in *both* the OnNewMail and Iterate functions.
   // In the OnNewMail function so the most up-to-date time is available
   // when processing mail.
@@ -132,34 +143,64 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
   m_info_buffer->setCurrTime(m_curr_time);
   m_curr_time_updated = true;
 
-  MOOSMSG_LIST::iterator p;
+  m_Comms.Notify("READ_MAIL", m_curr_time);
 
+  MOOSMSG_LIST::iterator p;
   for(p=NewMail.begin(); p!=NewMail.end(); p++) {
     CMOOSMsg &msg = *p;
 
     string moosvar = msg.GetKey();
     string sval    = msg.GetString();
+    string source  = msg.GetSource();
 
     double skew_time;
     msg.IsSkewed(m_curr_time, &skew_time);
-    
+
     if(!m_skews_matter || (fabs(skew_time) < m_ok_skew)) {
       if((moosvar =="MOOS_MANUAL_OVERIDE") || 
 	 (moosvar =="MOOS_MANUAL_OVERRIDE") ||
 	 ((moosvar == m_additional_override) && (moosvar != ""))) {
 	if(toupper(sval) == "FALSE") {
 	  m_has_control = true;
-	  postAllStop("clear");
+	  helmStatusUpdate();
 	}
 	else if(toupper(sval) == "TRUE") {
 	  if(m_allow_override) {
 	    m_has_control = false;
-	    postAllStop("ManualOverride");
+	    helmStatusUpdate();
 	  }
 	}
       }
-      else if(moosvar == "IVPHELM_ENGAGED")
+      else if(moosvar == "IVPHELM_STATE") {
 	m_init_vars_ready = true;
+	// Check if this heartbeat message is from another helm
+	if(msg.GetSource() != GetAppName()) {
+	  // First handle things considering we are a standby helm
+	  if(m_standby_helm) {
+	    // If we're still in standby mode, just note the hearbeat
+	    // of the primary helm. We take over when that gets old.
+	    if(helmStatus() == "STANDBY") {
+	      m_standby_last_heartbeat = m_curr_time;
+	    }
+	    // If the standby helm has taken over already, the incoming
+	    // report must be from tardy primary helm finally responding.
+	    // In this case we just want to republish things that are
+	    // normally not published due to being the same as previous
+	    // publications.
+	    else {
+	      m_refresh_pending = true;
+	      m_rejournal_requested = true;
+	      postAllStop();
+	    }
+	  }
+	  // If we're a primary helm, then yield to the other helm
+	  // if their helm status is anything but standby
+	  else if(!m_standby_helm && (sval != "STANDBY")) {
+	    postAllStop("DisabledByStandbyHelm");
+	    helmStatusUpdate("DISABLED");
+	  }
+	}
+      }
       else if(moosvar == "IVPHELM_VERBOSE") {
 	if((sval == "verbose") || (sval == "quiet") || (sval == "terse"))
 	  m_verbose = sval;
@@ -191,6 +232,8 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
     }
   }
 
+  if(helmStatus() == "STANDBY")
+    checkForTakeOver();
   return(true);
 }
 
@@ -201,7 +244,12 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
 
 bool HelmIvP::Iterate()
 {
-  postEngagedStatus();
+  postHelmStatus();
+  if(!helmStatusEnabled()) {
+    m_info_buffer->clearDeltaVectors();
+    return(true);
+  }
+  
   postCharStatus();
   
   if(m_init_vars_ready && !m_init_vars_done)
@@ -285,7 +333,7 @@ bool HelmIvP::Iterate()
   if(helm_report.getHalted())
     allstop_msg = "BehaviorError";
   else if(helm_report.getOFNUM() == 0)
-    allstop_msg = "NoIvPFunctions";
+    allstop_msg = "NothingToDo";
   
   // First make sure the HelmEngine has made a decision for all 
   // non-optional variables - otherwise declare an incomplete decision.
@@ -329,7 +377,7 @@ bool HelmIvP::Iterate()
   m_Comms.Notify("LOOP_CPU", helm_report.getLoopTime());
 
   if(allstop_msg != "clear")
-    if(m_allow_override && m_disengage_on_allstop)
+    if(m_allow_override && m_park_on_allstop)
       m_has_control = false;
 
   // Clear the delta vectors now that all behavior have had the 
@@ -548,7 +596,7 @@ void HelmIvP::handleInitialVarsPhase1()
     }
 
   }
-  registerSingleVariable("IVPHELM_ENGAGED");
+  registerSingleVariable("IVPHELM_STATE");
 }
 
 //------------------------------------------------------------
@@ -640,24 +688,29 @@ void HelmIvP::postDefaultVariables()
 }
 
 //------------------------------------------------------------
-// Procedure: postEngagedStatus()
+// Procedure: postHelmStatus()
+//    Values: Possible helm status values: STANDBY
+//                                         PARK     (ENABLED)
+//                                         DRIVE    (ENABLED)
+//                                         DISABLED
 
-void HelmIvP::postEngagedStatus()
+void HelmIvP::postHelmStatus()
 {
-  string engaged_status = "ENGAGED";
-  if(!m_has_control)
-    engaged_status = "DISENGAGED";
+  string helm_status = helmStatus();
 
-  double heartbeat_interval = 1.0;  // seconds
-  bool time_for_a_new_heartbeat = false;
-  if((m_curr_time-m_last_heartbeat) >= heartbeat_interval) {
-      time_for_a_new_heartbeat = true;
-      m_last_heartbeat = m_curr_time;
+  // Was this originally a standby helm? If so indicate with '+'
+  if(helmStatusEnabled() && m_standby_helm)
+    helm_status += "+";
+
+  // Post the helm status even if the value hasn't changed, 
+  // unless the status is DISABLED and has been posted previously.
+  if(helm_status != "DISABLED")
+    m_Comms.Notify("IVPHELM_STATE", helm_status);
+  else {
+    bool changed = detectChangeOnKey("IVPHELM_STATE", helm_status);
+    if(changed)
+      m_Comms.Notify("IVPHELM_STATE", helm_status);
   }
-
-  bool changed = detectChangeOnKey("IVPHELM_ENGAGED", engaged_status);
-  if(changed || time_for_a_new_heartbeat)
-    m_Comms.Notify("IVPHELM_ENGAGED", engaged_status);
 }
 
 //------------------------------------------------------------
@@ -665,12 +718,19 @@ void HelmIvP::postEngagedStatus()
 
 void HelmIvP::postCharStatus()
 {
-  if(m_has_control) {
-    if(m_verbose == "terse")
-      MOOSTrace("$");
-  }
-  else
+  if(m_verbose == "quiet")
+    return;
+
+  if(helmStatus() == "DRIVE")
+    MOOSTrace("$");
+  else if(helmStatus() == "PARK")
     MOOSTrace("*");
+  else if(helmStatus() == "STANDBY")
+    MOOSTrace("#");
+  else if(helmStatus() == "DISABLED")
+    MOOSTrace("!");
+  else
+    MOOSTrace("?");
 }
 
 //------------------------------------------------------------
@@ -786,6 +846,22 @@ void HelmIvP::requestBehaviorLogging()
   }
 }
 
+//------------------------------------------------------------
+// Procedure: checkForTakeOver
+
+void HelmIvP::checkForTakeOver()
+{
+  if(helmStatus() != "STANDBY")
+    return;
+  
+  if(m_standby_last_heartbeat == 0)
+    return;
+
+  double elapsed_time = m_curr_time - m_standby_last_heartbeat;
+  if(elapsed_time > m_standby_threshold)
+    helmStatusUpdate("ENABLED");
+}
+
 //--------------------------------------------------------
 // Procedure: onStartUp()
 
@@ -846,12 +922,26 @@ bool HelmIvP::OnStartUp()
       }
       m_verbose = value;
     }
-    else if((param == "ACTIVE_START") || (param == "START_ENGAGED"))
+    else if((param == "ACTIVE_START") || 
+	    (param == "START_ENGAGED") ||
+	    (param == "START_INDRIVE"))
       setBooleanOnString(m_has_control, value);
-    else if(param == "ALLOW_DISENGAGE") 
+    else if(param == "HELM_ALIAS") {
+      if(!strContainsWhite(value))
+	m_helm_alias = value;
+    }
+    else if(param == "STANDBY") {
+      double dval = atof(value.c_str());
+      if(dval > 0) {
+	helmStatusUpdate("STANDBY");
+	m_standby_threshold = dval;
+	m_standby_helm      = true;
+      }	
+    }
+    else if(param == "ALLOW_PARK") 
       setBooleanOnString(m_allow_override, value);
-    else if(param == "DISENGAGE_ON_ALLSTOP")
-      setBooleanOnString(m_disengage_on_allstop, value);
+    else if(param == "PARK_ON_ALLSTOP")
+      setBooleanOnString(m_park_on_allstop, value);
 
     else if(param == "NODE_SKEW") {
       string vname = stripBlankEnds(biteString(value, ','));
@@ -913,6 +1003,8 @@ bool HelmIvP::OnStartUp()
 
   m_Comms.Notify("IVPHELM_DOMAIN",  domainToString(m_ivp_domain));
   m_Comms.Notify("IVPHELM_MODESET", mode_set_string_description);
+  if(m_helm_alias != "")
+    m_Comms.Notify("IVPHELM_ALIAS", m_helm_alias);
 
   return(true);
 }
@@ -1011,6 +1103,10 @@ bool HelmIvP::detectRepeatOnKey(const string& key)
 // Procedure: detectChangeOnKey
 //   Purpose: To determine if the given key-value pair is unique 
 //            against the last key-value posting.
+//      Note: The assumption is that if a change is detected, the caller
+//            will go ahead and make the posting. This assumption is 
+//            reflected in the fact that the m_outgoing_strings map is
+//            updated when a changed is detected.
 
 bool HelmIvP::detectChangeOnKey(const string& key, const string& value)
 {
@@ -1027,6 +1123,7 @@ bool HelmIvP::detectChangeOnKey(const string& key, const string& value)
     if(old_value == value)
       return(false);
     else {
+      // map is updated if changed detected.
       m_outgoing_strings[key] = value;
       return(true);
     }
@@ -1037,6 +1134,10 @@ bool HelmIvP::detectChangeOnKey(const string& key, const string& value)
 // Procedure: detectChangeOnKey
 //   Purpose: To determine if the given key-value pair is unique 
 //            against the last key-value posting.
+//      Note: The assumption is that if a change is detected, the caller
+//            will go ahead and make the posting. This assumption is 
+//            reflected in the fact that the m_outgoing_strings map is
+//            updated when a changed is detected.
 
 bool HelmIvP::detectChangeOnKey(const string& key, double value)
 {
@@ -1053,6 +1154,7 @@ bool HelmIvP::detectChangeOnKey(const string& key, double value)
     if(old_value == value)
       return(false);
     else {
+      // map is updated if changed detected.
       m_outgoing_doubles[key] = value;
       return(true);
     }
@@ -1071,25 +1173,16 @@ bool HelmIvP::detectChangeOnKey(const string& key, double value)
 
 void HelmIvP::postAllStop(string msg)
 {
-  if(msg == "")
-    msg = "ManualOverride";
-
-  // If nothing has changed, no need to do anything.
-  if(msg == m_allstop_msg)
+  // Don't post all-stop info if the helm is on standby or disabled.
+  if(!helmStatusEnabled())
     return;
 
-  // If the incoming message is not "ManualOverride" make this the
-  // current allstop message no matter what.
-  if(msg != "ManualOverride")
+  if(msg == m_allstop_msg)  
+    return;
+
+  // Interpret empty message as request to re-post the current status
+  if(msg != "")
     m_allstop_msg = msg;
-  // If it is indeed a manual override message, we only overwrite 
-  // the current message if the current message was the "clear" message.
-  else {
-    if(tolower(m_allstop_msg == "clear"))
-      m_allstop_msg = msg;
-    else
-      return;
-  }
 
   MOOSDebugWrite("pHelmIvP AllStop: " + m_allstop_msg);
   m_Comms.Notify("IVPHELM_ALLSTOP", m_allstop_msg);
@@ -1145,3 +1238,41 @@ bool HelmIvP::processNodeReport(const string& report)
   return(true);
 }
 
+//--------------------------------------------------------------------
+// Procedure: helmStatusUpdate()
+//   Purpose: 
+
+void HelmIvP::helmStatusUpdate(const string& new_status)
+{
+  if((new_status == "DRIVE") || (new_status == "STANDBY")  ||
+     (new_status == "PARK")  || (new_status == "DISABLED")) {
+    m_helm_status = new_status;
+  }
+  
+  // If otherwise just specified generally as "ENABLED", then 
+  // set it, for now, to PARK and we'll figure out below
+  // whether it should actually be PARK based on m_has_control
+  else if(new_status == "ENABLED")
+    m_helm_status = "PARK";
+  
+  // Now apply the knowledge expressed in m_has_control
+  if((m_helm_status == "DRIVE") && !m_has_control)
+    m_helm_status = "PARK";
+  else if((m_helm_status == "PARK") && m_has_control)
+    m_helm_status = "DRIVE";
+}
+  
+
+//--------------------------------------------------------------------
+// Procedure: helmStatusEnabled
+//   Purpose: Convenience function, and just to be clear that the two
+//            states, PARK and DRIVE represent an "enabled" 
+//            helm, a helm that is neither on standby or disabled.
+
+bool HelmIvP::helmStatusEnabled() const
+{
+  if((m_helm_status == "DRIVE") || (m_helm_status == "PARK"))
+    return(true);
+  return(false);
+}
+  

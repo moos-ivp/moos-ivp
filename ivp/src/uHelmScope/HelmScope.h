@@ -74,6 +74,8 @@ class HelmScope : public CMOOSApp
   void handleNewStateVars(const std::string&);
   void handleNewIterXMS();
   void pruneHistory();
+
+  void handleHelmStatusVar(const std::string&);
   
  protected: // Protected Functions for basic DB Scoping
   void updateVariable(CMOOSMsg& msg);
@@ -82,6 +84,8 @@ class HelmScope : public CMOOSApp
   void updateVarSource(const std::string&, const std::string&);
   void updateVarTime(const std::string&, const std::string&);
   void updateVarCommunity(const std::string&, const std::string&);
+
+  void updateEngaged(const std::string&);
 
   void printHelp();
   void printModeSet();
@@ -92,6 +96,9 @@ class HelmScope : public CMOOSApp
   void printPostingReport(int ix);
   
  protected:   
+  // Set of all known variables posted by the helm
+  std::set<std::string> m_set_helmvars; 
+
   std::map<int, IterBlockHelm>  m_blocks_helm;
   std::map<int, IterBlockPosts> m_blocks_posts;
   std::map<int, IterBlockXMS>   m_blocks_xms;
@@ -103,7 +110,8 @@ class HelmScope : public CMOOSApp
   std::vector<StringTree>  m_mode_trees;
   std::string m_current_mode;
 
-  bool   m_helm_engaged;
+  std::string m_helm_engaged_primary;
+  std::string m_helm_engaged_standby;
 
   bool   m_display_help;
   bool   m_display_modeset;

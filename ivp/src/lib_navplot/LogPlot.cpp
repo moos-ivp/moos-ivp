@@ -20,6 +20,7 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
+#include <list>
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
@@ -37,7 +38,7 @@ LogPlot::LogPlot()
   m_max_val  = 0; 
   m_median   = 0;
   m_median_set = false;
-  m_utc_start_time = 0; 
+  m_logstart_utc = 0; 
 }
 
 
@@ -123,6 +124,17 @@ double LogPlot::get_time_by_index(unsigned int index) const
 }
      
 //---------------------------------------------------------------
+// Procedure: get_utctime_by_index
+
+double LogPlot::get_utctime_by_index(unsigned int index) const
+{
+  if(index < m_time.size())
+    return(m_time[index] + m_logstart_utc);
+  else
+    return(0);
+}
+     
+//---------------------------------------------------------------
 // Procedure: get_value_by_time
 //      Note: If the argument, interp, is true, the function will
 //            return an interpolated value if the given value falls
@@ -162,6 +174,15 @@ double LogPlot::get_value_by_time(double gtime, bool interp) const
 }
      
 //---------------------------------------------------------------
+// Procedure: get_value_by_utctime
+
+double LogPlot::get_value_by_utctime(double utc_time, bool interp) const
+{
+  double local_time = utc_time - m_logstart_utc;
+  return(get_value_by_time(local_time, interp));
+}
+     
+//---------------------------------------------------------------
 // Procedure: get_min_time
 
 double LogPlot::get_min_time() const
@@ -169,7 +190,18 @@ double LogPlot::get_min_time() const
   if(m_time.size() > 0)
     return(m_time[0]);
   else
-    return(0.0);
+    return(0);
+}
+
+//---------------------------------------------------------------
+// Procedure: get_min_utctime
+
+double LogPlot::get_min_utctime() const
+{
+  if(m_time.size() > 0)
+    return(m_time[0] + m_logstart_utc);
+  else
+    return(0);
 }
 
 //---------------------------------------------------------------
@@ -180,7 +212,18 @@ double LogPlot::get_max_time() const
   if(m_time.size() > 0)
     return(m_time[m_time.size()-1]);
   else
-    return(0.0);
+    return(0);
+}
+
+//---------------------------------------------------------------
+// Procedure: get_max_utctime
+
+double LogPlot::get_max_utctime() const
+{
+  if(m_time.size() > 0)
+    return(m_time[m_time.size()-1] + m_logstart_utc);
+  else
+    return(0);
 }
 
 
@@ -235,6 +278,17 @@ unsigned int LogPlot::get_index_by_time(double gtime) const
       index -= jump;
   }
   return(index);
+}
+
+
+//---------------------------------------------------------------
+// Procedure: get_index_by_utctime
+
+unsigned int LogPlot::get_index_by_utctime(double utc_time) const
+{
+  double local_time = utc_time - m_logstart_utc;
+  return(get_index_by_time(local_time));
+  
 }
 
 

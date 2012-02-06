@@ -46,6 +46,7 @@ bool Populator_LogPlots::populateFromEntries(const vector<ALogEntry>& entries)
     if(p == m_logplot_var_map.end()) {
       if(entries[i].isNumerical()) {
 	LogPlot new_logplot;
+	new_logplot.set_logstart_utc(m_logstart_utc);
 	new_logplot.set_varname(var_name);
 	new_logplot.set_vehi_name(m_vname);
 	new_logplot.set_value(itime, dvalue);

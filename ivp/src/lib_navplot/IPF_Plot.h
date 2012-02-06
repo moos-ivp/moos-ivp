@@ -51,6 +51,7 @@ public:
   double       getPwtByHelmIteration(unsigned int) const;
   IvPDomain    getDomainByHelmIter(unsigned int) const;
   unsigned int getHelmIterByTime(double);
+  double       getTimeByHelmIter(unsigned int) const;
 
   std::string getSource() const {return(m_source);};
   std::string getVName()  const {return(m_vname);};

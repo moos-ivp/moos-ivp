@@ -52,6 +52,7 @@ public:
   void crossFillCoords(NodeRecord&, double, double);
   void crossFillLocalToGlobal(NodeRecord&);
   void crossFillGlobalToLocal(NodeRecord&);
+  void handleHelmSwitch();
 
  protected: // Configuration Variables (Node Reports)
   std::string  m_vessel_name;
@@ -66,7 +67,8 @@ public:
   std::string  m_helm_allstop_mode;
   std::string  m_alt_nav_prefix;
   std::string  m_alt_nav_name;
-  bool         m_helm_engaged;
+  std::string  m_helm_status_primary;
+  std::string  m_helm_status_standby;
   double       m_helm_lastmsg;
 
   NodeRecord   m_record;
@@ -81,6 +83,7 @@ public:
  protected: // State Variables (General)
   bool         m_time_updated;
   double       m_utc_time;
+  bool         m_helm_switch_noted;
   
  protected: // Config and State Vars (Blackout Interval)
   double  m_blackout_interval;
@@ -99,4 +102,3 @@ public:
 };
 
 #endif
-

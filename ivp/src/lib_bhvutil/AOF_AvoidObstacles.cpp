@@ -399,10 +399,11 @@ double AOF_AvoidObstacles::evalBox(const IvPBox *b) const
 
     if(dist_to_poly == -1) 
       i_utility = max_utility;
+    else if(eval_spd == 0)
+     i_utility = max_utility;
     else {
       // determine time to collision w/ poly (in seconds)
       double time_to_collision = dist_to_poly / eval_spd;
-      
       if(time_to_collision > allowable_ttc)
 	i_utility = max_utility;
       else

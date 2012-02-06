@@ -36,6 +36,8 @@ killall pSensorSim pArtifactMapper pNoiseSim uNafconSplitter    \
         
 killall pCBF pBTracker pTrackMonitor uTimerScript pDTSP         \
         pTallyomatic pNodeReporter iCommStack pMissionCtl iDSP  \
+        pNotDTSP pBoundingCircle pRIDManager uLogView           \
+        uLogViewHelm uLogViewIPF                                \
         pNotDTSP pBoundingCircle pRIDManager iKayakControlBoard
 
 killall pFleetControl uFldScope uFldContactRangeSensor         \

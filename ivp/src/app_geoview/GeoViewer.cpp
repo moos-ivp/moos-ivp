@@ -20,6 +20,7 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
+#include <iostream>
 #include <string>
 #include <cmath>
 #include "GeoViewer.h"
@@ -97,10 +98,12 @@ void GeoViewer::draw()
    
   vector<XYGrid>    grids   = m_geoshapes.getGrids();
   vector<XYSegList> segls   = m_geoshapes.getSegLists();
+  vector<XYPoint>   points  = m_geoshapes.getPoints();
   vector<XYCircle>  circles = m_geoshapes.getCircles();
 
   drawSegLists(segls);
   drawGrids(grids);
+  drawPoints(points);
   drawHexagons();
 }
 
@@ -201,8 +204,12 @@ bool GeoViewer::setParam(string param, string value)
     handled = m_geoshapes.addPolygon(value);
   else if(param == "view_seglist")
     handled = m_geoshapes.addSegList(value);
-  else if(param == "view_point")
+  else if(param == "view_point") {
+    cout << "Adding a point:" << endl; 
     handled = m_geoshapes.addPoint(value);
+    cout << "handled:" << handled << endl; 
+  }
+
   else if(param == "view_vector")
     handled = m_geoshapes.addVector(value);
   else if(param == "view_circle")

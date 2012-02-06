@@ -55,6 +55,7 @@
 #include "BHV_Trail.h"
 #include "BHV_Shadow.h"
 #include "BHV_Timer.h"
+#include "BHV_TestFailure.h"
 #include "BHV_HSLine.h"
 #include "BHV_BearingLine.h"
 #include "BHV_HeadingChange.h"
@@ -89,6 +90,7 @@ bool BFactoryStatic::isKnownBehavior(string bhv_name) const
      (bhv_name == "BHV_StationKeep")     || 
      (bhv_name == "BHV_RStationKeep")    || 
      (bhv_name == "BHV_Timer")           || 
+     (bhv_name == "BHV_TestFailure")     || 
      (bhv_name == "BHV_HSLine")          || 
      (bhv_name == "BHV_BearingLine")     || 
      (bhv_name == "BHV_HeadingChange")   || 
@@ -142,6 +144,8 @@ IvPBehavior* BFactoryStatic::newBehavior(string bhv_name) const
     bhv = new BHV_RStationKeep(m_domain);
   else if(bhv_name == "BHV_Timer")     
     bhv = new BHV_Timer(m_domain);
+  else if(bhv_name == "BHV_TestFailure")     
+    bhv = new BHV_TestFailure(m_domain);
   else if(bhv_name == "BHV_HSLine")     
     bhv = new BHV_HSLine(m_domain);
   else if(bhv_name == "BHV_BearingLine")     

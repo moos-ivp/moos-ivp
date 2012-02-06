@@ -110,12 +110,12 @@ HelmReport HelmEngine::determineNextDecision(BehaviorSet *bhv_set,
 
 bool HelmEngine::part1_PreliminaryBehaviorSetHandling()
 {
-  m_helm_report.m_domain    = m_ivp_domain;
-  m_helm_report.m_iteration = m_iteration;
-  m_helm_report.m_time_utc  = m_curr_time;
+  m_helm_report.setIvPDomain(m_ivp_domain);
+  m_helm_report.setIteration(m_iteration);
+  m_helm_report.setTimeUTC(m_curr_time);
 
   if(!m_bhv_set) {
-    m_helm_report.m_halted = true;
+    m_helm_report.setHalted(true);
     m_helm_report.addMsg("HELM HALTING CONDITION: NULL Behavior Set");
     m_helm_report.setHaltMsg("Null BehaviorSet");
     return(false);
@@ -171,7 +171,7 @@ bool HelmEngine::part2_GetFunctionsFromBehaviorSet(int filter_level)
       double state_time_entered = m_bhv_set->getStateTimeEntered(bhv_ix);
 
       if(!m_bhv_set->stateOK(bhv_ix)) {
-	m_helm_report.m_halted = true;
+	m_helm_report.setHalted(true);
 	m_helm_report.addMsg("HELM HALTING: Safety Emergency!!!");
 	bool ok;
 	string bhv_error_str = m_info_buffer->sQuery("BHV_ERROR", ok);
@@ -287,7 +287,7 @@ bool HelmEngine::part3_VerifyFunctionDomains()
       string hmsg = "DomainVar "+ of_domains[i] + " not recognized ";
       m_helm_report.setHaltMsg(hmsg);
       m_sub_domain = IvPDomain();
-      m_helm_report.m_halted = true;
+      m_helm_report.setHalted(true);
       m_helm_report.addMsg("HELM HALTING: Unrecognized domain var");
       return(false);
     }
@@ -326,7 +326,7 @@ bool HelmEngine::part4_BuildAndSolveIvPProblem(string phase)
 {
   unsigned int i, ipfs = m_ivp_functions.size(); 
   m_helm_report.addMsg("Number of IvP Functions: " + intToString(ipfs)); 
-  m_helm_report.m_ofnum = ipfs;
+  m_helm_report.setOFNUM(ipfs);
   if(ipfs == 0) {
     m_helm_report.addMsg("No Decision due to zero IvP functions");
     return(false);
@@ -371,15 +371,15 @@ bool HelmEngine::part4_BuildAndSolveIvPProblem(string phase)
 
 bool HelmEngine::part6_FinishHelmReport()
 {
-  double create_time = m_create_timer.get_float_wall_time();
-  double solve_time  = m_solve_timer.get_float_wall_time();
-  //double create_time = m_create_timer.get_float_cpu_time();
-  //double solve_time  = m_solve_timer.get_float_cpu_time();
+  //double create_time = m_create_timer.get_float_wall_time();
+  //double solve_time  = m_solve_timer.get_float_wall_time();
+  double create_time = m_create_timer.get_float_cpu_time();
+  double solve_time  = m_solve_timer.get_float_cpu_time();
   m_create_timer.reset();
   m_solve_timer.reset();
-  m_helm_report.m_create_time = create_time;
-  m_helm_report.m_solve_time  = solve_time;
-  m_helm_report.m_loop_time   = create_time + solve_time;
+  m_helm_report.setCreateTime(create_time);
+  m_helm_report.setSolveTime(solve_time);
+
   return(true);
 }
 

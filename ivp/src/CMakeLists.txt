@@ -21,6 +21,7 @@ ELSE (${WIN32})
     # as done previously. Below commented-out lines left just for clarity
     #SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32")
     #SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m32")
+
   ENDIF( ${APPLE} )
 
 ENDIF (${WIN32})
@@ -145,6 +146,7 @@ SET(IVP_NON_GUI_LIBS
    lib_logutils
    lib_mbutil
    lib_navplot
+   lib_ulogview
    )
 
 IF (${WIN32})
@@ -219,7 +221,6 @@ SET(IVP_NON_GUI_APPS
   app_nsplug
   app_gen_hazards
   pEchoVar
-  pHostInfo
   pXRelay
   pHelmIvP
   pMarinePID
@@ -245,11 +246,12 @@ SET(IVP_NON_GUI_APPS
   uTermCommand
   uXMS
   uPokeDB
+  pHostInfo
   pBinaryTest
   )
 
 SET(IVP_GUI_APPS
-  app_ivpcheck
+ app_ivpcheck
   app_ffview
   app_geoview
   app_currview
@@ -258,6 +260,9 @@ SET(IVP_GUI_APPS
   app_gzaicview
   pMarineViewer
   uFunctionVis
+  uLogView
+  uLogViewIPF
+  uLogViewHelm
   app_cpaview
   )
   

@@ -32,7 +32,7 @@
 class Populator_LogPlots 
 {
 public:
-  Populator_LogPlots() {};
+  Populator_LogPlots() {m_logstart_utc=0;};
   ~Populator_LogPlots() {};
 
   bool    populateFromEntries(const std::vector<ALogEntry>&);
@@ -41,12 +41,14 @@ public:
   LogPlot getLogPlot(const std::string& varname) const;
   int     size() const  {return(m_logplots.size());};
 
+  void        setLogStartUTC(double v)       {m_logstart_utc=v;};
   void        setVName(const std::string& s) {m_vname=s;};
   std::string getVName() const               {return(m_vname);};
 
 protected:
   std::string               m_vname;
   std::vector<LogPlot>      m_logplots;
+  double                    m_logstart_utc;
 
   // Mapping from logplot variable to index in m_loplots vector
   std::map<std::string, unsigned int> m_logplot_var_map;

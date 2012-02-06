@@ -51,7 +51,7 @@ ProcessConfig = pLogger
   SyncLog = false
   AsyncLog = true
 
-  LogAuxSrc = true
+  //LogAuxSrc = true
   WildCardLogging = true
   WildCardOmitPattern = *_STATUS
 }

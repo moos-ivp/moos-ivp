@@ -65,7 +65,7 @@ public:
   virtual bool setParam(std::string, std::string);
   virtual void onSetParamComplete() {};
   virtual void onIdleState() {};
-  virtual void onCompleteState() {std::cout << "in ocs" << std::endl;};
+  virtual void onCompleteState() {};
   virtual void onIdleToRunState() {};
   virtual void onRunToIdleState() {};
 

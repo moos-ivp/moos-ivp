@@ -99,6 +99,11 @@ bool USM_MOOSApp::OnStartUp()
   
   m_model.resetTime(MOOSTime());
 
+  double foobar = 23;
+  m_MissionReader.GetConfigurationParam("FOOBAR", foobar);
+
+  cout << "Value of FOOBAR is: " << foobar << endl;
+
   STRING_LIST sParams;
   m_MissionReader.GetConfiguration(GetAppName(), sParams);
     

@@ -8,8 +8,21 @@ Community  = alpha
 
 MOOSTimeWarp = 1
 
+// Forest Lake
 LatOrigin  = 43.825300 
 LongOrigin = -70.330400 
+
+// Pierce Boathouse
+//LatOrigin  = 42.3550
+//LongOrigin = -71.0972
+
+// MIT Sailing Pavilion
+//LatOrigin = 42.3583622
+//LongOrigin = -71.08754594
+
+//LatOrigin  = 42.358456 use this one
+//LongOrigin = -71.087589
+
 
 //------------------------------------------
 // Antler configuration  block
@@ -21,10 +34,10 @@ ProcessConfig = ANTLER
   Run = pLogger         @ NewConsole = true
   Run = uSimMarine	@ NewConsole = true
   Run = pNodeReporter	@ NewConsole = true
-  Run = pMarinePID	@ NewConsole = true
-  Run = pHelmIvP	@ NewConsole = true
-  Run = pMarineViewer	@ NewConsole = true
-  Run = uProcessWatch	@ NewConsole = true
+  Run = pMarinePID	@ NewConsole = false
+  Run = pHelmIvP	@ NewConsole = false
+  Run = pMarineViewer	@ NewConsole = false
+  Run = uProcessWatch	@ NewConsole = false
 }
 
 //------------------------------------------
@@ -70,8 +83,8 @@ ProcessConfig = pLogger
 
   Log = NAV_X @ 0.2
   Log = NAV_Y @ 0.2
-  Log = NAV_SPEED @ 0.2
-  Log = NAV_HEADING @ 3.0
+  Log = NAV_SPEED   @ 0.8
+  Log = NAV_HEADING @ 0.8
 
   // For variables that are published in a bundle on their first post,
   // explicitly declare their logging request
@@ -79,7 +92,6 @@ ProcessConfig = pLogger
   Log = IVPHELM_LIFE_EVENT @ 0 NOSYNC
 
   LogAuxSrc = true
-
   WildCardLogging = true
   WildCardOmitPattern = *_STATUS
   WildCardExclusionLog = true
@@ -124,7 +136,7 @@ ProcessConfig = uSimMarine
   START_HEADING = 180
 
   PREFIX        = NAV
-  
+
   TURN_RATE     = 40
   THRUST_MAP    = 0:0, 20:1, 40:2, 60:3, 80:4, 100:5
 }
@@ -185,6 +197,7 @@ ProcessConfig = pMarineViewer
   AppTick    = 4
   CommsTick  = 4
 
+  //TIFF_FILE            = AerialMIT.tif
   TIFF_FILE            = forrest19.tif
   set_pan_x            = -90
   set_pan_y            = -280

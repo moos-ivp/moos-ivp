@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: NodeReporter.cpp                                     */
 /*    DATE: Feb 13th 2006 (TransponderAIS)                       */
 /*    DATE: Jun  8th 2009 (NodeReporter)                         */
@@ -43,11 +43,13 @@ NodeReporter::NodeReporter()
   m_record.setType("unknown");
   m_record.setLength(0);
 
-  m_helm_engaged = false;
-  m_helm_lastmsg = -1;
-  m_nohelm_thresh = 5;
-  m_helm_mode    = "none";
+  m_helm_status_primary = "unknown";
+  m_helm_status_standby = "";
+  m_helm_lastmsg      = -1;
+  m_nohelm_thresh     = 5;
+  m_helm_mode         = "none";
   m_helm_allstop_mode = "unknown";
+  m_helm_switch_noted = false;
 
   m_blackout_interval = 0;
   m_blackout_baseval  = 0;
@@ -155,10 +157,20 @@ bool NodeReporter::OnNewMail(MOOSMSG_LIST &NewMail)
       m_helm_lastmsg = m_utc_time;
       m_helm_allstop_mode = sdata;
     }
-    else if(key == "IVPHELM_ENGAGED") {
+    else if(key == "IVPHELM_STATE") {
       m_helm_lastmsg = m_utc_time;
-      string value = tolower(stripBlankEnds(sdata));
-      m_helm_engaged = (value == "engaged");
+      string helm_status = stripBlankEnds(sdata);
+      if((helm_status == "DRIVE") ||
+	 (helm_status == "PARK") ||
+	 (helm_status == "DISABLED"))
+	m_helm_status_primary = helm_status;
+      else if((helm_status == "DRIVE+") ||
+	      (helm_status == "PARK+") ||
+	      (helm_status == "STANDBY"))
+	m_helm_status_standby = helm_status;
+
+      if(strEnds(helm_status, "+"))
+	handleHelmSwitch();
     }
 
     if(vectorContains(m_plat_vars, key)) {
@@ -208,7 +220,7 @@ void NodeReporter::registerVariables()
   }  
 
   m_Comms.Register("IVPHELM_SUMMARY", 0);
-  m_Comms.Register("IVPHELM_ENGAGED", 0);
+  m_Comms.Register("IVPHELM_STATE", 0);
   m_Comms.Register("IVPHELM_ALLSTOP", 0);
 }
 
@@ -507,6 +519,10 @@ string NodeReporter::assembleNodeReport(NodeRecord record)
 {
   record.setTimeStamp(m_utc_time); 
 
+  // First set the mode field
+
+  // (1) If the info has never been received or is stale we want
+  // to indicate so.
   string  mode;
   if((m_utc_time-m_helm_lastmsg) > m_nohelm_thresh) {
     string awol_time = "EVER";
@@ -514,13 +530,22 @@ string NodeReporter::assembleNodeReport(NodeRecord record)
       awol_time = doubleToString((m_utc_time-m_helm_lastmsg), 0);
     mode = "NOHELM-" + awol_time;
   }
-  else if(m_helm_engaged == false)
-    mode = "DISENGAGED";
+  // (2) If helm is in DRIVE but has provided mode information, 
+  // then use the mode information in the node report.
   else {
-    if(m_helm_mode != "none")
-      mode = m_helm_mode;
-    else
-      mode = "ENGAGED";
+    // First determine the helm_status, possibly using info
+    // reported by a standby that has stepped in.
+    string helm_status = m_helm_status_primary;
+    if((m_helm_status_standby == "DRIVE+") ||
+       (m_helm_status_standby == "PARK+")) {
+      helm_status = m_helm_status_standby;
+    }
+    mode = helm_status;
+    // Now check if the helm is in DRIVE and has a mode defined
+    if((helm_status == "DRIVE") || (helm_status == "DRIVE+")) {
+      if((m_helm_mode !="none") && (m_helm_mode != ""))
+	mode = m_helm_mode;
+    }
   }
   
   record.setMode(mode);
@@ -618,4 +643,22 @@ void NodeReporter::crossFillGlobalToLocal(NodeRecord& record)
 
   record.setX(nav_x);
   record.setY(nav_y);
+}
+
+
+//------------------------------------------------------------------
+// Procedure: handleHelmSwitch
+//   Purpose: When or if a helm switch has been noted, reset some
+//            locally held information that may have been due to the
+//            the disabled helm, and let them be repopulated by the
+//            helm that has stepped in.
+
+void NodeReporter::handleHelmSwitch()
+{
+  if(m_helm_switch_noted) 
+    return;
+  
+  m_helm_mode = "";
+  m_helm_allstop_mode = "";
+  m_helm_switch_noted = true;
 }

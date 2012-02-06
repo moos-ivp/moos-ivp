@@ -46,9 +46,10 @@ public:
   void addBehaviorFile(std::string);
   
 protected:
+  bool handleHeartBeat(const std::string&);
   bool handleDomainEntry(const std::string&);
   bool updateInfoBuffer(CMOOSMsg &Msg);
-  void postEngagedStatus();
+  void postHelmStatus();
   void postCharStatus();
   void postBehaviorMessages();
   void postLifeEvents();
@@ -60,6 +61,7 @@ protected:
   void registerSingleVariable(std::string var, double freq=0.0);
   void registerNewVariables();
   void requestBehaviorLogging();
+  void checkForTakeOver();
 
   bool detectChangeOnKey(const std::string& key, 
 			 const std::string& sval);
@@ -67,19 +69,32 @@ protected:
 			 double dval);
   bool detectRepeatOnKey(const std::string& key);
 
-  void postAllStop(std::string msg="");  
+  void postAllStop(std::string msg="");
   bool processNodeReport(const std::string &);
+
+  std::string helmStatus() const {return(m_helm_status);};
+  void        helmStatusUpdate(const std::string& val="");
+  bool        helmStatusEnabled() const;
 
 protected:
   InfoBuffer*   m_info_buffer;
+  std::string   m_helm_status;   // STANDBY,PARK,DRIVE,DISABLED
   bool          m_has_control;
+
   bool          m_allow_override;
-  bool          m_disengage_on_allstop;
+  bool          m_park_on_allstop;
   std::string   m_allstop_msg;
   IvPDomain     m_ivp_domain;
   BehaviorSet*  m_bhv_set;
   std::string   m_verbose;
   double        m_last_heartbeat;
+  std::string   m_helm_alias;
+
+  // The helm may be configured to be in "standby" mode, waiting for an
+  // absence of another helm's heartbeat for "standby_threshold" seconds.
+  bool          m_standby_helm;           // config variable
+  double        m_standby_threshold;      // config variable
+  double        m_standby_last_heartbeat; // state variable
 
   bool          m_rejournal_requested;
   bool          m_init_vars_ready;
@@ -138,6 +153,5 @@ protected:
   // A mapping of vehicle node_report skews  VEHICLE_NAME --> SKEW
   std::map<std::string, double>  m_node_skews;
 };
-
 #endif 
 

@@ -7,7 +7,6 @@
 initialize   DEPLOY = false
 initialize   RETURN = false
 
-
 set MODE = ACTIVE {
   DEPLOY = true
 } INACTIVE

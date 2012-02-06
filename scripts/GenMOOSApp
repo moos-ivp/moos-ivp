@@ -30,6 +30,7 @@ ADD_EXECUTABLE($2$1 \${SRC})
 TARGET_LINK_LIBRARIES($2$1
    MOOS
    MOOSGen
+   mbutil
    m
    pthread)
 
@@ -67,44 +68,77 @@ protected:
 #endif 
 EOF
 
-cat >> ${1}Main.cpp <<EOF
+cat >> main.cpp <<EOF
 /************************************************************/
 /*    NAME: $3                                              */
 /*    ORGN: MIT                                             */
-/*    FILE: ${1}Main.cpp                                    */
+/*    FILE: main.cpp                                        */
 /*    DATE:                                                 */
 /************************************************************/
 
 #include <string>
 #include "MOOSLib.h"
 #include "MOOSGenLib.h"
+#include "MBUtils.h"
+#include "${1}_ExampleConfig.h"
 #include "${1}.h"
 
 using namespace std;
 
 int main(int argc, char *argv[])
 {
-  // default parameters file
-  string sMissionFile = "${1}.moos";
-        
-  //under what name shoud the application register with the MOOSDB?
-  string sMOOSName = "${2}${1}";
-  
-  switch(argc)
-    {
-    case 3:
-      //command line says don't register with default name              
-      sMOOSName = argv[2];
-    case 2:
-      //command line says don't use default config file
-      sMissionFile = argv[1];
-    }
-  
-  //make an application
-  ${1} ${1}App;
+  string mission_file = "";
+  string run_command  = argv[0];
+  bool   help_requested = false;
+  bool   vers_requested = false;
+  bool   exam_requested = false;
 
-  //run it
-  ${1}App.Run(sMOOSName.c_str(), sMissionFile.c_str());
+  int    i;
+  for(i=1; i<argc; i++) {
+    string argi = argv[i];
+    if((argi=="-v") || (argi=="--version") || (argi=="-version"))
+      vers_requested = true;
+    else if((argi=="-e") || (argi=="--example") || (argi=="-example"))
+      exam_requested = true;
+    else if((argi == "--help")||(argi=="-h"))
+      help_requested = true;
+    else if(strEnds(argi, ".moos") || strEnds(argi, ".moos++"))
+      mission_file = argv[i];
+    else if(strBegins(argi, "--alias="))
+      run_command = argi.substr(8);
+  }
+  
+  if(vers_requested) {
+    cout << "${2}${1} Version 0.1" << endl;
+    return(0);
+  }
+
+  if(exam_requested) {
+    showExampleConfig();
+    return(0);
+  }
+
+  if((mission_file == "") || help_requested) {
+    cout << "Usage: ${2}${1} file.moos [OPTIONS]                 " << endl;
+    cout << "                                                    " << endl;
+    cout << "Options:                                            " << endl;
+    cout << "  --alias=<ProcessName>                             " << endl;
+    cout << "      Launch ${2}${1} with the given process  " << endl;
+    cout << "      name rather than ${2}${1}.               " << endl;
+    cout << "  --example, -e                                     " << endl;
+    cout << "      Display example MOOS configuration block.     " << endl;
+    cout << "  --help, -h                                        " << endl;
+    cout << "      Display this help message.                    " << endl;
+    cout << "  --version,-v                                      " << endl;
+    cout << "      Display the release version of ${2}${1}. " << endl;
+    return(0);
+  }
+
+  cout << "${2}${1} running as: " << run_command << endl;
+
+  ${1} ${1};
+
+  ${1}.Run(run_command.c_str(), mission_file.c_str());
   
   return(0);
 }
@@ -197,5 +231,63 @@ bool ${1}::OnStartUp()
 }
 
 EOF
+
+
+cat >> ${1}_ExampleConfig.h <<EOF
+/****************************************************************/
+/*   NAME: ${3}                                             */
+/*   ORGN: MIT Cambridge MA                                     */
+/*   FILE: ${1}_ExampleConfig.h                            */
+/*   DATE: Dec 29th 1963                                        */
+/****************************************************************/
+
+#ifndef ${1}_EXAMPLE_CONFIG_HEADER
+#define ${1}_EXAMPLE_CONFIG_HEADER
+
+void showExampleConfig();
+
+#endif
+
+EOF
+
+
+cat >> ${1}_ExampleConfig.cpp <<EOF
+/****************************************************************/
+/*   NAME: ${3}                                             */
+/*   ORGN: MIT Cambridge MA                                     */
+/*   FILE: ${1}_ExampleConfig.cpp                               */
+/*   DATE: Dec 29th 1963                                        */
+/****************************************************************/
+
+#include <iostream>
+#include "${1}_ExampleConfig.h"
+#include "ColorParse.h"
+
+using namespace std;
+
+//----------------------------------------------------------------
+// Procedure: showExampleConfig                                  
+
+void showExampleConfig()
+{
+  cout << "                                                   " << endl;
+  cout << "===================================================" << endl;
+  cout << "${2}${1} Example MOOS Configuration                " << endl;
+  cout << "===================================================" << endl;
+  cout << "                                                   " << endl;
+  cout << "ProcessConfig = ${2}${1}                           " << endl;
+  cout << "{                                                  " << endl;
+  cout << "  AppTick   = 4                                    " << endl;
+  cout << "  CommsTick = 4                                    " << endl;
+  cout << "                                                   " << endl;
+  cout << "  Port = /dev/ttyUSB0                              " << endl;
+  cout << "  Timeout = 6                                      " << endl;
+  cout << "                                                   " << endl;
+  cout << "  // If 1 then heading computed from magnetometers " << endl;
+  cout << "  ComputeHeading = 0                               " << endl;
+  cout << "                                                   " << endl;
+}
+EOF
+
 
 echo "$2${1} generated"

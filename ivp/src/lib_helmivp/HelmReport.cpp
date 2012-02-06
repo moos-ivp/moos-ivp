@@ -37,6 +37,7 @@
 /* enhancements or modifications.                                */
 /*****************************************************************/
 
+#include <iostream>
 #include "HelmReport.h"
 #include "MBUtils.h"
 
@@ -47,13 +48,12 @@ using namespace std;
 
 HelmReport::HelmReport() 
 { 
+  m_warning_count = 0;
+  m_time_utc      = 0;
   m_iteration     = 0;
   m_ofnum         = 0;
-  m_time_utc      = 0;
-  m_warning_count = 0;
   m_create_time   = 0;
   m_solve_time    = 0;
-  m_loop_time     = 0;
   m_halted        = false;
 }
 
@@ -63,15 +63,21 @@ HelmReport::HelmReport()
 void HelmReport::addDecision(const string& var, double val) 
 {
   m_decisions[var] = val;
+
+  m_decision_summary += ",var=" + var + ":";
+  m_decision_summary += doubleToStringX(val, 5);
 }
+
 
 //-----------------------------------------------------------
-// Procedure: setDecision()
+// Procedure: clearDecisions()
 
-void HelmReport::setDecision(const string& var, double val) 
+void HelmReport::clearDecisions()
 {
-  m_decisions[var] = val;
+  m_decisions.clear();
+  m_decision_summary = "";
 }
+
 
 //-----------------------------------------------------------
 // Procedure: getDecision()
@@ -97,15 +103,6 @@ bool HelmReport::hasDecision(const string& var)
   else
     return(false);
 }
-
-//-----------------------------------------------------------
-// Procedure: delDecision()
-
-void HelmReport::delDecision(const string& var) 
-{
-  m_decisions.erase(var);
-}
-
 
 //-----------------------------------------------------------
 // Procedure: addRunningBHV
@@ -167,105 +164,12 @@ void HelmReport::addActiveBHV(const string& descriptor, double time,
 
 
 //-----------------------------------------------------------
-// Procedure: getRunningBehaviors()
-
-string HelmReport::getRunningBehaviors() const
-{
-  return(m_running_bhvs);
-}
-
-//-----------------------------------------------------------
-// Procedure: getActiveBehaviors()
-
-string HelmReport::getActiveBehaviors() const
-{
-  return(m_active_bhvs);
-}
-
-//-----------------------------------------------------------
-// Procedure: getIdleBehaviors()
-
-string HelmReport::getIdleBehaviors() const
-{
-  return(m_idle_bhvs);
-}
-
-//-----------------------------------------------------------
-// Procedure: getCompletedBehaviors()
-
-string HelmReport::getCompletedBehaviors() const
-{
-  return(m_completed_bhvs);
-}
-
-//-----------------------------------------------------------
 // Procedure: getReportAsString()
 
 string HelmReport::getReportAsString()
 {
-  string report;
-
-  report += ("iter=" + uintToString(m_iteration));
-  report += (",ofnum=" + uintToString(m_ofnum));
-  report += (",warnings=" + uintToString(m_warning_count));
-  report += (",utc_time=" + doubleToString(m_time_utc, 2));
-  report += (",solve_time=" + doubleToString(m_solve_time, 2));
-  report += (",create_time=" + doubleToString(m_create_time, 2));
-  report += (",loop_time=" + doubleToString(m_loop_time, 2));
-  
-  map<string, double>::iterator p;
-  for(p=m_decisions.begin(); p!=m_decisions.end(); p++) {
-    string var = p->first;
-    double val = p->second;
-    report += ",var=" + var + ":";
-    report += doubleToString(val, 1);
-  }
-
-  // Now check to see if the helm did not produce a decision for one
-  // of the variables in the originally declared domain for the helm
-  unsigned int i, dsize = m_domain.size();
-  for(i=0; i<dsize; i++) {
-    string varname = m_domain.getVarName(i);
-    if(!hasDecision(varname))
-      report += (",var=" + varname + ":varbalk");
-  }
-
-  if(m_halted)
-    report += ",halted=true";
-  else
-    report += ",halted=false";
-
-  report += ",running_bhvs=";
-  if(m_running_bhvs == "")
-    report += "none";
-  else
-    report += m_running_bhvs;
-
-  report += ",modes=";
-  if(m_modes == "")
-    report += "none";
-  else
-    report += m_modes;
-
-  report += ",active_bhvs=";
-  if(m_active_bhvs == "")
-    report += "none";
-  else
-    report += m_active_bhvs;
-
-  report += ",idle_bhvs=";
-  if(m_idle_bhvs == "")
-    report += "none";
-  else
-    report += m_idle_bhvs;
-  
-  report += ",completed_bhvs=";
-  if(m_completed_bhvs == "")
-    report += "none";
-  else
-    report += m_completed_bhvs;
-
-  return(report);
+  HelmReport empty_report;
+  return(getReportAsString(empty_report));
 }
 
 
@@ -285,20 +189,15 @@ string HelmReport::getReportAsString(const HelmReport& prep)
     report += (",solve_time=" + doubleToString(m_solve_time, 2));
   if(m_create_time != prep.getCreateTime())
     report += (",create_time=" + doubleToString(m_create_time, 2));
-  if(m_loop_time != prep.getLoopTime())
-    report += (",loop_time=" + doubleToString(m_loop_time, 2));
-  
-  m_decision_summary = "";
-  map<string, double>::iterator p;
-  for(p=m_decisions.begin(); p!=m_decisions.end(); p++) {
-    string var = p->first;
-    double val = p->second;
-    m_decision_summary += ",var=" + var + ":";
-    m_decision_summary += doubleToString(val, 1);
-  }
 
+  double loop_time = m_create_time + m_solve_time;
+  if(loop_time != prep.getLoopTime())
+    report += (",loop_time=" + doubleToString(loop_time, 2));
+  
+  // The first part of the decision summary is built as decisions
+  // are added to the report.
   // Now check to see if the helm did not produce a decision for one
-  // of the variables in the originally declared domain for the helm
+  // of the vars in the originally declared domain for the helm.
   unsigned int i, dsize = m_domain.size();
   for(i=0; i<dsize; i++) {
     string varname = m_domain.getVarName(i);
@@ -352,8 +251,33 @@ string HelmReport::getReportAsString(const HelmReport& prep)
       report += m_completed_bhvs;
   }
 
+  if(m_halt_message != prep.getHaltMsg()) {
+    report += ",halt_msg=";
+    if(m_halt_message == "")
+      report += "none";
+    else
+      report += m_halt_message;
+  }
+
   return(report);
 }
 
+//---------------------------------------------------------
+// Procedure: print()
 
+void HelmReport::print() const
+{
+  cout << "HelmReport:-----------------------------------" << endl;
+  cout << "decision_summary:" << m_decision_summary << endl;
+  cout << "halt_message:" << m_halt_message << endl;
+  cout << "active_bhvs:" << m_active_bhvs << endl;
+  cout << "running_bhvs:" << m_running_bhvs << endl;
+  cout << "completed_bhvs:" << m_completed_bhvs << endl;
+  cout << "idle_bhvs:" << m_idle_bhvs << endl;
+  cout << "modes:" << m_modes << endl;
+  cout << "warning_count:" << m_warning_count << endl;
+  cout << "iteration:" << m_iteration << endl;
+  cout << "ofnum:" << m_ofnum << endl;
+  cout << "halted:" << boolToString(m_halted) << endl;
+}
 

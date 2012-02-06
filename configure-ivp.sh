@@ -84,7 +84,6 @@ case "${IVP_BUILD_GUI_CODE}" in
       ;;
 esac
 
-
 echo ""
 echo "Environment variable 'IVP_BUILD_GUI_CODE' = '"${IVP_BUILD_GUI_CODE}"'"
 echo "   So will invoke cmake with -DIVP_BUILD_GUI_CODE="${CLEANED_IVP_BUILD_GUI_CODE}" argument."

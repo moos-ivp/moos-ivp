@@ -16,9 +16,11 @@ Processconfig = ANTLER
   Run = MOOSDB          @ NewConsole = false
   Run = pMOOSBridge     @ NewConsole = true
   Run = uTimerScript    @ NewConsole = false
-  Run = pMarineViewer   @ NewConsole = false
+  Run = pMarineViewer   @ NewConsole = true, ExtraProcessParams=PMV
   Run = pLogger         @ NewConsole = false
   Run = pSearchGrid     @ NewConsole = false
+
+  PMV =--geometry=xsmall
 }
 
 //--------------------------------------------------

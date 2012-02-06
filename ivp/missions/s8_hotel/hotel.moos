@@ -41,11 +41,12 @@ ProcessConfig = uFldBeaconRangeSensor
   report_vars   = long
 
   // Configurations for all vehicles/nodes
-  reach_distance = default = 100000
+  reach_distance = default = nolimit
   ping_wait      = default = 20
 
   // Configurations for all beacons
-  default_beacon_report_range  = 100000
+  default_beacon_report_range  = nolimit
+  default_beacon_report_range  = 1000
   default_beacon_shape  = circle
   default_beacon_color  = blue
   default_beacon_width  = 5
@@ -57,9 +58,11 @@ ProcessConfig = uFldBeaconRangeSensor
   // Example:
   // beacon = x=1,y=2,label=foo,freq=17,shape=square,width=3,color=orange
 
-  beacon    = x=200, y=0,    label=01
-  beacon    = x=400, y=-200, label=02
+  beacon    = x=200,  y=0,    label=01
+  beacon    = x=350, y=-225, label=02
   beacon    = x=0,   y=-200, label=03
+  beacon    = x=-65,   y=-345, label=04
+  beacon    = x=115,   y=-150, label=05
 
   //beacon    = x=160, y=-100, label=01
   //beacon    = x=290, y=-190, label=02, freq=30:45
@@ -111,7 +114,7 @@ ProcessConfig = pLogger
 }
 
 //------------------------------------------
-// Uxms config block
+// uXMS config block
 
 ProcessConfig = uXMS
 {

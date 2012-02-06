@@ -317,6 +317,11 @@ double BHV_AvoidCollision::getRelevance()
   m_contact_range = hypot((m_osx - m_cnx),(m_osy - m_cny));
   m_curr_closing_spd = closingSpeed(m_osx, m_osy, m_osv, m_osh,
 				    m_cnx, m_cny, m_cnv, m_cnh);
+
+
+  // Inserted for debugging - remove!!! mikerb
+  if((m_contact_range > 40) && (m_contact_range < 50))
+    postWMessage("Watch out! Range:" + doubleToString(m_contact_range));
   
   if(m_contact_range >= m_pwt_outer_dist) {
     //postInfo(0,0);
