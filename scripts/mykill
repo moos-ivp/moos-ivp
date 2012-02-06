@@ -43,6 +43,6 @@ killall pCBF pBTracker pTrackMonitor uTimerScript pDTSP         \
 killall pFleetControl uFldScope uFldContactRangeSensor         \
         uFldPathCheck uFldNodeComms pSearchGrid pHostInfo      \
         uFldShoreBroker uFldNodeBroker uFldBeaconRangeSensor   \
-        uFldHazardSensor
+        uFldHazardSensor uFldMessageHandler
 
 echo Done - Killed all MOOS-Related Processes.....
