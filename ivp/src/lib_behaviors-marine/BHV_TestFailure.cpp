@@ -21,6 +21,7 @@
 /*****************************************************************/
 
 #include <assert.h>
+#include <cstdlib>
 #include "MBUtils.h"
 #include "MBTimer.h"
 #include "BHV_TestFailure.h"

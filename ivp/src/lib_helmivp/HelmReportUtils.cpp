@@ -5,6 +5,7 @@
 /*    DATE: Oct0511                                              */
 /*****************************************************************/
 
+#include <cstdlib>
 #include "HelmReportUtils.h"
 #include "MBUtils.h"
 
