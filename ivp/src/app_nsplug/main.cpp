@@ -42,6 +42,9 @@ int main(int argc, char *argv[])
 {
   Expander expander;
 
+  bool input_file_provided  = false;
+  bool output_file_provided = false;
+
   for(int i=1; i<argc; i++) {
     string arg = argv[i];
 
@@ -61,10 +64,14 @@ int main(int argc, char *argv[])
       expander.setStrict(true);
 
     // If none of the above switch options explicitly match...
-    else if(i == 1)
+    else if(i == 1) {
       expander.setInFile(argv[1]);
-    else if(i == 2)
+      input_file_provided = true;
+    }
+    else if(i == 2) {
       expander.setOutFile(argv[2]);
+      output_file_provided = true;
+    }
     else if(strContains(arg, '=')) {
       string left  = biteStringX(arg, '=');
       string right = arg;
@@ -72,6 +79,16 @@ int main(int argc, char *argv[])
     }
     else
       expander.addMacro(arg, "<defined>");
+  }
+
+  if(!input_file_provided) {
+    cout << "Aborted: An input file must be provided." << endl;
+    exit(EXIT_FAILURE);
+  }
+
+  if(!output_file_provided) {
+    cout << "Aborted: An output file must be provided" << endl;
+    exit(EXIT_FAILURE);
   }
 
   if(expander.verifyInfile()) {

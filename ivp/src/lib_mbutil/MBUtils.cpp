@@ -282,7 +282,7 @@ string biteString(string& str, char separator)
 string biteStringX(string& str, char separator)
 {
   string front = stripBlankEnds(biteString(str, separator));
-  stripBlankEnds(str);
+  str = stripBlankEnds(str);
   return(front);
 }
 

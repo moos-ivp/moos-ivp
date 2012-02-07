@@ -66,7 +66,6 @@ bool Expander::expand()
   else
     m_newlines = fvector;
   
-  writeOutput();
   return(true);
 }
   
@@ -343,8 +342,8 @@ bool Expander::writeOutput()
 
   f = fopen(m_outfile.c_str(), "w");
   if(!f) {
-    cout << "Aborted: The file" << m_outfile;
-    cout << " cannot be written to" << endl;
+    cout << "Aborted: The file [" << m_outfile;
+    cout << "] cannot be written to" << endl;
     return(false);
   }
 
