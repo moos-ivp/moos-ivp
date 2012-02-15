@@ -37,9 +37,9 @@ Target_LINK_LIBRARIES(pMarineViewer
    contacts
    mbutil
       # Standard libraries used by this project's FLTK apps...
-   dl
    fltk 
    fltk_gl 
+   dl
    tiff)
 
 # http://developer.apple.com/qa/qa2007/qa1567.html

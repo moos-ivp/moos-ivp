@@ -36,9 +36,9 @@ TARGET_LINK_LIBRARIES(cpaview
   ivpbuild
   mbutil
   ivpcore
-  dl
   fltk 
   fltk_gl 
+  dl
   tiff
   ${SYSTEM_LIBS}
 )

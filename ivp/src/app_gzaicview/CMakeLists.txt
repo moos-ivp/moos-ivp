@@ -32,9 +32,10 @@ TARGET_LINK_LIBRARIES(gzaicview
   ivpbuild
   mbutil
   ivpcore
-  dl
   fltk 
-  fltk_gl)
+  fltk_gl
+  dl
+)
 
 # http://developer.apple.com/qa/qa2007/qa1567.html
 IF (${APPLE})

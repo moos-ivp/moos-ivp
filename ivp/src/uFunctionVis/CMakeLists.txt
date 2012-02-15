@@ -45,9 +45,9 @@ TARGET_LINK_LIBRARIES(uFunctionVis
    mbutil
    ivpcore
    genutil
-   dl
    fltk 
    fltk_gl
+   dl
    ${SYSTEM_LIBS})
 
 # http://developer.apple.com/qa/qa2007/qa1567.html
