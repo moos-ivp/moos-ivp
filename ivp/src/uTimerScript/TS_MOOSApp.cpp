@@ -573,35 +573,42 @@ bool TS_MOOSApp::checkForReadyPostings()
 
 void TS_MOOSApp::executePosting(VarDataPair pair)
 {
+  double db_uptime = MOOSTime() - m_connect_tstamp;
+
   m_rand_vars.reset("at_post");
   string variable = pair.get_var();
+
   if(!pair.is_string()) {
+    printPosting(variable, pair.get_ddata(), db_uptime);
     m_Comms.Notify(variable, pair.get_ddata());
     return;
   }
     
-  double db_uptime = MOOSTime() - m_connect_tstamp;
   string sval = pair.get_sdata();
   // Handle special case where MOOSDB_UPTIME *is* the post
   if((sval == "$(DBTIME)") || (sval == "$[DBTIME]")) {
+    printPosting(variable, db_uptime, db_uptime);
     m_Comms.Notify(variable, db_uptime);
     return;
   }
 
   // Handle special case where UTC_TIME *is* the post
   if((sval == "$(UTCTIME)") || (sval == "$[UTCTIME]")) {
+    printPosting(variable, db_uptime, db_uptime);
     m_Comms.Notify(variable, db_uptime);
     return;
   }
 
   // Handle special case where COUNT *is* the post
   else if((sval == "$(COUNT)") || (sval == "$[COUNT]")) {
+    printPosting(variable, m_posted_count, db_uptime);
     m_Comms.Notify(variable, m_posted_count);
     return;
   }
   
   // Handle special case where COUNT *is* the post
   else if((sval == "$(TCOUNT)") || (sval == "$[TCOUNT]")) {
+    printPosting(variable, m_posted_tcount, db_uptime);
     m_Comms.Notify(variable, m_posted_tcount);
     return;
   }
@@ -634,26 +641,41 @@ void TS_MOOSApp::executePosting(VarDataPair pair)
     replace_amt++;
   }
 
+  if(isQuoted(sval))
+    sval = stripQuotes(sval);
+  printPosting(variable, sval, db_uptime);
+  m_Comms.Notify(variable, sval);
+}
+
+//----------------------------------------------------------------
+// Procedure: printPosting()
+
+void TS_MOOSApp::printPosting(string var, string sval, double db_uptime)
+{
   if(m_verbose) {
     cout << termColor("green");
     cout << "[" << m_iter_char << "/" << db_uptime << "]";
     cout << termColor("blue");
     cout << "[" << m_elapsed_time << "]: ";
-    cout << variable << " = " << sval << endl;
+    cout << var << " = " << sval << endl;
     cout << termColor();
-  }
-    
-  if(isNumber(sval)) {
-    double dval = atof(sval.c_str());
-    m_Comms.Notify(variable, dval);
-  }
-  else {
-    if(isQuoted(sval))
-      sval = stripQuotes(sval);
-    m_Comms.Notify(variable, sval);
   }
 }
 
+//----------------------------------------------------------------
+// Procedure: printPosting()
+
+void TS_MOOSApp::printPosting(string var, double dval, double db_uptime)
+{
+  if(m_verbose) {
+    cout << termColor("green");
+    cout << "[" << m_iter_char << "/" << db_uptime << "]";
+    cout << termColor("blue");
+    cout << "[" << m_elapsed_time << "]: ";
+    cout << var << " = " << dval << endl;
+    cout << termColor();
+  }
+}
 
 //----------------------------------------------------------------
 // Procedure: jumpToNextPosting()

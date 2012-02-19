@@ -136,7 +136,7 @@ bool HazardSensor_Model::handleMsg(string key, double dval, string sval,
   if(key == "UHZ_SENSOR_REQUEST")
     return(handleSensorRequest(sval));
   
-  if(key == "UHZ_SENSOR_CONFIG_REQ")
+  if(key == "UHZ_CONFIG_REQUEST")
     return(handleSensorConfig(sval, src_community));
   
   return(true);
@@ -303,7 +303,7 @@ bool HazardSensor_Model::handleSensorRequest(const string& request)
   for(i=0; i<vsize; i++) {
     string param = toupper(stripBlankEnds(biteString(svector[i], '=')));
     string value = stripBlankEnds(svector[i]);
-    if(param == "NAME")
+    if(param == "VNAME")
       vname = value;
   }
 
@@ -508,7 +508,7 @@ void HazardSensor_Model::postHazardReport(unsigned int hix,
   if(label != "")
     str += ",label=" + label;
   
-  string full_str = "vname=" + vname + ",";
+  string full_str = "vname=" + vname + "," + str;
 
   addMessage("UHZ_HAZARD_REPORT", full_str);
   addMessage("UHZ_HAZARD_REPORT_"+toupper(vname), str);
@@ -864,7 +864,7 @@ void HazardSensor_Model::sortSensorProperties()
 //            chosen based on the avg width of possible sensor settings.
 //            This may be useful if a vehicle starts using the sensor 
 //            w/out ever requesting a particular sensor setting.
-//      Note: A UHV_SENSOR_CONFIG_ACK_<VNAME> acknowledgement is posted
+//      Note: A UHZ_CONFIG_ACK_<VNAME> acknowledgement is posted
 //            and presumably bridged out to the vehicle.
 
 bool HazardSensor_Model::setVehicleSensorSetting(string vname,
@@ -931,7 +931,7 @@ bool HazardSensor_Model::setVehicleSensorSetting(string vname,
   m_map_prob_false_alarm[vname] = implied_pfa;
   m_map_prob_classify[vname]    = selected_class;
   // Part 43a: Build and post confirmation
-  string var = "UHZ_SENSOR_CONFIG_ACK_" + toupper(vname);
+  string var = "UHZ_CONFIG_ACK_" + toupper(vname);
   string msg = "vname=" + vname;
   msg += ",width="  + doubleToStringX(selected_width,1);
   msg += ",pd="     + doubleToStringX(selected_pd,3);

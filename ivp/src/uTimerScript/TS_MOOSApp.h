@@ -60,6 +60,9 @@ class TS_MOOSApp : public CMOOSApp
   void   postStatus();
   void   seedRandom();
   bool   handleMathExpr(std::string&);
+  void   printPosting(std::string, double, double);
+  void   printPosting(std::string, std::string, double);
+
 
  protected: // Functions in support of logic conditions
   bool updateInfoBuffer(CMOOSMsg&);

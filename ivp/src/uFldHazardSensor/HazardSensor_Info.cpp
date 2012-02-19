@@ -1,8 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: BRS_Info.cpp                                         */
-/*    DATE: July 5th 2011                                        */
+/*    FILE: HazardSensor_Info.cpp                                */
+/*    DATE: Jan 28th 2012                                        */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
 /* modify it under the terms of the GNU General Public License   */
@@ -33,14 +33,18 @@ using namespace std;
 
 void showSynopsis()
 {
-  blk("SYNOPSIS:                                                       ");
-  blk("------------------------------------                            ");
-  blk("  Typically run in a shoreside community. Configured with one or");
-  blk("  more beacons with known beacon locations. Takes range requests");
-  blk("  from a remote vehicle and returns a range report indicating   ");
-  blk("  that vehicle's range to nearby beacons.  Range requests may   ");
-  blk("  or may not be answered depending on range to beacon. Reports  ");
-  blk("  may have noise added and may or may not include beaco ID.     ");
+  blk("SYNOPSIS:                                                        ");
+  blk("------------------------------------                             ");
+  blk("  Typically run in a shoreside community. Configured with a set  ");
+  blk("  objects with a given x,y location and classification (hazard   ");
+  blk("  or beningn). The sensor simulator receives a series of requests");
+  blk("  from a remote vehicle. When sensor determines that an object is");
+  blk("  is within the sensor field of a requesting vehicle, it may or  ");
+  blk("  may not return a sensor detection report for the object, and   ");
+  blk("  perhaps also a proper classification. The odds of receiving a  ");
+  blk("  detection and proper classification depend on the sensor       ");
+  blk("  configuration and the user's preference for P_D/P_FA on the    ");
+  blk("  prevailing ROC curve.                                          ");
 }
 
 //----------------------------------------------------------------
@@ -90,29 +94,19 @@ void showExampleConfigAndExit()
   blk("  AppTick   = 4                                                 ");
   blk("  CommsTick = 4                                                 ");
   blk("                                                                ");
-  blk("  // Configuring aspects of vehicles in the sim                 ");
-  blk("  reach_distance = default = 200  "," // or {nolimit}           ");
-  blk("  reach_distance = henry = 40     "," // meters                 ");
-  blk("  ping_wait      = default = 30   "," // seconds                ");
-  blk("  ping_wait      = henry   = 120                                ");
-  blk("  ping_payments  = upon_response  "," // or {upon_receipt, upon_request}");
-  blk("                                                                ");
-  blk("  // Configuring manner of reporting                            ");
-  blk("  report_vars    = short  ","// or {long, both}                 ");
-  blk("  ground_truth   = true   ","// or {false}                      ");
-  blk("  verbose        = true   ","// or {false}                      ");
-  blk("                                                                ");
-  blk("  // Configuring default beacon properties                      ");
-  blk("  default_beacon_shape = circle    ","// or {square, diamond, etc.}  ");
-  blk("  default beacon_color = orange    ","// or {red, green, etc.}       ");
-  blk("  default_beacon_width = 4                                      ");
-  blk("  default_beacon_report_range = 100                             ");
-  blk("  default_beacon_freq  = never     ","// or [0,inf]             ");
-  blk("                                                                ");
   blk("  // Configuring Beacon properties                              ");
-  blk("  beacon = x=200, y=435, label=01, report_range=45              ");
-  blk("  beacon = x=690, y=205, label=02, freq=90                      ");
-  blk("  beacon = x=350, y=705, label=03, width=8, color=blue          ");
+  blk("  default_hazard_shape = triangle                               ");
+  blk("  default_hazard_color = light_blue                             ");
+  blk("  default_hazard_width = 8                                      ");
+  blk("  poly_transparency    = 0.25                                   ");
+  blk("                                                                ");
+  blk("  sensor_config = width=25, exp=4, class=0.80                   ");
+  blk("  sensor_config = width=50, exp=2, class=0.60                   ");
+  blk("  sensor_config = width=10, exp=6, class=0.93                   ");
+  blk("  swath_length  = 5                                             ");
+  blk("  seed_random   = false                                         ");
+  blk("  hazard_file   = hazards.txt                                   ");
+  blk("  verbose       = true                                          ");
   blk("                                                                ");
   blk("  // Configuring Artificial Noise                               ");
   blk("  rn_algorithm  =  uniform,pct=0  "," // pct may be in [0,1]    ");
@@ -142,20 +136,25 @@ void showInterfaceAndExit()
   blk("                      LON=-70.329755,SPD=2.0,HDG=118.8,         ");
   blk("                      YAW=118.8,DEPTH=4.6,LENGTH=3.8,           ");
   blk("                      MODE=MODE@ACTIVE:LOITERING                ");
-  blk("  BRS_RANGE_REQUEST = name=archie                               ");
+  blk("  UHZ_SENSOR_REQUEST = vname=archie                             ");
+  blk("  UHZ_CONFIG_REQUEST = vname=archie,width=50,pd=0.9             ");
   blk("                                                                ");
   blk("PUBLICATIONS:                                                   ");
   blk("------------------------------------                            ");
-  blk("  BRS_RANGE_REPORT    = vname=alpha,range=26.54,                ");
-  blk("                        time=19656022406.44                     ");
-  blk("  BRS_RANGE_REPORT_GT = vname=archie,range=126.54,              ");
-  blk("                        time=19656022406.44                     ");
-  blk("  BRS_DEBUG           = Invalid incoming node report            ");
-  blk("  VIEW_MARKER         = x=400,y=-200,label=02,color=orange,     ");
+  blk("  UHZ_HAZARD_REPORT   = vname=betty,x=51,y=11.3,hazard=true,  ");
+  blk("                        label=12                              ");
+  blk("  UHZ_HAZARD_REPORT_<V> = x=51,y=11.3,hazard=true,label=12      ");
+  blk("  UHZ_CONFIG_ACK      = vname=archie,width=20,pd=0.9,pfa=0.53,  ");
+  blk("                        pclass=0.91                             ");
+  blk("  VIEW_CIRCLE         = x=-150.3,y=-117.5,radius=10,edge_size=1 ");
+  blk("  (detection)           edge_color=white,fill_color=white,      ");
+  blk("                        vertex_size=0,fill_transparency=0.3     ");
   blk("                        type=circle,width=4                     ");
-  blk("  VIEW_RANGE_PULSE    = x=4,y=15,radius=40,duration=15,label=04,");
-  blk("                        fill=0.25,fill_color=green,edge_size=1, ");
-  blk("                        edge_color=green,time=3892830128.5      ");
+  blk("  VIEW_POLYGON        = pts={-156.7,-314.6:-160.2,-305.2:-113.3,");
+  blk("  (sensor swath)        -287.7:-109.8,-297.1},msg=_null_,       ");
+  blk("                        label=sensor_swath_archie,vertex_size=0,");
+  blk("                        fill_color=white,edge_size=0,           ");
+  blk("                        fill_transparency=0.25                  ");
   exit(0);
 }
 

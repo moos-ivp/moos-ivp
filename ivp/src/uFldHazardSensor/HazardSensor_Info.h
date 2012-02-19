@@ -1,8 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: BRS_Info.h                                           */
-/*    DATE: July 5th 2011                                        */
+/*    FILE: HazardSensor_Info.h                                  */
+/*    DATE: Jan 28th 2012                                        */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
 /* modify it under the terms of the GNU General Public License   */
@@ -20,8 +20,8 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
  
-#ifndef UFLD_BEACON_RANGE_SENSOR_INFO_HEADER
-#define UFLD_BEACON_RANGE_SENSOR_INFO_HEADER
+#ifndef UFLD_HAZARD_SENSOR_INFO_HEADER
+#define UFLD_HAZARD_SENSOR_INFO_HEADER
 
 void showSynopsis();
 void showHelpAndExit();

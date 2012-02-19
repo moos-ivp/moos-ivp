@@ -68,7 +68,7 @@ void HazardSensor_MOOSApp::RegisterVariables()
   m_Comms.Register("NODE_REPORT", 0);
   m_Comms.Register("NODE_REPORT_LOCAL", 0);
   m_Comms.Register("UHZ_SENSOR_REQUEST", 0);
-  m_Comms.Register("UHZ_SENSOR_CONFIG_REQ", 0);
+  m_Comms.Register("UHZ_CONFIG_REQUEST", 0);
 }
 
 

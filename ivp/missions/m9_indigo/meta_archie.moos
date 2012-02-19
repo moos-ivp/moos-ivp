@@ -38,7 +38,7 @@ ProcessConfig = uTimerScript
   RESET_TIME = end
   CONDITION  = (NAV_SPEED > 0)
 
-  EVENT = var=UHZ_SENSOR_REQUEST, val="name=archie", time=0.5
+  EVENT = var=UHZ_SENSOR_REQUEST, val="vname=archie", time=0.5
 }
 
 

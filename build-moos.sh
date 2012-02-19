@@ -104,8 +104,6 @@ fi
 
 
 cmake                                           \
-   -DFLTK_DIR=/usr/lib                          \
-   -DFLTK_INCLUDE_DIR=/usr/include              \
    -DPYTHON_INCLUDE_PATH=/usr/include/python2.5 \
    -DBUILD_CONTROL_AND_NAV=ON                   \
    -DBUILD_INSTRUMENTS=ON                      \

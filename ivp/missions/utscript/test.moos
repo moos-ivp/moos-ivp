@@ -1,0 +1,39 @@
+// Level 2 Configuration file: M. Benjamin
+
+ServerHost = localhost
+ServerPort = 9000
+Simulator  = true
+
+Community  = alpha
+
+MOOSTimeWarp = 1
+
+
+//------------------------------------------
+// Antler configuration  block
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+
+  Run = MOOSDB		@ NewConsole = true
+  Run = uTimerScript	@ NewConsole = true
+}
+
+//------------------------------------------
+// uTimerScript config block
+
+ProcessConfig = uTimerScript
+{
+  AppTick   = 1
+  CommsTick = 1
+
+  reset_max  = nolimit
+  reset_time = all-posted
+
+  event     = var=FOOBAR, val="apples", time=2
+  event     = var=FOOBAR, val="pears",  time=2
+  event     = var=TEMPD,  val=23,       time=2
+  event     = var=TEMPS,  val="244",    time=2
+  event     = var=TEMPS,  val=18,       time=2
+}
+

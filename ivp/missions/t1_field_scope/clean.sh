@@ -1,4 +1,4 @@
-#!/bin/sh 
+#!/bin/bash 
 
 rm -rf   MOOSLog_*
 rm -f    *~

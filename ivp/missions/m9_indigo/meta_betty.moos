@@ -39,7 +39,7 @@ ProcessConfig = uTimerScript
   CONDITION  = (NAV_SPEED > 0)
 
   EVENT = var=UHZ_SENSOR_CONFIG_REQ, val="vname=betty,width=10,pd=0.9", time=0.1
-  EVENT = var=UHZ_SENSOR_REQUEST, val="name=betty", time=0.5
+  EVENT = var=UHZ_SENSOR_REQUEST, val="vname=betty", time=0.5
 }
 
   

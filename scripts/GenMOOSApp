@@ -54,14 +54,15 @@ class ${1} : public CMOOSApp
 {
 public:
 	${1}();
-	virtual ~${1}();
+	~${1}();
 
+protected:
 	bool OnNewMail(MOOSMSG_LIST &NewMail);
 	bool Iterate();
 	bool OnConnectToServer();
 	bool OnStartUp();
 
-protected:
+private:
 	// insert local vars here
 };
 
@@ -205,7 +206,7 @@ bool ${1}::OnConnectToServer()
    // register for variables here
    // possibly look at the mission file?
    // m_MissionReader.GetConfigurationParam("Name", <string>);
-   // m_Comms.Register("VARNAME", is_float(int));
+   // m_Comms.Register("VARNAME", 0);
 	
    return(true);
 }
