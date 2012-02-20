@@ -69,8 +69,7 @@ class TS_MOOSApp : public CMOOSApp
   bool checkConditions();
 
  protected: // Functions in support of random variables
-  std::string addRandomVariable(std::string spec);
-  void resetVariables(std::string key, double time);
+  std::string randomNumString(unsigned int);
 
  protected: // Configuration parameters
   std::vector<VarDataPair>  m_pairs;

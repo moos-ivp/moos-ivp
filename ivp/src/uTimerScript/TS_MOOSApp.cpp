@@ -617,11 +617,33 @@ void TS_MOOSApp::executePosting(VarDataPair pair)
   sval = findReplace(sval, "$(UTCTIME)", doubleToString(m_utc_time, 2));
   sval = findReplace(sval, "$(TCOUNT)", uintToString(m_posted_tcount));
   sval = findReplace(sval, "$(COUNT)", uintToString(m_posted_count));
-  
+ 
   sval = findReplace(sval, "$[DBTIME]", doubleToString(db_uptime, 2));
   sval = findReplace(sval, "$[UTCTIME]", doubleToString(m_utc_time, 2));
   sval = findReplace(sval, "$[TCOUNT]", uintToString(m_posted_tcount));
   sval = findReplace(sval, "$[COUNT]", uintToString(m_posted_count));
+
+  sval = findReplace(sval, "$(1)", randomNumString(1));
+  sval = findReplace(sval, "$(2)", randomNumString(2));
+  sval = findReplace(sval, "$(3)", randomNumString(3));
+  sval = findReplace(sval, "$(4)", randomNumString(4));
+  sval = findReplace(sval, "$(5)", randomNumString(5));
+  sval = findReplace(sval, "$(6)", randomNumString(6));
+  sval = findReplace(sval, "$(7)", randomNumString(7));
+  sval = findReplace(sval, "$(8)", randomNumString(8));
+  sval = findReplace(sval, "$(9)", randomNumString(9));
+  sval = findReplace(sval, "$(10)", randomNumString(10));
+  sval = findReplace(sval, "$(11)", randomNumString(11));
+  sval = findReplace(sval, "$(12)", randomNumString(12));
+  sval = findReplace(sval, "$(13)", randomNumString(13));
+  sval = findReplace(sval, "$(14)", randomNumString(14));
+  sval = findReplace(sval, "$(15)", randomNumString(15));
+  sval = findReplace(sval, "$(16)", randomNumString(16));
+  sval = findReplace(sval, "$(17)", randomNumString(17));
+  sval = findReplace(sval, "$(18)", randomNumString(18));
+  sval = findReplace(sval, "$(19)", randomNumString(19));
+  sval = findReplace(sval, "$(20)", randomNumString(20));
+
   
   unsigned int i, vsize = m_rand_vars.size();
   for(i=0; i<vsize; i++) {
@@ -855,6 +877,28 @@ bool TS_MOOSApp::checkConditions()
   }
   return(true);
 }
+
+
+//-----------------------------------------------------------
+// Procedure: randomNumString
+//   Purpose: Generate a string of random digits of given length
+
+string TS_MOOSApp::randomNumString(unsigned int digits)
+{
+  string result;
+
+  unsigned int i;
+  for(i=0; i<digits; i++) {
+    int  rand_ix    = rand() % 10;
+    char char_digit = 48 + rand_ix;
+    // Don't let a zero be the first number.
+    if((rand_ix != 0) || (result != ""))
+      result += char_digit;
+  }
+  return(result);
+}
+
+
 
 //-----------------------------------------------------------
 // Procedure: handleMathExpr()
