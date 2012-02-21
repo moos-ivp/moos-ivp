@@ -52,15 +52,16 @@ cat >> ${1}.h <<EOF
 
 class ${1} : public CMOOSApp
 {
-public:
-	${1}();
-	~${1}();
+ public:
+   ${1}();
+   ~${1}();
 
-protected:
-	bool OnNewMail(MOOSMSG_LIST &NewMail);
-	bool Iterate();
-	bool OnConnectToServer();
-	bool OnStartUp();
+ protected:
+   bool OnNewMail(MOOSMSG_LIST &NewMail);
+   bool Iterate();
+   bool OnConnectToServer();
+   bool OnStartUp();
+   void RegisterVariables();
 
 private:
 	// insert local vars here
@@ -170,6 +171,9 @@ cat >> ${1}.cpp <<EOF
 
 #include <iterator>
 #include "${1}.h"
+
+using namespace std;
+
 //---------------------------------------------------------
 // Constructor
 
@@ -218,6 +222,7 @@ bool ${1}::Iterate()
 {
    // happens AppTick times per second
 	
+   RegisterVariables();
    return(true);
 }
 
@@ -227,8 +232,17 @@ bool ${1}::Iterate()
 bool ${1}::OnStartUp()
 {
    // happens before connection is open
-	
+
+   RegisterVariables();	
    return(true);
+}
+
+//---------------------------------------------------------
+// Procedure: RegisterVariables
+
+void ${1}::RegisterVariables()
+{
+   //m_Comms.Register("FOOBAR", 0);
 }
 
 EOF
