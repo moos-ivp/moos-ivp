@@ -34,10 +34,10 @@ ProcessConfig = ANTLER
   Run = pLogger         @ NewConsole = true
   Run = uSimMarine	@ NewConsole = true
   Run = pNodeReporter	@ NewConsole = true
-  Run = pMarinePID	@ NewConsole = false
-  Run = pHelmIvP	@ NewConsole = false
-  Run = pMarineViewer	@ NewConsole = false
-  Run = uProcessWatch	@ NewConsole = false
+  Run = pMarinePID	@ NewConsole = true
+  Run = pHelmIvP	@ NewConsole = true
+  Run = pMarineViewer	@ NewConsole = true
+  Run = uProcessWatch	@ NewConsole = true
 }
 
 //------------------------------------------
