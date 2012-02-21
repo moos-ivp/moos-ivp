@@ -52,6 +52,7 @@ std::string truncString(const std::string&, unsigned int newlen,
 			std::string="");
 std::string boolToString(bool);
 std::string uintToString(unsigned int);
+std::string ulintToString(unsigned long int);
 std::string intToString(int);
 std::string intToCommaString(int);
 std::string uintToCommaString(unsigned int);

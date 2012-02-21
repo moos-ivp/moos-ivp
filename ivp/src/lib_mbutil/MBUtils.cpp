@@ -532,6 +532,14 @@ string uintToString(unsigned int val)
   return(str);
 }
 
+string ulintToString(unsigned long int val)
+{
+  char buff[500];
+  sprintf(buff, "%lu", val);
+  string str = buff;
+  return(str);
+}
+
 string floatToString(float val, int digits)
 {
   char format[10] = "%.5f\0";
