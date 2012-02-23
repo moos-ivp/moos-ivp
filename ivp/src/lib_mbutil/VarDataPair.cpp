@@ -35,6 +35,7 @@ VarDataPair::VarDataPair()
   m_sdata     = "";
   m_ddata     = 0;
   m_is_string = false;
+  m_is_quoted = false;
 }
 
 //------------------------------------------------------------------
@@ -46,6 +47,7 @@ VarDataPair::VarDataPair(const string& var, double ddata)
   m_sdata     = "";
   m_ddata     = ddata;
   m_is_string = false;
+  m_is_quoted = false;
 }
 
 //------------------------------------------------------------------
@@ -57,6 +59,9 @@ VarDataPair::VarDataPair(const string& var, const string& sdata)
   m_sdata     = stripBlankEnds(sdata);
   m_ddata     = 0;
   m_is_string = true;
+  m_is_quoted = false;
+  if(isQuoted(sdata))
+    m_is_quoted = true;
 }
 
 //------------------------------------------------------------------
@@ -69,6 +74,7 @@ VarDataPair::VarDataPair(const string& var, const string& sdata,
 {
   m_var   = stripBlankEnds(var);
   m_ddata = 0;
+  m_is_quoted = false;
 
   string data = stripBlankEnds(sdata);
 
@@ -80,8 +86,10 @@ VarDataPair::VarDataPair(const string& var, const string& sdata,
     m_is_string = false;
   }
   else {
-    if(isQuoted(data))
+    if(isQuoted(data)) {
       m_sdata = stripQuotes(data);
+      m_is_quoted = true;
+    }
     else
       m_sdata = data;
     m_is_string = true;

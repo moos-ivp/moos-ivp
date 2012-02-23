@@ -50,6 +50,7 @@ public:
   std::string get_sdata() const {return(m_sdata);};
   double      get_ddata() const {return(m_ddata);};
   bool        is_string() const {return(m_is_string);};
+  bool        is_quoted() const {return(m_is_quoted);};
   std::string get_key()   const {return(m_key);};
 
   std::string getPrintable();
@@ -59,6 +60,7 @@ protected:
   std::string m_sdata;
   double      m_ddata;
   bool        m_is_string;
+  bool        m_is_quoted;
   std::string m_key;
 };
 

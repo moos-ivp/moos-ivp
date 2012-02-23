@@ -663,10 +663,15 @@ void TS_MOOSApp::executePosting(VarDataPair pair)
     replace_amt++;
   }
 
-  if(isQuoted(sval))
-    sval = stripQuotes(sval);
-  printPosting(variable, sval, db_uptime);
-  m_Comms.Notify(variable, sval);
+  if(isNumber(sval) && !pair.is_quoted()) {
+    double dval = atof(sval.c_str());
+    printPosting(variable, dval, db_uptime);
+    m_Comms.Notify(variable, dval);
+  }
+  else {
+    printPosting(variable, sval, db_uptime);
+    m_Comms.Notify(variable, sval);
+  }
 }
 
 //----------------------------------------------------------------
