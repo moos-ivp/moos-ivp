@@ -25,13 +25,13 @@ ProcessConfig = ANTLER
   Run = pMarinePID	@ NewConsole = false
   Run = pHelmIvP	@ NewConsole = true
   Run = uTimerScript    @ NewConsole = false
-  Run = uSimBeaconRange @ NewConsole = true
+  Run = uFldBeaconRangeSensor @ NewConsole = true
 }
 
 //------------------------------------------
-// uSimBeaconRange config block
+// uFldBeaconRangeSensor config block
 
-ProcessConfig = uSimBeaconRange
+ProcessConfig = uFldBeaconRangeSensor
 {
   AppTick   = 4
   CommsTick = 4

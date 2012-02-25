@@ -55,8 +55,7 @@ class HazardSensor_Model
   bool    addSensorConfig(std::string);
   bool    setSwathLength(std::string);
   bool    setRandomNoiseAlgorithm(std::string);
-  bool    setPolyTransparency(std::string);
-  bool    setSeedRandom(std::string);
+  bool    setSwathTransparency(std::string);
   bool    setTermReportInterval(std::string);
 
  protected: // Incoming mail utility
@@ -104,7 +103,6 @@ class HazardSensor_Model
   std::map<std::string, int>   m_map_memos;
 
  protected: // Configuration variables
-  XYHazard    m_default_hazard;
   double      m_min_reset_interval;
   double      m_term_report_interval;
   bool        m_seed_random;
@@ -132,13 +130,16 @@ class HazardSensor_Model
   double      m_rn_uniform_pct;
 
   // Visual preferences
+  bool        m_show_hazards;
+  bool        m_show_swath;
+  double      m_circle_duration;
   std::string m_color_hazard;
-  std::string m_color_inert;
+  std::string m_color_benign;
   std::string m_shape_hazard;
-  std::string m_shape_inert;
+  std::string m_shape_benign;
   double      m_width_hazard;
-  double      m_width_inert;
-  double      m_poly_transparency;
+  double      m_width_benign;
+  double      m_swath_transparency;
 };
 
 #endif 

@@ -38,12 +38,14 @@ public:
   void   setX(double v)          {m_x=v; m_x_set=true;}
   void   setY(double v)          {m_y=v; m_y_set=true;}
   void   setRad(double v)        {m_rad=v; m_rad_set=true;if(v<0) m_rad=0;};
+  void   setDuration(double v)   {m_duration=v;};
   void   set_spec_digits(int v)  {if((v>=0) && (v<=6)) m_sdigits=v;};
 
   bool   valid() const {return(m_x_set && m_y_set && m_rad_set);};
 
   double getX()    const         {return(m_x);};
   double getY()    const         {return(m_y);};
+  double getDuration() const     {return(m_duration);};
   double getRad()  const         {return(m_rad);};
   void   alterX(double v)        {m_x+=v;};
   void   alterY(double v)        {m_y+=v;};
@@ -84,6 +86,7 @@ protected:
   double   m_y;
   double   m_rad;
   int      m_sdigits;
+  double   m_duration;
 
   bool     m_x_set;
   bool     m_y_set;

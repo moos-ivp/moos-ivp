@@ -106,8 +106,8 @@ protected:
   void  drawConvexGrids(const std::vector<XYConvexGrid>&);
   void  drawConvexGrid(const XYConvexGrid&);
 
-  void  drawCircles(const std::vector<XYCircle>&);
-  void  drawCircle(const XYCircle&, unsigned int pts);
+  void  drawCircles(const std::vector<XYCircle>&, double timestamp=0);
+  void  drawCircle(const XYCircle&, double timestamp);
 
   void  drawRangePulses(const std::vector<XYRangePulse>&, double timstamp);
   void  drawRangePulse(const XYRangePulse&, double timestamp);

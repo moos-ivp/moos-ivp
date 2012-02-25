@@ -1747,7 +1747,8 @@ void MarineViewer::drawConvexGrid(const XYConvexGrid& grid)
 //-------------------------------------------------------------
 // Procedure: drawCircles
 
-void MarineViewer::drawCircles(const vector<XYCircle>& circles)
+void MarineViewer::drawCircles(const vector<XYCircle>& circles, 
+			       double timestamp)
 {
   // If the viewable parameter is set to false just return. In 
   // querying the parameter the optional "true" argument means return
@@ -1759,15 +1760,24 @@ void MarineViewer::drawCircles(const vector<XYCircle>& circles)
   
   for(i=0; i<vsize; i++)
     if(circles[i].active())
-      drawCircle(circles[i], 180); 
+      drawCircle(circles[i], timestamp); 
   
 }
 
 //-------------------------------------------------------------
 // Procedure: drawCircle
 
-void MarineViewer::drawCircle(const XYCircle& circle, unsigned int pts)
+void MarineViewer::drawCircle(const XYCircle& circle, double timestamp)
 {
+  if(timestamp != 0) {
+    double circle_duration = circle.getDuration();
+    if(circle_duration > 0) {
+      double elapsed = timestamp - circle.get_time();
+      if(elapsed > circle_duration)
+	return;
+    }
+  }
+
   ColorPack edge_c("blue");
   ColorPack vert_c("blue");
   ColorPack labl_c("white");
@@ -1811,7 +1821,7 @@ void MarineViewer::drawCircle(const XYCircle& circle, unsigned int pts)
   poly_str += doubleToString(px,2) + ",";
   poly_str += doubleToString(py,2) + ",";
   poly_str += doubleToString(rad,2) + ",";
-  poly_str += uintToString(pts);
+  poly_str += uintToString(90);  // number of points rendered
   
   XYPolygon poly = string2Poly(poly_str);
 

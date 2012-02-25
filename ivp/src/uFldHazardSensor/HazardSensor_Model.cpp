@@ -63,13 +63,16 @@ HazardSensor_Model::HazardSensor_Model()
   m_seed_random  = true;
   
   // Visual preferences
+  m_circle_duration = -1;
+  m_show_hazards = true;
+  m_show_swath   = true;
   m_color_hazard = "green";
-  m_color_inert  = "light_blue";
+  m_color_benign = "light_blue";
   m_shape_hazard = "triangle";
-  m_shape_inert  = "triangle";
+  m_shape_benign = "triangle";
   m_width_hazard = 8;
-  m_width_inert  = 8;
-  m_poly_transparency = 0.2;
+  m_width_benign = 8;
+  m_swath_transparency = 0.2;
 }
 
 //------------------------------------------------------------
@@ -86,18 +89,48 @@ bool HazardSensor_Model::setParam(string param, string value, unsigned int pass)
       return(false);
   }
   else if(pass == 1) {
-    if(param == "default_hazard_shape")
-      return(m_default_hazard.setShape(value));
-    else if(param == "default_hazard_color")
-      return(m_default_hazard.setColor(value));
-    else if(param == "default_hazard_width")
-      return(m_default_hazard.setWidth(value));
+    if(param == "default_hazard_shape") {
+      m_shape_hazard = value;
+      return(true);
+    }
+    else if(param == "default_hazard_color") {
+      m_color_hazard = value;
+      return(true);
+    }
+    else if((param == "default_hazard_width") && isNumber(value)) {
+      m_width_hazard = atof(value.c_str());
+      return(true);
+    }
+    if(param == "default_benign_shape") {
+      m_shape_benign = value;
+      return(true);
+    }
+    else if(param == "default_benign_color") {
+      m_color_benign = value;
+      return(true);
+    }
+    else if((param == "default_benign_width") && isNumber(value)) {
+      m_width_benign = atof(value.c_str());
+      return(true);
+    }
+    else if(param == "show_hazards")
+      return(setBooleanOnString(m_show_hazards, value));
+    else if(param == "show_swath")
+      return(setBooleanOnString(m_show_swath, value));
+    else if((param == "show_reports") && isNumber(value)) {
+      m_circle_duration = atof(value.c_str());
+      return(true);
+    }
     else if(param == "swath_length")
       return(setSwathLength(value));
+    else if(param == "show_swath")
+      return(setBooleanOnString(m_show_swath, value));
+    else if(param == "show_hazards")
+      return(setBooleanOnString(m_show_hazards, value));
     else if(param == "seed_random")
-      return(setSeedRandom(value));
-    else if(param == "poly_transparency")
-      return(setPolyTransparency(value));
+      return(setBooleanOnString(m_seed_random, value));
+    else if(param == "swath_transparency")
+      return(setSwathTransparency(value));
     else if(param == "rn_algorithm") 
       return(setRandomNoiseAlgorithm(value));
     else if(param == "sensor_config") 
@@ -348,8 +381,11 @@ bool HazardSensor_Model::handleSensorRequest(const string& request)
       postHazardReport(hix, vname);  // classify dice inside
   }
 
-  string poly_spec = m_node_polygons[vix].get_spec();
-  addMessage("VIEW_POLYGON", poly_spec);
+  // Possible draw the swath
+  if(m_show_swath) {
+    string poly_spec = m_node_polygons[vix].get_spec();
+    addMessage("VIEW_POLYGON", poly_spec);
+  }
 
   return(true);
 }
@@ -380,14 +416,16 @@ bool HazardSensor_Model::handleSensorConfig(const string& config,
   if((vname == "") || (vname != msg_src)) {
     string memo = "ERROR: Bad sensor config request from: " + vname + " src:" + msg_src;
     m_map_memos[memo]++;
-    cout << "x" << flush;
+    if(!m_verbose)
+      cout << "x" << flush;
     return(false);
   }
 
   if(!isNumber(str_width) || !isNumber(str_pd)) {
     string memo = "ERROR: Bad sensor config request from: " + vname;
     m_map_memos[memo]++;
-    cout << "X" << flush;
+    if(!m_verbose)
+      cout << "X" << flush;
     return(false);
   }    
   
@@ -428,6 +466,9 @@ vector<VarDataPair> HazardSensor_Model::getVisuals()
 {
   vector<VarDataPair> visuals;
 
+  if(m_show_hazards == false)
+    return(visuals);
+
   unsigned int i, vsize = m_hazards.size();
   for(i=0; i<vsize; i++) {
 
@@ -435,9 +476,9 @@ vector<VarDataPair> HazardSensor_Model::getVisuals()
     string shape = m_shape_hazard;
     double width = m_width_hazard;
     if(m_hazards[i].getType() != "hazard") {
-      color = m_color_inert;
-      shape = m_shape_inert;
-      width = m_width_inert;
+      color = m_color_benign;
+      shape = m_shape_benign;
+      width = m_width_benign;
     }    
 
     if(m_hazards[i].getColor() != "")
@@ -519,20 +560,25 @@ void HazardSensor_Model::postHazardReport(unsigned int hix,
   m_map_detections[vname]++;
 
   // Part 5: Build/Post some visual artifacts using VIEW_CIRCLE
-  XYCircle circ(haz_x, haz_y, 10);
-  if(is_hazard) {
-    circ.set_color("edge", "yellow");
-    circ.set_color("fill", "yellow");
+  if((m_circle_duration == -1) || (m_circle_duration > 0)) {
+    XYCircle circ(haz_x, haz_y, 10);
+    if(is_hazard) {
+      circ.set_color("edge", "yellow");
+      circ.set_color("fill", "yellow");
+    }
+    else {
+      circ.set_color("edge", "white");
+      circ.set_color("fill", "white");
+    }
+    circ.set_vertex_size(0);
+    circ.set_edge_size(1);
+    circ.set_transparency(0.3);
+    circ.set_time(m_curr_time);
+    circ.setDuration(m_circle_duration);
+    addMessage("VIEW_CIRCLE", circ.get_spec());
   }
-  else {
-    circ.set_color("edge", "white");
-    circ.set_color("fill", "white");
-  }
-  circ.set_vertex_size(0);
-  circ.set_edge_size(1);
-  circ.set_transparency(0.3);
-  addMessage("VIEW_CIRCLE", circ.get_spec());
 }
+
 
 
 //------------------------------------------------------------
@@ -663,7 +709,7 @@ bool HazardSensor_Model::updateNodePolygon(unsigned int ix)
   poly.set_label(label);
   poly.set_msg("_null_");
   
-  poly.set_transparency(m_poly_transparency);
+  poly.set_transparency(m_swath_transparency);
 
   m_node_polygons[ix] = poly;
   return(true);
@@ -695,23 +741,12 @@ bool HazardSensor_Model::setRandomNoiseAlgorithm(string str)
 }
 
 //------------------------------------------------------------
-// Procedure: setPolyTransparency
+// Procedure: setSwathTransparency
 
-bool HazardSensor_Model::setPolyTransparency(string str)
+bool HazardSensor_Model::setSwathTransparency(string str)
 {
   // No check for [0,1] range. Handled in polygon set_transparency()
-  m_poly_transparency = atof(str.c_str());
-  return(true);
-}
-
-//------------------------------------------------------------
-// Procedure: setSeedRandom
-
-bool HazardSensor_Model::setSeedRandom(string str)
-{
-  if(!isBoolean(str))
-    return(false);
-  m_seed_random = setBooleanOnString(m_seed_random, str);
+  m_swath_transparency = atof(str.c_str());
   return(true);
 }
 
@@ -817,7 +852,7 @@ void HazardSensor_Model::perhapsSeedRandom()
 //            also contains a value for the classifier algorithm. This
 //            is a number between [0,1] representing the probability 
 //            that the sensor will properly classify the object as either
-//            a hazard or inert object, once it has been detected.
+//            a hazard or benign object, once it has been detected.
 
 void HazardSensor_Model::sortSensorProperties()
 {

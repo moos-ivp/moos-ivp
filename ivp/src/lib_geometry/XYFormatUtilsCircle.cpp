@@ -55,6 +55,9 @@ XYCircle string2Circle(string str)
       new_circle.setY(dval);
     else if((left == "radius") && isNumber(right))
       new_circle.setRad(dval);
+    else if((left == "duration") && isNumber(right))
+      new_circle.setDuration(dval);
+
     else if((left == "time") && isNumber(right))
       new_circle.set_time(dval);
     else if(left == "label") 

@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
   }
 
   if(help_requested) {
-    cout << "Usage: gen_object_field [OPTIONS]                      " << endl;
+    cout << "Usage: gen_hazards [OPTIONS]                           " << endl;
     cout << "                                                       " << endl;
     cout << "Options:                                               " << endl;
     cout << "  --help, -h                                           " << endl;
@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
     cout << "      \"amount,type\"                                  " << endl;
     cout << "  --polygon=<poly>                                     " << endl;
     cout << "      Specify a polygon region of the form:            " << endl;
-    cout << "      \"0,0 : 50,0 : 50,50 : 0:50\"                    " << endl;
+    cout << "      \"0,0 : 50,0 : 50,50 : 0,50\"                    " << endl;
     return(0);
   }
 

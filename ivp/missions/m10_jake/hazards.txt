@@ -8,8 +8,8 @@ hazard = x=217.3,y=-16.7,type=hazard
 hazard = x=-14.2,y=-293.60001,type=hazard
 hazard = x=260.20001,y=-66.2,type=hazard
 hazard = x=-65.8,y=-125.2,type=hazard
-hazard = x=171.90001,y=-253.7,type=inert,color=light_blue
-hazard = x=-150.3,y=-117.5,type=inert,color=light_blue
+hazard = x=171.90001,y=-253.7,type=inert
+hazard = x=-150.3,y=-117.5,type=inert
 hazard = x=-59.8,y=-294.10001,type=inert,color=light_blue
 hazard = x=98.2,y=-127.7,type=inert,color=light_blue
 hazard = x=-178.8,y=-234,type=inert,color=light_blue

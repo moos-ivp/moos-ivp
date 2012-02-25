@@ -39,8 +39,15 @@ ProcessConfig = uFldHazardSensor
 
   swath_length  = 5
 
-  poly_transparency = 0.25
-  seed_random       = false
+  default_hazard_shape = triangle
+  default_benign_shape = triangle
+
+  swath_transparency = 0.85
+  seed_random        = false
+
+  show_swath=true
+  show_hazards=true
+  //show_reports=44
 
   hazard_file   = hazards.txt
   verbose       = true
@@ -55,7 +62,7 @@ ProcessConfig = uFldShoreBroker
   CommsTick     = 1
 
   QBRIDGE  = DEPLOY, NODE_REPORT, NODE_MESSAGE
-  QBRIDGE  = MOOS_MANUAL_OVERIDE
+  QBRIDGE  = MOOS_MANUAL_OVERIDE, UHZ_CONFIG_ACK
 
   BRIDGE   = src=RETURN_ALL, alias=RETURN
   BRIDGE   = src=RETURN_$V,  alias=RETURN
@@ -69,7 +76,7 @@ ProcessConfig = uFldNodeComms
   AppTick       = 2
   CommsTick     = 2
 
-  COMMS_RANGE      = 975
+  COMMS_RANGE      = 50
   CRITICAL_RANGE   = 25
 
   MIN_MSG_INTERVAL = 20

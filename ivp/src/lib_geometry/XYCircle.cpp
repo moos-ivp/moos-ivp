@@ -37,6 +37,7 @@ XYCircle::XYCircle()
   m_x    = 0;
   m_y    = 0;
   m_rad  = 0;
+  m_duration = -1;  // unlimited
 
   m_x_set   = false;
   m_y_set   = false;
@@ -114,6 +115,11 @@ string XYCircle::get_spec(string param) const
   spec += doubleToStringX(m_y, m_sdigits) + ","; 
   spec += "radius=";
   spec += doubleToStringX(m_rad, m_sdigits); 
+
+  if(m_duration >= 0) {
+    spec += ",duration=";
+    spec += doubleToStringX(m_duration,1); 
+  }
 
   string obj_spec = XYObject::get_spec(param);
   if(obj_spec != "")

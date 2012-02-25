@@ -133,6 +133,7 @@ void GeoViewer::handle_left_mouse(int vx, int vy)
 	new_label += next_char;
 	vvsize = vvsize - 26;
       }
+      newpoly.set_param("edge_size", "1");
       newpoly.set_label(new_label);
       newpoly.add_vertex(sx, sy);
       m_geoshapes.addPolygon(newpoly);
@@ -265,6 +266,7 @@ void GeoViewer::createNew()
   else {
     XYPolygon newpoly;
 
+    newpoly.set_param("edge_size", "1");
     string new_label;
     int vvsize = vsize;
     while(vvsize >= 0) {
