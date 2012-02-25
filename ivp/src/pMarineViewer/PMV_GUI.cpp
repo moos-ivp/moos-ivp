@@ -47,63 +47,75 @@ PMV_GUI::PMV_GUI(int g_w, int g_h, const char *g_l)
   mviewer  = new PMV_Viewer(0, 30, w(), h()-140);
   cmviewer = mviewer;
 
-  v_nam = new Fl_Output(60, h()-100, 70, 20, "VName:"); 
+  v_nam = new Fl_Output(w()*0.07, h()-100, w()*0.07, 20, "VName:"); 
+  //v_nam = new Fl_Output(60, h()-100, 70, 20, "VName:"); 
   v_nam->set_output();
   v_nam->textsize(info_size); 
   v_nam->labelsize(info_size);
 
-  v_typ = new Fl_Output(60, h()-70, 70, 20, "VType:"); 
+  v_typ = new Fl_Output(w()*0.07, h()-70, w()*0.07, 20, "VType:"); 
+  //v_typ = new Fl_Output(60, h()-70, 70, 20, "VType:"); 
   v_typ->set_output();
   v_typ->textsize(info_size); 
   v_typ->labelsize(info_size);
   v_typ->value("unknown");
 
-  x_mtr = new Fl_Output(175, h()-100, 75, 20, "X(m):"); 
+  x_mtr = new Fl_Output(w()*0.20, h()-100, w()*0.06, 20, "X(m):"); 
+  //x_mtr = new Fl_Output(175, h()-100, 75, 20, "X(m):"); 
   x_mtr->set_output();
   x_mtr->textsize(info_size); 
   x_mtr->labelsize(info_size);
 
-  y_mtr = new Fl_Output(175, h()-70, 75, 20, "Y(m):"); 
+  y_mtr = new Fl_Output(w()*0.20, h()-70, w()*0.06, 20, "Y(m):"); 
+  //y_mtr = new Fl_Output(175, h()-70, 75, 20, "Y(m):"); 
   y_mtr->set_output();
   y_mtr->textsize(info_size); 
   y_mtr->labelsize(info_size);
 
-  v_lat = new Fl_Output(295, h()-100, 80, 20, "Lat:"); 
+  v_lat = new Fl_Output(w()*0.31, h()-100, w()*0.11, 20, "Lat:"); 
+  //v_lat = new Fl_Output(295, h()-100, 80, 20, "Lat:"); 
   v_lat->set_output();
   v_lat->textsize(info_size); 
   v_lat->labelsize(info_size);
 
-  v_lon = new Fl_Output(295, h()-70, 80, 20, "Long:"); 
+  v_lon = new Fl_Output(w()*0.31, h()-70, w()*0.11, 20, "Long:"); 
+  //v_lon = new Fl_Output(295, h()-70, 80, 20, "Long:"); 
   v_lon->set_output();
   v_lon->textsize(info_size); 
   v_lon->labelsize(info_size);
 
-  v_spd = new Fl_Output(440, h()-100, 50, 20, "Spd(m/s):"); 
+  v_spd = new Fl_Output(w()*0.49, h()-100, w()*0.06, 20, "Spd:"); 
+  //v_spd = new Fl_Output(440, h()-100, 50, 20, "Spd(m/s):"); 
   v_spd->set_output();
   v_spd->textsize(info_size); 
   v_spd->labelsize(info_size);
 
-  v_crs = new Fl_Output(440, h()-70, 50, 20, "Heading:"); 
+  v_crs = new Fl_Output(w()*0.49, h()-70, w()*0.06, 20, "Hdg:"); 
+  //v_crs = new Fl_Output(440, h()-70, 50, 20, "Heading:"); 
   v_crs->set_output();
   v_crs->textsize(info_size); 
   v_crs->labelsize(info_size);
 
-  v_dep = new Fl_Output(565, h()-100, 50, 20, "Dep(m):"); 
+  v_dep = new Fl_Output(w()*0.62, h()-100, w()*0.07, 20, "Depth(m):"); 
+  //v_dep = new Fl_Output(565, h()-100, 50, 20, "Dep(m):"); 
   v_dep->set_output();
   v_dep->textsize(info_size); 
   v_dep->labelsize(info_size);
 
-  v_ais = new Fl_Output(565, h()-70, 50, 20, "Report-Age:"); 
+  v_ais = new Fl_Output(w()*0.62, h()-70, w()*0.07, 20, "Report-Age:"); 
+  //v_ais = new Fl_Output(565, h()-70, 50, 20, "Report-Age:"); 
   v_ais->set_output();
   v_ais->textsize(info_size); 
   v_ais->labelsize(info_size);
 
-  time = new Fl_Output(660, h()-100, 60, 20, "Time:"); 
+  time = new Fl_Output(w()*0.75, h()-100, w()*0.06, 20, "Time:"); 
+  //time = new Fl_Output(660, h()-100, 60, 20, "Time:"); 
   time->set_output();
   time->textsize(info_size); 
   time->labelsize(info_size);
 
-  warp = new Fl_Output(660, h()-70, 60, 20, "Warp:"); 
+  warp = new Fl_Output(w()*0.75, h()-70, w()*0.06, 20, "Warp:"); 
+  //warp = new Fl_Output(660, h()-70, 60, 20, "Warp:"); 
   warp->set_output();
   warp->textsize(info_size); 
   warp->labelsize(info_size);
@@ -135,27 +147,26 @@ PMV_GUI::PMV_GUI(int g_w, int g_h, const char *g_l)
   m_scope_value->textsize(small_info_size); 
   m_scope_value->labelsize(info_size);
 
-  int wid_b  = 120;
-  int hgt_b  = 24;
-  int col_b  = w() - wid_b;
-  int col_bb = w() - (wid_b * 2);
-  int row_b  = (h() - 53) - (2* hgt_b) ;
-  int row_bb = ((h() - 53) - hgt_b) + 2;
+  int hgt_b  = 22;
 
-  user_button_1 = new MY_Button(col_b+2, row_b, 
-                                wid_b-4, hgt_b, "Disabled");
-  user_button_2 = new MY_Button(col_b+2, row_bb, 
-                                wid_b-4, hgt_b, "Disabled");
-  user_button_3 = new MY_Button(col_bb, row_b, 
-                                wid_b-4, hgt_b, "Disabled");
-  user_button_4 = new MY_Button(col_bb, row_bb, 
-                                wid_b-4, hgt_b, "Disabled");
+  user_button_1 = new MY_Button(w()*0.91, h()-100, 
+                                w()*0.09, hgt_b, "Disabled");
+  user_button_2 = new MY_Button(w()*0.91, h()-70, 
+                                w()*0.09, hgt_b, "Disabled");
+  user_button_3 = new MY_Button(w()*0.82, h()-100, 
+                                w()*0.09, hgt_b, "Disabled");
+  user_button_4 = new MY_Button(w()*0.82, h()-70, 
+                                w()*0.09, hgt_b, "Disabled");
 
   user_button_1->callback((Fl_Callback*)PMV_GUI::cb_MOOS_Button,(void*)1);
   user_button_2->callback((Fl_Callback*)PMV_GUI::cb_MOOS_Button,(void*)2);
   user_button_3->callback((Fl_Callback*)PMV_GUI::cb_MOOS_Button,(void*)3);
   user_button_4->callback((Fl_Callback*)PMV_GUI::cb_MOOS_Button,(void*)4);
 
+  user_button_1->labelsize(10);
+  user_button_2->labelsize(10);
+  user_button_3->labelsize(10);
+  user_button_4->labelsize(10);
   user_button_1->hide();
   user_button_2->hide();
   user_button_3->hide();
@@ -170,6 +181,102 @@ PMV_GUI::PMV_GUI(int g_w, int g_h, const char *g_l)
   this->end();
   this->resizable(this);
   this->show();
+}
+
+//----------------------------------------------------------
+// Procedure: draw
+//      Note: 
+//            
+
+void PMV_GUI::draw() 
+{
+  cout << "In PMV_GUI::draw()!!!!!!!!!!!!!!!!!" << endl;
+
+  if((h() > 600) && (w() > 750)) {
+    resizeWidgets(12);
+    v_nam->label("VName:");
+    v_typ->label("VType:");
+    x_mtr->label("X(m):");
+    y_mtr->label("Y(m):");
+    v_lon->label("Long:");
+    v_dep->label("Depth(m):");
+    v_ais->label("Rpt-Age:");
+  }
+  else if((h() > 800) && (w() > 950)) {
+    resizeWidgets(14);
+    v_nam->label("VName:");
+    v_typ->label("VType:");
+    x_mtr->label("X(m):");
+    y_mtr->label("Y(m):");
+    v_lon->label("Long:");
+    v_dep->label("Depth(m):");
+    v_ais->label("Rpt-Age:");
+  }
+  else if((h() > 350) && (w() > 440)) {
+    resizeWidgets(10);
+    v_nam->label("Name:");
+    v_typ->label("Type:");
+    x_mtr->label("X:");
+    y_mtr->label("Y:");
+    v_lon->label("Lon:");
+    v_dep->label("Dep:");
+    v_ais->label("Age:");
+  }
+  else {
+    resizeWidgets(8);
+    v_nam->label("Name:");
+    v_typ->label("Type:");
+    x_mtr->label("X:");
+    y_mtr->label("Y:");
+    v_lon->label("Lon:");
+    v_dep->label("Dep:");
+    v_ais->label("Age:");
+  }
+
+  MarineVehiGUI::draw();
+}
+
+//----------------------------------------------------------
+// Procedure: resizeWidgets
+
+void PMV_GUI::resizeWidgets(int wsize) 
+{
+  user_button_1->labelsize(wsize+1);
+  user_button_2->labelsize(wsize+1);
+  user_button_3->labelsize(wsize+1);
+  user_button_4->labelsize(wsize+1);
+  
+  v_nam->labelsize(wsize);
+  v_typ->labelsize(wsize);
+  x_mtr->labelsize(wsize);
+  y_mtr->labelsize(wsize);
+  v_lat->labelsize(wsize);
+  v_lon->labelsize(wsize);
+  v_spd->labelsize(wsize);
+  v_crs->labelsize(wsize);
+  v_dep->labelsize(wsize);
+  v_ais->labelsize(wsize);
+  time->labelsize(wsize);
+  warp->labelsize(wsize);
+  m_scope_variable->labelsize(wsize);
+  m_scope_time->labelsize(wsize);
+  m_scope_value->labelsize(wsize);
+  
+  v_nam->textsize(wsize);
+  v_typ->textsize(wsize);
+  x_mtr->textsize(wsize);
+  y_mtr->textsize(wsize);
+  v_lat->textsize(wsize);
+  v_lon->textsize(wsize);
+  v_spd->textsize(wsize);
+  v_crs->textsize(wsize);
+  v_dep->textsize(wsize);
+  v_ais->textsize(wsize);
+  time->textsize(wsize);
+  warp->textsize(wsize);
+  m_scope_variable->textsize(wsize);
+  m_scope_time->textsize(wsize);
+  m_scope_value->textsize(wsize);
 }
 
 //----------------------------------------------------------

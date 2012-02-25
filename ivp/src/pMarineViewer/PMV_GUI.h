@@ -33,7 +33,9 @@ public:
   PMV_GUI(int w, int h, const char *l=0);
   virtual ~PMV_GUI() {};
 
-  void draw() {MarineVehiGUI::draw();};
+  //void draw() {MarineVehiGUI::draw();};
+  void draw();
+  void resizeWidgets(int);
 
   void updateXY();
   void addButton(std::string button, std::string pairs);

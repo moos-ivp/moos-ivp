@@ -45,7 +45,7 @@ PMV_Viewer::PMV_Viewer(int x, int y, int w, int h, const char *l)
   m_centric_view_sticky = true;
   m_reference_point     = "datum";
   m_reference_bearing   = "relative";
-  m_stale_report_thresh = 5;
+  m_stale_report_thresh = 115;
   m_stale_report_thresh_nodraw = 120;
   m_mouse_x   = 0;
   m_mouse_y   = 0;
@@ -92,7 +92,7 @@ void PMV_Viewer::draw()
     drawGrids(grids);
     drawConvexGrids(cgrids);
     drawSegLists(segls);
-    drawCircles(circles);
+    drawCircles(circles, m_curr_time);
     drawPoints(points);
     drawVectors(vectors);
     drawRangePulses(rng_pulses, m_curr_time);
