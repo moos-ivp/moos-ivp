@@ -223,10 +223,6 @@ ProcessConfig = pMarineViewer
   BUTTON_ONE = MOOS_MANUAL_OVERIDE=false # RETURN=false
   BUTTON_TWO = RETURN # RETURN=true
 
-  BUTTON_THREE = DEPLOY # DEPLOY=true
-  BUTTON_THREE = MOOS_MANUAL_OVERIDE=false # RETURN=false
-  BUTTON_FOUR  = RETURN # RETURN=true
-
   ACTION  = MENU_KEY=deploy # DEPLOY = true # RETURN = false
   ACTION+ = MENU_KEY=deploy # MOOS_MANUAL_OVERIDE=false
   ACTION  = RETURN=true
