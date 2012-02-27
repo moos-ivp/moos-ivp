@@ -74,9 +74,9 @@ int main(int argc, char *argv[])
 
   // For lecture resolution:
   //PMV_GUI* gui = new PMV_GUI(880,540, "pMarineViewer");
-  PMV_GUI* gui = new PMV_GUI(720,480, "pMarineViewer");
+  //PMV_GUI* gui = new PMV_GUI(720,480, "pMarineViewer");
 
-  //PMV_GUI* gui = new PMV_GUI(1100,850, "pMarineViewer");
+  PMV_GUI* gui = new PMV_GUI(1000,800, "pMarineViewer");
   if(!gui) {
     cout << "Unable to instantiate the GUI - exiting." << endl;
     return(-1);

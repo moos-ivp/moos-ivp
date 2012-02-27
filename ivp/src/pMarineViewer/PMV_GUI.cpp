@@ -221,6 +221,7 @@ void PMV_GUI::draw()
     v_lon->label("Lon:");
     v_dep->label("Dep:");
     v_ais->label("Age:");
+    m_scope_variable->label("Var:");
   }
   else {
     resizeWidgets(8);
@@ -231,6 +232,7 @@ void PMV_GUI::draw()
     v_lon->label("Lon:");
     v_dep->label("Dep:");
     v_ais->label("Age:");
+    m_scope_variable->label("Var:");
   }
 
   MarineVehiGUI::draw();
@@ -274,7 +276,7 @@ void PMV_GUI::resizeWidgets(int wsize)
   v_ais->textsize(wsize);
   time->textsize(wsize);
   warp->textsize(wsize);
-  m_scope_variable->textsize(wsize);
+  m_scope_variable->textsize(wsize-1);
   m_scope_time->textsize(wsize);
   m_scope_value->textsize(wsize);
 }
