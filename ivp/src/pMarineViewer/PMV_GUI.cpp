@@ -190,8 +190,6 @@ PMV_GUI::PMV_GUI(int g_w, int g_h, const char *g_l)
 
 void PMV_GUI::draw() 
 {
-  cout << "In PMV_GUI::draw()!!!!!!!!!!!!!!!!!" << endl;
-
   if((h() > 600) && (w() > 750)) {
     resizeWidgets(12);
     v_nam->label("VName:");
