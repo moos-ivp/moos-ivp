@@ -105,7 +105,10 @@ void SimEngine::propagateDepth(NodeRecord& record,
     double new_depth = prev_depth + (1 * total_depth_rate * delta_time);
     record.setDepth(new_depth);
     // Pitch added by HS 120124
-    double pitch = - asin((pitch_depth_rate+actuator_depth_rate)/speed); 
+
+    double pitch =0 ;
+    if (speed > 0)
+      pitch = - asin((pitch_depth_rate+actuator_depth_rate)/speed); 
     record.setPitch(pitch);
   }
     
