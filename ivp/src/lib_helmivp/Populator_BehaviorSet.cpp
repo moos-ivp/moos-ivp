@@ -314,7 +314,7 @@ bool Populator_BehaviorSet::handleLine(string line,
       }
       return(true);
     }
-    else if(!strncasecmp("behavior ", line.c_str(), 9)) {
+    else if(!strncasecmp("behavior", line.c_str(), 8)) {
       if(m_parse_mode == "set-defined-ish")
 	closeSetMode();
       string bhv_str  = biteString(line, '=');
