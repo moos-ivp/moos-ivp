@@ -30,7 +30,20 @@ ProcessConfig = ANTLER
   Run = pHelmIvP        @ NewConsole = false
   Run = pLogger         @ NewConsole = false
   Run = uTimerScript    @ NewConsole = false
+  Run = uProcessWatch   @ NewConsole = true
 }
+
+//------------------------------------------
+// uProcessWatch config block
+
+ProcessConfig = uProcessWatch                                   
+{                                                               
+  AppTick   = 4                                                 
+  CommsTick = 4                                                 
+                                                                
+  WATCH_ALL = true                                              
+  NOWATCH = uXMS*                                               
+}                                                             
 
 //------------------------------------------
 // pLogger config block
