@@ -634,6 +634,39 @@ string XYSegList::get_spec(unsigned int precision, string param) const
   return(spec);
 }
 
+
+//---------------------------------------------------------------
+// Procedure: get_spec_pts
+//   Purpose: Get a string specification of the just the points. We set
+//            the vertex precision to be at the integer by default.
+
+string XYSegList::get_spec_pts(unsigned int precision) const
+{
+  string spec;
+
+  // Clip the precision to be at most 6
+  if(precision > 6)
+    precision = 6;
+
+  unsigned int i, vsize = m_vx.size();
+  if(vsize > 0)
+    spec += "pts={";
+  for(i=0; i<vsize; i++) {
+    spec += doubleToStringX(m_vx[i],precision);
+    spec += ",";
+    spec += doubleToStringX(m_vy[i],precision);
+    if((m_vz[i] != 0) || (m_vprop[i] != ""))
+      spec += "," + doubleToStringX(m_vz[i], precision);
+    if(m_vprop[i] != "")
+      spec += "," + m_vprop[i];
+    if(i != vsize-1)
+      spec += ":";
+    else
+      spec += "}";
+  }
+  return(spec);
+}
+
 //---------------------------------------------------------------
 // Procedure: closest_vertex
 //   Purpose: Find the existing vertex that is closest to the 

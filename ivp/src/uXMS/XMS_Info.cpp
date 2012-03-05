@@ -125,12 +125,12 @@ void showExampleConfigAndExit()
   blk("  VAR = PROC_WATCH_EVENT                                        ");
   blk("                                                                ");
   blk("  HISTORY_VAR = DB_CLIENTS                                      ");
-  blu("  DIPLAY_VIRGINS = true           // default                    ");
+  blu("  DISPLAY_VIRGINS = true          // default                    ");
   blk("  DISPLAY_EMPTY_STRINGS = true    // default                    ");
   blk("  DISPLAY_SOURCE        = false   // default                    ");
   blk("  DISPLAY_TIME          = false   // default                    ");
-  blk("  DIPLAY_COMMUNITY      = false   // default                    ");
-  blk("  DIPLAY_ALL            = false   // default                    ");
+  blk("  DISPLAY_COMMUNITY     = false   // default                    ");
+  blk("  DISPLAY_ALL           = false   // default                    ");
   blk("                                                                ");
   blk("  COLOR_MAP    = pHelmIvP, red   // All postings by pHelmIvP red");
   blk("  COLOR_MAP    = NAV_SPEED, blue // Only var NAV_SPEED is blue  ");
