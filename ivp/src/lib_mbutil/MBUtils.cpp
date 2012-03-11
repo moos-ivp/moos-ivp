@@ -781,7 +781,7 @@ string stripComment(const string& str, const string& cstr)
 
 bool isValidIPAddress(const string& ipstring)
 {
-  if(ipstring == "localhost")
+  if(tolower(ipstring) == "localhost")
     return(true);
 
   vector<string> svector = parseString(ipstring, '.');

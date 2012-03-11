@@ -8,6 +8,8 @@
 #ifndef P_HOST_INFO_HEADER
 #define P_HOST_INFO_HEADER
 
+#include <string>
+#include <vector>
 #include "MOOSLib.h"
 
 class HostInfo : public CMOOSApp
@@ -26,6 +28,7 @@ class HostInfo : public CMOOSApp
   void generateIPInfoFiles();
   void gatherIPInfoFromFiles();
   void postIPInfo();
+  void printReport();
 
  protected: 
   std::string readOSXInfoIP(std::string);
@@ -36,9 +39,14 @@ class HostInfo : public CMOOSApp
 
  protected: // Config variables
   std::string   m_tmp_file_dir;
+  std::string   m_default_hostip;
+  bool          m_default_hostip_force;
+  double        m_report_interval;
 
  protected: // state variables
   unsigned int  m_iterations;
+  double        m_last_report_time;
+  double        m_curr_time;
 
   std::string   m_ip_osx_wifi;
   std::string   m_ip_osx_airport;
@@ -58,11 +66,14 @@ class HostInfo : public CMOOSApp
   std::string   m_host_ip;
   std::string   m_host_port_db;
   std::string   m_host_port_udp;
-  std::string   m_timewarp;
+  double        m_timewarp;
+  std::string   m_timewarp_str;
 
   std::string   m_host_ip_verbose;
   std::string   m_host_ip_all;
-
+  std::string   m_host_record_all;
+  
+  std::vector<std::string> m_bad_configs;
 };
 
 #endif 

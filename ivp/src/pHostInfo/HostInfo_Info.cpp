@@ -33,28 +33,34 @@ void showSynopsis()
 
 void showHelpAndExit()
 {
-  blk("                                                          ");
-  blk("Usage: uFldCommsRegister file.moos [OPTIONS]              ");
-  blk("                                                          ");
+  blk("                                                                ");
+  blk("Usage: pHostInfo file.moos [OPTIONS]                            ");
+  blk("                                                                ");
   showSynopsis();
-  blk("                                                          ");
-  blk("Options:                                                  ");
-  mag("  --alias","=<ProcessName>                                ");
-  blk("      Launch uFldCommsRegister with the given             ");
-  blk("      process name rather than uFldCommsRegister.         ");
-  mag("  --example, -e                                           ");
-  blk("      Display example MOOS configuration block.           ");
-  mag("  --help, -h                                              ");
-  blk("      Display this help message.                          ");
-  mag("  --interface, -i                                         ");
-  blk("      Display MOOS publications and subscriptions.        ");
-  mag("  --version,-v                                            ");
-  blk("      Display release version of uFldCommsRegister.       ");
-  blk("                                                          ");
-  blk("Note: If argv[2] does not otherwise match a known option, ");
-  blk("      then it will be interpreted as a run alias. This is ");
-  blk("      to support pAntler launching conventions.           ");
-  blk("                                                          ");
+  blk("                                                                ");
+  blk("Options:                                                        ");
+  mag("  --alias","=<ProcessName>                                      ");
+  blk("      Launch pHostInfo with the given process name rather       ");
+  blk("      than pHostInfo.                                           ");
+  mag("  --example, -e                                                 ");
+  blk("      Display example MOOS configuration block.                 ");
+  mag("  --help, -h                                                    ");
+  blk("      Display this help message.                                ");
+  mag("  --hostip","=<HostIP>                                          ");
+  blk("      Use the given IP address as a fall-back rather than the   ");
+  blk("      the fall-back address of \"localhost\".                   ");
+  mag("  --HOSTIP","=<HostIP>                                          ");
+  blk("      Force the use of the given IP address as the reported IP  ");
+  blk("      address ignoring any other auto-discovered IP address.    ");
+  mag("  --interface, -i                                               ");
+  blk("      Display MOOS publications and subscriptions.              ");
+  mag("  --version,-v                                                  ");
+  blk("      Display release version of pHostInfo.                     ");
+  blk("                                                                ");
+  blk("Note: If argv[2] does not otherwise match a known option,       ");
+  blk("      then it will be interpreted as a run alias. This is       ");
+  blk("      to support pAntler launching conventions.                 ");
+  blk("                                                                ");
   exit(0);
 }
 
@@ -73,7 +79,8 @@ void showExampleConfigAndExit()
   blk("  AppTick   = 4                                                 ");
   blk("  CommsTick = 4                                                 ");
   blk("                                                                ");
-  blk("  TEMP_FILE_DIR = ./                                            ");
+  blk("  TEMP_FILE_DIR  = ./                                           ");
+  blk("  DEFAULT_HOSTIP = 192.168.0.55    // default is \"localhost\"  ");
   blk("}                                                               ");
   exit(0);
 }

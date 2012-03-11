@@ -9,6 +9,7 @@
 #include <iterator>
 #include "HostInfo.h"
 #include "HostRecord.h"
+#include "ColorParse.h"
 #include "FileBuffer.h"
 #include "MBUtils.h"
 
@@ -20,7 +21,11 @@ using namespace std;
 HostInfo::HostInfo()
 {
   // Initialize config variables
-  m_tmp_file_dir = "~/";
+  m_tmp_file_dir   = "~/";
+  m_default_hostip = "localhost";   // fall-back ip address
+  m_default_hostip_force = false;   // Force use fall-back for debugging
+  m_report_interval = 0.75;         // Terminal report interval seconds
+  m_last_report_time = 0;           // Timestamp of last terminal report
 
   // Initialize state variables
   m_iterations = 0;
@@ -43,7 +48,7 @@ bool HostInfo::OnNewMail(MOOSMSG_LIST &NewMail)
     string comm  = msg.GetCommunity();
     double dval  = msg.GetDouble();
 	
-#if 0
+#if 0 // Keep these around just for template
     string sval  = msg.GetString(); 
     string msrc  = msg.GetSource();
     double mtime = msg.GetTime();
@@ -86,17 +91,28 @@ bool HostInfo::OnConnectToServer()
 bool HostInfo::Iterate()
 {
   m_iterations++;
+  m_curr_time = MOOSTime();
 
-  if(!m_ip_info_files_generated)
-    generateIPInfoFiles();
-
-  if(!m_ip_info_gathered || (m_host_ip==""))
-    gatherIPInfoFromFiles();
+  // Do all the auto-discovery work here - unless in the rare/debugging 
+  // case where the hostip address is hard-configured (m_default_hostip_force
+  // is true).
+  if(m_default_hostip_force == false) {
+    if(!m_ip_info_files_generated)
+      generateIPInfoFiles();
+    
+    if(!m_ip_info_gathered || (m_host_ip==""))
+      gatherIPInfoFromFiles();
+  }    
 
   if((!m_ip_info_posted) || ((m_iterations % 10) == 0))
     postIPInfo();
 
-  cout << "*" << flush;
+  double moos_elapsed_time = m_curr_time - m_last_report_time;
+  double real_elapsed_time = moos_elapsed_time / m_timewarp;
+  if(real_elapsed_time >= m_report_interval)
+    printReport();
+  else
+    cout << "*" << flush;
   return(true);
 }
 
@@ -110,13 +126,37 @@ bool HostInfo::OnStartUp()
   if(m_MissionReader.GetConfiguration(GetAppName(), sParams)) {
     list<string>::iterator p;
     for(p=sParams.begin(); p!=sParams.end(); p++) {
+      string original_line = *p;
       string param = stripBlankEnds(toupper(biteString(*p, '=')));
       string value = stripBlankEnds(*p);
       
-      if(param == "TEMP_FILE_DIR")
+      if(param == "TEMP_FILE_DIR") {
 	if(!strContainsWhite(value))
 	  m_tmp_file_dir = value;
+	else
+	  m_bad_configs.push_back(original_line);	  
+      }
       
+      else if((param == "DEFAULT_HOSTIP") ||
+	      (param == "DEFAULT_HOST_IP")) {
+	if(isValidIPAddress(value))
+	  m_default_hostip = value;
+	else
+	  m_bad_configs.push_back(original_line);	  
+      }
+
+      else if((param == "DEFAULT_HOSTIP_FORCE") || 
+	      (param == "DEFAULT_HOST_IP_FORCE")) {
+	if(isValidIPAddress(value)) {
+	  m_default_hostip = value;
+	  m_default_hostip_force = true;
+	}
+	else
+	  m_bad_configs.push_back(original_line);	  
+      }
+
+      else if((param != "APPTICK") && (param != "COMMSTICK"))
+	m_bad_configs.push_back(original_line);
     }
   }
 
@@ -128,9 +168,10 @@ bool HostInfo::OnStartUp()
     MOOSTrace("Community name not found in mission file!\n");
   else
     MOOSTrace("Community: %s\n", m_host_community.c_str());
-
-  m_timewarp = doubleToStringX(GetMOOSTimeWarp());
-
+  
+  m_timewarp     = GetMOOSTimeWarp();
+  m_timewarp_str = doubleToStringX(m_timewarp);
+  
   if(strContains(m_tmp_file_dir, "~")) {
     string home_dir = getenv("HOME");
     m_tmp_file_dir = findReplace(m_tmp_file_dir, "~", home_dir);
@@ -239,21 +280,26 @@ void HostInfo::gatherIPInfoFromFiles()
 
 void HostInfo::postIPInfo()
 {
-  if(m_host_ip == "")
-    m_host_ip = "localhost";
+  // If m_host_ip is empty string give it a default value
+  if(m_host_ip == "")             
+    m_host_ip = m_default_hostip;
 
   m_host_ip_all = "";
   m_host_ip_verbose = "";
 
-  addIPInfo(m_ip_linux_wifi, "LINUX_WLAN");
-  addIPInfo(m_ip_osx_wifi, "OSX_WIFI");
-  addIPInfo(m_ip_osx_airport, "OSX_AIRPORT");
-  addIPInfo(m_ip_linux_ethernet0, "LINUX_ETH0");
-  addIPInfo(m_ip_linux_ethernet1, "LINUX_ETH1");
-  addIPInfo(m_ip_osx_ethernet, "OSX_ETHERNET");
-  addIPInfo(m_ip_osx_ethernet1, "OSX_ETHERNET1");
-  addIPInfo(m_ip_osx_ethernet2, "OSX_ETHERNET2");
-  
+  if(m_default_hostip_force == true) 
+    addIPInfo(m_default_hostip, "USER_HARD_CONFIGURED");
+  else {
+    addIPInfo(m_ip_linux_wifi, "LINUX_WLAN");
+    addIPInfo(m_ip_osx_wifi, "OSX_WIFI");
+    addIPInfo(m_ip_osx_airport, "OSX_AIRPORT");
+    addIPInfo(m_ip_linux_ethernet0, "LINUX_ETH0");
+    addIPInfo(m_ip_linux_ethernet1, "LINUX_ETH1");
+    addIPInfo(m_ip_osx_ethernet, "OSX_ETHERNET");
+    addIPInfo(m_ip_osx_ethernet1, "OSX_ETHERNET1");
+    addIPInfo(m_ip_osx_ethernet2, "OSX_ETHERNET2");
+  }    
+
   if(m_host_ip != "")
     m_Comms.Notify("PHI_HOST_IP", m_host_ip);
   if(m_host_ip_all != "")
@@ -270,24 +316,60 @@ void HostInfo::postIPInfo()
   hrecord.setHostIP(m_host_ip);
   hrecord.setPortDB(m_host_port_db);
   hrecord.setPortUDP(m_host_port_udp);
-  hrecord.setTimeWarp(m_timewarp);
+  hrecord.setTimeWarp(m_timewarp_str);
   
-  string full_info = hrecord.getSpec();
-  m_Comms.Notify("PHI_HOST_INFO", full_info);
-
-  cout << endl;
-  cout << "PHI_HOST_IP:         " << m_host_ip << endl;
-  cout << "PHI_HOST_IP_ALL:     " << m_host_ip_all << endl;
-  cout << "PHI_HOST_IP_VERBOSE: " << m_host_ip_verbose << endl;
-  cout << "PHI_HOST_PORT:       " << m_host_port_db << endl;
-  cout << "PHI_HOST_PORT_UDP:   " << m_host_port_udp << endl;
-  cout << "PHI_HOST_INFO:       " << full_info << endl;
+  m_host_record_all = hrecord.getSpec();
+  m_Comms.Notify("PHI_HOST_INFO", m_host_record_all);
 
   m_ip_info_posted = true;
 
-  if(m_host_ip == "localhost")
+  // If m_host_ip still is the default value, reset m_host_ip to indicate
+  // that the host informatin has still yet to be determined.
+  if(m_host_ip == m_default_hostip)
     m_host_ip = "";
+}
 
+//---------------------------------------------------------
+// Procedure: printReport()
+
+void HostInfo::printReport()
+{
+  // Part 1: Header
+  cout << endl << endl << endl << endl << endl;
+  cout << "======================================================" << endl;
+  cout << "pHostInfo Report ";
+  cout << termColor("reverseblue") + m_host_community + termColor();
+  cout << "  (" << m_iterations << ")" << endl;
+
+  // Part 2: Configuration Warnings
+  unsigned int config_warnings = m_bad_configs.size();
+  if(config_warnings != 0) {
+    cout << termColor("red") << "MOOS File Configuration Errors (";
+    cout << config_warnings << ")" << endl;
+    for(unsigned i=0; i<config_warnings; i++) {
+      cout << "  [" <<stripBlankEnds(m_bad_configs[i]) << "]" << endl;
+    }
+  }
+  cout << termColor();
+
+
+  // Part 3: Normal Status Output
+  cout << "  PHI_HOST_IP:         " << m_host_ip;
+
+  if((m_host_ip == "") && m_default_hostip_force)
+    cout << termColor("reversered") << "DEFAULT HOSTIP FORCED";
+  else if(m_host_ip == "")
+    cout << termColor("reversegreen") << "DEFAULT HOSTIP USED";
+
+  cout << termColor() << endl;
+
+  cout << "  PHI_HOST_IP_ALL:     " << m_host_ip_all << endl;
+  cout << "  PHI_HOST_IP_VERBOSE: " << m_host_ip_verbose << endl;
+  cout << "  PHI_HOST_PORT:       " << m_host_port_db << endl;
+  cout << "  PHI_HOST_PORT_UDP:   " << m_host_port_udp << endl;
+  cout << "  PHI_HOST_INFO:       " << m_host_record_all << endl;
+
+  m_last_report_time = m_curr_time;
 }
 
 
