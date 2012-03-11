@@ -1,7 +1,8 @@
 =============================================================== 
 uProcessWatch Example MOOS Configuration                        
 =============================================================== 
-                                                                
+
+ProcessConfig = uProcessWatch                                                                
 {                                                               
   AppTick   = 4                                                 
   CommsTick = 4                                                 

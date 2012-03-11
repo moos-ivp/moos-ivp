@@ -82,6 +82,7 @@ void showExampleConfigAndExit()
   blu("uProcessWatch Example MOOS Configuration                        ");
   blu("=============================================================== ");
   blk("                                                                ");
+  blk("ProcessConfig = uProcessWatch                                   ");
   blk("{                                                               ");
   blk("  AppTick   = 4                                                 ");
   blk("  CommsTick = 4                                                 ");
