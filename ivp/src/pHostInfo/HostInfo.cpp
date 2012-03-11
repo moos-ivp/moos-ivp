@@ -29,6 +29,7 @@ HostInfo::HostInfo()
 
   // Initialize state variables
   m_iterations = 0;
+  m_timewarp   = 1;
 
   m_ip_info_files_generated = false;
   m_ip_info_gathered = false;
