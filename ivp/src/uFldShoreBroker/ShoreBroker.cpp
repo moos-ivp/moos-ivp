@@ -7,6 +7,7 @@
 
 #include <iterator>
 #include "ShoreBroker.h"
+#include "ColorParse.h"
 #include "HostRecord.h"
 #include "HostRecordUtils.h"
 #include "MBUtils.h"
@@ -368,8 +369,11 @@ bool ShoreBroker::handleConfigQBridge(string line)
 
 void ShoreBroker::printReport()
 {
+  string shore_info = termColor("magenta") + m_shore_host_record.getSpecTerse();
+
   cout << endl << endl << endl << endl << endl;
   cout << "ShoreBroker Status ----------- (" << m_iteration << ")" << endl;
+  cout << " Shoreside Info:         " << shore_info << termColor() << endl;
   cout << " MOOS Time Warp:                  " << m_timewarp << endl;
   cout << " Total PHI_HOST_INFO    received: " << m_phis_received << endl;
   cout << " Total NODE_BROKER_PING received: " << m_pings_received << endl;

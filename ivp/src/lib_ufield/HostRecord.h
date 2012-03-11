@@ -56,6 +56,7 @@ class HostRecord
   bool valid(const std::string& s="") const;
 
   std::string getSpec() const;
+  std::string getSpecTerse() const;
 
  protected: 
   std::string  m_community;
