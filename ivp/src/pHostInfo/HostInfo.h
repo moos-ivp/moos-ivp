@@ -59,6 +59,7 @@ class HostInfo : public CMOOSApp
   std::string   m_ip_linux_usb0;
   std::string   m_ip_linux_usb1;
   std::string   m_ip_linux_usb2;
+  std::string   m_ip_linux_any;
 
   bool          m_ip_info_files_generated;
   bool          m_ip_info_gathered;
