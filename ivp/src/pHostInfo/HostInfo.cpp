@@ -246,6 +246,21 @@ void HostInfo::generateIPInfoFiles()
   sys_call += m_tmp_file_dir + "ipinfo_linux_wifi_" + name + ".txt";
   system(sys_call.c_str());
 
+  sys_call  = "ifconfig usb0 | grep 'inet addr:'| grep -v '127.0.0.1' ";
+  sys_call += "| cut -d: -f2 | awk '{ print $1}' > ";
+  sys_call += m_tmp_file_dir + "ipinfo_linux_usb0_" + name + ".txt";
+  system(sys_call.c_str());
+
+  sys_call  = "ifconfig usb1 | grep 'inet addr:'| grep -v '127.0.0.1' ";
+  sys_call += "| cut -d: -f2 | awk '{ print $1}' > ";
+  sys_call += m_tmp_file_dir + "ipinfo_linux_usb1_" + name + ".txt";
+  system(sys_call.c_str());
+
+  sys_call  = "ifconfig usb2 | grep 'inet addr:'| grep -v '127.0.0.1' ";
+  sys_call += "| cut -d: -f2 | awk '{ print $1}' > ";
+  sys_call += m_tmp_file_dir + "ipinfo_linux_usb2_" + name + ".txt";
+  system(sys_call.c_str());
+
   m_ip_info_files_generated = true;
 }
 
@@ -267,6 +282,9 @@ void HostInfo::gatherIPInfoFromFiles()
   m_ip_linux_wifi      = readLinuxInfoIP("ipinfo_linux_wifi_" + name + ".txt");
   m_ip_linux_ethernet0 = readLinuxInfoIP("ipinfo_linux_ethernet0_" + name + ".txt");
   m_ip_linux_ethernet1 = readLinuxInfoIP("ipinfo_linux_ethernet1_" + name + ".txt");
+  m_ip_linux_usb0      = readLinuxInfoIP("ipinfo_linux_usb0_" + name + ".txt");
+  m_ip_linux_usb1      = readLinuxInfoIP("ipinfo_linux_usb1_" + name + ".txt");
+  m_ip_linux_usb2      = readLinuxInfoIP("ipinfo_linux_usb2_" + name + ".txt");
 
   m_ip_info_gathered = true;
 }
@@ -296,6 +314,9 @@ void HostInfo::postIPInfo()
     addIPInfo(m_ip_osx_airport, "OSX_AIRPORT");
     addIPInfo(m_ip_linux_ethernet0, "LINUX_ETH0");
     addIPInfo(m_ip_linux_ethernet1, "LINUX_ETH1");
+    addIPInfo(m_ip_linux_usb0, "LINUX_USB0");
+    addIPInfo(m_ip_linux_usb1, "LINUX_USB1");
+    addIPInfo(m_ip_linux_usb2, "LINUX_USB2");
     addIPInfo(m_ip_osx_ethernet, "OSX_ETHERNET");
     addIPInfo(m_ip_osx_ethernet1, "OSX_ETHERNET1");
     addIPInfo(m_ip_osx_ethernet2, "OSX_ETHERNET2");
@@ -463,6 +484,9 @@ void HostInfo::clearTempFiles()
   system("rm -f ~/.ipinfo_osx_ethernet2.txt");   // OS X 
   system("rm -f ~/.ipinfo_linux_ethernet0.txt"); // Linux
   system("rm -f ~/.ipinfo_linux_ethernet1.txt"); // Linux
+  system("rm -f ~/.ipinfo_linux_usb0.txt");      // Linux
+  system("rm -f ~/.ipinfo_linux_usb1.txt");      // Linux
+  system("rm -f ~/.ipinfo_linux_usb2.txt");      // Linux
   system("rm -f ~/.ipinfo_linux_wifi.txt");      // Linux
 }
 
