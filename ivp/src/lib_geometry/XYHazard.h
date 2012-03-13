@@ -32,10 +32,11 @@ class XYHazard
   virtual ~XYHazard() {};
 
   // Setters
-  void    setX(double x)               {m_x=x;};
-  void    setY(double y)               {m_y=y;};
+  void    setX(double x)               {m_x=x; m_x_set=true;};
+  void    setY(double y)               {m_y=y; m_y_set=true;};
   void    setLabel(std::string label)  {m_label=label;};
   void    setType(std::string v)       {m_type=v;};
+  void    setSource(std::string v)     {m_source=v;};
 
   bool    setShape(std::string);
   bool    setWidth(std::string);
@@ -46,8 +47,11 @@ class XYHazard
   double  getY() const             {return(m_y);};
   double  getWidth() const         {return(m_width);};
 
+  bool    valid() const            {return(m_x_set && m_y_set);};
+
   std::string getLabel() const     {return(m_label);};
   std::string getType() const      {return(m_type);};
+  std::string getSource() const    {return(m_source);};
   std::string getShape() const     {return(m_shape);};
   std::string getColor() const     {return(m_color);};
   std::string getSpec() const;
@@ -55,7 +59,10 @@ class XYHazard
  protected: // Key properties
   double       m_x;
   double       m_y;
+  bool         m_x_set;
+  bool         m_y_set;
   std::string  m_label;
+  std::string  m_source;
   std::string  m_type;
 
  protected: // Drawing hints

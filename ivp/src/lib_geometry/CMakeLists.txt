@@ -34,6 +34,7 @@ SET(HEADERS
   XYGrid.h
   XYConvexGrid.h
   XYHazard.h
+  XYHazardSet.h
   XYHexagon.h
   XYHexGrid.h
   XYObject.h
