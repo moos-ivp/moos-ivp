@@ -383,6 +383,11 @@ XYSegList stringLawnmower2SegList(string str)
   if(!rads_set && !degs_set)
     return(null_seglist);
 
+  if(rows == "east-west")
+    rows = "ew";
+  else if(rows == "north-south")
+    rows = "ns";
+
   if((rows != "ew") && (rows != "ns"))
     rows = "ew";
 
