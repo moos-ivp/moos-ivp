@@ -10,6 +10,7 @@
 
 #include <vector>
 #include <string>
+#include <set>
 #include "XYFieldGenerator.h"
 #include "XYPolygon.h"
 #include "XYFormatUtilsPoly.h"
@@ -17,13 +18,15 @@
 class HazardFieldGenerator
 {
  public:
-  HazardFieldGenerator() {};
+  HazardFieldGenerator() {m_pt_step=1; m_count=0;};
   virtual ~HazardFieldGenerator() {};
 
-  bool addPolygon(std::string s) {return(m_field_generator.addPolygon(s));};
-  bool addObjectSet(std::string);
+  bool   addPolygon(std::string s) {return(m_field_generator.addPolygon(s));};
+  bool   addObjectSet(std::string);
 
-  bool generate();
+  bool   generate();
+  
+  std::string generateRandomUniqueLabel();
 
  protected:
   bool generateObjectSet(unsigned int amt, std::string obj_type);
@@ -33,6 +36,11 @@ class HazardFieldGenerator
   std::vector<std::string>  m_obj_set_type;
 
   XYFieldGenerator          m_field_generator;
+  double                    m_pt_step;
+  unsigned int              m_count;
+
+  std::set<std::string>     m_rand_labels;
+
 
 };
 

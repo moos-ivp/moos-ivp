@@ -64,6 +64,7 @@ int main(int argc, char *argv[])
     cout << "  --polygon=<poly>                                     " << endl;
     cout << "      Specify a polygon region of the form:            " << endl;
     cout << "      \"0,0 : 50,0 : 50,50 : 0,50\"                    " << endl;
+    cout << "  gen_hazards --polygon=-150,-75:-150,-400:400,-400:400,-75 --objects=20,hazard --objects=20,benign " << endl;
     return(0);
   }
 

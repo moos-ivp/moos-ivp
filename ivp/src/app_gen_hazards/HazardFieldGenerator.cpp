@@ -60,21 +60,65 @@ bool HazardFieldGenerator::generate()
 
 
 //---------------------------------------------------------
+// Procedure: generateRandomUniqueLabel
+
+string HazardFieldGenerator::generateRandomUniqueLabel()
+{
+  unsigned int tries = 0;
+  unsigned int max_tries = 1000;
+  
+  string return_str = "label_error";
+
+  int field = 100;
+  if(m_rand_labels.size() >= 100)
+    field = 1000;
+  if(m_rand_labels.size() >= 1000)
+    field = 10000;
+  if(m_rand_labels.size() >= 10000)
+    field = 100000;
+
+
+  bool done = false;
+  while(!done && (tries < max_tries)) {
+    int    ival = rand() % field;
+    string sval = intToString(ival);
+    if(m_rand_labels.count(sval) == 0) {
+      m_rand_labels.insert(sval);
+      return_str = sval;
+      done = true;
+    }
+    else
+      tries++;
+  }
+
+  return(return_str);
+}
+    
+
+
+
+//---------------------------------------------------------
 // Procedure: generateObjectSet
 
 bool HazardFieldGenerator::generateObjectSet(unsigned int amt, string obj_type)
 {
   for(unsigned int i=0; i<amt; i++) {
-    
+    m_count++;
     XYPoint point = m_field_generator.generatePoint();
 
+    double vx = snapToStep(point.get_vx(), m_pt_step);
+    double vy = snapToStep(point.get_vy(), m_pt_step);
+
+    string label = generateRandomUniqueLabel();
+
     XYHazard hazard;
-    hazard.setX(point.get_vx());
-    hazard.setY(point.get_vy());
+    hazard.setX(vx);
+    hazard.setY(vy);
     hazard.setType(obj_type);
+    hazard.setLabel(label);
 
     string msg = hazard.getSpec();
-    cout << msg << endl;
+    cout << "hazard = " << msg << endl;
   }
   return(true);
 }
