@@ -31,6 +31,8 @@ SET(HEADERS
   XYFormatUtilsMarker.h
   XYFormatUtilsRangePulse.h
   XYFormatUtilsCommsPulse.h
+  XYFormatUtilsHazard.h
+  XYFormatUtilsHazardSet.h
   XYGrid.h
   XYConvexGrid.h
   XYHazard.h
