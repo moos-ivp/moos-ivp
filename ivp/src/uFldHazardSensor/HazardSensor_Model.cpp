@@ -48,12 +48,14 @@ HazardSensor_Model::HazardSensor_Model()
   m_iterations = 0;
   m_reports    = 0;
   m_last_report_time = 0;
+  m_last_summary_time = 0;    // last time settings options summary posted
 
   // Configuration variables
   // -------------------------------------------------------------
   m_verbose = true;
-  m_min_reset_interval = 300;    // seconds
-  m_term_report_interval = 0.8;  // realtime (non-timewarp) seconds
+  m_min_reset_interval = 300;        // seconds
+  m_term_report_interval = 0.8;      // realtime (non-timewarp) seconds
+  m_options_summary_interval = 10;   // in timewarped seconds
 
   // If uniformly random noise used, (m_rn_algorithm = "uniform")
   // this variable reflects the range of the uniform variable in 
@@ -121,6 +123,8 @@ bool HazardSensor_Model::setParam(string param, string value, unsigned int pass)
       m_circle_duration = atof(value.c_str());
       return(true);
     }
+    else if(param == "options_summary_interval")
+      return(setOptionsSummaryInterval(value));
     else if(param == "swath_length")
       return(setSwathLength(value));
     else if(param == "show_swath")
@@ -191,6 +195,7 @@ void HazardSensor_Model::iterate()
 {
   m_iterations++;
 
+  // Part 1: Consider printing a report to the terminal
   if(!m_verbose)
     cout << "*" << flush;
   else {
@@ -203,6 +208,14 @@ void HazardSensor_Model::iterate()
       m_last_report_time = m_curr_time;
     }
   }
+
+  // Part 2: Consider posting an settings options summary
+  double elapsed_time = m_curr_time - m_last_summary_time;
+  if(elapsed_time >= m_options_summary_interval) {
+    addMessage("UHZ_OPTIONS_SUMMARY", m_sensor_prop_summary);
+    m_last_summary_time = m_curr_time;
+  }
+
 }
 
 //------------------------------------------------------------
@@ -273,7 +286,7 @@ bool HazardSensor_Model::addSensorConfig(string line)
       str_width = value;
     else if(param == "exp") 
       str_exp = value;
-    else if(param == "class") 
+    else if((param == "class") || (param == "pclass"))
       str_class = value;
   }
   if(!isNumber(str_width) || !isNumber(str_exp) || !isNumber(str_class))
@@ -290,6 +303,15 @@ bool HazardSensor_Model::addSensorConfig(string line)
   m_sensor_prop_width.push_back(d_width);
   m_sensor_prop_exp.push_back(d_exp);
   m_sensor_prop_class.push_back(d_class);
+
+  // Build up the sensor property summary, published occassionally
+  // "width=25,exp=4,class=0.8 : width=10,exp=8,class=0.93"
+
+  if(m_sensor_prop_summary != "")
+    m_sensor_prop_summary += ":";
+  m_sensor_prop_summary += "width=" + str_width;
+  m_sensor_prop_summary += ",exp="   + str_exp;
+  m_sensor_prop_summary += ",class=" + str_class;
 
   return(true);
 }
@@ -524,10 +546,9 @@ void HazardSensor_Model::postHazardReport(unsigned int hix,
   }
     
   // Part 2: Get the hazard type info and do classification
-  double haz_x     = m_hazards[hix].getX();
-  double haz_y     = m_hazards[hix].getY();
-  string htype     = m_hazards[hix].getType();
-  string label     = m_hazards[hix].getLabel();
+  XYHazard raw_hazard = m_hazards[hix];
+  string htype        = raw_hazard.getType();
+ 
   bool   is_hazard = (htype == "hazard");
 
   double prob_classify = m_map_prob_classify[vname];
@@ -543,16 +564,18 @@ void HazardSensor_Model::postHazardReport(unsigned int hix,
   // Part 3: Build the report to be posted locally and eventually
   //         out to the source vehicle.
 
-  string str = "x=" + doubleToStringX(haz_x, 2);
-  str += ",y="      + doubleToStringX(haz_y, 2);
-  str += ",hazard=" + boolToString(is_hazard);
-  if(label != "")
-    str += ",label=" + label;
+  XYHazard post_hazard = raw_hazard;
+  if(is_hazard) 
+    post_hazard.setType("hazard");
+  else
+    post_hazard.setType("benign");
+  string hazard_spec = post_hazard.getSpec();
+
   
-  string full_str = "vname=" + vname + "," + str;
+  string full_str = "vname=" + vname + "," + hazard_spec;
 
   addMessage("UHZ_HAZARD_REPORT", full_str);
-  addMessage("UHZ_HAZARD_REPORT_"+toupper(vname), str);
+  addMessage("UHZ_HAZARD_REPORT_"+toupper(vname), hazard_spec);
 
   // Part 4: Build some local memo/debug messages.
   string memo = "Detect/Classify report sent to vehicle: " + vname;
@@ -561,6 +584,8 @@ void HazardSensor_Model::postHazardReport(unsigned int hix,
 
   // Part 5: Build/Post some visual artifacts using VIEW_CIRCLE
   if((m_circle_duration == -1) || (m_circle_duration > 0)) {
+    double haz_x = raw_hazard.getX();
+    double haz_y = raw_hazard.getY();
     XYCircle circ(haz_x, haz_y, 10);
     if(is_hazard) {
       circ.set_color("edge", "yellow");
@@ -715,6 +740,7 @@ bool HazardSensor_Model::updateNodePolygon(unsigned int ix)
   return(true);
 }
 
+
 //------------------------------------------------------------
 // Procedure: setRandomNoiseAlgorithm
 
@@ -722,14 +748,14 @@ bool HazardSensor_Model::setRandomNoiseAlgorithm(string str)
 {
   string algorithm = biteStringX(str, ',');
   string parameters = str;
-
+  
   if(algorithm == "uniform") {
     vector<string> svector = parseString(parameters, ',');
     unsigned int i, vsize = svector.size();
     for(i=0; i<vsize; i++) {
       string param = biteStringX(svector[i], '=');
       string value = svector[i];
-      if(param == "pct") 
+      if(param == "pct")
 	m_rn_uniform_pct = vclip(atof(value.c_str()), 0, 1);
     }
   }
@@ -737,6 +763,7 @@ bool HazardSensor_Model::setRandomNoiseAlgorithm(string str)
     return(false);
 
   m_rn_algorithm = algorithm;
+
   return(true);
 }
 
@@ -760,6 +787,19 @@ bool HazardSensor_Model::setTermReportInterval(string str)
 
   m_term_report_interval = atof(str.c_str());
   m_term_report_interval = vclip(m_term_report_interval, 0, 10);
+  return(true);
+}
+
+//------------------------------------------------------------
+// Procedure: setOptionsSummaryInterval
+
+bool HazardSensor_Model::setOptionsSummaryInterval(string str)
+{
+  if(!isNumber(str))
+    return(false);
+  
+  m_options_summary_interval = atof(str.c_str());
+  m_options_summary_interval = vclip(m_options_summary_interval, 0, 120);
   return(true);
 }
 

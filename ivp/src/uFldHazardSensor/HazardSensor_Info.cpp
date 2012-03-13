@@ -154,6 +154,9 @@ void showInterfaceAndExit()
   blk("  UHZ_CONFIG_ACK      = vname=archie,width=20,pd=0.9,pfa=0.53,  ");
   blk("                        pclass=0.91                             ");
   blk("                                                                ");
+  blk("  UHZ_OPTIONS_SUMMARY = width=10,exp=6,class=0.9:width=25,exp=4,");
+  blk("                        class=0.85:width=50,exp=2,class=0.78    ");
+  blk("                                                                ");
   blk("  VIEW_CIRCLE         = x=-150.3,y=-117.5,radius=10,edge_size=1 ");
   blk("  (detection)           edge_color=white,fill_color=white,      ");
   blk("                        vertex_size=0,fill_transparency=0.3     ");

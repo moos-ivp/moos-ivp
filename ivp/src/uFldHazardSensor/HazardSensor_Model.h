@@ -57,6 +57,7 @@ class HazardSensor_Model
   bool    setRandomNoiseAlgorithm(std::string);
   bool    setSwathTransparency(std::string);
   bool    setTermReportInterval(std::string);
+  bool    setOptionsSummaryInterval(std::string);
 
  protected: // Incoming mail utility
   bool    handleNodeReport(const std::string&);
@@ -82,6 +83,7 @@ class HazardSensor_Model
   double       m_curr_time;
   double       m_time_warp;
   double       m_last_report_time;
+  double       m_last_summary_time;
   unsigned int m_reports;
   unsigned int m_iterations;
 
@@ -105,6 +107,7 @@ class HazardSensor_Model
  protected: // Configuration variables
   double      m_min_reset_interval;
   double      m_term_report_interval;
+  double      m_options_summary_interval;
   bool        m_seed_random;
   bool        m_verbose;
   double      m_swath_len;  // Same for everyone, all settings.
@@ -124,6 +127,7 @@ class HazardSensor_Model
   std::vector<double> m_sensor_prop_width;
   std::vector<double> m_sensor_prop_exp;
   std::vector<double> m_sensor_prop_class;
+  std::string         m_sensor_prop_summary;
 
   // Info for adding random noise to the sensor report.
   std::string m_rn_algorithm;   // Empty string = no random noise
