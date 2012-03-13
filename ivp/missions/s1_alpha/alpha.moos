@@ -38,6 +38,7 @@ ProcessConfig = ANTLER
   Run = pHelmIvP	@ NewConsole = true
   Run = pMarineViewer	@ NewConsole = true
   Run = uProcessWatch	@ NewConsole = true
+  Run = uXMS	        @ NewConsole = true
 }
 
 //------------------------------------------
@@ -47,6 +48,17 @@ ProcessConfig = pHostInfo
 {
   AppTick   = 1
   CommsTick = 1
+}
+
+//------------------------------------------
+// uXMS config block
+
+ProcessConfig = uXMS
+{
+  AppTick   = 1
+  CommsTick = 1
+
+  DISPLAY_ALL = true
 }
 
   

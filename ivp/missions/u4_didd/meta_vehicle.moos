@@ -21,7 +21,7 @@ Processconfig = ANTLER
   Run = pHelmIvP           @ NewConsole = false
   Run = pBasicContactMgr   @ NewConsole = false
   Run = uProcessWatch      @ NewConsole = false
-  Run = pHostInfo          @ NewConsole = false
+  Run = pHostInfo          @ NewConsole = true
   Run = uFldNodeBroker     @ NewConsole = false
   Run = uFldMessageHandler @ NewConsole = true
   Run = uTimerScript       @ NewConsole = false
