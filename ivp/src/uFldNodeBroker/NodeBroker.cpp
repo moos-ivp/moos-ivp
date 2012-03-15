@@ -177,10 +177,9 @@ void NodeBroker::registerPingBridges(bool random)
 
 //------------------------------------------------------------
 // Procedure: registerPingBridgesSubsLocal
-//      Note: If localhost_ip is a valid IP address, and one of 
+//      Note: If localhost_ip is a valid IPaddress, and one of 
 //            the candidate hosts is "localhost", the IP address
 //            will be substituted in.
-
 
 void NodeBroker::registerPingBridgesSubsLocal(string localhost_ip)
 {
