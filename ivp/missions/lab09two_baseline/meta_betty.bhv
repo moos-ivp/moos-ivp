@@ -1,0 +1,47 @@
+//--------    FILE: betty.bhv   -------------
+
+initialize   DEPLOY = false
+initialize   RETURN = false
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{ 
+  name      = wpt_tour
+  pwt       = 100
+  condition = RETURN = false
+  condition = (DEPLOY = true)
+  condition = (SURVEY = COMPLETE)
+  updates   = UP_TOUR_PTS
+  endflag   = RETURN = true
+
+         speed = 1.5   // meters per second
+        radius = 5
+          lead = 12
+     nm_radius = 10
+        points = pts={-151,-217.3:263.2,-8.5:48.5,-195.7:165.9,-116.4:101.3,-159.3:257.6,-131.3:217.3,-16.7:-14.2,-293.6:260.2,-66.2:-65.8,-125.2}, label=tour
+
+ shortest_tour = true
+
+  visual_hints = nextpt_color=brown, nextpt_lcolor=green
+  visual_hints = vertex_color=yellow, edge_color=gray40
+  visual_hints = vertex_size=2, edge_size=1
+}
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name       = waypt_return
+  pwt        = 100
+  condition  = RETURN = true
+  condition  = DEPLOY = true
+  condition = (SURVEY = COMPLETE)
+  perpetual  = true
+  endflag    = RETURN = false
+  endflag    = DEPLOY = false
+
+         speed = 2.0
+        radius = 2.0
+     nm_radius = 8.0
+        points = $(START_POS)
+}
+

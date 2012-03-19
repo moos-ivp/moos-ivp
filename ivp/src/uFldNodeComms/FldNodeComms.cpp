@@ -42,6 +42,7 @@ FldNodeComms::FldNodeComms()
   m_debug            = false;
 
   m_pulse_duration   = 10;      // zero means no pulses posted.
+  m_view_node_rpt_pulses = true;
 
   // If true then comms between vehicles only happens if they are
   // part of the same group. (unless range is within critical).
@@ -95,6 +96,9 @@ bool FldNodeComms::OnNewMail(MOOSMSG_LIST &NewMail)
       bool ok = handleStealth(sval);
       if(!ok && m_debug)
 	MOOSTrace("Unhandled UNC_STEALTH: %s \n", sval.c_str());
+    }
+    else if(key == "UNC_VIEW_NODE_RPT_PULSES") {
+      setBooleanOnString(m_view_node_rpt_pulses, sval);
     }
     else if(key == "UNC_EARANGE") {
       bool ok = handleEarange(sval);
@@ -221,6 +225,13 @@ bool FldNodeComms::OnStartUp()
 	cout << "Improper config: VERBOSE should be \"true\" or \"false\".";
       }
     }
+    else if(param == "VIEW_NODE_RPT_PULSES") {
+      bool ok = setBooleanOnString(m_view_node_rpt_pulses, value);
+      if(!ok) {
+	cout << termColor("red");
+	cout << "Improper config: VIEW_NODE_RPT_PULSES should be \"true\" or \"false\".";
+      }
+    }
     else if(param == "DEBUG") {
       bool ok = setBooleanOnString(m_debug, value);
       if(!ok) {
@@ -245,6 +256,7 @@ void FldNodeComms::registerVariables()
   m_Comms.Register("NODE_MESSAGE", 0);
   m_Comms.Register("UNC_STEALTH", 0);
   m_Comms.Register("UNC_EARANGE", 0);
+  m_Comms.Register("UNC_VIEW_NODE_RPT_PULSES", 0);
 }
 
 
@@ -445,7 +457,8 @@ void FldNodeComms::distributeNodeReportInfo(const string& uname)
     if(msg_send) {
       string moos_var = "NODE_REPORT_" + vname;
       m_Comms.Notify(moos_var, node_report);
-      postViewCommsPulse(uname, vname);
+      if(m_view_node_rpt_pulses)
+	postViewCommsPulse(uname, vname);
       m_total_reports_sent++;
       m_map_reports_sent[vname]++;
     }

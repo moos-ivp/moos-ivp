@@ -40,13 +40,13 @@ class XYHazardSet
 		    std::string type="", 
 		    std::string label="");
 
-  XYHazard  findHazardMatch(XYHazard, double dist=1);
+  XYHazard  findHazardMatch(XYHazard, double dist=1) const;
 
-  XYHazard  findHazardByPosition(double x, double y);
-  XYHazard  findHazardByLabel(std::string label);
+  XYHazard  findHazardByPosition(double x, double y) const;
+  XYHazard  findHazardByLabel(std::string label) const;
 
   // Getters
-  XYHazard      getHazard(unsigned int);
+  XYHazard      getHazard(unsigned int) const;
 
   unsigned int  size() const         {return(m_hazards.size());};
   std::string   getSource() const    {return(m_source);};

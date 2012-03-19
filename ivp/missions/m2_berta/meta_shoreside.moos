@@ -108,7 +108,7 @@ ProcessConfig = pMarineViewer
   BUTTON_ONE   = MOOS_MANUAL_OVERIDE_ALL=false 
   BUTTON_ONE   = RETURN_ALL=false
   BUTTON_TWO   = RETURN  # RETURN_ALL=true
-  BUTTON_THREE = PERMUTE-NOW   # UTS_FORWARD=0
+  BUTTON_THREE = PERMUTE   # UTS_FORWARD=0
 }
 
 //--------------------------------------------------------

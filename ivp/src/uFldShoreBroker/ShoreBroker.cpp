@@ -174,6 +174,7 @@ void ShoreBroker::sendAcks()
 	",status=" + m_node_host_records[i].getStatus();
 
       m_Comms.Notify(msg_var, msg_val);
+      m_Comms.Notify("NODE_BROKER_VACK", m_node_host_records[i].getCommunity());
       m_acks_posted++;
     }
   }

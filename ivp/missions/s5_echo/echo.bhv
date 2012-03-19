@@ -1,6 +1,6 @@
 //--------    FILE: echo.bhv   -------------
 
-initialize   DEPLOY = true
+initialize   DEPLOY = false
 initialize   MOOS_MANUAL_OVERIDE = false
 initialize   AUTO_SPAWN = false
 initialize   RETURN = false

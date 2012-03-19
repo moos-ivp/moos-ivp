@@ -30,22 +30,6 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-  unsigned int i=0;
-  i--;
-  cout << i << endl;
-  unsigned long int ii=0;
-  ii--;
-  cout << ii << endl;
-  unsigned long long int iii=0;
-  iii--;
-  cout << iii << endl;
-
-  uint64_t k=0;
-  k--;
-  cout << k << endl;
-  
-
-
   string mission_file;
   string run_command = argv[0];
 

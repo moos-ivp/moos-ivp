@@ -50,7 +50,7 @@ void XYHazardSet::addHazard(double x, double y, string type, string label)
 //-----------------------------------------------------------
 // Procedure: getHazard
 
-XYHazard XYHazardSet::getHazard(unsigned int index)
+XYHazard XYHazardSet::getHazard(unsigned int index) const
 {
   if(index >= m_hazards.size()) {
     XYHazard null_hazard;
@@ -63,7 +63,7 @@ XYHazard XYHazardSet::getHazard(unsigned int index)
 //-----------------------------------------------------------
 // Procedure: findHazardMatch
 
-XYHazard XYHazardSet::findHazardMatch(XYHazard hazard, double thresh_dist)
+XYHazard XYHazardSet::findHazardMatch(XYHazard hazard, double thresh_dist) const
 {
   double       closest_dist = 0;
   unsigned int closest_ix;
@@ -93,7 +93,7 @@ XYHazard XYHazardSet::findHazardMatch(XYHazard hazard, double thresh_dist)
 //-----------------------------------------------------------
 // Procedure: findHazardByPosition
 
-XYHazard XYHazardSet::findHazardByPosition(double gx, double gy)
+XYHazard XYHazardSet::findHazardByPosition(double gx, double gy) const
 {
   unsigned int i, vsize = m_hazards.size();
   if(vsize == 0) {
@@ -121,7 +121,7 @@ XYHazard XYHazardSet::findHazardByPosition(double gx, double gy)
 //-----------------------------------------------------------
 // Procedure: findHazardByLabel
 
-XYHazard XYHazardSet::findHazardByLabel(string label)
+XYHazard XYHazardSet::findHazardByLabel(string label) const
 {
   XYHazard return_hazard;
   

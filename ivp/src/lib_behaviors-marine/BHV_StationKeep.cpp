@@ -64,9 +64,9 @@ BHV_StationKeep::BHV_StationKeep(IvPDomain gdomain) :
   
   // All visual hints initially turned off
   m_hint_vertex_color = "";
-  m_hint_edge_color   = "";
-  m_hint_vertex_size  = -1;
-  m_hint_edge_size    = -1;
+  m_hint_edge_color   = "light_blue";
+  m_hint_vertex_size  = 1;
+  m_hint_edge_size    = 1;
 
   // Default values for State  Variables
   m_center_pending     = false;

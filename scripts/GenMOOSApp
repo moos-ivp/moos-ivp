@@ -23,7 +23,15 @@ cat >> CMakeLists.txt <<EOF
 # Author(s):                              $3
 #--------------------------------------------------------
 
-FILE(GLOB SRC *.cpp)
+# FILE(GLOB SRC *.cpp)
+
+SET(SRC
+  ${1}.cpp
+  ${1}_Info.cpp
+  main.cpp
+)
+
+
 
 ADD_EXECUTABLE($2$1 \${SRC})
 
@@ -63,8 +71,11 @@ class ${1} : public CMOOSApp
    bool OnStartUp();
    void RegisterVariables();
 
-private:
-	// insert local vars here
+ private: // Configuration variables
+
+ private: // State variables
+   unsigned int m_iterations;
+   double       m_timewarp;
 };
 
 #endif 
@@ -79,66 +90,42 @@ cat >> main.cpp <<EOF
 /************************************************************/
 
 #include <string>
-#include "MOOSLib.h"
-#include "MOOSGenLib.h"
 #include "MBUtils.h"
-#include "${1}_ExampleConfig.h"
+#include "ColorParse.h"
 #include "${1}.h"
+#include "${1}_Info.h"
 
 using namespace std;
 
 int main(int argc, char *argv[])
 {
-  string mission_file = "";
-  string run_command  = argv[0];
-  bool   help_requested = false;
-  bool   vers_requested = false;
-  bool   exam_requested = false;
+  string mission_file;
+  string run_command = argv[0];
 
-  int    i;
-  for(i=1; i<argc; i++) {
+  for(int i=1; i<argc; i++) {
     string argi = argv[i];
     if((argi=="-v") || (argi=="--version") || (argi=="-version"))
-      vers_requested = true;
+      showReleaseInfoAndExit();
     else if((argi=="-e") || (argi=="--example") || (argi=="-example"))
-      exam_requested = true;
-    else if((argi == "--help")||(argi=="-h"))
-      help_requested = true;
+      showExampleConfigAndExit();
+    else if((argi == "-h") || (argi == "--help") || (argi=="-help"))
+      showHelpAndExit();
+    else if((argi == "-i") || (argi == "--interface"))
+      showInterfaceAndExit();
     else if(strEnds(argi, ".moos") || strEnds(argi, ".moos++"))
       mission_file = argv[i];
     else if(strBegins(argi, "--alias="))
       run_command = argi.substr(8);
     else if(i==2)
-     run_command = argi;
+      run_command = argi;
   }
   
-  if(vers_requested) {
-    cout << "${2}${1} Version 0.1" << endl;
-    return(0);
-  }
+  if(mission_file == "")
+    showHelpAndExit();
 
-  if(exam_requested) {
-    showExampleConfig();
-    return(0);
-  }
-
-  if((mission_file == "") || help_requested) {
-    cout << "Usage: ${2}${1} file.moos [OPTIONS]                 " << endl;
-    cout << "                                                    " << endl;
-    cout << "Options:                                            " << endl;
-    cout << "  --alias=<ProcessName>                             " << endl;
-    cout << "      Launch ${2}${1} with the given process  " << endl;
-    cout << "      name rather than ${2}${1}.               " << endl;
-    cout << "  --example, -e                                     " << endl;
-    cout << "      Display example MOOS configuration block.     " << endl;
-    cout << "  --help, -h                                        " << endl;
-    cout << "      Display this help message.                    " << endl;
-    cout << "  --version,-v                                      " << endl;
-    cout << "      Display the release version of ${2}${1}. " << endl;
-    return(0);
-  }
-
-  cout << "${2}${1} running as: " << run_command << endl;
+  cout << termColor("green");
+  cout << "${2}${1} launching as " << run_command << endl;
+  cout << termColor() << endl;
 
   ${1} ${1};
 
@@ -150,10 +137,8 @@ int main(int argc, char *argv[])
 EOF
 
 cat >> $2${1}.moos <<EOF
-// MOOS file
-
-ServerHost = localhost
-ServerPort = 9000
+//------------------------------------------------
+// ${2}${1} config block
 
 ProcessConfig = ${2}${1}
 {
@@ -172,6 +157,7 @@ cat >> ${1}.cpp <<EOF
 /************************************************************/
 
 #include <iterator>
+#include "MBUtils.h"
 #include "${1}.h"
 
 using namespace std;
@@ -181,6 +167,8 @@ using namespace std;
 
 ${1}::${1}()
 {
+  m_iterations = 0;
+  m_timewarp   = 1;
 }
 
 //---------------------------------------------------------
@@ -195,10 +183,21 @@ ${1}::~${1}()
 
 bool ${1}::OnNewMail(MOOSMSG_LIST &NewMail)
 {
-   MOOSMSG_LIST::iterator p;
+  MOOSMSG_LIST::iterator p;
    
-   for(p=NewMail.begin(); p!=NewMail.end(); p++) {
-      CMOOSMsg &msg = *p;
+  for(p=NewMail.begin(); p!=NewMail.end(); p++) {
+    CMOOSMsg &msg = *p;
+
+#if 0 // Keep these around just for template
+    string key   = msg.GetKey();
+    string comm  = msg.GetCommunity();
+    double dval  = msg.GetDouble();
+    string sval  = msg.GetString(); 
+    string msrc  = msg.GetSource();
+    double mtime = msg.GetTime();
+    bool   mdbl  = msg.IsDouble();
+    bool   mstr  = msg.IsString();
+#endif
    }
 	
    return(true);
@@ -214,29 +213,48 @@ bool ${1}::OnConnectToServer()
    // m_MissionReader.GetConfigurationParam("Name", <string>);
    // m_Comms.Register("VARNAME", 0);
 	
-   return(true);
-}
-
-//---------------------------------------------------------
-// Procedure: Iterate()
-
-bool ${1}::Iterate()
-{
-   // happens AppTick times per second
-	
    RegisterVariables();
    return(true);
 }
 
 //---------------------------------------------------------
+// Procedure: Iterate()
+//            happens AppTick times per second
+
+bool ${1}::Iterate()
+{
+  m_iterations++;
+  return(true);
+}
+
+//---------------------------------------------------------
 // Procedure: OnStartUp()
+//            happens before connection is open
 
 bool ${1}::OnStartUp()
 {
-   // happens before connection is open
+  list<string> sParams;
+  m_MissionReader.EnableVerbatimQuoting(false);
+  if(m_MissionReader.GetConfiguration(GetAppName(), sParams)) {
+    list<string>::iterator p;
+    for(p=sParams.begin(); p!=sParams.end(); p++) {
+      string original_line = *p;
+      string param = stripBlankEnds(toupper(biteString(*p, '=')));
+      string value = stripBlankEnds(*p);
+      
+      if(param == "FOO") {
+        //handled
+      }
+      else if(param == "BAR") {
+        //handled
+      }
+    }
+  }
+  
+  m_timewarp = GetMOOSTimeWarp();
 
-   RegisterVariables();	
-   return(true);
+  RegisterVariables();	
+  return(true);
 }
 
 //---------------------------------------------------------
@@ -244,66 +262,150 @@ bool ${1}::OnStartUp()
 
 void ${1}::RegisterVariables()
 {
-   //m_Comms.Register("FOOBAR", 0);
+  // m_Comms.Register("FOOBAR", 0);
 }
 
 EOF
 
 
-cat >> ${1}_ExampleConfig.h <<EOF
+cat >> ${1}_Info.h <<EOF
 /****************************************************************/
 /*   NAME: ${3}                                             */
 /*   ORGN: MIT Cambridge MA                                     */
-/*   FILE: ${1}_ExampleConfig.h                            */
+/*   FILE: ${1}_Info.h                                      */
 /*   DATE: Dec 29th 1963                                        */
 /****************************************************************/
 
-#ifndef ${1}_EXAMPLE_CONFIG_HEADER
-#define ${1}_EXAMPLE_CONFIG_HEADER
+#ifndef ${1}_INFO_HEADER
+#define ${1}_INFO_HEADER
 
-void showExampleConfig();
+void showSynopsis();
+void showHelpAndExit();
+void showExampleConfigAndExit();
+void showInterfaceAndExit();
+void showReleaseInfoAndExit();
 
 #endif
 
 EOF
 
 
-cat >> ${1}_ExampleConfig.cpp <<EOF
+cat >> ${1}_Info.cpp <<EOF
 /****************************************************************/
 /*   NAME: ${3}                                             */
 /*   ORGN: MIT Cambridge MA                                     */
-/*   FILE: ${1}_ExampleConfig.cpp                               */
+/*   FILE: ${1}_Info.cpp                               */
 /*   DATE: Dec 29th 1963                                        */
 /****************************************************************/
 
+#include <cstdlib>
 #include <iostream>
-#include "${1}_ExampleConfig.h"
+#include "${1}_Info.h"
 #include "ColorParse.h"
+#include "ReleaseInfo.h"
 
 using namespace std;
 
 //----------------------------------------------------------------
-// Procedure: showExampleConfig                                  
+// Procedure: showSynopsis
 
-void showExampleConfig()
+void showSynopsis()
 {
-  cout << "                                                   " << endl;
-  cout << "===================================================" << endl;
-  cout << "${2}${1} Example MOOS Configuration                " << endl;
-  cout << "===================================================" << endl;
-  cout << "                                                   " << endl;
-  cout << "ProcessConfig = ${2}${1}                           " << endl;
-  cout << "{                                                  " << endl;
-  cout << "  AppTick   = 4                                    " << endl;
-  cout << "  CommsTick = 4                                    " << endl;
-  cout << "                                                   " << endl;
-  cout << "  Port = /dev/ttyUSB0                              " << endl;
-  cout << "  Timeout = 6                                      " << endl;
-  cout << "                                                   " << endl;
-  cout << "  // If 1 then heading computed from magnetometers " << endl;
-  cout << "  ComputeHeading = 0                               " << endl;
-  cout << "                                                   " << endl;
+  blk("SYNOPSIS:                                                       ");
+  blk("------------------------------------                            ");
+  blk("  The ${2}${1} application is used for               ");
+  blk("                                                                ");
+  blk("                                                                ");
+  blk("                                                                ");
+  blk("                                                                ");
 }
+
+//----------------------------------------------------------------
+// Procedure: showHelpAndExit
+
+void showHelpAndExit()
+{
+  blk("                                                                ");
+  blu("=============================================================== ");
+  blu("Usage: ${2}${1} file.moos [OPTIONS]                   ");
+  blu("=============================================================== ");
+  blk("                                                                ");
+  showSynopsis();
+  blk("                                                                ");
+  blk("Options:                                                        ");
+  mag("  --alias","=<ProcessName>                                      ");
+  blk("      Launch ${2}${1} with the given process name         ");
+  blk("      rather than ${2}${1}.                           ");
+  mag("  --example, -e                                                 ");
+  blk("      Display example MOOS configuration block.                 ");
+  mag("  --help, -h                                                    ");
+  blk("      Display this help message.                                ");
+  mag("  --interface, -i                                               ");
+  blk("      Display MOOS publications and subscriptions.              ");
+  mag("  --version,-v                                                  ");
+  blk("      Display the release version of ${2}${1}.        ");
+  blk("                                                                ");
+  blk("Note: If argv[2] does not otherwise match a known option,       ");
+  blk("      then it will be interpreted as a run alias. This is       ");
+  blk("      to support pAntler launching conventions.                 ");
+  blk("                                                                ");
+  exit(0);
+}
+
+//----------------------------------------------------------------
+// Procedure: showExampleConfigAndExit
+
+void showExampleConfigAndExit()
+{
+  blk("                                                                ");
+  blu("=============================================================== ");
+  blu("${2}${1} Example MOOS Configuration                   ");
+  blu("=============================================================== ");
+  blk("                                                                ");
+  blk("ProcessConfig = ${2}${1}                              ");
+  blk("{                                                               ");
+  blk("  AppTick   = 4                                                 ");
+  blk("  CommsTick = 4                                                 ");
+  blk("                                                                ");
+  blk("}                                                               ");
+  blk("                                                                ");
+  exit(0);
+}
+
+
+//----------------------------------------------------------------
+// Procedure: showInterfaceAndExit
+
+void showInterfaceAndExit()
+{
+  blk("                                                                ");
+  blu("=============================================================== ");
+  blu("${2}${1} INTERFACE                                    ");
+  blu("=============================================================== ");
+  blk("                                                                ");
+  showSynopsis();
+  blk("                                                                ");
+  blk("SUBSCRIPTIONS:                                                  ");
+  blk("------------------------------------                            ");
+  blk("  NODE_MESSAGE = src_node=alpha,dest_node=bravo,var_name=FOO,   ");
+  blk("                 string_val=BAR                                 ");
+  blk("                                                                ");
+  blk("PUBLICATIONS:                                                   ");
+  blk("------------------------------------                            ");
+  blk("  Publications are determined by the node message content.      ");
+  blk("                                                                ");
+  exit(0);
+}
+
+//----------------------------------------------------------------
+// Procedure: showReleaseInfoAndExit
+
+void showReleaseInfoAndExit()
+{
+  showReleaseInfo("${2}${1}", "gpl");
+  exit(0);
+}
+
 EOF
 
 

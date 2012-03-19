@@ -40,7 +40,10 @@ NodeMessage string2NodeMessage(const string& message_string)
   NodeMessage empty_message;
   NodeMessage new_message;
 
-  vector<string> svector = parseString(message_string, ',');
+  string string_val;
+  bool   string_val_quoted = false;
+
+  vector<string> svector = parseStringQ(message_string, ',');
   unsigned int i, vsize = svector.size();
   for(i=0; i<vsize; i++) {
     string param = tolower(biteStringX(svector[i], '='));
@@ -55,10 +58,20 @@ NodeMessage string2NodeMessage(const string& message_string)
     else if(param == "var_name")
       new_message.setVarName(value);
     else if(param == "string_val")
-      new_message.setStringVal(value);
+      string_val = value;
+    else if((param == "string_val_quoted") && (value == "true"))
+      string_val_quoted = true;
     else if(param == "double_val")
       new_message.setDoubleVal(atof(value.c_str()));
   }
+
+  // If extra quotes were automatically added to the string val to hide
+  // separators in the string, remove them now.
+  
+  if(isQuoted(string_val) && string_val_quoted)
+    string_val = stripQuotes(string_val);
+  
+  new_message.setStringVal(string_val);
 
   if(!new_message.valid())
     return(empty_message);

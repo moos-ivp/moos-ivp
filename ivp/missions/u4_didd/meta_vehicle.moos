@@ -24,7 +24,7 @@ Processconfig = ANTLER
   Run = pHostInfo          @ NewConsole = true
   Run = uFldNodeBroker     @ NewConsole = false
   Run = uFldMessageHandler @ NewConsole = true
-  Run = uTimerScript       @ NewConsole = false
+//  Run = uTimerScript       @ NewConsole = false
 }
   
 #include plug_uFldNodeBroker.moos

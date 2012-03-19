@@ -53,7 +53,8 @@ class Expander
 	       bool& result);
   
   bool applyMacrosToLine(std::string&, 
-			 std::map<std::string, std::string>);
+			 std::map<std::string, std::string>,
+			 unsigned int line_num);
 
   std::string containsMacro(std::string);
   std::string findFileInPath(std::string);

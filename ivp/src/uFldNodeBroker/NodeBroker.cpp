@@ -18,7 +18,15 @@ using namespace std;
 
 NodeBroker::NodeBroker()
 { 
-  m_iteration         = 0;
+  // Initialize Config Variables
+  m_report_interval   = 0.75;  // secs between terminal reports
+
+  // Initialize State Variables
+  m_curr_time         = 0;
+  m_time_warp         = 0;
+  m_last_report_time  = 0;
+  m_iterations        = 0;
+
   m_pmbs_posted       = 0;
   m_pings_posted      = 0;
   m_ok_phis_received  = 0;
@@ -36,7 +44,6 @@ NodeBroker::NodeBroker()
 bool NodeBroker::OnNewMail(MOOSMSG_LIST &NewMail)
 {
   MOOSMSG_LIST::iterator p;
-	
   for(p=NewMail.begin(); p!=NewMail.end(); p++) {
     CMOOSMsg &msg = *p;
     string key   = msg.GetKey();
@@ -82,7 +89,8 @@ bool NodeBroker::OnConnectToServer()
 
 bool NodeBroker::Iterate()
 {
-  m_iteration++;
+  m_iterations++;
+  m_curr_time = MOOSTime();
 
   if(m_node_host_record.valid())
     postOutgoingPing();
@@ -90,8 +98,14 @@ bool NodeBroker::Iterate()
   if(!m_shore_host_record.valid())
     registerPingBridges(true);
 
-
-  printReport();
+  double warp_elapsed_time = m_curr_time - m_last_report_time;
+  double real_elapsed_time = warp_elapsed_time;
+  if(m_time_warp > 0)
+    real_elapsed_time = warp_elapsed_time / m_time_warp;
+  if(real_elapsed_time > m_report_interval) {
+    printReport();
+    m_last_report_time = m_curr_time;
+  }
   return(true);
 }
 
@@ -100,6 +114,9 @@ bool NodeBroker::Iterate()
 
 bool NodeBroker::OnStartUp()
 {
+  m_curr_time = MOOSTime();
+  m_time_warp = GetMOOSTimeWarp();
+
   // We grab our community info right away because we use this to
   // further filter incoming mail.
   string node_community;
@@ -206,7 +223,6 @@ void NodeBroker::registerPingBridgesSubsLocal(string localhost_ip)
 void NodeBroker::registerUserBridges()
 {
   unsigned int i, vsize = m_bridge_src_var.size();
-  cout << "In registerUserBridges()" << vsize << endl;
   for(i=0; i<vsize; i++) {
     string msg = "SrcVarName=" + m_bridge_src_var[i];
     msg += ",DestCommunity=" + m_shore_host_record.getCommunity();
@@ -398,7 +414,6 @@ void NodeBroker::handleMailHostInfo(string phi_msg)
     string localhost_ip = m_node_host_record.getHostIP();
     registerPingBridgesSubsLocal(localhost_ip);
   }
-
 }
 
 
@@ -409,7 +424,7 @@ void NodeBroker::handleMailHostInfo(string phi_msg)
 void NodeBroker::printReport()
 {
   cout << endl << endl << endl << endl << endl;
-  cout << "NodeBroker Status ----------- (" << m_iteration << ")" << endl;
+  cout << "NodeBroker Status ----------- (" << m_iterations << ")" << endl;
   //  cout << "  MOOS Time Warp:                  " << m_timewarp << endl;
   cout << "  Total OK  PHI_HOST_INFO    received: " << m_ok_phis_received << endl;
   cout << "  Total BAD PHI_HOST_INFO    received: " << m_bad_phis_received << endl;
@@ -440,9 +455,6 @@ void NodeBroker::printReport()
   cout << "   Port (DB):  " << m_shore_host_record.getPortDB() << endl; 
   cout << "  Port (UDP):  " << m_shore_host_record.getPortUDP() << endl; 
   cout << "   Time Warp:  " << m_shore_host_record.getTimeWarp() << endl; 
-
-
-
 }
 
 

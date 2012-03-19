@@ -26,6 +26,15 @@
 using namespace std;
 
 //------------------------------------------------------------
+// Constructor
+
+NodeMessage::NodeMessage()
+{
+  m_double_val       = 0; 
+  m_double_val_set   = false;
+}
+
+//------------------------------------------------------------
 // Procedure: getSpec()
 
 string NodeMessage::getSpec() const
@@ -51,16 +60,22 @@ string NodeMessage::getSpec() const
       str += ",";
     str += "var_name=" + m_var_name;
   }
-  if(m_string_val != "") {
-    if(str != "")
-      str += ",";
-    str += "string_val=" + m_string_val;
-  }
   if(m_double_val_set) {
     if(str != "")
       str += ",";
     str += "double_val=" + doubleToStringX(m_double_val,6);
   }
+
+  if(m_string_val != "") {
+    if(str != "")
+      str += ",";
+
+    if(!isQuoted(m_string_val) && strContains(m_string_val, ","))
+      str += "string_val=\"" + m_string_val + "\",string_val_quoted=true";
+    else
+      str += "string_val=" + m_string_val;
+  }
+  
   return(str);
 }
 

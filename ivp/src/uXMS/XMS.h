@@ -52,6 +52,7 @@ class XMS : public CMOOSApp
   void setDispSource(bool v)         {m_display_source = v;};
   void setDispAuxSource(bool v)      {m_display_aux_source = v;};
   void setDispCommunity(bool v)      {m_display_community = v;};
+  void setDispOwnCommunity(bool v)   {m_display_own_community = v;};
   void setDispEmptyStrings(bool v)   {m_display_null_strings = v;};
   void setDispAll(bool v)            {m_display_all = v;};
   void setTruncData(double v);
@@ -115,9 +116,11 @@ class XMS : public CMOOSApp
   bool   m_display_aux_source;
   bool   m_display_time;
   bool   m_display_community;
+  bool   m_display_own_community;
   bool   m_help_requested;
   int    m_iteration;
   std::string m_refresh_mode;
+  std::string m_community;
 
   double m_trunc_data;
   double m_trunc_data_start;

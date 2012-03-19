@@ -82,11 +82,13 @@ BHV_Waypoint::BHV_Waypoint(IvPDomain gdomain) :
   m_osy   = 0;
   m_osv   = 0;
 
-  m_shortest_tour_pending = false;
+  m_greedy_tour_pending = false;
 
   addInfoVars("NAV_X, NAV_Y, NAV_SPEED");
   m_markpt.set_active(false);
   m_markpt.set_vertex_size(4);
+
+  m_prevpt.set_label("prev_pt");
 }
 
 //-----------------------------------------------------------
@@ -117,6 +119,7 @@ void BHV_Waypoint::onSetParamComplete()
 bool BHV_Waypoint::setParam(string param, string param_val) 
 {
   double dval = atof(param_val.c_str());
+
   if((param == "polygon") || (param == "points")) {
     XYSegList new_seglist = string2SegList(param_val);
     if(new_seglist.size() == 0) {
@@ -143,8 +146,8 @@ bool BHV_Waypoint::setParam(string param, string param_val)
     m_cruise_speed = dval;
     return(true);
   }
-  else if(param == "shortest_tour") {
-    setBooleanOnString(m_shortest_tour_pending, param_val);
+  else if((param == "greedy_tour") || (param == "shortest_tour")) {
+    setBooleanOnString(m_greedy_tour_pending, param_val);
     return(true);
   }
   else if((param == "wpt_status") || (param == "wpt_status_var")) {
@@ -242,6 +245,21 @@ bool BHV_Waypoint::setParam(string param, string param_val)
     m_waypoint_engine.setNonmonotonicRadius(dval);
     return(true);
   }
+  else if(param == "capture_line") {
+    param_val = tolower(param_val);
+    if(!isBoolean(param_val) && (param_val != "absolute"))
+      return(false);
+    if(param_val == "absolute") {
+      param_val = "true";
+      m_waypoint_engine.setSlipRadius(0);
+      m_waypoint_engine.setCaptureRadius(0);
+    }
+    if(param_val == "true") 
+      m_waypoint_engine.setCaptureLine(true);
+    else
+      m_waypoint_engine.setCaptureLine(false);
+    return(true);
+  }
   else if(param == "visual_hints")  {
     vector<string> svector = parseStringQ(param_val, ',');
     unsigned int i, vsize = svector.size();
@@ -291,8 +309,22 @@ IvPFunction *BHV_Waypoint::onRunState()
     return(0);
   }
 
+  // Note the waypoint prior to possibly incrementing the waypoint
+  double this_x = m_waypoint_engine.getPointX();
+  double this_y = m_waypoint_engine.getPointY();
+  if(!m_prevpt.valid())
+    m_prevpt.set_vertex(m_osx, m_osy);
+
+  // Possibly increment the waypoint
   // Set m_nextpt, m_trackpt
   bool next_point = setNextWaypoint();
+
+  // Update things if the waypoint was indeed incremented
+  double next_x = m_waypoint_engine.getPointX();
+  double next_y = m_waypoint_engine.getPointY();
+  if((next_x != this_x) || (next_y != this_y))
+    m_prevpt.set_vertex(this_x, this_y);
+
 
   // We want to report the updated cycle info regardless of the 
   // above result. Even if the next_point is false and there are
@@ -306,6 +338,7 @@ IvPFunction *BHV_Waypoint::onRunState()
   if(next_point) {
     postStatusReport();
     postViewableSegList();
+    //postMessage("VIEW_POINT", m_prevpt.get_spec("active=true"), "prevpt");
     postMessage("VIEW_POINT", m_nextpt.get_spec("active=true"), "wpt");
     double dist = hypot((m_nextpt.x() - m_trackpt.x()), 
 			(m_nextpt.y() - m_trackpt.y()));
@@ -353,10 +386,10 @@ bool BHV_Waypoint::updateInfoIn()
     return(false);
   }
 
-  if(m_shortest_tour_pending) {
-    m_shortest_tour_pending = false;
+  if(m_greedy_tour_pending) {
+    m_greedy_tour_pending = false;
     XYSegList original_segl = m_waypoint_engine.getSegList();
-    XYSegList shtour_segl = bruteShortestPath(original_segl, m_osx, m_osy);
+    XYSegList shtour_segl = greedyPath(original_segl, m_osx, m_osy);
     m_waypoint_engine.setSegList(shtour_segl);
   }
 
@@ -377,6 +410,7 @@ bool BHV_Waypoint::setNextWaypoint()
   if(m_waypoint_engine.size() == 0)
     return(false);
 
+  m_waypoint_engine.setPrevPoint(m_prevpt);
   string feedback_msg = m_waypoint_engine.setNextWaypoint(m_osx, m_osy);
   
   if((feedback_msg=="completed") || (feedback_msg=="cycled")) {

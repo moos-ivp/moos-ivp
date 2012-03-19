@@ -128,6 +128,7 @@ protected:
   std::string m_contact; // Name for contact in InfoBuffer
   std::string m_behavior_type;
   std::string m_duration_status;
+  bool        m_duration_reset_pending;
   std::string m_build_info;
   std::string m_status_info;
 

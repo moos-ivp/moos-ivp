@@ -900,6 +900,7 @@ void HelmScope::printHelp()
   printf("   h/H     Show this Help msg - 'r' to resume               \n");
   printf("   b/B     Toggle Show Idle/Completed Behavior Details      \n");
   printf("   t/T     Toggle truncation of column output               \n");
+  printf("   l/L     Toggle showing of life event history             \n");
   printf("   m/M     Show the Hierarchical Mode Structure             \n");
   printf("    f      Filter PWT_* UH_* STATE_* in Behavior-Posts Report \n");
   printf("    F      Filter PC_* VIEW_* in Behavior-Posts Report      \n");

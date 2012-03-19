@@ -28,7 +28,7 @@
 class NodeMessage
 {
  public:
-  NodeMessage() {m_double_val=0; m_double_val_set=false;};
+  NodeMessage();
   ~NodeMessage() {};
 
   void setSourceNode(const std::string& s)  {m_src_node=s;};

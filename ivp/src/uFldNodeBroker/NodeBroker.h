@@ -43,6 +43,7 @@ class NodeBroker : public CMOOSApp
   std::vector<std::string> m_bridge_alias;
 
   std::string m_keyword;
+  double      m_report_interval;
 
   // Index on below vectors is a host to try as shoreside
   std::vector<std::string> m_candidate_shore_host;
@@ -50,11 +51,14 @@ class NodeBroker : public CMOOSApp
   std::vector<std::string> m_candidate_shore_name;
 
  protected: // State Variables
+  double       m_curr_time;
+  double       m_time_warp;
+  double       m_last_report_time;
+  unsigned int m_iterations;
 
-  HostRecord  m_shore_host_record; // From NODE_BROKER_ACK
-  HostRecord  m_node_host_record;  // From PHI_HOST_INFO
+  HostRecord   m_shore_host_record; // From NODE_BROKER_ACK
+  HostRecord   m_node_host_record;  // From PHI_HOST_INFO
 
-  unsigned int m_iteration;
   unsigned int m_pmbs_posted;
   unsigned int m_pings_posted;
   unsigned int m_ok_phis_received;

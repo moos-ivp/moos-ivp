@@ -161,6 +161,9 @@ int main(int argc ,char * argv[])
     if((str == "-c") || (str == "--clean") || (str == "-clean"))
       g_theXMS.ignoreFileVars(true);
     
+    if((str == "-m") || (str == "--nocomm") || (str == "-nocomm"))
+      g_theXMS.setDispOwnCommunity(false);
+    
     else if(strBegins(str, "--mode=")) {
       biteString(str, '=');
       str = tolower(str);

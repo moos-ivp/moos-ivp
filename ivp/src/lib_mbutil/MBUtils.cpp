@@ -1168,6 +1168,19 @@ bool isQuoted(const string& str)
 }
 
 //----------------------------------------------------------------
+// Procedure: isBraced
+//      Note: Returns true if the given string begins with a '{' and 
+//            ends witha a '}'. Returns false otherwise.
+
+bool isBraced(const string& str)
+{
+  string mod_str = stripBlankEnds(str);
+  if((mod_str[0] == '{') && (mod_str[str.length()-1] == '}'))
+    return(true);
+  return(false);
+}
+
+//----------------------------------------------------------------
 // Procedure: stripQuotes
 
 string stripQuotes(const string& given_str)
@@ -1178,6 +1191,24 @@ string stripQuotes(const string& given_str)
     return(given_str);
 
   if((str[0] != '"') || (str[len-1] != '"'))
+    return(given_str);
+
+  str.replace(len-1, 1, "");
+  str.replace(0, 1, "");
+  return(str);
+}
+
+//----------------------------------------------------------------
+// Procedure: stripBraces
+
+string stripBraces(const string& given_str)
+{
+  string str = stripBlankEnds(given_str);
+  string::size_type len = str.length();
+  if(len < 2)
+    return(given_str);
+
+  if((str[0] != '{') || (str[len-1] != '}'))
     return(given_str);
 
   str.replace(len-1, 1, "");

@@ -50,6 +50,8 @@ XYHazard stringStandard2Hazard(string str)
   str = stripBlankEnds(str);
   vector<string> mvector = parseString(str, ',');
   unsigned int i, vsize = mvector.size();
+
+  string hazard_field;
   
   for(i=0; i<vsize; i++) {
     mvector[i] = stripBlankEnds(mvector[i]);
@@ -65,13 +67,25 @@ XYHazard stringStandard2Hazard(string str)
       new_hazard.setType(value);
     else if(param == "shape")
       new_hazard.setShape(value);
+    else if(param == "source")
+      new_hazard.setSource(value);
     else if(param == "color")
       new_hazard.setColor(value);
     else if(param == "width")
       new_hazard.setWidth(value);
     else if(param == "label")
       new_hazard.setLabel(value);
+    else if(param == "hazard")
+      hazard_field = value;
   }
+
+  if((new_hazard.getType() == "") && (hazard_field != "")) {
+    if(hazard_field == "true") 
+      new_hazard.setType("hazard");
+    else
+      new_hazard.setType("benign");
+  }
+
   return(new_hazard);
 }
 

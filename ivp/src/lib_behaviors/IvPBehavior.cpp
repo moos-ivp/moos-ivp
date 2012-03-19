@@ -38,6 +38,7 @@ IvPBehavior::IvPBehavior(IvPDomain g_domain)
   m_duration_started         =  false;
   m_duration_start_time      = -1;
   m_duration_reset_timestamp = -1;
+  m_duration_reset_pending   = false;
   m_duration_running_time    = 0;
   m_duration_idle_time       = 0;
   m_duration_prev_timestamp  = 0;
@@ -269,17 +270,22 @@ string IvPBehavior::isRunnable()
   if(m_completed)
     return("completed");
 
-  if(!checkConditions())
+  if(!checkConditions()) {
+    //if(m_duration_idle_decay && m_duration_reset_pending)
+    //  durationReset();
     return("idle");
+  }
 
   // Important that this be called after checkConditions so 
   // the duration clock doesn't start until the conditions
   // are met.
+  if(m_duration_reset_pending)
+    durationReset();
   if(durationExceeded()) {
     statusInfoAdd("pc", "completed-byduration");
     setComplete();
-    if(m_perpetual)
-      durationReset();
+    if(m_perpetual) 
+      m_duration_reset_pending = true;
     else
       return("completed");
   }
@@ -554,10 +560,11 @@ bool IvPBehavior::checkForDurationReset()
 
 void IvPBehavior::durationReset()
 {
-  m_duration_started      = false;
-  m_duration_start_time   = -1;
-  m_duration_idle_time    = 0;
-  m_duration_running_time = 0;
+  m_duration_reset_pending = false;
+  m_duration_started       = false;
+  m_duration_start_time    = -1;
+  m_duration_idle_time     = 0;
+  m_duration_running_time  = 0;
   if(m_duration_status != "")
     postMessage(m_duration_status, m_duration);
 }
@@ -746,9 +753,8 @@ bool IvPBehavior::durationExceeded()
   if(!m_duration_idle_decay)
     elapsed_time -= m_duration_idle_time;
   
-#if 0
+#if 1
   double remaining_time = m_duration - elapsed_time;
-
 
   if(remaining_time < 0)
     remaining_time = 0;

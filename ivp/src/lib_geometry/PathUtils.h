@@ -25,6 +25,6 @@
 
 #include "XYSegList.h"
 
-XYSegList bruteShortestPath(XYSegList, double, double);
+XYSegList greedyPath(XYSegList, double, double);
   
 #endif

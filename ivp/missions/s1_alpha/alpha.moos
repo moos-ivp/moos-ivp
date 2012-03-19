@@ -1,9 +1,7 @@
-// Level 2 Configuration file: M. Benjamin
+// Alpha Configuration file: M. Benjamin
 
 ServerHost = localhost
 ServerPort = 9000
-Simulator  = true
-
 Community  = alpha
 
 MOOSTimeWarp = 1
@@ -12,16 +10,9 @@ MOOSTimeWarp = 1
 LatOrigin  = 43.825300 
 LongOrigin = -70.330400 
 
-// Pierce Boathouse
-//LatOrigin  = 42.3550
-//LongOrigin = -71.0972
-
-// MIT Sailing Pavilion
-//LatOrigin = 42.3583622
-//LongOrigin = -71.08754594
-
-//LatOrigin  = 42.358456 use this one
-//LongOrigin = -71.087589
+// MIT Sailing Pavilion (use this one)
+// LatOrigin  = 42.358456 
+// LongOrigin = -71.087589
 
 
 //------------------------------------------
@@ -223,11 +214,11 @@ ProcessConfig = pMarineViewer
   hash_shade           = 0.4
   hash_view            = true
 
+  scope  = WPT_DURATION
+  scope  = WPT_HIT
   scope  = VIEW_SEGLIST
   scope  = VIEW_POINT
   scope  = VIEW_POLYGON
-  scope  = NAV_X
-  scope  = NAV_Y
   scope  = MVIEWER_LCLICK
   scope  = MVIEWER_RCLICK
 

@@ -28,6 +28,62 @@
 #define M_PI 3.1415926
 #endif
 
+
+//-------------------------------------------------------------
+// Procedure: angleFromThreePoints
+//   Purpose: Returns the angle in a triangle given by three points
+//            The particular angle of the three angles in the triangle
+//            is the angle at the first given point.
+//
+//  a^2 = b^2 + c^2 - 2bc cos(A)   Law of Cosines
+//  
+//           b^2 + c^2 - a^2
+//  cos(A) = ---------------
+//                 2bc
+//
+//                                            (x2,y2)    B
+//                                                     o
+//                                                /   |
+//                                             /     |
+//                                         /        |
+//                                     /           |
+//                         (c)     /              |
+//                             /                 |
+//                         /                    |  (a)
+//                     /                       |
+//                 /                          |
+//             /                             |
+//         /                                |
+//     /                                   |
+//   o-------------------------------------o (x3,y3)
+// A (x1,y1)       (b)                     C
+//
+//
+
+double angleFromThreePoints(double x1, double y1, 
+			    double x2, double y2,
+			    double x3, double y3)
+{ 
+  double a = hypot((x2-x3), (y2-y3));  // pythag distance 
+  double b = hypot((x1-x3), (y1-y3));  // pythag distance 
+  double c = hypot((x1-x2), (y1-y2));  // pythag distance 
+
+  double numerator   = (b*b)+(c*c)-(a*a);
+  double denominator = (2*b*c);
+  if(denominator == 0)
+    return(0);
+
+  double rhs = numerator / denominator;
+
+  double angle_radians = acos(rhs);
+
+  double angle_degrees = ((angle_radians / M_PI) * 180);
+
+  return(angle_degrees);
+}
+
+
+
 //-------------------------------------------------------------
 // Procedure: relAng
 //   Purpose: Returns relative angle of pt B to pt A. Treats A

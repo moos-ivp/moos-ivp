@@ -48,6 +48,7 @@ class FldNodeComms : public CMOOSApp
   bool    m_verbose;
   bool    m_debug;
   bool    m_apply_groups;
+  bool    m_view_node_rpt_pulses;
 
   // Default range to source threshold for vehicle to receive
   // node report from a source vehicle.

@@ -43,6 +43,7 @@ XMS::XMS(string server_host, long int server_port)
   m_display_aux_source = false;
   m_display_time       = false;
   m_display_community  = false;
+  m_display_own_community = true;
   m_display_help       = false;
   m_displayed_help     = false;
   
@@ -120,8 +121,11 @@ bool XMS::OnNewMail(MOOSMSG_LIST &NewMail)
   if(m_db_start_time == 0) {
     for(p = NewMail.begin(); p!=NewMail.end(); p++) {
       CMOOSMsg &msg = *p;
-      if(msg.GetKey() == "DB_UPTIME") 
+      if(msg.GetKey() == "DB_UPTIME") {
 	m_db_start_time = MOOSTime() - msg.GetDouble();
+	if(m_community == "")
+	  m_community = msg.GetCommunity();
+      }
     }
   }
   
@@ -187,8 +191,6 @@ bool XMS::OnConnectToServer()
 
 bool XMS::OnStartUp()
 {
-  CMOOSApp::OnStartUp();
-  
   STRING_LIST sParams;
   //m_MissionReader.GetConfiguration(GetAppName(), sParams);
   m_MissionReader.GetConfiguration("uXMS", sParams);
@@ -300,6 +302,11 @@ void XMS::handleCommand(char c)
     break;
   case 'V':
     m_display_virgins = true;
+    m_update_requested = true;
+    break;
+  case 'm':
+  case 'M':
+    m_display_own_community = !m_display_own_community;
     m_update_requested = true;
     break;
   case 'n':
@@ -757,6 +764,7 @@ void XMS::printHelp()
   printf("    C        Display Community of variables       \n");
   printf("    v        Suppress virgin variables            \n");
   printf("    V        Display virgin variables             \n");
+  printf("   m/M       Toggle display own community at top  \n");
   printf("    n        Suppress null/empty strings          \n");
   printf("    N        Display null/empty strings           \n");
   printf("    w        Show Variable History if enabled     \n");
@@ -814,7 +822,15 @@ void XMS::printReport()
   
   printf("\n\n\n\n\n");
   
-  printf("  %-22s", "VarName");
+  string varname_str = "VarName";
+  if(m_display_own_community && (m_community != "")) {
+    varname_str += termColor("reverseblue");
+    varname_str += "(" +  m_community + ")" + termColor();
+    printf("  %-33s", varname_str.c_str());
+  }
+  else
+    printf("  %-22s", varname_str.c_str());
+
   
   if(m_display_source)
     printf("%-16s", "(S)ource");

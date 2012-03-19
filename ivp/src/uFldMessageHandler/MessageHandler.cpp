@@ -64,6 +64,7 @@ bool MessageHandler::OnNewMail(MOOSMSG_LIST &NewMail)
     //string msrc  = msg.GetSource();
 
     if(key == "NODE_MESSAGE") {
+      cout << "msg!!!!!!!!!!!!!+" << sval << endl;
       handleMailNodeMessage(sval);
       m_newmail = true;
     }
@@ -187,8 +188,11 @@ bool MessageHandler::handleMailNodeMessage(const string& msg)
   string dest_node  = message.getDestNode();
   string dest_group = message.getDestGroup();
   string var_name   = message.getVarName();
-  string var_sval   = message.getStringVal();
   double var_dval   = message.getDoubleVal();
+  string var_sval   = message.getStringVal();
+  if(isQuoted(var_sval))
+    var_sval = stripQuotes(var_sval);
+  
   
   bool is_string = true;
   if(var_sval == "")

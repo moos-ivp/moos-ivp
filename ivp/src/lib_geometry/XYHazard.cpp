@@ -95,7 +95,12 @@ string XYHazard::getSpec() const
     str += ",color=" + m_color;
   if(m_width >= 0)
     str += ",width=" + doubleToStringX(m_width);
-  
+
+  if(m_type=="hazard")
+    str += ",hazard=true";
+  else
+    str += ",hazard=false";
+
   return(str);
 }
 

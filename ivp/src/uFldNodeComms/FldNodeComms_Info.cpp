@@ -78,6 +78,8 @@ void showExampleConfigAndExit()
   blk("  MIN_MSG_INTERVAL = 30     // default (in seconds)             ");
   blk("  MAX_MSG_LENGTH   = 1000   // default (# of characters)        ");
   blk("                                                                ");
+  blk("  VIEW_NODE_RPT_PULSES = true // default                        ");
+  blk("                                                                ");
   blk("  VERBOSE  = true           // default                          ");
   blk("                                                                ");
   blk("  STEALTH  = vname=alpha, stealth=0.8                           ");
@@ -110,6 +112,10 @@ void showInterfaceAndExit()
   blk("                      LON=-70.329755,SPD=2.0,HDG=118.8,         ");
   blk("                      YAW=118.8,DEPTH=4.6,LENGTH=3.8,           ");
   blk("                      MODE=MODE@ACTIVE:LOITERING                ");
+  blk("                                                                ");
+  blk("  UNC_VIEW_NODE_RPT_PULSES = false                              ");
+  blk("  UNC_STEALTH = vname=alpha,stealth=0.4                         ");
+  blk("  UNC_EARANGE = vname=alpha,earange=0.5                         ");
   blk("                                                                ");
   blk("PUBLICATIONS:                                                   ");
   blk("------------------------------------                            ");

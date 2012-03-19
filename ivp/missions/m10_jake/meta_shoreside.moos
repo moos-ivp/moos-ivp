@@ -33,17 +33,19 @@ ProcessConfig = uFldHazardSensor
   AppTick       = 4
   CommsTick     = 4
 
-  sensor_config = width=25, exp=4, class=0.85
-  sensor_config = width=50, exp=2, class=0.60
-  sensor_config = width=10, exp=6, class=0.93
+  sensor_config = width=25, exp=4, pclass=0.85
+  sensor_config = width=50, exp=2, pclass=0.60
+  sensor_config = width=10, exp=6, pclass=0.93
 
   swath_length  = 5
 
   default_hazard_shape = triangle
   default_benign_shape = triangle
 
-  swath_transparency = 0.85
+  swath_transparency = 0.35
   seed_random        = false
+
+  options_summary_interval = 5
 
   show_swath=true
   show_hazards=true

@@ -177,7 +177,7 @@ vector<string> Expander::expandFile(string filename,
 
     //--------------------------------------------------------------
     else if(!skipLines() && (left == "#include")) {
-      applyMacrosToLine(rest, macros);
+      applyMacrosToLine(rest, macros, i+1);
       string file_str = stripBlankEnds(rest);
       if(isQuoted(file_str))
 	file_str = stripQuotes(file_str);
@@ -228,11 +228,18 @@ vector<string> Expander::expandFile(string filename,
       else {
 	if(value == "") 
 	  value = "<defined>";
+	
+	if(macros.count(macro) == 1) {
+	  cout << termColor("blue") << "Warning: \"" << macro;
+	  cout << "\" redefined from \"" << macros[macro] << "\" to \"";
+	  cout << value << "\". Line #" << i+1 << " in file: " << filename;
+	  cout << termColor() << endl;
+	}
 	macros[macro] = value;
       }
     }
     else if(!skipLines()) {
-      applyMacrosToLine(fvector[i], macros);
+      applyMacrosToLine(fvector[i], macros, i+1);
       return_vector.push_back(fvector[i]);
     }   
 
@@ -323,17 +330,17 @@ bool Expander::writeOutput()
       
       char answer = 'y';
       if(!m_force) {
-	cout <<  " Replace?(y/n)" << endl;
+	cout <<  " Replace? (y/N)" << endl;
 	answer = getCharNoWait();
       }
 
-      if(answer == 'n') {
+      if(answer == 'y')
+	done = true;
+      else if((answer == 'n') || ((int)(answer) == 10)) {
 	cout << "Aborted: The file " << m_outfile;
 	cout << " will not be created" << endl;
 	return(false);
       }
-      if(answer == 'y')
-	done = true;
     }
   }
 
@@ -375,7 +382,8 @@ void Expander::addPath(string str)
 // Procedure: applyMacrosToLine
 
 bool Expander::applyMacrosToLine(string& line, 
-				 map<string, string> macros)
+				 map<string, string> macros,
+				 unsigned int line_num)
 {
   map<string, string>::iterator p;
 
@@ -414,10 +422,16 @@ bool Expander::applyMacrosToLine(string& line,
   string res = containsMacro(newline);
 
   if(res != "") {
-    cout << "Warning: The following line of " << m_infile << endl;
-    cout << "  creating " << m_outfile << endl;
-    cout << "  may contain an undefined macro:" << endl;
-    cout << "> " << res << endl;
+    bool isCommented = false;
+    if(strBegins(stripBlankEnds(line), "//"))
+      isCommented = true;
+    if(!isCommented) {
+      cout << termColor("magenta");
+      cout << "Warning: The following line of " << m_infile;
+      cout << "  (creating " << m_outfile << ")" << endl;
+      cout << "  may contain an undefined macro on Line: " << line_num << endl;
+      cout << "> " << res << termColor() << endl;
+    }
 
     if(m_strict)
       exit(EXIT_FAILURE);

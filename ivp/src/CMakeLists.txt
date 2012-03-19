@@ -236,6 +236,7 @@ SET(IVP_NON_GUI_APPS
   uFldBeaconRangeSensor
   uFldContactRangeSensor
   uFldHazardSensor
+  uFldHazardMetric
   uMOOSClient
   pSearchGrid
   uTimerScript

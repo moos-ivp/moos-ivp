@@ -383,6 +383,7 @@ bool HazardSensor_Model::handleSensorRequest(const string& request)
   if(vix == jsize) {
     string memo = "ERROR. Failed sensor ping. Nothing known about:" + vname;
     m_map_memos[memo]++;
+    return(false);
   }
 
   // Part 3: If this vehicle has not initialized the sensor setting, 
@@ -403,12 +404,11 @@ bool HazardSensor_Model::handleSensorRequest(const string& request)
       postHazardReport(hix, vname);  // classify dice inside
   }
 
-  // Possible draw the swath
+  // Possibly draw the swath
   if(m_show_swath) {
     string poly_spec = m_node_polygons[vix].get_spec();
     addMessage("VIEW_POLYGON", poly_spec);
   }
-
   return(true);
 }
 
@@ -663,6 +663,8 @@ bool HazardSensor_Model::updateVehicleHazardStatus(unsigned int vix,
 bool HazardSensor_Model::updateNodeRecords(NodeRecord new_record)
 {
   bool add_new_record = true;
+
+  //new_record.setName(tolower(new_record.getName()));
 
   unsigned int i, vsize = m_node_records.size();
   unsigned int update_index = vsize;

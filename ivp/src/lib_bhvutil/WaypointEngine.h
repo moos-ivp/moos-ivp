@@ -24,6 +24,7 @@
 #define WAYPOINT_ENGINE_HEADER
 
 #include "XYSegList.h"
+#include "XYPoint.h"
 
 class WaypointEngine {
  public:
@@ -32,15 +33,17 @@ class WaypointEngine {
 
   void   setSegList(const XYSegList& seglist);
   void   setReverse(bool);
-  void   setRepeat(unsigned int);
   void   setCaptureRadius(double);
   void   setNonmonotonicRadius(double);
+  void   setSlipRadius(double);
   void   setCurrIndex(unsigned int);
-  void   setPerpetual(bool v) {m_perpetual = v;};
   void   setCenter(double, double);
-  void   resetForNewTraversal();
   void   resetSegList(double, double y);
-  void   setRepeatsEndless(bool v) {m_repeats_endless=v;};
+  void   resetForNewTraversal();
+  void   setRepeat(unsigned int v)  {m_repeats_allowed = v;};
+  void   setCaptureLine(bool v)     {m_capture_line = v;};
+  void   setPerpetual(bool v)       {m_perpetual = v;};
+  void   setRepeatsEndless(bool v)  {m_repeats_endless=v;};
 
   double getPointX(unsigned int) const;
   double getPointY(unsigned int) const;  
@@ -60,6 +63,7 @@ class WaypointEngine {
 
   XYSegList getSegList()  {return(m_seglist);};
 
+  void        setPrevPoint(XYPoint pt) {m_prevpt=pt;};
   std::string setNextWaypoint(double os_x, double os_y);
 
  protected:
@@ -69,13 +73,16 @@ class WaypointEngine {
   bool      m_reverse;
   bool      m_perpetual;
   double    m_capture_radius;
-  double    m_nm_radius;
+  double    m_slip_radius;
+  bool      m_capture_line;
 
   double    m_current_cpa;
   bool      m_complete;
   int       m_prev_ix;
   int       m_curr_ix;
   unsigned int  m_cycle_count;
+
+  XYPoint   m_prevpt;
 
   bool          m_repeats_endless;
   unsigned int  m_repeats_allowed;

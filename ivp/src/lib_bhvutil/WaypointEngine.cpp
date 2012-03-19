@@ -28,6 +28,7 @@
 #include <iostream>
 #include <cmath>
 #include "WaypointEngine.h"
+#include "AngleUtils.h"
 
 using namespace std;
 
@@ -40,8 +41,9 @@ WaypointEngine::WaypointEngine()
   m_prev_ix         = -1;
   m_reverse         = false;
   m_perpetual       = false;
+  m_capture_line    = false;
   m_capture_radius  = 3;
-  m_nm_radius       = 15;
+  m_slip_radius     = 15;
   m_complete        = true;
   m_current_cpa     = -1;
   m_capture_hits    = 0;
@@ -113,15 +115,6 @@ void WaypointEngine::setReverse(bool g_val)
 }
 
 //-----------------------------------------------------------
-// Procedure: setRepeat
-
-void WaypointEngine::setRepeat(unsigned int g_repeat)
-{
-  if(g_repeat >= 0)
-    m_repeats_allowed = g_repeat;
-}
-
-//-----------------------------------------------------------
 // Procedure: setCaptureRadius
 
 void WaypointEngine::setCaptureRadius(double g_capture_radius)
@@ -131,12 +124,21 @@ void WaypointEngine::setCaptureRadius(double g_capture_radius)
 }
 
 //-----------------------------------------------------------
-// Procedure: setNonmonotonicRadius
+// Procedure: setNonmonotonicRadius  (To Be Depricated)
 
-void WaypointEngine::setNonmonotonicRadius(double g_nm_radius)
+void WaypointEngine::setNonmonotonicRadius(double radius)
 {
-  if(g_nm_radius >= 0)
-    m_nm_radius = g_nm_radius;
+  if(radius >= 0)
+    m_slip_radius = radius;
+}
+
+//-----------------------------------------------------------
+// Procedure: setSlipRadius
+
+void WaypointEngine::setSlipRadius(double radius)
+{
+  if(radius >= 0)
+    m_slip_radius = radius;
 }
 
 //-----------------------------------------------------------
@@ -149,7 +151,7 @@ void WaypointEngine::setNonmonotonicRadius(double g_nm_radius)
 
 void WaypointEngine::setCurrIndex(unsigned int index)
 {
-  if((index < 0) || (index >= m_seglist.size()))
+  if(index >= m_seglist.size())
     return;
   
   // Need to set the current_cpa to -1 so the very next distance
@@ -172,7 +174,7 @@ void WaypointEngine::setCenter(double g_x, double g_y)
 
 double WaypointEngine::getPointX(unsigned int i) const
 {
-  if((i >= 0) && (i < m_seglist.size()))
+  if(i < m_seglist.size())
     return(m_seglist.get_vx(i));
   else
     return(0);
@@ -235,15 +237,20 @@ unsigned int WaypointEngine::resetsRemaining() const
 
 string WaypointEngine::setNextWaypoint(double os_x, double os_y)
 {
+  // Phase 1: Initial checks and setting of present waypoint
+  // --------------------------------------------------------------
   unsigned int vsize = m_seglist.size();
   if(vsize == 0)
     return("empty seglist");
-
   if(m_complete)
     return("completed");
   
   double pt_x  = m_seglist.get_vx(m_curr_ix);
   double pt_y  = m_seglist.get_vy(m_curr_ix);
+
+
+  // Phase 2A: Check for arrival based on capture radii.
+  // --------------------------------------------------------------
   double dist  = hypot((os_x - pt_x),(os_y - pt_y));
 
   // (m_current_cpa == -1) indicates first time this function called
@@ -258,14 +265,33 @@ string WaypointEngine::setNextWaypoint(double os_x, double os_y)
     m_capture_hits++;
   }
   else {
-    if((m_nm_radius > m_capture_radius) &&
+    if((m_slip_radius > m_capture_radius) &&
        (dist > m_current_cpa) &&
-       (m_current_cpa <= m_nm_radius)) {
+       (m_current_cpa <= m_slip_radius)) {
       point_advance = true;
       m_nonmono_hits++;
     }
   }
 
+  // Phase 2B: Check for arrival based on the capture line criteria
+  // --------------------------------------------------------------
+  if(m_capture_line && (m_prevpt.valid())) {
+    double prevpt_x = m_prevpt.get_vx();
+    double prevpt_y = m_prevpt.get_vy();
+    
+    double angle = angleFromThreePoints(pt_x, pt_y, prevpt_x, prevpt_y, os_x, os_y);
+    cout << "Angle: " << angle << endl;
+  
+    if(angle >= 90)
+      point_advance = true;
+  }
+
+  if(point_advance)
+    cout << "Point Advance!!!!" << endl;
+
+
+  // Phase 3: Handle waypoint advancement
+  // --------------------------------------------------------------
   // If waypoint has advanced, either
   // (1) just increment the waypoint, or
   // (2) start repeating the waypoints if perpetual or repeats !=0, or

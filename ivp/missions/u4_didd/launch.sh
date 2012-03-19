@@ -146,16 +146,16 @@ if [ "${SHOREONLY}" != "yes" ]; then
     printf "Launching $VNAME1 MOOS Community (WARP=%s) \n" $WARP
     pAntler targ_henry.moos >& /dev/null &
     sleep 0.1
-    printf "Launching $VNAME2 MOOS Community (WARP=%s) \n" $WARP
-    pAntler targ_gilda.moos >& /dev/null &
-    sleep 0.1
+    #printf "Launching $VNAME2 MOOS Community (WARP=%s) \n" $WARP
+    #pAntler targ_gilda.moos >& /dev/null &
+    #sleep 0.1
     
     printf "Launching $VNAME3 MOOS Community (WARP=%s) \n" $WARP
     pAntler targ_ike.moos >& /dev/null &
     sleep 0.1
-    printf "Launching $VNAME4 MOOS Community (WARP=%s) \n" $WARP
-    pAntler targ_james.moos >& /dev/null &
-    sleep 0.1
+    #printf "Launching $VNAME4 MOOS Community (WARP=%s) \n" $WARP
+    #pAntler targ_james.moos >& /dev/null &
+    #sleep 0.1
 fi
 
 printf "Launching $SNAME MOOS Community (WARP=%s) \n"  $WARP

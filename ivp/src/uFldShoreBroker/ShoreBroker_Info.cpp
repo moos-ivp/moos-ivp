@@ -111,13 +111,15 @@ void showInterfaceAndExit()
   blk("                                                                ");
   blk("PUBLICATIONS:                                                   ");
   blk("------------------------------------                            ");
-  blk("  NODE_BROKER_ACK = community=shoreside,host=192.168.1.199,     ");
-  blk("                    port=9000,port_udp=9200,timewarp=8,         ");
-  blk("                    status=ok                                   ");
+  blk("  NODE_BROKER_ACK  = community=shoreside,host=192.168.1.199,    ");
+  blk("                     port=9000,port_udp=9200,timewarp=8,        ");
+  blk("                     status=ok                                  ");
   blk("                                                                ");
-  blk("  PMB_REGISTER    = src_var=DEPLOY_ALL,dest_community=henry,    ");
-  blk("                    dest_port=9200,dest_host=192.168.1.22,      ");
-  blk("                    dest_alias=DEPLOY                           ");
+  blk("  NODE_BROKER_VACK = alpha                                      ");
+  blk("                                                                ");
+  blk("  PMB_REGISTER     = src_var=DEPLOY_ALL,dest_community=henry,   ");
+  blk("                     dest_port=9200,dest_host=192.168.1.22,     ");
+  blk("                     dest_alias=DEPLOY                          ");
   blk("                                                                ");
   exit(0);
 }

@@ -82,9 +82,9 @@ class TS_MOOSApp : public CMOOSApp
   bool                      m_shuffle;
   bool                      m_atomic;
   std::string               m_upon_awake;
-  RandomVariable            m_time_warp;
-  RandomVariable            m_delay_start;
-  RandomVariable            m_delay_reset;
+  RandomVariable            m_time_warp;     // report
+  RandomVariable            m_delay_start;   // report
+  RandomVariable            m_delay_reset;   // report
   RandomVariableSet         m_rand_vars;
 
   // Set of logic conditions pertaining to entire script

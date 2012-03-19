@@ -86,7 +86,7 @@ void showInterfaceAndExit()
 {
   blk("                                                                ");
   blu("=============================================================== ");
-  blu("uFldMessageHandler INTERFACE                                              ");
+  blu("uFldMessageHandler INTERFACE                                    ");
   blu("=============================================================== ");
   blk("                                                                ");
   showSynopsis();

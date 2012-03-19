@@ -67,6 +67,7 @@ std::string findReplace(const std::string&, const std::string&,
 std::string padString(const std::string&, std::string::size_type, bool=true);
 std::string stripComment(const std::string&, const std::string&);
 std::string stripQuotes(const std::string&);
+std::string stripBraces(const std::string&);
 std::string doubleToHex(double);
 
 std::string packageToString(const std::vector<std::string>&);
@@ -98,6 +99,7 @@ bool  isBoolean(const std::string&);
 bool  isNumber(const std::string&, bool=true);
 bool  isAlphaNum(const std::string&, const std::string& s="");
 bool  isQuoted(const std::string&);
+bool  isBraced(const std::string&);
 
 int   getArg(int, char**, int, const char*, const char *s=0);
 bool  scanArgs(int, char**, const char*, const char *a=0, const char *b=0);
