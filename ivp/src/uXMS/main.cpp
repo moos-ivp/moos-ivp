@@ -41,6 +41,7 @@ int main(int argc ,char * argv[])
 {
   string mission_file = "";
   string run_command = argv[0];
+  
 
   for(int i=1; i<argc; i++) {
     string argi = argv[i];
@@ -58,10 +59,11 @@ int main(int argc ,char * argv[])
       run_command = argi.substr(8);
   }
   
-  string server_host     = "localhost";
-  bool   server_host_set = false;
-  int    server_port     = 9000;
-  bool   server_port_set = false;
+  string server_host      = "localhost";
+  bool   server_host_set  = false;
+  int    server_port      = 9000;
+  bool   server_port_set  = false;
+  string term_rpt_interval;
   bool   seed = true;
   for(int i=1; i<argc; i++) {
     string argi = tolower(argv[i]);
@@ -84,6 +86,9 @@ int main(int argc ,char * argv[])
 	  server_port     = atoi(right.c_str());
 	  server_port_set = true;
 	}
+      }
+      else if((lleft == "--termint") || (lleft=="-termint")) {
+	term_rpt_interval = right;
       }
     }
   }
@@ -114,6 +119,9 @@ int main(int argc ,char * argv[])
   
   XMS g_theXMS(server_host, server_port);
 
+  if(term_rpt_interval != "")
+    g_theXMS.setTermReportInterval(term_rpt_interval);
+  
   if(mission_file == "") {
     cout << "Mission File not provided. " << endl;
     cout << "  server_host  = " << server_host << endl;

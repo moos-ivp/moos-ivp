@@ -25,6 +25,7 @@ class ShoreBroker : public CMOOSApp
  protected:
   bool handleConfigBridge(std::string);
   bool handleConfigQBridge(std::string);
+  bool handleConfigTermReportInterval(std::string);
 
   bool handleMailNodePing(std::string);
 
@@ -41,6 +42,7 @@ class ShoreBroker : public CMOOSApp
   std::vector<std::string> m_bridge_alias;
 
   std::string m_keyword;
+  double      m_term_report_interval;
 
  protected: // State Variables
 
@@ -54,8 +56,11 @@ class ShoreBroker : public CMOOSApp
   HostRecord   m_shore_host_record;
 
   double       m_curr_time;
-  std::string  m_timewarp;
-  unsigned int m_iteration;
+  double       m_time_warp;
+  std::string  m_time_warp_str;
+  unsigned int m_iterations;
+  double       m_last_report_time;
+
   unsigned int m_iteration_last_ack;
 
   unsigned int m_pings_received;

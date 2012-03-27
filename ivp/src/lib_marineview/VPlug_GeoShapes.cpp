@@ -333,12 +333,26 @@ void VPlug_GeoShapes::addConvexGrid(const XYConvexGrid& new_grid)
 //-----------------------------------------------------------
 // Procedure: addCircle
 
-void VPlug_GeoShapes::addCircle(const XYCircle& circle)
+void VPlug_GeoShapes::addCircle(const XYCircle& new_circle)
 {
-  updateBounds(circle.get_min_x(), circle.get_max_x(), 
-	       circle.get_min_y(), circle.get_max_y());
+  updateBounds(new_circle.get_min_x(), new_circle.get_max_x(), 
+	       new_circle.get_min_y(), new_circle.get_max_y());
 
-  m_circles.push_back(circle);
+  string new_label = new_circle.get_label();
+  if(new_label == "") {
+    m_circles.push_back(new_circle);
+    return;
+  }
+  
+  unsigned int i, vsize = m_circles.size();
+  for(i=0; i<vsize; i++) {
+    if(m_circles[i].get_label() == new_label) {
+      m_circles[i] = new_circle;
+      return;
+    }
+  }
+
+  m_circles.push_back(new_circle);
 }
 
 

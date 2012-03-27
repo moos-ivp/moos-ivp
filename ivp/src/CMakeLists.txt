@@ -237,6 +237,8 @@ SET(IVP_NON_GUI_APPS
   uFldContactRangeSensor
   uFldHazardSensor
   uFldHazardMetric
+  uFldGenericSensor
+#  uFldGenericMetric
   uMOOSClient
   pSearchGrid
   uTimerScript

@@ -1,8 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: HazardSensor_MOOSApp.cpp                             */
-/*    DATE: Jan 28th 2012                                         */
+/*    FILE: GenericSensor_MOOSApp.cpp                            */
+/*    DATE: Jan 28th 2012                                        */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
 /* modify it under the terms of the GNU General Public License   */
@@ -21,7 +21,7 @@
 /*****************************************************************/
 
 #include <iterator>
-#include "HazardSensor_MOOSApp.h"
+#include "GenericSensor_MOOSApp.h"
 #include "ColorParse.h"
 #include "MBUtils.h"
 
@@ -30,7 +30,7 @@ using namespace std;
 //---------------------------------------------------------
 // Procedure: OnNewMail
 
-bool HazardSensor_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
+bool GenericSensor_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 {
   m_model.setCurrTime(MOOSTime());
   MOOSMSG_LIST::iterator p;
@@ -46,7 +46,7 @@ bool HazardSensor_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 //---------------------------------------------------------
 // Procedure: OnConnectToServer
 
-bool HazardSensor_MOOSApp::OnConnectToServer()
+bool GenericSensor_MOOSApp::OnConnectToServer()
 {
   RegisterVariables();  
   return(true);
@@ -56,19 +56,19 @@ bool HazardSensor_MOOSApp::OnConnectToServer()
 //------------------------------------------------------------
 // Procedure: RegisterVariables
 
-void HazardSensor_MOOSApp::RegisterVariables()
+void GenericSensor_MOOSApp::RegisterVariables()
 {
   m_Comms.Register("NODE_REPORT", 0);
   m_Comms.Register("NODE_REPORT_LOCAL", 0);
-  m_Comms.Register("UHZ_SENSOR_REQUEST", 0);
-  m_Comms.Register("UHZ_CONFIG_REQUEST", 0);
+  m_Comms.Register("UGS_SENSOR_REQUEST", 0);
+  m_Comms.Register("UGS_CONFIG_REQUEST", 0);
 }
 
 
 //---------------------------------------------------------
 // Procedure: Iterate()
 
-bool HazardSensor_MOOSApp::Iterate()
+bool GenericSensor_MOOSApp::Iterate()
 {
   m_model.setCurrTime(MOOSTime());
   m_model.iterate();
@@ -79,38 +79,23 @@ bool HazardSensor_MOOSApp::Iterate()
 //---------------------------------------------------------
 // Procedure: OnStartUp()
 
-bool HazardSensor_MOOSApp::OnStartUp()
+bool GenericSensor_MOOSApp::OnStartUp()
 {
-  cout << termColor("blue");
-  MOOSTrace("\nSimulated Hazard Sensor starting...\n");
+  cout << termColor("blue") << "Simulated Hazard Sensor starting..." << endl;
   m_model.setCurrTime(MOOSTime());
   
   STRING_LIST sParams;
   m_MissionReader.GetConfiguration(GetAppName(), sParams);
 
   STRING_LIST::iterator p;
-  for(p = sParams.begin(); p!=sParams.end(); p++) {
+  for(p=sParams.begin(); p!=sParams.end(); p++) {
     string sLine  = *p;
-    string param  = biteStringX(sLine, '=');
+    string param  = tolower(biteStringX(sLine, '='));
     string value  = sLine;
-    bool ok = false;
-    if((tolower(param) == "apptick") ||
-       (tolower(param) == "commstick"))
-      ok = true;
-    else {
-      unsigned int pass, total_passes = 3;
-      for(pass=0; pass<total_passes; pass++)
-	ok = ok || m_model.setParam(param, value, pass);
-      if(!ok) {
-	cout << termColor("red");
-	cout << "WARNING: Unhandled configuration line:" << endl;
-	cout << termColor("black");
-	cout << "   Parameter=" << param << " Value=" << value << endl;
-	cout << termColor("blue");
-      }
-    }
-  }
-  
+    if((param != "apptick") && (param != "commstick"))
+      m_model.setParam(param, value);
+}
+
   RegisterVariables();
 
   postMessages(m_model.getVisuals());
@@ -119,8 +104,7 @@ bool HazardSensor_MOOSApp::OnStartUp()
   m_model.setTimeWarp(time_warp);
 
   m_model.perhapsSeedRandom();
-  m_model.sortSensorProperties();
-  MOOSTrace("Simulated Hazard Sensor started. \n\n");
+  cout << "Simulated Generic Sensor started." << endl;
   cout << termColor() << flush;
   return(true);
 }
@@ -129,7 +113,7 @@ bool HazardSensor_MOOSApp::OnStartUp()
 //---------------------------------------------------------
 // Procedure: postMessages()
 
-void HazardSensor_MOOSApp::postMessages(vector<VarDataPair> msgs)
+void GenericSensor_MOOSApp::postMessages(vector<VarDataPair> msgs)
 {
   unsigned int i, vsize = msgs.size();
   for(i=0; i<vsize; i++) {

@@ -35,7 +35,9 @@ PMV_MOOSApp::PMV_MOOSApp()
   m_verbose         = true;
   m_gui             = 0; 
   m_start_time      = 0;
+  m_time_warp       = 1;
   m_lastredraw_time = 0;
+  m_iterations      = 0;
   m_node_report_vars.push_back("NODE_REPORT");
   m_node_report_vars.push_back("NODE_REPORT_LOCAL");
 
@@ -152,6 +154,8 @@ bool PMV_MOOSApp::OnStartUp()
       SetAppFreq((20/time_warp));
   }
 
+  m_time_warp = GetMOOSTimeWarp();
+
   if((!m_gui) || (!m_pending_moos_events))
     return(true);
   
@@ -214,8 +218,8 @@ void PMV_MOOSApp::registerVariables()
   m_Comms.Register("VIEW_RANGE_PULSE",   0);
 
   unsigned int i, vsize = m_scope_vars.size();
-  for(i=0; i<vsize; i++)
-    m_Comms.Register(m_scope_vars[i], 0);
+  //for(i=0; i<vsize; i++)
+  //  m_Comms.Register(m_scope_vars[i], 0);
 
   vsize = m_node_report_vars.size();
   for(i=0; i<vsize; i++)
@@ -303,7 +307,8 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
       MOOSTrace("  [key:%s val:%s]\n", key.c_str(), sval.c_str());
       MOOSTrace("?");
     }
-    
+  
+#if 0  
     if(key == "VIEW_POLYGON")           cout << "P";
     else if(key == "VIEW_SEGLIST")      cout << "S";
     else if(key == "VIEW_POINT")        cout << ".";
@@ -314,31 +319,46 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
     else if(key == "NODE_REPORT_LOCAL") cout << "*";
     else if(key == "GRID_DELTA")        cout << "G";
     cout << flush;
+#endif
     if(handled)
       handled_msgs++;
   }
 
-  if(handled_msgs > 0) {
-    m_lastredraw_time = e.moos_time;
-    m_gui->updateXY();
-    m_gui->mviewer->redraw();
-  }
+  //if(handled_msgs > 0) {
+  //  m_lastredraw_time = e.moos_time;
+  //  m_gui->updateXY();
+  //  m_gui->mviewer->redraw();
+  // }
 }
 
 
 //----------------------------------------------------------------------
 // Procedure: handleIterate
 
-void PMV_MOOSApp::handleIterate(const MOOS_event & e) {
+void PMV_MOOSApp::handleIterate(const MOOS_event & e) 
+{
   double curr_time = e.moos_time - m_start_time;
-  double time_diff = (e.moos_time - m_lastredraw_time);
-  if(time_diff > 0.2) {
-    m_gui->mviewer->redraw();
-    m_lastredraw_time = e.moos_time;
+  double moos_elapsed_time = (e.moos_time - m_lastredraw_time);
+  double real_elapsed_time = moos_elapsed_time;
+  if(m_time_warp > 0)
+    real_elapsed_time = moos_elapsed_time / m_time_warp;
+
+  //cout << "moos_elapsed_time: " << moos_elapsed_time << endl;
+  //cout << "   real_elapsed_time: " << real_elapsed_time << endl;
+  //cout << "   m_time_warp: " << m_time_warp << endl;
+  
+  if(real_elapsed_time < 0.1) {
+    cout << "*" << flush;
+    return;
   }
+
+  cout << "." << flush;
+  
+  m_gui->mviewer->redraw();
   m_gui->updateXY();
   m_gui->mviewer->setParam("curr_time", e.moos_time);
   m_gui->setCurrTime(curr_time);
+  m_lastredraw_time = e.moos_time;
 
   string vname = m_gui->mviewer->getStringInfo("active_vehicle_name");
 

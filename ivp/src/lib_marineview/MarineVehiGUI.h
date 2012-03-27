@@ -46,6 +46,9 @@ protected:
   inline void cb_ToggleTrailColor_i();
   static void cb_ToggleTrailColor(Fl_Widget*);
 
+  inline void cb_AltIgnoreStale_i(int);
+  static void cb_AltIgnoreStale(Fl_Widget*, int);
+
   inline void cb_AltTrailConnect_i(int);
   static void cb_AltTrailConnect(Fl_Widget*, int);
 

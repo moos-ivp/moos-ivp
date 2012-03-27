@@ -54,7 +54,7 @@ TS_MOOSApp::TS_MOOSApp()
   m_posted_count   = 0;
   m_posted_tcount  = 0;
   m_reset_count    = 0;
-  m_iteration      = 0; 
+  m_iterations     = 0; 
   m_iter_char      = 'a';
   m_verbose        = true;
   m_shuffle        = true;
@@ -196,7 +196,7 @@ bool TS_MOOSApp::Iterate()
   if((m_reset_time > 0) && (m_elapsed_time >= m_reset_time))
     handleReset();
 
-  m_iteration++;
+  m_iterations++;
   m_iter_char++;
   if(m_iter_char > 122)
     m_iter_char -= 26;

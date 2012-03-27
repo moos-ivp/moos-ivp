@@ -75,6 +75,7 @@ class PMV_Viewer : public MarineViewer
   std::string m_reference_bearing;
   double      m_stale_report_thresh;
   double      m_stale_report_thresh_nodraw;  
+  bool        m_ignore_staleness;
   double      m_curr_time;
 
   // Member variables for holding scoped info

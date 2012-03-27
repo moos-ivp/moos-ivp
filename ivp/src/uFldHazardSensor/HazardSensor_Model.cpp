@@ -167,16 +167,29 @@ bool HazardSensor_Model::handleMsg(string key, double dval, string sval,
 				   double mtime, bool isdouble, bool isstring,
 				   string src_app, string src_community)
 {
+  bool handled = false;
   if((key == "NODE_REPORT") || (key == "NODE_REPORT_LOCAL"))
-    return(handleNodeReport(sval));
+    handled = handleNodeReport(sval);
 
   if(key == "UHZ_SENSOR_REQUEST")
-    return(handleSensorRequest(sval));
+    handled = handleSensorRequest(sval);
   
   if(key == "UHZ_CONFIG_REQUEST")
-    return(handleSensorConfig(sval, src_community));
+    handled = handleSensorConfig(sval, src_community);
   
-  return(true);
+  if(!handled) {
+    string msg = "ERROR. Uhandled msg: " + key;
+    if(isstring) 
+      msg += ", sval=" + sval;
+    else if(isdouble)
+      msg += ", dval=" + doubleToStringX(dval,6);
+    else
+      msg += ", unknown_type";
+    msg += ",[" + src_app + "],[" + src_community + "]";
+    m_map_memos[msg]++;
+  }
+   
+  return(handled);
 }
 
 //------------------------------------------------------------
@@ -1091,9 +1104,16 @@ void HazardSensor_Model::printReport()
   cout << "Internal Memos:                            " << endl;
   cout << "======================================     " << endl;
   map<string, int>::iterator p1;
-  for(p1=m_map_memos.begin(); p1!=m_map_memos.end(); p1++) 
-    cout << " (" << p1->second << ") " << p1->first  << endl;
-
+  for(p1=m_map_memos.begin(); p1!=m_map_memos.end(); p1++) {
+    string msg = p1->first;
+    int    amt = p1->second;
+    bool   err = strBegins(msg, "ERROR");
+    if(err)
+      cout << termColor("magenta");
+    cout << " (" << amt << ") " << msg  << termColor() << endl;
+    if(err)
+      cout << termColor();
+  }
 }
 
 

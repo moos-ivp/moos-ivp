@@ -116,7 +116,7 @@ class TS_MOOSApp : public CMOOSApp
   unsigned int  m_posted_count;
   unsigned int  m_posted_tcount;
   unsigned int  m_reset_count;
-  unsigned int  m_iteration;
+  unsigned int  m_iterations;
   char          m_iter_char;
 
   InfoBuffer *m_info_buffer;

@@ -43,6 +43,7 @@ class XMS : public CMOOSApp
   void addVariables(std::string);
   bool addVariable(std::string, bool histvar=false);
   bool addSource(std::string);
+  bool setTermReportInterval(std::string);
   void setHistoryVar(std::string);
   void setFilter(std::string);
   void ignoreFileVars(bool v)        {m_ignore_file_vars = v;};
@@ -107,6 +108,12 @@ class XMS : public CMOOSApp
   
   std::map<std::string, std::string> m_src_map;
 
+  unsigned int  m_iterations;
+  double        m_time_warp;
+  double        m_curr_time;
+  double        m_last_report_time;
+  double        m_term_report_interval;
+
   bool   m_update_requested;
   bool   m_scope_event;
   bool   m_history_event;
@@ -118,7 +125,6 @@ class XMS : public CMOOSApp
   bool   m_display_community;
   bool   m_display_own_community;
   bool   m_help_requested;
-  int    m_iteration;
   std::string m_refresh_mode;
   std::string m_community;
 

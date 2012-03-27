@@ -35,6 +35,8 @@ HazardMetric::HazardMetric()
   m_time_warp        = 1;
   m_curr_time        = 0;
   m_last_report_time = 0;      // Timestamp of last terminal report
+
+  m_start_time       = 0;
 }
 
 //---------------------------------------------------------
@@ -49,8 +51,13 @@ bool HazardMetric::OnNewMail(MOOSMSG_LIST &NewMail)
     string key   = msg.GetKey();
     string sval  = msg.GetString(); 
     
-    if(key == "HAZARD_REPORT")
+    if(key == "HAZARD_REPORT") {
       addHazardReport(sval);
+      evaluateReports();
+    }
+
+    else if(key == "HAZARD_METRIC_START")
+      m_start_time = MOOSTime();
 
 #if 0 // Keep these around just for template
     string comm  = msg.GetCommunity();
@@ -85,10 +92,8 @@ bool HazardMetric::Iterate()
 
   double moos_elapsed_time = m_curr_time - m_last_report_time;
   double real_elapsed_time = moos_elapsed_time / m_time_warp;
-  if(real_elapsed_time >= m_report_interval) {
-    m_last_report_time = m_curr_time;
+  if(real_elapsed_time >= m_report_interval) 
     printReport();
-  }
 
   return(true);
 }
@@ -156,6 +161,7 @@ bool HazardMetric::OnStartUp()
 void HazardMetric::RegisterVariables()
 {
   m_Comms.Register("HAZARD_REPORT", 0);
+  m_Comms.Register("HAZARD_METRIC_START", 0);
 }
 
 
@@ -253,6 +259,23 @@ bool HazardMetric::addHazardReport(string report_str)
 }
 
 //------------------------------------------------------------
+// Procedure: handleMailHazardMetricStart()
+
+void HazardMetric::handleMailHazardMetricStart(string vname)
+{
+  //m_map_start_time[vname] = m_curr_time;
+}
+
+//------------------------------------------------------------
+// Procedure: handleMailStopWatchStop()
+
+void HazardMetric::handleMailStopWatchStop(string vname)
+{
+  //m_map_start_time[vname] = m_curr_time;
+}
+
+
+//------------------------------------------------------------
 // Procedure: evaluateReports
 
 void HazardMetric::evaluateReports()
@@ -317,9 +340,13 @@ void HazardMetric::evaluateReport(string source)
       report_eval += "#";
     report_eval += eval;
   }
+
+  double elapsed_time = m_curr_time - m_start_time;
   
   string summary = "vname=" + source;
+  summary += ",objects_reported=" + uintToString(vsize);
   summary += ",total_score=" + doubleToStringX(total_score);
+  summary += ",time=" + doubleToString(elapsed_time,1);
   
   m_map_report_score[source] = doubleToStringX(total_score);
 
@@ -346,6 +373,7 @@ void HazardMetric::evaluateReport(string source)
 
 void HazardMetric::printReport() 
 {
+  m_last_report_time = m_curr_time;
   // Part 1: Header
   cout << endl << endl << endl << endl << endl;
   cout << "======================================================" << endl;
@@ -361,6 +389,8 @@ void HazardMetric::printReport()
     }
   }
   cout << termColor() << endl;
+  cout << "Hazards from File: " << m_hazards.size() << endl;
+  
 
   // Part 3: Normal Status Output
   cout << "Received Reports:" << endl;
@@ -372,8 +402,8 @@ void HazardMetric::printReport()
     string vname = p->first;
     string score = p->second;
     unsigned int amt = m_map_report_amt[vname];
-    double time  = m_map_report_time[vname];
-    cout << vname << "  " << amt << "   " << score << "   " << time << endl;
+    double time  = m_map_report_time[vname] - m_start_time;
+    cout << vname << "     " << amt << "          " << score << "    " << time << endl;
   }
 
   // Part 4: Memo Messages
@@ -386,3 +416,4 @@ void HazardMetric::printReport()
 
 
 }
+

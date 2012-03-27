@@ -30,7 +30,7 @@
 class XYCircle : public XYObject {
 public:
   XYCircle();
-  XYCircle(double, double, double);
+  XYCircle(double x, double y, double radius);
   virtual ~XYCircle() {};
 
   bool   initialize(const std::string&);

@@ -60,6 +60,10 @@ MarineVehiGUI::MarineVehiGUI(int g_w, int g_h, const char *g_l)
   mbar->add("Vehicles/Trails/trails_length = longer", ')', (Fl_Callback*)MarineVehiGUI::cb_AltTrailLength, (void*)+1, 0);
   mbar->add("Vehicles/Trails/trails_length = shorter", '(', (Fl_Callback*)MarineVehiGUI::cb_AltTrailLength, (void*)-1, 0);
 
+  mbar->add("Vehicles/Ignore Staleness/ignore_staleness = true",    0, (Fl_Callback*)MarineVehiGUI::cb_AltIgnoreStale, (void*)1, 0);
+  mbar->add("Vehicles/Ignore Staleness/ignore_staleness = false",   0, (Fl_Callback*)MarineVehiGUI::cb_AltIgnoreStale, (void*)0, 0);
+  mbar->add("Vehicles/Ignore Staleness/ignore_staleness = toggle", FL_CTRL+'i', (Fl_Callback*)MarineVehiGUI::cb_AltIgnoreStale, (void*)2, 0);
+
   mbar->add("Vehicles/BearingLines/bearing_lines_viewable = true",    0, (Fl_Callback*)MarineVehiGUI::cb_AltBearingLines, (void*)1, 0);
   mbar->add("Vehicles/BearingLines/bearing_lines_viewable = false",   0, (Fl_Callback*)MarineVehiGUI::cb_AltBearingLines, (void*)0, 0);
 
@@ -124,6 +128,20 @@ inline void MarineVehiGUI::cb_AltTrails_i(int v) {
 }
 void MarineVehiGUI::cb_AltTrails(Fl_Widget* o, int v) {
   ((MarineVehiGUI*)(o->parent()->user_data()))->cb_AltTrails_i(v);
+}
+
+//----------------------------------------- AltIgnoreStale
+inline void MarineVehiGUI::cb_AltIgnoreStale_i(int v) {
+  if(v==1)
+    cmviewer->setParam("ignore_staleness", "true");
+  else if(v==0)
+    cmviewer->setParam("ignore_staleness", "false");
+  else
+    cmviewer->setParam("ignore_staleness", "toggle");
+  cmviewer->redraw();
+}
+void MarineVehiGUI::cb_AltIgnoreStale(Fl_Widget* o, int v) {
+  ((MarineVehiGUI*)(o->parent()->user_data()))->cb_AltIgnoreStale_i(v);
 }
 
 //----------------------------------------- AltTrailConnect

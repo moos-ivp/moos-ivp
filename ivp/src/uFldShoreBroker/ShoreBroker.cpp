@@ -20,13 +20,19 @@ using namespace std;
 ShoreBroker::ShoreBroker()
 {
   // Initialize state variables
-  m_iteration          = 0;
+  m_iterations         = 0;
   m_iteration_last_ack = 0;
+  m_curr_time          = 0;
+  m_time_warp          = 1;
+  m_last_report_time   = 0;
 
   m_pings_received = 0;  // Times NODE_BROKER_PING received
   m_phis_received  = 0;  // Times PHI_HOST_INFO    received
   m_acks_posted    = 0;  // Times NODE_BROKER_ACK  posted
   m_pmbs_posted    = 0;  // Times PMB_REGISTER     posted
+
+  // Initialize config variables
+  m_term_report_interval = 0.75;
 }
 
 //---------------------------------------------------------
@@ -37,7 +43,7 @@ bool ShoreBroker::OnNewMail(MOOSMSG_LIST &NewMail)
   MOOSMSG_LIST::iterator p;
 	
   for(p=NewMail.begin(); p!=NewMail.end(); p++) {
-    p->Trace();
+    //p->Trace();
     CMOOSMsg msg = *p;
 	
     string key   = msg.GetKey();
@@ -84,12 +90,21 @@ bool ShoreBroker::OnConnectToServer()
 
 bool ShoreBroker::Iterate()
 {
-  m_iteration++;
+  m_iterations++;
   m_curr_time = MOOSTime();
 
   makeBridgeRequestAll();
   sendAcks();
-  printReport();
+
+  // Consider generating terminal output
+  double warp_elapsed_time = m_curr_time - m_last_report_time;
+  double real_elapsed_time = warp_elapsed_time;
+  if(m_time_warp > 0)
+    real_elapsed_time = warp_elapsed_time / m_time_warp;
+  if(real_elapsed_time > m_term_report_interval) {
+    printReport();
+    m_last_report_time = m_curr_time;
+  }
 
   return(true);
 }
@@ -134,14 +149,18 @@ bool ShoreBroker::OnStartUp()
 	    MOOSTrace("Invalid QBRIDGE config: %s\n", value.c_str());
 	}
       }
+      else if(param == "TERM_REPORT_INTERVAL") {
+	return(handleConfigTermReportInterval(value));
+      }
       else if(param == "KEYWORD") {
 	m_keyword = value;
       }
     }
   }
   
-  m_timewarp = doubleToStringX(GetMOOSTimeWarp());
-
+  m_time_warp     = GetMOOSTimeWarp();
+  m_time_warp_str = doubleToStringX(m_time_warp);
+  
   registerVariables();
   return(true);
 }
@@ -194,8 +213,8 @@ bool ShoreBroker::handleMailNodePing(string info)
   
   // Part 2: Determine the status (response) to the incoming ping.
   string status = "ok";
-  if(m_timewarp != hrecord.getTimeWarp()) 
-    status = "timewarp (" + m_timewarp + "!=" + hrecord.getTimeWarp() + ")";
+  if(m_time_warp_str != hrecord.getTimeWarp()) 
+    status = "timewarp (" + m_time_warp_str + "!=" + hrecord.getTimeWarp() + ")";
   
   if((m_keyword != "") && (m_keyword != hrecord.getKeyword()))
     status = "keyword_mismatch";
@@ -363,6 +382,18 @@ bool ShoreBroker::handleConfigQBridge(string line)
   return(true);
 }
 
+//------------------------------------------------------------
+// Procedure: setTermReportInterval
+
+bool ShoreBroker::handleConfigTermReportInterval(string str)
+{
+  if(!isNumber(str))
+    return(false);
+
+  m_term_report_interval = atof(str.c_str());
+  m_term_report_interval = vclip(m_term_report_interval, 0, 10);
+  return(true);
+}
 
 //------------------------------------------------------------
 // Procedure: printReport
@@ -373,9 +404,9 @@ void ShoreBroker::printReport()
   string shore_info = termColor("magenta") + m_shore_host_record.getSpecTerse();
 
   cout << endl << endl << endl << endl << endl;
-  cout << "ShoreBroker Status ----------- (" << m_iteration << ")" << endl;
+  cout << "ShoreBroker Status ----------- (" << m_iterations << ")" << endl;
   cout << " Shoreside Info:         " << shore_info << termColor() << endl;
-  cout << " MOOS Time Warp:                  " << m_timewarp << endl;
+  cout << " MOOS Time Warp:                  " << m_time_warp_str << endl;
   cout << " Total PHI_HOST_INFO    received: " << m_phis_received << endl;
   cout << " Total NODE_BROKER_PING received: " << m_pings_received << endl;
   cout << " Total NODE_BROKER_ACK    posted: " << m_acks_posted << endl;

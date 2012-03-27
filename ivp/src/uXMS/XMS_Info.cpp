@@ -97,6 +97,8 @@ void showHelpAndExit()
   blk("    Scope only on vars posted by the given MOOS processes       ");
   mag("  --trunc","=value [10,1000]                                    ");
   blk("    Truncate the output in the data column.                     ");
+  mag("  --termint","=value [0,10]  (default is 0.6)                   ");
+  blk("    Minimum real-time seconds between terminal reports.         ");
   mag("  -t                                                            ");
   blk("    Short for --trunc=45                                        ");
   mag("  --version,-v                                                  ");
@@ -131,6 +133,8 @@ void showExampleConfigAndExit()
   blk("  DISPLAY_TIME          = false   // default                    ");
   blk("  DISPLAY_COMMUNITY     = false   // default                    ");
   blk("  DISPLAY_ALL           = false   // default                    ");
+  blk("                                                                ");
+  blk("  TERM_REPORT_INTERVAL  = 0.6     // default (seconds           ");
   blk("                                                                ");
   blk("  COLOR_MAP    = pHelmIvP, red   // All postings by pHelmIvP red");
   blk("  COLOR_MAP    = NAV_SPEED, blue // Only var NAV_SPEED is blue  ");

@@ -53,7 +53,13 @@ XMS::XMS(string server_host, long int server_port)
   m_scope_event       = true;
   m_history_event     = true;
   m_refresh_mode      = "events";
-  m_iteration         = 0;
+
+
+  m_iterations        = 0;
+  m_term_report_interval = 0.6;   // Terminal report interval seconds
+  m_time_warp         = 1;
+  m_curr_time         = 0;
+  m_last_report_time  = 0;      // Timestamp of last terminal report
 
   m_trunc_data        = 0;
   m_trunc_data_start  = 50;
@@ -123,8 +129,8 @@ bool XMS::OnNewMail(MOOSMSG_LIST &NewMail)
       CMOOSMsg &msg = *p;
       if(msg.GetKey() == "DB_UPTIME") {
 	m_db_start_time = MOOSTime() - msg.GetDouble();
-	if(m_community == "")
-	  m_community = msg.GetCommunity();
+	m_community = msg.GetCommunity();
+	m_Comms.UnRegister("DB_UPTIME");
       }
     }
   }
@@ -156,21 +162,42 @@ bool XMS::OnNewMail(MOOSMSG_LIST &NewMail)
 
 bool XMS::Iterate()
 {
-  // see if any new variables have been posted (running in show all mode)
-  double moostime = MOOSTime();
-  if(m_display_all && ((m_last_all_refresh + ALL_BLACKOUT) < moostime)) {
-    refreshAllVarsList();
-    cacheColorMap();
-    m_last_all_refresh = moostime;
+  // Part 1: Update the key local state variables.
+  m_iterations++;
+  m_curr_time = MOOSTime();
+
+  // Part 2: If in the show-all mode, perhaps update new variables
+  // Don't want to do this too often. And want to consider the timewarp.
+  if(m_display_all) {
+    double time_since_last_all_refresh = m_curr_time - m_last_all_refresh;
+    if(m_time_warp > 0)
+      time_since_last_all_refresh = time_since_last_all_refresh / m_time_warp;
+    
+    if(time_since_last_all_refresh > ALL_BLACKOUT) {
+      refreshAllVarsList();
+      cacheColorMap();
+      m_last_all_refresh = m_curr_time;
+    }
   }
   
   refreshProcVarsList();
 
+  // Consider how long its been since our last report (regular or history)
+  // Want to report less frequently if using a higher time warp.
+  bool print_report = false;
+  double moos_elapsed_time = m_curr_time - m_last_report_time;
+  double real_elapsed_time = moos_elapsed_time / m_time_warp;
+
+  if(real_elapsed_time >= m_term_report_interval) {
+    m_last_report_time = m_curr_time;
+    print_report = true;
+  }
+
   if(m_display_help)
     printHelp();
-  else if(m_history_mode)
+  else if(m_history_mode && print_report)
     printHistoryReport();
-  else
+  else if(print_report)
     printReport();
   return(true);
 }
@@ -254,7 +281,9 @@ bool XMS::OnStartUp()
       string right = stripBlankEnds(value); 
       setColorMapping(left, right);
     }
-    
+    else if(param == "TERM_REPORT_INTERVAL")
+      return(setTermReportInterval(value));
+
     else if(!(m_ignore_file_vars || m_display_all) && (param == "VAR"))
       addVariables(value);
   }
@@ -265,6 +294,7 @@ bool XMS::OnStartUp()
   else
     registerVariables();
   
+  m_time_warp = GetMOOSTimeWarp();
   cacheColorMap();
   return(true);
 }
@@ -588,6 +618,19 @@ void XMS::setTruncData(double v)
 }
 
 //------------------------------------------------------------
+// Procedure: setTermReportInterval
+
+bool XMS::setTermReportInterval(string str)
+{
+  if(!isNumber(str))
+    return(false);
+
+  m_term_report_interval = atof(str.c_str());
+  m_term_report_interval = vclip(m_term_report_interval, 0, 10);
+  return(true);
+}
+
+//------------------------------------------------------------
 // Procedure: setColorMapping
 
 void XMS::setColorMapping(string str, string color)
@@ -818,7 +861,6 @@ void XMS::printReport()
 
   m_scope_event = false;
   m_update_requested = false;
-  m_iteration++;
   
   printf("\n\n\n\n\n");
   
@@ -862,7 +904,7 @@ void XMS::printReport()
     printf("%-14s", "----------");
   else
     printf(" --- ");
-  printf(" ----------- (%d)\n", m_iteration);
+  printf(" ----------- (%d)\n", m_iterations);
   
   unsigned int i, vsize = m_var_names.size();
   for(i=0; i<vsize; i++) {
@@ -984,7 +1026,6 @@ void XMS::printHistoryReport()
 
   m_history_event = false;
   m_update_requested = false;
-  m_iteration++;
   
   printf("\n\n\n\n\n");
   
@@ -1020,7 +1061,7 @@ void XMS::printHistoryReport()
   else
     printf(" --- ");
   
-  printf(" ----------- (%d)\n", m_iteration);
+  printf(" ----------- (%d)\n", m_iterations);
   
   list<string> hist_list    = m_history_list;
   list<string> hist_sources = m_history_sources;

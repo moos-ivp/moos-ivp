@@ -46,7 +46,8 @@ PMV_Viewer::PMV_Viewer(int x, int y, int w, int h, const char *l)
   m_reference_point     = "datum";
   m_reference_bearing   = "relative";
   m_stale_report_thresh = 115;
-  m_stale_report_thresh_nodraw = 120;
+  m_stale_report_thresh_nodraw = 300;
+  m_ignore_staleness    = true;
   m_mouse_x   = 0;
   m_mouse_y   = 0;
   m_mouse_lat = 0;
@@ -87,6 +88,10 @@ void PMV_Viewer::draw()
     vector<XYRangePulse> rng_pulses = m_geoshapes_map.getRangePulses(vnames[i]);
     vector<XYCommsPulse> cms_pulses = m_geoshapes_map.getCommsPulses(vnames[i]);
     vector<XYMarker>  markers = m_geoshapes_map.getMarkers(vnames[i]);
+
+    //cout << "polys[" << vnames[i] << "]:" << polys.size() << endl;
+    //cout << "segls[" << vnames[i] << "]:" << segls.size() << endl;
+    //cout << "points[" << vnames[i] << "]:" << points.size() << endl;
 
     drawPolygons(polys);
     drawGrids(grids);
@@ -228,14 +233,32 @@ bool PMV_Viewer::setParam(string param, string value)
     handled = m_vehiset.setParam(param, value);
   }
   else if(param == "stale_report_thresh") {
-    double dval = atof(value.c_str());
-    if(isNumber(value) && (dval > 0))
-      m_stale_report_thresh = dval;
+    if(isNumber(value)) {
+      double dval = atof(value.c_str());
+      if(dval > 0) {
+	m_stale_report_thresh = dval;
+	m_ignore_staleness = false;
+	handled = true;
+      }
+      else
+	handled = false;
+    }
+  }
+  else if(param == "ignore_staleness") {
+    handled = setBooleanOnString(m_ignore_staleness, value);
+    cout << "m_ignore_stalenes:" << m_ignore_staleness << endl;
   }
   else if(param == "stale_report_thresh_nodraw") {
-    double dval = atof(value.c_str());
-    if(isNumber(value) && (dval > 0))
-      m_stale_report_thresh_nodraw = dval;
+    if(isNumber(value)) {
+      double dval = atof(value.c_str());
+      if(dval > 0) {
+	m_stale_report_thresh_nodraw = dval;
+	m_ignore_staleness = false;
+	handled = true;
+      }
+      else
+	handled = false;
+    }
   }
   else if(param == "lclick_ix_start") {
     if(isNumber(value)) {
@@ -309,9 +332,9 @@ void PMV_Viewer::drawVehicle(string vname, bool active, string vehibody)
     return;
 
   double age_report = m_vehiset.getDoubleInfo(vname, "age_ais");
-  if(age_report > m_stale_report_thresh_nodraw)
+  if((age_report > m_stale_report_thresh_nodraw) && !m_ignore_staleness)
     return;
-
+  
   BearingLine bng_line = m_vehiset.getBearingLine(vname);
 
   // If there has been no explicit mapping of color to the given vehicle
@@ -366,8 +389,7 @@ void PMV_Viewer::drawVehicle(string vname, bool active, string vehibody)
 
   record.setName(vname_aug);
 
-  drawCommonVehicle(record, bng_line, vehi_color, vname_color, 
-		    vname_draw, 1);
+  drawCommonVehicle(record, bng_line, vehi_color, vname_color, vname_draw, 1);
 }
 
 //-------------------------------------------------------------
@@ -379,6 +401,8 @@ void PMV_Viewer::drawTrailPoints(CPList &cps, unsigned int trail_length)
     return;
 
   XYSegList segl;
+
+  //cout << "cplist:size: " << cps.size() << endl;;
 
   list<ColoredPoint>::reverse_iterator p;
   unsigned int i=0;

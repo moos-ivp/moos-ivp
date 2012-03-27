@@ -79,7 +79,7 @@ void showExampleConfigAndExit()
   blk("  score_benign_right =   5    // default                        ");
   blk("  score_benign_wrong = -25    // default                        ");
   blk("  score_hazard_zilch = -75    // default                        ");
-  blk("  score_ignore_zilch =   0    // default                        ");
+  blk("  score_benign_zilch =   0    // default                        ");
   blk("                                                                ");
   blk("  hazard_file   = hazards.txt                                   ");
   blk("}                                                               ");

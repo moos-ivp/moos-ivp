@@ -70,11 +70,12 @@ class PMV_MOOSApp : public CMOOSApp
   PMV_GUI* m_gui;
   Threadsafe_pipe<MOOS_event> * m_pending_moos_events;
 
-  double m_start_time;
-  double m_lastredraw_time;
-  bool   m_verbose;
-  bool   m_pending_pairs;
-  int    m_counter;
+  double       m_start_time;
+  double       m_lastredraw_time;
+  double       m_time_warp;
+  bool         m_verbose;
+  bool         m_pending_pairs;
+  unsigned int m_iterations;
 
   std::vector<std::string> m_node_report_vars;
   std::vector<std::string> m_scope_vars;

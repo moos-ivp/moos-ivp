@@ -130,6 +130,6 @@ int main(int argc, char *argv[])
 
   portAppRunnerThread.quit();
   delete gui;
-  return 0;
+  return(0);
 }
 

@@ -33,6 +33,10 @@ class HazardMetric : public CMOOSApp
   bool    addHazardReport(std::string report);
   void    evaluateReports();
   void    evaluateReport(std::string source);
+  void    handleMailHazardMetricStart(std::string vname);
+
+  void    handleMailStopWatchStop(std::string vname);
+
   void    printReport();
 
   std::string findReportForHazard(const XYHazard);
@@ -54,6 +58,8 @@ class HazardMetric : public CMOOSApp
   double       m_curr_time;
   double       m_last_report_time;
   
+  double       m_start_time;
+
   // Messages to be displayed to the terminal
   std::map<std::string, int>   m_map_memos;
 

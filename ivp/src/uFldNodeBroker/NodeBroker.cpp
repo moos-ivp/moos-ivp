@@ -106,6 +106,7 @@ bool NodeBroker::Iterate()
     printReport();
     m_last_report_time = m_curr_time;
   }
+
   return(true);
 }
 
@@ -456,5 +457,3 @@ void NodeBroker::printReport()
   cout << "  Port (UDP):  " << m_shore_host_record.getPortUDP() << endl; 
   cout << "   Time Warp:  " << m_shore_host_record.getTimeWarp() << endl; 
 }
-
-
