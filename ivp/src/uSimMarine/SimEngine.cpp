@@ -84,6 +84,7 @@ void SimEngine::propagateDepth(NodeRecord& record,
   if(speed <= 0) {
     double new_depth = prev_depth + (-1 * buoyancy_rate * delta_time);
     record.setDepth(new_depth);
+    record.setPitch(0.0);
   }
   else {
     double pct = 1.0;
@@ -98,17 +99,18 @@ void SimEngine::propagateDepth(NodeRecord& record,
       pct = sqrt(pct);
     double depth_rate = pct * max_depth_rate;
     double speed = record.getSpeed();
-    double pitch_depth_rate = - sin(record.getPitch())*speed; 
+    double pitch_depth_rate = - sin(record.getPitch())*speed;
     double actuator_depth_rate = (elevator_angle/100) * depth_rate;
     double total_depth_rate = (-buoyancy_rate) +  pitch_depth_rate + actuator_depth_rate;
 
     double new_depth = prev_depth + (1 * total_depth_rate * delta_time);
     record.setDepth(new_depth);
+
     // Pitch added by HS 120124
 
     double pitch =0 ;
-    if (speed > 0)
-      pitch = - asin((pitch_depth_rate+actuator_depth_rate)/speed); 
+    if (speed > 0 && (fabs(pitch_depth_rate+actuator_depth_rate) <= speed))
+      pitch = - asin((pitch_depth_rate+actuator_depth_rate)/speed);
     record.setPitch(pitch);
   }
     
