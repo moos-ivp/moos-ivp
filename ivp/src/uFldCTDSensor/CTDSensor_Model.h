@@ -53,14 +53,10 @@ class CTDSensor_Model
   bool    SensorConfig();
 
   bool    setTermReportInterval(std::string);
-  bool    setOptionsSummaryInterval(std::string);
-  bool    setMinResetInterval(std::string);
-  bool    setMinSensorInterval(std::string);
 
  protected: // Incoming mail utility
   bool    handleNodeReport(const std::string&);
   bool    handleSensorRequest(const std::string&);
-  bool    handleSensorConfig(const std::string&, const std::string&);
 
  protected: // Outgoing mail utility
   void    addMessage(const std::string&, const std::string&);
@@ -68,9 +64,6 @@ class CTDSensor_Model
   void    postSensorReport(double ptx, double pty, std::string vname);
 
  protected: // Utilities
-  bool    setVehicleSensorSetting(std::string, double);
-  bool    updateNodeRecords(NodeRecord);
-  void    printReport();
 
   void    memo(const std::string&);
   void    memoErr(const std::string&);
@@ -116,17 +109,10 @@ class CTDSensor_Model
   double m_sigma;
 
   double      m_term_report_interval;
-  double      m_options_summary_interval;
-  bool        m_seed_random;
 
   // A string describing available sensor propery settings
-  std::string m_sensor_prop_summary;
 
   // Key for each map below is the vehicle name. 
-  std::map<std::string, double>       m_map_reset_time;
-  std::map<std::string, unsigned int> m_map_reset_total;  
-  std::map<std::string, unsigned int> m_map_reports_total;  
-  std::map<std::string, double>       m_map_vehicle_sensor_temperature;
 
   // Visual preferences
 

@@ -35,18 +35,10 @@ void showSynopsis()
 {
   blk("SYNOPSIS:                                                        ");
   blk("------------------------------------                             ");
-  blk("  Typically run in a shoreside community. Configured with a set  ");
-  blk("  source objects with a given x,y location and label.            ");
-  blk("  The sensor simulator receives a series of requests from a      ");
-  blk("  remote vehicle. When the sensor determines that an object is   ");
-  blk("  is within the sensor field of a requesting vehicle, it may or  ");
-  blk("  may not return a sensor detection report for the object.       ");
-  blk("  The report consists of a point in the x-y space within a given ");
-  blk("  range from the source object. The vehicle is configured with   ");
-  blk("  one of several possible \"detection ranges\". The sensor will  ");
-  blk("  not produce a value unless the source point is within that     ");
-  blk("  range of the vehicle, and the reported point produced by the   ");
-  blk("  sensor is also within that range from the source point.        ");
+  blk("  Typically run in a shoreside community. Simulates a CTD        ");
+  blk("  sensor on a vehicle. Currently only provides temperature.      ");
+  blk("  Configured for a specific temepraturte field, currently        ");
+  blk("  a propagating ocean front                                      ");
 }
 
 //----------------------------------------------------------------
@@ -56,15 +48,15 @@ void showHelpAndExit()
 {
   blk("                                                          ");
   blu("==========================================================");
-  blu("Usage: uFldCTDSensor file.moos [OPTIONS]               ");
+  blu("Usage: uFldCTDSensor file.moos [OPTIONS]                  ");
   blu("==========================================================");
   blk("                                                          ");
   showSynopsis();
   blk("                                                          ");
   blk("Options:                                                  ");
   mag("  --alias","=<ProcessName>                                ");
-  blk("      Launch uFldCTDSensor with the given process      ");
-  blk("      name rather than uFldCTDSensor.                  ");
+  blk("      Launch uFldCTDSensor with the given process         ");
+  blk("      name rather than uFldCTDSensor.                     ");
   mag("  --example, -e                                           ");
   blk("      Display example MOOS configuration block.           ");
   mag("  --help, -h                                              ");
@@ -72,7 +64,7 @@ void showHelpAndExit()
   mag("  --interface, -i                                         ");
   blk("      Display MOOS publications and subscriptions.        ");
   mag("  --version,-v                                            ");
-  blk("      Display release version of uFldCTDSensor.        ");
+  blk("      Display release version of uFldCTDSensor.           ");
   mag("  --verbose","=<setting>                                  ");
   blk("      Set verbosity. true or false (default)              ");
   blk("                                                          ");
@@ -144,33 +136,12 @@ void showInterfaceAndExit()
   blk("                      LON=-70.329755,SPD=2.0,HDG=118.8,         ");
   blk("                      YAW=118.8,DEPTH=4.6,LENGTH=3.8,           ");
   blk("                      MODE=MODE@ACTIVE:LOITERING                ");
-  blk("  UGS_SENSOR_REQUEST = vname=archie                             ");
-  blk("  UGS_CONFIG_REQUEST = vname=archie,width=50,pd=0.9             ");
+  blk("  UCTD_SENSOR_REQUEST = vname=archie                             ");
   blk("                                                                ");
   blk("PUBLICATIONS:                                                   ");
   blk("------------------------------------                            ");
-  blk("  UGS_HAZARD_REPORT   = vname=betty,x=51,y=11.3,hazard=true,    ");
-  blk("                        label=12                                ");
-  blk("  UGS_HAZARD_REPORT_<V> = x=51,y=11.3,hazard=true,label=12      ");
-  blk("  UHZ_CONFIG_ACK      = vname=archie,width=20,pd=0.9,pfa=0.53,  ");
-  blk("                        pclass=0.91                             ");
-  blk("                                                                ");
-  blk("  UHZ_OPTIONS_SUMMARY = width=10,exp=6,class=0.9:width=25,exp=4,");
-  blk("                        class=0.85:width=50,exp=2,class=0.78    ");
-  blk("                                                                ");
-  blk("  VIEW_CIRCLE         = x=-150.3,y=-117.5,radius=10,edge_size=1 ");
-  blk("  (detection)           edge_color=white,fill_color=white,      ");
-  blk("                        vertex_size=0,fill_transparency=0.3     ");
-  blk("                        type=circle,width=4                     ");
-  blk("                                                                ");
-  blk("  VIEW_MARKER         = x=217.3,y=-16.7,width=8,label=6,        ");
-  blk("  (hazards)             primary_color=green,type=triangle       ");
-  blk("                                                                ");
-  blk("  VIEW_POLYGON        = pts={-156.7,-314.6:-160.2,-305.2:-113.3,");
-  blk("  (sensor swath)        -287.7:-109.8,-297.1},msg=_null_,       ");
-  blk("                        label=sensor_swath_archie,vertex_size=0,");
-  blk("                        fill_color=white,edge_size=0,           ");
-  blk("                        fill_transparency=0.25                  ");
+  blk("  UCTD_MSMNT_REPORT   = vname=betty,temperature=22.54           ");
+  blk("  UGS_HAZARD_REPORT_<V> = temperature=22.54                     ");
   exit(0);
 }
 

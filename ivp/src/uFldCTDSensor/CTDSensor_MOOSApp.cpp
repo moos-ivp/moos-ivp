@@ -60,8 +60,7 @@ void CTDSensor_MOOSApp::RegisterVariables()
 {
   m_Comms.Register("NODE_REPORT", 0);
   m_Comms.Register("NODE_REPORT_LOCAL", 0);
-  m_Comms.Register("UGS_SENSOR_REQUEST", 0);
-  m_Comms.Register("UGS_CONFIG_REQUEST", 0);
+  m_Comms.Register("UCTD_SENSOR_REQUEST", 0);
 }
 
 
@@ -81,7 +80,7 @@ bool CTDSensor_MOOSApp::Iterate()
 
 bool CTDSensor_MOOSApp::OnStartUp()
 {
-  cout << termColor("blue") << "Simulated Hazard Sensor starting..." << endl;
+  cout << termColor("blue") << "Simulated CTD Sensor starting..." << endl;
   m_model.setCurrTime(MOOSTime());
   
   STRING_LIST sParams;
@@ -98,13 +97,12 @@ bool CTDSensor_MOOSApp::OnStartUp()
 
   RegisterVariables();
 
-  postMessages(m_model.getVisuals());
   
   double time_warp = GetMOOSTimeWarp();
   m_model.setTimeWarp(time_warp);
 
-  m_model.perhapsSeedRandom();
-  cout << "Simulated Generic Sensor started." << endl;
+  //  m_model.perhapsSeedRandom();
+  cout << "Simulated CTD Sensor started." << endl;
   cout << termColor() << flush;
   return(true);
 }
