@@ -60,14 +60,16 @@ public:
   std::vector<XYPolygon> getPolygons(const std::string&);
   std::vector<XYSegList> getSegLists(const std::string&);
   std::vector<XYHexagon> getHexagons(const std::string&);
-  std::vector<XYCircle>  getCircles(const std::string&);
-  std::vector<XYPoint>   getPoints(const std::string&);
+
+  const std::map<std::string, XYCircle>& getCircles(const std::string&);
+  const std::map<std::string, XYMarker>& getMarkers(const std::string&);
+  const std::map<std::string, XYPoint>&   getPoints(const std::string&);
+
   std::vector<XYVector>  getVectors(const std::string&);
   std::vector<XYGrid>    getGrids(const std::string&);
   std::vector<XYConvexGrid> getConvexGrids(const std::string&);
   std::vector<XYRangePulse> getRangePulses(const std::string&);
   std::vector<XYCommsPulse> getCommsPulses(const std::string&);
-  std::vector<XYMarker>  getMarkers(const std::string&);
 
   std::vector<std::string> getVehiNames() const {return(m_vnames);};
   

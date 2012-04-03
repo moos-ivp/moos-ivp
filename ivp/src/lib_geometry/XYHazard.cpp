@@ -81,25 +81,58 @@ bool XYHazard::setColor(string color_str)
 
 //-----------------------------------------------------------
 // Procedure: getSpec()
+//      Note: The noshow argument contains a list of comma-separated
+//            fields to NOT include in the string specification
 
-string XYHazard::getSpec() const
+string XYHazard::getSpec(string noshow) const
 {
+  bool no_type  = false;
+  bool no_label = false;
+  bool no_width = false;
+  bool no_hr    = false;
+  bool no_color = false;
+
+  vector<string> svector = parseString(noshow, ',');
+  unsigned int i, vsize = svector.size();
+  for(i=0; i<vsize; i++) {
+    svector[i] = stripBlankEnds(svector[i]);
+    if(svector[i] == "type")
+      no_type = true;
+    else if(svector[i] == "label")
+      no_label = true;
+    else if(svector[i] == "width")
+      no_width = true;
+    else if(svector[i] == "hr")
+      no_hr = true;
+    else if(svector[i] == "color")
+      no_color = true;
+  }
+
   string str;
   str += "x=" + doubleToStringX(m_x);
   str += ",y=" + doubleToStringX(m_y);
-  if(m_type != "")
+
+  if((m_type != "") && (no_type == false))
     str += ",type=" + m_type;
-  if(m_label != "")
+
+  if((m_label != "") && (no_label == false))
     str += ",label=" + m_label;
-  if(m_color != "")
+
+  if((m_color != "") && (no_color == false))
     str += ",color=" + m_color;
-  if(m_width >= 0)
+
+  if((m_width >= 0) && (no_width == false))
     str += ",width=" + doubleToStringX(m_width);
 
-  if(m_type=="hazard")
-    str += ",hazard=true";
-  else
-    str += ",hazard=false";
+  if((m_type!="hazard") && m_hr_set && !vectorContains(svector, "hr"))
+    str += ",hr=" + doubleToStringX(m_hr);
+
+  if(no_type == false) {
+    if(m_type=="hazard")
+      str += ",hazard=true";
+    else
+      str += ",hazard=false";
+  }
 
   return(str);
 }

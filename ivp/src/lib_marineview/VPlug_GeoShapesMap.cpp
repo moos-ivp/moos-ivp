@@ -130,11 +130,11 @@ vector<XYConvexGrid> VPlug_GeoShapesMap::getConvexGrids(const string& vname)
 {
   return(m_geoshapes_map[vname].getConvexGrids());
 }
-vector<XYCircle> VPlug_GeoShapesMap::getCircles(const string& vname)
+const map<string, XYCircle>& VPlug_GeoShapesMap::getCircles(const string& vname)
 {
   return(m_geoshapes_map[vname].getCircles());
 }
-vector<XYPoint> VPlug_GeoShapesMap::getPoints(const string& vname)
+const map<string, XYPoint>& VPlug_GeoShapesMap::getPoints(const string& vname)
 {
   return(m_geoshapes_map[vname].getPoints());
 }
@@ -150,7 +150,7 @@ vector<XYCommsPulse> VPlug_GeoShapesMap::getCommsPulses(const string& vname)
 {
   return(m_geoshapes_map[vname].getCommsPulses());
 }
-vector<XYMarker> VPlug_GeoShapesMap::getMarkers(const string& vname)
+const map<string, XYMarker>& VPlug_GeoShapesMap::getMarkers(const string& vname)
 {
   return(m_geoshapes_map[vname].getMarkers());
 }

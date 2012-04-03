@@ -129,6 +129,30 @@ string XYCircle::get_spec(string param) const
 }
 
 //-------------------------------------------------------------
+// Procedure: setPointCache
+
+void XYCircle::setPointCache(unsigned int pts) 
+{
+  m_pt_cache.clear();
+  double delta = 360.0 / pts;
+  for(double deg=(delta/2); deg<360; deg+=delta) {
+    double new_x, new_y;
+    projectPoint(deg, m_rad, m_x, m_y, new_x, new_y);
+    m_pt_cache.push_back(new_x);
+    m_pt_cache.push_back(new_y);
+  }
+}
+
+//-------------------------------------------------------------
+// Procedure: getPointCache
+
+vector<double> XYCircle::getPointCache(unsigned int pts) const
+{
+  return(m_pt_cache);
+}
+
+
+//-------------------------------------------------------------
 // Procedure: containsPoint
 
 bool XYCircle::containsPoint(double g_x, double g_y) const

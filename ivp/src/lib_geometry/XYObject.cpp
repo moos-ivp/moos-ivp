@@ -33,11 +33,13 @@ using namespace std;
 
 XYObject::XYObject()
 {
-  m_active      = true;
-  m_time        = 0;
-  m_time_set    = false;
-  m_vertex_size = -1;
-  m_edge_size   = -1;
+  m_active       = true;
+  m_time         = 0;
+  m_vertex_size  = -1;
+  m_edge_size    = -1;
+  m_transparency = 0;
+
+  m_time_set         = false;
   m_transparency_set = false;
 }
 
@@ -46,15 +48,18 @@ XYObject::XYObject()
 
 void XYObject::clear()
 {
-  m_active      = true; 
-  m_time        = 0; 
-  m_time_set    = false; 
-  m_label       = ""; 
-  m_type        = "";
-  m_source      = ""; 
-  m_msg         = ""; 
-  m_vertex_size = -1;
-  m_edge_size   = -1;
+  m_active       = true; 
+  m_time         = 0; 
+  m_vertex_size  = -1;
+  m_edge_size    = -1;
+  m_transparency = 0;
+
+  m_time_set     = false; 
+  m_transparency_set = false;
+  m_label        = ""; 
+  m_type         = "";
+  m_source       = ""; 
+  m_msg          = ""; 
 
   m_color_map.clear();
 }

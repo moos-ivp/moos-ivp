@@ -48,7 +48,7 @@ HazardSensor_Model::HazardSensor_Model()
   m_iterations = 0;
   m_reports    = 0;
   m_last_report_time = 0;
-  m_last_summary_time = 0;    // last time settings options summary posted
+  m_last_summary_time   = 0;    // last time settings options summary posted
 
   // Configuration variables
   // -------------------------------------------------------------
@@ -56,6 +56,7 @@ HazardSensor_Model::HazardSensor_Model()
   m_min_reset_interval = 300;        // seconds
   m_term_report_interval = 0.8;      // realtime (non-timewarp) seconds
   m_options_summary_interval = 10;   // in timewarped seconds
+  m_min_queue_msg_interval = 30;     // seconds
 
   // If uniformly random noise used, (m_rn_algorithm = "uniform")
   // this variable reflects the range of the uniform variable in 
@@ -101,6 +102,14 @@ bool HazardSensor_Model::setParam(string param, string value, unsigned int pass)
     }
     else if((param == "default_hazard_width") && isNumber(value)) {
       m_width_hazard = atof(value.c_str());
+      return(true);
+    }
+    else if((param == "min_reset_interval") && isNumber(value)) {
+      m_min_reset_interval = atof(value.c_str());
+      return(true);
+    }
+    else if((param == "classify_period") && isNumber(value)) {
+      m_min_queue_msg_interval = atof(value.c_str());
       return(true);
     }
     if(param == "default_benign_shape") {
@@ -174,11 +183,17 @@ bool HazardSensor_Model::handleMsg(string key, double dval, string sval,
   if(key == "UHZ_SENSOR_REQUEST")
     handled = handleSensorRequest(sval);
   
+  if(key == "UHZ_SENSOR_CLEAR")
+    handled = handleSensorClear(sval);
+  
+  if(key == "UHZ_CLASSIFY_REQUEST")
+    handled = handleClassifyRequest(sval);
+  
   if(key == "UHZ_CONFIG_REQUEST")
     handled = handleSensorConfig(sval, src_community);
   
   if(!handled) {
-    string msg = "ERROR. Uhandled msg: " + key;
+    string msg = "ERROR. Unhandled msg: " + key;
     if(isstring) 
       msg += ", sval=" + sval;
     else if(isdouble)
@@ -229,6 +244,8 @@ void HazardSensor_Model::iterate()
     m_last_summary_time = m_curr_time;
   }
 
+  // m_map_memos["Number of currently queued messages"] = m_messages_queued.size();
+
 }
 
 //------------------------------------------------------------
@@ -244,6 +261,94 @@ vector<VarDataPair> HazardSensor_Model::getMessages(bool clear)
   return(rval);
 }
 
+//------------------------------------------------------------
+// Procedure: getQueueMessages
+
+vector<VarDataPair> HazardSensor_Model::getQueueMessages()
+{
+  vector<VarDataPair> return_vector;
+  
+  map<string, list<VarDataPair> >::iterator p;
+  for(p=m_map_msgs_queued.begin(); p!=m_map_msgs_queued.end(); p++) {
+    string vname = p->first;
+ 
+    // The first time this routine is called with a non-empty list of queued
+    // messages, a check is made on the "last time a msg was posted". If this
+    // timestamp is zero, then we set it to the current time. This ensures that
+    // the very first message put into this queue will also have to wait the
+    // min interval before being poppped.
+    if(m_map_msg_last_queue_time.count(vname) == 0) {
+      m_map_msg_last_queue_time[vname] = m_curr_time;
+      continue;
+    }
+
+    //  Now just calculate the last time since a msg was popped.
+    double elapsed = m_curr_time - m_map_msg_last_queue_time[vname];
+    if(elapsed < m_min_queue_msg_interval) 
+      continue;
+
+    // Ok, we're going to pop a pair of messages....
+    if(m_map_msgs_queued[vname].size() != 0) {
+      return_vector.push_back(m_map_msgs_queued[vname].front());
+      m_map_msgs_queued[vname].pop_front();
+    }
+
+    if(m_map_msgs_queued[vname].size() != 0) {
+      return_vector.push_back(m_map_msgs_queued[vname].front());
+      m_map_msgs_queued[vname].pop_front();
+    }
+
+    string memo = "Queued message released";
+    m_map_memos[memo]++;
+
+    m_map_msg_last_queue_time[vname] = m_curr_time;
+  }
+
+  return(return_vector);
+}
+
+//------------------------------------------------------------
+// Procedure: getQueueMessages
+
+#if 0
+vector<VarDataPair> HazardSensor_Model::getQueueMessages()
+{
+  vector<VarDataPair> return_vector;
+  if(m_messages_queued.size() == 0)
+    return(return_vector);
+    
+  // The first time this routine is called with a non-empty list of queued
+  // messages, a check is made on the "last time a msg was posted". If this
+  // timestamp is zero, then we set it to the current time. This ensures that
+  // the very first message put into this queue will also have to wait the
+  // min interval before being poppped.
+  if(m_last_queue_msg_time == 0) {
+    m_last_queue_msg_time = m_curr_time;
+    return(return_vector);
+  }
+
+  //  Now just calculate the last time since a msg was popped.
+  double elapsed = m_curr_time - m_last_queue_msg_time;
+  if(elapsed < m_min_queue_msg_interval) 
+    return(return_vector);
+
+  // Ok, we're going to pop a pair of message....
+  return_vector.push_back(m_messages_queued.front());
+  m_messages_queued.pop_front();
+
+  if(m_messages_queued.size() != 0) {
+    return_vector.push_back(m_messages_queued.front());
+    m_messages_queued.pop_front();
+  }
+
+  string memo = "Queued message released";
+  m_map_memos[memo]++;
+
+  m_last_queue_msg_time = m_curr_time;
+
+  return(return_vector);
+}
+#endif
 
 //------------------------------------------------------------
 // Procedure: addHazard
@@ -252,19 +357,20 @@ bool HazardSensor_Model::addHazard(string line)
 {
   XYHazard hazard = string2Hazard(line);
   
-  if(hazard.getLabel() == "")
-    hazard.setLabel(uintToString(m_hazards.size()));
-  
-  // Determine if a hazard with non-null label already exists.
-  unsigned int j, jsize = m_hazards.size();
-  for(j=0; j<jsize; j++) {
-    if(m_hazards[j].getLabel() == hazard.getLabel()) {
-      m_hazards[j] = hazard;
-      return(true);
-    }
+  string label = hazard.getLabel();
+  if(label == "") {
+    label = uintToString(m_map_hazards.size());    
+    hazard.setLabel(label);
   }
+
+  if(!hazard.hasResemblance())
+    hazard.setResemblance(1);
+
+
+  if(m_map_hazards.count(label) != 0)
+    m_map_memos["Duplicated hazard label detected:" + label]++;
   
-  m_hazards.push_back(hazard);
+  m_map_hazards[label] = hazard;
   return(true);
 }
 
@@ -288,7 +394,7 @@ bool HazardSensor_Model::setSwathLength(string line)
 
 bool HazardSensor_Model::addSensorConfig(string line)
 {
-  string str_width, str_exp, str_class;
+  string str_width, str_exp, str_class, str_max="0";
 
   vector<string> svector = parseString(line, ',');
   unsigned int i, vsize = svector.size();
@@ -301,21 +407,28 @@ bool HazardSensor_Model::addSensorConfig(string line)
       str_exp = value;
     else if((param == "class") || (param == "pclass"))
       str_class = value;
+    else if(param == "max")
+      str_max = value;
   }
-  if(!isNumber(str_width) || !isNumber(str_exp) || !isNumber(str_class))
+  if(!isNumber(str_width) || !isNumber(str_exp) || 
+     !isNumber(str_class) || !isNumber(str_max))
     return(false);
-
+  
   double d_width = atof(str_width.c_str());
   double d_exp   = atof(str_exp.c_str());
   double d_class = atof(str_class.c_str());
+  int    i_max   = atoi(str_max.c_str());
 
   d_width = vclip_min(d_width, 0);
   d_exp   = vclip_min(d_exp, 1);
   d_class = vclip(d_class, 0, 1);
+  if(i_max < 0)
+    i_max = 0;
 
   m_sensor_prop_width.push_back(d_width);
   m_sensor_prop_exp.push_back(d_exp);
   m_sensor_prop_class.push_back(d_class);
+  m_sensor_prop_max.push_back((unsigned int)(i_max));
 
   // Build up the sensor property summary, published occassionally
   // "width=25,exp=4,class=0.8 : width=10,exp=8,class=0.93"
@@ -325,6 +438,9 @@ bool HazardSensor_Model::addSensorConfig(string line)
   m_sensor_prop_summary += "width=" + str_width;
   m_sensor_prop_summary += ",exp="   + str_exp;
   m_sensor_prop_summary += ",class=" + str_class;
+
+  if(i_max > 0)
+    m_sensor_prop_summary += ",max=" + intToString(i_max);
 
   return(true);
 }
@@ -376,7 +492,7 @@ bool HazardSensor_Model::handleSensorRequest(const string& request)
   }
 
   if(vname == "") {
-    addMessage("UHZ_DEBUG", "Sensor request with null node name");
+    addMessage("UHZ_DEBUG", "Sensor detect request with null node name");
     return(false);
   }
   
@@ -388,7 +504,7 @@ bool HazardSensor_Model::handleSensorRequest(const string& request)
       vix = j;
   }
 
-  string memo = "Sensor request received from: " + vname;
+  string memo = "Sensor detection request received from: " + vname;
   m_map_memos[memo]++;
 
   // If nothing is known about this vehicle, we don't know its 
@@ -408,13 +524,15 @@ bool HazardSensor_Model::handleSensorRequest(const string& request)
   //         and perhaps new sensor setting.
   updateNodePolygon(vix);
 
-  // For each hazard, determine if the hazard is within range to the
-  // requesting vehicle to have received the request.
-  unsigned int hix, hsize = m_hazards.size();
-  for(hix=0; hix<hsize; hix++) {
-    bool new_report = updateVehicleHazardStatus(vix, hix);  // detection dice
+  // For each hazard, determine if the hazard is newly within the sensor 
+  // swath of the requesting vehicle.
+  
+  map<string, XYHazard>::iterator p;
+  for(p=m_map_hazards.begin(); p!=m_map_hazards.end(); p++) {
+    string hlabel = p->first;
+    bool new_report = updateVehicleHazardStatus(vix, hlabel);  // detection dice
     if(new_report) 
-      postHazardReport(hix, vname);  // classify dice inside
+      postHazardDetectionReport(hlabel, vname);  // classify dice inside
   }
 
   // Possibly draw the swath
@@ -422,6 +540,95 @@ bool HazardSensor_Model::handleSensorRequest(const string& request)
     string poly_spec = m_node_polygons[vix].get_spec();
     addMessage("VIEW_POLYGON", poly_spec);
   }
+  return(true);
+}
+
+//---------------------------------------------------------
+// Procedure: handleSensorClear
+//   Example: vname=alpha
+
+bool HazardSensor_Model::handleSensorClear(const string& request)
+{
+  string vname;
+  
+  // Part 1: Parse the string request
+  vector<string> svector = parseString(request, ',');
+  unsigned int i, vsize = svector.size();
+  for(i=0; i<vsize; i++) {
+    string param = tolower(stripBlankEnds(biteString(svector[i], '=')));
+    string value = stripBlankEnds(svector[i]);
+    if(param == "vname")
+      vname = value;
+  }
+
+  if(vname == "") {
+    m_map_memos["Error. Sensor clear request with null node name"]++;
+    return(false);
+  }
+
+  m_map_memos["Sensor clear request for vehicle " + vname]++;
+
+  if(m_map_msgs_queued.count(vname) != 0)
+    m_map_msgs_queued[vname].clear();
+  if(m_map_msg_last_queue_time.count(vname) != 0)
+    m_map_msg_last_queue_time[vname] = 0;
+  
+  return(true);
+}
+
+//---------------------------------------------------------
+// Procedure: handleClassifyRequest
+//   Example: vname=alpha, label=421
+
+bool HazardSensor_Model::handleClassifyRequest(const string& request)
+{
+  string vname, hlabel;
+  
+  // Part 1: Parse the string request
+  vector<string> svector = parseString(request, ',');
+  unsigned int i, vsize = svector.size();
+  for(i=0; i<vsize; i++) {
+    string param = tolower(stripBlankEnds(biteString(svector[i], '=')));
+    string value = stripBlankEnds(svector[i]);
+    if(param == "vname")
+      vname = value;
+    else if(param == "label")
+      hlabel = value;
+  }
+
+  // Part 2: Sanity check
+  if(vname == "") {
+    m_map_memos["Sensor classify request with null vehicle name"]++;
+    return(false);
+  }
+
+  if(hlabel == "") {
+    m_map_memos["Sensor classify request with null label"]++;
+    return(false);
+  }
+
+  // Note we dont include the label number to avoid bloating the memos
+  string memo = "Sensor classify request received from: " + vname;
+  m_map_memos[memo]++;
+
+
+  // Part 3: check whether there is a new classification result that may
+  //         possibly be made. A new class result may be generated each 
+  //         time a pass has been made over the hazard
+  unsigned int queries = m_map_hazard_class_queries[hlabel];
+  unsigned int hits    = m_map_hazard_hits[hlabel];
+  unsigned int unclassified_hits = 0;
+  if(hits > queries)
+    unclassified_hits = hits - queries;
+  if(unclassified_hits == 0) {
+    string memo = "Sensor classify request saturated: " + vname;
+    m_map_memos[memo]++;
+    return(false);
+  }
+
+  // Part 4: go ahead and post the classify report
+  postHazardClassifyReport(hlabel, vname);  // classify dice inside
+
   return(true);
 }
 
@@ -479,10 +686,21 @@ bool HazardSensor_Model::handleSensorConfig(const string& config,
 // Procedure: addMessage()
 
 void HazardSensor_Model::addMessage(const string& varname,
-			   const string& value)
+				    const string& value)
 {
   VarDataPair pair(varname, value);
   m_messages.push_back(pair);
+}
+
+//---------------------------------------------------------
+// Procedure: addQueueMessage()
+
+void HazardSensor_Model::addQueueMessage(const string& vname,
+					 const string& varname,
+					 const string& value)
+{
+  VarDataPair pair(varname, value);
+  m_map_msgs_queued[vname].push_back(pair);
 }
 
 //---------------------------------------------------------
@@ -504,31 +722,39 @@ vector<VarDataPair> HazardSensor_Model::getVisuals()
   if(m_show_hazards == false)
     return(visuals);
 
-  unsigned int i, vsize = m_hazards.size();
-  for(i=0; i<vsize; i++) {
+  map<string, XYHazard>::iterator p;
+  for(p=m_map_hazards.begin(); p!=m_map_hazards.end(); p++) {
+    
+    XYHazard hazard = p->second;
 
     string color = m_color_hazard;
     string shape = m_shape_hazard;
     double width = m_width_hazard;
-    if(m_hazards[i].getType() != "hazard") {
+    double hr    = 0;
+    if(hazard.hasResemblance())
+      hr = hazard.getResemblance();
+
+    if(hazard.getType() != "hazard") {
       color = m_color_benign;
       shape = m_shape_benign;
       width = m_width_benign;
     }    
 
-    if(m_hazards[i].getColor() != "")
-      color = m_hazards[i].getColor();
-    if(m_hazards[i].getShape() != "")
-      shape = m_hazards[i].getShape();
-    if(m_hazards[i].getWidth() >= 0)
-      width = m_hazards[i].getWidth();
+    if(hazard.getColor() != "")
+      color = hazard.getColor();
+    if(hazard.getShape() != "")
+      shape = hazard.getShape();
+    if(hazard.getWidth() >= 0)
+      width = hazard.getWidth();
 
     XYMarker marker;
-    marker.set_vx(m_hazards[i].getX());
-    marker.set_vy(m_hazards[i].getY());
-    marker.set_label(m_hazards[i].getLabel());
+    marker.set_vx(hazard.getX());
+    marker.set_vy(hazard.getY());
+    marker.set_label(hazard.getLabel());
     marker.set_width(width);
     marker.set_type(shape);
+    if(hazard.getType() != "hazard")
+      marker.set_transparency(1-hr);
     marker.set_active(true);
     marker.set_color("primary_color", color);
     string spec = marker.get_spec(); 
@@ -540,14 +766,68 @@ vector<VarDataPair> HazardSensor_Model::getVisuals()
 
 
 //------------------------------------------------------------
-// Procedure: postHazardReport()
+// Procedure: postHazardDetectionReport()
+//     Notes: Example postings:
+//            UHZ_DETECTION_REPORT_GILDA = "x=-125,y=-143,label=517"
 
-void HazardSensor_Model::postHazardReport(unsigned int hix, 
-					  string vname)
+void HazardSensor_Model::postHazardDetectionReport(string hazard_label, 
+						   string vname)
 {
   // Part 1: Sanity checking
-  if(hix >= m_hazards.size()) {
-    string memo = "Error: Out of bounds hazard index";
+  if(m_map_hazards.count(hazard_label) == 0) {
+    string memo = "Error: Unknown hazard label";
+    m_map_memos[memo]++;
+    return;
+  }
+  
+  // Part 2: Prepare the hazard detection report
+  XYHazard hazard = m_map_hazards[hazard_label];
+  string   spec   = hazard.getSpec("hr,type");
+  
+  addMessage("UHZ_DETECTION_REPORT", (spec + ",vname=" + vname));
+  addMessage("UHZ_DETECTION_REPORT_"+toupper(vname), spec);
+
+  // Part 3: Note the detection as another piece of data collected on this
+  //         hazard. Then possible for another classify query to be answered
+  m_map_hazard_hits[hazard_label]++;
+  
+  // Part 4: Build some local memo/debug messages.
+  string memo = "Detection report sent to vehicle: " + vname;
+  m_map_memos[memo]++;
+  m_map_detections[vname]++;
+
+  // Part 5: Build/Post some visual artifacts using VIEW_CIRCLE
+  if((m_circle_duration == -1) || (m_circle_duration > 0)) {
+    double haz_x = hazard.getX();
+    double haz_y = hazard.getY();
+    //string label = hazard.getLabel();
+    XYCircle circ(haz_x, haz_y, 10);
+    circ.set_color("edge", "white");
+    //circ.set_label(label);
+    circ.set_color("fill", "white");
+    circ.set_vertex_size(0);
+    circ.set_edge_size(1);
+    circ.set_transparency(0.3);
+    circ.set_time(m_curr_time);
+    circ.setDuration(m_circle_duration);
+    addMessage("VIEW_CIRCLE", circ.get_spec());
+  }
+}
+
+
+
+//------------------------------------------------------------
+// Procedure: postHazardClassifyReport()
+//     Notes: Example postings:
+//            UHZ_HAZARD_REPORT_GILDA = "x=-125,y=-143,type=benign,
+//                               label=517,hazard=false"
+
+void HazardSensor_Model::postHazardClassifyReport(string hazard_label, 
+						  string vname)
+{
+  // Part 1: Sanity checking
+  if(m_map_hazards.count(hazard_label) == 0) {
+    string memo = "Error: Unknown hazard label";
     m_map_memos[memo]++;
     return;
   }
@@ -559,16 +839,21 @@ void HazardSensor_Model::postHazardReport(unsigned int hix,
   }
     
   // Part 2: Get the hazard type info and do classification
-  XYHazard raw_hazard = m_hazards[hix];
-  string htype        = raw_hazard.getType();
- 
-  bool   is_hazard = (htype == "hazard");
+  XYHazard raw_hazard = m_map_hazards[hazard_label];
+  string   htype      = raw_hazard.getType();
+  bool     is_hazard  = (htype == "hazard");
 
   double prob_classify = m_map_prob_classify[vname];
+  double pc_prime      = prob_classify;
 
+  if((!is_hazard) && raw_hazard.hasResemblance()) {
+    double resemblance = raw_hazard.getResemblance();
+    pc_prime += (1-prob_classify) * (1-resemblance);
+  }
+    
   // Here's where we role the classification dice. 
   int rand_int = rand() % 10000;
-  int thresh   = (prob_classify * 10000) + 1;
+  int thresh   = (pc_prime * 10000) + 1;
   if(rand_int > thresh)
     is_hazard = !is_hazard;
   // Done rolling the dice and applying the consequences
@@ -582,16 +867,14 @@ void HazardSensor_Model::postHazardReport(unsigned int hix,
     post_hazard.setType("hazard");
   else
     post_hazard.setType("benign");
-  string hazard_spec = post_hazard.getSpec();
+  string hazard_spec = post_hazard.getSpec("hr");
 
-  
   string full_str = "vname=" + vname + "," + hazard_spec;
 
-  addMessage("UHZ_HAZARD_REPORT", full_str);
-  addMessage("UHZ_HAZARD_REPORT_"+toupper(vname), hazard_spec);
+  addQueueMessage(vname, "UHZ_HAZARD_REPORT_"+toupper(vname), hazard_spec);
 
   // Part 4: Build some local memo/debug messages.
-  string memo = "Detect/Classify report sent to vehicle: " + vname;
+  string memo = "Classify report queued to vehicle: " + vname;
   m_map_memos[memo]++;
   m_map_detections[vname]++;
 
@@ -599,21 +882,23 @@ void HazardSensor_Model::postHazardReport(unsigned int hix,
   if((m_circle_duration == -1) || (m_circle_duration > 0)) {
     double haz_x = raw_hazard.getX();
     double haz_y = raw_hazard.getY();
+    //string label = raw_hazard.getLabel();
     XYCircle circ(haz_x, haz_y, 10);
     if(is_hazard) {
       circ.set_color("edge", "yellow");
       circ.set_color("fill", "yellow");
     }
     else {
-      circ.set_color("edge", "white");
-      circ.set_color("fill", "white");
+      circ.set_color("edge", "green");
+      circ.set_color("fill", "green");
     }
+    //circ.set_label(label);
     circ.set_vertex_size(0);
     circ.set_edge_size(1);
     circ.set_transparency(0.3);
     circ.set_time(m_curr_time);
     circ.setDuration(m_circle_duration);
-    addMessage("VIEW_CIRCLE", circ.get_spec());
+    addQueueMessage(vname, "VIEW_CIRCLE", circ.get_spec());
   }
 }
 
@@ -623,36 +908,43 @@ void HazardSensor_Model::postHazardReport(unsigned int hix,
 // Procedure: updateVehicleHazardStatus
 
 bool HazardSensor_Model::updateVehicleHazardStatus(unsigned int vix, 
-						   unsigned int hix)
+						   string hazard_label)
 {
-  if((vix >= m_node_records.size()) || (hix >= m_hazards.size()))
+  // Part 1: Sanity checking
+  if(m_map_hazards.count(hazard_label)==0)
     return(false);
-
+  
+  if(vix >= m_node_records.size())
+    return(false);
+  
   string vname = m_node_records[vix].getName();
   if(m_map_swath_width.count(vname) == 0) {
     string memo = "No sensor setting for: " + vname;
     m_map_memos[memo]++;
     return(false);
   }
+
+  // Part 2:
+  XYHazard hazard = m_map_hazards[hazard_label];
+
   double prob_detect      = m_map_prob_detect[vname];
   double prob_false_alarm = m_map_prob_false_alarm[vname];
-
-  string hazard_label = m_hazards[hix].getLabel();
 
   string tag = vname + "_" + hazard_label;
 
   bool previous_contained_status = m_map_hv_status[tag];
 
   // Now figure out what the new status should be
-  double haz_x = m_hazards[hix].getX();
-  double haz_y = m_hazards[hix].getY();
+  double haz_x  = hazard.getX();
+  double haz_y  = hazard.getY();
+  double haz_hr = hazard.getResemblance();
 
   bool new_contained_status = m_node_polygons[vix].contains(haz_x, haz_y);
   
   m_map_hv_status[tag] = new_contained_status;
 
   bool is_hazard = true;
-  if(m_hazards[hix].getType() != "hazard")
+  if(hazard.getType() != "hazard")
     is_hazard = false;
 
   if((new_contained_status == true) && (previous_contained_status == false)) {
@@ -661,8 +953,12 @@ bool HazardSensor_Model::updateVehicleHazardStatus(unsigned int vix,
     int thresh;
     if(is_hazard)
       thresh = (prob_detect * 10000) + 1;
-    else
-      thresh = (prob_false_alarm * 10000) + 1;
+    else {
+      double coeff = 1;
+      if(prob_false_alarm < 1) 
+	coeff = (prob_false_alarm + haz_hr) / 2;
+      thresh = (coeff * 10000) + 1;
+    }
     if(rand_int < thresh)
       return(true);
   }
@@ -843,8 +1139,8 @@ bool HazardSensor_Model::processHazardFile(string filename)
 	cout << "Poorly specified hazard: " << right << endl;
     }
   }
-  cout << "Total hazards: " << m_hazards.size() << endl;
-  string memo = "Total hazards: " + uintToString(m_hazards.size());
+  cout << "Total hazards: " << m_map_hazards.size() << endl;
+  string memo = "Total hazards: " + uintToString(m_map_hazards.size());
   m_map_memos[memo]++;
 
   return(true);
@@ -962,7 +1258,7 @@ bool HazardSensor_Model::setVehicleSensorSetting(string vname,
 						 double pd,
 						 bool guess)
 {
-  string memo = "Setting sensor settings for:" + vname;
+  string memo = "Setting sensor settings for: " + vname;
   m_map_memos[memo]++;
 
   // Part 1: Fit the request to one of the allowable sensor settings.
@@ -1000,11 +1296,32 @@ bool HazardSensor_Model::setVehicleSensorSetting(string vname,
   // exact width request, match to the next lowest. If requested width is
   // smaller than the smallest property width, take the smallest.
   unsigned int pix = 0;
+  double       smallest_delta = 0;
+  bool         smallest_delta_set = false;
+
+  unsigned int j, jsize = m_sensor_prop_width.size();
+  for(j=0; j<jsize; j++) {
+    double jwidth = m_sensor_prop_width[j];
+
+    // first determine if this width is limited and at its limit
+    unsigned int smax = m_sensor_prop_max[j];
+    if((smax == 0) || (sensorSwathCount(jwidth,vname) < smax)) {
+      double delta = abs(width - jwidth);
+      if(!smallest_delta_set || (delta < smallest_delta)) {
+	smallest_delta_set = true;
+	smallest_delta = delta;
+	pix = j;
+      }
+    }
+  }
+
+#if 0
   unsigned int j, jsize = m_sensor_prop_width.size();
   for(j=0; j<jsize; j++) {
     if(width >= m_sensor_prop_width[j])
       pix = j;
   }
+#endif
   
   double selected_width = m_sensor_prop_width[pix];
   double selected_exp   = m_sensor_prop_exp[pix];
@@ -1116,4 +1433,23 @@ void HazardSensor_Model::printReport()
   }
 }
 
+//------------------------------------------------------------
+// Procedure: sensorSwathCount()
+//   Purpose: Return the number of *other* vehicles known to this simulator 
+//            that have the given swath width setting.
 
+unsigned int HazardSensor_Model::sensorSwathCount(double swath, string vname)
+{
+  unsigned int count = 0;
+
+  map<string, double>::iterator p;
+  for(p=m_map_swath_width.begin(); p!=m_map_swath_width.end(); p++) {
+    string this_vname = p->first;
+    double this_swath = p->second;
+    if((swath == this_swath) && (vname != this_vname))
+      count++;
+  }
+  
+  return(count);
+}
+  

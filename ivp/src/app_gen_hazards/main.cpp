@@ -21,14 +21,19 @@ int main(int argc, char *argv[])
 
   HazardFieldGenerator generator;
 
+  string arg_summary = argv[0];
+
   for(int i=1; i<argc; i++) {
     string argi = argv[i];
+    arg_summary += " " + argi;
     if((argi=="-v") || (argi=="--version") || (argi=="-version"))
       vers_requested = true;
     else if((argi=="-h") || (argi == "--help") || (argi=="-help"))
       help_requested = true;
     else if(strEnds(argi, ".moos") || strEnds(argi, ".moos++"))
       mission_file = argv[i];
+    else if(strBegins(argi, "--exp="))
+      generator.setExp(argi.substr(6));
     else if(strBegins(argi, "--objects=")) {
       string object_set = argi.substr(10);
       bool ok = generator.addObjectSet(object_set);
@@ -61,12 +66,16 @@ int main(int argc, char *argv[])
     cout << "  --objects=<object_set>                               " << endl;
     cout << "      Specify an object set of the form:               " << endl;
     cout << "      \"amount,type\"                                  " << endl;
+    cout << "  --exp=<value>                                        " << endl;
+    cout << "      hazard resemblance exponent [1,10]               " << endl;
     cout << "  --polygon=<poly>                                     " << endl;
     cout << "      Specify a polygon region of the form:            " << endl;
     cout << "      \"0,0 : 50,0 : 50,50 : 0,50\"                    " << endl;
     cout << "  gen_hazards --polygon=-150,-75:-150,-400:400,-400:400,-75 --objects=20,hazard --objects=20,benign " << endl;
     return(0);
   }
+
+  cout << "// " << arg_summary << endl;
 
   generator.generate();
   

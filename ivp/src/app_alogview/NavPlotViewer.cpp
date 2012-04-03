@@ -588,11 +588,11 @@ void NavPlotViewer::drawVPlugPlot(unsigned int index)
 
   vector<XYPolygon>    polys   = geo_shapes.getPolygons();
   vector<XYGrid>       grids   = geo_shapes.getGrids();
-  vector<XYPoint>      points  = geo_shapes.getPoints();
   vector<XYSegList>    segls   = geo_shapes.getSegLists();
-  vector<XYCircle>     circles = geo_shapes.getCircles();
   vector<XYRangePulse> pulses  = geo_shapes.getRangePulses();
-  vector<XYMarker>     markers = geo_shapes.getMarkers();
+  const map<string, XYPoint>&  points  = geo_shapes.getPoints();
+  const map<string, XYCircle>& circles = geo_shapes.getCircles();
+  const map<string, XYMarker>& markers = geo_shapes.getMarkers();
 
   drawPolygons(polys);
   drawGrids(grids);

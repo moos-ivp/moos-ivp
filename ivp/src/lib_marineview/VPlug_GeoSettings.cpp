@@ -62,6 +62,7 @@ VPlug_GeoSettings::VPlug_GeoSettings()
   m_viewable_map["grid_viewable_all"]       = true;
   m_viewable_map["grid_viewable_labels"]    = true;
   m_viewable_map["comms_pulses_viewable_all"] = true;
+  m_viewable_map["circle_viewable_all"] = true;
   
   m_gsize_map["polygon_edge_width"]  = 1.0;
   m_gsize_map["polygon_vertex_size"] = 3.0;
@@ -126,6 +127,8 @@ bool VPlug_GeoSettings::setParam(const string& param, string value)
   else if(param == "grid_viewable_labels")
     return(setViewableMapping(param, value));
   else if(param == "comms_pulses_viewable_all")
+    return(setViewableMapping(param, value));
+  else if(param == "circle_viewable_all")
     return(setViewableMapping(param, value));
 
   else if(param == "polygon_label_color")
@@ -366,7 +369,7 @@ ColorPack VPlug_GeoSettings::geocolor(const string& attribute,
 //            initially fails. 
 
 bool VPlug_GeoSettings::viewable(const string& attribute, 
-				      bool default_value)
+				 bool default_value)
 {
   map<string, bool>::iterator p;
   p = m_viewable_map.find(attribute);

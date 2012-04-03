@@ -54,7 +54,7 @@ public:
 
   void addPolygon(const XYPolygon&);
   void addSegList(const XYSegList&);
-  void addCircle(const XYCircle&);
+  void addCircle(const XYCircle&, unsigned int drawpts=90);
   void addHexagon(const XYHexagon&);
   void addPoint(const XYPoint&);
   void addVector(const XYVector&);
@@ -66,7 +66,7 @@ public:
 
   bool addPolygon(const std::string&);
   bool addSegList(const std::string&);
-  bool addCircle(const std::string&);
+  bool addCircle(const std::string&, unsigned int drawpts=90);
   bool addPoint(const std::string&);
   bool addVector(const std::string&);
   bool addGrid(const std::string&);
@@ -90,41 +90,18 @@ public:
   unsigned int sizeCommsPulses() const {return(m_comms_pulses.size());};
   unsigned int sizeMarkers() const {return(m_markers.size());};
 
-  XYPolygon& poly(unsigned int i)   {return(m_polygons[i]);};
-  XYSegList& segl(unsigned int i)   {return(m_seglists[i]);};
-  XYHexagon& hexa(unsigned int i)   {return(m_hexagons[i]);};
-  XYCircle&  circ(unsigned int i)   {return(m_circles[i]);};
-  XYPoint&   point(unsigned int i)  {return(m_points[i]);};
-  XYVector&  vector(unsigned int i) {return(m_vectors[i]);};
-  XYGrid&    grid(unsigned int i)   {return(m_grids[i]);};
-  XYConvexGrid& convex_grid(unsigned int i) {return(m_convex_grids[i]);};
-  XYRangePulse& range_pulse(unsigned int i) {return(m_range_pulses[i]);};
-  XYCommsPulse& comms_pulse(unsigned int i) {return(m_comms_pulses[i]);};
-  XYMarker&  marker(unsigned int i) {return(m_markers[i]);};
-
   std::vector<XYPolygon> getPolygons() const {return(m_polygons);};
   std::vector<XYSegList> getSegLists() const {return(m_seglists);};
   std::vector<XYHexagon> getHexagons() const {return(m_hexagons);};
-  std::vector<XYCircle>  getCircles() const  {return(m_circles);};
-  std::vector<XYPoint>   getPoints() const   {return(m_points);};
   std::vector<XYVector>  getVectors() const  {return(m_vectors);};
   std::vector<XYGrid>    getGrids() const    {return(m_grids);};
   std::vector<XYConvexGrid> getConvexGrids() const {return(m_convex_grids);};
   std::vector<XYRangePulse> getRangePulses() const {return(m_range_pulses);};
   std::vector<XYCommsPulse> getCommsPulses() const {return(m_comms_pulses);};
-  std::vector<XYMarker>  getMarkers() const  {return(m_markers);};
 
-  XYPolygon    getPolygon(unsigned int) const;
-  XYSegList    getSegList(unsigned int) const;
-  XYGrid       getGrid(unsigned int) const;
-  XYConvexGrid getConvexGrid(unsigned int) const;
-  XYCircle     getCircle(unsigned int) const;
-  XYHexagon    getHexagon(unsigned int) const;
-  XYPoint      getPoint(unsigned int) const;
-  XYVector     getVector(unsigned int) const;
-  XYRangePulse getRangePulse(unsigned int) const;
-  XYCommsPulse getCommsPulse(unsigned int) const;
-  XYMarker     getMarker(unsigned int) const;
+  const std::map<std::string, XYPoint>&  getPoints() const  {return(m_points);};
+  const std::map<std::string, XYCircle>& getCircles() const {return(m_circles);};
+  const std::map<std::string, XYMarker>& getMarkers() const {return(m_markers);};
 
  protected:
   void updateBounds(double xl, double xh, double yl, double yh);
@@ -135,12 +112,13 @@ protected:
   std::vector<XYHexagon>    m_hexagons;
   std::vector<XYGrid>       m_grids;
   std::vector<XYConvexGrid> m_convex_grids;
-  std::vector<XYCircle>     m_circles;
-  std::vector<XYPoint>      m_points;
   std::vector<XYVector>     m_vectors;
   std::vector<XYRangePulse> m_range_pulses;
   std::vector<XYCommsPulse> m_comms_pulses;
-  std::vector<XYMarker>     m_markers;
+
+  std::map<std::string, XYPoint>  m_points;
+  std::map<std::string, XYMarker> m_markers;
+  std::map<std::string, XYCircle> m_circles;
 
   double  m_xmin;
   double  m_xmax;

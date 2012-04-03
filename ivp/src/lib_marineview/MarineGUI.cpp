@@ -158,11 +158,14 @@ void MarineGUI::augmentMenu()
 
   mbar->add("GeoAttr/Points - Toggle", 'j', (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)550, FL_MENU_DIVIDER);
 
-  // --------------------------------- Points
+  // --------------------------------- Vectors
   mbar->add("GeoAttr/Vectors - Edit/vector_point_labels=on", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)700, 0);
   mbar->add("GeoAttr/Vectors - Edit/vector_point_labels=off", 0, (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)701, 0);
 
   mbar->add("GeoAttr/Vectors - Toggle", FL_ALT+'v', (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)750, FL_MENU_DIVIDER);
+
+  // --------------------------------- Circles
+  mbar->add("GeoAttr/Circles - Toggle", FL_ALT+'c', (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)850, FL_MENU_DIVIDER);
 
   // -------------------------------- XYGrids
   mbar->add("GeoAttr/XYGrids - Edit/More Transparent", FL_CTRL+'g', (Fl_Callback*)MarineGUI::cb_MG_SetGeoAttr, (void*)300, 0);
@@ -393,6 +396,9 @@ inline void MarineGUI::cb_MG_SetGeoAttr_i(int v) {
   else if(v==701) cmviewer->setParam("vector_viewable_labels", "off");
 
   else if(v==750) cmviewer->setParam("vector_viewable_all", "toggle");
+
+  //---------------------------------- Circles
+  else if(v==850) cmviewer->setParam("circle_viewable_all", "toggle");
 
   //---------------------------------- Datum
 

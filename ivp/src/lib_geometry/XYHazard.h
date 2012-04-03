@@ -32,8 +32,9 @@ class XYHazard
   virtual ~XYHazard() {};
 
   // Setters
-  void    setX(double x)               {m_x=x; m_x_set=true;};
-  void    setY(double y)               {m_y=y; m_y_set=true;};
+  void    setX(double x)               {m_x=x;  m_x_set=true;};
+  void    setY(double y)               {m_y=y;  m_y_set=true;};
+  void    setResemblance(double v)     {m_hr=v; m_hr_set=true;};
   void    setLabel(std::string label)  {m_label=label;};
   void    setType(std::string v)       {m_type=v;};
   void    setSource(std::string v)     {m_source=v;};
@@ -43,24 +44,28 @@ class XYHazard
   bool    setColor(std::string);
   
   // Getters
-  double  getX() const             {return(m_x);};
-  double  getY() const             {return(m_y);};
-  double  getWidth() const         {return(m_width);};
+  double  getX() const               {return(m_x);};
+  double  getY() const               {return(m_y);};
+  double  getWidth() const           {return(m_width);};
+  double  getResemblance() const     {return(m_hr);};
 
-  bool    valid() const            {return(m_x_set && m_y_set);};
+  bool    hasResemblance() const     {return(m_hr_set);};
+  bool    valid() const              {return(m_x_set && m_y_set);};
 
-  std::string getLabel() const     {return(m_label);};
-  std::string getType() const      {return(m_type);};
-  std::string getSource() const    {return(m_source);};
-  std::string getShape() const     {return(m_shape);};
-  std::string getColor() const     {return(m_color);};
-  std::string getSpec() const;
+  std::string getLabel() const       {return(m_label);};
+  std::string getType() const        {return(m_type);};
+  std::string getSource() const      {return(m_source);};
+  std::string getShape() const       {return(m_shape);};
+  std::string getColor() const       {return(m_color);};
+  std::string getSpec(std::string noshow="") const;
 
  protected: // Key properties
   double       m_x;
   double       m_y;
+  double       m_hr;
   bool         m_x_set;
   bool         m_y_set;
+  bool         m_hr_set;
   std::string  m_label;
   std::string  m_source;
   std::string  m_type;

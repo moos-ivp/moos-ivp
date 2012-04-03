@@ -63,6 +63,8 @@ XYHazard stringStandard2Hazard(string str)
       new_hazard.setX(dval);
     else if((param == "y") && isNumber(value))
       new_hazard.setY(dval);
+    else if((param == "hr") && isNumber(value))
+      new_hazard.setResemblance(dval);
     else if(param == "type")
       new_hazard.setType(value);
     else if(param == "shape")

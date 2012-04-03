@@ -88,7 +88,7 @@ protected:
 			   bool vname_draw, 
 			   unsigned int line=0);
 
-  void  drawMarkers(const std::vector<XYMarker>&);
+  void  drawMarkers(const std::map<std::string, XYMarker>&);
   void  drawMarker(const XYMarker&);
 
   void  drawPolygons(const std::vector<XYPolygon>&);
@@ -106,7 +106,7 @@ protected:
   void  drawConvexGrids(const std::vector<XYConvexGrid>&);
   void  drawConvexGrid(const XYConvexGrid&);
 
-  void  drawCircles(const std::vector<XYCircle>&, double timestamp=0);
+  void  drawCircles(const std::map<std::string, XYCircle>&, double timestamp=0);
   void  drawCircle(const XYCircle&, double timestamp);
 
   void  drawRangePulses(const std::vector<XYRangePulse>&, double timstamp);
@@ -115,7 +115,7 @@ protected:
   void  drawCommsPulses(const std::vector<XYCommsPulse>&, double timstamp);
   void  drawCommsPulse(const XYCommsPulse&, double timestamp);
   
-  void  drawPoints(const std::vector<XYPoint>&);
+  void  drawPoints(const std::map<std::string, XYPoint>&);
   void  drawPoint(const XYPoint&);
 
   void  drawDropPoints();
@@ -126,7 +126,8 @@ protected:
 
   void  drawGLPoly(double *points, unsigned int numPoints, 
 		   ColorPack fill_color,
-		   double thickness=0, double scale=1);
+		   double thickness=0, double scale=1, 
+		   double alpha=100);
 
 protected:
   BackImg   m_back_img;

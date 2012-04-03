@@ -508,16 +508,20 @@ double MarineViewer::getHashDelta()
 
 void MarineViewer::drawGLPoly(double *points, unsigned int numPoints, 
 			      ColorPack cpack, double thickness, 
-			      double scale)
+			      double scale, double alpha)
 {
-  if(thickness<=0)
+  if(thickness<=0) {
+    glEnable(GL_BLEND);
+    glColor4f(cpack.red(), cpack.grn(), cpack.blu(), alpha);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glBegin(GL_POLYGON);
+  }
   else {
     glLineWidth(thickness);
     glBegin(GL_LINE_STRIP);
+    glColor3f(cpack.red(), cpack.grn(), cpack.blu());
   }
 
-  glColor3f(cpack.red(), cpack.grn(), cpack.blu());
   unsigned int i;
   for(i=0; i<numPoints*2; i=i+2)
     glVertex2f(points[i]*scale, points[i+1]*scale);
@@ -697,17 +701,18 @@ void MarineViewer::drawCommonVehicle(const NodeRecord& record,
 //-------------------------------------------------------------
 // Procedure: drawMarkers
 
-void MarineViewer::drawMarkers(const vector<XYMarker>& markers)
+void MarineViewer::drawMarkers(const map<string, XYMarker>& markers)
 {
   // If the viewable parameter is set to false just return. In 
-  // querying the parameter the option "true" argument means return
+  // querying the parameter the optional "true" argument means return
   // true if nothing is known about the parameter.
   if(m_geo_settings.viewable("marker_viewable_all", true) == false)
     return;
 
-  unsigned int i, vsize = markers.size();
-  for(i=0; i<vsize; i++)
-    drawMarker(markers[i]);
+  map<string, XYMarker>::const_iterator p;
+  for(p=markers.begin(); p!=markers.end(); p++)
+    if(p->second.active())
+      drawMarker(p->second);
 }
 
 //-------------------------------------------------------------
@@ -730,7 +735,8 @@ void MarineViewer::drawMarker(const XYMarker& marker)
   string message = marker.get_msg();
   double x       = marker.get_vx();
   double y       = marker.get_vy();
-  double shape_width = marker.get_width() * gscale;
+  double shape_width  = marker.get_width() * gscale;
+  double alpha   =  1 - marker.get_transparency();
 
   if(shape_width <= 0)
     return;
@@ -771,7 +777,7 @@ void MarineViewer::drawMarker(const XYMarker& marker)
     double cx = g_gatewayCtrX * factor_x;
     double cy = g_gatewayCtrY * factor_y;
     glTranslatef(-cx, -cy, 0);
-    drawGLPoly(g_gatewayBody, g_gatewayBodySize, cpack1, 0, factor_x);    
+    drawGLPoly(g_gatewayBody, g_gatewayBodySize, cpack1, 0, factor_x, alpha);    
     drawGLPoly(g_gatewayBody, g_gatewayBodySize, black, bw, factor_x);    
     drawGLPoly(g_gatewayMidBody, g_gatewayMidBodySize, cpack2, 0, factor_x);
     glTranslatef(cx, cy, 0);
@@ -785,8 +791,8 @@ void MarineViewer::drawMarker(const XYMarker& marker)
     double cx = g_efieldCtrX * factor_x;
     double cy = g_efieldCtrY * factor_y;
     glTranslatef(-cx, -cy, 0);
-    drawGLPoly(g_efieldBody, g_efieldBodySize, cpack1, 0, factor_x);    
-    drawGLPoly(g_efieldMidBody, g_efieldMidBodySize, cpack2, 0, factor_x);
+    drawGLPoly(g_efieldBody, g_efieldBodySize, cpack1, 0, factor_x, alpha);    
+    drawGLPoly(g_efieldMidBody, g_efieldMidBodySize, cpack2, 0, factor_x, alpha);
     drawGLPoly(g_efieldMidBody, g_efieldMidBodySize, black, bw, factor_x);
     glTranslatef(cx, cy, 0);
   }
@@ -798,7 +804,7 @@ void MarineViewer::drawMarker(const XYMarker& marker)
     double cx = g_diamondCtrX * factor_x;
     double cy = g_diamondCtrY * factor_y;
     glTranslatef(-cx, -cy, 0);
-    drawGLPoly(g_diamondBody, g_diamondBodySize, cpack1, 0, factor_x);
+    drawGLPoly(g_diamondBody, g_diamondBodySize, cpack1, 0, factor_x, alpha);
     drawGLPoly(g_diamondBody, g_diamondBodySize, black, bw, factor_x);
     glTranslatef(cx, cy, 0);
   }
@@ -810,7 +816,7 @@ void MarineViewer::drawMarker(const XYMarker& marker)
     double cx = g_circleCtrX * factor_x;
     double cy = g_circleCtrY * factor_y;
     glTranslatef(-cx, -cy, 0);
-    drawGLPoly(g_circleBody, g_circleBodySize, cpack1, 0, factor_x);
+    drawGLPoly(g_circleBody, g_circleBodySize, cpack1, 0, factor_x, alpha);
     drawGLPoly(g_circleBody, g_circleBodySize, black, bw, factor_x);    
     glTranslatef(cx, cy, 0);
   }
@@ -822,7 +828,7 @@ void MarineViewer::drawMarker(const XYMarker& marker)
     double cx = g_triangleCtrX * factor_x;
     double cy = g_triangleCtrY * factor_y;
     glTranslatef(-cx, -cy, 0);
-    drawGLPoly(g_triangleBody, g_triangleBodySize, cpack1, 0, factor_x);
+    drawGLPoly(g_triangleBody, g_triangleBodySize, cpack1, 0, factor_x, alpha);
     drawGLPoly(g_triangleBody, g_triangleBodySize, black, bw, factor_x);
     glTranslatef(cx, cy, 0);
   }
@@ -834,7 +840,7 @@ void MarineViewer::drawMarker(const XYMarker& marker)
     double cx = g_squareCtrX * factor_x;
     double cy = g_squareCtrY * factor_y;
     glTranslatef(-cx, -cy, 0);
-    drawGLPoly(g_squareBody, g_squareBodySize, cpack1, 0, factor_x);
+    drawGLPoly(g_squareBody, g_squareBodySize, cpack1, 0, factor_x, alpha);
     drawGLPoly(g_squareBody, g_squareBodySize, black, bw, factor_x);
     glTranslatef(cx, cy, 0);
   }
@@ -846,7 +852,7 @@ void MarineViewer::drawMarker(const XYMarker& marker)
     double cx = g_kelpCtrX * factor_x;
     double cy = g_kelpCtrY * factor_y;
     glTranslatef(-cx, -cy, 0);
-    drawGLPoly(g_kelpBody, g_kelpBodySize, cpack1, 0, factor_x);
+    drawGLPoly(g_kelpBody, g_kelpBodySize, cpack1, 0, factor_x, alpha);
     drawGLPoly(g_kelpBody, g_kelpBodySize, black, bw, factor_y);
     glTranslatef(cx, cy, 0);
   }
@@ -1026,7 +1032,7 @@ bool MarineViewer::initGeodesy(const string& str)
 void MarineViewer::drawPolygons(const vector<XYPolygon>& polys)
 {
   // If the viewable parameter is set to false just return. In 
-  // querying the parameter the option "true" argument means return
+  // querying the parameter the optional "true" argument means return
   // true if nothing is known about the parameter.
   if(!m_geo_settings.viewable("polygon_viewable_all", true))
     return;
@@ -1253,7 +1259,7 @@ void MarineViewer::drawSegment(double x1, double y1, double x2, double y2,
 void MarineViewer::drawSegLists(const vector<XYSegList>& segls)
 {
   // If the viewable parameter is set to false just return. In 
-  // querying the parameter the option "true" argument means return
+  // querying the parameter the optional "true" argument means return
   // true if nothing is known about the parameter.
   if(!m_geo_settings.viewable("seglist_viewable_all", "true"))
     return;
@@ -1747,7 +1753,7 @@ void MarineViewer::drawConvexGrid(const XYConvexGrid& grid)
 //-------------------------------------------------------------
 // Procedure: drawCircles
 
-void MarineViewer::drawCircles(const vector<XYCircle>& circles, 
+void MarineViewer::drawCircles(const map<string, XYCircle>& circles, 
 			       double timestamp)
 {
   // If the viewable parameter is set to false just return. In 
@@ -1755,12 +1761,11 @@ void MarineViewer::drawCircles(const vector<XYCircle>& circles,
   // true if nothing is known about the parameter.
   if(!m_geo_settings.viewable("circle_viewable_all", true))
     return;
-
-  unsigned int i, vsize = circles.size();
   
-  for(i=0; i<vsize; i++)
-    if(circles[i].active())
-      drawCircle(circles[i], timestamp); 
+  map<string, XYCircle>::const_iterator p;
+  for(p=circles.begin(); p!=circles.end(); p++)
+    if(p->second.active())
+      drawCircle(p->second, timestamp); 
   
 }
 
@@ -1809,43 +1814,25 @@ void MarineViewer::drawCircle(const XYCircle& circle, double timestamp)
   glPushMatrix();
   glLoadIdentity();
   
-  glLineWidth(1.0);  // added dec1306
+  glLineWidth(1.0);  
   glTranslatef(qx, qy, 0);
   glScalef(m_zoom, m_zoom, m_zoom);
 
-  double px  = circle.getX();
-  double py  = circle.getY();
-  double rad = circle.getRad();
-
-  string poly_str = "radial:";
-  poly_str += doubleToString(px,2) + ",";
-  poly_str += doubleToString(py,2) + ",";
-  poly_str += doubleToString(rad,2) + ",";
-  poly_str += uintToString(90);  // number of points rendered
-  
-  XYPolygon poly = string2Poly(poly_str);
-
-  // Now set points to the actual size vs. the requested size
-  unsigned int actual_pts = poly.size();
-
-  if(actual_pts == 0)
-    return;
-
-  double *points = new double[2 * actual_pts];
-
+  vector<double> draw_pts = circle.getPointCache(90);
   double pix_per_mtr_x = m_back_img.get_pix_per_mtr_x();
   double pix_per_mtr_y = m_back_img.get_pix_per_mtr_y();
-  unsigned int i, pindex = 0;
-  for(i=0; i<actual_pts; i++) {
-    points[pindex]   = poly.get_vx(i) * pix_per_mtr_x;
-    points[pindex+1] = poly.get_vy(i) * pix_per_mtr_y;
-    pindex += 2;
+  unsigned int i;
+  for(i=0; i<draw_pts.size(); i++) {
+    if((i%2)==0)
+      draw_pts[i] *= pix_per_mtr_x;
+    else
+      draw_pts[i] *= pix_per_mtr_y;
   }
 
   glColor3f(edge_c.red(), edge_c.grn(), edge_c.blu());
   glBegin(GL_LINE_LOOP);
-  for(i=0; i<actual_pts*2; i=i+2) {
-    glVertex2f(points[i], points[i+1]);
+  for(i=0; i<draw_pts.size(); i=i+2) {
+    glVertex2f(draw_pts[i], draw_pts[i+1]);
   }
   glEnd();
 
@@ -1855,14 +1842,13 @@ void MarineViewer::drawCircle(const XYCircle& circle, double timestamp)
     glColor4f(fill_c.red(), fill_c.grn(), fill_c.blu(), transparency);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glBegin(GL_POLYGON);
-    for(i=0; i<actual_pts*2; i=i+2) {
-      glVertex2f(points[i], points[i+1]);
+    for(i=0; i<draw_pts.size(); i=i+2) {
+      glVertex2f(draw_pts[i], draw_pts[i+1]);
     }
     glEnd();
     glDisable(GL_BLEND);
   }
 
-  delete [] points;
   glFlush();
   glPopMatrix();
 
@@ -2043,19 +2029,20 @@ void MarineViewer::drawCommsPulse(const XYCommsPulse& pulse,
 //-------------------------------------------------------------
 // Procedure: drawPoints
 
-void MarineViewer::drawPoints(const vector<XYPoint>& points)
+void MarineViewer::drawPoints(const map<string, XYPoint>& points)
 {
   // If the viewable parameter is set to false just return. In 
-  // querying the parameter the option "true" argument means return
+  // querying the parameter the optional "true" argument means return
   // true if nothing is known about the parameter.
   if(!m_geo_settings.viewable("point_viewable_all", true))
     return;
-
-  unsigned int i, vsize = points.size();
-  for(i=0; i<vsize; i++)
-    if(points[i].active())
-      drawPoint(points[i]);
-}
+  
+  map<string, XYPoint>::const_iterator p;
+  for(p=points.begin(); p!=points.end(); p++) {
+    if(p->second.active())
+      drawPoint(p->second); 
+  }
+}  
 
 //-------------------------------------------------------------
 // Procedure: drawPoint

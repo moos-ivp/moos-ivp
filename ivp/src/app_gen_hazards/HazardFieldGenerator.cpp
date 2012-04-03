@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <cstdlib>
+#include <cmath>
 #include "HazardFieldGenerator.h"
 #include "XYHazard.h"
 #include "MBUtils.h"
@@ -77,7 +78,6 @@ string HazardFieldGenerator::generateRandomUniqueLabel()
   if(m_rand_labels.size() >= 10000)
     field = 100000;
 
-
   bool done = false;
   while(!done && (tries < max_tries)) {
     int    ival = rand() % field;
@@ -95,7 +95,24 @@ string HazardFieldGenerator::generateRandomUniqueLabel()
 }
     
 
+//---------------------------------------------------------
+// Procedure: setExp
+//      Note: The m_exp factor is used to alter the randomly generated
+//            hazard_resemblance factor. This factor is generated as a
+//            random number in the range of [0,1] to start. Then it is
+//            raised to value of m_exp. A high m_exp factor means that
+//            the expected value of the hazard_resemblance factor will
+//            be closer to zero. 
 
+void HazardFieldGenerator::setExp(string str)
+{
+  if(!isNumber(str))
+    return;
+
+  double dval = atof(str.c_str());
+  m_exp = vclip(dval, 1, 10);
+}
+    
 
 //---------------------------------------------------------
 // Procedure: generateObjectSet
@@ -116,6 +133,13 @@ bool HazardFieldGenerator::generateObjectSet(unsigned int amt, string obj_type)
     hazard.setY(vy);
     hazard.setType(obj_type);
     hazard.setLabel(label);
+
+    if(m_exp >= 1) {
+      int int_hr = rand() % 1000;
+      double pct = (double)(int_hr) / 1000;
+      double hr  = pow(pct, m_exp);
+      hazard.setResemblance(hr);
+    }
 
     string msg = hazard.getSpec();
     cout << "hazard = " << msg << endl;

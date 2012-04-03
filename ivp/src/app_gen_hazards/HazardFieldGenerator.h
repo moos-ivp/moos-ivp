@@ -18,11 +18,13 @@
 class HazardFieldGenerator
 {
  public:
-  HazardFieldGenerator() {m_pt_step=1; m_count=0;};
+  HazardFieldGenerator() {m_pt_step=1; m_count=0; m_exp=0;};
   virtual ~HazardFieldGenerator() {};
 
   bool   addPolygon(std::string s) {return(m_field_generator.addPolygon(s));};
   bool   addObjectSet(std::string);
+
+  void   setExp(std::string str);
 
   bool   generate();
   
@@ -38,6 +40,8 @@ class HazardFieldGenerator
   XYFieldGenerator          m_field_generator;
   double                    m_pt_step;
   unsigned int              m_count;
+
+  double                    m_exp;
 
   std::set<std::string>     m_rand_labels;
 

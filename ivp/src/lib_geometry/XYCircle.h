@@ -59,7 +59,9 @@ public:
 
   std::string get_spec(std::string s="") const;
   
-  
+  void                setPointCache(unsigned int);
+  std::vector<double> getPointCache(unsigned int pts) const;
+
   // True if on or inside circle, need not intersect perimeter
   bool   containsPoint(double, double) const;
   bool   containsPoint(const XYPoint&) const;
@@ -91,6 +93,9 @@ protected:
   bool     m_x_set;
   bool     m_y_set;
   bool     m_rad_set;
+
+  std::vector<double> m_pt_cache;
+
 };
 #endif
 

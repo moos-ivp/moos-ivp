@@ -61,6 +61,8 @@ void HazardSensor_MOOSApp::RegisterVariables()
   m_Comms.Register("NODE_REPORT", 0);
   m_Comms.Register("NODE_REPORT_LOCAL", 0);
   m_Comms.Register("UHZ_SENSOR_REQUEST", 0);
+  m_Comms.Register("UHZ_SENSOR_CLEAR", 0);
+  m_Comms.Register("UHZ_CLASSIFY_REQUEST", 0);
   m_Comms.Register("UHZ_CONFIG_REQUEST", 0);
 }
 
@@ -73,6 +75,7 @@ bool HazardSensor_MOOSApp::Iterate()
   m_model.setCurrTime(MOOSTime());
   m_model.iterate();
   postMessages(m_model.getMessages());
+  postMessages(m_model.getQueueMessages());
   return(true);
 }
 

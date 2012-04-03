@@ -108,7 +108,7 @@ void showExampleConfigAndExit()
   blk("                                                                ");
   blk("  sensor_config = width=25, exp=4, class=0.80                   ");
   blk("  sensor_config = width=50, exp=2, class=0.60                   ");
-  blk("  sensor_config = width=10, exp=6, class=0.93                   ");
+  blk("  sensor_config = width=10, exp=6, class=0.93,max=1             ");
   blk("  hazard_file   = hazards.txt                                   ");
   blk("  swath_length  = 5                               // default    ");
   blk("  seed_random   = false                           // default    ");
@@ -117,6 +117,10 @@ void showExampleConfigAndExit()
   blk("  show_hazards  = true  // default                // default    ");
   blk("  show_swath    = true  // default                // default    ");
   blk("  show_reports  = 60    // seconds (unlimited if unspecified)   ");
+  blk("                                                                ");
+  blk("  min_reset_interval       = 300  // default                    ");
+  blk("  options_summary_interval = 10   // default                    ");
+  blk("  classify_period          = 30   // default                    ");
   blk("}                                                               ");
   blk("                                                                ");
   exit(0);
@@ -143,11 +147,14 @@ void showInterfaceAndExit()
   blk("                      LON=-70.329755,SPD=2.0,HDG=118.8,         ");
   blk("                      YAW=118.8,DEPTH=4.6,LENGTH=3.8,           ");
   blk("                      MODE=MODE@ACTIVE:LOITERING                ");
-  blk("  UHZ_SENSOR_REQUEST = vname=archie                             ");
-  blk("  UHZ_CONFIG_REQUEST = vname=archie,width=50,pd=0.9             ");
+  blk("  UHZ_CLASSIFY_REQUEST = vname=archie,label=07                  ");
+  blk("  UHZ_SENSOR_REQUEST   = vname=archie                           ");
+  blk("  UHZ_CONFIG_REQUEST   = vname=archie,width=50,pd=0.9           ");
   blk("                                                                ");
   blk("PUBLICATIONS:                                                   ");
   blk("------------------------------------                            ");
+  blk("  UHZ_DETECTION_REPORT = vname=betty,x=51,y=11.3,label=12       ");
+  blk("  UHZ_DETECTION_REPORT_<V> = x=51,y=11.3,label=12               ");
   blk("  UHZ_HAZARD_REPORT   = vname=betty,x=51,y=11.3,hazard=true,    ");
   blk("                        label=12                                ");
   blk("  UHZ_HAZARD_REPORT_<V> = x=51,y=11.3,hazard=true,label=12      ");

@@ -81,17 +81,13 @@ void PMV_Viewer::draw()
     vector<XYPolygon> polys   = m_geoshapes_map.getPolygons(vnames[i]);
     vector<XYGrid>    grids   = m_geoshapes_map.getGrids(vnames[i]);
     vector<XYConvexGrid> cgrids = m_geoshapes_map.getConvexGrids(vnames[i]);
-    vector<XYPoint>   points  = m_geoshapes_map.getPoints(vnames[i]);
     vector<XYSegList> segls   = m_geoshapes_map.getSegLists(vnames[i]);
-    vector<XYCircle>  circles = m_geoshapes_map.getCircles(vnames[i]);
     vector<XYVector>  vectors = m_geoshapes_map.getVectors(vnames[i]);
     vector<XYRangePulse> rng_pulses = m_geoshapes_map.getRangePulses(vnames[i]);
     vector<XYCommsPulse> cms_pulses = m_geoshapes_map.getCommsPulses(vnames[i]);
-    vector<XYMarker>  markers = m_geoshapes_map.getMarkers(vnames[i]);
-
-    //cout << "polys[" << vnames[i] << "]:" << polys.size() << endl;
-    //cout << "segls[" << vnames[i] << "]:" << segls.size() << endl;
-    //cout << "points[" << vnames[i] << "]:" << points.size() << endl;
+    const map<string, XYPoint>&  points  = m_geoshapes_map.getPoints(vnames[i]);
+    const map<string, XYCircle>& circles = m_geoshapes_map.getCircles(vnames[i]);
+    const map<string, XYMarker>& markers = m_geoshapes_map.getMarkers(vnames[i]);
 
     drawPolygons(polys);
     drawGrids(grids);
@@ -184,12 +180,8 @@ int PMV_Viewer::handle(int event)
 
 bool PMV_Viewer::setParam(string param, string value)
 {
-  if(strContains(param, "comms"))
-    cout << "PMV_VIewer::setparam: " << param << " value:" << value << endl;
   if(MarineViewer::setParam(param, value))
     return(true);
-  if(strContains(param, "comms"))
-    cout << "PMV_VIewer::setparam(B): " << param << " value:" << value << endl;
 
   param = tolower(stripBlankEnds(param));
   value = stripBlankEnds(value);
@@ -246,7 +238,6 @@ bool PMV_Viewer::setParam(string param, string value)
   }
   else if(param == "ignore_staleness") {
     handled = setBooleanOnString(m_ignore_staleness, value);
-    cout << "m_ignore_stalenes:" << m_ignore_staleness << endl;
   }
   else if(param == "stale_report_thresh_nodraw") {
     if(isNumber(value)) {
@@ -401,8 +392,6 @@ void PMV_Viewer::drawTrailPoints(CPList &cps, unsigned int trail_length)
     return;
 
   XYSegList segl;
-
-  //cout << "cplist:size: " << cps.size() << endl;;
 
   list<ColoredPoint>::reverse_iterator p;
   unsigned int i=0;

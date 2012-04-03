@@ -25,6 +25,7 @@
 
 #include <vector>
 #include <string>
+#include <list>
 #include <map>
 #include "XYHazard.h"
 #include "XYPolygon.h"
@@ -48,6 +49,7 @@ class HazardSensor_Model
   void  sortSensorProperties();
 
   std::vector<VarDataPair> getMessages(bool clear=true);
+  std::vector<VarDataPair> getQueueMessages();
   std::vector<VarDataPair> getVisuals();
 
  protected: // Configuration utility
@@ -62,15 +64,19 @@ class HazardSensor_Model
  protected: // Incoming mail utility
   bool    handleNodeReport(const std::string&);
   bool    handleSensorRequest(const std::string&);
+  bool    handleSensorClear(const std::string&);
+  bool    handleClassifyRequest(const std::string&);
   bool    handleSensorConfig(const std::string&, const std::string&);
 
  protected: // Outgoing mail utility
   void    addMessage(const std::string&, const std::string&);
+  void    addQueueMessage(const std::string&, const std::string&, const std::string&);
   void    addMessage(const std::string&, double);
-  void    postHazardReport(unsigned int bix, std::string rec_node);
+  void    postHazardDetectionReport(std::string hlabel, std::string vname);
+  void    postHazardClassifyReport(std::string hlabel, std::string vname);
 
  protected: // Utilities
-  bool    updateVehicleHazardStatus(unsigned int vix, unsigned int hix);
+  bool    updateVehicleHazardStatus(unsigned int vix, std::string);
   bool    setVehicleSensorSetting(std::string, double, double, bool v=false);
   bool    processHazardFile(std::string filename);
   bool    updateNodeRecords(NodeRecord);
@@ -78,6 +84,8 @@ class HazardSensor_Model
   void    updateSwathGeometry();
   void    calcSwathGeometry(double, double&, double&);
   void    printReport();
+
+  unsigned int sensorSwathCount(double, std::string vname);
 
  protected: // State variables
   double       m_curr_time;
@@ -87,8 +95,10 @@ class HazardSensor_Model
   unsigned int m_reports;
   unsigned int m_iterations;
 
-  // Vector of N Hazards
-  std::vector<XYHazard>        m_hazards;
+  // map of hazard-labels to hazards
+  std::map<std::string, XYHazard>     m_map_hazards;
+  std::map<std::string, unsigned int> m_map_hazard_hits;
+  std::map<std::string, unsigned int> m_map_hazard_class_queries;
 
   // Map from tag=<vehiname_hazardindex> to Boolean 
   // True if hazard is currently within the sensor scope of the vehicle.
@@ -101,6 +111,11 @@ class HazardSensor_Model
   // Messages to be grabbed by the MOOSApp for posting to MOOSDB
   std::vector<VarDataPair>     m_messages;
 
+  // Limited-Frequency msgs to be grabbed by the MOOSApp for posting to MOOSDB
+  std::map<std::string, std::list<VarDataPair> >  m_map_msgs_queued;
+  std::map<std::string, double>                   m_map_msg_last_queue_time;
+
+
   // Messages to be displayed to the terminal
   std::map<std::string, int>   m_map_memos;
 
@@ -111,6 +126,7 @@ class HazardSensor_Model
   bool        m_seed_random;
   bool        m_verbose;
   double      m_swath_len;  // Same for everyone, all settings.
+  double      m_min_queue_msg_interval;
 
   // Key for each map below is the vehicle name. Swath width and PD are
   // requested by the user. The pfa and pc are determined from that.
@@ -124,10 +140,11 @@ class HazardSensor_Model
 
   // Absolute sensor characteristics. User may choose one of the
   // available widths. ROC curve and classification accuracy follow.
-  std::vector<double> m_sensor_prop_width;
-  std::vector<double> m_sensor_prop_exp;
-  std::vector<double> m_sensor_prop_class;
-  std::string         m_sensor_prop_summary;
+  std::vector<double>       m_sensor_prop_width;
+  std::vector<double>       m_sensor_prop_exp;
+  std::vector<double>       m_sensor_prop_class;
+  std::vector<unsigned int> m_sensor_prop_max;
+  std::string               m_sensor_prop_summary;
 
   // Info for adding random noise to the sensor report.
   std::string m_rn_algorithm;   // Empty string = no random noise

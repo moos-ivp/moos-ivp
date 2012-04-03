@@ -90,8 +90,10 @@ void CPAViewer::draw()
     drawHash();
 
   vector<XYPolygon> polys   = m_geoshapes.getPolygons();
-  vector<XYPoint>   points  = m_geoshapes.getPoints();
   vector<XYSegList> segls   = m_geoshapes.getSegLists();
+
+
+  const map<string, XYPoint>& points = m_geoshapes.getPoints();
 
   drawPolygons(polys);
   drawPoints(points);
