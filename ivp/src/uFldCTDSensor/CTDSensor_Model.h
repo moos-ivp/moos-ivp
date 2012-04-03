@@ -48,10 +48,11 @@ class CTDSensor_Model
   std::vector<VarDataPair> getMessages(bool clear=true);
   std::vector<VarDataPair> getVisuals();
 
- protected: // Configuration utility
+// Configuration utility
   bool    FieldModelConfig();
   bool    SensorConfig();
 
+ protected: 
   bool    setTermReportInterval(std::string);
 
  protected: // Incoming mail utility
@@ -104,6 +105,7 @@ class CTDSensor_Model
   double m_period;
   double m_wavelength;
   double m_alpha;
+  double m_beta;
   double m_T_N;
   double m_T_S;
   double m_sigma;

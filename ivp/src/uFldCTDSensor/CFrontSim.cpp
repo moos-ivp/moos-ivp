@@ -21,12 +21,13 @@
 // along with this software.  If not, see <http://www.gnu.org/licenses/>.
 
 
+#include <iostream>
 #include "CFrontSim.h"
 
 using namespace std;
 
 void CFrontSim::setVars(double amplitude, double offset, double wavelength, 
-			double period, double alpha_in, 
+			double period, double alpha_in, double beta_in,
 			double temp_N, double temp_S)
 
 {
@@ -37,10 +38,15 @@ void CFrontSim::setVars(double amplitude, double offset, double wavelength,
   k=2*M_PI/wavelength;
   omega=2*M_PI/period;
   alpha = alpha_in;
+  beta = beta_in;
   T_N = temp_N;
   T_S = temp_S;
   T_mean = (T_N+T_S)*0.5;
-  T_fac = M_PI/(T_N-T_S);
+  T_fac = (T_N-T_S)/(0.5*M_PI);
+  cout << "CFrontSim: offset = " << offset << endl; 
+  cout << "CFrontSim: T_mean = " << T_mean << endl; 
+  cout << "CFrontSim: T_fac = " << T_fac << endl; 
+
 }
 
 void CFrontSim::setSigma(double temp_sigma) 
@@ -61,7 +67,8 @@ void CFrontSim::setRegion(double x1, double x2,
 double CFrontSim::tempFunction(double t, double x, double y)
 { 
   double xi = xi_0 + amp*exp(-alpha*x)*sin(x*k-omega*t);
-  double val = T_mean + T_fac*atan(M_PI*k*(y-xi));
+  double val = T_mean + T_fac*atan((y-xi)/beta);
+  //  cout << "xi=" << xi << "val=" << val << endl;
   return(val);
 }
 

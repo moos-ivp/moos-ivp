@@ -1,3 +1,6 @@
+ServerHost = localhost
+ServerPort = 9000
+Community  = ufld_topside
 //=============================================================== 
 // uFldCTDSensor Example MOOS Configuration                      
 // =============================================================== 

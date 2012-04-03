@@ -97,9 +97,14 @@ bool CTDSensor_MOOSApp::OnStartUp()
 
   RegisterVariables();
 
+  // Configure field model and sensor
+
+  m_model.FieldModelConfig();
+  m_model.SensorConfig();
   
   double time_warp = GetMOOSTimeWarp();
   m_model.setTimeWarp(time_warp);
+
 
   //  m_model.perhapsSeedRandom();
   cout << "Simulated CTD Sensor started." << endl;

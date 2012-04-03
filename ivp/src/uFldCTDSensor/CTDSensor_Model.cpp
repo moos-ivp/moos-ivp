@@ -58,7 +58,8 @@ CTDSensor_Model::CTDSensor_Model()
   m_amplitude = 50;
   m_period = 30;
   m_wavelength = 300;
-  m_alpha = 100;
+  m_alpha = 100;  
+  m_beta = 10;
   m_T_N = 20;
   m_T_S = 25;
   m_sigma = 0.1;
@@ -71,62 +72,75 @@ bool CTDSensor_Model::setParam(string param, string value)
 {
   bool handled = false;
 
-  if((param == "xmin") && isNumber(value))
+  if (param == "xmin") 
     {
       m_xmin = atof(value.c_str());
       handled = true;
     }
-  else if((param == "xmax") && isNumber(value))
+  else if (param == "xmax")
     {
       m_xmax = atof(value.c_str());
       handled = true;
     }
-  else if((param == "ymin") && isNumber(value))
+  else if (param == "ymin")
     {
       m_ymin = atof(value.c_str());
       handled = true;
     }
-  else if((param == "ymax") && isNumber(value))
+  else if (param == "ymax")
     {
       m_ymax = atof(value.c_str());
       handled = true;
     }
-  else if((param == "offset") && isNumber(value))
+  else if (param == "offset")
     {
       m_offset = atof(value.c_str());
       handled = true;
+      cout << "offset = " << m_offset << endl; 
     }
-  else if((param == "amplitude") && isNumber(value))
+  else if (param == "amplitude")
     {
       m_amplitude = atof(value.c_str());
       handled = true;
+      cout << "amplitude = " << m_amplitude << endl; 
     }
-  else if((param == "period") && isNumber(value))
+  else if (param == "period")
     {
       m_period = atof(value.c_str());
       handled = true;
+      cout << "m_period = " << m_period << endl; 
     }
-  else if((param == "wavelength") && isNumber(value))
+  else if (param == "wavelength")
     {
       m_wavelength = atof(value.c_str());
       handled = true;
+      cout << "wavelength = " << m_wavelength << endl; 
     }
-  else if((param == "alpha") && isNumber(value))
+  else if (param == "alpha")
     {
       m_alpha = atof(value.c_str());
       handled = true;
+      cout << "alpha = " << m_alpha << endl; 
     }
-  else if((param == "temperature_north") && isNumber(value))
+  else if (param == "beta")
+    {
+      m_beta = atof(value.c_str());
+      handled = true;
+      cout << "beta = " << m_beta << endl; 
+    }
+  else if (param == "temperature_north")
     {
       m_T_N = atof(value.c_str());
       handled = true;
+      cout << "m_T_N = " << m_T_N << endl; 
     }
-  else if((param == "temperature_south") && isNumber(value))
+  else if (param == "temperature_south")
     {
       m_T_S = atof(value.c_str());
       handled = true;
+      cout << "m_T_S = " << m_T_S << endl; 
     }
-  else if((param == "sigma") && isNumber(value))
+  else if (param == "sigma")
     {
       m_sigma = atof(value.c_str());
       handled = true;
@@ -218,7 +232,7 @@ bool CTDSensor_Model::FieldModelConfig()
 {
 
   front.setVars(m_amplitude , m_offset, m_wavelength, 
-		m_period, m_alpha, m_T_N, m_T_S);
+		m_period, m_alpha, m_beta, m_T_N, m_T_S);
   front.setRegion(m_xmin, m_xmax,
 		  m_ymin, m_ymax); 
   
@@ -332,11 +346,24 @@ void CTDSensor_Model::addMessage(const string& varname, double value)
 void CTDSensor_Model::postSensorReport(double ptx, double pty, string vname)
 {
   // Get the sensor range
+  double temp = front.tempFunction(m_curr_time,ptx,pty);
+
+  string gt = "vname=" + vname 
+    + ",utc=" + doubleToString(m_curr_time,1)
+    +",x=" + doubleToString(ptx,1)
+    +",y=" + doubleToString(pty,1)
+    +",temp=" + doubleToString(temp,2);
+  
+  addMessage("UCTD_TEMP_REPORT_" + toupper(vname), gt);
 
   double msmnt = front.tempMeas(m_curr_time, ptx, pty);
 
-  string report = "vname=" + vname + ",temperature=" + doubleToString(msmnt,2);
-
+  string report = "vname=" + vname 
+    + ",utc=" + doubleToString(m_curr_time,1)
+    +",x=" + doubleToString(ptx,1)
+    +",y=" + doubleToString(pty,1)
+    +",temp=" + doubleToString(msmnt,2);
+  
   addMessage("UCTD_MSMNT_REPORT_" + toupper(vname), report);
   
 }

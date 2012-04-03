@@ -35,7 +35,7 @@ class CFrontSim
  public:
 
   void setVars(double amplitude , double offset, double wavelength, 
-	       double period, double alph_0, double T_N, double T_S);
+	       double period, double alph_0, double beta_0, double T_N, double T_S);
   void setSigma(double temp_sigma);
   void setRegion(double x1, double x2,
 		 double y1, double y2); 
@@ -51,6 +51,7 @@ class CFrontSim
   double k;
   double omega;
   double alpha;
+  double beta;
   double T_N;
   double T_S;
   double T_fac;
