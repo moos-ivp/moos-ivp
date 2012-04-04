@@ -42,7 +42,7 @@ void CFrontSim::setVars(double amplitude, double offset, double wavelength,
   T_N = temp_N;
   T_S = temp_S;
   T_mean = (T_N+T_S)*0.5;
-  T_fac = (T_N-T_S)/(0.5*M_PI);
+  T_fac = (T_N-T_S)/M_PI;
   cout << "CFrontSim: offset = " << offset << endl; 
   cout << "CFrontSim: T_mean = " << T_mean << endl; 
   cout << "CFrontSim: T_fac = " << T_fac << endl; 
@@ -66,7 +66,7 @@ void CFrontSim::setRegion(double x1, double x2,
 
 double CFrontSim::tempFunction(double t, double x, double y)
 { 
-  double xi = xi_0 + amp*exp(-alpha*x)*sin(x*k-omega*t);
+  double xi = xi_0 + amp*exp(-x/alpha)*sin(x*k-omega*t);
   double val = T_mean + T_fac*atan((y-xi)/beta);
   //  cout << "xi=" << xi << "val=" << val << endl;
   return(val);

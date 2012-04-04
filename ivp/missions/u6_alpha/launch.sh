@@ -83,24 +83,25 @@ SLPORT="9200"
 
 START_POS1="0,0"         # Vehicle 1 Behavior configurations
 LOITER_POS1="x=0,y=-75"
-START_POS2="80,0"        # Vehicle 2 Behavior configurations
+START_POS2="200,-50"        # Vehicle 2 Behavior configurations
 LOITER_POS2="x=125,y=-50"
 
 
 if [ "${SHOREONLY}" != "yes" ]; then
     nsplug meta_vehicle.moos targ_gilda.moos -f WARP=$WARP      \
 	VNAME=$VNAME2  VPORT=$VPORT2  LPORT=$LPORT2             \
-        GROUP=$GROUP12  START_POS=$START_POS1  KEY=$KEY         
+        GROUP=$GROUP12  START_POS=$START_POS2  KEY=$KEY         
 
     nsplug meta_vehicle.moos targ_henry.moos -f WARP=$WARP      \
 	VNAME=$VNAME1  VPORT=$VPORT1  LPORT=$LPORT1             \
-        GROUP=$GROUP12  START_POS=$START_POS2  KEY=$KEY 
+        GROUP=$GROUP12  START_POS=$START_POS1  KEY=$KEY 
     
+    nsplug meta_vehicle.bhv targ_gilda.bhv -f VNAME=$VNAME2     \
+	START_POS=$START_POS2 LOITER_POS=$LOITER_POS2       
+
     nsplug meta_vehicle.bhv targ_henry.bhv -f VNAME=$VNAME1     \
 	START_POS=$START_POS1 LOITER_POS=$LOITER_POS1       
     
-    nsplug meta_vehicle.bhv targ_gilda.bhv -f VNAME=$VNAME2     \
-	START_POS=$START_POS1 LOITER_POS=$LOITER_POS2       
 fi    
 
 nsplug meta_shoreside.moos targ_shoreside.moos -f WARP=$WARP    \

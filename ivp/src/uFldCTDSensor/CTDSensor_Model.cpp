@@ -59,7 +59,7 @@ CTDSensor_Model::CTDSensor_Model()
   m_period = 30;
   m_wavelength = 300;
   m_alpha = 100;  
-  m_beta = 10;
+  m_beta = 30;
   m_T_N = 20;
   m_T_S = 25;
   m_sigma = 0.1;
