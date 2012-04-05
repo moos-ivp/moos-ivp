@@ -42,6 +42,7 @@ class CTDSensor_Model
 		  std::string src_app, std::string src_community);
   void  iterate();
   void  setCurrTime(double);
+  void  setStartTime(double);
   void  setTimeWarp(double v) {m_time_warp=v;};
   void  perhapsSeedRandom();
 
@@ -58,11 +59,13 @@ class CTDSensor_Model
  protected: // Incoming mail utility
   bool    handleNodeReport(const std::string&);
   bool    handleSensorRequest(const std::string&);
+  bool    handleSensingReport(const std::string&);
 
  protected: // Outgoing mail utility
   void    addMessage(const std::string&, const std::string&);
   void    addMessage(const std::string&, double);
   void    postSensorReport(double ptx, double pty, std::string vname);
+  void    postSensingScore(std::string vname, double score);
 
  protected: // Utilities
 
@@ -71,6 +74,7 @@ class CTDSensor_Model
 
  protected: // State variables
   double       m_curr_time;
+  double       m_start_time;
   double       m_time_warp;
   double       m_last_report_time;
   double       m_last_summary_time;
@@ -109,6 +113,16 @@ class CTDSensor_Model
   double m_T_N;
   double m_T_S;
   double m_sigma;
+
+  // reported values
+  double r_offset;
+  double r_amplitude;
+  double r_period;
+  double r_wavelength;
+  double r_alpha;
+  double r_beta;
+  double r_T_N;
+  double r_T_S;
 
   double      m_term_report_interval;
 

@@ -40,6 +40,7 @@ CTDSensor_Model::CTDSensor_Model()
   // State Variables
   // -------------------------------------------------------------
   m_curr_time  = 0;
+  m_start_time  = 0;
   m_time_warp  = 1;
   m_iterations = 0;
   m_reports    = 0;
@@ -56,13 +57,13 @@ CTDSensor_Model::CTDSensor_Model()
   m_ymax  = 400;       
   m_offset = 200;
   m_amplitude = 50;
-  m_period = 30;
+  m_period = 120;
   m_wavelength = 300;
   m_alpha = 100;  
   m_beta = 30;
   m_T_N = 20;
   m_T_S = 25;
-  m_sigma = 0.1;
+  m_sigma = 0.2;
 }
 
 //------------------------------------------------------------
@@ -168,6 +169,9 @@ bool CTDSensor_Model::handleMsg(string key, double dval, string sval,
   if(key == "UCTD_SENSOR_REQUEST")
     handled = handleSensorRequest(sval);
   
+  if(key == "UCTD_PARAMETER_ESTIMATE")
+    handled = handleSensingReport(sval);
+  
   if(!handled) {
     string msg = "Uhandled msg: " + key;
     if(isstring) 
@@ -190,6 +194,15 @@ void CTDSensor_Model::setCurrTime(double new_time)
 {
   if(new_time > m_curr_time)
     m_curr_time = new_time;
+}
+
+//------------------------------------------------------------
+// Procedure: setStartTIme
+
+void CTDSensor_Model::setStartTime(double new_time)
+{
+  if(new_time > m_start_time)
+    m_start_time = new_time;
 }
 
 //------------------------------------------------------------
@@ -321,6 +334,69 @@ bool CTDSensor_Model::handleSensorRequest(const string& request)
 
 
 //---------------------------------------------------------
+// Procedure: handleSensingReport
+//   Example: vname=alpha,amplitude=50,offset=-100,period=100,wavelength=190,...
+//   Compares field parameters estimated by vname to ground truth
+
+
+bool CTDSensor_Model::handleSensingReport(const string& request)
+{
+  // Part 1: Parse the string report
+
+  string vname;
+  vector<string> svector = parseString(request, ',');
+  unsigned int i, vsize = svector.size();
+
+  for(i=0; i<vsize; i++) {
+    string param = tolower(biteStringX(svector[i], '='));
+    string value = svector[i];
+    if(param == "vname")
+      vname = value;
+    else if (param == "offset")
+      r_offset = atof(value.c_str());
+    else if (param == "amplitude")
+      r_amplitude = atof(value.c_str());
+    else if (param == "period")
+      r_period = atof(value.c_str());
+    else if (param == "wavelength")
+      r_wavelength = atof(value.c_str());
+    else if (param == "alpha")
+      r_alpha = atof(value.c_str());
+    else if (param == "beta")
+      r_beta = atof(value.c_str());
+    else if (param == "temperature_north")
+      r_T_N = atof(value.c_str());
+    else if (param == "temperature_south")
+      r_T_S = atof(value.c_str());
+  }
+
+  if(vname == "") {
+    memoErr("Sensor mission report received with null vehicle name");
+    return(false);
+  }
+
+  // compute estimation error
+
+  double error = pow(m_amplitude-r_amplitude,2)/pow(m_amplitude,2)
+    + pow(m_offset-r_offset,2)/pow(m_offset,2)
+    + pow(m_period-r_period,2)/pow(m_period,2)
+    + pow(m_wavelength-r_wavelength,2)/pow(m_wavelength,2)
+    + pow(m_alpha-r_alpha,2)/pow(m_alpha,2)
+    + pow(m_beta-r_beta,2)/pow(m_beta,2)
+    + pow(m_T_N-r_T_N,2)/pow(m_T_N,2)
+    + pow(m_T_S-r_T_S,2)/pow(m_T_S,2);
+  double score = 1/error;
+
+  memo("Sensor mission report received from " + vname);
+  memo("Score " + doubleToString(score));
+
+  postSensingScore(vname,score);
+
+  return(true);
+}
+
+
+//---------------------------------------------------------
 // Procedure: addMessage()
 
 void CTDSensor_Model::addMessage(const string& varname,
@@ -366,6 +442,20 @@ void CTDSensor_Model::postSensorReport(double ptx, double pty, string vname)
   
   addMessage("UCTD_MSMNT_REPORT_" + toupper(vname), report);
   
+}
+
+//------------------------------------------------------------
+// Procedure: postSensingScore()
+
+void CTDSensor_Model::postSensingScore(string vname, double score)
+{
+  // Get the sensor range
+
+  string gt = "vname=" + vname 
+    + ",score=" + doubleToString(1e3*score/(m_curr_time-m_start_time));
+   
+  addMessage("UCTD_SCORE_REPORT", gt);
+
 }
 
 //------------------------------------------------------------

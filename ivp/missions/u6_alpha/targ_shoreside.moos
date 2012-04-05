@@ -67,7 +67,7 @@ ProcessConfig = uFldCTDSensor
   beta = 40;
   temperature_north = 20;
   temperature_south = 25;
-  sigma = 0.1;
+  sigma = 0.2;
 }
 
 
@@ -106,6 +106,9 @@ ProcessConfig = uFldShoreBroker
   BRIDGE   = src=RETURN_$V,  alias=RETURN
 
   BRIDGE   = src=UP_LOITER_$N, alias=UP_LOITER
+  BRIDGE   = src=UCTD_MSMNT_REPORT_$V, alias=UCTD_MSMNT_REPORT
+//  BRIDGE   = src=UCTD_MSMNT_REPORT_HENRY, alias=UCTD_MSMNT_REPORT
+//  BRIDGE   = src=UCTD_MSMNT_REPORT_GILDA, alias=UCTD_MSMNT_REPORT
 }
 
 //--------------------------------------------------------

@@ -61,6 +61,7 @@ void CTDSensor_MOOSApp::RegisterVariables()
   m_Comms.Register("NODE_REPORT", 0);
   m_Comms.Register("NODE_REPORT_LOCAL", 0);
   m_Comms.Register("UCTD_SENSOR_REQUEST", 0);
+  m_Comms.Register("UCTD_PARAMETER_ESTIMATE", 0);
 }
 
 
