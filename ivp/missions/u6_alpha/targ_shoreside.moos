@@ -67,7 +67,7 @@ ProcessConfig = uFldCTDSensor
   beta = 40;
   temperature_north = 20;
   temperature_south = 25;
-  sigma = 0.2;
+  sigma = 0.1;
 }
 
 
