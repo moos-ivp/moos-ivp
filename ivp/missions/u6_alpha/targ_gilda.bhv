@@ -11,12 +11,6 @@ set MODE = ACTIVE {
   DEPLOY = true
 } INACTIVE
 
-set MODE = STATION-KEEPING {
-  MODE = ACTIVE
-  STATION_KEEP = true
-  RETURN = false
-}                       
-
 set MODE = RETURNING {
   MODE = ACTIVE
   RETURN = true
@@ -27,14 +21,6 @@ set MODE = SURVEYING {
   SURVEY = true
   RETURN = false
 } 
-
-set MODE = LOITERING {
-  MODE = ACTIVE
-  LOITER = true
-  RETURN = false
-} 
-
-
 
 
 //----------------------------------------------
@@ -54,32 +40,11 @@ Behavior = BHV_Waypoint
    lead_damper = 1
          speed = 2.0   // meters per second
         radius = 8.0
-        points = format=lawnmower, label=dudley_survey, x=50, y=-100, width=150, height=100, lane_width=20, rows=north-south, degs=0
+        points = format=lawnmower, label=dudley_survey, x=50, y=-50, width=150, height=120, lane_width=20, rows=north-south, degs=0
         repeat = 1
   visual_hints = nextpt_color=red, nextpt_lcolor=khaki
   visual_hints = vertex_color=yellow, line_color=white
   visual_hints = vertex_size=2, edge_size=1
-}
-
-//----------------------------------------------
-Behavior = BHV_Loiter
-{
-  name      = loiter
-  pwt       = 100
-  condition = MODE==LOITERING
-  updates   = UP_LOITER
-  runflag   = VEHICLE_UNDERWAY = TRUE
-  endflag   = VEHICLE_UNDERWAY = FALSE
-
-   post_suffix = A
-         speed = 1.3
-     clockwise = false
-        radius = 8.0
-     nm_radius = 15.0
-       polygon = radial:: x=125,y=-50, radius=20, pts=8, snap=1, label=gilda_LOITER
-  visual_hints = nextpt_color=white, nextpt_lcolor=khaki
-  visual_hints = edge_color=orange, vertex_color=white
-  visual_hints = edge_size=1, vertex_size=2
 }
 
 
@@ -96,27 +61,9 @@ Behavior = BHV_Waypoint
       speed = 1.3
      radius = 3.0
   nm_radius = 10.0
-     points = 200,-50
+     points = 0,0
      repeat = 10
        lead = 8
-}
-
-//----------------------------------------------
-Behavior = BHV_StationKeep
-{
-  name      = station-keep
-  pwt       = 100
-  condition = MODE==STATION-KEEPING
-
-     center_activate = true
-        inner_radius = 3
-        outer_radius = 10 
-         outer_speed = 1.0
-
-       transit_speed = 1.3
-          swing_time = 7
-  hibernation_radius = 20
-        visual_hints = vertex_size=0, edge_color=blue
 }
 
 

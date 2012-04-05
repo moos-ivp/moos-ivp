@@ -6,7 +6,12 @@ JUST_BUILD="no"
 SHOREONLY="no"
 BAD_ARGS=""
 KEY="lemon"
-
+SURVEY_X=50
+SURVEY_Y=-50
+HEIGHT=120
+WIDTH=150
+LANE_WIDTH=20
+DEGREES=0
 
 #-------------------------------------------------------
 #  Part 1: Check for and handle command-line arguments
@@ -16,6 +21,14 @@ for ARGI; do
     UNDEFINED_ARG=$ARGI
     if [ "${ARGI:0:6}" = "--warp" ] ; then
 	WARP="${ARGI#--warp=*}"
+	UNDEFINED_ARG=""
+    fi
+    if [ "${ARGI:0:8}" = "--height" ] ; then
+	HEIGHT="${ARGI#--height=*}"
+	UNDEFINED_ARG=""
+    fi
+    if [ "${ARGI:0:7}" = "--width" ] ; then
+	WIDTH="${ARGI#--width=*}"
 	UNDEFINED_ARG=""
     fi
     if [ "${ARGI:0:5}" = "--key" ] ; then
@@ -51,17 +64,27 @@ if [ "${BAD_ARGS}" != "" ] ; then
 fi
 
 if [ "${HELP}" = "yes" ]; then
-    printf "%s [SWITCHES]         \n" $0
-    printf "Switches:             \n" 
-    printf "  --warp=WARP_VALUE   \n" 
-    printf "  --just_build, -j    \n" 
-    printf "  --help, -h          \n" 
+    printf "%s [SWITCHES]            \n" $0
+    printf "Switches:                \n" 
+    printf "  --warp=WARP_VALUE      \n" 
+    printf "  --height=HEIGHT_VALUE    \n" 
+    printf "  --width=WIDTH_VALUE  \n" 
+    printf "  --just_build, -j       \n" 
+    printf "  --help, -h             \n" 
     exit 0;
 fi
 
-# Second check that the warp argument is numerical
+# Second check that the warp, height, width arguments are numerical
 if [ "${WARP//[^0-9]/}" != "$WARP" ]; then 
     printf "Warp values must be numerical. Exiting now."
+    exit 127
+fi
+if [ "${HEIGHT//[^0-9]/}" != "$HEIGHT" ]; then 
+    printf "Height values must be numerical. Exiting now."
+    exit 127
+fi
+if [ "${WIDTH//[^0-9]/}" != "$WIDTH" ]; then 
+    printf "Width values must be numerical. Exiting now."
     exit 127
 fi
 
@@ -82,10 +105,7 @@ SPORT="9000"
 SLPORT="9200"
 
 START_POS1="0,0"         # Vehicle 1 Behavior configurations
-LOITER_POS1="x=0,y=-75"
 START_POS2="200,-50"        # Vehicle 2 Behavior configurations
-LOITER_POS2="x=125,y=-50"
-
 
 if [ "${SHOREONLY}" != "yes" ]; then
     nsplug meta_vehicle.moos targ_gilda.moos -f WARP=$WARP      \
@@ -97,10 +117,12 @@ if [ "${SHOREONLY}" != "yes" ]; then
         GROUP=$GROUP12  START_POS=$START_POS1  KEY=$KEY 
     
     nsplug meta_vehicle.bhv targ_gilda.bhv -f VNAME=$VNAME2     \
-	START_POS=$START_POS2 LOITER_POS=$LOITER_POS2       
+	START_POS=$START_POS1 SURVEY_X=$SURVEY_X SURVEY_Y=$SURVEY_Y \
+        HEIGHT=$HEIGHT   WIDTH=$WIDTH LANE_WIDTH=$LANE_WIDTH DEGREES=$DEGREES      
 
     nsplug meta_vehicle.bhv targ_henry.bhv -f VNAME=$VNAME1     \
-	START_POS=$START_POS1 LOITER_POS=$LOITER_POS1       
+	START_POS=$START_POS2 SURVEY_X=$SURVEY_X SURVEY_Y=$SURVEY_Y \
+        HEIGHT=$HEIGHT   WIDTH=$WIDTH LANE_WIDTH=$LANE_WIDTH DEGREES=$DEGREES      
     
 fi    
 
