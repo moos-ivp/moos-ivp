@@ -280,15 +280,9 @@ string WaypointEngine::setNextWaypoint(double os_x, double os_y)
     double prevpt_y = m_prevpt.get_vy();
     
     double angle = angleFromThreePoints(pt_x, pt_y, prevpt_x, prevpt_y, os_x, os_y);
-    cout << "Angle: " << angle << endl;
-  
     if(angle >= 90)
       point_advance = true;
   }
-
-  if(point_advance)
-    cout << "Point Advance!!!!" << endl;
-
 
   // Phase 3: Handle waypoint advancement
   // --------------------------------------------------------------

@@ -95,10 +95,11 @@ void showExampleConfigAndExit()
   blk("  CommsTick = 4                                                 ");
   blk("                                                                ");
   blk("  // Configuring behavior file and decision domain              ");
-  blk("  behaviors   =  filename.bhv                                   ");
-  blk("  domain      =  course:0:359:360                               ");
-  blk("  domain      =  speed:0:2:21                                   ");
-  blk("  domain      =  depth:0:1000:1001                              ");
+  blk("  ivp_behavior_dir =  /Users/bob/moos-ivp-bob/lib/              ");
+  blk("  behaviors        =  filename.bhv                              ");
+  blk("  domain           =  course:0:359:360                          ");
+  blk("  domain           =  speed:0:2:21                              ");
+  blk("  domain           =  depth:0:1000:1001                         ");
   blk("                                                                ");
   blk("  // Configure Helm Engagement policies                         ");
   blk("  start_engaged        = false     // or {true}                 ");
