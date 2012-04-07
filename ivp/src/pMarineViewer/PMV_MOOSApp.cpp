@@ -347,10 +347,12 @@ void PMV_MOOSApp::handleIterate(const MOOS_event & e)
   //cout << "   real_elapsed_time: " << real_elapsed_time << endl;
   //cout << "   m_time_warp: " << m_time_warp << endl;
   
-  if(real_elapsed_time < 0.1) {
+#if 1
+  if(real_elapsed_time < 0.025) {
     cout << "*" << flush;
     return;
   }
+#endif
 
   cout << "." << flush;
   
