@@ -31,8 +31,8 @@ Behavior = BHV_Waypoint
   condition = MODE==SURVEYING
   perpetual = true
   updates   = SURVEY_UPDATES
-  activeflag   = VEHICLE_UNDERWAY = true
-  inactiveflag   = VEHICLE_UNDERWAY = false
+  activeflag   = SURVEY_UNDERWAY = true
+  inactiveflag   = SURVEY_UNDERWAY = false
   endflag   = RETURN = true
 
 //     cycleflag = SURVEY = false

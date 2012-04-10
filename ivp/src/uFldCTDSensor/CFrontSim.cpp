@@ -43,9 +43,9 @@ void CFrontSim::setVars(double amplitude, double offset, double wavelength,
   T_S = temp_S;
   T_mean = (T_N+T_S)*0.5;
   T_fac = (T_N-T_S)/M_PI;
-  cout << "CFrontSim: offset = " << offset << endl; 
-  cout << "CFrontSim: T_mean = " << T_mean << endl; 
-  cout << "CFrontSim: T_fac = " << T_fac << endl; 
+  //  cout << "CFrontSim: offset = " << offset << endl; 
+  // cout << "CFrontSim: T_mean = " << T_mean << endl; 
+  // cout << "CFrontSim: T_fac = " << T_fac << endl; 
 
 }
 

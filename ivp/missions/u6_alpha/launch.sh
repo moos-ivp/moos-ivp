@@ -11,7 +11,7 @@ SURVEY_Y=-70
 HEIGHT1=150
 HEIGHT2=150
 WIDTH=200
-LANE_WIDTH1=30
+LANE_WIDTH1=20
 LANE_WIDTH2=30
 DEGREES=0
 
@@ -110,18 +110,11 @@ START_POS1="0,0"         # Vehicle 1 Behavior configurations
 START_POS2="200,-50"        # Vehicle 2 Behavior configurations
 
 if [ "${SHOREONLY}" != "yes" ]; then
-    nsplug meta_vehicle.moos targ_gilda.moos -f WARP=$WARP      \
-	VNAME=$VNAME2  VPORT=$VPORT2  LPORT=$LPORT2             \
-        GROUP=$GROUP12  START_POS=$START_POS2  KEY=$KEY         
 
     nsplug meta_vehicle.moos targ_henry.moos -f WARP=$WARP      \
 	VNAME=$VNAME1  VPORT=$VPORT1  LPORT=$LPORT1             \
         GROUP=$GROUP12  START_POS=$START_POS1  KEY=$KEY 
     
-    nsplug meta_vehicle.bhv targ_gilda.bhv -f VNAME=$VNAME2     \
-	START_POS=$START_POS2 SURVEY_X=$SURVEY_X SURVEY_Y=$SURVEY_Y \
-        HEIGHT=$HEIGHT2   WIDTH=$WIDTH LANE_WIDTH=$LANE_WIDTH2 DEGREES=$DEGREES      
-
     nsplug meta_vehicle.bhv targ_henry.bhv -f VNAME=$VNAME1     \
 	START_POS=$START_POS1 SURVEY_X=$SURVEY_X SURVEY_Y=$SURVEY_Y \
         HEIGHT=$HEIGHT1   WIDTH=$WIDTH LANE_WIDTH=$LANE_WIDTH1 DEGREES=$DEGREES      
@@ -144,8 +137,6 @@ if [ "${SHOREONLY}" != "yes" ]; then
     printf "Launching $VNAME1 MOOS Community (WARP=%s) \n" $WARP
     pAntler targ_henry.moos >& /dev/null &
     sleep 0.1
-    printf "Launching $VNAME2 MOOS Community (WARP=%s) \n" $WARP
-    pAntler targ_gilda.moos >& /dev/null &
 fi
 
 printf "Launching $SNAME MOOS Community (WARP=%s) \n"  $WARP

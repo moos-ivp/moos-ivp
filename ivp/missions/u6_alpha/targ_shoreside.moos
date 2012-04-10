@@ -6,7 +6,7 @@ ServerHost = localhost
 ServerPort = 9000
 Community  = shoreside
 
-MOOSTimeWarp = 10
+MOOSTimeWarp = 30
 LatOrigin  = 43.825300 
 LongOrigin = -70.330400 
 
@@ -67,7 +67,7 @@ ProcessConfig = uFldCTDSensor
   beta = 40;
   temperature_north = 20;
   temperature_south = 25;
-  sigma = 0.1;
+  sigma = 0.05;
 }
 
 
