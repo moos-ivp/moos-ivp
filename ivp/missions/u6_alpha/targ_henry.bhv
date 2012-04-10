@@ -40,7 +40,7 @@ Behavior = BHV_Waypoint
    lead_damper = 1
          speed = 2.0   // meters per second
         radius = 8.0
-        points = format=lawnmower, label=dudley_survey, x=50, y=-70, width=200, height=200, lane_width=30, rows=north-south, degs=0
+        points = format=lawnmower, label=dudley_survey, x=80, y=-70, width=200, height=150, lane_width=30, rows=north-south, degs=0
 //        repeat = 1
   visual_hints = nextpt_color=red, nextpt_lcolor=khaki
   visual_hints = vertex_color=yellow, line_color=white
@@ -61,7 +61,7 @@ Behavior = BHV_Waypoint
       speed = 1.3
      radius = 3.0
   nm_radius = 10.0
-     points = 200,-50
+     points = 0,0
      repeat = 10
        lead = 8
 }

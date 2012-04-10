@@ -242,7 +242,7 @@ ProcessConfig = uTimerScript
   //RANDVAR = varname=Y, min=0,  max=100, key=at_reset
   //EVENT = var=NODE_MESSAGE_LOCAL, val="src_node=gilda,dest_node=all,var_name=FOOBAR,string_val=$[X],$[Y]", time=0:30 
 
-  EVENT = var=UCTD_SENSOR_REQUEST, val=vname=gilda, time=0 
+  EVENT = var=UCTD_SENSOR_REQUEST, val=vname=gilda, time=5 
 }
 
 
