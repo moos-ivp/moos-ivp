@@ -170,7 +170,12 @@ bool CTDSensor_Model::handleMsg(string key, double dval, string sval,
     handled = handleSensorRequest(sval);
   
   if(key == "UCTD_PARAMETER_ESTIMATE")
-    handled = handleSensingReport(sval);
+    {
+      handled = handleSensingReport(sval);
+      setCurrTime(MOOSTime());
+    }
+  if(key == "DEPLOY_ALL")
+    setStartTime(MOOSTime());
   
   if(!handled) {
     string msg = "Uhandled msg: " + key;
@@ -364,9 +369,9 @@ bool CTDSensor_Model::handleSensingReport(const string& request)
       r_alpha = atof(value.c_str());
     else if (param == "beta")
       r_beta = atof(value.c_str());
-    else if (param == "temperature_north")
+    else if (param == "T_N")
       r_T_N = atof(value.c_str());
-    else if (param == "temperature_south")
+    else if (param == "T_S")
       r_T_S = atof(value.c_str());
   }
 
@@ -385,12 +390,19 @@ bool CTDSensor_Model::handleSensingReport(const string& request)
     + pow(m_beta-r_beta,2)/pow(m_beta,2)
     + pow(m_T_N-r_T_N,2)/pow(m_T_N,2)
     + pow(m_T_S-r_T_S,2)/pow(m_T_S,2);
+
   double score = 1/error;
 
   memo("Sensor mission report received from " + vname);
+  memo("Error " + doubleToString(error));
   memo("Score " + doubleToString(score));
+  cout << "Report from " << vname << endl ;
+  cout << "Error " << error << endl ;
+  cout << "Start time " << m_start_time << endl ;
+  cout << "Current time " << m_curr_time << endl ;
+  cout << score << endl ;
 
-  postSensingScore(vname,score);
+  postSensingScore(vname,error, score);
 
   return(true);
 }
@@ -447,11 +459,12 @@ void CTDSensor_Model::postSensorReport(double ptx, double pty, string vname)
 //------------------------------------------------------------
 // Procedure: postSensingScore()
 
-void CTDSensor_Model::postSensingScore(string vname, double score)
+void CTDSensor_Model::postSensingScore(string vname, double error, double score)
 {
   // Get the sensor range
 
   string gt = "vname=" + vname 
+    + ",error=" + doubleToString(error)
     + ",score=" + doubleToString(1e3*score/(m_curr_time-m_start_time));
    
   addMessage("UCTD_SCORE_REPORT", gt);

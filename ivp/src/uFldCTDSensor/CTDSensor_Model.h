@@ -65,7 +65,7 @@ class CTDSensor_Model
   void    addMessage(const std::string&, const std::string&);
   void    addMessage(const std::string&, double);
   void    postSensorReport(double ptx, double pty, std::string vname);
-  void    postSensingScore(std::string vname, double score);
+  void    postSensingScore(std::string vname, double error, double score);
 
  protected: // Utilities
 
