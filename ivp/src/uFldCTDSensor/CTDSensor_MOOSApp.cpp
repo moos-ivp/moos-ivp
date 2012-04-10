@@ -58,6 +58,7 @@ bool CTDSensor_MOOSApp::OnConnectToServer()
 
 void CTDSensor_MOOSApp::RegisterVariables()
 {
+  m_Comms.Register("DEPLOY_ALL", 0);
   m_Comms.Register("NODE_REPORT", 0);
   m_Comms.Register("NODE_REPORT_LOCAL", 0);
   m_Comms.Register("UCTD_SENSOR_REQUEST", 0);

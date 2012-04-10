@@ -175,8 +175,13 @@ bool CTDSensor_Model::handleMsg(string key, double dval, string sval,
       setCurrTime(MOOSTime());
     }
   if(key == "DEPLOY_ALL")
-    setStartTime(MOOSTime());
-  
+    {
+      if (sval == "true")
+	{
+	  setStartTime(MOOSTime());
+	  cout << "Deploy, Start Time " << m_start_time << endl;
+	}
+    }
   if(!handled) {
     string msg = "Uhandled msg: " + key;
     if(isstring) 
@@ -465,7 +470,7 @@ void CTDSensor_Model::postSensingScore(string vname, double error, double score)
 
   string gt = "vname=" + vname 
     + ",error=" + doubleToString(error)
-    + ",score=" + doubleToString(1e3*score/(m_curr_time-m_start_time));
+    + ",score=" + doubleToString(1e6*score/(m_curr_time-m_start_time));
    
   addMessage("UCTD_SCORE_REPORT", gt);
 
