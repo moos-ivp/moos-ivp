@@ -4,8 +4,8 @@ ProcessConfig = pFrontEstimate
   CommsTick  = 4
 
   vname = $(VNAME)
-  temperature_factor = 1
-  cooling_steps = 1000
+  temperature_factor = $(COOL_FAC)
+  cooling_steps = $(COOL_STEPS)
   min_offset = -200;
   max_offset = 0;
   min_amplitude = 0;

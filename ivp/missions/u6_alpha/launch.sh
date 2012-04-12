@@ -7,13 +7,15 @@ SHOREONLY="no"
 BAD_ARGS=""
 KEY="lemon"
 SURVEY_X=80
-SURVEY_Y=-70
+SURVEY_Y=-80
 HEIGHT1=150
 HEIGHT2=150
-WIDTH=200
-LANE_WIDTH1=20
+WIDTH=150
+LANE_WIDTH1=10
 LANE_WIDTH2=30
 DEGREES=0
+COOL_FAC=10
+COOL_STEP=1000
 
 #-------------------------------------------------------
 #  Part 1: Check for and handle command-line arguments
@@ -113,7 +115,8 @@ if [ "${SHOREONLY}" != "yes" ]; then
 
     nsplug meta_vehicle.moos targ_henry.moos -f WARP=$WARP      \
 	VNAME=$VNAME1  VPORT=$VPORT1  LPORT=$LPORT1             \
-        GROUP=$GROUP12  START_POS=$START_POS1  KEY=$KEY 
+        GROUP=$GROUP12  START_POS=$START_POS1  KEY=$KEY \
+        COOL_FAC=$COOL_FAC COOL_STEPS=$COOL_STEPS
     
     nsplug meta_vehicle.bhv targ_henry.bhv -f VNAME=$VNAME1     \
 	START_POS=$START_POS1 SURVEY_X=$SURVEY_X SURVEY_Y=$SURVEY_Y \
