@@ -395,6 +395,7 @@ bool CTDSensor_Model::handleSensingReport(const string& request)
     + pow(m_beta-r_beta,2)/pow(m_beta,2)
     + pow(m_T_N-r_T_N,2)/pow(m_T_N,2)
     + pow(m_T_S-r_T_S,2)/pow(m_T_S,2);
+  error /= 8;
 
   double score = 1/error;
 
