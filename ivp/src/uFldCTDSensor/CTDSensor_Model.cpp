@@ -374,9 +374,9 @@ bool CTDSensor_Model::handleSensingReport(const string& request)
       r_alpha = atof(value.c_str());
     else if (param == "beta")
       r_beta = atof(value.c_str());
-    else if (param == "T_N")
+    else if (param == "tempnorth")
       r_T_N = atof(value.c_str());
-    else if (param == "T_S")
+    else if (param == "tempsouth")
       r_T_S = atof(value.c_str());
   }
 
@@ -401,12 +401,26 @@ bool CTDSensor_Model::handleSensingReport(const string& request)
 
   memo("Sensor mission report received from " + vname);
   memo("Error " + doubleToString(error));
+
+  score = 1e4*score/(m_curr_time-m_start_time);
   memo("Score " + doubleToString(score));
+  cout << "=================== " << endl;
   cout << "Report from " << vname << endl ;
-  cout << "Error " << error << endl ;
-  cout << "Start time " << m_start_time << endl ;
-  cout << "Current time " << m_curr_time << endl ;
-  cout << score << endl ;
+  cout << "=================== " << endl;
+  cout << "Error        " << error << endl ;
+  cout << "Elapsed time " << m_curr_time-m_start_time << endl ;
+  cout << "Score        " << score << endl ;
+
+  cout << "Parameter estimates " << endl;
+  cout << "=================== " << endl;
+  cout << "Offset     " << r_offset << " Actual " << m_offset << endl; 
+  cout << "Amplitude  " << r_amplitude << " Actual " << m_amplitude << endl; 
+  cout << "Period     " << r_period << " Actual " << m_period << endl; 
+  cout << "Wavelength " << r_wavelength << " Actual " << m_wavelength << endl; 
+  cout << "Alpha      " << r_alpha << " Actual " << m_alpha << endl; 
+  cout << "Beta       " << r_beta << " Actual " << m_beta << endl; 
+  cout << "Temp_North " << r_T_N << " Actual " << m_T_N << endl; 
+  cout << "Temp_South " << r_T_S << " Actual " << m_T_S << endl; 
 
   postSensingScore(vname,error, score);
 
@@ -471,7 +485,7 @@ void CTDSensor_Model::postSensingScore(string vname, double error, double score)
 
   string gt = "vname=" + vname 
     + ",error=" + doubleToString(error)
-    + ",score=" + doubleToString(1e6*score/(m_curr_time-m_start_time));
+    + ",score=" + doubleToString(score);
    
   addMessage("UCTD_SCORE_REPORT", gt);
 

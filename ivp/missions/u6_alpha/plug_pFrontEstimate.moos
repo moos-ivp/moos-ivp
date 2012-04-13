@@ -22,4 +22,5 @@ ProcessConfig = pFrontEstimate
   max_T_N = 25; 
   min_T_S = 20;
   max_T_S = 38; 
+  concurrent = true
 }

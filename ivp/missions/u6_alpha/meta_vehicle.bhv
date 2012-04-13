@@ -6,6 +6,7 @@ initialize   RETURN  = false
 initialize   STATION_KEEP = false
 initialize   SURVEY  = true
 initialize   AVOID   = true
+initialize   SURVEY_UNDERWAY = false
 
 set MODE = ACTIVE {
   DEPLOY = true
@@ -36,6 +37,7 @@ Behavior = BHV_Waypoint
   endflag   = RETURN = true
 
 //     cycleflag = SURVEY = false
+        repeat = 1
           lead = 8
    lead_damper = 1
          speed = 2.0   // meters per second
