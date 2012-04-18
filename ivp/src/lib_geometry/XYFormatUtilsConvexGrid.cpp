@@ -191,6 +191,29 @@ XYConvexGrid string2ConvexGrid(string str)
     }
   }
 
+
+#if 1 // Bit harder to read, but perhaps a bit faster
+
+  // Phase 2D: Apply the cell entries (usually not in initial config).
+  // cell=index:cell_var:value:cell_var:value
+  jsize = cell_entries.size();
+  for(j=0; j<jsize; j++) {
+    string index = biteString(cell_entries[j], ':');
+    unsigned int ix = atoi(index.c_str());
+
+    while(cell_entries[j] != "") {
+      string cell_var = biteString(cell_entries[j], ':');
+      string value = biteString(cell_entries[j], ':');
+      double dval = atof(value.c_str());
+      if(new_grid.hasCellVar(cell_var)) {
+	unsigned int cix = new_grid.getCellVarIX(cell_var);
+	new_grid.setVal(ix, dval, cix);
+      }
+    }
+  }
+#endif
+
+#if 0
   // Phase 2D: Apply the cell entries (usually not in initial config).
   // cell=index:cell_var:value:cell_var:value
   jsize = cell_entries.size();
@@ -210,6 +233,7 @@ XYConvexGrid string2ConvexGrid(string str)
       }
     }
   }
+#endif
 
   return(new_grid);
 }
