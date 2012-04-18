@@ -38,9 +38,14 @@
 
 //--------------------------------------------------------
 // Procedure: getCharNoWait()
+//      Note: Even though this function implies "no-wait", an optional
+//            sleep is available for callers who wish to utilize it. 
+//            The default sleep time is 1/10 second if an argument is
+//            not provided.
+
 
 #ifndef _WIN32
-char getCharNoWait() 
+char getCharNoWait(useconds_t usecs) 
 {
   char c, fd=0;
   struct termios term, oterm;
@@ -66,6 +71,7 @@ char getCharNoWait()
   tcsetattr(fd, TCSANOW, &oterm);
   
   /* return the charcter */
+  usleep(100000);
   return c;
 }
 #endif

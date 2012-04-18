@@ -51,16 +51,3 @@ protected:
   double m_break_ties;
 };
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-
