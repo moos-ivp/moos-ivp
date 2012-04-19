@@ -433,7 +433,7 @@ bool Expander::applyMacrosToLine(string& line,
       cout << "> " << res << termColor() << endl;
     }
 
-    if(m_strict)
+    if(!isCommented && m_strict)
       exit(EXIT_FAILURE);
     
     return(false);
