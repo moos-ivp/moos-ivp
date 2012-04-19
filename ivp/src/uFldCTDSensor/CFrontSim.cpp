@@ -26,7 +26,7 @@
 
 using namespace std;
 
-void CFrontSim::setVars(double amplitude, double offset, double wavelength, 
+void CFrontSim::setVars(double amplitude, double offset, double degrees, double wavelength, 
 			double period, double alpha_in, double beta_in,
 			double temp_N, double temp_S)
 
@@ -35,6 +35,7 @@ void CFrontSim::setVars(double amplitude, double offset, double wavelength,
   //
   amp = amplitude;
   xi_0 = offset;
+  angle = degrees;
   k=2*M_PI/wavelength;
   omega=2*M_PI/period;
   alpha = alpha_in;
@@ -66,9 +67,11 @@ void CFrontSim::setRegion(double x1, double x2,
 
 double CFrontSim::tempFunction(double t, double x, double y)
 { 
-  double xi = xi_0 + amp*exp(-x/alpha)*sin(x*k-omega*t);
-  double val = T_mean + T_fac*atan((y-xi)/beta);
-  //  cout << "xi=" << xi << "val=" << val << endl;
+  double theta = angle*M_PI/180.0;
+  double x_front = x * cos(theta) - (y-xi_0)*sin(theta);
+  double y_front = (y-xi_0)*cos(theta) + x*sin(theta); 
+  y_front = y_front + amp*exp(-x_front/alpha)*sin(x_front*k-omega*t);
+  double val = T_mean + T_fac*atan(y_front/beta);
   return(val);
 }
 

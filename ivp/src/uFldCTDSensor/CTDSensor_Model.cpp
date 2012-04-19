@@ -56,6 +56,7 @@ CTDSensor_Model::CTDSensor_Model()
   m_ymin  = 0;       
   m_ymax  = 400;       
   m_offset = 200;
+  m_angle = 20;
   m_amplitude = 50;
   m_period = 120;
   m_wavelength = 300;
@@ -98,6 +99,12 @@ bool CTDSensor_Model::setParam(string param, string value)
       m_offset = atof(value.c_str());
       handled = true;
       cout << "offset = " << m_offset << endl; 
+    }
+  else if (param == "angle")
+    {
+      m_angle = atof(value.c_str());
+      handled = true;
+      cout << "angle = " << m_angle << endl; 
     }
   else if (param == "amplitude")
     {
@@ -254,7 +261,7 @@ vector<VarDataPair> CTDSensor_Model::getMessages(bool clear)
 bool CTDSensor_Model::FieldModelConfig()
 {
 
-  front.setVars(m_amplitude , m_offset, m_wavelength, 
+  front.setVars(m_amplitude , m_offset, m_angle, m_wavelength, 
 		m_period, m_alpha, m_beta, m_T_N, m_T_S);
   front.setRegion(m_xmin, m_xmax,
 		  m_ymin, m_ymax); 
@@ -364,6 +371,8 @@ bool CTDSensor_Model::handleSensingReport(const string& request)
       vname = value;
     else if (param == "offset")
       r_offset = atof(value.c_str());
+    else if (param == "angle")
+      r_angle = atof(value.c_str());
     else if (param == "amplitude")
       r_amplitude = atof(value.c_str());
     else if (param == "period")
@@ -389,13 +398,14 @@ bool CTDSensor_Model::handleSensingReport(const string& request)
 
   double error = pow(m_amplitude-r_amplitude,2)/pow(m_amplitude,2)
     + pow(m_offset-r_offset,2)/pow(m_offset,2)
+    + pow(m_angle-r_angle,2)/pow(m_angle,2)
     + pow(m_period-r_period,2)/pow(m_period,2)
     + pow(m_wavelength-r_wavelength,2)/pow(m_wavelength,2)
     + pow(m_alpha-r_alpha,2)/pow(m_alpha,2)
     + pow(m_beta-r_beta,2)/pow(m_beta,2)
     + pow(m_T_N-r_T_N,2)/pow(m_T_N,2)
     + pow(m_T_S-r_T_S,2)/pow(m_T_S,2);
-  error /= 8;
+  error /= 9;
 
   double score = 1/error;
 
@@ -414,6 +424,7 @@ bool CTDSensor_Model::handleSensingReport(const string& request)
   cout << "Parameter estimates " << endl;
   cout << "=================== " << endl;
   cout << "Offset     " << r_offset << " Actual " << m_offset << endl; 
+  cout << "Angle      " << r_angle << " Actual " << m_angle << endl; 
   cout << "Amplitude  " << r_amplitude << " Actual " << m_amplitude << endl; 
   cout << "Period     " << r_period << " Actual " << m_period << endl; 
   cout << "Wavelength " << r_wavelength << " Actual " << m_wavelength << endl; 

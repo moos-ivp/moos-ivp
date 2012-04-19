@@ -15,6 +15,7 @@ ProcessConfig uFldCTDSensor
   ymin  = 0;       
   ymax  = 400;       
   offset = 200;
+  angle = 20;
   amplitude = 50;
   period = 30;
   wavelength = 300;

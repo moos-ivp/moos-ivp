@@ -42,7 +42,7 @@ using namespace std;
 // Procedure: Constructor
 
 BHV_Attractor::BHV_Attractor(IvPDomain gdomain) : 
-  IvPBehavior(gdomain)
+  IvPContactBehavior(gdomain)
 {
   this->setParam("descriptor", "(d)bhv_cutrange");
   this->setParam("build_info", "uniform_box =discrete@course:2,speed:3");
@@ -375,21 +375,25 @@ IvPFunction *BHV_Attractor::onRunState()
 
 bool BHV_Attractor::updateInfoIn()
 {
-  bool ok1, ok2, ok3, ok4, ok5, ok6, ok7, ok8, ok9;
+  bool ok1, ok2, ok3, ok4;
+    // , ok5, ok6, ok7, ok8, ok9;
  
   m_osx = getBufferDoubleVal("NAV_X", ok1);
   m_osy = getBufferDoubleVal("NAV_Y", ok2);
   m_osh = getBufferDoubleVal("NAV_HEADING", ok3);
   m_osv = getBufferDoubleVal("NAV_SPEED", ok4);
 
+  // the contact now coming in through the supeclass
+  /*
   m_cnx = getBufferDoubleVal(m_contact_name+"_NAV_X", ok5);
   m_cny = getBufferDoubleVal(m_contact_name+"_NAV_Y", ok6);
   m_cnh = getBufferDoubleVal(m_contact_name+"_NAV_HEADING", ok7);
   m_cnv = getBufferDoubleVal(m_contact_name+"_NAV_SPEED", ok8);
   m_cnutc = getBufferDoubleVal(m_contact_name+"_NAV_UTC", ok9);
+  */
 
-  if(!ok1 || !ok2 || !ok3 || !ok4 || !ok5 || 
-     !ok6 || !ok7 || !ok8 || !ok9)
+  if(!ok1 || !ok2 || !ok3 || !ok4) 
+     // || !ok5 || !ok6 || !ok7 || !ok8 || !ok9)
     return(false);
   
   double curr_time = getBufferCurrTime();

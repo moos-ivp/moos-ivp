@@ -105,6 +105,7 @@ class CTDSensor_Model
   double m_ymin;
   double m_ymax;
   double m_offset;
+  double m_angle;
   double m_amplitude;
   double m_period;
   double m_wavelength;
@@ -116,6 +117,7 @@ class CTDSensor_Model
 
   // reported values
   double r_offset;
+  double r_angle;
   double r_amplitude;
   double r_period;
   double r_wavelength;

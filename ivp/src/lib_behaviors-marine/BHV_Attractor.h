@@ -24,11 +24,11 @@
 #define BHV_ATTRACTOR_HEADER
 
 #include <string>
-#include "IvPBehavior.h"
+#include "IvPContactBehavior.h"
 #include "LinearExtrapolator.h"
 
 class IvPDomain;
-class BHV_Attractor : public IvPBehavior {
+class BHV_Attractor : public IvPContactBehavior {
 public:
   BHV_Attractor(IvPDomain);
   ~BHV_Attractor() {};
@@ -72,12 +72,14 @@ private: // State Variables
   double  m_osh; // ownship heading
   double  m_osv; // ownship velocity
 
+  // the contact now coming in through the supeclass
+  /* 
   double  m_cnx; // contact x-position
   double  m_cny; // contact y-position
   double  m_cnh; // contact heading
   double  m_cnv; // contact velocity
   double  m_cnutc; // UTC time of last contact report
-
+  */
   bool    m_extrapolate;
   double  m_decay_start;
   double  m_decay_end;
