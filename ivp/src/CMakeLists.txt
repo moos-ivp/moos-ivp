@@ -238,8 +238,6 @@ SET(IVP_NON_GUI_APPS
   uFldHazardSensor
   uFldHazardMetric
   uFldGenericSensor
-# Henrik's ctd sensor
-  uFldCTDSensor
 #  uFldGenericMetric
   uMOOSClient
   pSearchGrid
