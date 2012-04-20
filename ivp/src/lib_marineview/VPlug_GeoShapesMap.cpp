@@ -58,7 +58,8 @@ void VPlug_GeoShapesMap::clear(const string& vname)
 
 bool VPlug_GeoShapesMap::addGeoShape(const string& param, 
 				     const string& value, 
-				     const string& vname)
+				     const string& vname,
+				     double timestamp)
 {
   bool handled = false;
   unsigned int starting_map_size = m_geoshapes_map.size();
@@ -75,9 +76,9 @@ bool VPlug_GeoShapesMap::addGeoShape(const string& param,
   else if(lparam == "VIEW_CIRCLE")
     handled = m_geoshapes_map[vname].addCircle(value);
   else if(lparam == "VIEW_RANGE_PULSE")
-    handled = m_geoshapes_map[vname].addRangePulse(value);
+    handled = m_geoshapes_map[vname].addRangePulse(value, timestamp);
   else if(lparam == "VIEW_COMMS_PULSE")
-    handled = m_geoshapes_map[vname].addCommsPulse(value);
+    handled = m_geoshapes_map[vname].addCommsPulse(value, timestamp);
   else if((lparam == "VIEW_MARKER") || (lparam == "MARKER"))
     handled = m_geoshapes_map[vname].addMarker(value);
   else if(lparam == "grid_CONFIG")

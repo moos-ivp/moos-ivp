@@ -71,8 +71,8 @@ public:
   bool addVector(const std::string&);
   bool addGrid(const std::string&);
   bool addConvexGrid(const std::string&);
-  bool addRangePulse(const std::string&);
-  bool addCommsPulse(const std::string&);
+  bool addRangePulse(const std::string&, double timestamp=0);
+  bool addCommsPulse(const std::string&, double timestamp=0);
   bool addMarker(const std::string&);
 
   bool updateGrid(const std::string&);

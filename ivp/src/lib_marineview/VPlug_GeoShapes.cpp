@@ -435,10 +435,13 @@ bool VPlug_GeoShapes::addVector(const string& vect_str)
 //-----------------------------------------------------------
 // Procedure: addRangePulse
 
-bool VPlug_GeoShapes::addRangePulse(const string& pulse_str)
+bool VPlug_GeoShapes::addRangePulse(const string& pulse_str,
+				    double timestamp)
 {
   XYRangePulse new_pulse = string2RangePulse(pulse_str);
   if(new_pulse.valid()) {
+    if(new_pulse.get_time() == 0)
+      new_pulse.set_time(timestamp);       
     addRangePulse(new_pulse);
     return(true);
   }
@@ -448,10 +451,13 @@ bool VPlug_GeoShapes::addRangePulse(const string& pulse_str)
 //-----------------------------------------------------------
 // Procedure: addCommsPulse
 
-bool VPlug_GeoShapes::addCommsPulse(const string& pulse_str)
+bool VPlug_GeoShapes::addCommsPulse(const string& pulse_str,
+				    double timestamp)
 {
   XYCommsPulse new_pulse = string2CommsPulse(pulse_str);
   if(new_pulse.valid()) {
+    if(new_pulse.get_time() == 0)
+      new_pulse.set_time(timestamp);       
     addCommsPulse(new_pulse);
     return(true);
   }

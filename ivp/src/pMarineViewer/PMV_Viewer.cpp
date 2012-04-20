@@ -287,9 +287,10 @@ bool PMV_Viewer::setParam(string param, string value)
 //-------------------------------------------------------------
 // Procedure: addGeoShape()
 
-bool PMV_Viewer::addGeoShape(string param, string value, string community)
+bool PMV_Viewer::addGeoShape(string param, string value, string community,
+			     double timestamp)
 {
-  return(m_geoshapes_map.addGeoShape(param, value, community));
+  return(m_geoshapes_map.addGeoShape(param, value, community, timestamp));
 }
 
 

@@ -301,7 +301,7 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
       handled = true;
     }
     if(!handled)
-      handled = m_gui->mviewer->addGeoShape(key, sval, community);
+      handled = m_gui->mviewer->addGeoShape(key, sval, community, MOOSTime());
     if(!handled && !scope_handled) {
       MOOSTrace("pMarineViewer OnNewMail Unhandled msg: \n");
       MOOSTrace("  [key:%s val:%s]\n", key.c_str(), sval.c_str());

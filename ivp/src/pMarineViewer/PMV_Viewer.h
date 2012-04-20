@@ -42,7 +42,7 @@ class PMV_Viewer : public MarineViewer
 
   bool  setParam(std::string p, std::string v="");
   bool  setParam(std::string p, double v);
-  bool  addGeoShape(std::string p, std::string v, std::string c);
+  bool  addGeoShape(std::string p, std::string v, std::string c, double=0);
   bool  addScopeVariable(std::string);
   bool  updateScopeVariable(std::string varname, std::string value, 
 			    std::string vtime, std::string vsource);

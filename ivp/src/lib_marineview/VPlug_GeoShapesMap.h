@@ -37,7 +37,8 @@ public:
 
   bool   addGeoShape(const std::string& param, 
 		     const std::string& value, 
-		     const std::string& community);
+		     const std::string& community, 
+		     double time=0);
   
   double getXMin() const {return(m_xmin);};
   double getXMax() const {return(m_xmax);};
