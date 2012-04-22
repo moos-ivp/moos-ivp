@@ -59,7 +59,10 @@ class Expander
   std::string containsMacro(std::string);
   std::string findFileInPath(std::string);
 
-  bool checkIfDef(std::string, std::map<std::string, std::string>);
+  bool checkIfDef(std::string, std::map<std::string, std::string>, unsigned int);
+  bool checkIfDefConj(std::string, std::map<std::string, std::string>);
+  bool checkIfDefDisj(std::string, std::map<std::string, std::string>);
+
   bool checkIfNDef(std::string, std::map<std::string, std::string>);
 
   void currMode(std::string);

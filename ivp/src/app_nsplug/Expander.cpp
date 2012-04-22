@@ -99,7 +99,7 @@ vector<string> Expander::expandFile(string filename,
     //------------------------------------------------------------
     if(left == "#ifdef") {
       if(!skipLines()) {
-	bool ifdef = checkIfDef(rest, macros);
+	bool ifdef = checkIfDef(rest, macros, i+1);
 	if(!ifdef)
 	  pushMode("ifdefno");
 	else
@@ -126,7 +126,7 @@ vector<string> Expander::expandFile(string filename,
       if(currMode() == "ifdefyes")
 	currMode("ifdefnomore");
       else if(currMode() == "ifdefno") {
-	bool ifdef = checkIfDef(rest, macros);
+	bool ifdef = checkIfDef(rest, macros, i+1);
 	if(ifdef)
 	  currMode("ifdefyes");
       }
@@ -487,13 +487,45 @@ string Expander::findFileInPath(string filename)
 //--------------------------------------------------------
 // Procedure: checkIfDef
 
-bool Expander::checkIfDef(string entry, map<string, string> macros)
+bool Expander::checkIfDef(string entry, map<string, string> macros,
+			  unsigned int line_num)
+{
+  bool disj = strContains(entry, "||");
+  bool conj = strContains(entry, "&&");
+    
+  if(disj && conj) {
+    cout << termColor("red");
+    cout << "Warning: The following line of " << m_infile;
+    cout << "  (creating " << m_outfile << ")" << endl;
+    cout << "  contains a mixed-logic #ifdef on line: " << line_num << endl;
+    cout << "> #ifdef " << entry << endl;
+    if(m_strict) {
+      cout << "Since strict==true, exiting now..." << termColor() << endl;
+      exit(EXIT_FAILURE);
+    }
+    else {
+      cout << "Since strict==false, this line simply evaluates to false.";
+      cout << termColor() << endl;
+      return(false);
+    }
+  }
+
+  if(conj)
+    return(checkIfDefConj(entry, macros));
+
+  return(checkIfDefDisj(entry, macros));
+}
+
+//--------------------------------------------------------
+// Procedure: checkIfDefDisj
+
+bool Expander::checkIfDefDisj(string entry, map<string, string> macros)
 {
   // Assume this ifdef does not hold unless one of the ifdef 
   // macro-value pairs holds. The #ifdef construct supports the
   // disjunction of macro-value pairs.
   bool ifdef = false;
-  
+
   vector<string> kvector = parseString(entry, "||"); 
   unsigned int k, ksize = kvector.size();
   for(k=0; ((k<ksize) && !ifdef); k++) {
@@ -506,6 +538,33 @@ bool Expander::checkIfDef(string entry, map<string, string> macros)
     }
     else if(macros[macro_name] == macro_value)
       ifdef = true;
+  }
+  
+  return(ifdef);
+}
+
+//--------------------------------------------------------
+// Procedure: checkIfDefConj
+
+bool Expander::checkIfDefConj(string entry, map<string, string> macros)
+{
+  // Assume this ifdef does not hold unless all of the ifdef 
+  // macro-value pairs holds. The #ifdef construct supports the
+  // conjunction of macro-value pairs.
+  bool ifdef = true;
+
+  vector<string> kvector = parseString(entry, "&&"); 
+  unsigned int k, ksize = kvector.size();
+  for(k=0; ((k<ksize) && ifdef); k++) {
+    kvector[k] = stripBlankEnds(kvector[k]);
+    string macro_name  = biteStringX(kvector[k], ' ');
+    string macro_value = kvector[k];
+    if(macro_value == "") {
+      if(macros[macro_name] == "")
+	ifdef = false;
+    }
+    else if(macros[macro_name] != macro_value)
+      ifdef = false;
   }
   
   return(ifdef);
