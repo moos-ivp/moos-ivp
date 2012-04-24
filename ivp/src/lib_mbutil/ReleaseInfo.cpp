@@ -37,7 +37,7 @@ void showReleaseInfo(string app, string license_info)
     pad = padString("", (22-app.length()));
   cout << "************************************************************************" << endl;
   cout << "* " + app + " - Part of the MOOS-IvP Release Bundle         " + pad +"*" << endl;
-  cout << "* Version 12.2, Released Feb 6th, 2012                                 *" << endl;
+  cout << "* Version 12.2+t, Released Feb 6th, 2012                                 *" << endl;
   cout << "* M.Benjamin, H.Schmidt and J.Leonard (MIT), P.Newman (Oxford)         *" << endl;
   if(license_info == "gpl") {
     cout << "* Copyright (C) 2008 Free Software Foundation, Inc.                    *" << endl;
