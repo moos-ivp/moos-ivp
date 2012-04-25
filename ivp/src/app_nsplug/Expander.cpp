@@ -37,10 +37,11 @@ using namespace std;
 
 Expander::Expander(string given_infile, string given_outfile)
 {
-  m_infile  = given_infile;
-  m_outfile = given_outfile;
-  m_force   = false;  
-  m_strict  = false;
+  m_infile   = given_infile;
+  m_outfile  = given_outfile;
+  m_force    = false;  
+  m_strict   = false;
+  m_terminal = false;
   
   m_max_subs_per_line = 100;
   m_initial_filenames.push_back(given_infile);
@@ -91,6 +92,7 @@ vector<string> Expander::expandFile(string filename,
   }
 
   for(i=0; i<vsize; i++) {
+
     string line = stripBlankEnds(findReplace(fvector[i], '\t', ' '));
     string line_orig = line;
     string left = biteStringX(line, ' ');
@@ -98,17 +100,11 @@ vector<string> Expander::expandFile(string filename,
 
     //------------------------------------------------------------
     if(left == "#ifdef") {
-      if(!skipLines()) {
-	bool ifdef = checkIfDef(rest, macros, i+1);
-	if(!ifdef)
-	  pushMode("ifdefno");
-	else
-	  pushMode("ifdefyes");
-      }
-      else {
-	string curr_mode = currMode();
-	pushMode(curr_mode);
-      }
+      bool ifdef = checkIfDef(rest, macros, i+1);
+      if(!ifdef)
+	pushMode("ifdefno");
+      else
+	pushMode("ifdefyes");
     }
     
     //------------------------------------------------------------
@@ -123,8 +119,9 @@ vector<string> Expander::expandFile(string filename,
       
       // Being in the ifdefyes mode means one of the "above" ifdef cases
       // matched and the current #elseifdef is moot.
-      if(currMode() == "ifdefyes")
+      if(currMode() == "ifdefyes") {
 	currMode("ifdefnomore");
+      }
       else if(currMode() == "ifdefno") {
 	bool ifdef = checkIfDef(rest, macros, i+1);
 	if(ifdef)
@@ -151,17 +148,11 @@ vector<string> Expander::expandFile(string filename,
 
     //------------------------------------------------------------
     else if(left == "#ifndef") {
-      if(!skipLines()) {
-	bool ifndef = checkIfNDef(rest, macros);
-	if(!ifndef)
-	  pushMode("ifndefno");
-	else
-	  pushMode("ifndefyes");
-      }
-      else {
-	string curr_mode = currMode();
-	pushMode(curr_mode);
-      }
+      bool ifndef = checkIfNDef(rest, macros);
+      if(!ifndef)
+	pushMode("ifndefno");
+      else
+	pushMode("ifndefyes");
     }
 
     //-------------------------------------------------------------
@@ -258,8 +249,6 @@ vector<string> Expander::expandFile(string filename,
       cout << termColor("green") << "ok" << termColor();
     cout << endl;
 #endif // END DEBUGGING OUTPUT BLOCK
-
-
   }   
   
 
@@ -302,6 +291,12 @@ bool Expander::verifyInfile(const string& filename)
 
 bool Expander::writeOutput()
 {
+  if(m_terminal) {
+    for(unsigned int i=0; i<m_newlines.size(); i++)
+      printf("%s\n", m_newlines[i].c_str());
+    return(true);
+  }
+  
   //  Abort condition: Output file exists but cannot
   //  be overwritten. tests:  fopen(r), !fopen(r+)
 
@@ -681,5 +676,18 @@ bool Expander::modeStackContains(string str)
       return(true);
   }
   return(false);
+}
+
+//--------------------------------------------------------
+// Procedure: printModeStack
+//      Note: For debugging
+
+void Expander::printModeStack()
+{
+  unsigned int i, vsize = m_pmode.size();
+  for(i=0; i<vsize; i++) {
+    cout << "[" << i << "]" << m_pmode[i] << " ";
+  }
+  cout << endl;
 }
 

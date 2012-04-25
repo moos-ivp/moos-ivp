@@ -79,7 +79,7 @@ public:
   double getCurrTime()                  {return(m_curr_time);};
   void   setModeSet(ModeSet v)          {m_mode_set = v;};
 
-  int    getTCount()                    {return(m_total_behaviors_ever);};
+  unsigned int getTCount()              {return(m_total_behaviors_ever);};
 
   unsigned int size()                   {return(m_bhv_entry.size());};
 

@@ -835,8 +835,11 @@ void IvPBehavior::updateStateDurations(string bhv_state)
 
 //-----------------------------------------------------------
 // Procedure: postFlags()
+//     Notes: The repeat argument indicates that the posting should
+//            be made as postRepeatable. This means the helm's
+//            duplication filter will let it through absolutely.
 
-void IvPBehavior::postFlags(const string& str)
+void IvPBehavior::postFlags(const string& str, bool repeatable)
 {
   vector<VarDataPair> flags;
   if(str == "runflags")
@@ -867,14 +870,14 @@ void IvPBehavior::postFlags(const string& str)
       sdata = findReplace(sdata, "$[BHVNAME]", m_descriptor);
       sdata = findReplace(sdata, "$[BHVTYPE]", m_behavior_type);
       sdata = findReplace(sdata, "$[CONTACT]", m_contact);
-      if(endflags) 
+      if(endflags || repeatable) 
 	postRepeatableMessage(var, sdata);
       else
 	postMessage(var, sdata);
     }
     else {
       double ddata = flags[i].get_ddata();
-      if(endflags)
+      if(endflags || repeatable)
 	postRepeatableMessage(var, ddata);
       else
 	postMessage(var, ddata);

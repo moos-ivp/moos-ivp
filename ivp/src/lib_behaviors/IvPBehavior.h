@@ -102,7 +102,7 @@ protected:
   void    postRepeatableMessage(std::string, std::string);
   void    postEMessage(std::string);
   void    postWMessage(std::string);
-  void    postFlags(const std::string&);
+  void    postFlags(const std::string&, bool repeat=false);
 
   void    postDurationStatus();
   bool    durationExceeded();

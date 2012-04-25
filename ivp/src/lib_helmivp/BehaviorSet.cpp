@@ -367,8 +367,9 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
       bhv->onCompleteState();
 
     if(new_activity_state == "idle") {
-      bhv->postFlags("idleflags");
-      bhv->postFlags("inactiveflags");
+      bool repeatable = (old_activity_state != "idle");
+      bhv->postFlags("idleflags", repeatable);
+      bhv->postFlags("inactiveflags", repeatable);
       if((old_activity_state == "running") ||
 	 (old_activity_state == "active"))
 	bhv->onRunToIdleState();
@@ -377,8 +378,9 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
     }
     
     if(new_activity_state == "running") {
+      bool repeatable = (old_activity_state == "idle");
       bhv->postDurationStatus();
-      bhv->postFlags("runflags");
+      bhv->postFlags("runflags", repeatable);
       if(old_activity_state == "idle")
 	bhv->onIdleToRunState();
       ipf = bhv->onRunState();
@@ -405,13 +407,16 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
 	bhv->postMessage("BHV_IPF", ipf_str);
       }
       if(ipf) {
+	bool repeatable = (old_activity_state != "active");
 	new_activity_state = "active";
-	bhv->postFlags("activeflags");
+	bhv->postFlags("activeflags", repeatable);
 	bhv->statusInfoAdd("pwt", doubleToString(pwt));
 	bhv->statusInfoAdd("pcs", intToString(pcs));
       }
-      else
-	bhv->postFlags("inactiveflags");
+      else {
+	bool repeatable = (old_activity_state == "active");
+	bhv->postFlags("inactiveflags", repeatable);
+      }
       bhv->updateStateDurations("running");
     }
     bhv->statusInfoAdd("state", new_activity_state);

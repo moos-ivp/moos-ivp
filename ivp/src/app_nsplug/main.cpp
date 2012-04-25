@@ -62,6 +62,8 @@ int main(int argc, char *argv[])
       expander.addPath(argv[i+1]);
     else if(((arg=="-s") || (arg=="--strict")))
       expander.setStrict(true);
+    else if(((arg=="-t") || (arg=="--terminal")))
+      expander.setTerminal(true);
 
     // If none of the above switch options explicitly match...
     else if(i == 1) {
