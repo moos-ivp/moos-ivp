@@ -96,6 +96,7 @@ class CRS_Model
 
   std::string m_rn_algorithm;   // Empty string = no random noise
   double      m_rn_uniform_pct;
+  double      m_rn_gaussian_sigma;
 
 };
 

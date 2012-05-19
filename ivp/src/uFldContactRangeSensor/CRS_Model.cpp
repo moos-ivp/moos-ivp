@@ -27,6 +27,7 @@
 #include "MBUtils.h"
 #include "NodeRecordUtils.h"
 #include "XYRangePulse.h"
+#include "MOOSGenLibGlobalHelper.h"
 
 using namespace std;
 
@@ -55,6 +56,10 @@ CRS_Model::CRS_Model()
   // this variable reflects the range of the uniform variable in 
   // terms of percentage of the true (pre-noise) range.
   m_rn_uniform_pct = 0;
+
+  // If gaussian random noise used, (m_rn_algorithm = "gauss")
+  // this variable reflects the sigma in terms of absolute meters.
+  m_rn_gaussian_sigma = 0;
 }
 
 //------------------------------------------------------------
@@ -84,6 +89,8 @@ bool CRS_Model::setParam(string param, string value)
     return(setBooleanOnString(m_ground_truth, value));
   else if((param == "rn_uniform_pct") && isNumber(value))
     m_rn_uniform_pct = vclip(atof(value.c_str()), 0, 1);
+  else if((param == "rn_gaussian_sigma") && isNumber(value))
+    m_rn_gaussian_sigma = vclip_min(atof(value.c_str()), 0);
   else
     return(false);
   return(true);
@@ -143,16 +150,17 @@ void CRS_Model::print() const
 {
   cout << termColor("blue");
   cout << "==========================================" << endl;
-  cout << "Acoustic Sonar Simulator Model: " << endl;
+  cout << "Simulator Model:                          " << endl;
   cout << "==========================================" << endl;
 
   cout << "Default Reach Distance:   " << m_default_reach_dist << endl;
   cout << "Default Reply Distance:   " << m_default_reply_dist << endl;
-  cout << "Default Ping Wait:        " << m_default_ping_wait << endl;
-  cout << "Random Noise Algorithm:   " << m_rn_algorithm << endl;
-  cout << "Random Noise Uniform Pct: " << m_rn_uniform_pct << endl;
-  cout << "Ping Color:               " << m_ping_color << endl;
-  cout << "Reply Color:              " << m_reply_color << endl;
+  cout << "Default Ping Wait:        " << m_default_ping_wait  << endl;
+  cout << "Random Noise Algorithm:   " << m_rn_algorithm       << endl;
+  cout << "Random Noise Uniform Pct: " << m_rn_uniform_pct     << endl;
+  cout << "Gaussian Noise:           " << m_rn_gaussian_sigma  << endl;
+  cout << "Ping Color:               " << m_ping_color         << endl;
+  cout << "Reply Color:              " << m_reply_color        << endl;
   cout << "Ground Truth Reporting:   " << boolToString(m_ground_truth) << endl;
 
   cout << "ReachMap:" << endl;
@@ -441,7 +449,12 @@ double CRS_Model::getNoisyNodeNodeRange(double true_range) const
     double noisy_range = true_range + noise;
     return(noisy_range);
   }
-    
+  else if(m_rn_algorithm == "gaussian") {
+    double noise = MOOSWhiteNoise(m_rn_gaussian_sigma);
+    double noisy_range = true_range + noise;
+    return(noisy_range);
+  }
+  
   return(true_range);
 }
 
