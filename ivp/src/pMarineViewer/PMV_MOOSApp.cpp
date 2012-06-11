@@ -421,6 +421,9 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
     
     if(param == "verbose")
       m_verbose = (tolower(value) == "true");
+    else if(param == "gui_size") {
+      m_gui->size(500,500);
+    }
     else if(param == "button_one")
       m_gui->addButton(param, value);
     else if(param == "button_two")

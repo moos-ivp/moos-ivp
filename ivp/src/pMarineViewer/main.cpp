@@ -22,6 +22,7 @@
 
 #include <cstdlib>
 #include <iostream>
+#include <FL/Fl.H>
 #include "MBUtils.h"
 #include "Threadsafe_pipe.h"
 #include "MOOS_event.h"
@@ -75,9 +76,8 @@ int main(int argc, char *argv[])
   cout << "pMarineViewer launching as " << run_command << endl;
   cout << termColor() << endl;
 
-  int gui_wid = 1000;
-  int gui_hgt = 800;
-
+  int gui_wid = 0.60 * Fl::w();
+  int gui_hgt = 0.75 * Fl::h();
   if(size_request != "") {
     string s_wid = biteStringX(size_request, 'x');
     string s_hgt = size_request;
@@ -86,12 +86,7 @@ int main(int argc, char *argv[])
   }
 
   // For document screen shots:
-  //PMV_GUI* gui = new PMV_GUI(1100,640, "pMarineViewer");
-
-  // For lecture resolution:
-  //PMV_GUI* gui = new PMV_GUI(880,540, "pMarineViewer");
-  //PMV_GUI* gui = new PMV_GUI(720,480, "pMarineViewer");
-
+  // PMV_GUI* gui = new PMV_GUI(1100,640, "pMarineViewer");
   PMV_GUI* gui = new PMV_GUI(gui_wid, gui_hgt, "pMarineViewer");
   if(!gui) {
     cout << "Unable to instantiate the GUI - exiting." << endl;
