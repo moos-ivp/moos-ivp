@@ -402,7 +402,7 @@ void PMV_MOOSApp::handleIterate(const MOOS_event & e)
 
 
 //----------------------------------------------------------------------
-// Procedure: handleStartUp
+// Procedure: handleStartUp  (OnStartUp)
 
 void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
   // Keep track of whether the back images were user configured.

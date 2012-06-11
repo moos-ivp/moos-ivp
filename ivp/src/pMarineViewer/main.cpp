@@ -20,6 +20,7 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
+#include <cstdlib>
 #include <iostream>
 #include "MBUtils.h"
 #include "Threadsafe_pipe.h"
@@ -43,6 +44,7 @@ int main(int argc, char *argv[])
 {
   string mission_file;
   string run_command = argv[0];
+  string size_request;
 
   for(int i=1; i<argc; i++) {
     string argi = argv[i];
@@ -56,6 +58,10 @@ int main(int argc, char *argv[])
       showInterfaceAndExit();
     else if(strEnds(argi, ".moos") || strEnds(argi, ".moos++"))
       mission_file = argv[i];
+    else if(strEnds(argi, ".moos") || strEnds(argi, ".moos++"))
+      mission_file = argv[i];
+    else if(strBegins(argi, "--size="))
+      size_request = argi.substr(7);
     else if(strBegins(argi, "--alias="))
       run_command = argi.substr(8);
     else if(i==2)
@@ -69,6 +75,16 @@ int main(int argc, char *argv[])
   cout << "pMarineViewer launching as " << run_command << endl;
   cout << termColor() << endl;
 
+  int gui_wid = 1000;
+  int gui_hgt = 800;
+
+  if(size_request != "") {
+    string s_wid = biteStringX(size_request, 'x');
+    string s_hgt = size_request;
+    gui_wid = vclip(atoi(s_wid.c_str()), 700, 1500);
+    gui_hgt = vclip(atoi(s_hgt.c_str()), 500, 1250);
+  }
+
   // For document screen shots:
   //PMV_GUI* gui = new PMV_GUI(1100,640, "pMarineViewer");
 
@@ -76,7 +92,7 @@ int main(int argc, char *argv[])
   //PMV_GUI* gui = new PMV_GUI(880,540, "pMarineViewer");
   //PMV_GUI* gui = new PMV_GUI(720,480, "pMarineViewer");
 
-  PMV_GUI* gui = new PMV_GUI(1000,800, "pMarineViewer");
+  PMV_GUI* gui = new PMV_GUI(gui_wid, gui_hgt, "pMarineViewer");
   if(!gui) {
     cout << "Unable to instantiate the GUI - exiting." << endl;
     return(-1);
