@@ -17,16 +17,8 @@ FILE(GLOB SRC *.cpp)
 If (${APPLE})
       # If you want to create an Apple BUNDLE, do it here
       ADD_EXECUTABLE(vzaicview ${SRC})
-      # Install Targets
-      INSTALL(TARGETS vzaicview
-        RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
-      )
 ELSE (${APPLE})
       ADD_EXECUTABLE(vzaicview ${SRC})
-      # Install Targets
-      INSTALL(TARGETS vzaicview
-         RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
-      )
 ENDIF (${APPLE})
 
 Target_LINK_LIBRARIES(vzaicview         

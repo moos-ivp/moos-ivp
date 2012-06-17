@@ -20,16 +20,8 @@ SET(SRC	LauncherULI.cpp
 If (${APPLE})
       # If you want to create an Apple BUNDLE, do it here
       ADD_EXECUTABLE(uLogViewIPF ${SRC})
-      # Install Targets
-      INSTALL(TARGETS uLogViewIPF
-        RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
-      )
 ELSE (${APPLE})
       ADD_EXECUTABLE(uLogViewIPF ${SRC})
-      # Install Targets
-      INSTALL(TARGETS uLogViewIPF
-         RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
-      )
 ENDIF (${APPLE})
       
 Target_LINK_LIBRARIES(uLogViewIPF         

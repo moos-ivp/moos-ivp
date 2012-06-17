@@ -30,48 +30,30 @@ ENDIF (${WIN32})
 # FINDING MOOS' HEADERS AND LIBRARIES...
 #===============================================================================
 
-# *** REPLACE "../../MOOS" WITH WHATEVER VALUE IS REQUIRED.  THE DIRECTORY 
-# *** SHOULD HAVE CHILD DIRECTORIES SUCH AS "Core", "Essentials", ETC.
-IF (${WIN32})
-  # Windows does not have symbolic links. To handle this, subversion creates 
-  # a text file that represents the symbolic link with the destination of the 
-  # link inside the file. Here we extract the destination of the MOOS directory 
-  # link and use it set a variable.
-  FILE(READ ../../MOOS MOOS_DIR OFFSET 5)
-  SET(MOOS_BASE_DIR ../../${MOOS_DIR})
-ELSE (${WIN32})
-  SET(MOOS_BASE_DIR ../../MOOS)
-ENDIF (${WIN32})
+## allows us to write custom modules or modifying existing ones
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules/")
 
-# Using absolute pathnames seems to work better then relative, because you're 
-# never sure from which directory a relative path will be employed in commands
-# such as LINK_DIRECTORIES() ...
-GET_FILENAME_COMPONENT(MOOS_BASE_DIR_ABSOLUTE ${MOOS_BASE_DIR} ABSOLUTE)
+# moos - http://www.robots.ox.ac.uk/~mobile/MOOS/wiki/pmwiki.php
+find_package(MOOS REQUIRED)
+include_directories(${MOOS_CORE_INCLUDE_DIR}/MOOSLIB)
+include_directories(${MOOS_CORE_INCLUDE_DIR}/MOOSGenLib)
+include_directories(${MOOS_ESSENTIAL_INCLUDE_DIR}/MOOSUtilityLib)
+include_directories(${MOOS_INCLUDE_DIRS})
+link_directories(${MOOS_LIBRARY_PATH})
 
-# Confirm that MOOS_BASE_DIR seems to be set to a valid value...
-IF(NOT EXISTS ${MOOS_BASE_DIR_ABSOLUTE}/Core)
-   MESSAGE(FATAL_ERROR 
-      "The CMake variable MOOS_BASE_DIR_ABSOLUTE has the value "
-      "'${MOOS_BASE_DIR_ABSOLUTE}'.\n\n"
-      "That directory doesn't have a 'Core' subdirectory, which means it's "
-      "definitely not the base directory of a MOOS source tree."
-      "\n\n"
-      "You need to set the CMake variable 'MOOS_BASE_DIR' to a different value."
-)
-ENDIF(NOT EXISTS ${MOOS_BASE_DIR_ABSOLUTE}/Core)
+#===============================================================================
+# FINDING FLTK
+#===============================================================================
 
-SET(MOOS_LIB_DIR ${MOOS_BASE_DIR_ABSOLUTE}/MOOSBin)
-LINK_DIRECTORIES(${MOOS_LIB_DIR})
-
-# No harm in giving all IvP software access to MOOS's include libraries.
-SET(MOOS_INCLUDE_DIRS
-   ${MOOS_BASE_DIR_ABSOLUTE}/Essentials
-   ${MOOS_BASE_DIR_ABSOLUTE}/Core
-   ${MOOS_BASE_DIR_ABSOLUTE}/Essentials/MOOSUtilityLib
-   ${MOOS_BASE_DIR_ABSOLUTE}/Core/MOOSLIB
-   ${MOOS_BASE_DIR_ABSOLUTE}/Core/MOOSGenLib
-   )
-INCLUDE_DIRECTORIES(${MOOS_INCLUDE_DIRS})
+# prefer system fltk to built-in
+find_package(FLTK QUIET)
+if(FLTK_FOUND)
+  message("Using FLTK in ${FLTK_INCLUDE_DIR}")
+  set(BUILD_LOCAL_FLTK OFF)
+else()
+  message("Enabling compilation of FLTK including with this source")
+  set(BUILD_LOCAL_FLTK ON)
+endif()
    
 #===============================================================================
 # BUILDING IvP...
@@ -106,9 +88,6 @@ SET(IVP_BUILD_GUI_CODE ON CACHE BOOL "Build IvP's GUI-related libraries and apps
 #-------------------------------------------------------------------------------
 # Tell CMake (and thus C++) where to find IvP's header files...
 #-------------------------------------------------------------------------------
-FILE(GLOB IVP_LIBRARY_DIRS lib_*)
-INCLUDE_DIRECTORIES(${IVP_LIBRARY_DIRS})
-
 IF (${APPLE})
 
    # If Mac users installed libtiff using 'MacPorts', it will likely appear
@@ -164,16 +143,23 @@ IF (${WIN32})
    SET(IVP_GUI_LIBS
       lib_ipfview
       lib_marineview
-      lib_fltk-1.3.0
       lib_tiff
       )
+    
+    if(BUILD_LOCAL_FLTK)
+      set(IVP_GUI_LIBS ${IVP_GUI_LIBS} lib_fltk-1.3.0)
+    endif()
+
 ELSE (${WIN32})
    # Linux, Mac
    SET(IVP_GUI_LIBS
       lib_ipfview
       lib_marineview
-      lib_fltk-1.3.0
       )
+    if(BUILD_LOCAL_FLTK)
+      set(IVP_GUI_LIBS ${IVP_GUI_LIBS} lib_fltk-1.3.0)
+    endif()
+    
 ENDIF (${WIN32})
 
 SET(IVP_LIBS_TO_BUILD ${IVP_NON_GUI_LIBS})
@@ -189,6 +175,14 @@ IF("${IVP_LIB_DIRECTORY}" STREQUAL "")
    # IVP.
    GET_FILENAME_COMPONENT(IVP_LIB_DIRECTORY "${IVP_SOURCE_DIR}/../../lib" ABSOLUTE)
 ENDIF("${IVP_LIB_DIRECTORY}" STREQUAL "")
+
+IF("${IVP_INC_DIRECTORY}" STREQUAL "")
+   # IVP_SOURCE_DIRECTORY is defined by CMake, because this project's name is
+   # IVP.
+   GET_FILENAME_COMPONENT(IVP_INC_DIRECTORY "${IVP_SOURCE_DIR}/../../include" ABSOLUTE)
+ENDIF("${IVP_INC_DIRECTORY}" STREQUAL "")
+
+INCLUDE_DIRECTORIES(${IVP_LIBS_TO_BUILD})
 
 FOREACH(L ${IVP_LIBS_TO_BUILD} )
 # message("D: ${L} : IVP_LIB_DIRECTORY = ${IVP_LIB_DIRECTORY}")
@@ -315,5 +309,22 @@ IF( TEST_NIGHTLY )
 
 ENDIF( TEST_NIGHTLY )
 
+#=============================================================================
+# make install (tes 2012-05-08)
+#=============================================================================
 
+install(DIRECTORY ${IVP_BIN_DIRECTORY}/ DESTINATION ${CMAKE_INSTALL_PREFIX}/bin 
+  FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
+install(DIRECTORY ${IVP_LIB_DIRECTORY}/ DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 
+message("Include directory: ${IVP_INC_DIRECTORY}")
+file(GLOB_RECURSE INCLUDE_FILES RELATIVE ${IVP_SOURCE_DIR} lib_*/*.h)
+foreach(I ${INCLUDE_FILES})
+  if(BUILD_LOCAL_FLTK OR (NOT ${I} MATCHES .*lib_fltk.*))
+    get_filename_component(I_NAMEONLY ${I} NAME)
+    configure_file(${IVP_SOURCE_DIR}/${I} ${IVP_INC_DIRECTORY}/ivp/${I_NAMEONLY} COPYONLY)
+  endif()
+endforeach()
+
+install(DIRECTORY ${IVP_INC_DIRECTORY}/ DESTINATION ${CMAKE_INSTALL_PREFIX}/include
+  FILES_MATCHING REGEX .*\\.h)

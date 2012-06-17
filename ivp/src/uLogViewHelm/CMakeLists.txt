@@ -21,16 +21,8 @@ SET(SRC	LauncherULH.cpp
 If (${APPLE})
       # If you want to create an Apple BUNDLE, do it here
       ADD_EXECUTABLE(uLogViewHelm ${SRC})
-      # Install Targets
-      INSTALL(TARGETS uLogViewHelm
-        RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
-      )
 ELSE (${APPLE})
       ADD_EXECUTABLE(uLogViewHelm ${SRC})
-      # Install Targets
-      INSTALL(TARGETS uLogViewHelm
-         RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
-      )
 ENDIF (${APPLE})
       
 Target_LINK_LIBRARIES(uLogViewHelm         

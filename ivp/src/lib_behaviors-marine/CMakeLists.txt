@@ -78,14 +78,3 @@ TARGET_LINK_LIBRARIES(behaviors-marine
    geometry
    )
 
-# Install Headers
-INSTALL( FILES ${HEADERS} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/lib_behaviors-marine )
-
-# Install Libararies
-INSTALL( TARGETS behaviors-marine
-   RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-   LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-   ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-)
-
-

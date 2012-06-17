@@ -32,7 +32,3 @@ TARGET_LINK_LIBRARIES(uFldContactRangeSensor
   ${SYSTEM_LIBS}
 )
 
-# Install Targets
-INSTALL(TARGETS uFldContactRangeSensor
-  RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
-)

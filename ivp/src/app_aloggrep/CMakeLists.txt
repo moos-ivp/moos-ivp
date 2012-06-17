@@ -21,8 +21,3 @@ TARGET_LINK_LIBRARIES(aloggrep
   logutils
   ${SYSTEM_LIBS})
 
-# Install Targets
-INSTALL(TARGETS aloggrep
-  RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
-)
-

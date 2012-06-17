@@ -644,48 +644,48 @@ add_custom_target(uninstall
 # installation
 #######################################################################
 
-install(DIRECTORY ${FLTK_SOURCE_DIR}/FL
-   DESTINATION ${PREFIX_INCLUDE} USE_SOURCE_PERMISSIONS
-   PATTERN ".svn" EXCLUDE
-)
+# install(DIRECTORY ${FLTK_SOURCE_DIR}/FL
+#    DESTINATION ${PREFIX_INCLUDE} USE_SOURCE_PERMISSIONS
+#    PATTERN ".svn" EXCLUDE
+# )
 
-if(OPTION_CREATE_LINKS)
-   install(SCRIPT ${FLTK_BINARY_DIR}/install-symlinks.cmake)
-endif(OPTION_CREATE_LINKS)
+# if(OPTION_CREATE_LINKS)
+#    install(SCRIPT ${FLTK_BINARY_DIR}/install-symlinks.cmake)
+# endif(OPTION_CREATE_LINKS)
 
-install(PROGRAMS ${FLTK_BINARY_DIR}/fltk-config
-   DESTINATION ${PREFIX_BIN}
-   OPTIONAL
-)
+# install(PROGRAMS ${FLTK_BINARY_DIR}/fltk-config
+#    DESTINATION ${PREFIX_BIN}
+#    OPTIONAL
+# )
 
-install(EXPORT fltk-install
-   DESTINATION ${PREFIX_CONFIG}
-   FILE FLTKLibraries.cmake
-)
+# install(EXPORT fltk-install
+#    DESTINATION ${PREFIX_CONFIG}
+#    FILE FLTKLibraries.cmake
+# )
 
-install(FILES ${EXECUTABLE_OUTPUT_PATH}/FLTKConfig.cmake
-   DESTINATION ${PREFIX_CONFIG}
-)
+# install(FILES ${EXECUTABLE_OUTPUT_PATH}/FLTKConfig.cmake
+#    DESTINATION ${PREFIX_CONFIG}
+# )
 
-install(FILES ${EXECUTABLE_OUTPUT_PATH}/UseFLTK.cmake
-   DESTINATION ${PREFIX_CONFIG}
-)
+# install(FILES ${EXECUTABLE_OUTPUT_PATH}/UseFLTK.cmake
+#    DESTINATION ${PREFIX_CONFIG}
+# )
 
-if(CMAKE_HOST_UNIX)
-   macro(INSTALL_MAN FILE LEVEL)
-   install(FILES
-      ${FLTK_SOURCE_DIR}/documentation/src/${FILE}.man
-      DESTINATION ${PREFIX_MAN}/man${LEVEL}
-      RENAME ${FILE}.${LEVEL}
-   )
-   endmacro(INSTALL_MAN FILE LEVEL)
+# if(CMAKE_HOST_UNIX)
+#    macro(INSTALL_MAN FILE LEVEL)
+#    install(FILES
+#       ${FLTK_SOURCE_DIR}/documentation/src/${FILE}.man
+#       DESTINATION ${PREFIX_MAN}/man${LEVEL}
+#       RENAME ${FILE}.${LEVEL}
+#    )
+#    endmacro(INSTALL_MAN FILE LEVEL)
 
-   INSTALL_MAN(fluid 1)
-   INSTALL_MAN(fltk-config 1)
-   INSTALL_MAN(fltk 3)
-   INSTALL_MAN(blocks 6)
-   INSTALL_MAN(checkers 6)
-   INSTALL_MAN(sudoku 6)
+#    INSTALL_MAN(fluid 1)
+#    INSTALL_MAN(fltk-config 1)
+#    INSTALL_MAN(fltk 3)
+#    INSTALL_MAN(blocks 6)
+#    INSTALL_MAN(checkers 6)
+#    INSTALL_MAN(sudoku 6)
 
-endif(CMAKE_HOST_UNIX)
+# endif(CMAKE_HOST_UNIX)
 

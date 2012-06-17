@@ -32,7 +32,3 @@ TARGET_LINK_LIBRARIES(uFldGenericSensor
   ${SYSTEM_LIBS}
 )
 
-# Install Targets
-INSTALL(TARGETS uFldGenericSensor
-  RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
-)

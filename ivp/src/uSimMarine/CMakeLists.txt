@@ -33,8 +33,4 @@ TARGET_LINK_LIBRARIES(uSimMarine
   mbutil
   ${SYSTEM_LIBS})
 
-# Install Targets
-INSTALL(TARGETS uSimMarine
-  RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
-)
 

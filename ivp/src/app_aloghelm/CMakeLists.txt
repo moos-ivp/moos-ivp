@@ -22,8 +22,3 @@ TARGET_LINK_LIBRARIES(aloghelm
   behaviors
   ${SYSTEM_LIBS})
 
-# Install Targets
-INSTALL(TARGETS aloghelm
-  RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
-)
-

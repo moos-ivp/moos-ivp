@@ -32,7 +32,3 @@ TARGET_LINK_LIBRARIES(uFldHazardSensor
   ${SYSTEM_LIBS}
 )
 
-# Install Targets
-INSTALL(TARGETS uFldHazardSensor
-  RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
-)

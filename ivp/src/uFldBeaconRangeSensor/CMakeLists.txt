@@ -33,7 +33,3 @@ TARGET_LINK_LIBRARIES(uFldBeaconRangeSensor
   ${SYSTEM_LIBS}
 )
 
-# Install Targets
-INSTALL(TARGETS uFldBeaconRangeSensor
-  RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
-)

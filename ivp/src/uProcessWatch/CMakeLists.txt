@@ -25,8 +25,3 @@ TARGET_LINK_LIBRARIES(uProcessWatch
   mbutil
   ${SYSTEM_LIBS})
 
-# Install Targets
-INSTALL(TARGETS uProcessWatch
-  RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
-)
-

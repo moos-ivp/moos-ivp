@@ -15,17 +15,8 @@ FILE(GLOB SRC *.cpp)
 IF (${APPLE})
      # If you want to create an Apple BUNDLE, do it here
      ADD_EXECUTABLE(ffview ${SRC})
-     #Install Targets
-     INSTALL(TARGETS ffview
-       RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
-     )
-
 ELSE (${APPLE})
      ADD_EXECUTABLE(ffview ${SRC})
-     #Install Targets
-     INSTALL(TARGETS ffview
-        RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
-     )
 ENDIF (${APPLE})
 	     
 TARGET_LINK_LIBRARIES(ffview

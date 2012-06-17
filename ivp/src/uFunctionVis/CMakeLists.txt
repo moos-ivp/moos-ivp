@@ -24,16 +24,8 @@ SET(SRC
 IF (${APPLE})
       # If you want to create an Apple BUNDLE, do it here
       ADD_EXECUTABLE(uFunctionVis ${SRC})
-      # Install Targets
-      INSTALL(TARGETS uFunctionVis
-        RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
-      )
 ELSE (${APPLE})
       ADD_EXECUTABLE(uFunctionVis ${SRC})
-      # Install Targets
-      INSTALL(TARGETS uFunctionVis
-        RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
-      )
 ENDIF (${APPLE})
 
 TARGET_LINK_LIBRARIES(uFunctionVis
