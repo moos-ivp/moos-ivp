@@ -1,81 +1,48 @@
 README-LINUX.txt
-Last updated: 20 June 2008
-Maintainer: Christian Convey ( christian.convey@navy.mil )
-
-************************************************************
-***   THIS FILE IS A WORK IN PROGRESS.  CORRECTIONS OR   ***
-***   ADDITIONS ARE GREATLY APPRECIATED                  ***
-************************************************************
+Last updated: 19 June 2012
+Maintainer: Mike Benjamin (issues@moos-ivp.org)
 
 OVERVIEW
 ========
-This file gives Linux-specific steps for building and running 
+This file gives GNU/Linux-specific steps for building and running 
 MOOS-IvP software.
 
+Testing is primarily done on Ubuntu 12.2LTS 32bit and 64bit. We are 
+happy to feedback from user of other GNU/Linux distros.
 
-PACKAGES
+UBUNTU PACKAGES
 ========
-The following software packages must must installed on the 
-Linux computer in order to build MOOS-IvP.  For each package 
-we've listed some information on how it can be obtained.
 
-*******************
-* Ubuntu packages *
-*******************
+Packages you probably already have installed:
 
-(1) OpenGL development libraries.
-We're a little sketchy on which particular packages we need 
-for OpenGL support.  The following is our best guess:
+  g++        - GNU C++ compiler
+  subversion - Advanced version control system
+  cmake      - cross-platform, open-source make system
 
-(1A) Regardless of your graphics card, you need: 
-   libglut3-dev
+Additional packages:
 
-(1B) Then you also need basic 3D support within X-Windows on 
-   your system.  To get it, you may need to install one of
-   the following packages.  Which one you install depends on
-   your video card:
+  libfltk1.3-dev  - Fast Light Toolkit - development files
+  freeglut3-dev   - OpenGL Utility Toolkit development files
+  libpng12-dev    - PNG library - development
+  libjpeg-dev     - Independent JPEG Group's JPEG runtime library 
+  libxft-dev      - FreeType-based font drawing library for X
+  libxinerama-dev - X11 Xinerama extension library (development headers)
+  libtiff4-dev    - Tag Image File Format library (TIFF), development files
 
-   nVidia-based card --> 
-      nvidia-glx-new      (Ubuntu 8.04)
-      nvidia-glx-new-dev  (Ubuntu 8.04)
-      nvidia-glx-dev      (Ubuntu 8.10)  ** You'll have to choose a particular
-                                         ** version, such as nvidia-glx-177
-      libsm-dev
-      libXext-dev
-
-   ATI-based card (open-source driver) --> xorg-driver-fglrx,  
-       and maybe xorg-driver-fglrx-dev
-
-   ATI-based card (closed-source driver) --> xorg-driver-fglrx,
-       and maybe xorg-driver-fglrx-dev
-
-(2) libx11-dev
-
-(3) libxft-dev
-
-(4) libtiff
-Website: http://libtiff.org
-Ubuntu package: libtiff-dev
-
-(5) CMake (at least version 2.4)
-Website: cmake.org
-Ubuntu package: cmake
-
-(6) The Gnu C++ compiler (recommend version >= 4.0)
-Website: http://gcc.gnu.org/
-Ubuntu package: g++
+NOTE: As of this date we are no longer including FLTK as part of the 
+      MOOS-IvP tree. If you have trouble finding FLTK 1.3 in your 
+      system's package manager, we recommend that you install from the
+      source code from the FLTK website.
 
 
 BUILDING MOOS-IvP
 =================
-Please refer to the README file found in this directory.
+  ./build-moos.sh
+  ./build-ivp.sh
 
 
 ENVIRONMENT VARIABLES
 =====================
-The MOOS-IvP source tree contains the source code for two somewhat independent
-software packages: MOOS, and IvP.  
-
 When you build the MOOS software, the MOOS executable programs get placed in 
 the "MOOS/MOOSBin" subdirectory of the source code tree.
 

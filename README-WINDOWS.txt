@@ -1,6 +1,16 @@
 README-WINDOWS.txt
-Last updated: 8 September 2009
-Maintainer: Christopher Gagner ( Christopher.Gagner@navy.mil )
+Last updated: 19 June 2012
+Maintainer: No one (volunteer?)
+
+
+
+
+The below Windows help was last updated in 2009. We would be happy to have 
+volunteers for updating the build process for Windows.
+
+
+
+
 
 ******************************************************************************
 *** THIS FILE IS A WORK IN PROGRESS. CORRECTIONS OR ADDITIONS ARE GREATLY  ***

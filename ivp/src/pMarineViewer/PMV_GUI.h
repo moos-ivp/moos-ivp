@@ -38,7 +38,7 @@ public:
   void resizeWidgets(int);
 
   void updateXY();
-  void addButton(std::string button, std::string pairs);
+  bool addButton(std::string button, std::string pairs);
   void addAction(std::string pair, bool separator=false);
   int  handle(int);
   void setCurrTime(double v) {m_curr_time = v;};

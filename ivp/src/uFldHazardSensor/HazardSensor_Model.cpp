@@ -976,11 +976,9 @@ bool HazardSensor_Model::updateNodeRecords(NodeRecord new_record)
   //new_record.setName(tolower(new_record.getName()));
 
   unsigned int i, vsize = m_node_records.size();
-  unsigned int update_index = vsize;
   for(i=0; i<vsize; i++) {
     if(new_record.getName() == m_node_records[i].getName()) {
       add_new_record = false;
-      update_index   = i;
       // Make sure the timestamp is carried over to the updated 
       // record. It represents the last time a ping was made.
       double tstamp = m_node_records[i].getTimeStamp();

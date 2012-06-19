@@ -1,9 +1,0 @@
-=============================================================== 
-uMOOSClient Example MOOS Configuration                          
-=============================================================== 
-                                                                
-ProcessConfig = uMOOSClient                                     
-{                                                               
-  AppTick   = 4                                                 
-  CommsTick = 4                                                 
-}                                

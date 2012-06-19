@@ -58,10 +58,10 @@ bool XYHexGrid::initialize(string given_config_str)
   
   string poly_string = svector[0];
   string unit_string = svector[1];
-  double initial_val = 0.0;
+  //double initial_val = 0.0;
 
-  if(vsize == 3)
-    initial_val = atof(svector[2].c_str());
+  //if(vsize == 3)
+  //  initial_val = atof(svector[2].c_str());
 
   XYPolygon poly = string2Poly(poly_string);
   if(poly.size() == 0)

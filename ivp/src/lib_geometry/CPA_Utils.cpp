@@ -56,25 +56,26 @@ double evalCPA(double cnLON, double cnLAT, double cnSPD, double cnCRS,
   statK0 +=          cnLON * cnLON;  // (4,4)(b)
   
   // Set static variables for quickening the "crossingType" queries
-  double statCLOW, statCHGH, statCRNG;
+  //double statCLOW, statCHGH;
   //double statCNDIS = distPointToPoint(osLON, osLAT, cnLON, cnLAT);
-  double statCNANG = relAng(osLON, osLAT, cnLON, cnLAT);
-  if((cnCRS - statCNANG) <= 180) {
-    statCLOW = statCNANG;
-    statCHGH = cnCRS;
-  }
-  else {
-    statCLOW = cnCRS;
-    statCHGH = statCNANG;
-  }
+  //double statCNANG = relAng(osLON, osLAT, cnLON, cnLAT);
+  //if((cnCRS - statCNANG) <= 180) {
+  //  statCLOW = statCNANG;
+  //  statCHGH = cnCRS;
+  //}
+  //else {
+  //  statCLOW = cnCRS;
+  //  statCHGH = statCNANG;
+  //}
 
-  double ang1 = angle360(statCHGH - statCLOW);
-  double ang2 = angle360(statCLOW - statCHGH);
+  //double ang1 = angle360(statCHGH - statCLOW);
+  //double ang2 = angle360(statCLOW - statCHGH);
 
-  if(ang1 < ang2)
-    statCRNG = ang1;
-  else
-    statCRNG = ang2;
+  //double statCRNG;
+  //if(ang1 < ang2)
+  //  statCRNG = ang1;
+  //else
+  //  statCRNG = ang2;
 
 
   // Phase II ----------------------------------------------------

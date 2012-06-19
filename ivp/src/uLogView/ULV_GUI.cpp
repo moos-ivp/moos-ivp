@@ -602,7 +602,7 @@ void ULV_GUI::addLogPlot(const LogTPlot& logplot)
 
   string vname   = logplot.getVName();
   string varname = logplot.getVarName();
-  int ix = lp_viewer->addLogPlot(logplot) - 1;
+  intptr_t ix = lp_viewer->addLogPlot(logplot) - 1;
 
   string labelA, labelB;
   if(vname != "") {

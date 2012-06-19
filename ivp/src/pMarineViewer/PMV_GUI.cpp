@@ -283,12 +283,12 @@ void PMV_GUI::resizeWidgets(int wsize)
 // Procedure: addButton
 //      Note: 
 //            
-void PMV_GUI::addButton(string btype, string svalue) 
+bool PMV_GUI::addButton(string btype, string svalue) 
 {
   if((btype != "button_one") && (btype != "button_two") &&
      (btype != "button_three") && (btype != "button_four"))
-    return;
-
+    return(false);
+  
   // Set the default label if none is provided in the svalue.
   // The default is the *current* value of the label.
   string button_label = user_button_1->label();
@@ -338,6 +338,8 @@ void PMV_GUI::addButton(string btype, string svalue)
     user_button_4->show();
     user_button_4->redraw();
   }
+
+  return(ok_line);
 }
 
 //----------------------------------------------------------
@@ -376,7 +378,8 @@ void PMV_GUI::addAction(string svalue, bool separator)
   }
 
   for(i=0; i<psize; i++) {
-    unsigned int index = pindex + i;
+    // Use special unsigned int type having same size as pointer (void*)
+    uintptr_t index = pindex + i;
     string left  = truncString(vars[i], 25, "middle");
     string right = vals[i];
     //string right = truncString(vals[i], 25, "middle");
@@ -684,7 +687,7 @@ bool PMV_GUI::addScopeVariable(string varname)
   }
 
   m_scope_vars.push_back(varname);
-  unsigned int index = m_scope_vars.size()-1;
+  uintptr_t index = m_scope_vars.size()-1;
   
   string label = "MOOS-Scope/";
   label += (truncString(varname, 25, "middle"));
@@ -713,7 +716,7 @@ void PMV_GUI::addMousePoke(string side, string key, string vardata_pair)
 		  FL_MENU_RADIO);
       }
       m_left_mouse_keys.push_back(key);
-      unsigned int index = m_left_mouse_keys.size()-1;
+      uintptr_t index = m_left_mouse_keys.size()-1;
       string label = "Mouse-Context/Left/";
       label += (truncString(key, 40, "middle"));
 
@@ -742,7 +745,7 @@ void PMV_GUI::addMousePoke(string side, string key, string vardata_pair)
 		  FL_MENU_RADIO);
       }
       m_right_mouse_keys.push_back(key);
-      unsigned int index = m_right_mouse_keys.size()-1;
+      uintptr_t index = m_right_mouse_keys.size()-1;
       string label = "Mouse-Context/Right/";
       label += (truncString(key, 40, "middle"));
       // If this was the first right context mode, make it the active
@@ -799,7 +802,7 @@ void PMV_GUI::addReferenceVehicle(string vehicle_name)
 
   // Add the new vehicle name as a menu choice
   m_reference_tags.push_back(vehicle_name);
-  int index = m_reference_tags.size()-1;
+  intptr_t index = m_reference_tags.size()-1;
   string label = "ReferencePoint/";
   label += (truncString(vehicle_name, 25, "middle"));
   mbar->add(label.c_str(), 0, 
@@ -822,7 +825,7 @@ void PMV_GUI::addFilterVehicle(string vehicle_name)
 
   // Add the new vehicle name as a menu choice
   m_filter_tags.push_back(vehicle_name);
-  unsigned int index = m_filter_tags.size()-1;
+  uintptr_t index = m_filter_tags.size()-1;
   string label = "ClearHistory/";
   label += (truncString(vehicle_name, 25, "middle"));
   mbar->add(label.c_str(), 0, 

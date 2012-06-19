@@ -327,16 +327,13 @@ void LogViewLauncher::parseALogFiles()
   parse_timer.start();
   cout << "Parsing alog files..." << endl;
 
-  bool found_nonempty_alog = false;
   unsigned int i, vsize = m_alog_files.size();
   for(i=0; i<vsize; i++) {
     cout << "  Handling " << m_alog_files[i] << "...";
     cout << flush;
     bool non_empty = parseALogFile(i);
-    if(non_empty) {
-      found_nonempty_alog = true;
+    if(non_empty)
       cout << "DONE" << endl;
-    }
     else {
       cout << termColor("red");
       cout << "EMPTY!!! (THIS MAY BE WORTH CHECKING)" << endl;

@@ -326,9 +326,9 @@ vector<string> HelmScopeModel::parseBehaviors(string raw) const
   unsigned int ltim = 4;  // "Time"
   unsigned int lupd = 3;  // "UPD"
 
-  bool empty = false;
+  //bool empty = false;
   if(raw == "none") {
-    empty = true;
+    //empty = true;
     raw = "";
   }
 

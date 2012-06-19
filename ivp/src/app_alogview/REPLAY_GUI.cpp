@@ -1238,7 +1238,8 @@ void REPLAY_GUI::addLogPlot(const LogPlot& logplot)
     return;
 
   string vname = logplot.get_vehi_name();
-  int ix = lp_viewer->addLogPlot(logplot) - 1;
+  // Use special unsigned int type having same size a pointer (void*)
+  uintptr_t ix = lp_viewer->addLogPlot(logplot) - 1;
 
   string labelA, labelB;
   if(vname != "") {
@@ -1270,7 +1271,8 @@ void REPLAY_GUI::addHelmPlot(const HelmPlot& helm_plot)
   if(vname == "") 
     vname = "uknown";
 
-  unsigned int count = np_viewer->addHelmPlot(helm_plot);
+  // Use special unsigned int type having same size a pointer (void*)
+  uintptr_t count = np_viewer->addHelmPlot(helm_plot);
   if(count < 1)
     return;
   
@@ -1335,7 +1337,8 @@ void REPLAY_GUI::setVNameMenuButtonA(string vname)
 
   // First get the index in the list of known vehicle names. This index is 
   // needed to configure the callback for the menu item.
-  unsigned int i, vindex, vsize = m_vnames.size();
+  // Use special unsigned int type having same size a pointer (void*)
+  uintptr_t i, vindex, vsize = m_vnames.size();
   for(i=0; i<vsize; i++)
     if(m_vnames[i] == vname)
       vindex = i;
@@ -1377,7 +1380,8 @@ void REPLAY_GUI::updateSourceMenuButtonA()
 
     // First get the index in the list of known sources. This index is 
     // needed to configure the callback for the menu item.
-    unsigned int i, vindex, vsize = m_sources.size();
+    // Use special unsigned int type having same size a pointer (void*)
+    uintptr_t i, vindex, vsize = m_sources.size();
     for(i=0; i<vsize; i++)
       if(m_sources[i] == source)
 	vindex = i;
@@ -1398,7 +1402,8 @@ void REPLAY_GUI::setVNameMenuButtonB(string vname)
 
   // First get the index in the list of known vehicle names. This index is 
   // needed to configure the callback for the menu item.
-  unsigned int i, vindex, vsize = m_vnames.size();
+  // Use special unsigned int type having same size a pointer (void*)
+  uintptr_t i, vindex, vsize = m_vnames.size();
   for(i=0; i<vsize; i++)
     if(m_vnames[i] == vname)
       vindex = i;
@@ -1440,7 +1445,8 @@ void REPLAY_GUI::updateSourceMenuButtonB()
 
     // First get the index in the list of known sources. This index is 
     // needed to configure the callback for the menu item.
-    unsigned int i, vindex, vsize = m_sources.size();
+    // Use special unsigned int type having same size a pointer (void*)
+    uintptr_t i, vindex, vsize = m_sources.size();
     for(i=0; i<vsize; i++)
       if(m_sources[i] == source)
 	vindex = i;

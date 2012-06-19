@@ -90,7 +90,8 @@ void OF_Rater::takeSamples(int amount, double winterruptVal)
   if(!m_pdmap || !m_aof || (amount <= 0))
     return;
 
-  double val1, val2, diff, avgErr;
+  double val1, val2, diff;
+  // double avgErr;
   int    i;
 
   IvPDomain domain = m_aof->getDomain();
@@ -139,8 +140,8 @@ void OF_Rater::takeSamples(int amount, double winterruptVal)
     else
       amount--;
   }
-  assert(m_sample_count > 0);
-  avgErr = (double)(m_total_err / (double)m_sample_count);
+  //assert(m_sample_count > 0);
+  //avgErr = (double)(m_total_err / (double)m_sample_count);
 
 }
 

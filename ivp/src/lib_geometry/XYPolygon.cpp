@@ -410,19 +410,11 @@ double XYPolygon::dist_to_poly(double px, double py) const
 	   
   // Distance to poly is given by the shortest distance to any
   // one of the edges.
-  double x1, y1, x2, y2;
   double dist = 0;
   for(ix=0; ix<vsize; ix++) {
-
-    x1 = m_vx[ix];
-    y1 = m_vy[ix];
-    
     int ixx = ix+1;
     if(ix == vsize-1)
       ixx = 0;
-    
-    x2 = m_vx[ixx];
-    y2 = m_vy[ixx];
 
     double idist = distPointToSeg(m_vx[ix], m_vy[ix], 
 				  m_vx[ixx], m_vy[ixx], 
@@ -457,19 +449,11 @@ double XYPolygon::dist_to_poly(double x3, double y3,
 	   
   // Distance to poly is given by the shortest distance to any
   // one of the edges.
-  double x1, y1, x2, y2;
   double dist = 0;
   for(ix=0; ix<vsize; ix++) {
-
-    x1 = m_vx[ix];
-    y1 = m_vy[ix];
-    
     int ixx = ix+1;
     if(ix == vsize-1)
       ixx = 0;
-    
-    x2 = m_vx[ixx];
-    y2 = m_vy[ixx];
 
     double idist = distSegToSeg(m_vx[ix], m_vy[ix], 
 				m_vx[ixx], m_vy[ixx], 

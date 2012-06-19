@@ -89,7 +89,6 @@ string XYHazard::getSpec(string noshow) const
   bool no_type  = false;
   bool no_label = false;
   bool no_width = false;
-  bool no_hr    = false;
   bool no_color = false;
 
   vector<string> svector = parseString(noshow, ',');
@@ -102,8 +101,6 @@ string XYHazard::getSpec(string noshow) const
       no_label = true;
     else if(svector[i] == "width")
       no_width = true;
-    else if(svector[i] == "hr")
-      no_hr = true;
     else if(svector[i] == "color")
       no_color = true;
   }

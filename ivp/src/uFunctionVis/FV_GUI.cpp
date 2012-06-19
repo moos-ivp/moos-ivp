@@ -128,7 +128,8 @@ Fl_Menu_Item FV_GUI::menu_[] = {
 void FV_GUI::addBehaviorSource(string bhv_source)
 {
   bool found = false;
-  unsigned int index = 0;
+  // Use special unsigned int type having same size a pointer (void*)
+  uintptr_t index = 0;
   unsigned int i, vsize = m_bhv_sources.size();
   for(i=0; i<vsize; i++) {
     if(m_bhv_sources[i] == bhv_source) {

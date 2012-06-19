@@ -58,12 +58,6 @@ int main(int argc, char *argv[])
     return(0);
   }
   
-  int summits = 1;
-  if(scanArgs(argc, argv, "-2", "--two-summits")) {
-    summits = 2;
-    return(0);
-  }
-  
   int domain = 410;
   if(scanArgs(argc, argv, "-d", "--domain")) {
     domain = atoi(argv[res]) - 191;

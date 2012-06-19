@@ -16,13 +16,6 @@ ELSE (${WIN32})
   # Note sure why: -fPIC should only be needed for shared objects, and
   # AFAIK, CMake gets that right when building shared objects. -CJC
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -g")
-  IF( ${APPLE} )
-    # FLTK 1.3.0 is supported for 64 bit on OS X so we no longer force 32bit
-    # as done previously. Below commented-out lines left just for clarity
-    #SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32")
-    #SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m32")
-
-  ENDIF( ${APPLE} )
 
 ENDIF (${WIN32})
 
@@ -41,20 +34,6 @@ include_directories(${MOOS_ESSENTIAL_INCLUDE_DIR}/MOOSUtilityLib)
 include_directories(${MOOS_INCLUDE_DIRS})
 link_directories(${MOOS_LIBRARY_PATH})
 
-#===============================================================================
-# FINDING FLTK
-#===============================================================================
-
-# prefer system fltk to built-in
-find_package(FLTK QUIET)
-if(FLTK_FOUND)
-  message("Using FLTK in ${FLTK_INCLUDE_DIR}")
-  set(BUILD_LOCAL_FLTK OFF)
-else()
-  message("Enabling compilation of FLTK including with this source")
-  set(BUILD_LOCAL_FLTK ON)
-endif()
-   
 #===============================================================================
 # BUILDING IvP...
 #===============================================================================
@@ -146,19 +125,12 @@ IF (${WIN32})
       lib_tiff
       )
     
-    if(BUILD_LOCAL_FLTK)
-      set(IVP_GUI_LIBS ${IVP_GUI_LIBS} lib_fltk-1.3.0)
-    endif()
-
 ELSE (${WIN32})
    # Linux, Mac
    SET(IVP_GUI_LIBS
       lib_ipfview
       lib_marineview
       )
-    if(BUILD_LOCAL_FLTK)
-      set(IVP_GUI_LIBS ${IVP_GUI_LIBS} lib_fltk-1.3.0)
-    endif()
     
 ENDIF (${WIN32})
 
@@ -232,8 +204,6 @@ SET(IVP_NON_GUI_APPS
   uFldHazardSensor
   uFldHazardMetric
   uFldGenericSensor
-#  uFldGenericMetric
-  uMOOSClient
   pSearchGrid
   uTimerScript
   uHelmScope
@@ -244,7 +214,6 @@ SET(IVP_NON_GUI_APPS
   uXMS
   uPokeDB
   pHostInfo
-  pBinaryTest
   )
 
 SET(IVP_GUI_APPS

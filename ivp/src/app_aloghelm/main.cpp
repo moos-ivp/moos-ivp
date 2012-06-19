@@ -41,15 +41,15 @@ int main(int argc, char *argv[])
   }
 
   bool use_colors  = true;
-  bool report_life = false;
-  if(scanArgs(argc, argv, "--life", "-l"))
-    report_life = true;
+  //bool report_life = false;
+  //if(scanArgs(argc, argv, "--life", "-l"))
+  //  report_life = true;
   if(scanArgs(argc, argv, "--nocolor"))
     use_colors = false;
   
-  bool file_overwrite = false;
-  if(scanArgs(argc, argv, "-f", "--force", "-force"))
-    file_overwrite = true;
+  //bool file_overwrite = false;
+  //if(scanArgs(argc, argv, "-f", "--force", "-force"))
+  //  file_overwrite = true;
   
   // Look for a request for usage information
   if(scanArgs(argc, argv, "-h", "--help", "-help")) {

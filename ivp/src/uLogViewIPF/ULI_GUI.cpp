@@ -373,8 +373,9 @@ void ULI_GUI::updateSourceMenuButton()
 			  (Fl_Callback*)ULI_GUI::cb_SelectSource, 
 			  (void*)901);
   }
-  
-  unsigned int i, vsize = m_sources.size();
+
+  // Use special unsigned int type having same size a pointer (void*)  
+  uintptr_t i, vsize = m_sources.size();
   for(i=0; i<vsize; i++) {
     if(i==0) 
       m_but_ipf_source->label(m_sources[i].c_str());

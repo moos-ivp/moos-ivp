@@ -466,21 +466,22 @@ void Regressor::setQuadCoeffs(double  x1, double  y1, double  x2,
   if((x1==x2) || (x1==x3) || (x2==x3))
     return;
 
-  double m11, m12, m13, m14, m21, m22, m23, m24, m31, m32, m33, m34;
+  double m11, m12, m13, m14, m21, m22, m24, m31, m32, m34;
+  //double m23, m33;
   m11 = x1*x1;    m12 = x1;    m13 = 1;    m14 = y1;  
-  m21 = x2*x2;    m22 = x2;    m23 = 1;    m24 = y2;
-  m31 = x3*x3;    m32 = x3;    m33 = 1;    m34 = y3;
+  m21 = x2*x2;    m22 = x2;  /*m23 = 1;*/  m24 = y2;
+  m31 = x3*x3;    m32 = x3;  /*m33 = 1;*/  m34 = y3;
 
   // Gaussian elimination step 1
   m31 = m21 - m31;
   m32 = m22 - m32;
-  m33 = 0;
+  //m33 = 0;
   m34 = m24 - m34;
 
   // Gaussian elimination step 2
   m21 = m11 - m21;
   m22 = m12 - m22;
-  m23 = 0;
+  //m23 = 0;
   m24 = m14 - m24;
 
   // Gaussian elimination pre-step 3 - make m22 and m32 equal
@@ -495,7 +496,7 @@ void Regressor::setQuadCoeffs(double  x1, double  y1, double  x2,
   // Gaussian elimination step 3
   m31 = m21 - m31;
   m32 = 0;
-  m33 = 0;
+  //m33 = 0;
   m34 = m24 - m34;
 
   // solve for qm

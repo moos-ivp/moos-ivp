@@ -292,10 +292,8 @@ XYSegList stringLawnmower2SegList(string str)
   bool width_set   = false;
   bool height_set  = false;
   bool swath_set   = false;
-  bool startx_set  = false;
-  bool starty_set  = false;
-  bool degs_set    = false;
-  bool rads_set    = false;
+  //bool startx_set  = false;
+  //bool starty_set  = false;
 
   string xpos, ypos, vertex_color, edge_color, label, label_color;
   string start, source, type, msg, edge_size, vertex_size, rows="ew";  
@@ -303,7 +301,6 @@ XYSegList stringLawnmower2SegList(string str)
   double height = 0;
   double width  = 0;
   double degs   = 0;
-  double rads   = 0;
   double swath  = 0;
   double startx = 0;
   double starty = 0;
@@ -332,14 +329,8 @@ XYSegList stringLawnmower2SegList(string str)
       width = dval;
       width_set = true;
     }
-    else if((param == "degs") && isNumber(value)) {
+    else if((param == "degs") && isNumber(value))
       degs = dval;
-      degs_set = true;
-    }
-    else if((param == "rads") && isNumber(value)) {
-      rads = dval;
-      rads_set = true;
-    }
     else if(((param == "swath") || (param == "lane_width")) 
 	    && isNumber(value)) {
       swath = dval;
@@ -347,11 +338,11 @@ XYSegList stringLawnmower2SegList(string str)
     }
     else if((param == "startx") && isNumber(value)) {
       startx = dval;
-      startx_set = true;
+      //startx_set = true;
     }
     else if((param == "starty") && isNumber(value)) {
       starty = dval;
-      starty_set = true;
+      //starty_set = true;
     }
     else if((param == "snap") && isNumber(value) && (dval >= 0))
       snapval = dval;
@@ -380,9 +371,6 @@ XYSegList stringLawnmower2SegList(string str)
   if(!xpos_set || !ypos_set || !height_set || !width_set || !swath_set)
     return(null_seglist);
 
-  if(!rads_set && !degs_set)
-    return(null_seglist);
-  
   if(rows == "east-west")
     rows = "ew";
   else if(rows == "north-south")

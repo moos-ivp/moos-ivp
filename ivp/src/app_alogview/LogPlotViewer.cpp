@@ -445,9 +445,6 @@ void LogPlotViewer::drawLogPlot()
   if(!m_valid_cache)
     return;
     
-  float r, g, b;
-  r=0.2; g=0.8; b=0.2;
-
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   glOrtho(0, w(), 0, h(), -1 ,1);

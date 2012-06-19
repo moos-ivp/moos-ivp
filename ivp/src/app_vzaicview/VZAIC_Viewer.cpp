@@ -295,18 +295,17 @@ void VZAIC_Viewer::drawPiece(const IvPBox *piece, int mode)
   //glTranslatef(0, 0, 0);
   glTranslatef(x_offset, y_offset, 0);
 
-  double x1, x2, y1, y2, dx1, dx2, m, b;
+  double x1, x2, y1, y2, m, b;
 
-  m = piece->wt(0);
-  b = piece->wt(1);
-
-  double x_base  = m_domain.getVarLow(0);
-  double x_delta = m_domain.getVarDelta(0);
-
+  m  = piece->wt(0);
+  b  = piece->wt(1);
   x1 = piece->pt(0,0);
   x2 = piece->pt(0,1);
-  dx1 = x_base = (x1 * x_delta);
-  dx2 = x_base = (x2 * x_delta);
+
+  // double x_base  = m_domain.getVarLow(0);
+  // double x_delta = m_domain.getVarDelta(0);
+  // double dx1 = x_base = (x1 * x_delta);
+  // double dx2 = x_base = (x2 * x_delta);
   y1 = (m * (double)(x1)) + b;
   y2 = (m * (double)(x2)) + b;
 

@@ -1195,7 +1195,6 @@ void XMS::refreshAllVarsList()
 
 void XMS::refreshProcVarsList()
 {
-  bool new_vars_added = false;
   map<string, string>::iterator p;
   for(p=m_src_map.begin(); p!=m_src_map.end(); p++) {
     string status_var = p->first;
@@ -1213,7 +1212,6 @@ void XMS::refreshProcVarsList()
 	for(j=0; j<jsize; j++) {
 	  string varname = jvector[j];
 	  if((varname != status_var) && addVariable(varname)) {
-	    new_vars_added = true;
 	    m_Comms.Register(varname, 0);
 	  }
 	}

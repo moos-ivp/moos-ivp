@@ -251,7 +251,7 @@ XYPolygon stringEllipse2Poly(string str)
   // Below are the mandatory parameters - check they are set.
   bool xpos_set    = false;
   bool ypos_set    = false;
-  bool zval_set    = false;
+  //bool zval_set    = false;
   bool major_set   = false;
   bool minor_set   = false;
   bool degrees_set = false;  // Either degrees OR radians must
@@ -285,7 +285,7 @@ XYPolygon stringEllipse2Poly(string str)
       ypos = dval;
     }
     else if((param == "z") && (isNumber(value))) {
-      zval_set = true;
+      //zval_set = true;
       zval = dval;
     }
     else if((param == "major") && (isNumber(value))) {
@@ -381,7 +381,7 @@ XYPolygon stringRadial2Poly(string str)
   // Below are the mandatory parameters - check they are set.
   bool xpos_set   = false;
   bool ypos_set   = false;
-  bool zval_set   = false;
+  //bool zval_set   = false;
   bool radius_set = false;
   bool pts_set    = false;
 
@@ -409,7 +409,7 @@ XYPolygon stringRadial2Poly(string str)
       ypos = atof(value.c_str());
     }
     else if((param == "z") && (isNumber(value))) {
-      zval_set = true;
+      //zval_set = true;
       zval = atof(value.c_str());
     }
     else if((param == "radius") && (isNumber(value))) {
@@ -809,7 +809,7 @@ XYPolygon stringPylon2Poly(string str)
   bool y1_set  = false;
   bool x2_set  = false;
   bool y2_set  = false;
-  bool zval_set = false;
+  //bool zval_set = false;
   bool axis_pad_set = false;
   bool perp_pad_set = false;  // Either degrees OR radians must
 
@@ -843,7 +843,7 @@ XYPolygon stringPylon2Poly(string str)
       y2 = dval;
     }
     else if((param == "z") && isNumber(value)) {
-      zval_set = true;
+      //zval_set = true;
       zval = dval;
     }
     else if((param == "axis_pad") && isNumber(value)) {
