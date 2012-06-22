@@ -474,7 +474,7 @@ bool BHV_StationKeep::historyShowsProgressStart()
     return(false);
 
   double rate = (newest_dist - oldest_dist) / delta_time;
-  if(rate < 0)
+  if(rate <= 0)
     return(true);
 
   return(false);
@@ -509,7 +509,7 @@ bool BHV_StationKeep::historyShowsProgressEnd()
     return(false);
 
   double rate = (newest_dist - oldest_dist) / delta_time;
-  if(rate > 0)
+  if(rate >= 0)
     return(true);
 
   return(false);
