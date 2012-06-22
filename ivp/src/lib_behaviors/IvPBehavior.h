@@ -63,11 +63,12 @@ public:
   virtual IvPFunction* onRunState() {return(0);};
   virtual BehaviorReport onRunState(std::string);
   virtual bool setParam(std::string, std::string);
-  virtual void onSetParamComplete() {};
+  virtual void onSetParamComplete() {postConfigStatus();};
   virtual void onIdleState() {};
   virtual void onCompleteState() {};
   virtual void onIdleToRunState() {};
   virtual void onRunToIdleState() {};
+  virtual void postConfigStatus() {};
 
   bool   setParamCommon(std::string, std::string);
   void   setInfoBuffer(const InfoBuffer*);

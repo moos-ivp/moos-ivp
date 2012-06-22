@@ -38,6 +38,7 @@ public:
   IvPFunction* onRunState();
   void         onRunToIdleState();
   void         onCompleteState() {postStationMessage(false);};
+  void         postConfigStatus();
 
 protected:
   bool         updateInfoIn();  
@@ -75,6 +76,7 @@ private:  // Configuration Parameters
   // depth. It may need to dive to depth when it is not hibernating.
   double      m_pskeep_radius;
   std::string m_pskeep_variable;
+  std::string m_station_ctr_var;
 
 private:  // State Variables
   bool         m_center_pending;

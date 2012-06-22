@@ -721,6 +721,9 @@ bool IvPBehavior::checkUpdates()
     }
   }
 
+  if(update_made)
+    postConfigStatus();
+
   m_update_summary  = uintToString(m_good_updates) + "/";
   m_update_summary += uintToString(m_good_updates + m_bad_updates);
   return(update_made);

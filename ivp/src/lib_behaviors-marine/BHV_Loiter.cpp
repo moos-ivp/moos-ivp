@@ -580,3 +580,23 @@ void BHV_Loiter::handleVisualHint(string hint)
     m_hint_poly_label = value;
 }
 
+//-----------------------------------------------------------
+// Procedure: postConfigStatus
+
+void BHV_Loiter::postConfigStatus()
+{
+  string str = "type=BHV_Loiter,name=" + m_descriptor;
+  
+  str += ",x=" + doubleToString(m_loiter_engine.getCenterX(),2);
+  str += ",y=" + doubleToString(m_loiter_engine.getCenterY(),2);
+  str += ",clockwise=" + boolToString(m_clockwise);
+  str += ",dynamic_clockwise=" + boolToString(m_dynamic_clockwise);
+  str += ",center_activate=" + boolToString(m_center_activate);
+  str += ",desired_speed=" + doubleToString(m_desired_speed,1);
+
+  string poly_str = m_loiter_engine.getPolygon().get_spec();
+  str += ",polygon=" + poly_str;
+
+  postMessage("BHV_SETTINGS", str);
+}
+

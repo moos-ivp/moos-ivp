@@ -40,6 +40,7 @@ public:
   void         onIdleState();
   void         onIdleToRunState();
   void         onCompleteState();
+  void         postConfigStatus();
 
 protected:
   bool         updateInfoIn();

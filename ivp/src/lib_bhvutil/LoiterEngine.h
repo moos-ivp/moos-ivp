@@ -37,7 +37,7 @@ class LoiterEngine {
 
   double getCenterX() const      {return(m_polygon.get_center_x());}
   double getCenterY() const      {return(m_polygon.get_center_y());}
-  double getClockwise() const    {return(m_clockwise);};
+  bool   getClockwise() const    {return(m_clockwise);};
   double getSpiralFactor() const {return(m_spiral_factor);};
 
   XYPolygon getPolygon() {return(m_polygon);};

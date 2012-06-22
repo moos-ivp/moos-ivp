@@ -60,6 +60,7 @@ BHV_StationKeep::BHV_StationKeep(IvPDomain gdomain) :
   m_center_activate  = false;
   m_pskeep_radius    = -1;   // -1 indicates not enabled
   m_pskeep_variable  = "PSKEEP_MODE";
+  m_station_ctr_var  = "STAION_KEEP_CTR";
   m_swing_time       = 0;
   
   // All visual hints initially turned off
@@ -308,12 +309,13 @@ bool BHV_StationKeep::updateInfoIn()
   }
 
   // PART 2: UPDATE THE STATION-KEEP POINT IF NECESSARY
-  bool ok_center_update = true;
+  bool ctr_changed = false;
   if(m_center_pending) {
     if(m_center_activate) {
       m_station_x   = m_osx;
       m_station_y   = m_osy;
       m_station_set = true;
+      ctr_changed = true;
       if(m_currtime >= (m_mark_time + m_swing_time))
 	m_center_pending = false;
     }
@@ -323,12 +325,16 @@ bool BHV_StationKeep::updateInfoIn()
 	m_station_y = m_static_station_y;
 	m_station_set = true;
 	m_center_pending = false;
+	ctr_changed = true;
       }
     }
   }
-  if(ok_center_update == false)
-    return(false);
-  
+  if(ctr_changed) {
+    // Post the center to the MOOSDB
+    m_pskeep_state = "hibernating";
+    m_transit_state = "hibernating";
+    return(true);
+  }
 
   // PART 3: CALCULATE DISTANCE TO STATION-PT AND UPDATE HISTORIES
   // Calculate the distance to the station-point
@@ -436,13 +442,14 @@ void BHV_StationKeep::updateHibernationState()
 
   if(m_pskeep_state == "seeking_station") {
     if((m_dist_to_station <= m_inner_radius) || 
-       (m_transit_state == "noted_progress_end")) {
+       ((m_transit_state == "noted_progress_end") && 
+	(m_dist_to_station <= m_pskeep_radius))) {
+
       m_pskeep_state = "hibernating";
       m_transit_state = "hibernating";
       historyClear();
     }
   }
-  
 }
 
 
@@ -505,6 +512,7 @@ bool BHV_StationKeep::historyShowsProgressEnd()
   double newest_time = m_distance_thistory.front();
 
   double delta_time = newest_time - oldest_time;
+
   if(delta_time <= 5)
     return(false);
 
@@ -541,5 +549,24 @@ void BHV_StationKeep::historyClear()
 {
   m_distance_history.clear();
   m_distance_thistory.clear();
+}
+
+
+//-----------------------------------------------------------
+// Procedure: postConfigStatus
+
+void BHV_StationKeep::postConfigStatus()
+{
+  string str = "type=BHV_StationKeep,name=" + m_descriptor;
+  
+  str += ",x=" + doubleToString(m_static_station_x,2);
+  str += ",y=" + doubleToString(m_static_station_y,2);
+  str += ",inner_radius=" + doubleToString(m_inner_radius,1);
+  str += ",outer_radius=" + doubleToString(m_outer_radius,1);
+  str += ",hibernation_radius=" + doubleToString(m_pskeep_radius,1);
+  str += ",outer_speed=" + doubleToString(m_outer_speed,1);
+  str += ",center_activate=" + boolToString(m_center_activate);
+
+  postMessage("BHV_SETTINGS", str);
 }
 

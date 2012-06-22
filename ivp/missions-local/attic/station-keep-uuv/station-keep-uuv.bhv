@@ -1,8 +1,9 @@
 //--------    FILE: charlie.bhv   -------------
 
-initialize   DEPLOY  = false
+initialize   DEPLOY  = true
 initialize   RETURN  = false
-initialize   STATION = false
+initialize   MOOS_MANUAL_OVERIDE=false
+initialize   STATION = true
 
 set MODE = ACTIVE {
   DEPLOY = true
@@ -78,7 +79,7 @@ Behavior = BHV_ConstantDepth
   name       = station_depth
   pwt        = 100
   condition  = MODE == STATION-KEEPING
-  condition  = STATION_HIBERNATION = ACTIVE
+  condition  = PSKEEP_MODE = SEEKING_STATION
   updates    = UPDATES_STATION_DEPTH
 
        depth = 5
@@ -86,6 +87,3 @@ Behavior = BHV_ConstantDepth
 }
 
 
-
-
-// Do we need a !== relation definition?
