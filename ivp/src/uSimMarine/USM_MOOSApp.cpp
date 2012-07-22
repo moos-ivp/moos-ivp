@@ -65,9 +65,9 @@ bool USM_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
       m_model.setParam("buoyancy_rate", dval);
     else if(key == "USM_FORCE_THETA")
       m_model.setParam("torque_theta", dval);
-    else if(key == "USM_FORCE_X")
+    else if(key == "USM_FORCE_X" || key == "CURRENT_X")
       m_model.setParam("force_x", dval);
-    else if(key == "USM_FORCE_Y")
+    else if(key == "USM_FORCE_Y" || key == "CURRENT_Y")
       m_model.setParam("force_y", dval);
     else if(key == "USM_FORCE_VECTOR")
       m_model.setForceVector(sval, false);
@@ -251,6 +251,8 @@ void USM_MOOSApp::registerVariables()
   // Added buoyancy and trim control and sonar handshake
   m_Comms.Register("TRIM_CONTROL",0);
   m_Comms.Register("BUOYANCY_CONTROL",0);
+  m_Comms.Register("CURRENT_X",0);
+  m_Comms.Register("CURRENT_Y",0);
 }
 
 //------------------------------------------------------------------------
