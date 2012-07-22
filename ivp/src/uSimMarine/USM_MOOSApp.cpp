@@ -77,11 +77,31 @@ bool USM_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
       m_model.magForceVector(dval);
     else if(key == "USM_WATER_DEPTH")
       m_model.setParam("water_depth", dval);
-    else if(key == "USM_RESET") {
-      m_reset_count++;
-      m_Comms.Notify("USM_RESET_COUNT", m_reset_count);
-      m_model.initPosition(sval);
-    }
+    else if(key == "USM_RESET") 
+      {
+	m_reset_count++;
+	m_Comms.Notify("USM_RESET_COUNT", m_reset_count);
+	m_model.initPosition(sval);
+      }
+  // Added buoyancy and trim control and sonar handshake. HS 2012-07-22
+    else if(key == "BUOYANCY_CONTROL")
+      {
+	if (dval > 0.5)
+	  {
+	    // Set buoyancy to zero to simulate trim
+	    m_model.setParam("buoyancy_rate", 0.0);
+	    std::string buoyancy_status="status=2,error=0,buoyancy=0.0";
+	    m_Comms.Notify("BUOYANCY_REPORT",buoyancy_status);
+	  }
+      }
+    else if(key == "TRIM_CONTROL")
+      {
+	if (dval > 0.5)
+	  {
+	    std::string trim_status="status=2,error=0,trim_pitch=0.0,trim_roll=0.0";
+	    m_Comms.Notify("TRIM_REPORT",trim_status);
+	  }
+      }
     else
       MOOSTrace("Unrecognized command: [%s]\n", key.c_str());
   }
@@ -228,6 +248,9 @@ void USM_MOOSApp::registerVariables()
   m_Comms.Register("USM_FORCE_THETA", 0);
   m_Comms.Register("USM_PAUSE", 0);
   m_Comms.Register("USM_RESET", 0);
+  // Added buoyancy and trim control and sonar handshake
+  m_Comms.Register("TRIM_CONTROL",0);
+  m_Comms.Register("BUOYANCY_CONTROL",0);
 }
 
 //------------------------------------------------------------------------
