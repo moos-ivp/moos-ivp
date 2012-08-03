@@ -63,19 +63,19 @@ bool USM_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
       m_model.setPaused(toupper(sval) == "TRUE");
     else if(key == "USM_BUOYANCY_RATE")
       m_model.setParam("buoyancy_rate", dval);
-    else if(key == "USM_FORCE_THETA")
+    else if((key == "USM_FORCE_THETA") || (key == "USM_ROTATE_SPEED"))
       m_model.setParam("torque_theta", dval);
-    else if(key == "USM_FORCE_X" || key == "CURRENT_X")
-      m_model.setParam("force_x", dval);
-    else if(key == "USM_FORCE_Y" || key == "CURRENT_Y")
-      m_model.setParam("force_y", dval);
-    else if(key == "USM_FORCE_VECTOR")
-      m_model.setForceVector(sval, false);
-    else if(key == "USM_FORCE_VECTOR_ADD")
-      m_model.setForceVector(sval, true);
-    else if(key == "USM_FORCE_VECTOR_MULT")
-      m_model.magForceVector(dval);
-    else if(key == "USM_WATER_DEPTH")
+    else if((key == "USM_FORCE_X") || (key == "CURRENT_X") || (key == "USM_DRIFT_X"))
+      m_model.setParam("drift_x", dval);
+    else if((key == "USM_FORCE_Y") || (key == "CURRENT_Y") || (key == "USM_DRIFT_Y"))
+      m_model.setParam("drift_y", dval);
+    else if((key == "USM_FORCE_VECTOR")      || (key == "USM_DRIFT_VECTOR"))
+      m_model.setDriftVector(sval, false);
+    else if((key == "USM_FORCE_VECTOR_ADD")  || (key == "USM_DRIFT_VECTOR_ADD"))
+      m_model.setDriftVector(sval, true);
+    else if((key == "USM_FORCE_VECTOR_MULT") || (key == "USM_DRIFT_VECTOR_MULT"))
+      m_model.magDriftVector(dval);
+    else if((key == "USM_WATER_DEPTH") || (key == "USM_WATER_DEPTH"))
       m_model.setParam("water_depth", dval);
     else if(key == "USM_RESET") 
       {
@@ -84,24 +84,20 @@ bool USM_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 	m_model.initPosition(sval);
       }
   // Added buoyancy and trim control and sonar handshake. HS 2012-07-22
-    else if(key == "BUOYANCY_CONTROL")
-      {
-	if (dval > 0.5)
-	  {
-	    // Set buoyancy to zero to simulate trim
-	    m_model.setParam("buoyancy_rate", 0.0);
-	    std::string buoyancy_status="status=2,error=0,buoyancy=0.0";
-	    m_Comms.Notify("BUOYANCY_REPORT",buoyancy_status);
-	  }
+    else if(key == "BUOYANCY_CONTROL") {
+      if (dval > 0.5) {
+	// Set buoyancy to zero to simulate trim
+	m_model.setParam("buoyancy_rate", 0.0);
+	std::string buoyancy_status="status=2,error=0,buoyancy=0.0";
+	m_Comms.Notify("BUOYANCY_REPORT",buoyancy_status);
       }
-    else if(key == "TRIM_CONTROL")
-      {
-	if (dval > 0.5)
-	  {
-	    std::string trim_status="status=2,error=0,trim_pitch=0.0,trim_roll=0.0";
-	    m_Comms.Notify("TRIM_REPORT",trim_status);
-	  }
+    }
+    else if(key == "TRIM_CONTROL") {
+      if (dval > 0.5) {
+	std::string trim_status="status=2,error=0,trim_pitch=0.0,trim_roll=0.0";
+	m_Comms.Notify("TRIM_REPORT",trim_status);
       }
+    }
     else
       MOOSTrace("Unrecognized command: [%s]\n", key.c_str());
   }
@@ -155,12 +151,12 @@ bool USM_MOOSApp::OnStartUp()
       m_model.setParam(param, dval);
     else if(param == "BUOYANCY_RATE")
       m_model.setParam(param, dval);
-    else if(param == "FORCE_X")
-      m_model.setParam("force_x", dval);
-    else if(param == "FORCE_Y")
-      m_model.setParam("force_y", dval);
-    else if(param == "FORCE_THETA")
-      m_model.setParam("torque_theta", dval);
+    else if((param == "FORCE_X") || (param == "DRIFT_X"))
+      m_model.setParam("drift_x", dval);
+    else if((param == "FORCE_Y") || (param == "DRIFT_Y"))
+      m_model.setParam("drift_y", dval);
+    else if((param == "FORCE_THETA") || (param == "ROTATE_SPEED"))
+      m_model.setParam("rotate_speed", dval);
     else if((param == "MAX_ACCELERATION") && isNumber(value))
       m_model.setParam("max_acceleration", dval);
     else if((param == "MAX_DECELERATION") && isNumber(value))
@@ -172,8 +168,8 @@ bool USM_MOOSApp::OnStartUp()
 
     else if(param == "PREFIX")
       m_sim_prefix = value;
-    else if(param == "FORCE_VECTOR")
-      m_model.setForceVector(value);
+    else if((param == "FORCE_VECTOR") || (param == "DRIFT_VECTOR"))
+      m_model.setDriftVector(value);
     else if(param == "SIM_PAUSE")
       m_model.setPaused(tolower(value) == "true");
     else if(param == "DUAL_STATE")
@@ -253,6 +249,12 @@ void USM_MOOSApp::registerVariables()
   m_Comms.Register("BUOYANCY_CONTROL",0);
   m_Comms.Register("CURRENT_X",0);
   m_Comms.Register("CURRENT_Y",0);
+  m_Comms.Register("USM_DRIFT_X",0);
+  m_Comms.Register("USM_DRIFT_Y",0);
+  m_Comms.Register("USM_DRIFT_VECTOR", 0);
+  m_Comms.Register("USM_DRIFT_VECTOR_ADD", 0);
+  m_Comms.Register("USM_DRIFT_VECTOR_MULT", 0);
+  m_Comms.Register("USM_ROTATE_SPEED", 0);
 }
 
 //------------------------------------------------------------------------
@@ -272,9 +274,10 @@ bool USM_MOOSApp::Iterate()
     postNodeRecordUpdate(m_sim_prefix+"_GT", record_gt, curr_time);
   }
 
-  if(m_model.isForceFresh()) {
-    m_Comms.Notify("USM_FSUMMARY", m_model.getForceSummary());
-    m_model.setForceFresh(false);
+  if(m_model.isDriftFresh()) {
+    m_Comms.Notify("USM_FSUMMARY", m_model.getDriftSummary());
+    m_Comms.Notify("USM_DRIFT_SUMMARY", m_model.getDriftSummary());
+    m_model.setDriftFresh(false);
   }
 
   return(true);

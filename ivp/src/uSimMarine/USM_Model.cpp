@@ -51,10 +51,10 @@ USM_Model::USM_Model()
   m_rudder       = 0;
   m_thrust       = 0;
   m_elevator     = 0;
-  m_force_x      = 0;
-  m_force_y      = 0; 
-  m_torque_theta = 0;
-  m_force_fresh  = true;
+  m_drift_x      = 0;
+  m_drift_y      = 0; 
+  m_rotate_speed = 0;
+  m_drift_fresh  = true;
   m_water_depth  = 0;    // zero means nothing known, no altitude reported
 
 }
@@ -98,12 +98,12 @@ bool USM_Model::setParam(string param, double value)
     m_buoyancy_rate = value;
   else if(param == "turn_rate")
     m_turn_rate = vclip(value, 0, 100);
-  else if(param == "force_x")
-    m_force_x = value;
-  else if(param == "force_y")
-    m_force_y = value;
-  else if(param == "torque_theta")
-    m_torque_theta = value;
+  else if(param == "drift_x")
+    m_drift_x = value;
+  else if(param == "drift_y")
+    m_drift_y = value;
+  else if(param == "rotate_speed")
+    m_rotate_speed = value;
   else if(param == "max_acceleration") {
     m_max_acceleration = value;
     if(m_max_acceleration < 0)
@@ -156,9 +156,9 @@ bool USM_Model::propagate(double g_curr_time)
 }
 
 //--------------------------------------------------------------------
-// Procedure: setForceVector(string, bool)
+// Procedure: setDriftVector(string, bool)
 
-void USM_Model::setForceVector(string str, bool add_new_force)
+void USM_Model::setDriftVector(string str, bool add_new_drift)
 {
   string left  = stripBlankEnds(biteString(str, ','));
   string right = stripBlankEnds(str);
@@ -173,28 +173,28 @@ void USM_Model::setForceVector(string str, bool add_new_force)
   double xmps = cos(rads) * mag;
   double ymps = sin(rads) * mag;
 
-  if(add_new_force) {
-    m_force_x += xmps;
-    m_force_y += ymps;
+  if(add_new_drift) {
+    m_drift_x += xmps;
+    m_drift_y += ymps;
   }
   else {
-    m_force_x = xmps;
-    m_force_y = ymps;
+    m_drift_x = xmps;
+    m_drift_y = ymps;
   }
 
-  m_force_fresh = true;
+  m_drift_fresh = true;
 }
 
 //--------------------------------------------------------------------
-// Procedure: magForceVector(double)
-//   Purpose: Grow the existing force vector by the specified percent.
+// Procedure: magDriftVector(double)
+//   Purpose: Grow the existing drift vector by the specified percent.
 //            Negative values allowed, but each will flip the direction
 //            of the vector.
 
-void USM_Model::magForceVector(double pct)
+void USM_Model::magDriftVector(double pct)
 {
-  double ang = relAng(0, 0, m_force_x, m_force_y);
-  double mag = hypot(m_force_x, m_force_y);
+  double ang = relAng(0, 0, m_drift_x, m_drift_y);
+  double mag = hypot(m_drift_x, m_drift_y);
 
   double new_mag = mag * pct;
   double rads = headingToRadians(ang);
@@ -202,10 +202,10 @@ void USM_Model::magForceVector(double pct)
   double xmps = cos(rads) * new_mag;
   double ymps = sin(rads) * new_mag;
 
-  m_force_x = xmps;
-  m_force_y = ymps;
+  m_drift_x = xmps;
+  m_drift_y = ymps;
 
-  m_force_fresh = true;
+  m_drift_fresh = true;
 }
 
 //------------------------------------------------------------------------
@@ -252,23 +252,23 @@ bool USM_Model::addThrustMapping(double thrust, double speed)
 }
 
 //---------------------------------------------------------------------
-// Procedure: getForceSummary()
+// Procedure: getDriftSummary()
 
-string USM_Model::getForceSummary()
+string USM_Model::getDriftSummary()
 {
   // Revert to c^2 = a^2 + b^2 
-  double c_squared = (m_force_x * m_force_x) + (m_force_y * m_force_y);
+  double c_squared = (m_drift_x * m_drift_x) + (m_drift_y * m_drift_y);
   double magnitude = sqrt(c_squared);
-  double angle = relAng(0, 0, m_force_x, m_force_y);
+  double angle = relAng(0, 0, m_drift_x, m_drift_y);
 
   string val = "ang=";
   val += doubleToStringX(angle,2);
   val += ", mag=";
   val += doubleToStringX(magnitude,2);
   val += ", xmag=";
-  val += doubleToStringX(m_force_x,3);
+  val += doubleToStringX(m_drift_x,3);
   val += ", ymag=";
-  val += doubleToStringX(m_force_y,3);
+  val += doubleToStringX(m_drift_y,3);
   return(val);
 }
 
@@ -341,7 +341,7 @@ void USM_Model::propagateNodeRecord(NodeRecord& record,
 
   m_sim_engine.propagateHeading(record, delta_time, m_rudder, 
 				m_thrust, m_turn_rate, 
-				m_torque_theta);
+				m_rotate_speed);
 
   m_sim_engine.propagateDepth(record, delta_time, 
 			      m_elevator, m_buoyancy_rate, 
@@ -349,16 +349,16 @@ void USM_Model::propagateNodeRecord(NodeRecord& record,
 			      m_max_depth_rate_speed);
 
   // Calculate the total external forces on the vehicle first.
-  double total_force_x = 0;
-  double total_force_y = 0;
+  double total_drift_x = 0;
+  double total_drift_y = 0;
   
   if(apply_external_forces) {
-    total_force_x = m_force_x;
-    total_force_y = m_force_y;
+    total_drift_x = m_drift_x;
+    total_drift_y = m_drift_y;
   }
 
   m_sim_engine.propagate(record, delta_time, prior_hdg, prior_spd,
-			 total_force_x, total_force_y);
+			 total_drift_x, total_drift_y);
 
   // If m_water_depth > 0 then something is known about the present
   // water depth and thus we update the vehicle altitude.

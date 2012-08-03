@@ -45,26 +45,26 @@ public:
   void   setThrust(double v)        {m_thrust = v;};
   void   setElevator(double v)      {m_elevator = v;};
   void   setDualState(bool v)       {m_dual_state = v;}; 
-  void   setForceFresh(bool v)      {m_force_fresh = v;}; 
+  void   setDriftFresh(bool v)      {m_drift_fresh = v;}; 
   void   setPaused(bool); 
   void   setThrustFactor(double);
   void   setThrustReflect(bool);
 
-  void   setForceVector(std::string, bool add=false);
-  void   magForceVector(double);
+  void   setDriftVector(std::string, bool add=false);
+  void   magDriftVector(double);
 
   bool   initPosition(const std::string&);
   bool   addThrustMapping(double, double);
 
   // Getters
-  double     getForceX()       {return(m_force_x);};
-  double     getForceY()       {return(m_force_y);};
+  double     getDriftX()       {return(m_drift_x);};
+  double     getDriftY()       {return(m_drift_y);};
   bool       usingDualState()  {return(m_dual_state);}
-  bool       isForceFresh()    {return(m_force_fresh);}; 
+  bool       isDriftFresh()    {return(m_drift_fresh);}; 
   NodeRecord getNodeRecord()   {return(m_record);};
   NodeRecord getNodeRecordGT() {return(m_record_gt);};
 
-  std::string getForceSummary();
+  std::string getDriftSummary();
 
  protected:
   void   propagateNodeRecord(NodeRecord&, double delta_time, bool);
@@ -78,9 +78,9 @@ public:
   double     m_water_depth;
 
   double     m_turn_rate;
-  double     m_torque_theta;
-  double     m_force_x;           // meters per sec
-  double     m_force_y;           // meters per sec
+  double     m_rotate_speed;
+  double     m_drift_x;           // meters per sec
+  double     m_drift_y;           // meters per sec
   double     m_buoyancy_rate;
   double     m_max_depth_rate;
   double     m_max_depth_rate_speed;
@@ -91,7 +91,7 @@ public:
   NodeRecord m_record_gt;    // NAV_GT_X, NAV_GT_Y   
 
   bool       m_dual_state;   
-  bool       m_force_fresh;
+  bool       m_drift_fresh;
 
   MBTimer    m_pause_timer;
   SimEngine  m_sim_engine;

@@ -34,7 +34,7 @@ public:
   
 public:
   void propagate(NodeRecord&, double delta_time, double prior_heading,
-		 double prior_speed, double force_x, double force_y);
+		 double prior_speed, double drift_x, double drift_y);
   
   void propagateDepth(NodeRecord&, double delta_time, 
 		      double elevator_angle, double buoyancy_rate, 
@@ -47,7 +47,7 @@ public:
 
   void propagateHeading(NodeRecord&, double delta_time, double rudder,
 			double thrust, double turn_rate, 
-			double torque_theta);
+			double rotate_speed);
 };
 
 #endif

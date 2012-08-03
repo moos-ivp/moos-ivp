@@ -32,7 +32,7 @@ using namespace std;
 
 void SimEngine::propagate(NodeRecord &record, double delta_time,
 			  double prior_heading, double prior_speed,
-			  double force_x, double force_y)
+			  double drift_x, double drift_y)
 {
   double speed   = (record.getSpeed() + prior_speed) / 2;
 
@@ -54,10 +54,10 @@ void SimEngine::propagate(NodeRecord &record, double delta_time,
   double ydot  = (cos_ang * speed);
 
   double new_speed = hypot(xdot, ydot);
-  double new_x = prev_x + (xdot * delta_time) + (force_x * delta_time);
-  double new_y = prev_y + (ydot * delta_time) + (force_y * delta_time);
+  double new_x = prev_x + (xdot * delta_time) + (drift_x * delta_time);
+  double new_y = prev_y + (ydot * delta_time) + (drift_y * delta_time);
   double new_time = record.getTimeStamp() + delta_time;
-  double new_sog = hypot((xdot + force_x), (ydot + force_y));
+  double new_sog = hypot((xdot + drift_x), (ydot + drift_y));
   double new_hog = relAng(prev_x, prev_y,  new_x, new_y);
   
   record.setSpeed(new_speed);
@@ -162,7 +162,7 @@ void SimEngine::propagateHeading(NodeRecord& record,
 				 double rudder,
 				 double thrust,
 				 double turn_rate,
-				 double torque_theta)
+				 double rotate_speed)
 {
   // Assumption is that the thruster and rudder are on the same
   // actuator, e.g., like the kayaks, or typical UUVs. A rotated
@@ -183,8 +183,8 @@ void SimEngine::propagateHeading(NodeRecord& record,
   // Step 2: Calculate change in heading factoring thrust
   delta_deg = (1 + ((thrust-50)/50)) * delta_deg;
 
-  // Step 3: Calculate change in heading factoring external force
-  delta_deg += (delta_time * torque_theta);
+  // Step 3: Calculate change in heading factoring external drift
+  delta_deg += (delta_time * rotate_speed);
 
   // Step 4: Calculate final new heading in the range [0,359]
   double prev_heading = record.getHeading();
