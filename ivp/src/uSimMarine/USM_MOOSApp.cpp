@@ -61,40 +61,56 @@ bool USM_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
       m_model.setElevator(dval);
     else if(key == "USM_SIM_PAUSED")
       m_model.setPaused(toupper(sval) == "TRUE");
-    else if(key == "USM_BUOYANCY_RATE")
+
+    else if((key == "USM_BUOYANCY_RATE") || // Deprecated
+	    (key == "BUOYANCY_RATE"))
       m_model.setParam("buoyancy_rate", dval);
-    else if((key == "USM_FORCE_THETA") || (key == "USM_ROTATE_SPEED"))
-      m_model.setParam("torque_theta", dval);
-    else if((key == "USM_FORCE_X") || (key == "CURRENT_X") || (key == "USM_DRIFT_X"))
+
+    else if((key == "USM_FORCE_THETA") ||   // Deprecated
+	    (key == "ROTATE_SPEED"))
+      m_model.setParam("rotate_speed", dval);
+
+    else if((key == "USM_FORCE_X") ||       // Deprecated
+	    (key == "CURRENT_X")   || 
+	    (key == "DRIFT_X"))
       m_model.setParam("drift_x", dval);
-    else if((key == "USM_FORCE_Y") || (key == "CURRENT_Y") || (key == "USM_DRIFT_Y"))
+
+    else if((key == "USM_FORCE_Y") ||       // Deprecated
+	    (key == "CURRENT_Y")   || 
+	    (key == "DRIFT_Y"))
       m_model.setParam("drift_y", dval);
-    else if((key == "USM_FORCE_VECTOR")      || (key == "USM_DRIFT_VECTOR"))
+
+    else if((key == "USM_FORCE_VECTOR") ||  // Deprecated
+	    (key == "DRIFT_VECTOR"))
       m_model.setDriftVector(sval, false);
-    else if((key == "USM_FORCE_VECTOR_ADD")  || (key == "USM_DRIFT_VECTOR_ADD"))
+
+    else if((key == "USM_FORCE_VECTOR_ADD") || // Deprecated
+	    (key == "DRIFT_VECTOR_ADD"))
       m_model.setDriftVector(sval, true);
-    else if((key == "USM_FORCE_VECTOR_MULT") || (key == "USM_DRIFT_VECTOR_MULT"))
+
+    else if((key == "USM_FORCE_VECTOR_MULT") || // Deprecated
+	    (key == "DRIFT_VECTOR_MULT"))
       m_model.magDriftVector(dval);
-    else if((key == "USM_WATER_DEPTH") || (key == "USM_WATER_DEPTH"))
+    else if((key == "USM_WATER_DEPTH") ||    // Dprecated
+	    (key == "WATER_DEPTH"))
       m_model.setParam("water_depth", dval);
-    else if(key == "USM_RESET") 
-      {
-	m_reset_count++;
-	m_Comms.Notify("USM_RESET_COUNT", m_reset_count);
-	m_model.initPosition(sval);
-      }
-  // Added buoyancy and trim control and sonar handshake. HS 2012-07-22
+    else if(key == "USM_RESET") {
+      m_reset_count++;
+      m_Comms.Notify("USM_RESET_COUNT", m_reset_count);
+      m_model.initPosition(sval);
+    }
+    // Added buoyancy and trim control and sonar handshake. HS 2012-07-22
     else if(key == "BUOYANCY_CONTROL") {
       if (dval > 0.5) {
 	// Set buoyancy to zero to simulate trim
 	m_model.setParam("buoyancy_rate", 0.0);
-	std::string buoyancy_status="status=2,error=0,buoyancy=0.0";
+	string buoyancy_status="status=2,error=0,buoyancy=0.0";
 	m_Comms.Notify("BUOYANCY_REPORT",buoyancy_status);
       }
     }
     else if(key == "TRIM_CONTROL") {
       if (dval > 0.5) {
-	std::string trim_status="status=2,error=0,trim_pitch=0.0,trim_roll=0.0";
+	string trim_status="status=2,error=0,trim_pitch=0.0,trim_roll=0.0";
 	m_Comms.Notify("TRIM_REPORT",trim_status);
       }
     }
@@ -234,27 +250,38 @@ void USM_MOOSApp::registerVariables()
   m_Comms.Register("DESIRED_THRUST", 0);
   m_Comms.Register("DESIRED_ELEVATOR", 0);
 
-  m_Comms.Register("USM_BUOYANCY_RATE", 0);
-  m_Comms.Register("USM_WATER_DEPTH", 0);
-  m_Comms.Register("USM_FORCE_X", 0);
-  m_Comms.Register("USM_FORCE_Y", 0);
-  m_Comms.Register("USM_FORCE_VECTOR", 0);
-  m_Comms.Register("USM_FORCE_VECTOR_ADD", 0);
-  m_Comms.Register("USM_FORCE_VECTOR_MULT", 0);
-  m_Comms.Register("USM_FORCE_THETA", 0);
-  m_Comms.Register("USM_PAUSE", 0);
+  m_Comms.Register("USM_BUOYANCY_RATE", 0);  // Deprecated
+  m_Comms.Register("BUOYANCY_RATE", 0);
+
+  m_Comms.Register("USM_WATER_DEPTH", 0);    // Deprecated
+  m_Comms.Register("WATER_DEPTH", 0);
+
+  m_Comms.Register("USM_FORCE_X", 0);  // Deprecated
+  m_Comms.Register("CURRENT_X",0);
+  m_Comms.Register("DRIFT_X",0);
+
+  m_Comms.Register("USM_FORCE_Y", 0);  // Dperecated
+  m_Comms.Register("CURRENT_Y",0);
+  m_Comms.Register("DRIFT_Y",0);
+
+  m_Comms.Register("USM_FORCE_VECTOR", 0); // Deprecated
+  m_Comms.Register("DRIFT_VECTOR", 0);
+
+  m_Comms.Register("USM_FORCE_VECTOR_ADD", 0); // Deprecated
+  m_Comms.Register("DRIFT_VECTOR_ADD", 0);
+
+  m_Comms.Register("USM_FORCE_VECTOR_MULT", 0); // Deprecated
+  m_Comms.Register("DRIFT_VECTOR_MULT", 0);
+
+  m_Comms.Register("USM_FORCE_THETA", 0); // Deprecated
+  m_Comms.Register("ROTATE_SPEED", 0);
+
+  m_Comms.Register("USM_PAUSE", 0); 
   m_Comms.Register("USM_RESET", 0);
+
   // Added buoyancy and trim control and sonar handshake
   m_Comms.Register("TRIM_CONTROL",0);
   m_Comms.Register("BUOYANCY_CONTROL",0);
-  m_Comms.Register("CURRENT_X",0);
-  m_Comms.Register("CURRENT_Y",0);
-  m_Comms.Register("USM_DRIFT_X",0);
-  m_Comms.Register("USM_DRIFT_Y",0);
-  m_Comms.Register("USM_DRIFT_VECTOR", 0);
-  m_Comms.Register("USM_DRIFT_VECTOR_ADD", 0);
-  m_Comms.Register("USM_DRIFT_VECTOR_MULT", 0);
-  m_Comms.Register("USM_ROTATE_SPEED", 0);
 }
 
 //------------------------------------------------------------------------
