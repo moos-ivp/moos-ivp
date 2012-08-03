@@ -149,17 +149,17 @@ ProcessConfig = uTimerScript
    RANDVAR = varname=ANG, min=0,   max=359, key=at_reset
    RANDVAR = varname=MAG, min=1.5, max=3.5, key=at_reset
 
-   EVENT = var=USM_DRIFT_VECTOR_ADD, val="$(ANG),{$(MAG)*0.2}", time=0
-   EVENT = var=USM_DRIFT_VECTOR_ADD, val="$(ANG),{$(MAG)*0.2}", time=2
-   EVENT = var=USM_DRIFT_VECTOR_ADD, val="$(ANG),{$(MAG)*0.2}", time=4
-   EVENT = var=USM_DRIFT_VECTOR_ADD, val="$(ANG),{$(MAG)*0.2}", time=6
-   EVENT = var=USM_DRIFT_VECTOR_ADD, val="$(ANG),{$(MAG)*0.2}", time=8
+   EVENT = var=DRIFT_VECTOR_ADD, val="$(ANG),{$(MAG)*0.2}", time=0
+   EVENT = var=DRIFT_VECTOR_ADD, val="$(ANG),{$(MAG)*0.2}", time=2
+   EVENT = var=DRIFT_VECTOR_ADD, val="$(ANG),{$(MAG)*0.2}", time=4
+   EVENT = var=DRIFT_VECTOR_ADD, val="$(ANG),{$(MAG)*0.2}", time=6
+   EVENT = var=DRIFT_VECTOR_ADD, val="$(ANG),{$(MAG)*0.2}", time=8
 
-   EVENT = var=USM_DRIFT_VECTOR_ADD, val="$(ANG),{$(MAG)*-0.2}", time=10
-   EVENT = var=USM_DRIFT_VECTOR_ADD, val="$(ANG),{$(MAG)*-0.2}", time=12
-   EVENT = var=USM_DRIFT_VECTOR_ADD, val="$(ANG),{$(MAG)*-0.2}", time=14
-   EVENT = var=USM_DRIFT_VECTOR_ADD, val="$(ANG),{$(MAG)*-0.2}", time=16
-   EVENT = var=USM_DRIFT_VECTOR_ADD, val="$(ANG),{$(MAG)*-0.2}", Time=18
+   EVENT = var=DRIFT_VECTOR_ADD, val="$(ANG),{$(MAG)*-0.2}", time=10
+   EVENT = var=DRIFT_VECTOR_ADD, val="$(ANG),{$(MAG)*-0.2}", time=12
+   EVENT = var=DRIFT_VECTOR_ADD, val="$(ANG),{$(MAG)*-0.2}", time=14
+   EVENT = var=DRIFT_VECTOR_ADD, val="$(ANG),{$(MAG)*-0.2}", time=16
+   EVENT = var=DRIFT_VECTOR_ADD, val="$(ANG),{$(MAG)*-0.2}", Time=18
 }
 
 //------------------------------------------

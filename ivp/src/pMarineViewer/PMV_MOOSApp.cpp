@@ -218,8 +218,8 @@ void PMV_MOOSApp::registerVariables()
   m_Comms.Register("VIEW_RANGE_PULSE",   0);
 
   unsigned int i, vsize = m_scope_vars.size();
-  //for(i=0; i<vsize; i++)
-  //  m_Comms.Register(m_scope_vars[i], 0);
+  for(i=0; i<vsize; i++)
+    m_Comms.Register(m_scope_vars[i], 0);
 
   vsize = m_node_report_vars.size();
   for(i=0; i<vsize; i++)

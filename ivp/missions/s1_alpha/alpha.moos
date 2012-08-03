@@ -214,6 +214,7 @@ ProcessConfig = pMarineViewer
   hash_shade           = 0.4
   hash_view            = true
 
+  scope  = FOOBAR
   scope  = WPT_DURATION
   scope  = WPT_HIT
   scope  = VIEW_SEGLIST
