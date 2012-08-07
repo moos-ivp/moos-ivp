@@ -184,6 +184,7 @@ SET(IVP_NON_GUI_APPS
   app_alogrm
   app_alogclip
   app_aloghelm
+  app_alogcheck
   app_nsplug
   app_gen_hazards
   pEchoVar
