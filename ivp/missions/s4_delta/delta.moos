@@ -168,7 +168,10 @@ ProcessConfig = pMarineViewer
   hash_shade           = 0.4
   hash_view            = true
 
-  left_context[survey-point] = SURVEY_UPDATES = points = vname=$(VNAME), x=$(XPOS), y=$(YPOS), format=lawnmower, label=delta, width=70, height=30, lane_width=8, rows=north-south, degs=80
+  left_context[survey-point] = SURVEY_UPDATES = points = vname=$(VNAME), x=$(XPOS), y=$(YPOS), format=bowtie, label=delta, wid1=10, wid2=25, wid3=30, height=20
+
+//  left_context[survey-point] = SURVEY_UPDATES = points = vname=$(VNAME), x=$(XPOS), y=$(YPOS), format=lawnmower, label=delta, width=70, height=30, lane_width=8, rows=north-south, degs=80
+
   left_context[survey-point] = SURVEY = true
 
   SCOPE = SURVEY_UPDATES
