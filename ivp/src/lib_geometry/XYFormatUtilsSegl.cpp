@@ -59,6 +59,8 @@ XYSegList string2SegList(string str)
       new_segl = stringZigZag2SegList(str);
     else if(strContains(no_white_string, "format=lawnmower"))
       new_segl = stringLawnmower2SegList(str);
+    else if(strContains(no_white_string, "format=bowtie"))
+      new_segl = stringBowTie2SegList(str);
 
     if(new_segl.valid())
       return(new_segl);
@@ -430,5 +432,184 @@ XYSegList stringLawnmower2SegList(string str)
   }
   if(snapval > 0)
     new_seglist.apply_snap(snapval);
+  return(new_seglist);
+}
+
+
+//---------------------------------------------------------------
+// Procedure: stringBowTie2SegList (Method #5)
+// Example: "format=bowtie, x=0, y=8, height=100, wid1=10, wid2=25, 
+//          wid3=30, startx=-40, starty=80"
+
+XYSegList stringBowTie2SegList(string str)
+{
+  XYSegList null_seglist;
+  XYSegList new_seglist;
+
+  // Below are the mandatory parameters - check they are set.
+  bool xpos_set   = false;
+  bool ypos_set   = false;
+  bool wid1_set   = false;
+  bool wid2_set   = false;
+  bool wid3_set   = false;
+  bool height_set = false;
+  bool startx_set = false;
+  bool starty_set = false;
+
+  double xpos   = 0;
+  double ypos   = 0;
+  double height = 0;
+  double wid1   = 0;
+  double wid2   = 0;
+  double wid3   = 0;
+  double startx = 0;
+  double starty = 0;
+
+  vector<string> mvector = parseStringQ(str, ',');
+  unsigned int i, vsize = mvector.size();
+  
+  for(i=0; i<vsize; i++) {
+    string param = tolower(biteStringX(mvector[i], '='));
+    string value = mvector[i];
+    double dval  = atof(value.c_str());
+    if((param == "x") && isNumber(value)) {
+      xpos = dval;
+      xpos_set = true;
+    }
+    else if((param == "y") && isNumber(value)) {
+      ypos = dval;
+      ypos_set = true;
+    }
+    else if((param == "height") && isNumber(value)) {
+      height = dval;
+      height_set = true;
+    }
+    else if((param == "wid1") && isNumber(value)) {
+      wid1 = dval;
+      wid1_set = true;
+    }
+    else if((param == "wid2") && isNumber(value)) {
+      wid2 = dval;
+      wid2_set = true;
+    }
+    else if((param == "wid3") && isNumber(value)) {
+      wid3 = dval;
+      wid3_set = true;
+    }
+    else if((param == "startx") && isNumber(value)) {
+      startx = dval;
+      startx_set = true;
+    }
+    else if((param == "starty") && isNumber(value)) {
+      starty = dval;
+      starty_set = true;
+    }
+    else
+      new_seglist.set_param(param, value);
+  }
+
+  if(!xpos_set || !ypos_set || !height_set || !wid1_set || !wid2_set || !wid3_set)
+    return(null_seglist);
+
+  double x0 = xpos;
+  double y0 = ypos;
+
+  double x1 = xpos - wid2;
+  double y1 = ypos + (height/2);
+
+  double x2 = xpos - wid1; 
+  double y2 = ypos + (height/2);
+
+  double x3 = xpos + wid1;
+  double y3 = ypos + (height/2);
+
+  double x4 = xpos + wid2;
+  double y4 = ypos + (height/2);
+
+  double x5 = xpos - wid3;
+  double y5 = ypos;
+
+  double x6 = xpos + wid3;
+  double y6 = ypos;
+
+  double x7 = xpos - wid2;
+  double y7 = ypos - (height/2);
+
+  double x8 = xpos - wid1; 
+  double y8 = ypos - (height/2);
+
+  double x9 = xpos + wid1;
+  double y9 = ypos - (height/2);
+
+  double x10 = xpos + wid2;
+  double y10 = ypos - (height/2);
+
+  string acase = "ne";
+  if(startx_set && starty_set) {
+    double rang = relAng(xpos, ypos, startx, starty);
+    if((rang >= 0) && (rang < 90))
+      acase = "ne";
+    else if((rang >= 90) && (rang < 180))
+      acase = "se";
+    else if((rang >= 180) && (rang < 270))
+      acase = "sw";
+    else 
+      acase = "nw";
+  }
+
+  new_seglist.add_vertex(x0,  y0);
+
+  if(acase == "nw") {
+    new_seglist.add_vertex(x9,  y9);
+    new_seglist.add_vertex(x10, y10);
+    new_seglist.add_vertex(x6,  y6);
+    new_seglist.add_vertex(x4,  y4);
+    new_seglist.add_vertex(x3,  y3);
+    new_seglist.add_vertex(x8,  y8);
+    new_seglist.add_vertex(x7,  y7);
+    new_seglist.add_vertex(x5,  y5);
+    new_seglist.add_vertex(x1,  y1);
+    new_seglist.add_vertex(x2,  y2);
+  }
+  else if(acase == "ne") {
+    new_seglist.add_vertex(x8,  y8);
+    new_seglist.add_vertex(x7,  y7);
+    new_seglist.add_vertex(x5,  y5);
+    new_seglist.add_vertex(x1,  y1);
+    new_seglist.add_vertex(x2,  y2);
+    new_seglist.add_vertex(x9,  y9);
+    new_seglist.add_vertex(x10, y10);
+    new_seglist.add_vertex(x6,  y6);
+    new_seglist.add_vertex(x4,  y4);
+    new_seglist.add_vertex(x3,  y3);
+  }
+  else if(acase == "se") {
+    new_seglist.add_vertex(x2,  y2);
+    new_seglist.add_vertex(x1,  y1);
+    new_seglist.add_vertex(x5,  y5);
+    new_seglist.add_vertex(x7,  y7);
+    new_seglist.add_vertex(x8,  y8);
+    new_seglist.add_vertex(x3,  y3);
+    new_seglist.add_vertex(x4,  y4);
+    new_seglist.add_vertex(x6,  y6);
+    new_seglist.add_vertex(x10, y10);
+    new_seglist.add_vertex(x9,  y9);
+  }
+  else if(acase == "sw") {
+    new_seglist.add_vertex(x3,  y3);
+    new_seglist.add_vertex(x4,  y4);
+    new_seglist.add_vertex(x6,  y6);
+    new_seglist.add_vertex(x10, y10);
+    new_seglist.add_vertex(x9,  y9);
+    new_seglist.add_vertex(x2,  y2);
+    new_seglist.add_vertex(x1,  y1);
+    new_seglist.add_vertex(x5,  y5);
+    new_seglist.add_vertex(x7,  y7);
+    new_seglist.add_vertex(x8,  y8);
+  }
+
+
+  new_seglist.add_vertex(x0,  y0);
+
   return(new_seglist);
 }
