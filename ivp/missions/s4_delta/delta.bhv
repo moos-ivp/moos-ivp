@@ -109,7 +109,7 @@ Behavior = BHV_Waypoint
   updates   = SURVEY_UPDATES
   endflag   = SURVEY = false
 
-     cycleflag = SURVEY = false
+     endflag = SURVEY = false
           lead = 8
    lead_damper = 1
          speed = 2.0   // meters per second
