@@ -303,18 +303,33 @@ bool USM_MOOSApp::Iterate()
   m_model.propagate(curr_time);
   
     // buoyancy and trim control
-    if (buoyancy_requested && (curr_time-buoyancy_request_time >= buoyancy_delay) )
+    if (buoyancy_requested)
       {
-	std::string buoyancy_status="status=2,error=0,buoyancy=0.0";
-	m_Comms.Notify("BUOYANCY_REPORT",buoyancy_status);
-	buoyancy_requested = false;
+	if (curr_time-buoyancy_request_time >= buoyancy_delay) 
+	  {
+	    std::string buoyancy_status="status=2,error=0,buoyancy=0.0";
+	    m_Comms.Notify("BUOYANCY_REPORT",buoyancy_status);
+	    buoyancy_requested = false;
+	  }
+	else
+	  {
+	    std::string buoyancy_status="status=1,error=0,buoyancy=0.0";
+	    m_Comms.Notify("BUOYANCY_REPORT",buoyancy_status);
+	  }
       }
-
-    if (trim_requested && (curr_time-trim_request_time >= trim_delay) )
+    if (trim_requested)
       {
-	std::string trim_status="status=2,error=0,trim_pitch=0.0,trim_roll=0.0";
-	m_Comms.Notify("TRIM_REPORT",trim_status);
-	trim_requested = false;
+	if (curr_time-trim_request_time >= trim_delay) 
+	  {
+	    std::string trim_status="status=2,error=0,trim_pitch=0.0,trim_roll=0.0";
+	    m_Comms.Notify("TRIM_REPORT",trim_status);
+	    trim_requested = false;
+	  }
+	else
+	  {
+	    std::string trim_status="status=1,error=0,trim_pitch=0.0,trim_roll=0.0";
+	    m_Comms.Notify("TRIM_REPORT",trim_status);
+	  }
       }
 
   NodeRecord record = m_model.getNodeRecord();
