@@ -421,9 +421,11 @@ void BHV_StationKeep::updateHibernationState()
     return;  
   
   if(m_transit_state == "pending_progress_start") {
-    if(historyShowsProgressStart()) {
-      historyClear();
-      m_transit_state = "noted_progress_start";
+    if(m_dist_to_station <= m_pskeep_radius) {
+      if(historyShowsProgressStart()) {
+	historyClear();
+	m_transit_state = "noted_progress_start";
+      }
     }
   }
   else if(m_transit_state == "noted_progress_start") {
