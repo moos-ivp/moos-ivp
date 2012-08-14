@@ -36,6 +36,11 @@ USM_MOOSApp::USM_MOOSApp()
 {
   m_sim_prefix     = "USM";
   m_reset_count    = 0;
+
+  buoyancy_requested = false;
+  trim_requested = false;
+  buoyancy_delay = 2;
+  trim_delay = 4;
 }
 
 //------------------------------------------------------------------------
@@ -100,28 +105,32 @@ bool USM_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
       m_model.initPosition(sval);
     }
     // Added buoyancy and trim control and sonar handshake. HS 2012-07-22
-    else if(key == "BUOYANCY_CONTROL") {
-      if (dval > 0.5) {
-	// Set buoyancy to zero to simulate trim
-	m_model.setParam("buoyancy_rate", 0.0);
-	string buoyancy_status="status=2,error=0,buoyancy=0.0";
-	m_Comms.Notify("BUOYANCY_REPORT",buoyancy_status);
+    else if (key == "BUOYANCY_CONTROL") 
+      {
+	if (MOOSStrCmp(sval,"true"))
+	  {
+	    // Set buoyancy to zero to simulate trim
+	    m_model.setParam("buoyancy_rate", 0.0);
+	    buoyancy_request_time = MOOSTime();
+	    buoyancy_requested = true;
+	  } 
+      }	    
+    else if(key == "TRIM_CONTROL")
+      {
+	if (MOOSStrCmp(sval,"true"))
+	  {
+	    trim_request_time = MOOSTime();
+	    trim_requested = true;
+	  }
       }
-    }
-    else if(key == "TRIM_CONTROL") {
-      if (dval > 0.5) {
-	string trim_status="status=2,error=0,trim_pitch=0.0,trim_roll=0.0";
-	m_Comms.Notify("TRIM_REPORT",trim_status);
-      }
-    }
     else
       MOOSTrace("Unrecognized command: [%s]\n", key.c_str());
   }
-
+  
   return(true);
 }
-
-//------------------------------------------------------------------------
+  
+  //------------------------------------------------------------------------
 // Procedure: OnStartUp
 //      Note: 
 
@@ -293,6 +302,21 @@ bool USM_MOOSApp::Iterate()
   double curr_time = MOOSTime();
   m_model.propagate(curr_time);
   
+    // buoyancy and trim control
+    if (buoyancy_requested && (curr_time-buoyancy_request_time >= buoyancy_delay) )
+      {
+	std::string buoyancy_status="status=2,error=0,buoyancy=0.0";
+	m_Comms.Notify("BUOYANCY_REPORT",buoyancy_status);
+	buoyancy_requested = false;
+      }
+
+    if (trim_requested && (curr_time-trim_request_time >= trim_delay) )
+      {
+	std::string trim_status="status=2,error=0,trim_pitch=0.0,trim_roll=0.0";
+	m_Comms.Notify("TRIM_REPORT",trim_status);
+	trim_requested = false;
+      }
+
   NodeRecord record = m_model.getNodeRecord();
   postNodeRecordUpdate(m_sim_prefix, record, curr_time);
 

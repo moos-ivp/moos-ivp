@@ -56,6 +56,13 @@ protected:
 
   CMOOSGeodesy m_geodesy;
   bool         m_geo_ok;
+
+  bool buoyancy_requested;
+  bool trim_requested;
+  double buoyancy_request_time;
+  double trim_request_time;
+  double buoyancy_delay;
+  double trim_delay;
 };
 #endif
 
