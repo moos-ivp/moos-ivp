@@ -21,6 +21,7 @@
 /*****************************************************************/
 
 #include <iostream>
+#include <math.h>
 #include "USM_MOOSApp.h"
 #include "MBUtils.h"
 #include "AngleUtils.h"
@@ -40,7 +41,8 @@ USM_MOOSApp::USM_MOOSApp()
   buoyancy_requested = false;
   trim_requested = false;
   buoyancy_delay = 2;
-  trim_delay = 4;
+  max_trim_delay = 10;
+  pitch_tolerance = 5;
 }
 
 //------------------------------------------------------------------------
@@ -211,6 +213,11 @@ bool USM_MOOSApp::OnStartUp()
       m_model.setParam("turn_rate", dval);
     else if(param == "DEFAULT_WATER_DEPTH")
       m_model.setParam("water_depth", dval);
+    else if(param == "TRIM_TOLERANCE")
+      pitch_tolerance = dval;
+    else if(param == "MAX_TRIM_DELAY")
+      max_trim_delay = dval;
+
   }
 
   // look for latitude, longitude global variables
@@ -302,6 +309,9 @@ bool USM_MOOSApp::Iterate()
   double curr_time = MOOSTime();
   m_model.propagate(curr_time);
   
+  NodeRecord record = m_model.getNodeRecord();
+  double pitch_degrees = record.getPitch()*180.0/M_PI;
+
     // buoyancy and trim control
     if (buoyancy_requested)
       {
@@ -319,20 +329,21 @@ bool USM_MOOSApp::Iterate()
       }
     if (trim_requested)
       {
-	if (curr_time-trim_request_time >= trim_delay) 
+	if (fabs(pitch_degrees) <= pitch_tolerance || curr_time-trim_request_time >= max_trim_delay) 
 	  {
-	    std::string trim_status="status=2,error=0,completed,trim_pitch=0.0,trim_roll=0.0";
+	    std::string trim_status="status=2,error=0,completed,trim_pitch="
+	      + doubleToString(pitch_degrees) + ",trim_roll=0.0";
 	    m_Comms.Notify("TRIM_REPORT",trim_status);
 	    trim_requested = false;
 	  }
 	else
 	  {
-	    std::string trim_status="status=1,error=0,progressing,trim_pitch=0.0,trim_roll=0.0";
+	    std::string trim_status="status=1,error=0,progressing,trim_pitch="
+	      + doubleToString(pitch_degrees) + ",trim_roll=0.0";
 	    m_Comms.Notify("TRIM_REPORT",trim_status);
 	  }
       }
 
-  NodeRecord record = m_model.getNodeRecord();
   postNodeRecordUpdate(m_sim_prefix, record, curr_time);
 
   if(m_model.usingDualState()) {

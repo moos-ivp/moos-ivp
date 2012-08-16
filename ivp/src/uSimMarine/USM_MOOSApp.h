@@ -62,7 +62,9 @@ protected:
   double buoyancy_request_time;
   double trim_request_time;
   double buoyancy_delay;
-  double trim_delay;
+  double max_trim_delay;
+  double pitch_tolerance;
+
 };
 #endif
 
