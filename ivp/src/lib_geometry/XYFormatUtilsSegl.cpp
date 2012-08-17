@@ -511,8 +511,8 @@ XYSegList stringBowTie2SegList(string str)
   if(!xpos_set || !ypos_set || !height_set || !wid1_set || !wid2_set || !wid3_set)
     return(null_seglist);
 
-  double x0 = xpos;
-  double y0 = ypos;
+  //double x0 = xpos;
+  //double y0 = ypos;
 
   double x1 = xpos - wid2;
   double y1 = ypos + (height/2);
@@ -557,7 +557,7 @@ XYSegList stringBowTie2SegList(string str)
       acase = "nw";
   }
 
-  new_seglist.add_vertex(x0,  y0);
+  //new_seglist.add_vertex(x0,  y0);
 
   if(acase == "nw") {
     new_seglist.add_vertex(x9,  y9);
@@ -609,7 +609,7 @@ XYSegList stringBowTie2SegList(string str)
   }
 
 
-  new_seglist.add_vertex(x0,  y0);
+  //new_seglist.add_vertex(x0,  y0);
 
   return(new_seglist);
 }
