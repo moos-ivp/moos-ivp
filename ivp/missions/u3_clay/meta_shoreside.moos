@@ -180,17 +180,29 @@ ProcessConfig = uTimerScript
   RESET_MAX  = unlimited
   RESET_TIME = end
 
-  RANDVAR = varname=X1, min=-30,  max=20,   key=at_reset
-  RANDVAR = varname=Y1, min=-100, max=-50,  key=at_reset
+  RANDVAR = varname=X1, min=-10,  max=0,   key=at_reset
+  RANDVAR = varname=Y1, min=-80, max=-70,  key=at_reset
 
-  RANDVAR = varname=X2, min=100,  max=150,  key=at_reset
-  RANDVAR = varname=Y2, min=-100, max=-50,  key=at_reset
+  RANDVAR = varname=X2, min=120,  max=130,  key=at_reset
+  RANDVAR = varname=Y2, min=-80, max=-70,  key=at_reset
 
-  RANDVAR = varname=X3, min=-30,  max=20,   key=at_reset
-  RANDVAR = varname=Y3, min=-210, max=-160, key=at_reset
+  RANDVAR = varname=X3, min=-10,  max=0,   key=at_reset
+  RANDVAR = varname=Y3, min=-190, max=-180, key=at_reset
 
-  RANDVAR = varname=X4, min=100,  max=150,  key=at_reset
-  RANDVAR = varname=Y4, min=-210, max=-160, key=at_reset
+  RANDVAR = varname=X4, min=120,  max=130,  key=at_reset
+  RANDVAR = varname=Y4, min=-190, max=-180, key=at_reset
+
+  //RANDVAR = varname=X1, min=-30,  max=20,   key=at_reset
+  //RANDVAR = varname=Y1, min=-100, max=-50,  key=at_reset
+
+  //RANDVAR = varname=X2, min=100,  max=150,  key=at_reset
+  //RANDVAR = varname=Y2, min=-100, max=-50,  key=at_reset
+
+  //RANDVAR = varname=X3, min=-30,  max=20,   key=at_reset
+  //RANDVAR = varname=Y3, min=-210, max=-160, key=at_reset
+
+  //RANDVAR = varname=X4, min=100,  max=150,  key=at_reset
+  //RANDVAR = varname=Y4, min=-210, max=-160, key=at_reset
 
   EVENT = var=UP_LOITER_4, val="center_assign=$[X4],$[Y4]", time=180 
   EVENT = var=UP_LOITER_3, val="center_assign=$[X3],$[Y3]", time=180
