@@ -597,6 +597,6 @@ void BHV_Loiter::postConfigStatus()
   string poly_str = m_loiter_engine.getPolygon().get_spec();
   str += ",polygon=" + poly_str;
 
-  postMessage("BHV_SETTINGS", str);
+  postRepeatableMessage("BHV_SETTINGS", str);
 }
 

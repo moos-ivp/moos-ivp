@@ -569,6 +569,6 @@ void BHV_StationKeep::postConfigStatus()
   str += ",outer_speed=" + doubleToString(m_outer_speed,1);
   str += ",center_activate=" + boolToString(m_center_activate);
 
-  postMessage("BHV_SETTINGS", str);
+  postRepeatableMessage("BHV_SETTINGS", str);
 }
 
