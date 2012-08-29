@@ -95,6 +95,7 @@ bool BHV_Loiter::setParam(string param, string value)
   else if(param == "center_assign") {
     m_center_assign  = value;
     m_center_pending = true;
+    updateCenter(); // Added by mikerb 08/29/12 to ensure updates are immediate
     return(true);
   }  
   else if(param == "xcenter_assign") {
