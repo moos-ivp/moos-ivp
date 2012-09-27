@@ -41,7 +41,7 @@ USM_MOOSApp::USM_MOOSApp()
   buoyancy_requested = false;
   trim_requested = false;
   buoyancy_delay = 2;
-  max_trim_delay = 10;
+  max_trim_delay = 5;
   pitch_tolerance = 5;
 }
 
@@ -114,6 +114,8 @@ bool USM_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 	    // Set buoyancy to zero to simulate trim
 	    m_model.setParam("buoyancy_rate", 0.0);
 	    buoyancy_request_time = MOOSTime();
+	    std::string buoyancy_status="status=1,error=0,progressing,buoyancy=0.0";
+	    m_Comms.Notify("BUOYANCY_REPORT",buoyancy_status);
 	    buoyancy_requested = true;
 	  } 
       }	    
@@ -122,6 +124,8 @@ bool USM_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 	if (MOOSStrCmp(sval,"true"))
 	  {
 	    trim_request_time = MOOSTime();
+	    std::string trim_status="status=1,error=0,progressing,trim_pitch=0.0,trim_roll=0.0";
+	    m_Comms.Notify("TRIM_REPORT",trim_status);
 	    trim_requested = true;
 	  }
       }
