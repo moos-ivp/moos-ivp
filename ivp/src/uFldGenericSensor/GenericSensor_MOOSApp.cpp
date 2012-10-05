@@ -179,13 +179,13 @@ bool GenericSensor_MOOSApp::OnStartUp()
     else if(param == "show_source_pts")
       handled = setBooleanOnString(m_show_source_pts, value);
     else if(param == "source_point")
-      handled = addSourcePoint(value);
+      handled = handleConfigSourcePoint(value);
     else if(param == "min_reset_interval")
-      handled = setMinResetInterval(value);
+      handled = handleConfigMinResetInterval(value);
     else if(param == "min_sensor_interval")
-      handled = setMinSensorInterval(value);
+      handled = handleConfigMinSensorInterval(value);
     else if(param == "sensor_config")
-      handled = addSensorConfig(value);
+      handled = handleConfigSensorOption(value);
     else if((param == "scope_transparency") && isNumber(value)) {
       m_scope_transparency = vclip(atof(value.c_str()), 0, 1);
       handled = true;
@@ -211,9 +211,9 @@ bool GenericSensor_MOOSApp::OnStartUp()
 //==================================================================
 
 //------------------------------------------------------------
-// Procedure: addSourcePoint  "x=20,y=30,label=01"
+// Procedure: handleConfigSourcePoint  "x=20,y=30,label=01"
 
-bool GenericSensor_MOOSApp::addSourcePoint(string line)
+bool GenericSensor_MOOSApp::handleConfigSourcePoint(string line)
 {
   double xval, yval;
   string label;
@@ -247,10 +247,10 @@ bool GenericSensor_MOOSApp::addSourcePoint(string line)
 }
 
 //------------------------------------------------------------
-// Procedure: addSensorConfig  
+// Procedure: handleConfigSensorOption  
 //   Example: range=40
 
-bool GenericSensor_MOOSApp::addSensorConfig(string line)
+bool GenericSensor_MOOSApp::handleConfigSensorOption(string line)
 {
   string sensor_range_str;
 
@@ -392,7 +392,7 @@ bool GenericSensor_MOOSApp::handleSensorRequest(const string& request)
 //   Example: vname=alpha,range=40
 
 bool GenericSensor_MOOSApp::handleSensorConfig(const string& config,
-					     const string& msg_src)
+					       const string& msg_src)
 {
   // Part 1: Parse the incoming configuration request
   string vname, str_range;
@@ -480,9 +480,9 @@ void GenericSensor_MOOSApp::postSensorReport(double ptx, double pty, string vnam
 }
 
 //------------------------------------------------------------
-// Procedure: setSensorTransparency
+// Procedure: handleConfigSensorTransparency
 
-bool GenericSensor_MOOSApp::setSensorTransparency(string str)
+bool GenericSensor_MOOSApp::handleConfigSensorTransparency(string str)
 {
   // No check for [0,1] range. Handled in polygon set_transparency()
   m_sensor_transparency = atof(str.c_str());
@@ -490,9 +490,9 @@ bool GenericSensor_MOOSApp::setSensorTransparency(string str)
 }
 
 //------------------------------------------------------------
-// Procedure: setTermReportInterval
+// Procedure: handleConfigTermReportInterval
 
-bool GenericSensor_MOOSApp::setTermReportInterval(string str)
+bool GenericSensor_MOOSApp::handleConfigTermReportInterval(string str)
 {
   if(!isNumber(str)) {
     memoErr("Improper term_report_interval: " + str);
@@ -505,9 +505,9 @@ bool GenericSensor_MOOSApp::setTermReportInterval(string str)
 }
 
 //------------------------------------------------------------
-// Procedure: setOptionsSummaryInterval
+// Procedure: handleConfigOptionsSummaryInterval
 
-bool GenericSensor_MOOSApp::setOptionsSummaryInterval(string str)
+bool GenericSensor_MOOSApp::handleConfigOptionsSummaryInterval(string str)
 {
   if(!isNumber(str)) {
     memoErr("Improper options_summary_interval: " + str);
@@ -520,9 +520,9 @@ bool GenericSensor_MOOSApp::setOptionsSummaryInterval(string str)
 }
 
 //------------------------------------------------------------
-// Procedure: setMinResetInterval
+// Procedure: handleConfigMinResetInterval
 
-bool GenericSensor_MOOSApp::setMinResetInterval(string str)
+bool GenericSensor_MOOSApp::handleConfigMinResetInterval(string str)
 {
   if(!isNumber(str)) {
     memoErr("Improper min_reset_interval: " + str);
@@ -536,9 +536,9 @@ bool GenericSensor_MOOSApp::setMinResetInterval(string str)
 }
 
 //------------------------------------------------------------
-// Procedure: setMinSensorInterval
+// Procedure: handleConfigMinSensorInterval
 
-bool GenericSensor_MOOSApp::setMinSensorInterval(string str)
+bool GenericSensor_MOOSApp::handleConfigMinSensorInterval(string str)
 {
   if(!isNumber(str)) {
     memoErr("Improper min_sensor_interval: " + str);

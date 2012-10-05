@@ -47,13 +47,13 @@ class GenericSensor_MOOSApp : public CMOOSApp
   void  postVisuals();
 
  protected: // Configuration utility
-  bool    addSourcePoint(std::string);
-  bool    addSensorConfig(std::string);
-  bool    setSensorTransparency(std::string);
-  bool    setTermReportInterval(std::string);
-  bool    setOptionsSummaryInterval(std::string);
-  bool    setMinResetInterval(std::string);
-  bool    setMinSensorInterval(std::string);
+  bool    handleConfigSourcePoint(std::string);
+  bool    handleConfigSensorOption(std::string);
+  bool    handleConfigSensorTransparency(std::string);
+  bool    handleConfigTermReportInterval(std::string);
+  bool    handleConfigOptionsSummaryInterval(std::string);
+  bool    handleConfigMinResetInterval(std::string);
+  bool    handleConfigMinSensorInterval(std::string);
 
  protected: // Incoming mail utility
   bool    handleNodeReport(const std::string&);
