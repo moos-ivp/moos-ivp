@@ -48,8 +48,6 @@ int main(int argc, char *argv[])
       mission_file = argv[i];
     else if(strBegins(argi, "--alias="))
       run_command = argi.substr(8);
-    else if(argi=="--verbose=")
-      verbose = argi.substr(10);
     else if(i == 2)
       run_command = argi;
   }
@@ -62,8 +60,6 @@ int main(int argc, char *argv[])
   cout << termColor() << endl;
 
   GenericSensor_MOOSApp generic_sensor;
-  if(verbose != "")
-    generic_sensor.setVerbose(verbose);
   generic_sensor.Run(run_command.c_str(), mission_file.c_str());
  
   return(0);

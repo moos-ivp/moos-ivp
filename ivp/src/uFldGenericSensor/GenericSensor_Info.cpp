@@ -56,15 +56,15 @@ void showHelpAndExit()
 {
   blk("                                                          ");
   blu("==========================================================");
-  blu("Usage: uFldGenericSensor file.moos [OPTIONS]               ");
+  blu("Usage: uFldGenericSensor file.moos [OPTIONS]              ");
   blu("==========================================================");
   blk("                                                          ");
   showSynopsis();
   blk("                                                          ");
   blk("Options:                                                  ");
   mag("  --alias","=<ProcessName>                                ");
-  blk("      Launch uFldGenericSensor with the given process      ");
-  blk("      name rather than uFldGenericSensor.                  ");
+  blk("      Launch uFldGenericSensor with the given process     ");
+  blk("      name rather than uFldGenericSensor.                 ");
   mag("  --example, -e                                           ");
   blk("      Display example MOOS configuration block.           ");
   mag("  --help, -h                                              ");
@@ -72,7 +72,7 @@ void showHelpAndExit()
   mag("  --interface, -i                                         ");
   blk("      Display MOOS publications and subscriptions.        ");
   mag("  --version,-v                                            ");
-  blk("      Display release version of uFldGenericSensor.        ");
+  blk("      Display release version of uFldGenericSensor.       ");
   mag("  --verbose","=<setting>                                  ");
   blk("      Set verbosity. true or false (default)              ");
   blk("                                                          ");
@@ -90,34 +90,30 @@ void showHelpAndExit()
 void showExampleConfigAndExit()
 {
   blu("=============================================================== ");
-  blu("uFldGenericSensor Example MOOS Configuration                     ");
+  blu("uFldGenericSensor Example MOOS Configuration                    ");
   blu("=============================================================== ");
   blk("                                                                ");
-  blk("ProcessConfig = uFldGenericSensor                                ");
+  blk("ProcessConfig = uFldGenericSensor                               ");
   blk("{                                                               ");
   blk("  AppTick   = 4                                                 ");
   blk("  CommsTick = 4                                                 ");
   blk("                                                                ");
   blk("  // Configuring visual preferences                             ");
-  blk("  show_source_pts      = true                     // default    ");
-  blk("  scope_transparency   = 0.25                     // default    ");
+  blk("  show_source_pts     = true                    // default      ");
+  blk("  scope_transparency  = 0.25                    // default      ");
+  blk("  color_source_pts    = green                   // default      ");
+  blk("  show_source_pts     = true                    // default      ");
   blk("                                                                ");
-  blk("  source_point         = x=20,y=30,label=12                     ");
-  blk("  default_benign_color = light_blue               // default    ");
-  blk("  default_benign_width = 8                        // default    ");
-  blk("  swath_transparency   = 0.2                      // default    ");
+  blk("  // Configure the Sensed Object Laydown                        ");
+  blk("  source_point        = x=-20,y=30,label=07                     ");
+  blk("  source_point        = x=45,y=-93,label=12                     ");
   blk("                                                                ");
-  blk("  sensor_config = width=25, exp=4, class=0.80                   ");
-  blk("  sensor_config = width=50, exp=2, class=0.60                   ");
-  blk("  sensor_config = width=10, exp=6, class=0.93                   ");
-  blk("  hazard_file   = hazards.txt                                   ");
-  blk("  swath_length  = 5                               // default    ");
-  blk("  seed_random   = false                           // default    ");
-  blk("  verbose       = true                            // default    ");
-  blk("                                                                ");
-  blk("  show_hazards  = true  // default                // default    ");
-  blk("  show_swath    = true  // default                // default    ");
-  blk("  show_reports  = 60    // seconds (unlimited if unspecified)   ");
+  blk("  // Configure the Sensor Properties                            ");
+  blk("  min_reset_interval  = 300                     // default      ");
+  blk("  min_sensor_interval = 30                      // default      ");
+  blk("  sensor_config       = range = 30                              ");
+  blk("  sensor_config       = range = 100                             ");
+  blk("  sensor_config       = range = 60                              ");
   blk("}                                                               ");
   blk("                                                                ");
   exit(0);
@@ -145,7 +141,7 @@ void showInterfaceAndExit()
   blk("                      YAW=118.8,DEPTH=4.6,LENGTH=3.8,           ");
   blk("                      MODE=MODE@ACTIVE:LOITERING                ");
   blk("  UGS_SENSOR_REQUEST = vname=archie                             ");
-  blk("  UGS_CONFIG_REQUEST = vname=archie,width=50,pd=0.9             ");
+  blk("  UGS_CONFIG_REQUEST = vname=archie,range=25                    ");
   blk("                                                                ");
   blk("PUBLICATIONS:                                                   ");
   blk("------------------------------------                            ");
@@ -163,14 +159,6 @@ void showInterfaceAndExit()
   blk("                        vertex_size=0,fill_transparency=0.3     ");
   blk("                        type=circle,width=4                     ");
   blk("                                                                ");
-  blk("  VIEW_MARKER         = x=217.3,y=-16.7,width=8,label=6,        ");
-  blk("  (hazards)             primary_color=green,type=triangle       ");
-  blk("                                                                ");
-  blk("  VIEW_POLYGON        = pts={-156.7,-314.6:-160.2,-305.2:-113.3,");
-  blk("  (sensor swath)        -287.7:-109.8,-297.1},msg=_null_,       ");
-  blk("                        label=sensor_swath_archie,vertex_size=0,");
-  blk("                        fill_color=white,edge_size=0,           ");
-  blk("                        fill_transparency=0.25                  ");
   exit(0);
 }
 

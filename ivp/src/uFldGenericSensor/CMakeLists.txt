@@ -15,7 +15,6 @@ endif (${WIN32})
 
 SET(SRC
    GenericSensor_MOOSApp.cpp
-   GenericSensor_Model.cpp
    GenericSensor_Info.cpp
    main.cpp
 )
