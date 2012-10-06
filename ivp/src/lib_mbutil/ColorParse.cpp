@@ -190,13 +190,13 @@ string colorNameToHex(const std::string &str)
   // Check for the most common ones first
   if(cstr == "black")          return("hex:00,00,00");
   if(cstr == "blue")           return("hex:00,00,ff");
+  if(cstr == "red")            return("hex:ff,00,00");
+  if(cstr == "yellow")         return("hex:ff,ff,00");
+  if(cstr == "white")          return("hex:ff,ff,ff");
   if(cstr == "darkgreen")      return("hex:00,64,00");
   if(cstr == "darkolivegreen") return("hex:55,6b,2f");
   if(cstr == "darkred")        return("hex:8b,00,00");
   if(cstr == "green")          return("hex:00,80,00");
-  if(cstr == "red")            return("hex:ff,00,00");
-  if(cstr == "yellow")         return("hex:ff,ff,00");
-  if(cstr == "white")          return("hex:ff,ff,ff");
   if(cstr == "macbeige")       return("hex:df,db,c3");
   if(cstr == "macpurple")      return("hex:49,3d,78");
 

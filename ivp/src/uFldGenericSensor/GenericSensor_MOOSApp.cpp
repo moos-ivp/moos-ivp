@@ -3,6 +3,7 @@
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: GenericSensor_MOOSApp.cpp                            */
 /*    DATE: Jan 28th 2012                                        */
+/*    DATE: Oct 5th 2012 Major Mods                              */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
 /* modify it under the terms of the GNU General Public License   */
@@ -52,8 +53,6 @@ GenericSensor_MOOSApp::GenericSensor_MOOSApp()
   m_options_summary_interval = 10;   // in timewarped seconds
   m_sensor_transparency  = 0.75;     // visual preference
   
-  m_seed_random  = true;
-  
   // Visual preferences
   m_show_source_pts    = true;
   m_color_source_pts   = "green";
@@ -77,13 +76,13 @@ bool GenericSensor_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
     
     bool handled = false;
     if((key == "NODE_REPORT") || (key == "NODE_REPORT_LOCAL"))
-      handled = handleNodeReport(sval);
+      handled = handleMailNodeReport(sval);
     
     else if(key == "UGS_SENSOR_REQUEST")
-      handled = handleSensorRequest(sval);
+      handled = handleMailSensorRequest(sval);
     
     else if(key == "UGS_CONFIG_REQUEST")
-      handled = handleSensorConfig(sval, src_community);
+      handled = handleMailSensorConfig(sval, src_community);
     
     if(!handled) {
       string unhandled_msg = "Uhandled msg: " + key;
@@ -201,14 +200,12 @@ bool GenericSensor_MOOSApp::OnStartUp()
   
   m_time_warp = GetMOOSTimeWarp();
 
-  perhapsSeedRandom();
+  srand(time(NULL));
   cout << "Simulated Generic Sensor started." << endl;
   cout << termColor() << flush;
   return(true);
 }
 
-
-//==================================================================
 
 //------------------------------------------------------------
 // Procedure: handleConfigSourcePoint  "x=20,y=30,label=01"
@@ -285,13 +282,13 @@ bool GenericSensor_MOOSApp::handleConfigSensorOption(string line)
 }
     
 //---------------------------------------------------------
-// Procedure: handleNodeReport
+// Procedure: handleMailNodeReport
 //   Example: NAME=alpha,TYPE=KAYAK,UTC_TIME=1267294386.51,
 //            X=29.66,Y=-23.49,LAT=43.825089, LON=-70.330030, 
 //            SPD=2.00, HDG=119.06,YAW=119.05677,DEPTH=0.00,     
 //            LENGTH=4.0,MODE=ENGAGED
 
-bool GenericSensor_MOOSApp::handleNodeReport(const string& node_report_str)
+bool GenericSensor_MOOSApp::handleMailNodeReport(const string& node_report_str)
 {
   NodeRecord node_record = string2NodeRecord(node_report_str);
 
@@ -311,10 +308,10 @@ bool GenericSensor_MOOSApp::handleNodeReport(const string& node_report_str)
 }
 
 //---------------------------------------------------------
-// Procedure: handleSensorRequest
+// Procedure: handleMailSensorRequest
 //   Example: vname=alpha
 
-bool GenericSensor_MOOSApp::handleSensorRequest(const string& request)
+bool GenericSensor_MOOSApp::handleMailSensorRequest(const string& request)
 {
   // Part 1: Parse the string request
   string vname;
@@ -357,7 +354,7 @@ bool GenericSensor_MOOSApp::handleSensorRequest(const string& request)
 
   // Part 4: Update the sensor region/polygon based on new position 
   //         and perhaps new sensor setting.
-  //updateNodePolygon(vix);
+  // updateNodePolygon(vix);
 
   // Part 5: For each source point, determine if the point is within range to
   //         the requesting vehicle.
@@ -388,11 +385,18 @@ bool GenericSensor_MOOSApp::handleSensorRequest(const string& request)
 }
 
 //---------------------------------------------------------
-// Procedure: handleSensorConfig
+// Procedure: handleMailSensorConfig
 //   Example: vname=alpha,range=40
+//     Notes: For those simulated sensors that have different possible 
+//            sensor configurations, we check for mail here in case the
+//            vehicle has requested to dynamically reconfigure its setting.
+//  Consider: How to handle the case where the vehicle requests a setting
+//            not available? Find the "nearest" legal setting? Reject the
+//            request outright? Here we take the nearest legal setting.
+//  Consider: Posting an acknowledgement. We do that here: UGS_CONFIG_ACK 
 
-bool GenericSensor_MOOSApp::handleSensorConfig(const string& config,
-					       const string& msg_src)
+bool GenericSensor_MOOSApp::handleMailSensorConfig(const string& config,
+						   const string& msg_src)
 {
   // Part 1: Parse the incoming configuration request
   string vname, str_range;
@@ -430,6 +434,9 @@ bool GenericSensor_MOOSApp::handleSensorConfig(const string& config,
 
 //---------------------------------------------------------
 // Procedure: postVisuals()
+//   Purpose: Post visual artifacts relevant to the initial sensor
+//            configuration or simulated field of objects. Here this
+//            is just the set of "points" in the op area.
 
 void GenericSensor_MOOSApp::postVisuals()
 {
@@ -453,6 +460,13 @@ void GenericSensor_MOOSApp::postVisuals()
 
 //------------------------------------------------------------
 // Procedure: postSensorReport()
+//   Purpose: Generate the MOOS var posting that will constitute the "sensor
+//            output" from the vehicle's perspective. For example, a temperature
+//            sensor would grab the temperature and wrap it up into a MOOS
+//            message here.
+//      Note: Visual artifcacts are also typically generated. These are usually
+//            not bridged out to the vehicle, but rather consumed on the 
+//            shoreside for visual feedback.
 
 void GenericSensor_MOOSApp::postSensorReport(double ptx, double pty, string vname)
 {
@@ -460,14 +474,14 @@ void GenericSensor_MOOSApp::postSensorReport(double ptx, double pty, string vnam
   double range = m_map_vehicle_sensor_range[vname];
   
   int    bearing = rand() % 360; 
-  double dist    = rand() % (int)(range);
+  double dist    = MOOSWhiteNoise(range/4);
   
   double rx, ry;
   projectPoint(bearing, dist, ptx, pty, rx, ry);
   
   string report = "vname=" + vname + ",x=" + doubleToString(rx,1) + 
     ",y=" + doubleToString(ry,1);
-  m_Comms.Notify("UGS_HAZARD_REPORT_" + toupper(vname), report);
+  m_Comms.Notify("UGS_SENSOR_REPORT_" + toupper(vname), report);
   
   XYPoint point;
   point.set_vx(rx);
@@ -481,6 +495,10 @@ void GenericSensor_MOOSApp::postSensorReport(double ptx, double pty, string vnam
 
 //------------------------------------------------------------
 // Procedure: handleConfigSensorTransparency
+//      Note: For sensors that have a "range" or "swath", we often generate
+//            a polygon to render that field. Often it is also good to make
+//            that field semi transparent. This function just allows one to
+//            configure that transparency.
 
 bool GenericSensor_MOOSApp::handleConfigSensorTransparency(string str)
 {
@@ -491,6 +509,11 @@ bool GenericSensor_MOOSApp::handleConfigSensorTransparency(string str)
 
 //------------------------------------------------------------
 // Procedure: handleConfigTermReportInterval
+//      Note: Reports sent to the terminal are not usually generated every
+//            AppTick, but rather based on a time interval more in line with
+//            how often a user can visually consume continuously updated 
+//            information. The time interval is "real" time, that is, time
+//            warp information will be taken into consideration.
 
 bool GenericSensor_MOOSApp::handleConfigTermReportInterval(string str)
 {
@@ -506,6 +529,11 @@ bool GenericSensor_MOOSApp::handleConfigTermReportInterval(string str)
 
 //------------------------------------------------------------
 // Procedure: handleConfigOptionsSummaryInterval
+//   Purpose: Periodically the simulated sensor will post configuration options
+//            and bridge this to the vehicle. This way the vehicle knows which
+//            configuration options are available. This may not be relevant for
+//            say a temperature sensor, but for say a simulated sonar this 
+//            could mean the available swath widths and frequencies available.
 
 bool GenericSensor_MOOSApp::handleConfigOptionsSummaryInterval(string str)
 {
@@ -521,6 +549,8 @@ bool GenericSensor_MOOSApp::handleConfigOptionsSummaryInterval(string str)
 
 //------------------------------------------------------------
 // Procedure: handleConfigMinResetInterval
+//   Purpose: Allow the simulated sensor to enforce a minimum time between
+//            sensor re-configurations.
 
 bool GenericSensor_MOOSApp::handleConfigMinResetInterval(string str)
 {
@@ -550,16 +580,6 @@ bool GenericSensor_MOOSApp::handleConfigMinSensorInterval(string str)
     m_min_sensor_interval  = 0;
   return(true);
 }
-
-//------------------------------------------------------------
-// Procedure: perhapsSeedRandom
-
-void GenericSensor_MOOSApp::perhapsSeedRandom()
-{
-  if(m_seed_random)
-    srand(time(NULL));
-}
-
 
 //------------------------------------------------------------
 // Procedure: setVehicleSensorSetting

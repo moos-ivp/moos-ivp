@@ -3,6 +3,7 @@
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: HazardSensor_MOOSApp.h                               */
 /*    DATE: Jan 28th, 2012                                       */
+/*    DATE: Oct 4th, 2012 Major Mods                             */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
 /* modify it under the terms of the GNU General Public License   */
@@ -35,16 +36,11 @@ class GenericSensor_MOOSApp : public CMOOSApp
   GenericSensor_MOOSApp();
   virtual ~GenericSensor_MOOSApp() {};
 
-  bool OnNewMail(MOOSMSG_LIST &NewMail);
-  bool Iterate();
-  bool OnConnectToServer();
-  bool OnStartUp();
-  void RegisterVariables();
-
-  // -----------------------------------------------------------
-  void  perhapsSeedRandom();
-  void  sortSensorProperties();
-  void  postVisuals();
+  bool    OnNewMail(MOOSMSG_LIST &NewMail);
+  bool    Iterate();
+  bool    OnConnectToServer();
+  bool    OnStartUp();
+  void    RegisterVariables();
 
  protected: // Configuration utility
   bool    handleConfigSourcePoint(std::string);
@@ -56,9 +52,9 @@ class GenericSensor_MOOSApp : public CMOOSApp
   bool    handleConfigMinSensorInterval(std::string);
 
  protected: // Incoming mail utility
-  bool    handleNodeReport(const std::string&);
-  bool    handleSensorRequest(const std::string&);
-  bool    handleSensorConfig(const std::string&, const std::string&);
+  bool    handleMailNodeReport(const std::string&);
+  bool    handleMailSensorRequest(const std::string&);
+  bool    handleMailSensorConfig(const std::string&, const std::string&);
 
  protected: // Outgoing mail utility
   void    postSensorReport(double ptx, double pty, std::string vname);
@@ -66,6 +62,9 @@ class GenericSensor_MOOSApp : public CMOOSApp
  protected: // Utilities
   bool    setVehicleSensorSetting(std::string, double);
   bool    updateNodeRecords(NodeRecord);
+  void    sortSensorProperties();
+  void    postVisuals();
+
   void    printReport();
 
   void    memo(const std::string&);
@@ -95,8 +94,6 @@ class GenericSensor_MOOSApp : public CMOOSApp
   double      m_min_reset_interval;
   double      m_term_report_interval;
   double      m_options_summary_interval;
-  bool        m_seed_random;
-
   double      m_sensor_transparency;
 
   // A string describing available sensor propery settings
