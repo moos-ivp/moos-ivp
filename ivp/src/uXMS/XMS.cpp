@@ -219,8 +219,12 @@ bool XMS::OnConnectToServer()
 bool XMS::OnStartUp()
 {
   STRING_LIST sParams;
-  //m_MissionReader.GetConfiguration(GetAppName(), sParams);
-  m_MissionReader.GetConfiguration("uXMS", sParams);
+
+  string app_name = m_app_name_noindex;
+  if(app_name == "")
+    app_name = GetAppName();
+
+  m_MissionReader.GetConfiguration(app_name, sParams);
 
   // Variables shown in the order they appear in the config file
   sParams.reverse();

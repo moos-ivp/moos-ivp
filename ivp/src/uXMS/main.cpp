@@ -57,6 +57,11 @@ int main(int argc ,char * argv[])
       mission_file = argv[i];
     else if(strBegins(argi, "--alias="))
       run_command = argi.substr(8);
+    // To support pAntler convention where argv[2] indicates an alternative
+    // procname, we allow this when argv[2] begins with uXMS. In this case
+    // it is likely that argv[2] does not represent a var to be scoped.
+    else if((i==2) && strBegins(argi, "uXMS"))
+      run_command = argi;
   }
   
   string server_host      = "localhost";
@@ -118,6 +123,7 @@ int main(int argc ,char * argv[])
   }
   
   XMS g_theXMS(server_host, server_port);
+  g_theXMS.setAppNameNoIndex(run_command);
 
   if(term_rpt_interval != "")
     g_theXMS.setTermReportInterval(term_rpt_interval);

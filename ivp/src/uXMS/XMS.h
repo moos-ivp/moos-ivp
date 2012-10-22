@@ -57,6 +57,7 @@ class XMS : public CMOOSApp
   void setDispEmptyStrings(bool v)   {m_display_null_strings = v;};
   void setDispAll(bool v)            {m_display_all = v;};
   void setTruncData(double v);
+  void setAppNameNoIndex(std::string s) {m_app_name_noindex = s;};
  
   void setConfigureCommsLocally(bool v) {m_configure_comms_locally=v;};
   void setColorMapping(std::string var, std::string color="any");
@@ -152,6 +153,8 @@ class XMS : public CMOOSApp
   double m_last_all_refresh;    
 
   std::map<std::string, std::string> m_color_map;
+
+  std::string m_app_name_noindex;
 };
 
 
