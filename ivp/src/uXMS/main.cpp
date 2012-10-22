@@ -138,31 +138,33 @@ int main(int argc ,char * argv[])
     cout << "Mission File was provided: " << mission_file << endl;
   }
 
-  // Handle the building of the uXMS process name.
-  if(seed) {
-    // Add 1 to each in case one returns a zero in an error case
-    unsigned long tseed = time(NULL) + 1;
+  if(run_command == "uXMS") {
+    // Handle the building of the uXMS process name.
+    if(seed) {
+      // Add 1 to each in case one returns a zero in an error case
+      unsigned long tseed = time(NULL) + 1;
 #ifdef _WIN32
-    unsigned long hostid = 0; 
-    char hostname[256];
-    if(gethostname(hostname, 256) == 0 ){
-      hostent *host = gethostbyname(hostname);
-      if(host != NULL){
-	hostid = *(u_long *)host->h_addr_list[0];
+      unsigned long hostid = 0; 
+      char hostname[256];
+      if(gethostname(hostname, 256) == 0 ){
+	hostent *host = gethostbyname(hostname);
+	if(host != NULL){
+	  hostid = *(u_long *)host->h_addr_list[0];
+	}
       }
-    }
-    hostid += 1;
+      hostid += 1;
 #else
-    unsigned long hostid = gethostid() + 1; 
+      unsigned long hostid = gethostid() + 1; 
 #endif
-    unsigned long pid = (long)getpid() + 1;
-    unsigned long seed = (tseed%999999);
-    seed = ((rand()) * seed * hostid) % 999999;
-    seed = (seed * pid) % 999999;
-    srand(seed);
-    int    rand_int = rand() % 1000;
-    string rand_str = intToString(rand_int);
-    run_command += "_" + rand_str;
+      unsigned long pid = (long)getpid() + 1;
+      unsigned long seed = (tseed%999999);
+      seed = ((rand()) * seed * hostid) % 999999;
+      seed = (seed * pid) % 999999;
+      srand(seed);
+      int    rand_int = rand() % 1000;
+      string rand_str = intToString(rand_int);
+      run_command += "_" + rand_str;
+    }
   }
 
   // start the XMS in its own thread
