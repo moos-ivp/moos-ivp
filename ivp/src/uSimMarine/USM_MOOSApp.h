@@ -63,6 +63,8 @@ protected:
   double trim_request_time;
   double buoyancy_delay;
   double max_trim_delay;
+  double last_report;
+  double report_interval;
   double pitch_tolerance;
 
 };

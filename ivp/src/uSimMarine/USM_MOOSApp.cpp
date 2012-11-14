@@ -40,8 +40,10 @@ USM_MOOSApp::USM_MOOSApp()
 
   buoyancy_requested = false;
   trim_requested = false;
-  buoyancy_delay = 2;
-  max_trim_delay = 5;
+  buoyancy_delay = 5;
+  max_trim_delay = 10;
+  last_report = 0;
+  report_interval = 5; 
   pitch_tolerance = 5;
 }
 
@@ -117,6 +119,7 @@ bool USM_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 	    std::string buoyancy_status="status=1,error=0,progressing,buoyancy=0.0";
 	    m_Comms.Notify("BUOYANCY_REPORT",buoyancy_status);
 	    buoyancy_requested = true;
+	    last_report = buoyancy_request_time;
 	  } 
       }	    
     else if(key == "TRIM_CONTROL")
@@ -127,6 +130,7 @@ bool USM_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 	    std::string trim_status="status=1,error=0,progressing,trim_pitch=0.0,trim_roll=0.0";
 	    m_Comms.Notify("TRIM_REPORT",trim_status);
 	    trim_requested = true;
+	    last_report = trim_request_time;
 	  }
       }
     else
@@ -325,10 +329,11 @@ bool USM_MOOSApp::Iterate()
 	    m_Comms.Notify("BUOYANCY_REPORT",buoyancy_status);
 	    buoyancy_requested = false;
 	  }
-	else
+	else if (curr_time - last_report >= report_interval)
 	  {
 	    std::string buoyancy_status="status=1,error=0,progressing,buoyancy=0.0";
 	    m_Comms.Notify("BUOYANCY_REPORT",buoyancy_status);
+	    last_report = curr_time; 
 	  }
       }
     if (trim_requested)
@@ -342,11 +347,12 @@ bool USM_MOOSApp::Iterate()
 	    m_Comms.Notify("TRIM_REPORT",trim_status);
 	    trim_requested = false;
 	  }
-	else
+	else if (curr_time - last_report >= report_interval)
 	  {
 	    std::string trim_status="status=1,error=0,progressing,trim_pitch="
 	      + doubleToString(pitch_degrees) + ",trim_roll=0.0";
 	    m_Comms.Notify("TRIM_REPORT",trim_status);
+	    last_report = curr_time; 
 	  }
       }
 
