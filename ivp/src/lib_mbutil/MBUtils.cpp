@@ -1400,11 +1400,11 @@ float snapToStep(float gfloat, float step)
   if(step <= 0) 
     return(gfloat);
   float fval   = gfloat / step;    // Divide by step
-  int   itemp;
+  long int itemp;
   if(fval < 0.0)
-    itemp = (int)(fval-0.5);
+    itemp = (long int)(fval-0.5);
   else
-    itemp  = (int)(fval+0.5);      // round to nearest integer
+    itemp  = (long int)(fval+0.5);      // round to nearest integer
   fval = (float)itemp * step;      // multiply again by the step
   return(fval);
 }
@@ -1423,9 +1423,9 @@ float snapToStep(float gfloat, float step)
 float snapDownToStep(float gfloat, float step)
 { 
   if(step <= 0) return(gfloat);
-  float fval   = gfloat / step;    // Divide by step
-  int   itemp  = (int)(fval);      // round to nearest integer
-  fval = (float)itemp * step;      // multiply again by the step
+  float fval     = gfloat / step;    // Divide by step
+  long int itemp = (long int)(fval); // round to nearest integer
+  fval = (float)itemp * step;        // multiply again by the step
   return(fval);
 }
   
