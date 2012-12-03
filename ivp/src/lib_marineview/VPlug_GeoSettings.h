@@ -33,29 +33,36 @@ public:
   VPlug_GeoSettings();
   virtual ~VPlug_GeoSettings() {};
 
+ public:   // A Catch-All Setter
   bool   setParam(const std::string& param, std::string value);
+
+ protected: // Specfic Setters
+  bool   setViewMapping(std::string, std::string);
+  bool   setSizeMapping(std::string, std::string);
+  bool   setSizeMapping(std::string, std::string, double min, double max);
+  bool   setOpaqMapping(std::string, std::string);
+  bool   setAttrMapping(std::string, std::string);
   bool   setColorMapping(std::string, std::string);
-  bool   setTransparencyMapping(std::string, std::string);
-  bool   setViewableMapping(std::string, std::string);
-  bool   setGSizeMapping(std::string, std::string, double max=0);
 
-  bool   viewable(const std::string&, bool view_default=true);
-  double geosize(const std::string&, double size_default=0);
-  double transparency(const std::string&, double size_default=0.5);
-  
-  ColorPack geocolor(const std::string&, 
-		     std::string color_default="");
+ public:  // Specific Gettters (Custom return format)
+  bool         viewable(const std::string&, bool view_default=true) const;
+  double       geosize(const std::string&, double size_default=0) const;
+  double       opaqueness(const std::string&, double size_default=0.5) const;
+  std::string  attribute(const std::string&, std::string str_default="") const;
+  std::string  colorname(const std::string&, std::string color_default="") const;
+  ColorPack    geocolor(const std::string&, std::string color_default="") const;
 
-  std::vector<std::string> getParamReport() const;
+ public:  // A Catch-All Getter (String return format)
+  std::string  strvalue(const std::string&);  
 
 protected:
-  std::map<std::string, ColorPack>  m_color_map;
-  std::map<std::string, bool>       m_viewable_map;
-  std::map<std::string, double>     m_gsize_map;
-  std::map<std::string, double>     m_trans_map;
-  
+  std::map<std::string, bool>        m_viewable_map;
+  std::map<std::string, double>      m_gsize_map;
+  std::map<std::string, double>      m_opaque_map; 
+  std::map<std::string, std::string> m_attribute_map;
+  std::map<std::string, std::string> m_color_str_map;
+  std::map<std::string, ColorPack>   m_color_pck_map;
 };
 
 #endif
-
 

@@ -40,9 +40,11 @@ public:
 
   unsigned int size() const {return(m_vertex_xpos.size());}
   
-  bool viewable(const std::string& s="all") const;
-  double getLineShade() const       {return(m_line_shade);};
-  double getLabelShade() const      {return(m_label_shade);};
+  bool   viewable(const std::string& s="all") const;
+  double geosize(const std::string&) const;
+
+  double getLineShade() const               {return(m_line_shade);};
+  double getLabelShade() const              {return(m_label_shade);};
 
   double getXPos(unsigned int ix) const;
   double getYPos(unsigned int ix) const;
@@ -56,9 +58,6 @@ public:
   std::vector<double> getLColor(unsigned int ix) const;
   std::vector<double> getVColor(unsigned int ix) const;
 
-  ColorPack getDatumColor() const {return(m_datum_color);};
-  double getDatumSize() const     {return(m_datum_size);};
-  
 protected:
   void addVertex(double xpos, double ypos, double lwidth,
 		 std::string group, std::string label, 
@@ -81,13 +80,9 @@ protected:
   bool   m_viewable_all;
   double m_line_shade;
   double m_label_shade;
-
-  // Datum member variables
-  bool      m_datum_viewable;
-  double    m_datum_size;
-  ColorPack m_datum_color;
 };
 
 #endif
+
 
 

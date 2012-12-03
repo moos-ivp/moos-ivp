@@ -1,9 +1,24 @@
-/****************************************************************/
-/*   NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
-/*   ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*   FILE: HostInfo_Info.cpp                                    */
-/*   DATE: Dec 9th 2011                                         */
-/****************************************************************/
+/*****************************************************************/
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    FILE: HostInfo_Info.cpp                                    */
+/*    DATE: Dec 9th 2011                                         */
+/*                                                               */
+/* This program is free software; you can redistribute it and/or */
+/* modify it under the terms of the GNU General Public License   */
+/* as published by the Free Software Foundation; either version  */
+/* 2 of the License, or (at your option) any later version.      */
+/*                                                               */
+/* This program is distributed in the hope that it will be       */
+/* useful, but WITHOUT ANY WARRANTY; without even the implied    */
+/* warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR       */
+/* PURPOSE. See the GNU General Public License for more details. */
+/*                                                               */
+/* You should have received a copy of the GNU General Public     */
+/* License along with this program; if not, write to the Free    */
+/* Software Foundation, Inc., 59 Temple Place - Suite 330,       */
+/* Boston, MA 02111-1307, USA.                                   */
+/*****************************************************************/
 
 #include <cstdlib>
 #include <iostream>
@@ -81,6 +96,8 @@ void showExampleConfigAndExit()
   blk("                                                                ");
   blk("  TEMP_FILE_DIR  = ./                                           ");
   blk("  DEFAULT_HOSTIP = 192.168.0.55    // default is \"localhost\"  ");
+  blk("                                                                ");
+  blk("  DEFAULT_HOSTIP_FORCE = 192.168.0.55                           ");
   blk("}                                                               ");
   exit(0);
 }
@@ -97,23 +114,24 @@ void showInterfaceAndExit()
   blk("                                                                ");
   showSynopsis();
   blk("                                                                ");
+  blk("DOCUMENTATION: moos-ivp.org/apps/pHostInfo                      ");
+  blk("                                                                ");
   blk("PUBLICATIONS:                                                   ");
   blk("------------------------------------                            ");
   blk("  PHI_HOST_IP         = 192.168.0.1                             ");
   blk("  PHI_HOST_IP_ALL     = 192.168.0.1,10.1.127.3                  ");
   blk("  PHI_HOST_IP_VERBOSE = OSX_WIFI=192.168.0.1,OSX_ETHERNET=      ");
   blk("                        10.1.127.3                              ");
-  blk("  PHI_HOST_PORT       = 9000                                    ");
-  blk("  PHI_HOST_PORT_UDP   = 9200                                    ");
+  blk("  PHI_HOST_PORT_DB    = 9000                                    ");
   blk("  PHI_HOST_INFO       = community=alpha,hostip=123.1.1.0,       ");
-  blk("                        port_db=9000,port_udp=9200,             ");
-  blk("                        timewarp=8                              ");
+  blk("                        port_db=9000,timewarp=8,                ");
+  blk("                        pshare_iroutes=localhost:9000,multicast_9");
   blk("                                                                ");
   blk("SUBSCRIPTIONS:                                                  ");
   blk("------------------------------------                            ");
-  blk("  PMB_UDP_LISTEN    = 9200                                      ");
-  blk("  HOST_INFO_REQUEST = true                                      ");
-  blk("                                                                ");
+  blk("  pShare_INPUT_SUMMARY = localhost:9000:udp,                    ");
+  blk("                         1.2.3.4:2000:multicast_23              ");
+  blk("  HOST_INFO_REQUEST    = true                                   ");
   exit(0);
 }
 
@@ -125,4 +143,5 @@ void showReleaseInfoAndExit()
   showReleaseInfo("pHostInfo", "gpl");
   exit(0);
 }
+
 

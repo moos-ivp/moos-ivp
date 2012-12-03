@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: BHV_ConstantHeading.cpp                              */
 /*    DATE: Jul 21st 2005                                        */
 /*                                                               */
@@ -49,6 +49,7 @@ BHV_ConstantHeading::BHV_ConstantHeading(IvPDomain gdomain) :
   m_peakwidth       = 10;
   m_basewidth       = 170;
   m_summitdelta     = 25;
+  m_os_heading      = 0;
 
   // The default duration at the IvPBehavior level is "-1", which
   // indicates no duration applied to the behavior by default. By
@@ -83,6 +84,10 @@ bool BHV_ConstantHeading::setParam(string param, string val)
     m_summitdelta = vclip(dval, 0, 100);
     return(true);
   }
+  else if((param == "heading_mismatch_var") && !strContainsWhite(val)) {
+    m_heading_mismatch_var = val;
+    return(true);
+  }
 
   return(false);
 }
@@ -93,6 +98,7 @@ bool BHV_ConstantHeading::setParam(string param, string val)
 
 IvPFunction *BHV_ConstantHeading::onRunState() 
 {
+  updateInfoIn();
   if(!m_domain.hasDomain("course")) {
     postEMessage("No 'heading/course' variable in the helm domain");
     return(0);
@@ -118,12 +124,31 @@ IvPFunction *BHV_ConstantHeading::onRunState()
   return(ipf);
 }
 
+//-----------------------------------------------------------
+// Procedure: updateInfoIn()
+//   Purpose: Update relevant to the behavior from the info_buffer.
+//            Warning messages may be posted if info is missing.
+//   Returns: true if no relevant info is missing from the info_buffer.
+//            false otherwise.
 
+bool BHV_ConstantHeading::updateInfoIn()
+{
+  bool ok;
+  m_os_heading = getBufferDoubleVal("NAV_HEADING", ok);
 
+  // Should get ownship information from the InfoBuffer
+  if(!ok) {
+    postWMessage("No ownship HEADING info in info_buffer.");  
+    return(false);
+  }
+  
+  double delta = angle180(m_os_heading - m_desired_heading);
+  if(delta < 0)
+    delta *= -1; 
 
-
-
-
-
-
+  if(m_heading_mismatch_var != "")
+    postMessage(m_heading_mismatch_var, delta);
+  
+  return(true);
+}
 

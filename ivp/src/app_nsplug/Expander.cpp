@@ -47,6 +47,8 @@ Expander::Expander(string given_infile, string given_outfile)
   m_initial_filenames.push_back(given_infile);
   m_path.push_back(".");
   m_pmode.push_back("top");
+
+  m_partial_expand_ok = false;
 }
 
 //--------------------------------------------------------
@@ -431,12 +433,12 @@ bool Expander::applyMacrosToLine(string& line,
     if(!isCommented && m_strict)
       exit(EXIT_FAILURE);
     
-    return(false);
+    if(!m_partial_expand_ok)
+      return(false);
   }
-  else {
-    line = newline;
-    return(true);
-  }
+
+  line = newline;
+  return(true);
 }
 
 //--------------------------------------------------------
@@ -690,4 +692,5 @@ void Expander::printModeStack()
   }
   cout << endl;
 }
+
 

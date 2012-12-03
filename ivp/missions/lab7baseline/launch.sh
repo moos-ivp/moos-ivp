@@ -1,89 +1,52 @@
 #!/bin/bash 
-
-WARP=1
-HELP="no"
-JUST_BUILD="no"
-BAD_ARGS=""
-
 #-------------------------------------------------------
 #  Part 1: Check for and handle command-line arguments
 #-------------------------------------------------------
-let COUNT=0
+TIME_WARP=1
+JUST_MAKE="no"
 for ARGI; do
-    UNDEFINED_ARG=$ARGI
-    if [ "${ARGI:0:6}" = "--warp" ] ; then
-	WARP="${ARGI#--warp=*}"
-	UNDEFINED_ARG=""
-    fi
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
-	HELP="yes"
-	UNDEFINED_ARG=""
-    fi
-    # Handle Warp shortcut
-    if [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$COUNT" = 0 ]; then 
-        WARP=$ARGI
-        let "COUNT=$COUNT+1"
-        UNDEFINED_ARG=""
-    fi
-    if [ "${ARGI}" = "--just_build" -o "${ARGI}" = "-j" ] ; then
-	JUST_BUILD="yes"
-	UNDEFINED_ARG=""
-    fi
-    if [ "${UNDEFINED_ARG}" != "" ] ; then
-	BAD_ARGS=$UNDEFINED_ARG
+	printf "%s [SWITCHES] [time_warp]   \n" $0
+	printf "  --just_make, -j    \n" 
+	printf "  --help, -h         \n" 
+	exit 0;
+    elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then 
+        TIME_WARP=$ARGI
+    elif [ "${ARGI}" = "--just_build" -o "${ARGI}" = "-j" ] ; then
+	JUST_MAKE="yes"
+    else 
+	printf "Bad Argument: %s \n" $ARGI
+	exit 0
     fi
 done
-
-if [ "${BAD_ARGS}" != "" ] ; then
-    printf "Bad Argument: %s \n" $BAD_ARGS
-    exit 0
-fi
-
-if [ "${HELP}" = "yes" ]; then
-    printf "%s [SWITCHES]         \n" $0
-    printf "Switches:             \n" 
-    printf "  --warp=WARP_VALUE   \n" 
-    printf "  --just_build, -j    \n" 
-    printf "  --help, -h          \n" 
-    exit 0;
-fi
-
-# Second check that the warp argument is numerical
-if [ "${WARP//[^0-9]/}" != "$WARP" ]; then 
-    printf "Warp values must be numerical. Exiting now."
-    exit 127
-fi
 
 #-------------------------------------------------------
 #  Part 2: Create the .moos and .bhv files. 
 #-------------------------------------------------------
-
+VNAME1="gilda"  
+VNAME2="henry"  
 GROUP12="GROUP12"
-VNAME1="henry"  # The first vehicle Community
-VPORT1="9201"
-LPORT1="9301"
-VNAME2="gilda"  # The second vehicle Community
-VPORT2="9202"
-LPORT2="9302"
 
-SNAME="shoreside"  # Shoreside Community
-SPORT="9000"
-SLPORT="9200"
-
-START_POS1="0,0"         # Vehicle 1 Behavior configurations
+START_POS1="0,0"    
+START_POS2="80,0"   
 LOITER_POS1="x=0,y=-75"
-START_POS2="80,0"        # Vehicle 2 Behavior configurations
 LOITER_POS2="x=125,y=-50"
 
-if [ "${SHOREONLY}" != "yes" ]; then
-    nsplug meta_vehicle.moos targ_gilda.moos -f WARP=$WARP      \
-	VNAME=$VNAME2  VPORT=$VPORT2  LPORT=$LPORT2             \
-        GROUP=$GROUP12  START_POS=$START_POS2 
+SHORE_LISTEN="9300"
 
-    nsplug meta_vehicle.moos targ_henry.moos -f WARP=$WARP      \
-	VNAME=$VNAME1  VPORT=$VPORT1  LPORT=$LPORT1             \
-        GROUP=$GROUP12  START_POS=$START_POS1 
-    
+if [ "${SHOREONLY}" != "yes" ]; then
+    nsplug meta_vehicle.moos targ_gilda.moos -f WARP=$TIME_WARP \
+	VNAME=$VNAME1      START_POS=$START_POS1                \
+	VPORT="9001"       SHARE_LISTEN="9301"                  \
+	VTYPE="kayak"      SHORE_LISTEN=$SHORE_LISTEN           \
+        GROUP=$GROUP12
+
+    nsplug meta_vehicle.moos targ_henry.moos -f WARP=$TIME_WARP \
+	VNAME=$VNAME2      START_POS=$START_POS2                \
+	VPORT="9002"       SHARE_LISTEN="9302"                  \
+	VTYPE="kayak"      SHORE_LISTEN=$SHORE_LISTEN           \
+        GROUP=$GROUP12
+
     nsplug meta_vehicle.bhv targ_henry.bhv -f VNAME=$VNAME1     \
 	START_POS=$START_POS1 LOITER_POS=$LOITER_POS1       
     
@@ -91,28 +54,27 @@ if [ "${SHOREONLY}" != "yes" ]; then
 	START_POS=$START_POS2 LOITER_POS=$LOITER_POS2       
 fi    
 
-nsplug meta_shoreside.moos targ_shoreside.moos -f WARP=$WARP    \
-    SLPORT=$SLPORT  SPORT=$SPORT  SNAME=$SNAME
-    
-    
-if [ ${JUST_BUILD} = "yes" ] ; then
+nsplug meta_shoreside.moos targ_shoreside.moos -f WARP=$TIME_WARP \
+   VNAME="shoreside"  SHARE_LISTEN=$SHORE_LISTEN                  \
+   VPORT="9000"     
+        
+if [ ${JUST_MAKE} = "yes" ] ; then
     exit 0
 fi
 
 #-------------------------------------------------------
 #  Part 3: Launch the processes
 #-------------------------------------------------------
-
 if [ "${SHOREONLY}" != "yes" ]; then
-    printf "Launching $VNAME1 MOOS Community (WARP=%s) \n" $WARP
+    printf "Launching $VNAME1 MOOS Community (WARP=%s) \n" $TIME_WARP
     pAntler targ_henry.moos >& /dev/null &
-    sleep 0.5
-    printf "Launching $VNAME2 MOOS Community (WARP=%s) \n" $WARP
+    sleep 0.25
+    printf "Launching $VNAME2 MOOS Community (WARP=%s) \n" $TIME_WARP
     pAntler targ_gilda.moos >& /dev/null &
-    sleep 0.5
+    sleep 0.25
 fi
 
-printf "Launching $SNAME MOOS Community (WARP=%s) \n"  $WARP
+printf "Launching $SNAME MOOS Community (WARP=%s) \n"  $TIME_WARP
 pAntler targ_shoreside.moos >& /dev/null &
 printf "Done \n"
 

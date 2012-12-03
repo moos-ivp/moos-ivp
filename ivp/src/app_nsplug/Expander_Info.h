@@ -30,3 +30,4 @@ void showManualAndExit();
 void showReleaseInfoAndExit();
 
 #endif
+

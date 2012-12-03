@@ -23,8 +23,7 @@
 #ifndef FV_MOOSAPP_HEADER
 #define FV_MOOSAPP_HEADER
 
-#include "MOOSLib.h"
-#include "MOOSGenLib.h"
+#include "MOOS/libMOOS/MOOSLib.h"
 #include "FV_Viewer.h"
 #include "FV_Model.h"
 #include "FV_GUI.h"
@@ -74,4 +73,5 @@ class FV_MOOSApp : public CMOOSApp
 };
 
 #endif
+
 

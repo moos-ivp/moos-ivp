@@ -54,6 +54,7 @@ VPlug_DropPoints::VPlug_DropPoints()
 bool VPlug_DropPoints::setParam(const string& param, string value)
 {
   value = tolower(value);
+#if 0
   if(param == "drop_point_viewable_all") {
     if((value == "true") || (value == "on"))
       m_viewable_all = true;
@@ -62,7 +63,8 @@ bool VPlug_DropPoints::setParam(const string& param, string value)
     else if(value == "toggle")
       m_viewable_all = !m_viewable_all;
   }
-  else if(param == "drop_point_edit") {
+#endif
+  if(param == "drop_point_edit") {
     if(value == "clear")
       m_points.clear();
     else if((value == "clear_last") && (m_points.size() > 0))
@@ -95,7 +97,6 @@ bool VPlug_DropPoints::setParam(const string& param, string value)
       m_points[i].set_color("label", param);
   }
   else if(param == "drop_point_vertex_size") {
-    cout << "Setting drop_point_vertex_size to " << value << endl;
     if(!isNumber(value))
       return(false);
     double dval = vclip(atof(value.c_str()), 1, 20);
@@ -169,4 +170,5 @@ string VPlug_DropPoints::getCoordinates(unsigned int index) const
   else
     return(m_points_native[index]);
 }
+
 

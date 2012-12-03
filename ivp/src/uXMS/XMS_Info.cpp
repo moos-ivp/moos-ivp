@@ -78,9 +78,8 @@ void showHelpAndExit()
   blk("    Allow history-scoping on variable                           ");
   mag("  --interface, -i                                               ");
   blk("      Display MOOS publications and subscriptions.              ");
-  mag("  --mask","=[virgin,empty]                                      ");
-  blk("    virgin: Don't display virgin variables                      ");
-  blk("    empty:  Don't display empty strings                         ");
+  mag("  --novirgins,-g                                                ");
+  blk("    Don't display virgin variables                              ");
   mag("  --mode","=[paused,events,STREAMING]                           ");
   blk("    Determine display mode. Paused: scope updated only on user  ");
   blk("    request. Events: data updated only on change to a scoped    "); 
@@ -133,8 +132,9 @@ void showExampleConfigAndExit()
   blk("  DISPLAY_TIME          = false   // default                    ");
   blk("  DISPLAY_COMMUNITY     = false   // default                    ");
   blk("  DISPLAY_ALL           = false   // default                    ");
+  blk("  TRUNC_DATA            = false   // default                    ");
   blk("                                                                ");
-  blk("  TERM_REPORT_INTERVAL  = 0.6     // default (seconds           ");
+  blk("  TERM_REPORT_INTERVAL  = 0.6     // default (seconds)          ");
   blk("                                                                ");
   blk("  COLOR_MAP    = pHelmIvP, red   // All postings by pHelmIvP red");
   blk("  COLOR_MAP    = NAV_SPEED, blue // Only var NAV_SPEED is blue  ");
@@ -179,4 +179,5 @@ void showReleaseInfoAndExit()
   showReleaseInfo("uXMS", "gpl");
   exit(0);
 }
+
 

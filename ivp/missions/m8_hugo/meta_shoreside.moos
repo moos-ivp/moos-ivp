@@ -11,23 +11,103 @@ Community  = $(SNAME)
 //--------------------------------------------------------
 Processconfig = ANTLER
 {
-  MSBetweenLaunches = 200
+  MSBetweenLaunches = 100
 
   Run = MOOSDB                 @ NewConsole = false
-  Run = pMOOSBridge            @ NewConsole = false
-  Run = pMarineViewer          @ NewConsole = true
+  Run = pMarineViewer          @ NewConsole = false
   Run = pLogger                @ NewConsole = false
-  Run = uFldContactRangeSensor @ NewConsole = true
+  Run = uProcessWatch          @ NewConsole = false
+  Run = uFldContactRangeSensor @ NewConsole = false
+
+  Run = pShare             @ NewConsole = false
+  Run = pHostInfo          @ NewConsole = false
+  Run = uFldShoreBroker    @ NewConsole = false
+  Run = uFldNodeComms      @ NewConsole = false
+}
+
+#include plug_pShare.moos
+#include plug_pHostInfo.moos
+
+//--------------------------------------------------
+// uFldShoreBroker Configuration Block
+
+ProcessConfig = uFldShoreBroker
+{
+  AppTick   = 1
+  CommsTick = 1
+
+  // Note: [QBRIDGE = FOO]  is shorthand for                    
+  //       [BRIDGE = src=FOO_$V,  alias=FOO] and                
+  //       [BRIDGE = src=FOO_ALL, alias=FOO]
+
+  QBRIDGE  = DEPLOY, RETURN, STATION_KEEP, NODE_REPORT, NODE_MESSAGE
+  QBRIDGE  = MOOS_MANUAL_OVERIDE, APPCAST_REQ, CRS_RANGE_REPORT
 }
 
 //--------------------------------------------------
-// pLogger Configuration Block
+// uFldNodeComms Configuration Block
 
+ProcessConfig = uFldNodeComms
+{
+  AppTick   = 2
+  CommsTick = 2
+
+           COMMS_RANGE = 150
+        CRITICAL_RANGE = 25
+      MIN_MSG_INTERVAL = 20
+        MAX_MSG_LENGTH = 1000
+                GROUPS = true
+  VIEW_NODE_RPT_PULSES = true
+}
+
+//---------------------------------------------------- uProcessWatch
+ProcessConfig = uProcessWatch                                   
+{                                                               
+  WATCH_ALL = true                                              
+  NOWATCH = uXMS* 
+}                                                   
+
+//------------------------------------------------------------- uXMS
+ProcessConfig = uXMS
+{
+  AppTick   = 2
+  CommsTick = 2
+  
+  VAR = PMB_REGISTER
+  VAR = PMB_UDP_LISTEN
+  VAR = APPCAST_REQ
+  VAR = DB_CLIENTS
+  VAR = PROC_WATCH_SUMMARY
+  VAR = CRS_RANGE_REQUEST
+  VAR = CRS_RANGE_REPORT
+
+  DISPLAY_SOURCE        = true
+  DISPLAY_TIME          = true
+  DISPLAY_COMMUNITY     = false   // default
+
+  REFRESH_MODE = streaming
+}
+
+//------------------------------------------------------------ uMAC
+ProcessConfig = uMAC
+{
+  AppTick       = 1
+  CommsTick     = 1
+}
+
+//------------------------------------------------------ pMOOSBridge
+ProcessConfig = pMOOSBridge
+{
+  AppTick   = 3
+  CommsTick = 3
+  UDPListen = 9200
+}
+
+//---------------------------------------------------------- pLogger
 ProcessConfig = pLogger
 {
   AppTick       = 10
   CommsTick     = 10
-  
   File          = LOG_SHORESIDE
   PATH          = ./
   SyncLog       = true @ 0.2
@@ -38,50 +118,24 @@ ProcessConfig = pLogger
   WildCardLogging = true 
   WildCardOmitPattern = *_STATUS
 }
-
-//------------------------------------------
-// uFldContactRangeSensor config block
-
+//-------------------------------------------- uFldContactRangeSensor
 ProcessConfig = uFldContactRangeSensor
 {
   AppTick   = 4
   CommsTick = 4
 
-  reply_distance = jackal = 50
-  reach_distance = archie = 190
-  ping_wait      = archie = 32  
+  push_distance = jackal = 50
+  push_distance = archie = 190
+  ping_wait     = archie = 32  
+  ping_color    = white
+  echo_color    = chartreuse
 
-  ping_color = white
-  reply_color = chartreuse
+  allow_echo_types = uuv,auv,glider
 
-  verbose = true
   rn_algorithm = uniform,pct=0.04
 }
 
-//--------------------------------------------------------
-ProcessConfig = pMOOSBridge
-{
-  AppTick   = 3
-  CommsTick = 3
-
-  SHARE = [DEPLOY_ALL]  -> $(VNAME1) @ localhost:$(VPORT1) [DEPLOY]
-  SHARE = [DEPLOY_ALL]  -> $(VNAME9) @ localhost:$(VPORT9) [DEPLOY]
-
-  SHARE = [CRS_RANGE_REPORT]  -> $(VNAME1) @ localhost:$(VPORT1) [CRS_RANGE_REPORT]
-  SHARE = [CRS_RANGE_REPORT]  -> $(VNAME9) @ localhost:$(VPORT9) [CRS_RANGE_REPORT]
-
-  SHARE = [RETURN_ALL]  -> $(VNAME1) @ localhost:$(VPORT1) [RETURN]
-  SHARE = [RETURN_ALL]  -> $(VNAME9) @ localhost:$(VPORT9) [RETURN]
-
-  SHARE = [STATION_ALL] -> $(VNAME1) @ localhost:$(VPORT1) [STATION_KEEP]
-
-  SHARE = [UP_LOITER_1] -> $(VNAME1) @ localhost:$(VPORT1) [UP_LOITER]
-
-  SHARE = [MOOS_MANUAL_OVERIDE_ALL] -> $(VNAME1) @ localhost:$(VPORT1) [MOOS_MANUAL_OVERIDE
-  SHARE = [MOOS_MANUAL_OVERIDE_ALL] -> $(VNAME9) @ localhost:$(VPORT9) [MOOS_MANUAL_OVERIDE]
-}
-
-//--------------------------------------------------------
+//------------------------------------------------- pMarineViewer
 ProcessConfig = pMarineViewer
 {
   AppTick    = 4
@@ -94,9 +148,8 @@ ProcessConfig = pMarineViewer
   vehicles_shape_scale = 3.5
   vehicles_name_viewable = names
 
-  reference_vehicle = $(VNAME1)
-  reference_vehicle = $(VNAME9)
-
+  appcast_viewable     = true
+  appcast_color_scheme = indigo
 
   SCOPE = CONTACT_INFO
 

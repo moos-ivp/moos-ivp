@@ -19,14 +19,16 @@ SET(SRC
    EnumVariable.cpp
    RandomVariable.cpp
    RandomVariableSet.cpp 
+   RandVarUniform.cpp
+   RandVarGaussian.cpp
    main.cpp)
 
 ADD_EXECUTABLE(uTimerScript ${SRC})
 
 TARGET_LINK_LIBRARIES(uTimerScript
    MOOS
-   MOOSGen
    mbutil
+   apputil
    logic
    ${SYSTEM_LIBS})
 

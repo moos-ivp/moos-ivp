@@ -1,15 +1,32 @@
-/****************************************************************/
-/*   NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
-/*   ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*   FILE: PathCheck_MOOSApp.cpp                                */
-/*   DATE: Nov 22th 2011                                        */
-/****************************************************************/
+/*****************************************************************/
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    FILE: PathCheck_MOOSApp.cpp                                */
+/*    DATE: Nov 22th 2011                                        */
+/*                                                               */
+/* This program is free software; you can redistribute it and/or */
+/* modify it under the terms of the GNU General Public License   */
+/* as published by the Free Software Foundation; either version  */
+/* 2 of the License, or (at your option) any later version.      */
+/*                                                               */
+/* This program is distributed in the hope that it will be       */
+/* useful, but WITHOUT ANY WARRANTY; without even the implied    */
+/* warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR       */
+/* PURPOSE. See the GNU General Public License for more details. */
+/*                                                               */
+/* You should have received a copy of the GNU General Public     */
+/* License along with this program; if not, write to the Free    */
+/* Software Foundation, Inc., 59 Temple Place - Suite 330,       */
+/* Boston, MA 02111-1307, USA.                                   */
+/*****************************************************************/
 
 #include <cmath>
 #include <iterator>
 #include "PathCheck_MOOSApp.h"
 #include "MBUtils.h"
+#include "ColorParse.h"
 #include "NodeRecordUtils.h"
+#include "ACTable.h"
 
 using namespace std;
 
@@ -18,14 +35,12 @@ using namespace std;
 
 PathCheck_MOOSApp::PathCheck_MOOSApp()
 {
+  // Initialize configuration params
   m_history_size = 10;
-}
 
-//---------------------------------------------------------
-// Destructor
-
-PathCheck_MOOSApp::~PathCheck_MOOSApp()
-{
+  // Initialize state variables
+  m_node_reports_recd_good = 0;
+  m_node_reports_recd_bad  = 0;
 }
 
 //---------------------------------------------------------
@@ -33,34 +48,30 @@ PathCheck_MOOSApp::~PathCheck_MOOSApp()
 
 bool PathCheck_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 {
-  MOOSMSG_LIST::iterator p;
-  
+  AppCastingMOOSApp::OnNewMail(NewMail);
+
+  MOOSMSG_LIST::iterator p;  
   for(p=NewMail.begin(); p!=NewMail.end(); p++) {
     CMOOSMsg &msg = *p;
-    
-    string key   = msg.GetKey();
+    string key    = msg.GetKey();
 
-    //double dval  = msg.GetDouble();
-    //double mtime = msg.GetTime();
-    //bool   mdbl  = msg.IsDouble();
-    //bool   mstr  = msg.IsString();
-    //string msrc  = msg.GetSource();
-    
     if((key == "NODE_REPORT") || (key == "NODE_REPORT_LOCAL")) {
       string sval  = msg.GetString(); 
       NodeRecord record = string2NodeRecord(sval);
       bool ok = addNodeRecord(record);
       if(!ok)
-	MOOSTrace("Invalid NODE_REPORT: %s\n", sval.c_str());
+	reportRunWarning("Invalid NODE_REPORT: " + sval);
     }
     else if(key == "UPC_TRIP_RESET") {
       string sval  = msg.GetString(); 
       bool ok = handleTripReset(sval);
       if(!ok)
-	MOOSTrace("Invalid TRIP_RESET: %s\n", sval.c_str());
+	reportRunWarning("Invalid TRIP_RESET: " + sval);
     }
-  }
-  
+    else
+      reportRunWarning("Unhandled Mail: " + key);
+
+  }  
   return(true);
 }
 
@@ -79,9 +90,12 @@ bool PathCheck_MOOSApp::OnConnectToServer()
 
 bool PathCheck_MOOSApp::Iterate()
 {
-  cout << "*" << flush;
+  AppCastingMOOSApp::Iterate();
+
   computeAndPostSpeeds();
   detectAndPostOdometry();
+
+  AppCastingMOOSApp::PostReport();
   return(true);
 }
 
@@ -90,32 +104,31 @@ bool PathCheck_MOOSApp::Iterate()
 
 bool PathCheck_MOOSApp::OnStartUp()
 {
+  AppCastingMOOSApp::OnStartUp();
+
   STRING_LIST sParams;
   m_MissionReader.EnableVerbatimQuoting(false);
-  m_MissionReader.GetConfiguration(GetAppName(), sParams);
+  if(!m_MissionReader.GetConfiguration(GetAppName(), sParams)) 
+    reportConfigWarning("No config block found for " + GetAppName());
 
   STRING_LIST::iterator p;
-  for(p = sParams.begin();p!=sParams.end();p++) {
+  for(p=sParams.begin(); p!=sParams.end(); p++) {
+    string orig  = *p;
     string line  = *p;
-    string param = stripBlankEnds(toupper(biteString(line, '=')));
-    string value = stripBlankEnds(line);
+    string param = toupper(biteStringX(line, '='));
+    string value = line;
 
-    if(param == "HISTORY_LENGTH") {
-      bool valid_length = true;
-      if(!isNumber(value))
-	valid_length = false;
-      else {
-	int length = atoi(value.c_str());
-	if(length > 1) 
-	  m_history_size = (unsigned int)(length);
-	else
-	  valid_length = false;
-      }
-      if(!valid_length) {
-	MOOSTrace("Improper HISTORY_LENGTH: %s\n", value.c_str());
-	return(false);
+    bool handled = false;
+    if((param == "HISTORY_LENGTH") && isNumber(value)) {
+      int length = atoi(value.c_str());
+      if(length > 1) {
+	m_history_size = (unsigned int)(length);
+	handled = true;
       }
     }
+    
+    if(!handled)
+      reportUnhandledConfigWarning(orig);
   }
 
   registerVariables();
@@ -127,10 +140,16 @@ bool PathCheck_MOOSApp::OnStartUp()
 
 bool PathCheck_MOOSApp::addNodeRecord(const NodeRecord& record)
 {
-  if(!record.valid())
-    return(false);
-  
   string vname = record.getName();
+  m_map_noderep_tstamp[vname] = m_curr_time;
+
+  if(!record.valid()) {
+    m_node_reports_recd_bad++;
+    return(false);
+  }
+  else
+    m_node_reports_recd_good++;
+  
   
   // If there is previous record for this vehicle, calculate the
   // delta distance, add it to the odometers.
@@ -172,6 +191,7 @@ bool PathCheck_MOOSApp::handleTripReset(string reset_vname)
 
 void PathCheck_MOOSApp::registerVariables()
 {
+  AppCastingMOOSApp::RegisterVariables();
   m_Comms.Register("NODE_REPORT", 0);
   m_Comms.Register("NODE_REPORT_LOCAL", 0);
   m_Comms.Register("UPC_TRIP_RESET", 0);
@@ -242,7 +262,48 @@ void PathCheck_MOOSApp::detectAndPostOdometry()
   }
 }
 
+//---------------------------------------------------------
+// Procedure: buildReport
+//      Note: A virtual function of the AppCastingMOOSApp superclass, 
+//            conditionally invoked if either a terminal or appcast 
+//            report is needed.
+
+bool PathCheck_MOOSApp::buildReport()
+{
+  m_msgs << " Node Reports Recd (good): " << m_node_reports_recd_good  << endl;
+  m_msgs << " Node Reports Recd (bad):  " << m_node_reports_recd_bad   << endl;
+  m_msgs << " MOOS Time Warp:           " << m_time_warp               << endl;
+  m_msgs << endl;
+
+  ACTable actab(6,3); // 6 columns, 3 space separators
+  
+  actab << "Node | TripDist | Distance | ReportAge | Speed | AvgSpeed";
+  actab.addHeaderLines();
+  
+  map<string, double>::iterator p;
+  for(p=m_map_total_dist.begin(); p!=m_map_total_dist.end(); p++) {
+    string node_name   = p->first;
+    double total_dist  = p->second;
+    double trip_dist   = m_map_trip_dist[node_name];
+    double noderep_age = m_curr_time - m_map_noderep_tstamp[node_name];
+
+    string s_total_dist  = doubleToString(total_dist,1);
+    string s_trip_dist   = doubleToString(trip_dist,1);    
+    string s_noderep_age = doubleToString(noderep_age,1);
+    string s_curr_spd    = "n/a";
+    string s_avg_spd     = "n/a";
+
+    m_msgs << node_name  << s_trip_dist << s_total_dist << s_noderep_age;
+    m_msgs << s_curr_spd  << s_avg_spd;
+  }
+  m_msgs << actab.getFormattedString();
+  
+  return(true);
+}
+
+
 #if 0
   ODOMETRY_REPORT = "vname=alpha, total_dist=9832.1, trip_dist=1991.1"
   SPEED_REPORT    = "vname=alpha, avg_speed=1.0"
 #endif
+

@@ -98,7 +98,7 @@ void showExampleConfigAndExit()
   blk("                                                                ");
   blk("  drift_x       = 0                                             ");
   blk("  drift_y       = 0                                             ");
-  blk("  force_theta   = 0                                             ");
+  blk("  rotate_speed  = 0                                             ");
   blk("  drift_vector  = 0,0     "," // heading, magnitude             ");
   blk("                                                                ");  
   blk("  buoyancy_rate        = 0.025 ","// meters/sec                 ");
@@ -181,4 +181,5 @@ void showReleaseInfoAndExit()
   showReleaseInfo("uSimMarine   ", "gpl");
   exit(0);
 }
+
 

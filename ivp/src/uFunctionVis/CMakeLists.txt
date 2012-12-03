@@ -30,7 +30,6 @@ ENDIF (${APPLE})
 
 TARGET_LINK_LIBRARIES(uFunctionVis
    MOOS
-   MOOSGen
    ipfview
    geometry
    ivpbuild

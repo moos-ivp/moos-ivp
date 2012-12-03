@@ -25,7 +25,7 @@ ProcessConfig = ANTLER
   Run = pHelmIvP	@ NewConsole = true
   Run = pMarineViewer	@ NewConsole = true
   Run = uFldPathCheck	@ NewConsole = true
-  //Run = uFldScope	@ NewConsole = true
+  Run = uFldScope	@ NewConsole = true
 }
 
 //------------------------------------------

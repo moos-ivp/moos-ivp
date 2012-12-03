@@ -54,7 +54,7 @@ ULV_GUI::ULV_GUI(int g_w, int g_h, const char *g_l)
 
   setWindowLayout("normal");
 
-  cmviewer     = np_viewer;
+  m_mviewer    = np_viewer;
 
   // Initialize Time fields ------------------------------------------
   double time_pos = (w()/2)-250;
@@ -230,36 +230,20 @@ void ULV_GUI::setWindowLayout(string layout)
 
 void ULV_GUI::augmentMenu()
 {
-  mbar->add("File/Delete ", 0, (Fl_Callback*)ULV_GUI::cb_Delete, 0, 0);
+  m_menubar->add("File/Delete ", 0, (Fl_Callback*)ULV_GUI::cb_Delete, 0, 0);
 
-  mbar->add("Replay/Streaming Toggle",  '=', 
-	    (Fl_Callback*)ULV_GUI::cb_StreamToggle,(void*)0, 0);
-  mbar->add("Replay/Streaming Faster", 'a', 
-	    (Fl_Callback*)ULV_GUI::cb_StreamSpeed, (void*)1, 0);
-  mbar->add("Replay/Streaming Slower", 'z', 
-	    (Fl_Callback*)ULV_GUI::cb_StreamSpeed, (void*)0, 
-	    FL_MENU_DIVIDER);
-  mbar->add("Replay/Streaming Step 1",  0, 
-	    (Fl_Callback*)ULV_GUI::cb_StreamStep, (void*)1, 
-	    FL_MENU_RADIO|FL_MENU_VALUE);
-  mbar->add("Replay/Streaming Step 3",  0, 
-	    (Fl_Callback*)ULV_GUI::cb_StreamStep, (void*)3, 
-	    FL_MENU_RADIO);
-  mbar->add("Replay/Streaming Step 5",  0, 
-	    (Fl_Callback*)ULV_GUI::cb_StreamStep, (void*)5, 
-	    FL_MENU_RADIO);
-  mbar->add("Replay/Streaming Step 10", 0, 
-	    (Fl_Callback*)ULV_GUI::cb_StreamStep, (void*)10, 
-	    FL_MENU_RADIO|FL_MENU_DIVIDER);
+  m_menubar->add("Replay/Streaming Toggle",  '=', (Fl_Callback*)ULV_GUI::cb_StreamToggle,(void*)0, 0);
+  m_menubar->add("Replay/Streaming Faster", 'a',  (Fl_Callback*)ULV_GUI::cb_StreamSpeed, (void*)1, 0);
+  m_menubar->add("Replay/Streaming Slower", 'z',  (Fl_Callback*)ULV_GUI::cb_StreamSpeed, (void*)0, FL_MENU_DIVIDER);
+  m_menubar->add("Replay/Streaming Step 1",  0, (Fl_Callback*)ULV_GUI::cb_StreamStep, (void*)1, FL_MENU_RADIO|FL_MENU_VALUE);
+  m_menubar->add("Replay/Streaming Step 3",  0, (Fl_Callback*)ULV_GUI::cb_StreamStep, (void*)3, FL_MENU_RADIO);
+  m_menubar->add("Replay/Streaming Step 5",  0, (Fl_Callback*)ULV_GUI::cb_StreamStep, (void*)5, FL_MENU_RADIO);
+  m_menubar->add("Replay/Streaming Step 10", 0, (Fl_Callback*)ULV_GUI::cb_StreamStep, (void*)10, FL_MENU_RADIO|FL_MENU_DIVIDER);
 
-  mbar->add("Replay/Step Ahead 1",  ']', 
-	    (Fl_Callback*)ULV_GUI::cb_Step, (void*)1, 0);
-  mbar->add("Replay/Step Back  1",  '[', 
-	    (Fl_Callback*)ULV_GUI::cb_Step, (void*)-1, 0);
-  mbar->add("Replay/Step Ahead 5", '>', 
-	    (Fl_Callback*)ULV_GUI::cb_Step, (void*)5, 0);
-  mbar->add("Replay/Step Back  5", '<', 
-	    (Fl_Callback*)ULV_GUI::cb_Step, (void*)-5, FL_MENU_DIVIDER);
+  m_menubar->add("Replay/Step Ahead 1", ']', (Fl_Callback*)ULV_GUI::cb_Step, (void*)1, 0);
+  m_menubar->add("Replay/Step Back  1", '[', (Fl_Callback*)ULV_GUI::cb_Step, (void*)-1, 0);
+  m_menubar->add("Replay/Step Ahead 5", '>',  (Fl_Callback*)ULV_GUI::cb_Step, (void*)5, 0);
+  m_menubar->add("Replay/Step Back  5", '<',  (Fl_Callback*)ULV_GUI::cb_Step, (void*)-5, FL_MENU_DIVIDER);
 };
 
 //----------------------------------------------------------
@@ -614,11 +598,11 @@ void ULV_GUI::addLogPlot(const LogTPlot& logplot)
     labelB = "LogPlots(R)/" + varname;
   }
 
-  mbar->add(labelA.c_str(), 0, 
+  m_menubar->add(labelA.c_str(), 0, 
 	    (Fl_Callback*)ULV_GUI::cb_LeftLogPlot,  (void*)ix);
-  mbar->add(labelB.c_str(), 0, 
+  m_menubar->add(labelB.c_str(), 0, 
 	    (Fl_Callback*)ULV_GUI::cb_RightLogPlot, (void*)ix);
-  mbar->redraw();
+  m_menubar->redraw();
 }
 
 //----------------------------------------------------------
@@ -653,3 +637,4 @@ PostingBuffer ULV_GUI::getPostingBuffer(bool clear)
 
   return(pbuffer);
 }
+

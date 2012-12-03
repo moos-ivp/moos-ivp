@@ -6,9 +6,8 @@ ProcessConfig = uProcessWatch
   AppTick   = 2
   CommsTick = 2
   
-  WATCH  = iMarineSim
+  WATCH  = uSimMarine
   WATCH  = pMOOSBridge*
-  WATCH  = pEchoVar
   WATCH  = pLogger
   WATCH  = pNodeReporter
   WATCH  = pMarinePID

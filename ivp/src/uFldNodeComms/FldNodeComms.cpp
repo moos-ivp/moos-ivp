@@ -1,9 +1,24 @@
-/****************************************************************/
-/*   NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
-/*   ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*   FILE: FldNodeComms.cpp                                     */
-/*   DATE: Dec 4th 2011                                         */
-/****************************************************************/
+/*****************************************************************/
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    FILE: FldNodeComms.cpp                                     */
+/*    DATE: Dec 4th 2011                                         */
+/*                                                               */
+/* This program is free software; you can redistribute it and/or */
+/* modify it under the terms of the GNU General Public License   */
+/* as published by the Free Software Foundation; either version  */
+/* 2 of the License, or (at your option) any later version.      */
+/*                                                               */
+/* This program is distributed in the hope that it will be       */
+/* useful, but WITHOUT ANY WARRANTY; without even the implied    */
+/* warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR       */
+/* PURPOSE. See the GNU General Public License for more details. */
+/*                                                               */
+/* You should have received a copy of the GNU General Public     */
+/* License along with this program; if not, write to the Free    */
+/* Software Foundation, Inc., 59 Temple Place - Suite 330,       */
+/* Boston, MA 02111-1307, USA.                                   */
+/*****************************************************************/
 
 #include <cmath>
 #include <set>
@@ -38,7 +53,7 @@ FldNodeComms::FldNodeComms()
   m_min_msg_interval = 30.0;
   m_max_msg_length   = 1000;    // zero means unlimited length
 
-  m_verbose          = true;
+  m_verbose          = false;
   m_debug            = false;
 
   m_pulse_duration   = 10;      // zero means no pulses posted.
@@ -65,46 +80,28 @@ FldNodeComms::FldNodeComms()
 
 bool FldNodeComms::OnNewMail(MOOSMSG_LIST &NewMail)
 {
+  AppCastingMOOSApp::OnNewMail(NewMail);
+
   MOOSMSG_LIST::iterator p;
-	
   for(p=NewMail.begin(); p!=NewMail.end(); p++) {
     CMOOSMsg &msg = *p;
-	
-    string key   = msg.GetKey();
-    string sval  = msg.GetString(); 
-    //double dval  = msg.GetDouble();
-    //double mtime = msg.GetTime();
-    //bool   mdbl  = msg.IsDouble();
-    //bool   mstr  = msg.IsString();
-    //string msrc  = msg.GetSource();
+    string key    = msg.GetKey();
+    string sval   = msg.GetString(); 
 
-    if((key == "NODE_REPORT") || (key == "NODE_REPORT_LOCAL")) {
-      bool ok = handleMailNodeReport(sval);
-      if(!ok && m_debug)
-	MOOSTrace("Unhandled NODE_REPORT: %s \n", sval.c_str());
-    }
-    else if(key == "NODE_MESSAGE") {
-      bool ok = handleMailNodeMessage(sval);
-      if(m_debug) {
-	if(!ok )
-	  MOOSTrace("Unhandled NODE_MESSAGE: %s \n", sval.c_str());
-	else
-	  MOOSTrace("Handled NODE_MESSAGE: %s \n", sval.c_str());
-      }
-    }
-    else if(key == "UNC_STEALTH") {
-      bool ok = handleStealth(sval);
-      if(!ok && m_debug)
-	MOOSTrace("Unhandled UNC_STEALTH: %s \n", sval.c_str());
-    }
-    else if(key == "UNC_VIEW_NODE_RPT_PULSES") {
-      setBooleanOnString(m_view_node_rpt_pulses, sval);
-    }
-    else if(key == "UNC_EARANGE") {
-      bool ok = handleEarange(sval);
-      if(!ok && m_debug)
-	MOOSTrace("Unhandled UNC_EARANGE: %s \n", sval.c_str());
-    }
+    bool handled = false;
+    if((key == "NODE_REPORT") || (key == "NODE_REPORT_LOCAL")) 
+      handled = handleMailNodeReport(sval);
+    else if(key == "NODE_MESSAGE") 
+      handled = handleMailNodeMessage(sval);
+    else if(key == "UNC_STEALTH") 
+      handled = handleStealth(sval);
+    else if(key == "UNC_VIEW_NODE_RPT_PULSES") 
+      handled = setBooleanOnString(m_view_node_rpt_pulses, sval);
+    else if(key == "UNC_EARANGE") 
+      handled = handleEarange(sval);
+
+    if(!handled)
+      reportRunWarning("Unhandled Mail: " + key);
 
   }
   return(true);
@@ -116,7 +113,6 @@ bool FldNodeComms::OnNewMail(MOOSMSG_LIST &NewMail)
 bool FldNodeComms::OnConnectToServer()
 {
   registerVariables();  
-
   return(true);
 }
 
@@ -125,7 +121,7 @@ bool FldNodeComms::OnConnectToServer()
 
 bool FldNodeComms::Iterate()
 {
-  m_curr_time = MOOSTime();
+  AppCastingMOOSApp::Iterate();
 
   map<string, bool>::iterator p;
   for(p=m_map_newrecord.begin(); p!=m_map_newrecord.end(); p++) {
@@ -155,8 +151,7 @@ bool FldNodeComms::Iterate()
   m_map_newrecord.clear();
   m_map_newmessage.clear();
 
-  printReport();
-
+  AppCastingMOOSApp::PostReport();
   return(true);
 }
 
@@ -166,80 +161,59 @@ bool FldNodeComms::Iterate()
 
 bool FldNodeComms::OnStartUp()
 {
-  m_curr_time = MOOSTime();
+  AppCastingMOOSApp::OnStartUp();
 
   STRING_LIST sParams;
   m_MissionReader.EnableVerbatimQuoting(false);
-  m_MissionReader.GetConfiguration(GetAppName(), sParams);
+  if(!m_MissionReader.GetConfiguration(GetAppName(), sParams)) 
+    reportConfigWarning("No config block found for " + GetAppName());
 
-  STRING_LIST::reverse_iterator p;
-  for(p=sParams.rbegin(); p!=sParams.rend(); p++) {
+  STRING_LIST::iterator p;
+  for(p=sParams.begin(); p!=sParams.end(); p++) {
+    string orig  = *p;
     string line  = *p;
-    string param = stripBlankEnds(toupper(biteString(line, '=')));
-    string value = stripBlankEnds(line);
-
-    if(param == "COMMS_RANGE") {
+    string param = toupper(biteStringX(line, '='));
+    string value = line;
+    
+    bool handled = false;
+    if((param == "COMMS_RANGE") && isNumber(value)) {
       // A negative comms range means all comms goes through
       // A zero comms range means nothing goes through
-      if(isNumber(value))
-	m_comms_range = atof(value.c_str());
+      m_comms_range = atof(value.c_str());
+      handled = true;
     }
-    else if(param == "CRITICAL_RANGE") {
-      if(isNumber(value))
-	m_critical_range = atof(value.c_str());
+    else if((param == "CRITICAL_RANGE") && isNumber(value)) {
+      m_critical_range = atof(value.c_str());
+      handled = true;
     }
-    else if(param == "STALE_TIME") {
+    else if((param == "STALE_TIME") && isNumber(value)) {
       // A negative stale time means staleness never applies
-      if(isNumber(value))
-	m_stale_time = atof(value.c_str());
+      m_stale_time = atof(value.c_str());
+      handled = true;
     }
-    else if(param == "MIN_MSG_INTERVAL") {
-      if(isNumber(value))
-	m_min_msg_interval = atof(value.c_str());
+    else if((param == "MIN_MSG_INTERVAL") && isNumber(value)) {
+      m_min_msg_interval = atof(value.c_str());
+      handled = true;
     }
-    else if(param == "MAX_MSG_LENGTH") {
-      if(isNumber(value))
-	m_max_msg_length = atoi(value.c_str());
+    else if((param == "MAX_MSG_LENGTH") && isNumber(value)) {
+      m_max_msg_length = atoi(value.c_str());
+      handled = true;
     }
-    else if(param == "STEALTH") {
-      bool ok = handleStealth(value);
-      if(!ok)
-	cout << termColor("red") << "Improper Node Stealth config: " << value;
-    }
-    else if(param == "EARANGE") {
-      bool ok = handleEarange(value);
-      if(!ok)
-	cout << termColor("red") << "Improper Node Earange config: " << value;
-    }
-    else if(param == "GROUPS") {
-      bool ok = setBooleanOnString(m_apply_groups, value);
-      if(!ok) {
-	cout << termColor("red");
-	cout << "Improper config: GROUPS should be \"true\" or \"false\".";
-      }
-    }
-    else if(param == "VERBOSE") {
-      bool ok = setBooleanOnString(m_verbose, value);
-      if(!ok) {
-	cout << termColor("red");
-	cout << "Improper config: VERBOSE should be \"true\" or \"false\".";
-      }
-    }
-    else if(param == "VIEW_NODE_RPT_PULSES") {
-      bool ok = setBooleanOnString(m_view_node_rpt_pulses, value);
-      if(!ok) {
-	cout << termColor("red");
-	cout << "Improper config: VIEW_NODE_RPT_PULSES should be \"true\" or \"false\".";
-      }
-    }
-    else if(param == "DEBUG") {
-      bool ok = setBooleanOnString(m_debug, value);
-      if(!ok) {
-	cout << termColor("red");
-	cout << "Improper config: DEBUG should be \"true\" or \"false\".";
-      }
-    }
-    cout << termColor() << endl;
+    else if(param == "STEALTH") 
+      handled = handleStealth(value);
+    else if(param == "EARANGE") 
+      handled = handleEarange(value);
+    else if(param == "GROUPS") 
+      handled  = setBooleanOnString(m_apply_groups, value);
+    else if(param == "VERBOSE") 
+      handled = setBooleanOnString(m_verbose, value);
+    else if(param == "VIEW_NODE_RPT_PULSES") 
+      handled = setBooleanOnString(m_view_node_rpt_pulses, value);
+    else if(param == "DEBUG") 
+      handled = setBooleanOnString(m_debug, value);
+    
+    if(!handled)
+      reportUnhandledConfigWarning(orig);
   }
 
   registerVariables();
@@ -251,6 +225,8 @@ bool FldNodeComms::OnStartUp()
 
 void FldNodeComms::registerVariables()
 {
+  AppCastingMOOSApp::RegisterVariables();
+
   m_Comms.Register("NODE_REPORT", 0);
   m_Comms.Register("NODE_REPORT_LOCAL", 0);
   m_Comms.Register("NODE_MESSAGE", 0);
@@ -292,19 +268,20 @@ bool FldNodeComms::handleMailNodeReport(const string& str)
 
 //------------------------------------------------------------
 // Procedure: handleMailNodeMessage
+//   Example: NODE_MESSAGE = src_node=henry,dest_node=ike,
+//                           var_name=FOO, string_val=bar   
 
 bool FldNodeComms::handleMailNodeMessage(const string& msg)
 {
   NodeMessage new_message = string2NodeMessage(msg);
 
-  cout << "Handling new Node Message: " << new_message.getSpec() << endl;
-
-  // List of "last" messages store solely for user debug viewing at
-  // the console window.
+  // #1 List of "last" messages store solely for user debug 
+  //    viewing at the console window.
   m_last_messages.push_back(msg);
   if(m_last_messages.size() > 5) 
     m_last_messages.pop_front();
 
+  // #2 Check that the message is valid
   if(!new_message.valid())
     return(false);
 
@@ -322,6 +299,8 @@ bool FldNodeComms::handleMailNodeMessage(const string& msg)
   else
     m_map_messages_rcvd[upp_src_node]++;
   m_total_messages_rcvd++;
+
+  reportEvent("New message received: " + msg);
 
   return(true);
 }
@@ -568,16 +547,9 @@ void FldNodeComms::distributeNodeMessageInfo(const string& src_name)
       string moos_var = "NODE_MESSAGE_" + a_dest_name;
       string node_message = message.getSpec();
       m_Comms.Notify(moos_var, node_message);
-      postViewCommsPulse(src_name, a_dest_name, "white");
+      postViewCommsPulse(src_name, a_dest_name, "white", 0.6);
       m_total_messages_sent++;
       m_map_messages_sent[a_dest_name]++;
-    }
-
-    if(m_verbose) {
-      if(msg_send)
-	cout << "NODE_MESSAGE Sent!" << endl;
-      else
-	cout << "NODE_MESSAGE Held!" << endl;
     }
   }
 }
@@ -664,7 +636,8 @@ bool FldNodeComms::meetsCriticalRangeThresh(const string& uname1,
 
 void FldNodeComms::postViewCommsPulse(const string& uname1,
 				      const string& uname2,
-				      const string& pcolor)
+				      const string& pcolor,
+				      double fill_opaqueness)
 {
   if(m_pulse_duration <= 0)
     return;
@@ -691,9 +664,12 @@ void FldNodeComms::postViewCommsPulse(const string& uname1,
   pulse.set_label(label);
   pulse.set_time(m_curr_time);
   pulse.set_beam_width(7);
+  pulse.set_fill(fill_opaqueness);
 
+#if 0
   if(m_verbose)
     cout << "Pulse: From: " << uname1 << "   TO: " << uname2 << endl;
+#endif
 
   string pulse_color = pcolor;
   if(pcolor == "auto") {
@@ -716,77 +692,66 @@ void FldNodeComms::postViewCommsPulse(const string& uname1,
   m_Comms.Notify("VIEW_COMMS_PULSE", pulse_spec);
 }
 
-
 //------------------------------------------------------------
-// Procedure: printReport
-//   Purpose: 
+// Procedure: buildReport
+//      Note: A virtual function of the AppCastingMOOSApp superclass, conditionally 
+//            invoked if either a terminal or appcast report is needed.
 
-void FldNodeComms::printReport()
+bool FldNodeComms::buildReport()
 {
-  if(!m_verbose) {
-    cout << "*" << flush;
-    return;
-  }
+  m_msgs << "Node Report Summary"                    << endl;
+  m_msgs << "======================================" << endl;
 
-  cout << endl << endl << endl;
-  cout << "*****************************************" << endl;
-  cout << "uFldNodeCommsSummary:                    " << endl;
-  cout << "*****************************************" << endl;
-  cout << "                                         " << endl;
-  cout << "Node Report Summary                      " << endl;
-  cout << "======================================   " << endl;
-
-  cout << "        Total Received: " << m_total_reports_rcvd << endl;
+  m_msgs << "        Total Received: " << m_total_reports_rcvd << endl;
   map<string, unsigned int>::iterator p;
   for(p=m_map_reports_rcvd.begin(); p!=m_map_reports_rcvd.end(); p++) {
     string vname = p->first;
     unsigned int total = p->second;
     string pad_vname  = padString(vname, 20);
-    cout << "  " << pad_vname << ": " << total;
+    m_msgs << "  " << pad_vname << ": " << total;
 
     double elapsed_time = m_curr_time - m_map_time_nreport[vname];
     string stime = "(" + doubleToString(elapsed_time,1) + ")";
     stime = padString(stime,12);
-    cout << stime << endl;
+    m_msgs << stime << endl;
   }
 
-  cout << "     ------------------ " << endl;
-  cout << "            Total Sent: " << m_total_reports_sent << endl;
+  m_msgs << "     ------------------ " << endl;
+  m_msgs << "            Total Sent: " << m_total_reports_sent << endl;
   map<string, unsigned int>::iterator p2;
   for(p2=m_map_reports_sent.begin(); p2!=m_map_reports_sent.end(); p2++) {
     string vname = p2->first;
     unsigned int total = p2->second;
     vname  = padString(vname, 20);
-    cout << "  " << vname << ": " << total << endl;
+    m_msgs << "  " << vname << ": " << total << endl;
   }
 
+  m_msgs << endl;
+  m_msgs << "Node Message Summary"                   << endl;
+  m_msgs << "======================================" << endl;
 
-  cout << endl << endl;
-  cout << "Node Message Summary                      " << endl;
-  cout << "======================================   " << endl;
-
-  cout << "    Total Msgs Received: " << m_total_messages_rcvd << endl;
+  m_msgs << "    Total Msgs Received: " << m_total_messages_rcvd << endl;
   map<string, unsigned int>::iterator q;
   for(q=m_map_messages_rcvd.begin(); q!=m_map_messages_rcvd.end(); q++) {
     string vname = q->first;
     unsigned int total = q->second;
     string pad_vname  = padString(vname, 20);
-    cout << "  " << pad_vname << ": " << total;
+    m_msgs << "  " << pad_vname << ": " << total;
 
     double elapsed_time = m_curr_time - m_map_time_nmessage[vname];
     string stime = "(" + doubleToString(elapsed_time,1) + ")";
     stime = padString(stime,12);
-    cout << stime << endl;
+    m_msgs << stime << endl;
   }
 
-  cout << "     ------------------ " << endl;
-  cout << "            Total Sent: " << m_total_messages_sent << endl;
+  m_msgs << "     ------------------ " << endl;
+  m_msgs << "            Total Sent: " << m_total_messages_sent << endl;
   map<string, unsigned int>::iterator q2;
   for(q2=m_map_messages_sent.begin(); q2!=m_map_messages_sent.end(); q2++) {
     string vname = q2->first;
     unsigned int total = q2->second;
     vname  = padString(vname, 20);
-    cout << "  " << vname << ": " << total << endl;
+    m_msgs << "  " << vname << ": " << total << endl;
   }
   
   unsigned int total_blk_msgs = m_blk_msg_invalid + m_blk_msg_toostale + 
@@ -797,19 +762,22 @@ void FldNodeComms::printReport()
   string blk_msg_toolong  = uintToString(m_blk_msg_toolong);
   string blk_msg_toofar   = uintToString(m_blk_msg_toofar);
   
-  cout << "     ------------------ " << endl;
-  cout << "    Total Blocked Msgs: " << total_blk_msgs << endl;
-  cout << "               Invalid: " << blk_msg_invalid << endl;
-  cout << "        Stale Receiver: " << blk_msg_toostale << endl;
-  cout << "            Too Recent: " << blk_msg_tooquick<< endl;
-  cout << "          Msg Too Long: " << blk_msg_toolong << endl;
-  cout << "         Range Too Far: " << blk_msg_toofar << endl;
+  m_msgs << "     ------------------ " << endl;
+  m_msgs << "    Total Blocked Msgs: " << total_blk_msgs << endl;
+  m_msgs << "               Invalid: " << blk_msg_invalid << endl;
+  m_msgs << "        Stale Receiver: " << blk_msg_toostale << endl;
+  m_msgs << "            Too Recent: " << blk_msg_tooquick<< endl;
+  m_msgs << "          Msg Too Long: " << blk_msg_toolong << endl;
+  m_msgs << "         Range Too Far: " << blk_msg_toofar << endl;
 
-  cout << "     ------------------ " << endl;
-  cout << "             Last Msgs: " << endl;
+  m_msgs << "     ------------------ " << endl;
+  m_msgs << "             Last Msgs: " << endl;
   list<string>::iterator p3;
   for(p3 = m_last_messages.begin(); p3 != m_last_messages.end(); p3++) {
     string msg = *p3;
-    cout << msg << endl;
+    m_msgs << msg << endl;
   }
+
+  return(true);
 }
+

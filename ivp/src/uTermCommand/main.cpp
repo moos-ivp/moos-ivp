@@ -3,7 +3,6 @@
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: main.cpp                                             */
 /*    DATE: June 26th 2007                                       */
-/*          Aug  25th 2011 Mods                                  */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
 /* modify it under the terms of the GNU General Public License   */
@@ -88,5 +87,6 @@ int main(int argc ,char * argv[])
   appThread.quit();
   return(0);
 }
+
 
 

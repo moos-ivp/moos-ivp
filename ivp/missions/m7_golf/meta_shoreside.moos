@@ -11,46 +11,55 @@ Community  = $(SNAME)
 //--------------------------------------------------------
 Processconfig = ANTLER
 {
-  MSBetweenLaunches = 200
+  MSBetweenLaunches = 100
 
   Run = MOOSDB          @ NewConsole = false
-  Run = pMOOSBridge     @ NewConsole = true
-  Run = pMarineViewer   @ NewConsole = true
+  Run = pMarineViewer   @ NewConsole = false
+
+  Run = pShare          @ NewConsole = false
+  Run = pHostInfo       @ NewConsole = false
+  Run = uFldShoreBroker @ NewConsole = false
+  Run = uFldNodeComms   @ NewConsole = false
 }
 
-//--------------------------------------------------------
-ProcessConfig = pMOOSBridge
+#include plug_pShare.moos
+#include plug_pHostInfo.moos
+
+//--------------------------------------------------
+// uFldShoreBroker Configuration Block
+
+ProcessConfig = uFldShoreBroker
 {
-  AppTick   = 3
-  CommsTick = 3
+  AppTick       = 1
+  CommsTick     = 1
 
-  BridgeFrequency = 0
+  // Note: [QBRIDGE = FOO]  is shorthand for                    
+  //       [BRIDGE = src=FOO_$V,  alias=FOO] and                
+  //       [BRIDGE = src=FOO_ALL, alias=FOO]
 
-  SHARE = [SURVEY_%(VNAME1)]  -> $(VNAME1) @ localhost:$(VPORT1) [SURVEY]
+  QBRIDGE  = DEPLOY, RETURN, STATION, NODE_REPORT, NODE_MESSAGE
+  QBRIDGE  = MOOS_MANUAL_OVERIDE, APPCAST_REQ, SURVEY
+  QBRIDGE  = TRANSIT, SAFETY_RETREAT
 
-  SHARE = [TRANSIT_%(VNAME2) -> $(VNAME2) @ localhost:$(VPORT2) [TRANSIT]  
-  SHARE = [RETREAT_%(VNAME2) -> $(VNAME2) @ localhost:$(VPORT2) [SAFETY_RETREAT]  
+  BRIDGE   = src=UP_LOITER_$N,   alias=UP_LOITER
+  //BRIDGE   = src=TRANSIT,        alias=TRANSIT
+  //BRIDGE   = src=SAFETY_RETREAT, alias=SAFETY_RETREAT
+}
 
+//--------------------------------------------------
+// uFldNodeComms Configuration Block
 
-  SHARE = [DEPLOY_ALL]  -> $(VNAME1) @ localhost:$(VPORT1) [DEPLOY]
-  SHARE = [DEPLOY_ALL]  -> $(VNAME2) @ localhost:$(VPORT2) [DEPLOY]
+ProcessConfig = uFldNodeComms
+{
+  AppTick   = 2
+  CommsTick = 2
 
-  SHARE = [DEPLOY_%(VNAME1)]  -> $(VNAME1) @ localhost:$(VPORT1) [DEPLOY]
-  SHARE = [DEPLOY_%(VNAME2)]  -> $(VNAME2) @ localhost:$(VPORT2) [DEPLOY]
-
-
-  SHARE = [RETURN_ALL]  -> $(VNAME1) @ localhost:$(VPORT1) [RETURN]
-  SHARE = [RETURN_ALL]  -> $(VNAME2) @ localhost:$(VPORT2) [RETURN]
-
-  SHARE = [RETURN_%(VNAME1)]  -> $(VNAME1) @ localhost:$(VPORT1) [RETURN]
-  SHARE = [RETURN_%(VNAME2)]  -> $(VNAME2) @ localhost:$(VPORT2) [RETURN]
-
-
-  SHARE = [MOOS_MANUAL_OVERIDE_ALL] -> $(VNAME1) @ localhost:$(VPORT1) [MOOS_MANUAL_OVERIDE]
-  SHARE = [MOOS_MANUAL_OVERIDE_ALL] -> $(VNAME2) @ localhost:$(VPORT2) [MOOS_MANUAL_OVERIDE]
-
-  SHARE = [MOOS_MANUAL_OVERIDE_%(VNAME1)] -> $(VNAME1) @ localhost:$(VPORT1) [MOOS_MANUAL_OVERIDE]
-  SHARE = [MOOS_MANUAL_OVERIDE_%(VNAME2)] -> $(VNAME2) @ localhost:$(VPORT2) [MOOS_MANUAL_OVERIDE]
+           COMMS_RANGE = 150
+        CRITICAL_RANGE = 25
+      MIN_MSG_INTERVAL = 20
+        MAX_MSG_LENGTH = 1000
+                GROUPS = true
+  VIEW_NODE_RPT_PULSES = true
 }
 
 //--------------------------------------------------------
@@ -61,15 +70,15 @@ ProcessConfig = pMarineViewer
 
   TIFF_FILE            = forrest19.tif
   set_pan_x            = -90
-//  set_pan_y            = -280
   set_pan_y            = -425
   zoom                 = 0.65
   vehicles_shape_scale = 1.5
   vehicles_name_viewable = names+shortmode
 
   vehicles_inactive_color = green
-  reference_vehicle = $(VNAME1)
-  reference_vehicle = $(VNAME2)
+
+  appcast_viewable     = true
+  appcast_color_scheme = indigo
 
   SCOPE = THREAT_DETECTED
 

@@ -23,7 +23,7 @@
 #ifndef IPF_MODEL_HEADER
 #define IPF_MODEL_HEADER
 
-#include "MOOSLock.h"
+#include "MOOS/libMOOS/MOOSLib.h"
 #include "QuadSet.h"
 #include "FColorMap.h"
 #include "IPF_BundleSeries.h"
@@ -70,4 +70,5 @@ public:
 
 };
 #endif 
+
 

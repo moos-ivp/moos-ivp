@@ -20,19 +20,19 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
-#ifndef HelmIvP_HEADER
-#define HelmIvP_HEADER
+#ifndef HELMIVP_HEADER
+#define HELMIVP_HEADER
 
 #include <string>
 #include <set>
 #include <map>
-#include "MOOSLib.h"
+#include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
 #include "InfoBuffer.h"
 #include "IvPDomain.h"
 #include "BehaviorSet.h"
 #include "HelmEngine.h"
 
-class HelmIvP : public CMOOSApp
+class HelmIvP : public AppCastingMOOSApp
 {
 public:
   HelmIvP();
@@ -43,11 +43,20 @@ public:
   bool Iterate();
   bool OnConnectToServer();
   bool OnStartUp();
-  void addBehaviorFile(std::string);
+
+  bool buildReport();
+
+  bool addBehaviorFile(std::string);
+  bool setVerbosity(const std::string&);
   
-protected:
+ protected:
+  bool handleConfigNodeSkew(const std::string&);
+  bool handleConfigSkewAny(const std::string&);
+  bool handleConfigStandBy(const std::string&);
+  bool handleConfigDomain(const std::string&);
+  
+ protected:
   bool handleHeartBeat(const std::string&);
-  bool handleDomainEntry(const std::string&);
   bool updateInfoBuffer(CMOOSMsg &Msg);
   void postHelmStatus();
   void postCharStatus();
@@ -78,7 +87,7 @@ protected:
 
 protected:
   InfoBuffer*   m_info_buffer;
-  std::string   m_helm_status;   // STANDBY,PARK,DRIVE,DISABLED
+  std::string   m_helm_status;   // STANDBY,PARK,DRIVE,DISABLED,MALCONFIG
   bool          m_has_control;
 
   bool          m_allow_override;
@@ -87,6 +96,7 @@ protected:
   IvPDomain     m_ivp_domain;
   BehaviorSet*  m_bhv_set;
   std::string   m_verbose;
+  bool          m_verbose_reset;
   double        m_last_heartbeat;
   std::string   m_helm_alias;
 
@@ -113,12 +123,10 @@ protected:
   double        m_refresh_interval;
   
   unsigned int  m_helm_iteration;
-  unsigned int  m_warning_count;
   double        m_ok_skew;
-  double        m_curr_time;
-  double        m_start_time;
   bool          m_skews_matter;
 
+  HelmReport    m_helm_report;
   HelmReport    m_prev_helm_report;
   HelmEngine*   m_hengine;
   std::string   m_ownship;
@@ -138,20 +146,29 @@ protected:
 
   // Maps for keeping track of the previous outgoing behavior postings
   // for comparison on current posting. Possibly supress if they match
-  std::map<std::string, std::string> m_outgoing_strings;
-  std::map<std::string, double>      m_outgoing_doubles;
+  std::map<std::string, std::string> m_outgoing_key_strings;
+  std::map<std::string, double>      m_outgoing_key_doubles;
 
   // Maps for keeping track of when the last time a post happened for
   // a particular variable, and whether or not repeat posts are wanted.
-  std::map<std::string, double>      m_outgoing_timestamp;
-  std::map<std::string, double>      m_outgoing_repinterval;
+  std::map<std::string, double>       m_outgoing_timestamp;
+  std::map<std::string, std::string>  m_outgoing_sval;
+  std::map<std::string, double>       m_outgoing_dval;
+  std::map<std::string, unsigned int> m_outgoing_iter;
+  std::map<std::string, std::string>  m_outgoing_bhv;
   
-  // A flag maintained on each iteration indicating whether curr_time
-  // has yet to be updated.
-  bool m_curr_time_updated;
+
+  std::map<std::string, double>      m_outgoing_repinterval;
+
+  
+  
+  // A flag maintained on each iteration indicating whether the 
+  // info_buffer curr_time has yet to be synched to the app curr_time.
+  bool m_ibuffer_curr_time_updated;
 
   // A mapping of vehicle node_report skews  VEHICLE_NAME --> SKEW
   std::map<std::string, double>  m_node_skews;
 };
 #endif 
+
 

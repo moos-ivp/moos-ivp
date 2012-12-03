@@ -24,39 +24,44 @@
 #define PLATFORM_ALERT_RECORD_HEADER
 
 #include <map>
+#include <set>
 #include <string>
 
 class PlatformAlertRecord
 {
  public:
-  PlatformAlertRecord();
+  PlatformAlertRecord() {};
   ~PlatformAlertRecord() {};
-
-  void print();
 
   void addAlertID(std::string str);
   void addVehicle(std::string str);
 
   void setValue(std::string vehicle, std::string alertid, bool);
-  bool getValue(std::string vehicle, std::string alertid);
+  bool getValue(std::string vehicle, std::string alertid) const;
 
-  bool containsVehicle(std::string vehicle);
-  bool containsAlertID(std::string alertid);
+  bool containsVehicle(const std::string& vehicle) const;
+  bool containsAlertID(const std::string& alertid) const;
 
-  std::string getAlertedGroup(bool alerted);
+  std::string getAlertedGroup(bool alerted) const;
 
-  bool alertsPending();
+  bool alertsPending() const;
 
+  void print() const;
 
  protected: 
-  // map<vehicle, map<alertid, bool>>
+  //  map<vehicle, map<alertid, bool>>
+  //  
+  //                id=aa   id=bb
+  //  -----------   ------  --------
+  //  vname=gilda | true    false
+  //  vname=henry | false   false
+  //  vname=ike   | true    false
+  //  vname=jake  | false   true
   std::map<std::string, std::map<std::string, bool> > m_par;
 
-  std::map<std::string, bool> m_temp_row;
-
-  unsigned int m_rows;
-  unsigned int m_cols;
+  std::set<std::string> m_alertids;
 };
 
 #endif 
+
 

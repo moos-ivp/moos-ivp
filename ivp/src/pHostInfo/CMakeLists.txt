@@ -3,15 +3,19 @@
 # Author(s):                                Mike Benjamin
 #--------------------------------------------------------
 
-FILE(GLOB SRC *.cpp)
+SET(SRC
+  HostInfo.cpp
+  HostInfo_Info.cpp
+  main.cpp
+)
 
 ADD_EXECUTABLE(pHostInfo ${SRC})
 
 TARGET_LINK_LIBRARIES(pHostInfo
    MOOS
-   MOOSGen
    mbutil
    ufield
+   apputil
    m
    pthread)
 

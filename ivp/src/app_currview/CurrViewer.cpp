@@ -41,9 +41,9 @@ CurrViewer::CurrViewer(int x, int y,
 
   // Modes:   0:insert 1:edit 2:delete
   m_drop_mode = 0;     
-  m_hash_delta = 10;
   m_hash_shade = 0.3;
-  m_hash_offon = true;
+
+  m_geo_settings.setParam("hash_viewable", "true");
 }
 
 //-------------------------------------------------------------
@@ -75,7 +75,7 @@ int CurrViewer::handle(int event)
 void CurrViewer::draw()
 {
   MarineViewer::draw();
-  if(m_hash_offon)
+  if(m_geo_settings.viewable("hash_viewable"))
     drawHash();
 
   vector<XYVector>  mvectors = m_current_field.getVectorsMarked();

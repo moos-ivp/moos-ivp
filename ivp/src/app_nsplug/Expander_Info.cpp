@@ -65,6 +65,11 @@ void showHelpAndExit()
   mag("  --strict,-s                                                   ");
   blk("      If an undefined macro is encountered, the output file will");
   blk("      not be generated.                                         ");
+  mag("  --lenient,-l                                                   ");
+  blk("      If an undefined macro is encountered on a line with other ");
+  blk("      properly defined macros, the undefined ones are just      ");
+  blk("      ignored. Defined macros are expanded. By default, unless  ");
+  blk("      this option is used, the whole line would be ignored.     ");
   mag("  --version,-v                                                  ");
   blk("      Display the release version of nsplug.                    ");
   blk("  MACRO=VAL                                                     ");
@@ -272,3 +277,4 @@ void showReleaseInfoAndExit()
   showReleaseInfo("nsplug", "gpl");
   exit(0);
 }
+

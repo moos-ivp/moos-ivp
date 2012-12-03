@@ -2,7 +2,7 @@
 /*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: PMV_MOOSApp.h                                        */
-/*    DATE:                                                      */
+/*    DATE: September 2003                                       */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
 /* modify it under the terms of the GNU General Public License   */
@@ -24,64 +24,65 @@
 #define MOOS_VEHICLE_STATE_HEADER
 
 #include <string>
-#include "MOOSLib.h"
+#include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
 #include "PMV_GUI.h"
 #include "Threadsafe_pipe.h"
 #include "MOOS_event.h"
 
-class PMV_MOOSApp : public CMOOSApp  
+class PMV_MOOSApp : public AppCastingMOOSApp  
 {
  public:
   PMV_MOOSApp();
   virtual ~PMV_MOOSApp() {};
 
-  void setGUI(PMV_GUI* g_gui) {m_gui=g_gui;};
-  
-  void setPendingEventsPipe(Threadsafe_pipe<MOOS_event> 
-			    *pending_moos_events) 
-  {
-    m_pending_moos_events = pending_moos_events;
-  }
-
   bool Iterate();
-
-  // virtual overide of base class CMOOSApp member.
-  // Here we register for data we wish be informed about
   bool OnConnectToServer();
-
   bool OnStartUp();
   bool OnNewMail(MOOSMSG_LIST &NewMail);
+
+  void setGUI(PMV_GUI* g_gui)            {m_gui=g_gui;};  
+  void setAppCastRepo(AppCastRepo* repo) {m_appcast_repo=repo;};
+  void setPendingEventsPipe(Threadsafe_pipe<MOOS_event>*); 
 
   // Only call these methods in the main FLTK l thread, for thread
   // safety w.r.t. that  library...
   void handleNewMail(const MOOS_event & e);
   void handleIterate(const MOOS_event & e);
   void handleStartUp(const MOOS_event & e);
+  void handleAppCastRequesting();
 
  protected:
+  bool buildReport();
   void handlePendingGUI();
-  bool receivePK_SOL(std::string sval);
   void registerVariables();
   void postConnectionPairs();
+  void postAppCastRequest(std::string node, std::string app,
+			  std::string key,  std::string thresh,
+			  double duration);
 
   std::string getContextKey(std::string);
 
  protected:
-  PMV_GUI* m_gui;
-  Threadsafe_pipe<MOOS_event> * m_pending_moos_events;
+  Threadsafe_pipe<MOOS_event> *m_pending_moos_events;
 
-  double       m_start_time;
+  PMV_GUI     *m_gui;
   double       m_lastredraw_time;
-  double       m_time_warp;
   bool         m_verbose;
   bool         m_pending_pairs;
-  unsigned int m_iterations;
 
-  std::vector<std::string> m_node_report_vars;
-  std::vector<std::string> m_scope_vars;
-  std::vector<VarDataPair> m_connection_pairs; 
+  std::vector<std::string>  m_node_report_vars;
+  std::vector<std::string>  m_scope_vars;
+  std::vector<VarDataPair>  m_connection_pairs; 
+
+  AppCastRepo *m_appcast_repo;
+  double       m_appcast_last_req_time;
+  double       m_appcast_request_interval;
+
+  unsigned int m_node_reports_received;
+  int          m_node_report_index;
 };
 
 #endif 
+
 
 

@@ -68,8 +68,6 @@ XYMarker stringStandard2Marker(string str)
     string param = tolower(stripBlankEnds(biteString(mvector[i], '=')));
     string value = stripBlankEnds(mvector[i]);
     
-    cout << "param:" << param << " value:" << value << endl;
-
     if(((param == "x") || (param == "xpos")) && isNumber(value))
       x = value;
     else if(((param == "y") || (param == "ypos")) && isNumber(value))
@@ -107,5 +105,6 @@ XYMarker stringStandard2Marker(string str)
 
   return(new_marker);
 }
+
 
 

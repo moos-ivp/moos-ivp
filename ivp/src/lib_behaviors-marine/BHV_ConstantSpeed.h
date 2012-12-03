@@ -30,24 +30,22 @@ public:
   BHV_ConstantSpeed(IvPDomain);
   ~BHV_ConstantSpeed() {};
   
+  void         onIdleState() {updateInfoIn();};
   IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
 
-protected:
-  double  m_desired_speed;
-  double  m_peakwidth;
-  double  m_basewidth;
-  double  m_summitdelta;
+ protected:
+  bool         updateInfoIn();
+
+ protected: // Configuration variables
+  double       m_desired_speed;
+  double       m_peakwidth;
+  double       m_basewidth;
+  double       m_summitdelta;
+  std::string  m_speed_mismatch_var;
+
+ protected: // State variables
+  double       m_os_speed;
 };
 #endif
-
-
-
-
-
-
-
-
-
-
 

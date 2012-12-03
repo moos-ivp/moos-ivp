@@ -1,9 +1,24 @@
-/****************************************************************/
-/*   NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
-/*   ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*   FILE: UFS_MOOSApp.h                                        */
-/*   DATE: Nov 23rd 2011                                        */
-/****************************************************************/
+/*****************************************************************/
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    FILE: UFS_MOOSApp.h                                        */
+/*    DATE: Nov 23rd 2011                                        */
+/*                                                               */
+/* This program is free software; you can redistribute it and/or */
+/* modify it under the terms of the GNU General Public License   */
+/* as published by the Free Software Foundation; either version  */
+/* 2 of the License, or (at your option) any later version.      */
+/*                                                               */
+/* This program is distributed in the hope that it will be       */
+/* useful, but WITHOUT ANY WARRANTY; without even the implied    */
+/* warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR       */
+/* PURPOSE. See the GNU General Public License for more details. */
+/*                                                               */
+/* You should have received a copy of the GNU General Public     */
+/* License along with this program; if not, write to the Free    */
+/* Software Foundation, Inc., 59 Temple Place - Suite 330,       */
+/* Boston, MA 02111-1307, USA.                                   */
+/*****************************************************************/
 
 #ifndef UFS_MOOS_APP_HEADER
 #define UFS_MOOS_APP_HEADER
@@ -11,7 +26,7 @@
 #include <set>
 #include <vector>
 #include <map>
-#include "MOOSLib.h"
+#include "MOOS/libMOOS/MOOSLib.h"
 #include "UFS_Config.h"
 #include "VarDataPair.h"
 
@@ -21,11 +36,13 @@ class UFS_MOOSApp : public CMOOSApp
   UFS_MOOSApp();
   virtual ~UFS_MOOSApp() {};
 
+ public: // Standard MOOSApp functions to overload
   bool OnNewMail(MOOSMSG_LIST &NewMail);
   bool Iterate();
   bool OnConnectToServer();
   bool OnStartUp();
 
+ public:
   void handleCommand(char);
 
  protected:
@@ -59,7 +76,6 @@ class UFS_MOOSApp : public CMOOSApp
   std::vector<std::string> m_postings_keyval;   // e.g. "henry"
   std::vector<std::string> m_postings_msgval;   // e.g. "X=2,y=44,TIME..."
 
-
   // A 2D report structure - one vehicle per row, one fld per column
   std::vector<std::vector<std::string> > m_raw_report;
   
@@ -77,3 +93,4 @@ class UFS_MOOSApp : public CMOOSApp
 
 };
 #endif 
+

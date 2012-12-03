@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: IvPFuncViewerX.cpp                                    */
+/*    FILE: IvPFuncViewerX.cpp                                   */
 /*    DATE: Feb 25th, 2007                                       */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
@@ -412,3 +412,4 @@ PostingBuffer IvPFuncViewerX::getPostingBuffer(bool clear)
     m_pbuffer.clear();
   return(return_buffer);
 }
+

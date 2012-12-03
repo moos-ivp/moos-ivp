@@ -3,7 +3,6 @@
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: NodeReporter.cpp                                     */
 /*    DATE: Feb 13th 2006 (TransponderAIS)                       */
-/*    DATE: Jun  8th 2009 (NodeReporter)                         */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
 /* modify it under the terms of the GNU General Public License   */
@@ -28,17 +27,21 @@
 #include "MBUtils.h"
 #include "AngleUtils.h"
 #include "NodeRecord.h"
+#include "ACBlock.h"
 
 #define USE_UTM
 
 using namespace std;
 
 //-----------------------------------------------------------------
-// Procedure: Constructor
+// Constructor
 
 NodeReporter::NodeReporter()
 {
   m_vessel_name  = "unknown";
+
+  m_reports_posted         = 0;
+  m_reports_posted_alt_nav = 0;
 
   m_record.setType("unknown");
   m_record.setLength(0);
@@ -55,7 +58,6 @@ NodeReporter::NodeReporter()
   m_blackout_baseval  = 0;
   m_blackout_variance = 0;
   m_last_post_time    = -1;
-  m_time_updated      = false;
 
   // Below is a good alt_nav prefix suggestion,  but left blank to keep
   // feature off unless another app is generating the alt nav solution.
@@ -81,11 +83,9 @@ NodeReporter::NodeReporter()
 
 bool NodeReporter::OnNewMail(MOOSMSG_LIST &NewMail)
 {
-  m_utc_time = MOOSTime();
-  m_time_updated = true;
+  AppCastingMOOSApp::OnNewMail(NewMail);
 
   MOOSMSG_LIST::iterator p;
-  
   for(p=NewMail.begin(); p!=NewMail.end(); p++) {
     CMOOSMsg &msg = *p;
 
@@ -95,19 +95,19 @@ bool NodeReporter::OnNewMail(MOOSMSG_LIST &NewMail)
 
     if(key == "NAV_X") {
       m_record.setX(ddata);
-      m_nav_xy_updated = m_utc_time;
+      m_nav_xy_updated = m_curr_time;
     }
     else if(key == "NAV_Y") {
       m_record.setY(ddata);
-      m_nav_xy_updated = m_utc_time;
+      m_nav_xy_updated = m_curr_time;
     }
     else if(key == "NAV_LAT") {
       m_record.setLat(ddata);
-      m_nav_latlon_updated = m_utc_time;
+      m_nav_latlon_updated = m_curr_time;
     }
     else if(key == "NAV_LONG") {
       m_record.setLon(ddata);
-      m_nav_latlon_updated = m_utc_time;
+      m_nav_latlon_updated = m_curr_time;
     }
     else if(key == "NAV_SPEED")
       m_record.setSpeed(ddata);
@@ -117,60 +117,68 @@ bool NodeReporter::OnNewMail(MOOSMSG_LIST &NewMail)
       m_record.setDepth(ddata);
     else if(key == "NAV_YAW") 
       m_record.setYaw(ddata);
-    
-    bool record_gt_updated = true;
-    if(key == (m_alt_nav_prefix + "X")) {
-      m_record_gt.setX(ddata);
-      m_nav_xy_updated_gt = m_utc_time;
+
+    // BEGIN logic for checking for alternative nav reporting
+    if(m_alt_nav_prefix != "") {
+      bool record_gt_updated = true;
+      if(key == (m_alt_nav_prefix + "X")) {
+	m_record_gt.setX(ddata);
+	m_nav_xy_updated_gt = m_curr_time;
+      }
+      else if(key == (m_alt_nav_prefix + "Y")) {
+	m_record_gt.setY(ddata);
+	m_nav_xy_updated_gt = m_curr_time;
+      }
+      else if(key == (m_alt_nav_prefix + "LAT")) {
+	m_record_gt.setLat(ddata);
+	m_nav_latlon_updated_gt = m_curr_time;
+      }
+      else if(key == (m_alt_nav_prefix + "LONG")) {
+	m_record_gt.setLon(ddata);
+	m_nav_latlon_updated_gt = m_curr_time;
+      }
+      else if(key == (m_alt_nav_prefix + "SPEED"))
+	m_record_gt.setSpeed(ddata);
+      else if(key == (m_alt_nav_prefix + "HEADING"))
+	m_record_gt.setHeading(angle360(ddata));
+      else if(key == (m_alt_nav_prefix + "DEPTH"))
+	m_record_gt.setDepth(ddata);
+      else if(key == (m_alt_nav_prefix + "YAW"))
+	m_record_gt.setYaw(ddata);
+      else 
+	record_gt_updated = false;
+      
+      if(record_gt_updated)
+	m_record_gt_updated = m_curr_time;
     }
-    else if(key == (m_alt_nav_prefix + "Y")) {
-      m_record_gt.setY(ddata);
-      m_nav_xy_updated_gt = m_utc_time;
-    }
-    else if(key == (m_alt_nav_prefix + "LAT")) {
-      m_record_gt.setLat(ddata);
-      m_nav_latlon_updated_gt = m_utc_time;
-    }
-    else if(key == (m_alt_nav_prefix + "LONG")) {
-      m_record_gt.setLon(ddata);
-      m_nav_latlon_updated_gt = m_utc_time;
-    }
-    else if(key == (m_alt_nav_prefix + "SPEED"))
-      m_record_gt.setSpeed(ddata);
-    else if(key == (m_alt_nav_prefix + "HEADING"))
-      m_record_gt.setHeading(angle360(ddata));
-    else if(key == (m_alt_nav_prefix + "DEPTH"))
-      m_record_gt.setDepth(ddata);
-    else if(key == (m_alt_nav_prefix + "YAW"))
-      m_record_gt.setYaw(ddata);
-    else 
-      record_gt_updated = false;
-    
-    if(record_gt_updated)
-      m_record_gt_updated = m_utc_time;
+    // END logic for checking for alternative nav reporting
 
     else if(key == "IVPHELM_SUMMARY") {
-      m_helm_lastmsg = m_utc_time;
+      m_helm_lastmsg = m_curr_time;
       handleLocalHelmSummary(sdata);
     }
     else if(key == "IVPHELM_ALLSTOP") {
-      m_helm_lastmsg = m_utc_time;
+      m_helm_lastmsg = m_curr_time;
       m_helm_allstop_mode = sdata;
     }
     else if(key == "IVPHELM_STATE") {
-      m_helm_lastmsg = m_utc_time;
+      m_helm_lastmsg = m_curr_time;
       string helm_status = stripBlankEnds(sdata);
-      if((helm_status == "DRIVE") ||
-	 (helm_status == "PARK") ||
+      if((helm_status == "DRIVE")     ||
+	 (helm_status == "PARK")      ||
+	 (helm_status == "MALCONFIG") ||
 	 (helm_status == "DISABLED"))
 	m_helm_status_primary = helm_status;
-      else if((helm_status == "DRIVE+") ||
-	      (helm_status == "PARK+") ||
+      else if((helm_status == "DRIVE+")     ||
+	      (helm_status == "PARK+")      ||
+	      (helm_status == "MALCONFIG+") ||
 	      (helm_status == "STANDBY"))
 	m_helm_status_standby = helm_status;
-
+      
       if(strEnds(helm_status, "+"))
 	handleHelmSwitch();
+      if(strBegins(helm_status, "MALCONFIG"))
+	m_helm_allstop_mode = "n/a";
     }
 
     if(vectorContains(m_plat_vars, key)) {
@@ -197,6 +205,10 @@ bool NodeReporter::OnConnectToServer()
 
 void NodeReporter::registerVariables()
 {
+  AppCastingMOOSApp::RegisterVariables();
+
+  Register("NAV_*", "*", 0);
+
   m_Comms.Register("NAV_X", 0);
   m_Comms.Register("NAV_Y", 0);
   m_Comms.Register("NAV_LAT", 0);
@@ -225,6 +237,151 @@ void NodeReporter::registerVariables()
 }
 
 //-----------------------------------------------------------------
+// Procedure: OnStartUp()
+//      Note: Happens before connection is open
+
+bool NodeReporter::OnStartUp()
+{
+  AppCastingMOOSApp::OnStartUp();
+
+  // m_host_community set in superclass OnStartUp()
+  m_vessel_name = m_host_community;
+
+   // look for latitude, longitude global variables
+  double lat_origin, lon_origin;
+  bool ok1 = m_MissionReader.GetValue("LatOrigin", lat_origin);
+  bool ok2 = m_MissionReader.GetValue("LongOrigin", lon_origin);
+  if(!ok1 || !ok2)
+    reportConfigWarning("Lat or Lon Origin not set in *.moos file.");
+
+  // initialize m_geodesy
+  if(!m_geodesy.Initialise(lat_origin, lon_origin))
+    reportConfigWarning("Geodesy init failed.");
+  
+  STRING_LIST sParams;
+  m_MissionReader.EnableVerbatimQuoting(false);
+  if(!m_MissionReader.GetConfiguration(GetAppName(), sParams)) 
+    reportConfigWarning("No config block found for " + GetAppName());
+  
+  STRING_LIST::iterator p;
+  for(p=sParams.begin(); p!=sParams.end(); p++) {
+    string orig  = *p;
+    string line  = *p;
+    string param = toupper(biteStringX(line, '='));
+    string value = line;
+    double dval  = atof(value.c_str());
+
+    bool handled = false;
+    if((param == "PLATFORM_TYPE") ||           // Preferred
+       (param == "VESSEL_TYPE")) {             // Deprecated
+      m_record.setType(value);
+      handled = true;
+    }
+    else if((param =="PLATFORM_LENGTH") ||     // Preferred
+	    (param =="VESSEL_LENGTH")) {       // Deprecated
+      if(isNumber(value) && (dval >= 0)) {
+	m_record.setLength(dval);
+	handled = true;
+      }
+    }
+    else if(param == "BLACKOUT_INTERVAL") {
+      if(isNumber(value) && (dval >= 0)) {
+	m_blackout_baseval  = dval;
+	m_blackout_interval = dval;
+	handled = true;
+      }
+    }
+    else if(param == "BLACKOUT_VARIANCE") {
+      if(isNumber(value) && (dval >= 0)) {
+	m_blackout_variance = dval;
+	handled = true;
+      }
+    }
+    else if((param == "PLAT_REPORT_INPUT") ||     // Preferred
+	    (param == "PLAT_REPORT_VAR")   ||     // Deprecated
+	    (param == "PLATFORM_VARIABLE")) {     // Deprecated
+      addPlatformVar(value);
+      handled = true;
+    }
+    else if((param == "NODE_REPORT_OUTPUT")  ||   // Preferred
+	    (param == "NODE_REPORT_SUMMARY") ||   // Deprecated
+	    (param == "NODE_REPORT_VAR")) {       // Deprecated
+      if(!strContainsWhite(value)) {
+	m_node_report_var = value;
+	handled = true;
+      }
+    }      
+    else if(param == "PLAT_REPORT_OUTPUT") {
+      if(!strContainsWhite(value)) {
+	m_plat_report_var = value;
+	handled = true;
+      }
+    }      
+    else if(param == "GROUP") {
+      m_group_name = value;
+      handled = true;
+    }
+    else if(param == "NOHELM_THRESHOLD") {
+      if(isNumber(value) && (dval > 0)) {
+	m_nohelm_thresh = dval;
+	handled = true;
+      }
+    }      
+    else if(param =="CROSSFILL_POLICY")
+      handled = setCrossFillPolicy(value);
+    else if(param =="ALT_NAV_PREFIX") {
+      m_alt_nav_prefix = value;
+      handled = true;
+    }
+    else if(param =="ALT_NAV_NAME") {
+      m_alt_nav_name = value;
+      handled = true;
+    }
+    
+    if(!handled)
+      reportUnhandledConfigWarning(orig);
+  }
+  
+  registerVariables();
+  unsigned int k, ksize = m_plat_vars.size();
+  for(k=0; k<ksize; k++)
+    m_Comms.Register(m_plat_vars[k], 0);
+
+  // If the length is unknown, put in some good guesses
+  if(m_record.getLength() == 0) {
+    string vtype = tolower(m_record.getType());
+    if(vtype == "kayak")
+      m_record.setLength(4); // meters;
+    else if(vtype == "auv")
+      m_record.setLength(4); // meters;
+    else if(vtype == "uuv")
+      m_record.setLength(4); // meters;
+    else if(vtype == "ship")
+      m_record.setLength(8); // meters
+    else if(vtype == "glider")
+      m_record.setLength(3); // meters
+    else if(vtype == "usv")
+      m_record.setLength(6); // meters
+    else if(vtype == "kingfisher")
+      m_record.setLength(3); // meters
+    else
+      reportConfigWarning("Unrecognized platform type: " + vtype);
+  }
+  
+  m_record.setName(m_vessel_name);
+  m_record.setGroup(m_group_name);
+  // To start with m_record_gt is just a copy of m_record.
+  m_record_gt = m_record;       
+
+  if(strBegins(m_alt_nav_name, "_"))
+    m_record_gt.setName(m_vessel_name + m_alt_nav_name);
+  else
+    m_record_gt.setName(m_alt_nav_name);
+  
+  return(true);
+}
+
+//-----------------------------------------------------------------
 // Procedure: Iterate()
 // Note: The "blackout_interval" is a way to have a vehicle simulate 
 //       a vehicle that is only making period reports available to 
@@ -234,35 +391,36 @@ void NodeReporter::registerVariables()
 
 bool NodeReporter::Iterate()
 {
-  // If the time was updated while handling mail, don't update it again
-  if(!m_time_updated)
-    m_utc_time = MOOSTime();
-  m_time_updated = false;
+  AppCastingMOOSApp::Iterate();
 
   // If (a) this is the first chance to post, or (b) there is no
   // blackout interval being implemented, or (c) the time since last
   // post exceeds the blackout interval, then perform a posting.
   if((m_last_post_time == -1) || (m_blackout_interval <= 0) ||
-     ((m_utc_time - m_last_post_time) > m_blackout_interval)) {
+     ((m_curr_time - m_last_post_time) > m_blackout_interval)) {
 
     if(m_crossfill_policy != "literal")
       crossFillCoords(m_record, m_nav_xy_updated, m_nav_latlon_updated);
-      
-    string report = assembleNodeReport(m_record);
-    m_Comms.Notify(m_node_report_var, report);
     
-    double elapsed_time = m_utc_time - m_record_gt_updated;
+    m_record.setIndex(m_reports_posted);
+    string report = assembleNodeReport(m_record);    
+    m_Comms.Notify(m_node_report_var, report);
+    m_reports_posted++;
+
+    double elapsed_time = m_curr_time - m_record_gt_updated;
     if(elapsed_time < 5) {
       if(m_crossfill_policy != "literal")
 	crossFillCoords(m_record_gt, m_nav_xy_updated_gt, 
 			m_nav_latlon_updated_gt);
       
+      m_record_gt.setIndex(m_reports_posted);
       string report_gt = assembleNodeReport(m_record_gt);
       m_Comms.Notify(m_node_report_var, report_gt);
+      m_reports_posted_alt_nav++;
     }
 
     // Note the post time and apply it to the blackout calculation
-    m_last_post_time = m_utc_time;
+    m_last_post_time = m_curr_time;
     m_blackout_interval  = m_blackout_baseval;
 
     if(m_blackout_variance > 0) {
@@ -281,121 +439,11 @@ bool NodeReporter::Iterate()
   if(platform_report != "")
     m_Comms.Notify(m_plat_report_var, platform_report);
 
+  AppCastingMOOSApp::PostReport();
   return(true);
 }
 
 
-//-----------------------------------------------------------------
-// Procedure: OnStartUp()
-//      Note: Happens before connection is open
-
-bool NodeReporter::OnStartUp()
-{
-  CMOOSApp::OnStartUp();
-  MOOSTrace("pNodeReporter starting....\n");
-
-  // Ownship_name == Community must be provided
-  if(!m_MissionReader.GetValue("Community", m_vessel_name))
-    return(MOOSFail("Vehicle (Community) Name not provided\n"));
-
-   // look for latitude, longitude global variables
-  double lat_origin, lon_origin;
-  bool ok1 = m_MissionReader.GetValue("LatOrigin", lat_origin);
-  bool ok2 = m_MissionReader.GetValue("LongOrigin", lon_origin);
-  if(!ok1 || !ok2)
-    return(MOOSFail("Lat or Lon Origin not set in *.moos file.\n"));
-
-  // initialize m_geodesy
-  if(!m_geodesy.Initialise(lat_origin, lon_origin))
-    return(MOOSFail("Geodesy init failed.\n"));
-
-  list<string> sParams;
-  m_MissionReader.EnableVerbatimQuoting(false);
-  if(m_MissionReader.GetConfiguration(GetAppName(), sParams)) {
-    list<string>::iterator p;
-    for(p=sParams.begin(); p!=sParams.end(); p++) {
-      string param = stripBlankEnds(toupper(biteString(*p, '=')));
-      string value = stripBlankEnds(*p);
-      double dval  = atof(value.c_str());
-
-      if((param == "PLATFORM_TYPE") ||           // Preferred
-	 (param == "VESSEL_TYPE"))               // Deprecated
-	m_record.setType(value);
-      else if((param =="PLATFORM_LENGTH") ||     // Preferred
-	      (param =="VESSEL_LENGTH")) {       // Deprecated
-	if(isNumber(value) && (dval >= 0))
-	  m_record.setLength(dval);
-      }
-      else if(param == "BLACKOUT_INTERVAL") {
-	if(isNumber(value) && (dval >= 0)) {
-	  m_blackout_baseval  = dval;
-	  m_blackout_interval = dval;
-	}
-      }
-      else if(param == "BLACKOUT_VARIANCE") {
-	if(isNumber(value) && (dval >= 0))
-	  m_blackout_variance = dval;
-      }
-      else if((param == "PLAT_REPORT_INPUT") ||     // Preferred
-	      (param == "PLAT_REPORT_VAR") ||       // Deprecated
-	      (param == "PLATFORM_VARIABLE"))       // Deprecated
-	addPlatformVar(value);
-      else if((param == "NODE_REPORT_OUTPUT") ||    // Preferred
-	      (param == "NODE_REPORT_SUMMARY") ||   // Deprecated
-	      (param == "NODE_REPORT_VAR")) {       // Deprecated
-	if(!strContainsWhite(value))
-	  m_node_report_var = value;
-      }      
-      else if(param == "PLAT_REPORT_OUTPUT") {
-	if(!strContainsWhite(value))
-	  m_plat_report_var = value;
-      }      
-      else if(param == "GROUP")
-	m_group_name = value;
-      else if(param == "NOHELM_THRESHOLD") {
-	if(isNumber(value) && (dval > 0))
-	  m_nohelm_thresh = dval;
-      }      
-      else if(param =="CROSSFILL_POLICY")
-	setCrossFillPolicy(value);
-      else if(param =="ALT_NAV_PREFIX")
-	m_alt_nav_prefix = value;
-      else if(param =="ALT_NAV_NAME")
-	m_alt_nav_name = value;
-    }
-  }
-
-  registerVariables();
-  unsigned int k, ksize = m_plat_vars.size();
-  for(k=0; k<ksize; k++)
-    m_Comms.Register(m_plat_vars[k], 0);
-
-  // If the length is unknown, put in some good guesses
-  if(m_record.getLength() == 0) {
-    if(tolower(m_record.getType()) == "kayak")
-      m_record.setLength(4); // meters;
-    if(tolower(m_record.getType()) == "auv")
-      m_record.setLength(4); // meters;
-    if(tolower(m_record.getType()) == "uuv")
-      m_record.setLength(4); // meters;
-    if(tolower(m_record.getType()) == "ship")
-      m_record.setLength(8); // meters
-    if(tolower(m_record.getType()) == "glider")
-      m_record.setLength(3); // meters
-  }
-  
-  m_record.setName(m_vessel_name);
-  m_record.setGroup(m_group_name);
-  // To start with m_record_gt is just a copy of m_record.
-  m_record_gt = m_record;       
-
-  if(strBegins(m_alt_nav_name, "_"))
-    m_record_gt.setName(m_vessel_name + m_alt_nav_name);
-  else
-    m_record_gt.setName(m_alt_nav_name);
-  
-  return(true);
-}
 
 //-----------------------------------------------------------------
 // Procedure: handleLocalHelmSummary()
@@ -471,7 +519,7 @@ void NodeReporter::updatePlatformVar(string variable, string value)
   for(i=0; i<isize; i++) {
     if(m_plat_vars[i] == variable) {
       m_plat_vals[i] = value;
-      m_plat_recv_tstamp[i]  = m_utc_time;
+      m_plat_recv_tstamp[i]  = m_curr_time;
     }
   }
 }
@@ -487,7 +535,7 @@ string NodeReporter::assemblePlatformReport()
   unsigned int i, isize = m_plat_vars.size();
   for(i=0; i<isize; i++) {
     if(m_plat_recv_tstamp[i] != 0) {
-      double time_since_last_post = m_utc_time - m_plat_post_tstamp[i];
+      double time_since_last_post = m_curr_time - m_plat_post_tstamp[i];
       bool   unposted_change = false;
       if((m_plat_recv_tstamp[i] - m_plat_post_tstamp[i]) > 0)
 	unposted_change = true;
@@ -498,13 +546,13 @@ string NodeReporter::assemblePlatformReport()
 	  return_str += (m_plat_vars[i] + "=" + m_plat_vals[i]);
 	else
 	  return_str += (m_plat_alias[i] + "=" + m_plat_vals[i]);
-	m_plat_post_tstamp[i] = m_utc_time;
+	m_plat_post_tstamp[i] = m_curr_time;
       }
     }
   }
   if(return_str != "") {
     string augment_str = ("platform=" + m_vessel_name + ",");
-    augment_str += "utc_time=" + doubleToString(m_utc_time) + ",";
+    augment_str += "utc_time=" + doubleToString(m_curr_time) + ",";
     return_str = augment_str + return_str;
   }
   return(return_str);
@@ -517,17 +565,17 @@ string NodeReporter::assemblePlatformReport()
 
 string NodeReporter::assembleNodeReport(NodeRecord record)
 {
-  record.setTimeStamp(m_utc_time); 
+  record.setTimeStamp(m_curr_time); 
 
   // First set the mode field
 
   // (1) If the info has never been received or is stale we want
   // to indicate so.
   string  mode;
-  if((m_utc_time-m_helm_lastmsg) > m_nohelm_thresh) {
+  if((m_curr_time-m_helm_lastmsg) > m_nohelm_thresh) {
     string awol_time = "EVER";
     if(m_helm_lastmsg > 0)
-      awol_time = doubleToString((m_utc_time-m_helm_lastmsg), 0);
+      awol_time = doubleToString((m_curr_time-m_helm_lastmsg), 0);
     mode = "NOHELM-" + awol_time;
   }
   // (2) If helm is in DRIVE but has provided mode information, 
@@ -546,6 +594,7 @@ string NodeReporter::assembleNodeReport(NodeRecord record)
       if((m_helm_mode !="none") && (m_helm_mode != ""))
 	mode = m_helm_mode;
     }
+
   }
   
   record.setMode(mode);
@@ -560,13 +609,18 @@ string NodeReporter::assembleNodeReport(NodeRecord record)
 //      Note: Determines how or whether the local and global coords
 //            are updated from one another.
 
-void NodeReporter::setCrossFillPolicy(string policy)
+bool NodeReporter::setCrossFillPolicy(string policy)
 {
   policy = tolower(policy);
   policy = findReplace(policy, '_', '-');
-  if((policy=="literal")||(policy=="fill-empty")||(policy=="use-latest"))
+  if((policy=="literal")||(policy=="fill-empty")||(policy=="use-latest")) {
     m_crossfill_policy = policy;
+    return(true);
+  }
+  
+  return(false);
 }
+
 
 
 //------------------------------------------------------------------
@@ -662,3 +716,74 @@ void NodeReporter::handleHelmSwitch()
   m_helm_allstop_mode = "";
   m_helm_switch_noted = true;
 }
+
+
+//-----------------------------------------------------------------
+// Procedure: buildReport()
+//      Note: A virtual function of the AppCastingMOOSApp superclass, 
+//            conditionally invoked if either a terminal or appcast 
+//            report is needed.
+// 
+// Configuration Summary:
+// ---------------------------------
+// Vehicle name:    henry
+// Platform type:   uuv
+// Platform length: 4.2
+// 
+// BLACKOUT_INTERVAL  = 0
+//
+// NODE_REPORT_OUTPUT = NODE_REPORT_LOCAL
+// NOHELM_THRESHOLD   = 5
+// CROSSFILL_POLICY   = literal
+// 
+// ALT_NAV_PREFIX     = NAV_GT
+// ALT_NAV_NAME       = _GT
+//
+//
+//
+// Alt Nav Updates: 276 
+
+
+
+// Latest posting:
+// NODE_REPORT_LOCAL = NAME=alpha,TYPE=UUV,TIME=1252348077.59,   
+//                      X=51.71,Y=-35.50, LAT=43.824981,          
+//                      LON=-70.329755,SPD=2.0,HDG=118.8,         
+//                      YAW=118.8,DEPTH=4.6,LENGTH=3.8,           
+//                      MODE=MODE@ACTIVE:LOITERING      
+
+bool NodeReporter::buildReport()
+{
+  string str_vlength  = doubleToString(m_record.getLength(),1);
+  string str_blackout = doubleToString(m_blackout_interval,2);
+  string str_bovariance = doubleToString(m_blackout_variance,2);
+
+  m_msgs << "Vehicle Configuration:"                    << endl;
+  m_msgs << "----------------------------"              << endl;
+  m_msgs << "     Vehicle name: " << m_vessel_name      << endl;
+  m_msgs << "     Vehicle type: " << m_record.getType() << endl; 
+  m_msgs << "   Vehicle length: " << str_vlength        << endl;
+  m_msgs << endl;
+  m_msgs << "Blackout Configuration:"                   << endl;
+  m_msgs << "----------------------------"              << endl;
+  m_msgs << "Blackout interval: " << str_blackout       << endl;
+  m_msgs << "Blackout variance: " << str_bovariance     << endl;
+  m_msgs  << endl;
+  m_msgs << "AltNav Config and Status:"                 << endl;
+  m_msgs << "----------------------------"              << endl;
+  m_msgs << "   ALT_NAV_PREFIX: " << m_alt_nav_prefix   << endl;
+  m_msgs << "     ALT_NAV_NAME: " << m_alt_nav_name     << endl;
+  m_msgs << " ALT_NAV_POSTINGS: " << m_reports_posted_alt_nav << endl;
+  m_msgs << endl;
+  m_msgs << "Node Report Summary:"                 << endl;
+  m_msgs << "----------------------------"         << endl;
+  m_msgs << "Reports Posted: " << m_reports_posted << endl;
+  
+  string report = assembleNodeReport(m_record);    
+  ACBlock block(" Latest Report: ", report, 50);
+  m_msgs << block.getFormattedString();
+
+  return(true);
+}
+
+

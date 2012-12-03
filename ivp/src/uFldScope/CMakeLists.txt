@@ -9,7 +9,6 @@ ADD_EXECUTABLE(uFldScope ${SRC})
 
 TARGET_LINK_LIBRARIES(uFldScope
    MOOS
-   MOOSGen
    mbutil
    genutil
    m

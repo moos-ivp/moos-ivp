@@ -538,3 +538,4 @@ void BHV_OpRegion::handleVisualHint(string hint)
     m_hint_vertex_size = dval;
 }
 
+

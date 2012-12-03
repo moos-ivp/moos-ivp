@@ -63,18 +63,8 @@ int main(int argc, char *argv[])
   LogViewLauncher launcher;
   gui = launcher.launch(argc, argv);
   
-  // Set up some convenient initial conditions
   if(gui) {
-    // It's only polite to center the view on the center of the 
-    // bounding box of the total vehicle trails.
-    gui->cmviewer->setParam("center_view", "average");
-
-    // Let the GUI choose a convenient non-zero start time.
     gui->setCurrTime();
-  }
-
-
-  if(gui) {
     Fl::add_idle(idleProc);
     return(Fl::run());
   }
@@ -117,5 +107,6 @@ void help_message()
   cout << "  (3) See also: alogscan, alogrm, alogclip, aloggrep      " << endl;
   cout << endl;
 }
+
 
 

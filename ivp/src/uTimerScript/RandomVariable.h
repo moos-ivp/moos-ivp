@@ -31,30 +31,41 @@ class RandomVariable
   RandomVariable();
   virtual ~RandomVariable() {};
 
+  virtual bool setParam(std::string, double);
+  virtual void reset() {};
+  
+  virtual std::string getStringSummary() const;
+  virtual std::string getParams() const {return("");};
+  
  public:
-  void   setVarName(std::string str)   {m_varname=str;}; 
-  void   setKeyName(std::string str)   {m_keyname=str;};
-  bool   setRange(double, double);
-  double reset(double timestamp=-1);
-  double getAge(double timestamp);
+  void   setVarName(std::string str)  {m_varname=str;}; 
+  void   setKeyName(std::string str)  {m_keyname=str;};
+  void   setType(std::string str)     {m_type=str;};
 
-  std::string getVarName() const {return(m_varname);};
-  std::string getKeyName() const {return(m_keyname);};
+  std::string getVarName() const      {return(m_varname);};
+  std::string getKeyName() const      {return(m_keyname);};
+  std::string getType() const         {return(m_type);};
+  
+  double      getMinVal() const       {return(m_min_val);};
+  double      getMaxVal() const       {return(m_max_val);};
+  double      getValue() const        {return(m_value);};
+
   std::string getStringValue() const;
-  double  getValue() const {return(m_value);};
-
-  std::string getStringSummary();
 
  protected: // Configuration Parameters
   std::string m_varname;
   std::string m_keyname;
+  std::string m_type;
+
   double      m_min_val;
   double      m_max_val;
 
  protected: // State Variables
   double      m_value;
-  double      m_timestamp;
+  std::string m_value_str;
+
 };
 
 #endif 
+
 

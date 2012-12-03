@@ -1,44 +1,28 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin                                     */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: HelmReport.cpp                                       */
 /*    DATE: Sep 26th, 2006                                       */
 /*                                                               */
-/* (IvPHelm) The IvP autonomous control Helm is a set of         */
-/* classes and algorithms for a behavior-based autonomous        */
-/* control architecture with IvP action selection.               */
+/* This program is free software; you can redistribute it and/or */
+/* modify it under the terms of the GNU General Public License   */
+/* as published by the Free Software Foundation; either version  */
+/* 2 of the License, or (at your option) any later version.      */
 /*                                                               */
-/* The algorithms embodied in this software are protected under  */
-/* U.S. Pat. App. Ser. Nos. 10/631,527 and 10/911,765 and are    */
-/* the property of the United States Navy.                       */
+/* This program is distributed in the hope that it will be       */
+/* useful, but WITHOUT ANY WARRANTY; without even the implied    */
+/* warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR       */
+/* PURPOSE. See the GNU General Public License for more details. */
 /*                                                               */
-/* Permission to use, copy, modify and distribute this software  */
-/* and its documentation for any non-commercial purpose, without */
-/* fee, and without a written agreement is hereby granted        */
-/* provided that the above notice and this paragraph and the     */
-/* following three paragraphs appear in all copies.              */
-/*                                                               */
-/* Commercial licences for this software may be obtained by      */
-/* contacting Patent Counsel, Naval Undersea Warfare Center      */
-/* Division Newport at 401-832-4736 or 1176 Howell Street,       */
-/* Newport, RI 02841.                                            */
-/*                                                               */
-/* In no event shall the US Navy be liable to any party for      */
-/* direct, indirect, special, incidental, or consequential       */
-/* damages, including lost profits, arising out of the use       */
-/* of this software and its documentation, even if the US Navy   */
-/* has been advised of the possibility of such damage.           */
-/*                                                               */
-/* The US Navy specifically disclaims any warranties, including, */
-/* but not limited to, the implied warranties of merchantability */
-/* and fitness for a particular purpose. The software provided   */
-/* hereunder is on an 'as-is' basis, and the US Navy has no      */
-/* obligations to provide maintenance, support, updates,         */
-/* enhancements or modifications.                                */
+/* You should have received a copy of the GNU General Public     */
+/* License along with this program; if not, write to the Free    */
+/* Software Foundation, Inc., 59 Temple Place - Suite 330,       */
+/* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
 #include <iostream>
 #include "HelmReport.h"
+#include "BuildUtils.h"
 #include "MBUtils.h"
 
 using namespace std;
@@ -63,9 +47,6 @@ HelmReport::HelmReport()
 void HelmReport::addDecision(const string& var, double val) 
 {
   m_decisions[var] = val;
-
-  m_decision_summary += ",var=" + var + ":";
-  m_decision_summary += doubleToStringX(val, 5);
 }
 
 
@@ -75,29 +56,27 @@ void HelmReport::addDecision(const string& var, double val)
 void HelmReport::clearDecisions()
 {
   m_decisions.clear();
-  m_decision_summary = "";
 }
 
 
 //-----------------------------------------------------------
 // Procedure: getDecision()
 
-double HelmReport::getDecision(const string& var) 
+double HelmReport::getDecision(const string& var) const
 {
-  map<string, double>::iterator p;
-  p = m_decisions.find(var);
-  double result = 0;
-  if(p != m_decisions.end())
-    result = p->second;
-  return(result);
+  map<string, double>::const_iterator p = m_decisions.find(var);
+  if(p == m_decisions.end())
+    return(0);
+  else
+    return(p->second);
 }
 
 //-----------------------------------------------------------
 // Procedure: hasDecision()
 
-bool HelmReport::hasDecision(const string& var) 
+bool HelmReport::hasDecision(const string& var) const
 {
-  map<string, double>::iterator p = m_decisions.find(var);
+  map<string, double>::const_iterator p = m_decisions.find(var);
   if(p != m_decisions.end())
     return(true);
   else
@@ -105,68 +84,227 @@ bool HelmReport::hasDecision(const string& var)
 }
 
 //-----------------------------------------------------------
-// Procedure: addRunningBHV
-//            addIdleBHV
-//            addCompletedBHV
+// Procedure: getDecisionSummary()
 
-void HelmReport::addRunningBHV(const string& descriptor, double time, 
-			       const string& update_summary)
+string HelmReport::getDecisionSummary() const
 {
-  if(m_running_bhvs != "")
-    m_running_bhvs += ":";
-  m_running_bhvs += descriptor;
-  m_running_bhvs += "$" + doubleToString(time, 1);
-  m_running_bhvs += "$" + update_summary;
+  string summary;
+
+  unsigned int i, domain_size = m_domain.size();
+  for(i=0; i<domain_size; i++) {
+    string varname = m_domain.getVarName(i);
+    if(i!=0)
+      summary += ",";
+    summary += "var=" + varname + ":";
+    map<string,double>::const_iterator p = m_decisions.find(varname);
+    if(p == m_decisions.end())
+      summary += "varbalk";
+    else
+      summary += doubleToStringX(p->second);
+  }
+  return(summary);
 }
 
-void HelmReport::addIdleBHV(const string& descriptor, double time,
-			    const string& update_summary)
-{
-  if(m_idle_bhvs != "")
-    m_idle_bhvs += ":";
-  m_idle_bhvs += descriptor;
-  m_idle_bhvs += "$" + doubleToString(time, 1);
-  m_idle_bhvs += "$" + update_summary;
-}
-
-void HelmReport::addCompletedBHV(const string& descriptor, double time,
-				 const string& update_summary)
-{
-  if(m_completed_bhvs != "")
-    m_completed_bhvs += ":";
-  m_completed_bhvs += descriptor;
-  m_completed_bhvs += "$" + doubleToString(time, 1);
-  m_completed_bhvs += "$" + update_summary;
-}
 
 //-----------------------------------------------------------
 // Procedure: addActiveBHV
 
-//   bhv_waypoint:100,bhv_avoid:200,bhv_opregion:100
-
 void HelmReport::addActiveBHV(const string& descriptor, double time, 
-			      double pwt, double pcs, double cpu_time, 
+			      double pwt, int pcs, double cpu_time, 
 			      const string& update_summary, 
-			      unsigned int ipfs, bool orig)
+			      unsigned int ipfs)
 {
-  if(m_active_bhvs != "")
-    m_active_bhvs += ":";
+  m_bhvs_active_desc.push_back(descriptor);
+  m_bhvs_active_time.push_back(time);
+  m_bhvs_active_upds.push_back(update_summary);
+  m_bhvs_active_pwt.push_back(pwt);
+  m_bhvs_active_pcs.push_back(pcs);
+  m_bhvs_active_cpu.push_back(cpu_time);
+  m_bhvs_active_ipfs.push_back(ipfs);
+}
   
-  m_active_bhvs += descriptor;
-  m_active_bhvs += "$" + doubleToString(time, 1);
-  m_active_bhvs += "$" + doubleToStringX(pwt, 2);
-  m_active_bhvs += "$" + doubleToStringX(pcs);
-  m_active_bhvs += "$" + doubleToString(cpu_time,2);
-  m_active_bhvs += "$" + update_summary;
-  m_active_bhvs += "$" + uintToString(ipfs);
-  m_active_bhvs += "$" + uintToString(orig);
+//-----------------------------------------------------------
+// Procedure: getActiveBehaviors
+
+string HelmReport::getActiveBehaviors() const
+{
+  string return_str;
+  unsigned int i, vsize = m_bhvs_active_desc.size();
+  for(i=0; i<vsize; i++) {
+    if(i>0)
+      return_str += ":";
+    return_str += m_bhvs_active_desc[i];
+    return_str += "$" + doubleToString(m_bhvs_active_time[i],2);
+    return_str += "$" + doubleToString(m_bhvs_active_pwt[i]);
+    return_str += "$" + intToString(m_bhvs_active_pcs[i]);
+    return_str += "$" + doubleToString(m_bhvs_active_cpu[i]);
+    return_str += "$" + m_bhvs_active_upds[i];
+    return_str += "$" + uintToString(m_bhvs_active_ipfs[i]);
+  }
+  return(return_str);
+}
+
+//-----------------------------------------------------------
+// Procedure: clearActiveBHVs
+
+void HelmReport::clearActiveBHVs() 
+{
+  m_bhvs_active_desc.clear();
+  m_bhvs_active_time.clear();
+  m_bhvs_active_upds.clear();
+  m_bhvs_active_pwt.clear();
+  m_bhvs_active_cpu.clear();
+  m_bhvs_active_pcs.clear();
+  m_bhvs_active_ipfs.clear();
+}
+
+//-----------------------------------------------------------
+// Procedure: addRunningBHV
+
+void HelmReport::addRunningBHV(const string& descriptor, double time, 
+			       const string& update_summary)
+{
+  m_bhvs_running_desc.push_back(descriptor);
+  m_bhvs_running_time.push_back(time);
+  m_bhvs_running_upds.push_back(update_summary);
+}
+
+//-----------------------------------------------------------
+// Procedure: getRunningBehaviors
+//   Example: "loiter$1252348077.59$4/4 : return$1252348047.12$0/0"
+
+string HelmReport::getRunningBehaviors() const
+{
+  string return_str;
+  unsigned int i, vsize = m_bhvs_running_desc.size();
+  for(i=0; i<vsize; i++) {
+    if(i>0)
+      return_str += ":";
+    return_str += m_bhvs_running_desc[i];
+    return_str += "$" + doubleToString(m_bhvs_running_time[i],2);
+    return_str += "$" + m_bhvs_running_upds[i];
+  }
+  return(return_str);
+}
+
+//-----------------------------------------------------------
+// Procedure: clearRunningBHVs
+
+void HelmReport::clearRunningBHVs() 
+{
+  m_bhvs_running_desc.clear();
+  m_bhvs_running_time.clear();
+  m_bhvs_running_upds.clear();
 }
 
 
 //-----------------------------------------------------------
+// Procedure: addIdleBHV
+//            getIdleBehaviors
+
+void HelmReport::addIdleBHV(const string& descriptor, double time,
+			    const string& update_summary)
+{
+  m_bhvs_idle_desc.push_back(descriptor);
+  m_bhvs_idle_time.push_back(time);
+  m_bhvs_idle_upds.push_back(update_summary);
+}
+
+//-----------------------------------------------------------
+// Procedure: getIdleBehaviors
+//   Example: "loiter$1252348077.59$4/4 : return$1252348047.12$0/0"
+
+string HelmReport::getIdleBehaviors() const
+{
+  string return_str;
+  unsigned int i, vsize = m_bhvs_idle_desc.size();
+  for(i=0; i<vsize; i++) {
+    if(i>0)
+      return_str += ":";
+    return_str += m_bhvs_idle_desc[i];
+    return_str += "$" + doubleToString(m_bhvs_idle_time[i],2);
+    return_str += "$" + m_bhvs_idle_upds[i];
+  }
+  return(return_str);
+}
+
+//-----------------------------------------------------------
+// Procedure: clearIdleBHVs
+
+void HelmReport::clearIdleBHVs() 
+{
+  m_bhvs_idle_desc.clear();
+  m_bhvs_idle_time.clear();
+  m_bhvs_idle_upds.clear();
+}
+
+//-----------------------------------------------------------
+// Procedure: addCompletedBHV
+
+void HelmReport::addCompletedBHV(const string& descriptor, double time,
+				 const string& update_summary)
+{
+  m_bhvs_completed_desc.push_back(descriptor);
+  m_bhvs_completed_time.push_back(time);
+  m_bhvs_completed_upds.push_back(update_summary);
+}
+
+//-----------------------------------------------------------
+// Procedure: getCompletedBehaviors
+//   Example: "loiter$1252348077.59$4/4 : return$1252348047.12$0/0"
+
+string HelmReport::getCompletedBehaviors() const
+{
+  string return_str;
+  unsigned int i, vsize = m_bhvs_completed_desc.size();
+  for(i=0; i<vsize; i++) {
+    if(i>0)
+      return_str += ":";
+    return_str += m_bhvs_completed_desc[i];
+    return_str += "$" + doubleToString(m_bhvs_completed_time[i],2);
+    return_str += "$" + m_bhvs_completed_upds[i];
+  }
+  return(return_str);
+}
+
+//-----------------------------------------------------------
+// Procedure: clearCompletedBHVs
+
+void HelmReport::clearCompletedBHVs() 
+{
+  m_bhvs_completed_desc.clear();
+  m_bhvs_completed_time.clear();
+  m_bhvs_completed_upds.clear();
+}
+
+
+//-----------------------------------------------------------
+// Procedure: getDomainString()
+//   Example: [speed,0,5,26] [course,0,359,360] 
+
+string HelmReport::getDomainString() const
+{
+  return(domainToString(m_domain));
+  string return_string;
+
+  unsigned int i, vsize = m_domain.size();
+  for(i=0; i<vsize; i++) {
+    if(i>0)
+      return_string += " ";
+    return_string += "[" + m_domain.getVarName(i);
+    return_string += "," + doubleToStringX(m_domain.getVarLow(i));
+    return_string += "," + doubleToStringX(m_domain.getVarHigh(i));
+    return_string += "," + uintToString(m_domain.getVarPoints(i));
+    return_string += "]";
+  }
+    
+  return(return_string);
+}
+
+//-----------------------------------------------------------
 // Procedure: getReportAsString()
 
-string HelmReport::getReportAsString()
+string HelmReport::getReportAsString() const
 {
   HelmReport empty_report;
   return(getReportAsString(empty_report));
@@ -176,7 +314,7 @@ string HelmReport::getReportAsString()
 //-----------------------------------------------------------
 // Procedure: getReportAsString(const HelmReport&)
 
-string HelmReport::getReportAsString(const HelmReport& prep)
+string HelmReport::getReportAsString(const HelmReport& prep) const
 {
   string report = "iter=" + uintToString(m_iteration);
   report += (",utc_time=" + doubleToString(m_time_utc, 2));
@@ -190,23 +328,20 @@ string HelmReport::getReportAsString(const HelmReport& prep)
   if(m_create_time != prep.getCreateTime())
     report += (",create_time=" + doubleToString(m_create_time, 2));
 
+  if(m_max_create_time != prep.getMaxCreateTime())
+    report += (",max_create_time=" + doubleToString(m_max_create_time, 2));
+  if(m_max_solve_time != prep.getMaxSolveTime())
+    report += (",max_solve_time=" + doubleToString(m_max_solve_time, 2));
+  if(m_max_loop_time != prep.getMaxLoopTime())
+    report += (",max_loop_time=" + doubleToString(m_max_loop_time, 2));
+
   double loop_time = m_create_time + m_solve_time;
   if(loop_time != prep.getLoopTime())
     report += (",loop_time=" + doubleToString(loop_time, 2));
   
-  // The first part of the decision summary is built as decisions
-  // are added to the report.
-  // Now check to see if the helm did not produce a decision for one
-  // of the vars in the originally declared domain for the helm.
-  unsigned int i, dsize = m_domain.size();
-  for(i=0; i<dsize; i++) {
-    string varname = m_domain.getVarName(i);
-    if(!hasDecision(varname))
-      m_decision_summary += (",var=" + varname + ":varbalk");
-  }
-
-  if(m_decision_summary != prep.getDecisionSummary())
-    report += m_decision_summary;
+  string decision_summary = getDecisionSummary();
+  if(decision_summary != prep.getDecisionSummary())
+    report += "," + decision_summary;
 
   if(m_halted != prep.getHalted())
     report += (",halted=" + boolToString(m_halted));
@@ -219,37 +354,45 @@ string HelmReport::getReportAsString(const HelmReport& prep)
       report += m_modes;
   }
 
-  if(m_running_bhvs != prep.getRunningBehaviors()) {
+  string running_bhvs = getRunningBehaviors();
+  if(running_bhvs != prep.getRunningBehaviors()) {
     report += ",running_bhvs=";
-    if(m_running_bhvs == "")
+    if(running_bhvs == "")
       report += "none";
     else
-      report += m_running_bhvs;
+      report += running_bhvs;
   }
 
-  if(m_active_bhvs != prep.getActiveBehaviors()) {
+  string active_bhvs = getActiveBehaviors();
+  if(active_bhvs != prep.getActiveBehaviors()) {
     report += ",active_bhvs=";
-    if(m_active_bhvs == "")
+    if(active_bhvs == "")
       report += "none";
     else
-      report += m_active_bhvs;
+      report += active_bhvs;
   }
 
-  if(m_idle_bhvs != prep.getIdleBehaviors()) {
+  string idle_bhvs = getIdleBehaviors();
+  if(idle_bhvs != prep.getIdleBehaviors()) {
     report += ",idle_bhvs=";
-    if(m_idle_bhvs == "")
+    if(idle_bhvs == "")
       report += "none";
     else
-      report += m_idle_bhvs;
+      report += idle_bhvs;
   }
 
-  if(m_completed_bhvs != prep.getCompletedBehaviors()) {
+  string completed_bhvs = getCompletedBehaviors();
+  if(completed_bhvs != prep.getCompletedBehaviors()) {
     report += ",completed_bhvs=";
-    if(m_completed_bhvs == "")
+    if(completed_bhvs == "")
       report += "none";
     else
-      report += m_completed_bhvs;
+      report += completed_bhvs;
   }
+
+  string domain_str = domainToString(m_domain);
+  if(domain_str != prep.getDomainString())
+    report += ",ivpdomain=\"" + domain_str + "\"";
 
   if(m_halt_message != prep.getHaltMsg()) {
     report += ",halt_msg=";
@@ -268,16 +411,140 @@ string HelmReport::getReportAsString(const HelmReport& prep)
 void HelmReport::print() const
 {
   cout << "HelmReport:-----------------------------------" << endl;
-  cout << "decision_summary:" << m_decision_summary << endl;
   cout << "halt_message:" << m_halt_message << endl;
-  cout << "active_bhvs:" << m_active_bhvs << endl;
-  cout << "running_bhvs:" << m_running_bhvs << endl;
-  cout << "completed_bhvs:" << m_completed_bhvs << endl;
-  cout << "idle_bhvs:" << m_idle_bhvs << endl;
+  cout << "active_bhvs:" << getActiveBehaviors() << endl;
+  cout << "running_bhvs:" << getRunningBehaviors() << endl;
+  cout << "completed_bhvs:" << getCompletedBehaviors() << endl;
+  cout << "idle_bhvs:" << getIdleBehaviors() << endl;
   cout << "modes:" << m_modes << endl;
   cout << "warning_count:" << m_warning_count << endl;
   cout << "iteration:" << m_iteration << endl;
   cout << "ofnum:" << m_ofnum << endl;
   cout << "halted:" << boolToString(m_halted) << endl;
 }
+
+
+//---------------------------------------------------------
+// Procedure: formattedSummary()
+//   
+// 
+//  Helm Iteration: 2       (hz=0.25)(1)  (hz=0.25)(1)  (hz=0.25)(max)
+//    IvP functions:  0
+//    Mode(s):        ACTIVE:LOITERING
+//    SolveTime:      0.00    (max=0.00)
+//    CreateTime:     0.00    (max=0.00)
+//    LoopTime:       0.00    (max=0.00)
+//    Halted:         false   (0 warnings: 0 total)
+//  Helm Decision: [speed,0,5,26] [course,0,359,360] 
+//    course = 195
+//    speed  = 1.2
+//  Behaviors Active: ---------- (1)
+//    loiter [0.25] (pwt=100.00000) (pcs=9) (cpu=0.00000) (upd=0/0)
+//  Behaviors Running: --------- (0)
+//  Behaviors Idle: ------------ (2)
+//    waypt_return, station-keep
+//  Behaviors Completed: ------- (0)
+//
+list<string> HelmReport::formattedSummary(double curr_time, bool verbose) const
+{
+  list<string> rlist;
+
+  string str;
+
+  rlist.push_back("  Helm Iteration: " + uintToString(m_iteration));
+  rlist.push_back("  IvP Functions:  " + uintToString(m_ofnum));
+  rlist.push_back("  Mode(s):        " + m_modes);
+
+  str =  "  SolveTime:   " + doubleToString(m_solve_time,2);
+  str += "   (max=" + doubleToString(m_max_solve_time,2) + ")";
+  rlist.push_back(str);
+
+  str =  "  CreateTime:  " + doubleToString(m_create_time,2);
+  str += "   (max=" + doubleToString(m_max_create_time,2) + ")";
+  rlist.push_back(str);
+
+  str =  "  LoopTime:    " + doubleToString(getLoopTime(),2);
+  str += "   (max=" + doubleToString(m_max_loop_time,2) + ")";
+  rlist.push_back(str);
+
+  str = "  Halted:         " + boolToString(m_halted);
+  str += "   (" + uintToString(m_warning_count) + " warnings)";
+  rlist.push_back(str);
+
+  string domain_str = "[" + domainToString(m_domain) + "]";
+  domain_str = findReplace(domain_str, ":", "] [");
+  rlist.push_back("Helm Decision: " + domain_str);
+  
+  map<string, double>::const_iterator p;
+  unsigned int i, vsize = m_domain.size();
+  for(i=0; i<vsize; i++) {
+    string varname = m_domain.getVarName(i);
+    p = m_decisions.find(varname);
+    if(p == m_decisions.end())
+      rlist.push_back("  " + varname + " = no-decision");
+    else
+      rlist.push_back("  " + varname + " = " + doubleToStringX(p->second));
+  }
+  
+  string active_bhvs    = uintToString(m_bhvs_active_desc.size());
+  string running_bhvs   = uintToString(m_bhvs_running_desc.size());
+  string idle_bhvs      = uintToString(m_bhvs_idle_desc.size());
+  string completed_bhvs = uintToString(m_bhvs_completed_desc.size());
+
+  rlist.push_back("Behaviors Active: ---------- (" + active_bhvs + ")");
+  vsize = m_bhvs_active_desc.size();
+  for(i=0; i<vsize; i++) {
+    str = "  " + m_bhvs_active_desc[i];
+    string time_in_state = timeInState(curr_time, m_bhvs_active_time[i]);
+    str += " [" + time_in_state + "]";
+    str += " (pwt=" + doubleToStringX(m_bhvs_active_pwt[i]) + ")";
+    str += " (pcs=" + intToString(m_bhvs_active_pcs[i]) + ")";
+    str += " (cpu=" + doubleToStringX(m_bhvs_active_cpu[i]) + ")";
+    str += " (upd=" + m_bhvs_active_upds[i] + ")";
+    rlist.push_back(str);
+  }
+
+  rlist.push_back("Behaviors Running: --------- (" + running_bhvs + ")");
+  vsize = m_bhvs_running_desc.size();
+  for(i=0; i<vsize; i++) {
+    str = "  " + m_bhvs_running_desc[i];
+    string time_in_state = timeInState(curr_time, m_bhvs_running_time[i]);
+    str += " [" + time_in_state + "]";
+    rlist.push_back(str);
+  }
+
+  rlist.push_back("Behaviors Idle: ------------ (" + idle_bhvs + ")");
+  vsize = m_bhvs_idle_desc.size();
+  for(i=0; i<vsize; i++) {
+    str = "  " + m_bhvs_idle_desc[i];
+    string time_in_state = timeInState(curr_time, m_bhvs_idle_time[i]);
+    str += " [" + time_in_state + "]";
+    rlist.push_back(str);
+  }
+
+  rlist.push_back("Behaviors Completed: ------- (" + completed_bhvs + ")");
+  vsize = m_bhvs_completed_desc.size();
+  for(i=0; i<vsize; i++) {
+    str = "  " + m_bhvs_completed_desc[i];
+    string time_in_state = timeInState(curr_time, m_bhvs_completed_time[i]);
+    str += " [" + time_in_state + "]";
+    rlist.push_back(str);
+  }
+  
+  return(rlist);
+}
+
+//---------------------------------------------------------
+// Procedure: timeInState()
+
+string HelmReport::timeInState(double curr_time, double mark_time) const
+{
+  string s_time_in_state = "always";
+  if(mark_time > 0) {
+    double d_time_in_state = curr_time - mark_time;
+    s_time_in_state = doubleToString(d_time_in_state,2);
+  }
+  return(s_time_in_state);
+}
+
 

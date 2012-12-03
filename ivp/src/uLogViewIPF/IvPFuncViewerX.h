@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: IvPFuncViewerX.h                                      */
+/*    FILE: IvPFuncViewerX.h                                     */
 /*    DATE: Feb 24, 2007                                         */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
@@ -93,4 +93,5 @@ private:
 };
 
 #endif
+
 

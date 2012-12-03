@@ -12,8 +12,9 @@ SET(SRC
   LMV_Utils.cpp
   VPlug_GeoShapes.cpp
   VPlug_GeoShapesMap.cpp
-  VPlug_GeoSettings.cpp
   VPlug_DropPoints.cpp
+  VPlug_GeoSettings.cpp
+  VPlug_AppCastSettings.cpp
   VPlug_VehiSettings.cpp
   VehicleSet.cpp
 )

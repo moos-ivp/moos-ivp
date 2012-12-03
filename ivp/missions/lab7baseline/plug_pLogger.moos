@@ -8,16 +8,14 @@ ProcessConfig = pLogger
   
   File		= LOG_%(VNAME)
   PATH		= ./
-  SyncLog 	= true @ 0.2
   AsyncLog 	= true
   FileTimeStamp = true
 
-  Log = IVPHELM_LIFE_EVENT @ 0 nosync
-
   // Log it all!!!!!
-  LogAuxSrc = true
+  LogAuxSrc       = true
   WildCardLogging = true 
-  LoggingDirectorySummaryFile = ~/.pLogger_%(VNAME)
 
-  CompressAlogs = true
+  WildCardOmitPattern = *_STATUS
+
+  CompressAlogs = false
 }

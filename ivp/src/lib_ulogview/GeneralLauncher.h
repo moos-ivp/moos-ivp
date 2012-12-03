@@ -2,7 +2,7 @@
 /*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: GeneralLauncher.h                                    */
-/*    DATE  Oct 1st, 2011                                        */
+/*    DATE:                                                      */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
 /* modify it under the terms of the GNU General Public License   */
@@ -59,4 +59,5 @@ protected:
 };
 
 #endif 
+
 

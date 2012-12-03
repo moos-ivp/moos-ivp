@@ -73,6 +73,8 @@ void showHelpAndExit()
   blk("      The default is true.                                     ");
   mag("  --version,-v                                                 ");
   blk("      Display the release version of uTimerScript.             ");
+  mag("  --noterm_appcast                                             ");
+  blk("      Do not generate appcasts to the terminal.                ");
   blk("                                                               ");
   blk("Note: If argv[2] does not otherwise match a known option,      ");
   blk("      then it will be interpreted as a run alias. This is      ");
@@ -157,6 +159,8 @@ void showInterfaceAndExit()
   blk("  UTS_RESET   = reset                                           ");
   blk("  UTS_FORWARD = 10                                              ");
   blk("  UTS_PAUSE   = true                                            ");
+  blk("  APPCAST_REQ = node=henry,app=pHostInfo,duration=10,           ");
+  blk("                key=uMAC_438                                    ");
   blk("                                                                ");
   blk("PUBLICATIONS:                                                   ");
   blk("------------------------------------                            ");
@@ -167,6 +171,8 @@ void showInterfaceAndExit()
   blk("               pending=4, paused=false, conditions_ok=true,     ");
   blk("               time_warp=3, start_delay=0, shuffle=false,       ");
   blk("               upon_awake=reset, resets=0/4                     ");
+  blk("  APPCAST    = name=uTimerScript!@#iter=917!@#node=hotel!@#     ");
+  blk("               messages=...                                     ");
   blk("                                                                ");
   exit(0);
 }
@@ -179,4 +185,5 @@ void showReleaseInfoAndExit()
   showReleaseInfo("uTimerScript", "gpl");
   exit(0);
 }
+
 

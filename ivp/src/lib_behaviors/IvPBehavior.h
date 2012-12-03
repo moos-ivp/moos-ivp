@@ -44,7 +44,6 @@
 #ifndef IVP_BEHAVIOR_HEADER
 #define IVP_BEHAVIOR_HEADER
 
-#include <iostream>
 #include <map>
 #include <vector>
 #include <string>
@@ -53,6 +52,8 @@
 #include "VarDataPair.h"
 #include "LogicCondition.h"
 #include "BehaviorReport.h"
+
+using namespace std;
 
 class IvPBehavior {
 friend class BehaviorSet;
@@ -92,9 +93,11 @@ protected:
   bool    setBehaviorName(std::string str);
   bool    augBehaviorName(std::string str);
   void    setBehaviorType(std::string str) {m_behavior_type = str;};
+  void    setPriorityWt(double);
 
   void    addInfoVars(std::string, std::string="");
   void    setComplete();
+  void    postBadConfig(std::string);
   void    postMessage(std::string, double, std::string key="");
   void    postMessage(std::string, std::string, std::string key="");
   void    postBoolMessage(std::string, bool, std::string key="");
@@ -112,7 +115,9 @@ protected:
   bool    checkConditions();
   bool    checkForDurationReset();
   bool    checkNoStarve();
+  
 
+  double                   getPriorityWt() {return(m_priority_wt);};
   double                   getBufferCurrTime();
   double                   getBufferTimeVal(std::string);
   double                   getBufferDoubleVal(std::string, bool&);
@@ -184,4 +189,5 @@ private:
 };
 
 #endif
+
 

@@ -12,18 +12,26 @@ Processconfig = ANTLER
 {
   MSBetweenLaunches = 200
    
-  Run = MOOSDB           @ NewConsole = false
-  Run = uSimMarine       @ NewConsole = false
-  Run = pMOOSBridge      @ NewConsole = false ~ pMOOSBridge_%(VNAME)
-  Run = pLogger          @ NewConsole = false
-  Run = pNodeReporter    @ NewConsole = false
-  Run = pMarinePID       @ NewConsole = false
-  Run = pHelmIvP         @ NewConsole = false
-  Run = pBasicContactMgr @ NewConsole = false
-  Run = uProcessWatch    @ NewConsole = false
+  Run = MOOSDB             @ NewConsole = false
+  Run = uSimMarine         @ NewConsole = false
+  Run = pLogger            @ NewConsole = false
+  Run = pNodeReporter      @ NewConsole = false
+  Run = pMarinePID         @ NewConsole = false
+  Run = pHelmIvP           @ NewConsole = false
+  Run = pBasicContactMgr   @ NewConsole = false
+  Run = uProcessWatch      @ NewConsole = false
+
+  Run = pShare             @ NewConsole = false
+  Run = pHostInfo          @ NewConsole = false
+  Run = uFldNodeBroker     @ NewConsole = false
+  Run = uFldMessageHandler @ NewConsole = false
 }
+
+#include plug_uFldNodeBroker.moos
+#include plug_pShare.moos
+#include plug_pHostInfo.moos
+#include plug_uFldMessageHandler.moos
   
-#include plug_pMOOSBridgeV.moos
 #include plug_uSimMarine.moos
 #include plug_pHelmIvP.moos
 #include plug_pMarinePID.moos

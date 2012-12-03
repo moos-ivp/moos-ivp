@@ -25,6 +25,7 @@
 
 #include <string>
 #include <vector>
+#include "MOOS/libMOOSGeodesy/MOOSGeodesy.h"
 #include "FL/Fl.H"
 #include "FL/Fl_Gl_Window.H"
 #include "FL/gl.h"
@@ -39,7 +40,6 @@
 #include "XYRangePulse.h"
 #include "XYCommsPulse.h"
 #include "OpAreaSpec.h"
-#include "MOOSGeodesy.h"
 #include "VPlug_GeoShapes.h"
 #include "VPlug_GeoSettings.h"
 #include "VPlug_VehiSettings.h"
@@ -63,8 +63,9 @@ class MarineViewer : public Fl_Gl_Window
   bool   initGeodesy(double, double);
   bool   initGeodesy(const std::string&);
   bool   setTexture();
-  double getHashDelta();
-
+  std::string geosetting(const std::string& s);
+  std::string vehisetting(const std::string& s);
+  
 protected:
   bool   readTiff(std::string);
   bool   readTiffB(std::string);
@@ -116,6 +117,8 @@ protected:
   void  drawCommsPulse(const XYCommsPulse&, double timestamp);
   
   void  drawPoints(const std::map<std::string, XYPoint>&);
+
+  //  void  drawPoints(const std::map<std::string, XYPoint>&);
   void  drawPoint(const XYPoint&);
 
   void  drawDropPoints();
@@ -147,17 +150,19 @@ protected:
   bool      m_tiff_offon;
 
   double    m_hash_shade;
-  double    m_hash_delta;
+  //  double    m_hash_delta;
   double    m_fill_shade;
-  bool      m_hash_offon;
 
   VPlug_GeoSettings  m_geo_settings;
   VPlug_VehiSettings m_vehi_settings;
   VPlug_DropPoints   m_drop_points;
   CMOOSGeodesy       m_geodesy;
+  bool               m_geodesy_initialized;
+  OpAreaSpec         m_op_area;
 
   std::string m_param_warning;
 };
 
 #endif 
+
 

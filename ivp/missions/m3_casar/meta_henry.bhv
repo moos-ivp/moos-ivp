@@ -91,7 +91,7 @@ Behavior = BHV_StationKeep
 Behavior = BHV_AvoidCollision
 {
   name       = avd_collision
-  pwt        = 200
+  pwt        = 400
   condition  = MODE == ACTIVE
   condition  = MODE != STATION-KEEPING
   updates    = CONTACT_INFO
@@ -124,7 +124,7 @@ Behavior = BHV_Trail
   templating = spawn
 
               contact = to-be-set
-       pwt_outer_dist = 125
+       pwt_outer_dist = 325
             nm_radius = 18
                radius = 8
           trail_angle = 155

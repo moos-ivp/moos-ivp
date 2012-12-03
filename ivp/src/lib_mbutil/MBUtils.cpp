@@ -114,6 +114,41 @@ vector<string> parseStringQ(const string& string_str, char separator)
 }
 
 //----------------------------------------------------------------
+// Procedure: parseStringQ(string, char, unsigned int)
+//   Purpose: Same as parseStringQ, but bundle component into strings
+//            with length no greater than maxlen
+//   Example: string_str = community=shoreside,hostip=128.30.24.232,foo=bar
+//            maxlen     = 40
+//    Result: rvector[0]="community=shoreside,hostip=128.30.24.232,"
+//            rvector[0]="foo=bar"
+ 
+vector<string> parseStringQ(const string& string_str, char separator,
+			    unsigned int maxlen)
+{
+  vector<string> rvector;
+
+  vector<string> svector = parseStringQ(string_str, separator);
+  unsigned int i, vsize = svector.size();
+  string buffer;
+  for(i=0; i<vsize; i++) {
+    if(buffer == "")
+      buffer = svector[i];
+    else {
+      if((buffer.length() + 1 + svector[i].length()) <= maxlen)
+	buffer = buffer + separator + svector[i];
+      else {
+	rvector.push_back(buffer + ",");
+	buffer = svector[i];
+      }
+    }
+  }
+  if(buffer != "")
+    rvector.push_back(buffer);
+
+  return(rvector);
+}
+
+//----------------------------------------------------------------
 // Procedure: parseString(string, string)
 //   Example: svector = parseString("apples $@$ pears $@$ banannas", "$@$");
 //            svector[0] = "apples "
@@ -572,7 +607,22 @@ string doubleToString(double val, int digits)
 
 string doubleToStringX(double val, int digits)
 {
-  return(dstringCompact(doubleToString(val, digits)));
+  string rstr = dstringCompact(doubleToString(val, digits));
+  if(rstr == "-0")
+    return("0");
+  return(rstr);
+}
+
+string setToString(const set<string>& str_set)
+{
+  string rstr;
+  set<string>::iterator p;
+  for(p=str_set.begin(); p!=str_set.end(); p++) {
+    if(rstr != "")
+      rstr += ",";
+    rstr += *p;
+  }
+  return(rstr);
 }
 
 //----------------------------------------------------------------
@@ -1090,22 +1140,27 @@ bool tokParse(const string& str, const string& left,
 bool isAlphaNum(const string& str, const std::string& achars)
 {
   unsigned int i, len = str.length();
-  bool ok = false;
-  for(i=0; i<len; i++) {
+  if(len == 0)
+    return(false);
+
+  bool ok = true;
+  for(i=0; (i<len)&&(ok); i++) {
+    bool this_char_ok = false;
     char c = str.at(i);
     if((c >= 48) && (c <= 57))
-      ok = true;
+      this_char_ok = true;
     else if((c >= 65) && (c <= 90))
-      ok = true;
+      this_char_ok = true;
     else if((c >= 97) && (c <= 122))
-      ok = true;
+      this_char_ok = true;
     else {
       unsigned int j, alen = achars.length();
-      for(j=0; (j<alen)&&!ok; j++) {
+      for(j=0; (j<alen)&&!this_char_ok; j++) {
 	if(c == achars.at(j))
-	  ok = true;
+	  this_char_ok = true;
       }
     }
+    ok = ok && this_char_ok;
   }
   return(ok);
 }
@@ -1400,7 +1455,7 @@ float snapToStep(float gfloat, float step)
   if(step <= 0) 
     return(gfloat);
   float fval   = gfloat / step;    // Divide by step
-  long int itemp;
+  long int   itemp;
   if(fval < 0.0)
     itemp = (long int)(fval-0.5);
   else
@@ -1450,6 +1505,62 @@ bool setBooleanOnString(bool& boolval, string str, bool case_tolow)
     boolval = false;
   else
     return(false);
+  return(true);
+}
+
+//-------------------------------------------------------------
+// Procedure: setPosDoubleOnString
+//      Note: This function is designed to possibley set the given
+//            double based on the contents of the str.
+//   Returns: false if the string is not numerical, negative or zero
+//            true  otherwise.
+
+bool setPosDoubleOnString(double& given_dval, string str)
+{
+  if(!isNumber(str))
+    return(false);
+
+  double dval = atof(str.c_str());
+  if(dval <= 0)
+    return(false);
+  
+  given_dval = dval;
+  return(true);
+}
+
+//-------------------------------------------------------------
+// Procedure: setNonNegDoubleOnString
+//      Note: This function is designed to possibley set the given 
+//            double based on the contents of the str.
+//   Returns: false if the string is not numerical, or negative.
+//            true  otherwise.
+
+bool setNonNegDoubleOnString(double& given_dval, string str)
+{
+  if(!isNumber(str))
+    return(false);
+
+  double dval = atof(str.c_str());
+  if(dval < 0)
+    return(false);
+  
+  given_dval = dval;
+  return(true);
+}
+
+//-------------------------------------------------------------
+// Procedure: setNonWhiteVarOnString
+//      Note: This function is designed to possibley set the given 
+//            variable based the contents of the str.
+//   Returns: false if the string contains white space.
+//            true  otherwise.
+
+bool setNonWhiteVarOnString(string& given_var, string str)
+{
+  if((str == "") || strContainsWhite(str))
+    return(false);
+
+  given_var = str;
   return(true);
 }
 
@@ -1643,7 +1754,24 @@ string parseAppName(const string& name){
     return appFilename;
 }
 
+//----------------------------------------------------------------
+// Procedure: isKnownVehicleType
+//   Purpose: A utility function to check a given string against known
+//            vehicle types. To help catch configuration errors in 
+//            various applications
 
+bool isKnownVehicleType(const string& vehicle_type)
+{
+  string vtype = tolower(vehicle_type);
+  if((vtype == "auv")  || (vtype != "uuv") || (vtype != "kayak") || 
+     (vtype == "usv")  || (vtype != "asv") || (vtype != "glider") ||
+     (vtype == "ship") || (vtype != "kingfisher")) {
+    return(true);
+  }
+  
+  return(false);
+}
+    
 //----------------------------------------------------------------
 // Procedure: charCount()
 
@@ -1657,3 +1785,4 @@ unsigned int charCount(const std::string& str, char mychar)
   }
   return(count);
 }
+

@@ -23,11 +23,10 @@ ADD_EXECUTABLE(uFldGenericSensor ${SRC})
 
 TARGET_LINK_LIBRARIES(uFldGenericSensor
   MOOS
-  MOOSGen
-  MOOSUtility
   mbutil
   geometry 
   contacts
+  apputil
   ${SYSTEM_LIBS}
 )
 

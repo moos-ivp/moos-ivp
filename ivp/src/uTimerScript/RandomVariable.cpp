@@ -32,86 +32,56 @@ using namespace std;
 RandomVariable::RandomVariable()
 {
   // Initial values for state variables.
-  m_value     = 0;
-  m_timestamp = 0;
+  m_value   = 0;
 
   // Initial values for configuration parameters
   m_varname = "random_var";
   m_keyname = "";
-  m_min_val = 0;
-  m_max_val = 1;
 }
 
-
 //---------------------------------------------------------
-// Procedure: setRange
+// Procedure: setParam
 
-bool RandomVariable::setRange(double min, double max)
+bool RandomVariable::setParam(string param, double value)
 {
-  if(min > max)
+  if(param == "min") {
+    m_min_val = value;
+    if(m_max_val < m_min_val)
+      m_max_val = m_min_val;
+  }
+  else if(param == "max") {
+    m_max_val = value;
+    if(m_min_val > m_max_val)
+      m_min_val = m_max_val;
+  }
+  else
     return(false);
-  
-  m_min_val = min;
-  m_max_val = max;
-  
-  reset();
+
   return(true);
 }
 
-//---------------------------------------------------------
-// Procedure: reset
-
-double RandomVariable::reset(double timestamp)
-{
-  if(m_timestamp >= 0)
-    m_timestamp = timestamp;
-  
-  // Unlikely but check and handle special case anyway.
-  if(m_min_val >= m_max_val) {
-    m_value = m_min_val;
-    return(m_value);
-  }
-
-  int    rand_int = rand() % 10000;
-  double rand_pct = (double)(rand_int) / 10000;
-  m_value = m_min_val + ((m_max_val-m_min_val) * rand_pct);
-
-  return(m_value);
-}
-  
-//---------------------------------------------------------
-// Procedure: getAge
-
-double RandomVariable::getAge(double timestamp)
-{
-  if((m_timestamp < 0) || (timestamp < m_timestamp))
-    return(0);
-  else
-    return(timestamp - m_timestamp);
-}
-  
-  
 //---------------------------------------------------------
 // Procedure: getStringValue
 
 string RandomVariable::getStringValue() const
 {
-  return(doubleToStringX(m_value,0));
+  return(m_value_str);
 }
   
   
 //---------------------------------------------------------
 // Procedure: getStringSummary
 
-string RandomVariable::getStringSummary()
+string RandomVariable::getStringSummary() const
 {
   string str = "varname=" + m_varname;
   if(m_keyname != "")
-    str += ", keyname=" + m_keyname;
-  str += ", min=" + doubleToStringX(m_min_val);
-  str += ", max=" + doubleToStringX(m_max_val);
+    str += ",keyname=" + m_keyname;
+  if(m_type != "")
+    str += ",type=" + m_type;
+  str += ",min=" + doubleToStringX(m_min_val);
+  str += ",max=" + doubleToStringX(m_max_val);
+  str += ",val=" + doubleToStringX(m_value);
   return(str);
 }
-  
-  
 

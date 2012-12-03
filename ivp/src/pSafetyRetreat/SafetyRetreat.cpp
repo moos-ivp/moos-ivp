@@ -261,3 +261,4 @@ unsigned int SafetyRetreat::closestPolygon()
   return(lowix);
 }
 
+

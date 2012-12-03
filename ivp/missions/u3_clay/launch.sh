@@ -1,146 +1,86 @@
 #!/bin/bash 
-
-WARP=1
-HELP="no"
-JUST_BUILD="no"
-BAD_ARGS=""
-
 #-------------------------------------------------------
 #  Part 1: Check for and handle command-line arguments
 #-------------------------------------------------------
-let COUNT=0
+TIME_WARP=1
+JUST_MAKE="no"
 for ARGI; do
-    UNDEFINED_ARG=$ARGI
-    if [ "${ARGI:0:6}" = "--warp" ] ; then
-	WARP="${ARGI#--warp=*}"
-	UNDEFINED_ARG=""
-    fi
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
-	HELP="yes"
-	UNDEFINED_ARG=""
-    fi
-    # Handle Warp shortcut
-    if [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$COUNT" = 0 ]; then 
-        WARP=$ARGI
-        let "COUNT=$COUNT+1"
-        UNDEFINED_ARG=""
-    fi
-    if [ "${ARGI}" = "--just_build" -o "${ARGI}" = "-j" ] ; then
-	JUST_BUILD="yes"
-	UNDEFINED_ARG=""
-    fi
-    if [ "${UNDEFINED_ARG}" != "" ] ; then
-	BAD_ARGS=$UNDEFINED_ARG
+	printf "%s [SWITCHES] [time_warp]   \n" $0
+	printf "  --just_make, -j    \n" 
+	printf "  --help, -h         \n" 
+	exit 0;
+    elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then 
+        TIME_WARP=$ARGI
+    elif [ "${ARGI}" = "--just_build" -o "${ARGI}" = "-j" ] ; then
+	JUST_MAKE="yes"
+    else 
+	printf "Bad Argument: %s \n" $ARGI
+	exit 0
     fi
 done
-
-if [ "${BAD_ARGS}" != "" ] ; then
-    printf "Bad Argument: %s \n" $BAD_ARGS
-    exit 0
-fi
-
-if [ "${HELP}" = "yes" ]; then
-    printf "%s [SWITCHES]         \n" $0
-    printf "Switches:             \n" 
-    printf "  --warp=WARP_VALUE   \n" 
-    printf "  --just_build, -j    \n" 
-    printf "  --help, -h          \n" 
-    exit 0;
-fi
-
-# Second check that the warp argument is numerical
-if [ "${WARP//[^0-9]/}" != "$WARP" ]; then 
-    printf "Warp values must be numerical. Exiting now."
-    exit 127
-fi
 
 #-------------------------------------------------------
 #  Part 2: Create the .moos and .bhv files. 
 #-------------------------------------------------------
 
-GROUP12="GROUP12"
 VNAME1="henry"  # The first vehicle Community
-VPORT1="9201"
-LPORT1="9301"
 VNAME2="gilda"  # The second vehicle Community
-VPORT2="9202"
-LPORT2="9302"
-
-GROUP34="GROUP34"
 VNAME3="ike"    # The third vehicle Community
-VPORT3="9203"
-LPORT3="9303"
 VNAME4="james"  # The fourth vehicle Community
-VPORT4="9204"
-LPORT4="9304"
 
-SNAME="shoreside"  # Shoreside Community
-SPORT="9200"
-
-START_POS1="0,0"         # Vehicle 1 Behavior configurations
+START_POS1="0,0"            # Vehicle 1 Behavior configurations
+START_POS2="80,0"           # Vehicle 2 Behavior configurations
+START_POS3="25,-25"         # Vehicle 3 Behavior configurations
+START_POS4="105,-25"        # Vehicle 4 Behavior configurations
 LOITER_POS1="x=0,y=-75"
-START_POS2="80,0"        # Vehicle 2 Behavior configurations
 LOITER_POS2="x=125,y=-50"
-
-START_POS3="25,-25"         # Vehicle 1 Behavior configurations
 LOITER_POS3="x=60,y=-100"
-START_POS4="105,-25"        # Vehicle 2 Behavior configurations
 LOITER_POS4="x=145,y=-150"
 
+SHORE_LISTEN="9300"
 
+nsplug meta_vehicle.moos targ_gilda.moos -f WARP=$TIME_WARP \
+   VNAME=$VNAME1    START_POS=$START_POS1                   \
+   VPORT="9001"     LOITER_POS=$LOITER_POS1                 \
+   VTYPE="kayak"    SHARE_LISTEN="9301"                     \
+   GROUP="GROUP12"  SHORE_LISTEN=$SHORE_LISTEN
 
-nsplug meta_vehicle.moos targ_gilda.moos -f WARP=$WARP           \
-    VNAME1=$VNAME1 VNAME2=$VNAME2 VNAME3=$VNAME3 VNAME4=$VNAME4  \
-    VPORT1=$VPORT1 VPORT2=$VPORT2 VPORT3=$VPORT3 VPORT4=$VPORT4  \
-    LPORT1=$LPORT1 LPORT2=$LPORT2 LPORT3=$LPORT3 LPORT4=$LPORT4  \
-    VNAME=$VNAME2  VPORT=$VPORT2  LPORT=$LPORT2                  \
-    SPORT=$SPORT   SNAME=$SNAME   GROUP=$GROUP12                 \
-    START_POS=$START_POS2
+nsplug meta_vehicle.moos targ_henry.moos -f WARP=$TIME_WARP \
+   VNAME=$VNAME2    START_POS=$START_POS2                   \
+   VPORT="9002"     LOITER_POS=$LOITER_POS2                 \
+   VTYPE="kayak"    SHARE_LISTEN="9302"                     \
+   GROUP="GROUP12"  SHORE_LISTEN=$SHORE_LISTEN
 
-nsplug meta_vehicle.moos targ_henry.moos -f WARP=$WARP           \
-    VNAME1=$VNAME1 VNAME2=$VNAME2 VNAME3=$VNAME3 VNAME4=$VNAME4  \
-    VPORT1=$VPORT1 VPORT2=$VPORT2 VPORT3=$VPORT3 VPORT4=$VPORT4  \
-    LPORT1=$LPORT1 LPORT2=$LPORT2 LPORT3=$LPORT3 LPORT4=$LPORT4  \
-    VNAME=$VNAME1  VPORT=$VPORT1  LPORT=$LPORT1                  \
-    SPORT=$SPORT   SNAME=$SNAME   GROUP=$GROUP12                 \
-    START_POS=$START_POS1
+nsplug meta_vehicle.moos targ_ike.moos -f WARP=$TIME_WARP   \
+   VNAME=$VNAME3    START_POS=$START_POS3                   \
+   VPORT="9003"     LOITER_POS=$LOITER_POS3                 \
+   VTYPE="kayak"    SHARE_LISTEN="9303"                     \
+   GROUP="GROUP34"  SHORE_LISTEN=$SHORE_LISTEN
 
-nsplug meta_vehicle.moos targ_ike.moos -f WARP=$WARP             \
-    VNAME1=$VNAME1 VNAME2=$VNAME2 VNAME3=$VNAME3 VNAME4=$VNAME4  \
-    VPORT1=$VPORT1 VPORT2=$VPORT2 VPORT3=$VPORT3 VPORT4=$VPORT4  \
-    LPORT1=$LPORT1 LPORT2=$LPORT2 LPORT3=$LPORT3 LPORT4=$LPORT4  \
-    VNAME=$VNAME3  VPORT=$VPORT3  LPORT=$LPORT3                  \
-    SPORT=$SPORT   SNAME=$SNAME   GROUP=$GROUP34                 \
-    START_POS=$START_POS3
+nsplug meta_vehicle.moos targ_james.moos -f WARP=$TIME_WARP \
+   VNAME=$VNAME4    START_POS=$START_POS4                   \
+   VPORT="9004"     LOITER_POS=$LOITER_POS4                 \
+   VTYPE="kayak"    SHARE_LISTEN="9304"                     \
+   GROUP="GROUP34"  SHORE_LISTEN=$SHORE_LISTEN
 
-nsplug meta_vehicle.moos targ_james.moos -f WARP=$WARP           \
-    VNAME1=$VNAME1 VNAME2=$VNAME2 VNAME3=$VNAME3 VNAME4=$VNAME4  \
-    VPORT1=$VPORT1 VPORT2=$VPORT2 VPORT3=$VPORT3 VPORT4=$VPORT4  \
-    LPORT1=$LPORT1 LPORT2=$LPORT2 LPORT3=$LPORT3 LPORT4=$LPORT4  \
-    VNAME=$VNAME4  VPORT=$VPORT4  LPORT=$LPORT4                  \
-    SPORT=$SPORT   SNAME=$SNAME   GROUP=$GROUP34                 \
-    START_POS=$START_POS4
+nsplug meta_shoreside.moos targ_shoreside.moos -f WARP=$TIME_WARP \
+   VNAME="shoreside"  SHARE_LISTEN=$SHORE_LISTEN                  \
+   VPORT="9000" 
 
-nsplug meta_shoreside.moos targ_shoreside.moos -f WARP=$WARP     \
-    VNAME1=$VNAME1 VNAME2=$VNAME2 VNAME3=$VNAME3 VNAME4=$VNAME4  \
-    VPORT1=$VPORT1 VPORT2=$VPORT2 VPORT3=$VPORT3 VPORT4=$VPORT4  \
-    LPORT1=$LPORT1 LPORT2=$LPORT2 LPORT3=$LPORT3 LPORT4=$LPORT4  \
-    SPORT=$SPORT SNAME=$SNAME
-
-
-nsplug meta_vehicle.bhv targ_henry.bhv -f VNAME=$VNAME1      \
+nsplug meta_vehicle.bhv targ_henry.bhv -f VNAME=$VNAME1  \
     START_POS=$START_POS1 LOITER_POS=$LOITER_POS1       
 
-nsplug meta_vehicle.bhv targ_gilda.bhv -f VNAME=$VNAME2      \
+nsplug meta_vehicle.bhv targ_gilda.bhv -f VNAME=$VNAME2  \
     START_POS=$START_POS1 LOITER_POS=$LOITER_POS2       
 
-nsplug meta_vehicle.bhv targ_ike.bhv -f   VNAME=$VNAME3      \
+nsplug meta_vehicle.bhv targ_ike.bhv -f   VNAME=$VNAME3  \
     START_POS=$START_POS3 LOITER_POS=$LOITER_POS3       
 
-nsplug meta_vehicle.bhv targ_james.bhv -f VNAME=$VNAME4      \
+nsplug meta_vehicle.bhv targ_james.bhv -f VNAME=$VNAME4  \
     START_POS=$START_POS4 LOITER_POS=$LOITER_POS4       
 
-if [ ${JUST_BUILD} = "yes" ] ; then
+if [ ${JUST_MAKE} = "yes" ] ; then
     exit 0
 fi
 
@@ -148,22 +88,21 @@ fi
 #  Part 3: Launch the processes
 #-------------------------------------------------------
 
-printf "Launching $VNAME1 MOOS Community (WARP=%s) \n" $WARP
+printf "Launching $VNAME1 MOOS Community (WARP=%s) \n" $TIME_WARP
 pAntler targ_henry.moos >& /dev/null &
-sleep 0.4
-printf "Launching $VNAME2 MOOS Community (WARP=%s) \n" $WARP
+sleep 0.25
+printf "Launching $VNAME2 MOOS Community (WARP=%s) \n" $TIME_WARP
 pAntler targ_gilda.moos >& /dev/null &
-sleep 0.4
+sleep 0.25
 
-printf "Launching $VNAME3 MOOS Community (WARP=%s) \n" $WARP
+printf "Launching $VNAME3 MOOS Community (WARP=%s) \n" $TIME_WARP
 pAntler targ_ike.moos >& /dev/null &
-sleep 0.4
-printf "Launching $VNAME4 MOOS Community (WARP=%s) \n" $WARP
+sleep 0.25
+printf "Launching $VNAME4 MOOS Community (WARP=%s) \n" $TIME_WARP
 pAntler targ_james.moos >& /dev/null &
-sleep 0.4
+sleep 0.25
 
-
-printf "Launching $SNAME MOOS Community (WARP=%s) \n"  $WARP
+printf "Launching $SNAME MOOS Community (WARP=%s) \n"  $TIME_WARP
 pAntler targ_shoreside.moos >& /dev/null &
 printf "Done \n"
 

@@ -19,7 +19,6 @@ ADD_EXECUTABLE(uPokeDB ${SRC})
 
 TARGET_LINK_LIBRARIES(uPokeDB
    MOOS
-   MOOSGen
    mbutil
    ${SYSTEM_LIBS})
 

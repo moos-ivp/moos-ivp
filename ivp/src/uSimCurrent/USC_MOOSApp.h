@@ -24,7 +24,7 @@
 #define USC_MOOSAPP_HEADER
 
 #include <string>
-#include "MOOSLib.h"
+#include "MOOS/libMOOS/MOOSLib.h"
 #include "CurrentField.h"
 
 
@@ -61,6 +61,7 @@ public:
   std::string  m_prev_posting;
 };
 #endif
+
 
 
 

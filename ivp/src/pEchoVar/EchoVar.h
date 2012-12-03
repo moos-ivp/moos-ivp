@@ -26,7 +26,7 @@
 #include <vector>
 #include <list>
 #include <string>
-#include "MOOSLib.h"
+#include "MOOS/libMOOS/MOOSLib.h"
 #include "EFlipper.h"
 #include "LogicBuffer.h"
 
@@ -69,4 +69,5 @@ protected:
 };
 
 #endif
+
 

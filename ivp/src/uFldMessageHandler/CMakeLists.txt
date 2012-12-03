@@ -9,8 +9,8 @@ ADD_EXECUTABLE(uFldMessageHandler ${SRC})
 
 TARGET_LINK_LIBRARIES(uFldMessageHandler
    MOOS
-   MOOSGen
    mbutil
+   apputil
    ufield
    m
    pthread)

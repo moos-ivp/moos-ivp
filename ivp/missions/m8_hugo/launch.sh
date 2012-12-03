@@ -1,131 +1,100 @@
 #!/bin/bash 
-
-WARP=1
-HELP="no"
-JUST_BUILD="no"
-BAD_ARGS=""
-
 #-------------------------------------------------------
 #  Part 1: Check for and handle command-line arguments
 #-------------------------------------------------------
-let COUNT=0
+TIME_WARP=1
+JUST_MAKE="no"
 for ARGI; do
-    UNDEFINED_ARG=$ARGI
-    if [ "${ARGI:0:6}" = "--warp" ] ; then
-	WARP="${ARGI#--warp=*}"
-	UNDEFINED_ARG=""
-    fi
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
-	HELP="yes"
-	UNDEFINED_ARG=""
-    fi
-    # Handle Warp shortcut
-    if [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$COUNT" = 0 ]; then 
-        WARP=$ARGI
-        let "COUNT=$COUNT+1"
-        UNDEFINED_ARG=""
-    fi
-    if [ "${ARGI}" = "--just_build" ] ; then
-	JUST_BUILD="yes"
-	UNDEFINED_ARG=""
-    fi
-    if [ "${UNDEFINED_ARG}" != "" ] ; then
-	BAD_ARGS=$UNDEFINED_ARG
+	printf "%s [SWITCHES] [time_warp]   \n" $0
+	printf "  --just_make, -j    \n" 
+	printf "  --help, -h         \n" 
+	exit 0;
+    elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then 
+        TIME_WARP=$ARGI
+    elif [ "${ARGI}" = "--just_build" -o "${ARGI}" = "-j" ] ; then
+	JUST_MAKE="yes"
+    else 
+	printf "Bad Argument: %s \n" $ARGI
+	exit 0
     fi
 done
-
-if [ "${BAD_ARGS}" != "" ] ; then
-    printf "Bad Argument: %s \n" $BAD_ARGS
-    exit 0
-fi
-
-if [ "${HELP}" = "yes" ]; then
-    printf "%s [SWITCHES]         \n" $0
-    printf "Switches:             \n" 
-    printf "  --warp=WARP_VALUE   \n" 
-    printf "  --just_build        \n" 
-    printf "  --help, -h          \n" 
-    exit 0;
-fi
-
-# Second check that the warp argument is numerical
-if [ "${WARP//[^0-9]/}" != "$WARP" ]; then 
-    printf "Warp values must be numerical. Exiting now."
-    exit 127
-fi
 
 #-------------------------------------------------------
 #  Part 2: Create the .moos and .bhv files. 
 #-------------------------------------------------------
+VNAME1="archie"        # The first  surface vehicle community
+VNAME2="betty"         # The second surface vehicle community
+VNAME9="jackal"        # The uuv vehicle community
 
-VNAME1="archie"  # The first vehicle Community
-VPORT1="9201"
-VNAME9="jackal"
-VPORT9="9209"
+START_POS1="0,0"       
+START_POS2="10,-10"    
+START_POS9="-180,-100" 
+SHORE_LISTEN="9300"
 
-SNAME="shoreside"  # Shoreside Community
-SPORT="9200"
+nsplug meta_surfacecraft.moos targ_archie.moos -f WARP=$TIME_WARP \
+   VNAME=$VNAME1    START_POS=$START_POS1                         \
+   VPORT="9001"     SHARE_LISTEN="9301"                           \
+   VTYPE=KAYAK      SHORE_LISTEN=$SHORE_LISTEN
 
-START_POS1="0,0"         # Vehicle 1 Behavior configurations
-START_POS9="-180,-100"   # Vehicle 9 UUV configuration
+nsplug meta_surfacecraft.moos targ_betty.moos -f WARP=$TIME_WARP  \
+   VNAME=$VNAME2    START_POS=$START_POS2                         \
+   VPORT="9002"     SHARE_LISTEN="9302"                           \
+   VTYPE=KAYAK      SHORE_LISTEN=$SHORE_LISTEN
 
-nsplug meta_archie.moos targ_archie.moos -f WARP=$WARP       \
-   VNAME=$VNAME1 VPORT=$VPORT1 SPORT=$SPORT SNAME=$SNAME VTYPE=KAYAK       \
-   START_POS=$START_POS1
+nsplug meta_jackal.moos targ_jackal.moos -f WARP=$TIME_WARP       \
+   VNAME=$VNAME9    START_POS=$START_POS9                         \
+   VPORT="9009"     SHARE_LISTEN="9309"                           \
+   VTYPE=UUV        SHORE_LISTEN=$SHORE_LISTEN
 
-nsplug meta_jackal.moos targ_jackal.moos -f WARP=$WARP       \
-   VNAME=$VNAME9 VPORT=$VPORT9 SPORT=$SPORT SNAME=$SNAME VTYPE=UUV       \
-   START_POS=$START_POS9
+nsplug meta_shoreside.moos targ_shoreside.moos -f WARP=$TIME_WARP \
+   SNAME="shoreside"  SHARE_LISTEN=$SHORE_LISTEN                  \
+   SPORT="9000"       
 
-nsplug meta_shoreside.moos targ_shoreside.moos -f WARP=$WARP    \
-   VNAME1=$VNAME1 VNAME9=$VNAME9 \
-   VPORT1=$VPORT1 VPORT9=$VPORT9 \
-   SPORT=$SPORT SNAME=$SNAME
-
-
-nsplug meta_archie.bhv targ_archie.bhv -f VNAME=$VNAME1      \
+nsplug meta_archie.bhv targ_archie.bhv -f VNAME=$VNAME1   \
     START_POS=$START_POS1 
 
-nsplug meta_jackal.bhv targ_jackal.bhv -f VNAME=$VNAME9      \
+nsplug meta_betty.bhv targ_betty.bhv -f VNAME=$VNAME2     \
+    START_POS=$START_POS2 
+
+nsplug meta_jackal.bhv targ_jackal.bhv -f VNAME=$VNAME9   \
     START_POS=$START_POS9 
 
-
-if [ ${JUST_BUILD} = "yes" ] ; then
+if [ ${JUST_MAKE} = "yes" ] ; then
     exit 0
 fi
 
 #-------------------------------------------------------
 #  Part 3: Launch the processes
 #-------------------------------------------------------
-
-printf "Launching $VNAME1 MOOS Community (WARP=%s) \n" $WARP
+printf "Launching $VNAME1 MOOS Community (WARP=%s) \n" $TIME_WARP
 pAntler targ_archie.moos >& /dev/null &
-sleep 1
-printf "Launching $VNAME9 MOOS Community (WARP=%s) \n" $WARP
+sleep 0.25
+printf "Launching $VNAME2 MOOS Community (WARP=%s) \n" $TIME_WARP
+pAntler targ_betty.moos >& /dev/null &
+sleep 0.25
+printf "Launching $VNAME9 MOOS Community (WARP=%s) \n" $TIME_WARP
 pAntler targ_jackal.moos >& /dev/null &
-sleep 1
-
-printf "Launching $SNAME MOOS Community (WARP=%s) \n"  $WARP
+sleep 0.25
+printf "Launching $SNAME MOOS Community (WARP=%s) \n"  $TIME_WARP
 pAntler targ_shoreside.moos >& /dev/null &
 printf "Done \n"
 
 #-------------------------------------------------------
 #  Part 4: Exiting and/or killing the simulation
 #-------------------------------------------------------
-
 ANSWER="0"
-while [ "${ANSWER}" != "1" -a "${ANSWER}" != "2" ]; do
-    printf "Now what? (1) Exit script (2) Exit and Kill Simulation \n"
+while [ "${ANSWER}" != "2" -a "${ANSWER}" != "q" ]; do
+    printf "Hit (q) to Exit and Kill Simulation \n"
     printf "> "
     read ANSWER
 done
 
 # %1, %2, %3 matches the PID of the first three jobs in the active
 # jobs list, namely the three pAntler jobs launched in Part 3.
-if [ "${ANSWER}" = "2" ]; then
+if [ "${ANSWER}" = "q"  -o "${ANSWER}" = "2" ]; then
     printf "Killing all processes ... \n"
-    kill %1 %2 %3 
+    kill %1 %2 %3 %4
     printf "Done killing processes.   \n"
 fi
-
 

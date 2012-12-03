@@ -36,6 +36,7 @@ public:
   
   bool         setParam(std::string, std::string);
   IvPFunction* onRunState();
+  void         onIdleToRunState();
   void         onRunToIdleState();
   void         onCompleteState() {postStationMessage(false);};
   void         postConfigStatus();
@@ -85,8 +86,8 @@ private:  // State Variables
   double       m_osy;
   double       m_currtime;
   double       m_dist_to_station;
-  std::string  m_pskeep_state;
-  std::string  m_transit_state;
+  std::string  m_pskeep_state;     // pending_progress_start, noted_prog...
+  std::string  m_transit_state;    // seeking_station, hibernating
 
   // Time at which the behavior transitioned from idle to running.
   double       m_mark_time;
@@ -105,4 +106,5 @@ private:  // State Variables
 };
 
 #endif
+
 

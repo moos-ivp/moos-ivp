@@ -9,8 +9,8 @@ ADD_EXECUTABLE(uFldNodeComms ${SRC})
 
 TARGET_LINK_LIBRARIES(uFldNodeComms
    MOOS
-   MOOSGen
    mbutil
+   apputil
    contacts
    ufield
    geometry

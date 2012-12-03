@@ -29,6 +29,7 @@
 #include "AngleUtils.h"
 #include "FileBuffer.h"
 #include "XYFormatUtilsVector.h"
+#include "MOOS/libMOOSGeodesy/MOOSGeodesy.h"
 
 using namespace std;
 
@@ -641,6 +642,7 @@ void CurrentField::applyRenderHint(string param, string value)
     }
   }
 }
+
 
 
 

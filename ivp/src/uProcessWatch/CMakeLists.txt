@@ -21,7 +21,7 @@ ADD_EXECUTABLE(uProcessWatch ${SRC})
  
 TARGET_LINK_LIBRARIES(uProcessWatch 
   MOOS
-  MOOSGen
+  apputil
   mbutil
   ${SYSTEM_LIBS})
 

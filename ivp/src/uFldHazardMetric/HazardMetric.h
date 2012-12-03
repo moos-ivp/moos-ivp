@@ -1,8 +1,23 @@
 /*****************************************************************/
-/*   NAME: Michael Benjamin, Henrik Schmidt, and John Leonard    */
-/*   ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA      */
-/*   FILE: HazardMetric.h                                        */
-/*   DATE: March 12th, 2012                                      */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    FILE: HazardMetric.h                                       */
+/*    DATE: March 12th, 2012                                     */
+/*                                                               */
+/* This program is free software; you can redistribute it and/or */
+/* modify it under the terms of the GNU General Public License   */
+/* as published by the Free Software Foundation; either version  */
+/* 2 of the License, or (at your option) any later version.      */
+/*                                                               */
+/* This program is distributed in the hope that it will be       */
+/* useful, but WITHOUT ANY WARRANTY; without even the implied    */
+/* warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR       */
+/* PURPOSE. See the GNU General Public License for more details. */
+/*                                                               */
+/* You should have received a copy of the GNU General Public     */
+/* License along with this program; if not, write to the Free    */
+/* Software Foundation, Inc., 59 Temple Place - Suite 330,       */
+/* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
 #ifndef HAZARD_METRIC_HEADER
@@ -11,70 +26,55 @@
 #include <string>
 #include <vector>
 #include <map>
-#include "MOOSLib.h"
+#include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
 #include "XYHazard.h"
 #include "XYHazardSet.h"
+#include "XYHazardRepEval.h"
 
-class HazardMetric : public CMOOSApp
+class HazardMetric : public AppCastingMOOSApp
 {
  public:
   HazardMetric();
   ~HazardMetric() {};
   
- protected:  // Common MOOS functions
+ public: // Standard MOOSApp functions to overload
   bool OnNewMail(MOOSMSG_LIST &NewMail);
   bool Iterate();
   bool OnConnectToServer();
   bool OnStartUp();
-  void RegisterVariables();
 
- protected:  // Application specific functions
+ protected: // Standard AppCastingMOOSApp function to overload
+  bool buildReport();
+
+ protected: 
+  void    registerVariables();
   bool    processHazardFile(std::string filename);
   bool    addHazardReport(std::string report);
-  void    evaluateReports();
-  void    evaluateReport(std::string source);
-  void    handleMailHazardMetricStart(std::string vname);
+  void    evaluateReport(const XYHazardSet&);
 
-  void    handleMailStopWatchStop(std::string vname);
-
-  void    printReport();
-
-  std::string findReportForHazard(const XYHazard);
-
-  
- private: // Configuration variables
-  double  m_hazard_right;  // reward  for hazard reported as hazard
-  double  m_hazard_wrong;  // penalty for hazard reported as benign
-  double  m_benign_right;  // reward  for benign reported as benign
-  double  m_benign_wrong;  // penalty for benign reported as hazard
-  double  m_hazard_zilch;  // penalty for ignoring a hazard
-  double  m_benign_zilch;  // penalty for ignoring a benign
-
-  double  m_report_interval;
+ private: // Configuration variables for grading reports.
+  double  m_penalty_false_alarm;
+  double  m_penalty_missed_hazard;
+  double  m_max_time;
+  double  m_penalty_max_time_over;
+  double  m_penalty_max_time_overage;
 
  private: // State variables
-  unsigned int m_iterations;
-  double       m_time_warp;
-  double       m_curr_time;
-  double       m_last_report_time;
   
-  double       m_start_time;
+  // Ground Truth
+  std::string  m_hazard_file;
+  XYHazardSet  m_hazards;
 
-  // Messages to be displayed to the terminal
-  std::map<std::string, int>   m_map_memos;
+  double       m_search_start_time;
 
-  // Add a deadline???
+  // Collection of Incoming reports/stats
+  std::map<std::string, XYHazardSet>     m_map_reports;
+  std::map<std::string, XYHazardRepEval> m_map_evals;
+  std::map<std::string, unsigned int>    m_map_report_amt;
 
-  // Vector of N Hazards
-  XYHazardSet                           m_hazards;
-
-  std::map<std::string, XYHazardSet>    m_map_reports;
-  std::map<std::string, double>         m_map_report_time;
-  std::map<std::string, std::string>    m_map_report_score;
-  std::map<std::string, unsigned int>   m_map_report_amt;
-
-  // Keep track of bad configuration lines
-  std::vector<std::string> m_bad_configs;
+  // Most recent source of reported information
+  std::string m_most_recent_source;
 };
 
 #endif 
+

@@ -76,6 +76,8 @@ int main(int argc, char *argv[])
   cout << "pMarineViewer launching as " << run_command << endl;
   cout << termColor() << endl;
 
+  AppCastRepo appcast_repo;
+
   int gui_wid = 0.60 * Fl::w();
   int gui_hgt = 0.75 * Fl::h();
   if(size_request != "") {
@@ -87,7 +89,7 @@ int main(int argc, char *argv[])
 
   // For document screen shots:
   // PMV_GUI* gui = new PMV_GUI(1100,640, "pMarineViewer");
-  PMV_GUI* gui = new PMV_GUI(gui_wid, gui_hgt, "pMarineViewer");
+  PMV_GUI* gui = new PMV_GUI(gui_wid, gui_hgt, "pMarineViewer (MIT Version 12.10)");
   if(!gui) {
     cout << "Unable to instantiate the GUI - exiting." << endl;
     return(-1);
@@ -97,6 +99,8 @@ int main(int argc, char *argv[])
 
   thePort.setGUI(gui);
   thePort.setPendingEventsPipe(& g_pending_moos_events);
+  thePort.setAppCastRepo(&appcast_repo);
+  gui->setAppCastRepo(&appcast_repo);
   
   // start the MOOSPort in its own thread
   
@@ -119,7 +123,7 @@ int main(int argc, char *argv[])
     // latency between when we enqueue MOOS_events into
     // g_pending_moos_events, and when this thread gets a chance to
     // act on them.
-    while (! g_pending_moos_events.empty()) {
+    while (!g_pending_moos_events.empty()) {
       // This is the only thread performing dequeues, so this call
       // should never block, since we already confirmed the pipe isn't
       // empty.
@@ -143,4 +147,5 @@ int main(int argc, char *argv[])
   delete gui;
   return(0);
 }
+
 

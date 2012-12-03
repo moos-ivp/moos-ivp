@@ -46,6 +46,8 @@ class PMV_Viewer : public MarineViewer
   bool  addScopeVariable(std::string);
   bool  updateScopeVariable(std::string varname, std::string value, 
 			    std::string vtime, std::string vsource);
+  bool  setAppCasting(std::string);
+  bool  isAppCasting() const;
   void  setActiveScope(std::string);
   bool  isScopeVariable(std::string) const;
   void  addMousePoke(std::string key, std::string vardata_pair);
@@ -58,6 +60,7 @@ class PMV_Viewer : public MarineViewer
   std::vector<VarDataPair> getRightMousePairs(bool=true);
   std::vector<VarDataPair> getNonMousePairs(bool=true);
 
+  unsigned int shapeCount(const std::string& gtype, const std::string& vname="") const;
 
  private:
   void   drawVehicle(std::string, bool, std::string);
@@ -73,9 +76,6 @@ class PMV_Viewer : public MarineViewer
 
   std::string m_reference_point;
   std::string m_reference_bearing;
-  double      m_stale_report_thresh;
-  double      m_stale_report_thresh_nodraw;  
-  bool        m_ignore_staleness;
   double      m_curr_time;
 
   // Member variables for holding scoped info
@@ -109,10 +109,10 @@ class PMV_Viewer : public MarineViewer
   bool        m_centric_view_sticky;
 
   VPlug_GeoShapesMap  m_geoshapes_map;
-  OpAreaSpec          m_op_area;
 };
 
 #endif 
+
 
 
 

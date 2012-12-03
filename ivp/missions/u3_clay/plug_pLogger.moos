@@ -8,7 +8,6 @@ ProcessConfig = pLogger
   
   File		= LOG_%(VNAME)
   PATH		= ./
-  SyncLog 	= true @ 0.2
   AsyncLog 	= true
   FileTimeStamp = true
 
@@ -17,5 +16,5 @@ ProcessConfig = pLogger
   // Log it all!!!!!
   LogAuxSrc = true
   WildCardLogging = true 
-  LoggingDirectorySummaryFile = ~/.pLogger_%(VNAME)
+  WildCardOmitPattern = *_STATUS
 }

@@ -11,34 +11,53 @@ Community  = $(SNAME)
 //--------------------------------------------------------
 ProcessConfig = ANTLER
 {
-  MSBetweenLaunches = 200
+  MSBetweenLaunches = 100
 
   Run = MOOSDB          @ NewConsole = false
-  Run = pMOOSBridge     @ NewConsole = false
-  Run = pMarineViewer   @ NewConsole = true
+  Run = pMarineViewer   @ NewConsole = false
+
+  Run = pShare          @ NewConsole = false
+  Run = pHostInfo       @ NewConsole = false
+  Run = uFldShoreBroker @ NewConsole = false
+  Run = uFldNodeComms   @ NewConsole = false
 }
 
-//--------------------------------------------------------
-ProcessConfig = pMOOSBridge
+#include plug_pShare.moos
+#include plug_pHostInfo.moos
+
+//--------------------------------------------------
+// uFldShoreBroker Configuration Block
+
+ProcessConfig = uFldShoreBroker
 {
-  AppTick   = 3
-  CommsTick = 3
+  AppTick       = 1
+  CommsTick     = 1
 
-  SHARE = [DEPLOY_ALL]  -> $(VNAME1) @ localhost:$(VPORT1) [DEPLOY]
-  SHARE = [DEPLOY_ALL]  -> $(VNAME2) @ localhost:$(VPORT2) [DEPLOY]
-  SHARE = [RETURN_ALL]  -> $(VNAME1) @ localhost:$(VPORT1) [RETURN]
-  SHARE = [RETURN_ALL]  -> $(VNAME2) @ localhost:$(VPORT2) [RETURN]
-  SHARE = [STATION_ALL] -> $(VNAME1) @ localhost:$(VPORT1) [STATION_KEEP]
-  SHARE = [STATION_ALL] -> $(VNAME2) @ localhost:$(VPORT2) [STATION_KEEP]
+  // Note: [QBRIDGE = FOO]  is shorthand for                    
+  //       [BRIDGE = src=FOO_$V,  alias=FOO] and                
+  //       [BRIDGE = src=FOO_ALL, alias=FOO]
 
-  SHARE = [UP_LOITER_1] -> $(VNAME1) @ localhost:$(VPORT1) [UP_LOITER]
-  SHARE = [UP_LOITER_2] -> $(VNAME2) @ localhost:$(VPORT2) [UP_LOITER]
+  QBRIDGE  = DEPLOY, RETURN, STATION, NODE_REPORT, NODE_MESSAGE
+  QBRIDGE  = MOOS_MANUAL_OVERIDE, APPCAST_REQ
 
-  SHARE = [TRAILING_ALLOWED] -> $(VNAME1) @ localhost:$(VPORT1) [TRAILING_ALLOWED]
-  SHARE = [PATROL]      -> $(VNAME1) @ localhost:$(VPORT1) [PATROL]
+  BRIDGE   = src=TRAILING_ALLOWED, alias=TRAILING_ALLOWED
+  BRIDGE   = src=PATROL, alias=PATROL
+}
 
-  SHARE = [MOOS_MANUAL_OVERIDE_ALL] -> $(VNAME1) @ localhost:$(VPORT1) [MOOS_MANUAL_OVERIDE]
-  SHARE = [MOOS_MANUAL_OVERIDE_ALL] -> $(VNAME2) @ localhost:$(VPORT2) [MOOS_MANUAL_OVERIDE]
+//--------------------------------------------------
+// uFldNodeComms Configuration Block
+
+ProcessConfig = uFldNodeComms
+{
+  AppTick       = 2
+  CommsTick     = 2
+
+           COMMS_RANGE = 250
+        CRITICAL_RANGE = 25
+      MIN_MSG_INTERVAL = 20
+        MAX_MSG_LENGTH = 1000
+                GROUPS = true
+  VIEW_NODE_RPT_PULSES = true
 }
 
 //--------------------------------------------------------
@@ -50,12 +69,12 @@ ProcessConfig = pMarineViewer
   TIFF_FILE            = forrest19.tif
   set_pan_x            = -90
   set_pan_y            = -280
-  zoom                 = 0.65
+  zoom                 = 0.55
   vehicles_shape_scale = 1.5
-  vehicles_name_viewable = names
+  vehicles_name_mode   = names+shortmode
 
-  reference_vehicle = $(VNAME1)
-  reference_vehicle = $(VNAME2)
+  appcast_viewable     = true
+  appcast_color_scheme = indigo
 
   SCOPE = CONTACT_INFO
 
@@ -80,11 +99,8 @@ ProcessConfig = uXMS
   AppTick    = 5
   CommsTick  = 5
 
-  VAR  = PROC_WATCH_SUMMARY_%(VNAME1)
-  VAR  = PROC_WATCH_SUMMARY_%(VNAME2)
   VAR  = NODE_REPORT
   VAR  = VIEW_POLYGON
   VAR  = VIEW_POINT
-
-  VAR  = DEPLOY_ALL, DEPLOY_VH1, DEPLOY_VH2
+  VAR  = DEPLOY_ALL
 }   

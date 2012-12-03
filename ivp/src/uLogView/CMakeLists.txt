@@ -27,16 +27,15 @@ ELSE (${APPLE})
 ENDIF (${APPLE})
       
 Target_LINK_LIBRARIES(uLogView         
-   MOOS
-   MOOSGen
    ulogview
    marineview
-   contacts
-   MOOSUtility
-   logutils
-   genutil
    geometry
+   logutils
+   MOOSGeodesy
+   MOOS
+   genutil
    contacts
+   apputil
    mbutil
       # Standard libraries used by this project's FLTK apps...
    fltk 
@@ -51,5 +50,4 @@ IF (${APPLE})
       )
 ENDIF (${APPLE})
 
-ADD_TEST(MyTest1 ${EXECUTABLE_OUTPUT_PATH}/uLogView --version)
 

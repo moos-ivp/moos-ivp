@@ -1,8 +1,23 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin                                     */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: BehaviorSet.cpp                                      */
 /*    DATE: Oct 27th 2004 Sox up 3-0 in the Series               */
+/*                                                               */
+/* This program is free software; you can redistribute it and/or */
+/* modify it under the terms of the GNU General Public License   */
+/* as published by the Free Software Foundation; either version  */
+/* 2 of the License, or (at your option) any later version.      */
+/*                                                               */
+/* This program is distributed in the hope that it will be       */
+/* useful, but WITHOUT ANY WARRANTY; without even the implied    */
+/* warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR       */
+/* PURPOSE. See the GNU General Public License for more details. */
+/*                                                               */
+/* You should have received a copy of the GNU General Public     */
+/* License along with this program; if not, write to the Free    */
+/* Software Foundation, Inc., 59 Temple Place - Suite 330,       */
+/* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
 #include <iostream>
@@ -71,6 +86,8 @@ void BehaviorSet::addBehavior(IvPBehavior *bhv)
   m_bhv_names.insert(bhv_name);
 
   m_total_behaviors_ever++;
+
+  cout << "Total Behaviors now: " << m_total_behaviors_ever << endl;
 }
 
 //------------------------------------------------------------
@@ -141,6 +158,8 @@ bool BehaviorSet::buildBehaviorsFromSpecs()
     // created builds from a behavior with templating type = spawn. We
     // need to create such behaviors to see if they are syntactically 
     // correct, but delete them immediately by definition of type=spawn.
+    cout << "spec_build: " << i << "  result:" << sbuild.valid() << endl;
+
     if(!sbuild.valid()) {
       all_builds_ok = false;
       spec_builds.push_back(sbuild);
@@ -152,7 +171,6 @@ bool BehaviorSet::buildBehaviorsFromSpecs()
 	spec_builds.push_back(sbuild);
 	string bhv_name   = sbuild.getBehaviorName();
       	// If otherwise valid, check if the new bhv_name is unique
-	//if(bhv_names.count(bhv_name) || m_bhv_names.count(bhv_name)) {
 	if(!uniqueNameX(bhv_name, bhv_names) ||
 	   !uniqueNameX(bhv_name, m_bhv_names)) {
 	  cerr << "Duplicate behavior name found: " << bhv_name << endl;
@@ -194,6 +212,7 @@ bool BehaviorSet::buildBehaviorsFromSpecs()
   // If all the builds were successful, populate the behavior_set
   // with all the new IvPBehaviors, and add LifeEvents.
   unsigned int k, ksize = spec_builds.size();
+  cout << "total specs::::::::::::::::::::::::" << ksize << endl;
   for(k=0; k<ksize; k++) {
     IvPBehavior *bhv = spec_builds[k].getIvPBehavior();
     addBehavior(bhv);
@@ -243,9 +262,10 @@ SpecBuild BehaviorSet::buildBehaviorFromSpec(BehaviorSpec spec,
   bool specs_valid = true;
   unsigned int i, count = spec.size();
   for(i=0; i<count; i++) {
+    string orig  = spec.getConfigLine(i);
     string cline = spec.getConfigLine(i);
-    string left  = stripBlankEnds(tolower(biteString(cline, '=')));
-    string right = stripBlankEnds(cline);
+    string left  = tolower(biteStringX(cline, '='));
+    string right = cline;
     bool valid = false;
     if((left == "name") || (left == "descriptor"))
       valid = bhv->IvPBehavior::setBehaviorName(right);
@@ -254,19 +274,29 @@ SpecBuild BehaviorSet::buildBehaviorFromSpec(BehaviorSpec spec,
 
     if(!valid)
       valid = bhv->setParam(left, right);
-    if(!valid)
-      sbuild.addBadConfig(cline, spec.getConfigLineNum(i));
+    if(!valid) {
+      unsigned int bad_line = spec.getConfigLineNum(i);
+      sbuild.addBadConfig(cline, bad_line);
+
+      string filename = spec.getFileName();
+      string msg = filename + ": ";
+      msg += "Line " + uintToString(bad_line) + ": " + orig;
+      addWarning(msg);
+    }
+
     specs_valid = specs_valid && valid;
   }
 
   // Then apply all the behavior specs from an UPDATES string which may
-  // possibly be empty. 
+  // possibly be empty.
+  // NOTE: If the update_str is non-empty we can assume this is a spawning
   vector<string> jvector = parseStringQ(update_str, '#');
   unsigned int j, jsize = jvector.size();
   for(j=0; j<jsize; j++) {
+    string orig  = jvector[j];
     string cline = jvector[j];
-    string left  = stripBlankEnds(tolower(biteString(cline, '=')));
-    string right = stripBlankEnds(cline);
+    string left  = tolower(biteStringX(cline, '='));
+    string right = cline;
     bool   valid = false;
     if((left == "name") || (left == "descriptor"))
       valid = bhv->IvPBehavior::augBehaviorName(right);
@@ -275,8 +305,14 @@ SpecBuild BehaviorSet::buildBehaviorFromSpec(BehaviorSpec spec,
 
     if(!valid)
       valid = bhv->setParam(left.c_str(), right.c_str());
-    if(!valid)
+    if(!valid) {
       sbuild.addBadConfig(jvector[j], 0);
+      
+      string msg = "Failed to spawn " + bhv->getDescriptor();
+      msg += + ". Bad config: " + orig;
+      addWarning(msg);
+    }
+
     specs_valid = specs_valid && valid;
   }
   if(specs_valid) 
@@ -310,7 +346,7 @@ bool BehaviorSet::handlePossibleSpawnings()
 	string bname = tokStringParse(update_str, "name", '#', '=');
 	if(m_bhv_names.count(bname)==0) {
 	  SpecBuild sbuild = buildBehaviorFromSpec(m_behavior_specs[i], 
-						 update_str);
+						   update_str);
 	  //sbuild.print();
 
 	  LifeEvent life_event;
@@ -320,6 +356,9 @@ bool BehaviorSet::handlePossibleSpawnings()
 	  
 	  if(sbuild.valid()) {
 	    IvPBehavior *bhv = sbuild.getIvPBehavior();
+	    // Called here now since it was just spawned and could not have
+	    // been called previously. 07/18/12 mikerb
+	    bhv->onSetParamComplete(); 
 	    addBehavior(bhv);
 	    life_event.setEventType("spawn");
 	  }
@@ -333,7 +372,6 @@ bool BehaviorSet::handlePossibleSpawnings()
   return(true);
 }
 
-#if 1
 //------------------------------------------------------------
 // Procedure: produceOF
 
@@ -434,7 +472,6 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
   }
   return(ipf);
 }
-#endif
 
 //------------------------------------------------------------
 // Procedure: produceOFX
@@ -663,12 +700,14 @@ bool BehaviorSet::filterBehaviorsPresent()
 //------------------------------------------------------------
 // Procedure: getMessages
 
-vector<VarDataPair> BehaviorSet::getMessages(unsigned int ix)
+vector<VarDataPair> BehaviorSet::getMessages(unsigned int ix, 
+					     bool clear)
 {
   vector<VarDataPair> mvector;
   if(ix < m_bhv_entry.size()) {
     mvector = m_bhv_entry[ix].getBehavior()->getMessages();
-    m_bhv_entry[ix].getBehavior()->clearMessages();
+    if(clear)
+      m_bhv_entry[ix].getBehavior()->clearMessages();
   }
   return(mvector);
 }
@@ -705,7 +744,6 @@ vector<string> BehaviorSet::getNewInfoVars()
 
   vector<string> cvector = getInfoVars();
   unsigned int i, csize = cvector.size();
-
   for(i=0; i<csize; i++) {
     if(!m_prev_info_vars.count(cvector[i])) {
       rvector.push_back(cvector[i]);
@@ -730,10 +768,15 @@ vector<string> BehaviorSet::getSpecUpdateVars()
       rvector.push_back(updates_var);
   }
   return(rvector);
-
 }
 
+//------------------------------------------------------------
+// Procedure: addWarning()
 
+void BehaviorSet::addWarning(const string& str)
+{
+  m_warnings.push_back(str);
+}
 
 //------------------------------------------------------------
 // Procedure: uniqueNameX()
@@ -821,4 +864,6 @@ void BehaviorSet::print()
     cout << "-------" << endl;
   }
 }
+
+
 

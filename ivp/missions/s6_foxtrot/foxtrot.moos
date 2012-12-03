@@ -108,7 +108,13 @@ ProcessConfig = pMarineViewer
   point_vertex_size    = 12
   hash_delta           = 50
   hash_shade           = 0.4
-  hash_view            = true
+  hash_viewable        = false
+  hash_delta           = 78
+
+  //oparea_viewable_all = true
+
+  marker_viewable_all = false
+  marker_scale = 4.0
 
   BUTTON_ONE = DEPLOY # DEPLOY=true
   BUTTON_ONE = MOOS_MANUAL_OVERIDE=false # RETURN=false
@@ -140,10 +146,10 @@ ProcessConfig = pMarineViewer
   marker = type=gateway,x=32,y=-156,label=gateway,color=light_blue,width=5
 
   // SWAMSI OP-AREA
-  op_vertex = x=-10, y=10,lwidth=2,lcolor=yellow,looped=true,group=soa
-  op_vertex = x=-10, y=-165,lwidth=2,lcolor=yellow,looped=true,group=soa
-  op_vertex = x=195, y=-165,lwidth=2,lcolor=yellow,looped=true,group=soa
-  op_vertex = x=195, y=10,lwidth=2,lcolor=yellow,looped=true,group=soa
+  op_vertex = x=-10, y=10,lwidth=1,lcolor=yellow,looped=true,group=soa
+  op_vertex = x=-10, y=-165,lwidth=1,lcolor=yellow,looped=true,group=soa
+  op_vertex = x=195, y=-165,lwidth=1,lcolor=yellow,looped=true,group=soa
+  op_vertex = x=195, y=10,lwidth=1,lcolor=yellow,looped=true,group=soa
 
 }
 

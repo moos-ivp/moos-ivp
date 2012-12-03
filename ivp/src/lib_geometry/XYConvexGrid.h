@@ -3,7 +3,6 @@
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: XYGrid.h                                             */
 /*    DATE: Aug 27th 2005                                        */
-/*    DATE: Dec  7th 2011                                        */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
 /* modify it under the terms of the GNU General Public License   */
@@ -106,3 +105,4 @@ protected:
   std::vector<bool>                  m_cell_minmax_noted;
 };
 #endif
+

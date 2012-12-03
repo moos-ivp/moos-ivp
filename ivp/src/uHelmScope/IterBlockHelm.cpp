@@ -361,7 +361,7 @@ bool IterBlockHelm::getDecChg(unsigned int ix) const
 //------------------------------------------------------------
 // Procedure: print()
 
-void IterBlockHelm::print(int iter)
+void IterBlockHelm::print(int iter) const
 {
   cout << "==================================(" << iter << ")" << endl;
   cout << "m_iteration:    " << m_iteration << endl;
@@ -381,4 +381,5 @@ void IterBlockHelm::print(int iter)
   cout << "m_idle_bhv.size(): " << m_idle_bhv.size() << endl;
   cout << "m_completed_bhv.size(): " << m_completed_bhv.size() << endl;
 }
+
 

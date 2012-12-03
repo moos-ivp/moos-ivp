@@ -1,17 +1,34 @@
-/***************************************************************/
-/*   NAME: Michael Benjamin, Henrik Schmidt, and John Leonard  */
-/*   ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA    */
-/*   FILE: HazardMetric.cpp                                    */
-/*   DATE: March 12th, 2012                                    */
-/***************************************************************/
+/*****************************************************************/
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    FILE: HazardMetric.cpp                                     */
+/*    DATE: March 12th, 2012                                     */
+/*                                                               */
+/* This program is free software; you can redistribute it and/or */
+/* modify it under the terms of the GNU General Public License   */
+/* as published by the Free Software Foundation; either version  */
+/* 2 of the License, or (at your option) any later version.      */
+/*                                                               */
+/* This program is distributed in the hope that it will be       */
+/* useful, but WITHOUT ANY WARRANTY; without even the implied    */
+/* warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR       */
+/* PURPOSE. See the GNU General Public License for more details. */
+/*                                                               */
+/* You should have received a copy of the GNU General Public     */
+/* License along with this program; if not, write to the Free    */
+/* Software Foundation, Inc., 59 Temple Place - Suite 330,       */
+/* Boston, MA 02111-1307, USA.                                   */
+/*****************************************************************/
 
 #include <iterator>
 #include "MBUtils.h"
 #include "ColorParse.h"
 #include "FileBuffer.h"
 #include "HazardMetric.h"
+#include "XYHazardRepEval.h"
 #include "XYFormatUtilsHazard.h"
 #include "XYFormatUtilsHazardSet.h"
+#include "ACTable.h"
 
 using namespace std;
 
@@ -22,21 +39,15 @@ HazardMetric::HazardMetric()
 {
   // Initialized configuration variables
   // Default Reward Structure
-  m_hazard_right     = 10;
-  m_hazard_wrong     = -50;
-  m_benign_right     = 5;
-  m_benign_wrong     = -25;
-  m_hazard_zilch     = -75;
-  m_benign_zilch     = 0;
-  m_report_interval  = 0.75;   // Terminal report interval seconds
+  m_penalty_false_alarm      = 10;
+  m_penalty_missed_hazard    = 100; 
+  m_penalty_max_time_over    = 0;
+  m_penalty_max_time_overage = 0;
 
-  // Initialize state variables
-  m_iterations       = 0;
-  m_time_warp        = 1;
-  m_curr_time        = 0;
-  m_last_report_time = 0;      // Timestamp of last terminal report
+  // A max_time=0 means there is no mission time limit 
+  m_max_time = 0;
 
-  m_start_time       = 0;
+  m_search_start_time = 0;
 }
 
 //---------------------------------------------------------
@@ -44,21 +55,13 @@ HazardMetric::HazardMetric()
 
 bool HazardMetric::OnNewMail(MOOSMSG_LIST &NewMail)
 {
-  MOOSMSG_LIST::iterator p;
-  
+  AppCastingMOOSApp::OnNewMail(NewMail);
+
+  MOOSMSG_LIST::iterator p;  
   for(p=NewMail.begin(); p!=NewMail.end(); p++) {
     CMOOSMsg &msg = *p;
     string key   = msg.GetKey();
     string sval  = msg.GetString(); 
-    
-    if(key == "HAZARD_REPORT") {
-      addHazardReport(sval);
-      evaluateReports();
-    }
-
-    else if(key == "HAZARD_METRIC_START")
-      m_start_time = MOOSTime();
-
 #if 0 // Keep these around just for template
     string comm  = msg.GetCommunity();
     double dval  = msg.GetDouble();
@@ -67,6 +70,13 @@ bool HazardMetric::OnNewMail(MOOSMSG_LIST &NewMail)
     bool   mdbl  = msg.IsDouble();
     bool   mstr  = msg.IsString();
 #endif
+    
+    if(key == "HAZARD_REPORT")
+      addHazardReport(sval);
+    else if(key == "HAZARD_SEARCH_START")
+      m_search_start_time = MOOSTime() - m_start_time;
+    else 
+      reportRunWarning("Unhandled Mail: " + key);
    }
 	
    return(true);
@@ -77,7 +87,7 @@ bool HazardMetric::OnNewMail(MOOSMSG_LIST &NewMail)
 
 bool HazardMetric::OnConnectToServer()
 {
-   RegisterVariables();
+   registerVariables();
    return(true);
 }
 
@@ -87,14 +97,8 @@ bool HazardMetric::OnConnectToServer()
 
 bool HazardMetric::Iterate()
 {
-  m_iterations++;
-  m_curr_time = MOOSTime();
-
-  double moos_elapsed_time = m_curr_time - m_last_report_time;
-  double real_elapsed_time = moos_elapsed_time / m_time_warp;
-  if(real_elapsed_time >= m_report_interval) 
-    printReport();
-
+  AppCastingMOOSApp::Iterate();
+  AppCastingMOOSApp::PostReport();
   return(true);
 }
 
@@ -104,64 +108,60 @@ bool HazardMetric::Iterate()
 
 bool HazardMetric::OnStartUp()
 {
-  list<string> sParams;
-  m_MissionReader.EnableVerbatimQuoting(false);
-  if(m_MissionReader.GetConfiguration(GetAppName(), sParams)) {
-    list<string>::iterator p;
-    for(p=sParams.begin(); p!=sParams.end(); p++) {
-      string original_line = *p;
-      string param = stripBlankEnds(toupper(biteString(*p, '=')));
-      string value = stripBlankEnds(*p);
-      
-      bool handled = false;
-      if((param == "SCORE_HAZARD_RIGHT") && isNumber(value)) {
-	m_hazard_right = atof(value.c_str());
-	handled = true;
-      }
-      else if((param == "SCORE_HAZARD_WRONG") && isNumber(value)) {
-	m_hazard_wrong = atof(value.c_str());
-	handled = true;
-      }
-      else if((param == "SCORE_BENIGN_RIGHT") && isNumber(value)) {
-	m_benign_right = atof(value.c_str());
-	handled = true;
-      }
-      else if((param == "SCORE_BENIGN_WRONG") && isNumber(value)) {
-	m_benign_wrong = atof(value.c_str());
-	handled = true;
-      }
-      else if((param == "SCORE_HAZARD_ZILCH") && isNumber(value)) {
-	m_hazard_zilch = atof(value.c_str());
-	handled = true;
-      }
-      else if((param == "SCORE_BENIGN_ZILCH") && isNumber(value)) {
-	m_benign_zilch = atof(value.c_str());
-	handled = true;
-      }
-      else if((param == "APPTICK") || (param=="COMMSTICK"))
-        handled = true;
-      
-      else if(param == "HAZARD_FILE")
-	handled = processHazardFile(value);
-      
-      if(!handled)
-	m_bad_configs.push_back(original_line);
-    }
-  }
-  
-  m_time_warp = GetMOOSTimeWarp();
+  AppCastingMOOSApp::OnStartUp();
 
-  RegisterVariables();	
+  STRING_LIST sParams;
+  m_MissionReader.EnableVerbatimQuoting(false);
+  if(!m_MissionReader.GetConfiguration(GetAppName(), sParams)) 
+    reportConfigWarning("No config block found for " + GetAppName());
+  
+  STRING_LIST::iterator p;
+  for(p=sParams.begin(); p!=sParams.end(); p++) {
+    string orig  = *p;
+    string line  = *p;
+    string param = toupper(biteStringX(line, '='));
+    string value = line;
+    
+    bool handled = false;
+    if((param == "PENALTY_MISSED_HAZARD") && isNumber(value)) {
+      m_penalty_missed_hazard = atof(value.c_str());
+      handled = true;
+    }
+    else if((param == "PENALTY_FALSE_ALARM") && isNumber(value)) {
+      m_penalty_false_alarm = atof(value.c_str());
+      handled = true;
+    }
+    else if((param == "PENALTY_MAX_TIME_OVER") && isNumber(value)) {
+      m_penalty_max_time_over = atof(value.c_str());
+      handled = true;
+    }
+    else if((param == "PENALTY_MAX_TIME_OVERAGE") && isNumber(value)) {
+      m_penalty_max_time_overage = atof(value.c_str());
+      handled = true;
+    }
+    else if((param == "MAX_TIME") && isNumber(value)) {
+      m_max_time = atof(value.c_str());
+      handled = true;
+    }
+    else if(param == "HAZARD_FILE")
+      handled = processHazardFile(value);
+    
+    if(!handled)
+      reportUnhandledConfigWarning(orig);
+  }
+
+  registerVariables();	
   return(true);
 }
 
 //---------------------------------------------------------
-// Procedure: RegisterVariables
+// Procedure: registerVariables
 
-void HazardMetric::RegisterVariables()
+void HazardMetric::registerVariables()
 {
+  AppCastingMOOSApp::RegisterVariables();
   m_Comms.Register("HAZARD_REPORT", 0);
-  m_Comms.Register("HAZARD_METRIC_START", 0);
+  m_Comms.Register("HAZARD_SEARCH_START", 0);
 }
 
 
@@ -170,56 +170,44 @@ void HazardMetric::RegisterVariables()
 
 bool HazardMetric::processHazardFile(string filename)
 {
-  cout << "Processing Hazard File: " << filename << endl;
+  string msg = "Reading " + filename + ": ";
 
   vector<string> lines = fileBuffer(filename);
   unsigned int i, vsize = lines.size();
-  cout << "Total lines: " << vsize << endl;
-  if(vsize == 0)
+  if(vsize == 0) {
+    reportRunWarning(msg + "Empty or File Not found.");
     return(false);
+  }
+  else
+    m_hazard_file = filename;
 
   XYHazardSet hazard_set;
 
-  unsigned int count = 0;
   for(i=0; i<vsize; i++) {
+    string orig  = lines[i];
+    lines[i] = stripBlankEnds(stripComment(lines[i], "//"));
     string left  = biteStringX(lines[i], '=');
     string right = lines[i];
     if(left == "source")
       hazard_set.setSource(right);
     else if(left == "hazard") {
       XYHazard new_hazard = string2Hazard(right);
-      if(new_hazard.valid()) {
+      if(new_hazard.valid()) 
 	hazard_set.addHazard(new_hazard);
-	count++;
-      }
-      else {
-	string bad_entry = "Bad Hazard file entry (" + filename + "): " + right;
-	cout << bad_entry << endl;
-	m_bad_configs.push_back(bad_entry);
-      }
+      else
+	reportConfigWarning(msg + "bad hazard file entry: " + orig);
     }
+    else if(left != "")
+      reportConfigWarning("strange hazard file entry: " + orig);
+    
   }
   
-  string hazard_set_source = hazard_set.getSource();
+  m_hazards = hazard_set;
+  reportEvent(msg + "Objects read: " + uintToString(m_hazards.size()));
+
+  if(m_hazards.getSource() == "")
+    m_hazards.setSource(filename);
   
-  if(hazard_set_source == "") {
-    string bad_entry = "Hazard file (" + filename + ") has no src info. Rejected";
-    cout << bad_entry << endl;
-    m_bad_configs.push_back(bad_entry);
-    return(false);
-  }
-
-  cout << "Total hazards added: " << count << endl;
-  if(hazard_set_source == "actual")
-    m_hazards = hazard_set;
-  else {
-    m_map_reports[hazard_set_source]      = hazard_set;
-    m_map_report_time[hazard_set_source]  = m_curr_time;
-    m_map_report_score[hazard_set_source] = "n/a";
-    m_map_report_amt[hazard_set_source]++;
-  }
-
-
   return(true);
 }
 
@@ -234,186 +222,178 @@ bool HazardMetric::addHazardReport(string report_str)
   string src = hazard_set.getSource();
   
   if(src == "") {
-    string memo = "Rejected HAZARD_REPORT: Missing Source info";
-    m_map_memos[memo]++;
+    reportRunWarning("Rejected HAZARD_REPORT: Missing Source info");
     return(false);
   }
   
   if(src == "actual") {
-    string memo = "Rejected HAZARD_REPORT: Source claims to be actual";
-    m_map_memos[memo]++;
-      return(false);
+    reportRunWarning("Rejected HAZARD_REPORT: Source claims to be actual");
+    return(false);
   }
 
   if(hazard_set.size() == 0) {
-    string memo = "Warning: HAZARD_REPORT of size ZERO received";
-    m_map_memos[memo]++;
+    reportRunWarning("Warning: HAZARD_REPORT of size ZERO received");
+    return(false);
   }
 
-  m_map_reports[src]      = hazard_set;
-  m_map_report_time[src]  = m_curr_time;
-  m_map_report_score[src] = "n/a";
+  m_map_reports[src] = hazard_set;
   m_map_report_amt[src]++;
+
+  m_most_recent_source = src;
   
+  reportEvent("Received valid report from: " + src);
+
+  evaluateReport(hazard_set);
   return(true);
-}
-
-//------------------------------------------------------------
-// Procedure: handleMailHazardMetricStart()
-
-void HazardMetric::handleMailHazardMetricStart(string vname)
-{
-  //m_map_start_time[vname] = m_curr_time;
-}
-
-//------------------------------------------------------------
-// Procedure: handleMailStopWatchStop()
-
-void HazardMetric::handleMailStopWatchStop(string vname)
-{
-  //m_map_start_time[vname] = m_curr_time;
-}
-
-
-//------------------------------------------------------------
-// Procedure: evaluateReports
-
-void HazardMetric::evaluateReports()
-{
-  map<string, XYHazardSet>::iterator p;
-  for(p=m_map_reports.begin(); p!=m_map_reports.end(); p++) {
-    string source = p->first;
-    evaluateReport(source);
-  }
 }
 
 //------------------------------------------------------------
 // Procedure: evaluateReport
 
-void HazardMetric::evaluateReport(string source)
+void HazardMetric::evaluateReport(const XYHazardSet& src_hset)
 {
-  if(m_map_reports.count(source) == 0)
-    return;
-
-  XYHazardSet src_hset = m_map_reports[source];
+  string source = src_hset.getSource();
 
   double total_score = 0;
-  string report_eval;
+  string object_report;
 
+  // Part 1: Tally up the correct hazards, missed hazards and false alarms
+  unsigned int correct_hazards = 0;
+  unsigned int missed_hazards  = 0;
+  unsigned int false_alarms    = 0;
   unsigned int i, vsize = m_hazards.size();
   for(i=0; i<vsize; i++) {
-    double   iscore = 0;
     XYHazard ihaz   = m_hazards.getHazard(i);
     string   ilabel = ihaz.getLabel();
     string   itype  = ihaz.getType();
 
-    string   eval = "label=" + ilabel + ",truth=" + itype;
+    string   detailed_rep = "label=" + ilabel + ",truth=" + itype;
+    bool     haz_reported = src_hset.hasHazard(ilabel);
 
-    XYHazard src_haz = src_hset.findHazardByLabel(ilabel);
-    if(src_haz.valid() == false) {
-      eval += ",report=nothing";
-      if(itype == "hazard") 
-	iscore = m_hazard_zilch;
-      else
-	iscore = m_benign_zilch;
-    }
-    else {
-      string src_haz_type = src_haz.getType();
-      eval += ",report=" + src_haz_type;
+    // Ground truth hazard: not reported as hazard (missed_hazard)
+    if(!haz_reported) {
+      detailed_rep += ",report=nothing";
       if(itype == "hazard") {
-	if(src_haz_type == "hazard") 
-	  iscore = m_hazard_right;
-	else
-	  iscore = m_hazard_wrong;
+	missed_hazards++;
+	detailed_rep += ",penalty=" + doubleToStringX(m_penalty_missed_hazard,2);
       }
-      else {  // itype = benign
-	if(src_haz_type == "hazard") 
-	  iscore = m_benign_wrong;
-	else
-	  iscore = m_benign_right;
-      }
-      eval += ",score=" + doubleToStringX(iscore);
     }
-    
-    total_score += iscore;
-    if(report_eval != "")
-      report_eval += "#";
-    report_eval += eval;
+    // Ground truth non-hazard: reported as hazard (false alarm)
+    else {
+      detailed_rep += ",report=hazard";
+      if(itype != "hazard") {
+	false_alarms++;
+	detailed_rep += ",penalty=" + doubleToStringX(m_penalty_false_alarm,2);
+      }
+      else
+	correct_hazards++;
+    }
+
+    if(object_report != "")
+      object_report += "#";
+    object_report += detailed_rep;
   }
 
-  double elapsed_time = m_curr_time - m_start_time;
-  
-  string summary = "vname=" + source;
-  summary += ",objects_reported=" + uintToString(vsize);
-  summary += ",total_score=" + doubleToStringX(total_score);
-  summary += ",time=" + doubleToString(elapsed_time,1);
-  
-  m_map_report_score[source] = doubleToStringX(total_score);
+  // Part 2: Tally up the penalties for missed hazards and false alarms.
+  double score_missed_hazards = (missed_hazards * m_penalty_missed_hazard);
+  double score_false_alarms   = (false_alarms   * m_penalty_false_alarm);
+  total_score += score_missed_hazards;
+  total_score += score_false_alarms;
 
-  report_eval = summary + "#" + report_eval;
+  // Part 3: Tally up penalties (if any) based on search time.
+  double elapsed_time = m_curr_time - m_search_start_time;
+  // If search start time was not marked, no elapsed time.
+  if(m_search_start_time == 0)
+    elapsed_time = 0;
+  double overage = elapsed_time - m_max_time;
 
-  m_Comms.Notify("REPORT_FULL_EVAL", report_eval);
-  m_Comms.Notify("REPORT_FULL_EVAL_"+toupper(source), report_eval);
+  // If no max time set, no overage
+  if(m_max_time == 0)
+    overage = 0;
 
-  m_Comms.Notify("REPORT_EVAL", summary);
-  m_Comms.Notify("REPORT_EVAL_"+toupper(source), summary);
+  double score_time_overage = 0;
+  if(overage > 0) {
+    score_time_overage += m_penalty_max_time_over;
+    score_time_overage += (m_penalty_max_time_overage * overage);
+  }
+  total_score += score_time_overage;
 
+  // Part 4: Fill in the report eval data structure
+  XYHazardRepEval eval;
+  eval.setVName(source);
+  eval.setTotalScore(total_score);
+  eval.setScoreMissedHazards(score_missed_hazards);
+  eval.setScoreFalseAlarms(score_false_alarms);
+  eval.setScoreTimeOverage(score_time_overage);
 
-  // REPORT_FULL_EVAL = vname=archie,total_score=450 # 
-  //                    label=34,truth=hazard,report=hazard,score=10  #
-  //                    label=17,truth=hazard,report=benign,score=-50 #
-  //                    label=91,truth=benign,report=nothing,score=0 
+  eval.setTotalObjects(src_hset.size());
+  eval.setCorrectHazards(correct_hazards);
+  eval.setMissedHazards(missed_hazards);
+  eval.setFalseAlarms(false_alarms);
+  eval.setTotalTime(elapsed_time);
+  eval.setReceivedTime(m_curr_time - m_start_time);
+  eval.setStartTime(m_search_start_time);
 
+  eval.setPenaltyFalseAlarm(m_penalty_false_alarm);
+  eval.setPenaltyMissedHazard(m_penalty_missed_hazard);
+  eval.setPenaltyMaxTimeOver(m_penalty_max_time_over);
+  eval.setPenaltyMaxTimeOverage(m_penalty_max_time_overage);
+  eval.setMaxTime(m_max_time);
+  eval.setObjectReport(object_report);
+
+  m_map_evals[source] = eval;
+
+  m_Comms.Notify("REPORT_FULL_EVAL", eval.getFullSpec());
+  m_Comms.Notify("REPORT_FULL_EVAL_"+toupper(source), eval.getFullSpec());
+
+  m_Comms.Notify("REPORT_EVAL", eval.getShortSpec());
+  m_Comms.Notify("REPORT_EVAL_"+toupper(source), eval.getShortSpec());
 }
 
 
 
 //------------------------------------------------------------
-// Procedure: printReport
+// Procedure: buildReport()
 
-void HazardMetric::printReport() 
+bool HazardMetric::buildReport() 
 {
-  m_last_report_time = m_curr_time;
-  // Part 1: Header
-  cout << endl << endl << endl << endl << endl;
-  cout << "======================================================" << endl;
-  cout << "uFldHazardMetric Report (" << m_iterations << ")" << endl;
+  m_msgs << "============================================" << endl;
+  m_msgs << "Hazard File: (" + m_hazard_file + ")"         << endl;
+  m_msgs << "============================================" << endl;
+  m_msgs << "     Hazard: " + m_hazards.getHazardCnt() << endl;
+  m_msgs << "     Benign: " + m_hazards.getBenignCnt() << endl;
+  m_msgs << endl;  
+  m_msgs << "==========================================" << endl;
+  m_msgs << "Received Reports:"                          << endl;
+  m_msgs << "==========================================" << endl;;
 
-  // Part 2: Configuration Warnings
-  unsigned int config_warnings = m_bad_configs.size();
-  if(config_warnings != 0) {
-    cout << termColor("red") << "MOOS File Configuration Errors (";
-    cout << config_warnings << ")" << endl;
-    for(unsigned i=0; i<config_warnings; i++) {
-      cout << "  [" <<stripBlankEnds(m_bad_configs[i]) << "]" << endl;
-    }
-  }
-  cout << termColor() << endl;
-  cout << "Hazards from File: " << m_hazards.size() << endl;
-  
-
-  // Part 3: Normal Status Output
-  cout << "Received Reports:" << endl;
-  cout << "----------------------------------" << endl;
-  cout << "Vname     Reports     Score   Time" << endl;
-  cout << "-------   -------     -----   ----" << endl;    
-  map<string, string>::iterator p;
-  for(p=m_map_report_score.begin(); p!=m_map_report_score.end(); p++) {
+  ACTable actab(5);
+  actab << "Vehicle | Total   |       | Time | Time   ";
+  actab << "Name    | Reports | Score | Recd | Elapsed";
+  actab.addHeaderLines();
+  map<string, XYHazardRepEval>::iterator p;
+  for(p=m_map_evals.begin(); p!=m_map_evals.end(); p++) {
     string vname = p->first;
-    string score = p->second;
-    unsigned int amt = m_map_report_amt[vname];
-    double time  = m_map_report_time[vname] - m_start_time;
-    cout << vname << "     " << amt << "          " << score << "    " << time << endl;
+    XYHazardRepEval eval = p->second;
+    string amt   = uintToString(m_map_report_amt[vname]);
+
+    string score      = doubleToStringX(eval.getTotalScore());
+    string time_reced = doubleToString(eval.getReceivedTime(),2);
+    string time_total = doubleToString(eval.getTotalTime(),2);
+    actab << vname << amt << score << time_reced << time_total;
+  }
+  m_msgs << actab.getFormattedString();
+
+  if(m_map_evals.count(m_most_recent_source)) {
+    XYHazardRepEval eval = m_map_evals[m_most_recent_source];
+    m_msgs << endl;
+    m_msgs << "=========================================="         << endl;
+    m_msgs << "Most Recent Report: (" + m_most_recent_source + ")" << endl;
+    m_msgs << "=========================================="         << endl;
+    m_msgs << eval.getFormattedString();
   }
 
-  // Part 4: Memo Messages
-  cout << endl;
-  cout << "Internal Memos:                            " << endl;
-  cout << "======================================     " << endl;
-  map<string, int>::iterator p1;
-  for(p1=m_map_memos.begin(); p1!=m_map_memos.end(); p1++) 
-    cout << " (" << p1->second << ") " << p1->first  << endl;
-
-
+  return(true);
 }
+
 

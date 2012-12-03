@@ -254,11 +254,11 @@ void PokeDB::updateVariable(CMOOSMsg &msg)
   m_source_read[ix] = msg.GetSource();
   m_wrtime_read[ix] = vtime_str;
 
-  if(msg.IsDataType(MOOS_STRING)) {
+  if(msg.IsString()) {
     m_svalue_read[ix]  = msg.GetString();
     m_valtype_read[ix] = "string";
   }      
-  else if(msg.IsDataType(MOOS_DOUBLE)) {
+  else if(msg.IsDouble()) {
     m_dvalue_read[ix]  = doubleToString(msg.GetDouble());
     m_valtype_read[ix] = "double";
   }
@@ -298,6 +298,7 @@ void PokeDB::printReport()
     printf("\n");		
   }
 }
+
 
 
 

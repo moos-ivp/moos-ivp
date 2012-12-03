@@ -180,7 +180,7 @@ bool MarinePID::Iterate()
       MOOSDebugWrite("Paused Due To Tardy HELM Input: THRUST=0");
     cout << "Paused Due To Tardy HELM Input: THRUST=0" << endl;
     m_paused = true;
-    m_Comms.Notify("DESIRED_THRUST", 0);
+    m_Comms.Notify("DESIRED_THRUST", 0.0);
     return(true);
   }
   
@@ -189,7 +189,7 @@ bool MarinePID::Iterate()
       MOOSDebugWrite("Paused Due To Tardy NAV Input: THRUST=0");
     cout << "Paused Due To Tardy NAV Input: THRUST=0" << endl;
     m_paused = true;
-    m_Comms.Notify("DESIRED_THRUST", 0);
+    m_Comms.Notify("DESIRED_THRUST", 0.0);
     return(true);
   }
 
@@ -269,10 +269,10 @@ void MarinePID::postAllStop()
   if(m_allstop_posted)
     return;
 
-  m_Comms.Notify("DESIRED_RUDDER", 0);
-  m_Comms.Notify("DESIRED_THRUST", 0);
+  m_Comms.Notify("DESIRED_RUDDER", 0.0);
+  m_Comms.Notify("DESIRED_THRUST", 0.0);
   if(m_depth_control)
-    m_Comms.Notify("DESIRED_ELEVATOR", 0);
+    m_Comms.Notify("DESIRED_ELEVATOR", 0.0);
 
   m_allstop_posted = true;
 }
@@ -559,4 +559,5 @@ bool MarinePID::handleDepthSettings()
 
   return(ok);
 }
+
 

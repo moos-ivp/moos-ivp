@@ -33,11 +33,9 @@ public:
   virtual ~XYObject() {};
 
   virtual void   clear();
-  virtual bool   valid() const  {return(true);};
-  virtual bool   set_type(const std::string&);
+  virtual bool   valid() const {return(true);};
   
   void   set_label(const std::string& str)  {m_label=str;};
-  void   set_source(const std::string& str) {m_source=str;};
   void   set_msg(const std::string& str)    {m_msg=str;};
   void   set_active(bool val)               {m_active=val;};
   void   set_time(double val)               {m_time=val;m_time_set=true;};
@@ -45,10 +43,13 @@ public:
   void   set_edge_size(double val);
   void   set_transparency(double);
 
+  void   set_type()   {}; // deprecated
+  void   set_source() {}; // deprecated
+
+  bool      color_set(const std::string& key) const;
   void      set_color(const std::string& key, const std::string& color);
   void      set_color(const std::string& key, const ColorPack& color);
   ColorPack get_color(const std::string& key) const;
-  bool      color_set(const std::string& key) const;
 
   bool      active()        const {return(m_active);};
   double    get_time()      const {return(m_time);};
@@ -63,8 +64,6 @@ public:
 
   std::string get_label()     const {return(m_label);};
   std::string get_msg()       const {return(m_msg);};
-  std::string get_type()      const {return(m_type);};
-  std::string get_source()    const {return(m_source);};
   std::string get_spec(std::string s="") const;
 
   bool set_param(const std::string&, const std::string&);
@@ -74,8 +73,6 @@ public:
 
 protected:
   std::string  m_label;
-  std::string  m_type;
-  std::string  m_source;
   std::string  m_msg;
   bool         m_active;
   double       m_time;
@@ -90,4 +87,5 @@ protected:
 };
 
 #endif
+
 

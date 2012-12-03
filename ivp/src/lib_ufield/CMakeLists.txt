@@ -8,12 +8,15 @@ SET(SRC
   HostRecordUtils.cpp
   NodeMessage.cpp
   NodeMessageUtils.cpp
+  UFieldUtils.cpp
 )
 
 SET(HEADERS
   HostRecord.h
   HostRecordUtils.h
+  NodeMessage.h
   NodeMessageUtils.h
+  UFieldUtils.h
 )
 
 # Build Library

@@ -47,7 +47,7 @@
 #include "BackImg.h"
 #include "MBUtils.h"
 #include "FileBuffer.h"
-#include "MOOSGeodesy.h"
+#include "MOOS/libMOOSGeodesy/MOOSGeodesy.h"
 
 using namespace std;
 
@@ -92,7 +92,7 @@ BackImg::BackImg()
 }
 
 // ----------------------------------------------------------
-// Procedure: Constructor
+// Procedure: Destructor
 
 BackImg::~BackImg()
 {
@@ -471,4 +471,5 @@ void BackImg::print()
   cout << "pix_per_mtr_y: " <<(m_img_pix_height / m_img_mtr_height) << endl;
 
 }
+
 

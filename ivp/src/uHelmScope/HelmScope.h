@@ -20,23 +20,22 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
-#ifndef HELM_SCOPE_HEADER
-#define HELM_SCOPE_HEADER
+#ifndef U_HELM_SCOPE_HEADER
+#define U_HELM_SCOPE_HEADER
 
 #include <vector>
 #include <string>
 #include <map>
 #include <list>
+#include <set>
 
-#include "MOOSLib.h"
-#include "MOOSGenLib.h"
-#include "IterBlockHelm.h"
-#include "IterBlockPosts.h"
-#include "IterBlockXMS.h"
+#include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
+#include "HelmReport.h"
 #include "StringTree.h"
 #include "LifeEventHistory.h"
+#include "ScopeEntry.h"
 
-class HelmScope : public CMOOSApp  
+class HelmScope : public AppCastingMOOSApp
 {
  public:
   HelmScope();
@@ -47,136 +46,90 @@ class HelmScope : public CMOOSApp
   bool OnConnectToServer();
   bool OnStartUp();
   
-  void handleCommand(char);
-  void setPaused(bool v)         {m_paused = v;};
-  void setDisplayXMS(bool v)     {m_display_xms = v;};
-  void setDisplayPosts(bool v)   {m_display_posts = v;};
-  void setIgnoreFileVars(bool v) {m_ignore_filevars = v;};
-  void setDisplayTrunc(bool v)   {m_display_truncate = v;};
-  void setDisplayVirgins(bool v) {m_display_virgins = v;};
+  bool buildReport();
 
-#if 0 // modification in progress 
-  bool configureComms(std::string, std::string, double, std::string);
-  void setAppTick(double v)      {SetAppFreq(v);};
-  void setServer(const char *s, long v) {SetServer(s,v);};
-#endif
+  void handleCommand(char);
+  void setPaused(bool v)                {m_paused = v;};
+  void setDisplayXMS(bool v)            {m_display_xms = v;};
+  void setDisplayPosts(bool v)          {m_display_posts = v;};
+  void setIgnoreFileVars(bool v)        {m_ignore_filevars = v;};
+  void setDisplayTrunc(bool v)          {m_display_truncate = v;};
+  void setDisplayVirgins(bool v)        {m_display_virgins = v;};
+  void setTermServerHost(std::string s) {m_term_server_host = s;};
+  void setTermServerPort(std::string s) {m_term_server_port = s;};
 
  public:  // Public Functions for basic DB Scoping
-  void addVariables(const std::string&, const std::string&);
-  void addVariable(const std::string&, const std::string&);
+  void addScopeVariables(const std::string& varname_list);
+  void addScopeVariable(const std::string& varname);
 
  protected:
   void registerVariables();
   void handleNewIvPDomain(const std::string&);
   void handleNewHelmSummary(const std::string&);
-  void handleNewHelmPostings(const std::string&);
   void handleNewHelmModeSet(const std::string&);
   void handleNewStateVars(const std::string&);
-  void handleNewIterXMS();
-  void pruneHistory();
-
+  void updateScopeEntries(const CMOOSMsg&);
   void handleHelmStatusVar(const std::string&);
   
  protected: // Protected Functions for basic DB Scoping
-  void updateVariable(CMOOSMsg& msg);
-  void updateVarVal(const std::string&, const std::string&);
-  void updateVarType(const std::string&, const std::string&);
-  void updateVarSource(const std::string&, const std::string&);
-  void updateVarTime(const std::string&, const std::string&);
-  void updateVarCommunity(const std::string&, const std::string&);
-
   void updateEngaged(const std::string&);
 
   void printHelp();
   void printModeSet();
   void printReport();
-  void printHelmReport(int ix);
   void printLifeEventHistory();
-  void printDBReport(int);
-  void printPostingReport(int ix);
+  void printDBReport();
+  void printPostingReport();
+  void printWarnings();
+ 
+  // An overloading of the CMOOSApp ConfigureComms function
+  bool ConfigureComms();
+ 
+ protected: 
+  // Set of variables named by user or involved in behavior conditions
+  std::set<std::string> m_set_scopevars; 
   
- protected:   
-  // Set of all known variables posted by the helm
-  std::set<std::string> m_set_helmvars; 
+  // Set of variables known to be published by the helm
+  std::set<std::string>   m_set_helmvars; 
+  
+  
+  std::set<std::string>   m_observed_behaviors;
+  std::list<ScopeEntry>   m_bhv_warnings;
+  std::vector<StringTree> m_mode_trees;
+  
+  std::map<std::string, ScopeEntry> m_map_posts;
 
-  std::map<int, IterBlockHelm>  m_blocks_helm;
-  std::map<int, IterBlockPosts> m_blocks_posts;
-  std::map<int, IterBlockXMS>   m_blocks_xms;
-
-  IterBlockHelm m_block_helm_prev;
-
+  HelmReport       m_helm_report;
   LifeEventHistory m_life_event_history;
 
-  std::vector<StringTree>  m_mode_trees;
-  std::string m_current_mode;
+  std::string  m_helm_engaged_primary;
+  std::string  m_helm_engaged_standby;
+  std::string  m_display_mode;
+  std::string  m_community;
 
-  std::string m_helm_engaged_primary;
-  std::string m_helm_engaged_standby;
+  std::string  m_term_server_host;
+  std::string  m_term_server_port;
 
-  bool   m_display_help;
-  bool   m_display_modeset;
-  bool   m_display_lehistory;
-  bool   m_paused;
-  bool   m_display_truncate;
-  bool   m_concise_bhv_list;
+  bool         m_paused;
+  bool         m_display_truncate;
+  bool         m_concise_bhv_list;
+  bool         m_display_posts;
 
-  // Settings for the Postings Report
-  bool   m_display_posts;
-  bool   m_display_msgs_pc;    // PC_BHV_FOOBAR posts
-  bool   m_display_msgs_view;  // VIEW_FOOBAR posts
-  bool   m_display_msgs_pwt;   // PWT_BHV_FOOBAR posts
-  bool   m_display_msgs_upd;   // UH_BHV_FOOBAR posts
-  bool   m_display_msgs_state; // STATE_BHV_FOOBAR posts
+   // Settings for the XMS Report
+  bool         m_display_xms;
+  bool         m_display_virgins;
+  bool         m_display_statevars;
+  bool         m_ignore_filevars;
 
-  // Settings for the XMS Report
-  bool   m_display_xms;
-  bool   m_display_virgins;
-  bool   m_display_statevars;
-  bool   m_ignore_filevars;
+  bool         m_update_pending;
+  bool         m_updates_throttled;
 
-  bool   m_update_pending;
-  bool   m_modeset_pending;
-  bool   m_lehistory_pending;
-  bool   m_helpmsg_pending;
-
-  unsigned int m_moosapp_iter;
   unsigned int m_total_warning_cnt;
+  unsigned int m_iteration_helm;      
 
-  // The last helm index received
-  int    m_iteration_helm;      
-  int    m_iter_last_post;
-  int    m_iter_next_post;
+  double       m_db_start_time;
 
-  int    m_history_size_max;
-  int    m_history_last_cut;
-
-  double m_db_uptime;
-  double m_max_time_loop;
-  double m_max_time_create;
-  double m_max_time_solve;
-
-  int    m_last_iter_recd;
-  double m_last_iter_time;
-  std::list<double> m_helm_intervals;
-  int    m_interval_samples_a;
-  int    m_interval_samples_b;
-  
-  std::string m_ivpdomain;
-
- protected:  // Structures for basic DB Scoping 
-  std::vector<std::string> m_var_names;
-  std::vector<std::string> m_var_vals;
-  std::vector<std::string> m_var_type;
-  std::vector<std::string> m_var_source;
-  std::vector<std::string> m_var_time;
-  std::vector<std::string> m_var_community;
-  std::vector<std::string> m_var_category;
+  std::string  m_ivpdomain;
 };
 #endif 
-
-
-
-
-
-
 

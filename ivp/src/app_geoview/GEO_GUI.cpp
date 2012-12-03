@@ -39,8 +39,8 @@ GEO_GUI::GEO_GUI(int g_w, int g_h, const char *g_l)
 
   int info_size=10;
 
-  pviewer  = new GeoViewer(0, 30, w(), h()-100);
-  cmviewer = pviewer;
+  pviewer   = new GeoViewer(0, 30, w(), h()-100);
+  m_mviewer = pviewer;
 
   augmentMenu();
 
@@ -311,5 +311,6 @@ void GEO_GUI::updateXY() {
   sprintf(buff, "%f", pviewer->getSnap());
   p_snap->value(buff);
 }
+
 
 

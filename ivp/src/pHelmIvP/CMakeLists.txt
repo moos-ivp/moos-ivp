@@ -24,7 +24,6 @@ ADD_EXECUTABLE(pHelmIvP ${SRC})
    
 TARGET_LINK_LIBRARIES(pHelmIvP 
   MOOS
-  MOOSGen
   helmivp
   contacts
   behaviors-marine
@@ -33,6 +32,7 @@ TARGET_LINK_LIBRARIES(pHelmIvP
   ivpbuild 
   ivpcore 
   geometry
+  apputil
   mbutil 
   logic 
   genutil

@@ -9,8 +9,8 @@ ADD_EXECUTABLE(uFldNodeBroker ${SRC})
 
 TARGET_LINK_LIBRARIES(uFldNodeBroker
    MOOS
-   MOOSGen
    mbutil
+   apputil
    ufield
    m
    pthread)

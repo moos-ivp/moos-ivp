@@ -96,3 +96,4 @@ string XYPoint::get_spec(string param) const
   return(spec);
 }
 
+

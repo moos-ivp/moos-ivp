@@ -198,10 +198,8 @@ bool BHV_Attractor::setParam(string g_param, string g_val)
 void BHV_Attractor::onSetParamComplete() 
 {
   m_trail_point.set_label(m_us_name + "_attractor");
-  m_trail_point.set_type("attractor");
   m_trail_point.set_active("false");
   string bhv_tag = tolower(getDescriptor());
-  m_trail_point.set_source(m_us_name + "_" + bhv_tag);
 }
 
 //-----------------------------------------------------------
@@ -518,6 +516,7 @@ void BHV_Attractor::postErasableTrailPoint()
   string spec = m_trail_point.get_spec();
   postMessage("VIEW_POINT", spec);
 }
+
 
 
 

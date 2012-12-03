@@ -50,20 +50,34 @@ public:
   void   setThrustFactor(double);
   void   setThrustReflect(bool);
 
-  void   setDriftVector(std::string, bool add=false);
+  bool   setDriftVector(std::string, bool add=false);
   void   magDriftVector(double);
 
   bool   initPosition(const std::string&);
   bool   addThrustMapping(double, double);
 
   // Getters
-  double     getDriftX()       {return(m_drift_x);};
-  double     getDriftY()       {return(m_drift_y);};
-  bool       usingDualState()  {return(m_dual_state);}
-  bool       isDriftFresh()    {return(m_drift_fresh);}; 
-  NodeRecord getNodeRecord()   {return(m_record);};
-  NodeRecord getNodeRecordGT() {return(m_record_gt);};
+  double     getThrust() const       {return(m_thrust);};
+  double     getDriftX() const       {return(m_drift_x);};
+  double     getDriftY() const       {return(m_drift_y);};
+  double     getDriftMag() const;
+  double     getDriftAng() const;
+  double     getRotateSpd() const    {return(m_rotate_speed);};
+  double     getWaterDepth() const   {return(m_water_depth);};
+  bool       usingDualState() const  {return(m_dual_state);}
+  bool       isDriftFresh() const    {return(m_drift_fresh);}; 
+  NodeRecord getNodeRecord() const   {return(m_record);};
+  NodeRecord getNodeRecordGT() const {return(m_record_gt);};
+  double     getBuoyancyRate() const {return(m_buoyancy_rate);};
+  bool       usingThrustFactor() const;
+  double     getThrustFactor() const;
+  double     getMaxDepthRate() const    {return(m_max_depth_rate);};
+  double     getMaxDepthRateSpd() const {return(m_max_depth_rate_speed);};
+  double     getMaxAcceleration() const {return(m_max_acceleration);};
+  double     getMaxDeceleration() const {return(m_max_deceleration);};
 
+  std::string getThrustMapPos() const {return(m_thrust_map.getMapPos());};
+  std::string getThrustMapNeg() const {return(m_thrust_map.getMapNeg());};
   std::string getDriftSummary();
 
  protected:
@@ -99,4 +113,5 @@ public:
   ThrustMap  m_thrust_map;
 };
 #endif
+
 

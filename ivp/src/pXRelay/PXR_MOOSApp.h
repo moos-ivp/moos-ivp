@@ -23,7 +23,7 @@
 #ifndef PXR_MOOSAPP_HEADER
 #define PXR_MOOSAPP_HEADER
 
-#include "MOOSLib.h"
+#include "MOOS/libMOOS/MOOSLib.h"
 
 class PXR_MOOSApp : public CMOOSApp
 {
@@ -56,4 +56,5 @@ class PXR_MOOSApp : public CMOOSApp
 };
 
 #endif 
+
 

@@ -86,8 +86,6 @@ bool TermCommand::OnStartUp()
     sVarName = toupper(sVarName);
     sLine    = stripBlankEnds(sLine);
 
-    //int len  = sLine.length();
-    
     if(MOOSStrCmp(sVarName, "CMD"))
       addCommand(sLine);
 
@@ -385,5 +383,6 @@ void TermCommand::handleCharInput(char c)
 
   printf("> %s\n", m_cmd_buffer.c_str());
 }
+
 
 

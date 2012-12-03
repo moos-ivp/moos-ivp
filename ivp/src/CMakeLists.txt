@@ -1,6 +1,4 @@
-# We require CMake 2.6 or higher because there are some syntatic constructs
-# we use that aren't supported in earlier versions of CMake. -CJC
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 
 PROJECT(IVP)
 
@@ -23,16 +21,30 @@ ENDIF (${WIN32})
 # FINDING MOOS' HEADERS AND LIBRARIES...
 #===============================================================================
 
-## allows us to write custom modules or modifying existing ones
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules/")
-
 # moos - http://www.robots.ox.ac.uk/~mobile/MOOS/wiki/pmwiki.php
-find_package(MOOS REQUIRED)
-include_directories(${MOOS_CORE_INCLUDE_DIR}/MOOSLIB)
-include_directories(${MOOS_CORE_INCLUDE_DIR}/MOOSGenLib)
-include_directories(${MOOS_ESSENTIAL_INCLUDE_DIR}/MOOSUtilityLib)
+find_package(MOOS 10.0)
 include_directories(${MOOS_INCLUDE_DIRS})
 link_directories(${MOOS_LIBRARY_PATH})
+
+message("+++++++++++++++++++++++++++++++++++++++++")
+message("MOOS_INCLUDE_DIRS:" ${MOOS_INCLUDE_DIRS})
+message("+++++++++++++++++++++++++++++++++++++++++")
+
+#===============================================================================
+# FINDING MOOSGeodesy' HEADERS AND LIBRARIES...
+#===============================================================================
+
+# moos - http://www.robots.ox.ac.uk/~mobile/MOOS/wiki/pmwiki.php
+find_package(MOOSGeodesy)
+include_directories(${MOOSGeodesy_INCLUDE_DIRS})
+link_directories(${MOOSGeodesy_LIBRARY_PATH})
+
+message("+++++++++++++++++++++++++++++++++++++++++")
+message("MOOSGeodesy_INCLUDE_DIRS:" ${MOOSGeodesy_INCLUDE_DIRS})
+message("+++++++++++++++++++++++++++++++++++++++++")
+
+
+
 
 #===============================================================================
 # BUILDING IvP...
@@ -62,7 +74,7 @@ ENDIF(CMAKE_COMPILER_IS_GNUCXX)
 #-------------------------------------------------------------------------------
 # Let users control whether or not GUI-related libraries/apps are built...
 #-------------------------------------------------------------------------------
-SET(IVP_BUILD_GUI_CODE ON CACHE BOOL "Build IvP's GUI-related libraries and apps.")
+SET(IVP_BUILD_GUI_CODE OFF CACHE BOOL "Build IvP's GUI-related libraries and apps.")
 
 #-------------------------------------------------------------------------------
 # Tell CMake (and thus C++) where to find IvP's header files...
@@ -99,12 +111,12 @@ SET(IVP_NON_GUI_LIBS
    lib_ivpbuild
    lib_ivpcore
    lib_logic
+   lib_apputil
    lib_contacts
    lib_ufield
+   lib_ufld_hazards
    lib_logutils
    lib_mbutil
-   lib_navplot
-   lib_ulogview
    )
 
 IF (${WIN32})
@@ -130,6 +142,8 @@ ELSE (${WIN32})
    SET(IVP_GUI_LIBS
       lib_ipfview
       lib_marineview
+      lib_navplot
+      lib_ulogview
       )
     
 ENDIF (${WIN32})
@@ -187,6 +201,8 @@ SET(IVP_NON_GUI_APPS
   app_alogcheck
   app_nsplug
   app_gen_hazards
+  app_testfp
+  app_colbrowser
   pEchoVar
   pXRelay
   pHelmIvP
@@ -203,6 +219,7 @@ SET(IVP_NON_GUI_APPS
   uFldBeaconRangeSensor
   uFldContactRangeSensor
   uFldHazardSensor
+  uFldHazardMgr
   uFldHazardMetric
   uFldGenericSensor
   pSearchGrid
@@ -213,6 +230,7 @@ SET(IVP_NON_GUI_APPS
   uSimMarine
   uTermCommand
   uXMS
+  uMAC
   uPokeDB
   pHostInfo
   )
@@ -227,6 +245,8 @@ SET(IVP_GUI_APPS
   app_gzaicview
   pMarineViewer
   uFunctionVis
+  uPlotViewer
+  uMACView
   uLogView
   uLogViewIPF
   uLogViewHelm

@@ -32,69 +32,227 @@ using namespace std;
 MarineVehiGUI::MarineVehiGUI(int g_w, int g_h, const char *g_l)
   : MarineGUI(g_w, g_h, g_l) 
 {
-  m_vname_color_ix = 0;
-
-  mbar->add("Vehicles/Vehicles-Toggle", FL_CTRL+'v', (Fl_Callback*)MarineVehiGUI::cb_ToggleVehicles, (void*)0, FL_MENU_DIVIDER);
-  mbar->add("Vehicles/Cycle Focus", 'v', (Fl_Callback*)MarineVehiGUI::cb_CycleFocus,(void*)0, FL_MENU_DIVIDER);
-
-  mbar->add("Vehicles/center_view = vehicle_average", 'c', (Fl_Callback*)MarineVehiGUI::cb_CenterView,  (void*)0, 0);
-  mbar->add("Vehicles/center_view = vehicle_active", FL_CTRL+'c', (Fl_Callback*)MarineVehiGUI::cb_CenterView,  (void*)1, FL_MENU_DIVIDER);
-
-  mbar->add("Vehicles/VehicleSize/vehicles_shape_scale = larger",    '+', (Fl_Callback*)MarineVehiGUI::cb_AltShapeScale, (void*)+1, 0);
-  mbar->add("Vehicles/VehicleSize/vehicles_shape_scale = smaller",   '-', (Fl_Callback*)MarineVehiGUI::cb_AltShapeScale, (void*)-1, 0);
-  mbar->add("Vehicles/VehicleSize/vehicles_shape_scale = actual", FL_ALT+'v', (Fl_Callback*)MarineVehiGUI::cb_AltShapeScale, (void*)0, FL_MENU_DIVIDER);
-  mbar->add("Vehicles/VehicleNames/vehicles_name_viewable = true", 0, (Fl_Callback*)MarineVehiGUI::cb_ToggleVName, 0, 0);
-  mbar->add("Vehicles/VehicleNames/vehicles_name_viewable = false", 0, (Fl_Callback*)MarineVehiGUI::cb_ToggleVName, 0, 0);
-  mbar->add("Vehicles/VehicleNames/vehicles_name_viewable = toggle", 'n', (Fl_Callback*)MarineVehiGUI::cb_ToggleVName, 0, FL_MENU_DIVIDER);
-  mbar->add("Vehicles/VehicleNames/vehicles_name_color = toggle", FL_CTRL+'n', (Fl_Callback*)MarineVehiGUI::cb_ToggleVNameColor, 0, 0);
-
-  mbar->add("Vehicles/Trails/trails_viewable = true",    0, (Fl_Callback*)MarineVehiGUI::cb_AltTrails, (void*)1, 0);
-  mbar->add("Vehicles/Trails/trails_viewable = false",   0, (Fl_Callback*)MarineVehiGUI::cb_AltTrails, (void*)0, 0);
-  mbar->add("Vehicles/Trails/trails_viewable = toggle",  't', (Fl_Callback*)MarineVehiGUI::cb_AltTrails, (void*)2, FL_MENU_DIVIDER);
-  mbar->add("Vehicles/Trails/trails_connect_viewable = true", 0, (Fl_Callback*)MarineVehiGUI::cb_AltTrailConnect, (void*)1, 0);
-  mbar->add("Vehicles/Trails/trails_connect_viewable = false", 0, (Fl_Callback*)MarineVehiGUI::cb_AltTrailConnect, (void*)0, 0);
-  mbar->add("Vehicles/Trails/trails_connect_viewable = toggle", 'y', (Fl_Callback*)MarineVehiGUI::cb_AltTrailConnect, (void*)2, FL_MENU_DIVIDER);
-  mbar->add("Vehicles/Trails/trails_color = toggle", FL_CTRL+'t', (Fl_Callback*)MarineVehiGUI::cb_ToggleTrailColor, 0, FL_MENU_DIVIDER);
-  mbar->add("Vehicles/Trails/trails_point_size = larger", FL_ALT+']', (Fl_Callback*)MarineVehiGUI::cb_AltTrailSize, (void*)+1, 0);
-  mbar->add("Vehicles/Trails/trails_point_size = smaller", FL_ALT+'[', (Fl_Callback*)MarineVehiGUI::cb_AltTrailSize, (void*)-1, 0);
-  mbar->add("Vehicles/Trails/trails_length = longer", ')', (Fl_Callback*)MarineVehiGUI::cb_AltTrailLength, (void*)+1, 0);
-  mbar->add("Vehicles/Trails/trails_length = shorter", '(', (Fl_Callback*)MarineVehiGUI::cb_AltTrailLength, (void*)-1, 0);
-
-  mbar->add("Vehicles/Ignore Staleness/ignore_staleness = true",    0, (Fl_Callback*)MarineVehiGUI::cb_AltIgnoreStale, (void*)1, 0);
-  mbar->add("Vehicles/Ignore Staleness/ignore_staleness = false",   0, (Fl_Callback*)MarineVehiGUI::cb_AltIgnoreStale, (void*)0, 0);
-  mbar->add("Vehicles/Ignore Staleness/ignore_staleness = toggle", FL_CTRL+'i', (Fl_Callback*)MarineVehiGUI::cb_AltIgnoreStale, (void*)2, 0);
-
-  mbar->add("Vehicles/BearingLines/bearing_lines_viewable = true",    0, (Fl_Callback*)MarineVehiGUI::cb_AltBearingLines, (void*)1, 0);
-  mbar->add("Vehicles/BearingLines/bearing_lines_viewable = false",   0, (Fl_Callback*)MarineVehiGUI::cb_AltBearingLines, (void*)0, 0);
-
-  mbar->add("Vehicles/ActiveColor/active_vcolor=red", 0, (Fl_Callback*)MarineVehiGUI::cb_MVG_SetGeoAttr, (void*)700, 0);
-  mbar->add("Vehicles/ActiveColor/active_vcolor=crimson", 0, (Fl_Callback*)MarineVehiGUI::cb_MVG_SetGeoAttr, (void*)701, 0);
-  mbar->add("Vehicles/ActiveColor/active_vcolor=white", 0, (Fl_Callback*)MarineVehiGUI::cb_MVG_SetGeoAttr, (void*)702, 0);
-  mbar->add("Vehicles/ActiveColor/active_vcolor=blue_violet", 0, (Fl_Callback*)MarineVehiGUI::cb_MVG_SetGeoAttr, (void*)703, 0);
-  mbar->add("Vehicles/ActiveColor/active_vcolor=dark_olive_green", 0, (Fl_Callback*)MarineVehiGUI::cb_MVG_SetGeoAttr, (void*)704, 0);
-  mbar->add("Vehicles/ActiveColor/active_vcolor=orange_red", 0, (Fl_Callback*)MarineVehiGUI::cb_MVG_SetGeoAttr, (void*)705, FL_MENU_DIVIDER);
-
-  mbar->add("Vehicles/InactiveColor/inactive_vcolor=yellow", 0, (Fl_Callback*)MarineVehiGUI::cb_MVG_SetGeoAttr, (void*)800, 0);
-  mbar->add("Vehicles/InactiveColor/inactive_vcolor=dark_sea_green", 0, (Fl_Callback*)MarineVehiGUI::cb_MVG_SetGeoAttr, (void*)801, 0);
-  mbar->add("Vehicles/InactiveColor/inactive_vcolor=khaki", 0, (Fl_Callback*)MarineVehiGUI::cb_MVG_SetGeoAttr, (void*)802, 0);
-  mbar->add("Vehicles/InactiveColor/inactive_vcolor=gold", 0, (Fl_Callback*)MarineVehiGUI::cb_MVG_SetGeoAttr, (void*)803, 0);
-  mbar->add("Vehicles/InactiveColor/inactive_vcolor=goldenrod", 0, (Fl_Callback*)MarineVehiGUI::cb_MVG_SetGeoAttr, (void*)804, 0);
-  mbar->add("Vehicles/InactiveColor/inactive_vcolor=green_yellow", 0, (Fl_Callback*)MarineVehiGUI::cb_MVG_SetGeoAttr, (void*)805, 0);
+  augmentMenu();
 }
 
-//----------------------------------------- ToggleVehicles
-inline void MarineVehiGUI::cb_ToggleVehicles_i() {
-  cmviewer->setParam("vehicles_viewable", "toggle");
-  cmviewer->redraw();
+//-------------------------------------------------------------------
+// Procedure: augmentMenu()
+
+void MarineVehiGUI::augmentMenu()
+{
+  m_menubar->add("Vehicles/vehicles_viewable=true",  0,                (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)10, FL_MENU_RADIO);
+  m_menubar->add("Vehicles/vehicles_viewable=false", 0,                (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)11, FL_MENU_RADIO);
+  m_menubar->add("Vehicles/    Toggle vehicles_viewable", FL_CTRL+'v', (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)12, FL_MENU_DIVIDER);
+
+  m_menubar->add("Vehicles/vehicles_name_mode=names",            0, (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)20, FL_MENU_RADIO);
+  m_menubar->add("Vehicles/vehicles_name_mode=names+mode",       0, (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)21, FL_MENU_RADIO);
+  m_menubar->add("Vehicles/vehicles_name_mode=names+shortmode",  0, (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)22, FL_MENU_RADIO);
+  m_menubar->add("Vehicles/vehicles_name_mode=names+depth",      0, (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)23, FL_MENU_RADIO);
+  m_menubar->add("Vehicles/vehicles_name_mode=off",              0, (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)24, FL_MENU_RADIO);
+  m_menubar->add("Vehicles/    Toggle Vehicle Name Mode",      'n', (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)29, FL_MENU_DIVIDER);
+
+  m_menubar->add("Vehicles/stale_vehicles_viewable=true",                 0, (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)30, FL_MENU_RADIO);
+  m_menubar->add("Vehicles/stale_vehicles_viewable=false",                0, (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)31, FL_MENU_RADIO);
+  m_menubar->add("Vehicles/    Toggle stale_vehicles_viewable", FL_CTRL+'i', (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)32, FL_MENU_DIVIDER);
+
+  m_menubar->add("Vehicles/vehicles_active_color=red",    0, (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)40, FL_MENU_RADIO);
+  m_menubar->add("Vehicles/vehicles_active_color=yellow", 0, (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)41, FL_MENU_RADIO);
+  m_menubar->add("Vehicles/vehicles_active_color=white",  0, (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)42, FL_MENU_RADIO);
+  m_menubar->add("Vehicles/vehicles_active_color=blue",   0, (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)43, FL_MENU_RADIO);
+  m_menubar->add("Vehicles/vehicles_active_color=green",  0, (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)44, FL_MENU_RADIO|FL_MENU_DIVIDER);
+
+  m_menubar->add("Vehicles/vehicles_inactive_color=yellow", 0, (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)50, FL_MENU_RADIO);
+  m_menubar->add("Vehicles/vehicles_inactive_color=white",  0, (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)51, FL_MENU_RADIO);
+  m_menubar->add("Vehicles/vehicles_inactive_color=blue",   0, (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)52, FL_MENU_RADIO);
+  m_menubar->add("Vehicles/vehicles_inactive_color=green",  0, (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)53, FL_MENU_RADIO);
+  m_menubar->add("Vehicles/vehicles_inactive_color=red",    0, (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)54, FL_MENU_RADIO|FL_MENU_DIVIDER);
+
+  m_menubar->add("Vehicles/trails_viewable=true",          0, (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)60, FL_MENU_RADIO);
+  m_menubar->add("Vehicles/trails_viewable=false",         0, (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)61, FL_MENU_RADIO);
+  m_menubar->add("Vehicles/    Toggle trails_viewable",  't', (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)62, FL_MENU_DIVIDER);
+
+  m_menubar->add("Vehicles/trails_color=white",  0, (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)65, FL_MENU_RADIO);
+  m_menubar->add("Vehicles/trails_color=yellow", 0, (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)66, FL_MENU_RADIO);
+  m_menubar->add("Vehicles/trails_color=green",  0, (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)67, FL_MENU_RADIO|FL_MENU_DIVIDER);
+
+  m_menubar->add("Vehicles/trails_connect_viewable=true",         0, (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)70, FL_MENU_RADIO);
+  m_menubar->add("Vehicles/trails_connect_viewable=false",        0, (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)71, FL_MENU_RADIO);
+  m_menubar->add("Vehicles/    Toggle trails_connect_viewable", 'y', (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)72, FL_MENU_DIVIDER);
+
+  m_menubar->add("Vehicles/bearing_lines_viewable=true",         0, (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)80, FL_MENU_RADIO);
+  m_menubar->add("Vehicles/bearing_lines_viewable=false",        0, (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)81, FL_MENU_RADIO);
+  m_menubar->add("Vehicles/    Toggle bearing_lines_viewable", '$', (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)82, FL_MENU_DIVIDER);
+
+  m_menubar->add("Vehicles/Cycle Vehicle Focus", 'v', (Fl_Callback*)MarineVehiGUI::cb_CycleFocus,(void*)0, FL_MENU_DIVIDER);
+
+  m_menubar->add("Vehicles/center_view = vehicle_average", 'c', (Fl_Callback*)MarineVehiGUI::cb_CenterView,  (void*)0, 0);
+  m_menubar->add("Vehicles/center_view = vehicle_active", FL_CTRL+'c', (Fl_Callback*)MarineVehiGUI::cb_CenterView,  (void*)1, FL_MENU_DIVIDER);
+
+  m_menubar->add("Vehicles/VehicleSize/vehicles_shape_scale = larger",    '+', (Fl_Callback*)MarineVehiGUI::cb_AltShapeScale, (void*)+1, 0);
+  m_menubar->add("Vehicles/VehicleSize/vehicles_shape_scale = smaller",   '-', (Fl_Callback*)MarineVehiGUI::cb_AltShapeScale, (void*)-1, 0);
+  m_menubar->add("Vehicles/VehicleSize/vehicles_shape_scale = actual",    '\\', (Fl_Callback*)MarineVehiGUI::cb_AltShapeScale, (void*)0, FL_MENU_DIVIDER);
+
+  m_menubar->add("Vehicles/Trails/trails_point_size = larger", FL_ALT+']', (Fl_Callback*)MarineVehiGUI::cb_AltTrailSize, (void*)+1, 0);
+  m_menubar->add("Vehicles/Trails/trails_point_size = smaller", FL_ALT+'[', (Fl_Callback*)MarineVehiGUI::cb_AltTrailSize, (void*)-1, 0);
+  m_menubar->add("Vehicles/Trails/trails_length = longer", ')', (Fl_Callback*)MarineVehiGUI::cb_AltTrailLength, (void*)+1, 0);
+  m_menubar->add("Vehicles/Trails/trails_length = shorter", '(', (Fl_Callback*)MarineVehiGUI::cb_AltTrailLength, (void*)-1, FL_MENU_DIVIDER);
 }
-void MarineVehiGUI::cb_ToggleVehicles(Fl_Widget* o) {
-  ((MarineVehiGUI*)(o->parent()->user_data()))->cb_ToggleVehicles_i();
+
+//----------------------------------------------------- 
+// Procedure: updateRadios
+
+void MarineVehiGUI::updateRadios()
+{
+  MarineGUI::updateRadios();
+  setRadioVehiAttrib("vehicles_viewable");
+  setRadioVehiAttrib("vehicles_name_mode");
+  setRadioVehiAttrib("stale_vehicles_viewable");
+  setRadioVehiAttrib("vehicles_active_color");
+  setRadioVehiAttrib("vehicles_inactive_color");
+  setRadioVehiAttrib("trails_viewable");
+  setRadioVehiAttrib("trails_color");
+  setRadioVehiAttrib("trails_connect_viewable");
+  setRadioVehiAttrib("bearing_lines_viewable");
+}
+
+//----------------------------------------------------- 
+// Procedure: setMenuItemColors
+
+void MarineVehiGUI::setMenuItemColors()
+{
+  MarineGUI::setMenuItemColors();
+  setMenuItemColor("Vehicles/vehicles_viewable=true");
+  setMenuItemColor("Vehicles/vehicles_viewable=false");
+
+  setMenuItemColor("Vehicles/vehicles_name_mode=names");
+  setMenuItemColor("Vehicles/vehicles_name_mode=names+mode");
+  setMenuItemColor("Vehicles/vehicles_name_mode=names+shortmode");
+  setMenuItemColor("Vehicles/vehicles_name_mode=names+depth");
+  setMenuItemColor("Vehicles/vehicles_name_mode=off");
+
+  setMenuItemColor("Vehicles/stale_vehicles_viewable=true");
+  setMenuItemColor("Vehicles/stale_vehicles_viewable=false");
+
+  setMenuItemColor("Vehicles/vehicles_active_color=red");
+  setMenuItemColor("Vehicles/vehicles_active_color=yellow");
+  setMenuItemColor("Vehicles/vehicles_active_color=white");
+  setMenuItemColor("Vehicles/vehicles_active_color=blue");
+  setMenuItemColor("Vehicles/vehicles_active_color=green");
+
+  setMenuItemColor("Vehicles/vehicles_inactive_color=yellow");
+  setMenuItemColor("Vehicles/vehicles_inactive_color=white");
+  setMenuItemColor("Vehicles/vehicles_inactive_color=blue");
+  setMenuItemColor("Vehicles/vehicles_inactive_color=green");
+  setMenuItemColor("Vehicles/vehicles_inactive_color=red");
+
+  setMenuItemColor("Vehicles/trails_viewable=true");
+  setMenuItemColor("Vehicles/trails_viewable=false");
+
+  setMenuItemColor("Vehicles/trails_color=white");
+  setMenuItemColor("Vehicles/trails_color=yellow");
+  setMenuItemColor("Vehicles/trails_color=green");
+
+  setMenuItemColor("Vehicles/trails_connect_viewable=true");
+  setMenuItemColor("Vehicles/trails_connect_viewable=false");
+
+  setMenuItemColor("Vehicles/bearing_lines_viewable=true");
+  setMenuItemColor("Vehicles/bearing_lines_viewable=false");
+}
+
+
+//----------------------------------------------------- 
+// Procedure: setRadioVehiAttrib
+//   Purpose: A way of setting the vehicle attributes that assures that 
+//            the GUI radio buttons are properly updated.
+//  
+//  Examples: "vehicles_viewable", true
+//            "vehicles_active_color", red
+//            "vehicles_inactive_color", yellow
+
+bool MarineVehiGUI::setRadioVehiAttrib(string attr, string value) 
+{
+  if(!m_mviewer || !m_menubar)
+    return(false);
+
+  // If empty value, then no update attempted, just updated the menu
+  // radio button settings if appropriate.
+  if(value != "") {
+    bool handled = m_mviewer->setParam(attr, value);
+    if(!handled)
+      return(false);
+  }
+
+  // Get latest setting of this attr (esp if this value is "toggle" etc)
+  value = m_mviewer->vehisetting(attr);
+
+  // Form for example, "Vehicle/vehicles_viewable=true"
+  string item_str = "Vehicles/" + attr + "=" + value;
+  const Fl_Menu_Item *item = m_menubar->find_item(item_str.c_str());
+  if(item)
+    ((Fl_Menu_Item *)item)->setonly();
+
+  m_mviewer->redraw();
+  return(true);
+}
+
+//--------------------------------------------------------------------
+// procedure: cb_SetRadioVehiAttrib_i()
+
+inline void MarineVehiGUI::cb_SetRadioVehiAttrib_i(int v) 
+{
+  if(v==10)      setRadioVehiAttrib("vehicles_viewable", "true");
+  else if(v==11) setRadioVehiAttrib("vehicles_viewable", "false");
+  else if(v==12) setRadioVehiAttrib("vehicles_viewable", "toggle");
+
+  else if(v==20) setRadioVehiAttrib("vehicles_name_mode", "names");
+  else if(v==21) setRadioVehiAttrib("vehicles_name_mode", "names+mode");
+  else if(v==22) setRadioVehiAttrib("vehicles_name_mode", "names+shortmode");
+  else if(v==23) setRadioVehiAttrib("vehicles_name_mode", "names+depth");
+  else if(v==24) setRadioVehiAttrib("vehicles_name_mode", "off");
+  else if(v==29) setRadioVehiAttrib("vehicles_name_mode", "toggle");
+
+  else if(v==30) setRadioVehiAttrib("stale_vehicles_viewable", "true");
+  else if(v==31) setRadioVehiAttrib("stale_vehicles_viewable", "false");
+  else if(v==32) setRadioVehiAttrib("stale_vehicles_viewable", "toggle");
+
+  else if(v==40) setRadioVehiAttrib("vehicles_active_color", "red");
+  else if(v==41) setRadioVehiAttrib("vehicles_active_color", "yellow");
+  else if(v==42) setRadioVehiAttrib("vehicles_active_color", "white");
+  else if(v==43) setRadioVehiAttrib("vehicles_active_color", "blue");
+  else if(v==44) setRadioVehiAttrib("vehicles_active_color", "green");
+
+  else if(v==50) setRadioVehiAttrib("vehicles_inactive_color", "yellow");
+  else if(v==51) setRadioVehiAttrib("vehicles_inactive_color", "white");
+  else if(v==52) setRadioVehiAttrib("vehicles_inactive_color", "blue");
+  else if(v==53) setRadioVehiAttrib("vehicles_inactive_color", "green");
+  else if(v==54) setRadioVehiAttrib("vehicles_inactive_color", "red");
+
+  else if(v==60) setRadioVehiAttrib("trails_viewable", "true");
+  else if(v==61) setRadioVehiAttrib("trails_viewable", "false");
+  else if(v==62) setRadioVehiAttrib("trails_viewable", "toggle");
+
+  else if(v==65) setRadioVehiAttrib("trails_color", "white");
+  else if(v==66) setRadioVehiAttrib("trails_color", "yellow");
+  else if(v==67) setRadioVehiAttrib("trails_color", "green");
+
+  else if(v==70) setRadioVehiAttrib("trails_connect_viewable", "true");
+  else if(v==71) setRadioVehiAttrib("trails_connect_viewable", "false");
+  else if(v==72) setRadioVehiAttrib("trails_connect_viewable", "toggle");
+
+  else if(v==80) setRadioVehiAttrib("bearing_lines_viewable", "true");
+  else if(v==81) setRadioVehiAttrib("bearing_lines_viewable", "false");
+  else if(v==82) setRadioVehiAttrib("bearing_lines_viewable", "toggle");
+}
+
+void MarineVehiGUI::cb_SetRadioVehiAttrib(Fl_Widget* o, int v) 
+{
+  ((MarineVehiGUI*)(o->parent()->user_data()))->cb_SetRadioVehiAttrib_i(v);
 }
 
 //----------------------------------------- CycleFocus
 inline void MarineVehiGUI::cb_CycleFocus_i() {
-  cmviewer->setParam("cycle_active");
-  cmviewer->redraw();
+  m_mviewer->setParam("cycle_active");
+  m_mviewer->redraw();
   updateXY();
 }
 
@@ -102,99 +260,13 @@ void MarineVehiGUI::cb_CycleFocus(Fl_Widget* o) {
   ((MarineVehiGUI*)(o->parent()->user_data()))->cb_CycleFocus_i();
 }
 
-//----------------------------------------- AltBearingLines
-inline void MarineVehiGUI::cb_AltBearingLines_i(int v) {
-  if(v==1)
-    cmviewer->setParam("bearing_lines_viewable", "true");
-  else if(v==0)
-    cmviewer->setParam("bearing_lines_viewable", "false");
-  else
-    cmviewer->setParam("bearing_lines_viewable", "toggle");
-  cmviewer->redraw();
-}
-void MarineVehiGUI::cb_AltBearingLines(Fl_Widget* o, int v) {
-  ((MarineVehiGUI*)(o->parent()->user_data()))->cb_AltBearingLines_i(v);
-}
-
-//----------------------------------------- AltTrails
-inline void MarineVehiGUI::cb_AltTrails_i(int v) {
-  if(v==1)
-    cmviewer->setParam("trails_viewable", "true");
-  else if(v==0)
-    cmviewer->setParam("trails_viewable", "false");
-  else
-    cmviewer->setParam("trails_viewable", "toggle");
-  cmviewer->redraw();
-}
-void MarineVehiGUI::cb_AltTrails(Fl_Widget* o, int v) {
-  ((MarineVehiGUI*)(o->parent()->user_data()))->cb_AltTrails_i(v);
-}
-
-//----------------------------------------- AltIgnoreStale
-inline void MarineVehiGUI::cb_AltIgnoreStale_i(int v) {
-  if(v==1)
-    cmviewer->setParam("ignore_staleness", "true");
-  else if(v==0)
-    cmviewer->setParam("ignore_staleness", "false");
-  else
-    cmviewer->setParam("ignore_staleness", "toggle");
-  cmviewer->redraw();
-}
-void MarineVehiGUI::cb_AltIgnoreStale(Fl_Widget* o, int v) {
-  ((MarineVehiGUI*)(o->parent()->user_data()))->cb_AltIgnoreStale_i(v);
-}
-
-//----------------------------------------- AltTrailConnect
-inline void MarineVehiGUI::cb_AltTrailConnect_i(int v) {
-  if(v==1)
-    cmviewer->setParam("trails_connect_viewable", "true");
-  else if(v==0)
-    cmviewer->setParam("trails_connect_viewable", "false");
-  else
-    cmviewer->setParam("trails_connect_viewable", "toggle");
-  cmviewer->redraw();
-}
-void MarineVehiGUI::cb_AltTrailConnect(Fl_Widget* o, int v) {
-  ((MarineVehiGUI*)(o->parent()->user_data()))->cb_AltTrailConnect_i(v);
-}
-
-//----------------------------------------- ToggleVName
-inline void MarineVehiGUI::cb_ToggleVName_i() {
-  cmviewer->setParam("vehicles_name_viewable", "toggle");
-  cmviewer->redraw();
-}
-void MarineVehiGUI::cb_ToggleVName(Fl_Widget* o) {
-  ((MarineVehiGUI*)(o->parent()->user_data()))->cb_ToggleVName_i();
-}
-
-//----------------------------------------- ToggleVNameColor
-inline void MarineVehiGUI::cb_ToggleVNameColor_i() {
-  m_vname_color_ix = (m_vname_color_ix+1) % 6;
-  if(m_vname_color_ix == 0)
-    cmviewer->setParam("vehicles_name_color", "blue");
-  else if(m_vname_color_ix == 1)
-    cmviewer->setParam("vehicles_name_color", "darkblue");
-  else if(m_vname_color_ix == 2)
-    cmviewer->setParam("vehicles_name_color", "yellow");
-  else if(m_vname_color_ix == 3)
-    cmviewer->setParam("vehicles_name_color", "red");
-  else if(m_vname_color_ix == 4)
-    cmviewer->setParam("vehicles_name_color", "green");
-  else
-    cmviewer->setParam("vehicles_name_color", "white");
-  cmviewer->redraw();
-}
-void MarineVehiGUI::cb_ToggleVNameColor(Fl_Widget* o) {
-  ((MarineVehiGUI*)(o->parent()->user_data()))->cb_ToggleVNameColor_i();
-}
-
 //----------------------------------------- Alt Trail Size
 inline void MarineVehiGUI::cb_AltTrailSize_i(int delta) {
   if(delta > 0)
-    cmviewer->setParam("trails_point_size", "bigger");
+    m_mviewer->setParam("trails_point_size", "bigger");
   else
-    cmviewer->setParam("trails_point_size", "smaller");
-  cmviewer->redraw();
+    m_mviewer->setParam("trails_point_size", "smaller");
+  m_mviewer->redraw();
 }
 void MarineVehiGUI::cb_AltTrailSize(Fl_Widget* o, int v) {
   ((MarineVehiGUI*)(o->parent()->user_data()))->cb_AltTrailSize_i(v);
@@ -202,8 +274,8 @@ void MarineVehiGUI::cb_AltTrailSize(Fl_Widget* o, int v) {
 
 //----------------------------------------- ToggleTrailColor
 inline void MarineVehiGUI::cb_ToggleTrailColor_i() {
-  cmviewer->setParam("trails_color", "toggle");
-  cmviewer->redraw();
+  m_mviewer->setParam("trails_color", "toggle");
+  m_mviewer->redraw();
 }
 void MarineVehiGUI::cb_ToggleTrailColor(Fl_Widget* o) {
   ((MarineVehiGUI*)(o->parent()->user_data()))->cb_ToggleTrailColor_i();
@@ -212,49 +284,24 @@ void MarineVehiGUI::cb_ToggleTrailColor(Fl_Widget* o) {
 //----------------------------------------- Alt Trail Length
 inline void MarineVehiGUI::cb_AltTrailLength_i(int delta) {
   if(delta < 0)
-    cmviewer->setParam("trails_length", "shorter");
+    m_mviewer->setParam("trails_length", "shorter");
   else
-    cmviewer->setParam("trails_length", "longer");
-  cmviewer->redraw();
+    m_mviewer->setParam("trails_length", "longer");
+  m_mviewer->redraw();
 }
 void MarineVehiGUI::cb_AltTrailLength(Fl_Widget* o, int v) {
   ((MarineVehiGUI*)(o->parent()->user_data()))->cb_AltTrailLength_i(v);
 }
 
-//----------------------------------------- MVG_SetGeoAttr
-inline void MarineVehiGUI::cb_MVG_SetGeoAttr_i(int v) {
-  if(v==700) cmviewer->setParam("active_vcolor", "red");
-  else if(v==701) cmviewer->setParam("vehicles_active_color", "crimson");
-  else if(v==702) cmviewer->setParam("vehicles_active_color", "white");
-  else if(v==703) cmviewer->setParam("vehicles_active_color", "blue_violet");
-  else if(v==704) cmviewer->setParam("vehicles_active_color", "dark_olive_green");
-  else if(v==705) cmviewer->setParam("vehicles_active_color", "orange_red");
-
-  else if(v==800) cmviewer->setParam("vehicles_inactive_color", "1.0,0.9,0.243");
-  else if(v==801) cmviewer->setParam("vehicles_inactive_color", "dark_sea_green");
-  else if(v==802) cmviewer->setParam("vehicles_inactive_color", "khaki");
-  else if(v==803) cmviewer->setParam("vehicles_inactive_color", "gold");
-  else if(v==804) cmviewer->setParam("vehicles_inactive_color", "goldenrod");
-  else if(v==805) cmviewer->setParam("vehicles_inactive_color", "green_yellow");
-
-  else 
-    return;
-
-  cmviewer->redraw();
-}
-void MarineVehiGUI::cb_MVG_SetGeoAttr(Fl_Widget* o, int v) {
-  ((MarineVehiGUI*)(o->parent()->user_data()))->cb_MVG_SetGeoAttr_i(v);
-}
-
 //----------------------------------------- Alt Shape Scale
 inline void MarineVehiGUI::cb_AltShapeScale_i(int delta) {
   if(delta > 0)
-    cmviewer->setParam("vehicle_shape_scale", "bigger");
+    m_mviewer->setParam("vehicle_shape_scale", "bigger");
   else if(delta < 0)
-    cmviewer->setParam("vehicle_shape_scale", "smaller");
+    m_mviewer->setParam("vehicle_shape_scale", "smaller");
   else 
-    cmviewer->setParam("vehicle_shape_scale", "reset");
-  cmviewer->redraw();
+    m_mviewer->setParam("vehicle_shape_scale", "reset");
+  m_mviewer->redraw();
 }
 void MarineVehiGUI::cb_AltShapeScale(Fl_Widget* o, int v) {
   ((MarineVehiGUI*)(o->parent()->user_data()))->cb_AltShapeScale_i(v);
@@ -263,17 +310,18 @@ void MarineVehiGUI::cb_AltShapeScale(Fl_Widget* o, int v) {
 //----------------------------------------- CenterView
 inline void MarineVehiGUI::cb_CenterView_i(int v) {
   if(v == 0)
-    cmviewer->setParam("center_view", "average");
+    m_mviewer->setParam("center_view", "average");
   if(v == 1)
-    cmviewer->setParam("center_view", "active");
+    m_mviewer->setParam("center_view", "active");
 
-  cmviewer->redraw();
+  m_mviewer->redraw();
   updateXY();
 }
 
 void MarineVehiGUI::cb_CenterView(Fl_Widget* o, int v) {
   ((MarineVehiGUI*)(o->parent()->user_data()))->cb_CenterView_i(v);
 }
+
 
 
 

@@ -121,10 +121,6 @@ string XYSegment::get_spec(int precision) const
   
   if(m_label != "")
     spec += "label=" + m_label + "#"; 
-  if(m_type != "")
-    spec += "type=" + m_label + "#"; 
-  if(m_source != "")
-    spec += "source=" + m_label + "#"; 
 
   spec += "pts=";
   spec += doubleToStringX(m_x1, precision) + ",";
@@ -149,5 +145,6 @@ void XYSegment::reverse()
   m_x2 = tmpx;
   m_y2 = tmpy;
 }
+
 
 

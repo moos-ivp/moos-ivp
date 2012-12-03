@@ -219,3 +219,4 @@ vector<string> LifeEventHistory::getReport(string mode)
   return(m_history_report);
 }
 
+

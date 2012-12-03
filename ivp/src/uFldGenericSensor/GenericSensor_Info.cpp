@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: GenericSensor_Info.cpp                                */
+/*    FILE: GenericSensor_Info.cpp                               */
 /*    DATE: Jan 28th 2012                                        */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
@@ -170,4 +170,5 @@ void showReleaseInfoAndExit()
   showReleaseInfo("uFldGenericSensor", "gpl");
   exit(0);
 }
+
 

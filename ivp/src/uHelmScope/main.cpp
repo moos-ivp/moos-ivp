@@ -25,12 +25,6 @@
 #include "MBUtils.h"
 #include "HelmScope.h"
 #include "HelmScope_Info.h"
-
-#ifdef _WIN32
-  #include <process.h>
-  #define getpid _getpid
-#endif
-
 #include "MOOSAppRunnerThread.h"
 
 using namespace std;
@@ -43,6 +37,8 @@ int main(int argc ,char * argv[])
   HelmScope theHelmScope;
   string    mission_file;
   string    run_command = argv[0];
+  string    server_host;
+  string    server_port;
 
   for(int i=1; i<argc; i++) {
     string argi = argv[i];
@@ -56,8 +52,6 @@ int main(int argc ,char * argv[])
       showInterfaceAndExit();
     else if(strEnds(argi, ".moos") || strEnds(argi, ".moos++"))
       mission_file = argv[i];
-    else if(strBegins(argi, "--alias="))
-      run_command = argi.substr(8);
     else if((argi == "-r") || (argi == "-s") || (argi == "--stream"))
       theHelmScope.setPaused(false);
     else if((argi == "-l") || (argi == "--life") || (argi == "-life"))
@@ -72,42 +66,60 @@ int main(int argc ,char * argv[])
       theHelmScope.setDisplayTrunc(true);
     else if((argi == "-g") || (argi == "--novirgins") || (argi == "-novirgins"))
       theHelmScope.setDisplayVirgins(false);
+    else if(strBegins(argi, "--serverhost="))
+      server_host = argi.substr(13);
+    else if(strBegins(argi, "--serverport="))
+      server_port = argi.substr(13);
+    else if(strBegins(argi, "--alias="))
+      run_command = argi.substr(8);
     else // This check needs to be last:
-      theHelmScope.addVariable(argi, "user");
+      theHelmScope.addScopeVariable(argi);
   }
   
-  if(mission_file == "")
-    showHelpAndExit();
+  // If the mission file is not provided, we prompt the user if the 
+  // server_host or server_port information is not on command line.
+  if(mission_file == "") {
+    char buff[1000];
+    // If server_host info was not on the command line, prompt here.
+    if(server_host == "") {
+      server_host = "localhost";
+      cout << "Enter IP address:  [localhost] ";
+      fgets(buff, 999, stdin);
+      if(buff[0] != '\n')
+	server_host = buff;    
+    }
+    // If server_port info was not on the command line, prompt here.
+    if(server_port == "") {
+      server_port = "9000";
+      cout << "Enter Port number: [9000] ";
+      fgets(buff, 999, stdin);
+      if(buff[0] != '\n')
+	server_port = buff; 
+    }
+  }
+  
+  theHelmScope.setTermServerHost(server_host);
+  theHelmScope.setTermServerPort(server_port);
 
-  bool seed = true;
-  if(seed) {
-    unsigned long tseed = time(NULL)+1;
-    unsigned long pid = (long)getpid()+1;
-    unsigned long seed = (tseed%999999);
-    seed = ((rand())*seed)%999999;
-    seed = (seed*pid)%999999;
-    srand(seed);
-  }
-  
+
+  srand(time(NULL));
   int rand_int = rand() % 10000;
   run_command += "_" + intToString(rand_int);
 
-  MOOSAppRunnerThread appThread(&theHelmScope, 
-				(char*)(run_command.c_str()), 
+  MOOSAppRunnerThread appThread(&theHelmScope, (char*)(run_command.c_str()), 
 				mission_file.c_str());
-
+  
   bool quit = false;
   while(!quit) {
     char c = getCharNoWait();
-    if((c=='q') || (c==(char)(3))) { // ASCII 03 is control-c
-      cout << "Quitting..." << endl;
+    if((c=='q') || (c==(char)(3))) // ASCII 03 is control-c
       quit = true;
-    }
     else
       theHelmScope.handleCommand(c);
   }
 
-  appThread.quit();
+  cout << "Quitting..." << endl;
+  //appThread.quit();
   return(0);
 }
 

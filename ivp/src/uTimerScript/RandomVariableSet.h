@@ -26,30 +26,41 @@
 #include <string>
 #include <vector>
 #include "RandomVariable.h"
+#include "RandVarUniform.h"
+#include "RandVarGaussian.h"
 
 class RandomVariableSet 
 {
  public:
   RandomVariableSet() {};
-  virtual ~RandomVariableSet() {};
+  ~RandomVariableSet();
 
  public:
-  unsigned int size() {return(m_rvar_vector.size());};
-  bool         contains(const std::string& varname);
-  void         addRandomVar(const RandomVariable&);
   std::string  addRandomVar(const std::string& spec);
+  std::string  addRandomVarUniform(const std::string& spec);
+  std::string  addRandomVarGaussian(const std::string& spec);
   void         reset(const std::string& key, double timestamp=0);
 
-  std::string  getVarName(unsigned int index);
-  std::string  getStringValue(unsigned int index);
-  std::string  getStringSummary(unsigned int index);
-  double       getValue(unsigned int index);
+  unsigned int size() const  {return(m_rvar_vector.size());};
+  std::string  getVarName(unsigned int index) const;
+  std::string  getKeyName(unsigned int index) const;
+  std::string  getType(unsigned int index) const;
+  double       getValue(unsigned int index) const;
+  double       getMinVal(unsigned int index) const;
+  double       getMaxVal(unsigned int index) const;
+
+  bool         contains(const std::string& varname) const;
+
+  std::string  getStringValue(unsigned int index) const;
+  std::string  getStringSummary(unsigned int index) const;
+  std::string  getParams(unsigned int index) const;
+
+  void         print() const;
 
  protected: // Configuration Parameters
-  std::vector<RandomVariable> m_rvar_vector;
+
+  std::vector<RandomVariable*> m_rvar_vector;
 };
 
 #endif 
-
-
 

@@ -464,3 +464,4 @@ void HelmScopeModel::setTimeUTCFromIteration(unsigned int new_iter)
   m_curr_time = m_helm_plot.getTimeUTCByIndex(index);
   m_curr_iter = new_iter;
 }
+

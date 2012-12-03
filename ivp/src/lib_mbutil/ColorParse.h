@@ -27,13 +27,17 @@
 #include <string>
 
 std::vector<double> colorParse(const std::string&);
+std::vector<double> colorParse(const std::string&, bool& result);
 std::vector<double> colorHexToVector(const std::string&);
 std::vector<double> colorDecToVector(const std::string&);
 std::string         colorNameToHex(const std::string&);
 std::string         colorVectorToString(const std::vector<double>&);
 std::string         termColor(const std::string& color="");
 
+std::string         removeTermColors(std::string);
+
 bool isColor(const std::string&);
+bool isTermColor(const std::string&);
 
 void blu(const std::string&, const std::string& s="");
 void blk(const std::string&, const std::string& s="");
@@ -46,5 +50,6 @@ double gOfRGB(const std::string);
 double bOfRGB(const std::string);
 
 #endif
+
 
 

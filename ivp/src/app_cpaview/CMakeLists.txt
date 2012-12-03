@@ -22,10 +22,10 @@ ENDIF (${APPLE})
 
 TARGET_LINK_LIBRARIES(cpaview 
   marineview
-  contacts
-  MOOSUtility
-  ipfview
   geometry
+  MOOSGeodesy
+  contacts
+  ipfview
   ivpbuild
   mbutil
   ivpcore

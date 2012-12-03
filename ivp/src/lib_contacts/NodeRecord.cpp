@@ -3,7 +3,6 @@
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: NodeRecord.cpp                                       */
 /*    DATE: Feb 27th 2010                                        */
-/*          Jun 26th 2011                                        */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
 /* modify it under the terms of the GNU General Public License   */
@@ -45,6 +44,8 @@ NodeRecord::NodeRecord(string vname, string vtype)
   m_length     = 0;
   m_name       = vname;
   m_type       = vtype;
+ 
+  m_index      = 0;
 
   m_x_set   = false;
   m_y_set   = false;
@@ -147,11 +148,16 @@ bool NodeRecord::hasProperty(string key) const
 string NodeRecord::getSpec() const
 {
   string str = "NAME=" + m_name;
-  str += ",X="    + doubleToStringX(m_x,2);
-  str += ",Y="    + doubleToStringX(m_y,2);
-  str += ",SPD="  + doubleToStringX(m_speed,2);
-  str += ",HDG="  + doubleToStringX(m_heading,2);
-  str += ",DEP="  + doubleToStringX(m_depth,2);
+  if(m_x_set)
+    str += ",X="    + doubleToStringX(m_x,2);
+  if(m_y_set)
+    str += ",Y="    + doubleToStringX(m_y,2);
+  if(m_speed_set)
+    str += ",SPD="  + doubleToStringX(m_speed,2);
+  if(m_heading_set)
+    str += ",HDG="  + doubleToStringX(m_heading,2);
+  if(m_depth_set)
+    str += ",DEP="  + doubleToStringX(m_depth,2);
 
   if(m_lat_set)
     str += ",LAT=" + doubleToStringX(m_lat, 8);
@@ -175,6 +181,9 @@ string NodeRecord::getSpec() const
   if(m_heading_og_set)
     str += ",HDG_OG="  + doubleToStringX(m_heading_og,2);
 
+  if(m_index != 0)
+    str += ",index="  + intToString(m_index);
+  
   if(m_yaw_set)
     str += ",YAW="  + doubleToStringX(m_heading,2);
   if(m_timestamp_set)
@@ -289,3 +298,4 @@ bool NodeRecord::valid(string check) const
   }
   return(true);
 }
+

@@ -21,7 +21,7 @@
 /*****************************************************************/
 
 #include <string>
-#include "MOOSLib.h"
+#include "MOOS/libMOOS/MOOSLib.h"
 
 class PokeDB : public CMOOSApp  
 {
@@ -64,4 +64,5 @@ protected:
   int    m_iteration;
   bool   m_configure_comms_locally;
 };
+
 

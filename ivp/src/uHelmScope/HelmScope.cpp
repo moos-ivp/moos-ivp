@@ -24,65 +24,76 @@
 #include <cstring>
 #include "HelmScope.h"
 #include "MBUtils.h"
+#include "HelmReportUtils.h"
 #include "ColorParse.h"
-
-#define BACKSPACE_ASCII 127
-// number of seconds before checking for new moos vars (in all mode)
-#define ALL_BLACKOUT 2 
+#include "ACTable.h"
 
 using namespace std;
+
+extern bool MOOSAPP_OnConnect(void*);
+extern bool MOOSAPP_OnDisconnect(void*);
 
 //------------------------------------------------------------
 // Procedure: Constructor
 
 HelmScope::HelmScope()
 { 
-  m_display_help       = false;
-  m_display_modeset    = false;
-  m_display_lehistory  = false;
+  m_display_mode       = "normal";
+
   m_paused             = true;
-  m_display_truncate   = false;
+  m_display_truncate   = true;
   m_concise_bhv_list   = true;
   m_total_warning_cnt  = 0;
 
   // Default Settings for the Postings Report
   m_display_posts      = true;
-  m_display_msgs_pc    = true;
-  m_display_msgs_view  = true;
-  m_display_msgs_pwt   = false;
-  m_display_msgs_upd   = false;
-  m_display_msgs_state = false;
 
   // Default Settings for the XMS Report
   m_display_xms        = true;
   m_display_virgins    = true;
-  m_display_statevars  = true;
   // Do not ignore the variables specified in the .moos file
   // config block unless overridden from the command line
   m_ignore_filevars    = false;
 
   m_update_pending     = true; 
-  m_modeset_pending    = false; 
-  m_helpmsg_pending    = false; 
-  m_lehistory_pending  = false;
-  m_moosapp_iter       = 0; 
-  m_iteration_helm     = -1; 
-  m_iter_last_post     = -1; 
-  m_iter_next_post     = -1; 
+  m_updates_throttled  = true;
+  m_iteration_helm     = 0; 
 
-  // A history size of 0 indicates unlimited history kept
-  m_history_size_max   = 2000; 
-  m_history_last_cut   = 0; 
+  m_db_start_time      = 0; 
+}
+
+//------------------------------------------------------------
+//  Proc: ConfigureComms
+//  Note: Overload MOOSApp::ConfigureComms implementation which would
+//        have grabbed port/host info from the .moos file instead
+
+bool HelmScope::ConfigureComms()
+{
+  if((m_term_server_host == "") || (m_term_server_port == "")) 
+    return(CMOOSApp::ConfigureComms());
+
+  long lport = atol(m_term_server_port.c_str());
+  CMOOSApp::SetServer(m_term_server_host.c_str(), lport);
+
+  cout << "HelmScope::ConfigureComms(): Host/Port Configured Locally:" << endl;
+  cout << "  m_sServerHost: " << m_sServerHost << endl;
+  cout << "  m_lServErport: " << m_lServerPort << endl;
+
+  //register a callback for On Connect
+  m_Comms.SetOnConnectCallBack(MOOSAPP_OnConnect, this);
   
-  m_db_uptime          = 0; 
-  m_max_time_loop      = 0; 
-  m_max_time_create    = 0; 
-  m_max_time_solve     = 0; 
-
-  m_last_iter_recd     = -1; 
-  m_last_iter_time     = 0; 
-  m_interval_samples_a = 5; 
-  m_interval_samples_b = 100; 
+  //and one for the disconnect callback
+  m_Comms.SetOnDisconnectCallBack(MOOSAPP_OnDisconnect, this);
+  
+  //start the comms client....
+  if(m_sMOOSName.empty())
+    m_sMOOSName = m_sAppName;
+  
+  m_nCommsFreq = 10;
+  m_Comms.Run(m_sServerHost.c_str(),  m_lServerPort,
+	      m_sMOOSName.c_str(),    m_nCommsFreq);
+  
+  return(true);
 }
 
 //------------------------------------------------------------
@@ -90,13 +101,19 @@ HelmScope::HelmScope()
 
 bool HelmScope::OnNewMail(MOOSMSG_LIST &NewMail)
 {    
+  AppCastingMOOSApp::OnNewMail(NewMail);
+
   // First scan the mail for the DB_UPTIME message to get an 
-  // up-to-date value of DB uptime *before* handling other vars
+  // up-to-date value of DB start time *before* handling other vars
   MOOSMSG_LIST::iterator p;
-  for(p=NewMail.begin(); p!=NewMail.end(); p++) {
-    CMOOSMsg &msg = *p;
-    if(msg.GetKey() == "DB_UPTIME")
-      m_db_uptime = msg.GetDouble();
+  if(m_db_start_time == 0) {
+    for(p=NewMail.begin(); p!=NewMail.end(); p++) {
+      const CMOOSMsg &msg = *p;
+      if(msg.GetKey() == "DB_UPTIME") {
+	m_db_start_time = MOOSTime() - msg.GetDouble();
+	m_community = msg.GetCommunity();
+      }
+    }
   }
   
   for(p = NewMail.begin(); p!=NewMail.end(); p++) { 
@@ -104,32 +121,23 @@ bool HelmScope::OnNewMail(MOOSMSG_LIST &NewMail)
     string    key  = msg.GetKey();
     string    sval = msg.GetString();
 
+    updateScopeEntries(msg);
     if(key == "IVPHELM_DOMAIN") 
       handleNewIvPDomain(sval); 
     else if(key == "IVPHELM_SUMMARY") 
       handleNewHelmSummary(sval); 
     else if(key == "IVPHELM_MODESET") 
       handleNewHelmModeSet(sval); 
-    else if(key == "IVPHELM_POSTINGS") 
-      handleNewHelmPostings(sval); 
     else if(key == "IVPHELM_STATEVARS") 
-      handleNewStateVars(sval); 
+      addScopeVariables(sval); 
     else if(key == "IVPHELM_LIFE_EVENT") 
       m_life_event_history.addLifeEvent(sval);
     else if(key == "IVPHELM_STATE") 
       updateEngaged(sval);
+    else if(key == "PHELMIVP_STATUS") 
+      handleHelmStatusVar(sval);
   }
 
-  // Update the values of all variables we have registered for.  
-  // All variables "values" are stored as strings. We let MOOS
-  // tell us the type of the variable, and we keep track of the
-  // type locally, just so we can put quotes around string values.
-  for(p=NewMail.begin(); p!=NewMail.end(); p++) { 
-    CMOOSMsg &msg = *p; 
-    updateVariable(msg); 
-  } 
-
-  handleNewIterXMS(); 
   return(true); 
 }
 
@@ -139,18 +147,67 @@ bool HelmScope::OnNewMail(MOOSMSG_LIST &NewMail)
 
 bool HelmScope::Iterate()
 {
-  if(m_display_help && m_helpmsg_pending)
+  AppCastingMOOSApp::Iterate();
+
+  // If uHelmScope is just starting, in paused mode, give it a chance to 
+  // read its mail before pausing. Treat first couple app iterations as if
+  // an explicit update request is pending.
+  if(m_iteration <= 2)
+    m_update_pending = true;
+
+  // Consider how long its been since our last report (of any kind)
+  // May want to report less frequently if using a higher time warp.
+  bool throttled = true;
+  if(!m_updates_throttled) 
+    throttled = false;
+  else {
+    double moos_elapsed_time = m_curr_time - m_last_report_time;
+    double real_elapsed_time = moos_elapsed_time / m_time_warp;
+    if(real_elapsed_time >= m_term_report_interval) {
+      m_last_report_time = m_curr_time;
+      throttled = false;
+    }
+  }
+
+  // The throttling check (okto_report) is only applied in display modes
+  // that support streaming, e.g., normal, life_events, warnings.
+
+  if((m_display_mode == "help") && m_update_pending)
     printHelp();
-  else if(m_display_modeset && m_modeset_pending)
+  else if((m_display_mode == "modes") && m_update_pending)
     printModeSet();
-  else if(m_display_lehistory && m_lehistory_pending)
-    printLifeEventHistory();
-  else if(!m_display_help && !m_display_modeset && !m_display_lehistory)
-    printReport();
 
-  pruneHistory();
+  // Now apply the throttling criteria
+  if(throttled)
+    return(true);
 
+  // If not throttled, display modes that support streaming
+  if(m_display_mode == "warnings") {
+    if(m_update_pending || !m_paused)
+      printWarnings();
+  }
+  else if(m_display_mode == "life_events") {
+    if(m_update_pending || !m_paused)
+      printLifeEventHistory();
+  }
+  else if(m_display_mode == "normal") {
+    if(m_update_pending || !m_paused)
+      printReport();
+  }
+
+  AppCastingMOOSApp::PostReport();
   return(true);
+}
+
+//------------------------------------------------------------
+// Procedure: buildReport
+//      Note: A virtual function of the AppCastingMOOSApp superclass, 
+//            conditionally invoked if either a terminal or appcast 
+//            report is needed.
+
+bool HelmScope::buildReport()
+{
+  return(false);
 }
 
 //------------------------------------------------------------
@@ -169,7 +226,7 @@ bool HelmScope::OnConnectToServer()
 
 bool HelmScope::OnStartUp()
 {
-  CMOOSApp::OnStartUp();
+  AppCastingMOOSApp::OnStartUp();
   
   STRING_LIST sParams;
   m_MissionReader.EnableVerbatimQuoting(false);
@@ -182,39 +239,20 @@ bool HelmScope::OnStartUp()
     sVarName = stripBlankEnds(toupper(sVarName));
     sLine    = stripBlankEnds(sLine);
     
-    if(sVarName == "PAUSED")
+    if(sVarName == "PAUSED") 
       m_paused = (tolower(sLine) == "true");
-    else if(sVarName == "HZ_MEMORY") {
-      // Ensure that only two numbers are provided, both are greater
-      // than zero and the second is greater than the first.
-      vector<string> svector = parseString(sLine, ',');
-      if(svector.size() == 2) { 
-	svector[0] = stripBlankEnds(svector[0]);
-	svector[1] = stripBlankEnds(svector[1]);
-	if(isNumber(svector[0]) && isNumber(svector[1])) {
-	  int a = atoi(svector[0].c_str());
-	  int b = atoi(svector[1].c_str());
-	  if((a >=1) && (b>a)) {
-	    m_interval_samples_a = a;
-	    m_interval_samples_b = b;
-	  }
-	}
-      }
-    }
     else if(sVarName == "DISPLAY_MOOS_SCOPE")
       m_display_xms = (tolower(sLine) == "true");
     else if(sVarName == "DISPLAY_BHV_POSTS")
       m_display_posts = (tolower(sLine) == "true");
     else if(sVarName == "DISPLAY_VIRGINS")
       m_display_virgins = (tolower(sLine) == "true");
-    else if(sVarName == "DISPLAY_STATEVARS")
-      m_display_statevars = (tolower(sLine) == "true");
     else if(sVarName == "TRUNCATED_OUTPUT")
       m_display_truncate = (tolower(sLine) == "true");
     else if(sVarName == "BEHAVIORS_CONCISE")
       m_concise_bhv_list = (tolower(sLine) == "true");
     else if((sVarName == "VAR") && !m_ignore_filevars)
-      addVariables(sLine, "user");
+      addScopeVariables(sLine);
   }
     
   registerVariables();
@@ -230,69 +268,53 @@ bool HelmScope::OnStartUp()
 void HelmScope::handleCommand(char c)
 {
   switch(c) {
+  case 'd':
+  case 'D':
+    m_update_pending = true;
+    m_display_mode = "normal";
+    break;
   case 'r':
+    m_paused = false;
+    m_update_pending = true;
+    m_updates_throttled = true;
+    break;
   case 'R':
     m_paused = false;
     m_update_pending = true;
-    m_display_help = false;
-    m_display_lehistory = false;
-    m_display_modeset = false;
+    m_updates_throttled = false;
     break;
   case ' ':
     m_paused = true;
-    m_iter_next_post = m_iteration_helm;
-    if(m_display_lehistory)
-      m_lehistory_pending = true;
-    else if(m_display_modeset)
-      m_modeset_pending = true;
-    else if(m_display_help)
-      m_helpmsg_pending = true;
-    else
-      m_update_pending = true;
+    m_update_pending = true;
     break;
   case 'h':
   case 'H':
     m_paused = true;
-    m_display_help = !m_display_help;
-    if(!m_display_help) 
-      m_update_pending = true;
-    else
-      m_helpmsg_pending = true;
-    m_display_modeset = false;
-    m_display_lehistory = false;
+    m_display_mode = "help";
+    m_update_pending = true;
     break;
   case 'l':
   case 'L':
-    m_paused = true;
-    m_display_lehistory = !m_display_lehistory;
-    if(!m_display_lehistory)
-      m_update_pending = true;
-    else
-      m_lehistory_pending = true;
-    m_display_help = false;
-    m_display_modeset = false;
+    m_display_mode = "life_events";
+    m_update_pending = true;
     break;
   case 'm':
   case 'M':
     m_paused = true;
-    m_display_modeset = !m_display_modeset;
-    if(!m_display_modeset)
-      m_update_pending = true;
-    else
-      m_modeset_pending = true;
-    m_display_help = false;
-    m_display_lehistory = false;
+    m_display_mode = "modes";
+    m_update_pending = true;
+    break;
+  case 'w':
+  case 'W':
+    m_display_mode = "warnings";
+    m_update_pending = true;
     break;
   case 'b':
   case 'B':
     m_concise_bhv_list = !m_concise_bhv_list;
     m_update_pending = true;
     break;
-  case 's':
-  case 'S':
-    m_display_statevars = !m_display_statevars;
-    m_update_pending = true;
-    break;
+  case '`':
   case 't':
   case 'T':
     m_display_truncate = !m_display_truncate;
@@ -301,53 +323,6 @@ void HelmScope::handleCommand(char c)
   case 'v':
   case 'V':
     m_display_virgins = !m_display_virgins;
-    m_update_pending = true;
-    break;
-  case 'f':
-    m_display_msgs_pwt = false;
-    m_display_msgs_upd = false;
-    m_display_msgs_state = false;
-    m_update_pending = true;
-    break;
-  case 'F':
-    m_display_msgs_pc   = false;
-    m_display_msgs_view = false;
-    m_update_pending  = true;
-    break;
-  case 'u':
-  case 'U':
-    m_display_msgs_pwt   = true;
-    m_display_msgs_upd   = true;
-    m_display_msgs_state = true;
-    m_display_msgs_pc    = true;
-    m_display_msgs_view  = true;
-    m_update_pending   = true;
-    break;
-  case '[':
-    m_paused = true;
-    m_iter_next_post = m_iter_last_post - 1;
-    m_update_pending = true;
-    break;
-  case ']':
-    m_iter_next_post = m_iter_last_post + 1;
-    m_update_pending = true;
-    break;
-  case '{':
-    m_paused = true;
-    m_iter_next_post = m_iter_last_post - 10;
-    m_update_pending = true;
-    break;
-  case '}':
-    m_iter_next_post = m_iter_last_post + 10;
-    m_update_pending = true;
-    break;
-  case '(':
-    m_paused = true;
-    m_iter_next_post = m_iter_last_post - 100;
-    m_update_pending = true;
-    break;
-  case ')':
-    m_iter_next_post = m_iter_last_post + 100;
     m_update_pending = true;
     break;
   case '#':
@@ -381,7 +356,6 @@ void HelmScope::handleNewIvPDomain(const string& str)
   }
 }
 
-
 //------------------------------------------------------------
 // Procedure: handleNewHelmSummary
 //   Purpose: Parse the string that arrived in IVPHELM_SUMMARY.
@@ -389,161 +363,9 @@ void HelmScope::handleNewIvPDomain(const string& str)
 
 void HelmScope::handleNewHelmSummary(const string& str)
 {
-  // Primary objective is to create and populate a new instance 
-  // of IterBlockHelm and store it a map associated by the helm
-  // index.
-  IterBlockHelm hblock;
-
-  if(m_blocks_helm.size() > 0)
-    hblock.initialize(m_block_helm_prev);
-
-  string summary = stripBlankEnds(str);
-  vector<string> svector = parseString(summary, ',');
-  unsigned int i, vsize = svector.size();
-  
-  double time_loop   = 0;
-  double time_create = 0;
-  double time_solve  = 0;
-  double time_utc    = 0;
-  int    helm_iter   = 0;
-  
-  for(i=0; i<vsize; i++) {
-    vector<string> ivector = parseString(svector[i], '=');
-    int isize = ivector.size();
-    if(isize == 2) {
-      string left  = stripBlankEnds(ivector[0]);
-      string right = stripBlankEnds(ivector[1]);      
-      if(left == "iter")
-	helm_iter = atoi(right.c_str());
-      else if(left == "ofnum")
-	hblock.setCountIPF(atoi(right.c_str()));
-      else if(left == "warnings")
-	hblock.setWarnings(atoi(right.c_str()));
-      else if(left == "utc_time")
-	time_utc = atof(right.c_str());
-      else if(left == "solve_time")
-	time_solve = atof(right.c_str());
-      else if(left == "modes")
-	hblock.setModeString(right);
-      else if(left == "create_time")
-	time_create = atof(right.c_str());
-      else if(left == "loop_time")
-	time_loop = atof(right.c_str());
-      else if(left == "var") {
-	vector<string> pvector = parseString(right, ':');
-	if(pvector.size() == 2) {
-	  pvector[0] = stripBlankEnds(pvector[0]);
-	  pvector[1] = stripBlankEnds(pvector[1]);
-	  string var = pvector[0];
-	  string val = pvector[1];
-	  hblock.addDecVarVal(var, val);
-	}
-      }
-      else if(left == "halted") {
-	right = tolower(right);
-	bool v = ((right=="true")||(right=="yes")||(right=="halted"));
-	hblock.setHalted(v);
-      }
-      else if((left == "running_bhvs") && (right != "none")) 
-	hblock.setRunningBHVs(right);
-      else if((left == "active_bhvs")  && (right != "none"))
-	hblock.setActiveBHVs(right);
-      else if((left == "idle_bhvs")  && (right != "none"))
-	hblock.setIdleBHVs(right);
-      else if((left == "completed_bhvs") && (right != "none"))
-	hblock.setCompletedBHVs(right);
-    }
-  }
-
-  // 
-  if(time_solve > m_max_time_solve) 
-    m_max_time_solve = time_solve;
-  if(time_loop > m_max_time_loop)
-    m_max_time_loop = time_loop;
-  if(time_create > m_max_time_create)
-    m_max_time_create = time_create;
-
-  hblock.setSolveTime(time_solve);
-  hblock.setLoopTime(time_loop);
-  hblock.setCreateTime(time_create);
-  hblock.setIteration(helm_iter);
-  hblock.setUTCTime(time_utc);
-
-  // Begin Handle the interval time bookkeeping.
-  // We store the helm time interval information across several
-  // helm iterations. They are stored in one list of doubles. The
-  // info provided by the helm is simply the time-stamp of the 
-  // iteration. The actual interval is calculated here by comparing
-  // agains the time stamp of the last iteration received.
-
-  // Nothing to be done if this is the first helm iteration recd.
-  if(m_last_iter_recd != -1) {
-    // In case the index of the last iteration received is not 
-    // simply one less than the current index. Unlikely. 
-    int    iter_count   = helm_iter - m_last_iter_recd;
-    double time_elapsed = time_utc  - m_last_iter_time;
-    if(iter_count > 0) {
-      double interval = time_elapsed / (double)(iter_count);
-      m_helm_intervals.push_front(interval);
-      int max_samples = m_interval_samples_a;
-      if(m_interval_samples_b > max_samples)
-	max_samples = m_interval_samples_b;
-      if((int)(m_helm_intervals.size()) > max_samples)
-	m_helm_intervals.pop_back();
-    }
-  }
-  m_last_iter_recd = helm_iter;
-  m_last_iter_time = time_utc;
-  // End Handle the interval time bookkeeping
-
-  if(helm_iter > m_iteration_helm)
-    m_iteration_helm = helm_iter;
-
-  // If not in paused mode, the currently received helm iteration
-  // becomes the next iteration to post output.
-  if(!m_paused)
-    m_iter_next_post = helm_iter;
-
-  // Keep a copy of this hblock around for the next iteration to 
-  // copy BehaviorRecord contents.
-  m_block_helm_prev = hblock;
-
-  // Finally, store the info for this iteration.
-  m_blocks_helm[helm_iter] = hblock;
-}
-
-//------------------------------------------------------------
-// Procedure: handleNewHelmPostings
-//    
-//    Note: This msg is generated in HelmIvP.cpp::postBehaviorMessages()
-//    IVPHELM_POSTINGS="bhv_trail $@!$ 341 $@!$ foo=23 $@!$ bar=done"
-
-void HelmScope::handleNewHelmPostings(const string& str)
-{
-  vector<string> svector = parseString(str, "$@!$");
-  int i, vsize = svector.size();
-  
-  if(vsize < 2)
-    return;
-
-  string behavior  = stripBlankEnds(svector[0]);
-  int    iteration = atoi(svector[1].c_str());
-  
-  if(iteration > m_iteration_helm)
-    m_iteration_helm = iteration;
-  
-  map<int, IterBlockPosts>::iterator p;
-  p = m_blocks_posts.find(iteration);
-  if(p == m_blocks_posts.end()) {
-    IterBlockPosts new_ibp;
-    new_ibp.setIteration(iteration);
-    m_blocks_posts[iteration] = new_ibp;
-  }
-  
-  for(i=2; i<vsize; i++) {
-    svector[i] = stripBlankEnds(svector[i]);
-    m_blocks_posts[iteration].addPosting(behavior, svector[i]);
-  }
+  // Build off the previous helm report.x
+  HelmReport helm_report = string2HelmReport(str, m_helm_report);
+  m_helm_report = helm_report;
 }
 
 //------------------------------------------------------------
@@ -573,45 +395,51 @@ void HelmScope::handleNewHelmModeSet(const string& str)
       m_mode_trees[index].addParChild(parent, child);
     }
   }
+}
 
-#if 0
-  cout << "Full Tree: " << endl;
-  vsize = m_mode_trees.size();
-  for(i=0; i<vsize; i++) {
-    vector<string> jvector = m_mode_trees[i].getPrintableSet();
-    unsigned int j, jsize = jvector.size();
-    for(j=0; j<jsize; j++) 
-      cout << jvector[j] << endl;
+//------------------------------------------------------------
+// Procedure: updateScopeEntries
+
+void HelmScope::updateScopeEntries(const CMOOSMsg& msg)
+{
+  string varname = msg.GetKey();
+
+  ScopeEntry entry;
+
+  if(msg.IsString()) {
+    entry.setType("string");
+    entry.setValue(msg.GetString());
   }
-#endif
-}
+  else if(msg.IsDouble()) {
+    entry.setType("double");
+    entry.setValue(doubleToStringX(msg.GetDouble()));
+  }
 
-//------------------------------------------------------------
-// Procedure: handleNewIterXMS
-//    
+  string srcaux = msg.GetSourceAux();
+  if(srcaux != "") {
+    entry.setSrcAux(msg.GetSourceAux());
+    // Should be something like: "23:wpt_survey"
+    vector<string> svector = parseString(srcaux, ':');
+    unsigned int vsize = svector.size();
+    if(vsize == 2) {
+      entry.setIteration(svector[0]);
+      entry.setNameBHV(svector[1]); 
+      m_observed_behaviors.insert(svector[1]);
+    }
+  }      
 
-void HelmScope::handleNewIterXMS()
-{
-  IterBlockXMS xblock;
-  xblock.setIteration(m_iteration_helm);
-  xblock.setVarNames(m_var_names);
-  xblock.setVarVals(m_var_vals);
-  xblock.setVarType(m_var_type);
-  xblock.setVarSource(m_var_source);
-  xblock.setVarTime(m_var_time);
-  xblock.setVarCommunity(m_var_community);
-  xblock.setVarCategory(m_var_category);
-  
-  m_blocks_xms[m_iteration_helm] = xblock;
-}
+  entry.setSource(msg.GetSource());
+  entry.setTime(doubleToString((msg.GetTime()-m_db_start_time),2));
+  entry.setCommunity(msg.GetCommunity());
 
-//------------------------------------------------------------
-// Procedure: handleNewStateVars
-//    
+  if(varname == "BHV_WARNING") {
+    m_bhv_warnings.push_back(entry);
+    if(m_bhv_warnings.size() > 40)
+      m_bhv_warnings.pop_front();
+  }
 
-void HelmScope::handleNewStateVars(const string& str)
-{
-  addVariables(str, "state");
+  m_map_posts[varname] = entry;
+
 }
 
 //------------------------------------------------------------
@@ -619,74 +447,16 @@ void HelmScope::handleNewStateVars(const string& str)
 
 void HelmScope::registerVariables()
 {
-  unsigned int i, vsize = m_var_names.size();
-  for(i=0; i<vsize; i++)
-    m_Comms.Register(m_var_names[i], 0);
-
+  AppCastingMOOSApp::RegisterVariables();
   m_Comms.Register("DB_UPTIME", 0);
   m_Comms.Register("IVPHELM_SUMMARY", 0);
-  m_Comms.Register("IVPHELM_POSTINGS", 0);
   m_Comms.Register("IVPHELM_STATEVARS", 0);
   m_Comms.Register("IVPHELM_DOMAIN", 0);
   m_Comms.Register("IVPHELM_MODESET", 0);
   m_Comms.Register("IVPHELM_STATE", 0);
   m_Comms.Register("IVPHELM_LIFE_EVENT", 0);
-
   m_Comms.Register("PHELMIVP_STATUS", 0);
-
-  m_Comms.Register("WPT_STAT", 0);
 }
-
-//------------------------------------------------------------
-// Procedure: pruneHistory()
-//   Purpose: Prune the amount of stored information in the two
-//            maps that keep info for each helm iteration.
-
-void HelmScope::pruneHistory()
-{  
-  // When m_history_size is zero, this indicates that unlimited
-  // history is kept. Potentially dangerous growth of memory, but
-  // perhaps useful sometimes - so the user has this option. But
-  // is not the default.
-  if(m_history_size_max <= 0)
-    return;
-
-  // The size of the two maps *should* be the same since the helm
-  // generates these two pieces of info once for each iteration. 
-  // But since that is largely out the control of this MOOS App, 
-  // we don't take it for granted. So we use a curr_history_size
-  // that is the max of the two map sizes.
-  int curr_history_size = m_blocks_helm.size();
-  if((int)(m_blocks_posts.size()) > curr_history_size)
-    curr_history_size = m_blocks_posts.size();
-  
-  // If the curr_history_size is within the bounds set by the 
-  // user, nothing needs to be done - yet.
-  if(curr_history_size <= m_history_size_max)
-    return;
-  
-  // Determine the helm iteration K steps ago, where K is the
-  // history_size_max set by the user. A reasonable assumption 
-  // here is that there are K pieces of stored info in the two
-  // maps during the last K iterations of the helm. If this 
-  // assumption is wrong - unlikely - then perhaps less than 
-  // the max amount of information is kept, which is a tolerable
-  // state.
-  int top_index = m_iteration_helm - m_history_size_max;
-
-  // Now do the removals starting with the last index removed
-  // on the previous call to this function. On the first call
-  // to this function the iteration starts at zero.
-  for(int i=m_history_last_cut; i<top_index; i++) {
-    m_blocks_helm.erase(i);
-    m_blocks_posts.erase(i);
-  }
-  
-  // Keep track of where the prunine left off in this invocation
-  // to help in the efficiency of the next invocation.
-  m_history_last_cut = top_index;
-}
-
 
 //------------------------------------------------------------
 // Procedure: handleHelmStatusVar
@@ -708,160 +478,62 @@ void HelmScope::handleHelmStatusVar(const string& sval)
       unsigned int k, ksize = kvector.size();
       for(k=0; k<ksize; k++) {
 	if(m_set_helmvars.count(kvector[k]) == 0) {
-	  m_Comms.Register(kvector[k], 0);
 	  m_set_helmvars.insert(kvector[k]);
-	  cout << "REGISTERING FOR :" << kvector[k] << endl;
+	  m_Comms.Register(kvector[k], 0);
 	}
       }
-    }
-    
+    } 
   }
 }
 
 
 //------------------------------------------------------------
-// Procedure: addVariables
+// Procedure: addScopeVariables
 
-void HelmScope::addVariables(const string& line, const string& category)
+void HelmScope::addScopeVariables(const string& line)
 {
   vector<string> svector = parseString(line, ',');
   unsigned int i, vsize = svector.size();
   
   for(i=0; i<vsize; i++) {
     string var = stripBlankEnds(svector[i]);
-    addVariable(var, category);
+    addScopeVariable(var);
   }
 }
 
 //------------------------------------------------------------
-// Procedure: addVariable
+// Procedure: addScopeVariable
 
-void HelmScope::addVariable(const string& varname, const string& category)
+void HelmScope::addScopeVariable(const string& varname)
 {
+  // Don't do anything if this variable has already been added.
+  if(m_set_scopevars.count(varname) == 1)
+    return;
+
   // Check if the varname contains uHelmScope. Antler has the 
   // effect of artificially giving the process name as an 
   // argument to itself. This would have the effect of 
-  // registering uXMS as variable to be scoped on. We assert 
+  // registering uHelmScope as variable to be scoped on. We assert 
   // here that we don't want that.
   if(strContains(varname, "uHelmScope"))
     return;
-  
-  // Return if the variable has already been added, but apply
-  // the category.
-  unsigned int i, vsize = m_var_names.size();
-  for(i=0; i<vsize; i++) {
-    if(m_var_names[i] == varname) {
-      if(category == "state") {
-	if(strContains(m_var_category[i], "user"))
-	  m_var_category[i] = "user-state";
-	else
-	  m_var_category[i] = "state";
-      }
-      else if(category == "user") {
-	if(strContains(m_var_category[i], "state"))
-	  m_var_category[i] = "user-state";
-	else
-	  m_var_category[i] = "user";
-      }
-      else
-	m_var_category[i] = category;
-      return;
-    }
-  }
-  
-  m_var_names.push_back(varname);
-  m_var_vals.push_back("n/a");
-  m_var_type.push_back("string");
-  m_var_source.push_back(" n/a");
-  m_var_time.push_back(" n/a");
-  m_var_community.push_back(" n/a");
-  m_var_category.push_back(category);
 
-  // This may be redundant but no harm done
+  m_set_scopevars.insert(varname);
+
+  cout << "Registering for: " << varname << endl;
   m_Comms.Register(varname, 0);
-}
 
-//------------------------------------------------------------
-// Procedure: updateVariable
-//      Note: Will read a MOOS Mail message and grab the fields
-//            and update the variable only if its in the vector 
-//            of variables vector<string> vars.
-
-void HelmScope::updateVariable(CMOOSMsg &msg)
-{
-  string varname = msg.GetKey();  
-  double vtime   = m_db_uptime;
-
-  string vtime_str = doubleToString(vtime, 2);
-  vtime_str = dstringCompact(vtime_str);
-  
-  updateVarSource(varname, msg.GetSource());
-  updateVarTime(varname, vtime_str);
-  updateVarCommunity(varname, msg.GetCommunity());
-  
-  if(msg.IsString()) {
-    updateVarVal(varname, msg.GetString());
-    updateVarType(varname, "string");
-  }      
-  else if(msg.IsDouble()) {
-    updateVarVal(varname, doubleToString(msg.GetDouble()));
-    updateVarType(varname, "double");
+  // If not already an entry for this variable add empty placeholder
+  if(m_map_posts.count(varname) == 0) {
+    ScopeEntry entry;
+    entry.setValue("n/a");
+    entry.setType("string");
+    entry.setSource(" n/a");
+    entry.setSrcAux(" n/a");
+    entry.setTime(" n/a");
+    entry.setCommunity("");
+    m_map_posts[varname] = entry;
   }
-  else if(msg.IsDataType(MOOS_NOT_SET)) {
-    updateVarVal(varname, "n/a");
-    updateVarSource(varname, "n/a");
-    updateVarTime(varname, "n/a");
-    updateVarCommunity(varname, "n/a");
-    updateVarType(varname, "string");
-  }
-}
-
-//------------------------------------------------------------
-// Procedures - Update Functions
-
-void HelmScope::updateVarVal(const string& varname, 
-			     const string& val)
-{
-  for(unsigned int i=0; i<m_var_names.size(); i++) {
-    if(m_var_names[i] == varname) {
-      if(isNumber(val))
-	m_var_vals[i] = dstringCompact(val);
-      else
-	m_var_vals[i] = val;
-    }
-  }
-}
-
-void HelmScope::updateVarType(const string& varname, 
-			      const string& vtype)
-{
-  for(unsigned int i=0; i<m_var_names.size(); i++)
-    if(m_var_names[i] == varname)
-      m_var_type[i] = vtype;
-}
-
-void HelmScope::updateVarSource(const string& varname, 
-				const string& vsource)
-{
-  for(unsigned int i=0; i<m_var_names.size(); i++)
-    if(m_var_names[i] == varname)
-      m_var_source[i] = vsource;
-}
-
-void HelmScope::updateVarTime(const string& varname, 
-			      const string& vtime)
-{
-  for(unsigned int i=0; i<m_var_names.size(); i++)
-    if(m_var_names[i] == varname)
-      m_var_time[i] = vtime;
-}
-
-void HelmScope::updateVarCommunity(const string& varname, 
-				   const string& vcommunity)
-{
-  for(unsigned int i=0; i<m_var_names.size(); i++)
-    if(m_var_names[i] == varname)
-      m_var_community[i] = vcommunity;
 }
 
 //------------------------------------------------------------
@@ -891,32 +563,33 @@ void HelmScope::updateEngaged(const string& val)
 
 void HelmScope::printHelp()
 {
-  printf("\n\n");
-  
+  printf("\n\n");  
   printf("KeyStroke  Function                                         \n");
   printf("---------  ---------------------------                      \n");
-  printf("   Spc     Pause and Update information once - now          \n");
-  printf("   r/R     Resume information refresh                       \n");
-  printf("   h/H     Show this Help msg - 'r' to resume               \n");
-  printf("   b/B     Toggle Show Idle/Completed Behavior Details      \n");
-  printf("   t/T     Toggle truncation of column output               \n");
-  printf("   l/L     Toggle showing of life event history             \n");
-  printf("   m/M     Show the Hierarchical Mode Structure             \n");
-  printf("    f      Filter PWT_* UH_* STATE_* in Behavior-Posts Report \n");
-  printf("    F      Filter PC_* VIEW_* in Behavior-Posts Report      \n");
-  printf("   s/S     Toggle Behavior State Vars in MOOSDB-Scope Report\n");
-  printf("   u/U     Unmask all variables in Behavior-Posts Report    \n");
-  printf("   v/V     Toggle display of virgins in MOOSDB-Scope output \n");
-  printf("   [/]     Display Iteration 1 step p rev/forward            \n");
-  printf("   {/}     Display Iteration 10 steps prev/forward          \n");
-  printf("   (/)     Display Iteration 100 steps prev/forward         \n");
+  printf("Getting Help:                                               \n");
+  printf("    h      Show this Help msg - 'r' to resume               \n");
+  printf("                                                            \n");
+  printf("Modifying the Refresh Mode:                                 \n");
+  printf("   Spc     Refresh Mode: Pause (after updating once)        \n");
+  printf("    r      Refresh Mode: Streaming (throttled)              \n");
+  printf("    R      Refresh Mode: Streaming (unthrottled)            \n");
+  printf("                                                            \n");
+  printf("Modifying the Content Mode:                                 \n");
+  printf("    d      Content Mode: Show normal reporting (default)    \n");
+  printf("    w      Content Mode: Show behavior warnings             \n");
+  printf("    l      Content Mode: Show life events                   \n");
+  printf("    m      Content Mode: Show hierarchical mode structure   \n");
+  printf("                                                            \n");
+  printf("Modifying the Content Format or Filtering:                  \n");
+  printf("    b      Toggle Show Idle/Completed Behavior Details      \n");
+  printf("    `      Toggle truncation of column output               \n");
+  printf("    v      Toggle display of virgins in MOOSDB-Scope output \n");
   printf("    #      Toggle Show the MOOSDB-Scope Report              \n");
   printf("    @      Toggle Show the Behavior-Posts Report            \n");
   printf("                                                            \n");
   printf("Hit 'r' to resume outputs, or SPACEBAR for a single update  \n");
 
-  m_paused = true;
-  m_helpmsg_pending = false;
+  m_update_pending = false;
 }
 
 //------------------------------------------------------------
@@ -924,8 +597,7 @@ void HelmScope::printHelp()
 
 void HelmScope::printModeSet()
 {
-  IterBlockHelm hblock = m_blocks_helm[m_iter_next_post];
-  string modes         = hblock.getModeStr();
+  string modes = m_helm_report.getModeSummary();
 
   unsigned int j, lead_lines = 10;
   for(j=0; j<lead_lines; j++)
@@ -952,8 +624,7 @@ void HelmScope::printModeSet()
   printf("                                                            \n");
   printf("Hit 'r' to resume outputs, or SPACEBAR for a single update  \n");
 
-  m_paused = true;
-  m_modeset_pending = false;
+  m_update_pending = false;
   return;
 }
 
@@ -962,9 +633,7 @@ void HelmScope::printModeSet()
 
 void HelmScope::printLifeEventHistory()
 {
-  unsigned int j, lead_lines = 10;
-  for(j=0; j<lead_lines; j++)
-    printf("\n");
+  printf("\n\n\n\n\n\n\n\n\n\n");
 
   vector<string> history_lines = m_life_event_history.getReport();
   unsigned int i, vsize = history_lines.size();
@@ -974,8 +643,7 @@ void HelmScope::printLifeEventHistory()
   printf("                                                            \n");
   printf("Hit 'r' to resume outputs, or SPACEBAR for a single update  \n");
 
-  m_paused = true;
-  m_lehistory_pending = false;
+  m_update_pending = false;
   return;
 }
 
@@ -984,30 +652,6 @@ void HelmScope::printLifeEventHistory()
 
 void HelmScope::printReport()
 {
-  // If we're paused and no update was requested, plain and simple, 
-  // do not print a new report.
-  if(m_paused && !m_update_pending)
-    return;
-
-  if((m_iter_next_post == m_iter_last_post) && !m_update_pending)
-    return;
-  
-  if((m_iter_next_post == -1) || (m_iter_next_post > m_iteration_helm))
-    m_iter_next_post = m_iteration_helm;
-  
-  if(m_iter_next_post < m_history_last_cut)
-    m_iter_next_post = m_history_last_cut;
-
-  // We're willing to decare the update request satisfied as long
-  //   as the index to be posted on this report is not -1. 
-  // This is to ensure that if the scope comes up in paused mode, 
-  //   it doesnt just come up displaying an empty set of records.
-  if(m_iter_next_post == -1)
-    m_iter_next_post = m_iteration_helm;
-  if(m_iter_next_post != -1)
-    m_update_pending = false;
-
-
   string engaged_status = m_helm_engaged_standby;
   if(engaged_status != "")
     engaged_status += "/";
@@ -1015,7 +659,23 @@ void HelmScope::printReport()
  
   printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
 
-  printf("==============   uHelmScope Report  ============== ");
+  string community;
+  community += termColor("reverseblue");
+  community += "(" + m_community + ")" + termColor();
+  printf("%s", community.c_str());
+
+  string refresh_mode;
+  if(m_paused) {
+    refresh_mode += termColor("reversered");
+    refresh_mode += "(PAUSED)" + termColor();
+  }
+  else {
+    refresh_mode += termColor("reversegreen");
+    refresh_mode += "(STREAMING)" + termColor();
+  }
+  printf("%s", refresh_mode.c_str());
+       
+  printf("===========   uHelmScope Report  ============= ");
   
   if((m_helm_engaged_standby == "DRIVE+") ||
      (m_helm_engaged_standby == "PARK+"))
@@ -1025,352 +685,178 @@ void HelmScope::printReport()
 
   printf("%s ", engaged_status.c_str()); 
   printf("%s", termColor().c_str());
-  printf("(%d)\n", m_moosapp_iter); 
+  printf("(%d)\n", m_iteration); 
 
+  list<string> report_lines = m_helm_report.formattedSummary(m_curr_time);
+  list<string>::const_iterator p;
+  for(p=report_lines.begin(); p!=report_lines.end(); p++) {
+    string line = *p;
+    printf("%s\n", line.c_str());
+  }
   
-  printHelmReport(m_iter_next_post);
   printf("\n\n");
 
   printf("#  MOOSDB-SCOPE ------------------------------------ ");
   printf("(Hit '#' to en/disable)\n");
   if(m_display_xms) {
-    printDBReport(m_iter_next_post);
+    printDBReport();
     printf("\n\n");
   }
 
   printf("@  BEHAVIOR-POSTS TO MOOSDB ----------------------- ");
   printf("(Hit '@' to en/disable)\n");
   if(m_display_posts)
-    printPostingReport(m_iter_next_post);
+    printPostingReport();
 
-  m_iter_last_post = m_iter_next_post;
-
-  m_moosapp_iter++;
+  m_update_pending = false;
 }
-
-
-//------------------------------------------------------------
-// Procedure: printHelmReport(int index)
-
-void HelmScope::printHelmReport(int index)
-{  
-  unsigned int i, vsize;
-  vector<string> svector, tvector;
-  
-  if(m_iteration_helm == -1) {
-    printf("No IVPHELM_SUMMARY messages received. \n");
-    return;
-  }
-
-  IterBlockHelm hblock = m_blocks_helm[index];
-
-  int    iter = hblock.getIteration();
-  int    ipfs = hblock.getCountIPF();
-
-  double solve_time  = hblock.getSolveTime();
-  double create_time = hblock.getCreateTime();
-  double loop_time   = hblock.getLoopTime();
-  double utc_time    = hblock.getUTCTime();
-  bool   halted      = hblock.getHalted();
-  string modes       = hblock.getModeStr();
-
-  //--------------------------------------------
-  double max_interval  = 0;
-  double avg_samples_a = 0;
-  double avg_samples_b = 0;
-  double sum_samples_a = 0;
-  double sum_samples_b = 0;
-  int    num_samples_a = 0;
-  int    num_samples_b = 0;
-  int    count = 0;
-  list<double>::iterator p;
-  for(p=m_helm_intervals.begin(); p!=m_helm_intervals.end(); p++) {
-    count++;
-    double interval = *p;
-    if(interval > max_interval)
-      max_interval = interval;
-    if(m_interval_samples_a >= count) {
-      sum_samples_a += interval;
-      num_samples_a++;
-    }
-    sum_samples_b += interval;
-    num_samples_b++;
-  }
-  if(num_samples_a > 0)
-    avg_samples_a = sum_samples_a / (double)(num_samples_a);
-  if(num_samples_b > 0)
-    avg_samples_b = sum_samples_b / (double)(num_samples_b);
-  //---------------------------------------------
-
-  printf("  Helm Iteration: %-5d ", iter);
-  printf("  (hz=%.2f)(%d)", avg_samples_a, num_samples_a);
-  printf("  (hz=%.2f)(%d)", avg_samples_b, num_samples_b);
-  printf("  (hz=%.2f)(max)\n", max_interval);
-  printf("  IvP functions:  %d\n", ipfs);
-  printf("  Mode(s):        %s\n", modes.c_str());
-  printf("  SolveTime:      %.2f  ", solve_time);
-  printf("  (max=%.2f)\n", m_max_time_solve);
-  
-  printf("  CreateTime:     %.2f  ", create_time);
-  printf("  (max=%.2f)\n", m_max_time_create);
-  
-  printf("  LoopTime:       %.2f  ", loop_time);
-  printf("  (max=%.2f)\n", m_max_time_loop);
-
-  if(halted)
-    printf("  Halted:         true    ");
-  else
-    printf("  Halted:         false   ");
-  unsigned int wcnt = hblock.getWarnings();
-  if(wcnt == 1)
-    printf("(%d warning: %d total)\n", wcnt, m_total_warning_cnt);
-  else
-    printf("(%d warnings: %d total)\n", wcnt, m_total_warning_cnt);
-
-
-  printf("Helm Decision: %s\n", m_ivpdomain.c_str());
-  unsigned int j, vars = hblock.getDecVarCnt();
-  for(j=0; j<vars; j++) {
-    string var = hblock.getDecVar(j);
-    string val = hblock.getDecVal(j);
-    bool   chg = hblock.getDecChg(j);
-    if(chg)
-      cout << termColor("blue") << flush;
-    printf("  %s = %s\n", var.c_str(), val.c_str());
-    if(chg)
-      cout << termColor() << flush;
-  }
-
-  svector = hblock.getActiveBHV(utc_time);
-  vsize = svector.size();
-  printf("Behaviors Active: ---------- (%d)\n", vsize);
-  for(i=0; i<vsize; i++) {
-    printf("  %s\n", svector[i].c_str());
-  }
-
-  svector = hblock.getRunningBHV(utc_time);
-  vsize = svector.size();
-  printf("Behaviors Running: --------- (%d)\n", vsize);
-  for(i=0; i<vsize; i++)
-    printf("  %s\n", svector[i].c_str());
-
-  svector = hblock.getIdleBHV(utc_time, m_concise_bhv_list);
-  vsize = svector.size();
-  printf("Behaviors Idle: ------------ (%d)\n", vsize);
-  for(i=0; i<vsize; i++) {
-    if((i==0) || (!m_concise_bhv_list))
-      printf("  ");
-    printf("%s", svector[i].c_str());
-    if((m_concise_bhv_list) && (i < (vsize-1)))
-      printf(", ");
-    else
-      printf("\n");
-  }
-
-  svector = hblock.getCompletedBHV(utc_time, m_concise_bhv_list);
-  vsize = svector.size();
-  printf("Behaviors Completed: ------- (%d)\n", vsize);
-  for(i=0; i<vsize; i++) {
-    if((i==0) || (!m_concise_bhv_list))
-      printf("  ");
-    printf("%s", svector[i].c_str());
-    if((m_concise_bhv_list) && (i < (vsize-1)))
-      printf(", ");
-    else
-      printf("\n");
-  }
-}
-
 
 //------------------------------------------------------------
 // Procedure: printDBReport()
 
-void HelmScope::printDBReport(int index)
+void HelmScope::printDBReport()
 {
-  IterBlockXMS xblock;
-
-  map<int, IterBlockXMS>::iterator p;
-
-  int ix = index;
-  p = m_blocks_xms.find(index);
-  while((p == m_blocks_xms.end()) && (ix > 0)) {
-    ix--;
-    p = m_blocks_xms.find(ix);
-  }
-
-  if(p == m_blocks_xms.end()) {
-    cout << "  --  No DB Report for " << index << endl;
-    return;
-  }
-  else 
-    xblock = p->second;
-  
-  vector<string> i_var_names  = xblock.getVarNames();
-  vector<string> i_var_vals   = xblock.getVarVals();
-  vector<string> i_var_source = xblock.getVarSource();
-  vector<string> i_var_type   = xblock.getVarType();
-  vector<string> i_var_time   = xblock.getVarTime();
-  vector<string> i_var_community = xblock.getVarCommunity();
-  vector<string> i_var_category = xblock.getVarCategory();
-
   printf("#\n");
-  printf("#  %-18s", "VarName");
-  
-  printf("%-12s ", "Source");
-  printf("%-9s", "Time");
-  printf("%-11s", "Community");
-  printf("VarValue\n");
-  
-  printf("#  %-18s", "----------------");
-  printf("%-12s ", "-----------");
-  printf("%-9s", "-------");
-  printf("%-11s", "---------");
-  printf("----------- \n");
-  
-  unsigned int vsize = m_var_names.size();
-  for(unsigned int i=0; i<vsize; i++) {
-    if((m_display_virgins || (i_var_vals[i]!="n/a")) &&
-       (m_display_statevars || (strContains(i_var_category[i], "user")))) {
+  ACTable actab(5,2);
+  actab.setLeftMargin("#  ");
+  actab.setColumnJustify(2, "right");
+  actab << "VarName | Source | Time | Commty | VarValue";
+  if(m_display_truncate) {
+    actab.setColumnMaxWidth(0, 18);
+    actab.setColumnMaxWidth(1, 12);
+    actab.setColumnMaxWidth(3, 10);
+    actab.setColumnMaxWidth(4, 35);
+  }
+  actab.addHeaderLines(35);
+    
+  map<string, ScopeEntry>::const_iterator p;
+  for(p=m_map_posts.begin(); p!=m_map_posts.end(); p++) {
+    string varname = p->first;
+    if(m_set_scopevars.count(varname) == 1) {
+      string varval    = p->second.getValue();
+      string vartype   = p->second.getType();
+      string varsource = p->second.getSource();
+      string vartime   = p->second.getTime();
+      string community = p->second.getCommunity();
+      if(m_display_virgins || (varval != "n/a")) {
 
-      // Output the Variable Name
-      if(!strContains(i_var_category[i], "state"))
-	printf("#  %-18s", i_var_names[i].c_str());
-      else {
-	string vname = i_var_names[i] + "*";
-	printf("#  %-18s", vname.c_str());
+	if((vartype == "string") && (varval != "n/a"))
+	  varval = "\"" + varval + "\"";
+	
+	actab << varname << varsource << vartime << community << varval;
       }
-      
-      // Output the Variable Source
-      if(m_display_truncate) {
-	string str = truncString(i_var_source[i], 12, "middle");
-	printf("%-12s ", str.c_str());
-      }
-      else
-	printf("%-12s ", i_var_source[i].c_str());
-      
-      // Output the Variable Time
-      printf("%-9s", i_var_time[i].c_str());
-      
-      // Output the Variable Community
-      if(m_display_truncate) {
-	string str = truncString(i_var_community[i], 10);
-	printf("%-11s", str.c_str());
-      }
-      else
-	printf("%-11s", i_var_community[i].c_str());
-      
-      if(m_var_type[i] == "string") {
-	if(m_var_vals[i] != "n/a") {
-	  unsigned int max_len = 28;
-	  if((m_display_truncate) && (i_var_vals[i].length() > max_len)) {
-	    string str = truncString(i_var_vals[i], max_len);
-	    printf("\"%s\"+", str.c_str());
-	  }
-	  else
-	    printf("\"%s\"", i_var_vals[i].c_str());
-	}
-	else
-	  printf("n/a");
-      }
-      else if(m_var_type[i] == "double")
-	printf("%s", i_var_vals[i].c_str());
-      printf("\n");		
     }
   }
+  actab.print();
 }
 
 //------------------------------------------------------------
-// Procedure: printPostingReport(index)
+// Procedure: printPostingReport()
 
-void HelmScope::printPostingReport(int index)
+void HelmScope::printPostingReport()
 {  
+  
   printf("@\n");
-
-  if(m_iteration_helm == -1) {
-    printf("@  No IVPHELM_POSTINGS messages received. \n");
-    return;
+  ACTable actab(4,2);
+  actab.setLeftMargin("@  ");
+  actab.setColumnJustify(2, "right");
+  actab.setColumnNoPad(3);
+  if(m_display_truncate) {
+    actab.setColumnMaxWidth(0, 14);
+    actab.setColumnMaxWidth(1, 12);
+    actab.setColumnMaxWidth(3, 40);
   }
 
-  vector<string> postings;
-  postings = m_blocks_posts[index].getPostings();
-  unsigned int psize = postings.size();
-
-  vector<string> behaviors;
-  behaviors = m_blocks_posts[index].getBehaviors();
-
-  printf("@  MOOS Variable     Value \n");
+  actab << "MOOS Var | Behavior | Iter | Value";
+  if(m_observed_behaviors.size() == 0)
+    actab.addHeaderLines(40);
   
-  string prev_behavior = "";
-  for(unsigned int i=0; i<psize; i++) {
-    bool ok_post = true;
-    const char *pcstr = postings[i].c_str();
-    if(!m_display_msgs_view && (!strncmp("VIEW_", pcstr, 5)))
-      ok_post = false;
-    else if(!m_display_msgs_state && (!strncmp("STATE_", pcstr, 6)))
-      ok_post = false;
-    else if(!m_display_msgs_pwt && (!strncmp("PWT_", pcstr, 4)))
-      ok_post = false;
-    else if(!m_display_msgs_upd && (!strncmp("UH_", pcstr, 3)))
-      ok_post = false;
-    else if(!m_display_msgs_pc &&  (!strncmp("PC_", pcstr, 3)))
-      ok_post = false;
+  set<string>::iterator p;  
+  for(p=m_observed_behaviors.begin(); p!=m_observed_behaviors.end(); p++) {
+ 
+    string bhv_name = *p;
 
-    ok_post = true;
-    if(ok_post) {
-      if(behaviors[i] != prev_behavior)
-	printf("@  -------------     -------  (BEHAVIOR=%s)\n", 
-	       behaviors[i].c_str());
-      prev_behavior = behaviors[i];
-      vector<string> svector = chompString(postings[i].c_str(), '=');
-      if(svector.size() == 2) {
-	string var = stripBlankEnds(svector[0]);
-	string val = stripBlankEnds(svector[1]);
+    unsigned int bhv_count = 0;
+    map<string, ScopeEntry>::const_iterator q;
+    for(q=m_map_posts.begin(); q!=m_map_posts.end(); q++) {
+      string var_name = q->first;
+      string var_name_bhv  = q->second.getNameBHV();
+      string var_iteration = q->second.getIteration();
+      
+      if((var_name_bhv == bhv_name) && (var_iteration != "")) {
+	bhv_count++;
+	if(bhv_count == 1) 
+	  actab.addHeaderLines(40);
+
+	string var_val    = q->second.getValue();
+	//string var_type   = q->second.getType();
+	//string var_source = q->second.getSource();
+	//string var_time   = q->second.getTime();
 	
-	unsigned int var_max_len = 17;
-	if((m_display_truncate) && (var.length() > var_max_len))
-	  var = truncString(var, 17, "middle");
-	printf("@  %-17s ", var.c_str());
-	
-	unsigned int val_max_len = 50;
-	if((m_display_truncate) && (val.length() > val_max_len)) {
-	  string str = truncString(val, val_max_len);
-	  printf("%s +\n", str.c_str());
-	}
+	if(var_iteration == (uintToString(m_iteration_helm)))
+	  var_iteration = ">" + var_iteration;
 	else
-	  printf("%s\n",  val.c_str());
+	  var_iteration = " " + var_iteration;
+
+	actab << var_name << var_name_bhv << var_iteration << var_val;
       }
     }
   }
-  
-  if(prev_behavior == "") {
-    printf("@  -------------     -------- \n"); 
-    printf("@  <empty>           <empty>  \n"); 
+  actab.print();
+}
+
+void HelmScope::printWarnings()
+{  
+  printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+
+  string community;
+  community += termColor("reverseblue");
+  community += "(" + m_community + ")" + termColor();
+  printf("%s", community.c_str());
+
+  string refresh_mode;
+  if(m_paused) {
+    refresh_mode += termColor("reversered");
+    refresh_mode += "(PAUSED)" + termColor();
   }
+  else {
+    refresh_mode += termColor("reversegreen");
+    refresh_mode += "(STREAMING)" + termColor();
+  }
+  printf("%s", refresh_mode.c_str());
+       
+  printf("===============   uHelmScope Report (Warnings) ============= ");
+  printf("(%d)\n", m_iteration); 
+
+  ACTable actab(3,3);
+  actab << "Behavior | Iter | Value";
+  actab.addHeaderLines();
+  if(m_display_truncate) {
+    actab.setColumnMaxWidth(0,22);
+    actab.setColumnMaxWidth(2,45);
+  }
+
+  list<ScopeEntry>::const_iterator q;
+  for(q=m_bhv_warnings.begin(); q!=m_bhv_warnings.end(); q++) {
+    ScopeEntry entry = *q;
+    string var_name_bhv  = entry.getNameBHV();
+    string var_iteration = entry.getIteration();
+    
+    if(var_iteration != "") {
+      string var_val    = entry.getValue();
+      if(var_iteration == (uintToString(m_iteration_helm)))
+	var_iteration = ">" + var_iteration;
+      else
+	var_iteration = " " + var_iteration;
+
+      actab << var_name_bhv << var_iteration << var_val;
+    }
+  }
+  
+  actab.print();
+  if(m_bhv_warnings.size() == 0)
+    printf(" No Behavior Warnings Noted \n");
+
+  m_update_pending = false;
 }
-
-
-#if 0
-//------------------------------------------------------------
-// Procedure: configureComms()
-
-bool HelmScope::configureComms(string host, string port, 
-			       int freq, string appname)
-{
-  m_sServerHost = host;
-  m_sServerPort = port;
-  m_lServerPort = atoi(port.c_str());
-  //if(!CheckSetUp())
-  //  return false;
-
-  m_nCommsFreq = freq;
-
-  //register a callback for On Connect
-  m_Comms.SetOnConnectCallBack(MOOSAPP_OnConnect,this);
-
-  //start the comms client....
-  m_Comms.Run(m_sServerHost.c_str(),m_lServerPort,m_sAppName.c_str(),m_nCommsFreq);
-
-  return(true);
-}
-#endif
 

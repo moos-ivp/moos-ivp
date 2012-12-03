@@ -27,57 +27,24 @@
 using namespace std;
 
 //---------------------------------------------------------------
-// Constructor
-
-PlatformAlertRecord::PlatformAlertRecord()
-{
-  // Create a temporary "row in waiting" with just the no_id col. 
-  m_temp_row["no_id"] = false;
-
-  m_rows = 0;
-  m_cols = 0;  
-}
-
-//---------------------------------------------------------------
-// Procedure: print
-
-void PlatformAlertRecord::print()
-{
-  cout << "rows:" << m_rows << ", cols:" << m_cols << endl;
-  map<string, map<string, bool> >::iterator p1;
-  for(p1=m_par.begin(); p1!=m_par.end(); p1++) {
-    string vehicle = p1->first;
-    map<string, bool> imap = p1->second;
-    map<string, bool>::iterator p2;
-    for(p2=imap.begin(); p2!=imap.end(); p2++) {
-      string alertid = p2->first;
-      bool bval = p2->second;
-
-      string str = "(" + vehicle + "," + alertid + ")=" + boolToString(bval);
-      cout << str << "   ";
-    }
-    cout << endl;
-  }
-}
-
-//---------------------------------------------------------------
 // Procedure: addAlertID
+//    Step 1: add it to a list of alert_ids
+//    Step 2: set m_par[vname][alert_id] = false for all known vnames
 
 void PlatformAlertRecord::addAlertID(std::string alertid)
 {
-  // If there are no rows, add the alertid to the "row in waiting".
-  if(m_rows == 0) {
-    m_temp_row[alertid] = false;
+  // If the "column" already exists, do nothing
+  if(m_alertids.count(alertid) != 0)
     return;
-  }
 
-  unsigned int cols = 0;
-  map<string, map<string, bool> >::iterator p1;
-  for(p1=m_par.begin(); p1!=m_par.end(); p1++) {
-    p1->second[alertid] = false;
-    cols = p1->second.size();
-  }  
-  m_cols = cols;
+  // Step 1: Update the list of columns. Note there may be no rows
+  // yet until a contact/vehicle has been added to this data structure
+  m_alertids.insert(alertid);
+
+  // Step 2: add the column (w/ false values) for all known vehicles
+  map<string, map<string, bool> >::iterator p;
+  for(p=m_par.begin(); p!=m_par.end(); p++)
+    p->second[alertid] = false;
 }
 
 //---------------------------------------------------------------
@@ -90,28 +57,20 @@ void PlatformAlertRecord::addVehicle(string vehicle)
   vehicle = tolower(vehicle);
 
   // First check to see if the row/vehicle already exists.
-  map<string, map<string, bool> >::iterator p1;
-  p1 = m_par.find(vehicle);
-  if(p1 != m_par.end())
+  if(m_par.count(vehicle) != 0)
     return;
 
-  map<string, bool> new_row;
-
-  // If this is the first row, use the "row in waiting"
-  if(m_rows == 0) {
-    new_row = m_temp_row;
-    m_cols = m_temp_row.size();
-    m_temp_row.clear();
+  // Create an "empty row". A map of alertid->false for all known
+  // alertids.
+  map<string, bool> idmap;
+  set<string>::iterator p;
+  for(p=m_alertids.begin(); p!=m_alertids.end(); p++) {
+    string alertid = *p;
+    idmap[alertid] = false;
   }
-  else
-    new_row = m_par.begin()->second;
-
-  map<string, bool>::iterator p;
-  for(p=new_row.begin(); p!=new_row.end(); p++)
-    p->second = false;
-  m_par[vehicle] = new_row;
-
-  m_rows = m_par.size();
+  
+  // Then assign this "empty row" to the new given vehicle.
+  m_par[vehicle] = idmap;
 }
 
 
@@ -120,42 +79,36 @@ void PlatformAlertRecord::addVehicle(string vehicle)
 //      Note: The vehicles names are case insensitive. They are
 //            converted and regarded thereafter all in lowercase.
 
-bool PlatformAlertRecord::containsVehicle(string vehicle)
+bool PlatformAlertRecord::containsVehicle(const string& vehicle) const
 {
-  vehicle = tolower(vehicle);
-
-  map<string, map<string, bool> >::iterator p1;
-  p1 = m_par.find(vehicle);
-  return(p1 != m_par.end());
+  return(m_par.count(tolower(vehicle)) == 1);
 }
 
 
 //---------------------------------------------------------------
 // Procedure: containsAlertID
 
-bool PlatformAlertRecord::containsAlertID(string alertid)
+bool PlatformAlertRecord::containsAlertID(const string& alertid) const
 {
-  map<string, bool> some_row = m_par.begin()->second;
-  
-  map<string, bool>::iterator p;
-  p = some_row.find(alertid);
-  return(p != some_row.end());
+  return(m_alertids.count(tolower(alertid)) == 1);
 }
 
 //---------------------------------------------------------------
 // Procedure: setValue
 //      Note: The vehicles names are case insensitive. They are
 //            converted and regarded thereafter all in lowercase.
+//      Note: If the alertid is unknown, nothing is done.
+//      Note: If the vehicle is unknown, nothing is done.
 
 void PlatformAlertRecord::setValue(string vehicle, string alertid, 
 				   bool bval)
 {
-  vehicle = tolower(vehicle);
-
-  if(!containsVehicle(vehicle))
-    return;
   if((alertid != "all_alerts") && !containsAlertID(alertid))
     return;
+  if(!containsVehicle(vehicle))
+    return;
+
+  vehicle = tolower(vehicle);
 
   // If the caller specifies all_allerts, 
 
@@ -176,16 +129,21 @@ void PlatformAlertRecord::setValue(string vehicle, string alertid,
 //      Note: The vehicles names are case insensitive. They are
 //            converted and regarded thereafter all in lowercase.
 
-bool PlatformAlertRecord::getValue(string vehicle, string alertid)
+bool PlatformAlertRecord::getValue(string vehicle, string alertid) const
 {
   vehicle = tolower(vehicle);
 
-  if(!containsVehicle(vehicle))
+  map<string, map<string,bool> >::const_iterator p=m_par.find(vehicle);
+  if(p==m_par.end())
     return(false);
-  if(!containsAlertID(alertid))
-    return(false);
-
-  return(m_par[vehicle][alertid]);
+  else {
+    map<string, bool> imap = p->second;
+    map<string,bool>::const_iterator q=imap.find(alertid);
+    if(q==imap.end())
+      return(false);
+    else
+      return(q->second);
+  }
 }
 
 //---------------------------------------------------------------
@@ -195,15 +153,15 @@ bool PlatformAlertRecord::getValue(string vehicle, string alertid)
 //            pairs for which alerts have been made (alerted=true), 
 //            or the opposite case where alerts are pending.
 
-string PlatformAlertRecord::getAlertedGroup(bool alerted)
+string PlatformAlertRecord::getAlertedGroup(bool alerted) const
 {
   string result;
   
-  map<string, map<string, bool> >::iterator p1;
+  map<string, map<string, bool> >::const_iterator p1;
   for(p1=m_par.begin(); p1!=m_par.end(); p1++) {
     string vehicle = p1->first;
     map<string, bool> imap = p1->second;
-    map<string, bool>::iterator p2;
+    map<string, bool>::const_iterator p2;
     for(p2=imap.begin(); p2!=imap.end(); p2++) {
       string alertid = p2->first;
       bool bval = p2->second;
@@ -221,13 +179,13 @@ string PlatformAlertRecord::getAlertedGroup(bool alerted)
 //   Purpose: Return true if any of the (vehicle,alertid) pairs in 
 //            the matrix have false value. 
 
-bool PlatformAlertRecord::alertsPending()
+bool PlatformAlertRecord::alertsPending() const
 {
-  map<string, map<string, bool> >::iterator p1;
+  map<string, map<string, bool> >::const_iterator p1;
   for(p1=m_par.begin(); p1!=m_par.end(); p1++) {
     string vehicle = p1->first;
     map<string, bool> imap = p1->second;
-    map<string, bool>::iterator p2;
+    map<string, bool>::const_iterator p2;
     for(p2=imap.begin(); p2!=imap.end(); p2++) {
       bool bool_val = p2->second;
       if(bool_val == false)
@@ -236,4 +194,27 @@ bool PlatformAlertRecord::alertsPending()
   }
   return(false);
 }
+
+//---------------------------------------------------------------
+// Procedure: print
+
+void PlatformAlertRecord::print() const
+{
+  cout << "rows:" << m_par.size() << ", cols:" << m_alertids.size() << endl;
+  map<string, map<string, bool> >::const_iterator p1;
+  for(p1=m_par.begin(); p1!=m_par.end(); p1++) {
+    string vehicle = p1->first;
+    map<string, bool> imap = p1->second;
+    map<string, bool>::const_iterator p2;
+    for(p2=imap.begin(); p2!=imap.end(); p2++) {
+      string alertid = p2->first;
+      bool bval = p2->second;
+
+      string str = "(" + vehicle + "," + alertid + ")=" + boolToString(bval);
+      cout << str << "   ";
+    }
+    cout << endl;
+  }
+}
+
 

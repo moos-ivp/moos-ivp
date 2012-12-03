@@ -71,8 +71,6 @@ void showHelpAndExit()
   blk("      Display MOOS publications and subscriptions.        ");
   mag("  --version,-v                                            ");
   blk("      Display release version of uFldHazardSensor.        ");
-  mag("  --verbose","=<setting>                                  ");
-  blk("      Set verbosity. true or false (default)              ");
   blk("                                                          ");
   blk("Note: If argv[2] does not otherwise match a known option, ");
   blk("      then it will be interpreted as a run alias. This is ");
@@ -112,7 +110,6 @@ void showExampleConfigAndExit()
   blk("  hazard_file   = hazards.txt                                   ");
   blk("  swath_length  = 5                               // default    ");
   blk("  seed_random   = false                           // default    ");
-  blk("  verbose       = true                            // default    ");
   blk("                                                                ");
   blk("  show_hazards  = true  // default                // default    ");
   blk("  show_swath    = true  // default                // default    ");
@@ -188,4 +185,5 @@ void showReleaseInfoAndExit()
   showReleaseInfo("uFldHazardSensor", "gpl");
   exit(0);
 }
+
 

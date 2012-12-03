@@ -25,11 +25,11 @@
 
 #include <string>
 #include <vector>
-#include "MOOSLib.h"
-#include "MOOSGeodesy.h"
+#include "MOOS/libMOOSGeodesy/MOOSGeodesy.h"
+#include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
 #include "NodeRecord.h"
 
-class NodeReporter : public CMOOSApp
+class NodeReporter : public AppCastingMOOSApp
 {
 public:
   NodeReporter();
@@ -40,6 +40,9 @@ public:
   bool OnConnectToServer();
   bool OnStartUp();
 
+  void registerVariables();
+  bool buildReport();
+
  protected:
   void handleLocalHelmSummary(const std::string&);
   std::string assembleNodeReport(NodeRecord);
@@ -47,8 +50,7 @@ public:
   
   void updatePlatformVar(std::string, std::string);
   bool addPlatformVar(std::string);
-  void registerVariables();
-  void setCrossFillPolicy(std::string);
+  bool setCrossFillPolicy(std::string);
   void crossFillCoords(NodeRecord&, double, double);
   void crossFillLocalToGlobal(NodeRecord&);
   void crossFillGlobalToLocal(NodeRecord&);
@@ -81,9 +83,9 @@ public:
   double       m_nav_latlon_updated_gt;
 
  protected: // State Variables (General)
-  bool         m_time_updated;
-  double       m_utc_time;
   bool         m_helm_switch_noted;
+  unsigned int m_reports_posted;
+  unsigned int m_reports_posted_alt_nav;
   
  protected: // Config and State Vars (Blackout Interval)
   double  m_blackout_interval;
@@ -102,3 +104,4 @@ public:
 };
 
 #endif
+

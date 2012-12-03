@@ -2,7 +2,7 @@
 
 #define BAR 22
 
-BAR is $(BAR)
+BAR is $(BAR) HELLO=$(WORLD)
 
 #define BAR 33
 

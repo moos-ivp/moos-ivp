@@ -83,10 +83,9 @@ BHV_StationKeep::BHV_StationKeep(IvPDomain gdomain) :
 
 //-----------------------------------------------------------
 // Procedure: setParam
-//     Notes: We expect the "waypoint" entries will be of the form
+//     Notes: We expect the "station_pt" entry will be of the form
 //            "xposition,yposition".
-//            The "radius" parameter indicates what it means to have
-//            arrived at the waypoint.
+//            The "radius" parameters is given in meters.
 
 bool BHV_StationKeep::setParam(string param, string val) 
 {
@@ -180,6 +179,19 @@ bool BHV_StationKeep::setParam(string param, string val)
   return(false);
 }
 
+
+//-----------------------------------------------------------
+// Procedure: onIdleToRunState
+
+void BHV_StationKeep::onIdleToRunState()
+{
+  // The below hack will ensure the vehicle actively seeks the station
+  // center each time the vehicle enters the running state. Current 
+  // thinking is that this is not necessary.
+  // 
+  // m_dist_to_station = m_pskeep_radius + 1;
+  // updateHibernationState();
+}
 
 //-----------------------------------------------------------
 // Procedure: onRunToIdleState
@@ -571,4 +583,5 @@ void BHV_StationKeep::postConfigStatus()
 
   postRepeatableMessage("BHV_SETTINGS", str);
 }
+
 

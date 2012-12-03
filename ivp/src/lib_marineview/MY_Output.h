@@ -20,13 +20,11 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
-#ifndef MY_OUTPUT_HEADER
-#define MY_OUTPUT_HEADER
+#ifndef MY_FLTK_OUTPUT_HEADER
+#define MY_FLTK_OUTPUT_HEADER
 
-#include <iostream>
 #include <FL/Fl.H>
 #include <FL/Fl_Output.H>
-
 
 class MY_Output : public Fl_Output {
 public:
@@ -36,6 +34,7 @@ public:
   int  handle(int event) {return(0);};
 };
 #endif
+
 
 
 

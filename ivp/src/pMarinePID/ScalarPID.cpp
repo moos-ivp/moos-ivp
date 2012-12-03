@@ -31,7 +31,7 @@
 /* Name of the class is changed from "CScalarPID" to "ScalarPID"  */
 /******************************************************************/
 
-#include "MOOSGenLibGlobalHelper.h"
+#include "MOOS/libMOOS/MOOSLib.h"
 #include "ScalarPID.h"
 #include <math.h>
 #include <iostream>
@@ -330,6 +330,7 @@ void ScalarPID::SetGoal(double dfGoal)
 {
   m_dfGoal =dfGoal;
 }
+
 
 
 

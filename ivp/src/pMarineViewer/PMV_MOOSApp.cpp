@@ -2,7 +2,7 @@
 /*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: PMV_MOOSApp.cpp                                      */
-/*    DATE:                                                      */
+/*    DATE: Early 2000's. Modified many times since....          */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
 /* modify it under the terms of the GNU General Public License   */
@@ -23,6 +23,7 @@
 #include <iostream>
 #include "PMV_MOOSApp.h"
 #include "MBUtils.h"
+#include "NodeRecordUtils.h"
 
 using namespace std;
 
@@ -32,18 +33,33 @@ using namespace std;
 PMV_MOOSApp::PMV_MOOSApp() 
 {
   m_pending_moos_events = 0;
-  m_verbose         = true;
   m_gui             = 0; 
-  m_start_time      = 0;
-  m_time_warp       = 1;
   m_lastredraw_time = 0;
-  m_iterations      = 0;
   m_node_report_vars.push_back("NODE_REPORT");
   m_node_report_vars.push_back("NODE_REPORT_LOCAL");
 
-  VarDataPair pair("HELM_MAP_CLEAR", 0);
-  m_connection_pairs.push_back(pair);
+  VarDataPair pair1("HELM_MAP_CLEAR", 0);
+  VarDataPair pair2("PMV_CONNECT", 0);
+  m_connection_pairs.push_back(pair1);
+  m_connection_pairs.push_back(pair2);
   m_pending_pairs   = true;
+
+  m_appcast_repo             = 0;
+  m_appcast_last_req_time    = 0;
+  m_appcast_request_interval = 1.0;  // seconds
+
+
+  m_node_reports_received = 0;
+  m_node_report_index     = 0;
+}
+
+//----------------------------------------------------------------
+// Procedure: setPendingEventsPipe()
+
+void PMV_MOOSApp::setPendingEventsPipe(Threadsafe_pipe<MOOS_event> 
+				       *pending_moos_events) 
+{
+  m_pending_moos_events = pending_moos_events;
 }
 
 //----------------------------------------------------------------
@@ -51,6 +67,7 @@ PMV_MOOSApp::PMV_MOOSApp()
 
 bool PMV_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 {
+  AppCastingMOOSApp::OnNewMail(NewMail);
   if((!m_gui) || (!m_pending_moos_events))
     return(true);
 
@@ -89,8 +106,11 @@ bool PMV_MOOSApp::OnConnectToServer()
 
 bool PMV_MOOSApp::Iterate()
 {
+  AppCastingMOOSApp::Iterate();
   if(m_pending_pairs)
     postConnectionPairs();
+
+  handleAppCastRequesting();
 
   if((!m_gui) || (!m_pending_moos_events))
     return(true);
@@ -102,6 +122,7 @@ bool PMV_MOOSApp::Iterate()
   m_pending_moos_events->enqueue(e);
   Fl::awake();
   
+  AppCastingMOOSApp::PostReport();
   return(true);
 }
 
@@ -128,18 +149,18 @@ void PMV_MOOSApp::postConnectionPairs()
 
 bool PMV_MOOSApp::OnStartUp()
 {
-  MOOSTrace("pMarineViewer starting....\n");
+  AppCastingMOOSApp::OnStartUp();
   
   // look for datum latitude, longitude global variables
   double lat, lon;
   bool ok1 = m_MissionReader.GetValue("LatOrigin", lat);
   bool ok2 = m_MissionReader.GetValue("LongOrigin", lon);
-  if(!ok1 || !ok2)
-    return(MOOSFail("Lat or Lon Origin not set in *.moos file.\n"));
+  if(!ok1 || !ok2) 
+    reportConfigWarning("Lat or Lon Origin not set in *.moos file");
 
   // If both lat and lon origin ok - then initialize the Geodesy.
   if(m_gui && !m_gui->mviewer->initGeodesy(lat, lon))
-    return(MOOSFail("Geodesy Init in pMarineViewer failed - FAIL\n"));
+    reportConfigWarning("Geodesy init failed");
 
   if(m_gui) {
     cout << "Setting PMV LatOrigin based on the MOOS file. " << endl;
@@ -170,39 +191,14 @@ bool PMV_MOOSApp::OnStartUp()
 }
 
 
-//---------------------------------------------------------------
-// Procedure: receivePK_SOL
-
-bool PMV_MOOSApp::receivePK_SOL(string sval)
-{
-  bool return_status = true;
-  vector<string> rvector;
-
-  // REPORTS in PK_SOL message are separated by ";"
-
-  vector<string> svector = parseString(sval, ';');
-
-  // Cycle through all reports
-  for(unsigned int i=0;i<svector.size()-1;i++) {
-    // Remove first item of string - it is the type of report
-    // (e.g. REPORT_TYPE = AIS_REPORT) so strip that off and 
-    // proceed as before with the single AIS_REPORT messages
-    
-    rvector = chompString(svector[i], ',');
-    if(rvector.size() > 1 ) {
-      return_status = m_gui->mviewer->setParam("node_report", 
-					       rvector[1].c_str());
-    }
-  }
-  return(return_status);
-}
-
 //------------------------------------------------------------
 // Procedure: registerVariables
 
 void PMV_MOOSApp::registerVariables()
 {
-  m_Comms.Register("PK_SOL", 0);
+  AppCastingMOOSApp::RegisterVariables();
+
+  m_Comms.Register("APPCAST", 0);
   m_Comms.Register("VIEW_POLYGON", 0);
   m_Comms.Register("VIEW_POINT",   0);
   m_Comms.Register("VIEW_VECTOR",  0);
@@ -265,23 +261,45 @@ void PMV_MOOSApp::handlePendingGUI()
 }
 
 //----------------------------------------------------------------------
-// Procedure: handleNewMail
+// Procedure: handleNewMail (OnNewMail)
 
 void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
 {
+  if(!m_appcast_repo || !m_gui)
+    return;
+
   m_gui->mviewer->setParam("curr_time", e.moos_time);
   
-  int handled_msgs = 0;
-  for (size_t i = 0; i < e.mail.size(); ++i) {
-    CMOOSMsg msg = e.mail[i].msg;
-    string key   = msg.GetKey();
-    string sval  = msg.GetString();
-    string community = msg.GetCommunity();
+  // Begin gather appcast repo info prior to mail handling
+  string node = m_appcast_repo->getCurrentNode();
+  string proc = m_appcast_repo->getCurrentProc();  
 
+  unsigned int old_node_count    = m_appcast_repo->getNodeCount();
+  unsigned int old_proc_count    = m_appcast_repo->getProcCount();
+  unsigned int old_cast_count_n  = m_appcast_repo->getAppCastCount(node);
+  unsigned int old_cast_count_np = m_appcast_repo->getAppCastCount(node, proc);
+  bool         handled_appcast   = false;
+  // End gather appcast repo info prior to mail handling
+
+  for(size_t i = 0; i < e.mail.size(); ++i) {
+    CMOOSMsg msg   = e.mail[i].msg;
+    string   key   = msg.GetKey();
+    string   sval  = msg.GetString();
+    string   community = msg.GetCommunity();
+
+    if(key == "NODE_REPORT") {
+      m_node_reports_received++;
+      NodeRecord record = string2NodeRecord(sval);
+      m_node_report_index = record.getIndex();
+    }
+    
+    // Handler part 1: check for geometry messages
     m_gui->addFilterVehicle(community);
 
-    bool scope_handled = false;
+    bool handled = false;
+    bool handled_scope   = false;
     unsigned int j, vsize = m_scope_vars.size();
+
     for(j=0; j<vsize; j++) {
       if(key == m_scope_vars[j]) {
 	double tstamp = msg.GetTime();
@@ -290,47 +308,57 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
 	if(msg.IsDouble())
 	  sval = doubleToStringX(msg.GetDouble(), 8);
 	m_gui->mviewer->updateScopeVariable(key, sval, mtime, source);
-	scope_handled = true;
+	handled_scope = true;
       }
     }
 
-    bool handled = m_gui->mviewer->setParam(key, sval);
-    if(!handled && (key == "PK_SOL")) {
-      MOOSTrace("\nProcessing PK_SOL Message\n");
-      receivePK_SOL(sval);
-      handled = true;
-    }
     if(!handled)
       handled = m_gui->mviewer->addGeoShape(key, sval, community, MOOSTime());
-    if(!handled && !scope_handled) {
-      MOOSTrace("pMarineViewer OnNewMail Unhandled msg: \n");
-      MOOSTrace("  [key:%s val:%s]\n", key.c_str(), sval.c_str());
-      MOOSTrace("?");
+    if(!handled)
+      handled = m_gui->mviewer->setParam(key, sval);
+
+    if(!handled && (key == "APPCAST")) {
+      handled = m_appcast_repo->addAppCast(sval);
+      handled_appcast = true;
     }
-  
-#if 0  
-    if(key == "VIEW_POLYGON")           cout << "P";
-    else if(key == "VIEW_SEGLIST")      cout << "S";
-    else if(key == "VIEW_POINT")        cout << ".";
-    else if(key == "VIEW_MARKER")       cout << "M";
-    else if(key == "VIEW_VECTOR")       cout << "V";
-    else if(key == "GRID_CONFIG")       cout << "X";
-    else if(key == "NODE_REPORT")       cout << "*";
-    else if(key == "NODE_REPORT_LOCAL") cout << "*";
-    else if(key == "GRID_DELTA")        cout << "G";
-    cout << flush;
-#endif
-    if(handled)
-      handled_msgs++;
+
+    if(!handled && !handled_scope) 
+      reportRunWarning("Unhandled Mail: " + key);
   }
 
-  //if(handled_msgs > 0) {
-  //  m_lastredraw_time = e.moos_time;
-  //  m_gui->updateXY();
-  //  m_gui->mviewer->redraw();
-  // }
-}
+  // Part II: Handle Appcasting updates and possible new appcast requests
+  unsigned int new_node_count    = m_appcast_repo->getNodeCount();
+  unsigned int new_proc_count    = m_appcast_repo->getProcCount();
+  unsigned int new_cast_count_n  = m_appcast_repo->getAppCastCount(node);
+  unsigned int new_cast_count_np = m_appcast_repo->getAppCastCount(node, proc);
+  
+  // If we've just discovered a new node, send out a request to ALL nodes
+  // everywhere.
+  if(new_node_count > old_node_count) {
+    string key = GetAppName() + "startup";
+    postAppCastRequest("all", "all", key, "any", (0.1*m_time_warp));
+  }
+  // If we've just discovered a new app on the current node, send out a 
+  // request to ALL apps on the current node.
+  else if(new_proc_count > old_proc_count) {
+    cout << "new_proc_count" << new_proc_count << endl;
+    string key = GetAppName() + "newproc";
+    postAppCastRequest("all", "all", key, "any", (1.1*m_time_warp));
+  }
+  
 
+  // Update the Node entries if there is ANY new appcast
+  if(handled_appcast)
+    m_gui->updateNodes();
+
+  // Update the Proc entries if new appcasts for current Node
+  if(new_cast_count_n > old_cast_count_n)
+    m_gui->updateProcs();
+
+  // Update the Appcast content if new appcast for current node/proc
+  if(new_cast_count_np > old_cast_count_np)
+    m_gui->updateAppCast();
+}
 
 //----------------------------------------------------------------------
 // Procedure: handleIterate
@@ -338,24 +366,9 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
 void PMV_MOOSApp::handleIterate(const MOOS_event & e) 
 {
   double curr_time = e.moos_time - m_start_time;
-  double moos_elapsed_time = (e.moos_time - m_lastredraw_time);
-  double real_elapsed_time = moos_elapsed_time;
-  if(m_time_warp > 0)
-    real_elapsed_time = moos_elapsed_time / m_time_warp;
-
-  //cout << "moos_elapsed_time: " << moos_elapsed_time << endl;
-  //cout << "   real_elapsed_time: " << real_elapsed_time << endl;
-  //cout << "   m_time_warp: " << m_time_warp << endl;
-  
-#if 1
-  if(real_elapsed_time < 0.025) {
-    cout << "*" << flush;
-    return;
-  }
-#endif
-
   cout << "." << flush;
   
+  m_gui->mviewer->PMV_Viewer::draw();
   m_gui->mviewer->redraw();
   m_gui->updateXY();
   m_gui->mviewer->setParam("curr_time", e.moos_time);
@@ -400,6 +413,40 @@ void PMV_MOOSApp::handleIterate(const MOOS_event & e)
   handlePendingGUI();
 }
 
+//-------------------------------------------------------------
+// Procedure: handleAppCastRequesting()
+
+void PMV_MOOSApp::handleAppCastRequesting()
+{
+  // If appcasts are not being viewed dont request refreshes 
+  if(m_gui && (m_gui->showingAppCasts() == false))
+    return;
+
+  // Consider how long its been since our appcast request.
+  // Want to request less frequently if using a higher time warp.
+  double moos_elapsed_time = m_curr_time - m_appcast_last_req_time;
+  double real_elapsed_time = moos_elapsed_time / m_time_warp;
+  
+  if(real_elapsed_time >= m_appcast_request_interval) {
+    m_appcast_last_req_time = m_curr_time;
+    string refresh_mode = m_appcast_repo->getRefreshMode();
+    string current_node = m_appcast_repo->getCurrentNode();
+    string current_proc = m_appcast_repo->getCurrentProc();
+    
+    if(refresh_mode == "events") {
+      // Not critical that key names be unique, but good practice to 
+      // head off multiple uMAC clients from interfering
+      string key_app = GetAppName() + ":" + m_host_community + "app";      
+      string key_gen = GetAppName() + ":" + m_host_community + "gen";      
+      postAppCastRequest(current_node, current_proc, key_app, "any", 3);
+      postAppCastRequest("all", "all", key_gen, "run_warning", 3);
+    }
+    else if(refresh_mode == "streaming") {
+      string key = GetAppName() + ":" + m_host_community;      
+      postAppCastRequest("all", "all", key, "any", 3);
+    }
+  }
+}
 
 //----------------------------------------------------------------------
 // Procedure: handleStartUp  (OnStartUp)
@@ -412,63 +459,88 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
 
   STRING_LIST sParams;
   m_MissionReader.EnableVerbatimQuoting(false);
-  m_MissionReader.GetConfiguration(GetAppName(), sParams);
+  if(!m_MissionReader.GetConfiguration(GetAppName(), sParams)) 
+    reportConfigWarning("No config block found for " + GetAppName());
+  
   STRING_LIST::reverse_iterator p;
   for(p=sParams.rbegin(); p!=sParams.rend(); p++) {
+    string orig  = *p;
     string line  = *p;
-    string param = stripBlankEnds(tolower(biteString(line, '=')));
-    string value = stripBlankEnds(line);
-    
-    if(param == "verbose")
-      m_verbose = (tolower(value) == "true");
-    else if(param == "gui_size") {
-      m_gui->size(500,500);
+    string param = tolower(biteStringX(line, '='));
+    string value = line;
+    bool   handled = false;
+
+    if((param == "gui_size") && (tolower(value) == "small")) {
+      m_gui->size(1000,750);
+      handled = true;
+    }
+    else if((param == "gui_size") && (tolower(value) == "xsmall")) {
+      m_gui->size(800,600);
+      handled = true;
     }
     else if(param == "button_one")
-      m_gui->addButton(param, value);
+      handled = m_gui->addButton(param, value);
     else if(param == "button_two")
-      m_gui->addButton(param, value);
+      handled = m_gui->addButton(param, value);
     else if(param == "button_three")
-      m_gui->addButton(param, value);
+      handled = m_gui->addButton(param, value);
     else if(param == "button_four")
-      m_gui->addButton(param, value);
+      handled = m_gui->addButton(param, value);
     else if(param == "action")
-      m_gui->addAction(value);
+      handled = m_gui->addAction(value);
     else if(param == "action+")
-      m_gui->addAction(value, true);
+      handled = m_gui->addAction(value, true);
     else if((param == "center_vehicle") || (param == "reference_vehicle"))
-      m_gui->addReferenceVehicle(value);
+      handled = m_gui->addReferenceVehicle(value);
+
+    else if(param == "nodes_font_size") 
+      handled = m_gui->setRadioCastAttrib(param, value);
+    else if(param == "procs_font_size") 
+      handled = m_gui->setRadioCastAttrib(param, value);
+    else if(param == "appcast_font_size") 
+      handled = m_gui->setRadioCastAttrib(param, value);
+    else if(param == "appcast_color_scheme") 
+      handled = m_gui->setRadioCastAttrib(param, value);
+    else if(param == "appcast_viewable") 
+      handled = m_gui->setRadioCastAttrib(param, value);
+    else if(param == "appcast_height") 
+      handled = m_gui->setRadioCastAttrib(param, value);
+        else if(param == "appcast_width") 
+      handled = m_gui->setRadioCastAttrib(param, value);
+    
     else if(strBegins(param, "left_context", false)) {
       string key = getContextKey(param);
-      if(key != "error")
-	m_gui->addMousePoke("left", key, value);
+      handled = m_gui->addMousePoke("left", key, value);
     }
     else if(strBegins(param, "right_context", false)) {
       string key = getContextKey(param);
-      if(key != "error")
-	m_gui->addMousePoke("right", key, value);
+      handled = m_gui->addMousePoke("right", key, value);
     }
     else if(param == "tiff_file") {
       if(!tiff_a_set)
 	tiff_a_set = m_gui->mviewer->setParam(param, value);
+      handled = true;
     }
     else if(param == "tiff_file_b") {
       if(!tiff_b_set) 
 	tiff_b_set = m_gui->mviewer->setParam(param, value);
+      handled = true;
     }
     else if(param == "node_report_variable") {
       if(!strContainsWhite(value)) {
 	m_gui->mviewer->setParam(param, value);
 	m_node_report_vars.push_back(value);
+	handled = true;
       }
     }
     else if(param == "connection_posting") {
-      string var = stripBlankEnds(biteString(value, '='));
-      string val = stripBlankEnds(value);
+      string var = biteStringX(value, '=');
+      string val = value;
       if(!strContainsWhite(var)) {
 	m_pending_pairs = true;
 	VarDataPair pair(var, val, "auto");
 	m_connection_pairs.push_back(pair);
+	handled = true;
       }      
     }
     else if(param == "scope") {
@@ -480,15 +552,18 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
 	if(ok)  {
 	  m_gui->addScopeVariable(new_var);
 	  m_scope_vars.push_back(new_var);
+	  handled = true;
 	}
       }
     }
     else {
-      cout << "param:" << param << " value:" << value << endl;
-      bool handled = m_gui->mviewer->setParam(param, value);
+      handled = m_gui->mviewer->setParam(param, value);
       if(!handled)
         handled = m_gui->mviewer->setParam(param, atof(value.c_str()));
     }
+    
+    if(!handled)
+      reportUnhandledConfigWarning(orig);
   }
   
   // If no images were specified, use the default images.
@@ -499,6 +574,8 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
 
   m_start_time = MOOSTime();
   m_gui->mviewer->redraw();
+  m_gui->updateRadios();
+  m_gui->setMenuItemColors();
   
   registerVariables();
 }
@@ -536,5 +613,56 @@ string PMV_MOOSApp::getContextKey(string str)
     return(null_key);
   else
     return(key);
+}
+
+//------------------------------------------------------------
+// Procedure: postAppCastRequest
+//   Example: str = "node=henry,app=pHostInfo,duration=10,key=uMAC_438"
+
+void PMV_MOOSApp::postAppCastRequest(string channel_node, 
+				     string channel_proc, 
+				     string given_key, 
+				     string threshold, 
+				     double duration)
+{
+  string key = given_key;
+  if(key == "")
+    key = GetAppName();
+
+  if((channel_node == "") || (channel_proc == "")) {
+    cout << "REJECTED postAppCastRequest!!!!" << endl;
+    return;
+  }
+  
+  if((threshold != "any") && (threshold != "run_warning")) {
+    cout << "REJECTED postAppCastRequest: unrecognized threshold type" << endl;
+    return;
+  }
+
+  // Notify the source of the NEW channel of the switch
+  string str = "node=" + channel_node;
+  str += ",app=" + channel_proc;
+  str += ",duration=" + doubleToString(duration, 1);
+  str += ",key=" + key;
+  str += ",thresh=" + threshold;
+
+  m_Comms.Notify("APPCAST_REQ", str);
+  m_Comms.Notify("APPCAST_REQ_"+toupper(channel_node), str);
+}
+
+//------------------------------------------------------------
+// Procedure: buildReport
+//      Note: A virtual function of the AppCastingMOOSApp superclass, conditionally 
+//            invoked if either a terminal or appcast report is needed.
+
+bool PMV_MOOSApp::buildReport()
+{
+  // Nothing for now. AppCasting mostly to catch configuration warnings.
+
+  m_msgs << "Total GeoShapes:  " << m_gui->mviewer->shapeCount("total_shapes") << endl;
+  m_msgs << "NodeReports Recd: " << m_node_reports_received << endl;
+  m_msgs << "NodeReport Index: " << m_node_report_index << endl;
+
+  return(true);
 }
 

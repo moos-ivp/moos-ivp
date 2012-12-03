@@ -1,65 +1,77 @@
-/****************************************************************/
-/*   NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
-/*   ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*   FILE: NodeBroker.h                                         */
-/*   DATE: Dec 19th 2011                                        */
-/****************************************************************/
+/*****************************************************************/
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    FILE: NodeBroker.h                                         */
+/*    DATE: Dec 19th 2011                                        */
+/*                                                               */
+/* This program is free software; you can redistribute it and/or */
+/* modify it under the terms of the GNU General Public License   */
+/* as published by the Free Software Foundation; either version  */
+/* 2 of the License, or (at your option) any later version.      */
+/*                                                               */
+/* This program is distributed in the hope that it will be       */
+/* useful, but WITHOUT ANY WARRANTY; without even the implied    */
+/* warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR       */
+/* PURPOSE. See the GNU General Public License for more details. */
+/*                                                               */
+/* You should have received a copy of the GNU General Public     */
+/* License along with this program; if not, write to the Free    */
+/* Software Foundation, Inc., 59 Temple Place - Suite 330,       */
+/* Boston, MA 02111-1307, USA.                                   */
+/*****************************************************************/
 
 #ifndef UFLD_NODE_BROKER_HEADER
 #define UFLD_NODE_BROKER_HEADER
 
-#include "MOOSLib.h"
+#include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
 #include "HostRecord.h"
 
-class NodeBroker : public CMOOSApp
+class NodeBroker : public AppCastingMOOSApp
 {
  public:
   NodeBroker();
   virtual ~NodeBroker() {};
 
+ public: // Standard MOOSApp functions to overload
   bool OnNewMail(MOOSMSG_LIST &NewMail);
   bool Iterate();
   bool OnConnectToServer();
   bool OnStartUp();
 
+ protected: // Standard AppCastingMOOSApp function to overload
+  bool buildReport();
+
  protected:
-  void handleConfigTryShoreHost(std::string);
+  bool handleConfigTryShoreHost(std::string);
   bool handleConfigBridge(std::string);
+
+  void sendNodeBrokerPing();
 
   void handleMailHostInfo(std::string);
   void handleMailAck(std::string);
 
   void registerVariables();
-  void registerPingBridges(bool=false);
-  void registerPingBridgesSubsLocal(std::string);
+  void registerPingBridges();
   void registerUserBridges();
 
-  void postOutgoingPing();
-  void printReport();
-
+  void postPShareCommand(std::string src, std::string dest, std::string route);
 
  protected: // Configuration Variables
   std::vector<std::string> m_bridge_src_var;
   std::vector<std::string> m_bridge_alias;
 
-  std::string m_keyword;
-  double      m_report_interval;
-
   // Index on below vectors is a host to try as shoreside
-  std::vector<std::string> m_candidate_shore_host;
-  std::vector<std::string> m_candidate_shore_port;
-  std::vector<std::string> m_candidate_shore_name;
+  std::vector<std::string>  m_shore_routes;
+  std::vector<std::string>  m_shore_community;
+  std::vector<unsigned int> m_shore_pings_ack;
+  std::vector<std::string>  m_shore_ipaddr;
+  std::vector<std::string>  m_shore_timewarp;
+  std::vector<bool>         m_shore_bridged;
 
  protected: // State Variables
-  double       m_curr_time;
-  double       m_time_warp;
-  double       m_last_report_time;
-  unsigned int m_iterations;
-
-  HostRecord   m_shore_host_record; // From NODE_BROKER_ACK
   HostRecord   m_node_host_record;  // From PHI_HOST_INFO
 
-  unsigned int m_pmbs_posted;
+  unsigned int m_pshare_cmd_posted;
   unsigned int m_pings_posted;
   unsigned int m_ok_phis_received;
   unsigned int m_bad_phis_received;
@@ -67,20 +79,8 @@ class NodeBroker : public CMOOSApp
   unsigned int m_bad_acks_received;
   unsigned int m_host_info_changes;
 
-  std::vector<std::string> m_valid_tryhosts;
-  std::vector<std::string> m_invalid_tryhosts;
-
-  unsigned int m_hack_ix;
-
+  std::string m_pshare_cmd_latest;
 };
 
 #endif 
-
-
-// NODE_BROKER_PING = "community=alpha,hostip=1.2.3.4,
-//                     port_db=9000,port_udp=9200,key=lemon"
-
-// NODE_BROKER_ACK = "community=shoreside,hostip=6.7.8.9,
-//                    port_db=9000, port_udp=9200
-
 

@@ -25,13 +25,14 @@
 
 #include <vector>
 #include <string>
-#include "MOOSLib.h"
-#include "MOOSGenLib.h"
+#include <set>
+#include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
+#include "ScopeEntry.h"
 
-class XMS : public CMOOSApp  
+class XMS : public AppCastingMOOSApp
 {
  public:
-  XMS(std::string server_host="localhost", long int server_port=9000);
+  XMS();
   virtual ~XMS() {};
   
   bool OnNewMail(MOOSMSG_LIST &NewMail);
@@ -43,40 +44,46 @@ class XMS : public CMOOSApp
   void addVariables(std::string);
   bool addVariable(std::string, bool histvar=false);
   bool addSource(std::string);
-  bool setTermReportInterval(std::string);
   void setHistoryVar(std::string);
   void setFilter(std::string);
-  void ignoreFileVars(bool v)        {m_ignore_file_vars = v;};
-  void setRefreshMode(std::string s) {m_refresh_mode = s;};
-  void setDispVirgins(bool v)        {m_display_virgins = v;};
-  void setDispTime(bool v)           {m_display_time = v;};
-  void setDispSource(bool v)         {m_display_source = v;};
-  void setDispAuxSource(bool v)      {m_display_aux_source = v;};
-  void setDispCommunity(bool v)      {m_display_community = v;};
-  void setDispOwnCommunity(bool v)   {m_display_own_community = v;};
-  void setDispEmptyStrings(bool v)   {m_display_null_strings = v;};
-  void setDispAll(bool v)            {m_display_all = v;};
-  void setTruncData(double v);
+  void setContentMode(std::string, bool=false);
+  void setRefreshMode(std::string);
+  void setDisplayColumns(std::string);
+  void setTruncData(std::string);
+  void ignoreFileVars(bool v)           {m_ignore_file_vars = v;};
+  void setDispVirgins(bool v)           {m_display_virgins = v;};
+  void setDispTime(bool v)              {m_display_time = v;};
+  void setDispSource(bool v)            {m_display_source = v;};
+  void setDispAuxSource(bool v)         {m_display_aux_source = v;};
+  void setDispCommunity(bool v)         {m_display_community = v;};
+  void setDispOwnCommunity(bool v)      {m_display_own_community = v;};
+  void setDispAll(bool v)               {m_display_all = v;};
+  void setTermServerHost(std::string s) {m_term_server_host = s;};
+  void setTermServerPort(std::string s) {m_term_server_port = s;};
   void setAppNameNoIndex(std::string s) {m_app_name_noindex = s;};
- 
-  void setConfigureCommsLocally(bool v) {m_configure_comms_locally=v;};
+  void setTermReportInterval(std::string);
+  
   void setColorMapping(std::string var, std::string color="any");
+  void setColorMappingsAny(std::string);
+  void setColorMappingsPairs(std::string);
 
  protected:
   void registerVariables();
+
+  bool buildReport();
+  bool printHelp();
+  bool printReport();
+  bool printHistoryReport();
+  bool printProcsReport();
   
+  void updateDBClients(std::string);
   void updateVariable(CMOOSMsg& msg);
-  void updateVarVal(std::string, std::string);
-  void updateVarType(std::string, std::string);
-  void updateVarSource(std::string, std::string);
-  void updateVarSourceAux(std::string, std::string);
-  void updateVarTime(std::string, std::string);
-  void updateVarCommunity(std::string, std::string);
+  bool updateVarEntry(std::string, const ScopeEntry&);
   void updateHistory(std::string, std::string, double);
-  
-  void printHelp();
-  void printReport();
-  void printHistoryReport();
+  void updateSourceInfo(std::string);
+ 
+  void handleSelectMaskSubSources();
+  void handleSelectMaskAddSources();
   
   void refreshAllVarsList();
   void refreshProcVarsList();
@@ -89,56 +96,56 @@ class XMS : public CMOOSApp
   bool ConfigureComms();
 
  protected:
-  std::vector<std::string> m_var_names;
-  std::vector<std::string> m_var_vals;
-  std::vector<std::string> m_var_type;
-  std::vector<std::string> m_var_source;
-  std::vector<std::string> m_var_srcaux;
-  std::vector<std::string> m_var_time;
-  std::vector<std::string> m_var_community;
-  std::vector<std::string> m_var_color;
-  
-  std::vector<std::string> m_orig_var_names;
-  std::vector<std::string> m_orig_var_vals;
-  std::vector<std::string> m_orig_var_type;
-  std::vector<std::string> m_orig_var_source;
-  std::vector<std::string> m_orig_var_srcaux;
-  std::vector<std::string> m_orig_var_time;
-  std::vector<std::string> m_orig_var_community;
-  std::vector<std::string> m_orig_var_color;
-  
-  std::map<std::string, std::string> m_src_map;
+  // Map from MOOS var name to last-message components
+  std::map<std::string, ScopeEntry>  m_map_var_entries;
+  std::map<std::string, std::string> m_map_var_entries_color;
 
-  unsigned int  m_iterations;
-  double        m_time_warp;
-  double        m_curr_time;
-  double        m_last_report_time;
-  double        m_term_report_interval;
+  // A shadow list to hold when otherwise scoping on all variables
+  std::map<std::string, ScopeEntry>  m_map_orig_var_entries;
+  std::map<std::string, std::string> m_map_orig_var_entries_color;
+
+  // Map from source to alive indicators (msg rcvd and db_clients)
+  std::map<std::string, double>      m_map_src_update;
+  std::map<std::string, double>      m_map_src_dbclient;
+
+  // Map from source to id and id to source
+  std::map<std::string, std::string> m_map_src_id;
+  std::map<std::string, std::string> m_map_id_src;
+  unsigned int     m_max_proc_name_len;
+  unsigned int     m_variable_id_srcs;
+  unsigned int     m_proc_watch_count;
+  std::string      m_proc_watch_summary;
+
+  std::set<std::string> m_mask_sub_sources;
+  std::set<std::string> m_mask_add_sources;
+
+  // Map from source to source _STATUS string
+  std::map<std::string, std::string> m_map_src_status;
 
   bool   m_update_requested;
   bool   m_scope_event;
+
   bool   m_history_event;
-  bool   m_display_help;
-  bool   m_displayed_help;
   bool   m_display_source;
   bool   m_display_aux_source;
   bool   m_display_time;
   bool   m_display_community;
   bool   m_display_own_community;
-  bool   m_help_requested;
   std::string m_refresh_mode;
+  std::string m_content_mode;
+  std::string m_content_mode_prev;
   std::string m_community;
 
   double m_trunc_data;
   double m_trunc_data_start;
   bool   m_display_virgins;
-  bool   m_display_null_strings;
-  bool   m_configure_comms_locally;
   
   bool   m_ignore_file_vars;
   double m_db_start_time;
   
   std::string m_filter;
+  std::string m_term_server_host;
+  std::string m_term_server_port;
 
   std::string             m_history_var;
   std::list<std::string>  m_history_list;
@@ -146,8 +153,6 @@ class XMS : public CMOOSApp
   std::list<int>          m_history_counts;
   std::list<double>       m_history_times;
   unsigned int            m_history_length;
-  bool                    m_history_mode;
-  bool                    m_report_histvar;
 
   bool   m_display_all;
   double m_last_all_refresh;    
@@ -156,13 +161,5 @@ class XMS : public CMOOSApp
 
   std::string m_app_name_noindex;
 };
-
-
 #endif 
-
-
-
-
-
-
 

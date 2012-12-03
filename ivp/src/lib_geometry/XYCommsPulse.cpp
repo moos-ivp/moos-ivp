@@ -56,8 +56,7 @@ XYCommsPulse::XYCommsPulse(double sx, double sy, double tx, double ty)
 void XYCommsPulse::initialize()
 {
   // Superclass member variables
-  set_edge_size(1);
-  set_color("edge", "green");
+  set_edge_size(0);
   set_color("fill", "green");
   
   // Local member variables
@@ -195,5 +194,6 @@ string XYCommsPulse::get_spec(string param) const
   
   return(spec);
 }
+
 
 

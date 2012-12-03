@@ -43,7 +43,6 @@
 //            The default sleep time is 1/10 second if an argument is
 //            not provided.
 
-
 #ifndef _WIN32
 char getCharNoWait(useconds_t usecs) 
 {
@@ -71,7 +70,7 @@ char getCharNoWait(useconds_t usecs)
   tcsetattr(fd, TCSANOW, &oterm);
   
   /* return the charcter */
-  usleep(100000);
+  usleep(usecs);
   return c;
 }
 #endif
@@ -82,6 +81,7 @@ char getCharNoWait()
   return _getch() ;
 }
 #endif
+
 
 
 

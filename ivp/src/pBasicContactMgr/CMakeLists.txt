@@ -22,8 +22,8 @@ endif (${WIN32})
 
 TARGET_LINK_LIBRARIES(pBasicContactMgr
    MOOS
-   MOOSGen
    mbutil
+   apputil
    geometry
    contacts
    ${SYSTEM_LIBS}

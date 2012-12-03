@@ -2,8 +2,7 @@
 /*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: BHV_MinAltitudeX.cpp                                 */
-/*    DATE: Mar 3rd,  2007                                       */
-/*    DATE: May 27th, 2011 Signficant revision                   */
+/*    DATE: Mar 3rd, 2007                                        */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
 /* modify it under the terms of the GNU General Public License   */
@@ -150,5 +149,6 @@ void BHV_MinAltitudeX::postStatusReport()
 
   postMessage("MIN_ALT_STATUS", info);
 }
+
 
 

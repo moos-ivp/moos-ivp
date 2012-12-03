@@ -22,7 +22,6 @@ ADD_EXECUTABLE(uTermCommand ${SRC})
 
 TARGET_LINK_LIBRARIES(uTermCommand 
   MOOS
-  MOOSGen
   mbutil
   genutil
   ${SYSTEM_LIBS})

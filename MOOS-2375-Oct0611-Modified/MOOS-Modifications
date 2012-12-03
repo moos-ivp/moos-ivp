@@ -1,6 +1,0 @@
-This tree contains modifications to:
-
-o pMOOSBridge to support dynamic registrations
-o pScheduler minor fixes
-o Core/MOOSGenLib/MOOSThread.h - replaced the use of Status keyward 
-  with p_status for later g++ compilers 

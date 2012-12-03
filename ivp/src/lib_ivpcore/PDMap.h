@@ -96,3 +96,4 @@ protected:
   IvPGrid*  m_grid;
 };
 #endif
+

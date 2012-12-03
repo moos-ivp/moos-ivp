@@ -3,7 +3,7 @@ ServerPort = 9000
 Simulator  = true
 
 Community    = charlie
-MOOSTimeWarp = 18
+MOOSTimeWarp = 1
 LatOrigin    = 43.825300 
 LongOrigin   = -70.330400 
 
@@ -65,9 +65,9 @@ ProcessConfig = uSimMarine
   START_SPEED   = 0
   START_HEADING = 180
   PREFIX        = NAV
-  DECELERATION  = 0.1
+  MAX_DECELERATION  = 0.1
 
-  /ROTATE_SPEED = 1
+  //ROTATE_SPEED = 1
 
   DUAL_STATE    = true
 }

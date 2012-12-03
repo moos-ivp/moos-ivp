@@ -24,14 +24,14 @@
    #include <string>
 #endif
 
-using namespace std;
-
 #include <algorithm>
 #include <cmath>
 #include "MBUtils.h"
 #include "AngleUtils.h"
 #include "GeomUtils.h"
 #include "XYPatternBlock.h"
+
+using namespace std;
 
 //-----------------------------------------------------------
 // Procedure: Constructor
@@ -147,10 +147,7 @@ int XYPatternBlock::setLanePoints()
       new_point.set_vertex(new_x, new_y);
     }
     string idstr = doubleToString(i,0);
-    string foobar = doubleToString(dist_from_pt, 1);
     new_point.set_label(idstr);
-    new_point.set_type(idstr);
-    new_point.set_source(foobar);
     new_vector.push_back(new_point);
   }
   
@@ -393,4 +390,5 @@ void XYPatternBlock::idPointCenter(double& retx, double& rety) const
   retx = x_total / (double)(vsize);
   rety = y_total / (double)(vsize);
 }
+
 

@@ -20,13 +20,13 @@ ELSE (${APPLE})
 ENDIF (${APPLE})
       
 Target_LINK_LIBRARIES(pMarineViewer         
+   MOOSGeodesy
    MOOS
-   MOOSGen
    marineview
-   MOOSUtility
    genutil
    geometry
    contacts
+   apputil
    mbutil
       # Standard libraries used by this project's FLTK apps...
    fltk 

@@ -28,31 +28,50 @@
 using namespace std;
 
 //---------------------------------------------------------
+// Destructor
+
+RandomVariableSet::~RandomVariableSet()
+{
+  unsigned int i, vsize = m_rvar_vector.size();
+  for(i=0; i<vsize; i++)
+    delete(m_rvar_vector[i]);
+}
+
+//---------------------------------------------------------
 // Procedure: contains
 
-bool RandomVariableSet::contains(const string& varname)
+bool RandomVariableSet::contains(const string& varname) const
 {
   unsigned int i, vsize = m_rvar_vector.size();
   for(i=0; i<vsize; i++) {
-    if(m_rvar_vector[i].getVarName() == varname)
+    if(m_rvar_vector[i]->getVarName() == varname)
       return(true);
   }
   return(false);
 }
 
 //---------------------------------------------------------
-// Procedure: addRandomVar(RandomVariable)
+// Procedure: addRandomVar()
 
-void RandomVariableSet::addRandomVar(const RandomVariable& rvar)
+string RandomVariableSet::addRandomVar(const string& spec)
 {
-  if(!contains(rvar.getVarName()))
-    m_rvar_vector.push_back(rvar);
+  string rvtype = tokStringParse(spec, "type", ',', '=');
+  
+  cout << "rvtype: [" << rvtype << "]" << endl;
+
+  if((rvtype == "uniform") || (rvtype == ""))
+    return(addRandomVarUniform(spec));
+
+  if((rvtype == "gaussian") || (rvtype == "normal"))
+    return(addRandomVarGaussian(spec));
+
+  return("unknown random variable type: " + rvtype);
 }
 
 //---------------------------------------------------------
-// Procedure: addRandomVar(string)
+// Procedure: addRandomVarUniform()
 
-string RandomVariableSet::addRandomVar(const string& spec)
+string RandomVariableSet::addRandomVarUniform(const string& spec)
 {
   string varname;
   string keyname;
@@ -78,8 +97,8 @@ string RandomVariableSet::addRandomVar(const string& spec)
       maxval = atof(right.c_str());
       maxval_set = true;
     }
-    else 
-      return("Bad parameter=value: " + left + "=" + right);
+    else if(left != "type")
+      return("Bad parametery=value: " + left + "=" + right);
   }
   
   if(varname == "")
@@ -94,17 +113,98 @@ string RandomVariableSet::addRandomVar(const string& spec)
   if(minval > maxval)
     return("Minimum value greater than maximum value");
 
-  unsigned int j, jsize = m_rvar_vector.size();
-  for(j=0; j<jsize; j++) {
-    if(m_rvar_vector[j].getVarName() == varname)
-      return("Duplicate random variable");
+
+  if(contains(varname))
+    return("Duplicate random variable");
+
+  
+  RandVarUniform *rand_var = new RandVarUniform();
+  rand_var->setVarName(varname);
+  if(keyname != "")
+    rand_var->setKeyName(keyname);
+  rand_var->setType("uniform");
+  rand_var->setParam("min", minval);
+  rand_var->setParam("max", maxval);
+  
+  m_rvar_vector.push_back(rand_var);
+  return("");
+}
+
+//---------------------------------------------------------
+// Procedure: addRandomVarGaussian()
+
+string RandomVariableSet::addRandomVarGaussian(const string& spec)
+{
+  string varname;
+  string keyname;
+  double minval=0;
+  double maxval=1;
+  double mu=0;
+  double sigma=1;
+  bool   minval_set = false;
+  bool   maxval_set = false;
+  bool   mu_set     = false;
+  bool   sigma_set  = false;
+
+  vector<string> svector = parseString(spec, ',');
+  unsigned int i, vsize = svector.size();
+  for(i=0; i<vsize; i++) {
+    string left  = stripBlankEnds(biteString(svector[i], '='));
+    string right = stripBlankEnds(svector[i]);
+    if(left == "varname")
+      varname = right;
+    else if(left == "key")
+      keyname = right;
+    else if((left == "min") && isNumber(right)) {
+      minval = atof(right.c_str());
+      minval_set = true;
+    }
+    else if((left == "max") && isNumber(right)) {
+      maxval = atof(right.c_str());
+      maxval_set = true;
+    }
+    else if((left == "mu") && isNumber(right)) {
+      mu = atof(right.c_str());
+      mu_set = true;
+    }
+    else if((left == "sigma") && isNumber(right)) {
+      sigma = atof(right.c_str());
+      sigma_set = true;
+    }
+    else if(left != "type")
+      return("Bad parameterx=value: " + left + "=" + right);
   }
   
-  RandomVariable rand_var;
-  rand_var.setVarName(varname);
+  if(varname == "")
+    return("Unset variable name");
+
+  if(!minval_set)
+    return("Lower value of the range not set");
+
+  if(!maxval_set)
+    return("Upper value of the range not set");
+
+  if(!mu_set)
+    return("Mu not set");
+
+  if(!sigma_set)
+    return("Sigma not set");
+  
+  if(minval > maxval)
+    return("Minimum value greater than maximum value");
+
+  if(contains(varname))
+    return("Duplicate random variable");
+  
+  RandVarGaussian *rand_var = new RandVarGaussian();
+  rand_var->setVarName(varname);
   if(keyname != "")
-    rand_var.setKeyName(keyname);
-  rand_var.setRange(minval, maxval);
+    rand_var->setKeyName(keyname);
+  rand_var->setType("gaussian");
+  rand_var->setParam("min", minval);
+  rand_var->setParam("max", maxval);
+  rand_var->setParam("mu",  mu);
+  rand_var->setParam("sigma", sigma);
   
   m_rvar_vector.push_back(rand_var);
   return("");
@@ -117,29 +217,78 @@ void RandomVariableSet::reset(const string& key, double tstamp)
 {
   unsigned int i, vsize = m_rvar_vector.size();
   for(i=0; i<vsize; i++) {
-    if(m_rvar_vector[i].getKeyName() == key)
-      m_rvar_vector[i].reset(tstamp);
+    if(m_rvar_vector[i]->getKeyName() == key)
+      m_rvar_vector[i]->reset();
   }
 }
 
 //---------------------------------------------------------
 // Procedure: getVarName(index)
 
-string RandomVariableSet::getVarName(unsigned int ix)
+string RandomVariableSet::getVarName(unsigned int ix) const
 {
   if(ix < m_rvar_vector.size())
-    return(m_rvar_vector[ix].getVarName());
-  else
-    return("");
+    return(m_rvar_vector[ix]->getVarName());
+  return("");
+}
+
+//---------------------------------------------------------
+// Procedure: getKeyName(index)
+
+string RandomVariableSet::getKeyName(unsigned int ix) const
+{
+  if(ix < m_rvar_vector.size())
+    return(m_rvar_vector[ix]->getKeyName());
+  return("");
+}
+
+//---------------------------------------------------------
+// Procedure: getType(index)
+
+string RandomVariableSet::getType(unsigned int ix) const
+{
+  if(ix < m_rvar_vector.size())
+    return(m_rvar_vector[ix]->getType());
+  return("");
+}
+
+//---------------------------------------------------------
+// Procedure: getValue(index)
+
+double RandomVariableSet::getValue(unsigned int ix) const
+{
+  if(ix < m_rvar_vector.size())
+    return(m_rvar_vector[ix]->getValue());
+  return(0);
+}
+
+//---------------------------------------------------------
+// Procedure: getMinVal(index)
+
+double RandomVariableSet::getMinVal(unsigned int ix) const
+{
+  if(ix < m_rvar_vector.size())
+    return(m_rvar_vector[ix]->getMinVal());
+  return(0);
+}
+
+//---------------------------------------------------------
+// Procedure: getMaxVal(index)
+
+double RandomVariableSet::getMaxVal(unsigned int ix) const
+{
+  if(ix < m_rvar_vector.size())
+    return(m_rvar_vector[ix]->getMaxVal());
+  return(0);
 }
 
 //---------------------------------------------------------
 // Procedure: getStringSummary(index)
 
-string RandomVariableSet::getStringSummary(unsigned int ix)
+string RandomVariableSet::getStringSummary(unsigned int ix) const
 {
   if(ix < m_rvar_vector.size())
-    return(m_rvar_vector[ix].getStringSummary());
+    return(m_rvar_vector[ix]->getStringSummary());
   else
     return("");
 }
@@ -147,23 +296,35 @@ string RandomVariableSet::getStringSummary(unsigned int ix)
 //---------------------------------------------------------
 // Procedure: getStringValue(index)
 
-string RandomVariableSet::getStringValue(unsigned int ix)
+string RandomVariableSet::getStringValue(unsigned int ix) const
 {
   if(ix < m_rvar_vector.size())
-    return(m_rvar_vector[ix].getStringValue());
+    return(m_rvar_vector[ix]->getStringValue());
   else
     return("");
 }
 
 //---------------------------------------------------------
-// Procedure: getValue(index)
+// Procedure: getParams(index)
 
-double RandomVariableSet::getValue(unsigned int ix)
+string RandomVariableSet::getParams(unsigned int ix) const
 {
   if(ix < m_rvar_vector.size())
-    return(m_rvar_vector[ix].getValue());
+    return(m_rvar_vector[ix]->getParams());
   else
-    return(0);
+    return("");
+}
+
+//---------------------------------------------------------
+// Procedure: print() 
+
+void RandomVariableSet::print() const
+{
+  cout << "RandomVariableSet: " << m_rvar_vector.size() << endl; 
+  for(unsigned int i=0; i<m_rvar_vector.size(); i++) {
+    cout << "[" << i << "]:" << m_rvar_vector[i]->getStringSummary() << endl;
+  }
+  cout << "done." << endl;
 }
 
 

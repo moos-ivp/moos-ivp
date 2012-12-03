@@ -24,7 +24,7 @@
 #define MARINE_PID_HEADER
 
 #include <string>
-#include "MOOSLib.h"
+#include "MOOS/libMOOS/MOOSLib.h"
 #include "PIDEngine.h"
 
 class MarinePID : public CMOOSApp
@@ -85,4 +85,5 @@ protected:
   double  m_tardy_nav_thresh;
 };
 #endif 
+
 

@@ -4,20 +4,9 @@
 /*    FILE: CPA_GUI.cpp                                          */
 /*    DATE: Feb 12, 2007                                         */
 /*                                                               */
-/* This program is free software; you can redistribute it and/or */
-/* modify it under the terms of the GNU General Public License   */
-/* as published by the Free Software Foundation; either version  */
-/* 2 of the License, or (at your option) any later version.      */
-/*                                                               */
-/* This program is distributed in the hope that it will be       */
-/* useful, but WITHOUT ANY WARRANTY; without even the implied    */
-/* warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR       */
-/* PURPOSE. See the GNU General Public License for more details. */
-/*                                                               */
-/* You should have received a copy of the GNU General Public     */
-/* License along with this program; if not, write to the Free    */
-/* Software Foundation, Inc., 59 Temple Place - Suite 330,       */
-/* Boston, MA 02111-1307, USA.                                   */
+/* This is unreleased BETA code. No permission is granted or     */
+/* implied to use, copy, modify, and distribute this software    */
+/* except by the author(s).                                      */
 /*****************************************************************/
 
 #include <cstdio>
@@ -106,7 +95,7 @@ CPA_GUI::CPA_GUI(int g_w, int g_h, const char *g_l)
   int info_size = 10;
 
   cpa_viewer = new CPAViewer(cpa_model, 0, 30, w()/2, h()-140);
-  cmviewer   = cpa_viewer;
+  m_mviewer  = cpa_viewer;
 
   ipf_viewer = new IPFViewer(cpa_model, (w()/2)+5, 30, (w()/2)-5, h()-140);
 
@@ -133,52 +122,52 @@ CPA_GUI::CPA_GUI(int g_w, int g_h, const char *g_l)
 
 void CPA_GUI::augmentMenu() 
 {
-  mbar->add("Ownship/Reset", FL_ALT+'r', (Fl_Callback*)CPA_GUI::cb_ResetOS, (void*)0, 0);
-  mbar->add("Ownship/MaxSpd+",         's', (Fl_Callback*)CPA_GUI::cb_AltOS_MAXSPD, (void*)1, 0);
-  mbar->add("Ownship/MaxSpd-",         'x', (Fl_Callback*)CPA_GUI::cb_AltOS_MAXSPD, (void*)-1, 0);
-  mbar->add("Ownship/MaxSpd++", FL_ALT+'s', (Fl_Callback*)CPA_GUI::cb_AltOS_MAXSPD, (void*)10, 0);
-  mbar->add("Ownship/MaxSpd--", FL_ALT+'x', (Fl_Callback*)CPA_GUI::cb_AltOS_MAXSPD, (void*)-10, FL_MENU_DIVIDER);
-  mbar->add("Ownship/MaxTOL+",         'f', (Fl_Callback*)CPA_GUI::cb_AltOS_MAXTOL, (void*)10, 0);
-  mbar->add("Ownship/MaxTOL-",         'v', (Fl_Callback*)CPA_GUI::cb_AltOS_MAXTOL, (void*)-10, 0);
-  mbar->add("Ownship/MaxTOL++", FL_ALT+'f', (Fl_Callback*)CPA_GUI::cb_AltOS_MAXTOL, (void*)100, 0);
-  mbar->add("Ownship/MaxTOL--", FL_ALT+'v', (Fl_Callback*)CPA_GUI::cb_AltOS_MAXTOL, (void*)-100, 0);
+  m_menubar->add("Ownship/Reset", FL_ALT+'r', (Fl_Callback*)CPA_GUI::cb_ResetOS, (void*)0, 0);
+  m_menubar->add("Ownship/MaxSpd+",         's', (Fl_Callback*)CPA_GUI::cb_AltOS_MAXSPD, (void*)1, 0);
+  m_menubar->add("Ownship/MaxSpd-",         'x', (Fl_Callback*)CPA_GUI::cb_AltOS_MAXSPD, (void*)-1, 0);
+  m_menubar->add("Ownship/MaxSpd++", FL_ALT+'s', (Fl_Callback*)CPA_GUI::cb_AltOS_MAXSPD, (void*)10, 0);
+  m_menubar->add("Ownship/MaxSpd--", FL_ALT+'x', (Fl_Callback*)CPA_GUI::cb_AltOS_MAXSPD, (void*)-10, FL_MENU_DIVIDER);
+  m_menubar->add("Ownship/MaxTOL+",         'f', (Fl_Callback*)CPA_GUI::cb_AltOS_MAXTOL, (void*)10, 0);
+  m_menubar->add("Ownship/MaxTOL-",         'v', (Fl_Callback*)CPA_GUI::cb_AltOS_MAXTOL, (void*)-10, 0);
+  m_menubar->add("Ownship/MaxTOL++", FL_ALT+'f', (Fl_Callback*)CPA_GUI::cb_AltOS_MAXTOL, (void*)100, 0);
+  m_menubar->add("Ownship/MaxTOL--", FL_ALT+'v', (Fl_Callback*)CPA_GUI::cb_AltOS_MAXTOL, (void*)-100, 0);
   
-  mbar->add("Contact/Reset", 0, (Fl_Callback*)CPA_GUI::cb_ResetCN, (void*)0, 0);
-  mbar->add("Contact/Index-0", FL_CTRL+'0', (Fl_Callback*)CPA_GUI::cb_CN_INDEX, (void*)0, 0);
-  mbar->add("Contact/Index-1", FL_CTRL+'1', (Fl_Callback*)CPA_GUI::cb_CN_INDEX, (void*)1, 0);
-  mbar->add("Contact/Index-2", FL_CTRL+'3', (Fl_Callback*)CPA_GUI::cb_CN_INDEX, (void*)2, FL_MENU_DIVIDER);
-  mbar->add("Contact/Move N", 'A', (Fl_Callback*)CPA_GUI::cb_AltCNY, (void*)5, 0);
-  mbar->add("Contact/Move S", 'Z', (Fl_Callback*)CPA_GUI::cb_AltCNY, (void*)-5, 0);
-  mbar->add("Contact/Move E", 'M', (Fl_Callback*)CPA_GUI::cb_AltCNX, (void*)5, 0);
-  mbar->add("Contact/Move W", 'N', (Fl_Callback*)CPA_GUI::cb_AltCNX, (void*)-5, FL_MENU_DIVIDER);
-  mbar->add("Contact/Heading -", 'n', (Fl_Callback*)CPA_GUI::cb_AltCNCRS, (void*)-5, 0);
-  mbar->add("Contact/Heading +", 'm', (Fl_Callback*)CPA_GUI::cb_AltCNCRS, (void*)5, 0);
-  mbar->add("Contact/Speed   -", 'a', (Fl_Callback*)CPA_GUI::cb_AltCNSPD, (void*)2, 0);
-  mbar->add("Contact/Speed   +", 'z', (Fl_Callback*)CPA_GUI::cb_AltCNSPD, (void*)-2, 0);
+  m_menubar->add("Contact/Reset", 0, (Fl_Callback*)CPA_GUI::cb_ResetCN, (void*)0, 0);
+  m_menubar->add("Contact/Index-0", FL_CTRL+'0', (Fl_Callback*)CPA_GUI::cb_CN_INDEX, (void*)0, 0);
+  m_menubar->add("Contact/Index-1", FL_CTRL+'1', (Fl_Callback*)CPA_GUI::cb_CN_INDEX, (void*)1, 0);
+  m_menubar->add("Contact/Index-2", FL_CTRL+'3', (Fl_Callback*)CPA_GUI::cb_CN_INDEX, (void*)2, FL_MENU_DIVIDER);
+  m_menubar->add("Contact/Move N", 'A', (Fl_Callback*)CPA_GUI::cb_AltCNY, (void*)5, 0);
+  m_menubar->add("Contact/Move S", 'Z', (Fl_Callback*)CPA_GUI::cb_AltCNY, (void*)-5, 0);
+  m_menubar->add("Contact/Move E", 'M', (Fl_Callback*)CPA_GUI::cb_AltCNX, (void*)5, 0);
+  m_menubar->add("Contact/Move W", 'N', (Fl_Callback*)CPA_GUI::cb_AltCNX, (void*)-5, FL_MENU_DIVIDER);
+  m_menubar->add("Contact/Heading -", 'n', (Fl_Callback*)CPA_GUI::cb_AltCNCRS, (void*)-5, 0);
+  m_menubar->add("Contact/Heading +", 'm', (Fl_Callback*)CPA_GUI::cb_AltCNCRS, (void*)5, 0);
+  m_menubar->add("Contact/Speed   -", 'a', (Fl_Callback*)CPA_GUI::cb_AltCNSPD, (void*)2, 0);
+  m_menubar->add("Contact/Speed   +", 'z', (Fl_Callback*)CPA_GUI::cb_AltCNSPD, (void*)-2, 0);
 
-  mbar->add("Pan-Zoom/Rotate X- ", FL_CTRL+FL_SHIFT+FL_Down,  (Fl_Callback*)CPA_GUI::cb_RotateX, (void*)-1, 0);
-  mbar->add("Pan-Zoom/Rotate X+ ", FL_CTRL+FL_SHIFT+FL_Up,  (Fl_Callback*)CPA_GUI::cb_RotateX, (void*)1, 0);
-  mbar->add("Pan-Zoom/Rotate Z- ", FL_CTRL+FL_SHIFT+FL_Left,  (Fl_Callback*)CPA_GUI::cb_RotateZ, (void*)-1, 0);
-  mbar->add("Pan-Zoom/Rotate Z+ ", FL_CTRL+FL_SHIFT+FL_Right,  (Fl_Callback*)CPA_GUI::cb_RotateZ, (void*)1, FL_MENU_DIVIDER);
-  mbar->add("Pan-Zoom/Reset 1",         '1',  (Fl_Callback*)CPA_GUI::cb_Reset, (void*)1, 0);
-  mbar->add("Pan-Zoom/Reset 2",         '2',  (Fl_Callback*)CPA_GUI::cb_Reset, (void*)2, 0);
-  mbar->add("Pan-Zoom/Reset 3",         '3',  (Fl_Callback*)CPA_GUI::cb_Reset, (void*)3, FL_MENU_DIVIDER);
-  mbar->add("Pan-Zoom/Toggle Frame ",   'F',  (Fl_Callback*)CPA_GUI::cb_ToggleFrame, (void*)-1, FL_MENU_DIVIDER);
-  mbar->add("Pan-Zoom/Expand Radius ",  '}',  (Fl_Callback*)CPA_GUI::cb_StretchRad, (void*)1, 0);
-  mbar->add("Pan-Zoom/Shrink Radius ",  '{',  (Fl_Callback*)CPA_GUI::cb_StretchRad, (void*)-1, FL_MENU_DIVIDER);
-  mbar->add("Pan-Zoom/Base Higher ",    'B',  (Fl_Callback*)CPA_GUI::cb_ModBase, (void*)1, 0);
-  mbar->add("Pan-Zoom/Base Lower ",     'b',  (Fl_Callback*)CPA_GUI::cb_ModBase, (void*)-1, FL_MENU_DIVIDER);
-  mbar->add("Pan-Zoom/Scale Higher ",   'S',  (Fl_Callback*)CPA_GUI::cb_ModScale, (void*)1, 0);
-  mbar->add("Pan-Zoom/Scale Lower ",    's',  (Fl_Callback*)CPA_GUI::cb_ModScale, (void*)-1, FL_MENU_DIVIDER);
-  mbar->add("Pan-Zoom/AdjustPrecision 1",'*',  (Fl_Callback*)CPA_GUI::cb_AdjustPrecisionIPF, (void*)0, 0);
-  mbar->add("Pan-Zoom/AdjustPrecision +",FL_CTRL+'>',  (Fl_Callback*)CPA_GUI::cb_AdjustPrecisionIPF, (void*)-1, 0);
-  mbar->add("Pan-Zoom/AdjustPrecision -",FL_CTRL+'<',  (Fl_Callback*)CPA_GUI::cb_AdjustPrecisionIPF, (void*)1, 0);
+  m_menubar->add("Pan-Zoom/Rotate X- ", FL_CTRL+FL_SHIFT+FL_Down,  (Fl_Callback*)CPA_GUI::cb_RotateX, (void*)-1, 0);
+  m_menubar->add("Pan-Zoom/Rotate X+ ", FL_CTRL+FL_SHIFT+FL_Up,  (Fl_Callback*)CPA_GUI::cb_RotateX, (void*)1, 0);
+  m_menubar->add("Pan-Zoom/Rotate Z- ", FL_CTRL+FL_SHIFT+FL_Left,  (Fl_Callback*)CPA_GUI::cb_RotateZ, (void*)-1, 0);
+  m_menubar->add("Pan-Zoom/Rotate Z+ ", FL_CTRL+FL_SHIFT+FL_Right,  (Fl_Callback*)CPA_GUI::cb_RotateZ, (void*)1, FL_MENU_DIVIDER);
+  m_menubar->add("Pan-Zoom/Reset 1",         '1',  (Fl_Callback*)CPA_GUI::cb_Reset, (void*)1, 0);
+  m_menubar->add("Pan-Zoom/Reset 2",         '2',  (Fl_Callback*)CPA_GUI::cb_Reset, (void*)2, 0);
+  m_menubar->add("Pan-Zoom/Reset 3",         '3',  (Fl_Callback*)CPA_GUI::cb_Reset, (void*)3, FL_MENU_DIVIDER);
+  m_menubar->add("Pan-Zoom/Toggle Frame ",   'F',  (Fl_Callback*)CPA_GUI::cb_ToggleFrame, (void*)-1, FL_MENU_DIVIDER);
+  m_menubar->add("Pan-Zoom/Expand Radius ",  '}',  (Fl_Callback*)CPA_GUI::cb_StretchRad, (void*)1, 0);
+  m_menubar->add("Pan-Zoom/Shrink Radius ",  '{',  (Fl_Callback*)CPA_GUI::cb_StretchRad, (void*)-1, FL_MENU_DIVIDER);
+  m_menubar->add("Pan-Zoom/Base Higher ",    'B',  (Fl_Callback*)CPA_GUI::cb_ModBase, (void*)1, 0);
+  m_menubar->add("Pan-Zoom/Base Lower ",     'b',  (Fl_Callback*)CPA_GUI::cb_ModBase, (void*)-1, FL_MENU_DIVIDER);
+  m_menubar->add("Pan-Zoom/Scale Higher ",   'S',  (Fl_Callback*)CPA_GUI::cb_ModScale, (void*)1, 0);
+  m_menubar->add("Pan-Zoom/Scale Lower ",    's',  (Fl_Callback*)CPA_GUI::cb_ModScale, (void*)-1, FL_MENU_DIVIDER);
+  m_menubar->add("Pan-Zoom/AdjustPrecision 1",'*',  (Fl_Callback*)CPA_GUI::cb_AdjustPrecisionIPF, (void*)0, 0);
+  m_menubar->add("Pan-Zoom/AdjustPrecision +",FL_CTRL+'>',  (Fl_Callback*)CPA_GUI::cb_AdjustPrecisionIPF, (void*)-1, 0);
+  m_menubar->add("Pan-Zoom/AdjustPrecision -",FL_CTRL+'<',  (Fl_Callback*)CPA_GUI::cb_AdjustPrecisionIPF, (void*)1, 0);
 
-  mbar->add("TypeIPF/CPA", 0, (Fl_Callback*)CPA_GUI::cb_SetTypeIPF, (void*)0, 0);
-  mbar->add("TypeIPF/Waypoint", 0, (Fl_Callback*)CPA_GUI::cb_SetTypeIPF, (void*)1, 0);
-  mbar->add("TypeIPF/Avoid", 0, (Fl_Callback*)CPA_GUI::cb_SetTypeIPF, (void*)2, 0);
-  mbar->add("TypeIPF/ROC", 0, (Fl_Callback*)CPA_GUI::cb_SetTypeIPF, (void*)3, 0);
-  mbar->add("TypeIPF/R16", 0, (Fl_Callback*)CPA_GUI::cb_SetTypeIPF, (void*)4, 0);
+  m_menubar->add("TypeIPF/CPA", 0, (Fl_Callback*)CPA_GUI::cb_SetTypeIPF, (void*)0, 0);
+  m_menubar->add("TypeIPF/Waypoint", 0, (Fl_Callback*)CPA_GUI::cb_SetTypeIPF, (void*)1, 0);
+  m_menubar->add("TypeIPF/Avoid", 0, (Fl_Callback*)CPA_GUI::cb_SetTypeIPF, (void*)2, 0);
+  m_menubar->add("TypeIPF/ROC", 0, (Fl_Callback*)CPA_GUI::cb_SetTypeIPF, (void*)3, 0);
+  m_menubar->add("TypeIPF/R16", 0, (Fl_Callback*)CPA_GUI::cb_SetTypeIPF, (void*)4, 0);
 }
 
 //----------------------------------------------------------
@@ -501,4 +490,5 @@ void CPA_GUI::updateXY()
   p_os_maxspd->value(str.c_str());
   os_maxspd_ctr->value(dval);
 }
+
 

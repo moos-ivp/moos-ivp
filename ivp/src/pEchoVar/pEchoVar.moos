@@ -6,6 +6,9 @@ ProcessConfig = pEchoVar
 {                                                               
   AppTick   = 4                                                 
   CommsTick = 4                                                 
+
+  test    = "val 1"
+  test    = "         val 2 "
                                                                 
   Echo    = MARINESIM_X       ->  NAV_X                         
   Echo    = MARINESIM_Y       ->  NAV_Y                         

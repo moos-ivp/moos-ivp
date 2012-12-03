@@ -3,7 +3,6 @@
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: HazardSensor_MOOSApp.h                               */
 /*    DATE: Jan 28th, 2012                                       */
-/*    DATE: Oct 4th, 2012 Major Mods                             */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
 /* modify it under the terms of the GNU General Public License   */
@@ -27,55 +26,52 @@
 #include <string>
 #include <vector>
 #include <map>
-#include "MOOSLib.h"
+#include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
 #include "NodeRecord.h"
 
-class GenericSensor_MOOSApp : public CMOOSApp
+class GenericSensor_MOOSApp : public AppCastingMOOSApp
 {
  public:
   GenericSensor_MOOSApp();
   virtual ~GenericSensor_MOOSApp() {};
 
-  bool    OnNewMail(MOOSMSG_LIST &NewMail);
-  bool    Iterate();
-  bool    OnConnectToServer();
-  bool    OnStartUp();
-  void    RegisterVariables();
+ public: // Standard MOOSApp functions to overload
+  bool  OnNewMail(MOOSMSG_LIST &NewMail);
+  bool  Iterate();
+  bool  OnConnectToServer();
+  bool  OnStartUp();
+
+ protected: // Standard AppCastingMOOSApp function to overload
+  bool  buildReport();
+
+ protected:
+  void  registerVariables();
 
  protected: // Configuration utility
-  bool    handleConfigSourcePoint(std::string);
-  bool    handleConfigSensorOption(std::string);
-  bool    handleConfigSensorTransparency(std::string);
-  bool    handleConfigTermReportInterval(std::string);
-  bool    handleConfigOptionsSummaryInterval(std::string);
-  bool    handleConfigMinResetInterval(std::string);
-  bool    handleConfigMinSensorInterval(std::string);
+  bool  handleConfigSourcePoint(std::string);
+  bool  handleConfigSensorOption(std::string);
+  bool  handleConfigSensorTransparency(std::string);
+  bool  handleConfigTermReportInterval(std::string);
+  bool  handleConfigOptionsSummaryInterval(std::string);
+  bool  handleConfigMinResetInterval(std::string);
+  bool  handleConfigMinSensorInterval(std::string);
 
  protected: // Incoming mail utility
-  bool    handleMailNodeReport(const std::string&);
-  bool    handleMailSensorRequest(const std::string&);
-  bool    handleMailSensorConfig(const std::string&, const std::string&);
+  bool  handleMailNodeReport(const std::string&);
+  bool  handleMailSensorRequest(const std::string&);
+  bool  handleMailSensorConfig(const std::string&, const std::string&);
 
  protected: // Outgoing mail utility
-  void    postSensorReport(double ptx, double pty, std::string vname);
+  void  postSensorReport(double ptx, double pty, std::string vname);
 
  protected: // Utilities
-  bool    setVehicleSensorSetting(std::string, double);
-  bool    updateNodeRecords(NodeRecord);
-  void    sortSensorProperties();
-  void    postVisuals();
-
-  void    printReport();
-
-  void    memo(const std::string&);
-  void    memoErr(const std::string&);
+  bool  setVehicleSensorSetting(std::string, double);
+  bool  updateNodeRecords(NodeRecord);
+  void  sortSensorProperties();
+  void  postVisuals();
 
  protected: // State variables ---------------------------------------
-  double       m_curr_time;
-  double       m_time_warp;
-  double       m_last_report_time;
   double       m_last_summary_time;
-  unsigned int m_iterations;
   unsigned int m_reports;
 
   // Map from vehicle name to latest node report;
@@ -88,6 +84,13 @@ class GenericSensor_MOOSApp : public CMOOSApp
   // Messages to be displayed to the terminal
   std::map<std::string, unsigned int>   m_map_memos;
   std::map<std::string, unsigned int>   m_map_err_memos;
+
+  // Key for each map below is the vehicle name. 
+  std::map<std::string, double>       m_map_reset_time;
+  std::map<std::string, unsigned int> m_map_reset_total;  
+  std::map<std::string, unsigned int> m_map_requests_total;  
+  std::map<std::string, unsigned int> m_map_reports_total;  
+  std::map<std::string, double>       m_map_vehicle_sensor_range;
 
  protected: // Configuration variables -----------------------------
   double      m_min_sensor_interval;
@@ -108,12 +111,6 @@ class GenericSensor_MOOSApp : public CMOOSApp
   std::vector<double>      m_source_pt_y;
   std::vector<std::string> m_source_pt_label;
 
-  // Key for each map below is the vehicle name. 
-  std::map<std::string, double>       m_map_reset_time;
-  std::map<std::string, unsigned int> m_map_reset_total;  
-  std::map<std::string, unsigned int> m_map_reports_total;  
-  std::map<std::string, double>       m_map_vehicle_sensor_range;
-
   // Visual preferences
   bool        m_show_source_pts;
   std::string m_color_source_pts;
@@ -121,4 +118,5 @@ class GenericSensor_MOOSApp : public CMOOSApp
 };
 
 #endif 
+
 

@@ -70,6 +70,9 @@ BHV_Loiter::BHV_Loiter(IvPDomain gdomain) :
   m_center_pending    = false;
   m_center_activate   = false;
 
+  m_hint_edge_size    = 1;
+  m_hint_vertex_size  = 1;
+
   m_waypoint_engine.setPerpetual(true);
   m_waypoint_engine.setRepeatsEndless(true);
 
@@ -217,7 +220,7 @@ void BHV_Loiter::onIdleState()
 
 void BHV_Loiter::onIdleToRunState()
 {
-// Fix made by HS, to avoid looping back to earlier approach vertex
+  // Fix made by HS, to avoid looping back to earlier approach vertex
   updateInfoIn();
   int curr_waypt = m_loiter_engine.acquireVertex(m_osh, m_osx, m_osy); 
   m_waypoint_engine.setCurrIndex(curr_waypt);
@@ -532,8 +535,6 @@ void BHV_Loiter::postViewablePoint()
   XYPoint view_point(m_ptx, m_pty);
   //view_point.set_label(m_us_name + "'s next_waypoint");
   view_point.set_label(m_us_name + "_waypoint");
-  view_point.set_type("waypoint");
-  view_point.set_source(m_us_name + "_" + bhv_tag);
   view_point.set_color("label", m_hint_nextpt_lcolor);
   view_point.set_color("vertex", m_hint_nextpt_color);
   postMessage("VIEW_POINT", view_point.get_spec());
@@ -550,8 +551,6 @@ void BHV_Loiter::postErasablePoint()
   XYPoint view_point(m_ptx, m_pty);
   //view_point.set_label(m_us_name + "'s next waypoint");
   view_point.set_label(m_us_name + "_waypoint");
-  view_point.set_type("waypoint");
-  view_point.set_source(m_us_name + "_" + bhv_tag);
   view_point.set_active(false);
   postMessage("VIEW_POINT", view_point.get_spec());
 }
@@ -600,4 +599,5 @@ void BHV_Loiter::postConfigStatus()
 
   postRepeatableMessage("BHV_SETTINGS", str);
 }
+
 

@@ -3,7 +3,6 @@
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: GenericSensor_MOOSApp.cpp                            */
 /*    DATE: Jan 28th 2012                                        */
-/*    DATE: Oct 5th 2012 Major Mods                              */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
 /* modify it under the terms of the GNU General Public License   */
@@ -27,6 +26,7 @@
 #include "XYCircle.h"
 #include "NodeRecordUtils.h"
 #include "GeomUtils.h"
+#include "ACTable.h"
 #include "MBUtils.h"
 
 using namespace std;
@@ -38,11 +38,7 @@ GenericSensor_MOOSApp::GenericSensor_MOOSApp()
 {
   // State Variables
   // -------------------------------------------------------------
-  m_curr_time  = 0;
-  m_time_warp  = 1;
-  m_iterations = 0;
-  m_reports    = 0;
-  m_last_report_time  = 0;
+  m_reports           = 0;
   m_last_summary_time = 0;    // last time settings options summary posted
 
   // Configuration variables
@@ -50,8 +46,8 @@ GenericSensor_MOOSApp::GenericSensor_MOOSApp()
   m_min_sensor_interval  = 30;       // seconds
   m_min_reset_interval   = 300;      // seconds
   m_term_report_interval = 0.8;      // realtime (non-timewarp) seconds
-  m_options_summary_interval = 10;   // in timewarped seconds
   m_sensor_transparency  = 0.75;     // visual preference
+  m_options_summary_interval = 10;   // in timewarped seconds
   
   // Visual preferences
   m_show_source_pts    = true;
@@ -64,7 +60,8 @@ GenericSensor_MOOSApp::GenericSensor_MOOSApp()
 
 bool GenericSensor_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 {
-  m_curr_time = MOOSTime();
+  AppCastingMOOSApp::OnNewMail(NewMail);
+
   MOOSMSG_LIST::iterator p;
   for(p=NewMail.begin(); p!=NewMail.end(); p++) {
     CMOOSMsg &msg = *p;
@@ -74,30 +71,19 @@ bool GenericSensor_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
     string src_app = msg.GetSource();
     string src_community = msg.GetCommunity();
     
-    bool handled = false;
-    if((key == "NODE_REPORT") || (key == "NODE_REPORT_LOCAL"))
-      handled = handleMailNodeReport(sval);
+    if(key == "NODE_REPORT")
+      handleMailNodeReport(sval);
     
     else if(key == "UGS_SENSOR_REQUEST")
-      handled = handleMailSensorRequest(sval);
+      handleMailSensorRequest(sval);
     
     else if(key == "UGS_CONFIG_REQUEST")
-      handled = handleMailSensorConfig(sval, src_community);
+      handleMailSensorConfig(sval, src_community);
     
-    if(!handled) {
-      string unhandled_msg = "Uhandled msg: " + key;
-      if(msg.IsString()) 
-	unhandled_msg += ", sval=" + sval;
-      else if(msg.IsDouble()) {
-	double dval = msg.GetDouble();
-	unhandled_msg += ", dval=" + doubleToStringX(dval, 6);
-      }
-      else
-	unhandled_msg += ", unknown_type";
-      unhandled_msg += ",[" + src_app + "],[" + src_community + "]";
-      memoErr(unhandled_msg);
-    }
+    else 
+      reportRunWarning("Unhandled Mail: " + key);    
   }
+
   return(true);
 }
 
@@ -106,18 +92,18 @@ bool GenericSensor_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 
 bool GenericSensor_MOOSApp::OnConnectToServer()
 {
-  RegisterVariables();  
+  registerVariables();  
   return(true);
 }
 
 
 //------------------------------------------------------------
-// Procedure: RegisterVariables
+// Procedure: registerVariables
 
-void GenericSensor_MOOSApp::RegisterVariables()
+void GenericSensor_MOOSApp::registerVariables()
 {
+  AppCastingMOOSApp::RegisterVariables();
   m_Comms.Register("NODE_REPORT", 0);
-  m_Comms.Register("NODE_REPORT_LOCAL", 0);
   m_Comms.Register("UGS_SENSOR_REQUEST", 0);
   m_Comms.Register("UGS_CONFIG_REQUEST", 0);
 }
@@ -128,26 +114,16 @@ void GenericSensor_MOOSApp::RegisterVariables()
 
 bool GenericSensor_MOOSApp::Iterate()
 {
-  m_curr_time = MOOSTime();
-  m_iterations++;
-  
-  // Part 1: Consider printing a report to the terminal
-  double warp_elapsed_time = m_curr_time - m_last_report_time;
-  double real_elapsed_time = warp_elapsed_time;
-  if(m_time_warp > 0)
-    real_elapsed_time = warp_elapsed_time / m_time_warp;
-  if(real_elapsed_time > m_term_report_interval) {
-    printReport();
-    m_last_report_time = m_curr_time;
-  }
-  
-  // Part 2: Consider posting a settings-options summary
+  AppCastingMOOSApp::Iterate();
+
+  // Consider posting a settings-options summary
   double elapsed_time = m_curr_time - m_last_summary_time;
   if(elapsed_time >= m_options_summary_interval) {
     m_Comms.Notify("UGS_OPTIONS_SUMMARY", m_sensor_prop_summary);
     m_last_summary_time = m_curr_time;
   }
   
+  AppCastingMOOSApp::PostReport();
   return(true);
 }
 
@@ -156,22 +132,21 @@ bool GenericSensor_MOOSApp::Iterate()
 
 bool GenericSensor_MOOSApp::OnStartUp()
 {
-  cout << termColor("blue") << "Generic Sensor starting..." << endl;
-  m_curr_time = MOOSTime();
-  
-  STRING_LIST sParams;
-  m_MissionReader.GetConfiguration(GetAppName(), sParams);
+  AppCastingMOOSApp::OnStartUp();
 
+  STRING_LIST sParams;
+  if(!m_MissionReader.GetConfiguration(GetAppName(), sParams)) 
+    reportConfigWarning("No config block found for " + GetAppName());
+  
   STRING_LIST::iterator p;
   for(p=sParams.begin(); p!=sParams.end(); p++) {
-    string sLine  = *p;
-    string param  = tolower(biteStringX(sLine, '='));
-    string value  = sLine;
+    string orig  = *p;
+    string line  = *p;
+    string param = tolower(biteStringX(line, '='));
+    string value = line;
     
     bool handled = false;
-    if((param == "apptick") || (param == "commstick"))
-      handled = true;
-    else if((param == "color_source_pts") && isColor(value)) {
+    if((param == "color_source_pts") && isColor(value)) {
       m_color_source_pts = value;
       handled = true;
     }
@@ -189,20 +164,17 @@ bool GenericSensor_MOOSApp::OnStartUp()
       m_scope_transparency = vclip(atof(value.c_str()), 0, 1);
       handled = true;
     }
+    
     if(!handled)
-      memoErr("Unhandled config, param="+param+", value="+value);
+      reportUnhandledConfigWarning(orig);
   }
 
   
-  RegisterVariables();
+  registerVariables();
   
   postVisuals();
   
-  m_time_warp = GetMOOSTimeWarp();
-
   srand(time(NULL));
-  cout << "Simulated Generic Sensor started." << endl;
-  cout << termColor() << flush;
   return(true);
 }
 
@@ -293,7 +265,7 @@ bool GenericSensor_MOOSApp::handleMailNodeReport(const string& node_report_str)
   NodeRecord node_record = string2NodeRecord(node_report_str);
 
   if(!node_record.valid()) {
-    memoErr("Unhandled node record");
+    reportRunWarning("Unhandled node record");
     return(false);
   }
   
@@ -302,8 +274,6 @@ bool GenericSensor_MOOSApp::handleMailNodeReport(const string& node_report_str)
   m_map_node_records[vname]     = node_record;
   m_map_last_node_update[vname] = m_curr_time;
   
-  memo("Node report received");
-
   return(true);
 }
 
@@ -325,14 +295,15 @@ bool GenericSensor_MOOSApp::handleMailSensorRequest(const string& request)
   }
   
   if(vname == "") {
-    memoErr("Sensor request received with null vehicle name");
+    reportRunWarning("Sensor request received with null vehicle name");
     return(false);
   }
-  memo("Sensor request received from " + vname);
-  
+
+  m_map_requests_total[vname]++;
+
   // Part 2: Find out the latest node report info for the given vname;
   if(m_map_node_records.count(vname) == 0) {
-    memoErr("Cannot handle sensor request: no node reports received from " +vname);
+    reportRunWarning("Cant handle sensor request: no node reports rec'd from "+vname);
     return(false);
   }
   
@@ -344,9 +315,9 @@ bool GenericSensor_MOOSApp::handleMailSensorRequest(const string& request)
   if(m_map_vehicle_sensor_range.count(vname) == 0) {
     bool ok = setVehicleSensorSetting(vname, 0);
     if(ok)
-      memo("Warning: no sensor setting for vehicle " + vname + ". Default chosen");
+      reportRunWarning("Warning: no sensor setting for " + vname + ". Default chosen");
     if(!ok) {
-      memoErr("No sensor setting for vehicle " + vname);
+      reportRunWarning("No sensor setting for vehicle " + vname);
       return(false);
     }
   }
@@ -373,7 +344,6 @@ bool GenericSensor_MOOSApp::handleMailSensorRequest(const string& request)
   circ.set_color("fill", "white");
   circ.set_label("gs_scope_"+vname);
   circ.set_msg("gs_scope_"+vname);
-  circ.set_source("gs_scope_"+vname);
   circ.set_vertex_size(0);
   circ.set_edge_size(1);
   circ.set_transparency(m_scope_transparency);
@@ -414,12 +384,12 @@ bool GenericSensor_MOOSApp::handleMailSensorConfig(const string& config,
   // Part 2: Check for correctness of incoming request. The vname and src should 
   // match so that one vehicle cannot change the sensor setting of another.
   if((vname == "") || (vname != msg_src)) {
-    memoErr("Bad sensor config request from: " +vname+ " src:" + msg_src);
+    reportRunWarning("Bad sensor config request from: " +vname+ " src:" + msg_src);
     return(false);
   }
   
   if(!isNumber(str_range)) {
-    memoErr("Bad sensor config request from: " + vname);
+    reportRunWarning("Bad sensor config request from: " + vname);
     return(false);
   }
   
@@ -483,6 +453,8 @@ void GenericSensor_MOOSApp::postSensorReport(double ptx, double pty, string vnam
     ",y=" + doubleToString(ry,1);
   m_Comms.Notify("UGS_SENSOR_REPORT_" + toupper(vname), report);
   
+  m_map_reports_total[vname]++;
+
   XYPoint point;
   point.set_vx(rx);
   point.set_vy(ry);
@@ -517,10 +489,8 @@ bool GenericSensor_MOOSApp::handleConfigSensorTransparency(string str)
 
 bool GenericSensor_MOOSApp::handleConfigTermReportInterval(string str)
 {
-  if(!isNumber(str)) {
-    memoErr("Improper term_report_interval: " + str);
+  if(!isNumber(str)) 
     return(false);
-  }
 
   m_term_report_interval = atof(str.c_str());
   m_term_report_interval = vclip(m_term_report_interval, 0, 10);
@@ -537,10 +507,8 @@ bool GenericSensor_MOOSApp::handleConfigTermReportInterval(string str)
 
 bool GenericSensor_MOOSApp::handleConfigOptionsSummaryInterval(string str)
 {
-  if(!isNumber(str)) {
-    memoErr("Improper options_summary_interval: " + str);
+  if(!isNumber(str)) 
     return(false);
-  }
   
   m_options_summary_interval = atof(str.c_str());
   m_options_summary_interval = vclip(m_options_summary_interval, 0, 120);
@@ -554,10 +522,8 @@ bool GenericSensor_MOOSApp::handleConfigOptionsSummaryInterval(string str)
 
 bool GenericSensor_MOOSApp::handleConfigMinResetInterval(string str)
 {
-  if(!isNumber(str)) {
-    memoErr("Improper min_reset_interval: " + str);
+  if(!isNumber(str)) 
     return(false);
-  }
   
   m_min_reset_interval = atof(str.c_str());
   if(m_min_reset_interval < 0)
@@ -570,10 +536,8 @@ bool GenericSensor_MOOSApp::handleConfigMinResetInterval(string str)
 
 bool GenericSensor_MOOSApp::handleConfigMinSensorInterval(string str)
 {
-  if(!isNumber(str)) {
-    memoErr("Improper min_sensor_interval: " + str);
+  if(!isNumber(str))
     return(false);
-  }
   
   m_min_sensor_interval = atof(str.c_str());
   if(m_min_sensor_interval < 0)
@@ -589,23 +553,24 @@ bool GenericSensor_MOOSApp::handleConfigMinSensorInterval(string str)
 //            and presumably bridged out to the vehicle.
 
 bool GenericSensor_MOOSApp::setVehicleSensorSetting(string req_vname,
-						  double req_range)
+						    double req_range)
 {
-  memo("Setting sensor settings for:" + req_vname);
+  reportEvent("Setting sensor settings for: " + req_vname + ":" + 
+	      doubleToString(req_range,0));
 
   // Part 1: Sanity check: If no sensor properties have been configured, 
   //         there is nothing to choose from! Just return false. 
 
   unsigned int i, psize = m_sensor_ranges_dbl.size();
   if(psize == 0) {
-    memoErr("Error. No selectable settings for uFldGenericSensor!");
+    reportRunWarning("Error. No selectable settings for uFldGenericSensor!");
     return(false);
   }
   
   // Part 2: Determine if this request is allowed, based on frequency
   double elapsed = m_curr_time - m_map_reset_time[req_vname];
   if(elapsed < m_min_reset_interval) {
-    memo("Sensor reset denied (too soon) for vehicle: " + req_vname);
+    reportEvent("Sensor reset denied (too soon) for vehicle: " + req_vname);
     return(false);
   }
 
@@ -647,102 +612,54 @@ bool GenericSensor_MOOSApp::setVehicleSensorSetting(string req_vname,
   return(true);
 }
 
-
 //------------------------------------------------------------
-// Procedure: memo()
-//   Purpose: Collect output meant for the terminal on each iteration.
-//            Duplicate memos simply have their counter increased so the
-//               screen is not flooded with a line for each occurance. 
-//            Some thought must be given to the memo content such that 
-//            memos posted regularly do not differ in content on trivial
-//            differences; to avoid terminal reports that run off the 
-//            screen.
-
-void GenericSensor_MOOSApp::memo(const string& memo_str)
+// Procedure: buildReport
+//      Note: A virtual function of the AppCastingMOOSApp superclass, 
+//            conditionally invoked if either a terminal or appcast 
+//            report is needed.
+//
+bool GenericSensor_MOOSApp::buildReport()
 {
-  m_map_memos[memo_str]++;
-}
 
-//------------------------------------------------------------
-// Procedure: memoErr()
-//   Purpose: Same as the memo() function, but...
-//            when these memos are sent to the terminal, they may be
-//            in a different color indicating the error nature.
+  m_msgs << "Sensor Configuration Options"              << endl;
+  m_msgs << "=========================================" << endl;
 
-void GenericSensor_MOOSApp::memoErr(const string& memo_str)
-{
-  m_map_err_memos[memo_str]++;
-}
-
-//------------------------------------------------------------
-// Procedure: printReport
-//   Purpose: 
-
-void GenericSensor_MOOSApp::printReport()
-{
-  m_reports++;
-  unsigned int colpad = 2;
-
-  cout << endl << endl <<endl << endl << endl << endl;
-  cout << "*****************************************"      << endl;
-  cout << "uFldGenericSensor Summary:(" << m_reports << ")" << endl;
-  cout << "*****************************************"      << endl;
-  cout << "                                         "      << endl;
-  cout << "Sensor Configuration Options             "      << endl;
-  cout << "========================================="      << endl;
+  ACTable actab(1);
+  actab << "Range";
+  actab.addHeaderLines();
 
   unsigned int i, vsize = m_sensor_ranges_str.size();
-  cout << "   Range  " << endl;
-  cout << "  ------  " << endl;
-  for(i=0; i<vsize; i++) {
-    string s_range = m_sensor_ranges_str[i];
-    s_range = padString(s_range, 6+colpad);
-    cout << s_range << endl;
-  }
+  for(i=0; i<vsize; i++) 
+    actab << m_sensor_ranges_str[i];
+  m_msgs << actab.getFormattedString();
 
-  cout << endl;
-  cout << "Sensor Settings for known vehicles: ";
-  cout << "(" << m_map_node_records.size() << ")" << endl;
-  cout << "======================================   " << endl;
+  string curr_loc_time = doubleToString((m_curr_time - m_start_time), 2);
+  m_msgs << endl;
+  m_msgs << "Sensor Settings for known vehicles: (" << curr_loc_time << ")" << endl;
+  m_msgs << "=================================================" << endl;
 
-  cout << "VName      Range        Resets  Reports" << endl;
-  cout << "-------    -----     ---------  -------" << endl;
+  actab = ACTable(5);
+  actab << "Vehicle | Sensor | Config | Sensor   | Sensor ";
+  actab << "Name    | Range  | Resets | Requests | Reports";
+  actab.addHeaderLines();
 
   map<string, NodeRecord>::iterator p;
   for(p=m_map_node_records.begin(); p!=m_map_node_records.end(); p++) {
-    string vname      = p->first;
+    string vname    = p->first;
 
-    double dbl_range   = m_map_vehicle_sensor_range[vname];
-    string str_range   = doubleToStringX(dbl_range,1);
-    string str_resets  = uintToString(m_map_reset_total[vname]);
+    double drange   = m_map_vehicle_sensor_range[vname];
+    string range    = doubleToStringX(drange,1);
+    string resets   = uintToString(m_map_reset_total[vname]);
+    string requests = uintToString(m_map_requests_total[vname]);
+    string reports  = uintToString(m_map_reports_total[vname]);
     if(m_map_reset_total[vname] > 0) {
-      double elapsed_since_reset = m_curr_time - m_map_reset_time[vname];
-      str_resets        += "(" + doubleToString(elapsed_since_reset,0) + ")";
+      double timestamp = m_map_reset_time[vname] - m_start_time;
+      resets += "(" + doubleToString(timestamp, 1) + ")";
     }
-    string str_reports = uintToString(m_map_reports_total[vname]);
-    
-    string pad_vname   = padString(vname,       6+colpad, false);
-    string pad_range   = padString(str_range,   6+colpad);
-    string pad_resets  = padString(str_resets,  11+colpad);
-    string pad_reports = padString(str_reports, 7+colpad);
-
-    cout << pad_vname << pad_range << pad_resets << pad_reports << endl;
+    actab << vname << range << resets << requests << reports;
   }
+  m_msgs << actab.getFormattedString();
 
-  cout << endl;
-  cout << "Internal Memos:                            " << endl;
-  cout << "======================================     " << endl;
-  map<string, unsigned int>::iterator p1;
-  for(p1=m_map_memos.begin(); p1!=m_map_memos.end(); p1++) {
-    string       msg = p1->first;
-    unsigned int amt = p1->second;
-    cout << " (" << amt << ") " << msg << endl;
-  }
-
-  for(p1=m_map_err_memos.begin(); p1!=m_map_err_memos.end(); p1++) {
-    string msg = p1->first;
-    int    amt = p1->second;
-    cout << termColor("magenta");
-    cout << " (" << amt << ") " << msg  << termColor() << endl;
-  }
+  return(true);
 }
+

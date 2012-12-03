@@ -25,7 +25,6 @@ ADD_EXECUTABLE(pMarinePID ${SRC})
    
 TARGET_LINK_LIBRARIES(pMarinePID 
   MOOS
-  MOOSGen
   mbutil
   geometry 
   ${SYSTEM_LIBS})

@@ -1,15 +1,31 @@
-/****************************************************************/
-/*   NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
-/*   ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*   FILE: MessageHandler.cpp                                   */
-/*   DATE: Jan 30th 2012                                        */
-/****************************************************************/
+/*****************************************************************/
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    FILE: MessageHandler.cpp                                   */
+/*    DATE: Jan 30th 2012                                        */
+/*                                                               */
+/* This program is free software; you can redistribute it and/or */
+/* modify it under the terms of the GNU General Public License   */
+/* as published by the Free Software Foundation; either version  */
+/* 2 of the License, or (at your option) any later version.      */
+/*                                                               */
+/* This program is distributed in the hope that it will be       */
+/* useful, but WITHOUT ANY WARRANTY; without even the implied    */
+/* warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR       */
+/* PURPOSE. See the GNU General Public License for more details. */
+/*                                                               */
+/* You should have received a copy of the GNU General Public     */
+/* License along with this program; if not, write to the Free    */
+/* Software Foundation, Inc., 59 Temple Place - Suite 330,       */
+/* Boston, MA 02111-1307, USA.                                   */
+/*****************************************************************/
 
 #include <iterator>
 #include "MessageHandler.h"
 #include "MBUtils.h"
 #include "NodeMessage.h"
 #include "NodeMessageUtils.h"
+#include "ACTable.h"
 
 using namespace std;
 
@@ -19,8 +35,6 @@ using namespace std;
 MessageHandler::MessageHandler()
 {
   // Initialize state variables
-  m_curr_time  = 0;
-  m_iterations = 0;
   m_reports    = 0;
   m_newmail    = false;
 
@@ -29,19 +43,8 @@ MessageHandler::MessageHandler()
   m_valid_messages_rcvd     = 0;  // Not valid msg structure
   m_last_message_rcvd       = 0;
   
-  m_last_report_time        = 0;
-
-  m_max_len_msg_src    = 6;  // Source
-  m_max_len_msg_total  = 5;  // Total
-  m_max_len_msg_tstamp = 7;  // Elapsed
-  m_max_len_msg_var    = 8;  // Variable
-  m_max_len_msg_value  = 5;  // Value
-
   // Initialize config variables
-  m_verbose             = true;
   m_strict_addressing   = false;
-
-  m_time_warp = 1;
 }
 
 //---------------------------------------------------------
@@ -49,25 +52,21 @@ MessageHandler::MessageHandler()
 
 bool MessageHandler::OnNewMail(MOOSMSG_LIST &NewMail)
 {
+  AppCastingMOOSApp::OnNewMail(NewMail);
+
   MOOSMSG_LIST::iterator p;
-	
   for(p=NewMail.begin(); p!=NewMail.end(); p++) {
     CMOOSMsg &msg = *p;
-	
-    string key   = msg.GetKey();
-    string sval  = msg.GetString(); 
-
-    //double dval  = msg.GetDouble();
-    //double mtime = msg.GetTime();
-    //bool   mdbl  = msg.IsDouble();
-    //bool   mstr  = msg.IsString();
-    //string msrc  = msg.GetSource();
+    string key    = msg.GetKey();
+    string sval   = msg.GetString(); 
 
     if(key == "NODE_MESSAGE") {
-      cout << "msg!!!!!!!!!!!!!+" << sval << endl;
       handleMailNodeMessage(sval);
       m_newmail = true;
     }
+    else
+      reportRunWarning("Unhandled mail: " + key);
+
   }
 
   return(true);
@@ -88,33 +87,13 @@ bool MessageHandler::OnConnectToServer()
 
 bool MessageHandler::Iterate()
 {
-  m_iterations++;
-  m_curr_time = MOOSTime();
-
-
-
-  if(m_newmail)
-    updateMaxLens();
+  AppCastingMOOSApp::Iterate();
   
-  if(((m_iterations%100)==1) || m_newmail)
+  if(((m_iteration%100)==1) || m_newmail)
     postMsgSummary();
-  
-  // Begin handling the Terminal Report 
-
-  if(!m_verbose)
-    cout << "*" << flush;
-  else {
-    double warp_elapsed_time = m_curr_time - m_last_report_time;
-    double real_elapsed_time = warp_elapsed_time;
-    if(m_time_warp > 0)
-      real_elapsed_time = warp_elapsed_time / m_time_warp;
-    if(real_elapsed_time > 0.5) {
-      printReport();
-      m_last_report_time = m_curr_time;
-    }
-  }
-
   m_newmail = false;
+
+  AppCastingMOOSApp::PostReport();
   return(true);
 }
 
@@ -123,32 +102,29 @@ bool MessageHandler::Iterate()
 
 bool MessageHandler::OnStartUp()
 {
-  // Get the MOOSDB Community Information
-  if(!m_MissionReader.GetValue("COMMUNITY", m_host_community))
-    MOOSTrace("Community name not found in mission file!\n");
-  else
-    MOOSTrace("Community: %s\n", m_host_community.c_str());
+  AppCastingMOOSApp::OnStartUp();
 
   STRING_LIST sParams;
   m_MissionReader.EnableVerbatimQuoting(false);
-  m_MissionReader.GetConfiguration(GetAppName(), sParams);
+  if(!m_MissionReader.GetConfiguration(GetAppName(), sParams)) 
+    reportConfigWarning("No config block found for " + GetAppName());
 
   STRING_LIST::reverse_iterator p;
   for(p=sParams.rbegin(); p!=sParams.rend(); p++) {
+    string orig  = *p;
     string line  = *p;
-    string param = stripBlankEnds(toupper(biteString(line, '=')));
-    string value = stripBlankEnds(line);
+    string param = toupper(biteStringX(line, '='));
+    string value = line;
     
+    bool handled = false;
     if(param == "STRICT_ADDRESSING")
-      setBooleanOnString(m_strict_addressing, value);
-    else if(param == "VERBOSE")
-      setBooleanOnString(m_verbose, value);
+      handled = setBooleanOnString(m_strict_addressing, value);
     
+    if(!handled)
+      reportUnhandledConfigWarning(orig);
   }
 
   registerVariables();
-
-  m_time_warp = GetMOOSTimeWarp();
   return(true);
 }
 
@@ -158,6 +134,7 @@ bool MessageHandler::OnStartUp()
 
 void MessageHandler::registerVariables()
 {
+  AppCastingMOOSApp::RegisterVariables();
   m_Comms.Register("NODE_MESSAGE", 0);
 }
 
@@ -247,107 +224,6 @@ bool MessageHandler::handleMailNodeMessage(const string& msg)
 
 
 //------------------------------------------------------------
-// Procedure: printReport
-//   Purpose: 
-
-void MessageHandler::printReport()
-{
-  m_reports++;
-  unsigned int colpad = 2;
-
-  cout << endl << endl <<endl << endl << endl << endl;
-  cout << "*****************************************" << endl;
-  cout << "uFldMessageHandler Summary: (" << m_host_community << ")";
-  cout << "(" << m_reports << ")" << endl;
-  cout << "*****************************************" << endl;
-  cout << "                                         " << endl;
-  cout << "Overall Totals Summary                   " << endl;
-  cout << "======================================   " << endl;
-
-  unsigned int invalid = m_total_messages_rcvd - m_valid_messages_rcvd;
-
-  string last_msg = "N/A";
-  if(m_last_message_rcvd > 0) {
-    double elapsed = m_curr_time - m_last_message_rcvd;
-    last_msg = doubleToString(elapsed, 1);
-  }
-
-  cout << "   Total Received Valid: " << m_total_messages_rcvd << endl;
-  cout << "                Invalid: " << invalid << endl;
-  cout << "               Rejected: " << m_rejected_messages_rcvd << endl;
-  cout << "    Time since last Msg: " << last_msg << endl;
-
-  cout << endl;
-  cout << "Per Source Node Summary                  " << endl;
-  cout << "======================================   " << endl;
-
-  cout << padString("Source",   m_max_len_msg_src    + colpad);
-  cout << padString("Total",    m_max_len_msg_total  + colpad);
-  cout << padString("Elapsed",  m_max_len_msg_tstamp + colpad);
-  cout << padString("Variable", m_max_len_msg_var    + colpad);
-  cout << padString("Value",    m_max_len_msg_value  + colpad) << endl;
-
-  cout << padString("------",   m_max_len_msg_src    + colpad);
-  cout << padString("-----",    m_max_len_msg_total  + colpad);
-  cout << padString("-------",  m_max_len_msg_tstamp + colpad);
-  cout << padString("--------", m_max_len_msg_var    + colpad);
-  cout << padString("-----",    m_max_len_msg_value  + colpad) << endl;
-
-  map<string, unsigned int>::iterator p;
-  for(p=m_map_msg_total.begin(); p!=m_map_msg_total.end(); p++) {
-    string src          = p->first;
-    string str_total    = uintToString(p->second);
-    string str_elapsed  = doubleToString((m_curr_time - m_map_msg_tstamp[src]),1);
-    string str_msg_var  = m_map_msg_var[src];
-    string str_msg_val  = m_map_msg_value[src];
-
-    string pad_src      = padString(src,         m_max_len_msg_src    + colpad);
-    string pad_total    = padString(str_total,   m_max_len_msg_total  + colpad);
-    string pad_elapsed  = padString(str_elapsed, m_max_len_msg_tstamp + colpad);
-    string pad_msg_var  = padString(str_msg_var, m_max_len_msg_var    + colpad);
-    string pad_msg_val  = padString(str_msg_val, m_max_len_msg_value  + colpad);
-
-    cout << pad_src << pad_total + pad_elapsed + pad_msg_var + pad_msg_val << endl;
-  }
-
-  list<string>::iterator p2;
-  cout << endl;
-  cout << "Last Few Messages: (from oldest to newest) " << endl;
-  cout << "======================================     " << endl;
-  cout << "Valid Mgs: " << endl;
-  if(m_last_valid_msgs.size() == 0)
-    cout << "  NONE" << endl;
-  else {
-    for(p2 = m_last_valid_msgs.begin(); p2 != m_last_valid_msgs.end(); p2++) {
-      string msg = *p2;
-      cout << "  " << truncString(msg, 70) << endl;
-    }
-  }
-
-  cout << "Invalid Mgs: " << endl;
-  if(m_last_invalid_msgs.size() == 0)
-    cout << "  NONE" << endl;
-  else {
-    for(p2 = m_last_invalid_msgs.begin(); p2 != m_last_invalid_msgs.end(); p2++) {
-      string msg = *p2;
-      cout << "  " << truncString(msg, 70) << endl;
-    }
-  }
-
-  cout << "Rejected Mgs: " << endl;
-  if(m_last_rejected_msgs.size() == 0)
-    cout << "  NONE" << endl;
-  else {
-    for(p2 = m_last_rejected_msgs.begin(); p2 != m_last_rejected_msgs.end(); p2++) {
-      string msg = *p2;
-      cout << "  " << truncString(msg, 70) << endl;
-    }
-  }
-
-}
-
-
-//------------------------------------------------------------
 // Procedure: postMsgSummary
 //   Purpose: Post a totals summary of all messages receive so far.
 //            UMH_SUMMARY_MSGS = total=14,valid=12,rejected=2
@@ -362,44 +238,105 @@ void MessageHandler::postMsgSummary()
   m_Comms.Notify("UMH_SUMMARY_MSGS", str);
 }
 
-
-
 //------------------------------------------------------------
-// Procedure: updateMaxLens
-//   Purpose: 
-
-void MessageHandler::updateMaxLens()
+// Procedure: buildReport
+//      Note: A virtual function of the AppCastingMOOSApp superclass, 
+//            conditionally invoked if either a terminal or appcast 
+//            report is needed.
+// 
+//   Overall Totals Summary                   
+//   ======================================   
+//      Total Received Valid: 0
+//                   Invalid: 0
+//                  Rejected: 0
+//       Time since last Msg: N/A
+//                                          
+//   Per Source Node Summary                
+//   ====================================== 
+//     Source  Total  Elapsed  Variable  Value
+//     ------  -----  -------  --------  -----
+//                                              
+//   Last Few Messages: (from oldest to newest) 
+//   ======================================     
+//   Valid Mgs: 
+//     NONE  
+//   Invalid Mgs: 
+//     NONE  
+//   Rejected Mgs: 
+//     NONE  
+    
+bool MessageHandler::buildReport()
 {
-  m_max_len_msg_src    = 6;  // Source
-  m_max_len_msg_total  = 5;  // Total
-  m_max_len_msg_tstamp = 7;  // Elapsed
-  m_max_len_msg_var    = 8;  // Variable
-  m_max_len_msg_value  = 5;  // Value
+  m_reports++;
+
+  m_msgs << "Overall Totals Summary"                 << endl;
+  m_msgs << "======================================" << endl;
+
+  unsigned int invalid = m_total_messages_rcvd - m_valid_messages_rcvd;
+
+  string last_msg = "N/A";
+  if(m_last_message_rcvd > 0) {
+    double elapsed = m_curr_time - m_last_message_rcvd;
+    last_msg = doubleToString(elapsed, 1);
+  }
+
+  m_msgs << "   Total Received Valid: " << m_total_messages_rcvd << endl;
+  m_msgs << "                Invalid: " << invalid << endl;
+  m_msgs << "               Rejected: " << m_rejected_messages_rcvd << endl;
+  m_msgs << "    Time since last Msg: " << last_msg << endl;
+  m_msgs << endl;
+  m_msgs << "Per Source Node Summary"                << endl;
+  m_msgs << "======================================" << endl;
+
+  ACTable actab(5,2); // 5 columns, 2 blank separator
+  actab << "Source | Total | Elapsed | Variable | Value";
+  actab.addHeaderLines();
 
   map<string, unsigned int>::iterator p;
   for(p=m_map_msg_total.begin(); p!=m_map_msg_total.end(); p++) {
-    string src = p->first;
-    unsigned int total = p->second;
-    string stotal = uintToString(total);
-
-    double elapsed = m_curr_time - m_map_msg_tstamp[src];
-    string selapsed = doubleToString(elapsed,1);
+    string src      = p->first;
+    string total    = uintToString(p->second);
+    string elapsed  = doubleToString((m_curr_time - m_map_msg_tstamp[src]),1);
     string msg_var  = m_map_msg_var[src];
     string msg_val  = m_map_msg_value[src];
-
-    if(src.length() > m_max_len_msg_src)
-      m_max_len_msg_src = src.length();
-
-    if(stotal.length() > m_max_len_msg_total)
-      m_max_len_msg_total = stotal.length();
-
-    if(selapsed.length() > m_max_len_msg_tstamp)
-      m_max_len_msg_tstamp = selapsed.length();
-
-    if(msg_var.length() > m_max_len_msg_var)
-      m_max_len_msg_var = msg_var.length();
-
-    if(msg_val.length() > m_max_len_msg_value)
-      m_max_len_msg_value = msg_val.length();
+    actab << src << total + elapsed + msg_var + msg_val;
   }
+  m_msgs << actab.getFormattedString();
+
+  list<string>::iterator p2;
+  m_msgs << endl;
+  m_msgs << "Last Few Messages: (oldest to newest) " << endl;
+  m_msgs << "======================================" << endl;
+  m_msgs << "Valid Mgs: " << endl;
+  if(m_last_valid_msgs.size() == 0)
+    m_msgs << "  NONE  " << endl;
+  else {
+    for(p2 = m_last_valid_msgs.begin(); p2 != m_last_valid_msgs.end(); p2++) {
+      string msg = *p2;
+      m_msgs << "  " << truncString(msg, 70) << endl;
+    }
+  }
+
+  m_msgs << "Invalid Mgs: " << endl;
+  if(m_last_invalid_msgs.size() == 0)
+    m_msgs << "  NONE  " << endl;
+  else {
+    for(p2 = m_last_invalid_msgs.begin(); p2 != m_last_invalid_msgs.end(); p2++) {
+      string msg = *p2;
+      m_msgs << "  " << truncString(msg, 70) << endl;
+    }
+  }
+
+  m_msgs << "Rejected Mgs: " << endl;
+  if(m_last_rejected_msgs.size() == 0)
+    m_msgs << "  NONE  " << endl;
+  else {
+    for(p2 = m_last_rejected_msgs.begin(); p2 != m_last_rejected_msgs.end(); p2++) {
+      string msg = *p2;
+      m_msgs << "  " << truncString(msg, 70) << endl;
+    }
+  }
+  
+  return(true);
 }
+

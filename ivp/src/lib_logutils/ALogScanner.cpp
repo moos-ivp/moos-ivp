@@ -73,3 +73,4 @@ bool ALogScanner::openALogFile(string alogfile)
   else
     return(true);
 }
+

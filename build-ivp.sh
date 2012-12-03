@@ -10,6 +10,6 @@ echo ""
 echo "Invoking make..."
 echo ""
 
-make $@
+make -j8 $@
 
 cd ${INVOCATION_ABS_DIR}

@@ -24,7 +24,7 @@
 
 #include <string>
 #include <vector>
-#include "MOOSMsg.h"
+#include "MOOS/libMOOS/MOOSLib.h"
 
 /// Represents the events associated with MOOSApp's callbacks.  In the
 /// case of OnNewMessage, this represents one of the possibly multiple 

@@ -46,33 +46,39 @@ using namespace std;
 //
 //   Returns: <0.741, 0.718, 0.420>
 
-
-vector<double> colorParse(const std::string &str)
+vector<double> colorParse(const string &str)
 {
-  // CASE 1: string is apparently a named description of the color
-  // e.g., "blue". Detected by lack of comma-separated fields
+  // Case 1: string is hex representation of the color
+  if(strBegins(str, "hex:"))
+    return(colorHexToVector(str));
 
-  string numerical_str;
-  if(!strContains(str, ",")  && !strContains(str, "%") &&
-     !strContains(str, "$")  && !strContains(str, "#") &&
-     !strContains(str, ":"))
-    numerical_str = colorNameToHex(str);
-  else
-    numerical_str = str;
+  // Case 2: string is decimal representation of the color
+  if(strContains(str, ',') || strContains(str, '%') ||
+     strContains(str, '$') || strContains(str, '#') ||
+     strContains(str, ':')) {
+    return(colorDecToVector(str));
+  }
 
-  // CASE 2: string is hex representation of the color
-  if(strContains(numerical_str, "hex"))
-    return(colorHexToVector(numerical_str));
-
-  // CASE 3: string is decimal representation of the color
-  return(colorDecToVector(numerical_str));
+  vector<double> fail_vector(3,0);  // (equivalent to black)
+  // Case 3: Most common.
+  // The string is is apparently a named description of the 
+  // color, e.g., "blue". If hex string is not "error" proceed 
+  // to convert to a decimal vector
+  string parsed_str = colorNameToHex(str);
+  if(parsed_str == "error") 
+    return(fail_vector);
+  else {
+    if(strBegins(parsed_str, "hex:"))
+      return(colorHexToVector(parsed_str));
+    else 
+      return(colorDecToVector(parsed_str));
+  }
 }
-
 
 //-------------------------------------------------------------
 // Procedure: colorHexToVector
 
-vector<double> colorHexToVector(const std::string& str)
+vector<double> colorHexToVector(const string& str)
 {
   vector<double> return_vector(3,0);
   int i;
@@ -123,21 +129,21 @@ vector<double> colorHexToVector(const std::string& str)
 //-------------------------------------------------------------
 // Procedure: colorDecToVector
 
-vector<double> colorDecToVector(const std::string& str)
+vector<double> colorDecToVector(const string& str)
 {
   vector<double> return_vector(3,0);
   int i;
 
   vector<string> svector;
-  if(strContains(str, ","))
+  if(strContains(str, ','))
     svector = parseString(str, ',');
-  else if(strContains(str, "%"))
+  else if(strContains(str, '%'))
     svector = parseString(str, '%');
-  else if(strContains(str, "$"))
+  else if(strContains(str, '$'))
     svector = parseString(str, '$');
-  else if(strContains(str, "#"))
+  else if(strContains(str, '#'))
     svector = parseString(str, '#');
-  else if(strContains(str, ":"))
+  else if(strContains(str, ':'))
     svector = parseString(str, ':');
 
   int vsize = svector.size();
@@ -166,7 +172,7 @@ vector<double> colorDecToVector(const std::string& str)
 //-------------------------------------------------------------
 // Procedure: isColor
 
-bool isColor(const std::string &str)
+bool isColor(const string &str)
 {
   if((tolower(str) == "black") || (tolower(str) == "invisible"))
     return(true);
@@ -180,9 +186,30 @@ bool isColor(const std::string &str)
 
 
 //-------------------------------------------------------------
+// Procedure: isTermColor
+
+bool isTermColor(const string &raw_color_in)
+{
+  string raw_color = tolower(raw_color_in);
+  if((raw_color == "nocolor")   || (raw_color == "lightred")     ||
+     (raw_color == "red")       || (raw_color == "lightgreen")   ||
+     (raw_color == "green")     || (raw_color == "lightyellow")  ||
+     (raw_color == "yellow")    || (raw_color == "lightblue")    ||
+     (raw_color == "blue")      || (raw_color == "lightmagenta") ||
+     (raw_color == "magenta")   || (raw_color == "lightwhite")   ||
+     (raw_color == "white")     || (raw_color == "reversered")   ||
+     (raw_color == "cyan")      || (raw_color == "reverseblue")  ||
+     (raw_color == "lightcyan") || (raw_color == "reversegreen"))
+    return(true);
+  else
+    return(false);
+}
+
+
+//-------------------------------------------------------------
 // Procedure: colorNameToHex
 
-string colorNameToHex(const std::string &str)
+string colorNameToHex(const string &str)
 {
   string cstr = tolower(stripBlankEnds(str));
   cstr = findReplace(cstr, "_", "");
@@ -313,6 +340,7 @@ string colorNameToHex(const std::string &str)
   if(cstr == "orange")         return("hex:ff,a5,00");
   if(cstr == "orangered")      return("hex:ff,45,00");
   if(cstr == "orchid")         return("hex:da,70,d6");
+  if(cstr == "oxfordindigo")   return("hex:41,57,98");
   if(cstr == "palegreen")      return("hex:98,fb,98");
   if(cstr == "paleturquoise")  return("hex:af,ee,ee");
   if(cstr == "palevioletred")  return("hex:db,70,93");
@@ -424,6 +452,35 @@ string termColor(const string& raw_color_in)
   
 
 //-------------------------------------------------------------
+// Procedure: removeTermColors
+
+string removeTermColors(string str)
+{
+  str = findReplace(str, "\33[0m", "");
+  str = findReplace(str, "\33[0m", "");
+  str = findReplace(str, "\33[91m", "");
+  str = findReplace(str, "\33[31m", "");
+  str = findReplace(str, "\33[92m", "");
+  str = findReplace(str, "\33[32m", "");
+  str = findReplace(str, "\33[93m", "");
+  str = findReplace(str, "\33[33m", "");
+  str = findReplace(str, "\33[94m", "");
+  str = findReplace(str, "\33[34m", "");
+  str = findReplace(str, "\33[95m", "");
+  str = findReplace(str, "\33[35m", "");
+  str = findReplace(str, "\33[96m", "");
+  str = findReplace(str, "\33[36m", "");
+  str = findReplace(str, "\33[97m", "");
+  str = findReplace(str, "\33[37m", "");
+  str = findReplace(str, "\33[7;31m", "");
+  str = findReplace(str, "\33[7;34m", "");
+  str = findReplace(str, "\33[7;32m", "");
+  str = findReplace(str, "\33[0m", "");
+  return(str);
+}
+  
+
+//-------------------------------------------------------------
 // Procedure: blu, blk, red, grn, mag
 
 void blu(const string& str, const string& xstr)
@@ -450,3 +507,4 @@ void mag(const string& str, const string& xstr)
 {
   cout << "\33[35m" << str << "\33[0m" << xstr << endl;
 }
+

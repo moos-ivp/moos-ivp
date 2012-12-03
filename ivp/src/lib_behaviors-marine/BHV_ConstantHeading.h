@@ -30,17 +30,25 @@ public:
   BHV_ConstantHeading(IvPDomain);
   ~BHV_ConstantHeading() {};
   
+  void         onIdleState() {updateInfoIn();};
   IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
 
-protected:
-  double  m_desired_heading;
-  double  m_basewidth;
-  double  m_peakwidth;
-  double  m_summitdelta;
+ protected:
+  bool         updateInfoIn();
 
+ protected: // Configuration variables
+  double      m_desired_heading;
+  double      m_basewidth;
+  double      m_peakwidth;
+  double      m_summitdelta;
+  std::string m_heading_mismatch_var;
+
+ protected: // State variables
+  double      m_os_heading;
 };
 #endif
+
 
 
 

@@ -25,13 +25,13 @@
 
 #include <vector>
 #include <string>
-#include "MOOSLib.h"
+#include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
 #include "VarDataPair.h"
 #include "LogicCondition.h"
 #include "InfoBuffer.h"
 #include "RandomVariableSet.h"
 
-class TS_MOOSApp : public CMOOSApp
+class TS_MOOSApp : public AppCastingMOOSApp
 {
  public:
   TS_MOOSApp();
@@ -43,13 +43,16 @@ class TS_MOOSApp : public CMOOSApp
   bool OnConnectToServer();
   bool OnStartUp();
 
+ protected: // Standard AppCastingMOOSApp function to overload
+  bool   buildReport();
+
  public: // Public configuration functions
   void setVerbose(bool val) {m_verbose = val;};
   void setShuffle(bool val) {m_shuffle = val;};
 
  protected: // Locally defined and locally used functions
-  void   RegisterVariables();
-  bool   addNewEvent(std::string);
+  void   registerVariables();
+  void   addNewEvent(const std::string&);
   void   scheduleEvents(bool shuffle=true);
   void   printRawScript();
   bool   checkForReadyPostings();
@@ -60,9 +63,7 @@ class TS_MOOSApp : public CMOOSApp
   void   postStatus();
   void   seedRandom();
   bool   handleMathExpr(std::string&);
-  void   printPosting(std::string, double, double);
-  void   printPosting(std::string, std::string, double);
-
+  void   addLogEvent(std::string, std::string, double);
 
  protected: // Functions in support of logic conditions
   bool updateInfoBuffer(CMOOSMsg&);
@@ -77,14 +78,15 @@ class TS_MOOSApp : public CMOOSApp
   std::vector<double>       m_ptime_min;
   std::vector<double>       m_ptime_max;
   std::vector<bool>         m_poked;
+
   std::string               m_script_name;
   bool                      m_verbose;
   bool                      m_shuffle;
   bool                      m_atomic;
   std::string               m_upon_awake;
-  RandomVariable            m_time_warp;     // report
-  RandomVariable            m_delay_start;   // report
-  RandomVariable            m_delay_reset;   // report
+  RandVarUniform            m_uts_time_warp;
+  RandVarUniform            m_delay_start;   
+  RandVarUniform            m_delay_reset;  
   RandomVariableSet         m_rand_vars;
 
   // Set of logic conditions pertaining to entire script
@@ -103,24 +105,24 @@ class TS_MOOSApp : public CMOOSApp
  protected: // State variables
   double   m_previous_time;
   double   m_elapsed_time;
-  double   m_start_time;
+  double   m_script_start_time;
   double   m_connect_tstamp;
   double   m_status_tstamp;
   bool     m_status_needed;
   double   m_skip_time;
   double   m_pause_time;
-  double   m_utc_time;
   bool     m_paused;
   bool     m_conditions_ok;
 
-  unsigned int  m_posted_count;
-  unsigned int  m_posted_tcount;
+  unsigned int  m_posted_count_local;
+  unsigned int  m_posted_count_total;
   unsigned int  m_reset_count;
-  unsigned int  m_iterations;
-  char          m_iter_char;
 
   InfoBuffer *m_info_buffer;
+
+  std::list<std::string> m_event_log;
 };
 
 #endif 
+
 

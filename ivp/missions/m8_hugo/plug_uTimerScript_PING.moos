@@ -1,0 +1,15 @@
+//------------------------------------------
+// uTimerScript config block
+
+ProcessConfig = uTimerScript_PING
+{
+  AppTick	= 4
+  CommsTick	= 4
+
+  PAUSED     = false
+  RESET_MAX  = nolimit
+  RESET_TIME = end
+  CONDITION  = (NAV_SPEED > 0)
+
+  EVENT = var=CRS_RANGE_REQUEST, val="name=archie", time=27:37
+}

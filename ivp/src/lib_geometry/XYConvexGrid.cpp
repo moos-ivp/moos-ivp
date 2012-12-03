@@ -3,7 +3,6 @@
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: XYConvexGrid.cpp                                     */
 /*    DATE: Aug 27th 2005                                        */
-/*    DATE: Dec  7th 2011                                        */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
 /* modify it under the terms of the GNU General Public License   */
@@ -592,5 +591,6 @@ void XYConvexGrid::print() const
   for(i=0; i<vsize; i++) 
     cout << "[" << i << "]: " << m_elements[i].get_spec() << endl;
 }
+
 
 

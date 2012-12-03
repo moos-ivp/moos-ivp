@@ -32,7 +32,6 @@ int main(int argc, char *argv[])
 {
   string mission_file;
   string run_command = argv[0];
-  bool   verbose_setting = true;
 
   for(int i=1; i<argc; i++) {
     string argi = argv[i];
@@ -44,8 +43,6 @@ int main(int argc, char *argv[])
       showHelpAndExit();
     else if((argi == "-i") || (argi == "--interface"))
       showInterfaceAndExit();
-    else if(strBegins(argi, "--verbose="))
-      setBooleanOnString(verbose_setting, argi.substr(10));
     else if(strEnds(argi, ".moos") || strEnds(argi, ".moos++"))
       mission_file = argv[i];
     else if(strBegins(argi, "--alias="))
@@ -63,10 +60,10 @@ int main(int argc, char *argv[])
 
   BasicContactMgr BasicContactMgr;
 	
-  BasicContactMgr.setVerbose(verbose_setting);
   BasicContactMgr.Run(run_command.c_str(), mission_file.c_str());
 
   return(0);
 }
+
 
 

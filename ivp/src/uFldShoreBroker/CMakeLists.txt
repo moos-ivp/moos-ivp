@@ -9,8 +9,8 @@ ADD_EXECUTABLE(uFldShoreBroker ${SRC})
 
 TARGET_LINK_LIBRARIES(uFldShoreBroker
    MOOS
-   MOOSGen
    mbutil
+   apputil
    ufield
    m
    pthread)

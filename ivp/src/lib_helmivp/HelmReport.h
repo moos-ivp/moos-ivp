@@ -1,8 +1,23 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin                                     */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: HelmReport.h                                         */
 /*    DATE: Sep 26th, 2006                                       */
+/*                                                               */
+/* This program is free software; you can redistribute it and/or */
+/* modify it under the terms of the GNU General Public License   */
+/* as published by the Free Software Foundation; either version  */
+/* 2 of the License, or (at your option) any later version.      */
+/*                                                               */
+/* This program is distributed in the hope that it will be       */
+/* useful, but WITHOUT ANY WARRANTY; without even the implied    */
+/* warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR       */
+/* PURPOSE. See the GNU General Public License for more details. */
+/*                                                               */
+/* You should have received a copy of the GNU General Public     */
+/* License along with this program; if not, write to the Free    */
+/* Software Foundation, Inc., 59 Temple Place - Suite 330,       */
+/* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
 #ifndef HELM_REPORT_HEADER
@@ -10,6 +25,7 @@
 
 #include <map>
 #include <vector>
+#include <list>
 #include <string>
 #include "IvPDomain.h"
 
@@ -20,22 +36,23 @@ public:
   void  addMsg(const std::string& str)     {m_messages.push_back(str);};
   void  setHaltMsg(const std::string& str) {m_halt_message = str;};
   
+  void  clearActiveBHVs();
   void  addActiveBHV(const std::string& descriptor, double time,
-		     double pwt, double pcs, double cpu,
+		     double pwt, int pcs, double cpu,
 		     const std::string& update_summary, 
-		     unsigned int ipfs, bool orig=true);
+		     unsigned int ipfs);
+
+  void  clearRunningBHVs();
   void  addRunningBHV(const std::string& descriptor, double time,
 		      const std::string& update_summary);
+
+  void  clearIdleBHVs();
   void  addIdleBHV(const std::string& descriptor, double time,
 		   const std::string& updated_summary);
+
+  void  clearCompletedBHVs();
   void  addCompletedBHV(const std::string& descriptor, double time,
 			const std::string& update_summary);
-
-  void  setActiveBHVs(const std::string& s)    {m_active_bhvs=s;};
-  void  setRunningBHVs(const std::string& s)   {m_running_bhvs=s;};
-  void  setIdleBHVs(const std::string& s)      {m_idle_bhvs=s;};
-  void  setCompletedBHVs(const std::string& s) {m_completed_bhvs=s;};
-
 
   void  setModeSummary(const std::string& s) {m_modes=s;};
   void  setIvPDomain(const IvPDomain &dom)   {m_domain = dom;};
@@ -46,51 +63,81 @@ public:
   void  setOFNUM(unsigned int ofnum)         {m_ofnum=ofnum;};
   void  setCreateTime(double t)              {m_create_time=t;};
   void  setSolveTime(double t)               {m_solve_time=t;};
+  void  setMaxLoopTime(double t)             {m_max_loop_time=t;};
+  void  setMaxCreateTime(double t)           {m_max_create_time=t;};
+  void  setMaxSolveTime(double t)            {m_max_solve_time=t;};
 
   void  clearDecisions();
   void  addDecision(const std::string &var, double val);
 
   // Getters
-  unsigned int getWarnings() const   {return(m_warning_count);};
-  unsigned int getIteration() const  {return(m_iteration);};
-  unsigned int getOFNUM() const      {return(m_ofnum);};
-  double       getTimeUTC() const    {return(m_time_utc);};
-  double       getCreateTime() const {return(m_create_time);};
-  double       getSolveTime() const  {return(m_solve_time);};
-  double       getLoopTime() const   {return(m_solve_time+m_create_time);};
-  bool         getHalted() const     {return(m_halted);};
-  double       getDecision(const std::string &var);
-  bool         hasDecision(const std::string &var);
+  unsigned int getWarnings()   const  {return(m_warning_count);};
+  unsigned int getIteration()  const  {return(m_iteration);};
+  unsigned int getOFNUM()      const  {return(m_ofnum);};
+  double       getTimeUTC()    const  {return(m_time_utc);};
+  double       getCreateTime() const  {return(m_create_time);};
+  double       getSolveTime()  const  {return(m_solve_time);};
+  double       getLoopTime()   const  {return(m_solve_time+m_create_time);};
+  bool         getHalted()     const  {return(m_halted);};
+  double       getMaxLoopTime() const {return(m_max_loop_time);};
+  double       getMaxSolveTime()  const {return(m_max_solve_time);};
+  double       getMaxCreateTime() const {return(m_max_create_time);};
 
-  std::string  getReportAsString();
-  std::string  getReportAsString(const HelmReport&);
+  double       getDecision(const std::string&) const;
+  bool         hasDecision(const std::string&) const;
 
-  std::string  getModeSummary() const        {return(m_modes);};
-  std::string  getHaltMsg() const            {return(m_halt_message);};
-  std::string  getActiveBehaviors() const    {return(m_active_bhvs);};;
-  std::string  getRunningBehaviors() const   {return(m_running_bhvs);};
-  std::string  getIdleBehaviors() const      {return(m_idle_bhvs);};
-  std::string  getCompletedBehaviors() const {return(m_completed_bhvs);};
-  std::string  getDecisionSummary() const    {return(m_decision_summary);};
+  std::string  getModeSummary()      const {return(m_modes);};
+  std::string  getHaltMsg()          const {return(m_halt_message);};
+  std::vector<std::string> getMsgs() const {return(m_messages);};
 
-  std::vector<std::string> getMsgs() const   {return(m_messages);};
+  // Serialization Helper Methods
+  std::string  getDecisionSummary()    const;
+  std::string  getActiveBehaviors()    const;
+  std::string  getRunningBehaviors()   const;
+  std::string  getIdleBehaviors()      const;
+  std::string  getCompletedBehaviors() const;
+  std::string  getDomainString()       const;
+  std::string  timeInState(double, double) const;
 
+  // Serialization Methods
+  std::string  getReportAsString() const;
+  std::string  getReportAsString(const HelmReport&) const;
+
+  // Formatted Summary
+  std::list<std::string> formattedSummary(double, bool=false) const;
+
+  // Debugging
   void print() const;
 
 protected:
+
+  std::vector<std::string>  m_bhvs_running_desc;   // Running Behaviors
+  std::vector<double>       m_bhvs_running_time;
+  std::vector<std::string>  m_bhvs_running_upds;
+  
+  std::vector<std::string>  m_bhvs_idle_desc;      // Idle Behaviors
+  std::vector<double>       m_bhvs_idle_time;
+  std::vector<std::string>  m_bhvs_idle_upds;
+  
+  std::vector<std::string>  m_bhvs_completed_desc; // Completed Behaviors
+  std::vector<double>       m_bhvs_completed_time;
+  std::vector<std::string>  m_bhvs_completed_upds;
+  
+  std::vector<std::string>  m_bhvs_active_desc;    // Active Behaviors
+  std::vector<double>       m_bhvs_active_time;
+  std::vector<std::string>  m_bhvs_active_upds;
+  std::vector<double>       m_bhvs_active_pwt;
+  std::vector<double>       m_bhvs_active_cpu;
+  std::vector<int>          m_bhvs_active_pcs;
+  std::vector<unsigned int> m_bhvs_active_ipfs;
+  
+
   std::vector<std::string>      m_messages;
   std::map<std::string, double> m_decisions;  // +
 
   std::string   m_halt_message;    // +
-  std::string   m_active_bhvs;     // +
-  std::string   m_running_bhvs;    // +
-  std::string   m_completed_bhvs;  // +
-  std::string   m_idle_bhvs;       // +
   std::string   m_modes;           // +
   
-  // A decision summary for easy comparing between successive reports
-  std::string   m_decision_summary; 
-
   unsigned int  m_warning_count;   // +
   double        m_time_utc;        // +
   unsigned int  m_iteration;       // +
@@ -99,8 +146,14 @@ protected:
   double        m_solve_time;      // + 
   bool          m_halted;          // +
 
+  double        m_max_create_time;
+  double        m_max_solve_time;
+  double        m_max_loop_time;
+
   IvPDomain     m_domain;          // referenced for varbalk info
 };
 
 #endif
+
+
 

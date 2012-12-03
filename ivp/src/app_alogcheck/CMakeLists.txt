@@ -26,7 +26,6 @@ ADD_EXECUTABLE(alogcheck ${SRC} ${HDR} )
 
 TARGET_LINK_LIBRARIES(alogcheck
   MOOS
-  MOOSGen
   genutil
   mbutil
   logic

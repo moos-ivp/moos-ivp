@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: NavPlotElement.h                                        */
+/*    FILE: NavPlotElement.h                                     */
 /*    DATE: Sep 27th, 2011                                       */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
@@ -89,3 +89,4 @@ class NavPlotElement
 };
 
 #endif 
+

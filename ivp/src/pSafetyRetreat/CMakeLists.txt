@@ -21,7 +21,6 @@ ADD_EXECUTABLE(pSafetyRetreat ${SRC})
 
 TARGET_LINK_LIBRARIES(pSafetyRetreat
    MOOS
-   MOOSGen
    mbutil
    geometry
    ${SYSTEM_LIBS})

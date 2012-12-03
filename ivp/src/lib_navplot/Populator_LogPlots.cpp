@@ -102,3 +102,4 @@ LogPlot Populator_LogPlots::getLogPlot(const string& varname) const
   return(empty_logplot);
 }
 
+

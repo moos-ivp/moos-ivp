@@ -40,7 +40,7 @@ using namespace std;
 VehicleSet::VehicleSet()
 {
   m_curr_time    = 0;
-  m_history_size = 100;
+  m_history_size = 1000;
 
   m_node_report_vars.push_back("NODE_REPORT");
   m_node_report_vars.push_back("NODE_REPORT_LOCAL");
@@ -570,5 +570,6 @@ bool VehicleSet::updateVehicleBearingLine(const string& str)
   m_bearing_map[vname] = bearing_line; 
   return(true);
 }
+
 
 

@@ -1,40 +1,23 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin                                     */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: Populator_BehaviorSet.cpp                            */
 /*    DATE:                                                      */
 /*                                                               */
-/* (IvPHelm) The IvP autonomous control Helm is a set of         */
-/* classes and algorithms for a behavior-based autonomous        */
-/* control architecture with IvP action selection.               */
+/* This program is free software; you can redistribute it and/or */
+/* modify it under the terms of the GNU General Public License   */
+/* as published by the Free Software Foundation; either version  */
+/* 2 of the License, or (at your option) any later version.      */
 /*                                                               */
-/* The algorithms embodied in this software are protected under  */
-/* U.S. Pat. App. Ser. Nos. 10/631,527 and 10/911,765 and are    */
-/* the property of the United States Navy.                       */
+/* This program is distributed in the hope that it will be       */
+/* useful, but WITHOUT ANY WARRANTY; without even the implied    */
+/* warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR       */
+/* PURPOSE. See the GNU General Public License for more details. */
 /*                                                               */
-/* Permission to use, copy, modify and distribute this software  */
-/* and its documentation for any non-commercial purpose, without */
-/* fee, and without a written agreement is hereby granted        */
-/* provided that the above notice and this paragraph and the     */
-/* following three paragraphs appear in all copies.              */
-/*                                                               */
-/* Commercial licences for this software may be obtained by      */
-/* contacting Patent Counsel, Naval Undersea Warfare Center      */
-/* Division Newport at 401-832-4736 or 1176 Howell Street,       */
-/* Newport, RI 02841.                                            */
-/*                                                               */
-/* In no event shall the US Navy be liable to any party for      */
-/* direct, indirect, special, incidental, or consequential       */
-/* damages, including lost profits, arising out of the use       */
-/* of this software and its documentation, even if the US Navy   */
-/* has been advised of the possibility of such damage.           */
-/*                                                               */
-/* The US Navy specifically disclaims any warranties, including, */
-/* but not limited to, the implied warranties of merchantability */
-/* and fitness for a particular purpose. The software provided   */
-/* hereunder is on an 'as-is' basis, and the US Navy has no      */
-/* obligations to provide maintenance, support, updates,         */
-/* enhancements or modifications.                                */
+/* You should have received a copy of the GNU General Public     */
+/* License along with this program; if not, write to the Free    */
+/* Software Foundation, Inc., 59 Temple Place - Suite 330,       */
+/* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 #ifdef _WIN32
 #pragma warning(disable : 4786)
@@ -79,15 +62,15 @@ BehaviorSet *Populator_BehaviorSet::populate(set<string> bhv_files)
   unsigned int  line_ix;
   set<string>::const_iterator p;
   for(p=bhv_files.begin(); p!=bhv_files.end(); p++) {
-
     string filename = *p;
-
     FILE *f = fopen(filename.c_str(), "r");
-    
     cout << "Processing Behavior File: " << filename << "  START" << endl;
 
-    if(!f) 
-      cerr << "    Could not find File: " << filename << endl;
+    if(!f) {
+      string msg = "Could not find File: " + filename;
+      cerr << "    " << msg << endl;
+      addConfigWarning(msg);
+    } 
     else {
       cout << "    Successfully found file: " << filename << endl;
       fclose(f);
@@ -133,20 +116,22 @@ BehaviorSet *Populator_BehaviorSet::populate(set<string> bhv_files)
 	  
 	bool ok = true;
 	if(pre_line != "")
-	  ok = ok && handleLine(pre_line, line_ix);
-	ok = ok && handleLine(line, line_ix);
+	  ok = ok && handleLine(filename, pre_line, line_ix);
+	ok = ok && handleLine(filename, line, line_ix);
 	if(post_line != "")
-	  ok = ok && handleLine(post_line, line_ix);
+	  ok = ok && handleLine(filename, post_line, line_ix);
 	
 	//cout << "After line " << i+1 << " mode:[" << m_parse_mode
 	//<< "]" << endl; cout << "(" << line << ")" << endl;
 	
 	if(!ok) {
-	  cerr << "    Problem with line " << line_ix+1;
-	  cerr << "    in the BehaviorSet file: " << filename << endl;
-	  cerr << "Pre_line: [" << pre_line << "]" << endl;
-	  cerr << "Post_line: [" << post_line << "]" << endl;
-	  cerr << "Line:     [" << line     << "]" << endl;
+	  string msg = "Problem with line " + uintToString(line_ix+1);
+	  msg +=  " in the BehaviorSet file: " + filename;
+	  //msg +=  " Pre_line: [" + pre_line + "]";
+	  //msg +=  " Post_line: [" + post_line + "]";
+	  msg +=  " Line: [" + line + "]";
+	  cerr << "   " << msg << endl;
+	  addConfigWarning(msg);
 	  return(0);
 	}
 
@@ -170,6 +155,9 @@ BehaviorSet *Populator_BehaviorSet::populate(set<string> bhv_files)
   for(i=0; i<m_behavior_specs.size(); i++)
     bset->addBehaviorSpec(m_behavior_specs[i]);
   bool ok = bset-> buildBehaviorsFromSpecs();
+
+  addConfigWarnings(bset->getWarnings());
+  
   if(!ok) {
     delete(bset);
     return(0);
@@ -201,20 +189,10 @@ BehaviorSet *Populator_BehaviorSet::populate(string filestr)
   return(populate(bhv_files));
 }
 
-#if 0
-//----------------------------------------------------------
-// Procedure: loadBehaviorDirectory
-
-void Populator_BehaviorSet::loadBehaviorDirectory(string dirname)
-{
-  m_bfactory_dynamic.loadDirectory(dirname);
-}
-#endif
-
 //----------------------------------------------------------
 // Procedure: printBehaviorSpecs()
 
-void Populator_BehaviorSet::printBehaviorSpecs()
+void Populator_BehaviorSet::printBehaviorSpecs() const
 {
   unsigned int i, vsize = m_behavior_specs.size();
   for(i=0; i<vsize; i++) {
@@ -227,7 +205,7 @@ void Populator_BehaviorSet::printBehaviorSpecs()
 //   Returns: true  if all OK
 //            false otherwise
 //
-bool Populator_BehaviorSet::handleLine(string line, 
+bool Populator_BehaviorSet::handleLine(string filename, string line, 
 				       unsigned int line_num)
 {
   // Comments are anything to the right of a "#" or "//"
@@ -255,8 +233,11 @@ bool Populator_BehaviorSet::handleLine(string line,
       m_parse_mode = "bhv-defining";
     else if(m_parse_mode == "set-declared")
       m_parse_mode = "set-defining";
-    else { 
-      cerr << "Unexpected open brace '{'" << endl;
+    else {
+      string msg = "File:" + filename + " Line:" + uintToString(line_num);
+      msg += "Unexpected open brace '{'";
+      cerr << msg << endl;
+      addConfigWarning(msg);
       return(false);
     }
     return(true);
@@ -268,13 +249,17 @@ bool Populator_BehaviorSet::handleLine(string line,
       m_parse_mode = "misc-defined-ish";
     else if(m_parse_mode == "bhv-defining") {
       m_parse_mode = "top";
+      m_curr_bhv_spec.setFileName(filename);
       m_behavior_specs.push_back(m_curr_bhv_spec);
       m_curr_bhv_spec.clear();
     }
     else if(m_parse_mode == "set-defining")
       m_parse_mode = "set-defined-ish";
     else { 
-      cerr << "Unexpected close brace '}'" << endl;
+      string msg = "File:" + filename + " Line:" + uintToString(line_num);
+      msg += "Unexpected close brace '}'";
+      cerr << msg << endl;
+      addConfigWarning(msg);
       return(false);
     }
     return(true);
@@ -376,4 +361,23 @@ void Populator_BehaviorSet::closeSetMode()
   m_mode_set.addEntry(m_mode_entry);
   m_mode_entry.clear();
 }
+
+//----------------------------------------------------------
+// Procedure: addConfigWarning()
+
+void Populator_BehaviorSet::addConfigWarning(const string& warning)
+{
+  m_config_warnings.push_back(warning);
+}
+
+//----------------------------------------------------------
+// Procedure: addConfigWarnings()
+
+void Populator_BehaviorSet::addConfigWarnings(vector<string> warnings)
+{
+  for(unsigned int i=0; i<warnings.size(); i++)
+    m_config_warnings.push_back(warnings[i]);
+}
+
+
 

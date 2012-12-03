@@ -3,7 +3,6 @@
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: ProcessWatch.cpp                                     */
 /*    DATE: May 27th 2007 (MINUS-07)                             */
-/*          Aug 7th  2011 (overhaul, Waterloo)                   */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
 /* modify it under the terms of the GNU General Public License   */
@@ -25,6 +24,7 @@
 #include <iterator>
 #include "ProcessWatch.h"
 #include "MBUtils.h"
+#include "ACTable.h"
 
 using namespace std;
 
@@ -33,17 +33,28 @@ using namespace std;
 
 ProcessWatch::ProcessWatch()
 {
-  // m_watch_all true means all processes detected on incoming
+  // m_watch_all_db true means all processes detected on incoming
   // db_clients mail will be added to the watch list (unless the
   // the process is on the exclude list)
-  m_watch_all = true;
+  m_watch_all_db = true;
+
+  // m_watch_all_antler true means all processes detected on the
+  // antler configuration block in the mission file will be added
+  // to the the watch list (unless the process is on the exclude list)
+  m_watch_all_antler = true;
 
   // m_min_wait = -1 means proc_watch_summary postings will only
   // occur when the value of the posting changes. Change to a non-
   // negative value to allow subscribers to get a heartbeat
   // sense for the uProcessWatch process itself.
-  m_min_wait  = -1;
+  m_min_wait = -1;
 
+  // Allow retractions = -1 means always allow retractions. 
+  // Otherwise retractions allowed only if elapsed_time is LESS than 
+  // the m_allow_retractions time.
+  m_allow_retractions = -1;
+
+  // Indicates whether the summary (overall status) has changed 
   m_proc_watch_summary_changed = false;
   m_last_posting_time = 0;
 }
@@ -54,23 +65,26 @@ ProcessWatch::ProcessWatch()
 
 bool ProcessWatch::OnNewMail(MOOSMSG_LIST &NewMail)
 {
+  AppCastingMOOSApp::OnNewMail(NewMail);
+
   MOOSMSG_LIST::iterator p;
-	
   for(p=NewMail.begin(); p!=NewMail.end(); p++) {
     CMOOSMsg &msg = *p;
-
-    if(msg.GetKey() == "DB_CLIENTS") {
+    string    key = msg.GetKey();
+    
+    if(key == "DB_CLIENTS") {
       string new_db_clients = msg.GetString();
       if(new_db_clients != m_db_clients) {
 	m_db_clients = new_db_clients;
 	// Invoke on EACH piece of new mail in case a proc chgs
 	// status twice in one iteration. Want to note that in
 	// a proc_watch_event outgoing message.
-	handleNewDBClients();
+	handleMailNewDBClients();
       }
     }
+    else
+      reportRunWarning("Unhandled Mail: " + key);
   }
-
   return(true);
 }
 
@@ -79,33 +93,242 @@ bool ProcessWatch::OnNewMail(MOOSMSG_LIST &NewMail)
 
 bool ProcessWatch::OnConnectToServer()
 {
-  // register for variables here
-  // possibly look at the mission file?
-  // m_MissionReader.GetConfigurationParam("Name", <string>);
-  // m_Comms.Register("VARNAME", is_float(int));
-
-  m_Comms.Register("DB_CLIENTS", 0);
+  registerVariables();
   return(true);
 }
 
 //------------------------------------------------------------
-// Procedure: handleNewDBClients
+// Procedure: registerVariables
 
-void ProcessWatch::handleNewDBClients()
+void ProcessWatch::registerVariables()
+{
+  AppCastingMOOSApp::RegisterVariables();
+  m_Comms.Register("DB_CLIENTS", 0);
+}
+
+
+//------------------------------------------------------------
+// Procedure: Iterate
+
+bool ProcessWatch::Iterate()
+{
+  AppCastingMOOSApp::Iterate();
+
+  bool post_based_on_time = false;
+  if(m_min_wait <= 0)
+    post_based_on_time = true;
+  else {
+    double moos_elapsed_time = m_curr_time - m_last_posting_time;
+    double real_elapsed_time = moos_elapsed_time;
+    if(m_time_warp > 0)
+      real_elapsed_time = moos_elapsed_time / m_time_warp;
+    if(real_elapsed_time > m_min_wait)
+      post_based_on_time = true;
+  }
+
+  if(m_proc_watch_summary_changed || post_based_on_time) {
+    m_Comms.Notify(postVar("PROC_WATCH_SUMMARY"), m_proc_watch_summary);
+    m_last_posting_time = m_curr_time;
+  }
+
+  if(m_proc_watch_summary_changed) {
+    checkForIndividualUpdates();
+    postFullSummary();
+    m_map_alive_prev = m_map_alive;
+  }
+  
+  m_proc_watch_summary_changed = false;
+
+  AppCastingMOOSApp::PostReport();
+  return(true);
+}
+
+//------------------------------------------------------------
+// Procedure: OnStartUp
+  
+bool ProcessWatch::OnStartUp()
+{
+  AppCastingMOOSApp::OnStartUp();
+
+  STRING_LIST sParams;
+  m_MissionReader.EnableVerbatimQuoting(false);
+  if(!m_MissionReader.GetConfiguration(GetAppName(), sParams)) 
+    reportConfigWarning("No config block found for " + GetAppName());
+  
+  STRING_LIST::iterator p;
+  for(p = sParams.begin(); p!=sParams.end(); p++) {
+    string orig = *p;
+    string line = *p;
+    string param = tolower(biteStringX(line, '='));
+    string value = line;
+
+    if(param == "watch")
+      handleConfigWatchList(value);
+    else if(param == "nowatch") 
+      handleConfigExcludeList(value);
+    else if(param == "watch_all") {
+      string lvalue = tolower(value);
+      if(lvalue == "true") {
+	m_watch_all_antler = true;
+	m_watch_all_db = true;
+      }
+      else if(lvalue == "false") {
+	m_watch_all_antler = false;
+	m_watch_all_db     = false;
+      }
+      else if(lvalue == "antler") {
+	m_watch_all_antler = true;
+	m_watch_all_db     = false;
+      }
+      else if((lvalue == "dbclients") || (lvalue == "db_clients")) {
+	m_watch_all_antler = false;
+	m_watch_all_db     = true;
+      }
+      else 
+	reportConfigWarning("Invalide WATCH_ALL value:" + value);
+    }
+    else if(param == "summary_wait") {
+      if(isNumber(value))
+	m_min_wait = atof(value.c_str());
+      else
+	reportConfigWarning("SUMMARY_WAIT must be numerical value");
+    }
+    else if(param == "allow_retractions") {
+      if(tolower(value) == "true")
+	m_allow_retractions = -1;
+      else if(tolower(value) == "false")
+	m_allow_retractions = 0;
+      else if(isNumber(value))
+	m_allow_retractions = atof(value.c_str());
+      else
+	reportConfigWarning("Param ALLOW_RETRACTIONS must be Boolean or numerial");
+    }
+    else if(param == "post_mapping")
+      handlePostMapping(value);
+    else 
+      reportUnhandledConfigWarning(orig);
+  }
+  
+  if(m_watch_all_antler == true)
+    populateAntlerList();
+  
+  registerVariables();
+
+  return(true);
+}
+
+//------------------------------------------------------------
+// Procedure: buildReport
+//
+//  Summary: All Present
+//  Antler List: pHelmIvP, pLogger, uSimMarine, uFldShoreBroker
+// 
+//  ProcName    Watch Reason    Status                               
+//  --------    ------------    ------                           
+//  pHelmIvP    DB_CLIENTS      OK                               
+//  pLogger     DB_CLIENTS      OK                              
+//  uSimMarine  DB_CLIENTS      OK                              
+
+//  ProcName    Watch Reason    Status                                 
+//  --------    ------------    ------                           
+//  pHelmIvP    DB/WL/ANT       OK                               
+//  pLogger     DB/ANT          OK                              
+//  pApples     DB/ANT          OK(1)                              
+//  pFooBar     ANT             MISSING
+
+bool ProcessWatch::buildReport()
+{
+  m_msgs << "Summary: " << m_proc_watch_summary << endl << endl;
+
+  // Part 1: Produce a list of apps named in the Antler List:
+  // Antler List: pHelmIvP, pLogger, uSimMarine, uFldShoreBroker
+  //              uFldNodeComms, pMarinePID, pHostInfo
+
+  if(m_watch_all_antler == false) 
+    m_msgs << "Antler List: (Configured with WATCH_ALL = false)" << endl;
+  else {
+    m_msgs << "Antler List: ";
+    set<string>::iterator p;
+    string alist;
+    for(p=m_set_antler_clients.begin(); p!=m_set_antler_clients.end(); p++) {
+      string client = *p;
+      if(alist != "")
+	alist += ",";
+      alist += client;
+      if(alist.length() > 43) {
+	m_msgs << alist << endl;
+	alist = "";
+	m_msgs << "             ";
+      }
+    }
+    if(alist != "") 
+      m_msgs << alist << endl;
+  }
+  m_msgs << endl;
+
+
+  ACTable actab(3,3);
+  // In case we have an obscenely long MOOS app name.
+  actab.setColumnMaxWidth(0,30);
+
+  actab << "ProcName | Watch Reason | Status";
+  actab.addHeaderLines();
+
+  map<string, bool>::iterator p;
+  for(p=m_map_alive.begin(); p!=m_map_alive.end(); p++) {
+    string proc_name = p->first;
+    bool   proc_here = p->second;
+
+    actab << proc_name;
+
+    string reason;
+    if(m_watch_all_antler && m_set_antler_clients.count(proc_name))
+      reason += "ANT ";
+    else
+      reason += "    ";
+
+    if(processIncluded(proc_name))
+      reason += "WATCH ";
+    else
+      reason += "      ";
+    
+    if(m_watch_all_db && m_set_db_clients.count(proc_name))
+      reason += "DB";
+    else
+      reason += "  ";
+    actab.addCell(reason);
+    
+    if(proc_here) 
+      actab.addCell("OK", "reversegreen");
+    else
+      actab.addCell("MISSING", "reversered");
+  }
+  m_msgs << actab.getFormattedString();
+
+  return(true);
+}
+
+//------------------------------------------------------------
+// Procedure: handleMailNewDBClients
+
+void ProcessWatch::handleMailNewDBClients()
 {
   // Phase 1: Possibly expand watchlist given current DB_CLIENTS
-  vector<string> svector = parseString(m_db_clients, ',');
-  unsigned int i, vsize = svector.size();
-  for(i=0; i<vsize; i++)
-    addToWatchList(svector[i]);
-  
+  if(m_watch_all_db) {
+    vector<string> svector = parseString(m_db_clients, ',');
+    unsigned int i, vsize = svector.size();
+    for(i=0; i<vsize; i++) {
+      addToWatchList(svector[i]);
+      m_set_db_clients.insert(svector[i]);
+    }
+  }
 
   // Phase 2: Check items in watchlist against current DB_CLIENTS
   string prev_summary = m_proc_watch_summary;
   m_proc_watch_summary = "All Present";  
-  vsize = m_watch_list.size();
-  for(i=0; i<vsize; i++) {
-    string proc = m_watch_list[i];
+  unsigned int j, jsize = m_watch_list.size();
+  for(j=0; j<jsize; j++) {
+    string proc = m_watch_list[j];
     bool alive = isAlive(proc);
     
     if(!alive) {
@@ -125,70 +348,7 @@ void ProcessWatch::handleNewDBClients()
   }
 
   if(prev_summary != m_proc_watch_summary)
-    m_proc_watch_summary_changed = true;
-  
-}
-
-//------------------------------------------------------------
-// Procedure: Iterate
-
-bool ProcessWatch::Iterate()
-{
-  double current_time = MOOSTime();
-  double elapsed_time = current_time - m_last_posting_time;
-
-  bool post_based_on_time = false;
-  if((m_min_wait >= 0) && (elapsed_time > m_min_wait))
-    post_based_on_time = true;
-
-  //cout << "min_wait:" << m_min_wait << endl;
-  //cout << "elapsed:" << elapsed_time << endl;
-
-  if(m_proc_watch_summary_changed || post_based_on_time) {
-    m_Comms.Notify(postVar("PROC_WATCH_SUMMARY"), m_proc_watch_summary);
-    MOOSTrace("PROC_WATCH_SUMMARY: %s\n", m_proc_watch_summary.c_str()); 
-    m_last_posting_time = current_time;
-  }
-
-  if(m_proc_watch_summary_changed) {
-    checkForIndividualUpdates();
-    postFullSummary();
-    m_map_alive_prev = m_map_alive;
-  }
-  
-  m_proc_watch_summary_changed = false;
-
-  return(true);
-}
-
-//------------------------------------------------------------
-// Procedure: OnStartUp
-  
-bool ProcessWatch::OnStartUp()
-{
-  STRING_LIST sParams;
-  m_MissionReader.EnableVerbatimQuoting(false);
-  m_MissionReader.GetConfiguration(GetAppName(), sParams);
-  
-  STRING_LIST::iterator p;
-  for(p = sParams.begin();p!=sParams.end();p++) {
-    string sLine = *p;
-    string param = tolower(biteStringX(sLine, '='));
-    string value = stripBlankEnds(sLine);
-    
-    if(param == "watch")
-      augmentIncludeList(value);
-    else if(param == "nowatch")
-      augmentExcludeList(value);
-    else if(param == "watch_all")
-      setBooleanOnString(m_watch_all, value);
-    else if((param == "summary_wait") && isNumber(value))
-      m_min_wait = atof(value.c_str());
-    else if(param == "post_mapping")
-      handlePostMapping(value);
-  }
-  
-  return(true);
+    m_proc_watch_summary_changed = true;  
 }
 
 //-----------------------------------------------------------------
@@ -212,21 +372,32 @@ bool ProcessWatch::isAlive(string procname)
   
 
 //-----------------------------------------------------------------
-// Procedure: augmentToIncludeList
+// Procedure: handleConfigWatchList
 //   Purpose: Allow for handling a comma-separated list of names
 //            on a watchlist configuration
 
-void ProcessWatch::augmentIncludeList(string pnames)
+bool ProcessWatch::handleConfigWatchList(string pnames)
 {
   vector<string> svector = parseString(pnames, ',');
   unsigned int i, vsize = svector.size();
-  for(i=0; i<vsize; i++) 
-    addToIncludeList(svector[i]);
+
+  if(vsize == 0) {
+    reportConfigWarning("Empty list provided to WATCH config param");
+    return(false);
+  }
+
+  bool handled = true;
+  for(i=0; i<vsize; i++) {
+    bool ok = handleConfigWatchItem(svector[i]);
+    if(!ok)
+      handled = false;
+  }
+  return(handled);
 }
 
 
 //-----------------------------------------------------------------
-// Procedure: addToIncludeList
+// Procedure: handleConfigWatchItem
 //      Note: A step toward defining the watch policy. 
 //            A given procname may define a process or process prefix.
 //            If it's not a prefix, the process will immediately be 
@@ -237,11 +408,14 @@ void ProcessWatch::augmentIncludeList(string pnames)
 //              list.
 
 
-void ProcessWatch::addToIncludeList(string procname)
+bool ProcessWatch::handleConfigWatchItem(string procname)
 {
   procname = stripBlankEnds(procname);
-  if(procname == "")
-    return;
+  if((procname == "")  || strContainsWhite(procname)) {
+    string msg = "Bad or Null procname on the WATCH list: [" + procname + "]";
+    reportConfigWarning(msg);
+    return(false);
+  }
 
   bool prefix = false; 
   unsigned int len = procname.length();
@@ -266,7 +440,7 @@ void ProcessWatch::addToIncludeList(string procname)
   for(i=0; i<vsize; i++) {
     if(m_include_list[i] == procname) {
       m_include_list_prefix[i] = m_include_list_prefix[i] || prefix;
-      return;
+      return(false);
     }
   }
 
@@ -276,27 +450,41 @@ void ProcessWatch::addToIncludeList(string procname)
 
   // If prefix==false then this specifies an actual varname, not a
   // pattern, so varname should be added now to the watchlist
-  if(!prefix)
+  if(!prefix) {
     m_watch_list.push_back(procname);
+    procNotedHere(procname);
+  }
+  return(true);
 }
 
 
 //-----------------------------------------------------------------
-// Procedure: augmentToExcludeList
+// Procedure: handleConfigExcludeList
 //   Purpose: Allow for handling a comma-separated list of names
 //            on a watchlist configuration
 
-void ProcessWatch::augmentExcludeList(string pnames)
+bool ProcessWatch::handleConfigExcludeList(string pnames)
 {
   vector<string> svector = parseString(pnames, ',');
   unsigned int i, vsize = svector.size();
-  for(i=0; i<vsize; i++) 
-    addToExcludeList(svector[i]);
+
+  if(vsize == 0) {
+    reportConfigWarning("Empty list provided to NOWATCH config param");
+    return(false);
+  }
+
+  bool handled = true;
+  for(i=0; i<vsize; i++) {
+    bool ok = handleConfigExcludeItem(svector[i]);
+    if(!ok) 
+      handled = false;
+  }
+  return(handled);
 }
 
 
 //-----------------------------------------------------------------
-// Procedure: addToExcludeList
+// Procedure: handleConfigExcludeItem
 //      Note: A step toward defining the watch policy. Only relevant 
 //              when all processes are being watched by default. This is
 //              a way to exclude certain processes from that default.
@@ -304,11 +492,14 @@ void ProcessWatch::augmentExcludeList(string pnames)
 //      Note: If a process is both excluded AND included the inclusion
 //            takes precedent. 
 
-void ProcessWatch::addToExcludeList(string procname)
+bool ProcessWatch::handleConfigExcludeItem(string procname)
 {
   procname = stripBlankEnds(procname);
-  if(procname == "")
-    return;
+  if((procname == "")  || strContainsWhite(procname)) {
+    string msg = "Bad or Null procname on NOWATCH list: [" + procname + "]";
+    reportConfigWarning(msg);
+    return(false);
+  }
 
   bool prefix = false; 
   unsigned int len = procname.length();
@@ -323,13 +514,14 @@ void ProcessWatch::addToExcludeList(string procname)
   for(i=0; i<vsize; i++) {
     if(m_exclude_list[i] == procname) {
       m_exclude_list_prefix[i] = m_exclude_list_prefix[i] || prefix;
-      return;
+      return(false);
     }
   }
 
   // If not - add the new item to the include list
   m_exclude_list.push_back(procname);
   m_exclude_list_prefix.push_back(prefix);
+  return(true);
 }
 
 
@@ -339,50 +531,27 @@ void ProcessWatch::addToExcludeList(string procname)
 //            or not a process should be on the watch list, potentially
 //            add the process to the watch list.
 
-void ProcessWatch::addToWatchList(string procname)
+bool ProcessWatch::addToWatchList(string procname)
 {
   procname = stripBlankEnds(procname);
-  if(procname == "")
-    return;
+  if((procname == "") || (procname == "uProcessWatch"))
+    return(false);
 
   // If already on the watch list, dont do anything
   if(vectorContains(m_watch_list, procname))
-    return;
+    return(false);
 
   // Is this process explicitly excluded?
-  bool explicitly_excluded = false;
-  unsigned int i, vsize = m_exclude_list.size();
-  for(i=0; i<vsize; i++) {
-    if(procname == m_exclude_list[i])
-      explicitly_excluded = true;
-    else 
-      if(m_exclude_list_prefix[i]  && 
-	 strBegins(procname, m_exclude_list[i]))
-	explicitly_excluded = true;
-  }
+  bool explicitly_excluded = processExcluded(procname);
 
   // Is this process explicitly included?
-  bool explicitly_included = false;
-  vsize = m_include_list.size();
-  for(i=0; i<vsize; i++) {
-    if(procname == m_include_list[i])
-      explicitly_included = true;
-    else       
-      if(m_include_list_prefix[i]  && 
-	 strBegins(procname, m_include_list[i]))
-	explicitly_included = true;
-  }
+  bool explicitly_included = processIncluded(procname);
 
-  bool add_to_list = false;
-  if(explicitly_included)
-    add_to_list = true;
-  else 
-    if(m_watch_all && !explicitly_excluded)
-      add_to_list = true;
-
-  if(add_to_list)
+  if(explicitly_included || !explicitly_excluded) {
     m_watch_list.push_back(procname);
-
+    return(true);
+  }
+  return(false);
 }
 
 
@@ -444,14 +613,31 @@ void ProcessWatch::procNotedHere(string procname)
   m_map_noted_here[procname]++;
   m_map_alive[procname] = true;
 
-  string msg = "Process [" + procname + "]";
+  string msg;
   if(m_map_noted_here[procname] <= 1)
-    msg += " is noted to be present.";
-  else
-    msg += " is resurected!!!";
+    msg += "Noted to be present: [" + procname + "]";
+  else {
+    msg += "Resurrected: [" + procname + "]";
+
+    bool allow_this_retraction = false;
+    if(m_allow_retractions < 0)
+      allow_this_retraction = true;
+    else {
+      double moos_elapsed_time = m_curr_time - m_last_posting_time;
+      double real_elapsed_time = moos_elapsed_time;
+      if(m_time_warp > 0)
+	real_elapsed_time = moos_elapsed_time / m_time_warp;
+      if(real_elapsed_time <= m_allow_retractions) 
+	allow_this_retraction = true;
+    }
+    
+    // Retraction String must match exactly. See XYZ below.
+    if(allow_this_retraction) 
+      retractRunWarning("Process [" + procname + "] is missing.");
+  }
 
   m_Comms.Notify(postVar("PROC_WATCH_EVENT"), msg);
-  MOOSTrace("PROC_WATCH_EVENT: %s\n", msg.c_str());
+  reportEvent(msg);
 }
 
 //-----------------------------------------------------------------
@@ -464,9 +650,13 @@ void ProcessWatch::procNotedGone(string procname)
   m_map_noted_gone[procname]++;
   m_map_alive[procname] = false;
 
-  string msg = "Process [" + procname + "] has died!!!!";
+  // Run Warning must match exactly when/if retracting. See XYZ above.
+  string msg = "Process [" + procname + "] is missing.";
   m_Comms.Notify(postVar("PROC_WATCH_EVENT"), msg);
-  MOOSTrace("PROC_WATCH_EVENT: %s\n", msg.c_str()); 
+
+
+  reportEvent("PROC_WATCH_EVENT: " + msg);
+  reportRunWarning(msg);
 }
 
 
@@ -493,3 +683,80 @@ string ProcessWatch::postVar(string varname)
   else
     return(p->second);
 }
+
+//-----------------------------------------------------------------
+// Procedure: populateAntlerList
+
+void ProcessWatch::populateAntlerList()
+{
+  STRING_LIST sParams;
+  m_MissionReader.GetConfiguration("ANTLER", sParams);
+  
+  STRING_LIST::iterator p;
+  for(p = sParams.begin();p!=sParams.end();p++) {
+    string sLine = *p;
+    string param = tolower(biteStringX(sLine, '='));
+    string value = stripBlankEnds(sLine);
+    
+    if(param == "run") {
+      string app = biteStringX(value, '@');
+
+      // Handle case where app is launched under an alias name with ~ alias
+      biteStringX(value, '~');
+      if(value != "")
+	app = value;
+
+      if((app != "") && (app != "uProcessWatch") && !strBegins(app, "MOOSDB")) {
+	m_set_antler_clients.insert(app);
+	bool added = addToWatchList(app);
+	if(added)
+	  procNotedHere(app);
+      }
+    }
+  }
+}
+
+//-----------------------------------------------------------------
+// Procedure: processExcluded
+//   Purpose: Determine if this process is to be excluded based on 
+//            NOWATCH params. Either by an explicit match or by a
+//            pattern match.
+
+bool ProcessWatch::processExcluded(const string& procname)
+{
+  bool excluded = false;
+  unsigned int i, vsize = m_exclude_list.size();
+  for(i=0; i<vsize; i++) {
+    if(procname == m_exclude_list[i])
+      excluded = true;
+    else 
+      if(m_exclude_list_prefix[i]  && 
+	 strBegins(procname, m_exclude_list[i]))
+	excluded = true;
+  }
+  return(excluded);
+}
+
+//-----------------------------------------------------------------
+// Procedure: processIncluded
+//   Purpose: Determine if this process is included based on the 
+//            WATCH params. Either by an explicit match or by a
+//            pattern match.
+
+bool ProcessWatch::processIncluded(const string& procname)
+{
+  // Is this process explicitly included?
+  bool included = false;
+  unsigned int i, vsize = m_include_list.size();
+  for(i=0; i<vsize; i++) {
+    if(procname == m_include_list[i])
+      included = true;
+    else       
+      if(m_include_list_prefix[i]  && 
+	 strBegins(procname, m_include_list[i]))
+	included = true;
+  }
+  return(included);
+}
+  
+

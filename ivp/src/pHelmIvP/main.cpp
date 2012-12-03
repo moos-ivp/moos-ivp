@@ -33,6 +33,7 @@ int main(int argc, char *argv[])
 {
   string mission_file;
   string run_command = argv[0];
+  string verbose_setting;
 
   vector<string>  bhv_files;
 
@@ -46,6 +47,8 @@ int main(int argc, char *argv[])
       showHelpAndExit();
     else if((argi == "-i") || (argi == "--interface"))
       showInterfaceAndExit();
+    else if(strBegins(argi, "--verbose=")) 
+      verbose_setting = argi.substr(10);
     else if(strEnds(argi, ".moos") || strEnds(argi, ".moos++"))
       mission_file = argv[i];
     else if(strBegins(argi, "--alias="))
@@ -58,9 +61,17 @@ int main(int argc, char *argv[])
   
   if(mission_file == "")
     showHelpAndExit();
-
-  HelmIvP helmIvP;
   
+  HelmIvP helmIvP;
+
+  if(verbose_setting != "") {
+    bool ok = helmIvP.setVerbosity(verbose_setting);
+    if(!ok) {
+      cout << "Illegal verbose setting. Exiting now.";
+      return(0);
+    }
+  }
+    
   unsigned int k, ksize = bhv_files.size();
   for(k=0; k<ksize; k++)
     helmIvP.addBehaviorFile(bhv_files[k]);
@@ -69,6 +80,7 @@ int main(int argc, char *argv[])
   
   return(0);
 }
+
 
 
 

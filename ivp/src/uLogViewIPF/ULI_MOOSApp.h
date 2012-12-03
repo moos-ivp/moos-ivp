@@ -24,7 +24,7 @@
 #define ULI_MOOS_APP_HEADER
 
 #include <string>
-#include "MOOSLib.h"
+#include "MOOS/libMOOS/MOOSLib.h"
 #include "ULI_GUI.h"
 #include "Threadsafe_pipe.h"
 #include "VarDataPair.h"
@@ -78,3 +78,4 @@ class ULI_MOOSApp : public CMOOSApp
 };
 
 #endif 
+

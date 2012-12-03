@@ -115,3 +115,4 @@ void NavPlotElement::initialize()
   cout << "    m_max_time_utc = " << doubleToString(m_max_time_utc) << endl;
 
 }
+

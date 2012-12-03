@@ -25,10 +25,12 @@
 
 #include <vector>
 #include <string>
+#include <set>
 #include <time.h>
 
 std::vector<std::string> parseString(const std::string&, char);
 std::vector<std::string> parseStringQ(const std::string&, char);
+std::vector<std::string> parseStringQ(const std::string&, char, unsigned int);
 std::vector<std::string> parseString(const std::string&, 
 				     const std::string&);
 std::vector<std::string> parseQuotedString(const std::string&, char);
@@ -57,6 +59,7 @@ std::string intToString(int);
 std::string intToCommaString(int);
 std::string uintToCommaString(unsigned int);
 std::string floatToString(float, int=5);
+std::string setToString(const std::set<std::string>&);
 std::string doubleToString(double, int=5);
 std::string doubleToStringX(double, int=5);
 std::string dstringCompact(const std::string&);
@@ -109,6 +112,9 @@ float snapToStep(float, float v=1.0);
 float snapDownToStep(float, float v=1.0);
 
 bool  setBooleanOnString(bool& boolval, std::string str, bool=true);
+bool  setPosDoubleOnString(double& dval, std::string str);
+bool  setNonNegDoubleOnString(double& dval, std::string str);
+bool  setNonWhiteVarOnString(std::string& svar, std::string str);
 
 bool  okFileToRead(std::string);
 bool  okFileToWrite(std::string);
@@ -122,6 +128,9 @@ std::vector<std::string>  getReleaseInfo(const std::string&);
 std::vector<std::string> tokenizePath(const std::string&);
 std::string parseAppName(const std::string&);
 
+bool isKnownVehicleType(const std::string&);
+
 unsigned int charCount(const std::string&, char);
 
 #endif
+

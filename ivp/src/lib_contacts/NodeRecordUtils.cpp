@@ -41,8 +41,8 @@ NodeRecord string2NodeRecord(const string& node_rep_string)
   vector<string> svector = parseString(node_rep_string, ',');
   unsigned int i, vsize = svector.size();
   for(i=0; i<vsize; i++) {
-    string param = toupper(stripBlankEnds(biteString(svector[i], '=')));
-    string value = stripBlankEnds(svector[i]);
+    string param = toupper(biteStringX(svector[i], '='));
+    string value = svector[i];
     
     if(param == "NAME")
       new_record.setName(value);
@@ -54,6 +54,8 @@ NodeRecord string2NodeRecord(const string& node_rep_string)
       new_record.setMode(value);
     else if(param == "ALLSTOP")
       new_record.setAllStop(value);
+    else if(param == "INDEX")
+      new_record.setIndex(atof(value.c_str()));
     else if(isNumber(value)) {
       if((param == "UTC_TIME") || (param == "TIME"))
 	new_record.setTimeStamp(atof(value.c_str()));
@@ -92,3 +94,4 @@ NodeRecord string2NodeRecord(const string& node_rep_string)
 
   return(new_record);
 }
+

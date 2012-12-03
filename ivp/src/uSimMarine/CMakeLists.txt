@@ -26,10 +26,10 @@ ADD_EXECUTABLE(uSimMarine ${SRC})
 
 TARGET_LINK_LIBRARIES(uSimMarine 
   MOOS
-  MOOSGen
-  MOOSUtility
+  MOOSGeodesy
   contacts
   geometry 
+  apputil
   mbutil
   ${SYSTEM_LIBS})
 

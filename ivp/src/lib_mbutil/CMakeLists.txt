@@ -30,13 +30,8 @@ SET(HEADERS
   TermUtils.h
   VarDataPair.h
   ReleaseInfo.h
+  ScopeEntry.h
 )
-
-# SET_SOURCE_FILES_PROPERTIES(
-#    MBUtils.cpp 
-#    PROPERTIES OBJECT_DEPENDS ${IVP_SRC_DIR_ABSOLUTE}/svn_revision_number.h
-#    )
-
 
 # Build Library
 ADD_LIBRARY(mbutil ${SRC})

@@ -46,6 +46,10 @@ public:
   double getThrustFactor() const;
   bool   isAscending() const;
   bool   isConfigured();
+  bool   usingThrustFactor() const;
+
+  std::string getMapPos() const;
+  std::string getMapNeg() const;
 
  public: // Actions
   void   print() const;
@@ -73,4 +77,5 @@ public:
 };
 
 #endif 
+
 

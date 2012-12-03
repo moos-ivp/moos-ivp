@@ -8,11 +8,14 @@ ProcessConfig = pLogger
   
   File		= LOG_%(VNAME)
   PATH		= ./
-  SyncLog 	= true @ 0.2
+  //SyncLog 	= true @ 0.2
   AsyncLog 	= true
   FileTimeStamp = true
 
+  BridgeFrequency = 0
+
   Log = IVPHELM_LIFE_EVENT @ 0 nosync
+  Log = APPCAST @ 0 nosync
 
   // Log it all!!!!!
   LogAuxSrc = true

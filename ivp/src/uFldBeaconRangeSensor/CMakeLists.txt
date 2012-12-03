@@ -14,8 +14,7 @@ else (${WIN32})
 endif (${WIN32})
 
 SET(SRC
-   BRS_MOOSApp.cpp
-   BRS_Model.cpp
+   BRS_App.cpp
    BRS_Info.cpp
    BeaconBuoy.cpp
    main.cpp
@@ -25,9 +24,8 @@ ADD_EXECUTABLE(uFldBeaconRangeSensor ${SRC})
 
 TARGET_LINK_LIBRARIES(uFldBeaconRangeSensor
   MOOS
-  MOOSGen
-  MOOSUtility
   mbutil
+  apputil
   geometry 
   contacts
   ${SYSTEM_LIBS}

@@ -15,9 +15,6 @@ endif (${WIN32})
 
 SET(SRC 
   HelmScope.cpp
-  IterBlockHelm.cpp
-  IterBlockBHV.cpp
-  IterBlockPosts.cpp
   BehaviorRecord.cpp
   HelmScope_Info.cpp
   main.cpp
@@ -27,9 +24,11 @@ ADD_EXECUTABLE(uHelmScope ${SRC})
 
 TARGET_LINK_LIBRARIES(uHelmScope 
   MOOS
-  MOOSGen
   genutil
+  apputil
+  helmivp
   behaviors
+  ivpbuild
+  ivpcore
   mbutil 
   ${SYSTEM_LIBS})
-

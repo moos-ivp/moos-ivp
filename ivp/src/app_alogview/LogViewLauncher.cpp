@@ -744,3 +744,4 @@ bool LogViewLauncher::buildGraphical()
   return(true);
 }
 
+

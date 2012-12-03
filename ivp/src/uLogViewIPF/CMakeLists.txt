@@ -26,11 +26,9 @@ ENDIF (${APPLE})
       
 Target_LINK_LIBRARIES(uLogViewIPF         
    MOOS
-   MOOSGen
    marineview
    ipfview
    contacts
-   MOOSUtility
    ulogview
    logutils
    genutil

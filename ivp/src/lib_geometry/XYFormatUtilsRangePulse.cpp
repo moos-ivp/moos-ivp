@@ -56,10 +56,10 @@ XYRangePulse stringStandard2RangePulse(string str)
   
   for(i=0; i<vsize; i++) {
     mvector[i] = stripBlankEnds(mvector[i]);
-    string param = tolower(stripBlankEnds(biteString(mvector[i], '=')));
-    string value = stripBlankEnds(mvector[i]);
+    string param = tolower(biteStringX(mvector[i], '='));
+    string value = mvector[i];
     double dval  = atof(value.c_str());
-
+    
     if((param == "x") && isNumber(value))
       new_pulse.set_x(dval);
     else if((param == "y") && isNumber(value))
@@ -68,8 +68,12 @@ XYRangePulse stringStandard2RangePulse(string str)
       new_pulse.set_rad(dval);
     else if((param == "duration") && isNumber(value))
       new_pulse.set_duration(dval);
+    else if((param == "linger") && isNumber(value))
+      new_pulse.set_linger(dval);
     else if((param == "fill") && isNumber(value))
       new_pulse.set_fill(dval);
+    else if((param == "fill_invariant") && isBoolean(value))
+      new_pulse.set_fill_invariant(tolower(value)=="true");
     else
       new_pulse.set_param(param, value);
   }
@@ -79,4 +83,5 @@ XYRangePulse stringStandard2RangePulse(string str)
   
   return(new_pulse);
 }
+
 

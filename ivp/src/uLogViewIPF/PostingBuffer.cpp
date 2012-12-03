@@ -83,3 +83,4 @@ void PostingBuffer::merge(const PostingBuffer& pbuffer)
     pushPending(pbuffer.getPending(i));
 }
 
+

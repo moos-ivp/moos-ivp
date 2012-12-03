@@ -39,3 +39,4 @@ bool Populator_VPlugTPlots::populateFromEntries(const vector<ALogEntry>& entries
 }
 
 
+

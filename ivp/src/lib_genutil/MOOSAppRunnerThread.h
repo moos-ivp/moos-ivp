@@ -1,8 +1,9 @@
 #ifndef IVP_THREAD_UTIL_H
 #define IVP_THREAD_UTIL_H
 
-#include "MOOSApp.h"
-#include "MOOSThread.h"
+#include "MOOS/libMOOS/MOOSLib.h"
+//#include "MOOSApp.h"
+//#include "MOOSThread.h"
 #include <string>
 
 /**

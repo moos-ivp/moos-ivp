@@ -8,8 +8,8 @@ ADD_EXECUTABLE(uFldPathCheck ${SRC})
 
 TARGET_LINK_LIBRARIES(uFldPathCheck
    MOOS
-   MOOSGen
    mbutil
+   apputil
    contacts
    m
    pthread)

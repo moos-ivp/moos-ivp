@@ -24,7 +24,7 @@
 #define ULH_MOOS_APP_HEADER
 
 #include <string>
-#include "MOOSLib.h"
+#include "MOOS/libMOOS/MOOSLib.h"
 #include "ULH_GUI.h"
 #include "Threadsafe_pipe.h"
 #include "VarDataPair.h"
@@ -78,3 +78,4 @@ class ULH_MOOSApp : public CMOOSApp
 };
 
 #endif 
+

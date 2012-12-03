@@ -42,10 +42,10 @@ class ColoredPoint
   bool    m_valid;
 };
 
-//typedef std::vector<ColoredPoint> CPVector;
 typedef std::list<ColoredPoint> CPList;
 
 #endif 
+
 
 
 

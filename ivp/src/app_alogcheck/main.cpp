@@ -1,9 +1,8 @@
 /*****************************************************************/
-/* AUTHOR:      Christopher Gagner                               */
-/* DATE:        July 29, 2010                                    */
-/* FILE:        alogcheck_main.cpp                               */
-/* DESCRIPTION: Checks an alog for specified conditions and      */
-/*              reports if those conditions have been satisfied. */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    FILE: alogcheck_main.cpp                                   */
+/*    DATE: July 29, 2010                                        */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
 /* modify it under the terms of the GNU General Public License   */
@@ -209,4 +208,5 @@ int main(int argc, char** argv)
 /*****************************************************************************
  * END of alogcheck_main.cpp
  ****************************************************************************/
+
 

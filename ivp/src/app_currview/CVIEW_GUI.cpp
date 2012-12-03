@@ -39,8 +39,8 @@ CVIEW_GUI::CVIEW_GUI(int g_w, int g_h, const char *g_l)
 
   int info_size=10;
 
-  pviewer  = new CurrViewer(0, 30, w(), h()-100);
-  cmviewer = pviewer;
+  pviewer   = new CurrViewer(0, 30, w(), h()-100);
+  m_mviewer = pviewer;
 
   augmentMenu();
 
@@ -90,44 +90,44 @@ CVIEW_GUI::CVIEW_GUI(int g_w, int g_h, const char *g_l)
 
 void CVIEW_GUI::augmentMenu() 
 {
-  mbar->add("File/Save", FL_CTRL + 's', (Fl_Callback*)CVIEW_GUI::cb_FileSave, (void*)0, 0);
+  m_menubar->add("File/Save", FL_CTRL + 's', (Fl_Callback*)CVIEW_GUI::cb_FileSave, (void*)0, 0);
 
-  mbar->add("File/Save As", 0, (Fl_Callback*)CVIEW_GUI::cb_FileSaveAs, (void*)0, 0);
+  m_menubar->add("File/Save As", 0, (Fl_Callback*)CVIEW_GUI::cb_FileSaveAs, (void*)0, 0);
 
-  mbar->add("Vectors/Clear Marked", 0, (Fl_Callback*)CVIEW_GUI::cb_Clear, (void*)0, 0);
-  mbar->add("Vectors/Delete Marked", FL_BackSpace, (Fl_Callback*)CVIEW_GUI::cb_DeleteMarked, (void*)0, 0);
-  mbar->add("Vectors/Delete Last", FL_CTRL + FL_BackSpace, (Fl_Callback*)CVIEW_GUI::cb_DeleteLastAdded, (void*)0, 0);
-  mbar->add("Vectors/Current --", '-', (Fl_Callback*)CVIEW_GUI::cb_AdjustActive, (void*)-1, 0);
-  mbar->add("Vectors/Current ++", '+', (Fl_Callback*)CVIEW_GUI::cb_AdjustActive, (void*)1, 0);
+  m_menubar->add("Vectors/Clear Marked", 0, (Fl_Callback*)CVIEW_GUI::cb_Clear, (void*)0, 0);
+  m_menubar->add("Vectors/Delete Marked", FL_BackSpace, (Fl_Callback*)CVIEW_GUI::cb_DeleteMarked, (void*)0, 0);
+  m_menubar->add("Vectors/Delete Last", FL_CTRL + FL_BackSpace, (Fl_Callback*)CVIEW_GUI::cb_DeleteLastAdded, (void*)0, 0);
+  m_menubar->add("Vectors/Current --", '-', (Fl_Callback*)CVIEW_GUI::cb_AdjustActive, (void*)-1, 0);
+  m_menubar->add("Vectors/Current ++", '+', (Fl_Callback*)CVIEW_GUI::cb_AdjustActive, (void*)1, 0);
 
-  mbar->add("Vectors/Move Right", FL_SHIFT + FL_Right, (Fl_Callback*)CVIEW_GUI::cb_ShiftX, (void*)10, 0);
-  mbar->add("Vectors/Move Left",  FL_SHIFT + FL_Left, (Fl_Callback*)CVIEW_GUI::cb_ShiftX, (void*)-10, 0);
-  mbar->add("Vectors/Move Up",    FL_SHIFT + FL_Up, (Fl_Callback*)CVIEW_GUI::cb_ShiftY, (void*)10, 0);
-  mbar->add("Vectors/Move Down",  FL_SHIFT + FL_Down, (Fl_Callback*)CVIEW_GUI::cb_ShiftY, (void*)-10, FL_MENU_DIVIDER);
-  mbar->add("Vectors/Move Right (slow)", FL_SHIFT + FL_ALT + FL_Right, (Fl_Callback*)CVIEW_GUI::cb_ShiftX, (void*)1, 0);
-  mbar->add("Vectors/Move Left (slow)",  FL_SHIFT + FL_ALT + FL_Left, (Fl_Callback*)CVIEW_GUI::cb_ShiftX, (void*)-1, 0);
-  mbar->add("Vectors/Move Up (slow)",    FL_SHIFT + FL_ALT + FL_Up, (Fl_Callback*)CVIEW_GUI::cb_ShiftY, (void*)1, 0);
-  mbar->add("Vectors/Move Down (slow)",  FL_SHIFT + FL_ALT + FL_Down, (Fl_Callback*)CVIEW_GUI::cb_ShiftY, (void*)-1, FL_MENU_DIVIDER);
+  m_menubar->add("Vectors/Move Right", FL_SHIFT + FL_Right, (Fl_Callback*)CVIEW_GUI::cb_ShiftX, (void*)10, 0);
+  m_menubar->add("Vectors/Move Left",  FL_SHIFT + FL_Left, (Fl_Callback*)CVIEW_GUI::cb_ShiftX, (void*)-10, 0);
+  m_menubar->add("Vectors/Move Up",    FL_SHIFT + FL_Up, (Fl_Callback*)CVIEW_GUI::cb_ShiftY, (void*)10, 0);
+  m_menubar->add("Vectors/Move Down",  FL_SHIFT + FL_Down, (Fl_Callback*)CVIEW_GUI::cb_ShiftY, (void*)-10, FL_MENU_DIVIDER);
+  m_menubar->add("Vectors/Move Right (slow)", FL_SHIFT + FL_ALT + FL_Right, (Fl_Callback*)CVIEW_GUI::cb_ShiftX, (void*)1, 0);
+  m_menubar->add("Vectors/Move Left (slow)",  FL_SHIFT + FL_ALT + FL_Left, (Fl_Callback*)CVIEW_GUI::cb_ShiftX, (void*)-1, 0);
+  m_menubar->add("Vectors/Move Up (slow)",    FL_SHIFT + FL_ALT + FL_Up, (Fl_Callback*)CVIEW_GUI::cb_ShiftY, (void*)1, 0);
+  m_menubar->add("Vectors/Move Down (slow)",  FL_SHIFT + FL_ALT + FL_Down, (Fl_Callback*)CVIEW_GUI::cb_ShiftY, (void*)-1, FL_MENU_DIVIDER);
   
-  mbar->add("Vectors/Rotate CWise", ']', (Fl_Callback*)CVIEW_GUI::cb_Rotate, (void*)10, 0);
-  mbar->add("Vectors/Rotate CCWise",  '[', (Fl_Callback*)CVIEW_GUI::cb_Rotate, (void*)-10, 0);
-  mbar->add("Vectors/Rotate CWise (slow)", '}', (Fl_Callback*)CVIEW_GUI::cb_Rotate, (void*)1, 0);
-  mbar->add("Vectors/Rotate CCwise (slow)",  '{', (Fl_Callback*)CVIEW_GUI::cb_Rotate, (void*)-1, FL_MENU_DIVIDER);
+  m_menubar->add("Vectors/Rotate CWise", ']', (Fl_Callback*)CVIEW_GUI::cb_Rotate, (void*)10, 0);
+  m_menubar->add("Vectors/Rotate CCWise",  '[', (Fl_Callback*)CVIEW_GUI::cb_Rotate, (void*)-10, 0);
+  m_menubar->add("Vectors/Rotate CWise (slow)", '}', (Fl_Callback*)CVIEW_GUI::cb_Rotate, (void*)1, 0);
+  m_menubar->add("Vectors/Rotate CCwise (slow)",  '{', (Fl_Callback*)CVIEW_GUI::cb_Rotate, (void*)-1, FL_MENU_DIVIDER);
   
-  mbar->add("Vectors/Magnitude Grow", ')', (Fl_Callback*)CVIEW_GUI::cb_Magnitude, (void*)1, 0);
-  mbar->add("Vectors/Magnitude Shrink",'(', (Fl_Callback*)CVIEW_GUI::cb_Magnitude, (void*)-1, 0);
+  m_menubar->add("Vectors/Magnitude Grow", ')', (Fl_Callback*)CVIEW_GUI::cb_Magnitude, (void*)1, 0);
+  m_menubar->add("Vectors/Magnitude Shrink",'(', (Fl_Callback*)CVIEW_GUI::cb_Magnitude, (void*)-1, 0);
   
-  mbar->add("SnapValue/200.0 meters", 0, (Fl_Callback*)CVIEW_GUI::cb_SnapVal, (void*)20000, FL_MENU_RADIO);
-  mbar->add("SnapValue/100.0 meters", 0, (Fl_Callback*)CVIEW_GUI::cb_SnapVal, (void*)10000, FL_MENU_RADIO);
-  mbar->add("SnapValue/50.0 meters", 0, (Fl_Callback*)CVIEW_GUI::cb_SnapVal, (void*)5000, FL_MENU_RADIO);
-  mbar->add("SnapValue/10.0 meters", 0, (Fl_Callback*)CVIEW_GUI::cb_SnapVal, (void*)1000, FL_MENU_RADIO);
-  mbar->add("SnapValue/ 5.0 meters", 0, (Fl_Callback*)CVIEW_GUI::cb_SnapVal, (void*)500, FL_MENU_RADIO);
-  mbar->add("SnapValue/ 2.0 meters", 0, (Fl_Callback*)CVIEW_GUI::cb_SnapVal, (void*)200, FL_MENU_RADIO);
-  mbar->add("SnapValue/ 1.0 meters", 0, (Fl_Callback*)CVIEW_GUI::cb_SnapVal, (void*)100, FL_MENU_RADIO|FL_MENU_VALUE);
-  mbar->add("SnapValue/ 0.1 meters", 0, (Fl_Callback*)CVIEW_GUI::cb_SnapVal, (void*)10, FL_MENU_RADIO);
-  mbar->add("SnapValue/ 0.01 meters", 0, (Fl_Callback*)CVIEW_GUI::cb_SnapVal, (void*)1, FL_MENU_RADIO);
-  mbar->add("SnapValue/ 0.00 meters", 0, (Fl_Callback*)CVIEW_GUI::cb_SnapVal, (void*)0, FL_MENU_RADIO);
-  mbar->add("SnapValue/Apply SnapVal", 0, (Fl_Callback*)CVIEW_GUI::cb_ApplySnapVal, (void*)0, 0);
+  m_menubar->add("SnapValue/200.0 meters", 0, (Fl_Callback*)CVIEW_GUI::cb_SnapVal, (void*)20000, FL_MENU_RADIO);
+  m_menubar->add("SnapValue/100.0 meters", 0, (Fl_Callback*)CVIEW_GUI::cb_SnapVal, (void*)10000, FL_MENU_RADIO);
+  m_menubar->add("SnapValue/50.0 meters", 0, (Fl_Callback*)CVIEW_GUI::cb_SnapVal, (void*)5000, FL_MENU_RADIO);
+  m_menubar->add("SnapValue/10.0 meters", 0, (Fl_Callback*)CVIEW_GUI::cb_SnapVal, (void*)1000, FL_MENU_RADIO);
+  m_menubar->add("SnapValue/ 5.0 meters", 0, (Fl_Callback*)CVIEW_GUI::cb_SnapVal, (void*)500, FL_MENU_RADIO);
+  m_menubar->add("SnapValue/ 2.0 meters", 0, (Fl_Callback*)CVIEW_GUI::cb_SnapVal, (void*)200, FL_MENU_RADIO);
+  m_menubar->add("SnapValue/ 1.0 meters", 0, (Fl_Callback*)CVIEW_GUI::cb_SnapVal, (void*)100, FL_MENU_RADIO|FL_MENU_VALUE);
+  m_menubar->add("SnapValue/ 0.1 meters", 0, (Fl_Callback*)CVIEW_GUI::cb_SnapVal, (void*)10, FL_MENU_RADIO);
+  m_menubar->add("SnapValue/ 0.01 meters", 0, (Fl_Callback*)CVIEW_GUI::cb_SnapVal, (void*)1, FL_MENU_RADIO);
+  m_menubar->add("SnapValue/ 0.00 meters", 0, (Fl_Callback*)CVIEW_GUI::cb_SnapVal, (void*)0, FL_MENU_RADIO);
+  m_menubar->add("SnapValue/Apply SnapVal", 0, (Fl_Callback*)CVIEW_GUI::cb_ApplySnapVal, (void*)0, 0);
 }
 
 //----------------------------------------------------------

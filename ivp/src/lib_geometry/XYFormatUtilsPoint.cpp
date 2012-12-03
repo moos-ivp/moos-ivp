@@ -35,10 +35,8 @@ using namespace std;
 //            the user. The other functions are subject to change 
 //            without regard to backward compatibility.
 
-XYPoint string2Point(string str)
+XYPoint string2Point(const string& str)
 {
-  str = stripBlankEnds(str);
-
   XYPoint new_point = stringStandard2Point(str);
   if(new_point.valid())
     return(new_point);
@@ -56,26 +54,24 @@ XYPoint string2Point(string str)
 //            vertex_color=white,soure=foobar
 // 
 
-XYPoint stringStandard2Point(string str)
+XYPoint stringStandard2Point(const string& str)
 {
   XYPoint null_point;
   XYPoint new_point;
 
-  str = stripBlankEnds(str);
   vector<string> mvector = parseString(str, ',');
   unsigned int i, vsize = mvector.size();
   
   string x,y,z;
   for(i=0; i<vsize; i++) {
-    mvector[i] = stripBlankEnds(mvector[i]);
-    string param = tolower(stripBlankEnds(biteString(mvector[i], '=')));
-    string value = stripBlankEnds(mvector[i]);
+    string param = biteStringX(mvector[i], '=');
+    string value = mvector[i];
 
-    if((param == "x") && isNumber(value))
+    if(param == "x")
       x = value;
-    else if((param == "y") && isNumber(value))
+    else if(param == "y")
       y = value;
-    else if((param == "z") && isNumber(value))
+    else if(param == "z")
       z = value;
     else
       new_point.set_param(param, value);
@@ -94,18 +90,17 @@ XYPoint stringStandard2Point(string str)
 //   Example: 0,0
 //   Example: 4,5:label,foobar:source,bravo:msg,hello
 
-XYPoint stringAbbreviated2Point(string str)
+XYPoint stringAbbreviated2Point(const string& str)
 {
   XYPoint null_point;
   XYPoint new_point;
 
-  str = stripBlankEnds(str);
   vector<string> mvector = parseString(str, ':');
   unsigned int i, vsize = mvector.size();
   
   for(i=0; i<vsize; i++) {
-    string param = stripBlankEnds(biteString(mvector[i], ','));
-    string value = stripBlankEnds(mvector[i]);
+    string param = biteStringX(mvector[i], ',');
+    string value = mvector[i];
     bool handled = new_point.set_param(param, value);
 
     if(!handled) { // This component might be the vertex  x,y or x,y,z
@@ -130,4 +125,5 @@ XYPoint stringAbbreviated2Point(string str)
 
   return(new_point);
 }
+
 

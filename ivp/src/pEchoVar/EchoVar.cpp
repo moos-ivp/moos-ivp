@@ -53,9 +53,9 @@ bool EchoVar::OnNewMail(MOOSMSG_LIST &NewMail)
       string sdata = msg.GetString();
       double ddata = msg.GetDouble();
       
-      if(msg.IsDataType(MOOS_DOUBLE))
+      if(msg.IsDouble())
 	m_logic_buffer.updateInfoBuffer(key, ddata);
-      else if(msg.IsDataType(MOOS_STRING))
+      else if(msg.IsString())
 	m_logic_buffer.updateInfoBuffer(key, sdata);
     }
   }
@@ -111,18 +111,20 @@ bool EchoVar::OnStartUp()
   cout << "pEchoVar starting...." << endl;
 
   list<string> sParams;
-  m_MissionReader.EnableVerbatimQuoting(false);
+  m_MissionReader.EnableVerbatimQuoting(true);
   if(m_MissionReader.GetConfiguration(GetAppName(), sParams)) {
     
     list<string>::reverse_iterator p;
     for(p=sParams.rbegin(); p!=sParams.rend(); p++) {
+      cout << "line:[" << *p << "]" << endl;
+      
       string original_line = *p;
       string parse_line    = stripBlankEnds(*p);
       string sKey  = tolower(stripBlankEnds(biteString(parse_line, '=')));
       string sLine = stripBlankEnds(parse_line);
 
-      cout << "sKey: [" << sKey << "]" << endl;
-      cout << "  sLine: [" << sLine << "]" << endl;
+      //cout << "sKey: [" << sKey << "]" << endl;
+      //cout << "  sLine: [" << sLine << "]" << endl;
 
       sKey = tolower(sKey);
       if(!strncmp(sKey.c_str(), "flip", 4)) {
@@ -410,9 +412,9 @@ void EchoVar::releaseMessages()
     for(i=0; i<vsize; i++) {
       if(key == m_var_source[i]) {
 	string new_key = m_var_target[i];
-	if(msg.IsDataType(MOOS_DOUBLE))
+	if(msg.IsDouble())
 	  m_Comms.Notify(new_key, ddata);
-	else if(msg.IsDataType(MOOS_STRING))
+	else if(msg.IsString())
 	  m_Comms.Notify(new_key, sdata);
       }
     }
@@ -428,5 +430,6 @@ void EchoVar::releaseMessages()
   }
   m_held_messages.clear();
 }
+
 
 

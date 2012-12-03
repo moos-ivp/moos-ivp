@@ -3,16 +3,23 @@
 
 ProcessConfig = uProcessWatch
 {
-  AppTick   = 2
-  CommsTick = 2
+  AppTick   = 1
+  CommsTick = 1
+
+  ALLOW_RETRACTIONS = true
   
-  WATCH  = iMarineSim
+  WATCH_ALL = true      // default is true
+
+  WATCH  = uSimMarine
   WATCH  = pMOOSBridge*
-  WATCH  = pEchoVar
-  WATCH  = pLogger
   WATCH  = pNodeReporter
   WATCH  = pMarinePID
   WATCH  = pHelmIvP
+
+  NOWATCH = uXMS*
+  NOWATCH = uPokeDB*
+
+  SUMMARY_WAIT = 12
 }
 
 

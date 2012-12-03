@@ -62,7 +62,9 @@ void XYRangePulse::initialize()
   m_y_set = false;
 
   m_duration = 15;
-  m_fill = 0.25;
+  m_linger   = 0;
+  m_fill     = 0.25;
+  m_fill_invariant = false;
 }
 
 //-------------------------------------------------------------
@@ -81,12 +83,15 @@ vector<double> XYRangePulse::get_circle(double timestamp,
 
   double elapsed_time = timestamp - m_time;
 
-  if((elapsed_time < 0) || (elapsed_time > m_duration))
+  if((elapsed_time < 0) || (elapsed_time > (m_duration + m_linger)))
     return(vpts);
 
   double pct = 1.0;
   if(m_duration > 0) 
     pct = elapsed_time / m_duration;
+  // Handle case were nonzero linger may mean pct > 1
+  if(pct > 1)  
+    pct = 1;
   double range = pct * m_rad;
 
   double new_x, new_y;
@@ -120,6 +125,16 @@ void XYRangePulse::set_duration(double val)
 }
 
 //-------------------------------------------------------------
+// Procedure: set_linger()
+
+void XYRangePulse::set_linger(double val)
+{
+  m_linger = val;
+  if(m_linger < 0)
+    m_linger = 0;
+}
+
+//-------------------------------------------------------------
 // Procedure: set_fill()
 
 void XYRangePulse::set_fill(double val)
@@ -137,6 +152,9 @@ void XYRangePulse::set_fill(double val)
 
 double XYRangePulse::get_fill(double timestamp) const
 {
+  if(m_fill_invariant)
+    return(m_fill);
+
   double elapsed_time = timestamp - m_time;
 
   if(elapsed_time <= 0)
@@ -173,6 +191,17 @@ string XYRangePulse::get_spec(string param) const
   spec += doubleToStringX(m_rad); 
   spec += ",duration=";
   spec += doubleToStringX(m_duration); 
+  spec += ",fill=";
+  spec += doubleToStringX(m_fill); 
+
+  if(m_linger > 0) {
+    spec += ",linger=";
+    spec += doubleToStringX(m_linger); 
+  }
+  if(m_fill_invariant) {
+    spec += ",fill_invariant=";
+    spec += boolToString(m_fill_invariant); 
+  }
 
   string obj_spec = XYObject::get_spec(param);
   if(obj_spec != "")
@@ -180,5 +209,6 @@ string XYRangePulse::get_spec(string param) const
   
   return(spec);
 }
+
 
 

@@ -549,3 +549,4 @@ void LogPlotViewer::drawLogPlot()
 
 
 
+

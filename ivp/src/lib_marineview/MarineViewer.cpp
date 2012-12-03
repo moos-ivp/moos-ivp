@@ -24,7 +24,7 @@
 #include <windows.h>
 #include <GL/gl.h>
 #include "glext.h" // http://www.opengl.org/registry/api/glext.h
-//#include "tiffio.h" // CWG - TIFFIO Not needed
+ //#include "tiffio.h" // CWG - TIFFIO Not needed
 #else
 #include <tiffio.h>
 #endif
@@ -65,18 +65,19 @@ MarineViewer::MarineViewer(int x, int y, int w, int h, const char *l)
   m_y_origin    = 0;
 
   m_hash_shade  = 0.65;
-  m_hash_delta  = 100;
   m_fill_shade  = 0.55;
   m_texture_set = 0;
   m_texture_init = false;
   m_textures    = new GLuint[1];
 
   m_tiff_offon  = true;
-  m_hash_offon  = false;
 
   m_back_img_b_ok = false;
   m_back_img_b_on = false;
   m_back_img_mod  = false;
+
+  m_geodesy_initialized = false;
+
   //  glGenTextures(1, m_textures);
 }
 
@@ -136,14 +137,31 @@ bool MarineViewer::setParam(string param, string value)
     if(handled)
       m_back_img_b_ok = true;
   }
-  else if(p=="hash_view")
-    handled = setBooleanOnString(m_hash_offon, v);
+  //  else if(p=="hash_viewable")
+  //  handled = setBooleanOnString(m_hash_offon, v);
   else if(p=="geodesy_init")
     handled = initGeodesy(v);
   else if(p=="zoom") {
     handled = (v=="reset");
     if(handled)
       m_zoom = 1.0;
+  }
+  else if(param == "hash_delta") {  // 1000, 500, 200, 100, 50
+    double dval = atof(value.c_str());
+    string hash_val;
+    if(dval < 50)
+      hash_val = "10";
+    else if(dval < 100)
+      hash_val = "50";
+    else if(dval < 200)
+      hash_val = "100";
+    else if(dval < 500)
+      hash_val = "200";
+    else if(dval < 1000)
+      hash_val = "500";
+    else
+      hash_val = "1000";
+    handled = m_geo_settings.setParam("hash_delta", hash_val);
   }
   else if(p=="datum") {
     string lat = stripBlankEnds(biteString(value, ','));
@@ -157,9 +175,9 @@ bool MarineViewer::setParam(string param, string value)
     }
   }
   else {
-    handled = handled || m_drop_points.setParam(p,v);
     handled = handled || m_vehi_settings.setParam(p,v);
     handled = handled || m_geo_settings.setParam(p,v);
+    handled = m_drop_points.setParam(p,v) || handled;
   }
   return(handled);
 }
@@ -172,16 +190,13 @@ bool MarineViewer::setParam(string param, double v)
   param = tolower(stripBlankEnds(param));
   
   bool handled = true;
+
   if(param == "hash_shade_mod") {
     m_hash_shade = vclip((m_hash_shade+v), 0, 1);
     cout << "hash_shade:" << m_hash_shade << endl;
   }
-  if(param == "hash_shade") {
+  else if(param == "hash_shade") {
     m_hash_shade = vclip(v, 0, 1);
-  }
-  else if(param == "hash_delta") {
-    if(((v >= 10) && (v <= 1000)) || (v==-1))
-      m_hash_delta = (int)v;
   }
   else if(param == "back_shade_delta") {
     if(!m_tiff_offon) {
@@ -206,21 +221,20 @@ bool MarineViewer::setParam(string param, double v)
   else if(param == "set_pan_x") {
     m_vshift_x = v;
     cout << "set_pan_x:" << m_vshift_x << endl;
-   }
+  }
   else if(param == "pan_y") {
     double pix_shift = v * m_back_img.get_pix_per_mtr_y();
     m_vshift_y += pix_shift;
     cout << "pan_y:" << m_vshift_y << endl;
- }
+  }
   else if(param == "set_pan_y") {
     m_vshift_y = v;
     cout << "set_pan_y:" << m_vshift_y << endl;
   }
   else
     handled = false;
-  
-  return(handled);
 
+  return(handled);
 }
 
 // ----------------------------------------------------------
@@ -306,11 +320,15 @@ double MarineViewer::view2img(char xy, double view_val)
   double adj_img_height = (double)(m_back_img.get_img_pix_height()) * m_zoom;
 
   if(xy == 'x') {
+    if(adj_img_width == 0)
+      return(0);
     img_val = ((view_val - m_x_origin) - w()/2);
     img_val = img_val / (adj_img_width);
   }
   
   if(xy == 'y') {
+    if(adj_img_height == 0)
+      return(0);
     img_val = ((view_val - m_y_origin) - h()/2);
     img_val = img_val / (adj_img_height);
   }
@@ -447,7 +465,7 @@ void MarineViewer::drawHash(double xl, double xr, double yb, double yt)
   double g = m_hash_shade;
   double b = m_hash_shade;
 
-  double hash_delta = getHashDelta();
+  double hash_delta = m_geo_settings.geosize("hash_delta");
 
   // If specs not given use a default region defined by the image
   if((xl==0) && (xr==0) && (yb==0) && (yt==0)) {
@@ -487,20 +505,19 @@ void MarineViewer::drawHash(double xl, double xr, double yb, double yt)
 }
 
 //-------------------------------------------------------------
-// Procedure: getHashDelta
+// Procedure: geosetting
 
-double MarineViewer::getHashDelta()
+string MarineViewer::geosetting(const string& key)
 {
-  if(m_hash_delta == -1) {
-    if(m_zoom < 0.7)       return(1000);
-    else if(m_zoom < 3.5)  return(500);
-    else if(m_zoom < 7)    return(200);
-    else if(m_zoom < 15)   return(100);
-    else if(m_zoom < 47)   return(50);
-    else return(10);
-  }
-  else
-    return(m_hash_delta);
+  return(m_geo_settings.strvalue(key));
+}
+
+//-------------------------------------------------------------
+// Procedure: vehisetting
+
+string MarineViewer::vehisetting(const string& key)
+{
+  return(m_vehi_settings.strvalue(key));
 }
 
 //-------------------------------------------------------------
@@ -726,7 +743,7 @@ void MarineViewer::drawMarker(const XYMarker& marker)
     return;
 
   double    gscale = m_geo_settings.geosize("marker_scale");
-  ColorPack labelc = m_geo_settings.geocolor("marker_label_color", "white");
+  ColorPack labelc("white");
 
   vector<ColorPack> color_vector;
 
@@ -881,10 +898,11 @@ void MarineViewer::drawMarker(const XYMarker& marker)
 
 void MarineViewer::drawDatum(const OpAreaSpec& op_area)
 {
-  if(op_area.viewable("datum")) {
+  if(m_geo_settings.viewable("datum_viewable")) {
     XYPoint datum_point;
-    datum_point.set_vertex_size(op_area.getDatumSize());
-    datum_point.set_color("vertex", op_area.getDatumColor().str());
+    datum_point.set_vertex_size(m_geo_settings.geosize("datum_size"));
+    //datum_point.set_color("vertex", op_area.getDatumColor().str());
+    datum_point.set_color("vertex", m_geo_settings.geocolor("datum_color"));
     drawPoint(datum_point);
   }
 }
@@ -894,7 +912,7 @@ void MarineViewer::drawDatum(const OpAreaSpec& op_area)
 
 void MarineViewer::drawOpArea(const OpAreaSpec& op_area)
 {
-  if(op_area.viewable() == false)
+  if(m_geo_settings.viewable("oparea_viewable_all") == false)
     return;
 
   glMatrixMode(GL_PROJECTION);
@@ -912,7 +930,6 @@ void MarineViewer::drawOpArea(const OpAreaSpec& op_area)
 
   glTranslatef(qx, qy, 0);
   glScalef(m_zoom, m_zoom, m_zoom);
-
 
   unsigned int index = 0;
   unsigned int asize = op_area.size();
@@ -997,7 +1014,11 @@ bool MarineViewer::initGeodesy(double lat, double lon)
   if((lon > 180) || (lon < -180))
     return(false);
 
-  return(m_geodesy.Initialise(lat, lon));
+  bool initialized = m_geodesy.Initialise(lat, lon);
+  if(initialized)
+    m_geodesy_initialized = true;
+
+  return(initialized);
 }
 
 //-------------------------------------------------------------
@@ -1023,7 +1044,11 @@ bool MarineViewer::initGeodesy(const string& str)
   double dlat = atof(slat.c_str());
   double dlon = atof(slon.c_str());
 
-  return(initGeodesy(dlat, dlon));
+  bool initialized = m_geodesy.Initialise(dlat, dlon);
+  if(initialized)
+    m_geodesy_initialized = true;
+
+  return(initialized);
 }
 
 //-------------------------------------------------------------
@@ -1048,11 +1073,14 @@ void MarineViewer::drawPolygons(const vector<XYPolygon>& polys)
 
 void MarineViewer::drawPolygon(const XYPolygon& poly)
 {
-  ColorPack edge_c, fill_c, vert_c, labl_c;
-  edge_c = m_geo_settings.geocolor("polygon_edge_color", "aqua");
-  fill_c = m_geo_settings.geocolor("polygon_fill_color", "invisible");
-  vert_c = m_geo_settings.geocolor("polygon_vertex_color", "red");
-  labl_c = m_geo_settings.geocolor("polygon_label_color", "white");
+  ColorPack edge_c("aqua");      // default if no drawing hint
+  ColorPack fill_c("invisible"); // default if no drawing hint
+  ColorPack vert_c("red");       // default if no drawing hint
+  ColorPack labl_c("white");     // default if no drawing hint
+  double transparency = 0.2;     // default if no drawing hint
+  double line_width   = 1;       // default if no drawing hint
+  double vertex_size  = 2;       // default if no drawing hint
+
   if(poly.color_set("label"))            // label_color
     labl_c = poly.get_color("label");
   if(poly.color_set("vertex"))           // vertex_color
@@ -1061,16 +1089,11 @@ void MarineViewer::drawPolygon(const XYPolygon& poly)
     edge_c = poly.get_color("edge");
   if(poly.color_set("fill"))             // fill_color
     fill_c = poly.get_color("fill");
-  
-  double transparency = 0.2;
-  if(poly.transparency_set())
-    transparency = poly.get_transparency();
-
-  double line_width  = m_geo_settings.geosize("polygon_line_size");
-  double vertex_size = m_geo_settings.geosize("polygon_vertex_size");
-  if(poly.edge_size_set())         // edge_size
+  if(poly.transparency_set())            // transparency
+    transparency = poly.get_transparency(); 
+  if(poly.edge_size_set())               // edge_size
     line_width = poly.get_edge_size();
-  if(poly.vertex_size_set())       // vertex_size
+  if(poly.vertex_size_set())             // vertex_size
     vertex_size = poly.get_vertex_size();
   
   unsigned int vsize = poly.size();
@@ -1122,7 +1145,7 @@ void MarineViewer::drawPolygon(const XYPolygon& poly)
   
   // Now draw the edges - if the polygon is invalid, don't draw
   // the last edge.
-  if((vsize > 1) && (line_width > 0)) {
+  if((vsize > 1) && (line_width > 0) && edge_c.visible()) {
     glLineWidth(line_width);
     glColor3f(edge_c.red(), edge_c.grn(), edge_c.blu());
     
@@ -1275,22 +1298,22 @@ void MarineViewer::drawSegLists(const vector<XYSegList>& segls)
 
 void MarineViewer::drawSegList(const XYSegList& segl)
 {
-  ColorPack edge_c, vert_c, labl_c;
-  edge_c = m_geo_settings.geocolor("seglist_edge_color", "yellow");
-  vert_c = m_geo_settings.geocolor("seglist_vertex_color", "white");
-  labl_c = m_geo_settings.geocolor("seglist_label_color", "white");
+  ColorPack edge_c("white"); // default if no drawing hint
+  ColorPack vert_c("blue");  // default if no drawing hint
+  ColorPack labl_c("white");  // default if no drawing hint
+  double line_width  = 1;     // default if no drawing hint
+  double vertex_size = 2;     // default if no drawing hint
+
   if(segl.color_set("label"))          // label_color
     labl_c = segl.get_color("label");
   if(segl.color_set("vertex"))         // vertex_color
     vert_c = segl.get_color("vertex");
+  
   if(segl.color_set("edge"))           // edge_color
     edge_c = segl.get_color("edge");
-  
-  double lwid = m_geo_settings.geosize("seglist_edge_width", 1);
-  double vertex_size = m_geo_settings.geosize("seglist_vertex_size", 2);
-  if(segl.edge_size_set())       // edge_size
-    lwid = segl.get_edge_size();
-  if(segl.vertex_size_set())     // vertex_size
+    if(segl.edge_size_set())           // edge_size
+    line_width = segl.get_edge_size();
+  if(segl.vertex_size_set())           // vertex_size
     vertex_size = segl.get_vertex_size();
   
   unsigned int vsize = segl.size();
@@ -1325,7 +1348,7 @@ void MarineViewer::drawSegList(const XYSegList& segl)
   
   // First draw the edges
   if((vsize >= 2) && edge_c.visible()) {
-    glLineWidth(lwid);
+    glLineWidth(line_width);
     glColor3f(edge_c.red(), edge_c.grn(), edge_c.blu());
 
     glBegin(GL_LINE_STRIP);
@@ -1427,10 +1450,10 @@ void MarineViewer::drawVector(const XYVector& vect)
     edge_c = vect.get_color("edge");
   
   // Determine the size properties
-  double lwid = m_geo_settings.geosize("vector_edge_width", 1);
-  double vertex_size = m_geo_settings.geosize("vector_vertex_size", 2);
+  double line_width  = 1;  // default if no drawing hints provided 
+  double vertex_size = 2;  // default if no drawing hints provided 
   if(vect.edge_size_set())   
-    lwid = vect.get_edge_size();
+    line_width = vect.get_edge_size();
   if(vect.vertex_size_set()) 
     vertex_size = vect.get_vertex_size();
 
@@ -1486,7 +1509,7 @@ void MarineViewer::drawVector(const XYVector& vect)
   glScalef(m_zoom, m_zoom, m_zoom);
 
   // First draw the vector stem
-  glLineWidth(lwid);
+  glLineWidth(line_width);
   glColor3f(edge_c.red(), edge_c.grn(), edge_c.blu());
 
   glBegin(GL_LINE_STRIP);
@@ -1688,7 +1711,6 @@ void MarineViewer::drawConvexGrid(const XYConvexGrid& grid)
   //cout << "min_limited:" << grid.cellVarMinLimited() << endl;
   //cout << "max_limited:" << grid.cellVarMaxLimited() << endl << endl;
 
-
   if(grid.cellVarMaxLimited() && grid.cellVarMinLimited()) {
     min_eval = grid.getMinLimit();
     max_eval = grid.getMaxLimit();
@@ -1700,8 +1722,8 @@ void MarineViewer::drawConvexGrid(const XYConvexGrid& grid)
     range  = max_eval - min_eval;
   }
   
-  double cell_transparency = m_geo_settings.transparency("grid_transparency", 0.3);
-  double edge_transparency = cell_transparency * 0.6;
+  double cell_opaqueness = m_geo_settings.opaqueness("grid_opaqueness", 0.3);
+  double edge_opaqueness = cell_opaqueness * 0.6;
   
   for(i=0; i<gsize; i++) {
     XYSquare element = grid.getElement(i);
@@ -1725,7 +1747,7 @@ void MarineViewer::drawConvexGrid(const XYConvexGrid& grid)
       
       glEnable(GL_BLEND);
       //glColor4f(r,g,b,0.3);
-      glColor4f(r,g,b,cell_transparency);
+      glColor4f(r,g,b,cell_opaqueness);
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
       glBegin(GL_POLYGON);
       for(int j=0; j<4; j++)
@@ -1736,7 +1758,7 @@ void MarineViewer::drawConvexGrid(const XYConvexGrid& grid)
 
     // Begin Draw the cell edges
     glEnable(GL_BLEND);
-    glColor4f(0.6,0.6,0.6,edge_transparency);
+    glColor4f(0.6,0.6,0.6,edge_opaqueness);
     glBegin(GL_LINE_LOOP);
     for(int k=0; k<4; k++)
       glVertex2f(px[k], py[k]);
@@ -1784,18 +1806,19 @@ void MarineViewer::drawCircle(const XYCircle& circle, double timestamp)
   }
 
   ColorPack edge_c("blue");
-  ColorPack vert_c("blue");
   ColorPack labl_c("white");
   ColorPack fill_c("invisible");
 
-  if(circle.color_set("label"))          // label_color
-    labl_c = circle.get_color("label");
-  if(circle.color_set("vertex"))         // vertex_color
-    vert_c = circle.get_color("vertex");
   if(circle.color_set("edge"))           // edge_color
     edge_c = circle.get_color("edge");  
-  if(circle.color_set("fill"))             // fill_color
+  if(circle.color_set("label"))          // label_color
+    labl_c = circle.get_color("label");  
+  if(circle.color_set("fill"))           // fill_color
     fill_c = circle.get_color("fill");
+
+  // If neither edges or circle-fill are visible, just quit now!
+  if(!edge_c.visible() && !fill_c.visible())
+    return;
 
   double transparency = 0.2;
   if(circle.transparency_set())
@@ -1828,14 +1851,16 @@ void MarineViewer::drawCircle(const XYCircle& circle, double timestamp)
     else
       draw_pts[i] *= pix_per_mtr_y;
   }
-
-  glColor3f(edge_c.red(), edge_c.grn(), edge_c.blu());
-  glBegin(GL_LINE_LOOP);
-  for(i=0; i<draw_pts.size(); i=i+2) {
-    glVertex2f(draw_pts[i], draw_pts[i+1]);
+  
+  if(edge_c.visible()) {
+    glColor3f(edge_c.red(), edge_c.grn(), edge_c.blu());
+    glBegin(GL_LINE_LOOP);
+    for(i=0; i<draw_pts.size(); i=i+2) {
+      glVertex2f(draw_pts[i], draw_pts[i+1]);
+    }
+    glEnd();
   }
-  glEnd();
-
+  
   // If filled option is on, draw the interior of the circle
   if(fill_c.visible()) {
     glEnable(GL_BLEND);
@@ -1847,6 +1872,30 @@ void MarineViewer::drawCircle(const XYCircle& circle, double timestamp)
     }
     glEnd();
     glDisable(GL_BLEND);
+  }
+
+  // Draw the labels unless either the viewer has it shut off OR if 
+  // the publisher of the point requested it not to be viewed, by
+  // setting the color to be "invisible".
+  bool draw_labels = m_geo_settings.viewable("circle_viewable_labels");
+  if(!edge_c.visible() && !fill_c.visible())
+    draw_labels = false;
+
+  if(draw_labels && labl_c.visible()) {
+    glColor3f(labl_c.red(), labl_c.grn(), labl_c.blu());
+    gl_font(1, 10);
+    
+    double px = circle.getX() * m_back_img.get_pix_per_mtr_x();
+    double py = circle.get_max_y() * m_back_img.get_pix_per_mtr_y();
+
+    string plabel = circle.get_msg();
+    if(plabel == "")
+      plabel = circle.get_label();
+    if(plabel != "") {    
+      double offset = 3.0 * (1/m_zoom);
+      glRasterPos3f(px+offset, py+offset, 0);
+      gl_draw(plabel.c_str());
+    }
   }
 
   glFlush();
@@ -1899,7 +1948,7 @@ void MarineViewer::drawRangePulse(const XYRangePulse& pulse,
   glPushMatrix();
   glLoadIdentity();
   
-  glLineWidth(1.0);  // added dec1306
+  glLineWidth(1.0);  
   glTranslatef(qx, qy, 0);
   glScalef(m_zoom, m_zoom, m_zoom);
 
@@ -1949,7 +1998,7 @@ void MarineViewer::drawCommsPulses(const vector<XYCommsPulse>& pulses,
   // If the viewable parameter is set to false just return. In 
   // querying the parameter the optional "true" argument means return
   // true if nothing is known about the parameter.
-  if(!m_geo_settings.viewable("comms_pulses_viewable_all", true))
+  if(!m_geo_settings.viewable("comms_pulse_viewable_all", true))
     return;
 
   unsigned int i, vsize = pulses.size();
@@ -2007,8 +2056,7 @@ void MarineViewer::drawCommsPulse(const XYCommsPulse& pulse,
 #endif
 
   // Determine the fill degree [0,1]. 1 is completely opaque
-  //double fill_degree = pulse.get_fill(timestamp);
-  double fill_degree = 0.5;
+  double fill_degree = pulse.get_fill(timestamp);
 
   // If filled option is on, draw the interior of the triangle
   if((fill_degree > 0) && fill_c.visible()) {
@@ -2026,6 +2074,7 @@ void MarineViewer::drawCommsPulse(const XYCommsPulse& pulse,
   glPopMatrix();  
 }
 
+#if 0
 //-------------------------------------------------------------
 // Procedure: drawPoints
 
@@ -2043,25 +2092,22 @@ void MarineViewer::drawPoints(const map<string, XYPoint>& points)
       drawPoint(p->second); 
   }
 }  
+#endif
+
 
 //-------------------------------------------------------------
 // Procedure: drawPoint
 
 void MarineViewer::drawPoint(const XYPoint& point)
 {
-  // The second argument to geocolor is what is returned if no color
-  // mapping is present in the geo_settings data structure.
-  ColorPack vert_c, labl_c;
-  vert_c = m_geo_settings.geocolor("point_vertex_color", "red");
-  labl_c = m_geo_settings.geocolor("point_label_color", "aqua_marine");  
+  ColorPack vert_c("red");         // default if no drawing hint
+  ColorPack labl_c("aqua_marine"); // default if no drawing hint
+  double vertex_size = 2;          // default if no drawing hint
+
   if(point.color_set("label"))
     labl_c = point.get_color("label");
   if(point.color_set("vertex"))
     vert_c = point.get_color("vertex");
-
-  // The second argument to geosize is what is returned if no size
-  // mapping is present in the geo_settings data structure.
-  double vertex_size = m_geo_settings.geosize("point_vertex_size", 3);
   if(point.vertex_size_set())
     vertex_size = point.get_vertex_size();
 
@@ -2116,13 +2162,104 @@ void MarineViewer::drawPoint(const XYPoint& point)
   glPopMatrix();
 }
 
+
+
+//-------------------------------------------------------------
+// Procedure: drawPoints
+
+void MarineViewer::drawPoints(const map<string, XYPoint>& points)
+{
+  // If the viewable parameter is set to false just return. In 
+  // querying the parameter the optional "true" argument means return
+  // true if nothing is known about the parameter.
+  if(!m_geo_settings.viewable("point_viewable_all", true))
+    return;
+  
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glOrtho(0, w(), 0, h(), -1 ,1);
+  
+  double tx = meters2img('x', 0);
+  double ty = meters2img('y', 0);
+  double qx = img2view('x', tx);
+  double qy = img2view('y', ty);
+
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
+  glLoadIdentity();
+  
+  glTranslatef(qx, qy, 0);
+  glScalef(m_zoom, m_zoom, m_zoom);
+  
+  ColorPack default_vert_color("red");
+  ColorPack default_labl_color("aqua_marine");
+  bool      draw_labels = m_geo_settings.viewable("point_viewable_labels");
+
+  map<string, XYPoint>::const_iterator p;
+  for(p=points.begin(); p!=points.end(); p++) {
+    if(p->second.active()) {
+      XYPoint point = p->second;
+      
+      // Set defaults if no drawing hints found
+      ColorPack vert_c = default_vert_color; 
+      ColorPack labl_c = default_labl_color;
+      double    vertex_size = 2;  
+
+      if(point.color_set("label"))
+	labl_c = point.get_color("label");
+      if(point.color_set("vertex"))
+	vert_c = point.get_color("vertex");
+      if(point.vertex_size_set())
+	vertex_size = point.get_vertex_size();
+
+      double px  = point.get_vx() * m_back_img.get_pix_per_mtr_x();
+      double py  = point.get_vy() * m_back_img.get_pix_per_mtr_y();
+
+      if(vert_c.visible()) {
+	glPointSize(vertex_size);
+	glColor3f(vert_c.red(), vert_c.grn(), vert_c.blu()); 
+	glEnable(GL_POINT_SMOOTH);
+	glBegin(GL_POINTS);
+	glVertex2f(px, py);
+	glEnd();
+	glDisable(GL_POINT_SMOOTH);
+      }
+      
+      // Draw the labels unless either the viewer has it shut off OR if 
+      // the publisher of the point set the color to "invisible".
+      if(draw_labels && labl_c.visible()) {
+	glColor3f(labl_c.red(), labl_c.grn(), labl_c.blu());
+	gl_font(1, 10);
+	
+	string plabel = point.get_msg();
+	if(plabel == "")
+	  plabel = point.get_label();
+	if(plabel != "") {    
+	  double offset = 3.0 * (1/m_zoom);
+	  glRasterPos3f(px+offset, py+offset, 0);
+	  gl_draw(plabel.c_str());
+	}
+      }
+    }
+  }
+
+  glFlush();
+  glPopMatrix();
+}
+
 //-------------------------------------------------------------
 // Procedure: drawDropPoints
 
 void MarineViewer::drawDropPoints()
 {
-  if(!m_drop_points.viewable())
+  // If the viewable parameter is set to false just return. In 
+  // querying the parameter the optional "true" argument means return
+  // true if nothing is known about the parameter.
+  if(!m_geo_settings.viewable("drop_point_viewable_all", true))
     return;
+
+  //if(!m_drop_points.viewable())
+  //  return;
 
   unsigned int i, vsize = m_drop_points.size();
   for(i=0; i<vsize; i++)
@@ -2163,5 +2300,6 @@ void MarineViewer::drawText(double px, double py, const string& text,
   glFlush();
   glPopMatrix();
 }
+
 
 

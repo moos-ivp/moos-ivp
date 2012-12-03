@@ -1,40 +1,23 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin                                     */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: BehaviorSpec.h                                       */
 /*    DATE: Feb 11, 2010                                         */
 /*                                                               */
-/* (IvPHelm) The IvP autonomous control Helm is a set of         */
-/* classes and algorithms for a behavior-based autonomous        */
-/* control architecture with IvP action selection.               */
+/* This program is free software; you can redistribute it and/or */
+/* modify it under the terms of the GNU General Public License   */
+/* as published by the Free Software Foundation; either version  */
+/* 2 of the License, or (at your option) any later version.      */
 /*                                                               */
-/* The algorithms embodied in this software are protected under  */
-/* U.S. Pat. App. Ser. Nos. 10/631,527 and 10/911,765 and are    */
-/* the property of the United States Navy.                       */
+/* This program is distributed in the hope that it will be       */
+/* useful, but WITHOUT ANY WARRANTY; without even the implied    */
+/* warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR       */
+/* PURPOSE. See the GNU General Public License for more details. */
 /*                                                               */
-/* Permission to use, copy, modify and distribute this software  */
-/* and its documentation for any non-commercial purpose, without */
-/* fee, and without a written agreement is hereby granted        */
-/* provided that the above notice and this paragraph and the     */
-/* following three paragraphs appear in all copies.              */
-/*                                                               */
-/* Commercial licences for this software may be obtained by      */
-/* contacting Patent Counsel, Naval Undersea Warfare Center      */
-/* Division Newport at 401-832-4736 or 1176 Howell Street,       */
-/* Newport, RI 02841.                                            */
-/*                                                               */
-/* In no event shall the US Navy be liable to any party for      */
-/* direct, indirect, special, incidental, or consequential       */
-/* damages, including lost profits, arising out of the use       */
-/* of this software and its documentation, even if the US Navy   */
-/* has been advised of the possibility of such damage.           */
-/*                                                               */
-/* The US Navy specifically disclaims any warranties, including, */
-/* but not limited to, the implied warranties of merchantability */
-/* and fitness for a particular purpose. The software provided   */
-/* hereunder is on an 'as-is' basis, and the US Navy has no      */
-/* obligations to provide maintenance, support, updates,         */
-/* enhancements or modifications.                                */
+/* You should have received a copy of the GNU General Public     */
+/* License along with this program; if not, write to the Free    */
+/* Software Foundation, Inc., 59 Temple Place - Suite 330,       */
+/* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
 #ifndef BEHAVIOR_SPEC_HEADER
@@ -54,28 +37,33 @@ class BehaviorSpec {
   void setBehaviorKind(std::string, unsigned int line_num);
   void addBehaviorConfig(std::string, unsigned int line_num);
 
+
   std::vector<std::string>  checkForSpawningStrings();
 
-  void setInfoBuffer(InfoBuffer *b) {m_info_buffer=b;};
+  void setFileName(std::string filename)  {m_filename = filename;};
+  void setInfoBuffer(InfoBuffer *b)       {m_info_buffer=b;};
+
   bool setTemplatingType(std::string s);
   void clear();
-  void print();
+  void print() const;
     
  public: // Getting Parameters 
-  unsigned int  size()              {return(m_config_lines.size());};
-  std::string   getTemplatingType() {return(m_templating);};
-  bool          templating()        {return(m_templating_enabled);};
-  std::string   getKind()           {return(m_behavior_kind);};
-  unsigned int  getKindLine()       {return(m_kind_line_num);};
-  std::string   getUpdatesVar()     {return(m_updates_var);};
-  
-  std::string   getConfigLine(unsigned int);
-  unsigned int  getConfigLineNum(unsigned int);
+  unsigned int  size() const              {return(m_config_lines.size());};
+  std::string   getTemplatingType() const {return(m_templating);};
+  bool          templating() const        {return(m_templating_enabled);};
+  std::string   getKind() const           {return(m_behavior_kind);};
+  unsigned int  getKindLine() const       {return(m_kind_line_num);};
+  std::string   getUpdatesVar() const     {return(m_updates_var);};
+  std::string   getFileName() const       {return(m_filename);};
+
+  std::string   getConfigLine(unsigned int) const;
+  unsigned int  getConfigLineNum(unsigned int) const;
 
  private: // State Variables
   std::string   m_templating;
   std::string   m_updates_var;
 
+  std::string   m_filename;
   std::string   m_behavior_kind;
   unsigned int  m_kind_line_num;
 
@@ -87,4 +75,6 @@ class BehaviorSpec {
 };
 
 #endif
+
+
 

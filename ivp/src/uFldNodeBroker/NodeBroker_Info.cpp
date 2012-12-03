@@ -1,9 +1,24 @@
-/****************************************************************/
-/*   NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
-/*   ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*   FILE: NodeBroker_Info.cpp                                  */
-/*   DATE: Dec 19th 2011                                        */
-/****************************************************************/
+/*****************************************************************/
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    FILE: NodeBroker_Info.cpp                                  */
+/*    DATE: Dec 19th 2011                                        */
+/*                                                               */
+/* This program is free software; you can redistribute it and/or */
+/* modify it under the terms of the GNU General Public License   */
+/* as published by the Free Software Foundation; either version  */
+/* 2 of the License, or (at your option) any later version.      */
+/*                                                               */
+/* This program is distributed in the hope that it will be       */
+/* useful, but WITHOUT ANY WARRANTY; without even the implied    */
+/* warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR       */
+/* PURPOSE. See the GNU General Public License for more details. */
+/*                                                               */
+/* You should have received a copy of the GNU General Public     */
+/* License along with this program; if not, write to the Free    */
+/* Software Foundation, Inc., 59 Temple Place - Suite 330,       */
+/* Boston, MA 02111-1307, USA.                                   */
+/*****************************************************************/
 
 #include <cstdlib>
 #include <iostream>
@@ -78,8 +93,9 @@ void showExampleConfigAndExit()
   blk("                                                                ");
   blk("  KEYWORD        = lemon                                        ");
   blk("                                                                ");
-  blk("  TRY_SHORE_HOST = host_ip=localhost, port_udp=9200, community=topside");
-  blk("  TRY_SHORE_HOST = host_ip=128.30.24.232, port_udp=9200         ");
+  blk("  TRY_SHORE_HOST = pshare_route=localhost:9200                  ");
+  blk("  TRY_SHORE_HOST = pshare_route=192.168.0.122:9301              ");
+  blk("  TRY_SHORE_HOST = pshare_route=multicast_8                     ");
   blk("                                                                ");
   blk("  BRIDGE = src=VIEW_POLYGON                                     ");
   blk("  BRIDGE = src=VIEW_POINT                                       ");
@@ -132,4 +148,5 @@ void showReleaseInfoAndExit()
   showReleaseInfo("uFldNodeBroker", "gpl");
   exit(0);
 }
+
 

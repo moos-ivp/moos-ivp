@@ -31,12 +31,13 @@ ENDIF (${APPLE})
       
 TARGET_LINK_LIBRARIES(alogview
    marineview
+   geometry
+   logutils
+   MOOSGeodesy
+   MOOS
    contacts
-   MOOSUtility
    navplot
    ipfview
-   logutils
-   geometry
    mbutil
    ${SYSTEM_LIBS}
    

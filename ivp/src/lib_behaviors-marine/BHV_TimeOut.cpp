@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: BHV_TimeOut.cpp                                      */
 /*    DATE: Jul 27 2007 (pulled out from BHV_OpRegion)           */
 /*                                                               */
@@ -116,5 +116,6 @@ void BHV_TimeOut::setTimeStamps()
 
   m_elapsed_time = m_current_time - m_start_time;
 }
+
 
 

@@ -87,14 +87,18 @@ void showExampleConfigAndExit()
   blk("  AppTick   = 4                                                 ");
   blk("  CommsTick = 4                                                 ");
   blk("                                                                ");
-  blk("  WATCH_ALL = true                                              ");
+  blk("  WATCH_ALL = true   // The default is true.                    ");
   blk("                                                                ");
   blk("  WATCH  = pMarinePID:PID_OK                                    ");
   blk("  WATCH  = uSimMarine:USM_OK                                    ");
   blk("                                                                ");
   blk("  NOWATCH = uXMS*                                               ");
   blk("                                                                ");
-  blk("  SUMMARY_WAIT = 10  ","// Seconds                              ");
+  blk("  ALLOW_RETRACTIONS = true   // Always allow run-warnings to be ");
+  blk("                             // retracted if proc re-appears    ");
+  blk("                                                                ");
+  blk("  // A negative value means summary only when status changes.   ");
+  blk("  SUMMARY_WAIT = 10 // Seconds. Default is -1.                  ");
   blk("                                                                ");
   blk("  POST_MAPPING = PROC_WATCH_FULL_SUMMARY, UPW_FULL_SUMMARY      ");
   blk("}                                                               ");
@@ -143,4 +147,5 @@ void showReleaseInfoAndExit()
   showReleaseInfo("uProcessWatch", "gpl");
   exit(0);
 }
+
 

@@ -41,8 +41,7 @@ ColorPack::ColorPack()
 
 ColorPack::ColorPack(string str) 
 {
-  str = tolower(str);
-
+  // Handle special case first
   if(str == "invisible") {
     m_visible = false;
     m_set = true;
@@ -50,16 +49,23 @@ ColorPack::ColorPack(string str)
     return;
   } 
 
-  if(isColor(str)) {
-    m_color_vector=colorParse(str);
-    m_set = true;
-    m_visible = true;
-    m_color_string = str;
-    return;
-  }
+  m_color_vector=colorParse(str);
 
-  m_color_vector = std::vector<double>(3,0);
-  m_set = false;
+  // Detect if the color provided was a recognized color. Bad colors
+  // will return a vector of zeros, which is "black". If we get a 
+  // vector of zeros and the named color was not "black" we infer that
+  // the given string does not name a known color.
+  // Want to avoid isColor() call since this is expensive.
+  if((m_color_vector[0] == 0) && 
+     (m_color_vector[1] == 0) && 
+     (m_color_vector[2] == 0) &&
+     tolower(str) != "black") 
+    return;
+
+  // Otherwise all is good.
+  m_set = true;
+  m_visible = true;
+  m_color_string = str;
 }
 
 //----------------------------------------------------------------
@@ -99,14 +105,27 @@ void ColorPack::setColor(string str)
   if(str == "invisible") {
     m_visible = false;
     m_set = true;
-    m_color_vector = std::vector<double>(3,0);
+    m_color_vector = vector<double>(3,0);
+    return;
   } 
-  else if(isColor(str)) {
-    m_color_vector=colorParse(str);
-    m_set = true;
-    m_visible = true;
-    m_color_string = str;
-  }
+
+  vector<double> result_vector = colorParse(str);
+  // Detect if the color provided was a recognized color. Bad colors
+  // will return a vector of zeros, which is "black". If we get a 
+  // vector of zeros and the named color was not "black" we infer that
+  // the given string does not name a known color.
+  // Want to avoid isColor() call since this is expensive.
+  if((result_vector[0] == 0) && 
+     (result_vector[1] == 0) && 
+     (result_vector[2] == 0) &&
+     tolower(str) != "black") 
+    return;
+
+  // Otherwise all is good!
+  m_color_vector = result_vector;
+  m_set = true;
+  m_visible = true;
+  m_color_string = str;
 }
 
 //----------------------------------------------------------------
@@ -160,4 +179,5 @@ string ColorPack::str(char separator) const
   rstr += separator + doubleToStringX(m_color_vector[2],3);
   return(rstr);
 }
+
 

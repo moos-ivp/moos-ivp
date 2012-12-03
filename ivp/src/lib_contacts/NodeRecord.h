@@ -3,7 +3,6 @@
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: NodeRecord.h                                         */
 /*    DATE: Feb 27th 2010                                        */
-/*          Jun 26th 2011                                        */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
 /* modify it under the terms of the GNU General Public License   */
@@ -56,6 +55,9 @@ class NodeRecord
 
   void setProperty(std::string, std::string);
 
+  void setIndex(int i)         {m_index=i;};
+
+  int    getIndex() const      {return(m_index);};
   double getX() const          {return(m_x);};
   double getY() const          {return(m_y);};
   double getLat() const        {return(m_lat);};
@@ -72,6 +74,7 @@ class NodeRecord
   double getTimeStamp() const  {return(m_timestamp);};
   
   bool   isSetAltitude() const {return(m_altitude_set);};
+
   
 
   double getElapsedTime(double) const;
@@ -125,10 +128,13 @@ class NodeRecord
   bool m_length_set;
   bool m_timestamp_set;
 
+  int  m_index;
+
   // General provisions for using this record to store additional
   // information about this contact
   std::map<std::string, std::string> m_properties;
 };
 
 #endif 
+
 

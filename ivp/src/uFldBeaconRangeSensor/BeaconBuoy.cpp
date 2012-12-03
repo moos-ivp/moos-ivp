@@ -37,6 +37,10 @@ BeaconBuoy::BeaconBuoy()
   m_timestamp = 0;
   m_report_range = 100;
 
+  m_pings_recvd = 0;
+  m_pings_repld = 0;
+  m_pings_unsol = 0;
+
   // resonable default values
   m_freq_low   = -1;  // or say 30
   m_freq_hgh   = -1;  // or say 60
@@ -117,21 +121,38 @@ bool BeaconBuoy::setShape(string shape_str)
 }
 
 //-----------------------------------------------------------
-// Procedure: setReportRange
-//      Note: A negative range is allowed, but may be interpreted
-//            as range = infinity.
+// Procedure: setPushDist
+//      Note: A negative distance means push_dist = infinity.
 
-bool BeaconBuoy::setReportRange(string range)
+bool BeaconBuoy::setPushDist(string dist_str)
 {
-  if((range == "nolimit") || (range == "unlimited")) {
-    m_report_range = -1; 
+  if((dist_str == "nolimit") || (dist_str == "unlimited")) {
+    m_push_dist = -1; 
     return(true);
   }
   
-  if(!isNumber(range))
+  if(!isNumber(dist_str))
     return(false);
   
-  m_report_range = atof(range.c_str());
+  m_push_dist = atof(dist_str.c_str());
+  return(true);
+}
+
+//-----------------------------------------------------------
+// Procedure: setPullDist
+//      Note: A negative distance means pull_dist = infinity.
+
+bool BeaconBuoy::setPullDist(string dist_str)
+{
+  if((dist_str == "nolimit") || (dist_str == "unlimited")) {
+    m_pull_dist = -1; 
+    return(true);
+  }
+  
+  if(!isNumber(dist_str))
+    return(false);
+  
+  m_pull_dist = atof(dist_str.c_str());
   return(true);
 }
 
@@ -232,5 +253,27 @@ void BeaconBuoy::resetFrequency()
   
   m_frequency = m_freq_low + (rand_pct * range);
 }
+
+
+//-----------------------------------------------------------
+// Procedure: getFreqSetting
+//   Purpose: Return a string representation of the frequency config.
+//            "30"
+//            "[30:60]"
+
+string BeaconBuoy::getFreqSetting() const
+{
+  if(m_frequency == -1)
+    return("poll");
+
+  if(m_freq_low == m_freq_hgh)
+    return(doubleToString(m_frequency, 1));
+
+  string str_range = "[" + doubleToStringX(m_freq_low,1) + ":";
+  str_range += doubleToStringX(m_freq_hgh,1) + "]";
+
+  return(str_range);
+}
+
 
 

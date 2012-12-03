@@ -96,16 +96,10 @@ BHV_Waypoint::BHV_Waypoint(IvPDomain gdomain) :
 
 void BHV_Waypoint::onSetParamComplete()
 {
-  m_trackpt.set_source(m_us_name + "_" + tolower(getDescriptor()));
   m_trackpt.set_label(m_us_name + "'s track-point");
-  //m_trackpt.set_label(m_us_name + "_track-point");
-  m_trackpt.set_type("track_point");
   m_trackpt.set_vertex_size(4);
 
-  m_nextpt.set_source(m_us_name + "_" + tolower(getDescriptor()));
   m_nextpt.set_label(m_us_name + "'s next waypoint");
-  //m_nextpt.set_label(m_us_name + "_waypoint");
-  m_nextpt.set_type("waypoint");
   m_nextpt.set_vertex_size(4);
 }
 
@@ -662,4 +656,5 @@ void BHV_Waypoint::handleVisualHint(string hint)
   else if((param == "vertex_size") && isNumber(value) && (dval >= 0))
     m_hint_vertex_size = dval;
 }
+
 

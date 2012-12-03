@@ -1,9 +1,24 @@
-/****************************************************************/
-/*   NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
-/*   ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*   FILE: HostInfo.cpp                                         */
-/*   DATE: Dec 14th 2011                                        */
-/****************************************************************/
+/*****************************************************************/
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    FILE: HostInfo.cpp                                         */
+/*    DATE: Dec 14th 2011                                        */
+/*                                                               */
+/* This program is free software; you can redistribute it and/or */
+/* modify it under the terms of the GNU General Public License   */
+/* as published by the Free Software Foundation; either version  */
+/* 2 of the License, or (at your option) any later version.      */
+/*                                                               */
+/* This program is distributed in the hope that it will be       */
+/* useful, but WITHOUT ANY WARRANTY; without even the implied    */
+/* warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR       */
+/* PURPOSE. See the GNU General Public License for more details. */
+/*                                                               */
+/* You should have received a copy of the GNU General Public     */
+/* License along with this program; if not, write to the Free    */
+/* Software Foundation, Inc., 59 Temple Place - Suite 330,       */
+/* Boston, MA 02111-1307, USA.                                   */
+/*****************************************************************/
 
 #include <cstdlib>
 #include <iterator>
@@ -12,28 +27,25 @@
 #include "ColorParse.h"
 #include "FileBuffer.h"
 #include "MBUtils.h"
+#include "ACBlock.h"
 
 using namespace std;
 
 //---------------------------------------------------------
 // Constructor
 
-HostInfo::HostInfo()
+HostInfo::HostInfo() 
 {
   // Initialize config variables
   m_tmp_file_dir   = "~/";
   m_default_hostip = "localhost";   // fall-back ip address
   m_default_hostip_force = false;   // Force use fall-back for debugging
-  m_report_interval = 0.75;         // Terminal report interval seconds
-  m_last_report_time = 0;           // Timestamp of last terminal report
-
-  // Initialize state variables
-  m_iterations = 0;
-  m_timewarp   = 1;
 
   m_ip_info_files_generated = false;
   m_ip_info_gathered = false;
   m_ip_info_posted   = false;
+
+  m_pmb_udp_listen_cnt = 0;
 }
 
 //---------------------------------------------------------
@@ -41,37 +53,37 @@ HostInfo::HostInfo()
 
 bool HostInfo::OnNewMail(MOOSMSG_LIST &NewMail)
 {
-  MOOSMSG_LIST::iterator p;
+  AppCastingMOOSApp::OnNewMail(NewMail);
 
+  MOOSMSG_LIST::iterator p;
   for(p=NewMail.begin(); p!=NewMail.end(); p++) {
     CMOOSMsg &msg = *p;
+
     string key   = msg.GetKey();
     string comm  = msg.GetCommunity();
-    double dval  = msg.GetDouble();
+    string sval  = msg.GetString(); 
 	
 #if 0 // Keep these around just for template
-    string sval  = msg.GetString(); 
+    double dval  = msg.GetDouble();
     string msrc  = msg.GetSource();
     double mtime = msg.GetTime();
     bool   mdbl  = msg.IsDouble();
     bool   mstr  = msg.IsString();
 #endif
 
+    bool handled = true;
     if(key == "HOST_INFO_REQUEST") {
       m_ip_info_files_generated = false;
       m_ip_info_gathered = false;
       m_ip_info_posted = false;
     }
-    // We want to know, if pMOOSBridge is running locally, what port
-    // it is listening to for UDP traffic.
-    else if(key == "PMB_UDP_LISTEN") {
-      string prior_port_udp = m_host_port_udp;
-      // Only pay attention to pMOOSBridge running in this community
-      if(comm == m_host_community)
-	m_host_port_udp = doubleToStringX(dval);
-      if(prior_port_udp != m_host_port_udp)
-	m_ip_info_posted = false;
-    }
+    else if(key == "pShare_INPUT_SUMMARY") 
+      handled = handleMailPShareInput(sval);
+    else 
+      handled = false;
+
+    if(!handled)
+      reportRunWarning("Unhandled Mail: " + key);
   }
   return(true);
 }
@@ -91,12 +103,12 @@ bool HostInfo::OnConnectToServer()
 
 bool HostInfo::Iterate()
 {
-  m_iterations++;
-  m_curr_time = MOOSTime();
+  AppCastingMOOSApp::Iterate();
 
-  // Do all the auto-discovery work here - unless in the rare/debugging 
-  // case where the hostip address is hard-configured (m_default_hostip_force
-  // is true).
+  // Do all the auto-discovery work here - unless in the
+  // rare/debugging case where the hostip address is hard-configured
+  // (m_default_hostip_force is true).
+
   if(m_default_hostip_force == false) {
     if(!m_ip_info_files_generated)
       generateIPInfoFiles();
@@ -105,15 +117,10 @@ bool HostInfo::Iterate()
       gatherIPInfoFromFiles();
   }    
 
-  if((!m_ip_info_posted) || ((m_iterations % 10) == 0))
+  if((!m_ip_info_posted) || ((m_iteration % 10) == 0))
     postIPInfo();
 
-  double moos_elapsed_time = m_curr_time - m_last_report_time;
-  double real_elapsed_time = moos_elapsed_time / m_timewarp;
-  if(real_elapsed_time >= m_report_interval)
-    printReport();
-  else
-    cout << "*" << flush;
+  AppCastingMOOSApp::PostReport();
   return(true);
 }
 
@@ -122,56 +129,49 @@ bool HostInfo::Iterate()
 
 bool HostInfo::OnStartUp()
 {
-  list<string> sParams;
-  m_MissionReader.EnableVerbatimQuoting(false);
-  if(m_MissionReader.GetConfiguration(GetAppName(), sParams)) {
-    list<string>::iterator p;
-    for(p=sParams.begin(); p!=sParams.end(); p++) {
-      string original_line = *p;
-      string param = stripBlankEnds(toupper(biteString(*p, '=')));
-      string value = stripBlankEnds(*p);
-      
-      if(param == "TEMP_FILE_DIR") {
-	if(!strContainsWhite(value))
-	  m_tmp_file_dir = value;
-	else
-	  m_bad_configs.push_back(original_line);	  
-      }
-      
-      else if((param == "DEFAULT_HOSTIP") ||
-	      (param == "DEFAULT_HOST_IP")) {
-	if(isValidIPAddress(value))
-	  m_default_hostip = value;
-	else
-	  m_bad_configs.push_back(original_line);	  
-      }
+  AppCastingMOOSApp::OnStartUp();
 
-      else if((param == "DEFAULT_HOSTIP_FORCE") || 
-	      (param == "DEFAULT_HOST_IP_FORCE")) {
-	if(isValidIPAddress(value)) {
-	  m_default_hostip = value;
-	  m_default_hostip_force = true;
-	}
-	else
-	  m_bad_configs.push_back(original_line);	  
+  STRING_LIST sParams;
+  if(!m_MissionReader.GetConfiguration(GetAppName(), sParams)) 
+    reportConfigWarning("No config block found for " + GetAppName());
+  
+  STRING_LIST::iterator p;
+  for(p=sParams.begin(); p!=sParams.end(); p++) {
+    string orig  = *p;
+    string line  = *p;
+    string param = toupper(biteStringX(line, '='));
+    string value = line;
+    
+    bool handled = false;
+    if(param == "TEMP_FILE_DIR") {
+      if(!strContainsWhite(value)) {
+	m_tmp_file_dir = value;
+	handled = true;
       }
-
-      else if((param != "APPTICK") && (param != "COMMSTICK"))
-	m_bad_configs.push_back(original_line);
     }
+    
+    else if((param == "DEFAULT_HOSTIP") ||
+	    (param == "DEFAULT_HOST_IP")) {
+      if(isValidIPAddress(value)) {
+	m_default_hostip = value;
+	handled = true;
+      }
+    }
+    else if((param == "DEFAULT_HOSTIP_FORCE") || 
+	    (param == "DEFAULT_HOST_IP_FORCE")) {
+      if(isValidIPAddress(value)) {
+	m_default_hostip = value;
+	m_default_hostip_force = true;
+	handled = true;
+      }
+    }
+    
+    if(!handled)
+      reportUnhandledConfigWarning(orig);
   }
 
   // Get the MOOSDB Port Information
-  m_host_port_db = m_sServerPort;
-  
-  // Get the MOOSDB Community Information
-  if(!m_MissionReader.GetValue("COMMUNITY", m_host_community))
-    MOOSTrace("Community name not found in mission file!\n");
-  else
-    MOOSTrace("Community: %s\n", m_host_community.c_str());
-  
-  m_timewarp     = GetMOOSTimeWarp();
-  m_timewarp_str = doubleToStringX(m_timewarp);
+  m_host_port_db = doubleToString(m_lServerPort,0);
   
   if(strContains(m_tmp_file_dir, "~")) {
     string home_dir = getenv("HOME");
@@ -188,8 +188,9 @@ bool HostInfo::OnStartUp()
 
 void HostInfo::registerVariables()
 {
+  AppCastingMOOSApp::RegisterVariables();
   m_Comms.Register("HOST_INFO_REQUEST", 0);
-  m_Comms.Register("PMB_UDP_LISTEN", 0);
+  m_Comms.Register("pShare_INPUT_SUMMARY", 0);
 }
 
 
@@ -298,10 +299,12 @@ void HostInfo::gatherIPInfoFromFiles()
 //---------------------------------------------------------
 // Procedure: postIPInfo
 //  Examples:
-//  PHI_HOST_IP = "123.1.1.0"
-//  PHI_HOST_IP_ALL = "123.1.1.0,192.168.1.119"
+//  PHI_HOST_IP         = 123.1.1.0
+//  PHI_HOST_IP_ALL     = 123.1.1.0,192.168.1.119
+//  PHI_HOST_PORT_DB    = 9000
 //  PHI_HOST_IP_VERBOSE = "OSX_WIFI=123.1.1.0,OSX_ETHERNET=192.168.1.119"
-//  PHI_HOST_INFO = "COMMUNITY=alpha,IP=123.1.1.0,PORT=9000,PORT_UDP=9200"
+//  PHI_HOST_INFO       = community=alpha,hostip=123.1.1.0,port_db=9000,
+//                        pshare_iroutes=localhost:9301,timewarp=12
 
 void HostInfo::postIPInfo()
 {
@@ -336,20 +339,17 @@ void HostInfo::postIPInfo()
   if(m_host_ip_verbose != "")
     m_Comms.Notify("PHI_HOST_IP_VERBOSE", m_host_ip_verbose);
   if(m_host_port_db != "")
-    m_Comms.Notify("PHI_HOST_PORT", m_host_port_db);
-  if(m_host_port_udp != "")
-    m_Comms.Notify("PHI_HOST_PORT_UDP", m_host_port_udp);
+    m_Comms.Notify("PHI_HOST_PORT_DB", m_host_port_db);
 
   HostRecord hrecord;
   hrecord.setCommunity(m_host_community);
   hrecord.setHostIP(m_host_ip);
   hrecord.setPortDB(m_host_port_db);
-  hrecord.setPortUDP(m_host_port_udp);
-  hrecord.setTimeWarp(m_timewarp_str);
-  
+  hrecord.setTimeWarp(doubleToStringX(m_time_warp,1));
+  hrecord.setPShareIRoutes(m_pshare_iroutes);
   m_host_record_all = hrecord.getSpec();
   m_Comms.Notify("PHI_HOST_INFO", m_host_record_all);
-
+  
   m_ip_info_posted = true;
 
   // If m_host_ip still is the default value, reset m_host_ip to indicate
@@ -357,50 +357,6 @@ void HostInfo::postIPInfo()
   if(m_host_ip == m_default_hostip)
     m_host_ip = "";
 }
-
-//---------------------------------------------------------
-// Procedure: printReport()
-
-void HostInfo::printReport()
-{
-  // Part 1: Header
-  cout << endl << endl << endl << endl << endl;
-  cout << "======================================================" << endl;
-  cout << "pHostInfo Report ";
-  cout << termColor("reverseblue") + m_host_community + termColor();
-  cout << "  (" << m_iterations << ")" << endl;
-
-  // Part 2: Configuration Warnings
-  unsigned int config_warnings = m_bad_configs.size();
-  if(config_warnings != 0) {
-    cout << termColor("red") << "MOOS File Configuration Errors (";
-    cout << config_warnings << ")" << endl;
-    for(unsigned i=0; i<config_warnings; i++) {
-      cout << "  [" <<stripBlankEnds(m_bad_configs[i]) << "]" << endl;
-    }
-  }
-  cout << termColor();
-
-
-  // Part 3: Normal Status Output
-  cout << "  PHI_HOST_IP:         " << m_host_ip;
-
-  if((m_host_ip == "") && m_default_hostip_force)
-    cout << termColor("reversered") << "DEFAULT HOSTIP FORCED";
-  else if(m_host_ip == "")
-    cout << termColor("reversegreen") << "DEFAULT HOSTIP USED";
-
-  cout << termColor() << endl;
-
-  cout << "  PHI_HOST_IP_ALL:     " << m_host_ip_all << endl;
-  cout << "  PHI_HOST_IP_VERBOSE: " << m_host_ip_verbose << endl;
-  cout << "  PHI_HOST_PORT:       " << m_host_port_db << endl;
-  cout << "  PHI_HOST_PORT_UDP:   " << m_host_port_udp << endl;
-  cout << "  PHI_HOST_INFO:       " << m_host_record_all << endl;
-
-  m_last_report_time = m_curr_time;
-}
-
 
 //---------------------------------------------------------
 // Procedure: addIPInfo
@@ -474,7 +430,6 @@ string HostInfo::readLinuxInfoIP(string filename)
   return(return_info);
 }
 
-
 //---------------------------------------------------------
 // Procedure: clearTempFiles
 //   Purpose: Clear all the temporary files created for storing IP
@@ -497,4 +452,92 @@ void HostInfo::clearTempFiles()
   system("rm -f ~/.ipinfo_linux_wifi.txt");      // Linux
 }
 
+//---------------------------------------------------------
+// Procedure: handleMailPShareInput
+//   Example: localhost:9001:udp , 221.1.1.18:2000:multicast_18
+//
+//      Note: Two things are done here:
+//            (1) We reduce the long form (localhost:9000:udp) to the 
+//            short form (localhost:9000)
+//            (2) We error check where possible.
+
+bool HostInfo::handleMailPShareInput(const string& list_of_routes)
+{
+  string new_pshare_iroutes;
+
+  vector<string> svector = parseString(list_of_routes, ',');
+  unsigned int i, vsize = svector.size();
+  for(i=0; i<vsize; i++) {
+    string route = svector[i];
+    vector<string> jvector = parseString(route, ':');
+    unsigned int jsize = jvector.size();
+    string new_route;
+    if(jsize == 3) {
+      string hostname  = jvector[0];
+      string port      = jvector[1];
+      string protocol  = jvector[2];
+      if(isValidIPAddress(hostname) && isNumber(port) && (protocol=="udp")) 
+	new_route = hostname + ":" + port;
+      else if(isValidIPAddress(hostname) && isNumber(port))
+	new_route = protocol;
+    }
+    if(new_route != "") {
+      if(new_pshare_iroutes != "")
+	new_pshare_iroutes += "&";
+      new_pshare_iroutes += new_route;
+    }
+    else
+      reportRunWarning("Invalid pShare input route reported: " + route);
+  }
+
+  m_pshare_iroutes = new_pshare_iroutes;
+  return(true);
+}
+
+//---------------------------------------------------------
+// Procedure: buildReport()
+//      Note: A virtual function of the AppCastingMOOSApp superclass, 
+//            conditionally invoked if either a terminal or appcast 
+//            report is needed.
+//   Example:
+//
+//  PHI_HOST_IP:         128.30.24.232
+//  PHI_HOST_IP_ALL:     128.30.24.232,128.31.33.159
+//  PHI_HOST_IP_VERBOSE: OSX_ETHERNET2=128.30.24.232,
+//                       OSX_WIFI=128.31.33.159
+//  PHI_HOST_PORT:       9000
+//  PHI_HOST_INFO:       community=shoreside,hostip=128.30.24.232,
+//                       port_db=9000,port_udp=9200,timewarp=2
+//
+
+bool HostInfo::buildReport()
+{
+  vector<string> svector;
+
+  m_msgs << endl;
+  m_msgs << "  PHI_HOST_IP:         " << m_host_ip;
+
+  if((m_host_ip == "") && m_default_hostip_force)
+    m_msgs << termColor("reversered") << "DEFAULT HOSTIP FORCED";
+  else if(m_host_ip == "")
+    m_msgs << termColor("reversegreen") << "DEFAULT HOSTIP USED";
+
+  m_msgs << termColor() << endl;
+
+  ACBlock block;
+
+  block = ACBlock("  PHI_HOST_IP_ALL:     ", m_host_ip_all, 42);
+  m_msgs << block.getFormattedString() << endl;
+
+  block = ACBlock("  PHI_HOST_IP_VERBOSE: ", m_host_ip_verbose, 42);
+  m_msgs << block.getFormattedString() << endl;
+
+  m_msgs << "  PHI_HOST_PORT:       " << m_host_port_db    << endl;
+  m_msgs << "  PHI_PSHARES_IROUTES: " << m_pshare_iroutes  << endl;
+
+  block = ACBlock("  PHI_HOST_INFO:       ", m_host_record_all, 42);
+  m_msgs << block.getFormattedString();
+
+  return(true);
+}
 

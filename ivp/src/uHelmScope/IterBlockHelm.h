@@ -71,8 +71,10 @@ public:
   unsigned int getIteration() const  {return(m_iteration);};
   unsigned int getCountIPF() const   {return(m_count_ipf);};
   unsigned int getWarnings() const   {return(m_warning_cnt);};
+
+  unsigned int getCountIdle() const {return(m_idle_bhv.size());};
   
-  void print(int iter=0);
+  void print(int iter=0) const;
 
 protected:
   std::vector<BehaviorRecord> m_active_bhv;
@@ -102,4 +104,5 @@ protected:
 };
 
 #endif 
+
 

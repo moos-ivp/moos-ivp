@@ -24,7 +24,6 @@
 #include "ColorParse.h"
 #include "EchoVar.h"
 #include "EchoVar_Info.h"
-#include <stdint.h>
 
 using namespace std;
 
@@ -63,6 +62,7 @@ int main(int argc, char *argv[])
 
   return(0);
 }
+
 
 
 

@@ -125,9 +125,7 @@ void VPlug_GeoShapes::addPolygon(const XYPolygon& new_poly)
 
   unsigned int i, vsize = m_polygons.size();
   for(i=0; i<vsize; i++) {
-    if((m_polygons[i].get_label()  == new_label) &&
-       (m_polygons[i].get_type()   == new_poly.get_type())   &&
-       (m_polygons[i].get_source() == new_poly.get_source())) {
+    if(m_polygons[i].get_label() == new_label) {
       m_polygons[i] = new_poly;
       return;
     }
@@ -269,6 +267,19 @@ bool VPlug_GeoShapes::updateConvexGrid(const string& delta)
 }
 
 //-----------------------------------------------------------
+// Procedure: sizeTotalShapes()
+
+unsigned int VPlug_GeoShapes::sizeTotalShapes() const
+{
+  return(sizePolygons()    + sizeSegLists() + 
+	 sizeCircles()     + sizeHexagons() + 
+	 sizePoints()      + sizeVectors()  + 
+	 sizeGrids()       + sizeConvexGrids() + 
+	 sizeMarkers()     + sizeRangePulses() + 
+	 sizeCommsPulses());
+}
+
+//-----------------------------------------------------------
 // Procedure: addGrid
 
 void VPlug_GeoShapes::addGrid(const XYGrid& new_grid)
@@ -373,42 +384,15 @@ void VPlug_GeoShapes::addHexagon(const XYHexagon& hexagon)
 
 void VPlug_GeoShapes::addPoint(const XYPoint& new_point)
 {
-  updateBounds(new_point.x(), new_point.x(), 
-	       new_point.y(), new_point.y());
+  double px = new_point.x();
+  double py = new_point.y();
+  updateBounds(px, px, py, py);
 
   string new_label  = new_point.get_label();
   if(new_label == "")
     new_label = "pt_" + uintToString(m_points.size());
   m_points[new_label] = new_point;
 }
-
-#if 0
-void VPlug_GeoShapes::addPoint(const XYPoint& new_point)
-{
-  updateBounds(new_point.x(), new_point.x(), 
-	       new_point.y(), new_point.y());
-
-  string new_label  = new_point.get_label();
-  if(new_label == "") {
-    m_points.push_back(new_point);
-    return;
-  }
-  
-  string new_type   = new_point.get_type();
-  string new_source = new_point.get_source();
-  unsigned int i, vsize = m_points.size();
-  for(i=0; i<vsize; i++) {
-    if((m_points[i].get_label()  == new_label)  &&
-       (m_points[i].get_type()   == new_type)   &&
-       (m_points[i].get_source() == new_source)) {
-      m_points[i] = new_point;
-      return;
-    }
-  }
-  
-  m_points.push_back(new_point);
-}
-#endif
 
 //-----------------------------------------------------------
 // Procedure: addPolygon
@@ -497,7 +481,7 @@ bool VPlug_GeoShapes::addPoint(const string& point_str)
 {
   XYPoint new_point = string2Point(point_str);
   if(!new_point.valid())
-    return(false);
+    return(true);
   addPoint(new_point);
   return(true);
 }
@@ -556,5 +540,6 @@ void VPlug_GeoShapes::updateBounds(double xl, double xh,
   if(yh > m_ymax)
     m_ymax = yh;
 }
+
 
 

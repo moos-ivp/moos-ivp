@@ -40,23 +40,29 @@ public:
   virtual void updateXY() {};
 
   void augmentMenu();
+  void updateRadios();
+  void setMenuItemColors();
 
-public:
-  Fl_Menu_Bar  *mbar;
-  MarineViewer *cmviewer;
+  //void setMenuItemColor(std::string item, int r=31, int g=71, int b=195);
+  void setMenuItemColor(std::string item, int r=31, int g=71, int b=155);
+  bool setMenuAttrib(std::string menu, std::string attr, std::string val="");
+
+ protected:
+  Fl_Menu_Bar  *m_menubar;
+  MarineViewer *m_mviewer;
 
 protected:
   std::vector<std::string> m_pending_vars;
   std::vector<std::string> m_pending_vals;
 
   virtual void cb_Zoom_i(int);
-  static void cb_Zoom(Fl_Widget*, int);
+  static  void cb_Zoom(Fl_Widget*, int);
 
   virtual void cb_HandleUpDown_i(int);
-  static void cb_HandleUpDown(Fl_Widget*, int);
+  static  void cb_HandleUpDown(Fl_Widget*, int);
 
   virtual void cb_HandleLeftRight_i(int);
-  static void cb_HandleLeftRight(Fl_Widget*, int);
+  static  void cb_HandleLeftRight(Fl_Widget*, int);
 
   inline void cb_ToggleTiff_i();
   static void cb_ToggleTiff(Fl_Widget*);
@@ -73,14 +79,8 @@ protected:
   inline void cb_HashShade_i(int);
   static void cb_HashShade(Fl_Widget*, int);
 
-  inline void cb_MG_SetGeoAttr_i(int);
-  static void cb_MG_SetGeoAttr(Fl_Widget*, int);
-
-  inline void cb_ToggleDatum_i();
-  static void cb_ToggleDatum(Fl_Widget*);
-
-  inline void cb_ToggleGrids_i();
-  static void cb_ToggleGrids(Fl_Widget*);
+  inline void cb_SetGeoAttr_i(int);
+  static void cb_SetGeoAttr(Fl_Widget*, int);
 
   inline void cb_DatumSize_i(int);
   static void cb_DatumSize(Fl_Widget*, int);
@@ -91,6 +91,4 @@ protected:
   static void cb_Quit();
 };
 #endif
-
-
 

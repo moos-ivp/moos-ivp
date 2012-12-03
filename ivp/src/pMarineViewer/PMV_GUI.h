@@ -27,35 +27,52 @@
 #include "MarineVehiGUI.h"
 #include <FL/Fl_Output.H>
 #include "MY_Button.h"
+#include "MY_Fl_Hold_Browser.h"
+#include "AppCastRepo.h"
+#include "VPlug_AppCastSettings.h"
 
 class PMV_GUI : public MarineVehiGUI {
 public:
   PMV_GUI(int w, int h, const char *l=0);
   virtual ~PMV_GUI() {};
 
-  //void draw() {MarineVehiGUI::draw();};
-  void draw();
-  void resizeWidgets(int);
+  void         augmentMenu();
+  void         resize(int, int, int, int);
+  int          handle(int);
 
-  void updateXY();
-  bool addButton(std::string button, std::string pairs);
-  void addAction(std::string pair, bool separator=false);
-  int  handle(int);
-  void setCurrTime(double v) {m_curr_time = v;};
-
-  PMV_Viewer *mviewer;
+  bool         addButton(std::string button, std::string pairs);
+  bool         addAction(std::string pair, bool separator=false);
+  void         setCurrTime(double v) {m_curr_time = v;};
+  void         updateXY();
 
   std::string  getPendingVar(unsigned int index);
   std::string  getPendingVal(unsigned int index);
+
   void         clearPending();
   void         pushPending(std::string, std::string);
   unsigned int getPendingSize() {return(m_pending_vars.size());};
   bool         addScopeVariable(std::string);
-  void         addMousePoke(std::string side, std::string key, 
-			    std::string vardata_pair);
-  void         addReferenceVehicle(std::string vname);
-  void         addFilterVehicle(std::string vname);
+  bool         addMousePoke(std::string, std::string, std::string);
+  bool         addReferenceVehicle(std::string vname);
+  bool         addFilterVehicle(std::string vname);
+
+ public: // AppCasting Related Functions
+
+  void         updateNodes(bool clear=false);
+  void         updateProcs(bool clear=false);
+  void         updateAppCast();
+  void         setAppCastRepo(AppCastRepo* repo) {m_repo = repo;};
+  bool         showingAppCasts() const;
+  void         updateRadios();
+  void         setMenuItemColors();
+  bool         setRadioCastAttrib(std::string attr, std::string val="");
+
+ protected:
   void         removeFilterVehicle(std::string vname);
+  void         showDataFields();
+  void         hideDataFields();
+  void         resizeDataText(int);
+  void         resizeWidgets();
 
  private:
   inline void cb_MOOS_Button_i(unsigned int);
@@ -64,6 +81,10 @@ public:
   static void cb_DoAction(Fl_Widget*, unsigned int);
   inline void cb_Scope_i(unsigned int);
   static void cb_Scope(Fl_Widget*, unsigned int);
+
+  inline void cb_AppCastSetting_i(unsigned int);
+  static void cb_AppCastSetting(Fl_Widget*, unsigned int);
+
   inline void cb_LeftContext_i(unsigned int);
   static void cb_LeftContext(Fl_Widget*, unsigned int);
   inline void cb_RightContext_i(unsigned int);
@@ -73,7 +94,15 @@ public:
   inline void cb_FilterOut_i(int);
   static void cb_FilterOut(Fl_Widget*, int);
 
-protected:
+  inline void cb_SelectNode_i();
+  static void cb_SelectNode(Fl_Widget*, long);
+  inline void cb_SelectProc_i();
+  static void cb_SelectProc(Fl_Widget*, long);
+
+ public:
+  PMV_Viewer*  mviewer;
+
+ protected:
   Fl_Output  *v_nam;
   Fl_Output  *v_typ;
   Fl_Output  *x_mtr;
@@ -93,10 +122,10 @@ protected:
   Fl_Output  *m_scope_time;
   Fl_Output  *m_scope_value;
 
-  MY_Button  *user_button_1;
-  MY_Button  *user_button_2;
-  MY_Button  *user_button_3;
-  MY_Button  *user_button_4;
+  MY_Button  *m_user_button_1;
+  MY_Button  *m_user_button_2;
+  MY_Button  *m_user_button_3;
+  MY_Button  *m_user_button_4;
 
   std::vector<std::string> m_scope_vars;
   
@@ -117,8 +146,19 @@ protected:
   std::vector<std::string> m_reference_tags;
   std::vector<std::string> m_filter_tags;
 
-  double     m_curr_time;
-  double     m_prev_out_time;
+  double    m_curr_time;
+
+ protected: // Member variables added for AppCasting
+  AppCastRepo        *m_repo;
+  MY_Fl_Hold_Browser *m_brw_nodes;
+  MY_Fl_Hold_Browser *m_brw_procs;
+  MY_Fl_Hold_Browser *m_brw_casts;
+
+  VPlug_AppCastSettings m_ac_settings;
+
+  Fl_Color    m_color_runw;
+  Fl_Color    m_color_cfgw;
 };
 #endif
+
 

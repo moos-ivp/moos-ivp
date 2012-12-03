@@ -3,7 +3,6 @@
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: ProcessWatch.h                                       */
 /*    DATE: May 27th 2007 (MINUS-07)                             */
-/*          Aug 7th  2011 (overhaul, Waterloo)                   */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
 /* modify it under the terms of the GNU General Public License   */
@@ -27,9 +26,9 @@
 #include <string>
 #include <vector>
 #include <map>
-#include "MOOSLib.h"
+#include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
 
-class ProcessWatch : public CMOOSApp
+class ProcessWatch : public AppCastingMOOSApp
 {
 public:
   ProcessWatch();
@@ -40,19 +39,22 @@ public:
   bool OnConnectToServer();
   bool OnStartUp();
 
+  void registerVariables();
+  bool buildReport();
+
 protected:
-  void handleNewDBClients();
+  void handleMailNewDBClients();
 
-  void augmentIncludeList(std::string);
-  void addToIncludeList(std::string);
+  bool handleConfigWatchList(std::string);
+  bool handleConfigWatchItem(std::string);
 
-  void augmentExcludeList(std::string);
-  void addToExcludeList(std::string);
+  bool handleConfigExcludeList(std::string);
+  bool handleConfigExcludeItem(std::string);
 
-  void addToWatchList(std::string);
+ protected:
+  bool addToWatchList(std::string);
 
   void checkForIndividualUpdates();
-
   void postFullSummary();
 
   bool isAlive(std::string);
@@ -61,6 +63,11 @@ protected:
 
   void handlePostMapping(std::string);
   std::string postVar(std::string);
+
+  void populateAntlerList();
+
+  bool processIncluded(const std::string& procname);
+  bool processExcluded(const std::string& procname);
 
  protected: // State Variables
   bool         m_proc_watch_summary_changed;
@@ -72,14 +79,22 @@ protected:
 
   std::vector<std::string>  m_watch_list;
 
+  // Mapping from proc name to data
   std::map<std::string, bool> m_map_alive;
   std::map<std::string, bool> m_map_alive_prev;
+
   std::map<std::string, unsigned int> m_map_noted_gone;
   std::map<std::string, unsigned int> m_map_noted_here;
 
+  std::set<std::string> m_set_db_clients;
+  std::set<std::string> m_set_watch_clients;
+  std::set<std::string> m_set_antler_clients;
+
  protected: // Configurations Variables
-  bool         m_watch_all;
-  double       m_min_wait; // -1 means only post on change
+  bool         m_watch_all_db;
+  bool         m_watch_all_antler;
+  double       m_allow_retractions;
+  double       m_min_wait;             
 
   // Include List
   std::vector<std::string>  m_include_list;
@@ -97,3 +112,4 @@ protected:
 };
 
 #endif 
+

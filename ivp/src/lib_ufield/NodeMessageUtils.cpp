@@ -78,3 +78,4 @@ NodeMessage string2NodeMessage(const string& message_string)
 
   return(new_message);
 }
+

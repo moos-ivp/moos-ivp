@@ -103,3 +103,4 @@ class LogPlotViewer : public Fl_Gl_Window
 
 #endif 
 
+

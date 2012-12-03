@@ -1,7 +1,5 @@
 #include "MOOSAppRunnerThread.h"
 
-#include "MOOSGenLibGlobalHelper.h"
-
 //==============================================================================
 
 MOOSAppRunnerThread::MOOSAppRunnerThread(CMOOSApp *app, const char *name, const char *mission_file)

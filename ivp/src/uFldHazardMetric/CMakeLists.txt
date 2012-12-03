@@ -17,9 +17,10 @@ ADD_EXECUTABLE(uFldHazardMetric ${SRC})
 
 TARGET_LINK_LIBRARIES(uFldHazardMetric
    MOOS
-   MOOSGen
+   ufld_hazards
    geometry
    mbutil
+   apputil
    m
    pthread)
 

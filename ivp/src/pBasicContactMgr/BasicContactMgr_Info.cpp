@@ -66,9 +66,6 @@ void showHelpAndExit()
   blk("      Display this help message.                                ");
   mag("  --interface, -i                                               ");
   blk("      Display MOOS publications and subscriptions.              ");
-  mag("  --verbose=<Boolean>                                           ");
-  blk("      Display status updates and diagnostics if true.           ");
-  blk("      The default is true.                                      ");
   mag("  --version,-v                                                  ");
   blk("      Display the release version of pBasicContactMgr.          ");
   blk("                                                                ");
@@ -94,20 +91,23 @@ void showExampleConfigAndExit()
   blk("  AppTick   = 4                                                 ");
   blk("  CommsTick = 4                                                 ");
   blk("                                                                ");
-  blk("  // Alert configurations (one or more)                         ");
-  blk("  alert = var=CONTACT_INFO, val=\"name=avd_$[VNAME] # contact=$[VNAME]\"");
+  blk("  // Alert configurations (one or more, keyed by id)            ");
+  blk("  alert = id=avd, var=CONTACT_INFO                              ");
+  blk("  alert = id=avd, val=\"name=avd_$[VNAME] # contact=$[VNAME]\"  ");
+  blk("  alert = id=avd, range=80, range_color=white                   ");
+  blk("  alert = id=avd, range_cpa=95, range_cpa_color=gray50          ");
+  blk("  alert = id=avd, range_cpa_time=120                            ");
   blk("                                                                ");
   blk("  // Properties for all alerts                                  ");
-  blk("  alert_range      = 1000     "," // meters.   Range [0,inf)    ");
-  blk("  alert_cpa_range  = 1000     "," // meters.   Range [0,inf)    ");
-  blk("  alert_cpa_time   = 0        "," // seconds.  Range [0,inf)    ");
+  blk("  default_alert_range      = 1000   "," // meters.   Range [0,inf) ");
+  blk("  default_alert_range_cpa  = 1000   "," // meters.   Range [0,inf) ");
+  blk("  default_alert_range_cpa_time = 0  "," // seconds.  Range [0,inf) ");
   blk("                                                                ");
-  blk("  // Policy for retaining potentiall stale contacts             ");
+  blk("  // Policy for retaining potential stale contacts              ");
   blk("  contact_max_age  = 3600     "," // seconds.  Range [0,inf)    ");
   blk("                                                                ");
   blk("  // Configuring other output                                   ");
   blk("  display_radii    = false    "," // or {true}                  ");
-  blk("  verbose          = true     "," // or {false}                 ");
   blk("}                                                               ");
   blk("                                                                ");
   exit(0);
@@ -130,12 +130,10 @@ void showInterfaceAndExit()
   blk("------------------------------------                            ");
   blk("  NAV_X            = 112.3                                      ");
   blk("  NAV_Y            = -99.1                                      ");
-  blk("  NAV_LAT          = 43.824981                                  ");
-  blk("  NAV_LONG         = -70.329755                                 ");
   blk("  NAV_HEADING      = 118.8                                      ");
   blk("  NAV_SPEED        = 2.0                                        ");
-  blk("  NAV_YAW          = 118.8                                      ");
-  blk("  NAV_DEPTH        = 4.6                                        ");
+  blk("  APPCAST_REQ      = node=henry,app=pBasicContactMgr,duration=6,");
+  blk("                     key=uMAC_438                               ");
   blk("  CONTACT_RESOLVED = henry                                      ");
   blk("  NODE_REPORT      = NAME=alpha,TYPE=UUV,TIME=1252348077.59,    ");
   blk("                     X=51.71,Y=-35.50, LAT=43.824981,           ");
@@ -147,14 +145,18 @@ void showInterfaceAndExit()
   blk("------------------------------------                            ");
   blk("  Alert publications configured by the user.                    ");
   blk("                                                                ");
-  blk("  CONTACTS_LIST      = delta,gus,charlie,henry                  ");
-  blk("  CONTACTS_ALERTED   = delta,charlie                            ");
-  blk("  CONTACTS_UNALERTED = gus,henry                                ");
-  blk("  CONTACTS_RETIRED   = bravo,foxtrot,kilroy                     ");
-  blk("  CONTACTS_RECAP     = name=delta,age=11.3,range=193.1 #        ");
-  blk("                       name=gus,age=0.7,range=48.2 #            ");
-  blk("                       name=charlie,age=1.9,range=73.1 #        ");
-  blk("                       name=henry,age=4.0,range=18.             ");
+  blk("  CONTACTS_LIST       = delta,gus,charlie,henry                 ");
+  blk("  CONTACTS_ALERTED    = delta,charlie                           ");
+  blk("  CONTACTS_UNALERTED  = gus,henry                               ");
+  blk("  CONTACTS_RETIRED    = bravo,foxtrot,kilroy                    ");
+  blk("  CONTACTS_RECAP      = name=delta,age=11.3,range=193.1 #       ");
+  blk("                        name=gus,age=0.7,range=48.2 #           ");
+  blk("                        name=charlie,age=1.9,range=73.1 #       ");
+  blk("                        name=henry,age=4.0,range=18.            ");
+  blk("  CONTACT_MGR_WARNING = Bad Node Report Received                ");
+  blk("                                                                ");
+  blk("  APPCAST = name=pBasicContactMgr!@#iter=91!@#node=hotel!@#     ");
+  blk("            messages=...                                        ");
   blk("                                                                ");
   exit(0);
 }
@@ -167,4 +169,5 @@ void showReleaseInfoAndExit()
   showReleaseInfo("pBasicContactMgr", "gpl");
   exit(0);
 }
+
 

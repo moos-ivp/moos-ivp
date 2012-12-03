@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: BHV_ConstantSpeed.cpp                                */
 /*    DATE: Feb 17 2005                                          */
 /*                                                               */
@@ -48,6 +48,7 @@ BHV_ConstantSpeed::BHV_ConstantSpeed(IvPDomain gdomain) :
   m_peakwidth     = 0;
   m_basewidth     = 0.2;
   m_summitdelta   = 0;
+  m_os_speed      = 0;
 
   // The default duration at the IvPBehavior level is "-1", which
   // indicates no duration applied to the behavior by default. By
@@ -82,6 +83,10 @@ bool BHV_ConstantSpeed::setParam(string param, string val)
     m_summitdelta = vclip(dval, 0, 100);
     return(true);
   }
+  else if((param == "speed_mismatch_var") && !strContainsWhite(val)) {
+    m_speed_mismatch_var = val;
+    return(true);
+  }
   return(false);
 }
 
@@ -91,6 +96,7 @@ bool BHV_ConstantSpeed::setParam(string param, string val)
 
 IvPFunction *BHV_ConstantSpeed::onRunState() 
 {
+  updateInfoIn();
   if(!m_domain.hasDomain("speed")) {
     postEMessage("No 'speed' variable in the helm domain");
     return(0);
@@ -115,12 +121,31 @@ IvPFunction *BHV_ConstantSpeed::onRunState()
   return(ipf);
 }
 
+//-----------------------------------------------------------
+// Procedure: updateInfoIn()
+//   Purpose: Update relevant to the behavior from the info_buffer.
+//            Warning messages may be posted if info is missing.
+//   Returns: true if no relevant info is missing from the info_buffer.
+//            false otherwise.
 
+bool BHV_ConstantSpeed::updateInfoIn()
+{
+  bool ok;
+  m_os_speed = getBufferDoubleVal("NAV_SPEED", ok);
 
+  // Should get ownship information from the InfoBuffer
+  if(!ok) {
+    postWMessage("No ownship SPEED info in info_buffer.");  
+    return(false);
+  }
+  
+  double delta = m_os_speed - m_desired_speed;
+  if(delta < 0)
+    delta *= -1; 
 
-
-
-
-
-
+  if(m_speed_mismatch_var != "")
+    postMessage(m_speed_mismatch_var, delta);
+  
+  return(true);
+}
 

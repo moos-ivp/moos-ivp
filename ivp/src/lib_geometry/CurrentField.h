@@ -26,7 +26,7 @@
 #include <string>
 #include <vector>
 #include "XYVector.h"
-#include "MOOSGeodesy.h"
+#include "MOOS/libMOOSGeodesy/MOOSGeodesy.h"
 
 class CurrentField
 {
@@ -95,4 +95,5 @@ protected:
 };
 
 #endif 
+
 

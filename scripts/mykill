@@ -37,13 +37,19 @@ killall pSensorSim pArtifactMapper pNoiseSim uNafconSplitter    \
 killall pCBF pBTracker pTrackMonitor uTimerScript pDTSP         \
         pTallyomatic pNodeReporter iCommStack pMissionCtl iDSP  \
         pNotDTSP pBoundingCircle pRIDManager uLogView           \
-        uLogViewHelm uLogViewIPF                                \
+        uLogViewHelm uLogViewIPF pFooBar pFoobar                \
         pNotDTSP pBoundingCircle pRIDManager iKayakControlBoard
 
 killall pFleetControl uFldScope uFldContactRangeSensor         \
         uFldPathCheck uFldNodeComms pSearchGrid pHostInfo      \
         uFldShoreBroker uFldNodeBroker uFldBeaconRangeSensor   \
         uFldHazardSensor uFldMessageHandler pGenPath           \
-        pPointAssign uFldHazardMetric pHandleSensorData
+        pPointAssign uFldHazardMetric pHandleSensorData        \
+        uFldCTDSensor pFrontGridRender uPlotViewer uMAC        \
+        pShare uFldGenericSensor
+
+killall pParticle uFldContactRangeSensorHP pUUVPath            \
+        pWifiCheck uFldMessageSourcer pRangeSensorHandler      \
+        pHunterPrey
 
 echo Done - Killed all MOOS-Related Processes.....

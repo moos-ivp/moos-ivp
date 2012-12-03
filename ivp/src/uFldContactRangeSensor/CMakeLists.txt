@@ -14,8 +14,7 @@ else (${WIN32})
 endif (${WIN32})
 
 SET(SRC
-   CRS_MOOSApp.cpp
-   CRS_Model.cpp
+   CRS_App.cpp
    CRS_Info.cpp
    main.cpp
 )
@@ -24,8 +23,7 @@ ADD_EXECUTABLE(uFldContactRangeSensor ${SRC})
 
 TARGET_LINK_LIBRARIES(uFldContactRangeSensor
   MOOS
-  MOOSGen
-  MOOSUtility
+  apputil
   mbutil
   geometry 
   contacts

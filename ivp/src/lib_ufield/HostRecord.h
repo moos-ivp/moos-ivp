@@ -35,23 +35,25 @@ class HostRecord
 	   const std::string&, const std::string& udp="",
 	   const std::string& warp="");
   
-  void setCommunity(const std::string& s) {m_community=s;};
-  void setHostIP(const std::string& s)    {m_hostip=s;};
-  void setPortDB(const std::string& s)    {m_port_db=s;};
-  void setPortUDP(const std::string& s)   {m_port_udp=s;};
-  void setKeyword(const std::string& s)   {m_keyword=s;};
-  void setTimeWarp(const std::string& s)  {m_timewarp=s;};
-  void setStatus(const std::string& s)    {m_status=s;};
-  void setTimeStamp(const std::string& s) {m_timestamp=s;};
+  void setCommunity(const std::string& s)  {m_community=s;};
+  void setHostIP(const std::string& s)     {m_hostip=s;};
+  void setPortDB(const std::string& s)     {m_port_db=s;};
+  void setPortUDP(const std::string& s)    {m_port_udp=s;};
+  void setKeyword(const std::string& s)    {m_keyword=s;};
+  void setTimeWarp(const std::string& s)   {m_timewarp=s;};
+  void setStatus(const std::string& s)     {m_status=s;};
+  void setTimeStamp(const std::string& s)  {m_timestamp=s;};
+  void setPShareIRoutes(const std::string& s) {m_pshare_iroutes=s;};
 
-  std::string getCommunity() {return(m_community);};
-  std::string getHostIP()    {return(m_hostip);};
-  std::string getPortDB()    {return(m_port_db);};
-  std::string getPortUDP()   {return(m_port_udp);};
-  std::string getKeyword()   {return(m_keyword);};
-  std::string getTimeWarp()  {return(m_timewarp);};
-  std::string getStatus()    {return(m_status);};
-  std::string getTimeStamp() {return(m_timestamp);};
+  std::string getCommunity() const  {return(m_community);};
+  std::string getHostIP() const     {return(m_hostip);};
+  std::string getPortDB() const     {return(m_port_db);};
+  std::string getPortUDP() const    {return(m_port_udp);};
+  std::string getKeyword() const    {return(m_keyword);};
+  std::string getTimeWarp() const   {return(m_timewarp);};
+  std::string getStatus() const     {return(m_status);};
+  std::string getTimeStamp() const  {return(m_timestamp);};
+  std::string getPShareIRoutes() const {return(m_pshare_iroutes);};
     
   bool valid(const std::string& s="") const;
 
@@ -63,6 +65,7 @@ class HostRecord
   std::string  m_hostip;
   std::string  m_port_db;
   std::string  m_port_udp;
+  std::string  m_pshare_iroutes;
   std::string  m_keyword;
   std::string  m_timewarp;
   std::string  m_status;
@@ -70,4 +73,5 @@ class HostRecord
 };
 
 #endif 
+
 

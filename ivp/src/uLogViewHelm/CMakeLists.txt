@@ -27,9 +27,7 @@ ENDIF (${APPLE})
       
 Target_LINK_LIBRARIES(uLogViewHelm         
    MOOS
-   MOOSGen
    contacts
-   MOOSUtility
    ulogview
    logutils
    helmivp

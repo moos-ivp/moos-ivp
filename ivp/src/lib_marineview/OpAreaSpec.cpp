@@ -22,11 +22,10 @@
 
 #include <iostream>
 #include <cstdlib>
+#include "MOOS/libMOOSGeodesy/MOOSGeodesy.h"
 #include "OpAreaSpec.h"
 #include "MBUtils.h"
 #include "ColorParse.h"
-#include "MOOSGeodesy.h"
-
 #define USE_UTM
 
 using namespace std;
@@ -41,9 +40,8 @@ OpAreaSpec::OpAreaSpec()
   m_line_shade      = 1.0;
   m_label_shade     = 1.0;
 
-  m_datum_color     = ColorPack("red");
-  m_datum_viewable  = false;
-  m_datum_size      = 4;
+  //m_datum_color     = ColorPack("red");
+  //m_datum_viewable  = false;
 }
 
 //-----------------------------------------------------------
@@ -79,14 +77,6 @@ bool OpAreaSpec::addVertex(const std::string& str,
     else if(left == "dashed") dashed = tolower(right);
     else if(left == "looped") looped = tolower(right);
   }
-
-#if 0
-  cout << "addVertexA() x:" << xpos << " y:" << ypos
-       << "  lwidth:" << lwidth << "  lat:" << lat << "  lon:" << lon
-       << "  group:" << group << "  label:" << label << "  lcolor:" 
-       << lcolor << "  vcolor:" << vcolor << "  dashed:" << dashed
-       << "  looped:" << looped << endl;
-#endif
 
   // The position has to be fully specified in terms of either lat/lon
   // of the x-y position in local coords. Otherwise return(false);
@@ -185,29 +175,6 @@ bool OpAreaSpec::setParam(const string& param, string value)
     m_label_shade *= dval;
     m_label_shade = vclip(m_label_shade, 0, 1);
   }
-  else if(param == "datum_viewable") 
-    return(setBooleanOnString(m_datum_viewable, value));
-  else if(param == "datum_size") {
-    if(!isNumber(value)) 
-      return(false);
-    double dval = atof(value.c_str());
-    dval = vclip(dval, 1, 20);
-    m_datum_size = dval;
-  }
-  else if(param == "datum_size_add") {
-    if(value == "bigger")
-      m_datum_size *= 1.25;
-    else if (value == "smaller")
-      m_datum_size *= 0.8;
-    else
-      return(false);
-    m_datum_size = vclip(m_datum_size, 1, 20);
-  }
-  else if(param == "datum_color") {
-    if(!isColor(value))
-      return(false);
-    m_datum_color = ColorPack(value);
-  }
   else
     return(false);
   
@@ -223,8 +190,6 @@ bool OpAreaSpec::viewable(const string& str) const
     return(m_viewable_all);
   else if((str == "labels") || (tolower(str) == "labels"))
     return(m_viewable_labels);
-  else if((str == "datum") || (tolower(str) == "datum"))
-    return(m_datum_viewable);
   return(false);
 }
 
@@ -321,4 +286,5 @@ vector<double> OpAreaSpec::getVColor(unsigned int ix) const
   vector<double> grey_vector(3, 0.5);
   return(grey_vector);
 }
+
 

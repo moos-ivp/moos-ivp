@@ -39,6 +39,7 @@
 #include "LifeEvent.h"
 #include "NodeRecord.h"
 #include "NodeRecordUtils.h"
+#include "ACTable.h"
 
 using namespace std;
 
@@ -50,12 +51,12 @@ HelmIvP::HelmIvP()
   m_allstop_msg    = "";
   m_bhv_set        = 0;
   m_hengine        = 0;
-  m_info_buffer    = new InfoBuffer;
-  m_verbose        = "terse";
+  m_info_buffer    = 0;
+  m_verbose        = "verbose";
+  m_verbose_reset  = false;
   m_helm_iteration = 0;
   m_ok_skew        = 60; 
   m_skews_matter   = true;
-  m_warning_count  = 0;
   m_last_heartbeat = 0;
   m_curr_time      = 0;
   m_start_time     = 0;
@@ -73,7 +74,7 @@ HelmIvP::HelmIvP()
   m_allow_override  = true;
   m_park_on_allstop = false;
 
-  m_curr_time_updated = false;
+  m_ibuffer_curr_time_updated = false;
 
   m_rejournal_requested = true;
 
@@ -114,7 +115,7 @@ void HelmIvP::cleanup()
 {
   delete(m_info_buffer);
   m_info_buffer = 0;
-  m_curr_time_updated = false;
+  m_ibuffer_curr_time_updated = false;
 
   delete(m_bhv_set);
   m_bhv_set = 0;
@@ -130,106 +131,112 @@ void HelmIvP::cleanup()
 
 bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
 {
+  AppCastingMOOSApp::OnNewMail(NewMail);
   // If this helm has been disabled, don't bother processing mail.
   if(helmStatus() == "DISABLED")
     return(true);
 
-  // The curr_time is set in *both* the OnNewMail and Iterate functions.
-  // In the OnNewMail function so the most up-to-date time is available
-  // when processing mail.
-  // In the Iterate method to ensure behaviors are not iterated with an
-  // un-initialized timestamp on startup, and in case there is no Mail 
-  m_curr_time = MOOSTime();
-  m_info_buffer->setCurrTime(m_curr_time);
-  m_curr_time_updated = true;
+  // The info_buffer curr_time is synched to the helm's curr_time  
+  // in *both* the OnNewMail and Iterate functions. Because:
+  // (1) The OnNewMail function needs the most up-to-date time 
+  //     when processing mail.
+  // (2) The Iterate method must ensure behaviors aren't iterated w/ an
+  //     un-initialized timestamp on startup, in case there is no Mail 
+  // (3) The info_buffer should reflect "time since last update" of 
+  //     exactly zero for updates made on this iteration. If info_buffer
+  //     is synched in *both" OnNewMail and Iterate, the "time since 
+  //     last update" will be non-zero.
 
-  m_Comms.Notify("READ_MAIL", m_curr_time);
+  m_info_buffer->setCurrTime(m_curr_time);
+  m_ibuffer_curr_time_updated = true;
 
   MOOSMSG_LIST::iterator p;
   for(p=NewMail.begin(); p!=NewMail.end(); p++) {
     CMOOSMsg &msg = *p;
 
-    string moosvar = msg.GetKey();
-    string sval    = msg.GetString();
-    string source  = msg.GetSource();
+    string moosvar   = msg.GetKey();
+    string sval      = msg.GetString();
+    string source    = msg.GetSource();
+    string community = msg.GetCommunity();
 
     double skew_time;
     msg.IsSkewed(m_curr_time, &skew_time);
 
-    if(!m_skews_matter || (fabs(skew_time) < m_ok_skew)) {
-      if((moosvar =="MOOS_MANUAL_OVERIDE") || 
-	 (moosvar =="MOOS_MANUAL_OVERRIDE") ||
-	 ((moosvar == m_additional_override) && (moosvar != ""))) {
-	if(toupper(sval) == "FALSE") {
-	  m_has_control = true;
+    if(m_skews_matter && (fabs(skew_time) > m_ok_skew)) {
+      // If mail not posted by this helm from this community, flag the skew.
+      bool posted_by_this_helm = true;
+      if((source != GetAppName()) || (m_host_community != community))
+	posted_by_this_helm = false;
+      if(!posted_by_this_helm) {
+	string msg = "Helm ignores MOOS msg due to skew: " + moosvar;
+	msg += " Source=" + source + " Skew=" + doubleToString(skew_time,2);
+	//reportRunWarning(msg);
+	continue;
+      }
+    }
+
+    if((moosvar =="MOOS_MANUAL_OVERIDE") || 
+       (moosvar =="MOOS_MANUAL_OVERRIDE") ||
+       ((moosvar == m_additional_override) && (moosvar != ""))) {
+      if(toupper(sval) == "FALSE") {
+	m_has_control = true;
+	helmStatusUpdate();
+      }
+      else if(toupper(sval) == "TRUE") {
+	if(m_allow_override) {
+	  m_has_control = false;
 	  helmStatusUpdate();
 	}
-	else if(toupper(sval) == "TRUE") {
-	  if(m_allow_override) {
-	    m_has_control = false;
-	    helmStatusUpdate();
-	  }
-	}
       }
-      else if(moosvar == "IVPHELM_STATE") {
-	m_init_vars_ready = true;
-	// Check if this heartbeat message is from another helm
-	if(msg.GetSource() != GetAppName()) {
-	  // First handle things considering we are a standby helm
-	  if(m_standby_helm) {
-	    // If we're still in standby mode, just note the hearbeat
-	    // of the primary helm. We take over when that gets old.
-	    if(helmStatus() == "STANDBY") {
-	      m_standby_last_heartbeat = m_curr_time;
-	    }
-	    // If the standby helm has taken over already, the incoming
-	    // report must be from tardy primary helm finally responding.
-	    // In this case we just want to republish things that are
-	    // normally not published due to being the same as previous
-	    // publications.
-	    else {
-	      m_refresh_pending = true;
-	      m_rejournal_requested = true;
-	      postAllStop();
-	    }
-	  }
-	  // If we're a primary helm, then yield to the other helm
-	  // if their helm status is anything but standby
-	  else if(!m_standby_helm && (sval != "STANDBY")) {
-	    postAllStop("DisabledByStandbyHelm");
-	    helmStatusUpdate("DISABLED");
-	  }
-	}
-      }
-      else if(moosvar == "IVPHELM_VERBOSE") {
-	if((sval == "verbose") || (sval == "quiet") || (sval == "terse"))
-	  m_verbose = sval;
-      }
-      else if(moosvar == "RESTART_HELM") {
-	OnStartUp();
-	MOOSTrace("\n");
-	MOOSDebugWrite("pHelmIvP Has Been Re-Started");
-      }
-      else if(moosvar == "IVPHELM_REJOURNAL")
-	m_rejournal_requested = true;
-      else if(vectorContains(m_node_report_vars, moosvar)) {
-	bool ok = processNodeReport(sval);
-	if(!ok) {
-	  m_Comms.Notify("BHV_WARNING", "Unhandled NODE REPORT");
-	  m_warning_count++;
-	}
-      }
-      else if(moosvar == m_refresh_var) {
-	m_refresh_pending = true;
-      }
-      else
-	updateInfoBuffer(msg);
     }
-    else {
-      // Add the variable name inthe out put?
-      MOOSTrace("pHelmIvP ignores MOOS msg due to skew");
-      MOOSDebugWrite("pHelmIvP ignores MOOS msg due to skew");
+    else if(moosvar == "IVPHELM_STATE") {
+      m_init_vars_ready = true;
+      // Check if this heartbeat message is from another helm
+      if(msg.GetSource() != GetAppName()) {
+	// First handle things considering we are a standby helm
+	if(m_standby_helm) {
+	  // If we're still in standby mode, just note the hearbeat
+	  // of the primary helm. We take over when that gets old.
+	  if(helmStatus() == "STANDBY") {
+	    m_standby_last_heartbeat = m_curr_time;
+	  }
+	  // If the standby helm has taken over already, the incoming
+	  // report must be from tardy primary helm finally responding.
+	  // In this case we just want to republish things that are
+	  // normally not published due to being the same as previous
+	  // publications.
+	  else {
+	    m_refresh_pending = true;
+	    m_rejournal_requested = true;
+	    postAllStop();
+	  }
+	}
+	// If we're a primary helm, then yield to the other helm
+	// if their helm status is anything but standby
+	else if(!m_standby_helm && (sval != "STANDBY")) {
+	  postAllStop("DisabledByStandbyHelm");
+	  helmStatusUpdate("DISABLED");
+	}
+      }
     }
+    else if(moosvar == "RESTART_HELM") {
+      OnStartUp();
+      reportRunWarning("pHelmIvP has been re-started!!");
+      if(m_verbose == "terse") 
+	cout << endl << "pHelmIvP Has Been Re-Started" << endl;
+    }
+    else if(moosvar == "IVPHELM_REJOURNAL")
+      m_rejournal_requested = true;
+    else if(vectorContains(m_node_report_vars, moosvar)) {
+      bool ok = processNodeReport(sval);
+      if(!ok)
+	reportRunWarning("Unhandled NODE_REPORT");
+    }
+    else if(moosvar == m_refresh_var) {
+      m_refresh_pending = true;
+    }
+    else
+      updateInfoBuffer(msg);
   }
 
   if(helmStatus() == "STANDBY")
@@ -244,9 +251,12 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
 
 bool HelmIvP::Iterate()
 {
+  AppCastingMOOSApp::Iterate();
+
   postHelmStatus();
   if(!helmStatusEnabled()) {
     m_info_buffer->clearDeltaVectors();
+    AppCastingMOOSApp::PostReport();
     return(true);
   }
   
@@ -255,47 +265,36 @@ bool HelmIvP::Iterate()
   if(m_init_vars_ready && !m_init_vars_done)
     handleInitialVarsPhase2();
 
-  // If the curr_time is not set in the OnNewMail function (possibly 
-  // because there was no mail in the queue), set the current time now.
-  if(!m_curr_time_updated) {
-    m_curr_time = MOOSTime();
+  // If the info_buffer curr_time is not synched in the OnNewMail function
+  //  (possibly because there was no new mail), synch the current time now.
+  if(!m_ibuffer_curr_time_updated) 
     m_info_buffer->setCurrTime(m_curr_time);
-  }
   if(m_start_time == 0)
     m_start_time = m_curr_time;
 
-  // Now we're done addressing whether the curr_time is updated on this
-  // iteration. It was done either in this function or in onNewMail().
-  // Now set m_curr_time_updated=false to reflect the ingoing state for
+  // Now we're done addressing whether the info_buffer curr_time is synched 
+  // on this iteration. It was done either in this function or in onNewMail().
+  // Now set m_ibuffer_curr_time_updated=false to reflect the ingoing state for
   // the next iteration.
-  m_curr_time_updated = false;
+  m_ibuffer_curr_time_updated = false;
 
   if(!m_has_control) {
     postAllStop("ManualOverride");
+    AppCastingMOOSApp::PostReport();
     return(false);
   }
 
-  HelmReport helm_report;
-  helm_report = m_hengine->determineNextDecision(m_bhv_set, m_curr_time);
+  m_helm_report = m_hengine->determineNextDecision(m_bhv_set, m_curr_time);
 
-  m_helm_iteration = helm_report.getIteration();
-  if(m_verbose == "verbose") {
-    MOOSTrace("\n\n\n\n");
-    MOOSTrace("Iteration: %d", m_helm_iteration);
-    MOOSTrace("  ******************************************\n");
-    MOOSTrace("Helm Summary  ---------------------------\n");
-    vector<string> svector = helm_report.getMsgs();
-    for(unsigned int i=0; i<svector.size(); i++)
-      MOOSTrace("%s\n", svector[i].c_str());
-  }
- 
+  m_helm_iteration = m_helm_report.getIteration();
+
   // Check if refresh conditions are met - perhaps clear outgoing maps.
   // This will result in all behavior postings being posted to the MOOSDB
   // on the current iteration.
   if(m_refresh_pending && 
      ((m_curr_time-m_refresh_time) > m_refresh_interval)) {
-    m_outgoing_strings.clear();
-    m_outgoing_doubles.clear();
+    m_outgoing_key_strings.clear();
+    m_outgoing_key_doubles.clear();
     m_refresh_time = m_curr_time;
     m_refresh_pending = false;
   }
@@ -308,31 +307,26 @@ bool HelmIvP::Iterate()
 
   // Should be called after postBehaviorMessages() where warnings
   // are detected and the count is incremented.
-  helm_report.setWarningCount(m_warning_count);
+  unsigned int warning_count = getWarningCount("all"); 
+  m_helm_report.setWarningCount(warning_count);
   
   string report;
   if(m_rejournal_requested) {    
-    report = helm_report.getReportAsString();
+    report = m_helm_report.getReportAsString();
     m_rejournal_requested = false;
   }
   else
-    report = helm_report.getReportAsString(m_prev_helm_report); 
+    report = m_helm_report.getReportAsString(m_prev_helm_report); 
   
   m_Comms.Notify("IVPHELM_SUMMARY", report);
-  m_Comms.Notify("HELM_IPF_COUNT", helm_report.getOFNUM());
-  m_prev_helm_report = helm_report;
+  m_Comms.Notify("HELM_IPF_COUNT", m_helm_report.getOFNUM());
+  m_prev_helm_report = m_helm_report;
 
- 
-  if(m_verbose == "verbose") {
-    MOOSTrace("(End) Iteration: %d", m_helm_iteration);
-    MOOSTrace("  ******************************************\n");
-  }
-  
-  string allstop_msg = "clear";
+   string allstop_msg = "clear";
 
-  if(helm_report.getHalted())
+  if(m_helm_report.getHalted())
     allstop_msg = "BehaviorError";
-  else if(helm_report.getOFNUM() == 0)
+  else if(m_helm_report.getOFNUM() == 0)
     allstop_msg = "NothingToDo";
   
   // First make sure the HelmEngine has made a decision for all 
@@ -343,7 +337,7 @@ bool HelmIvP::Iterate()
     unsigned int i, dsize = m_ivp_domain.size();
     for(i=0; i<dsize; i++) {
       string domain_var = m_ivp_domain.getVarName(i);
-      if(!helm_report.hasDecision(domain_var)) {
+      if(!m_helm_report.hasDecision(domain_var)) {
 	if(m_optional_var[domain_var] == false) {
 	  complete_decision = false;
 	  if(missing_dec_vars != "")
@@ -368,13 +362,13 @@ bool HelmIvP::Iterate()
       string post_alias = "DESIRED_"+ toupper(domain_var);
       if(post_alias == "DESIRED_COURSE")
 	post_alias = "DESIRED_HEADING";
-      double domain_val = helm_report.getDecision(domain_var);
+      double domain_val = m_helm_report.getDecision(domain_var);
       m_Comms.Notify(post_alias, domain_val);
     }
   }
   
-  m_Comms.Notify("CREATE_CPU", helm_report.getCreateTime());
-  m_Comms.Notify("LOOP_CPU", helm_report.getLoopTime());
+  m_Comms.Notify("CREATE_CPU", m_helm_report.getCreateTime());
+  m_Comms.Notify("LOOP_CPU", m_helm_report.getLoopTime());
 
   if(allstop_msg != "clear")
     if(m_allow_override && m_park_on_allstop)
@@ -384,29 +378,28 @@ bool HelmIvP::Iterate()
   // chance to consume delta info.
   m_info_buffer->clearDeltaVectors();
 
+  AppCastingMOOSApp::PostReport();
   return(true);
 }
   
-
 //------------------------------------------------------------
 // Procedure: postBehaviorMessages()
 //      Note: Run once after every iteration of control loop.
 //            Each behavior has the chance to produce their 
-//            own message to posted in both the info_buffer
-//            and in the MOOSDB. 
-//            By posting to the MOOSDB and using a mechanism
-//            for sharing vars between communities, i.e, 
-//            pMOOSBridge, or MOOSLink, inter-vehicle coordin.
-//            can be accomplished.
+//            own message to be posted in both the info_buffer
+//            and to the MOOSDB. 
 
 void HelmIvP::postBehaviorMessages()
 {
   if(!m_bhv_set) 
     return;
   
-  if(m_verbose == "verbose") {
-    MOOSTrace("Behavior Report ---------------------------------\n");
-  }
+  // Added Aug 02 2012 to support enhanced warning reporting
+  vector<string> config_warnings = m_bhv_set->getWarnings();
+  m_bhv_set->clearWarnings();
+  for(unsigned int i=0; i<config_warnings.size(); i++)
+    reportRunWarning(config_warnings[i]);
+  // Added Aug 02 2012 to support enhanced warning reporting
 
   unsigned int i, bhv_cnt = m_bhv_set->size();
   m_Comms.Notify("BCOUNT", bhv_cnt);
@@ -415,10 +408,8 @@ void HelmIvP::postBehaviorMessages()
   for(i=0; i < bhv_cnt; i++) {
     string bhv_descriptor = m_bhv_set->getDescriptor(i);
     vector<VarDataPair> mvector = m_bhv_set->getMessages(i);
-    unsigned int j, msize = mvector.size();
 
-    string bhv_postings_summary;
-  
+    unsigned int j, msize = mvector.size();
     for(j=0; j<msize; j++) {
       VarDataPair msg = mvector[j];
 
@@ -435,25 +426,11 @@ void HelmIvP::postBehaviorMessages()
       else
 	key_change = detectChangeOnKey(mkey, sdata);
  
-      // Keep track of warnings count for inclusion in IVPHELM_SUMMARY
+      // Include warnings in this application's appcast
       if(var == "BHV_WARNING")
-	m_warning_count++;
-
-      // Possibly augment the postings_summary
-      if(key_change) {
-	// If first var-data tuple then tack header info on front
-	if(bhv_postings_summary == "") {
-	  bhv_postings_summary += bhv_descriptor;
-	  bhv_postings_summary += "$@!$";
-	  bhv_postings_summary += intToString(m_helm_iteration);
-	}
-	// Handle BHV_IPF tuples separately below
-	if(var != "BHV_IPF") {
-	  string pair_printable = msg.getPrintable();
-	  bhv_postings_summary += "$@!$";
-	  bhv_postings_summary += pair_printable;
-	}
-      }
+	reportRunWarning("BHV_WARNING: " + sdata);
+      else if(var == "BHV_ERROR")
+	reportRunWarning("BHV_ERROR: " + sdata);
 
       // If posting an IvP Function, mux first and post the parts.
       if(var == "BHV_IPF") { // mikerb
@@ -471,6 +448,9 @@ void HelmIvP::postBehaviorMessages()
 	      bhv_descriptor;
 	    m_Comms.Notify(var, sdata, aux);
 	    m_outgoing_timestamp[var] = m_curr_time;
+	    m_outgoing_iter[var] = m_helm_iteration;
+	    m_outgoing_sval[var] = sdata;
+	    m_outgoing_bhv[var]  = bhv_descriptor;
 	  }
 	}
 	else {
@@ -480,12 +460,13 @@ void HelmIvP::postBehaviorMessages()
 	      bhv_descriptor;
 	    m_Comms.Notify(var, ddata, aux);
 	    m_outgoing_timestamp[var] = m_curr_time;
+	    m_outgoing_iter[var] = m_helm_iteration;
+	    m_outgoing_dval[var] = ddata;
+	    m_outgoing_bhv[var]  = bhv_descriptor;
 	  }
 	}
       }
     }
-    if(bhv_postings_summary != "")
-      m_Comms.Notify("IVPHELM_POSTINGS", bhv_postings_summary, bhv_descriptor);
   }
   // Determine if the list of state-space related variables for
   // the behavior-set has changed and post the new set if so.
@@ -496,6 +477,57 @@ void HelmIvP::postBehaviorMessages()
     m_Comms.Notify("IVPHELM_STATEVARS", state_vars);
   }
   m_bhv_set->removeCompletedBehaviors();
+}
+
+//------------------------------------------------------------
+// Procedure: buildReport
+//      Note: A virtual function of the AppCastingMOOSApp superclass, conditionally 
+//            invoked if either a terminal or appcast report is needed.
+
+bool HelmIvP::buildReport()
+{
+  if(m_helm_status == "MALCONFIG") {
+    // Only need to send this message to the terminal once. After 
+    // doing so, turn off further reports to the terminal.
+    if(m_iteration > 1)
+      m_term_reporting = false;
+    m_msgs << "   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << endl;
+    m_msgs << "   !!                                             !!" << endl;
+    m_msgs << "   !!  The helm is in the MALCONFIG state due to  !!" << endl;
+    m_msgs << "   !!  unresolved configuration warnings.         !!" << endl;
+    m_msgs << "   !!                                             !!" << endl;
+    m_msgs << "   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << endl;
+    return(true);
+  }
+
+  list<string> summary = m_helm_report.formattedSummary(m_curr_time);
+  list<string>::iterator p;
+  for(p=summary.begin(); p!=summary.end(); p++)
+    m_msgs << *p << endl;
+
+  ACTable actab(5);
+  actab << "Variable | Behavior | Time | Iter | Value";
+  actab.addHeaderLines();
+  actab.setColumnMaxWidth(4,55);
+  actab.setColumnNoPad(4);
+  map<string, double>::iterator q;
+  for(q=m_outgoing_timestamp.begin(); q!=m_outgoing_timestamp.end(); q++) {
+    string varname = q->first;
+    string value = "???";
+    if(m_outgoing_sval.count(varname))
+      value = m_outgoing_sval[varname];
+    else if(m_outgoing_dval.count(varname))
+      value = doubleToStringX(m_outgoing_dval[value]);
+    double db_time = q->second - m_start_time;
+    string timestamp = doubleToString(db_time,2);
+    string bhv  = m_outgoing_bhv[varname];
+    string iter = uintToString(m_outgoing_iter[varname]);
+    actab << varname << bhv << timestamp << iter << value;
+  }
+  m_msgs << endl << endl;
+  m_msgs << actab.getFormattedString();
+
+  return(true);
 }
 
 //------------------------------------------------------------
@@ -688,6 +720,42 @@ void HelmIvP::postDefaultVariables()
 }
 
 //------------------------------------------------------------
+// Procedure: setVerbosity()
+//    Values: verbose values: "verbose", "terse", "quiet"
+//
+//            verbose: appcasts printed to the terminal
+//                     AppCastingMOOSApp::m_term_reporting = true
+//            terse:   Startup in plus heartbeat to terminal
+//                     AppCastingMOOSApp::m_term_reporting = false
+//            quiet:   Nothing to terminal
+//                     AppCastingMOOSApp::m_term_reporting = false
+//
+//   pHelmIvP --noterm ~ --verbose=terse
+//
+//   command-line specs trump VERBOSE setting in MOOS block
+
+bool HelmIvP::setVerbosity(const string& str)
+{
+  if(m_verbose_reset)
+    return(true);
+
+  string lstr = tolower(str);
+  
+  if((lstr == "verbose") || (lstr == "true"))
+    return(true);
+  else if((lstr == "terse") || (lstr == "false"))
+    m_term_reporting = false;
+  else if(lstr == "quiet")
+    m_term_reporting = false;
+  else
+    return(false);
+
+  m_verbose = lstr;
+  m_verbose_reset = true;
+  return(true);
+}
+
+//------------------------------------------------------------
 // Procedure: postHelmStatus()
 //    Values: Possible helm status values: STANDBY
 //                                         PARK     (ENABLED)
@@ -718,19 +786,21 @@ void HelmIvP::postHelmStatus()
 
 void HelmIvP::postCharStatus()
 {
-  if(m_verbose == "quiet")
+  if((m_verbose == "quiet") || (m_verbose == "verbose"))
     return;
 
   if(helmStatus() == "DRIVE")
-    MOOSTrace("$");
+    cout << "$" << flush;
   else if(helmStatus() == "PARK")
-    MOOSTrace("*");
+    cout << "*" << flush;
   else if(helmStatus() == "STANDBY")
-    MOOSTrace("#");
+    cout << "#" << flush;
+  else if(helmStatus() == "MALCONFIG")
+    cout << "!" << flush;
   else if(helmStatus() == "DISABLED")
-    MOOSTrace("!");
+    cout << "X" << flush;
   else
-    MOOSTrace("?");
+    cout << "?" << flush;
 }
 
 //------------------------------------------------------------
@@ -749,7 +819,7 @@ bool HelmIvP::updateInfoBuffer(CMOOSMsg &msg)
   if(src_aux == "HELM_VAR_INIT")
     return(false);
     
-  if(msg.IsDataType(MOOS_DOUBLE)) {
+  if(msg.IsDouble()) {
     return(m_info_buffer->setValue(moosvar, msg.GetDouble()));
   }
   else if(msg.IsString()) {
@@ -773,11 +843,12 @@ bool HelmIvP::OnConnectToServer()
 
 void HelmIvP::registerVariables()
 {
+  AppCastingMOOSApp::RegisterVariables();
   registerSingleVariable("DB_CLIENTS");
+  registerSingleVariable("TEST_RFLAG");
   registerSingleVariable("MOOS_MANUAL_OVERIDE");
   registerSingleVariable("MOOS_MANUAL_OVERRIDE");
   registerSingleVariable("RESTART_HELM");
-  registerSingleVariable("IVPHELM_VERBOSE");
   registerSingleVariable("IVPHELM_REJOURNAL");
   
   registerSingleVariable("NAV_SPEED");
@@ -826,8 +897,6 @@ void HelmIvP::registerSingleVariable(string varname, double frequency)
 {
   if(frequency < 0)
     frequency = 0;
-  if(m_verbose == "verbose")
-    cout << "Registering for: " << varname.c_str() << endl;
   m_Comms.Register(varname, frequency);
 }
 
@@ -863,24 +932,18 @@ void HelmIvP::checkForTakeOver()
 }
 
 //--------------------------------------------------------
-// Procedure: onStartUp()
+// Procedure: OnStartUp()
 
 bool HelmIvP::OnStartUp()
 {
+  AppCastingMOOSApp::OnStartUp();
   cleanup();
   if(!m_info_buffer)
     m_info_buffer = new InfoBuffer;
 
-  MOOSTrace("The IvP Helm (pHelmIvP) is starting....\n");
+  // ownship xis name of MOOS community, set in AppCastingMOOSApp::OnStartUp()
+  m_ownship = m_host_community;
 
-  // Look for ownship name first - a "global" variable in the 
-  // Configuration file. 
-  m_ownship = "unknown";
-  if(!m_MissionReader.GetValue("Community", m_ownship)) {
-    MOOSTrace("Vehicle (Community) Name not provided\n");
-    return(false);
-  }
-  
   STRING_LIST sParams;
   m_MissionReader.EnableVerbatimQuoting(false);
   m_MissionReader.GetConfiguration(GetAppName(), sParams);
@@ -889,82 +952,52 @@ bool HelmIvP::OnStartUp()
 
   STRING_LIST::iterator p;
   for(p = sParams.begin();p!=sParams.end();p++) {
+    string orig  = *p;
     string line  = *p;
-    string param = stripBlankEnds(toupper(biteString(line, '=')));
-    string value = stripBlankEnds(line);
+    string param = toupper(biteStringX(line, '='));
+    string value = line;
 
+    bool handled = false;
     if(param == "BEHAVIORS")
-      addBehaviorFile(value);
-    else if(param == "OK_SKEW") {
-      if(toupper(value) == "ANY") {
-	m_skews_matter = false;
-	m_ok_skew = -1;
-      }
-      else {
-	double dval = atof(value.c_str());
-	if(isNumber(value) && (dval >= 0)) {
-	  m_skews_matter = true;
-	  m_ok_skew = dval;
-	}
-	else {
-	  MOOSTrace("Improper OK_SKEW value: %s\n", line.c_str());
-	  return(false);
-	}
-      }
-    }
-    else if(param == "VERBOSE") {
-      value = tolower(value);
-      if(value == "true")  value = "verbose";
-      if(value == "false") value = "terse";
-      if((value!="verbose") && (value!="terse") && (value!="quiet")) {
-	MOOSTrace("Improper VERBOSE value: %s\n", value.c_str());
-	return(false);
-      }
-      m_verbose = value;
-    }
-    else if((param == "ACTIVE_START") || 
-	    (param == "START_ENGAGED") ||
-	    (param == "START_INDRIVE"))
-      setBooleanOnString(m_has_control, value);
-    else if(param == "HELM_ALIAS") {
-      if(!strContainsWhite(value))
-	m_helm_alias = value;
-    }
-    else if(param == "STANDBY") {
-      double dval = atof(value.c_str());
-      if(dval > 0) {
-	helmStatusUpdate("STANDBY");
-	m_standby_threshold = dval;
-	m_standby_helm      = true;
-      }	
-    }
+      handled = addBehaviorFile(value);
+    else if(param == "OK_SKEW") 
+      handled = handleConfigSkewAny(value);
+    else if(param == "VERBOSE") 
+      handled = setVerbosity(value);
+    else if(param == "ACTIVE_START")
+      handled = setBooleanOnString(m_has_control, value);
+    else if(param == "START_ENGAGED")
+      handled = setBooleanOnString(m_has_control, value);
+    else if(param == "START_INDRIVE")
+      handled = setBooleanOnString(m_has_control, value);
+    else if(param == "HELM_ALIAS") 
+      handled = setNonWhiteVarOnString(m_helm_alias, value);
+    else if(param == "STANDBY") 
+      handled = handleConfigStandBy(value);
     else if(param == "ALLOW_PARK") 
-      setBooleanOnString(m_allow_override, value);
+      handled = setBooleanOnString(m_allow_override, value);
     else if(param == "PARK_ON_ALLSTOP")
-      setBooleanOnString(m_park_on_allstop, value);
-
-    else if(param == "NODE_SKEW") {
-      string vname = stripBlankEnds(biteString(value, ','));
-      string skew  = stripBlankEnds(value);
-      double dskew = atof(skew.c_str());
-      if((vname != "") && (skew != "") && isNumber(skew))
-	m_node_skews[vname] = dskew;
-    }
-    else if(param == "DOMAIN") {
-      bool ok = handleDomainEntry(value);
-      if(!ok) {
-	MOOSTrace("Improper Domain Spec: %s\n", value.c_str());
-	return(false);
-      }
-    }
-    else if(param == "IVP_BEHAVIOR_DIR")
+      handled = setBooleanOnString(m_park_on_allstop, value);
+    else if(param == "NODE_SKEW") 
+      handled = handleConfigNodeSkew(value);
+    else if(param == "DOMAIN")
+      handled = handleConfigDomain(value);
+    else if((param == "IVP_BEHAVIOR_DIR") || (param == "IVP_BEHAVIOR_DIRS"))
       behavior_dirs.push_back(value);
-    else if(param == "OTHER_OVERRIDE_VAR") {
-      if(!strContainsWhite(value))
-	m_additional_override = value;
-    }
+    else if(param == "OTHER_OVERRIDE_VAR") 
+      handled = setNonWhiteVarOnString(m_additional_override, value);
+
+    if(!handled)
+      reportUnhandledConfigWarning(orig);
   }
-    
+  
+  // Check for Config Warnings first here after reading pHelmIvP block.
+  if(getWarningCount("config") > 0) {
+    helmStatusUpdate("MALCONFIG");
+    m_has_control = false;
+    return(true);
+  }
+
   m_hengine = new HelmEngine(m_ivp_domain, m_info_buffer);
 
   Populator_BehaviorSet *p_bset;
@@ -974,6 +1007,16 @@ bool HelmIvP::OnStartUp()
     p_bset->addBehaviorDir(behavior_dirs[k]);
   
   m_bhv_set = p_bset->populate(m_bhv_files);
+
+  vector<string> config_warnings = p_bset->getConfigWarnings();
+  for(unsigned int k=0; k<config_warnings.size(); k++) 
+    reportConfigWarning(config_warnings[k]);
+
+  if(getWarningCount("config") > 0) {
+    helmStatusUpdate("MALCONFIG");
+    m_has_control = false;
+    return(true);
+  }
 
 #if 0
   cout << "==================================================" << endl;
@@ -992,8 +1035,6 @@ bool HelmIvP::OnStartUp()
     m_bhv_set->getBehavior(i)->IvPBehavior::setParam("us", m_ownship);
     m_bhv_set->getBehavior(i)->onSetParamComplete();
   }
-  if(m_verbose == "verbose")
-    m_bhv_set->print();
   
   string mode_set_string_description = m_bhv_set->getModeSetDefinition();
 
@@ -1010,20 +1051,65 @@ bool HelmIvP::OnStartUp()
 }
 
 //--------------------------------------------------------------------
-// Procedure: addBehaviorFile
-//     Notes: More then one behavior file can be used to 
-//            configure the helm. Perhaps if there is a
-//            common set of behaviors like safety behaviors.
+// Procedure: handleConfigNodeSkew
+//   Example: NODE_SKEW = macrura,43
 
-void HelmIvP::addBehaviorFile(string filename)
+bool HelmIvP::handleConfigNodeSkew(const string& given_value)
 {
-  m_bhv_files.insert(filename);
+  string value = given_value;
+  string vname = biteStringX(value, ',');
+  string skew  = value;
+  double dskew = atof(skew.c_str());
+  if((vname != "") && (skew != "") && isNumber(skew)) {
+    // If we've set it already, we should disallow and flag this.
+    if(m_node_skews.count(vname) == 0) {
+      m_node_skews[vname] = dskew;
+      return(true);
+    }
+  }
+  return(false);
 }
 
 //--------------------------------------------------------------------
-// Procedure: handleDomainEntry
+// Procedure: handleConfigSkewAny
 
-bool HelmIvP::handleDomainEntry(const string& g_entry)
+bool HelmIvP::handleConfigSkewAny(const string& value)
+{
+  bool handled = true;
+  if(toupper(value) == "ANY") {
+    m_skews_matter = false;
+    m_ok_skew = -1;
+  }
+  else {
+    double dval = atof(value.c_str());
+    if(isNumber(value) && (dval >= 0)) {
+      m_skews_matter = true;
+      m_ok_skew = dval;
+    }
+    else
+      handled = false;
+  }
+  return(handled);
+}
+
+//--------------------------------------------------------------------
+// Procedure: handleConfigStandBy
+
+bool HelmIvP::handleConfigStandBy(const string& value)
+{
+  bool handled = setPosDoubleOnString(m_standby_threshold, value);
+  if(handled) {
+    helmStatusUpdate("STANDBY");
+    m_standby_helm = true;
+  }
+
+  return(handled);
+}
+
+//--------------------------------------------------------------------
+// Procedure: handleConfigDomain
+
+bool HelmIvP::handleConfigDomain(const string& g_entry)
 {
   string entry = stripBlankEnds(g_entry);
   entry = findReplace(entry, ',', ':');
@@ -1050,6 +1136,20 @@ bool HelmIvP::handleDomainEntry(const string& g_entry)
   return(ok);
 }
 
+//--------------------------------------------------------------------
+// Procedure: addBehaviorFile
+//     Notes: More then one behavior file can be used to 
+//            configure the helm. Perhaps if there is a
+//            common set of behaviors like safety behaviors.
+
+bool HelmIvP::addBehaviorFile(string filename)
+{
+  if(m_bhv_files.count(filename) != 0)
+    return(false);
+  
+  m_bhv_files.insert(filename);
+  return(true);
+}
 
 //--------------------------------------------------------------------
 // Procedure: detectRepeatOnKey
@@ -1105,17 +1205,17 @@ bool HelmIvP::detectRepeatOnKey(const string& key)
 //            against the last key-value posting.
 //      Note: The assumption is that if a change is detected, the caller
 //            will go ahead and make the posting. This assumption is 
-//            reflected in the fact that the m_outgoing_strings map is
-//            updated when a changed is detected.
+//            reflected in the fact that the m_outgoing_key_strings map
+//            is updated when a changed is detected.
 
 bool HelmIvP::detectChangeOnKey(const string& key, const string& value)
 {
   if(key == "")
     return(true);
   map<string, string>::iterator p;
-  p = m_outgoing_strings.find(key);
-  if(p == m_outgoing_strings.end()) {
-    m_outgoing_strings[key] = value;
+  p = m_outgoing_key_strings.find(key);
+  if(p == m_outgoing_key_strings.end()) {
+    m_outgoing_key_strings[key] = value;
     return(true);
   }
   else {
@@ -1124,7 +1224,7 @@ bool HelmIvP::detectChangeOnKey(const string& key, const string& value)
       return(false);
     else {
       // map is updated if changed detected.
-      m_outgoing_strings[key] = value;
+      m_outgoing_key_strings[key] = value;
       return(true);
     }
   }
@@ -1136,7 +1236,7 @@ bool HelmIvP::detectChangeOnKey(const string& key, const string& value)
 //            against the last key-value posting.
 //      Note: The assumption is that if a change is detected, the caller
 //            will go ahead and make the posting. This assumption is 
-//            reflected in the fact that the m_outgoing_strings map is
+//            reflected in the fact that the m_outgoing_key_strings map is
 //            updated when a changed is detected.
 
 bool HelmIvP::detectChangeOnKey(const string& key, double value)
@@ -1144,9 +1244,9 @@ bool HelmIvP::detectChangeOnKey(const string& key, double value)
   if(key == "")
     return(true);
   map<string, double>::iterator p;
-  p = m_outgoing_doubles.find(key);
-  if(p == m_outgoing_doubles.end()) {
-    m_outgoing_doubles[key] = value;
+  p = m_outgoing_key_doubles.find(key);
+  if(p == m_outgoing_key_doubles.end()) {
+    m_outgoing_key_doubles[key] = value;
     return(true);
   }
   else {
@@ -1155,7 +1255,7 @@ bool HelmIvP::detectChangeOnKey(const string& key, double value)
       return(false);
     else {
       // map is updated if changed detected.
-      m_outgoing_doubles[key] = value;
+      m_outgoing_key_doubles[key] = value;
       return(true);
     }
   }
@@ -1208,10 +1308,9 @@ void HelmIvP::postAllStop(string msg)
 bool HelmIvP::processNodeReport(const string& report)
 {
   NodeRecord new_record = string2NodeRecord(report);
-  if(!new_record.valid("name,x,y,time,heading,speed,depth")) {
-    cout << "************ Unhandle Node Report:" << report << endl << endl;
-    return(false);
-  }
+  //if(!new_record.valid("name,x,y,time"))
+  //  return(false);
+
   string raw_vname = new_record.getName();
   string vname = toupper(raw_vname);
   
@@ -1245,7 +1344,8 @@ bool HelmIvP::processNodeReport(const string& report)
 void HelmIvP::helmStatusUpdate(const string& new_status)
 {
   if((new_status == "DRIVE") || (new_status == "STANDBY")  ||
-     (new_status == "PARK")  || (new_status == "DISABLED")) {
+     (new_status == "PARK")  || (new_status == "DISABLED") ||
+     (new_status == "MALCONFIG")) {
     m_helm_status = new_status;
   }
   
@@ -1276,3 +1376,4 @@ bool HelmIvP::helmStatusEnabled() const
   return(false);
 }
   
+

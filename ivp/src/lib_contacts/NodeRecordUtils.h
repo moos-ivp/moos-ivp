@@ -2,7 +2,7 @@
 /*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: NodeRecordUtils.h                                    */
-/*          Jun 26th 2011                                        */
+/*    DATE:                                                      */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
 /* modify it under the terms of the GNU General Public License   */
@@ -28,4 +28,5 @@
 NodeRecord string2NodeRecord(const std::string&);
 
 #endif 
+
 

@@ -38,7 +38,7 @@ using namespace std;
 // Formats: default, zigzag
 //
 // Fields common to all:
-//    label, source, type, active, msg, label_color, vertex_color
+//    label, source, active, msg, label_color, vertex_color
 //    vertex_size
 // 
 // points = label=val, source=val, active=val, pts="0,0:200,-150:100,100"
@@ -298,7 +298,7 @@ XYSegList stringLawnmower2SegList(string str)
   //bool starty_set  = false;
 
   string xpos, ypos, vertex_color, edge_color, label, label_color;
-  string start, source, type, msg, edge_size, vertex_size, rows="ew";  
+  string start, source, msg, edge_size, vertex_size, rows="ew";  
   string active;
   double height = 0;
   double width  = 0;
@@ -312,8 +312,8 @@ XYSegList stringLawnmower2SegList(string str)
   unsigned int i, vsize = mvector.size();
   
   for(i=0; i<vsize; i++) {
-    string param = tolower(stripBlankEnds(biteString(mvector[i], '=')));
-    string value = stripBlankEnds(mvector[i]);
+    string param = tolower(biteStringX(mvector[i], '='));
+    string value = mvector[i];
     double dval  = atof(value.c_str());
     if((param == "x") && isNumber(value)) {
       xpos = value;
@@ -360,8 +360,6 @@ XYSegList stringLawnmower2SegList(string str)
       edge_color = value;
     else if(param == "vertex_color")
       vertex_color = value;
-    else if(param == "type")
-      type = value;
     else if(param == "source")
       source = value;
     else if(param == "edge_size")
@@ -414,10 +412,6 @@ XYSegList stringLawnmower2SegList(string str)
     new_seglist.set_color("vertex", vertex_color);
   if(edge_color != "")
     new_seglist.set_color("edge", edge_color);
-  if(type != "")
-    new_seglist.set_type(type);
-  if(source != "")
-    new_seglist.set_source(type);
   if(isNumber(edge_size)) {
     double dval = atof(edge_size.c_str());
     if(dval >= 0)
@@ -613,3 +607,4 @@ XYSegList stringBowTie2SegList(string str)
 
   return(new_seglist);
 }
+

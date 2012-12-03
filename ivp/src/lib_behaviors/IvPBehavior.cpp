@@ -3,6 +3,38 @@
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: IvPBehavior.cpp                                      */
 /*    DATE: Oct 21, 2003 5 days after Grady's Gaffe              */
+/*                                                               */
+/* (IvPHelm) The IvP autonomous control Helm is a set of         */
+/* classes and algorithms for a behavior-based autonomous        */
+/* control architecture with IvP action selection.               */
+/*                                                               */
+/* The algorithms embodied in this software are protected under  */
+/* U.S. Pat. App. Ser. Nos. 10/631,527 and 10/911,765 and are    */
+/* the property of the United States Navy.                       */
+/*                                                               */
+/* Permission to use, copy, modify and distribute this software  */
+/* and its documentation for any non-commercial purpose, without */
+/* fee, and without a written agreement is hereby granted        */
+/* provided that the above notice and this paragraph and the     */
+/* following three paragraphs appear in all copies.              */
+/*                                                               */
+/* Commercial licences for this software may be obtained by      */
+/* contacting Patent Counsel, Naval Undersea Warfare Center      */
+/* Division Newport at 401-832-4736 or 1176 Howell Street,       */
+/* Newport, RI 02841.                                            */
+/*                                                               */
+/* In no event shall the US Navy be liable to any party for      */
+/* direct, indirect, special, incidental, or consequential       */
+/* damages, including lost profits, arising out of the use       */
+/* of this software and its documentation, even if the US Navy   */
+/* has been advised of the possibility of such damage.           */
+/*                                                               */
+/* The US Navy specifically disclaims any warranties, including, */
+/* but not limited to, the implied warranties of merchantability */
+/* and fitness for a particular purpose. The software provided   */
+/* hereunder is on an 'as-is' basis, and the US Navy has no      */
+/* obligations to provide maintenance, support, updates,         */
+/* enhancements or modifications.                                */
 /*****************************************************************/
 
 #ifdef _WIN32
@@ -89,6 +121,16 @@ bool IvPBehavior::augBehaviorName(string aug_name)
   m_descriptor += aug_name;
   m_status_info = "name=" + m_descriptor;
   return(true);
+}
+
+//-----------------------------------------------------------
+// Procedure: setPriorityWt()
+
+void IvPBehavior::setPriorityWt(double val)
+{
+  if(val < 0)
+    val = 0;
+  m_priority_wt = val;
 }
 
 
@@ -431,6 +473,17 @@ void IvPBehavior::postEMessage(string g_emsg)
   m_bhv_state_ok = false;
 }
 
+//-----------------------------------------------------------
+// Procedure: postBadConfig
+
+void IvPBehavior::postBadConfig(string message)
+{
+  if(m_descriptor != "")
+    message = (m_descriptor + ": " + message);
+
+  postMessage("BHV_BAD_CONFIG", message, "repeatable");
+}
+
 
 //-----------------------------------------------------------
 // Procedure: postWMessage
@@ -711,6 +764,7 @@ bool IvPBehavior::checkUpdates()
 	  string wmsg = "Faulty update for behavior: " + m_descriptor;
 	  wmsg += (". Bad parameter(s): " + bad_params);
 	  postMessage("BHV_WARNING", wmsg);
+	  postMessage("BHV_CONFIG_WARNING", wmsg);
 	}
 	else {
 	  update_made = true;
@@ -1022,6 +1076,7 @@ vector<string> IvPBehavior::getStateSpaceVars()
   
   return(rvector);
 }
+
 
 
 

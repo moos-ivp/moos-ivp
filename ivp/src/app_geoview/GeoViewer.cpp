@@ -84,27 +84,26 @@ void GeoViewer::draw()
   // Rather than call "drawPolygons()" in the superclass, we implement 
   // the routine here so we can draw the "active" poly differently.
   if(m_geo_settings.viewable("polygon_viewable_all", true) == true) {
-    unsigned int i, vsize = m_geoshapes.sizePolygons();
-    if(vsize > 0) {
-      for(i=0; i<vsize; i++) {
-	XYPolygon poly = m_geoshapes.getPolygon(i);
-	bool filled = (i == m_active_poly);
-	if(filled)
-	  poly.set_color("fill", "dark_green");
-	drawPolygon(poly);
-      }
+    vector<XYPolygon> polygons = m_geoshapes.getPolygons();
+    unsigned int i, vsize = polygons.size();
+    for(i=0; i<vsize; i++) {
+      bool filled = (i == m_active_poly);
+      if(filled)
+	polygons[i].set_color("fill", "dark_green");
+      drawPolygon(polygons[i]);
     }
   }
-   
+  
   vector<XYGrid>    grids   = m_geoshapes.getGrids();
   vector<XYSegList> segls   = m_geoshapes.getSegLists();
-  vector<XYPoint>   points  = m_geoshapes.getPoints();
-  vector<XYCircle>  circles = m_geoshapes.getCircles();
+
+  const map<string, XYPoint> points = m_geoshapes.getPoints();
 
   drawSegLists(segls);
   drawGrids(grids);
   drawPoints(points);
   drawHexagons();
+
 }
 
 //-------------------------------------------------------------
@@ -422,5 +421,6 @@ void GeoViewer::reApplySnapToCurrent()
   
   m_geoshapes.poly(m_active_poly).apply_snap(m_snap_val);
 }
+
 
 

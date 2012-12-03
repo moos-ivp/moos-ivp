@@ -547,3 +547,4 @@ void ScanReport::switchItems(unsigned int i, unsigned int j)
 }
 
 
+

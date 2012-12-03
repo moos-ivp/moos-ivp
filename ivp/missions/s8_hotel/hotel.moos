@@ -41,12 +41,15 @@ ProcessConfig = uFldBeaconRangeSensor
   report_vars   = long
 
   // Configurations for all vehicles/nodes
-  reach_distance = default = nolimit
+  //reach_distance = default = nolimit
+  node_push_dist = default = 100
+  node_pull_dist = default = 100
   ping_wait      = default = 20
 
   // Configurations for all beacons
-  default_beacon_report_range  = nolimit
-  default_beacon_report_range  = 1000
+  //default_beacon_report_range  = nolimit
+  default_beacon_push_dist  = 85
+  default_beacon_pull_dist  = 75
   default_beacon_shape  = circle
   default_beacon_color  = blue
   default_beacon_width  = 5
@@ -59,22 +62,15 @@ ProcessConfig = uFldBeaconRangeSensor
   // beacon = x=1,y=2,label=foo,freq=17,shape=square,width=3,color=orange
 
   beacon    = x=200,  y=0,    label=01
-  beacon    = x=350, y=-225, label=02
-  beacon    = x=0,   y=-200, label=03
-  beacon    = x=-65,   y=-345, label=04
-  beacon    = x=115,   y=-150, label=05
+  beacon    = x=-100, y=-100, label=02
+  beacon    = x=0,   y=-200, label=03, freq=15
+  beacon    = x=-65, y=-345, label=04
+  beacon    = x=115, y=-150, label=05, push_dist=33, pull_dist=95
 
   //beacon    = x=160, y=-100, label=01
   //beacon    = x=290, y=-190, label=02, freq=30:45
   //beacon    = x=200, y=-260, label=03
   //beacon    = x=-40, y=-150, label=04, qrange=200
-  //beacon    = x=-150,y=-130, label=05
-  //beacon    = x=-140,y=-270, label=06
-  //beacon    = x=-40, y=-370, label=07
-  //beacon    = x=110, y=-230, label=08
-  //beacon    = x=40,  y=-60,  label=09
-  //beacon    = x=210, y=0,    label=10
-  //beacon    = x=200, y=-20,  label=11
 }
 
 //------------------------------------------
@@ -90,7 +86,28 @@ ProcessConfig = uTimerScript
   RESET_TIME = end
   CONDITION  = (NAV_SPEED > 0)
 
-  EVENT = var=BRS_RANGE_REQUEST, val="name=hotel", time=15:20
+  randvar        = varname=UVAR, min=0, max=359, key=at_post
+  randvar        = varname=GVAR, type=gaussian, min=0, max=400, mu=200, sigma=20, key=at_post
+  randvar        = varname=LGVAR, type=gaussian, min=0, max=400, mu=80, sigma=10, key=at_post
+
+  //event          = var=GAUSS_TEST_VAL, val=$(GVAR), time=4  
+  //event          = var=GAUSS_TEST_VAL, val=$(GVAR), time=0:40
+
+  //event          = var=LGAUSS_TEST_VAL, val=$(LGVAR), time=5  
+  //event          = var=LGAUSS_TEST_VAL, val=$(LGVAR), time=0:20
+
+  //event          = var=UNIFORM_TEST_VAL, val=$(UVAR), time=0  
+  //event          = var=UNIFORM_TEST_VAL, val=$(UVAR), time=15:20
+
+  reset_max  = no_limit
+  reset_time = all-posted
+
+  time_warp   = 1:2
+  //delay_reset = 25
+  //delay_start = 10:20
+
+  EVENT = var=BRS_RANGE_REQUEST, val="name=hotel", time=1:2
+  //EVENT = var=BRS_RANGE_REQUEST, val="name=hotel", time=15:20
 }
 
 

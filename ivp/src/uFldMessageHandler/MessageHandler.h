@@ -1,47 +1,58 @@
-/****************************************************************/
-/*   NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
-/*   ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*   FILE: MessageHandler.h                                     */
-/*   DATE: Jan 30th 2012                                        */
-/****************************************************************/
+/*****************************************************************/
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    FILE: MessageHandler.h                                     */
+/*    DATE: Jan 30th 2012                                        */
+/*                                                               */
+/* This program is free software; you can redistribute it and/or */
+/* modify it under the terms of the GNU General Public License   */
+/* as published by the Free Software Foundation; either version  */
+/* 2 of the License, or (at your option) any later version.      */
+/*                                                               */
+/* This program is distributed in the hope that it will be       */
+/* useful, but WITHOUT ANY WARRANTY; without even the implied    */
+/* warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR       */
+/* PURPOSE. See the GNU General Public License for more details. */
+/*                                                               */
+/* You should have received a copy of the GNU General Public     */
+/* License along with this program; if not, write to the Free    */
+/* Software Foundation, Inc., 59 Temple Place - Suite 330,       */
+/* Boston, MA 02111-1307, USA.                                   */
+/*****************************************************************/
 
 #ifndef UFLD_MESSAGE_HANDLER_HEADER
 #define UFLD_MESSAGE_HANDLER_HEADER
 
 #include <string>
 #include <map>
-#include "MOOSLib.h"
+#include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
 
-class MessageHandler : public CMOOSApp
+class MessageHandler : public AppCastingMOOSApp
 {
  public:
   MessageHandler();
   virtual ~MessageHandler() {};
 
+ public: // Standard MOOSApp functions to overload
   bool OnNewMail(MOOSMSG_LIST &NewMail);
   bool Iterate();
   bool OnConnectToServer();
   bool OnStartUp();
 
+ protected: // Standard AppCastingMOOSApp function to overload
+  bool buildReport();
+
  protected:
   void registerVariables();
   bool handleMailNodeMessage(const std::string&);
-  void printReport();
   void postMsgSummary();
-  void updateMaxLens();
 
  protected: // Config vars
-  bool         m_verbose;
   bool         m_strict_addressing;
   
  protected: // State vars
-  double       m_curr_time;
-  double       m_time_warp;
-  double       m_last_report_time;
-  unsigned int m_iterations;
   unsigned int m_reports;
   bool         m_newmail;
-  std::string  m_host_community;
 
   unsigned int m_total_messages_rcvd;
   unsigned int m_valid_messages_rcvd;
@@ -65,3 +76,4 @@ class MessageHandler : public CMOOSApp
 };
 
 #endif 
+

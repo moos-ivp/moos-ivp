@@ -23,8 +23,8 @@ ADD_EXECUTABLE(uXMS ${SRC})
 
 TARGET_LINK_LIBRARIES(uXMS 
   MOOS
-  MOOSGen
   genutil
+  apputil
   mbutil 
   ${SYSTEM_LIBS})
 

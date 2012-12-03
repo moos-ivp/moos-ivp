@@ -5,6 +5,11 @@ ServerPort = 9000
 Community  = alpha
 
 MOOSTimeWarp = 1
+TERM_REPORTING = false
+
+// Panama city
+//LatOrigin  = 30.17508647
+//LongOrigin = -85.74946797
 
 // Forest Lake
 LatOrigin  = 43.825300 
@@ -21,35 +26,38 @@ ProcessConfig = ANTLER
 {
   MSBetweenLaunches = 200
 
-  Run = MOOSDB		@ NewConsole = true
-  Run = pLogger         @ NewConsole = true
-  Run = uSimMarine	@ NewConsole = true
-  Run = pNodeReporter	@ NewConsole = true
-  Run = pMarinePID	@ NewConsole = true
-  Run = pHelmIvP	@ NewConsole = true
-  Run = pMarineViewer	@ NewConsole = true
-  Run = uProcessWatch	@ NewConsole = true
-  Run = uXMS	        @ NewConsole = true
-}
-
-//------------------------------------------
-// pHostInfo config block
-
-ProcessConfig = pHostInfo
-{
-  AppTick   = 1
-  CommsTick = 1
+  Run = MOOSDB		@ NewConsole = false
+  Run = pLogger         @ NewConsole = false
+  Run = uSimMarine	@ NewConsole = false
+  Run = pMarinePID	@ NewConsole = false
+  Run = pHelmIvP	@ NewConsole = false
+  Run = pMarineViewer	@ NewConsole = false
+  Run = uProcessWatch	@ NewConsole = false
+  Run = pNodeReporter	@ NewConsole = false
+  Run = uXMS	        @ NewConsole = false ~uXMS_NAV
+  Run = uXMS	        @ NewConsole = false~uXMS_USM
 }
 
 //------------------------------------------
 // uXMS config block
 
-ProcessConfig = uXMS
+ProcessConfig = uXMS_NAV
 {
   AppTick   = 1
   CommsTick = 1
 
-  DISPLAY_ALL = true
+  var = NAV_X, DB_CLIENTS, DB_UPTIME
+}
+
+//------------------------------------------
+// uXMS config block
+
+ProcessConfig = uXMS_USM
+{
+  AppTick   = 1
+  CommsTick = 1
+
+  var = USM_X, USM_Y, USM_SPEED
 }
 
   
@@ -60,16 +68,14 @@ ProcessConfig = uProcessWatch
 {
   AppTick   = 4
   CommsTick = 4
-  
-  //WATCH = uSimMarine
-  WATCH = pMarinePID:PID_OK
-  WATCH = pMarineViewer, pHelmIvP, uSimMarine:USM_OK
+
+  foo = bar  
+  TERM_REPORT_INTERVAL = 0.8
 
   SUMMARY_WAIT = 5
 
-  POST_MAPPING = PROC_WATCH_EVENT, UPW_EVENT
-
-  WATCH_ALL = false
+  NOWATCH   = uXMS*
+  WATCH_ALL = true
 }
 
 
@@ -78,16 +84,10 @@ ProcessConfig = uProcessWatch
 
 ProcessConfig = pLogger
 {
-  AppTick   = 4
-  CommsTick = 4
+  AppTick   = 8
+  CommsTick = 8
 
-  SyncLog  = true @ 0.2
   AsyncLog = true
-
-  Log = NAV_X @ 0.2
-  Log = NAV_Y @ 0.2
-  Log = NAV_SPEED   @ 0.8
-  Log = NAV_HEADING @ 0.8
 
   // For variables that are published in a bundle on their first post,
   // explicitly declare their logging request
@@ -96,7 +96,7 @@ ProcessConfig = pLogger
 
   LogAuxSrc = true
   WildCardLogging = true
-  WildCardOmitPattern = *_STATUS
+  //WildCardOmitPattern = *_STATUS
   WildCardExclusionLog = true
 }
 
@@ -134,7 +134,7 @@ ProcessConfig = uSimMarine
   CommsTick	= 4
 
   START_X       = 0
-  START_Y       = 0
+  START_Y       = -10
   START_SPEED   = 0
   START_HEADING = 180
 
@@ -149,11 +149,11 @@ ProcessConfig = uSimMarine
 
 ProcessConfig = pHelmIvP
 {
+  MaxAppTick = 10
   AppTick    = 4
   CommsTick  = 4
 
   Behaviors  = alpha.bhv
-  Verbose    = quiet
   Domain     = course:0:359:360
   Domain     = speed:0:4:21
 }
@@ -202,21 +202,44 @@ ProcessConfig = pMarineViewer
 
   //TIFF_FILE            = AerialMIT.tif
   TIFF_FILE            = forrest19.tif
+
   set_pan_x            = -90
   set_pan_y            = -280
   zoom                 = 0.65
   vehicle_shape_scale  = 1.5
-  seglist_edge_width   = 2.0
-  seglist_vertex_size  = 4
-  seglist_vertex_color = red
-  point_vertex_size    = 12
   hash_delta           = 50
   hash_shade           = 0.4
-  hash_view            = true
+  hash_viewable        = true
 
-  scope  = FOOBAR
-  scope  = WPT_DURATION
-  scope  = WPT_HIT
+  nodes_font_size      = medium
+  procs_font_size      = medium
+  appcast_font_size    = small
+  
+  appcast_height       = 75
+  appcast_width        = 30
+  appcast_viewable     = true
+  appcast_color_scheme = indigo
+
+  //seglist_viewable_all = false
+  //datum_viewable = true
+  //datum_size     = 18
+  //gui_size = small
+
+  left_context[survey-point] = DEPLOY=true
+  left_context[survey-point] = MOOS_MANUAL_OVERIDE=false
+  left_context[survey-point] = RETURN=false
+
+  left_context[returnX] = DEPLOY=true
+  left_context[returnX] = MOOS_MANUAL_OVERIDE=false
+  left_context[returnX] = RETURN=true
+
+  right_context[return] = DEPLOY=true
+  right_context[return] = MOOS_MANUAL_OVERIDE=false
+  right_context[return] = RETURN=false
+
+
+  scope  = RETURN
+  scope  = WPT_STAT
   scope  = VIEW_SEGLIST
   scope  = VIEW_POINT
   scope  = VIEW_POLYGON
@@ -226,6 +249,7 @@ ProcessConfig = pMarineViewer
   BUTTON_ONE = DEPLOY # DEPLOY=true
   BUTTON_ONE = MOOS_MANUAL_OVERIDE=false # RETURN=false
   BUTTON_TWO = RETURN # RETURN=true
+  BUTTON_THREE = RETURN # RETURN=false
 
   ACTION  = MENU_KEY=deploy # DEPLOY = true # RETURN = false
   ACTION+ = MENU_KEY=deploy # MOOS_MANUAL_OVERIDE=false
@@ -240,6 +264,7 @@ ProcessConfig = pMarineViewer
 
 ProcessConfig = pNodeReporter
 {
+  MaxAppTick    = 2
   AppTick	= 2
   CommsTick	= 2
 

@@ -78,17 +78,18 @@ public:
   bool updateGrid(const std::string&);
   bool updateConvexGrid(const std::string&);
 
-  unsigned int sizePolygons() const {return(m_polygons.size());};
-  unsigned int sizeSegLists() const {return(m_seglists.size());};
-  unsigned int sizeCircles() const  {return(m_circles.size());};
-  unsigned int sizeHexagons() const {return(m_hexagons.size());};
-  unsigned int sizePoints() const   {return(m_points.size());};
-  unsigned int sizeVectors() const  {return(m_vectors.size());};
-  unsigned int sizeGrids() const    {return(m_grids.size());};
+  unsigned int sizePolygons() const    {return(m_polygons.size());};
+  unsigned int sizeSegLists() const    {return(m_seglists.size());};
+  unsigned int sizeCircles() const     {return(m_circles.size());};
+  unsigned int sizeHexagons() const    {return(m_hexagons.size());};
+  unsigned int sizePoints() const      {return(m_points.size());};
+  unsigned int sizeVectors() const     {return(m_vectors.size());};
+  unsigned int sizeGrids() const       {return(m_grids.size());};
   unsigned int sizeConvexGrids() const {return(m_convex_grids.size());};
   unsigned int sizeRangePulses() const {return(m_range_pulses.size());};
   unsigned int sizeCommsPulses() const {return(m_comms_pulses.size());};
-  unsigned int sizeMarkers() const {return(m_markers.size());};
+  unsigned int sizeMarkers() const     {return(m_markers.size());};
+  unsigned int sizeTotalShapes() const;
 
   std::vector<XYPolygon> getPolygons() const {return(m_polygons);};
   std::vector<XYSegList> getSegLists() const {return(m_seglists);};
@@ -127,4 +128,5 @@ protected:
 };
 
 #endif
+
 

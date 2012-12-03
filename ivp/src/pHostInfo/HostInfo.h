@@ -1,39 +1,59 @@
-/****************************************************************/
-/*   NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
-/*   ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*   FILE: HostInfo.h                                           */
-/*   DATE: Dec 11th 2011                                        */
-/****************************************************************/
+/*****************************************************************/
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    FILE: HostInfo.h                                           */
+/*    DATE: Dec 11th 2011                                        */
+/*                                                               */
+/* This program is free software; you can redistribute it and/or */
+/* modify it under the terms of the GNU General Public License   */
+/* as published by the Free Software Foundation; either version  */
+/* 2 of the License, or (at your option) any later version.      */
+/*                                                               */
+/* This program is distributed in the hope that it will be       */
+/* useful, but WITHOUT ANY WARRANTY; without even the implied    */
+/* warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR       */
+/* PURPOSE. See the GNU General Public License for more details. */
+/*                                                               */
+/* You should have received a copy of the GNU General Public     */
+/* License along with this program; if not, write to the Free    */
+/* Software Foundation, Inc., 59 Temple Place - Suite 330,       */
+/* Boston, MA 02111-1307, USA.                                   */
+/*****************************************************************/
 
 #ifndef P_HOST_INFO_HEADER
 #define P_HOST_INFO_HEADER
 
 #include <string>
+#include <list>
 #include <vector>
-#include "MOOSLib.h"
+#include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
 
-class HostInfo : public CMOOSApp
+class HostInfo : public AppCastingMOOSApp
 {
  public:
   HostInfo();
   virtual ~HostInfo() {};
 
+ public: // Standard MOOSApp functions to overload
   bool OnNewMail(MOOSMSG_LIST &NewMail);
   bool Iterate();
   bool OnConnectToServer();
   bool OnStartUp();
+
+ protected: // Standard AppCastingMOOSApp function to overload
+  bool buildReport();
 
  protected:
   void registerVariables();
   void generateIPInfoFiles();
   void gatherIPInfoFromFiles();
   void postIPInfo();
-  void printReport();
 
  protected: 
   std::string readOSXInfoIP(std::string);
   std::string readLinuxInfoIP(std::string);
   void clearTempFiles();
+  bool handleMailPShareInput(const std::string&);
   
   void addIPInfo(std::string ip, std::string ip_source);
 
@@ -41,12 +61,8 @@ class HostInfo : public CMOOSApp
   std::string   m_tmp_file_dir;
   std::string   m_default_hostip;
   bool          m_default_hostip_force;
-  double        m_report_interval;
 
  protected: // state variables
-  unsigned int  m_iterations;
-  double        m_last_report_time;
-  double        m_curr_time;
 
   std::string   m_ip_osx_wifi;
   std::string   m_ip_osx_airport;
@@ -61,18 +77,18 @@ class HostInfo : public CMOOSApp
   std::string   m_ip_linux_usb2;
   std::string   m_ip_linux_any;
 
+  unsigned int  m_pmb_udp_listen_cnt;
+
   bool          m_ip_info_files_generated;
   bool          m_ip_info_gathered;
   bool          m_ip_info_posted;
 
+  std::list<std::string> m_event_messages;
+
  protected: // MOOSApp output
-  std::string   m_host_community;
   std::string   m_host_ip;
   std::string   m_host_port_db;
-  std::string   m_host_port_udp;
-  double        m_timewarp;
-  std::string   m_timewarp_str;
-
+  std::string   m_pshare_iroutes;
   std::string   m_host_ip_verbose;
   std::string   m_host_ip_all;
   std::string   m_host_record_all;
@@ -81,3 +97,4 @@ class HostInfo : public CMOOSApp
 };
 
 #endif 
+

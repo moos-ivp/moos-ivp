@@ -49,3 +49,4 @@ bool Populator_HelmPlots::populateFromEntries(const vector<ALogEntry>& entries)
 }
 
 
+

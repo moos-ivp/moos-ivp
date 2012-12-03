@@ -254,3 +254,4 @@ unsigned int LoiterEngine::acquireVertexIn(double os_hdg, double os_x,
   return(low_ix);
 }
 
+

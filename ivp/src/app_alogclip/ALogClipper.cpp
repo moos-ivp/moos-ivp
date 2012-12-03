@@ -183,3 +183,4 @@ unsigned int ALogClipper::getDetails(const string& statevar)
 
   
 
+

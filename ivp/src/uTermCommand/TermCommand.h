@@ -25,7 +25,7 @@
 
 #include <vector>
 #include <string>
-#include "MOOSLib.h"
+#include "MOOS/libMOOS/MOOSLib.h"
 
 
 class TermCommand : public CMOOSApp
@@ -73,4 +73,5 @@ protected:
 };
 
 #endif
+
 

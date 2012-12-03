@@ -57,30 +57,19 @@ void XYObject::clear()
   m_time_set     = false; 
   m_transparency_set = false;
   m_label        = ""; 
-  m_type         = "";
-  m_source       = ""; 
   m_msg          = ""; 
 
   m_color_map.clear();
 }
 
 //---------------------------------------------------------------
-// Procedure: set_type
-
-bool XYObject::set_type(const string& str)
-{
-  m_type = str;
-  return(true);
-}
-
-
-//---------------------------------------------------------------
 // Procedure: set_color()
 
 void XYObject::set_color(const string& key, const string& color)
 {
-  if(isColor(color))
-    m_color_map[key] = ColorPack(color);
+  ColorPack cpack(color);
+  if(cpack.set())
+    m_color_map[key] = cpack;
 }
 
 //---------------------------------------------------------------
@@ -171,11 +160,6 @@ std::string XYObject::get_spec(string param) const
     aug_spec(spec, "label=" + m_label); 
   if(m_msg != "")
     aug_spec(spec, "msg=" + m_msg); 
-  if(m_type != "")
-    aug_spec(spec, "type=" + m_type); 
-  if(m_source != "")
-    aug_spec(spec, "source=" + m_source); 
-
   if(color_set("label"))
     aug_spec(spec, "label_color=" + get_color("label").str(':'));
   if(color_set("edge"))
@@ -213,21 +197,17 @@ bool XYObject::set_param(const string& param, const string& value)
 {
   if(param == "label") 
     set_label(value);
-  else if(param == "msg")
-    set_msg(value);
-  else if(param == "type")
-    set_type(value);
-  else if(param == "source")
-    set_source(value);
-  else if(param == "time")
-    set_time(atof(value.c_str()));
   else if(param == "vertex_size")
     set_vertex_size(atof(value.c_str()));
+  else if(param == "vertex_color")
+    set_color("vertex", value);
+  else if(param == "msg")
+    set_msg(value);
+  else if(param == "time")
+    set_time(atof(value.c_str()));
   else if(param == "edge_size")
     set_edge_size(atof(value.c_str()));
 
-  else if(param == "vertex_color")
-    set_color("vertex", value);
   else if(param == "edge_color")
     set_color("edge", value);
   else if(param == "label_color")
@@ -239,6 +219,12 @@ bool XYObject::set_param(const string& param, const string& value)
 
   else if((param == "active") && isBoolean(value))
     set_active(tolower(value) == "true");
+
+  // "source" and "type" are deprecated fields. We don't want to return false
+  // if we find one of these, so check here
+  else if((param == "source") || (param == "type"))
+    return(true);
+
   else
     return(false);
   return(true);
@@ -256,4 +242,5 @@ void XYObject::aug_spec(string& orig, string new_part) const
     orig += ",";
   orig += new_part;
 }
+
 

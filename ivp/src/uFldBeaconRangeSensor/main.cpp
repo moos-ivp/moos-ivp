@@ -23,7 +23,7 @@
 #include <iostream>
 #include "MBUtils.h"
 #include "ColorParse.h"
-#include "BRS_MOOSApp.h"
+#include "BRS_App.h"
 #include "BRS_Info.h"
 
 using namespace std;
@@ -48,8 +48,6 @@ int main(int argc, char *argv[])
       mission_file = argv[i];
     else if(strBegins(argi, "--alias="))
       run_command = argi.substr(8);
-    else if(argi=="--verbose=")
-      verbose = argi.substr(10);
     else if(i == 2)
       run_command = argi;
   }
@@ -61,12 +59,11 @@ int main(int argc, char *argv[])
   cout << "uFldBeaconRangeSensor launching as " << run_command << endl;
   cout << termColor() << endl;
 
-  BRS_MOOSApp sim_beacon_range;
-  if(verbose != "")
-    sim_beacon_range.setVerbose(verbose);
+  BRS_App sim_beacon_range;
   sim_beacon_range.Run(run_command.c_str(), mission_file.c_str());
  
   return(0);
 }
+
 
 

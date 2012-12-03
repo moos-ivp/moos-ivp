@@ -1,10 +1,8 @@
 /*****************************************************************/
-/*    NAME: Mike Benjamin, Christopher Gagner                    */
-/*    DATE: July 29, 2010                                        */
-/*    DATE: Aug  07, 2012                                        */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: LogChecker.h                                         */
-/*    DESCRIPTION: Checks an alog for specified conditions and   */
-/*              reports if those conditions have been satisfied. */
+/*    DATE: July 29, 2010                                        */
 /*                                                               */
 /* This program is free software; you can redistribute it and/or */
 /* modify it under the terms of the GNU General Public License   */
@@ -87,4 +85,5 @@ class LogChecker {
 };
 
 #endif	
+
 

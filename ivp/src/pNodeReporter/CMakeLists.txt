@@ -23,9 +23,9 @@ ADD_EXECUTABLE(pNodeReporter ${SRC})
    
 TARGET_LINK_LIBRARIES(pNodeReporter
    MOOS
-   MOOSGen
-   MOOSUtility
+   MOOSGeodesy
    contacts
+   apputil
    mbutil
    geometry
    ${SYSTEM_LIBS})

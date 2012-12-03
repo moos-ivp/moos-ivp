@@ -67,6 +67,8 @@ string HostRecord::getSpecTerse() const
     str += ",port_db="  + m_port_db;
   if(m_port_udp != "")
     str += ",port_udp=" + m_port_udp;
+  if(m_pshare_iroutes != "")
+    str += ",pshare_iroutes=" + m_pshare_iroutes;
   if(m_keyword != "")
     str += ",keyword=" + m_keyword;
 
@@ -88,7 +90,11 @@ bool HostRecord::valid(const string& check) const
   if((check == "port_udp") && !isNumber(m_port_udp))
     return(false);
 
+  if((check == "pshare_iroutes") && (m_pshare_iroutes==""))
+    return(false);
+
   if((check == "time_warp") && !isNumber(m_timewarp))
     return(false);
   return(true);
 }
+

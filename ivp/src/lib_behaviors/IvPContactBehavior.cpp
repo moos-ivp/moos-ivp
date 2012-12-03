@@ -287,3 +287,4 @@ void IvPContactBehavior::postErasableBearingLine()
   postMessage("VIEW_SEGLIST", m_bearing_line.get_spec());
 }
 
+

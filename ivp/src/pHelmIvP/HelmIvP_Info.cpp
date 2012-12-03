@@ -66,6 +66,8 @@ void showHelpAndExit()
   blk("      Display MOOS publications and subscriptions.              ");
   mag("  --version,-v                                                  ");
   blk("      Display the release version of pHelmIvP.                  ");
+  mag("  --verbose=<setting>                                           ");
+  blk("      May be \"VERBOSE\", \"terse\", or \"quiet\".              ");
   blk("                                                                ");
   blk("Behavior files:                                                 ");
   blk("      One or more filenames to get IvP Helm config parameters.  ");
@@ -165,7 +167,6 @@ void showInterfaceAndExit()
   blk("  TBCOUNT                                                       ");
   blk("  HITER                                                         ");
   blk("  BHV_IPF                                                       ");
-  blk("  IVPHELM_POSTINGS                                              ");
   blk("  IVPHELM_STATEVARS                                             ");
   blk("  IVPHELM_LIFE_EVENT                                            ");
   blk("  IVPHELM_ENGAGED                                               ");
@@ -185,4 +186,5 @@ void showReleaseInfoAndExit()
   showReleaseInfo("pHelmIvP", "navy");
   exit(0);
 }
+
 

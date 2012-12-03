@@ -6,14 +6,15 @@ ProcessConfig = pBasicContactMgr
   AppTick   = 2
   CommsTick = 2
 
-  ALERT_RANGE     = 55
-  ALERT_CPA_RANGE = 70
-  ALERT_CPA_TIME  = 30
   CONTACT_MAX_AGE = 3600
-  DISPLAY_RADII   = false
-  VERBOSE         = true
+  DISPLAY_RADII   = true
 
-  Alert = var=CONTACT_INFO, val="name=$[VNAME] # contact=$[VNAME]"
-  Alert = var=TRAIL_INFO, val="name=trail_$[VNAME] # contact=$[VNAME]"
-  Alert = var=CONTACT_$[VTYPE], val="name=avd_$[VNAME] # contact_type=$[VTYPE]"
+  DEFAULT_ALERT_RANGE = 20
+  DEFAULT_CPA_RANGE   = 28
+  DEFAULT_ALERT_RANGE_COLOR = gray70
+  DEFAULT_CPA_RANGE_COLOR   = gray30
+
+  Alert = id=avd, var=CONTACT_INFO, val="name=$[VNAME] # contact=$[VNAME]"
+  Alert = id=avd, alert_range=40, cpa_range=45, alert_range_color=green
+  Alert = id=avd, cpa_range_color=invisible
 }

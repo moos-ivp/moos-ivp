@@ -26,9 +26,9 @@ ELSE (${APPLE})
 ENDIF (${APPLE})
 
 TARGET_LINK_LIBRARIES(currview
+  MOOSGeodesy
   marineview
   contacts
-  MOOSUtility
   mbutil
   geometry
   ${SYSTEM_LIBS}

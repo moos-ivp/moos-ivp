@@ -9,8 +9,8 @@ ADD_EXECUTABLE(gen_hazards ${SRC})
 
 TARGET_LINK_LIBRARIES(gen_hazards
   MOOS
-  MOOSGen
-  mbutil
+  ufld_hazards
   geometry
+  mbutil
   m
   pthread)

@@ -23,7 +23,7 @@ ADD_EXECUTABLE(pXRelay ${SRC}	)
 
 TARGET_LINK_LIBRARIES(pXRelay
    MOOS
-   MOOSGen
    mbutil
+   ${MOOS_LIBRARIES}
    ${SYSTEM_LIBS})
 

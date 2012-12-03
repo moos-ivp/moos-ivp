@@ -41,9 +41,10 @@ class Expander
   bool verifyInfile(const std::string& filename);
   bool writeOutput();
   void addMacro(std::string, std::string, bool=false);
-  void setForce(bool v)    {m_force=v;};
-  void setStrict(bool v)   {m_strict=v;};
-  void setTerminal(bool v) {m_terminal=v;};
+  void setForce(bool v)      {m_force=v;};
+  void setStrict(bool v)     {m_strict=v;};
+  void setPartialsOK(bool v) {m_partial_expand_ok=v;};
+  void setTerminal(bool v)   {m_terminal=v;};
   void addPath(std::string);
 
  protected:
@@ -94,7 +95,10 @@ class Expander
   int  m_max_subs_per_line;
   std::vector<std::string> m_pmode;
 
+  bool m_partial_expand_ok;
+
 };
 
 #endif 
+
 

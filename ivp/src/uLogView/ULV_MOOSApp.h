@@ -24,7 +24,7 @@
 #define ULV_MOOS_APP_HEADER
 
 #include <string>
-#include "MOOSLib.h"
+#include "MOOS/libMOOS/MOOSLib.h"
 #include "ULV_GUI.h"
 #include "Threadsafe_pipe.h"
 #include "VarDataPair.h"
@@ -78,3 +78,4 @@ class ULV_MOOSApp : public CMOOSApp
 };
 
 #endif 
+

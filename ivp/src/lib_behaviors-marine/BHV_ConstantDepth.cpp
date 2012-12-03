@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin and John Leonard                    */
-/*    ORGN: NAVSEA Newport RI and MIT Cambridge MA               */
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: BHV_ConstantDepth.cpp                                */
 /*    DATE: Jul 3rd 2005                                         */
 /*                                                               */
@@ -51,6 +51,7 @@ BHV_ConstantDepth::BHV_ConstantDepth(IvPDomain gdomain) :
   m_peakwidth     = 3;
   m_basewidth     = 100;
   m_summitdelta   = 50;
+  m_osd           = 0;
 
   // The default duration at the IvPBehavior level is "-1", which
   // indicates no duration applied to the behavior by default. By
@@ -89,6 +90,11 @@ bool BHV_ConstantDepth::setParam(string param, string val)
     return(true);
   }
 
+  else if((param == "depth_mismatch_var") && !strContainsWhite(val)) {
+    m_depth_mismatch_var = val;
+    return(true);
+  }
+  
   return(false);
 }
 
@@ -97,6 +103,7 @@ bool BHV_ConstantDepth::setParam(string param, string val)
 
 IvPFunction *BHV_ConstantDepth::onRunState() 
 {
+  updateInfoIn();
   if(!m_domain.hasDomain("depth")) {
     postEMessage("No 'depth' variable in the helm domain");
     return(0);
@@ -121,10 +128,31 @@ IvPFunction *BHV_ConstantDepth::onRunState()
   return(ipf);
 }
 
+//-----------------------------------------------------------
+// Procedure: updateInfoIn()
+//   Purpose: Update relevant to the behavior from the info_buffer.
+//            Warning messages may be posted if info is missing.
+//   Returns: true if no relevant info is missing from the info_buffer.
+//            false otherwise.
 
+bool BHV_ConstantDepth::updateInfoIn()
+{
+  bool ok;
+  m_osd = getBufferDoubleVal("NAV_DEPTH", ok);
 
+  // Should get ownship information from the InfoBuffer
+  if(!ok) {
+    postWMessage("No ownship DEPTH info in info_buffer.");  
+    return(false);
+  }
+  
+  double delta = m_osd - m_desired_depth;
+  if(delta < 0)
+    delta *= -1; 
 
-
-
-
+  if(m_depth_mismatch_var != "")
+    postMessage(m_depth_mismatch_var, delta);
+  
+  return(true);
+}
 

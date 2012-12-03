@@ -15,6 +15,14 @@ ProcessConfig = uXMS
   VAR = CONTACT_INFO
   VAR = CONTACT_RESOLVED
   VAR = CONTACT_MGR_WARNING
+
+  DISPLAY_SOURCE        = true
+  DISPLAY_TIME          = true
+  DISPLAY_COMMUNITY     = false   // default                    
+
+  TRUNC_DATA            = true
+       
+  REFRESH_MODE = streaming
 }
 
 

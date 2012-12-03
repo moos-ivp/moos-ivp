@@ -2,48 +2,66 @@
 
 .PHONY : all
 
-SRC_DIR = /home/mikerb/Research/moos-ivp/trunk/ivp/src/
+#SRC_DIR = /home/mikerb/Research/moos-ivp/trunk/ivp/src/
+SRC_DIR = /Users/mikerb/Research/moos-ivp/branches/mikerb/moos-ivp-122gou/ivp/src
 
 IVP_CORE  = lib_ivpcore
 
 IVP_HELM  = lib_helmivp lib_behaviors
 
-GPL_RELS  = lib_ivpbuild 	lib_behaviors-marine 	\
-	    lib_helmivp		lib_mbutil 		\
-	    lib_geometry 	lib_marineview 		\
-	    lib_navplot	 	lib_bhvutil		\
-	    lib_logic					\
-	    pHelmIvP 					\
-	    pMarineViewer 	pTransponderAIS 	\
-	    iMarineSim		pMarinePID 		\
-	    pEchoVar 		app_polyview 		\
-	    app_logview 	uTMS			\
-	    uXMS     		uProcessWatch		\
-	    uRepeater		uFunctionVis	
+GPL_RELS  = app_alogcheck       app_alogclip           \
+            app_aloggrep        app_aloghelm           \
+            app_alogrm          app_alogscan           \
+            app_alogview        app_gen_hazards        \
+            app_geoview         app_gzaicview          \
+            app_ivpcheck        app_nsplug             \
+            lib_apputil         lib_behaviors-marine   \
+	    lib_bhvutil		lib_contacts           \
+	    lib_geometry 	lib_helmivp            \
+	    lib_ipview          lib_logic              \
+	    lib_logutils        lib_marineview         \
+            lib_mbutil          lib_navplot            \
+            lib_ufield          lib_ufld_hazards       \
+            lib_ulogview                               \
+            pBasicContactMgr    pEchoVar               \
+            pHelmIvP            pHostInfo              \
+            pMarinePID          pMarineViewer          \
+            pNodeReporter       pSafetyRetreat         \
+            pSearchGrid         pXRelay                \
+            uFldHazardMetric    uFldBeaconRangeSensor  \
+            uFldHazardMgr       uFldContactRangeSensor \
+            uFldGenericSensor   uFldHazardSensor       \
+            uFldMessageHandler  uFldNodeBroker         \
+            uFldNodeComms       uFldPathCheck          \
+            uFldScope           uFldShoreBroker        \
+            uFunctionVis        uHelmScope             \
+            uLogView            uLogViewHelm           \
+            uLogViewIPF         uMAC                   \
+            uMACView            uPlotViewer            \
+            uPokeDB             uProcessWatch          \
+            uSimCurrent         uSimMarine             \
+            uTermCommand        uTimerScript           \
+            uXMS
 
-MRB_BETA  = lib_behaviors-colregs lib_behaviors-sandbox     	\
-	    lib_behaviors-atttic  app_fview app_hexaview 	\
-	    app_logclip app_logparse app_peval app_quadview 	\
-	    app_solveIPF app_splug app_zaicview iHeadingMonitor \
-	    iMetaCompass lib_xgui pLoiterControl		\
-	    uFunctionViewer uFunctionSender 
+MRB_BETA  = app_cpaview         app_ffview             \
+            app_testfp          app_vzaicview
 
 license: $(IVP_CORE) $(IVP_HELM) $(GPL_RELS) $(MRB_BETA)
 
 $(IVP_CORE)::
-	license ivpcore nuwc nuwc $(SRC_DIR)/$@/*.h
-	license ivpcore nuwc nuwc $(SRC_DIR)/$@/*.cpp
+	license ivpcore nuwc mike $(SRC_DIR)/$@/*.h
+	license ivpcore nuwc mike $(SRC_DIR)/$@/*.cpp
 
 $(IVP_HELM)::
-	license ivphelm nuwc nuwc $(SRC_DIR)/$@/*.h
-	license ivphelm nuwc nuwc $(SRC_DIR)/$@/*.cpp
+	license ivphelm nuwc mike $(SRC_DIR)/$@/*.h
+	license ivphelm nuwc mike $(SRC_DIR)/$@/*.cpp
 
 $(GPL_RELS)::
-	license none gpl nuwcmit $(SRC_DIR)/$@/*.h
-	license none gpl nuwcmit $(SRC_DIR)/$@/*.cpp
+	license none gpl all $(SRC_DIR)/$@/*.h
+	license none gpl all $(SRC_DIR)/$@/*.cpp
 
 $(MRB_BETA)::
-	license none limit nuwc $(SRC_DIR)/$@/*.h
-	license none limit nuwc $(SRC_DIR)/$@/*.cpp
+	license none limit all $(SRC_DIR)/$@/*.h
+	license none limit all $(SRC_DIR)/$@/*.cpp
 
 

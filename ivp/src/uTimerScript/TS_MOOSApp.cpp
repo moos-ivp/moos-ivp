@@ -23,6 +23,7 @@
 #include <cstdlib>
 #include <iterator>
 #include "TS_MOOSApp.h"
+#include "ACTable.h"
 #include "MBUtils.h"
 #include "ColorParse.h"
 
@@ -42,20 +43,17 @@ TS_MOOSApp::TS_MOOSApp()
   // Initial values for state variables.
   m_elapsed_time   = 0;
   m_previous_time  = -1;
-  m_start_time     = 0;
+  m_script_start_time = 0;
   m_connect_tstamp = 0;
   m_status_tstamp  = 0;
   m_status_needed  = false;
   m_skip_time      = 0;
   m_pause_time     = 0;
-  m_utc_time       = 0;
   m_paused         = false;
   m_conditions_ok  = true;
-  m_posted_count   = 0;
-  m_posted_tcount  = 0;
+  m_posted_count_local = 0;
+  m_posted_count_total = 0;
   m_reset_count    = 0;
-  m_iterations     = 0; 
-  m_iter_char      = 'a';
   m_verbose        = true;
   m_shuffle        = true;
   m_atomic         = false;
@@ -73,9 +71,15 @@ TS_MOOSApp::TS_MOOSApp()
 
   m_info_buffer    = new InfoBuffer;
 
-  m_time_warp.setRange(1.0, 1.0);
-  m_delay_start.setRange(0, 0);
-  m_delay_reset.setRange(0, 0);
+  m_uts_time_warp.setParam("min", 1.0);
+  m_uts_time_warp.setParam("max", 1.0);
+  m_uts_time_warp.reset();
+
+  m_delay_start.setParam("min", 0);
+  m_delay_start.setParam("max", 0);
+
+  m_delay_reset.setParam("min", 0);
+  m_delay_reset.setParam("max", 0);
 
   seedRandom();
 }
@@ -85,8 +89,9 @@ TS_MOOSApp::TS_MOOSApp()
 
 bool TS_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 {
+  AppCastingMOOSApp::OnNewMail(NewMail);
+
   MOOSMSG_LIST::iterator p;
-	
   for(p=NewMail.begin(); p!=NewMail.end(); p++) {
     CMOOSMsg &msg = *p;
 	
@@ -121,7 +126,7 @@ bool TS_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
       else if(pause_val == "toggle")
 	m_paused = !m_paused;
     }
-    else
+    else 
       updateInfoBuffer(msg);
   }
 
@@ -133,6 +138,8 @@ bool TS_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 
 bool TS_MOOSApp::Iterate()
 {
+  AppCastingMOOSApp::Iterate();
+
   // By default we declare that a posting of the status message is not
   // needed - until either an event occurs, elapsed time or state chng.
   m_status_needed = false;
@@ -144,8 +151,8 @@ bool TS_MOOSApp::Iterate()
   // otherwise the reset is not perform.
   // (b) if upon_awake==restart, then the script is simply restarted.
   bool new_conditions_ok = m_conditions_ok;
-  if(!m_atomic || (m_posted_count == 0) || 
-     (m_pairs.size() == m_posted_count))
+  if(!m_atomic || (m_posted_count_local == 0) || 
+     (m_pairs.size() == m_posted_count_local))
     new_conditions_ok = checkConditions();
 
   if(new_conditions_ok && !m_conditions_ok) { // Possible awakening
@@ -161,31 +168,32 @@ bool TS_MOOSApp::Iterate()
   // Now apply the results of the new conditions state
   m_conditions_ok = new_conditions_ok;
 
-  m_utc_time = MOOSTime();
-  if(m_start_time == 0) {
-    m_start_time = m_utc_time;
+  if(m_script_start_time == 0) {
+    m_script_start_time = m_curr_time;
     scheduleEvents(m_shuffle);
   }
 
   if(m_paused || !m_conditions_ok) {
     double delta_time = 0;
     if(m_previous_time != -1)
-      delta_time = m_utc_time - m_previous_time;
+      delta_time = m_curr_time - m_previous_time;
     m_pause_time += delta_time;
   }
 
   // Make sure these four steps are done *before* any resets.
-  m_previous_time = m_utc_time;
-  m_elapsed_time = (m_utc_time - m_start_time) + m_skip_time - m_pause_time;
-  m_elapsed_time *= m_time_warp.getValue();
-  if((m_status_tstamp == 0) || ((m_utc_time - m_status_tstamp) > 5))
+  m_previous_time = m_curr_time;
+  m_elapsed_time = (m_curr_time - m_script_start_time) + m_skip_time - m_pause_time;
+  m_elapsed_time *= m_uts_time_warp.getValue();
+  if((m_status_tstamp == 0) || ((m_curr_time - m_status_tstamp) > 5))
     m_status_needed = true;
   
-  bool all_posted = checkForReadyPostings();
+  bool all_posted = false;
+  if(m_conditions_ok) 
+    all_posted = checkForReadyPostings();
 
   // Do the reset only if all events are posted AND the reset_time is 
   // set to zero reset indicating desired after all postings complete.
-  if((all_posted) && (m_reset_time ==0))
+  if(all_posted && (m_reset_time ==0))
     handleReset();
 
   // The below check for reset (based on purely elapsed time) is done
@@ -196,13 +204,10 @@ bool TS_MOOSApp::Iterate()
   if((m_reset_time > 0) && (m_elapsed_time >= m_reset_time))
     handleReset();
 
-  m_iterations++;
-  m_iter_char++;
-  if(m_iter_char > 122)
-    m_iter_char -= 26;
-
   if(m_status_needed) 
     postStatus();
+
+  AppCastingMOOSApp::PostReport();
   return(true);
 }
 
@@ -211,138 +216,165 @@ bool TS_MOOSApp::Iterate()
 
 bool TS_MOOSApp::OnConnectToServer()
 {
-  // register for variables here
-  // possibly look at the mission file?
-  // m_MissionReader.GetConfigurationParam("Name", <string>);
-  // m_Comms.Register("VARNAME", is_float(int));
-  RegisterVariables();  
-
+  registerVariables();  
   return(true);
 }
-
 
 //---------------------------------------------------------
 // Procedure: OnStartUp()
 
 bool TS_MOOSApp::OnStartUp()
 {
-  CMOOSApp::OnStartUp();
-  MOOSTrace("uTimerScript starting....\n");
+  AppCastingMOOSApp::OnStartUp();
 
   list<string> sParams;
   m_MissionReader.EnableVerbatimQuoting(false);
-  if(m_MissionReader.GetConfiguration(GetAppName(), sParams)) {
-    list<string>::reverse_iterator p;
-    for(p=sParams.rbegin(); p!=sParams.rend(); p++) {
-      string line  = stripBlankEnds(*p);
-      string param = tolower(stripBlankEnds(biteString(line, '=')));
-      string value = stripBlankEnds(line);
+  if(!m_MissionReader.GetConfiguration(GetAppName(), sParams)) 
+    reportConfigWarning("No config block found for " + GetAppName());
 
-      if(param == "event")
-	addNewEvent(value);
-      else if(param == "paused")
-	setBooleanOnString(m_paused, value);
-      else if(param == "script_atomic")
-	setBooleanOnString(m_atomic, value);
-      else if(param == "verbose")
-	setBooleanOnString(m_verbose, value);
-      else if(param == "shuffle")
-	setBooleanOnString(m_shuffle, value);
-      else if(param == "upon_awake") {
-	string lvalue = tolower(value);
-	if((lvalue=="reset") || (lvalue=="restart") || (lvalue =="n/a"))
-	  m_upon_awake = lvalue;
+  list<string>::reverse_iterator p;
+  for(p=sParams.rbegin(); p!=sParams.rend(); p++) {
+    string original_line = *p;
+    string line  = stripBlankEnds(*p);
+    string param = tolower(biteStringX(line, '='));
+    string value = line;
+    
+    if(param == "event")
+      addNewEvent(value);
+    else if(param == "paused") {
+      if(!setBooleanOnString(m_paused, value))
+	reportConfigWarning("Invalid paused parameter: " + value);
+    }
+    else if(param == "script_atomic") {
+      if(!setBooleanOnString(m_atomic, value))
+	reportConfigWarning("Invalid script_atomic parameter: " + value);
+    }
+    else if(param == "verbose") {
+      if(!setBooleanOnString(m_verbose, value))
+	reportConfigWarning("Invalid verbose parameter: " + value);
+    }	  
+    else if(param == "shuffle") {
+      if(!setBooleanOnString(m_shuffle, value))
+	reportConfigWarning("Invalid shuffle parameter:" + value);
+    }	  
+    else if(param == "upon_awake") {
+      string lvalue = tolower(value);
+      if((lvalue=="reset") || (lvalue=="restart") || (lvalue =="n/a"))
+	m_upon_awake = lvalue;
+      else
+	reportConfigWarning("Invalid upon_awake parameter value: " + value);
+    }
+    else if(param == "reset_max") {
+      string str = tolower(value);
+      if((str == "any") || (str == "unlimited") || (str == "nolimit"))
+	m_reset_forever = true;
+      else if(isNumber(value) && (atoi(value.c_str()) >= 0)) {
+	m_reset_max = atoi(value.c_str());
+	m_reset_forever = false;
       }
-      else if(param == "reset_max") {
-	string str = tolower(value);
-	if((str == "any") || (str == "unlimited") || (str == "nolimit"))
-	  m_reset_forever = true;
-	else if(isNumber(value) && (atoi(value.c_str()) >= 0)) {
-	  m_reset_max = atoi(value.c_str());
-	  m_reset_forever = false;
-	}
-      }
-      else if(param == "reset_time") {
-	string str = tolower(value);
-	if((str == "end") || (str == "all-posted"))
-	  m_reset_time = 0;
-	else if(str == "none")  // Default
-	  m_reset_time = -1;
-	else if(isNumber(value) && (atof(value.c_str()) > 0))
-	  m_reset_time = atof(value.c_str());
-      }
-      else if(param == "script_name")
-	m_script_name = value;
-      else if((param == "forward_var") || (param == "forward_variable")) {
-	if(!strContainsWhite(value))
-	  m_var_forward = value;
-      }
-      else if((param == "reset_var") || (param == "reset_variable")) {
-	if(!strContainsWhite(value))
-	  m_var_reset = value;
-      }
-      else if((param == "pause_var") || (param == "pause_variable")) {
-	if(!strContainsWhite(value))
-	  m_var_pause = value;
-      }
-      else if(param == "status_var") {
-	if(!strContainsWhite(value))
-	  m_var_status = value;
-      }
-      else if(param == "time_warp") {
-	string left  = stripBlankEnds(biteString(value, ':'));
-	string right = stripBlankEnds(value);
-	double lval  = atof(left.c_str());
-	double rval  = atof(right.c_str());
-	if(right == "")
-	  rval = lval;
-	if((lval > 0) && (lval <= rval))
-	  m_time_warp.setRange(lval, rval);
-      }
-      else if(param == "delay_start") {
-	string left  = stripBlankEnds(biteString(value, ':'));
-	string right = stripBlankEnds(value);
-	if(right == "")
-	  right = left;
-	double lval  = atof(left.c_str());
-	double rval  = atof(right.c_str());
-	if(isNumber(left) && isNumber(right) && (lval >= 0) && (lval <= rval))
-	  m_delay_start.setRange(lval, rval);
-      }
-      else if(param == "delay_reset") {
-	string left  = stripBlankEnds(biteString(value, ':'));
-	string right = stripBlankEnds(value);
-	if(right == "")
-	  right = left;
-	double lval  = atof(left.c_str());
-	double rval  = atof(right.c_str());
-	if(isNumber(left) && isNumber(right) && (lval >= 0) && (lval <= rval))
-	  m_delay_reset.setRange(lval, rval);
-      }
-      else if((param == "rand_var") || (param == "randvar")) {
-	string result = m_rand_vars.addRandomVar(value);
-	if(result != "") {
-	  cout << termColor("red");
-	  cout << "Problem configuring random variable: " << endl;
-	  cout << "  " << value << endl;
-	  cout << "  " << result << endl;
-	  cout << termColor() << endl;
-	}
-      }
-      else if(param == "condition") {
-	LogicCondition new_condition;
-	bool ok = new_condition.setCondition(value);
-	if(ok)
-	  m_logic_conditions.push_back(new_condition);
-	m_conditions_ok = false; // Assume false until shown otherwise
-      }
-      else {
-	if((param != "apptick") && (param != "commstick")) {
-	  cout << termColor("red") << "Unrecognized Parameter: ";
-	  cout << param << termColor() << endl;
-	}
+      else
+	reportConfigWarning("Invalid reset_max parameter value: " + value);
+    }
+    else if(param == "reset_time") {
+      string str = tolower(value);
+      if((str == "end") || (str == "all-posted"))
+	m_reset_time = 0;
+      else if(str == "none")  // Default
+	m_reset_time = -1;
+      else if(isNumber(value) && (atof(value.c_str()) > 0))
+	m_reset_time = atof(value.c_str());
+      else
+	reportConfigWarning("Invalid reset_time parameter value: " + value);
+    }
+    else if(param == "script_name")
+      m_script_name = value;
+    else if((param == "forward_var") || (param == "forward_variable")) {
+      if(!strContainsWhite(value))
+	m_var_forward = value;
+      else
+	reportConfigWarning("The forward_var parameter given var with whitespace");
+    }
+    else if((param == "reset_var") || (param == "reset_variable")) {
+      if(!strContainsWhite(value))
+	m_var_reset = value;
+	else
+	  reportConfigWarning("The reset_var parameter given var with whitespace");
+    }
+    else if((param == "pause_var") || (param == "pause_variable")) {
+      if(!strContainsWhite(value))
+	m_var_pause = value;
+      else
+	reportConfigWarning("The pause_var parameter given var with whitespace");
+    }
+    else if(param == "status_var") {
+      if(!strContainsWhite(value))
+	m_var_status = value;
+      else
+	reportConfigWarning("The status_var parameter given var with whitespace");
+    }
+    else if(param == "time_warp") {
+      string orig  = value;
+      string left  = biteStringX(value, ':');
+      string right = value;
+      if(!isNumber(left) || ((right != "") && !isNumber(right)))
+	reportConfigWarning("Invalid time_warp provided:" + orig);
+      double lval  = atof(left.c_str());
+      double rval  = atof(right.c_str());
+      if(right == "")
+	rval = lval;
+      if((lval > 0) && (lval <= rval)) {
+	m_uts_time_warp.setParam("min", lval);
+	m_uts_time_warp.setParam("max", rval);
       }
     }
+    else if(param == "delay_start") {
+      string orig  = value;
+      string left  = biteStringX(value, ':');
+      string right = value;
+      if(!isNumber(left) || ((right != "") && !isNumber(right)))
+	reportConfigWarning("Invalid delay_start provided: " + orig);
+      double lval  = atof(left.c_str());
+      double rval  = atof(right.c_str());
+      if(right == "")
+	right = left;
+      if(isNumber(left) && isNumber(right) && (lval >= 0) && (lval <= rval)) {
+	m_delay_start.setParam("min", lval);
+	m_delay_start.setParam("max", rval);
+      }
+    }
+    else if(param == "delay_reset") {
+      string orig  = value;
+      string left  = biteString(value, ':');
+      string right = value;
+      if(!isNumber(left) || ((right != "") && !isNumber(right)))
+	reportConfigWarning("Invalid delay_start provided:" + orig);
+      double lval  = atof(left.c_str());
+      double rval  = atof(right.c_str());
+      if(right == "")
+	right = left;
+      if(isNumber(left) && isNumber(right) && (lval >= 0) && (lval <= rval)) {
+	m_delay_reset.setParam("min", lval);
+	m_delay_reset.setParam("max", rval);
+      }
+    }
+    else if((param == "rand_var") || (param == "randvar")) {
+      string result = m_rand_vars.addRandomVar(value);
+      if(result != "") {
+	string msg = "Rand variable problem: " + value + ":" + result;
+	reportConfigWarning(msg);
+      }
+    }
+    else if(param == "condition") {
+      LogicCondition new_condition;
+      bool ok = new_condition.setCondition(value);
+      if(ok)
+	m_logic_conditions.push_back(new_condition);
+      else
+	reportConfigWarning("Invalid logic condition: " + value);
+      m_conditions_ok = false; // Assume false until shown otherwise
+    }
+    else 
+      reportUnhandledConfigWarning(original_line);
   }
   
   if(m_verbose) {
@@ -361,7 +393,7 @@ bool TS_MOOSApp::OnStartUp()
   m_rand_vars.reset("at_reset");
   m_rand_vars.reset("at_post");
 
-  RegisterVariables();
+  registerVariables();
   if(m_verbose)
     printRawScript();
 
@@ -371,8 +403,10 @@ bool TS_MOOSApp::OnStartUp()
 //------------------------------------------------------------
 // Procedure: RegisterVariables
 
-void TS_MOOSApp::RegisterVariables()
+void TS_MOOSApp::registerVariables()
 {
+  AppCastingMOOSApp::RegisterVariables();
+
   m_Comms.Register(m_var_forward, 0);
   m_Comms.Register(m_var_pause, 0);
   m_Comms.Register(m_var_reset, 0);
@@ -398,7 +432,7 @@ void TS_MOOSApp::RegisterVariables()
 // Procedure: addNewEvent()
 // EVENT = var=FOOBAR, val=true, time=45.0
 
-bool TS_MOOSApp::addNewEvent(string event_str)
+void TS_MOOSApp::addNewEvent(const string& event_str)
 {
   string new_var;
   string new_val;
@@ -408,15 +442,18 @@ bool TS_MOOSApp::addNewEvent(string event_str)
   vector<string> svector = parseStringQ(event_str, ',');
   unsigned int i, vsize = svector.size();
   for(i=0; i<vsize; i++) {
-    string param = tolower(stripBlankEnds(biteString(svector[i], '=')));
-    string value = stripBlankEnds(svector[i]);
-    if(param == "var")
+    string param = tolower(biteStringX(svector[i], '='));
+    string value = svector[i];
+    if(param == "var") {
       new_var = value;
+      if(strContainsWhite(value))
+	reportConfigWarning("Event variable has white-space: " + value);
+    }
     else if(param == "val") {
       string idx_string = uintToString(m_pairs.size());
       idx_string = padString(idx_string, 3);
       idx_string = findReplace(idx_string, ' ', '0');
-      value = findReplace(value, "$$IDX", idx_string);
+      value = findReplace(value, "$$IDX",  idx_string);
       value = findReplace(value, "$(IDX)", idx_string);
       value = findReplace(value, "$[IDX]", idx_string);
       new_val = value;
@@ -428,22 +465,40 @@ bool TS_MOOSApp::addNewEvent(string event_str)
 	  new_ptime_min = dval;
 	  new_ptime_max = dval;
 	}
+	else
+	  reportConfigWarning("Event timestamp is non-zero: " + value);
       }
       else if(strContains(value, ':')) {
-	string left   = stripBlankEnds(biteString(value, ':'));
-	string right  = stripBlankEnds(value);
+	string origv  = value;
+	string left   = biteStringX(value, ':');
+	string right  = value;
 	double dleft  = atof(left.c_str());
 	double dright = atof(right.c_str());
 	if(isNumber(left) && isNumber(right) && (dleft <= dright)) {
 	  new_ptime_min = dleft;
 	  new_ptime_max = dright;
 	}
+	else
+	  reportConfigWarning("Invalid event time-interval: " + origv);
       }
     }
+    else
+      reportConfigWarning("Unknown param in event config: " + param);
+
   }
   
-  if((new_var=="") || (new_val=="") || (new_ptime_min == -1))
-    return(false);
+  if(new_var=="") {
+    reportConfigWarning("Event configured with NULL posting variable");
+    return;
+  }
+  if(new_val=="") {
+    reportConfigWarning("Event configured with NULL posting value");
+    return;
+  }
+  if(new_ptime_min==-1) {
+    reportConfigWarning("Event configured with missing time or time-interval");
+    return;
+  }
 
   VarDataPair new_pair(new_var, new_val, "auto");
   m_pairs.push_back(new_pair);
@@ -451,8 +506,6 @@ bool TS_MOOSApp::addNewEvent(string event_str)
   m_ptime_min.push_back(new_ptime_min);
   m_ptime_max.push_back(new_ptime_max);
   m_poked.push_back(false);
-
-  return(true);
 }
 
 //------------------------------------------------------------
@@ -466,14 +519,11 @@ bool TS_MOOSApp::addNewEvent(string event_str)
 
 void TS_MOOSApp::scheduleEvents(bool shuffle_requested)
 {
-  // Part (1): Post an updated header if in verbose mode.
-  if(m_verbose) {
-    cout << termColor("magenta");
-    cout << "Script (Re)Initialized. Time Warp=" << m_time_warp.getValue();
-    cout << "  DelayStart=" << m_delay_start.getValue();
-    cout << "  DelayReset=" << m_delay_reset.getValue();
-    cout << termColor() << endl;
-  }
+  string msg = "Script (Re)Init. ";
+  msg += "Warp=" + doubleToStringX(m_uts_time_warp.getValue());
+  msg += ", DelayStart=" + doubleToString(m_delay_start.getValue(),1);
+  msg += ", DelayReset=" + doubleToString(m_delay_reset.getValue(),1);
+  reportEvent(msg);
   
   // Part (2): Determine if there are events that do not yet have timestamps.
   bool unscheduled_events = false;
@@ -493,14 +543,16 @@ void TS_MOOSApp::scheduleEvents(bool shuffle_requested)
   }
 
   // Part (4): Re-set all state variables to initial values. 
-  m_time_warp.reset();
+  m_uts_time_warp.reset();
+  m_delay_start.reset();
+  m_delay_reset.reset();
   m_rand_vars.reset("at_reset");
   m_rand_vars.reset("at_post");
   m_elapsed_time  = 0;
   m_previous_time = -1;
   m_skip_time     = 0;
   m_pause_time    = 0;
-  m_posted_count  = 0;
+  m_posted_count_local = 0;
 
   // Mark all the posts as being unposted
   unsigned int j, psize=m_poked.size();
@@ -558,8 +610,8 @@ bool TS_MOOSApp::checkForReadyPostings()
       m_status_needed = true;
       
       // If just now poked, note it, so it won't be poked again
-      m_posted_count++;
-      m_posted_tcount++;
+      m_posted_count_local++;
+      m_posted_count_total++;
       m_poked[i] = true;
     }
     all_poked = all_poked && m_poked[i];
@@ -579,7 +631,6 @@ void TS_MOOSApp::executePosting(VarDataPair pair)
   string variable = pair.get_var();
 
   if(!pair.is_string()) {
-    printPosting(variable, pair.get_ddata(), db_uptime);
     m_Comms.Notify(variable, pair.get_ddata());
     return;
   }
@@ -587,41 +638,37 @@ void TS_MOOSApp::executePosting(VarDataPair pair)
   string sval = pair.get_sdata();
   // Handle special case where MOOSDB_UPTIME *is* the post
   if((sval == "$(DBTIME)") || (sval == "$[DBTIME]")) {
-    printPosting(variable, db_uptime, db_uptime);
     m_Comms.Notify(variable, db_uptime);
     return;
   }
 
   // Handle special case where UTC_TIME *is* the post
   if((sval == "$(UTCTIME)") || (sval == "$[UTCTIME]")) {
-    printPosting(variable, db_uptime, db_uptime);
     m_Comms.Notify(variable, db_uptime);
     return;
   }
 
   // Handle special case where COUNT *is* the post
   else if((sval == "$(COUNT)") || (sval == "$[COUNT]")) {
-    printPosting(variable, m_posted_count, db_uptime);
-    m_Comms.Notify(variable, m_posted_count);
+    m_Comms.Notify(variable, m_posted_count_local);
     return;
   }
   
   // Handle special case where COUNT *is* the post
   else if((sval == "$(TCOUNT)") || (sval == "$[TCOUNT]")) {
-    printPosting(variable, m_posted_tcount, db_uptime);
-    m_Comms.Notify(variable, m_posted_tcount);
+    m_Comms.Notify(variable, m_posted_count_total);
     return;
   }
   
   sval = findReplace(sval, "$(DBTIME)", doubleToString(db_uptime, 2));
-  sval = findReplace(sval, "$(UTCTIME)", doubleToString(m_utc_time, 2));
-  sval = findReplace(sval, "$(TCOUNT)", uintToString(m_posted_tcount));
-  sval = findReplace(sval, "$(COUNT)", uintToString(m_posted_count));
+  sval = findReplace(sval, "$(UTCTIME)", doubleToString(m_curr_time, 2));
+  sval = findReplace(sval, "$(TCOUNT)", uintToString(m_posted_count_total));
+  sval = findReplace(sval, "$(COUNT)", uintToString(m_posted_count_local));
  
   sval = findReplace(sval, "$[DBTIME]", doubleToString(db_uptime, 2));
-  sval = findReplace(sval, "$[UTCTIME]", doubleToString(m_utc_time, 2));
-  sval = findReplace(sval, "$[TCOUNT]", uintToString(m_posted_tcount));
-  sval = findReplace(sval, "$[COUNT]", uintToString(m_posted_count));
+  sval = findReplace(sval, "$[UTCTIME]", doubleToString(m_curr_time, 2));
+  sval = findReplace(sval, "$[TCOUNT]", uintToString(m_posted_count_total));
+  sval = findReplace(sval, "$[COUNT]", uintToString(m_posted_count_local));
 
   sval = findReplace(sval, "$(1)", randomNumString(1));
   sval = findReplace(sval, "$(2)", randomNumString(2));
@@ -665,43 +712,40 @@ void TS_MOOSApp::executePosting(VarDataPair pair)
 
   if(isNumber(sval) && !pair.is_quoted()) {
     double dval = atof(sval.c_str());
-    printPosting(variable, dval, db_uptime);
     m_Comms.Notify(variable, dval);
   }
-  else {
-    printPosting(variable, sval, db_uptime);
+  else
     m_Comms.Notify(variable, sval);
-  }
+
+  addLogEvent(variable, sval, db_uptime);
 }
 
 //----------------------------------------------------------------
-// Procedure: printPosting()
+// Procedure: addLogEvent
+//
+// P/Tot  P/Loc  T/Total   T/Local   Variable/Var
+// -----  -----  --------  -------   ------------
+// 2231   12     21175.31  18.89     BRS_RANGE_REQUEST   name=hotel
 
-void TS_MOOSApp::printPosting(string var, string sval, double db_uptime)
+
+void TS_MOOSApp::addLogEvent(string var, string sval, double db_uptime)
 {
-  if(m_verbose) {
-    cout << termColor("green");
-    cout << "[" << m_iter_char << "/" << db_uptime << "]";
-    cout << termColor("blue");
-    cout << "[" << m_elapsed_time << "]: ";
-    cout << var << " = " << sval << endl;
-    cout << termColor();
-  }
-}
+  unsigned int colpad = 2;
 
-//----------------------------------------------------------------
-// Procedure: printPosting()
+  string postt  = uintToString(m_posted_count_total);
+  string postl  = uintToString(m_posted_count_local);
+  string timet  = doubleToString(db_uptime,2);
+  string timel  = doubleToString(m_elapsed_time,2);
+  string varval = var + " = " + sval;
 
-void TS_MOOSApp::printPosting(string var, double dval, double db_uptime)
-{
-  if(m_verbose) {
-    cout << termColor("green");
-    cout << "[" << m_iter_char << "/" << db_uptime << "]";
-    cout << termColor("blue");
-    cout << "[" << m_elapsed_time << "]: ";
-    cout << var << " = " << dval << endl;
-    cout << termColor();
-  }
+  postt = padString(postt, 5+colpad, false);
+  postl = padString(postl, 5+colpad, false);
+  timet = padString(timet, 8+colpad, false);
+  timel = padString(timel, 7+colpad, false);
+  
+  m_event_log.push_back(postt + postl + timet + timel + varval);
+  if(m_event_log.size() > 8)
+    m_event_log.pop_front();
 }
 
 //----------------------------------------------------------------
@@ -746,9 +790,9 @@ void TS_MOOSApp::handleReset()
   // A reset should trigger an immediate status message publication
   m_status_needed = true;
 
-  // The key indicator for a script-reset is setting m_start_time to
-  // zero. The real work or resetting is done elsewhere.
-  m_start_time = 0;
+  // The key indicator for a script-reset is setting m_script_start_time 
+  // to zero. The real work or resetting is done elsewhere.
+  m_script_start_time = 0;
 }
   
 //----------------------------------------------------------------
@@ -762,9 +806,9 @@ void TS_MOOSApp::handleRestart()
   // A reset should trigger an immediate status message publication
   m_status_needed = true;
 
-  // The key indicator for a script-reset is setting m_start_time to
-  // zero. The real work or resetting is done elsewhere.
-  m_start_time = 0;
+  // The key indicator for a script-reset is setting m_script_start_time
+  // to zero. The real work or resetting is done elsewhere.
+  m_script_start_time = 0;
 }
   
   
@@ -778,15 +822,15 @@ void TS_MOOSApp::postStatus()
 
   string status = "name=" + m_script_name;
   status += ", elapsed_time=" + doubleToString(m_elapsed_time,2);
-  status += ", posted=" + uintToString(m_posted_count);
+  status += ", posted=" + uintToString(m_posted_count_local);
   
-  int pending = (m_pairs.size() - m_posted_count);
+  int pending = (m_pairs.size() - m_posted_count_local);
   status += ", pending=" + uintToString(pending);
 
   status += ", paused=" + boolToString(m_paused);
   status += ", conditions_ok=" + boolToString(m_conditions_ok);
   status += ", time_warp=";
-  status += doubleToStringX(m_time_warp.getValue());
+  status += doubleToStringX(m_uts_time_warp.getValue());
   status += ", delay_start=";
   status += doubleToStringX(m_delay_start.getValue());
   status += ", delay_reset=";
@@ -800,7 +844,7 @@ void TS_MOOSApp::postStatus()
   status += ", resets=" + uintToString(m_reset_count) + maxresets;
   
   m_Comms.Notify(m_var_status, status);
-  m_status_tstamp = m_utc_time;
+  m_status_tstamp = m_curr_time;
 }
   
   
@@ -827,10 +871,10 @@ bool TS_MOOSApp::updateInfoBuffer(CMOOSMsg &msg)
   string sdata = msg.GetString();
   double ddata = msg.GetDouble();
 
-  if(msg.IsDataType(MOOS_DOUBLE)) {
+  if(msg.IsDouble()) {
     return(m_info_buffer->setValue(key, ddata));
   }
-  else if(msg.IsDataType(MOOS_STRING)) {
+  else if(msg.IsString()) {
     return(m_info_buffer->setValue(key, sdata));
   }
   return(false);
@@ -992,20 +1036,20 @@ bool TS_MOOSApp::handleMathExpr(string& str)
   // Part 6: Get the left and right components
   string left, right;
   if(xtype == '*') {
-    left = stripBlankEnds(biteString(expression, '*'));
-    right = stripBlankEnds(expression);
+    left  = biteStringX(expression, '*');
+    right = expression;
   }
   else if(xtype == '/') {
-    left = stripBlankEnds(biteString(expression, '/'));
-    right = stripBlankEnds(expression);
+    left  = biteStringX(expression, '/');
+    right = expression;
   }
   else if(xtype == '+') {
-    left = stripBlankEnds(biteString(expression, '+'));
-    right = stripBlankEnds(expression);
+    left  = biteStringX(expression, '+');
+    right = expression;
   }
   else if(xtype == '-') {
-    left = stripBlankEnds(biteString(expression, '-'));
-    right = stripBlankEnds(expression);
+    left  = biteStringX(expression, '-');
+    right = expression;
   }
   if(!isNumber(left) || !isNumber(right))
     return(false);
@@ -1028,6 +1072,107 @@ bool TS_MOOSApp::handleMathExpr(string& str)
   
   string target = str.substr(max_lix, (max_rix-max_lix)+1);
   str = findReplace(str, target, replacement);
+
+  return(true);
+}
+
+
+//----------------------------------------------------------------
+// Procedure: buildReport()
+//      Note: A virtual function of the AppCastingMOOSApp superclass, 
+//            conditionally invoked if either a terminal or appcast 
+//            report is needed.
+// 
+// ===============================================================
+// uTimerScript_Current shoreside                        3/0 (183)
+// ===============================================================
+// Configuration Warnings: 3
+//  [1 of 3]: Invalid reset_time parameter value: endd
+//  [2 of 3]: Invalid delay_start provided:a30
+//  [3 of 3]: Unhandled param: foo
+// 
+// Current Script Information: 
+//    Elements: 10(11)
+//     Reinits: 0
+//   Time Warp: 1.63 [0.2,2]
+// Delay Start: 0
+// Delay Reset: 49.2 [10,60]
+//            
+// RandomVar     Type      Min     Max     Parameters  
+// -----------   --------  ------  ------  ------------
+// ANG           uniform   0       359     
+// MAG           uniform   1.5     3.5     
+// 
+// P/Tot  P/Loc  T/Total   T/Local  Variable/Var 
+// -----  -----  --------  -------  ------------ 
+// 2      2      60.80     4.09     USM_FORCE_VECTOR_ADD = 250,0.6
+// 3      3      62.30     6.54     USM_FORCE_VECTOR_ADD = 250,0.6
+// 4      4      63.31     8.17     USM_FORCE_VECTOR_ADD = 250,0.6
+// 5      5      64.81     10.61    USM_FORCE_VECTOR_ADD = 250,-0.6
+// 
+// Recent Events (1):
+// [0.01]: Script (Re)Init. Warp=1, DelayStart=0.0, DelayReset=0.0
+
+bool TS_MOOSApp::buildReport()
+{
+  string step = uintToString(m_posted_count_local+1);
+
+  // Part 1: Overall information
+  string s_uts_time_warp = doubleToStringX(m_uts_time_warp.getValue(),2);
+  if(m_uts_time_warp.getMinVal() != m_uts_time_warp.getMaxVal()) {
+    s_uts_time_warp += " [" + doubleToStringX(m_uts_time_warp.getMinVal(),1);
+    s_uts_time_warp += "," + doubleToStringX(m_uts_time_warp.getMaxVal(),1) + "]";
+  }
+
+  string s_delay_reset = doubleToStringX(m_delay_reset.getValue(),2);
+  if(m_delay_reset.getMinVal() != m_delay_reset.getMaxVal()) {
+    s_delay_reset += " [" + doubleToStringX(m_delay_reset.getMinVal(),1);
+    s_delay_reset += "," + doubleToStringX(m_delay_reset.getMaxVal(),1) + "]";
+  }
+
+  string s_delay_start = doubleToStringX(m_delay_start.getValue(),2);
+  if(m_delay_start.getMinVal() != m_delay_start.getMaxVal()) {
+    s_delay_start += " [" + doubleToStringX(m_delay_start.getMinVal(),1);
+    s_delay_start += "," + doubleToStringX(m_delay_start.getMaxVal(),1) + "]";
+  }
+
+  m_msgs << "Current Script Information: \n";
+  m_msgs << "    Elements: " << m_pairs.size() << "(" << step << ")" << endl;
+  m_msgs << "     Reinits: " << m_reset_count                  << endl;
+  m_msgs << "   Time Warp: " << s_uts_time_warp                << endl;
+  m_msgs << " Delay Start: " << s_delay_start                  << endl;
+  m_msgs << " Delay Reset: " << s_delay_reset                  << endl;
+  m_msgs << "      Paused: " << boolToString(m_paused)         << endl;
+  m_msgs << "ConditionsOK: " << boolToString(m_conditions_ok)  << endl << endl;
+
+  // Part 2: Random Variable information
+  ACTable actab(5,2); // 5 columns, 2 space separators
+  actab << "RandomVar | Type | Min | Max | Parameters \n";
+  actab.addHeaderLines();
+
+  unsigned int i, vsize = m_rand_vars.size();
+  if(vsize == 0)
+    actab << "None";
+  else{
+    for(i=0; i<vsize; i++) {
+      string rvar_name = m_rand_vars.getVarName(i);
+      string rvar_type = m_rand_vars.getType(i);
+      string rvar_min  = doubleToStringX(m_rand_vars.getMinVal(i),6);
+      string rvar_max  = doubleToStringX(m_rand_vars.getMaxVal(i),6);
+      string rvar_pars = m_rand_vars.getParams(i);
+      actab << rvar_name << rvar_type << rvar_min << rvar_max << rvar_pars;
+    }
+  }
+  m_msgs << actab.getFormattedString() << endl;
+  
+  // Part 3: Event Posting Information
+  m_msgs << endl;
+  m_msgs << "P/Tot  P/Loc  T/Total   T/Local  Variable/Var" << endl;
+  m_msgs << "-----  -----  --------  -------  ------------" << endl;
+  
+  list<string>::iterator p;
+  for(p=m_event_log.begin(); p!=m_event_log.end(); p++) 
+    m_msgs << *p << endl;
 
   return(true);
 }

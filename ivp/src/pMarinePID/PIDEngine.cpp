@@ -28,7 +28,7 @@
 #include "PIDEngine.h"
 #include "MBUtils.h"
 #include "AngleUtils.h"
-#include "MOOSGenLib.h"
+#include "MOOS/libMOOS/MOOSLib.h"
 
 using namespace std;
 
@@ -171,6 +171,7 @@ void PIDEngine::setPID(int ix, ScalarPID g_pid)
   else if(ix==3) 
     m_pitch_pid = g_pid;
 }
+
 
 
 

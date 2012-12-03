@@ -24,8 +24,9 @@
 #include "XMS.h"
 #include "MBUtils.h"
 #include "ColorParse.h"
+#include "TermUtils.h"
+#include "ACTable.h"
 
-#define BACKSPACE_ASCII 127
 // number of seconds before checking for new moos vars (in all mode)
 #define ALL_BLACKOUT 2 
 
@@ -37,15 +38,13 @@ extern bool MOOSAPP_OnDisconnect(void*);
 //------------------------------------------------------------
 // Procedure: Constructor
 
-XMS::XMS(string server_host, long int server_port)
+XMS::XMS()
 {    
   m_display_source     = false;
   m_display_aux_source = false;
   m_display_time       = false;
   m_display_community  = false;
   m_display_own_community = true;
-  m_display_help       = false;
-  m_displayed_help     = false;
   
   m_ignore_file_vars   = false;
   
@@ -53,32 +52,24 @@ XMS::XMS(string server_host, long int server_port)
   m_scope_event       = true;
   m_history_event     = true;
   m_refresh_mode      = "events";
-
-
-  m_iterations        = 0;
-  m_term_report_interval = 0.6;   // Terminal report interval seconds
-  m_time_warp         = 1;
-  m_curr_time         = 0;
-  m_last_report_time  = 0;      // Timestamp of last terminal report
+  m_content_mode      = "scoping";
+  m_content_mode_prev = "";
 
   m_trunc_data        = 0;
-  m_trunc_data_start  = 50;
+  m_trunc_data_start  = 20;
   m_display_virgins   = true;
-  m_display_null_strings = true;
   m_db_start_time     = 0;
   
   m_filter            = "";
   m_history_length    = 200;
-  m_history_mode      = false;
-  m_report_histvar    = true;
   
   m_display_all       = false;
   m_last_all_refresh  = 0;
 
-  m_sServerHost       = server_host; 
-  m_lServerPort       = server_port;
-
-  m_configure_comms_locally = false;
+  m_max_proc_name_len  = 12;
+  m_variable_id_srcs   = 0;
+  m_proc_watch_count   = 0;
+  m_proc_watch_summary = "not running";
 }
 
 //------------------------------------------------------------
@@ -88,14 +79,15 @@ XMS::XMS(string server_host, long int server_port)
 
 bool XMS::ConfigureComms()
 {
-  cout << "XMS::ConfigureComms:" << endl;
-  cout << "  m_sServerHost: " << m_sServerHost << endl;
-  cout << "  m_lServErport: " << m_lServerPort << endl;
-
-  if(!m_configure_comms_locally) 
+  if((m_term_server_host == "") || (m_term_server_port == "")) 
     return(CMOOSApp::ConfigureComms());
 
-  //cout << "**Doing things locally. " << endl;
+  long lport = atol(m_term_server_port.c_str());
+  CMOOSApp::SetServer(m_term_server_host.c_str(), lport);
+
+  cout << "XMS::ConfigureComms(): Host/Port Configured Locally:" << endl;
+  cout << "  m_sServerHost: " << m_sServerHost << endl;
+  cout << "  m_lServErport: " << m_lServerPort << endl;
 
   //register a callback for On Connect
   m_Comms.SetOnConnectCallBack(MOOSAPP_OnConnect, this);
@@ -120,8 +112,9 @@ bool XMS::ConfigureComms()
 
 bool XMS::OnNewMail(MOOSMSG_LIST &NewMail)
 {    
-  MOOSMSG_LIST::iterator p;
+  AppCastingMOOSApp::OnNewMail(NewMail);
 
+  MOOSMSG_LIST::iterator p;
   // First, if m_db_start_time is not set, scan the mail for the
   // DB_UPTIME mail from the MOOSDB and set. ONCE.
   if(m_db_start_time == 0) {
@@ -130,7 +123,6 @@ bool XMS::OnNewMail(MOOSMSG_LIST &NewMail)
       if(msg.GetKey() == "DB_UPTIME") {
 	m_db_start_time = MOOSTime() - msg.GetDouble();
 	m_community = msg.GetCommunity();
-	m_Comms.UnRegister("DB_UPTIME");
       }
     }
   }
@@ -143,15 +135,30 @@ bool XMS::OnNewMail(MOOSMSG_LIST &NewMail)
     CMOOSMsg &msg = *p;
     string key = msg.GetKey();
     if((key.length() >= 7) && (key.substr(key.length()-7,7) == "_STATUS")) {
-      if(m_src_map[key] != "") {
-	m_src_map[key] = msg.GetString();
+      if(m_map_src_status.count(key) == 1) {
+	m_map_src_status[key] = msg.GetString();
       }
     }
 
-    updateVariable(msg);
     if((key != "DB_UPTIME") && (key.length() > 7) &&
        (key.substr(key.length()-7, 7) != "_STATUS"))
       m_scope_event = true;
+    
+    else if(key == "PROC_WATCH_SUMMARY") {
+      m_proc_watch_count++;
+      m_proc_watch_summary = msg.GetString();
+    }
+
+    else if(key == "DB_CLIENTS") 
+      updateDBClients(msg.GetString());
+
+    //else if(key == "APPCAST_REQ") 
+    //  m_update_requested = true;
+
+    // A check is made in updateVariable() to ensure the given variable
+    // is indeed on the scope list.
+    updateVariable(msg);
+
   }
   return(true);
 }
@@ -162,9 +169,7 @@ bool XMS::OnNewMail(MOOSMSG_LIST &NewMail)
 
 bool XMS::Iterate()
 {
-  // Part 1: Update the key local state variables.
-  m_iterations++;
-  m_curr_time = MOOSTime();
+  AppCastingMOOSApp::Iterate();
 
   // Part 2: If in the show-all mode, perhaps update new variables
   // Don't want to do this too often. And want to consider the timewarp.
@@ -181,24 +186,15 @@ bool XMS::Iterate()
   }
   
   refreshProcVarsList();
+  
+  string term_directive;
+  if((m_refresh_mode == "paused") || (m_refresh_mode == "streaming"))
+    term_directive = "noterm";
 
-  // Consider how long its been since our last report (regular or history)
-  // Want to report less frequently if using a higher time warp.
-  bool print_report = false;
-  double moos_elapsed_time = m_curr_time - m_last_report_time;
-  double real_elapsed_time = moos_elapsed_time / m_time_warp;
+  if(m_scope_event || m_update_requested)
+    term_directive = "doterm";
 
-  if(real_elapsed_time >= m_term_report_interval) {
-    m_last_report_time = m_curr_time;
-    print_report = true;
-  }
-
-  if(m_display_help)
-    printHelp();
-  else if(m_history_mode && print_report)
-    printHistoryReport();
-  else if(print_report)
-    printReport();
+  AppCastingMOOSApp::PostReport(term_directive);
   return(true);
 }
 
@@ -218,23 +214,25 @@ bool XMS::OnConnectToServer()
 
 bool XMS::OnStartUp()
 {
-  STRING_LIST sParams;
+  AppCastingMOOSApp::OnStartUp();
 
+  STRING_LIST sParams;
   string app_name = m_app_name_noindex;
   if(app_name == "")
     app_name = GetAppName();
 
-  m_MissionReader.GetConfiguration(app_name, sParams);
+  m_MissionReader.EnableVerbatimQuoting(false);
+  if(!m_MissionReader.GetConfiguration(app_name, sParams)) 
+    reportConfigWarning("No config block found for " + app_name);
 
   // Variables shown in the order they appear in the config file
   sParams.reverse();
-  
   STRING_LIST::iterator p;
   for(p = sParams.begin();p!=sParams.end();p++) {
+    string orig  = *p;
     string line  = *p;
-    string param = biteString(line, '=');
-    string value = stripQuotes(stripBlankEnds(line));
-    param = stripBlankEnds(toupper(param));
+    string param = toupper(biteStringX(line, '='));
+    string value = stripQuotes(line);
     
     if(param == "REFRESH_MODE") {
       string str = tolower(value);
@@ -242,22 +240,17 @@ bool XMS::OnStartUp()
 	m_refresh_mode = str;
     }
 
-    else if(param == "CONTENT_MODE") {
-      string str = tolower(value);
-      if(str=="scoping")
-	m_history_mode = false;
-      else if(str=="history")
-	m_history_mode = true;
-    }
+    else if(param == "CONTENT_MODE") 
+      setContentMode(value);
 
     // Depricated PAUSED
     else if(param == "PAUSED") {
       string str = tolower(value);
       if(str == "true")
 	m_refresh_mode = "paused";
-	else
+      else
 	m_refresh_mode = "events";
-  }
+    }
   
     else if(param == "HISTORY_VAR") 
       setHistoryVar(value);
@@ -265,9 +258,14 @@ bool XMS::OnStartUp()
     else if(param == "DISPLAY_VIRGINS")
       m_display_virgins = (tolower(value) == "true");
     
-    else if(param == "DISPLAY_EMPTY_STRINGS")
-      m_display_null_strings = (tolower(value) == "true");
+    else if(param == "TRUNC_DATA") {
+      if(tolower(value) == "true")
+	m_trunc_data = m_trunc_data_start;
+    }
     
+    else if(param == "SOURCE") {
+      addSource(value);
+    }
     else if(param == "DISPLAY_SOURCE")
       m_display_source = (tolower(value) == "true");
     
@@ -277,16 +275,17 @@ bool XMS::OnStartUp()
     else if(param == "DISPLAY_COMMUNITY")
       m_display_community = (tolower(value) == "true");
     
-    else if(param == "DISPLAY_ALL")
-      m_display_all = (tolower(value) == "true");
-    
+    else if(param == "DISPLAY_ALL") {
+      if(!m_ignore_file_vars)
+	m_display_all = (tolower(value) == "true");
+    }    
+
     else if(param == "COLORMAP") {
-      string left  = stripBlankEnds(biteString(value, ','));
-      string right = stripBlankEnds(value); 
-      setColorMapping(left, right);
+      setColorMappingsPairs(value);
+      //string left  = stripBlankEnds(biteString(value, ','));
+      //string right = stripBlankEnds(value); 
+      //setColorMapping(left, right);
     }
-    else if(param == "TERM_REPORT_INTERVAL")
-      return(setTermReportInterval(value));
 
     else if(!(m_ignore_file_vars || m_display_all) && (param == "VAR"))
       addVariables(value);
@@ -310,11 +309,8 @@ void XMS::handleCommand(char c)
 {
   switch(c) {
   case 's':
-    m_display_source = false;
-    m_update_requested = true;
-    break;
   case 'S':
-    m_display_source = true;
+    m_display_source = !m_display_source;
     m_update_requested = true;
     break;
   case 'x':
@@ -323,70 +319,36 @@ void XMS::handleCommand(char c)
     m_update_requested = true;
     break;
   case 't':
-    m_display_time = false;
-    m_update_requested = true;
-    break;
   case 'T':
-    m_display_time = true;
+    m_display_time = !m_display_time;
     m_update_requested = true;
     break;
   case 'v':
-    m_display_virgins = false;
-    m_update_requested  = true;
-    break;
   case 'V':
-    m_display_virgins = true;
+    m_display_virgins = !m_display_virgins;
     m_update_requested = true;
     break;
-  case 'm':
-  case 'M':
-    m_display_own_community = !m_display_own_community;
-    m_update_requested = true;
-    break;
-  case 'n':
-    m_display_null_strings = false;
-    m_update_requested  = true;
-    break;
-  case 'N':
-    m_display_null_strings = true;
+  case 'd':
+  case 'D':
+    setContentMode("scoping", true);
     m_update_requested = true;
     break;
   case 'c':
-    m_display_community = false;
-    m_update_requested = true;
-    break;
   case 'C':
-    m_display_community = true;
+    m_display_community = !m_display_community;
     m_update_requested = true;
     break;
   case 'p':
   case 'P':
-    m_refresh_mode = "paused";
-    m_update_requested = true;
-    break;
-  case 'j':
-    m_report_histvar = false;
-    m_update_requested = true;
-    break;
-  case 'J':
-    m_report_histvar = true;
+    setContentMode("procs", true);
     m_update_requested = true;
     break;
   case 'z':
+  case 'Z':
     if(m_history_var != "") {
       m_update_requested = true;
-      m_history_mode = !m_history_mode;
+      setContentMode("history", true);
     }
-    break;
-  case 'w':
-    if(m_history_var != "") {
-      m_update_requested = true;
-      m_history_mode = true;
-    }
-    break;
-  case 'W':
-    m_update_requested = true;
-    m_history_mode = false;
     break;
   case 'r':
   case 'R':
@@ -432,10 +394,20 @@ void XMS::handleCommand(char c)
     break;
   case 'h':
   case 'H':
-    if(!m_displayed_help)
-      m_display_help = true;
-    else
-      m_update_requested = true;
+    setContentMode("help", true);
+    m_update_requested = true;
+    break;
+  case '-': 
+    m_refresh_mode = "paused";
+    handleSelectMaskSubSources();
+    setContentMode("scoping");
+    m_update_requested = true;
+    break;
+  case '+': 
+    m_refresh_mode = "paused";
+    handleSelectMaskAddSources();
+    setContentMode("scoping");
+    m_update_requested = true;
     break;
   case '`':
     if(m_trunc_data == 0)
@@ -470,15 +442,7 @@ void XMS::handleCommand(char c)
     
     // save the original startup variable configuration
     // there may a more elegant way to do this
-    m_orig_var_names  = m_var_names;
-    m_orig_var_vals   = m_var_vals;
-    m_orig_var_type   = m_var_type;
-    m_orig_var_source = m_var_source;
-    m_orig_var_srcaux = m_var_srcaux;
-    m_orig_var_time   = m_var_time;
-    m_orig_var_community = m_var_community;
-    m_orig_var_community = m_var_color;
-
+    m_map_orig_var_entries = m_map_var_entries;
     break;
     
     // turn show all variables mode off
@@ -488,14 +452,7 @@ void XMS::handleCommand(char c)
       m_update_requested = true;
       
       // restore the variable list at startup
-      m_var_names  = m_orig_var_names;
-      m_var_vals   = m_orig_var_vals;
-      m_var_type   = m_orig_var_type;
-      m_var_source = m_orig_var_source;
-      m_var_srcaux = m_orig_var_srcaux;
-      m_var_time   = m_orig_var_time;
-      m_var_community = m_orig_var_community;
-      m_var_color  = m_orig_var_color;
+      m_map_var_entries = m_map_orig_var_entries;
     }
     
   default:
@@ -534,32 +491,31 @@ bool XMS::addVariable(string varname, bool histvar)
     return(false);
   
   // Handle if this var is a "history" variable
-  if(histvar || (m_var_names.size() == 0)) {
+  if(histvar || (m_map_var_entries.size() == 0)) {
     m_history_var = varname;
     // If currently no variables scoped, hist_mode=true
-    if(m_var_names.size() == 0)
-      m_history_mode = true;
+    if(m_map_var_entries.size() == 0)
+      setContentMode("history");
   }    
-
+  
   // Simply return true if the variable has already been added.
-  unsigned int i, vsize = m_var_names.size();
-  for(i=0; i<vsize; i++)
-    if(m_var_names[i] == varname)
-      return(false);
+  if(m_map_var_entries.count(varname) != 0)
+    return(false);
   
-  m_var_names.push_back(varname);
-  m_var_vals.push_back("n/a");
-  m_var_type.push_back("string");
-  m_var_source.push_back(" n/a");
-  m_var_srcaux.push_back(" n/a");
-  m_var_time.push_back(" n/a");
-  m_var_community.push_back(" n/a");
-  m_var_color.push_back("");
+  ScopeEntry entry;
+  entry.setValue("n/a");
+  entry.setType("string");
+  entry.setSource(" n/a");
+  entry.setSrcAux(" n/a");
+  entry.setTime(" n/a");
+  entry.setCommunity("");
   
+  m_map_var_entries[varname] = entry;
+
   // If not a history variable, then go back to being in scope
   // mode by default.
   if(!histvar)
-    m_history_mode = false;
+    setContentMode("scoping");
 
   return(true);
 }
@@ -570,7 +526,7 @@ bool XMS::addVariable(string varname, bool histvar)
 bool XMS::addSource(string source)
 {
   source = toupper(source) + "_STATUS";
-  m_src_map[source] = "empty";
+  m_map_src_status[source] = "empty";
 
   return(true);
 }
@@ -585,10 +541,67 @@ void XMS::setHistoryVar(string varname)
 
   // If there are currently no variables being scoped, put
   // into the history mode
-  if(m_var_names.size() == 0)
-    m_history_mode = true;
+  if(m_map_var_entries.size() == 0)
+    setContentMode("history");
 
   m_history_var = varname;
+}
+
+//------------------------------------------------------------
+// Procedure: setContentMode
+
+void XMS::setContentMode(string str, bool toggle_on_match)
+{
+  str = tolower(str);
+  if((str != "scoping") && (str != "procs") && 
+     (str != "history") && (str != "help") && (str != "sub-proc"))
+    return;
+
+  m_update_requested = true;
+
+  // Empty string indicates a toggle request
+  if((str == m_content_mode) && toggle_on_match) {
+    string tmp = m_content_mode;
+    m_content_mode = m_content_mode_prev;
+    m_content_mode_prev = tmp;
+    return;
+  }
+  
+  m_content_mode_prev = m_content_mode;
+  m_content_mode = str;
+}
+
+//------------------------------------------------------------
+// Procedure: setRefreshMode
+
+void XMS::setRefreshMode(string str)
+{
+  str = tolower(str);
+  if((str != "events") && (str != "paused") && (str != "streaming"))
+    return;
+  
+  m_refresh_mode = str;
+}
+
+//------------------------------------------------------------
+// Procedure: setDisplayColumns
+//   Example: str = "source,time,aux"
+
+void XMS::setDisplayColumns(string str)
+{
+  vector<string> svector = parseString(str, ',');
+  unsigned int i, vsize = svector.size();
+  for(i=0; i<vsize; i++) {
+    string field = stripBlankEnds(tolower(svector[i]));
+    if(field == "source")
+      setDispSource(true);
+    else if(field == "time")
+      setDispTime(true);
+    else if(field == "community")
+      setDispCommunity(true);
+    else if(field == "aux")
+      setDispAuxSource(true);
+  }  
 }
 
 //------------------------------------------------------------
@@ -615,23 +628,24 @@ void XMS::setFilter(string str)
 //------------------------------------------------------------
 // Procedure: setTruncData
 
-void XMS::setTruncData(double v)
+void XMS::setTruncData(string val)
 {
-  m_trunc_data = vclip(v, 0, 1000);
+  double dval = atoi(val.c_str());
+
+  m_trunc_data = vclip(dval, 10, 1000);
   m_trunc_data_start = m_trunc_data;
 }
 
 //------------------------------------------------------------
 // Procedure: setTermReportInterval
 
-bool XMS::setTermReportInterval(string str)
+void XMS::setTermReportInterval(string str)
 {
   if(!isNumber(str))
-    return(false);
+    return;
 
   m_term_report_interval = atof(str.c_str());
   m_term_report_interval = vclip(m_term_report_interval, 0, 10);
-  return(true);
 }
 
 //------------------------------------------------------------
@@ -660,6 +674,36 @@ void XMS::setColorMapping(string str, string color)
   
   m_color_map[str] = color;
 }
+
+//------------------------------------------------------------
+// Procedure: setColorMappingsAny
+//   Example: str = "pHelmIvP,NAV_X,NAV_Y"
+
+void XMS::setColorMappingsAny(string str)
+{
+  vector<string> svector = parseString(str, ',');
+  unsigned int i, vsize  = svector.size();
+  for(i=0; i<vsize; i++) {
+    string key = stripBlankEnds(svector[i]);
+    setColorMapping(key, "any");
+  }
+}
+
+//------------------------------------------------------------
+// Procedure: setColorMappingsPairs
+//   Example: str = "IVPHELM_SUMMARY,blue,BHV_WARNING,red
+
+void XMS::setColorMappingsPairs(string str)
+{
+  while(str != "") {
+    string vname = biteStringX(str, ',');
+    string color = biteStringX(str, ',');
+    if(color == "")
+      color = "any";
+    setColorMapping(vname, color);
+  }
+}
+
 
 //------------------------------------------------------------
 // Procedure: getColorMapping
@@ -697,13 +741,17 @@ bool XMS::colorTaken(std::string color)
 
 void XMS::registerVariables()
 {
-  unsigned int i, vsize = m_var_names.size();
-  for(i=0; i<vsize; i++)
-    m_Comms.Register(m_var_names[i], 0);
-  
-  map<string, string>::iterator p;
-  for(p=m_src_map.begin(); p!=m_src_map.end(); p++) {
-    string reg_str = p->first;
+  AppCastingMOOSApp::RegisterVariables();
+  map<string,ScopeEntry>::iterator p;
+  for(p=m_map_var_entries.begin(); p!=m_map_var_entries.end(); p++) {
+    string varname = p->first;
+    cout << "Registering for:" << varname << endl;
+    m_Comms.Register(varname, 0);
+  }
+
+  map<string,string>::iterator p2;
+  for(p2=m_map_src_status.begin(); p2!=m_map_src_status.end(); p2++) {
+    string reg_str = p2->first;
     m_Comms.Register(reg_str, 1.0);
   }
 
@@ -711,62 +759,74 @@ void XMS::registerVariables()
     m_Comms.Register(m_history_var, 0);
   
   m_Comms.Register("DB_UPTIME", 0);
+  m_Comms.Register("DB_CLIENTS", 0);
+  m_Comms.Register("PROC_WATCH_SUMMARY", 0);
 }
 
 //------------------------------------------------------------
-// Procedures - Update Functions
+// Procedures: updateVarEntry
+//       Note: Returns true if the value/type/source etc has changed.
 
-void XMS::updateVarVal(string varname, string val)
+bool XMS::updateVarEntry(string varname, const ScopeEntry& new_entry)
 {
-  if(isNumber(val))
-    val = dstringCompact(val);
+  if(m_map_var_entries.count(varname) == 0) {
+    m_map_var_entries[varname] = new_entry;
+    return(true);
+  }
 
-  unsigned int i, vsize = m_var_names.size();
-  for(i=0; i<vsize; i++)
-    if(m_var_names[i] == varname)
-      m_var_vals[i] = val;
+  // Handle the Source information
+  const string& source = new_entry.getSource();
+  m_map_src_update[source] = m_curr_time;
+  updateSourceInfo(source);
+
+  const ScopeEntry& entry = m_map_var_entries[varname];
+  if(entry.isEqual(new_entry)) {
+    //    cout << varname << ": Duplicate entry!!!!" << endl;
+    return(false);
+  }
+
+  m_map_var_entries[varname] = new_entry;
+  return(true);
 }
 
-void XMS::updateVarType(string varname, string vtype)
+//------------------------------------------------------------
+// Procedures: updateSourceInfo
+//   Purposes: Create a new ID for the new source
+//             Update the max string length across sources
+
+//   Fixed IDs    (0)  MOOSDB
+//                (1)  pHelmIvP
+//   Variable IDs (a)  pMarinePID
+// 
+
+void XMS::updateSourceInfo(string new_src)
 {
-  unsigned int i, vsize = m_var_names.size();
-  for(i=0; i<vsize; i++)
-    if(m_var_names[i] == varname)
-      m_var_type[i] = vtype;
+  if(m_map_src_id.count(new_src) != 0)
+    return;
+
+  if(strBegins(new_src, "MOOSDB")) {
+    m_map_id_src["0"] = new_src;
+    m_map_src_id[new_src] = "0";
+  }
+  else if(new_src == "pHelmIvP") {
+    m_map_id_src["1"] = new_src;
+    m_map_src_id[new_src] = "1";
+  }
+  else {
+    char c = 97 + (int)(m_variable_id_srcs);  // 'a' + cnt
+    string id(1,c);
+    m_map_id_src[id] = new_src;
+    m_map_src_id[new_src] = id;
+    m_variable_id_srcs++;
+  }
+
+  if(new_src.length() > m_max_proc_name_len)
+    m_max_proc_name_len = new_src.length();
 }
 
-void XMS::updateVarSource(string varname, string vsource)
-{
-  unsigned int i, vsize = m_var_names.size();
-  for(i=0; i<vsize; i++)
-    if(m_var_names[i] == varname)
-      m_var_source[i] = vsource;
-}
-
-void XMS::updateVarSourceAux(string varname, string vsource_aux)
-{
-  unsigned int i, vsize = m_var_names.size();
-  for(i=0; i<vsize; i++)
-    if(m_var_names[i] == varname)
-      m_var_srcaux[i] = vsource_aux;
-}
-
-void XMS::updateVarTime(string varname, string vtime)
-{
-  unsigned int i, vsize = m_var_names.size();
-  for(i=0; i<vsize; i++)
-    if(m_var_names[i] == varname)
-      m_var_time[i] = vtime;
-}
-
-void XMS::updateVarCommunity(string varname, string vcommunity)
-{
-  unsigned int i, vsize = m_var_names.size();
-  for(i=0; i<vsize; i++)
-    if(m_var_names[i] == varname)
-      m_var_community[i] = vcommunity;
-}
-
+//------------------------------------------------------------
+// Procedures: updateHistory
+ 
 void XMS::updateHistory(string entry, string source, double htime)
 {
   if(!m_history_list.empty() && !m_history_sources.empty() &&
@@ -791,64 +851,74 @@ void XMS::updateHistory(string entry, string source, double htime)
 }
 
 //------------------------------------------------------------
+// Procedure: buildReport
+//      Note: A virtual function of the AppCastingMOOSApp superclass, 
+//            conditionally invoked if either a terminal or appcast 
+//            report is needed.
+
+bool XMS::buildReport()
+{
+  m_update_requested = true; // mikerb nov1012
+  bool generated = false;
+  if(m_content_mode == "help")
+    generated = printHelp();
+  else if(m_content_mode == "history")
+    generated = printHistoryReport();
+  else if(m_content_mode == "procs")
+    generated = printProcsReport();
+  else
+    generated = printReport();
+  
+  return(generated);
+}
+
+//------------------------------------------------------------
 // Procedure: printHelp()
 
-void XMS::printHelp()
+bool XMS::printHelp()
 {
-  string refstr = termColor("reversered") + "HELP" + termColor();
-  string mode_str = "(MODE = " + refstr + ")";   
+  if(!m_update_requested)
+    return(false);
 
-  m_displayed_help = true;
-  printf("\n\n");
+  ACTable actab(1);
   
-  printf("KeyStroke    Function         %s      \n", mode_str.c_str());
-  printf("---------    ---------------------------          \n");
-  printf("    s        Suppress Source of variables         \n");
-  printf("    S        Display Source of variables          \n");
-  printf("    t        Suppress Time of variables           \n");
-  printf("    T        Display Time of variables            \n");
-  printf("    c        Suppress Community of variables      \n");
-  printf("    C        Display Community of variables       \n");
-  printf("    v        Suppress virgin variables            \n");
-  printf("    V        Display virgin variables             \n");
-  printf("   m/M       Toggle display own community at top  \n");
-  printf("    n        Suppress null/empty strings          \n");
-  printf("    N        Display null/empty strings           \n");
-  printf("    w        Show Variable History if enabled     \n");
-  printf("    W        Hide Variable History                \n");
-  printf("    x        Show Auxilliary Source if non-empty  \n");
-  printf("    X        Hide Auxilliary Source               \n");
-  printf("   z/Z       Toggle the Variable History mode     \n");
-  printf("    j        Truncate Hist Variable in Hist Report\n");
-  printf("    J        Show Hist Variable in Hist Report    \n");
-  printf("  > or <     Show More or Less Variable History   \n");
-  printf("    /        Begin entering a filter string       \n");
-  printf("    `        Toggle Data Field truncation         \n");
-  printf("    ?        Clear current filter                 \n");    
-  printf("    a        Revert to variables shown at startup \n");
-  printf("    A        Display all variables in the database\n");
-  printf(" u/U/SPC     Update infor once-now, then Pause    \n");
-  printf("   p/P       Pause information refresh            \n");
-  printf("   r/R       Resume information refresh           \n");
-  printf("   e/E       Information refresh is event-driven  \n");
-  printf("   h/H       Show this Help msg - 'R' to resume   \n");
+  string refstr = termColor("reversered") + "HELP" + termColor();
+  string mode_str = "(" + refstr + ")";   
   
+  actab.addCell("KeyStroke    Function         " + mode_str);
+  actab.addCell("---------    ---------------------------             ");
+  actab.addCell("    s        Toggle show source of variables         ");
+  actab.addCell("    t        Toggle show time of variables           ");
+  actab.addCell("    c        Toggle show community of variables      ");
+  actab.addCell("    v        Toggle show virgin variables            ");
+  actab.addCell("    x        Toggle show Auxilliary Src if non-empty ");
+  actab.addCell("    d        Content Mode: Scoping Normal            ");
+  actab.addCell("    h        Content Mode: Help. Hit 'R' to resume   ");
+  actab.addCell("    p        Content Mode: Processes Info            ");
+  actab.addCell("    z        Content Mode: Variable History          ");
+  actab.addCell("  > or <     Show More or Less Variable History      ");
+  actab.addCell("    /        Begin entering a filter string          ");
+  actab.addCell("    `        Toggle Data Field truncation            ");
+  actab.addCell("    ?        Clear current filter                    ");    
+  actab.addCell("    a        Revert to variables shown at startup    ");
+  actab.addCell("    A        Display all variables in the database   ");
+  actab.addCell("   u/SPC     Refresh Mode: Update then Pause         ");
+  actab.addCell("    r        Refresh Mode: Streaming                 ");
+  actab.addCell("    e        Refresh Mode: Event-driven refresh      ");
+  
+  m_msgs << actab.getFormattedString();
   m_refresh_mode = "paused";
-  m_display_help = false;
+  m_update_requested = false;
+
+  return(true);
 }
 
 //------------------------------------------------------------
 // Procedure: printReport()
 
-void XMS::printReport()
-{
-  string refstr = toupper(m_refresh_mode) + termColor();
-  if(m_refresh_mode == "paused") 
-    refstr = termColor("reversered") + refstr;
-  else
-    refstr = termColor("reversegreen") + refstr;
-  string mode_str = "(MODE = SCOPE:" + refstr + ")";   
-
+bool XMS::printReport()
+{  
+#if 0
   bool do_the_report = false;
   if((m_refresh_mode == "paused") && m_update_requested)
     do_the_report = true;
@@ -859,161 +929,129 @@ void XMS::printReport()
     do_the_report = true;
 
   if(!do_the_report)
-    return;
+    return(false);
 
-  m_displayed_help = false;
-
+#endif
   m_scope_event = false;
   m_update_requested = false;
-  
-  printf("\n\n\n\n\n");
-  
-  string varname_str = "VarName";
-  if(m_display_own_community && (m_community != "")) {
-    varname_str += termColor("reverseblue");
-    varname_str += "(" +  m_community + ")" + termColor();
-    printf("  %-33s", varname_str.c_str());
-  }
-  else
-    printf("  %-22s", varname_str.c_str());
 
+  ACTable actab(5,2);
   
-  if(m_display_source)
-    printf("%-16s", "(S)ource");
-  else
-    printf(" (S) ");
-  if(m_display_time)
-    printf("%-12s", "(T)ime");
-  else
-    printf(" (T) ");
-  if(m_display_community)
-    printf("%-14s", "(C)ommunity");
-  else
-    printf(" (C) ");
-  printf("VarValue %s\n", mode_str.c_str());
-  
-  printf("  %-22s", "----------------");
-  
-  if(m_display_source)
-    printf("%-16s", "----------");
-  else
-    printf(" --- ");
-  
-  if(m_display_time)
-    printf("%-12s", "----------");
-  else
-    printf(" --- ");
-  
-  if(m_display_community)
-    printf("%-14s", "----------");
-  else
-    printf(" --- ");
-  printf(" ----------- (%d)\n", m_iterations);
-  
-  unsigned int i, vsize = m_var_names.size();
-  for(i=0; i<vsize; i++) {
-    
-    if(((m_display_virgins) || (m_var_vals[i] != "n/a")) &&
-       ((m_display_null_strings) || (m_var_vals[i] != "")) &&
-       MOOSStrCmp(m_filter, m_var_names[i].substr(0, m_filter.length()))) {
-      
-      string vcolor = m_var_color[i];
-      if(vcolor != "")
-	printf("%s", termColor(vcolor).c_str());
-      
-      printf("  %-22s ", m_var_names[i].c_str());
+  // No need to pad out the rightmost column. Leads to unnecessary line 
+  // wrap-arounds if there is even one long entry in this column.
+  actab.setColumnNoPad(4); 
 
-      if(m_display_source) {
-	if((!m_display_aux_source) || (m_var_srcaux[i]=="")) {
-	  string sstr = truncString(m_var_source[i], 14, "middle");
-	  printf("%-16s", sstr.c_str());
-	}
-	else {
-	  string sstr = truncString(m_var_srcaux[i], 14, "middle");
-	  sstr = "[" + sstr + "]";
-	  printf("%-16s", sstr.c_str());
-	}
-      }
-      else
-	printf("     ");
-      
-      if(m_display_time)
-	printf("%-12s", m_var_time[i].c_str());
-      else
-	printf("     ");
-      
-      if(m_display_community) {
-	string comm_str = truncString(m_var_community[i], 14, "middle");
-	printf("%-14s", comm_str.c_str());
-      }
-      else
-	printf("     ");
-      
-      if(m_var_type[i] == "string") {
-	if(m_var_vals[i] != "n/a") {
-	  if(m_trunc_data > 0) {
-	    string tstr = truncString(m_var_vals[i], m_trunc_data);
-	    if(tstr.length() < m_var_vals[i].length())
-	      printf("\"%s...\"", tstr.c_str());
-	    else
-	      printf("\"%s\"", tstr.c_str());
-	  }
-	  else
-	    printf("\"%s\"", m_var_vals[i].c_str());	    
-	}
-	else
-	  printf("n/a");	
-      }
-      else if(m_var_type[i] == "double")
-	printf("%s", m_var_vals[i].c_str());
-      
-      if(vcolor != "")
-	printf("%s", termColor().c_str());
-      printf("\n");		
-    }
-  }
-  
-  // provide information for current filter(s)
-  bool newline = false;
-  if(m_filter != "") {
-    printf("  -- filter: %s -- ", m_filter.c_str() );
-    newline = true;
-  }
-  if(m_display_all) {
-    printf("  -- displaying all variables --");
-    newline = true;
-  }
-  if(newline)
-    printf("\n");
-}
-
-
-//------------------------------------------------------------
-// Procedure: printHistoryReport()
-
-void XMS::printHistoryReport()
-{
   string refstr = toupper(m_refresh_mode) + termColor();
   if(m_refresh_mode == "paused") 
     refstr = termColor("reversered") + refstr;
   else
     refstr = termColor("reversegreen") + refstr;
-  string mode_str = "(MODE = HISTORY:" + refstr + ")";   
+  string mode_str = "(SCOPING:" + refstr + ")";   
 
-  unsigned int varlen = m_history_var.length();
-  if(varlen < 11)
-    varlen = 11;
+  string src_header  = m_display_source ? "(S)ource" : "(S)";
+  string time_header = m_display_time   ? "(T)ime"   : "(T)";
+  string comm_header = m_display_community ? "(C)ommunity" : "(C)";
 
-  unsigned int max_srclen = 12;
-  if(m_display_source) {
-    // Find length of longest source string
-    list<string>::iterator p;
-    for(p=m_history_sources.begin(); p != m_history_sources.end(); p++) {
-      if(p->length() > max_srclen)
-	max_srclen = p->length();
-    }
+  actab << "VarName" << src_header << time_header << comm_header;
+  actab << "VarValue " + mode_str;
+  actab.addHeaderLines(25);
+
+  unsigned int now_trunc_data = m_trunc_data;
+  if(m_trunc_data > 0) {
+    if(!m_display_community) 
+      now_trunc_data += 8;
+    if(!m_display_time) 
+      now_trunc_data += 5;
+    if(!m_display_source) 
+      now_trunc_data += 10;
   }
 
+  map<string,ScopeEntry>::iterator p;
+  for(p=m_map_var_entries.begin(); p!=m_map_var_entries.end(); p++) {
+    string varname   = p->first;
+    ScopeEntry entry = p->second;
+    string varval    = entry.getValue();
+    string varsrc    = entry.getSource();
+
+    bool dispvar = true;
+    if((varval == "n/a") && !m_display_virgins)
+      dispvar = false;
+    if(dispvar && m_mask_sub_sources.count(varsrc))
+      dispvar = false;
+    if(dispvar && ! MOOSStrCmp(m_filter, varname.substr(0, m_filter.length())))
+      dispvar = false;
+
+    if(dispvar) {
+      string vcolor = m_map_var_entries_color[varname];
+      actab.addCell(varname, vcolor);
+
+      string varsrc;
+      if(m_display_source) {
+	varsrc = m_map_var_entries[varname].getSource();
+	varsrc = truncString(varsrc, 14, "middle");
+      }
+      actab.addCell(varsrc, vcolor);
+      
+      if(m_display_time)
+	actab.addCell(m_map_var_entries[varname].getTime(), vcolor);
+      else
+	actab.addCell("");
+      
+      if(m_display_community) {
+	string community = m_map_var_entries[varname].getCommunity();
+	string comm_str = truncString(community, 14, "middle");
+	actab.addCell(comm_str, vcolor);
+      }
+      else
+	actab.addCell("");
+      
+      string vartype = m_map_var_entries[varname].getType();
+      string valcell;
+      if(vartype == "string") {
+	if(varval != "n/a") {
+	  if(m_trunc_data > 0) {
+	    string tstr = truncString(varval, now_trunc_data);
+	    if(tstr.length() < varval.length())
+	      valcell = tstr + "...";
+	    else
+	      valcell = "\"" + tstr + "\"";
+	  }
+	  else
+	    valcell = "\"" + varval + "\"";
+	}
+	else
+	  valcell= "n/a";	
+      }
+      else if(vartype == "double")
+	valcell = varval;
+
+      actab.addCell(valcell, vcolor);
+    }
+  }
+  
+  m_msgs << actab.getFormattedString();
+
+  // provide information for current filter(s)
+  bool newline = false;
+  if(m_filter != "") {
+    m_msgs << ("  -- filter: " + m_filter + " -- ");
+    newline = true;
+  }
+  if(m_display_all) {
+    m_msgs << "  -- displaying all variables --";
+    newline = true;
+  }
+  if(newline)
+    m_msgs << endl;
+
+  return(true);
+}
+
+//------------------------------------------------------------
+// Procedure: printHistoryReport()
+
+bool XMS::printHistoryReport()
+{
   bool do_the_report = false;
   if((m_refresh_mode == "paused") && m_update_requested)
     do_the_report = true;
@@ -1024,49 +1062,27 @@ void XMS::printHistoryReport()
     do_the_report = true;
 
   if(!do_the_report)
-    return;
-
-  m_displayed_help = false;
+    return(false);
 
   m_history_event = false;
   m_update_requested = false;
-  
-  printf("\n\n\n\n\n");
-  
-  string var_hdr = padString("VariableName", varlen, false);
-  if(m_report_histvar)
-    printf("  %s", var_hdr.c_str());
-  
-  string src_hdr = padString("(S)ource", max_srclen, false);
-  if(m_display_source)
-    printf("  %s", src_hdr.c_str());
-  else
-    printf(" (S) ");
 
-  if(m_display_time)
-    printf("  %-12s", "(T)ime");
-  else
-    printf(" (T) ");
+  ACTable actab(4,2);
 
-  printf(" VarValue %s\n", mode_str.c_str());
-  
-  string var_bar = padString("------------", varlen, false);
-  if(m_report_histvar)
-    printf("  %s", var_bar.c_str());
-  
-  string src_bar = padString("-------------", max_srclen, false);
-  if(m_display_source)
-    printf("  %s", src_bar.c_str());
+  string refstr = toupper(m_refresh_mode) + termColor();
+  if(m_refresh_mode == "paused") 
+    refstr = termColor("reversered") + refstr;
   else
-    printf(" --- ");
-  
-  if(m_display_time)
-    printf("  %-12s", "----------");
-  else
-    printf(" --- ");
-  
-  printf(" ----------- (%d)\n", m_iterations);
-  
+    refstr = termColor("reversegreen") + refstr;
+  string mode_str = "(HISTORY:" + refstr + ")";   
+
+  string src_header  = m_display_source ? "(S)ource" : "(S)";
+  string time_header = m_display_time   ? "(T)ime"   : "(T)";
+
+  actab << "VarName" << src_header << time_header;
+  actab << "VarValue " + mode_str;
+  actab.addHeaderLines(25);
+
   list<string> hist_list    = m_history_list;
   list<string> hist_sources = m_history_sources;
   list<int>    hist_counts  = m_history_counts;
@@ -1077,34 +1093,140 @@ void XMS::printHistoryReport()
     string source = hist_sources.back();
     int    count  = hist_counts.back();
     string htime  = doubleToString(hist_times.back(), 2);
+ 
+    actab << m_history_var;
     
-    if(m_report_histvar) {
-      string var = padString(m_history_var, varlen, false);
-      printf("  %s", var.c_str());
-    }
-
-    if(m_display_source) {
-      source = padString(source, max_srclen, false);
-      printf("  %s", source.c_str());
-    }
+    if(m_display_source) 
+      actab << source;
     else
-      printf("     ");
+      actab << "";
     
     if(m_display_time)
-      printf("  %-12s", htime.c_str());
+      actab << htime;
     else
-      printf("     ");
+      actab << "";
     
-    printf(" (%d) %s", count, entry.c_str());
-    printf("\n");		
+    string xentry = "(" + intToString(count) + ") " + entry; 
+    actab << xentry;
 
     hist_list.pop_back();
     hist_sources.pop_back();
     hist_counts.pop_back();
     hist_times.pop_back();
   }
+
+  m_msgs << actab.getFormattedString();
+
+  return(true);
 }
 
+//------------------------------------------------------------
+// Procedure: printProcsReport()
+//
+//   uProcessWatch: Not Running
+//   uProcessWatch: All-Present (12)
+//   uProcessWatch: Awol: pFoobar, uBananas
+
+//   ID     Process Name       Mail     Client 
+//   --     ------------       -------  ------             
+//   0      MOOSDB             0.12     0.04             
+//   1      pHelmIvP           0.27     0.04             
+//   2      pLogger            0.12     0.04             
+//   A      pMarinePID         0.04     0.04             
+//   B      iActuationKF       0.04     0.04             
+//   C      iGPS               0.15     0.04
+//   D      iCompass           0.22     0.04
+//
+//   Action: 1bc                
+
+bool XMS::printProcsReport()
+{
+  // Part 1: Determine if it is actually appropriate to DO the report
+  if((m_refresh_mode == "paused") && !m_update_requested)
+    return(false);
+
+  // Part 2: Determine the mode string at the top of the report
+  string refstr = toupper(m_refresh_mode) + termColor();
+  if(m_refresh_mode == "paused") 
+    refstr = termColor("reversered") + refstr;
+  else
+    refstr = termColor("reversegreen") + refstr;
+  string mode_str = "(PROCESSES:" + refstr + ")";   
+
+  // Now that we've decided to do the report, set some status vars
+  m_update_requested = false;
+  
+  // Part 3: Begin generating the report
+  if(m_community != "") {
+    string hdr = termColor("reverseblue");
+    hdr += "(" +  m_community + ")" + termColor();
+    printf("%s", hdr.c_str());
+  }
+  printf("=====================================");
+  printf("%s(%d)\n\n", mode_str.c_str(), m_iteration);
+  
+  // Part 4: Handle the Proc-Watch information
+  string psummary = m_proc_watch_summary;
+  if(strContains(psummary, "AWOL"))
+    psummary = termColor("reversered") + psummary + termColor();
+  
+  printf("uProcessWatch(%d): ", (int)(m_proc_watch_count));
+  printf("%s\n\n", psummary.c_str());
+  
+
+  ACTable actab(4,2);
+  actab << "ID | Process Name | Mail | Client";
+  actab.addHeaderLines();
+
+  map<string, string>::iterator q;
+  for(q=m_map_id_src.begin(); q!=m_map_id_src.end(); q++) {
+    string procid   = q->first;
+    string procname = q->second;
+
+    // Post the ID
+    if(m_mask_sub_sources.count(procname))
+      procid = "-" + procid;
+    else if(m_mask_add_sources.count(procname))
+      procid = "+" + procid;
+    
+    // Post the Mail Age (Time since last mail recvd from this source)
+    double posttime = m_map_src_update[procname];
+    string mail_age_str = "-";
+    if(posttime > 0)
+      mail_age_str = doubleToString((m_curr_time - posttime), 2);
+
+    // Post the Client Age (Time since this source appeared in DB_CLIENTS)
+    double dbclient_time = m_map_src_dbclient[procname];
+    string client_age_str = "-";
+    if(dbclient_time > 0)
+      client_age_str = doubleToString((m_curr_time - dbclient_time), 2);
+    
+    actab << procid << procname << mail_age_str << client_age_str;
+  }
+
+  m_msgs << actab.getFormattedString();
+
+  return(true);
+}
+
+//------------------------------------------------------------
+// Procedure: updateDBClients
+//      Note: Parses the DB_CLIENTS message and notes the current time
+//            for each client on the list. Also adds the client/source
+//            to the list of known sources if not otherwise known.
+
+void XMS::updateDBClients(string db_clients)
+{
+  vector<string> svector = parseString(db_clients, ',');
+  unsigned int i, vsize = svector.size();
+  for(i=0; i<vsize; i++) {
+    string source = stripBlankEnds(svector[i]);
+    if((source != "DBWebServer") && !strBegins(source, "uXMS")) {
+      m_map_src_dbclient[source] = m_curr_time;
+      updateSourceInfo(source);
+    }
+  } 
+}
 
 //------------------------------------------------------------
 // Procedure: updateVariable
@@ -1117,15 +1239,29 @@ void XMS::updateVariable(CMOOSMsg &msg)
   string varname = msg.GetKey();  
   double vtime   = msg.GetTime() - m_db_start_time;
 
+  if(m_map_var_entries.count(varname) == 0)
+    return;
+
   string vtime_str = doubleToString(vtime, 2);
   vtime_str = dstringCompact(vtime_str);
 
-  updateVarSource(varname, msg.GetSource());
-  updateVarSourceAux(varname, msg.GetSourceAux());
+  ScopeEntry entry;
+  if(msg.IsString()) {
+    entry.setType("string");
+    entry.setValue(msg.GetString());
+  }      
+  else if(msg.IsDouble()) {
+    entry.setType("double");
+    entry.setValue(doubleToStringX(msg.GetDouble(),6));
+  }
 
-  updateVarTime(varname, vtime_str);
-  updateVarCommunity(varname, msg.GetCommunity());
-  
+  entry.setSource(msg.GetSource());
+  entry.setSrcAux(msg.GetSourceAux());
+  entry.setTime(doubleToString((msg.GetTime()-m_db_start_time),2));
+  entry.setCommunity(msg.GetCommunity());
+
+  bool changed = updateVarEntry(varname, entry);
+
   if(varname == m_history_var) {
     m_history_event = true;
     if(msg.IsString()) {
@@ -1138,21 +1274,8 @@ void XMS::updateVariable(CMOOSMsg &msg)
     }
   }
 
-  if(msg.IsString()) {
-    updateVarVal(varname, msg.GetString());
-    updateVarType(varname, "string");
-  }      
-  else if(msg.IsDouble()) {
-    updateVarVal(varname, doubleToString(msg.GetDouble()));
-    updateVarType(varname, "double");
-  }
-  else if(msg.IsDataType(MOOS_NOT_SET)) {
-    updateVarVal(varname, "n/a");
-    updateVarSource(varname, "n/a");
-    updateVarTime(varname, "n/a");
-    updateVarCommunity(varname, "n/a");
-    updateVarType(varname, "string");
-  }
+  if(changed && m_refresh_mode == "events")
+    m_update_requested = true;
 }
 
 //------------------------------------------------------------
@@ -1200,7 +1323,7 @@ void XMS::refreshAllVarsList()
 void XMS::refreshProcVarsList()
 {
   map<string, string>::iterator p;
-  for(p=m_src_map.begin(); p!=m_src_map.end(); p++) {
+  for(p=m_map_src_status.begin(); p!=m_map_src_status.end(); p++) {
     string status_var = p->first;
     string status_str = p->second;
     status_str = findReplace(status_str, "Subscribing", ",Subscribing");
@@ -1227,20 +1350,96 @@ void XMS::refreshProcVarsList()
 
 //------------------------------------------------------------
 // Procedure: cacheColorMap
+//      Note: The color mapping changes rarely if at all after startup.
+//            The mapping may be associated by variable name, source or
+//            community. It would be inefficient to determine a variable's
+//            color on each report generated, so cache it here.
 
 void XMS::cacheColorMap()
 {
-  unsigned int i, vsize = m_var_names.size();
-  for(i=0; i<vsize; i++) {
-    string v1 = getColorMapping(m_var_names[i]);
-    string v2 = getColorMapping(m_var_source[i]);
-    string v3 = getColorMapping(m_var_community[i]);
+  map<string,ScopeEntry>::iterator p;
+  for(p=m_map_var_entries.begin(); p!=m_map_var_entries.end(); p++) {
+    string varname = p->first;
+    string v1 = getColorMapping(varname);
+    string v2 = getColorMapping(m_map_var_entries[varname].getSource());
+    string v3 = getColorMapping(m_map_var_entries[varname].getCommunity());
     if(v1 != "")
-      m_var_color[i] = v1;
+      m_map_var_entries_color[varname] = v1;
     else if(v2 != "")
-      m_var_color[i] = v2;
+      m_map_var_entries_color[varname] = v2;
     else if(v3 != "")
-      m_var_color[i] = v3;
+      m_map_var_entries_color[varname] = v3;
+  }
+}
+
+
+//------------------------------------------------------------
+// Procedure: handleSelectMaskSubSource
+
+void XMS::handleSelectMaskSubSources()
+{
+  m_update_requested = true;
+  printProcsReport();
+
+  string sub_list;
+  
+  cout << "> " << flush;
+  getline(cin, sub_list);
+
+  // If user just hits return (empty) this clears the source sub list
+  if(sub_list == "")
+    return;
+  
+  // The '?' character indicates a wish to clear the source sub list.
+  if(strContains(sub_list, "?"))
+    m_mask_sub_sources.clear();
+   
+  // Otherwise we'll interpret the user entry as a request to AUGMENT
+  // the current source mask list.
+  for(unsigned int i=0; i<sub_list.length(); i++) {
+    string id(1, sub_list[i]);
+    if(m_map_id_src.count(id)) {
+      m_mask_sub_sources.insert(m_map_id_src[id]);
+      m_mask_add_sources.erase(m_map_id_src[id]);
+    }
+  }
+
+}
+
+//------------------------------------------------------------
+// Procedure: handleSelectMaskAddSources
+
+void XMS::handleSelectMaskAddSources()
+{
+  m_update_requested = true;
+  printProcsReport();
+
+  string add_list;
+  
+  cout << "> " << flush;
+  getline(cin, add_list);
+  
+  cout << "---------------------------" << endl;
+  // If user just hits return (empty) this clears source add list
+  if(add_list.length() == 0)
+    return;
+  
+  // The '?' character indicates a wish to clear the source add list.
+  if(strContains(add_list, "?"))
+    m_mask_add_sources.clear();
+   
+  // Otherwise we'll interpret the user entry as a request to AUGMENT
+  // the current source mask list.
+  for(unsigned int i=0; i<add_list.length(); i++) {
+    string id(1, add_list[i]);
+    if(m_map_id_src.count(id)) {
+      string src = m_map_id_src[id];
+      string src_status = toupper(src) + "_STATUS";
+      addSource(src);
+      m_Comms.Register(src_status, 1.0);
+      m_mask_add_sources.insert(src);
+      m_mask_sub_sources.erase(src);
+    }
   }
 }
 

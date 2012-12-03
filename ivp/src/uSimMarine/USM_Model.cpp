@@ -93,6 +93,11 @@ bool USM_Model::setParam(string param, double value)
   else if(param == "start_depth") {
     m_record.setDepth(value);
     m_record_gt.setDepth(value);
+    if(value < 0) {
+      m_record.setDepth(0);
+      m_record_gt.setDepth(0);
+      return(false);
+    }
   }
   else if(param == "buoyancy_rate")
     m_buoyancy_rate = value;
@@ -106,13 +111,17 @@ bool USM_Model::setParam(string param, double value)
     m_rotate_speed = value;
   else if(param == "max_acceleration") {
     m_max_acceleration = value;
-    if(m_max_acceleration < 0)
+    if(m_max_acceleration < 0) {
       m_max_acceleration = 0;
+      return(false);
+    }
   }
   else if(param == "max_deceleration") {
     m_max_deceleration = value;
-    if(m_max_deceleration < 0)
+    if(m_max_deceleration < 0) {
       m_max_deceleration = 0;
+      return(false);
+    }
   }
   else if(param == "max_depth_rate")
     m_max_depth_rate = value;
@@ -121,6 +130,8 @@ bool USM_Model::setParam(string param, double value)
   else if(param == "water_depth") {
     if(value >= 0)
       m_water_depth = value;
+    else
+      return(false);
   }
   else
     return(false);
@@ -158,13 +169,13 @@ bool USM_Model::propagate(double g_curr_time)
 //--------------------------------------------------------------------
 // Procedure: setDriftVector(string, bool)
 
-void USM_Model::setDriftVector(string str, bool add_new_drift)
+bool USM_Model::setDriftVector(string str, bool add_new_drift)
 {
-  string left  = stripBlankEnds(biteString(str, ','));
-  string right = stripBlankEnds(str);
+  string left  = biteStringX(str, ',');
+  string right = str;
 
   if(!isNumber(left) || !isNumber(right))
-    return;
+    return(false);
   
   double ang  = angle360(atof(left.c_str()));
   double mag  = atof(right.c_str());
@@ -183,6 +194,7 @@ void USM_Model::setDriftVector(string str, bool add_new_drift)
   }
 
   m_drift_fresh = true;
+  return(true);
 }
 
 //--------------------------------------------------------------------
@@ -270,6 +282,23 @@ string USM_Model::getDriftSummary()
   val += ", ymag=";
   val += doubleToStringX(m_drift_y,3);
   return(val);
+}
+
+
+//------------------------------------------------------------------------
+// Procedure: usingThrustFactor
+
+bool USM_Model::usingThrustFactor() const
+{
+  return(m_thrust_map.usingThrustFactor());
+}
+
+//------------------------------------------------------------------------
+// Procedure: getThrustFactor
+
+double USM_Model::getThrustFactor() const
+{
+  return(m_thrust_map.getThrustFactor());
 }
 
 
@@ -369,6 +398,21 @@ void USM_Model::propagateNodeRecord(NodeRecord& record,
       altitude = 0;
     record.setAltitude(altitude);
   }
+}
 
+//------------------------------------------------------------------------
+// Procedure: getDriftMag
+
+double USM_Model::getDriftMag() const
+{
+  return(hypot(m_drift_x, m_drift_y));
+}
+
+//------------------------------------------------------------------------
+// Procedure: getDriftAng
+
+double USM_Model::getDriftAng() const
+{
+  return(relAng(0, 0, m_drift_x, m_drift_y));
 }
 

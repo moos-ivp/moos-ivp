@@ -24,7 +24,6 @@ ADD_EXECUTABLE(pEchoVar ${SRC})
 
 TARGET_LINK_LIBRARIES(pEchoVar 
   MOOS
-  MOOSGen
   geometry
   mbutil 
   logic

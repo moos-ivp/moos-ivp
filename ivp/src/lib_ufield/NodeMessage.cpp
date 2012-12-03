@@ -117,3 +117,4 @@ unsigned int NodeMessage::length() const
 
   return(overall_msg_length);
 }
+

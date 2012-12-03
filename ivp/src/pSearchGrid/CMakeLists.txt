@@ -9,7 +9,6 @@ ADD_EXECUTABLE(pSearchGrid ${SRC})
 
 TARGET_LINK_LIBRARIES(pSearchGrid
    MOOS
-   MOOSGen
    geometry
    mbutil
    contacts

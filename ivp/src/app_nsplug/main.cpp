@@ -62,6 +62,8 @@ int main(int argc, char *argv[])
       expander.addPath(argv[i+1]);
     else if(((arg=="-s") || (arg=="--strict")))
       expander.setStrict(true);
+    else if(((arg=="-l") || (arg=="--lenient")))
+      expander.setPartialsOK(true);
     else if(((arg=="-t") || (arg=="--terminal")))
       expander.setTerminal(true);
 
@@ -106,4 +108,5 @@ int main(int argc, char *argv[])
   
   return(0);
 }
+
 

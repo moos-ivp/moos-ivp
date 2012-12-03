@@ -32,6 +32,8 @@
 #include "ColorParse.h"
 #include "CPAEngine.h"
 #include "NodeRecordUtils.h"
+#include "XYCircle.h"
+#include "ACTable.h"
 
 using namespace std;
 
@@ -42,25 +44,16 @@ BasicContactMgr::BasicContactMgr()
 {
   m_nav_x   = 0;
   m_nav_y   = 0;
-  m_nav_lat = 0;
-  m_nav_lon = 0;
   m_nav_hdg = 0;
   m_nav_spd = 0;
-  m_nav_dep = 0;
-
-  m_pos_timestamp = 0;
 
   m_contact_max_age = 3600;   // units in seconds 3600 = 1 hour
-  m_alert_range     = 1000;   // units in meters
-  m_alert_cpa_range = 1000;   // units in meters
-  m_alert_cpa_time  = 0;      // units in seconds
-  m_verbose         = true;
   m_display_radii   = false;
 
-  m_start_time = -1;
-  m_curr_time  = -1;
-
-  m_iteration = 0;
+  m_default_alert_rng           = 1000;
+  m_default_alert_rng_cpa       = 1000;
+  m_default_alert_rng_color     = "gray65";
+  m_default_alert_rng_cpa_color = "gray35";
 }
 
 //---------------------------------------------------------
@@ -68,51 +61,34 @@ BasicContactMgr::BasicContactMgr()
 
 bool BasicContactMgr::OnNewMail(MOOSMSG_LIST &NewMail)
 {
+  AppCastingMOOSApp::OnNewMail(NewMail);
+
   MOOSMSG_LIST::iterator p;
-	
   for(p=NewMail.begin(); p!=NewMail.end(); p++) {
     CMOOSMsg &msg = *p;
 	
     string key   = msg.GetKey();
     double dval  = msg.GetDouble();
     string sval  = msg.GetString(); 
-    double mtime = msg.GetTime();
     string msrc  = msg.GetSource();
-
-    if(key == "NODE_REPORT") {
-      bool ok = handleNodeReport(sval);
-      if(!ok)
-	m_Comms.Notify("CONTACT_MGR_WARNING", "Bad Node Report Rcvd");
-    }
-    else if(key == "NAV_X") {
+    
+    if(key == "NAV_X")
       m_nav_x = dval;
-      m_pos_timestamp = mtime;
-    }
-    else if(key == "NAV_Y") {
+    else if(key == "NAV_Y")
       m_nav_y = dval;
-      m_pos_timestamp = mtime;
-    }
-    else if(key == "NAV_LAT") {
-      m_nav_lat = dval;
-      m_pos_timestamp = mtime;
-    }
-    else if(key == "NAV_LONG") {
-      m_nav_lon = dval;
-      m_pos_timestamp = mtime;
-    }
     else if(key == "NAV_HEADING")
       m_nav_hdg = dval;
     else if(key == "NAV_SPEED") 
       m_nav_spd = dval;
-    else if(key == "NAV_DEPTH")
-      m_nav_dep = dval;
-    else if(key == "CONTACT_RESOLVED") {
-      bool ok = handleResolved(sval);
-      if(!ok) {
-	string msg = "Unresolvable contact: " + sval;
-	m_Comms.Notify("CONTACT_MGR_WARNING", msg);
-      }
-    }
+    else if(key == "NODE_REPORT") 
+      handleMailNodeReport(sval);
+    else if(key == "BCM_DISPLAY_RADII")
+      handleMailDisplayRadii(sval);      
+    else if(key == "CONTACT_RESOLVED")
+      handleMailResolved(sval);
+
+    else
+      reportRunWarning("Unhandled Mail: " + key);
   }
   return(true);
 }
@@ -122,25 +98,8 @@ bool BasicContactMgr::OnNewMail(MOOSMSG_LIST &NewMail)
 
 bool BasicContactMgr::OnConnectToServer()
 {
-  RegisterVariables();  
+  registerVariables();  
   return(true);
-}
-
-
-//------------------------------------------------------------
-// Procedure: RegisterVariables
-
-void BasicContactMgr::RegisterVariables()
-{
-  m_Comms.Register("NODE_REPORT", 0);
-  m_Comms.Register("CONTACT_RESOLVED", 0);
-  m_Comms.Register("NAV_X", 0);
-  m_Comms.Register("NAV_Y", 0);
-  m_Comms.Register("NAV_LAT", 0);
-  m_Comms.Register("NAV_LONG", 0);
-  m_Comms.Register("NAV_SPEED", 0);
-  m_Comms.Register("NAV_HEADING", 0);
-  m_Comms.Register("NAV_DEPTH", 0);
 }
 
 
@@ -150,132 +109,122 @@ void BasicContactMgr::RegisterVariables()
 
 bool BasicContactMgr::Iterate()
 {
-  m_iteration++;
-
-  m_curr_time = MOOSTime();
-  if(m_start_time == -1)
-    m_start_time = m_curr_time;
+  AppCastingMOOSApp::Iterate();
 
   updateRanges();
   postSummaries();
+  postAlerts();
 
-  bool new_alerts = postAlerts();
-
-  if(m_verbose)
-    postConsoleSummary();
-  else {
-    if(new_alerts)
-      cout << "A" << flush;
-    else
-      cout << "*" << flush;
-  }
-
-  
   if(m_display_radii)
     postRadii();
 
+  AppCastingMOOSApp::PostReport();
   return(true);
 }
 
 //---------------------------------------------------------
 // Procedure: OnStartUp()
-//      Note: Happens before connection is open
 
 bool BasicContactMgr::OnStartUp()
 {
-  CMOOSApp::OnStartUp();
-  MOOSTrace("pBasicContactMgr starting....\n");
+  AppCastingMOOSApp::OnStartUp();
 
-  // Look for ownship name, a global variable in the config file.
-   m_ownship = "unknown";
-  if(!m_MissionReader.GetValue("Community", m_ownship)) {
-    MOOSTrace("Vehicle (Community) Name not provided\n");
+  m_ownship = m_host_community;
+  if(m_ownship == "") {
+    cout << "Vehicle Name (MOOS community) not provided" << endl;
     return(false);
   }
   
-  list<string> sParams;
-  m_MissionReader.EnableVerbatimQuoting(false);
-  if(m_MissionReader.GetConfiguration(GetAppName(), sParams)) {
-    list<string>::reverse_iterator p;
-    for(p=sParams.rbegin(); p!=sParams.rend(); p++) {
-      string line  = stripBlankEnds(*p);
-      string param = tolower(stripBlankEnds(biteString(line, '=')));
-      string value = stripBlankEnds(line);
-      double dval  = atof(value.c_str());
+  STRING_LIST sParams;
+  if(!m_MissionReader.GetConfiguration(GetAppName(), sParams)) 
+    reportConfigWarning("No config block found for " + GetAppName());
 
-      if(param == "alert") {
-	bool ok = addNewAlert(value);
-	if(!ok) 
-	  postErrorMsg("Failed alert config: " + value);
-      }
-      else if(param == "display_radii")
-	setBooleanOnString(m_display_radii, value);
-      else if(param == "verbose")
-	setBooleanOnString(m_verbose, value);
-      else if(param == "alert_range") {
-	if(dval > 0)
-	  m_alert_range = dval;
-	else
-	  postErrorMsg("alert_range must be > zero: " + value);
-      }
-      else if(param == "alert_cpa_range") {
-	if(dval > 0)
-	  m_alert_cpa_range = dval;
-	else
-	  postErrorMsg("alert_cpa_range must be > zero: " + value);
-      }
-      else if(param == "alert_cpa_time") {
-	if(dval > 0)
-	  m_alert_cpa_time = dval;
-	else
-	  postErrorMsg("alert_cpa_time must be > zero: " + value);
-      }
-      else if(param == "contact_max_age") {
-	if(dval > 0)
-	  m_contact_max_age = dval;
-	else
-	  postErrorMsg("contact_max_age must be > zero: " + value);
-      }
-      else {
-	if((param != "apptick") && (param != "commstick")) 
-	  postErrorMsg("Unrecognized parameter: " + param);
-      }
+  STRING_LIST::reverse_iterator p;
+  for(p=sParams.rbegin(); p!=sParams.rend(); p++) {
+    string orig  = *p;
+    string line  = stripBlankEnds(*p);
+    string param = tolower(biteStringX(line, '='));
+    string value = line;
+    double dval  = atof(value.c_str());
+    
+    if(param == "alert") {
+      bool ok = handleConfigAlert(value);
+      if(!ok) 
+	reportConfigWarning("Failed alert config: " + value);
     }
+    else if(param == "display_radii")
+      setBooleanOnString(m_display_radii, value);
+    else if((param == "alert_range") || (param == "default_alert_range")) {
+      if(dval > 0)
+	m_default_alert_rng = dval;
+      else
+	reportConfigWarning("alert_range must be > zero: " + value);
+    }
+    
+    else if((param=="alert_cpa_range") || (param=="default_cpa_range")) {
+      if(dval > 0)
+	m_default_alert_rng_cpa = dval;
+      else
+	reportConfigWarning("default_alert_range_cpa must be > zero: " + value);
+    }
+    
+    else if(param=="alert_cpa_time") {
+      reportConfigWarning("alert_cpa_time parameter has been deprecated.");
+    }
+    
+    else if(param == "default_alert_range_color") {
+      if(isColor(value))
+	m_default_alert_rng_color = value;
+      else
+	reportConfigWarning("default_alert_range_color, " + value +", not a color");
+    }
+    
+    else if(param == "default_cpa_range_color") {
+      if(isColor(value))
+	m_default_alert_rng_cpa_color = value;
+      else
+	reportConfigWarning("default_alert_range_cpa_color, " +value+", not a color");
+    }
+    
+    else if(param == "contact_max_age") {
+      if(dval > 0)
+	m_contact_max_age = dval;
+      else
+	reportConfigWarning("contact_max_age must be > zero: " + value);
+    }
+    
+    else 
+      reportUnhandledConfigWarning(orig);
   }
-
-  if(m_verbose) {
-    cout << termColor("blue") << "pBasicContactMgr Alerts: ";
-    unsigned int i, vsize = m_alert_var.size();
-    for(i=0; i<vsize; i++) {
-      cout << "[" << i << "]: VAR=" << m_alert_var[i];
-      cout << "  VAL=" << m_alert_val[i] << endl;
-    }
-    cout << termColor() << endl;
-  }  
-
-  RegisterVariables();
+  
+  registerVariables();
   return(true);
 }
 
+//------------------------------------------------------------
+// Procedure: registerVariables
 
-//---------------------------------------------------------
-// Procedure: postErrorMsg()
-
-void BasicContactMgr::postErrorMsg(const string& msg)
+void BasicContactMgr::registerVariables()
 {
-  cout << termColor("red");
-  cout << msg << termColor() << endl;
+  AppCastingMOOSApp::RegisterVariables();
+
+  m_Comms.Register("NODE_REPORT", 0);
+  m_Comms.Register("CONTACT_RESOLVED", 0);
+  m_Comms.Register("BCM_DISPLAY_RADII", 0);
+  m_Comms.Register("NAV_X", 0);
+  m_Comms.Register("NAV_Y", 0);
+  m_Comms.Register("NAV_SPEED", 0);
+  m_Comms.Register("NAV_HEADING", 0);
 }
 
-
 //---------------------------------------------------------
-// Procedure: handleNodeReport
+// Procedure: handleMailNodeReport
 //   Example: NAME=alpha,TYPE=KAYAK,UTC_TIME=1267294386.51,
 //            X=29.66,Y=-23.49, LAT=43.825089,LON=-70.330030, 
 //            SPD=2.00,HDG=119.06,YAW=119.05677,DEPTH=0.00,     
 //            LENGTH=4.0,MODE=DRIVE
 
-bool BasicContactMgr::handleNodeReport(const string& report)
+void BasicContactMgr::handleMailNodeReport(const string& report)
 {
   NodeRecord new_node_record = string2NodeRecord(report);
   string vname = new_node_record.getName();
@@ -283,99 +232,132 @@ bool BasicContactMgr::handleNodeReport(const string& report)
   // If incoming node name matches ownship, just ignore the node report
   // but don't return false which would indicate an error.
   if(vname == m_ownship)
-    return(true);
-
-  bool record_exists = false;
-  unsigned int i, vsize = m_node_records.size();
-  for(i=0; i<vsize; i++) {
-    if(vname == m_node_records[i].getName()) {
-      record_exists = true;
-      m_node_records[i] = new_node_record;
-    }
+    return;
+  
+  if(!new_node_record.valid()) {
+    m_Comms.Notify("CONTACT_MGR_WARNING", "Bad Node Report Received");
+    reportRunWarning("Bad Node Report Received");
+    return;
   }
-  if(!record_exists) {
-    m_node_records.push_back(new_node_record);
+  
+  bool newly_known_vehicle = false;
+  if(m_map_node_records.count(vname) == 0)
+    newly_known_vehicle = true;
+  
+  m_map_node_records[vname] = new_node_record;
+  
+  if(newly_known_vehicle) {
+    m_map_node_ranges[vname] = 0;
+    m_map_node_alerts_total[vname]    = 0;
+    m_map_node_alerts_active[vname]   = 0;
+    m_map_node_alerts_resolved[vname] = 0;
     m_par.addVehicle(vname);
-    m_ranges.push_back(0);
   }
-
-  return(true);
 }
 
 
 //---------------------------------------------------------
-// Procedure: handleResolved
-//   Returns: true if the contact name is found, false otherwise
+// Procedure: handleMailResolved
 //      Note: This MOOS process is registering for the variable
 //            CONTACT_RESOLVED, which simply contains the string
-//            value of a contact name. 
+//            value of a contact name and an alert id. 
 //      Note: The notion of "resolved" means that this contact mgr
 //            needs to post another alert when or if the alert
 //            criteria is met again.
 
-bool BasicContactMgr::handleResolved(string resolution)
+void BasicContactMgr::handleMailResolved(const string& str)
 {
-  string vehicle = stripBlankEnds(biteString(resolution, ','));
-  string alertid = stripBlankEnds(resolution);
+  string resolution = tolower(str);
+  string vehicle = biteStringX(resolution, ',');
+  string alertid = resolution;
 
   if(alertid == "")
     alertid = "all_alerts";
 
-  augmentAlertHistory("TryResolve: (" + vehicle + "," + alertid + ")");
+  reportEvent("TryResolve: (" + vehicle + "," + alertid + ")");
 
-  if(!m_par.containsVehicle(vehicle))
-    return(false);
-  if((alertid != "all_alerts") && !m_par.containsAlertID(alertid))
-    return(false);
+  // Error Check #1 - Make sure we know about the vehicle
+  if(!m_par.containsVehicle(vehicle)) {
+    string msg = "Resolution failed. Nothing known about vehicle: " + vehicle;
+    m_Comms.Notify("CONTACT_MGR_WARNING", msg);
+    reportRunWarning(msg);
+    return;
+  }
+  
+  // Error Check #2 - Make sure we know about the alert id
+  if((alertid != "all_alerts") && !m_par.containsAlertID(alertid)) {
+    string msg = "Resolution failed. Nothing known about alertid: " + alertid;
+    m_Comms.Notify("CONTACT_MGR_WARNING", msg);
+    reportRunWarning(msg);
+    return;
+  }
+  
+  m_map_node_alerts_active[vehicle]--;
+  m_map_node_alerts_resolved[vehicle]++;
   
   m_par.setValue(vehicle, alertid, false);
-  augmentAlertHistory("Resolved: (" + vehicle + "," + alertid + ")");
-  return(true);
+  reportEvent("Resolved: (" + vehicle + "," + alertid + ")");
 }
 
+//---------------------------------------------------------
+// Procedure: handleMailDisplayRadii
+
+void BasicContactMgr::handleMailDisplayRadii(const string& value)
+{
+  bool ok = setBooleanOnString(m_display_radii, value);
+  if(ok) {
+    string msg = "DISPLAY_RADII set to " + boolToString(m_display_radii);
+    reportEvent(msg);
+  }
+  else {
+    string msg = "Failed attempt so set DISPLAY_RADII to: " + value;
+    reportEvent(msg);
+    reportConfigWarning(msg);
+  }
+
+  if(m_display_radii == false)
+    postRadii(false);
+}
 
 //---------------------------------------------------------
-// Procedure: addNewAlert
+// Procedure: handleConfigAlert
 
-bool BasicContactMgr::addNewAlert(const string& alert_str)
+bool BasicContactMgr::handleConfigAlert(const string& alert_str)
 {
-  string varname;
-  string value;
-  string alert_id = "no_id";
+  string alert_id = tokStringParse(alert_str, "id", ',', '=');
+  if(alert_id == "")
+    alert_id = "no_id";
+  m_par.addAlertID(alert_id);
 
   vector<string> svector = parseStringQ(alert_str, ',');
   unsigned int i, vsize = svector.size();
   for(i=0; i<vsize; i++) {
-    string left  = tolower(stripBlankEnds(biteString(svector[i], '=')));
-    string right = stripBlankEnds(svector[i]);
-    
+    string left  = tolower(biteStringX(svector[i], '='));
+    string right = svector[i];
+    double dval  = atof(right.c_str());
+
     if(isQuoted(right))
       right = stripQuotes(right);
 
     if(left == "var")
-      varname = right;
-    else if(left == "val")
-      value = right;
-    else if(left == "id")
-      alert_id = right;
+      m_map_alert_varname[alert_id] = right;
+    else if((left == "val") || (left == "pattern"))
+      m_map_alert_pattern[alert_id] = right;
+    else if((left == "alert_range") && isNumber(right) && (dval >= 0))
+      m_map_alert_rng[alert_id] = dval;
+    else if((left == "cpa_range") && isNumber(right) && (dval >= 0))
+      m_map_alert_rng_cpa[alert_id] = dval;
+    else if((left == "alert_range_color") && isColor(right))
+      m_map_alert_rng_color[alert_id] = right;
+    else if((left == "cpa_range_color") && isColor(right))
+      m_map_alert_rng_cpa_color[alert_id] = right;
     else {
-      cout << "pBasicContactMgr: Bad Alert component: " << left << endl;
-      return(false);
+      if(left != "id") {
+	reportConfigWarning("unhandled alert config component: " + left);
+	return(false);
+      }
     }
   }
-
-  if((varname == "") || (value == "") || strContainsWhite(varname)) {
-    cout << "pBasicContactMgr: Faulty Alert configuration: " << endl;
-    cout << alert_str << endl;
-    return(false);
-  }
-
-  m_alert_var.push_back(varname);
-  m_alert_val.push_back(value);
-  m_alert_id.push_back(alert_id);
-  
-  if(alert_id != "")
-    m_par.addAlertID(alert_id);
 
   return(true);
 }
@@ -392,21 +374,23 @@ void BasicContactMgr::postSummaries()
   string contacts_unalerted;
   string contacts_recap;
 
-  unsigned int i, vsize = m_node_records.size();
-  for(i=0; i<vsize; i++) {
-    string contact_name = m_node_records[i].getName();
+  map<string, NodeRecord>::const_iterator p;
+  for(p=m_map_node_records.begin(); p!= m_map_node_records.end(); p++) {
+    string     contact_name = p->first;
+    NodeRecord node_record  = p->second;
+
     if(contacts_list != "")
       contacts_list += ",";
     contacts_list += contact_name;
 
-    double age = m_curr_time - m_node_records[i].getTimeStamp();
+    double age = m_curr_time - node_record.getTimeStamp();
     if(age > m_contact_max_age) {
       if(contacts_retired == "")
 	contacts_retired += ",";
       contacts_retired += contact_name;
     }
 
-    double range = m_ranges[i];
+    double range = m_map_node_ranges[contact_name];
 
     if(contacts_recap != "")
       contacts_recap += " # ";
@@ -432,15 +416,16 @@ void BasicContactMgr::postSummaries()
     m_prev_contacts_unalerted = contacts_unalerted;
   }
 
+  if(m_prev_contacts_retired != contacts_retired) {
+    m_Comms.Notify("CONTACTS_RETIRED", contacts_retired);
+    m_prev_contacts_retired = contacts_retired;
+  }
+
   if(m_prev_contacts_recap != contacts_recap) {
     m_Comms.Notify("CONTACTS_RECAP", contacts_recap);
     m_prev_contacts_recap = contacts_recap;
   }
   
-  if(m_prev_contacts_retired != contacts_retired) {
-    m_Comms.Notify("CONTACTS_RETIRED", contacts_retired);
-    m_prev_contacts_retired = contacts_retired;
-  }
 }
 
 
@@ -449,41 +434,37 @@ void BasicContactMgr::postSummaries()
 
 bool BasicContactMgr::postAlerts()
 {
-#if 0
-  // Quick check to see if there are any posts needed, otherwise
-  // we can return immediately.
-  bool alerts_pending = m_par.alertsPending();
-  if(!alerts_pending)
-    return(false);
-#endif  
-
   bool new_alerts = false;
-  unsigned int i, isize = m_node_records.size();
-  unsigned int j, jsize = m_alert_var.size();
-  for(i=0; i<isize; i++) {
-    for(j=0; j<jsize; j++) {
-      string ivname = m_node_records[i].getName();
-      string jalert = m_alert_id[j];;
-      bool alerted = m_par.getValue(ivname, jalert);
+
+  map<string, NodeRecord>::iterator p;
+  for(p=m_map_node_records.begin(); p!=m_map_node_records.end(); p++) {
+    string     contact_name  = p->first;
+    NodeRecord node_record   = p->second;
+    double     contact_range = m_map_node_ranges[contact_name];
+    double     age = m_curr_time - node_record.getTimeStamp();
+
+    map<string,string>::iterator q;
+    for(q=m_map_alert_varname.begin(); q!=m_map_alert_varname.end(); q++) {
+      string alert_id = q->first;
+      bool alerted = m_par.getValue(contact_name, alert_id);
       if(!alerted) {
-	double range = m_ranges[i];
-	double age = m_curr_time - m_node_records[i].getTimeStamp();
-	if((age <= m_contact_max_age) && (range <= m_alert_range)) {
-	  string x_str   = m_node_records[i].getStringValue("x");
-	  string y_str   = m_node_records[i].getStringValue("y");
-	  string lat_str = m_node_records[i].getStringValue("lat");
-	  string lon_str = m_node_records[i].getStringValue("lon");
-	  string spd_str = m_node_records[i].getStringValue("speed");
-	  string hdg_str = m_node_records[i].getStringValue("heading");
-	  string dep_str = m_node_records[i].getStringValue("depth");
-	  string time_str = m_node_records[i].getStringValue("time");
-	  string name_str = m_node_records[i].getName();
-	  string type_str = m_node_records[i].getType();
-	  
+	double alert_range = getAlertRange(alert_id);
+	if((age <= m_contact_max_age) && (contact_range <= alert_range)) {
 	  new_alerts = true;
 
-	  string var = m_alert_var[j];
-	  string msg = m_alert_val[j];
+	  string x_str    = node_record.getStringValue("x");
+	  string y_str    = node_record.getStringValue("y");
+	  string lat_str  = node_record.getStringValue("lat");
+	  string lon_str  = node_record.getStringValue("lon");
+	  string spd_str  = node_record.getStringValue("speed");
+	  string hdg_str  = node_record.getStringValue("heading");
+	  string dep_str  = node_record.getStringValue("depth");
+	  string time_str = node_record.getStringValue("time");
+	  string name_str = node_record.getName();
+	  string type_str = node_record.getType();
+	  
+	  string var = m_map_alert_varname[alert_id];
+	  string msg = m_map_alert_pattern[alert_id];
 	  var = findReplace(var, "$[X]", x_str);
 	  var = findReplace(var, "$[Y]", y_str);
 	  var = findReplace(var, "$[LAT]", lat_str);
@@ -511,8 +492,11 @@ bool BasicContactMgr::postAlerts()
 	  msg = findReplace(msg, "%[VTYPE]", tolower(type_str));
 
 	  m_Comms.Notify(var, msg);
-	  m_par.setValue(ivname, jalert, true);
-	  augmentAlertHistory(var + "=" + msg);
+	  m_par.setValue(contact_name, alert_id, true);
+	  reportEvent(var + "=" + msg);
+
+	  m_map_node_alerts_total[contact_name]++;
+	  m_map_node_alerts_active[contact_name]++;
 	}
       }
     }
@@ -526,31 +510,37 @@ bool BasicContactMgr::postAlerts()
 
 void BasicContactMgr::updateRanges()
 {
-  unsigned int i, vsize = m_node_records.size();
-  for(i=0; i<vsize; i++) {
+  map<string, NodeRecord>::iterator p;
+  for(p=m_map_node_records.begin(); p!=m_map_node_records.end(); p++) {
+    string     vname = p->first;
+    NodeRecord node_record = p->second;
 
     // First figure out the raw range to the contact
-    double cnx = m_node_records[i].getX();
-    double cny = m_node_records[i].getY();
+    double cnx = node_record.getX();
+    double cny = node_record.getY();
     // Extrapolation from last node report added by henrik
-    double cnh = m_node_records[i].getHeading();
-    double cns = m_node_records[i].getSpeed();
-    double cnt = m_node_records[i].getTimeStamp();
+    double cnh = node_record.getHeading();
+    double cns = node_record.getSpeed();
+    double cnt = node_record.getTimeStamp();
     double ang = (90.0-cnh)*M_PI;
+
     cnx += cns*(m_curr_time - cnt)*cos(ang);
     cny += cns*(m_curr_time - cnt)*sin(ang);
 
     double range = hypot((m_nav_x - cnx), (m_nav_y - cny));
-    m_ranges[i] = range;
+    m_map_node_ranges[vname] = range;
 
     // If the raw range exceeds the minimum threshold, but is less
     // than the alert_cpa threshold, calculate the CPA and uses this
     // as the range instead.
-    if((range > m_alert_range) && (range <= m_alert_cpa_range)) {
+    double alert_range = getAlertRange(vname);
+    double alert_range_cpa = getAlertRangeCPA(vname);
+    double alert_range_cpa_time = 36000; // 10 hours
+    if((range > alert_range) && (range < alert_range_cpa)) {
       CPAEngine engine(cny, cnx, cnh, cns, m_nav_y, m_nav_x);
       
-      double cpa = engine.evalCPA(m_nav_hdg, m_nav_spd, m_alert_cpa_time);
-      m_ranges[i] = cpa;
+      double cpa = engine.evalCPA(m_nav_hdg, m_nav_spd, alert_range_cpa_time);
+      m_map_node_ranges[vname] = cpa;
     }
   }
 }
@@ -558,65 +548,196 @@ void BasicContactMgr::updateRanges()
 //---------------------------------------------------------
 // Procedure: postRadii
 
-void BasicContactMgr::postRadii()
+void BasicContactMgr::postRadii(bool active)
 {
-  string s1 = "radial:: pts=60, snap=1, label=in";
-  s1 += ", source=" + m_ownship;
-  s1 += ", x=" + doubleToString(m_nav_x,1);
-  s1 += ", y=" + doubleToString(m_nav_y,1);
-  s1 += ", radius=" + doubleToString(m_alert_range,1);
-  s1 += ", edge_color=gray65, vertex_size=0";
-    
-  m_Comms.Notify("VIEW_POLYGON", s1);
+  map<string, double>::const_iterator p;
+  for(p=m_map_alert_rng.begin(); p!=m_map_alert_rng.end(); p++) {
+    string alert_id = p->first;
+    double alert_range = getAlertRange(alert_id);
+    string alert_range_color = getAlertRangeColor(alert_id);
 
-  string s2 = "radial:: pts=60, snap=1, label=out";
-  s2 += ", source=" + m_ownship;
-  s2 += ", x=" + doubleToString(m_nav_x,1);
-  s2 += ", y=" + doubleToString(m_nav_y,1);
-  s2 += ", radius=" + doubleToString(m_alert_cpa_range,1);
-  s2 += ", edge_color=gray35, vertex_size=0";
-    
-  m_Comms.Notify("VIEW_POLYGON", s2);
-}
+    XYCircle circle(m_nav_x, m_nav_y, alert_range);
+    circle.set_label(alert_id + "_in");
+    circle.set_color("edge", alert_range_color);
+    circle.set_vertex_size(0);
+    circle.set_edge_size(1);
+    circle.set_active(true);
+    string s1 = circle.get_spec();
+    m_Comms.Notify("VIEW_CIRCLE", s1);
 
+    double alert_range_cpa = getAlertRangeCPA(alert_id);
+    if(alert_range_cpa > alert_range) {
 
-//---------------------------------------------------------
-// Procedure: postConsoleSummary
+      string alert_range_cpa_color = getAlertRangeCPAColor(alert_id);
+      XYCircle circ(m_nav_x, m_nav_y, alert_range_cpa);
+      circ.set_label(alert_id + "_out");
+      circ.set_color("edge", alert_range_cpa_color);
+      circ.set_vertex_size(0);
+      circ.set_edge_size(1);
+      circ.set_active(true);
+      string s2 = circ.get_spec();
 
-void BasicContactMgr::postConsoleSummary()
-{
-  cout << endl;
-  cout << "--------------------- Iteration: " << m_iteration << endl;
-  cout << " Time: " << (m_curr_time - m_start_time) << endl;
-  cout << "       List: " << m_prev_contacts_list << endl;
-  cout << "    Alerted: " << m_prev_contacts_alerted << endl;
-  cout << "  UnAlerted: " << m_prev_contacts_unalerted << endl;
-  cout << "    Retired: " << m_prev_contacts_retired << endl;
-  cout << "      Recap: " << m_prev_contacts_recap << endl;
-  cout << endl;
-
-  cout << "Recent Alerts: (" << m_alert_history.size() << ")" << endl;
-  list<string>::iterator p;
-  for(p=m_alert_history.begin(); p!=m_alert_history.end(); p++) {
-    string str = *p;
-    cout << str << endl;
+      m_Comms.Notify("VIEW_CIRCLE", s2);
+    }
   }
-
-  m_par.print();
-
 }
 
 //---------------------------------------------------------
-// Procedure: augmentAlertHistory
+// Procedure: buildReport
+//      Note: A virtual function of the AppCastingMOOSApp superclass, 
+//            conditionally invoked if either a terminal or appcast 
+//            report is needed.
 
-void BasicContactMgr::augmentAlertHistory(const string& alert) 
+// Alert Configurations (2):
+// ---------------------
+// Alert ID = avd
+//   VARNAME   = CONTACT_INFO
+//   PATTERN   = name=$[VNAME] # contact=$[VNAME]
+//   RANGE     = 1000, lightblue
+//   CPA_RANGE = 1200, green
+//
+// Alert ID = trail
+//   VARNAME   = TRAIL_INFO
+//   PATTERN   = name=trail_$[VNAME] # contact=$[VNAME]
+//   RANGE     = 600, white
+//   CPA_RANGE = 750, grey45
+//
+// Alert Status Summary
+// ----------------------
+//        List: henry
+//     Alerted: 
+//   UnAlerted: (henry,avd)
+//     Retired: 
+//       Recap: vname=henry,range=105.85,age=1.75
+//  
+// Contact Status Summary:
+// ---------------------- 
+//   Contact   Range    Alerts   Alerts  Alerts    Alerts
+//                      Total    Active  Resolved  Active
+//   -------   -----    -------  ------  --------  ------
+//   gilda     188.2    4        3       1         (a,b)
+//   henry     19.0     0        0       0         
+//   ike       65.9     23       12      11        (a)
+// 
+//
+// Events (Last 5):
+// ---------------------
+// 203.1  CONTACT_INFO = name=gilda # contact=gilda
+// 192.0  CONTACT_RESOLVED = contact=gilda, alert=CONTACT_INFO 
+// 143.2  CONTACT_INFO = name=gilda # contact=gilda
+// 111.9  CONTACT_RESOLVED = contact=gilda, alert=CONTACT_INFO 
+//  43.2  CONTACT_INFO = name=gilda # contact=gilda
+
+bool BasicContactMgr::buildReport()
 {
-  double timestamp = m_curr_time - m_start_time;
-  string timestr   = "  [" + doubleToString(timestamp,2) + "]: ";
-  
-  m_alert_history.push_back(timestr+alert);
-  if(m_alert_history.size() > 10)
-    m_alert_history.pop_front();
+  string alert_count = uintToString(m_map_alert_varname.size());
+  m_msgs << "DisplayRadii: " << m_display_radii << endl << endl;;
+  m_msgs << "Alert Configurations (" << alert_count << "):" << endl;
+  m_msgs << "---------------------";
+  map<string,string>::iterator p;
+  for(p=m_map_alert_varname.begin(); p!=m_map_alert_varname.end(); p++) {
+    string alert_id = p->first;
+    string alert_var = p->second;
+    string alert_pattern = m_map_alert_pattern[alert_id];
+    string alert_rng     = doubleToStringX(getAlertRange(alert_id));
+    string alert_rng_cpa = doubleToStringX(getAlertRangeCPA(alert_id));
+    string alert_rng_color     = getAlertRangeColor(alert_id);
+    string alert_rng_cpa_color = getAlertRangeCPAColor(alert_id);
+
+    m_msgs << "Alert ID = " << alert_id         << endl;
+    m_msgs << "  VARNAME   = " << alert_var     << endl;
+    m_msgs << "  PATTERN   = " << alert_pattern << endl;
+    m_msgs << "  RANGE     = " << alert_rng     << ", " << alert_rng_color     << endl;
+    m_msgs << "  CPA_RANGE = " << alert_rng_cpa << ", " << alert_rng_cpa_color << endl;
+  }
+  m_msgs << endl;
+  m_msgs << "Alert Status Summary: ";
+  m_msgs << "----------------------";
+  m_msgs << "       List: " << m_prev_contacts_list         << endl;
+  m_msgs << "    Alerted: " << m_prev_contacts_alerted      << endl;
+  m_msgs << "  UnAlerted: " << m_prev_contacts_unalerted    << endl;
+  m_msgs << "    Retired: " << m_prev_contacts_retired      << endl;
+  m_msgs << "      Recap: " << m_prev_contacts_recap        << endl;
+  m_msgs << endl;
+
+  ACTable actab(5,5);
+  actab.setColumnJustify(1, "right");
+  actab << "Contact | Range | Alerts  | Alerts | Alerts   ";
+  actab << "        |       | Total   | Active | Resolved ";
+  actab.addHeaderLines();
+
+  map<string, NodeRecord>::iterator q;
+  for(q=m_map_node_records.begin(); q!=m_map_node_records.end(); q++) {
+    string vname = q->first;
+    string range = doubleToString(m_map_node_ranges[vname], 1);
+    string alerts_total  = uintToString(m_map_node_alerts_total[vname]);
+    string alerts_active = uintToString(m_map_node_alerts_active[vname]);
+    string alerts_resolved = uintToString(m_map_node_alerts_resolved[vname]);
+    actab << vname << range << alerts_total << alerts_active << alerts_resolved;
+  }
+  m_msgs << "Contact Status Summary:" << endl;
+  m_msgs << "-----------------------" << endl;
+  m_msgs << actab.getFormattedString();
+  return(true);
 }
 
+//---------------------------------------------------------
+// Procedure: getAlertRange
+//      Note: Use this method to access map, not map directly. This 
+//            allows intelligent defaults to be applied if missing key.
+
+double BasicContactMgr::getAlertRange(const string& alert_id) const
+{
+  map<string, double>::const_iterator p;
+  p = m_map_alert_rng.find(alert_id);
+  if(p == m_map_alert_rng.end())
+    return(m_default_alert_rng);
+  else
+    return(p->second);
+}
+
+//---------------------------------------------------------
+// Procedure: getAlertRangeCPA
+//      Note: Use this method to access map, not map directly. This 
+//            allows intelligent defaults to be applied if missing key.
+
+double BasicContactMgr::getAlertRangeCPA(const string& alert_id) const
+{
+  map<string, double>::const_iterator p;
+  p = m_map_alert_rng_cpa.find(alert_id);
+  if(p == m_map_alert_rng_cpa.end())
+    return(m_default_alert_rng_cpa);
+  else
+    return(p->second);
+}
+
+//---------------------------------------------------------
+// Procedure: getAlertRangeColor
+//      Note: Use this method to access map, not map directly. This 
+//            allows intelligent defaults to be applied if missing key.
+
+string BasicContactMgr::getAlertRangeColor(const string& alert_id) const
+{
+  map<string, string>::const_iterator p;
+  p = m_map_alert_rng_color.find(alert_id);
+  if(p == m_map_alert_rng_color.end())
+    return(m_default_alert_rng_color);
+  else
+    return(p->second);
+}
+
+//---------------------------------------------------------
+// Procedure: getAlertRangeCPAColor
+//      Note: Use this method to access map, not map directly. This 
+//            allows intelligent defaults to be applied if missing key.
+
+string BasicContactMgr::getAlertRangeCPAColor(const string& alert_id) const
+{
+  map<string, string>::const_iterator p;
+  p = m_map_alert_rng_cpa_color.find(alert_id);
+  if(p == m_map_alert_rng_cpa_color.end())
+    return(m_default_alert_rng_cpa_color);
+  else
+    return(p->second);
+}
 

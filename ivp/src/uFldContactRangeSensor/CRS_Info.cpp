@@ -143,7 +143,6 @@ void showInterfaceAndExit()
   blk("                        target=jackal,time=19656022406.44       ");
   blk("  CRS_RANGE_REPORT_GT = vname=archie,range=126.54,              ");
   blk("                        target=jackal,time=19656022406.44       ");
-  blk("  CRSE_DEBUG          = Invalid incoming node report            ");
   blk("  VIEW_RANGE_PULSE    = x=-40,y=-150,radius=40,duration=15,     ");
   blk("                        fill=0.25,fill_color=green,label=04,    ");
   blk("                        edge_color=green,time=3892830128.5,     ");
@@ -159,4 +158,5 @@ void showReleaseInfoAndExit()
   showReleaseInfo("uFldContactRangeSensor", "gpl");
   exit(0);
 }
+
 

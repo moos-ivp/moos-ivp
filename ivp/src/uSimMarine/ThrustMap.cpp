@@ -256,6 +256,59 @@ void ThrustMap::clear()
   m_figlog.clear();
 }
 
+//----------------------------------------------------------------
+// Procedure: usingThrustFactor()
+//      Note: The thrust factor is used by default to calculated speed
+//            for a given thrust, unless/until a thrus mapping is provided. 
+
+bool ThrustMap::usingThrustFactor() const
+{
+  if(m_pos_mapping.size() == 0)
+    return(true);
+  else
+    return(false);
+}
+
+//----------------------------------------------------------------
+// Procedure: getMapPos()
+
+string ThrustMap::getMapPos() const
+{
+  string posmap;
+
+  map<double, double>::const_iterator p;
+  for(p=m_pos_mapping.begin(); p!=m_pos_mapping.end(); p++) {
+    double thrust = p->first;
+    double speed  = p->second;
+    if(posmap != "")
+      posmap += ", ";
+    posmap += doubleToStringX(thrust,4);
+    posmap += ","+ doubleToStringX(speed, 4);
+  }
+  return(posmap);
+}
+
+//----------------------------------------------------------------
+// Procedure: getMapNeg()
+
+string ThrustMap::getMapNeg() const
+{
+  if(m_reflect_negative)
+    return("Positive thrust-map reflected");
+  
+  string negmap;
+  map<double, double>::const_iterator p;
+  for(p=m_neg_mapping.begin(); p!=m_neg_mapping.end(); p++) {
+    double thrust = p->first;
+    double speed  = p->second;
+    if(negmap != "")
+      negmap += ", ";
+    negmap += doubleToStringX(thrust,4);
+    negmap += ":"+ doubleToStringX(speed, 4);
+  }
+  return(negmap);
+}
+
 
 //----------------------------------------------------------------
 // Procedure: getSpeedValueNeg
@@ -478,6 +531,7 @@ double ThrustMap::getThrustValueNeg(double speed) const
 
   return(thrust_val);
 }
+
 
 
 
