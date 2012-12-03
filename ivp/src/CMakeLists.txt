@@ -202,7 +202,6 @@ SET(IVP_NON_GUI_APPS
   app_nsplug
   app_gen_hazards
   app_testfp
-  app_colbrowser
   pEchoVar
   pXRelay
   pHelmIvP
