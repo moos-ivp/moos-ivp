@@ -22,7 +22,7 @@ SET(SRC
 ADD_EXECUTABLE(uFldHazardSensor ${SRC})
 
 TARGET_LINK_LIBRARIES(uFldHazardSensor
-  MOOS
+  ${MOOS_LIBRARIES}
   ufld_hazards
   mbutil
   geometry 

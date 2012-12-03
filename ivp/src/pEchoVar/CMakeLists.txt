@@ -23,7 +23,7 @@ SET(SRC
 ADD_EXECUTABLE(pEchoVar ${SRC})
 
 TARGET_LINK_LIBRARIES(pEchoVar 
-  MOOS
+  ${MOOS_LIBRARIES}
   geometry
   mbutil 
   logic

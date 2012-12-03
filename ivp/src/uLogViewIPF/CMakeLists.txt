@@ -25,7 +25,7 @@ ELSE (${APPLE})
 ENDIF (${APPLE})
       
 Target_LINK_LIBRARIES(uLogViewIPF         
-   MOOS
+   ${MOOS_LIBRARIES}
    marineview
    ipfview
    contacts

@@ -8,9 +8,8 @@ FILE(GLOB SRC *.cpp)
 ADD_EXECUTABLE(gen_hazards ${SRC})
 
 TARGET_LINK_LIBRARIES(gen_hazards
-  MOOS
   ufld_hazards
   geometry
   mbutil
-  m
-  pthread)
+  ${SYSTEM_LIBS}
+)

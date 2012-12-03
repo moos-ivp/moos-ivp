@@ -25,7 +25,7 @@ SET(SRC
 ADD_EXECUTABLE(uSimMarine ${SRC})
 
 TARGET_LINK_LIBRARIES(uSimMarine 
-  MOOS
+  ${MOOS_LIBRARIES}
   MOOSGeodesy
   contacts
   geometry 

@@ -24,7 +24,7 @@ SET(SRC
 ADD_EXECUTABLE(pMarinePID ${SRC})
    
 TARGET_LINK_LIBRARIES(pMarinePID 
-  MOOS
+  ${MOOS_LIBRARIES}
   mbutil
   geometry 
   ${SYSTEM_LIBS})

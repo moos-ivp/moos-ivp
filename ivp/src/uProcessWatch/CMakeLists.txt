@@ -20,7 +20,7 @@ SET(SRC
 ADD_EXECUTABLE(uProcessWatch ${SRC})
  
 TARGET_LINK_LIBRARIES(uProcessWatch 
-  MOOS
+  ${MOOS_LIBRARIES}
   apputil
   mbutil
   ${SYSTEM_LIBS})

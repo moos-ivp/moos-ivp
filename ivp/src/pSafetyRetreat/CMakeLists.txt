@@ -20,7 +20,7 @@ FILE(GLOB SRC *.cpp)
 ADD_EXECUTABLE(pSafetyRetreat ${SRC})
 
 TARGET_LINK_LIBRARIES(pSafetyRetreat
-   MOOS
+   ${MOOS_LIBRARIES}
    mbutil
    geometry
    ${SYSTEM_LIBS})

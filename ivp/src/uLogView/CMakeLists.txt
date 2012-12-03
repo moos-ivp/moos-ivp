@@ -26,13 +26,13 @@ ELSE (${APPLE})
       ADD_EXECUTABLE(uLogView ${SRC})
 ENDIF (${APPLE})
       
-Target_LINK_LIBRARIES(uLogView         
+TARGET_LINK_LIBRARIES(uLogView         
    ulogview
    marineview
    geometry
    logutils
-   MOOSGeodesy
-   MOOS
+   ${MOOSGeodesy_LIBRARIES}
+   ${MOOS_LIBRARIES}
    genutil
    contacts
    apputil

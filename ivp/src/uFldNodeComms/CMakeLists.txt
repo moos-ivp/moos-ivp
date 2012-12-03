@@ -8,7 +8,7 @@ FILE(GLOB SRC *.cpp)
 ADD_EXECUTABLE(uFldNodeComms ${SRC})
 
 TARGET_LINK_LIBRARIES(uFldNodeComms
-   MOOS
+   ${MOOS_LIBRARIES}
    mbutil
    apputil
    contacts

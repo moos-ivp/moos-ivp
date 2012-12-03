@@ -29,7 +29,7 @@ ENDIF (${APPLE})
 
 
 TARGET_LINK_LIBRARIES(uMACView
-  MOOS
+  ${MOOS_LIBRARIES}
   genutil
   marineview
   apputil

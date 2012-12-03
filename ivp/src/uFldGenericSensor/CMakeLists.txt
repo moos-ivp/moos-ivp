@@ -22,7 +22,7 @@ SET(SRC
 ADD_EXECUTABLE(uFldGenericSensor ${SRC})
 
 TARGET_LINK_LIBRARIES(uFldGenericSensor
-  MOOS
+  ${MOOS_LIBRARIES}
   mbutil
   geometry 
   contacts

@@ -29,7 +29,7 @@ ENDIF (${APPLE})
 
 
 TARGET_LINK_LIBRARIES(uPlotViewer
-  MOOS
+  ${MOOS_LIBRARIES}
   genutil
   ivpbuild
   mbutil

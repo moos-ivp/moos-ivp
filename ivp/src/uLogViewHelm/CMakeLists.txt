@@ -25,8 +25,8 @@ ELSE (${APPLE})
       ADD_EXECUTABLE(uLogViewHelm ${SRC})
 ENDIF (${APPLE})
       
-Target_LINK_LIBRARIES(uLogViewHelm         
-   MOOS
+TARGET_LINK_LIBRARIES(uLogViewHelm         
+   ${MOOS_LIBRARIES}
    contacts
    ulogview
    logutils

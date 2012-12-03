@@ -16,11 +16,11 @@ SET(SRC
 ADD_EXECUTABLE(uFldHazardMetric ${SRC})
 
 TARGET_LINK_LIBRARIES(uFldHazardMetric
-   MOOS
+   ${MOOS_LIBRARIES}
    ufld_hazards
    geometry
    mbutil
    apputil
-   m
-   pthread)
+   ${SYSTEM_LIBS}
+)
 

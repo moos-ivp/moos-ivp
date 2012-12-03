@@ -21,7 +21,7 @@ SET(SRC
 ADD_EXECUTABLE(uTermCommand ${SRC})
 
 TARGET_LINK_LIBRARIES(uTermCommand 
-  MOOS
+  ${MOOS_LIBRARIES}
   mbutil
   genutil
   ${SYSTEM_LIBS})

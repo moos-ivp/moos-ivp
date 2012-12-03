@@ -8,10 +8,10 @@ FILE(GLOB SRC *.cpp)
 ADD_EXECUTABLE(pSearchGrid ${SRC})
 
 TARGET_LINK_LIBRARIES(pSearchGrid
-   MOOS
+   ${MOOS_LIBRARIES}
    geometry
    mbutil
    contacts
-   m
-   pthread)
+   ${SYSTEM_LIBS}
+)
 

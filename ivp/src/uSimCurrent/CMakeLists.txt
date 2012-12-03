@@ -22,8 +22,8 @@ SET(SRC
 ADD_EXECUTABLE(uSimCurrent ${SRC})
 
 TARGET_LINK_LIBRARIES(uSimCurrent
-  MOOS
-  MOOSGeodesy
+  ${MOOS_LIBRARIES}
+  ${MOOSGeodesy_LIBRARIES}
   mbutil
   geometry 
   ${SYSTEM_LIBS})

@@ -22,7 +22,7 @@ SET(SRC
 ADD_EXECUTABLE(uXMS ${SRC})
 
 TARGET_LINK_LIBRARIES(uXMS 
-  MOOS
+  ${MOOS_LIBRARIES}
   genutil
   apputil
   mbutil 

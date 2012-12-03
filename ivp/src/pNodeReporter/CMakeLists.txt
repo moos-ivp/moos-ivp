@@ -22,8 +22,8 @@ SET(SRC
 ADD_EXECUTABLE(pNodeReporter ${SRC})
    
 TARGET_LINK_LIBRARIES(pNodeReporter
-   MOOS
-   MOOSGeodesy
+   ${MOOS_LIBRARIES}
+   ${MOOSGeodesy_LIBRARIES}
    contacts
    apputil
    mbutil

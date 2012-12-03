@@ -22,7 +22,7 @@ SET(SRC
 ADD_EXECUTABLE(uFldContactRangeSensor ${SRC})
 
 TARGET_LINK_LIBRARIES(uFldContactRangeSensor
-  MOOS
+  ${MOOS_LIBRARIES}
   apputil
   mbutil
   geometry 

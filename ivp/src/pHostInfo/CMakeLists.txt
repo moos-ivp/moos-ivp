@@ -12,10 +12,10 @@ SET(SRC
 ADD_EXECUTABLE(pHostInfo ${SRC})
 
 TARGET_LINK_LIBRARIES(pHostInfo
-   MOOS
+   ${MOOS_LIBRARIES}
    mbutil
    ufield
    apputil
-   m
-   pthread)
+   ${SYSTEM_LIBS}
+)
 

@@ -23,7 +23,7 @@ SET(SRC
 ADD_EXECUTABLE(uFldBeaconRangeSensor ${SRC})
 
 TARGET_LINK_LIBRARIES(uFldBeaconRangeSensor
-  MOOS
+  ${MOOS_LIBRARIES}
   mbutil
   apputil
   geometry 

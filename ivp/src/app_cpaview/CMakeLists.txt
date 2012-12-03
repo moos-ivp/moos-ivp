@@ -23,7 +23,7 @@ ENDIF (${APPLE})
 TARGET_LINK_LIBRARIES(cpaview 
   marineview
   geometry
-  MOOSGeodesy
+  ${MOOSGeodesy_LIBRARIES}
   contacts
   ipfview
   ivpbuild

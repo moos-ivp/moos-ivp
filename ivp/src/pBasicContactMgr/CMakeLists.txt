@@ -21,11 +21,11 @@ else (${WIN32})
 endif (${WIN32})
 
 TARGET_LINK_LIBRARIES(pBasicContactMgr
-   MOOS
+   ${MOOS_LIBRARIES}
    mbutil
    apputil
    geometry
    contacts
    ${SYSTEM_LIBS}
-   )
+)
 

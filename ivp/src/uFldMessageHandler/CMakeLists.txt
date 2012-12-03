@@ -8,10 +8,10 @@ FILE(GLOB SRC *.cpp)
 ADD_EXECUTABLE(uFldMessageHandler ${SRC})
 
 TARGET_LINK_LIBRARIES(uFldMessageHandler
-   MOOS
+   ${MOOS_LIBRARIES}
    mbutil
    apputil
    ufield
-   m
-   pthread)
+   ${SYSTEM_LIBS}
+)
 

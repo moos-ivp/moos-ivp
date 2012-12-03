@@ -35,9 +35,9 @@ void showSynopsis()
 {
   blk("SYNOPSIS:                                                       ");
   blk("------------------------------------                            ");
-  blk("  The uFldHazardMgr application is used for                     ");
-  blk("                                                                ");
-  blk("                                                                ");
+  blk("  The uFldHazardMgr is a strawman MOOS app for managing hazard  ");
+  blk("  sensor information and generation of a hazard report over the ");
+  blk("  course of an autonomous search mission.                       ");
   blk("                                                                ");
   blk("                                                                ");
 }

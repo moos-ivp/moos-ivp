@@ -29,7 +29,7 @@ ELSE (${APPLE})
 ENDIF (${APPLE})
 
 TARGET_LINK_LIBRARIES(uFunctionVis
-   MOOS
+   ${MOOS_LIBRARIES}
    ipfview
    geometry
    ivpbuild

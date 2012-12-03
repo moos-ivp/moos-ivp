@@ -14,7 +14,7 @@ SET(SRC
 ADD_EXECUTABLE(uMAC ${SRC})
 
 TARGET_LINK_LIBRARIES(uMAC
-   MOOS
+   ${MOOS_LIBRARIES}
    genutil
    mbutil
    apputil

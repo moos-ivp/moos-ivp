@@ -33,7 +33,7 @@ TARGET_LINK_LIBRARIES(alogview
    marineview
    geometry
    logutils
-   MOOSGeodesy
+   ${MOOSGeodesy_LIBRARIES}
    MOOS
    contacts
    navplot

@@ -8,7 +8,7 @@ FILE(GLOB  SRC *.cpp)
 ADD_EXECUTABLE(uFldScope ${SRC})
 
 TARGET_LINK_LIBRARIES(uFldScope
-   MOOS
+   ${MOOS_LIBRARIES}
    mbutil
    genutil
    m

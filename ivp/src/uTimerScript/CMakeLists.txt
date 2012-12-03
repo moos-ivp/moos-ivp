@@ -26,7 +26,7 @@ SET(SRC
 ADD_EXECUTABLE(uTimerScript ${SRC})
 
 TARGET_LINK_LIBRARIES(uTimerScript
-   MOOS
+   ${MOOS_LIBRARIES}
    mbutil
    apputil
    logic
