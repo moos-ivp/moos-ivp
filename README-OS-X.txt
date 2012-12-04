@@ -62,7 +62,7 @@ BUILDING MOOS-IvP
 ENVIRONMENT VARIABLES
 =====================
 When you build the MOOS software, the MOOS executable programs get placed in 
-the "MOOS/MOOSBin" subdirectory of the source code tree.
+the "MOOS/bin" subdirectory of the source code tree.
 
 When you build the IvP software, the IvP executable programs get placed in
 the "bin/" subdirectory of the source code tree (moos-ivp/bin/).
