@@ -1,0 +1,11 @@
+//---------------------------------------------------------
+// pMOOSBridge_%(VNAME) Config Block  (Created from Plugin)
+
+ProcessConfig = pMOOSBridge_%(VNAME)
+{
+  AppTick    = 4
+  CommsTick  = 4 
+  
+  UDPListen = $(LPORT)
+  BridgeFrequency = 0  
+}

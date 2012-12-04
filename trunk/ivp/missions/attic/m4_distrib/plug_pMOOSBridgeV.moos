@@ -1,0 +1,32 @@
+//---------------------------------------------------------
+// pMOOSBridge_%(VNAME) Config Block  (Created from Plugin)
+
+ProcessConfig = pMOOSBridge_%(VNAME)
+{
+  AppTick    = 8
+  CommsTick  = 8 
+  
+  UDPListen = $(VPORT)
+  BridgeFrequency = 0
+  
+  SHARE = [VIEW_POLYGON] -> $(SNAME) @ localhost:$(SPORT) [VIEW_POLYGON]
+  SHARE = [VIEW_SEGLIST] -> $(SNAME) @ localhost:$(SPORT) [VIEW_SEGLIST]
+  SHARE = [VIEW_POINT]   -> $(SNAME) @ localhost:$(SPORT) [VIEW_POINT]
+
+  UDPSHARE = [VIEW_POLYGON] -> listener @ 128.30.24.232: 9300 [VIEW_POLYGON]
+  UDPSHARE = [VIEW_SEGLIST] -> listener @ 128.30.24.232: 9300 [VIEW_SEGLIST]
+  UDPSHARE = [VIEW_POINT]   -> listener @ 128.30.24.232: 9300 [VIEW_POINT]
+
+  UDPSHARE = [NODE_REPORT_LOCAL] -> listener  @ 128.30.24.232: 9300 [NODE_REPORT]
+  UDPSHARE = [NODE_REPORT_LOCAL] -> $(SNAME) @ localhost:$(SPORT) [NODE_REPORT]
+
+  UDPSHARE = [SIMCOR_RANGE_REQUEST] -> listener  @ 128.30.24.232: 9300 [SIMCOR_RANGE_REQUEST]
+  UDPSHARE = [SIMCOR_RANGE_REQUEST] -> $(SNAME) @ localhost:$(SPORT) [SIMCOR_RANGE_REQUEST]
+
+
+
+  //UDPSHARE = [NODE_REPORT_LOCAL] -> all @ broadcast: 9200 [NODE_REPORT]
+  //UDPSHARE = [NODE_REPORT_LOCAL] -> $(VNAME1) @ localhost:$(VPORT1) [NODE_REPORT]
+  //UDPSHARE = [NODE_REPORT_LOCAL] -> $(VNAME2) @ localhost:$(VPORT2) [NODE_REPORT]
+  //UDPSHARE = [NODE_REPORT_LOCAL] -> $(SNAME) @ localhost:$(SPORT) [NODE_REPORT]
+}

@@ -1,0 +1,30 @@
+initialize   DEPLOY   = false
+initialize   RETURN   = false
+initialize   TRAIL    = false
+
+//----------------------------------------------
+Behavior = BHV_Trail
+{
+  name      = trail_vehi1
+  pwt       = 100
+  condition = (DEPLOY = true) and (TRAIL == true)
+  condition = (RETURN != true)
+  updates   = TRAIL_UPDATES
+
+           contact = charlie
+       trail_range = 30
+       trail_angle = 190
+            radius = 8
+  trail_angle_type = absolute
+}
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name      = waypoint
+  pwt       = 100	
+  condition = (DEPLOY == true) and (RETURN == true)
+
+      speed = 1.4
+     points = 0,-10
+}

@@ -1,0 +1,20 @@
+wc -l  lib_ivpcore/*.h             lib_ivpcore/*.cpp             \
+       lib_ivpbuild/*.h            lib_ivpbuild/*.cpp            \
+       lib_helmivp/*.h             lib_helmvivp/*.cpp            \
+       lib_behaviors/*.h           lib_behaviors/*.cpp           \
+       lib_behaviors-marine/*.h    lib_behaviors-marine/*.cpp    \
+       lib_mbutil/*.h              lib_mbutil/*.cpp              \
+       lib_geometry/*.h            lib_geometry/*.cpp            \
+       lib_helmivp/*.h             lib_helmivp/*.cpp            
+       pHelmIvP/*.h                pHelmIvP/*.cpp                \
+       uTMS/*.h                    uTMS/*.cpp                    \
+       pTransponderAIS/*.h         pTransponderAIS/*.cpp         \
+       pMarineViewer/*.h           pMarineViewer/*.cpp           \
+       pMarinePID/*.h              pMarinePID/*.cpp              \
+       app_logview/*.h             app_logview/*.cpp             \
+       lib_navplot/*.h             lib_navplot/*.cpp             \
+       app_polyview/*.h            app_polyview/*.cpp            \
+       lib_marineview/*.h          lib_marineview/*.cpp          \
+       iMarineSim/*.h              iMarineSim/*.cpp              \
+       pEchoVar/*.h                pEchoVar/*.cpp                \
+ 

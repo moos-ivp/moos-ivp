@@ -1,0 +1,29 @@
+hazard = x=-151,y=-217.3,type=hazard
+hazard = x=263.20001,y=-8.5,type=hazard
+hazard = x=48.5,y=-195.7,type=hazard
+hazard = x=165.90001,y=-116.4,type=hazard
+hazard = x=101.3,y=-159.3,type=hazard
+hazard = x=257.60001,y=-131.3,type=hazard
+hazard = x=217.3,y=-16.7,type=hazard
+hazard = x=-14.2,y=-293.60001,type=hazard
+hazard = x=260.20001,y=-66.2,type=hazard
+hazard = x=-65.8,y=-125.2,type=hazard
+hazard = x=171.90001,y=-253.7,type=inert
+hazard = x=-150.3,y=-117.5,type=inert
+hazard = x=-59.8,y=-294.10001,type=inert,color=light_blue
+hazard = x=98.2,y=-127.7,type=inert,color=light_blue
+hazard = x=-178.8,y=-234,type=inert,color=light_blue
+hazard = x=24,y=-61,type=inert,color=light_blue
+hazard = x=250.3,y=-214.6,type=inert,color=light_blue
+hazard = x=97.7,y=-245.5,type=inert,color=light_blue
+
+-151,y=-217.3:263.2,y=-8.5:48.5,y=-195.7:165.9,y=-116.4:101.3,y=-159.3:257.6,y=-131.3:217.3,y=-16.7:-14.2,y=-293.6:260.2,y=-66.2:-65.8,y=-125.2:
+
+171.9,y=-253.7:
+-150.3,y=-117.5:
+-59.8,y=-294.1:
+98.2,y=-127.7:
+-178.8,y=-234:
+24,y=-61:
+250.3,y=-214.6:
+97.7,y=-245.5:

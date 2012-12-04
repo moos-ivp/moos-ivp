@@ -1,0 +1,9 @@
+//------------------------------------------------
+// uFldHazardMetric config block
+
+ProcessConfig = uFldHazardMetric
+{
+   AppTick   = 4
+   CommsTick = 4
+}
+

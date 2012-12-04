@@ -1,0 +1,17 @@
+//--------------------------------------------------------
+// pBasicContactMgr Configuration Block (Created from Plugin)
+
+ProcessConfig = pBasicContactMgr
+{
+  AppTick   = 2
+  CommsTick = 2
+
+  ALERT_RANGE     = 55
+  ALERT_CPA_RANGE = 70
+  CONTACT_MAX_AGE = 3600
+  DISPLAY_RADII   = false
+
+  Alert = var=CONTACT_INFO, val="name=avd_$[VNAME] # contact=$[VNAME]"
+  Alert = var=TRAIL_INFO, val="name=trail_$[VNAME] # contact=$[VNAME]"
+  Alert = var=CONTACT_$[VTYPE], val="name=avd_$[VNAME] # contact_type=$[VTYPE]"
+}

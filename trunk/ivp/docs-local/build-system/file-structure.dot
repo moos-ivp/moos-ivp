@@ -1,0 +1,43 @@
+/*
+To build:
+
+dot -Tps file-structure.dot > file-structure.ps \
+&& ps2ps file-structure.ps file-structure.fixed.ps \
+&& ps2epsi file-structure.fixed.ps file-structure.eps
+
+*/
+
+digraph {
+   graph[
+      rankdir = "LR"
+   ]
+
+   subgraph cluster_0 {
+      label = ".../CMakeLists.txt"
+      style=filled;
+      color=lightgrey;
+
+      node0 [
+      label = "<f0> PROJECT(Foo) \l | <f1> SET(MyVar 'X') \l | <f2> ADD_SUBDIRECTORY(Bar) \l | <f3> MESSAGE(\$\{MyVar\}) \l "
+      shape = "record"
+      style=filled
+      color=white
+      ];
+   }   
+
+   subgraph cluster_1 {
+      label = ".../Bar/CMakeLists.txt"
+      style=filled;
+      color=lightgrey;
+
+      node1 [
+      label = "<f0> MESSAGE(\$\{MyVar\}) \l | <f1> SET(MyVar 'Y') \l "
+      shape = "record"
+      style=filled
+      color=white
+      ];
+   }   
+
+   node0:f2 -> node1:f0
+   node1:f1 -> node0:f3
+}

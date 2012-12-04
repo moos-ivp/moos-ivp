@@ -1,0 +1,14 @@
+#!/bin/sh
+
+# This script launches the specified program within its application bundle.
+# We launch the program within its app bundle (rather than using /usr/bin/open)
+# because this is the only way (that we know of) that permits us to supply
+# command-line arguments.
+#
+# Although IvP's users could explicitly call the specified program directly,
+# we provide this script so that the scripts for launching these programs can
+# all be placed in the same directory (ivp/src/bin/mac-osx).  This lets users
+# just add this one directory to their PATH, rather than having to add many
+# directories ( .../pShipsideViewer.app/Contents/MacOS:.../pMarineViewer.app/...., etc.)
+
+`dirname $0`/../logview.app/Contents/MacOS/logview $*

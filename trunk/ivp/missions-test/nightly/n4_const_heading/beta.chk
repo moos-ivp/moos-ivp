@@ -1,0 +1,19 @@
+##############################################################################
+# AUTHOR:      Christopher Gagner
+# DATE:        2010/08/08
+# FILE:        beta.chk
+# DESCRIPTION: An input file for the alogcheck application to check for a
+#              successful run of the beta mission.
+##############################################################################
+
+START      "(NAV_HEADING > 179) AND (NAV_HEADING < 181)"
+END        "MISSION_COMPLETE == true"
+PASS       "(NAV_HEADING > 179) AND (NAV_HEADING < 181)"
+FAIL       "(NAV_HEADING < 179) OR (NAV_HEADING > 181)"
+
+
+
+##############################################################################
+#                              END of beta.chk
+##############################################################################
+

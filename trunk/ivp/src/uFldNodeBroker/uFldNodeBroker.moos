@@ -1,0 +1,19 @@
+=============================================================== 
+uFldNodeBroker Example MOOS Configuration                       
+=============================================================== 
+                                                                
+ProcessConfig = uFldNodeBroker                                  
+{                                                               
+  AppTick   = 4                                                 
+  CommsTick = 4                                                 
+                                                                
+  KEYWORD        = lemon                                        
+  TRY_SHORE_HOST = localhost, 9200                              
+  TRY_SHORE_HOST = 128.30.24.232, 9200                          
+                                                                
+  PIGEON_VAR = VIEW_POLYGON                                     
+  PIGEON_VAR = VIEW_POINT                                       
+  PIGEON_VAR = VIEW_SEGLIST                                     
+                                                                
+  PIGEON_VAR = NODE_REPORT_LOCAL, NODE_REPORT                   
+}                                            

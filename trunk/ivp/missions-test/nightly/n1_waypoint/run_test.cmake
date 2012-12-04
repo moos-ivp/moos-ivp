@@ -1,0 +1,63 @@
+#!/usr/bin/cmake -P
+IF( "${MOOSIVP_DIR}" STREQUAL "" )
+   GET_FILENAME_COMPONENT(MOOSIVP_DIR "../../../.." ABSOLUTE)
+ENDIF( "${MOOSIVP_DIR}" STREQUAL "" )
+#MESSAGE("Moos-ivp dir: ${MOOSIVP_DIR}")
+
+
+IF( "${IVP_BIN_DIR}" STREQUAL "" OR "${MOOS_BIN_DIR}" STREQUAL "")
+   GET_FILENAME_COMPONENT(IVP_BIN_DIR "${MOOSIVP_DIR}/bin" ABSOLUTE)
+   GET_FILENAME_COMPONENT(MOOS_BIN_DIR "${MOOSIVP_DIR}/MOOS/MOOSBin" ABSOLUTE)
+ENDIF( "${IVP_BIN_DIR}" STREQUAL "" OR "${MOOS_BIN_DIR}" STREQUAL "")
+
+IF( "${TEST_DIR}" STREQUAL "" )
+   GET_FILENAME_COMPONENT(TEST_DIR "." ABSOLUTE)
+ENDIF( "${TEST_DIR}" STREQUAL "" )
+
+
+# Remove the old log files
+FILE(GLOB MOOS_LOG_DIRS "${TEST_DIR}/MOOSLog_*")
+FILE(GLOB TESTING_DIR "${TEST_DIR}/Testing")
+FOREACH(LOG_DIR ${MOOS_LOG_DIRS} ${TESTING_DIR})
+   FILE(REMOVE_RECURSE ${LOG_DIR} )
+ENDFOREACH(LOG_DIR)
+
+
+#=============================================================================
+# Setup the Path
+IF( ${WIN32} )
+   SET(ENV{PATH} "${IVP_BIN_DIR}/Debug;${MOOS_BIN_DIR}/Debug;" )
+ELSE( ${WIN32} )
+   SET(ENV{PATH} "${IVP_BIN_DIR}:${MOOS_BIN_DIR}:/bin:/usr/bin:/usr/local/bin")
+ENDIF( ${WIN32} )
+
+MESSAGE( "Your path is: $ENV{PATH}")
+MESSAGE( "Your working directory is: ${TEST_DIR}")
+
+EXECUTE_PROCESS( COMMAND uMissionTester alpha.moos
+    WORKING_DIRECTORY ${TEST_DIR}
+    RESULT_VARIABLE RUN_TEST )
+
+MESSAGE("Result: ${RUN_TEST}")
+
+IF( "${RUN_TEST}" STREQUAL "0" )
+   MESSAGE("Mission ran successfully!")
+ELSE( "${RUN_TEST}" STREQUAL "0" )
+   MESSAGE(SEND_ERROR "Mission failed to run!")
+ENDIF( "${RUN_TEST}" STREQUAL "0" )
+
+SET(MOOS_LOG_PREFIX "MOOSLog_")
+FILE(GLOB MOOS_LOG_FILES "${TEST_DIR}/${MOOS_LOG_PREFIX}*/*.alog" )
+FOREACH( LOG_FILE ${MOOS_LOG_FILES} )
+   MESSAGE("Logfile: ${LOG_FILE}")
+   EXECUTE_PROCESS( COMMAND alogcheck -i alpha.chk ${LOG_FILE}
+      WORKING_DIRECTORY ${TEST_DIR}
+      RESULT_VARIABLE RUN_TEST )
+   IF( "${RUN_TEST}" STREQUAL "0" )
+      MESSAGE("Check successful!")
+   ELSE( "${RUN_TEST}" STREQUAL "0" )
+      MESSAGE(SEND_ERROR "Check failed!")
+   ENDIF( "${RUN_TEST}" STREQUAL "0" )
+ENDFOREACH( LOG_FILE )
+
+

@@ -1,0 +1,11 @@
+//--------------------------------------------------
+// uFldHazardMgr configuration block from plugin
+
+ProcessConfig = uFldHazardMgr
+{
+  AppTick   = 2
+  CommsTick = 2
+
+  swath_width = 48
+  pd          = 0.86
+}

@@ -1,0 +1,32 @@
+=============================================================== 
+pEchoVar Example MOOS Configuration                             
+=============================================================== 
+                                                                
+ProcessConfig = pEchoVar                                        
+{                                                               
+  AppTick   = 4                                                 
+  CommsTick = 4                                                 
+
+  test    = "val 1"
+  test    = "         val 2 "
+                                                                
+  Echo    = MARINESIM_X       ->  NAV_X                         
+  Echo    = MARINESIM_Y       ->  NAV_Y                         
+  Echo    = MARINESIM_YAW     ->  NAV_YAW                       
+  Echo    = MARINESIM_HEADING ->  NAV_HEADING                   
+  Echo    = MARINESIM_SPEED   ->  NAV_SPEED                     
+                                                                
+  Echo    = FOO -> BAR                                          
+                                                                
+  FLIP:1    = source_variable  = MVIEWER_LCLICK                 
+  FLIP:1    = dest_variable    = UP_LOITERA                     
+  FLIP:1    = source_separator = ,                              
+  FLIP:1    = dest_separator   = #                              
+  FLIP:1    = type == redeploy                                  
+  FLIP:1    = x -> xcenter_assign                               
+  FLIP:1    = y -> xcenter_assign                               
+                                                                
+  condition = (CHECK1 = hello) or (CHECK2 < 10)                 
+                                                                
+  hold_messages = false                                         
+}                                          

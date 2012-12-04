@@ -1,0 +1,29 @@
+##############################################################################
+# AUTHOR:      Christopher Gagner
+# DATE:        August 19, 2010
+# FILE:        ivp/missions-test/README
+# DESCRIPTION: Overview of the missions in the missions-test directory.
+##############################################################################
+
+
+#-----------------------------------------------------------------------------
+# Introduction
+#-----------------------------------------------------------------------------
+The 'missions-test' directory contains missions that are used for various 
+levels of testing. This missions are similar to those that are found in the
+'missions' directory. However, in many cases these missions are designed to
+tests a specific behavior or circumstance.
+
+#-----------------------------------------------------------------------------
+# Nightly
+#-----------------------------------------------------------------------------
+The 'nightly' directory contains missions that are tested each night. These 
+are very basic missions that only test the essential components of MOOS-IvP
+are still functioning correctly.
+
+
+
+##############################################################################
+#                     END of ivp/missions-test/README
+##############################################################################
+

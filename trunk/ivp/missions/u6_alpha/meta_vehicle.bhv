@@ -1,0 +1,94 @@
+//---------------------------------------------------
+// Helm Behavior file 
+
+initialize   DEPLOY  = true
+initialize   RETURN  = false
+initialize   STATION_KEEP = false
+initialize   SURVEY  = true
+initialize   AVOID   = true
+initialize   SURVEY_UNDERWAY = false
+
+set MODE = ACTIVE {
+  DEPLOY = true
+} INACTIVE
+
+set MODE = RETURNING {
+  MODE = ACTIVE
+  RETURN = true
+} 
+
+set MODE = SURVEYING {
+  MODE = ACTIVE
+  SURVEY = true
+  RETURN = false
+} 
+
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name      = waypt_survey
+  pwt       = 100
+  condition = MODE==SURVEYING
+  perpetual = true
+  updates   = SURVEY_UPDATES
+  activeflag   = SURVEY_UNDERWAY = true
+  inactiveflag   = SURVEY_UNDERWAY = false
+  endflag   = RETURN = true
+
+//     cycleflag = SURVEY = false
+        repeat = 1
+          lead = 8
+   lead_damper = 1
+         speed = 2.0   // meters per second
+        radius = 8.0
+        points = format=lawnmower, label=dudley_survey, x=$(SURVEY_X), y=$(SURVEY_Y), width=$(WIDTH), height=$(HEIGHT), lane_width=$(LANE_WIDTH), rows=north-south, degs=$(DEGREES)
+//        repeat = 1
+  visual_hints = nextpt_color=red, nextpt_lcolor=khaki
+  visual_hints = vertex_color=yellow, line_color=white
+  visual_hints = vertex_size=2, edge_size=1
+}
+
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name      = waypt_return
+  pwt       = 100
+  updates   = RETURN_UPDATES
+  condition = MODE==RETURNING
+  endflag   = DEPLOY = false
+  endflag = RETURN = false;
+
+      speed = 1.3
+     radius = 3.0
+  nm_radius = 10.0
+     points = $(START_POS)
+     repeat = 10
+       lead = 8
+}
+
+
+//----------------------------------------------
+Behavior = BHV_AvoidCollision
+{
+  name       = avd_
+  pwt        = 200
+  condition  = AVOID=true
+  updates    = CONTACT_INFO
+  endflag    = CONTACT_RESOLVED = $[CONTACT]
+  templating = spawn
+
+             contact = to-be-set
+    on_no_contact_ok = true
+         extrapolate = true
+               decay = 30,60
+
+        pwt_outer_dist = 50
+        pwt_inner_dist = 20
+        completed_dist = 75
+     min_util_cpa_dist = 8
+     max_util_cpa_dist = 25
+             pwt_grade = linear
+   bearing_line_config = white:0, green:0.65, yellow:0.8, red:1.0
+}

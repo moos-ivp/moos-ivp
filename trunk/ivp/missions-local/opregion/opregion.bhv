@@ -1,0 +1,91 @@
+initialize   DEPLOY = false
+initialize   RETURN = false
+initialize   SAFETY = true
+initialize   TIMER  = true
+ 
+//----------------------------------------------
+Behavior = BHV_Loiter
+{
+  name      = loiter_a
+  pwt       = 100
+  condition = RETURN = false
+  condition = DEPLOY = true
+  condition = LTIMER < 150
+  updates   = UP_LOITERA
+
+  post_suffix = A
+        speed = 2.0
+    clockwise = false
+       radius = 8.0
+    nm_radius = 15.0
+//      polygon = format=radial, x=10, y=-100, radius=35, pts=12, snap=1, label=a 
+       polygon = format=ellipse, x=50, y=-100, major=80, minor=40, degs=90, rads=0.785398, pts=20, snap_value=1, label=foobar
+}
+
+//----------------------------------------------
+Behavior = BHV_Loiter
+{
+  name      = loiter_b
+  pwt       = 100
+  condition = RETURN = false
+  condition = DEPLOY = true
+  condition = LTIMER >= 150
+  updates   = UP_LOITERB
+
+  post_suffix = B
+        speed = 2.0
+    clockwise = false
+       radius = 8.0
+    nm_radius = 15.0
+      polygon = radial:: x=110, y=-100, radius=35, pts=3, snap=1, label=b
+}
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name       = waypt_return
+  pwt        = 100
+  condition  = RETURN = true
+  condition  = DEPLOY = true
+  perpetual  = true
+  endflag    = RETURN = false
+  endflag    = DEPLOY = false
+ 
+       speed = 2.0
+      radius = 2.0
+   nm_radius = 8.0
+      points = 0,0
+}
+
+//----------------------------------------------
+Behavior = BHV_OpRegion
+{
+  name       = opregion
+  pwt        = 100
+  condition  = SAFETY = true
+ 
+             polygon = 0,-50:0,-150:150,-150:150,-50
+//             polygon = pts="0,-100:0,-200:150,-200:150,-100"
+  trigger_entry_time = 1
+  trigger_exit_time  = 1
+}
+
+//----------------------------------------------
+Behavior = BHV_Timer
+{
+  name            = loiter_timer
+  duration        = 200
+  perpetual       = true
+  condition       = TIMER=true
+  runflag         = TIMER_STATE=running
+  idleflag        = TIMER_STATE=idle
+
+  duration_status = LTIMER
+  duration_reset  = JAKE=7
+  duration_idle_decay = false
+
+     var_status_idle = LTIMER_IDLE
+  var_status_running = LTIMER_RUNNING
+}
+
+

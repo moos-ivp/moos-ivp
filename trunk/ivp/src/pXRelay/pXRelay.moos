@@ -1,0 +1,12 @@
+=============================================================== 
+pXRelay Example MOOS Configuration                              
+=============================================================== 
+                                                                
+ProcessConfig = pXRelay                                         
+{                                                               
+  AppTick   = 4                                                 
+  CommsTick = 4                                                 
+                                                                
+  OUTGOING_VAR = APPLES                                         
+  INCOMING_VAR = PEARS                                          
+}                     

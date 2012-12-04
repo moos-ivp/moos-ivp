@@ -1,0 +1,20 @@
+Outline for artifactsearch.tex document
+
+1) Intro
+Layout problem, what we're trying to solve, what we will assume
+
+2) pSensorSim
+Describe SensorModel and ArtifactField
+
+3) pArtifactMapper
+Describe XYArtifactGrid, communication process, grid updates
+
+4) bhv_SearchGrid
+Not implemented yet
+
+5) Example Mission
+How to create the bounding poly, how to run artgridgen, how to include this in the mission.
+How to setup the lawnmower, how to view the result.
+
+-) Appendix
+Example mission files.

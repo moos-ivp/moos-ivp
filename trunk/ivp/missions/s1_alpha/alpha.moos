@@ -1,0 +1,273 @@
+// Alpha Configuration file: M. Benjamin
+
+ServerHost = localhost
+ServerPort = 9000
+Community  = alpha
+
+MOOSTimeWarp = 1
+TERM_REPORTING = false
+
+// Panama city
+//LatOrigin  = 30.17508647
+//LongOrigin = -85.74946797
+
+// Forest Lake
+LatOrigin  = 43.825300 
+LongOrigin = -70.330400 
+
+// MIT Sailing Pavilion (use this one)
+// LatOrigin  = 42.358456 
+// LongOrigin = -71.087589
+
+
+//------------------------------------------
+// Antler configuration  block
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+
+  Run = MOOSDB		@ NewConsole = false
+  Run = pLogger         @ NewConsole = false
+  Run = uSimMarine	@ NewConsole = false
+  Run = pMarinePID	@ NewConsole = false
+  Run = pHelmIvP	@ NewConsole = false
+  Run = pMarineViewer	@ NewConsole = false
+  Run = uProcessWatch	@ NewConsole = false
+  Run = pNodeReporter	@ NewConsole = false
+  Run = uXMS	        @ NewConsole = false ~uXMS_NAV
+  Run = uXMS	        @ NewConsole = false~uXMS_USM
+}
+
+//------------------------------------------
+// uXMS config block
+
+ProcessConfig = uXMS_NAV
+{
+  AppTick   = 1
+  CommsTick = 1
+
+  var = NAV_X, DB_CLIENTS, DB_UPTIME
+}
+
+//------------------------------------------
+// uXMS config block
+
+ProcessConfig = uXMS_USM
+{
+  AppTick   = 1
+  CommsTick = 1
+
+  var = USM_X, USM_Y, USM_SPEED
+}
+
+  
+//------------------------------------------
+// uProcessWatch config block
+
+ProcessConfig = uProcessWatch
+{
+  AppTick   = 4
+  CommsTick = 4
+
+  foo = bar  
+  TERM_REPORT_INTERVAL = 0.8
+
+  SUMMARY_WAIT = 5
+
+  NOWATCH   = uXMS*
+  WATCH_ALL = true
+}
+
+
+//------------------------------------------
+// pLogger config block
+
+ProcessConfig = pLogger
+{
+  AppTick   = 8
+  CommsTick = 8
+
+  AsyncLog = true
+
+  // For variables that are published in a bundle on their first post,
+  // explicitly declare their logging request
+
+  Log = IVPHELM_LIFE_EVENT @ 0 NOSYNC
+
+  LogAuxSrc = true
+  WildCardLogging = true
+  //WildCardOmitPattern = *_STATUS
+  WildCardExclusionLog = true
+}
+
+//------------------------------------------
+// uXMS config block
+
+ProcessConfig = uXMS
+{
+  AppTick   = 0.5
+  CommsTick = 0.5
+
+  VAR = NAV_X, NAV_Y, DB_CLIENTS
+  VAR = NAV_SPEED
+  VAR = NAV_HEADING
+  VAR = DESIRED_HEADING
+  VAR = DESIRED_SPEED
+  VAR = DESIRED_RUDDER
+  VAR = DESIRED_THRUST
+  VAR = NODE_REPORT_LOCAL
+  VAR = DEPLOY
+  VAR = RETURN
+  VAR = IVPHELM_ENGAGED
+
+  COLORMAP = pHelmIvP, red
+  COLORMAP = DB_CLIENTS, blue
+}
+
+
+//------------------------------------------
+// uSimMarine config block
+
+ProcessConfig = uSimMarine
+{
+  AppTick	= 4
+  CommsTick	= 4
+
+  START_X       = 0
+  START_Y       = -10
+  START_SPEED   = 0
+  START_HEADING = 180
+
+  PREFIX        = NAV
+
+  TURN_RATE     = 40
+  THRUST_MAP    = 0:0, 20:1, 40:2, 60:3, 80:4, 100:5
+}
+
+//------------------------------------------
+// pHelmIvP config block
+
+ProcessConfig = pHelmIvP
+{
+  MaxAppTick = 10
+  AppTick    = 4
+  CommsTick  = 4
+
+  Behaviors  = alpha.bhv
+  Domain     = course:0:359:360
+  Domain     = speed:0:4:21
+}
+
+//------------------------------------------
+// pMarinePID config block
+
+ProcessConfig = pMarinePID
+{
+  AppTick    = 20
+  CommsTick  = 20
+
+  VERBOSE       = true
+  DEPTH_CONTROL = false
+
+  // SIM_INSTABILITY = 20
+
+  // Yaw PID controller
+  YAW_PID_KP		 = 1.2
+  YAW_PID_KD		 = 0.0
+  YAW_PID_KI		 = 0.3
+  YAW_PID_INTEGRAL_LIMIT = 0.07
+
+  // Speed PID controller
+  SPEED_PID_KP		 = 1.0
+  SPEED_PID_KD		 = 0.0
+  SPEED_PID_KI		 = 0.0
+  SPEED_PID_INTEGRAL_LIMIT = 0.07
+
+  //MAXIMUMS
+  MAXRUDDER    = 100
+  MAXTHRUST    = 100
+
+  // A non-zero SPEED_FACTOR overrides use of SPEED_PID
+  // Will set DESIRED_THRUST = DESIRED_SPEED * SPEED_FACTOR
+  SPEED_FACTOR = 20
+}
+
+//------------------------------------------
+// pMarineViewer config block
+
+ProcessConfig = pMarineViewer
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  //TIFF_FILE            = AerialMIT.tif
+  TIFF_FILE            = forrest19.tif
+
+  set_pan_x            = -90
+  set_pan_y            = -280
+  zoom                 = 0.65
+  vehicle_shape_scale  = 1.5
+  hash_delta           = 50
+  hash_shade           = 0.4
+  hash_viewable        = true
+
+  nodes_font_size      = medium
+  procs_font_size      = medium
+  appcast_font_size    = small
+  
+  appcast_height       = 75
+  appcast_width        = 30
+  appcast_viewable     = true
+  appcast_color_scheme = indigo
+
+  //seglist_viewable_all = false
+  //datum_viewable = true
+  //datum_size     = 18
+  //gui_size = small
+
+  left_context[survey-point] = DEPLOY=true
+  left_context[survey-point] = MOOS_MANUAL_OVERIDE=false
+  left_context[survey-point] = RETURN=false
+
+  left_context[returnX] = DEPLOY=true
+  left_context[returnX] = MOOS_MANUAL_OVERIDE=false
+  left_context[returnX] = RETURN=true
+
+  right_context[return] = DEPLOY=true
+  right_context[return] = MOOS_MANUAL_OVERIDE=false
+  right_context[return] = RETURN=false
+
+
+  scope  = RETURN
+  scope  = WPT_STAT
+  scope  = VIEW_SEGLIST
+  scope  = VIEW_POINT
+  scope  = VIEW_POLYGON
+  scope  = MVIEWER_LCLICK
+  scope  = MVIEWER_RCLICK
+
+  BUTTON_ONE = DEPLOY # DEPLOY=true
+  BUTTON_ONE = MOOS_MANUAL_OVERIDE=false # RETURN=false
+  BUTTON_TWO = RETURN # RETURN=true
+  BUTTON_THREE = RETURN # RETURN=false
+
+  ACTION  = MENU_KEY=deploy # DEPLOY = true # RETURN = false
+  ACTION+ = MENU_KEY=deploy # MOOS_MANUAL_OVERIDE=false
+  ACTION  = RETURN=true
+  ACTION  = HSLINE=off
+  ACTION  = HSLINE=on
+  ACTION  = UPDATES_RETURN=speed=1.4
+}
+
+//------------------------------------------
+// pNodeReporter config block
+
+ProcessConfig = pNodeReporter
+{
+  MaxAppTick    = 2
+  AppTick	= 2
+  CommsTick	= 2
+
+  PLATFORM_TYPE   = KAYAK
+  PLATFORM_LENGTH = 4
+}

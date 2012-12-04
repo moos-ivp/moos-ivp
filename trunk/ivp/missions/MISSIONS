@@ -1,0 +1,18 @@
+
+Alpha
+  Synopsis:
+    One vehicle does a simple waypoint traversal with an option to 
+    return to the launch point at any time. 
+  Behaviors:
+    BHV_Waypoint
+  Notes:
+    Does not utilize HSD
+
+Foxtrot
+  Synopsis: (same as alpha but with PeriodSpeed)
+    One vehicle does a simple waypoint traversal with an option to 
+    return to the launch point at any time. The speed changes 
+    periodically.
+  Behaviors:
+    BHV_Waypoint, BHV_PeriodicSpeed
+  Variations

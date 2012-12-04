@@ -1,0 +1,26 @@
+=============================================================== 
+uFldContactRangeSensor Example MOOS Configuration                     
+=============================================================== 
+                                                                
+ProcessConfig = uFldContactRangeSensor                                   
+{                                                               
+  AppTick   = 4                                                 
+  CommsTick = 4                                                 
+                                                                
+  // Configuring aspects of the vehicles in the sim             
+  reach_distance = default = 100  // in meters or {nolimit}     
+  reply_distance = default = 100  // in meters or {nolimit}     
+  ping_wait      = default = 30   // in seconds                 
+                                                                
+  // Configuring manner of reporting                            
+  report_vars    = short // or {long, both}                     
+  ground_truth   = true  // or {false}                          
+  verbose        = true  // or {false}                          
+                                                                
+  // Configuring visual artifacts                               
+  ping_color     = white                                        
+  reply_color    = chartreuse                                   
+                                                                
+  // Configuring Artificial Noise                               
+  rn_algorithm   = uniform,pct=0                                
+}                                      

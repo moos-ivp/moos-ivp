@@ -1,0 +1,10 @@
+//--------------------------------------------------------
+// pNodeReporter Configuration Block (Created from Plugin)
+
+ProcessConfig = pNodeReporter
+{
+  AppTick     = 10
+  CommsTick   = 10
+  
+  VESSEL_TYPE = KAYAK
+}

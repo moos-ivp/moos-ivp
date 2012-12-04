@@ -1,0 +1,86 @@
+%\documentclass[journal]{IEEEtran}
+\documentclass[conference]{IEEEtran}
+%\documentclass[twocolumn]{article}
+
+% Begin IEEE recommended very useful LaTeX packages:
+\usepackage{cite}
+\usepackage{graphicx}
+\usepackage{epsfig}
+\usepackage{psfrag}
+\usepackage{subfigure}
+\usepackage{url}  
+\usepackage{array}
+\usepackage{amsmath}
+\interdisplaylinepenalty=2500
+% End IEEE recommended very useful LaTeX packages:
+
+\usepackage{verbatim}
+
+\newcommand{\var}[1]{{\footnotesize #1}}
+
+% correct bad hyphenation here
+\hyphenation{op-tical net-works semi-conduc-tor IEEEtran}
+
+\newcommand{\email}[1]{\textless #1\textgreater}
+\newcommand{\img}[4][width=\linewidth]
+{
+\begin{figure}[ht]
+\centering
+\includegraphics[#1]{#2}
+\caption{#3}
+\label{#4}
+\end{figure}
+}
+\newcommand{\bhvsg}{bhv\_SearchGrid}
+%\newcommand{\helm}{IvP Helm}
+%\newcommand{\phelm}{pHelmIvP}
+%\newcommand{\ibuff}{info\_buffer}
+%\newcounter{listing}
+%\newcounter{alisting}
+
+\newlength{\pin}
+\setlength{\pin}{0.2in}
+\newenvironment{hangpar}[1]{\list{}{
+    \setlength{\listparindent}{1.5em}       \setlength{\itemindent}{0pt}
+    \setlength{\itemsep}{0pt}               \setlength{\parindent}{0pt}
+    \setlength{\rightmargin}{0pt}           \setlength{\leftmargin}{#1}
+               \parsep                                 \medskipamount}%
+    \item\hspace{-\leftmargin}\noindent\ignorespaces}
+    {\endlist}
+
+
+\begin{document}
+\title{A Guide to Artifact Searching using MOOSIvP}
+\author{Andrew Shafer, Michael Benjamin \\
+Dept of Electrical Engineering/Computer Science, MIT \\
+Cambridge MA 02139 \\
+\email{ajshafer@mit.edu}, \email{mikerb@mit.edu} \\ \\
+{\Large{\today}}}
+\maketitle
+
+
+\begin{abstract}
+Documentation for the MOOS/IvP artifact search system.  Includes notes for pSensorSim, pArtifactMapper, artfieldgenerator, and \bhvsg.  Includes an example mission as a tutorial for users experienced with MOOS/IvP
+\end{abstract}
+
+\input{sec_1_intro}
+
+\input{sec_2_psensorsim}
+
+\input{sec_3_partifactmapper}
+
+\input{sec_4_bhv_searchgrid}
+
+\input{sec_5_example_missions}
+
+\small
+\bibliographystyle{plain} 
+\bibliography{biblio}
+
+\newpage
+\appendices
+\input{sec_appendix}
+%\input{sec_bravo_moos}
+%\input{sec_charlie_moos}
+
+\end{document}

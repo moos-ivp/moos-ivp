@@ -1,0 +1,12 @@
+=============================================================== 
+uFldHazardSensor Example MOOS Configuration                      
+=============================================================== 
+{                                                               
+  AppTick   = 4                                                 
+  CommsTick = 4                                                 
+                                                                
+  // Configuring Artificial Noise                               
+  rn_algorithm  =  uniform,pct=0   // pct may be in [0,1]    
+}                                               
+
+

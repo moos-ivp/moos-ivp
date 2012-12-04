@@ -1,0 +1,17 @@
+=============================================================== 
+pSearchGrid Example MOOS Configuration                          
+=============================================================== 
+                                                                
+ProcessConfig = pSearchGrid                                     
+{                                                               
+  AppTick   = 4                                                 
+  CommsTick = 4                                                 
+                                                                
+  GRID_CONFIG = pts={-50,-40: -10,0: 180,0: 180,-150: -50,-150} 
+  GRID_CONFIG = cell_size=5                                     
+  GRID_CONFIG = cell_vars=x:0:y:0:z:0                           
+  GRID_CONFIG = cell_min=x:0                                    
+  GRID_CONFIG = cell_max=x:10                                   
+  GRID_CONFIG = cell_min=y:0                                    
+  GRID_CONFIG = cell_max=y:1000                                                                     
+}                                             

@@ -1,0 +1,55 @@
+#!/bin/sh
+
+# We no longer use the "-q" option because it is not supported on
+# the mac
+
+killall MOOSDB iRemote MOOSRemote iGPS iGPSMonitor pNav     \
+        pHelm pHelmIvP pMarineViewer iMarineSim uSimMarine  \
+        pLogger iPWMController MOOSDump pAntler             \
+        iINS iDepth pScheduler pThermoTrack pNaFCon pSearch \
+        pHuxley pMessageSim pBeamform uTermCommand          \
+        pBearingTrack
+
+killall pMOOSBridge  iVSA iCTD iCTDSBE49 pBearingsSim        \
+        iPNICompass iMetaCompass iHeadingMonitor  pAEL       \
+        iWifi p1BTracker p2BTracker pBearings uMS pTarget    \
+        pRedirect pLoiterControl pTransponderAIS uMVS        \
+        pMarinePID uTMS uMVS_Bluefin pEchoVar pDeployHandler \
+        pTrafficControl pShipsideViewer uRepeater uXMS       \
+        pViewerRelay uHelmScope pClusterPriority zLoggerNG
+
+killall iMicroModem pRouter pFramer pMessageSim                \
+        pCSVLogger pBearings_VSA pEchoVar pTrackQuality        \
+        p1HTracker pGPSSim uBathy uCtdSim2 pTargetOpportunity  \
+        pBearings_DURIP uProcessWatch uPlayBack pSubIndex      \
+        pBearings_GENERIC pTargetSim pMBTracker zLoggerNG      \
+	iModemSim pFunctionSender uFunctionViewer uFunctionVis \
+        uSimBeaconRange uSimCurrent pBasicContactMgr           \
+        uSimActiveSonar
+
+killall pSensorSim pArtifactMapper pNoiseSim uNafconSplitter    \
+        pBlast pSweepLines pNSWCPC pXRelay pXRelayTest alogview  \
+        pAcommsHandler pCTDCodec pBTRCodec iDAS iOEX pGateway   \
+        pAcommsPoller pArraySim pSimpleAcousticSim geoview      \
+        pMultiTargetSim pMultiAcousticSim iOS5000 pGeneralCodec
+        
+        
+killall pCBF pBTracker pTrackMonitor uTimerScript pDTSP         \
+        pTallyomatic pNodeReporter iCommStack pMissionCtl iDSP  \
+        pNotDTSP pBoundingCircle pRIDManager uLogView           \
+        uLogViewHelm uLogViewIPF pFooBar pFoobar                \
+        pNotDTSP pBoundingCircle pRIDManager iKayakControlBoard
+
+killall pFleetControl uFldScope uFldContactRangeSensor         \
+        uFldPathCheck uFldNodeComms pSearchGrid pHostInfo      \
+        uFldShoreBroker uFldNodeBroker uFldBeaconRangeSensor   \
+        uFldHazardSensor uFldMessageHandler pGenPath           \
+        pPointAssign uFldHazardMetric pHandleSensorData        \
+        uFldCTDSensor pFrontGridRender uPlotViewer uMAC        \
+        pShare uFldGenericSensor
+
+killall pParticle uFldContactRangeSensorHP pUUVPath            \
+        pWifiCheck uFldMessageSourcer pRangeSensorHandler      \
+        pHunterPrey
+
+echo Done - Killed all MOOS-Related Processes.....
