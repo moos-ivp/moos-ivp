@@ -381,12 +381,12 @@ bool MOOSAsyncCommClient::DoReading()
 					{
 						//we have a fancy new DB upstream...
 						//one that support Asynchronous Clients
-						CMOOSMsg TimingMsg = m_InBox.front();
-						m_InBox.pop_front();
-
-						UpdateMOOSSkew(TimingMsg.GetDouble(),
-								TimingMsg.GetTime(),
+						UpdateMOOSSkew(q->GetDouble(),
+								q->GetTime(),
 								MOOSLocalTime());
+
+						m_InBox.erase(q);
+
 						break;
 					}
 					case MOOS_NULL_MSG:
