@@ -50,6 +50,6 @@ killall pFleetControl uFldScope uFldContactRangeSensor         \
 
 killall pParticle uFldContactRangeSensorHP pUUVPath            \
         pWifiCheck uFldMessageSourcer pRangeSensorHandler      \
-        pHunterPrey camera_example
+        pHunterPrey camera_example camera_example_server camera_example_viewer
 
 echo Done - Killed all MOOS-Related Processes.....
