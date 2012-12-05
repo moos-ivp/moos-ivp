@@ -193,7 +193,6 @@ ENDFOREACH(L)
 #---------------------------------------------------------------------
   
 SET(IVP_NON_GUI_APPS
-  camera_example
   app_alogscan
   app_aloggrep
   app_alogrm
