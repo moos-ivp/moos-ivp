@@ -1,6 +1,5 @@
 ServerHost = localhost
 ServerPort = 9000
-Simulator  = true
 Community  = xrelay
 
 //------------------------------------------
@@ -9,10 +8,20 @@ ProcessConfig = ANTLER
 {
   MSBetweenLaunches = 200
 
-  Run = MOOSDB	 @ NewConsole = true
+  Run = MOOSDB	 @ NewConsole = false
+  Run = pLogger	 @ NewConsole = false
   Run = pXRelay	 @ NewConsole = true ~ pXRelay_PEARS
   Run = pXRelay	 @ NewConsole = true ~ pXRelay_APPLES
   Run = uXMS	 @ NewConsole = true
+}
+
+//------------------------------------------
+// pLogger config block
+
+ProcessConfig = pLogger
+{
+  AsyncLog = true
+  WildCardLogging = true
 }
 
 //------------------------------------------
