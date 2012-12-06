@@ -7,10 +7,6 @@ Community  = alpha
 MOOSTimeWarp = 1
 TERM_REPORTING = false
 
-// Panama city
-//LatOrigin  = 30.17508647
-//LongOrigin = -85.74946797
-
 // Forest Lake
 LatOrigin  = 43.825300 
 LongOrigin = -70.330400 
@@ -34,33 +30,8 @@ ProcessConfig = ANTLER
   Run = pMarineViewer	@ NewConsole = false
   Run = uProcessWatch	@ NewConsole = false
   Run = pNodeReporter	@ NewConsole = false
-  Run = uXMS	        @ NewConsole = false ~uXMS_NAV
-  Run = uXMS	        @ NewConsole = false~uXMS_USM
 }
 
-//------------------------------------------
-// uXMS config block
-
-ProcessConfig = uXMS_NAV
-{
-  AppTick   = 1
-  CommsTick = 1
-
-  var = NAV_X, DB_CLIENTS, DB_UPTIME
-}
-
-//------------------------------------------
-// uXMS config block
-
-ProcessConfig = uXMS_USM
-{
-  AppTick   = 1
-  CommsTick = 1
-
-  var = USM_X, USM_Y, USM_SPEED
-}
-
-  
 //------------------------------------------
 // uProcessWatch config block
 
@@ -96,34 +67,9 @@ ProcessConfig = pLogger
 
   LogAuxSrc = true
   WildCardLogging = true
-  //WildCardOmitPattern = *_STATUS
+  WildCardOmitPattern = *_STATUS
   WildCardExclusionLog = true
 }
-
-//------------------------------------------
-// uXMS config block
-
-ProcessConfig = uXMS
-{
-  AppTick   = 0.5
-  CommsTick = 0.5
-
-  VAR = NAV_X, NAV_Y, DB_CLIENTS
-  VAR = NAV_SPEED
-  VAR = NAV_HEADING
-  VAR = DESIRED_HEADING
-  VAR = DESIRED_SPEED
-  VAR = DESIRED_RUDDER
-  VAR = DESIRED_THRUST
-  VAR = NODE_REPORT_LOCAL
-  VAR = DEPLOY
-  VAR = RETURN
-  VAR = IVPHELM_ENGAGED
-
-  COLORMAP = pHelmIvP, red
-  COLORMAP = DB_CLIENTS, blue
-}
-
 
 //------------------------------------------
 // uSimMarine config block
@@ -248,8 +194,8 @@ ProcessConfig = pMarineViewer
 
   BUTTON_ONE = DEPLOY # DEPLOY=true
   BUTTON_ONE = MOOS_MANUAL_OVERIDE=false # RETURN=false
-  BUTTON_TWO = RETURN # RETURN=true
-  BUTTON_THREE = RETURN # RETURN=false
+  BUTTON_TWO = RETURN:T # RETURN=true
+  BUTTON_THREE = RETURN:F # RETURN=false
 
   ACTION  = MENU_KEY=deploy # DEPLOY = true # RETURN = false
   ACTION+ = MENU_KEY=deploy # MOOS_MANUAL_OVERIDE=false
