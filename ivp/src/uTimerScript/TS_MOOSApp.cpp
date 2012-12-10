@@ -33,6 +33,12 @@
 #define getpid _getpid
 #endif
 
+#ifndef _WIN32
+#include <sys/types.h>
+#include <unistd.h>
+#endif
+
+
 using namespace std;
 
 //---------------------------------------------------------

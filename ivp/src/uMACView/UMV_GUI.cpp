@@ -522,7 +522,7 @@ void UMV_GUI::resizeWidgets()
   // constraints are not violated.
 
   double pct_cast_hgt = m_ac_settings.geosize("appcast_height") / 100;
-  double pct_pane_hgt = 0.95;
+  //double pct_pane_hgt = 0.95;
   double pct_menu_hgt = 0.05;
   
   // Check for violations of minimal constraints
@@ -534,7 +534,7 @@ void UMV_GUI::resizeWidgets()
     pct_menu_hgt = 20 / now_hgt;
   if((pct_menu_hgt * now_hgt) > 25) 
     pct_menu_hgt = 25 / now_hgt;
-  pct_pane_hgt = (1 - pct_menu_hgt);
+  //pct_pane_hgt = (1 - pct_menu_hgt);
   
   // Part 2: Adjust the extents of the MENU Bar
   // ================================================================  
