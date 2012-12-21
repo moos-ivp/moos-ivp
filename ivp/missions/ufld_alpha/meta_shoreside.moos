@@ -46,7 +46,7 @@ ProcessConfig = uFldNodeComms
 //--------------------------------------------------
 // uFldShoreBroker Configuration Block
 
-ProcessConfig = uFldShoreBroker_DFDSF
+ProcessConfig = uFldShoreBroker
 {
   AppTick   = 1
   CommsTick = 1

@@ -162,6 +162,13 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
     double skew_time;
     msg.IsSkewed(m_curr_time, &skew_time);
 
+    if(moosvar=="MOOS_MANUAL_OVERIDE") {
+      string skew_info = "var=" + moosvar + ":";
+      skew_info += "matter="+boolToString(m_skews_matter);
+      skew_info += ", skew=" + doubleToString(skew_time,2);
+      reportEvent(skew_info);
+    }
+
     if(m_skews_matter && (fabs(skew_time) > m_ok_skew)) {
       // If mail not posted by this helm from this community, flag the skew.
       bool posted_by_this_helm = true;
@@ -170,7 +177,7 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
       if(!posted_by_this_helm) {
 	string msg = "Helm ignores MOOS msg due to skew: " + moosvar;
 	msg += " Source=" + source + " Skew=" + doubleToString(skew_time,2);
-	//reportRunWarning(msg);
+	reportRunWarning(msg);
 	continue;
       }
     }
@@ -246,13 +253,12 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
 
 //--------------------------------------------------------------------
 // Procedure: Iterate()
-//      Note: happens AppTick times per second
-//            
 
 bool HelmIvP::Iterate()
 {
   AppCastingMOOSApp::Iterate();
 
+  helmStatusUpdate();
   postHelmStatus();
   if(!helmStatusEnabled()) {
     m_info_buffer->clearDeltaVectors();

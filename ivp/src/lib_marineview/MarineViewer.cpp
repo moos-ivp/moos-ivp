@@ -344,14 +344,23 @@ double MarineViewer::meters2img(char xy, double meters_val)
   double img_val = 0.0;
   if(xy == 'x') {
     double range = m_back_img.get_img_mtr_width();
-    double pct = (meters_val - m_back_img.get_x_at_img_ctr()) / range;
-    img_val = pct + 0.5;
+    if(range == 0)
+      img_val = 0;
+    else {
+      double pct = (meters_val - m_back_img.get_x_at_img_ctr()) / range;
+      img_val = pct + 0.5;
+    }
   }
-  if(xy == 'y') {
+  else if(xy == 'y') {
     double range = m_back_img.get_img_mtr_height();
-    double pct = (meters_val - m_back_img.get_y_at_img_ctr()) / range;
-    img_val = pct + 0.5;
+    if(range == 0)
+      img_val = 0;
+    else {
+      double pct = (meters_val - m_back_img.get_y_at_img_ctr()) / range;
+      img_val = pct + 0.5;
+    }
   }
+
   return(img_val);
 }
 

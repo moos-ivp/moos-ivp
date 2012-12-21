@@ -46,6 +46,7 @@ ProcessConfig = uProcessWatch
   SUMMARY_WAIT = 5
 
   NOWATCH   = uXMS*
+  NOWATCH   = uPokeDB*
   WATCH_ALL = true
 }
 

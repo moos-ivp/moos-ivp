@@ -48,11 +48,10 @@ class PokeDB : public CMOOSApp
 
   bool ConfigureComms();
 
-protected:
+ protected: // Index for each is unique per variable name
   std::vector<std::string>  m_varname;
   std::vector<std::string>  m_valtype;
   std::vector<std::string>  m_varvalue;
-
   std::vector<std::string>  m_svalue_read;
   std::vector<std::string>  m_dvalue_read;
   std::vector<std::string>  m_source_read;

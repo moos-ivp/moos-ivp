@@ -319,7 +319,6 @@ void HostInfo::postIPInfo()
     addIPInfo(m_default_hostip, "USER_HARD_CONFIGURED");
   else {
     addIPInfo(m_ip_linux_wifi, "LINUX_WLAN");
-    addIPInfo(m_ip_osx_wifi, "OSX_WIFI");
     addIPInfo(m_ip_osx_airport, "OSX_AIRPORT");
     addIPInfo(m_ip_linux_any, "LINUX_ANY");
     addIPInfo(m_ip_linux_ethernet0, "LINUX_ETH0");
@@ -330,6 +329,7 @@ void HostInfo::postIPInfo()
     addIPInfo(m_ip_osx_ethernet, "OSX_ETHERNET");
     addIPInfo(m_ip_osx_ethernet1, "OSX_ETHERNET1");
     addIPInfo(m_ip_osx_ethernet2, "OSX_ETHERNET2");
+    addIPInfo(m_ip_osx_wifi, "OSX_WIFI");
   }    
 
   if(m_host_ip != "")
