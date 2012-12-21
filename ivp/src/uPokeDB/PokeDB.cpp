@@ -112,8 +112,8 @@ bool PokeDB::Iterate()
 	varval = findReplace(varval, "@MOOSTIME", stime);
       }
       if(m_valtype[i] == "double")
-	m_Comms.Notify(m_varname[i], atof(varval.c_str());
-		       else 
+	m_Comms.Notify(m_varname[i], atof(varval.c_str()));
+      else 
 	m_Comms.Notify(m_varname[i], varval);
     }  
   }
