@@ -1,0 +1,71 @@
+\usepackage[lined,boxed]{}
+\usepackage{latex_packages/lastpage}
+\usepackage{latex_packages/here}
+\usepackage{latex_packages/makeidx}
+\usepackage{latex_packages/subfigure}
+\usepackage{color, listings, tabularx, amsfonts, epsfig, psfrag, cite}
+\usepackage{url, array, amsmath, fancyhdr, verbatim, graphicx, index}  
+\usepackage[footnotesize]{caption}
+\usepackage[bookmarksopen=true,colorlinks=true,linkcolor=blue,citecolor=green,bookmarks,pdftex]{hyperref}
+
+% The undesirablility of a page break between formula lines
+\interdisplaylinepenalty=2500
+
+\setlength{\textwidth}{6.5in}
+\setlength{\textheight}{8.5in}
+\setlength{\topmargin}{-0.25in}
+\setlength{\evensidemargin}{0.1in}
+\setlength{\oddsidemargin}{0.1in}
+\setlength{\parskip}{0pt}
+\setcounter{tocdepth}{3}
+
+\newcommand{\pskip}{\vspace{4pt}}
+\newcommand{\app}[1]{{\small \tt #1}}
+\newcommand{\aapp}[1]{{\footnotesize \tt #1}}
+\newcommand{\var}[1]{{\small \tt #1}}
+\newcommand{\varr}[1]{{\tt #1}}
+\newcommand{\vvar}[1]{{\footnotesize \tt #1}}
+\newcommand{\mvar}[1]{\mbox{{\small \tt #1}}}
+\newcommand{\mvvar}[1]{\mbox{{\footnotesize \tt #1}}}
+\newcommand{\mvvvar}[1]{\mbox{{\tiny \tt #1}}}
+\newcommand{\bvar}[1]{{\footnotesize \tt #1}}
+\newcommand{\bvvar}[1]{{\footnotesize {\bf{\tt #1}}}}
+\newcounter{listing}
+
+%==================================================
+\definecolor{mbeige}{rgb}{0.875,0.859,0.765}
+\definecolor{mygrey}{rgb}{0.93,0.93,0.98}
+%==================================================
+\newenvironment{packed_itemize}{
+\begin{itemize}
+  \setlength{\itemsep}{1pt}
+  \setlength{\parskip}{0pt}
+  \setlength{\parsep}{0pt}
+}{\end{itemize}}
+
+\newenvironment{xpacked_itemize}{
+\begin{itemize}
+  \setlength{\itemsep}{2pt}
+  \setlength{\parskip}{0pt}
+  \setlength{\parsep}{0pt}
+}{\end{itemize}}
+
+\newenvironment{packed_enumerate}{
+\begin{enumerate}
+  \setlength{\itemsep}{1pt}
+  \setlength{\parskip}{0pt}
+  \setlength{\parsep}{0pt}
+}{\end{enumerate}}
+
+\newenvironment{hangpar}[1]{\list{}{
+    \setlength{\listparindent}{1.5em}       \setlength{\itemindent}{0pt}
+    \setlength{\itemsep}{0pt}               \setlength{\parindent}{0pt}
+    \setlength{\rightmargin}{0pt}           \setlength{\leftmargin}{#1}}
+    \item\hspace{-\leftmargin}\noindent\ignorespaces}
+    {\endlist}
+
+%==================================================
+\makeindex
+\newindex{vars}{adx}{and}{Index of MOOS Variables}
+
+
