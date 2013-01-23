@@ -19,8 +19,8 @@ SET(SRC
 ADD_EXECUTABLE(mandler ${SRC})
      
 TARGET_LINK_LIBRARIES(mandler
-  mbutil
-  apputil
   manifest
+  apputil
+  mbutil
   ${SYSTEM_LIBS})
 
