@@ -27,7 +27,7 @@ ProcessConfig = ANTLER
   Run = uSimMarine	@ NewConsole = false
   Run = pMarinePID	@ NewConsole = false
   Run = pHelmIvP	@ NewConsole = false
-  Run = pMarineViewer	@ NewConsole = true
+  Run = pMarineViewer	@ NewConsole = false
   Run = uProcessWatch	@ NewConsole = false
   Run = pNodeReporter	@ NewConsole = false
   //Run = uTimerScript    @ NewConsole = false
